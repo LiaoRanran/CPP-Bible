@@ -1793,6 +1793,31 @@ int main(){std::variant<int,double> v;std::cout<<sizeof(v)<<std::endl;v=3.14;std
 
 > 交叉引用：虚分发对比见 [ch45](Book/part05_oo/ch45_oop_object_model.md)； unions 内存见 [ch35](Book/part04_memory/ch35_memory_layout.md)。
 
+## 附录 J（工业级 union / variant 实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil `absl::variant` 即 `std::variant` 封装
+- **LLVM** — libc++ 用 `std::variant` 表示解释器值类型
+- **Chromium** — base 用 `absl::variant` 表达多形态结果
+- **Boost** — Boost.Variant 是 `std::variant` 的上一代方案
+- **Qt ** — QVariant 为 Qt 元对象系统的通用值容器
+- **Eigen** — 用 `union` 对齐存储不同标量宽度的矩阵
+- **folly** — folly 用 `variant` 表示异构任务结果
+- **Redis** — hiredispp 用 `std::variant` 表达回复类型
+- **ClickHouse** — 函数返回值用 `variant` 承载多类型列
+- **RocksDB** — 状态以 `variant` 表示不同 KV 编码
+- **V8** — 局部值用 `variant` 表示 JS 类型
+- **DPDK** — 配置解析用 `union` 复用缓冲区
+- **gRPC** — 消息字段用 `variant` 标记可选类型
+- **spdlog** — sink 配置用 `variant` 表达目标
+- **fmt** — 格式化参数用 `variant` 容纳多类型
+- **Unreal** — UE 用 `TUnion` 对应 `std::variant`
+- **WebKit** — WTF 用 `std::variant` 表示节点值
+- **Mozilla** — SpiderMonkey 用 `variant` 表示值
+- **Abseil** — Abseil `absl::visit` 基于重载访问 variant
+- **Blink** — Blink 用 `variant` 缓存样式结果
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

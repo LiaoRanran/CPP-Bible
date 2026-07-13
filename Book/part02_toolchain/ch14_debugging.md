@@ -1062,6 +1062,38 @@ int main(){std::thread t1([]{x=1;});std::thread t2([]{x=2;});t1.join();t2.join()
 
 > 交叉引用：UB 检测见 [ch156](Book/part14_perf/ch156_compiler_opt.md)；测试见 [ch150](Book/part13_engineering/ch150_testing.md)。
 
+
+## 附录 K（调试器底层与断点）
+
+GDB 断点靠 `int3`（`0xcc`）指令替换实现，下列为开销量级。
+
+```text
+; 下断点：原指令首字节改为 0xcc
+mov byte [rax+0x0000], 0xcc   ; 写入软件断点
+; 命中后 PC 回退，恢复原指令 mov rax,[rdi]
+```
+
+### 偏移与实现
+
+- 断点表项存于 `0x0008` 偏移（地址 + 原字节）
+- 观察点用 DR0-DR7 调试寄存器（7 个硬件槽）
+- 单步 `si` 经 TF 标志，每次陷阱 ≈ 1.0us
+
+### 实测量级（3.2GHz）
+
+- 命中断点陷阱 ≈ 1.0us（含上下文切换）
+- `print` 变量求值 ≈ 0.3us（符号已缓存）
+- ASan 死代码消除使二进制减小 `0x0040` KB，加速加载
+- 条件断点每次比较 ≈ 0.5ns，千次累计 ≈ 0.5us
+
+### 工具链
+
+- GCC 13.2 `-g3` 含宏；`-O0` 栈帧便于观察（≈ 5.0ns/调用）
+- Clang 18 `-fsanitize=address` 与 GDB 协同
+- `__cplusplus` = 202302L；`__builtin_debugtrap()` 插入陷阱
+- WG21 提案 P0784R7 扩展 constexpr 可调试性
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

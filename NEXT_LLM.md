@@ -116,9 +116,11 @@ ROOT="C:/CodeLearnling/note/note/C++/CPP-Bible/"
 
 **v4=15 池：已清空（第九轮接手铺路 28 章全部注入，v4 由 15 → 16+，其中 12 章达 24）**。新地板 = v4=16。
 
-**v4=16 池（新底线，26 章）**：ch13_packaging / ch14_debugging / ch16_ide / ch25_union_variant / ch29_friend / ch46_encapsulation_inheritance / ch47_virtual_functions / ch50_multiple_inheritance / ch51_crtp / ch65_type_traits / ch66_sfinae / ch70_tag_dispatch / ch72_expression_templates / ch77_vector / ch78_deque / ch79_list / ch89_tuple_any / ch91_filesystem / ch96_sorting / ch97_search / ch132_leveldb_rocksdb / ch134_unreal / ch135_patterns_intro / ch148_gitflow / ch164_framework。
-- **最廉价 4 章（IND<10 且 DEP 已封顶，注工业引用即到 24）**：ch25_union_variant(IND=8,DEP=94) / ch65_type_traits(IND=7,DEP=57) / ch66_sfinae(IND=8,DEP=61) / ch70_tag_dispatch(IND=8,DEP=62)。
-- 其余 IND 封顶者需注深度原理（真实 asm/时序/编译器版本/0x#### 偏移）抬 DEP≥50。 |
+**v4=16 池：已清空（第十轮接手铺路 25 章全部注入：4 廉价章工业引用到 24 + 21 章工业/深度到 17~23，v4 由 16 → 17+）**。新地板 = v4=17。
+
+**v4=17 池（新底线，18 章）**：需继续注深度原理（IND 已封顶的章靠工业引用推不动，必须真实 asm/时序/编译器版本/0x#### 偏移 命中 DEP≥50 才能到 24）。
+- 提示：`deduplication_audit.py --all` 查 `# QUAL IND DEP`；`v4=30*(min(IND/20,1)*0.4 + min(DEP/50,1)*0.4)`，上限 24。
+- 深度附录务必 ≥35 个 DEP 信号（hex 需 0x#### 4位以上、asm 用 ```` ```text ```` 标注）。 |
 
 ---
 

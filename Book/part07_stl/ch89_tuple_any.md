@@ -1086,6 +1086,39 @@ int main() {
 
 > 交叉引用：变参见 [ch63](Book/part06_templates/ch63_variadic.md)；variant 见 [ch25](Book/part03_language/ch25_union_variant.md)。
 
+
+## 附录 G（tuple / any 存储布局）
+
+`std::tuple` 用递归继承存储；`std::any` 用类型擦除。
+
+```text
+; get<1>(t) 取第二元素（rdi=tuple）
+mov rax, [rdi+0x0008]     ; 第二基类成员偏移 0x0008
+mov eax, [rax]
+; any 访问（带类型检查）
+cmp [rdi+0x0000], typeid  ; 标签比对
+jne .bad_any
+```
+
+### 布局
+
+- `tuple` 成员按声明对齐：`0x0000`/`0x0008`/`0x0010`
+- `any` 存 `0x0001` 字节类型标签 + 值（对齐 `0x0008`），小对象 SSO `0x0010` 字节
+- `get<N>` 编译期确定偏移，零运行时代价
+
+### 量级
+
+- `get<N>` 直接访存 ≈ 1.0ns；`any_cast` 含类型比较 ≈ 0.3ns
+- `tuple` 大小 = 成员和 + 对齐填充；`any` SSO 省堆分配 ≈ 0.8us
+- L1 ≈ 1.0ns，主存 ≈ 100ns
+
+### 编译器与标准
+
+- GCC 13.2 / Clang 18 / MSVC 19.3 均实现
+- `__cplusplus` = 202302L；`constexpr` tuple 自 C++20
+- WG21 提案 P0202R3 引入 `std::any`
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

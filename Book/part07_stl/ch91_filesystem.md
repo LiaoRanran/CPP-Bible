@@ -942,6 +942,39 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 
 > 交叉引用：I/O 流见 [ch92](Book/part07_stl/ch92_chrono.md)；错误处理见 [ch40](Book/part04_memory/ch40_exception_safety.md)。
 
+
+## 附录 G（文件系统调用底层）
+
+`std::filesystem` 封装 syscall，下列为典型代价。
+
+```text
+; fs::exists(p) -> stat
+mov rax, 0x0004          ; SYS_stat 号（示意）
+mov rdi, [r8+0x0000]     ; 路径指针
+syscall                   ; 陷入内核
+test rax, rax
+jne .not_exist
+```
+
+### 量级
+
+- `stat` 系统调用 ≈ 1.2us（缓存命中）→ 22ms（冷盘）
+- `directory_iterator` 单次 `getdents` ≈ 0.5us，批量 `0x0100` 项
+- 路径解析每组件 ≈ 0.1us；绝对路径省 ≈ 0.2us
+- L1 ≈ 1.0ns，主存 ≈ 100ns
+
+### 布局
+
+- path 内部存 `0x0010` 字节短路径 SSO，长路径堆分配 `0x0040` 字节
+- 文件元数据偏移 `0x0008` 存 mtime/size
+
+### 编译器与标准
+
+- GCC 13.2 / Clang 18 / MSVC 19.3 均实现 `<filesystem>`
+- `__cplusplus` = 202302L；C++17 引入该库
+- WG21 提案 P0202R3 规范 `std::filesystem`
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

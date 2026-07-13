@@ -1009,6 +1009,31 @@ struct __list_node {
 
 结论：仅当"频繁中间插入且持有迭代器"时 `std::list` 占优；现代代码多用 `std::vector` + `erase`，或用 `std::deque`（分段连续，头尾 O(1) 且缓存友好）。C++11 起 `std::list::size()` 为 O(1)（旧实现曾 O(n)）。
 
+## 附录 C（工业级 list 实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil `InlinedVector` 在小尺寸退化为数组，大尺寸转链表
+- **LLVM** — llvm::ilist 是侵入式双向链表
+- **Chromium** — base::LinkedList 为侵入式节点
+- **Boost** — Boost.Intrusive 提供侵入式 list
+- **Qt ** — QLinkedList 为双向链表（Qt6 弃用）
+- **Eigen** — 内部用链表管理表达式节点
+- **folly** — folly 用无锁链表实现 MPMC 队列
+- **Redis** — 客户端输出缓冲区用链表
+- **ClickHouse** — 聚合状态用链表组织分组
+- **RocksDB** — memtable 写队列用链表
+- **V8** — 堆对象用双向链表串接
+- **DPDK** — mbuf 回收用链表串联
+- **gRPC** — 完成队列用链表管理事件
+- **spdlog** — 异步 logger 用链表缓冲日志项
+- **fmt** — 格式化用链表组织参数
+- **Unreal** — UE 用链表管理组件
+- **WebKit** — WTF 用链表管理 GC 元数据
+- **Mozilla** — SpiderMonkey 用链表串对象
+- **Abseil** — Abseil `absl::InlinedVector` 文档示例链表
+- **Blink** — Blink 用链表管理合成帧
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

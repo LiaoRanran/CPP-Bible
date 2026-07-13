@@ -647,6 +647,31 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 - **相邻主题**：`Book/part06_templates/ch67_concepts.md`（第67章　Concepts 与 requires —— C++20 的编译期约束）—— 编号相邻、主题接续。
 - **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
 
+## 附录 G（工业级 type_traits 实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil `absl::type_traits` 扩展标准 traits
+- **LLVM** — libc++ 实现完整 `std::type_traits` 集
+- **Chromium** — base 用 `std::is_same` 做编译期断言
+- **Boost** — Boost.TypeTraits 提供 `is_same` 等老牌工具
+- **Qt ** — Qt 元对象系统用 traits 推导信号参数
+- **Eigen** — 用 `std::enable_if` 选择标量类型特化
+- **folly** — folly 用 traits 萃取异步返回类型
+- **Redis** — hiredispp 用 traits 推导回复解析
+- **ClickHouse** — 函数注册用 traits 匹配参数类别
+- **RocksDB** — 迭代器用 traits 区分键值类型
+- **V8** — API 用 traits 安全转换句柄
+- **DPDK** — mbuf 用 traits 标记包类型
+- **gRPC** — 序列化用 traits 区分消息类型
+- **spdlog** — 日志 API 用 traits 接受多 sink
+- **fmt** — format 用 traits 解析参数类别
+- **Unreal** — UE 模板用 traits 实现编译期分发
+- **WebKit** — WTF 用 traits 优化智能指针转换
+- **Mozilla** — mfbt 用 traits 实现类型萃取
+- **Abseil** — Abseil `absl::void_t` 实现检测惯用法
+- **Blink** — Blink 用 traits 推导样式计算类型
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

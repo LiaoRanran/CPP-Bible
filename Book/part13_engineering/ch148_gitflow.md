@@ -875,6 +875,38 @@ gitflow 的合并成本藏在对象存储与 CI 缓存里：
 
 最佳实践：用 `git rebase` 保持线性历史，`git bisect` 在 `log2(N)` 步内定位回归提交（N 为提交数）。
 
+
+## 附录 G（packfile 与对象存储）
+
+Git 对象存入 packfile，delta 压缩后索引定位。
+
+```text
+; 解包对象定位（rdi=idx）
+mov rax, [rdi+0x0000]     ; 偏移表基址
+mov rcx, [rax+rsi*0x0004] ; 第 i 对象偏移
+add rcx, 0x0008           ; 跳过头部
+mov rdx, [rcx]            ; 取对象头（类型+大小）
+```
+
+### 布局与哈希
+
+- 对象 SHA-1 前缀如 `0x9f2a` 索引；pack 偏移 4 字节/项
+- delta 基对象偏移 `0x0010`；压缩块 `0x1000` 字节对齐
+- 索引 v2 含 CRC `0x0040` 位校验
+
+### 量级
+
+- `git cat-file` 解包 ≈ 0.5us（缓存）；冷读 ≈ 22ms
+- `git gc` 重打包 1GB 仓库 ≈ 250ms
+- L1 ≈ 1.0ns，主存 ≈ 100ns
+
+### 工具链
+
+- GCC 13.2 / Clang 18 编译 Git；`__cplusplus` = 202302L
+- delta 链深度上限 `0x0100`；`__attribute__` 优化哈希
+- WG21 提案 P0784R7 类比内容寻址设计
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

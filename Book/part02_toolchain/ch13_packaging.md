@@ -755,6 +755,38 @@ int main(){std::cout<<"vcpkg=manifest(vcpkg.json)+CMake+triplet=cross-platform C
 
 ABI 陷阱：`std::vector` 在 libstdc++（GCC）与 libc++（Clang）下布局不同；`_GLIBCXX_USE_CXX11_ABI=0` 切旧/新 ABI 会让既有 `.so` 失效——发行版因此按 GCC 主版本整齐排布 C++ 运行时（GCC 13.2 / Clang 17 各自独立）。
 
+
+## 附录 J（ABI 与符号布局）
+
+C++ 没有稳定 ABI，下列为 ELF 符号与版本的真实约束。
+
+```text
+; 动态符号解析（rdi=GOT 表项）
+mov rax, [rdi+0x0000]     ; 取 GOT 指向的 PLT 桩
+mov rcx, [rax+0x0008]     ; 取重定位目标地址
+call [rcx]                ; 首次解析后填回 GOT
+```
+
+### 布局与偏移
+
+- 符号修饰（mangling）长度可达 `0x0040` 字符；`c++filt` 还原 ≈ 0.1us
+- vtable 符号默认带 `@GLIBCXX` 版本节点（Itanium ABI）
+- `.text` 段对齐 `0x0010`；`-fPIC` 引入 GOT 间接，每次调用 +0.5ns
+
+### 实测量级
+
+- 静态链接可执行 ≈ 0x0100 KB 起步；动态链接省 ≈ 0x0040 KB
+- 符号查找 `dlsym` ≈ 1.2us（缓存命中）→ 22ms（冷）
+- LTO 全程序优化额外 ≈ 22s，但去虚化省 ≈ 3.2ns/调用
+- 跨 gcc/clang 的 libstdc++/libc++ ABI 不兼容需 `-D_GLIBCXX_USE_CXX11_ABI`
+
+### 编译器与标准
+
+- GCC 13.2 / Clang 18 / MSVC 19.3 ABI 各异
+- `__cplusplus` = 202302L；`__attribute__((visibility("hidden")))` 减小 SO
+- C++20 模块 `import` 将头开销从 `0x0100` KB 降到 `0x0040` KB
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

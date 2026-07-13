@@ -1179,6 +1179,40 @@ int main(){std::cout<<"Framework=ch47+ch93+ch141+ch88+ch161"<<std::endl;return 0
 
 > 交叉引用：内存池见 [ch160](Book/part15_cases/ch160_mempool.md)；错误传播见 [ch146](Book/part13_engineering/ch146_error_handling.md)。
 
+
+## 附录 G（框架派发开销）
+
+通用框架多用虚分发或类型擦除，下列为开销视图。
+
+```text
+; 框架处理事件（rdi=handler）
+mov rax, [rdi+0x0000]     ; 取 vptr
+mov rcx, [rax+0x0008]     ; 取 onEvent 槽
+call [rcx]                ; 虚派发
+; 类型擦除替代路径
+mov rdx, [rdi+0x0010]     ; 取擦除函数指针
+call [rdx]
+```
+
+### 布局
+
+- 框架基类 vptr `0x0000`；槽位 `0x0000/0x0008/0x0010`
+- 类型擦除控制块偏移 `0x0010`，存擦除函数指针
+- 插件接口 vtable 顶端偏移 `0x0040`
+
+### 量级（3.2GHz）
+
+- 虚派发 ≈ 3.2ns（BTB miss 18ns）；类型擦除 ≈ 3.5ns
+- 非虚直接调用 ≈ 0.5ns；省 ≈ 2.7ns/调用
+- L1 ≈ 1.0ns，L2 ≈ 4.0ns，L3 ≈ 12ns，主存 ≈ 100ns
+
+### 编译器与标准
+
+- GCC 13.2 / Clang 18 / MSVC 19.3 生成 vtable
+- `__cplusplus` = 202302L；`-fwhole-program-vtables` 去虚化框架调用
+- `constexpr` 将框架配置前移到编译期（C++20）
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

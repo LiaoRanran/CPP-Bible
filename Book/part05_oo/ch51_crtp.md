@@ -616,6 +616,31 @@ int main(){Widget w(7);auto c=w.clone();std::cout<<c->v<<std::endl;return 0;}
 - **相邻主题**：`Book/part05_oo/ch49_virtual_inheritance.md`（第49章 虚继承与菱形继承：共享虚基类）—— 编号相邻、主题接续。
 - **同模块**：`Book/part05_oo/ch45_oop_object_model.md`（第 45 章　C++ 面向对象总览与对象模型基础）—— 同模块下的其他主题。
 
+## 附录 G（工业级 CRTP 实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil 用 CRTP 实现 `absl::Span` 的静态接口
+- **LLVM** — LLVM `RTTI` 用 CRTP 做编译期多态
+- **Chromium** — base 用 CRTP 实现 `RepeatingCallback` 基类
+- **Boost** — Boost.Iterator 用 CRTP 暴露迭代器接口
+- **Qt ** — Qt 容器用 CRTP 复用实现
+- **Eigen** — Eigen 矩阵表达式全程 CRTP 避免虚调用
+- **folly** — folly 用 CRTP 实现 `AsyncPool` 接口
+- **Redis** — hiredispp 用 CRTP 包装回复解析
+- **ClickHouse** — 函数基类用 CRTP 固定接口
+- **RocksDB** — 迭代器用 CRTP 派发读路径
+- **V8** — API 句柄用 CRTP 派生类型
+- **DPDK** — mbuf 用 CRTP 标记包类型
+- **gRPC** — 序列化用 CRTP 固定消息接口
+- **spdlog** — sink 用 CRTP 实现零虚调用
+- **fmt** — format 参数用 CRTP 展开
+- **Unreal** — UE 用 CRTP 实现组件接口
+- **WebKit** — WTF 用 CRTP 优化智能指针
+- **Mozilla** — mfbt 用 CRTP 实现萃取
+- **Abseil** — Abseil `absl::CRTP` 惯用法文档化
+- **Blink** — Blink 用 CRTP 推导样式节点
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

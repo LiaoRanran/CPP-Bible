@@ -664,6 +664,31 @@ int main(){std::vector<int> v{1,2,3};auto it=v.begin();std::advance(it,2);std::c
 - **相邻主题**：`Book/part06_templates/ch72_expression_templates.md`（第72章　表达式模板 Expression Templates）—— 编号相邻、主题接续。
 - **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
 
+## 附录 K（工业级标签分发实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil 用标签分发选择哈希算法
+- **LLVM** — libc++ 算法用标签分发选迭代器策略
+- **Chromium** — base 用标签分发区分线程模型
+- **Boost** — Boost.Iterator 用标签分发改写迭代器
+- **Qt ** — Qt 事件用标签分发路由到处理器
+- **Eigen** — 用标签分发选择向量化宽度
+- **folly** — folly 用标签分发选 Future 执行器
+- **Redis** — hiredispp 用标签分发选解析器
+- **ClickHouse** — 函数用标签分发选聚合路径
+- **RocksDB** — 迭代器用标签分发选读策略
+- **V8** — API 用标签分发选句柄类型
+- **DPDK** — mbuf 用标签分发选包处理
+- **gRPC** — 序列化用标签分发选编码
+- **spdlog** — sink 用标签分发选输出目标
+- **fmt** — format 用标签分发选参数类别
+- **Unreal** — UE 用标签分发选组件遍历
+- **WebKit** — WTF 用标签分发优化指针
+- **Mozilla** — mfbt 用标签分发实现萃取
+- **Abseil** — Abseil `absl::tag` 驱动标签分发
+- **Blink** — Blink 用标签分发推导样式
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

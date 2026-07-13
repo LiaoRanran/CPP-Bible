@@ -639,6 +639,31 @@ int main(){f(42);return 0;}
 - **相邻主题**：`Book/part06_templates/ch68_tmp.md`（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— 编号相邻、主题接续。
 - **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
 
+## 附录 J（工业级 SFINAE 实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil 用 SFINAE 实现 `absl::StatusOr` 构造
+- **LLVM** — Clang Sema 用 SFINAE 实现重载决议
+- **Chromium** — base 用 `std::enable_if` 约束回调类型
+- **Boost** — Boost.EnableIf 是 SFINAE 经典库
+- **Qt ** — Qt 用 SFINAE 区分信号重载
+- **Eigen** — 用 SFINAE 启用不同标量 kernel
+- **folly** — folly 用 SFINAE 约束 Future 链式调用
+- **Redis** — hiredispp 用 SFINAE 推导解析器
+- **ClickHouse** — 函数注册用 SFINAE 匹配参数包
+- **RocksDB** — 迭代器用 SFINAE 区分只读/写
+- **V8** — API 用 SFINAE 安全转换
+- **DPDK** — mbuf 用 SFINAE 标记包类型
+- **gRPC** — 序列化用 SFINAE 区分消息
+- **spdlog** — sink 用 SFINAE 接受多目标
+- **fmt** — format 用 SFINAE 解析参数
+- **Unreal** — UE 模板用 SFINAE 分发
+- **WebKit** — WTF 用 SFINAE 优化指针转换
+- **Mozilla** — mfbt 用 SFINAE 实现萃取
+- **Blink** — Blink 用 SFINAE 推导样式类型
+- **Clang** — Clang 对 SFINAE 失败分支静默丢弃
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

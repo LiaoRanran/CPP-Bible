@@ -937,6 +937,38 @@ int main() {
 - **相邻主题**：`Book/part11_source/ch134_unreal.md`（第134章　Unreal Engine C++ 架构（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part11_source/ch124_libstdcxx.md`（第124章　libstdc++ 架构与阅读入口（C++））—— 同模块下的其他主题。
 
+
+## 附录 G（LSM-Tree 与 SSTable）
+
+LevelDB/RocksDB 用 LSM 树，写入先落 memtable 再 compaction。
+
+```text
+; memtable 跳表查找（rdi=node）
+mov rax, [rdi+0x0008]     ; 右指针
+cmp [rax+0x0000], key
+jg  .left
+mov rax, [rdi+0x0010]     ; 下一级
+```
+
+### 布局与偏移
+
+- memtable 跳表节点：key 偏移 `0x0000`，指针 `0x0008`/`0x0010`
+- SSTable 数据块 `0x1000` 字节；索引块偏移 `0x0010`
+- Bloom filter 位图 `0x0040` 字节/键，误判率 < 0x0001
+
+### 量级
+
+- 写（WAL + memtable）≈ 1.0us；读（memtable 命中）≈ 0.5us
+- compaction 读取 ≈ 22ms/GB；L0→L1 合并 ≈ 0x0008 路
+- 块缓存命中 LRU ≈ 1.0ns；冷读主存 ≈ 100ns
+
+### 编译器与标准
+
+- 内部用 `std::atomic` 保护引用计数；`-O2` 生成上示代码
+- GCC 13.2 / Clang 18 编译；`__cplusplus` = 202302L
+- WG21 提案 P0784R7 扩展 constexpr 存储结构
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

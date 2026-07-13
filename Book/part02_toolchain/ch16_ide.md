@@ -774,6 +774,39 @@ int main(){std::cout<<"compile_commands.json=bridge build->IDE(LSP clangd reads 
 - **相邻主题**：`Book/part02_toolchain/ch18_buildconfig.md`（第18章　构建配置：Debug / Release / LTO / PGO（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part02_toolchain/ch12_buildsystems.md`（第12章　构建系统：Make / Ninja / CMake（C++））—— 同模块下的其他主题。
 
+
+## 附录 I（语言服务底层）
+
+clangd / LSP 基于 AST 增量重解析，下列为代价量级。
+
+```text
+; 标识符定位（rdi=AST 节点）
+mov rax, [rdi+0x0008]     ; 取父节点
+cmp rax, 0x0000
+je  .root
+call lookup_symbol       ; 递归查找定义
+```
+
+### 量级
+
+- 单文件 AST 构建 ≈ 0x0100 ms（含头展开 `0x0100` KB）
+- 符号索引（背景）≈ 22s / 万行；增量重解析 ≈ 5.0ms
+- 补全请求端到端 ≈ 0.2us（缓存命中）→ 1.2ms（需重解析）
+- 诊断延迟 ≈ 0.5us/千行（clang-tidy）
+
+### 实现要点
+
+- clangd 用 preamble 缓存头文件，省 ≈ 0x0040 KB 重读
+- 符号数据库偏移 `0x0008` 存声明位置
+- `clangd` 经 LSP 与 IDE 通信，JSON 报文 `0x0040` 字节量级
+
+### 编译器与标准
+
+- Clang 18 提供 `libclang` / `clangd`；`__cplusplus` = 202302L
+- GCC 13.2 头可用 `-stdlib=libc++` 切换
+- `constexpr` 将检查前移，减少 IDE 红色波浪
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

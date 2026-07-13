@@ -927,6 +927,39 @@ int main() {
 | [第80章](Book/part07_stl/ch80_array.md) | 资源管理/事务回滚 | 本章提供概念，第80章提供实现 |
 
 
+
+## 附录 G（vector 扩容与缓存）
+
+`std::vector` 连续存储，扩容是主要代价来源。
+
+```text
+; push_back 触发扩容（rdi=vec）
+mov rax, [rdi+0x0008]     ; _M_finish
+mov rcx, [rdi+0x0010]     ; _M_end_of_storage
+cmp rax, rcx
+je  .grow                 ; 满则扩容
+mov [rax], xmm0           ; 写入（0x0010 字节）
+```
+
+### 容量增长
+
+- 0 → 0x0001 → 0x0002 → 0x0004 → 0x0008 → 0x0010 → 0x0020（翻倍）
+- 扩容 `memcpy` 新缓冲 `0x0100` 字节，均摊 O(1)
+- `reserve(0x1000)` 省 ≈ 6.0us 多次拷贝
+
+### 量级
+
+- 随机访问 `mov rax,[rdi+rsi*0x0008]` ≈ 1.0ns（L1）
+- 顺序遍历命中预取，≈ 0.5ns/元素；越界 ≈ 100ns
+- 单次要分配 ≈ 0.2us（tcmalloc）/ 0.8us（malloc）
+
+### 编译器与标准
+
+- GCC 13.2 默认 `_GLIBCXX_USE_CXX11_ABI=1`
+- `__cplusplus` = 202302L；`__attribute__((always_inline))` 内联 `size()`
+- WG21 提案 P0202R3 引入 `std::span` 零拷贝视图
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

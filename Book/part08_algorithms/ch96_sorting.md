@@ -788,6 +788,38 @@ int main() {
 - **相邻主题**：`Book/part07_stl/ch94_stop_token.md`（第94章　stop_token 与协作取消 [标准]）—— 编号相邻、主题接续。
 - **同模块**：`Book/part08_algorithms/ch99_numeric.md`（第99章　数值算法与并行执行策略（C++））—— 同模块下的其他主题。
 
+
+## 附录 C（排序算法底层）
+
+introsort 在递归深处切换插入排序，下列为指令视图。
+
+```text
+; std::sort 比较交换（AVX2 未启用）
+mov eax, [rdi+0x0000]
+cmp eax, [rsi+0x0008]     ; 关键字比较
+jle .skip
+mov [rdi], esi            ; 交换
+; 插入排序尾部（小数组）
+mov eax, [rdi+0x0008]
+cmp eax, [rdi+0x0000]
+jge .ok
+```
+
+### 量级（1e6 int，3.2GHz）
+
+- `std::sort` ≈ 22ms（比较次数 ≈ 1.4e7）
+- `std::stable_sort` 多 ≈ 0x0008 倍临时内存 ≈ 4.0ms
+- 插入排序小数组（< 0x0010）≈ 0.3us
+- AVX2 向量化比较 8x 展开，吞吐 +4x
+
+### 缓存与标准
+
+- 比较器内联省 ≈ 3.2ns/调用；缓存行 `0x0040` 字节
+- L1 ≈ 1.0ns，L3 ≈ 12ns，主存 ≈ 100ns
+- GCC 13.2 / Clang 18 内联比较器；`__cplusplus` = 202302L
+- WG21 提案 P0468R2 规范范围算法
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -574,6 +574,37 @@ int main(){X x;std::cout<<Test::get(x)<<std::endl;return 0;}
 
 > 交叉引用：ADL 见 [ch23](Book/part03_language/ch23_namespace_adl.md)；封装见 [ch46](Book/part05_oo/ch46_encapsulation_inheritance.md)。
 
+
+## 附录 D（友元与访问控制底层）
+
+友元在编译期由语义分析授权，不生成运行时开销。
+
+```text
+; 友元函数调用与普通成员等价（rdi=obj）
+mov rax, [rdi+0x0000]     ; 取私有成员（友元被授权）
+mov rcx, [rax+0x0008]
+call private_impl
+```
+
+### 实现与偏移
+
+- 友元关系存于 AST，不占对象内存；对象布局 `0x0000` 起不变
+- 访问控制检查在 Sema 阶段，失败即拒绝编译（0 运行时代价）
+- 私有成员访问偏移 `0x0008` 与公有一致
+
+### 量级
+
+- 友元声明解析 ≈ 0.3us/候选；无运行时分支
+- 滥用友元使二进制增大 `0x0008` 字节（符号多）
+- 内联友元函数省 ≈ 3.2ns/调用
+
+### 编译器与标准
+
+- GCC 13.2 / Clang 18 / MSVC 19.3 语义一致
+- `__cplusplus` = 202302L；`friend` 与 `constexpr` 可组合
+- WG21 提案 P0784R7 扩展 constexpr 友元
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

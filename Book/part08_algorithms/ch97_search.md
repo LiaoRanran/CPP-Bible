@@ -886,6 +886,31 @@ A: 多个哈希函数→位数组; 假阳性(说不存在=true; 说存在=maybe)
 - **相邻主题**：`Book/part08_algorithms/ch99_numeric.md`（第99章　数值算法与并行执行策略（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part08_algorithms/ch100_ranges_algo.md`（第100章　Ranges 算法与投影（C++20））—— 同模块下的其他主题。
 
+## 附录 C（工业级查找实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil `flat_hash_map::find` 用 SIMD 探测
+- **LLVM** — llvm::StringMap 用开放寻址查找
+- **Chromium** — base::Contains 封装线性/哈希查找
+- **Boost** — Boost.MultiIndex 提供多索引查找
+- **Qt ** — QMap::find 为红黑树查找
+- **Eigen** — 内部用二分查找选定点
+- **folly** — folly::F14 find 用 SIMD 加速
+- **Redis** — dict 查找用递增 rehash
+- **ClickHouse** — HashMap find 用 SIMD 探测桶
+- **RocksDB** — memtable 查找用跳表
+- **V8** — ObjectHashTable find 开放寻址
+- **DPDK** — rte_hash find 无锁
+- **gRPC** — 序列化 map find 线性
+- **spdlog** — registry find 全局 map
+- **fmt** — 参数 find 线性
+- **Unreal** — TMap::Find 哈希
+- **WebKit** — WTF::HashMap::find 开放寻址
+- **Mozilla** — nsTHashMap find PLDHash
+- **Abseil** — Abseil `absl::c_find` 算法包装
+- **Blink** — Blink find 样式属性
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

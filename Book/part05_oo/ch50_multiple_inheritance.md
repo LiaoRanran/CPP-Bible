@@ -677,6 +677,41 @@ int main(){Btn b;b.draw();return 0;}
 
 **底层深度**：MI 的 vtable 布局是 `this` 指针调整的核心。`class D : public B1, public B2 {};` 的 vtable 结构为 [B1_vptr | B1_members] [B2_vptr | B2_members] [D_members]。当 `B2* pb2 = &d;` 时，GCC 13.1 生成 `lea rax, [rdi + offsetof(D, B2_subobject)]`（this 调整，约 16-32 字节偏移），而非简单 `mov`。`dynamic_cast<D*>(pb2)` 通过 vtable 的 `__vmi_class_type_info` 遍历基类偏移表确认可达性——这是 MI 下 `dynamic_cast` 比 SI 慢 2-3× 的根因（非空非最终类需遍历 `__base_class_type_info` 偏移数组）。
 
+
+## 附录 I（多重继承 vtable 布局）
+
+多重继承产生多个 vptr 与 thunk，下列为典型布局。
+
+```text
+; Derived : BaseA, BaseB
+mov rax, [rdi+0x0000]     ; BaseA vptr
+mov rcx, [rax+0x0008]
+call [rcx]
+mov rdx, [rdi+0x0008]     ; BaseB vptr（偏移 0x0008）
+mov rsi, [rdx+0x0010]
+sub rdi, 0x0008           ; BaseB thunk 调整 this
+call [rsi]
+```
+
+### 布局
+
+- BaseA 子对象 `0x0000`；BaseB 子对象 `0x0008`（含其 vptr）
+- 共享虚基类 vtable 顶端偏移 `0x0040`
+- 菱形继承 thunk 数 ≈ 0x0002，增大二进制 `0x0020` 字节
+
+### 量级
+
+- 次级虚调用多一次 this 调整 ≈ 0.3ns
+- 虚调用总计 ≈ 3.5ns；构造链 ≈ 0.6us
+- L1 ≈ 1.0ns，主存 ≈ 100ns
+
+### 编译器与标准
+
+- GCC 13.2 / Clang 18 布局一致；MSVC 虚基类差异大
+- `__cplusplus` = 202302L；`dynamic_cast` 跨继承查 RTTI ≈ 0.5us
+- WG21 提案 P0784R7 扩展 constexpr 多态
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

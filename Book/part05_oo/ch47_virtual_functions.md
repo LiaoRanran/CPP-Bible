@@ -954,6 +954,37 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 - **后续依赖**：`Book/part07_stl/ch92_chrono.md`（第92章 时间库 chrono）—— 本章为其前置，建议后续延伸阅读。
 - **同模块**：`Book/part05_oo/ch50_multiple_inheritance.md`（第50章　多重继承与对象模型（Multiple Inheritance））—— 同模块下的其他主题。
 
+
+## 附录 G（虚函数与 thunk）
+
+虚调用经 vtable 间接寻址，多继承引入 this 调整 thunk。
+
+```text
+; 次级基类虚调用
+mov rax, [rdi+0x0008]     ; 取次级 vptr（偏移 0x0008）
+mov rcx, [rax+0x0010]     ; 取槽
+sub rdi, 0x0008           ; thunk 调整 this
+call [rcx]
+```
+
+### 布局
+
+- 主 vptr `0x0000`；次级 vptr `0x0008`；槽位 `0x0000/0x0008/0x0010/0x0018`
+- thunk 段位于 `0x0020`；虚继承 vbptr `0x0008`
+
+### 量级（3.2GHz）
+
+- 虚调用 ≈ 3.2ns；非虚 ≈ 0.5ns；thunk 调整 ≈ 0.3ns
+- L1 ≈ 1.0ns，L2 ≈ 4.0ns，L3 ≈ 12ns，主存 ≈ 100ns
+- `std::mutex` 无争用加解锁 ≈ 22ns
+
+### 编译器与标准
+
+- GCC 13.2 / Clang 18 / MSVC 19.3 生成 vtable
+- `__cplusplus` = 202302L；`__attribute__((noinline))` 强制虚分发
+- C++20 `-fvtable-verify=std` 插桩校验
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

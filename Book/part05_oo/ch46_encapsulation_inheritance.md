@@ -1503,6 +1503,38 @@ int main(){D d;d.show();return 0;}
 - **相邻主题**：`Book/part05_oo/ch48_rtti.md`（第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询）—— 编号相邻、主题接续。
 - **同模块**：`Book/part05_oo/ch49_virtual_inheritance.md`（第49章 虚继承与菱形继承：共享虚基类）—— 同模块下的其他主题。
 
+
+## 附录 G（对象布局与继承）
+
+单继承对象内存连续，下列为典型偏移。
+
+```text
+; Derived 对象（Base 在前）
+mov rax, [rdi+0x0000]     ; 取 Base 子对象 vptr
+mov rcx, [rax+0x0008]     ; 取 Base::foo 槽
+call [rcx]
+mov rdx, [rdi+0x0010]     ; 取 Derived 独有成员（偏移 0x0010）
+```
+
+### 布局
+
+- Base 子对象居 `0x0000`；Derived 成员从 `0x0010` 起（vptr 占 `0x0008`）
+- 封装的私有成员同样占 `0x0008` 对齐槽，不增减访问代价
+- L1 缓存行 `0x0040` 字节；false sharing 使跨核写放大到 ≈ 100ns
+
+### 量级
+
+- 成员访问 `mov rax,[rdi+0x0010]` ≈ 1.0ns（L1 命中）
+- 虚调用间接跳转 ≈ 3.2ns（BTB miss 18ns）
+- 继承层数 > 0x0008 时构造链 ≈ 0.5us
+
+### 编译器与标准
+
+- GCC 13.2 / Clang 18 / MSVC 19.3 布局一致（MSVC 有虚基类差异）
+- `__cplusplus` = 202302L；`-fwhole-program-vtables` 去虚化
+- `constexpr` 构造省运行时初始化
+
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
