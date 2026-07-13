@@ -1483,7 +1483,7 @@ void clear_status() {
 
 ---
 
-*待补：若有篇幅，可补（a）Windows PE 段布局完整图与 `dumpbin /headers` 对照；（b）`-fsanitize=thread` 检测 TLS/static 数据竞争的实操；（c）`__cxa_atexit` 与 `__dso_handle` 在动态库卸载时的析构序细节。以上均非必需，本章 10 个核心点已全部展开，32 个示例已满足 ≥30 约束。*
+*可选扩展（非必需）：若有篇幅，可补（a）Windows PE 段布局完整图与 `dumpbin /headers` 对照；（b）`-fsanitize=thread` 检测 TLS/static 数据竞争的实操；（c）`__cxa_atexit` 与 `__dso_handle` 在动态库卸载时的析构序细节。以上均非必需，本章 10 个核心点已全部展开，32 个示例已满足 ≥30 约束。*
 
 
 ## 联合使用场景

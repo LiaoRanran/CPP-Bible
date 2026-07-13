@@ -96,3 +96,7 @@ bash tools/pre_push_check.sh         # 6 项预检，全绿可推送
 ```
 
 _本文件由 ROADMAP_v2 竣工-6 生成，2026-07-12；2026-07-13 补强续推（v4 均分 16.3→17.1、交引 1190/0）+ 站点重建；2026-07-13 第二轮：修复 `mkdocs --strict` 链接翻倍根因（2 处错章号跨章引用 ch66→ch67[Concepts]、ch80→ch77[vector]，原误指向不存在文件 ch72_concepts/ch79_vector，rewrite_links 无法解析故 MkDocs 路径翻倍）、为 `gen_mkdocs_nav.py` 增加 16 part 中文标题兜底（导航不再显示裸目录名），严格构建终达 0 警告；初始 git 提交完成。_
+
+_2026-07-13 第三轮：完善文档本身真实缺陷（非注水，全部经实证定位）。① `ch09_cpp26.md` 缺失收尾 ```` ``` ```` 围栏修复——第 300 行 ```` ```cpp ```` 未闭合，导致后续散文/标题/下一代码块被吞入首块（真渲染损坏，独立重跑编译由 FAIL→0）。② `ch161_logger.md` 的 `FileSink` 块补 `#include <fstream>`——用 `std::ofstream` 却缺头，读者照抄必编译失败。③ `ch22_auto_decltype.md` 过时断链 `概念（Concepts，ch 待补）`→`ch67`（Concepts 章早已存在）。④ `ch20_reference_pointer.md` 删「智能指针章正式发布后补锚点」过时陈述（ch41 已发布）。⑤ `ch19_variables.md` `待补`→`可选扩展（非必需）`，去「未完成」暗示。⑥ `tools/chapter_compile_check.py` 的 PRELUDE 补 22 个常用标准库头（经 g++ 13.1 实测全部可用：`<fstream>`/`<source_location>`/`<stacktrace>`/`<syncstream>`/`<spanstream>`/`<valarray>`/`<ios>`/`<system_error>`/`<typeindex>`/`<compare>` 等），消除检查器「未声明/不完整类型」误报。_
+
+_**已排除的假阳性（避免误修）**：`ch162_json.md` 围栏「不平衡」为审计脚本误判（作者开闭围栏均带语言标记，CommonMark 允许收尾带 info 串，渲染合法；旧全量编译中 ch162 零 FAIL）；`ch11_compilers.md` 的 `max_of` 为**故意展示编译失败**的教学反例（`❌ 推导冲突`）；`ch12_buildsystems.md`/`ch16_ide.md` 失败属 FRAG/ENV（本地头 `_ch12_mylib.h`、Qt `QPushButton` 本机未装），读者在对应环境下可编译。一致性/交引门禁复验仍全绿（100/100、1190/0）。全量 147 章编译重验（新 PRELUDE）后台运行中，用于补强编译门禁报告。_

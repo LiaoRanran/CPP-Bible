@@ -300,6 +300,7 @@ static_assert(__GNUC__ >= 13, "gcc13+");
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++26: Contracts(P2900), reflection(P2996), std::execution(P2300), std::simd.\n";return 0;}
+```
 
 1. 跟踪 P2996 提案进展，理解 `std::meta` 用法（ch74）。
 2. 思考题：若反射普及，`Boost.Serialization` 类库会如何被替代？（ch128、ch162）

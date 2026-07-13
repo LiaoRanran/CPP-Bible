@@ -79,6 +79,31 @@ PRELUDE = """#include <iostream>
 #include <regex>
 #include <random>        // std::mt19937 / uniform_int_distribution 等；许多章示例自带 #include <random> 但 harness 剥离后需前置
 #include <numbers>       // std::numbers::pi 等数学常量；header-only，安全前置
+// 补强：常用标准库头（日志/文件/错误/类型信息/Runtime 反射等），本机 GCC 13.1 均提供。
+// harness 默认剥离块内 #include，下列头被多章示例依赖，统一前置以避免"不完整类型/未声明"伪失败。
+#include <fstream>          // std::ofstream/ifstream（ch161 file sink 等）
+#include <source_location>  // std::source_location（C++20 日志定位，ch161 等）
+#include <stacktrace>       // std::stacktrace（C++23 栈回溯）
+#include <syncstream>       // std::osyncstream（C++20 同步输出）
+#include <spanstream>       // std::spanstream（C++23）
+#include <scoped_allocator> // std::scoped_allocator_adaptor
+#include <valarray>         // std::valarray
+#include <ios>              // std::ios 基类
+#include <ostream>          // std::ostream
+#include <exception>        // std::exception
+#include <new>              // 全局 operator new/delete 声明
+#include <system_error>     // std::error_code/system_error
+#include <typeindex>        // std::type_index
+#include <typeinfo>         // std::type_info/typeid
+#include <compare>          // std::strong_ordering 等三路比较
+#include <cctype>           // std::isdigit 等
+#include <ctime>            // std::time_t/clock
+#include <cwchar>           // std::wchar_t 宽字符
+#include <climits>          // INT_MAX 等极限宏
+#include <cerrno>           // errno
+#include <cfenv>            // 浮点环境
+#include <csignal>          // std::signal
+#include <codecvt>          // 码转换 facet（C++17 弃用但仍可用）
 // SIMD 章节（如 ch155）的示例合法依赖以下头；harness 默认剥离块内 #include，
 // 故在此统一前置，避免 '__m256'/'__m512'/'__get_cpuid_*' 未声明。
 #include <immintrin.h>   // __m128/__m256/__m512 及 SSE/AVX/AVX-512 intrinsics

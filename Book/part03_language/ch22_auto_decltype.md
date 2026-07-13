@@ -47,7 +47,7 @@
 - **ch59 模板推导**：`auto` 推导 = 模板推导的语法糖，二者规则完全一致（除 `{}` 特例）。
 - **ch115 右值引用 / ch116 完美转发**：`decltype(auto)` 转发工厂、`auto&&` 范围 for 都建立在转发引用之上。
 - **ch26 lambda 中 `auto` 参数**：C++14 generic lambda 本质是带 `auto` 参数的缩写模板；C++20 把 `auto` 参数提到普通函数。
-- **概念（Concepts，ch 待补）**：C++20 `void f(Integral auto x)` 是缩写函数模板 + 约束的合体。
+- **概念（Concepts，ch67）**：C++20 `void f(Integral auto x)` 是缩写函数模板 + 约束的合体。
 
 ---
 

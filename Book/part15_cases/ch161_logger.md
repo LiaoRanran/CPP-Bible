@@ -180,6 +180,7 @@ file sink 把日志持久化，便于事后排查：
 
 ```cpp
 #include <string_view>
+#include <fstream>
 // ③ file sink：追加写入文件
 struct FileSink {
     std::ofstream ofs;
