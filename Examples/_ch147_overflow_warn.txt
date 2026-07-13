@@ -1,0 +1,6 @@
+Examples/_ch147_overflow.cpp: In function 'int main()':
+Examples/_ch147_overflow.cpp:2:38: warning: integer overflow in expression of type 'int' results in '-294967296' [-Woverflow]
+    2 | int main(){ const int x = 2000000000 + 2000000000; std::printf("%d\n", x); }
+      |                           ~~~~~~~~~~~^~~~~~~~~~~~
+Assembler messages:
+Fatal error: can't create /tmp/tmp.Sv8ZeW1csS/_ch147_overflow.o: No such file or directory

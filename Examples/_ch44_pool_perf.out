@@ -1,0 +1,5 @@
+TSC = 2.395 GHz   (MinGW GCC 13.1.0 -O2, x86_64)
+alloc              cyc/op      ns/op     raw(cyc)
+bump                 0.00      0.000         1.01
+freelist             3.12      1.304         4.14
+malloc             108.98     45.495       110.00

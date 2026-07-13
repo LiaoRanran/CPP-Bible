@@ -1,0 +1,46 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <memory>
+#include <algorithm>
+#include <map>
+#include <set>
+#include <functional>
+#include <thread>
+#include <future>
+#include <atomic>
+#include <tuple>
+#include <utility>
+#include <initializer_list>
+#include <array>
+#include <stdexcept>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstddef>
+#include <limits>
+#include <ciso646>
+#include <iomanip>
+#include <iterator>
+#include <filesystem>
+#include <variant>
+#include <any>
+#include <optional>
+#include <ranges>
+#include <bit>
+#include <chrono>
+#include <execution>
+#include <type_traits>
+#include <concepts>
+#include <span>
+#include <expected>
+#include <print>
+#include <mdspan>
+#include <flat_map>
+#include <flat_set>
+
+namespace chk_ch05_cpp14_22 {
+// 字符串字面量到 string_view（17 特性，此处占位）
+std::string s="hi";
+}
+int main(){ return 0; }

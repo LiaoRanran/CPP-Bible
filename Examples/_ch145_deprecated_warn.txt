@@ -1,0 +1,7 @@
+_ch145_deprecated.cpp: In function 'int main()':
+_ch145_deprecated.cpp:8:12: warning: 'void old_api()' is deprecated: use new_api() instead; removed in v3 [-Wdeprecated-declarations]
+    8 |     old_api();   // 触发弃用警告
+      |     ~~~~~~~^~
+_ch145_deprecated.cpp:3:6: note: declared here
+    3 | void old_api() {}
+      |      ^~~~~~~

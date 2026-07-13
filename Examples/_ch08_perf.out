@@ -1,0 +1,6 @@
+
+=== 实测（GCC 13.1 -O2, TSC 2.395GHz, N=1000000) ===
+exception_throw_catch_ns : 2191.75
+expected_error_path_ns   : 0.431038
+speedup(失败路径)         : 5084.81x
+[sink] 2000000

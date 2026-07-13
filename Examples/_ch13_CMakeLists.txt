@@ -1,0 +1,11 @@
+// 文件：Examples/_ch13_CMakeLists.txt
+// 行号：1
+cmake_minimum_required(VERSION 3.25)
+project(myapp CXX)
+
+find_package(fmt CONFIG REQUIRED)      # vcpkg/Conan 注入的包
+find_package(Microsoft.GSL CONFIG REQUIRED)
+
+add_executable(app main.cpp)
+target_compile_features(app PRIVATE cxx_std_23)
+target_link_libraries(app PRIVATE fmt::fmt Microsoft.GSL::GSL)

@@ -1,0 +1,524 @@
+{
+  "$schema": "https://cpp-bible.dev/knowledge-graph-schema.json",
+  "version": "0.2.0",
+  "generated": "2026-07-09T21:30",
+  "project": "现代 C++ 终极圣经",
+  "governance": "GOVERNANCE.md",
+  "total_chapters": 147,
+  "total_lines": 119000,
+  "total_cpp_blocks": 6900,
+  "parts": [
+    {
+      "id": "part01",
+      "name": "C++ 版本史",
+      "chapters": "01-10",
+      "count": 10,
+      "domain": "history",
+      "prereq": [],
+      "topics": [
+        "C with Classes",
+        "C++98",
+        "C++11",
+        "C++14",
+        "C++17",
+        "C++20",
+        "C++23",
+        "C++26",
+        "WG21",
+        "standardization"
+      ],
+      "xref_coverage": 0
+    },
+    {
+      "id": "part02",
+      "name": "工具链",
+      "chapters": "11-18",
+      "count": 8,
+      "domain": "toolchain",
+      "prereq": [
+        "part01"
+      ],
+      "topics": [
+        "GCC",
+        "Clang",
+        "MSVC",
+        "CMake",
+        "Ninja",
+        "vcpkg",
+        "Conan",
+        "GDB",
+        "LLDB",
+        "Sanitizer",
+        "perf",
+        "VTune",
+        "LTO",
+        "PGO"
+      ],
+      "xref_coverage": 0
+    },
+    {
+      "id": "part03",
+      "name": "语言核心",
+      "chapters": "19-28",
+      "count": 10,
+      "domain": "language",
+      "prereq": [
+        "part01"
+      ],
+      "topics": [
+        "variable",
+        "storage",
+        "linkage",
+        "ODR",
+        "reference",
+        "pointer",
+        "const",
+        "constexpr",
+        "consteval",
+        "constinit",
+        "auto",
+        "decltype",
+        "namespace",
+        "ADL",
+        "enum",
+        "union",
+        "variant",
+        "lambda",
+        "cast",
+        "lifetime",
+        "UB"
+      ],
+      "xref_coverage": 0
+    },
+    {
+      "id": "part04",
+      "name": "内存管理",
+      "chapters": "35-44",
+      "count": 10,
+      "domain": "memory",
+      "prereq": [
+        "part03"
+      ],
+      "topics": [
+        "memory model",
+        "stack",
+        "heap",
+        "new",
+        "delete",
+        "allocator",
+        "RAII",
+        "Rule of 3/5/0",
+        "exception safety",
+        "unique_ptr",
+        "shared_ptr",
+        "weak_ptr",
+        "strict aliasing",
+        "cache",
+        "false sharing",
+        "NUMA",
+        "memory pool"
+      ],
+      "xref_coverage": 0
+    },
+    {
+      "id": "part05",
+      "name": "面向对象",
+      "chapters": "45-52",
+      "count": 8,
+      "domain": "oop",
+      "prereq": [
+        "part03"
+      ],
+      "topics": [
+        "OOP model",
+        "encapsulation",
+        "inheritance",
+        "virtual function",
+        "vtable",
+        "RTTI",
+        "typeid",
+        "dynamic_cast",
+        "virtual inheritance",
+        "diamond",
+        "CRTP",
+        "EBO",
+        "multiple inheritance"
+      ],
+      "xref_coverage": 0
+    },
+    {
+      "id": "part06",
+      "name": "模板",
+      "chapters": "60-72",
+      "count": 13,
+      "domain": "templates",
+      "prereq": [
+        "part03",
+        "part05"
+      ],
+      "topics": [
+        "template basics",
+        "overload resolution",
+        "specialization",
+        "partial specialization",
+        "variadic",
+        "pack expansion",
+        "fold expression",
+        "type traits",
+        "SFINAE",
+        "enable_if",
+        "Concepts",
+        "requires",
+        "TMP",
+        "constexpr",
+        "integral_constant",
+        "tag dispatch",
+        "Policy-Based Design",
+        "expression templates"
+      ],
+      "xref_coverage": 0.2
+    },
+    {
+      "id": "part07",
+      "name": "STL 容器与工具",
+      "chapters": "76-94",
+      "count": 19,
+      "domain": "stl",
+      "prereq": [
+        "part03",
+        "part04"
+      ],
+      "topics": [
+        "STL architecture",
+        "iterator",
+        "vector",
+        "deque",
+        "list",
+        "forward_list",
+        "array",
+        "string",
+        "SSO",
+        "span",
+        "map",
+        "multimap",
+        "set",
+        "multiset",
+        "unordered_map",
+        "unordered_set",
+        "stack",
+        "queue",
+        "priority_queue",
+        "bitset",
+        "optional",
+        "expected",
+        "variant",
+        "tuple",
+        "pair",
+        "any",
+        "function",
+        "bind",
+        "ranges",
+        "views",
+        "filesystem",
+        "chrono",
+        "thread",
+        "future",
+        "async",
+        "stop_token",
+        "jthread"
+      ],
+      "xref_coverage": 17.5
+    },
+    {
+      "id": "part08",
+      "name": "STL 算法",
+      "chapters": "95-101",
+      "count": 7,
+      "domain": "algorithms",
+      "prereq": [
+        "part07"
+      ],
+      "topics": [
+        "sort",
+        "stable_sort",
+        "partial_sort",
+        "binary search",
+        "heap",
+        "numeric",
+        "parallel execution",
+        "ranges algorithms",
+        "projection"
+      ],
+      "xref_coverage": 0
+    },
+    {
+      "id": "part09",
+      "name": "并发",
+      "chapters": "107-113",
+      "count": 6,
+      "domain": "concurrency",
+      "prereq": [
+        "part04",
+        "part07"
+      ],
+      "topics": [
+        "atomic",
+        "memory_order",
+        "lock-free",
+        "wait-free",
+        "ABA",
+        "hazard pointer",
+        "RCU",
+        "coroutine",
+        "promise",
+        "awaiter"
+      ],
+      "xref_coverage": 0
+    },
+    {
+      "id": "part10",
+      "name": "现代 C++ 特性",
+      "chapters": "115-123",
+      "count": 9,
+      "domain": "modern",
+      "prereq": [
+        "part03",
+        "part06"
+      ],
+      "topics": [
+        "move semantics",
+        "rvalue reference",
+        "perfect forwarding",
+        "universal reference",
+        "RVO",
+        "NRVO",
+        "copy elision",
+        "Modules",
+        "Ranges deep",
+        "Coroutine application",
+        "Contracts",
+        "PMR",
+        "polymorphic allocator",
+        "Compile-Time programming"
+      ],
+      "xref_coverage": 10.3
+    },
+    {
+      "id": "part11",
+      "name": "源码剖析",
+      "chapters": "124-134",
+      "count": 11,
+      "domain": "source",
+      "prereq": [
+        "part07",
+        "part10"
+      ],
+      "topics": [
+        "libstdc++",
+        "libc++",
+        "MS STL",
+        "LLVM",
+        "Clang",
+        "Boost",
+        "Qt",
+        "Chromium",
+        "Abseil",
+        "fmt",
+        "spdlog",
+        "LevelDB",
+        "RocksDB",
+        "ClickHouse",
+        "Redis",
+        "Unreal Engine"
+      ],
+      "xref_coverage": 0
+    },
+    {
+      "id": "part12",
+      "name": "设计模式",
+      "chapters": "135-143",
+      "count": 9,
+      "domain": "patterns",
+      "prereq": [
+        "part05",
+        "part06"
+      ],
+      "topics": [
+        "creational",
+        "structural",
+        "behavioral",
+        "CRTP pattern",
+        "Policy-Based",
+        "dependency injection",
+        "ECS",
+        "DOD"
+      ],
+      "xref_coverage": 0
+    },
+    {
+      "id": "part13",
+      "name": "工程实践",
+      "chapters": "144-151",
+      "count": 8,
+      "domain": "engineering",
+      "prereq": [
+        "part02",
+        "part12"
+      ],
+      "topics": [
+        "code style",
+        "naming",
+        "API design",
+        "error handling",
+        "code review",
+        "Git workflow",
+        "CI/CD",
+        "testing",
+        "benchmark"
+      ],
+      "xref_coverage": 0
+    },
+    {
+      "id": "part14",
+      "name": "性能优化",
+      "chapters": "152-158",
+      "count": 7,
+      "domain": "performance",
+      "prereq": [
+        "part04",
+        "part06"
+      ],
+      "topics": [
+        "performance model",
+        "Amdahl",
+        "Gustafson",
+        "Roofline",
+        "CPU microarchitecture",
+        "pipeline",
+        "branch prediction",
+        "out-of-order",
+        "cache optimization",
+        "data locality",
+        "SIMD",
+        "AVX",
+        "compiler optimization",
+        "Compiler Explorer",
+        "performance antipatterns"
+      ],
+      "xref_coverage": 4.8
+    },
+    {
+      "id": "part15",
+      "name": "从零实现",
+      "chapters": "159-164",
+      "count": 6,
+      "domain": "projects",
+      "prereq": [
+        "part07",
+        "part09",
+        "part13"
+      ],
+      "topics": [
+        "thread pool",
+        "memory pool",
+        "logger",
+        "JSON",
+        "network",
+        "mini framework"
+      ],
+      "xref_coverage": 0
+    },
+    {
+      "id": "part16",
+      "name": "阅读路线",
+      "chapters": "165",
+      "count": 1,
+      "domain": "reading",
+      "prereq": [
+        "*"
+      ],
+      "topics": [
+        "roadmap",
+        "learning path"
+      ],
+      "xref_coverage": 0
+    }
+  ],
+  "learning_paths": {
+    "beginner": [
+      "part01",
+      "part03(ch19-22)",
+      "part07(ch76-80)",
+      "part10(ch115-117)",
+      "part13(ch144-145)"
+    ],
+    "intermediate": [
+      "part04",
+      "part05",
+      "part06(ch60-67)",
+      "part07(ch81-94)",
+      "part08",
+      "part12"
+    ],
+    "advanced": [
+      "part06(ch68-72)",
+      "part09",
+      "part10(ch118-123)",
+      "part11",
+      "part14",
+      "part15"
+    ],
+    "expert": [
+      "part02",
+      "part13(ch146-151)",
+      "part16"
+    ]
+  },
+  "infrastructure": {
+    "governance": "GOVERNANCE.md",
+    "conventions": "CONVENTIONS.md",
+    "progress": "PROGRESS.md",
+    "tasks": "TASKS.md",
+    "issues": "ISSUES.md",
+    "review": "REVIEW.md",
+    "crossref": "CROSSREF.md",
+    "faq": "FAQ.md",
+    "source_map": "source_map.json",
+    "dependency": "DEPENDENCY.md",
+    "learning_paths": "learning_paths.json",
+    "references": "REFERENCES.md",
+    "glossary": "glossary.json",
+    "memory": "memory/",
+    "tools": "tools/",
+    "build": "make.bat"
+  },
+  "quality_gates": {
+    "consistency_check": {
+      "error": 0,
+      "warn": 0,
+      "score": 100,
+      "date": "2026-07-09T18:11"
+    },
+    "chapter_compile": {
+      "total_blocks": 6200
+    },
+    "cross_reference": {
+      "total": 482,
+      "coverage": "100%",
+      "broken": 0
+    },
+    "glossary_terms": 129,
+    "benchmarks_extracted": 33
+  },
+  "cross_reference": {
+    "total": 651,
+    "coverage": "100%",
+    "broken": 0
+  },
+  "glossary_terms": 129,
+  "build": {
+    "error": 0,
+    "warn": 0,
+    "score": 100
+  }
+}

@@ -1,0 +1,12 @@
+// 文件：Examples/_ch13_vcpkg_manifest.json
+// 行号：1
+{
+  "name": "myapp",
+  "version": "1.0.0",
+  "dependencies": [
+    "fmt",
+    "ms-gsl",
+    { "name": "boost", "version>=": "1.83" }
+  ],
+  "builtin-baseline": "2023.08.09"
+}

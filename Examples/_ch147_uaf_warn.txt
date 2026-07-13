@@ -1,0 +1,9 @@
+Examples/_ch147_uaf.cpp: In function 'int* leak_dangling()':
+Examples/_ch147_uaf.cpp:8:12: warning: address of local variable 'local' returned [-Wreturn-local-addr]
+    8 |     return &local;        // 返回栈上对象地址：悬垂
+      |            ^~~~~~
+Examples/_ch147_uaf.cpp:7:9: note: declared here
+    7 |     int local = 7;
+      |         ^~~~~
+Assembler messages:
+Fatal error: can't create /tmp/tmp.Sv8ZeW1csS/_ch147_uaf.o: No such file or directory

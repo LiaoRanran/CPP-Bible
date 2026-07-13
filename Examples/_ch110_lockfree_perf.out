@@ -1,0 +1,5 @@
+TSC = 2.395 GHz   (MinGW GCC 13.1.0 -O2, x86_64, uncontended single-thread)
+op               cyc/op      ns/op     raw(cyc)
+mutex             16.48      6.879        17.49
+CAS                7.91      3.301         8.92
+fetch_add          6.31      2.633         7.32

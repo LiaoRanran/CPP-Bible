@@ -1,0 +1,8 @@
+TSC = 2.395 GHz   (MinGW GCC 13.1.0 -O2, x86_64)
+call                 cyc/call    ns/call     raw(cyc)
+direct                   4.15      1.734         5.19
+virtual(hot)             4.04      1.686         5.08
+fnptr                    4.04      1.686         5.08
+virtual(reload)         32.99     13.770        34.03
+virtual(hot)-direct extra = -0.05 ns (-0.1 cyc)
+virtual(reload)-direct extra = 12.04 ns (28.8 cyc)

@@ -1,0 +1,871 @@
+digraph learning_path {
+  rankdir=LR; node [shape=box, style=filled, fillcolor=lightblue];
+  subgraph cluster_part38 { label="part38";
+    "ch38" [label="ch38\nallocator"];
+  }
+  subgraph cluster_part03 { label="part03";
+    "ch03" [label="ch03\nC++98/03"];
+  }
+  subgraph cluster_part23 { label="part23";
+    "ch23" [label="ch23\n类型系统"];
+  }
+  subgraph cluster_part31 { label="part31";
+    "ch31" [label="ch31\n运算符重载"];
+  }
+  subgraph cluster_part09 { label="part09";
+    "ch09" [label="ch09\nC++26"];
+  }
+  subgraph cluster_part43 { label="part43";
+    "ch43" [label="ch43\n内存模型"];
+  }
+  subgraph cluster_part06 { label="part06";
+    "ch06" [label="ch06\nC++17"];
+  }
+  subgraph cluster_part15 { label="part15";
+    "ch15" [label="ch15\nCMake"];
+    "ch150" [label="ch150\n测试"];
+    "ch151" [label="ch151\n基准测试"];
+    "ch152" [label="ch152\n性能模型"];
+    "ch153" [label="ch153\nCPU微架构"];
+    "ch154" [label="ch154\nCache"];
+    "ch155" [label="ch155\nSIMD"];
+    "ch156" [label="ch156\n编译器优化"];
+    "ch157" [label="ch157\nCompiler Explorer"];
+    "ch158" [label="ch158\n反模式"];
+    "ch159" [label="ch159\n线程池"];
+  }
+  subgraph cluster_part20 { label="part20";
+    "ch20" [label="ch20\n基本语法"];
+  }
+  subgraph cluster_part47 { label="part47";
+    "ch47" [label="ch47\n虚函数"];
+  }
+  subgraph cluster_part13 { label="part13";
+    "ch13" [label="ch13\n打包"];
+    "ch130" [label="ch130\nchromium"];
+    "ch131" [label="ch131\nfmt"];
+    "ch132" [label="ch132\ncppreference"];
+    "ch133" [label="ch133\nclickhouse"];
+    "ch134" [label="ch134\nunreal"];
+    "ch135" [label="ch135\n模式总论"];
+    "ch136" [label="ch136\n创建型"];
+    "ch137" [label="ch137\n结构型"];
+    "ch138" [label="ch138\n行为型"];
+    "ch139" [label="ch139\nCRTP模式"];
+  }
+  subgraph cluster_part10 { label="part10";
+    "ch10" [label="ch10\n版本矩阵"];
+    "ch100" [label="ch100\nheap"];
+    "ch101" [label="ch101\n线程"];
+    "ch107" [label="ch107\natomic"];
+    "ch108" [label="ch108\nmemory_order"];
+    "ch109" [label="ch109\nfence"];
+  }
+  subgraph cluster_part19 { label="part19";
+    "ch19" [label="ch19\n构建系统"];
+  }
+  subgraph cluster_part17 { label="part17";
+    "ch17" [label="ch17\n交叉编译"];
+  }
+  subgraph cluster_part12 { label="part12";
+    "ch12" [label="ch12\n工具链"];
+    "ch120" [label="ch120\n协程应用"];
+    "ch121" [label="ch121\ncontracts"];
+    "ch122" [label="ch122\npmr"];
+    "ch123" [label="ch123\nct"];
+    "ch124" [label="ch124\nsource location"];
+    "ch125" [label="ch125\nstd::format"];
+    "ch126" [label="ch126\nmsstl"];
+    "ch127" [label="ch127\nllvm"];
+    "ch128" [label="ch128\nboost"];
+    "ch129" [label="ch129\nqt"];
+  }
+  subgraph cluster_part14 { label="part14";
+    "ch14" [label="ch14\n调试"];
+    "ch140" [label="ch140\nPolicy"];
+    "ch141" [label="ch141\nDI"];
+    "ch142" [label="ch142\nECS"];
+    "ch143" [label="ch143\nDOD"];
+    "ch144" [label="ch144\n代码风格"];
+    "ch145" [label="ch145\n命名API"];
+    "ch146" [label="ch146\n错误处理"];
+    "ch147" [label="ch147\n代码审查"];
+    "ch148" [label="ch148\nGit"];
+    "ch149" [label="ch149\nCI/CD"];
+  }
+  subgraph cluster_part64 { label="part64";
+    "ch64" [label="ch64\n模板元"];
+  }
+  subgraph cluster_part45 { label="part45";
+    "ch45" [label="ch45\nOOP"];
+  }
+  subgraph cluster_part42 { label="part42";
+    "ch42" [label="ch42\nmove"];
+  }
+  subgraph cluster_part11 { label="part11";
+    "ch11" [label="ch11\nC生态"];
+    "ch110" [label="ch110\nlock-free"];
+    "ch111" [label="ch111\nABA"];
+    "ch112" [label="ch112\nfuture"];
+    "ch113" [label="ch113\n协程"];
+    "ch115" [label="ch115\nmove"];
+    "ch116" [label="ch116\n完美转发"];
+    "ch117" [label="ch117\ncopy elision"];
+    "ch118" [label="ch118\nmodules"];
+    "ch119" [label="ch119\nranges深入"];
+  }
+  subgraph cluster_part21 { label="part21";
+    "ch21" [label="ch21\nconst"];
+  }
+  subgraph cluster_part50 { label="part50";
+    "ch50" [label="ch50\n多继承"];
+  }
+  subgraph cluster_part66 { label="part66";
+    "ch66" [label="ch66\nSFINAE"];
+  }
+  subgraph cluster_part02 { label="part02";
+    "ch02" [label="ch02\nC++标准化"];
+  }
+  subgraph cluster_part99 { label="part99";
+    "ch99" [label="ch99\n集合"];
+  }
+  subgraph cluster_part25 { label="part25";
+    "ch25" [label="ch25\nunion"];
+  }
+  subgraph cluster_part40 { label="part40";
+    "ch40" [label="ch40\n异常安全"];
+  }
+  subgraph cluster_part30 { label="part30";
+    "ch30" [label="ch30\n作用域"];
+  }
+  subgraph cluster_part60 { label="part60";
+    "ch60" [label="ch60\n模板基础"];
+  }
+  subgraph cluster_part26 { label="part26";
+    "ch26" [label="ch26\nlambda"];
+  }
+  subgraph cluster_part46 { label="part46";
+    "ch46" [label="ch46\n封装继承"];
+  }
+  subgraph cluster_part71 { label="part71";
+    "ch71" [label="ch71\nPolicy"];
+  }
+  subgraph cluster_part16 { label="part16";
+    "ch16" [label="ch16\nIDE"];
+    "ch160" [label="ch160\n内存池"];
+    "ch161" [label="ch161\n日志"];
+    "ch162" [label="ch162\nJSON"];
+    "ch163" [label="ch163\n网络"];
+    "ch164" [label="ch164\n框架"];
+    "ch165" [label="ch165\n路线图"];
+  }
+  subgraph cluster_part04 { label="part04";
+    "ch04" [label="ch04\nC++11"];
+  }
+  subgraph cluster_part95 { label="part95";
+    "ch95" [label="ch95\n算法总览"];
+  }
+  subgraph cluster_part24 { label="part24";
+    "ch24" [label="ch24\nenum"];
+  }
+  subgraph cluster_part62 { label="part62";
+    "ch62" [label="ch62\n特化"];
+  }
+  subgraph cluster_part29 { label="part29";
+    "ch29" [label="ch29\n友元"];
+  }
+  subgraph cluster_part63 { label="part63";
+    "ch63" [label="ch63\n可变参数"];
+  }
+  subgraph cluster_part07 { label="part07";
+    "ch07" [label="ch07\nC++20"];
+  }
+  subgraph cluster_part92 { label="part92";
+    "ch92" [label="ch92\nchrono"];
+  }
+  subgraph cluster_part67 { label="part67";
+    "ch67" [label="ch67\nConcepts"];
+  }
+  subgraph cluster_part70 { label="part70";
+    "ch70" [label="ch70\ntag dispatch"];
+  }
+  subgraph cluster_part27 { label="part27";
+    "ch27" [label="ch27\n属性"];
+  }
+  subgraph cluster_part96 { label="part96";
+    "ch96" [label="ch96\n排序"];
+  }
+  subgraph cluster_part79 { label="part79";
+    "ch79" [label="ch79\nlist"];
+  }
+  subgraph cluster_part61 { label="part61";
+    "ch61" [label="ch61\n模板重载"];
+  }
+  subgraph cluster_part08 { label="part08";
+    "ch08" [label="ch08\nC++23"];
+  }
+  subgraph cluster_part80 { label="part80";
+    "ch80" [label="ch80\narray"];
+  }
+  subgraph cluster_part88 { label="part88";
+    "ch88" [label="ch88\ntuple"];
+  }
+  subgraph cluster_part81 { label="part81";
+    "ch81" [label="ch81\nstring"];
+  }
+  subgraph cluster_part83 { label="part83";
+    "ch83" [label="ch83\nmap"];
+  }
+  subgraph cluster_part37 { label="part37";
+    "ch37" [label="ch37\nnew/delete"];
+  }
+  subgraph cluster_part90 { label="part90";
+    "ch90" [label="ch90\nranges"];
+  }
+  subgraph cluster_part93 { label="part93";
+    "ch93" [label="ch93\nthread"];
+  }
+  subgraph cluster_part32 { label="part32";
+    "ch32" [label="ch32\n初始化"];
+  }
+  subgraph cluster_part49 { label="part49";
+    "ch49" [label="ch49\n虚继承"];
+  }
+  subgraph cluster_part91 { label="part91";
+    "ch91" [label="ch91\nfilesystem"];
+  }
+  subgraph cluster_part39 { label="part39";
+    "ch39" [label="ch39\nRAII"];
+  }
+  subgraph cluster_part44 { label="part44";
+    "ch44" [label="ch44\n内存池"];
+  }
+  subgraph cluster_part41 { label="part41";
+    "ch41" [label="ch41\n智能指针"];
+  }
+  subgraph cluster_part01 { label="part01";
+    "ch01" [label="ch01\nC++历史"];
+  }
+  subgraph cluster_part89 { label="part89";
+    "ch89" [label="ch89\noptional/variant"];
+  }
+  subgraph cluster_part35 { label="part35";
+    "ch35" [label="ch35\n?"];
+  }
+  subgraph cluster_part78 { label="part78";
+    "ch78" [label="ch78\ndeque"];
+  }
+  subgraph cluster_part05 { label="part05";
+    "ch05" [label="ch05\nC++14"];
+  }
+  subgraph cluster_part52 { label="part52";
+    "ch52" [label="ch52\nEBO"];
+  }
+  subgraph cluster_part84 { label="part84";
+    "ch84" [label="ch84\nset"];
+  }
+  subgraph cluster_part69 { label="part69";
+    "ch69" [label="ch69\nconstexpr"];
+  }
+  subgraph cluster_part48 { label="part48";
+    "ch48" [label="ch48\nRTTI"];
+  }
+  subgraph cluster_part36 { label="part36";
+    "ch36" [label="ch36\n?"];
+  }
+  subgraph cluster_part86 { label="part86";
+    "ch86" [label="ch86\n适配器"];
+  }
+  subgraph cluster_part82 { label="part82";
+    "ch82" [label="ch82\nspan"];
+  }
+  subgraph cluster_part98 { label="part98";
+    "ch98" [label="ch98\n数值"];
+  }
+  subgraph cluster_part65 { label="part65";
+    "ch65" [label="ch65\ntype_traits"];
+  }
+  subgraph cluster_part97 { label="part97";
+    "ch97" [label="ch97\n搜索"];
+  }
+  subgraph cluster_part76 { label="part76";
+    "ch76" [label="ch76\nSTL架构"];
+  }
+  subgraph cluster_part22 { label="part22";
+    "ch22" [label="ch22\nauto"];
+  }
+  subgraph cluster_part87 { label="part87";
+    "ch87" [label="ch87\nbitset"];
+  }
+  subgraph cluster_part72 { label="part72";
+    "ch72" [label="ch72\n?"];
+  }
+  subgraph cluster_part77 { label="part77";
+    "ch77" [label="ch77\nvector"];
+  }
+  subgraph cluster_part28 { label="part28";
+    "ch28" [label="ch28\n生命周期"];
+  }
+  subgraph cluster_part94 { label="part94";
+    "ch94" [label="ch94\nstop_token"];
+  }
+  subgraph cluster_part51 { label="part51";
+    "ch51" [label="ch51\nCRTP"];
+  }
+  subgraph cluster_part18 { label="part18";
+    "ch18" [label="ch18\nSanitizer"];
+  }
+  subgraph cluster_part85 { label="part85";
+    "ch85" [label="ch85\nunordered"];
+  }
+  subgraph cluster_part68 { label="part68";
+    "ch68" [label="ch68\n折叠"];
+  }
+  "ch01" -> "ch19";
+  "ch01" -> "ch02";
+  "ch01" -> "ch32";
+  "ch04" -> "ch63";
+  "ch04" -> "ch115";
+  "ch04" -> "ch05";
+  "ch04" -> "ch03";
+  "ch05" -> "ch69";
+  "ch05" -> "ch115";
+  "ch05" -> "ch06";
+  "ch05" -> "ch04";
+  "ch06" -> "ch05";
+  "ch06" -> "ch88";
+  "ch06" -> "ch64";
+  "ch06" -> "ch07";
+  "ch07" -> "ch08";
+  "ch07" -> "ch119";
+  "ch07" -> "ch67";
+  "ch07" -> "ch06";
+  "ch08" -> "ch120";
+  "ch08" -> "ch88";
+  "ch08" -> "ch09";
+  "ch08" -> "ch07";
+  "ch09" -> "ch08";
+  "ch09" -> "ch121";
+  "ch09" -> "ch123";
+  "ch09" -> "ch10";
+  "ch10" -> "ch04";
+  "ch10" -> "ch09";
+  "ch10" -> "ch07";
+  "ch11" -> "ch69";
+  "ch11" -> "ch157";
+  "ch11" -> "ch12";
+  "ch12" -> "ch18";
+  "ch12" -> "ch13";
+  "ch12" -> "ch11";
+  "ch13" -> "ch128";
+  "ch13" -> "ch14";
+  "ch13" -> "ch12";
+  "ch14" -> "ch13";
+  "ch14" -> "ch15";
+  "ch15" -> "ch151";
+  "ch15" -> "ch16";
+  "ch15" -> "ch157";
+  "ch15" -> "ch14";
+  "ch16" -> "ch15";
+  "ch16" -> "ch11";
+  "ch16" -> "ch14";
+  "ch16" -> "ch17";
+  "ch17" -> "ch30";
+  "ch17" -> "ch18";
+  "ch17" -> "ch11";
+  "ch17" -> "ch16";
+  "ch18" -> "ch149";
+  "ch18" -> "ch17";
+  "ch18" -> "ch12";
+  "ch19" -> "ch35";
+  "ch19" -> "ch32";
+  "ch19" -> "ch20";
+  "ch19" -> "ch21";
+  "ch19" -> "ch36";
+  "ch20" -> "ch19";
+  "ch20" -> "ch32";
+  "ch20" -> "ch69";
+  "ch20" -> "ch21";
+  "ch20" -> "ch65";
+  "ch21" -> "ch22";
+  "ch21" -> "ch31";
+  "ch21" -> "ch19";
+  "ch21" -> "ch20";
+  "ch22" -> "ch69";
+  "ch22" -> "ch21";
+  "ch22" -> "ch19";
+  "ch22" -> "ch23";
+  "ch23" -> "ch22";
+  "ch23" -> "ch61";
+  "ch23" -> "ch24";
+  "ch23" -> "ch29";
+  "ch24" -> "ch23";
+  "ch24" -> "ch20";
+  "ch24" -> "ch25";
+  "ch24" -> "ch65";
+  "ch25" -> "ch24";
+  "ch25" -> "ch88";
+  "ch25" -> "ch32";
+  "ch25" -> "ch26";
+  "ch26" -> "ch25";
+  "ch26" -> "ch27";
+  "ch26" -> "ch77";
+  "ch26" -> "ch116";
+  "ch27" -> "ch31";
+  "ch27" -> "ch48";
+  "ch27" -> "ch28";
+  "ch27" -> "ch26";
+  "ch28" -> "ch27";
+  "ch29" -> "ch46";
+  "ch30" -> "ch107";
+  "ch31" -> "ch27";
+  "ch32" -> "ch19";
+  "ch35" -> "ch39";
+  "ch35" -> "ch37";
+  "ch35" -> "ch36";
+  "ch36" -> "ch39";
+  "ch36" -> "ch37";
+  "ch36" -> "ch35";
+  "ch37" -> "ch115";
+  "ch37" -> "ch39";
+  "ch37" -> "ch36";
+  "ch37" -> "ch38";
+  "ch38" -> "ch160";
+  "ch38" -> "ch39";
+  "ch38" -> "ch37";
+  "ch38" -> "ch122";
+  "ch39" -> "ch40";
+  "ch39" -> "ch77";
+  "ch39" -> "ch38";
+  "ch40" -> "ch39";
+  "ch40" -> "ch41";
+  "ch41" -> "ch42";
+  "ch41" -> "ch40";
+  "ch42" -> "ch43";
+  "ch42" -> "ch41";
+  "ch43" -> "ch154";
+  "ch43" -> "ch44";
+  "ch43" -> "ch42";
+  "ch43" -> "ch36";
+  "ch44" -> "ch160";
+  "ch44" -> "ch43";
+  "ch44" -> "ch122";
+  "ch45" -> "ch46";
+  "ch45" -> "ch47";
+  "ch45" -> "ch52";
+  "ch46" -> "ch47";
+  "ch46" -> "ch45";
+  "ch46" -> "ch29";
+  "ch47" -> "ch49";
+  "ch47" -> "ch48";
+  "ch47" -> "ch46";
+  "ch47" -> "ch51";
+  "ch48" -> "ch49";
+  "ch48" -> "ch47";
+  "ch48" -> "ch65";
+  "ch49" -> "ch48";
+  "ch49" -> "ch50";
+  "ch49" -> "ch47";
+  "ch50" -> "ch49";
+  "ch50" -> "ch51";
+  "ch50" -> "ch45";
+  "ch51" -> "ch50";
+  "ch51" -> "ch47";
+  "ch51" -> "ch52";
+  "ch51" -> "ch68";
+  "ch52" -> "ch51";
+  "ch52" -> "ch45";
+  "ch60" -> "ch69";
+  "ch60" -> "ch61";
+  "ch60" -> "ch77";
+  "ch61" -> "ch62";
+  "ch61" -> "ch66";
+  "ch61" -> "ch67";
+  "ch61" -> "ch60";
+  "ch62" -> "ch63";
+  "ch62" -> "ch68";
+  "ch62" -> "ch61";
+  "ch62" -> "ch60";
+  "ch63" -> "ch62";
+  "ch63" -> "ch64";
+  "ch63" -> "ch116";
+  "ch64" -> "ch63";
+  "ch64" -> "ch77";
+  "ch64" -> "ch65";
+  "ch65" -> "ch66";
+  "ch65" -> "ch64";
+  "ch65" -> "ch68";
+  "ch66" -> "ch67";
+  "ch66" -> "ch65";
+  "ch67" -> "ch66";
+  "ch67" -> "ch119";
+  "ch67" -> "ch68";
+  "ch68" -> "ch69";
+  "ch68" -> "ch67";
+  "ch68" -> "ch65";
+  "ch69" -> "ch70";
+  "ch69" -> "ch123";
+  "ch69" -> "ch68";
+  "ch70" -> "ch69";
+  "ch70" -> "ch95";
+  "ch70" -> "ch71";
+  "ch70" -> "ch65";
+  "ch71" -> "ch70";
+  "ch71" -> "ch140";
+  "ch71" -> "ch72";
+  "ch71" -> "ch65";
+  "ch72" -> "ch51";
+  "ch72" -> "ch71";
+  "ch72" -> "ch68";
+  "ch76" -> "ch19";
+  "ch76" -> "ch20";
+  "ch76" -> "ch90";
+  "ch76" -> "ch38";
+  "ch76" -> "ch84";
+  "ch76" -> "ch65";
+  "ch76" -> "ch95";
+  "ch76" -> "ch71";
+  "ch76" -> "ch155";
+  "ch76" -> "ch85";
+  "ch76" -> "ch67";
+  "ch76" -> "ch77";
+  "ch76" -> "ch60";
+  "ch77" -> "ch115";
+  "ch77" -> "ch78";
+  "ch77" -> "ch38";
+  "ch77" -> "ch76";
+  "ch77" -> "ch85";
+  "ch77" -> "ch84";
+  "ch77" -> "ch154";
+  "ch77" -> "ch80";
+  "ch77" -> "ch37";
+  "ch77" -> "ch87";
+  "ch78" -> "ch82";
+  "ch78" -> "ch90";
+  "ch78" -> "ch20";
+  "ch78" -> "ch76";
+  "ch78" -> "ch93";
+  "ch78" -> "ch80";
+  "ch78" -> "ch79";
+  "ch78" -> "ch63";
+  "ch78" -> "ch86";
+  "ch78" -> "ch77";
+  "ch79" -> "ch115";
+  "ch79" -> "ch78";
+  "ch79" -> "ch90";
+  "ch79" -> "ch76";
+  "ch79" -> "ch95";
+  "ch79" -> "ch131";
+  "ch79" -> "ch86";
+  "ch79" -> "ch142";
+  "ch79" -> "ch77";
+  "ch80" -> "ch19";
+  "ch80" -> "ch82";
+  "ch80" -> "ch20";
+  "ch80" -> "ch90";
+  "ch80" -> "ch81";
+  "ch80" -> "ch77";
+  "ch81" -> "ch80";
+  "ch81" -> "ch82";
+  "ch82" -> "ch90";
+  "ch82" -> "ch20";
+  "ch82" -> "ch80";
+  "ch82" -> "ch77";
+  "ch82" -> "ch83";
+  "ch83" -> "ch20";
+  "ch83" -> "ch90";
+  "ch83" -> "ch76";
+  "ch83" -> "ch84";
+  "ch83" -> "ch80";
+  "ch83" -> "ch85";
+  "ch84" -> "ch83";
+  "ch84" -> "ch19";
+  "ch84" -> "ch115";
+  "ch84" -> "ch76";
+  "ch84" -> "ch154";
+  "ch84" -> "ch86";
+  "ch84" -> "ch85";
+  "ch84" -> "ch40";
+  "ch84" -> "ch65";
+  "ch85" -> "ch83";
+  "ch85" -> "ch19";
+  "ch85" -> "ch115";
+  "ch85" -> "ch84";
+  "ch85" -> "ch154";
+  "ch85" -> "ch124";
+  "ch85" -> "ch65";
+  "ch86" -> "ch98";
+  "ch86" -> "ch19";
+  "ch86" -> "ch78";
+  "ch86" -> "ch76";
+  "ch86" -> "ch88";
+  "ch86" -> "ch77";
+  "ch87" -> "ch88";
+  "ch87" -> "ch80";
+  "ch87" -> "ch155";
+  "ch87" -> "ch124";
+  "ch87" -> "ch77";
+  "ch87" -> "ch65";
+  "ch88" -> "ch87";
+  "ch88" -> "ch89";
+  "ch89" -> "ch88";
+  "ch89" -> "ch90";
+  "ch90" -> "ch91";
+  "ch90" -> "ch89";
+  "ch91" -> "ch19";
+  "ch91" -> "ch115";
+  "ch91" -> "ch122";
+  "ch91" -> "ch47";
+  "ch91" -> "ch90";
+  "ch91" -> "ch146";
+  "ch91" -> "ch88";
+  "ch91" -> "ch39";
+  "ch91" -> "ch107";
+  "ch91" -> "ch40";
+  "ch91" -> "ch81";
+  "ch91" -> "ch92";
+  "ch92" -> "ch151";
+  "ch92" -> "ch19";
+  "ch92" -> "ch91";
+  "ch92" -> "ch47";
+  "ch92" -> "ch152";
+  "ch92" -> "ch90";
+  "ch92" -> "ch93";
+  "ch92" -> "ch88";
+  "ch92" -> "ch69";
+  "ch92" -> "ch39";
+  "ch92" -> "ch131";
+  "ch92" -> "ch08";
+  "ch92" -> "ch68";
+  "ch92" -> "ch40";
+  "ch92" -> "ch60";
+  "ch93" -> "ch19";
+  "ch93" -> "ch115";
+  "ch93" -> "ch159";
+  "ch93" -> "ch94";
+  "ch93" -> "ch93";
+  "ch93" -> "ch107";
+  "ch93" -> "ch63";
+  "ch93" -> "ch110";
+  "ch93" -> "ch108";
+  "ch93" -> "ch40";
+  "ch94" -> "ch159";
+  "ch94" -> "ch93";
+  "ch94" -> "ch39";
+  "ch94" -> "ch107";
+  "ch94" -> "ch108";
+  "ch100" -> "ch101";
+  "ch100" -> "ch95";
+  "ch100" -> "ch119";
+  "ch100" -> "ch99";
+  "ch101" -> "ch95";
+  "ch101" -> "ch100";
+  "ch101" -> "ch96";
+  "ch95" -> "ch96";
+  "ch95" -> "ch77";
+  "ch95" -> "ch97";
+  "ch96" -> "ch95";
+  "ch96" -> "ch98";
+  "ch96" -> "ch77";
+  "ch96" -> "ch97";
+  "ch97" -> "ch98";
+  "ch97" -> "ch96";
+  "ch97" -> "ch83";
+  "ch98" -> "ch99";
+  "ch98" -> "ch96";
+  "ch98" -> "ch97";
+  "ch99" -> "ch151";
+  "ch99" -> "ch95";
+  "ch99" -> "ch100";
+  "ch99" -> "ch98";
+  "ch107" -> "ch30";
+  "ch107" -> "ch111";
+  "ch107" -> "ch110";
+  "ch107" -> "ch108";
+  "ch107" -> "ch109";
+  "ch108" -> "ch110";
+  "ch108" -> "ch107";
+  "ch108" -> "ch109";
+  "ch109" -> "ch110";
+  "ch109" -> "ch108";
+  "ch109" -> "ch107";
+  "ch110" -> "ch107";
+  "ch110" -> "ch111";
+  "ch111" -> "ch110";
+  "ch111" -> "ch112";
+  "ch112" -> "ch110";
+  "ch112" -> "ch113";
+  "ch112" -> "ch111";
+  "ch113" -> "ch120";
+  "ch113" -> "ch107";
+  "ch113" -> "ch112";
+  "ch115" -> "ch19";
+  "ch115" -> "ch116";
+  "ch115" -> "ch20";
+  "ch115" -> "ch39";
+  "ch115" -> "ch27";
+  "ch115" -> "ch117";
+  "ch115" -> "ch77";
+  "ch116" -> "ch115";
+  "ch116" -> "ch122";
+  "ch116" -> "ch20";
+  "ch116" -> "ch107";
+  "ch116" -> "ch63";
+  "ch116" -> "ch117";
+  "ch116" -> "ch65";
+  "ch117" -> "ch118";
+  "ch117" -> "ch116";
+  "ch118" -> "ch117";
+  "ch118" -> "ch119";
+  "ch119" -> "ch118";
+  "ch119" -> "ch120";
+  "ch120" -> "ch120";
+  "ch120" -> "ch113";
+  "ch121" -> "ch120";
+  "ch121" -> "ch122";
+  "ch122" -> "ch126";
+  "ch122" -> "ch47";
+  "ch122" -> "ch152";
+  "ch122" -> "ch38";
+  "ch122" -> "ch93";
+  "ch122" -> "ch43";
+  "ch122" -> "ch121";
+  "ch122" -> "ch154";
+  "ch122" -> "ch125";
+  "ch122" -> "ch44";
+  "ch122" -> "ch37";
+  "ch122" -> "ch81";
+  "ch122" -> "ch77";
+  "ch122" -> "ch83";
+  "ch123" -> "ch122";
+  "ch124" -> "ch39";
+  "ch124" -> "ch125";
+  "ch124" -> "ch77";
+  "ch125" -> "ch126";
+  "ch125" -> "ch124";
+  "ch126" -> "ch124";
+  "ch126" -> "ch127";
+  "ch126" -> "ch125";
+  "ch127" -> "ch126";
+  "ch127" -> "ch128";
+  "ch127" -> "ch11";
+  "ch127" -> "ch125";
+  "ch128" -> "ch124";
+  "ch128" -> "ch127";
+  "ch128" -> "ch129";
+  "ch128" -> "ch65";
+  "ch129" -> "ch130";
+  "ch129" -> "ch128";
+  "ch129" -> "ch45";
+  "ch129" -> "ch135";
+  "ch130" -> "ch131";
+  "ch130" -> "ch129";
+  "ch130" -> "ch77";
+  "ch131" -> "ch132";
+  "ch131" -> "ch130";
+  "ch132" -> "ch133";
+  "ch132" -> "ch131";
+  "ch132" -> "ch96";
+  "ch132" -> "ch83";
+  "ch133" -> "ch132";
+  "ch133" -> "ch134";
+  "ch133" -> "ch77";
+  "ch134" -> "ch142";
+  "ch134" -> "ch45";
+  "ch134" -> "ch133";
+  "ch135" -> "ch136";
+  "ch135" -> "ch137";
+  "ch135" -> "ch138";
+  "ch136" -> "ch137";
+  "ch136" -> "ch116";
+  "ch136" -> "ch135";
+  "ch137" -> "ch136";
+  "ch137" -> "ch138";
+  "ch137" -> "ch45";
+  "ch137" -> "ch135";
+  "ch138" -> "ch137";
+  "ch138" -> "ch139";
+  "ch138" -> "ch141";
+  "ch139" -> "ch51";
+  "ch139" -> "ch140";
+  "ch139" -> "ch138";
+  "ch139" -> "ch68";
+  "ch140" -> "ch141";
+  "ch140" -> "ch139";
+  "ch140" -> "ch71";
+  "ch140" -> "ch135";
+  "ch141" -> "ch142";
+  "ch141" -> "ch140";
+  "ch141" -> "ch45";
+  "ch141" -> "ch135";
+  "ch142" -> "ch141";
+  "ch142" -> "ch143";
+  "ch142" -> "ch45";
+  "ch143" -> "ch154";
+  "ch143" -> "ch142";
+  "ch144" -> "ch147";
+  "ch144" -> "ch145";
+  "ch145" -> "ch146";
+  "ch145" -> "ch144";
+  "ch145" -> "ch135";
+  "ch146" -> "ch121";
+  "ch146" -> "ch88";
+  "ch146" -> "ch145";
+  "ch146" -> "ch147";
+  "ch147" -> "ch148";
+  "ch147" -> "ch150";
+  "ch147" -> "ch146";
+  "ch147" -> "ch144";
+  "ch148" -> "ch18";
+  "ch148" -> "ch149";
+  "ch148" -> "ch147";
+  "ch149" -> "ch148";
+  "ch149" -> "ch150";
+  "ch150" -> "ch151";
+  "ch150" -> "ch149";
+  "ch150" -> "ch29";
+  "ch151" -> "ch150";
+  "ch151" -> "ch157";
+  "ch151" -> "ch152";
+  "ch152" -> "ch151";
+  "ch152" -> "ch153";
+  "ch152" -> "ch157";
+  "ch153" -> "ch154";
+  "ch153" -> "ch152";
+  "ch154" -> "ch153";
+  "ch154" -> "ch155";
+  "ch154" -> "ch156";
+  "ch155" -> "ch154";
+  "ch155" -> "ch156";
+  "ch156" -> "ch155";
+  "ch156" -> "ch157";
+  "ch157" -> "ch156";
+  "ch158" -> "ch154";
+  "ch158" -> "ch152";
+  "ch159" -> "ch160";
+  "ch159" -> "ch107";
+  "ch159" -> "ch116";
+  "ch160" -> "ch122";
+  "ch160" -> "ch159";
+  "ch160" -> "ch161";
+  "ch161" -> "ch162";
+  "ch161" -> "ch144";
+  "ch161" -> "ch160";
+  "ch161" -> "ch131";
+  "ch162" -> "ch63";
+  "ch162" -> "ch88";
+  "ch162" -> "ch163";
+  "ch162" -> "ch161";
+  "ch163" -> "ch162";
+  "ch163" -> "ch113";
+  "ch163" -> "ch159";
+  "ch163" -> "ch164";
+  "ch164" -> "ch141";
+  "ch164" -> "ch159";
+  "ch164" -> "ch163";
+  "ch165" -> "ch115";
+  "ch165" -> "ch01";
+  "ch165" -> "ch19";
+  "ch165" -> "ch39";
+  "ch165" -> "ch77";
+}

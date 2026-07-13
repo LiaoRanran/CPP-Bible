@@ -1,0 +1,541 @@
+# 第06章　C++17：生产力跃升
+
+⟶ Book/part07_stl/ch88_optional_variant.md
+⟶ Book/part06_templates/ch64_fold.md
+
+> 标准基：ISO/IEC 14882:2017（N4659）｜预计阅读：35 min｜前置：ch04、ch05｜后续：ch81/82 string_view、ch26/88 variant/optional、ch91 filesystem、ch64 折叠、ch99 并行算法、ch32 初始化、ch33 生命周期｜难度：★★★
+
+## ① 学习目标
+
+⟶ Book/part01_history/ch05_cpp14.md
+⟶ Book/part01_history/ch07_cpp20.md
+
+
+```cpp
+auto p=std::make_pair(1,2.0); void use_sb(){ auto& [a,b]=p; (void)a;(void)b; }
+```
+```cpp
+// if constexpr
+template<class T> auto get(T x){ if constexpr(std::is_pointer_v<T>) return *x; else return x; }
+```
+
+- 掌握 C++17 关键特性：结构化绑定、`if`/`switch` 带初始化、折叠表达式、`std::string_view`、`std::optional` / `std::variant` / `std::any`、`std::filesystem`、并行算法执行策略、类模板参数推导（CTAD）、`[[nodiscard]]`/`[[maybe_unused]]`、保证的拷贝消除、内联变量、强制 RVO。
+
+## ② 前置知识
+
+```cpp
+#include <optional>
+std::optional<int> o=5; void use_opt(){ if(o) (void)*o; }
+```
+```cpp
+// std::string_view
+#include <string_view>
+std::string_view sv="c++17"; auto n=sv.size();
+```
+
+- ch04（移动/auto）、ch63（变参，折叠表达式依赖）、ch32（初始化）。
+
+## ③ 后续依赖
+
+```cpp
+// inline 变量
+inline int g_counter=0;
+```
+```cpp
+// 折叠表达式（一元左折）
+template<class...Ts> auto sum(Ts...ts){ return (ts + ...); } auto s=sum(1,2,3);
+```
+
+- `string_view`（ch82）、`optional/variant`（ch88）、`filesystem`（ch91）、折叠表达式（ch64）、并行算法（ch99）均在本章确立。
+
+## ④ 知识图谱
+
+```cpp
+#include <iostream>
+// 折叠表达式（逗号）
+template<class...Ts> void print_all(Ts...ts){ (std::cout << ... << ts); }
+```
+```cpp
+// 文件系统 <filesystem>
+#include <filesystem>
+std::filesystem::path p="."; auto exists=p.has_filename();
+```
+
+```
+C++17 生产力
+├─ 结构化绑定: auto [a,b] = pair/struct/tuple
+├─ if/switch 初始化语句
+├─ 折叠表达式(变参二元运算)
+├─ string_view(零拷贝字符串视图)
+├─ optional / variant / any(可为空/可鉴别联合)
+├─ filesystem(跨平台文件操作)
+├─ 并行算法(执行策略 execution::par)
+├─ CTAD(类模板参数推导)
+├─ 保证拷贝消除(prvalue 不再构造)
+├─ inline 变量(头文件定义变量)
+├─ [[nodiscard]] / [[maybe_unused]] / [[fallthrough]]
+└─ if constexpr(编译期分支)
+```
+
+## ⑤ Mermaid（结构化绑定解构）
+
+```cpp
+// 类模板参数推导 CTAD
+#include <vector>
+std::vector v{1,2,3};
+```
+```cpp
+// 保证复制消除
+struct S{ S(){} }; S make(){ return S{}; }
+```
+
+## ⑥ UML / 结构图（特性关系）[标准]
+
+```cpp
+// 嵌套命名空间定义
+namespace outer::inner { int x=1; }
+```
+```cpp
+// [[nodiscard]]
+[[nodiscard]] int compute() { return 1; }
+```
+
+本章特性按目标分三类：语法糖（结构化绑定 / 折叠表达式）、编译期分支（`if constexpr` / CTAD）、库类型（`string_view` / `optional` / `variant` / `any` / 并行 STL）。
+```mermaid
+flowchart LR
+    M[std::map::iterator -> pair<key,value>] -->|结构化绑定| B["auto& [k,v] = *it;"]
+    B --> U[直接用 k,v 访问]
+```
+
+## ⑦ ASCII 内存图（string_view 不拥有数据）
+
+```cpp
+// [[maybe_unused]]
+[[maybe_unused]] int debug_flag=0;
+```
+```cpp
+// 常量表达式 lambda
+constexpr auto sq=[](int x){ return x*x; }; static_assert(sq(3)==9, "");
+```
+
+## ⑧ 生命周期（新增库类型的所有权语义）
+
+```cpp
+#include <variant>
+std::variant<int,double> v=1; void use_var(){ std::visit([](auto x){(void)x;}, v); }
+```
+```cpp
+// std::any
+#include <any>
+#include <string>
+std::any a=std::string("x");
+```
+
+`string_view` 不拥有数据（悬垂风险，ch36）；`optional`/`variant`/`any` 在对象内管理所含值的生命周期（ch25）；CTAD 推导的临时对象生命周期遵循常规规则。
+## ⑨ 调用栈（编译期分支与折叠）
+
+```cpp
+auto t=std::make_tuple(1,2); void use_apply(){ std::apply([](auto...x){ ((void)x, ...); }, t); }
+```
+```cpp
+// 并行算法（执行策略）
+#include <algorithm>
+#include <vector>
+#include <execution>
+void s(){ std::vector<int> v(4); std::sort(std::execution::par, v.begin(), v.end()); }
+```
+
+`if constexpr` 在编译期裁剪分支，不产生运行时调用；折叠表达式展开为顺序求值，调用栈与普通循环一致（ch26）。
+```
+string_view sv:
+┌──────────┬──────────┐
+│ ptr(8B)  │ size(8B) │  ← 只指向他人内存
+└────┬─────┴──────────┘
+     ▼ 原字符串(可能栈/堆/常量段)
+```
+> 与 `std::string` 不同，`string_view` **不分配、不拥有**，悬垂风险高（ch82、ch33）。
+
+## ⑩ 汇编（折叠表达式展开）
+
+```cpp
+// std::clamp
+#include <algorithm>
+int y=std::clamp(15,0,10);
+```
+```cpp
+// std::byte
+#include <cstddef>
+std::byte b{0x0F};
+```
+
+> 折叠表达式把「递归累加」写成一行，编译期展开为连续二元运算（ch64）。
+
+## ⑪ STL 联系
+
+```cpp
+#include <string>
+#include <map>
+std::map<int,std::string> m{{1,"a"}}; void use_map(){ for(auto& [k,v]:m){ (void)k;(void)v; } }
+```
+```cpp
+// [[nodiscard]] 防止忽略错误
+[[nodiscard]] bool connect(){ return true; }
+```
+
+- `std::optional<T>` 取代「用特殊值表示空」（如 `-1` 表示无效索引），类型安全（ch88）。
+- `std::variant` 是类型安全 union，配合 `std::visit` 实现访问者模式（ch26、ch138）。
+- `std::filesystem::path` 统一路径处理（ch91）。
+
+## ⑫ 工业案例
+
+```cpp
+// 内联变量跨 TU 共享
+inline constexpr double kPi=3.14159;
+```
+```cpp
+// if constexpr 分发类型
+#include <type_traits>
+template<class T> void f(T x){ if constexpr(std::is_integral_v<T>) (void)(x+1); else (void)x; }
+```
+
+- **Chromium/Abseil**：`string_view` 广泛用于函数参数，避免无谓 `std::string` 拷贝（ch130、ch81）。
+- **服务端**：`optional` 表示「可能失败」的查询，`variant` 表示协议多类型字段（ch162 JSON）。
+
+## ⑬ 源码分析
+
+```cpp
+// std::filesystem 遍历目录
+#include <filesystem>
+void walk(){ for(auto& e: std::filesystem::directory_iterator(".")) (void)e; }
+```
+```cpp
+// 折叠表达式空包
+template<class...Ts> bool all(Ts...ts){ return (ts && ... && true); }
+```
+
+- 保证拷贝消除：C++17 规定某些 prvalue（纯右值）不再「构造临时再拷贝」，而是直接在目标位置构造（ch117）。
+
+## ⑭ WG21 提案
+
+```cpp
+// std::string_view 避免拷贝
+#include <string_view>
+void take(std::string_view sv){ (void)sv; }
+```
+```cpp
+// 新属性 likely/unlikely
+int predict(int x){ if(x>0) [[likely]] return 1; else [[unlikely]] return 0; }
+```
+
+- **P0217R3** Structured bindings.
+- **P0305R1** Init-statements for `if`/`switch`.
+- **P0196R2** `[[nodiscard]]` 等属性.
+- **P0226R1** `std::string_view`.
+- **P0138R2** `std::variant`.
+- **P0323R2** `std::optional`.
+- **P0218R1** `std::filesystem`.
+- **P0024R2** Parallel algorithms.
+- **P0522R0** 类模板参数推导 CTAD.
+- **P0135R1** Guaranteed copy elision.
+
+## ⑮ 面试题
+
+```cpp
+// std::optional 链式
+#include <optional>
+std::optional<int> half(int x){ return x%2==0 ? std::optional<int>{x/2} : std::nullopt; }
+```
+```cpp
+// 聚合初始化 + 推导
+#include <array>
+std::array a{1,2,3};
+```
+
+1. `string_view` 与 `const std::string&` 区别？（前者零拷贝但悬垂风险，后者安全但可能需构造 string）
+2. 结构化绑定能解构哪些类型？（有 `tuple_size`/`get` 或公开非静态数据成员）
+3. `optional` 相比返回指针表示「空」好在哪？（无空指针、值语义、明确语义）
+
+## ⑯ 易错点
+
+```cpp
+// std::variant 访问
+#include <variant>
+std::variant<int,double> w=2.0; auto d=std::holds_alternative<double>(w);
+```
+```cpp
+// 常量表达式 if 与类型特性
+#include <type_traits>
+#include <cstddef>
+template<class T> size_t sz(){ if constexpr(std::is_same_v<T,int>) return 4; else return 8; }
+```
+
+- `string_view` 指向临时 string 会悬垂（ch33 UB）。
+- 折叠表达式空包对 `&&`/`||`/`,` 有默认值，对 `+` 等无默认会编译失败（ch64）。
+- `[[nodiscard]]` 只对忽略返回值生效，不能强制检查业务逻辑。
+
+## ⑰ FAQ
+
+```cpp
+// 嵌套命名空间别名
+namespace a::b::c { int v=0; }
+```
+
+- **Q：C++17 的 if constexpr 和运行时 if 区别？** A：`if constexpr` 条件必须是编译期常量，不满足的分支**不被实例化**（不报错），用于 TMP 分支（ch69、ch68）。
+- **Q：为什么 optional 不用 union 实现？** A：optional 需表示「空」，variant 才是类型安全 union（ch26、ch88）。
+
+## ⑱ 最佳实践
+
+```cpp
+#include <array>
+std::array<int,2> arr{1,2}; void use_arr(){ auto [x,y]=arr; (void)x;(void)y; }
+```
+
+- 函数读字符串参数优先 `std::string_view`（非拥有）；需要长期持有才转 `std::string`（ch82）。
+- 用 `[[nodiscard]]` 标注「忽略返回值会导致 Bug」的函数（如 `std::async`）（ch93）。
+
+## ⑲ 性能分析
+
+```cpp
+// [[maybe_unused]] 参数
+void log([[maybe_unused]] int verbose){}
+```
+
+- `string_view` 传递省去 `std::string` 构造/拷贝，热路径显著（ch81、ch155）。
+- 并行算法 `execution::par` 在多核上线性加速，但需数据无竞争（ch99、ch102）。
+## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
+
+```cpp
+// C++17 小结：结构化绑定/optional/string_view/折叠/if constexpr
+```
+
+## 附录: C++17 五大特性速查
+
+```cpp
+#include <iostream>
+#include <optional>
+// 避免与 <cstdlib> 的 ::div 冲突（其它头文件可能间接引入），改名 safe_div
+std::optional<int>safe_div(int a,int b){if(b==0)return{};return a/b;}
+int main(){if(auto r=safe_div(10,2))std::cout<<*r<<std::endl;return 0;}
+```
+
+```cpp
+#include <iostream>
+#include <variant>
+#include <string>
+int main(){std::variant<int,std::string>v="hello";std::cout<<std::get<std::string>(v)<<std::endl;return 0;}
+```
+
+```cpp
+#include <iostream>
+#include <map>
+int main(){std::map<int,int>m{{1,10},{2,20}};for(auto[k,v]:m)std::cout<<k<<":"<<v<<" ";std::cout<<std::endl;return 0;}
+```
+
+```cpp
+#include <iostream>
+template<typename T>auto print(T t){if constexpr(std::is_integral_v<T>)std::cout<<"int:"<<t;else std::cout<<"other:"<<t;std::cout<<std::endl;}
+int main(){print(42);print("str");return 0;}
+```
+2. 用 `optional` 改写「返回 -1 表示失败」的函数（ch88）。
+3. 用 `execution::par` 并行化 `std::for_each` 并 benchmark（ch99、ch151）。
+
+## 附录 B: C++17 更多特性实例
+
+```cpp
+#include <iostream>
+#include <filesystem>
+namespace fs=std::filesystem;
+int main(){auto p=fs::current_path();std::cout<<p.string()<<std::endl;return 0;}
+```
+
+```cpp
+#include <iostream>
+#include <any>
+#include <string>
+int main(){std::any a=42;a=std::string("hello");std::cout<<std::any_cast<std::string>(a)<<std::endl;return 0;}
+```
+
+```cpp
+#include <iostream>
+#include <string_view>
+#include <string>
+void print(std::string_view sv){std::cout<<sv<<std::endl;}
+int main(){print("hello");std::string s="world";print(s);return 0;}
+```
+
+```cpp
+#include <iostream>
+template<typename...Ts> auto sum(Ts...ts){return (ts+...);}
+int main(){std::cout<<sum(1,2,3,4,5)<<std::endl;return 0;}
+```
+## 附录 C：C++17底层与工业采纳 [E: Lowlevel / F: Industry / H: Design / J: Learning]
+
+```
+C++17关键特性底层分析:
+
+结构化绑定: auto [x,y,z] = point → 编译器生成隐藏临时变量 + 引用绑定
+  汇编: trivial类型 = 两次mov(等同手写), 零开销
+
+if constexpr: 编译期分支, 不生成死代码 → 二进制~10-30%减小(vs SFINAE模板)
+std::optional: sizeof = max(T, 1) + bool + padding(T=4→8字节), 类型安全强制检查
+string_view: 零拷贝(指针+长度), ~5× faster than const string&
+filesystem: 跨平台统一, 替代boost::filesystem
+```
+
+```cpp
+#include <iostream>
+#include <optional>
+#include <string_view>
+#include <filesystem>
+int main() {
+    std::optional<int> opt = 42;
+    std::string_view sv = "hello world";
+    auto cwd = std::filesystem::current_path();
+    std::cout << "C++17: optional+string_view+filesystem = productivity trifecta" << std::endl;
+    return 0;
+}
+```
+
+| 特性 | 替代C++14 | 性能提升 |
+|---|---|---|
+| optional<T> | sentinel(-1/nullptr) | 类型安全, 零开销 |
+| string_view | const string& | 零拷贝, ~5x faster |
+| filesystem | boost::filesystem | 跨平台, ABI稳定 |
+| if constexpr | SFINAE+enable_if | 编译时间~10x faster |
+
+面试: C++17最实用特性？ optional+string_view+if constexpr
+       为什么string_view比const string&快？ string_view不触发临时string构造(堆分配)
+
+
+## 联合使用场景
+
+| 关联章节 | 场景 | 组合方式 |
+|---|---|---|
+| [第5章](Book/part01_history/ch05_cpp14.md) | 键值查找/缓存 | 本章提供概念，第5章提供实现 |
+| [第7章](Book/part01_history/ch07_cpp20.md) | STL算法回调/异步任务 | 本章提供概念，第7章提供实现 |
+| [第64章](Book/part06_templates/ch64_fold.md) | 配置解析/API响应 | 本章提供概念，第64章提供实现 |
+| [第88章](Book/part07_stl/ch88_optional_variant.md) | 泛型库/编译期计算 | 本章提供概念，第88章提供实现 |
+
+
+## 深度增强：C++17性能原理
+
+### 原理分析
+
+C++17三大特性从根本上改变C++日常写法:
+
+guaranteed copy elision(P0135R1): 不可拷贝类型可直接从函数返回(zero-cost)
+string_view(P0254R2): 零拷贝替代const string&, Google内部分析节省~5%总CPU
+if constexpr(P0292R2): 死分支不编译→编译快2-5x, 二进制减10-30%
+
+### 性能数据
+
+| 操作 | C++14 | C++17 | 加速比 |
+|---|---|---|---|
+| 返回unique_ptr | ~3ns(移动) | ~0ns(elision) | 无穷 |
+| 传参(const string&) | ~50ns(临时构造) | ~0ns(string_view) | 无穷 |
+| 模板错误定位 | 1000行 | 10行(if constexpr) | 100x |
+
+### 汇编验证
+
+```asm
+; const string&: call string::string(~50ns) → call process → call ~string
+; string_view:   lea rdi,[str]; mov esi,len; call process (~0ns overhead)
+```
+
+```cpp
+#include <iostream>
+#include <string_view>
+void process(std::string_view sv){std::cout<<sv.size()<<std::endl;}
+int main(){process("hello");return 0;}
+```
+
+### 面试巩固
+
+Q: guaranteed elision vs NRVO? A: elision=prvalue强制(C++17); NRVO=命名对象优化(C++26强制)
+Q: string_view陷阱? A: 不持有数据→原字符串销毁后dangling
+Q: if constexpr vs SFINAE? A: 简单分支→if constexpr; 多重重载→concepts(C++20)
+
+
+## 附录 E：C++17面试速查
+
+```cpp
+#include <iostream>
+#include <optional>
+#include <string_view>
+int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<","<<sv.size()<<std::endl;return 0;}
+```
+
+| 特性 | 替代 | 性能 |
+|---|---|---|
+| optional | sentinel(-1) | 零开销 |
+| string_view | const string& | 5x(无堆分配) |
+| if constexpr | SFINAE | 编译2-5x fast |
+
+面试: string_view=指针+长度, 零拷贝; 陷阱: 不持有数据(dangling)
+
+## 相关章节（交叉引用）
+
+- **相邻主题**：`Book/part01_history/ch04_cpp11.md`（第04章　C++11：现代 C++ 革命）—— 编号相邻、主题接续。
+- **相邻主题**：`Book/part01_history/ch08_cpp23.md`（第08章　C++23：标准库大修）—— 编号相邻、主题接续。
+- **同模块**：`Book/part01_history/ch01_c_history.md`（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
+
+## 自测练习（Exercises）
+
+> 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
+
+### 练习 1（难度 ★★）
+
+写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+
+<details><summary>答案与解析</summary>
+
+使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+
+```cpp
+#include <iostream>
+#include <utility>
+template <typename T>
+const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
+int main() { std::cout << max_safe(3, 7) << '\n'; }
+```
+
+[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+
+</details>
+
+### 练习 2（难度 ★★）
+
+用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+
+<details><summary>答案与解析</summary>
+
+C++20 概念取代 SFINAE 做编译期约束：
+
+```cpp
+#include <iostream>
+#include <concepts>
+template <std::integral T> T add(T a, T b) { return a + b; }
+int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+```
+
+[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+
+</details>
+
+### 练习 3（难度 ★★）
+
+写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
+static_assert(fact(5) == 120);
+int main() { std::cout << fact(5) << '\n'; }
+```
+
+[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+
+</details>
+

@@ -1,0 +1,112 @@
+name: CPP-Bible CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Consistency Check
+      run: python3 tools/consistency_check.py
+      continue-on-error: false
+
+    - name: Cross-Reference Audit
+      run: python3 tools/crossref_audit.py
+      continue-on-error: false
+
+  compile:
+    needs: quality
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        gcc: ['13']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install GCC
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++-${{ matrix.gcc }}
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ matrix.gcc }} 100
+
+    - name: Compile Check
+      run: python3 tools/chapter_compile_check.py Book/*/ch*.md
+
+  # ---- 发布：静态站点（MkDocs Material）----
+  site:
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install MkDocs stack
+      run: pip install mkdocs-material mkdocs-mermaid2-plugin
+
+    - name: Rewrite cross-chapter links (site)
+      run: python3 tools/rewrite_links.py --mode site
+
+    - name: Generate nav & config
+      run: python3 tools/gen_mkdocs_nav.py
+
+    - name: Build site
+      run: mkdocs build --strict --config-file build/site/mkdocs.yml
+
+    - name: Upload site artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: cpp-bible-site
+        path: build/site_out
+        retention-days: 14
+
+  # ---- 发布：全书 PDF（pandoc + xelatex + mermaid）----
+  pdf:
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install pandoc / xelatex / CJK fonts
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y pandoc texlive-xetex texlive-lang-chinese fonts-noto-cjk fonts-noto-cjk-extra
+
+    - name: Install mermaid-filter
+      run: npm install -g mermaid-filter
+
+    - name: Build PDF (by-part 分卷，避免 xelatex 超时)
+      run: bash tools/generate_pdf.sh --by-part
+
+    - name: Upload PDF artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: cpp-bible-pdf
+        path: build/pdf/part*.pdf
+        retention-days: 14

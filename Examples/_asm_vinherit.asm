@@ -1,0 +1,92 @@
+	.file	"_asm_vinherit.cpp"
+	.intel_syntax noprefix
+	.text
+	.section	.text$_Z6printfPKcz,"x"
+	.linkonce discard
+	.p2align 4
+	.globl	_Z6printfPKcz
+	.def	_Z6printfPKcz;	.scl	2;	.type	32;	.endef
+	.seh_proc	_Z6printfPKcz
+_Z6printfPKcz:
+.LFB11:
+	push	rsi
+	.seh_pushreg	rsi
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 56
+	.seh_stackalloc	56
+	.seh_endprologue
+	lea	rsi, 88[rsp]
+	mov	rbx, rcx
+	mov	QWORD PTR 88[rsp], rdx
+	mov	ecx, 1
+	mov	QWORD PTR 96[rsp], r8
+	mov	QWORD PTR 104[rsp], r9
+	mov	QWORD PTR 40[rsp], rsi
+	call	[QWORD PTR __imp___acrt_iob_func[rip]]
+	mov	r8, rsi
+	mov	rdx, rbx
+	mov	rcx, rax
+	call	__mingw_vfprintf
+	add	rsp, 56
+	pop	rbx
+	pop	rsi
+	ret
+	.seh_endproc
+	.text
+	.p2align 4
+	.globl	_Z10read_vbaseRK1D
+	.def	_Z10read_vbaseRK1D;	.scl	2;	.type	32;	.endef
+	.seh_proc	_Z10read_vbaseRK1D
+_Z10read_vbaseRK1D:
+.LFB50:
+	.seh_endprologue
+	mov	rax, QWORD PTR [rcx]
+	mov	rax, QWORD PTR -24[rax]
+	mov	eax, DWORD PTR 8[rcx+rax]
+	ret
+	.seh_endproc
+	.p2align 4
+	.globl	_Z10cross_castP2M1
+	.def	_Z10cross_castP2M1;	.scl	2;	.type	32;	.endef
+	.seh_proc	_Z10cross_castP2M1
+_Z10cross_castP2M1:
+.LFB51:
+	.seh_endprologue
+	test	rcx, rcx
+	je	.L6
+	mov	rax, QWORD PTR [rcx]
+	add	rcx, QWORD PTR -24[rax]
+	mov	rax, rcx
+	ret
+	.p2align 4,,10
+	.p2align 3
+.L6:
+	xor	eax, eax
+	ret
+	.seh_endproc
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.section .rdata,"dr"
+.LC0:
+	.ascii "%d %d\12\0"
+	.section	.text.startup,"x"
+	.p2align 4
+	.globl	main
+	.def	main;	.scl	2;	.type	32;	.endef
+	.seh_proc	main
+main:
+.LFB52:
+	sub	rsp, 40
+	.seh_stackalloc	40
+	.seh_endprologue
+	call	__main
+	mov	r8d, 1
+	mov	edx, 1
+	lea	rcx, .LC0[rip]
+	call	_Z6printfPKcz
+	xor	eax, eax
+	add	rsp, 40
+	ret
+	.seh_endproc
+	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__mingw_vfprintf;	.scl	2;	.type	32;	.endef

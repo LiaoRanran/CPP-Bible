@@ -1,0 +1,34 @@
+{
+  "version": "0.1.0",
+  "paths": {
+    "beginner": [
+      "part01",
+      "part03(ch19-22)",
+      "part07(ch76-80)",
+      "part10(ch115-117)",
+      "part13(ch144-145)"
+    ],
+    "intermediate": [
+      "part04",
+      "part05",
+      "part06(ch60-67)",
+      "part07(ch81-94)",
+      "part08",
+      "part12"
+    ],
+    "advanced": [
+      "part06(ch68-72)",
+      "part09",
+      "part10(ch118-123)",
+      "part11",
+      "part14",
+      "part15"
+    ],
+    "expert": [
+      "part02",
+      "part13(ch146-151)",
+      "part16"
+    ]
+  },
+  "description": "Learning paths for Modern C++ Bible — from beginner to expert"
+}

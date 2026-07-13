@@ -1,0 +1,4 @@
+_ch145_noexcept2.cpp: In function 'void sink()':
+_ch145_noexcept2.cpp:3:24: warning: 'throw' will always call 'terminate' [-Wterminate]
+    3 | void sink() noexcept { throw 1; }
+      |                        ^~~~~~~

@@ -1,0 +1,6 @@
+TSC calibrated = 2.3955 GHz
+operator new + delete : 118.68 cy   49.542 ns  (round-trip)
+malloc + free         : 114.02 cy   47.598 ns  (round-trip)
+placement new+dtor    :   4.57 cy    1.907 ns  (no alloc)
+new Obj + delete      : 117.58 cy   49.084 ns  (round-trip)
+pool alloc (bump)     :   4.57 cy    1.907 ns  (pointer bump)

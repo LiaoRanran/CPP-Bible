@@ -1,0 +1,5 @@
+Examples/_ch147_api.cpp:3:9: warning: #pragma once in main file
+    3 | #pragma once
+      |         ^~~~
+Assembler messages:
+Fatal error: can't create /tmp/tmp.Sv8ZeW1csS/_ch147_api.o: No such file or directory

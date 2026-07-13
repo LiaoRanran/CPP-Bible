@@ -1,0 +1,9 @@
+Examples/_ch147_nodiscard.cpp: In function 'int main()':
+Examples/_ch147_nodiscard.cpp:3:22: warning: ignoring return value of 'int important()', declared with attribute 'nodiscard' [-Wunused-result]
+    3 | int main(){ important(); std::printf("ignored\n"); }
+      |             ~~~~~~~~~^~
+Examples/_ch147_nodiscard.cpp:2:19: note: declared here
+    2 | [[nodiscard]] int important() { return 7; }
+      |                   ^~~~~~~~~
+Assembler messages:
+Fatal error: can't create /tmp/tmp.Sv8ZeW1csS/_ch147_nodiscard.o: No such file or directory

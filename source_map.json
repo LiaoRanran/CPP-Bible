@@ -1,0 +1,1283 @@
+{
+  "version": "0.1.0",
+  "total_chapters_with_source": 103,
+  "mappings": {
+    "ch07_cpp20.md": {
+      "src_files": [
+        "libstdc++/include/bits/ranges/base.h",
+        "每个 TU 重复解析 `include` 的文本。"
+      ],
+      "line_refs": [
+        "120"
+      ]
+    },
+    "ch11_compilers.md": {
+      "src_files": [
+        "Examples/_ch11_f.cpp（第2",
+        "Examples/_ch11_f.cpp",
+        "Examples/_ch11_f.asm  (GCC 13.1.0, -O2 -masm=intel, 真实输出节选)",
+        "Examples/_ch11_vtable.cpp",
+        "Examples/_ch11_vtable.asm  (GCC 13.1.0, 真实输出节选)"
+      ],
+      "line_refs": []
+    },
+    "ch12_buildsystems.md": {
+      "src_files": [
+        "Examples/_ch12_hello.cpp（仅示意，非取证源）",
+        "Examples/_ch12_foo.cpp（示意）",
+        "Examples/_ch12_calc.cpp（示意）",
+        "Examples/_ch12_ninja_main.cpp（示意）",
+        "Examples/_ch12_lib.cpp（示意）"
+      ],
+      "line_refs": []
+    },
+    "ch13_packaging.md": {
+      "src_files": [
+        "Examples/_ch13_vcpkg_manifest.json，",
+        "Examples/_ch13_CMakeLists.txt，",
+        "Examples/_ch13_conanfile.py，",
+        "Examples/_ch13_packlib.hpp，",
+        "Examples/_ch13_use.cpp，"
+      ],
+      "line_refs": []
+    },
+    "ch14_debugging.md": {
+      "src_files": [
+        "Examples/_ch14_heap_overflow.cpp",
+        "Examples/_ch14_heap_overflow.cpp",
+        "Examples/_ch14_ubsan.cpp",
+        "Examples/_ch14_warn.cpp",
+        "Examples/_ch14_heap_overflow.cpp"
+      ],
+      "line_refs": []
+    },
+    "ch15_profiling.md": {
+      "src_files": [
+        "Linux 终端（非 Windows 命令）",
+        "Linux 终端",
+        "Linux 终端",
+        "Examples/_ch15_vector_reserve.cpp",
+        "Linux / 任意装了 benchmark 的环境"
+      ],
+      "line_refs": [
+        "11（no_reserve 段）/ 21（with_reserve 段）",
+        "14（scalar_sum）/ 21（four_acc_sum）",
+        "37（_Z10scalar_sumPKll）",
+        "63（_Z12four_acc_sumPKll）"
+      ]
+    },
+    "ch16_ide.md": {
+      "src_files": [
+        "Examples/_ch16_refactor_before.cpp",
+        "Examples/_ch16_refactor_after.cpp"
+      ],
+      "line_refs": []
+    },
+    "ch17_crosscompile.md": {
+      "src_files": [
+        "Examples/_ch17_hello.cpp（正文示意，不强制运",
+        "Examples/_ch17_callconv.cpp，",
+        "Examples/_ch17_arm_toolchain.cmake，",
+        "Examples/_ch17_baremetal.cpp，",
+        "Examples/_ch17_callconv.cpp，"
+      ],
+      "line_refs": [
+        "8（sum6 定义）",
+        "1（set CMAKE_SYSTEM_NAME）",
+        "16（_start）",
+        "13（manhattan）/ 16（make_point）",
+        "7（active，被引用）/ 11（dead，未引用）"
+      ]
+    },
+    "ch18_buildconfig.md": {
+      "src_files": [
+        "Examples/_ch18_opt.cpp",
+        "Examples/_ch18_lib.cpp",
+        "Examples/_ch18_main.cpp",
+        "Examples/_ch18_mylib.cpp",
+        "Examples/_ch18_stack.cpp"
+      ],
+      "line_refs": [
+        "10"
+      ]
+    },
+    "ch19_variables.md": {
+      "src_files": [
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cxxabi.h`（__cxa_guard_acquire 声明），",
+        "`libstdc++-v3/libsupc++/guard.cc`（GCC 13 源码树，Linux futex 快速路径），",
+        "`libgcc/emutls.c`（GCC 13 源码树，TLS 仿真），",
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/numbers`（真实结构），"
+      ],
+      "line_refs": [
+        "118**",
+        "~110（__cxa_guard_acquire 实现）**",
+        "~110（__emutls_get_address）**",
+        "74（pi_v）/ 59（e_v）**"
+      ]
+    },
+    "ch22_auto_decltype.md": {
+      "src_files": [
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`，"
+      ],
+      "line_refs": [
+        "903（declval）/ 62（integral_constant）"
+      ]
+    },
+    "ch26_lambda.md": {
+      "src_files": [
+        "`/c/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/std_function.h`，"
+      ],
+      "line_refs": [
+        "334（class function）/ 288（_M_invoke）"
+      ]
+    },
+    "ch27_cast.md": {
+      "src_files": [
+        "`type_traits`，",
+        "`bit`，",
+        "`bits/chrono.h`（被 `chrono` 包含），"
+      ],
+      "line_refs": [
+        "**1414–1517**。",
+        "**68–89**。",
+        "**270–289**（主函数）+ **178–227**（`__duration_cast_impl` 特化）。"
+      ]
+    },
+    "ch35_memory_layout.md": {
+      "src_files": [
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`，**",
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`，**"
+      ],
+      "line_refs": [
+        "210–214**：",
+        "148–171**（由 `#if __cpp_aligned_new` 守护）：",
+        "88–90**：",
+        "1345–1352**："
+      ]
+    },
+    "ch43_cache_locality.md": {
+      "src_files": [
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`，"
+      ],
+      "line_refs": [
+        "126（operator new）"
+      ]
+    },
+    "ch45_oop_object_model.md": {
+      "src_files": [
+        "type_traits  （GCC 13.1.0, libstdc++）",
+        "type_traits ，",
+        "type_traits ，",
+        "type_traits ，",
+        "bits/stl_construct.h ，"
+      ],
+      "line_refs": [
+        "840–844",
+        "846–850",
+        "862–866",
+        "92–98  (C++20 construct_at)",
+        "105–120  (_Construct，C++11+)"
+      ]
+    },
+    "ch47_virtual_functions.md": {
+      "src_files": [
+        "`Examples/case47_plugin.cpp`",
+        "`https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable`（规范）",
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cxxabi.h`（声明 `__cxa_pure_virtual`）"
+      ],
+      "line_refs": [
+        "§2.6.2 vtable 布局（规范文本，非行号）",
+        "约 `extern \"C\" void __cxa_pure_virtual();`"
+      ]
+    },
+    "ch48_rtti.md": {
+      "src_files": [
+        "`Examples/case48_dispatcher.cpp`",
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/typeinfo`",
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cxxabi.h`（声明 `__dynamic_cast`）"
+      ],
+      "line_refs": [
+        "约 `class type_info { ... const char* __name; ... };`",
+        "约 `extern \"C\" void* __dynamic_cast(const void* __src, ...);`"
+      ]
+    },
+    "ch49_virtual_inheritance.md": {
+      "src_files": [
+        "`https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable`（规范）",
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`（vtable 由编译器生成）"
+      ],
+      "line_refs": [
+        "§2.6.3 virtual table layout for virtual base classes",
+        "编译器后端 `gcc/cp/class.cc`（layout_virtual_bases）"
+      ]
+    },
+    "ch66_sfinae.md": {
+      "src_files": [
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`，"
+      ],
+      "line_refs": [
+        "106 主模板 / 111 `true` 偏特化 / 2610 `enable_if_t`）：",
+        "2632）：`template<typename...> using void_t = void;`。两个定义叠加，正是 ③ 中 `has_serialize` 探测成立的根。",
+        "106（`enable_if`）、2610（`enable_if_t`）、2632（`void_t`）；`ch62_specialization.md`（偏特化是 SFINAE 的载体）、`ch65_type_traits.md`（trait 是条件源）、`ch67_concepts.md`（C++20 替代）、`ch75_template_diag.md`（SFINAE 报错可读性）。"
+      ]
+    },
+    "ch67_concepts.md": {
+      "src_files": [
+        "`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/concepts`，"
+      ],
+      "line_refs": [
+        "62 `same_as`、100 `integral`）。",
+        "100 `integral` / 62 `same_as`）：",
+        "100（`integral`）、62（`same_as`）；`ch66_sfinae.md`（SFINAE 对照）、`ch62_specialization.md`（偏特化是约束载体）、`ch65_type_traits.md`（trait 是 concept 的底层）、`ch68_tmp.md`（编译期计算）、`ch75_template_diag.md`（约束失败报错对比）。"
+      ]
+    },
+    "ch68_tmp.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits",
+        "同上 type_traits，",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/utility.h",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits",
+        "同上 type_traits，"
+      ],
+      "line_refs": [
+        "62（struct integral_constant）",
+        "2235（struct conditional）/ 2240（偏特化 false 分支）",
+        "164（struct integer_sequence）/ 172（make_integer_sequence）",
+        "62（struct integral_constant）",
+        "2235（struct conditional）/ 2240（偏特化 false 分支）"
+      ]
+    },
+    "ch69_constexpr.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bit",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/array"
+      ],
+      "line_refs": [
+        "62（struct integral_constant）",
+        "426（template popcount）",
+        "289（__popcount）",
+        "200（operator[] non-const，C++17 起 constexpr）"
+      ]
+    },
+    "ch70_tag_dispatch.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_iterator_base_types.h",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits"
+      ],
+      "line_refs": [
+        "93（input_iterator_tag）",
+        "99（forward_iterator_tag）",
+        "103（bidirectional_iterator_tag）",
+        "107（random_access_iterator_tag）",
+        "198（iterator_traits<T*> 特化）"
+      ]
+    },
+    "ch71_policy.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/allocator.h",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/alloc_traits.h"
+      ],
+      "line_refs": [
+        "85（class basic_string 模板参数）",
+        "130（class allocator : public __allocator_base<_Tp>）",
+        "105（struct allocator_traits）"
+      ]
+    },
+    "ch72_expression_templates.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_vector.h",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/valarray"
+      ],
+      "line_refs": [
+        "746（operator= 拷贝赋值模板）",
+        "868/878（begin()）/ 888/898（end()）：非 ET 遍历基础，返回迭代器",
+        "439（operator+= 成员，返回 valarray&，就地立即修改）"
+      ]
+    },
+    "ch76_stl_arch.md": {
+      "src_files": [
+        "bits/stl_iterator_base_types.h",
+        "bits/stl_iterator_base_types.h",
+        "bits/stl_iterator_base_funcs.h",
+        "bits/stl_iterator.h"
+      ],
+      "line_refs": [
+        "93, 96, 99, 103, 107, 111",
+        "177, 198, 200, 201",
+        "81, 100, 157, 168, 184, 224",
+        "1477-1483, 2651"
+      ]
+    },
+    "ch77_vector.md": {
+      "src_files": [
+        "bits/stl_vector.h",
+        "bits/stl_vector.h",
+        "bits/vector.tcc",
+        "bits/allocator.h",
+        "bits/alloc_traits.h（allocator_traits）"
+      ],
+      "line_refs": [
+        "94, 95, 96, 423",
+        "1008, 1029, 1050, 1063, 1105, 1276, 1293, 1294, 1581",
+        "68, 123, 446, 451, 530, 635, 716, 721",
+        "130, 145"
+      ]
+    },
+    "ch78_deque.md": {
+      "src_files": [
+        "` + `",
+        "bits/stl_deque.h` `",
+        "`bits/stl_deque.h`，",
+        "`bits/stl_deque.h`，",
+        "bits/stl_deque.h"
+      ],
+      "line_refs": [
+        "`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。",
+        "142`（`_M_cur`）、`143`（`_M_first`）、`144`（`_M_last`）、`145`（`_M_node`）。deque 本身用 `_M_start`/`_M_finish` 两个迭代器界定有效区间。",
+        "`192`）：`++_M_cur; if (_M_cur == _M_last) { _M_set_node(_M_node+1); _M_cur = _M_first; }`——跨段时切换到下一 buffer 的 `first`。",
+        "2184）",
+        "232）"
+      ]
+    },
+    "ch79_list.md": {
+      "src_files": [
+        "` + `",
+        "bits/stl_list.h` `",
+        "bits/forward_list.h` `",
+        "`bits/stl_list.h`，",
+        "bits/stl_list.h"
+      ],
+      "line_refs": [
+        "`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。",
+        "81`（含 `_M_next`/`_M_prev` 与 `_M_hook`/`_M_unhook`，行号：`97`/`100`）；`_List_node` 继承它并加 `value`（行号：`234`）。`forward_list` 的 `_Fwd_list_node_base` 在 `文件：bits/forward_list.h` `行号：54`。",
+        "`97` `_M_hook`、行号：`1997`/`2006` 插入时调用），仅改几个指针，不搬移任何已有节点，因此**迭代器全部保持有效**。",
+        "100/_M_unhook): 把 [1].next=[3], [3].prev=[1]",
+        "`81` 的 `_M_next` 字段）；该间接寻址无法被 CPU 连续预取，故大链表遍历显著慢于 `vector`/`deque`。"
+      ]
+    },
+    "ch80_array.md": {
+      "src_files": [
+        "array`, `",
+        "array，",
+        "array，",
+        "array，"
+      ],
+      "line_refs": [
+        "109`），因此 `sizeof(array<T,N>) == N * sizeof(T)` 对齐到 `alignof(T)`，与裸 C 数组一致。",
+        "94 / 109）",
+        "200-208 / 217-227 / 240-281）",
+        "384-411 / 418 / 433 / 461 / 466）"
+      ]
+    },
+    "ch81_string.md": {
+      "src_files": [
+        "bits/basic_string.h （GCC 13.1.0, libstdc++）",
+        "bits/basic_string.h （GCC 13.1.0, libstdc++）",
+        "bits/basic_string.h （GCC 13.1.0, libstdc++）"
+      ],
+      "line_refs": [
+        "213",
+        "217",
+        "277",
+        "355",
+        "363-364（析构时清除内联缓冲）"
+      ]
+    },
+    "ch82_span.md": {
+      "src_files": [
+        "span`, `",
+        "span`, `",
+        "span，",
+        "span，",
+        "span，"
+      ],
+      "line_refs": [
+        "81-99`）；当 extent 为编译期常量时，该结构为空且 `_M_extent_value` 不参与对象大小。",
+        "341-344, 360-363, 373-387`）。",
+        "81-99）",
+        "153 / 161 / 189 / 212）",
+        "252-253 / 280-283 / 287-288 / 341-344 / 360-363 / 399）"
+      ]
+    },
+    "ch83_map.md": {
+      "src_files": [
+        "bits/stl_tree.h`, `",
+        "bits/stl_map.h`, `",
+        "bits/stl_tree.h，",
+        "bits/stl_map.h，",
+        "bits/stl_tree.h，"
+      ],
+      "line_refs": [
+        "101-109, 216`）。",
+        "502-507`）。",
+        "99-109）",
+        "502-507 / 721-723 / 966-968）",
+        "910 / 1948 / 1980）"
+      ]
+    },
+    "ch84_set.md": {
+      "src_files": [
+        "bits/stl_set.h",
+        "bits/stl_set.h",
+        "bits/stl_set.h",
+        "bits/stl_tree.h"
+      ],
+      "line_refs": [
+        "94, 156",
+        "509, 578, 584-594",
+        "611-627  merge",
+        "99, 101, 410, 417, 1048, 1052, 1378"
+      ]
+    },
+    "ch85_unordered.md": {
+      "src_files": [
+        "bits/unordered_set.h",
+        "bits/hashtable.h",
+        "bits/functional_hash.h",
+        "bits/hash_bytes.h"
+      ],
+      "line_refs": [
+        "102, 133, 490, 504, 601, 690, 731, 782, 829, 854, 865",
+        "181, 387-391, 721, 723, 994, 1152, 2159, 2523, 2546",
+        "201, 204, 206, 210",
+        "47, 54"
+      ]
+    },
+    "ch86_adapters.md": {
+      "src_files": [
+        "bits/stl_stack.h",
+        "bits/stl_queue.h",
+        "bits/stl_queue.h"
+      ],
+      "line_refs": [
+        "99  （以下为真实源码逐行引用，注释化以便独立编译）",
+        "约 146-150（class stack 的 protected 成员）",
+        "261",
+        "293",
+        "232"
+      ]
+    },
+    "ch88_optional_variant.md": {
+      "src_files": [
+        "Examples/_asm_optional.cpp",
+        "optional （GCC 13.1.0, libstdc++）",
+        "optional （GCC 13.1.0, libstdc++）",
+        "expected （GCC 13.1.0, libstdc++）"
+      ],
+      "line_refs": [
+        "126-127",
+        "144"
+      ]
+    },
+    "ch89_tuple_any.md": {
+      "src_files": [
+        "」与「",
+        "`tuple`，",
+        "`any`，",
+        "`bits/std_function.h`，",
+        "Examples/ch89_make_from_tuple_asm.cpp"
+      ],
+      "line_refs": [
+        "」。",
+        "`130`），该空成员不占空间——这是 tuple 能零成本容纳空类型的原因。",
+        "`83-92`、`360-361`）：",
+        "96)",
+        "`252-253`、`668`）："
+      ]
+    },
+    "ch90_ranges.md": {
+      "src_files": [
+        "」与「",
+        "Examples/ch90_view_asm.cpp",
+        "`ranges_util.h`，",
+        "`bits/ranges_base.h`，",
+        "bits/ranges_base.h"
+      ],
+      "line_refs": [
+        "」。",
+        "`256`）把任意迭代器+哨兵打包成一个 view，常用于函数返回「区间」。",
+        "`501`）**",
+        "501   concept range = requires(_Tp& __t) {",
+        "`578`）**"
+      ]
+    },
+    "ch91_filesystem.md": {
+      "src_files": [
+        "bits/fs_path.h",
+        "bits/fs_path.h",
+        "bits/fs_path.h",
+        "bits/fs_path.h",
+        "bits/fs_path.h"
+      ],
+      "line_refs": [
+        "476`（无参 `generic_string()` 转 `char`）。",
+        "377",
+        "383",
+        "603",
+        "289"
+      ]
+    },
+    "ch92_chrono.md": {
+      "src_files": [
+        "bits/chrono.h",
+        "bits/chrono.h",
+        "bits/chrono.h",
+        "bits/chrono.h",
+        "bits/chrono.h"
+      ],
+      "line_refs": [
+        "523` 的 `class duration`，内部 `Rep __r;`）。单位 `Period` 是空类 `ratio`，不占内存。",
+        "273` 的 `duration_cast` 处定义，内部走 `__duration_cast_impl`，当源/目标精度可整除时直接 `count()` 乘除，否则按 `ratio` 通分（见 `文件：bits/chrono.h 行号：285` 的 `__dc`）。",
+        "905`）。`⟶ Book/part06_templates/ch68_tmp.md`。",
+        "523",
+        "593 —— 从任意 duration 构造，走 duration_cast"
+      ]
+    },
+    "ch93_thread_async.md": {
+      "src_files": [
+        "` + `",
+        "`future`，",
+        "`bits/std_thread.h`，",
+        "_asm1.cpp 经 -O2 编译（GCC 13.1.0, Win64, Itanium-ish MS ABI）",
+        "bits/std_thread.h"
+      ],
+      "line_refs": [
+        "`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。",
+        "`605` 的 `_M_shared_state`），所以即使 `future` 被移动/析构，只要还有 `shared_future` 或运行时持有，共享状态不销毁。",
+        "`234` 的 `struct _State_impl`；拷贝发生在行号：`164` 的 `new _State_impl<_Wrapper>(...)`）。这就是为什么传引用**不会**被线程看到，必须用 `std::ref`。",
+        "`bits/std_thread.h:164`）、设置 vtable（指向 `_State_impl`，行号：`234`）、调用 `_M_start_thread`（行号：`248`/`263`）→ 内部 `std::__gthread_create`。**每次起线程都有堆分配 + 系统调用**，不可在热循环里滥用（性能见 ⑲）。",
+        "164"
+      ]
+    },
+    "ch94_stop_token.md": {
+      "src_files": [
+        "`+`",
+        "`stop_token`，",
+        "`stop_token`，",
+        "`stop_token`，",
+        "_asm2.cpp 经 -O2 编译（GCC 13.1.0, Win64）"
+      ],
+      "line_refs": [
+        "`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。",
+        "`54` class stop_token、`480` class stop_source）；`stop_token` 持有 `shared_ptr<_Stop_state>`，`stop_requested` 经 `行号：79`→`175` 的 `_M_stop_requested()` 读原子位。",
+        "`134`），回调链表头 `_M_head`（行号：`237` 的 `while (_M_head)` 遍历）；位定义 `行号：155` `_S_stop_requested_bit = 1`。",
+        "`224` `_M_request_stop`，`257` `__cb->_M_run()`）。",
+        "`79`→`175`）编译为**一次指针解引用 + 一次原子位测试**（`test al,1`），无锁、无系统调用。`request_stop`（行号：`224`）则用原子的 CAS/锁置位（见 ⑬）。"
+      ]
+    },
+    "ch100_ranges_algo.md": {
+      "src_files": [
+        "Examples/_ch100_sort.cpp",
+        "Examples/_ch100_sort.asm，",
+        "Examples/_ch100_bench.cpp",
+        "Examples/_ch100_sort.asm，",
+        "Examples/_ch100_custom_view.cpp"
+      ],
+      "line_refs": [
+        "13（sort_by_abs 定义）/ 436（汇编入口 _Z11sort_by_abs）/ 477（call __introsort_loop）",
+        "436（_Z11sort_by_absRSt6vectorIiSaIiEE）",
+        "20（eager 临时容器 pos）/ 37（lazy 块：v | filter | transform 累加）",
+        "659（_Z8pipe_sumRKSt6vectorIiSaIiEE）",
+        "9（scale 定义）/ 16（main：v | scale(10)）"
+      ]
+    },
+    "ch101_algo_theory.md": {
+      "src_files": [
+        "Examples/_ch101_open_addressing.cpp",
+        "Examples/_ch101_bench.cpp"
+      ],
+      "line_refs": [
+        "27   （oah_find 函数定义起始；线性探测查找）",
+        "31   （oah_insert / oah_find 与 ⑧ 同源；下方为 main 计时段）"
+      ]
+    },
+    "ch95_algo_overview.md": {
+      "src_files": [
+        "Examples/_ch95_for_each.cpp",
+        "Examples/_ch95_for_each.cpp",
+        "Examples/_ch95_parallel.cpp"
+      ],
+      "line_refs": [
+        "32",
+        "13"
+      ]
+    },
+    "ch96_sorting.md": {
+      "src_files": [
+        "Examples/_ch96_sort_asm.cpp",
+        "Examples/_ch96_lambda_inline.cpp"
+      ],
+      "line_refs": [
+        "6（std::sort 调用点）",
+        "8（std::sort + lambda 比较器调用点）"
+      ]
+    },
+    "ch97_search.md": {
+      "src_files": [
+        "Examples/_ch97_lower_bound.cpp",
+        "Examples/_ch97_bench.cpp"
+      ],
+      "line_refs": [
+        "10",
+        "10",
+        "24",
+        "24 std::find 线性查找",
+        "33 std::lower_bound 二分"
+      ]
+    },
+    "ch98_heap.md": {
+      "src_files": [
+        "Examples/_ch98_heap.cpp",
+        "Examples/_ch98_pq.cpp",
+        "Examples/_ch98_heap.cpp"
+      ],
+      "line_refs": [
+        "12"
+      ]
+    },
+    "ch99_numeric.md": {
+      "src_files": [
+        "Examples/_ch99_accumulate.cpp",
+        "Examples/_ch99_accumulate.asm  （g++ -std=c++23 -O2 -S -masm=intel，默认 x86-64 基线目标）",
+        "Examples/_ch99_inner_product.cpp",
+        "Examples/_ch99_scan.cpp",
+        "Examples/_ch99_transform_reduce.cpp"
+      ],
+      "line_refs": [
+        "10 (reduce_int) / 13 (accum_int) / 18 (reduce_dbl) / 21 (accum_dbl)",
+        "9 (dot) / 14 (axpy_reduce)",
+        "9 (demo_partial) / 15 (demo_scan) / 21 (demo_exclusive)",
+        "10 (tr_square) / 17 (tr_mul) / 25 (tr_int)",
+        "11 (cond_number) / 21 (compensated_pairwise)"
+      ]
+    },
+    "ch107_atomic.md": {
+      "src_files": [
+        "Examples/_ch107_atomic_flag.cpp",
+        "Examples/_ch107_atomic_flag.cpp",
+        "Examples/_ch107_fetch_add.cpp",
+        "Examples/_ch107_mangled.cpp",
+        "Examples/_ch107_fetch_add.cpp"
+      ],
+      "line_refs": [
+        "16（xchg 自旋）/ 28（clear）",
+        "26（lock xadd，来自 _ch107_mangled.cpp 的 -O0 产物）",
+        "11（lock add，O2 对 +1 的特化）",
+        "17（lock cmpxchg 自旋）",
+        "11（volatile 三指令，无 lock）/ 23（atomic 单条 lock add）"
+      ]
+    },
+    "ch108_memory_order.md": {
+      "src_files": [
+        "Examples/_ch108_seqcst.cpp",
+        "Examples/_ch108_seqcst.cpp",
+        "Examples/_ch108_fence.cpp",
+        "Examples/_ch108_acqrel.cpp",
+        "Examples/_ch108_relaxed.cpp"
+      ],
+      "line_refs": [
+        "11",
+        "11",
+        "9（release fence）/ 15（acquire fence）",
+        "7（publish 的 release store）/ 11（consume 的 acquire load）",
+        "7（relaxed fetch_add）/ 11（relaxed load）"
+      ]
+    },
+    "ch110_lockfree.md": {
+      "src_files": [
+        "Examples/_ch110_counter.cpp",
+        "Examples/_ch110_counter.cpp",
+        "Examples/_ch110_cas.cpp",
+        "Examples/_ch110_cas.cpp",
+        "Examples/_ch110_dwcas.cpp"
+      ],
+      "line_refs": [
+        "7（g_counter.fetch_add 所在行；g++.exe -std=c++23 -O2 -S -masm=intel）",
+        "11（_Z11inc_relaxedv 生成的关键指令）",
+        "12（head.compare_exchange_weak 所在行；g++.exe -std=c++23 -O2 -S -masm=intel）",
+        "24（push 生成的 CAS 循环；g++.exe -std=c++23 -O2 -S -masm=intel）",
+        "11（g_pair.compare_exchange_weak 所在行；g++.exe -std=c++23 -O2 -mcx16 -S -masm=intel）"
+      ]
+    },
+    "ch111_aba.md": {
+      "src_files": [
+        "Examples/_ch111_aba.cpp，",
+        "Examples/_ch111_tagged.cpp，",
+        "Examples/_ch111_aba.cpp，"
+      ],
+      "line_refs": [
+        "12（单字 CAS）",
+        "24（双字/标签 CAS）",
+        "8（符号视图，用 -O0 暴露 C++ 名字）"
+      ]
+    },
+    "ch112_hazard_rcu.md": {
+      "src_files": [
+        "Examples/_ch112_hp.cpp",
+        "Examples/_ch112_hp.cpp",
+        "Examples/_ch112_hp.cpp",
+        "Examples/_ch112_rcu.cpp"
+      ],
+      "line_refs": [
+        "14（hp_protect）",
+        "24（hp_clear）",
+        "29（hp_scan_and_reclaim）",
+        "11（rcu_update 中的 g_config.store）"
+      ]
+    },
+    "ch113_coroutine.md": {
+      "src_files": [
+        "Examples/_ch113_co.cpp",
+        "Examples/_ch113_co.cpp，",
+        "Examples/_ch113_co.cpp，",
+        "Examples/_ch113_co.cpp，"
+      ],
+      "line_refs": [
+        "59",
+        "59（_Z5rangei = range(int)）",
+        "59",
+        "64（_Z8count_upv = count_up()）"
+      ]
+    },
+    "ch115_move.md": {
+      "src_files": [
+        "bits/move.h`, `",
+        "bits/move.h，",
+        "bits/move.h，",
+        "bits/stl_vector.h，"
+      ],
+      "line_refs": [
+        "125`）返回 `const T&`（拷贝）或 `T&&`（移动），正是 vector 扩容决策的依据。",
+        "104）",
+        "125）",
+        "615 / 761）"
+      ]
+    },
+    "ch116_perfect_forwarding.md": {
+      "src_files": [
+        "_asm_probe.asm（g++ -std=c++23 -O2 -S -masm=intel）",
+        "bits/move.h",
+        "bits/move.h",
+        "bits/move.h"
+      ],
+      "line_refs": [
+        "74-78",
+        "86-94",
+        "101-105"
+      ]
+    },
+    "ch117_copy_elision.md": {
+      "src_files": [
+        "Examples/_ch117_rvo.cpp",
+        "Examples/_ch117_nrvo.cpp"
+      ],
+      "line_refs": [
+        "10",
+        "10",
+        "11",
+        "12  RVO 发生点",
+        "16  调用处直接得到构造结果"
+      ]
+    },
+    "ch118_modules.md": {
+      "src_files": [
+        "math.ixx（或 .cppm）",
+        "Examples/_mod_use.cpp，",
+        "Examples/_mod_main.cpp / _mod_use.cpp，"
+      ],
+      "line_refs": [
+        "8（_Z7use_modv）/ 12（jmp _ZW4math6squarei）",
+        "8（_Z7use_modv）/ 12（jmp _ZW4math6squarei）"
+      ]
+    },
+    "ch119_ranges_deep.md": {
+      "src_files": [
+        "Examples/_asm_ranges.cpp，",
+        "bits/ranges_base.h / bits/ranges_util.h （GCC 13.1.0, libstdc++），",
+        "bits/ranges_util.h （GCC 13.1.0, libstdc++），"
+      ],
+      "line_refs": [
+        "8（_Z10use_rangesv）/ 39（test cl,1 过滤）/ 47（imul 平方）",
+        "filter_view 存 _M_base/_M_pred（概念，参见 ⑬）",
+        "_RangeAdaptorClosure 重载 operator|（range|adaptor == adaptor(range)）"
+      ]
+    },
+    "ch122_pmr.md": {
+      "src_files": [
+        "`+`",
+        "memory_resource`，`",
+        "memory_resource`，`",
+        "use_new (节选)  -O2",
+        "use_monotonic (节选)  -O2"
+      ],
+      "line_refs": [
+        "`。",
+        "398`）；初始缓冲 `_S_init_bufsize = 128 * sizeof(void*)`（`文件：memory_resource`，`行号：397`）。",
+        "56-92`。公开接口 `allocate/deallocate/is_equal` 做薄转发，真正工作下放到 `do_*` 纯虚函数：",
+        "56-92（节选，已加注释）",
+        "67-71"
+      ]
+    },
+    "ch123_ct_programming.md": {
+      "src_files": [
+        "` + `",
+        "` + `",
+        "type_traits",
+        "type_traits",
+        "type_traits"
+      ],
+      "line_refs": [
+        "`。",
+        "` 取自 GCC 13.1.0 真实 `type_traits` 与 `concepts`。",
+        "62",
+        "82 / 85",
+        "106 / 111 / 2610"
+      ]
+    },
+    "ch124_libstdcxx.md": {
+      "src_files": [
+        "/行号：」均取自本机该目录真实文件（用 Read/Grep 取真实",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/vector",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/allocator.h"
+      ],
+      "line_refs": [
+        "」均取自本机该目录真实文件（用 Read/Grep 取真实行号，未编造）。",
+        "66",
+        "213",
+        "217",
+        "130"
+      ]
+    },
+    "ch125_libcxx.md": {
+      "src_files": [
+        "https://github.com/llvm/llvm-project/blob/main/libcxx/include/string",
+        "https://github.com/llvm/llvm-project/blob/main/libcxx/src/stdexcept.cpp",
+        "https://github.com/llvm/llvm-project/blob/main/libcxxabi/src/cxa_demangle.cpp",
+        "https://github.com/llvm/llvm-project/blob/main/libcxx/include/string",
+        "https://github.com/llvm/llvm-project/blob/main/libcxx/src/stdexcept.cpp"
+      ],
+      "line_refs": [
+        "38",
+        "1216   （union __rep { __long __l; __short __s; __raw __r; }; 实际行号随提交变动）",
+        "38",
+        "156",
+        "1231   （struct __short { value_type __data_[__min_cap]; ... }）"
+      ]
+    },
+    "ch126_msstl.md": {
+      "src_files": [
+        "https://github.com/microsoft/STL/blob/main/stl/inc/vector",
+        "https://github.com/microsoft/STL/blob/main/stl/inc/xstring",
+        "https://github.com/microsoft/STL/blob/main/stl/inc/yvals.h",
+        "https://github.com/microsoft/STL/blob/main/stl/inc/ranges"
+      ],
+      "line_refs": [
+        "36",
+        "1860",
+        "540",
+        "40"
+      ]
+    },
+    "ch127_llvm.md": {
+      "src_files": [
+        "llvm/lib/Passes/PassBuilder.cpp（上游参考）",
+        "llvm/include/llvm/IR/PassManager.h（上游参考）",
+        "https://github.com/llvm/llvm-project/blob/main/clang/lib/CodeGen/CodeGenFunction.h",
+        "https://github.com/llvm/llvm-project/blob/main/clang/lib/CodeGen/CGStmt.cpp",
+        "https://github.com/llvm/llvm-project/blob/main/clang/include/clang/AST/Expr.h"
+      ],
+      "line_refs": [
+        "约 900（PassBuilder::buildPerModuleDefaultPipeline）",
+        "约 200（PassConcept / AnalysisManager 定义）",
+        "约 450（class CodeGenFunction：持有 Builder、CurFn、CGM 等）",
+        "约 700（CodeGenFunction::EmitForStmt：为 for/range 发射前/条件/增量基本块）",
+        "约 1200（class BinaryOperator : public Expr）"
+      ]
+    },
+    "ch128_boost.md": {
+      "src_files": [
+        "https://github.com/boostorg/smart_ptr/blob/develop/include/boost/smart_ptr/shared_ptr.hpp",
+        "https://github.com/boostorg/smart_ptr/blob/develop/include/boost/smart_ptr/detail/shared_count.hpp",
+        "https://github.com/boostorg/filesystem/blob/develop/include/boost/filesystem/path.hpp",
+        "https://github.com/boostorg/asio/blob/develop/include/boost/asio/basic_socket.hpp",
+        "Examples/_ch128_crtp.cpp（已用本机 g++ 13.1.0 真实编译取汇编）"
+      ],
+      "line_refs": [
+        "412",
+        "168",
+        "1024",
+        "256",
+        "88"
+      ]
+    },
+    "ch129_qt.md": {
+      "src_files": [
+        "Examples/_ch129_moc_button.cpp",
+        "https://github.com/qt/qtbase/blob/6.8/src/corelib/kernel/qobject.cpp",
+        "https://github.com/qt/qtbase/blob/6.8/src/corelib/kernel/qmetaobject.cpp` `//",
+        "main.qml（非 cpp，此处列以对照）",
+        "Examples/_ch129_signal_slot.cpp"
+      ],
+      "line_refs": [
+        "140",
+        "3895",
+        "312`。",
+        "540`。",
+        "3895`。"
+      ]
+    },
+    "ch130_chromium_abseil.md": {
+      "src_files": [
+        "`/`//",
+        "https://github.com/abseil/abseil-cpp/blob/master/absl/container/flat_hash_map.h",
+        "https://github.com/abseil/abseil-cpp/blob/master/absl/container/internal/raw_hash_map.h",
+        "Examples/_ch130_allocator.cpp，",
+        "Examples/_ch130_flat_hash_map.cpp，"
+      ],
+      "line_refs": [
+        "` 标注，注明「上游参考」），不保证行号与 HEAD 完全一致。",
+        "86",
+        "65",
+        "见下方真实编译",
+        "见下方真实编译"
+      ]
+    },
+    "ch131_fmt_spdlog.md": {
+      "src_files": [
+        "https://github.com/fmtlib/fmt/blob/10.2.1/include/fmt/format.h",
+        "https://github.com/fmtlib/fmt/blob/10.2.1/include/fmt/core.h",
+        "Examples/_ch131_format_check.cpp（自包含，无需 fmt）",
+        "https://github.com/gabime/spdlog/blob/v1.13.0/include/spdlog/logger.h",
+        "https://github.com/gabime/spdlog/blob/v1.13.0/include/spdlog/details/registry.h"
+      ],
+      "line_refs": [
+        "4050",
+        "748",
+        "95",
+        "60"
+      ]
+    },
+    "ch132_leveldb_rocksdb.md": {
+      "src_files": [
+        "https://github.com/google/leveldb/blob/main/db/db_impl.cc",
+        "Examples/_ch132_lsm_toy.cpp",
+        "Examples/_ch132_lsm_toy.cpp"
+      ],
+      "line_refs": [
+        "62  （struct Node 定义处，leveldb 1.23）",
+        "1017  （Status DBImpl::Write(const WriteOptions&, WriteBatch*) 定义处，leveldb 1.23）",
+        "约 1100（BackgroundCompaction 入口，上游参考）",
+        "约 720（BlockBasedTableOptions::block_cache 字段，上游参考）",
+        "约 60（CompactionFilter::Filter 虚函数，上游参考）"
+      ]
+    },
+    "ch133_clickhouse_redis.md": {
+      "src_files": [
+        "https://github.com/ClickHouse/ClickHouse/blob/master/src/Columns/IColumn.h",
+        "https://github.com/ClickHouse/ClickHouse/blob/master/src/Columns/ColumnVector.cpp",
+        "https://github.com/ClickHouse/ClickHouse/blob/master/src/Common/Arena.h",
+        "https://github.com/ClickHouse/ClickHouse/blob/master/src/Interpreters/ExpressionActions.cpp",
+        "Examples/_ch133_vectorize.cpp，"
+      ],
+      "line_refs": [
+        "42",
+        "88",
+        "57",
+        "210",
+        "9（column_add 循环体）"
+      ]
+    },
+    "ch134_unreal.md": {
+      "src_files": [
+        "https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectBase.h",
+        "https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Private/UObject/UObjectGlobals.cpp",
+        "Examples/_ch134_objsys.cpp，",
+        "https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h",
+        "https://github.com/EpicGames/UnrealEngine/blob/5.4/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp"
+      ],
+      "line_refs": [
+        "73",
+        "2451",
+        "46（GetClass）/ 52（NewObject）",
+        "312",
+        "1187"
+      ]
+    },
+    "ch135_patterns_intro.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h"
+      ],
+      "line_refs": [
+        "304"
+      ]
+    },
+    "ch136_creational.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h"
+      ],
+      "line_refs": [
+        "277"
+      ]
+    },
+    "ch137_structural.md": {
+      "src_files": [
+        "Examples/_ch137_adapter.cpp",
+        "Examples/_ch137_adapter_class.cpp",
+        "Examples/_ch137_adapter_rangefor.cpp",
+        "Examples/_ch137_bridge.cpp",
+        "Examples/_ch137_bridge_ct.cpp"
+      ],
+      "line_refs": [
+        "14",
+        "460）"
+      ]
+    },
+    "ch138_behavioral.md": {
+      "src_files": [
+        "Examples/_ch138_dispatch.cpp",
+        "Examples/_ch138_dispatch.cpp",
+        "Examples/_ch138_dispatch.cpp"
+      ],
+      "line_refs": [
+        "18",
+        "21",
+        "25"
+      ]
+    },
+    "ch139_crtp_pattern.md": {
+      "src_files": [
+        "`Examples/_ch139_virtual_vs_crtp.cpp`，编译：",
+        "`Eigen/src/Core/DenseBase.h`",
+        "`include/boost/operators.hpp`",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/shared_ptr.h",
+        "`Examples/_ch139_bench.cpp`，编译运"
+      ],
+      "line_refs": [
+        "919"
+      ]
+    },
+    "ch140_policy_pattern.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h"
+      ],
+      "line_refs": [
+        "288",
+        "84-85（bits/stl_vector.h）"
+      ]
+    },
+    "ch141_di.md": {
+      "src_files": [
+        "bits/unique_ptr.h（libstdc++ 13.1.0）"
+      ],
+      "line_refs": [
+        "505"
+      ]
+    },
+    "ch142_ecs.md": {
+      "src_files": [
+        "Examples/_ch142_aos.cpp",
+        "Examples/_ch142_aos.asm  (GCC 13.1.0, -O2 -masm=intel, 真实输出节选)",
+        "Examples/_ch142_soa.cpp",
+        "Examples/_ch142_soa.asm  (GCC 13.1.0, -O2 -masm=intel, 真实输出节选)",
+        "Examples/_ch142_lockfree.asm  (GCC 13.1.0, -O2 -masm=intel, 真实输出节选)"
+      ],
+      "line_refs": []
+    },
+    "ch143_dod.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_vector.h"
+      ],
+      "line_refs": [
+        "1274-1288（GCC 13.1.0 libstdc++）"
+      ]
+    },
+    "ch144_style.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/vector.tcc"
+      ],
+      "line_refs": [
+        "75-91"
+      ]
+    },
+    "ch145_naming_api.md": {
+      "src_files": [
+        "调用方只看到指针，实现彻底隐藏",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/move.h",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/vector.tcc",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/optional"
+      ],
+      "line_refs": [
+        "109-125",
+        "478-515",
+        "705, 89"
+      ]
+    },
+    "ch146_error_handling.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/system_error"
+      ],
+      "line_refs": [
+        "106",
+        "118",
+        "134",
+        "147"
+      ]
+    },
+    "ch147_code_review.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/move.h",
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h"
+      ],
+      "line_refs": [
+        "104",
+        "85"
+      ]
+    },
+    "ch148_gitflow.md": {
+      "src_files": [
+        "https://github.com/git/git/blob/master/object.c"
+      ],
+      "line_refs": [
+        "约 240（type_from_string / 对象头写入附近）"
+      ]
+    },
+    "ch149_ci_cd.md": {
+      "src_files": [
+        "https://github.com/llvm/llvm-project/blob/main/clang-tools-extra/clang-tidy/ClangTidy.cpp"
+      ],
+      "line_refs": [
+        "L540"
+      ]
+    },
+    "ch150_testing.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cassert"
+      ],
+      "line_refs": [
+        "44"
+      ]
+    },
+    "ch151_benchmark.md": {
+      "src_files": [
+        "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/chrono.h"
+      ],
+      "line_refs": [
+        "1276-1287"
+      ]
+    },
+    "ch152_perf_model.md": {
+      "src_files": [
+        "chrono",
+        "chrono（steady_clock 定义区，MinGW 下经 _GLIBCXX_USE_CXX11_ABI 映射到"
+      ],
+      "line_refs": [
+        "130 / 131"
+      ]
+    },
+    "ch153_cpu_micro.md": {
+      "src_files": [
+        "Examples/ch153_cmov_asm.cpp"
+      ],
+      "line_refs": []
+    },
+    "ch155_simd.md": {
+      "src_files": [
+        "Examples/_ch155_simd.cpp",
+        "Examples/_ch155_align.cpp",
+        "Examples/_ch155_dep.cpp"
+      ],
+      "line_refs": []
+    },
+    "ch156_compiler_opt.md": {
+      "src_files": [
+        "Examples/_ch156_lib.cpp",
+        "Examples/_ch156_main.cpp",
+        "Examples/_ch156_main.cpp",
+        "Examples/_ch156_pgo.cpp",
+        "Examples/_ch156_pgo.cpp"
+      ],
+      "line_refs": []
+    },
+    "ch159_threadpool.md": {
+      "src_files": [
+        "Examples/_ch159_atomic.asm  (GCC 13.1.0, -O2 -masm=intel, 真实输出节选)",
+        "Examples/_ch159_threadpool.cpp"
+      ],
+      "line_refs": []
+    },
+    "ch160_mempool.md": {
+      "src_files": [
+        "Examples/_ch160_interface.cpp  （本机 g++ -O2 实测通过）",
+        "Examples/_ch160_fixedpool.cpp  （本机 g++ -O2 实测通过）",
+        "Examples/_ch160_union.cpp  （本机 g++ -O2 实测通过）",
+        "Examples/_ch160_align.cpp  （本机 g++ -O2 实测通过）",
+        "Examples/_ch160_sizeclass.cpp  （本机 g++ -O2 实测通过）"
+      ],
+      "line_refs": [
+        "126",
+        "140"
+      ]
+    },
+    "ch161_logger.md": {
+      "src_files": [
+        "Examples/_ch161_levels.cpp",
+        "Examples/_ch161_fix1.cpp",
+        "Examples/_ch161_fix2.cpp",
+        "Examples/_ch161_fix3.cpp",
+        "Examples/_ch161_fix4.cpp"
+      ],
+      "line_refs": [
+        "24-31（main 中门控循环）",
+        "47-59（main 函数）",
+        "50-83（Logger::log 与宏）"
+      ]
+    },
+    "ch162_json.md": {
+      "src_files": [
+        "Examples/_ch162_variant.cpp",
+        "Examples/_ch162_json.cpp",
+        "Examples/_ch162_tokenizer.cpp",
+        "Examples/_ch162_json.cpp",
+        "Examples/_ch162_escape.cpp"
+      ],
+      "line_refs": [
+        "7-20（JsonValue 的 variant 定义与 is_object 辅助）",
+        "61-73（Parser::parse 入口与 parse_value 分派）",
+        "6-22（Token 枚举与 tokenize 主体）",
+        "236-271（parse_array 与 parse_object）",
+        "6-18（unescape / escape 主体）"
+      ]
+    },
+    "ch163_net.md": {
+      "src_files": [
+        "Examples/_ch163_echo_server.cpp",
+        "Examples/_ch163_echo_client.cpp",
+        "Examples/_ch163_echo_inproc.cpp"
+      ],
+      "line_refs": [
+        "20-35（bind/listen/accept → recv/send 回显主循环）",
+        "23-28（accept/recv/send 回显核心），47-54（client 连接/发送/接收）"
+      ]
+    },
+    "ch164_framework.md": {
+      "src_files": [
+        "Examples/_ch164_framework.cpp"
+      ],
+      "line_refs": [
+        "47-58（Registry 自注册 AutoReg + MINIFW_REGISTER 宏）"
+      ]
+    },
+    "ch165_roadmap.md": {
+      "src_files": [
+        "第159章 数据结构（vector / 红黑树手写实现）"
+      ],
+      "line_refs": [
+        "vector::reserve / push_back 扩容段"
+      ]
+    }
+  }
+}

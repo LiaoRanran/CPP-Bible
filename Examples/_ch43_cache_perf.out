@@ -1,0 +1,6 @@
+TSC = 2.395 GHz   (MinGW GCC 13.1.0 -O2, x86_64)
+work_set          nodes       cyc/step        ns/step
+16KB(L1)           2048           4.00          1.668
+256KB(L2)         32768          13.12          5.476
+8MB(L3)         1048576          54.19         22.622
+64MB(DRAM)      8388608         205.87         85.940

@@ -1,0 +1,9 @@
+Examples/_ch147_format.cpp: In function 'int main()':
+Examples/_ch147_format.cpp:2:38: warning: format '%s' expects argument of type 'char*', but argument 2 has type 'int' [-Wformat=]
+    2 | int main(){ int n = 5; std::printf("%s\n", n); }  // %s 期望 char*，却给 int
+      |                                     ~^     ~
+      |                                      |     |
+      |                                      char* int
+      |                                     %d
+Assembler messages:
+Fatal error: can't create /tmp/tmp.Sv8ZeW1csS/_ch147_format.o: No such file or directory

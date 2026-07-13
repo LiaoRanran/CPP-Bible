@@ -1,0 +1,9 @@
+
+=== 实测（GCC 13.1 -O2, TSC 2.395GHz, N=1000000) ===
+copy_vec_1M_ns  : 724068  (深拷贝 1M int)
+move_vec_1M_ns  : 40.0835  (指针交换, 含调用开销)
+virtual_call_ns : 2.55845
+typeid_ns       : 1.79732
+dynamic_cast_ns : 6.19831
+sort_1M_ms      : 85.0491
+[sink] 259500098

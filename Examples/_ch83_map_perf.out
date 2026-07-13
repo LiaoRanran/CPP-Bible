@@ -1,0 +1,19 @@
+[node] std::map<int,int> node = 40 bytes (libstdc++ _Rb_tree_node<pair<const int,int>>, pmr 实测)
+[build] 3 containers x 1M done
+[find] measured
+[insert] measured (base=20000, add=10000)
+
+=== 实测（GCC 13.1 -O2, TSC 2.395GHz, N=1000000) ===
+node_size_B      : 40
+map_find_ns      : 669.961
+flat_find_ns     : 213.154
+umap_find_ns     : 51.6314
+map_insert_ns    : 93.98  (base=20000)
+flat_insert_ns   : 12872.2  (base=20000, O(N)移位)
+umap_insert_ns   : 69.22  (base=20000)
+map_trav_ns_elem : 110.791
+flat_trav_ns_elem: 0.4416
+map_mem_MB       : 38.147
+flat_mem_MB      : 7.62939
+umap_mem_MB      : 30.5176
+[sink] -539868382

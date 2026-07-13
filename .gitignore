@@ -1,0 +1,50 @@
+# 发布管线构建产物（可由 tools/ 重生成，不入库）
+build/
+site_out/
+现代C++终极圣经.pdf
+*.pdf
+
+# 清理战役备份（一次性，可删）
+*.bak
+*.preclean.bak
+
+# 编译校验临时产物
+*.exe
+*.o
+*.obj
+/*.cpp          # 仅根目录：compile_all/chapter_compile_check 漏回根目录的 .cpp（不伤 Examples/ 真实源）
+_probe*.cpp
+_tu_*.cpp
+_repro.py
+
+# 根目录调试/编译副产物（应只写 build/，见 tools/clean_root_artifacts.py）
+# 这些目录/文件是 ch148/149/150/151/161 调试与 benchmark 的泄漏产物，违反
+# AGENT.md「源只读、只写 build/」红线。已移至 build/_root_artifacts/（可逆）。
+_run/
+_run_ch161/
+_tcf/
+gcm.cache/
+ch148/
+ch148_forensics/
+ch149_out/
+*.log
+ac_verify.py
+ac_verify.log
+_g.py
+_one.py
+_two.py
+book.toml       # mdBook 配置；本项目交付物为 MkDocs（CI 用 mkdocs build --strict），book.toml 为废弃实验遗留
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# 本地 Agent / 工具状态（非内容，不入版本库）
+.workbuddy/
