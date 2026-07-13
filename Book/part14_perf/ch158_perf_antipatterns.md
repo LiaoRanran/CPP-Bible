@@ -400,7 +400,7 @@ int main(){int v=42;int&r=v;r=100;std::cout<<v<<std::endl;return 0;}
 | 反模式 | 典型代价 | 修复 |
 |---|---|---|
 | 隐式拷贝 | O(n) heap alloc | const& / move |
-| endl | syscall/line | '\n' |
+| endl | syscall/line | `'\n'` |
 | 虚函数热路径 | ~5ns indirect | CRTP/final/template |
 | 异常热路径 | ~100ns unwind | error_code/optional |
 | false sharing | 60ns bounce | alignas(64) |

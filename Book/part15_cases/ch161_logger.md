@@ -772,6 +772,7 @@ constexpr Lv g_thr = Lv::info;
 `do { ... } while(0)` 包裹是为了让宏在 `if` 后加分号时语义正确——这是 C/C++ 宏的标准惯用法。**[经验]** 永远用 `do/while(0)` 包宏体，避免 `if (x) LOG_INFO(...); else ...` 这类经典坑。
 
 // ⑩ 作用域计时宏：进入/离开函数自动记日志（RAII + 计时）
+```cpp
 #define LOG_SCOPE()                                                     \
     const auto _t0 = std::chrono::steady_clock::now();                  \
     struct _ScopeGuard {                                                \
@@ -782,6 +783,7 @@ constexpr Lv g_thr = Lv::info;
             std::printf("[info] scope exit in %.2f ms\n", ms);          \
         }                                                               \
     } _sg{_t0};
+```
 
 // ⑩ 宏设计（二）：完整 LOG_TRACE/DEBUG/INFO 家族，自动注入文件行号与级别门控（真实可编译，Examples/_ch161_fix9.cpp）
 ```cpp

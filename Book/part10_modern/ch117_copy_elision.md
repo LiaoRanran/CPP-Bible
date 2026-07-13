@@ -640,6 +640,7 @@ struct Z { static int k; Z(){} Z(const Z&){++k;} };
 int Z::k=0;
 Z zmake(){ Z z; return z; }
 int zmain(){ Z z=zmake(); std::printf("copies=%d\n", Z::k); return z.k; }
+```
 
 
 ## 附录 A：WG21 提案与标准演化 [B: Principle]

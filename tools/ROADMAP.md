@@ -2,13 +2,78 @@
 
 > 本文档为后续模型提供6个月项目演进方向。**密度已满,未来是质量与闭环**。
 
-## 当前状态（2026-07-10）
+## 当前状态（2026-07-13 更新）
 
 ```
 ✅ 147章完整 / 144K行 / 7132 cpp块 / 1648表 / 858交引
 ✅ 门禁100/100 / v3审计均分30.0(天花板) / shallow=0
+✅ CI 4-job 骨架（quality/compile/site/pdf）已上线，quality+site+compile 稳定绿
+✅ preflight_check.py 预检门禁落地（错误左移，push 前秒级抓 LaTeX 致命反斜杠）
+✅ mermaid.parse 本地 oracle（88 块 0 失败，与 CI 同版本 11.16.0）
+🔧 pdf job 攻坚中：连败 5 次已逐一根除（见下节复盘），本轮修复待验证绿
 ⚠️  代码未逐一编译验证 / 0练习题 / 无学习路径
 ```
+
+---
+
+## CJ-13 CI 血战复盘（2026-07-11 ~ 07-13）
+
+> 全书 PDF（pandoc + xelatex + mermaid-filter）在 GitHub Actions 从 0 到接近绿，连败 5 次。
+> 每次错误**只在 CI 暴露**，来回等待 10+ 分钟，暴露"缺少错误左移"是最大工程债。
+
+| 轮次 | 失败根因 | 定位手段 | 修复 | 沉淀的工具/门禁 |
+|---|---|---|---|---|
+| #1 | Chromium sandbox FATAL（root runner 无 sandbox） | pdf job exit 83 | `MERMAID_FILTER_PUPPETEER_CONFIG` 指 `.puppeteer.json`（含 `--no-sandbox`） | CI 配置固化 |
+| #2 | 6 处 Mermaid 语法错误 | xelatex/filter 报错 | 逐块修正 | **mermaid.parse 本地 oracle**（88 块 0 失败） |
+| #3 | 标题字面量 `\n` → Undefined control sequence | xelatex exit 43 | 包入行内代码 `` `\n` `` | — |
+| #4 | 表格单元格字面 `\n`（ch158:403） | 日志 `l.8120 endl & syscall/line & '\n'` | 同上，包行内代码 | **preflight_check.py**（全仓扫裸反斜杠） |
+| #5 | 2 处代码块缺围栏（ch117:636 / ch161:771-786） | preflight 误报 → 追出真结构 bug | 补 `` ``` `` 开/闭围栏 | preflight 兼当"围栏失步"探针 |
+
+**核心教训（写进决策原则）**：
+1. **错误左移 (Shift-Left)** — 任何能在本地秒级发现的错误，绝不留到 CI 数分钟后暴露。校验放最快的 quality job 首位。
+2. **本地 oracle 优先** — 用与 CI 完全同版本的解析器（mermaid 11.16.0）在 push 前跑真解析，而非靠肉眼。
+3. **fenced code 围栏失步是隐性炸弹** — 一个缺闭合围栏会翻转其后所有行的 in_fence 状态，吞掉标题/宏/正文，既坏渲染又触发误报。preflight 已能探测。
+4. **LaTeX 致命字符清单**：fenced/inline code 之外的字面 `\n` `\t`、Windows 路径 `C:\U`、任意 `\[a-zA-Z]` 都会让 xelatex 整本中断。
+
+---
+
+## 进化四层模型（Layer 0-4，能力成熟度阶梯）
+
+> 从"能编译的静态文本"→"自我维护的活知识体系"。每层是下一层的地基。
+
+| 层 | 名称 | 定义 | 关键交付物 | 现状 |
+|---|---|---|---|---|
+| **L0** | 门禁地基 | 一切自动化校验，push 前秒级抓错 | consistency / crossref / compile_check / density_audit / **preflight** / mermaid oracle / CI 4-job | **~90%**（本轮 preflight + CI 接入是最后拼图，PDF 绿后 ≈100%） |
+| **L1** | 内容质量闭环 | 从"通过门禁"到"可量化质量" | density dashboard / 去水词审计 v4 / 重复段落检测 / **全量 cpp 运行级验证** / 练习题覆盖 | **~30%** |
+| **L2** | 多形态交付 | 一份源，多端产品 | PDF（攻坚中）/ HTML 站点+全文搜索 / EPUB / 知识图谱可视化 / GitHub Pages 公开 | **~40%**（site job 已绿，PDF 临门一脚，EPUB/搜索未做） |
+| **L3** | 自我维护自动化 | 项目自己发现退化并修 | nightly 编译回归 / 自动 PR 审查 / pre-commit 钩子 / 内容治理 Agent（自动建 issue） | **~15%**（CI 骨架有，治理 Agent 无） |
+| **L4** | 权威性与广度 | 内容深度与外部背书 | C++23/26 广度补全 / WG21 追踪 / 专家审阅 / 读者 FAQ 闭环 | **~10%** |
+
+**"达到某层"的判定标准**：该层核心交付物 ≥80% 完成，且下一层可启动。
+
+---
+
+## 9 天冲刺估算（回应用户提问：9 天能否到 L2 / L3 / L4）
+
+> 前提：按当前节奏（每日推进 + 权限全开 + 工具链已齐备），9 个工作日预算。
+> 判定分级：✅ 稳达 / ⚠️ 大概率达（有外部依赖风险） / 🔶 仅可启动/部分 / ❌ 不现实。
+
+| 目标层 | 判定 | 依据 | 排期草案 |
+|---|---|---|---|
+| **L0 完成** | ✅ 必达 | 仅差 PDF 绿；本轮修复已本地三门禁全过 | Day 1（push 绿即达成） |
+| **L1 达成 80%** | ✅ 稳达 | 全是纯脚本工程、零外部依赖：density dashboard / 去水词 v4 / 重复检测 / 全量编译已有 `chapter_compile_check.py` 底座 | Day 2-5 |
+| **L2 达成 80%** | ⚠️ 大概率 | PDF 绿 + EPUB（pandoc 已在链，加 `-t epub3` 成本极低）+ mkdocs 内置搜索插件 + Pages 部署；风险=CI 渲染偶发不稳 | Day 5-8 |
+| **L3 部分** | 🔶 可启动 | nightly cron + pre-commit 可落地；治理 Agent 只能搭框架，无法 9 天内成熟 | Day 8-9 |
+| **L4** | ❌ 不现实 | 内容广度（C++23/26 逐特性）与专家审阅是慢变量，9 天只能起头 | 起头 |
+
+**结论**：
+- **"9 天到第二层" → 现实且大概率达成**（L0 必达、L1 稳达、L2 ~80%）。
+- **"甚至第三层" → 只能部分**（nightly/pre-commit 可，治理 Agent 仅框架）。
+- **"第四层" → 9 天内否**，属月度级慢变量，只能启动。
+
+**最快兑现路径（关键路径法）**：
+`PDF 绿(L0 收口) → 全量编译验证脚本(L1 最高价值单点) → EPUB+搜索+Pages(L2 三连) → nightly+pre-commit(L3 起步)`。
+瓶颈是 **CI 反馈延迟**——已用 preflight/oracle 把大部分错误左移到本地秒级，实际迭代速度取决于 push→绿 的往返次数，而非编码工时。
 
 ## 6个月进化方向（按信息增量）
 

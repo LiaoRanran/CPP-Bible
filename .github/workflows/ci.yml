@@ -22,6 +22,14 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Preflight (LaTeX 致命反斜杠扫描，错误左移)
+      # 纯 Python 零依赖，秒级扫描全书标题/表格/正文里 fenced code 之外的
+      # 裸反斜杠序列（如 '\n'），这类字符会让 pdf job 的 xelatex 报
+      # "Undefined control sequence" 并整本中断 (exit 43)。放在最快的 quality
+      # job 首位，push 后 <10s 即可失败，无需等到耗时的 pdf 阶段才发现。
+      run: python3 tools/preflight_check.py
+      continue-on-error: false
+
     - name: Consistency Check
       run: python3 tools/consistency_check.py
       continue-on-error: false
