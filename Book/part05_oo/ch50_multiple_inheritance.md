@@ -712,6 +712,23 @@ call [rsi]
 - WG21 提案 P0784R7 扩展 constexpr 多态
 
 
+## 底层视角：多 vptr 布局与 this 调整 thunk [E: Low-level]
+
+[示意] 多继承对象含多个 vptr：主基类 vptr 在偏移 `0x0000`，次级基类 vptr 在 `0x0008`，各基类 vtable 槽宽 `0x0008`。经次级基类指针调用虚函数前，this 须回退到对象首部——这就是 thunk：
+
+```text
+mov rax, [rdi+0x0008]   ; 取次级 vptr
+mov rcx, [rax+0x0010]   ; 取次级基类槽
+sub rdi, 0x0008         ; thunk：this 回退 0x0008 到对象首
+call [rcx]
+```
+
+thunk 是一小段 `sub` + `jmp`，成本约 0.3 ns（一次 ALU + 一次跳转）。虚继承引入 vbptr（虚基类指针），再占 `0x0008`，布局偏移需查虚基类表（vbtable），额外一次间接。
+
+缓存行 `0x0040`（64 字节）在对象较小时可同时容纳主/次 vptr 与部分数据，减少一次 cache miss；对象跨 `0x0040` 边界时，访问两个基类字段可能触发两次 L1 取行（≈2 ns）。
+
+`GCC 13.1.0` / `Clang 17` 对 `final` 基类或单继承退化情形可消除 thunk；`C++11` 的 `final` 与 `override` 是静态去虚化的前提。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

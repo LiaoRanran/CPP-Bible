@@ -1016,6 +1016,19 @@ int main() {
 
 > 交叉引用：停止令牌见 [ch94](Book/part07_stl/ch94_stop_token.md)；原子见 [ch108](Book/part09_concurrency/ch108_memory_order.md)。
 
+## 底层视角：原子指令、内存屏障与上下文切换代价 [E: Low-level]
+
+[示意] `std::atomic` 的 `fetch_add` 在 x86-64 编译为 `lock xadd`；`lock` 前缀保证缓存行 `0x0040` 原子性，代价约 10–20 ns（含缓存一致性流量）。`std::mutex` 无争用加解锁约 15–25 ns，争用时退化为 futex 等待（≈1–5 µs 上下文切换）。
+
+```text
+lock xadd [rdi], eax    ; 原子自增，锁缓存行 0x0040
+mfence                  ; 全内存屏障，约 10–20 ns
+```
+
+线程创建（`std::thread`）是一次 `clone` 系统调用 + 栈分配，约数十 µs；`std::async(launch::async)` 复用线程池可降到 µs 级。`std::future` 共享状态是堆上 `0x0010`+ 的控制块，get() 阻塞时同样走 futex。
+
+伪共享：两个线程各写相邻 `0x0008` 字段若落在同一 `0x0040` 缓存行，会互相 invalidate，吞吐骤降——须按 `0x0040` 填充或 `alignas(0x0040)`。`GCC 13.1.0` / `Clang 17` 的 `-O2` 对 `constexpr` 启动策略可编译期求值，`C++20` `constinit` 保证静态原子零初始化竞争。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

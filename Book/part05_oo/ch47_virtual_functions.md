@@ -985,6 +985,26 @@ call [rcx]
 - C++20 `-fvtable-verify=std` 插桩校验
 
 
+## 底层视角：vtable 寻址与虚调用硬件代价 [E: Low-level]
+
+[示意，非本书 `Examples/*.asm` 编译证据] x86-64 System V ABI 下，对象首 `0x0008` 字节为 vptr；每个 vtable 槽为 `0x0008` 字节函数指针，槽 i 位于偏移 `0x0008 * i`（单继承虚析构通常占槽 0）。
+
+虚调用的典型机器码（示意）：
+
+```text
+mov rax, [rcx]          ; 取 vptr（一次缓存访问）
+mov rax, [rax+0x0008]   ; 取槽 1 函数指针
+call rax                ; 间接跳转，目标运行期才定
+```
+
+这是两条**串行依赖**的 load：`vptr → vtable → 函数`。若 vtable 已在 L1（≈1 ns）则快；冷启动落在 L3（≈12 ns）甚至主存（≈100 ns）。间接 `call rax` 依赖分支目标缓冲（BTB），命中约 1–3 ns，未命中（多态热点切换）追加约 10–15 cycles 惩罚。
+
+缓存行 `0x0040`（64 字节）通常容纳 8 个 vtable 槽（0x0040 / 0x0008 = 8），热门类的 vtable 多驻留 L1/L2。
+
+去虚化：`GCC 13.1.0` 在 `-O2` 默认开启 `-fdevirtualize`，配合 LTO（`-flto`）或 `final` 可把虚调用改成直接 `call` 并内联；`Clang 17` / `MSVC 19.3` 同理。`C++20` 起 `consteval` 可在编译期彻底消除虚分派路径。
+
+[标准] 虚析构自 `C++98`；`override` / `final` 自 `C++11`；`consteval` 自 `C++20`。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

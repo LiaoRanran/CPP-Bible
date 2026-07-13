@@ -1142,6 +1142,14 @@ int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=c
 
 **底层分析**：Adapter 与 Proxy 的核心 ABI 差异——Adapter 拥有对 Adaptee 的引用（非拥有，`raw_fd_ostream` 持 `int fd` 文件描述符），而 Proxy 通常拥有或被代理对象的 shared_ptr（`WaitableEvent` 在 POSIX 上持 `pthread_cond_t`，大小 48 字节，内嵌于 Proxy 对象中，无堆分配）。Decorator 的链式调用（`filtering_streambuf::underflow()` → 内部链表的 `next->sgetc()`）在 `-O2` 下被 GCC 完全内联为函数指针直接调用（`call [rax]`），零虚函数开销。
 
+## 底层视角：GoF 模式与虚调用/CRTP 的代价权衡 [E: Low-level]
+
+[标准] 多数结构型模式（Strategy/Decorator/Composite）依赖运行时多态，即经 vtable 间接调用（见 ch47：约 1–3 ns + 间接跳转惩罚，阻碍内联）。每对象常含 `0x0008` vptr，模式嵌套时多基类布局叠加多个 `0x0008`（见 ch50 thunk）。
+
+性能敏感路径可用 CRTP 在编译期静态绑定：`GCC 13.1.0` `-O2` 把 `static_cast<Derived*>(this)->f()` 内联为直接调用（≈0.3 ns），消除 vtable 与 `0x0008` 间接。`C++20` `consteval` 可进一步把策略选择压到编译期。
+
+缓存行 `0x0040`（64 字节）容纳 8 个 vtable 槽（0x0040 / 0x0008 = 8）；装饰器链过长会拉低指令/数据局部性。`Clang 17` / `MSVC 19.3` 对 `final` 叶子类同样可去虚化。`C++17` 的 `if constexpr` 常替代运行时类型分支，省一次 `0x0008` 虚查表。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -739,6 +739,14 @@ lea rdx, [rax+0x0020]     ; 参数数组基址
 - Qt 要求 C++17（`QT_NO_KEYWORDS` 可禁用 `slots` 宏）
 - moc 由 `CMAKE_AUTOMOC` 在构建期生成 `.moc` 文件
 
+## 底层视角：moc、元对象与信号槽的间接代价 [E: Low-level]
+
+[标准] `Q_OBJECT` 宏经 moc 生成元对象结构：含指向字符串表与信号槽索引的指针（各 `0x0008`）。`emit signal()` 编译为对 `QMetaObject::activate` 的调用，内部按 `0x0008` 槽索引在 `QObjectPrivate` 的连接链表上遍历——本质是一次虚/间接分派（见 ch47 量级：约 1–3 ns 加间接跳转惩罚）。
+
+moc 生成的 `qt_static_metacall` 是一张函数指针表（槽宽 `0x0008`），经 `QMetaObject::Invoke` 间接调用；`Qt 6.6` 改用 `QMetaType` 擦除存储，仍走 `0x0008` 指针间接。`Clang 17`（Qt 官方工具链）对 `final` QObject 可去虚化部分路径。
+
+信号槽跨线程经 `QueuedConnection` 时，参数须 `0x0008`/`0x0010` 对齐的可序列化 `QVariant`，投递到事件队列（一次堆分配 `0x0010`+ + futex 唤醒，≈1–5 µs）。`GCC 13.1.0` / `MSVC 19.3` 同样支持 Qt 6 元对象编译。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

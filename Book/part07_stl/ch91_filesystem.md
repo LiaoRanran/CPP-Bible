@@ -975,6 +975,14 @@ jne .not_exist
 - WG21 提案 P0202R3 规范 `std::filesystem`
 
 
+## 底层视角：系统调用号、stat 结构与路径解析代价 [E: Low-level]
+
+[标准] x86-64 上 `openat` 系统调用号为 `0x0101`（257），`stat` 为 `0x0004`（4）；glibc 包装后进入 `syscall` 指令，一次陷入内核约 0.1–0.5 µs。`struct stat` 的 `off_t` 在 LP64 为 `0x0008` 字节，文件大小以字节计。
+
+路径解析逐分量进行：每个分量一次目录项查找，命中 dentry 缓存（≈1 ns）则快，未命中落到 inode/磁盘（L3 ≈12 ns 或主存 ≈100 ns）。`std::filesystem::path` 在 `C++17` 引入，`C++20` 加 `path::lexically_normal`。
+
+`std::error_code` 封装 `errno`（如 `ENOENT=0x0002`），零开销抽象；`copy_file` 经缓冲区拷贝，吞吐受 `0x0040` 缓存行与 DMA 带宽限制。`GCC 13.1.0` / `Clang 17` 的 `std::filesystem` 由 libstdc++/libc++ 实现，`constexpr` 路径拼接可在编译期求值。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
