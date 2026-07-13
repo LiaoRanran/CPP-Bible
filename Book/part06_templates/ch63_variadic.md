@@ -345,67 +345,60 @@ template <typename... Ts> auto add(Ts... ts) { return (0 + ... + ts); }
 ## ⑪ STL 中的该模式
 
 ```cpp
-#include <utility>
-// std::tuple<Ts...> 是可变参数类模板
-std::tuple<int, double, char> t{1, 2.0, 'x'};
-```
-
-```cpp
-#include <memory>
-#include <vector>
-// std::make_shared / emplace 用可变参数完美转发
-std::vector<Widget> v; v.emplace_back(1, 2.0, "x");
-```
-
-```cpp
 #include <iostream>
-// std::apply 用包展开调用函数
-std::apply([](auto... xs){ ( (std::cout << xs), ... ); }, t);
-```
-
-```cpp
-// std::index_sequence / make_index_sequence 偏特化 + 包展开生成整数序列
-```
-
-```cpp
-// std::format（C++20）底层可变参数
+#include <utility>
+#include <vector>
+#include <string>
+#include <tuple>
+struct Pt { int x; double y; std::string s; };
+template <std::size_t... I>
+void show_idx(std::index_sequence<I...>) { std::cout << "idx count=" << sizeof...(I) << '\n'; }
+int main() {
+    // std::tuple<Ts...> 是可变参数类模板
+    std::tuple<int, double, char> t{1, 2.0, 'x'};
+    // emplace 用可变参数完美转发多参构造
+    std::vector<Pt> v; v.emplace_back(1, 2.0, "x");
+    // std::apply 用包展开调用函数
+    std::apply([](auto... xs){ ( (std::cout << xs << ' '), ... ); }, t);
+    std::cout << '\n';
+    // std::index_sequence / make_index_sequence 生成整数序列
+    show_idx(std::make_index_sequence<3>{});   // idx count=3
+}
+// 输出：1 2 x  idx count=3
 ```
 
 ## ⑫ 变体（variant patterns）
 
 ```cpp
+#include <iostream>
 #include <utility>
-// 完美转发可变参数构造（emplace）
+#include <array>
+#include <string>
+#include <type_traits>
+// 1) 完美转发可变参数构造（emplace）
 template <typename T> struct Holder {
     template <typename... Ts> Holder(Ts&&... ts) : obj(std::forward<Ts>(ts)...) {}
     T obj;
 };
-```
-
-```cpp
-#include <iostream>
-// 递归 print 用 if constexpr 免基线
+// 2) 递归 print 用 if constexpr 免基线
 template <typename T, typename... R>
 void log(T f, R... r) {
-    std::cout << f;
+    std::cout << f << ' ';
     if constexpr (sizeof...(r) > 0) log(r...);
 }
-```
-
-```cpp
-#include <array>
-// 包展开进 std::array 构造
+// 3) 包展开进 std::array 构造
 template <typename... Ts> constexpr auto arr(Ts... ts) { return std::array{ts...}; }
-```
-
-```cpp
-// 变参 lambda（C++20 不支持直接，但可用 auto...）
-// auto f = [](auto... xs) { return (xs + ...); };  // C++14 起泛型 lambda + C++17 折叠
-```
-
-```cpp
-// 包展开 + 折叠做类型判断
+// 4) 包展开 + 折叠做类型判断
 template <typename... Ts> constexpr bool any_same = (std::is_same_v<Ts, int> || ...);
+int main() {
+    Holder<std::string> h("hi");
+    std::cout << h.obj << '\n';                          // hi
+    log(1, 2.14, 'z'); std::cout << '\n';                // 1 2.14 z
+    auto a = arr(10, 20, 30);
+    std::cout << a.size() << '\n';                       // 3
+    std::cout << std::boolalpha << any_same<int, double, int> << '\n';  // true
+}
+// 输出：hi  1 2.14 z  3  true
 ```
 
 ## ⑬ 反模式（anti-patterns）
