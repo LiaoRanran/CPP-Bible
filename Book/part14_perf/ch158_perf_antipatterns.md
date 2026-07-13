@@ -30,7 +30,7 @@ void sink_ref(const std::string& s){} // ✅ 常量引用
 int main(){ std::string x="hello";sink_ref(x);std::cout<<x<<std::endl;return 0; }
 ```
 
-## ④ std::endl vs '\n' [经验]
+## ④ std::endl vs `'\n'` [经验]
 
 ```cpp
 #include <iostream>
