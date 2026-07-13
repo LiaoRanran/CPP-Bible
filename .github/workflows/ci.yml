@@ -86,6 +86,11 @@ jobs:
   pdf:
     needs: quality
     runs-on: ubuntu-latest
+    env:
+      # GitHub Actions Linux runner 以 root 运行且无可用的 Chromium sandbox，
+      # mermaid-filter 用 Puppeteer 调 Chromium 渲染 Mermaid 图会 FATAL 退出；
+      # 将 --no-sandbox 透传给 Chromium 启动参数即可（CI 环境内无安全风险）。
+      PUPPETEER_ARGS: --no-sandbox
     steps:
     - uses: actions/checkout@v4
 
