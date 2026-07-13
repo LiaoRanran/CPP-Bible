@@ -33,7 +33,7 @@
 | 断言 | `run_cpp_assertions.py` | **FAIL=0**（编译期 349 + 运行期 96 PASS） |
 | 交引 | `crossref_audit.py` | **1190 引用 / 0 断链** |
 | 质量 | `deduplication_audit.py`（v4） | **17.1/30 均分**（全部 16 part ≥15，无 v4≤12 章） |
-| 图表 | Mermaid 块 | 127 |
+| 图表 | Mermaid 块 | 88（`Book/`，全部有效闭合且语法校验通过） |
 | 去重 | `deduplication_audit.py` | DUP%=0.0 / WTR%=0.00 |
 | 单章 | `chapter_lint.py` GPA | **98.7**（A=146 / B=2 / C=2 / HIGH 缺陷=0） |
 | 验收 | `EVALUATION.md` | **87/100（A-）** |
@@ -84,6 +84,17 @@
 1. **CI / PDF 未实跑**：本机无 xelatex，PDF 与 CI 四 job 需推送 GitHub 后由 Actions 产出。
 2. **根目录产物回漏**：`compile_all.py` / `chapter_compile_check.py` 仍可能把产物写回根目录；门禁已能检出，清理命令 `python3 tools/clean_root_artifacts.py`。
 3. **占位符自动门禁未启用**：`~N` 类占位在本手册大量作泛型变量/模板参数（如 `~N()` 析构、`bitset<N>`），正则误报率高，改由人工 + `expansion_audit.py` 处理。
+4. **编译门禁已知非 bug 失败（透明清单）**：`chapter_compile_check.py` 逐块隔离编译（每块包进 `namespace chk_{stem}_{idx}` 单 TU 校验），以下失败均为「教学序列依赖 / 本机环境缺失 / 故意展示失败的反例」，**非文档逻辑缺陷**——读者顺序阅读（前序块已定义符号）或在本机对应环境下均可编译。全量重验（新 PRELUDE，147 章）后台任务 `88GzEc` 产出权威明细于 `build/_root_artifacts/_full_newprelude_fail.txt`。
+
+   | 章 | 失败块（示例） | 性质 | 说明 |
+   |----|--------------|------|------|
+   | `ch161_logger` | #1,#9,#17,#28,#30,#34（6） | FRAG / checker 伪影 | 案例章跨块教学依赖：`Level`/`log_if`/`g_mtx`/`now` 等在前序块定义；#9 的 `std::formatter` 特化被 namespace 包裹误报（非文档 bug） |
+   | `ch11_compilers` | `max_of` 块 | 故意反例 | 教学意图：展示 GCC/Clang/MSVC 推导冲突报错（原文标注 `❌ 推导冲突`） |
+   | `ch12_buildsystems` | 若干 | FRAG/ENV | 依赖本地头 `_ch12_mylib.h`（读者有该头即可编译） |
+   | `ch16_ide` | 若干 | ENV | 依赖 Qt `QPushButton`（本机 MinGW 未装 Qt，Linux/macOS 有 Qt 可编译） |
+   | `ch13_packaging` | 若干 | FRAG/ENV | pkg-config / 系统包依赖（本机环境缺失，非代码缺陷） |
+
+   **判定原则**：凡属上表性质者不计为真实缺陷；若某块出现「语法错误 / 错误使用 std 符号 / 逻辑错误」且非跨块依赖，方为真实 bug，须修。
 
 ---
 
