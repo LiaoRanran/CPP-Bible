@@ -88,9 +88,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # GitHub Actions Linux runner 以 root 运行且无可用的 Chromium sandbox，
-      # mermaid-filter 用 Puppeteer 调 Chromium 渲染 Mermaid 图会 FATAL 退出；
-      # 将 --no-sandbox 透传给 Chromium 启动参数即可（CI 环境内无安全风险）。
-      PUPPETEER_ARGS: --no-sandbox
+      # mermaid-filter 1.4.x 调 mermaid-cli(mmdc) 渲染 Mermaid 图会因 Chromium
+      # 启动失败而 FATAL 退出（exit 83）。mermaid-filter 只认
+      # MERMAID_FILTER_PUPPETEER_CONFIG 指向的 puppeteer 配置文件，把
+      # --no-sandbox 写进该 JSON 的 args，再由 mmdc -p 透传给 puppeteer.launch()。
+      # （注意：PUPPETEER_ARGS 在本版本不生效，必须用配置文件方式。）
+      MERMAID_FILTER_PUPPETEER_CONFIG: ${{ github.workspace }}/.puppeteer.json
     steps:
     - uses: actions/checkout@v4
 
