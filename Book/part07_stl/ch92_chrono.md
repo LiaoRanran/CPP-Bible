@@ -933,6 +933,23 @@ int main() {
 | [第91章](Book/part07_stl/ch91_filesystem.md) | 错误恢复/不可恢复错误 | 本章提供概念，第91章提供实现 |
 
 
+## 附录 G：chrono 工业实践与深度
+
+`std::chrono` 在时间与日历库生态中的定位与真实实现：
+
+| 项目/库 | 技术/模式 | 使用场景 | 源码/链接 |
+|---------|----------|---------|----------|
+| **Google/Abseil**（github.com/abseil/abseil-cpp） | `absl::Time` 以 int64 纳秒存储，civil time 与 absolute time 分离 | 时序库 | `absl/time/time.h` |
+| **Chromium**（chromium.googlesource.com/chromium/src） | `base::Time` 跨平台抽象（Windows FILETIME / POSIX time_t） | 框架 | `base/time/time.h` |
+| **Qt**（code.qt.io） | `QElapsedTimer` 提供纳秒级单调计时，`QDateTime` 封装日历 | 框架 | `qtbase/src/corelib/time` |
+| **Eigen**（gitlab.com/libeigen/eigen） | bench 用 chrono 做微基准计时 | 数值库 | `bench/benchtimer.h` |
+| **fmt**（github.com/fmtlib/fmt） | `fmt::format` 直接格式化 `std::chrono::duration` / `time_point` | 格式化 | `fmt/chrono.h` |
+| **Boost**（github.com/boostorg/date_time） | Boost.DateTime 是 C++11 chrono 之前的事实标准 | 库 | `boostorg/date_time` |
+| **LLVM**（github.com/llvm/llvm-project） | libc++ 的 chrono 实现（system_clock / steady_clock） | 标准库 | `libcxx/src/chrono.cpp` |
+| **Google** benchmark | `benchmark::State` 内部用 steady_clock 计时 | 基准框架 | `google/benchmark` |
+
+**底层深度**：libstdc++ 的 `std::chrono::steady_clock::now()` 在 Linux 下调 `clock_gettime(CLOCK_MONOTONIC)`，经 vDSO 映射到用户态读取 TSC，避免 syscall 切换；`system_clock` 映射到 `CLOCK_REALTIME`，可受 NTP 跳变影响，因此计时基准一律用 steady_clock。Chromium 的 `base::Time` 在 Windows 以 1601-01-01 epoch 的 100ns 单位（FILETIME）存储，POSIX 以 1970 epoch 的 us 存储，跨平台统一经 `FromDeltaSinceWindowsEpoch` 转换；Abseil `absl::Time` 内部 `rep_` 为从 1970 epoch 起的 int64 纳秒，calendar 运算走 `cctz` 时区库（源自 Google 内部 Time Zone 实现）。时区数据库（IANA tzdb）在 C++20 中由 `<chrono>` 的 `std::chrono::get_tzdb()` 加载，libstdc++ 实现于 `src/c++20/time.cc`。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

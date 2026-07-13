@@ -479,6 +479,23 @@ Q: 版本迁移最大风险? A: ABI断裂(GCC5.1)和SFINAE→concepts重写
 - **相邻主题**：`Book/part02_toolchain/ch12_buildsystems.md`（第12章　构建系统：Make / Ninja / CMake（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part01_history/ch01_c_history.md`（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
 
+## 附录 H：版本矩阵工业实践与源码对照
+
+编译器特性支持与最低版本策略在真实项目中的落地：
+
+| 项目/库 | 技术/模式 | 使用场景 | 源码/链接 |
+|---------|----------|---------|----------|
+| **Boost**（github.com/boostorg/config） | Boost.Config 用 `BOOST_CXX_*` 预处理器宏探测编译器特性 | 编译期特性探测 | `boost/config/compiler/gcc.hpp` |
+| **Google/Abseil**（github.com/abseil/abseil-cpp） | 年份版本政策：明确最低 C++14/17/20 并随编译器季度升级 | 版本策略 | `absl/base/config.h` |
+| **Chromium**（chromium.googlesource.com/chromium/src） | 当前最低 C++17，规划迁移 C++20，含特性灰度清单 | 项目政策 | `build/config/compiler/BUILD.gn` |
+| **Qt**（code.qt.io） | Qt 6 强制最低 C++17，Qt 5 维持 C++11 | 框架基线 | `qtbase/cmake` |
+| **Google** C++ Style Guide | 规定项目最低标准版本与升级节奏 | 编码规范 | `google.github.io/styleguide/cppguide` |
+| **LLVM**（github.com/llvm/llvm-project） | Clang 的 `-std=` 与特性门控（`-fcoroutines` 等）开关 | 编译器 | `clang/include/clang/Basic/LangOptions.def` |
+| **folly**（github.com/facebook/folly） | 要求 C++17+/C++20，利用 `if constexpr` 与 concepts | 框架基线 | `folly/CPortability.h` |
+| **fmt**（github.com/fmtlib/fmt） | fmt 10 要求 C++17，使用 C++20 std::format 兼容层 | 库基线 | `fmt/base.h` |
+
+**底层深度**：Boost.Config 在 `boost/config/compiler/gcc.hpp` 中依据 `__GNUC__` / `__GNUC_MINOR__` 与 `_GLIBCXX__` 宏定义 `BOOST_CXX_VARIADIC_TEMPLATES` 等探测宏，使同一份代码在 GCC 4.8–13 间自适应；Abseil 的 `absl/base/config.h` 用 `__cplusplus` 配合 `_MSC_VER` / `__GNUC__` 决定 `ABSL_LTS_RELEASE` 与最低标准，并在 CI 矩阵中覆盖 C++14/17/20；Chromium 通过 `build/config/compiler/BUILD.gn` 的 `cxx_version` 与目标强制最低标准，未达标直接编译失败而非警告。这种"探测宏 + 强制基线 + CI 矩阵"三层机制，是工业界保证多编译器可移植性的标准做法。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

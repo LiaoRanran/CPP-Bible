@@ -405,6 +405,23 @@ _Z13release_fencev:
 
 - **同模块**：`Book/part09_concurrency/ch113_coroutine.md`（第113章　协程 coroutine：promise / awaiter（C++20））—— 同模块下的其他主题。
 
+## 附录 I：fence 工业实现与源码对照
+
+内存屏障在编译器后端与高性能库中的真实实现：
+
+| 项目/库 | 技术/模式 | 使用场景 | 源码/链接 |
+|---------|----------|---------|----------|
+| **LLVM**（github.com/llvm/llvm-project） | `atomic_thread_fence` 降级为 X86 `MFENCE`/`lock` 或 ARM `dmb` | 编译器后端 | `llvm/lib/Target/X86/X86ISelLowering.cpp` |
+| **Chromium**（chromium.googlesource.com/chromium/src） | `base::subtle::Atomic32` 操作 + 手写屏障 | 框架原子 | `base/atomicops.h` |
+| **Google/Abseil**（github.com/abseil/abseil-cpp） | `absl::atomic_hook` 与内存序工具 | 库 | `absl/base/internal` |
+| **DPDK**（github.com/DPDK/dpdk） | `rte_ring` 无锁环用 `__atomic_thread_fence(__ATOMIC_ACQ_REL)` | 高性能数据面 | `lib/ring/rte_ring_c11_pvt.h` |
+| **folly**（github.com/facebook/folly） | `folly::atomic_shared_ptr` 用 acquire/release 屏障 | 并发库 | `folly/AtomicSharedPtr.h` |
+| **Google** 性能实践 | 明确 seq_cst 在 x86 免费、ARM 昂贵，按架构选序 | 优化规范 | `google/perfguide` |
+| **Boost**（github.com/boostorg/lockfree） | Boost.Lockfree 队列用 `memory_order_acquire/release` | 无锁库 | `boostorg/lockfree` |
+| **Qt**（code.qt.io） | `QAtomicInt` 封装平台原子与屏障 | 框架 | `qtbase/src/corelib/thread` |
+
+**底层深度**：LLVM 在 SelectionDAG 阶段将 `fence(seq_cst)` 降级为 `X86ISD::MFENCE` 或带 lock 前缀的指令（例如 `lock orq $0,(%rsp)`），ARM 后端生成 `dmb ish`；这与附录 H 的真实汇编证据一致——x86 TSO 下 seq_cst store 经 `xchgl`（隐含 lock）即获全屏障，无需独立 mfence。DPDK `rte_ring` 在 C11 实现里于 enqueue 末尾发 release fence、dequeue 开头发 acquire fence，配合头/尾指针保证多生产者写入对消费者可见；Chromium 在 ARM 平台用 `dmb` 指令、x86 用 `std::atomic_signal_fence` 编译器屏障阻止重排。工业界共识：x86 上能避免 seq_cst 就避免（acquire/release 在 x86 零成本），ARM/Power 上才需要显式屏障。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

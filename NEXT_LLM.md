@@ -110,9 +110,9 @@ ROOT="C:/CodeLearnling/note/note/C++/CPP-Bible/"
 | asm | DRIFT=0 | `verify_asm_evidence.py` |
 | 站点 | mkdocs strict 0 警告 | `mkdocs build --strict` |
 | Git | 5 提交，无 remote | `git log --oneline` |
-| 已注入附录 G | 15 章（ch17/ch32/ch50/ch60/ch64/ch67/ch68/ch80/ch99/ch107/ch137/ch142/ch145/ch154/ch162） | — |
+| 已注入附录 G | 20 章（ch17/ch32/ch50/ch60/ch64/ch67/ch68/ch80/ch99/ch107/ch137/ch142/ch145/ch154/ch162 + 本轮 ch07(G)/ch10(H)/ch92(G)/ch109(I)/ch117(G)） | — |
 
-**v4=14 池（剩余可铺章）**：ch07_cpp20(IND=4) / ch10_version_matrix(IND=4) / ch13_packaging(IND=80) / ch62_specialization(IND=14) / ch68_tmp(IND=28 已铺) / ch76_stl_arch(IND=6) / ch79_list(IND=19) / ch92_chrono(IND=4) / ch109_fence(IND=4) / ch117_copy_elision(IND=4) / ch121_contracts(IND=6) / ch129_qt(IND=83) / ch148_gitflow(IND=23) / ch149_ci_cd(IND=35) / ch155_simd(IND=4)
+**v4=14 池（剩余可铺章，2026-07-13 第六轮后剩 9 章）**：ch13_packaging(IND=80) / ch62_specialization(IND=14) / ch76_stl_arch(IND=6) / ch79_list(IND=19) / ch121_contracts(IND=6) / ch129_qt(IND=83) / ch148_gitflow(IND=23) / ch149_ci_cd(IND=35) / ch155_simd(IND=4) |
 
 ---
 

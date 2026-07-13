@@ -463,6 +463,23 @@ int main(){std::cout<<add(10,20)<<std::endl;return 0;}
 - **相邻主题**：`Book/part01_history/ch09_cpp26.md`（第09章　C++26：已确定特性与方向）—— 编号相邻、主题接续。
 - **同模块**：`Book/part01_history/ch01_c_history.md`（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
 
+## 附录 G：C++20 工业实践与深度
+
+C++20 的 concepts / ranges / coroutines / modules 在主流工具链与大型代码库中的真实落地情况：
+
+| 项目/库 | 技术/模式 | 使用场景 | 源码/链接 |
+|---------|----------|---------|----------|
+| **LLVM**（github.com/llvm/llvm-project） | Clang 前端 Sema 实现 concepts 约束求解与 coroutine 状态机构建 | 编译器实现 | `clang/lib/Sema/SemaConcept.cpp`、`clang/lib/Sema/SemaCoroutine.cpp` |
+| **Chromium**（chromium.googlesource.com/chromium/src） | C++20 特性灰度启用清单（concepts / coroutines 逐步放开） | 超大型项目 | `styleguide/c++/c++-features.md` |
+| **Qt**（code.qt.io） | Qt 6 要求最低 C++17，内部采用 concepts 约束模板接口 | 框架 | `qtbase/src/corelib` |
+| **Boost**（github.com/boostorg） | Boost 1.80+ 全面 C++20，Ranges / MP11 提供 concepts 工具 | 库生态 | `boostorg/ranges`、`boostorg/mp11` |
+| **Google/Abseil**（github.com/abseil/abseil-cpp） | 向后移植 C++20 构件（absl::FunctionRef、absl::Cleanup） | 库 | `absl/functional`、`absl/utility` |
+| **Google** C++ Style Guide | 允许并推荐 concepts 替代 SFINAE 提升错误可读性 | 编码规范 | `google.github.io/styleguide/cppguide` |
+| **fmt**（github.com/fmtlib/fmt） | fmt 10 基于 C++20 std::format，用 concepts 约束格式化器 | 格式化库 | `fmt/format.h` |
+| **folly**（github.com/facebook/folly） | folly 采用 C++20 协程实现异步 Future / Promise | 异步框架 | `folly/experimental/coro` |
+
+**底层深度**：Clang 在 `Sema::CheckConceptCheckArgs` 中对 concept 检查做约束规范化（normalizeConstraintExpr），失败时报错位置精确到原子约束而非整条 `requires`；GCC 在 `cp/constraint.cc` 内做类似处理，GCC 10 起 concepts 默认开启。Coroutine 由 Clang 的 `CoroutineStmtBuilder` 在 Sema 阶段把 `co_await/co_yield/co_return` 改写为对 promise 的调用并构建 ramps / resume 标签，最终 Lower 到 `llvm::coro.begin/end` 内联 IR；x86-64 下 coroutine frame 默认经 `::operator new` 分配，Clang 13 起 `-std=c++20` 自动启用 `-fcoroutines`。Modules 在 LLVM 侧经 `clang-scan-deps` + PCM（precompiled module）缓存，Chromium 实测可缩减 10–20% 的翻译单元重编译时间。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

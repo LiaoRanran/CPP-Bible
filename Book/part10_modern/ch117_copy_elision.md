@@ -904,6 +904,23 @@ A: P2025 提议将 NRVO 也强制化（目前仅 RVO 强制）。通过后，所
 
 - **同模块**：`Book/part10_modern/ch121_contracts.md`（第121章 Contracts 契约（方向，C++26））—— 同模块下的其他主题。
 
+## 附录 G：copy elision 工业实践与深度
+
+拷贝消除在编译器与框架中的真实实现与规避拷贝的工程模式：
+
+| 项目/库 | 技术/模式 | 使用场景 | 源码/链接 |
+|---------|----------|---------|----------|
+| **LLVM**（github.com/llvm/llvm-project） | Clang `Sema::getCopyElisionCandidate` 判定 NRVO 候选 | 编译器 | `clang/lib/Sema/SemaInit.cpp` |
+| **Google** C++ Style Guide | 允许返回大对象并依赖 RVO，不强制 `std::move` 返回 | 编码规范 | `google.github.io/styleguide/cppguide` |
+| **Qt**（code.qt.io） | 隐式共享（COW）+ `QSharedData` 写时复制，规避拷贝 | 框架 | `qtbase/src/corelib/tools/qshareddata.h` |
+| **Google/Abseil**（github.com/abseil/abseil-cpp） | 返回 `absl::StatusOr<T>` 大对象依靠 guaranteed elision | 库 | `absl/status` |
+| **folly**（github.com/facebook/folly） | Future 连续传递（continuation）避免中间拷贝 | 异步框架 | `folly/futures` |
+| **Boost**（github.com/boostorg/move） | Boost.Move 提供移动语义与 `BOOST_MOVABLE_BUT_NOT_COPYABLE` | 库 | `boostorg/move` |
+| **Chromium**（chromium.googlesource.com/chromium/src） | 大对象传参优先 `const&`/移动，禁用隐式拷贝 | 框架 | `base/containers` |
+| **fmt**（github.com/fmtlib/fmt） | `fmt::format` 返回 `std::string` 经 NRVO 零拷贝 | 格式化 | `fmt/format.h` |
+
+**底层深度**：Clang 在 `SemaInit.cpp` 的 `getCopyElisionCandidate` 中，如果函数返回的局部变量类型与目标一致、且不是 `volatile`，则复用同一栈槽（NRVO），不产生 `memcpy`；GCC 由 `-fno-elide-constructors` 显式禁用以消除优化便于调试（默认开启 elision）。C++17 的 guaranteed copy elision 将 prvalue 直接构造于目标对象，省去"临时物化（temporary materialization）"——即 `T x = T(args);` 中 `T(args)` 不再生成临时再拷贝，而是就地构造 `x`。Qt 的 `QSharedData` 用 `QAtomicInt` 引用计数，`detach()` 在非常量写路径复制、常量路径零拷贝，是"逻辑拷贝、物理共享"在库层面的经典实现。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
