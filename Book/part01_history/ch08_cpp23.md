@@ -523,6 +523,18 @@ int main(){
 
 > 交叉引用：C++11 见 [ch04](Book/part01_history/ch04_cpp11.md)；范围见 [ch82](Book/part07_stl/ch82_span.md)。
 
+## 工业实现参考：C++23 特性的真实采用 [B: Principle]
+
+[标准·可查证] C++23 多项特性源自工业库：
+- `std::print` / `std::format` 吸收 `{fmt}`（Victor Zverovich，广泛采用的格式化库）；
+- `std::ranges` 受 range-v3（Eric Niebler）影响；
+- `std::expected` 借鉴 `Boost.Outcome`（Boost）；
+- `std::mdspan` 来自 Kokkos（与 `LLVM`/HPC 社区协作）；
+- `std::generator` / 协程被 `folly`（Facebook）等异步栈采用；
+- Chromium、Qt 6 已逐步启用 C++20/23 特性。
+
+`GCC 13.1.0` / `Clang 17` / `MSVC 19.3` 对 C++23 特性支持度不同（部分需 `-std=c++23` 与实验开关）；`constexpr` 在 C++23 进一步扩展。`fmt` 与 `range-v3` 是 `LLVM`/Chromium 构建链常见依赖。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

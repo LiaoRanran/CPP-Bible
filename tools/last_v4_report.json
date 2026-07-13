@@ -1,5 +1,5 @@
 {
-  "avg": 20.7,
+  "avg": 21.1,
   "total_chapters": 147,
   "chapters": [
     {
@@ -11,182 +11,6 @@
       "file": "ch09_cpp26.md",
       "part": "part01_history",
       "lines": 490,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.038,
-      "water_rate": 0.0,
-      "ind_hits": 9,
-      "dep_hits": 70,
-      "file": "ch08_cpp23.md",
-      "part": "part01_history",
-      "lines": 581,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0,
-      "water_rate": 0.0,
-      "ind_hits": 22,
-      "dep_hits": 21,
-      "file": "ch18_buildconfig.md",
-      "part": "part02_toolchain",
-      "lines": 892,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0857,
-      "water_rate": 0.0,
-      "ind_hits": 28,
-      "dep_hits": 21,
-      "file": "ch31_operator_overloading.md",
-      "part": "part03_language",
-      "lines": 492,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0,
-      "water_rate": 0.0,
-      "ind_hits": 9,
-      "dep_hits": 65,
-      "file": "ch38_allocator.md",
-      "part": "part04_memory",
-      "lines": 1604,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0043,
-      "water_rate": 0.0,
-      "ind_hits": 17,
-      "dep_hits": 31,
-      "file": "ch39_raii_rule.md",
-      "part": "part04_memory",
-      "lines": 1795,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0,
-      "water_rate": 0.0,
-      "ind_hits": 27,
-      "dep_hits": 23,
-      "file": "ch48_rtti.md",
-      "part": "part05_oo",
-      "lines": 983,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0111,
-      "water_rate": 0.0,
-      "ind_hits": 21,
-      "dep_hits": 21,
-      "file": "ch71_policy.md",
-      "part": "part06_templates",
-      "lines": 635,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0,
-      "water_rate": 0.0,
-      "ind_hits": 9,
-      "dep_hits": 71,
-      "file": "ch87_bitset.md",
-      "part": "part07_stl",
-      "lines": 1045,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0,
-      "water_rate": 0.0,
-      "ind_hits": 27,
-      "dep_hits": 24,
-      "file": "ch94_stop_token.md",
-      "part": "part07_stl",
-      "lines": 1193,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0078,
-      "water_rate": 0.0,
-      "ind_hits": 22,
-      "dep_hits": 22,
-      "file": "ch126_msstl.md",
-      "part": "part11_source",
-      "lines": 903,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0,
-      "water_rate": 0.0,
-      "ind_hits": 97,
-      "dep_hits": 23,
-      "file": "ch127_llvm.md",
-      "part": "part11_source",
-      "lines": 653,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0165,
-      "water_rate": 0.0,
-      "ind_hits": 27,
-      "dep_hits": 24,
-      "file": "ch136_creational.md",
-      "part": "part12_patterns",
-      "lines": 1106,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0,
-      "water_rate": 0.0,
-      "ind_hits": 12,
-      "dep_hits": 42,
-      "file": "ch138_behavioral.md",
-      "part": "part12_patterns",
-      "lines": 938,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0,
-      "water_rate": 0.0,
-      "ind_hits": 43,
-      "dep_hits": 23,
-      "file": "ch139_crtp_pattern.md",
-      "part": "part12_patterns",
-      "lines": 981,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0,
-      "water_rate": 0.0,
-      "ind_hits": 37,
-      "dep_hits": 23,
-      "file": "ch150_testing.md",
-      "part": "part13_engineering",
-      "lines": 1144,
-      "water_hits": 0
-    },
-    {
-      "quality": 17,
-      "dup_rate": 0.0,
-      "water_rate": 0.0,
-      "ind_hits": 34,
-      "dep_hits": 23,
-      "file": "ch156_compiler_opt.md",
-      "part": "part14_perf",
-      "lines": 806,
       "water_hits": 0
     },
     {
@@ -499,6 +323,17 @@
     },
     {
       "quality": 19,
+      "dup_rate": 0.0,
+      "water_rate": 0.0,
+      "ind_hits": 12,
+      "dep_hits": 72,
+      "file": "ch38_allocator.md",
+      "part": "part04_memory",
+      "lines": 1616,
+      "water_hits": 0
+    },
+    {
+      "quality": 19,
       "dup_rate": 0.0132,
       "water_rate": 0.0,
       "ind_hits": 22,
@@ -655,11 +490,33 @@
       "quality": 20,
       "dup_rate": 0.0,
       "water_rate": 0.0,
+      "ind_hits": 22,
+      "dep_hits": 37,
+      "file": "ch18_buildconfig.md",
+      "part": "part02_toolchain",
+      "lines": 898,
+      "water_hits": 0
+    },
+    {
+      "quality": 20,
+      "dup_rate": 0.0,
+      "water_rate": 0.0,
       "ind_hits": 21,
       "dep_hits": 34,
       "file": "ch29_friend.md",
       "part": "part03_language",
       "lines": 667,
+      "water_hits": 0
+    },
+    {
+      "quality": 20,
+      "dup_rate": 0.0833,
+      "water_rate": 0.0,
+      "ind_hits": 28,
+      "dep_hits": 34,
+      "file": "ch31_operator_overloading.md",
+      "part": "part03_language",
+      "lines": 498,
       "water_hits": 0
     },
     {
@@ -671,6 +528,28 @@
       "file": "ch41_smart_pointers.md",
       "part": "part04_memory",
       "lines": 1709,
+      "water_hits": 0
+    },
+    {
+      "quality": 20,
+      "dup_rate": 0.0,
+      "water_rate": 0.0,
+      "ind_hits": 27,
+      "dep_hits": 35,
+      "file": "ch48_rtti.md",
+      "part": "part05_oo",
+      "lines": 989,
+      "water_hits": 0
+    },
+    {
+      "quality": 20,
+      "dup_rate": 0.0109,
+      "water_rate": 0.0,
+      "ind_hits": 21,
+      "dep_hits": 36,
+      "file": "ch71_policy.md",
+      "part": "part06_templates",
+      "lines": 641,
       "water_hits": 0
     },
     {
@@ -704,6 +583,17 @@
       "file": "ch93_thread_async.md",
       "part": "part07_stl",
       "lines": 1091,
+      "water_hits": 0
+    },
+    {
+      "quality": 20,
+      "dup_rate": 0.0,
+      "water_rate": 0.0,
+      "ind_hits": 27,
+      "dep_hits": 34,
+      "file": "ch94_stop_token.md",
+      "part": "part07_stl",
+      "lines": 1201,
       "water_hits": 0
     },
     {
@@ -770,6 +660,28 @@
       "file": "ch135_patterns_intro.md",
       "part": "part12_patterns",
       "lines": 823,
+      "water_hits": 0
+    },
+    {
+      "quality": 20,
+      "dup_rate": 0.0,
+      "water_rate": 0.0,
+      "ind_hits": 43,
+      "dep_hits": 37,
+      "file": "ch139_crtp_pattern.md",
+      "part": "part12_patterns",
+      "lines": 987,
+      "water_hits": 0
+    },
+    {
+      "quality": 20,
+      "dup_rate": 0.0,
+      "water_rate": 0.0,
+      "ind_hits": 37,
+      "dep_hits": 37,
+      "file": "ch150_testing.md",
+      "part": "part13_engineering",
+      "lines": 1150,
       "water_hits": 0
     },
     {
@@ -939,6 +851,28 @@
     },
     {
       "quality": 21,
+      "dup_rate": 0.0077,
+      "water_rate": 0.0,
+      "ind_hits": 22,
+      "dep_hits": 40,
+      "file": "ch126_msstl.md",
+      "part": "part11_source",
+      "lines": 909,
+      "water_hits": 0
+    },
+    {
+      "quality": 21,
+      "dup_rate": 0.0,
+      "water_rate": 0.0,
+      "ind_hits": 101,
+      "dep_hits": 41,
+      "file": "ch127_llvm.md",
+      "part": "part11_source",
+      "lines": 659,
+      "water_hits": 0
+    },
+    {
+      "quality": 21,
       "dup_rate": 0.0,
       "water_rate": 0.0,
       "ind_hits": 27,
@@ -950,6 +884,28 @@
     },
     {
       "quality": 21,
+      "dup_rate": 0.0162,
+      "water_rate": 0.0,
+      "ind_hits": 27,
+      "dep_hits": 40,
+      "file": "ch136_creational.md",
+      "part": "part12_patterns",
+      "lines": 1114,
+      "water_hits": 0
+    },
+    {
+      "quality": 21,
+      "dup_rate": 0.0,
+      "water_rate": 0.0,
+      "ind_hits": 16,
+      "dep_hits": 56,
+      "file": "ch138_behavioral.md",
+      "part": "part12_patterns",
+      "lines": 946,
+      "water_hits": 0
+    },
+    {
+      "quality": 21,
       "dup_rate": 0.0,
       "water_rate": 0.0,
       "ind_hits": 25,
@@ -957,6 +913,17 @@
       "file": "ch148_gitflow.md",
       "part": "part13_engineering",
       "lines": 969,
+      "water_hits": 0
+    },
+    {
+      "quality": 21,
+      "dup_rate": 0.0,
+      "water_rate": 0.0,
+      "ind_hits": 34,
+      "dep_hits": 41,
+      "file": "ch156_compiler_opt.md",
+      "part": "part14_perf",
+      "lines": 812,
       "water_hits": 0
     },
     {
@@ -1001,6 +968,17 @@
       "file": "ch32_initialization.md",
       "part": "part03_language",
       "lines": 678,
+      "water_hits": 0
+    },
+    {
+      "quality": 22,
+      "dup_rate": 0.0042,
+      "water_rate": 0.0,
+      "ind_hits": 21,
+      "dep_hits": 43,
+      "file": "ch39_raii_rule.md",
+      "part": "part04_memory",
+      "lines": 1805,
       "water_hits": 0
     },
     {
@@ -1115,6 +1093,17 @@
     },
     {
       "quality": 23,
+      "dup_rate": 0.037,
+      "water_rate": 0.0,
+      "ind_hits": 19,
+      "dep_hits": 79,
+      "file": "ch08_cpp23.md",
+      "part": "part01_history",
+      "lines": 593,
+      "water_hits": 0
+    },
+    {
+      "quality": 23,
       "dup_rate": 0.0,
       "water_rate": 0.238,
       "ind_hits": 112,
@@ -1133,6 +1122,17 @@
       "file": "ch60_template_basics.md",
       "part": "part06_templates",
       "lines": 774,
+      "water_hits": 0
+    },
+    {
+      "quality": 23,
+      "dup_rate": 0.0,
+      "water_rate": 0.0,
+      "ind_hits": 19,
+      "dep_hits": 77,
+      "file": "ch87_bitset.md",
+      "part": "part07_stl",
+      "lines": 1056,
       "water_hits": 0
     },
     {

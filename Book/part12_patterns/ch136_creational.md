@@ -1044,6 +1044,14 @@ A: 构造参数 > 4 个; 构造多步骤; 不同配置生成不同表示
 
 > 交叉引用：结构型模式见 [ch137](Book/part12_patterns/ch137_structural.md)；CRTP 静态替代见 [ch139](Book/part12_patterns/ch139_crtp_pattern.md)。
 
+## 底层视角：工厂/原型的多态代价与 CRTP 替代 [E: Low-level]
+
+[标准] 工厂/抽象工厂/原型模式经虚函数分派（见 ch47：约 1–3 ns + 间接跳转惩罚，每对象 `0x0008` vptr）。原型模式额外一次 `clone()` 虚调用 + 一次 `new`/`0x0010` 堆分配（约 tens of ns）。
+
+`Singleton` 的 `getInstance()` 若用 `std::call_once` 内部是 `0x0008` 原子标志 + futex（首次 ≈1–5 µs，后续约 1 ns）。`C++17` `if constexpr` 可在编译期选构造分支，省一次 `0x0008` 虚查表；`GCC 13.1.0` `-O2` 对 `final` 工厂可去虚化。
+
+缓存行 `0x0040`（64 字节）容纳 8 个 vtable 槽（0x0040 / 0x0008 = 8）；工厂返回大对象时构造写入跨 `0x0040` 边界会触发两次 L1 取行（≈2 ns）。`Clang 17` / `MSVC 19.3` 对 `final` 叶子类同样去虚化。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

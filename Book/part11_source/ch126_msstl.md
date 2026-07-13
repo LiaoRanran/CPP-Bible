@@ -841,6 +841,12 @@ int main(){std::cout<<"MS STL: 0=Release, 1=Debug, 2=Full. Parallel via Windows 
 
 > 交叉引用：libstdc++ 内幕见 [ch124](Book/part11_source/ch124_libstdcxx.md)；字符串实现见 [ch81](Book/part07_stl/ch81_string.md)。
 
+## 底层视角：MSVC STL 实现与 SIMD 内部 [E: Low-level]
+
+[标准] MSVC STL（`MSVC 19.3`）容器节点含 `0x0008` 指针（链表/树）或连续 `0x0010` 对齐缓冲（vector）。标准算法用 `_STD` 命名空间与 `<intrin.h>` 内部函数，`-arch:AVX2` 启用 SSE（`0x0010` 宽）/ AVX（`0x0020` 宽）并行比较。
+
+`constexpr` 容器操作（`C++20` 起）于编译期求值，省运行期 `0x0008` 间接。`std::atomic` 用 `lock xadd`（10–20 ns）保证 `0x0040` 缓存行原子。`GCC 13.1.0` / `Clang 17` 的交叉验证可暴露 MSVC 专属行为；缓存行 `0x0040`（64 字节）是 `std::hardware_destructive_interference_size` 的取值（C++17 起）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

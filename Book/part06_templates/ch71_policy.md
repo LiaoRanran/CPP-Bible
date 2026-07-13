@@ -573,6 +573,12 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 - **相邻主题**：`Book/part06_templates/ch69_constexpr.md`（第69章　编译期计算：constexpr / consteval / constinit）—— 编号相邻、主题接续。
 - **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
 
+## 底层视角：策略模板参数与静态派发 [E: Low-level]
+
+[标准] 策略作为模板实参在编译期绑定，`GCC 13.1.0` `-O2` 把策略方法直接内联（≈0.3 ns），消除 `0x0008` vptr 与 vtable 间接。`C++17` `if constexpr` 按策略分支静态派发，省一次 `0x0008` 虚查表；`C++20` `consteval` 把策略选择压到编译期。
+
+含 SIMD 策略时，`-mavx2`（`0x0020` 宽）/`-mavx512f`（`0x0040` 宽）指令要求 `alignas`，否则 `vmovdqa` 触发 #GP。缓存行 `0x0040`（64 字节）容纳多个策略状态字段，减少伪共享须 `alignas(0x0040)`。`Clang 17` / `MSVC 19.3` 对策略模板同样完全内联。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

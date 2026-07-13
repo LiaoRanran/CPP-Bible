@@ -919,6 +919,12 @@ A: 不能。CRTP是编译期绑定，variant/any需要运行时类型擦除 → 
 - **相邻主题**：`Book/part12_patterns/ch141_di.md`（第141章 依赖注入（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part12_patterns/ch135_patterns_intro.md`（第135章 设计模式总论（C++））—— 同模块下的其他主题。
 
+## 底层视角：CRTP 静态绑定消除 vptr 与间接 [E: Low-level]
+
+[标准] CRTP 把派生类作为基类模板实参，`static_cast<Derived*>(this)->f()` 在编译期确定目标，`GCC 13.1.0` `-O2` 直接内联为 `0.3 ns` 调用，完全消除 `0x0008` vptr 与 vtable 间接（`constexpr` 路径甚至于编译期求值）。
+
+对比运行时多态（见 ch47）：每对象省 `0x0008` vptr、每次调用省一次 `0x0008` 虚查表与间接跳转惩罚。`C++17` `if constexpr` 按策略分支静态派发；`C++20` `consteval` 可把策略选择压到编译期。`Clang 17` / `MSVC 19.3` 同理内联。`SIMD` 不适于此模式，但 CRTP 包装的数值循环可被 `-mavx2`（`0x0020` 宽）向量化。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

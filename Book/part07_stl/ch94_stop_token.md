@@ -1128,6 +1128,14 @@ int main(){std::jthread t([](std::stop_token st){while(!st.stop_requested()){std
 - **相邻主题**：`Book/part08_algorithms/ch96_sorting.md`（第96章　排序：sort / stable_sort / partial_sort（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part07_stl/ch76_stl_arch.md`（第76章　STL 架构与迭代器概念）—— 同模块下的其他主题。
 
+## 底层视角：stop 状态原子检查与回调链表 [E: Low-level]
+
+[标准] `std::stop_token` 的检查是 `std::atomic` 标志的 `load`（`memory_order_acquire`），无争用时约 1 ns（L1 命中）。`stop_source` 共享状态是堆上 `0x0010`+ 控制块，含 `0x0008` 回调函数指针链表。
+
+`std::stop_callback` 注册即把节点挂入链表（一次无锁 CAS，约 10–20 ns）；`request_stop()` 遍历链表逐个 `call`，代价随回调数线性增长。`GCC 13.1.0` / `Clang 17` 对空回调路径可优化为单次原子读。
+
+信号经 `std::condition_variable` 唤醒时走 futex（≈1–5 µs）。`C++20` 引入，`constexpr` 不可用于运行期 stop 状态，但 `stop_callback` 构造可标注 `noexcept`。缓存行 `0x0040`（64 字节）容纳多个回调节点字段，减少伪共享需 `alignas(0x0040)`。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

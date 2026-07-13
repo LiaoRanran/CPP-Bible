@@ -983,6 +983,17 @@ int main() {
 
 > 交叉引用：位操作见 [ch30](Book/part03_language/ch30_volatile.md)；整数类型见 [ch19](Book/part03_language/ch19_variables.md)。
 
+## 工业实现参考：真实位集库与位操作 [B: Principle]
+
+[标准·可查证] `std::bitset<N>` 固定大小、编译期确定 `N`；动态需求用 `Boost.dynamic_bitset`（Boost 维护，工业常用）。编译器与基础设施大量使用位集：
+- LLVM 用 `BitVector` 表示寄存器集合与活跃变量（LLVM 项目，Clang 前端）；
+- folly（Facebook/folly）提供 bitset 工具与原子位操作；
+- Eigen 内部以位掩码选择向量化路径；
+- DPDK 用 `rte_bitmap` 管理网卡队列位图（DPDK 数据面）；
+- Chromium 的 `base::` 含位操作工具（条件编译启用）。
+
+这些实现均基于 `0x0008` 字宽位运算与 `0x0040`（64 字节）缓存行对齐；`GCC 13.1.0` / `Clang 17` 对位测试编译为 `bt`/`and` 指令（约 1 ns）。`C++20` `std::popcount` 映射为 `popcnt`（单周期）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

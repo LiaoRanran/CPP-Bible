@@ -876,6 +876,14 @@ int main(){std::cout<<"Strategy: compile-time=Policy(zero cost), runtime=virtual
 - **相邻主题**：`Book/part12_patterns/ch140_policy_pattern.md`（第140章 Policy-Based Design（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part12_patterns/ch142_ecs.md`（第142章 实体组件系统 ECS（C++））—— 同模块下的其他主题。
 
+## 底层视角：行为型模式的多态代价与静态替代 [E: Low-level]
+
+[标准] Observer/Strategy/Command/Iterator 等经虚函数分派（见 ch47：约 1–3 ns + 间接跳转惩罚，每对象 `0x0008` vptr）。Command 的 `execute()` 是一次 `0x0008` 虚查表 + 间接调用；Iterator 的 `operator++`/`operator*` 同理，且破坏连续访问的缓存局部性（见 ch79 指针追逐，L3 ≈12 ns）。
+
+Template Method 把不变骨架放基类、可变步放虚函数，仍走 vtable；可用 `C++17` `if constexpr` 把步选择压到编译期，省 `0x0008` 虚查表。`GCC 13.1.0` `-O2` 对 `final` 叶子类去虚化（`Clang 17` / `MSVC 19.3` 同理）。
+
+工业实现：Boost.Signals2（Boost）提供线程安全 Observer；folly（Facebook）的 `Executor` 用策略模式封装异步任务；Chromium 的 `base::Callback` 经 `0x0008` 状态指针间接调用。缓存行 `0x0040`（64 字节）容纳 8 个 vtable 槽（0x0040 / 0x0008 = 8）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -430,6 +430,12 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 
 > 交叉引用：重载决议细节见 [ch60](Book/part06_templates/ch60_template_basics.md)；比较概念见 [ch67](Book/part06_templates/ch67_concepts.md)。
 
+## 底层视角：运算符成员/非成员、隐式转换与 constexpr [E: Low-level]
+
+[标准] 成员运算符首参为隐式 `this`（`0x0008` 指针）；非成员 `operator@` 须至少一参为用户类型。含隐式转换的运算符（如 `T::operator U()`）每次上下文转换触发一次 `0x0008` 构造/拷贝（约数 ns~数十 ns），是性能陷阱。
+
+`C++20` `consteval` 运算符可在编译期求值（如 `operator""` 字面量），彻底省运行期 `0x0008` 间接；`C++17` `if constexpr` 按类型静态派发。`GCC 13.1.0` `-O2` 把内联运算符直接展开（≈0.3 ns），未内联的虚运算符走 vtable（见 ch47，约 1–3 ns + 跳转惩罚）。SIMD 不直接适用，但向量化的 `operator+` 可经 `-mavx2`（`0x0020` 宽）并行。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

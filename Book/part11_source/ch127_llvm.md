@@ -591,6 +591,12 @@ int main(){std::cout<<"LLVM=Frontend(Clang→AST→IR)→Optimizer(Passes)→Bac
 - **相邻主题**：`Book/part11_source/ch129_qt.md`（第129章　Qt 对象模型与信号槽（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part11_source/ch124_libstdcxx.md`（第124章　libstdc++ 架构与阅读入口（C++））—— 同模块下的其他主题。
 
+## 底层视角：LLVM IR、SSA 与后端向量化 [E: Low-level]
+
+[标准] LLVM IR 为 SSA 形式，`Instruction` 等对象含 `0x0008` 指针链；`clang` 前端生成 IR 后由 `opt` 做 `-O2`/`-O3` 优化。`GCC 13.1.0` 与 `Clang 17` 后端对热点循环发射 AVX（`0x0020` 宽）/ AVX-512（`0x0040` 宽）指令，要求数据 `alignas(0x0020)`/`alignas(0x0040)`。
+
+LLVM 用 `0x0040`（64 字节）对齐的 `SmallVector` 内联缓冲减少堆分配；Pass 管理器按 `0x0008` 函数指针表驱动。`MSVC 19.3` 不共用 LLVM 后端，但 `C++17`/`C++20` 抽象一致。缓存行 `0x0040` 是寄存器分配与指令调度的基本时间/空间单位（L1 ≈1 ns，L3 ≈12 ns，主存 ≈100 ns）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

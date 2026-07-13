@@ -813,6 +813,12 @@ int main() {
 - **相邻主题**：`Book/part03_language/ch20_reference_pointer.md`（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 编号相邻、主题接续。
 - **同模块**：`Book/part02_toolchain/ch11_compilers.md`（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 同模块下的其他主题。
 
+## 底层视角：编译旗标、SIMD 与二进制对齐 [E: Low-level]
+
+[标准] CMake 生成的构建经 `GCC 13.1.0`/`Clang 17`/`MSVC 19.3`；`-O2` 开内联，`-O3` 加向量化。`-mavx2`（`0x0020` 宽）/`-mavx512f`（`0x0040` 宽）需 `alignas(0x0020)`/`alignas(0x0040)`，否则 `vmovdqa` 触发 #GP。
+
+`C++17`/`C++20`/`C++23` 标准开关影响 ABI；缓存行 `0x0040`（64 字节）是 false-sharing 与 `std::hardware_destructive_interference_size` 的基准（L1 ≈1 ns，L3 ≈12 ns，主存 ≈100 ns）。静态库 `.a` 按 `0x0010` 符号表归档，动态库 `.so`/`.dll` 首加载有重定位（µs 级/符号）。`ccache` 以预处理哈希命中复用，省重编译。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

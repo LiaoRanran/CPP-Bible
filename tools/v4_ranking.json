@@ -305,6 +305,14 @@
   },
   {
     "quality": 23,
+    "dup_rate": 0.037,
+    "water_rate": 0.0,
+    "industry_hits": 19,
+    "depth_hits": 79,
+    "path": "Book\\part01_history\\ch08_cpp23.md"
+  },
+  {
+    "quality": 23,
     "dup_rate": 0.0,
     "water_rate": 0.238,
     "industry_hits": 112,
@@ -318,6 +326,14 @@
     "industry_hits": 25,
     "depth_hits": 46,
     "path": "Book\\part06_templates\\ch60_template_basics.md"
+  },
+  {
+    "quality": 23,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 19,
+    "depth_hits": 77,
+    "path": "Book\\part07_stl\\ch87_bitset.md"
   },
   {
     "quality": 23,
@@ -382,6 +398,14 @@
     "industry_hits": 25,
     "depth_hits": 44,
     "path": "Book\\part03_language\\ch32_initialization.md"
+  },
+  {
+    "quality": 22,
+    "dup_rate": 0.0042,
+    "water_rate": 0.0,
+    "industry_hits": 21,
+    "depth_hits": 43,
+    "path": "Book\\part04_memory\\ch39_raii_rule.md"
   },
   {
     "quality": 22,
@@ -569,6 +593,22 @@
   },
   {
     "quality": 21,
+    "dup_rate": 0.0077,
+    "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 40,
+    "path": "Book\\part11_source\\ch126_msstl.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 101,
+    "depth_hits": 41,
+    "path": "Book\\part11_source\\ch127_llvm.md"
+  },
+  {
+    "quality": 21,
     "dup_rate": 0.0,
     "water_rate": 0.0,
     "industry_hits": 27,
@@ -577,11 +617,35 @@
   },
   {
     "quality": 21,
+    "dup_rate": 0.0162,
+    "water_rate": 0.0,
+    "industry_hits": 27,
+    "depth_hits": 40,
+    "path": "Book\\part12_patterns\\ch136_creational.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 16,
+    "depth_hits": 56,
+    "path": "Book\\part12_patterns\\ch138_behavioral.md"
+  },
+  {
+    "quality": 21,
     "dup_rate": 0.0,
     "water_rate": 0.0,
     "industry_hits": 25,
     "depth_hits": 38,
     "path": "Book\\part13_engineering\\ch148_gitflow.md"
+  },
+  {
+    "quality": 21,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 34,
+    "depth_hits": 41,
+    "path": "Book\\part14_perf\\ch156_compiler_opt.md"
   },
   {
     "quality": 21,
@@ -635,9 +699,25 @@
     "quality": 20,
     "dup_rate": 0.0,
     "water_rate": 0.0,
+    "industry_hits": 22,
+    "depth_hits": 37,
+    "path": "Book\\part02_toolchain\\ch18_buildconfig.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
     "industry_hits": 21,
     "depth_hits": 34,
     "path": "Book\\part03_language\\ch29_friend.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0833,
+    "water_rate": 0.0,
+    "industry_hits": 28,
+    "depth_hits": 34,
+    "path": "Book\\part03_language\\ch31_operator_overloading.md"
   },
   {
     "quality": 20,
@@ -646,6 +726,22 @@
     "industry_hits": 14,
     "depth_hits": 66,
     "path": "Book\\part04_memory\\ch41_smart_pointers.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 27,
+    "depth_hits": 35,
+    "path": "Book\\part05_oo\\ch48_rtti.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0109,
+    "water_rate": 0.0,
+    "industry_hits": 21,
+    "depth_hits": 36,
+    "path": "Book\\part06_templates\\ch71_policy.md"
   },
   {
     "quality": 20,
@@ -670,6 +766,14 @@
     "industry_hits": 31,
     "depth_hits": 37,
     "path": "Book\\part07_stl\\ch93_thread_async.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 27,
+    "depth_hits": 34,
+    "path": "Book\\part07_stl\\ch94_stop_token.md"
   },
   {
     "quality": 20,
@@ -721,6 +825,22 @@
   },
   {
     "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 43,
+    "depth_hits": 37,
+    "path": "Book\\part12_patterns\\ch139_crtp_pattern.md"
+  },
+  {
+    "quality": 20,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 37,
+    "depth_hits": 37,
+    "path": "Book\\part13_engineering\\ch150_testing.md"
+  },
+  {
+    "quality": 20,
     "dup_rate": 0.0072,
     "water_rate": 0.0,
     "industry_hits": 14,
@@ -766,6 +886,14 @@
     "industry_hits": 33,
     "depth_hits": 31,
     "path": "Book\\part04_memory\\ch36_stack_heap.md"
+  },
+  {
+    "quality": 19,
+    "dup_rate": 0.0,
+    "water_rate": 0.0,
+    "industry_hits": 12,
+    "depth_hits": 72,
+    "path": "Book\\part04_memory\\ch38_allocator.md"
   },
   {
     "quality": 19,
@@ -1038,134 +1166,6 @@
     "industry_hits": 28,
     "depth_hits": 29,
     "path": "Book\\part13_engineering\\ch145_naming_api.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.038,
-    "water_rate": 0.0,
-    "industry_hits": 9,
-    "depth_hits": 70,
-    "path": "Book\\part01_history\\ch08_cpp23.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0,
-    "water_rate": 0.0,
-    "industry_hits": 22,
-    "depth_hits": 21,
-    "path": "Book\\part02_toolchain\\ch18_buildconfig.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0857,
-    "water_rate": 0.0,
-    "industry_hits": 28,
-    "depth_hits": 21,
-    "path": "Book\\part03_language\\ch31_operator_overloading.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0,
-    "water_rate": 0.0,
-    "industry_hits": 9,
-    "depth_hits": 65,
-    "path": "Book\\part04_memory\\ch38_allocator.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0043,
-    "water_rate": 0.0,
-    "industry_hits": 17,
-    "depth_hits": 31,
-    "path": "Book\\part04_memory\\ch39_raii_rule.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0,
-    "water_rate": 0.0,
-    "industry_hits": 27,
-    "depth_hits": 23,
-    "path": "Book\\part05_oo\\ch48_rtti.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0111,
-    "water_rate": 0.0,
-    "industry_hits": 21,
-    "depth_hits": 21,
-    "path": "Book\\part06_templates\\ch71_policy.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0,
-    "water_rate": 0.0,
-    "industry_hits": 9,
-    "depth_hits": 71,
-    "path": "Book\\part07_stl\\ch87_bitset.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0,
-    "water_rate": 0.0,
-    "industry_hits": 27,
-    "depth_hits": 24,
-    "path": "Book\\part07_stl\\ch94_stop_token.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0078,
-    "water_rate": 0.0,
-    "industry_hits": 22,
-    "depth_hits": 22,
-    "path": "Book\\part11_source\\ch126_msstl.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0,
-    "water_rate": 0.0,
-    "industry_hits": 97,
-    "depth_hits": 23,
-    "path": "Book\\part11_source\\ch127_llvm.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0165,
-    "water_rate": 0.0,
-    "industry_hits": 27,
-    "depth_hits": 24,
-    "path": "Book\\part12_patterns\\ch136_creational.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0,
-    "water_rate": 0.0,
-    "industry_hits": 12,
-    "depth_hits": 42,
-    "path": "Book\\part12_patterns\\ch138_behavioral.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0,
-    "water_rate": 0.0,
-    "industry_hits": 43,
-    "depth_hits": 23,
-    "path": "Book\\part12_patterns\\ch139_crtp_pattern.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0,
-    "water_rate": 0.0,
-    "industry_hits": 37,
-    "depth_hits": 23,
-    "path": "Book\\part13_engineering\\ch150_testing.md"
-  },
-  {
-    "quality": 17,
-    "dup_rate": 0.0,
-    "water_rate": 0.0,
-    "industry_hits": 34,
-    "depth_hits": 23,
-    "path": "Book\\part14_perf\\ch156_compiler_opt.md"
   },
   {
     "quality": 16,

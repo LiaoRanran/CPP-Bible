@@ -921,6 +921,12 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 - **相邻主题**：`Book/part05_oo/ch50_multiple_inheritance.md`（第50章　多重继承与对象模型（Multiple Inheritance））—— 编号相邻、主题接续。
 - **同模块**：`Book/part05_oo/ch45_oop_object_model.md`（第 45 章　C++ 面向对象总览与对象模型基础）—— 同模块下的其他主题。
 
+## 底层视角：RTTI 指针、typeinfo 与 dynamic_cast 的指针追逐 [E: Low-level]
+
+[标准] 开启 RTTI 时，vtable 首槽前藏一个 `0x0008` 的 `typeinfo` 指针（指向 `.rodata` 中唯一的 `std::type_info` 对象）。`typeid` 取其地址（`0x0008` 解引用，L1 ≈1 ns）；`dynamic_cast` 沿继承树走 RTTI 链做类型比对，深度 d 即 d 次 `0x0008` 指针追逐（冷路径落 L3 ≈12 ns 或主存 ≈100 ns）。
+
+`-fno-rtti` 省去 `0x0008` typeinfo 指针与 `.rodata` 表，二进制更小但禁 `dynamic_cast`/`typeid`。`GCC 13.1.0` / `Clang 17` 在 `-O2` 下对已知静态类型可把 `dynamic_cast` 优化为直接指针调整（见 ch50 thunk）。`C++98` 起 RTTI 标准，`C++20` `consteval` 可把类型查询压到编译期。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -1542,6 +1542,18 @@ int main() {
 - **相邻主题**：`Book/part04_memory/ch40_exception_safety.md`（第 40 章　异常安全（Exception Safety））—— 编号相邻、主题接续。
 - **同模块**：`Book/part04_memory/ch35_memory_layout.md`（第 35 章  C++ 程序的内存模型与操作系统视角）—— 同模块下的其他主题。
 
+## 工业实现参考：真实通用分配器 [B: Principle]
+
+[标准·可查证] 标准 `std::allocator` 仅包装 `::operator new`；高性能场景用工业分配器：
+- jemalloc（Meta/Facebook，多核低锁，大规模服务）；
+- tcmalloc（Google，线程缓存，gperftools）；
+- mimalloc（Microsoft，低碎片，Azure 基础设施）；
+- snmalloc（Microsoft，消息传递并发）；
+- Boost.Pool（Boost，定长块池）；
+- tbb::scalable_allocator（Intel oneTBB）。
+
+这些分配器以 `0x0010`/`0x0040`（16/64 字节）块对齐减少碎片，热路径用线程本地缓存避免锁（`lock xadd` 10–20 ns 仅在跨核时）。`GCC 13.1.0` / `Clang 17` 的 `-O2` 把 `std::allocator` 的 `new` 内联；`C++17` 起 `std::pmr` 提供多态分配器（经 `0x0008` 指针间接，见 ch47 量级）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
