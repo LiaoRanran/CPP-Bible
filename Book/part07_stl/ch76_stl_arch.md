@@ -980,6 +980,18 @@ int main(){std::vector<int> v{1,2,3};std::map<int,int> m{{1,10}};std::cout<<v[0]
 
 > 交叉引用：容器见 [ch78](Book/part07_stl/ch78_deque.md) 等；分配器见 [ch38](Book/part04_memory/ch38_allocator.md)。
 
+## 附录 G：STL 架构工业实践 [F: Industry / B: Principle]
+
+标准 STL 只是基线，工业库在容器与分配上做了大量替换：
+
+- **Eigen**：用表达式模板（`Expr<...>`）把 `a + b + c` 合成单一循环，避免临时 `Matrix` 拷贝；`internal::evaluator` trait 分发到 SIMD 内核。
+- **Abseil**：`absl::flat_hash_map` 用 Swiss Table（ctrl 字节 + 8 槽组），开放寻址加 SIMD 组探测，`find` 平均 1–2 次内存访问；`absl::InlinedVector` 小对象栈驻留避免堆分配。
+- **folly**：`folly::F14` 是分段 Swiss Table，高并发下比 `std::unordered_map` 省 40% 内存、`find` 快 2×；`folly::small_vector` 类似 Abseil 内联策略。
+- **Boost**：`boost::multi_index` 一个容器挂多套索引；`boost::intrusive` 把链表/树节点嵌入用户结构体，零分配（常用于高频交易订单簿）。
+- **DPDK**：数据面用 `rte_mempool` 预分配定长对象池，完全绕开 `std::allocator` 的 `new` 路径，换确定性延迟。
+
+架构共性：allocator 是关键抽象点——`std::polymorphic_allocator` + `std::memory_resource`（C++17）把 SSO/池化下沉到 `resource`，工业库普遍自定义 `memory_resource` 做 NUMA 感知分配。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

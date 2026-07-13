@@ -1023,6 +1023,16 @@ int main(){std::cout<<"LLVM:Buildbot+GH Actions(15min pre,2h full);Chromium:LUCI
 - **相邻主题**：`Book/part13_engineering/ch151_benchmark.md`（第151章 基准测试与性能度量（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part13_engineering/ch144_style.md`（第144章 代码风格与规范（C++））—— 同模块下的其他主题。
 
+## 附录 B：编译缓存与分布式构建深度 [E: Low-level / B: Principle]
+
+CI 快不快，取决于"能复用的编译产物"有多少：
+
+- **ccache**：以预处理后源码 + 编译器指纹算 SHA-256（64 位十六进制 `0x9f2a...`）作缓存键，命中直接拷 `.o` 跳过 `g++ -c`；`CCACHE_DIR` 跨 job 复用，本地命中率常 `60–85%`。
+- **distcc / icecream**：把 `.o` 编译分发到农场，`__cplusplus` 探测决定 `-std=`；Google 内部用 Blaze 做大规模并行，单仓十万目标级。
+- **CMake configure 缓存**：`CMakeCache.txt` 记 `CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++-17`，重跑 `cmake` 不重探工具链，省 `200 ms`/次；`ccache` 未命中时一次 `g++ -O2 -c foo.cpp` 约 `300 ms`（小文件）到 `8 s`（重模板头）。
+
+缓存失效根因：改动 `__cplusplus` 相关宏、`-D` 定义或 `compiler_version` 变化都会让 SHA 键变，触发整池重编——这是 CI 时间突增的常见元凶。用 `constexpr` 内联头减少 TU 间重复实例化也能降缓存压力。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

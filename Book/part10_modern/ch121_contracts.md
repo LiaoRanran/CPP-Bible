@@ -799,6 +799,17 @@ int main(){std::cout<<"C++26 contracts(P2900): proof-carrying code for safety-cr
 
 > 交叉引用：断言与测试见 [ch150](Book/part13_engineering/ch150_testing.md)；异常安全见 [ch40](Book/part04_memory/ch40_exception_safety.md)。
 
+## 附录 H：C++20 Contracts 工业实践 [F: Industry / H: Design / B: Principle]
+
+契约（P0542R3 → P2900R3）让前置/后置/断言从宏升级为语言设施：
+
+- **LLVM / Clang**：`-fexperimental-contracts` 实验支持 `[[assert: ...]]`，配合 `-fcontract-continuation-mode` 控制违例行为（terminate / throw / ignore）。
+- **Boost.Contract**：库级实现 `BOOST_CONTRACT_AA` 前后置加类不变式，早于语言特性，工业代码里仍有存量。
+- **Chromium**：`DCHECK` / `CHECK` 是契约的工程雏形——`DCHECK(a > 0)` 在 Release 被剥离，等价于 `[[assert]]` 的 debug-only 语义；`base::ImmediateCrash` 对应违例终止。
+- **Google**：C++ Style Guide 区分 `CHECK`（永不剥离）与 `DCHECK`（debug 断言），契约标准意在把这套语义统一到 `std::contracts::*` 命名空间。
+
+设计权衡：默认 `ignore` 模式保持 ABI 稳定但失效用；`enforce` 暴露 bug 但可能冲击性能敏感路径。WG21 最终把默认语义交给构建系统（`-fcontract-level`）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

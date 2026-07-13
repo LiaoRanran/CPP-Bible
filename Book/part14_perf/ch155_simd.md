@@ -818,6 +818,19 @@ SIMD设计决策树:
 - **相邻主题**：`Book/part14_perf/ch157_compiler_explorer.md`（第157章 Compiler Explorer 实战）—— 编号相邻、主题接续。
 - **同模块**：`Book/part14_perf/ch152_perf_model.md`（第152章　性能模型与测量学）—— 同模块下的其他主题。
 
+## 附录 F：SIMD 工业实践与深度 [F: Industry / E: Low-level / B: Principle]
+
+真实生产代码里的 SIMD 几乎从不直接手写 intrinsics，而是依赖库与编译器向量化：
+
+- **LLVM Loop Vectorizer / SLP Vectorizer**：`-O2` 下自动把标量循环转成 AVX2；`#pragma clang loop vectorize(enable)` 显式提示。LLVM 的 `@llvm.experimental.vector.reduce` 系列内在支撑 reduction 合并。
+- **Eigen**：内部 `internal::packet_traits<T>` 把逐元素运算映射到 `Packet4f`/`Packet8f`（SSE/AVX），矩阵乘走 `gebp` 微内核，自动 dispatch 到 AVX-512。
+- **folly::simd**（Meta）：`folly::simd::Vec<T, W>` 类型安全封装，提供 `load`/`store` 与原生 intrinsic 的零开销桥接。
+- **DPDK**：`rte_eth_rx_burst` 用向量化收包（AVX-512 版 `ice_recv_pkts_vec_avx512`），配合 `rte_prefetch0` 隐藏内存延迟；数据面要求确定性吞吐，禁用分支预测失败路径。
+- **Boost.SIMD**（历史）：Boost 社区早期 SIMD 抽象，后并入 `std::simd`（P0918），展示 `pack<float, 8>` 风格的 API。
+- **Google ruy / gemmlowp**：移动端量化矩阵乘，手写 ARM NEON `int8x16_t` 微内核，吞吐由 `1.2 GFLOP/s` 量级实测约束。
+
+编译侧：`g++ -std=c++23 -mavx2 -mfma -O3` 让编译器把内层循环向量化；`clang++ -march=native -fno-math-errno` 避免标量回退。AVX2 单条 `vfmadd231ps` 在 3.5 GHz 上 5 周期延迟、0.5 周期吞吐，理论 8×float/指令。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -681,6 +681,33 @@ A: 移除 QTextCodec (改用 UTF-8), QVector=QList 统一, CMake 成为首选构
 - **相邻主题**：`Book/part11_source/ch131_fmt_spdlog.md`（第131章　fmt / spdlog 格式化与日志（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part11_source/ch124_libstdcxx.md`（第124章　libstdc++ 架构与阅读入口（C++））—— 同模块下的其他主题。
 
+## 附录 E：Q_OBJECT 与 moc 的底层实现 [E: Low-level / B: Principle]
+
+`Q_OBJECT` 宏展开后，moc 生成一个平行的元对象类，信号/槽本质是虚函数 + 字符串查表：
+
+信号 `emit valueChanged(x)` 编译为 moc 生成的：
+
+```text
+// moc 生成（简化）
+void Foo::valueChanged(int _t1) {
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
+}
+```
+
+`QMetaObject::activate` 走 `QObjectPrivate::connectionLists`，按信号索引 `1` 取出接收者列表，逐个调用其 `qt_metacall`：
+
+```text
+    mov  rax, [rbx + 0x08]     ; 取 connectionList 头
+    call [rax + 0x20]          ; 虚调 qt_metacall（vtable 偏移）
+```
+
+`qt_metacall` 是 `QObject` 的虚函数，位于 vtable 固定槽位（偏移 `~0x38`），由 moc 合成的 `reinterpret_cast` 分发到具体槽函数。
+
+跨线程 `QueuedConnection` 走事件队列：`postEvent` 把参数序列化进 `QMetaCallEvent`，目标线程 `eventLoop` 取出后 `invokeMethod`，延迟受队列深度影响，典型 `1–5 ms`（同进程跨线程）。
+
+内存：每个 `QObject` 持 `QObjectPrivate*`，子对象链表占 `0x10`（指针 ×2），父子析构自动级联。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

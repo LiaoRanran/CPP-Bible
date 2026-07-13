@@ -742,6 +742,17 @@ int main(){std::cout<<Traits<int>::name()<<std::endl;return 0;}
 
 > 交叉引用：特化与 `type_traits` 联动见 [ch65](Book/part06_templates/ch65_type_traits.md)；与 SFINAE 选拔见 [ch66](Book/part06_templates/ch66_sfinae.md)。
 
+## 附录 I：模板特化工业实践 [F: Industry / B: Principle]
+
+特化是泛型库把"通用算法"换成"最优实现"的核心手段：
+
+- **Eigen**：`Eigen::NumTraits<T>` 全特化给标量类型定 `epsilon()`/`dummy_precision()`；`internal::scalar_product_traits` 特化决定是否走 SIMD。
+- **Boost**：`boost::type_traits`（`is_integral`/`is_pointer`）通过偏特化萃型；`boost::multiprecision` 对 `cpp_int` 全特化 `numeric_limits`。
+- **Abseil**：`absl::StrFormat` 用特化选 `FormatValue` 的编码路径；`absl::hash` 对 `std::string`/容器特化。
+- **LLVM**：`llvm::DenseMapInfo<T>` 特化提供哈希/相等/空哨兵，是 LLVM 容器的关键定制点。
+
+模式：默认模板定义算法骨架，全/偏特化替换热点分支——比运行时 `if` 早到编译期，零开销。C++17 的 `if constexpr` 与 C++20 concepts 逐步把"特化地狱"收敛为 `requires` 约束。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
