@@ -12,15 +12,14 @@
 
 
 ```cpp
-// std::expected（成功/错误载体）
+// [merged] ## ① 学习目标
+#include <iostream>
 #include <expected>
 #include <system_error>
-std::expected<int,std::error_code> ok=42;
-```
-```cpp
-// std::expected 错误分支
-#include <expected>
-std::expected<int, int> e=std::unexpected(1); bool bad=!e.has_value();
+int main() {
+    std::expected<int,std::error_code> ok=42;
+    std::expected<int, int> e=std::unexpected(1); bool bad=!e.has_value();
+}
 ```
 
 - 掌握 C++23 核心特性：`std::expected`（带错误值的返回值）、`std::flat_map`/`flat_set`（连续存储有序容器）、`std::print`/`std::println`、`std::stacktrace`、`std::mdspan`、范围适配增强（`zip`/`chunk`/`slide`/`adjacent`）、`std::ranges::contains`、多维度等。
@@ -29,15 +28,15 @@ std::expected<int, int> e=std::unexpected(1); bool bad=!e.has_value();
 ## ② 前置知识
 
 ```cpp
-// std::span 多维视图（本机 GCC13 的 <mdspan> 尚未实现，用 span 等价演示）
+// [merged] ## ② 前置知识
+#include <iostream>
 #include <span>
-int buf[6]; std::span<int> a(buf); int n=a.size();
-```
-```cpp
-// std::flat_map 扁平有序容器（C++23；本机用 std::map 等价演示）
 #include <map>
 #include <string>
-std::map<int,std::string> fm{{1,"a"}};
+int main() {
+    int buf[6]; std::span<int> a(buf); int n=a.size();
+    std::map<int,std::string> fm{{1,"a"}};
+}
 ```
 
 - ch07（Ranges/format/coroutine 基础）。
@@ -45,14 +44,13 @@ std::map<int,std::string> fm{{1,"a"}};
 ## ③ 后续依赖
 
 ```cpp
-// std::print 直接打印（C++23 <print>；本机 GCC13 未实现，用 cout 等价演示）
+// [merged] ## ③ 后续依赖
 #include <iostream>
-void p(){ std::cout << 42 << "\n"; }
-```
-```cpp
-// auto(x) 衰减拷贝（C++23）
 #include <string>
-std::string s="x"; auto d=s;
+void p(){ std::cout << 42 << "\n"; }
+int main() {
+    std::string s="x"; auto d=s;
+}
 ```
 
 - `expected`（ch88，错误处理现代范式）、`print`（ch131）、Ranges 适配（ch90）、`stacktrace`（调试，ch14）。
@@ -60,12 +58,11 @@ std::string s="x"; auto d=s;
 ## ④ 知识图谱
 
 ```cpp
-// 多维下标运算符
+// [merged] ## ④ 知识图谱
+#include <iostream>
 struct M{ int at(int i,int j) const { return i+j; } }; M m; int v=m.at(1,2);
-```
-```cpp
-// 静态 operator()
 struct F{ static int call(int x){ return x; } }; int r=F::call(3);
+int main() {}
 ```
 
 ```
@@ -84,24 +81,22 @@ C++23 库大修
 ## ⑤ Mermaid（expected 错误处理流）
 
 ```cpp
-// [[assume]] 属性
-[[assume(true)]] void hint(){}
-```
-```cpp
-// 范围适配器增强（zip）
+// [merged] ## ⑤ Mermaid（expected 错误处理流）
+#include <iostream>
 #include <ranges>
 #include <vector>
+[[assume(true)]] void hint(){}
 void z(){ std::vector<int> a{1,2},b{3,4}; for(auto [x,y]: std::views::zip(a,b)){ (void)x;(void)y; } }
+int main() {}
 ```
 
 ## ⑥ UML / 结构图（特性关系）[标准]
 
 ```cpp
-// std::generator 协程（示意）
-// std::generator<int> seq(){ co_yield 1; co_yield 2; }
-```
-```cpp
+// [merged] ## ⑥ UML / 结构图（特性关系）[标准]
+#include <iostream>
 inline unsigned long long operator"" _u(unsigned long long x){ return x; }  // 用户定义字面量（UDL）
+int main() {}
 ```
 
 本章特性按目标分三类：语法糖（结构化绑定 / 折叠表达式）、编译期分支（`if constexpr` / CTAD）、库类型（`string_view` / `optional` / `variant` / `any` / 并行 STL）。
@@ -117,39 +112,33 @@ flowchart TD
 ## ⑦ ASCII 内存图（flat_map 连续布局）
 
 ```cpp
-// import std 模块示意（需模块支持）
-// import std;
-```
-```cpp
-// std::ranges 范围工厂（包进函数体）
+// [merged] ## ⑦ ASCII 内存图（flat_map 连续布局）
+#include <iostream>
 #include <ranges>
 auto r=std::views::iota(1,5); void use_iota(){ for(int x:r) (void)x; }
+int main() {}
 ```
 
 ## ⑧ 生命周期（新增库类型的所有权语义）
 
 ```cpp
-// stacktrace（注释示意，链接需 -lstdc++_exp）
-// #include <stacktrace>
-// auto st=std::stacktrace::current();
-```
-```cpp
-// std::expected monadic
+// [merged] ## ⑧ 生命周期（新增库类型的所有权语义）
+#include <iostream>
 #include <expected>
-int val=std::expected<int,int>{42}.value_or(0);
+int main() {
+    int val=std::expected<int,int>{42}.value_or(0);
+}
 ```
 
 `string_view` 不拥有数据（悬垂风险，ch36）；`optional`/`variant`/`any` 在对象内管理所含值的生命周期（ch25）；CTAD 推导的临时对象生命周期遵循常规规则。
 ## ⑨ 调用栈（编译期分支与折叠）
 
 ```cpp
-// std::print 原生字符串（等价 cout 演示）
+// [merged] ## ⑨ 调用栈（编译期分支与折叠）
 #include <iostream>
 void hi(){ std::cout << "hi\n"; }
-```
-```cpp
-// 命名空间枚举（C++23 收尾）
 enum struct Color : unsigned char { R, G, B }; Color c=Color::R;
+int main() {}
 ```
 
 `if constexpr` 在编译期裁剪分支，不产生运行时调用；折叠表达式展开为顺序求值，调用栈与普通循环一致（ch26）。
@@ -167,14 +156,14 @@ values: [v1][v2][v3]...   ← 连续内存, 缓存友好, 查找 O(log n)
 ## ⑩ 汇编（std::print 编译期格式检查）
 
 ```cpp
-// auto(x) 与 const
+// [merged] ## ⑩ 汇编（std::print 编译期格式检查）
+#include <iostream>
 #include <string>
-const std::string cs="y"; auto copy=cs;
-```
-```cpp
-// std::mdspan 多维视图访问（本机用 span 等价演示）
 #include <span>
 int d2[4]; std::span<int> m2(d2); void use_md(){ m2[0]=1; }
+int main() {
+    const std::string cs="y"; auto copy=cs;
+}
 ```
 
 > 编译期校验格式串，避免运行时 `printf` 崩溃（ch131、ch34）。
@@ -182,12 +171,11 @@ int d2[4]; std::span<int> m2(d2); void use_md(){ m2[0]=1; }
 ## ⑪ STL 联系
 
 ```cpp
-// 静态成员函数对象
+// [merged] ## ⑪ STL 联系
+#include <iostream>
 struct Cb{ static void run(){ } };
-```
-```cpp
-// 多维下标自定义
 struct Grid{ int g[2][2]; int& operator[](int i){ return g[i][0]; } };
+int main() {}
 ```
 
 - `expected` 与 `optional` 互补：`optional` 表示「有/无」，`expected` 表示「值/错误原因」（ch88）。
@@ -196,16 +184,15 @@ struct Grid{ int g[2][2]; int& operator[](int i){ return g[i][0]; } };
 ## ⑫ 工业案例
 
 ```cpp
-// std::expected 错误映射
+// [merged] ## ⑫ 工业案例
+#include <iostream>
 #include <expected>
 #include <system_error>
-std::expected<int,std::error_code> f(){ return std::unexpected(std::error_code{}); }
-```
-```cpp
-// 范围 zip + 变换
 #include <ranges>
 #include <vector>
+std::expected<int,std::error_code> f(){ return std::unexpected(std::error_code{}); }
 void zt(){ std::vector<int> a{1,2}; for(auto [x,y]: std::views::zip(a,a)){ (void)x;(void)y; } }
+int main() {}
 ```
 
 - **服务端**：函数返回 `expected<Result, ErrorCode>` 取代异常（性能敏感路径不用异常，ch146）。
