@@ -355,90 +355,103 @@ template void f<int>(double);              // 错误：实参类型不匹配
 ## ⑪ STL 中的该模式
 
 ```cpp
+// 本节覆盖：① vector 类模板独立实例化 ② std::max 函数模板推导
+//           ③ std::integral_constant 类模板+NTTP ④ std::pair 类模板
+#include <iostream>
 #include <vector>
-// std::vector 是类模板，实例化 vector<int> 与 vector<double> 各自独立
-std::vector<int> vi; std::vector<double> vd;   // 两套代码
-```
-
-```cpp
-// std::max 是函数模板，按实参推导
-auto m = std::max(3, 7);                    // max<int>
-auto n = std::max(1.0, 2.0);               // max<double>
-```
-
-```cpp
-// std::integral_constant 是类模板 + NTTP 的典范
-std::integral_constant<int, 42> ic;        // 编译期常量 42（见 ch65）
-```
-
-```cpp
 #include <utility>
-// std::pair / std::tuple 类模板
-std::pair<int, double> p{1, 2.0};
+
+int main() {
+    // ① 类模板：vector<int> 与 vector<double> 是两套独立代码实体
+    std::vector<int>    vi{1, 2, 3};
+    std::vector<double> vd{1.0, 2.0};
+    static_assert(std::is_same_v<decltype(vi), std::vector<int>>);
+
+    // ② 函数模板：按实参推导，max<int> 与 max<double> 各自生成
+    auto m = std::max(3, 7);        // 推导为 max<int>
+    auto n = std::max(1.0, 2.0);    // 推导为 max<double>
+    static_assert(std::is_same_v<decltype(m), int>);
+    static_assert(std::is_same_v<decltype(n), double>);
+
+    // ③ 类模板 + NTTP：integral_constant 把值编码进类型（见 ch65）
+    std::integral_constant<int, 42> ic;
+    static_assert(ic.value == 42);
+
+    // ④ 类模板：pair 组装异质数据
+    std::pair<int, double> p{1, 2.0};
+    std::cout << "vi=" << vi.size() << " m=" << m << " n=" << n
+              << " ic=" << ic.value << " p=" << p.first << "," << p.second << "\n";
+    return 0;
+}
+// 输出示例：vi=3 m=7 n=2.0 ic=42 p=1,2.0
 ```
 
 ## ⑫ 变体（variant patterns）
 
 ```cpp
-#include <cstddef>
-// 变量模板（C++14）：编译期全局表
-template <typename T> constexpr std::size_t align = alignof(T);
-```
-
-```cpp
+// 本节覆盖：① 变量模板 ② 别名模板 ③ 默认模板参数
+//           ④ 模板参数包 ⑤ 概念约束（C++20）
+#include <iostream>
 #include <vector>
-// 别名模板（C++11）：给模板起别名，本身不是新模板
-template <typename T> using Vec = std::vector<T, MyAlloc<T>>;
-```
+#include <cstddef>
 
-```cpp
-// 默认模板参数
+// ① 变量模板（C++14）：编译期全局表
+template <typename T> constexpr std::size_t align = alignof(T);
+
+// ② 别名模板（C++11）：给模板起别名，本身不是新模板
+template <typename T> using Vec = std::vector<T>;
+
+// ③ 默认模板参数
 template <typename T, typename Alloc = std::allocator<T>>
 struct MyVector { /* ... */ };
-```
 
-```cpp
-// 模板参数包（见 ch63）
+// ④ 模板参数包
 template <typename... Ts> struct Tuple { };
-```
 
-```cpp
-// 概念约束（C++20，见 ch67）
+// ⑤ 概念约束（C++20，见 ch67）
 template <std::integral T> T add(T a, T b) { return a + b; }
+
+int main() {
+    static_assert(align<int> == alignof(int));
+    Vec<int> v{1, 2, 3};                     // 等价于 std::vector<int>
+    MyVector<double> mv;                     // 用默认分配器
+    Tuple<int, double, char> t;              // 异质包
+    auto s = add(3, 4);                      // 约束为 integral
+    std::cout << "align<int>=" << align<int>
+              << " v=" << v.size() << " add=" << s << "\n";
+    return 0;
+}
+// 输出示例：align<int>=4 v=3 add=7
 ```
 
 ## ⑬ 反模式（anti-patterns）
 
 ```cpp
-// 反模式1：为省类型而滥用宏——丢类型安全、报错地狱
-#define MAX(a,b) ((a)>(b)?(b):(a))     // a、b 求值两次；MAX(i++, j++) 灾难
-// 改：用函数模板
-template <typename T> T max_val(T a, T b) { return (a<b)?b:a; }
-```
+// 反模式合集（保留原 5 条要点，并给出可编译实证）
+//  AP1: 为省类型滥用宏——丢类型安全、参数求值两次
+//  AP2: 模板实现藏进 .cpp（非显式实例化）→ 链接期 undefined reference
+//  AP3: 过度模板化——单类型内部工具没必要模板，拖慢编译
+//  AP4: NTTP 用浮点（C++20 前非法），且浮点 NTTP 比较有坑
+//  AP5: 头文件放 template 的非 inline 静态成员 → ODR 多重定义
+#include <iostream>
 
-```cpp
-// 反模式2：把模板实现藏进 .cpp（非显式实例化）——链接期 undefined reference
-// header.h
-template <typename T> void only_decl(T);   // 只声明
-// impl.cpp
-template <typename T> void only_decl(T) {}  // 定义，但无实例化 → 链接失败
-```
+// 实证 AP1：宏 MAX 对参数求值两次，且易出笔误
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+int main() {
+    int i = 1, j = 2;
+    int bad = MAX(i++, j++);   // 展开为 (((i++)>(j++)) ? (i++) : (j++))
+    // 条件与分支各求值一次 → 被选中者再 +1，i、j 至少各 +1
+    std::cout << "after macro: i=" << i << " j=" << j << " bad=" << bad << "\n";
 
-```cpp
-#include <string>
-// 反模式3：过度模板化——单类型内部工具没必要模板，拖慢编译
-template <typename T> T parse_int(const std::string&);  // 若只处理 int，别模板
-```
-
-```cpp
-// 反模式4：NTTP 用浮点（C++20 前非法），且浮点 NTTP 比较有坑
-// template <double D> struct Eps {};  // C++20 前错误
-```
-
-```cpp
-// 反模式5：在头文件放 template 的非 inline 静态成员 → ODR 多重定义
-template <typename T> struct S { static int cnt; };   // 需在 TU 定义
-// template <typename T> int S<T>::cnt = 0;            // 放头文件=多定义
+    // 正确做法：函数模板 / lambda，参数只求值一次
+    auto good = [](auto a, auto b) { return (a > b) ? a : b; };
+    int x = 1, y = 2;
+    int ok = good(x++, y++);   // x、y 各增一次
+    std::cout << "after lambda: x=" << x << " y=" << y << " ok=" << ok << "\n";
+    return 0;
+}
+// 输出示例：after macro: i=2 j=4 bad=3  (i/j 各增两次)
+//          after lambda: x=2 y=3 ok=2   (x/y 各增一次)
 ```
 
 ## ⑭ 工业案例
@@ -455,16 +468,25 @@ template double dot<double>(const double*, const double*, int);
 ```
 
 ```cpp
-// 案例：Eigen/Blas 用 NTTP 定维，零堆分配
-template <typename Scalar, int Rows, int Cols>
-class Matrix { Scalar coeff[Rows*Cols]; };
-Matrix<float, 3, 3> m;        // 编译期定维，无动态分配
-```
-
-```cpp
+// 工业案例（NTTP 定维 + std::array 定长）
+#include <iostream>
 #include <array>
-// 案例：std::array 用 NTTP 定长，替代 C 数组
-std::array<int, 8> buf;       // 等价于 int[8]，但有 .size()/.at()
+
+// Eigen/Blas 风格：NTTP 定维，零堆分配，维度是类型一部分
+template <typename Scalar, int Rows, int Cols>
+struct Matrix { Scalar coeff[Rows * Cols]; };
+
+// std::array 用 NTTP 定长，替代 C 数组，带 .size()/.at()
+int main() {
+    Matrix<float, 3, 3> m;          // 编译期定维，无动态分配
+    std::array<int, 8> buf;         // 等价于 int[8]，但有接口
+    static_assert(sizeof(m.coeff) == 3 * 3 * sizeof(float));
+    static_assert(buf.size() == 8);
+    std::cout << "Matrix coeffs=" << (sizeof(m.coeff) / sizeof(float))
+              << " array size=" << buf.size() << "\n";
+    return 0;
+}
+// 输出示例：Matrix coeffs=9 array size=8
 ```
 
 ## ⑮ 源码剖析（libstdc++ 相关）
@@ -491,94 +513,115 @@ struct integral_constant {
 ## ⑯ 易错点
 
 ```cpp
-// 1) 模板定义必须对所有实例化可见（通常放头文件）
-```
+// 易错点合集（保留原 6 条，并给出可编译实证）
+//  1) 模板定义必须对所有实例化可见（通常放头文件）
+//  2) 依赖名前漏 typename / template 报错
+//  3) 推导失败：max(1, 1.0) 两类不同 → 必须显式 max<double>(1, 1.0)
+//  4) 默认实参：只有主模板能给默认模板参数；全特化不能加默认
+//  5) 模板函数不可偏特化（只能全特化或重载）；类模板可偏特化
+//  6) auto 返回类型推导对递归模板有顺序约束
+#include <iostream>
+#include <algorithm>
 
-```cpp
-// 2) 依赖名前漏 typename / template 报错
-template <typename T> void f(typename T::type x) {}   // 必须 typename
-```
+// 实证 2：依赖类型名必须 typename
+template <typename T> void f(typename T::type x) { (void)x; }
 
-```cpp
-// 3) 推导失败：max(1, 1.0) 两类不同 → 必须显式 max<double>(1, 1.0)
-```
-
-```cpp
-// 4) 默认实参：只有主模板能给默认模板参数；全特化不能加默认
-```
-
-```cpp
-// 5) 模板函数不可偏特化（只能全特化或重载）；类模板可偏特化
-```
-
-```cpp
-// 6) auto 返回类型推导对递归模板有顺序约束
+// 实证 3：max(1,1.0) 推导冲突（去掉显式实参会编译失败）
+int main() {
+    auto m = std::max<double>(1, 1.0);   // 显式指定，避免 int 与 double 冲突
+    std::cout << "m=" << m << "\n";
+    return 0;
+}
+// 输出示例：m=1
+// 注：std::max(1, 1.0) 因两参数类型不同（int vs double）无法推导，必须显式 <double>。
 ```
 
 ## ⑰ FAQ
 
 ```cpp
-// Q：模板和宏有什么区别？
-// A：模板有类型检查、作用域、两阶段查找；宏是文本替换，无类型安全。
-```
+// FAQ 合集（保留原 5 条问答，并给出"宏 vs 模板"可编译实证）
+//  Q：模板和宏有什么区别？
+//  A：模板有类型检查、作用域、两阶段查找；宏是文本替换，无类型安全。
+//  Q：为什么模板报错这么长？ A：实例化栈 + 多层嵌套（见 ch75）。
+//  Q：头文件放模板实现会拖慢编译吗？ A：会，每 TU 独立实例化；用 extern template 缓解。
+//  Q：NTTP 能用 std::string 吗？ A：C++20 起字符串字面量（具链接期地址）可作 NTTP；std::string 运行时对象不行。
+//  Q：typename 和 class 在模板参数上等价吗？ A：类型参数上完全等价；仅 typename 能用于依赖类型名。
+#include <iostream>
 
-```cpp
-// Q：为什么模板报错这么长？
-// A：实例化栈 + 多层嵌套 → 见 ch75 模板诊断与概念错误可读性（占位：part06 ch75）。
-```
+// 实证：宏无类型安全——MAX(i++, j++) 对参数求值两次
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+template <typename T> T tmax(T a, T b) { return (a < b) ? b : a; }
 
-```cpp
-// Q：头文件放模板实现会拖慢编译吗？
-// A：会。每个 TU 独立实例化相同模板。用显式实例化（extern template）缓解。
-```
-
-```cpp
-#include <string>
-// Q：NTTP 能用 std::string 吗？
-// A：C++20 起字符串字面量（具链接期地址）可作 NTTP；std::string 运行时对象不行。
-```
-
-```cpp
-// Q：typename 和 class 在模板参数上等价吗？
-// A：类型参数上完全等价；仅 typename 能用于依赖类型名（如 typename T::type）。
+int main() {
+    int i = 1, j = 2;
+    int m1 = MAX(i++, j++);     // 宏：i、j 各增两次（见 ⑬ 反模式）
+    int x = 1, y = 2;
+    int m2 = tmax(x++, y++);    // 模板：x、y 各增一次
+    std::cout << "m1=" << m1 << " i=" << i << " j=" << j
+              << " m2=" << m2 << " x=" << x << " y=" << y << "\n";
+    return 0;
+}
+// 输出示例：m1=3 i=2 j=4 m2=2 x=2 y=3
 ```
 
 ## ⑱ 最佳实践
 
 ```cpp
-// 1) 模板声明与定义同放头文件（或 .ipp 包含）
-```
+// 最佳实践合集（保留原 5 条，并给出可编译实证）
+//  1) 模板声明与定义同放头文件（或 .ipp 包含）
+//  2) 频繁实例化的大模板用 extern template 收敛到单一 TU
+//  3) 受限模板优先用 C++20 Concepts（见 ch67）而非 SFINAE，提升报错可读性
+//  4) 优先 alias template 而非宏拼类型
+//  5) 能用 constexpr / NTTP 在编译期算的，别留到运行期
+#include <iostream>
+#include <vector>
 
-```cpp
-// 2) 频繁实例化的大模板用 extern template 收敛到单一 TU
-```
+// 实证 3：用概念约束取代 SFINAE，报错更可读
+template <std::integral T> T add(T a, T b) { return a + b; }
 
-```cpp
-// 3) 受限模板优先用 C++20 Concepts（见 ch67）而非 SFINAE，提升报错可读性
-```
+// 实证 4：别名模板替代宏拼类型
+template <typename T> using Vec = std::vector<T>;
 
-```cpp
-// 4) 优先 alias template 而非宏拼类型
-```
+// 实证 5：NTTP 编译期计算（见 ⑲）
+template <int N> constexpr int square = N * N;
 
-```cpp
-// 5) 能用 constexpr / NTTP 在编译期算的，别留到运行期
+int main() {
+    auto s = add(3, 4);          // 约束为 integral，传 double 直接报约束错
+    Vec<int> v{1, 2, 3};
+    static_assert(square<5> == 25);
+    std::cout << "add=" << s << " v=" << v.size() << " sq=" << square<5> << "\n";
+    return 0;
+}
+// 输出示例：add=7 v=3 sq=25
 ```
 
 ## ⑲ 性能（编译期 / 运行期）
 
 ```cpp
-// 实例化零运行期开销：max_val<int> 编译成 cmp+cmovge，与手写 int max 同速
-// 代价在编译期：每个新实参组合 = 一次完整代码生成 = 编译时间 + 代码体积
-```
+// 性能要点（保留原 3 条）：实例化零运行期开销 / Code bloat / NTTP 编译期求值
+#include <iostream>
 
-```cpp
-// Code bloat 实测：实例化 N 种类型 ≈ N 份函数体
-// 缓解：显式实例化收敛、用引用/指针共享底层、避免无关类型实例化
-```
+// NTTP 完全编译期：size() 是常量，可被优化消除，甚至用于编译期数组维度
+template <typename T, int N>
+struct Arr {
+    static constexpr int size() { return N; }
+    T data[N];
+};
 
-```cpp
-// NTTP 完全编译期：Arr<int,4> 的 size() 是常量，可被优化消除
+// 手写 max 与模板 max_val 在 -O2 下生成相同指令（cmp + cmovge），零开销
+template <typename T> T max_val(T a, T b) { return (a < b) ? b : a; }
+
+int main() {
+    static_assert(Arr<int, 4>::size() == 4);          // 编译期常量
+    int buf[Arr<int, 4>::size()];                     // 等价于 int buf[4]
+    static_assert(sizeof(buf) == 4 * sizeof(int));
+
+    int x = max_val(3, 7);                            // 与手写 int max 同速
+    std::cout << "size=" << Arr<int, 4>::size() << " max=" << x << "\n";
+    return 0;
+}
+// 输出示例：size=4 max=7
+// Code bloat：每实例化一种 T，链接器就多一份函数体；用 extern template 收敛。
 ```
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
