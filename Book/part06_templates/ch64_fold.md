@@ -43,13 +43,18 @@ template <typename... Ts> auto left_init(Ts... ts) { return (0 + ... + ts); }
 
 // 二元右折叠（带初值）：(... (init op a) ... )
 template <typename... Ts> auto right_init(Ts... ts) { return (ts + ... + 0); }
-```
 
-```cpp
 // 支持所有可折叠二元运算符：+ - * / % & | ^ && || , .* ->*
 template <typename... Ts> auto land(Ts... ts) { return (... && ts); }   // 逻辑与
 template <typename... Ts> auto lor(Ts... ts)  { return (... || ts); }   // 逻辑或
 template <typename... Ts> auto comma(Ts... ts){ (ts , ...); }           // 逗号序列
+
+#include <iostream>
+int main() {
+    std::cout << "left(1,2,3)=" << left(1,2,3) << "\n";            // 6
+    std::cout << "right_init(1,2,3)=" << right_init(1,2,3) << "\n"; // 6
+    std::cout << "land(true,false,true)=" << land(true,false,true) << "\n"; // 0
+}
 ```
 
 ## ④ 空包处理规则 [标准]
@@ -78,26 +83,23 @@ template <typename... Ts> auto sum0(Ts... ts) { return (0 + ... + ts); }  // 空
 
 ```cpp
 #include <iostream>
-template <typename... Ts> auto sum(Ts... ts) { return (0 + ... + ts); }
-int main() {
-    std::cout << sum(1, 2, 3, 4) << '\n';   // 10
-    std::cout << sum() << '\n';             // 0（二元带初值）
-}
-```
-
-```cpp
-template <typename... Ts> auto all_true(Ts... ts) { return (... && ts); }
-// all_true(true, true, false) => false
-```
-
-```cpp
-#include <iostream>
-template <typename... Ts> void print_all(Ts... ts) { ( (std::cout << ts << ' '), ... ); }
-```
-
-```cpp
 #include <string>
+// 求和：一元左折叠带初值，空包 => 0
+template <typename... Ts> auto sum(Ts... ts) { return (0 + ... + ts); }
+// 全 true：逻辑与折叠，空包 => true
+template <typename... Ts> auto all_true(Ts... ts) { return (... && ts); }
+// 打印所有：逗号折叠序列
+template <typename... Ts> void print_all(Ts... ts) { ( (std::cout << ts << ' '), ... ); }
+// 字符串拼接：二元左折叠
 template <typename... Ts> auto join(Ts... ts) { return (std::string{} + ... + ts); }
+
+int main() {
+    std::cout << "sum(1,2,3,4)=" << sum(1,2,3,4) << "\n";               // 10
+    std::cout << "sum()=" << sum() << "\n";                            // 0（二元带初值）
+    std::cout << "all_true(t,t,f)=" << all_true(true,true,false) << "\n"; // 0
+    print_all("a", 1, 2.5); std::cout << "\n";                         // a 1 2.5
+    std::cout << "join(x,y)=" << join(std::string("x"), std::string("y")) << "\n"; // xy
+}
 ```
 
 ## ⑦ 标准规定 [标准]
@@ -109,13 +111,12 @@ template <typename... Ts> auto join(Ts... ts) { return (std::string{} + ... + ts
 ## ⑧ GCC / Clang / MSVC 行为差异 [实现][平台]
 
 ```cpp
+#include <iostream>
 // C++17 起三者均支持折叠表达式
 // 旧 MSVC（<19.1x）不支持逗号折叠内的 void 转换，需显式 (void)ts
-template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ); }  // 兼容写法
-```
-
-```cpp
+template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ) ); }  // 兼容写法
 // 短路语义三者一致：&& / || 在折叠中保留短路（见⑩）
+int main() { p(1, 2, 3); std::cout << "msvc-compatible comma fold ok\n"; }
 ```
 
 ## ⑨ 内存 / 对象模型
@@ -123,9 +124,17 @@ template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ); }  // 兼容写
 折叠不产生运行期数据结构，纯编译期展开为运算符链。
 
 ```cpp
+#include <iostream>
+#include <type_traits>
 // 折叠结果类型 = 运算符返回类型；二元初值影响类型推导
-auto x = (0 + ... + values);   // int（初值 0 为 int）
-auto y = (0.0 + ... + values); // double
+template <typename... Ts>
+void demo_types(Ts... values) {
+    auto x = (0 + ... + values);     // int（初值 0 为 int）
+    auto y = (0.0 + ... + values);   // double（初值 0.0 为 double）
+    std::cout << "x is int=" << std::is_same_v<decltype(x), int>
+              << " y is double=" << std::is_same_v<decltype(y), double> << "\n";
+}
+int main() { demo_types(1, 2, 3); }   // x is int=1 y is double=1
 ```
 
 ## ⑩ 汇编 / 符号证据（真实 MinGW GCC 13.1.0，-O2 -masm=intel）
@@ -281,7 +290,7 @@ template <typename... Ts> bool in_range(Ts... ts) { return (... && (ts < 100)); 
 
 ```cpp
 // 注意：编译期常量折叠下短路被常量传播吃掉的等价结果
-static_assert((false && true));  // 编译期即 false
+static_assert((false && true) == false);  // 编译期即 false（短路：首 false 后续不求值）
 ```
 
 ```cpp
@@ -363,7 +372,7 @@ template <typename... Ts> auto ok(Ts... ts) { return (0 + ... + ts); }
 
 ```cpp
 // 正确：逗号折叠包 void 转换保兼容
-template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ); }
+template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ) ); }
 ```
 
 ```cpp
@@ -373,54 +382,57 @@ template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ); }
 ## ⑪ STL 中的该模式
 
 ```cpp
-// std::integer_sequence + 折叠常用于编译期整数归约
-template <typename T, T... V> constexpr T sum_seq(std::integer_sequence<T, V...>) { return (0 + ... + V); }
-```
-
-```cpp
+#include <iostream>
 #include <utility>
-// std::tuple 的 tie/apply 常用逗号折叠
-```
+#include <type_traits>
+// std::integer_sequence + 折叠常用于编译期整数归约
+template <typename T, T... V>
+constexpr T sum_seq(std::integer_sequence<T, V...>) { return (0 + ... + V); }
 
-```cpp
-// ranges 中大量折叠做归约（C++20）
-```
+// 折叠实现 «all_of» 谓词（编译期全谓词）
+template <typename... Ts>
+constexpr bool all_integral = (std::is_integral_v<Ts> && ...);
 
-```cpp
-// 折叠实现 «all_of» 谓词
-template <typename... Ts> constexpr bool all_integral = (std::is_integral_v<Ts> && ...);
+// ranges 中大量折叠做归约（C++20）；std::tuple 的 tie/apply 常用逗号折叠
+int main() {
+    static_assert(sum_seq(std::integer_sequence<int,1,2,3,4>{}) == 10);
+    static_assert(all_integral<int, char, long>);
+    std::cout << "sum_seq(1..4)=" << sum_seq(std::integer_sequence<int,1,2,3,4>{}) << "\n";      // 10
+    std::cout << "all_integral<int,double,char>=" << all_integral<int,double,char> << "\n"; // 0
+}
 ```
 
 ## ⑫ 变体（variant patterns）
 
 ```cpp
+#include <iostream>
+#include <string>
+#include <sstream>
 // 编译期全谓词
 template <typename... Ts> constexpr bool all_same = (std::is_same_v<Ts, int> && ...);
-```
 
-```cpp
-#include <string>
 // 任意类型转字符串并拼接
 template <typename... Ts> std::string cat(Ts... ts) {
     std::ostringstream os;
     ( (os << ts), ... );
     return os.str();
 }
-```
 
-```cpp
 // 折叠做「最小值」
 template <typename... Ts> auto min_of(Ts... ts) { return std::min({ts...}); }
-```
 
-```cpp
 // 折叠 + 短路做「首个满足条件」
 template <typename... Ts> bool has_neg(Ts... ts) { return (... || (ts < 0)); }
-```
 
-```cpp
-// 嵌套折叠（双层包）
+// 折叠求和（双层包时对各行分别折叠后累加）
 template <typename... Rows> auto flatten(Rows... rows) { return ( (rows + ... ) ); }
+
+int main() {
+    static_assert(all_same<int, int, int>);
+    std::cout << "cat(1,'a',2.5)=" << cat(1, 'a', 2.5) << "\n"; // 1a2.5
+    std::cout << "min_of(3,1,4)=" << min_of(3,1,4) << "\n";    // 1
+    std::cout << "has_neg(1,2,-3)=" << has_neg(1,2,-3) << "\n"; // 1
+}
 ```
 
 ## ⑬ 反模式（anti-patterns）
@@ -449,41 +461,47 @@ template <typename... Rows> auto flatten(Rows... rows) { return ( (rows + ... ) 
 ## ⑭ 工业案例
 
 ```cpp
-// 案例：断言所有参数满足 trait
+#include <iostream>
+#include <string>
+#include <cstddef>
+// 案例：断言所有参数满足 trait（编译期全谓词）
 template <typename... Ts> constexpr bool all_pod = (std::is_trivial_v<Ts> && ...);
 static_assert(all_pod<int, double, char>);
-```
 
-```cpp
-// 案例：日志批量写入
-template <typename... Ts> void sink(Ts... ts) { ( (write(ts), ... ); }
-```
+// 案例：日志批量写入（折叠展开为序列写）
+template <typename... Ts> void sink(std::ostream& o, Ts... ts) { ( (o << ts), ... ); }
 
-```cpp
-// 案例：ORM 字段非空校验
-template <typename... Fs> bool valid(Fs... fs) { return (... && fs.not_null()); }
-```
+// 案例：ORM 字段非空校验（指针非空折叠）
+template <typename... Ps> bool valid(Ps... ps) { return (... && (ps != nullptr)); }
 
-```cpp
 // 案例：数值归约（均值/和）
 template <typename... Ts> double mean(Ts... ts) { return (0.0 + ... + ts) / sizeof...(ts); }
+
+int main() {
+    static_assert(all_pod<int, double, char>);
+    sink(std::cout, "log:", 1, 2.5); std::cout << "\n";
+    int a = 1; int* p = &a; int* q = nullptr;
+    std::cout << "valid(p,q)=" << valid(p, q) << "\n";           // 0
+    std::cout << "mean(2,4,6)=" << mean(2.0, 4.0, 6.0) << "\n"; // 4
+}
 ```
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
 ```cpp
+#include <iostream>
+#include <type_traits>
 // libstdc++ 折叠常用于 traits 组合（源码级即用）
 template <typename... _Bn>
-struct __and_ : public conjunction<_Bn...> {};   // conjunction 用偏特化短路
+struct __and_ : public std::conjunction<_Bn...> {};   // conjunction 用偏特化短路
 // 等价手写折叠：(... && _Bn::value)
-```
-
-```cpp
 // std::conjunction 自身用偏特化实现短路（非折叠表达式，但语义等价）
-```
-
-```cpp
 // GCC 折叠在 constexpr 路径直接算出常量（见⑩ mov eax,39）
+
+int main() {
+    static_assert(__and_<std::true_type, std::true_type>::value);
+    std::cout << "__and_(true,true)=" << __and_<std::true_type, std::true_type>::value << "\n"; // 1
+}
 ```
 
 ## ⑯ 易错点
