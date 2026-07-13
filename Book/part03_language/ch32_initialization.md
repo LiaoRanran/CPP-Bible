@@ -604,6 +604,18 @@ int main(){int x{};std::vector<int> v{1,2,3};std::cout<<x<<","<<v[0]<<std::endl;
 
 > 交叉引用：变量见 [ch19](Book/part03_language/ch19_variables.md)；构造见 [ch37](Book/part04_memory/ch37_new_delete.md)。
 
+## 附录 G：工业初始化惯例与底层语义
+
+| 项目 | 初始化风格 | 动机 | 源码/来源 |
+|------|----------|------|----------|
+| **Google C++ Style Guide** | 优先 `= {}` 值初始化 / 禁止未初始化内置类型 | 消除 UB：`int x;` 读即为 UB；`int x{};` 保证零初始化 | google.github.io/styleguide/cppguide.html |
+| **LLVM**（github.com/llvm/llvm-project） | `auto *X = cast<T>(Y)` + `SmallVector<T, 0> V;` 的零初始化 | LLVM Coding Standards 要求所有变量声明时初始化，聚合用 `= {}` | `llvm/docs/CodingStandards.rst` |
+| **Chromium**（github.com/chromium/chromium） | `base::NoDestructor<T>` + `= default` / `= delete` 显式管理 | `NoDestructor` 绕过静态析构顺序问题（与 Google Abseil `absl::NoDestructor` 等价） | `base/no_destructor.h` |
+| **Abseil**（github.com/abseil/abseil-cpp） | `absl::make_unique<T>()` → C++14+ `std::make_unique<T>()` | 异常安全 + 消除裸 `new`——Google 代码库历史迁移记录 | `absl/memory/memory.h` |
+| **WebKit**（github.com/WebKit/WebKit） | `LazyNeverDestroyed<T>` + `static NeverDestroyed<T>` | JavaScriptCore 中编译期确定的单例用 `static` 局部变量（C++11 保证线程安全 Lazy Init） | `Source/WTF/wtf/NeverDestroyed.h` |
+
+**底层深度**：`T x{};` vs `T x = T{};` 在 GCC 13.1 `-O2` 下的差异——前者直接值初始化（零填充栈空间），后者可能触发临时对象 + 拷贝（C++17 强制 copy elision 后等价，但 `-fno-elide-constructors` 下仍产生额外 `mov`。`int x;` 的汇编：`sub rsp, 4`（仅分配栈空间，值来自栈残留）→ 读 `x` 即 UB。`int x{};`：`mov DWORD PTR [rsp], 0`（显式置零）。聚合初始化 `T{.a=1}` 在 `-O2` 下展开为逐字段 `mov` 序列（struct {int a; double b;} -> `mov [rdi],1; movq xmm0,XYZ; movsd [rdi+8],xmm0`），与 C 的 `= {0}` 完全等价。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

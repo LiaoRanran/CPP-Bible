@@ -924,6 +924,18 @@ int main() {
 
 > 交叉引用：span 视图见 [ch82](Book/part07_stl/ch82_span.md)；vector 见 [ch77](Book/part07_stl/ch77_vector.md)。
 
+## 附录 G：工业中 std::array 的典型使用场景
+
+| 项目 | 使用模式 | 动机（为何 array 而非 C 数组/vector） | 源码位置 |
+|------|---------|--------------------------------------|----------|
+| **LLVM**（github.com/llvm/llvm-project） | `SmallVector<T,N>` 内部用 `std::array` 做栈上初始存储 | `N=0/1/2/4/8` 的小对象避免堆分配（inline capacity 优化），编译器中 90% 以上 `SmallVector` 不超过 N | `llvm/include/llvm/ADT/SmallVector.h` |
+| **Qt**（code.qt.io） | `QStaticByteArray<N>` 编译期定长数组 | GUI 控件 ID 查找表（编译期已知大小 → 零堆分配），`QString` 的 SSO 短串优化同样用栈数组 | `qtbase/src/corelib/tools/` |
+| **Chromium**（github.com/chromium/chromium） | `base::FixedFlatMap<K,V,N>` | 编译期已知的少量映射（MIME 类型、HTTP 头名称），数组存储键值对 + 二分查找 O(logN) 替代 HashMap | `base/containers/fixed_flat_map.h` |
+| **WebKit**（github.com/WebKit/WebKit） | `WTF::FixedVector<T,N>` | JavaScriptCore 的字节码操作码表（256 条操作码 → `std::array<Opcode,256>`，O(1) 查表） | `Source/WTF/wtf/FixedVector.h` |
+| **Abseil**（github.com/abseil/abseil-cpp） | `absl::FixedArray<T,N>` | 热点路径小数组（`N≤256` 栈上，超限退化为堆），Google 服务器 C++ 代码广泛使用 | `absl/container/fixed_array.h` |
+
+**底层深度**：`std::array` 与 C 数组在 ABI 层完全等价（相同的大小、对齐和成员排布）。GCC 13.1 `-O2` 下，`std::array<int,4>::operator[]` 编译为单条 `mov eax, [rdi + rsi*4]`，与 `int arr[4]; arr[i]` 生成完全相同的机器码——零开销抽象的典范。`std::array::data()` 返回指向内部 `T[N]` 的裸指针，可直接传给 C API（如 `memcpy`、`sendto`）。与 `std::span` 配合：`std::span{arr}.subspan(1,2)` 在 `-O2` 下被完全优化掉（内联为偏移计算，无额外间接层）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

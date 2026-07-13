@@ -665,6 +665,18 @@ int main(){Btn b;b.draw();return 0;}
 - **相邻主题**：`Book/part05_oo/ch52_ebo.md`（第52章　空基类优化 EBO（Empty Base Optimization））—— 编号相邻、主题接续。
 - **同模块**：`Book/part05_oo/ch46_encapsulation_inheritance.md`（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 同模块下的其他主题。
 
+## 附录 G：MI（多继承）工业实践与 ABI 深度
+
+| 项目 | MI 使用模式 | 目的 | 源码 |
+|------|-----------|------|------|
+| **Qt**（code.qt.io） | `QObject` 已自带 MI：`class MyWidget : public QWidget, public Ui::MyForm` | 界面类（.ui 生成）与业务逻辑 MI 组合；`QObject` 虚继承自 `QObjectData`（d-pointer） | `qtbase/src/widgets/` |
+| **LLVM**（github.com/llvm/llvm-project） | `class Function : public GlobalObject, public ilist_node<Function>` | AST 节点 MI 实现侵入式链表节点（`ilist_node`），避免 `std::list` 的堆分配 | `llvm/include/llvm/IR/Function.h` |
+| **Chromium**（github.com/chromium/chromium） | `class RenderWidgetHostView : public RenderWidgetHostViewBase, public ui::CompositorDelegate` | 跨平台窗口系统 MI 组合（Windows Aura/Mac Cocoa/Linux Ozone），每平台基类不同 | `content/browser/renderer_host/` |
+| **WebKit**（github.com/WebKit/WebKit） | `class JSObject : public JSCell, public PropertyTable` | JavaScriptCore 对象 MI：`JSCell`（GC 可追踪）+ `PropertyTable`（属性存取），用 `static_cast` 而非 `dynamic_cast` | `Source/JavaScriptCore/runtime/JSObject.h` |
+| **Abseil**（github.com/abseil/abseil-cpp） | `class Mutex : public absl::synchronization_internal::MutexImpl` | MI 隔离平台实现（`MutexImpl` 在 Linux/macOS/Windows 不同，但接口一致） | `absl/synchronization/mutex.h` |
+
+**底层深度**：MI 的 vtable 布局是 `this` 指针调整的核心。`class D : public B1, public B2 {};` 的 vtable 结构为 [B1_vptr | B1_members] [B2_vptr | B2_members] [D_members]。当 `B2* pb2 = &d;` 时，GCC 13.1 生成 `lea rax, [rdi + offsetof(D, B2_subobject)]`（this 调整，约 16-32 字节偏移），而非简单 `mov`。`dynamic_cast<D*>(pb2)` 通过 vtable 的 `__vmi_class_type_info` 遍历基类偏移表确认可达性——这是 MI 下 `dynamic_cast` 比 SI 慢 2-3× 的根因（非空非最终类需遍历 `__base_class_type_info` 偏移数组）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

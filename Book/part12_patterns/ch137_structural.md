@@ -1129,6 +1129,19 @@ int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=c
 - **相邻主题**：`Book/part12_patterns/ch139_crtp_pattern.md`（第139章 CRTP 与静态多态（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part12_patterns/ch141_di.md`（第141章 依赖注入（C++））—— 同模块下的其他主题。
 
+## 附录 G：结构型模式工业实例
+
+| 模式 | 项目 | 实现 | 源码 |
+|------|------|------|------|
+| Adapter | **LLVM**（github.com/llvm/llvm-project） | `llvm::raw_ostream` 适配 `std::ostream`（`raw_os_ostream`）和文件描述符（`raw_fd_ostream`） | `llvm/include/llvm/Support/raw_ostream.h` |
+| Decorator | **Boost.Iostreams**（github.com/boostorg/iostreams） | `boost::iostreams::filtering_stream` 链式装饰：`input → gzip_decompressor() → file_source` | `include/boost/iostreams/filtering_stream.hpp` |
+| Facade | **Qt**（code.qt.io） | `QFileDialog::getOpenFileName()` 是 Win32 `GetOpenFileNameW` / macOS `NSOpenPanel` / Linux GTK 三平台的 Facade | `qtbase/src/widgets/dialogs/qfiledialog.cpp` |
+| Proxy | **Chromium**（github.com/chromium/chromium） | `base::WaitableEvent` 是 Windows `HANDLE CreateEvent` / POSIX `pthread_cond_t` 的跨平台 Proxy | `base/synchronization/waitable_event.h` |
+| Composite | **WebKit**（github.com/WebKit/WebKit） | 渲染树 `RenderObject` → `RenderBlock` → `RenderInline` → `RenderText` 是 Composite 模式（叶子与组合统一 `layout()` 接口） | `Source/WebCore/rendering/RenderObject.h` |
+| Bridge | **Unreal Engine**（github.com/EpicGames/UnrealEngine） | `FWindowsWindow` / `FMacWindow` / `FLinuxWindow` 是实现 Bridge，`FGenericWindow` 是抽象接口 | `Engine/Source/Runtime/ApplicationCore/` |
+
+**底层分析**：Adapter 与 Proxy 的核心 ABI 差异——Adapter 拥有对 Adaptee 的引用（非拥有，`raw_fd_ostream` 持 `int fd` 文件描述符），而 Proxy 通常拥有或被代理对象的 shared_ptr（`WaitableEvent` 在 POSIX 上持 `pthread_cond_t`，大小 48 字节，内嵌于 Proxy 对象中，无堆分配）。Decorator 的链式调用（`filtering_streambuf::underflow()` → 内部链表的 `next->sgetc()`）在 `-O2` 下被 GCC 完全内联为函数指针直接调用（`call [rax]`），零虚函数开销。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -1253,6 +1253,17 @@ int main() {
 - **相邻主题**：`Book/part08_algorithms/ch101_algo_theory.md`（第101章　哈希、图、树、DP、贪心（算法思想））—— 编号相邻、主题接续。
 - **同模块**：`Book/part08_algorithms/ch96_sorting.md`（第96章　排序：sort / stable_sort / partial_sort（C++））—— 同模块下的其他主题。
 
+## 附录 G：工业数值计算生态
+
+| 库/项目 | 定位 | 典型使用 | 源码/链接 |
+|---------|------|---------|----------|
+| **Eigen**（gitlab.com/libeigen/eigen） | 仅头文件 C++ 线性代数库 | 机器人学（ROS）、计算机视觉（OpenCV 内部）；Google TensorFlow 早期使用 Eigen 做张量运算后端（`tensorflow/core/framework/tensor.h` 持有 `Eigen::ThreadPoolDevice`） | 模板表达式惰性求值：`Eigen::MatrixXd` 的 `+`/`*` 不产生临时对象 |
+| **Boost.Multiprecision**（github.com/boostorg/multiprecision） | 任意精度算术（`cpp_int`/`mpfr_float`） | 金融量化（精确小数）、密码学（RSA/ECDSA 大整数） | `boost::multiprecision::cpp_int` 替代 `std::numeric_limits` |
+| **CGAL**（github.com/CGAL/cgal） | 计算几何算法库 | CAD、GIS、3D 打印路径规划，4,000+ 数值算法 | 依赖 Eigen + BLAS，内核使用惰性精确数类型 |
+| **Intel oneMKL**（oneapi-src.github.io/oneMKL） | 高性能 BLAS/LAPACK/FFT | SIMD 优化矩阵乘法：`cblas_dgemm` 在 AVX-512 上达 ~95% 峰值 FLOPS | `oneapi::mkl::blas::gemm` |
+
+**底层深度**：`std::accumulate` 与 `std::reduce` 核心差异在浮点结合律。`std::accumulate` 保证 `((a+b)+c)+d` 严格左结合，GCC 13.1 `-O2` 下仅标量 `addsd` 递推；`std::reduce` 放弃结合律，GCC 自动向量化为 `vaddpd ymm0`（256 位 AVX2，一次 4 个 double），Godbolt 实测循环体缩减 4×。`std::transform_reduce` 在 Intel oneAPI 后端可卸载到 GPU（SYCL）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

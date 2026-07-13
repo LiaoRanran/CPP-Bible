@@ -769,6 +769,17 @@ a alive after destroy? no
 - **相邻主题**：`Book/part13_engineering/ch144_style.md`（第144章 代码风格与规范（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part12_patterns/ch135_patterns_intro.md`（第135章 设计模式总论（C++））—— 同模块下的其他主题。
 
+## 附录 G：ECS 工业实践与底层性能
+
+| 库/项目 | 定位 | 典型使用 | 源码 |
+|---------|------|---------|------|
+| **EnTT**（github.com/skypjack/entt） | 仅头文件 C++ ECS 库 | Minecraft Bedrock（Mojang/Microsoft）、Satisfactory（Coffee Stain） | `entt/registry.hpp` — 稀疏集 + 分组（`group<>`）优化 |
+| **Flecs**（github.com/SanderMertens/flecs） | C99/C++ ECS 框架 | 嵌入式仿真、游戏（支持编译期查询 + 多线程调度） | `flecs.h` — `ecs_query_t` 惰性构建 |
+| **Unreal Engine Mass** | UE5 大规模实体系统（github.com/EpicGames/UnrealEngine） | 万人同屏 NPC、城市交通仿真（受 Unity DOTS 启发） | `MassEntitySubsystem` — chunk-based 内存布局 |
+| **Unity DOTS** | Unity 2022+ 核心架构 | `Burst` 编译器将 ECS System 编译为 SIMD 机器码 | `EntityQuery` + `IJobEntity`，`NativeArray<T>` |
+
+**底层性能**：ECS 关键优势是 SoA（Structure of Arrays）布局的 cache line 利用率。以 Entt 的 `group<>` 为例：同组组件的内存连续分配（内部 `std::vector` + 稀疏索引），一条 cache line（64 字节）可加载 8 个 `Position`（`float[3]=12B`），CPU 预取器能隐藏 200+ 周期的 DDR 延迟。对比 AoS 的 `struct Entity { Position p; Velocity v; }`——遍历位置时速度数据不必要地占满 cache line（每 cache line 仅 2 个 Entity，其余 40 字节为未访问的 Velocity 字段），导致 4× 更高的 cache miss 率。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

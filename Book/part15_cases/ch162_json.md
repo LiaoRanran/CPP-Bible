@@ -836,6 +836,18 @@ int main() {
 - **相邻主题**：`Book/part15_cases/ch164_framework.md`（第164章 从零实现迷你框架（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part15_cases/ch159_threadpool.md`（第159章 从零实现线程池（C++））—— 同模块下的其他主题。
 
+## 附录 G：工业 JSON 库生态
+
+| 库 | 定位 | 核心特性 | 源码/链接 |
+|----|------|---------|----------|
+| **nlohmann/json**（github.com/nlohmann/json） | 仅头文件 JSON 库（GitHub 最星 C++ JSON 库） | `j["key"]` 的 `operator[]` 访问、`j.get<T>()` 类型安全提取、JSON Pointer（RFC 6901） | `single_include/nlohmann/json.hpp` — 45K 星 |
+| **simdjson**（github.com/simdjson/simdjson） | SIMD 加速 JSON 解析器（2.5GB/s） | stage 1（结构字符识别、SIMD 并行） + stage 2（统一解析），比 RapidJSON 快 2–10× | `include/simdjson.h` — AVX2/NEON 后端 |
+| **RapidJSON**（github.com/Tencent/rapidjson） | 腾讯开源的高性能 SAX/DOM JSON 库 | 零拷贝字符串（`StringRef`）、SIMD 优化的数值解析；Unreal Engine 内置使用 | `include/rapidjson/reader.h` |
+| **Boost.JSON**（github.com/boostorg/json） | 标准委员会成员设计的 JSON 库 | `boost::json::value` 使用 `variant` 存储、`boost::json::serializer` 流式输出 | `include/boost/json.hpp` |
+| **Chromium** `base::Value`（github.com/chromium/chromium） | Chromium 内置 JSON 表示（`base::Value` / `base::JSONReader`） | Service Worker、扩展 API、DevTools 协议均使用 | `base/values.h` — `base::JSONReader::Read` |
+
+**底层深度**：解析性能瓶颈在 UTF-8 校验与数值解析。simdjson 的 stage-1 使用 SIMD 并行识别 JSON 结构字符（`{` `}` `[` `]` `:` `,` `"` `\`）——将 64 字节加载到 AVX2 `__m256i`，用 4 次 `_mm256_cmpeq_epi8` + `_mm256_movemask_epi8` 并行标记位置，峰值 3 周期/64 字节。RapidJSON 的 `Reader<UTF8<>>` 采用状态机 + `switch` 分派（`case kObjectBegin:` → `ParseMember` → `ParseValue`），递归深度受 `kParseStopWhenDoneFlag` 限制。`nlohmann/json` 的 `json::parse()` 内部使用 `lexer` 将输入流 Token 化（`token_string::parse()` 单字符循环逐字节处理），纯标量解析速度为 simdjson 的 ~1/8。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

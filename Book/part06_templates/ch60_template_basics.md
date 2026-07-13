@@ -657,6 +657,18 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 - **后续依赖**：`Book/part07_stl/ch76_stl_arch.md`（第76章　STL 架构与迭代器概念）—— 本章为其前置，建议后续延伸阅读。
 - **同模块**：`Book/part06_templates/ch63_variadic.md`（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 同模块下的其他主题。
 
+## 附录 G：工业 C++ 模板生态
+
+| 库/项目 | 模板技术 | 典型场景 | 源码 |
+|---------|---------|---------|------|
+| **LLVM**（github.com/llvm/llvm-project） | `SmallVector<T,N>` + traits 偏特化 | 编译器 AST 节点存储（`isa<>`/`cast<>` 模板继承链） | `llvm/include/llvm/ADT/SmallVector.h` — SFINAE 优化 N=0 特化 |
+| **Eigen**（gitlab.com/libeigen/eigen） | 表达式模板（Expression Templates） | 矩阵运算 `a+b*c` 在编译期展开成单次循环，消除 `MatrixXd` 临时对象 | `Eigen/src/Core/MatrixBase.h` — CRTP + 运算符重载模板 |
+| **Boost**（github.com/boostorg） | MPL（C++03 元编程）、Hana（C++14 constexpr 元编程） | Boost.Spirit 用表达式模板构造编译期 EBNF 解析器 | `boost/mpl/` — 100+ 元函数（`if_`/`fold`/`transform`） |
+| **Qt**（code.qt.io） | `QList<T>` / `QMap<K,V>` + moc 反射模板 | GUI 信号槽 `QObject::connect` 模板重载在编译期校验签名匹配 | `qtbase/src/corelib/kernel/qobjectdefs.h` — 10+ `connect` 模板重载 |
+| **Google Protobuf**（github.com/protocolbuffers/protobuf） | 代码生成模板（`RepeatedPtrField<T>`、`Map<K,V>`） | 序列化 API 的 `SerializeToString` 等模板函数在编译期根据字段类型分派 | `src/google/protobuf/repeated_ptr_field.h` |
+
+**底层深度**：模板实例化是 C++ 编译期内存第一大开销。GCC 13.1 的 `-ftime-report` 显示，`boost::mpl::fold` 在 100 元素序列上消耗约 200MB 模板实例化内存（每个中间类型生成独立 `mpl::push_back` 特化），而等效的 C++17 fold expression（`(args + ...)`）仅需 O(1) 内存。LLVM 的 `SmallVector<T,N>` 对 N=0 使用 `__attribute__((empty_bases))` + EBCO（空基类优化）确保 `sizeof(SmallVector<int,0>) == sizeof(void*)`（8 字节），而非 naive 的 16 字节——利用模板偏特化 + `conditional_t` 在编译期消除空数组存储。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -716,6 +716,17 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 - **相邻主题**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 编号相邻、主题接续。
 - **同模块**：`Book/part02_toolchain/ch12_buildsystems.md`（第12章　构建系统：Make / Ninja / CMake（C++））—— 同模块下的其他主题。
 
+## 附录 G：工业交叉编译生态
+
+| 项目 | 目标 | 工具链 | 关键配置 |
+|------|------|--------|---------|
+| **LLVM/Clang**（github.com/llvm/llvm-project） | ARM/AArch64/RISC-V/WebAssembly | Clang + lld + `--target=aarch64-linux-gnu` | `llvm/cmake/` — `CMAKE_CROSSCOMPILING=ON` + `LLVM_DEFAULT_TARGET_TRIPLE` |
+| **Chromium**（github.com/chromium/chromium） | Android (ARM64) / ChromeOS (x86_64/ARM) / Fuchsia | GN + Clang cross-toolchain | `build/config/arm.gni` — `target_cpu="arm64"` + `arm_use_neon=true` |
+| **Qt**（code.qt.io） | 嵌入式 Linux (Yocto/Boot2Qt) / QNX / INTEGRITY | `qmake -spec devices/linux-rasp-pi4-g++` / CMake `-DCMAKE_TOOLCHAIN_FILE` | `qtbase/mkspecs/devices/` — 40+ 设备配置 |
+| **Google Android NDK**（developer.android.com/ndk） | ARM32/ARM64/x86_64 Android | Clang + `android-ndk-r26c/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang++` | `-DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=21` |
+
+**底层深度**：交叉编译的关键是 sysroot——目标系统的头文件/库的镜像目录。GCC cross 构建时 `--with-sysroot=/path/to/aarch64-rootfs` 将 `#include` 解析根重定向到目标 sysroot，链接器从 `$sysroot/usr/lib` 搜索 `libc.so`。`CMAKE_TOOLCHAIN_FILE` 的本质是设置 `CMAKE_C_COMPILER_TARGET`（GCC triplet: `aarch64-linux-gnu`）与 `CMAKE_FIND_ROOT_PATH`。工具链文件的 `CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER` 禁止 CMake 从 sysroot 找 `g++` 等主机工具。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

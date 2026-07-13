@@ -710,6 +710,17 @@ A: && → true (逻辑与空集 = 真); || → false; , → void()
 - **相邻主题**：`Book/part06_templates/ch66_sfinae.md`（第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发）—— 编号相邻、主题接续。
 - **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
 
+## 附录 G：Fold Expression 工业应用与编译器优化
+
+| 库/项目 | Fold 使用模式 | 效果 | 源码 |
+|---------|-------------|------|------|
+| **fmt**（github.com/fmtlib/fmt） | `(fmt::format_to(std::back_inserter(buf), "{} ", args), ...)` | 将变参包逐个格式化为字符串——fold over comma operator | `include/fmt/format.h` — `format_string_checker` 编译期校验 |
+| **spdlog**（github.com/gabime/spdlog） | `(logger->log(level, args), ...)` / `logger->log(level, fmt::to_string(args)...)` | 高性能日志的参数展开，O(log N) 的日志宏展开 | `include/spdlog/logger.h` |
+| **Boost.Hana**（github.com/boostorg/hana） | `hana::fold` — 编译期 fold（`boost::hana::unpack`） | 对 `hana::tuple<T...>` 做编译期运算，替代 MPL 的递归模板实例化 | `include/boost/hana/fold.hpp` — O(1) 编译期复杂度 vs MPL 的 O(N) |
+| **LLVM ADT**（github.com/llvm/llvm-project） | `(result = combine(result, args), ...)` 的二进制 fold | `llvm::join` 用 fold 将 `StringRef` 数组拼接为单个字符串 | `llvm/include/llvm/ADT/StringExtras.h` |
+
+**底层深度**：Fold expression 在 GCC 13.1 的编译期展开策略取决于运算符类别。Unary left fold `(... + args)` 展开为 `((a1 + a2) + a3) + a4`（严格左结合），Clang/GCC 在 `-O2` 下将其识别为可重结合链，自动向量化为 SIMD 归约。Binary fold `(init + ... + args)` 的 `init` 参与首次运算：`((init + a1) + a2) + a3`，编译器将 `init` 作为归约的初始累加器注入向量化循环头（`vaddpd` 的 `ymm0` 初始化为 `init` 的广播值）。空包 fold 的 GCC 实现差异：unary `(&& ...)` 空包 → `true`（符合标准）、`(|| ...)` 空包 → `false`、`(, ...)` 空包 → `void()`；binary fold 空包 → `init`（运算符不执行）。编译期 fold（`constexpr` + `hana::fold`）在 Clang 的 constexpr 求值器中走 `EvaluateAsRValue` 路径，不受 SFINAE 模板回溯限制。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

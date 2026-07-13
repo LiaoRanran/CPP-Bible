@@ -981,6 +981,18 @@ int main(){Widget w;w.doWork();std::cout<<"PIMPL: 2ns/call, 30x compile speedup"
 - **相邻主题**：`Book/part13_engineering/ch147_code_review.md`（第147章 代码审查（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part13_engineering/ch148_gitflow.md`（第148章 Git 工作流（C++））—— 同模块下的其他主题。
 
+## 附录 G：工业命名与 API 设计惯例
+
+| 组织 | 命名规则 | API 设计原则 | 来源 |
+|------|---------|-------------|------|
+| **Google** | `PascalCase` 类/函数，`snake_case` 变量，`kConstant` 枚举，`member_` 后下划线 | 优先值语义（`string_view`/`span`）、输出参数用指针（`T*`）而非引用（`T&`），因为指针在调用点更显式 | google.github.io/styleguide/cppguide.html |
+| **LLVM**（github.com/llvm/llvm-project） | `PascalCase` 类，`camelCase` 函数，`Data` 成员无前缀（`Value *V;`） | `assert(isa<T>(X) && "message")` 胜于注释；`ErrorOr<T>` 而非异常 | `llvm/docs/CodingStandards.rst` |
+| **Qt**（code.qt.io） | `Q` 前缀类名，`camelCase` 函数，`setProperty()`/`property()` getter/setter | 信号槽 `signal: void valueChanged(int);` + `emit` 关键字；d-pointer 隐藏实现 | `qtbase/src/corelib/global/qglobal.h` |
+| **Chromium**（github.com/chromium/chromium） | `PascalCase` 类，`snake_case` 函数（`DoFoo()`），`member_` 后缀 | `base::Callback` / `OnceCallback`（无全局 mutable 回调）；禁止异常、禁止 RTTI | `styleguide/c++/c++.md`（Chromium 代码库内） |
+| **WebKit**（github.com/WebKit/WebKit） | `PascalCase` 类（`WTF::String`），`camelCase` 函数 | `WTF::RefPtr<T>` 智能指针（引用计数而非 `shared_ptr`），`NeverDestroyed<T>` 单例 | `Source/WTF/wtf/RefPtr.h` |
+
+**底层分析**：Google Style Guide 的输出参数优先用指针（`bool GetValue(int key, int* value)`）而非引用（`int& value`），因为调用点 `GetValue(k, &v)` 的 `&` 明确表示"此参数被修改"，减少审查误读。LLVM 的 `isa<T>(X) &&` 模式在 `NDEBUG` 下被编译器消除（`assert` → 宏展开为 `(void)0`），在 `DEBUG` 下生成 `dynamic_cast` 检查 + `__builtin_trap()`。`WebKit::RefPtr<T>` 与 `std::shared_ptr<T>` 的核心差异：前者仅需 8 字节（单指针 + 侵入式计数器在对象内部，同 `boost::intrusive_ptr`），后者 16 字节（控制块指针 + 对象指针），在渲染树的百万节点规模下节省 8MB+ 内存。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

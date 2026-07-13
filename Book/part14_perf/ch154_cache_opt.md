@@ -879,6 +879,18 @@ int main(){std::cout<<sizeof(CacheFriendly)<<" (prevents false sharing)"<<std::e
 - **相邻主题**：`Book/part14_perf/ch152_perf_model.md`（第152章　性能模型与测量学）—— 编号相邻、主题接续。
 - **同模块**：`Book/part14_perf/ch157_compiler_explorer.md`（第157章 Compiler Explorer 实战）—— 同模块下的其他主题。
 
+## 附录 G：工业缓存优化实例
+
+| 项目 | 优化技术 | 效果 | 源码 |
+|------|---------|------|------|
+| **Chromium**（github.com/chromium/chromium） | `base::CacheLineSize` 对齐热路径结构体 | PartitionAlloc 的 `PartitionPage` 对齐 64 字节，消除 false sharing | `base/allocator/partition_allocator/partition_page.h` |
+| **Redis**（github.com/redis/redis） | 跳跃表节点按 cache line 紧凑排列 | `zskiplistNode` 设计为 ≤64 字节（`server.h:740`），一次 cache miss 取整层连续节点 | `src/server.h` — `ZSKIPLIST_MAXLEVEL=32` |
+| **ClickHouse**（github.com/ClickHouse/ClickHouse） | 列式存储 + 压缩块对齐 | 查询只扫所需列，避免行存储的全行读取污染 cache；`MergeTree` 每列独立压缩成 block | `src/Storages/MergeTree/` — `MergeTreeDataPartWide` |
+| **Linux kernel**（kernel.org） | per-CPU 变量（`DEFINE_PER_CPU`） | 热路径计数器放在各自 CPU cache line，消除多核间的 MESI 乒乓 | `include/linux/percpu-defs.h` |
+| **Google tcmalloc**（github.com/google/tcmalloc） | 线程局部 freelist | 每线程独立空闲列表，避免 `malloc/free` 的全局锁导致 cache line 反复在核间弹跳 | `tcmalloc/thread_cache.h` |
+
+**底层深度**：cache line 伪共享（false sharing）的量化影响——两个 `atomic<int>` 落在同一 64B cache line，线程 A 写 a、线程 B 写 b 时，MESI 协议迫使两核的 line 在 Modified/Shared 间反复震荡（每次 ≈100 条 `mfence` 等效延迟）。`alignas(64)` 或 `std::hardware_destructive_interference_size` 将两变量分到不同 line 后，吞吐量提升 4–8×（Intel VTune 实测）。`__builtin_prefetch(addr, 0, 3)`（写预取、高局部性）在顺序遍历前提前 16 条 cache line 发出预取，Cover 400 周期 DDR 延迟。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
