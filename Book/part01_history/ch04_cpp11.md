@@ -12,14 +12,18 @@
 
 
 ```cpp
+#include <iostream>
 #include <string>
-// auto 类型推导
-auto x=42; auto s=std::string("11");
-```
-```cpp
-// 范围 for
 #include <vector>
-void f(){ std::vector<int> v{1,2,3}; for(int e:v) (void)e; }
+int main() {
+    auto x = 42;
+    auto s = std::string("11");
+    std::cout << x << ' ' << s << '\n';          // 42 11
+    std::vector<int> v{1,2,3};
+    for (int e : v) std::cout << e << ' ';       // 1 2 3
+    std::cout << '\n';
+}
+// 输出：42 11 1 2 3
 ```
 
 - 掌握 C++11 的范式级特性：移动语义、右值引用、完美转发、lambda、智能指针、`auto`/`decltype`、统一初始化、可变参数模板、`constexpr`、并发库（thread/atomic）、`nullptr`、范围 for、强类型枚举、`override`/`final`、default/delete。
@@ -29,12 +33,15 @@ void f(){ std::vector<int> v{1,2,3}; for(int e:v) (void)e; }
 ## ② 前置知识
 
 ```cpp
-// 统一初始化 {}
+#include <iostream>
 #include <vector>
-std::vector<int> v{1,2,3};
-```
-```cpp
-int g(int* p){ return *p; }  // 函数定义（非仅声明），避免链接期 undefined reference
+int g(int* p) { return *p; }
+int main() {
+    std::vector<int> v{1,2,3};                   // 统一初始化 {}
+    int buf[3] = {10,20,30};
+    std::cout << g(buf) << '\n';                 // 10
+}
+// 输出：10
 ```
 
 - ch03（C++98 痛点：裸指针、auto_ptr 诡异拷贝、SFINAE 雏形、无并发库）。
@@ -42,15 +49,19 @@ int g(int* p){ return *p; }  // 函数定义（非仅声明），避免链接期
 ## ③ 后续依赖
 
 ```cpp
-// 右值引用与移动
+#include <iostream>
 #include <string>
-#include <utility>
-std::string a="x"; std::string b=std::move(a);
-```
-```cpp
-// 移动构造
 #include <vector>
-std::vector<int> mk(){ return std::vector<int>{1,2}; }
+#include <utility>
+std::vector<int> mk() { return std::vector<int>{1,2}; }
+int main() {
+    std::string a = "x";
+    std::string b = std::move(a);                // 移动，非拷贝
+    std::cout << b << '\n';                      // x
+    std::vector<int> v = mk();
+    std::cout << v.size() << '\n';               // 2
+}
+// 输出：x 2
 ```
 
 - 移动语义（ch115）、完美转发（ch116）、拷贝消除（ch117）、lambda（ch27）、constexpr（ch69）、智能指针（ch48）、并发（ch102–ch114）、模板（ch60–ch75）都基于本章。
@@ -58,14 +69,14 @@ std::vector<int> mk(){ return std::vector<int>{1,2}; }
 ## ④ 知识图谱（ASCII）
 
 ```cpp
-// 智能指针 shared_ptr
+#include <iostream>
 #include <memory>
-std::shared_ptr<int> p=std::make_shared<int>(5);
-```
-```cpp
-// 智能指针 unique_ptr
-#include <memory>
-std::unique_ptr<int> q=std::make_unique<int>(5);
+int main() {
+    std::shared_ptr<int> p = std::make_shared<int>(5);
+    std::unique_ptr<int> q = std::make_unique<int>(5);
+    std::cout << *p << ' ' << *q << '\n';        // 5 5
+}
+// 输出：5 5
 ```
 
 ```
@@ -102,12 +113,15 @@ C++11 三大支柱
 ## ⑤ Mermaid（移动语义数据流向）
 
 ```cpp
-// lambda 基础
-auto f=[](int x){ return x+1; }; int y=f(1);
-```
-```cpp
-// lambda 捕获
-int k=10; auto g=[k](int x){ return x+k; };
+#include <iostream>
+int main() {
+    auto f = [](int x){ return x+1; };
+    int y = f(1);
+    int k = 10;
+    auto g = [k](int x){ return x+k; };
+    std::cout << y << ' ' << g(5) << '\n';       // 2 15
+}
+// 输出：2 15
 ```
 
 ```mermaid
@@ -121,23 +135,30 @@ flowchart LR
 ## ⑥ UML（不适用）
 
 ```cpp
-// lambda 可变捕获
-int c=0; auto inc=[&c](){ ++c; };
-```
-```cpp
-// constexpr 编译期常量
-constexpr int sq(int x){ return x*x; } int a=sq(4);
+#include <iostream>
+constexpr int sq(int x) { return x*x; }
+int main() {
+    int c = 0;
+    auto inc = [&c](){ ++c; };
+    inc(); inc();
+    int a = sq(4);
+    std::cout << c << ' ' << a << '\n';          // 2 16
+}
+// 输出：2 16
 ```
 
 ## ⑦ ASCII 内存图（移动 vs 拷贝）
 
 ```cpp
-// constexpr 函数（编译期求值）
-constexpr int fact(int n){ return n<=1?1:n*fact(n-1); } static_assert(fact(5)==120,"");
-```
-```cpp
-// 强类型枚举 enum class
-enum class Color { R, G, B }; Color c=Color::R;
+#include <iostream>
+constexpr int fact(int n) { return n<=1?1:n*fact(n-1); }
+static_assert(fact(5)==120);
+int main() {
+    enum class Color { R, G, B };
+    Color c = Color::R;
+    std::cout << fact(5) << ' ' << (int)c << '\n';   // 120 0
+}
+// 输出：120 0
 ```
 
 拷贝（深拷贝，开销大）：
@@ -154,12 +175,16 @@ dst: [ptr→0x5000 数据]       // 直接接管
 ## ⑧ 生命周期
 
 ```cpp
-// 委托构造
-class A { int x; public: A():A(0){} A(int v):x(v){} };
-```
-```cpp
-// 继承构造
-class B { public: B(int){} }; class D:public B{ using B::B; };
+#include <iostream>
+class A { int x; public: A():A(0){} A(int v):x(v){} int get() const { return x; } };
+class B { public: B(int){} };
+class D : public B { using B::B; };
+int main() {
+    A a(7);                                      // 委托构造
+    D d(9);                                       // 继承构造
+    std::cout << a.get() << '\n';                // 7
+}
+// 输出：7
 ```
 
 - 右值引用延长临时对象生命期到下一条语句（特殊规则），使 `T&&` 绑定临时量并安全使用（ch115）。
@@ -167,12 +192,18 @@ class B { public: B(int){} }; class D:public B{ using B::B; };
 ## ⑨ 调用栈（lambda 闭包）
 
 ```cpp
-// override / final
-class Base { public: virtual void f(){} }; class Dr:public Base{ void f() override{} };
-```
-```cpp
-// noexcept
-void f() noexcept {}
+#include <iostream>
+class Base { public: virtual void f(){} };
+class Dr : public Base { void f() override{} };
+void g() noexcept {}
+int main() {
+    Dr d;
+    Base* p = &d;
+    p->f();                                       // 动态绑定到 Dr::f（override）
+    g();                                          // noexcept
+    std::cout << "ok\n";
+}
+// 输出：ok
 ```
 
 ```
@@ -183,11 +214,15 @@ void f() noexcept {}
 ## ⑩ 汇编（移动构造省去分配）
 
 ```cpp
+#include <iostream>
 #include <thread>
-void demo_thread(){ std::thread th([]{}); th.join(); }
-```
-```cpp
-int run_async(){ return std::async([]{ return 1; }).get(); }
+#include <future>
+int main() {
+    std::thread th([]{}); th.join();              // 线程
+    int r = std::async([]{ return 1; }).get();    // 异步
+    std::cout << r << '\n';                       // 1
+}
+// 输出：1
 ```
 
 > 移动语义使「返回大对象」「插入容器」从深拷贝变为指针窃取；配合 RVO/NRVO（ch117）多数情况连移动都省。
@@ -195,12 +230,14 @@ int run_async(){ return std::async([]{ return 1; }).get(); }
 ## ⑪ STL 联系
 
 ```cpp
-// 类型推导 decltype
-int a=1; decltype(a) b=a;
-```
-```cpp
-// 尾置返回类型
-auto add(int x,int y) -> int { return x+y; }
+#include <iostream>
+auto add(int x, int y) -> int { return x+y; }
+int main() {
+    int a = 1;
+    decltype(a) b = a;
+    std::cout << b << ' ' << add(2,3) << '\n';    // 1 5
+}
+// 输出：1 5
 ```
 
 - 所有容器获得移动构造/移动赋值，`push_back(T&&)` 支持移动插入（ch77）。
@@ -210,14 +247,15 @@ auto add(int x,int y) -> int { return x+y; }
 ## ⑫ 工业案例
 
 ```cpp
-// 初始化列表构造函数
-#include <initializer_list>
+#include <iostream>
 #include <vector>
-std::vector<int> v={1,2,3};
-```
-```cpp
-// thread_local 线程局部存储（C++11）
 thread_local int tl = 0;
+int main() {
+    std::vector<int> v = {1,2,3};                 // 初始化列表构造
+    tl = 42;
+    std::cout << v.size() << ' ' << tl << '\n';   // 3 42
+}
+// 输出：3 42
 ```
 
 - **Google/Clang 自举**：Clang 用 C++11 重写，lambda 与 `auto` 大幅简化 AST 遍历（ch127）。
@@ -227,12 +265,15 @@ thread_local int tl = 0;
 ## ⑬ 源码分析（libstdc++ 智能指针）
 
 ```cpp
-// 用户定义字面量
+#include <iostream>
 constexpr long double operator"" _km(long double x){ return x*1000; }
-```
-```cpp
-// 变长模板初版
-template<class... Ts> void f(Ts...){}
+template<class... Ts> void f(Ts...) {}
+int main() {
+    auto d = 3.0_km;
+    f(1, 2.0, 'x');
+    std::cout << d << '\n';                       // 3000
+}
+// 输出：3000
 ```
 
 - `std::shared_ptr` 控制块（引用计数 + 弱计数 + 删除器）用原子操作；`make_shared` 把对象与控制块**一次分配**减少碎片（ch48、ch43）。
@@ -241,15 +282,16 @@ template<class... Ts> void f(Ts...){}
 ## ⑭ WG21 提案（关键）[标准]
 
 ```cpp
-// std::tuple
+#include <iostream>
 #include <tuple>
-#include <utility>
-auto t=std::make_tuple(1,'a',2.0);
-```
-```cpp
-// std::bind / placeholders
 #include <functional>
-auto g=std::bind([](int,int){},std::placeholders::_1,1);
+int main() {
+    auto t = std::make_tuple(1, 'a', 2.0);
+    auto g = std::bind([](int,int){}, std::placeholders::_1, 1);
+    g(5);                                         // bind 固定第二参数为 1
+    std::cout << std::get<0>(t) << '\n';          // 1
+}
+// 输出：1
 ```
 
 - **N1968** Rvalue References → 移动语义。
@@ -266,12 +308,14 @@ auto g=std::bind([](int,int){},std::placeholders::_1,1);
 ## ⑮ 面试题
 
 ```cpp
-// 作用域枚举底层类型
+#include <iostream>
 enum class E : unsigned char { A, B };
-```
-```cpp
-// 标准属性 [[noreturn]]
 [[noreturn]] void die(){ throw 1; }
+int main() {
+    E e = E::A;
+    std::cout << (int)e << '\n';                  // 0
+}
+// 输出：0
 ```
 
 1. 移动构造与拷贝构造的区别？何时编译器生成默认移动？（见 ch115）
@@ -283,13 +327,14 @@ enum class E : unsigned char { A, B };
 ## ⑯ 易错点
 
 ```cpp
-// 静态断言改进（带消息）
-static_assert(sizeof(void*)==8,"64-bit");
-```
-```cpp
-// std::array
+#include <iostream>
 #include <array>
-std::array<int,3> a{1,2,3};
+static_assert(sizeof(void*)==8, "64-bit");
+int main() {
+    std::array<int,3> a{1,2,3};
+    std::cout << a[1] << '\n';                    // 2
+}
+// 输出：2
 ```
 
 - 移动后对象处于「有效但未指定状态」，对其使用（除析构/赋值）需谨慎（ch115、MISCONCEPTIONS 56/57）。
@@ -300,16 +345,17 @@ std::array<int,3> a{1,2,3};
 ## ⑰ FAQ
 
 ```cpp
-// std::begin/end 自由函数
-#include <vector>
-void f(){ std::vector<int> v(2); (void)std::begin(v); (void)std::end(v); }
-```
-```cpp
-// 移动迭代器
+#include <iostream>
 #include <vector>
 #include <iterator>
 #include <string>
-void f(){ std::vector<std::string> v; auto it=std::make_move_iterator(v.begin()); }
+void f() { std::vector<int> v(2); (void)std::begin(v); (void)std::end(v); }
+void f2() { std::vector<std::string> v; auto it = std::make_move_iterator(v.begin()); (void)it; }
+int main() {
+    f(); f2();
+    std::cout << "ok\n";
+}
+// 输出：ok
 ```
 
 - **Q：C++11 还能算「C++」吗？** A：是同一语言，只是补上长期缺失的现代设施；向后兼容 98。
@@ -318,13 +364,17 @@ void f(){ std::vector<std::string> v; auto it=std::make_move_iterator(v.begin())
 ## ⑱ 最佳实践
 
 ```cpp
-// 右值引用转发引用
-template<class T> void f(T&&){}
-```
-```cpp
-// 完美转发
+#include <iostream>
 #include <utility>
-template<class T> void f(T&& x){ g(std::forward<T>(x)); }
+template<class T> void f(T&&) {}
+void g(int) {}
+template<class T> void fwd(T&& x) { g(std::forward<T>(x)); }
+int main() {
+    f(1);
+    fwd(2);
+    std::cout << "ok\n";
+}
+// 输出：ok
 ```
 
 - 优先 `auto` 减少冗余类型，但公开接口签名写全类型。
@@ -335,10 +385,18 @@ template<class T> void f(T&& x){ g(std::forward<T>(x)); }
 ## ⑲ 性能分析
 
 ```cpp
-std::atomic<int> cnt{0}; void bump(){ cnt.fetch_add(1); }
-```
-```cpp
-std::atomic<bool> ready{false}; void set_ready(){ ready.store(true, std::memory_order_relaxed); }
+#include <iostream>
+#include <atomic>
+std::atomic<int> cnt{0};
+void bump(){ cnt.fetch_add(1); }
+std::atomic<bool> ready{false};
+void set_ready(){ ready.store(true, std::memory_order_relaxed); }
+int main() {
+    bump();
+    set_ready();
+    std::cout << cnt.load() << ' ' << ready.load() << '\n';   // 1 1
+}
+// 输出：1 1
 ```
 
 - 移动语义在容器/大对象场景带来数量级提升（深拷贝 O(n) → 移动 O(1)）。
