@@ -86,6 +86,7 @@ C++20 四大支柱 + 配套
 ```cpp
 // [merged] ## ⑤ Mermaid（Ranges 管道）
 #include <iostream>
+#include <format>
 struct Ver { int v; }; bool operator<(const Ver& x,const Ver& y){ return x.v<y.v; }  // 自定义比较
 auto msg=std::format("{}+{}={}", 1, 2, 3); void use_fmt(){ (void)msg; }
 int main() {
@@ -161,6 +162,7 @@ module M; 编译 → M.pcm/BMI (一次) → 各 TU 直接加载
 ```cpp
 // [merged] ## ⑩ 汇编（Concepts 不产生运行时开销）
 #include <iostream>
+#include <chrono>
 int branch(int x){ if(x>0) [[likely]] return 1; return 0; }
 auto y=std::chrono::year{2026}; void use_yr(){ (void)y; }
 int main() {}

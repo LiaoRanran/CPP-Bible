@@ -4,118 +4,23 @@
   "main_only": true,
   "partial": false,
   "total_chapters": 147,
-  "passed_chapters": 71,
-  "failed_chapters": 76,
-  "total_blocks_checked": 3525,
-  "failed_blocks": 180,
+  "passed_chapters": 108,
+  "failed_chapters": 39,
+  "total_blocks_checked": 3564,
+  "failed_blocks": 73,
   "failures": [
-    {
-      "file": "ch01_c_history.md",
-      "path": "Book/part01_history/ch01_c_history.md",
-      "failures": [
-        {
-          "block": 38,
-          "error": "'printf' was not declared in this scope",
-          "has_main": true
-        },
-        {
-          "block": 39,
-          "error": "'printf' was not declared in this scope",
-          "has_main": true
-        },
-        {
-          "block": 40,
-          "error": "'printf' was not declared in this scope",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch03_cpp98_03.md",
-      "path": "Book/part01_history/ch03_cpp98_03.md",
-      "failures": [
-        {
-          "block": 4,
-          "error": "missing terminating \" character",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch04_cpp11.md",
-      "path": "Book/part01_history/ch04_cpp11.md",
-      "failures": [
-        {
-          "block": 42,
-          "error": "'cout' is not a member of 'std'",
-          "has_main": true
-        },
-        {
-          "block": 44,
-          "error": "missing terminating \" character",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch06_cpp17.md",
-      "path": "Book/part01_history/ch06_cpp17.md",
-      "failures": [
-        {
-          "block": 37,
-          "error": "ambiguating new declaration of 'std::optional<int> div(int, int)'",
-          "has_main": true
-        }
-      ]
-    },
     {
       "file": "ch07_cpp20.md",
       "path": "Book/part01_history/ch07_cpp20.md",
       "failures": [
         {
-          "block": 44,
-          "error": "missing terminating \" character",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch08_cpp23.md",
-      "path": "Book/part01_history/ch08_cpp23.md",
-      "failures": [
-        {
-          "block": 33,
-          "error": "ambiguating new declaration of 'std::expected<int, std::__cxx11::basic_string<char> > div(int, int)'",
+          "block": 6,
+          "error": "'format' is not a member of 'std'",
           "has_main": true
         },
         {
-          "block": 34,
-          "error": "print: No such file or directory",
-          "has_main": true
-        },
-        {
-          "block": 37,
-          "error": "print: No such file or directory",
-          "has_main": true
-        },
-        {
-          "block": 40,
-          "error": "flat_map: No such file or directory",
-          "has_main": true
-        },
-        {
-          "block": 41,
-          "error": "flat_map: No such file or directory",
-          "has_main": true
-        },
-        {
-          "block": 42,
-          "error": "ambiguating new declaration of 'std::expected<int, std::__cxx11::basic_string<char> > div(int, int)'",
-          "has_main": true
-        },
-        {
-          "block": 44,
-          "error": "flat_map: No such file or directory",
+          "block": 11,
+          "error": "'std::chrono' has not been declared",
           "has_main": true
         }
       ]
@@ -180,28 +85,6 @@
       ]
     },
     {
-      "file": "ch15_profiling.md",
-      "path": "Book/part02_toolchain/ch15_profiling.md",
-      "failures": [
-        {
-          "block": 9,
-          "error": "'vector' in namespace 'std' does not name a template type",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch16_ide.md",
-      "path": "Book/part02_toolchain/ch16_ide.md",
-      "failures": [
-        {
-          "block": 19,
-          "error": "\"__has_include\" used outside of preprocessing directive",
-          "has_main": true
-        }
-      ]
-    },
-    {
       "file": "ch18_buildconfig.md",
       "path": "Book/part02_toolchain/ch18_buildconfig.md",
       "failures": [
@@ -217,11 +100,6 @@
       "path": "Book/part03_language/ch19_variables.md",
       "failures": [
         {
-          "block": 5,
-          "error": "'class std::thread::id' has no member named 'hash'",
-          "has_main": true
-        },
-        {
           "block": 14,
           "error": "counter.hpp: No such file or directory",
           "has_main": true
@@ -235,37 +113,6 @@
         {
           "block": 13,
           "error": "expected primary-expression before 'int'",
-          "has_main": true
-        },
-        {
-          "block": 22,
-          "error": "no match for 'operator=' (operand types are 'std::reference_wrapper<int>' and 'int')",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch22_auto_decltype.md",
-      "path": "Book/part03_language/ch22_auto_decltype.md",
-      "failures": [
-        {
-          "block": 39,
-          "error": "'move' is not a member of 'std'",
-          "has_main": true
-        },
-        {
-          "block": 48,
-          "error": "a function-definition is not allowed here before '{' token",
-          "has_main": true
-        },
-        {
-          "block": 55,
-          "error": "ambiguating new declaration of 'auto fact(int)'",
-          "has_main": true
-        },
-        {
-          "block": 63,
-          "error": "static assertion failed",
           "has_main": true
         }
       ]
@@ -282,93 +129,6 @@
         {
           "block": 32,
           "error": "'module' does not name a type",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch24_enum.md",
-      "path": "Book/part03_language/ch24_enum.md",
-      "failures": [
-        {
-          "block": 47,
-          "error": "found ':' in nested-name-specifier, expected '::'",
-          "has_main": true
-        },
-        {
-          "block": 48,
-          "error": "found ':' in nested-name-specifier, expected '::'",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch25_union_variant.md",
-      "path": "Book/part03_language/ch25_union_variant.md",
-      "failures": [
-        {
-          "block": 4,
-          "error": "'uint32_t' is not a member of 'std'",
-          "has_main": true
-        },
-        {
-          "block": 6,
-          "error": "use of deleted function 'Msg::<unnamed union>::<constructor>()'",
-          "has_main": true
-        },
-        {
-          "block": 7,
-          "error": "'uint32_t' in namespace 'std' does not name a type",
-          "has_main": true
-        },
-        {
-          "block": 11,
-          "error": "use of deleted function 'Leak::Leak()'",
-          "has_main": true
-        },
-        {
-          "block": 23,
-          "error": "'const struct Num' has no member named 'index'",
-          "has_main": true
-        },
-        {
-          "block": 34,
-          "error": "no match for 'operator<<' (operand types are 'std::ostream' {aka 'std::basic_ostream<char>'} and 'const std::vector<std::unique_ptr<JsonValue> >')",
-          "has_main": true
-        },
-        {
-          "block": 36,
-          "error": "'const struct Idle' has no member named 'index'",
-          "has_main": true
-        },
-        {
-          "block": 43,
-          "error": "conversion from 'variant<int, double>' to non-scalar type 'variant<double, int>' requested",
-          "has_main": true
-        },
-        {
-          "block": 44,
-          "error": "static assertion failed: result type must be constructible from input type",
-          "has_main": true
-        },
-        {
-          "block": 54,
-          "error": "use of deleted function 'U::U()'",
-          "has_main": true
-        },
-        {
-          "block": 56,
-          "error": "no matching function for call to 'bit_cast<uint32_t>(uint64_t)'",
-          "has_main": true
-        },
-        {
-          "block": 57,
-          "error": "use of deleted function 'f(bool)::<unnamed union>::<constructor>()'",
-          "has_main": true
-        },
-        {
-          "block": 65,
-          "error": "'const struct Click' has no member named 'index'",
           "has_main": true
         }
       ]
@@ -422,17 +182,6 @@
       ]
     },
     {
-      "file": "ch31_operator_overloading.md",
-      "path": "Book/part03_language/ch31_operator_overloading.md",
-      "failures": [
-        {
-          "block": 11,
-          "error": "'strdup' was not declared in this scope",
-          "has_main": true
-        }
-      ]
-    },
-    {
       "file": "ch35_memory_layout.md",
       "path": "Book/part04_memory/ch35_memory_layout.md",
       "failures": [
@@ -445,84 +194,6 @@
           "block": 14,
           "error": "sys/wait.h: No such file or directory",
           "has_main": true
-        },
-        {
-          "block": 29,
-          "error": "'aligned_alloc' is not a member of 'std'",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch36_stack_heap.md",
-      "path": "Book/part04_memory/ch36_stack_heap.md",
-      "failures": [
-        {
-          "block": 14,
-          "error": "deducing from brace-enclosed initializer list requires '#include <initializer_list>'",
-          "has_main": true
-        },
-        {
-          "block": 15,
-          "error": "deducing from brace-enclosed initializer list requires '#include <initializer_list>'",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch37_new_delete.md",
-      "path": "Book/part04_memory/ch37_new_delete.md",
-      "failures": [
-        {
-          "block": 8,
-          "error": "size '9223372036854775807' of array exceeds maximum object size '9223372036854775807'",
-          "has_main": true
-        },
-        {
-          "block": 12,
-          "error": "size '9223372036854775807' of array exceeds maximum object size '9223372036854775807'",
-          "has_main": true
-        },
-        {
-          "block": 13,
-          "error": "size '18446744073709551615' of array exceeds maximum object size '9223372036854775807'",
-          "has_main": true
-        },
-        {
-          "block": 17,
-          "error": "size '9223372036854775807' of array exceeds maximum object size '9223372036854775807'",
-          "has_main": true
-        },
-        {
-          "block": 39,
-          "error": "expected identifier before 'int'",
-          "has_main": true
-        },
-        {
-          "block": 45,
-          "error": "cannot convert 'double*' to 'std::allocator_traits<std::allocator<int> >::pointer' {aka 'int*'}",
-          "has_main": true
-        },
-        {
-          "block": 51,
-          "error": "cannot convert 'char [32]' to 'const std::nothrow_t&'",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch38_allocator.md",
-      "path": "Book/part04_memory/ch38_allocator.md",
-      "failures": [
-        {
-          "block": 12,
-          "error": "no match for 'operator!=' (operand types are 'std::_Vector_base<int, A<int> >::_Tp_alloc_type' {aka 'std::allocator_traits<A<int> >::rebind_alloc<int>'} and 'co",
-          "has_main": true
-        },
-        {
-          "block": 16,
-          "error": "no matching function for call to 'DebugAlloc<int>::DebugAlloc()'",
-          "has_main": true
         }
       ]
     },
@@ -531,60 +202,13 @@
       "path": "Book/part04_memory/ch39_raii_rule.md",
       "failures": [
         {
-          "block": 33,
-          "error": "missing template arguments before '(' token",
-          "has_main": true
-        },
-        {
           "block": 34,
           "error": "'SCOPE_EXIT' was not declared in this scope",
           "has_main": true
         },
         {
-          "block": 35,
-          "error": "scope: No such file or directory",
-          "has_main": true
-        },
-        {
           "block": 53,
           "error": "'m' was not declared in this scope",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch40_exception_safety.md",
-      "path": "Book/part04_memory/ch40_exception_safety.md",
-      "failures": [
-        {
-          "block": 12,
-          "error": "no matching function for call to 'NoThrowMove::NoThrowMove()'",
-          "has_main": true
-        },
-        {
-          "block": 14,
-          "error": "use of deleted function 'constexpr Safe& Safe::operator=(const Safe&)'",
-          "has_main": true
-        },
-        {
-          "block": 35,
-          "error": "use of deleted function 'constexpr BigNT& BigNT::operator=(const BigNT&)'",
-          "has_main": true
-        },
-        {
-          "block": 38,
-          "error": "no matching function for call to 'construct_at(Fast*&)'",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch41_smart_pointers.md",
-      "path": "Book/part04_memory/ch41_smart_pointers.md",
-      "failures": [
-        {
-          "block": 53,
-          "error": "data member 'std::_Head_base<1, void(int*), false>::_M_head_impl' invalidly declared function type",
           "has_main": true
         }
       ]
@@ -596,16 +220,6 @@
         {
           "block": 11,
           "error": "invalid conversion from 'unsigned int*' to 'PDWORD' {aka 'long unsigned int*'} [-fpermissive]",
-          "has_main": true
-        },
-        {
-          "block": 21,
-          "error": "could not convert '(& in)->std::vector<Particle>::size()' from 'std::vector<Particle>::size_type' {aka 'long long unsigned int'} to 'std::vector<float>'",
-          "has_main": true
-        },
-        {
-          "block": 41,
-          "error": "'aligned_alloc' is not a member of 'std'; did you mean 'aligned_union'?",
           "has_main": true
         }
       ]
@@ -620,23 +234,8 @@
           "has_main": true
         },
         {
-          "block": 14,
-          "error": "request for member 'data' in 's.StaticPool<Sensor, 32>::Slot::raw', which is of non-class type 'std::byte [8]'",
-          "has_main": true
-        },
-        {
           "block": 15,
           "error": "'mutex' in namespace 'std' does not name a type",
-          "has_main": true
-        },
-        {
-          "block": 16,
-          "error": "field 'buckets_' has incomplete type 'std::array<SegAllocBase::Node*, 32>'",
-          "has_main": true
-        },
-        {
-          "block": 20,
-          "error": "'aligned_alloc' is not a member of 'std'",
           "has_main": true
         },
         {
@@ -677,71 +276,12 @@
       ]
     },
     {
-      "file": "ch45_oop_object_model.md",
-      "path": "Book/part05_oo/ch45_oop_object_model.md",
+      "file": "ch64_fold.md",
+      "path": "Book/part06_templates/ch64_fold.md",
       "failures": [
         {
-          "block": 14,
-          "error": "expected primary-expression before ',' token",
-          "has_main": true
-        },
-        {
-          "block": 40,
-          "error": "'forward' is not a member of 'std'",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch47_virtual_functions.md",
-      "path": "Book/part05_oo/ch47_virtual_functions.md",
-      "failures": [
-        {
-          "block": 35,
-          "error": "'virtual' outside class declaration",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch51_crtp.md",
-      "path": "Book/part05_oo/ch51_crtp.md",
-      "failures": [
-        {
-          "block": 34,
-          "error": "initializer for 'Comparable<P>' must be brace-enclosed",
-          "has_main": true
-        },
-        {
-          "block": 37,
-          "error": "'unique_ptr' in namespace 'std' does not name a template type",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch52_ebo.md",
-      "path": "Book/part05_oo/ch52_ebo.md",
-      "failures": [
-        {
-          "block": 33,
-          "error": "'unique_ptr' is not a member of 'std'",
-          "has_main": true
-        },
-        {
-          "block": 36,
-          "error": "initializer for 'Tag1' must be brace-enclosed",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch60_template_basics.md",
-      "path": "Book/part06_templates/ch60_template_basics.md",
-      "failures": [
-        {
-          "block": 8,
-          "error": "'std::size_t' has not been declared",
+          "block": 54,
+          "error": "no matching function for call to 'min(<brace-enclosed initializer list>)'",
           "has_main": true
         }
       ]
@@ -758,167 +298,12 @@
       ]
     },
     {
-      "file": "ch66_sfinae.md",
-      "path": "Book/part06_templates/ch66_sfinae.md",
-      "failures": [
-        {
-          "block": 32,
-          "error": "no matching function for call to 'f(Y)'",
-          "has_main": true
-        },
-        {
-          "block": 33,
-          "error": "'>=' should be '> =' to terminate a template argument list",
-          "has_main": true
-        },
-        {
-          "block": 36,
-          "error": "'vector' is not a member of 'std'",
-          "has_main": true
-        },
-        {
-          "block": 37,
-          "error": "'>=' should be '> =' to terminate a template argument list",
-          "has_main": true
-        },
-        {
-          "block": 38,
-          "error": "'>=' should be '> =' to terminate a template argument list",
-          "has_main": true
-        },
-        {
-          "block": 40,
-          "error": "'>=' should be '> =' to terminate a template argument list",
-          "has_main": true
-        },
-        {
-          "block": 41,
-          "error": "'>=' should be '> =' to terminate a template argument list",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch68_tmp.md",
-      "path": "Book/part06_templates/ch68_tmp.md",
-      "failures": [
-        {
-          "block": 9,
-          "error": "'uint16_t' does not name a type",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch70_tag_dispatch.md",
-      "path": "Book/part06_templates/ch70_tag_dispatch.md",
-      "failures": [
-        {
-          "block": 39,
-          "error": "'vector' is not a member of 'std'",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch76_stl_arch.md",
-      "path": "Book/part07_stl/ch76_stl_arch.md",
-      "failures": [
-        {
-          "block": 28,
-          "error": "variable 'std::istringstream iss' has initializer but incomplete type",
-          "has_main": true
-        },
-        {
-          "block": 36,
-          "error": "'vector' is not a member of 'std'",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch78_deque.md",
-      "path": "Book/part07_stl/ch78_deque.md",
-      "failures": [
-        {
-          "block": 32,
-          "error": "C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/deque<int: Invalid argument",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch81_string.md",
-      "path": "Book/part07_stl/ch81_string.md",
-      "failures": [
-        {
-          "block": 32,
-          "error": "comparison between distinct pointer types 'std::string*' {aka 'std::__cxx11::basic_string<char>*'} and 'char*' lacks a cast [-fpermissive]",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch83_map.md",
-      "path": "Book/part07_stl/ch83_map.md",
-      "failures": [
-        {
-          "block": 12,
-          "error": "multimap: No such file or directory",
-          "has_main": true
-        },
-        {
-          "block": 36,
-          "error": "flat_map: No such file or directory",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch84_set.md",
-      "path": "Book/part07_stl/ch84_set.md",
-      "failures": [
-        {
-          "block": 43,
-          "error": "'set_difference' is not a member of 'std'; did you mean 'iter_difference_t'?",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch85_unordered.md",
-      "path": "Book/part07_stl/ch85_unordered.md",
-      "failures": [
-        {
-          "block": 23,
-          "error": "unordered_multiset: No such file or directory",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch93_thread_async.md",
-      "path": "Book/part07_stl/ch93_thread_async.md",
-      "failures": [
-        {
-          "block": 28,
-          "error": "'thread' is not a member of 'std'",
-          "has_main": true
-        }
-      ]
-    },
-    {
       "file": "ch96_sorting.md",
       "path": "Book/part08_algorithms/ch96_sorting.md",
       "failures": [
         {
           "block": 4,
           "error": "'introsort' was not declared in this scope",
-          "has_main": true
-        },
-        {
-          "block": 14,
-          "error": "'string' in namespace 'std' does not name a type",
           "has_main": true
         }
       ]
@@ -930,33 +315,6 @@
         {
           "block": 18,
           "error": "'push' was not declared in this scope",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch115_move.md",
-      "path": "Book/part10_modern/ch115_move.md",
-      "failures": [
-        {
-          "block": 29,
-          "error": "'vector' is not a member of 'std'",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch116_perfect_forwarding.md",
-      "path": "Book/part10_modern/ch116_perfect_forwarding.md",
-      "failures": [
-        {
-          "block": 2,
-          "error": "cannot declare reference to 'int&', which is not a typedef or a template type argument",
-          "has_main": true
-        },
-        {
-          "block": 28,
-          "error": "'as_const' is not a member of 'std'",
           "has_main": true
         }
       ]
@@ -999,38 +357,6 @@
         {
           "block": 25,
           "error": "'module' does not name a type",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch119_ranges_deep.md",
-      "path": "Book/part10_modern/ch119_ranges_deep.md",
-      "failures": [
-        {
-          "block": 34,
-          "error": "'all_of' is not a member of 'std::ranges'",
-          "has_main": true
-        },
-        {
-          "block": 38,
-          "error": "'to' is not a member of 'std::ranges'",
-          "has_main": true
-        }
-      ]
-    },
-    {
-      "file": "ch123_ct_programming.md",
-      "path": "Book/part10_modern/ch123_ct_programming.md",
-      "failures": [
-        {
-          "block": 11,
-          "error": "'struct Plain' has no member named 'serialize'",
-          "has_main": true
-        },
-        {
-          "block": 27,
-          "error": "'cout' is not a member of 'std'",
           "has_main": true
         }
       ]
@@ -1127,28 +453,12 @@
       ]
     },
     {
-      "file": "ch133_clickhouse_redis.md",
-      "path": "Book/part11_source/ch133_clickhouse_redis.md",
-      "failures": [
-        {
-          "block": 60,
-          "error": "missing terminating \" character",
-          "has_main": true
-        }
-      ]
-    },
-    {
       "file": "ch135_patterns_intro.md",
       "path": "Book/part12_patterns/ch135_patterns_intro.md",
       "failures": [
         {
           "block": 11,
           "error": "'area_of' was not declared in this scope",
-          "has_main": true
-        },
-        {
-          "block": 36,
-          "error": "missing terminating \" character",
           "has_main": true
         }
       ]
@@ -1165,28 +475,12 @@
       ]
     },
     {
-      "file": "ch137_structural.md",
-      "path": "Book/part12_patterns/ch137_structural.md",
-      "failures": [
-        {
-          "block": 33,
-          "error": "'vector' in namespace 'std' does not name a template type",
-          "has_main": true
-        }
-      ]
-    },
-    {
       "file": "ch138_behavioral.md",
       "path": "Book/part12_patterns/ch138_behavioral.md",
       "failures": [
         {
           "block": 2,
           "error": "'area_of' was not declared in this scope",
-          "has_main": true
-        },
-        {
-          "block": 22,
-          "error": "expected '{' before ';' token",
           "has_main": true
         }
       ]
@@ -1223,11 +517,6 @@
           "has_main": true
         },
         {
-          "block": 44,
-          "error": "'string' in namespace 'std' does not name a type",
-          "has_main": true
-        },
-        {
           "block": 53,
           "error": "'clamp' was not declared in this scope",
           "has_main": true
@@ -1251,17 +540,6 @@
       ]
     },
     {
-      "file": "ch147_code_review.md",
-      "path": "Book/part13_engineering/ch147_code_review.md",
-      "failures": [
-        {
-          "block": 45,
-          "error": "missing terminating \" character",
-          "has_main": true
-        }
-      ]
-    },
-    {
       "file": "ch150_testing.md",
       "path": "Book/part13_engineering/ch150_testing.md",
       "failures": [
@@ -1278,7 +556,7 @@
       "failures": [
         {
           "block": 40,
-          "error": "'std::thread' has not been declared",
+          "error": "'ThreadPool' was not declared in this scope; did you mean 'thread_local'?",
           "has_main": true
         }
       ]
@@ -1301,16 +579,6 @@
           "block": 20,
           "error": "'MemoryPool' was not declared in this scope",
           "has_main": true
-        },
-        {
-          "block": 23,
-          "error": "'printf' is not a member of 'std'",
-          "has_main": true
-        },
-        {
-          "block": 27,
-          "error": "'malloc' is not a member of 'std'",
-          "has_main": true
         }
       ]
     },
@@ -1324,43 +592,18 @@
           "has_main": true
         },
         {
-          "block": 9,
-          "error": "'cout' is not a member of 'std'",
-          "has_main": true
-        },
-        {
-          "block": 15,
-          "error": "'atomic' in namespace 'std' does not name a template type",
-          "has_main": true
-        },
-        {
-          "block": 17,
-          "error": "'printf' is not a member of 'std'",
-          "has_main": true
-        },
-        {
           "block": 18,
           "error": "'log_if' was not declared in this scope",
           "has_main": true
         },
         {
-          "block": 22,
-          "error": "'printf' is not a member of 'std'",
+          "block": 30,
+          "error": "'g_mtx' was not declared in this scope",
           "has_main": true
         },
         {
-          "block": 29,
-          "error": "'std::chrono' has not been declared",
-          "has_main": true
-        },
-        {
-          "block": 33,
-          "error": "'string_view' is not a member of 'std'",
-          "has_main": true
-        },
-        {
-          "block": 35,
-          "error": "'std::string_view' has not been declared",
+          "block": 36,
+          "error": "'now' was not declared in this scope",
           "has_main": true
         }
       ]

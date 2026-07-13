@@ -51,10 +51,10 @@ flowchart TD
 ## ② 模块单元的类型 [标准]
 
 ```cpp
-// ② 三种基本单元
-export module A;              // 模块接口单元（可导出）
-module A;                     // 模块实现单元（内部，不导出）
-module A:part;                // 模块分区（接口/实现分区）
+// ② 三种基本单元（三者各自是独立文件/翻译单元，不能写在同一文件）
+export module A;              // (a) 模块接口单元（本例唯一可独立编译的单元）
+// module A;                 // (b) 模块实现单元：独立文件，仅写 module A;
+// export module A:part;     // (c) 模块分区接口：独立文件
 ```
 
 - `[标准]`：接口单元以 `export module` 开头；实现单元 `module X;` 无 `export`，仅供本模块实现细节。
@@ -115,13 +115,12 @@ _Z7use_modv:
 
 ```cpp
 // ⑥ 大模块拆分为分区，对外仍是一个模块
-export module big;                  // 主接口
-export module big:io;              // 分区接口
-export module big:core;            // 另一分区
-// 主接口中用 export import 聚合分区
-export module big;
-export import :io;
+export module big;                  // 主接口（本文件）
+export import :io;                 // 聚合分区（:io / :core 在独立文件）
 export import :core;
+// —— 以下在独立文件中 ——
+// export module big:io;            // 分区接口单元
+// export module big:core;         // 另一分区接口单元
 ```
 
 - `[标准]`：分区名 `module big:io`；主接口用 `export import :io` 把分区导出重组为统一模块 `big`。
@@ -148,9 +147,9 @@ export module networking;
 export namespace net {
     void connect();
 }
-// 导入方：
-import networking;
-net::connect();               // 名字在 net 命名空间，模块只是发布单元
+// 导入方（独立文件）：
+// import networking;
+// net::connect();             // 名字在 net 命名空间，模块只是发布单元
 ```
 
 - `[标准]`：模块是"发布单元"，命名空间是"逻辑分组"——两者正交。一个模块可导出多个命名空间。
@@ -214,9 +213,9 @@ export module m;
 int hidden();          // 没 export：导入方看不到
 export int visible();  // 导出
 // ⑬ 陷阱2：循环模块依赖 -> 编译失败（模块不允许循环）
-// ⑬ 陷阱3：全局状态在模块中仍按 ODR 单一定义
-export module m;
-export int counter = 0;        // 多翻译单元导入 -> 同一实体（OK，ODR）
+// ⑬ 陷阱3：全局状态在模块中仍按 ODR 单一定义（独立文件，不可与本块同文件）
+// export module m;
+// export int counter = 0;        // 多翻译单元导入 -> 同一实体（OK，ODR）
 ```
 
 - `[经验]`：忘记 `export` 是最常见错误；模块依赖必须是**有向无环图**（DAG）。
@@ -255,9 +254,9 @@ g++ Examples/_mod_main.o Examples/_mod_use.o -o Examples/_mod_app
 export module tmpl;
 export template <typename T>
 T max_of(T a, T b) { return a < b ? b : a; }
-// 使用方：
-import tmpl;
-int x = max_of(1, 2);     // 模板定义随模块接口可见
+// 使用方（独立文件）：
+// import tmpl;
+// int x = max_of(1, 2);     // 模板定义随模块接口可见
 ```
 
 - `[标准]`：导出模板时，模板**定义**必须随接口单元可见（一如头文件需含定义）。
@@ -376,19 +375,20 @@ int main(){std::cout<<"Pattern 3: import std; only, minimal migration.\n";return
 ## 附录 C: 模块分区深度剖析
 
 ```cpp
-// C-1 大型模块拆分为接口分区+实现分区
+// C-1 大型模块拆分为接口分区+实现分区（各单元独立文件）
 // file: big.cppm (主接口)
 export module big;
 export import :io;
 export import :core;
-// file: io.cppm (分区接口)
-export module big:io;
-export void log(const char*);
-// file: core.cppm (分区接口)
-export module big:core;
-export int process();
-#include <iostream>
-int main(){std::cout<<"Partitions enable multi-file module with single import entry.\n";return 0;}
+// file: io.cppm (分区接口，独立文件)
+// export module big:io;
+// export void log(const char*);
+// file: core.cppm (分区接口，独立文件)
+// export module big:core;
+// export int process();
+// 使用方（独立文件）：
+// #include <iostream>
+// int main(){ std::cout<<"Partitions enable multi-file module with single import entry.\n"; return 0; }
 ```
 
 ```cpp
@@ -440,14 +440,12 @@ export int sub(int a, int b) { return a - b; }
 ```
 
 ```cpp
-// M2 模块分区：接口分区 + 主接口聚合
-export module big:io;
+// M2 模块分区：接口分区 + 主接口聚合（每个分区是独立文件）
+export module big:io;          // 分区接口单元（本文件）
 export void log(const char*);
-export module big:core;
-export int core_fn();
-export module big;
-export import :io;
-export import :core;
+// —— 另一分区在独立文件中 ——
+// export module big:core;
+// export int core_fn();
 ```
 
 ```cpp
@@ -533,8 +531,9 @@ int internal() { return 42; }   // 仅本模块可见
 ```cpp
 // M13 模块 + 概念（C++20）导出受约束接口
 export module mathc;
-template <std::integral T>
-export T factorial(T n) { T r = 1; for (T i = 2; i <= n; ++i) r *= i; return r; }
+#include <concepts>            // std::integral 定义于此
+export template <std::integral T>
+T factorial(T n) { T r = 1; for (T i = 2; i <= n; ++i) r *= i; return r; }
 ```
 
 ## 附录 E：标准演进与工业采纳 [B/WG21 · F/Industry]

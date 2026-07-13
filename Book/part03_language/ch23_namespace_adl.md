@@ -855,21 +855,19 @@ int main() { std::printf("%s\n", old::n(old::A)); return 0; }
 
 ```cpp
 // prog_24_module_demo.cpp  —— C++20 模块（需 -std=c++20 且编译器支持模块）
-// 文件 math.cppm
-module;
-export module math;
-export namespace math {
-    inline int add(int a, int b) { return a + b; }
-}
-// 文件 main.cpp
-// import math;
-// int main(){ return math::add(1,2); }
-// 注: 完整模块需分文件编译；此处以注释展示结构。真实编译见 ch119。
+// 真实模块需分文件编译（接口单元 math.cppm + 使用单元 main.cpp），结构示意：
+//   // 文件 math.cppm（接口单元）
+//   export module math;
+//   export namespace math { inline int add(int a, int b) { return a + b; } }
+//   // 文件 main.cpp（使用单元）
+//   import math;
+//   int main(){ return math::add(1,2); }
+// 注：分文件模块编译见 ch118/ch119。下面给出“等价可运行”的命名空间版本：
 #include <cstdio>
+namespace math { inline int add(int a, int b) { return a + b; } }
 int main() {
     // 模块版等价逻辑：隔离 + 命名空间双重保护
-    namespace math { inline int add(int a,int b){ return a+b; } }
-    std::printf("%d\n", math::add(1,2));
+    std::printf("%d\n", math::add(1, 2));
     return 0;
 }
 ```
