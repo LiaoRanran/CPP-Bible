@@ -11,15 +11,14 @@
 
 
 ```cpp
-// __cplusplus 宏探测标准版本
+// [merged] ## ① 学习目标
 #include <iostream>
 void show_ver(){ std::cout << __cplusplus; }
-```
-```cpp
-// 特性测试宏：concepts
-#ifdef __cpp_concepts
 static_assert(__cpp_concepts >= 201707L, "");
-#endif
+int main() {
+    #ifdef __cpp_concepts
+    #endif
+}
 ```
 
 - 一张表纵览各版本关键特性、动机、提案、对你代码的影响。
@@ -28,14 +27,14 @@ static_assert(__cpp_concepts >= 201707L, "");
 ## ② 前置知识
 
 ```cpp
-// 特性测试宏：modules
-#ifdef __cpp_modules
-#endif
-```
-```cpp
-// 特性测试宏：ranges 库
-#ifdef __cpp_lib_ranges
-#endif
+// [merged] ## ② 前置知识
+#include <iostream>
+int main() {
+    #ifdef __cpp_modules
+    #endif
+    #ifdef __cpp_lib_ranges
+    #endif
+}
 ```
 
 - ch03–ch09 各版本章。
@@ -43,14 +42,14 @@ static_assert(__cpp_concepts >= 201707L, "");
 ## ③ 后续依赖
 
 ```cpp
-// 特性测试宏：format 库
-#ifdef __cpp_lib_format
-#endif
-```
-```cpp
-// 特性测试宏：三路比较库
-#ifdef __cpp_lib_three_way_comparison
-#endif
+// [merged] ## ③ 后续依赖
+#include <iostream>
+int main() {
+    #ifdef __cpp_lib_format
+    #endif
+    #ifdef __cpp_lib_three_way_comparison
+    #endif
+}
 ```
 
 - 作为速查表，后续每章可回查「该特性属于哪版」。
@@ -58,14 +57,14 @@ static_assert(__cpp_concepts >= 201707L, "");
 ## ④ 对照总表
 
 ```cpp
-// 特性测试宏：coroutine 实现
-#ifdef __cpp_impl_coroutine
-#endif
-```
-```cpp
-// 特性测试宏：结构化绑定
-#ifdef __cpp_structured_bindings
-#endif
+// [merged] ## ④ 对照总表
+#include <iostream>
+int main() {
+    #ifdef __cpp_impl_coroutine
+    #endif
+    #ifdef __cpp_structured_bindings
+    #endif
+}
 ```
 
 | 版本 | 标志特性 | 关键提案 | 解决痛点 | 工业影响 |
@@ -82,14 +81,14 @@ static_assert(__cpp_concepts >= 201707L, "");
 ## ⑤ 迁移指南
 
 ```cpp
-// 特性测试宏：if constexpr
-#ifdef __cpp_if_constexpr
-#endif
-```
-```cpp
-// 检测 C++11
-#if __cplusplus >= 201103L
-#endif
+// [merged] ## ⑤ 迁移指南
+#include <iostream>
+int main() {
+    #ifdef __cpp_if_constexpr
+    #endif
+    #if __cplusplus >= 201103L
+    #endif
+}
 ```
 
 ### 从 C++98 → C++11/14
@@ -122,14 +121,14 @@ static_assert(__cpp_concepts >= 201707L, "");
 ## ⑥ 编译器支持矩阵（要点，详见 ch11）
 
 ```cpp
-// 检测 C++14
-#if __cplusplus >= 201402L
-#endif
-```
-```cpp
-// 检测 C++17
-#if __cplusplus >= 201703L
-#endif
+// [merged] ## ⑥ 编译器支持矩阵（要点，详见 ch11）
+#include <iostream>
+int main() {
+    #if __cplusplus >= 201402L
+    #endif
+    #if __cplusplus >= 201703L
+    #endif
+}
 ```
 
 - GCC：C++17 自 7 起较全，C++20 自 10/11 逐步，C++23 持续补全。
@@ -140,43 +139,43 @@ static_assert(__cpp_concepts >= 201707L, "");
 ## ⑦ 版本演进 Mermaid
 
 ```cpp
-// 检测 C++20
-#if __cplusplus >= 202002L
-#endif
-```
-```cpp
-// 检测 C++23
-#if __cplusplus >= 202302L
-#endif
+// [merged] ## ⑦ 版本演进 Mermaid
+#include <iostream>
+int main() {
+    #if __cplusplus >= 202002L
+    #endif
+    #if __cplusplus >= 202302L
+    #endif
+}
 ```
 
 ## ⑧ 生命周期（版本矩阵本身无生命周期语义）
 
 ```cpp
-// 头文件 <version> 提供特性宏
+// [merged] ## ⑧ 生命周期（版本矩阵本身无生命周期语义）
+#include <iostream>
 #include <version>
-```
-```cpp
-// 编译器宏 __GNUC__
-#ifdef __GNUC__
-int gcc_major = __GNUC__;
-#endif
+int main() {
+    #ifdef __GNUC__
+    int gcc_major = __GNUC__;
+    #endif
+}
 ```
 
 各标准版本的对象生命周期规则见对应章（ch19 存储期、ch39 RAII、ch47 析构）；本章只横向对照版本差异。
 ## ⑨ 调用栈 / ABI（见 ch11、ch47）
 
 ```cpp
-// 编译器宏 _MSC_VER
-#ifdef _MSC_VER
-int msc = _MSC_VER;
-#endif
-```
-```cpp
-// 标准库宏 __GLIBCXX__
-#ifdef __GLIBCXX__
-int libstdcxx = __GLIBCXX__;
-#endif
+// [merged] ## ⑨ 调用栈 / ABI（见 ch11、ch47）
+#include <iostream>
+int main() {
+    #ifdef _MSC_VER
+    int msc = _MSC_VER;
+    #endif
+    #ifdef __GLIBCXX__
+    int libstdcxx = __GLIBCXX__;
+    #endif
+}
 ```
 
 调用约定与 ABI 由各编译器与平台决定，标准仅规定行为；版本迁移时重点关注 ABI 兼容性。
@@ -202,56 +201,54 @@ static_assert(sizeof(void*)==8, "64-bit");
 ## ⑪ STL 联系（各版标准库演进）
 
 ```cpp
-// 特性宏组合：可选实现
-#if defined(__cpp_concepts) && defined(__cpp_lib_ranges)
-#endif
-```
-```cpp
-// 编译期特性可用性汇总（注释表）
-// C++11: __cpp_static_assert_2 / __cpp_range_for ...
+// [merged] ## ⑪ STL 联系（各版标准库演进）
+#include <iostream>
+int main() {
+    #if defined(__cpp_concepts) && defined(__cpp_lib_ranges)
+    #endif
+}
 ```
 
 C++11 起 STL 大幅扩展（智能指针、区间、并发）；C++17/20 加入 `string_view`/`<filesystem>`/Ranges；演进全貌见 ch76–ch110。
 ## ⑫ 工业案例（编译器/库对标准的跟进节奏）
 
 ```cpp
-// 编译期特性可用性汇总2（注释表）
-// C++20: __cpp_concepts / __cpp_using_enum ...
-```
-```cpp
-// 多标准兼容写法
-#if __cplusplus >= 202002L
+// [merged] ## ⑫ 工业案例（编译器/库对标准的跟进节奏）
+#include <iostream>
 #include <ranges>
-#endif
+int main() {
+    #if __cplusplus >= 202002L
+    #endif
+}
 ```
 
 GCC/Clang/MSVC 与 libc++/libstdc++/MS STL 对新课标的支持普遍滞后 1–3 年，直接影响代码可移植性与上线节奏。
 ## ⑬ 源码分析（标准文本即规范源码）
 
 ```cpp
-// 静态断言结合特性宏
-#ifndef __cpp_concepts
-#error "need concepts"
-#endif
-```
-```cpp
-// 模块宏占位（C++20/23）
-#ifdef __cpp_modules
-#endif
+// [merged] ## ⑬ 源码分析（标准文本即规范源码）
+#include <iostream>
+int main() {
+    #ifndef __cpp_concepts
+    #error "need concepts"
+    #endif
+    #ifdef __cpp_modules
+    #endif
+}
 ```
 
 C++ 标准文本（ISO/IEC 14882）与 WG21 提案、编译器前端实现共同构成「规范级源码」；研读草案比二手博客更可靠。
 ## ⑭ WG21 提案背景 [标准]
 
 ```cpp
-// 协程宏占位
-#ifdef __cpp_impl_coroutine
-#endif
-```
-```cpp
-// 反射宏占位（C++26 提案）
-#ifdef __cpp_lib_reflection
-#endif
+// [merged] ## ⑭ WG21 提案背景 [标准]
+#include <iostream>
+int main() {
+    #ifdef __cpp_impl_coroutine
+    #endif
+    #ifdef __cpp_lib_reflection
+    #endif
+}
 ```
 
 标准由提案（Proposal）驱动，约每三年发布一版；提案状态、投票记录公开于 open-std.org，可追溯到每条特性的来龙去脉。
@@ -266,38 +263,35 @@ C++ 标准文本（ISO/IEC 14882）与 WG21 提案、编译器前端实现共同
 ## ⑮ 面试题
 
 ```cpp
-// 版本宏与 std::string_view
+// [merged] ## ⑮ 面试题
+#include <iostream>
 #include <string_view>
-std::string_view v10{"c++"};
-```
-```cpp
-// 编译器特性查询命令（注释）
-// g++ -dM -E -x c++ /dev/null | grep cpp
+int main() {
+    std::string_view v10{"c++"};
+}
 ```
 
 ## ⑯ 易错点（版本混用陷阱）
 
 ```cpp
-// 标准库版本与 ABI
+// [merged] ## ⑯ 易错点（版本混用陷阱）
+#include <iostream>
 #include <string>
 std::string stdlib_ver();
-```
-```cpp
-// 检测异常规范 noexcept
 void noex10() noexcept {}
+int main() {}
 ```
 
 混用不同 `-std=` 编译单元可能导致 ODR 违规与 ABI 不一致；NDK/MSVC 对新课标支持常滞后，切勿假设「写 C++20 就能编」。
 ## ⑰ FAQ（迁移必读）
 
 ```cpp
-// C++26 预测宏占位
-#ifdef __cpp_lib_reflection
-#endif
-```
-```cpp
-// 版本矩阵：年份->标准 映射（注释）
-// 1998=C++98, 2003=C++03, 2011=C++11, ...
+// [merged] ## ⑰ FAQ（迁移必读）
+#include <iostream>
+int main() {
+    #ifdef __cpp_lib_reflection
+    #endif
+}
 ```
 
 - **Q：能否随意升到 `-std=c++23`？** A：需确认工具链与所有依赖库均已支持，否则链接期或运行期失败。
