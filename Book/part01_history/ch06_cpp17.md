@@ -12,11 +12,11 @@
 
 
 ```cpp
+// [merged] ## ① 学习目标
+#include <iostream>
 auto p=std::make_pair(1,2.0); void use_sb(){ auto& [a,b]=p; (void)a;(void)b; }
-```
-```cpp
-// if constexpr
 template<class T> auto get(T x){ if constexpr(std::is_pointer_v<T>) return *x; else return x; }
+int main() {}
 ```
 
 - 掌握 C++17 关键特性：结构化绑定、`if`/`switch` 带初始化、折叠表达式、`std::string_view`、`std::optional` / `std::variant` / `std::any`、`std::filesystem`、并行算法执行策略、类模板参数推导（CTAD）、`[[nodiscard]]`/`[[maybe_unused]]`、保证的拷贝消除、内联变量、强制 RVO。
@@ -24,13 +24,14 @@ template<class T> auto get(T x){ if constexpr(std::is_pointer_v<T>) return *x; e
 ## ② 前置知识
 
 ```cpp
+// [merged] ## ② 前置知识
+#include <iostream>
 #include <optional>
-std::optional<int> o=5; void use_opt(){ if(o) (void)*o; }
-```
-```cpp
-// std::string_view
 #include <string_view>
-std::string_view sv="c++17"; auto n=sv.size();
+std::optional<int> o=5; void use_opt(){ if(o) (void)*o; }
+int main() {
+    std::string_view sv="c++17"; auto n=sv.size();
+}
 ```
 
 - ch04（移动/auto）、ch63（变参，折叠表达式依赖）、ch32（初始化）。
@@ -38,12 +39,11 @@ std::string_view sv="c++17"; auto n=sv.size();
 ## ③ 后续依赖
 
 ```cpp
-// inline 变量
+// [merged] ## ③ 后续依赖
+#include <iostream>
 inline int g_counter=0;
-```
-```cpp
-// 折叠表达式（一元左折）
 template<class...Ts> auto sum(Ts...ts){ return (ts + ...); } auto s=sum(1,2,3);
+int main() {}
 ```
 
 - `string_view`（ch82）、`optional/variant`（ch88）、`filesystem`（ch91）、折叠表达式（ch64）、并行算法（ch99）均在本章确立。
@@ -51,14 +51,13 @@ template<class...Ts> auto sum(Ts...ts){ return (ts + ...); } auto s=sum(1,2,3);
 ## ④ 知识图谱
 
 ```cpp
+// [merged] ## ④ 知识图谱
 #include <iostream>
-// 折叠表达式（逗号）
-template<class...Ts> void print_all(Ts...ts){ (std::cout << ... << ts); }
-```
-```cpp
-// 文件系统 <filesystem>
 #include <filesystem>
-std::filesystem::path p="."; auto exists=p.has_filename();
+template<class...Ts> void print_all(Ts...ts){ (std::cout << ... << ts); }
+int main() {
+    std::filesystem::path p="."; auto exists=p.has_filename();
+}
 ```
 
 ```
@@ -80,24 +79,23 @@ C++17 生产力
 ## ⑤ Mermaid（结构化绑定解构）
 
 ```cpp
-// 类模板参数推导 CTAD
+// [merged] ## ⑤ Mermaid（结构化绑定解构）
+#include <iostream>
 #include <vector>
-std::vector v{1,2,3};
-```
-```cpp
-// 保证复制消除
 struct S{ S(){} }; S make(){ return S{}; }
+int main() {
+    std::vector v{1,2,3};
+}
 ```
 
 ## ⑥ UML / 结构图（特性关系）[标准]
 
 ```cpp
-// 嵌套命名空间定义
+// [merged] ## ⑥ UML / 结构图（特性关系）[标准]
+#include <iostream>
 namespace outer::inner { int x=1; }
-```
-```cpp
-// [[nodiscard]]
 [[nodiscard]] int compute() { return 1; }
+int main() {}
 ```
 
 本章特性按目标分三类：语法糖（结构化绑定 / 折叠表达式）、编译期分支（`if constexpr` / CTAD）、库类型（`string_view` / `optional` / `variant` / `any` / 并行 STL）。
@@ -110,25 +108,26 @@ flowchart LR
 ## ⑦ ASCII 内存图（string_view 不拥有数据）
 
 ```cpp
-// [[maybe_unused]]
-[[maybe_unused]] int debug_flag=0;
-```
-```cpp
-// 常量表达式 lambda
-constexpr auto sq=[](int x){ return x*x; }; static_assert(sq(3)==9, "");
+// [merged] ## ⑦ ASCII 内存图（string_view 不拥有数据）
+#include <iostream>
+int main() {
+    [[maybe_unused]] int debug_flag=0;
+    constexpr auto sq=[](int x){ return x*x; }; static_assert(sq(3)==9, "");
+}
 ```
 
 ## ⑧ 生命周期（新增库类型的所有权语义）
 
 ```cpp
+// [merged] ## ⑧ 生命周期（新增库类型的所有权语义）
+#include <iostream>
 #include <variant>
-std::variant<int,double> v=1; void use_var(){ std::visit([](auto x){(void)x;}, v); }
-```
-```cpp
-// std::any
 #include <any>
 #include <string>
-std::any a=std::string("x");
+std::variant<int,double> v=1; void use_var(){ std::visit([](auto x){(void)x;}, v); }
+int main() {
+    std::any a=std::string("x");
+}
 ```
 
 `string_view` 不拥有数据（悬垂风险，ch36）；`optional`/`variant`/`any` 在对象内管理所含值的生命周期（ch25）；CTAD 推导的临时对象生命周期遵循常规规则。
@@ -158,14 +157,14 @@ string_view sv:
 ## ⑩ 汇编（折叠表达式展开）
 
 ```cpp
-// std::clamp
+// [merged] ## ⑩ 汇编（折叠表达式展开）
+#include <iostream>
 #include <algorithm>
-int y=std::clamp(15,0,10);
-```
-```cpp
-// std::byte
 #include <cstddef>
-std::byte b{0x0F};
+int main() {
+    int y=std::clamp(15,0,10);
+    std::byte b{0x0F};
+}
 ```
 
 > 折叠表达式把「递归累加」写成一行，编译期展开为连续二元运算（ch64）。
@@ -173,13 +172,13 @@ std::byte b{0x0F};
 ## ⑪ STL 联系
 
 ```cpp
+// [merged] ## ⑪ STL 联系
+#include <iostream>
 #include <string>
 #include <map>
 std::map<int,std::string> m{{1,"a"}}; void use_map(){ for(auto& [k,v]:m){ (void)k;(void)v; } }
-```
-```cpp
-// [[nodiscard]] 防止忽略错误
 [[nodiscard]] bool connect(){ return true; }
+int main() {}
 ```
 
 - `std::optional<T>` 取代「用特殊值表示空」（如 `-1` 表示无效索引），类型安全（ch88）。
@@ -189,13 +188,12 @@ std::map<int,std::string> m{{1,"a"}}; void use_map(){ for(auto& [k,v]:m){ (void)
 ## ⑫ 工业案例
 
 ```cpp
-// 内联变量跨 TU 共享
-inline constexpr double kPi=3.14159;
-```
-```cpp
-// if constexpr 分发类型
+// [merged] ## ⑫ 工业案例
+#include <iostream>
 #include <type_traits>
+inline constexpr double kPi=3.14159;
 template<class T> void f(T x){ if constexpr(std::is_integral_v<T>) (void)(x+1); else (void)x; }
+int main() {}
 ```
 
 - **Chromium/Abseil**：`string_view` 广泛用于函数参数，避免无谓 `std::string` 拷贝（ch130、ch81）。
@@ -204,13 +202,12 @@ template<class T> void f(T x){ if constexpr(std::is_integral_v<T>) (void)(x+1); 
 ## ⑬ 源码分析
 
 ```cpp
-// std::filesystem 遍历目录
+// [merged] ## ⑬ 源码分析
+#include <iostream>
 #include <filesystem>
 void walk(){ for(auto& e: std::filesystem::directory_iterator(".")) (void)e; }
-```
-```cpp
-// 折叠表达式空包
 template<class...Ts> bool all(Ts...ts){ return (ts && ... && true); }
+int main() {}
 ```
 
 - 保证拷贝消除：C++17 规定某些 prvalue（纯右值）不再「构造临时再拷贝」，而是直接在目标位置构造（ch117）。
@@ -218,13 +215,12 @@ template<class...Ts> bool all(Ts...ts){ return (ts && ... && true); }
 ## ⑭ WG21 提案
 
 ```cpp
-// std::string_view 避免拷贝
+// [merged] ## ⑭ WG21 提案
+#include <iostream>
 #include <string_view>
 void take(std::string_view sv){ (void)sv; }
-```
-```cpp
-// 新属性 likely/unlikely
 int predict(int x){ if(x>0) [[likely]] return 1; else [[unlikely]] return 0; }
+int main() {}
 ```
 
 - **P0217R3** Structured bindings.
@@ -241,14 +237,14 @@ int predict(int x){ if(x>0) [[likely]] return 1; else [[unlikely]] return 0; }
 ## ⑮ 面试题
 
 ```cpp
-// std::optional 链式
+// [merged] ## ⑮ 面试题
+#include <iostream>
 #include <optional>
-std::optional<int> half(int x){ return x%2==0 ? std::optional<int>{x/2} : std::nullopt; }
-```
-```cpp
-// 聚合初始化 + 推导
 #include <array>
-std::array a{1,2,3};
+std::optional<int> half(int x){ return x%2==0 ? std::optional<int>{x/2} : std::nullopt; }
+int main() {
+    std::array a{1,2,3};
+}
 ```
 
 1. `string_view` 与 `const std::string&` 区别？（前者零拷贝但悬垂风险，后者安全但可能需构造 string）
@@ -258,15 +254,15 @@ std::array a{1,2,3};
 ## ⑯ 易错点
 
 ```cpp
-// std::variant 访问
+// [merged] ## ⑯ 易错点
+#include <iostream>
 #include <variant>
-std::variant<int,double> w=2.0; auto d=std::holds_alternative<double>(w);
-```
-```cpp
-// 常量表达式 if 与类型特性
 #include <type_traits>
 #include <cstddef>
 template<class T> size_t sz(){ if constexpr(std::is_same_v<T,int>) return 4; else return 8; }
+int main() {
+    std::variant<int,double> w=2.0; auto d=std::holds_alternative<double>(w);
+}
 ```
 
 - `string_view` 指向临时 string 会悬垂（ch33 UB）。
