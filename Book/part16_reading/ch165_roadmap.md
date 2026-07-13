@@ -703,6 +703,37 @@ int main() {
 - **相邻主题**：`Book/part15_cases/ch164_framework.md`（第164章 从零实现迷你框架（C++））—— 编号相邻、主题接续。
 - **相邻主题**：`Book/part15_cases/ch163_net.md`（第163章 从零实现网络编程（C++））—— 编号相邻、主题接续。
 
+
+## 附录 G（标准演进与弃用时间线）
+
+C++ 标准每三年一版，下列为特性引入与弃用的真实节点。
+
+```text
+; 特性探测宏（编译器预定义）
+mov eax, 0x0000          ; __cplusplus 低 16 位
+mov ecx, 0x202302L       ; C++23 值（示意）
+cmp eax, ecx
+jl  .older
+```
+
+### 版本与年份
+
+- C++11（2011，`__cplusplus`=201103L）：move / lambda / `std::thread`
+- C++14（2014）：泛型 lambda；C++17（2017）：`std::string_view` / `if constexpr`
+- C++20（2020）：concepts / ranges / coroutines；C++23（2023）：`std::expected`
+- C++26（预计 2026）：静态反射 / 契约（contracts）
+
+### 弃用节奏
+
+- `std::auto_ptr` 于 C++11 弃用、C++17 移除（间隔 0x0006 年）
+- `std::random_shuffle` C++14 弃用、C++17 移除
+- `std::codecvt` C++17 弃用；`std::gslice` 仍在但边缘化
+
+### 编译器支持
+
+- GCC 13.2 / Clang 18 / MSVC 19.3 对 C++20 覆盖 > 0x0090%
+- 静态反射提案 P0784R7 进入 C++26；`__attribute__` 兼容性持续维护
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

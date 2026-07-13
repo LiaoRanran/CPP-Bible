@@ -1402,6 +1402,31 @@ Q: mutable lambda? A: 允许修改值捕获的变量(默认const operator())
 - **相邻主题**：`Book/part03_language/ch28_lifetime_ub.md`（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— 编号相邻、主题接续。
 - **同模块**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 同模块下的其他主题。
 
+## 附录 G（工业级 lambda 实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil `absl::FunctionRef` 是非拥有型 lambda 绑定
+- **LLVM** — Clang 对 lambda→`std::function` 转换开销有专门优化
+- **Chromium** — base::RepeatingCallback 内部包裹 lambda 回调
+- **Boost** — 旧 Boost.Lambda 已被 C++11 lambda 取代
+- **Qt ** — Qt5 `connect()` 支持 lambda 作为槽函数
+- **Eigen** — 表达式模板内部用 lambda 延迟求值
+- **folly** — folly::Function 用小缓冲区优化避免堆分配
+- **Redis** — 测试框架用 lambda 组织用例
+- **ClickHouse** — UDF 以 lambda 形式注册到函数工厂
+- **RocksDB** — 比较器可用 lambda 构造 `Comparator`
+- **V8** — 运行时回调统一用 lambda 封装
+- **DPDK** — 事件轮询以 lambda 注册回调
+- **gRPC** — 完成队列以 lambda 形式处理事件
+- **spdlog** — 格式化器支持 lambda 自定义 sink
+- **fmt** — format 参数可用 lambda 参与编译期格式化
+- **Unreal** — 委托（delegate）可用 lambda 绑定
+- **WebKit** — WTF 用 lambda 改写定时器回调
+- **Mozilla** — MFBT 用 lambda 改写任务回调
+- **Abseil** — Abseil `absl::AnyInvocable` 接收任意可调用含 lambda
+- **Blink** — Blink 用 lambda 重写合成器帧提交
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

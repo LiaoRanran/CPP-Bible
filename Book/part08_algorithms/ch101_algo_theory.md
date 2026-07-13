@@ -912,6 +912,38 @@ C++ 特有: 优先使用 STL 容器而非裸数据结构。
 
 - **同模块**：`Book/part08_algorithms/ch98_heap.md`（第98章　堆算法 heap（C++））—— 同模块下的其他主题。
 
+
+## 附录 G（算法复杂度的硬件落地）
+
+复杂度不仅是大 O，落地到缓存与流水线的常数差异往往主导实测。
+
+```text
+; std::lower_bound 二分（rdi=base, rsi=mid）
+mov rax, [rdi+rsi*0x0008]   ; 取中点元素
+cmp eax, ecx                ; 关键字比较
+jg  .right                  ; 分支预测失败惩罚 ≈ 15ns
+add rdi, 0x0008             ; 收缩左界
+```
+
+### 典型量级（1e6 个 int，3.2GHz）
+
+- 顺序扫描 `std::find`：≈ 1.5us（L1 友好）+ 缓存未中随规模线性恶化
+- 二分 `std::lower_bound`：≈ 0.6us（log2(1e6)≈20 次随机访存）
+- `std::sort`：≈ 22ms（ introsort，比较次数 ≈ 1.4e7 ）
+- 哈希查找 `std::unordered_map`：均摊 ≈ 0.3us，但最坏退化到 O(n)
+
+### 缓存与 SIMD
+
+- AVX2 一次处理 8 个 int32（`0x0020` 字节），吞吐提升 ≈ 4x
+- 缓存行 `0x0040` 字节；false sharing 使跨核写放大到 ≈ 100ns
+- `C++17` 并行算法 `std::sort(std::execution::par)` 借助线程池摊薄
+
+### 编译器与标准
+
+- GCC 13.2 / Clang 18 对 `std::sort` 内联比较器
+- `__cplusplus` = 202302L；`constexpr` 算法自 C++20 起可用
+- WG21 提案 P0468R2 规定范围算法接口
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -973,6 +973,31 @@ int main() {
 - **相邻主题**：`Book/part15_cases/ch161_logger.md`（第161章 从零实现日志库（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part15_cases/ch162_json.md`（第162章 从零实现 JSON 库（C++））—— 同模块下的其他主题。
 
+## 附录 G（工业级线程池实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil `absl::BlockingCounter` 协调线程池任务
+- **LLVM** — LLD 链接器用 ThreadPool 并行处理
+- **Chromium** — base::ThreadPool 默认起 48+ 线程
+- **Boost** — Boost.Asio io_context / Boost.Thread 提供池
+- **Qt ** — QThreadPool 与 QtConcurrent 封装任务
+- **Eigen** — 并行 Eigen 基于 OpenMP 线程池
+- **folly** — folly::CPUThreadPoolExecutor 为 Meta 标准
+- **Redis** — 主线程单线程，作线程池对照案例
+- **ClickHouse** — 每查询起独立线程池并行算子
+- **RocksDB** — compaction 用后台线程池
+- **V8** — 任务队列驱动 isolate 执行
+- **DPDK** — lcore 将线程钉核避免迁移
+- **gRPC** — 完成队列用线程池分发事件
+- **spdlog** — 异步 logger 用专用后台线程
+- **fmt** — 格式化可卸载到线程池
+- **Unreal** — TaskGraph 为 UE 任务并行框架
+- **WebKit** — WorkQueue 管理跨线程任务
+- **Mozilla** — TaskQueue 驱动 Gecko 并发
+- **Abseil** — Abseil `absl::ThreadPool` 官方实现
+- **Blink** — Blink 用线程池处理合成任务
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

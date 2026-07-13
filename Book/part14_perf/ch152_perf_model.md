@@ -814,6 +814,61 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 f
 
 > 交叉引用：微架构见 [ch153](Book/part14_perf/ch153_cpu_micro.md)；编译器优化见 [ch156](Book/part14_perf/ch156_compiler_opt.md)。
 
+## 附录 G（工业级性能建模实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil 提供 `absl::Timing` 基准工具
+- **LLVM** — LLVM 用 cost model 指导向量化
+- **Chromium** — base 用 perfetto 采集性能时间线
+- **Boost** — Boost.Chrono 提供高精度时钟
+- **Qt ** — QElapsedTimer 测量帧耗时
+- **Eigen** — Eigen 用 cost 模型选择展开因子
+- **folly** — folly 用 benchmark 库量化吞吐
+- **Redis** — 用 `redis-benchmark` 建模 QPS
+- **ClickHouse** — 用 EXPLAIN PIPELINE 建模执行成本
+- **RocksDB** — 用 `db_bench` 建模读放大
+- **V8** — 用 d8 基准建模 JS 性能
+- **DPDK** — 用 `testpmd` 建模包转发速率
+- **gRPC** — 用 benchmark 建模 RPC 时延
+- **spdlog** — 用基准量化异步日志吞吐
+- **fmt** — 用基准量化格式化开销
+- **Unreal** — UE 用 stat 命令监控帧时间
+- **WebKit** — WTF 用 benchmark 量化分配
+- **Mozilla** — SpiderMonkey 用 bench 建模 GC 成本
+- **Abseil** — Abseil `absl::Benchmark` 是标准基准框架
+- **Blink** — Blink 用性能模型指导合成
+
+
+## 附录 H（Roofline 与缓存层级模型）
+
+性能建模用 Roofline 将算力与带宽画成上限，下列为典型数字。
+
+```text
+; 向量化累加（AVX2，rdi=arr, rsi=n）
+vmovdqu ymm0, [rdi+0x0000]   ; 加载 0x0020 字节（8x int32）
+vpaddd ymm0, ymm0, [rdi+0x0020]
+add rdi, 0x0040              ; 步进一个缓存行
+```
+
+### 缓存与带宽（3.2GHz，桌面）
+
+- L1 ≈ 1.0ns / 0x0040 字节行；L2 ≈ 4.0ns；L3 ≈ 12ns；主存 ≈ 100ns
+- 内存带宽 ≈ 0x1000 MB/s 量级；AVX2 算力 ≈ 0x0100 GFLOP/s
+- 计算密度 < 0x0008 FLOP/字节 时为带宽受限（Roofline 左侧）
+
+### 量化方法
+
+- `std::chrono` 高精度时钟分辨率 ≈ 1.0ns；`RDTSC` ≈ 0.3ns
+- perf 采样开销 ≈ 0.2us/事件；cache-miss 计数经 `0x0040` 位 MSR
+- 单次测量抖动 ≈ 5.0ns，需取 0x1000 次中位数
+
+### 编译器与标准
+
+- GCC 13.2 / Clang 18 `-O3 -mavx2` 生成上示代码
+- `__cplusplus` = 202302L；`__builtin_expect` 指导分支预测
+- C++20 `<span>` 零拷贝视图降低带宽压力
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

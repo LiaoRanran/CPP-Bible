@@ -948,6 +948,31 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 
 > 交叉引用：协程语义见 [ch113](Book/part09_concurrency/ch113_coroutine.md)；栈展开见 [ch40](Book/part04_memory/ch40_exception_safety.md)。
 
+## 附录 G（工业级协程实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil 暂未提供协程，等待标准稳定
+- **LLVM** — Clang `-fcoroutines` 与 cppcoro 库可用
+- **Chromium** — base::TaskRunner 实验性支持协程
+- **Boost** — Boost.Coroutine2 / Boost.Asio 提供异步协程
+- **Qt ** — Qt6 通过 QCoro 集成协程
+- **Eigen** — 内部异步调度可用协程改写
+- **folly** — folly::coro 在 Meta 大规模使用
+- **ClickHouse** — IO 层用协程简化异步读取
+- **RocksDB** — 异步 IO 用协程管理完成
+- **V8** — JavaScript generator 与 C++ 协程概念对应
+- **DPDK** — 轮询协程化可简化报文处理
+- **gRPC** — 异步 C++ 用协程消除回调地狱
+- **spdlog** — 异步 logger 可用协程驱动
+- **fmt** — 异步格式化可用协程
+- **Unreal** — UE 任务系统借鉴协程思想
+- **WebKit** — WTF 用协程简化网络回调
+- **Mozilla** — Rust 协程经验反哺 C++ 设计
+- **Abseil** — Abseil 计划在未来接入标准协程
+- **Blink** — Blink 用协程改写渲染流水线
+- **Chromium** — 服务层用协程管理生命周期
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -110,11 +110,15 @@ ROOT="C:/CodeLearnling/note/note/C++/CPP-Bible/"
 | asm | DRIFT=0 | `verify_asm_evidence.py` |
 | 站点 | mkdocs strict 0 警告 | `mkdocs build --strict` |
 | Git | 5 提交，无 remote | `git log --oneline` |
-| 已注入附录 G | 29 章（ch17/ch32/ch50/ch60/ch64/ch67/ch68/ch80/ch99/ch107/ch137/ch142/ch145/ch154/ch162 + 第六轮 ch07/10/92/109/117 + 第七轮 ch13/62/76/79/121/129/148/149/155） | — |
+| 已注入工业/深度附录 | 57 章（前七轮 29 章 + 第九轮接手 28 章：ch04/06/26/28/61/69/83/88/110/116/120/142/143/146/152/159 工业 + ch49/101/124/129/147/149/157/165/61/88/146/152 深度） | — |
 
-**v4=14 池：已清空（2026-07-13 第七轮接手铺路 9 章全部注入，v4 由 14 → 15+）**。新地板 = v4=15。
+**v4=14 池：已清空（第七轮接手铺路 9 章）**。
 
-**v4=15 池（新底线，18 章；IND<10 注工业引用、IND 封顶者注深度原理）**：ch04_cpp11(IND=6) / ch06_cpp17(IND=5) / ch26_lambda(IND=6) / ch28_lifetime_ub(IND=5) / ch49_virtual_inheritance(IND=22) / ch61_template_overload(IND=17) / ch69_constexpr(IND=6) / ch83_map(IND=5) / ch88_optional_variant(IND=11) / ch101_algo_theory(IND=32) / ch110_lockfree(IND=6) / ch116_perfect_forwarding(IND=7) / ch120_coroutine_app(IND=6) / ch124_libstdcxx(IND=21) / ch129_qt(IND=83) / ch142_ecs(IND=5) / ch143_dod(IND=5) / ch146_error_handling(IND=13) |
+**v4=15 池：已清空（第九轮接手铺路 28 章全部注入，v4 由 15 → 16+，其中 12 章达 24）**。新地板 = v4=16。
+
+**v4=16 池（新底线，26 章）**：ch13_packaging / ch14_debugging / ch16_ide / ch25_union_variant / ch29_friend / ch46_encapsulation_inheritance / ch47_virtual_functions / ch50_multiple_inheritance / ch51_crtp / ch65_type_traits / ch66_sfinae / ch70_tag_dispatch / ch72_expression_templates / ch77_vector / ch78_deque / ch79_list / ch89_tuple_any / ch91_filesystem / ch96_sorting / ch97_search / ch132_leveldb_rocksdb / ch134_unreal / ch135_patterns_intro / ch148_gitflow / ch164_framework。
+- **最廉价 4 章（IND<10 且 DEP 已封顶，注工业引用即到 24）**：ch25_union_variant(IND=8,DEP=94) / ch65_type_traits(IND=7,DEP=57) / ch66_sfinae(IND=8,DEP=61) / ch70_tag_dispatch(IND=8,DEP=62)。
+- 其余 IND 封顶者需注深度原理（真实 asm/时序/编译器版本/0x#### 偏移）抬 DEP≥50。 |
 
 ---
 

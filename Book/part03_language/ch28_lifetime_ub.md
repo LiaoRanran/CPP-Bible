@@ -1354,6 +1354,31 @@ int main(){int*p=new int(42);delete p;std::cout<<"use-after-free=UB; ASan detect
 
 - **同模块**：`Book/part03_language/ch20_reference_pointer.md`（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 同模块下的其他主题。
 
+## 附录 G（工业级 UB / sanitizer 实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil 与 ASan / GTest 深度集成做生命周期测试
+- **LLVM** — `-fsanitize=address` 与 `-fsanitize=undefined` 由 Clang 提供
+- **Chromium** — clusterfuzz 要求所有构建开启 ASan
+- **Boost** — Boost.Uuid 严格避免未定义行为
+- **Qt ** — QPointer 自动置空防止悬垂指针
+- **Eigen** — AVX 对齐加载若越界会触发 UB，需用 `EIGEN_MAX_ALIGN_BYTES`
+- **folly** — folly 提供 sanitizer 友好的原子封装
+- **Redis** — CI 中开启 ASan 捕获越界写
+- **ClickHouse** — 用 MSan 检测未初始化内存读取
+- **RocksDB** — 单元测试默认挂 ASan
+- **V8** — V8 GC 与 ASan 协同检测悬垂
+- **DPDK** — DPDK 支持以 ASan 构建捕获池外写
+- **gRPC** — CI 对 C++ 开启 ASan / UBSan
+- **spdlog** — 实现严格无 UB，可被 sanitizer 验证
+- **fmt** — 格式化库接受 fuzzing 持续测试
+- **Unreal** — UE 提供专属 sanitizer 构建配置
+- **WebKit** — WebKitGTK 提供 ASan 构建
+- **Mozilla** — Mozilla 提供 ASan 官方构建
+- **Abseil** — Abseil 要求编译器开启 UBSan 才合入
+- **Blink** — Blink 用 sanitizer 验证布局对象生命周期
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

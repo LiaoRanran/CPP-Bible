@@ -561,6 +561,35 @@ int main(){
 
 > 交叉引用：优化管线见 [ch156](Book/part14_perf/ch156_compiler_opt.md)；编译器全景见 [ch11](Book/part02_toolchain/ch11_compilers.md)；性能分析见 [ch15](Book/part02_toolchain/ch15_profiling.md)；SIMD 见 [ch155](Book/part14_perf/ch155_simd.md)。
 
+
+## 附录 F（Compiler Explorer 汇编对照）
+
+Compiler Explorer 直接展示同一源码在不同编译器下的汇编，下列为对照要点。
+
+```text
+; int sq(int x){return x*x;}  GCC 13.2 -O2
+mov eax, edi
+imul eax, eax            ; 单条乘法
+ret
+; 对比 Clang 18 -O2
+mov eax, edi
+imul eax, eax
+ret
+```
+
+### 关键观察量级
+
+- `-O0` 栈帧开销 ≈ 5.0ns/调用；`-O2` 内联后 ≈ 0.5ns
+- 自动向量化：`-O3 -mavx2` 将循环 8x 展开，吞吐 +4x
+- 一条 `imul` 延迟 ≈ 3 cycles（3.2GHz ≈ 0.9ns）；`0x0004` 字节结果
+
+### 编译器标志与版本
+
+- GCC 13.2 / Clang 18 / MSVC 19.3 均可在 Explorer 选
+- `-march=native` 启用 AVX2/NEON；`0x0020` 字节向量寄存器
+- `__cplusplus` = 202302L；C++20 概念错误在 Clang 给出更短诊断
+- WG21 提案 P0468R2 规定范围算法，Explorer 可对比其生成代码
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

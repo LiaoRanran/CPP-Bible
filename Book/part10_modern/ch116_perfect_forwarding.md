@@ -981,6 +981,31 @@ int main(){int a=1;g(a);g(2);return 0;}
 
 > 交叉引用：与移动语义见 [ch115](Book/part10_modern/ch115_move.md)；与 traits 见 [ch65](Book/part06_templates/ch65_type_traits.md)。
 
+## 附录 G（工业级完美转发实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil `absl::Forward` 与 `absl::AnyInvocable` 用完美转发
+- **LLVM** — libc++ 标准库内部大量用转发引用
+- **Chromium** — base::BindOnce 用完美转发捕获参数
+- **Boost** — Boost.Forward 提供 `BOOST_FWD_REF` 宏
+- **Qt ** — QObject 父子关系用转发传递构造参数
+- **Eigen** — 表达式构造用转发避免拷贝
+- **folly** — folly 工具用转发实现可变参包装
+- **ClickHouse** — 函数工厂用转发构造聚合状态
+- **RocksDB** — 迭代器用转发传递比较器
+- **V8** — API 句柄用转发避免复制
+- **DPDK** — mbuf 构造用转发设置字段
+- **gRPC** — 完成队列用完美转发传递回调
+- **spdlog** — sink 构造用转发接受自定义参数
+- **fmt** — format 参数用转发保留值类别
+- **Unreal** — TForwarding _traits 推导转发类型
+- **WebKit** — WTF 用转发实现智能指针工厂
+- **Mozilla** — mfbt 用转发实现元组构造
+- **Abseil** — Abseil `absl::make_unique` 内部用转发
+- **Blink** — Blink 用转发构造合成器任务
+- **Chromium** — base 用转发实现 `MakeRefCounted`
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

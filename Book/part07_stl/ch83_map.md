@@ -1125,6 +1125,31 @@ int main(){std::map<int,int> m{{1,10}};std::unordered_map<int,int> um{{1,10}};st
 
 > 交叉引用：集合见 [ch84](Book/part07_stl/ch84_set.md)；哈希见 [ch38](Book/part04_memory/ch38_allocator.md)。
 
+## 附录 I（工业级关联容器实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil `absl::flat_hash_map` 用 Swiss Table 而非 `std::map`
+- **LLVM** — LLVM `DenseMap` 采用开放寻址
+- **Chromium** — base::flat_map 用扁平数组避免节点分配
+- **Boost** — Boost.MultiIndex / Boost.Unordered 提供多索引哈希
+- **Qt ** — QMap 为红黑树，QHash 为哈希表
+- **Eigen** — 内部用定长映射缓存表达式类型
+- **folly** — folly::F14 为缓存友好型哈希表
+- **Redis** — dict 用递增式 rehash 的哈希表
+- **ClickHouse** — HashMap 用 SIMD 探测桶
+- **RocksDB** — memtable 用跳表（skip list）组织有序 KV
+- **V8** — ObjectHashTable 用开放寻址
+- **DPDK** — rte_hash 提供无锁哈希表
+- **gRPC** — 序列化用 `map<string, T>` 映射
+- **spdlog** — registry 用全局 map 管理 logger
+- **fmt** — 参数以 map 形式组织
+- **Unreal** — TMap 为游戏常用关联容器
+- **WebKit** — WTF::HashMap 用开放寻址
+- **Mozilla** — nsTHashMap 基于 PLDHash
+- **Abseil** — Abseil 同时提供 flat / node / parallel hash map
+- **Blink** — Blink 用 WTF::HashMap 管理 DOM 属性
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

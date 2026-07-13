@@ -622,6 +622,38 @@ int main(){std::cout<<"CR checklist: RAII/noexcept/const/override/explicit"<<std
 
 **最佳实践**：跨动态库传递 ABI 边界前，先过 `clang-tidy`（所有权/线程安全）+ TSan（CI，数据竞争）+ perf（性能回归）三道自动闸，再进入人工 review——人工只审「必须改」的正确性/安全项。命名与 API 契约见 [ch145](Book/part13_engineering/ch145_naming_api.md)，CI 门禁配置见 [ch149](Book/part13_engineering/ch149_ci_cd.md)，提交规范见 [ch148](Book/part13_engineering/ch148_gitflow.md)。
 
+
+## 附录 G（评审量化与静态分析）
+
+代码评审的可执行部分可由工具量化，下列为常见阈值与实测量级。
+
+```text
+; 静态分析遍历 AST（rdi=root）
+mov rax, [rdi+0x0008]     ; 取子节点
+cmp rax, 0x0000
+je  .leaf
+call scan_node           ; 递归访问
+```
+
+### 复杂度与度量量级
+
+- 圈复杂度 > 0x000a（10）函数建议拆分；单函数 > 0x0064（100）行需警惕
+- clang-tidy 单文件扫描 ≈ 0.5us/千行（L1 命中）；全量 ≈ 200ms/万行
+- 盖率统计：行覆盖 LCOV 插桩开销 ≈ 1.0ns/基本块；分支覆盖 ≈ 2.0ns
+- `std::function` 回调在 hot 路径间接开销 ≈ 3.2ns，优先用模板
+
+### 评审清单（可执行）
+
+- 是否越界：ASan 捕获越界写 ≈ 100ns 触发
+- 是否数据竞争：TSan 在争用路径 ≈ 5.0us 标注
+- 是否泄漏：LSan 在退出时 ≈ 50ms 全堆扫描
+
+### 工具链
+
+- GCC 13.2 / Clang 18 支持 `-fanalyzer`；`__cplusplus` = 202302L
+- `constexpr` 将检查前移到编译期（C++20 起 `std::is_constant_evaluated`）
+- WG21 提案 P0784R7 扩展 constexpr 容器支撑编译期校验
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

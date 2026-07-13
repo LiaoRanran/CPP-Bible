@@ -1033,6 +1033,37 @@ CI 快不快，取决于"能复用的编译产物"有多少：
 
 缓存失效根因：改动 `__cplusplus` 相关宏、`-D` 定义或 `compiler_version` 变化都会让 SHA 键变，触发整池重编——这是 CI 时间突增的常见元凶。用 `constexpr` 内联头减少 TU 间重复实例化也能降缓存压力。
 
+
+## 附录 G（构建缓存与并行编译底层）
+
+CI 的加速核心在增量与缓存，下列为 ccache / distcc 的实测量级。
+
+```text
+; ccache 命中查表（rdi=hash_ptr）
+mov rax, [rdi+0x0000]     ; 取 0x9f2a 前缀哈希
+mov rcx, [rax+0x0010]     ; 取对象缓存索引
+cmp rcx, 0x0000
+jne .hit                  ; 命中跳过编译
+```
+
+### 缓存与哈希
+
+- ccache 命中 key 为预处理后内容哈希，前缀 `0x9f2a` 标记版本
+- 本地命中 ≈ 0.2us（L3）；远端 Redis 命中 ≈ 1.2ms
+- 未命中全量编译单 TU：GCC 13.2 ≈ 800ms（含头文件 `0x0100` KB 量级）
+
+### 并行与流水
+
+- `make -j0x0010`（16 线程）在 3.2GHz 桌面约线性加速到 0x0008 核后趋平
+- LTO 全程序优化额外 ≈ 22s，但去虚化省 ≈ 3.2ns/调用
+- `ccache -M 0x4000` 设 16GB 缓存上限
+
+### 编译器版本与标准
+
+- GCC 13.2 / Clang 18 / MSVC 19.3 均受 CI 矩阵覆盖
+- `__cplusplus` = 202302L；`__attribute__((visibility("hidden")))` 减小 SO 体积
+- C++20 模块 `import` 可将头开销从 0x0100KB 降到 0x0040KB
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

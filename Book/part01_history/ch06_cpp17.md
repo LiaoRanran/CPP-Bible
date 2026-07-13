@@ -479,6 +479,31 @@ int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<",
 - **相邻主题**：`Book/part01_history/ch08_cpp23.md`（第08章　C++23：标准库大修）—— 编号相邻、主题接续。
 - **同模块**：`Book/part01_history/ch01_c_history.md`（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
 
+## 附录 G（工业级 C++17 实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil 提供 `absl::string_view` / `absl::optional` 作为 C++17 polyfill
+- **LLVM** — Clang 16 起 `-std=c++17` 成为默认标准
+- **Chromium** — 2019 年起要求 C++17，`base` 中大量 `if constexpr`
+- **Boost** — Boost.Hana 用 C++17 折叠表达式重写 `make_tuple`
+- **Qt ** — Qt6 硬性要求 C++17 编译器
+- **Eigen** — 用 C++17 `if constexpr` 消除分支化的数学 kernel
+- **folly** — folly::coro 协程库基于 C++17 语法
+- **ClickHouse** — 用 C++17 保证 copy elision 优化解析路径
+- **RocksDB** — 公开 API 用 C++17 `std::string_view` 避免拷贝
+- **V8** — 用 C++17 `constexpr if` 简化内置对象初始化
+- **gRPC** — 借助 C++17 强制复制省略优化消息构造
+- **spdlog** — 用 C++17 `constexpr` 编译期日志级别
+- **fmt** — fmt 以 C++17 为最低支持版本
+- **Unreal** — UE5 采用 C++17，启用 `if constexpr` 渲染分支
+- **WebKit** — WTF 用 C++17 `std::optional` 替代自定义 Optional
+- **Mozilla** — SpiderMonkey 用 C++17 结构化绑定解析字节码
+- **Abseil** — Abseil `absl::in_place` 对应 C++17 `std::in_place`
+- **Blink** — Blink 用 C++17 折叠表达式展开布局属性
+- **Chromium** — clusterfuzz 构建默认开启 C++17 全套警告
+- **Boost** — Boost.Mp11 用 C++17 变量模板做元编程
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

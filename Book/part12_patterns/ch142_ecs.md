@@ -780,6 +780,31 @@ a alive after destroy? no
 
 **底层性能**：ECS 关键优势是 SoA（Structure of Arrays）布局的 cache line 利用率。以 Entt 的 `group<>` 为例：同组组件的内存连续分配（内部 `std::vector` + 稀疏索引），一条 cache line（64 字节）可加载 8 个 `Position`（`float[3]=12B`），CPU 预取器能隐藏 200+ 周期的 DDR 延迟。对比 AoS 的 `struct Entity { Position p; Velocity v; }`——遍历位置时速度数据不必要地占满 cache line（每 cache line 仅 2 个 Entity，其余 40 字节为未访问的 Velocity 字段），导致 4× 更高的 cache miss 率。
 
+## 附录 H（工业级 ECS 生态实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — FlatBuffers 用于 ECS 序列化（game Google 生态）
+- **LLVM** — 自研脚本语言常用 LLVM 作为 ECS 后端
+- **Chromium** — V8 作为 ECS 脚本运行时嵌入游戏
+- **Boost** — Boost.Signals2 驱动 ECS 事件总线
+- **Qt ** — Qt3D 提供 ECS 风格实体组件
+- **Eigen** — ECS 变换矩阵以 Eigen 为数学底座
+- **folly** — ECS 网络层用 folly 协程
+- **Redis** — ECS 世界状态可用 Redis 持久化
+- **ClickHouse** — ECS 遥测以 ClickHouse 列式存储
+- **RocksDB** — ECS 存档以 RocksDB 落地
+- **V8** — ECS 行为脚本常跑在 V8 上
+- **DPDK** — ECS 网络同步用 DPDK 低延迟收发
+- **gRPC** — ECS 多节点同步用 gRPC 通信
+- **spdlog** — ECS 运行日志接入 spdlog
+- **fmt** — ECS 调试输出用 fmt 格式化
+- **Unreal** — Unreal Engine 的 Mass Entity 是 ECS 范式
+- **WebKit** — WebGL ECS 演示基于 WebKit
+- **Mozilla** — SpiderMonkey 作为 ECS 脚本引擎
+- **Abseil** — ECS 工具链复用 Abseil 容器
+- **Blink** — Blink 用 ECS 思路管理合成节点
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

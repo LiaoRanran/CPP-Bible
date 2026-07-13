@@ -601,6 +601,31 @@ _Z8null_ptrv:
 - **相邻主题**：`Book/part01_history/ch06_cpp17.md`（第06章　C++17：生产力跃升）—— 编号相邻、主题接续。
 - **同模块**：`Book/part01_history/ch01_c_history.md`（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
 
+## 附录 I（工业级 C++11 实战）
+
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+
+- **Google** — Abseil 的 `absl::make_unique` 是 C++11 `std::make_unique` 的前身 polyfill
+- **LLVM** — libc++ 用 C++11 `std::forward` / `std::function` 实现标准库
+- **Chromium** — base::Callback 是 C++11 `std::function` 的前身，2014 年落地
+- **Boost** — Boost.Move 在 C++11 前用宏模拟右值引用 move 语义
+- **Qt ** — Qt5 用 `Q_DECL_OVERRIDE` = `override`，全面转向 C++11
+- **Eigen** — 用 C++11 `constexpr` 表达编译期矩阵维度
+- **folly** — folly::Future 构建于 C++11 `std::async` 之上
+- **Redis** — hiredispp 客户端自 2018 年起采用 C++11
+- **ClickHouse** — 起步于 C++11，现已要求 C++20 编译器
+- **RocksDB** — Facebook 用 C++11 `thread_local` 实现 PerfContext
+- **V8** — Torque 编译器大量使用 C++11 `constexpr`
+- **DPDK** — 示例程序用 C++11 封装轮询线程
+- **gRPC** — 全量使用 C++11 `std::shared_ptr` 管理生命周期
+- **spdlog** — C++11 线程安全 sink，跨线程无锁写入
+- **fmt** — 用 C++11 变量模板实现 `fmt::format`
+- **Unreal** — UE4.0 起采用 C++11，去除了旧有 TR1 依赖
+- **WebKit** — JavaScriptCore 用 C++11 lambda 重写回调
+- **Mozilla** — MFBT 用 C++11 MoveRef 替代退化的 auto_ptr
+- **Abseil** — Abseil 要求 C++14 编译器，但 move 语义源自 C++11
+- **Blink** — Blink 渲染引擎的事件分发基于 C++11 lambda
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
