@@ -25,9 +25,16 @@
 - **一句话定义**：特化为特定（或某类）实参提供「替代主模板」的实现，由偏序选出最特化者 [标准]
 
 ```cpp
-template <typename T> struct Wrapper { /* 主 */ };
-template <>           struct Wrapper<int> { /* 全特化 */ };
-template <typename U> struct Wrapper<U*> { /* 偏特化：指针 */ };
+// 主模板 / 全特化 / 偏特化同台竞技：偏序决定选中谁
+#include <iostream>
+template <typename T> struct Wrapper { static const char* k() { return "primary"; } };
+template <>           struct Wrapper<int> { static const char* k() { return "full-int"; } };
+template <typename U> struct Wrapper<U*> { static const char* k() { return "ptr"; } };
+int main() {
+    std::cout << Wrapper<double>::k() << '\n';   // primary（主模板）
+    std::cout << Wrapper<int>::k()   << '\n';     // full-int（全特化）
+    std::cout << Wrapper<int*>::k()  << '\n';     // ptr（偏特化）
+}
 ```
 
 ## ③ 核心结构与完整代码实现
@@ -110,16 +117,18 @@ int main() {
 ```
 
 ```cpp
-// 全特化改成员集
+// 全特化可改成员集；偏特化可针对类型族（数组）
+#include <iostream>
+#include <cstddef>
 template <typename T> struct Info { static constexpr int tag = 0; };
 template <> struct Info<void> { static constexpr int tag = -1; static const char* s() { return "void"; } };
-```
-
-```cpp
-#include <cstddef>
-// 偏特化：数组
 template <typename T> struct ArrInfo { static constexpr bool is_arr = false; };
 template <typename T, std::size_t N> struct ArrInfo<T[N]> { static constexpr bool is_arr = true; static constexpr std::size_t n = N; };
+int main() {
+    std::cout << Info<int>::tag << ' ' << Info<void>::tag << '\n';            // 0 -1
+    std::cout << ArrInfo<int>::is_arr << ' '
+              << ArrInfo<int[4]>::is_arr << ' ' << ArrInfo<int[4]>::n << '\n'; // 0 1 4
+}
 ```
 
 ## ⑦ 标准规定 [标准]
@@ -133,11 +142,10 @@ template <typename T, std::size_t N> struct ArrInfo<T[N]> { static constexpr boo
 ```cpp
 // 三者在偏序与 SFINAE 上基本一致（现代 MSVC 已修复旧版宽松两阶段）
 // 差异主要：模板报错可读性（见 ch75）与对 C++20 概念的支持进度
-```
-
-```cpp
 // MSVC 对「函数模板偏序」曾与类模板偏序处理不一致；用类模板包装规避
-template <typename T> struct Dispatcher { static void run(T); };
+#include <iostream>
+template <typename T> struct Dispatcher { static void run(T) { /* 类模板包装规避函数模板偏序差异 */ } };
+int main() { Dispatcher<int> d; d.run(0); std::cout << "ok\n"; }
 ```
 
 ## ⑨ 内存 / 对象模型
@@ -145,14 +153,19 @@ template <typename T> struct Dispatcher { static void run(T); };
 每份选中的特化是**独立类型**，各自布局独立。
 
 ```cpp
-static_assert(sizeof(W<int>)   != sizeof(W<int*>));   // 不同特化是不同类型
-static_assert(!std::is_same_v<W<int>, W<int*>>);
-```
-
-```cpp
+// 每份选中的特化是独立类型，各自布局独立
+#include <iostream>
 #include <vector>
-// std::vector<bool> 偏特化位压缩：sizeof 远小于 N 字节
-std::vector<bool> vb(8);   // 通常只占 1 字节（位域）
+#include <type_traits>
+template <typename T> struct W { int a; };
+template <> struct W<int> { double a; };               // 全特化：不同布局
+template <typename U> struct W<U*> { long a; };         // 偏特化：不同布局
+static_assert(sizeof(W<int>)   != sizeof(W<int*>));     // 不同特化是不同类型
+static_assert(!std::is_same_v<W<int>, W<int*>>);
+int main() {
+    std::vector<bool> vb(8);   // 通常只占 1 字节（位域压缩）
+    std::cout << sizeof(vb) << ' ' << vb.size() << '\n';   // 小对象 + 8 位
+}
 ```
 
 ## ⑩ 汇编 / 符号证据（真实 MinGW GCC 13.1.0，-O2 -masm=intel）
@@ -403,27 +416,19 @@ template <> struct D<void> { };
 ## ⑪ STL 中的该模式
 
 ```cpp
+// STL 中大量使用特化实现「通用算法 -> 最优实现」替换
+#include <iostream>
 #include <vector>
-// std::vector<bool> 偏特化：位压缩，与普通 vector 布局完全不同
-```
-
-```cpp
-// std::is_pointer / std::is_array / std::is_const 全靠偏特化实现（见 ch65）
-```
-
-```cpp
 #include <cstddef>
 #include <string>
-// std::hash 对每种类型全特化
+// std::vector<bool> 偏特化：位压缩，与普通 vector 布局完全不同
+// std::is_pointer / std::is_array / std::is_const 全靠偏特化实现（见 ch65）
+// std::hash 对每种类型全特化（用户类型须在命名空间 std 内特化）
 template <> struct std::hash<std::string> { std::size_t operator()(const std::string&) const; };
-```
-
-```cpp
-// std::allocator_traits 偏特化处理不同 allocator
-```
-
-```cpp
-// std::tuple_element 偏特化按索引取类型
+int main() {
+    std::vector<bool> vb(8);
+    std::cout << "vector<bool> size=" << vb.size() << '\n';   // 8（位压缩）
+}
 ```
 
 ## ⑫ 变体（variant patterns）
@@ -484,42 +489,42 @@ template <typename T> struct B<T*> { };   // 若想只针对 int*，应写全特
 ## ⑭ 工业案例
 
 ```cpp
-// 案例：type traits 库（Boost.TypeTraits / std）全靠偏特化萃取类型属性
+// 工业案例：type traits 库全靠偏特化萃取类型属性；序列化框架按类型特化
+#include <iostream>
+#include <type_traits>
+#include <vector>
 template <typename T> struct is_integral : std::false_type {};
 template <> struct is_integral<int> : std::true_type {};
 template <> struct is_integral<long> : std::true_type {};
-```
-
-```cpp
-#include <vector>
-// 案例：序列化框架按类型特化
-template <typename T> struct Codec { static void write(Output&, const T&); };
-template <> struct Codec<int> { static void write(Output&, int); };  // 定长快路径
-template <typename T> struct Codec<std::vector<T>> { static void write(Output&, const std::vector<T>&); };
-```
-
-```cpp
-// 案例：Eigen 对固定尺寸/动态尺寸矩阵用不同存储特化
-template <typename Scalar, int Rows, int Cols> class Matrix;   // 固定
-template <typename Scalar> class Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;  // 动态
+// 序列化框架按类型特化
+template <typename T> struct Codec { static void write(const T&); };
+template <> struct Codec<int> { static void write(int); };   // 定长快路径
+template <typename T> struct Codec<std::vector<T>> { static void write(const std::vector<T>&); };
+// Eigen 对固定/动态尺寸矩阵用不同存储特化（示意，需 Eigen 头，此处仅注释）
+//   template <typename Scalar, int Rows, int Cols> class Matrix;            // 固定
+//   template <typename Scalar> class Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>;  // 动态
+int main() {
+    std::cout << is_integral<int>::value << ' ' << is_integral<double>::value << '\n';  // 1 0
+}
 ```
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
 ```cpp
-// libstdc++ std::is_pointer（简化）
-template <typename> struct is_pointer : false_type {};
-template <typename _Tp> struct is_pointer<_Tp*> : true_type {};
-```
-
-```cpp
+// libstdc++ std::is_pointer（简化）+ 偏序比较机制演示
+#include <iostream>
+#include <type_traits>
 #include <vector>
-// std::vector<bool> 偏特化：_Bit_type 位数组，operator[] 返回代理引用
-// bits/stl_bvector.h 中 vector<bool> 是独立实现，并非 vector 的子类
-```
-
-```cpp
-// GCC pt.cc do_class_deduction / partial_inst：偏序比较
+template <typename> struct is_pointer : std::false_type {};
+template <typename _Tp> struct is_pointer<_Tp*> : std::true_type {};
+int main() {
+    std::cout << is_pointer<int*>::value << ' ' << is_pointer<int>::value << '\n';  // 1 0
+    // std::vector<bool> 偏特化：_Bit_type 位数组，operator[] 返回代理引用（非 bool&）
+    // bits/stl_bvector.h 中 vector<bool> 是独立实现，并非 vector 的子类
+    // GCC pt.cc do_class_deduction / partial_inst：偏序比较在实例化时选出最特化者
+    std::vector<bool> vb(4);
+    std::cout << "vector<bool>[0]=" << vb[0] << '\n';   // 代理引用（非 bool&）
+}
 ```
 
 ## ⑯ 易错点
