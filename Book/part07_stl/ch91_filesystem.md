@@ -74,15 +74,15 @@
 
 ```mermaid
 flowchart TD
-    A[用户调用 fs::copy(from,to,opt,ec)] --> B{ec 为空?}
+    A["用户调用 fs::copy(from,to,opt,ec)"] --> B{"ec 为空?"}
     B -- 是 --> C[抛异常版 wrapper]
     B -- 否 --> D[无异常版，填充 ec]
-    C --> E[libstdc++ __do_copy]
+    C --> E["libstdc++ __do_copy"]
     D --> E
     E --> F[调用 status 判断 from 类型]
-    F --> G{是目录?}
-    G -- 是 --> H[create_directory + 递归 copy]
-    G -- 否 --> I[copy_file: open/read/write/close]
+    F --> G{"是目录?"}
+    G -- 是 --> H["create_directory + 递归 copy"]
+    G -- 否 --> I["copy_file: open/read/write/close"]
     H --> J[返回]
     I --> J
     J --> K[设置 ec 或返回]

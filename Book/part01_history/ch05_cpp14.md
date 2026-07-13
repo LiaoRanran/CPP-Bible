@@ -90,7 +90,7 @@ int main() {}
 
 ```mermaid
 flowchart TD
-    A[C++11 lambda 需写参数类型] --> B[C++14 泛型 lambda auto]
+    A["C++11 lambda 需写参数类型"] --> B["C++14 泛型 lambda auto"]
     B --> C[配合算法写内联谓词]
     C --> D[ranges 高阶组合基础]
 ```

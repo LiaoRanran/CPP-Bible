@@ -62,13 +62,13 @@
 ```mermaid
 flowchart LR
     IF[取指] --> ID[译码]
-    ID --> BP{分支?}
+    ID --> BP{"分支?"}
     BP -- 预测方向 --> IQ[指令队列]
-    BP -- 误预测 --> FLUSH[清空流水线+重取]
+    BP -- 误预测 --> FLUSH["清空流水线+重取"]
     IQ --> ISS[发射到空闲执行单元]
     ISS --> EX[执行]
     EX --> ROB[重排序缓冲]
-    ROB --> RET[按序退休/写寄存器]
+    ROB --> RET["按序退休/写寄存器"]
     FLUSH -. 约15-20周期惩罚 .-> IF
 ```
 
@@ -120,7 +120,7 @@ sequenceDiagram
     P->>ROB: 指令按序进入 ROB, 乱序执行
     Note over ROB: 指令可提前完成, 但结果暂存
     ROB->>Ret: 仅当「前面所有指令都已安全退休」才提交
-    Note: 异常/分支误预测时, ROB 中后续(程序序在后)指令被丢弃
+    Note over ROB: 异常/分支误预测时，ROB 中后续(程序序在后)指令被丢弃
 ```
 
 ## ⑨ 调用栈 / 时序图：OoO 重排示意（程序序 vs 执行序）[平台]
@@ -129,8 +129,8 @@ sequenceDiagram
 sequenceDiagram
     participant Sw as 程序序
     participant Hw as 执行序(乱序)
-    Sw->>Hw: A(独立); B(依赖A); C(独立); D(独立)
-    Note over Hw: A 完成后 B 才就绪; 但 C,D 与 A 并行
+    Sw->>Hw: A(独立)； B(依赖A)； C(独立)； D(独立)
+    Note over Hw: A 完成后 B 才就绪； 但 C,D 与 A 并行
     Hw-->>Sw: 退休仍按 A,B,C,D 顺序 (语义正确)
 ```
 

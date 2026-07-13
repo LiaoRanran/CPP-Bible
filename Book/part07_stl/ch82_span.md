@@ -142,17 +142,17 @@ int main() {
 
 ```mermaid
 flowchart TD
-    A[连续内存源] --> B{C 数组 / vector / array / 指针+长度}
+    A[连续内存源] --> B{"C 数组 / vector / array / 指针+长度"}
     B -->|C数组/array| C[静态 extent span T N]
     B -->|vector/指针+len| D[动态 extent span T]
     C --> E[subspan 可能产生动态 extent]
     D --> E
-    E --> F[first n / last n]
+    E --> F["first n / last n"]
     E --> G[subspan off cnt]
     F --> H[新 span 仍指向同一底层]
     G --> H
-    H --> I[越界访问 -> UB]
-    H --> J[安全切片 -> 编译期/运行期断言]
+    H --> I["越界访问 -> UB"]
+    H --> J["安全切片 -> 编译期/运行期断言"]
 ```
 
 ---

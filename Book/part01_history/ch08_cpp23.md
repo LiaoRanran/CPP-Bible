@@ -102,11 +102,11 @@ int main() {}
 本章特性按目标分三类：语法糖（结构化绑定 / 折叠表达式）、编译期分支（`if constexpr` / CTAD）、库类型（`string_view` / `optional` / `variant` / `any` / 并行 STL）。
 ```mermaid
 flowchart TD
-    A[调用函数] --> B{成功?}
+    A[调用函数] --> B{"成功?"}
     B -- 是 --> C[expected 含值 T]
     B -- 否 --> D[expected 含错误 E]
     C --> E[用 * 取值]
-    D --> F[用 .error() 处理]
+    D --> F["用 .error() 处理"]
 ```
 
 ## ⑦ ASCII 内存图（flat_map 连续布局）

@@ -164,11 +164,11 @@ int main() {
 
 ```mermaid
 flowchart TD
-    A[源对象 Source] -->|std::move(Source)| B[变成 xvalue / 将亡值]
-    B --> C[调用移动构造/赋值 T&&]
+    A[源对象 Source] -->|std::move 转右值| B["变成 xvalue / 将亡值"]
+    B --> C["调用移动构造/赋值 T&&"]
     C --> D[新对象窃取 Source 的内部资源指针]
     D --> E[把 Source 的内部指针置空]
-    E --> F[Source 进入"有效但未指定"状态]
+    E --> F[Source 进入「有效但未指定」状态]
     F --> G[Source 析构时 delete nullptr（无双释放）]
     D --> H[新对象正常拥有资源]
 ```

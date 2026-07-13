@@ -134,20 +134,20 @@ int main() {
 ```mermaid
 flowchart TD
     A[find key k] --> B[从 _M_header._M_parent 根节点出发]
-    B --> C{k < 节点.key ?}
+    B --> C{"k < 节点.key ?"}
     C -->|是| D[走向 _M_left]
     C -->|否| E[走向 _M_right]
-    D --> F{到达空指针?}
+    D --> F{"到达空指针?"}
     E --> F
-    F -->|是| G[未找到 -> end]
-    F -->|否| H{命中?}
+    F -->|是| G["未找到 -> end"]
+    F -->|否| H{"命中?"}
     H -->|是| I[返回迭代器]
     H -->|否| C
 
-    J[insert key] --> K[树下降找插入点 O(logN)]
+    J[insert key] --> K["树下降找插入点 O(logN)"]
     K --> L[分配新节点并染色为红]
-    L --> M[红黑旋转再平衡 O(logN)]
-    M --> N[树高保持 ~2*log2(N+1)]
+    L --> M["红黑旋转再平衡 O(logN)"]
+    M --> N["树高保持 ~2*log2(N+1)"]
 ```
 
 ---

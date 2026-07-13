@@ -74,15 +74,15 @@
 
 ```mermaid
 flowchart TD
-    A[insert key] --> B{树为空?}
-    B -- 是 --> C[新建根节点, 染黑]
-    B -- 否 --> D[从根下降: compare key]
-    D --> E{key 已存在?}
-    E -- set 且存在 --> F[返回 pair<old_it,false>]
-    E -- multiset 或 不存在 --> G[新建节点, 染红]
+    A[insert key] --> B{"树为空?"}
+    B -- 是 --> C["新建根节点, 染黑"]
+    B -- 否 --> D["从根下降: compare key"]
+    D --> E{"key 已存在?"}
+    E -- set 且存在 --> F["返回 pair<old_it,false>"]
+    E -- multiset 或 不存在 --> G["新建节点, 染红"]
     G --> H[_Rb_tree_insert_and_rebalance]
-    H --> I{违反 RB 性质?}
-    I -- 是 --> J[旋转 + 重染色]
+    H --> I{"违反 RB 性质?"}
+    I -- 是 --> J["旋转 + 重染色"]
     I -- 否 --> K[完成]
     J --> K
     F --> L[结束]

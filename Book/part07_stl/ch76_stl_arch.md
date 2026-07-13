@@ -63,12 +63,12 @@ STL（Standard Template Library）由**六大组件**构成，迭代器是连接
 ```mermaid
 flowchart LR
     A[算法 sort] -->|first,last| B(迭代器区间)
-    B --> C{迭代器范畴?}
-    C -->|random_access| D[指针算术 O(1) 跳步]
-    C -->|bidirectional| E[++/-- 逐步]
-    C -->|input| F[单遍 ++]
-    D --> G[vector/deque/array]
-    E --> H[list/map/set]
+    B --> C{"迭代器范畴?"}
+    C -->|random_access| D["指针算术 O(1) 跳步"]
+    C -->|bidirectional| E["++/-- 逐步"]
+    C -->|input| F["单遍 ++"]
+    D --> G["vector/deque/array"]
+    E --> H["list/map/set"]
     F --> I[istream_iterator]
 ```
 

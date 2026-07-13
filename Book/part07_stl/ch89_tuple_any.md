@@ -68,13 +68,13 @@
 
 ```mermaid
 flowchart TD
-    A[构造 tuple/pair] --> B{访问方式}
+    A["构造 tuple/pair"] --> B{访问方式}
     B -->|已知索引| C["std::get<I>(t)"]
     B -->|已知类型| D["std::get<T>(t) 类型唯一才可"]
     B -->|批量拆包| E["结构化绑定 auto& [a,b,c]=t"]
     B -->|整体转发| F["std::apply(f, t)"]
     F --> G["index_sequence 展开"]
-    H[构造 any/function] --> I{对象大小}
+    H["构造 any/function"] --> I{对象大小}
     I -->|≤SBO| J["就地存储, 无堆分配"]
     I -->|大于SBO| K["堆分配, 指针入存储"]
     J --> L["manager/invoker 表驱动"]
@@ -176,12 +176,12 @@ sequenceDiagram
     participant M as _Manager<T>
     participant H as 堆/栈
 
-    U->>A: any a = 42;  (SBO, int≤8B)
+    U->>A: any a = 42；  (SBO, int≤8B)
     A->>M: _M_manager = &_Manager<int>::_S_manage
     M->>H: 在 _M_buffer 原地构造 int
-    U->>A: any b = a;   (拷贝)
+    U->>A: any b = a；   (拷贝)
     A->>M: _Op_clone -> 在 b 的 buffer 拷贝 int
-    U->>A: a.reset();
+    U->>A: a.reset()；
     A->>M: _Op_destroy -> 调 ~int (无堆释放)
     Note over A,H: 大对象时 buffer 存指针, destroy 调 delete
 ```
@@ -199,7 +199,7 @@ sequenceDiagram
     A->>I: 转发 + 整数序列
     I->>F: f(get<0>(t), get<1>(t), get<2>(t))
     F-->>C: 返回值原样返回
-    Note: -O2 下 index_sequence 全折叠, 无运行期开销
+    Note over C: -O2 下 index_sequence 全折叠，无运行期开销
 ```
 
 ## ⑩ 汇编分析（-O2，Intel 语法）[实现]

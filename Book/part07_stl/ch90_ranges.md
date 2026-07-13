@@ -64,13 +64,13 @@
 
 ```mermaid
 flowchart LR
-    A[源 range v] -->|v | views::filter(pred)| B[filter_view]
-    B -->|... | views::transform(fn)| C[transform_view]
-    C -->|... | views::take(n)| D[take_view]
+    A[源 range v] -->|v：views::filter| B[filter_view]
+    B -->|...：views::transform| C[transform_view]
+    C -->|...：views::take| D[take_view]
     D -->|for 循环迭代| E{逐元素驱动}
     E -->|第1次| F1[filter 拉取直到命中]
     E -->|第2次| F2[transform 作用于命中元素]
-    E -->|到达n| STOP([停止, 不触碰剩余元素])
+    E -->|到达n| STOP("[停止, 不触碰剩余元素]")
     style E fill:#ffe,stroke:#a00
 ```
 
@@ -142,20 +142,20 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant Loop as for 循环
+    participant Lp as for 循环
     participant Take as take_view
     participant Trans as transform_view
     participant Filt as filter_view
     participant Base as vector
-    Loop->>Take: begin()
+    Lp->>Take: begin()
     Take->>Trans: begin()
     Trans->>Filt: begin()
     Filt->>Base: begin()
-    Loop->>Take: ++it (拉取下一个)
+    Lp->>Take: ++it (拉取下一个)
     Take->>Trans: 推进
     Trans->>Filt: 推进(跳过不满足)
     Filt->>Base: 推进直到命中
-    Note: 每次 Loop 拉取, 上游按需前进; take 计数到 n 即停
+    Note over Lp: 每次 Lp 拉取，上游按需前进；take 计数到 n 即停
 ```
 
 ## ⑩ 汇编分析（-O2，Intel 语法）[实现]

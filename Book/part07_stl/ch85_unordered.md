@@ -70,14 +70,14 @@ libstdc++ 实现采用**开链法（separate chaining）**：一个桶数组（`
 
 ```mermaid
 flowchart TD
-    A[insert key] --> B[hash(key) -> code]
-    B --> C[bkt = code % bucket_count]
-    C --> D{bucket 已存在同键?}
-    D -- 是 --> E[unordered_set: 忽略; map: 覆盖 value]
-    D -- 否 --> F[new node, 头插桶链表]
-    F --> G{load_factor > max?}
-    G -- 是 --> H[rehash: 重建桶数组, 所有节点重挂]
-    G -- 否 --> I[完成, element_count++]
+    A[insert key] --> B["hash(key) -> code"]
+    B --> C["bkt = code % bucket_count"]
+    C --> D{"bucket 已存在同键?"}
+    D -- 是 --> E["unordered_set: 忽略; map: 覆盖 value"]
+    D -- 否 --> F["new node, 头插桶链表"]
+    F --> G{"load_factor > max?"}
+    G -- 是 --> H["rehash: 重建桶数组, 所有节点重挂"]
+    G -- 否 --> I["完成, element_count++"]
     H --> I
 ```
 

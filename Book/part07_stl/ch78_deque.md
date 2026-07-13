@@ -82,15 +82,15 @@ int main() {
 
 ```mermaid
 flowchart TD
-    A[push_front(x)] --> B{cur == first?}
-    B -->|否| C[--cur; 构造 *cur=x]
+    A["push_front(x)"] --> B{"cur == first?"}
+    B -->|否| C["--cur; 构造 *cur=x"]
     B -->|是| D[需新 buffer]
-    D --> E{map 前端有空位?}
-    E -->|是| F[取 map 前一槽, 分配 buffer]
+    D --> E{"map 前端有空位?"}
+    E -->|是| F["取 map 前一槽, 分配 buffer"]
     E -->|否| G[_M_reallocate_map 扩容中控]
-    F --> H[cur=新buffer尾, 构造 x]
+    F --> H["cur=新buffer尾, 构造 x"]
     G --> H
-    H --> I[完成, 均摊 O(1)]
+    H --> I["完成, 均摊 O(1)"]
 ```
 
 ---
@@ -120,7 +120,7 @@ classDiagram
         +operator++()
         +operator+=(n)
     }
-    deque "1" *-- "_M_start/_M_finish" : 两个迭代器界定范围
+    deque "1" *-- _M_start__M_finish : 两个迭代器界定范围
     deque ..> _Deque_iterator : 产生
 ```
 

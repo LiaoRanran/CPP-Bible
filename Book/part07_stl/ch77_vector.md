@@ -53,13 +53,13 @@
 
 ```mermaid
 flowchart TD
-    A[push_back(x)] --> B{_M_finish == _M_end_of_storage?}
-    B -- 否 --> C[construct at *_M_finish; ++_M_finish]
+    A["push_back(x)"] --> B{"_M_finish == _M_end_of_storage?"}
+    B -- 否 --> C["construct at *_M_finish; ++_M_finish"]
     B -- 是 --> D[_M_check_len 计算新容量]
-    D --> E[allocate 新块 (2x)]
-    E --> F[移动/拷贝旧元素到新块]
+    D --> E["allocate 新块 (2x)"]
+    E --> F["移动/拷贝旧元素到新块"]
     F --> G[construct 新元素]
-    G --> H[释放旧块; 更新三指针]
+    G --> H["释放旧块; 更新三指针"]
     C --> I[完成]
     H --> I
 ```

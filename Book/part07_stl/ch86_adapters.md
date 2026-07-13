@@ -74,14 +74,14 @@
 
 ```mermaid
 flowchart TD
-    A[用户调用 push/pop/top] --> B{适配器类型}
-    B -->|stack| C[调用 c.back/push_back/pop_back]
-    B -->|queue| D[调用 c.front/back/push_back/pop_front]
-    B -->|priority_queue| E[调用 c.push_back 后 push_heap / pop_heap]
-    C --> F[底层 Sequence 容器: deque/vector/list]
+    A["用户调用 push/pop/top"] --> B{适配器类型}
+    B -->|stack| C["调用 c.back/push_back/pop_back"]
+    B -->|queue| D["调用 c.front/back/push_back/pop_front"]
+    B -->|priority_queue| E["调用 c.push_back 后 push_heap / pop_heap"]
+    C --> F["底层 Sequence 容器: deque/vector/list"]
     D --> F
-    E --> G[底层 Sequence 容器: vector/deque]
-    G --> H[二叉堆不变量: comp(parent,child)==false]
+    E --> G["底层 Sequence 容器: vector/deque"]
+    G --> H["二叉堆不变量: comp(parent,child)==false"]
 ```
 
 ---

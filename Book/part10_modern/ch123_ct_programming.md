@@ -112,12 +112,12 @@ int main() {
 
 ```mermaid
 flowchart LR
-    A[C++98 模板] --> B[模板元编程 TMP<br/>递归/特化]
-    B --> C[C++11 constexpr<br/>值计算入翻译期]
-    C --> D[C++17 if constexpr<br/>编译期分支]
-    D --> E[C++20 Concepts<br/>约束+可读错误]
-    E --> F[C++20 consteval<br/>强制编译期求值]
-    F --> G[P2996 静态反射<br/>方向/进行中]
+    A["C++98 模板"] --> B["模板元编程 TMP<br/>递归/特化"]
+    B --> C["C++11 constexpr<br/>值计算入翻译期"]
+    C --> D["C++17 if constexpr<br/>编译期分支"]
+    D --> E["C++20 Concepts<br/>约束+可读错误"]
+    E --> F["C++20 consteval<br/>强制编译期求值"]
+    F --> G["P2996 静态反射<br/>方向/进行中"]
     B -.SFINAE.-> E
     C -.可运行期.-> F
 ```

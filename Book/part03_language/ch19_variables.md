@@ -85,33 +85,33 @@
 
 ```mermaid
 flowchart TD
-    A[变量声明] --> B{声明位置?}
-    B -- 块内无 static/thread_local --> C[automatic: 栈, 进入构造 离开析构]
-    B -- 命名空间/类 static --> D{带 inline?}
-    D -- 否 --> E[static 存储期: .data/.bss, 程序期]
-    D -- 是 --> F[static+inline: 允许多 TU 定义, 链接合并]
-    B -- 带 thread_local --> G[thread 存储期: .tdata/.tbss, 每线程一份]
-    B -- new/make_shared --> H[dynamic: 堆, 手动/智能指针管理]
+    A[变量声明] --> B{"声明位置?"}
+    B -- 块内无 static/thread_local --> C["automatic: 栈, 进入构造 离开析构"]
+    B -- 命名空间/类 static --> D{"带 inline?"}
+    D -- 否 --> E["static 存储期: .data/.bss, 程序期"]
+    D -- 是 --> F["static+inline: 允许多 TU 定义, 链接合并"]
+    B -- 带 thread_local --> G["thread 存储期: .tdata/.tbss, 每线程一份"]
+    B -- new/make_shared --> H["dynamic: 堆, 手动/智能指针管理"]
 
-    I[名字在 >1 TU 被定义?] --> J{是 inline / 模板 / static 内部链接?}
-    J -- 否 --> K[ODR 违规: multiple definition 链接错误]
-    J -- 是 --> L[合规: 合并或各自独立]
+    I["名字在 >1 TU 被定义?"] --> J{"是 inline / 模板 / static 内部链接?"}
+    J -- 否 --> K["ODR 违规: multiple definition 链接错误"]
+    J -- 是 --> L["合规: 合并或各自独立"]
 ```
 
 ### 3.4 函数内 static 初始化守卫状态机（Mermaid）
 
 ```mermaid
 flowchart TD
-    M[static 局部首次执行到定义] --> N{guard 标志已置位?}
+    M[static 局部首次执行到定义] --> N{"guard 标志已置位?"}
     N -- 是 --> O[直接返回已有对象]
-    N -- 否 --> P[调用 __cxa_guard_acquire<br/>原子测试 + double-checked + 互斥]
-    P --> Q{获得初始化权?}
-    Q -- 是 --> R[构造对象 + __cxa_guard_release<br/>+ __cxa_atexit 注册析构]
-    Q -- 否 --> S[等待对方完成, 复用对象]
+    N -- 否 --> P["调用 __cxa_guard_acquire<br/>原子测试 + double-checked + 互斥"]
+    P --> Q{"获得初始化权?"}
+    Q -- 是 --> R["构造对象 + __cxa_guard_release<br/>+ __cxa_atexit 注册析构"]
+    Q -- 否 --> S["等待对方完成, 复用对象"]
     R --> O
     S --> O
-    P --> T[构造抛异常?]
-    T -- 是 --> U[__cxa_guard_abort<br/>释放锁, 允许重试]
+    P --> T["构造抛异常?"]
+    T -- 是 --> U["__cxa_guard_abort<br/>释放锁, 允许重试"]
 ```
 
 ---

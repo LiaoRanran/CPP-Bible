@@ -101,8 +101,8 @@ int main() {}
 本章特性按目标分三类：语法糖（结构化绑定 / 折叠表达式）、编译期分支（`if constexpr` / CTAD）、库类型（`string_view` / `optional` / `variant` / `any` / 并行 STL）。
 ```mermaid
 flowchart LR
-    M[std::map::iterator -> pair<key,value>] -->|结构化绑定| B["auto& [k,v] = *it;"]
-    B --> U[直接用 k,v 访问]
+    M["std::map::iterator -> pair<key,value>"] -->|结构化绑定| B["auto& [k,v] = *it;"]
+    B --> U["直接用 k,v 访问"]
 ```
 
 ## ⑦ ASCII 内存图（string_view 不拥有数据）

@@ -46,7 +46,7 @@
 flowchart TD
     A[访问 d.b（虚基类成员）] --> B[取 d 头部 vbptr]
     B --> C[经 vbptr 取 vbase offset（vtable 负偏移）]
-    C --> D[计算 虚基类子对象地址 = d头 + offset]
+    C --> D["计算 虚基类子对象地址 = d头 + offset"]
     D --> E[访问 b 字段]
     E --> F[多一次间接取指 → 比普通成员慢]
 ```

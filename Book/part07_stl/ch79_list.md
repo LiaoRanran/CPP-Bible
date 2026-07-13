@@ -83,9 +83,9 @@ flowchart LR
     subgraph B[list B]
         b1[x] --> b2[y]
     end
-    A -- "splice(pos, B)" --> C[list A 含 b 节点]
+    A -- splice(pos, B) --> C[list A 含 b 节点]
     B -- "B 变空" --> E[空]
-    C --> F[a-b1-b2-b-a2-a3 顺序串联, 节点指针改接, 零拷贝]
+    C --> F["a-b1-b2-b-a2-a3 顺序串联, 节点指针改接, 零拷贝"]
 ```
 
 ---
@@ -116,8 +116,8 @@ classDiagram
         +erase_after(it)
         +insert_after 无 push_back
     }
-    list "1" *-- "_List_node_base 哨兵" : head
-    forward_list "1" *-- "_Fwd_list_node_base" : _M_head
+    list "1" *-- _List_node_base_哨兵 : head
+    forward_list "1" *-- _Fwd_list_node_base : _M_head
 ```
 
 `[实现·GCC13]`：`_List_node_base` 定义于 `文件：bits/stl_list.h` `行号：81`（含 `_M_next`/`_M_prev` 与 `_M_hook`/`_M_unhook`，行号：`97`/`100`）；`_List_node` 继承它并加 `value`（行号：`234`）。`forward_list` 的 `_Fwd_list_node_base` 在 `文件：bits/forward_list.h` `行号：54`。

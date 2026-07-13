@@ -93,15 +93,15 @@ int main() {
 
 ```mermaid
 flowchart TD
-    A[调用方传入实参] --> B{实参是左值还是右值?}
-    B -->|左值| C[模板推导 T = U&]
-    B -->|右值| D[模板推导 T = U]
-    C --> E[引用折叠: U& && = U&]
-    D --> F[引用折叠: U && = U&&]
-    E --> G[std::forward<U&> → static_cast<U&>]
-    F --> H[std::forward<U> → static_cast<U&&>]
-    G --> I[下游按左值处理: 拷贝]
-    H --> J[下游按右值处理: 移动]
+    A[调用方传入实参] --> B{"实参是左值还是右值?"}
+    B -->|左值| C["模板推导 T = U&"]
+    B -->|右值| D["模板推导 T = U"]
+    C --> E["引用折叠: U& && = U&"]
+    D --> F["引用折叠: U && = U&&"]
+    E --> G["std::forward<U&> → static_cast<U&>"]
+    F --> H["std::forward<U> → static_cast<U&&>"]
+    G --> I["下游按左值处理: 拷贝"]
+    H --> J["下游按右值处理: 移动"]
     I --> K[无多余拷贝]
     J --> K
 ```

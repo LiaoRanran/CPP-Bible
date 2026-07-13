@@ -68,11 +68,11 @@
 
 ```mermaid
 flowchart TD
-    A[bit 位置 pos] --> B[_S_whichword pos = pos / 64]
-    A --> C[_S_whichbit pos = pos % 64]
-    B --> D[_M_w[word_index]]
+    A[bit 位置 pos] --> B["_S_whichword pos = pos / 64"]
+    A --> C["_S_whichbit pos = pos % 64"]
+    B --> D["_M_w[word_index]"]
     C --> E[该 word 内的第 bit_index 位]
-    D --> F[读/写单 bit: _M_w[w] >> (pos%64) & 1]
+    D --> F["读/写单 bit: _M_w[w] >> (pos%64) & 1"]
     E --> F
 ```
 

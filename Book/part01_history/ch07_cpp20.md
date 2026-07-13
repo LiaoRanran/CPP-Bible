@@ -108,7 +108,7 @@ int main() {}
 本章特性按目标分三类：语法糖（结构化绑定 / 折叠表达式）、编译期分支（`if constexpr` / CTAD）、库类型（`string_view` / `optional` / `variant` / `any` / 并行 STL）。
 ```mermaid
 flowchart LR
-    A[vector] --> B[views::filter] --> C[views::transform] --> D[views::take] --> E[算法/收集]
+    A[vector] --> B["views::filter"] --> C["views::transform"] --> D["views::take"] --> E["算法/收集"]
 ```
 
 ## ⑦ ASCII 内存图（Modules 编译模型）

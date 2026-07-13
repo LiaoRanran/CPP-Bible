@@ -46,13 +46,13 @@
 
 ```mermaid
 flowchart TD
-    A[调用 obj.foo] --> B{foo 是虚函数?}
+    A[调用 obj.foo] --> B{"foo 是虚函数?"}
     B -- 否 --> C[直接 call 地址 可内联]
     B -- 是 --> D[取对象头部 vptr]
     D --> E[按 foo 在 vtable 中槽位]
-    E --> F[间接 call vtable[slot]]
+    E --> F["间接 call vtable[slot]"]
     F --> G[运行时依动态类型分派]
-    G --> H[阻碍内联/优化/分支预测]
+    G --> H["阻碍内联/优化/分支预测"]
 ```
 
 ## ⑥ UML 类图

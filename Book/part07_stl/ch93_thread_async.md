@@ -105,7 +105,7 @@ int main() {
 ```mermaid
 flowchart TD
     A[callable F] --> B{选择原语}
-    B -->|promise| C[producer: set_value/set_exception]
+    B -->|promise| C["producer: set_value/set_exception"]
     B -->|packaged_task| D[task 自身即生产者]
     B -->|async| E[运行时自动起 thread 或 deferred]
     B -->|thread+ref| F[手动传 future 引用]
@@ -113,8 +113,8 @@ flowchart TD
     D --> G
     E --> G
     F --> G
-    G --> H[consumer: future.get]
-    H --> I{结果 ready?}
+    G --> H["consumer: future.get"]
+    H --> I{"结果 ready?"}
     I -->|yes| J[返回 T 或抛异常]
     I -->|no| K[阻塞等待]
     K --> J

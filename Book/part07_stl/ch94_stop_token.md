@@ -89,11 +89,11 @@ int main() {
 flowchart TD
     A[主线程创建 jthread] --> B[jthread 内部建 stop_source]
     B --> C[stop_token 注入线程函数]
-    C --> D[工作线程循环: stop_requested?]
-    D -->|否| E[干活 / 等待]
+    C --> D["工作线程循环: stop_requested?"]
+    D -->|否| E["干活 / 等待"]
     E --> D
     D -->|是| F[清理并退出]
-    G[jthread 析构 / 手动 request_stop] --> H[request_stop 置位原子]
+    G["jthread 析构 / 手动 request_stop"] --> H[request_stop 置位原子]
     H --> I[按序同步调用所有 stop_callback]
     I --> J[唤醒 condition_variable_any]
     J --> D
@@ -130,9 +130,9 @@ classDiagram
         +bool request_stop()
         +void join()
     }
-    stop_source "1" *-- "_Stop_state" : 持有
-    stop_token --> "_Stop_state" : 弱引用
-    stop_callback --> "_Stop_state" : 注册
+    stop_source "1" *-- _Stop_state : 持有
+    stop_token --> _Stop_state : 弱引用
+    stop_callback --> _Stop_state : 注册
     jthread "1" *-- "1" stop_source
 ```
 

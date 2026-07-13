@@ -43,14 +43,14 @@
 
 ```mermaid
 flowchart TD
-    A[dynamic_cast 目标 T] --> B{源指针为空?}
+    A[dynamic_cast 目标 T] --> B{"源指针为空?"}
     B -- 是 --> Z[返 nullptr 或抛 bad_cast 引用]
-    B -- 否 --> C{目标与源为同一条继承链?}
+    B -- 否 --> C{"目标与源为同一条继承链?"}
     C -- 上行/同型 --> D[编译期可定，直接调整 this]
     C -- 下行/交叉 --> E[调 __dynamic_cast 运行期比对 type_info]
-    E --> F{比对成功?}
-    F -- 是 --> G[返目标指针+this 调整]
-    F -- 否 --> H[指针返 nullptr / 引用抛 bad_cast]
+    E --> F{"比对成功?"}
+    F -- 是 --> G["返目标指针+this 调整"]
+    F -- 否 --> H["指针返 nullptr / 引用抛 bad_cast"]
 ```
 
 ## ⑥ UML 类图

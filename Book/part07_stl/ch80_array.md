@@ -119,16 +119,16 @@ int main() {
 
 ```mermaid
 flowchart TD
-    A[定长数据] --> B{长度编译期已知?}
-    B -->|是| C[std::array T N : 栈上零开销]
-    B -->|否| D[std::vector T : 堆上变长]
+    A[定长数据] --> B{"长度编译期已知?"}
+    B -->|是| C["std::array T N : 栈上零开销"]
+    B -->|否| D["std::vector T : 堆上变长"]
     C --> E[花括号聚合初始化]
-    C --> F[std::to_array 从 C 数组提升]
-    C --> G[data 转 span/C 指针]
+    C --> F["std::to_array 从 C 数组提升"]
+    C --> G["data 转 span/C 指针"]
     E --> H[满足 contiguous_range]
     F --> H
     G --> H
-    H --> I[算法 / 结构化绑定 / tuple 接口]
+    H --> I["算法 / 结构化绑定 / tuple 接口"]
 ```
 
 ---

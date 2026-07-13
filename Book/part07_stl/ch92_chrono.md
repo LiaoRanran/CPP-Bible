@@ -70,10 +70,10 @@
 
 ```mermaid
 flowchart TD
-    A[构造 ScopeTimer] --> B[t0 = steady_clock::now]
+    A[构造 ScopeTimer] --> B["t0 = steady_clock::now"]
     B --> C[执行被测代码]
-    C --> D[t1 = steady_clock::now]
-    D --> E[d = t1 - t0  → duration]
+    C --> D["t1 = steady_clock::now"]
+    D --> E["d = t1 - t0  → duration"]
     E --> F[析构时输出 d.count]
 ```
 
