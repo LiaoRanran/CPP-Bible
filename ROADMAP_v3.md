@@ -261,5 +261,23 @@
 
 ---
 
+### 9.4 I.实战 / H.设计双维度补强 · 第四批（2026-07-14）
+
+**选章**：交集表 combined=24 章（ch110/118/119/120/123）。各章末追加真实「工业实战复盘与设计取舍」散文小节，纯散文、0 新增 cpp 块。ch110 既有「设计权衡」、ch120/123 既有「工业案例」附录，本批补齐其余关键词维度。
+
+| 章 | 追加小节 | 工业实战要点(I) | 设计取舍要点(H) |
+|----|----------|-----------------|-----------------|
+| ch110 lockfree | 附录 H | 无锁队列假无锁陷阱；`atomic` `is_lock_free` 假象 | 无锁 CAS/细粒度锁/单锁 Trade-off；伪共享反模式；RAII 守卫 hazard pointer |
+| ch118 modules | 附录 F | 大库 Modules 编译期收益；`import std` 跨编译器不一致 | 边界粒度/标准库/迁移 Trade-off；头文件级模块反模式；接口模块+私有分区 API |
+| ch119 ranges_deep | 附录 A | ranges 惰性管道替代手写循环；悬垂视图 UAF | 惰性/物化/算法 Trade-off；返回悬垂视图反模式；`ranges::to<T>` 物化 API |
+| ch120 coroutine_app | 附录 H | 异步 IO 协程化帧分配；generator 流式降内存 | 调度/分配/错误 Trade-off；协程吞异常反模式；`task<expected>` 错误传播 |
+| ch123 ct_programming | 附录 B | 编译期哈希驱动分派碰撞；`constexpr` 配置表 | 求值时机/约束/元编程 Trade-off；宏模拟编译期计算反模式；`concept` 约束 API |
+
+**验证**：5 章 I/H 关键词 0→（I=3/6：工业案例/Code Review/重构建议；H=6/7，ch110 含既有「设计权衡」补到 6）；cpp 块数不变；`consistency_check`=147 章 0/0（100/100）；`git diff --stat`=5 文件 +140 行、0 新 cpp 围栏。commit `b29d5cc`（`27b4e6c..b29d5cc → master`）→ CI 触发。红线守全。
+
+**累计（四批 20 章）**：第一批 ch40/97/124/131/154 + 第二批 ch127/130/134/112/113 + 第三批 ch03/11/12/125/111 + 第四批 ch110/118/119/120/123。**交集表 combined=23 全补 + combined=24 已补 5/7**（剩 ch126_msstl/ch128_boost）；仅单维度零覆盖章待补。
+
+---
+
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
 _每次扩写完成后跑 `expansion_audit.py` 更新基线_
