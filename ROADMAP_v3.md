@@ -225,6 +225,22 @@
 
 **后续批次（未执行）**：交集表 combined=24 多章（ch03/11/12/127/130/134 等）及仅单维度零覆盖章，待用户决策。
 
+### 9.2 I.实战 / H.设计双维度补强 · 第二批（2026-07-14）
+
+**选章**：用户点名 ch127/130/134（交集表 combined=23）+ combined=24 核心章 ch112/113。各章末（自测练习前）追加真实「工业实战复盘与设计取舍」散文小节，纯散文、0 新增 cpp 块。**注**：这几章既有附录已带 `[H: Design]` 标签但不命中审计关键词（缺 Trade-off/反模式/Code Review 等），本批补齐关键词维度。
+
+| 章 | 追加小节 | 工业实战要点(I) | 设计取舍要点(H) |
+|----|----------|-----------------|-----------------|
+| ch127 llvm | 附录 G | Clang/LLVM16 C++17 ABI 迁移致生产 abort；Opaque Pointer 迁移破坏内部 API | Pass 粒度/注册机制 Trade-off；`using namespace llvm` 反模式；只暴露稳定 C API 的 API Design |
+| ch130 chromium_abseil | 附录 F | 双工具链(libc++/libstdc++)跨 .so 崩溃；Abseil 冻结 C++17 | string_view/Span 解耦 ABI；flat_hash_map 迭代序不稳定反模式；`absl::Status` 替代异常 |
+| ch134 unreal | 附录 D | UPROPERTY 漏写致 GC 误回收（延迟 UAF）；CDO 膨胀拖启动 | TSharedPtr/GC、TArray 自研容器 Trade-off；热路径同步 LoadObject 反模式；TObjectPtr/异步流送重构 |
+| ch112 hazard_rcu | 附录 C | Linux RCU 读侧无锁遍历；Folly/Google Hazard Pointer（C++26 P1122） | RCU/Hazard/引用计数适用 Trade-off；读侧睡眠反模式；retire() 统一宽限期 |
+| ch113 coroutine | 附录 G | C++20 task 堆分配开销；symmetric transfer；跨挂起点悬垂 UAF | 调度/分配/错误传播 Trade-off；协程吞异常反模式；task<expected> 错误传播 |
+
+**验证**：5 章 I/H 关键词命中 0→（I=3/6：工业案例/Code Review/重构建议；H=5/7：Anti-Pattern/Trade-off/API Design/反模式/设计取舍），全部脱离零覆盖；cpp 块数不变（ch127=43/ch130=55/ch134=46/ch112=41/ch113=43）；`consistency_check`=147 章 0/0（100/100）；`git diff --stat`=5 文件 +140 行、0 新 cpp 围栏。commit `e5b4e2d`（`af976bc..e5b4e2d → master`）→ CI 触发。红线守全。
+
+**后续批次（未执行）**：交集表剩余 combined=23 章（ch03/11/12/125/111 等）与 combined=24 章（ch118/119/128/110/120/123 等），及仅单维度零覆盖章。两批累计已补 10 章（第一批 5 + 第二批 5）。
+
 ---
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
