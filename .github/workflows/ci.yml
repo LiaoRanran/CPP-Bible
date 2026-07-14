@@ -7,6 +7,9 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -83,12 +86,24 @@ jobs:
     - name: Build site
       run: mkdocs build --strict --config-file build/site/mkdocs.yml
 
+    - name: Index full-text search (PageFind, CJK)
+      # PageFind extended 二进制原生支持中日文分词；对 build/site_out 静态产物建索引，
+      # 生成 build/site_out/pagefind/（含 pagefind-ui.js / pagefind-ui.css）。
+      run: |
+        pip install 'pagefind[extended]'
+        python3 -m pagefind --site build/site_out
+
     - name: Upload site artifact
       uses: actions/upload-artifact@v4
       with:
         name: cpp-bible-site
         path: build/site_out
         retention-days: 14
+
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: build/site_out
 
   # ---- 发布：全书 PDF（pandoc + xelatex + mermaid）----
   pdf:
@@ -127,3 +142,18 @@ jobs:
         name: cpp-bible-pdf
         path: build/pdf/part*.pdf
         retention-days: 14
+
+  # ---- 发布：GitHub Pages 部署（site + PageFind 索引）----
+  deploy:
+    needs: site
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

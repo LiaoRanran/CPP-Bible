@@ -79,6 +79,7 @@ def build_nav(index: dict, part_titles: dict) -> str:
 
     lines = ["nav:"]
     lines.append('  - "首页": index.md')
+    lines.append('  - "搜索": search.md')
     # 全局导航件
     if (DOCS_DIR / "CROSSREF.md").exists():
         lines.append('  - "全局导航":')
@@ -93,6 +94,21 @@ def build_nav(index: dict, part_titles: dict) -> str:
             lines.append(f"    - {yq(meta['title'])}: {nav_path}")
     return "\n".join(lines)
 
+
+SEARCH_PAGE = """\
+# 全文搜索
+
+本页由 PageFind 提供中英文全文检索（章标题、正文、代码标识符均可命中）。
+
+<div id="search"></div>
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css">
+<script src="/pagefind/pagefind-ui.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', function () {
+  new PagefindUI({ element: "#search", showSubResults: true });
+});
+</script>
+"""
 
 MKDOCS_TEMPLATE = """\
 # mkdocs.yml — 《现代 C++ 终极圣经》静态站点配置
@@ -112,8 +128,6 @@ theme:
     - navigation.top
     - navigation.indexes
     - toc.follow
-    - search.suggest
-    - search.highlight
     - content.code.copy
     - content.code.annotate
   palette:
@@ -133,10 +147,6 @@ theme:
         name: 切换到浅色
 
 plugins:
-  - search:
-      lang:
-        - zh
-        - en
   - mermaid2
 
 markdown_extensions:
@@ -179,7 +189,7 @@ WELCOME_TEMPLATE = """\
 ## 如何使用
 
 - **左侧导航**：按 16 个 Part（历史 → 工具链 → 语言核心 → … → 性能 → 案例 → 阅读路线）浏览全部 147 章。
-- **顶部搜索**：支持中英文全文检索（章标题、正文、代码标识符）。
+- **「搜索」页**：基于 PageFind 的中英文全文检索（章标题、正文、代码标识符均可命中）。
 - **交叉引用索引**：见「全局导航 → 交叉引用依赖索引 (CROSSREF)」，含全书 732 条章间依赖边、枢纽章 Top10 与孤立章清单。
 
 ## 全书结构一览
@@ -217,9 +227,11 @@ def main() -> int:
     (SITE_DIR / "mkdocs.yml").write_text(mkdocs_yml, encoding="utf-8")
     welcome = WELCOME_TEMPLATE.format(part_table=build_part_table(index, part_titles))
     (DOCS_DIR / "index.md").write_text(welcome, encoding="utf-8")
+    (DOCS_DIR / "search.md").write_text(SEARCH_PAGE, encoding="utf-8")
     print(f"[nav] 章 {len(index)} · part {len(part_titles)}")
     print(f"[nav] 写 {SITE_DIR / 'mkdocs.yml'}")
     print(f"[nav] 写 {DOCS_DIR / 'index.md'}")
+    print(f"[nav] 写 {DOCS_DIR / 'search.md'}")
     return 0
 
 
