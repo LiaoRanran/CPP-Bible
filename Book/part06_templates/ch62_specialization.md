@@ -158,7 +158,7 @@ int main() { Dispatcher<int> d; d.run(0); std::cout << "ok\n"; }
 #include <vector>
 #include <type_traits>
 template <typename T> struct W { int a; };
-template <> struct W<int> { double a; };               // 全特化：不同布局
+template <> struct W<int> { char a; };                 // 全特化：不同布局（char→size=1，保证与 long 特化大小不同，跨 LP64/LLP64 均成立）
 template <typename U> struct W<U*> { long a; };         // 偏特化：不同布局
 static_assert(sizeof(W<int>)   != sizeof(W<int*>));     // 不同特化是不同类型
 static_assert(!std::is_same_v<W<int>, W<int*>>);

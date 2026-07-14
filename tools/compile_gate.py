@@ -34,7 +34,7 @@ DEFAULT_EXEMPT = os.path.join(HERE, "compile_exempt.json")
 # 平台 / 库专属错误模式 -> 豁免原因。命中即视为豁免（即使未显式列出），
 # 用于吸收 CI (Linux) 与本地 (Windows) 间的报告差异，避免误报红。
 AUTO_PATTERNS = [
-    (re.compile(r"(?i)windows\.h|GetProcAddress|GetLogicalProcessor|PDWORD|\bHANDLE\b|__declspec"), "WINDOWS"),
+    (re.compile(r"(?i)windows\.h|winsock2\.h|ws2tcpip\.h|winsock|GetProcAddress|GetLogicalProcessor|PDWORD|\bHANDLE\b|__declspec"), "WINDOWS"),
     (re.compile(r"(?i)sys/mman\.h|\bmmap\b|POSIX"), "POSIX"),
     (re.compile(r"(?i)boost/|Qt|QObject|QWidget|fmt/|spdlog|gtest|gmock|catch2|Catch"), "EXT_LIB"),
     (re.compile(r"(?i)export module|import std|import \w+;|module \w+;"), "MODULE"),

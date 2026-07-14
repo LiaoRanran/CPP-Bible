@@ -1209,6 +1209,7 @@ int main() {
 //       本机 MinGW 未暴露该名，改用 Windows 的 _aligned_malloc 演示。
 #include <cstdio>
 #include <cstddef>
+#include <cstdint>
 #ifdef _WIN32
 #include <malloc.h>
 #define ALLOC_ALIGNED(sz, al) _aligned_malloc((sz), (al))

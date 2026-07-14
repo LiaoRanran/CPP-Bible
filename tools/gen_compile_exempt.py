@@ -58,7 +58,7 @@ NOTE_HINT = {
 
 # 错误文本 -> 原因（兜底，CHAPTER_REASON 未覆盖时用）
 ERR_PATTERNS = [
-    (re.compile(r"(?i)windows\.h|GetProcAddress|GetLogicalProcessor|PDWORD|__declspec"), "WINDOWS"),
+    (re.compile(r"(?i)windows\.h|winsock2\.h|GetProcAddress|GetLogicalProcessor|PDWORD|__declspec"), "WINDOWS"),
     (re.compile(r"(?i)sys/mman\.h|\bmmap\b"), "POSIX"),
     (re.compile(r"(?i)boost/|Qt|QObject|fmt/|spdlog|gtest|gmock|catch2"), "EXT_LIB"),
     (re.compile(r"(?i)export module|import std|module \w+;"), "MODULE"),

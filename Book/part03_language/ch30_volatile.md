@@ -289,6 +289,7 @@ int main() {
 #include <iostream>
 #include <atomic>
 #include <cstdint>
+#include <csignal>
 
 // 法则1: MMIO → volatile 结构体指针 + reinterpret_cast
 struct Gpio { volatile uint32_t MODER, OTYPER, OSPEEDR, PUPDR, IDR, ODR; };

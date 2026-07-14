@@ -305,3 +305,24 @@ _每完成一个Phase→更新本文件,记录决策与收获。_
 - **度量诚实化**：门禁守护的是「自包含完整程序 100% 可编译」这一可达子集；多文件/模块/平台/外部库/故意错误·UB/跨块增量等设计性豁免不误伤，也不伪造通过率。
 - **提交与验证**：commit `9bfb657`（13 文件：5 处 `Book/*.md` 修复 + 去封面 + 2 门禁脚本 + `compile_exempt.json` + `ci.yml` + `ROADMAP.md` + 新 `compile_report.json`）。本地 `compile_gate.py` 校验＝**0 新增回归 / 0 冗余**（66 豁免块全命中）；PAT 内联推送 `a53b92a..9bfb657 → master`，remote 不含 token。CI 门禁绿即闭环。
 
+### L4 补遗：CI 门禁拦住 8 个跨平台回归（run #14 红 → 闭环）
+
+**事件**：commit `9bfb657` 推送后 CI run #14 的 `compile (13)` job **变红**，抓出 8 个本地 mingw 审计掩盖的跨平台回归。证明门禁按设计工作——把本地 mingw 软通过、Linux/gcc13 真失败的缺陷挡在合并前。
+
+**根因（跨平台隐式头差异）**：豁免清单由**本地 mingw1310** 报告生成，mingw 隐式带 `<cstdint>`/`<csignal>`，同一源码在 mingw 软通过；**CI 跑 Linux gcc13**，不隐式带这些头，于是在 CI 暴露：
+- `ch35`/`ch36`：缺 `#include <cstdint>`，`uintptr_t` 未声明（Linux 失败，mingw 软过）。
+- `ch30`：缺 `#include <csignal>`，`sig_atomic_t` 未声明（Linux 失败，mingw 软过）。
+- `ch62`：`W<int>` 成员 `double a` 在 **LP64（Linux）** 上 `sizeof(double)=8` 与偏特化 `W<U*>` 的 `long a`（`sizeof(long)=8`）相等 → `static_assert(sizeof(W<int>) != sizeof(W<int*>))` **失败**；mingw（LLP64，`long`=4）恰好成立，掩盖了缺陷。
+- `ch163`：`winsock2.h` 是 Windows 专属头，Linux 不可编（mingw 软过）。
+
+**修复（最小、不注水，mingw1310 隔离复编均 PASS）**：
+1. `ch30_volatile.md` blk17：补 `#include <csignal>`。
+2. `ch35_memory_layout.md` blk28/37：补 `#include <cstdint>`（uintptr_t）。
+3. `ch36_stack_heap.md` blk37：补 `#include <cstdint>`。
+4. `ch62_specialization.md` blk9：`W<int>` 全特化成员 `double a` → `char a`（`sizeof=1`，保证 LP64/LLP64 下均 ≠ `sizeof(W<int*>)`，跨平台 `static_assert` 恒成立）。
+5. 门禁 `WINDOWS` 模式补 `winsock2.h|ws2tcpip.h`：`compile_gate.py` 与 `gen_compile_exempt.py` 的 AUTO_PATTERNS 同步加，吸收 CI(Linux)/本地(Windows) 报告差异，避免误报红。
+
+**复验闭环**：重跑全量审计（`compile_all.py --main-only`，147 章全扫）→ `partial=False` / 112 通过 / 35 豁免 / 66 失败块，与基线逐字节一致（审计确定性得到二次证明）→ `gen_compile_exempt.py` 重申豁免清单（66 块，**0 UNCLASSIFIED**）→ `compile_gate.py` 本地校验＝**0 新增回归 / 0 冗余**（EXIT=0）。PAT 内联推送后由 CI 复验全绿，门禁跨平台稳健性坐实。
+
+> 安全提示：本次及历史推送使用的 GitHub PAT 已在聊天中暴露，按约定视为已泄露，**须吊销并重建**；remote URL 始终不含 token，未来推送需使用重建后的 PAT。
+

@@ -888,6 +888,7 @@ int main() {
 // P20: 用对齐 new 分配 64 字节对齐对象（C++17）
 #include <new>
 #include <cstdio>
+#include <cstdint>
 struct alignas(64) Node { double x[8]; };
 int main() {
     Node* p = new Node;                       // 编译器选 operator new(size, align_val_t{64})
@@ -1210,6 +1211,7 @@ int main() {
 // P31: 交叉引用演示 —— ch36 栈堆 + ch37 对齐 new
 #include <new>
 #include <cstdio>
+#include <cstdint>
 struct alignas(64) Block { char d[64]; };   // 过对齐 → ch37 对齐 new
 int main() {
     int* heap = new int(1);                 // ch37: operator new
