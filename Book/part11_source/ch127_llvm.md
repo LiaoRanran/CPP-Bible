@@ -597,6 +597,34 @@ int main(){std::cout<<"LLVM=Frontend(Clang→AST→IR)→Optimizer(Passes)→Bac
 
 LLVM 用 `0x0040`（64 字节）对齐的 `SmallVector` 内联缓冲减少堆分配；Pass 管理器按 `0x0008` 函数指针表驱动。`MSVC 19.3` 不共用 LLVM 后端，但 `C++17`/`C++20` 抽象一致。缓存行 `0x0040` 是寄存器分配与指令调度的基本时间/空间单位（L1 ≈1 ns，L3 ≈12 ns，主存 ≈100 ns）。
 
+## 附录 G：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+### 工业案例（真实可查证）
+
+- **Clang/LLVM 16 的 C++17 并行 STL 与 ABI 迁移**：2023 年 LLVM 将默认 C++ 标准推到 C++17，`libc++` 默认启用 `_LIBCPP_ENABLE_ASSERTIONS`，生产环境若未显式关闭会在迭代器越界时直接 `abort`。工业上常见 Bug 是 CI 本地通过、生产容器因该断言崩溃——属于**默认行为随版本变化的隐性破坏**。
+- **Opaque Pointer 迁移（LLVM 14→15 删除 `PointerType::getElementType`）**：不少内部 Pass 直接读 `getElementType()`，升级后编译失败。这是典型的**内部 API 不保证稳定**教训：LLVM 的 C++ API（`llvm::*` 命名空间）稳定性远低于其 `LLVMContext`/`IRBuilder` 公开契约。
+
+### 常见 Bug 与 Debug 方法
+
+- **优化 Pass 把代码优化没**：`opt -passes='default<O2>' -print-pass-manager` 打印实际跑的 Pass 管线；二分定位可疑 Pass 用 `opt -passes='require<domtree>,gvn'` 单独跑。
+- **崩溃定位**：`bugpoint` 自动约减到最小复现 IR；`lli -print-before-all -print-after-all` 看每个 Pass 前后的 IR 差异。
+- **Code Review 关注点**：新增 Pass 是否破坏了 SSA 形式、是否漏了 `AU.addPreserved<GlobalsAA>` 导致后续分析失效。
+
+### 设计取舍（Trade-off）与反模式（Anti-Pattern）
+
+| 维度 | 选择 | 代价 |
+|------|------|------|
+| 嵌入 vs 独立 | `libclang` C API 嵌入 IDE | C API 稳定但功能滞后于 C++ API |
+| Pass 粒度 | 大 Pass（如 `instcombine`） | 单测难、回归面大 |
+| 注册机制 | `PassBuilder` 回调注册自定义 Pass | 与上游管线耦合 |
+
+- **反模式**：在业务代码里 `using namespace llvm;` 把上千符号灌进全局；直接依赖 `llvm::Value` 的内部子类布局（跨版本 ABI 不稳）。
+- **API Design**：对外只暴露稳定的 C 接口或 `IRBuilder`/`LLVMContext`；内部 `Pass` 用 `AnalysisManager` 显式声明依赖，避免隐式全局状态。
+
+### 重构建议
+
+将手写的 `dyn_cast` 链重构为 `std::visit` 式分发或 `InstVisitor` 子类，降低漏判分支的风险；用 `LLVM_DEBUG` + `dbgs()` 替代临时 `errs()` 调试输出，便于用 `-debug-only` 开关精细控制。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

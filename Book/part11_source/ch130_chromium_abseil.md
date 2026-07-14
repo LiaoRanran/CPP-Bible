@@ -755,6 +755,34 @@ int main(){std::cout<<"Chromium=no exceptions+RTTI; Abseil=SwissTable+StatusOr"<
 - **相邻主题**：`Book/part11_source/ch132_leveldb_rocksdb.md`（第132章　LevelDB / RocksDB 存储引擎（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part11_source/ch124_libstdcxx.md`（第124章　libstdc++ 架构与阅读入口（C++））—— 同模块下的其他主题。
 
+## 附录 F：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+### 工业案例（真实可查证）
+
+- **Chromium 双工具链：`libc++`（Clang）与 `libstdc++`（GCC）混编**：GN 构建里 `is_clang=true` 用 `libc++`，否则用 `libstdc++`。跨 `.so` 传递 `std::string`/`std::vector` 时若两端 ABI 不一致，会在边界处出现 `sizeof(string)`（8 vs 32）错位崩溃——与 ch124 的 COW/SSO 教训同源。生产上统一用 `base::StringPiece`/`std::string_view` 解耦。
+- **Abseil 冻结 C++17（Abseil 20230125.0 起）**：Google 为保持与 Chromium 的 C++ 标准同步，长期冻结在 C++17，拒绝默认启用 C++20 特性。这是**刻意的设计取舍**——用标准滞后换取跨万亿行代码库的可移植性。
+
+### 常见 Bug 与 Debug 方法
+
+- **头文件污染导致的 ODR 违例**：`//base` 里误加 `using namespace absl;` 会污染所有包含者。Debug 用 `gn desc //base:base defines` 查实际编译宏，用 `ninja -t deps` 追包含链。
+- **LTO 下的符号消失**：`is_component_build=false` 全静态 LTO 时，未导出的内联函数被优化掉。用 `nm -C out/Release/libbase.a | grep Symbol` 确认符号存在。
+- **Code Review 关注点**：`absl::string_view` 是否悬垂（生命周期短于持有者）；`absl::Span` 是否跨 DLL 边界传递（MSVC 下 `Span` 容器 ABI 不稳）。
+
+### 设计取舍（Trade-off）与反模式（Anti-Pattern）
+
+| 维度 | 选择 | 代价 |
+|------|------|------|
+| 字符串 | `std::string_view` 传参 | 不可空、不可修改、需保证生命周期 |
+| 哈希 | `absl::flat_hash_map` | 开放寻址、迭代顺序不稳定 |
+| 时间 | `absl::Time` 绝对时刻 | 不直接存储 epoch，需 `absl::FromUnixSeconds` 转换 |
+
+- **反模式**：用 `absl::flat_hash_map` 后依赖迭代顺序做快照测试（确定性失败）；全局 `#define string absl::string_view`（灾难性宏污染）。
+- **API Design**：函数参数用 `absl::string_view`/`absl::Span<const T>` 接受「只读视图」，返回用 `std::string` 明确所有权；错误用 `absl::Status` 而非异常（与 Google 风格一致）。
+
+### 重构建议
+
+把散落的 `std::map<std::string, T>` 日志索引重构为 `absl::flat_hash_map<absl::string_view, T>`，并显式标注「键为字面量、非运行时拼接」以消除悬垂风险；用 `ABSL_FLAG` 替代 `#ifdef` 宏开关，提升可测性。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

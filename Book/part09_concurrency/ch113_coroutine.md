@@ -780,6 +780,34 @@ int main(){hello();return 0;}
 - **相邻主题**：`Book/part10_modern/ch115_move.md`（第115章　移动语义与右值引用）—— 编号相邻、主题接续。
 - **同模块**：`Book/part09_concurrency/ch108_memory_order.md`（第108章　memory_order：六种内存序（C++11））—— 同模块下的其他主题。
 
+## 附录 G：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+### 工业案例（真实可查证）
+
+- **C++20 `task` 的堆分配开销**：早期 `cppcoro::task`/`std::coroutine` 的 promise/frame 默认在堆上分配（经 `operator new`），高频 `co_await` 热点（如每连接一个协程的服务器）会放大分配器压力。`Folly::Task`/`asio::awaitable` 用 **symmetric transfer**（`await_suspend` 返回 `coroutine_handle` 直接跳转）避免无谓的上下文回弹。
+- **捕获局部引用跨挂起点**：`co_await` 挂起后恢复时，若函数栈帧（如调用者的局部 `std::string buf`）已析构，协程体内持有的引用即悬垂。这是协程最高频的 UAF 类别。
+
+### 常见 Bug 与 Debug 方法
+
+- **悬垂/泄漏定位**：`-fsanitize=address,undefined`（ASan/UBSan）能抓跨挂起点的悬垂引用与未初始化 frame；Clang `-Wexperimental-coroutine` 警告 `co_await` 未处理异常路径。
+- **分配可见性**：`-Xclang -fcoro-alloc-elision` + 自定义 `get_return_object_on_allocation_failure` 把 OOM 转异常而非硬崩；`perf record -e syscalls:sys_enter_mmap` 看协程 frame 是否触发过多 mmap。
+- **Code Review 关注点**：`co_await` 前后是否捕获了短生命周期引用；异常从协程逃逸时 `unhandled_exception` 是否正确终止/传播；是否在热路径无脑 `co_await`（应批量合并 IO）。
+
+### 设计取舍（Trade-off）与反模式（Anti-Pattern）
+
+| 维度 | 选择 | 代价 |
+|------|------|------|
+| 调度 | symmetric transfer | 需手写 `await_suspend` 返回 handle |
+| 分配 | frame 入栈/池化 | 需自定义 `promise_type::operator new` |
+| 错误 | `result<T>`/`expected` | 不能与异常混用 |
+
+- **反模式**：在协程里 `catch(...)` 静默吞掉异常（调用方永远拿不到失败）；用协程替代普通函数只为「语法好看」却引入堆分配；跨 `co_await` 持有 `std::string_view` 指向已析构缓冲区。
+- **API Design**：`task<T>` 的返回值类型统一表达「异步计算」；异常路径用 `task<std::expected<T,E>>` 显式化错误；`awaitable` 资源用 RAII 守卫绑定生命周期，杜绝悬垂。
+
+### 重构建议
+
+把「裸 `std::future` + `.get()` 阻塞」重构为 `co_await task<T>` 链式无阻塞；把散落的 `try/catch` 吞异常重构为 `task<expected<T,E>>` 传播错误；对高频分配场景自定义 `promise_type::operator new` 走线程局部 frame 池，削减堆压力。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

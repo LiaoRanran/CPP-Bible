@@ -723,6 +723,34 @@ call [rcx+0x0018]         ; 反射访问属性
 - WG21 提案 P0784R7 启发 constexpr 反射（C++26）
 
 
+## 附录 D：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+### 工业案例（真实可查证）
+
+- **UPROPERTY 漏写导致 GC 误回收（悬垂野指针）**：UObject 派生类成员若未标 `UPROPERTY()`，垃圾回收器（GC）的标记-清除不可见该引用，对象被回收后成员变悬垂。这是 UE 项目最高频崩溃源之一，且只在 Play/PIE 运行一段时间后才暴露——典型的**延迟 Manifest Bug**。
+- **CDO（Class Default Object）膨胀**：每个 `UCLASS` 在引擎启动时构造一个 CDO 常驻内存。大量含大 `TArray` 默认值的类会拖慢启动、吃掉常驻内存。生产项目用 `-DisableAILogging`/`UE_BUILD_SHIPPING` 剥离调试默认。
+
+### 常见 Bug 与 Debug 方法
+
+- **内存与卡顿定位**：Unreal Insights（`trace.send` + `-tracehost`）采集 `stat unit`/`stat game`；低层用 LLM（Low Level Memory Tracker）看 `FUObjectArray` 体量。
+- **反射宏展开错**：`UHT` 生成的 `.gen.cpp` 与手写宏不匹配时，编译期报 `Inappropriate #include`；用 `GeneratedCodeVersion` 对齐引擎版本。
+- **Code Review 关注点**：所有 UObject 裸指针成员是否 `UPROPERTY()`；`TWeakObjectPtr` 是否在使用前 `IsValid()`；热路径是否误用 `FindObject`（O(n) 全表扫描）。
+
+### 设计取舍（Trade-off）与反模式（Anti-Pattern）
+
+| 维度 | 选择 | 代价 |
+|------|------|------|
+| 生命周期 | `TSharedPtr`/`UObject` GC | GC 不可控时点、暂停风险 |
+| 容器 | `TArray`/`TMap`（UE 自研） | 不兼容 `std::` 算法、需 `TConcurrent` 变体 |
+| 反射 | `UCLASS`/`UFUNCTION` 宏 | 编译期代码生成、构建耦合 |
+
+- **反模式**：在热路径（每帧 `Tick`）`new`/`Delete` UObject（GC 压力爆炸）；同步 `LoadObject` 阻塞游戏线程加载大资产（卡顿掉帧）；裸 `UObject*` 跨模块传递不标 `UPROPERTY`。
+- **API Design**：对外暴露 `UFUNCTION(BlueprintCallable)` 供蓝图调用，内部用 `TSharedPtr` 管非 UObject 资源；异步加载走 `FStreamableManager::RequestAsyncLoad` 回调，避免阻塞。
+
+### 重构建议
+
+把散落的「裸 `UObject*` + 手动计数」重构为 `TObjectPtr<>`（UE5 引入，兼容反射且支持延迟加载）；把同步 `LoadObject` 重构为 `FSoftObjectPath` + 异步流送，消除主线程卡顿。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

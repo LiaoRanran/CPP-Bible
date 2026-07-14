@@ -669,6 +669,34 @@ A: (1) tagged pointer (ABA 防护 + 无 HP); (2) hazard pointers (C++26 方向);
 
 - **同模块**：`Book/part09_concurrency/ch109_fence.md`（第109章 内存屏障与 fence）—— 同模块下的其他主题。
 
+## 附录 C：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+### 工业案例（真实可查证）
+
+- **Linux 内核 RCU 读侧无锁遍历**：内核链表（`struct list_head`）读侧靠 `rcu_read_lock()`/`rcu_dereference()` 无锁遍历，写侧 `call_rcu()` 等宽限期（grace period）结束后回收。生产事故常在「读侧忘了 `rcu_read_lock`」时暴露——指针在遍历中途被回收，表现为极难复现的野指针崩溃。
+- **Folly/Google 的 Hazard Pointer 落地**：`std::atomic<T*>` 标记「当前正访问」的指针，回收线程先扫所有 hazard slot 再决定能否释放。C++26 已采纳 `std::hazard_pointer`（P1122），取代各厂自建实现。
+
+### 常见 Bug 与 Debug 方法
+
+- **Use-After-Free 跨线程**：`-fsanitize=thread`（TSan）能捕获 RCU/hazard 保护缺失的并发访问；`std::hazard_pointer` 自带的「slot 未注册就解引用」可在调试构建断言。
+- **宽限期不结束**：RCU 读侧持锁太久（如阻塞系统调用）导致写侧无限等待。`perf sched` 看 `rcu_gp` 线程是否被读侧抢占。
+- **Code Review 关注点**：读侧临界区是否绝对无阻塞；hazard pointer 是否在作用域结束 `store(nullptr)` 释放；回收是否漏了 `synchronize_rcu` 等待宽限期。
+
+### 设计取舍（Trade-off）与反模式（Anti-Pattern）
+
+| 机制 | 适用 | 代价 |
+|------|------|------|
+| RCU | 读多写少、读侧可容忍略旧数据 | 写侧延迟回收、内存滞压 |
+| Hazard Pointer | 精确保护单指针、回收及时 | 需全局 slot 表、上限固定 |
+| 引用计数 | 通用 | 原子开销、ABA/循环引用 |
+
+- **反模式**：在 RCU 读侧临界区里调可能睡眠的函数（死等宽限期）；hazard pointer slot 用后不 `store(nullptr)`（永远挡住回收→内存泄漏）；把 `shared_ptr` 当无锁方案用（原子计数本身就是瓶颈）。
+- **API Design**：对外暴露「读侧句柄」类型约束其生命周期（RAII 包装 `rcu_read_lock`）；回收接口统一走 `retire()` 而非直接 `delete`，把宽限期决策内聚。
+
+### 重构建议
+
+把「裸指针 + 注释约定『别在我访问时删』」重构为 RAII 的 `hazard_scope` 或 `rcu_reader` 守卫；把散落的 `delete p` 重构为 `retire(p)` 统一进宽限期队列，消除漏等 `synchronize` 的风险。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
