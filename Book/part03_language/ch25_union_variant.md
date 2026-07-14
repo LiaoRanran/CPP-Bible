@@ -1818,6 +1818,23 @@ int main(){std::variant<int,double> v;std::cout<<sizeof(v)<<std::endl;v=3.14;std
 - **Abseil** — Abseil `absl::visit` 基于重载访问 variant
 - **Blink** — Blink 用 `variant` 缓存样式结果
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **`std::variant` 的 valueless_by_exception 状态**：`variant` 在赋值抛异常时进入「无值」状态（`valueless_by_exception()==true`），此后任何访问都抛 `bad_variant_access`。这是工业上最容易忽略的状态——大多数代码默认 `variant`「总有值」，直到一次异常把生产组件打成「永久无效」。
+- **union 的 active member 误访问**：C++ union 的 active member 由程序员自己追踪，误读非活跃成员在标准上是 UB（尽管多数编译器不做优化，但 PGO/优化可能静默重排）。`std::variant` 用 tagged union 彻底消除该问题。
+
+### 常见 Bug 与 Debug 方法
+
+- **variant 访问非预期类型**：`std::get<int>(v)` 当 `v` 实际持 `double` 时抛异常。Debug 用 `std::holds_alternative`/`std::get_if` 判断；或 `std::visit` 自动覆盖所有类型且编译期检查完备性。
+- **union 的 ABI 对齐**：裸 union 在不同平台/编译器下对齐不同（如 `union { double d; char c; }` 对齐到 4 还是 8）。跨平台序列化必用 `alignas` 锁定。
+- **Code Review 关注点**：variant 赋值路径是否防 `valueless_by_exception`；union 是否含非平凡成员（含则需手动管理生命周期）。
+
+### 重构建议
+
+把「裸 union + 手动 active member tag」重构为 `std::variant<...>` + `std::visit`（类型安全、自动析构）；variant 赋值加 `noexcept` 便携的 `move_if_noexcept`；访问前加 `if (auto* p = std::get_if<T>(&v))` 而非裸 `get`；对 valueless 恢复：先用 `=默认值` 重置再操作。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

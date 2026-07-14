@@ -795,6 +795,22 @@ SSE 寄存器 `0x0010`（16 字节）宽、AVX `0x0020`、AVX-512 `0x0040`；数
 
 静态链接（`-static`）把运行时代码并入二进制，体积增但启动快、无 `LD_LIBRARY_PATH` 依赖；动态链接（`-shared` / `.so`）按 `0x0010` 符号表解析，省内存但首加载有重定位开销（约 µs 级/符号）。`GCC 13.1.0` / `Clang 17` / `MSVC 19.3` 的 `-O2` 产物在 `C++17` ABI 下二进制兼容。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **vcpkg 版本锁定缺失引发 CI 漂移**：`vcpkg install boost` 默认取 latest，今天 CI 绿色、明天新版本 AB Ⅰ 变了全红。生产直接用 `vcpkg.json` + `"version>="` 约束 + `baseline` 锁定 commit hash，或 Conan `[>=1.74 <2]` 范围，杜绝时空漂移。
+- **Conan SCM 模式的坑**：`conan create . user/channel` 若仓库有未提交改动（dirty state），构建报 `fatal: repository is dirty`——GitOps 流水线若不对齐 check-in 与 create 时序，这是高频失败点。
+
+### 常见 Bug 与 Debug 方法
+
+- **ABI 不匹配**：vcpkg `triplet` 错了（如 x86 vs x64、static vs dynamic），链接器报 `undefined reference`/`unresolved external`。Debug 用 `vcpkg list` 对 triplet + `nm -C` 看导出符号与预期是否一致。
+- **系统包干扰**：`/usr/local` 下残存旧版本 `.so`，Conan 路径优先级设错后悄悄链接到非预期版本。Debug 用 `ldd`/`readelf -d` 看实际加载的 `.so` 路径 + CMake `message(STATUS "Conan: ${CONAN_LIBS_SDL2}")` 打印决议路径。
+
+### 重构建议
+
+把「手工 `vcpkg install` + README 文档」重构为 `vcpkg.json` manifest 模式（`"builtin-baseline"` 锁定）+ CMake 自动集成；把 Conan 裸 `conanfile.txt` 重构为 `conanfile.py` recipe 显式声明 `requires(version_range)`；CI 加 triplet 校验步，确保 Debug/Release/x86/x64 四种配置全覆盖。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

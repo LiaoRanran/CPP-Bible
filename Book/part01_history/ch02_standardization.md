@@ -468,6 +468,22 @@ int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/S
 - **版本特性**：`Book/part01_history/ch10_version_matrix.md`（第10章　版本特性全景对照表与迁移指南）—— 本章 §④ 仅概述各版本演进脉络，本章给出逐特性的横向对照、取舍与迁移指引，是版本历史的深化入口。
 - **编译器实现**：`Book/part02_toolchain/ch11_compilers.md`（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI）—— 延伸本章 附录⑩ 编译器对标准的支持差异，落到具体工具链实现。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **WG21 Proposal 落地的工业滞后**：`std::optional` 从 P0798、C++17 纳入标准到 Clang/gcc/MSVC 全面支持间隔 **3–5 年**，大型代码库因需跨三编译器而长期驻留在实验特性。工业上线前必查 `__cpp_xxx` 宏 + 多编译器 CI 矩阵，而非盲信「C++XX 已支持」。
+- **提案跟踪的工程实践**：生产迁移到新标准需逐一核对所有 `library/` 文件夹的 P 编号与编译器状态页（如 `libcxx/cxx2a_status.html`），WS-only 提案仍可能在最终 draft 前被移除——依赖未合入 master 的提案是高危行为。
+
+### 常见 Bug 与 Debug 方法
+
+- **`__cpp_xxx` 宏版本假设错误**：`#if __cpp_concepts >= 201907L` 写法在严格编译器上 OK，但在带私有补丁的内部构建上可能不匹配。Debug 用 `-dM -E` dump 宏值；Code Review 要求 CI 矩阵覆盖 GCC12/13/14 + Clang16/17/18 实测。
+- **编译器 bug 而非代码 bug**：新标准特性初版编译器（如 `import std` 的早期实现）常 bug 百出，表象是「代码合法但 ICE（Internal Compiler Error）或 OOM」。Debug 用 `bugpoint`（LLVM）/最小化 reproducer，确定是标准合规 bug 后上报编译器仓库。
+
+### 重构建议
+
+把「硬编码 C++17」`-std=c++17` 升级为 CMake `target_compile_features(... PUBLIC cxx_std_20)` + CI 矩阵双标共存；用 `__cpp_xxx` 守护特性而非 `__cplusplus`；提交《编译器支持状态自评报告》作为升级前 checklist。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

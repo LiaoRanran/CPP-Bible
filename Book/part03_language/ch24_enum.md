@@ -1285,6 +1285,23 @@ int main(){Color c=Color::Red;std::cout<<static_cast<int>(c)<<","<<sizeof(c)<<st
 - **相邻主题**：`Book/part03_language/ch26_lambda.md`（第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除）—— 编号相邻、主题接续。
 - **同模块**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **枚举版本新增导致 ABI 断裂**：`.so` 里 `enum class Status { OK, Error }` 升级到 `{ OK, Error, Timeout }`，下游二进制未重编仍跑旧版本——若新代码 `switch` 没 `default` 分支且调用方传入 `Timeout`，行为未定义。两方案：枚举尾部强制 `=max_reserved` 预留槽位，或保证 switch 总含 `default`。
+- **`enum class` vs 非限定枚举的整型提升陷阱**：`enum OldColor { RED = 1, GREEN = 2 }` 可隐式转 `int`；`RED | GREEN` 变成 `int` 而非 `OldColor`，导致重载决议选错。`enum class` 禁止隐式转换，避免该坑；位掩码仍需 `operator|` 重载。
+
+### 常见 Bug 与 Debug 方法
+
+- **枚举超出底层类型范围**：`enum class X : uint8_t { A=255, B }` 编译报错，因为 256 不进 `uint8_t`。Debug 用 `static_cast<std::underlying_type_t<X>>(X::B)` 显式查值。
+- **序列化/网络传输**：直接 `memcpy` enum 到 wire，接收方与发送方的基础类型不同（如 `int` vs `short`）。统一 `enum class T : uint32_t` + `static_assert` 校验大小。
+- **Code Review 关注点**：switch 是否含 `default` 分支；enum 是否有预留 slot；位掩码是否特化 `std::enable_bitmask`（C++20）。
+
+### 重构建议
+
+把「旧式 `enum` + 隐式 `int`」重构为 `enum class T : uint32_t` 后所有转换显式 `static_cast`；switch 无 default 者补 `default: std::unreachable();`（C++23）；ABI 暴露的 enum 加 `_max_reserved = 0xFFFF` 预留；序列化加 `static_assert(sizeof(Enum)==4)`。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

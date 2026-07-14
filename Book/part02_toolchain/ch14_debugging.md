@@ -1094,6 +1094,23 @@ mov byte [rax+0x0000], 0xcc   ; 写入软件断点
 - WG21 提案 P0784R7 扩展 constexpr 可调试性
 
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **ASan 发现的「碰巧能跑」的栈溢出**：某生产服务偶发 SIGSEGV，gdb 看栈损毁无头绪。加 `-fsanitize=address` 重编，首次启动即报「stack-buffer-overflow」——局部数组越界 2 字节覆盖了返回地址，但因栈间隙填充在未开 ASan 的普通构建下不崩溃。ASan 通过重排栈帧 + canary 让越界瞬间触发。
+- **Valgrind/Memcheck 的 10–50× 减速代价**：大型 C++ 服务在 Valgrind 下慢到不可用；工业上用 Sanitizer 替代（2–3× 减速，ASan/TSan/UBSan），Valgrind 仅用于无法重编的二进制（闭源 SDK leak 检测）。
+
+### 常见 Bug 与 Debug 方法
+
+- **gdb 无法定位 `std::unique_ptr` 值**：`p ptr` 只显示地址。用 `p *ptr._M_ptr`（libstdc++ 内名）或 gdb pretty-printer（`set print pretty on` + `python import libstdcxx`）。
+- **Release + Debug 行为不一致**：`-O2` 优化消除未初始化读的「碰巧值」、`-O0` 保留。Debug 用 ASan/UBSan（两构建）对照 + `-Og` 调优级别定位。
+- **Code Review 关注点**：CI 是否含 Sanitizer 矩阵（ASan/UBSan/TSan）；死亡测试（EXPECT_DEATH）是否覆盖断言路径。
+
+### 重构建议
+
+把「`printf` 调试 + 肉眼比对」重构为 CI 内置 `-fsanitize=address,undefined` 构建配置 + 每个 PR 自动跑；把 gdb 手工断点重构为 `.gdbinit` 脚本 + pretty-printer 配置；Linux 服务加 `core_pattern` + `systemd-coredump` 自动收集崩溃现场。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
