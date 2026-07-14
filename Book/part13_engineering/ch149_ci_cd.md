@@ -1072,6 +1072,23 @@ SIMD 旗标 `-mavx2`（32 字节 `0x0020` 宽）/ `-mavx512f`（64 字节 `0x004
 
 测试并行：`N` 进程并行跑用例，受 `0x0040` 缓存行与核数限制；`std::atomic` 计数（`lock xadd`，10–20 ns）的争用随 `N` 增大而上升。缓存行 `0x0040`（64 字节）是 L1 预取与 false-sharing 粒度，CI 缓存目录按 `0x1000`（4 KB 页）对齐可减 mmap 抖动。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **GitHub Actions 上 C++ 全量编译 CI 的磁盘/timeout 噩梦**：147 章 C++ 项目全量编译在 actions runner 上需 10–15 分钟，免费额度按分钟计。工业上通过 `matrix` 分平台编译 + `ccache`/`sccache` 加速 + `paths` filter 按需编译（仅改 .md 跳过 compile），而非每次推全量。本项目 CI 正是此模式——compile job 仅对代码变更触发。
+- **Sanitizer 流水线跑在 CI 上的成本权衡**：ASan/UBSan 使执行慢 2–3 倍、内存涨 2×，全量 CI 跑一套 sanitizer 矩阵会耗尽 runner budget。生产用 nightly 定跑全套 sanitizer、PR 仅跑 TSan（最快暴露并发问题）。
+
+### 常见 Bug 与 Debug 方法
+
+- **CI 绿但本地红（或反之）**：因 runner 的 libc++/kernel 版本不同。Debug 用 `act` 本地模拟 GitHub Actions；统一 `container:` 镜像（如 `ubuntu-22.04`）锁定环境。
+- **缓存失效**：`ccache` 命中率掉到 10%。Debug 看 `ccache -s` 统计；CI 缓存 key 应含编译器版本 + 构建 flags hash。
+- **Code Review 关注点**：CI 是否覆盖多平台（至少 Linux + Windows）；编译门禁是否 `continue-on-error: false`（false 才真门禁）；缓存 key 是否稳健。
+
+### 重构建议
+
+把「每次推全量编译」重构为 `paths` filter（仅 C++ 源码改动触发 compile job）；把「单平台」CI 扩展为 `matrix: [ubuntu, windows, macos]` 至少 2 个；引入 `sccache` 缩减洁净编译耗时；sanitizer 分流：PR 跑 TSan（快）、nightly 跑全套 ASan+UBSan+LSan。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

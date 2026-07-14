@@ -1269,6 +1269,23 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 - **相邻主题**：`Book/part13_engineering/ch149_ci_cd.md`（第149章 CI/CD 流水线（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part13_engineering/ch144_style.md`（第144章 代码风格与规范（C++））—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **Google Benchmark 的统计噪声陷阱**：`benchmark::DoNotOptimize` 防止编译器消掉计算，但未隔离 CPU throttling/缓存冷热差异。同一函数连续跑 10 次得到 ±20% 波动是常见的——原因非代码，而是 Power Management（DVFS）降频或兄弟进程抢占。生产用 `--benchmark_min_time=5` 拉长运行时间 + `taskset` 绑核 + 禁用 Turbo Boost 得稳定基线。
+- **微基准的「工厂数据」误导**：一个 `std::unordered_map` vs `absl::flat_hash_map` 的微基准测出 2× 差，但生产代码里 map 只占 1% 时延——过度优化微基准胜出者而忽略热路径是工业基准滥用之首。
+
+### 常见 Bug 与 Debug 方法
+
+- **编译器优化消除被测量**：被测函数返回值未被使用，编译器 DCE 清空。Debug 是 `benchmark::DoNotOptimize(result)` 防止消除；或 `perf stat` 看实际指令数。
+- **benchmark 代码本身开销**：基准框架的 `clock_gettime`/`rdtsc` 在微纳秒级测量中占比大。用 `--benchmark_min_time` 多次迭代摊薄，而非单次。
+- **Code Review 关注点**：被测代码是否被优化掉；基线是否排除框架开销；是否绑核/禁 Turbo 做可复现测试。
+
+### 重构建议
+
+把「单次跑时 + 眼看输出」重构为 `--benchmark_min_time=5` + `--benchmark_repetitions=5` 输出统计量（均值/标准差/中位数）；把「无约束 CPU 下的基线」重构为 `taskset -c 0` 绑核 + `cpupower frequency-set` 锁定频率；检验每个基准是否真的测量到目标路径（`perf stat -e instructions:u`）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -805,6 +805,23 @@ a alive after destroy? no
 - **Abseil** — ECS 工具链复用 Abseil 容器
 - **Blink** — Blink 用 ECS 思路管理合成节点
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **Unity DOTS / Entt 的 cache 友好收益**：传统 OOP 用继承层次（`Enemy : Actor : Object`）把组件散落在堆上，遍历「所有敌人」时缓存行大量未命中。ECS 把同组件存连续数组（`std::vector<Transform>`），系统遍历时顺序访问，L1/L2 命中率大幅提升——这是 DoD（见 ch143）在游戏引擎的旗舰落地。
+- **ECS 过度拆分导致的间接开销**：组件过细（每个标量一个组件）会让系统要 gather 多个不连续数组，反而比紧凑 struct 慢。工业上按「系统访问共现性」打包组件，而非一味原子化。
+
+### 常见 Bug 与 Debug 方法
+
+- **实体 ID 复用导致悬垂引用**：实体销毁后其 ID 被回收复用，旧引用指向新实体（逻辑错乱）。Debug 用 `generation`/`version` 计数（ID = index + version），访问前校验 version；或 ECS 框架的「实体句柄」自动失效。
+- **系统顺序依赖暗病**：系统 A 写 `Position`、系统 B 读 `Position`，若 B 在 A 前跑结果过期。Debug 用 `perf`/profiler 看帧时间抖动；明确声明系统读写依赖（如 Entt 的 `on_update`/`depends_on`）。
+- **Code Review 关注点**：组件粒度是否合理（共现访问打包）；实体引用是否带 version 防悬垂；系统依赖顺序是否显式声明。
+
+### 重构建议
+
+把「`std::vector<Enemy*>` + 虚函数 `Update`」重构为 SoA 组件数组（`vector<Transform>`/`vector<Velocity>`）+ 系统函数批处理，用 `perf stat cache-misses` 验证命中率提升；把裸实体 ID 引用重构为「index + generation」句柄或框架实体引用，消除复用悬垂；按访问共现性合并组件减少 gather 开销。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
