@@ -1045,13 +1045,28 @@ int main(){std::cout<<"Network=ch163+ch93+ch81+ch77+ch159"<<std::endl;return 0;}
 - **相邻主题**：`Book/part16_reading/ch165_roadmap.md`（第165章 C++ 进阶路线图（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part15_cases/ch160_mempool.md`（第160章 从零实现内存池（C++））—— 同模块下的其他主题。
 
-## 自测练习（Exercises）
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
-> 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
+### 工业案例：C10K 升级 C100K——epoll 还不够
 
-### 练习 1（难度 ★★）
+某交易网关从 C10K 架构（`select` + 每连接一线程）升级 C100K 时，简单换成 `epoll` 后发现 CPU 仍跑满在 `epoll_wait` 的 `epitem` 红黑树查找上。根因是每次 `epoll_ctl(EPOLL_CTL_MOD)` 改事件掩码都触发 `rb_insert`——连接密集的金融协议（心跳/报价/成交三路流）导致海量 MOD 操作。修复：用 `EPOLLONESHOT` 减少重复 MOD + `io_uring` 替换 epoll（kernel 5.1+ 支持），`IORING_OP_SEND`/`IORING_OP_RECV` 批量提交，单核 C100K CPU 从 98% 降到 35%。
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+### 常见 Bug / Debug 方法
+
+- **TCP_NODELAY 忘记设**：Linux 默认开启 Nagle 算法（合并小包等 ACK），延迟敏感协议（游戏/交易）未设 `setsockopt(TCP_NODELAY)` 会导致每 40ms 才发一次小包——用 `tcpdump -i eth0 'tcp[tcpflags] & tcp-push == 0'` 查延迟包。
+- **TIME_WAIT 端口耗尽**：短连接高频场景（压测/爬虫），主动关闭方进入 TIME_WAIT 2MSL（60s），16bit 端口空间耗尽后 `connect()` 报 `EADDRNOTAVAIL`。设置 `SO_REUSEADDR` 或改 `net.ipv4.tcp_tw_reuse=1` 缓解。
+- **epoll EPOLLOUT 滥用**：send 缓冲区不满时 `epoll_wait` 会持续返回 `EPOLLOUT`，造成不必要的 CPU 空转（busy-loop）。正确做法：只在 `send()` 返回 `EAGAIN` 后注册 `EPOLLOUT`，发送完成后立即注销。
+
+### Code Review 关注点
+
+- `recv()` 返回值是否检查 `0`（对端关闭）vs `-1`（错误）？`recv()==0` 不关闭 fd 会导致 epoll 持续触发 `EPOLLIN` 但读不到数据的死循环。
+- `close()` vs `shutdown(fd, SHUT_WR)`：`close()` 直接释放 fd 且如果其他线程持有引用就会 dup 出的 fd 泄漏；`shutdown()` 优雅关闭——先 SHUT_WR 发 FIN → 对端 recv()==0 → 对端 close → 本端再 close。
+- 并发调用 `epoll_ctl` 是否需要锁？epoll fd 本身线程安全，但 `epoll_ctl(ADD)` 与 `close(fd)` 竞态——内核在 `epoll_ctl` 前自动移除关闭的 fd，但最佳实践是在同一线程管理 epoll。
+
+### 重构建议
+
+- 从回调地狱转协程：C++20 `co_await` + `io_uring` 实现 `async_read(async_socket, buffer)` 同步风格写法，消除回调嵌套。参考 `liburing` 的官方示例 `io_uring-cpp`。
+- 协议层与传输层解耦：网络层只做 `recv()`/`send()` 字节流，协议解析用 `std::span<const uint8_t>` 零拷贝引用，避免 `memcpy` 进中间 buffer。
 
 <details><summary>答案与解析</summary>
 

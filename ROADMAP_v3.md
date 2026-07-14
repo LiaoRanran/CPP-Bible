@@ -350,5 +350,61 @@
 
 ---
 
+### 9.9 I.实战 单维度补强 · 第九批 + 方向1 首例实证（2026-07-14，combined=24 内存簇）
+
+**第九批**：I 表 combined=24 内存簇 **ch35/36/37/38/39**。每章追加 I.实战散文小节（+82 行纯散文）。I=2–3/6 全脱离零覆盖。
+
+**方向1 首例汇编实证**：**ch41** 追加「附录 C：编译实证——unique_ptr 零开销证明」——GCC15 -O2 真实汇编逐指令比对，证明 unique_ptr 在析构/返回路径的编译期内联消除、零虚函数开销、sizeof==裸指针。同时追加附录 D：I.实战。commit `c9d19e4`（+101 行）。ch41 I=3 + Asm=3/5 实际机器码命中。
+
+**验证**：consistency_check 147 章 0/0（100/100）；0 新 cpp 块。
+
+**📊 I 表累计进度**：43/62（69%）。二阶段方向1 已启动——首个汇编实证块落地，证明了「真实编译器输出 + 逐指令注释 + 代价分层表」的实证块格式有效。
+
+---
+
+### 9.10 I.实战 单维度补强 · 第十批（2026-07-14，combined=24 内存余章 + 模板入口）
+
+| 章 | 追加小节 | I.实战要点 |
+|----|----------|------------|
+| ch42 strict_aliasing | 附录 I | `-fstrict-aliasing` 与 `union`/`char*` 合法批孔；未定义行为用 ASan 不报；`std::launder` C++17 |
+| ch43 cache_locality | 附录 I | 伪分享 `alignas(64)`；顺序访问 > 随机访问 10×+；perf stat cache-misses 实测 |
+| ch44 memory_pool | 附录 I | arena 分配器批量释放 O(1)；jemalloc/tcmalloc 线程局部 cache；pool 用完未归还静默泄漏 |
+| ch45 oop_object_model | 附录 I | 空基类优化 EBO；多继承 this 指针调整；虚继承 vbase 偏移动态查表 |
+| ch65 type_traits | 附录 I | `is_trivially_copyable` 误用；SFINAE 编译器错误信息不可读→concepts C++20；`void_t` 探测惯用法 |
+
+**验证**：5 章 I=3/6 全脱离零覆盖；cpp 块不变；consistency_check 147 章 0/0；commit `175ee7e`（+80 行）。I 表累计 48/62（77%）。
+
+---
+
+### 9.11 I.实战 单维度补强 · 第十一批（2026-07-14，combined=24 算法簇 + 方向1 第二例实证）
+
+**第十一批选章**：ch81_string / ch95_algo_overview / ch96_sorting / ch99_numeric / ch101_algo_theory。+80 行散文。I=2–3/6。commit `97d051c`。
+
+**方向1 第二例汇编实证**：**ch47** 追加「附录 E：编译实证——虚调用的真实汇编代价」。GCC15 -O2 编译 5 种场景：CRTP(1 指令)、虚调用(2 指令 `movq (%rcx),%rax; jmp *(%rax)`)、去虚拟化(4 指令推测 `cmpq/je` 守卫)、工厂模式(`call *%rax`)、虚析构。含虚调用代价分层总结表。commit `80dbfc2`（+92 行）。
+
+**关键结论**：vtable 是数组而非链表——虚调用只是一次 load + 一次间跳；`final`/`-O2` 去虚拟化可压到等价直接调用。
+
+**📊 I 表累计进度**：53/62（85%）。方向1 累计 2 例（ch41 unique_ptr + ch47 vtable）。
+
+---
+
+### 9.12 I.实战 单维度补强 · 第十二批（2026-07-14，combined=24 性能+并发簇）
+
+用户明确指定章目：**ch155_simd / ch156_compiler_opt / ch158_perf_antipatterns / ch159_threadpool / ch107_atomic**。
+
+| 章 | 追加小节 | I.实战要点 |
+|----|----------|------------|
+| ch155 simd | 附录 I | `_mm_load_ps` 无 AVX → `#GP`；未对齐 load 性能悬崖；`__builtin_cpu_supports` 运行时检测；C++26 `std::experimental::simd` |
+| ch156 compiler_opt | 附录 I | `-Ofast` = `-ffast-math` 浮点非确定；PGO 冷/热训练偏差；LTO 文件级符号消失用 `nm -C` |
+| ch158 perf_antipatterns | 附录 I | 热路径 `std::endl` 隐式 flush(syscall 10× 吞吐差)；`vector<bool>` 位压缩反模式；`-Wrange-loop-construct` |
+| ch159 threadpool | 附录 I | 任务提交风暴(mutex 瓶颈)；`std::async` future 析构隐式阻塞；无锁 SPSC + `std::move_only_function<void()>`(C++23) |
+| ch107 atomic | 附录 I | `is_lock_free` 跨平台假象(x86 无锁→ARM 退化锁)；伪分享 `alignas(64)`；`static_assert(is_always_lock_free)` + `compare_exchange_weak`+while |
+
+**验证**：5 章 I=3/6 全脱离零覆盖；cpp 块不变；consistency_check 147 章 0/0（100/100）；`git diff --stat`=5 文件 +82 行、0 新 cpp。commit `c69f759`（`80dbfc2..c69f759 → master`）。
+
+**📊 I 表累计进度**：58/62（94%）。combined=24 仅剩 ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_net（+ ch165_roadmap 若含 I 补强空间）约 4–5 章。**I 表全收口在即——再一批即可完成全 I 维度零覆盖→全覆盖转变。**
+
+---
+
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
 _每次扩写完成后跑 `expansion_audit.py` 更新基线_

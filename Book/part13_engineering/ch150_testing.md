@@ -1088,13 +1088,28 @@ P2895R0 (std::testing): 标准化测试框架提案 (2024, 早期讨论)
 
 测试夹具构造/析构走 `0x0008` 虚或模板路径；`C++20` `constexpr` 可把预期值计算移到编译期。`-mavx2`（`0x0020` 宽）/`-mavx512f`（`0x0040` 宽）要求 `alignas`，否则测试中的 `vmovdqa` 触发 #GP。`GCC 13.1.0` / `Clang 17` / `MSVC 19.3` 的 `-O2` 对测试代码同样优化；缓存行 `0x0040`（64 字节）是 false-sharing 粒度，并行用例须按 `0x0040` 填充。
 
-## 自测练习（Exercises）
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
-> 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
+### 工业案例：CI 上随机失败的"Flaky Test"——gRPC 的教训
 
-### 练习 1（难度 ★★）
+gRPC C++ 仓库有 ~3000 个测试用例，每天 CI 总有 2–5 个随机失败（flaky），排查发现两类根因：① `EXPECT_CALL` 未设置 `Times()`，依赖默认期望次数，当被测代码因竞态条件少调用或多次调用 mock 时不报错；② 网络相关测试用真实端口 `localhost:0`（系统分配随机端口），但偶发端口占用冲突导致 `bind()` 失败。修复：所有 mock 调用显式加 `Times(1)` 或 `WillRepeatedly()`；网络测试改 unix domain socket（无端口冲突）或在 `SetUp()` 中 `ASSERT_TRUE(bind_success)` 并 `RETRY(3)`。
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+### 常见 Bug / Debug 方法
+
+- **`ASSERT_*` vs `EXPECT_*` 误用**：`ASSERT_TRUE(ptr != nullptr)` 后面直接 `ptr->foo()`——如果 `ASSERT` 失败直接 `return`（非 `exit`），`foo()` 不会执行。正确做法：`ASSERT_NE` 后跟安全访问，不信任 NULL guard 逻辑。
+- **测试间数据污染**：gtest 默认销毁 fixture 但不清理全局/静态变量。用 `static` 单例的模块在 `TearDown()` 中需显式 `reset()` 或 mock 恢复。gtest 的 `--gtest_shuffle` 和 `--gtest_repeat` 能暴露测试间隐式依赖。
+- **`std::abort()` 在测试中**：`EXPECT_DEATH` 只对子进程生效，如果被测代码在主测试进程中 `abort()`/`exit()`，会把整个测试二进制干掉——检查 `EXPECT_DEATH` 的 regex 是否匹配正确的退出方式。
+
+### Code Review 关注点
+
+- 测试是否只测 happy path？每个公开 API 至少应有 1 个异常输入测试（nullptr/空字符串/超界索引）。
+- mock 是否过度使用？mock 外部依赖合理，mock 内部工具类说明封装耦合过度。
+- 参数化测试 `TEST_P` 是否覆盖了边界组合？只用 `Values(1,2,3)` 测不到 `INT_MAX`/`0`/`负值`。
+
+### 重构建议
+
+- 从 gtest 1.8 升 1.14+：用 `EXPECT_THAT(x, AllOf(Gt(0), Lt(10)))` 替代链式 `EXPECT_*`，一个断言给出多重约束、失败信息更可读。
+- 引入 `DeathTest` 替代手工子进程：`EXPECT_DEATH(fn(), "assertion failed")` 一行完成断言+退出验证，避免自己写 `fork()`/`waitpid()`。
 
 <details><summary>答案与解析</summary>
 

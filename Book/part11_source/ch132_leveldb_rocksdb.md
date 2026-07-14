@@ -969,13 +969,28 @@ mov rax, [rdi+0x0010]     ; 下一级
 - WG21 提案 P0784R7 扩展 constexpr 存储结构
 
 
-## 自测练习（Exercises）
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
-> 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
+### 工业案例：Compaction 风暴——RocksDB 写停顿的根因
 
-### 练习 1（难度 ★★）
+某推荐系统用 RocksDB 存特征向量（单实例 500GB LSM），高峰期写 QPS 从 50K 骤降到 5K，P99 延迟从 2ms 飙到 500ms。根因是 L0 文件数超过 `level0_file_num_compaction_trigger=4` 后触发 Compaction，但 L0→L1 的写放大（Write Amplification）达 20×，Compaction 线程跑满磁盘 IO 带宽，前台写入被 `DB::Write()` 内部 stall 阻塞。解决方案：增加 `max_background_compactions` 到 CPU 核数、设置 `level0_slowdown_writes_trigger=20` / `level0_stop_writes_trigger=36` 加大缓冲、换 NVMe 后写放大降到可控。教训：LSM 的 Compaction 不是"后台任务"——磁盘带宽不足时它就是前台瓶颈。
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+### 常见 Bug / Debug 方法
+
+- **MANIFEST 损坏**：突然断电后 `MANIFEST-*` 文件可能记录未完成的 Compaction 元数据，导致 DB 无法 open。用 `ldb repair` 或 RocksDB 的 `repairer` API 恢复，但会丢弃未 flush 的 WAL 尾部数据（<1MB 可接受）。
+- **Column Family 句柄泄漏**：`DB::CreateColumnFamily()` 返回的 `ColumnFamilyHandle*` 必须 `delete`，否则 RocksDB 内部引用计数不归零，`DB::Close()` 死等。
+- **Iterator 持有资源过长**：`DB::NewIterator()` 内部持有 SST 文件的 mmap 引用，长生命周期 Iterator（如遍历 1 亿 key 的离线任务）会阻止 Compaction 回收旧 SST → 磁盘空间只增不减。改用 `DB::Get()` 逐 key 查或用 `ReadOptions::background_purge_on_iterator_cleanup=true`。
+
+### Code Review 关注点
+
+- `WriteOptions::sync=false` 在生产是否安全？（机器级掉电丢失最近一批写，但对推荐/日志类场景可接受；金融/元数据须 `sync=true`）
+- `CompactRange(nullptr, nullptr)` 全量 Compaction 会长时间 Block 写入，是否放在维护窗口执行？
+- Bloom filter 的 `bits_per_key` 默认 10——但对 key 空间巨大的场景（如 UUID key）调高到 14–16 可显著降低读放大。
+
+### 重构建议
+
+- 从 LevelDB 迁 RocksDB：保留 `leveldb::DB*` 接口兼容层用适配器模式包裹 `rocksdb::DB*`（API 95% 兼容），灰度切流验证 L0 行为差异。
+- LSM 不是银弹：写多读少才高效；读多写少用 B-tree 系列（LMDB/WiredTiger）更好；读写均衡考虑 PostgreSQL 的 LSM（Citus）+ B-tree 混合方案。
 
 <details><summary>答案与解析</summary>
 
