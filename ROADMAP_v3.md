@@ -243,5 +243,23 @@
 
 ---
 
+### 9.3 I.实战 / H.设计双维度补强 · 第三批（2026-07-14）
+
+**选章**：交集表 combined=23 剩余章中素材最扎实者——用户点名 ch03/11/12 + ch125_libcxx + ch111_aba。各章末追加真实「工业实战复盘与设计取舍」散文小节，纯散文、0 新增 cpp 块。ch125 既有「设计权衡」、ch111 既有「工业案例」附录，本批补齐其余关键词维度。
+
+| 章 | 追加小节 | 工业实战要点(I) | 设计取舍要点(H) |
+|----|----------|-----------------|-----------------|
+| ch03 cpp98_03 | 附录 A | C++98 存量库现代编译器迁移；`auto_ptr` 淘汰 ABI 断链；`std::bind` 悬垂 | 所有权/遍历/回调 Trade-off；`#define nullptr` 反模式；`const T&`/值语义 API Design |
+| ch11 compilers | 附录 F | GCC/MSVC 行为差导致跨平台序列化错；`-O2` 暴露 UB（DCE） | 标准化/诊断/优化 Trade-off；头文件 `-fpermissive` 反模式；`[[nodiscard]]`/内联接口 |
+| ch12 buildsystems | 附录 J | `find_package` 缓存坑（clean build 失败）；全局 `include_directories` 污染 ODR | 依赖获取/生成器/范围 Trade-off；`aux_source_directory`/`GLOB` 反模式；`find_package(my::my)` 暴露 |
+| ch125 libcxx | 附录 F | `_LIBCPP_ENABLE_ASSERTIONS` 生产 abort；libc++/libstdc++ 混链接局崩溃 | 字符串/断言/模块化 Trade-off；跨 ABI 传 STL 反模式；`string_view`/`error_code` 解耦 |
+| ch111 aba | 附录 F | Treiber 栈 ABA 经典崩溃；Linux `cmpxchg16b` 双字 CAS | 抗 ABA 方案对照表；`relaxed` 误用反模式；`hazard_pointer` 守卫回收 |
+
+**验证**：5 章 I/H 关键词 0→（I=3/6：工业案例/Code Review/重构建议；H=5–6/7，ch125/111 含既有「设计权衡/工业案例」补到 6）；cpp 块数不变；`consistency_check`=147 章 0/0（100/100）；`git diff --stat`=5 文件 +141 行、0 新 cpp 围栏。commit `3fa96a2`（`5a659bb..3fa96a2 → master`）→ CI 触发。红线守全。
+
+**累计（三批 15 章）**：第一批 ch40/97/124/131/154 + 第二批 ch127/130/134/112/113 + 第三批 ch03/11/12/125/111。交集表 combined=23 章已补完（ch03/11/12/124/125/127/130/134/111）；**交集表剩余 combined=24 章（ch110/118/119/120/123/126/128 等）+ 仅单维度零覆盖章**待补。
+
+---
+
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
 _每次扩写完成后跑 `expansion_audit.py` 更新基线_
