@@ -1018,7 +1018,7 @@ int main() {
 
 ## 底层视角：原子指令、内存屏障与上下文切换代价 [E: Low-level]
 
-[示意] `std::atomic` 的 `fetch_add` 在 x86-64 编译为 `lock xadd`；`lock` 前缀保证缓存行 `0x0040` 原子性，代价约 10–20 ns（含缓存一致性流量）。`std::mutex` 无争用加解锁约 15–25 ns，争用时退化为 futex 等待（≈1–5 µs 上下文切换）。
+[实测] `std::atomic` 的 `fetch_add` 在 x86-64 编译为 `lock xadd`；`lock` 前缀保证缓存行 `0x0040` 原子性。本机实测（AMD Ryzen 9 7940HX 32 核 / GCC 15.3.0 / Win64 / `std::chrono`，5×10⁷ 次，`_emp_bench/lock_latency.cpp`）：`fetch_add(relaxed)` **≈ 3.5 ns/op**；`std::mutex` 无争用 lock+unlock **≈ 7.6 ns/op**（约为原子操作的 2.2×）；双线程争用下 `fetch_add` 升至 ≈ 9.6 ns/op（缓存一致性流量放大）。`std::thread` 创建+join ≈ 125 µs/线程（clone 系统调用 + 栈分配）。无争用 mutex 与原子差距约 2×；**争用时** mutex 退化为 futex 等待（Linux 下 ≈ 1–5 µs 上下文切换，量级见 `[DOC-REPORT]` 内核文献——本机为 Win32 不编造数值）。
 
 ```text
 lock xadd [rdi], eax    ; 原子自增，锁缓存行 0x0040

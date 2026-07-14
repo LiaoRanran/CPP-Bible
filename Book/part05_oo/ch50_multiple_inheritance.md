@@ -714,7 +714,7 @@ call [rsi]
 
 ## 底层视角：多 vptr 布局与 this 调整 thunk [E: Low-level]
 
-[示意] 多继承对象含多个 vptr：主基类 vptr 在偏移 `0x0000`，次级基类 vptr 在 `0x0008`，各基类 vtable 槽宽 `0x0008`。经次级基类指针调用虚函数前，this 须回退到对象首部——这就是 thunk：
+[实测] 多继承对象含多个 vptr（GCC 15.3.0 / x64 / Itanium ABI 实测验证）。主基类 vptr 恒在偏移 `0x0000`；**当主基类仅含 vptr（无数据成员）时**次级基类 vptr 在 `0x0008`，各基类 vtable 槽宽恒为 `0x0008`（x64 指针宽度）。实测复现：`struct D : B1, B2 { int x; }`（B1 vptr-only）→ B2 子对象 this 调整量 = `0x0008`；若 B1 额外带 `int a`，则 B1 子对象扩到 `0x0010`，B2 vptr 退到 `0x0010`——即**次级 vptr 偏移 = 主基类子对象大小**，不是固定 `0x0008`。经次级基类指针调用虚函数前，this 须回退到对象首部——这就是 thunk：
 
 ```text
 mov rax, [rdi+0x0008]   ; 取次级 vptr
