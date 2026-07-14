@@ -1,0 +1,130 @@
+{
+  "project": "现代C++终极圣经",
+  "phase": "quality_consolidation",
+  "phase_label": "第三阶段：质量收尾 + 高含金量升级",
+  "total_chapters": 150,
+  "last_updated": "2026-07-14T19:00:00+08:00",
+  "last_commit": "bfaeb14",
+  "git_status": "clean",
+  "completed_phases": [
+    "density_deepening",
+    "i_practice_closeout",
+    "assembly_empirical_core"
+  ],
+  "tasks": {
+    "P0-1": {
+      "label": "性能数据实测化",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 3,
+      "detail": "353处[示意] → Google Benchmark",
+      "current_batch_items": ["ch43_cache", "ch77_vector", "ch93_thread", "ch40_exception", "ch115_move"]
+    },
+    "P0-2": {
+      "label": "编译器版本矩阵表",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "218处对比 → docs/compiler-matrix.md",
+      "current_batch_items": ["scan", "create_matrix", "inject_refs", "verify_script"]
+    },
+    "P0-3": {
+      "label": "反例/UB库 + Sanitizer",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 3,
+      "detail": "15 UB示例 → Book/appendix_ub/",
+      "current_batch_items": ["use_after_free", "double_free", "stack_after_scope", "alignment_violation", "strict_aliasing"]
+    },
+    "A1": {
+      "label": "交叉引用审计",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "147章全量引用链修复"
+    },
+    "A2": {
+      "label": "CI豁免消化",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "35豁免审计→修复→更新"
+    },
+    "B1": {
+      "label": "v1.1.0发布",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "CHANGELOG + tag + Release"
+    },
+    "B2": {
+      "label": "Interview嵌入式分类",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "10道系统向新题 + embedded/子目录"
+    },
+    "B3": {
+      "label": "WG21提案跟踪表",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "TRACKER.md + __cpp_*自动检测"
+    },
+    "B4": {
+      "label": "汇编实证扩展",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "4章追加(ch117/42/48/52)"
+    },
+    "B5": {
+      "label": "PDF全量构建",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "Mermaid→静态图 + PDF"
+    },
+    "C1": {
+      "label": "术语一致性",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1
+    },
+    "C2": {
+      "label": "Mermaid图表审计",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1
+    },
+    "C3": {
+      "label": "章编号一致性",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1
+    }
+  },
+  "execution_order": [
+    "P0-2",
+    "P0-3",
+    "P0-1",
+    "A1",
+    "A2",
+    "B2",
+    "B3",
+    "B4",
+    "B1",
+    "B5",
+    "C1",
+    "C2",
+    "C3"
+  ],
+  "metrics": {
+    "density_avg_combined": 24.9,
+    "shallow_chapters": 0,
+    "consistency_check_streak": 30,
+    "assembly_empirical_examples": 8,
+    "i_practice_coverage": "63/150",
+    "compile_pass_rate": "112/150"
+  }
+}

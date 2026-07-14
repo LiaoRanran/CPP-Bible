@@ -1,163 +1,154 @@
-# NEXT_LLM.md — 下任大模型接手脚本
+# NEXT_LLM.md — 接手即跑，零上下文启动
 
-> 专为 LLM Agent 设计：自包含、可执行、无需人类判断。
-> 读完本文件 + `AGENT.md`（宪法）即可开工。
+> **读这个文件 = 知道一切。不需要读其他文件就能开始干活。**
 
 ---
 
-## 0. 环境速查
+## 30 秒速览
+
+| 问题 | 答案 |
+|------|------|
+| 什么项目？ | 《现代 C++ 终极圣经》— 150 章 C++ 技术书 |
+| 在哪？ | `C:/CodeLearnling/note/note/C++/CPP-Bible/` |
+| 当前阶段？ | 第三阶段：质量收尾 + 高含金量升级 |
+| 下一步做什么？ | **按 P0→A→B→C 顺序，读完 STATE.json 取第一个未完成项** |
+| 做到什么时候？ | 额度燃尽或所有任务完成。**不要问用户，一直做** |
+| 需要什么工具？ | GCC15：`C:/Qt/Tools/mingw1530_64/bin/g++.exe`；Python：`C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe` |
+| 怎么提交？ | `git -c http.sslBackend=schannel push`（PAT 从项目记忆/工作记忆获取，不写死在文件中） |
+
+---
+
+## 🚀 启动序列（每次接手必跑）
 
 ```bash
-PY="C:/Users/ASUS/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
-GPP="C:/Qt/Tools/mingw1310_64/bin/g++.exe"
-MKDOCS="C:/Users/ASUS/.workbuddy/binaries/python/envs/default/Scripts/mkdocs.exe"
-ROOT="C:/CodeLearnling/note/note/C++/CPP-Bible/"
+cd C:/CodeLearnling/note/note/C++/CPP-Bible
+
+# 1. 读状态文件
+cat STATE.json
+
+# 2. 跑门禁确认基线
+python3 tools/consistency_check.py
+
+# 3. 检查 git 状态
+git status
+git log --oneline -5
 ```
 
-所有工具用 `"$PY" tools/xxx.py` 调用。**禁止**用 `python3` 或 `python`（路径不可靠）。
+---
+
+## 📋 任务队列（严格按此顺序执行）
+
+所有任务在 `WORKLIST_v4.md` 中有详细子项拆分。STATE.json 记录完成状态。
+
+### P0 级（不做完不往下）
+
+| 序号 | 任务 | 类型 | 关键文件 |
+|------|------|------|----------|
+| **P0-2** | 编译器版本矩阵表 | 扫描→建表→注入 | `docs/compiler-matrix.md` |
+| **P0-3** | 反例/UB 库（3 批 × 5 例） | 写代码→编译+sanitizer→写文档 | `Book/appendix_ub/` |
+| **P0-1** | 性能实测化（3 批） | 装 Google Benchmark→重写→跑→注入 | `Benchmarks/` |
+| **A1** | 交叉引用审计 | 扫描→修复 | `tools/crossref_audit.py` |
+| **A2** | CI 豁免消化 | 审计→修复→更新豁免清单 | `tools/compile_exempt.json` |
+
+### P1 级（P0 全部完成后再碰）
+
+| B2 | Interview 嵌入式分类 | `Interview/embedded/` |
+| B3 | WG21 提案跟踪表 | `WG21/TRACKER.md` |
+| B4 | 汇编实证扩展 | Book/ 追加附录 H |
+| B1 | v1.1.0 发布 | CHANGELOG + tag + Release |
+
+### P2 级（最后做）
+
+| C1-C3 | 术语/Mermaid/编号 | 扫描→修复 |
 
 ---
 
-## 1. 接手工序（5 分钟，3 条命令）
+## 🔧 每种任务的标准化流水线
 
-```bash
-# 命令 1：状态验证（秒级）
-"$PY" tools/hy3_check.py
-# 期望: "✅ 全部通过 — 项目健康"
-
-# 命令 2：v4 审计（秒级）
-"$PY" tools/deduplication_audit.py --all 2>&1 | head -15
-# 期望: v4=13 池为空，最低分=14
-
-# 命令 3：门禁
-"$PY" tools/consistency_check.py 2>&1 | tail -3
-# 期望: "ERROR=0 WARN=0" + "100/100"
-```
-
-**如果三项全过** → 项目健康，可以开始工作。
-**如果某项失败** → 先看 `HANDOVER.md`「已知限制与注意事项」排查，再读 `RELEASE.md`。
-
----
-
-## 2. 三种合法工作方向（选一个开始）
-
-### 方向 A：铺路（附录 G 注入，v4 抬分）
-
-1. 跑 `"$PY" tools/deduplication_audit.py --all 2>&1` 看 v4 排名
-2. 取 v4 最低的 5 章，按 IND 排序（IND 越低 → 越需要工业引用）
-3. 对每章：
-   a. 读章头找主题
-   b. 找 `## 自测练习（Exercises）` 前的那行（`- **同模块**：...` 或 `> 交叉引用：...`）
-   c. 在它和 `## 自测练习` 之间插入「附录 G」，模板：
+### 类型 A：纯文档任务（P0-2 / B2 / B3 / C1-C3）
 
 ```
-## 附录 G：{主题}工业实践与深度
-
-| 项目/库 | 技术/模式 | 使用场景 | 源码/链接 |
-|---------|----------|---------|----------|
-| **LLVM**（github.com/llvm/llvm-project） | ... | ... | `llvm/include/...` |
-| **Chromium**（github.com/chromium/chromium） | ... | ... | `base/...` |
-| **Qt**（code.qt.io） | ... | ... | `qtbase/...` |
-| **Boost**（github.com/boostorg/xxx） | ... | ... | `include/...` |
-| **Google/Abseil**（github.com/abseil/abseil-cpp） | ... | ... | `absl/...` |
-
-**底层深度**：{一段 ≥5 行的汇编/性能/编译器行为分析}
+1. 读 WORKLIST_v4.md 对应子项 → 确认具体文件/脚本
+2. 写/改文件
+3. 跑 consistency_check.py → 必须 0/0
+4. git add + commit（含任务说明）
+5. git push
+6. 更新 STATE.json（标记完成）
+7. 追加记忆日志 .workbuddy/memory/YYYY-MM-DD.md
+8. 读 STATE.json → 取下一个未完成任务 → 继续
 ```
 
-4. 每批 5 章完成后：
-   a. 跑 `"$PY" tools/consistency_check.py` + `"$PY" tools/crossref_audit.py` 确认无断链
-   b. 跑 `"$PY" tools/deduplication_audit.py --all 2>&1 | head -12` 看 v4 最低是否抬升
-   c. `git add -A && git commit -m "feat: 附录G注入 chXX~chYY (v4 X→Y)"`
+### 类型 B：编译+实证任务（P0-3 UB 库 / P0-1 benchmark / B4 汇编）
 
-**关键约束**：
-- 项目引用必须真实可查（GitHub link 为 permalink）
-- 每条附录 ≥10 行实质性内容
-- 不编造性能数据、不编造 GitHub 链接
-- 禁止重复关键词堆砌（同一项目名在表内重复出现不计数）
+```
+1. 读 WORKLIST_v4.md 对应子项 → 确认目标章节
+2. 写 .cpp 测试文件到对应目录
+3. 编译：g++ -std=c++23 -O2 -c -o X.o X.cpp（或加 -fsanitize=address,undefined）
+4. 运行/反汇编：objdump -d X.o（或 ./X.exe for sanitizer）
+5. 捕获输出 → 写入 Book/ 附录
+6. 跑 consistency_check.py → 必须 0/0
+7. git add + commit + push
+8. 更新 STATE.json
+9. 追加记忆日志
+10. 继续下一个
+```
 
-### 方向 B：浅块重构（ROADMAP_v3 阶段 A）
+### 类型 C：扫描+修复任务（A1 交叉引用 / A2 CI 豁免）
 
-1. 跑 `"$PY" tools/expansion_audit.py --top 20` 看清块优先队列
-2. 对每个高优先级"浅块"（代码块 <10 行、缺 main、缺头文件）：
-   a. 补全头文件（`auto_include.py --dry-run` 辅助）
-   b. 补 `int main()` + 示例调用
-   c. 跑 `"$PY" tools/chapter_compile_check.py Book/partXX/chYYY.md` 确认编译通过
-3. 每批完成后跑门禁
-
-### 方向 C：基础设施（GitHub CI / PDF）
-
-1. **CI 实跑**：需 GitHub repo URL → `git remote add origin <url>` → `git push` → 等 Actions
-2. **PDF 生成**：需本机有 xelatex → `bash tools/generate_pdf.sh`
-3. **站点重建**：`"$PY" tools/rewrite_links.py --mode site` → `"$PY" tools/gen_mkdocs_nav.py` → `"$MKDOCS" build --strict -f build/site/mkdocs.yml`（三步骤顺序不可变）
-
----
-
-## 3. 当前项目数据（2026-07-13 午实测）
-
-| 维度 | 数值 | 来源 |
-|------|------|------|
-| 章节 | 147 章 / 16 part | `Book/` |
-| 行数 | 143,469 行 | 逐文件累加 |
-| cpp 块 | 7,013 | ```` ```cpp ```` 计数 |
-| 交引 | 1,190 / 0 断链 | `crossref_audit.py` |
-| Mermaid | 88 块（全部有效） | `Book/` 实测 |
-| 表格 | 597（0 真实缺陷） | 2026-07-13 审计 |
-| v4 均分 | 17.8/30 | `deduplication_audit.py` |
-| v4 最低 | 14（v4=13 池已清零） | 同上 |
-| GPA | 98.7（0 HIGH 缺陷） | `chapter_lint.py` |
-| 门禁 | 100/100 | `consistency_check.py` |
-| 断言 | FAIL=0 | `run_cpp_assertions.py` |
-| asm | DRIFT=0 | `verify_asm_evidence.py` |
-| 站点 | mkdocs strict 0 警告 | `mkdocs build --strict` |
-| Git | 5 提交，无 remote | `git log --oneline` |
-| 已注入工业/深度附录 | 57 章（前七轮 29 章 + 第九轮接手 28 章：ch04/06/26/28/61/69/83/88/110/116/120/142/143/146/152/159 工业 + ch49/101/124/129/147/149/157/165/61/88/146/152 深度） | — |
-
-**v4=14 池：已清空（第七轮接手铺路 9 章）**。
-
-**v4=15 池：已清空（第九轮接手铺路 28 章全部注入，v4 由 15 → 16+，其中 12 章达 24）**。新地板 = v4=16。
-
-**v4=16 池：已清空（第十轮接手铺路 25 章全部注入：4 廉价章工业引用到 24 + 21 章工业/深度到 17~23，v4 由 16 → 17+）**。新地板 = v4=17。
-
-**v4=17 池（新底线，18 章）**：需继续注深度原理（IND 已封顶的章靠工业引用推不动，必须真实 asm/时序/编译器版本/0x#### 偏移 命中 DEP≥50 才能到 24）。
-- 提示：`deduplication_audit.py --all` 查 `# QUAL IND DEP`；`v4=30*(min(IND/20,1)*0.4 + min(DEP/50,1)*0.4)`，上限 24。
-- 深度附录务必 ≥35 个 DEP 信号（hex 需 0x#### 4位以上、asm 用 ```` ```text ```` 标注）。 |
+```
+1. 跑对应审计脚本
+2. 收集问题列表
+3. 逐项修复（每修复一项 verify 一次）
+4. consistency_check.py final
+5. git add + commit + push
+6. 更新 STATE.json
+7. 继续
+```
 
 ---
 
-## 4. 工具调用规范
+## 🚫 关键规则
 
-- 所有 Python 调用：`"$PY" tools/xxx.py`
-- 单章编译：`"$PY" tools/chapter_compile_check.py Book/partXX/chYYY.md`
-- 读取文件：优先用 Read 工具（非 Bash cat）
-- 编辑文件：优先用 Edit 工具（非 Bash sed）——**必须先 Read 再 Edit**
-- Git Bash 下路径带空格需双引号；POSIX 路径给 Windows exe 前用 `cygpath -w` 转换
-- 后台编译重验用 `run_in_background: true`，不轮询（等通知）
-
----
-
-## 5. 红线（禁止事项）
-
-1. **禁止注水**：不堆砌关键词、不批量追加空表、不编造 GitHub 链接
-2. **禁止增章**：147 章规模已定，不新增 ch166+
-3. **禁止伪造**：asm 符号必须 ⊆ `Examples/*.asm` 真实产物；WG21 提案号/库版本不确定 = 不写
-4. **禁止单行追加**：每条新内容 ≥5 行，有信息增量
-5. **禁止改门禁语义**：不修改检查器规则来"凑绿"
+1. **不询问用户**：不要问"要不要继续？""这个方向对吗？"——直接做
+2. **不跳过门禁**：每次 commit 前必须 consistency_check.py 0/0
+3. **不扩章**：150 章上限不变，新内容追加到附录或独立文件
+4. **Book/*.md 最简洁**：正文保持精简，不要装饰性前言/水词
+5. **每批 5 章/5 例**：保持今天已验证的节奏
+6. **状态及时存**：每完成一个子项立即更新 STATE.json
+7. **额度燃尽时**：先 commit+push 当前进度，再更新 STATE.json，最后停下来
 
 ---
 
-## 6. 参考文档
+## 📁 文件速查
 
-| 需要什么 | 看什么 |
-|---------|--------|
-| 项目宪法 + 红线 + 工具清单 | `AGENT.md` |
-| 当前详细快照 + 四轮验证历史 + 踩坑 | `HANDOVER.md` |
-| 发布基线 + 编译豁免清单 | `RELEASE.md` |
-| 总索引（阅读顺序/工具地图） | `INDEX.md` |
-| 竣工路线 | `ROADMAP_v2.md` |
-| 扩写路线 | `ROADMAP_v3.md` |
-| 扩写处方模板 | `EXPANSION_RECIPES.md` |
-| 项目长期记忆 | `C:/Users/ASUS/WorkBuddy/2026-07-07-08-47-50/.workbuddy/memory/2026-07-13.md` |
+| 文件 | 作用 | 接手必读 |
+|------|------|----------|
+| `NEXT_LLM.md` | **本文件 —— 接手入口** | ✅ |
+| `STATE.json` | 进度状态 | ✅ |
+| `WORKLIST_v4.md` | 45 子项详细清单 | 需要时 |
+| `AGENT.md` | 项目宪法（工具链/红线） | 需要时 |
+| `ROADMAP_v3.md` | 历史路线 + 阶段规划 | 需要时 |
+| `HANDOVER.md` | 快照 | 需要时 |
+| `Book/` | 150 章正文 | 按任务 |
+| `tools/` | 30+ 工具脚本 | 按任务 |
+| `_asm_demo/` | 汇编实证产物 | 不需要 |
+| `Benchmarks/` | 性能测试 | P0-1 需要 |
 
 ---
 
-_生成时间：2026-07-13 14:15 | 为下一个 LLM Agent 接手铺路_
+## ⚡ 快速恢复
+
+如果模型中途被打断（context 刷新 / 额度耗尽），新模型接手只需：
+
+```
+1. 读 NEXT_LLM.md
+2. 读 STATE.json
+3. 跑 consistency_check.py
+4. 从第一个 status=pending 的任务继续
+5. 不回头重做已完成的任务
+```
+
+---
+
+_最后更新：2026-07-14 19:00 — 第三阶段启动_
+_预期下次模型接手时间：2026-07-15_
