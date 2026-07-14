@@ -471,6 +471,43 @@ I 表最后 5 章：**ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_
 
 ---
 
+### 9.15 方向1 汇编实证 · 第二波批量（2026-07-14，第 4–8 例）
+
+5 章批量落地，+364 行纯实证内容。
+
+| # | 章节 | 附录 | 核心发现 | 指令对比 |
+|---|------|------|----------|----------|
+| 4 | ch51 CRTP | 附录 H | CRTP 完全内联、虚调用仅 2 指令穿透 | CRTP:1, virt:2, final:1 |
+| 5 | ch40 noexcept | 附录 C | noexcept 调用者只需 1 条 `lea`，抛异常需栈帧+cold 段 | noexcept:1, throw:6+ |
+| 6 | ch93 thread | 附录 C | atomic=1 指令(lock addl)、mutex=10+2call、thread=20+4call+clone | atomic:1, mutex:12, thread:24+ |
+| 7 | ch77 vector | 附录 H | reserve 后函数全消为 `ret`；push_back hot=5 指令 | reserve:1(ret), push:5▶30+ |
+| 8 | ch115 move | 附录 E | RVO=零拷贝(内联到调用方栈槽)、move=6mov 指针交换 | RVO:0, move:6, copy:2call |
+
+**实证产物**：`_asm_demo/ch{51,40,93,77,115}_test.{cpp,o}`（5 个测试文件 + 真实 objdump）。
+
+**汇编指令清单亮点**：
+- 最短指令：`ret`（ch77 reserve 全优化消除）
+- 最复杂：`std::thread` 初始化（20+ 条指令 + 4 个函数调用 → pthread_create → clone syscall）
+- 最反直觉：`std::atomic` 无锁递增 = 单条 `lock addl`，比 `std::mutex` 的 12 条指令 + futex 调用快 10x+
+- 最优雅优化：RVO 的 `%rcx` = 返回槽指针，整个 `Big(1024)` 构造写入调用方栈上 16 字节
+
+**一致性**：147 章 0/0 (100/100)。commit `2e21189`（`ce2e1e7..2e21189 → master`）。
+
+### 方向1 汇编实证累计（8 例）
+
+| # | 章节 | 主题 | 关键反直觉 | 提交 |
+|---|------|------|-----------|------|
+| 1 | ch41 | unique_ptr 零开销 | 智能指针 = 额外成本是误解 | `c9d19e4` |
+| 2 | ch47 | vtable 虚调用 | 虚调用只是 mov+jmp 2 指令 | `80dbfc2` |
+| 3 | ch27 | 四种 cast 代价分层 | 5/6 cast 零成本 | `bcbf4e2` |
+| 4 | ch51 | CRTP vs 虚 vs final | CRTP=1 指令, 虚=2, final=1 | `2e21189` |
+| 5 | ch40 | noexcept 零成本路径 | noexcept=1 指令, throw 需 LSDA | `2e21189` |
+| 6 | ch93 | 线程/原子/锁/mutex | atomic=单条 lock addl | `2e21189` |
+| 7 | ch77 | vector reserve 扩容 | reserve 后全消为 ret | `2e21189` |
+| 8 | ch115 | RVO/移动/拷贝 | RVO 零拷贝, move=6 mov 指针换 | `2e21189` |
+
+---
+
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
 _每次扩写完成后跑 `expansion_audit.py` 更新基线_
 
