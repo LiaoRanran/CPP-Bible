@@ -332,6 +332,22 @@
 
 **剩余（未执行）**：I 表 combined=24 30 章（ch02/13/14/24/25/35/36/37/38/39/41/42/43/44/45/65/81/95/96/99/101/107/132/143/150/155/156/158/159/163/165）+ H 表单维度 ≈60 章。
 
+### 9.8 I.实战 单维度补强 · 第八批（2026-07-14，combined=24 起头）
+
+**选章**：I 表 combined=24 首 5 章 **ch02/13/14/24/25**。仅补 I 维度（这些章已有 H 覆盖）。
+
+| 章 | 追加小节 | I.实战要点 |
+|----|----------|------------|
+| ch02 standardization | 附录 I | WG21 提案落地滞后 3–5 年；`__cpp_xxx` 宏版本假设；ICE/bugpoint 编译器 bug 定位 |
+| ch13 packaging | 附录 I | vcpkg 版本漂移 CI；Conan SCM dirty state；triplet ABI 不匹配；manifest 锁版本 |
+| ch14 debugging | 附录 I | ASan 抓到「碰巧能跑」栈溢出；Valgrind vs Sanitizer 性能取舍；gdb pretty-printer |
+| ch24 enum | 附录 I | enum 版本新增 ABI 断裂；`enum class` 隐式转换陷阱；switch default 预留 slot |
+| ch25 union_variant | 附录 I | `variant` valueless_by_exception 永久无效；union active member UB；`get_if` 防爆 |
+
+**验证**：5 章 I 关键词 0→2–3/6（ch13 I=2 缺 Code Review，包管理主题天然少 CR 角度）；cpp 块不变；`consistency_check`=147 章 0/0（100/100）；`git diff --stat`=5 文件 +83 行、0 新 cpp 围栏。commit `4cf1291`（`27c3f80..4cf1291 → master`）→ CI 触发。红线守全。
+
+**📊 I 表累计进度**：37/62（60%），八批→阶段 A 双维 22 + 阶段 B 单 I combined=23 10 + 阶段 C combined=24 5 章。combined=24 剩 25 章。
+
 ---
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
