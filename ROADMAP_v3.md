@@ -402,7 +402,43 @@
 
 **验证**：5 章 I=3/6 全脱离零覆盖；cpp 块不变；consistency_check 147 章 0/0（100/100）；`git diff --stat`=5 文件 +82 行、0 新 cpp。commit `c69f759`（`80dbfc2..c69f759 → master`）。
 
-**📊 I 表累计进度**：58/62（94%）。combined=24 仅剩 ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_net（+ ch165_roadmap 若含 I 补强空间）约 4–5 章。**I 表全收口在即——再一批即可完成全 I 维度零覆盖→全覆盖转变。**
+**📊 I 表累计进度**：58/62（94%）。combined=24 仅剩 ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_net / ch165_roadmap = 4–5 章。**I 表全收口在即——再一批即可完成全 I 维度零覆盖→全覆盖转变。**
+
+### 9.13 I.实战 单维度补强 · 第十三批（2026-07-14，★ I 表全收口 ★）
+
+I 表最后 5 章：**ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_net / ch165_roadmap**。
+
+| 章 | 追加小节 | I.实战要点 |
+|----|----------|------------|
+| ch132 leveldb | 附录 I | Compaction 风暴写停顿（L0→L1 写放大 20× 跑满磁盘 IO）；MANIFEST 损坏恢复(`ldb repair`)；ColumnFamily 句柄泄漏 |
+| ch143 dod | 附录 I | 粒子系统 AoS→SoA 150K→600K 粒子（L1 miss 42%→8%）；SoA 下标越界断言；EnTT/flecs ECS 框架选型 |
+| ch150 testing | 附录 I | FlakyTest 根因（`Times()` 未设/端口占用）；`ASSERT_*` vs `EXPECT_*` 误用；`DeathTest` 替代手工子进程 |
+| ch163 net | 附录 I | C10K→C100K epoll_ctl MOD 红黑树瓶颈；TIME_WAIT 端口耗尽(`SO_REUSEADDR`)；EPOLLOUT busy-loop 防呆 |
+| ch165 roadmap | 附录 I | 新人 CR 拒绝 Top4（RAII 38%/值传递 22%/迭代器失效 15%）；理解错觉验证法；开源贡献=真里程碑 |
+
+**验证**：5 章全脱离零覆盖；cpp 块不变；consistency_check 147 章 0/0（100/100）；`git diff --stat`=6 文件 +152/-19（含 ROADMAP 回填）。commit `62270c3`（`c69f759..62270c3 → master`）。
+
+---
+
+## ★★★ I 表全收口里程碑 ★★★
+
+| 指标 | 数值 |
+|------|------|
+| I 维度零覆盖章数 | 62 → **0** |
+| 总补强批次数 | 13 |
+| 阶段 A：I∩H 双维度交集补强 | 5 批 22 章（§9.1–§9.5） |
+| 阶段 B：combined=23 单 I 补强 | 2 批 10 章（§9.6–§9.7） |
+| 阶段 C：combined=24 单 I 补强 | 6 批 30 章（§9.8–§9.13） |
+| 总增量行数 | ~1,700 行纯散文 |
+| 新增 cpp 块 | 0（纯散文，门禁一致） |
+| consistency_check 通过 | 14 次全量 100/100 |
+| git commits | 27 次 |
+| 二阶段方向1 实证 | 2 例（ch41 unique_ptr + ch47 vtable） |
+
+---
+
+_配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
+_每次扩写完成后跑 `expansion_audit.py` 更新基线_
 
 ---
 
