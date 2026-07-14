@@ -49,6 +49,18 @@
 | C4 | [ubc4_tsan_false_positive.md](./ubc4_tsan_false_positive.md) | TSan 误报识别 | 注解/suppression 机制（DOC）| TSan |
 | C5 | [ubc5_false_sharing.md](./ubc5_false_sharing.md) | 伪共享 | 基准 **≈6.1× 退化**(4237 vs 698 ms) | —（perf 剖析）|
 
+## 1c. 反例索引（第三批：生命周期 UB 5 例）
+
+| # | 文件 | UB 类型 | 本机真实证据 | Sanitizer 工具 |
+|---|------|--------|------------|:--------------:|
+| L1 | [ubl1_dangling_reference.md](./ubl1_dangling_reference.md) | 悬垂引用/指针 | `-Wreturn-local-addr` + SIGSEGV(exit 139) | ASan |
+| L2 | [ubl2_iterator_invalidation.md](./ubl2_iterator_invalidation.md) | 迭代器失效 | SIGSEGV(exit 139) 实测崩溃 | ASan |
+| L3 | [ubl3_vptr_corruption.md](./ubl3_vptr_corruption.md) | 虚表指针损坏 | 崩溃(exit 1, 空vptr解引用) | ASan/Valgrind |
+| L4 | [ubl4_odr_violation.md](./ubl4_odr_violation.md) | 单定义规则违反 | 单TU可编译；跨TU复现命令见.md | 链接器/LTO |
+| L5 | [ubl5_const_cast_mutation.md](./ubl5_const_cast_mutation.md) | 去const改真const | exit 0 但常量折叠(G=5) = UB表现依赖优化 | — |
+
+> **P0-3 共 15 例（内存5 + 并发5 + 生命周期5）已全部落地，均含真实代码与本地可复现证据。**
+
 ---
 
 ## 2. 如何在本机复现

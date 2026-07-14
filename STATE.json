@@ -30,13 +30,14 @@
     },
     "P0-3": {
       "label": "反例/UB库 + Sanitizer",
-      "status": "in_progress",
+      "status": "completed",
       "batch": 3,
       "total_batches": 3,
-      "detail": "15 UB示例 → Appendix/ub/（batch1:内存UB 5例, batch2:并发UB 5例）",
+      "detail": "15 UB示例 → Appendix/ub/（内存5+并发5+生命周期5 全部落地）",
       "current_batch_items": ["dangling_reference", "iterator_invalidation", "vptr_corruption", "odr_violation", "const_cast_mutation"],
       "batch1_done": ["use_after_free", "double_free", "stack_after_scope", "alignment_violation", "strict_aliasing"],
-      "batch2_done": ["data_race", "lock_order_inversion", "signal_handler", "tsan_false_positive", "false_sharing"]
+      "batch2_done": ["data_race", "lock_order_inversion", "signal_handler", "tsan_false_positive", "false_sharing"],
+      "batch3_done": ["dangling_reference", "iterator_invalidation", "vptr_corruption", "odr_violation", "const_cast_mutation"]
     },
     "A1": {
       "label": "交叉引用审计",
