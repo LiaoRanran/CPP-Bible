@@ -779,6 +779,34 @@ int main(){std::cout<<"Boost=167库, ~80%进入C++标准. shared_ptr→C++11, op
 - **相邻主题**：`Book/part11_source/ch130_chromium_abseil.md`（第130章　Chromium / Abseil 基础设施（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part11_source/ch125_libcxx.md`（第125章　libc++ 架构（C++））—— 同模块下的其他主题。
 
+## 附录 G：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+### 工业案例（真实可查证）
+
+- **Boost 版本错配引发的 ODR 灾难**：大型项目同时链两个不同 Boost 版本（如 `libboost_filesystem.so.1.74` 与 `1.82`），同名符号两份、ABI 布局不同，`dlopen` 时静默选错，运行时崩溃或数据错乱。生产用 `b2` 统一版本 + `BOOST_VERSION` 静态断言守卫。
+- **Boost.Asio 的 `io_context` 线程池模型**：高并发服务用 `post`/`dispatch` 把任务投到 `io_context::run` 的多线程，但误在 strand 外用共享 `socket` 会数据竞争。这是 Asio 最经典的所有权边界 Bug。
+
+### 常见 Bug 与 Debug 方法
+
+- **`shared_ptr` 循环引用泄漏**：Boost 老 `enable_shared_from_this` 误用在析构中 `shared_from_this()` 导致自引用环。Debug 用 `-fsanitize=address` 看常驻增长；现代用 `weak_from_this()`。
+- **Asio 竞态**：TSan 抓跨 strand 共享对象；`io_context` 停止后投递的任务被丢弃，需 `restart()`。
+- **Code Review 关注点**：是否跨版本混链 Boost；`shared_from_this` 是否在析构期调用；`io_context` 是否在 `run()` 前 `stop()`。
+
+### 设计权衡（Trade-off）与反模式（Anti-Pattern）
+
+| 维度 | 选择 | 代价 |
+|------|------|------|
+| 依赖 | 头文件-only Boost（如 `asio`/`beast`） | 编译变慢、无链接 |
+| 模块化 | 仅取需要的 `boost::xxx` 子库 | 版本管理复杂 |
+| 现代替代 | 优先标准库（C++17/20 已吸收多数） | 平滑迁移成本 |
+
+- **反模式**：全量 `#include <boost/...>` 头文件库（编译时间爆炸）；跨 Boost 大版本混链（ODR）；`shared_from_this` 在析构中调用（自环）。
+- **API Design**：优先用标准库对应物（`std::filesystem` 替 `boost::filesystem`、`std::thread` 替 `boost::thread`），减少外部依赖；必须 Boost 时仅 `find_package(Boost COMPONENTS xxx)` 取所需组件，避免全量。
+
+### 重构建议
+
+把全量 Boost 依赖重构为「仅 `find_package` 所需组件」+ 优先替换为 C++17/20 标准库等价物（如 `std::filesystem`）；把 `shared_from_this` 误用改为 `weak_from_this()` 断环；Asio 共享对象统一进 `strand` 消除跨线程竞争。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

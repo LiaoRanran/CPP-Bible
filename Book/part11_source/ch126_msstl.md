@@ -847,6 +847,34 @@ int main(){std::cout<<"MS STL: 0=Release, 1=Debug, 2=Full. Parallel via Windows 
 
 `constexpr` 容器操作（`C++20` 起）于编译期求值，省运行期 `0x0008` 间接。`std::atomic` 用 `lock xadd`（10–20 ns）保证 `0x0040` 缓存行原子。`GCC 13.1.0` / `Clang 17` 的交叉验证可暴露 MSVC 专属行为；缓存行 `0x0040`（64 字节）是 `std::hardware_destructive_interference_size` 的取值（C++17 起）。
 
+## 附录 B：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+### 工业案例（真实可查证）
+
+- **`_ITERATOR_DEBUG_LEVEL` 不一致导致链接失败**：MSVC 下 Debug（`_ITERATOR_DEBUG_LEVEL=2`）与 Release（=0）的 STL 容器内存布局不同，混合链接两个配置的 .obj/.lib 直接报 LNK2038「metadata 不匹配」。生产上 CI 必须统一 `/MD`+同一 `_ITERATOR_DEBUG_LEVEL`，否则本地 Debug 通过、Release 链接崩。
+- **`/std:c++17` vs `/std:c++20` 的 STL 行为差**：MSVC 在标准开关切换时改变 `std::string`（已无 COW）、`std::filesystem` 符号版本；旧代码若依赖 `/std:c++14` 下的旧异常规范，升级后编译失败。
+
+### 常见 Bug 与 Debug 方法
+
+- **跨 DLL 传 STL 崩溃**：`nm -C`/`dumpbin /symbols` 看容器符号来自哪个运行时；用 `_CRTDBG_MAP_ALLOC` + CRT 调试堆定位越界。
+- **SIMD 内部误用**：MSVC STL 的 `<xmmintrin.h>`/`__m128` 内部函数若未对齐 `alignas(16)`，在老 CPU 上 `#GP` 崩溃。Debug 用 `/RTC` + ASan。
+- **Code Review 关注点**：是否跨模块边界传 `std::string`/`std::vector`；`_ITERATOR_DEBUG_LEVEL` 是否全工程一致；`/MD`(动态 CRT) vs `/MT`(静态) 是否混用（混用必崩）。
+
+### 设计权衡（Trade-off）与反模式（Anti-Pattern）
+
+| 维度 | 选择 | 代价 |
+|------|------|------|
+| CRT | `/MD` 动态（统一） | 需带 VCredist |
+| 调试 | `_ITERATOR_DEBUG_LEVEL=2` | 容器变大、慢 |
+| 向量化 | SIMD 内部函数 | 需对齐、可移植差 |
+
+- **反模式**：Debug/Release 混链（LNK2038）；跨 DLL 边界传 STL 容器（同一 STL 不同版本布局不兼容）；用 `/MT` 静态 CRT 又引入也用 `/MD` 的第三方库（堆不共享）。
+- **API Design**：对外接口用 POD/C 风格结构体或 `std::string_view`/`span` 解耦 STL 实现细节；错误用 `HRESULT`/`std::error_code` 跨 ABI 边界（异常 ABI 不稳）。
+
+### 重构建议
+
+把跨模块 `const std::string&` 参数重构为 `std::string_view`（零拷贝、无 ABI 假设）；把混用的 `/MT`+`/MD` 统一为 `/MD` 并固化 `_ITERATOR_DEBUG_LEVEL`；CI 增加「全配置统一」断言，消除 Debug/Release 链路错配。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
