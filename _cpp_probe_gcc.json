@@ -1,0 +1,322 @@
+{
+  "__cpp_modules": {
+    "feature": "Modules (C++20)",
+    "std": "c++20",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_concepts": {
+    "feature": "Concepts (C++20)",
+    "std": "c++20",
+    "gcc_value": "202002"
+  },
+  "__cpp_coroutines": {
+    "feature": "Coroutines (C++20)",
+    "std": "c++20",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_impl_coroutine": {
+    "feature": "Coroutine impl (C++23 统一)",
+    "std": "c++23",
+    "gcc_value": "201902"
+  },
+  "__cpp_constexpr": {
+    "feature": "constexpr 扩展",
+    "std": "c++23",
+    "gcc_value": "202211"
+  },
+  "__cpp_if_consteval": {
+    "feature": "if consteval (C++23)",
+    "std": "c++23",
+    "gcc_value": "202106"
+  },
+  "__cpp_static_call_operator": {
+    "feature": "static operator() (C++23)",
+    "std": "c++23",
+    "gcc_value": "202207"
+  },
+  "__cpp_explicit_this": {
+    "feature": "explicit object param / deducing this (C++23)",
+    "std": "c++23",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_multidimensional_subscript": {
+    "feature": "多维下标 operator[]",
+    "std": "c++23",
+    "gcc_value": "202211"
+  },
+  "__cpp_size_t_suffix": {
+    "feature": "size_t 字面量后缀 zu (C++23)",
+    "std": "c++23",
+    "gcc_value": "202011"
+  },
+  "__cpp_named_character_escapes": {
+    "feature": "命名转义 \\o{...} (C++23)",
+    "std": "c++23",
+    "gcc_value": "202207"
+  },
+  "__cpp_lib_modules": {
+    "feature": "Standard library modules (std / std.compat)",
+    "std": "c++23",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_deducing_this": {
+    "feature": "deducing this (C++23)",
+    "std": "c++23",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_capture_star_this": {
+    "feature": "*this capture (C++17)",
+    "std": "c++17",
+    "gcc_value": "201603"
+  },
+  "__cpp_generic_lambdas": {
+    "feature": "generic lambda (C++14)",
+    "std": "c++14",
+    "gcc_value": "201707"
+  },
+  "__cpp_init_captures": {
+    "feature": "init-capture (C++14)",
+    "std": "c++14",
+    "gcc_value": "201803"
+  },
+  "__cpp_lambda_capture": {
+    "feature": "lambda capture [=, this] deprecate (C++20)",
+    "std": "c++20",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_structured_bindings": {
+    "feature": "structured bindings (C++17)",
+    "std": "c++17",
+    "gcc_value": "201606"
+  },
+  "__cpp_if_constexpr": {
+    "feature": "if constexpr (C++17)",
+    "std": "c++17",
+    "gcc_value": "201606"
+  },
+  "__cpp_fold_expressions": {
+    "feature": "fold expressions (C++17)",
+    "std": "c++17",
+    "gcc_value": "201603"
+  },
+  "__cpp_deduction_guides": {
+    "feature": "CTAD (C++17)",
+    "std": "c++17",
+    "gcc_value": "202207"
+  },
+  "__cpp_variadic_using": {
+    "feature": "variadic using (C++17)",
+    "std": "c++17",
+    "gcc_value": "201611"
+  },
+  "__cpp_aggregate_nsdmi": {
+    "feature": "aggregate NSDMI (C++14)",
+    "std": "c++14",
+    "gcc_value": "201304"
+  },
+  "__cpp_nontype_template_args": {
+    "feature": "NTTP 扩展 (C++20)",
+    "std": "c++20",
+    "gcc_value": "201911"
+  },
+  "__cpp_rvalue_references": {
+    "feature": "rvalue refs (C++11)",
+    "std": "c++11",
+    "gcc_value": "200610"
+  },
+  "__cpp_decltype": {
+    "feature": "decltype (C++11)",
+    "std": "c++11",
+    "gcc_value": "200707"
+  },
+  "__cpp_lambdas": {
+    "feature": "lambdas (C++11)",
+    "std": "c++11",
+    "gcc_value": "200907"
+  },
+  "__cpp_alias_templates": {
+    "feature": "alias templates (C++11)",
+    "std": "c++11",
+    "gcc_value": "200704"
+  },
+  "__cpp_variadic_templates": {
+    "feature": "variadic templates (C++11)",
+    "std": "c++11",
+    "gcc_value": "200704"
+  },
+  "__cpp_unicode_characters": {
+    "feature": "unicode identifiers (C++11)",
+    "std": "c++11",
+    "gcc_value": "201411"
+  },
+  "__cpp_raw_strings": {
+    "feature": "raw strings (C++11)",
+    "std": "c++11",
+    "gcc_value": "200710"
+  },
+  "__cpp_user_defined_literals": {
+    "feature": "UDL (C++11)",
+    "std": "c++11",
+    "gcc_value": "200809"
+  },
+  "__cpp_lib_format": {
+    "feature": "std::format (C++20)",
+    "std": "c++20",
+    "gcc_value": "202304"
+  },
+  "__cpp_lib_print": {
+    "feature": "std::print (C++23)",
+    "std": "c++23",
+    "gcc_value": "202211"
+  },
+  "__cpp_lib_ranges": {
+    "feature": "std::ranges (C++20)",
+    "std": "c++20",
+    "gcc_value": "202302"
+  },
+  "__cpp_lib_span": {
+    "feature": "std::span (C++20)",
+    "std": "c++20",
+    "gcc_value": "202002"
+  },
+  "__cpp_lib_jthread": {
+    "feature": "std::jthread (C++20)",
+    "std": "c++20",
+    "gcc_value": "201911"
+  },
+  "__cpp_lib_atomic_wait": {
+    "feature": "atomic wait/notify (C++20)",
+    "std": "c++20",
+    "gcc_value": "201907"
+  },
+  "__cpp_lib_barrier": {
+    "feature": "std::barrier (C++20)",
+    "std": "c++20",
+    "gcc_value": "201907"
+  },
+  "__cpp_lib_latch": {
+    "feature": "std::latch (C++20)",
+    "std": "c++20",
+    "gcc_value": "201907"
+  },
+  "__cpp_lib_semaphore": {
+    "feature": "std::counting_semaphore (C++20)",
+    "std": "c++20",
+    "gcc_value": "201907"
+  },
+  "__cpp_lib_coroutine": {
+    "feature": "coroutine library (C++20)",
+    "std": "c++20",
+    "gcc_value": "201902"
+  },
+  "__cpp_lib_concepts": {
+    "feature": "concepts library (C++20)",
+    "std": "c++20",
+    "gcc_value": "202002"
+  },
+  "__cpp_lib_memory_resource": {
+    "feature": "pmr (C++17)",
+    "std": "c++17",
+    "gcc_value": "201603"
+  },
+  "__cpp_lib_filesystem": {
+    "feature": "std::filesystem (C++17)",
+    "std": "c++17",
+    "gcc_value": "201703"
+  },
+  "__cpp_lib_string_view": {
+    "feature": "std::string_view (C++17)",
+    "std": "c++17",
+    "gcc_value": "201803"
+  },
+  "__cpp_lib_optional": {
+    "feature": "std::optional (C++17)",
+    "std": "c++17",
+    "gcc_value": "202110"
+  },
+  "__cpp_lib_variant": {
+    "feature": "std::variant (C++17)",
+    "std": "c++17",
+    "gcc_value": "202106"
+  },
+  "__cpp_lib_any": {
+    "feature": "std::any (C++17)",
+    "std": "c++17",
+    "gcc_value": "201606"
+  },
+  "__cpp_lib_shared_mutex": {
+    "feature": "std::shared_mutex (C++17)",
+    "std": "c++17",
+    "gcc_value": "201505"
+  },
+  "__cpp_lib_atomic_ref": {
+    "feature": "std::atomic_ref (C++20)",
+    "std": "c++20",
+    "gcc_value": "201806"
+  },
+  "__cpp_lib_to_chars": {
+    "feature": "std::to_chars (C++17)",
+    "std": "c++17",
+    "gcc_value": "201611"
+  },
+  "__cpp_lib_bitops": {
+    "feature": "bit ops (C++20)",
+    "std": "c++20",
+    "gcc_value": "201907"
+  },
+  "__cpp_lib_endian": {
+    "feature": "std::endian (C++20)",
+    "std": "c++20",
+    "gcc_value": "201907"
+  },
+  "__cpp_lib_source_location": {
+    "feature": "std::source_location (C++20)",
+    "std": "c++20",
+    "gcc_value": "201907"
+  },
+  "__cpp_lib_smart_ptr_for_overwrite": {
+    "feature": "smart ptr for overwrite (C++20)",
+    "std": "c++20",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_lib_move_only_function": {
+    "feature": "std::move_only_function (C++23)",
+    "std": "c++23",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_lib_expected": {
+    "feature": "std::expected (C++23)",
+    "std": "c++23",
+    "gcc_value": "202211"
+  },
+  "__cpp_lib_generator": {
+    "feature": "std::generator (C++23)",
+    "std": "c++23",
+    "gcc_value": "202207"
+  },
+  "__cpp_lib_stacktrace": {
+    "feature": "std::stacktrace (C++23)",
+    "std": "c++23",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_lib_simd": {
+    "feature": "std::simd (C++23)",
+    "std": "c++23",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_lib_stdatomic_h": {
+    "feature": "<stdatomic.h> (C++23)",
+    "std": "c++23",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_lib_hazard_pointer": {
+    "feature": "hazard_pointer (C++26)",
+    "std": "c++26",
+    "gcc_value": "<undef>"
+  },
+  "__cpp_lib_rcu": {
+    "feature": "rcu (C++26)",
+    "std": "c++26",
+    "gcc_value": "<undef>"
+  }
+}

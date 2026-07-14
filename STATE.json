@@ -3,7 +3,7 @@
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
-  "last_updated": "2026-07-14T19:00:00+08:00",
+  "last_updated": "2026-07-15T06:49:00+08:00",
   "last_commit": "bfaeb14",
   "git_status": "clean",
   "completed_phases": [
@@ -22,15 +22,15 @@
     },
     "P0-2": {
       "label": "编译器版本矩阵表",
-      "status": "pending",
+      "status": "completed",
       "batch": 1,
       "total_batches": 1,
-      "detail": "218处对比 → docs/compiler-matrix.md",
+      "detail": "466处对比(实测) → docs/compiler-matrix.md + 验证工具 + 3章注入引用",
       "current_batch_items": ["scan", "create_matrix", "inject_refs", "verify_script"]
     },
     "P0-3": {
       "label": "反例/UB库 + Sanitizer",
-      "status": "pending",
+      "status": "in_progress",
       "batch": 1,
       "total_batches": 3,
       "detail": "15 UB示例 → Book/appendix_ub/",
