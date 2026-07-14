@@ -312,6 +312,26 @@
 
 **累计 I 表补强进度**：已补 22（双维）+ 5（单 I）= 27/62；**I 表单维度剩余 35 章**（combined=23 剩 ch133/142/144/149/151/161/164 等 + combined=24/25 全部）。
 
+### 9.7 I.实战 单维度补强 · 第七批（2026-07-14，收口 combined=23 I 表）
+
+**选章**：I 表 combined=23 最后未补 5 章 **ch133/142/144/149/151**。这些章已有 H 覆盖（ch142 附录 H 等），仅补 I 维度。
+
+| 章 | 追加小节 | I.实战要点 |
+|----|----------|------------|
+| ch133 clickhouse_redis | 附录 I | Redis `KEYS *` 阻塞 + SCAN；ClickHouse 物化视图写放大；bigkeys/query_log Debug |
+| ch142 ecs | 附录 I | Unity DOTS/Entt cache 友好；ECS 过拆分 gather 开销；实体 ID generation 防悬垂 |
+| ch144 style | 附录 I | Google Style 取舍；clang-format 首次提交 blame 失真；clang-tidy 盲信「规则即正确」 |
+| ch149 ci_cd | 附录 I | Actions 全量编译 timeout 分阶段；Sanitizer CI 成本取舍；多平台 matrix；sccache |
+| ch151 benchmark | 附录 I | Benchmark 统计噪声（DVFS）；DCE 消除被测；`taskset` 绑核 + 禁 Turbo 可复现基线 |
+
+**验证**：5 章 I 关键词 0→3/6（工业案例/Code Review/重构建议），脱离零覆盖；cpp 块不变；`consistency_check`=147 章 0/0（100/100）；`git diff --stat`=5 文件 +85 行、0 新 cpp 围栏。commit `9efaef3`（`498e188..9efaef3 → master`）→ CI 触发。红线守全。
+
+**🔴 I 表 combined=23 已全数收口**：I 表单维度 combined=23 共 15 章（ch23/108/133/135/136/139/142/144/149/151/161/164 等 + 此前双维已补的 ch03/11/12/40/97/124/125/127/130/131/134/154），全部脱离零覆盖。
+
+**📊 I 表累计进度**：32/62（52%），分三阶段——阶段 A 双维交集 22 章（§9.1–§9.5）+ 阶段 B 单 I combined=23 10 章（§9.6–§9.7）+ 阶段 C combined=24/25 待启动。
+
+**剩余（未执行）**：I 表 combined=24 30 章（ch02/13/14/24/25/35/36/37/38/39/41/42/43/44/45/65/81/95/96/99/101/107/132/143/150/155/156/158/159/163/165）+ H 表单维度 ≈60 章。
+
 ---
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
