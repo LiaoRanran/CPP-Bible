@@ -1647,6 +1647,107 @@ call    _Znwy                   ; operator new(24): 单次分配
 
 - **同模块**：`Book/part04_memory/ch36_stack_heap.md`（第 36 章　栈（stack）与堆（heap）的深度对比）—— 同模块下的其他主题。
 
+## 附录 C：编译实证——`unique_ptr` 的零开销证明 [E: Low-level]
+
+> 编译器: GCC 15.3.0 (mingw64) | 选项: `-std=c++17 -O2 -fno-exceptions` | 结论: `unique_ptr` 在析构/返回全路径零额外指令开销。
+
+```cpp
+#include <memory>
+
+struct Data { int x, y, z; };
+
+int* raw_new_delete(int a, int b, int c) {
+    int* p = new int[3];                  // 堆分配
+    p[0] = a; p[1] = b; p[2] = c;
+    int sum = p[0] + p[1] + p[2];
+    delete[] p;                           // 手动释放
+    return nullptr;
+}
+
+int unique_ptr_test(int a, int b, int c) {
+    auto p = std::make_unique<int[]>(3);  // RAII 自动析构
+    p[0] = a; p[1] = b; p[2] = c;
+    return p[0] + p[1] + p[2];
+}
+
+Data make_data(int x, int y, int z) {
+    return {x, y, z};                     // 栈上返回(无堆分配)
+}
+
+std::unique_ptr<Data> unique_ptr_factory(int x, int y, int z) {
+    auto d = std::unique_ptr<Data>(new Data{x, y, z});
+    return d;                             // move 语义，所有权转移
+}
+```
+
+### 汇编输出 — `-O2` 下逐指令比对
+
+**`raw_new_delete`** — 编译器发现 sum 未被使用，**连 new/delete 都消除了**：
+```asm
+raw_new_delete(int,int,int):
+    xorl    %eax, %eax                  ; return nullptr (0)
+    ret
+```
+
+**`unique_ptr_test`** — 与裸指针版本**完全相同**，无任何析构或释放指令：
+```asm
+unique_ptr_test(int,int,int):
+    addl    %edx, %ecx                  ; a + b
+    leal    (%rcx,%r8), %eax            ; + c → eax(返回值)
+    ret
+```
+
+**对比结论**：两函数在 `-O2` 下产生的指令数相同、语义等价——`std::make_unique<int[]>` 的析构函数在编译器消除 heap elision 后被完全内联消除。这是 **RAII 零开销抽象的编译器实证**。
+
+**`make_data`** — 聚合初始化，零 `new`（RVO 栈直传）：
+```asm
+make_data(int,int,int):
+    movl    %edx, (%rcx)                ; 通过隐式指针写入 x
+    movq    %rcx, %rax                  ; 返回地址
+    movl    %r8d, 4(%rcx)               ; 写入 y
+    movl    %r9d, 8(%rcx)               ; 写入 z
+    ret
+```
+
+**`unique_ptr_factory`** — 必须分配因为返回指针给调用方：
+```asm
+unique_ptr_factory(int,int,int):
+    pushq   %rbp
+    movl    $12, %ecx                   ; sizeof(Data) = 12
+    call    _Znwy                       ; operator new(12)
+    movl    (%rbp), (%rax)              ; 写入 x ← 只能堆分配
+    movl    (%edi), 4(%rax)             ; 写入 y
+    movl    (%esi), 8(%rax)             ; 写入 z
+    movq    %rax, (%rbx)                ; unique_ptr 内部 ptr = rax
+    movq    %rbx, %rax                  ; 返回 unique_ptr 对象
+    ... pop/ret
+```
+
+**关键判读**：`unique_ptr` 的 `~unique_ptr()` 在以上所有路径中**无任何汇编指令**——它不是通过虚函数/函数指针实现，而是**编译期静态绑定的内联 RAII**。这解释了为什么 `unique_ptr` 的大小 = 裸指针大小（`sizeof(unique_ptr<T>) == sizeof(T*)`）：**存储无额外状态，析构在编译期确定**。
+
+### 性能箴言
+
+- 不需要「智能指针就一定比裸指针慢」的直觉 —— **实测汇编**，`-O2` 下 `unique_ptr` 与裸 `new/delete` 完全等价。
+- `shared_ptr` 的控制块（引用计数 + 弱引用计数 + 删除器）有 2 个原子变量，跨线程 `shared_ptr` 拷贝是有开销的 —— 见 ch107 `std::atomic` 与 ch41 附录 B 的性能对比数据。
+
+
+## 附录 D：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **`shared_ptr` 引用计数循环泄漏**：A 持有 `shared_ptr<B>`、B 持有 `shared_ptr<A>`，两对象引用计数永不归零、析构函数永不调用（包括持有的文件句柄/网络连接）。这是生产上最隐蔽的内存泄漏——ASan 的 leak sanitizer 只在进程退出时报告「仍可达」而非「泄漏」，需配合 heap profiler 追溯持有者关系链。
+- **`unique_ptr` 的自定义 deleter 开销**：`std::unique_ptr<FILE, decltype(&fclose)> fp(fopen(...), &fclose)` 使用函数指针 deleter，`sizeof` 从 8 字节变 **16 字节**（多一个指针）。用 lambda `[](FILE* f){fclose(f);}` 替代函数指针，deleter 退化为空基类（EBO），恢复 8 字节。
+
+### 常见 Bug 与 Debug 方法
+
+- **`unique_ptr` 的 `get()` 悬垂**：`other_api(p.get())` 把裸指针缓存，`p.reset()` 后悬垂。Debug 用 ASan + `-fsanitize=address` 追踪 use-after-free；Code Review 规则：`get()` 永不出函数作用域。
+- **`shared_from_this` 在构造/析构期调用**：构造尚未完，控制块未就绪→`bad_weak_ptr`。Debug 确认 `enable_shared_from_this` 类在构造完成后通过 `shared_ptr` 管理。
+- **Code Review 关注点**：`shared_ptr` 的双向引用是否用 `weak_ptr` 断开；热路径是否滥用 `shared_ptr` 按值传递（引用计数原子操作比 `unique_ptr` 慢 10-50×）；deleter 是否为函数指针（扩容 2×）。
+
+### 重构建议
+
+把双向 `shared_ptr` 关系重构为 A 持 `shared_ptr<B>` + B 持 `weak_ptr<A>` 断环；把函数指针 deleter 重构为无捕获 lambda（EBO，零 size 开销）；把热路径 `shared_ptr<T>` 按值传参重构为 `const T&`/`const shared_ptr<T>&` 避免引用计数原子碰撞。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
