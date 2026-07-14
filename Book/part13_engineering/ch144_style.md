@@ -812,6 +812,15 @@ Q: snake_case vs camelCase 选择？
 A: 无性能差异。C++ 标准库用 snake_case; Qt/Unreal 用 CamelCase → 跟已有代码库一致
 ```
 
+## 附录 C：设计起源与演化 [B: 原理/设计目标]
+
+代码风格从"个人品味"演化到"工具可强制执行的工程约束"，有一条清晰的历史背景脉络——理解它才明白为什么现代团队把风格写进 CI 而非口头约定。
+
+- **思想源头（1974）**：Kernighan & Plauger《The Elements of Programming Style》确立"代码是写给人读的"这一**设计目标**——一致性的价值在于降低阅读与维护的认知负荷，而非美观。
+- **工业规范成文**：Google C++ Style Guide（内部规范，2008 公开）、LLVM Coding Standards（随 LLVM 演化，Swift/Rust 编译器沿用）把风格从个人习惯升级为**组织级契约**（本章附录 A 已对比四大规范）。
+- **权威指南（2015）**：Bjarne Stroustrup 与 Herb Sutter 在 CppCon 2015 发布 **C++ Core Guidelines**（GitHub `isocpp/CppCoreGuidelines`，社区持续维护）——它超越排版层面，给出"何时用什么特性"的设计准则（如 R.20 用智能指针表达所有权、F.15 参数传递规则），与本章 §⑥/§⑨/§⑩ 的取舍一脉相承。
+- **工具化演化（关键转折）**：`clang-format`（LLVM 3.3，2013）与 `clang-tidy` 把风格从"文档里的约定"变成"CI 里可强制执行的检查"。这是决定性的一步：`.clang-format` 入库 + pre-commit hook + PR 门禁，使一致性不再依赖人的自律，而由工具保证（本章 §⑰/§⑱）。
+- **一句话**：风格的演化方向是"从人的自觉 → 团队的文档 → 工具的强制"，现代实践的设计目标是**让机器承担一致性检查，让人专注逻辑**。
 
 ## 联合使用场景
 

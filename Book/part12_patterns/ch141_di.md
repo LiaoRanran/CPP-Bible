@@ -980,18 +980,15 @@ int main(){auto s=std::make_unique<Impl>();s->serve();return 0;}
 | Google Fruit | 运行时可配置 | 需代码生成 | 服务器 |
 | 服务定位器 | 极简 | 隐藏依赖,难测试 | 不推荐 |
 
-```cpp
-#include <iostream>
-int main(){std::cout<<"Constructor injection: mandatory deps via params. Setter injection: optional deps."<<std::endl;return 0;}
-```
+## 附录 H：设计起源与演化 [B: 原理/设计目标]
 
+DI 常被误当成"一个 C++ 技巧"，实则是一条源自 1980 年代的软件设计原则，C++ 只是它的一种落地。理解历史背景能避免把 DI 退化成"到处传指针"。
 
-## 附录 G：面试
-
-
-
-Q: 本章核心? A: 见附录A-F中的深度分析(工业原理/性能/汇编/面试)
-
+- **概念根源：控制反转（IoC）**：Ralph Johnson 与 Brian Foote 在 1988 年论文《Designing Reusable Classes》中提出——框架反过来调用用户代码，即"好莱坞原则：别调用我们，我们会调用你"。DI 是 IoC 在"对象依赖装配"这一子问题上的具体手法。
+- **命名（2004，Martin Fowler）**：Fowler 于 2004-01 发表《Inversion of Control Containers and the Dependency Injection pattern》，把 IoC 中"如何把依赖交给对象"这一子集正式命名为 **Dependency Injection**，并区分三种形式：构造函数注入（本章 §②）、setter 注入（§③）、接口注入。**设计目标**：让对象不自己 `new` 依赖，而由外部装配，从而解耦、可替换、可测试（mock 注入，§⑧）。
+- **C++ 生态演化**：与 Java 的运行时反射式容器（Spring）不同，C++ 走**编译期 DI** 路线——`Boost.DI`（Krzysztof Jusiak，header-only，编译期解析依赖图、零运行时开销）与 `Google Fruit`（编译期检查 + 运行时可配置）。这是 C++ "零成本抽象"哲学对 DI 的本地化：把依赖装配尽量前移到编译期（本章 §④/§⑩ 的模板参数注入与 `if constexpr` 选择即此思路）。
+- **反模式警示**：服务定位器（Service Locator）表面像 DI，实则把依赖藏进全局查找，破坏"依赖显式化"这一核心目标——见本章 §⑮ 反模式。
+- **标准演化展望**：C++ 的编译期 DI 一直受限于"无法枚举构造函数参数类型"，只能靠宏或手写注册。WG21 的静态反射提案 **P2996**（Reflection for C++26）有望改变这点——容器可在编译期反射目标类型的构造函数签名、自动装配依赖图，无需手写胶水代码。这将是 DI 在 C++ 落地方式的下一次实质演化。
 
 ## 相关章节（交叉引用）
 

@@ -185,5 +185,27 @@
 
 ---
 
+## 九、密度短板专项补强完成记录（2026-07-14）
+
+> 独立 track：基于 `tools/density_audit.py` **v3**（维度 A–J 各 0–3 + 深度信号 cap，combined 0–30），与本文档主线的 `expansion_audit.py` 四维体系区分。v3 全量基线：avg 24.2/30、shallow=0（147 章）。
+
+**定位**：v3 审计取最低分章，全书最低 22/30 共 5 章（ch133/139/141/143/144）。共同特征为 **depth 信号已满（92–104/100）但 dim 维度覆盖窄**——拖分集中在 **B.原理=0**（全 5 章）、I.实战≤1、H.设计=0。均为真实可补的历史起源/设计目标/演化内容，非关键词注水。
+
+**补强动作**（每章追加"设计起源与演化 [B: 原理/设计目标]"小节，真实人物/年份/文献/设计目标）：
+
+| 章 | 补强内容要点 | combined | dim | B.原理 |
+|----|--------------|----------|-----|--------|
+| ch133 clickhouse_redis | Redis(antirez 2009 单线程 Reactor)、ClickHouse(Yandex 2009→2016 开源 列式+向量化)、OLTP/OLAP 设计哲学对比 | 22→23 | 13→15 | 0→2 |
+| ch139 crtp_pattern | Barton-Nackman(1994)、Coplien 命名(1995 C++ Report)、C++11/20 演化、Concepts 与 CRTP 互补 | 22→23 | 12→14 | 0→2 |
+| ch141 di | IoC 根源(Johnson & Foote 1988)、Fowler 命名(2004)、编译期 DI(Boost.DI/Fruit)、P2996 展望 | 22→23 | 16→17 | 0→3 |
+| ch143 dod | memory wall 动因、Llopis(2009)、Acton(CppCon 2014)、ECS 演化 | 22→24 | 16→18 | 0→2 |
+| ch144 style | Kernighan & Plauger(1974)、Google/LLVM 规范、Core Guidelines(2015)、clang-format/tidy 工具化 | 22→23 | 12→14 | 0→2 |
+
+**顺手质量修复**：删除 4 个空洞 cpp 打印块（ch133×3、ch141×1，`std::cout<<"...enhanced"` 类注水），符合"禁空洞 cpp 块"红线。删块导致后续块号前移 → 重生成 `tools/compile_exempt.json` 匹配新基线。
+
+**门禁验证**：`consistency_check.py` = 147 章 ERROR=0 WARN=0（100/100，交叉引用无损）；全书 range 22–30 → **23–30**，shallow 保持 0。
+
+---
+
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
 _每次扩写完成后跑 `expansion_audit.py` 更新基线_

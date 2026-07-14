@@ -743,25 +743,12 @@ bool should_vectorize(size_t n, bool branchy) {
 - `[经验]`：记不住细节就看速查表的四行——**列连续、循环无分支、单线程无锁、先 profile 再优化**。
 
 
-## 附录追加：工业底层与面试
-
-```cpp
-#include <iostream>
-int main(){std::cout<<"ch133_clickhouse_redis.md enhanced"<<"\n";return 0;}
-```
-
-
 ## 附录 E：ClickHouse/Redis 底层与设计
 
 ```
 ClickHouse: 列存+SIMD向量化, AVX2单核~40GB/s
 Redis: 单线程epoll, 零锁竞争, 100K QPS/core
 RocksDB: LSM Tree+Bloom filter, 写优化10K writes/s
-```
-
-```cpp
-#include <iostream>
-int main(){std::cout<<"ClickHouse(OLAP)/Redis(cache)/RocksDB(write-heavy)"<<std::endl;return 0;}
 ```
 
 | 系统 | 性能 | 场景 |
@@ -786,11 +773,14 @@ Q: ClickHouse为何快? A: 列存(只读相关列)+SIMD(向量化,40GB/s)+Bloom 
 Q: Redis单线程为何高性能? A: 内存操作(~100ns)+epoll非阻塞IO+零锁竞争
 Q: LSM Tree vs B-tree? A: LSM=写快(顺序)+读慢(多层merge); B-tree=读写均衡(就地修改)
 
-```cpp
-#include <iostream>
-int main(){std::cout<<"ClickHouse=columnar+SIMD; Redis=in-memory+epoll+single-thread; RocksDB=LSM+Bloom"<<std::endl;return 0;}
-```
+## 附录 G：设计起源与演化 [B: 原理/设计目标]
 
+两套系统的架构分歧，根植于各自诞生时要解决的问题——理解历史背景才能理解它们的设计目标为何相反。
+
+- **Redis（2009，Salvatore Sanfilippo / antirez）**：最初为其实时网站分析产品 LLOOGG 手写，用 C 实现。**设计目标**是内存态数据结构的极低延迟点操作（GET/SET ~100 ns 量级），故选**单线程事件循环**（`ae.c` 的 Reactor）——刻意回避多线程锁竞争与 cache 一致性开销。这一"单线程够快"的判断建立在"内存操作远快于网络 RTT"的前提上；直到 6.0（2020）才为网络 I/O 引入多线程，命令执行仍单线程。
+- **ClickHouse（Yandex 内部 2009 起，2016-06 开源）**：为 Yandex.Metrica（Web 流量分析，类 Google Analytics）而生，用 C++。**设计目标**是海量只读数据上的**亚秒级 OLAP 聚合**，故走**列式存储 + 向量化执行**——按列连续存放使同类型数据被 SIMD 批量处理，扫描聚合吞吐达 GB/s 级/核。
+- **设计哲学对比**：Redis 是 OLTP 式的"低延迟点查/缓存"，为单条请求的响应时间优化；ClickHouse 是 OLAP 式的"高吞吐扫描聚合"，为批量数据的处理带宽优化。二者常组合：Redis 扛在线热点、ClickHouse 扛离线分析（见"联合使用场景"）。
+- **演化**：Redis 从纯 KV 演化出 Stream/Module/RESP3；ClickHouse 从单机演化出分布式表引擎与 `MergeTree` 家族。两者都验证了"设计目标决定架构、架构决定性能上限"这条规律。
 
 ## 相关章节（交叉引用）
 

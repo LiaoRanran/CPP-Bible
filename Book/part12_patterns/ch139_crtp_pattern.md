@@ -925,6 +925,15 @@ A: 不能。CRTP是编译期绑定，variant/any需要运行时类型擦除 → 
 
 对比运行时多态（见 ch47）：每对象省 `0x0008` vptr、每次调用省一次 `0x0008` 虚查表与间接跳转惩罚。`C++17` `if constexpr` 按策略分支静态派发；`C++20` `consteval` 可把策略选择压到编译期。`Clang 17` / `MSVC 19.3` 同理内联。`SIMD` 不适于此模式，但 CRTP 包装的数值循环可被 `-mavx2`（`0x0020` 宽）向量化。
 
+## 附录 C：设计起源与演化 [B: 原理/设计目标]
+
+CRTP 不是被"设计"出来的，而是被"发现"的——它是模板机制的一个自然结果，先有用法、后有命名。理解这段历史背景有助于把握它的设计目标边界。
+
+- **Barton-Nackman trick（1994）**：John Barton 与 Lee Nackman 在《Scientific and Engineering C++》中用"基类模板以派生类为实参"的写法解决运算符注入问题，业界称 Barton-Nackman trick——这是 CRTP 的技术雏形，但当时无统一名称。
+- **命名（1995）**：James O. Coplien 于 1995-02 在《C++ Report》发表 "Curiously Recurring Template Patterns"，正式为 `class D : Base<D>` 这一"奇异递归"结构命名 CRTP。**设计目标**从此明确：在**不付出虚函数运行时代价**的前提下实现多态（即静态多态），把派生类型信息在编译期注入基类。
+- **演化**：C++11 的可变参数模板让 CRTP 与 mixin 结合，可"叠加"多个能力基类（本章 §⑩）；C++20 Concepts 在"接口约束"这一用途上部分替代 CRTP（用 `requires` 直接约束而非靠 CRTP 检查），但 CRTP 在**运算符批量生成**（Boost.Operators）、**空基类优化**（§⑫）、`std::enable_shared_from_this` 等场景仍不可替代——因为这些依赖"基类静态知道派生类型"，而非仅仅约束接口。
+- **一句话**：Concepts 回答"这个类型满足接口吗"，CRTP 回答"基类如何静态复用派生类的实现"——二者互补而非替代。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
