@@ -261,8 +261,8 @@ _每完成一个Phase→更新本文件,记录决策与收获。_
 3. **本地 pandoc 3.10 真渲染**（下载 windows 构建，非假设）：
    - HTML 模式：`# 第01章… {#ch1}` → `<h1 data-number="1" id="ch1">`；`[…](#ch2)` → `<a href="#ch2">` → **跳转成立**。
    - EPUB 模式（`--epub-chapter-level=1` 分章）：生成 `text/ch001.xhtml#ch1` 等，pandoc **自动把跨章链接改写为跨文件引用**（`href="text/ch001.xhtml#ch1"`），`id="ch1"/"ch2"` 各存在一次 → **跨文件跳转成立**。
-4. CI：`epub` / `pdf`(by-part) job 绿（run #待 CI 回填）→ 管道集成确认，产物 EPUB/PDF 含可用锚点。
+4. CI：run #29297775396 = **success**（quality/compile/site/pdf/epub/deploy 六 job 全绿）。下载 shipped EPUB 产物（artifact 8297446503）解包验证：含 **147 个 `id="chNN"`**（ch1–ch147 全覆盖）+ 跨章链接被 pandoc 改写为**跨文件引用**（`href="ch001.xhtml#ch1"`、`href="ch017.xhtml#ch5"` …）→ EPUB 跨章跳转成立（非假设，真产物证据）。
 
-**结论**：L2 多形态交付的最后质量短板（分卷 PDF 跨章跳转）已闭环；三路径锚点行为现在一致且经真 pandoc 验证。无需为「通过率」伪造任何内容，纯链接重写 + 显式 id，零正文注水。
+**结论**：L2 多形态交付的最后质量短板（分卷 PDF 跨章跳转）已闭环；三路径锚点行为现在一致且经真 pandoc + 真 CI 产物双重验证。无需为「通过率」伪造任何内容，纯链接重写 + 显式 id，零正文注水。
 
-- 提交：`待回填`（本任务 commit，含 `rewrite_links.py` 函数抽取 + `generate_pdf.sh --by-part` 注入 + ROADMAP 更新）。
+- 提交：`8d58438`（4 文件：rewrite_links.py / generate_pdf.sh / generate_epub.sh 注释 / ROADMAP.md）。CI run #29297775396 绿。
