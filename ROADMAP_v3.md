@@ -209,6 +209,22 @@
 
 **后续候选（只读分析，未执行）**：基于 `--json` 维度矩阵，全书最弱维度为 **I.实战（avg 0.62/3，62章零覆盖，覆盖57.8%）** 与 **H.设计（avg 0.76/3，82章零覆盖，覆盖44.2%）**，交集 37 章；候选章清单见 `density_worklist.md`。若启动下一轮补强，优先级 I.实战 > H.设计 > A.基础（8章零覆盖），守红线（禁增章/禁注水/正文最简洁）。
 
+### 9.1 I.实战 / H.设计双维度补强 · 第一批（2026-07-14）
+
+**定位**：从 `density_worklist.md` 交集表（I∩H 双零覆盖）取 combined 最低的 5 章，各章末追加真实「工业实战与设计取舍」散文小节，一节同覆 I.实战 + H.设计 双维度。**纯散文，0 新增 cpp 块**（`git diff` 校验），对 `--main-only` 编译基线零影响。
+
+| 章 | 追加小节 | 工业实战要点(I) | 设计取舍要点(H) |
+|----|----------|-----------------|-----------------|
+| ch40 exception_safety | 附录 J | strong/nothrow move 缺失导致拷贝回退性能悬崖；`is_nothrow_move_constructible_v` static_assert 定位；析构抛异常/半构造泄漏/异常做控制流反模式清单 | nothrow/strong/basic 三级保证 Trade-off 表；copy-and-swap 重构 |
+| ch97 search | 附录 D | 二分静默返回错误答案 Bug（未排序/比较器不一致/严格弱序违反）；`is_sorted` 断言 + `_GLIBCXX_DEBUG` | find vs lower_bound vs 哈希 vs Bloom Filter 取舍表；返回迭代器优于 bool 的 API Design |
+| ch124 libstdcxx | 附录 H | `_GLIBCXX_USE_CXX11_ABI` 双 ABI 跨 .so 崩溃；`nm -C`/`ldd`/`sizeof(string)` 8vs32 定位 | COW(旧) vs SSO(新) 取舍；string_view/span 解耦 ABI 的 API Design |
+| ch131 fmt_spdlog | 附录 F | 运行时拼接格式串注入 / 悬垂 string_view 进异步日志 Bug；字面量格式串编译期拦截 | spdlog overflow_policy(block vs overrun_oldest) 取舍；format_to 复用 buffer |
+| ch154 cache_opt | 附录 H | false sharing 隐形性能杀手；`perf stat cache-misses`/`perf c2c`/VTune 定位 | AoS vs SoA 取舍表；先定访问模式再选布局的设计权衡 |
+
+**验证**：5 章 I/H 关键词命中从 **0 → 4–6/6**（ch131 I=4/6，余 6/6，均脱离零覆盖）；`consistency_check.py` = 147 章 ERROR=0 WARN=0（100/100）；`git diff --stat` = 5 文件 +188 行、0 新 cpp 围栏。commit `d97f293`（`44fd24f..d97f293 → master`）→ CI 触发。红线守全：禁增章（仍 147）/禁注水（真实案例可验证）/正文最简洁（增量小节，不改既有正文）。
+
+**后续批次（未执行）**：交集表 combined=24 多章（ch03/11/12/127/130/134 等）及仅单维度零覆盖章，待用户决策。
+
 ---
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
