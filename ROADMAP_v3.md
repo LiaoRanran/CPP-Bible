@@ -205,6 +205,10 @@
 
 **门禁验证**：`consistency_check.py` = 147 章 ERROR=0 WARN=0（100/100，交叉引用无损）；全书 range 22–30 → **23–30**，shallow 保持 0。
 
+**编译门禁闭环（2026-07-14 完成）**：全量编译审计 resume 跑完 → 报告 partial=False、147章/112通过/35豁免，与原始基线逐字节一致（删 4 个非-`int main` 空洞块 + 新增散文设计起源小节对 `--main-only` 编译零影响，豁免清单 0 变更）。`gen_compile_exempt.py`=66 块 0 UNCLASSIFIED；`compile_gate.py` 本地 PASS。commit `e6f5686`（7 文件 +65/−28）→ PAT 内联 push `ab2242c..e6f5686 → master`。**CI run `29315641935`（compile job 全量147章 Linux gcc13）`completed/success`，零回归**。本轮密度短板专项补强**完整闭环**。
+
+**后续候选（只读分析，未执行）**：基于 `--json` 维度矩阵，全书最弱维度为 **I.实战（avg 0.62/3，62章零覆盖，覆盖57.8%）** 与 **H.设计（avg 0.76/3，82章零覆盖，覆盖44.2%）**，交集 37 章；候选章清单见 `density_worklist.md`。若启动下一轮补强，优先级 I.实战 > H.设计 > A.基础（8章零覆盖），守红线（禁增章/禁注水/正文最简洁）。
+
 ---
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
