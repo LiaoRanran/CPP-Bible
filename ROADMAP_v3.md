@@ -279,5 +279,22 @@
 
 ---
 
+### 9.5 I.实战 / H.设计双维度补强 · 第五批（2026-07-14，收口）
+
+**选章**：交集表 combined=24 最后 2 章 ch126_msstl / ch128_boost。各章末追加真实「工业实战复盘与设计取舍」散文小节，纯散文、0 新增 cpp 块。ch126 含既有「设计权衡」。
+
+| 章 | 追加小节 | 工业实战要点(I) | 设计取舍要点(H) |
+|----|----------|-----------------|-----------------|
+| ch126 msstl | 附录 B | `_ITERATOR_DEBUG_LEVEL` 不一致 LNK2038；跨 DLL 传 STL 崩溃；`/MD` vs `/MT` 混用 | CRT/调试/向量化 Trade-off；Debug/Release 混链反模式；`string_view`/`error_code` 解耦 |
+| ch128 boost | 附录 G | Boost 版本错配 ODR 灾难；Asio `io_context` 跨 strand 竞态 | 头文件-only/模块化/现代替代 Trade-off；全量包含反模式；优先标准库替代 |
+
+**验证**：2 章 I/H 关键词 0→（I=3/6；H=6/7，ch126 含既有「设计权衡」补到 6）；cpp 块数不变；`consistency_check`=147 章 0/0（100/100）；`git diff --stat`=2 文件 +56 行、0 新 cpp 围栏。commit `cb38080`（`4f33d66..cb38080 → master`）→ CI 触发。红线守全。
+
+**🔴 交集表 I∩H 双零覆盖章已全数收口**：五批累计 22 章（combined=23 全 15 章 + combined=24 全 7 章）。`density_worklist.md` 交集表 N=37 中，其余 15 章为「单维度零覆盖」（仅 I 或仅 H 为零），已不在 I∩H 交集范围内。
+
+**剩余可选项（未执行）**：单维度零覆盖章——`density_worklist.md` 表一（I.实战零覆盖 62 章，已补 22 章，剩 40 章单维度）与表二（H.设计零覆盖 82 章，已补 22 章，剩 60 章单维度）。这些是「另一维度已有覆盖、仅一个维度缺」的章，补强价值低于双零覆盖章；是否继续由用户决策。
+
+---
+
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
 _每次扩写完成后跑 `expansion_audit.py` 更新基线_
