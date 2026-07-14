@@ -437,6 +437,40 @@ I 表最后 5 章：**ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_
 
 ---
 
+### 9.14 方向1 汇编实证 · 第三例 — ch27 cast（2026-07-14）
+
+**目标**：用真实 GCC15 -O2 汇编证明「四种 cast 的真实代价分层」，反驳常见误解。
+
+| 函数 | 汇编指令 | 指令数 | 字节 | 性能 |
+|------|----------|--------|------|------|
+| `static_cast<int>(double)` | `cvttsd2si %xmm0,%eax; ret` | 2 | 5 | 零开销 |
+| `const_cast<int*>(const int*)` | `movq %rcx,%rax; ret` | 2 | 4 | 零开销 |
+| `reinterpret_cast<uintptr_t>(void*)` | `movq %rcx,%rax; ret` | 2 | 4 | 零开销 |
+| `static_cast<void*>(int*)` | `movq %rcx,%rax; ret` | 2 | 4 | 零开销 |
+| `dynamic_cast<Derived*>(Base*)` | `testq; je; ... jmp __dynamic_cast` | 6+call | — | **RTTI 成本** |
+| 隐式 `double→int` | `cvttsd2si %xmm0,%eax; ret` | 2 | 5 | 与 static_cast 等价 |
+
+**关键反直觉发现**：
+1. **C 风格 `(int)d` 与 `static_cast<int>(d)` 完全相同指令** → 「C cast 更快」是误解
+2. **5/6 cast 零成本** → 现代编译器把 cast 在 IR 层视为零成本节点
+3. **仅 `dynamic_cast` 有 RTTI 开销** → 热路径应避免，用 `variant+visit` / `enum class` 替代
+
+**产物**：`_asm_demo/ch27_cast_test.cpp` (181B) + `ch27_cast_test.s` (2456B 真实汇编) + ch27 附录 H (+131 行) commit `bcbf4e2` → push `a63ac8f..bcbf4e2`。
+
+---
+
+### 方向1 汇编实证累计（3 例）
+
+| # | 章节 | 主题 | 关键反直觉 | 提交 |
+|---|------|------|-----------|------|
+| 1 | ch41 | unique_ptr 零开销 | 智能指针非额外成本 | `c9d19e4` |
+| 2 | ch47 | vtable 虚调用 | 虚调用只是 mov+jmp 2 指令 | `80dbfc2` |
+| 3 | ch27 | 四种 cast 代价分层 | 5/6 cast 零成本，仅 dynamic_cast 有 RTTI 成本 | `bcbf4e2` |
+
+下一阶段候选实证主题：coroutine frame 堆分配、vector 扩容几何增长因子、CRTP vs 虚函数再对照、`std::function` 慢路径、noexcept 异常处理零成本。
+
+---
+
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
 _每次扩写完成后跑 `expansion_audit.py` 更新基线_
 
