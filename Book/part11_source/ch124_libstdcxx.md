@@ -875,6 +875,45 @@ sub rdx, rax              ; capacity = end - start
 - `__cplusplus` = 202302L；`__attribute__((always_inline))` 内联 `size()`
 - WG21 提案 P0202R3 引入 `std::string_view`
 
+## 附录 H：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+**[经验]**　读标准库源码的价值在于把"黑盒崩溃"变成"可解释的行为"。本节从 production 事故与 Code Review 视角总结 libstdc++ 的实战坑与设计权衡。
+
+### 工业案例：`_GLIBCXX_USE_CXX11_ABI` 双 ABI 事故
+
+最经典的 **常见Bug**：一个 `.so` 用 GCC 4.x（旧 COW ABI）编译，主程序用 GCC 5.1+（新 SSO ABI），两侧都传 `std::string`。链接**成功**、运行时**崩溃或数据错乱**——因为 `std::string` 的内存布局不同（COW 是单指针 + 引用计数，SSO 是 15 字节内联缓冲 + 指针）。这不是标准 bug，是 ABI 边界被违反。
+
+**Debug方法**：
+1. `nm -C libfoo.so | grep basic_string` 看符号里是否有 `__cxx11` 命名空间标记——有则新 ABI，无则旧 ABI。
+2. `ldd` + `objdump -T` 核对所有依赖库的 ABI 版本一致。
+3. GDB 下 `p sizeof(std::string)`：旧 COW=8 字节，新 SSO=32 字节，一眼分辨。
+
+**重构建议**：全代码库统一 `-D_GLIBCXX_USE_CXX11_ABI=1` 并在 CI 里加断言；跨 `.so` 边界若无法保证 ABI 一致，改传 `const char*` + 长度或 `std::string_view`（只读）而非 `std::string`。
+
+### 设计取舍（Trade-off）：COW string 为何被废弃
+
+C++11 前 libstdc++ 的 `std::string` 用**写时拷贝（COW）**：拷贝只增引用计数，`O(1)`。看似高明，却因两个 **设计权衡** 失败被 C++11 标准间接禁止：
+
+| 维度 | COW（旧） | SSO（新） |
+|---|---|---|
+| 拷贝大字符串 | O(1)（共享） | O(n)（真拷贝） |
+| 多线程 | 引用计数需原子操作，**每次访问都有同步开销** | 无共享，天然线程安全 |
+| `operator[]` | 非 const 版**可能触发深拷贝**（要 detach），迭代器/引用意外失效 | 稳定，无隐藏拷贝 |
+| 短字符串 | 仍需堆分配 | 15 字节内联，**零堆分配** |
+
+**设计取舍的核心教训**：COW 用"拷贝廉价"换来了"访问昂贵 + 线程不安全 + 迭代器失效规则复杂"。C++11 要求 `operator[]`/迭代器不得使引用失效，直接判了 COW 死刑。这是"过早优化一个维度、牺牲其余维度"的反面教材。
+
+### 反模式（Anti-Pattern）与 Code Review 检查清单
+
+- **反模式**：跨动态库边界传 STL 容器却不锁定 ABI/编译器版本——最隐蔽的崩溃源。
+- **反模式**：在头文件里 `-D_GLIBCXX_DEBUG` 只开一半（部分 TU 开、部分不开）→ 容器内部结构大小不一致 → ODR 违规 + 崩溃。调试模式必须**全工程统一**。
+- **API Design 准则**：库的公开接口尽量用 `std::string_view`/`std::span`（无所有权、无 ABI 布局依赖）而非 `std::string`/`std::vector`，降低 ABI 耦合。
+
+Code Review 清单：
+- [ ] 跨 `.so`/`.dll` 边界是否传递了 STL 容器？两侧 ABI/编译器/标准库版本是否锁定一致？
+- [ ] `-D_GLIBCXX_DEBUG` / `_ITERATOR_DEBUG_LEVEL` 是否全工程统一，杜绝混编 ODR 违规？
+- [ ] 公开 API 是否优先用 `string_view`/`span` 而非 `string`/`vector` 以解耦 ABI？
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

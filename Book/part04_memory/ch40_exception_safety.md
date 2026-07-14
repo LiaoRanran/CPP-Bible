@@ -1417,6 +1417,44 @@ Google/LLVM禁止异常的深层原因: 异常会阻止noexcept优化链
 
 面试: noexcept影响什么? vector扩容性能(4x); 编译器优化(more aggressive); 异常安全(noexcept violation=terminate)
 
+## 附录 J：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+**[经验]**　本节从 production 事故与 Code Review 视角总结异常安全的落地经验，补足前文以「标准/实现」为主的视角。
+
+### 工业案例：strong 保证为何"看似有却没有"
+
+一个真实且高频的 **常见Bug**：团队自信 `std::vector<Widget>::push_back` 提供强保证（strong guarantee），扩容失败可回滚——但 `Widget` 只写了 `Widget(Widget&&)`（未加 `noexcept`）。标准 `[vector.modifiers]` 只在移动构造 `noexcept` 或元素不可拷贝时才用移动重定位；否则回退到**拷贝**以保住 strong 保证。后果不是崩溃，而是**性能悬崖**（拷贝代替移动，见附录 I 的 4x 差距）外加一个隐蔽事实：若 `Widget` 移动会抛，`move_if_noexcept` 也无法给你 strong 保证。这就是 LWG 对 `move_if_noexcept` 的设计初衷。
+
+**Debug方法**：怀疑"该移动却在拷贝"时，给移动构造打断点或加 `std::cout` 计数器，跑一次 `reserve` 触发的扩容即可现形；或用 `static_assert(std::is_nothrow_move_constructible_v<Widget>)` 直接在编译期拦截。
+
+### 反模式（Anti-Pattern）清单
+
+1. **析构函数抛异常**：栈展开期间二次抛 → `std::terminate`。这是 C++ 异常安全头号反模式，`~T()` 默认 `noexcept`（C++11 起），显式 `noexcept(false)` 只会把问题延后。
+2. **半构造对象泄漏**：构造函数里 `new` 了资源 A，再 `new` 资源 B 时抛异常——A 泄漏。反模式根因是"裸资源 + 多步构造"，修复用 RAII 成员，让编译器保证已构造成员逆序析构。
+3. **用异常做控制流**：把 `find` 失败、EOF 这类**预期**事件用 `throw` 表达（µs 级代价 + 破坏可读性）。异常只应表达"违反前置/后置条件"的意外。
+4. **`catch(...)` 吞掉一切**：捕获后既不重抛也不记录，把 bug 变成静默数据损坏——比崩溃更难排查。
+
+### 设计取舍（Trade-off）：三种保证的选择
+
+| 保证级别 | 实现代价 | API 设计建议 |
+|---|---|---|
+| nothrow | 需全链路 `noexcept`，常需预分配 | 用于析构、swap、移动、`main` 出口 |
+| strong（copy-and-swap） | 一次额外拷贝/分配 | 事务性操作（配置提交、批量更新）值得 |
+| basic | 最低成本，仅保证无泄漏/不变量成立 | 大多数普通函数的合理默认 |
+
+**设计权衡的核心**：strong 保证不是越多越好——copy-and-swap 对大对象是 O(n) 额外内存与拷贝。**API Design** 准则是"basic 为默认，strong 为承诺"：只在文档明确写出 strong 的函数才让调用方假设可回滚，其余按 basic 契约设计。
+
+### Code Review 检查清单（异常安全专项）
+
+- [ ] 每个 `~T()`、`swap`、移动构造/赋值是否 `noexcept`？（解锁容器优化 + 防 terminate）
+- [ ] 构造函数是否只用 RAII 成员，无裸 `new`/`malloc` 的多步获取？
+- [ ] 声称 strong 保证的函数，是否真用了 copy-and-swap 或等价回滚，并写进注释？
+- [ ] `catch` 块是否要么处理、要么重抛、要么记录，杜绝静默吞异常？
+- [ ] 跨 `extern "C"` / 线程入口 / `std::thread` 边界，异常是否被拦在内部？
+- [ ] 性能敏感路径是否误用异常做常规控制流？
+
+**重构建议**：遇到"赋值运算符里手动 delete 旧资源再 new 新资源"的老代码，优先重构为 copy-and-swap——一行 `swap` 换来强保证与自赋值安全，代价是可控的一次拷贝。
+
 ## 相关章节（交叉引用）
 
 - **后续依赖**：`Book/part07_stl/ch84_set.md`（第84章　set / multiset：红黑树有序集合）—— 本章为其前置，建议后续延伸阅读。

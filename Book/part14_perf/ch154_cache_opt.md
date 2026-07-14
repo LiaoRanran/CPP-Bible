@@ -891,6 +891,44 @@ int main(){std::cout<<sizeof(CacheFriendly)<<" (prevents false sharing)"<<std::e
 
 **底层深度**：cache line 伪共享（false sharing）的量化影响——两个 `atomic<int>` 落在同一 64B cache line，线程 A 写 a、线程 B 写 b 时，MESI 协议迫使两核的 line 在 Modified/Shared 间反复震荡（每次 ≈100 条 `mfence` 等效延迟）。`alignas(64)` 或 `std::hardware_destructive_interference_size` 将两变量分到不同 line 后，吞吐量提升 4–8×（Intel VTune 实测）。`__builtin_prefetch(addr, 0, 3)`（写预取、高局部性）在顺序遍历前提前 16 条 cache line 发出预取，Cover 400 周期 DDR 延迟。
 
+## 附录 H：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+**[经验]**　缓存优化最大的坑是"凭直觉优化"——不 profile 就改，常常越改越慢。本节从 production 事故与 Code Review 视角总结。
+
+### 工业案例：false sharing 的"隐形性能杀手"
+
+真实 **常见Bug**：一个多线程计数器数组 `std::atomic<int> counters[N]`，每个线程 `++counters[tid]`。逻辑上无竞争（各写各的），实测却比单线程还慢——因为多个 `atomic<int>`（各 4 字节）挤在同一 64 字节 cache line，MESI 协议让这条 line 在核间反复失效（cache line ping-pong）。
+
+**Debug方法**（关键，比盲改重要）：
+1. `perf stat -e cache-misses,LLC-load-misses ./app`——false sharing 表现为异常高的 cache-misses 但 miss 地址集中。
+2. Linux `perf c2c`（cache-to-cache）是**专门诊断 false sharing 的工具**，能直接指出哪两个变量共享了 line。
+3. Intel VTune 的 "Memory Access" 分析同样定位。
+
+**修复/重构建议**：`alignas(std::hardware_destructive_interference_size)`（通常 64）把每个计数器独占一条 line；或改为线程局部累加、最后归并（tcmalloc 的 thread_cache 思路）。实测吞吐提升 4–8×。
+
+### 设计取舍（Trade-off）：AoS vs SoA
+
+| 布局 | 优点 | 缺点 | 适用 |
+|---|---|---|---|
+| AoS（结构数组 `struct{x,y,z}[]`） | 单个对象访问局部性好、代码直观 | 只用一个字段时，其余字段污染 cache | OOP 逻辑、随机访问整对象 |
+| SoA（数组结构 `{x[], y[], z[]}`） | 遍历单字段时零浪费、天然 SIMD 连续加载 | 访问整对象要多次跳转、代码复杂 | 数值计算、ECS、批量处理单字段 |
+
+**设计权衡的核心**：SoA 不是永远更快——若算法总是同时用到一个对象的所有字段，AoS 的局部性反而更好。**API Design** 上，游戏引擎（ECS）和数值库倾向 SoA 是因为"批量处理同一字段"是主导访问模式；通用业务对象保持 AoS。**先确定访问模式，再选布局**。
+
+### 反模式（Anti-Pattern）
+
+- **反模式：不 profile 就优化**。缓存优化的收益高度依赖真实访问模式，凭感觉加 `alignas`/`prefetch` 常常无效甚至有害（浪费内存、污染 cache）。
+- **反模式：滥用 `__builtin_prefetch`**。预取距离错了（太近来不及、太远被换出）或对已在 cache 的数据预取，纯属浪费指令。prefetch 只在"可预测的顺序/跨步访问 + 明确 DDR 延迟瓶颈"下才值得，且必须 A/B profile 验证。
+- **反模式：过度对齐**。给每个小对象都 `alignas(64)` 会浪费大量内存、降低有效 cache 容量——只对**真正跨线程写**的热变量做 line 隔离。
+
+### Code Review 检查清单（缓存优化专项）
+
+- [ ] 每一处缓存优化是否有 profile 数据（perf/VTune）支撑，而非凭直觉？
+- [ ] 多线程频繁写的变量是否可能 false sharing？是否用 `hardware_destructive_interference_size` 隔离？
+- [ ] 数据布局（AoS/SoA）是否匹配真实的主导访问模式？
+- [ ] `prefetch` 是否经 A/B 测试证明有效，预取距离是否合理？
+- [ ] 是否避免了对小对象无差别 `alignas(64)` 造成的内存浪费？
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

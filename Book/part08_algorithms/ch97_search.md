@@ -911,6 +911,44 @@ A: 多个哈希函数→位数组; 假阳性(说不存在=true; 说存在=maybe)
 - **Abseil** — Abseil `absl::c_find` 算法包装
 - **Blink** — Blink find 样式属性
 
+## 附录 D：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+**[经验]**　查找算法的 bug 极少来自算法本身，几乎全部来自"前置条件被违反"。本节从 production 事故与 Code Review 视角总结。
+
+### 常见Bug：二分查找的"静默错误答案"
+
+`std::binary_search` / `lower_bound` / `upper_bound` 的前置条件是**区间按同一比较器有序**（partitioned）。违反时它们**不报错、不崩溃**，只返回**错误答案**——这比崩溃更危险。三个高频 **工业案例**：
+
+1. **未排序就二分**：数据来自网络/DB，开发者假设"应该是有序的"。修复：调试时加 `assert(std::is_sorted(v.begin(), v.end(), cmp))`（Release 下 `is_sorted` 是 O(n)，仅调试期开启）。
+2. **比较器与排序不一致**：`sort` 用 `<`（升序）、`lower_bound` 传了 `std::greater`。两者比较器必须**完全一致**。
+3. **比较器不满足严格弱序（strict weak ordering）**：写成 `<=` 而非 `<`，或浮点 NaN 参与比较。这在 libstdc++ Debug 模式（`-D_GLIBCXX_DEBUG`）下会被断言抓住，是首选的 **Debug方法**。
+
+### 设计取舍（Trade-off）：find vs lower_bound vs 哈希
+
+| 需求 | 选择 | 设计权衡 |
+|---|---|---|
+| 无序数据、一次查找 | `std::find` O(n) | 无需排序，n 小时最快（cache 友好、无分支预测失败） |
+| 有序数据、多次查找 | `lower_bound` O(log n) | 一次性排序 O(n log n)，之后每次查找廉价 |
+| 只问存在性、可容忍假阳性 | Bloom Filter + 哈希 | 用 ~1.2 B/key 内存换 O(1)，适合"先挡不存在的键" |
+| 需要"最近邻/范围" | `lower_bound`/`equal_range` | 哈希做不到有序范围，红黑树/有序数组才行 |
+
+**API Design 准则**：返回**迭代器**（`lower_bound`）比返回 **bool**（`binary_search`）更通用——调用方既能判存在（`it!=end && *it==key`），又能拿到插入点。这就是标准库很少直接用 `binary_search` 的原因，也是设计查找 API 时的经验：**返回位置，让调用方决定语义**。
+
+### 反模式（Anti-Pattern）
+
+- **线性扫描热路径**：在每帧/每请求都跑的循环里对大容器 `std::find`，却从不改成哈希/有序结构。Profile 一次就能发现。
+- **重复排序**：每次查找前都 `sort` 一遍再二分——排序成本远超收益，应改为"一次排序，多次查找"或直接上哈希表。
+
+**重构建议**：把"频繁 `std::find` 于 `std::vector`"重构为 `std::unordered_map`（无序需求）或"排序后 `lower_bound`"（需范围/有序遍历）；若容器小（<32 元素）则保留线性查找——现代 CPU 上小数组线性扫描常比哈希更快（无哈希计算、cache 命中好）。
+
+### Code Review 检查清单（查找专项）
+
+- [ ] 调用二分类算法前，数据是否**保证**按同一比较器有序？（可加调试期 `is_sorted` 断言）
+- [ ] `sort` 与 `lower_bound` 是否使用**完全一致**的比较器？
+- [ ] 自定义比较器是否满足严格弱序（用 `<` 不用 `<=`，处理 NaN）？
+- [ ] 热路径上的 `std::find` 是否应升级为哈希/有序结构？
+- [ ] 用 `lower_bound` 判存在时，是否检查了 `it != end() && *it == key` 两个条件？
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

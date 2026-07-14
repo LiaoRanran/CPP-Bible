@@ -660,6 +660,41 @@ int main(){std::cout<<"fmt=5-10x faster than cout; spdlog=300ns/msg async"<<std:
 - **相邻主题**：`Book/part11_source/ch133_clickhouse_redis.md`（第133章　ClickHouse / Redis 实现精读（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part11_source/ch124_libstdcxx.md`（第124章　libstdc++ 架构与阅读入口（C++））—— 同模块下的其他主题。
 
+## 附录 F：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+**[经验]**　fmt/spdlog 是 C++ 日志与格式化的工业事实标准，但误用会引入难查的 bug。本节从 production 事故与 Code Review 视角总结。
+
+### 常见Bug 与 Debug方法
+
+1. **运行时拼接格式串**：`fmt::format(user_input, args...)`——把外部字符串当格式串是**格式串注入**漏洞，且绕过编译期检查。修复：格式串必须是**编译期常量**，用 `fmt::format(FMT_STRING("..."), ...)`（旧版）或直接字面量（fmt 8+ 的 `consteval` 检查自动生效）。**Debug方法**：把 `format` 的格式串全部改为字面量，编译器会在编译期报出参数/占位符不匹配。
+2. **悬垂 `string_view`/引用进异步日志**：`spdlog` 异步模式下，日志消息被推入队列、后台线程稍后格式化。若传入指向**栈上临时**的 `string_view` 或 `const char*`，等后台线程处理时已悬垂 → 读到垃圾/崩溃。修复：异步日志只传**值**（`std::string`、算术类型），不传引用/视图。
+3. **格式化异常吞没**：`fmt` 遇到类型不匹配（如 `{:d}` 配 `std::string`）抛 `fmt::format_error`。若在日志路径里未捕获，一条坏日志能拖垮整个请求。
+
+### 设计取舍（Trade-off）：spdlog 异步队列的 overflow_policy
+
+spdlog 异步 logger 用有界 MPSC 队列。队列满时的 **设计权衡** 是核心决策：
+
+| overflow_policy | 行为 | 适用场景 |
+|---|---|---|
+| `block`（默认） | 生产者线程**阻塞**等待队列空位 | 日志不可丢失（审计、金融），但会**拖慢业务线程** |
+| `overrun_oldest` | 丢弃最旧消息，不阻塞 | 高吞吐服务，宁丢日志不卡请求 |
+
+**设计取舍的核心**：`block` 保证不丢日志但把日志变成业务线程的同步依赖（一旦磁盘/网络 sink 变慢，业务线程被拖住）；`overrun_oldest` 保证业务不被日志拖累但会静默丢日志。没有银弹——要按"日志重要性 vs 延迟敏感度"选择，并**在代码注释里写明选了哪种及原因**。
+
+### 反模式（Anti-Pattern）与 API Design
+
+- **反模式**：热路径同步日志（`spdlog::info` 默认同步 sink）——每条日志都做 I/O，µs 级阻塞累积成吞吐瓶颈。改用异步 logger。
+- **反模式**：日志级别判断放在昂贵参数求值之后。`SPDLOG_DEBUG` 宏在编译期按 `SPDLOG_ACTIVE_LEVEL` 剔除，比运行时 `if(logger->should_log(debug))` 更彻底——**API Design** 上优先用宏级别控制，让 Release 版零开销。
+- **fmt 的 API 设计亮点**：`fmt::format` 返回 `std::string`（有分配），`fmt::format_to` 写入已有 buffer（可复用、零分配）——热路径应选 `format_to`。这是"通用便利 API + 高性能 API"并存的良好设计范式。
+
+### Code Review 检查清单（日志/格式化专项）
+
+- [ ] 格式串是否都是编译期常量（字面量/`FMT_STRING`），杜绝运行时拼接？
+- [ ] 异步日志是否只传值，无悬垂 `string_view`/引用/指针？
+- [ ] 异步 logger 的 `overflow_policy` 是否按业务显式选择并注释？
+- [ ] 热路径是否用异步 sink + `format_to`（复用 buffer），避免同步 I/O 与重复分配？
+- [ ] Debug 日志是否用 `SPDLOG_DEBUG` 宏，保证 Release 零开销？
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
