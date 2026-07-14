@@ -1160,6 +1160,23 @@ int main() {
 - **相邻主题**：`Book/part03_language/ch25_union_variant.md`（第25章　union 与 std::variant 深度详解）—— 编号相邻、主题接续。
 - **同模块**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **`using namespace std;` 在头文件里的灾难**：某库头文件顶部写了 `using namespace std;`，所有包含它的 TU 都灌入 `std` 全符号。下游恰好定义了同名 `count`/`find`，与 `std::count`/`std::find` 静默歧义甚至 ODR 冲突，表现为「在我机器上能编、CI 挂」。生产铁律：头文件禁止 `using namespace`，实现文件也仅在最小作用域内 `using`。
+- **ADL 导致的意外函数选中**：调用 `swap(a, b)` 时 ADL 会把 `a,b` 所属命名空间里的 `swap` 拉进候选集，若用户自定义的 `myns::swap` 与 `std::swap` 语义不一致，行为取决于调用写法（含 `<utility>` 与否）。标准惯用法是 `using std::swap; swap(a,b);` 显式合并，而非裸 `swap`。
+
+### 常见 Bug 与 Debug 方法
+
+- **名字冲突歧义**：两命名空间有同名函数，调用 `ns1::f()` 却因 `using` 引入 `ns2::f` 报「歧义」。Debug 用 `-fshow-column` + `g++ -E` 看宏/using 展开；Code Review 时扫 `using namespace` 出现在 `.h` 的告警。
+- **内联命名空间版本化误用**：`inline namespace v2` 让 `lib::v2::X` 自动可见为 `lib::X`，但若旧 ABI 符号未保留，老二进制加载新库直接崩溃。Debug 用 `nm -C` 看导出符号是否落在预期 inline 层。
+- **Code Review 关注点**：头文件是否含 `using namespace`；`using` 声明是否污染全局；ADL 依赖是否显式化（`using std::swap;` 模式）。
+
+### 重构建议
+
+把头文件里的 `using namespace std;` 删除，改为实现文件内「函数级 `using std::xxx;`」或显式 `std::` 限定；把裸 `swap(a,b)` 重构为 `using std::swap; swap(a,b);` 消除 ADL 歧义；对库版本用 `inline namespace v1/v2` + 显式 `extern` 旧符号维持 ABI 兼容。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

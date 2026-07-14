@@ -743,6 +743,23 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 - **后续依赖**：`Book/part07_stl/ch94_stop_token.md`（第94章　stop_token 与协作取消 [标准]）—— 本章为其前置，建议后续延伸阅读。
 - **同模块**：`Book/part09_concurrency/ch111_aba.md`（第111章　ABA 问题与解决（C++11））—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **`memory_order_relaxed` 误用导致标志丢失**：典型「publisher 设 `data_ready.store(true, relaxed)`，consumer 轮询 `data_ready.load(relaxed)`」——单线程测试永远过，多核弱内存模型（ARM/POWER）下 store 与前面的数据写可能重排，consumer 读到 `ready=true` 却看到未初始化的数据。修复是 store 用 `release`、load 用 `acquire`，建立 synchronizes-with 边。
+- **double-checked locking 用错序**：旧惯用法 `if(!p) { lock; if(!p) p=new X; }` 在 C++11 前因「构造与赋值的重排」而 UB；正确做法用 `std::atomic<X*> p` + `memory_order_acquire/release`，或干脆 `call_once`/`static` 局部变量（C++11 起线程安全）。
+
+### 常见 Bug 与 Debug 方法
+
+- **弱内存重排**：x86 因 TSO 强序几乎不暴露 relaxed 误用，ARM/AArch64 上必现。Debug 用 `-fsanitize=thread` 抓 happens-before 违规；在 ARM 设备/模拟器（QEMU）上复现，而非仅本地 x86 测。
+- **fence 位置错**：把 `atomic_thread_fence(seq_cst)` 放在错误的地方，等于没加。用 `std::atomic` 自带 order 参数比裸 fence 更易证正确。
+- **Code Review 关注点**：`relaxed` 是否真的无跨线程数据依赖；标志位与数据是否成对 acquire/release；是否有「先测后锁」的 DCL 未用原子。
+
+### 重构建议
+
+把「裸 `relaxed` 标志 + 数据」重构为 `store(data, relaxed); flag.store(true, release)` + `if(flag.load(acquire)) use(data)` 的发布-消费对；把手工 DCL 重构为 `std::call_once` 或函数内 `static` 局部（零成本且标准保证线程安全）；不要在热路径滥用 `seq_cst`（全局 fence 拖性能），按需降到 acquire/release 并实测 fence 代价。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -1052,6 +1052,23 @@ A: 构造参数 > 4 个; 构造多步骤; 不同配置生成不同表示
 
 缓存行 `0x0040`（64 字节）容纳 8 个 vtable 槽（0x0040 / 0x0008 = 8）；工厂返回大对象时构造写入跨 `0x0040` 边界会触发两次 L1 取行（≈2 ns）。`Clang 17` / `MSVC 19.3` 对 `final` 叶子类同样去虚化。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **`std::make_unique`/`make_shared` 漏用导致异常不安全**：`foo(widget(), std::unique_ptr<X>(new X))` 在 `new X` 与 `widget()` 求值顺序未定时，若 `widget()` 抛异常，`new X` 已分配却未进 `unique_ptr`，内存泄漏。正确写 `foo(widget(), std::make_unique<X>())`——单语句内完成分配与接管，异常安全。
+- **Builder 链式构造遗漏必填字段**：手搓 Builder 不强制必填项，运行期才发现对象不完整。工业上用「阶段性 Builder」（`AddressBuilder().street(s).city(c).build()` 中 `build()` 校验必填，否则断言/抛），或 `withX().withY().done()` 返回完整对象。
+
+### 常见 Bug 与 Debug 方法
+
+- **工厂返回裸指针的所有权歧义**：`create()` 返回 `T*` 却没说清谁负责 `delete`。Debug 用 ASan 抓泄漏/ double-free；规范是工厂一律返回 `unique_ptr`（明确转移所有权）或 `shared_ptr`（共享）。
+- **单例双重初始化竞争**：非线程安全 Singleton（见 ch108 的 DCL 误用）在并发首次访问时构造两次。Debug 用 TSan；修复用 `call_once`/函数内 `static`。
+- **Code Review 关注点**：`new` 是否出现在 `make_*` 之外；工厂返回值是否 `unique_ptr`/`shared_ptr`；Builder 必填项是否编译期/运行期强制。
+
+### 重构建议
+
+把 `new X` + 裸指针参数重构为 `std::make_unique<X>()`（异常安全、零裸 `new`）；把「返回 `T*` 的工厂」重构为返回 `std::unique_ptr<T>`（所有权自明）；把可变 Builder 重构为「`done()`/ `build()` 校验必填并返回完整对象」，消除半构造状态。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
