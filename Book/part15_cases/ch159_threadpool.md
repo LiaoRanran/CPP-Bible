@@ -998,6 +998,22 @@ int main() {
 - **Abseil** — Abseil `absl::ThreadPool` 官方实现
 - **Blink** — Blink 用线程池处理合成任务
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **线程池的「任务提交风暴」**：短任务大量 `enqueue`，每个任务进锁→出锁→notify，条件变量唤醒成本远超任务本身执行时间。生产用无锁 SPSC 队列 + work stealing 削减争抢（如 `Folly::CPUThreadPoolExecutor`），或批提交（`enqueue_bulk`）。
+- **`std::async` 的隐式 future 阻塞**：`auto fut = std::async(task)` 返回的 `std::future` 在析构时隐式 `wait()`——若 `fut` 是局部变量且作用域结束早于预期，不可见阻塞成为性能瓶颈。正确用 `std::async(std::launch::async, ...)` + 显式生命周期管理。
+
+### 常见 Bug 与 Debug 方法
+
+- **工作线程泄漏**：`std::thread` 对象未 `join()`/`detach()` →析构时 `std::terminate`。ThreadPool 析构函数在 shutdown 时需 `for(auto& t : threads) t.join()`。
+- **Code Review 关注点**：队列是否用无锁方案（高并发时 mutex 瓶颈）；任务是否支持 `std::move_only_function`（C++23 替 type-erased `std::function`，零堆分配）。
+
+### 重构建议
+
+把 `std::mutex + deque` 升级为 `concurrent_queue`（无锁 MPMC）+ `std::jthread`（自动 join）；把 `std::function<void()>` 升级为 `std::move_only_function<void()>` （C++23，零小对象堆分配）；支持 `enqueue_bulk` 批提交削减 notify 开销。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

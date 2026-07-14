@@ -430,6 +430,23 @@ int main(){std::vector<int> v;v.reserve(1000);for(int i=0;i<1000;++i)v.push_back
 - **相邻主题**：`Book/part15_cases/ch160_mempool.md`（第160章 从零实现内存池（C++））—— 编号相邻、主题接续。
 - **同模块**：`Book/part14_perf/ch153_cpu_micro.md`（第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行）—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **热路径 `std::endl` 隐式 flush**：`std::cout<<"x\n"<<std::flush` 每次调用 `fflush`→系统调用→50K IOPS 降到 5K。`\n` 仅刷新 line-buffered、不触发 syscall，差异可达 10× 吞吐量。
+- **`std::vector<bool>` 的位压缩反模式**：不是真正的 `vector`——不返回 `bool&` 而是 proxy、不可取址、不可喂 `std::span`/`auto&`。热路径迭代器需要对每个 bit 位掩码解包，开销远大于 `vector<char>`。用 `std::bitset<N>` / `std::vector<char>` 替代。
+
+### 常见 Bug 与 Debug 方法
+
+- **不必要的拷贝**：`for (auto x : vec)` 按值拷贝每个元素→触发构造/析构对。改 `auto&` 或 `const auto&`。`-Wrange-loop-construct` 警告。
+- **`std::map` 热路径 O(log n)**：用 `unordered_map` 但 `hash` 不是 `const`→编译器误算哈希，退化为 `map` 性能。Debug 用 `perf record -e cache-misses` 看 L3 miss 激增。
+- **Code Review 关注点**：range-for 是否按值；endl vs `\n`；`vector<bool>` 替代方案。
+
+### 重构建议
+
+全局 `s/\bstd::endl\b/'\\n'/` 除有意 flush 的行；`for (auto x: vec)` 补 `const auto&`；`vector<bool>` 替代为 `vector<char>`/`dynamic_bitset`；关键循环加 `__builtin_prefetch` 减少 cache miss。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

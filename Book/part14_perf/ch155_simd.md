@@ -831,6 +831,22 @@ SIMD设计决策树:
 
 编译侧：`g++ -std=c++23 -mavx2 -mfma -O3` 让编译器把内层循环向量化；`clang++ -march=native -fno-math-errno` 避免标量回退。AVX2 单条 `vfmadd231ps` 在 3.5 GHz 上 5 周期延迟、0.5 周期吞吐，理论 8×float/指令。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **SIMD 内联函数跨平台不可移植**：`_mm_load_ps`(SSE)、`_mm256_load_ps`(AVX)、`_mm512_load_ps`(AVX-512) 在不同 CPU 代际上「写时编译通过、运行时 `#GP` 异常」。跨平台用 `__builtin_cpu_supports("avx2")` 运行时检测 + fallback 路径，或用 `std::experimental::simd`（C++26 TS）写平台无关 SIMD。
+- **未对齐 load 的性能悬崖**：`_mm_loadu_ps`（未对齐）vs `_mm_load_ps`（对齐）在 Sandy Bridge 上差 2–3×，Skylake 无差——但多数代码仍加 `alignas(16)` 而不测收益。`perf stat -e mem_load_uops_retired.l3_miss` 比对实测才能判断是否该对齐。
+
+### 常见 Bug 与 Debug 方法
+
+- **SIMD lane 混读（shuffle 错位）**：`_mm_shuffle_ps(a,b,0b01001110)` 的立即数编码因顺序误记高位/低位 lane 搬错数据。Debug 用 `std::array<float,4> tmp; _mm_store_ps(tmp.data(), v)` dump 到内存逐元素比对。
+- **Code Review 关注点**：是否用 `__builtin_cpu_supports` 运行时检测；是否有标量 fallback 路径；`alignas` 是否匹配 load variant。
+
+### 重构建议
+
+把手写 `_mm_add_ps` 等重构为 `std::experimental::simd<float>` 平台无关 SIMD（C++26 TS）；对关键路径加 `_mm_prefetch` 软件预取减少 L3 miss；保持标量 fallback 用于 CPU 不支持 AVX2/AVX-512 时自动降级。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
