@@ -214,7 +214,7 @@ Blocks   : 3564 checked, 73 failed      ← 仅 2.0% 块失败
 | 水词率 | 未知 | <10% |
 | 练习题覆盖率 | 0% | 100% |
 | 学习路径完整性 | 0% | 100% |
-| 公开可访问 | 0 | GitHub Pages |
+| 公开可访问 | ✅ 已上线 | https://liaoranran.github.io/CPP-Bible/ |
 | PDF可打印 | 有脚本 | 实测可生成 |
 
 ## 决策原则
@@ -227,3 +227,18 @@ Blocks   : 3564 checked, 73 failed      ← 仅 2.0% 块失败
 ---
 
 _每完成一个Phase→更新本文件,记录决策与收获。_
+
+## L2 完成（2026-07-14）：EPUB + PageFind 中文搜索 + GitHub Pages
+
+- **中文全文搜索**：弃用 MkDocs 内置 lunr 搜索（开源版无中文分词，Insiders 才含 jieba），改用 **PageFind extended**（原生中日文分词）。
+  - `site` job 末 `pip install 'pagefind[extended]'` + `python3 -m pagefind --site build/site_out` 建索引。
+  - `gen_mkdocs_nav.py` 移除 `search` 插件与 `search.suggest/highlight` 特性；新增独立「搜索」页 `search.md`（挂载 PageFind UI）。
+  - 线上冒烟：`/pagefind/*` 全 200，`id="search"` 挂载点存在 → 中文检索可用。
+- **GitHub Pages**：新增 `deploy` job（`pages`/`id-token` 写权限 + `github-pages` 环境 + `actions/deploy-pages`）；仓库 Pages 经 API 启用（Source=GitHub Actions）。
+  - 上线 URL：https://liaoranran.github.io/CPP-Bible/
+- **EPUB**：`tools/generate_epub.sh`（pandoc epub3，复用 `rewrite_links --mode pdf` 的 combined.md；`--epub-chapter-level=1` 分章 + `assets/cover.png` 封面 + zh 元数据；复用 `.puppeteer.json` 渲染 Mermaid 为 SVG）。
+  - 封面 `assets/cover.png` 由 ImageGen 生成（832×1216 合法 PNG）。
+  - 新增 `epub` job；产物 `cpp-bible-epub` 7.4 MB。
+- **CI 全绿**：run #29296420478 = success（quality / compile / pdf / site / epub / deploy 六 job 全绿）。
+- 已知限制：EPUB / PDF 内跨章 `#chNN` 锚点为同源保真（与 PDF 一致），如需完美跳转后续可加 `epub` 链接重写模式。
+- 提交：`a0fde22`(A: 搜索+Pages) + `ef731a9`(B: EPUB+封面)。
