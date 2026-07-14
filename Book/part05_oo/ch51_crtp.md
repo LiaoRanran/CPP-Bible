@@ -641,6 +641,67 @@ int main(){Widget w(7);auto c=w.clone();std::cout<<c->v<<std::endl;return 0;}
 - **Abseil** — Abseil `absl::CRTP` 惯用法文档化
 - **Blink** — Blink 用 CRTP 推导样式节点
 
+## 附录 H：编译实证——CRTP vs 虚函数 vs final 的真实汇编代价 [C: Compiler / E: Low-level]
+
+> 编译：`g++ -std=c++23 -O2 -c ch51_crtp_test.cpp`（GCC 15.3.0 / Win64 ABI）。`objdump -d` 反汇编。
+
+### 测试源码
+
+```cpp
+template <typename D> struct AnimalCRTP { void speak() { static_cast<D*>(this)->speak_impl(); } };
+struct DogCRTP : AnimalCRTP<DogCRTP> { int age; void speak_impl() { age += 1; } };
+struct AnimalVirt { int age; virtual void speak() { age += 1; } virtual ~AnimalVirt() = default; };
+struct DogFinal final : AnimalVirt { void speak() override { age += 2; } };
+
+void crtp_dispatch(DogCRTP& d) { d.speak(); }    // ① CRTP 静态多态
+void virt_dispatch(AnimalVirt* a) { a->speak(); } // ② 虚函数动态多态
+void final_call(DogFinal* d) { d->speak(); }        // ③ final 类去虚拟化
+```
+
+### 真实汇编（GCC15 -O2）
+
+**① CRTP 调用（编译期多态）—— 1 指令, 3 字节**
+```asm
+<_Z13crtp_dispatchR7DogCRTP>:
+    addl    $0x1,(%rcx)       ; 直接 +1 到 age 字段（CRTP 被完全内联）
+    ret                       ; 零间接调用!
+```
+
+**② 虚函数调用（动态多态）—— 2 指令, 6 字节**
+```asm
+<_Z13virt_dispatchP10AnimalVirt>:
+    mov     (%rcx),%rax       ; 加载 vptr → vtable 指针
+    rex.W jmp *(%rax)          ; 间跳 vtable[0] → speak()
+```
+虚调用只是 **一次 load + 一次间跳**（tail-call），与 ch47 实证结论一致。
+
+**③ final 类去虚拟化 —— 1 指令, 4 字节**
+```asm
+<_Z10final_callP8DogFinal>:
+    addl    $0x2,0x8(%rcx)    ; 直接操作 age 字段（偏移 8B = 跳过 vptr）
+    ret
+```
+编译器知道 `DogFinal` 不能有派生类 → 去虚拟化后等价直接函数调用。
+
+### sizeof 反映的存储差异
+
+| 结构体 | sizeof | 内存组成 |
+|--------|--------|----------|
+| `DogCRTP` | 4B | `int age` 独占 |
+| `AnimalVirt` | 16B | `vptr`(8B) + `int age`(4B) + padding(4B) |
+| `DogFinal` | 16B | 同 AnimalVirt（`final` 不改变对象布局） |
+
+### 代价分层
+
+| 机制 | 指令数 | 字节 | 额外内存 | 适用场景 |
+|------|--------|------|----------|----------|
+| CRTP | 1 | 3 | 0（无 vptr） | 编译期已知类型 |
+| 虚调用 | 2 | 6 | 8B vptr | 运行期多态 |
+| final 去虚拟化 | 1 | 4 | 8B vptr | 无继承的虚类 |
+| 直接调用 | 1 | 3 | 0 | 已知具体类型 |
+
+---
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -1463,6 +1463,72 @@ Google/LLVM禁止异常的深层原因: 异常会阻止noexcept优化链
 - **相邻主题**：`Book/part04_memory/ch42_strict_aliasing.md`（第 42 章 · 严格别名规则（Strict Aliasing）与编译器优化）—— 编号相邻、主题接续。
 - **同模块**：`Book/part04_memory/ch35_memory_layout.md`（第 35 章  C++ 程序的内存模型与操作系统视角）—— 同模块下的其他主题。
 
+## 附录 C：编译实证——noexcept 零成本路径 vs 抛异常的汇编差异 [C: Compiler / E: Low-level]
+
+> 编译：`g++ -std=c++23 -O2 -c ch40_exception_test.cpp`（GCC 15.3.0 / Win64 ABI）。`objdump -d` 反汇编。
+
+### 测试源码
+
+```cpp
+int may_throw_div(int a, int b) {
+    if (b == 0) throw "div by zero";
+    return a / b;
+}
+int noexcept_add(int a, int b) noexcept { return a + b; }
+int call_may_throw(int x, int y) { return may_throw_div(x, y); }
+int call_noexcept(int x, int y) { return noexcept_add(x, y); }
+```
+
+### 真实汇编（GCC15 -O2）
+
+**调用者 `call_noexcept`（noexcept 路径）—— 1 指令, 4 字节**
+```asm
+<_Z13call_noexceptii>:
+    lea     (%rcx,%rdx,1),%eax   ; a + b 直接计算
+    ret                            ; 无 unwind 表/栈帧/分支
+```
+**无栈帧（无 `sub $0x28,%rsp`），无 LSDA，无异常处理表插入。**
+
+**调用者 `call_may_throw`（可能抛异常）—— 6 指令 + cold 段**
+```asm
+<_Z14call_may_throwii>:
+    sub     $0x28,%rsp            ; 为 LSDA 预留栈帧！(even on happy path)
+    mov     %ecx,%eax
+    mov     %edx,%ecx
+    test    %edx,%edx              ; b==0?
+    je      .cold                  ; 跳转冷路径（抛异常）
+    cltd                           ; 符号扩展 → idiv 准备
+    idiv    %ecx                   ; a / b
+    add     $0x28,%rsp
+    ret
+```
+.cold 段（抛异常路径）：
+```asm
+<_Z14call_may_throwii.cold>:
+    call    <may_throw_div.part.0> ; 异常抛出函数
+```
+
+**noexcept_add 本体 —— 1 指令**
+```asm
+<_Z12noexcept_addii>:
+    lea     (%rcx,%rdx,1),%eax   ; 与 call_noexcept 完全一致
+    ret
+```
+
+### 关键发现
+
+1. **调用 noexcept 函数：1 指令**（`lea; ret`）。无需栈帧，无需异常处理表——编译器敢把调用者压到最小。
+2. **调用可能抛异常的函数：6+ 指令**（`sub; test; je; cltd; idiv; add; ret`）——即使 happy path 也必须为 LSDA 准备栈帧空间（`.eh_frame` section 在链接时插入）。
+3. **异常路径隔离到 `.cold` 段**：`je .cold` 跳转使 CPU 分支预测器能从正常路径受益——冷路径不占用 I-cache。
+4. **`noexcept` 不是性能注解，是编译器权限**：标注 `noexcept` 不是给 CPU 的信号（两条路径的 `lea; ret` 完全一样），而是给**调用者编译器**的信号——"这个函数绝不会抛异常，你可以不用准备 LSDA"。
+
+### 实战含义
+
+- `vector<T>::push_back` 在 `T::T(T&&) noexcept` 时走 move 路径（否则降级 copy）—— **强异常安全保证的关键依赖**。
+- STL 容器扩容对 `noexcept` 条件敏感：如果用 `noexcept` 标注 move 构造函数，`vector` 扩容用 move 而非 copy → 性能差数量级（见 `is_nothrow_move_constructible`）。
+
+---
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

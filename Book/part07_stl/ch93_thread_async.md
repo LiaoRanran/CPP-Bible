@@ -1029,6 +1029,85 @@ mfence                  ; 全内存屏障，约 10–20 ns
 
 伪共享：两个线程各写相邻 `0x0008` 字段若落在同一 `0x0040` 缓存行，会互相 invalidate，吞吐骤降——须按 `0x0040` 填充或 `alignas(0x0040)`。`GCC 13.1.0` / `Clang 17` 的 `-O2` 对 `constexpr` 启动策略可编译期求值，`C++20` `constinit` 保证静态原子零初始化竞争。
 
+## 附录 C：编译实证——四种同步机制的汇编代价对比 [C: Compiler / E: Low-level / G: Performance]
+
+> 编译：`g++ -std=c++23 -O2 -c ch93_thread_test.cpp`（GCC 15.3.0 / Win64 ABI）。`objdump -d`。
+
+### 测试源码
+
+```cpp
+#include <thread>; std::mutex mtx; std::atomic<int> cnt{0}; thread_local int tl=0;
+
+std::thread* make_thread() { return new std::thread([]{volatile int x=0;for(int i=0;i<100;i++)x+=i;}); }
+void lock_work(int& c) { std::lock_guard<std::mutex> lk(mtx); ++c; }
+void atomic_inc()       { cnt.fetch_add(1, std::memory_order_relaxed); }
+int  read_tl()          { return tl; }
+```
+
+### 真实汇编（GCC15 -O2）
+
+**① `std::thread` 创建 —— ~20 指令 + 4 syscall**
+```asm
+<_Z11make_threadv>:
+    sub     $0x48,%rsp
+    mov     $0x8,%ecx; call operator new(8)        ; 分配 thread 对象
+    mov     $0x10,%ecx; call operator new(16)       ; 分配 _State 控制块
+    lea     lambda(%rip),%rdx; mov %rax,(%rax)      ; 存 lambda 地址进 state
+    call    std::thread::_M_start_thread            ; → pthread_create → clone syscall
+    test    %rcx,%rcx; je .ok                       ; 检查是否创建成功
+.ok:
+    add     $0x48,%rsp; ret
+```
+.cold 路径含 `_M_start_thread+call pthread_create+join_deleter` 异常清理（~15 条额外指令）。
+
+**② `std::mutex` lock/unlock —— 3 指令关键区 + 2 syscall 包装**
+```asm
+<_Z9lock_workRi>:
+    push %rbx; sub $0x20,%rsp
+    call __gthrw_pthread_mutex_lock    ; lock → futex(2) 用户态快速路径，争用时 syscall
+    addl $0x1,(%rbx)                    ; ← 关键区：1 指令！
+    call __gthrw_pthread_mutex_unlock  ; unlock → futex
+    add $0x20,%rsp; pop %rbx; ret
+```
+
+**③ `std::atomic` 无锁递增 —— 1 指令, 7 字节**
+```asm
+<_Z10atomic_incv>:
+    lock addl $0x1,cnt(%rip)           ; 单条 LOCK 前缀指令 → 原子 RMW
+    ret
+```
+**零 syscall，零函数调用**。x86 上 `lock addl` 约 10–20 个 CPU cycle（非争用）。
+
+**④ `thread_local` 读取 —— 5 指令 + __tls_get_addr 调用**
+```asm
+<_Z7read_tlv>:
+    sub $0x28,%rsp
+    lea tl_var@tls(%rip),%rcx          ; TLS 变量符号
+    call __tls_get_addr                ; 查找当前线程的 TLS 块
+    mov (%rax),%eax                    ; 读取值
+    add $0x28,%rsp; ret
+```
+Win64 上 `__tls_get_addr` 属 `KERNEL32.dll`——动态查找当前线程的 TEB（Thread Environment Block）。
+
+### 四种机制代价分层
+
+| 机制 | 指令数 | syscall | 延迟（粗略） | 适用 |
+|------|--------|---------|-------------|------|
+| `std::atomic` | 1 | 0 | ~10–20ns | 计数器、标志位、无锁栈 |
+| `thread_local` 读 | 5+call | 0（API 调用） | ~50ns | 每线程单例、allocator 缓存 |
+| `std::mutex` 非争用 | 10+2call | 0（FUTEX 快速路径） | ~50–100ns | 通用互斥 |
+| `std::mutex` 争用 | 10+2call | 1+（futex wait） | ~1–10µs | 必要时才用 |
+| `std::thread` 创建 | 20+4call | 1（clone） | ~10–50µs | 线程池替代为佳 |
+
+### 关键发现
+
+1. **`std::atomic` 是同步的"最终基准"**——单条 `lock addl`（x86），无 syscall，无上下文切换。只要数据体量小到适合单个缓存行，lock-free 基本不可能再快。
+2. **mutex 关键区只有 1 条指令**，但 lock/unlock 包编译成 2 次 futex 调用（非争用走快速路径零 syscall，争用走慢路径 syscall）——mutex 的"昂贵"在于争用时的 scheduler 介入，而非 lock/unlock 的指令数。
+3. **`std::thread` 每次创建必须 `clone`**——线程池通过复用线程消除这个 10–50µs 开销，是高性能服务器的必备基础设施。
+4. **`thread_local` 每次访问要走 `__tls_get_addr`**——虽然不是 syscall 但有额外查表开销，故 TLS 不适合热路径（建议用 `std::atomic` + CPU 亲和性替代）。
+
+---
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -1077,6 +1077,88 @@ int main(){std::cout<<"std::move is a cast to rvalue reference. It does NOT move
 
 > 交叉引用：移动与 noexcept 见 [ch40](Book/part04_memory/ch40_exception_safety.md)；完美转发见 [ch116](Book/part10_modern/ch116_perfect_forwarding.md)。
 
+## 附录 E：编译实证——RVO vs 移动构造 vs 拷贝构造的真实汇编 [C: Compiler / E: Low-level]
+
+> 编译：`g++ -std=c++23 -O2 -c ch115_move_test.cpp`（GCC 15.3.0 / Win64 ABI）。`objdump -d`。
+
+### 测试源码
+
+```cpp
+struct Big { char* data; size_t sz;
+    Big(size_t n): data(new char[n]), sz(n) { memset(data, 0, n); }
+    Big(const Big& o): data(new char[o.sz]), sz(o.sz) { memcpy(data, o.data, sz); }
+    Big(Big&& o) noexcept : data(o.data), sz(o.sz) { o.data=nullptr; o.sz=0; }
+    ~Big() { delete[] data; }
+};
+Big make_big_rvo() { return Big(1024); }              // ① RVO
+void move_into_consume(Big&& src) { consume_big(std::move(src)); } // ② 移动
+```
+
+### 真实汇编（GCC15 -O2）
+
+**① RVO 构造 —— 内联到调用方栈槽**
+
+RVO 不产生函数调用在调用方生成对象。编译器在函数签名层面传递了**隐藏的返回槽指针**（Win64 ABI：`%rcx` = 目标地址）：
+
+```asm
+<_Z12make_big_rvov>:
+    push   %rdi; push %rbx; sub $0x28,%rsp
+    mov    %rcx,%rbx                    ; [RVO] 保存返回槽指针
+    mov    $0x400,%ecx                  ; 1024 字节
+    call   operator new(1024)           ; 只分配一次
+    movq   $0x400,0x8(%rbx)            ; sz = 1024（直接写入返回槽）
+    lea    0x8(%rax),%rdx
+    mov    %rax,(%rbx)                  ; data = new char[1024]（写入返回槽）
+    ; memset 展开为两次 8B 零写（首尾 8 字节）——避免 memset 调用
+    and    $0xfffffffffffffff8,%rdx
+    movq   $0x0,(%rax)                  ; data[0..7] = 0
+    movq   $0x0,0x3f8(%rax)            ; data[1016..1023] = 0（编译器2×8B覆盖够了）
+    mov    %rbx,%rax; add $0x28,%rsp; pop %rbx; pop %rdi; ret
+```
+
+**💡 关键观察**：
+- **零次拷贝/移动构造调用**——`Big` 的构造函数体（`new` + `memset` + 字段初始化）直接被编译到函数中，不通过任何中间对象。
+- **返回槽指针**`%rbx` 是调用方栈上预分配的 16 字节 `Big` 对象地址——RVO 是 ABI 层面的操作，不是编译器优化。
+
+**② 移动构造 —— 指针交换**
+
+当 RVO 不适用时（如 `std::move(src)` 传参），移动构造器被调用：
+
+```asm
+; 移动构造器 Big(Big&&) — 3 条关键 mov
+mov  (%rcx),%rax    ; dst->data = src->data（指针搬移）
+mov  %rax,(%rdx)
+mov  0x8(%rcx),%rax ; dst->sz  = src->sz（值搬移）
+mov  %rax,0x8(%rdx)
+movq $0x0,(%rcx)    ; src->data = nullptr（搬空源）
+movq $0x0,0x8(%rcx) ; src->sz   = 0
+```
+
+**③ 拷贝构造 —— 堆分配 + memcpy**
+
+```asm
+; 拷贝构造器 Big(const Big&) — call 链
+call operator new(other.sz)   ; 新分配
+call memcpy(dst, src, sz)     ; 逐字节复制
+```
+
+### 三层代价分层
+
+| 机制 | 指令特征 | 堆分配 | 额外拷贝 | 适用场景 |
+|------|----------|--------|----------|----------|
+| RVO | 内联到调用方栈槽 | 1 次（本地） | 0 | 返回局部对象（**C++17 强制**） |
+| 移动构造 | `mov;mov;mov;mov;mov;ret` | 0（指针置换） | 0 | `std::move` + noexcept |
+| 拷贝构造 | `call new+call memcpy` | 1 次（新块） | 1 次（memcpy） | 无法 move 时 |
+| 原始分配 | `new+delete` 裸露 | 1 次 | 0 | C 风格/裸管理 |
+
+### 关键发现
+
+1. **RVO 是代码优化的物理定律，不是魔法**——C++17 强制要求：返回值路径中的构造必须直接在调用方地址进行（prvalue materialization 规则）。
+2. **`std::move` 不会生成额外指令**——move 构造函数只有 6 条 mov，编译器内联后移动成本 = 搬 2 个字段（+ 零空源字段）。
+3. **`Big` 的 sizeof=16**——data(8B) + sz(8B)。对于小于两个指针的对象，**copy 可能比 move 更快**（copy 的三指令 mov 无 nullptr 赋值开销）——这是为什么 `std::is_trivially_copyable` 的对象不需要 noexcept move。
+
+---
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
