@@ -973,6 +973,34 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 - **Blink** — Blink 用协程改写渲染流水线
 - **Chromium** — 服务层用协程管理生命周期
 
+## 附录 H：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+### 工业案例（真实可查证）
+
+- **异步 IO 框架的协程化**：Asio/`cppcoro` 用 `co_await async_read` 把「回调地狱」展平为顺序代码，但每个 `task` 的 promise/frame 默认堆分配。高频连接（如代理服务器每连接一个协程）下，分配器压力显著上升；`Folly` 用线程局部 frame 池 + symmetric transfer 削减。
+- **生成器 `generator<T>`**：Python 式惰性序列（`co_yield`）用于大文件/流解析，避免一次性读入内存。生产上把「先读全量再处理」重构为 `generator` 流式处理，峰值内存从 GB 级降到 MB 级。
+
+### 常见 Bug 与 Debug 方法
+
+- **跨挂起点悬垂引用**：`co_await` 恢复后调用者栈帧已析构，协程内裸引用变悬垂。ASan/UBSan 抓；Clang `-Wexperimental-coroutine` 警告异常路径未处理。
+- **异常从协程逃逸**：默认 `unhandled_exception` 调 `std::terminate`。Debug 在 promise 里 `print_exception`；用 `task<expected<T,E>>` 显式化错误。
+- **Code Review 关注点**：是否跨 `co_await` 持有短生命周期引用；热路径是否无脑 `co_await`（应合并 IO）；frame 分配是否走自定义 `operator new`。
+
+### 设计权衡（Trade-off）与反模式（Anti-Pattern）
+
+| 维度 | 选择 | 代价 |
+|------|------|------|
+| 调度 | symmetric transfer | 需手写 `await_suspend` 返回 handle |
+| 分配 | frame 池化 | 需自定义 `promise_type::operator new` |
+| 错误 | `expected<T,E>` | 不能与异常混用 |
+
+- **反模式**：协程里 `try/catch(...)` 静默吞异常（调用方永远拿不到失败）；用协程替普通函数只为语法好看却引入堆分配；跨 `co_await` 持有 `string_view` 指向已析构缓冲区。
+- **API Design**：`task<T>` 统一表达「异步计算」；异常路径用 `task<expected<T,E>>` 传播错误；`awaitable` 资源用 RAII 守卫绑定生命周期，杜绝悬垂。
+
+### 重构建议
+
+把「裸 `std::future` + `.get()` 阻塞」重构为 `co_await task<T>` 链式无阻塞；把散落 `try/catch` 吞异常重构为 `task<expected<T,E>>`；对高频分配场景自定义 `promise_type::operator new` 走线程局部 frame 池，削减堆压力。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

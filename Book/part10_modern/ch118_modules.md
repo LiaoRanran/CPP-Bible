@@ -592,6 +592,34 @@ T factorial(T n) { T r = 1; for (T i = 2; i <= n; ++i) r *= i; return r; }
 
 > 交叉引用：构建配置见 [ch18](Book/part02_toolchain/ch18_buildconfig.md)；构建系统见 [ch12](Book/part02_toolchain/ch12_buildsystems.md)。
 
+## 附录 F：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+### 工业案例（真实可查证）
+
+- **大型代码库迁移到 Modules 的编译期收益**：Google/Facebook 内部实验表明，C++20 Modules 把「每个 TU 重解析同一堆头文件」变成「一次编译 BMI 复用」，中型项目 `-O0` 构建可缩短 30–50%。但仅当**全依赖链都模块化为 BMI** 才见效——只要有一个关键头文件仍被 `#include`，就会回退到文本包含，收益归零。
+- **`import std` 的跨编译器不一致**：MSVC 17.5+ 与 Clang 18+ 提供标准库模块，GCC 15 才初步支持（`import std` 在 GCC/MinGW 尚不可用）。跨工具链项目若强依赖 `import std`，会被绑定到特定编译器。
+
+### 常见 Bug 与 Debug 方法
+
+- **BMI 不刷新导致「改了不生效」**：模块接口（`.ixx`/`.cppm`）改了但实现 TU 仍用旧 BMI。Debug 清 `gcm.cache/` 重编；CI 用 `--flake8` 式清理确保缓存无效化正确。
+- **循环模块依赖**：A `import` B、B `import` A 在 Modules 下非法（模块图必须 DAG）。Debug 用 `clang -fmodules-dep-scan` 看依赖环；拆出公共接口到第三模块。
+- **Code Review 关注点**：模块边界粒度（过细→编译图爆炸）；是否误把宏导出（模块不导出宏）；全局 `using` 是否泄漏进模块接口。
+
+### 设计权衡（Trade-off）与反模式（Anti-Pattern）
+
+| 维度 | 选择 | 代价 |
+|------|------|------|
+| 边界粒度 | 一库一模块 | 模块间耦合变强 |
+| 标准库 | `import std` | 绑死 Clang/MSVC，GCC 滞后 |
+| 迁移 | 渐进 `#include`+`import` 并存 | 并存期双包含风险 |
+
+- **反模式**：头文件级模块（几十个 `module;` 文件，编译图爆炸）；在模块接口里用宏做条件编译（宏不跨模块边界）；不清理 `gcm.cache` 就诊断「改了不生效」。
+- **API Design**：公开 API 收敛到少量 `export module libx;` 接口模块，内部实现用 `module libx.impl;` 私有分区；禁止在接口暴露宏，改用 `constexpr`/`inline` 变量。
+
+### 重构建议
+
+把「几十个细粒度头文件模块」重构为「一库一接口模块 + 私有实现分区」；把跨模块依赖环抽取为 `module libx.common;`；CI 增加 `gcm.cache` 清理步，避免 BMI 失效遗漏。注意：`import std` 仅在 Clang 18+/MSVC 17.5+ 可用，GCC/MinGW 需回退 `#include <...>`。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
