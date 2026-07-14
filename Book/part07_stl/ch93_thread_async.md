@@ -1168,3 +1168,7 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+---
+
+> **UB 实证库（并发）**：data race / 锁顺序反转死锁 / 信号 handler 非原子 / 伪共享的真实代码与实测证据，见 [附录 UB 反例库·并发批](../../Appendix/ub/README.md#1b-反例索引第二批并发-ub-5-例)（C1–C5）。伪共享基准实测 **≈6.1× 退化**。

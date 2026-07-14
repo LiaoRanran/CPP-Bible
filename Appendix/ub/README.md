@@ -39,6 +39,16 @@
 | 4 | [ub04_alignment_violation.md](./ub04_alignment_violation.md) | 对齐违例 | x86 静默通过（exit 0）| UBSan (alignment) |
 | 5 | [ub05_strict_aliasing.md](./ub05_strict_aliasing.md) | 严格别名破坏 | -O0/O2 输出分歧 + `-Wstrict-aliasing` | —（UBSan 不覆盖）|
 
+## 1b. 反例索引（第二批：并发 UB 5 例）
+
+| # | 文件 | UB 类型 | 本机真实证据 | Sanitizer 工具 |
+|---|------|--------|------------|:--------------:|
+| C1 | [ubc1_data_race.md](./ubc1_data_race.md) | 数据竞争 | 3 次"看似正确"(陷阱) + TSan DOC | TSan |
+| C2 | [ubc2_lock_order_inversion.md](./ubc2_lock_order_inversion.md) | 锁顺序反转/死锁 | `timeout` 杀掉(exit 124) 实测死锁 | TSan |
+| C3 | [ubc3_signal_handler.md](./ubc3_signal_handler.md) | 信号 handler 非原子 | exit=3 异常终止 | TSan |
+| C4 | [ubc4_tsan_false_positive.md](./ubc4_tsan_false_positive.md) | TSan 误报识别 | 注解/suppression 机制（DOC）| TSan |
+| C5 | [ubc5_false_sharing.md](./ubc5_false_sharing.md) | 伪共享 | 基准 **≈6.1× 退化**(4237 vs 698 ms) | —（perf 剖析）|
+
 ---
 
 ## 2. 如何在本机复现

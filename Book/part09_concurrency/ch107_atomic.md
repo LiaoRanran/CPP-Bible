@@ -951,3 +951,7 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+---
+
+> **UB 实证库（并发）**：数据竞争（非原子并发写）与伪共享（缓存行弹跳）的**真实基准/运行证据** + `std::atomic` 修复，见 [附录 UB 反例库](../../Appendix/ub/README.md)（C1/C5）。
