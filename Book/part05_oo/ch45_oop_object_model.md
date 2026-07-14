@@ -1425,6 +1425,22 @@ int main(){std::cout<<sizeof(B)<<","<<sizeof(D)<<std::endl;return 0;}
 - **相邻主题**：`Book/part04_memory/ch43_cache_locality.md`（第 43 章　CPU 缓存体系与内存局部性）—— 编号相邻、主题接续。
 - **同模块**：`Book/part05_oo/ch49_virtual_inheritance.md`（第49章 虚继承与菱形继承：共享虚基类）—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **多重继承 vptr 补齐的跨 ABI 崩溃**：类是 `MI`（multiply-inherited）的 `Derived : public A, public B`，vptr 在两个基类子对象中各占一份（`vptr_A` 在 `offset 0`、`vptr_B` 在 `offset sizeof(A)`）。`reinterpret_cast<B*>(d)` 在不同编译器下可能隐式偏移修正，若不用 `dynamic_cast` 或 `static_cast` 而是直接 `(B*)d`，指针偏移量差导致静默错误。
+- **`dynamic_cast` 开启 RTTI 的真实开销**：带 `-fno-rtti` 编译的 so 加载到 RTTI 开启的主程序→`dynamic_cast` 在跨边界时直接 `__dynamic_cast` 穿越 vtable + typeinfo，性能比静态 `switch` 慢 10–20×。热路径用 `static_cast`+`enum` 标记替代。
+
+### 常见 Bug 与 Debug 方法
+
+- **切片（slicing）**：`Base b = Derived(args)` 把多态对象的额外成员「切掉」——批量转换是高频源头。Debug 用 `-Wctor-dtor-privacy`、Clang-Tidy 检测拷贝构造调用。
+- **Code Review 关注点**：是否用 `dynamic_cast` 在热路径；是否存在隐式转换导致的切片；`static_cast` 下行转换是否安全（是否有继承链标记）。
+
+### 重构建议
+
+把热路径的 `dynamic_cast<Derived*>(base)` 重构为 `std::variant<DerivedA,DerivedB>` + `std::visit` 消除 RTTI 穿透开销；把「批量 `Base` 值拷贝」重构为 `vector<unique_ptr<Base>>` 杜绝切片；对必须用 `dynamic_cast` 的路径确保 `-frtti` 全局一致。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

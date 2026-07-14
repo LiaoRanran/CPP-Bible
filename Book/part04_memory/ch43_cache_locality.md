@@ -1618,6 +1618,22 @@ int main() {
 - **相邻主题**：`Book/part05_oo/ch45_oop_object_model.md`（第 45 章　C++ 面向对象总览与对象模型基础）—— 编号相邻、主题接续。
 - **同模块**：`Book/part04_memory/ch35_memory_layout.md`（第 35 章  C++ 程序的内存模型与操作系统视角）—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **链表的缓存不友好性**：`std::list` 每个节点单独分配（通常调用 `operator new`），相邻节点地址不连续→每次遍历都是 DRAM 访问（~100ns）而非 L1 命中（~1ns）。这是「数据局部性比算法复杂度更决定性能」的经典案例。
+- **`std::vector` vs `std::deque` vs `std::list` 在遍历上的数量级差**：`vector` → 连续内存、预取友好；`deque` → 分块连续，L2 命中尚可；`list` → 每次随机访问 ≈ 一次 cache miss。实测差距与 `-O2 -march=native` perf 的输出对照。
+
+### 常见 Bug 与 Debug 方法
+
+- **伪共享（false sharing）**：两个线程各自写紧邻的 `atomic<int>` 变量（同一缓存行 64B），每次写都触发一致性协议的缓存行失效，串行化读写。Debug 用 `perf c2c`（cache-to-cache）按 HITM 排序看热行；修复用 `alignas(64)` 或 `std::hardware_destructive_interference_size` 分离。
+- **Code Review 关注点**：热数据结构是否友好连续；多线程共享标志是否落到同一缓存行。
+
+### 重构建议
+
+把「频繁遍历的 `std::list`」重构为 `std::vector`（compact、预取友好），仅当需要 O(1) 中间插入删除（且遍历少）才保留 list；把「多线程共享的独立标志」用 `__attribute__((aligned(64)))` 或 `alignas` 分到不同缓存行。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

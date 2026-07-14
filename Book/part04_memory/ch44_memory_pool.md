@@ -1987,6 +1987,22 @@ int main(){
 - **相邻主题**：`Book/part05_oo/ch46_encapsulation_inheritance.md`（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 编号相邻、主题接续。
 - **同模块**：`Book/part04_memory/ch35_memory_layout.md`（第 35 章  C++ 程序的内存模型与操作系统视角）—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **固定大小池（Slab）的碎片消除**：线程-本地 freelist 对固定大小对象（如 `sizeof(T)=64`）分配 O(1)、无碎片。工业上游戏引擎（如 UE 的 `FMemory::Malloc`）对帧内临时对象的 95% 使用 slab 池化，只有未匹配大小的 5% 退化到通用 allocator。`perf stat -e cache-references` 对比池化前后的 cache miss 可量化收益。
+- **`pmr::unsynchronized_pool_resource` 的「无锁」假象**：单线程片段无需锁，但若误传进多线程容器（`pmr::vector` 含 `synchronized_pool_resource`），数据竞争静默。正确区分 `synchronized`/`unsynchronized` 版本并 `static_assert` 校验。
+
+### 常见 Bug 与 Debug 方法
+
+- **池对象析构未调用**：池调用 `operator delete` 回收内存但不析构对象→若对象析构函数有副作用（日志、refcount 减少），业务逻辑漏跑。Debug 用 `std::pmr::polymorphic_allocator` + `allocator_traits::destroy` 显式调用；池释放前加析构钩子。
+- **Code Review 关注点**：池分配/释放是否匹配（alloc 和 dealloc 内嵌到 RAII）；是否在池空闲时未归还 OS（内存虚高）。
+
+### 重构建议
+
+把「散落 `new`/`delete` 固定大小对象」重构为 `std::pmr::unsynchronized_pool_resource` + PMR 容器；池析构加 `destroy` 遍历确保非平凡对象析构完整；生产加池使用量 metrics 监控内存是否泄漏/虚高。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -672,6 +672,22 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 - **Abseil** — Abseil `absl::void_t` 实现检测惯用法
 - **Blink** — Blink 用 traits 推导样式计算类型
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **`std::is_trivially_copyable` 的序列化决策**：网络/文件序列化函数中 `if constexpr (std::is_trivially_copyable_v<T>)` 允许直接用 `memcpy` 而非逐字段序列化，性能差可达 10–50×。但该 trait 在跨平台下需验证编译器实现——`std::array<int,3>` 是 trivially copyable，但 MSVC 与 GCC 对齐差可能导致 `sizeof` 不一致。
+- **`std::conditional` 过深嵌套的编译期爆炸**：`std::conditional<A, T1, std::conditional<B, T2, T3>>` 嵌套三层以上，编译错误信息展开为上百行 `_Ty`/`_T` 内部类型名，调试极其昂贵。C++17 `if constexpr` 替代、或 C++20 `requires` 约束可读性飞升。
+
+### 常见 Bug 与 Debug 方法
+
+- **SFINAE 对 `is_detected` 的误用**：`std::experimental::is_detected<auto_f, T>` 在 `auto_f` 的 SFINAE 条件恰好同时覆盖两个分支时，选错实现。Debug 用 `-ftemplate-backtrace-limit=20` 缩小错误范围；C++20 `requires` 替 SFINAE 消除该幻觉。
+- **Code Review 关注点**：trait 的结果是否在编译期 `static_assert` 校验；`std::conditional` 链是否超过 2 层（应换成 `if constexpr`/`concept`）。
+
+### 重构建议
+
+把 `std::conditional` 多重嵌套重构为 `if constexpr`（C++17）或 `template<C T>` concept（C++20），诊断可读性提升 20×+；序列化用 `if constexpr (is_trivially_copyable_v<T>)` 分支 `memcpy` 快速路径 + `static_assert` 校验对齐。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -1272,6 +1272,22 @@ A: 几乎从不。唯一安全: 从指向标准布局类型第一个成员的指
 
 - **同模块**：`Book/part04_memory/ch36_stack_heap.md`（第 36 章　栈（stack）与堆（heap）的深度对比）—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **`-O2` 下 `uint32_t` 通过 `float*` 读写导致的致命错误**：常见模式——网络包解包时 `uint32_t` buffer 里 `reinterpret_cast<float*>(buf)` 直接取浮点值，破坏了严格别名规则。`-O2` 下编译器假设 `float*` 和 `uint32_t*` 永不别名，把两次访问重排/消除，导致读到旧值。正确的做法是 `memcpy` 或 `std::bit_cast`（C++20），依赖编译器内联消除拷贝开销。
+- **`union` 类型双关的破坏性**：用 `union { float f; uint32_t u; }` 通过 `u` 写、`f` 读在 C++ 中是 UB（仅 C 允许）。生产上改用 `std::bit_cast` 彻底消除未定义风险。
+
+### 常见 Bug 与 Debug 方法
+
+- **别名规则 violation 的诡异现象**：只在高优化级别出现（`-O1` 正常→`-O2` 出错），仅 ARM/x86 单边触发。Debug 用 `-fno-strict-aliasing` 临时代码、再用 `-Wstrict-aliasing` 找 violation；Code Review 搜索所有 `reinterpret_cast` 做专项排查。
+- **Code Review 检查**：所有 `reinterpret_cast` 是否违反对齐和别名规则；`union` 是否用于 type punning（应改 `bit_cast`）。
+
+### 重构建议
+
+把「`reinterpret_cast<B*>(a_ptr)` + 直接存取」重构为 `std::bit_cast<B>(a)`；关闭 strict-aliasing 的旧代码（`-fno-strict-aliasing`）逐步迁移到 `memcpy`/`bit_cast`，恢复编译器优化机会。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
