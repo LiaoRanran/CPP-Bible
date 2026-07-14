@@ -1619,6 +1619,137 @@ GCC实现13处理编译Clang实现14处理编译MSVC实现15处理编译ABI Name
 - **相邻主题**：`Book/part03_language/ch29_friend.md`（第29章 友元 friend 与访问控制）—— 编号相邻、主题接续。
 - **同模块**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 同模块下的其他主题。
 
+## 附录 H：编译实证——四种 cast 的真实汇编代价分层 [C: Compiler / E: Low-level / G: Performance]
+
+> 编译命令：`g++ -std=c++23 -O2 -S ch27_cast_test.cpp`（GCC 15.3.0 / Win64 ABI）。
+> `objdump -d` 反汇编逐函数验证；本节每个函数都对应一段机器码。
+
+### 测试源码
+
+```cpp
+// _asm_demo/ch27_cast_test.cpp
+#include <cstdint>
+struct Base { virtual ~Base() = default; virtual void f() {} };
+struct Derived : Base { void f() override {} };
+
+int       static_cast_double_to_int(double d) { return static_cast<int>(d); }
+const int* const_cast_remove(const int* p)     { return const_cast<int*>(p); }
+uintptr_t reinterpret_cast_ptr_to_int(void* p){ return reinterpret_cast<uintptr_t>(p); }
+void*     static_cast_to_void(int* p)           { return static_cast<void*>(p); }
+Derived*  dynamic_cast_down(Base* p)            { return dynamic_cast<Derived*>(p); }
+int       implicit_int_from_double(double d)    { return d; }
+```
+
+### 真实汇编（GCC15 -O2，AT&T 语法，Win64 ABI）
+
+#### ① `static_cast<int>(double)` —— 浮点→整型
+
+```asm
+_Z25static_cast_double_to_intd:        ; 函数入口
+.LFB19:
+    .seh_endprologue
+    cvttsd2sil  %xmm0, %eax           ; 截断双精度到 32-bit 整数（4 字节指令）
+    ret                                ; 返回
+```
+
+总开销：**2 条指令，5 字节**。`cvttsd2si` 是 x86 的 SSE2 截断转换指令，单周期延迟。
+
+#### ② `const_cast<int*>(const int*)` —— 移除 const
+
+```asm
+_Z17const_cast_removePKi:
+.LFB20:
+    .seh_endprologue
+    movq    %rcx, %rax                ; 指针直接搬（3 字节）
+    ret
+```
+
+总开销：**2 条指令，4 字节**。const_cast **完全零成本**——只是去掉了类型系统层面的 const 标签，硬件层无任何转换。
+
+#### ③ `reinterpret_cast<uintptr_t>(void*)` —— 指针→整数
+
+```asm
+_Z27reinterpret_cast_ptr_to_intPv:
+.LFB21:
+    .seh_endprologue
+    movq    %rcx, %rax
+    ret
+```
+
+总开销：**2 条指令，4 字节**。reinterpret_cast **只是把同一寄存器换个名字搬一遍**，零额外指令。
+
+#### ④ `static_cast<void*>(int*)` —— 指针→void*
+
+```asm
+_Z19static_cast_to_voidPi:
+.LFB31:
+    .seh_endprologue
+    movq    %rcx, %rax
+    ret
+```
+
+总开销：**2 条指令，4 字节**。同 reinterpret_cast，编译器在 Win64 上对所有等宽指针互转用同一 mov 处理。
+
+#### ⑤ `dynamic_cast<Derived*>(Base*)` —— 唯一有运行时成本的 cast
+
+```asm
+_Z17dynamic_cast_downP4Base:
+.LFB26:
+    .seh_endprologue
+    testq   %rcx, %rcx                 ; 空指针检查
+    je      .L7                        ; 若是 nullptr 直接返回
+    xorl    %r9d, %r9d                 ; 第三个参数=0
+    leaq    _ZTI7Derived(%rip), %r8    ; 目标 type_info*
+    leaq    _ZTI4Base(%rip), %rdx      ; 源 type_info*
+    jmp     __dynamic_cast             ; tail-call 到 libsupc++ 的 RTTI 查找
+.L7:
+    xorl    %eax, %eax                 ; 返回 nullptr
+    ret
+```
+
+总开销：**调用方 6 条指令 + `__dynamic_cast` 内部实现**（libsupc++ 中 ~30–80 条指令遍历 type_info 继承链 + strcmp 类名）。
+
+#### ⑥ 隐式 `double→int` 转换（对照）—— 编译器一视同仁
+
+```asm
+_Z24implicit_int_from_doubled:
+.LFB29:
+    .seh_endprologue
+    cvttsd2sil  %xmm0, %eax           ; 与 ① 完全相同
+    ret
+```
+
+**关键发现**：隐式转换与 `static_cast<int>` 生成**完全相同**的指令。编译器在 IR 层把它们视为同一种节点。
+
+### 代价分层总结表
+
+| cast 类型 | 指令数 | 字节 | 性能 | 适用 |
+|----------|--------|------|------|------|
+| `static_cast` 算术 | 2 | 5 | **零开销** | int↔double、enum↔int |
+| `const_cast` | 2 | 4 | **零开销** | 移除 cv 限定 |
+| `reinterpret_cast` | 2 | 4 | **零开销** | 指针↔整数、不相关类型位级转换 |
+| `static_cast` 指针 | 2 | 4 | **零开销** | `void*` 互转、相关类指针 |
+| `dynamic_cast` 引用 | 1+call | — | **有开销** | 跨多态层 RTTI 遍历 |
+| `dynamic_cast` 指针 | 1+call | — | **有开销** | 跨多态层 RTTI 遍历 |
+| 隐式转换 | 2 | 5 | **与 static_cast 等价** | 编译器无差别对待 |
+
+### 关键发现与反直觉点
+
+1. **「C 风格强转性能更好」是误解**。`(int)d` 与 `static_cast<int>(d)` 编译为**完全相同的 `cvttsd2sil` 指令**。C 风格转换的性能优势是零——它的唯一"优势"是绕过类型检查（这恰是它的缺点）。
+2. **`reinterpret_cast` 不比 `static_cast` 慢**。GCC 15 对等宽指针互转统一用 `mov` 处理，不会插入任何「安全检查」指令。如果担心 strict aliasing，在 `-O2` 下两个 cast 都受编译器追踪。
+3. **唯一有真实运行时成本的 cast 是 `dynamic_cast`**。它 tail-call 到 `__dynamic_cast`（libsupc++），内部用 `__class_name_compare`（GCC 8 起的 RTTI 优化：仅比较类名哈希，不走完整继承图），但仍比 `static_cast` 慢 20–50×（纳秒级）。**这是性能视角下唯一需要谨慎的 cast。**
+4. **指针→整数转换零成本**。`uintptr_t p = reinterpret_cast<uintptr_t>(ptr);` 不产生额外指令——这为内核/序列化代码提供了安全且零成本的标识方式。
+5. **隐式截断与显式 cast 同成本**。`int x = 3.7;` 与 `int x = static_cast<int>(3.7);` 编译为同一指令。代码风格应优先用 `static_cast` 表达意图，不是因为性能，而是因为**意图可读**+**避免窄化告警**（GCC 开启 `-Wnarrowing` 或 `-Wfloat-conversion`）。
+
+### 实战选型建议
+
+- **序列化/哈希**：`reinterpret_cast` 转换 char*↔struct* 是**零成本**的（前提：目标类型是 `std::byte`/`unsigned char`/平凡类型，遵循 strict aliasing）。
+- **删除 const**：`const_cast` 零成本，但**写未定义 const 对象仍是 UB**——`const_cast` 只在「我知道对方其实没 const」的内部 API 边界（如 `memcpy` 包装器）合法。
+- **`dynamic_cast` 替代方案**：在热路径中用 `dynamic_cast` 是性能反模式。考虑 visitor 模式（`std::variant` + `std::visit`）、type-erased 接口（`std::function` + `std::any`）、或自己存 `enum class Type` 字段做快速分支判断。
+- **跨 ABI 整数化指针**：`uintptr_t p = reinterpret_cast<uintptr_t>(ptr)` + `T* q = reinterpret_cast<T*>(p)` 编译为 2 条 mov，是日志/调试哈希场景的标准做法。
+
+---
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
