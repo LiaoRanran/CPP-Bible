@@ -292,7 +292,7 @@ _每完成一个Phase→更新本文件,记录决策与收获。_
 - **跨块增量教学**（符号定义在更早块，块隔离编译缺失，但顺读可编）：ch14(`g_alloc` 在 `#ifdef TRACK_LEAK` 内，需 `-DTRACK_LEAK`)、ch18(`compute` 在 `Examples/_ch18_main.cpp`)、ch39(`SCOPE_EXIT`@33→用@34)、ch96(`introsort`@3)、ch117(`Big`@2)、ch135(`area_of`@186)、ch136(`Session`@21)、ch138(`area_of`@39)、ch142(`World`@40)、ch145(`log`@15,`clamp`@52,`UserId`@56)、ch146(`divide_error_code`@56)、ch159(`ThreadPool`@5)、ch160(`FreeList`@5/`FixedPool`@4/`MemoryPool`@19)、ch161(`Level`@1,`log_if`@17,`now`@21,`g_mtx` 更早)。
 - **libstdcxx 内部窥探**（非公开 API）：ch124。
 
-**诚实结论**：「147 章完整程序 100% 可编译」对**隔离块审计不可达且不诚实**——本书大量采用多文件工程、外部库、模块、平台专属与跨块增量示例，本就不能作为单 `cpp` 块编译。真正有意义且可达的度量＝「自包含完整程序 100% 可编译」：4 个真实 bug 修复后该子集已 100% 通过；余下失败均为上述设计性豁免，已在 ROADMAP 透明登记。绝不为了「通过率」数字伪造任何可编译性。新基线见 `tools/compile_report.json`（本轮重跑）。
+**诚实结论**：「147 章完整程序 100% 可编译」对**隔离块审计不可达且不诚实**——本书大量采用多文件工程、外部库、模块、平台专属与跨块增量示例，本就不能作为单 `cpp` 块编译。真正有意义且可达的度量＝「自包含完整程序 100% 可编译」：5 个真实 bug 修复后该子集已 100% 通过；余下失败均为上述设计性豁免，已在 ROADMAP 透明登记。绝不为了「通过率」数字伪造任何可编译性。新基线见 `tools/compile_report.json`（本轮重跑，147 章全扫 / 112 通过 / 35 豁免）。
 
 **附带：移除 EPUB 封面（2026-07-14）**：独立技术作品不需要水封面。`tools/generate_epub.sh` 原 `--epub-cover-image=assets/cover.png`（由 ImageGen 生成的 `assets/cover.png`）已移除；EPUB 现在无封面图，仅保留 `--epub-chapter-level=1` 分章 + zh 元数据。ROADMAP L2 节相关封面描述同步更正。
 
@@ -303,4 +303,5 @@ _每完成一个Phase→更新本文件,记录决策与收获。_
 - `.github/workflows/ci.yml`：`compile` job 原 `chapter_compile_check.py`（`continue-on-error: true`，故意错误块会令检查器非零退出，设计预期下不阻断 pipeline）替换为 `compile_all.py --main-only` + `compile_gate.py`，成真门禁。
 - **豁免双层设计**：显式 (file,block) + 错误文本模式，吸收 CI(Linux/gcc13) 与本地(Windows/mingw) 的报告差异，避免误报红。
 - **度量诚实化**：门禁守护的是「自包含完整程序 100% 可编译」这一可达子集；多文件/模块/平台/外部库/故意错误·UB/跨块增量等设计性豁免不误伤，也不伪造通过率。
+- **提交与验证**：commit `9bfb657`（13 文件：5 处 `Book/*.md` 修复 + 去封面 + 2 门禁脚本 + `compile_exempt.json` + `ci.yml` + `ROADMAP.md` + 新 `compile_report.json`）。本地 `compile_gate.py` 校验＝**0 新增回归 / 0 冗余**（66 豁免块全命中）；PAT 内联推送 `a53b92a..9bfb657 → master`，remote 不含 token。CI 门禁绿即闭环。
 
