@@ -58,9 +58,17 @@ jobs:
         sudo apt-get install -y g++-${{ matrix.gcc }}
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ matrix.gcc }} 100
 
-    - name: Compile Check
-      continue-on-error: true   # ch61-63 故意保留的「编译错误」教学块会令检查器非零退出，属设计预期；失败不阻断 pipeline，pdf/site 任务照常产出
-      run: python3 tools/chapter_compile_check.py Book/*/ch*.md
+    - name: Compile Audit (全量隔离块语法检查)
+      # --main-only 仅验证含 int main 的完整程序；设计性豁免（多文件工程/
+      # 模块/MSVC/POSIX 专属/外部库/故意错误·UB/跨块增量）由 compile_gate
+      # 依据 tools/compile_exempt.json 放行，避免误伤。
+      run: python3 tools/compile_all.py --main-only
+
+    - name: Compile Gate (防回归门禁)
+      # 未来任何编辑若引入新的 SYNTAX/TYPE_MISMATCH 内容 bug，CI 立即变红；
+      # 已知豁免不阻断。门禁失败则本 job 失败，阻断后续发布任务。
+      continue-on-error: false
+      run: python3 tools/compile_gate.py
 
   # ---- 发布：静态站点（MkDocs Material）----
   site:

@@ -767,7 +767,8 @@ int main() {
 #include <memory>
 #include <string>
 #include <utility>
-
+#include <fcntl.h>     // open()
+#include <unistd.h>    // close()
 // 模式1: Builder Pattern + NRVO（Google/Abseil 风格）
 class QueryBuilder {
     std::string table_;

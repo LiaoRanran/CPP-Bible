@@ -476,7 +476,7 @@ int main() {
 #include <cstddef>
 #include <memory>
 void print_numa_win() {
-    unsigned len = 0;
+    DWORD len = 0;   // PDWORD 实参类型为 unsigned long*，须用 DWORD
     GetLogicalProcessorInformationEx(RelationNumaNode, nullptr, &len);
     auto buf = std::make_unique<char[]>(len);
     if (GetLogicalProcessorInformationEx(RelationNumaNode,

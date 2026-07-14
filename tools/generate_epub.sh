@@ -47,7 +47,6 @@ echo "[2/2] pandoc 生成 EPUB (epub3) ..."
 pandoc "$COMBINED" -o "$OUTPUT_DIR/现代C++终极圣经.epub" \
   --toc --toc-depth=2 \
   --epub-chapter-level=1 \
-  --epub-cover-image=assets/cover.png \
   --metadata title="现代 C++ 终极圣经" \
   --metadata author="LiaoRanran" \
   --metadata lang=zh \

@@ -408,6 +408,7 @@ int main() {
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <algorithm>    // std::min({...}) 初始化列表重载
 // 编译期全谓词
 template <typename... Ts> constexpr bool all_same = (std::is_same_v<Ts, int> && ...);
 

@@ -392,12 +392,10 @@ Holder make() {
 #include <cstdio>
 
 int main() {
-    int arr[3] = {1, 2, 3};
-    // const int& r = arr[1];  // 绑定到具名数组元素 → 跟随 arr 生命, 正常
-    // 真正陷阱: 临时数组 + 元素引用
-    const int& bad = (int[3]{10, 20, 30})[1];  // 临时数组绑定到元素引用?
-    // 标准: 数组本身是临时, 引用绑定的是"数组元素", 不触发延长 → 悬垂
-    // std::printf("%d\n", bad);  // UB
+    // 临时数组(纯右值)绑定到 const 引用 —— 整个临时数组的生命期被延长到该引用作用域
+    const int (&tmp)[3] = {10, 20, 30};
+    const int& ok = tmp[1];        // 安全: 数组随 tmp 延长, 元素引用不悬垂
+    std::printf("%d\n", ok);       // 20
     return 0;
 }
 ```

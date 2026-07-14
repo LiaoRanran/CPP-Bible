@@ -532,8 +532,8 @@ static_assert(!has_serialize_v<int>);
 #include <iostream>
 
 // 手写 is_same（最基础的布尔 trait）
-template <class T, class U> struct my_is_same       : false_type {};
-template <class T>          struct my_is_same<T, T> : true_type  {};
+template <class T, class U> struct my_is_same       : std::false_type {};
+template <class T>          struct my_is_same<T, T> : std::true_type  {};
 template <class T, class U>
 inline constexpr bool my_is_same_v = my_is_same<T, U>::value;
 
@@ -546,9 +546,9 @@ static_assert(std::is_same_v<storage_t<int>,  int>);
 
 // 标签分发：用 true_type/false_type 选不同实现
 template <class T>
-void describe(T, true_type)  { std::cout << "pointer\n"; }
+void describe(T, std::true_type)  { std::cout << "pointer\n"; }
 template <class T>
-void describe(T, false_type) { std::cout << "not pointer\n"; }
+void describe(T, std::false_type) { std::cout << "not pointer\n"; }
 template <class T>
 void describe(T v) { describe(v, my_is_pointer<T>{}); }
 
