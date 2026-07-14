@@ -693,6 +693,22 @@ int main(){std::string s="hello";std::cout<<s<<" ("<<s.capacity()<<" capacity, "
 - **相邻主题**：`Book/part07_stl/ch83_map.md`（第83章　map / multimap（红黑树））—— 编号相邻、主题接续。
 - **同模块**：`Book/part07_stl/ch76_stl_arch.md`（第76章　STL 架构与迭代器概念）—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **SSO 越界导致的不可重现已崩溃**：`libstdc++` 的 `std::string`（32B SSO，容量 15 字符）在本地 `str = "OK"` 正常，但从网络读入 16 字节后触发堆分配，旧代码持有的 `c_str()` 悬垂。`libc++` 为 24B SSO（容量 22 字符），同代码在两 STL 上行为不同——这是跨 STL 的 SSO 阈值差异陷阱。
+- **`string_view` 生命周期的生产事故**：日志系统 `spdlog::info(fmt, std::string_view(buf))` 与外部`buf` 析构竞速——日志异步队列未消费完，`buf` 已在调方退出时析构。修复用 `std::string` 拷贝而非 `string_view` 进入异步通道。
+
+### 常见 Bug 与 Debug 方法
+
+- **`c_str()` 悬垂**：`const char* p = (s1 + s2).c_str()` 临时对象析构后 `p` 悬垂。ASan 抓 use-after-free；Code Review 用 `-Wdangling-gsl` / Clang-Tidy 警告临时对象引用。
+- **Code Review 关注点**：临时 `string` 的 `.c_str()`/`.data()` 是否被存储；SSO 阈值是否在跨平台时不一致（`#if defined(_GLIBCXX_USE_CXX11_ABI)` 条件处理）。
+
+### 重构建议
+
+把「临时 `string().c_str()` 存储为 `const char*`」重构为 `std::string` 持有所有权；SSO 阈值差异大的代码用 `static_assert(sizeof(std::string)==32)` 锁定平台假设；异步日志传 `std::string` 拷贝而非 `string_view`。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

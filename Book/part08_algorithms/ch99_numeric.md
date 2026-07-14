@@ -1264,6 +1264,22 @@ int main() {
 
 **底层深度**：`std::accumulate` 与 `std::reduce` 核心差异在浮点结合律。`std::accumulate` 保证 `((a+b)+c)+d` 严格左结合，GCC 13.1 `-O2` 下仅标量 `addsd` 递推；`std::reduce` 放弃结合律，GCC 自动向量化为 `vaddpd ymm0`（256 位 AVX2，一次 4 个 double），Godbolt 实测循环体缩减 4×。`std::transform_reduce` 在 Intel oneAPI 后端可卸载到 GPU（SYCL）。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **`std::reduce` vs `std::accumulate` 的非确定性问题**：`std::reduce(std::execution::par, v.begin(), v.end())` 因并行化不保证结合顺序，浮点累加结果因四舍五入非确定性——两次运行同一数据输出不同。金融级计算坚持用 `std::accumulate`（确定序）。
+- **`std::inner_product` 性能瓶颈**：在未优化编译器下 `inner_product` 的链式计算可能不如手写展开循环 + `_mm256_fmadd_ps` AVX2 指令。`-march=native` 开启 SIMD 自动向量化可部分恢复。
+
+### 常见 Bug 与 Debug 方法
+
+- **并行策略不支持的迭代器类型**：`std::reduce(par, map.begin(), ...)` 对非随机存取迭代器是编译错误——信息多达几十行嵌套。Debug 用 `static_assert(random_access_iterator<decltype(c.begin())>)` 早报错。
+- **整数溢出在 `accumulate` 中**：`accumulate(v.begin(), v.end(), 0)` 当 `v = {INT_MAX, 1}` 时积 type 不够大→溢出为负数。用 `0LL` 或 `std::accumulate(v.begin(), v.end(), 0LL)` 指定泛型。
+
+### 重构建议
+
+把「`std::accumulate` + 手写展开」重构为 `std::reduce(std::execution::unseq)` 允许编译器 SIMD 向量化（非并行）；加 `static_assert(std::random_access_iterator<It>)` 守护并行执行；金融级累加保留 `std::accumulate` 确定序。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

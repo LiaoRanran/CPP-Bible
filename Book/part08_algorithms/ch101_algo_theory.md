@@ -944,6 +944,22 @@ add rdi, 0x0008             ; 收缩左界
 - `__cplusplus` = 202302L；`constexpr` 算法自 C++20 起可用
 - WG21 提案 P0468R2 规定范围算法接口
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **`std::unordered_map` 的哈希碰撞 DoS**：`std::hash<int>` 在多数实现中为恒等函数（`return key`），攻击者构造 `colliding batch` 使所有 key 落入同一 bucket→退化链表 O(n²) 碰撞。修复用随机 salt hash（如 `absl::Hash`）、或限制单 bucket 长度。
+- **DP 的 `vector<vector<T>>` 二维表缓存不友好**：`dp[i][j]` 按行遍历则连续访问、按列遍历则每次 cache miss。解法是如果列遍历为主，交换维度（`dp[j][i]`）或转为 1D flat index（`dp[i*W+j]`）。
+
+### 常见 Bug 与 Debug 方法
+
+- **无符号溢出与向下环路**：`for(size_t i=n-1; i>=0; --i)` 当 i 减到 <0 时 `size_t` 回绕为 (unsigned)-1→无限循环。Debug 用 `-fsanitize=unsigned-integer-overflow` 或 `-Wsign-compare` 替代。
+- **Code Review 关注点**：hash map 是否用自定义 hash 防止碰撞攻击；DP 表的访问模式是否匹配内存布局（行优先/列优先）。
+
+### 重构建议
+
+把 `std::unordered_map` 的默认 hash 替换为 `absl::flat_hash_map` 或自定义随机 seed hash；DP 表用 `vector<T>` flat 索引（`i*W+j`）替代 `vector<vector<T>>` 双指针跳转；`size_t` 递减循环改为 `for(size_t i=n; i--; )` 避免回绕。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

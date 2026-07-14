@@ -820,6 +820,22 @@ jge .ok
 - WG21 提案 P0468R2 规范范围算法
 
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **`std::sort` vs `std::stable_sort` 的 allocator 分配开销**：`std::stable_sort` 在无额外内存时退化为 O(n log² n) 归并排序。生产上对大数据集先 `reserve` 临时 buffer，否则隐式分配反复触發 page fault + 性能骤降。
+- **`std::nth_element` 被误作排序**：`nth_element` 只保证第 n 个元素在正确位置，其余元素**部分有序但非全序**，业务代码误读「前 n 个是最小的 n 个元素」逐项处理——结果乱序。正确替代是 `std::partial_sort`（前 n 个全序）。
+
+### 常见 Bug 与 Debug 方法
+
+- **`std::sort` 的随机存取迭代器要求**：`std::list` 不满足 RandomAccessIterator，无法 `std::sort`。报错信息深度嵌套（几十行 `value_type`/`iterator_category`）。Debug 用 `static_assert(std::random_access_iterator<It>)` 在进入 sort 前明确报错。
+- **Code Review 关注点**：sort vs stable_sort 的选择（仅需部分顺序用 nth_element 是 O(n)）；lambda 是否 `noexcept`（不可抛，否则 sort 未保证强异常安全）。
+
+### 重构建议
+
+把「`std::stable_sort` 无 reserve 对大列表」改为先 `reserve` buffer 或对大列表改用 `std::sort`；把误用 `nth_element` 当排序改为 `std::partial_sort`；比较器 lambda 加 `noexcept` 满足 `_GLIBCXX_DEBUG` 断言。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
