@@ -1370,6 +1370,22 @@ int main() {
 - **相邻主题**：`Book/part04_memory/ch38_allocator.md`（第 38 章　分配器（Allocator）模型与 PMR）—— 编号相邻、主题接续。
 - **同模块**：`Book/part04_memory/ch40_exception_safety.md`（第 40 章　异常安全（Exception Safety））—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **栈上"巨型对象"的隐蔽性能问题**：`LargeStruct buf[1024]` 在栈上分配，编译器插 `___chkstk` (MSVC) 或 `-fstack-clash-protection` 逐页触摸——每 4KB 一页的触页开销导致函数入口耗时 O(n)。堆分配无此问题，代价是 allocator 锁竞争。
+- **栈返回地址溢出（Stack Clash）**：2017 年 Qualys 发现栈与下方 mmap 区碰撞无保护，攻击者用 `alloca` 跳过多页触页，直写相邻内存。CVE-2017-1000364 后 gcc 引入 `-fstack-clash-protection`。
+
+### 常见 Bug 与 Debug 方法
+
+- **alloca/VLA 的"吞页"陷阱**：`alloca(1<<20)` 在无栈碰撞保护的内核上可跳过栈 Guard 页。Debug 用 `cat /proc/pid/maps` 看栈与相邻 VMA 间距。
+- **堆碎片导致 OOM**：长寿命程序（服务/数据库）频繁创建不同大小对象，堆碎片导致 `new` 失败而 RSS 尚有空闲。Debug 用 `mallinfo`/`malloc_info` 看 arena 碎片率。
+
+### 重构建议
+
+把「栈上的大数组」重构为 `std::vector`/`std::unique_ptr<T[]>`（堆分配、无栈溢风险）；碎片化场景用 `std::pmr::monotonic_buffer_resource` 池化（见 ch38）；CI 加 `-fstack-protector-strong` + `-D_FORTIFY_SOURCE=2` 防御栈溢出。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

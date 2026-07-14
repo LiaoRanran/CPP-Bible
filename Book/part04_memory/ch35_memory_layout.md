@@ -1421,6 +1421,22 @@ int main() {
 - **后续依赖**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 本章为其前置，建议后续延伸阅读。
 - **同模块**：`Book/part04_memory/ch40_exception_safety.md`（第 40 章　异常安全（Exception Safety））—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **BSS 段不占文件大小但占虚拟内存**：全局未初始化数组 `char buf[1<<20]` 在 ELF 中只增 BSS 大小计数、不占磁盘，但运行时内核映射匿名页——表面看 .o 小，实则虚拟地址空间膨胀。48-bit 空间耗尽 (256TB) 的 64 位程序常见此陷阱。
+- **栈大小硬限制（ulimit -s 8MB）**：递归深度过大导致 `SIGSEGV`（栈溢出），表象是「访问越界」而非「栈用完」。Debug 用 `pmap` 看栈段 VMA、`gdb catch signal SIGSEGV` 捞栈损毁现场。生产上用 `setrlimit(RLIMIT_STACK)` 调整。
+
+### 常见 Bug 与 Debug 方法
+
+- **TLS 误用导致加载失败**：`thread_local` 变量在 `.tdata/.tbss` 段，`dlopen` 加载含 TLS 变量的 .so 时，若已耗尽 TLS 区域会 `ENOMEM`。Debug 用 `readelf -S lib.so | grep tdata` 看段大小。
+- **Code Review 关注点**：全局指针是否在 BSS 零初始化假设下工作；局部数组是否超栈（>1MB 需堆分配）。
+
+### 重构建议
+
+把「递归 + 大局部数组」重构为 `std::array`+`std::stack`（堆分配迭代代替递归）；全局大缓冲从裸数组重构为 `static std::vector<char>` 延退分配；`dlopen` 前检查 `.tdata` 段大小给出硬上限。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

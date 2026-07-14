@@ -1839,6 +1839,22 @@ int main() {
 - **后续依赖**：`Book/part07_stl/ch77_vector.md`（第77章　vector：扩容、失效、allocator 协作）—— 本章为其前置，建议后续延伸阅读。
 - **同模块**：`Book/part04_memory/ch40_exception_safety.md`（第 40 章　异常安全（Exception Safety））—— 同模块下的其他主题。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **C++14 `operator delete` 带 size 参数优化**：`void operator delete(void* p, size_t sz)` 允许 allocator 根据释放大小直接归还到正确的 freelist，避免大小查询开销。但代码若定义了旧式 `delete(void*)` 而未同时提供带 size 版本，compiler 可能选择旧版——行为静默退化。
+- **`new(nothrow)` 的误信任**：`int* p = new (std::nothrow) int[1ULL<<40]` 返回 `nullptr`，但旧代码默认 `new` 必然成功，结果直接 `*p` 触发 nullptr deref。现代代码用 `std::make_unique` + `nullptr` 检查或干脆用 `try/catch std::bad_alloc`。
+
+### 常见 Bug 与 Debug 方法
+
+- **`new` 与 `free` / `malloc` 与 `delete` 混用**：堆分离（glibc 对 C 和 C++ 分配使用独立堆）下直接 `SIGABRT` 或 `corrupted double-linked list`。Debug 用 ASan + `-fsanitize=address` 抓；用 `MALLOC_CHECK_=3` 环境变量快速检测。
+- **Code Review 关注点**：所有 `new` 是否有对应 `delete`；异常安全路径是否有泄漏；是否有 `new(nothrow)` 无 nullptr 检查。
+
+### 重构建议
+
+把「裸 `new`/`delete`」重构为 `std::make_unique`/`std::make_shared`（异常安全、零裸指针）；把 `new(nothrow)` + 滞后 nullptr 检查替换为异常处理 `catch(std::bad_alloc)`；重定义全局 `operator new` 加 ASan/Valgrind 追踪（`extern "C" void* __asan_malloc(size_t)`）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

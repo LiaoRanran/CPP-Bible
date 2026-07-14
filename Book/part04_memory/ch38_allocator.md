@@ -1554,6 +1554,23 @@ int main() {
 
 这些分配器以 `0x0010`/`0x0040`（16/64 字节）块对齐减少碎片，热路径用线程本地缓存避免锁（`lock xadd` 10–20 ns 仅在跨核时）。`GCC 13.1.0` / `Clang 17` 的 `-O2` 把 `std::allocator` 的 `new` 内联；`C++17` 起 `std::pmr` 提供多态分配器（经 `0x0008` 指针间接，见 ch47 量级）。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **`std::allocator` 的 `construct`/`destroy` 在 C++17 被弃用**：allocator 的 `construct` 用 placement-new、`destroy` 用显式析构，C++17 起标为 deprecated——标准库容器不会再调它们。旧自定义 allocator 若仍实现这两个函数会报 warn，需删除并改用 `std::allocator_traits` 统一入口。
+- **`pmr::monotonic_buffer_resource` 生产落坑**：一次性分配、一次性释放的高性能池化 allocator。陷阱是释放整个 buffer 时所有指针瞬间悬挂——若对象析构函数写日志/析构其他资源需在 buffer 销毁前跑完。
+
+### 常见 Bug 与 Debug 方法
+
+- **allocator 传播遗漏**：容器 swap/move 时若 `propagate_on_container_swap` 为 `false_type`，两容器的 allocator 各自保持，行为与直觉相反。Debug 用 `using traits = std::allocator_traits<A>` + `static_assert` 检查 propagate 值。
+- **`operator==` 遗漏**：两个 allocator 相等是容器 swap 合法性的前提。缺失 `operator==` 默认构造为 true，但自定义 pool allocator 应语义判断而非默认。
+- **Code Review 关注点**：状态式 allocator 的 equality；propagate 语义是否正确。
+
+### 重构建议
+
+把「全局 `malloc`/`free` + 散落的大小追踪」重构为 `std::pmr::monotonic_buffer_resource` 阶段式分配；把旧 `allocator::construct/destroy` 改为 `=default`/删除（C++17+）；对跨容器 propagate 行为加 `static_assert` 验证预期。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

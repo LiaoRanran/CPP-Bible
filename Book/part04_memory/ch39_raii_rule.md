@@ -1743,6 +1743,23 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 [标准·可查证] 工业实现：Boost.ScopeExit（Boost）提供作用域退出清理；folly（Facebook）的 `ScopeGuard` 类似；Chromium 的 `base::ScopedFoo` 系列封装资源。
 
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
+
+### 工业案例（真实可查证）
+
+- **Rule of Zero 在互操作中的坑**：类只含 `std::mutex` 和值类型成员，符合 Rule of Zero——不写任何特殊成员。但若某成员升级为原始资源（如 `int fd`），类从 Rule of Zero 变 Rule of Three/Five 而编译器不警告——`std::copy` 造成 fd 复制 + 双重 close。
+- **`=default` 的误导**：`~Base() = default` 写于头文件却因某成员不完全类型导致隐式 delete，编译器只在**使用点**报错，而非定义点——延迟诊断让调试极其昂贵。
+
+### 常见 Bug 与 Debug 方法
+
+- **隐式生成的拷贝构造/赋值**：用 `-Wdeprecated-copy-dtor` / Clang-Tidy `cppcoreguidelines-special-member-functions` 检测 Rule of Three/Five 违反；`=delete` 不需要的非平凡成员防止隐式生成。
+- **移动语义缺失**：对象有 `noexcept` 移动构造但无 move assignment，编译器生成拷贝赋值代替。`static_assert(std::is_nothrow_move_assignable_v<T>)` 强制检查。
+- **Code Review 关注点**：析构含资源释放的类是否有 `=delete` 的拷贝；资源类是否有 `noexcept` move；double-free 可能性（见 ASan 日志 `attempting double-free`）。
+
+### 重构建议
+
+把「`int fd` 裸资源类」重构为 RAII wrapper（构造 open/析构 close + `=delete` 拷贝 + `noexcept` move），类退到 Rule of Zero；加 `static_assert(is_nothrow_move_constructible_v<T>)` 确保 `std::vector` 扩容走移动而非拷贝；Clang-Tidy 检查全量 `cppcoreguidelines-special-member-functions`。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
