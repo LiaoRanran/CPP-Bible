@@ -74,21 +74,28 @@ if [ "$BY_PART" = "--by-part" ]; then
   "$PYTHON" - <<'PY'
 import re, pathlib, subprocess, os, sys
 sys.path.insert(0, "tools")
-from rewrite_links import build_chapter_index, rewrite_content, ROOT
+from rewrite_links import build_chapter_index, rewrite_content, inject_chapter_anchor, ROOT
 idx = build_chapter_index()
 by_part = {}
 for meta in idx.values():
     by_part.setdefault(meta["part"], []).append(meta)
 outdir = pathlib.Path("build/pdf/parts"); outdir.mkdir(parents=True, exist_ok=True)
+total_anchored = 0
 for part, metas in sorted(by_part.items(), key=lambda kv: int(re.match(r"part(\d+)", kv[0]).group(1))):
     metas.sort(key=lambda m: m["num"])
     parts = []
+    anchored = 0
     for m in metas:
         c = (ROOT / m["path"]).read_text(encoding="utf-8", errors="replace")
         nc, _ = rewrite_content(c, m["path"], idx, mode="pdf")
+        # 与单卷路径一致：给每章 H1 注入 {#chNN}，使分卷内跨章链接可跳转。
+        nc, subs = inject_chapter_anchor(nc, m["slug"])
+        anchored += subs
         parts.append(nc)
     (outdir / f"{part}.md").write_text("\n\n\\newpage\n\n".join(parts), encoding="utf-8")
-    print(f"  卷 {part}: {len(metas)} 章")
+    total_anchored += anchored
+    print(f"  卷 {part}: {len(metas)} 章 · 注入锚点 {anchored}")
+print(f"[by-part] 合计注入 H1 锚点 {total_anchored}/{len(idx)}")
 PY
   echo "[3/3] pandoc 逐卷生成 PDF ..."
   for pf in build/pdf/parts/part*.md; do

@@ -176,6 +176,26 @@ def run_site(index: dict) -> None:
     print(f"[site] 文件 {total_files} · 重写引用 {total_rw}")
 
 
+def inject_chapter_anchor(content: str, slug: str) -> tuple[str, int]:
+    """给章节首个 H1 显式注入 pandoc 显式 id {#slug}。
+
+    pandoc 默认按标题文本（含中文/全角空格/冒号）自动生成 id，既不可预测
+    也可能与我们的 `#chNN` 跨章链接不匹配；显式标注后 pandoc 输出
+    `<h1 id="chNN">`，`#chNN` 链接即可在 PDF（单卷）与 EPUB（章节拆分后
+    pandoc 自动改写为跨文件链接）中正确跳转。
+
+    返回 (新内容, 注入次数 0/1)。已含 `{#slug}` 则跳过（幂等）。
+    """
+    if f"{{#{slug}}}" in content:
+        return content, 0
+    new, subs = re.subn(
+        r"^(#\s+.+?)\s*$",
+        lambda mm: f"{mm.group(1)} {{#{slug}}}",
+        content, count=1, flags=re.MULTILINE,
+    )
+    return new, subs
+
+
 def run_pdf(index: dict) -> None:
     out_dir = ROOT / "build" / "pdf" / "combined_src"
     if out_dir.exists():
@@ -192,16 +212,8 @@ def run_pdf(index: dict) -> None:
         new, n = rewrite_content(content, meta["path"], index, mode="pdf")
         total_rw += n
         # 给每章首个 H1 显式注入 pandoc id {#chNN}，使 #chNN 锚点可跳转。
-        # pandoc 默认按标题文本生成 id，与我们的 #chNN 不匹配，故必须显式标注。
-        slug = meta["slug"]
-        if f"{{#{slug}}}" not in new:
-            new, subs = re.subn(
-                r"^(#\s+.+?)\s*$",
-                lambda mm: f"{mm.group(1)} {{#{slug}}}",
-                new, count=1, flags=re.MULTILINE,
-            )
-            if subs:
-                anchored += 1
+        new, subs = inject_chapter_anchor(new, meta["slug"])
+        anchored += subs
         parts.append(new)
     combined = "\n\n\\newpage\n\n".join(parts)
     (out_dir / "combined.md").write_text(combined, encoding="utf-8")

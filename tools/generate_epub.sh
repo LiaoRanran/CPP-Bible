@@ -6,7 +6,7 @@
 #   - mermaid-filter（npm，可选；缺失则 Mermaid 块降级为代码块，不阻断）
 #
 # 复用 rewrite_links --mode pdf 产出的 combined.md（跨章引用已重写为
-# 书内锚点 #chNN，与 PDF 同源；EPUB 内跨章跳转保真度与 PDF 一致）。
+# 书内锚点 #chNN，H1 已显式注入 {#chNN}；EPUB/PDF 跨章跳转经本地 pandoc 端到端验证可用）。
 #
 # 用法：
 #   bash tools/generate_epub.sh

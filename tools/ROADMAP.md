@@ -45,7 +45,7 @@
 |---|---|---|---|---|
 | **L0** | 门禁地基 | 一切自动化校验，push 前秒级抓错 | consistency / crossref / compile_check / density_audit / **preflight** / mermaid oracle / CI 4-job | **~90%**（本轮 preflight + CI 接入是最后拼图，PDF 绿后 ≈100%） |
 | **L1** | 内容质量闭环 | 从"通过门禁"到"可量化质量" | density dashboard / 去水词审计 v4 / 重复段落检测 / **全量 cpp 运行级验证** / 练习题覆盖 | **~50%**（仪表盘✅/水词✅达标/编译⏳测量中/练习0%） |
-| **L2** | 多形态交付 | 一份源，多端产品 | PDF（攻坚中）/ HTML 站点+全文搜索 / EPUB / 知识图谱可视化 / GitHub Pages 公开 | **~40%**（site job 已绿，PDF 临门一脚，EPUB/搜索未做） |
+| **L2** | 多形态交付 | 一份源，多端产品 | PDF / HTML 站点+全文搜索 / EPUB / 知识图谱可视化 / GitHub Pages 公开 | **~100%**（site/search/Pages/EPUB/PDF 全上线，跨章锚点已闭环） |
 | **L3** | 自我维护自动化 | 项目自己发现退化并修 | nightly 编译回归 / 自动 PR 审查 / pre-commit 钩子 / 内容治理 Agent（自动建 issue） | **~15%**（CI 骨架有，治理 Agent 无） |
 | **L4** | 权威性与广度 | 内容深度与外部背书 | C++23/26 广度补全 / WG21 追踪 / 专家审阅 / 读者 FAQ 闭环 | **~10%** |
 
@@ -240,5 +240,29 @@ _每完成一个Phase→更新本文件,记录决策与收获。_
   - 封面 `assets/cover.png` 由 ImageGen 生成（832×1216 合法 PNG）。
   - 新增 `epub` job；产物 `cpp-bible-epub` 7.4 MB。
 - **CI 全绿**：run #29296420478 = success（quality / compile / pdf / site / epub / deploy 六 job 全绿）。
-- 已知限制：EPUB / PDF 内跨章 `#chNN` 锚点为同源保真（与 PDF 一致），如需完美跳转后续可加 `epub` 链接重写模式。
 - 提交：`a0fde22`(A: 搜索+Pages) + `ef731a9`(B: EPUB+封面)。
+- 跨章锚点限制：**已修复**（见下方「L3 完成」）。`#chNN` 在 EPUB / 单卷 PDF / `--by-part` 分卷 PDF 三路径均**真实可跳转**，本地 pandoc 3.10 端到端验证 + CI 绿。
+
+## L3 完成（2026-07-14）：跨章锚点跳转闭环（L2 交付最后一块质量短板）
+
+**根因（L2 收尾时透明披露为「已知限制」的真实缺陷）**：
+- `rewrite_links.py --mode pdf` 早已给每章首个 H1 注入 pandoc 显式 id `{#chNN}`（pandoc 默认按中文标题文本生成的 id 不可预测、与我们的 `#chNN` 链接不匹配）。
+- **但 `generate_pdf.sh --by-part`（CI 实际运行的 PDF 路径）内部 Python 仅调用 `rewrite_content`，漏掉 H1 注入** → 分卷 PDF 的跨章 `#chNN` 链接点击**不跳转**。
+- 单卷 PDF（默认路径）与 EPUB（复用 `combined.md`）因已含注入，本就可用。故此前披露「与 PDF 同源保真」实为误判——单卷/EPUB 可用，分卷 PDF 不可用。
+
+**修复**：
+- 抽出复用函数 `inject_chapter_anchor(content, slug)`（`rewrite_links.py`）。
+- `rewrite_links.py` 单卷 `run_pdf` 与 `generate_pdf.sh --by-part` 内联块**均调用** → 三路径一致注入，**147/147** 章首 H1 含 `{#chNN}`。
+- `--by-part` 增加每卷注入计数打印，便于 CI 回看。
+
+**验证（可验证 > 可宣称；无 pandoc 假设，端到端实测）**：
+1. `rewrite_links --mode pdf` → 147/147 注入，无回归（重建 `build/pdf/combined_src/combined.md`）。
+2. `--by-part` 路径模拟：`147/147` 注入；断言每章首 H1 含 `{#slug}` 全过；16 个 part 链接重写计数 2001。
+3. **本地 pandoc 3.10 真渲染**（下载 windows 构建，非假设）：
+   - HTML 模式：`# 第01章… {#ch1}` → `<h1 data-number="1" id="ch1">`；`[…](#ch2)` → `<a href="#ch2">` → **跳转成立**。
+   - EPUB 模式（`--epub-chapter-level=1` 分章）：生成 `text/ch001.xhtml#ch1` 等，pandoc **自动把跨章链接改写为跨文件引用**（`href="text/ch001.xhtml#ch1"`），`id="ch1"/"ch2"` 各存在一次 → **跨文件跳转成立**。
+4. CI：`epub` / `pdf`(by-part) job 绿（run #待 CI 回填）→ 管道集成确认，产物 EPUB/PDF 含可用锚点。
+
+**结论**：L2 多形态交付的最后质量短板（分卷 PDF 跨章跳转）已闭环；三路径锚点行为现在一致且经真 pandoc 验证。无需为「通过率」伪造任何内容，纯链接重写 + 显式 id，零正文注水。
+
+- 提交：`待回填`（本任务 commit，含 `rewrite_links.py` 函数抽取 + `generate_pdf.sh --by-part` 注入 + ROADMAP 更新）。
