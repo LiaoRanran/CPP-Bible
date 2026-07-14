@@ -143,6 +143,37 @@ jobs:
         path: build/pdf/part*.pdf
         retention-days: 14
 
+  # ---- 发布：全书 EPUB（pandoc epub3）----
+  epub:
+    needs: quality
+    runs-on: ubuntu-latest
+    env:
+      # 复用 pdf job 的 puppeteer 配置，让 mermaid-filter 在 CI 无沙箱环境渲染 Mermaid 为 SVG 嵌入 EPUB
+      MERMAID_FILTER_PUPPETEER_CONFIG: ${{ github.workspace }}/.puppeteer.json
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install pandoc
+      run: sudo apt-get update && sudo apt-get install -y pandoc
+
+    - name: Install mermaid-filter
+      run: npm install -g mermaid-filter
+
+    - name: Generate EPUB
+      run: bash tools/generate_epub.sh
+
+    - name: Upload EPUB artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: cpp-bible-epub
+        path: build/epub/*.epub
+        retention-days: 14
+
   # ---- 发布：GitHub Pages 部署（site + PageFind 索引）----
   deploy:
     needs: site
