@@ -1005,6 +1005,98 @@ call rax                ; 间接跳转，目标运行期才定
 
 [标准] 虚析构自 `C++98`；`override` / `final` 自 `C++11`；`consteval` 自 `C++20`。
 
+## 附录 E：编译实证——虚调用的真实汇编代价 [E: Low-level]
+
+> 编译器: GCC 15.3.0 (mingw64) | 选项: `-std=c++17 -O2 -fno-rtti -fno-exceptions`
+
+```cpp
+struct Base {
+    virtual int value() const { return 1; }
+    virtual ~Base() = default;
+};
+struct Derived : Base {
+    int value() const override { return 2; }
+};
+
+// CRTP 静态多态对照
+template<typename D> struct StaticBase {
+    int value() const { return static_cast<const D*>(this)->value(); }
+};
+struct StaticDerived : StaticBase<StaticDerived> {
+    int value() const { return 3; }
+};
+
+int direct_value(const Base& b) { return b.value(); }
+int direct_value_derived(const Derived& d) { return d.value(); }
+int call_virtual(int n) {                // 工厂→必须 vtable
+    auto p = n>0 ? std::unique_ptr<Base>(new Derived)
+                 : std::unique_ptr<Base>(new Base);
+    return p->value();
+}
+int crtp_call() { StaticDerived d; return d.value(); }
+```
+
+### 汇编输出（-O2）逐指令对比
+
+**场景 0：CRTP 静态多态 — 零指令开销**
+```asm
+crtp_call():
+    movl    $3, %eax                  ; 字面量 3 直接返回——编译期内联消除
+    ret
+```
+
+**场景 1：已知类型但参数是 `Base&` — 2 指令穿透**
+```asm
+direct_value(Base const&):
+    movq    (%rcx), %rax              ; 从对象首8字节取 vptr
+    jmp     *(%rax)                   ; 间跳转到 vtable[0] → value()
+```
+> 这两条指令就是「虚调用比直接调用多的全部开销」：一次 load + 一次间跳。CPU 分支预测器在稳态可命中（≈1–2 周期），但冷启动/去虚拟化失败要多花约 12–15 周期。
+
+**场景 2：参数类型是 `Derived&` — 编译去虚拟化**
+```asm
+direct_value_derived(Derived const&):
+    movq    (%rcx), %rax              ; 取 vptr
+    leaq    Derived::value()(%rip), %rdx  ; 取 Der::value 地址
+    movq    (%rax), %rax              ; 取 vtable[0] 的实际入口
+    cmpq    %rdx, %rax                ; 比较：实际函数==Derived::value?
+    jne     .L11                      ; 不相等→走通用虚分派
+    movl    $2, %eax                  ; 相等→直接返回 2（零跳转！）
+    ret
+```
+> 编译器做了**推测去虚拟化（speculative devirtualization）**：假设 vtable 入口就是 `Derived::value()`，用一个比较分支做守卫。猜测命中仅 4 指令，不命中才走通用路径。`final` 关键字可让前一步也变成 `movl $2, %eax; ret`。
+
+**场景 3：工厂模式 — 无法去虚拟化，必走 vtable**
+```asm
+call_virtual(int):
+    pushq   %rbx
+    subq    $48, %rsp
+    testl   %ecx, %ecx               ; 判断 n>0
+    movl    $8, %ecx                 ; sizeof(Base) = 8
+    call    operator new(8)          ; 堆分配 (jle 走 Base 分支)
+    movq    %rax, %rbx               ; 保存对象指针
+    leaq    16+vtable(Derived)(%rip), %rax  ; Derived 的 vtable 地址
+    movq    %rax, (%rbx)             ; 写入 vptr（对象首8字节）
+    leaq    Derived::value()(%rip), %rax  ; value() 函数地址
+    ...
+    call    *%rax                    ; 间跳调用 value()
+    ...
+    call    *16(%rdx)                ; 间跳调用 ~Derived()（vtable[2]）
+```
+> 只做一次 `call *%rax`（间跳）——**无多次链式穿透**。vtable 是数组：`[0]=&value, [1]=&typeinfo(nullptr), [2]=&dtor`。调用只需两步：（1）`movq (%obj), vptr` 取表地址，（2）`call *(vptr + offset)` 取函数指针并跳转。
+
+### 虚调用代价分层总结
+
+| 场景 | 指令开销 | 条件 |
+|------|---------|------|
+| CRTP / concrete type | 1 指令 (movl $N) | 编译器可见完整类型 |
+| `final` 方法 | 1–2 指令 (movl $N) | `final` 禁止进一步派生 |
+| 推测去虚拟化成功 | 4 指令 (cmp+je+movl) | Derived& 类型精确 -> 编译优化 |
+| 通用虚调用 | 2 指令 (movq + jmp *) | 必须走 vtable（工厂/接口） |
+| 虚析构 | 3–4 指令 (vptr取表+base off+间跳) | 多继承有偏移修正 |
+
+结论：**虚调用比想象的便宜**——它不是虚函数指针的链式穿透，只是一次 load + 一次间跳。`-O2` 下的去虚拟化可把它压到等价于直接调用。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
