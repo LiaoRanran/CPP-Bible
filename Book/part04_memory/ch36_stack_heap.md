@@ -1449,3 +1449,7 @@ int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << 
 
 </details>
 
+
+---
+
+> **UB 实证库**：堆内存（释放后使用 / 双重释放）与栈内存（栈对象越界使用）的**真实 UB 代码 + GCC 警告 + 修复**，见 [附录 UB 反例库](../../Appendix/ub/README.md)（UB-01/02/03）。

@@ -1348,3 +1348,7 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+---
+
+> **UB 实证库**：严格别名规则破坏的**真实优化分歧证据**（`-O0` 输出 `x=1065353217` 而 `-O2` 输出 `x=1`）+ `-Wstrict-aliasing` 警告 + `std::bit_cast` 修复，见 [UB-05 严格别名](../../Appendix/ub/ub05_strict_aliasing.md)。

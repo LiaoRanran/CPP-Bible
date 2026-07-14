@@ -31,10 +31,11 @@
     "P0-3": {
       "label": "反例/UB库 + Sanitizer",
       "status": "in_progress",
-      "batch": 1,
+      "batch": 2,
       "total_batches": 3,
-      "detail": "15 UB示例 → Book/appendix_ub/",
-      "current_batch_items": ["use_after_free", "double_free", "stack_after_scope", "alignment_violation", "strict_aliasing"]
+      "detail": "15 UB示例 → Appendix/ub/（已完batch1: 内存UB 5例）",
+      "current_batch_items": ["data_race", "lock_order_inversion", "signal_handler", "tsan_false_positive", "false_sharing"],
+      "batch1_done": ["use_after_free", "double_free", "stack_after_scope", "alignment_violation", "strict_aliasing"]
     },
     "A1": {
       "label": "交叉引用审计",
