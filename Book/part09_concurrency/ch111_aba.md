@@ -677,6 +677,35 @@ int main() {
 
 > 交叉引用：内存模型见 [ch108](Book/part09_concurrency/ch108_memory_order.md)；无锁队列见 [ch110](Book/part09_concurrency/ch110_lockfree.md)。
 
+## 附录 F：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+### 工业案例（真实可查证）
+
+- **Treiber 栈的 ABA 经典崩溃**：无锁栈 `pop` 用单指针 CAS，线程 A 读 `top=Node1` 后被抢占，B `pop` 两次又 `push` 回同一地址 `Node1`，A 恢复 CAS 成功但栈结构已破坏（中间节点丢失）。这是无锁数据结构最经典的 ABA 陷阱。
+- **Linux 内核 `cmpxchg` 的标签法**：内核无锁结构用「指针 + 版本号」双字 CAS（`cmpxchg16b`）规避 ABA；用户态 `std::atomic<std::uint128_t>` 需目标支持 16 字节原子（x86-64 `CMPXCHG16B`），ARM 需 LSE2。
+
+### 常见 Bug 与 Debug 方法
+
+- **ABA 复现难**：问题高度依赖调度时序。Debug 用 `-fsanitize=thread`（TSan）对无锁结构做「happens-before」违规检测；用 `std::atomic_thread_fence` 对照实验隔离内存序问题。
+- **双字 CAS 不支持**：在缺 `CMPXCHG16B` 的老 CPU 上 `std::atomic<__int128>` 退化锁。Debug 查 `std::atomic<...>::is_always_lock_free` 静态断言。
+- **Code Review 关注点**：CAS 循环是否只比指针（漏 tag）；`memory_order` 是否在不该放松处用了 `relaxed`；回收是否漏 hazard pointer/epoch 保护。
+
+### 设计权衡（Trade-off）与反模式（Anti-Pattern）
+
+| 方案 | 抗 ABA | 代价 |
+|------|--------|------|
+| 指针 + 版本号（双字 CAS） | 强 | 需 16B 原子指令支持 |
+| Hazard Pointer | 强、回收及时 | 全局 slot 表、上限固定 |
+| RCU | 强 | 写侧延迟回收 |
+| 单指针 CAS（无保护） | 否 | 实现简单但会 ABA |
+
+- **反模式**：用 `memory_order_relaxed` 跑无锁 CAS 循环却不验证 fence 必要性（隐藏重排 bug）；在热路径用 `std::mutex`「假装无锁」（退化互斥）；忽略 `is_always_lock_free` 假设所有平台无锁。
+- **API Design**：对外暴露无锁队列时，明确「调用方不可在 ABA 危险区持有节点指针」的契约；用 `hazard_pointer` 守卫暴露安全的「安全回收」接口，而非裸 `delete`。
+
+### 重构建议
+
+把裸「指针 CAS 循环」重构为「`atomic<struct{ptr, tag}>` 双字 CAS」或改用 `std::hazard_pointer`（C++26）保护回收；把 `relaxed` 误用改为 `acquire/release` 并附 fence 代价实测；用 `static_assert(is_always_lock_free)` 固化平台假设。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

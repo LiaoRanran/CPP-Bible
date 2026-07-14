@@ -778,6 +778,34 @@ int main() {
 - **相邻主题**：`Book/part10_modern/ch123_ct_programming.md`（第123章　Compile-Time 编程范式总览）—— 编号相邻、主题接续。
 - **同模块**：`Book/part11_source/ch128_boost.md`（第128章　Boost 核心库（C++））—— 同模块下的其他主题。
 
+## 附录 F：工业实战复盘与设计取舍 [I: Practice / H: Design]
+
+### 工业案例（真实可查证）
+
+- **`_LIBCPP_ENABLE_ASSERTIONS` 生产 abort（2023）**：libc++ 默认开启迭代器/容器断言，生产若未 `-D_LIBCPP_ENABLE_ASSERTIONS=0`，越界访问直接终止进程。大量旧代码的「侥幸越界」在升级 libc++ 后变崩溃——与 ch127 同源的版本行为变化陷阱。
+- **libc++ 与 libstdc++ 混链接**：同一进程同时链两者（如某 .so 用 Clang/libc++、主程序用 GCC/libstdc++），`std::string` 布局不同（`std::string` 在 libc++ 为 24 字节 SSO、libstdc++ 为 32 字节 COW 残影）导致跨边界析构崩。统一工具链是硬要求。
+
+### 常见 Bug 与 Debug 方法
+
+- **符号冲突/ODR**：`nm -C` 看两份 `std::string` 符号来自哪个库；`DYLD_PRINT_LIBRARIES`/`LD_DEBUG=libs` 跟踪实际加载的 `libc++.so` 路径。
+- **断言触发定位**：`-D_LIBCPP_DEBUG=1` 打开调试模式（含迭代器防护）；`lldb` 断在 `__libcpp_assert` 拿栈回溯。
+- **Code Review 关注点**：是否跨 ABI 边界传 STL 容器；是否依赖 libc++ 私有头（`<__xxx>` 双下划线命名空间属内部）。
+
+### 设计权衡（Trade-off）与反模式（Anti-Pattern）
+
+| 维度 | libc++ 立场 | 代价 |
+|------|------------|------|
+| 字符串 | 24B SSO、无 COW | 与 libstdc++ 不二进制兼容 |
+| 断言 | 默认开启（debug 友好） | 生产需显式关闭 |
+| 模块化 | 优先 C++20 Modules | 旧构建系统支持滞后 |
+
+- **反模式**：跨动态库边界传 `std::vector`/`std::string`（除非两端同 ABI 同编译器）；直接 `#include <__memory/xxx>` 私有头（版本升级即破）；混用两种标准库实现。
+- **API Design**：对外暴露用 `std::string_view`/`std::span` 解耦 STL 实现细节；错误用 `std::error_code` 而非抛异常跨越 ABI 边界（异常 ABI 同样不稳）。
+
+### 重构建议
+
+把跨 .so 的 `const std::string&` 参数重构为 `std::string_view`（零拷贝、无 ABI 假设）；把依赖 libc++ 私有头的部分改为公开 `<memory>`/`<utility>`；构建系统显式 `-stdlib=libc++` 并固化到 `CMakePresets`，杜绝混链。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
