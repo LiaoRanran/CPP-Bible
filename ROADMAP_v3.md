@@ -296,5 +296,23 @@
 
 ---
 
+### 9.6 I.实战 单维度补强 · 第六批（2026-07-14，起头）
+
+**背景**：交集表 I∩H 双零覆盖 22 章已收口。转入 `density_worklist.md` 表一（I.实战零覆盖 62 章），剔除已补 22 章剩 40 章。本批取 combined=23 未补首 5 章：**ch23/108/135/136/139**。这些章已有 H 维度覆盖（既有设计附录），故本批**仅补 I 维度**，保留 H 覆盖、不重复。
+
+| 章 | 追加小节 | I.实战要点（仅补 I） |
+|----|----------|----------------------|
+| ch23 namespace_adl | 附录 I | `using namespace std` 头文件灾难；ADL `swap` 歧义；内联命名空间 ABI；`using std::swap` 重构 |
+| ch108 memory_order | 附录 I | `relaxed` 标志丢失（ARM 重排）；DCL 误用；TSan/ARM 复现；`call_once` 重构 |
+| ch135 patterns_intro | 附录 I | YAGNI 过度抽象；Singleton 阻断测试；模式堆砌可读性；依赖注入重构 |
+| ch136 creational | 附录 I | `make_unique` 异常安全；Builder 必填校验；工厂裸指针所有权；`unique_ptr` 重构 |
+| ch139 crtp_pattern | 附录 I | CRTP 静态多态（Eigen）；无限递归陷阱；菱形消歧；`requires`/`=delete` 重构 |
+
+**验证**：5 章 I 关键词 0→3/6（工业案例/Code Review/重构建议），脱离零覆盖；H 维度保持既有覆盖（ch23/108/139 H=1、ch135 H=2、ch136 H=4，未被破坏）；cpp 块数不变；`consistency_check`=147 章 0/0（100/100）；`git diff --stat`=5 文件 +85 行、0 新 cpp 围栏。commit `24d7e71`（`5b335ac..24d7e71 → master`）→ CI 触发。红线守全。
+
+**累计 I 表补强进度**：已补 22（双维）+ 5（单 I）= 27/62；**I 表单维度剩余 35 章**（combined=23 剩 ch133/142/144/149/151/161/164 等 + combined=24/25 全部）。
+
+---
+
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）_
 _每次扩写完成后跑 `expansion_audit.py` 更新基线_
