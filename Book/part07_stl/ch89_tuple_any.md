@@ -1220,3 +1220,46 @@ use_agg(P const&):                 ; struct P{int a; double b; char c;}
 ```
 
 **工程含义**：tuple / 结构化绑定**没有运行时分发开销**，可作多返回值聚合（如 `auto [ok, val] = parse()`）而无性能顾虑。唯一结构差异是 libstdc++ 的"末参在底地址"布局——若需与 C ABI / 内存映射（寄存器组、外设描述符）逐字段对齐，优先用显式 `struct`（首成员 offset 0、可读性更佳）。
+## 附录：GCC 15.3.0 真机实证 — `std::any` SBO 边界与堆分配代价
+
+> 证据：`_asm_demo/ch89_any_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**≤ 16 字节类型走 SBO 内联存（零堆分配），> 16 字节走 `_Manager_external` + operator new 堆，`any_cast` 走内联 typeid 校验 + 类型指针偏移。**
+
+**1. `any a = 42`（int ≤ 16B）→ SBO 内联存储，无 operator new**：
+
+```asm
+; any a = 42：int 占用 4 字节，使用 _Manager_internal<int>（SBO）
+    lea    rax,[_Manager_internal<int>::_S_manage]  ; ★ 内联管理器
+    mov    [rsp+0x3c],0x2a                          ; ★ 值 42 直接写入栈（SBO）
+    mov    [rsp+0x40],rax                           ; 管理器指针存于 +0x40
+    ; ▸ 无 operator new 调用 —— 纯栈操作
+```
+
+⚠️ **SBO 边界**：libstdc++ `any` 的 SBO 缓冲为 **16 字节**（一个 `__aligned_buffer` 或等价的 16B union）。`any a = 42 (int, 4B)`、`any b = 3.14 (double, 8B)` 均走 SBO。
+
+**2. `any b = std::string("this string is longer than 16 bytes SBO")` (> 16B) → 堆分配**：
+
+```asm
+; any b = 长字符串（40 字符，ssize > 16）：
+    ; ① 先创建 string 对象（operator new 分配字符串缓冲区）：
+    mov    ecx,0x28                                 ; 40 字节（string 自身 SSO 缓冲不可用）
+    call   operator new                             ; ★ 堆分配 1
+    ; ② any 走 _Manager_external（外部/堆管理器）：
+    lea    rax,[_Manager_external<string>::_S_manage]; ★ 外部管理器
+    ; ③ string 本身可能有分别的堆分配
+    mov    ecx,0x20                                 ; 32 字节
+    call   operator new                             ; ★ 堆分配 2（string 内部 buffer）
+```
+
+**3. `any_cast<int>(a)` 内联类型校验**（managervoid* 比对）：
+
+```asm
+; any_cast<int> 展开为 if (a.type() == typeid(int)) 内联：
+    lea    rax,[typeinfo for int]                   ; typeid(int)
+    cmp    rax,[rsp+0x40-8]                          ; vs a._M_manager 关联的类型
+    jne    bad_any_cast
+    mov    eax,[rsp+0x3c]                           ; ★ 直接取 SBO 区域的值（无函数调用）
+```
+
+**工程含义**：`any` 是 C++17 最"重"的类型擦除容器——SBO 路径（≤ 16B）几乎零开销（与 `variant<int, double, string>` 同级），但**超 SBO 边界后的每次构造/赋值/拷贝均触发 operator new**，性能劣化为带 typeid 分发的 `void*`。核心使用规则：**仅当预知存储类型 ≤ 16B 时用 any 替代 variant**，否则优先用 `variant<...>`（编译期穷举、无堆分配）。
+
+

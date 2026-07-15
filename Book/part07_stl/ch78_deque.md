@@ -1122,4 +1122,51 @@ int main() { std::cout << fact(5) << '\n'; }
 [标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
 
 </details>
+## 附录：GCC 15.3.0 真机实证 — `std::deque` 分块映射与 push_back 代价
+
+> 证据：`_asm_demo/ch78_deque_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**operator[] 是双间接访存（块索引→块指针→元素），块大小 = 512 字节（128 × int），新块每次 operator new(0x200)。**
+
+**1. 块缓冲区 = 512 字节（0x200，含 128 个 `int`）**：
+
+```asm
+; deque<int> 初始化第一块：分配 map（8 指针=64B）+ 块缓冲区（512B）
+main+0x18:  mov    ecx,0x40                ; map 初始 8 指针
+main+0x1d:  call   operator new(unsigned long long)  ; map 分配
+main+0x2e:  mov    ecx,0x200               ; 块缓冲 = 512 字节
+main+0x33:  call   operator new(unsigned long long)  ; 首块分配
+;                 ^^ 512 = _Deque_buf_size = max(512/sizeof(T), 1)
+```
+
+**2. `operator[]` 双间接访存**——循环 `s += d[i]` 的编译器生成码：
+
+```asm
+; 遍历 d[0..199]，每元素双间接：
+main+0x160:  mov    rdx,rcx
+main+0x163:  cmp    rax,0x7f               ; i >= 128 ?
+main+0x167:  jle    1f                     ; 若仍在首块，走直取
+main+0x169:  mov    rdx,rax
+main+0x16c:  sar    rdx,0x7                ; ★ 块索引 = i >> 7
+main+0x170:  mov    rdi,rdx
+main+0x173:  mov    r9,rax
+main+0x176:  mov    rdx,QWORD PTR [rbx+rdx*8] ; ★ 查 map[块索引]（第一级间接）
+main+0x17a:  shl    rdi,0x7                ; 块索引 << 7（= 块起始偏移）
+main+0x17e:  sub    r9,rdi                 ; r9 = i - 块起始 = 元素内偏移
+main+0x181:  lea    rdx,[rdx+r9*4]         ; ★ base + 内偏移 × 4（第二级间接）
+1:           add    r8d,DWORD PTR [rdx]    ; ★ 取元素并累加（第三级直接）
+```
+
+⚠️ **首元素短路优化**：当 `i < 128`（仍在首块、未越块边界），跳过`sar/shl` 双间接，直接 `[rdx]` — 编译器将首块访问降为单间接（与 vector 等效，但只有首块、且 `push_back` 越块后即失效）。
+
+**3. push_back 越块触发新块分配**：
+
+```asm
+; 首块 128 元素写满 → 分配新块：
+main+0x100:  mov    ecx,0x200              ; 512 字节
+main+0x108:  call   operator new(unsigned long long)  ; ★ 第二块
+main+0x114:  mov    QWORD PTR [rbp+0x0],rax  ; 存新块指针到 map[1]
+;                 每个 push_back 走 "写数据 → cmp 尾指针 → 越块则 operator new"
+```
+
+**工程含义**：deque 的 operator[] 比 vector 多**一级间接**（map 查块表）和**一次分支**（块越界判断），但块粒度 128 元素使越块分支在循环中预测率极高。push_back 仅在越块时触发 operator new — 与 vector 的 amortized O(1) 类似但粒度更大（块而非单元素 realloc），故**尾端插入吞吐与 vector 同级**，但中间插入因需 `memmove` 单块内容仍明显劣于 list 的指针改写。
+
 

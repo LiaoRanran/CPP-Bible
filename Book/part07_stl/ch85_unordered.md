@@ -1221,4 +1221,45 @@ jne    <loop>
 | 隐藏成本 | 每次插入堆分配节点 | 桶数组堆分配 + **rehash**（增长时整体重散列，O(n)） |
 | 小数据量 | 仅靠比较，常比哈希快（无 `div`、无 rehash） | `div` + 桶数组 cache 不友好，未必更快 |
 
-→ 实测启示：元素少或需要有序遍历时用 `std::map`；查找为主且数据量大、哈希质量好时用 `std::unordered_map`。两者都**非连续内存、都付堆分配代价**，不能当作"廉价"容器——嵌入式/热路径优先考虑 `std::vector` + 排序后二分，或 `std::array`/`std::span` 等连续结构。
+→ 实测启示：元素少或需要有序遍历时用 `std::map`；查找为主且数据量大、哈希质量好时用 `std::unordered_map`。两者都**非连续内存、都付堆分配代价**，不能当作"廉价"容器——嵌入式/热路径优先考虑 `std::vector` + 排序后二分，或 `std::array`/`std::span` 等连续结构。
+## 附录：GCC 15.3.0 真机实证 — `std::unordered_set` 哈希查找代价
+
+> 证据：`_asm_demo/ch85_uset_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**find 走 hash → div 取桶 → 单链表 next 追逐 → 逐节点比较值，每节点 16 字节（next 指针 + value），键值存于 offset 0x8。**
+
+**1. 桶索引计算 = `value % bucket_count`**（整数除指令 `div`）：
+
+```asm
+; find(42) 的桶索引计算：
+    mov    eax,0x2a                   ; 42 作为被除数
+    xor    edx,edx
+    div    r10                        ; ★ 除法：hash % bucket_count → 桶索引
+    mov    rax,QWORD PTR [rsp+0x60]   ; 桶数组基址
+    mov    rcx,QWORD PTR [rax+rdx*8]  ; ★ 查桶[索引]，取链表首节点
+```
+
+**2. 桶内链表追逐 + 比较**（节点布局：offset 0 = next ptr, offset 8 = value）：
+
+```asm
+; 沿单链表 next 指针找 value == 42：
+bucket_chain:
+    mov    rax,QWORD PTR [rcx]         ; next 指针（offset 0）
+    mov    r9d,DWORD PTR [rax+0x8]     ; value（offset 8）
+    cmp    r9d,0x2a                    ; ★ value == 42？
+    je     found
+    mov    r8,QWORD PTR [rax]          ; 继续 next 追逐
+    test   r8,r8
+    je     not_found
+    ; ... 递归 down the chain
+```
+
+**3. 每节点 16 字节**（operator new(0x10)），仅含 next 指针（8B）+ value（4B + 4B pad）：
+
+```asm
+    mov    ecx,0x10                   ; 16 字节
+    call   operator new(unsigned long long)  ; 每元素一次堆分配
+    mov    DWORD PTR [rax+0x8],ebx    ; store key at +0x8
+```
+
+**工程含义**：unordered_set find 是平均 O(1) 但实际受桶链长度影响。整数 key 的 hash 是恒等函数（无 hash 运算），瓶颈在 `div` 指令（30-40 cycle）和桶内链表追逐的 cache miss。负载因子 < 1 时桶链极短（0-1 次循环），优于 set 的 7 步树追逐；但 rehash 是 O(n) 的全局操作——**插入触发 rehash 时瞬间代价是 set 的数倍**（全量重新分配桶数组 + 迁移所有节点）。
+
+

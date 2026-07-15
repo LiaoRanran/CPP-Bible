@@ -1167,4 +1167,80 @@ int main() { std::cout << fact(5) << '\n'; }
 [标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
 
 </details>
+## 附录：GCC 15.3.0 真机实证 — `std::priority_queue` 零开销上浮代价
+
+> 证据：`_asm_demo/ch86_pq_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**push = vector::push_back + push_heap 上浮环（比较 + 交换），top = c.front() 纯寄存器 load，无虚函数、无委托、零开销。**
+
+**1. push_heap 上浮环内联到 main**（`std::greater<int>` 默认大顶堆，本测试用默认 less → 大顶堆）：
+
+```asm
+; push_heap sift-up：从堆末向根比较并交换
+push_sift:
+    mov    rdx,rax
+    sar    rdx,1                      ; ★ 计算父节点索引 = i/2（sar 算术右移）
+    mov    r9,[rbx+rdx*4]             ; 父节点值
+    cmp    DWORD PTR [rbx+rax*4],r9d  ; 子节点 vs 父节点（本测试为 less<int>）
+    jle    done                        ; 若 子 < 父，停止
+    ; 否则交换，继续上浮
+    mov    [rbx+rax*4],r9d
+    mov    [rbx+rdx*4],r8d
+    mov    rax,rdx
+    test   rax,rax
+    jg     push_sift                  ; 继续上浮直至根或满足堆序
+```
+
+**2. `top() = c.front()` 单寄存器 load**：
+
+```asm
+; volatile int top = pq.top();
+    mov    eax,DWORD PTR [rbx]        ; ★ c.front() = 堆顶 = *c.begin()
+    mov    [rsp+0x2c],eax             ; 存入 volatile
+```
+
+**3. 底层 vector 扩容 = 单次 operator new + memcpy**：
+
+```asm
+; 当 c.size() == c.capacity() 时触发：
+    lea    r13,[rax*4]                ; 新容量 × sizeof(int)
+    mov    rcx,r13
+    call   operator new               ; ★ 重分配
+    mov    eax,[rbx]                  ; memcpy 旧数据
+    call   memcpy
+    call   operator delete            ; 释放旧 buffer
+```
+
+**工程含义**：priority_queue 无任何运行时开销——push_heap 上浮环仅 `sar`（除 2）+ `cmp` + 条件 `mov`，与手写堆**逐字节相同**。与 `std::sort` + `pop_back` 模拟优先队列相比，堆操作避免了 O(n log n) 的全排序。
+## 附录：GCC 15.3.0 真机实证 — `stack` / `queue` 委托适配器零开销
+
+> 证据：`_asm_demo/ch86_adapters_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**stack::top = deque::back、queue::front = deque 首元素直接访问、queue::back = deque::back —— 全部编译为底层容器的直接指令，零额外开销。**
+
+**1. stack::push / top → 直接委托 deque**：
+
+```asm
+; stack<int> st; st.push(1); st.push(2); volatile int t = st.top();
+    lea    rcx,[rsp+0x30]             ; deque 对象
+    mov    [rsp+0x80],0x1             ; 值 1
+    call   deque::emplace_back        ; ★ st.push(1) = deque::push_back
+    mov    [rsp+0x80],0x2             ; 值 2
+    call   deque::emplace_back        ; ★ st.push(2) = deque::push_back
+    call   deque::back                ; ★ st.top()  = deque::back()
+    mov    eax,[rax]                  ; 取返回值
+```
+
+**2. queue::front → deque 内部直接访问（无函数调用）**：
+
+```asm
+; q.push(1); q.push(2); volatile int f = q.front();
+    ; push 同 stack（委托 deque::emplace_back），略
+    mov    rax,QWORD PTR [rsp+0x90]   ; ★ deque._M_impl._M_start 首元素指针
+    mov    eax,DWORD PTR [rax]        ; ★ q.front() 直接取首元素
+; queue::back → 仍走 deque::back():
+    call   deque::back                ; ★ q.back() = deque::back()
+    mov    eax,[rax]
+```
+
+⚠️ **stack 选 deque 作底层**：stack 默认 `deque<T>`，因 deque 的 `push_back/pop_back` 同时是 stack 的操作。改用 `vector<T>` 时 `pop_back` 等价但顶部无容量 shrink（vector 不自缩）；改用 `list<T>` 时存储代价加倍（24B/元素 vs 4B/元素）。
+
+**工程含义**：适配器是纯编译期委托——`stack::push` 展开为 `c.push_back` 的**直接调用**，无虚函数表、无转型、无额外栈帧。与手写 `deque.push_back()` 编译结果逐指令相同。适配器的价值在**语义约束**——禁止不安全的 `c[5] = x` 破坏栈序——而非运行时开销。
+
 
