@@ -2,10 +2,10 @@
   "project": "现代C++终极圣经",
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
-  "total_chapters": 150,
+  "total_chapters": 147,
   "last_updated": "2026-07-15",
-  "last_commit": "a82b2c987b123a7dfb8e2665f690034b27247cd9",
-  "git_status": "in sync with origin/master after push 2026-07-15 (batch H: 37 asm examples, HEAD a82b2c987b123a7dfb8e2665f690034b27247cd9)",
+  "last_commit": "1275b2b1037a9263588126ee612cd38a3181aeed",
+  "git_status": "in sync with origin/master after push 2026-07-15 (batch I/J/K: 45 asm examples, HEAD 1275b2b1037a9263588126ee612cd38a3181aeed)",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -353,6 +353,62 @@
       "batch": 8,
       "total_batches": 1,
       "detail": "ch89 附录: GCC15.3 -O2 真机 objdump。get<N> 编译期偏移访问(无索引计算); 结构化绑定与裸 struct 成员访问逐字节相同; libstdc++ 递归继承致末参在最底地址(get<2>@0/get<1>@8/get<0>@16), sizeof=24。证据 _asm_demo/ch89_tuple_test.cpp/.s。"
+    },
+    "I1": {
+      "label": "ASM-80-array（批I：std::array 零开销下标）",
+      "status": "completed",
+      "batch": 9,
+      "total_batches": 1,
+      "detail": "ch80 附录: GCC15.3 -O2 真机 objdump。std::array 与裸数组逐字节同布局(均32B); operator[]=mov eax,[rcx+rdx*4] 无边界检查; at()=cmp rdx,0x7+ja throw 路径; data()=mov rax,rcx; 按值整段32B 拷贝(movdqu+mov)。证据 _asm_demo/ch80_array_test.cpp/.s。"
+    },
+    "I2": {
+      "label": "ASM-81-string_view（批I：std::string_view 零成本视图）",
+      "status": "completed",
+      "batch": 9,
+      "total_batches": 1,
+      "detail": "ch81 附录(接 SSO): GCC15.3 -O2 真机 objdump。string_view={len@0,ptr@8}、16B; sv_substr 零 call O(1); str_substr 含 _M_create/_M_copy 调用 O(n); sv_at=add rdx,[rcx+8]+movzx 无检查。证据 _asm_demo/ch81_string_view_test.cpp/.s。"
+    },
+    "I3": {
+      "label": "ASM-32-init_list（批I：std::initializer_list 寿命陷阱）",
+      "status": "completed",
+      "batch": 9,
+      "total_batches": 1,
+      "detail": "ch32 附录: GCC15.3 -O2 真机 objdump。initializer_list={ptr@0,len@8}; range-for 退化为指针自增循环; dangling_il() 触发 -Winit-list-lifetime 告警; 字面量提升为 .rdata 非常量悬垂。证据 _asm_demo/ch32_init_list_test.cpp/.s。"
+    },
+    "J1": {
+      "label": "ASM-87-bitset（批J：std::bitset 边界检查代价）",
+      "status": "completed",
+      "batch": 10,
+      "total_batches": 1,
+      "detail": "ch87 附录: GCC15.3 -O2 真机 objdump。bitset_flip=not; bitset_set/test 移位+位运算带 cmp i,0x3f 边界检查; bitset_count 拆低/高32位各 call 一次 popcount 运行库。证据 _asm_demo/ch87_bitset_test.cpp/.s。"
+    },
+    "J2": {
+      "label": "ASM-87-bit（批J：<bit> 工具与硬件 popcount）",
+      "status": "completed",
+      "batch": 10,
+      "total_batches": 1,
+      "detail": "ch87 附录(接 bitset): GCC15.3 -O2 真机 objdump。popcnt_u 默认走运行库 SWAR; bswap_u=bswap; to_float=movd; is_pow2=(x-1)<(x^(x-1)); -mpopcnt 后 popcnt eax,ecx 单指令。证据 _asm_demo/ch87_bit_test.cpp/.s + ch87_bit_test_popcnt.cpp/.s。"
+    },
+    "J3": {
+      "label": "ASM-24-enum（批J：enum class 强类型零开销）",
+      "status": "completed",
+      "batch": 10,
+      "total_batches": 1,
+      "detail": "ch24 附录: GCC15.3 -O2 真机 objdump。use_enum=movzx+add+越界 cmovae; use_plain=lea [rcx+1] 隐式转换零成本; enum_underlying=mov eax,ecx。证据 _asm_demo/ch24_enum_test.cpp/.s。"
+    },
+    "K1": {
+      "label": "ASM-83-map（批K：std::map 红黑树指针追逐）",
+      "status": "completed",
+      "batch": 11,
+      "total_batches": 1,
+      "detail": "ch83 附录: GCC15.3 -O2 真机 objdump。build() 三次 call _M_emplace_hint_unique(每元素 operator new 节点); find_it 沿 +0x10 左/+0x18 右指针追逐比较键@0x20, O(log n)。证据 _asm_demo/ch83_map_test.cpp/.s。"
+    },
+    "K2": {
+      "label": "ASM-85-unordered（批K：std::unordered_map 桶链表+整数除法）",
+      "status": "completed",
+      "batch": 11,
+      "total_batches": 1,
+      "detail": "ch85 附录: GCC15.3 -O2 真机 objdump。build() 节点堆分配+桶数组(max_load_factor=0x3f800000); find_it 先 div r11 取桶索引再沿 +0x00 next 单链表比较键@0x08。证据 _asm_demo/ch85_unordered_test.cpp/.s。"
     }
   },
   "execution_order": [
@@ -396,15 +452,23 @@
     "G3",
     "H1",
     "H2",
-    "H3"
+    "H3",
+    "I1",
+    "I2",
+    "I3",
+    "J1",
+    "J2",
+    "J3",
+    "K1",
+    "K2"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 37,
-    "i_practice_coverage": "63/150",
-    "compile_pass_rate": "112/150"
+    "assembly_empirical_examples": 45,
+    "i_practice_coverage": "63/147",
+    "compile_pass_rate": "112/147"
   },
-  "ci_status": "Pushed Phase4+Phase5 tree (HEAD 9c0657f); site/pdf CI pending on pushed tree"
+  "ci_status": "Pushed batch I/J/K tree (HEAD 1275b2b1037a9263588126ee612cd38a3181aeed); asm examples 45; consistency 100/100"
 }
