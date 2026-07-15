@@ -231,7 +231,23 @@
 | K1 | ASM-83-map：ch83 附录。`build()` 三次 `call _M_emplace_hint_unique`（每元素 `operator new` 节点）；`find_it` 沿 `+0x10`左/`+0x18`右指针追逐比较键`@0x20`，O(log n) | ✅ |
 | K2 | ASM-85-unordered：ch85 附录。`build()` 节点堆分配+桶数组（`max_load_factor=0x3f800000`）；`find_it` 先 `div r11` 取桶索引再沿 `+0x00` next 单链表比较键`@0x08` | ✅ |
 
-**产出**：`_asm_demo/` 累计 **45 组**实证（37+8）；`STATE.json` `assembly_empirical_examples=45`；一致性门禁维持 100/100；INDEX.md 已建"批 I/J/K"小节并单列八例。
+**产出**：`_asm_demo/` 累计 **53 组**实证（37+3+11）；`STATE.json` `assembly_empirical_examples=53`；一致性门禁维持 100/100；INDEX.md 已建"批 I/J/K/L"小节。
+
+## Phase G：批 L STL 容器真实成本实证（ASM MATRIX 容器收尾，2026-07-15）
+
+> 批 L 补 8 例**容器级别的非显然底层代价**——deque 双间接 vs vector 单间接、list/forward_list 每元素堆分配 vs 缓存局部性、set 红黑树指针追逐 vs unordered_set 整数除桶、适配器编译期委托零开销、any SBO 边界超 16B 即堆。全部 GCC 15.3.0 `-O2` 链接 exe 后 objdump，附录注入 6 个目标章（ch78/79/84/85/86/89）。
+
+| 子任务 | 内容 | 状态 |
+|--------|------|------|
+| L1 | ASM-78-deque：ch78 附录。分块大小=0x200(512B=128×int)；`operator[]`=`sar rdx,0x7`块索引→map查表→`lea rdx,[rdx+r9*4]`元素偏移双间接；push_back 越块 operator new(0x200) |  ✅ |
+| L2 | ASM-79-list：ch79 附录。每元素 operator new 24B 节点(prev+next+value)；遍历=`mov rax,[rax+0x8]` next追逐无缓存局部性 | ✅ |
+| L3 | ASM-79-fwdlist：ch79 附录（与 list 同章）。无 size 成员 O(n) distance；before_begin 哨兵；insert_after 仅改写 2 next 指针；节点 16B（比 list 省 8B） | ✅ |
+| L4 | ASM-84-set：ch84 附录。每节点 operator new(0x28=40B)；find 比较键@0x20 追逐左@0x10/右@0x18；键即值均存 0x20 | ✅ |
+| L5 | ASM-85-uset：ch85 附录。find div 取桶→next 链比较值@0x08；节点 16B；rehash O(n) 全量桶重建 | ✅ |
+| L6 | ASM-86-pq：ch86 附录。push=push_back+push_heap 上浮环(sar除2+cmp+swap)；top=c.front() 单 load；零开销 | ✅ |
+| L7 | ASM-86-adapters：ch86 附录（与 pq 同章）。stack.top()=deque.back()；queue.front() 直接读 deque._M_start 首元素无函数调用；queue.back()=deque.back()；全编译期委托 | ✅ |
+| L8 | ASM-89-any：ch89 附录。≤16B 走 _Manager_internal SBO 内联（零 operator new）；>16B 走 _Manager_external+operator new；any_cast 内联 typeid 校验 | ✅ |
+
 
 ## 不纳入项（P2-，已评估）
 
@@ -262,7 +278,8 @@
 | F-I | 批 I 零成本词汇/容器（array / string_view / init_list） | 3 | 3 | 100% |
 | F-J | 批 J 零成本工具与强类型（bitset / <bit> / enum） | 3 | 3 | 100% |
 | F-K | 批 K 关联容器（map / unordered_map） | 2 | 2 | 100% |
-| **合计** | | **59** | **59** | **100%** |
+| G-L | 批 L STL 容器真实成本实证（deque/list/fwdlist/set/uset/pq/adapters/any） | 8 | 8 | 100% |
+| **合计** | | **67** | **67** | **100%** |
 
 ---
 

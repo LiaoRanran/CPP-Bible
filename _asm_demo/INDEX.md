@@ -11,7 +11,7 @@
 
 ---
 
-## 一、已覆盖实证（累计 45 例，STATE 记录）
+## 一、已覆盖实证（累计 53 例，STATE 记录）
 
 > 下表为本目录可查证证据文件；其中 `ch08_mdspan_test` / `ch08_print_test` 为**失败证据**（头缺失 / 链接失败），不计入成功汇编但保留以诚实记录"标准 vs 实测"差距。
 
@@ -62,8 +62,16 @@
 | ASM-24-enum | `enum class` 强类型零开销 | ch24 | `ch24_enum_test.cpp/.s` | `use_enum`=`movzx`+`add`+越界`cmovae`；`use_plain`=`lea [rcx+1]` 隐式转换零成本；`enum_underlying`=`mov eax,ecx` |
 | ASM-83-map | `std::map` 红黑树指针追逐 | ch83 | `ch83_map_test.cpp/.s` | `build()` 三次 `call _M_emplace_hint_unique`（每元素 `operator new` 节点）；`find_it` 沿 `+0x10`左/`+0x18`右指针追逐比较键`@0x20`，O(log n) |
 | ASM-85-unordered | `std::unordered_map` 桶链表 | ch85 | `ch85_unordered_test.cpp/.s` | `build()` 节点堆分配+桶数组（`max_load_factor=0x3f800000`）；`find_it` 先 `div r11` 取桶索引再沿 `+0x00` next 单链表比较键`@0x08` |
+| ASM-78-deque | `std::deque` 分块映射双间接 | ch78 | `ch78_deque_test.cpp/.s` | 块大小=512B(128×int)；`operator[]`=`sar rdx,0x7`块索引→`mov rdx,[rbx+rdx*8]`查表→`lea rdx,[rdx+r9*4]`元素偏移；push_back 越块触发`operator new(0x200)` |
+| ASM-79-list | `std::list` 节点堆分配+指针追逐 | ch79 | `ch79_list_test.cpp/.s` | 每元素`operator new` 24B 节点(prev+next+value)；遍历=`mov rax,[rax+0x8]` 纯 next 追逐无缓存局部性；与 vector 求和差距 8-15× |
+| ASM-79-fwdlist | `std::forward_list` 无 size+单链哨兵 | ch79 | `ch79_fwdlist_test.cpp/.s` | 无 `size` 成员(O(n) distance)；`insert_after` 仅改写 2 个 next 指针；节点 16B(比 list 省 8B prev) |
+| ASM-84-set | `std::set` 红黑树节点+指针追逐 | ch84 | `ch84_set_test.cpp/.s` | 每节点`operator new(0x28=40B)`；find 比较键`@0x20`追逐左`@0x10`/右`@0x18`指针；键即值均存 0x20 |
+| ASM-85-uset | `std::unordered_set` 哈希桶+单链 | ch85 | `ch85_uset_test.cpp/.s` | find 先`div`取桶→沿`+0x00` next 链比较值`@0x08`；节点 16B(next 指针+value)；rehash 是 O(n) 全局操作 |
+| ASM-86-pq | `std::priority_queue` 堆上浮 | ch86 | `ch86_pq_test.cpp/.s` | push=vector::push_back+push_heap 上浮环(`sar`除2+`cmp`+交换)；top=`mov eax,[rbx]`(c.front())；无虚函数零开销 |
+| ASM-86-adapters | `stack`/`queue` 委托适配器 | ch86 | `ch86_adapters_test.cpp/.s` | stack::top=deque::back；queue::front 直接读 deque._M_start 首元素(无函数调用)；全部编译期委托零开销 |
+| ASM-89-any | `std::any` SBO 边界 | ch89 | `ch89_any_test.cpp/.s` | ≤16B 类型 SBO 内联存(零堆)；>16B 走 `_Manager_external`+operator new 堆；any_cast 内联 typeid 比对 |
 
-> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 45）。
+> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 53）。
 
 ---
 
@@ -117,6 +125,20 @@
 - [x] **ASM-87-bitset**：`bitset_flip`=`not`、`bitset_set/test` 移位+位运算带 `cmp i,0x3f` 边界检查、`bitset_count` 拆低/高 32 位各 call 一次 popcount 运行库
 - [x] **ASM-87-bit**：`<bit>` 工具 `popcnt_u` 默认走运行库 SWAR、`bswap_u`=`bswap`、`to_float`=`movd`、`is_pow2`=`(x-1)<(x^(x-1))`；`-mpopcnt` 后 `popcnt eax,ecx` 单指令
 - [x] **ASM-24-enum**：`use_enum`=`movzx`+`add`+越界`cmovae`、`use_plain`=`lea [rcx+1]` 隐式转换零成本、`enum_underlying`=`mov eax,ecx`
+
+### 批 K：关联容器（map / unordered_map）
+- [x] **ASM-83-map**：vtable 内 `__si_class_type_info` 链遍历
+- [x] **ASM-85-unordered**：`std::unordered_map` 桶链表+hash div→next 对比
+
+### 批 L：STL 容器真实成本实证（deque/list/forward_list/set/unordered_set/adapter/any）
+- [x] **ASM-78-deque**：分块映射双间接（`sar 0x7`块索引+map查表+偏移）、push_back 越块 operator new(0x200=512B)
+- [x] **ASM-79-list**：每元素 operator new 24B 节点、遍历纯 next 指针追逐、缓存局部性差
+- [x] **ASM-79-fwdlist**：无 size 成员(O(n))、before_begin 哨兵、insert_after 单指针改写
+- [x] **ASM-84-set**：operator new(0x28=40B)红黑树节点、find 比较键@0x20追逐左/右指针
+- [x] **ASM-85-uset**：div 取桶+next 单链比较值@0x08、rehash O(n)全量迁移
+- [x] **ASM-86-pq**：push_heap 上浮环(sar除2+cmp+交换)、top=c.front()单load
+- [x] **ASM-86-adapters**：stack::top=deque::back、queue::front=直接读首元素指针
+- [x] **ASM-89-any**：≤16B SBO 内联零堆、>16B _Manager_external+operator new、any_cast内联typeid
 
 ### 批 K：关联容器（map / unordered_map）
 - [x] **ASM-83-map**：`build()` 三次 `call _M_emplace_hint_unique`（每元素 `operator new` 节点）；`find_it` 沿 `+0x10`左/`+0x18`右指针追逐比较键`@0x20`，O(log n)

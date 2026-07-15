@@ -583,6 +583,10 @@ I 表最后 5 章：**ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_
   - 批 J（bitset/<bit>/enum class）：bitset 下标带 `cmp i,0x3f` 边界检查（与 array 相反）、`std::popcount` 默认软件 SWAR 仅 `-mpopcnt` 才硬件单指令、enum class 强类型零运行期代价
   - 批 K（map/unordered_map）：map 红黑树节点每元素 `operator new` 且 find 沿左右指针追逐 O(log n)；unordered_map find 含 `div` 取桶索引 + next 单链表追逐
   - 汇编实证 37 → 45 例
-- **最终状态**：汇编实证 8 → 45 例（+37），全部 GCC 15.3.0 真实 objdump 产物存 `_asm_demo/`；不可用特性（`import std`、`mdspan`、`reflection`、contracts 链接）均诚实标注
+- **批 L — STL 容器真实成本实证（L1~L8，2026-07-15）**
+  - 容器底层代价：deque 双间接分块映射（块索引`sar 0x7`+map查表+元素偏移）、list/forward_list 每元素 operator new 节点分配与纯指针追逐遍历、set 红黑树 40B 节点与 find 指针追逐（键@0x20）、unordered_set 哈希 div 取桶+next 单链表（节点 16B）、priority_queue 堆上浮环（sar 除 2+cmp+swap）零开销
+  - 适配器与类型擦除：stack/queue 编译期委托 deque 直接调用（零额外指令）、std::any SBO 边界（≤16B 内联零堆，>16B 走 _Manager_external+operator new）
+  - 汇编实证 45 → 53 例（对应 8 例 + 6 章附录注入）
+- **最终状态**：汇编实证 8 → 53 例（+45），全部 GCC 15.3.0 真实 objdump 产物存 `_asm_demo/`；不可用特性（`import std`、`mdspan`、`reflection`、contracts 链接）均诚实标注
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）、**WORKLIST_v4.md（质量收尾导航）**_
