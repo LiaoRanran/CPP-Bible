@@ -3,7 +3,7 @@
 > 全书术语索引。每条含：定义 + 出现章节 + 关联术语。持续扩充。
 
 ## A
-- **ABI（Application Binary Interface，应用二进制接口）**：决定编译产物如何互操作的底层约定（调用约定、名称修饰、结构体布局、异常展开）。C++ 无跨编译器稳定 ABI；Itanium C++ ABI 被 GCC/Clang 采用，MSVC 自有。⟶ ch11、ch51、ch54
+- **ABI（Application Binary Interface，应用二进制接口）**：决定编译产物如何互操作的底层约定（调用约定、名称修饰、结构体布局、异常展开）。C++ 无跨编译器稳定 ABI；Itanium C++ ABI 被 GCC/Clang 采用，MSVC 自有。⟶ ch11、ch13、ch51
 - **ADL（Argument-Dependent Lookup，实参依赖查找）**：名字查找时连同实参所属命名空间一并搜索。支撑 `std::swap` 定制。⟶ ch24、ch115
 - **API（Application Programming Interface）**：源码级接口约定。
 - **AST（Abstract Syntax Tree，抽象语法树）**：编译器前端产出。⟶ ch127
@@ -19,15 +19,15 @@
 - **constinit（常量初始化）**：保证静态初始化期完成（C++20）。⟶ ch21
 - **Concepts（概念）**：对模板实参的谓词约束（C++20）。⟶ ch67
 - **Coroutine（协程）**：可暂停/恢复的函数（C++20）。⟶ ch113、ch120
-- **CRTP（Curiously Recurring Template Pattern，奇异递归模板模式）**：基类以派生类为模板实参，实现静态多态。⟶ ch57、ch73、ch139
+- **CRTP（Curiously Recurring Template Pattern，奇异递归模板模式）**：基类以派生类为模板实参，实现静态多态。⟶ ch51、ch139
 - **copy elision（拷贝消除）**：编译器省略拷贝/移动构造。⟶ ch117
 
 ## D
-- **data race（数据竞争）**：未同步的并发读写同一内存。⟶ ch102、ch108
-- **deadlock（死锁）**：多线程互相等锁。⟶ ch104
+- **data race（数据竞争）**：未同步的并发读写同一内存。⟶ ch107、ch108
+- **deadlock（死锁）**：多线程互相等锁。⟶ ch110
 
 ## E
-- **EBO（Empty Base Optimization，空基类优化）**：空基类不占空间的布局优化。⟶ ch58
+- **EBO（Empty Base Optimization，空基类优化）**：空基类不占空间的布局优化。⟶ ch52
 - **exception safety（异常安全）**：不泄漏资源、不破坏不变式的保证等级。⟶ ch49
 
 ## F
@@ -37,7 +37,7 @@
 
 ## I
 - **inline namespace（内联命名空间）**：成员对外可见如在外层命名空间，用于版本化 ABI。⟶ ch24
-- **Itanium C++ ABI**：GCC/Clang 采用的 C++ ABI 规范。⟶ ch11、ch54
+- **Itanium C++ ABI**：GCC/Clang 采用的 C++ ABI 规范。⟶ ch11、ch13
 
 ## L
 - **lock-free（无锁）**：某线程崩溃系统仍前进。⟶ ch110
@@ -82,12 +82,12 @@
 - **TLS（Thread-Local Storage，线程局部存储）**：每线程独立变量。⟶ ch19、ch35
 
 ## U
-- **UB（Undefined Behavior，未定义行为）**：标准未规定后果，后果不可预测。⟶ ch34
+- **UB（Undefined Behavior，未定义行为）**：标准未规定后果，后果不可预测。⟶ ch28
 - **universal reference（万能引用）**：`T&&` 在类型推导上下文兼作左/右值引用。⟶ ch116
 
 ## V
-- **vtable（虚函数表）**：存放虚函数指针的只读表。⟶ ch54
-- **vptr（虚表指针）**：对象中指向 vtable 的隐藏指针。⟶ ch54
+- **vtable（虚函数表）**：存放虚函数指针的只读表。⟶ ch47
+- **vptr（虚表指针）**：对象中指向 vtable 的隐藏指针。⟶ ch47
 
 ## W
 - **WG21**：ISO C++ 标准委员会。⟶ ch02
