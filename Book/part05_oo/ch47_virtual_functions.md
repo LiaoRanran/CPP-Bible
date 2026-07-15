@@ -1097,6 +1097,103 @@ call_virtual(int):
 
 结论：**虚调用比想象的便宜**——它不是虚函数指针的链式穿透，只是一次 load + 一次间跳。`-O2` 下的去虚拟化可把它压到等价于直接调用。
 
+## 附录 F：编译实证——虚调用 vs CRTP 静态分发（循环优化边界）[E: Low-level / C: Compiler]
+
+> 编译：`g++ -std=c++26 -O2 -c ch47_vs_51_dispatch_test.cpp`（GCC 15.3.0 / Win64 ABI），`objdump -d -M intel -C`。
+> 本附录采用 **Intel 语法**（与 附录 E 的 AT&T 对照，结论一致），聚焦 附录 E / ch51 附录 H 未覆盖的**循环内分派**视角：虚调用之所以“慢”，本质是优化器看不见调用目标，从而**无法内联、无法跨调用边界优化**。
+> 完整源码：`_asm_demo/ch47_vs_51_dispatch_test.cpp`。
+
+### 测试源码（节选）
+
+```cpp
+struct ShapeV { int k; virtual int area() const = 0; virtual ~ShapeV()=default; };
+struct CircV : ShapeV { int r; int area() const override { return r*r; } };
+struct RectV : ShapeV { int w,h; int area() const override { return w*h; } };
+
+[[gnu::noinline]] long v_dispatch(const ShapeV& s) { return s.area(); }
+[[gnu::noinline]] long v_loop(const ShapeV* const* arr, int n) {
+    long s=0; for(int i=0;i<n;++i) s+=arr[i]->area(); return s;   // 每轮查 vtable
+}
+
+template<typename D> struct ShapeBase {
+    const D& self() const { return static_cast<const D&>(*this); }
+    int area() const { return self().area_impl(); }
+};
+struct CircC : ShapeBase<CircC> { int r; int area_impl() const { return r*r; } };
+struct RectC : ShapeBase<RectC> { int w,h; int area_impl() const { return w*h; } };
+
+[[gnu::noinline]] long c_dispatch(const CircC& c) { return c.area(); }
+template<typename D> [[gnu::noinline]] long c_loop(const D* arr, int n) {
+    long s=0; for(int i=0;i<n;++i) s+=arr[i].area(); return s;       // 派生体被内联
+}
+```
+
+### 真实汇编（GCC15 -O2，Intel 语法）
+
+**① 单点虚调用 `v_dispatch` —— 2 指令**
+```asm
+v_dispatch(ShapeV const&):
+    mov    rax, QWORD PTR [rcx]     ; 取 vptr（对象首 8 字节）
+    rex.W jmp QWORD PTR [rax]       ; 间跳 vtable[0]=area()（尾调用）
+```
+与 附录 E 场景 1、ch51 附录 H ② 一致：`1× load + 1× 间跳`。
+
+**② 虚循环 `v_loop` —— 每轮迭代都 `call [vtable]`**
+```asm
+v_loop(ShapeV const* const*, int):
+    ...                         ; 循环头：test/jle、指针 rbx=arr
+.loop:
+    mov    rcx, QWORD PTR [rbx]  ; 取 arr[i] 指针
+    add    rbx, 0x8
+    mov    rax, QWORD PTR [rcx]  ; 取 arr[i] 的 vptr
+    call   QWORD PTR [rax]       ; 间接调用 area() —— 每轮查 vtable！
+    add    esi, eax              ; 累加
+    cmp    rbx, rdi
+    jne    .loop                 ; 循环回边
+```
+> **关键**：循环体含 `call [vtable]`，`area()` 的函数体**未被内联**。优化器无法看穿虚调用边界——不能常量传播、不能向量化、不能消除冗余加载、不能把多轮计算融合。
+
+**③ 单点 CRTP `c_dispatch` —— 派生体直接内联**
+```asm
+c_dispatch(CircC const&):
+    mov    eax, DWORD PTR [rcx]   ; 取 r（CircC 布局：r 在偏移 0）
+    imul   eax, eax               ; r*r（area_impl 完全内联）
+    ret
+```
+无调用，3 指令。
+
+**④ CRTP 循环 `c_loop<CircC>` / `c_loop<RectC>` —— 派生体展开进循环，零调用**
+```asm
+long c_loop<CircC>(CircC const*, int):
+.loop:
+    mov    eax, DWORD PTR [rcx]   ; 取 arr[i].r
+    add    rcx, 0x4
+    imul   eax, eax               ; r*r 内联进循环体
+    add    edx, eax
+    cmp    rcx, r8
+    jne    .loop
+long c_loop<RectC>(RectC const*, int):
+.loop:
+    mov    eax, DWORD PTR [rcx]        ; 取 w
+    imul   eax, DWORD PTR [rcx+0x4]    ; w*h 内联进循环体
+    add    rcx, 0x8
+    add    edx, eax
+    cmp    r8, rcx
+    jne    .loop
+```
+> 两个实例化都把派生 `area_impl` 完全内联进循环，**循环体内无任何 `call`**。类型在编译期钉死，优化器拥有完整视野，可自由做常量传播/向量化/冗余消除。
+
+### 代价分层（优化边界视角）
+
+| 场景 | 调用边界 | 循环体是否内联 | 关键指令 |
+|------|----------|----------------|----------|
+| 单点虚调用 `v_dispatch` | 间接 `call [vtable]` | — | `mov vptr; jmp [vtable]` |
+| 虚循环 `v_loop` | 每轮 `call [vtable]` | **否** | `call [rax]` 在循环回边内 |
+| 单点 CRTP `c_dispatch` | 无（内联） | — | `mov; imul` |
+| CRTP 循环 `c_loop` | 无（内联） | **是** | `imul` 在循环体内，零 call |
+
+**结论**：虚调用的真实成本不是“一次间跳有多慢”，而是**它把调用目标对优化器隐藏**，使整个调用子树无法被内联、常量传播、向量化或融合——在热循环里这个代价被放大 N 倍。CRTP / 具体类型把类型钉死在编译期，优化器得以看穿边界。本附录与 附录 E（逐指令代价 / 去虚拟化）、ch51 附录 H（单点 CRTP/final 对比）三角互补。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

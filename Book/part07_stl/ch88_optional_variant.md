@@ -662,6 +662,82 @@ movsd xmm0, [rdi+0x0008]  ; 取 double 成员（偏移 0x0008）
 - `__cplusplus` = 202302L；`constexpr` variant 自 C++20
 - WG21 提案 P0202R3 引入 `std::variant`
 
+## 附录 G：编译实证——`std::variant` + `std::visit` 的类型索引分派 [E: Low-level / C: Compiler]
+
+> 编译：`g++ -std=c++26 -O2 ch88_variant_visit_test.cpp -o ...`（GCC 15.3.0 / Win64 ABI），`objdump -d -M intel -C`。
+> 本附录采用 **Intel 语法**。完整源码：`_asm_demo/ch88_variant_visit_test.cpp`。
+> 验证目标：破除“`std::visit` 是某种虚函数式间接调用”的误解——它底层是**按 index 字节的分支链**，且访问者被完全内联。
+
+### 测试源码
+
+```cpp
+struct A { int x; int compute() const { return x; } };
+struct B { int x; int compute() const { return x*2; } };
+struct C { int x; int compute() const { return x*3; } };
+using V = std::variant<A, B, C>;
+
+[[gnu::noinline]] int dispatch_visit(const V& v) {
+    return std::visit([](const auto& e) -> int { return e.compute(); }, v);
+}
+[[gnu::noinline]] int dispatch_manual(const V& v) {   // 对照：手写 switch 分派
+    switch (v.index()) {
+        case 0: return std::get<0>(v).compute();
+        case 1: return std::get<1>(v).compute();
+        case 2: return std::get<2>(v).compute();
+    }
+    return 0;
+}
+```
+
+### 真实汇编（GCC15 -O2，Intel 语法）
+
+**① `dispatch_visit` —— 按 index 字节的分支链，零 `call`**
+```asm
+dispatch_visit(std::variant<A,B,C> const&):
+    movzx  eax, BYTE PTR [rcx+0x4]   ; 取 index 标签字节（活跃类型索引）
+    cmp    al, 0x1
+    je     .B                         ; index==1 → B 分支
+    cmp    al, 0x2                    ; 检查 index==2
+    mov    eax, DWORD PTR [rcx]      ; 预取活跃成员（A/C 共享 union 偏移 0）
+    jne    .ret                       ; index==0（A）→ 直接返回 x
+    lea    eax, [rax+rax*2]           ; index==2（C）：x*3 内联
+.ret:
+    ret
+.B: mov    eax, DWORD PTR [rcx]       ; 取活跃成员
+    add    eax, eax                   ; x*2 内联（B::compute）
+    ret
+```
+> **关键发现**：`std::visit` 编译后**没有任何 `call` 指令**——它是一条 `cmp`/`je` 分支链，按 index 字节跳到对应分支；访问者 lambda `e.compute()` 被**完全内联**进每个分支（A→直接返回 `x`、B→`add eax,eax` 即 2x、C→`lea [rax+rax*2]` 即 3x）。访存只有一次 `movzx` 取标签 + 一次 `mov` 取成员，常数时间、可被分支预测器完美覆盖。
+
+**② `dispatch_manual` —— 手写 `switch` 与 `std::visit` 几乎逐字节相同**
+```asm
+dispatch_manual(std::variant<A,B,C> const&):
+    movzx  eax, BYTE PTR [rcx+0x4]   ; 同样取 index 标签
+    cmp    al, 0x1
+    je     .B
+    cmp    al, 0x2
+    je     .C
+    ...                              ; A 分支：mov edx,[rcx]; mov eax,edx; ret
+.B: mov    edx, [rcx]; add edx,edx; mov eax,edx; ret   ; B: 2x
+.C: mov    edx, [rcx]; lea edx,[edx+edx*2]; mov eax,edx; ret  ; C: 3x
+```
+> 二者生成**结构一致的分支链**，仅寄存器分配略有差异。`std::visit` 不引入任何额外的间接层或堆分配——它本质就是编译期展开的“按 index 分派”，与手写 `switch(v.index())` 等价。
+
+### 真实布局注记（修订 附录 F 示意）
+
+- `variant<A,B,C>`（三个备选均为 `int`）真实内存：活跃成员在 `[rcx+0x0]`，**index 标签字节在 `[rcx+0x4]`**（变体共 8 字节）。
+- 这与 附录 F 手绘“标签位于 `0x0000`”的示意**不一致**：标签偏移随“备选类型最大尺寸”浮动——本例备选均为 4B，标签只能落在 union 之后的 `0x4`。引用 附录 F 的布局示意时，请以真机 objdump 为准。
+
+### 代价分层：variant 分派 vs 虚调用
+
+| 机制 | 分派本质 | 内存间接 | 调用 |
+|------|----------|----------|------|
+| `std::visit` | `cmp`/`je` 分支链（按 index 字节） | 1× 取标签 | **无**（handler 内联） |
+| 虚调用（见 ch47 附录 E/F） | `call [vtable]` 间接跳转 | 2× 取 vptr→取函数指针 | **有**（每点一次） |
+| 手写 `switch(index)` | 同 `std::visit` | 1× 取标签 | 无 |
+
+**结论**：`std::variant` 的访问是**编译期已知的类型集上的常数时间直接分派**，无函数指针间接层、无堆分配、handler 可被内联；而虚调用要在运行时经 vtable 两级解引用后间接 `call`，流水线需排空。在“候选类型在编译期已知、且需值语义/异常安全”的场景，variant + `std::visit` 是虚多态的零开销替代；代价仅是 variant 体积 = max(备选) + 标签字节，且访问非活跃类型会抛 `bad_variant_access`（需保证穷尽）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

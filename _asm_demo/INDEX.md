@@ -11,7 +11,7 @@
 
 ---
 
-## 一、已覆盖实证（累计 27 例，STATE 记录）
+## 一、已覆盖实证（累计 29 例，STATE 记录）
 
 > 下表为本目录可查证证据文件；其中 `ch08_mdspan_test` / `ch08_print_test` 为**失败证据**（头缺失 / 链接失败），不计入成功汇编但保留以诚实记录"标准 vs 实测"差距。
 
@@ -44,8 +44,10 @@
 | ASM-117-nrvo | 拷贝省略 vs 未省略 | ch117 | `ch117_nrvo_test.cpp/.s` | prvalue/NRVO 零 call；多返回路径 NRVO 失效→两分支各 `call` move 构造 |
 | ASM-81-sso | `std::string` 小字符串优化 | ch81 | `ch81_sso_test.cpp/.s` | 短串 `make_short` 无 `operator new`（SSO 栈内缓冲）；长串 `make_long` 含 `call operator new` 堆分配 |
 | ASM-77-vector_grow | `vector::push_back` 扩容 | ch77 | `ch77_vector_grow_test.cpp/.s` | 扩容三连 `operator new`+`memcpy`+`operator delete`；`reserve` 后循环无扩容 call |
+| ASM-47-vs-51 | 虚调用 vs CRTP 静态分发 | ch47 | `ch47_vs_51_dispatch_test.cpp/.s` | 单点虚调用 `mov vptr;jmp [vtable]`；虚循环每轮 `call [vtable]` 无法内联；CRTP 循环体 `imul` 内联零 call |
+| ASM-88-variant | `std::variant`+`std::visit` 分派 | ch88 | `ch88_variant_visit_test.cpp/.s` | visit = 按 index 字节 `cmp`/`je` 分支链，零 `call`，handler 内联；≈ 手写 switch；标签真实偏移 0x4（全 int 变体） |
 
-> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 18）。
+> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 29）。
 
 ---
 
@@ -69,8 +71,8 @@
 - [x] ASM-77-vector_grow：`push_back` 触发扩容的 `operator new`+`memcpy`+`operator delete` 三连（扩展现有 ASM-77-vector，与附录 H 互补）
 
 ### 批 D：多态分发
-- [ ] ASM-47-vs-51：虚函数调用（`call [vtable+off]` 间接调用）vs CRTP 静态分发（直接 `call`）的指令数/间接跳转对比
-- [ ] ASM-88-variant：`std::variant` 访问（`std::visit`）的类型索引分派 vs `virtual` 虚调用
+- [x] ASM-47-vs-51：虚函数调用（`call [vtable+off]` 间接调用）vs CRTP 静态分发（直接 `call`）的指令数/间接跳转对比
+- [x] ASM-88-variant：`std::variant` 访问（`std::visit`）的类型索引分派 vs `virtual` 虚调用
 
 ### 批 E：分配与 PMR
 - [ ] ASM-122-pmr：`std::pmr` 多态分配器（资源句柄）vs 默认 `new` 的分配路径差异

@@ -283,6 +283,20 @@
       "batch": 3,
       "total_batches": 2,
       "detail": "push_no_reserve 含 operator new+memcpy+operator delete 三连; push_reserved 仅 reserve 一次分配, 循环无 call; 与附录H互补"
+    },
+    "P5-11": {
+      "label": "ASM-47-vs-51 虚调用 vs CRTP 静态分发实证",
+      "status": "completed",
+      "batch": 4,
+      "total_batches": 2,
+      "detail": "虚循环每轮 call [vtable] 无法内联; CRTP 循环体 imul 内联零 call; 单点虚调用 mov vptr;jmp [vtable]"
+    },
+    "P5-12": {
+      "label": "ASM-88-variant std::visit 类型索引分派实证",
+      "status": "completed",
+      "batch": 4,
+      "total_batches": 2,
+      "detail": "visit=按 index 字节 cmp/je 分支链零 call handler 内联; 等同手写 switch; 标签真实偏移 0x4(全 int 变体)"
     }
   },
   "execution_order": [
@@ -312,7 +326,7 @@
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 27,
+    "assembly_empirical_examples": 29,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   },
