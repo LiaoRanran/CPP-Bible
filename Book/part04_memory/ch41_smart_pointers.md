@@ -1800,57 +1800,118 @@ clone(std::shared_ptr<S> const&):
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+`std::unique_ptr` 与 `std::shared_ptr` 的所有权语义有何本质区别？
+写一个工厂 `make_node()` 返回 `unique_ptr<Node>`，调用方应如何"转移"而非"共享"所有权？
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`unique_ptr` 独占所有权（不可拷贝、可移动，零控制块开销）；`shared_ptr` 共享所有权（引用计数，控制块分配）。
+工厂返回 `unique_ptr`，调用方用 `std::move` 接收转移；若想共享则 `std::shared_ptr<std::unique_ptr 不可>`——直接返回 `shared_ptr` 或用 `std::move` 构造 `shared_ptr`。
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <memory>
+struct Node { int v; };
+std::unique_ptr<Node> make_node(int v) { return std::make_unique<Node>(Node{v}); }
+int main() {
+    auto a = make_node(1);          // 拥有
+    auto b = std::move(a);          // 转移; a 现在为空
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `unique_ptr`  movable-only；`make_unique`(C++14) 异常安全且避免裸 `new`。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+为何 `shared_ptr` 的**循环引用**会导致内存泄漏？画一个 `A ↔ B` 双向 `shared_ptr` 结构，
+并改成 `weak_ptr` 打破循环。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct A; struct B;
+struct A { std::shared_ptr<B> b; ~A(){/*不会跑*/} };
+struct B { std::shared_ptr<A> a; };
+auto pa = std::make_shared<A>();   // use_count(A)=1
+auto pb = std::make_shared<B>();   // use_count(B)=1
+pa->b = pb; pb->a = pa;            // 互相 +1 -> 双方引用计数停在有环状态
+// 离开作用域: pa/pb 析构各 -1, 但计数仍 >=1, 对象永不释放 -> 泄漏
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+修复：`struct B { std::weak_ptr<A> a; };` —— `weak_ptr` 不增加强引用计数，析构时 `B` 先释放，
+其 `weak_ptr` 自动失效，`A` 随后释放。
+
+[标准] `weak_ptr` 是 `shared_ptr` 的观察者，不拥有对象；`lock()` 原子尝试提升为 `shared_ptr`。
 
 </details>
 
+### 练习 3（难度 ★★★★）
+
+`std::make_shared<T>` 相比 `std::shared_ptr<T>(new T)` 为何更快且更安全？
+再写一个用**自定义 deleter** 管理 `std::FILE*` 的例子，并指出 `enable_shared_from_this` 的生命周期陷阱。
+
+<details><summary>答案与解析</summary>
+
+`make_shared` 把"控制块 + 对象"**一次性分配**（一次堆分配、更好缓存局部性），且不会因
+`f(shared_ptr<T>(new T), g())` 的参数求值顺序导致泄漏；后者是两次分配。
+
+```cpp
+#include <memory>
+#include <cstdio>
+auto file = std::shared_ptr<FILE>(std::fopen("log.txt","w"),
+                                  [](FILE* f){ if(f) std::fclose(f); }); // 自定义 deleter
+// 即使异常离开作用域, fclose 也会被调用
+```
+
+陷阱：`enable_shared_from_this::shared_from_this()` 要求对象**已**被 `shared_ptr` 拥有；
+在构造函数内或栈上对象调用会得到 `bad_weak_ptr` 或 UB。
+
+[标准] `make_shared`(C++11) 单分配; `shared_ptr` deleter 保存在控制块中。
+
+</details>
+
+## 附录：用法演绎 — 从裸指针迁移到 `unique_ptr`
+
+> 场景：重构一段老代码，原接口返回裸 `T*`（调用方负责 `delete`），频繁出现泄漏与双重释放。
+
+**步骤 1：原始代码（双重释放雷区）**
+
+```cpp
+Buffer* create_buffer(size_t n) { return new Buffer(n); }
+// 调用方:
+Buffer* b = create_buffer(1024);
+use(b);
+delete b;                 // 若 use() 内部也 delete -> 双重释放; 若抛异常 -> 泄漏
+```
+
+**步骤 2：用 `unique_ptr` + 自定义 deleter 包装**
+
+```cpp
+auto create_buffer(size_t n) {
+    return std::unique_ptr<Buffer>(new Buffer(n));   // 或 make_unique
+}
+auto b = create_buffer(1024);   // 离开作用域自动释放, 异常安全
+use(b.get());                   // .get() 仅借出裸指针, 不转移所有权
+```
+
+**步骤 3：工厂模式转移所有权**
+
+```cpp
+std::unique_ptr<Buffer> b = create_buffer(1024);  // 拥有
+std::unique_ptr<Buffer> b2 = std::move(b);        // 显式转移; b 变空
+// 不能 copy: auto b3 = b2; 编译失败 -> 编译期杜绝双重释放
+```
+
+**步骤 4：管理非内存资源（FILE*）**
+
+```cpp
+auto f = std::unique_ptr<FILE, decltype(&fclose)>(fopen("x","r"), fclose);
+// 文件句柄随 f 析构自动 fclose, 异常安全
+```
+
+**结论**：`unique_ptr` 把"所有权"编码进类型系统——可移动不可拷贝，编译期阻止双重释放；
+`.get()` 仅用于需要裸指针的旧 API，绝不从中转交生命周期管理。
+
+**工程含义**：裸 `new/delete` 在 modern C++ 中基本只应出现在 `make_unique/make_shared` 内部；
+所有权语义不清是 C++ 历史泄漏的头号来源。

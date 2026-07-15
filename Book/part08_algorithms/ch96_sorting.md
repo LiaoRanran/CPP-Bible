@@ -842,76 +842,116 @@ jge .ok
 
 ### 练习 1（难度 ★★）
 
-## 真实开源项目参考（可查证链接）
-
-> 排序算法的工业实现——下列链接指向标准库与第三方库的真实源码文件（L2 文件级）。
-
-- **libstdc++ `std::sort` / introsort**：[gcc-mirror/gcc · libstdc++-v3/include/bits/stl_algo.h](https://github.com/gcc-mirror/gcc/blob/master/libstdc++-v3/include/bits/stl_algo.h) —— 「② introsort」「⑥ 汇编证据 __introsort_loop」的源头；`std::__introsort_loop` 的递归深度上限 `__depth_limit = 2 * log2(N)` 在此定义。
-- **libc++ `std::sort`**：[llvm/llvm-project · libcxx/include/__algorithm/sort.h](https://github.com/llvm/llvm-project/blob/main/libcxx/include/__algorithm/sort.h) —— Clang/MSVC 侧的等价实现，采用 `__sort_impl` 模板分发，验证「② 实现：introsort」的跨库一致性。
-- **pdqsort（模式防御快速排序）**：[orlp/pdqsort · pdqsort.h](https://github.com/orlp/pdqsort/blob/master/pdqsort.h) —— 「③ 枢纽选择」「⑬ 几乎有序数组优化」的现代工业答案；对部分有序输入从 O(N²) 退化到 O(N log N)，是 libstdc++ `std::sort` 之后被广泛引用的改进。
-- **Boost.Sort**：[boostorg/sort · include/boost/sort/sort.hpp](https://github.com/boostorg/sort/blob/develop/include/boost/sort/sort.hpp) —— 提供 `spreadsort`（基数排序变体）等，对应「⑫ 大规模排序与缓存局部性」的工业级实现。
-
-**最佳实践**：默认用 `std::sort`；需要稳定时显式 `std::stable_sort`（归并，额外 O(N) 内存）；几乎有序大数组考虑 `pdqsort` 或 `std::sort` + 插入排序混合；比较器必须严格弱序，否则「⑯ 比较器不满足严格弱序 → UB/死循环」。
-
-- **Chromium `base::sort`（github.com/chromium/chromium）**：浏览器用 `std::sort` + `base::ranges::sort` 统一入口，`base::Contains` 等基于 ranges。
-- **ClickHouse `sortBlock`（ClickHouse/ClickHouse）**：列式引擎的排序用 `std::sort` + 自定义比较器（按列 `isNull` + 值），对应「⑫ 缓存局部性」。
-- **Folly `sort`（facebook/folly）**：`folly::sort` 是 `std::sort` 的并行化变体（timsort/introsort 混合），热路径用 `folly::hardware_concurrency` 切分。
-- **Abseil（abseil/abseil-cpp）**：`absl::c_sort` 提供非 ranges 风格的容器排序。
-- **Eigen（gitlab.com/libeigen/eigen）**：矩阵排序用表达式模板避免中间物化，思想与「⑥ 汇编证据」的零开销一致。
-
-> 交叉引用：二分查找见 [ch97](Book/part08_algorithms/ch97_search.md)；算法复杂度理论见 [ch101](Book/part08_algorithms/ch101_algo_theory.md)；`span` 视图优化见 [ch82](Book/part07_stl/ch82_span.md)。
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+`std::sort` 与 `std::stable_sort` 的稳定性有何差异？对一个 `(年龄, 姓名)` 的 pair 序列排序，
+演示稳定性如何保留同年龄元素的原有相对顺序。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`sort` **不保证**相等元素顺序（可能重排）；`stable_sort` **保持**相等元素的原有相对顺序。
+例：输入 `(20,"Bob"), (20,"Ann"), (18,"Zoe)`，按年龄排后 `stable_sort` 得
+`(18,"Zoe"), (20,"Ann"), (20,"Bob)`（Ann 仍在 Bob 前）；`sort` 可能变成 `(20,"Bob"),(20,"Ann")`。
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+std::vector<std::pair<int,std::string>> v{{20,"Bob"},{20,"Ann"},{18,"Zoe"}};
+std::stable_sort(v.begin(), v.end(), [](auto&a,auto&b){ return a.first<b.first; });
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `stable_sort` 复杂度上限 O(n·log²n)，内存不足时退化但仍稳定；`sort` 平均 O(n log n)。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+introsort（introspective sort）为何混合 quick / heap / insertion？
+解释它在什么条件下从 quick 切换到 heap（递归深度超限），这解决了快排的什么最坏情况？
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+快排平均 O(n log n) 但**已排序/几乎有序**输入会退化到 O(n²)。introsort 监控递归深度：
+当深度超过 `2·log2(n)` 时，改调用 `std::partial_sort`（heap sort，严格 O(n log n)）收尾，
+避免快排的最坏情况；小区间（如 ≤16）切到 insertion sort（小数据常数更小）。
 
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+```
+if (depth_limit == 0)      heap_sort(range);   // 防 O(n^2)
+else if (small(range))     insertion_sort(range);
+else                       quick_sort_partition + recurse(depth_limit-1);
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] introsort = introspective sort；libstdc++ `std::sort` 即此实现（见 ch96 附录 A 工业源码）。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+求 top-k 与中位数时，全排序是浪费的。分别用 `std::partial_sort` 与 `std::nth_element` 实现"找中位数"，
+对比复杂度，并说明 introselect 的 pivot 选择为何影响最坏情况。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+// 方法 A: partial_sort -> O(n log k), 这里 k=n/2
+std::vector<int> a = /*...*/;
+std::partial_sort(a.begin(), a.begin()+a.size()/2, a.end());
+int medA = a[a.size()/2-1];
+
+// 方法 B: nth_element -> O(n), 仅分区, 不排序
+std::vector<int> b = a;
+std::nth_element(b.begin(), b.begin()+b.size()/2, b.end());
+int medB = b[b.size()/2];
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+`partial_sort` 把前 k 个排好（O(n log k)）；`nth_element` 只保证第 k 个就位、左右分区（O(n)）。
+找中位数应用 `nth_element`。introselect 在快排式选择中同样用"深度超限转 heap select"防止 O(n²)。
+
+[标准] `nth_element` 实现 introselect（median-of-medians 或 introspective pivot）；平均/最坏视实现而定。
 
 </details>
 
+## 附录：用法演绎 — top-k 与中位数的正确打开方式
+
+> 场景：从 1,000,000 个数里取最大的 100 个，或求中位数。全排序是浪费的。
+
+**步骤 1：朴素全排序（O(n log n)，绝大多数工作白做）**
+
+```cpp
+std::vector<int> a = read_million();
+std::sort(a.begin(), a.end());          // 全部排好, 但只想要前 100 / 中间 1 个
+auto topk = std::vector<int>(a.begin()+a.size()-100, a.end());
+int median = a[a.size()/2];
+```
+
+**步骤 2：`std::partial_sort`（只排前 k，O(n log k)）**
+
+```cpp
+std::partial_sort(a.begin(), a.begin()+100, a.end()); // 前 100 就位且有序, 其余无序
+// 比全排序少排 n-100 个元素
+```
+
+**步骤 3：`std::nth_element`（只分区，O(n) — top-k 与中位数的最优解）**
+
+```cpp
+// 找中位数: 只保证第 n/2 个就位, 左边都 <= 它, 右边都 >= 它
+std::nth_element(a.begin(), a.begin()+a.size()/2, a.end());
+int median = a[a.size()/2];
+
+// 取最大 100: 以第 n-100 个为支点分区, 再 sort 尾部 100
+std::nth_element(a.begin(), a.begin()+a.size()-100, a.end());
+std::sort(a.begin()+a.size()-100, a.end());
+```
+
+**步骤 4：理解 introsort / introselect 的 pivot 保护**
+
+`std::sort`/`nth_element` 内部用 introsort/introselect：正常快排式分区，但当递归深度超限（防已排序输入退化 O(n²)）时转 heap sort / heap select 兜底——保证严格 O(n log n) / O(n)。
+
+**量化对照（示意）**：
+
+| 需求 | 算法 | 复杂度 |
+|------|------|------|
+| 全有序 | `sort` | O(n log n) |
+| 前 k 有序 | `partial_sort` | O(n log k) |
+| 第 k 个就位 | `nth_element` | O(n) |
+
+**结论**：只取极值/分位数 → `nth_element`；只要前 k 有序 → `partial_sort`；全排序才用 `sort`。
+盲目 `sort` 取 top-k 是把 O(n) 问题做成了 O(n log n)。
+
+**工程含义**：算法选型先看"我到底需要什么不变量"——多数 top-k/中位数场景根本不需要完全有序。

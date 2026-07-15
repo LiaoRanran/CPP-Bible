@@ -1756,57 +1756,107 @@ _Z24implicit_int_from_doubled:
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+用 `static_cast` 完成 `double→int` 截断与 `int→double` 提升，指出哪一步会丢失信息、是否触发警告。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`int→double` 是拓宽，值保真（但大整数超过 2^53 会失精度，非本题范围）。
+`double→int` 是收缩，**截断小数**且可能溢出——这是唯一的信息/UB 风险点，应开 `-Wfloat-conversion -Wconversion`。
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+double d = 3.9;
+int a = static_cast<int>(d);   // 3, 截断; -Wfloat-conversion 会警告
+int b = 7;
+double e = static_cast<double>(b); // 7.0, 保真
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `static_cast` 执行良定义的数值转换；窄化转换在列表初始化 `{ }` 中被禁止，但在 `static_cast` 中允许（仅警告）。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+何时**必须**用 `reinterpret_cast`？给出嵌入式内存映射 IO 读取一个 32 位状态寄存器的合理用例，
+并指出它在严格别名规则下的未定义行为边界。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+内存映射寄存器地址是硬件固定的整数，必须用 `reinterpret_cast` 把整数地址转为指针：
 
 ```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+volatile uint32_t* const STATUS = reinterpret_cast<volatile uint32_t*>(0x4002'1000);
+uint32_t s = *STATUS;          // 读硬件寄存器
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+UB 边界：`reinterpret_cast` 得到的指针只有在"该地址确实存在一个同类型对象"时才合法访问。
+把 `float*` 强转为 `int*` 去读位模式违反严格别名（见 ch42），应改用 `std::bit_cast` 或 `memcpy`。
+
+[标准] `reinterpret_cast` 转换指针/整数；其结果的可解引用性受"对象模型 + 严格别名"约束，滥用即 UB。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+`dynamic_cast` 在虚继承下为何比普通单继承更慢（涉及 vtable thunk）？
+写一个多重继承下 `dynamic_cast<Derived*>(base_ptr)` 返回 `nullptr` 的 case，并解释原因。
 
 <details><summary>答案与解析</summary>
 
+虚继承中派生类到虚基类的偏移**运行时才能确定**（取决于完整对象布局），`dynamic_cast`
+需沿 vtable 的 RTTI 信息做路径查找并可能调用调整 thunk（见 ch49 实证）。
+返回 `nullptr` 的典型情况：基类指针实际指向一个**不相关分支**的对象。
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct B { virtual ~B() = default; };
+struct D1 : B {};
+struct D2 : B {};
+struct Most : D1, D2 {};   // B 被继承两次(非虚)
+B* p = new D2;             // p 指向 D2 那一支的 B 子对象
+D1* q = dynamic_cast<D1*>(p); // nullptr: p 并不指向 D1 分支
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `dynamic_cast` 对指针在失败时为 `nullptr`、对引用抛 `std::bad_cast`；跨虚继承布局需 RTTI 路径解析。
 
 </details>
 
+## 附录：用法演绎 — 类型双关（type punning）的正确与错误姿势
+
+> 场景：网络/序列化中常需查看一个 `float` 的 32 位 IEEE-754 位模式（或反过来构造）。
+
+**步骤 1：错误——通过 union 双关（UB）**
+
+```cpp
+union U { float f; uint32_t u; };
+U x; x.f = 1.0f;
+uint32_t bits = x.u;             // C++ 中读取非活跃成员是未定义行为
+```
+
+虽然很多编译器"恰好"支持（type-punning union 是 GCC 扩展），但它**不是标准行为**，换编译器/开启严格别名优化即崩。
+
+**步骤 2：错误——`reinterpret_cast` 强转指针（违反严格别名）**
+
+```cpp
+float f = 1.0f;
+uint32_t bits = *reinterpret_cast<uint32_t*>(&f);  // 违反严格别名 -> UB, -fstrict-aliasing 下可能被优化错
+```
+
+编译器假设 `float*` 与 `uint32_t*` 不会指向同一内存，可能重排/缓存，结果不可信。
+
+**步骤 3：正确——`std::memcpy`（零开销且标准合法）**
+
+```cpp
+float f = 1.0f; uint32_t bits;
+std::memcpy(&bits, &f, sizeof(bits));   // 标准明确允许, 编译器优化为单条 mov
+```
+
+`memcpy` 是唯一被标准许可的"重新解释对象表示"方式；现代编译器会把它优化成一条寄存器传送，**零运行时成本**。
+
+**步骤 4：正确——`std::bit_cast`（C++20，最优雅）**
+
+```cpp
+uint32_t bits = std::bit_cast<uint32_t>(1.0f);   // 编译期可求值, 类型安全
+```
+
+**结论**：需要位模式互看时，优先 `std::bit_cast`(C++20) 或 `memcpy`；`reinterpret_cast`/`union` 双关仅在明确 UB 边界内、且确认编译器扩展支持时使用。
+
+**工程含义**：严格别名规则（ch42）不是学术细节——它直接决定你的序列化/网络代码在 `-O2` 下是否正确。

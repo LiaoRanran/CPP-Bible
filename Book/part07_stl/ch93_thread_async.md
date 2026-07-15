@@ -1114,61 +1114,113 @@ Win64 上 `__tls_get_addr` 属 `KERNEL32.dll`——动态查找当前线程的 T
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 `std::thread` 并行求 `0..N` 的和；指出若改用 `detach()` 而非 `join()` 会有什么风险，
+并说明 `std::jthread`(C++20) 如何自动避免它。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <thread>
+#include <vector>
+long sum = 0;
+void part(int lo, int hi){ long s=0; for(int i=lo;i<hi;++i) s+=i; sum += s; } // 注意: 这里有竞争!
+int main(){
+    std::thread t(part, 0, 1000);
+    t.join();   // 等它结束再继续
+    // t.detach(); // 危险: 线程可能访问已销毁的栈/全局, 或主线程先退出
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+`detach()` 后线程在后台独立运行，若主线程先退出或引用了局部变量 → 悬垂/UB。
+`std::jthread` 析构时**自动 `request_stop()` + `join()`**，杜绝忘记 join 的泄漏。
+
+[标准] `thread` 析构若仍 joinable 则 `std::terminate`；`jthread`(C++20) 自动 join。
 
 </details>
 
+### 练习 2（难度 ★★★）
 
----
+`std::async` 返回的 `future` 在析构时为何会**阻塞**？写一个"忘记保存 future"导致意外同步的 bug。
 
-> **UB 实证库（并发）**：data race / 锁顺序反转死锁 / 信号 handler 非原子 / 伪共享的真实代码与实测证据，见 [附录 UB 反例库·并发批](../../Appendix/ub/README.md#1b-反例索引第二批并发-ub-5-例)（C1–C5）。伪共享基准实测 **≈6.1× 退化**。
+<details><summary>答案与解析</summary>
+
+```cpp
+void fire_and_forget(){
+    std::async(std::launch::async, [](){ heavy_work(); }); // future 是临时对象
+} // 此处 future 析构 -> 阻塞等待 heavy_work 完成! 本想异步, 实际变同步
+```
+
+`std::async` 的 `future` 析构会等待共享状态就绪（标准规定），所以上面"即发即忘"反而同步了。
+修复：真的想后台跑就用 `std::thread` 或显式 `std::packaged_task` + 长期持有 `future`。
+
+[标准] `async` 返回的 `future` 析构行为：若共享状态未就绪则阻塞（阻塞析构语义）。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+两个线程对 `int counter` 各做 `++counter` 十万次，结果为何小于 20 万（丢失更新）？
+用 `std::atomic<int>` 修复，并指出相比 `std::mutex` 的取舍（含 false sharing）。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <atomic>
+std::atomic<int> counter{0};                 // 原子 RMW, 无竞争
+void worker(){ for(int i=0;i<100000;++i) ++counter; } // 正确累加到 200000
+```
+
+`++counter`（非原子）是"读-改-写"三步，线程交错导致写覆盖 → 丢失更新。
+`atomic` 用 `lock xadd` 单指令完成；比 `mutex` 更轻，但若多个原子变量落在**同一缓存行**（false sharing），
+会因缓存行在核间反复失效而变慢——此时应 padding 隔离（见 ch110/ch111 无锁章节）。
+
+[标准] 数据竞争是 UB；`atomic` 提供无锁 RMW，`mutex` 提供临界区；false sharing 需缓存行对齐。
+
+</details>
+
+## 附录：用法演绎 — 并行求和的数据竞争现场
+
+> 场景：把 0..N 的求和拆到 4 个线程，最后合并。演示竞争如何产生、如何修。
+
+**步骤 1：朴素共享计数器（数据竞争 → 错误结果）**
+
+```cpp
+long counter = 0;
+auto worker = [&](){ for(int i=0;i<50000;++i) ++counter; }; // 读-改-写非原子
+std::thread t1(worker), t2(worker), t3(worker), t4(worker);
+t1.join(); t2.join(); t3.join(); t4.join();
+// 期望 200000, 实际常 < 200000: 写覆盖导致丢失更新 (UB)
+```
+
+`++counter` 编译为 `mov+add+mov`，线程交错使一次写被另一次覆盖。
+
+**步骤 2：加 `std::mutex`（正确但较重）**
+
+```cpp
+long counter = 0; std::mutex m;
+auto worker = [&](){ for(int i=0;i<50000;++i){ std::lock_guard<std::mutex> lk(m); ++counter; } };
+// 正确, 但每次 ++ 都加锁 -> 串行化, 并行收益被锁吃掉
+```
+
+**步骤 3：改 `std::atomic<int>`（无锁、正确）**
+
+```cpp
+std::atomic<long> counter{0};
+auto worker = [&](){ for(int i=0;i<50000;++i) ++counter; }; // lock xadd 单指令 RMW
+// 结果严格 200000, 且无锁竞争开销远低于 mutex
+```
+
+**步骤 4：更好——每个线程私有计数，最后合并（无共享 → 无竞争）**
+
+```cpp
+std::vector<long> local(4, 0);
+std::vector<std::thread> ts;
+for (int t=0;t<4;++t) ts.emplace_back([&,t]{ for(int i=t*25000;i<(t+1)*25000;++i) local[t]+=i; });
+for (auto& th : ts) th.join();
+long total = std::accumulate(local.begin(), local.end(), 0L); // 无锁合并
+```
+
+**结论**：能避免共享就不共享（步骤 4 最快）；必须共享用 `atomic`（轻）而非 `mutex`（重）；
+注意 false sharing——把 `local[t]` 放同一缓存行会互相失效，需 padding 隔离（见 ch110/111）。
+
+**工程含义**：并行化的第一原则不是"加锁"，而是"减少共享"；atomic 解决正确性，架构解决性能。

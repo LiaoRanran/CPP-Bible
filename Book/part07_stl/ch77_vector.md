@@ -1081,77 +1081,108 @@ size_type _M_check_len(size_type __n, const char* __s) const {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-## 真实开源项目参考（可查证链接）
-
-> 本节补可查证的真实项目引用（非虚构）。每个链接均指向具体源码文件，可逐行对照实现差异。
-
-- **GCC libstdc++ `stl_vector.h`**：`std::vector` 的 GNU 实现——含扩容策略（`_M_realloc_insert`，L412-L520）、`_M_check_len` 容量检查（L1721）、迭代器失效标注。
-  → <https://github.com/gcc-mirror/gcc/blob/master/libstdc++-v3/include/bits/stl_vector.h>
-- **LLVM libc++ `vector`**：Clang 标准库的实现——`__split_buffer` 扩容复用机制、`__swap_out_circular_buffer`（L1198-L1250）、small-buffer 优化。
-  → <https://github.com/llvm/llvm-project/blob/main/libcxx/include/vector>
-- **Microsoft STL `vector`**：MSVC 的实现——比较三大家对 `push_back`/`emplace_back`/异常安全的不同处理路径，`_Emplace_reallocate`（L1850-L1920）。
-  → <https://github.com/microsoft/STL/blob/main/stl/inc/vector>
-- **Folly `FBVector.h`**：Facebook 的 `std::vector` 替代——geometric growth（1.5x 扩容） + relocation 优化，与 libstdc++ 的 2x 扩容形成对照基准。
-  → <https://github.com/facebook/folly/blob/main/folly/FBVector.h>
-- **Chromium `base::circular_deque` / `base::span`**：[chromium/chromium · base/containers](https://github.com/chromium/chromium/tree/main/base/containers) —— 浏览器对 `std::vector` 的定制替代（环形双端队列避免扩容搬迁、span 零拷贝视图），对应「⑫ 工业案例」中"容器选型对 cache 命中率的影响"。
-- **常见陷阱**：三大家 `push_back` 在扩容时的移动/拷贝策略不同——GCC 用 `std::__uninitialized_move_if_noexcept`（移动安全则移动），Clang 用 `__construct_forward_with_exception_guarantees`。理解此差异可避免 `noexcept` 不当导致的性能退化。
-- **Abseil `absl::InlinedVector`（abseil/abseil-cpp）**：小对象内联存储的 `vector` 替代——容量 ≤ N 时存在栈上，超界才堆分配，避免 `std::vector` 小对象也走堆。
-- **ClickHouse `PODArray`（ClickHouse/ClickHouse）**：列式存储用自定义分配器（jemalloc 后端），`std::vector` 的工业替代，避免扩容搬迁对 cache 的破坏。
-- **Boost.Container `small_vector`（boostorg/container）**：同 `absl::InlinedVector` 思路，内联小 buffer 省一次堆跳转。
-- **Eigen（gitlab.com/libeigen/eigen）**：固定大小 `Matrix` 用栈上连续存储，等价于"零间接 vector"，其表达式模板避免中间 `vector` 物化。
-- **Chromium `base::HeapArray`（github.com/chromium/chromium）**：C++20 前 `std::vector` 的崩责替代，带边界检查的动态数组。
+解释 `reserve(1000)` 后再 `push_back` 1000 次的复杂度；对比**不** reserve 时发生的扩容拷贝次数（假设 2× 扩容）。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`reserve(1000)` 一次分配够用，`push_back` 1000 次全部 O(1) 追加，总 **O(n)** 无重分配。
+不 reserve（2× 扩容）：容量走 1→2→4→…→1024，元素被**整体拷贝** log2(1000)≈10 次，
+总拷贝 ~1000+500+250+…≈2000 次移动，明显更慢且可能重复构造/析构。
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+std::vector<int> a; a.reserve(1000);
+for (int i=0;i<1000;++i) a.push_back(i);   // 0 次重分配
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `reserve` 改变 `capacity` 不触发元素构造；扩容是"分配新缓冲 + 移动/拷贝 + 释放旧缓冲"。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+写出在 `for` 循环中 `v.push_back` 导致**迭代器失效**的 bug，并给出两种修复（用索引 / 先 reserve）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+// BUG: 扩容使 it 失效, 行为未定义
+std::vector<int> v{1,2,3};
+for (auto it = v.begin(); it != v.end(); ++it) v.push_back(*it);
+// FIX 1: 用索引, end() 每次重算
+for (size_t i = 0; i < v.size(); ++i) v.push_back(v[i]);
+// FIX 2: 先 reserve 使 push_back 不扩容(迭代器仍可能因 size 变化需重算, 但地址稳定)
+v.reserve(v.size()*2 + 4);
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+注：即使 reserve 后地址稳定，逻辑上 `end()` 也变了——索引法最稳妥。
+
+[标准] `push_back` 触发扩容会使所有迭代器/引用/指针失效；未扩容时仅 `end()` 失效。
 
 </details>
 
+### 练习 3（难度 ★★★★）
+
+实现 `erase_remove_if` 惯用法删除所有偶数；并解释 `vector<bool>` 的位压缩特化陷阱（proxy reference）。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+std::vector<int> v{1,2,3,4,5,6};
+v.erase(std::remove_if(v.begin(), v.end(), [](int x){ return x%2==0; }), v.end());
+// v == {1,3,5}
+```
+
+`vector<bool>` 把每个 bool 压成 1 bit，其 `operator[]` 返回**代理对象**而非 `bool&`：
+不能 `auto& b = vb[0];`（编译失败），不能取地址，与"容器存 T 则 `T&` 可绑定"的直觉冲突。
+需要真实 bool 语义时用 `std::vector<char>` 或 `std::bitset`/`dynamic_bitset`。
+
+[标准] `vector<bool>` 是显性特化，元素非独立地址able 对象；属历史设计失误，工业代码慎用。
+
+</details>
+
+## 附录：用法演绎 — 百万元素构建的性能对决
+
+> 场景：从外部数据源读入 1,000,000 条记录构建一个 `vector`，对比四种写法的耗时差距。
+
+**步骤 1：无 reserve 逐步 `push_back`（最慢）**
+
+```cpp
+std::vector<Rec> v;
+for (auto& r : source) v.push_back(r);   // 容量 1->2->4->...->1048576, 约 20 次重分配 + 整体搬迁
+```
+
+每次扩容都分配新缓冲并把旧元素**移动**过去；总搬移量 ≈ `n·log2(n)`，且反复申请/释放内存。
+
+**步骤 2：先 `reserve` 再 `push_back`（快得多）**
+
+```cpp
+std::vector<Rec> v; v.reserve(source.size());   // 1 次分配到位
+for (auto& r : source) v.push_back(r);          // 零重分配
+```
+
+**步骤 3：用 `emplace_back` 避免临时对象（更快）**
+
+```cpp
+v.reserve(source.size());
+for (auto& r : source) v.emplace_back(r.id, r.name, r.val); // 原地构造, 跳过一次拷贝/移动
+```
+
+**步骤 4：容量收缩（若之后不再增长）**
+
+```cpp
+v.shrink_to_fit();   // 释放多余 capacity, 降低内存占用(可能触发一次搬迁)
+```
+
+**量化对照（示意，i7/`-O2`）**：
+
+| 写法 | 重分配次数 | 相对耗时 |
+|------|:--:|:--:|
+| 无 reserve + push_back | ~20 | 1.00× (基线) |
+| reserve + push_back | 0 | ~0.35× |
+| reserve + emplace_back | 0 | ~0.30× |
+
+结合 ch77 扩容策略：`vector` 默认约 **1.5×–2×** 几何增长，预 `reserve` 直接消灭扩容抖动。
+
+**结论**：已知规模必 `reserve`；能用 `emplace_back` 就别 `push_back(临时对象)`；增长结束后 `shrink_to_fit` 回收。
+
+**工程含义**：`vector` 的"慢"几乎总是"忘了 reserve"造成的，不是 `vector` 本身慢。

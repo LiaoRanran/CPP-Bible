@@ -1048,125 +1048,99 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-## 真实开源项目参考（可查证链接）
-
-> 本节补可查证的真实项目引用（非虚构）。每个链接均指向具体源码文件。
-
-- **GCC libstdc++ `stl_deque.h`**：分段连续（chunked array）的 GNU 实现——`_Deque_iterator` 跨 chunk 遍历（L120-L200）、`_M_initialize_map`（L680-L730）分配指针数组、`push_front` 反向扩展（L1500-L1580）。
-  → <https://github.com/gcc-mirror/gcc/blob/master/libstdc++-v3/include/bits/stl_deque.h>
-- **LLVM libc++ `deque`**：Clang 的 `__deque_base`（L280-L380，block size 为 4096/sizeof(T) 的自适应策略）、`__deque_iterator`（L450-L520）。
-  → <https://github.com/llvm/llvm-project/blob/main/libcxx/include/deque>
-- **Boost.Container `devector`**：双端 `vector` 替代——单连续块实现 O(1) 双端插入（比 `deque` 少一次间接）、小对象优化到内联 buffer。
-  → <https://github.com/boostorg/container/blob/develop/include/boost/container/devector.hpp>
-- **Chromium `base::circular_deque`（github.com/chromium/chromium）**：分块环形队列，缓存局部性优于 `std::deque` 的指针数组映射（热路径少一次间接）。
-  → <https://github.com/chromium/chromium>
-- **Google Benchmark（github.com/google/benchmark）**：`std::deque` 下标/迭代访问的 ns/us 级微基准，量化 `operator[]` 两次间接寻址（`map[i/bs][i%bs]`）相比 `vector[]` 的 2–3x 开销。
-  → <https://github.com/google/benchmark>
-- **跨章关联**：`vector` 扩容策略对比 → `Book/part07_stl/ch77_vector.md`；迭代器失效规则 → `Book/part07_stl/ch76_stl_arch.md`。
-- **常见陷阱**：`deque` 的 `operator[]` 需两次间接寻址（`map[index/block_size][index%block_size]`），热路径比 `vector[]` 慢 2–3x；`push_front` 引起 map 重分配时所有迭代器失效。
-- **分块大小与地址计算（深度）**：libc++ 的 block size 公式为 `block_size = sizeof(T) < 0x1000 ? 0x1000 / sizeof(T) : 1` 个元素/块（默认 `0x1000` = 4096 字节一页）；`operator[]` 两次间接寻址在 `-O2` 下约 `8ns`（L1 hit）至 `120ns`（跨 chunk TLB miss），而 `vector[]` 仅 `2ns` 单次寻址。
-- **ClickHouse `PODArray`（ClickHouse/ClickHouse）**：列式存储用自定义连续数组而非 `deque`，规避两次间接；其 deque 替代直接内联 buffer。
-- **Folly `small_vector` 思想（facebook/folly）**：小对象内联、超界转 `std::deque`/堆，规避 `deque` 的指针数组间接。
-- **Eigen（gitlab.com/libeigen/eigen）**：固定大小矩阵用栈上连续存储，等价于"零间接 deque"。
+对比 `deque` 与 `vector` 在**头部插入**的复杂度；用 `deque` 实现一个先进先出的队列。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`vector::insert(begin())` 要把全部元素后移 → **O(n)**；`deque::push_front` 只填当前头块、
+必要时分配新块 → **摊还 O(1)**。`deque` 天然适合双端队列。
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <deque>
+std::deque<int> q;
+q.push_back(1); q.push_back(2);   // 入队尾
+int head = q.front(); q.pop_front(); // 出队头 O(1)
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `deque` 由分段连续缓冲区组成（见 ch78 批 L 实证），头/尾插入均摊 O(1)。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+为何 `deque` 随机访问仍是 O(1) 但带"双间接"常数开销？结合批 L 实证中 `sar rdx, 0x7` 的分块映射解释。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+`deque` 用"指针数组(map) + 定长块(512B)"两层结构。`operator[]` 先算块号 `i / 512`（`sar rdx, 0x7` 即 ÷128 元素的移位，取决于元素大小）去 map 查块指针，再算块内偏移 `i % 512`：
+两次内存访问 vs `vector` 一次。故仍是 O(1)，但常数更大、缓存局部性弱于 `vector`。
 
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+```
+block = map[ i >> 7 ];        // 第一跳: 取块基址
+elem  = block[ i & 0x7f ];    // 第二跳: 块内索引
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `deque` 随机访问摊还 O(1)，但比 `vector` 多一次间接；无 `data()` 连续视图。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 `deque` 实现**单调队列**（滑动窗口最大值），分析窗口滑动的均摊复杂度；并对比用 `vector` 的代价。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+// 维护双端队列存"候选最大值下标", 队首为当前窗口最大
+std::deque<int> dq;
+for (int i = 0; i < n; ++i) {
+    while (!dq.empty() && a[dq.back()] <= a[i]) dq.pop_back(); // 淘汰更小者
+    dq.push_back(i);
+    if (dq.front() == i - k) dq.pop_front();                    // 移出窗口
+    if (i >= k-1) out.push_back(a[dq.front()]);
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+每个元素最多入队、出队各一次 → 均摊 **O(1)/元素**，总 O(n)。
+若用 `vector`：头部 `pop_front` 是 O(n) 拷贝，整体退化到 O(n·k)。
+
+[标准] 单调队列是"双端 + 单调性"的经典技巧；`deque` 的 O(1) 双端弹出是关键。
 
 </details>
-## 附录：GCC 15.3.0 真机实证 — `std::deque` 分块映射与 push_back 代价
 
-> 证据：`_asm_demo/ch78_deque_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**operator[] 是双间接访存（块索引→块指针→元素），块大小 = 512 字节（128 × int），新块每次 operator new(0x200)。**
+## 附录：用法演绎 — 生产者-消费者双端缓冲的选型
 
-**1. 块缓冲区 = 512 字节（0x200，含 128 个 `int`）**：
+> 场景：一个日志/任务队列，头部被频繁 `pop`、尾部被频繁 `push`，元素生命周期短。
 
-```asm
-; deque<int> 初始化第一块：分配 map（8 指针=64B）+ 块缓冲区（512B）
-main+0x18:  mov    ecx,0x40                ; map 初始 8 指针
-main+0x1d:  call   operator new(unsigned long long)  ; map 分配
-main+0x2e:  mov    ecx,0x200               ; 块缓冲 = 512 字节
-main+0x33:  call   operator new(unsigned long long)  ; 首块分配
-;                 ^^ 512 = _Deque_buf_size = max(512/sizeof(T), 1)
+**步骤 1：若误用 `vector`（头部删除 O(n)）**
+
+```cpp
+std::vector<Task> q;
+q.push_back(t);          // 尾插 O(1)
+q.erase(q.begin());      // 头删 O(n): 后续所有元素前移
 ```
 
-**2. `operator[]` 双间接访存**——循环 `s += d[i]` 的编译器生成码：
+高吞吐下每次头删都搬动整个队列 → 性能随队列长度线性恶化。
 
-```asm
-; 遍历 d[0..199]，每元素双间接：
-main+0x160:  mov    rdx,rcx
-main+0x163:  cmp    rax,0x7f               ; i >= 128 ?
-main+0x167:  jle    1f                     ; 若仍在首块，走直取
-main+0x169:  mov    rdx,rax
-main+0x16c:  sar    rdx,0x7                ; ★ 块索引 = i >> 7
-main+0x170:  mov    rdi,rdx
-main+0x173:  mov    r9,rax
-main+0x176:  mov    rdx,QWORD PTR [rbx+rdx*8] ; ★ 查 map[块索引]（第一级间接）
-main+0x17a:  shl    rdi,0x7                ; 块索引 << 7（= 块起始偏移）
-main+0x17e:  sub    r9,rdi                 ; r9 = i - 块起始 = 元素内偏移
-main+0x181:  lea    rdx,[rdx+r9*4]         ; ★ base + 内偏移 × 4（第二级间接）
-1:           add    r8d,DWORD PTR [rdx]    ; ★ 取元素并累加（第三级直接）
+**步骤 2：改用 `deque`（头尾均摊 O(1)）**
+
+```cpp
+std::deque<Task> q;
+q.push_back(t);          // 尾 O(1)
+q.pop_front();           // 头 O(1): 仅释放头块一个槽, 不搬移其余元素
 ```
 
-⚠️ **首元素短路优化**：当 `i < 128`（仍在首块、未越块边界），跳过`sar/shl` 双间接，直接 `[rdx]` — 编译器将首块访问降为单间接（与 vector 等效，但只有首块、且 `push_back` 越块后即失效）。
+deque 的块结构让头删只动"头块"，其余块原地不动——无全局搬迁抖动。
 
-**3. push_back 越块触发新块分配**：
+**步骤 3：何时 deque 反而**不如** vector？**
 
-```asm
-; 首块 128 元素写满 → 分配新块：
-main+0x100:  mov    ecx,0x200              ; 512 字节
-main+0x108:  call   operator new(unsigned long long)  ; ★ 第二块
-main+0x114:  mov    QWORD PTR [rbp+0x0],rax  ; 存新块指针到 map[1]
-;                 每个 push_back 走 "写数据 → cmp 尾指针 → 越块则 operator new"
+```cpp
+// 随机访问密集 + 缓存敏感的数值计算:
+for (size_t i=0;i<n;++i) sum += q[i];   // deque 每次访问 2 次间接(map查块+块内)
+// vector 仅 1 次直接寻址, 且连续内存对预取友好 -> 更快
 ```
 
-**工程含义**：deque 的 operator[] 比 vector 多**一级间接**（map 查块表）和**一次分支**（块越界判断），但块粒度 128 元素使越块分支在循环中预测率极高。push_back 仅在越块时触发 operator new — 与 vector 的 amortized O(1) 类似但粒度更大（块而非单元素 realloc），故**尾端插入吞吐与 vector 同级**，但中间插入因需 `memmove` 单块内容仍明显劣于 list 的指针改写。
+**结论**：双端频繁增删（队列、滑动窗口、撤销栈）→ `deque`；
+尾部增删 + 随机访问密集 + 缓存敏感 → `vector`。不要因为"deque 也能随机访问"就无脑替换 vector。
 
-
+**工程含义**：容器选型看**访问模式**而非功能列表；deque 以"双端 O(1) + 无 realloc 抖动"换"随机访问常数更大 + 缓存更差"。

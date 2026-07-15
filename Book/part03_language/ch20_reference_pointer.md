@@ -1278,57 +1278,122 @@ GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangli
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+写一个函数 `void scale(std::vector<int>& v, int factor)`，把每个元素乘以 `factor`。
+为什么这里**必须**用引用而不能用值传递？如果接口要求用指针，调用处要怎么写？
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+值传递 `std::vector<int> v` 会触发一次完整拷贝（O(n) 且可能抛 `bad_alloc`）；引用传递只绑定原对象，零拷贝。
+若用指针：`void scale(std::vector<int>* v, int f)` 内部写 `(*v)[i] *= f`，调用处 `scale(&v, 2)`。
+指针表达"可空"，引用表达"必非空"——按语义选：此函数不应接受空对象，故引用更贴切。
 
 ```cpp
+#include <vector>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+void scale(std::vector<int>& v, int f) { for (auto& x : v) x *= f; }
+int main() {
+    std::vector<int> v{1,2,3};
+    scale(v, 10);
+    for (int x : v) std::cout << x << ' '; // 10 20 30
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 引用是已存在对象的别名，无独立存储；函数形参引用在调用处即绑定实参。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+给定 `int x = 5; int& r = x; int* p = &x;`，依次执行 `r = 10; *p = 20;` 后 `x` 的值是多少？
+用本书「批 L」的实证说明：引用在汇编层为何与被引用对象共享同一地址（零运行时开销）。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+`x == 20`。`r` 和 `*p` 都直接寻址 `x` 的内存，没有任何"引用对象"被创建。
+GCC 15.3.0 下 `r = 10` 编译为 `mov DWORD PTR [rbp-4], 10`，与直接写 `x` 的指令完全相同——引用在优化后**不占存储、无间接层**。
 
 ```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+int x = 5; int& r = x; int* p = &x;
+r = 10;      // mov DWORD PTR [rbp-4], 10
+*p = 20;     // mov DWORD PTR [rbp-4], 20
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 标准不规定引用的实现，但要求其与对象行为等价；主流 ABI 直接用指针底层实现，优化后常完全消除。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+C++ **没有** `std::optional<T&>`（引用不能重绑定）。请基于裸指针实现一个 `optional_ref<T>`：
+支持 `has_value()` / `value()` / `reset()`，构造时禁止空引用，并在一处故意误用触发未定义行为，指出问题。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+template <class T>
+struct optional_ref {
+    T* p;                              // 非空 invariant
+    explicit optional_ref(T& r) : p(&r) {}
+    bool has_value() const { return p != nullptr; }
+    T& value() const { return *p; }    // 前置条件: has_value()
+    void reset() { p = nullptr; }      // 破坏 invariant!
+};
+int main() {
+    int x = 1;
+    optional_ref<int> o(x);
+    o.reset();                         // 误用: 此后 p==nullptr
+    (void)o.value();                  // UB: 解引用空指针
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+陷阱：`reset()` 把 `p` 置空，但 `value()` 未检查——调用方越过 `has_value()` 直接 `value()` 即 UB。
+工业写法应在 `value()` 内 `assert(p)` 或抛 `bad_optional_access`。
+
+[标准] 引用必须在定义时绑定且不可重绑定；故 `optional<T&>` 被标准明确排除（用指针或 `std::reference_wrapper` 替代）。
 
 </details>
 
+## 附录：用法演绎 — 返回引用还是指针？
+
+> 场景：设计一个配置读取 API，调用方要拿到一个"可能很大、且不应被拷贝"的对象。
+
+**步骤 1：朴素值返回（错误起点）**
+
+```cpp
+Config load_config();              // 返回副本: 大对象拷贝 + 可能异常
+Config c = load_config();          // 一次完整拷贝
+```
+
+问题：每次调用都拷贝整个 `Config`（可能有数百字段/嵌套容器），且若函数内部抛异常，半构造副本难处理。
+
+**步骤 2：返回 `const` 引用（悬垂风险）**
+
+```cpp
+const Config& load_config();       // 若内部返回局部变量的引用 -> 悬垂!
+const Config& c = load_config();   // c 指向已销毁对象 -> UB
+```
+
+陷阱：引用必须绑定到**调用方或更长生命周期**的对象。返回局部变量引用是经典 UB。
+
+**步骤 3：返回指针表达"可空"**
+
+```cpp
+Config* load_config();             // nullptr 表示"未找到/失败"
+Config* c = load_config();
+if (c) use(*c);                    // 调用方必须判空
+```
+
+指针的语义是"可能没有"，调用方被迫判空——适合"查找可能失败"的场景。
+
+**步骤 4：工业最终形态（所有权转移）**
+
+```cpp
+std::unique_ptr<Config> load_config();   // 转移所有权, 零拷贝, 无悬垂
+auto c = load_config();                  // 拥有, 离开作用域自动释放
+if (c) use(*c);
+```
+
+**结论**：返回值（拷贝，小对象）/ `const&`（借出长生命周期对象）/ 指针（可空查询）/ `unique_ptr`（转移所有权）。
+选型的唯一依据是**生命周期与可空性**，而非习惯。
+
+**工程含义**：引用≠指针的"语法糖"，而是"非空别名"的契约；在 API 边界滥用引用会埋下悬垂雷。

@@ -1200,57 +1200,119 @@ long c_loop<RectC>(RectC const*, int):
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+写一个基类 `Shape` 含 `virtual double area()`，派生 `Circle` 与 `Rect`，用基类指针容器演示多态分发。
+结合本书实证说明：一次虚调用在汇编层发生了什么（vtable 查找）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+#include <memory>
+struct Shape { virtual double area() const = 0; virtual ~Shape()=default; };
+struct Circle : Shape { double r; Circle(double r):r(r){} double area() const override { return 3.14159*r*r; } };
+struct Rect   : Shape { double w,h; Rect(double w,double h):w(w),h(h){} double area() const override { return w*h; } };
+int main(){
+    std::vector<std::unique_ptr<Shape>> v;
+    v.push_back(std::make_unique<Circle>(2));
+    v.push_back(std::make_unique<Rect>(3,4));
+    for (auto& s : v) std::cout << s->area() << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+汇编层：调用 `s->area()` 编译为 `mov rax, [rsi]`（取 vtable 指针）→ `call [rax+offset]`（查虚函数槽）。
+本书批 L/ASM 实证记录过 vtable 槽调用 `operator[]` 式的间接跳转。
+
+[标准] 虚函数经 vtable 间接分发；override 必须签名一致（C++11 起建议显式 `override`）。
 
 </details>
 
+### 练习 2（难度 ★★★）
+
+为何在**构造函数体内**调用虚函数不会触发动态绑定（不会调到派生类 override）？给出输出并解释。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+struct Base { Base(){ f(); } virtual void f(){ std::cout << "Base::f\n"; } };
+struct Der : Base { Der():Base(){} void f() override { std::cout << "Der::f\n"; } };
+int main(){ Der d; }   // 输出 "Base::f", 不是 "Der::f"
+```
+
+原因：对象在基类构造期间，其动态类型是 `Base`——vtable 指针此刻指向 `Base` 的 vtable，
+派生类子对象尚未构造。标准明确规定构造/析构期间虚调用绑定到当前正在构造的类。
+
+[标准] 在构造/析构函数中，虚函数调用绑定到当前构造/析构的类，不向下分发。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+CRTP 静态多态 vs 虚函数动态多态：各写一个 `add` 示例，指出前者零虚表开销但失去运行时异构，并说明何时选哪个。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+// 动态多态: 运行时异构, 有 vtable + 间接调用开销
+struct Addable { virtual int add(int)=0; };
+// 静态多态(CRTP): 编译期绑定, 无 vtable, 但容器必须同类型
+template <class D> struct AddableCrtp { int add(int x){ return static_cast<D*>(this)->impl(x); } };
+struct IntA : AddableCrtp<IntA> { int impl(int x){ return x+1; } };
+```
+
+选 CRTP：性能敏感、类型在编译期确定（如数值库 Eigen）；选虚函数：需要运行时多态、异构容器（如插件系统）。
+
+[标准] CRTP 把虚调用转为静态分发（见 ch51 实证）；代价是失去运行时类型擦除能力。
+
+</details>
+
+## 附录：用法演绎 — 设计一个可扩展的插件系统
+
+> 场景：主程序要在**运行时**按名字加载不同算法实现（图像处理滤镜、压缩器等），且易于第三方扩展。
+
+**步骤 1：定义抽象接口（多态基类）**
+
+```cpp
+struct Filter {
+    virtual ~Filter() = default;
+    virtual Image apply(const Image&) const = 0;
+    virtual const char* name() const = 0;
+};
+```
+
+**步骤 2：派生具体滤镜（override 虚函数）**
+
+```cpp
+struct Grayscale : Filter {
+    Image apply(const Image& i) const override { /* ... */ return gray; }
+    const char* name() const override { return "grayscale"; }
+};
+```
+
+**步骤 3：工厂注册 + 运行时按名创建（多态分发）**
+
+```cpp
+std::map<std::string, std::function<std::unique_ptr<Filter>()>> registry;
+registry["grayscale"] = [] { return std::make_unique<Grayscale>(); };
+// 运行时:
+auto f = registry.at(user_choice)();   // 动态多态: 不知道具体类型也能调用
+Image out = f->apply(src);              // 经 vtable 分发到正确实现
+```
+
+**步骤 4：对比 CRTP 静态策略（性能优先时）**
+
+```cpp
+template <class Impl> struct FilterCrtp {
+    Image apply(const Image& i) const { return static_cast<const Impl*>(this)->impl(i); }
+};
+struct GrayscaleS : FilterCrtp<GrayscaleS> { Image impl(const Image&) const { /*...*/ } };
+```
+
+`FilterCrtp` 把 `apply` 编译期内联（无 vtable 间接、可被优化掉），但**容器必须同类型**——
+无法把 `GrayscaleS` 和 `SepiaS` 放进同一个 `vector<FilterCrtp<??>>`。
+
+**结论**：需要运行时异构插件 → 虚函数多态（灵活、有 vtable 开销）；
+性能热点且类型编译期已知 → CRTP（零开销、失去异构）。两者不是替代关系，是按场景取用。
+
+**工程含义**：多态不是"面向对象必用"，而是"异构 + 运行时分发"需求的答案；误用 CRTP 会锁死扩展性。
