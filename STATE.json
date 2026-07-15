@@ -3,7 +3,7 @@
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
-  "last_updated": "2026-07-15 09:02",
+  "last_updated": "2026-07-15 09:05",
   "last_commit": "aabca07",
   "git_status": "clean",
   "completed_phases": [
@@ -91,10 +91,10 @@
     },
     "B1": {
       "label": "v1.1.0发布",
-      "status": "pending",
+      "status": "completed",
       "batch": 1,
       "total_batches": 1,
-      "detail": "CHANGELOG + tag + Release"
+      "detail": "v1.1.0 tag(附注)+GitHub Release 已发布(html_url releases/tag/v1.1.0); CHANGELOG 补入 C系; master+tags 已推送"
     },
     "B2": {
       "label": "Interview嵌入式分类",
