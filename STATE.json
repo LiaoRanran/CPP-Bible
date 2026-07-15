@@ -3,8 +3,8 @@
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
-  "last_updated": "2026-07-15 08:43",
-  "last_commit": "4d48411",
+  "last_updated": "2026-07-15 09:02",
+  "last_commit": "aabca07",
   "git_status": "clean",
   "completed_phases": [
     "density_deepening",
@@ -84,10 +84,10 @@
     },
     "A2": {
       "label": "CI豁免消化",
-      "status": "verifying",
+      "status": "completed",
       "batch": 1,
       "total_batches": 1,
-      "detail": "定向重测66个豁免块(GCC13.1, CI相同 -std=c++23 -O0 -fsyntax-only): 66/66 全部 ACTIVE(每块含int main, CI真编, 仍失败), 0失效。失败原因全合法(modules/外部库fmt·spdlog·boost·Qt·gtest/POSIX/MSVC/多文件/跨fence/ch28故意错误演示)。豁免清单本已精确, 无需裁剪。--main-only 语义已厘清(不含main块直接跳过, 对CI红绿无影响)。全量147章回归扫描后台进行中, 至81章 0回归。新增 tools/prune_exempt.py(防呆:拒partial报告)。"
+      "detail": "全量 --main-only 扫描(GCC13.1)完成: 147章/112通过/35失败/66失败块, 与基线一致; compile_gate PASS: 已知豁免66(显式66/模式0), 新增回归0, 无过期豁免"
     },
     "B1": {
       "label": "v1.1.0发布",
@@ -144,9 +144,10 @@
     },
     "C1": {
       "label": "术语一致性",
-      "status": "pending",
+      "status": "completed",
       "batch": 1,
-      "total_batches": 1
+      "total_batches": 1,
+      "detail": "索引层断链修复: GLOSSARY 7条+CROSSREF 4链+MISCONCEPTIONS 21处=32处映射真实章号; glossary.json 0断链; 术语变体审计(运行期/运行时/范本/解构/指标/多形/内连)均有意用法0错; 断链总数0; 一致性100/100 (commit aabca07)"
     },
     "C2": {
       "label": "Mermaid图表审计",
