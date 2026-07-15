@@ -1,0 +1,145 @@
+{
+  "gcc": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe",
+  "flags": "-std=c++23 -O0 -fsyntax-only",
+  "main_only": true,
+  "partial": true,
+  "total_chapters": 27,
+  "passed_chapters": 19,
+  "failed_chapters": 8,
+  "total_blocks_checked": 703,
+  "failed_blocks": 11,
+  "failures": [
+    {
+      "file": "ch11_compilers.md",
+      "path": "Book/part02_toolchain/ch11_compilers.md",
+      "failures": [
+        {
+          "block": 49,
+          "error": "'import' does not name a type",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch12_buildsystems.md",
+      "path": "Book/part02_toolchain/ch12_buildsystems.md",
+      "failures": [
+        {
+          "block": 20,
+          "error": "_ch12_mylib.h: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 21,
+          "error": "fmt/core.h: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch13_packaging.md",
+      "path": "Book/part02_toolchain/ch13_packaging.md",
+      "failures": [
+        {
+          "block": 1,
+          "error": "fmt/core.h: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 2,
+          "error": "fmt/core.h: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 18,
+          "error": "_ch13_packlib.hpp: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch14_debugging.md",
+      "path": "Book/part02_toolchain/ch14_debugging.md",
+      "failures": [
+        {
+          "block": 11,
+          "error": "'g_alloc' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch18_buildconfig.md",
+      "path": "Book/part02_toolchain/ch18_buildconfig.md",
+      "failures": [
+        {
+          "block": 13,
+          "error": "'compute' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch19_variables.md",
+      "path": "Book/part03_language/ch19_variables.md",
+      "failures": [
+        {
+          "block": 14,
+          "error": "counter.hpp: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch23_namespace_adl.md",
+      "path": "Book/part03_language/ch23_namespace_adl.md",
+      "failures": [
+        {
+          "block": 27,
+          "error": "'process' was not declared in this scope; did you mean 'thirdparty::process'?",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch26_lambda.md",
+      "path": "Book/part03_language/ch26_lambda.md",
+      "failures": [
+        {
+          "block": 15,
+          "error": "increment of read-only variable 'n'",
+          "has_main": true
+        }
+      ]
+    }
+  ],
+  "processed_paths": [
+    "Book/part01_history/ch01_c_history.md",
+    "Book/part01_history/ch02_standardization.md",
+    "Book/part01_history/ch03_cpp98_03.md",
+    "Book/part01_history/ch04_cpp11.md",
+    "Book/part01_history/ch05_cpp14.md",
+    "Book/part01_history/ch06_cpp17.md",
+    "Book/part01_history/ch07_cpp20.md",
+    "Book/part01_history/ch08_cpp23.md",
+    "Book/part01_history/ch09_cpp26.md",
+    "Book/part01_history/ch10_version_matrix.md",
+    "Book/part02_toolchain/ch11_compilers.md",
+    "Book/part02_toolchain/ch12_buildsystems.md",
+    "Book/part02_toolchain/ch13_packaging.md",
+    "Book/part02_toolchain/ch14_debugging.md",
+    "Book/part02_toolchain/ch15_profiling.md",
+    "Book/part02_toolchain/ch16_ide.md",
+    "Book/part02_toolchain/ch17_crosscompile.md",
+    "Book/part02_toolchain/ch18_buildconfig.md",
+    "Book/part03_language/ch19_variables.md",
+    "Book/part03_language/ch20_reference_pointer.md",
+    "Book/part03_language/ch21_const_family.md",
+    "Book/part03_language/ch22_auto_decltype.md",
+    "Book/part03_language/ch23_namespace_adl.md",
+    "Book/part03_language/ch24_enum.md",
+    "Book/part03_language/ch25_union_variant.md",
+    "Book/part03_language/ch26_lambda.md",
+    "Book/part03_language/ch27_cast.md"
+  ]
+}

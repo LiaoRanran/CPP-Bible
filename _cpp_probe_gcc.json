@@ -34,10 +34,10 @@
     "std": "c++23",
     "gcc_value": "202207"
   },
-  "__cpp_explicit_this": {
+  "__cpp_explicit_this_parameter": {
     "feature": "explicit object param / deducing this (C++23)",
     "std": "c++23",
-    "gcc_value": "<undef>"
+    "gcc_value": "202110"
   },
   "__cpp_multidimensional_subscript": {
     "feature": "多维下标 operator[]",
@@ -56,11 +56,6 @@
   },
   "__cpp_lib_modules": {
     "feature": "Standard library modules (std / std.compat)",
-    "std": "c++23",
-    "gcc_value": "<undef>"
-  },
-  "__cpp_deducing_this": {
-    "feature": "deducing this (C++23)",
     "std": "c++23",
     "gcc_value": "<undef>"
   },

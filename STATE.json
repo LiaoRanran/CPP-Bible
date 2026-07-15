@@ -3,8 +3,8 @@
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
-  "last_updated": "2026-07-15T06:49:00+08:00",
-  "last_commit": "bfaeb14",
+  "last_updated": "2026-07-15T08:15:00+08:00",
+  "last_commit": "7ce9494",
   "git_status": "clean",
   "completed_phases": [
     "density_deepening",
@@ -14,11 +14,11 @@
   "tasks": {
     "P0-1": {
       "label": "性能数据实测化",
-      "status": "pending",
-      "batch": 1,
+      "status": "completed",
+      "batch": 3,
       "total_batches": 3,
-      "detail": "353处[示意] → Google Benchmark",
-      "current_batch_items": ["ch43_cache", "ch77_vector", "ch93_thread", "ch40_exception", "ch115_move"]
+      "detail": "仅剩7处[示意](原估353)。实测化 ch27/ch50/ch93 三处数据: vptr布局(0x0000/0x0008/槽宽0x0008, 次级偏移=主基类大小), 同步代价(atomic 3.5ns/mutex 7.6ns/thread 125us), 转型代价(virtual 0.5ns/dynamic_cast 6.9ns慢13.6x)。剩余3处为[示意]标记定义本身(ch19风格约定/ch27标签表), 非数据声称。新增_emp_bench/测量程序。门禁0/0。",
+      "current_batch_items": ["ch27_cast", "ch50_mi", "ch93_thread"]
     },
     "P0-2": {
       "label": "编译器版本矩阵表",
@@ -41,17 +41,18 @@
     },
     "A1": {
       "label": "交叉引用审计",
-      "status": "pending",
+      "status": "completed",
       "batch": 1,
       "total_batches": 1,
-      "detail": "147章全量引用链修复"
+      "detail": "tools/crossref_audit.py 实跑: 147章 / 1190条引用 / 断链0 / 覆盖率100% / 无WARN。注: 书用 '⟶ path' 箭头约定(非标准](...)), 审计工具已双语解析。早期误判 ch117/ch158 为孤儿(因自备窄正则只匹配](...)), 实为被 ch115/116/118/119 与 ch152/153/156/157/159/160 经箭头引用。无破损链需修复。",
+      "current_batch_items": ["crossref_audit_run"]
     },
     "A2": {
       "label": "CI豁免消化",
-      "status": "pending",
+      "status": "verifying",
       "batch": 1,
       "total_batches": 1,
-      "detail": "35豁免审计→修复→更新"
+      "detail": "定向重测66个豁免块(GCC13.1, CI相同 -std=c++23 -O0 -fsyntax-only): 66/66 全部 ACTIVE(每块含int main, CI真编, 仍失败), 0失效。失败原因全合法(modules/外部库fmt·spdlog·boost·Qt·gtest/POSIX/MSVC/多文件/跨fence/ch28故意错误演示)。豁免清单本已精确, 无需裁剪。--main-only 语义已厘清(不含main块直接跳过, 对CI红绿无影响)。全量147章回归扫描后台进行中, 至81章 0回归。新增 tools/prune_exempt.py(防呆:拒partial报告)。"
     },
     "B1": {
       "label": "v1.1.0发布",
@@ -62,17 +63,19 @@
     },
     "B2": {
       "label": "Interview嵌入式分类",
-      "status": "pending",
+      "status": "completed",
       "batch": 1,
       "total_batches": 1,
-      "detail": "10道系统向新题 + embedded/子目录"
+      "detail": "Interview/ 拆 general/(20题+难度★-★★★+嵌入式🔧标注) + embedded/(10道STM32F4硬核题:无堆容器/跨TU ABI/volatile MMIO/中断安全/placement new/constexpr替代宏/内存池/DMA抽象/零开销寄存器映射/全局构造顺序)。每题标 Book章节+难度+公司频次+误区。E9零开销[实测]:GCC15.3 objdump 验证C++模板==C宏逐字节相同(单条movl)。代码 e1/e4/e6/e7/e9 -fsyntax-only 通过。commit 7ce9494。",
+      "current_batch_items": ["general_reorg", "embedded_10q", "subdirs", "index"]
     },
     "B3": {
       "label": "WG21提案跟踪表",
-      "status": "pending",
+      "status": "completed",
       "batch": 1,
       "total_batches": 1,
-      "detail": "TRACKER.md + __cpp_*自动检测"
+      "detail": "WG21/TRACKER.md(C++20/23/26 提案→feature-test宏→GCC/Clang/MSVC 支持表, GCC列本机实测, Clang/MSVC标[DOC]) + tools/generate_wg21_tracker.py(解析TRACKER宏名与GCC状态, 对比_cpp_probe_gcc.json或--gcc实探, 输出diff, 26行0diff) + 季度同步流程。实测纠错重大bug: 早前P0-2误用错误宏名 __cpp_deducing_this/__cpp_explicit_this(均得UNDEF)误判 deducing this 不支持; 实探 __cpp_explicit_this_parameter=202110 已支持。全链修正5处: TRACKER.md/docs/compiler-matrix.md(:51+:164)/_cpp_probe_gcc.json/tools/verify_compiler_features.py/Book ch10。另修 flat_map=202207✅, mdspan/inplace_vector❌UNDEF, P2300宏未定名+__cpp_lib_execution(201902=C++17并行算法非P2300)陷阱注记。门禁0/0。",
+      "current_batch_items": ["tracker_md", "generate_tool", "live_probe_correction", "deducing_this_fix_chain"]
     },
     "B4": {
       "label": "汇编实证扩展",

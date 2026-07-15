@@ -48,8 +48,7 @@
 | constexpr 扩展 | `__cpp_constexpr` | ✓ 202211 | ✓ | ✓ | C++23 | GCC 实测 |
 | if consteval | `__cpp_if_consteval` | ✓ 202106 | ✓ ≥14 | ✓ ≥19.3 | C++23 | GCC 实测 |
 | static operator() | `__cpp_static_call_operator` | ✓ 202207 | ✓ ≥13 | ✓ ≥19.4 | C++23 | GCC 实测 |
-| **deducing this** | `__cpp_explicit_this` | **—** | ✓ ≥18 | ✓ ≥19.4 | C++23 | **GCC 15.3 仍未实现（实测 UNDEF）** |
-| deducing this (alt) | `__cpp_deducing_this` | **—** | ✓ ≥18 | ✓ ≥19.4 | C++23 | 同上，GCC 缺口 |
+| **deducing this** | `__cpp_explicit_this_parameter` | ✓ 202110 | ✓ ≥18 | ✓ ≥19.4 | C++23 | **GCC 15.3 实测已支持 202110**（正确宏名带 `_parameter`；`__cpp_deducing_this` 是错误名，探测必得 UNDEF） |
 | 多维下标 | `__cpp_multidimensional_subscript` | ✓ 202211 | ✓ ≥15 | ✓ ≥19.3 | C++23 | GCC 实测 |
 | `size_t` 后缀 `zu` | `__cpp_size_t_suffix` | ✓ 202011 | ✓ ≥13 | ✓ ≥19.3 | C++23 | GCC 实测 |
 | 命名转义 `\o{}` | `__cpp_named_character_escapes` | ✓ 202207 | ✓ ≥17 | ✓ ≥19.4 | C++23 | GCC 实测 |
@@ -162,7 +161,7 @@ diff <(python3 -c "import json;d=json.load(open('_cpp_probe_gcc.json'));\
 
 | 日期 | GCC 版本 | 变化 |
 |------|---------|------|
-| 2026-07-15 | 15.3.0 | 基线建立：51/64 宏已定义；deducing this / stacktrace / simd 仍 UNDEF |
+| 2026-07-15 | 15.3.0 | 基线建立：51/64 宏已定义；deducing this 已支持（`__cpp_explicit_this_parameter`=202110，早前误用 `__cpp_deducing_this` 得 UNDEF）；stacktrace / simd 仍 UNDEF |
 
 ---
 

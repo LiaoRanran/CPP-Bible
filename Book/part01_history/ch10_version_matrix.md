@@ -299,8 +299,9 @@ int main() {
 ## ⑱ 最佳实践（版本治理）
 
 ```cpp
-// 特性宏 __cpp_deducing_this（C++23）
-#ifdef __cpp_deducing_this
+// 特性宏 __cpp_explicit_this_parameter（C++23 deducing this，GCC 15.3 实测 202110）
+// 注意：标准宏名是 __cpp_explicit_this_parameter，非直觉的 __cpp_deducing_this（后者不存在）
+#ifdef __cpp_explicit_this_parameter
 #endif
 ```
 
