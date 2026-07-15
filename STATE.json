@@ -3,13 +3,14 @@
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
-  "last_updated": "2026-07-15 11:28",
-  "last_commit": "8ca8cca",
-  "git_status": "clean",
+  "last_updated": "2026-07-14 17:47",
+  "last_commit": "47b7e97",
+  "git_status": "ahead of origin by 49 (unpushed)",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
-    "assembly_empirical_core"
+    "assembly_empirical_core",
+    "std_frontier_phase4"
   ],
   "tasks": {
     "P0-1": {
@@ -162,6 +163,34 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "新增 tools/chapter_number_audit.py：147章 文件名编号==H1章号 0错、无重号、part区间不重叠；18个缺号(33/34/53-59/73-75/102-106/114)为有意预留空位，crossref_audit 1190条引用 0断链，无悬空指向缺号章"
+    },
+    "P4-1": {
+      "label": "C++23 真机汇编实证(ch08)",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "ch08_cpp23 新增附录G(GCC15.3.0 -O2 真机 objdump): std::expected parse_digit 汇编(union 值/错误指针偏移0, has_value 1字节标志偏移8, 零开销 tagged union); std::generator iota 协程帧 operator new(0x68=104B) 堆分配, 帧[0x30] 存 n/[0x34]=0x10000 初始挂起态; std::mdspan 诚实标注头缺失(fatal error: mdspan: No such file, 该 MinGW 构建未含). ⑩ 修正 std::print -> std::format 等价展示(__open_terminal 链接失败 undefined reference, MinGW libstdc++ 未导出). 证据 _asm_demo/ch08_{expected,generator,format,mdspan,print}_test.cpp."
+    },
+    "P4-2": {
+      "label": "C++26 真机汇编实证(ch09)",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "ch09_cpp26 附录G.1 contracts: -fcontracts 编 .o 做汇编实证(clamp post 检查 cmp edx,eax; jg 跳 handle_contract_violation; 链接缺该符号=GCC 实验限制; pre 默认 assume 不发电码). P2300 sender <execution> 头可编译但 just/then 非成员('just' is not a member of 'ex'), 诚实标注仅头骨架; P2996 reflection <meta> 缺失(fatal error: meta: No such file), 方向性特性不可编译. 证据 _asm_demo/ch09_contracts_test.cpp/.o."
+    },
+    "P4-3": {
+      "label": "WG21 TRACKER 真机对齐",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "WG21/TRACKER.md 5 行 GCC 列对齐真机: P2093 std::print(✅->🚧 宏202211支持但链接失败, 指向 ch08 附录G); P1899 std::mdspan(❌->❌ 头缺失, 指向 ch08/ch82); P2996 reflection(❌->❌ <meta>缺失, 指向 ch09 ⑩); P2300 sender(❌->🚧 头有/算法无, 指向 ch09/ch93/ch114); P2900 contracts(❌->🚧 -fcontracts 可编译, 指向 ch09/ch121). 新增实测结论6(宏支持≠可链接运行)与7(GCC15 contracts 实验半成品)."
+    },
+    "P4-4": {
+      "label": "门禁复验 + 提交 + 推送 + 收尾",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "consistency_check 0/0 维持(147章 ERROR=0/WARN=0=100/100); crossref 断链0; commit 47b7e97(9文件/237插入); push master 触发 CI 复验 site/pdf 仍绿; STATE 收尾. 红线: 不新增章节(嵌入 ch08/ch09), 不注水, 汇编全部 GCC15.3.0 真实 objdump, 不可用特性诚实标注."
     }
   },
   "execution_order": [
@@ -177,15 +206,19 @@
     "B5",
     "C1",
     "C2",
-    "C3"
+    "C3",
+    "P4-1",
+    "P4-2",
+    "P4-3",
+    "P4-4"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 12,
+    "assembly_empirical_examples": 16,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   },
-  "ci_status": "all green (site regression fixed, run 8ca8cca)"
+  "ci_status": "Phase4 committed 47b7e97; CI pending push"
 }
