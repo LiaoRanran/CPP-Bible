@@ -4,8 +4,8 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
   "last_updated": "2026-07-15",
-  "last_commit": "1a45b0aaeb5ea21b9366e185e6a00c2121ca988d",
-  "git_status": "in sync with origin/master after push 2026-07-15 (batch G: 34 asm examples, HEAD 1a45b0a)",
+  "last_commit": "e4ebf34",
+  "git_status": "batch H committed (content + STATE), pending push 2026-07-15; asm matrix 37 examples",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -332,6 +332,27 @@
       "batch": 7,
       "total_batches": 1,
       "detail": "ch40 新增实战实证节: MinGW/Win64 SEH. may_throw EH元数据100B vs no_throw 32B(−68%): .xdata.unlikely(LSDA块)24B→0整体消失, .text.unlikely 抛异常冷路径64B→0, .xdata 16B→8B, .text 64B→32B. .xdata 含0x42标志(异常处理器/LSDA存在)在 may_throw, no_throw 无. 等价 ELF .gcc_except_table 消失. 证据 _asm_demo/ch40_nt_*.cpp/.o/.s."
+    },
+    "H1": {
+      "label": "ASM-88-optional（批H：std::optional 布局与访问代价）",
+      "status": "completed",
+      "batch": 8,
+      "total_batches": 1,
+      "detail": "ch88 附录: GCC15.3 -O2 真机 objdump。访问零额外间接(值单条 mov, engaged 标志@offset4); 空间代价真实: optional<int>=8B / optional<long long>=16B / optional<char>=2B (vs int 4B)。证据 _asm_demo/ch88_optional_test.cpp/.s。"
+    },
+    "H2": {
+      "label": "ASM-82-span（批H：std::span 零成本视图）",
+      "status": "completed",
+      "batch": 8,
+      "total_batches": 1,
+      "detail": "ch82 附录: GCC15.3 -O2 真机 objdump。遍历与裸 ptr+len 逐字节同码(同循环体); operator[] 无运行时边界检查(越界静默 UB, 非 vector::at 抛异常); sizeof=16(ptr+size_t)。证据 _asm_demo/ch82_span_test.cpp/.s。"
+    },
+    "H3": {
+      "label": "ASM-89-tuple（批H：std::tuple / 结构化绑定 代价）",
+      "status": "completed",
+      "batch": 8,
+      "total_batches": 1,
+      "detail": "ch89 附录: GCC15.3 -O2 真机 objdump。get<N> 编译期偏移访问(无索引计算); 结构化绑定与裸 struct 成员访问逐字节相同; libstdc++ 递归继承致末参在最底地址(get<2>@0/get<1>@8/get<0>@16), sizeof=24。证据 _asm_demo/ch89_tuple_test.cpp/.s。"
     }
   },
   "execution_order": [
@@ -372,15 +393,18 @@
     "P5-14",
     "G1",
     "G2",
-    "G3"
+    "G3",
+    "H1",
+    "H2",
+    "H3"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 34,
+    "assembly_empirical_examples": 37,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   },
   "ci_status": "Pushed Phase4+Phase5 tree (HEAD 9c0657f); site/pdf CI pending on pushed tree"
-}
+}
