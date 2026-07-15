@@ -3,8 +3,8 @@
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
-  "last_updated": "2026-07-15 09:05",
-  "last_commit": "aabca07",
+  "last_updated": "2026-07-15 11:28",
+  "last_commit": "8ca8cca",
   "git_status": "clean",
   "completed_phases": [
     "density_deepening",
@@ -137,10 +137,10 @@
     },
     "B5": {
       "label": "PDF全量构建",
-      "status": "pending",
+      "status": "completed",
       "batch": 1,
       "total_batches": 1,
-      "detail": "Mermaid→静态图 + PDF"
+      "detail": "PDF 全量构建管线(CI pdf job)验证绿; Mermaid→静态图由 mermaid-filter 在 CI 完成; 本地无 LaTeX 仅验证前置 combined.md(147章/6.2M/88图块)干净组装。附带修复 site job(mkdocs --strict)回归: run_site 漏复制被引用的外部根 docs/、Appendix/, 新增 collect_external_roots 整目录复制+external_assets.json manifest, gen_mkdocs_nav 追加 nav 小节, README 的 1b 标题加显式 {#id}; CI site job 已 completed success (commit 8ca8cca)"
     },
     "C1": {
       "label": "术语一致性",
@@ -186,5 +186,6 @@
     "assembly_empirical_examples": 12,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
-  }
+  },
+  "ci_status": "all green (site regression fixed, run 8ca8cca)"
 }
