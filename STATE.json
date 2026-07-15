@@ -5,7 +5,7 @@
   "total_chapters": 150,
   "last_updated": "2026-07-15",
   "last_commit": "93a716cadb0191ee2f06c9f8f98bb4648c7002c0",
-  "git_status": "ahead of origin by 49 (unpushed)",
+  "git_status": "in sync with origin/master after push 2026-07-15 (63 commits delivered)",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -334,7 +334,21 @@
     "P4-5-1",
     "P4-5-2",
     "P4-5-3",
-    "P4-5-4"
+    "P4-5-4",
+    "P5-1",
+    "P5-2",
+    "P5-3",
+    "P5-4",
+    "P5-5",
+    "P5-6",
+    "P5-7",
+    "P5-8",
+    "P5-9",
+    "P5-10",
+    "P5-11",
+    "P5-12",
+    "P5-13",
+    "P5-14"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
@@ -344,5 +358,5 @@
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   },
-  "ci_status": "Phase4 committed 47b7e97; CI pending push"
+  "ci_status": "Pushed Phase4+Phase5 tree (HEAD 9c0657f); site/pdf CI pending on pushed tree"
 }
