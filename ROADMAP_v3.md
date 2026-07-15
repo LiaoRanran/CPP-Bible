@@ -572,6 +572,12 @@ I 表最后 5 章：**ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_
   - 批 A 并发原子（108/41/107/109）、批 B 零开销验证（69/116/117）、批 C 字符串容器（81-sso/77-vector_grow）
   - 批 D 多态分发（47-vs-51/88-variant）、批 E PMR（122-pmr）、批 F 类型擦除（std_function）
   - 汇编实证 18 → 31 例（累计）
-- **最终状态**：汇编实证 8 → 31 例（+23），全部 GCC 15.3.0 真实 objdump 产物存 `_asm_demo/`；不可用特性（`import std`、`mdspan`、`reflection`、contracts 链接）均诚实标注
+- **批 G — 高相关非显然实证（G1~G3，2026-07-15）**
+  - lambda 捕获代价（ch26）、虚继承 this 调整 thunk（ch50）、noexcept 对 EH 元数据体积（ch40，SEH 100B→32B）
+  - 汇编实证 31 → 34 例
+- **批 H — 零成本词汇类型（H1~H3，2026-07-15）**
+  - std::optional 空间膨胀但访问零间接（ch88）、std::span 零成本视图且 operator[] 不查边界（ch82）、std::tuple/结构化绑定编译期偏移访问（ch89）
+  - 汇编实证 34 → 37 例
+- **最终状态**：汇编实证 8 → 37 例（+29），全部 GCC 15.3.0 真实 objdump 产物存 `_asm_demo/`；不可用特性（`import std`、`mdspan`、`reflection`、contracts 链接）均诚实标注
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）、**WORKLIST_v4.md（质量收尾导航）**_
