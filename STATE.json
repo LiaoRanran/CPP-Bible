@@ -4,7 +4,7 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
   "last_updated": "2026-07-15",
-  "last_commit": "366ce3b",
+  "last_commit": "ed6bb20",
   "git_status": "ahead of origin by 49 (unpushed)",
   "completed_phases": [
     "density_deepening",
@@ -255,6 +255,20 @@
       "batch": 2,
       "total_batches": 3,
       "detail": "use_constexpr=mov eax,0x1a6d(6765 递归全消); use_runtime_arg 退化为真实 fib_cx 递归; 升级附录C手写道称"
+    },
+    "P5-7": {
+      "label": "ASM-116 perfect_fwd 引用折叠零开销实证",
+      "status": "completed",
+      "batch": 2,
+      "total_batches": 3,
+      "detail": "std::forward 运行时零指令; fwd_tmpl<S&>/<S> 与 fwd_lvalue/fwd_rvalue 逐字节相同 jmp; fwd_val 多 16B 栈拷贝"
+    },
+    "P5-8": {
+      "label": "ASM-117 nrvo 拷贝省略 vs 未省略实证",
+      "status": "completed",
+      "batch": 2,
+      "total_batches": 3,
+      "detail": "prvalue/NRVO 零 call; make_nrvo_fail 多返回路径 NRVO 失效->两分支各 call move 构造; 复核附录E手写注释"
     }
   },
   "execution_order": [
@@ -284,7 +298,7 @@
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 23,
+    "assembly_empirical_examples": 25,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   },

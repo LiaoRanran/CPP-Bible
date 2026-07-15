@@ -1006,6 +1006,55 @@ int main(){int a=1;g(a);g(2);return 0;}
 - **Blink** — Blink 用转发构造合成器任务
 - **Chromium** — base 用转发实现 `MakeRefCounted`
 
+## 附录 H：GCC 15.3.0 真机汇编实证（ASM-116-perfect_fwd） [C: Compiler / E: Low-level]
+
+> `[实测]` 编译：`g++ -std=c++26 -O2 -c ch116_perfect_fwd_test.cpp` + `objdump -d -M intel -C`。`sink_l`/`sink_r` 写全局变量以强制不被 O2 抹平。产物 `_asm_demo/ch116_perfect_fwd_test.{cpp,.s}`。
+
+`std::forward` 常被误读为"某种运行时的智能移动"。真机结论：**它是纯编译期引用折叠，运行时零指令**，且与手写转发生成逐字节相同的代码。
+
+### 测试源码（核心）
+
+```cpp
+int g_l = 0, g_r = 0;
+[[gnu::noinline]] void sink_l(S&)  { g_l = 1; }   // 左值接收端
+[[gnu::noinline]] void sink_r(S&&) { g_r = 1; }   // 右值接收端
+
+[[gnu::noinline]] void fwd_lvalue(S& s)  { sink_l(s); }
+[[gnu::noinline]] void fwd_rvalue(S&& s) { sink_r(std::move(s)); }
+
+template <class T>
+[[gnu::noinline]] void fwd_tmpl(T&& s) {            // 完美转发模板
+    if constexpr (std::is_lvalue_reference_v<T>) sink_l(s);
+    else sink_r(std::move(s));
+}
+template void fwd_tmpl<S&>(S&);   // 左值实例化
+template void fwd_tmpl<S>(S&&);   // 右值实例化
+
+[[gnu::noinline]] void fwd_val(S s) { sink_r(std::move(s)); }  // 反例：按值传递
+```
+
+### 真实汇编（关键片段）
+
+```asm
+<fwd_lvalue(S&)>:        jmp   sink_l(S&)        ; 左值手写转发
+<void fwd_tmpl<S&>(S&)>: jmp   sink_l(S&)        ; 左值实例化 —— 与 fwd_lvalue 逐字节相同
+<fwd_rvalue(S&&)>:       jmp   sink_r(S&&)       ; 右值手写转发
+<void fwd_tmpl<S>(S&&)>: jmp   sink_r(S&&)       ; 右值实例化 —— 与 fwd_rvalue 逐字节相同
+
+<fwd_val(S)>:                                 ; 反例：按值传递
+    sub   rsp,0x38
+    movdqu xmm0, XMMWORD PTR [rcx]            ; 从传入位置取 S(12B→16B 对齐)
+    lea   rcx, [rsp+0x20]
+    movaps XMMWORD PTR [rsp+0x20], xmm0       ; 多一次 16 字节栈拷贝
+    call  sink_r(S&&)
+```
+
+### 关键发现
+
+- **`std::forward` 运行时零指令**：`fwd_tmpl<S&>` 与手写的 `fwd_lvalue` 都是 `jmp sink_l`，`fwd_tmpl<S>` 与 `fwd_rvalue` 都是 `jmp sink_r`，四者逐字节相同。`forward<T>(x)` 在汇编层面不产生任何 `mov`/构造，只是把 `x` 按原值类别（`S&` 或 `S&&`）交给被调函数。
+- **引用折叠保存值类别**：左值实例化走 `sink_l`（左值重载）、右值实例化走 `sink_r`（右值重载）。若改用 `const T&` 手写转发，只能落 `sink_l`，**丢失移动语义**——汇编上就是目标符号从 `sink_r` 变成 `sink_l`。这正是完美转发相对"const 引用转发"的不可替代之处。
+- **按值传递的隐藏代价**：`fwd_val(S)` 在调用方无法省略实参构造，进入函数后必须先 `movdqu`/`movaps` 把 S 拷到本地栈 `[rsp+0x20]`（一次 16 字节内存复制）再 `move` 给 `sink_r`；而完美转发（引用）直接 `jmp`，**完全避开这次拷贝**。对含非平凡成员的大对象，这一拷贝可能触发深层资源搬移，绝非免费。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

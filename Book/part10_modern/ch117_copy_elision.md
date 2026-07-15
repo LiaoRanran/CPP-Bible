@@ -923,6 +923,58 @@ A: P2025 提议将 NRVO 也强制化（目前仅 RVO 强制）。通过后，所
 
 **底层深度**：Clang 在 `SemaInit.cpp` 的 `getCopyElisionCandidate` 中，如果函数返回的局部变量类型与目标一致、且不是 `volatile`，则复用同一栈槽（NRVO），不产生 `memcpy`；GCC 由 `-fno-elide-constructors` 显式禁用以消除优化便于调试（默认开启 elision）。C++17 的 guaranteed copy elision 将 prvalue 直接构造于目标对象，省去"临时物化（temporary materialization）"——即 `T x = T(args);` 中 `T(args)` 不再生成临时再拷贝，而是就地构造 `x`。Qt 的 `QSharedData` 用 `QAtomicInt` 引用计数，`detach()` 在非常量写路径复制、常量路径零拷贝，是"逻辑拷贝、物理共享"在库层面的经典实现。
 
+## 附录 H：GCC 15.3.0 真机汇编复核（ASM-117-nrvo） [C: Compiler / E: Low-level]
+
+> `[实测]` 编译：`g++ -std=c++26 -O2 -c ch117_nrvo_test.cpp` + `objdump -d -M intel -C`。拷贝/移动构造塞 `puts` 副作用，数汇编里的 `call` 即知是否真消除。产物 `_asm_demo/ch117_nrvo_test.{cpp,.s}`。本附录用 GCC 15.3.0 真实 `-M intel` 产物复核附录 E 的手写注释段，并补"NRVO 失效"对比。
+
+### 测试源码（核心）
+
+```cpp
+struct Tracer {
+    int v;
+    Tracer(int x) : v(x) {}
+    Tracer(const Tracer& o) : v(o.v) { puts("copy"); }
+    Tracer(Tracer&& o) noexcept     : v(o.v) { puts("move"); }
+};
+[[gnu::noinline]] Tracer make_prvalue()  { return Tracer(42); }     // ① 强制消除
+[[gnu::noinline]] Tracer make_nrvo()     { Tracer t(7); return t; } // ② NRVO
+[[gnu::noinline]] Tracer make_nrvo_fail(bool b) {                   // ③ NRVO 失效
+    Tracer a(1); Tracer c(2);
+    if (b) return a; else return c;       // 不同返回路径 → 无法合并返回槽
+}
+```
+
+### 真实汇编（关键片段）
+
+```asm
+<make_prvalue()>:
+    mov   rax, rcx
+    mov   DWORD PTR [rcx], 0x2a          ; v=42 直接写返回槽
+    ret                                  ; 零 call —— 强制消除
+
+<make_nrvo()>:
+    mov   rax, rcx
+    mov   DWORD PTR [rcx], 0x7           ; v=7 直接写返回槽
+    ret                                  ; 零 call —— NRVO 生效
+
+<make_nrvo_fail(bool)>:                  ; 两条路径各有一个 call
+    ...
+    mov   DWORD PTR [rcx], 0x1           ; 构造 a
+    lea   rcx, [rip+0x0]
+    call  Tracer::Tracer(Tracer&&)       ; ← move 发生（b==true 路径）
+    ...
+    mov   DWORD PTR [rcx], 0x2           ; 构造 c
+    lea   rcx, [rip+0x0]
+    call  Tracer::Tracer(Tracer&&)       ; ← move 发生（b==false 路径）
+```
+
+### 关键发现
+
+- **prvalue 强制消除 = 零调用**：`make_prvalue` 全程无 `call puts`，`Tracer(42)` 直接在调用方返回槽（`rcx`）里构造，不存在"临时→拷贝/移动"中间步。这是 C++17 语义规则，编译器无选择。
+- **NRVO 通常消除但非强制**：`make_nrvo` 在 `-O2` 下零 `call`，但标准只"允许"不"保证"。
+- **NRVO 失效的硬证据**：`make_nrvo_fail` 因不同返回路径返回不同具名对象，编译器无法把它们合并进同一返回槽，两分支各插入一次 `call Tracer(Tracer&&)`（move 发生）。这说明"依赖 NRVO 省掉移动构造"只在**单一返回路径返回同一具名对象**时可靠——跨路径/条件返回会退化成真实 move，开销立刻显现。因此**别删具名返回类型的移动构造器**。
+- 本附录与附录 E 互证：附录 E 的手写注释（`mov %rcx,%rax`，AT&T 语法）在 GCC 15.3.0 `-M intel` 下即 `mov rax,rcx`，语义一致；本附录补了"失效路径"这一附录 E 缺失的对照。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
