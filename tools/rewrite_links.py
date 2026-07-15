@@ -33,6 +33,7 @@ MkDocs 站点与 pandoc PDF 中都**不会**渲染为可点击链接，且相对
 """
 from __future__ import annotations
 import argparse
+import json
 import posixpath
 import re
 import shutil
@@ -59,6 +60,12 @@ CHREF_RE = re.compile(
 
 CHNUM_RE = re.compile(r"/ch(\d+)")
 H1_RE = re.compile(r"^#\s+(.+?)\s*$", re.MULTILINE)
+
+# 书内对仓库根级外部目录的链接：形如 `](../../docs/compiler-matrix.md)` 或
+# `](../../Appendix/ub/README.md#anchor)`。从 `Book/partNN/chYY.md` 起算，`../../`
+# 解析到仓库根，故目标的顶层目录（docs / Appendix）即被引用的外部根。
+# run_site 把整个外部根目录复制进 mkdocs 文档树，使其内部 .md 互相链接可解析。
+EXT_ASSET_RE = re.compile(r"\]\((\.\./\.\./([^\s)]+))\)")
 
 
 def build_chapter_index() -> dict:
@@ -91,6 +98,25 @@ def build_chapter_index() -> dict:
             "name": md.name,
         }
     return index
+
+
+def collect_external_roots(index: dict) -> list:
+    """扫描所有章正文，收集被 `](../../TOPDIR/...)` 引用的仓库根级目录名（去重、排序）。
+
+    如某章链接 `../../docs/compiler-matrix.md` 或 `../../Appendix/ub/README.md#x`，
+    则 roots = ['Appendix', 'docs']。这些目录需整目录复制进 mkdocs 文档树，其内部
+    所有 .md 互相链接才能解析，且每个 .md 须出现在 nav（strict 模式要求）。
+    """
+    roots = set()
+    for src_rel in index:
+        src = ROOT / src_rel
+        if not src.exists():
+            continue
+        text = src.read_text(encoding="utf-8", errors="replace")
+        for m in EXT_ASSET_RE.finditer(text):
+            top = m.group(2).split("#")[0].split("/")[0]   # 去锚点 → 取顶层目录
+            roots.add(top)
+    return sorted(roots)
 
 
 def _short_link_text(meta: dict) -> str:
@@ -172,8 +198,31 @@ def run_site(index: dict) -> None:
             (out_docs / extra).write_text(new, encoding="utf-8")
             total_files += 1
             total_rw += n
+    # 3) 外部资产根目录（docs/、Appendix/ 等被书内链接引用的仓库根级目录）
+    #    整目录复制进 mkdocs 文档树对应位置，使其内部所有 .md 互相链接可解析；
+    #    并写 manifest（含各 .md 的首个 H1 标题）供 nav 生成器收录（strict 模式
+    #    要求所有文档文件出现在 nav，否则报 not-in-nav 警告）。
+    roots = collect_external_roots(index)
+    manifest = []
+    for root in roots:
+        src_root = ROOT / root
+        if not src_root.is_dir():
+            continue
+        dst_root = out_docs / root
+        if dst_root.exists():
+            shutil.rmtree(dst_root)
+        shutil.copytree(src_root, dst_root)
+        for md in sorted(dst_root.rglob("*.md")):
+            rel = md.relative_to(out_docs).as_posix()
+            t = md.read_text(encoding="utf-8", errors="replace")
+            h1 = H1_RE.search(t)
+            title = h1.group(1).strip() if h1 else rel
+            manifest.append({"path": rel, "title": title})
+    (ROOT / "build" / "site" / "external_assets.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+    total_files += len(manifest)
     print(f"[site] 输出 {out_docs}")
-    print(f"[site] 文件 {total_files} · 重写引用 {total_rw}")
+    print(f"[site] 文件 {total_files} · 重写引用 {total_rw} · 外部根 {roots} · 外部md {len(manifest)}")
 
 
 def inject_chapter_anchor(content: str, slug: str) -> tuple[str, int]:

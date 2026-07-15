@@ -39,7 +39,7 @@
 | 4 | [ub04_alignment_violation.md](./ub04_alignment_violation.md) | 对齐违例 | x86 静默通过（exit 0）| UBSan (alignment) |
 | 5 | [ub05_strict_aliasing.md](./ub05_strict_aliasing.md) | 严格别名破坏 | -O0/O2 输出分歧 + `-Wstrict-aliasing` | —（UBSan 不覆盖）|
 
-## 1b. 反例索引（第二批：并发 UB 5 例）
+## 1b. 反例索引（第二批：并发 UB 5 例） {#1b-反例索引第二批并发-ub-5-例}
 
 | # | 文件 | UB 类型 | 本机真实证据 | Sanitizer 工具 |
 |---|------|--------|------------|:--------------:|

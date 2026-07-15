@@ -13,6 +13,7 @@
 nav 路径相对 docs_dir(=docs)，与重写后的目录结构一致。
 """
 from __future__ import annotations
+import json
 import re
 import sys
 from pathlib import Path
@@ -84,6 +85,18 @@ def build_nav(index: dict, part_titles: dict) -> str:
     if (DOCS_DIR / "CROSSREF.md").exists():
         lines.append('  - "全局导航":')
         lines.append('    - "交叉引用依赖索引 (CROSSREF)": CROSSREF.md')
+    # 外部资产（docs/、Appendix/ 中被书内链接引用，由 rewrite_links 写入 manifest）
+    # strict 模式要求所有文档文件出现在 nav，否则报 not-in-nav 警告。
+    manifest_path = SITE_DIR / "external_assets.json"
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except Exception:
+            manifest = []
+        if manifest:
+            lines.append('  - "附录 / 外部资源":')
+            for item in manifest:
+                lines.append(f"    - {yq(item['title'])}: {item['path']}")
     # 各 part
     for part_dir in sorted(parts.keys(), key=_part_seq):
         seq = _part_seq(part_dir)
