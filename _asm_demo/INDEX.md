@@ -11,7 +11,7 @@
 
 ---
 
-## 一、已覆盖实证（累计 22 例，STATE 记录）
+## 一、已覆盖实证（累计 23 例，STATE 记录）
 
 > 下表为本目录可查证证据文件；其中 `ch08_mdspan_test` / `ch08_print_test` 为**失败证据**（头缺失 / 链接失败），不计入成功汇编但保留以诚实记录"标准 vs 实测"差距。
 
@@ -39,6 +39,7 @@
 | ASM-41-shared_ptr | shared_ptr 引用计数 | ch41 | `ch41_shared_ptr_test.cpp/.s` | 拷贝构造 = 16B memcpy + `lock add [rdx+0x8]` 原子递增 use_count |
 | ASM-107-atomic_rmw | 原子 RMW (fetch_add/exchange/CAS) | ch107 | `ch107_atomic_rmw_test.cpp/.s` | fetch_add relaxed/seqcst 逐字节相同 `lock xadd`；exchange 用隐式锁 `xchg`；CAS 环 `lock cmpxchg`+`jne` |
 | ASM-109-fence | 显式内存屏障 | ch109 | `ch109_fence_test.cpp/.s` | seq_cst fence=`lock or`(非 mfence)；acquire/release/acq_rel 全空；signal fence 零指令 |
+| ASM-69-constexpr | constexpr 编译期求值 | ch69 | `ch69_constexpr_test.cpp/.s` | 常量参数→`mov eax,0x1a6d`(6765) 递归零痕迹；运行时参数→退化为真实 `fib_cx` 递归体 |
 
 > 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 18）。
 
@@ -55,7 +56,7 @@
 - [x] ASM-109-fence：显式 `atomic_thread_fence` 生成的 `lock or` 全屏障 / acquire-release 空 / signal 零指令
 
 ### 批 B：零开销验证
-- [ ] ASM-69-constexpr：`constexpr` 编译期求值 → 运行时零痕迹（函数体在运行时完全消失）
+- [x] ASM-69-constexpr：`constexpr` 编译期求值 → 运行时零痕迹（函数体在运行时完全消失；带运行时参数退化为真实递归）
 - [ ] ASM-116-perfect_fwd：完美转发的引用折叠（零开销，编译期类型推导）
 - [ ] ASM-117-nrvo：拷贝省略 vs 未省略的指令数对比（扩展现有 ASM-117-elision）
 
