@@ -25,7 +25,7 @@
 
 | 提案 | 特性 | feature-test macro | GCC | Clang [DOC] | MSVC [DOC] | 备注 | 章节 |
 |------|------|-------------------|:---:|:---:|:---:|------|------|
-| P0896 | Ranges | `__cpp_lib_ranges` | ✅ 202302 | ✅ 15 | ✅ 19.29 | GCC 实测 202302（含后续 DR） | ch90、ch119 |
+| P0896 | Ranges | `__cpp_lib_ranges` | ✅ 202302 | ✅ 15 | ✅ 19.29 | GCC 15.3 实测 ✅；ch08 附录 G.5 真机零成本实证（ranges::sort≡std::sort 同一 `__introsort_loop` / views::filter 谓词内联为 `test`+`jne`） | ch90、ch119、ch08 |
 | P0645 | `std::format` | `__cpp_lib_format` | ✅ 202304 | ✅ 17 | ✅ 19.29 | GCC 实测 202304 | ch131 |
 | P0122 | `std::span` | `__cpp_lib_span` | ✅ 202002 | ✅ 7 | ✅ 19.26 | | ch82 |
 | P1135 | `std::jthread`/`stop_token` | `__cpp_lib_jthread` | ✅ 201911 | ✅ 18 | ✅ 19.28 | Clang 长期缺失，18 才补 | ch94、ch103 |

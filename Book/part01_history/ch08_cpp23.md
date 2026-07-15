@@ -595,6 +595,116 @@ ch08_mdspan_test.cpp:3:10: fatal error: mdspan: No such file or directory
 
 多维→一维偏移的地址计算（如 `a[1,2]` → `data[1*extent1+2]`）由编译器在后端完成；在无 `<mdspan>` 时可用手写下标计算等价表达（见 ch82_span）。C++23 标准已规定 `std::mdspan`，但**编译器实测支持滞后**——这正是 WG21 跟踪表（WG21/TRACKER.md）记录"标准 vs 实测"差距的价值。
 
+### G.4 优化等级对比：-O0 / -O2 / -Os（嵌入式视角）
+
+> 嵌入式固件普遍用 `-Os` 压缩 flash，本实证回答"零开销抽象在 `-Os` 下是否仍零开销"。
+> 手法：`[[gnu::noinline]]` 强制 `parse_digit` 独立成符号，使三个等级对比的是同一函数。
+> 源码：`_asm_demo/ch08_opt_expected.cpp`，编译：
+> `g++ -std=c++26 -O0|-O2|-Os -c ch08_opt_expected.cpp -o ox.o`
+
+实测函数体积与构造方式：
+
+| 等级 | 函数体积 | 栈帧 | 构造函数调用 | 构造方式 |
+|---|---|---|---|---|
+| `-O0` | 182 B | 64 B `rsp` + `rbp` | 3 次 `call` | 经 value/unexpected 构造函数 |
+| `-O2` | 99 B | 无 | **0** | 直接写 `[rax]`(值)+`[rax+0x8]`(has_value=1) |
+| `-Os` | 74 B | 无 | **0** | 尾合并存储（最紧凑） |
+
+`-O2` 下构造函数被彻底消除，tagged union 原地构建（零开销成立）：
+
+```asm
+parse_digit(char) @ -O2:
+    mov    rax,rcx              ; rcx=隐藏 this 指针 (expected& 经隐藏指针返回)
+    lea    ecx,[rdx-0x30]      ; rdx=char c; ecx=c-'0'
+    cmp    cl,0x9
+    ja     20                  ; 非 '0'..'9' → 跳 0x20
+    movsx  edx,dl
+    mov    BYTE PTR [rax+0x8],0x1  ; 原地置 has_value 标志=1 (偏移 8)
+    sub    edx,0x30
+    mov    DWORD PTR [rax],edx     ; 原地写值 (偏移 0)
+    ret                         ; 无构造函数调用！
+ 20: lea    ecx,[rdx-0x61]      ; 'a'..'f' 分支: c-'a'
+    ...
+ 50: lea    rcx,[rip+0x0]       ; "not a hex digit" 字符串地址
+    mov    QWORD PTR [rax+0x8],0x0  ; has_value=0
+    mov    QWORD PTR [rax],rcx      ; 错误指针存偏移 0
+    ret
+```
+
+`-Os` 进一步**尾合并**了三路分支的存储序列（74 B < 99 B），对 flash 受限 MCU 最友好：
+
+```asm
+parse_digit(char) @ -Os (74 B):
+    mov    rax,rcx
+    lea    ecx,[rdx-0x30]
+    cmp    cl,0x9
+    ja     13
+    movsx  edx,dl
+    sub    edx,0x30
+    jmp    31                  ; 尾合并到统一存储
+ 13: lea    ecx,[rdx-0x61]      ; 'a'..'f'
+    ...
+ 31: mov    DWORD PTR [rax],edx     ; 统一写值
+    mov    BYTE PTR [rax+0x8],0x1  ; 统一置 has_value=1
+    jmp    49
+ 39: xor    edx,edx             ; 错误分支
+    lea    rcx,[rip+0x0]
+    mov    QWORD PTR [rax+0x8],rdx ; has_value=0
+    mov    QWORD PTR [rax],rcx
+ 49: ret
+```
+
+**结论**：`std::expected` 的零开销承诺在 `-O2` 与 `-Os` 下均成立——构造函数被消除、tagged union 原地构建；`-Os` 反而最小（74 B）。`-O0`（调试/未优化）是唯一有构造函数调用开销的等级，印证"发布构建务必开优化"。
+
+### G.5 std::ranges 零成本抽象实证
+
+> 破除"Ranges 慢"迷思。源码：`_asm_demo/ch08_ranges_test.cpp`，编译：
+> `g++ -std=c++26 -O2 -c ch08_ranges_test.cpp -o ranges.o`
+
+**(1) `std::ranges::sort` ≡ `std::sort` 同一套 introsort**
+
+两者最终都调用 libstdc++ 的同一实例化：
+
+```text
+void std::__introsort_loop<
+    __gnu_cxx::__normal_iterator<int*, std::vector<int, std::allocator<int> > >,
+    long long,
+    __gnu_cxx::__ops::_Iter_less_iter
+>(...) [clone .isra.0]
+```
+
+本例中 `sort_std` 用 `call` 引用该共享克隆，`sort_ranges` 将其内联进自身主体（GCC 启发式），但**排序内核完全相同**：阈值 `cmp rdi,0x40`（>64 元素才进快排）、插入排序尾、末趟单遍。ranges 层唯一的额外成本是 prologue 中构造 range 的 begin/end 对：
+
+```asm
+sort_ranges @ -O2 prologue:
+    mov    rsi,QWORD PTR [rcx+0x8]   ; end()
+    mov    rbp,QWORD PTR [rcx]       ; begin()
+    lea    rdx,[rsp+0x3e]
+    lea    rax,[rsp+0x3f]
+    xchg   rdx,rax                   ; 在栈上构造 std::ranges::sort 的 range 参数(begin/end 对)
+```
+
+这是一次性常量开销，调用点被内联进调用者时即消失。
+
+**(2) `std::views::filter` 谓词被内联为单条 `test`+`jne`**
+
+`count_even` 用 `v | views::filter([](int x){ return (x&1)==0; })` 过滤偶数并求和，`-O2` 下 filter 闭包与 lambda **完全消失**，退化成与手写循环一致的紧致循环（仅 98 B）：
+
+```asm
+count_even(const std::vector<int>&) @ -O2 (98 B):
+    mov    r8,QWORD PTR [rcx+0x8]   ; end()
+    mov    rcx,QWORD PTR [rcx]      ; begin()
+    cmp    r8,rcx
+    jne    659
+ 659: mov    edx,DWORD PTR [rcx]    ; *it
+    test   dl,0x1                   ; (x & 1) == 0 ? 偶数判定
+    jne    650                      ; 奇数 → 跳过 (650: add rcx,4 取下一元素)
+    add    r9d,edx                  ; 偶数 → 累加
+    ...
+```
+
+**结论**：`std::ranges` 是零成本抽象——`ranges::sort` 与 `std::sort` 生成同一 introsort；`views::filter` 的谓词被编译成循环内的 `test`+`jne`，无迭代器包装、无间接调用。Ranges 的可读性提升不以运行时性能为代价。
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。
