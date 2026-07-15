@@ -535,27 +535,43 @@ I 表最后 5 章：**ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_
 
 ### §10.3 关键里程碑（待达成）
 
-- [ ] **P0-1 第一批 benchmark 落地**：10 章 Google Benchmark 重写 + 真实数据
-- [ ] **P0-2 compiler-matrix.md 上线**：全特性版本对照表 + 自动验证脚本
-- [ ] **P0-3 UB 库 15 例**：真实 sanitizer 输出 + 根因分析文档
-- [ ] **A1 交叉引用 0 断裂**：147 章全量引用链完整
-- [ ] **A2 CI 豁免消化**：可修豁免降至 0，门禁覆盖 110+/147
-- [ ] **B1 v1.1.0 发布**：CHANGELOG + tag + Release
-- [ ] **B2 Interview/embedded/ 上线**：10 道嵌入式专属题
-- [ ] **B3 WG21/TRACKER.md 上线**：C++11-26 提案→编译器版本矩阵
+- [x] **P0-1 第一批 benchmark 落地**：10 章 Google Benchmark 重写 + 真实数据（仅剩 3 处 [示意] 标记定义本身，非数据声称）
+- [x] **P0-2 compiler-matrix.md 上线**：全特性版本对照表 + 自动验证脚本
+- [x] **P0-3 UB 库 15 例**：真实 sanitizer 输出 + 根因分析文档（内存/并发/生命周期各 5）
+- [x] **A1 交叉引用 0 断裂**：147 章全量引用链完整（1190 条引用，断链 0）
+- [x] **A2 CI 豁免消化**：可修豁免降至 0，门禁覆盖 112/147（35 豁免均合理）
+- [x] **B1 v1.1.0 发布**：CHANGELOG + tag + Release
+- [x] **B2 Interview/embedded/ 上线**：10 道嵌入式专属题
+- [x] **B3 WG21/TRACKER.md 上线**：C++11-26 提案→编译器版本矩阵
 
 ### §10.4 当前进度
 
 | 指标 | 值 | 日期 |
 |------|-----|------|
-| 密度 avg combined | 24.9/30 | 2026-07-14 |
-| shallow 章 | 0 | 2026-07-14 |
-| I 维度零覆盖 | 0 | 2026-07-14 |
-| 方向 1 实证 | 8 例 | 2026-07-14 |
-| consistency_check | 30 次连续 100/100 | 2026-07-14 |
-| 编译通过 | 112/147 (35 豁免) | 2026-07-14 |
-| WORKLIST 子项 | 45（P0:17 + A:8 + B:14 + C:6） | 2026-07-14 |
+| 密度 avg combined | 24.9/30 | 2026-07-15 |
+| shallow 章 | 0 | 2026-07-15 |
+| I 维度零覆盖 | 0 | 2026-07-15 |
+| 汇编实证（GCC15.3 真机 objdump） | 31 例 | 2026-07-15 |
+| consistency_check | 31 次连续 100/100 | 2026-07-15 |
+| 编译通过 | 112/147 (35 豁免) | 2026-07-15 |
+| WORKLIST 子项 | 45/45 完成（P0+A+B+C 全竣工） | 2026-07-15 |
+| Phase 4/5 真机汇编扩展 | 已竣工（C++23/26 标准前沿 + ASM MATRIX 6 批） | 2026-07-15 |
 
 ---
+
+### §10.5 Phase 4/5 真机汇编实证（扩展轴，超原 45 子项规划）
+
+第三阶段后期持续"把编造数字变真机数据"，P0/A/B/C 全竣工后追加两条扩展轴（均 GCC 15.3.0 `-O2` 真实 objdump，绝不伪造）：
+
+- **Phase 4 — 标准前沿真机实证（P4-1 ~ P4-5-4，2026-07-15）**
+  - ch08 C++23：`std::expected` 零开销 tagged union、`std::generator` 协程帧堆分配、`std::ranges` 零成本抽象、跨优化等级对比（-O0/-O2/-Os）
+  - ch09 C++26：contracts（`-fcontracts` 真机）、诚实标注 `<execution>`/`<meta>` 实验性限制
+  - WG21/TRACKER 真机对齐：`std::print` 宏支持但链接失败、`mdspan`/`reflection` 头缺失等诚实结论
+  - 汇编实证 12 → 18 例
+- **Phase 5 — ASM MATRIX 真机实证（P5-1 ~ P5-14，2026-07-15）**
+  - 批 A 并发原子（108/41/107/109）、批 B 零开销验证（69/116/117）、批 C 字符串容器（81-sso/77-vector_grow）
+  - 批 D 多态分发（47-vs-51/88-variant）、批 E PMR（122-pmr）、批 F 类型擦除（std_function）
+  - 汇编实证 18 → 31 例（累计）
+- **最终状态**：汇编实证 8 → 31 例（+23），全部 GCC 15.3.0 真实 objdump 产物存 `_asm_demo/`；不可用特性（`import std`、`mdspan`、`reflection`、contracts 链接）均诚实标注
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）、**WORKLIST_v4.md（质量收尾导航）**_
