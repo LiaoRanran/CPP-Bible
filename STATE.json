@@ -3,7 +3,7 @@
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
-  "last_updated": "2026-07-15T08:35:00+08:00",
+  "last_updated": "2026-07-15 08:34",
   "last_commit": "4d48411",
   "git_status": "clean",
   "completed_phases": [
@@ -18,7 +18,11 @@
       "batch": 3,
       "total_batches": 3,
       "detail": "仅剩7处[示意](原估353)。实测化 ch27/ch50/ch93 三处数据: vptr布局(0x0000/0x0008/槽宽0x0008, 次级偏移=主基类大小), 同步代价(atomic 3.5ns/mutex 7.6ns/thread 125us), 转型代价(virtual 0.5ns/dynamic_cast 6.9ns慢13.6x)。剩余3处为[示意]标记定义本身(ch19风格约定/ch27标签表), 非数据声称。新增_emp_bench/测量程序。门禁0/0。",
-      "current_batch_items": ["ch27_cast", "ch50_mi", "ch93_thread"]
+      "current_batch_items": [
+        "ch27_cast",
+        "ch50_mi",
+        "ch93_thread"
+      ]
     },
     "P0-2": {
       "label": "编译器版本矩阵表",
@@ -26,7 +30,12 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "466处对比(实测) → docs/compiler-matrix.md + 验证工具 + 3章注入引用",
-      "current_batch_items": ["scan", "create_matrix", "inject_refs", "verify_script"]
+      "current_batch_items": [
+        "scan",
+        "create_matrix",
+        "inject_refs",
+        "verify_script"
+      ]
     },
     "P0-3": {
       "label": "反例/UB库 + Sanitizer",
@@ -34,10 +43,34 @@
       "batch": 3,
       "total_batches": 3,
       "detail": "15 UB示例 → Appendix/ub/（内存5+并发5+生命周期5 全部落地）",
-      "current_batch_items": ["dangling_reference", "iterator_invalidation", "vptr_corruption", "odr_violation", "const_cast_mutation"],
-      "batch1_done": ["use_after_free", "double_free", "stack_after_scope", "alignment_violation", "strict_aliasing"],
-      "batch2_done": ["data_race", "lock_order_inversion", "signal_handler", "tsan_false_positive", "false_sharing"],
-      "batch3_done": ["dangling_reference", "iterator_invalidation", "vptr_corruption", "odr_violation", "const_cast_mutation"]
+      "current_batch_items": [
+        "dangling_reference",
+        "iterator_invalidation",
+        "vptr_corruption",
+        "odr_violation",
+        "const_cast_mutation"
+      ],
+      "batch1_done": [
+        "use_after_free",
+        "double_free",
+        "stack_after_scope",
+        "alignment_violation",
+        "strict_aliasing"
+      ],
+      "batch2_done": [
+        "data_race",
+        "lock_order_inversion",
+        "signal_handler",
+        "tsan_false_positive",
+        "false_sharing"
+      ],
+      "batch3_done": [
+        "dangling_reference",
+        "iterator_invalidation",
+        "vptr_corruption",
+        "odr_violation",
+        "const_cast_mutation"
+      ]
     },
     "A1": {
       "label": "交叉引用审计",
@@ -45,7 +78,9 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "tools/crossref_audit.py 实跑: 147章 / 1190条引用 / 断链0 / 覆盖率100% / 无WARN。注: 书用 '⟶ path' 箭头约定(非标准](...)), 审计工具已双语解析。早期误判 ch117/ch158 为孤儿(因自备窄正则只匹配](...)), 实为被 ch115/116/118/119 与 ch152/153/156/157/159/160 经箭头引用。无破损链需修复。",
-      "current_batch_items": ["crossref_audit_run"]
+      "current_batch_items": [
+        "crossref_audit_run"
+      ]
     },
     "A2": {
       "label": "CI豁免消化",
@@ -67,7 +102,12 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "Interview/ 拆 general/(20题+难度★-★★★+嵌入式🔧标注) + embedded/(10道STM32F4硬核题:无堆容器/跨TU ABI/volatile MMIO/中断安全/placement new/constexpr替代宏/内存池/DMA抽象/零开销寄存器映射/全局构造顺序)。每题标 Book章节+难度+公司频次+误区。E9零开销[实测]:GCC15.3 objdump 验证C++模板==C宏逐字节相同(单条movl)。代码 e1/e4/e6/e7/e9 -fsyntax-only 通过。commit 7ce9494。",
-      "current_batch_items": ["general_reorg", "embedded_10q", "subdirs", "index"]
+      "current_batch_items": [
+        "general_reorg",
+        "embedded_10q",
+        "subdirs",
+        "index"
+      ]
     },
     "B3": {
       "label": "WG21提案跟踪表",
@@ -75,7 +115,12 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "WG21/TRACKER.md(C++20/23/26 提案→feature-test宏→GCC/Clang/MSVC 支持表, GCC列本机实测, Clang/MSVC标[DOC]) + tools/generate_wg21_tracker.py(解析TRACKER宏名与GCC状态, 对比_cpp_probe_gcc.json或--gcc实探, 输出diff, 26行0diff) + 季度同步流程。实测纠错重大bug: 早前P0-2误用错误宏名 __cpp_deducing_this/__cpp_explicit_this(均得UNDEF)误判 deducing this 不支持; 实探 __cpp_explicit_this_parameter=202110 已支持。全链修正5处: TRACKER.md/docs/compiler-matrix.md(:51+:164)/_cpp_probe_gcc.json/tools/verify_compiler_features.py/Book ch10。另修 flat_map=202207✅, mdspan/inplace_vector❌UNDEF, P2300宏未定名+__cpp_lib_execution(201902=C++17并行算法非P2300)陷阱注记。门禁0/0。",
-      "current_batch_items": ["tracker_md", "generate_tool", "live_probe_correction", "deducing_this_fix_chain"]
+      "current_batch_items": [
+        "tracker_md",
+        "generate_tool",
+        "live_probe_correction",
+        "deducing_this_fix_chain"
+      ]
     },
     "B4": {
       "label": "汇编实证扩展",
@@ -83,7 +128,12 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "4章各加「附录E 编译实证」(GCC15.3 -O2 objdump 全部真实生成, 产物 _asm_demo/): ch42 strict-aliasing 开关翻转对比(-fstrict-aliasing 下 no_alias 返回值缓存进eax省一条load, 关闭则必 mov(%rcx),%eax 重载); ch48 RTTI(who 用 mov -0x8(%rax) 实证 typeid 读 vtable[-1] 的 type_info; dynamic_cast 尾调 __dynamic_cast; 静态 typeid 仅 lea); ch52 EBO(read_ebo 偏移0/read_noebo 偏移0x4/no_unique_address 偏移0 —— sizeof 4vs8 差异汇编直接可见); ch117 复制消除(make_prvalue/nrvo 直接写返回槽 movl$val,(%rcx) 零 call puts; make_nomove 删move仍编译=强制消除是语义非优化)。累计汇编实证 8→12 例。门禁0/0。",
-      "current_batch_items": ["ch42_aliasing", "ch48_rtti", "ch52_ebo", "ch117_elision"]
+      "current_batch_items": [
+        "ch42_aliasing",
+        "ch48_rtti",
+        "ch52_ebo",
+        "ch117_elision"
+      ]
     },
     "B5": {
       "label": "PDF全量构建",
@@ -106,9 +156,10 @@
     },
     "C3": {
       "label": "章编号一致性",
-      "status": "pending",
+      "status": "completed",
       "batch": 1,
-      "total_batches": 1
+      "total_batches": 1,
+      "detail": "新增 tools/chapter_number_audit.py：147章 文件名编号==H1章号 0错、无重号、part区间不重叠；18个缺号(33/34/53-59/73-75/102-106/114)为有意预留空位，crossref_audit 1190条引用 0断链，无悬空指向缺号章"
     }
   },
   "execution_order": [
