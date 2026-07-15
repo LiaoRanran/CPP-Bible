@@ -11,7 +11,8 @@
     "i_practice_closeout",
     "assembly_empirical_core",
     "std_frontier_phase4",
-    "std_frontier_phase4_5"
+    "std_frontier_phase4_5",
+    "asm_matrix_phase5"
   ],
   "tasks": {
     "P0-1": {
@@ -212,6 +213,41 @@
       "subject": "WG21/TRACKER P0896 补真机实证链接",
       "status": "completed",
       "detail": "ranges 备注指向 ch08 附录 G.5 零成本实证"
+    },
+    "P5-1": {
+      "label": "ASM-108 memory_order 指令屏障实证",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "ch108 附录J: GCC15.3 x86-64 下 acquire/release 零屏障, seq_cst store 付 xchg, 原子RMW 付 lock xadd; 含 ARM 弱内存对比警示"
+    },
+    "P5-2": {
+      "label": "ASM-41 shared_ptr 引用计数原子递增实证",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "ch41 附录D: clone 拷贝构造 = 16B memcpy + lock add [rdx+0x8] 递增 use_count; 相对 unique_ptr 硬开销"
+    },
+    "P5-3": {
+      "label": "Phase5 批A 收尾: 嵌入附录+索引+门禁+提交",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "两章附录嵌入, INDEX 20例, consistency 0/0, 提交推送"
+    },
+    "P5-4": {
+      "label": "ASM-107 atomic_rmw (fetch_add/cmpxchg)",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "lock xadd / lock cmpxchg 与 CAS 循环展开"
+    },
+    "P5-5": {
+      "label": "ASM-109 fence (mfence/lfence/sfence)",
+      "status": "pending",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "显式 atomic_thread_fence 生成的屏障指令"
     }
   },
   "execution_order": [
@@ -241,7 +277,7 @@
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 18,
+    "assembly_empirical_examples": 20,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   },

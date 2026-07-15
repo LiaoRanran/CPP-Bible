@@ -760,6 +760,58 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 
 把「裸 `relaxed` 标志 + 数据」重构为 `store(data, relaxed); flag.store(true, release)` + `if(flag.load(acquire)) use(data)` 的发布-消费对；把手工 DCL 重构为 `std::call_once` 或函数内 `static` 局部（零成本且标准保证线程安全）；不要在热路径滥用 `seq_cst`（全局 fence 拖性能），按需降到 acquire/release 并实测 fence 代价。
 
+## 附录 J：GCC 15.3.0 真机汇编实证——内存序指令屏障（ASM-108-memory_order）[E: Low-level]
+
+> 编译器: GCC 15.3.0 (mingw64, x86_64) | 选项: `-std=c++26 -O2` | 反汇编: `objdump -d -M intel -C`
+> 证据: `_asm_demo/ch108_memory_order_test.cpp` → `ch108_memory_order_test.s`
+> 核心结论: **x86-64 的 TSO 内存模型让 `acquire`/`release` 零屏障**；真正的屏障只出现在 `seq_cst` 的 store（`xchg` 隐式 `lock`）与所有原子 RMW（`lock` 前缀）。
+
+### 测试源码（节选）
+
+```cpp
+std::atomic<int> g{0};
+[[gnu::noinline]] void store_relaxed() { g.store(1, std::memory_order_relaxed); }
+[[gnu::noinline]] void store_release() { g.store(1, std::memory_order_release); }
+[[gnu::noinline]] void store_seqcst()  { g.store(1, std::memory_order_seq_cst); }
+[[gnu::noinline]] int  load_acquire()  { return g.load(std::memory_order_acquire); }
+[[gnu::noinline]] int  load_seqcst()   { return g.load(std::memory_order_seq_cst); }
+[[gnu::noinline]] int  fadd_relaxed()  { return g.fetch_add(1, std::memory_order_relaxed); }
+[[gnu::noinline]] int  fadd_seqcst()   { return g.fetch_add(1, std::memory_order_seq_cst); }
+```
+
+### 关键汇编对照
+
+| 函数 | 内存序 | 生成指令（x86-64） | 屏障代价 |
+|------|--------|--------------------|----------|
+| `store_relaxed` | relaxed | `mov DWORD PTR [rip+...], 0x1` | 无 |
+| `store_release` | release | `mov DWORD PTR [rip+...], 0x1` | 无（与 relaxed **逐字节相同**） |
+| `store_seqcst` | seq_cst | `xchg DWORD PTR [rip+0x0], eax` | **有**：`xchg` 带隐式 `lock` → 全屏障 |
+| `load_acquire` | acquire | `mov eax, DWORD PTR [rip+0x0]` | 无 |
+| `load_seqcst` | seq_cst | `mov eax, DWORD PTR [rip+0x0]` | 无（与 acquire **逐字节相同**） |
+| `fadd_relaxed` | relaxed | `lock xadd DWORD PTR [rip+0x0], eax` | 有：`lock` 前缀 |
+| `fadd_seqcst` | seq_cst | `lock xadd DWORD PTR [rip+0x0], eax` | 有：`lock` 前缀（与 relaxed **逐字节相同**） |
+
+### 真实片段
+
+```asm
+; seq_cst store：全章唯一出现栅栏的地方
+store_seqcst():
+    mov    eax,0x1
+    xchg   DWORD PTR [rip+0x0],eax      ; 隐式 lock → 全内存屏障
+
+; 原子 RMW：relaxed 与 seq_cst 指令完全相同
+fadd_seqcst():
+    mov    eax,0x1
+    lock xadd DWORD PTR [rip+0x0],eax   ; lock 前缀保 RMW 原子性
+```
+
+### 非显然事实与工程警示
+
+1. **`acquire`/`release` 在 x86-64 下是"免费"的**：x86-64 采用 TSO（Total Store Order），硬件本就不允许「store 与更早 store 重排」「load 与更早 load 重排」，因此普通 `mov` 天然满足 acquire/release 语义，编译器无需插入任何 `lfence`/`mfence`/`lock`。这是 CPU 强内存模型的直接红利。
+2. **`seq_cst` 的真正成本只在 store**：`seq_cst` store 必须付 `xchg`（或 `mfence`）以锚定全局单一总序；而 `seq_cst` load 在 GCC/x86-64 下仍是普通 `mov`——因为「`lock` 前缀 store + TSO」已足以维持顺序一致性，编译器不为 load 额外加屏障。
+3. **原子 RMW 无论内存序都付 `lock`**：`fetch_add` 的 relaxed 与 seq_cst 生成**逐字节相同**的 `lock xadd`。内存序差异不改变这条指令，只改变编译器对"周围代码能否重排"的约束——机器码层面无差别。
+4. **⚠️ 嵌入式跨平台陷阱（最重要）**：上述"看起来都免费"的现象是 **x86-64 TSO 独有**。在嵌入式常见的 **ARM/AArch64（弱内存模型）** 上，`seq_cst` load/store 会生成 `dmb ish` 数据内存屏障，`acquire`/`release` 才对应 `ldar`/`stlr` 免费指令。因此：**在 x86 开发机用 `relaxed`/`seq_cst` 看不出性能差别、也几乎不暴露重排 bug，但烧到 ARM MCU 上两者指令数与正确性语义天差地别**。内存序选型必须按目标架构实测，不可只信 x86 本地结果。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
