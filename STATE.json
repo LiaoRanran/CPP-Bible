@@ -4,7 +4,7 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
   "last_updated": "2026-07-15",
-  "last_commit": "ed6bb20",
+  "last_commit": "f2186da",
   "git_status": "ahead of origin by 49 (unpushed)",
   "completed_phases": [
     "density_deepening",
@@ -269,6 +269,20 @@
       "batch": 2,
       "total_batches": 3,
       "detail": "prvalue/NRVO 零 call; make_nrvo_fail 多返回路径 NRVO 失效->两分支各 call move 构造; 复核附录E手写注释"
+    },
+    "P5-9": {
+      "label": "ASM-81 sso 零堆分配实证",
+      "status": "completed",
+      "batch": 3,
+      "total_batches": 2,
+      "detail": "make_short 无 operator new (SSO 栈内缓冲); make_long 含 call operator new 堆分配; 链接后 objdump 升级附录F手写注释"
+    },
+    "P5-10": {
+      "label": "ASM-77 vector_grow 扩容三连实证",
+      "status": "completed",
+      "batch": 3,
+      "total_batches": 2,
+      "detail": "push_no_reserve 含 operator new+memcpy+operator delete 三连; push_reserved 仅 reserve 一次分配, 循环无 call; 与附录H互补"
     }
   },
   "execution_order": [
@@ -298,7 +312,7 @@
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 25,
+    "assembly_empirical_examples": 27,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   },

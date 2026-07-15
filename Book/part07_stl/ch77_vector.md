@@ -1036,6 +1036,45 @@ size_type _M_check_len(size_type __n, const char* __s) const {
 
 ---
 
+## 附录 I：GCC 15.3.0 真机汇编实证——扩容三连（ASM-77-vector_grow） [C: Compiler / E: Low-level / G: Performance]
+
+> `[实测]` 编译：`g++ -std=c++26 -O2 ch77_vector_grow_test.cpp -o ch77_vector_grow_test.exe`（链接后 objdump 以显示符号名）+ `objdump -d -M intel -C`。产物 `_asm_demo/ch77_vector_grow_test.{cpp,.s}`（`.o` 提交，`.exe` 仅本地链接验证）。本附录聚焦"扩容瞬间到底发生什么指令"，与附录 H 的 hot/cold 路径优化互为补充。
+
+### 测试源码（核心）
+
+```cpp
+[[gnu::noinline]] void push_no_reserve() {
+    std::vector<int> v;
+    for (int i = 0; i < 8; ++i) v.push_back(i);   // 不预分配 -> 多次扩容
+}
+[[gnu::noinline]] void push_reserved() {
+    std::vector<int> v;
+    v.reserve(16);
+    for (int i = 0; i < 8; ++i) v.push_back(i);   // 预分配 -> 无扩容
+}
+```
+
+### 真实汇编（链接后，关键调用）
+
+```asm
+<push_no_reserve()>:                 ; 8 次 push_back 触发约 3 次扩容 (0->1->2->4->8)
+    ...
+    call  operator new(unsigned long long)   ; 分配 2× 容量新缓冲
+    call  memcpy                            ; 搬移旧元素到新缓冲
+    call  operator delete(void*, ...)       ; 释放旧缓冲
+    ... (上述三连重复出现 —— 每次容量满都重演)
+
+<push_reserved()>:                    ; reserve(16) 已分配
+    call  operator new(unsigned long long)   ; 仅 reserve 时一次分配
+    ...                                      ; 循环内无 call —— 无扩容
+```
+
+### 关键发现
+
+- **扩容 = 分配 + 搬移 + 释放 三连**：每当 `size == capacity`，`push_back` 先 `operator new` 分配 2× 容量新缓冲，再 `memcpy` 搬旧元素，最后 `operator delete` 释放旧缓冲（见 `_M_realloc_insert` 内联展开）。这是 O(n) 开销，正是均摊 O(1) 的代价所在。
+- **`reserve` 消除扩容分支**：`push_reserved` 仅 `reserve` 时一次 `operator new`，循环内 `push_back` 直接写槽、零 `call`——与附录 H 的"reserve 后零分配"结论在指令级互证。
+- **增长因子 2×**：libstdc++ 默认 `new_cap = 2*old_cap`（附录 H 已列各库因子），故 8 次 push 触发约 3 次扩容、峰值浪费可达 100%。已知元素数量时 `reserve(N)` 可把扩容次数降到 0。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

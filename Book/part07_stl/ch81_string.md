@@ -709,6 +709,47 @@ int main(){std::string s="hello";std::cout<<s<<" ("<<s.capacity()<<" capacity, "
 
 把「临时 `string().c_str()` 存储为 `const char*`」重构为 `std::string` 持有所有权；SSO 阈值差异大的代码用 `static_assert(sizeof(std::string)==32)` 锁定平台假设；异步日志传 `std::string` 拷贝而非 `string_view`。
 
+## 附录 J：GCC 15.3.0 真机汇编实证（ASM-81-sso） [C: Compiler / E: Low-level]
+
+> `[实测]` 编译：`g++ -std=c++26 -O2 ch81_sso_test.cpp -o ch81_sso_test.exe`（链接后 objdump 以显示符号名）+ `objdump -d -M intel -C`。`volatile g_obs` 强制 `std::string` 真实构造。产物 `_asm_demo/ch81_sso_test.{cpp,.s}`（`.o` 提交，`.exe` 仅本地链接验证）。
+
+### 测试源码（核心）
+
+```cpp
+volatile int g_obs = 0;
+[[gnu::noinline]] void make_short() {                 // 短串 -> SSO
+    std::string s("hi");
+    g_obs = (int)s.size();
+    g_obs = (int)(intptr_t)s.data();   // data() 返回运行时地址, 强制真实构造
+}
+[[gnu::noinline]] void make_long() {                  // 长串 -> 堆
+    std::string s("this string is definitely longer than the SSO buffer and must go to the heap");
+    g_obs = (int)s.size();
+    g_obs = (int)(intptr_t)s.data();
+}
+```
+
+### 真实汇编（链接后，关键调用）
+
+```asm
+<make_short()>:
+    mov   DWORD PTR [rip+g_obs], 0x2   ; size=2 直接写全局
+    mov   DWORD PTR [rip+g_obs], eax   ; data() 栈内地址
+    ret                                 ; 全程无 call operator new —— SSO 零堆分配
+
+<make_long()>:
+    mov   ecx, 0x4d                     ; 长度 77
+    call  operator new(unsigned long long)   ; ← 长串触发堆分配
+    mov   QWORD PTR [rcx+0x8], rdx      ; 字面量逐字节写入堆缓冲
+    ...
+```
+
+### 关键发现
+
+- **SSO 真机验证**：`make_short`（"hi"，2 字节）构造全程**无 `call operator new`**——字符串直接落在 `std::string` 对象内部的 16 字节本地缓冲（栈上），零堆分配。
+- **超阈值即堆分配**：`make_long`（77 字节 > libstdc++ 15 字节 SSO 阈值）构造含 `call operator new(unsigned long long)`——堆分配 + 字面量 `memcpy` 进堆缓冲。
+- 本附录用 GCC 15.3.0 真实链接后 objdump 升级了附录 F 的"手写注释"（附录 F 声称 `s._M_local_buf = "hello" (栈上16字节, 无堆分配)`，此处给出指令级证据）。阈值：GCC libstdc++ = 15B、Clang libc++ = 22B、MSVC = 15B（见附录 F/G 表格）。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

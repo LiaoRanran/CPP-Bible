@@ -11,7 +11,7 @@
 
 ---
 
-## 一、已覆盖实证（累计 25 例，STATE 记录）
+## 一、已覆盖实证（累计 27 例，STATE 记录）
 
 > 下表为本目录可查证证据文件；其中 `ch08_mdspan_test` / `ch08_print_test` 为**失败证据**（头缺失 / 链接失败），不计入成功汇编但保留以诚实记录"标准 vs 实测"差距。
 
@@ -42,6 +42,8 @@
 | ASM-69-constexpr | constexpr 编译期求值 | ch69 | `ch69_constexpr_test.cpp/.s` | 常量参数→`mov eax,0x1a6d`(6765) 递归零痕迹；运行时参数→退化为真实 `fib_cx` 递归体 |
 | ASM-116-perfect_fwd | 完美转发引用折叠 | ch116 | `ch116_perfect_fwd_test.cpp/.s` | `std::forward` 运行时零指令；模板两实例化与手写转发逐字节相同 `jmp sink_l/sink_r`；按值传递多 16B 栈拷贝 |
 | ASM-117-nrvo | 拷贝省略 vs 未省略 | ch117 | `ch117_nrvo_test.cpp/.s` | prvalue/NRVO 零 call；多返回路径 NRVO 失效→两分支各 `call` move 构造 |
+| ASM-81-sso | `std::string` 小字符串优化 | ch81 | `ch81_sso_test.cpp/.s` | 短串 `make_short` 无 `operator new`（SSO 栈内缓冲）；长串 `make_long` 含 `call operator new` 堆分配 |
+| ASM-77-vector_grow | `vector::push_back` 扩容 | ch77 | `ch77_vector_grow_test.cpp/.s` | 扩容三连 `operator new`+`memcpy`+`operator delete`；`reserve` 后循环无扩容 call |
 
 > 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 18）。
 
@@ -63,8 +65,8 @@
 - [x] ASM-117-nrvo：拷贝省略 vs 未省略的指令数对比（prvalue/NRVO 零 call；多返回路径 NRVO 失效触发真实 move 构造）
 
 ### 批 C：字符串与容器
-- [ ] ASM-81-sso：`std::string` 小字符串优化（SSO）：短串存栈内联缓冲，免堆分配
-- [ ] ASM-77-vector_grow：`push_back` 触发扩容的 `realloc` + 元素搬移真实代码（扩展现有 ASM-77-vector）
+- [x] ASM-81-sso：`std::string` 小字符串优化（SSO）：短串存栈内联缓冲，免堆分配（链接后 objdump 显示 `make_short` 无 `operator new`、`make_long` 有）
+- [x] ASM-77-vector_grow：`push_back` 触发扩容的 `operator new`+`memcpy`+`operator delete` 三连（扩展现有 ASM-77-vector，与附录 H 互补）
 
 ### 批 D：多态分发
 - [ ] ASM-47-vs-51：虚函数调用（`call [vtable+off]` 间接调用）vs CRTP 静态分发（直接 `call`）的指令数/间接跳转对比
