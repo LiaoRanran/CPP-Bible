@@ -29,7 +29,13 @@
 ### 质量审计（A 系）
 
 - **交叉引用审计（A1）**：`tools/crossref_audit.py` 实跑 147 章 / 1190 引用 / 断链 0 / part 覆盖率 100%。
-- **CI 豁免消化（A2）**：定向重测 66 个豁免块（GCC 13.1，CI 同款 flags）全部合法失败（modules / 外部库 / POSIX / MSVC / 多文件 / 故意错误演示），0 stale；新增防呆工具 `tools/prune_exempt.py`。
+- **CI 豁免消化（A2）**：定向重测 66 个豁免块（GCC 13.1，CI 同款 flags）全部合法失败（modules / 外部库 / POSIX / MSVC / 多文件 / 故意错误演示），0 stale；新增防呆工具 `tools/prune_exempt.py`。全量 `--main-only` 复扫：147 章 / 112 通过 / 66 失败块与基线一致。
+
+### 一致性审计（C 系）
+
+- **术语一致性（C1）**：修复索引层 32 处断链引用——`GLOSSARY.md`（ABI/CRTP/data race/deadlock/EBO/UB/vtable 共 7 条）、`CROSSREF.md`（生命周期/虚函数链/协程链/CRTP 链 4 条核心链）、`MISCONCEPTIONS.md`（章节区间头 + 条目章号共 21 处）全部映射到真实章号；`glossary.json` 129 术语 0 断链；术语变体审计（运行期/运行时/范本/解构/指标/多形/内连）确认均为有意用法，0 实际错误。
+- **Mermaid 图表审计（C2）**：新增 `tools/mermaid_audit.py`（静态结构校验）+ `tools/mermaid_parse_check.mjs`（官方 `mermaid.parse` + jsdom 真实解析）；全量 88 图块静态 + 官方解析双重校验 0 失败。
+- **章编号一致性（C3）**：新增 `tools/chapter_number_audit.py`——校验文件名 `chNN` ↔ H1 `第NN章`、序列连续性、重号、part 区间重叠、mkdocs nav 悬空引用；147 章 0 错、18 个缺号确认为有意预留（33/34/53-59/73-75/102-106/114）。
 
 ### 质量基线（不变）
 
