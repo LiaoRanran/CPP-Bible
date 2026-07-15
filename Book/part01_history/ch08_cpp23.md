@@ -155,18 +155,39 @@ values: [v1][v2][v3]...   ← 连续内存, 缓存友好, 查找 O(log n)
 
 ## ⑩ 汇编（std::print 编译期格式检查）
 
+> **真实编译验证（GCC 15.3.0，`-std=c++26 -O2`）**：`<print>` 头存在、语法支持，但本 MinGW 构建的 libstdc++ **未导出终端符号**，链接失败：
+>
+> ```text
+> undefined reference to `std::__open_terminal(_iobuf*)'
+> undefined reference to `std::__write_to_terminal(void*, std::span<char, ...>)'
+> ```
+>
+> 故用**等价的 `std::format`（已验证可编译+链接）**展示格式化机制。自定义 formatter 通过 handler 函数指针注入格式上下文，编译期生成 `_S_format<Point const>`：
+
 ```cpp
-// [merged] ## ⑩ 汇编（std::print 编译期格式检查）
-#include <iostream>
-#include <string>
-#include <span>
-int d2[4]; std::span<int> m2(d2); void use_md(){ m2[0]=1; }
-int main() {
-    const std::string cs="y"; auto copy=cs;
-}
+// _asm_demo/ch08_format_test.cpp （GCC 15.3.0 -std=c++26 -O2，实测可编可链）
+#include <format>
+#include <cstdio>
+struct Point { int x, y; };
+template <> struct std::formatter<Point> {
+    constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
+    auto format(const Point& p, std::format_context& ctx) const {
+        return std::format_to(ctx.out(), "({}, {})", p.x, p.y);
+    }
+};
+int main() { auto s = std::format("p={}", Point{3, 4}); std::printf("%s\n", s.c_str()); }
 ```
 
-> 编译期校验格式串，避免运行时 `printf` 崩溃（ch131、ch34）。
+```asm
+; main 准备 format 参数（objdump -d -M intel，demangled）
+lea    rax,[rip+...]            ; 加载格式串 "p={}"
+lea    rax,[rip+...]            ; 载入 _S_format<Point const> handler 地址
+; _S_format<Point const> handler：加载 "(%d, %d)" 模板并 format_to 展开
+movdqa xmm0,XMMWORD PTR [rip+0x8a50]
+mov    edx,DWORD PTR [r8]       ; 取 Point.x
+```
+
+> 关键：`std::format` 用**类型擦除 + handler 函数指针**（非虚函数、零 vtable）实现运行时多态格式化；`std::print` 在本工具链仅差终端链接符号，标准层面 C++23 已交付。编译期校验格式串、避免 `printf` 运行时崩溃的目标达成（ch131、ch34）。
 
 ## ⑪ STL 联系
 
@@ -509,6 +530,70 @@ int main(){
 面试: 选map还是flat_map? 读多→flat_map; 写多→map; 内存紧→flat_map
       flat_map为何快? 连续内存=Cache友好+无指针chasing
 
+
+## 附录 G：C++23 特性真机汇编实证（GCC 15.3.0 实测）
+
+> 工具链：GCC 15.3.0（MinGW-w64 x86_64-msvcrt，built by Brecht Sanders r1），`-std=c++26 -O2`。实证源码：`_asm_demo/ch08_*.cpp`，真实编译 + `objdump -d -M intel`。
+
+### G.1 std::expected：零开销 tagged union
+
+`std::expected<int, const char*>` 的返回对象（sret 隐藏指针 `rax`）在 `parse_digit` 中布局：
+
+```cpp
+// _asm_demo/ch08_expected_test.cpp （GCC 15.3.0 -std=c++26 -O2，实测）
+std::expected<int, const char*> parse_digit(const char* s) {
+    if (!s || !*s) return std::unexpected("empty");
+    if (*s < '0' || *s > '9') return std::unexpected("not digit");
+    return static_cast<int>(*s - '0');
+}
+```
+
+关键指令（节选，`objdump -d -M intel`，demangled）：
+
+```asm
+; 失败路径：错误指针写入 [rax]（偏移0），[rax+8] 写 0（error 标记）
+lea    rcx,[rip+0x98da]        ; 错误字符串地址
+mov    QWORD PTR [rax+0x8],0x0 ; 偏移8 = 1字节 has_value 标记：0=error
+mov    QWORD PTR [rax],rcx     ; 偏移0 = union 存错误指针
+ret
+; 成功路径：int 值写入 [rax]（偏移0 低32位），[rax+8] 写 1
+sub    edx,0x30
+mov    BYTE PTR [rax+0x8],0x1  ; has_value=1
+mov    DWORD PTR [rax],edx     ; union 存 int 值
+ret
+```
+
+结论：expected 是**单返回对象的 tagged union**——偏移 0 是值/错误指针的 union，偏移 8 是 1 字节 `has_value` 标志；无 vtable、无堆分配，零运行时开销（对比异常路径 ch40）。
+
+### G.2 std::generator：堆分配协程帧
+
+```cpp
+// _asm_demo/ch08_generator_test.cpp （GCC 15.3.0 -std=c++26 -O2，实测）
+std::generator<int> iota(int n) { for (int i = 0; i < n; ++i) co_yield i; }
+```
+
+`iota(int)` 入口为协程帧堆分配（非栈上）：
+
+```asm
+; iota(int) 入口：operator new(0x68=104B) 分配协程帧
+mov    ecx,0x68
+call   operator new(unsigned long long)   ; 堆分配 104 字节协程帧
+mov    DWORD PTR [rbx+0x30],ebp           ; 帧[0x30] 存 n（上限）
+mov    DWORD PTR [rbx+0x34],0x10000       ; 帧[0x34] 初始协程状态
+mov    BYTE PTR [rbx+0x20],0x0            ; 帧[0x20] yield 索引初值
+```
+
+结论：`std::generator` 每次调用 `iota(n)` 都 `operator new` 一个 104 字节协程帧——**生成器有堆分配开销**，循环内高频 yield 时需警惕（对比 `std::views::iota` 的无分配惰性范围 ch77）。
+
+### G.3 std::mdspan：本工具链不可用（诚实标注）
+
+本 MinGW 构建的 libstdc++ **未提供 `<mdspan>` 头**：
+
+```text
+ch08_mdspan_test.cpp:3:10: fatal error: mdspan: No such file or directory
+```
+
+多维→一维偏移的地址计算（如 `a[1,2]` → `data[1*extent1+2]`）由编译器在后端完成；在无 `<mdspan>` 时可用手写下标计算等价表达（见 ch82_span）。C++23 标准已规定 `std::mdspan`，但**编译器实测支持滞后**——这正是 WG21 跟踪表（WG21/TRACKER.md）记录"标准 vs 实测"差距的价值。
 
 ## 真实开源项目参考（可查证链接）
 

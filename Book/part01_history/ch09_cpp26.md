@@ -148,6 +148,12 @@ int main() {}
 
 > 反射把「运行时 typeid 字符串」升级为「编译期可遍历的类型元数据」，用于自动生成序列化/比较/打印代码（ch74）。无运行时开销。
 
+> **真机实测（GCC 15.3.0）**：C++26 反射提案 P2996 **尚未实现**——`<meta>` 头不存在：
+> ```text
+> _probe_reflection.cpp:2:10: fatal error: meta: No such file or directory
+> ```
+> 即反射仍是"方向性"特性，本工具链无法编译 `reflect_value` / `^T` 等语法。跟踪表见 WG21/TRACKER.md。
+
 ## ⑪ STL 联系
 
 ```cpp
@@ -405,6 +411,13 @@ P2300核心优势:
 面试: P2300 vs std::async? async=future阻塞; P2300=sender/receiver链式, 无阻塞
 
 
+> **真机实测（GCC 15.3.0）**：`<execution>` 头可编译，但 P2300 算法骨架未实现——`std::execution::just` / `then` 不是成员：
+> ```text
+> _probe_sender_real.cpp:5:18: error: 'just' is not a member of 'ex'
+> _probe_sender_real.cpp:5:35: error: 'then' is not a member of 'ex'
+> ```
+> 即 C++26 方向特性在 GCC15 仅到位"头文件骨架"，**可声明 sender 概念、不可组合算法**。生产异步仍用 ch93 的 `std::async` / coroutine / 或第三方 Asio。
+
 ## 附录 G：Contracts P2900深度
 
 C++20 P0542被拒(continuation过于复杂)。P2900简化: 只保留pre/post/assert + 三级检查(default/audit/axiom)。
@@ -421,6 +434,33 @@ int main(){std::cout<<"P2900 contracts=pre/post/assert with default/audit/axiom 
 | axiom | 永不 | 0 |
 
 面试: P2900 vs P0542? P0542被拒(过复杂); contracts vs static_assert? contracts=运行时; static_assert=编译期
+
+### G.1 真机汇编实证（GCC 15.3.0 `-fcontracts`）
+
+```cpp
+// _asm_demo/ch09_contracts_test.cpp （GCC 15.3.0 -std=c++26 -O2 -fcontracts，实测）
+[[nodiscard]] int clamp(int x, int lo, int hi)
+    [[pre: lo <= hi]]
+    [[post r: r >= lo && r <= hi]]
+{ if (x < lo) return lo; if (x > hi) return hi; return x; }
+```
+
+`clamp` 入口构造 violation 描述（xmm0/xmm1 加载源位置串），`post` 检查插入调用点：
+
+```asm
+; clamp(int,int,int) 节选（objdump -d -M intel，demangled）
+sub    rsp,0x58
+lea    rax,[rip+0x22]        ; 构造 contract_violation 描述
+movq   xmm0,QWORD PTR [rip+0x50]
+...
+cmp    edx,r8d               ; pre: lo <= hi
+jg     25                    ; （默认 continuation 下 pre 失败不调 handler，按 assume）
+...
+cmp    edx,eax               ; post: r >= lo
+jg     7b                    ; 失败→跳 0x7b 调用 handle_contract_violation
+```
+
+> 链接期缺 `handle_contract_violation`（GCC 实验性 runtime 限制）；`pre` 在默认语义下降级为 `assume`。**Contracts 在 GCC15 仍是实验特性**——可编译识别语法、完整可运行需更完整的 violation handler 实现。
 
 ## 相关章节（交叉引用）
 
