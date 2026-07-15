@@ -1064,6 +1064,67 @@ int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in rep
 
 > 交叉引用：分配器实现见 [ch38](Book/part04_memory/ch38_allocator.md)；内存池见 [ch44](Book/part04_memory/ch44_memory_pool.md)；MS STL 实现见 [ch126](Book/part11_source/ch126_msstl.md)。
 
+## 附录 C：编译实证——std::pmr 分配路径 vs 默认 `operator new` [E: Low-level / F: Industry]
+
+> 编译：`g++ -std=c++26 -O2 ch122_pmr_test.cpp -o ...`（GCC 15.3.0 / Win64 ABI），`objdump -d -M intel -C`。本附录采用 **Intel 语法**。完整源码：`_asm_demo/ch122_pmr_test.cpp`。
+> 验证目标：量化“默认 vector 走堆”与“pmr vector 走栈缓冲”的底层差异，并澄清 pmr 的多态代价何时才出现。
+
+### 测试源码（节选）
+
+```cpp
+[[gnu::noinline]] void default_push() {
+    std::vector<int> v;
+    for (int i = 0; i < 16; ++i) v.push_back(i);   // 增长走 operator new
+}
+[[gnu::noinline]] void pmr_push() {
+    char buf[1024];                                  // 栈上预分配 1KB
+    std::pmr::monotonic_buffer_resource res{buf, sizeof(buf)};
+    std::pmr::vector<int> v{&res};
+    for (int i = 0; i < 16; ++i) v.push_back(i);     // 落在栈缓冲内
+}
+```
+
+### 真实汇编（GCC15 -O2，Intel 语法）
+
+**① 默认 `std::vector` —— 扩容走堆三连**
+```asm
+default_push():
+    ...                         ; 容量不足时：
+    call   140001a88 <operator new(unsigned long long)>   ; 堆分配新缓冲
+    ...
+    call   140003580 <memcpy>                              ; 搬旧元素
+    ...
+    call   140001a90 <operator delete(void*, unsigned long long)>  ; 释放旧块
+```
+> 与 ch77 扩容三连同源：每次 2× 增长都付出 `operator new` + `memcpy` + `operator delete`。
+
+**② `std::pmr::vector`（栈缓冲够用）—— 零 `operator new`**
+```asm
+pmr_push():
+    ...                         ; 构造 res：仅一次 call get_default_resource()
+.loop:
+    cmp    r8, r9
+    jne    .store               ; 容量够 → 直接写入
+    ...                         ; 计算新容量
+    mov    rax, QWORD PTR [rsp+0x50]   ; 当前缓冲尾指针
+    cmp    rax, rbp
+    jb     140001a30            ; 仅“缓冲耗尽”才跳走（→ _M_new_buffer → operator new）
+.store:
+    mov    DWORD PTR [r9], r10d ; 直接写入栈缓冲（指针递增，无任何 call）
+```
+> **关键**：`pmr_push` 整个函数体内**搜不到 `call operator new`**。容量够时，分配被完全内联为缓冲指针的算术递增（`[rsp+0x50]`/`[rsp+0x48]` 两个指针的推进），连 `do_allocate` 的虚调用都被内联掉了——因为 `monotonic_buffer_resource` 是具体类型、构造点类型可见。本例 16×int(64B) ≪ 1024B 缓冲，故 `jb 140001a30`（耗尽分支）在真实执行中永不命中，全程零堆分配。
+
+### 代价分层（pmr 的多态代价何时出现）
+
+| 场景 | 分配路径 | `operator new` | 说明 |
+|------|----------|----------------|------|
+| 默认 `std::vector` | 全局堆 | **每次扩容都有** | 锁竞争 + 系统调用尾延迟 |
+| pmr（具体资源 + 缓冲够） | 栈缓冲指针撞针 | **无** | 分配内联为指针递增，零系统调用 |
+| pmr（缓冲耗尽） | `do_allocate`→`_M_new_buffer`→上游 heap | 触发一次 | 回退堆，引入尾延迟 |
+| pmr（经 `memory_resource*` 不透明传递） | 虚调用 `do_allocate` | 视上游而定 | 资源类型不可见 → 虚派发 |
+
+**结论**：PMR 把“每次分配都进堆”换成“预分配大块 + 指针撞针”，**热路径零系统调用、零锁**；其多态代价（虚 `do_allocate`、或缓冲耗尽回退堆）只在“资源不透明”或“缓冲耗尽”时才付出。工程含义：Arena / 请求级内存池、`monotonic_buffer_resource` 是同一条思路——用生命周期整体管理换分配吞吐。注意 `monotonic_buffer_resource` 不单独释放，必须整体 reset，且 resource 生命周期须覆盖使用期。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

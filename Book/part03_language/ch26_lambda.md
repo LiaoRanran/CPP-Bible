@@ -1380,6 +1380,48 @@ N3649(C++14 generic lambda): auto参数→模板化的operator() → 单态lambd
 int main(){auto f=[](int x){return x*2;};std::cout<<f(21)<<std::endl;std::cout<<"sizeof(lambda)="<<sizeof(f)<<" (no capture=1 byte)"<<std::endl;return 0;}
 ```
 
+#### GCC 15.3.0 真机：`std::function` 调用的类型擦除代价（ASM-std_function）
+
+> 编译：`g++ -std=c++26 -O2 ch26_std_function_test.cpp -o ...`，`objdump -d -M intel -C`。完整源码：`_asm_demo/ch26_std_function_test.cpp`。
+> 上面手绘片段只覆盖了 lambda 本身；下面用真机 objdump 揭示 `std::function` **调用**的底层机制——它和虚调用是同一代价类。
+
+**① 经 `std::function` 类型擦除调用 —— 经对象内 invoker 指针间接调用**
+```asm
+via_std_function(std::function<int(int)> const&, int):
+    sub    rsp, 0x38
+    mov    DWORD PTR [rsp+0x2c], edx       ; 保存 x
+    cmp    QWORD PTR [rcx+0x10], 0x0       ; 空守卫
+    je     .cold                            ; 空 → __throw_bad_function_call
+    lea    rdx, [rsp+0x2c]
+    call   QWORD PTR [rcx+0x18]             ; ★ 经对象内 invoker 指针间接调用
+    add    rsp, 0x38
+    ret
+```
+> 调用目标是一个**存在 `std::function` 对象内部（偏移 0x18）的函数指针（invoker）**。每次调用先判空（`cmp [rcx+0x10]`），再间接 `call [rcx+0x18]`——无法内联、无法常量传播，流水线需排空。
+
+**② 裸函数指针（模板实参）—— 同样间接，但无擦除/守卫**
+```asm
+via_template_fp(int (*)(int), int):
+    mov    rax, rcx            ; rax = 函数指针 f
+    mov    ecx, edx            ; ecx = x
+    rex.W jmp rax              ; 尾跳：间接跳转（无对象、无守卫）
+```
+**③ 无捕获 lambda（模板实参）—— 完全内联，零调用**
+```asm
+; via_template<lambda> 被整体内联进 main()，无独立符号；
+; 调用点等价于直接算出 x*x（编译期/内联后）
+```
+
+### 代价分层：调用路径光谱
+
+| 调用方式 | 机制 | 可内联 | 额外开销 |
+|----------|------|--------|----------|
+| `std::function` | 对象内 invoker 指针间接 `call` + 空守卫 | **否** | 对象存储 + 间接调用 + 守卫分支 |
+| 裸函数指针（模板） | 值间接 `jmp rax` | 否 | 仅一次间接跳 |
+| 无捕获 lambda（模板） | 编译期类型，内联 | **是** | 零 |
+
+**结论**：`std::function` 的类型擦除，本质上是“为每个对象手动维护一个 invoker 指针”，其调用代价与虚调用 `call [vtable]` **同属‘经对象内指针的间接调用’**——差别仅在：虚调用共享每类一张 vtable，`std::function` 每对象一个 invoker。二者都不能内联。这与 ch47 附录 E/F 的结论一致，也解释了本章程 ㉑ 速查表中“std::function ≈ 8.1× 慢”的来源（间接调用 + 可能的堆分配，捕获 >16B 时走堆）。工程取舍：需要**类型擦除存储 / 回调注册 / 接口边界**时用 `std::function`；**热路径**用模板 / `auto` 参数 / 内联 lambda 拿回零开销。
+
 ### 工业案例
 
 | 项目 | lambda使用 | 场景 |

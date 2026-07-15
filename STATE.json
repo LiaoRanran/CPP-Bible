@@ -297,6 +297,20 @@
       "batch": 4,
       "total_batches": 2,
       "detail": "visit=按 index 字节 cmp/je 分支链零 call handler 内联; 等同手写 switch; 标签真实偏移 0x4(全 int 变体)"
+    },
+    "P5-13": {
+      "label": "ASM-122-pmr std::pmr 分配路径实证",
+      "status": "completed",
+      "batch": 5,
+      "total_batches": 2,
+      "detail": "默认 vector operator new+memcpy+operator delete 堆三连; pmr 栈缓冲够用零 operator new 分配内联指针递增"
+    },
+    "P5-14": {
+      "label": "ASM-std_function 类型擦除调用实证",
+      "status": "completed",
+      "batch": 6,
+      "total_batches": 2,
+      "detail": "调用=经对象内 invoker 指针 call [rcx+0x18]+空守卫; 裸函数指针 jmp rax; 无捕获 lambda 内联零 call; 与虚调用同代价类"
     }
   },
   "execution_order": [
@@ -326,7 +340,7 @@
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 29,
+    "assembly_empirical_examples": 31,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   },

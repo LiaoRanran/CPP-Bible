@@ -11,7 +11,7 @@
 
 ---
 
-## 一、已覆盖实证（累计 29 例，STATE 记录）
+## 一、已覆盖实证（累计 31 例，STATE 记录）
 
 > 下表为本目录可查证证据文件；其中 `ch08_mdspan_test` / `ch08_print_test` 为**失败证据**（头缺失 / 链接失败），不计入成功汇编但保留以诚实记录"标准 vs 实测"差距。
 
@@ -46,8 +46,10 @@
 | ASM-77-vector_grow | `vector::push_back` 扩容 | ch77 | `ch77_vector_grow_test.cpp/.s` | 扩容三连 `operator new`+`memcpy`+`operator delete`；`reserve` 后循环无扩容 call |
 | ASM-47-vs-51 | 虚调用 vs CRTP 静态分发 | ch47 | `ch47_vs_51_dispatch_test.cpp/.s` | 单点虚调用 `mov vptr;jmp [vtable]`；虚循环每轮 `call [vtable]` 无法内联；CRTP 循环体 `imul` 内联零 call |
 | ASM-88-variant | `std::variant`+`std::visit` 分派 | ch88 | `ch88_variant_visit_test.cpp/.s` | visit = 按 index 字节 `cmp`/`je` 分支链，零 `call`，handler 内联；≈ 手写 switch；标签真实偏移 0x4（全 int 变体） |
+| ASM-122-pmr | `std::pmr` 分配路径 | ch122 | `ch122_pmr_test.cpp/.s` | 默认 vector `operator new`+`memcpy`+`operator delete` 堆三连；pmr 栈缓冲够用→零 `operator new`，分配内联为指针递增 |
+| ASM-std_function | `std::function` 类型擦除 | ch26 | `ch26_std_function_test.cpp/.s` | 调用=经对象内 invoker 指针 `call [rcx+0x18]`+空守卫；裸函数指针 `jmp rax`；无捕获 lambda 内联零 call；与虚调用同代价类 |
 
-> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 29）。
+> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 31）。
 
 ---
 
@@ -75,10 +77,10 @@
 - [x] ASM-88-variant：`std::variant` 访问（`std::visit`）的类型索引分派 vs `virtual` 虚调用
 
 ### 批 E：分配与 PMR
-- [ ] ASM-122-pmr：`std::pmr` 多态分配器（资源句柄）vs 默认 `new` 的分配路径差异
+- [x] ASM-122-pmr：`std::pmr` 多态分配器（资源句柄）vs 默认 `new` 的分配路径差异
 
 ### 批 F：类型擦除
-- [ ] ASM-std_function：`std::function` 类型擦除的间接调用 + 小对象优化 vs 模板/CRTP 静态内联
+- [x] ASM-std_function：`std::function` 类型擦除的间接调用 + 小对象优化 vs 模板/CRTP 静态内联
 
 ---
 
