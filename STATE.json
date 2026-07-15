@@ -4,8 +4,8 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
   "last_updated": "2026-07-15",
-  "last_commit": "93a716cadb0191ee2f06c9f8f98bb4648c7002c0",
-  "git_status": "in sync with origin/master after push 2026-07-15 (63 commits delivered)",
+  "last_commit": "b99f5c0f9669b8e17b839cc1117be017e332c2ea",
+  "git_status": "batch G committed (b99f5c0), pending push 2026-07-15; asm matrix 34 examples",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -311,6 +311,27 @@
       "batch": 6,
       "total_batches": 2,
       "detail": "调用=经对象内 invoker 指针 call [rcx+0x18]+空守卫; 裸函数指针 jmp rax; 无捕获 lambda 内联零 call; 与虚调用同代价类"
+    },
+    "G1": {
+      "label": "ASM-26-lambda-capture（批G：lambda 捕获代价）",
+      "status": "completed",
+      "batch": 7,
+      "total_batches": 1,
+      "detail": "ch26 附录H: GCC15.3 -O2 真机 objdump。无捕获闭包 sizeof=1B(占位); 按值捕获值=4B(快照, 调用点 mov ecx,r9d 寄存器搬运 0 访存); 按引用捕获=8B(持 int*, 调用点 mov ecx,[r8] 经指针二次解引用). 关键: 目标可证明不变时 GCC 折叠引用捕获为零开销; 实时读取(经不透明指针 bump 别名写)才显式二次解引用. 证据 _asm_demo/ch26_lambda_capture_test.cpp/.s."
+    },
+    "G2": {
+      "label": "ASM-50-vi（批G：虚继承 this 调整 thunk）",
+      "status": "completed",
+      "batch": 7,
+      "total_batches": 1,
+      "detail": "ch50 新增[实现]节: GCC15.3 -O2 真机. virtual thunk to D::f()(_ZTv0_n24_N1D1fEv) 经 vbtable 运行时查虚基类偏移 add rcx,[rax-0x18] 调整 this, 非固定 sub; 成员访问 b 也走 vbptr 间接. 代价排序: 非虚MI thunk(sub rdi,0x10)≈1cycle < 虚继承 this调整+成员访问≈2~3次额外内存间接+vbtable查表. 证据 _asm_demo/ch50_vi_test.cpp/.s."
+    },
+    "G3": {
+      "label": "ASM-40-noexcept（批G：noexcept EH 元数据体积）",
+      "status": "completed",
+      "batch": 7,
+      "total_batches": 1,
+      "detail": "ch40 新增实战实证节: MinGW/Win64 SEH. may_throw EH元数据100B vs no_throw 32B(−68%): .xdata.unlikely(LSDA块)24B→0整体消失, .text.unlikely 抛异常冷路径64B→0, .xdata 16B→8B, .text 64B→32B. .xdata 含0x42标志(异常处理器/LSDA存在)在 may_throw, no_throw 无. 等价 ELF .gcc_except_table 消失. 证据 _asm_demo/ch40_nt_*.cpp/.o/.s."
     }
   },
   "execution_order": [
@@ -348,13 +369,16 @@
     "P5-11",
     "P5-12",
     "P5-13",
-    "P5-14"
+    "P5-14",
+    "G1",
+    "G2",
+    "G3"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 31,
+    "assembly_empirical_examples": 34,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   },
