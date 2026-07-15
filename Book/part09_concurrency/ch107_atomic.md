@@ -891,6 +891,44 @@ A: CAS 是用户态原子操作(~20ns)；mutex 涉及系统调用 + 上下文切
 
 对所有 `atomic<T>` 加上 `static_assert(is_always_lock_free)` 编译期断言；相邻高频 atomic 变量用 `alignas(64)` 分离消除伪分享；CAS 循环用 `compare_exchange_weak` + while 循环最小化 fence 开销。
 
+## 附录 J：GCC 15.3.0 真机汇编实证（ASM-107-atomic_rmw）[E: Low-level]
+
+> 工具链：`g++.exe (MinGW-W64 x86_64-msvcrt-posix-seh, Brecht Sanders r1) 15.3.0`，`-std=c++26 -O2 -c`，`objdump -d -M intel -C`。证据源码 `_asm_demo/ch107_atomic_rmw_test.cpp`、汇编 `_asm_demo/ch107_atomic_rmw_test.s`。各函数加 `[[gnu::noinline]]` 以隔离对比。
+
+### 真机指令（节选）
+
+```asm
+; fetch_add_relaxed() 与 fetch_add_seqcst() —— 二者逐字节相同
+        mov     eax,0x1
+        lock xadd DWORD PTR [rip+g32],eax   ; 返回旧值于 eax；relaxed/seq_cst 指令无差别
+        ret
+; fetch_add64()  (uint64_t)
+        mov     eax,0x1
+        lock xadd QWORD PTR [rip+g64],rax   ; 64 位形式，rax 承载旧值
+        ret
+; exchange_seqcst()
+        mov     eax,0x63                     ; 0x63 = 99
+        xchg    DWORD PTR [rip+g32],eax      ; xchg 对内存操作数隐式 LOCK#，天然原子（无需显式 f0 前缀）
+        ret
+; cas_inc()  —— canonical CAS 重试环（compare_exchange_weak + while）
+        mov     eax,DWORD PTR [rip+g32]      ; expected = load()
+        lea     edx,[rax+0x1]                ; desired = expected + 1
+.loop:  lock cmpxchg DWORD PTR [rip+g32],edx ; 若 [mem]==eax→写 edx 且 ZF=1；否则 [mem]→eax（刷新 expected）
+        jne     .loop                        ; ZF=0（失败）→ 用新 eax 重试
+        ret
+```
+
+### 非显然事实
+
+1. **`fetch_add` 的 relaxed 与 seq_cst 生成逐字节相同的 `lock xadd`。** 原因：x86 的 `lock` 前缀本身就是全屏障（sequentially consistent），不存在"更弱"的 RMW 指令；内存序差异不是体现在 RMW 指令上，而是体现在编译器对**周围其他访存**的重排约束上。换言之，单看一条原子 RMW，你无法从指令区分 relaxed 与 seq_cst。
+2. **`exchange` 用 `xchg` 而非 `lock xchg`。** x86 ISA 规定 `xchg` 一旦带内存操作数就**隐式断言 LOCK# 总线锁**（无论是否写 `f0` 前缀字节），因此无条件 swap 天然原子、零额外前缀开销。
+3. **`compare_exchange_weak` 在 x86 上编译为 `lock cmpxchg` + `jne` 重试环；weak 与 strong 逐字节相同。** x86 的 `cmpxchg` 是真实硬件 CAS，GCC **不模拟"伪失败"**——所谓 spurious failure 只发生在无法用单条指令表达 CAS 的平台（编译器被迫注入重试）。这也解释了 ch107 正文"弱平台才需 weak、x86 上两者等价"的结论：硬件层面根本没有差别。
+4. **64 位 RMW 为 `lock xadd QWORD ... ,rax`**，与 32 位完全同构，仅操作数宽度与累加器（rax vs eax）不同。
+
+### 跨平台警示（呼应 ch108）
+
+以上 `lock` 前缀行为仅在 x86-64 TSO 成立。ARM/AArch64 上 `fetch_add`/`exchange` 通常编译为 `ldadd`/`swp`（Armv8.1 LSE 原子指令）或 `ldrex`/`strex` 独占监视对，CAS 用 `ldxr`/`stxr` 循环。**`lock` 前缀是 x86 专属**，把 x86 上"一条带锁指令"的心智模型照搬到 ARM MCU 会误判原子性与性能——ARM 弱内存还需配 `dmb` 屏障才获得等价顺序保证。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

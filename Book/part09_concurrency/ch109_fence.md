@@ -422,6 +422,29 @@ _Z13release_fencev:
 
 **底层深度**：LLVM 在 SelectionDAG 阶段将 `fence(seq_cst)` 降级为 `X86ISD::MFENCE` 或带 lock 前缀的指令（例如 `lock orq $0,(%rsp)`），ARM 后端生成 `dmb ish`；这与附录 H 的真实汇编证据一致——x86 TSO 下 seq_cst store 经 `xchgl`（隐含 lock）即获全屏障，无需独立 mfence。DPDK `rte_ring` 在 C11 实现里于 enqueue 末尾发 release fence、dequeue 开头发 acquire fence，配合头/尾指针保证多生产者写入对消费者可见；Chromium 在 ARM 平台用 `dmb` 指令、x86 用 `std::atomic_signal_fence` 编译器屏障阻止重排。工业界共识：x86 上能避免 seq_cst 就避免（acquire/release 在 x86 零成本），ARM/Power 上才需要显式屏障。
 
+## 附录 J：GCC 15.3.0 真机汇编实证（ASM-109-fence）[E: Low-level]
+
+> 工具链：`g++.exe (MinGW-W64 x86_64-msvcrt-posix-seh, Brecht Sanders r1) 15.3.0`，`-std=c++26 -O2 -c`，`objdump -d -M intel -C`。证据源码 `_asm_demo/ch109_fence_test.cpp`、汇编 `_asm_demo/ch109_fence_test.s`。各 fence 包在 `[[gnu::noinline]]` 空函数内隔离对比。与附录 H（GCC 13.1.0）结论相互印证、并补齐 `acq_rel`/`signal` 两档。
+
+### 真机指令（节选）
+
+```asm
+; fence_seqcst()  —— 全屏障（注意：GCC 用的是 lock-or 技巧，不是 mfence）
+        lock or QWORD PTR [rsp],0x0     ; locked-OR-zero：借 lock 前缀隐式全屏障，等价于 mfence
+        ret
+; fence_acquire() / fence_release() / fence_acq_rel() —— x86-64 TSO 下全部为空
+        ret
+; fence_signal()  —— 纯编译期屏障，运行时零指令
+        ret
+```
+
+### 非显然事实
+
+1. **`seq_cst` fence 生成的是 `lock or QWORD PTR [rsp],0x0`，不是 `mfence`。** 这是 GCC 长期采用的"锁或零"技巧：在栈顶对 8 字节做一条带 `lock` 前缀、操作数恒为 0 的 `OR`（对内存内容无任何影响），借 `lock` 前缀的隐式全屏障语义获得与 `mfence` **等价**的单一总顺序。`lock or` 在某些微架构比独立 `mfence` 更省端口/更短延迟。本实证（GCC 15.3.0）与附录 H（GCC 13.1.0 的 `lock orq $0,(%rsp)`）**跨主版本一致**——该手法稳定可信。
+2. **`acquire` / `release` / `acq_rel` 三种 fence 在 x86-64 下全部编译为空函数（`ret` 一条）。** 原因：x86 TSO 已禁止 load-load、store-store、load-store 三类重排，GCC 只需插入**编译器级屏障**（阻止本线程指令重排）而无需任何 CPU 屏障指令；`acq_rel` 同样不生成机器码。
+3. **`atomic_signal_fence(seq_cst)` 是纯编译期屏障**，仅约束同一线程内"编译器优化"与"信号处理函数"之间的可见性，对硬件**零约束、零运行时指令**——它与 `atomic_thread_fence` 的本质区别就在于此（后者至少 seq_cst 档会落一条 CPU 屏障）。
+4. **跨平台警示（呼应 ch108 / 附录 H）**：上述"空"只在 x86-64 TSO 成立。ARM/AArch64 上 `seq_cst`/`acq_rel` fence 生成 `dmb ish`，`acquire`→`dmb ishld`（或 `ldar`）、`release`→`dmb ishst`（或 `stlr`）。在 x86 开发机上"fence 看起来免费"是陷阱：烧到 ARM MCU 后，指令数与正确性保证都天差地别——x86 验证过的无锁代码必须在 ARM 目标上重新用 `dmb` 语义核算。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

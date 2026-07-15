@@ -233,21 +233,21 @@
       "status": "completed",
       "batch": 1,
       "total_batches": 1,
-      "detail": "两章附录嵌入, INDEX 20例, consistency 0/0, 提交推送"
+      "detail": "两章附录嵌入, INDEX 20例, consistency 0/0, 提交推送 | 批A(108/41/107/109) 全完成"
     },
     "P5-4": {
       "label": "ASM-107 atomic_rmw (fetch_add/cmpxchg)",
-      "status": "pending",
+      "status": "completed",
       "batch": 1,
       "total_batches": 1,
-      "detail": "lock xadd / lock cmpxchg 与 CAS 循环展开"
+      "detail": "lock xadd(relaxed/seqcst 逐字节同) + lock xadd QWORD(64位) + xchg(隐式锁) + lock cmpxchg+jne CAS 环; weak/strong x86 逐字节同"
     },
     "P5-5": {
       "label": "ASM-109 fence (mfence/lfence/sfence)",
-      "status": "pending",
+      "status": "completed",
       "batch": 1,
       "total_batches": 1,
-      "detail": "显式 atomic_thread_fence 生成的屏障指令"
+      "detail": "seq_cst fence=lock or(非 mfence); acquire/release/acq_rel 全空; signal fence 零指令; 跨版本(GCC13.1)一致"
     }
   },
   "execution_order": [
@@ -277,7 +277,7 @@
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 20,
+    "assembly_empirical_examples": 22,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   },
