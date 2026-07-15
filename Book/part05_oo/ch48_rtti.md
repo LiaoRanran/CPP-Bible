@@ -987,3 +987,74 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+---
+
+## 附录 E：编译实证——`typeid` 与 `dynamic_cast` 的真实汇编 [C: Compiler / E: Low-level]
+
+> `[实测]` 编译：`g++ -std=c++23 -O2 -c ch48_rtti_test.cpp` + `objdump -dC`（GCC 15.3.0 / Win64 ABI，Itanium C++ ABI 布局）。产物 `_asm_demo/ch48_rtti_test.cpp`。
+
+RTTI 常被说成"黑盒"，但它的实现完全可在汇编里看清：多态 `typeid` 就是**读 vtable 前一个槽的 `type_info*`**，`dynamic_cast` 就是**调用运行期函数 `__dynamic_cast`**。
+
+### ① 多态 `typeid` —— 读 vtable[-1]
+
+```cpp
+const std::type_info& who(Base& b) { return typeid(b); }
+```
+
+```asm
+<who(Base&)>:
+    mov    (%rcx),%rax        ; rax = b.vptr（对象首 8 字节 = 虚表指针）
+    mov    -0x8(%rax),%rax    ; [关键] rax = vptr[-1] = type_info* （Itanium ABI）
+    ret
+```
+
+**💡 关键观察**：`typeid(多态对象)` 只有**两条 `mov`**。`type_info` 指针存放在虚表**起始地址的前 8 字节**（`-0x8`）——这就是"多态类的 RTTI 挂在 vtable 上"的字面含义。开销 = 2 次内存读，无函数调用。
+
+### ② `dynamic_cast` 下行 —— 尾调 `__dynamic_cast`
+
+```cpp
+Derived* down(Base* b) { return dynamic_cast<Derived*>(b); }
+```
+
+```asm
+<down(Base*)>:
+    test   %rcx,%rcx          ; 空指针检查
+    je     .Lnull             ; nullptr → 返回 nullptr
+    xor    %r9d,%r9d          ; 第4参 hint = 0
+    lea    ...,%r8            ; 第3参 = Derived 的 type_info
+    lea    ...,%rdx           ; 第2参 = Base   的 type_info
+    jmp    __dynamic_cast     ; [关键] 尾调运行期函数（4参: 对象/src_ti/dst_ti/hint）
+.Lnull:
+    xor    %eax,%eax; ret     ; 返回 0
+```
+
+**💡 关键观察**：`dynamic_cast` 编译为一次 `__dynamic_cast` 运行期调用（此处是尾调 `jmp`），需遍历继承图比对 `type_info`——这就是它比 `static_cast` 慢一个数量级的根源（见 ch27 转型代价实测：`dynamic_cast` 6.9ns vs virtual 0.5ns）。
+
+### ③ 静态 `typeid` —— 编译期常量，零运行期开销
+
+```cpp
+const std::type_info& static_who() { return typeid(Derived); }  // 非多态表达式
+```
+
+```asm
+<static_who()>:
+    lea    ...,%rax           ; rax = &typeinfo for Derived（编译期确定的静态地址）
+    ret                       ; 无内存读、无调用
+```
+
+**💡 关键观察**：对**类型名**（而非多态对象）取 `typeid` 在编译期解析，只剩一条 `lea` 装载常量地址——与运行期 `typeid(b)` 的 2 次 `mov` 形成鲜明对比。
+
+### 代价分层
+
+| 表达式 | 汇编特征 | 运行期开销 | 说明 |
+|--------|----------|-----------|------|
+| `typeid(类型)` | 单条 `lea` | 0 | 编译期常量地址 |
+| `typeid(多态对象)` | `mov;mov`（读 vptr[-1]） | 2 次内存读 | 依赖虚表 |
+| `dynamic_cast<D*>` | `call/jmp __dynamic_cast` | 图遍历（~ns 级） | 需 `-frtti` |
+| `static_cast<D*>` | 常量偏移加法 | 0（不检查） | 类型错则 UB |
+
+### 关键发现
+
+- 多态 RTTI 的全部秘密就是 **vtable[-1] 槽的 `type_info*`**——`-fno-rtti` 会去掉这个槽，`typeid`/`dynamic_cast` 随之不可用。
+- `dynamic_cast` 的成本来自 `__dynamic_cast` 的继承图搜索，热路径下行应优先考虑虚函数分派或 CRTP（见 ch51），而非反复 `dynamic_cast`。
+- 对确定类型用 `typeid(T)` 是编译期常量；只有对**多态左值/引用**取 `typeid` 才有运行期开销。

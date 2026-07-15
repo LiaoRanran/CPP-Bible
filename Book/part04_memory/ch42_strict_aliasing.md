@@ -1352,3 +1352,73 @@ int main() { std::cout << fact(5) << '\n'; }
 ---
 
 > **UB 实证库**：严格别名规则破坏的**真实优化分歧证据**（`-O0` 输出 `x=1065353217` 而 `-O2` 输出 `x=1`）+ `-Wstrict-aliasing` 警告 + `std::bit_cast` 修复，见 [UB-05 严格别名](../../Appendix/ub/ub05_strict_aliasing.md)。
+
+---
+
+## 附录 E：编译实证——`-fstrict-aliasing` 开关如何改变生成码 [C: Compiler / E: Low-level]
+
+> `[实测]` 编译：`g++ -std=c++23 -O2 -c ch42_aliasing_test.cpp` + `objdump -d`（GCC 15.3.0 / Win64 ABI，`%rcx`=第1参数、`%rdx`=第2参数）。产物 `_asm_demo/ch42_aliasing_test.cpp`。
+
+严格别名不是抽象规则——它直接决定编译器**能否把一次内存读缓存进寄存器**。用同一份源码、只翻转 `-fstrict-aliasing`/`-fno-strict-aliasing`，观察 `no_alias()` 的汇编分歧。
+
+### 测试源码
+
+```cpp
+int no_alias(int* pi, float* pf) {
+    *pi = 1;          // 写 int
+    *pf = 2.0f;       // 写 float
+    return *pi;       // 关键: 严格别名下 int/float 不重叠 → 可返回缓存的 1
+}
+int same_type(int* pi, int* pj) {  // 同类型: 必然可能重叠
+    *pi = 1; *pj = 2; return *pi;  // 必须重载内存
+}
+```
+
+### 真实汇编对比
+
+**① `-fstrict-aliasing`（默认，`-O2`/`-O3` 打开）**
+
+```asm
+<no_alias>:
+    mov    $0x1,%eax          ; [关键] eax = 1 —— 返回值被提前算好, 不重载!
+    movl   $0x1,(%rcx)        ; *pi = 1
+    movl   $0x40000000,(%rdx) ; *pf = 2.0f (0x40000000 = 2.0f 的 IEEE754)
+    ret                       ; 直接返回 eax=1
+```
+
+**② `-fno-strict-aliasing`（关闭）**
+
+```asm
+<no_alias>:
+    movl   $0x1,(%rcx)        ; *pi = 1
+    movl   $0x40000000,(%rdx) ; *pf = 2.0f
+    mov    (%rcx),%eax        ; [关键] 重载 *pi —— 编译器假定 float 写可能改了 int!
+    ret
+```
+
+**💡 关键观察**：唯一差别就是那一条 `mov (%rcx),%eax`。严格别名下编译器**证明** `float*` 写不可能影响 `int*`，于是把返回值 `1` 直接留在 `%eax`；关闭后它必须保守地重新读内存。这正是 UB-05 里 `-O0`/`-O2` 结果分歧的机器码根源。
+
+### 别名边界：哪些一定重载
+
+`same_type()` 与 `char_pun()` 在**两种开关下都重载**，因为它们的别名合法：
+
+```asm
+<same_type>:                  ; int* 与 int* —— 同类型天然可重叠
+    movl $0x1,(%rcx); movl $0x2,(%rdx); mov (%rcx),%eax; ret   ; 必重载
+<char_pun>:                   ; char* 可别名任意类型（标准豁免）
+    movl $0x1,(%rcx); movb $0x0,(%rdx); mov (%rcx),%eax; ret   ; 必重载
+```
+
+### 代价分层
+
+| 场景 | 指针类型 | 严格别名下 | 机器码差异 |
+|------|----------|-----------|-----------|
+| `no_alias` | `int*` vs `float*` | 不重叠→缓存返回值 | **省一条 `mov` load** |
+| `same_type` | `int*` vs `int*` | 同类型→必重叠 | 始终重载 |
+| `char_pun` | `int*` vs `char*` | `char` 豁免→必重叠 | 始终重载 |
+
+### 关键发现
+
+- 严格别名的收益是**寄存器缓存 + 消除冗余 load/store**，热点循环里可省下大量内存访问。
+- 代价是：一旦你用 `reinterpret_cast` 跨类型读写（type punning），编译器基于「不重叠」的优化会让结果与直觉不符——这就是 UB。**合法替代是 `std::bit_cast`（C++20）或 `memcpy`**，它们在 `-O2` 下同样零开销但不触发 UB。
+- `char*`/`std::byte*`/`unsigned char*` 是标准明确豁免的「万能别名」，可安全遍历任意对象的字节表示。

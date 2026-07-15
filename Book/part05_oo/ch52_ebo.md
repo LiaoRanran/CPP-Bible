@@ -681,3 +681,63 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+---
+
+## 附录 E：编译实证——EBO 的字节偏移在汇编里直接可见 [C: Compiler / E: Low-level]
+
+> `[实测]` 编译：`g++ -std=c++23 -O2 -c ch52_ebo_test.cpp` + `objdump -d`（GCC 15.3.0 / Win64 ABI）。产物 `_asm_demo/ch52_ebo_test.cpp`。编译通过本身即证明所有 `static_assert` 成立。
+
+空基类优化（EBO）不是"约定"，它由 ABI 强制：**空基类子对象大小为 0**。三种写法的 `sizeof` 与成员偏移差异，直接写进了成员访问的汇编偏移里。
+
+### 测试源码
+
+```cpp
+struct Empty {};                        // sizeof == 1（独立时）
+struct WithEBO : Empty { int x; };      // 继承空基类 —— EBO: sizeof == 4
+struct NoEBO  { Empty e; int x; };      // 空类做成员 —— 无 EBO: sizeof == 8
+struct NoUniqAddr { [[no_unique_address]] Empty e; int x; };  // C++20: sizeof == 4
+
+static_assert(sizeof(Empty)      == 1);
+static_assert(sizeof(WithEBO)    == 4);
+static_assert(sizeof(NoEBO)      == 8);
+static_assert(sizeof(NoUniqAddr) == 4);   // 全部通过 → 编译成功
+```
+
+### 真实汇编：偏移即证据
+
+```asm
+<read_ebo(WithEBO&)>:
+    mov    (%rcx),%eax        ; [EBO] x 在偏移 0 —— 空基类占 0 字节
+    ret
+
+<read_noebo(NoEBO&)>:
+    mov    0x4(%rcx),%eax     ; [无EBO] x 在偏移 4 —— 空成员 e 被迫占 1 字节 + 3 填充
+    ret
+
+<read_nua(NoUniqAddr&)>:
+    mov    (%rcx),%eax        ; [no_unique_address] x 回到偏移 0 —— 恢复 EBO
+    ret
+```
+
+**💡 关键观察**：三个函数体都只有一条 `mov`，唯一差别是**立即数偏移**：
+- `WithEBO`：偏移 `0`（`(%rcx)`）——空基类零字节，`x` 紧贴对象头。
+- `NoEBO`：偏移 `0x4`——空成员 `e` 因"不同对象地址必须不同"规则被迫占 1 字节，加对齐填充推到 4。
+- `NoUniqAddr`：偏移 `0`——`[[no_unique_address]]` 允许空成员与后续成员共址，把 EBO 从"仅继承"扩展到"成员"。
+
+### 为什么空成员不能是 0 字节
+
+C++ 要求**同类型的两个不同对象有不同地址**。若 `NoEBO::e` 占 0 字节，则 `&n.e == &n.x`（不同类型尚可），但两个相邻 `Empty` 数组元素会同址——违反规则。所以**空成员至少 1 字节**。而空**基类**子对象不受此约束（基类子对象允许与派生对象同址），故 EBO 成立。
+
+### 代价分层
+
+| 写法 | `sizeof` | `x` 偏移 | 空类零开销? | 适用 |
+|------|---------|---------|------------|------|
+| `struct D : Empty { int x; }` | 4 | 0 | ✅ EBO | 策略/分配器/删除器基类 |
+| `struct D { Empty e; int x; }` | 8 | 4 | ❌ 浪费 4 字节 | 避免 |
+| `struct D { [[no_unique_address]] Empty e; int x; }` | 4 | 0 | ✅ C++20 | 组合优于继承时 |
+
+### 关键发现
+
+- EBO 是 `std::allocator`、`std::default_delete`、`std::tuple`、`std::function` 等库设施能"零成本携带无状态策略"的底层机制——空分配器/空删除器不占对象一个字节。
+- C++20 前，想让**成员**（而非基类）享受零开销只能用继承（`private Empty`）；C++20 的 `[[no_unique_address]]` 让组合也能做到，代码更清晰。
+- 判断一个库类型是否用了 EBO，最直接的方法就是本附录的手法：`static_assert(sizeof(...))` + 看成员访问偏移。

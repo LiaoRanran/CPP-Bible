@@ -3,8 +3,8 @@
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
-  "last_updated": "2026-07-15T08:15:00+08:00",
-  "last_commit": "7ce9494",
+  "last_updated": "2026-07-15T08:35:00+08:00",
+  "last_commit": "4d48411",
   "git_status": "clean",
   "completed_phases": [
     "density_deepening",
@@ -79,10 +79,11 @@
     },
     "B4": {
       "label": "汇编实证扩展",
-      "status": "pending",
+      "status": "completed",
       "batch": 1,
       "total_batches": 1,
-      "detail": "4章追加(ch117/42/48/52)"
+      "detail": "4章各加「附录E 编译实证」(GCC15.3 -O2 objdump 全部真实生成, 产物 _asm_demo/): ch42 strict-aliasing 开关翻转对比(-fstrict-aliasing 下 no_alias 返回值缓存进eax省一条load, 关闭则必 mov(%rcx),%eax 重载); ch48 RTTI(who 用 mov -0x8(%rax) 实证 typeid 读 vtable[-1] 的 type_info; dynamic_cast 尾调 __dynamic_cast; 静态 typeid 仅 lea); ch52 EBO(read_ebo 偏移0/read_noebo 偏移0x4/no_unique_address 偏移0 —— sizeof 4vs8 差异汇编直接可见); ch117 复制消除(make_prvalue/nrvo 直接写返回槽 movl$val,(%rcx) 零 call puts; make_nomove 删move仍编译=强制消除是语义非优化)。累计汇编实证 8→12 例。门禁0/0。",
+      "current_batch_items": ["ch42_aliasing", "ch48_rtti", "ch52_ebo", "ch117_elision"]
     },
     "B5": {
       "label": "PDF全量构建",
@@ -129,7 +130,7 @@
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 8,
+    "assembly_empirical_examples": 12,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   }

@@ -983,3 +983,73 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+---
+
+## 附录 E：编译实证——强制复制消除的"零调用"证据 [C: Compiler / E: Low-level]
+
+> `[实测]` 编译：`g++ -std=c++23 -O2 -c ch117_elision_test.cpp` + `objdump -dC`（GCC 15.3.0 / Win64 ABI）。产物 `_asm_demo/ch117_elision_test.cpp`。
+
+C++17 把返回 prvalue 的复制消除从"允许优化"升级为"语言强制"。验证方法最硬核：给拷贝/移动构造器塞 `puts("copy")`/`puts("move")`，然后在汇编里**数 `call` 的个数**——若一个都没有，就是真消除。
+
+### 测试源码
+
+```cpp
+struct Tracer {
+    int v;
+    Tracer(int x) : v(x) {}
+    Tracer(const Tracer& o) : v(o.v) { puts("copy"); }   // 若被调用会出现 call puts
+    Tracer(Tracer&& o) noexcept : v(o.v) { puts("move"); }
+};
+Tracer make_prvalue() { return Tracer(42); }   // ① 强制消除
+Tracer make_nrvo()    { Tracer t(7); return t; } // ② NRVO
+```
+
+### 真实汇编：零 copy/move 调用
+
+```asm
+<make_prvalue()>:
+    mov    %rcx,%rax          ; rax = 返回槽指针（Win64: 隐藏首参 %rcx）
+    movl   $0x2a,(%rcx)       ; 直接把 v=42 写进调用方的返回槽
+    ret                       ; 全程无 call puts —— copy/move 均未发生
+
+<make_nrvo()>:
+    mov    %rcx,%rax          ; 同样直接构造到返回槽
+    movl   $0x7,(%rcx)        ; v = 7
+    ret                       ; NRVO 生效, 零 move
+```
+
+**💡 关键观察**：`objdump | grep call` 对整个目标文件返回**空**——三个 `make_*` 函数没有任何 `call puts`。`Tracer(42)` 这个 prvalue 被**直接在调用方预留的返回槽里构造**（`%rcx` = 返回槽地址），根本不存在"临时对象→拷贝/移动→返回"的中间步骤。
+
+### 强制消除的杀手锏：move 被删也能编译
+
+```cpp
+struct NoMove {
+    NoMove() = default;
+    NoMove(const NoMove&) = delete;
+    NoMove(NoMove&&)      = delete;   // 拷贝、移动全删
+};
+NoMove make_nomove() { return NoMove{}; }   // C++17 合法! C++14 会编译失败
+```
+
+```asm
+<make_nomove()>:
+    mov    %rcx,%rax          ; 直接在返回槽构造空对象
+    ret                       ; 零调用
+```
+
+**💡 关键观察**：`make_nomove()` 在 **C++14 下会因"移动构造被删"报错**，但 C++17 起合法——因为标准规定 prvalue 初始化返回对象时**根本不涉及任何构造器调用**，删不删无关紧要。这是"强制消除 ≠ 优化"最直接的证明：它是**语义规则**，编译器无选择余地。
+
+### NRVO 与 RVO 的区别
+
+| 机制 | 触发 | C++17 地位 | 本附录证据 |
+|------|------|-----------|-----------|
+| RVO（强制，prvalue） | `return Tracer(42);` | **语言强制** | `make_prvalue` 零 call；`make_nomove` 删 move 仍编译 |
+| NRVO（具名局部变量） | `Tracer t; return t;` | **允许**（非强制） | `make_nrvo` 在 GCC `-O2` 下零 move，但标准不保证 |
+
+> ⚠️ NRVO 是"编译器可以"而非"必须"。跨编译器/低优化级别下具名返回可能仍调用移动构造，所以**别删具名返回类型的移动构造器**。只有 prvalue 返回（RVO）才是 100% 强制的。
+
+### 关键发现
+
+- 强制复制消除让"返回大对象"零成本：对象自始至终只有一份，构造在最终目的地——无临时、无拷贝、无移动。
+- 工厂函数 `T make()` 返回 prvalue 是最佳实践，比返回 `unique_ptr` 更轻（省一次堆分配），且天然支持不可移动类型（如含 `atomic`/`mutex` 的类型）。
+- 想验证任意类型是否真消除，就用本附录手法：拷贝/移动构造塞副作用 + 数汇编里的 `call`。
