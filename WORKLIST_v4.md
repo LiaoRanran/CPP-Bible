@@ -1,4 +1,4 @@
-# WORKLIST v4.2 — 质量收尾 + 高含金量升级（2026-07-14 重构 → 2026-07-15 全项完成 + Phase4/5 汇编矩阵并入 → 批 G/H 实证续扩至 37 例）
+# WORKLIST v4.2 — 质量收尾 + 高含金量升级（2026-07-14 重构 → 2026-07-15 全项完成 + Phase4/5 汇编矩阵并入 → 批 G/H/I/J/K 实证续扩至 45 例）
 
 > **前置状态**（2026-07-14 终检）：
 > - 密度 v3：avg combined=24.9/30, shallow=0, min=23, max=30, A-J 十维全非零 → 竣工
@@ -216,6 +216,23 @@
 
 **产出**：`_asm_demo/` 累计 **37 组**实证（34+3）；`STATE.json` `assembly_empirical_examples=37`；一致性门禁维持 100/100；INDEX.md 已建"批 H"小节并单列三例。
 
+## Phase F：批 I/J/K 零成本词汇/容器/类型实证（ASM MATRIX 扩展续，2026-07-15）
+
+> 承接批 H，补 8 例**零成本抽象直觉易错、且嵌入式高频**的机制：std::array 与裸数组同码、string_view 布局反直觉（len 在前）、initializer_list 寿命陷阱、bitset 边界检查代价、<bit> 默认软件 popcount、enum class 强类型零开销、map/unordered_map 的真实指针追逐与整数除法。全部 GCC 15.3.0 真机 objdump，绝不伪造。
+
+| 子任务 | 内容 | 状态 |
+|--------|------|------|
+| I1 | ASM-80-array：ch80 附录。`std::array` 与裸数组逐字节同布局（均 32B）；`operator[]`=`mov eax,[rcx+rdx*4]` 无边界检查；`at()`=`cmp rdx,0x7`+`ja` throw；`data()`=`mov rax,rcx`；按值整段 32B 拷贝 | ✅ |
+| I2 | ASM-81-string_view：ch81 附录（接 SSO）。`string_view`={len@0,ptr@8}、16B；`sv_substr` 零 call O(1)；`str_substr` 含 `_M_create/_M_copy` 调用 O(n)；`sv_at`=`add rdx,[rcx+8]`+`movzx` 无检查 | ✅ |
+| I3 | ASM-32-init_list：ch32 附录。`initializer_list`={ptr@0,len@8}；range-for 退化为指针自增循环；`dangling_il()` 触发 `-Winit-list-lifetime` 告警；字面量提升为 .rdata 非常量悬垂 | ✅ |
+| J1 | ASM-87-bitset：ch87 附录。`bitset_flip`=`not`；`bitset_set/test` 移位+位运算带 `cmp i,0x3f` 边界检查；`bitset_count` 拆低/高 32 位各 call 一次 popcount 运行库 | ✅ |
+| J2 | ASM-87-bit：ch87 附录（接 bitset）。`popcnt_u` 默认走运行库 SWAR；`bswap_u`=`bswap`；`to_float`=`movd`；`is_pow2`=`(x-1)<(x^(x-1))`；`-mpopcnt` 后 `popcnt eax,ecx` 单指令 | ✅ |
+| J3 | ASM-24-enum：ch24 附录。`use_enum`=`movzx`+`add`+越界`cmovae`；`use_plain`=`lea [rcx+1]` 隐式转换零成本；`enum_underlying`=`mov eax,ecx` | ✅ |
+| K1 | ASM-83-map：ch83 附录。`build()` 三次 `call _M_emplace_hint_unique`（每元素 `operator new` 节点）；`find_it` 沿 `+0x10`左/`+0x18`右指针追逐比较键`@0x20`，O(log n) | ✅ |
+| K2 | ASM-85-unordered：ch85 附录。`build()` 节点堆分配+桶数组（`max_load_factor=0x3f800000`）；`find_it` 先 `div r11` 取桶索引再沿 `+0x00` next 单链表比较键`@0x08` | ✅ |
+
+**产出**：`_asm_demo/` 累计 **45 组**实证（37+8）；`STATE.json` `assembly_empirical_examples=45`；一致性门禁维持 100/100；INDEX.md 已建"批 I/J/K"小节并单列八例。
+
 ## 不纳入项（P2-，已评估）
 
 - **C++ 嵌入式驱动适用边界专题**：评估后不纳入。C++ 在内核态基本不用，用户态驱动/BSP 工具链场景受限，独立专题容易牵强。相关内容融入 P0-3（UB 库的内存相关反例）和 B2（Interview 嵌入式题）即可覆盖核心价值。
@@ -242,7 +259,10 @@
 | C | 体验优化（术语 / Mermaid / 编号） | 6 | 6 | 100% |
 | E | 批 G 高相关非显然实证（lambda 捕获 / 虚继承 / noexcept 元数据） | 3 | 3 | 100% |
 | E2 | 批 H 零成本词汇类型（optional / span / tuple） | 3 | 3 | 100% |
-| **合计** | | **51** | **51** | **100%** |
+| F-I | 批 I 零成本词汇/容器（array / string_view / init_list） | 3 | 3 | 100% |
+| F-J | 批 J 零成本工具与强类型（bitset / <bit> / enum） | 3 | 3 | 100% |
+| F-K | 批 K 关联容器（map / unordered_map） | 2 | 2 | 100% |
+| **合计** | | **59** | **59** | **100%** |
 
 ---
 

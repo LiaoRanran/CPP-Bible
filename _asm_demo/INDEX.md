@@ -11,7 +11,7 @@
 
 ---
 
-## 一、已覆盖实证（累计 34 例，STATE 记录）
+## 一、已覆盖实证（累计 45 例，STATE 记录）
 
 > 下表为本目录可查证证据文件；其中 `ch08_mdspan_test` / `ch08_print_test` 为**失败证据**（头缺失 / 链接失败），不计入成功汇编但保留以诚实记录"标准 vs 实测"差距。
 
@@ -54,8 +54,16 @@
 | ASM-88-optional | `std::optional` 布局与访问代价 | ch88 | `ch88_optional_test.cpp/.s` | 访问零额外间接（值单条 mov，engaged 标志@offset4）；空间代价真实：optional<int> 8B / optional<long long> 16B / optional<char> 2B（vs int 4B） |
 | ASM-82-span | `std::span` 零成本视图 | ch82 | `ch82_span_test.cpp/.s` | 遍历与裸 `ptr+len` 逐字节同码；`operator[]` 无运行时边界检查（越界静默 UB）；sizeof=16（ptr+size_t） |
 | ASM-89-tuple | `std::tuple` / 结构化绑定 | ch89 | `ch89_tuple_test.cpp/.s` | `get<N>` 编译期偏移访问（无索引计算）；结构化绑定与裸 struct 成员访问逐字节相同；libstdc++ 递归继承致末参在最底地址（get<2>@0/get<1>@8/get<0>@16），sizeof=24 |
+| ASM-80-array | `std::array` 零开销下标 | ch80 | `ch80_array_test.cpp/.s` | 与裸数组逐字节同布局（均 32B）；`operator[]`=`mov eax,[rcx+rdx*4]` 无边界检查；`at()`=`cmp rdx,0x7`+`ja` throw 路径；`data()`=`mov rax,rcx`；按值传递整段 32B 拷贝 |
+| ASM-81-string_view | `std::string_view` 零成本视图 | ch81 | `ch81_string_view_test.cpp/.s` | 布局 `{len@0,ptr@8}`、16B；`sv_substr` 零 call O(1)；`str_substr` 含 `_M_create/_M_copy` 调用 O(n)；`sv_at`=`add rdx,[rcx+8]`+`movzx` 无检查 |
+| ASM-32-init_list | `std::initializer_list` 寿命陷阱 | ch32 | `ch32_init_list_test.cpp/.s` | 布局 `{ptr@0,len@8}`；range-for 退化为指针自增循环；`dangling_il()` 触发 `-Winit-list-lifetime` 告警；字面量提升为 .rdata 非常量悬垂 |
+| ASM-87-bitset | `std::bitset` 边界检查代价 | ch87 | `ch87_bitset_test.cpp/.s` | `bitset_flip`=`not`；`bitset_set/test` 移位+位运算带 `cmp i,0x3f` 边界检查；`bitset_count` 拆低/高 32 位各 call 一次 popcount 运行库 |
+| ASM-87-bit | `<bit>` 工具与硬件 popcount | ch87 | `ch87_bit_test.cpp/.s` + `ch87_bit_test_popcnt.s` | `popcnt_u` 默认走运行库 SWAR；`bswap_u`=`bswap`；`to_float`=`movd`；`is_pow2`=`(x-1)<(x^(x-1))`；`-mpopcnt` 后 `popcnt eax,ecx` 单指令 |
+| ASM-24-enum | `enum class` 强类型零开销 | ch24 | `ch24_enum_test.cpp/.s` | `use_enum`=`movzx`+`add`+越界`cmovae`；`use_plain`=`lea [rcx+1]` 隐式转换零成本；`enum_underlying`=`mov eax,ecx` |
+| ASM-83-map | `std::map` 红黑树指针追逐 | ch83 | `ch83_map_test.cpp/.s` | `build()` 三次 `call _M_emplace_hint_unique`（每元素 `operator new` 节点）；`find_it` 沿 `+0x10`左/`+0x18`右指针追逐比较键`@0x20`，O(log n) |
+| ASM-85-unordered | `std::unordered_map` 桶链表 | ch85 | `ch85_unordered_test.cpp/.s` | `build()` 节点堆分配+桶数组（`max_load_factor=0x3f800000`）；`find_it` 先 `div r11` 取桶索引再沿 `+0x00` next 单链表比较键`@0x08` |
 
-> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 34）。
+> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 45）。
 
 ---
 
@@ -99,6 +107,20 @@
 - [x] **ASM-88-optional**：`std::optional` 布局与访问代价（空间真实膨胀、访问零额外间接；engaged 标志@offset4；optional<int> 8B vs int 4B）
 - [x] **ASM-82-span**：`std::span` 零成本视图（遍历≡裸 `ptr+len`；`operator[]` 不查边界；sizeof=16）
 - [x] **ASM-89-tuple**：`std::tuple`/`get<N>`/结构化绑定编译期偏移访问（零运行时索引；libstdc++ 末参在最底地址布局；sizeof=24）
+
+### 批 I：零成本词汇/容器（array / string_view / initializer_list）
+- [x] **ASM-80-array**：`std::array` 与裸数组逐字节同布局（均 32B）、`operator[]`=`mov eax,[rcx+rdx*4]` 无边界检查、`at()`=`cmp rdx,0x7`+`ja` throw 路径、`data()`=`mov rax,rcx`、按值传递整段 32B 拷贝（movdqu+mov）
+- [x] **ASM-81-string_view**：`string_view`={len@0,ptr@8}、16B、`sv_substr` 零 call O(1)、`str_substr` 含 `_M_create/_M_copy` 调用 O(n)、`sv_at`=`add rdx,[rcx+8]`+`movzx` 无检查
+- [x] **ASM-32-init_list**：`initializer_list`={ptr@0,len@8}、range-for 退化为指针自增循环、`dangling_il()` 触发 `-Winit-list-lifetime` 告警、字面量提升为 .rdata 非常量悬垂
+
+### 批 J：零成本工具与强类型（bitset / <bit> / enum class）
+- [x] **ASM-87-bitset**：`bitset_flip`=`not`、`bitset_set/test` 移位+位运算带 `cmp i,0x3f` 边界检查、`bitset_count` 拆低/高 32 位各 call 一次 popcount 运行库
+- [x] **ASM-87-bit**：`<bit>` 工具 `popcnt_u` 默认走运行库 SWAR、`bswap_u`=`bswap`、`to_float`=`movd`、`is_pow2`=`(x-1)<(x^(x-1))`；`-mpopcnt` 后 `popcnt eax,ecx` 单指令
+- [x] **ASM-24-enum**：`use_enum`=`movzx`+`add`+越界`cmovae`、`use_plain`=`lea [rcx+1]` 隐式转换零成本、`enum_underlying`=`mov eax,ecx`
+
+### 批 K：关联容器（map / unordered_map）
+- [x] **ASM-83-map**：`build()` 三次 `call _M_emplace_hint_unique`（每元素 `operator new` 节点）；`find_it` 沿 `+0x10`左/`+0x18`右指针追逐比较键`@0x20`，O(log n)
+- [x] **ASM-85-unordered**：`build()` 节点堆分配+桶数组（`max_load_factor=0x3f800000`）；`find_it` 先 `div r11` 取桶索引再沿 `+0x00` next 单链表比较键`@0x08`
 
 ---
 

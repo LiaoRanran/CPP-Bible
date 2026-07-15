@@ -578,6 +578,11 @@ I 表最后 5 章：**ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_
 - **批 H — 零成本词汇类型（H1~H3，2026-07-15）**
   - std::optional 空间膨胀但访问零间接（ch88）、std::span 零成本视图且 operator[] 不查边界（ch82）、std::tuple/结构化绑定编译期偏移访问（ch89）
   - 汇编实证 34 → 37 例
-- **最终状态**：汇编实证 8 → 37 例（+29），全部 GCC 15.3.0 真实 objdump 产物存 `_asm_demo/`；不可用特性（`import std`、`mdspan`、`reflection`、contracts 链接）均诚实标注
+- **批 I/J/K — 零成本词汇/容器/类型实证（I1~I3 / J1~J3 / K1~K2，2026-07-15）**
+  - 批 I（array/string_view/init_list）：std::array 与裸数组逐字节同码（operator[] 无边界检查、at() 有）、string_view 布局 {len@0,ptr@8} 反直觉、initializer_list 寿命陷阱（-Winit-list-lifetime）
+  - 批 J（bitset/<bit>/enum class）：bitset 下标带 `cmp i,0x3f` 边界检查（与 array 相反）、`std::popcount` 默认软件 SWAR 仅 `-mpopcnt` 才硬件单指令、enum class 强类型零运行期代价
+  - 批 K（map/unordered_map）：map 红黑树节点每元素 `operator new` 且 find 沿左右指针追逐 O(log n)；unordered_map find 含 `div` 取桶索引 + next 单链表追逐
+  - 汇编实证 37 → 45 例
+- **最终状态**：汇编实证 8 → 45 例（+37），全部 GCC 15.3.0 真实 objdump 产物存 `_asm_demo/`；不可用特性（`import std`、`mdspan`、`reflection`、contracts 链接）均诚实标注
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）、**WORKLIST_v4.md（质量收尾导航）**_
