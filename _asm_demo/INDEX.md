@@ -11,7 +11,7 @@
 
 ---
 
-## 一、已覆盖实证（累计 31 例，STATE 记录）
+## 一、已覆盖实证（累计 34 例，STATE 记录）
 
 > 下表为本目录可查证证据文件；其中 `ch08_mdspan_test` / `ch08_print_test` 为**失败证据**（头缺失 / 链接失败），不计入成功汇编但保留以诚实记录"标准 vs 实测"差距。
 
@@ -48,8 +48,11 @@
 | ASM-88-variant | `std::variant`+`std::visit` 分派 | ch88 | `ch88_variant_visit_test.cpp/.s` | visit = 按 index 字节 `cmp`/`je` 分支链，零 `call`，handler 内联；≈ 手写 switch；标签真实偏移 0x4（全 int 变体） |
 | ASM-122-pmr | `std::pmr` 分配路径 | ch122 | `ch122_pmr_test.cpp/.s` | 默认 vector `operator new`+`memcpy`+`operator delete` 堆三连；pmr 栈缓冲够用→零 `operator new`，分配内联为指针递增 |
 | ASM-std_function | `std::function` 类型擦除 | ch26 | `ch26_std_function_test.cpp/.s` | 调用=经对象内 invoker 指针 `call [rcx+0x18]`+空守卫；裸函数指针 `jmp rax`；无捕获 lambda 内联零 call；与虚调用同代价类 |
+| ASM-26-lambda-capture | lambda 捕获代价 | ch26 | `ch26_lambda_capture_test.cpp/.s` | 无捕获=1B 占位；按值捕获值=4B 快照(调用点寄存器搬运 0 访存)；按引用捕获=8B 持指针(调用点经指针解引用多 1 次加载)；目标可证明不变时 GCC 折叠引用捕获为零开销 |
+| ASM-50-vi | 虚继承 this 调整 thunk | ch50 | `ch50_vi_test.cpp/.s` | virtual thunk(`_ZTv0_n24_N1D1fEv`)经 vbtable 运行时查虚基类偏移调整 this(`add rcx,[rax-0x18]`)，非固定 `sub`；比非虚 MI thunk(`sub rdi,0x10`)更贵 |
+| ASM-40-noexcept | noexcept 对异常处理元数据体积 | ch40 | `ch40_nt_maythrow.cpp/.o/.s` + `ch40_nt_noexcept.cpp/.o/.s` | SEH: may_throw EH 元数据 100B vs no_throw 32B(−68%)；`.xdata.unlikely` LSDA 块整体消失；`.text.unlikely` 抛异常路径代码消除(64→0)；等价于 ELF 上 `.gcc_except_table` 消失 |
 
-> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 31）。
+> 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 34）。
 
 ---
 
@@ -81,6 +84,11 @@
 
 ### 批 F：类型擦除
 - [x] ASM-std_function：`std::function` 类型擦除的间接调用 + 小对象优化 vs 模板/CRTP 静态内联
+
+### 批 G：捕获 / 虚继承 / noexcept 元数据（嵌入式高相关、非显然）
+- [x] **ASM-26-lambda-capture**：lambda 捕获形式的指令代价与闭包布局（无捕获 1B / 按值 4B / 按引用 8B；引用捕获在目标可证明不变时被 GCC 折叠为零开销，实时读取才显式二次解引用）
+- [x] **ASM-50-vi**：虚继承 this 调整 thunk 经 vbtable 运行时查虚基类偏移（非固定 `sub`，比非虚 MI thunk 更贵）——虚继承除 vbptr 外的第二重运行时代价
+- [x] **ASM-40-noexcept**：noexcept 对异常处理元数据体积影响（SEH：100B→32B，LSDA 块消失；等价 ELF `.gcc_except_table`）
 
 ---
 

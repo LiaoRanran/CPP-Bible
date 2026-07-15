@@ -757,6 +757,41 @@ _ZThn16_N1D1fEv:                       ; this-adjustment thunk（非虚调用入
 
 `dynamic_cast<B2*>(d)` 在 -O2 下被编译为读取 `_ZTV1D+8` 处的 `top_offset` 并做指针算术，而非每次调用都生成 thunk；thunk 仅在**虚调用经 B2 接口**时才介入，故 MI 的虚调用比 SI 多一次 `sub`/`add` 开销（约 1 cycle/调用，可用 `RDTSC` 取证）。这印证「常见陷阱」中"避免对 vtable 偏移做硬假设"——`top_offset` 在 GCC/Clang 下均为 `.quad` 立即数，MSVC 则编码在 `-8(rdi)` 形式的负偏移里。
 
+## [实现]真实：虚继承的 this 调整 thunk（虚基类 vbtable 运行时寻址）[E: Low-level]
+
+> 编译：`g++ -std=c++26 -O2 ch50_vi_test.cpp -o ch50_vi_test.exe`；反汇编 `objdump -d -M intel -C`（GCC 15.3.0 / Win64 / Itanium ABI）。证据：`_asm_demo/ch50_vi_test.cpp/.s`。对比"非虚 MI"的固定偏移 thunk（见上节 `sub rdi,0x10; jmp f`）。
+
+**场景**：`struct D : virtual B { int d; int f() override { return b + d; } };`（`B` 为虚基类，`f` 同时访问 `b` 与 `d`，故需完整 `D` 的 `this`）。经虚基类指针 `B*` 调用 `f` 必须把 `this` 从 `B` 子对象调整到完整 `D` 对象。
+
+```asm
+; callB(B*)：经虚基类指针调用
+mov    rax,QWORD PTR [rcx]   ; 取 B 子对象 vptr
+rex.W jmp QWORD PTR [rax]    ; 间接跳到虚表 f 槽(指向 virtual thunk)
+
+; virtual thunk to D::f()  (_ZTv0_n24_N1D1fEv, 符号 n24 = non-virtual 调整 0x18)
+mov    rax,QWORD PTR [rcx]        ; rcx = B* (虚基类子对象)
+add    rcx,QWORD PTR [rax-0x18]   ; 经 vbtable 查虚基类偏移, this 从 B 子对象调整到完整 D
+mov    rax,QWORD PTR [rcx]
+mov    rdx,QWORD PTR [rax-0x18]   ; 再查虚基类内 b 的偏移
+mov    eax,DWORD PTR [rcx+0x8]    ; 取 d
+add    eax,DWORD PTR [rcx+rdx*1+0x8]  ; 取 b (this + vbase_offset + 8)，返回 b+d
+ret
+
+; D::f() 经 D* 直接调用(无调整)：同样经 vbptr 查偏移访问 b
+mov    rax,QWORD PTR [rcx]        ; load vbptr
+mov    rdx,QWORD PTR [rax-0x18]   ; vbase offset
+mov    eax,DWORD PTR [rcx+0x8]    ; d
+add    eax,DWORD PTR [rcx+rdx*1+0x8]  ; b
+ret
+```
+
+**关键发现**
+
+1. **虚继承的 this 调整是运行时 vbtable 查表，不是编译期常数 `sub`**：非虚 MI 的 thunk（上节）是固定 `sub rdi,0x10; jmp f`（2 指令、偏移写死在指令里）；而虚继承因为"虚基类在最终派生对象中的偏移"**不是编译期常数**（取决于最派生类的布局），编译器改在 thunk 里 `add rcx,[rax-0x18]` 从 vbtable 取出偏移再调整——多出一次 vbtable 间接加载。
+2. **访问成员也走 vbtable**：`D::f` 取 `b` 用 `this + vbase_offset + 8`，`vbase_offset` 来自 vbptr 指向的 vbtable（`[rax-0x18]`），同样一次额外间接。
+3. **代价排序**：`final` 单继承/非虚 MI 的 this 调整 ≈ 1 cycle（`sub`+`jmp`）；**虚继承的 this 调整 + 成员访问 ≈ 2~3 次额外内存间接 + 一次 vbtable 查表**，是三者里最贵的——这是虚继承除"对象布局多一个 vbptr"之外的第二重运行时代价。
+4. **工程含义**：嵌入式/实时场景优先用非虚 MI 或组合（成员而非继承）；必须虚继承时（diamond），把热路径虚函数改为经最派生类指针/`final` 调用以绕过 thunk，或对虚函数用 `final` 帮编译器去虚化。
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。每个链接均指向具体源码文件或 ABI 标准文档，可逐行对照多重继承的对象布局与 this 调整逻辑。

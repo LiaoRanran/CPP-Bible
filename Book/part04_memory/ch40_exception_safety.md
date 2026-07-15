@@ -1527,6 +1527,39 @@ int call_noexcept(int x, int y) { return noexcept_add(x, y); }
 - `vector<T>::push_back` 在 `T::T(T&&) noexcept` 时走 move 路径（否则降级 copy）—— **强异常安全保证的关键依赖**。
 - STL 容器扩容对 `noexcept` 条件敏感：如果用 `noexcept` 标注 move 构造函数，`vector` 扩容用 move 而非 copy → 性能差数量级（见 `is_nothrow_move_constructible`）。
 
+### 实战实证：noexcept 对异常处理元数据体积的影响（ASM-40-noexcept）[E: Low-level]
+
+> 两个翻译单元分别编译：`g++ -std=c++26 -O2 -c ch40_nt_maythrow.cpp -o ch40_nt_maythrow.o` 与 `ch40_nt_noexcept.cpp`（GCC 15.3.0 / Win64）。证据：`_asm_demo/ch40_nt_*.cpp/.o/.s`。段大小 `objdump -h`，LSDA 内容 `objdump -s -j .xdata`。
+
+**平台事实（务必区分）**：本工具链为 MinGW/Win64，异常用 **SEH**（`.pdata` 函数表 + `.xdata` 展开/LSDA 信息），**不是** ELF/Linux 的 DWARF `.eh_frame`/`.gcc_except_table`。二者语义等价，只是段名不同——下列数据以 SEH 为准。
+
+| 段（异常处理元数据） | `may_throw`(可能抛) | `no_throw`(noexcept) | 差异 |
+|----------------------|:---:|:---:|:---:|
+| `.text` | 0x40 (64B) | 0x20 (32B) | −32B（`.text.unlikely` 抛异常路径代码**完全消除**） |
+| `.text.unlikely` | 0x40 (64B) | — (无) | −64B |
+| `.xdata` | 0x10 (16B) | 0x08 (8B) | −8B |
+| `.xdata.unlikely`(LSDA) | 0x18 (24B) | — (无) | **−24B（LSDA 块整体消失）** |
+| `.pdata` | 0x18 (24B) | 0x18 (24B) | 0 |
+| `.pdata.unlikely` | 0x24 (36B) | — (无) | −36B |
+| **EH 元数据合计** | **100 B** | **32 B** | **−68 B（−68%）** |
+
+`.xdata` 内容也印证：
+
+```asm
+; may_throw.o  .xdata : 含 0x42 标志(异常处理器/LSDA 存在), 主路径 + unlikely 两区块
+Contents of section .xdata
+ 0000 01040100 04420000 01040100 04420000   ; 0x42 = 带语言特定异常处理
+; no_throw.o .xdata : 仅 epilog 展开信息, 无 0x42
+ 0000 01000000 01000000
+```
+
+**关键发现**
+
+1. **`noexcept` 不是只给调用者"少准备栈帧"——它从目标文件里彻底删除了 LSDA**：`.xdata.unlikely`（异常展开/LSDA 块）在 noexcept 版本中**完全不存在**（24B → 0），对应 ELF 上的 `.gcc_except_table` 整段消失。
+2. **代码也变小**：可能抛异常的 `.text.unlikely`（抛异常冷路径 + 栈展开 prologue）整体消除，`.text` 从 64B 降到 32B。
+3. **EH 元数据总量 100B → 32B（−68%）**：在含上千函数的工程里，普遍标注 `noexcept` 能让可执行文件的异常处理元数据显著收缩，加快静态/动态链接、减少 I-cache/页占用。
+4. **跨平台等价表述**：Linux/ELF 上对应为 `.gcc_except_table` 段——noexcept 函数该段为空或不存在，可能抛异常函数则含 LSDA 字节；结论一致，仅段名因 SEH/DWARF 而异。
+
 ---
 
 ## 自测练习（Exercises）
