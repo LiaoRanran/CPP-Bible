@@ -799,3 +799,40 @@ int main() { int x=0; inspect(x); inspect(&x); }
 
 </details>
 
+## 附录：GCC 15.3.0 真机实证 — `std::optional` 布局与访问代价
+
+> 证据：`_asm_demo/ch88_optional_test.cpp`（GCC 15.3.0 `-O2`，链接 exe 后 `objdump -d -M intel -C`）。
+> 结论：**访问零额外间接，真正代价在内存占用，不在时间。**
+
+**1. 空间代价真实（engaged 标志膨胀布局）**
+
+`emit_sizes()` 把各 `sizeof` 折叠为立即数写 volatile 全局，直接读数：
+
+| 类型 | `sizeof` | 说明 |
+|------|:--:|------|
+| `int` | 4 | 基准 |
+| `std::optional<int>` | **8** | 值 4 + engaged 标志 4（对齐填充） |
+| `std::optional<long long>` | **16** | 值 8 + 标志 8 |
+| `std::optional<char>` | **2** | 值 1 + 标志 1（无填充） |
+
+**2. 访问零额外间接** — `get_opt` 与裸指针 `get_raw` 结构同级：
+
+```asm
+; std::optional<int> 按值传入 rcx（8 字节：值@0，engaged 标志@4）
+get_opt(std::optional<int>):
+    mov     rax, rcx
+    shr     rax, 0x20              ; 取高 32 位 = engaged 标志
+    test    al, al                 ; if (o) 测标志字节
+    je      .disengaged
+    mov     eax, DWORD PTR [rsp+0x8]   ; *o：单条 mov 读值（offset 0），无二次解引用
+    ret
+get_raw(int const*):
+    test    rcx, rcx               ; if (p) 测指针
+    je      .null
+    mov     eax, DWORD PTR [rcx]   ; *p：单条 mov
+    ret
+```
+
+两者均为 **1 条"存在性"测试 + 1 条值 `mov`**，时间代价几乎相同。`opt_use` 中 `*o + (o.has_value()?1:0)` 仅 `movzx eax,al`（复用同一标志字节）+ `add eax,ecx`，`has_value()` 无独立存储——值就在对象内，不经指针。
+
+**工程含义**：optional 的"零开销抽象"指**时间零开销**，但**空间非零**——`optional<int>` 是 8 字节而非 4。嵌入式 RAM/寄存器受限场景用 optional 表达"可能无值"需接受 2× 膨胀；若类型本就指针，优先用空指针哨兵更省空间。

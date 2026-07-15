@@ -1179,3 +1179,44 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录：GCC 15.3.0 真机实证 — `std::tuple` / 结构化绑定 代价
+
+> 证据：`_asm_demo/ch89_tuple_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**`get<N>` 是编译期偏移访问，零运行时索引计算；结构化绑定与裸 struct 成员访问逐字节相同。**
+
+**1. `get<N>` 编译为直接偏移 `mov`**（N 是编译期常量，无函数调用、无索引查表）：
+
+```asm
+; tuple<int, double, char> 实布局（libstdc++ 递归继承：末参在最底地址）
+use_get(std::tuple<int,double,char> const&):
+    movsx   edx, BYTE PTR [rcx]        ; get<2> char  @ offset 0
+    cvttsd2si eax, QWORD PTR [rcx+0x8] ; get<1> double @ offset 8
+    add     eax, DWORD PTR [rcx+0x10]  ; get<0> int    @ offset 16
+    add     eax, edx
+    ret
+```
+
+⚠️ **非显然布局**：libstdc++ 用递归继承实现 tuple，最深的基类对应**最后一个**模板参数，故 `get<2>`(char) 在 offset 0、`get<1>`(double) 在 8、`get<0>`(int) 在 16——**声明顺序与内存偏移相反**（与裸 struct 首成员在 offset 0 相反）。`sizeof` = **24**。
+
+**2. 结构化绑定 = 编译期别名**，与 `get<N>` 逐字节相同：
+
+```asm
+use_bind(std::tuple<int,double,char> const&):   ; auto& [a,b,c] = t
+    movsx   edx, BYTE PTR [rcx]
+    cvttsd2si eax, QWORD PTR [rcx+0x8]
+    add     eax, DWORD PTR [rcx+0x10]
+    add     eax, edx
+    ret
+```
+
+**3. 与裸聚合 struct 对比**——成员访问代价同级（仅 offset 顺序因 tuple 反转布局而异）：
+
+```asm
+use_agg(P const&):                 ; struct P{int a; double b; char c;}
+    movsx   edx, BYTE PTR [rcx+0x10]  ; c @16
+    cvttsd2si eax, QWORD PTR [rcx+0x8]; b @8
+    add     eax, DWORD PTR [rcx]      ; a @0
+    add     eax, edx
+    ret
+```
+
+**工程含义**：tuple / 结构化绑定**没有运行时分发开销**，可作多返回值聚合（如 `auto [ok, val] = parse()`）而无性能顾虑。唯一结构差异是 libstdc++ 的"末参在底地址"布局——若需与 C ABI / 内存映射（寄存器组、外设描述符）逐字段对齐，优先用显式 `struct`（首成员 offset 0、可读性更佳）。

@@ -51,6 +51,9 @@
 | ASM-26-lambda-capture | lambda 捕获代价 | ch26 | `ch26_lambda_capture_test.cpp/.s` | 无捕获=1B 占位；按值捕获值=4B 快照(调用点寄存器搬运 0 访存)；按引用捕获=8B 持指针(调用点经指针解引用多 1 次加载)；目标可证明不变时 GCC 折叠引用捕获为零开销 |
 | ASM-50-vi | 虚继承 this 调整 thunk | ch50 | `ch50_vi_test.cpp/.s` | virtual thunk(`_ZTv0_n24_N1D1fEv`)经 vbtable 运行时查虚基类偏移调整 this(`add rcx,[rax-0x18]`)，非固定 `sub`；比非虚 MI thunk(`sub rdi,0x10`)更贵 |
 | ASM-40-noexcept | noexcept 对异常处理元数据体积 | ch40 | `ch40_nt_maythrow.cpp/.o/.s` + `ch40_nt_noexcept.cpp/.o/.s` | SEH: may_throw EH 元数据 100B vs no_throw 32B(−68%)；`.xdata.unlikely` LSDA 块整体消失；`.text.unlikely` 抛异常路径代码消除(64→0)；等价于 ELF 上 `.gcc_except_table` 消失 |
+| ASM-88-optional | `std::optional` 布局与访问代价 | ch88 | `ch88_optional_test.cpp/.s` | 访问零额外间接（值单条 mov，engaged 标志@offset4）；空间代价真实：optional<int> 8B / optional<long long> 16B / optional<char> 2B（vs int 4B） |
+| ASM-82-span | `std::span` 零成本视图 | ch82 | `ch82_span_test.cpp/.s` | 遍历与裸 `ptr+len` 逐字节同码；`operator[]` 无运行时边界检查（越界静默 UB）；sizeof=16（ptr+size_t） |
+| ASM-89-tuple | `std::tuple` / 结构化绑定 | ch89 | `ch89_tuple_test.cpp/.s` | `get<N>` 编译期偏移访问（无索引计算）；结构化绑定与裸 struct 成员访问逐字节相同；libstdc++ 递归继承致末参在最底地址（get<2>@0/get<1>@8/get<0>@16），sizeof=24 |
 
 > 方向 1 早期另有 `unique_ptr`(ch41)、`vtable`(ch47) 等以**章内联片段**形式存在的实证，不重复计入本文件清单；总计数以 STATE.json `assembly_empirical_examples` 为准（当前 34）。
 
@@ -89,6 +92,13 @@
 - [x] **ASM-26-lambda-capture**：lambda 捕获形式的指令代价与闭包布局（无捕获 1B / 按值 4B / 按引用 8B；引用捕获在目标可证明不变时被 GCC 折叠为零开销，实时读取才显式二次解引用）
 - [x] **ASM-50-vi**：虚继承 this 调整 thunk 经 vbtable 运行时查虚基类偏移（非固定 `sub`，比非虚 MI thunk 更贵）——虚继承除 vbptr 外的第二重运行时代价
 - [x] **ASM-40-noexcept**：noexcept 对异常处理元数据体积影响（SEH：100B→32B，LSDA 块消失；等价 ELF `.gcc_except_table`）
+
+---
+
+### 批 H：零成本词汇类型（optional / span / tuple）
+- [x] **ASM-88-optional**：`std::optional` 布局与访问代价（空间真实膨胀、访问零额外间接；engaged 标志@offset4；optional<int> 8B vs int 4B）
+- [x] **ASM-82-span**：`std::span` 零成本视图（遍历≡裸 `ptr+len`；`operator[]` 不查边界；sizeof=16）
+- [x] **ASM-89-tuple**：`std::tuple`/`get<N>`/结构化绑定编译期偏移访问（零运行时索引；libstdc++ 末参在最底地址布局；sizeof=24）
 
 ---
 

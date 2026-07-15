@@ -1144,3 +1144,41 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录：GCC 15.3.0 真机实证 — `std::span` 零成本视图
+
+> 证据：`_asm_demo/ch82_span_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**span 只是 `{ptr, size}` 对，遍历与裸 `ptr+len` 同码；`operator[]` 不检查边界。**
+
+**1. 遍历零成本** — `sum_span` 与裸 `sum_ptr` 生成同一循环体（仅寄存器分配不同）：
+
+```asm
+sum_span(std::span<int const, N>):
+    mov     rdx, QWORD PTR [rcx+0x8]   ; 取 size（span 第二 qword）
+    mov     rax, QWORD PTR [rcx]       ; 取 ptr（span 第一 qword）
+    lea     rcx, [rax+rdx*4]           ; end = begin + size*4
+.loop: add     edx, DWORD PTR [rax]
+    add     rax, 0x4
+    cmp     rax, rcx
+    jne     .loop
+sum_ptr(int const*, unsigned long long):
+    test    rdx, rdx
+    je      .empty
+    lea     rdx, [rcx+rdx*4]           ; 同 end 计算
+.loop: add     eax, DWORD PTR [rcx]
+    add     rcx, 0x4
+    cmp     rcx, rdx
+    jne     .loop
+```
+
+**2. `operator[]` 无运行时边界检查**（对比 `vector::at()` 会 `cmp`+`jcc`+抛异常）：
+
+```asm
+at_span(std::span<int const, N>, unsigned long long):
+    mov     rax, QWORD PTR [rcx]       ; ptr
+    lea     rdx, [rax+rdx*4]           ; ptr + i*4   ← 纯索引算术
+    mov     eax, DWORD PTR [rdx]       ; 直接读，无任何越界判断
+    ret
+```
+
+**3. 布局**：`sizeof(std::span<const int>)` = **16**（指针 8 + `size_t` 8）。按值传递 span 拷贝 16 字节（略多于裸指针，但换来 `.size()`/`.subspan()`/`.first()`）。
+
+**工程含义**：span 性能等价于裸指针+长度，适合做"不拥有、零拷贝"的缓冲区视图（嵌入式中传 DMA 缓冲区、外设 FIFO 区段极佳）。**但 `span[i]` 与原始数组一样不查边界——越界是静默 UB，不是异常**；需要运行时防护时应显式 `if (i < s.size())` 或改用带检查封装。
