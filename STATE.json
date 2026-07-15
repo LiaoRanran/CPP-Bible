@@ -1,11 +1,11 @@
 {
   "project": "现代C++终极圣经",
   "phase": "quality_consolidation",
-  "phase_label": "第三阶段：质量收尾 + 高含金量升级",
+  "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
   "last_updated": "2026-07-15",
-  "last_commit": "442106bbc3b3c2ea4121392136861ce29bc7dc69",
-  "git_status": "in sync with origin/master after push 2026-07-15 (batch L: 53 asm examples, HEAD 442106b)",
+  "last_commit": "6b555311c339219942c495388a3b01933650ccdd",
+  "git_status": "in sync with origin/master after push 2026-07-16 (Phase APP batch1: 8 chapters exercise-rewrite+usage-demo, 53 asm examples unchanged, HEAD 6b555311c339219942c495388a3b01933650ccdd)",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -409,7 +409,8 @@
       "batch": 11,
       "total_batches": 1,
       "detail": "ch85 附录: GCC15.3 -O2 真机 objdump。build() 节点堆分配+桶数组(max_load_factor=0x3f800000); find_it 先 div r11 取桶索引再沿 +0x00 next 单链表比较键@0x08。证据 _asm_demo/ch85_unordered_test.cpp/.s。"
-    }
+    },
+    "APP1": null
   },
   "execution_order": [
     "P0-2",
@@ -468,7 +469,11 @@
     "L5",
     "L6",
     "L7",
-    "L8"
+    "L8",
+    "APP1",
+    "APP2",
+    "APP3",
+    "APP4"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
@@ -476,7 +481,8 @@
     "consistency_check_streak": 30,
     "assembly_empirical_examples": 53,
     "i_practice_coverage": "63/147",
-    "compile_pass_rate": "112/147"
+    "compile_pass_rate": "112/147",
+    "application_layer_app1_chapters": "8/147 (ch20/27/41/47/77/78/93/96)"
   },
-  "ci_status": "Batch L completed (8 examples + 6 chapter appendices injected); asm examples 45→53; consistency 100/100"
+  "ci_status": "Pushed Phase APP batch1 (HEAD 6b555311c339219942c495388a3b01933650ccdd); application_layer 8/147 chapters enhanced; consistency 100/100; asm examples 53 unchanged"
 }
