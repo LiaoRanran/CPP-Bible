@@ -3,14 +3,15 @@
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级",
   "total_chapters": 150,
-  "last_updated": "2026-07-14 17:47",
-  "last_commit": "47b7e97",
+  "last_updated": "2026-07-15",
+  "last_commit": "3b05cae",
   "git_status": "ahead of origin by 49 (unpushed)",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
     "assembly_empirical_core",
-    "std_frontier_phase4"
+    "std_frontier_phase4",
+    "std_frontier_phase4_5"
   ],
   "tasks": {
     "P0-1": {
@@ -191,6 +192,26 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "consistency_check 0/0 维持(147章 ERROR=0/WARN=0=100/100); crossref 断链0; commit 47b7e97(9文件/237插入); push master 触发 CI 复验 site/pdf 仍绿; STATE 收尾. 红线: 不新增章节(嵌入 ch08/ch09), 不注水, 汇编全部 GCC15.3.0 真实 objdump, 不可用特性诚实标注."
+    },
+    "P4-5-1": {
+      "subject": "构建 std::expected 跨优化等级真机对比",
+      "status": "completed",
+      "detail": "ch08_opt_expected.cpp 以 -O0/-O2/-Os 编译；parse_digit 实测 182B/99B/74B，构造函数调用 3/0/0，零开销在 -O2/-Os 成立，嵌入式 -Os 反而最小"
+    },
+    "P4-5-2": {
+      "subject": "构建 std::ranges 零成本抽象真机实证",
+      "status": "completed",
+      "detail": "ch08_ranges_test.cpp -O2；ranges::sort 与 std::sort 同调 __introsort_loop<__normal_iterator<int*,vector>,long long,_Iter_less_iter>；views::filter 谓词内联为 test+jne(98B 紧致循环)"
+    },
+    "P4-5-3": {
+      "subject": "ch08 附录G 新增 G.4 优化对比 + G.5 ranges",
+      "status": "completed",
+      "detail": "嵌入真实 objdump 片段（-O0/-O2/-Os parse_digit + sort_ranges prologue + count_even filter 内联），全部 GCC15.3.0 真机"
+    },
+    "P4-5-4": {
+      "subject": "WG21/TRACKER P0896 补真机实证链接",
+      "status": "completed",
+      "detail": "ranges 备注指向 ch08 附录 G.5 零成本实证"
     }
   },
   "execution_order": [
@@ -210,13 +231,17 @@
     "P4-1",
     "P4-2",
     "P4-3",
-    "P4-4"
+    "P4-4",
+    "P4-5-1",
+    "P4-5-2",
+    "P4-5-3",
+    "P4-5-4"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
     "shallow_chapters": 0,
     "consistency_check_streak": 30,
-    "assembly_empirical_examples": 16,
+    "assembly_empirical_examples": 18,
     "i_practice_coverage": "63/150",
     "compile_pass_rate": "112/150"
   },
