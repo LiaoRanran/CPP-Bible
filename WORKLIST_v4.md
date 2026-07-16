@@ -365,10 +365,23 @@
 | APP9 | ch121 Contracts | 习题：pre 契约 vs assert / 前置违反 vs 异常 / 契约驱动去分支；演绎：安全关键契约 + 性能热点去分支 |
 | APP9 | ch122 PMR | 习题：monotonic arena 零 new / 请求级 arena / 分配器传播；演绎：每请求海量临时对象 + 高频小对象池 |
 
+**Batch APP10（已完成，2026-07-16）**：part09_concurrency 6 章全覆盖 APP-A + APP-C（习题重写 + 用法演绎附录）
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP10 | ch107 原子 | 习题：fetch_add 计数 / compare_exchange 无锁栈 / 原子标志位域；演绎：计数器自增竞争→原子 vs 互斥 + 宽结构 atomic<Config> |
+| APP10 | ch108 内存序 | 习题：relaxed 计数器 / acquire-release 发布 / seq_cst 与获取加载；演绎：双重检查锁定→内存序 + 标志同步→acq-rel |
+| APP10 | ch109 屏障 | 习题：store-load 重排 / fence 对称配对 / 宽松操作配围栏；演绎：生产者-消费者→fence 配对 |
+| APP10 | ch111 ABA | 习题：无锁栈 ABA 复现 / 带标签 CAS / 风险定级；演绎：pop 的 ABA→带标签指针 |
+| APP10 | ch112 RCU | 习题：读侧无锁 / grace period / 多版本回收；演绎：读多写少→RCU + hazard pointer 回收 |
+| APP10 | ch113 协程 | 习题：generator 实现 / 惰性序列 / 协程 vs 线程；演绎：回调嵌套→co_await 顺序化 |
+
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。靶向编译校验：22 注入块 GCC 13.1 -O2 -Wall -Wextra 全链接 0 fail（ch118/119/120/121/122；ch118 模块两 TU 语法与 ch121 C++26 契约语法用 ```text 围栏、ch120 协程概念骨架同转 text，门禁跳过；含协程 generator 与 pmr arena 实测可编译运行）。全章编译校验（chapter_compile_check 含注入前既有内容）0 fail，确认零回归。APP-A/APP-C 累计覆盖 54/147 章。
 
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归（1 处 ch108#blk18 为既有正文 CROSS_BLOCK 显式豁免）；独立全链接校验（无 PRELUDE，include-hoist，真全链接）32 注入块 GCC 13.1 -O2 -Wall -Wextra -pthread -mcx16 -latomic 0 fail（含 16 字节 atomic<TaggedPtr> 的 cmpxchg16b 与 24 字节 atomic<Config> 经 libatomic 链接实测可编译运行）。APP-A/APP-C 累计覆盖 60/147 章。ch107 采用 preserve 模式保留尾随 UB 实证库交叉引用。
+
 **后续批次（规划中）**
-- **APP10+**：滚动覆盖剩余章节（part09_concurrency / part11_lowlevel / part12_network / part13_dsa / part14_perf 等剩余章，及 part03_language 的 ch24/26/29/30/32 需注意 preserve 模式保尾随 ASM 附录），直至 147 章习题全部主题对齐。
+- **APP11+**：滚动覆盖剩余章节（part11_lowlevel / part12_network / part13_dsa / part14_perf 等剩余章，及 part03_language 的 ch24/26/29/30/32 需注意 preserve 模式保尾随 ASM 附录），直至 147 章习题全部主题对齐。
 
 ## 不纳入项（P2-，已评估）
 
@@ -409,7 +422,8 @@
 | APP7 | Phase APP 应用层增强第七批（语言基础簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP8 | Phase APP 应用层增强第八批（算法簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP9 | Phase APP 应用层增强第九批（part10_modern 5 章习题重写+用法演绎） | 5 | 5 | 100% |
-| **合计** | | **121** | **121** | **100%** |
+| APP10 | Phase APP 应用层增强第十批（part09_concurrency 6 章习题重写+用法演绎） | 6 | 6 | 100% |
+| **合计** | | **127** | **127** | **100%** |
 
 ---
 

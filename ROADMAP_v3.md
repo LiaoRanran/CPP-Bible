@@ -609,6 +609,7 @@ I 表最后 5 章：**ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_
 
 **Batch APP8（2026-07-16 完成）**：算法簇 5 章 ch95/97/98/99/100 全覆盖 APP-A + APP-C。通用模板习题替换为章主题对齐难度阶梯（★★/★★★/★★★★）；每章追加「用法演绎」附录；靶向编译校验 35 注入块全链接 0 fail（含 `std::execution::par` 算法实测可链接运行）；一致性门禁 147 章 0/0 维持。关键修复：门禁初报 9 处「常见错误」反例块失败（引用未定义变量），将运行时/逻辑类反例改为自包含可编译反例程序、编译错误类（ch99 演绎1 `accumulate` 无执行策略重载）改为纯注释块，复验 0 fail。注入块均显式写全 `#include`（CI 的 `compile_all.py` 不带 PRELUDE，防止缺头文件回归）。APP-A/APP-C 累计覆盖 49/147 章。
 **Batch APP9（2026-07-16 完成）**：part10_modern 5 章 ch118/119/120/121/122 全覆盖 APP-A + APP-C。通用模板习题（max_safe/integral add/constexpr fact 与章主题错配）替换为章主题对齐难度阶梯（★★/★★★/★★★★）；每章追加「用法演绎」附录；靶向编译校验 22 注入块全链接 0 fail；全章编译校验（含注入前既有内容）0 fail 确认零回归；一致性门禁 147 章 0/0 维持。特殊围栏处理：ch118 Modules 的 `export module`/`import` 两 TU 语法、ch121 Contracts 的 C++26 契约语法（`pre`/`post`/`contract_assert`，GCC 13.1 不支持）、ch120 协程概念骨架，均用 ```text 围栏（门禁只编译 ```cpp，跳过 text），与本书既有风格一致；所有 ```cpp 注入块自包含可编译且显式写全 `#include`（防 CI 缺头文件回归）。APP-A/APP-C 累计覆盖 54/147 章。
-**滚动计划**：APP10+（剩余章节滚动覆盖）。目标：147 章习题全部主题对齐，重点章均有用法演绎 + 工业深挖。
+**Batch APP10（2026-07-16 完成）**：part09_concurrency 6 章 ch107/108/109/111/112/113 全覆盖 APP-A + APP-C。通用模板习题（练习1 竟是 max 函数模板，与原子操作严重错配）替换为章主题对齐难度阶梯（★★/★★★/★★★★）；每章追加「用法演绎」附录；双门禁校验：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归（1 处 ch108#blk18 为既有正文 CROSS_BLOCK 显式豁免），独立全链接校验（无 PRELUDE，include-hoist，真全链接）32 注入块 GCC 13.1 -O2 -Wall -Wextra -pthread -mcx16 -latomic 0 fail（含 16 字节 atomic<TaggedPtr> 的 cmpxchg16b 与 24 字节 atomic<Config> 经 libatomic 链接实测可编译运行）；一致性门禁 147 章 0/0 维持。preserve 模式：ch107 尾随 UB 实证库交叉引用块保留；其余 5 章习题区直达文末。所有 ```cpp 注入块自包含可编译且显式写全 `#include`。APP-A/APP-C 累计覆盖 60/147 章。
+**滚动计划**：APP11+（剩余章节滚动覆盖）。目标：147 章习题全部主题对齐，重点章均有用法演绎 + 工业深挖。
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）、**WORKLIST_v4.md（质量收尾导航）**_

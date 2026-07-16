@@ -4,7 +4,7 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
   "last_updated": "2026-07-16",
-  "last_commit": "f291e2799dfd921ac416027a31bb51ece752f211",
+  "last_commit": "bb1d67289b49b1b1950047309a34800a8db8de09",
   "git_status": "in sync with origin/master after push (Phase APP batch8: 算法簇 5章 ch95/97/98/99/100 习题重写+用法演绎; 通用模板习题替换为章主题对齐难度阶梯; 每章追加用法演绎附录; HEAD be7509b44b3ae6da1ba319e3f051d9da50e053c5)",
   "completed_phases": [
     "density_deepening",
@@ -472,6 +472,13 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "习题重写+用法演绎覆盖 part10_modern 5章: ch118_modules/ch119_ranges_deep/ch120_coroutine_app/ch121_contracts/ch122_pmr。通用模板习题(max_safe/integral add/constexpr fact 与章主题严重错配)替换为章主题对齐难度阶梯(★★/★★★/★★★★);每章追加「附录:用法演绎(从选型到落地)」2 walkthrough(选型场景→常见错误text→修复cpp→结论)。靶向编译校验 22 注入块 FAILS:0(全链接 GCC13.1 -O2 -Wall -Wextra, 含协程 generator 与 pmr arena 实测可编译运行); 一致性 147章 ERROR=0 WARN=0=100/100 零回归。特殊围栏: ch118 模块 export/import 两TU 语法、ch121 C++26 契约语法(pre/post/contract_assert GCC13.1 不支持)、ch120 协程概念骨架 均用 ```text 围栏(门禁只编译 ```cpp, 跳过 text, 与本书既有风格一致); 所有 ```cpp 注入块自包含可编译且显式写全 #include(CI 的 compile_all.py 不带 PRELUDE, 防缺头文件回归)。asm 实证 53例不变。HEAD f291e2799dfd921ac416027a31bb51ece752f211。"
+    },
+    "APP10": {
+      "label": "Phase APP 应用层增强 批10(习题重写+用法演绎 part09_concurrency 6章)",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "习题重写+用法演绎覆盖 part09_concurrency 6章: ch107_atomic/ch108_memory_order/ch109_fence/ch111_aba/ch112_hazard_rcu/ch113_coroutine。通用模板习题(练习1竟是 max 函数模板，与原子操作错配)替换为章主题对齐难度阶梯(★★/★★★/★★★★); 每章追加「附录:用法演绎(从选型到落地)」2 walkthrough(选型场景→常见错误→修复cpp→结论)。双门禁: CI 模拟(无PRELUDE main-only, -fsyntax-only) 0 新增回归(1 处 ch108#blk18 为既有正文 CROSS_BLOCK 显式豁免); 独立全链接校验(无PRELUDE, include-hoist, 真全链接) 32 注入块 FAILS:0(GCC13.1 -O2 -Wall -Wextra -pthread -mcx16 -latomic, 含 16字节 atomic<TaggedPtr> 的 cmpxchg16b 与 24字节 atomic<Config> 经 libatomic 链接实测可编译运行); 一致性 147章 ERROR=0 WARN=0=100/100 零回归。preserve 模式: ch107 尾随 UB 实证库交叉引用块保留; 其余 5 章习题区直达文末。所有 ```cpp 注入块自包含可编译且显式写全 #include。asm 实证 53例不变。HEAD bb1d67289b49b1b1950047309a34800a8db8de09。"
     }
   },
   "execution_order": [
@@ -540,7 +547,8 @@
     "APP6",
     "APP7",
     "APP8",
-    "APP9"
+    "APP9",
+    "APP10"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
@@ -558,7 +566,8 @@
     "application_layer_app7_chapters": "5/147 (ch19/22/23/25/28)",
     "application_layer_app8_chapters": "5/147 (ch95/97/98/99/100)",
     "application_layer_app9_chapters": "5/147 (ch118/119/120/121/122)",
-    "application_layer_total_chapters": "54/147 (app1 8 + app2 8 + app3 5 + app4 8 + app5 5 + app6 5 + app7 5 + app8 5 + app9 5)"
+    "application_layer_total_chapters": "60/147 (app1-10: 60 章)",
+    "application_layer_app10_chapters": "6/147 (ch107/108/109/111/112/113)"
   },
-  "ci_status": "Pushed Phase APP batch9 (HEAD f291e2799dfd921ac416027a31bb51ece752f211); application_layer enhanced 54/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68 + app5 ch61/69/70/71/72 + app6 ch35/36/37/38/40 + app7 ch19/22/23/25/28 + app8 ch95/97/98/99/100 + app9 ch118/119/120/121/122); consistency 100/100; asm examples 53 unchanged; 注入块均显式 #include 防 CI 缺头文件回归"
+  "ci_status": "Pushed Phase APP batch10 (HEAD bb1d67289b49b1b1950047309a34800a8db8de09); application_layer enhanced 60/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68 + app5 ch61/69/70/71/72 + app6 ch35/36/37/38/40 + app7 ch19/22/23/25/28 + app8 ch95/97/98/99/100 + app9 ch118/119/120/121/122 + app10 ch107/108/109/111/112/113); consistency 100/100; asm examples 53 unchanged; 双门禁: CI 模拟(无PRELUDE main-only) 0 回归 + 独立全链接 32块0失败(-pthread -mcx16 -latomic)"
 }
