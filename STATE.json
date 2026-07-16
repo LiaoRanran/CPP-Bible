@@ -4,7 +4,7 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
   "last_updated": "2026-07-16",
-  "last_commit": "be7509b44b3ae6da1ba319e3f051d9da50e053c5",
+  "last_commit": "f291e2799dfd921ac416027a31bb51ece752f211",
   "git_status": "in sync with origin/master after push (Phase APP batch8: 算法簇 5章 ch95/97/98/99/100 习题重写+用法演绎; 通用模板习题替换为章主题对齐难度阶梯; 每章追加用法演绎附录; HEAD be7509b44b3ae6da1ba319e3f051d9da50e053c5)",
   "completed_phases": [
     "density_deepening",
@@ -465,6 +465,13 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "习题重写+用法演绎覆盖算法簇 5章: ch95/97/98/99/100(算法总览 / 查找 / 堆 / 数值 / ranges)。通用模板习题(max_safe/integral add/constexpr fact 与章主题严重错配)替换为章主题对齐难度阶梯(★★/★★★/★★★★);每章追加「附录:用法演绎(从选型到落地)」2 walkthrough(选型场景→常见错误text→修复cpp→结论)。靶向编译校验 35 注入块 FAILS:0(全链接 -O2 -Wall -Wextra -mavx2/-mavx512f/-mfma, 含 std::execution::par 算法实测可链接运行); 一致性 147章 ERROR=0 WARN=0=100/100 零回归。关键修复: 门禁初报 9 处 常见错误(text) 块失败(引用未定义 v/h/sum 等变量), 将运行时/逻辑类反例改为自包含可编译反例程序(数据竞争/未排序二分/堆不变量/悬垂视图/int截断), 编译错误类(ch99 演绎1 accumulate 无执行策略重载)改为纯注释块, 复验 0 fail。注入块均显式写全 #include(CI 的 compile_all.py 不带 PRELUDE, 此为防止回归的关键)。asm 实证 53例不变。HEAD be7509b44b3ae6da1ba319e3f051d9da50e053c5。"
+    },
+    "APP9": {
+      "label": "Phase APP 应用层增强 批9(习题重写+用法演绎 part10_modern 5章)",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "习题重写+用法演绎覆盖 part10_modern 5章: ch118_modules/ch119_ranges_deep/ch120_coroutine_app/ch121_contracts/ch122_pmr。通用模板习题(max_safe/integral add/constexpr fact 与章主题严重错配)替换为章主题对齐难度阶梯(★★/★★★/★★★★);每章追加「附录:用法演绎(从选型到落地)」2 walkthrough(选型场景→常见错误text→修复cpp→结论)。靶向编译校验 22 注入块 FAILS:0(全链接 GCC13.1 -O2 -Wall -Wextra, 含协程 generator 与 pmr arena 实测可编译运行); 一致性 147章 ERROR=0 WARN=0=100/100 零回归。特殊围栏: ch118 模块 export/import 两TU 语法、ch121 C++26 契约语法(pre/post/contract_assert GCC13.1 不支持)、ch120 协程概念骨架 均用 ```text 围栏(门禁只编译 ```cpp, 跳过 text, 与本书既有风格一致); 所有 ```cpp 注入块自包含可编译且显式写全 #include(CI 的 compile_all.py 不带 PRELUDE, 防缺头文件回归)。asm 实证 53例不变。HEAD f291e2799dfd921ac416027a31bb51ece752f211。"
     }
   },
   "execution_order": [
@@ -532,7 +539,8 @@
     "APP5",
     "APP6",
     "APP7",
-    "APP8"
+    "APP8",
+    "APP9"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
@@ -543,14 +551,14 @@
     "compile_pass_rate": "112/147",
     "application_layer_app1_chapters": "8/147 (ch20/27/41/47/77/78/93/96)",
     "application_layer_app2_chapters": "8/147 (ch21/31/39/42/43/44/50/51)",
-    "application_layer_total_chapters": "34/147 (app1 8 + app2 8 + app3 5 + app4 8 + app5 5)",
     "application_layer_app3_chapters": "5/147 (ch27/41/96/110/133)",
     "application_layer_app4_chapters": "8/147 (ch60/62/63/64/65/66/67/68)",
     "application_layer_app5_chapters": "5/147 (ch61/69/70/71/72)",
     "application_layer_app6_chapters": "5/147 (ch35/36/37/38/40)",
     "application_layer_app7_chapters": "5/147 (ch19/22/23/25/28)",
     "application_layer_app8_chapters": "5/147 (ch95/97/98/99/100)",
-    "application_layer_total_chapters": "49/147 (app1 8 + app2 8 + app3 5 + app4 8 + app5 5 + app6 5 + app7 5 + app8 5)"
+    "application_layer_app9_chapters": "5/147 (ch118/119/120/121/122)",
+    "application_layer_total_chapters": "54/147 (app1 8 + app2 8 + app3 5 + app4 8 + app5 5 + app6 5 + app7 5 + app8 5 + app9 5)"
   },
-  "ci_status": "Pushed Phase APP batch8 (HEAD be7509b44b3ae6da1ba319e3f051d9da50e053c5); application_layer enhanced 49/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68 + app5 ch61/69/70/71/72 + app6 ch35/36/37/38/40 + app7 ch19/22/23/25/28 + app8 ch95/97/98/99/100); consistency 100/100; asm examples 53 unchanged; 注入块均显式 #include 防 CI 缺头文件回归"
+  "ci_status": "Pushed Phase APP batch9 (HEAD f291e2799dfd921ac416027a31bb51ece752f211); application_layer enhanced 54/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68 + app5 ch61/69/70/71/72 + app6 ch35/36/37/38/40 + app7 ch19/22/23/25/28 + app8 ch95/97/98/99/100 + app9 ch118/119/120/121/122); consistency 100/100; asm examples 53 unchanged; 注入块均显式 #include 防 CI 缺头文件回归"
 }

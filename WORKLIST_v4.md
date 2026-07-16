@@ -355,8 +355,20 @@
 
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。靶向编译校验：35 注入块 GCC 13.1 -O2 -Wall -Wextra 全链接 0 fail（ch95/97/98/99/100；含 `std::execution::par` 算法实测可链接运行）。关键修复：门禁初报 9 处「常见错误」反例块失败（引用未定义变量），将运行时/逻辑类反例改为自包含可编译反例程序，编译错误类（ch99 演绎1 `accumulate` 无执行策略重载）改为纯注释块，复验 0 fail。注入块均显式写全 `#include`（CI 的 `compile_all.py` 不带 PRELUDE，防止缺头文件回归）。APP-A/APP-C 累计覆盖 49/147 章。
 
+**Batch APP9（已完成，2026-07-16）**：part10_modern 5 章全覆盖 APP-A + APP-C（习题重写 + 用法演绎附录）
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP9 | ch118 Modules | 习题：模块三单元职责 / export 粒度与 ABI / 分区拆分；演绎：头文件包含爆炸→模块 + 循环依赖→分区 |
+| APP9 | ch119 Ranges 深入 | 习题：filter+transform+take 惰性单遍 / projection 排序 / 悬垂 view 物化；演绎：手写循环 vs ranges + 管道结果物化 |
+| APP9 | ch120 协程应用 | 习题：generator<int> 实现 / awaitable 三段式 / 协程 vs 线程；演绎：回调地狱→协程顺序化 + 惰性生成器 |
+| APP9 | ch121 Contracts | 习题：pre 契约 vs assert / 前置违反 vs 异常 / 契约驱动去分支；演绎：安全关键契约 + 性能热点去分支 |
+| APP9 | ch122 PMR | 习题：monotonic arena 零 new / 请求级 arena / 分配器传播；演绎：每请求海量临时对象 + 高频小对象池 |
+
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。靶向编译校验：22 注入块 GCC 13.1 -O2 -Wall -Wextra 全链接 0 fail（ch118/119/120/121/122；ch118 模块两 TU 语法与 ch121 C++26 契约语法用 ```text 围栏、ch120 协程概念骨架同转 text，门禁跳过；含协程 generator 与 pmr arena 实测可编译运行）。全章编译校验（chapter_compile_check 含注入前既有内容）0 fail，确认零回归。APP-A/APP-C 累计覆盖 54/147 章。
+
 **后续批次（规划中）**
-- **APP9+**：滚动覆盖剩余章节（part09_concurrency / part10_modern / part11_lowlevel / part12_network / part13_dsa / part14_perf 等剩余章，及 part03_language 的 ch24/26/29/30/32 需注意 preserve 模式保尾随 ASM 附录），直至 147 章习题全部主题对齐。
+- **APP10+**：滚动覆盖剩余章节（part09_concurrency / part11_lowlevel / part12_network / part13_dsa / part14_perf 等剩余章，及 part03_language 的 ch24/26/29/30/32 需注意 preserve 模式保尾随 ASM 附录），直至 147 章习题全部主题对齐。
 
 ## 不纳入项（P2-，已评估）
 
@@ -396,7 +408,8 @@
 | APP6 | Phase APP 应用层增强第六批（内存管理簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP7 | Phase APP 应用层增强第七批（语言基础簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP8 | Phase APP 应用层增强第八批（算法簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
-| **合计** | | **116** | **116** | **100%** |
+| APP9 | Phase APP 应用层增强第九批（part10_modern 5 章习题重写+用法演绎） | 5 | 5 | 100% |
+| **合计** | | **121** | **121** | **100%** |
 
 ---
 
