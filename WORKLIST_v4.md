@@ -380,8 +380,20 @@
 
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归（1 处 ch108#blk18 为既有正文 CROSS_BLOCK 显式豁免）；独立全链接校验（无 PRELUDE，include-hoist，真全链接）32 注入块 GCC 13.1 -O2 -Wall -Wextra -pthread -mcx16 -latomic 0 fail（含 16 字节 atomic<TaggedPtr> 的 cmpxchg16b 与 24 字节 atomic<Config> 经 libatomic 链接实测可编译运行）。APP-A/APP-C 累计覆盖 60/147 章。ch107 采用 preserve 模式保留尾随 UB 实证库交叉引用。
 
+**Batch APP11（已完成，2026-07-16）**：part05_oo 5 章全覆盖 APP-A + APP-C（习题重写 + 用法演绎附录）
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP11 | ch45 对象模型 | 习题：struct 布局与填充 / 静态成员不计入 sizeof / EBO 空基类；演绎：值语义返回 vs 悬垂引用 + sizeof 手算坑 |
+| APP11 | ch46 封装继承 | 习题：切片 / 名字隐藏+using / NVI；演绎：返回 Base 值切片 + 漏 override 静默隐藏 |
+| APP11 | ch48 RTTI | 习题：dynamic_cast 安全下行 / typeid 依赖 vtable / variant 替代 RTTI；演绎：过度 RTTI 分支 + 非多态 dynamic_cast |
+| APP11 | ch49 虚继承 | 习题：菱形二义+虚继承 / 虚基类由最派生构造 / 多重继承 this 调整；演绎：菱形二义 + 虚基类构造错乱 |
+| APP11 | ch52 EBO | 习题：基本 EBO / 多空基类 EBO / Policy-Based 空基类混入；演绎：空策略当成员膨胀 + EBO 非绝对零 |
+
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归；独立全链接校验（无 PRELUDE，include-hoist，真全链接）35 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（OO 章无需 -pthread/-latomic）。APP-A/APP-C 累计覆盖 65/147 章（批次数累加；唯一覆盖 62 章）。ch48/ch52 采用 preserve 模式保留尾随「## 附录 E」汇编实证（typeid/dynamic_cast 真实汇编、EBO 字节偏移），独立校验器仅校验注入区。ch48 演绎2 错误块（非多态 dynamic_cast 编译错误）用 ```text 围栏。
+
 **后续批次（规划中）**
-- **APP11+**：滚动覆盖剩余章节（part11_lowlevel / part12_network / part13_dsa / part14_perf 等剩余章，及 part03_language 的 ch24/26/29/30/32 需注意 preserve 模式保尾随 ASM 附录），直至 147 章习题全部主题对齐。
+- **APP12+**：滚动覆盖剩余章节（part11_lowlevel / part12_network / part13_dsa / part14_perf 等剩余章，及 part03_language 的 ch24/26/29/30/32 需注意 preserve 模式保尾随 ASM 附录），直至 147 章习题全部主题对齐。
 
 ## 不纳入项（P2-，已评估）
 
@@ -423,7 +435,8 @@
 | APP8 | Phase APP 应用层增强第八批（算法簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP9 | Phase APP 应用层增强第九批（part10_modern 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP10 | Phase APP 应用层增强第十批（part09_concurrency 6 章习题重写+用法演绎） | 6 | 6 | 100% |
-| **合计** | | **127** | **127** | **100%** |
+| APP11 | Phase APP 应用层增强第十一批（part05_oo 5 章习题重写+用法演绎） | 5 | 5 | 100% |
+| **合计** | | **132** | **132** | **100%** |
 
 ---
 
