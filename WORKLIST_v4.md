@@ -392,8 +392,20 @@
 
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归；独立全链接校验（无 PRELUDE，include-hoist，真全链接）35 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（OO 章无需 -pthread/-latomic）。APP-A/APP-C 累计覆盖 65/147 章（批次数累加；唯一覆盖 62 章）。ch48/ch52 采用 preserve 模式保留尾随「## 附录 E」汇编实证（typeid/dynamic_cast 真实汇编、EBO 字节偏移），独立校验器仅校验注入区。ch48 演绎2 错误块（非多态 dynamic_cast 编译错误）用 ```text 围栏。
 
+**Batch APP12（已完成，2026-07-16）**：part03_language 5 章全覆盖 APP-A + APP-C（习题重写 + 用法演绎附录）
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP12 | ch24 枚举 | 习题：enum class 类型安全 / 位掩码运算符返回原类型 / 前向声明跨 TU；演绎：enum class 选型 + 位掩码零开销 |
+| APP12 | ch26 lambda | 习题：init-capture 移动捕获 / 模板 lambda+concept / std::function 类型擦除成本；演绎：std::function vs 模板回调 + 悬垂 this/循环引用 |
+| APP12 | ch29 友元 | 习题：operator<< 友元 / 模板友元同 T / 工厂+友元控制构造；演绎：friend vs public getter + 友元与单元测试 |
+| APP12 | ch30 volatile | 习题：MMIO 寄存器轮询 / volatile sig_atomic_t / volatile 不能替代 atomic；演绎：MMIO 用 volatile + volatile 非线程安全 |
+| APP12 | ch32 初始化 | 习题：initializer_list 构造歧义 / 聚合指定初始化器 / array vs vector 开销；演绎：() vs {} 歧义 + 聚合边界 |
+
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归；独立全链接校验（不裹命名空间，无 PRELUDE，include-hoist，真全链接）39 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（语言章无需 -pthread/-latomic；不含 main 块用 -c 仅编译）。APP-A/APP-C 累计覆盖 70/147 章（批次数累加；唯一覆盖 67 章）。ch24/ch32 采用 preserve 模式保留尾随「## 附录：…真机汇编实证」（enum class / initializer_list 真实汇编），独立校验器按 `真机汇编实证` 尾精确截断仅校验注入区。修复：ch24 演绎2 补 operator& 定义使 has() 自包含；ch26 演绎2 错误示范令 Node 继承 enable_shared_from_this 使 shared_from_this 合法；standalone TAIL_RE 由 `^## 附录` 收紧为 `^## 附录：.*真机汇编实证` 避免误截断注入区。
+
 **后续批次（规划中）**
-- **APP12+**：滚动覆盖剩余章节（part11_lowlevel / part12_network / part13_dsa / part14_perf 等剩余章，及 part03_language 的 ch24/26/29/30/32 需注意 preserve 模式保尾随 ASM 附录），直至 147 章习题全部主题对齐。
+- **APP13+**：滚动覆盖剩余章节（part11_lowlevel / part12_network / part13_dsa / part14_perf 等剩余章），直至 147 章习题全部主题对齐。
 
 ## 不纳入项（P2-，已评估）
 
@@ -436,7 +448,8 @@
 | APP9 | Phase APP 应用层增强第九批（part10_modern 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP10 | Phase APP 应用层增强第十批（part09_concurrency 6 章习题重写+用法演绎） | 6 | 6 | 100% |
 | APP11 | Phase APP 应用层增强第十一批（part05_oo 5 章习题重写+用法演绎） | 5 | 5 | 100% |
-| **合计** | | **132** | **132** | **100%** |
+| APP12 | Phase APP 应用层增强第十二批（part03_language 5 章习题重写+用法演绎） | 5 | 5 | 100% |
+| **合计** | | **137** | **137** | **100%** |
 
 ---
 

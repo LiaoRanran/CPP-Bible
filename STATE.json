@@ -4,7 +4,7 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
   "last_updated": "2026-07-16",
-  "last_commit": "60879f47bcdcca573145a360f2c3d756d27e7d31",
+  "last_commit": "92b984a4653b0f3b2cbb9557aaa282fd531c2bcf",
   "git_status": "in sync with origin/master after push (Phase APP batch8: 算法簇 5章 ch95/97/98/99/100 习题重写+用法演绎; 通用模板习题替换为章主题对齐难度阶梯; 每章追加用法演绎附录; HEAD be7509b44b3ae6da1ba319e3f051d9da50e053c5)",
   "completed_phases": [
     "density_deepening",
@@ -486,6 +486,13 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "习题重写+用法演绎覆盖 part05_oo 5章: ch45_oop_object_model/ch46_encapsulation_inheritance/ch48_rtti/ch49_virtual_inheritance/ch52_ebo。通用模板习题(max_safe/integral add/constexpr fact 与 OO 主题错配)替换为章主题对齐难度阶梯(★★/★★★/★★★★); 每章追加「附录:用法演绎(从选型到落地)」2 walkthrough(选型场景→常见错误→修复cpp→结论)。双门禁: CI 模拟(无PRELUDE main-only, -fsyntax-only) 0 新增回归; 独立全链接校验(无PRELUDE, include-hoist, 真全链接) 35 注入块 FAILS:0(GCC13.1 -O2 -Wall -Wextra, OO 章无需 -pthread/-latomic)。一致性 147章 ERROR=0 WARN=0=100/100 零回归。preserve 模式: ch48 保留尾随『## 附录 E: 编译实证——typeid/dynamic_cast 真实汇编』、ch52 保留『## 附录 E: EBO 字节偏移汇编』(均为原书既有 ASM 实证, 非注入区, 独立校验器已限定仅校验注入区)。ch48 演绎2 错误块(非多态 dynamic_cast 编译错误)用 ```text 围栏。asm 实证 53例不变。HEAD 60879f47bcdcca573145a360f2c3d756d27e7d31。"
+    },
+    "APP12": {
+      "label": "Phase APP 应用层增强 批12(习题重写+用法演绎 part03_language 5章)",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "习题重写+用法演绎覆盖 part03_language 5章: ch24_enum/ch26_lambda/ch29_friend/ch30_volatile/ch32_initialization。通用模板习题替换为章主题对齐难度阶梯(★★/★★★/★★★★); 每章追加「附录:用法演绎(从选型到落地)」2 walkthrough。双门禁: CI 模拟(无PRELUDE main-only) 0 新增回归; 独立全链接校验(不裹命名空间, 无PRELUDE, include-hoist, 真全链接) 19 注入块 FAILS:0 (GCC13.1 -O2 -Wall -Wextra, 语言章无需 -pthread/-latomic; 不含 main 块用 -c 仅编译)。一致性 147章 ERROR=0 WARN=0=100/100 零回归。preserve 模式: ch24 保留尾随『## 附录:enum class 真机汇编实证』、ch32 保留『## 附录:std::initializer_list 真机汇编实证』(原书既有 ASM 实证, 独立校验器按 真机汇编实证 尾精确截断仅校验注入区)。修复: ch24 演绎2 补 operator& 定义使 has() 自包含; ch26 演绎2 错误示范令 Node 继承 enable_shared_from_this 使 shared_from_this 合法;standalone TAIL_RE 由 ^## 附录 收紧为 ^## 附录:.*真机汇编实证 避免误截断注入区。asm 实证 53例不变。HEAD 92b984a4653b0f3b2cbb9557aaa282fd531c2bcf。"
     }
   },
   "execution_order": [
@@ -556,7 +563,8 @@
     "APP8",
     "APP9",
     "APP10",
-    "APP11"
+    "APP11",
+    "APP12"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
@@ -574,9 +582,10 @@
     "application_layer_app7_chapters": "5/147 (ch19/22/23/25/28)",
     "application_layer_app8_chapters": "5/147 (ch95/97/98/99/100)",
     "application_layer_app9_chapters": "5/147 (ch118/119/120/121/122)",
-    "application_layer_total_chapters": "65/147 (app1-11: 65 章, 批次数累加; 唯一覆盖 62 章)",
+    "application_layer_total_chapters": "70/147 (app1-12: 70 章, 批次数累加; 唯一覆盖 67 章)",
     "application_layer_app10_chapters": "6/147 (ch107/108/109/111/112/113)",
-    "application_layer_app11_chapters": "5/147 (ch45/46/48/49/52)"
+    "application_layer_app11_chapters": "5/147 (ch45/46/48/49/52)",
+    "application_layer_app12_chapters": "5/147 (ch24/26/29/30/32)"
   },
-  "ci_status": "Pushed Phase APP batch11 (HEAD 60879f47bcdcca573145a360f2c3d756d27e7d31); application_layer enhanced 65/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68 + app5 ch61/69/70/71/72 + app6 ch35/36/37/38/40 + app7 ch19/22/23/25/28 + app8 ch95/97/98/99/100 + app9 ch118/119/120/121/122 + app10 ch107/108/109/111/112/113 + app11 ch45/46/48/49/52); consistency 100/100; asm examples 53 unchanged; 双门禁: CI 模拟(无PRELUDE main-only) 0 回归 + 独立全链接 35块0失败"
+  "ci_status": "Pushed Phase APP batch12 (HEAD 92b984a4653b0f3b2cbb9557aaa282fd531c2bcf); application_layer enhanced 70/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68 + app5 ch61/69/70/71/72 + app6 ch35/36/37/38/40 + app7 ch19/22/23/25/28 + app8 ch95/97/98/99/100 + app9 ch118/119/120/121/122 + app10 ch107/108/109/111/112/113 + app11 ch45/46/48/49/52 + app12 ch24/26/29/30/32); consistency 100/100; asm examples 53 unchanged; 双门禁: CI 模拟(无PRELUDE main-only) 0 回归 + 独立全链接 19块0失败(不裹命名空间, 无PRELUDE)"
 }
