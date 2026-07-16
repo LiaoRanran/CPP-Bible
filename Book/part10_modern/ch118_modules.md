@@ -626,57 +626,157 @@ T factorial(T n) { T r = 1; for (T i = 2; i <= n; ++i) r *= i; return r; }
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+模块系统把"包含文本"换成"导入已编译的符号"。请说明 **模块接口单元（module interface unit）**、**模块实现单元（module implementation unit）** 与 **模块分区（module partition）** 三者的职责，并写出 `math` 模块的最小接口单元与使用单元的骨架。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+三类单元职责：
 
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+- **模块接口单元**：以 `export module math;` 开头，声明并 `export` 对外可见的实体；编译器据此生成 BMI（Binary Module Interface），使用者 `import math;` 直接读 BMI，不再文本包含任何 `.h`。
+- **模块实现单元**：以 `module math;`（无 `export`）开头，放不导出的实现细节；它只看得到本模块，外部不可见。
+- **模块分区**：`export module math:impl;` / `module math:impl;` 把大模块拆成多个编译单元，接口单元用 `export import :impl;` 再导出，BMI 随之拆分。
+
+最小骨架（两 TU，实际需分别编译，故用 ```text 呈现）：
+
+```text
+// --- math.ixx : 模块接口单元 ---
+export module math;
+export int square(int x);
+export int add(int a, int b);
+
+// --- math_impl.cpp : 模块实现单元 ---
+module math;
+int square(int x) { return x * x; }
+int add(int a, int b) { return a + b; }
+
+// --- main.cpp : 使用单元 ---
+import math;
+int main() { return square(add(2, 3)); }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 模块名是全局命名空间中的独立名字空间（不是 C++ 普通 `namespace`），`import` 的符号不会泄漏宏（宏不是模块实体，只活在 preprocessor，模块彻底绕开文本包含）。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+解释 **export 粒度** 如何影响封装与 ABI：若 `math` 模块接口只 `export square`，而内部 helper `sq` 不导出，外部翻译单元为什么既不能调用 `sq`，也**不会因修改 `sq` 的实现而触发重编译**？
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+模块导出的实体名与签名写进 BMI 的"导出符号表"。未导出的 `sq`：
+
+1. **不可见**：外部 TU 的 `import math;` 只读导出表，`sq` 不在其中，链接期就找不到符号（名字未导出 ≠ 符号不存在，只是不公开）。
+2. **不触重编**：`sq` 的实现只活在 `math_impl.cpp` 的目标文件里，且未进入 BMI。BMI 不变 → 依赖 `math` 的 TU 无需重新编译；只有改了 `export` 列表或可观察行为（签名）才会让 BMI 失效、触发下游重编。
+
+这正好是"头文件包含"的反面：传统头文件把 `sq` 的**定义**文本塞进每个 TU，改 `sq` 任一行所有包含者全重编。下面用普通类演示同一封装边界（可编译）：
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+// 模块里未 export 的 helper 等价于类的 private 实现：
+struct Math {
+    int square(int x) const { return sq(x); }   // 导出 API
+private:
+    int sq(int x) const { return x * x; }        // 未导出 helper
+};
+int main() {
+    Math m;
+    std::cout << m.square(4) << '\n';   // 8
+    // m.sq(4);  // 错误：sq 不可访问，类比模块未导出符号
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 模块的封装边界在**编译期（名字可见性）+ 链接期（符号导出）** 双层生效，比 `#ifndef` 头卫士更彻底，且不污染全局宏名字空间。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+当单接口单元过大（如 5000 行、含数十个 `export`）导致 BMI 臃肿、编译慢时，如何用 **模块分区** 拆分？写出把 `app` 模块拆成 `app:ui` 与 `app:core` 两个分区、并由接口单元再导出的骨架，并说明分区对编译时间的好处。
 
 <details><summary>答案与解析</summary>
 
-```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+分区把"一个巨型接口单元"拆成多个可被并行/CU 增量编译的接口分区，每个分区生成自己的 BMI 片段，接口单元用 `export import :xxx;` 把它们聚合成完整模块。
+
+```text
+// --- app.cppm : 主接口单元 ---
+export module app;
+export import :ui;     // 再导出 ui 分区
+export import :core;   // 再导出 core 分区
+
+// --- app_ui.cppm : ui 分区接口单元 ---
+export module app:ui;
+export void render();
+
+// --- app_core.cppm : core 分区接口单元 ---
+export module app:core;
+export int compute();
+
+// 使用方只需: import app; 即可见 render()/compute()
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+好处：
+
+- **增量编译**：改 `app:core` 只重编 core 分区与其下游，不波及 ui 分区与使用者。
+- **并行编译**：各分区是独立 TU，构建系统可并行编译，缩短墙钟时间。
+- **BMI 体积分散**：单个 BMI 片段更小，解析更快。
+
+[标准] 分区名 `app:ui` 中 `app` 是模块名、`:ui` 是分区标识；分区接口单元必须以 `export module` 声明（实现分区才用 `module`）。主接口单元不重复 `export` 分区的实体，而是 `export import` 再导出，避免二次定义。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：头文件包含爆炸 → 模块
+
+**选型场景。** 一个 5000 行的 `core.h` 被 80 个翻译单元 `#include`，任何一行改动都触发 80 个 TU 全量重编（分钟级）；更糟的是 `core.h` 里 `#define small` 之类宏随文本包含泄漏，悄悄破坏了某些 TU 里的 STL 代码。
+
+**常见错误。** 继续用 `#include "core.h"`，试图靠 `#pragma once` 止血——但头卫士只防同一 TU 重复包含，挡不住"改一行重编 80 TU"和"宏跨 TU 污染"这两个根本问题。
+
+**修复（落地）。** 抽 `module core;` 接口单元，只 `export` 纯 API；宏留在 **global module fragment** 不外泄，使用方 `import core;` 只读 BMI：
+
+```text
+// --- core.cppm : 模块接口单元 ---
+module;                      // ← global module fragment 开始
+#define small  // 宏只活在这里, 不会泄漏到 import 方
+export module core;
+export int process(int);    // 只导出 API, 宏不外泄
+
+// --- user.cpp ---
+import core;                // 只读 BMI, 不含任何宏/文本
+int main() { return process(1); }
+```
+
+**结论。** 模块把"文本包含"换成"符号导入"：包含爆炸（重编范围）与宏污染（全局名字空间）同时消除；BMI 让"改实现不触重编"成为默认行为。注意：`import std` 仅在 Clang 18+/MSVC 17.5+ 可用，GCC/MinGW 仍须回退 `#include <...>`。
+
+### 演绎 2：头文件循环依赖 → 分区
+
+**选型场景。** 两个库 `A`、`B` 互相依赖：`A` 用到 `B` 的类型，`B` 用到 `A` 的类型。用头文件时只能靠大量前向声明 + 拆分"接口/实现"补丁维持，脆弱且易碎。
+
+**常见错误。** `A.h` `#include "B.h"` 且 `B.h` `#include "A.h"`，依赖包含顺序与前向声明，任何一方的内部改动都可能让循环包含失控（编译期报"类型不完全"）。
+
+**修复（落地）。** 抽 `module common;` 放共享类型，A/B 各自 `import common;`；若 A/B 自身也大，再用分区拆接口/实现：
+
+```text
+// --- common.cppm : 共享类型模块 ---
+export module common;
+export struct Shared { int id; };
+
+// --- a.cppm ---
+export module a;
+import common;
+export void use_b(Shared);
+
+// --- b.cppm ---
+export module b;
+import common;
+export void use_a(Shared);
+```
+
+**结论。** 模块的"导入图"是有向无环的符号依赖，编译器在 BMI 层解析，不再受文本包含顺序与前向声明补丁束缚；配合分区可把巨型双向耦合拆成"共享核心 + 各自分区"的清晰结构。CI 构建需加 `gcm.cache` 清理步，避免 BMI 失效被遗漏。
+
+### 练习与演绎自检
+
+- 模块 ≠ 命名空间：模块名是独立全局实体，导出的封装边界在编译期+链接期双层生效。
+- `import` 不泄漏宏；`#include` 泄漏宏——这是模块解决包含爆炸之外的第二大收益。
+- 分区用于拆分大接口单元的编译成本；`export import :xxx;` 是"再导出"，不是"二次定义"。

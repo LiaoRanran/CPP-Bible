@@ -816,57 +816,149 @@ int main(){std::cout<<"C++26 contracts(P2900): proof-carrying code for safety-cr
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+为 `element_at(v, i)` 表达"下标必须合法"这一前置条件。先用当下的 `assert` 写出可编译版本，再给出 C++26 `pre` 契约的等价写法（契约语法用 ```text，因本机 GCC 13.1 尚不支持），并说明二者在 release 构建下的行为差异。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+**当下可编译版本（`assert`）**：
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <vector>
+#include <cassert>
+int element_at(const std::vector<int>& v, std::size_t i) {
+    assert(i < v.size());          // 前置条件: release(-DNDEBUG) 下被剔除
+    return v[i];
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+**C++26 契约等价写法（```text，方向性）**：
+
+```text
+int element_at(const std::vector<int>& v, std::size_t i)
+    pre (i < v.size());           // 前置契约
+{
+    return v[i];
+}
+```
+
+差异：
+
+- `assert` 在 `NDEBUG` 下**完全消失**（连检查都不做），且违反时调用 `abort`。
+- 契约的 `pre` 是否保留、违反时做什么，由**构建模式/契约级别**决定（可保留为轻量检查、可升级为终止、也可在性能模式下降为 `assume`），比 `assert` 更可控、可被优化器利用。
+
+[标准] 契约三要素 `pre`/`post`/`assert` 是函数级声明式检查；C++26 P2900 把"前置/后置/断言"统一为可配置机制，当前为方向特性。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+区分"前置违反 = 调用方 bug（应终止）"与"可恢复错误 = 应抛异常"。写一段 `parse_int(s)`：字符串为空属**调用方 bug**（用契约/断言终止），字符串非空但含非数字属**可恢复输入错误**（抛异常），并说明为何两者不该混用。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <string>
+#include <stdexcept>
+#include <cassert>
+int parse_int(const std::string& s) {
+    assert(!s.empty());                       // 空串=调用方违反前置, 属 bug → 终止
+    for (char c : s)
+        if (c < '0' || c > '9')
+            throw std::invalid_argument("non-digit in input");  // 合法输入错误 → 可恢复
+    int v = 0;
+    for (char c : s) v = v * 10 + (c - '0');
+    return v;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+- **前置违反（空串）**：函数契约假定"非空"由调用方保证，违反即编程错误，用 `assert`/`pre` 快速失败（fail-fast），不应被 `try/catch` 兜住——因为调用方逻辑已错。
+- **可恢复错误（非数字）**：这是合法输入空间的"业务错误"，调用方可能想重试/提示用户，用**异常**传递，让上层决定恢复策略。
+
+混用的害处：若把"空串"也抛异常，正常代码就得到处 `try/catch` 本不该发生的 bug，掩盖缺陷；若把"非数字"也 `assert`，用户输入错误会直接崩溃而非优雅处理。
+
+[标准] 契约（terminate 类）用于"绝不该发生"的不变量；异常用于"可能发生且调用方应处理"的可恢复条件。
 
 </details>
 
+### 练习 3（难度 ★★★★）
+
+契约能向优化器提供**额外不变量**，使其删除恒真/恒假分支。用 `[[unlikely]]` 写出一个带"输入恒非空"假设的快速路径，并说明 C++26 契约/`[[assume]]` 如何让编译器据此消除分支（语法用 ```text）。
+
+<details><summary>答案与解析</summary>
+
+**当下可编译版本（用 `[[unlikely]]` 提示热点）**：
+
+```cpp
+#include <cstddef>
+std::size_t first_nonzero(const int* p, std::size_t n) {
+    for (std::size_t i = 0; i < n; ++i) {
+        if (p[i] != 0) [[likely]]      // 绝大多数迭代命中的热路径
+            return i;
+    }
+    return n;                           // 罕见: 全零
+}
+```
+
+**C++26 契约/`assume` 等价（```text，方向性）**：当函数有 `pre (p != nullptr)` 契约，优化器可把"`p` 为空"的所有分支视为不可达并删除：
+
+```text
+std::size_t len(const int* p)
+    pre (p != nullptr);     // 优化器据此前置把 "if (!p) ..." 分支整体消除
+{
+    return (std::size_t)*p; // 假设 p 非空, 无需再判空
+}
+```
+
+要点：契约不仅是"运行时检查"，更是**给编译器的证明**——一旦 `pre (p != nullptr)` 被编译器采信，所有防御性 `if (!p)` 会被当作死代码删掉（等价于 `[[assume(p != nullptr)]`）。这在 `-O2` 高频路径上能去掉冗余判空，但**必须保证不变量真实成立**，否则 `assume` 会让 UB 静默蔓延。
+
+[标准] 契约与 `[[assume]]` 是"程序员向优化器担保的不变式"，区别于 `assert`（仅运行期检查）；担保错误会转化为未定义行为，务必谨慎。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：安全关键系统 → 契约而非异常
+
+**选型场景。** 嵌入式心跳监测：读到传感器值 `v[i]` 前必须先确认 `i < N`（数组边界）。
+
+**常见错误。** 用异常表示"传感器越界"——但本固件以 `-fno-exceptions` 构建（异常表占 Flash/ROM，且实时性不保证），且"越界"本质是**编程错误**而非可恢复输入，抛异常既不合适也不可用。
+
+**修复（落地）。** 用前置契约快速失败；release 下契约可保留为轻量边界检查（而非剔除），越界即终止进入安全状态：
+
+```cpp
+#include <cstddef>
+#include <cassert>
+int sample(const int* buf, std::size_t i, std::size_t n) {
+    assert(i < n);          // 前置: 越界=编程错误, 立即终止(可配为 release 保留)
+    return buf[i];
+}
+```
+
+C++26 等价（```text）：`int sample(const int* buf, size_t i, size_t n) pre (i < n);`
+
+**结论。** 安全关键/嵌入式场景：可恢复业务错误才用返回值/错误码；**不变式违反（越界、空指针、非法状态）用契约/断言 terminate**，且 `-fno-exceptions` 下契约比异常更可行。契约可在"开发期严格 / 发布期轻量保留"间配置，优于 `assert` 的"发布即消失"。
+
+### 演绎 2：性能热点 → 契约驱动去分支
+
+**选型场景。** 数学内核有个不变式 `x > 0`，每帧被调用百万次，当前每次进入都 `if (x <= 0) throw` 做运行时判空/判界。
+
+**常见错误。** 把"本不该发生"的非法输入用异常分支兜住，百万次/帧的判界带来可测开销，且异常路径拖累分支预测；更糟的是该检查在正确输入下**永远为真**，纯属冗余。
+
+**修复（落地）。** 用契约/`assume` 告诉优化器"此不变式成立"，删除冗余分支（C++26 语法见练习 3 ```text）：
+
+```cpp
+#include <cstddef>
+double inv(double x) {
+    // 假设 x>0 由调用方保证; 用 unlikely 提示异常极罕见
+    if (x <= 0) [[unlikely]] { return 0.0; }   // 契约成立时此分支可被优化器整体消除
+    return 1.0 / x;
+}
+```
+
+**结论。** 契约的价值一半在"检查"、一半在"证明"：当它把不变式交给优化器，冗余判空/判界会被当作死代码删除，热点路径变短。代价是**担保必须为真**——一旦谎报，删掉的分支本该拦截的非法输入会直接引发 UB。
+
+### 练习与演绎自检
+
+- 契约（pre/post/assert）是方向特性（C++26 P2900），本机 GCC 13.1 不可用，演示用 `assert`/`[[likely]]`/`[[unlikely]]` 可编译等价。
+- 前置违反 = 调用方 bug → terminate/fail-fast；可恢复业务错误 → 异常。
+- 契约给优化器的不变量（类 `assume`）能删分支，但谎报即 UB，须保证成立。

@@ -1007,57 +1007,189 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+用协程实现一个最小 `generator<int>`，写出 `iota(n)` 生成 `0..n-1` 并用 range-for 打印。要求复用 `std::coroutine_handle` 与 `suspend_always`，不依赖任何第三方库。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+最小生成器：promise 存当前值，`yield_value` 暂存并返回 `suspend_always`（每次产出后挂起），迭代器 `++` 时 `resume()` 恢复协程到下一 `co_yield`：
 
 ```cpp
+#include <coroutine>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct generator {
+    struct promise_type {
+        int current;
+        auto get_return_object() { return generator{this}; }
+        auto initial_suspend() { return std::suspend_always{}; }
+        auto final_suspend() noexcept { return std::suspend_always{}; }
+        void return_void() {}
+        auto yield_value(int v) { current = v; return std::suspend_always{}; }
+        void unhandled_exception() { std::terminate(); }
+    };
+    using handle = std::coroutine_handle<promise_type>;
+    handle h;
+    explicit generator(promise_type* p) : h(handle::from_promise(*p)) {}
+    ~generator() { if (h) h.destroy(); }
+    struct iterator {
+        handle h; bool done;
+        int operator*() const { return h.promise().current; }
+        iterator& operator++() { h.resume(); done = h.done(); return *this; }
+        bool operator!=(const iterator& o) const { return !done; }
+    };
+    iterator begin() { h.resume(); return {h, h.done()}; }
+    iterator end() { return {h, true}; }
+};
+generator iota(int n) {
+    for (int i = 0; i < n; ++i) co_yield i;
+}
+int main() {
+    for (int x : iota(5)) std::cout << x << ' ';   // 0 1 2 3 4
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 协程函数由编译器做 **coroutine transform**：把函数体拆成"协程帧（堆上）"+"状态机"，`co_yield`/`co_await` 是恢复点。`initial_suspend` 返回 `suspend_always` 让 `begin()` 时先 `resume()` 才产出首个值。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+`co_await` 表达式背后是 **awaitable 三段式协议**：`await_ready` / `await_suspend` / `await_resume`。写出 `awaitable_int` 类型，使 `co_await awaitable_int{42}` 在 `await_suspend` 中立即 `resume()` 并返回 `42`，并说明三段各自职责。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+三段职责：**`await_ready`**（是否可跳过挂起，直接取结果）、**`await_suspend`**（挂起后要做什么，可调度恢复或立即 resume）、**`await_resume`**（恢复后 `co_await` 表达式的返回值）。
 
 ```cpp
+#include <coroutine>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct awaitable_int {
+    int v;
+    bool await_ready() const noexcept { return false; }              // 需要挂起
+    void await_suspend(std::coroutine_handle<> h) const noexcept { h.resume(); } // 立即恢复
+    int await_resume() const noexcept { return v; }                   // 返回 42
+};
+struct task {
+    struct promise_type {
+        int val;
+        auto get_return_object() { return task{this}; }
+        auto initial_suspend() { return std::suspend_always{}; }
+        auto final_suspend() noexcept { return std::suspend_always{}; }
+        void return_value(int x) { val = x; }
+        void unhandled_exception() { std::terminate(); }
+    };
+    using handle = std::coroutine_handle<promise_type>;
+    handle h;
+    explicit task(promise_type* p) : h(handle::from_promise(*p)) {}
+    ~task() { if (h) h.destroy(); }
+    int get() { h.resume(); return h.promise().val; }
+};
+task use() {
+    int x = co_await awaitable_int{42};
+    co_return x + 1;
+}
+int main() { std::cout << use().get() << '\n'; }   // 43
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+`await_suspend` 收到协程句柄后立即 `resume()`，协程从挂起点继续算出 `co_return x+1`，`await_resume` 的 `42` 成为 `co_await` 的值。
+
+[标准] `await_suspend` 的返回类型可为 `void`/`bool`/协程句柄；返回 `void` 时语义"挂起后由调用方决定何时 resume"，这里直接 resume 形成同步链。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+为什么说"协程适合海量轻量任务，而线程不适合"？用 `iota(100000)` 演示一个生成器在**单个线程/单个栈**上顺序产出 10 万个值并求和，并对比"若用 10 万个 `std::thread` 会怎样"。
 
 <details><summary>答案与解析</summary>
 
+协程帧分配在**堆上**，每个挂起点只是一次普通函数调用（`resume`），没有内核态线程切换。下面 `iota(100000)` 全程只占一个 OS 线程、一个 C 栈：
+
 ```cpp
+#include <coroutine>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct generator {
+    struct promise_type {
+        long long current;
+        auto get_return_object() { return generator{this}; }
+        auto initial_suspend() { return std::suspend_always{}; }
+        auto final_suspend() noexcept { return std::suspend_always{}; }
+        void return_void() {}
+        auto yield_value(long long v) { current = v; return std::suspend_always{}; }
+        void unhandled_exception() { std::terminate(); }
+    };
+    using handle = std::coroutine_handle<promise_type>;
+    handle h;
+    explicit generator(promise_type* p) : h(handle::from_promise(*p)) {}
+    ~generator() { if (h) h.destroy(); }
+    struct iterator {
+        handle h; bool done;
+        long long operator*() const { return h.promise().current; }
+        iterator& operator++() { h.resume(); done = h.done(); return *this; }
+        bool operator!=(const iterator& o) const { return !done; }
+    };
+    iterator begin() { h.resume(); return {h, h.done()}; }
+    iterator end() { return {h, true}; }
+};
+generator iota(int n) { for (long long i = 0; i < n; ++i) co_yield i; }
+int main() {
+    long long sum = 0;
+    for (long long x : iota(100000)) sum += x;   // 单线程单栈, O(1) 额外内存
+    std::cout << sum << '\n';                    // 4999950000
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+对比：若改用 10 万个 `std::thread`，每个线程默认栈 1–8 MB → 需 100–800 GB 内存，直接 OOM；且内核调度 10 万上下文切换的开销远超协程的 `resume()` 函数调用。
+
+[标准] 协程把"任务状态"存在堆帧，上下文切换是用户态函数调用；线程把状态存在内核栈，切换需内核介入。故"海量短任务"用协程（如异步 I/O、生成器、流水线），"真并行算量"才用线程。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：回调地狱 → 协程顺序化
+
+**选型场景。** 异步 HTTP 请求：读取响应 → JSON 解析 → 入库，三步都异步（返回 `future`/回调）。
+
+**常见错误。** 用嵌套回调把三步串起来：状态机分散在三个 lambda 里，错误/取消要贯穿三层，代码呈"向右漂移的金字塔"，极难维护与测试。
+
+**修复（落地，概念骨架）。** 用 `task<T>` 协程把异步步骤写成**顺序代码**，`co_await` 在编译期插入挂起/恢复点，读起来像同步：
+
+```text
+// 概念骨架: task<T> 承载异步结果, co_await 在挂起点让出, 恢复后继续
+// (真实 task<T> 需含 promise_type/三段式 awaitable, 见练习2; 此处仅表意)
+struct task { /* awaitable 封装 future/回调, 见练习2 三段式 */ };
+task<std::string> pipeline(const std::string& url) {
+    auto resp = co_await async_read(url);     // 异步读, 挂起等待
+    auto doc  = co_await async_parse(resp);   // 异步解析
+    co_await async_store(doc);                // 异步入库
+    co_return doc.id;
+}
+```
+
+**结论。** 协程把"状态机"交还给编译器生成，业务代码恢复为自上而下顺序，错误可用 `try/catch`（跨 `co_await` 仍有效），取消可借 `stop_token`。代价：每个协程有堆帧分配，超高频微任务需评估帧开销。
+
+### 演绎 2：一次性读全文件 → 惰性生成器
+
+**选型场景。** 逐行处理一个超大日志文件，统计满足条件的行数。
+
+**常见错误。** `std::vector<std::string> lines; while(getline) lines.push_back(...);` 一次性把全文件读进内存，大文件直接 OOM，且统计前就要付全部 I/O 与分配成本。
+
+**修复（落地）。** 用生成器**逐行产出**，内存占用 O(1)（同一行缓冲复用），边产边统计：
+
+```text
+// 概念骨架: 逐行 yield, 不持有全部行
+// (真实 line_gen 需含 promise_type 与 yield_value, 见练习1; 此处仅表意)
+struct line_gen { /* 同练习1 的 generator<std::string> 框架 */ };
+line_gen read_lines(std::istringstream& in) {
+    std::string line;
+    while (std::getline(in, line)) co_yield line;   // 每次只持有一行
+}
+```
+
+**结论。** 生成器是"惰性序列"的通用抽象：把"数据源"与"消费逻辑"解耦，内存恒定、可组合（再套 `filter`/`transform`）。与 Ranges（ch119）天然互补——协程产序列，ranges 加工序列。
+
+### 练习与演绎自检
+
+- 协程帧在堆上，上下文切换是用户态函数调用；线程切换需内核介入——海量轻任务用协程。
+- `co_yield`/`co_await`/`co_return` 是恢复点，由编译器做 coroutine transform 生成状态机。
+- 协程 ≠ 并行：单线程上 N 个协程仍是并发非并行；要真并行需配合线程/执行器。

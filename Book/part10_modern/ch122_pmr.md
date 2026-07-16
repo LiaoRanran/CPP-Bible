@@ -1131,57 +1131,151 @@ pmr_push():
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 `std::pmr::vector<int>` + `std::pmr::monotonic_buffer_resource` 在一个**栈上缓冲区**里 `push_back` 100 个元素，对比默认 `std::vector<int>`（每次 `push_back` 触发堆分配）。说明 pmr 如何把"每次 `push_back` 的 `operator new`"换成"缓冲区指针推进"。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
+#include <memory_resource>
+#include <vector>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main() {
+    char buf[1024];
+    std::pmr::monotonic_buffer_resource res(std::data(buf), std::size(buf));
+    std::pmr::vector<int> v(&res);          // vector 从 res 这个 arena 分配
+    for (int i = 0; i < 100; ++i) v.push_back(i);
+    std::cout << v.size() << '\n';          // 100, 全程零次 operator new
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+`monotonic_buffer_resource` 是"只增不减"的线性 arena：内部维护一个"当前指针"，分配时只把指针前推（O(1)，无锁、无系统调用）；`v` 的所有 `push_back` 扩容都在这 1KB 栈缓冲里"指针推进"完成，**没有一次 `operator new`**。`std::pmr::vector<int>` 用 `polymorphic_allocator<int>`，其构造接收 `memory_resource*`（这里是 `&res`）。
+
+对比默认 `std::vector<int>`：前几次 `push_back` 容量 0→1→2→4→8… 每次扩容都 `operator new` + `memcpy` + `operator delete`，且这些分配来自全局堆、带锁竞争。
+
+[标准] `polymorphic_allocator` 是"类型擦除的分配器"，持有 `memory_resource*`；`monotonic_buffer_resource` 是资源的一种，语义"单调、不释放单块、整体一次性回收"。
 
 </details>
 
+### 练习 2（难度 ★★★）
+
+写一段代码：在一个 `monotonic_buffer_resource` arena 上构造多个临时 `pmr::vector`/`pmr::string`，函数返回前**整个 arena 一次性释放**（零次单个 `delete`）。解释 arena 为何能消除分配碎片与释放开销。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <memory_resource>
+#include <vector>
+#include <string>
+#include <iostream>
+void handle_request() {
+    char buf[4096];
+    std::pmr::monotonic_buffer_resource arena(std::data(buf), std::size(buf));
+    std::pmr::vector<std::pmr::string> logs(&arena);   // 日志容器在 arena 上
+    logs.emplace_back("start");
+    logs.emplace_back("process");
+    logs.emplace_back("done");
+    std::cout << logs.size() << '\n';
+    // 函数返回: arena 析构, 一次性回收 buf 内所有分配, 零次 delete
+}
+int main() { handle_request(); }
+```
+
+arena 的"整体回收"是关键：它不追踪每块单独释放，只在 `monotonic_buffer_resource` 析构时把整段缓冲标记为空。于是对"同一作用域内成批创建、一起销毁"的临时对象（如一次请求处理的几十个容器/字符串）：
+
+- **零碎片**：所有分配在连续缓冲内推进，没有堆块的零散空隙。
+- **零释放开销**：N 个对象只需 1 次 arena 析构，而非 N 次 `delete`/`free`。
+- **无锁**：arena 分配不走全局堆，避免多线程 `operator new` 的锁竞争。
+
+[标准] 这正是"请求级 Arena"模式（网络服务器每请求一个 arena，请求结束整体释放），代价是 arena 内的单个对象**不能提前单独释放**（单调资源不回收中间块）。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+解释 `polymorphic_allocator` 如何**沿容器元素递归传播**：写一个 `pmr::vector<pmr::string>`，使所有 `string` 元素与外层 `vector` 共用同一个 arena；对比默认 `std::vector<std::string>`，后者每个 `string` 各自向全局堆 `operator new`。
+
+<details><summary>答案与解析</summary>
+
+`polymorphic_allocator` 在构造嵌套元素时会把**自身的 `memory_resource*` 传给元素**，所以 `pmr::vector<pmr::string>` 的 `string` 元素自动用同一个 arena——这就是"分配器传播"：
+
+```cpp
+#include <memory_resource>
+#include <vector>
+#include <string>
+#include <iostream>
+int main() {
+    char buf[4096];
+    std::pmr::monotonic_buffer_resource arena(std::data(buf), std::size(buf));
+    std::pmr::polymorphic_allocator<int> pa(&arena);
+    std::pmr::vector<std::pmr::string> vs(pa);   // 命名 allocator 变量, 避免 most-vexing-parse
+    vs.emplace_back("hello");                     // 该 string 也在 arena 上
+    vs.emplace_back("world");
+    for (auto& s : vs) std::cout << s << ' ';     // hello world
+    // arena 析构时, vector 与其所有 string 一起被回收
+}
+```
+
+注意 `std::pmr::vector<std::pmr::string> vs(pa);` 先命名 `pa` 再传入——若写成 `vs(std::pmr::polymorphic_allocator<int>(&arena))` 会触发 **most-vexing-parse**（被解析为函数声明）。
+
+对比默认 `std::vector<std::string>`：外层 `vector` 扩容走全局堆，每个 `string` 的 `push_back`/`emplace` 也各自 `operator new`，N 个 string = N 次独立堆分配，且彼此碎片分散、带锁竞争。pmr 版本则全部落在同一块 arena，分配 O(1)、释放 O(1)、缓存更友好。
+
+[标准] `polymorphic_allocator` 的传播靠 `allocator_traits::construct` 在构造元素时把 `resource()` 透传；嵌套 STL 容器（vector/string/map…）的 `pmr` 别名都遵循此约定，形成"共享 arena 的对象森林"。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：每请求海量临时对象 → Arena
+
+**选型场景。** 网络服务器处理一个请求时，要建约 50 个临时容器/字符串（解析头、拼响应、记日志），请求结束全部丢弃。
+
+**常见错误。** 用默认分配器：`operator new`/`delete` 被调用成千上万次/请求，多线程下争抢全局堆锁，且短命小对象留下堆碎片；请求结束时还要逐个 `delete`。
+
+**修复（落地）。** 每请求建一个 `monotonic_buffer_resource` arena，所有临时结构放其上，请求末 arena 析构一次性回收：
+
+```cpp
+#include <memory_resource>
+#include <vector>
+#include <string>
+#include <iostream>
+void serve() {
+    char buf[8192];
+    std::pmr::monotonic_buffer_resource arena(std::data(buf), std::size(buf));
+    std::pmr::vector<std::pmr::string> logs(&arena);   // logs 及其 string 元素都落在 arena
+    logs.emplace_back("recv");
+    logs.emplace_back("resp");
+    std::cout << logs.size() << '\n';
+    // 请求结束: arena 析构, 全部回收, 零次 delete
+}
+int main() { serve(); }
+```
+
+**结论。** "批创建、一起销毁"的对象群是 arena 的最佳场景：分配 O(1) 无锁、释放 O(1) 无碎片、缓存局部性好。代价是 arena 内对象不能单独提前释放——若需复用中间块，应改 `unsynchronized_pool_resource`。
+
+### 演绎 2：高频小对象 → 池资源
+
+**选型场景。** 词法分析/协议解析产生海量短命小对象（token、节点），生命周期短、尺寸相近。
+
+**常见错误。** 每 token `new`+`delete`：小对象频繁分配触发全局堆锁与缓存行抖动，且相似尺寸的对象反复向堆申请/归还，碎片明显。
+
+**修复（落地）。** 用 `unsynchronized_pool_resource`（线程内池，按尺寸分桶复用）或 `monotonic_buffer_resource`（若同批同生命周期）：
+
+```cpp
+#include <memory_resource>
+#include <vector>
+int main() {
+    std::pmr::unsynchronized_pool_resource pool;   // 按尺寸分桶, 释放后块回到池可复用
+    std::pmr::vector<int> a(&pool), b(&pool);      // a/b 从不同尺寸桶取块, 不回全局堆
+    for (int i = 0; i < 1000; ++i) { a.push_back(i); b.push_back(i * 2); }
+    // pool 析构时统一回收所有桶
+}
+```
+
+**结论。** 池资源把"向全局堆要小块"变成"从线程内预分配桶取/还"，消除锁竞争与碎片；`unsynchronized_pool_resource` 用于单线程热路径，`synchronized_pool_resource` 用于多线程（内部加锁但仍是池化）。选型口诀：**同生共死用 monotonic，反复创建销毁用 pool**。
+
+### 练习与演绎自检
+
+- pmr 把"每次 `operator new`"变成"arena 指针推进"，分配 O(1)、无锁、无碎片。
+- `polymorphic_allocator` 沿嵌套容器递归传播 `memory_resource*`，形成共享 arena 的对象森林。
+- 选型：批创建同销毁 → `monotonic_buffer_resource`；高频小对象反复分配 → `unsynchronized_pool_resource` / `synchronized_pool_resource`。
+- 单块不能提前释放是 arena 的固有取舍；需复用中间块要换池资源。
