@@ -4,8 +4,8 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
   "last_updated": "2026-07-16",
-  "last_commit": "92b984a4653b0f3b2cbb9557aaa282fd531c2bcf",
-  "git_status": "in sync with origin/master after push (Phase APP batch8: 算法簇 5章 ch95/97/98/99/100 习题重写+用法演绎; 通用模板习题替换为章主题对齐难度阶梯; 每章追加用法演绎附录; HEAD be7509b44b3ae6da1ba319e3f051d9da50e053c5)",
+  "last_commit": "645bd7045676dfbe82b60d24be7a0c14e7e0d5e4",
+  "git_status": "local committed, pushing",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -493,6 +493,23 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "习题重写+用法演绎覆盖 part03_language 5章: ch24_enum/ch26_lambda/ch29_friend/ch30_volatile/ch32_initialization。通用模板习题替换为章主题对齐难度阶梯(★★/★★★/★★★★); 每章追加「附录:用法演绎(从选型到落地)」2 walkthrough。双门禁: CI 模拟(无PRELUDE main-only) 0 新增回归; 独立全链接校验(不裹命名空间, 无PRELUDE, include-hoist, 真全链接) 19 注入块 FAILS:0 (GCC13.1 -O2 -Wall -Wextra, 语言章无需 -pthread/-latomic; 不含 main 块用 -c 仅编译)。一致性 147章 ERROR=0 WARN=0=100/100 零回归。preserve 模式: ch24 保留尾随『## 附录:enum class 真机汇编实证』、ch32 保留『## 附录:std::initializer_list 真机汇编实证』(原书既有 ASM 实证, 独立校验器按 真机汇编实证 尾精确截断仅校验注入区)。修复: ch24 演绎2 补 operator& 定义使 has() 自包含; ch26 演绎2 错误示范令 Node 继承 enable_shared_from_this 使 shared_from_this 合法;standalone TAIL_RE 由 ^## 附录 收紧为 ^## 附录:.*真机汇编实证 避免误截断注入区。asm 实证 53例不变。HEAD 92b984a4653b0f3b2cbb9557aaa282fd531c2bcf。"
+    },
+    "APP13": {
+      "status": "completed",
+      "chapters": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "label": "part02_toolchain 8章 习题重写+用法演绎",
+      "double_gate": "standalone 36块0fail + CI模拟0回归(8既有豁免)",
+      "consistency": "147章 ERROR=0 WARN=0",
+      "mode": "简单替换(习题锚点→EOF, 工业附录在锚点前已保留)"
     }
   },
   "execution_order": [
@@ -564,7 +581,8 @@
     "APP9",
     "APP10",
     "APP11",
-    "APP12"
+    "APP12",
+    "APP13"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
@@ -582,10 +600,11 @@
     "application_layer_app7_chapters": "5/147 (ch19/22/23/25/28)",
     "application_layer_app8_chapters": "5/147 (ch95/97/98/99/100)",
     "application_layer_app9_chapters": "5/147 (ch118/119/120/121/122)",
-    "application_layer_total_chapters": "70/147 (app1-12: 70 章, 批次数累加; 唯一覆盖 67 章)",
+    "application_layer_total_chapters": "78/147 (app1-13: 78 章, 批次数累加; 唯一覆盖 75 章)",
     "application_layer_app10_chapters": "6/147 (ch107/108/109/111/112/113)",
     "application_layer_app11_chapters": "5/147 (ch45/46/48/49/52)",
-    "application_layer_app12_chapters": "5/147 (ch24/26/29/30/32)"
+    "application_layer_app12_chapters": "5/147 (ch24/26/29/30/32)",
+    "application_layer_app13_chapters": "8/147 (ch11/12/13/14/15/16/17/18)"
   },
-  "ci_status": "Pushed Phase APP batch12 (HEAD 92b984a4653b0f3b2cbb9557aaa282fd531c2bcf); application_layer enhanced 70/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68 + app5 ch61/69/70/71/72 + app6 ch35/36/37/38/40 + app7 ch19/22/23/25/28 + app8 ch95/97/98/99/100 + app9 ch118/119/120/121/122 + app10 ch107/108/109/111/112/113 + app11 ch45/46/48/49/52 + app12 ch24/26/29/30/32); consistency 100/100; asm examples 53 unchanged; 双门禁: CI 模拟(无PRELUDE main-only) 0 回归 + 独立全链接 19块0失败(不裹命名空间, 无PRELUDE)"
+  "ci_status": "Pushed Phase APP batch13 (HEAD 645bd7045676dfbe82b60d24be7a0c14e7e0d5e4); application_layer enhanced 78/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62-68 + app5 ch61/69-72 + app6 ch35-38/40 + app7 ch19/22/23/25/28 + app8 ch95/97-100 + app9 ch118-122 + app10 ch107-109/111-113 + app11 ch45/46/48/49/52 + app12 ch24/26/29/30/32 + app13 ch11-18); consistency 100/100; 双门禁: 独立全链接 36块0fail + CI模拟0回归(8既有豁免)"
 }

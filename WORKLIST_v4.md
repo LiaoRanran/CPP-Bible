@@ -404,8 +404,23 @@
 
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归；独立全链接校验（不裹命名空间，无 PRELUDE，include-hoist，真全链接）39 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（语言章无需 -pthread/-latomic；不含 main 块用 -c 仅编译）。APP-A/APP-C 累计覆盖 70/147 章（批次数累加；唯一覆盖 67 章）。ch24/ch32 采用 preserve 模式保留尾随「## 附录：…真机汇编实证」（enum class / initializer_list 真实汇编），独立校验器按 `真机汇编实证` 尾精确截断仅校验注入区。修复：ch24 演绎2 补 operator& 定义使 has() 自包含；ch26 演绎2 错误示范令 Node 继承 enable_shared_from_this 使 shared_from_this 合法；standalone TAIL_RE 由 `^## 附录` 收紧为 `^## 附录：.*真机汇编实证` 避免误截断注入区。
 
+**Batch APP13（已完成，2026-07-16）**：part02_toolchain 8 章全覆盖 APP-A + APP-C（习题重写 + 用法演绎附录）
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP13 | ch11 编译器全景 | 习题：名字改编/重载 / extern "C" 跨语言 / 四阶段预处理演示；演绎：c++filt 还原 mangled 符号 + extern "C" 封装 C 库 |
+| APP13 | ch12 构建系统 | 习题：target-based CMake / -MMD 依赖图 / 静态库命令；演绎：全局变量污染→target-based + PCH/Unity 加速 |
+| APP13 | ch13 包管理 | 习题：vcpkg manifest / Conan recipe+生成器 / 版本冲突求解；演绎：manifest 可复现 + Conan 二进制缓存 |
+| APP13 | ch14 调试 | 习题：ASan 堆越界 / UBSan 有符号溢出 / -g 与 assert；演绎：ASan 定位堆破坏 + TSan 抓数据竞争（命令示意） |
+| APP13 | ch15 性能分析 | 习题：vector reserve 微基准 / 多累加器向量化 / 行优先 cache 友好；演绎：perf 定位热点 + Godbolt 比对汇编 |
+| APP13 | ch16 IDE | 习题：clang-tidy 值参告警 / compile_commands.json / 提取函数重构；演绎：.clang-format 统一风格 + LSP 编译数据库 |
+| APP13 | ch17 交叉编译 | 习题：目标三元组探测 / #pragma pack 对齐 / CMake toolchain；演绎：QEMU 用户态冒烟 + sysroot 隔离 |
+| APP13 | ch18 构建配置 | 习题：NDEBUG/assert / LTO 跨 TU 内联 / PGO 两阶段；演绎：_GLIBCXX_ASSERTIONS 抓越界 + PGO 接 CI 性能门禁 |
+
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归（8 处既有正文 MULTI_FILE/MODULE/GUARDED_COMPILE 豁免）；独立全链接校验（不裹命名空间，无 PRELUDE，include-hoist，真全链接）36 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（工具链章无需 -pthread/-latomic）。APP-A/APP-C 累计覆盖 78/147 章（批次数累加；唯一覆盖 75 章）。8 章既有工业附录均位于习题锚点之前，简单替换（锚点→EOF）天然保留，无 preserve 截断需求。修复：ch11 演绎2 为 old_init 补同 TU 定义使链接自包含；ch17 练习2 修正 offsetof(Packed, int)→offsetof(Packed, i)（int 为关键字不可作成员指示符）。所有 ```cpp 注入块自包含可编译且显式写全 `#include`。
+
 **后续批次（规划中）**
-- **APP13+**：滚动覆盖剩余章节（part11_lowlevel / part12_network / part13_dsa / part14_perf 等剩余章），直至 147 章习题全部主题对齐。
+- **APP14+**：滚动覆盖剩余章节（part01_history / part07_stl / part08 / part09 余 / part10 余 / part11_source / part12_patterns / part13_engineering / part14_perf / part15_cases / part16_reading），直至 147 章习题全部主题对齐。
 
 ## 不纳入项（P2-，已评估）
 
@@ -449,7 +464,8 @@
 | APP10 | Phase APP 应用层增强第十批（part09_concurrency 6 章习题重写+用法演绎） | 6 | 6 | 100% |
 | APP11 | Phase APP 应用层增强第十一批（part05_oo 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP12 | Phase APP 应用层增强第十二批（part03_language 5 章习题重写+用法演绎） | 5 | 5 | 100% |
-| **合计** | | **137** | **137** | **100%** |
+| APP13 | Phase APP 应用层增强第十三批（part02_toolchain 8 章习题重写+用法演绎） | 8 | 8 | 100% |
+| **合计** | | **145** | **145** | **100%** |
 
 ---
 
