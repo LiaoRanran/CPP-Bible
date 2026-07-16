@@ -1516,57 +1516,110 @@ void clear_status() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+写一个程序，验证「函数内 `static` 局部变量」在多次调用间保持状态，但其初始化只发生一次；并用 `static_assert` 证明 `static` 对象具有静态存储期（地址在程序生命周期内恒定）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cstdint>
+int& counter() {
+    static int c = 0;          // 仅首次调用时初始化
+    return c;
+}
+int main() {
+    counter() = 10;
+    counter()++;               // 第二次调用看到上一次的值
+    std::cout << counter() << "\n";   // 11
+    static_assert(sizeof(&counter()) == sizeof(void*), "static 对象在静态区");
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 具有静态存储期的变量在 `main` 之前完成初始化（常量初始化或零初始化），其存储不在栈上，故跨调用保持。
 
 </details>
+
+### 练习 2（难度 ★★★）
+
+头文件 `cfg.h` 中需要定义一个被多个翻译单元共享、且只有一份定义的配置对象。给出两种正确写法（C++17 `inline` 变量 / 匿名命名空间），并指出哪一种能真正避免 ODR 多定义链接错误。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+// cfg.h  (被多个 .cpp 包含)
+inline int g_timeout_ms = 3000;          // C++17: inline 变量, 多 TU 合并为一份
+
+namespace {
+    int detail_log_level = 2;            // 匿名命名空间: 每 TU 各一份(内部链接)
+}
+```
+
+[标准] `inline` 变量（C++17 P0607）允许多个翻译单元出现同一实体的定义，链接器合并为单一实例，根治 ODR 多定义；匿名命名空间提供的是**内部链接**（每 TU 独立副本），适合"不希望跨 TU 共享"的常量，但若目标是"全局唯一共享对象"应优先用 `inline`。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+静态初始化顺序灾难（SOIF）：两个不同翻译单元的静态对象 `A` 依赖 `B`，但 `B` 可能先于 `A` 初始化而读到未初始化值。用 Meyers 单例（`constinit` 之外的最常用修复）写出线程安全、无 SOIF 的访问函数。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+struct Database { int open() const { return 1; } };
+Database& get_db() {            // Meyers 单例: 局部 static 延迟到首次使用
+    static Database db;         // 由 __cxa_guard 保证线程安全的一次初始化
+    return db;
+}
+int main() { std::cout << get_db().open() << "\n"; }
+```
+
+[标准] 函数内的 `static` 局部变量初始化受编译器生成的 guard（GCC 为 `__cxa_guard_*`）保护，保证即使多线程首次并发调用也只构造一次，从而彻底规避跨 TU 的静态初始化顺序问题。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：跨翻译单元共享配置——选 `inline` 变量还是单例？
+
+**场景**：你要把一个全局超时阈值暴露给 6 个 `.cpp`，要求全程序只有一份、可被运行期修改。
+
+**常见错误（朴素写法）**：
+```text
+// cfg.h
+int g_timeout_ms = 3000;   // 被 6 个 .cpp 包含 -> 6 份定义 -> 链接报 multiple definition
+```
+
+**修复**：
+```cpp
+// cfg.h
+inline int g_timeout_ms = 3000;   // C++17: 多 TU 合并为一份, 链接零错误
+// 使用方直接 #include "cfg.h" 后读写 g_timeout_ms 即可
+```
+
+**结论**：跨 TU 共享且需"唯一实例"的全局状态，首选 C++17 `inline` 变量（头文件内定义即 OK）；匿名命名空间只适合"每 TU 私有"的常量，不能充当共享单例。
+
+### 演绎 2：全局服务的初始化顺序——用 Meyers 单例兜底 SOIF
+
+**场景**：日志器 `Logger` 在 `net.cpp` 定义，`Config` 在 `config.cpp` 定义，二者都可能先于对方构造；任何"静态对象构造时访问对方"都踩 SOIF。
+
+**常见错误（朴素写法）**：
+```text
+// config.cpp
+Config g_config;            // 静态对象
+// net.cpp
+Logger g_logger(g_config);  // 若 g_config 尚未初始化 -> 读到垃圾
+```
+
+**修复**：
+```cpp
+#include <iostream>
+struct Config { int timeout() const { return 3000; } };
+struct Logger { explicit Logger(const Config&){} };
+Config&  get_config() { static Config  c; return c; }
+Logger&  get_logger() { static Logger l(get_config()); return l; }  // 首次使用才构造, 顺序自然正确
+int main() { (void)get_logger(); std::cout << "ok\n"; }
+```
+
+**结论**：任何"跨 TU 静态对象互相依赖"的场景，把依赖改为"函数内 `static` 局部 + 访问函数"即可把初始化推迟到首次使用，顺序由调用关系决定，SOIF 彻底消失。
 

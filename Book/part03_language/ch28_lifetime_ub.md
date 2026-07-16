@@ -1385,61 +1385,127 @@ int main(){int*p=new int(42);delete p;std::cout<<"use-after-free=UB; ASan detect
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+写出"返回局部变量的引用"和"返回局部变量的指针"两个函数，用 `static_assert`/注释说明两者都产生悬垂（dangling）；并给出正确的修正（返回值或返回静态/成员存储的对象）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+const int& bad_ref() { const int x = 5; return x; }   // x 在返回时已亡 -> 悬垂引用 (UB)
+int*      bad_ptr() { int y = 6; return &y; }          // y 已亡 -> 悬垂指针 (UB)
+int       good_val() { int z = 7; return z; }          // 返回值: 拷贝出函数, 安全
+int main() {
+    int v = good_val();
+    std::cout << v << "\n";                            // 7, 安全
+    // std::cout << bad_ref();   // 悬垂引用, 读取即 UB
+    // int* p = bad_ptr();       // 悬垂指针
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 自动存储期对象在其声明所在的块结束时销毁；返回其引用/指针得到指向已释放存储的悬垂实体，任何使用都是未定义行为。返回值是拷贝，安全。
 
 </details>
 
+### 练习 2（难度 ★★★）
 
----
+临时对象生命周期延长规则有一个著名例外：`std::string_view` 绑定到临时 `std::string` 时，**不会**延长临时生命，导致视图悬垂。构造最小复现并指出为什么 `const T&` 能延长而 `string_view` 不能。
 
-> **UB 实证库**：释放后使用 / 双重释放 / 栈对象越界使用等生命周期 UB 的**真实代码 + 编译器警告 + 运行时表现 + 修复**，见 [附录 UB 反例库](../../Appendix/ub/README.md)（UB-01/02/03）。
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <string>
+#include <string_view>
+int main() {
+    // const std::string& r = std::string("x");   // 引用绑定 -> 临时延长到 r 的作用域 (安全)
+    // std::string_view sv = std::string("y");    // sv 只存指针+长度, 临时 string 立刻消亡 -> 悬垂
+    // std::cout << sv;                            // UB: 访问已释放的缓冲区
+    std::string s = "y";
+    std::string_view sv(s);                        // 正确: 视图绑定到具名对象 s
+    std::cout << sv << "\n";                       // 安全
+}
+```
+
+[标准] 生命周期延长只对"引用（`const T&`/`T&`/`auto&&`）直接绑定纯右值"生效；`std::string_view` 是**值类型**（内部只持有指针+长度），它拷贝的是指针，并不持有或延长原对象，故临时 `std::string` 立即析构，视图悬垂。让 `string_view` 绑定具名变量即可。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+`std::launder` 用于"对象在原有存储被重新构造后取回指针"的场景（placement new 重建）。写一个在已分配存储上反复重建 `T` 并用 `std::launder` 取回新对象指针的最小程序，说明为什么没有 `launder` 优化器可能用到旧类型信息。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <new>
+struct T { int v = 0; };
+int main() {
+    alignas(T) char buf[sizeof(T)];
+    T* p = new (buf) T();          // 在 buf 上构造第一个 T
+    p->v = 10;
+    p->~T();
+    T* q = new (buf) T();          // 同一存储重建第二个 T (原对象已亡)
+    q->v = 20;
+    T* r = std::launder(q);        // 取回指向新对象(同地址但新"动态类型")的指针
+    std::cout << r->v << "\n";     // 20
+}
+```
+
+[标准] 在同一存储上销毁旧对象、构造新对象后，原指针的"动态类型"信息已陈旧；`std::launder` 告诉优化器"此地址上的对象类型可能变了"，强制按新对象重新取指。省略 `launder` 时，编译器可能基于旧类型假设做非法优化（UB）。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：函数返回大对象——优先返回值而非 `const T&`
+
+**场景**：一个 `load_config()` 需要把读到的配置交回调用方；新手常写成 `const Config& load_config()` 并 return 局部变量，触发悬垂引用。
+
+**常见错误（朴素写法）**：
+```text
+const Config& load_config() {
+    Config c = parse("cfg.ini");   // 局部对象
+    return c;                       // 返回引用 -> c 已亡 -> 调用方拿到悬垂引用 (UB)
+}
+```
+
+**修复**：
+```cpp
+#include <iostream>
+#include <string>
+struct Config { std::string path; };
+Config load_config() {                   // 按值返回: NRVO/移动消除多余拷贝
+    Config c{"cfg.ini"};
+    return c;                            // 调用方拿到独立副本, 安全
+}
+int main() { Config c = load_config(); std::cout << c.path << "\n"; }
+```
+
+**结论**：返回局部对象应**按值返回**（现代编译器用 NRVO / 移动语义几乎零成本），切勿返回局部变量的引用或指针——那必然悬垂。需要共享同一实例时，返回指向 `static` 或堆（智能指针）对象的引用/指针。
+
+### 演绎 2：`string_view` 形参——绑定生命周期要可控
+
+**场景**：函数 `void log(std::string_view s)` 接收日志文本；调用方如果图省事直接传临时 `std::string`，视图会悬垂。
+
+**常见错误（朴素写法）**：
+```text
+void log(std::string_view s);
+log(std::string("temp msg"));   // 临时 string 在语句结束即析构, s 内部指针悬垂 (若 log 异步保存)
+```
+
+**修复**：
+```cpp
+#include <iostream>
+#include <string>
+#include <string_view>
+void log(std::string_view s) { std::cout << s << "\n"; }
+int main() {
+    std::string msg = "hello";          // 具名对象, 生命周期覆盖 log 的同步使用
+    log(msg);                            // 视图绑定具名 string, 安全
+    log("literal");                     // 字符串字面量有静态存储期, 同样安全
+}
+```
+
+**结论**：`std::string_view` 是零成本的只读视图，但它**不拥有**底层存储。把它作为函数形参时，确保传入的 `std::string` 在视图被使用的整个区间内都存活（具名变量或静态字面量）；禁止让视图持有临时 `std::string` 的缓冲区。
+

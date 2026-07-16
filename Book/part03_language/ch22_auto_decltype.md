@@ -1370,57 +1370,113 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+写出 `auto`、`const auto&`、`auto&&` 在 `for` 遍历 `std::vector<std::string>` 时各自的推导结果，并说明为什么"想避免拷贝且允许修改元素"应首选 `auto&`。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+#include <type_traits>
+int main() {
+    std::vector<std::string> v = {"a", "b"};
+    for (auto x : v)        static_assert(std::is_same_v<decltype(x), std::string>);  // 拷贝
+    for (auto& x : v)       static_assert(std::is_same_v<decltype(x), std::string&>); // 引用, 可改
+    for (const auto& x : v) static_assert(std::is_same_v<decltype(x), const std::string&>); // 只读
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `auto` 非引用推导产生副本；`auto&` 是元素的左值引用（可修改）；`const auto&` 是常量左值引用（只读、零拷贝）。遍历容器修改元素用 `auto&`。
 
 </details>
+
+### 练习 2（难度 ★★★）
+
+`decltype` 与 `decltype(auto)` 有何区别？写一个返回函数，使 `decltype(auto)` 精确保留表达式的值类别（返回全局变量的引用时仍是 `int&`，可被修改），并对比裸 `auto` 会按值剥掉引用。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+int g = 42;
+decltype(auto) get_ref() { return (g); }   // decltype((g)) = int& -> 返回引用
+auto          get_val() { return (g); }   // auto 按值 -> 返回 int
+int main() {
+    static_assert(std::is_same_v<decltype(get_ref()), int&>);   // 保留引用
+    static_assert(std::is_same_v<decltype(get_val()), int >);   // 被剥成值
+    get_ref() = 99;                      // 真的改到了全局 g
+    std::cout << g << "\n";              // 99
+}
+```
+
+[标准] 裸 `auto` 永远按值返回（丢弃引用性），`decltype(auto)` 用 `decltype` 的规则保留表达式的值类别——`decltype((x))` 对左值 `x` 给出 `T&`。注意三元运算符 `a ? b : c` 会把 `int&` 与 `int` 统一为右值 `int`，故"跟随引用"必须直接 `return (lvalue)` 而非经三元表达式。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+`auto` 在 `vector<bool>` 上有一个著名陷阱：`for (auto x : vb)` 拿到的是 `vector<bool>::reference` 的**代理对象拷贝**而非 `bool`，`auto&` 才能正确绑定。构造一个最小复现，并给出正确的遍历写法。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+int main() {
+    std::vector<bool> vb = {true, false};
+    // auto x 推导为 vector<bool>::reference (代理), 不是 bool —— 语义微妙但可编译
+    for (auto x : vb) std::cout << x << " ";          // 输出 1 0 (代理可转 bool)
+    std::cout << "\n";
+    // 取地址/绑定引用时必须用 auto& 或显式 bool, 否则拿到代理的悬垂引用
+    for (auto&& x : vb) std::cout << x << " ";        // auto&& 正确转发代理
+}
+```
+
+[标准] `vector<bool>` 是特化，按位压缩存储，其 `operator[]` 返回的是代理引用 `vector<bool>::reference`，不是真正的 `bool&`。需要真实 `bool` 值时用 `bool b = vb[i];` 或遍历用 `auto&&` 避免误用代理的生命周期。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：API 返回类型不确定时——用 `auto` 隐藏实现类型
+
+**场景**：你封装一个容器访问函数，返回类型随实现可能是 `std::vector<int>` 也可能是 `std::span<int>`，调用方不应被实现类型绑架。
+
+**常见错误（朴素写法）**：
+```text
+std::vector<int> get_data();   // 把实现类型钉死, 将来想换成 span 就要改所有调用方签名
+```
+
+**修复**：
+```cpp
+#include <vector>
+auto get_data() {                 // C++14 起函数可返回 auto, 类型由 return 推导
+    static std::vector<int> v = {1, 2, 3};
+    return v;                     // 返回类型 = std::vector<int>, 但调用方写 auto 即不受绑架
+}
+int main() { auto d = get_data(); (void)d; }
+```
+
+**结论**：当返回类型是实现细节、或将来可能变化时，让函数返回 `auto`（C++14）或 `auto&`/`decltype(auto)`（C++14/17），调用方用 `auto` 接收，实现类型演进不破坏接口。
+
+### 演绎 2：转发函数的返回类型——`decltype(auto)` 保真
+
+**场景**：写一个泛型 Getter 包装，必须原样保留底层成员的引用性（成员是 `int&` 就返回 `int&`，是 `int` 就返回值），裸 `auto` 会丢引用。
+
+**常见错误（朴素写法）**：
+```text
+template <class T> auto get(T& o) { return o.m; }   // 若 o.m 是 int& 也会被剥成 int 值拷贝
+```
+
+**修复**：
+```cpp
+#include <iostream>
+struct S { int m = 5; };
+template <class T> decltype(auto) get(T& o) { return (o.m); }  // decltype((o.m)) -> int&
+int main() {
+    S s; int& r = get(s); r = 9; std::cout << s.m << "\n";   // 9: 确实改到了 s.m
+}
+```
+
+**结论**：需要"返回类型精确等于某表达式的值类别"时，唯一正确工具是 `decltype(auto)`；裸 `auto` 永远按值，会无声地剥掉引用语义。
 

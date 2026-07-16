@@ -1841,57 +1841,131 @@ int main(){std::variant<int,double> v;std::cout<<sizeof(v)<<std::endl;v=3.14;std
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 `std::variant<int, double, std::string>` 存一个值，分别用 `std::holds_alternative` 和 `std::get_if` 安全读取；指出直接 `std::get<int>(v)` 在类型不匹配时会抛什么异常。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <variant>
+#include <string>
+int main() {
+    std::variant<int, double, std::string> v = 42;
+    if (std::holds_alternative<int>(v))
+        std::cout << "int=" << std::get<int>(v) << "\n";
+    if (auto* p = std::get_if<double>(&v))            // 不抛, 返回 nullptr 表示类型不符
+        std::cout << "double=" << *p << "\n";
+    try { std::get<double>(v); }                       // 当前是 int -> 抛 std::bad_variant_access
+    catch (const std::bad_variant_access&) { std::cout << "bad get\n"; }
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `std::get<T>(v)` 在 `T` 不是当前活跃类型时抛 `std::bad_variant_access`；`get_if` 返回指针，类型不符得 `nullptr`，是免异常的访问方式。
 
 </details>
+
+### 练习 2（难度 ★★★）
+
+用 `std::visit` + `std::overload` 技巧（聚合多个 lambda 成一个 visitor）遍历一个 `variant<int, double, std::string>`，对每种类型输出不同文案。说明 `std::visit` 的派发是 O(1) 还是 O(n)。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <variant>
+#include <string>
+template <class... Ts> struct overload : Ts... { using Ts::operator()...; };
+int main() {
+    std::variant<int, double, std::string> v = std::string("hi");
+    std::visit(overload{
+        [](int)         { std::cout << "int\n"; },
+        [](double)      { std::cout << "double\n"; },
+        [](const std::string& s) { std::cout << "str=" << s << "\n"; },
+    }, v);
+}
+```
+
+[标准] `std::visit` 按 `index()` 经内部函数指针表（`_Multi_array`/`__gen_vtable`）一次查表分派，复杂度为 **O(1)**，等价于手写 `switch`，远快于虚函数链。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+`valueless_by_exception`：当 variant 在执行一次会抛异常的赋值/emplace 中途失败时，可能进入"无值"状态。构造一个场景使 `v.valueless_by_exception()` 为 `true`，并说明为什么"平凡可复制且尺寸≤某阈值"的 alternative 永不进入该态。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <variant>
+#include <string>
+#include <vector>
+struct ThrowsOnCopy {
+    ThrowsOnCopy() = default;
+    ThrowsOnCopy(const ThrowsOnCopy&) { throw 1; }   // 拷贝构造抛异常
+};
+int main() {
+    // 当前为大的、非平凡可复制类型, 半途失败 -> variant 变 valueless
+    std::variant<std::vector<int>, ThrowsOnCopy> v = std::vector<int>(100);
+    try { v = ThrowsOnCopy{}; }                       // 目标类型拷贝抛 -> 半途失败
+    catch (...) {}
+    std::cout << "valueless=" << v.valueless_by_exception() << "\n";  // 可能 1
+}
+```
+
+[标准] variant 只对"所有 alternative 都是**平凡可复制**且尺寸不超过某实现阈值"的情况提供 **never-empty** 保证；若涉及非平凡类型且在赋值/转换构造的中途抛异常，variant 会落为 `valueless_by_exception()`（既不持有任何 alternative）。访问 valueless 的 variant 仍会抛 `bad_variant_access`。因此涉及外部资源、异常敏感路径时，优先用确定性状态（如 `std::monostate` 作为首个可默认构造的 alternative）。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：替代"union + 手写 tag"——用 `std::variant` 消灭活跃成员 UB
+
+**场景**：一个 tokenizer 需要表示"整数 / 标识符 / 运算符"三种 token，旧代码用 C 风格 union 配 enum 手工记录活跃成员。
+
+**常见错误（朴素写法）**：
+```text
+union { int i; char* s; } u;     // 读非活跃成员 = UB; 还需额外 enum 记录当前类型
+enum { T_INT, T_STR } tag;
+// 忘了设 tag 或读错成员 -> 未定义行为
+```
+
+**修复**：
+```cpp
+#include <iostream>
+#include <variant>
+#include <string>
+struct Token {
+    std::variant<int, std::string, char> val;   // 类型即 tag, 编译期保证活跃成员唯一
+};
+int main() {
+    Token t{42};                                  // 活跃成员是 int, 无需手工 tag
+    if (auto* p = std::get_if<int>(&t.val)) std::cout << *p << "\n";
+}
+```
+
+**结论**：凡需要"同一存储在不同时刻持有不同类型"，优先 `std::variant` 而非 C 风格 `union`——它用类型系统编码活跃成员，杜绝"读非活跃成员"的 UB，并天然提供 `holds_alternative`/`get_if` 安全访问。
+
+### 演绎 2：需要"无值也可默认构造"——加 `std::monostate`
+
+**场景**：你要把 variant 放进一个要求"默认可构造"的容器（如 `std::map` 的 value 类型），但 variant 的第一个 alternative（`std::string`）没有便宜的默认状态。
+
+**常见错误（朴素写法）**：
+```text
+using Event = std::variant<std::string, int>;   // 默认构造会去构造 std::string, 未必符合语义且可能抛
+```
+
+**修复**：
+```cpp
+#include <iostream>
+#include <variant>
+#include <string>
+using Event = std::variant<std::monostate, std::string, int>;  // 首个 alternative 默认可构造
+int main() {
+    Event e;                               // 默认 -> std::monostate (空事件), 零成本
+    std::cout << "holds monostate=" << std::holds_alternative<std::monostate>(e) << "\n";
+}
+```
+
+**结论**：当 variant 需要一个"语义上的空/默认"状态且现有 alternative 都不适合默认构造时，把 `std::monostate` 作为**首个** alternative——它默认可构造且不占额外空间，使整个 variant 自然满足默认可构造约束。
 

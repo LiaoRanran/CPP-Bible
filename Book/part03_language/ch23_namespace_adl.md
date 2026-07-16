@@ -1183,57 +1183,129 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+解释参数依赖查找（ADL）：为什么 `operator<<(std::cout, my_type)` 在 `my_type` 定义于命名空间 `ns` 时，即使不写 `using namespace ns;` 也能通过 `std::cout << obj` 找到 `ns::operator<<`？给出最小复现。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+```cpp
+#include <iostream>
+namespace ns {
+    struct Widget {};
+    std::ostream& operator<<(std::ostream& os, const Widget&) { return os << "Widget"; }
+}
+int main() {
+    ns::Widget w;
+    std::cout << w << "\n";   // ADL: 实参 w 的类型在 ns 中 -> 自动把 ns 加入候选
+}
+```
+
+[标准] ADL 在计算函数名候选时，把"实参类型的关联命名空间"也纳入查找域，故无需 `using` 即可找到同命名空间内的 `operator<<`。
+
+</details>
+
+### 练习 2（难度 ★★★）
+
+`std::swap` 惯用法要求写 `using std::swap; swap(a, b);` 而非直接 `std::swap(a, b)`。说明原因，并为自定义类型提供一个高效（交换内部指针、不抛异常）的 `swap` 重载。
+
+<details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <string>
+struct Buffer {
+    std::string* p;
+    void swap(Buffer& o) noexcept { std::swap(p, o.p); }   // 仅交换指针, O(1) 不抛
+};
+void swap(Buffer& a, Buffer& b) noexcept { a.swap(b); }    // 自由函数 swap 重载
+int main() {
+    using std::swap;                  // 把 std::swap 引入, 但允许 ADL 找到上面的重载
+    Buffer x{new std::string("x")}, y{new std::string("y")};
+    swap(x, y);                        // ADL 选中 Buffer 的 O(1) swap
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `using std::swap;` 后调用无限定 `swap(a,b)`，编译器先用 ADL 找 `Buffer` 命名空间里的 `swap` 重载（高效、不抛），找不到才退回 `std::swap`。这是异常安全赋值（`copy-and-swap`）的基础。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+`inline namespace` 用于 ABI 版本控制：库可以在不破坏旧代码的前提下发布新版本。写出一个 `v1`/`v2` 共存的命名空间结构，使默认 `lib::connect()` 调用最新版，而老代码仍可显式选 `lib::v1::connect()`。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+namespace lib {
+    inline namespace v2 {            // inline: 名字默认"透出"到 lib::, 即 lib::connect == v2::connect
+        void connect() { std::cout << "v2 (new ABI)\n"; }
+    }
+    namespace v1 {                   // 非 inline: 旧版仍可显式访问
+        void connect() { std::cout << "v1 (old ABI)\n"; }
+    }
+}
+int main() {
+    lib::connect();                  // 默认 -> v2
+    lib::v1::connect();              // 老代码显式选 v1
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `inline namespace` 的成员可直接通过外层命名空间名访问（名字查找会进入 inline 命名空间），从而在不改调用方代码的情况下切换默认实现版本；旧版放在非 inline 命名空间保留兼容入口。libstdc++ 正是用 `__cxx11` 区分新旧 `std::string` ABI。
 
 </details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：自定义类型的流式输出——靠 ADL 让 `<<` 被发现
+
+**场景**：你在新命名空间 `geo` 里定义了 `Point`，希望用户能直接写 `std::cout << p`，而不必每次 `using`。
+
+**常见错误（朴素写法）**：
+```text
+namespace geo { struct Point { int x, y; }; }
+// 在全局写 std::cout << geo::Point{}; -> 找不到 operator<<, 编译失败
+```
+
+**修复**：
+```cpp
+#include <iostream>
+namespace geo {
+    struct Point { int x = 1, y = 2; };
+    std::ostream& operator<<(std::ostream& os, const Point& p) {
+        return os << "Point{" << p.x << "," << p.y << "}";
+    }
+}
+int main() { geo::Point p; std::cout << p << "\n"; }   // ADL 自动找 geo::operator<<
+```
+
+**结论**：把 `operator<<` 定义在类型所在的命名空间里，ADL 会在 `<<` 调用时自动把该命名空间加入查找域——这是库作者让自定义类型"自然可打印"的标准做法。
+
+### 演绎 2：交换语义的异常安全——`using std::swap` + 重载
+
+**场景**：你的 `Handle` 类内部持有堆资源，赋值运算符要做到"强异常安全"，必须先 `copy` 再 `swap`，而 `swap` 必须是 O(1) 且不抛。
+
+**常见错误（朴素写法）**：
+```text
+Handle& operator=(Handle o) { delete p; p = o.p; o.p = nullptr; return *this; }  // 若中间抛异常 -> 资源泄漏/重复释放
+```
+
+**修复**：
+```cpp
+#include <iostream>
+#include <utility>
+#include <string>
+struct Handle {
+    std::string* p = new std::string("res");
+    Handle() = default;                                  // 用户声明了拷贝构造 -> 默认构造被抑制, 需显式恢复
+    Handle(const Handle& o) : p(new std::string(*o.p)) {}
+    void swap(Handle& o) noexcept { std::swap(p, o.p); }
+    Handle& operator=(Handle o) noexcept { swap(o); return *this; }  // copy-and-swap: 强异常安全
+    ~Handle() { delete p; }
+};
+void swap(Handle& a, Handle& b) noexcept { a.swap(b); }
+int main() { using std::swap; Handle a, b; swap(a, b); (void)a; (void)b; }
+```
+
+**结论**：异常安全赋值 = 让形参 `o` 按值（=拷贝）传入，再 `noexcept swap`；`using std::swap; swap(a,b)` 让 ADL 优先选中你的 O(1) 重载。`noexcept` 是 `std::vector` 在重分配时选择 move 还是 copy 的关键信号。
 
