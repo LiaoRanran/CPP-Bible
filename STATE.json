@@ -4,8 +4,8 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
   "last_updated": "2026-07-16",
-  "last_commit": "894b23b03903ea2da6b6af8ab6928d8e21c876f5",
-  "git_status": "in sync with origin/master after push (Phase APP batch7: 语言基础簇 5章 ch19/22/23/25/28 习题重写+用法演绎; 通用模板习题替换为章主题对齐难度阶梯; 每章追加用法演绎附录; HEAD 894b23b03903ea2da6b6af8ab6928d8e21c876f5)",
+  "last_commit": "03a5ef7906f6c417f8cd213884d12361e16153a9",
+  "git_status": "in sync with origin/master after push (CI compile gate 修复: 3 个新增回归块已修复并推送; 2 条 stale POSIX 豁免已清理; HEAD 03a5ef7906f6c417f8cd213884d12361e16153a9)",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -543,5 +543,5 @@
     "application_layer_app7_chapters": "5/147 (ch19/22/23/25/28)",
     "application_layer_total_chapters": "44/147 (app1 8 + app2 8 + app3 5 + app4 8 + app5 5 + app6 5 + app7 5)"
   },
-  "ci_status": "Pushed Phase APP batch7 (HEAD 894b23b03903ea2da6b6af8ab6928d8e21c876f5); application_layer enhanced 44/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68 + app5 ch61/69/70/71/72 + app6 ch35/36/37/38/40 + app7 ch19/22/23/25/28); consistency 100/100; asm examples 53 unchanged"
+  "ci_status": "Pushed CI compile gate fix (HEAD 03a5ef7906f6c417f8cd213884d12361e16153a9): 3 个新增回归块(ch35#45 uint8_t, ch42#47 std::memcpy, ch43#53 _mm256_loadu_ps)已补充缺失头文件; 2 条 stale POSIX 豁免(ch35#blk6/#blk14)已清理; 预期 CI compile job 回归 0; consistency 100/100; application_layer 44/147 unchanged; asm examples 53 unchanged"
 }
