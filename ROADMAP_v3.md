@@ -602,6 +602,8 @@ I 表最后 5 章：**ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_
 **Batch APP3（2026-07-15 完成）**：工业深挖首批 5 章 ch27/41/96/110/133。上游源码逐行（text 围栏）+ 每章自包含可编译 cpp 范式；一致性门禁 147 章 0/0 维持。APP-A/APP-C 累计覆盖 21/147 章。
 **Batch APP4（2026-07-16 完成）**：模板核心簇 8 章 ch60/ch62-ch68 全覆盖 APP-A + APP-C。通用模板习题替换为章主题对齐难度阶梯（★★/★★★/★★★★）；每章追加「用法演绎」附录；靶向编译校验 40 注入块 0 fail；一致性门禁 147 章 0/0 维持；4 处真实缺陷修复（std::clamp C++20 四参 ADL 歧义 / std::hash 特化命名空间限制 / enable_if 返回类型）。APP-A/APP-C 累计覆盖 29/147 章。
 **Batch APP5（2026-07-16 完成）**：模板/编译期簇尾章 5 章 ch61/69/70/71/72 全覆盖 APP-A + APP-C。通用模板习题替换为章主题对齐难度阶梯（★★/★★★/★★★★）；每章追加「用法演绎」附录；靶向编译校验 30 注入块 0 fail；一致性门禁 147 章 0/0 维持；1 处真实缺陷修复（ch72 演绎1 最小化 Vec 缺 `Vec(const VecAdd&)` 转换构造，致 `Vec ab = a + b` 因 VecAdd→Vec 无可行转换失败，补转换构造后通过）。APP-A/APP-C 累计覆盖 34/147 章。
+
+**Batch APP6（2026-07-16 完成）**：内存管理簇 5 章 ch35/36/37/38/40 全覆盖 APP-A + APP-C。通用模板习题（max_safe/integral add/constexpr fact 与章主题严重错配）替换为章主题对齐难度阶梯（★★/★★★/★★★★）；每章追加「用法演绎」附录；靶向编译校验 25 注入块 0 fail（3 块 ch37 operator-new 命中 OPERATOR_REPLACE_RE 被门禁跳过，经 `_verify_ch37_manual.py` 独立 TU 编译 0 fail 确认）；一致性门禁 147 章 0/0 维持；1 处真实缺陷修复（ch38 演绎2 `std::pmr::vector<int> v(std::pmr::polymorphic_allocator<int>(&res));` 触发 most-vexing-parse，被解析为函数声明致 `v.push_back` 报 "non-class type"，改为先命名 allocator 变量 `pa` 再 `std::pmr::vector<int> v(pa);` 修复）。APP-A/APP-C 累计覆盖 39/147 章。
 **滚动计划**：APP6+（剩余章节滚动覆盖）。目标：147 章习题全部主题对齐，重点章均有用法演绎 + 工业深挖。
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）、**WORKLIST_v4.md（质量收尾导航）**_

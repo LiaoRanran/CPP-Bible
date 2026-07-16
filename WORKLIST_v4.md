@@ -319,8 +319,20 @@
 
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。靶向编译校验：30 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（ch61/69/70/71/72）。1 处真实缺陷修复：ch72 演绎1 最小化 Vec 缺 `Vec(const VecAdd&)` 转换构造，导致 `Vec ab = a + b` 因 VecAdd→Vec 无可行转换失败（演绎2/练习3 已有该构造故通过），补转换构造后编译通过。APP-A/APP-C 累计覆盖 34/147 章。
 
+**Batch APP6（已完成，2026-07-16）**：内存管理簇 5 章全覆盖 APP-A + APP-C（习题重写 + 用法演绎附录）
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP6 | ch35 内存布局 | 习题：offsetof 字段偏移 / 对齐填充 sizeof / 栈堆增长方向；演绎：地址空间段布局 + 对齐陷阱 |
+| APP6 | ch36 栈与堆 | 习题：栈对象生命周期 / RAII 异常安全 / 堆分配开销计时；演绎：悬垂引用 + 运行时缓冲选型 |
+| APP6 | ch37 new/delete | 习题：类域 operator new 计数 / placement new 重建 / 对象池；演绎：空闲链表 node 池化降碎片 |
+| APP6 | ch38 分配器 | 习题：pmr monotonic_buffer_resource / 计数资源 / reserve 扩容；演绎：资源生命周期陷阱 + 池化降延迟 |
+| APP6 | ch40 异常安全 | 习题：copy-and-swap / 栈展开 / 事务式提交；演绎：dtor noexcept + noexcept 移动保证强异常安全 |
+
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。靶向编译校验：25 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（ch35/36/37/38/40；其中 ch37 的 3 个 operator-new 块命中 OPERATOR_REPLACE_RE 被门禁跳过，经 `_verify_ch37_manual.py` 独立 TU 编译 0 fail 确认可编译）。1 处真实缺陷修复：ch38 演绎2 `std::pmr::vector<int> v(std::pmr::polymorphic_allocator<int>(&res));` 触发 most-vexing-parse（被解析为函数声明，`v.push_back` 报 "non-class type"），改为先命名 allocator 变量 `std::pmr::polymorphic_allocator<int> pa(&res);` 再 `std::pmr::vector<int> v(pa);` 修复。APP-A/APP-C 累计覆盖 39/147 章。
+
 **后续批次（规划中）**
-- **APP6+**：滚动覆盖剩余章节，直至 147 章习题全部主题对齐、重点章均有用法演绎 + 工业深挖。
+- **APP7+**：滚动覆盖剩余章节，直至 147 章习题全部主题对齐、重点章均有用法演绎 + 工业深挖。
 
 ## 不纳入项（P2-，已评估）
 
@@ -357,7 +369,8 @@
 | APP3 | Phase APP 工业深挖首批（5 章上游源码逐行+可编译范式） | 5 | 5 | 100% |
 | APP4 | Phase APP 应用层增强第四批（模板核心簇 8 章习题重写+用法演绎） | 8 | 8 | 100% |
 | APP5 | Phase APP 应用层增强第五批（模板/编译期簇尾章 5 章习题重写+用法演绎） | 5 | 5 | 100% |
-| **合计** | | **101** | **101** | **100%** |
+| APP6 | Phase APP 应用层增强第六批（内存管理簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
+| **合计** | | **106** | **106** | **100%** |
 
 ---
 

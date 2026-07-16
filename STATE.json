@@ -4,8 +4,8 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
   "last_updated": "2026-07-16",
-  "last_commit": "43a4116a1936b95cff08ebd49756923a7c88d5db",
-  "git_status": "in sync with origin/master after push 2026-07-16 (Phase APP batch5: 习题重写+用法演绎覆盖模板/编译期簇尾章 5章 ch61/69/70/71/72; 通用模板习题替换为章主题对齐难度阶梯; 每章追加用法演绎附录; HEAD 43a4116)",
+  "last_commit": "e8d725e8b964689240f3a1f8c92ea7df13cdd10a",
+  "git_status": "in sync with origin/master after push (Phase APP batch6: 内存管理簇 5章 ch35/36/37/38/40 习题重写+用法演绎; 通用模板习题替换为章主题对齐难度阶梯; 每章追加用法演绎附录; ch38 演绎2 most-vexing-parse 修复; HEAD e8d725e8b964689240f3a1f8c92ea7df13cdd10a)",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -444,6 +444,13 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "习题重写+用法演绎覆盖模板/编译期簇尾章 5章: ch61/69/70/71/72。通用模板习题替换为章主题对齐难度阶梯(★★/★★★/★★★★);每章追加「附录:用法演绎(从选型到落地)」2 walkthrough(选型场景→常见错误text→修复cpp→结论)。靶向编译校验 30 注入块 FAILS:0; 一致性 147章 ERROR=0 WARN=0=100/100 零回归。1处真实编译缺陷修复: ch72 演绎1 最小化 Vec 缺少 Vec(const VecAdd&) 转换构造, 导致 Vec ab = a+b 因 VecAdd→Vec 无可行转换而失败(演绎2/练习3 已有该构造故通过); 补转换构造后编译通过(表达式模板'惰性代理+单次遍历'演示自洽)。asm 实证 53例不变。HEAD 43a4116。"
+    },
+    "APP6": {
+      "label": "Phase APP 应用层增强 批6(习题重写+用法演绎 内存管理簇 5章)",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "习题重写+用法演绎覆盖内存管理簇 5章: ch35/36/37/38/40。通用模板习题(max_safe/integral add/constexpr fact 与章主题严重错配)替换为章主题对齐难度阶梯(★★/★★★/★★★★);每章追加「附录:用法演绎(从选型到落地)」2 walkthrough(选型场景→常见错误text→修复cpp→结论)。靶向编译校验 25 注入块 FAILS:0(3 块 ch37 operator-new 命中 OPERATOR_REPLACE_RE 被门禁跳过, 经 _verify_ch37_manual.py 独立 TU 编译 0 fail 确认); 一致性 147章 ERROR=0 WARN=0=100/100 零回归。1处真实编译缺陷修复: ch38 演绎2 `std::pmr::vector<int> v(std::pmr::polymorphic_allocator<int>(&res));` 触发 most-vexing-parse(被解析为函数声明, v.push_back 报 'non-class type'), 改为先命名 allocator 变量 `std::pmr::polymorphic_allocator<int> pa(&res);` 再 `std::pmr::vector<int> v(pa);` 修复。asm 实证 53例不变。HEAD e8d725e8b964689240f3a1f8c92ea7df13cdd10a。"
     }
   },
   "execution_order": [
@@ -508,7 +515,8 @@
     "APP2",
     "APP3",
     "APP4",
-    "APP5"
+    "APP5",
+    "APP6"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
@@ -522,7 +530,9 @@
     "application_layer_total_chapters": "34/147 (app1 8 + app2 8 + app3 5 + app4 8 + app5 5)",
     "application_layer_app3_chapters": "5/147 (ch27/41/96/110/133)",
     "application_layer_app4_chapters": "8/147 (ch60/62/63/64/65/66/67/68)",
-    "application_layer_app5_chapters": "5/147 (ch61/69/70/71/72)"
+    "application_layer_app5_chapters": "5/147 (ch61/69/70/71/72)",
+    "application_layer_app6_chapters": "5/147 (ch35/36/37/38/40)",
+    "application_layer_total_chapters": "39/147 (app1 8 + app2 8 + app3 5 + app4 8 + app5 5 + app6 5)"
   },
-  "ci_status": "Pushed Phase APP batch5 (HEAD 43a4116); application_layer enhanced 34/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68 + app5 ch61/69/70/71/72); consistency 100/100; asm examples 53 unchanged"
+  "ci_status": "Pushed Phase APP batch6 (HEAD e8d725e8b964689240f3a1f8c92ea7df13cdd10a); application_layer enhanced 39/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68 + app5 ch61/69/70/71/72 + app6 ch35/36/37/38/40); consistency 100/100; asm examples 53 unchanged"
 }
