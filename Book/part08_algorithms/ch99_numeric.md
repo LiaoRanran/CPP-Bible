@@ -1286,57 +1286,134 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+`std::accumulate` 可指定初始值并自定义二元操作。写出程序：对 `vector<int>{1,2,3,4,5}` 求和（应为 15）；并用 `accumulate` 把 `vector<string>{"a","b","c"}` 拼接为 `"abc"`。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+#include <numeric>
+#include <string>
+int main() {
+    std::vector<int> v{1, 2, 3, 4, 5};
+    int s = std::accumulate(v.begin(), v.end(), 0);
+    std::cout << "sum=" << s << "\n";                       // 15
+    std::vector<std::string> w{"a", "b", "c"};
+    std::string cat = std::accumulate(w.begin(), w.end(), std::string(""));
+    std::cout << "cat=" << cat << "\n";                     // abc
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `accumulate(first, last, init, op=plus)` 以 `init` 为初值，对区间元素依次 `op(acc, x)`。初值类型即结果类型；拼接字符串用 `std::string("")` 作初值。
 
 </details>
+
+### 练习 2（难度 ★★★）
+
+用 `std::inner_product` 计算两个等长轴向量的点积。给定 `a{1,2,3}`、`b{4,5,6}`，输出应为 `32`（=4+10+18）。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <numeric>
+int main() {
+    std::vector<int> a{1, 2, 3}, b{4, 5, 6};
+    int dot = std::inner_product(a.begin(), a.end(), b.begin(), 0);
+    std::cout << "dot=" << dot << "\n";   // 32
+}
+```
+
+[标准] `inner_product` 同时做「乘后加」与「加后乘」两个可定制操作，默认即点积 `Σ a[i]*b[i]`。初值 0 决定结果类型（整数）。注意两区间长度须匹配，否则越界。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+用 `std::transform_reduce` 配合 `std::execution::par` 并行计算 1'000'000 个浮点数的平方和（对比串行 `accumulate`）。需给出 `0.0` 浮点初值以保证结果类型。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <numeric>
+#include <execution>
+int main() {
+    std::vector<double> v(1'000'000);
+    for (int i = 0; i < (int)v.size(); ++i) v[i] = i + 1;
+    double ss = std::transform_reduce(
+        std::execution::par, v.begin(), v.end(), 0.0,
+        std::plus<>(), [](double x) { return x * x; });
+    std::cout << "sum_sq=" << ss << "\n";
+}
+```
+
+[标准] `transform_reduce` 是 `transform` + `reduce` 的融合，支持执行策略实现并行规约；`0.0` 初值确保结果为 `double` 而非被截断为 `int`。相比「先 transform 到中间容器再 accumulate」，它单次遍历且不物化中间序列。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：并行规约——`reduce` 而非 `accumulate(par)`
+
+**选型场景**：对大向量并行求和。错误写法给 `std::accumulate` 传执行策略——但 `accumulate` **没有**执行策略重载，编译直接失败。
+
+**常见错误（text）**：
+
+```cpp
+// 错误写法（std::accumulate 不接受执行策略，以下为反模式示意，本身不可编译）:
+//   auto s = std::accumulate(std::execution::par, v.begin(), v.end(), 0);
+```
+
+**修复（cpp）**：用 `std::reduce`（带执行策略重载）做并行规约。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <numeric>
+#include <execution>
+int main() {
+    std::vector<int> v(1'000'000);
+    for (int i = 0; i < (int)v.size(); ++i) v[i] = i + 1;
+    long long s = std::reduce(std::execution::par, v.begin(), v.end(), 0LL);
+    std::cout << "sum=" << s << "\n";   // 500000500000
+}
+```
+
+**结论**：并行规约用 `std::reduce`/`std::transform_reduce`（带执行策略重载）；`std::accumulate` 仅串行、无策略参数。另注意 `reduce` 不保证结合顺序，二元操作必须可交换/结合（如 `plus`）。
+
+### 演绎 2：初值类型决定结果类型
+
+**选型场景**：对 `vector<double>` 求平均，错误写法用整数初值 `0`，导致浮点被截断累加为 `int`，结果完全错误。
+
+**常见错误（text）**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <numeric>
+int main() {
+    std::vector<double> v{0.1, 0.2, 0.3};
+    double avg = std::accumulate(v.begin(), v.end(), 0) / (double)v.size();   // 0(int) 初值 -> 截断
+    std::cout << "avg(maybe wrong)=" << avg << "\n";
+}
+```
+
+**修复（cpp）**：用 `0.0` 作初值，结果类型即 `double`。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <numeric>
+int main() {
+    std::vector<double> v{0.1, 0.2, 0.3};
+    double sum = std::accumulate(v.begin(), v.end(), 0.0);   // 0.0 -> double
+    std::cout << "sum=" << sum << " avg=" << sum / v.size() << "\n";  // 0.6 0.2
+}
+```
+
+**结论**：`accumulate`/`reduce` 的 `init` 类型即结果类型。浮点累加用 `0.0`；大整数用 `0LL`；字符串拼接用 `std::string("")`。初值类型选错会静默截断或产生意外类型。
 

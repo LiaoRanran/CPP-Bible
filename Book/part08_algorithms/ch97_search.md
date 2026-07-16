@@ -955,70 +955,145 @@ A: 多个哈希函数→位数组; 假阳性(说不存在=true; 说存在=maybe)
 
 ### 练习 1（难度 ★★）
 
-## 真实开源项目参考（可查证链接）
-
-> 查找算法的工业实现——下列链接指向标准库与第三方库的真实源码文件（L2 文件级）。
-
-- **libstdc++ `std::lower_bound`**：[gcc-mirror/gcc · libstdc++-v3/include/bits/stl_algo.h](https://github.com/gcc-mirror/gcc/blob/master/libstdc++-v3/include/bits/stl_algo.h) —— 「③ lower_bound/upper_bound/equal_range」「⑤ 真实汇编二分循环」的源头；模板 `__lower_bound` 用迭代器推进实现 O(log N) 二分。
-- **libc++ `std::lower_bound`**：[llvm/llvm-project · libcxx/include/__algorithm/lower_bound.h](https://github.com/llvm/llvm-project/blob/main/libcxx/include/__algorithm/lower_bound.h) —— Clang/MSVC 侧等价实现，验证「⑤ -O2 下真正二分循环」的跨库一致。
-- **Boost.Algorithm（is_permutation 等）**：[boostorg/algorithm · include/boost/algorithm/cxx11/is_permutation.hpp](https://github.com/boostorg/algorithm/blob/develop/include/boost/algorithm/cxx11/is_permutation.hpp) —— 「⑥ 有序区间集合操作」「⑨ 谓词查找」的扩展库；`boost::algorithm::is_permutation` 是 `std::is_permutation` 的灵感来源。
-- **folly 哈希（衔接 ⑪ 哈希查找）**：[facebook/folly · folly/hash/SpookyHashV2.cpp](https://github.com/facebook/folly/blob/main/folly/hash/SpookyHashV2.cpp) —— `unordered` 容器底层哈希函数的工业实现，对应「⑪ 哈希查找衔接」的性能基线。
-
-**最佳实践**：有序区间永远用 `lower_bound`/`equal_range` 做 O(log N) 查找而非 `find` 的 O(N)；对未排序区间用二分 = UB（「⑯ 常见坑」）；C++20 Ranges 用 `std::ranges::lower_bound` 支持投影，避免临时拷贝。
-
-> 交叉引用：排序算法见 [ch96](Book/part08_algorithms/ch96_sorting.md)；堆结构见 [ch98](Book/part08_algorithms/ch98_heap.md)；算法复杂度理论见 [ch101](Book/part08_algorithms/ch101_algo_theory.md)。
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+在**已排序** `vector` 中用 `std::lower_bound` 与 `std::upper_bound` 配合 `std::distance` 统计某 key 的出现次数。给定 `v{1,2,2,2,3,3,5}`、`key=2`，输出应为 3。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+#include <algorithm>
+#include <iterator>
+int main() {
+    std::vector<int> v{1, 2, 2, 2, 3, 3, 5};
+    int key = 2;
+    auto lo = std::lower_bound(v.begin(), v.end(), key);
+    auto hi = std::upper_bound(v.begin(), v.end(), key);
+    std::cout << "count(" << key << ") = " << std::distance(lo, hi) << "\n";  // 3
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 对有序区间，`[lower_bound, upper_bound)` 恰好是等于 key 的元素半开区间；`distance` 得其长度即出现次数。复杂度 O(log n + k)。
 
 </details>
+
+### 练习 2（难度 ★★★）
+
+`std::equal_range` 一次性返回 `[lower, upper)` 的 `pair`，比分别调用 `lower_bound`/`upper_bound` 只扫描一次、效率更高。重复练习 1 的计数，但改用 `std::equal_range`。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+int main() {
+    std::vector<int> v{1, 2, 2, 2, 3, 3, 5};
+    auto r = std::equal_range(v.begin(), v.end(), 2);
+    std::cout << "count = " << std::distance(r.first, r.second) << "\n";  // 3
+}
+```
+
+[标准] `equal_range` 等价于「同时返回 lower/upper」，内部只做约一次二分（左右边界对称推进），相比两次独立二分少约一半比较，是「既取区间又求计数」的最优写法。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+用 `std::search` 在「母序列」中查找「模式序列」首次出现的位置；未找到返回 `end()`。给定 `hay{1,2,3,4,5,6,7,8}`、`pat{4,5,6}`，应输出位置 3。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> hay{1, 2, 3, 4, 5, 6, 7, 8};
+    std::vector<int> pat{4, 5, 6};
+    auto it = std::search(hay.begin(), hay.end(), pat.begin(), pat.end());
+    if (it != hay.end())
+        std::cout << "pattern at idx " << (it - hay.begin()) << "\n";  // 3
+    else
+        std::cout << "not found\n";
+}
+```
+
+[标准] `std::search` 是子序列查找（模式匹配），与 `find`（单值查找）不同；返回首个完全匹配的位置。可配合 searcher 对象（如 `std::boyer_moore_searcher`）在长文本场景加速。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：仅判存在性——`binary_search` 优于 `find`
+
+**选型场景**：在已排序区间判断某 key 是否存在。错误写法用 `std::find`（O(n)），仅返回一个迭代器再比较 `!= end()`，浪费了「已排序」这一前提。
+
+**常见错误（text）**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> v(1'000'000);
+    for (int i = 0; i < (int)v.size(); ++i) v[i] = i * 2;
+    int key = 1'999'998;
+    bool has = std::find(v.begin(), v.end(), key) != v.end();   // 线性 O(n)
+    std::cout << "has=" << has << "\n";
+}
+```
+
+**修复（cpp）**：用 `std::binary_search` 直接返回 `bool`（O(log n)）。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> v(1'000'000);
+    for (int i = 0; i < (int)v.size(); ++i) v[i] = i * 2;  // 偶数序列
+    int key = 1'999'998;
+    bool has = std::binary_search(v.begin(), v.end(), key);  // O(log n)
+    std::cout << "binary_search=" << has << "\n";   // true
+}
+```
+
+**结论**：仅判存在用 `std::binary_search`（返回 `bool`）；需要位置/区间才用 `lower_bound`/`equal_range`。不要为「是否存在」付出线性扫描代价。
+
+### 演绎 2：二分的前提是「已排序」
+
+**选型场景**：对未排序区间调用 `std::lower_bound`，得到不可信结果（二分依赖有序前提，违之属逻辑错误）。错误写法直接二分一个乱序容器。
+
+**常见错误（text）**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> v{5, 3, 8, 1, 9, 2, 7};   // 未排序
+    int key = 7;
+    auto it = std::lower_bound(v.begin(), v.end(), key);   // 前置条件违反 -> 结果不可信
+    std::cout << "found=" << (it != v.end() && *it == key) << "\n";
+}
+```
+
+**修复（cpp）**：二分前先 `std::sort`（生产代码可加 `assert(std::is_sorted(...))`）。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> v{5, 3, 8, 1, 9, 2, 7};
+    std::sort(v.begin(), v.end());                       // 二分前必须排序
+    int key = 7;
+    auto it = std::lower_bound(v.begin(), v.end(), key);
+    std::cout << "found=" << (it != v.end() && *it == key) << "\n";  // true
+}
+```
+
+**结论**：二分系列（`lower_bound`/`upper_bound`/`equal_range`/`binary_search`）的前置条件是区间已按同一比较器排序。工业代码应在调试构建中用 `assert(std::is_sorted(...))` 守护该不变量。
 

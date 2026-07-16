@@ -802,57 +802,151 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 `std::make_heap` + `std::sort_heap` 对一个整数向量做升序排序。给定 `v{5,3,8,1,9,2,7}`，输出应为 `1 2 3 5 7 8 9`。说明 `make_heap` 默认建最大堆。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> v{5, 3, 8, 1, 9, 2, 7};
+    std::make_heap(v.begin(), v.end());    // 默认最大堆
+    std::sort_heap(v.begin(), v.end());    // 升序
+    for (int x : v) std::cout << x << ' ';  // 1 2 3 5 7 8 9
+    std::cout << "\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `make_heap` 将区间重排为满足堆性质的序列（默认 `std::less` → 最大堆，根在 `front()`）；`sort_heap` 反复 `pop_heap` 把最大值移到末尾，得到升序序列。复杂度 O(n log n)。
 
 </details>
+
+### 练习 2（难度 ★★★）
+
+手动维护一个动态优先队列：用 `push_heap` 插入新元素、用 `pop_heap` + `pop_back` 取出并删除最大值。依次插入 `5,3,9,1`，应依次取出 `9` 然后 `5`。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> h;
+    auto push = [&](int x) { h.push_back(x); std::push_heap(h.begin(), h.end()); };
+    auto pop  = [&]() { std::pop_heap(h.begin(), h.end()); int t = h.back(); h.pop_back(); return t; };
+    push(5); push(3); push(9); push(1);
+    std::cout << "max=" << pop() << "\n";   // 9
+    std::cout << "max=" << pop() << "\n";   // 5
+}
+```
+
+[标准] `push_heap` 假定 `[begin, end-1)` 已是堆、仅 `end-1` 待上浮，故必须先 `push_back` 再 `push_heap`；`pop_heap` 把最大值换到 `end-1` 并下沉根，随后需 `pop_back` 真正删除。复杂度 O(log n)。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+实现 **Top-K（取最大的 K 个）**：用「最小堆」维护大小不超过 K 的窗口——每插入一个元素，若堆大小超过 K 则弹出当前最小值。给定 `v{5,3,8,1,9,2,7,6,4,0}`、`K=3`，最终 Top-3 应为 `7 8 9`。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+int main() {
+    std::vector<int> v{5, 3, 8, 1, 9, 2, 7, 6, 4, 0};
+    const int K = 3;
+    std::priority_queue<int, std::vector<int>, std::greater<int>> minheap;  // 最小堆
+    for (int x : v) {
+        minheap.push(x);
+        if ((int)minheap.size() > K) minheap.pop();   // 保持堆大小 <= K
+    }
+    std::vector<int> topk;
+    while (!minheap.empty()) { topk.push_back(minheap.top()); minheap.pop(); }
+    std::sort(topk.begin(), topk.end());              // 升序输出
+    for (int x : topk) std::cout << x << ' ';          // 7 8 9
+    std::cout << "\n";
+}
+```
+
+[标准] 用最小堆维护「当前最大的 K 个」：堆顶始终是当前窗口最小者，超过 K 就弹堆顶，最终留下全局最大的 K 个。复杂度 O(n log K)，远优于全排序 O(n log n)（当 K≪n）。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：动态极值——`priority_queue` 优于反复全排序
+
+**选型场景**：任务调度需频繁取最大值。错误写法每次取最大都 `std::sort` 整个 `vector` 再取 `front()` 删除，单次 O(n log n)，高频调用下开销爆炸。
+
+**常见错误（text）**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <functional>
+int main() {
+    std::vector<int> v{5, 3, 9, 1, 7};
+    std::sort(v.begin(), v.end(), std::greater<int>());   // 每次取最大都全排序 O(n log n)
+    int top = v.front(); v.erase(v.begin());
+    std::cout << "top=" << top << "\n";
+}
+```
+
+**修复（cpp）**：用 `std::priority_queue`（堆），插入/取最大均 O(log n)。
+
+```cpp
+#include <iostream>
+#include <queue>
+int main() {
+    std::priority_queue<int> pq;        // 默认最大堆
+    for (int x : {5, 3, 9, 1, 7}) pq.push(x);
+    std::cout << "top=" << pq.top() << "\n";   // 9
+    pq.pop();
+    std::cout << "top=" << pq.top() << "\n";   // 7
+}
+```
+
+**结论**：动态极值场景用堆（`std::priority_queue` 或裸 `make_heap`/`push_heap`/`pop_heap`），避免全排序的重复开销。仅当「一次性取有序全部」时才用 `std::sort`。
+
+### 演绎 2：堆不变量——裸 `push_back` 会破坏堆
+
+**选型场景**：对 `make_heap` 过的容器直接 `push_back` 新元素，绕过 `push_heap`，堆性质被破坏，后续 `pop_heap`/`front()` 给出错误最大值。
+
+**常见错误（text）**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> h{9, 5, 8, 1, 3};
+    std::make_heap(h.begin(), h.end());
+    h.push_back(7);   // 绕过 push_heap -> 堆性质破坏
+    std::cout << "max(maybe wrong)=" << h.front() << "\n";
+}
+```
+
+**修复（cpp）**：插入后必须 `push_heap` 维护不变量。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> h{9, 5, 8, 1, 3};
+    std::make_heap(h.begin(), h.end());
+    h.push_back(7);
+    std::push_heap(h.begin(), h.end());   // 维护堆性质
+    std::cout << "max=" << h.front() << "\n";   // 9
+}
+```
+
+**结论**：`make_heap` 后的容器是「堆结构」而非普通序列。增删元素必须用 `push_heap`/`pop_heap` 维护不变量，绝不能裸 `push_back`/`erase`，否则堆性质失效、算法结果不可信。
 

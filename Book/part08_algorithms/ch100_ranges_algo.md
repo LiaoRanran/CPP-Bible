@@ -797,57 +797,146 @@ A: operator| 重载。view1 | view2 → view2(view1) → 返回组合后的 view
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 `std::ranges::sort` 配合**投影**（projection）按结构体成员排序。给定 `Person{{"Bob",30},{"Alice",25},{"Carol",35}}`，按 `age` 升序排序，输出应为 `Alice:25 Bob:30 Carol:35`。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+#include <algorithm>
+#include <string>
+struct Person { std::string name; int age; };
+int main() {
+    std::vector<Person> v{{"Bob", 30}, {"Alice", 25}, {"Carol", 35}};
+    std::ranges::sort(v, {}, &Person::age);   // 投影到 age, 默认升序
+    for (auto& p : v) std::cout << p.name << ':' << p.age << ' ';
+    std::cout << "\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `ranges::sort(range, comp={}, proj={})` 的第三参数是投影，先对元素应用投影再比较——`&Person::age` 是成员指针投影，免去手写 lambda 取成员。比传统 `sort(v.begin(), v.end(), [](auto&a,auto&b){return a.age<b.age;})` 更简洁。
 
 </details>
+
+### 练习 2（难度 ★★★）
+
+用 `std::views::filter` + `std::views::transform` 组成**惰性管道**：取偶数并平方，且零中间容器、单次遍历。给定 `v{1..8}`，输出应为 `4 16 36 64`。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <ranges>
+int main() {
+    std::vector<int> v{1, 2, 3, 4, 5, 6, 7, 8};
+    auto r = v | std::views::filter([](int x) { return x % 2 == 0; })
+               | std::views::transform([](int x) { return x * x; });
+    for (int x : r) std::cout << x << ' ';   // 4 16 36 64
+    std::cout << "\n";
+}
+```
+
+[标准] `views` 是惰性（lazy）的——`filter`/`transform` 不物化新容器，只在遍历 `r` 时按需计算；管道用 `|` 组合，可读性强。底层仍是原 `v`，无额外内存分配。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+用 `std::ranges::find` 配合投影在结构体数组中按成员查找。给定 `Person{{"Bob",30},{"Alice",25},{"Carol",35}}`，查找 `age==25` 的人，应输出 `Alice`。注意 `ranges::find` 返回 `borrowed_iterator`，可与 `end()` 比较。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+struct Person { std::string name; int age; };
+int main() {
+    std::vector<Person> v{{"Bob", 30}, {"Alice", 25}, {"Carol", 35}};
+    auto it = std::ranges::find(v, 25, &Person::age);   // 投影到 age 查找
+    if (it != v.end()) std::cout << "found " << it->name << "\n";   // Alice
+}
+```
+
+[标准] `ranges::find(range, value, proj)` 直接接受范围（无需 `begin()/end()`），第三参投影同样适用。返回 `borrowed_iterator`——对 `vector` 等拥有型范围，可安全与 `end()` 比较而不悬垂。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：多步处理——`views` 管道优于多次 `copy_if`
+
+**选型场景**：对容器做「过滤 + 变换」多步处理。错误写法每步都 `std::copy_if`/`std::transform` 物化一个中间 `vector`，浪费内存且多次遍历。
+
+**常见错误（text）**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+int main() {
+    std::vector<int> v{1, 2, 3, 4, 5, 6, 7, 8};
+    auto even = [](int x) { return x % 2 == 0; };
+    auto sq   = [](int x) { return x * x; };
+    std::vector<int> a; std::copy_if(v.begin(), v.end(), std::back_inserter(a), even);
+    std::vector<int> b; std::transform(a.begin(), a.end(), std::back_inserter(b), sq);  // 两步物化
+    for (int x : b) std::cout << x << ' ';
+    std::cout << "\n";
+}
+```
+
+**修复（cpp）**：用 `views` 惰性管道，零中间容器、单次遍历。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <ranges>
+int main() {
+    std::vector<int> v{1, 2, 3, 4, 5, 6, 7, 8};
+    auto r = v | std::views::filter([](int x) { return x % 2 == 0; })
+               | std::views::transform([](int x) { return x * x; });
+    for (int x : r) std::cout << x << ' ';   // 4 16 36 64
+    std::cout << "\n";
+}
+```
+
+**结论**：多步「过滤/变换/取值」用 `std::ranges::views` 惰性组合，避免中间容器分配与多次遍历；管道在遍历时才计算，且天然表达数据流意图。
+
+### 演绎 2：视图不拥有数据——悬垂视图陷阱
+
+**选型场景**：函数返回引用了局部 `vector` 的 `views` 管道，局部容器析构后视图悬垂（访问即 UB）。错误写法把视图返回出函数作用域。
+
+**常见错误（text）**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <ranges>
+auto make_view() {               // 返回引用局部 v 的视图 -> v 析构后悬垂(UB)
+    std::vector<int> v{1, 2, 3};
+    return v | std::views::filter([](int x) { return x > 1; });
+}
+int main() { (void)make_view(); }
+```
+
+**修复（cpp）**：视图绑定到生命周期更长的底层范围；在同一作用域内使用，且底层容器变化对视图可见。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <ranges>
+int main() {
+    std::vector<int> v{1, 2, 3, 4};
+    auto r = v | std::views::filter([](int x) { return x > 1; });  // 视图绑定 v
+    v.push_back(5);    // 视图随底层容器变化而可见新元素
+    for (int x : r) std::cout << x << ' ';   // 2 3 4 5
+    std::cout << "\n";
+}
+```
+
+**结论**：ranges 视图是底层范围的轻量视图（**不拥有数据**）。必须确保底层范围的生命周期长于视图的使用；把视图返回/存为成员引用局部容器会导致悬垂，是典型 UB。
 
