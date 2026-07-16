@@ -292,9 +292,23 @@
 
 > 一致性门禁（APP3 注入后）：147 章 ERROR=0 / WARN=0 = 100/100；5 章新注入 cpp 块编译校验通过（GCC15.3 -O2 -Wall -Wextra，ch27 2516B / ch41 882B / ch96 1076B / ch110 844B / ch133 自包含块）。APP-A/APP-C 累计覆盖 21/147 章。
 
+**Batch APP4（已完成，2026-07-16）**：模板核心簇 8 章全覆盖 APP-A + APP-C（习题重写 + 用法演绎附录）
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP4 | ch60 模板基础 | 习题：clamp 默认模板参数 / Matrix 非类型参数 / pi+Vec 变量+别名模板；演绎：默认参数位置 + 非类型参数编译期常量 |
+| APP4 | ch62 特化 | 习题：PointHash 自定义哈希器(可编译) / 类模板序列化特化 / is_ptr_like 偏特化；演绎：MyHash 特化签名匹配 + 偏序歧义 |
+| APP4 | ch63 变参 | 习题：递归 print_all / fold 重写 / make_array(index_sequence)；演绎：base case + 包展开运算符 |
+| APP4 | ch64 折叠 | 习题：sum/product 折叠方向 / all/any 短路 / for_each 逗号折叠；演绎：`-`/`/` 方向 + 空包语义 |
+| APP4 | ch65 类型萃取 | 习题：手写 my_is_pointer / enable_if to_string / void_t has_serialize；演绎：enable_if 位置 + void_t 探测 callable |
+| APP4 | ch66 SFINAE | 习题：enable_if load / void_t has_iterator / tag dispatch foo；演绎：SFINAE 软失败 vs 硬错误 + 条件互补 |
+| APP4 | ch67 concepts | 习题：integral add / requires Addable/Printable/Reportable / concept to_string 重写；演绎：requires 分号 + 诊断优势 |
+| APP4 | ch68 TMP | 习题：Fact 元函数 / TypeList / if constexpr process；演绎：终止特化 + if constexpr 编译期常量条件 |
+
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。靶向编译校验：40 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（ch60/62/63/64/65/66/67/68）。4 处真实缺陷修复：std::clamp C++20 四参 ADL 歧义 / std::hash 特化须位于 std 命名空间（改用自定义哈希器）/ enable_if 返回类型 size_t 后误 .length()。APP-A/APP-C 累计覆盖 29/147 章。
+
 **后续批次（规划中）**
-- **APP3（2026-07-15 完成）**：工业深挖首批 5 章 ch27/41/96/110/133。上游源码（ClickHouse IColumn/ColumnVector/Arena/ExpressionActions、Redis aeProcessEvents/zskiplistNode、Abseil/folly 所有权、moodycamel::ConcurrentQueue、libstdc++ `__introsort_loop`）以 text 围栏逐行呈现（编译门禁跳过）；每章附 1 个自包含可编译 cpp 范式（ch27 MMIO 2516B / ch41 IntrusivePtr 882B / ch96 median3 1076B / ch110 SPSCRing 844B / ch133 AggregateSum）。一致性门禁 147 章 0/0 维持。APP-A/APP-C 累计覆盖 21/147 章。
-- **APP4+**：滚动覆盖剩余章节，直至 147 章习题全部主题对齐、重点章均有用法演绎 + 工业深挖。
+- **APP5+**：滚动覆盖剩余章节，直至 147 章习题全部主题对齐、重点章均有用法演绎 + 工业深挖。
 
 ## 不纳入项（P2-，已评估）
 
@@ -328,7 +342,9 @@
 | G-L | 批 L STL 容器真实成本实证（deque/list/fwdlist/set/uset/pq/adapters/any） | 8 | 8 | 100% |
 | APP1 | Phase APP 应用层增强首批（8 章习题重写+用法演绎） | 8 | 8 | 100% |
 | APP2 | Phase APP 应用层增强第二批（8 章习题重写+用法演绎） | 8 | 8 | 100% |
-| **合计** | | **83** | **83** | **100%** |
+| APP3 | Phase APP 工业深挖首批（5 章上游源码逐行+可编译范式） | 5 | 5 | 100% |
+| APP4 | Phase APP 应用层增强第四批（模板核心簇 8 章习题重写+用法演绎） | 8 | 8 | 100% |
+| **合计** | | **96** | **96** | **100%** |
 
 ---
 

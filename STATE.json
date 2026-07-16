@@ -3,9 +3,9 @@
   "phase": "quality_consolidation",
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
-  "last_updated": "2026-07-15",
-  "last_commit": "25d9fbe7283ddbb71f9defcbf0351c4a40f312e7",
-  "git_status": "in sync with origin/master after push 2026-07-15 (Phase APP batch3: 工业深挖 5章 ch27/41/96/110/133 上游源码逐行+可编译范式; 53 asm examples unchanged, HEAD 25d9fbe)",
+  "last_updated": "2026-07-16",
+  "last_commit": "3f20e860066cc16e9964c4abaee8c07c347512ce",
+  "git_status": "in sync with origin/master after push 2026-07-16 (Phase APP batch4: 习题重写+用法演绎覆盖模板核心簇 8章 ch60/ch62-ch68; 通用模板习题替换为章主题对齐难度阶梯; 每章追加用法演绎附录; HEAD 3f20e86)",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -430,6 +430,13 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "工业深挖覆盖 5章: ch27/41/96/110/133。红线: 上游源码(ClickHouse IColumn/ColumnVector/Arena/ExpressionActions, Redis aeProcessEvents/zskiplistNode, Abseil/folly 所有权, moodycamel::ConcurrentQueue, libstdc++ __introsort_loop)以 text 围栏逐行呈现(编译门禁跳过); 每章附 1 个自包含可编译 cpp 范式(必过门禁): ch27 MMIO(STM32F4 volatile 寄存器映射 2516B 0warn)/ch41 IntrusivePtr<T>(882B)/ch96 median3_partition(1076B)/ch110 SPSCRing<T,N>(844B)/ch133 AggregateSum::addBatch。consistency 147章 ERROR=0 WARN=0=100/100 零回归; 新块编译全 OK; ch133 门禁 fail 经 _ch133_orig.md 对比确认为前序既有跨块依赖(CI --main-only 零回归)。HEAD 25d9fbe。"
+    },
+    "APP4": {
+      "label": "Phase APP 应用层增强 批4(习题重写+用法演绎 模板核心簇 8章)",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "习题重写+用法演绎覆盖模板核心簇 8章: ch60/ch62/ch63/ch64/ch65/ch66/ch67/ch68。通用模板习题(max_safe/integral add/constexpr fact)替换为章主题对齐难度阶梯(★★/★★★/★★★★);每章追加「附录:用法演绎(从选型到落地)」2 walkthrough(选型场景→常见错误text→修复cpp→结论)。靶向编译校验 40 注入块 FAILS:0; 一致性 147章 ERROR=0 WARN=0=100/100 零回归。4处真实编译缺陷修复: ch60 std::clamp C++20四参重载 ADL 歧义(改用自定义比较器规避);ch62 std::hash<Point> 特化被门禁命名空间包裹非法(改用自定义哈希器 PointHash 可编译 + text 呈现 std::hash 特化);ch66 get 返回 v.size()(size_t) 又调 .length() 类型错(改为返回 T)。asm 实证 53例不变。HEAD 3f20e86。"
     }
   },
   "execution_order": [
@@ -504,8 +511,9 @@
     "compile_pass_rate": "112/147",
     "application_layer_app1_chapters": "8/147 (ch20/27/41/47/77/78/93/96)",
     "application_layer_app2_chapters": "8/147 (ch21/31/39/42/43/44/50/51)",
-    "application_layer_total_chapters": "21/147 (app1 8 + app2 8 + app3 5)",
-    "application_layer_app3_chapters": "5/147 (ch27/41/96/110/133)"
+    "application_layer_total_chapters": "29/147 (app1 8 + app2 8 + app3 5 + app4 8)",
+    "application_layer_app3_chapters": "5/147 (ch27/41/96/110/133)",
+    "application_layer_app4_chapters": "8/147 (ch60/62/63/64/65/66/67/68)"
   },
-  "ci_status": "Pushed Phase APP batch3 (HEAD 25d9fbe); application_layer enhanced 21/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133); consistency 100/100; asm examples 53 unchanged"
+  "ci_status": "Pushed Phase APP batch4 (HEAD 3f20e86); application_layer enhanced 29/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68); consistency 100/100; asm examples 53 unchanged"
 }
