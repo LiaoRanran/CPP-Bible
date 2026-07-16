@@ -343,8 +343,20 @@
 
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。靶向编译校验：25 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（ch19/22/23/25/28；其中 ch19 的 1 块命中 CROSSBLOCK_INC_RE 被跳过）。2 处真实缺陷修复：ch22 练习2 原三元 `ref?f_ref():f_val()` 把 int& 与 int 统一为右值 int 致 decltype(auto) 推导为 int 而非 int&，改为 `return (g)` vs `return g` 直接演示 decltype((x)) 保引用；ch23 演绎2 `Handle` 因用户声明拷贝构造抑制默认构造，`Handle a,b;` 报 no matching ctor，加 `Handle()=default;` 修复。APP-A/APP-C 累计覆盖 44/147 章。
 
+**Batch APP8（已完成，2026-07-16）**：算法簇 5 章全覆盖 APP-A + APP-C（习题重写 + 用法演绎附录）
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP8 | ch95 算法总览 | 习题：count_if+par 并行统计 / 严格弱序降序 / for_each_n+erase-remove；演绎：二分 vs 线性查找 + 并行数据竞争 |
+| APP8 | ch97 查找 | 习题：lower/upper 计数 / equal_range / search 子序列；演绎：binary_search 判存在 + 二分前置已排序 |
+| APP8 | ch98 堆 | 习题：make_heap+sort_heap / 动态优先队列 / 最小堆 Top-K；演绎：priority_queue 动态极值 + 堆不变量 |
+| APP8 | ch99 数值 | 习题：accumulate 求和拼接 / inner_product 点积 / transform_reduce 并行平方和；演绎：reduce 并行规约 + 初值类型 |
+| APP8 | ch100 ranges | 习题：ranges::sort 投影 / views 惰性管道 / ranges::find 投影；演绎：views 替代多步 copy_if + 悬垂视图 |
+
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。靶向编译校验：35 注入块 GCC 13.1 -O2 -Wall -Wextra 全链接 0 fail（ch95/97/98/99/100；含 `std::execution::par` 算法实测可链接运行）。关键修复：门禁初报 9 处「常见错误」反例块失败（引用未定义变量），将运行时/逻辑类反例改为自包含可编译反例程序，编译错误类（ch99 演绎1 `accumulate` 无执行策略重载）改为纯注释块，复验 0 fail。注入块均显式写全 `#include`（CI 的 `compile_all.py` 不带 PRELUDE，防止缺头文件回归）。APP-A/APP-C 累计覆盖 49/147 章。
+
 **后续批次（规划中）**
-- **APP8+**：滚动覆盖剩余章节，直至 147 章习题全部主题对齐、重点章均有用法演绎 + 工业深挖。
+- **APP9+**：滚动覆盖剩余章节（part09_concurrency / part10_modern / part11_lowlevel / part12_network / part13_dsa / part14_perf 等剩余章，及 part03_language 的 ch24/26/29/30/32 需注意 preserve 模式保尾随 ASM 附录），直至 147 章习题全部主题对齐。
 
 ## 不纳入项（P2-，已评估）
 
@@ -383,7 +395,8 @@
 | APP5 | Phase APP 应用层增强第五批（模板/编译期簇尾章 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP6 | Phase APP 应用层增强第六批（内存管理簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP7 | Phase APP 应用层增强第七批（语言基础簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
-| **合计** | | **111** | **111** | **100%** |
+| APP8 | Phase APP 应用层增强第八批（算法簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
+| **合计** | | **116** | **116** | **100%** |
 
 ---
 

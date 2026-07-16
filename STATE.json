@@ -4,8 +4,8 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
   "last_updated": "2026-07-16",
-  "last_commit": "03a5ef7906f6c417f8cd213884d12361e16153a9",
-  "git_status": "in sync with origin/master after push (CI compile gate 修复: 3 个新增回归块已修复并推送; 2 条 stale POSIX 豁免已清理; HEAD 03a5ef7906f6c417f8cd213884d12361e16153a9)",
+  "last_commit": "be7509b44b3ae6da1ba319e3f051d9da50e053c5",
+  "git_status": "in sync with origin/master after push (Phase APP batch8: 算法簇 5章 ch95/97/98/99/100 习题重写+用法演绎; 通用模板习题替换为章主题对齐难度阶梯; 每章追加用法演绎附录; HEAD be7509b44b3ae6da1ba319e3f051d9da50e053c5)",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -458,6 +458,13 @@
       "batch": 1,
       "total_batches": 1,
       "detail": "习题重写+用法演绎覆盖语言基础簇 5章: ch19/22/23/25/28(变量与存储期 / auto·decltype / 命名空间·ADL / union·variant / 生命周期·UB)。通用模板习题(max_safe/integral add/constexpr fact 与章主题严重错配)替换为章主题对齐难度阶梯(★★/★★★/★★★★);每章追加「附录:用法演绎(从选型到落地)」2 walkthrough(选型场景→常见错误text→修复cpp→结论)。靶向编译校验 25 注入块 FAILS:0(1 块 ch19 命中 CROSSBLOCK_INC_RE 被跳过); 一致性 147章 ERROR=0 WARN=0=100/100 零回归。2处真实编译缺陷修复: (1)ch22 练习2 原三元 `ref?f_ref():f_val()` 把 int& 与 int 统一为右值 int, 导致 decltype(auto) 推导为 int 而非 int&, 改为 `return (g)` vs `return g` 直接演示 decltype((x)) 保引用;(2)ch23 演绎2 `Handle` 因用户声明拷贝构造而抑制默认构造, `Handle a,b;` 报 no matching ctor, 加 `Handle()=default;` 修复。注入前先 `git checkout HEAD` 恢复干净态(这些章工业/ASM 附录在习题之前, 删除锚点至 EOF 不会伤及)。asm 实证 53例不变。HEAD 894b23b03903ea2da6b6af8ab6928d8e21c876f5。"
+    },
+    "APP8": {
+      "label": "Phase APP 应用层增强 批8(习题重写+用法演绎 算法簇 5章)",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "习题重写+用法演绎覆盖算法簇 5章: ch95/97/98/99/100(算法总览 / 查找 / 堆 / 数值 / ranges)。通用模板习题(max_safe/integral add/constexpr fact 与章主题严重错配)替换为章主题对齐难度阶梯(★★/★★★/★★★★);每章追加「附录:用法演绎(从选型到落地)」2 walkthrough(选型场景→常见错误text→修复cpp→结论)。靶向编译校验 35 注入块 FAILS:0(全链接 -O2 -Wall -Wextra -mavx2/-mavx512f/-mfma, 含 std::execution::par 算法实测可链接运行); 一致性 147章 ERROR=0 WARN=0=100/100 零回归。关键修复: 门禁初报 9 处 常见错误(text) 块失败(引用未定义 v/h/sum 等变量), 将运行时/逻辑类反例改为自包含可编译反例程序(数据竞争/未排序二分/堆不变量/悬垂视图/int截断), 编译错误类(ch99 演绎1 accumulate 无执行策略重载)改为纯注释块, 复验 0 fail。注入块均显式写全 #include(CI 的 compile_all.py 不带 PRELUDE, 此为防止回归的关键)。asm 实证 53例不变。HEAD be7509b44b3ae6da1ba319e3f051d9da50e053c5。"
     }
   },
   "execution_order": [
@@ -524,7 +531,8 @@
     "APP4",
     "APP5",
     "APP6",
-    "APP7"
+    "APP7",
+    "APP8"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
@@ -541,7 +549,8 @@
     "application_layer_app5_chapters": "5/147 (ch61/69/70/71/72)",
     "application_layer_app6_chapters": "5/147 (ch35/36/37/38/40)",
     "application_layer_app7_chapters": "5/147 (ch19/22/23/25/28)",
-    "application_layer_total_chapters": "44/147 (app1 8 + app2 8 + app3 5 + app4 8 + app5 5 + app6 5 + app7 5)"
+    "application_layer_app8_chapters": "5/147 (ch95/97/98/99/100)",
+    "application_layer_total_chapters": "49/147 (app1 8 + app2 8 + app3 5 + app4 8 + app5 5 + app6 5 + app7 5 + app8 5)"
   },
-  "ci_status": "Pushed CI compile gate fix (HEAD 03a5ef7906f6c417f8cd213884d12361e16153a9): 3 个新增回归块(ch35#45 uint8_t, ch42#47 std::memcpy, ch43#53 _mm256_loadu_ps)已补充缺失头文件; 2 条 stale POSIX 豁免(ch35#blk6/#blk14)已清理; 预期 CI compile job 回归 0; consistency 100/100; application_layer 44/147 unchanged; asm examples 53 unchanged"
+  "ci_status": "Pushed Phase APP batch8 (HEAD be7509b44b3ae6da1ba319e3f051d9da50e053c5); application_layer enhanced 49/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51 + app3 ch27/41/96/110/133 + app4 ch60/62/63/64/65/66/67/68 + app5 ch61/69/70/71/72 + app6 ch35/36/37/38/40 + app7 ch19/22/23/25/28 + app8 ch95/97/98/99/100); consistency 100/100; asm examples 53 unchanged; 注入块均显式 #include 防 CI 缺头文件回归"
 }
