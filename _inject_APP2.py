@@ -941,6 +941,7 @@ int bits = *reinterpret_cast<int*>(&f);   // 违反严格别名 -> UB
 **步骤 2：合法——`memcpy` 重解释位模式**
 
 ```cpp
+#include <cstring>
 int main(){
     float f = 1.0f; int bits;
     std::memcpy(&bits, &f, sizeof(bits));   // 标准明确允许重解释对象表示
@@ -1017,6 +1018,7 @@ int main(){
 **步骤 4：进阶——SOA + SIMD**
 
 ```cpp
+#include <immintrin.h>
 int main(){
     const int N = 64; alignas(32) float x[N]{}, vx[N]{};
     for (int i=0;i<N;i+=8) _mm256_storeu_ps(x+i, _mm256_add_ps(_mm256_loadu_ps(x+i), _mm256_loadu_ps(vx+i)));

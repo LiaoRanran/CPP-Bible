@@ -1464,6 +1464,7 @@ int bits = *reinterpret_cast<int*>(&f);   // 违反严格别名 -> UB
 **步骤 2：合法——`memcpy` 重解释位模式**
 
 ```cpp
+#include <cstring>
 int main(){
     float f = 1.0f; int bits;
     std::memcpy(&bits, &f, sizeof(bits));   // 标准明确允许重解释对象表示

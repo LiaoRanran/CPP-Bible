@@ -1537,6 +1537,7 @@ void rx_task() {
 ```cpp
 #include <iostream>
 #include <cstddef>
+#include <cstdint>
 // 错误: void rx_task(){ uint8_t buf[4096]; }
 static uint8_t g_rx_buf[4096];   // 进 .bss, 启动即分配, 不占栈
 int main() {

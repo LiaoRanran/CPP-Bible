@@ -1752,6 +1752,7 @@ int main(){
 **步骤 4：进阶——SOA + SIMD**
 
 ```cpp
+#include <immintrin.h>
 int main(){
     const int N = 64; alignas(32) float x[N]{}, vx[N]{};
     for (int i=0;i<N;i+=8) _mm256_storeu_ps(x+i, _mm256_add_ps(_mm256_loadu_ps(x+i), _mm256_loadu_ps(vx+i)));

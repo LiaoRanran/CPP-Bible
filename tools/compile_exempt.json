@@ -104,16 +104,6 @@
       "note": "教学用故意错误块"
     },
     {
-      "file": "ch35_memory_layout.md",
-      "block": 6,
-      "reason": "POSIX"
-    },
-    {
-      "file": "ch35_memory_layout.md",
-      "block": 14,
-      "reason": "POSIX"
-    },
-    {
       "file": "ch39_raii_rule.md",
       "block": 34,
       "reason": "CROSS_BLOCK",
