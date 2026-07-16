@@ -654,74 +654,138 @@ jbe .depth_error
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**重载决议：模板 vs 非模板**
 
-## 真实开源项目参考（可查证链接）
+给定：
+```cpp
+template <class T> T id(T x) { return x; }
+int id(int x) { return x + 1; }
+```
+- 调用 `id(42)` 选择哪个重载？`id(3.14)` 呢？写出规则并验证。
 
-> 本节补可查证的真实项目引用（非虚构）。每个链接均指向具体源码文件。
+<details>
+<summary>参考答案</summary>
 
-- **LLVM/Clang `SemaOverload.cpp`**：C++ 重载决议的工业级实现——`AddOverloadCandidate`（L6900-L7100）、偏序比较 `isAtLeastAsSpecializedAs`（L5800-L6000）、隐式转换序列排名 `CompareImplicitConversionSequences`（L7500-L7700）。本章 §④/§⑤ 在此有工程级落地。
-  → <https://github.com/llvm/llvm-project/blob/main/clang/lib/Sema/SemaOverload.cpp>
-- **GCC `cp/call.cc`**：GCC 的 `add_candidates`（L3700-L3900）、`joust`（L12000-L12200）——比较 GCC 与 Clang 对同一偏序规则的实现差异（如 §⑧ 的行为差异表）。
-  → <https://github.com/gcc-mirror/gcc/blob/master/gcc/cp/call.cc>
-- **Boost.TypeTraits + SFINAE 模式**：`enable_if`、`is_detected`、`void_t` 等 SFINAE 奇技在本库中的工业级应用——对照本章 §⑪ STL 中的该模式。
-  → <https://github.com/boostorg/type_traits/blob/develop/include/boost/type_traits/detail/detector.hpp>
-- **Google C++ Style & eng-practices（github.com/google/eng-practices）**：函数重载的使用规范与代码审查实践，对照本章"何时不该重载"的工程告诫。
-  → <https://github.com/google/eng-practices>
-- **Abseil `absl::Overload`（github.com/abseil/abseil-cpp）**：用可变模板 + 泛型 lambda 实现 visitor 模式，是重载集合的现代替代（C++17）。
-  → <https://github.com/abseil/abseil-cpp>
-- **跨章关联**：SFINAE 深入 → `Book/part06_templates/ch65_type_traits.md`；concepts 替代 overload → `Book/part06_templates/ch67_concepts.md`。
-- **常见陷阱**：GCC 与 Clang 在 `decltype(auto)` + 尾置返回类型的偏序判定上存在已知分歧（GCC BZ #91134），跨编译器代码避免依赖两编译器都"有意不选"的模糊重载。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+非模板 `int id(int)` 对 `int` 实参是**精确匹配**，优先于模板实例化；`id(3.14)` 只能由模板 `T=double` 匹配。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+template <class T> T id(T x) { return x; }
+int id(int x) { return x + 1; }
+int main() {
+    std::cout << id(42)   << "\n";   // 非模板：43
+    std::cout << id(3.14) << "\n";   // 模板 T=double：3.14
+}
 ```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
+[标准] 重载决议中，非模板函数比模板实例化更特化，精确匹配胜出。
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**重载歧义与消歧**
 
-<details><summary>答案与解析</summary>
+```cpp
+template <class T> void f(T)  { /* 通用 */ }
+template <class T> void f(T*) { /* 指针 */ }
+```
+调用 `f((int*)nullptr)` 是否歧义？给出两种消除歧义的写法（`enable_if` 或标签）。
 
-C++20 概念取代 SFINAE 做编译期约束：
+<details>
+<summary>参考答案</summary>
+
+`f((int*)nullptr)` 中 `T=int*` 同时匹配两式（`T*` 版 `T=int`），两模板同等特化 → **歧义**。消歧写法：
+
+写法 A——`enable_if` 把指针版限定为指针类型：
+```cpp
+#include <type_traits>
+template <class T, class = void> void f(T) { /* 通用 */ }
+template <class T>
+void f(T*, std::enable_if_t<std::is_pointer_v<T>, int> = 0) { /* 指针 */ }
+```
+
+写法 B——`std::true_type` 标签分发（见 ch70）：
+```cpp
+#include <type_traits>
+template <class T> void f_impl(T, std::false_type) { /* 通用 */ }
+template <class T> void f_impl(T*, std::true_type)  { /* 指针 */ }
+template <class T> void f(T v) { f_impl(v, std::is_pointer<T>{}); }
+```
+</details>
+
+### 练习 3（难度 ★★★★）
+
+**运算符模板与 ADL 冲突**
+
+在全局命名空间定义 `template <class T> bool operator==(const T&, const T&)`，会与标准库大量 `operator==` 经 ADL 冲突（如比较两个 `std::vector`）。给出安全写法。
+
+<details>
+<summary>参考答案</summary>
+
+全局运算符模板会经实参依赖查找（ADL）污染所有类型，与 `std` 内 `operator==` 冲突。安全做法：定义为**类内友元**，仅对自定义类型生效：
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct Point {
+    int x, y;
+    friend bool operator==(const Point& a, const Point& b) {
+        return a.x == b.x && a.y == b.y;
+    }
+};
+int main() {
+    Point a{1, 2}, b{1, 2};
+    std::cout << std::boolalpha << (a == b) << "\n";   // true
+}
 ```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
+[标准] 类内友元运算符不污染全局命名空间，避免与标准库 ADL 候选冲突。
 </details>
 
-### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+## 附录：用法演绎（从选型到落地）
 
-<details><summary>答案与解析</summary>
+
+
+### 演绎 1：重载决议——模板并非总是优先
+
+**场景**：你写了一个通用 `id` 模板，期望所有整数都走它，却发现 `id(42)` 返回 43 而非 42。
+
+**常见错误**（直觉写法）：
+```text
+template <class T> T id(T x) { return x; }
+int id(int x) { return x; }   // 顺手加的非模板重载
+id(42);                       // 期望 42，得到 43
+```
+非模板 `int id(int)` 对 `int` 是精确匹配，重载决议中非模板优先于模板实例化。
+
+**修复**：明确要哪个——若所有整数统一走模板，删掉非模板重载；若 `int` 需特殊行为，保留并意识到它胜出。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+template <class T> T id(T x) { return x; }
+int main() { std::cout << id(42) << "\n"; }   // 42
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+**结论**：重载决议优先级——非模板精确匹配 > 模板实例化 > 转换序列。别假设"模板更通用就更优先"。
 
-</details>
+### 演绎 2：运算符模板别放全局
 
+**场景**：想给自定义类型加通用 `operator==`，于是在全局写 `template<class T> bool operator==(const T&, const T&)`。
+
+**常见错误**（编译失败 / 无限递归）：
+```text
+template <class T> bool operator==(const T& a, const T& b) { return a == b; }
+std::vector<int> v1, v2;
+bool eq = (v1 == v2);   // 与 std::vector 的 operator== 经 ADL 冲突 / 递归
+```
+
+**修复**：放进类内作友元（见练习 3 答案），作用域仅限该类型。
+
+```cpp
+#include <iostream>
+struct Point { int x, y;
+    friend bool operator==(const Point& a, const Point& b) {
+        return a.x == b.x && a.y == b.y; } };
+int main() { Point a{1,2}, b{1,2};
+    std::cout << std::boolalpha << (a == b) << "\n"; }
+```
+
+**结论**：通用比较逻辑用类内友元或限定命名空间自由函数，绝不在全局铺运算符模板。

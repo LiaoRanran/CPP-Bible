@@ -615,57 +615,174 @@ add rdi, 0x0008           ; 步进 int32
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**表达式模板消除临时对象**
 
-<details><summary>答案与解析</summary>
+朴素 `Vec operator+` 每次返回新 `Vec`（分配+拷贝）。改写为返回**代理类型** `VecAdd`，把加法推迟到赋值点单次遍历求值。
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+<details>
+<summary>参考答案</summary>
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <vector>
+struct Vec {
+    std::vector<double> d;
+    Vec(std::size_t n) : d(n, 0) {}
+    Vec(const struct VecAdd& e);          // 前向声明，见下
+    double operator[](std::size_t i) const { return d[i]; }
+    double& operator[](std::size_t i) { return d[i]; }
+};
+struct VecAdd {
+    const Vec& a; const Vec& b;
+    double operator[](std::size_t i) const { return a[i] + b[i]; }
+};
+Vec::Vec(const VecAdd& e) : d(e.a.d.size()) {
+    for (std::size_t i = 0; i < d.size(); ++i) d[i] = e[i];
+}
+VecAdd operator+(const Vec& a, const Vec& b) { return {a, b}; }
+int main() {
+    Vec x(3), y(3); x[0] = 1; y[0] = 2;
+    Vec z = x + y;                        // 仅 1 次遍历，无临时 Vec
+    std::cout << z[0] << "\n";          // 3
+}
 ```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
+[标准] 代理类型把表达式结构滞留到赋值，合并多次遍历为一次。
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 2（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**代理类型的复合赋值**
 
-<details><summary>答案与解析</summary>
+为 `Vec` 增加 `operator+=(const VecAdd&)`，让 `x += (y + y)` 原地累加、零临时。
+
+<details>
+<summary>参考答案</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+struct Vec {
+    std::vector<double> d;
+    Vec(std::size_t n) : d(n, 0) {}
+    double operator[](std::size_t i) const { return d[i]; }
+    double& operator[](std::size_t i) { return d[i]; }
+};
+struct VecAdd {
+    const Vec& a; const Vec& b;
+    double operator[](std::size_t i) const { return a[i] + b[i]; }
+};
+VecAdd operator+(const Vec& a, const Vec& b) { return {a, b}; }
+Vec& operator+=(Vec& a, const VecAdd& e) {
+    for (std::size_t i = 0; i < a.d.size(); ++i) a.d[i] += e[i];
+    return a;
+}
+int main() {
+    Vec x(3), y(3); x[0] = 1; y[0] = 2;
+    x += (y + y);                         // 原地累加
+    std::cout << x[0] << "\n";          // 1 + (2+2) = 5
+}
 ```
-
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
-
+[标准] 复合赋值直接读代理元素累加，避免生成中间 `Vec`。
 </details>
 
+### 练习 3（难度 ★★★★）
+
+**求值时机陷阱**
+
+表达式模板的代理常持 `const Vec&` 引用。若把 `auto tmp = a + b;` 存下、又在 `a/b` 离开作用域后使用 `tmp`，会发生什么？给出安全写法。
+
+<details>
+<summary>参考答案</summary>
+
+代理 `VecAdd` 内部引用 `a`、`b`；若 `a/b` 已销毁，`tmp[i]` 读悬垂引用 → 未定义行为。安全写法：立即物化为 `Vec`（`Vec z = a + b;`），或让代理持有值副本。
+
+```cpp
+#include <iostream>
+#include <vector>
+struct Vec {
+    std::vector<double> d;
+    Vec(std::size_t n) : d(n, 0) {}
+    Vec(const struct VecAdd& e);
+    double operator[](std::size_t i) const { return d[i]; }
+    double& operator[](std::size_t i) { return d[i]; }
+};
+struct VecAdd { const Vec& a; const Vec& b;
+    double operator[](std::size_t i) const { return a[i] + b[i]; } };
+Vec::Vec(const VecAdd& e) : d(e.a.d.size()) {
+    for (std::size_t i = 0; i < d.size(); ++i) d[i] = e[i];
+}
+VecAdd operator+(const Vec& a, const Vec& b) { return {a, b}; }
+int main() {
+    Vec a(3), b(3); a[0] = 1; b[0] = 2;
+    Vec z = a + b;                       // 立即物化，安全
+    std::cout << z[0] << "\n";         // 3
+}
+```
+[标准] 表达式模板代理廉价但有寿命约束；跨作用域保存必须物化为具体类型。
+</details>
+
+
+## 附录：用法演绎（从选型到落地）
+
+
+
+### 演绎 1：表达式模板为何快
+
+**场景**：你写 `Vec z = a + b + c;`，朴素 `operator+` 每步 new 一个 `Vec` 并全量拷贝，临时对象爆炸。
+
+**常见错误**（朴素运算符）：
+```text
+Vec operator+(const Vec& a, const Vec& b) { Vec r(a.d.size()); for(...) r[i]=a[i]+b[i]; return r; }
+Vec z = a + b + c;   // 2 次分配 + 2 次全量拷贝（O(n) 临时）
+```
+
+**修复**：返回惰性代理，赋值点单次遍历（见练习 1）。
+
+```cpp
+#include <iostream>
+#include <vector>
+struct Vec { std::vector<double> d; Vec(std::size_t n):d(n,0){}
+    Vec(const struct VecAdd& e);
+    double operator[](std::size_t i) const { return d[i]; }
+    double& operator[](std::size_t i) { return d[i]; } };
+struct VecAdd { const Vec& a; const Vec& b; double operator[](std::size_t i) const { return a[i]+b[i]; } };
+Vec::Vec(const VecAdd& e):d(e.a.d.size()){ for(std::size_t i=0;i<d.size();++i) d[i]=e[i]; }
+VecAdd operator+(const Vec& a, const Vec& b) { return {a, b}; }
+int main() { Vec a(3), b(3), c(3); a[0]=1; b[0]=2; c[0]=3;
+    Vec ab = a + b;                       // 先物化 a+b
+    VecAdd e = ab + c;                    // 惰性组合 ab+c，仅记录结构
+    Vec z(3); for (std::size_t i=0;i<3;++i) z[i]=e[i];   // 单次遍历求 (a+b)+c
+    std::cout << z[0] << "\n"; }          // 6
+```
+
+**结论**：表达式模板把"多次遍历+临时"合并为"一次遍历+零分配"，是 Eigen/Blitz++ 的核心加速手段。
+
+### 演绎 2：表达式模板的陷阱
+
+**场景**：你用表达式模板后，把 `auto tmp = a + b;` 存进容器或返回，程序偶发崩溃。
+
+**常见错误**（悬垂代理）：
+```text
+auto tmp = a + b;       // VecAdd 代理，内部引用 a、b
+// ... a、b 离开作用域 ...
+use(tmp);               // 读已销毁对象的引用 -> UB
+```
+
+**修复**：跨作用域保存前物化为 `Vec`（见练习 3）；调试困难时可退化为朴素 `operator+` 换取可观测性。
+
+```cpp
+#include <iostream>
+#include <vector>
+struct Vec { std::vector<double> d; Vec(std::size_t n):d(n,0){}
+    Vec(const struct VecAdd& e);
+    double operator[](std::size_t i) const { return d[i]; }
+    double& operator[](std::size_t i) { return d[i]; } };
+struct VecAdd { const Vec& a; const Vec& b; double operator[](std::size_t i) const { return a[i]+b[i]; } };
+Vec::Vec(const VecAdd& e):d(e.a.d.size()){ for(size_t i=0;i<d.size();++i) d[i]=e[i]; }
+VecAdd operator+(const Vec& a, const Vec& b){ return {a,b}; }
+int main() { Vec a(3), b(3); a[0]=1; b[0]=2;
+    Vec safe = a + b;     // 立即物化，可安全跨作用域
+    std::cout << safe[0] << "\n"; }
+```
+
+**结论**：表达式模板以"代理寿命约束 + 调试难度"换取性能；临时结果务必在使用前物化为具体类型。

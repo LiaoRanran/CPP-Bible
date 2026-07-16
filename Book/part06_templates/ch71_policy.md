@@ -585,57 +585,150 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**策略类注入**
 
-<details><summary>答案与解析</summary>
+写 `template <class T, class Alloc> struct Buffer`，用策略类 `Alloc` 提供 `allocate/deallocate`，并给出 `HeapPolicy`。
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+<details>
+<summary>参考答案</summary>
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <cstddef>
+struct HeapPolicy {
+    template <class T> static T* allocate(std::size_t n) { return new T[n]; }
+    template <class T> static void deallocate(T* p) { delete[] p; }
+};
+template <class T, class Alloc>
+struct Buffer {
+    T* data;
+    Buffer(std::size_t n) : data(Alloc::template allocate<T>(n)) {}
+    ~Buffer() { Alloc::template deallocate<T>(data); }
+};
+int main() {
+    Buffer<int, HeapPolicy> b(4);
+    std::cout << "ok\n";
+}
 ```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
+[标准] 策略作为模板参数，编译期绑定，可完全内联，零运行期虚函数开销。
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 2（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**正交策略组合**
 
-<details><summary>答案与解析</summary>
+用模板模板参数组合"存储策略"与"检查策略"：`template <class T, template<class> class Storage, template<class> class Checking> struct Vec`。
+
+<details>
+<summary>参考答案</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cstddef>
+#include <stdexcept>
+template <class T> struct HeapStorage {
+    T* p;
+    HeapStorage(std::size_t n) : p(new T[n]) {}
+    ~HeapStorage() { delete[] p; }
+    T& at(std::size_t i) { return p[i]; }
+};
+template <class T> struct BoundsChecking {
+    static void check(std::size_t i, std::size_t n) {
+        if (i >= n) throw std::out_of_range("oob");
+    }
+};
+template <class T, template <class> class Storage, template <class> class Checking>
+struct Vec {
+    Storage<T> s; std::size_t n;
+    Vec(std::size_t n_) : s(n_), n(n_) {}
+    T& at(std::size_t i) { Checking<T>::check(i, n); return s.at(i); }
+};
+int main() {
+    Vec<int, HeapStorage, BoundsChecking> v(3);
+    std::cout << "ok\n";
+}
 ```
-
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
-
+[标准] 正交策略用模板模板参数组合，编译期生成特化，避免运行期策略对象。
 </details>
 
+### 练习 3（难度 ★★★★）
+
+**编译期策略 vs 运行期策略**
+
+`std::sort` 的比较器是运行期传入的 lambda/函数对象，`Vec` 的排序策略能否改为编译期绑定以助内联？
+
+<details>
+<summary>参考答案</summary>
+
+可以：把排序策略作为编译期类型参数，调用点直接内联策略的 `sort`，无运行期间接。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+struct Ascending  { template <class It> static void sort(It a, It b) { std::sort(a, b); } };
+struct Descending { template <class It> static void sort(It a, It b) {
+    std::sort(a, b, [](auto x, auto y) { return x > y; }); } };
+template <class It, class Policy>
+void my_sort(It a, It b) { Policy::sort(a, b); }
+int main() {
+    std::vector<int> v{3, 1, 2};
+    my_sort<decltype(v.begin()), Ascending>(v.begin(), v.end());
+    std::cout << v[0] << "\n";   // 1
+}
+```
+[标准] 编译期策略可被内联，适合热路径；运行期策略（如 `std::sort` 比较器）更灵活但多一层间接。
+</details>
+
+
+## 附录：用法演绎（从选型到落地）
+
+
+
+### 演绎 1：编译期策略替代运行期虚函数
+
+**场景**：你用运行期策略 `ISortStrategy*` 虚函数注入排序行为，性能剖析发现虚调用拖累热路径。
+
+**常见错误**（运行期策略）：
+```text
+struct ISortStrategy { virtual void sort(std::vector<int>&) = 0; };
+struct Ascending : ISortStrategy { void sort(std::vector<int>& v) override { std::sort(v.begin(), v.end()); } };
+// 每次调用经虚表间接，无法内联
+```
+
+**修复**：策略作为模板参数（见练习 3），编译期内联。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+struct Ascending { template <class It> static void sort(It a, It b) { std::sort(a, b); } };
+template <class It, class P> void my_sort(It a, It b) { P::sort(a, b); }
+int main() { std::vector<int> v{3,1,2}; my_sort<decltype(v.begin()), Ascending>(v.begin(), v.end());
+    std::cout << v[0] << "\n"; }
+```
+
+**结论**：性能敏感的策略用编译期模板参数；需要运行期切换策略（如配置驱动）才用虚函数/函数对象。
+
+### 演绎 2：正交策略避免组合爆炸
+
+**场景**：存储、检查、线程安全三个正交维度各两种，用继承写出 2^3=8 个子类维护灾难。
+
+**常见错误**（继承树爆炸）：
+```text
+class VecHeap; class VecStack; class VecHeapChecked; class VecStackChecked; ... 8 个类
+```
+
+**修复**：每个维度一个模板模板参数，正交组合（见练习 2），编译器按需生成单一特化。
+
+```cpp
+#include <iostream>
+#include <cstddef>
+template <class T> struct Heap { T* p = new T[1]; ~Heap() { delete[] p; } };
+template <class T> struct NoCheck { static void check(std::size_t, std::size_t) {} };
+template <class T, template <class> class S, template <class> class C>
+struct Vec { S<T> s; void at(std::size_t i) { C<T>::check(i, 1); } };
+int main() { Vec<int, Heap, NoCheck> v; std::cout << "ok\n"; }
+```
+
+**结论**：正交关注点用模板参数组合，而非继承派生；维度增加时组合数由指数降为线性。

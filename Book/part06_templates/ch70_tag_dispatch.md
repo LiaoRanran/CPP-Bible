@@ -695,57 +695,128 @@ int main(){std::vector<int> v{1,2,3};auto it=v.begin();std::advance(it,2);std::c
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**手写标签分发**
 
-<details><summary>答案与解析</summary>
+定义两个空标签类型 `fast` / `safe`，重载 `algo(T, tag)` 让编译器在编译期选对版本。
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+<details>
+<summary>参考答案</summary>
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct fast {};
+struct safe {};
+template <class T> void algo(T, fast) { std::cout << "fast\n"; }
+template <class T> void algo(T, safe) { std::cout << "safe\n"; }
+int main() {
+    algo(0, fast{});   // fast
+    algo(0, safe{});   // safe
+}
 ```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
+[标准] 标签是空类型，仅用于重载决议；零运行期开销，调用点在编译期定型。
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 2（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**iterator_category 式分发**
 
-<details><summary>答案与解析</summary>
+仿 `std::advance`，用 `std::random_access_iterator_tag` / `std::input_iterator_tag` 让随机访问迭代器走 `it += n`（O(1)）、输入迭代器走 `++it` 循环（O(n)）。
+
+<details>
+<summary>参考答案</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <iterator>
+#include <vector>
+template <class It>
+void advance_impl(It& it, int n, std::random_access_iterator_tag) { it += n; }
+template <class It>
+void advance_impl(It& it, int n, std::input_iterator_tag) {
+    for (int i = 0; i < n; ++i) ++it;
+}
+template <class It>
+void my_advance(It& it, int n) {
+    using tag = typename std::iterator_traits<It>::iterator_category;
+    advance_impl(it, n, tag{});
+}
+int main() {
+    std::vector<int> v(10);
+    auto it = v.begin();
+    my_advance(it, 3);
+    std::cout << (it - v.begin()) << "\n";   // 3
+}
 ```
-
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
-
+[标准] 标准库算法靠标签 traits 在编译期选最优实现，避免运行期 `if` 分支。
 </details>
 
+### 练习 3（难度 ★★★★）
+
+**标签 + traits 组合**
+
+用 `std::true_type` / `std::false_type` 作为标签，结合 `std::is_integral` 在编译期选算法分支。
+
+<details>
+<summary>参考答案</summary>
+
+```cpp
+#include <iostream>
+#include <type_traits>
+template <class T> void process(T v, std::true_type)  { std::cout << "integral: " << v << "\n"; }
+template <class T> void process(T v, std::false_type) { std::cout << "other\n"; }
+template <class T> void process(T v) { process(v, std::is_integral<T>{}); }
+int main() { process(42); process(3.14); }
+```
+[标准] `std::is_integral<T>{}` 产生 `true_type`/`false_type` 标签，驱动重载决议。
+</details>
+
+
+## 附录：用法演绎（从选型到落地）
+
+
+
+### 演绎 1：标签分发消除运行期分支
+
+**场景**：你写一个算法，内部用 `if (is_random_access) it += n; else ++it;`，结果无法内联、分支预测抖动。
+
+**常见错误**（运行期分支）：
+```text
+template <class It> void my_advance(It& it, int n, bool random) {
+    if (random) it += n; else for (int i=0;i<n;++i) ++it;   // 运行期判断，难内联
+}
+```
+
+**修复**：用标签重载，让编译器在编译期选对版本（见练习 2）。
+
+```cpp
+#include <iostream>
+#include <iterator>
+#include <vector>
+template <class It> void adv(It& it, int n, std::random_access_iterator_tag) { it += n; }
+template <class It> void adv(It& it, int n, std::input_iterator_tag) { for (int i=0;i<n;++i) ++it; }
+template <class It> void my_advance(It& it, int n) {
+    adv(it, n, typename std::iterator_traits<It>::iterator_category{});
+}
+int main() { std::vector<int> v(5); auto it=v.begin(); my_advance(it,2);
+    std::cout << (it-v.begin()) << "\n"; }
+```
+
+**结论**：编译期已知的"类型属性"用标签分发，零运行期成本且可完全内联。
+
+### 演绎 2：标签分发 vs if constexpr
+
+**场景**：C++17 有了 `if constexpr`，标签分发是否还有必要？
+
+**修复示例**：当分支依赖**类型类别**（如 iterator_category）且需与重载/ADL 交互时，标签仍是标准库首选；纯"类型布尔属性"分支用 `if constexpr` 更简洁：
+
+```cpp
+#include <iostream>
+#include <type_traits>
+template <class T> auto pick(T v) {
+    if constexpr (std::is_integral_v<T>) return v + 1;
+    else return v;
+}
+int main() { std::cout << pick(41) << "\n"; }
+```
+
+**结论**：`if constexpr` 替代"布尔属性"标签；标签分发在需借重载决议消歧（如多迭代器类别）时仍不可替代。
