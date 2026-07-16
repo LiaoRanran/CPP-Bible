@@ -229,6 +229,16 @@ curl -sS "https://api.github.com/repos/LiaoRanran/CPP-Bible/actions/runs?per_pag
 
 ## ⚠️ 常见陷阱与经验
 
+### 🔴 CRLF / `core.autocrlf` 导致整文件伪 diff（最危险）
+- **现象**：注入后 `git diff --stat` 显示全章 2000+ 行变更（如 ch80 `2143 +++`），实际只改了习题尾部
+- **根因 A（注入器）**：用 `open().read().split("\n")` + `"\n".join()` 会把 CRLF 文件正文整文件转 LF，产生混合行尾
+- **根因 B（仓库配置）**：本仓库 markdown blob 是 **CRLF**（部分章是 LF），但 `core.autocrlf=true` 让 `git add` 把工作树 clean-filter 成 LF → 与 CRLF blob 比出整文件 hunk
+- **修复**：
+  1. 注入器改读 bytes → 检测 `b"\r\n"` → 逐行 `replace("\r","")` 归一化 → 按检测到的行尾 join → 写 bytes（`_app_driver.py` 已修）
+  2. **`git config core.autocrlf false`**（仓库级，一次性）→ 所有未来批次的 whole-file diff 消失
+- **验证（必须做）**：注入后 `git add` 完跑 `git diff --cached --numstat Book/partNN/chXX.md`，确认是局部变更（如 ch80 应 ~58/35，**绝不**是 1083/1060）。`git diff`（工作树 vs 索引）在 autocrlf 下会显示整文件，看 `--cached` 才准
+- **预防**：每次开新仓库/新会话先 `git config core.autocrlf` 确认 = false
+
 ### 注入脚本非幂等
 - **现象**：对已注入章重复运行 → 生成多份 ## 附录：用法演绎 副本
 - **修复**：`git checkout HEAD -- Book/partNN/chXX.md` 恢复干净态后**单次**注入
@@ -267,7 +277,7 @@ curl -sS "https://api.github.com/repos/LiaoRanran/CPP-Bible/actions/runs?per_pag
 
 ## 📊 剩余规划
 
-### 已覆盖章（83 批次 / 80 唯一章）
+### 已覆盖章（91 批次 / 88 唯一章）
 
 | 批次 | Part | 章号 |
 |------|------|------|
@@ -285,12 +295,13 @@ curl -sS "https://api.github.com/repos/LiaoRanran/CPP-Bible/actions/runs?per_pag
 | APP12 | part03 | 24/26/29/30/32 |
 | APP13 | part02 | 11/12/13/14/15/16/17/18 |
 | APP14 | part01 | 3/4/5/6/7 |
+| APP15 | part07 | 79/80/81/82/83/84/85/86 |
 
-### 剩余 67 章（推荐推进顺序）
+### 剩余 59 章（推荐推进顺序）
 
 | 优先级 | Part | 章号 | 数量 | 说明 |
 |--------|------|------|:---:|------|
-| **1** | part07 STL 余 | 76, 79–92, 94 | **16** | 代码密集，编译友好，价值最高 |
+| **1** | part07 STL 余 | 76, 87–92, 94 | **10** | 代码密集，编译友好，价值最高 |
 | 2 | part01 余 | 1, 2, 8, 9, 10 | 5 | 叙事章，习题以论述/查表为主（ch08/09 GCC13 受限） |
 | 3 | part08 余 | 101 | 1 | |
 | 4 | part09 余 | 110 | 1 | |
@@ -302,7 +313,7 @@ curl -sS "https://api.github.com/repos/LiaoRanran/CPP-Bible/actions/runs?per_pag
 | 10 | part15 | 159–164 | 6 | 案例章，代码少 |
 | 11 | part16 | 165 | 1 | 阅读清单，无代码 |
 
-**建议**：APP15 优先从 **part07 STL 首批**（ch76 queue_stack / ch79–84 容器）取 8 章——这些是全书核心内容，编译约束最少，收益最大。
+**建议**：APP16 继续取 **part07 STL 余**（ch76 queue_stack / ch87–92 容器与算法 / ch94 某 STL 章）——全书核心内容，编译约束最少，收益最大。
 
 ---
 
