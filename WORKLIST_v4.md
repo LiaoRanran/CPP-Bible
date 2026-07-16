@@ -419,8 +419,20 @@
 
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归（8 处既有正文 MULTI_FILE/MODULE/GUARDED_COMPILE 豁免）；独立全链接校验（不裹命名空间，无 PRELUDE，include-hoist，真全链接）36 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（工具链章无需 -pthread/-latomic）。APP-A/APP-C 累计覆盖 78/147 章（批次数累加；唯一覆盖 75 章）。8 章既有工业附录均位于习题锚点之前，简单替换（锚点→EOF）天然保留，无 preserve 截断需求。修复：ch11 演绎2 为 old_init 补同 TU 定义使链接自包含；ch17 练习2 修正 offsetof(Packed, int)→offsetof(Packed, i)（int 为关键字不可作成员指示符）。所有 ```cpp 注入块自包含可编译且显式写全 `#include`。
 
+**Batch APP14（已完成，2026-07-16）**：part01_history 5 章全覆盖 APP-A + APP-C（习题重写 + 用法演绎附录）
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP14 | ch03 C++98/03 | 习题：STL 迭代器/泛型算法 / vtable 虚函数多态 / vector&lt;bool&gt; 位压缩陷阱；演绎：RAII FileGuard + functor 绝对值排序 |
+| APP14 | ch04 C++11 | 习题：auto/范围for/nullptr / unique_ptr 所有权转移 / 移动构造 noexcept；演绎：lambda+function 回调节器 + shared_ptr/weak_ptr 破循环引用 |
+| APP14 | ch05 C++14 | 习题：泛型 lambda 通用打印 / auto 返回推导+变量模板 / 二进制字面量+make_unique；演绎：泛型 lambda 排序比较器 + 变量模板物理常量 |
+| APP14 | ch06 C++17 | 习题：结构化绑定解构 map / optional 可空查表 / if constexpr+折叠表达式；演绎：variant+visit 类型安全和类型 + string_view 零拷贝/悬垂陷阱 |
+| APP14 | ch07 C++20 | 习题：concepts 约束模板 / ranges 惰性管道 / 三路比较&lt;=&gt; default；演绎：span 统一连续序列 + 指派初始化自文档化 config |
+
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归；独立全链接校验（不裹命名空间，无 PRELUDE，include-hoist，真全链接）25 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（全含 main 全链接）。APP-A/APP-C 累计覆盖 83/147 章（批次数累加；唯一覆盖 80 章）。5 章既有工业附录均位于习题锚点之前，简单替换（锚点→EOF）天然保留。特性选择受 GCC 13.1 -std=c++23 可编译约束（未选 C++23/26 特性）。所有 ```cpp 注入块自包含可编译且显式写全 `#include`。
+
 **后续批次（规划中）**
-- **APP14+**：滚动覆盖剩余章节（part01_history / part07_stl / part08 / part09 余 / part10 余 / part11_source / part12_patterns / part13_engineering / part14_perf / part15_cases / part16_reading），直至 147 章习题全部主题对齐。
+- **APP15+**：滚动覆盖剩余章节（part01_history ch01/02/08/09/10 + part07_stl / part08 / part09 余 / part10 余 / part11_source / part12_patterns / part13_engineering / part14_perf / part15_cases / part16_reading），直至 147 章习题全部主题对齐。
 
 ## 不纳入项（P2-，已评估）
 
@@ -465,7 +477,8 @@
 | APP11 | Phase APP 应用层增强第十一批（part05_oo 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP12 | Phase APP 应用层增强第十二批（part03_language 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP13 | Phase APP 应用层增强第十三批（part02_toolchain 8 章习题重写+用法演绎） | 8 | 8 | 100% |
-| **合计** | | **145** | **145** | **100%** |
+| APP14 | Phase APP 应用层增强第十四批（part01_history 5 章习题重写+用法演绎） | 5 | 5 | 100% |
+| **合计** | | **150** | **150** | **100%** |
 
 ---
 
