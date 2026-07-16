@@ -290,10 +290,10 @@
 | APP2 | ch50 多重继承 | 习题：非虚 MI 两份基类 / 菱形二义 / virtual 继承代价；演绎：菱形继承要不要 virtual（保留[实现] ASM） |
 | APP2 | ch51 CRTP | 习题：CRTP 静态多态 / Barton-Nackman / CRTP vs 虚函数；演绎：虚函数→零成本静态分发 |
 
-> 一致性门禁（APP2 注入后）：147 章 ERROR=0 / WARN=0 = 100/100；8 章 cpp 块编译校验通过（GCC13.1 -O2 -Wall -Wextra）。APP-A/APP-C 累计覆盖 16/147 章。
+> 一致性门禁（APP3 注入后）：147 章 ERROR=0 / WARN=0 = 100/100；5 章新注入 cpp 块编译校验通过（GCC15.3 -O2 -Wall -Wextra，ch27 2516B / ch41 882B / ch96 1076B / ch110 844B / ch133 自包含块）。APP-A/APP-C 累计覆盖 21/147 章。
 
 **后续批次（规划中）**
-- **APP3**：工业深挖首批（ch27 MMIO / ch41 所有权实战 / ch96 introsort 源码 / ch110 无锁 / ch133 工业复盘升级）。
+- **APP3（2026-07-15 完成）**：工业深挖首批 5 章 ch27/41/96/110/133。上游源码（ClickHouse IColumn/ColumnVector/Arena/ExpressionActions、Redis aeProcessEvents/zskiplistNode、Abseil/folly 所有权、moodycamel::ConcurrentQueue、libstdc++ `__introsort_loop`）以 text 围栏逐行呈现（编译门禁跳过）；每章附 1 个自包含可编译 cpp 范式（ch27 MMIO 2516B / ch41 IntrusivePtr 882B / ch96 median3 1076B / ch110 SPSCRing 844B / ch133 AggregateSum）。一致性门禁 147 章 0/0 维持。APP-A/APP-C 累计覆盖 21/147 章。
 - **APP4+**：滚动覆盖剩余章节，直至 147 章习题全部主题对齐、重点章均有用法演绎 + 工业深挖。
 
 ## 不纳入项（P2-，已评估）
