@@ -4,7 +4,7 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
   "last_updated": "2026-07-16",
-  "last_commit": "f3d7f2951adaa01da9f5ba1ba1a722bb55b44bf4",
+  "last_commit": "d8043b52b5471c8acd11a9d1269be532f9eb1025",
   "git_status": "local committed, pushing",
   "completed_phases": [
     "density_deepening",
@@ -525,6 +525,24 @@
       "consistency": "147章 ERROR=0 WARN=0",
       "mode": "简单替换(习题锚点→EOF, 工业附录在锚点前已保留)",
       "note": "GCC13.1 -std=c++23 可编译约束下选特性; ch08(C++23)/ch09(C++26)/ch01/02/10 留 APP15"
+    },
+    "APP15": {
+      "status": "completed",
+      "chapters": [
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86
+      ],
+      "label": "part07_stl 8章 习题重写+用法演绎 (list/array/string/span/map/set/unordered/adapters)",
+      "double_gate": "standalone + CI模拟 0 fail/0 回归",
+      "consistency": "147章 ERROR=0 WARN=0",
+      "mode": "简单替换(习题锚点→EOF, 工业附录在锚点前已保留)",
+      "note": "GCC13.1 -std=c++23 可编译; 8 章既有真机汇编实证附录均位于习题锚点前，简单替换天然保留"
     }
   },
   "execution_order": [
@@ -598,7 +616,8 @@
     "APP11",
     "APP12",
     "APP13",
-    "APP14"
+    "APP14",
+    "APP15"
   ],
   "metrics": {
     "density_avg_combined": 24.9,
@@ -616,12 +635,13 @@
     "application_layer_app7_chapters": "5/147 (ch19/22/23/25/28)",
     "application_layer_app8_chapters": "5/147 (ch95/97/98/99/100)",
     "application_layer_app9_chapters": "5/147 (ch118/119/120/121/122)",
-    "application_layer_total_chapters": "83/147 (app1-14: 83 章, 批次数累加; 唯一覆盖 80 章)",
+    "application_layer_total_chapters": "91/147 (app15: 91 章, 批次数累加; 唯一覆盖 88 章)",
     "application_layer_app10_chapters": "6/147 (ch107/108/109/111/112/113)",
     "application_layer_app11_chapters": "5/147 (ch45/46/48/49/52)",
     "application_layer_app12_chapters": "5/147 (ch24/26/29/30/32)",
     "application_layer_app13_chapters": "8/147 (ch11/12/13/14/15/16/17/18)",
-    "application_layer_app14_chapters": "5/147 (ch03/04/05/06/07)"
+    "application_layer_app14_chapters": "5/147 (ch03/04/05/06/07)",
+    "application_layer_app15_chapters": "8/147 (ch79/ch80/ch81/ch82/ch83/ch84/ch85/ch86)"
   },
   "ci_status": "Pushed Phase APP batch14 (HEAD f3d7f2951adaa01da9f5ba1ba1a722bb55b44bf4); application_layer enhanced 83/147 chapters (app1-13 78 章 + app14 ch03-07 C++98/11/14/17/20); consistency 100/100; 双门禁: 独立全链接 25块0fail(全含main) + CI模拟0回归"
 }

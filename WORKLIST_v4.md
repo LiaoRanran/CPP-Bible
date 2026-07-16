@@ -431,6 +431,21 @@
 
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归；独立全链接校验（不裹命名空间，无 PRELUDE，include-hoist，真全链接）25 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（全含 main 全链接）。APP-A/APP-C 累计覆盖 83/147 章（批次数累加；唯一覆盖 80 章）。5 章既有工业附录均位于习题锚点之前，简单替换（锚点→EOF）天然保留。特性选择受 GCC 13.1 -std=c++23 可编译约束（未选 C++23/26 特性）。所有 ```cpp 注入块自包含可编译且显式写全 `#include`。
 
+**Batch APP15（已完成，2026-07-17）**：part07_stl 8章 习题重写+用法演绎 (list/array/string/span/map/set/unordered/adapters)
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP15 | ch79 79_list | 习题：### 练习 1（难度 ★★）【用 list::splice 把第 k 个节点前移到表头，演示 O(1) 节点搬迁（】 / ### 练习 2（难度 ★★★）【把源链表中一个半开区间 `[first, last)` 整体搬到目标链表末尾，验证 】 / ### 练习 3（难度 ★★★★）【用 splice 把原链表中的奇数节点稳定地搬到另一条链表（保持原相对顺序，即稳定分】；演绎：演绎 用 list + map 实现 O(1) 命中提升的 LRU 缓存【`list` 维护使用顺序（前端=最近使用），`map` 存键到 `list` 迭代】 / 演绎 list 与 vector 删除中间元素时的迭代器失效差异【`list` 的 `erase` 只使被删节点的迭代器失效，返回下一有效迭代器；`v】 |
+| APP15 | ch80 80_array | 习题：### 练习 1（难度 ★★）【用 std::to_array 从 C 数组构造 std::array，演示编译期固】 / ### 练习 2（难度 ★★★）【用 C++17 结构化绑定解构 array，并用 `std::get<N>` 按索引】 / ### 练习 3（难度 ★★★★）【用 alignas 让 array 满足 SIMD 对齐要求（32 字节对齐适配 A】；演绎：演绎 编译期查表（constexpr array）【用立即调用 lambda 在编译期填满 array，运行期查表零成本。】 / 演绎 array 作为聚合参与 constexpr 计算【array 是字面量类型，可在 `constexpr` 函数中构造与下标访问，参与编】 |
+| APP15 | ch81 81_string | 习题：### 练习 1（难度 ★★）【用 std::string_view::substr 做零拷贝切片，对比 std::】 / ### 练习 2（难度 ★★★）【用 string_view 原地解析 CSV 字段（按逗号切分，不拷贝子串），演示流】 / ### 练习 3（难度 ★★★★）【string_view 悬垂陷阱：view 指向的 string 生命周期短于 vi】；演绎：演绎 日志接口统一用 string_view 避免临时 string 分配【函数参数用 `string_view` 可同时接受字面量、`std::string`】 / 演绎 string 累积拼接 vs 只读解析的取舍【需要修改/拥有结果时用 `std::string` 累积；仅需查看时用 `strin】 |
+| APP15 | ch82 82_span | 习题：### 练习 1（难度 ★★）【用 std::span 写统一接口，同一函数接收 C 数组、std::array、s】 / ### 练习 2（难度 ★★★）【用动态 extent 的 span 做 subspan 切片，演示不拷贝地取子区间。】 / ### 练习 3（难度 ★★★★）【用 span 实现二维矩阵的"行视图"（无拷贝），演示把扁平 buffer 按列数切】；演绎：演绎 泛型数值累加，接受任意连续容器【把容器转成 `span<const T>` 后用标准算法累加，签名只依赖连续性。】 / 演绎 const 正确性——span<const T> 与 span<T>【只读函数用 `span<const T>`，可接收 `vector<int>` 与 】 |
+| APP15 | ch83 83_map | 习题：### 练习 1（难度 ★★）【用 lower_bound/upper_bound 在有序 map 上做闭开区间查询】 / ### 练习 2（难度 ★★★）【对比 operator[]、at、insert_or_assign 的语义差异：[]】 / ### 练习 3（难度 ★★★★）【用 C++17 节点句柄 extract 把节点从一张 map 转移到另一张 map】；演绎：演绎 用 map 实现区间映射（interval map 简化版）【以左闭起点为 key，查询时取"第一个大于 x 的起点"的前驱，即得 x 所属区间的】 / 演绎 map 的 O(log n) 与缓存局部性代价【红黑树节点分散在堆上，有序遍历会发生指针跳转，缓存命中率低于连续存储的 unorde】 |
+| APP15 | ch84 84_set | 习题：### 练习 1（难度 ★★）【插入重复元素验证 set 自动去重并按升序遍历，演示红黑树有序唯一性。】 / ### 练习 2（难度 ★★★）【用 set + lower_bound 维护滑动窗口内的最长无重复子数组长度，演示有】 / ### 练习 3（难度 ★★★★）【用 multiset 统计元素出现次数（允许重复），演示与 set 的关键区别。】；演绎：演绎 用 set 维护任务调度的最近到期时刻【set 的 `begin()` 即最小 key（最近到期），弹出即调度，O(log 】 / 演绎 set 与 unordered_set 的小规模性能拐点【元素少且需要有序时用 set；元素多且只判存在时用 unordered_set（均摊】 |
+| APP15 | ch85 85_unordered | 习题：### 练习 1（难度 ★★）【为自定义 key 提供哈希与相等，演示 unordered_set 的最小接口（默认】 / ### 练习 2（难度 ★★★）【用 C++20 异构查找（is_transparent）让 unordered_se】 / ### 练习 3（难度 ★★★★）【用 reserve 预分配桶以避免多次 rehash，演示 load_factor 】；演绎：演绎 用 unordered_map + list 实现 O(1) 查找的 LRU 骨架【map 存 key→list 迭代器做 O(1) 命中查找，list 维护使用顺序。】 / 演绎 为 pair 提供组合哈希，避免退化到单字段哈希【用移位+加法组合两个字段的哈希，降低碰撞概率（对抗哈希 DoS 需随机化种子，此处仅】 |
+| APP15 | ch86 86_adapters | 习题：### 练习 1（难度 ★★）【用 vector 作底层容器构造 stack，用默认 deque 构造 queue，】 / ### 练习 2（难度 ★★★）【用 std::greater 把 priority_queue 变成最小堆，演示比较】 / ### 练习 3（难度 ★★★★）【用最大堆实现 Top-K：持续压入，超过 K 就弹出堆顶，最终堆中即最大的 K 个。】；演绎：演绎 用 stack 实现括号匹配（经典栈应用）【遇到开括号入栈，遇到闭括号与栈顶配对，全程 LIFO 校验嵌套正确性。】 / 演绎 priority_queue 的比较器与底层容器约束【自定义比较器须是函数对象类型；底层容器必须满足 RandomAccessIterat】 |
+
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归；独立全链接校验（不裹命名空间，无 PRELUDE，include-hoist，真全链接）注入区 GCC 13.1 -O2 -Wall -Wextra 0 fail（无需 -pthread/-latomic）。APP-A/APP-C 累计覆盖 91/147 章（批次数累加；唯一覆盖 88 章）。简单替换(习题锚点→EOF, 工业附录在锚点前已保留)。所有 ```cpp 注入块自包含可编译且显式写全 `#include`。
+
 **后续批次（规划中）**
 - **APP15+**：滚动覆盖剩余章节（part01_history ch01/02/08/09/10 + part07_stl / part08 / part09 余 / part10 余 / part11_source / part12_patterns / part13_engineering / part14_perf / part15_cases / part16_reading），直至 147 章习题全部主题对齐。
 
@@ -478,7 +493,8 @@
 | APP12 | Phase APP 应用层增强第十二批（part03_language 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP13 | Phase APP 应用层增强第十三批（part02_toolchain 8 章习题重写+用法演绎） | 8 | 8 | 100% |
 | APP14 | Phase APP 应用层增强第十四批（part01_history 5 章习题重写+用法演绎） | 5 | 5 | 100% |
-| **合计** | | **150** | **150** | **100%** |
+| APP15 | Phase APP 应用层增强第十五批（part07_stl 8 章习题重写+用法演绎） | 8 | 8 | 100% |
+| **合计** | | **174** | **174** | **100%** |
 
 ---
 
