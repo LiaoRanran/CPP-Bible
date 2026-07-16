@@ -1766,57 +1766,150 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+用 RAII 包装一个必须配对调用的资源（`open()`/`close()`，如 `std::FILE*`）：
+写 `struct FileGuard` 在析构中 `fclose`，演示函数中途 `throw` 仍会关闭文件；对比裸 `open/close` 在异常路径泄漏。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+```cpp
+#include <cstdio>
+#include <stdexcept>
+struct FileGuard {
+    std::FILE* f;
+    FileGuard(const char* p){ f = std::fopen(p,"w"); if(!f) throw std::runtime_error("open"); }
+    ~FileGuard(){ if(f) std::fclose(f); }     // 无论正常返回还是异常, 都关闭
+};
+void use(){
+    FileGuard g("log.txt");
+    // ... 若此处 throw, 栈展开会调用 ~FileGuard -> fclose, 无泄漏
+}
+```
+
+裸写法：`fopen` 后某步 `throw`，跳过 `fclose` → 句柄泄漏。RAII 把"释放"绑定到作用域退出。
+
+[标准] RAII：资源获取即初始化，释放绑定到对象析构；异常安全的核心是析构兜底。
+
+</details>
+
+### 练习 2（难度 ★★★）
+
+实现 C++ 风格 `ScopeGuard`：支持 `auto g = scope_guard([&]{ cleanup(); });`，
+作用域结束（正常或异常）自动执行。说明它与"析构兜底"是同一机制，并指出异常安全保证级别。
+
+<details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+template <class F>
+struct ScopeGuard { F f; bool active = true;
+    explicit ScopeGuard(F fn): f(std::move(fn)) {}
+    ~ScopeGuard(){ if(active) f(); }
+    void dismiss(){ active = false; }
+};
+template <class F> ScopeGuard<F> scope_guard(F f){ return ScopeGuard<F>(std::move(f)); }
+// 用法:
+// auto g = scope_guard([&]{ unlock(m); });   // 离开作用域必解锁
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+`ScopeGuard` 本质是一个一次性 RAII 对象，把"清理动作"存为可调用对象。
+它提供 **basic 异常安全保证**：即使后续抛异常，已注册的清理仍执行，资源不泄漏。
+`dismiss()` 用于"成功路径上不再需要清理"时取消。
+
+[标准] ScopeGuard 是 RAII 的通用化形态；用 lambda 表达任意清理动作；属 basic 保证。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+解释异常安全三保证（noexcept / basic / strong），并用 **copy-and-swap** 实现 `StrongArray::operator=` 的强保证：
+先拷贝右边到临时量，再与当前对象无抛出地交换；若拷贝阶段抛异常，左边对象原状不变。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <utility>
+#include <vector>
+struct StrongArray {
+    std::vector<int> v;
+    StrongArray& operator=(const StrongArray& o){
+        StrongArray tmp(o);        // 拷贝可能抛, 但只影响 tmp, *this 不动
+        std::swap(v, tmp.v);       // 交换不抛 -> 提交
+        return *this;              // tmp 析构释放旧资源
+    }
+};
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+- **noexcept**：承诺绝不抛（如析构、移动构造）。
+- **basic**：异常后对象仍有效、无泄漏（但不保证值不变）。
+- **strong**：异常后对象**状态完全不变**（事务语义，如 `push_back` 扩容失败回滚）。
+copy-and-swap 把"可能失败的工作"放在临时对象上，最后一步 `swap` 不抛，从而获得强保证。
+
+[标准] 强异常安全 = 失败如未调用；copy-and-swap 经典实现；swap 必须 noexcept。
 
 </details>
 
+## 附录：用法演绎 — 用 RAII 把 10 处 open/close 收敛成 0 泄漏
+
+> 场景：一段函数有 3 个资源（文件、互斥锁、数据库连接），中途可能抛异常，手写 try/finally 极易漏关。
+
+**步骤 1：手动资源管理（漏 close 的 N 种路径）**
+
+```cpp
+#include <cstdio>
+int main(){
+    FILE* f = std::fopen("a.txt", "r");   // 若下面 throw, fclose 永不调用 -> 句柄泄漏
+    // step_that_may_throw();
+    std::fclose(f);                        // 仅正常路径执行, 异常路径被跳过
+}
+```
+
+异常从 `step_that_may_throw()` 逃出，跳过所有清理 → 锁死、句柄泄漏、连接泄漏。
+
+**步骤 2：RAII 包装（析构兜底）**
+
+```cpp
+#include <cstdio>
+struct FileGuard {
+    FILE* f;
+    FileGuard(const char* p) : f(std::fopen(p, "r")) {}
+    ~FileGuard() { if (f) std::fclose(f); }   // 析构必调用
+};
+int main(){
+    FileGuard fg("a.txt");   // 无论正常/异常, fg 析构自动 fclose -> 全清理
+}
+```
+
+栈展开（stack unwinding）保证：函数任意点退出，已构造的局部对象按**逆序**析构。
+清理逻辑集中到类型里，调用处零心智负担。
+
+**步骤 3：ScopeGuard 处理非资源清理**
+
+```cpp
+#include <mutex>
+std::mutex m;
+int main(){
+    m.lock();
+    auto g = [&]{ m.unlock(); };   // 作用域结束必解锁, 无论怎么退出
+    // ... 任意路径 ...
+    g();                           // 真实工程用 scope_exit / unique_lock
+}
+```
+
+`ScopeGuard` 把"清理动作"存成 lambda，适合"解锁、恢复全局状态、打日志"等非典型资源。
+
+**步骤 4：借 unique_ptr 自定义 deleter 复用标准设施**
+
+```cpp
+#include <cstdio>
+#include <memory>
+int main(){
+    auto f = std::unique_ptr<FILE, decltype(&std::fclose)>(std::fopen("a.txt","r"), std::fclose);
+    // 文件句柄随 f 析构自动 fclose, 且能放进容器/作为返回值转移所有权
+}
+```
+
+**结论**：资源管理的唯一正确范式是 RAII——把"释放"绑定到作用域退出；
+`unique_ptr`/`lock_guard`/`scope_guard` 覆盖绝大多数场景，手写 `new/delete` 极少需要。
+
+**工程含义**：异常安全不是"加 try/catch"，而是"每个资源都有 RAII 守护"；
+这正是现代 C++ 相比 C 在系统可靠性上的核心优势之一。

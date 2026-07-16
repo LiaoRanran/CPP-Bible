@@ -1294,67 +1294,80 @@ A: 几乎从不。唯一安全: 从指向标准布局类型第一个成员的指
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+`float f = 1.0f; int bits = *reinterpret_cast<int*>(&f);` 为何是未定义行为？
+给出两种**合法**的位模式重解释方式，并指出严格别名规则的核心约束。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cstring>
+#include <bit>
+int main(){
+    float f = 1.0f;
+    // 非法: float* 与 int* 是不同类型, 编译器假定它们不别名 -> UB
+    // int bits = *reinterpret_cast<int*>(&f);
+    int bits1; std::memcpy(&bits1, &f, sizeof(bits1));   // 合法: 重解释对象表示
+    int bits2 = std::bit_cast<int>(f);                   // 合法(C++20): 编译期友好
+    (void)bits1; (void)bits2;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+严格别名规则：通过与该对象动态类型不"相似"的指针类型写/读内存是 UB。合法重解释只有
+`memcpy` 与 `std::bit_cast`（以及 `char*`/`std::byte*` 字节遍历，见习题 2）。
+
+[标准] 严格别名（[basic.lval]）：仅限动态类型或"相似类型"访问；`memcpy`/`bit_cast` 是豁免通道。
 
 </details>
 
+### 练习 2（难度 ★★★）
 
----
+`char*` / `std::byte*` 是标准豁免的"万能别名"。写一泛型 `serialize(const T&)` 用 `std::byte*` 逐字节写出任意对象，
+解释为何它合法、而 `reinterpret_cast<T*>` 不合法。
 
-> **UB 实证库**：严格别名规则破坏的**真实优化分歧证据**（`-O0` 输出 `x=1065353217` 而 `-O2` 输出 `x=1`）+ `-Wstrict-aliasing` 警告 + `std::bit_cast` 修复，见 [UB-05 严格别名](../../Appendix/ub/ub05_strict_aliasing.md)。
+<details><summary>答案与解析</summary>
 
----
+```cpp
+#include <cstddef>
+#include <iostream>
+template <class T>
+void dump_bytes(const T& obj){
+    auto p = reinterpret_cast<const std::byte*>(&obj);   // byte* 可别名任意类型 (合法豁免)
+    for (std::size_t i = 0; i < sizeof(T); ++i)
+        std::cout << static_cast<int>(p[i]) << ' ';
+}
+```
 
+`char`/`signed char`/`unsigned char`/`std::byte` 被标准明确允许访问**任何**对象的字节表示，
+因此用它们遍历对象是合法的；但把对象地址 `reinterpret_cast` 成**其它具体类型**的指针去读就违反严格别名。
+这正是序列化、哈希、内存比较的标准做法。
+
+[标准] `char`/`std::byte` 系列是"通用别名"类型；其余类型间的 reinterpret 跨类型访问触发 UB。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+`__restrict`（GCC/Clang）是给编译器的"不别名"契约。写 `void axpy(int n, double* __restrict y,
+const double* __restrict a, const double* __restrict x, double c)`，说明它如何让编译器向量化
+（不必每次从内存重载 `a[i]`/`x[i]`），对比不标 `__restrict` 时编译器必须保守重载。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+void axpy(int n, double* __restrict y,
+          const double* __restrict a, const double* __restrict x, double c){
+    for (int i = 0; i < n; ++i) y[i] = a[i] + c * x[i];   // 编译器可假定 a/x/y 互不重叠 -> 向量化
+}
+```
+
+不标 `__restrict` 时，编译器怕 `a` 与 `y` 指向重叠内存（如 `axpy(n, y, y, x, c)`），
+被迫每次循环都从内存重读 `a[i]`（不能缓存到寄存器），无法安全向量化。
+`__restrict` 是**程序员对优化器的承诺**（非运行时检查）：承诺这些指针不别名，换来计算器级别的向量化收益。
+见本章「附录 E」真实汇编对比。
+
+[标准] `__restrict` 向编译器声明指针不别名；违反承诺是 UB，但收益是解除向量化阻碍。
+
+</details>
 ## 附录 E：编译实证——`-fstrict-aliasing` 开关如何改变生成码 [C: Compiler / E: Low-level]
 
 > `[实测]` 编译：`g++ -std=c++23 -O2 -c ch42_aliasing_test.cpp` + `objdump -d`（GCC 15.3.0 / Win64 ABI，`%rcx`=第1参数、`%rdx`=第2参数）。产物 `_asm_demo/ch42_aliasing_test.cpp`。
@@ -1422,3 +1435,63 @@ int same_type(int* pi, int* pj) {  // 同类型: 必然可能重叠
 - 严格别名的收益是**寄存器缓存 + 消除冗余 load/store**，热点循环里可省下大量内存访问。
 - 代价是：一旦你用 `reinterpret_cast` 跨类型读写（type punning），编译器基于「不重叠」的优化会让结果与直觉不符——这就是 UB。**合法替代是 `std::bit_cast`（C++20）或 `memcpy`**，它们在 `-O2` 下同样零开销但不触发 UB。
 - `char*`/`std::byte*`/`unsigned char*` 是标准明确豁免的「万能别名」，可安全遍历任意对象的字节表示。
+
+
+
+
+
+
+
+
+
+
+
+## 附录：用法演绎 — 严格别名如何悄悄改变你的程序结果
+
+> 场景：网络/序列化代码常需"看一个对象的位模式"或"把同一块内存当不同类型用"。这一步走错就是 UB。
+
+**步骤 1：错误——`reinterpret_cast` 跨类型读写（UB）**
+
+```cpp
+float f = 1.0f;
+int bits = *reinterpret_cast<int*>(&f);   // 违反严格别名 -> UB
+```
+
+编译器假定 `float*` 与 `int*` 不指向同一内存。开启 `-fstrict-aliasing`（默认 `-O2`）后，
+它可能把 `f` 的值缓存到寄存器、并不从你写的 `int*` 侧回读，结果与你直觉不符——且因是 UB，
+"在这台机器上能跑"不等于"换个优化级别/编译器还正确"。
+
+**步骤 2：合法——`memcpy` 重解释位模式**
+
+```cpp
+int main(){
+    float f = 1.0f; int bits;
+    std::memcpy(&bits, &f, sizeof(bits));   // 标准明确允许重解释对象表示
+}
+```
+
+`memcpy` 是唯一被标准许可的"重新解释对象表示"通道；现代编译器会把它优化成单条寄存器传送，零运行时成本。
+
+**步骤 3：优雅——`std::bit_cast`（C++20）**
+
+```cpp
+int bits = std::bit_cast<int>(1.0f);   // 编译期可求值, 类型安全, 零开销
+```
+
+比 `memcpy` 更地道：不依赖临时变量，且可在常量表达式中使用。
+
+**步骤 4：高级——`__restrict` 解锁向量化（性能反向利用别名假设）**
+
+```cpp
+void axpy(int n, double* __restrict y, const double* __restrict a,
+          const double* __restrict x, double c){
+    for (int i=0;i<n;++i) y[i] = a[i] + c*x[i];   // 编译器可假定 a/x/y 不重叠 -> 向量化
+}
+```
+
+严格别名默认让编译器"保守地假设可能别名"；`__restrict` 是程序员承诺"绝不别名"，
+把保守重载换成 SIMD 流水线。详见本章「附录 E」真实汇编对比（`no_alias` 比 `char_pun` 省一条 load）。
+
+**结论**：看位模式 → `bit_cast`/`memcpy`；跨类型读写对象 → 必 UB；想帮编译器向量化 → `__restrict`（并自担承诺）。
+
+**工程含义**：严格别名不是学术细节——它直接决定你的序列化/网络/数值代码在 `-O2` 下是否正确与多快。

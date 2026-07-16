@@ -708,57 +708,141 @@ void final_call(DogFinal* d) { d->speak(); }        // ③ final 类去虚拟化
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 CRTP 写 `template<class D> struct Printable { void print() const { static_cast<const D*>(this)->do_print(); } };`，
+派生类提供 `do_print()`，演示编译期多态（无 vtable、无虚函数）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+template <class D>
+struct Printable {
+    void print() const { static_cast<const D*>(this)->do_print(); }   // 编译期静态分发
+};
+struct Point : Printable<Point> {
+    int x = 3;
+    void do_print() const { std::cout << "Point(" << x << ")\n"; }
+};
+int main(){ Point p; p.print(); }   // 调用链在编译期确定, 无 vtable
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+`Printable<Point>` 把 `print` 转成对 `do_print` 的静态调用，编译器能直接内联、无间接跳转。
+这是"编译期多态"——类型 `D` 在编译期已知，不需要运行期类型信息。
+
+[标准] CRTP（Curiously Recurring Template Pattern）：基类以派生类为模板参数，静态分发。
 
 </details>
 
+### 练习 2（难度 ★★★）
+
+用 CRTP 实现 Barton–Nackman trick：基类提供 `operator<` 调用派生类的 `compare`，
+让派生类自动获得 `<` 且能用于模板，避免虚函数开销。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+template <class D>
+struct LessThan {
+    friend bool operator<(const D& a, const D& b){ return a.compare(b) < 0; }
+};
+struct Version : LessThan<Version> {
+    int major, minor;
+    int compare(const Version& o) const {            // 唯一的"真"比较逻辑
+        if (major != o.major) return major - o.major;
+        return minor - o.minor;
+    }
+};
+// Version 自动拥有 operator<, 可直接用于 std::sort / std::map
+```
+
+Barton–Nackman 把"运算符"放在基类、把"核心比较"留给派生类，`operator<` 是 `friend` 自由函数，
+能被 ADL 找到、可用于泛型算法，全程零虚函数、可内联。
+
+[标准] Barton–Nackman：基类定义运算符、调用派生类原语；友元自由函数经 ADL 参与重载。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+对比 CRTP 与虚函数的性能与局限：写数值算子 `Square`（CRTP）与虚函数版 `Op`，
+指出 CRTP 循环体被内联、零间接、但容器必须同类型；虚函数可异构但有 vtable 调用、阻止跨边界内联
+（见本书 ch47/ch51 ASM 实证）。说明 Eigen/Boost 为何选 CRTP。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+// CRTP: 编译期内联, 但 vector<Square> 不能混存其它算子
+template <class D> struct OpCrtp { double eval(double x) const { return static_cast<const D*>(this)->f(x); } };
+struct Square : OpCrtp<Square> { double f(double x) const { return x*x; } };
+
+// 虚函数: 可放 vector<Op*>, 但每次调用经 vtable, 难内联
+struct Op { virtual double eval(double) const = 0; virtual ~Op()=default; };
+struct SquareV : Op { double eval(double x) const override { return x*x; } };
+```
+
+CRTP 把虚调用变成静态 `static_cast` + 内联，循环中无 `call [vtable]`，可被整体优化（如向量化）；
+但 `Square` 与 `Cube` 是不同类型，无法进同一 `vector`（失去运行时异构）。
+虚函数相反：灵活但每次调用间接、阻止内联。Eigen 表达式模板、Boost 算子库选 CRTP 是为了
+把"运算符组合"在编译期展开成零开销代码。
+
+[标准] CRTP = 零开销静态多态（失异构）；虚函数 = 运行时多态（失内联）。按场景取用。
+
+</details>
+
+## 附录：用法演绎 — 把虚函数调用优化成零成本的静态分发
+
+> 场景：数值计算中有一族算子（`Square`/`Cube`/`Scale`），要高频调用 `eval(x)`。虚函数 vs CRTP 实测取舍。
+
+**步骤 1：虚函数版本（vtable 间接，无法跨边界内联）**
+
+```cpp
+struct Op { virtual double eval(double) const = 0; virtual ~Op()=default; };
+struct Square : Op { double eval(double x) const override { return x*x; } };
+int main(){
+    Square s;
+    Op* ops[1] = {&s};                     // 实际填充真实算子集合
+    double sum = 0;
+    for (auto* o : ops) sum += o->eval(2.0);  // 每次 call [vtable], 阻止内联 -> 无法向量化
+    (void)sum;
+}
+```
+
+虚调用在运行期经 vtable 查槽，编译器看不到具体实现，**不能内联**，循环体保留间接跳转。
+
+**步骤 2：CRTP 版本（编译期内联，零间接）**
+
+```cpp
+template <class D> struct OpCrtp { double eval(double x) const { return static_cast<const D*>(this)->f(x); } };
+struct Square : OpCrtp<Square> { double f(double x) const { return x*x; } };
+int main(){
+    Square s;
+    Square sqs[1] = {s};                  // CRTP: 同类型可装同容器
+    double sum = 0;
+    for (const auto& o : sqs) sum += o.eval(2.0);  // static_cast + 内联 -> 循环体融合并可向量化
+    (void)sum;
+}
+```
+
+`eval` 编译期解析为 `Square::f`，`x*x` 直接内联进循环体，无 vtable 间接、可被优化/向量化。
+
+**步骤 3：代价——失去运行时异构**
+
+```cpp
+struct Op { virtual double eval(double) const = 0; virtual ~Op()=default; };
+template <class D> struct OpCrtp { double eval(double x) const { return static_cast<const D*>(this)->f(x); } };
+struct Square : OpCrtp<Square> { double f(double x) const { return x*x; } };
+std::vector<Square> sqs;          // CRTP: 容器必须同类型, 不能混存 Cube
+std::vector<Op*> ops;             // 虚函数: 可混存任意派生类 -> 运行时异构
+```
+
+CRTP 把类型绑死在编译期，无法把不同算子放进同一个容器；这是它和虚函数最本质的取舍。
+
+**步骤 4：真实用例（Eigen / Boost）**
+
+Eigen 的"表达式模板"用 CRTP 把 `a + b * c` 在编译期展开成零临时对象的求值循环；
+Boost.Operators 用 CRTP 自动生成 `==`/`<` 全套。它们选 CRTP 就是为了"运算符组合零开销"。
+
+**结论**：性能热点 + 类型编译期已知 → CRTP（零开销、失异构）；
+需要运行时插件/异构容器 → 虚函数（灵活、失内联）。两者不是替代而是互补。
+
+**工程含义**：多态的"代价"并非必然——CRTP 证明在编译期可知类型时，动态分发的开销可被完全消除。

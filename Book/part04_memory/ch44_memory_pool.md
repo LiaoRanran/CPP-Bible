@@ -2009,57 +2009,142 @@ int main(){
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+写固定大小内存池 `FixedPool<Block, N>`：预分配 `N` 个 `Block`，分配时从空闲链表取一块、释放时归还。
+对比每次 `new Block` 走通用分配器的系统调用开销。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cstddef>
+template <class Block, std::size_t N>
+struct FixedPool {
+    alignas(Block) char buf[N * sizeof(Block)];   // 预分配一大块
+    void* free_list[N]; std::size_t head = 0;
+    FixedPool(){ for (std::size_t i=0;i<N;++i) free_list[i] = buf + i*sizeof(Block); head = N; }
+    void* alloc(){ return head ? free_list[--head] : nullptr; }   // O(1) 无系统调用
+    void dealloc(void* p){ free_list[head++] = p; }               // O(1) 归还
+};
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+每次 `new` 要进通用分配器（可能加锁、查找空闲块、系统调用 `sbrk`/`mmap`）。
+固定池的 `alloc`/`dealloc` 只是数组下标操作，**确定性的 O(1)、零系统调用**，适合高频小对象。
+
+[标准] 固定块池用空闲链表消除通用分配器开销；代价是块大小固定、总量预分配。
 
 </details>
 
+### 练习 2（难度 ★★★）
+
+把自定义池接入 STL 容器：用 `std::pmr::memory_resource` 派生一个池资源，
+让 `std::pmr::vector<int>` 从池分配（零系统调用、确定性延迟）。写出关键步骤。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <memory_resource>
+#include <vector>
+struct PoolResource : std::pmr::memory_resource {
+    void* do_allocate(std::size_t b, std::size_t a) override { return ::operator new(b); } // 接你的池
+    void  do_deallocate(void* p, std::size_t, std::size_t) override { ::operator delete(p); }
+    bool  do_is_equal(const memory_resource& o) const noexcept override { return this==&o; }
+};
+// 用法:
+PoolResource pool;
+std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
+```
+
+`std::pmr` 把"分配器"抽象成运行期多态的 `memory_resource`，容器持有指针即可换源。
+把 `do_allocate` 换成你的池后，`vector` 扩容不再触碰系统分配器，延迟确定、可预测——
+这正是嵌入式/实时系统的诉求（见 ch122 pmr 实证）。
+
+[标准] `std::pmr`(C++17) 运行期多态分配器；`memory_resource` 派生即可替换容器内存来源。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+对比池分配器与通用分配器的**碎片**问题：长期运行下通用 `new/delete` 产生外部碎片
+（嵌入式 OOM 风险），池分配器固定块无外部碎片但存在内部碎片（块比对象大即浪费）。
+给出选型准则。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+// 通用分配器: 任意大小混合分配/释放 -> 空闲块被切碎 -> 外部碎片
+// 长期运行后: 总空闲内存足够, 但无单块够大 -> 分配失败 (嵌入式致命)
+// 池分配器: 只服务一种固定块 -> 无外部碎片, 但 block 比对象大则内碎片
+```
+
+- **外部碎片**：空闲内存总量足、但无连续大块可用 → 分配失败。通用分配器长期运行必现。
+- **内部碎片**：池的块大小 > 实际对象 → 每块尾部浪费。
+选型：实时/确定性/长生命周期、对象大小固定 → **池**（无外部碎片、延迟确定）；
+通用、大小多变、短生命周期 → 系统分配器（灵活）。可在同一程序按对象类别混用。
+
+[标准] 池消除外部碎片换内部碎片；实时系统优先确定性而非峰值利用率。
+
+</details>
+
+## 附录：用法演绎 — 实时系统里把 new 换成内存池
+
+> 场景：嵌入式/实时控制循环中频繁创建销毁小对象，通用 `new/delete` 的延迟不确定且长期运行产生碎片。
+
+**步骤 1：裸 new（不确定性延迟 + 碎片）**
+
+```cpp
+struct Packet { int seq; };
+void use(Packet*);                   // -c 仅编译不链接, 声明即可
+void control_loop(){
+    auto* pkt = new Packet;          // 通用分配器: 可能加锁/查找空闲块/系统调用 -> 延迟抖动
+    use(pkt);
+    delete pkt;                      // 释放也可能触发合并/系统归还
+}
+// 长期运行: 不同大小对象混用 -> 外部碎片 -> 某次 new 失败 (嵌入式致命)
+```
+
+通用分配器为灵活性付出代价：每次分配延迟不可预测，且空闲块被切碎（外部碎片）。
+
+**步骤 2：固定块池（O(1) 分配 + 零碎片，但有内碎片）**
+
+```cpp
+struct Packet { int seq; };
+template <class T, std::size_t N> struct FixedPool {
+    void* alloc();
+    void dealloc(void*);
+};
+void use(Packet*);                   // 声明即可(-c 不链接)
+FixedPool<Packet, 256> pool;        // 启动预分配 256 个 Packet 的存储
+void control_loop(){
+    void* p = pool.alloc();          // O(1), 无系统调用, 延迟确定
+    auto* pkt = ::new(p) Packet;     // 在池块上 placement new 构造
+    use(pkt);
+    pkt->~Packet(); pool.dealloc(p); // 归还, 无外部碎片
+}
+```
+
+池的 `alloc` 只移动空闲链表指针——确定性的 O(1)，且固定块之间不存在外部碎片。
+代价：块大小固定，若 `sizeof(Packet)` < 块大小则尾部浪费（内部碎片）。
+
+**步骤 3：接入 STL（pmr）**
+
+```cpp
+struct Packet { int seq; };
+struct PoolResource : std::pmr::memory_resource {
+    void* do_allocate(std::size_t, std::size_t) override;
+    void  do_deallocate(void*, std::size_t, std::size_t) override;
+    bool  do_is_equal(const std::pmr::memory_resource&) const noexcept override;
+};
+PoolResource res;                    // 你的池包装成 memory_resource
+std::pmr::vector<Packet> v{&res};    // vector 内存全部来自池, 零系统调用
+```
+
+**步骤 4：实时性对照（示意）**
+
+| 分配器 | 分配延迟 | 碎片风险 | 适用 |
+|------|:--:|:--:|:--:|
+| 通用 `new/delete` | 不确定（μs~ms） | 外部碎片 | 通用/短生命周期 |
+| 固定块池 | 确定 O(1) | 仅内碎片 | 实时/长生命周期 |
+
+**结论**：实时/嵌入式优先确定性——用池把"不确定延迟 + 外部碎片"换成"确定 O(1) + 可控内碎片"；
+通用程序则无需提前优化，用系统分配器即可。
+
+**工程含义**：嵌入式内存管理的第一原则是"可预测"而非"峰值利用率"；池化是确定性系统的标配。

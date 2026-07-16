@@ -442,57 +442,174 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+为 `class Vec2 { double x, y; };` 重载 `operator+`（成员或自由函数）与 `operator<<`
+（自由函数，返回 `std::ostream&`）。指出 `+` 应返回**新对象**（值）而非引用。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
+struct Vec2 {
+    double x, y;
+    Vec2 operator+(const Vec2& o) const { return {x+o.x, y+o.y}; }  // 返回新对象
+};
+std::ostream& operator<<(std::ostream& os, const Vec2& v){
+    return os << '(' << v.x << ',' << v.y << ')';
+}
+int main(){
+    Vec2 a{1,2}, b{3,4};
+    std::cout << (a + b) << '\n';   // (4,6)
+}
+```
+
+`operator+` 返回值是必然的：`a+b` 的结果是个临时量，不能返回对局部/参数的引用。
+`operator<<` 返回 `ostream&` 以支持链式 `cout << a << b`。
+
+[标准] 算术运算符通常返回新值（值语义）；流插入运算符返回流引用以支持链式调用。
+
+</details>
+
+### 练习 2（难度 ★★★）
+
+用 C++20 三路比较 `operator<=>` 替代手写 `==`/`<`/`>` 全套：写 `struct Point{ int x,y; auto operator<=>(const Point&) const = default; };`，
+解释编译器如何自动生成全部 6 个比较运算符，并说明返回类型 `std::strong_ordering` 的含义。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <compare>
+struct Point {
+    int x, y;
+    auto operator<=>(const Point&) const = default;   // 生成 == < > <= >= !=
+};
+int main(){
+    Point a{1,2}, b{1,3};
+    bool t1 = (a == b);   // false
+    bool t2 = (a <  b);   // true
+    bool t3 = (a != b);   // true (由 == 自动取反)
+}
+```
+
+`= default` 的 `<=>` 对成员按声明顺序逐字段比较，并自动合成 `==` 等全套。
+`strong_ordering` 表示"相等可判定且不等时严格有序"（成员须完全有序，含 `int`）。
+若含 `float` 这类只有偏序的类型，需 `partial_ordering` 并谨慎处理 NaN。
+
+[标准] `operator<=>`(C++20) 生成全套比较；`default` 合成逐成员字典序比较。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+实现一个管理 `double* data` 的 `Matrix`，先写 **rule of 3**（拷贝构造/拷贝赋值/析构，深拷贝），
+再升级到 **rule of 5**（加 `noexcept` 移动构造/移动赋值），并说明为何移动操作应标 `noexcept`——
+否则 `std::vector` 扩容时会因"移动可能抛异常"而退化为拷贝。
+
+<details><summary>答案与解析</summary>
+
+```cpp
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <cstddef>
+struct Matrix {                 // rule of 5
+    size_t n; double* data;
+    Matrix(size_t n): n(n), data(new double[n*n]) {}
+    ~Matrix(){ delete[] data; }
+    Matrix(const Matrix& o): n(o.n), data(new double[n*n]) {     // 拷贝构造
+        for (size_t i=0;i<n*n;++i) data[i]=o.data[i];
+    }
+    Matrix& operator=(const Matrix& o){                         // 拷贝赋值
+        if (this!=&o){ double* p=new double[o.n*o.n]; /*...*/ delete[] data; data=p; n=o.n; }
+        return *this;
+    }
+    Matrix(Matrix&& o) noexcept : n(o.n), data(o.data) { o.data=nullptr; }   // 移动构造
+    Matrix& operator=(Matrix&& o) noexcept {                    // 移动赋值
+        if (this!=&o){ delete[] data; data=o.data; n=o.n; o.data=nullptr; }
+        return *this;
+    }
+};
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+`std::vector` 扩容时若元素的移动构造**不** `noexcept`，为保证强异常安全它会改用拷贝；
+标 `noexcept` 后扩容走移动（O(1) 指针交换，零元素拷贝）。
+
+[标准] rule of 0/3/5：有自定义析构/拷贝通常需补齐全套；移动操作标 `noexcept` 方能参与 vector 扩容优化。
 
 </details>
 
-### 练习 2（难度 ★★）
+## 附录：用法演绎 — 从 rule of 3 到 rule of 5：写一个安全的字符串类
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+> 场景：自己管理资源（动态数组）时，最容易漏写拷贝/移动导致泄漏或双重释放。逐步推导出健壮版本。
 
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+**步骤 1：朴素裸指针（漏析构 → 泄漏）**
 
 ```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct MyString {
+    char* data; size_t len;
+    MyString(const char* s){ len = std::strlen(s); data = new char[len+1]; std::strcpy(data,s); }
+    // 没有析构! 离开作用域 data 泄漏; 没有拷贝 -> 默认逐位拷贝导致双重释放
+};
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+默认拷贝构造是逐成员浅拷贝：`MyString b = a;` 后 `a.data == b.data`，两者析构各 `delete` 一次 → 双重释放。
 
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+**步骤 2：rule of 3（深拷贝补全）**
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct MyString {                       // rule of 3: 管理资源的类必须给出三者
+    char* data; std::size_t len;
+    MyString(const char* s){ len = std::strlen(s); data = new char[len+1]; std::strcpy(data,s); }
+    ~MyString(){ delete[] data; }                                          // 析构: 释放资源
+    MyString(const MyString& o): len(o.len), data(new char[len+1]) { std::strcpy(data,o.data); } // 深拷贝
+    MyString& operator=(const MyString& o){
+        if (this != &o) { delete[] data; len=o.len; data=new char[len+1]; std::strcpy(data,o.data); }
+        return *this;
+    }
+};
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+深拷贝让每个对象拥有独立数据——拷贝安全，但每次拷贝都是 O(n) 内存分配 + 复制。
 
-</details>
+**步骤 3：vector 扩容的性能坑（移动未 noexcept → 退化拷贝）**
 
+```cpp
+#include <vector>
+#include <cstring>
+struct MyString {
+    char* data; std::size_t len;
+    MyString(const char* s){ len=std::strlen(s); data=new char[len+1]; std::strcpy(data,s); }
+    ~MyString(){ delete[] data; }
+    MyString(const MyString& o): len(o.len), data(new char[len+1]){ std::strcpy(data,o.data); }
+    MyString& operator=(const MyString& o){ if(this!=&o){ delete[] data; len=o.len; data=new char[len+1]; std::strcpy(data,o.data);} return *this; }
+};
+int main(){
+    std::vector<MyString> v;
+    v.push_back(MyString("a"));   // 扩容时若 MyString 移动构造非 noexcept, vector 退化为拷贝!
+}
+```
+
+`std::vector` 扩容为保证强异常安全：仅当移动构造 `noexcept` 时才移动，否则**拷贝**（因为拷贝可回滚、移动失败无法恢复）。
+
+**步骤 4：rule of 5（加 noexcept 移动）**
+
+```cpp
+#include <vector>
+#include <cstring>
+struct MyString {
+    char* data; std::size_t len;
+    MyString(const char* s){ len=std::strlen(s); data=new char[len+1]; std::strcpy(data,s); }
+    ~MyString(){ delete[] data; }
+    MyString(const MyString& o): len(o.len), data(new char[len+1]){ std::strcpy(data,o.data); }
+    MyString& operator=(const MyString& o){ if(this!=&o){ delete[] data; len=o.len; data=new char[len+1]; std::strcpy(data,o.data);} return *this; }
+    MyString(MyString&& o) noexcept : data(o.data), len(o.len) { o.data = nullptr; }      // 移动构造
+    MyString& operator=(MyString&& o) noexcept { delete[] data; data=o.data; len=o.len; o.data=nullptr; return *this; }
+};
+int main(){
+    std::vector<MyString> v;
+    v.push_back(MyString("a"));   // 移动 noexcept -> 扩容走移动 O(1), 零元素拷贝
+}
+```
+
+**结论**：管理资源 → 默认优先 **rule of 0**（用 `std::string`/`unique_ptr` 替你管）；
+必须手写时 → rule of 5，且**移动操作务必 `noexcept`**，否则容器扩容退回拷贝。
+
+**工程含义**：裸 `new/delete` 几乎只该出现在 `unique_ptr`/`shared_ptr`/`vector` 等设施内部；
+手写资源类是现代 C++ 的"最后手段"。

@@ -1640,57 +1640,125 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+`int m[1000][1000];` 行优先（C 风格）遍历 `m[i][j]` 与列优先遍历 `m[j][i]`，哪个缓存更友好？
+写出两种遍历并说明 cache miss 次数差异。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main(){
+    static int m[256][256]{};   // static 避免栈溢出; 教学只关心遍历顺序
+    long sum = 0;
+    // 行优先: 内存连续访问 -> 每次缓存行加载后顺序命中
+    for (int i=0;i<256;++i) for (int j=0;j<256;++j) sum += m[i][j];   // 友好
+    // 列优先: 每次跨 256*4B 跳行 -> 几乎每次都 cache miss
+    for (int j=0;j<256;++j) for (int i=0;i<256;++i) sum += m[i][j];   // 不友好
+    (void)sum;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+C/C++ 多维数组按行优先（row-major）存储：`m[i][j]` 与 `m[i][j+1]` 相邻。
+行优先遍历顺序命中缓存行（一次加载 64B ≈ 16 个 int）；列优先每次都跳到新缓存行，
+cache miss 数量级差约 16×，实测可慢一个数量级。
+
+[标准] 数组行优先存储；访问模式应顺应内存布局以利用空间局部性。
 
 </details>
 
+### 练习 2（难度 ★★★）
+
+两个线程各写一个 `struct { long a; long b; }` 的**不同**字段却互相拖慢——这是 false sharing。
+给出用 `alignas(64)` / padding 修复的写法，并解释缓存行为何失效。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+// 错误: a 与 b 可能落在同一缓存行(64B), 两线程写不同字段仍互相使对方缓存行失效
+struct Bad { long a; long b; };
+// 修复: 把每个字段推到独立缓存行
+struct Aligned { alignas(64) long a; alignas(64) long b; };
+```
+
+现代 CPU 以缓存行（常 64B）为单位在核间迁移。即便 `a`/`b` 是不同字段，只要同处一行，
+线程 1 写 `a` 会使该行在另一核的副本失效，线程 2 写 `b` 又失效回来 → 行在核间乒乓。
+`alignas(64)` 让 `a`/`b` 各自独占一行，消除伪共享。
+
+[标准] false sharing：不同变量共享缓存行导致核间无效化；`alignas(缓存行)` 隔离解决。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+对比 AOS（Array of Structs）与 SOA（Structure of Arrays）在仅使用部分字段时的缓存与 SIMD 友好度：
+`struct P { float x,y,vx,vy; } ps[N];` vs `struct { float x[N],y[N],vx[N],vy[N]; } soa;`，
+写 `update()` 只改 `x += vx`，指出 SOA 为何对 SIMD 更友好。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+struct P { float x,y,vx,vy; } ps[1024];
+void update_aos(){ for (auto& p: ps) p.x += p.vx; }   // 每读 16B 只用 8B, 浪费一半带宽
+struct Soa { float x[1024],y[1024],vx[1024],vy[1024]; } s;
+void update_soa(){ for (int i=0;i<1024;++i) s.x[i] += s.vx[i]; }  // x/vx 连续, 单指令处理 4/8 个
+```
+
+AOS 把 `x,y,vx,vy` 交错存储，`update` 只碰 `x`/`vx` 却要把整个 struct 拉进缓存（带宽浪费）。
+SOA 把同类字段聚到一起，`x[]` 与 `vx[]` 连续，SIMD 一条指令可并行处理 4 个（float×4）或 8 个（AVX）
+元素，且缓存只装需要的字段。代价：SOA 的"结构体语义"被拆散，代码可读性下降。
+
+[标准] SOA 提升数据局部性与 SIMD 利用率，以结构可读性换取吞吐；常用于粒子/数值热点。
+
+</details>
+
+## 附录：用法演绎 — 矩阵遍历：一次 cache 友好的改写带来 10× 加速
+
+> 场景：对一个 4096×4096 的 `int` 矩阵做前缀和/累加，写法不同性能差一个数量级。
+
+**步骤 1：列优先遍历（cache miss 爆炸）**
+
+```cpp
+int main(){
+    const int N = 256; int m[N][N]{}; long sum = 0;
+    for (int j=0;j<N;++j)
+      for (int i=0;i<N;++i)
+        sum += m[i][j];        // 每次跨 N*4 字节跳行 -> 几乎每次 cache miss
+    (void)sum;
+}
+```
+
+`N=4096` 时跨距 16KB，远超 64B 缓存行。每个 `m[i][j]` 都在新缓存行，命中率极低，实测可慢 10× 以上。
+
+**步骤 2：行优先遍历（顺序预取友好）**
+
+```cpp
+int main(){
+    const int N = 256; int m[N][N]{}; long sum = 0;
+    for (int i=0;i<N;++i)
+      for (int j=0;j<N;++j)
+        sum += m[i][j];        // 连续访问, 一个缓存行服务 16 个 int, 硬件预取生效
+    (void)sum;
+}
+```
+
+顺序访问让硬件预取器提前载入下一行，缓存命中率高。
+
+**步骤 3：量化对照（示意，x86-64 / L1 32KB）**
+
+| 写法 | 缓存行利用 | 相对耗时 |
+|------|:--:|:--:|
+| 列优先 `m[i][j]` | ~1/16 命中 | 1.00×（基线，最慢） |
+| 行优先 `m[i][j]` | 顺序预取 | ~0.08× |
+
+**步骤 4：进阶——SOA + SIMD**
+
+```cpp
+int main(){
+    const int N = 64; alignas(32) float x[N]{}, vx[N]{};
+    for (int i=0;i<N;i+=8) _mm256_storeu_ps(x+i, _mm256_add_ps(_mm256_loadu_ps(x+i), _mm256_loadu_ps(vx+i)));
+}
+```
+
+**结论**：算法复杂度相同（都是 O(N²) 次加法），但**访问模式**决定实际耗时；
+先顺应内存布局（行优先），再考虑 SOA/SIMD。性能瓶颈常不在算法而在缓存。
+
+**工程含义**：优化先看"数据怎么走"，再看"算什么"；profile 显示热点在内存访问时，改遍历顺序比改算法更划算。

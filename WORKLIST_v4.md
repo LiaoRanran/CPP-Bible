@@ -277,8 +277,22 @@
 
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。APP-A/H-C 覆盖 8/147 章。
 
+**Batch APP2（已完成，2026-07-17）**：第二批 8 章全覆盖 APP-A + APP-C（其中 ch42/ch50 含既有真机 ASM 附录，脚本仅替换习题块并在 EOF 追加演绎，ASM 零破坏）
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP2 | ch21 const 家族 | 习题：const 重载 / constexpr vs const / constinit+consteval；演绎：const 的层层含义 |
+| APP2 | ch31 运算符重载 | 习题：operator+<< / <=> 三路比较 / rule of 5+noexcept 移动；演绎：rule of 3→5 安全字符串类 |
+| APP2 | ch39 RAII | 习题：RAII 资源守卫 / ScopeGuard / copy-and-swap 强异常安全；演绎：10 处 open/close → 0 泄漏 |
+| APP2 | ch42 严格别名 | 习题：reinterpret_cast UB / byte* 万能别名 / __restrict 向量化；演绎：严格别名如何悄悄改结果（保留附录E ASM） |
+| APP2 | ch43 缓存局部性 | 习题：行/列优先遍历 / false sharing / AOS vs SOA；演绎：矩阵遍历 10× 加速 |
+| APP2 | ch44 内存池 | 习题：固定块池 / pmr 接入 STL / 碎片对比；演绎：实时系统 new→内存池 |
+| APP2 | ch50 多重继承 | 习题：非虚 MI 两份基类 / 菱形二义 / virtual 继承代价；演绎：菱形继承要不要 virtual（保留[实现] ASM） |
+| APP2 | ch51 CRTP | 习题：CRTP 静态多态 / Barton-Nackman / CRTP vs 虚函数；演绎：虚函数→零成本静态分发 |
+
+> 一致性门禁（APP2 注入后）：147 章 ERROR=0 / WARN=0 = 100/100；8 章 cpp 块编译校验通过（GCC13.1 -O2 -Wall -Wextra）。APP-A/APP-C 累计覆盖 16/147 章。
+
 **后续批次（规划中）**
-- **APP2**：习题重写 + 用法演绎推进至第二批 8 章（ch21/31/32/42/43/44/50/51 等核心章）。
 - **APP3**：工业深挖首批（ch27 MMIO / ch41 所有权实战 / ch96 introsort 源码 / ch110 无锁 / ch133 工业复盘升级）。
 - **APP4+**：滚动覆盖剩余章节，直至 147 章习题全部主题对齐、重点章均有用法演绎 + 工业深挖。
 
@@ -313,7 +327,8 @@
 | F-K | 批 K 关联容器（map / unordered_map） | 2 | 2 | 100% |
 | G-L | 批 L STL 容器真实成本实证（deque/list/fwdlist/set/uset/pq/adapters/any） | 8 | 8 | 100% |
 | APP1 | Phase APP 应用层增强首批（8 章习题重写+用法演绎） | 8 | 8 | 100% |
-| **合计** | | **75** | **75** | **100%** |
+| APP2 | Phase APP 应用层增强第二批（8 章习题重写+用法演绎） | 8 | 8 | 100% |
+| **合计** | | **83** | **83** | **100%** |
 
 ---
 

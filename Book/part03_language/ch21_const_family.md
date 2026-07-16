@@ -871,57 +871,134 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+为 `class Buffer { std::vector<int> v; };` 提供 const 与非 const 两个 `at(size_t)` 重载，
+演示 `const Buffer` 只能调用 const 版本、`Buffer` 可调用两者；并指出 `mutable` 字段的合法用途。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+struct Buffer {
+    std::vector<int> v;
+    int& at(size_t i)             { return v.at(i); }       // 非 const: 可修改
+    const int& at(size_t i) const { return v.at(i); }       // const: 只读
+};
+int main(){
+    Buffer b; b.v = {1,2,3};
+    b.at(0) = 10;                      // 调用非 const 版本
+    const Buffer cb = b;
+    int x = cb.at(1);                  // 只能调用 const 版本
+    // cb.at(0) = 5;                   // 编译失败: const 对象不可调非 const 成员
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+`mutable` 用于"逻辑 const"：对象对外表现为只读，但内部缓存/计数可改。例如
+`mutable std::size_t cached_hash = 0;` 在 `hash() const` 中惰性计算。
+
+[标准] const 成员函数承诺不修改对象的可观察状态；`mutable` 允许豁免特定子对象。
 
 </details>
 
+### 练习 2（难度 ★★★）
+
+`constexpr` 与 `const` 有何本质区别？写 `constexpr int sq(int x){ return x*x; }`，
+分别展示它在**编译期**（`static_assert`）与**运行期**（`rand()` 作实参）两种上下文求值；
+再对比 `const int k = rand();`（只读但非编译期常量）。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <cstdlib>
+constexpr int sq(int x){ return x*x; }
+static_assert(sq(5) == 25);                 // 编译期求值: 不占运行时指令
+int main(){
+    int y = sq(std::rand());                // 运行期求值: 退化为普通函数调用
+    const int k = std::rand();              // 只读变量, 但值在运行期才确定
+    // static_assert(k == 0);               // 编译失败: k 不是常量表达式
+}
+```
+
+`const` 只保证"不可改"，`constexpr` 保证"值可在编译期确定"。`sq` 因 `constexpr` 两用：
+参数是常量表达式时在编译期算、是运行期值在运行期算。`k` 虽 `const` 但依赖 `rand()`，不是常量表达式。
+
+[标准] `constexpr` 函数/变量要求在合法常量表达式上下文中于翻译期求值；`const` 仅去除了可修改性。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+C++20 的 `constinit` 与 `consteval` 各自解决什么问题？
+写 `constinit static int g = 42;` 说明它如何消除"静态初始化顺序灾难"；
+写 `consteval int cube(int x){ return x*x*x; }` 说明它为何强制编译期求值（`cube(std::rand())` 会编译失败）。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <cstdlib>
+constinit static int g = 42;          // 编译期完成初始化, 零运行时开销, 无 SIOF
+consteval int cube(int x){ return x*x*x; }   // 必须编译期求值
+int main(){
+    constexpr int c = cube(3);        // OK: 编译期 27
+    // int bad = cube(std::rand());    // 编译失败: consteval 拒绝运行期参数
+}
+```
+
+- `constinit`：要求静态存储期对象的初始化是常量表达式 → 在静态初始化阶段完成，
+  避免跨 TU 初始化顺序不确定（Static Initialization Order Fiasco）。
+- `consteval`：比 `constexpr` 更强——函数**只能**在编译期调用，`cube(rand())` 直接拒绝。
+  适合元编程/代码生成（如编译期计算查表）。
+
+[标准] `constinit`(C++20) 约束初始化为常量表达式；`consteval`(C++20) 定义"立即函数"，仅编译期可调用。
+
+</details>
+
+## 附录：用法演绎 — const 的层层含义：从只读变量到编译期常量
+
+> 场景：很多初学者把 `const` 当成"编译器优化开关"，结果在接口设计、API 边界上踩坑。逐层厘清。
+
+**步骤 1：顶层 const 与底层 const（指针的两种 const）**
+
+```cpp
+int v = 1;
+const int* p = &v;     // 底层 const: 不能经 p 改 *p, 但 p 可指向别处
+int* const q = &v;     // 顶层 const: q 自身不可改(必须初始化), 但 *q 可改
+const int* const r = &v; // 既不能改指向也不能改所指
+```
+
+`const int*` 读作"指向 const int 的指针"——保护的是**数据**；`int* const` 保护的是**指针变量本身**。
+函数参数用 `const T*` 表达"我不修改你传给我的对象"。
+
+**步骤 2：const 成员函数与逻辑 const（mutable）**
+
+```cpp
+struct Cache {
+    mutable std::size_t hits = 0;   // 逻辑 const 豁免: 不影响对外状态
+    int compute() const { ++hits; return 42; }  // const 成员却改了 hits -> 合法
+};
+```
+
+`const` 成员函数承诺"不修改可观察状态"，但内部计数/缓存用 `mutable` 豁免。
+绝不要用 `mutable` 去绕过 const 修改真正的数据成员——那破坏契约。
+
+**步骤 3：constexpr 两用（编译期 + 运行期）**
+
+```cpp
+constexpr int sq(int x){ return x*x; }
+static_assert(sq(5) == 25);          // 编译期: 不生成任何运行时指令
+int get_runtime(){ return 7; }       // 真实运行期函数
+int y = sq(get_runtime());           // 运行期: 退化为普通调用
+```
+
+**步骤 4：constinit / consteval 消除静态初始化灾难**
+
+```cpp
+constexpr int compute(){ return 42; }       // 编译期可求值的初始化器
+constinit static int G = compute();  // 强制编译期初始化 -> 无 SIOF, 零运行时开销
+consteval int tbl(int n){ return n*2; } // 必须编译期: tbl(rand()) 编译失败
+```
+
+**结论**：`const` = 只读契约；`constexpr` = 可在编译期求值的函数/变量（两用）；
+`constinit` = 静态对象强制常量初始化（防 SIOF）；`consteval` = 立即函数（只编译期）。
+它们解决不同问题，别混为一谈。
+
+**工程含义**：API 边界对"不修改的输入"一律加 `const&`/`const*`；需要编译期能力的才上 `constexpr`/`consteval`。
