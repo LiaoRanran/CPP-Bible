@@ -1155,62 +1155,89 @@ int main(){std::map<int,int> m{{1,10}};std::unordered_map<int,int> um{{1,10}};st
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+用 lower_bound/upper_bound 在有序 map 上做闭开区间查询，演示红黑树的有序遍历。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <map>
+int main() {
+    std::map<int, std::string> m{{1, "a"}, {3, "c"}, {5, "e"}, {7, "g"}};
+    for (auto it = m.lower_bound(3); it != m.upper_bound(5); ++it)
+        std::cout << it->first << it->second << ' ';
+    std::cout << "\n";                       // 3c 5e
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：`std::map` 按 key 有序（默认 `<`），`lower_bound(k)` 返回首个 `>=k` 的迭代器，`upper_bound(k)` 返回首个 `>k` 的，二者构成 `[3,5]` 闭开区间，复杂度 O(log n)。
 
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+### 练习 2（难度 ★★★）
+对比 operator[]、at、insert_or_assign 的语义差异：[] 缺键会插入默认构造值，at 缺键抛异常，insert_or_assign 显式赋值。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <map>
+#include <string>
+int main() {
+    std::map<std::string, int> m;
+    m["x"] = 1;                    // [] 缺则插入（值默认构造后赋值）
+    m.insert_or_assign("x", 2);    // 存在则赋，返回 pair<it,bool>
+    std::cout << m.at("x") << "\n"; // 2；at 缺键抛 out_of_range
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：读多写少且 key 必存在时用 `at` 显式表达"必须存在"；`operator[]` 的"缺则插入"副作用可能导致意外插入，性能敏感路径应优先 `find`/`insert_or_assign`。
 
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+### 练习 3（难度 ★★★★）
+用 C++17 节点句柄 extract 把节点从一张 map 转移到另一张 map，验证不拷贝 key/value（仅移动节点所有权）。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <map>
+int main() {
+    std::map<int, std::string> a{{1, "one"}}, b;
+    auto nh = a.extract(1);         // 取出节点句柄，不拷贝
+    nh.mapped() = "ONE";            // 句柄上可改 key/value
+    b.insert(std::move(nh));
+    std::cout << b.at(1) << "\n";   // ONE
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：`extract` 返回 `node_type` 句柄，节点从红黑树摘除但不析构；转移后引用/指针仍有效，且避免了对 key/value 的拷贝/移动，适合"重哈希"或跨容器迁移大对象。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
+### 演绎 1：用 map 实现区间映射（interval map 简化版）
+以左闭起点为 key，查询时取"第一个大于 x 的起点"的前驱，即得 x 所属区间的值。
 
+```cpp
+#include <iostream>
+#include <map>
+#include <string>
+int main() {
+    std::map<int, std::string> im;  // 左闭起点 -> 值
+    im[0] = "low"; im[10] = "mid"; im[20] = "high";
+    auto val_at = [&](int x) {
+        auto it = im.upper_bound(x); // 第一个 > x 的起点
+        return std::prev(it)->second; // 前一个区间（x 必在区间内）
+    };
+    std::cout << val_at(15) << "\n";  // mid
+}
+```
+
+### 演绎 2：map 的 O(log n) 与缓存局部性代价
+红黑树节点分散在堆上，有序遍历会发生指针跳转，缓存命中率低于连续存储的 unordered 容器。
+
+```cpp
+#include <iostream>
+#include <map>
+int main() {
+    std::map<int, int> m;
+    for (int i = 0; i < 5; ++i) m[i] = i * i;
+    long s = 0;
+    for (auto& [k, v] : m) s += v;   // 节点跳变访问
+    std::cout << s << "\n";          // 30
+}
+```
 ## 附录：std::map 节点布局真机汇编实证（ASM-83-map · GCC 15.3.0 / C++26 / -O2）
 
 > 证据：`_asm_demo/ch83_map_test.cpp` + `ch83_map_test.s`（真实编译 + `objdump -d -M intel -C`）。
@@ -1249,4 +1276,4 @@ jne    <loop>
 | 内存 | 每元素独立堆分配，不连续 | 单块连续 |
 | 访问 | O(log n) 指针追逐 | O(1) 下标（单条 mov） |
 | 有序 | 是（中序有序） | 插入序 |
-| 代价 | 分配 + 指针 chase + 比较 | 仅内存搬运 |
+| 代价 | 分配 + 指针 chase + 比较 | 仅内存搬运 |

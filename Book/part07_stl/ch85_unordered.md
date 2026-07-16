@@ -1104,75 +1104,112 @@ int main() {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-
-## 真实开源项目参考（可查证链接）
-
-> 哈希容器的工业实现——下列链接指向标准库与高性能第三方库的真实源码（L2 文件级）。
-
-- **libstdc++ `std::unordered_map`**：[gcc-mirror/gcc · libstdc++-v3/include/bits/hashtable.h](https://github.com/gcc-mirror/gcc/blob/master/libstdc++-v3/include/bits/hashtable.h) —— 「⑬ 源码分析」的源头；`_Hashtable` 的链地址（bucket + node 链表）实现，`_M_bucket_count` 触发「⑫ 重哈希」的 2× 扩容策略。
-- **LLVM/Clang `llvm::DenseMap`**：[llvm/llvm-project · llvm/include/llvm/ADT/DenseMap.h](https://github.com/llvm/llvm-project/blob/main/llvm/include/llvm/ADT/DenseMap.h) —— 编译器自身用的开放寻址哈希表，对应「⑩ 汇编分析」的工业级性能基线；用二次探测 + 探针数组，比 `std::unordered_map` 的链表少一次间接跳转。
-- **Boost.Unordered（C++11 时代 unordered 的诞生地）**：[boostorg/unordered · include/boost/unordered/unordered_map.hpp](https://github.com/boostorg/unordered/blob/develop/include/boost/unordered/unordered_map.hpp) —— `std::unordered_map` 的标准化前身；提供 `node_handle`（C++17 拼接语义）的早期实现，对应「⑭ WG21 提案」历史。
-- **folly `F14NodeMap` / `F14ValueMap`**：[facebook/folly · folly/container/F14Map.h](https://github.com/facebook/folly/blob/main/folly/container/F14Map.h) —— Meta 生产环境的分段哈希（Swiss-table 风格），「⑫ 工业案例：分布式会话缓存」的高并发替代；`F14ValueMap` 把键值内联进 bucket 消除指针追击，cache 命中率显著高于 `std::unordered_map`。
-
-**最佳实践**：默认 `std::unordered_map`；超高并发/内存紧张场景换 `folly::F14ValueMap`（值小）或 `F14NodeMap`（值大）；切勿在遍历中修改触发「⑫ 重哈希」导致迭代器失效。
-
-> 交叉引用：字符串见 [ch81](Book/part07_stl/ch81_string.md)；并发安全容器见 [ch93](Book/part07_stl/ch93_thread_async.md)。
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+为自定义 key 提供哈希与相等，演示 unordered_set 的最小接口（默认 std::equal_to 即可）。
 
 ```cpp
 #include <iostream>
+#include <unordered_set>
+#include <string>
+struct StrHash {
+    size_t operator()(const std::string& s) const {
+        return std::hash<std::string>{}(s);
+    }
+};
+int main() {
+    std::unordered_set<std::string, StrHash> us{"a", "b", "a"};
+    std::cout << "unique=" << us.size() << "\n";   // 2
+}
+```
+
+[标准] 结论：`std::unordered_set` 需要 `Hash` 与 `KeyEqual`；字符串这类标准类型可直接复用 `std::hash`/`std::equal_to`。均摊插入/查找 O(1)，但最坏（哈希冲突）退化到 O(n)。
+
+### 练习 2（难度 ★★★）
+用 C++20 异构查找（is_transparent）让 unordered_set 直接以 string_view 查询，避免为查询构造临时 std::string。
+
+```cpp
+#include <iostream>
+#include <unordered_set>
+#include <string>
+#include <string_view>
+struct StrHash {
+    using is_transparent = void;
+    size_t operator()(std::string_view s) const { return std::hash<std::string_view>{}(s); }
+    size_t operator()(const std::string& s) const { return std::hash<std::string>{}(s); }
+};
+struct StrEq {
+    using is_transparent = void;
+    bool operator()(std::string_view a, std::string_view b) const { return a == b; }
+};
+int main() {
+    std::unordered_set<std::string, StrHash, StrEq> us{"hello"};
+    std::string_view q = "hello";
+    std::cout << "found=" << us.contains(q) << "\n";  // 1，不经 std::string 拷贝
+}
+```
+
+[标准] 结论：哈希/相等都定义 `is_transparent` 后，`find/contains` 接受任意可透明比较的类型（如 `string_view`），省去为查询临时构造 `std::string` 的分配，适合高频查找热点。
+
+### 练习 3（难度 ★★★★）
+用 reserve 预分配桶以避免多次 rehash，演示 load_factor 与 bucket_count 的关系。
+
+```cpp
+#include <iostream>
+#include <unordered_set>
+int main() {
+    std::unordered_set<int> us;
+    us.reserve(100);                  // 预分配桶，避免多次 rehash
+    for (int i = 0; i < 100; ++i) us.insert(i);
+    std::cout << "buckets=" << us.bucket_count()
+              << " load=" << us.load_factor() << "\n";
+}
+```
+
+[标准] 结论：`reserve(n)` 使桶数足以容纳 n 个元素而不触发 rehash（rehash 会使所有迭代器失效并重新分布）；`load_factor = size/bucket_count`，超过 `max_load_factor`（默认 1.0）即触发扩容。
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：用 unordered_map + list 实现 O(1) 查找的 LRU 骨架
+map 存 key→list 迭代器做 O(1) 命中查找，list 维护使用顺序。
+
+```cpp
+#include <iostream>
+#include <unordered_map>
+#include <list>
+#include <string>
+int main() {
+    std::list<std::string> lru;
+    std::unordered_map<std::string, std::list<std::string>::iterator> cache;
+    auto get = [&](const std::string& k) {
+        return cache.find(k) != cache.end();   // O(1) 命中查询
+    };
+    lru.push_front("x");
+    cache["x"] = lru.begin();
+    std::cout << "hit x=" << get("x") << "\n";  // 1
+}
+```
+
+### 演绎 2：为 pair 提供组合哈希，避免退化到单字段哈希
+用移位+加法组合两个字段的哈希，降低碰撞概率（对抗哈希 DoS 需随机化种子，此处仅示组合法）。
+
+```cpp
+#include <iostream>
+#include <unordered_set>
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <functional>
+struct PairHash {
+    size_t operator()(const std::pair<int, int>& p) const {
+        size_t h1 = std::hash<int>{}(p.first);
+        size_t h2 = std::hash<int>{}(p.second);
+        return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
+    }
+};
+int main() {
+    std::unordered_set<std::pair<int, int>, PairHash> us;
+    us.insert({1, 2});
+    us.insert({3, 4});
+    std::cout << "size=" << us.size() << "\n";  // 2
+}
 ```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
-
-```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
-```
-
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
-
-</details>
-
-
 ## 附录：std::unordered_map 节点布局真机汇编实证（ASM-85-unordered · GCC 15.3.0 / C++26 / -O2）
 
 > 证据：`_asm_demo/ch85_unordered_test.cpp` + `ch85_unordered_test.s`（真实编译 + `objdump -d -M intel -C`）。

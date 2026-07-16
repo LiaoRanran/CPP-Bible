@@ -1081,60 +1081,91 @@ int main() {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+插入重复元素验证 set 自动去重并按升序遍历，演示红黑树有序唯一性。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <set>
+int main() {
+    std::set<int> s{3, 1, 2, 1, 3};
+    for (int x : s) std::cout << x << ' ';
+    std::cout << "\n";                       // 1 2 3
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：`std::set` 维护唯一 key 且始终有序（默认升序）；插入已存在元素会被忽略（返回 `pair<it,false>`），遍历即有序输出，无需额外排序。
 
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+### 练习 2（难度 ★★★）
+用 set + lower_bound 维护滑动窗口内的最长无重复子数组长度，演示有序结构做窗口去重。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <set>
+#include <vector>
+#include <algorithm>
+int main() {
+    std::vector<int> v{1, 2, 3, 2, 4};
+    std::set<int> win;
+    int lo = 0, best = 0;
+    for (int hi = 0; hi < (int)v.size(); ++hi) {
+        while (win.count(v[hi])) { win.erase(v[lo++]); }
+        win.insert(v[hi]);
+        best = std::max(best, hi - lo + 1);
+    }
+    std::cout << "max unique window=" << best << "\n"; // 4
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：`std::set` 的 `count/lower_bound` 为 O(log n)，适合需要"有序+去重+范围查询"的窗口场景；若只需去重不计序，`unordered_set` 均摊更优。
 
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+### 练习 3（难度 ★★★★）
+用 multiset 统计元素出现次数（允许重复），演示与 set 的关键区别。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <set>
+#include <vector>
+int main() {
+    std::vector<int> v{1, 1, 2, 3, 3, 3};
+    std::multiset<int> ms(v.begin(), v.end());
+    std::cout << "count(3)=" << ms.count(3)
+              << " size=" << ms.size() << "\n"; // count(3)=3 size=6
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：`std::multiset` 允许重复 key，`count(k)` 返回该 key 的出现次数（O(log n + count)），`size()` 是总元素数；需要"带频次的集合"时选它，而非用 `map<K,int>` 手动计数。
 
-</details>
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：用 set 维护任务调度的最近到期时刻
+set 的 `begin()` 即最小 key（最近到期），弹出即调度，O(log n) 增删查。
+
+```cpp
+#include <iostream>
+#include <set>
+int main() {
+    std::set<int> due{100, 50, 200, 75};  // 任务到期时刻
+    int next = *due.begin();               // 最小 = 最近到期
+    std::cout << "next due=" << next << "\n"; // 50
+    due.erase(due.begin());
+}
+```
+
+### 演绎 2：set 与 unordered_set 的小规模性能拐点
+元素少且需要有序时用 set；元素多且只判存在时用 unordered_set（均摊 O(1)）。
+
+```cpp
+#include <iostream>
+#include <set>
+#include <unordered_set>
+int main() {
+    std::set<int> s;
+    std::unordered_set<int> u;
+    for (int i = 0; i < 8; ++i) { s.insert(i); u.insert(i); }
+    std::cout << "set.size=" << s.size()
+              << " uset.size=" << u.size() << "\n"; // 8 8
+}
+```
 ## 附录：GCC 15.3.0 真机实证 — `std::set` 红黑树节点分配与 find 代价
 
 > 证据：`_asm_demo/ch84_set_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**每节点 = 40 字节堆分配（_Rb_tree_node 含 3 指针 + color + value），find 沿左右指针比较并追逐，键存于偏移 0x20。**

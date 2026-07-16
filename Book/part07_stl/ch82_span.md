@@ -1089,61 +1089,105 @@ int main() {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+用 std::span 写统一接口，同一函数接收 C 数组、std::array、std::vector，演示连续序列的零成本抽象。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <span>
+#include <vector>
+#include <array>
+void print(std::span<const int> s) {
+    for (int x : s) std::cout << x << ' ';
+    std::cout << "\n";
+}
+int main() {
+    int c[] = {1, 2, 3};
+    std::array<int, 3> a{4, 5, 6};
+    std::vector<int> v{7, 8, 9};
+    print(c); print(a); print(v);     // 1 2 3 / 4 5 6 / 7 8 9
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：`std::span<T>` 是连续序列的视图（指针+长度），可隐式从任意连续容器构造；`span<const T>` 接受只读视图，是"我想读一段连续 int"的标准签名，避免为每种容器重载。
 
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+### 练习 2（难度 ★★★）
+用动态 extent 的 span 做 subspan 切片，演示不拷贝地取子区间。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <span>
+#include <vector>
+int main() {
+    std::vector<int> v{0, 1, 2, 3, 4, 5};
+    std::span<int> sp(v);
+    auto mid = sp.subspan(2, 3);       // [2,3,4]，不拷贝
+    for (int x : mid) std::cout << x << ' ';
+    std::cout << "\n";                  // 2 3 4
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：`std::span` 的 extent 可是编译期常量（静态）或 `dynamic_extent`（运行时）；`subspan/first/last` 在原缓冲区上滑动视图，复杂度 O(1)，适合算法分块。
 
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+### 练习 3（难度 ★★★★）
+用 span 实现二维矩阵的"行视图"（无拷贝），演示把扁平 buffer 按列数切成逻辑行。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <span>
+#include <vector>
+int main() {
+    std::vector<int> m{0, 1, 2, 3, 4, 5};   // 2x3
+    const int cols = 3;
+    auto row = [&](int r) -> std::span<int> {
+        return std::span<int>(&m[r * cols], cols);
+    };
+    for (int x : row(1)) std::cout << x << ' ';
+    std::cout << "\n";                        // 3 4 5
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：`span` 可指向缓冲区的任意偏移，配合"步长"概念能表达二维行视图而无需分配新容器；`at()` 提供有界检查（越界抛 `std::out_of_range`），`operator[]` 无检查更快。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
+### 演绎 1：泛型数值累加，接受任意连续容器
+把容器转成 `span<const T>` 后用标准算法累加，签名只依赖连续性。
+
+```cpp
+#include <iostream>
+#include <span>
+#include <vector>
+#include <numeric>
+template <class C>
+int sum_of(const C& c) {
+    std::span<const int> s(c.data(), c.size());
+    return std::reduce(s.begin(), s.end());
+}
+int main() {
+    std::vector<int> v{1, 2, 3};
+    std::cout << sum_of(v) << "\n";          // 6
+}
+```
+
+### 演绎 2：const 正确性——span<const T> 与 span<T>
+只读函数用 `span<const T>`，可接收 `vector<int>` 与 `const vector<int>`；`span<T>` 才能写回。
+
+```cpp
+#include <iostream>
+#include <span>
+#include <vector>
+void read_only(std::span<const int> s) {
+    for (int x : s) std::cout << x << ' ';
+    std::cout << "\n";
+}
+int main() {
+    std::vector<int> v{1, 2, 3};
+    read_only(v);                  // span<const int> 可隐式构造
+    std::span<int> rw(v);
+    rw[0] = 9;                      // 写回
+    read_only(v);                  // 9 2 3
+}
+```
 ## 附录：GCC 15.3.0 真机实证 — `std::span` 零成本视图
 
 > 证据：`_asm_demo/ch82_span_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**span 只是 `{ptr, size}` 对，遍历与裸 `ptr+len` 同码；`operator[]` 不检查边界。**

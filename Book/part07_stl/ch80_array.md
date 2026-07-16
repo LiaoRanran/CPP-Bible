@@ -941,62 +941,85 @@ int main() {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+用 std::to_array 从 C 数组构造 std::array，演示编译期固定长度、`.size()` 与 `.data()` 零开销桥接 C API。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <array>
+int main() {
+    int c[] = {1, 2, 3, 4};
+    auto a = std::to_array(c);                // std::array<int, 4>
+    std::cout << "size=" << a.size()
+              << " data[2]=" << a.data()[2] << "\n"; // size=4 data[2]=3
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：`std::array<T,N>` 是聚合类型，长度 N 是类型的一部分（编译期常量）；`.data()` 返回底层 C 数组指针，可无缝传给 C API，`.size()` 是 `constexpr`，比 C 数组的 `sizeof/strlen` 更安全。
 
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+### 练习 2（难度 ★★★）
+用 C++17 结构化绑定解构 array，并用 `std::get<N>` 按索引取元素，演示编译期下标访问。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <array>
+#include <tuple>
+int main() {
+    std::array<int, 3> a{10, 20, 30};
+    auto [x, y, z] = a;                        // 结构化绑定
+    std::cout << x << y << z << ' '
+              << std::get<1>(a) << "\n";       // 102030 20
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：`std::array` 满足 tuple-like 协议，`std::get<N>(a)` 在编译期完成下标访问（非运行时循环），`N` 必须是编译期常量；`auto [x,y,z]` 把每个元素绑定到独立变量，避免魔法下标。
 
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+### 练习 3（难度 ★★★★）
+用 alignas 让 array 满足 SIMD 对齐要求（32 字节对齐适配 AVX 加载），演示栈上定长缓冲的可预测内存布局。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <array>
+int main() {
+    alignas(32) std::array<float, 8> buf{};   // 32 字节对齐，适配 AVX
+    for (int i = 0; i < 8; ++i) buf[i] = static_cast<float>(i);
+    std::cout << "buf[7]=" << buf[7] << "\n"; // 7
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：`std::array` 的存储是对象的一部分（不是指针），配合 `alignas` 可直接获得对齐的定长缓冲，适合 SIMD 向量化；相比 `std::vector` 它不产生堆分配、生命周期随作用域自动结束。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
+### 演绎 1：编译期查表（constexpr array）
+用立即调用 lambda 在编译期填满 array，运行期查表零成本。
 
+```cpp
+#include <iostream>
+#include <array>
+constexpr std::array<int, 5> sq = [] {
+    std::array<int, 5> t{};
+    for (int i = 0; i < 5; ++i) t[i] = i * i;
+    return t;
+}();
+int main() {
+    std::cout << "sq[4]=" << sq[4] << "\n";   // 16（完全编译期）
+}
+```
+
+### 演绎 2：array 作为聚合参与 constexpr 计算
+array 是字面量类型，可在 `constexpr` 函数中构造与下标访问，参与编译期断言。
+
+```cpp
+#include <iostream>
+#include <array>
+constexpr bool check() {
+    std::array<int, 3> a{1, 2, 3};
+    return a[0] + a[1] + a[2] == 6;
+}
+int main() {
+    std::cout << std::boolalpha << check() << "\n"; // true
+}
+```
 ## 附录：std::array 真机汇编实证（ASM-80-array · GCC 15.3.0 / C++26 / -O2）
 
 > 证据：`_asm_demo/ch80_array_test.cpp` + `ch80_array_test.s`（真实编译 + `objdump -d -M intel -C`）。
@@ -1057,4 +1080,4 @@ ret
 | `a[i]`（operator[]） | `mov eax,[base+idx*4]` | 无 | 零 |
 | `a.at(i)` | `cmp` + `ja` 至 throw 路径 | 有 | 1 次比较 + throw 风险 |
 | `a.data()` | `mov rax,rcx` | 无 | 零 |
-| 按值传参 | 整段 N×sizeof(T) 拷贝 | — | O(N) 内存搬运 |
+| 按值传参 | 整段 N×sizeof(T) 拷贝 | — | O(N) 内存搬运 |

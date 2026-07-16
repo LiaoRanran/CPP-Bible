@@ -1049,83 +1049,112 @@ struct __list_node {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-## 真实开源项目参考（可查证链接）
-
-> 本节补可查证的真实项目引用（非虚构）。每个链接均指向具体源码文件。
-
-- **GCC libstdc++ `stl_list.h`**：`std::list` 的 GNU 实现——`_List_node` 双向节点（L80-L120）、`_M_insert`（L300-L360, splice 零拷贝 O(1)）、`sort`（L1200-L1300, 自底向上归并 O(n log n)）。
-  → <https://github.com/gcc-mirror/gcc/blob/master/libstdc++-v3/include/bits/stl_list.h>
-- **LLVM libc++ `list`**：Clang 的 `__list_imp`（L350-L430, `__end_` 为指向自身的 sentinel 节点）、`__link_nodes`（L520-L580, splice 实现）。
-  → <https://github.com/llvm/llvm-project/blob/main/libcxx/include/list>
-- **Boost.Intrusive `list`**：侵入式链表（节点内嵌 `next/prev` 指针）——与 `std::list` 的节点分配策略对照：无单独的内存分配/解配开销，适合高频插入/删除场景（如内存池内部管理）。
-  → <https://github.com/boostorg/intrusive/blob/develop/include/boost/intrusive/list.hpp>
-- **Chromium `base::LinkedList`（github.com/chromium/chromium）**：侵入式双向链表（`base::LinkNode`），节点内嵌 `next/prev`，无堆分配——与 `std::list`/`Boost.Intrusive` 的侵入式方案对照。
-  → <https://github.com/chromium/chromium>
-- **Google Benchmark（github.com/google/benchmark）**：`std::list` vs `std::vector` 遍历/插入的 ns/us 级微基准，量化"链表缓存不友好"的真实代价（顺序遍历约慢 3–5x）。
-  → <https://github.com/google/benchmark>
-- **跨章关联**：`vector`/`deque` 选型 → `Book/part07_stl/ch77_vector.md`；STL 容器全景 → `Book/part07_stl/ch76_stl_arch.md`。
-- **常见陷阱**：`std::list::sort` 是 O(n log n) 归并（不是 O(n²) 教科书冒泡/插入）——这是标准规定；`list::size()` 在 C++11 前某些实现是 O(n)（GCC libstdc++ 直到 C++11 才改 O(1)）。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+用 list::splice 把第 k 个节点前移到表头，演示 O(1) 节点搬迁（仅改指针，不拷贝值），对比 vector 必须 O(n) 拷贝。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <list>
+#include <iterator>
+int main() {
+    std::list<int> l{1, 2, 3, 4, 5};
+    auto it = l.begin();
+    std::advance(it, 3);                 // 指向 4（无随机访问，O(k)）
+    std::cout << "l[3]=" << *it << "\n"; // 4
+    l.splice(l.begin(), l, it);          // O(1) 节点搬移到表头
+    for (int x : l) std::cout << x << ' ';
+    std::cout << "\n";                    // 4 1 2 3 5
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：`std::list` 没有 `operator[]`，取第 k 个必须 `std::advance`（O(k)）；但其节点是独立堆对象，`splice` 可在 O(1) 内把节点在链表间/链内搬迁，迭代器与引用保持有效，这是它相对 `vector` 的核心优势。
 
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+### 练习 2（难度 ★★★）
+把源链表中一个半开区间 `[first, last)` 整体搬到目标链表末尾，验证 splice 区间版同样是 O(1) 且源/目标迭代器均不失效。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <list>
+int main() {
+    std::list<int> a{1, 2, 3}, b{10, 20, 30};
+    auto first = std::next(b.begin());    // 指向 20
+    a.splice(a.end(), b, first, b.end()); // 搬移 [20, 30]，O(1)
+    for (int x : a) std::cout << x << ' ';
+    std::cout << "\n";                     // 1 2 3 20 30
+    for (int x : b) std::cout << x << ' ';
+    std::cout << "\n";                     // 10
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：区间版 `splice(pos, src, first, last)` 把 `[first,last)` 内的节点从 `src` 摘除并接到 `pos` 之前，复杂度 O(1)；被搬移区间内的迭代器、引用、指针在搬移后仍然有效，只是归属到了新链表。
 
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `noexcept` 移动构造函数，使 `std::vector` 扩容时走移动而非拷贝。
-
-<details><summary>答案与解析</summary>
+### 练习 3（难度 ★★★★）
+用 splice 把原链表中的奇数节点稳定地搬到另一条链表（保持原相对顺序，即稳定分区），全程不拷贝节点值。
 
 ```cpp
 #include <iostream>
-#include <vector>
-#include <utility>
-struct S {
-  int* p = new int[8];
-  S() = default;
-  S(S&& o) noexcept : p(o.p) { o.p = nullptr; }
-  ~S() { delete[] p; }
-};
-int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << "ok\n"; }
+#include <list>
+int main() {
+    std::list<int> l{1, 2, 3, 4, 5, 6};
+    std::list<int> odds;
+    for (auto it = l.begin(); it != l.end(); ) {
+        if (*it % 2 != 0) {
+            auto nx = std::next(it);
+            odds.splice(odds.end(), l, it);   // 稳定搬移，保持原序
+            it = nx;
+        } else {
+            ++it;
+        }
+    }
+    for (int x : odds) std::cout << x << ' ';
+    std::cout << "\n";                         // 1 3 5
+    for (int x : l) std::cout << x << ' ';
+    std::cout << "\n";                         // 2 4 6
+}
 ```
 
-[标准] `noexcept` 移动构造让 `vector` 在重新分配时移动元素；否则因强异常保证退化为拷贝。
+[标准] 结论：借助 `splice` 实现稳定分区（`stable_partition` 的链表特化）只需 O(n) 指针操作，且奇数节点的相对顺序被完整保留；若用 `vector` 则需额外缓冲或多次搬移，无法在原地 O(1) 维护节点所有权。
 
-</details>
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：用 list + map 实现 O(1) 命中提升的 LRU 缓存
+`list` 维护使用顺序（前端=最近使用），`map` 存键到 `list` 迭代器；命中时 `splice` 把节点搬到前端，无需拷贝值。
+
+```cpp
+#include <iostream>
+#include <list>
+#include <unordered_map>
+#include <string>
+int main() {
+    std::list<std::string> usage;
+    std::unordered_map<std::string, std::list<std::string>::iterator> pos;
+    auto touch = [&](const std::string& k) {
+        if (auto it = pos.find(k); it != pos.end())
+            usage.splice(usage.begin(), usage, it->second);  // O(1) 命中提升
+        else {
+            usage.push_front(k);
+            pos[k] = usage.begin();
+        }
+    };
+    touch("a"); touch("b"); touch("a");
+    for (auto& k : usage) std::cout << k << ' ';
+    std::cout << "\n";                                       // a b
+}
+```
+
+### 演绎 2：list 与 vector 删除中间元素时的迭代器失效差异
+`list` 的 `erase` 只使被删节点的迭代器失效，返回下一有效迭代器；`vector` 删除后所有后续迭代器失效（需重新取）。
+
+```cpp
+#include <iostream>
+#include <list>
+int main() {
+    std::list<int> l{1, 2, 3, 4};
+    for (auto it = l.begin(); it != l.end(); )
+        it = ((*it % 2 == 0) ? l.erase(it) : std::next(it)); // erase 返回下一有效迭代器
+    for (int x : l) std::cout << x << ' ';
+    std::cout << "\n";                                       // 1 3
+}
+```
 ## 附录：GCC 15.3.0 真机实证 — `std::list` 节点分配与遍历代价
 
 > 证据：`_asm_demo/ch79_list_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**每元素独立 operator new 分配 24 字节节点（prev + next + value），遍历纯指针追逐无缓存局部性。**

@@ -1113,60 +1113,105 @@ int main() {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+用 vector 作底层容器构造 stack，用默认 deque 构造 queue，对比二者接口（LIFO vs FIFO）。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <stack>
+#include <vector>
+#include <queue>
+int main() {
+    std::stack<int, std::vector<int>> st;   // 底层 vector
+    st.push(1); st.push(2);
+    std::queue<int> q; q.push(1); q.push(2);
+    std::cout << "stack.top=" << st.top()
+              << " queue.front=" << q.front() << "\n"; // 2 1
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：`std::stack`/`std::queue` 是容器适配器，包装一个序列容器并暴露受限接口；`stack` 默认底层 `deque`，`queue` 默认 `deque`。`stack` 只允许栈顶访问（LIFO），`queue` 只允许队首出/队尾入（FIFO）。
 
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+### 练习 2（难度 ★★★）
+用 std::greater 把 priority_queue 变成最小堆，演示比较器决定堆序。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <queue>
+#include <vector>
+#include <functional>
+int main() {
+    std::priority_queue<int, std::vector<int>, std::greater<int>> pq;  // 最小堆
+    for (int x : {3, 1, 2}) pq.push(x);
+    std::cout << "min=" << pq.top() << "\n";  // 1
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：`std::priority_queue` 默认是最大堆（`std::less`），`top()` 总是当前极值；传入 `std::greater` 即变最小堆。底层容器必须是随机访问容器（默认 `vector`）。
 
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+### 练习 3（难度 ★★★★）
+用最大堆实现 Top-K：持续压入，超过 K 就弹出堆顶，最终堆中即最大的 K 个。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <queue>
+#include <vector>
+int main() {
+    std::priority_queue<int> pq;             // 最大堆
+    for (int x : {5, 1, 9, 2, 7}) pq.push(x);
+    std::cout << "top3: ";
+    for (int i = 0; i < 3 && !pq.empty(); ++i) {
+        std::cout << pq.top() << ' ';
+        pq.pop();
+    }
+    std::cout << "\n";                        // 9 7 5
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：适配器不提供遍历，只能从受限端点访问；Top-K、调度优先级等场景用 `priority_queue` 最自然。需要遍历时改用底层容器（如 `std::make_heap` + `vector`）。
 
-</details>
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：用 stack 实现括号匹配（经典栈应用）
+遇到开括号入栈，遇到闭括号与栈顶配对，全程 LIFO 校验嵌套正确性。
+
+```cpp
+#include <iostream>
+#include <stack>
+#include <string>
+int main() {
+    std::string s = "({[]})";
+    std::stack<char> st;
+    bool ok = true;
+    for (char c : s) {
+        if (c == '(' || c == '{' || c == '[') st.push(c);
+        else {
+            if (st.empty()) { ok = false; break; }
+            char o = st.top(); st.pop();
+            if (!((o == '(' && c == ')') || (o == '{' && c == '}') || (o == '[' && c == ']'))) {
+                ok = false; break;
+            }
+        }
+    }
+    std::cout << "balanced=" << (ok && st.empty()) << "\n"; // 1
+}
+```
+
+### 演绎 2：priority_queue 的比较器与底层容器约束
+自定义比较器须是函数对象类型；底层容器必须满足 RandomAccessIterator（故不能用 `list`）。
+
+```cpp
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <functional>
+struct Task { int pri; int id; };
+int main() {
+    auto cmp = [](const Task& a, const Task& b) { return a.pri < b.pri; }; // 大顶堆
+    std::priority_queue<Task, std::vector<Task>, decltype(cmp)> pq(cmp);
+    pq.push({1, 100}); pq.push({5, 200});
+    std::cout << "top pri=" << pq.top().pri << "\n";  // 5
+}
+```
 ## 附录：GCC 15.3.0 真机实证 — `std::priority_queue` 零开销上浮代价
 
 > 证据：`_asm_demo/ch86_pq_test.cpp`（`-O2`，链接 exe 后 objdump）。结论：**push = vector::push_back + push_heap 上浮环（比较 + 交换），top = c.front() 纯寄存器 load，无虚函数、无委托、零开销。**

@@ -755,81 +755,98 @@ volatile int g_obs = 0;
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-
-## 真实开源项目参考（可查证链接）
-
-> `std::string` 与字符串处理的工业实现——下列链接指向标准库与高性能第三方库的真实源码（L2 文件级）。
-
-- **libstdc++ `std::string`（`basic_string.h`）**：[gcc-mirror/gcc · libstdc++-v3/include/bits/basic_string.h](https://github.com/gcc-mirror/gcc/blob/master/libstdc++-v3/include/bits/basic_string.h) —— 「③ 字节级结构」「④ SSO」的源头；`_M_local_buf[15]` 内联缓冲与 `_M_dataplus` 堆指针的切换逻辑在此。
-- **LLVM `llvm::StringRef`**：[llvm/llvm-project · llvm/include/llvm/ADT/StringRef.h](https://github.com/llvm/llvm-project/blob/main/llvm/include/llvm/ADT/StringRef.h) —— 「⑫ `std::string_view`」的工业先驱；零拷贝视图，不拥有内存，对应编译器自身海量字符串处理（比 `std::string` 少一次分配）。
-- **Boost.StringAlgo / Boost.Container**：[boostorg/container · include/boost/container/string.hpp](https://github.com/boostorg/container/blob/develop/include/boost/container/string.hpp) —— `boost::container::string` 提供 `small_string_opt` 与 `backtrace` 选项，对应「⑦ COW 陷阱」的现代修正路线（COW 在 C++11 后被禁，因 `const` 失效问题）。
-- **folly `fbstring`**：[facebook/folly · folly/FBString.h](https://github.com/facebook/folly/blob/main/folly/FBString.h) —— Meta 生产级 `string`，按长度在「SSO / 内联 / 堆」三态间切换（24 字节内联缓冲），对应「④ SSO」的激进工业版，cache 友好度高于 `std::string` 的 15 字节 SSO。
-
-**最佳实践**：高频短字符串用 `std::string_view` 避免拷贝；需要可变则用 `std::string` 并预 `reserve` 防扩容（「⑧ 扩容策略」）；跨 ABI 边界传递优先 `std::string`（非 `folly::fbstring`，后者 ABI 不稳定）；禁止返回 `string_view` 指向临时 `string`（悬垂）。
-
-> 交叉引用：哈希容器见 [ch85](Book/part07_stl/ch85_unordered.md)；`string_view` 与 `span` 视图族见 [ch82](Book/part07_stl/ch82_span.md)。
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+用 std::string_view::substr 做零拷贝切片，对比 std::string::substr 必须分配新缓冲。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <string_view>
+int main() {
+    std::string_view s = "hello world";
+    std::string_view w = s.substr(6, 5);       // "world"，不分配
+    std::cout << w << " len=" << w.size() << "\n"; // world len=5
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：`std::string_view` 只持有指针+长度，`.substr` 仅调整指针与长度，**不分配内存**；适合只读解析。注意它不保证以 `\0` 结尾，不能用 `%s` 或 C 字符串函数直接处理。
 
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+### 练习 2（难度 ★★★）
+用 string_view 原地解析 CSV 字段（按逗号切分，不拷贝子串），演示流式只读处理。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `noexcept` 移动构造函数，使 `std::vector` 扩容时走移动而非拷贝。
-
-<details><summary>答案与解析</summary>
-
-```cpp
-#include <iostream>
+#include <string_view>
 #include <vector>
-#include <utility>
-struct S {
-  int* p = new int[8];
-  S() = default;
-  S(S&& o) noexcept : p(o.p) { o.p = nullptr; }
-  ~S() { delete[] p; }
-};
-int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << "ok\n"; }
+int main() {
+    std::string_view csv = "a,bb,ccc";
+    std::vector<std::string_view> fields;
+    size_t start = 0;
+    while (true) {
+        auto comma = csv.find(',', start);
+        fields.push_back(csv.substr(start, comma - start));
+        if (comma == std::string_view::npos) break;
+        start = comma + 1;
+    }
+    for (auto f : fields) std::cout << f.size() << ' ';
+    std::cout << "\n";                          // 1 2 3
+}
 ```
 
-[标准] `noexcept` 移动构造让 `vector` 在重新分配时移动元素；否则因强异常保证退化为拷贝。
+[标准] 结论：解析文本时若只需"查看"子串，全程用 `string_view` 可避免 N 次堆分配；字段视图的生命周期必须短于拥有数据的 `std::string`，否则悬垂。
 
-</details>
+### 练习 3（难度 ★★★★）
+string_view 悬垂陷阱：view 指向的 string 生命周期短于 view 时产生未定义行为。错误做法仅示意，正确做法是让 owner 生命周期覆盖 view。
 
+错误示范（逻辑示意，不可运行）：
+```text
+std::string_view dangling() {
+    std::string s = "temp";
+    return std::string_view(s);   // s 析构后 view 悬垂，未定义行为
+}
+```
 
+正确写法：
+```cpp
+#include <iostream>
+#include <string>
+#include <string_view>
+int main() {
+    std::string owner = "alive";
+    std::string_view v(owner);     // owner 活到 main 结束，view 安全
+    std::cout << v << "\n";        // alive
+}
+```
+
+[标准] 结论：`std::string_view` 不拥有数据，它只是"借看"；构造 view 前必须确认被借对象的生命周期覆盖 view 的所有使用点。`std::string` 的 `data()/substr` 返回的 view 同样受此约束。
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：日志接口统一用 string_view 避免临时 string 分配
+函数参数用 `string_view` 可同时接受字面量、`std::string`、C 字符串，且不发生拷贝。
+
+```cpp
+#include <iostream>
+#include <string>
+#include <string_view>
+void log(std::string_view msg) { std::cout << "[log] " << msg << "\n"; }
+int main() {
+    std::string s = "from std::string";
+    log(s);            // 无临时拷贝
+    log("literal");    // 字面量直接构造 view
+}
+```
+
+### 演绎 2：string 累积拼接 vs 只读解析的取舍
+需要修改/拥有结果时用 `std::string` 累积；仅需查看时用 `string_view`，二者按所有权边界划分。
+
+```cpp
+#include <iostream>
+#include <string>
+int main() {
+    std::string acc;
+    for (int i = 0; i < 3; ++i) acc += static_cast<char>('0' + i);
+    std::cout << acc << "\n";         // 012
+}
+```
 ## 附录：std::string_view 真机汇编实证（ASM-81-string_view · GCC 15.3.0 / C++26 / -O2）
 
 > 证据：`_asm_demo/ch81_string_view_test.cpp` + `ch81_string_view_test.s`（真实编译 + `objdump -d -M intel -C`）。
@@ -883,4 +900,4 @@ call   <...>             ; _M_create / _M_copy（分配或拷贝）
 | `sv.substr(p,c)` | 指针+长度算术 | O(1) | 无 |
 | `s.substr(p,c)` | 长度守卫 + `_M_copy`/`_M_create` | O(n) | 超 SSO 时堆分配 |
 | `sv[i]` | `movzx eax,[ptr+i]`，无检查 | O(1) | 无 |
-| `sv.size()` | `mov rax,[sv+0]`（取 len 字段） | O(1) | 无 |
+| `sv.size()` | `mov rax,[sv+0]`（取 len 字段） | O(1) | 无 |
