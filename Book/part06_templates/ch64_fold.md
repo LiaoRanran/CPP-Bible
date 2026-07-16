@@ -746,57 +746,112 @@ A: && → true (逻辑与空集 = 真); || → false; , → void()
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用**一元折叠**实现 `sum`（左折叠 `(xs + ...)`）与 `product`（右折叠 `(xs * ...)`），体会折叠方向。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+
+template <typename... Ts> auto sum(Ts... xs) { return (xs + ...); }
+template <typename... Ts> auto product(Ts... xs) { return (xs * ...); }
+
+int main() { std::cout << sum(1, 2, 3, 4) << ' ' << product(1, 2, 3, 4) << '\n'; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `(xs + ...)` 展开为 `((1+2)+3)+4`（左结合）；`(xs * ...)` 右折叠展开为 `1*(2*(3*4))`。对 `+`/`*` 可交换故结果相同，对 `-`/`/` 方向会影响结果。
 
 </details>
+
+### 练习 2（难度 ★★★）
+
+用折叠实现"全部满足 `pred`"（`all_of`）与"任一满足 `pred`"（`any_of`），注意 `&&` / `||` 的**短路**语义。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+
+template <typename P, typename... Ts>
+bool all_of(P p, Ts... xs) { return (p(xs) && ...); }
+template <typename P, typename... Ts>
+bool any_of(P p, Ts... xs) { return (p(xs) || ...); }
+
+int main() {
+    auto pos = [](auto x) { return x > 0; };
+    std::cout << std::boolalpha << all_of(pos, 1, 2, 3) << ' ' << any_of(pos, -1, 0, 5) << '\n';
+}
+```
+
+[标准] `(p(xs) && ...)` 是逻辑与折叠，运行期对每个元素短路求值——首个 `false` 即停；`||` 折叠首个 `true` 即停。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+用逗号运算符折叠 `(f(xs), ...)` 实现 `for_each(f, xs...)` 批量调用；并说明**空包**时的行为（为何不会编译失败）。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+
+template <typename F, typename... Ts>
+void for_each(F f, Ts... xs) { (f(xs), ...); }
+
+int main() { for_each([](auto x) { std::cout << x << ' '; }, 1, 2, 3); std::cout << '\n'; }
+```
+
+[标准] 一元逗号折叠对**空包**有定义值（`void()`），因此 `for_each(f)` 也能编译；而 `&&`/`||` 空包分别为 `true`/`false`。这是 fold expression 与手写递归最大的便利差异之一。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：折叠方向对 `-` / `/` 敏感
+
+**选型场景**：用 fold 求和/求积。
+
+**常见错误**（结果错误）：用减法/除法 fold 却误以为方向无关：
+
+```text
+auto r = (xs - ...);   // 左折叠 ((1-2)-3) = -4，并非期望的 2
+```
+
+**修复**：对 `+`/`*` 用任意方向都安全；对 `-`/`/` 明确方向或用归约算法：
+
+```cpp
+#include <iostream>
+
+template <typename... Ts> auto sum(Ts... xs) { return (xs + ...); }
+
+int main() {
+    std::cout << sum(1, 2, 3, 4) << '\n';   // 10，左折叠确定
+}
+```
+
+**结论**：`+`/`*` 可交换结合，折叠方向不影响结果；`-`/`/` 必须明确方向或改用两两归约，否则结果依赖展开顺序。
+
+### 演绎 2：空包的行为差异
+
+**选型场景**：`all_of` / `any_of` 对零参数调用。
+
+**常见错误**（误解）：以为空包会编译失败或未定义。
+
+**修复**：`&&` 空包为 `true`、`||` 空包为 `false`，是标准定义值：
+
+```cpp
+#include <iostream>
+
+template <typename P, typename... Ts> bool all_of(P p, Ts... xs) { return (p(xs) && ...); }
+template <typename P, typename... Ts> bool any_of(P p, Ts... xs) { return (p(xs) || ...); }
+
+int main() {
+    std::cout << std::boolalpha
+              << all_of([](auto){ return true; }) << ' '   // true（空包 &&）
+              << any_of([](auto){ return false; }) << '\n'; // false（空包 ||）
+}
+```
+
+**结论**：逻辑折叠的空包有明确语义（`&&`→`true`，`||`→`false`，逗号→`void()`）；这是 fold 比手写递归更省心之处。
 

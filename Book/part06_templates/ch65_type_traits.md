@@ -694,57 +694,150 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**手写**一个 `my_is_pointer<T>` trait（用偏特化识别 `T*`），不借助 `std::is_pointer`，并用 `static_assert` 验证。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+```cpp
+#include <iostream>
+#include <type_traits>
+
+template <typename T> struct my_is_pointer : std::false_type {};
+template <typename T> struct my_is_pointer<T*> : std::true_type {};
+
+int main() {
+    static_assert(my_is_pointer<int*>::value);
+    static_assert(!my_is_pointer<int>::value);
+    std::cout << "ok\n";
+}
+```
+
+[标准] trait 本质是一个继承 `true_type`/`false_type` 的类模板；偏特化 `T*` 命中指针，主模板兜底为非指针。
+
+</details>
+
+### 练习 2（难度 ★★★）
+
+用 `std::enable_if_t` + `std::is_integral` 写两个 `to_string` 重载：整数走数值格式化，非整数走字符串包装，实现编译期分流。
+
+<details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-#include <utility>
+#include <type_traits>
+#include <string>
+
 template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+std::enable_if_t<std::is_integral_v<T>, std::string>
+to_string(T v) { return "int:" + std::to_string(v); }
+
+template <typename T>
+std::enable_if_t<!std::is_integral_v<T>, std::string>
+to_string(const T& v) { return "other:" + std::string(v); }
+
+int main() { std::cout << to_string(42) << ' ' << to_string("hi") << '\n'; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 两个重载的 SFINAE 条件互补（`integral` vs `!integral`），对每个 `T` 恰好一个启用，无歧义；`enable_if_t` 把"约束失败"变成"该重载从候选集静默移除"。注意 `int` 是基础类型，ADL 不会因此拉入 `std::to_string`，故与标准库 `to_string` 不冲突。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 **`void_t` 检测惯用法**写一个 `has_serialize<T>` trait，探测类型是否存在可调用成员 `serialize()`，并 `static_assert` 验证 `A`（有）与 `B`（无）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <type_traits>
+#include <string>
+
+template <typename T, typename = void>
+struct has_serialize : std::false_type {};
+template <typename T>
+struct has_serialize<T, std::void_t<decltype(std::declval<T>().serialize())>> : std::true_type {};
+
+struct A { void serialize() const {} };
+struct B {};
+
+int main() {
+    static_assert(has_serialize<A>::value);
+    static_assert(!has_serialize<B>::value);
+    std::cout << "ok\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `void_t<...>` 永远 `void`；当 `decltype(...)` 内的表达式**合法**时特化生效（命中 `true_type`），否则回退主模板——这是编译期"探测成员/嵌套类型"的标准手段。
 
 </details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：`enable_if` 放返回类型 vs 模板参数
+
+**选型场景**：用 SFINAE 给 `to_string` 分流。
+
+**常见错误**（硬错误而非静默失败）：把 `enable_if` 放在函数体内或返回类型却导致约束失败变成硬错：
+
+```text
+template <typename T>
+typename std::enable_if<std::is_integral_v<T>, std::string>::type
+to_string(T v);   // 可行，但返回类型冗长
+```
+
+**修复**：用 `enable_if_t` + 默认模板参数，签名更干净且仍走 SFINAE：
+
+```cpp
+#include <iostream>
+#include <type_traits>
+#include <string>
+
+template <typename T>
+std::enable_if_t<std::is_integral_v<T>, std::string>
+to_string(T v) { return "int:" + std::to_string(v); }
+
+template <typename T>
+std::enable_if_t<!std::is_integral_v<T>, std::string>
+to_string(const T& v) { return "other:" + std::string(v); }
+
+int main() { std::cout << to_string(42) << ' ' << to_string("hi") << '\n'; }
+```
+
+**结论**：`enable_if` 必须出现在"可被替换失败影响"的位置（返回类型/模板参数/函数参数）；条件互补才能对每个 `T` 唯一启用。
+
+### 演绎 2：`void_t` 探测成员函数 vs 嵌套类型
+
+**选型场景**：编译期探测类型能力。
+
+**常见错误**（误探）：`void_t<decltype(T::serialize)>` 探测的是"名为 serialize 的**成员**"，而非"可调用的 serialize()"：
+
+```text
+template <typename T, typename = void> struct has_serialize : std::false_type {};
+template <typename T>
+struct has_serialize<T, std::void_t<decltype(&T::serialize)>> : std::true_type {}; // 只匹配成员函数指针形态
+```
+
+**修复**：用表达式 `decltype(std::declval<T>().serialize())` 探测"可调用"：
+
+```cpp
+#include <iostream>
+#include <type_traits>
+
+template <typename T, typename = void>
+struct has_serialize : std::false_type {};
+template <typename T>
+struct has_serialize<T, std::void_t<decltype(std::declval<T>().serialize())>> : std::true_type {};
+
+struct A { void serialize() const {} };
+struct B {};
+
+int main() {
+    static_assert(has_serialize<A>::value);
+    static_assert(!has_serialize<B>::value);
+    std::cout << "ok\n";
+}
+```
+
+**结论**：`void_t` 探测的是"表达式是否合法"；要探测 callable 成员就用 `declval<T>().member()` 表达式，而非 `&T::member` 指针形态。
 

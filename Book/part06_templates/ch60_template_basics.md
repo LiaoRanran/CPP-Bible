@@ -718,57 +718,152 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+写一个 `clamp` 函数模板，把 `value` 约束到 `[lo, hi]` 区间；再用**默认模板参数**让比较准则可替换（默认 `Less`）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+
+struct Less { bool operator()(int a, int b) const { return a < b; } };
+struct Greater { bool operator()(int a, int b) const { return a > b; } };
+
+template <typename T, typename Cmp = Less>
+T clamp(T v, T lo, T hi, Cmp cmp = Cmp{}) {
+    if (cmp(v, lo)) return lo;
+    if (cmp(hi, v)) return hi;
+    return v;
+}
+
+int main() {
+    std::cout << clamp(15, 0, 10) << '\n';             // 10（默认 Less）
+    std::cout << clamp(15, 0, 10, Greater{}) << '\n';  // 0（替换比较准则）
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 默认模板参数只能出现在参数列表**末尾**；比较准则通过函数参数 + 默认实参传入，调用点可整体替换而不改签名。
+
+> 注意：C++20 起 `std::clamp` 提供四参重载（`clamp(v, lo, hi, comp)`）。若你的函数也叫 `clamp` 且传入 `std` 里的比较器（如 `std::greater<int>`），实参的 ADL 会把 `std::clamp` 也拉成候选 → 歧义。实战中改用自定义比较器（如上 `Greater`）或改名即可规避——这正是"命名与 std 冲突"的典型陷阱。
 
 </details>
+
+### 练习 2（难度 ★★★）
+
+用**非类型模板参数**（维度 `R`、`C` 编译期固定）实现 `Matrix<T, R, C>`，提供 `at(r,c)` 访问与编译期 `rows()`/`cols()``；说明为何维度用非类型参数而非 `std::vector` 运行时维度。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+
+template <typename T, int R, int C>
+struct Matrix {
+    T data[R * C]{};
+    static constexpr int rows() { return R; }
+    static constexpr int cols() { return C; }
+    T& at(int r, int c) { return data[r * C + c]; }
+};
+
+int main() {
+    Matrix<double, 2, 3> m;
+    m.at(1, 2) = 5.0;
+    static_assert(m.rows() == 2 && m.cols() == 3);
+    std::cout << m.at(1, 2) << '\n';   // 5
+}
+```
+
+[标准] 非类型参数参与类型身份（`Matrix<double,2,3>` 与 `Matrix<double,3,2>` 是不同类型）。维度是编译期常量，`rows()/cols()` 为 `constexpr`，可被 `static_assert`/数组大小直接使用，零运行期开销。
+
+</details>
+
+### 练习 3（难度 ★★★★）
+
+用**变量模板** `pi<T>` 与**别名模板** `Vec<T>` 构造泛型几何工具，并 `static_assert` 验证类型与值；解释变量模板相对 `constexpr` 全局常量的优势。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <type_traits>
+
+template <typename T> constexpr T pi = T(3.1415926535897932385L);
+template <typename T> using Vec = T[3];
+
+template <typename T> T circumference(T r) { return 2 * pi<T> * r; }
+
+int main() {
+    static_assert(std::is_same_v<decltype(pi<double>), const double>);
+    static_assert(std::is_same_v<Vec<double>, double[3]>);
+    std::cout << circumference(1.0) << '\n';   // ~6.283185307
+}
+```
+
+[标准] 变量模板让"依赖于类型的常量"拥有唯一符号名 `pi<T>`，对所有实例化类型只生成一份；别名模板 `Vec<T>` 是类型别名而非新类型，零开销。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：默认模板参数的位置约束
+
+**选型场景**：想让 `clamp` 的比较准则可配置，又不想破坏现有调用点。
+
+**常见错误**（编译失败）：把默认模板参数放在非末尾：
+
+```text
+template <typename Cmp = Less, typename T>   // 错误：默认参数不在末尾
+T clamp_bad(T v, T lo, T hi, Cmp cmp);
+```
+
+**修复**：默认参数必须整体落在参数列表末尾：
+
+```cpp
+#include <iostream>
+
+struct Less { bool operator()(int a, int b) const { return a < b; } };
+
+template <typename T, typename Cmp = Less>
+T clamp(T v, T lo, T hi, Cmp cmp = Cmp{}) {
+    if (cmp(v, lo)) return lo;
+    if (cmp(hi, v)) return hi;
+    return v;
+}
+
+int main() { std::cout << clamp(15, 0, 10) << '\n'; }
+```
+
+**结论**：默认模板参数只允许出现在参数列表**末尾**；把"可配置策略"放在末尾并用默认实参，既有可扩展性又零侵入。
+
+### 演绎 2：非类型参数必须是编译期常量
+
+**选型场景**：矩阵维度在编译期已知，希望维度参与类型身份、零运行期存储。
+
+**常见错误**（编译失败）：用运行时变量做非类型模板参数：
+
+```text
+int r = 2, c = 3;
+Matrix<double, r, c> m;   // 错误：r/c 不是编译期常量
+```
+
+**修复**：用 `constexpr`/字面量：
+
+```cpp
+#include <iostream>
+
+template <typename T, int R, int C>
+struct Matrix {
+    T data[R * C]{};
+    T& at(int i) { return data[i]; }
+};
+
+int main() {
+    constexpr int R = 2, C = 3;
+    Matrix<double, R, C> m;
+    m.at(0) = 1.0;
+    static_assert(sizeof(m.data) == R * C * sizeof(double));
+    std::cout << m.at(0) << '\n';
+}
+```
+
+**结论**：非类型模板参数只能是编译期常量（整型、枚举、指针、引用、`auto` 受约束类型）；这保证维度是类型的一部分、可被 `static_assert`/数组大小直接使用。
 

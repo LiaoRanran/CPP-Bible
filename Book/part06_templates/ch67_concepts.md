@@ -634,57 +634,116 @@ A: SFINAE 可以操作任意类型属性；concepts 需要显式定义。concept
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+用 `std::integral` 概念约束 `add`，使其只接受整数类型；再故意用浮点调用，观察约束失败的诊断。
 
 <details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
 
 ```cpp
 #include <iostream>
 #include <concepts>
+
 template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+
+int main() {
+    std::cout << add(2, 3) << '\n';
+    // add(1.0, 2.0);  // 违反概念约束 -> 编译失败，诊断可读
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 违反概念约束是**硬错误**（而非 SFINAE 静默失败），编译器能直接指出"实参不满足 integral 概念"，诊断远优于 SFINAE。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 2（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 `requires` 表达式定义两个原子概念 `Addable` / `Printable`，再用 `&&` 组合成复合概念 `Reportable`，约束 `report`。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <concepts>
+
+template <typename T> concept Addable   = requires(T a, T b) { a + b; };
+template <typename T> concept Printable = requires(T a) { std::cout << a; };
+template <typename T> concept Reportable = Addable<T> && Printable<T>;
+
+template <Reportable T> void report(T v) { std::cout << v + v << '\n'; }
+
+int main() { report(21); }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `requires` 表达式在编译期检查"该表达式是否合法"；复合概念通过 `&&`/`||` 组合原子概念，约束语义清晰、可复用。
 
 </details>
+
+### 练习 3（难度 ★★★★）
+
+用概念**重写** ch65 的 `to_string`：以 `std::integral` 与 `std::floating_point` 两个 disjoint 概念分别约束，消除 SFINAE 样板。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <concepts>
+#include <string>
+
+template <std::integral T>       std::string to_string(T v) { return "int:" + std::to_string(v); }
+template <std::floating_point T> std::string to_string(T v) { return "fp:"  + std::to_string(v); }
+
+int main() { std::cout << to_string(42) << ' ' << to_string(3.14) << '\n'; }
+```
+
+[标准] 概念重载彼此 disjoint，编译器直接按约束匹配，无需 `enable_if`；相比 ch65 的 SFINAE 写法，可读性与错误诊断都显著改善。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：`requires` 表达式的语法细节
+
+**选型场景**：用 concept 约束可加可打印类型。
+
+**常见错误**（编译失败）：`requires` 体内语句漏分号、或括号不匹配：
+
+```text
+template <typename T> concept Addable = requires(T a, T b) { a + b };   // 漏分号 -> 非法
+```
+
+**修复**：`requires` 体内的要求子句以分号结尾：
+
+```cpp
+#include <iostream>
+#include <concepts>
+
+template <typename T> concept Addable   = requires(T a, T b) { a + b; };
+template <typename T> concept Printable = requires(T a) { std::cout << a; };
+template <typename T> concept Reportable = Addable<T> && Printable<T>;
+
+template <Reportable T> void report(T v) { std::cout << v + v << '\n'; }
+
+int main() { report(21); }
+```
+
+**结论**：`requires` 表达式中的每个要求是一条以分号结尾的"表达式语句"；它只在编译期检查合法性，不产生运行期代码。
+
+### 演绎 2：概念约束的诊断远优于 SFINAE
+
+**选型场景**：想让 `add` 只接受整数，并对浮点给出可读错误。
+
+**对比**：SFINAE 失败时通常报"无匹配重载"或一长串候选；concept 失败直接指出"实参不满足 integral 概念"。
+
+```cpp
+#include <iostream>
+#include <concepts>
+
+template <std::integral T> T add(T a, T b) { return a + b; }
+
+int main() {
+    std::cout << add(2, 3) << '\n';
+    // add(1.5, 2.5);  // 编译失败，诊断：约束 std::integral 不满足（而非晦涩的替换失败）
+}
+```
+
+**结论**：优先用 concept 表达约束——可读性、错误诊断、编译速度都优于等价 SFINAE；SFINAE 仅用于 concept 表达不了的复杂探测。
 

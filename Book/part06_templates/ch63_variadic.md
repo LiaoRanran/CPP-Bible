@@ -731,57 +731,129 @@ int main(){std::cout<<sum(1,2,3,4,5,6,7,8,9,10)<<std::endl;return 0;}
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+用**递归可变参数模板**（base case + 递归 case）写一个 `print_all`，依次打印所有参数，参数间用空格分隔。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+
+void print_all() {}
+template <typename T, typename... Ts>
+void print_all(const T& first, const Ts&... rest) {
+    std::cout << first << ' ';
+    print_all(rest...);
+}
+
+int main() { print_all(1, "two", 3.0, 'x'); std::cout << '\n'; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 每次递归剥掉一个参数，剩余包 `rest...` 逐层变短，直到空包命中 base case；递归深度 = 参数个数，会实例化 N 份函数。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 **C++17 fold expression** 重写 `print_all`（`(std::cout << ... << xs)`），并额外写一个 `sum` 折叠；对比递归版本说明 fold 的优势。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+
+template <typename... Ts>
+void print_all(const Ts&... xs) { (std::cout << ... << xs) << '\n'; }
+
+template <typename... Ts>
+auto sum(const Ts&... xs) { return (xs + ...); }
+
+int main() { print_all(1, 2, 3); std::cout << sum(1, 2, 3, 4) << '\n'; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] fold 只实例化一个函数，编译期展开为线性序列，无递归 N 份实例化的代码膨胀；`(xs + ...)` 为一元左折叠，从首个元素起累加。
 
 </details>
+
+### 练习 3（难度 ★★★★）
+
+用包展开 + `std::index_sequence` 实现一个 `make_array(args...)`，把所有参数存入 `std::array`，元素类型取公共类型（`std::common_type_t`）。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <array>
+#include <utility>
+#include <type_traits>
+
+template <typename... Ts>
+auto make_array(Ts&&... xs) {
+    using T = std::common_type_t<Ts...>;
+    return std::array<T, sizeof...(Ts)>{ static_cast<T>(xs)... };
+}
+
+int main() {
+    auto a = make_array(1, 2, 3);
+    static_assert(std::is_same_v<decltype(a), std::array<int, 3>>);
+    std::cout << a.size() << '\n';   // 3
+}
+```
+
+[标准] `sizeof...(xs)` 是编译期包大小；`static_cast<T>(xs)...` 是包展开 + 转换，保证所有元素同类型后构造 `std::array`。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：递归展开必须有 base case
+
+**选型场景**：C++11 风格打印任意参数包。
+
+**常见错误**（编译失败/无限递归）：只有递归 case、缺空包 base：
+
+```text
+template <typename T, typename... Ts>
+void print_all(const T& f, const Ts&... r) { std::cout << f; print_all(r...); }
+// 空包无匹配 -> 找不到 viable 函数
+```
+
+**修复**：补一个无参 base case 收尾：
+
+```cpp
+#include <iostream>
+
+void print_all() {}
+template <typename T, typename... Ts>
+void print_all(const T& first, const Ts&... rest) {
+    std::cout << first << ' ';
+    print_all(rest...);
+}
+
+int main() { print_all(1, "two", 3.0); std::cout << '\n'; }
+```
+
+**结论**：递归可变参数必须有一条"包为空"的终止路径；否则空包无法匹配任何重载。
+
+### 演绎 2：包展开的运算符不能省略
+
+**选型场景**：对每个参数调用 `f`。
+
+**常见错误**（编译失败）：直接写 `f(xs)...` 缺少展开运算符/逗号：
+
+```text
+template <typename F, typename... Ts> void for_each(F f, Ts... xs) { f(xs)...; }  // 语法错误
+```
+
+**修复**：用逗号折叠 `(f(xs), ...)`：
+
+```cpp
+#include <iostream>
+
+template <typename F, typename... Ts>
+void for_each(F f, Ts... xs) { (f(xs), ...); }
+
+int main() { for_each([](auto x) { std::cout << x << ' '; }, 1, 2, 3); std::cout << '\n'; }
+```
+
+**结论**：包展开必须出现在一个"模式"中（运算符、逗号、初始化器）；`(pat, ...)` 是最常用的"对每个元素执行副作用"写法。
 

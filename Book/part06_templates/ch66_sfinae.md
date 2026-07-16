@@ -670,57 +670,134 @@ int main(){f(42);return 0;}
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+用 `std::enable_if_t` 给 `load` 写两个重载：一个接受**算术标量**（`is_arithmetic`），一个接受**非算术**类型（如字符串），实现编译期分流。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
+#include <type_traits>
+#include <string>
+
 template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+std::enable_if_t<std::is_arithmetic_v<T>, void>
+load(T v) { std::cout << "scalar:" << v << '\n'; }
+
+template <typename T>
+std::enable_if_t<!std::is_arithmetic_v<T>, void>
+load(const T& v) { std::cout << "other:" << v << '\n'; }
+
+int main() { load(42); load(std::string("hi")); }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 两个重载的 SFINAE 条件互补（`arithmetic` vs `!arithmetic`），对每个 `T` 恰好一个启用；`enable_if_t` 把约束失败变成"该重载从候选集静默移除"，而非硬错误。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 **`void_t` 惯用法**写 `has_iterator<T>` trait，探测类型是否存在可调用成员 `begin()` / `end()`，并 `static_assert` 验证 `std::vector`（有）与 `int`（无）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <type_traits>
+#include <vector>
+
+template <typename T, typename = void>
+struct has_iterator : std::false_type {};
+template <typename T>
+struct has_iterator<T, std::void_t<decltype(std::declval<T>().begin()),
+                                   decltype(std::declval<T>().end())>> : std::true_type {};
+
+int main() {
+    static_assert(has_iterator<std::vector<int>>::value);
+    static_assert(!has_iterator<int>::value);
+    std::cout << "ok\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `void_t<decltype(begin()), decltype(end())>` 在两者都合法时为 `void`、特化命中；任一缺失则替换失败、回退主模板——这是"探测成员函数"的标准 SFINAE 手法。
 
 </details>
+
+### 练习 3（难度 ★★★★）
+
+用**优先级标签分发**（tag dispatch）实现 `foo`：整数走 `std::true_type` 分支，其余走 `std::false_type` 分支，主入口以 `std::bool_constant` 选择，避免 SFINAE 复杂性。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <type_traits>
+
+template <typename T> void foo(T v, std::true_type)  { std::cout << "integral:" << v << '\n'; }
+template <typename T> void foo(T v, std::false_type) { std::cout << "other:"   << v << '\n'; }
+
+template <typename T> void foo(T v) { foo(v, std::bool_constant<std::is_integral_v<T>>{}); }
+
+int main() { foo(1); foo(1.0); }
+```
+
+[标准] tag dispatch 用空标签类型在编译期选分支，错误信息比 SFINAE 更干净，且不需要 `enable_if`；是 Concepts 之前的标准"编译期重载选择"手法。
+
+</details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：SFINAE 是"软失败"，体内错误是"硬错误"
+
+**选型场景**：用 `enable_if` 做重载淘汰，并体会约束失败 vs 实体内错误的区别。
+
+**常见错误**（硬错误而非静默失败）：把依赖表达式写在函数**体内**而非签名，替换失败发生在实例化时变成硬错：
+
+```text
+template <typename T>
+T get(T v) {
+    return v.size();   // 当 T=int 时在体内实例化失败 -> 硬错误，并非 SFINAE 淘汰
+}
+```
+
+**修复**：把约束放到签名（返回类型/模板参数），使其走 SFINAE；约束命中的分支正常返回：
+
+```cpp
+#include <iostream>
+#include <type_traits>
+#include <string>
+
+template <typename T>
+std::enable_if_t<std::is_class_v<T>, T>
+get(T v) { return v; }   // 仅对类类型启用，返回原对象本身
+
+int main() { std::cout << get(std::string("abc")).length() << '\n'; }
+```
+
+**结论**：SFINAE 只在"模板实参替换签名"阶段生效；一旦进入函数体，错误就是硬错误，不会被其他重载救回。本例对 `int` 调用 `get` 会**静默无匹配**（SFINAE），而非编译崩溃。
+
+### 演绎 2：两个条件必须互补，否则全淘汰
+
+**选型场景**：`load` 分流算术/非算术。
+
+**常见错误**（无匹配或歧义）：两个条件重叠或都没覆盖某类型：
+
+```text
+template <typename T> enable_if_t<is_arithmetic_v<T>, void> load(T);
+template <typename T> enable_if_t<is_arithmetic_v<T>, void> load(T); // 复制条件 -> 歧义
+```
+
+**修复**：条件互补（`arithmetic` vs `!arithmetic`）：
+
+```cpp
+#include <iostream>
+#include <type_traits>
+#include <string>
+
+template <typename T> std::enable_if_t<std::is_arithmetic_v<T>, void> load(T v) { std::cout << "scalar:" << v << '\n'; }
+template <typename T> std::enable_if_t<!std::is_arithmetic_v<T>, void> load(const T& v) { std::cout << "other:" << v << '\n'; }
+
+int main() { load(42); load(std::string("hi")); }
+```
+
+**结论**：SFINAE 重载集要求条件 partition 整个类型空间（互补且不重叠），否则出现"无 viable 重载"或"多义"硬错误。
 

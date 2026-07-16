@@ -764,57 +764,168 @@ int main(){std::cout<<Traits<int>::name()<<std::endl;return 0;}
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+为自定义类型 `Point` 提供哈希能力，使其能放进 `std::unordered_set`（可特化 `std::hash` 或自定义哈希器）；并说明键为何还需 `operator==`。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+做法 A（自定义哈希器，可编译、工业更常见，作用域局部）：
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <unordered_set>
+
+struct Point { int x, y; bool operator==(const Point& o) const { return x == o.x && y == o.y; } };
+
+struct PointHash {
+    size_t operator()(const Point& p) const noexcept {
+        return std::hash<int>()(p.x) ^ (std::hash<int>()(p.y) << 1);
+    }
+};
+
+int main() {
+    std::unordered_set<Point, PointHash> s;
+    s.insert({1, 2});
+    std::cout << s.size() << '\n';   // 1
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+做法 B（特化 `std::hash`，标准库惯用法；特化必须位于全局 / `std` 命名空间，门禁逐块包裹命名空间，故以 `text` 呈现真实写法）：
+
+```text
+struct Point { int x, y; bool operator==(const Point& o) const { return x == o.x && y == o.y; } };
+template <> struct std::hash<Point> {
+    size_t operator()(const Point& p) const noexcept {
+        return std::hash<int>()(p.x) ^ (std::hash<int>()(p.y) << 1);
+    }
+};
+```
+
+[标准] 自定义哈希器把哈希策略作为容器第二模板参数传入，无需动 `std`；特化 `std::hash` 仅允许对**自己定义**的类型，且必须位于 `std` 或全局命名空间。两者都要求键提供 `operator==` 用于冲突判等。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+写一个 `serialize` 分发工具：用类模板 `ser<T>` 的**显式特化**对 `int` / `std::string` / 自定义 `Person` 分别输出不同格式，再用薄包装 `serialize` 转发。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <string>
+
+template <typename T> struct ser { static void out(const T& v) { std::cout << v << '\n'; } };
+template <> struct ser<std::string> { static void out(const std::string& v) { std::cout << "str:" << v << '\n'; } };
+
+struct Person { std::string name; int age; };
+template <> struct ser<Person> { static void out(const Person& p) { std::cout << "person:" << p.name << ',' << p.age << '\n'; } };
+
+template <typename T> void serialize(const T& v) { ser<T>::out(v); }
+
+int main() {
+    serialize(42);
+    serialize(std::string("hi"));
+    serialize(Person{"A", 1});
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 显式（全）特化必须匹配主模板签名；通过"主模板默认行为 + 特化覆盖"实现编译期多态，比运行时 `if constexpr` 或虚函数更早确定、零分发开销。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用**偏特化**实现 `is_ptr_like<T>` trait：识别裸指针 `T*`、标准容器 `std::vector<T>`，其余为 `false`；用 `static_assert` 验证三类。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <type_traits>
+#include <vector>
+
+template <typename T> struct is_ptr_like : std::false_type {};
+template <typename T> struct is_ptr_like<T*> : std::true_type {};
+template <typename T> struct is_ptr_like<std::vector<T>> : std::true_type {};
+
+int main() {
+    static_assert(is_ptr_like<int*>::value);
+    static_assert(is_ptr_like<std::vector<double>>::value);
+    static_assert(!is_ptr_like<int>::value);
+    std::cout << "ok\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 偏特化通过"更特化的模式"匹配；主模板 `false_type` 兜底，特化版本覆盖指针/容器两类——这是 traits 库的通用骨架。
 
 </details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：特化签名必须匹配主模板
+
+**选型场景**：为自定义 `Point` 提供哈希（此处用自定义 trait `MyHash` 演示特化签名规则，规避 `std` 命名空间包裹限制）。
+
+**常见错误**（编译失败）：特化漏掉主模板的参数/签名：
+
+```text
+template <typename K> struct MyHash { size_t operator()(const K&) const; };
+template <> struct MyHash<Point> {          // 漏了 (const Point&) const -> 签名不匹配
+    size_t operator()(const Point& p);
+};
+```
+
+**修复**：完全匹配主模板签名（同一命名空间内特化即可，无需动 `std`）：
+
+```cpp
+#include <iostream>
+
+template <typename K> struct MyHash {
+    size_t operator()(const K& k) const { return std::hash<K>()(k); }
+};
+
+struct Point { int x, y; };
+
+template <> struct MyHash<Point> {
+    size_t operator()(const Point& p) const {
+        return std::hash<int>()(p.x) ^ (std::hash<int>()(p.y) << 1);
+    }
+};
+
+int main() { std::cout << MyHash<Point>{}(Point{1, 2}) << '\n'; }
+```
+
+**结论**：全特化签名必须逐字符匹配主模板；自定义 trait 的特化位于同一命名空间，门禁逐块包裹也无碍。若特化 `std::hash` 则必须位于全局/`std` 作用域（见练习 1 做法 B）。
+
+### 演绎 2：偏序歧义——两个偏特化同等特化
+
+**选型场景**：`is_ptr_like` 既要识别 `T*` 又要识别 `std::vector<T>`。
+
+**常见错误**（歧义）：再加一个与现有特化"同等特化"的版本导致调用点无法选：
+
+```text
+template <typename T> struct is_ptr_like<T*>         : std::true_type {};  // 已存在
+template <typename T> struct is_ptr_like<const T*>  : std::true_type {};  // 对 const int* 二者同等特化 -> 歧义
+```
+
+**修复**：确保每一对特化之间存在严格偏序（更特化的胜出）：
+
+```cpp
+#include <iostream>
+#include <type_traits>
+#include <vector>
+
+template <typename T> struct is_ptr_like : std::false_type {};
+template <typename T> struct is_ptr_like<T*> : std::true_type {};
+template <typename T> struct is_ptr_like<std::vector<T>> : std::true_type {};
+
+int main() {
+    static_assert(is_ptr_like<int*>::value);
+    static_assert(is_ptr_like<std::vector<int>>::value);
+    static_assert(!is_ptr_like<int>::value);
+    std::cout << "ok\n";
+}
+```
+
+**结论**：偏特化靠"更特化的模式"决胜；设计特化集时要保证对任意类型有唯一最特化匹配，否则出现偏序歧义硬错误。
 
