@@ -4,8 +4,8 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
   "last_updated": "2026-07-15",
-  "last_commit": "6b555311c339219942c495388a3b01933650ccdd",
-  "git_status": "in sync with origin/master after push 2026-07-16 (Phase APP batch1: 8 chapters exercise-rewrite+usage-demo, 53 asm examples unchanged, HEAD 6b555311c339219942c495388a3b01933650ccdd)",
+  "last_commit": "d807b25c4ca3041a5df464144de30e78286450f3",
+  "git_status": "in sync with origin/master after push 2026-07-15 (Phase APP batch2: 8 chapters exercise-rewrite+usage-demo, preserve ch42 appendix-E & ch50 MI asm; 53 asm examples unchanged, HEAD d807b25)",
   "completed_phases": [
     "density_deepening",
     "i_practice_closeout",
@@ -410,7 +410,20 @@
       "total_batches": 1,
       "detail": "ch85 附录: GCC15.3 -O2 真机 objdump。build() 节点堆分配+桶数组(max_load_factor=0x3f800000); find_it 先 div r11 取桶索引再沿 +0x00 next 单链表比较键@0x08。证据 _asm_demo/ch85_unordered_test.cpp/.s。"
     },
-    "APP1": null
+    "APP1": {
+      "label": "Phase APP 应用层增强 批1(习题重写+用法演绎 8章)",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "习题重写+用法演绎覆盖 8章: ch20/27/41/47/77/78/93/96。习题全部可编译(逐块 -c 编译门禁 0 fail); 用法演绎含真实可编译示例; asm 实证 53例不变; consistency 147章 0/0。metrics.application_layer_app1_chapters='8/147 (ch20/27/41/47/77/78/93/96)'。"
+    },
+    "APP2": {
+      "label": "Phase APP 应用层增强 批2(习题重写+用法演绎 8章)",
+      "status": "completed",
+      "batch": 1,
+      "total_batches": 1,
+      "detail": "习题重写+用法演绎覆盖 8章: ch21/31/39/42/43/44/50/51(simple 模式 ch21/31/39/43/44/51 + preserve 双模 ch42/50 保留原 ASM 附录)。ch42 附录E / ch50 [实现] ASM 经 preserve 逻辑保留未删。精准分段编译验证 56 注入块 FAILS:0。consistency 147章 ERROR=0/WARN=0=100/100 零回归。asm 实证 53例不变。HEAD d807b25。"
+    }
   },
   "execution_order": [
     "P0-2",
@@ -482,7 +495,9 @@
     "assembly_empirical_examples": 53,
     "i_practice_coverage": "63/147",
     "compile_pass_rate": "112/147",
-    "application_layer_app1_chapters": "8/147 (ch20/27/41/47/77/78/93/96)"
+    "application_layer_app1_chapters": "8/147 (ch20/27/41/47/77/78/93/96)",
+    "application_layer_app2_chapters": "8/147 (ch21/31/39/42/43/44/50/51)",
+    "application_layer_total_chapters": "16/147 (app1 8 + app2 8)"
   },
-  "ci_status": "Pushed Phase APP batch1 (HEAD 6b555311c339219942c495388a3b01933650ccdd); application_layer 8/147 chapters enhanced; consistency 100/100; asm examples 53 unchanged"
-}
+  "ci_status": "Pushed Phase APP batch2 (HEAD d807b25); application_layer enhanced 16/147 chapters (app1 ch20/27/41/47/77/78/93/96 + app2 ch21/31/39/42/43/44/50/51); consistency 100/100; asm examples 53 unchanged"
+}
