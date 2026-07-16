@@ -703,57 +703,185 @@ A: (1) tagged pointer (ABA 防护 + 无 HP); (2) hazard pointers (C++26 方向);
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+实现一个最简 **Hazard Pointer** 登记/清除流程（单读者、单槽位）：读者在解引用共享指针前把它登记到全局 HP 槽，用完清除；回收者删除节点前先检查 HP 槽是否仍指向它。用单线程模拟「登记保护 → 回收被拒」。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+HP 的核心约定：**读者先登记、再解引用**；**回收者先扫描 HP 表，被任一 HP 引用的节点推迟删除**。这样保证「正在被读的节点」永不被 free，从根上消除 use-after-free 与 ABA。
 
 ```cpp
+#include <atomic>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct Node { int v; };
+std::atomic<Node*> g_hp{nullptr};       // 单个全局 hazard 槽
+
+bool try_retire(Node* n) {              // 回收者：被 HP 引用则拒绝删除
+    if (g_hp.load(std::memory_order_acquire) == n) return false;  // 仍被保护
+    delete n; return true;
+}
+int main() {
+    Node* n = new Node{42};
+    std::atomic<Node*> shared{n};
+
+    Node* p = shared.load(std::memory_order_acquire);
+    g_hp.store(p, std::memory_order_release);      // 读者登记 HP
+    std::cout << "protected try_retire = " << try_retire(p) << " (0=被拒，正确)\n";
+
+    g_hp.store(nullptr, std::memory_order_release);// 读者用完清除
+    std::cout << "unprotected try_retire = " << try_retire(p) << " (1=删除，正确)\n";
+    return 0;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[实现] 真实 HP 库有每线程多个 HP 槽 + 每线程 retire 列表 + 批量扫描回收（阈值触发），此处简化为单槽演示核心不变式。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+用单线程模拟 **RCU** 的「读侧免锁、写侧 copy-update + 宽限期」：写者复制→修改→原子替换指针，旧版本在「所有读者退出临界区（宽限期结束）」后才回收。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+RCU 读侧几乎零开销（仅标记进入/退出临界区）；写侧「复制-修改-替换」后必须等待**宽限期**（当前所有读者都已离开旧版本临界区）才能安全 free 旧版本。
 
 ```cpp
+#include <atomic>
+#include <memory>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct Config { int a, b; };
+int main() {
+    std::shared_ptr<const Config> g = std::make_shared<const Config>(Config{1, 2});
+
+    // 读侧：原子读快照，读期间旧对象由 shared_ptr 引用计数保活（模拟宽限期）
+    std::shared_ptr<const Config> reader = std::atomic_load(&g);
+    std::cout << "reader sees a=" << reader->a << '\n';
+
+    // 写侧：copy-update-replace
+    auto updated = std::make_shared<const Config>(Config{99, 2});
+    std::atomic_store(&g, updated);      // 原子替换发布新版本
+
+    // 旧版本 reader 仍在用，直到 reader 离开作用域（引用计数归零）才真正回收 —— 即宽限期
+    std::cout << "after update, new reader a=" << std::atomic_load(&g)->a << '\n';
+    std::cout << "old snapshot still valid a=" << reader->a << " (grace period 内)\n";
+    return 0;
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 此处用 `shared_ptr` 引用计数模拟宽限期；真实 RCU（如 Linux 内核）用「静止态检测」而非引用计数，读侧开销更低但回收延迟由 `synchronize_rcu()` 控制。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+实现 HP 的**批量回收**：读者可能登记多个指针，回收者维护一个 retire 列表，扫描全部 HP 槽后，只删除「不在任何 HP 槽中」的节点，其余留待下轮。给出核心扫描逻辑。
 
 <details><summary>答案与解析</summary>
 
+工业 HP 的回收是**批量**的：retire 列表累积到阈值时，把所有活跃 HP 槽收集成集合，逐个 retired 节点判断是否命中，未命中者删除、命中者保留。
+
 ```cpp
+#include <atomic>
+#include <vector>
+#include <algorithm>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct Node { int v; };
+constexpr int K = 4;
+std::atomic<Node*> g_hp[K];             // K 个全局 HP 槽
+
+void scan_and_reclaim(std::vector<Node*>& retired) {
+    std::vector<Node*> hazards;         // 收集所有活跃 HP
+    for (int i = 0; i < K; ++i)
+        if (Node* p = g_hp[i].load(std::memory_order_acquire)) hazards.push_back(p);
+    std::vector<Node*> keep;
+    for (Node* n : retired) {
+        if (std::find(hazards.begin(), hazards.end(), n) != hazards.end())
+            keep.push_back(n);          // 仍被保护，留待下轮
+        else
+            delete n;                   // 无人引用，安全删除
+    }
+    retired.swap(keep);
+}
+int main() {
+    for (auto& h : g_hp) h.store(nullptr);
+    Node* a = new Node{1};
+    Node* b = new Node{2};
+    g_hp[0].store(a, std::memory_order_release);   // a 被保护
+    std::vector<Node*> retired{a, b};
+    scan_and_reclaim(retired);          // 删 b，保留 a
+    std::cout << "remaining protected = " << retired.size() << " (应为1: a)\n";
+    g_hp[0].store(nullptr);             // a 用完
+    scan_and_reclaim(retired);          // 现在删 a
+    std::cout << "remaining = " << retired.size() << " (应为0)\n";
+    return retired.empty() ? 0 : 1;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[实现] 批量扫描把「每次 retire 都全表扫描」的 O(N·H) 摊薄为阈值触发的 O(N+H)，是 HP 可用性的关键工程优化。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+> 本节把安全内存回收放进真实决策链：**选型场景 → 常见错误 → 修复代码 → 工程结论**。
+
+### 演绎 1：HP 还是 RCU？读写比例决定选型
+
+**选型场景**：一个读多写少的路由表（99% 读、1% 写），需要无锁读。
+
+- **RCU**：读侧几乎零开销（无原子写、无 CAS），最适合读多写少；代价是回收延迟与写侧宽限期等待。
+- **Hazard Pointer**：读侧要为每个解引用做一次原子登记（写 HP 槽），开销高于 RCU，但内存回收及时、上界确定（每指针最多 K 个延迟节点）。
+
+**常见错误**：读多写少却选 HP，让每次读都付出 HP 登记的原子写开销。
+
+```cpp
+#include <atomic>
+#include <iostream>
+struct Route { int dst; };
+int main() {
+    std::atomic<Route*> hp{nullptr};
+    Route* r = new Route{42};
+    std::atomic<Route*> table{r};
+    // HP 路线：每次读都要一次原子写登记 —— 读多写少场景下这是主要开销来源
+    Route* p = table.load(std::memory_order_acquire);
+    hp.store(p, std::memory_order_release);   // 读侧原子写：RCU 场景本可省去
+    std::cout << "route dst=" << p->dst << '\n';
+    hp.store(nullptr, std::memory_order_release);
+    delete r;
+    return 0;
+}
+```
+
+**修复**：读多写少改用 RCU 式「原子指针 + 引用计数快照」（练习 2），读侧只做原子 load，不写 HP 槽。
+
+**结论**：**读多写少 → RCU**（读侧最省）；**写较频繁 / 需确定回收上界 / 指针数有限 → HP**。二者都比「裸 CAS + delete」安全。
+
+### 演绎 2：RCU 写侧忘记等宽限期就 free
+
+**选型场景**：RCU 更新路由表，写者替换指针后立即 `delete` 旧表。
+
+**常见错误**：不等宽限期，读者仍持旧指针时就释放。
+
+```cpp
+#include <atomic>
+#include <iostream>
+struct Table { int v; };
+int main() {
+    Table* old = new Table{1};
+    std::atomic<Table*> g{old};
+    Table* reader = g.load(std::memory_order_acquire);  // 读者拿到旧表指针，正在使用
+
+    Table* neo = new Table{2};
+    g.store(neo, std::memory_order_release);            // 发布新表
+    delete old;                                          // 错误：读者 reader 仍指向 old → 悬垂
+    // std::cout << reader->v;   // ← 若此处访问即 use-after-free
+    (void)reader;
+    std::cout << "freed too early: reader now dangling\n";
+    delete neo;
+    return 0;   // 编译通过；真实并发下读者访问 reader 即 UB
+}
+```
+
+**修复**：写侧替换后必须 `synchronize_rcu()`（等待所有读者离开旧版本临界区）或用引用计数（`shared_ptr` 快照）保活，确认无人引用旧表再回收。
+
+**结论**：RCU 的正确性完全建立在「回收前等待宽限期」上。省略宽限期 = 把 use-after-free 从「立即崩溃」推迟成「偶发难查」，比不用 RCU 更危险。

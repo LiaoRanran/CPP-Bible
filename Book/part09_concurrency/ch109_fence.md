@@ -451,57 +451,193 @@ _Z13release_fencev:
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+用 `std::atomic_thread_fence` 配合 **relaxed** 原子操作，实现与练习「release store / acquire load」等价的同步：生产者 `relaxed store 数据 → release fence → relaxed store flag`，消费者 `relaxed load flag → acquire fence → relaxed load 数据`。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+独立 fence 把「序」从具体原子操作里剥离出来：release fence 挡住其**前**的写被重排到其后的 relaxed store 之后；acquire fence 挡住其**后**的读被重排到其前的 relaxed load 之前。两者配对等价于 release/acquire 操作序。
 
 ```cpp
+#include <atomic>
+#include <thread>
+#include <cassert>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+int main() {
+    std::atomic<int> data{0};
+    std::atomic<bool> flag{false};
+    std::thread prod([&]{
+        data.store(42, std::memory_order_relaxed);
+        std::atomic_thread_fence(std::memory_order_release);  // release fence
+        flag.store(true, std::memory_order_relaxed);
+    });
+    std::thread cons([&]{
+        while (!flag.load(std::memory_order_relaxed)) {}
+        std::atomic_thread_fence(std::memory_order_acquire);  // acquire fence
+        assert(data.load(std::memory_order_relaxed) == 42);
+        std::cout << data.load(std::memory_order_relaxed) << '\n';
+    });
+    prod.join(); cons.join();
+    return 0;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] fence 与原子操作的组合语义见 `[atomics.fences]`：release fence + 后续 relaxed store，配 acquire fence + 前置 relaxed load，建立 synchronizes-with。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+说明「独立 fence」与「操作自带 memory_order」的区别：为什么一个 `fetch_add(acq_rel)` 不完全等同于 `relaxed fetch_add` 前后各加一个 fence？给出何时必须用独立 fence 的场景。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+操作自带序只作用于**该操作本身**的那一次访问；独立 fence 作用于**当前线程该 fence 前/后的所有原子操作**，粒度更粗、影响更广。当你需要「一批 relaxed 操作整体对外发布一次」时，用一个 release fence 比给每个操作都升级序更省。
 
 ```cpp
+#include <atomic>
+#include <thread>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+int main() {
+    std::atomic<int> a{0}, b{0}, c{0};
+    std::atomic<bool> pub{false};
+    std::thread w([&]{
+        a.store(1, std::memory_order_relaxed);      // 一批独立 relaxed 写
+        b.store(2, std::memory_order_relaxed);
+        c.store(3, std::memory_order_relaxed);
+        std::atomic_thread_fence(std::memory_order_release);  // 一次围栏统一发布
+        pub.store(true, std::memory_order_relaxed);
+    });
+    std::thread r([&]{
+        while (!pub.load(std::memory_order_relaxed)) {}
+        std::atomic_thread_fence(std::memory_order_acquire);
+        std::cout << a.load(std::memory_order_relaxed)
+                  << b.load(std::memory_order_relaxed)
+                  << c.load(std::memory_order_relaxed) << '\n';  // 123
+    });
+    w.join(); r.join();
+    return 0;
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 单操作有序化：`x.store(v, release)`；批量有序化：一次 `atomic_thread_fence(release)` 覆盖前面所有 relaxed 写——后者是 fence 不可被操作序替代的价值点。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+对比 `std::atomic_thread_fence` 与 `std::atomic_signal_fence`：写一个「主线程与同线程信号处理函数共享 relaxed 原子」的场景，说明为什么此处应用 `atomic_signal_fence` 而非 `atomic_thread_fence`。
 
 <details><summary>答案与解析</summary>
 
+`atomic_signal_fence` 只阻止**编译器**在当前线程内的重排（针对同线程异步信号/中断），不生成任何 CPU 屏障指令，因此零运行时开销；`atomic_thread_fence` 还会生成硬件屏障用于**跨线程/跨核**可见性。信号处理器与被中断代码在同一核同一线程上下文，只需防编译器重排。
+
 ```cpp
+#include <atomic>
+#include <csignal>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+std::atomic<int> g_data{0};
+std::atomic<bool> g_flag{false};
+extern "C" void handler(int) {
+    // 信号处理器：与被中断代码同线程，只需防编译器重排
+    if (g_flag.load(std::memory_order_relaxed)) {
+        std::atomic_signal_fence(std::memory_order_acquire);
+        (void)g_data.load(std::memory_order_relaxed);
+    }
+}
+int main() {
+    std::signal(SIGINT, handler);
+    g_data.store(99, std::memory_order_relaxed);
+    std::atomic_signal_fence(std::memory_order_release);  // 无 CPU 屏障，仅约束编译器
+    g_flag.store(true, std::memory_order_relaxed);
+    std::cout << "installed\n";
+    return 0;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[平台] 同线程信号/中断场景用 `atomic_signal_fence`（零指令）即可；跨线程一律 `atomic_thread_fence`。误用后者于纯信号场景会白白付出屏障指令开销。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+> 本节把 fence 放进真实决策链：**选型场景 → 常见错误 → 修复代码 → 工程结论**。
+
+### 演绎 1：该用独立 fence 还是让操作自带序？
+
+**选型场景**：发布单个「就绪」标志，标志之前只有一处数据写。
+
+**常见错误**：对「单操作即可有序」的场景滥用独立 fence，代码更啰嗦且易漏配对。
+
+```cpp
+#include <atomic>
+#include <thread>
+#include <iostream>
+int main() {
+    std::atomic<int> data{0};
+    std::atomic<bool> flag{false};
+    std::thread p([&]{
+        data.store(42, std::memory_order_relaxed);
+        // 冗余：只有一处发布，完全可以让 flag.store 自带 release
+        std::atomic_thread_fence(std::memory_order_release);
+        flag.store(true, std::memory_order_relaxed);
+    });
+    p.join();
+    std::cout << "verbose but correct\n";
+    return 0;
+}
+```
+
+**修复**：单点发布直接让操作自带序，去掉 fence：
+
+```cpp
+#include <atomic>
+#include <thread>
+#include <iostream>
+int main() {
+    std::atomic<int> data{0};
+    std::atomic<bool> flag{false};
+    std::thread p([&]{
+        data.store(42, std::memory_order_relaxed);
+        flag.store(true, std::memory_order_release);  // 一步到位，配对清晰
+    });
+    p.join();
+    std::cout << "concise\n";
+    return 0;
+}
+```
+
+**结论**：**单个发布点用操作自带 `release`/`acquire`**（可读、不易漏配对）；**仅当需要「一批 relaxed 操作统一发布/获取」时**才用独立 `atomic_thread_fence`。fence 是粗粒度工具，别当默认写法。
+
+### 演绎 2：`atomic_signal_fence` 被误当跨线程屏障
+
+**选型场景**：两个线程通过 relaxed 原子通信，开发者想「省点开销」用 `atomic_signal_fence` 代替 `atomic_thread_fence`。
+
+**常见错误**：跨线程用 `atomic_signal_fence`。
+
+```cpp
+#include <atomic>
+#include <thread>
+#include <iostream>
+int main() {
+    std::atomic<int> data{0};
+    std::atomic<bool> flag{false};
+    std::thread prod([&]{
+        data.store(42, std::memory_order_relaxed);
+        std::atomic_signal_fence(std::memory_order_release);  // 错误：不生成 CPU 屏障
+        flag.store(true, std::memory_order_relaxed);
+    });
+    std::thread cons([&]{
+        while (!flag.load(std::memory_order_relaxed)) {}
+        std::atomic_signal_fence(std::memory_order_acquire);  // 错误：跨核不可见性无保证
+        std::cout << data.load(std::memory_order_relaxed) << '\n';  // 弱内存平台可能读到 0
+    });
+    prod.join(); cons.join();
+    return 0;   // 编译通过；x86 碰巧对，ARM 上可能读到旧值
+}
+```
+
+`atomic_signal_fence` 只约束编译器，不发射硬件屏障，跨核之间的写缓冲/失效队列不会被强制排空，弱内存平台上读者可能看不到 `data` 的新值。
+
+**修复**：跨线程改用 `std::atomic_thread_fence`（生成 `dmb`/隐含屏障），或直接让 `flag` 操作自带 `release`/`acquire`。
+
+**结论**：`atomic_signal_fence` = **同线程**防编译器重排（信号/中断）；`atomic_thread_fence` = **跨线程/跨核**可见性。二者不可互换，选错在强内存平台会被掩盖、弱内存平台才暴露。

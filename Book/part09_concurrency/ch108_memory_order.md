@@ -818,52 +818,170 @@ fadd_seqcst():
 
 ### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+用 **release/acquire** 配对实现「生产者填数据后置 ready 标志，消费者见到 ready 后读数据」，保证消费者读到的数据一定是生产者写完的（无撕裂/无未初始化可见）。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+release store「之前」的所有写，对读到该值的 acquire load「之后」可见——这是 C++ 内存模型建立跨线程 happens-before 的核心手段。
 
 ```cpp
+#include <atomic>
+#include <thread>
+#include <cassert>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+int main() {
+    int data = 0;
+    std::atomic<bool> ready{false};
+    std::thread producer([&]{
+        data = 42;                                   // ① 普通写
+        ready.store(true, std::memory_order_release);// ② release：① 不会重排到 ② 之后
+    });
+    std::thread consumer([&]{
+        while (!ready.load(std::memory_order_acquire)) {}  // ③ acquire
+        assert(data == 42);                          // ④ 一定看到 42
+        std::cout << data << '\n';
+    });
+    producer.join(); consumer.join();
+    return 0;
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `②` release 与 `③` acquire 读到同一值构成 synchronizes-with，于是 `① happens-before ④`（`[atomics.order]`）。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-写一个按值捕获 `n` 且 `mutable` 的 lambda，使其内部可修改副本并返回自增结果。
+给出一个「两个 `relaxed` 原子在不同线程写、另两线程读」会观察到不一致顺序的场景（IRIW 变体），并说明为何需要 `seq_cst` 才能恢复单一全序。
 
 <details><summary>答案与解析</summary>
 
+`relaxed` 只保证单变量的修改顺序（modification order），**不保证跨变量的全局可见顺序**。两个独立标志用 relaxed 时，不同观察者可能看到相反的先后，逻辑上得出矛盾结论。`seq_cst` 为所有 seq_cst 操作建立单一全序，消除此类悖论。
+
 ```cpp
+#include <atomic>
+#include <thread>
 #include <iostream>
-int main(){ int n=10; auto f=[n]() mutable { return ++n; }; std::cout << f() << ' ' << f() << '\n'; }
+int main() {
+    std::atomic<bool> x{false}, y{false};
+    std::atomic<int> z{0};
+    std::thread wx([&]{ x.store(true, std::memory_order_seq_cst); });
+    std::thread wy([&]{ y.store(true, std::memory_order_seq_cst); });
+    std::thread r1([&]{ while (!x.load(std::memory_order_seq_cst)) {}
+                        if (y.load(std::memory_order_seq_cst)) z.fetch_add(1); });
+    std::thread r2([&]{ while (!y.load(std::memory_order_seq_cst)) {}
+                        if (x.load(std::memory_order_seq_cst)) z.fetch_add(1); });
+    wx.join(); wy.join(); r1.join(); r2.join();
+    // seq_cst 下：不可能出现 r1、r2 都看到「对方的标志还没置位」→ z 至少为 1
+    std::cout << "z = " << z.load() << " (seq_cst 保证 >= 1)\n";
+    return z.load() >= 1 ? 0 : 1;
+}
 ```
 
-[标准] 默认 lambda 的 `operator()` 是 `const`；`mutable` 解除该限制，捕获副本可变。
+[标准] 若把上面全部换成 `relaxed`，`z==0`（两读者互相看不到对方）在标准下是**允许**的结果。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-解释栈对象与堆对象生命周期差异：`{ int a; }` 与 `new int` 的销毁时机有何不同？
+用 `acquire`/`release`/`acq_rel` 为一个无锁栈的 `push`/`pop` 标注正确内存序，解释：为何 `push` 的 CAS 用 `release`、`pop` 的 CAS 用 `acquire`。
 
 <details><summary>答案与解析</summary>
 
-栈对象在作用域结束自动析构；`new` 分配的对象直到 `delete` 才释放：
+`push` 把新节点的初始化（写 `data`/`next`）通过 release CAS 发布；`pop` 用 acquire CAS 读到该指针后，才能安全解引用刚被 push 的节点——release/acquire 配对保证「节点内容写」happens-before「pop 端读」。
 
 ```cpp
+#include <atomic>
 #include <iostream>
-int main(){ int a=1; int* p=new int(2); /* ... */ delete p; }
+struct Node { int v; Node* next; };
+int main() {
+    std::atomic<Node*> head{nullptr};
+    // push
+    auto push = [&](int x){
+        Node* n = new Node{x, head.load(std::memory_order_relaxed)};
+        while (!head.compare_exchange_weak(n->next, n,
+                   std::memory_order_release, std::memory_order_relaxed)) {}
+    };
+    // pop（单线程演示；多线程回收需 ch111/ch112）
+    auto pop = [&]() -> int {
+        Node* old = head.load(std::memory_order_acquire);
+        while (old && !head.compare_exchange_weak(old, old->next,
+                   std::memory_order_acquire, std::memory_order_relaxed)) {}
+        if (!old) return -1;
+        int v = old->v; delete old; return v;
+    };
+    push(1); push(2); push(3);
+    std::cout << pop() << pop() << pop() << '\n';   // 321
+    return 0;
+}
 ```
 
-[标准] 遗漏 `delete` 即内存泄漏；这是 RAII/智能指针存在的根本动机。
+[实现] 本例单线程演示序标注；真正多线程 `pop` 存在 ABA 与 use-after-free，须配 tagged pointer（ch111）或 HP/RCU（ch112）。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+> 本节把六种内存序放进真实决策链：**选型场景 → 常见错误 → 修复代码 → 工程结论**。
+
+### 演绎 1：发布一个「已就绪的指针」该用 relaxed 还是 release？
+
+**选型场景**：后台线程构造好一个大对象，写一个全局原子指针发布给工作线程使用。
+
+**常见错误**：图快用 `relaxed` 发布指针。
+
+```cpp
+#include <atomic>
+#include <thread>
+#include <iostream>
+struct Big { int payload; };
+int main() {
+    std::atomic<Big*> g{nullptr};
+    std::thread pub([&]{
+        Big* b = new Big;
+        b->payload = 7;                              // ① 初始化
+        g.store(b, std::memory_order_relaxed);       // ② 错误：relaxed 不保证 ① 先于 ② 可见
+    });
+    std::thread sub([&]{
+        Big* b;
+        while (!(b = g.load(std::memory_order_relaxed))) {}
+        // 读者可能看到非空指针，却读到 payload 的旧值/未初始化值（弱内存平台上真实发生）
+        std::cout << b->payload << '\n';
+    });
+    pub.join(); sub.join();
+    return 0;   // x86 上「碰巧」对，ARM 上可能读到脏值——依赖平台的错误代码
+}
+```
+
+在 x86-64（TSO 强内存）上此错误常被掩盖；一移植到 ARM/AArch64（弱内存）就暴露读到未初始化 `payload`。
+
+**修复**：发布用 `release`、消费用 `acquire`（改 `②` 为 `release`、`load` 为 `acquire`）。这建立 `① happens-before 解引用`，跨平台正确。
+
+**结论**：**发布数据 = release，消费数据 = acquire**，是无锁编程第一定律。`relaxed` 只用于「不承载对其它内存可见性承诺」的纯计数/标志。
+
+### 演绎 2：无脑全 `seq_cst` 会付出多少性能？
+
+**选型场景**：一个每线程独立、互不依赖的命中计数器数组。
+
+**常见错误**：所有原子操作都用默认 `seq_cst`（最强序），在 ARM 上每次都插 `dmb ish` 全屏障。
+
+```cpp
+#include <atomic>
+#include <thread>
+#include <vector>
+#include <iostream>
+int main() {
+    std::atomic<long> hits{0};
+    // 独立计数无跨变量依赖，seq_cst 的全序保证在这里毫无用处，纯属性能浪费
+    auto work = [&]{ for (int i = 0; i < 1000000; ++i) hits.fetch_add(1); };  // 默认 seq_cst
+    std::vector<std::thread> ts;
+    for (int i = 0; i < 4; ++i) ts.emplace_back(work);
+    for (auto& t : ts) t.join();
+    std::cout << hits.load() << '\n';
+    return 0;
+}
+```
+
+**修复**：独立计数改 `fetch_add(1, std::memory_order_relaxed)`。x86 上 `seq_cst` 与 `relaxed` 的 RMW 都是 `lock xadd`（差别在编译器围栏），但在 ARM 上 `relaxed` 省掉 `dmb`，吞吐显著提升；即便 x86，也避免编译器为 seq_cst 施加的重排限制。
+
+**结论**：内存序按需最弱化——`relaxed`（独立计数）＜ `acq/rel`（发布/消费配对）＜ `seq_cst`（需要跨变量单一全序，如 Dekker）。默认 `seq_cst` 是「正确但可能慢」，热点路径应精确降级。

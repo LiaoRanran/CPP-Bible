@@ -712,57 +712,154 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+单线程模拟 ABA 问题：用一个「值 + 原始指针」的裸 CAS，构造 `A → B → A` 的中间变化，让 CAS **错误地成功**，说明为什么单纯比较指针/值无法察觉中间发生过的改动。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+CAS 只比较「当前值是否等于期望值」，看不到期望值被读取后到 CAS 提交之间的历史。若地址（或值）先变 B 再变回 A，CAS 认为「没变过」而成功提交，逻辑却已被破坏。
 
 ```cpp
+#include <atomic>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+int main() {
+    int A = 1, B = 2;
+    std::atomic<int*> head{&A};        // 初始指向 A
+    int* expected = head.load();       // 线程1 读到 &A（准备 CAS）
+
+    // ——此刻线程1 被抢占，其它线程完成 A→B→A——
+    head.store(&B);                    // 变 B
+    head.store(&A);                    // 又变回 A（地址复用！）
+
+    // 线程1 恢复：CAS 比较 head==expected(&A) 成立 → 误成功
+    bool ok = head.compare_exchange_strong(expected, &B);
+    std::cout << "CAS " << (ok ? "SUCCESS" : "FAIL")
+              << " —— 但中间已发生 A->B->A，逻辑已被破坏\n";
+    return ok ? 0 : 1;                 // ok==true，正是 ABA 陷阱
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] ABA 的根源：指针值相等 ≠ 所指对象未被回收/复用。无锁栈里被 pop 的节点若被 free 后同地址 new 回来，pop 端 CAS 会张冠李戴。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+用**版本号标签（tagged pointer / version counter）**修复 ABA：把 `{指针, 版本号}` 打包进一个可原子 CAS 的结构，每次修改版本号 +1，使 `A→B→A` 因版本号不同而被 CAS 拒绝。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+给指针附带单调递增的版本号，CAS 比较的是 `{ptr, ver}` 整体。即使 `ptr` 变回原值，`ver` 已改变，CAS 失败，从而识破 ABA。此处用一个可被 `atomic` 无锁承载的 64 位打包（32 位索引 + 32 位版本）演示。
 
 ```cpp
+#include <atomic>
+#include <cstdint>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+int main() {
+    // 高 32 位=版本，低 32 位=「指针索引」(演示用整型槽位)
+    std::atomic<std::uint64_t> tagged{ (std::uint64_t(0) << 32) | 1 };  // ver=0, idx=1(A)
+    std::uint64_t expected = tagged.load();                             // 读到 {ver0, A}
+
+    auto pack = [](std::uint32_t ver, std::uint32_t idx){ return (std::uint64_t(ver) << 32) | idx; };
+    // 其它线程完成 A(1)->B(2)->A(1)，每步版本+1 → 现值 {ver2, A}
+    tagged.store(pack(1, 2));
+    tagged.store(pack(2, 1));
+
+    // 恢复线程用旧期望 {ver0, A} 做 CAS → 版本不符，失败，成功识破 ABA
+    bool ok = tagged.compare_exchange_strong(expected, pack(1, 2));
+    std::cout << "tagged CAS " << (ok ? "SUCCESS(漏检)" : "FAIL(正确识破ABA)") << '\n';
+    return ok ? 1 : 0;                 // 期望 FAIL
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 版本号法是最常用的 ABA 对策；代价是需要「宽 CAS」同时原子更新指针与版本（这里用打包进 64 位规避）。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 `__int128` 双字 CAS 实现真正的「64 位指针 + 64 位版本」带标签指针结构 `TaggedPtr`，并给出其 `compare_exchange` 更新范式。说明为何需要 `-mcx16` / `cmpxchg16b` 及其对齐要求。
 
 <details><summary>答案与解析</summary>
 
+64 位平台上指针本身占满 64 位，无空闲位打包版本，需要 128 位宽 CAS（x86-64 的 `cmpxchg16b`，要求 16 字节对齐）。`std::atomic<__int128>` 在开启 `-mcx16` 时可 `is_lock_free`。
+
 ```cpp
+#include <atomic>
+#include <cstdint>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct alignas(16) TaggedPtr {          // 16 字节对齐，满足 cmpxchg16b
+    void* ptr;
+    std::uint64_t ver;
+};
+int main() {
+    std::atomic<TaggedPtr> head{ TaggedPtr{nullptr, 0} };
+    int node = 7;
+    TaggedPtr expected = head.load();
+    TaggedPtr desired{ &node, expected.ver + 1 };   // 更新指针并递增版本
+    bool ok = head.compare_exchange_strong(expected, desired);
+    std::cout << "install " << (ok ? "OK" : "retry")
+              << ", ver=" << head.load().ver << '\n';
+    // 说明：is_lock_free 依赖 -mcx16；否则退化为内部锁
+    std::cout << "lock_free=" << head.is_lock_free() << '\n';
+    return ok ? 0 : 1;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[实现] 需以 `-mcx16` 编译才让 `atomic<16字节>` 无锁；`alignas(16)` 不可省——未对齐的 `cmpxchg16b` 触发 `#GP` 异常。ARM 上对应 `casp`（LSE）或 `ldxp/stxp` 对。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+> 本节把 ABA 对策放进真实决策链：**选型场景 → 常见错误 → 修复代码 → 工程结论**。
+
+### 演绎 1：无锁栈的 pop 直接 CAS 指针——什么时候会中招？
+
+**选型场景**：实现一个高性能无锁栈，`pop` 用 `head.compare_exchange(old, old->next)`。
+
+**常见错误**：忽略节点回收，裸 CAS 指针。
+
+```cpp
+#include <atomic>
+#include <iostream>
+struct Node { int v; Node* next; };
+int main() {
+    std::atomic<Node*> head{nullptr};
+    Node* a = new Node{1, nullptr};
+    head.store(a);
+    Node* old = head.load();            // pop 线程读到 old=a, 准备 CAS(a -> a->next)
+    // —— 抢占：另一线程 pop 掉 a 并 delete，再 push 一个新节点，new 复用了同一地址 a ——
+    // 于是 head 又 == a（地址复用），但 a->next 已是悬垂/错误链
+    // pop 线程恢复：CAS(head==a) 成功，却把 head 设成了已释放节点的 next → UB
+    bool ok = head.compare_exchange_strong(old, old->next);
+    std::cout << "naive pop CAS ok=" << ok << " —— 地址复用下这是 use-after-free 温床\n";
+    return 0;   // 编译通过；多线程 + 回收下为运行期 UB
+}
+```
+
+**修复**：两条主流路线——(1) **tagged pointer / 版本号**（练习 2/3），让地址复用因版本不同被 CAS 拒绝；(2) **延迟回收**（HP/RCU，ch112），保证被读的节点在 pop 完成前不被 free，从根上消除地址复用。
+
+**结论**：无锁数据结构里「CAS 指针 + 手动回收」几乎必然遇 ABA。要么给指针加版本，要么用安全回收（HP/RCU）。二者常配合使用。
+
+### 演绎 2：版本号位宽不足导致的「回绕漏检」
+
+**选型场景**：用 16 位版本号打包进指针高位（图省内存），高频更新。
+
+**常见错误**：版本号太窄，`2^16` 次更新后回绕到旧值，ABA 重新可能。
+
+```cpp
+#include <atomic>
+#include <cstdint>
+#include <iostream>
+int main() {
+    // 16 位版本：65536 次更新即回绕，回绕后 {ptr,ver} 可能与历史某快照完全相同
+    std::uint16_t ver = 65535;
+    ver += 1;                            // 回绕为 0 —— 与初始版本撞车
+    std::cout << "ver after wrap = " << ver << " (回绕，ABA 窗口重新打开)\n";
+    return ver == 0 ? 0 : 1;
+}
+```
+
+**修复**：用足够宽的版本号（64 位平台优先 `__int128` 双字 CAS 带 64 位版本，见练习 3），使回绕在现实时间尺度内不可达；或改用 HP/RCU 彻底回避版本方案。
+
+**结论**：版本号法的安全性取决于「回绕周期 ≫ 任一线程被抢占的最长时间」。窄版本号在高频场景下不安全；宽版本号（≥48~64 位）或 HP/RCU 才是稳妥工业选择。

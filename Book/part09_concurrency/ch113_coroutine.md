@@ -814,57 +814,205 @@ int main(){hello();return 0;}
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+手写一个最简 `generator<int>`（`promise_type` + `co_yield`），惰性产出 `1..N`，在 `main` 中遍历打印。说明 `promise_type` 的四个必需成员各自的作用。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`promise_type` 是协程的「控制中枢」：`get_return_object`（造返回对象）、`initial_suspend`（起始是否挂起，生成器用 `suspend_always` 实现惰性）、`final_suspend`（结束是否挂起，须 `noexcept`）、`yield_value`（接管 `co_yield`）、`return_void` + `unhandled_exception`。
 
 ```cpp
+#include <coroutine>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct generator {
+    struct promise_type {
+        int cur;
+        generator get_return_object() { return generator{std::coroutine_handle<promise_type>::from_promise(*this)}; }
+        std::suspend_always initial_suspend() noexcept { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        std::suspend_always yield_value(int v) noexcept { cur = v; return {}; }
+        void return_void() noexcept {}
+        void unhandled_exception() { std::terminate(); }
+    };
+    std::coroutine_handle<promise_type> h;
+    explicit generator(std::coroutine_handle<promise_type> hh) : h(hh) {}
+    ~generator() { if (h) h.destroy(); }
+    generator(generator&& o) noexcept : h(o.h) { o.h = {}; }
+    bool next() { h.resume(); return !h.done(); }
+    int value() const { return h.promise().cur; }
+};
+generator range(int n) { for (int i = 1; i <= n; ++i) co_yield i; }
+int main() {
+    auto g = range(5);
+    while (g.next()) std::cout << g.value() << ' ';   // 1 2 3 4 5
+    std::cout << '\n';
+    return 0;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `co_yield e` 等价于 `co_await promise.yield_value(e)`；`initial_suspend` 返回 `suspend_always` 使协程创建时不立即执行，实现惰性求值。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+实现一个自定义 **awaiter**（`await_ready`/`await_suspend`/`await_resume`），演示 `co_await` 一个「立即就绪、直接返回值」的对象，说明三个接口的调用时机。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+`await_ready` 返回 `true` 表示无需挂起（快路径）；否则调 `await_suspend`（决定挂起后行为，可返回 `void`/`bool`/句柄）；恢复后调 `await_resume` 产出 `co_await` 表达式的值。
 
 ```cpp
+#include <coroutine>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct ready_value {
+    int v;
+    bool await_ready() const noexcept { return true; }          // 立即就绪，不挂起
+    void await_suspend(std::coroutine_handle<>) const noexcept {}// 就绪则不会被调用
+    int await_resume() const noexcept { return v; }             // 产出值
+};
+struct task {
+    struct promise_type {
+        task get_return_object() { return {}; }
+        std::suspend_never initial_suspend() noexcept { return {}; }
+        std::suspend_never final_suspend() noexcept { return {}; }
+        void return_void() noexcept {}
+        void unhandled_exception() { std::terminate(); }
+    };
+};
+task demo() {
+    int x = co_await ready_value{41};      // await_ready=true → 直接 await_resume 得 41
+    std::cout << "co_await got " << x + 1 << '\n';   // 42
+}
+int main() { demo(); return 0; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `co_await e` 依次求值 `e.await_ready()`；若 `false` 则挂起并调 `await_suspend`；恢复后 `await_resume()` 的返回值即整个表达式的值（`[expr.await]`）。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+演示协程帧生命周期的经典悬垂坑：一个协程 `co_await`/`co_yield` 后引用了**按值传入却被当引用捕获**或**指向已析构局部**的数据。给出正确写法（协程按值持有需跨挂起点存活的数据）。
 
 <details><summary>答案与解析</summary>
 
+协程帧在首次挂起时把「跨挂起点使用的局部」存入堆上的协程帧；但**函数参数若是引用/指针**，指向的对象在调用者作用域结束后即失效，恢复时解引用即悬垂。规则：需要跨挂起点存活的数据，协程应**按值接收并持有**。
+
 ```cpp
+#include <coroutine>
+#include <string>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct generator {
+    struct promise_type {
+        const std::string* cur;
+        generator get_return_object() { return generator{std::coroutine_handle<promise_type>::from_promise(*this)}; }
+        std::suspend_always initial_suspend() noexcept { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        std::suspend_always yield_value(const std::string& v) noexcept { cur = &v; return {}; }
+        void return_void() noexcept {}
+        void unhandled_exception() { std::terminate(); }
+    };
+    std::coroutine_handle<promise_type> h;
+    explicit generator(std::coroutine_handle<promise_type> hh) : h(hh) {}
+    ~generator() { if (h) h.destroy(); }
+    generator(generator&& o) noexcept : h(o.h) { o.h = {}; }
+    bool next() { h.resume(); return !h.done(); }
+    const std::string& value() const { return *h.promise().cur; }
+};
+// 正确：参数按值 s，存活于协程帧，跨 co_yield 安全
+generator words(std::string s) {
+    for (char c : s) { std::string one(1, c); co_yield one; }  // one 亦跨挂起点，按值 yield 后立即用
+}
+int main() {
+    auto g = words("abc");                 // 传临时串；按值 → 拷入协程帧，安全
+    while (g.next()) std::cout << g.value();
+    std::cout << '\n';                      // abc
+    return 0;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 协程参数的拷贝/移动进协程帧发生在帧构造时；**引用参数不延长被引用对象寿命**，跨挂起点使用引用/指针参数是悬垂高发区。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+> 本节把协程放进真实决策链：**选型场景 → 常见错误 → 修复代码 → 工程结论**。
+
+### 演绎 1：生成海量序列——协程、回调还是预先物化容器？
+
+**选型场景**：产出一个可能很长（甚至无限）的整数序列，消费方按需取用。
+
+- **预先物化到 `vector`**：简单，但无限序列不可行、大序列占内存。
+- **回调 / visitor**：能惰性，但控制流被翻转（inversion of control），状态得手动保存在闭包里，可读性差。
+- **协程 generator**：惰性、内存 O(1)、控制流自然（写成普通循环 + `co_yield`）——序列生成的首选。
+
+**常见错误**：把 generator 当容器，遍历完再遍历第二遍。
+
+```cpp
+#include <coroutine>
+#include <iostream>
+struct generator {
+    struct promise_type {
+        int cur;
+        generator get_return_object() { return generator{std::coroutine_handle<promise_type>::from_promise(*this)}; }
+        std::suspend_always initial_suspend() noexcept { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        std::suspend_always yield_value(int v) noexcept { cur = v; return {}; }
+        void return_void() noexcept {}
+        void unhandled_exception() { std::terminate(); }
+    };
+    std::coroutine_handle<promise_type> h;
+    explicit generator(std::coroutine_handle<promise_type> hh) : h(hh) {}
+    ~generator() { if (h) h.destroy(); }
+    generator(generator&& o) noexcept : h(o.h) { o.h = {}; }
+    bool next() { return h.resume(), !h.done(); }
+    int value() const { return h.promise().cur; }
+};
+generator range(int n) { for (int i = 1; i <= n; ++i) co_yield i; }
+int main() {
+    auto g = range(3);
+    while (g.next()) std::cout << g.value();   // 123
+    // 错误认知：generator 是「一次性游标」，done 后再 resume 是 UB，不能重头再来
+    std::cout << " (耗尽后需重新 range() 才能再遍历)\n";
+    return 0;
+}
+```
+
+**修复**：需要多次遍历就每次重新调用工厂函数 `range(n)` 生成新协程；或若数据需反复使用，先物化到容器。
+
+**结论**：generator 是**单次前向游标**，不是容器。用于「惰性、单遍、可能无限」的序列生成最佳；需随机访问/多遍遍历时物化到容器。
+
+### 演绎 2：协程句柄泄漏与悬垂——谁负责 destroy？
+
+**选型场景**：用协程实现异步任务，返回一个持有 `coroutine_handle` 的 RAII 包装。
+
+**常见错误**：返回对象不管理句柄生命周期，或多个包装共享同一句柄导致重复 destroy。
+
+```cpp
+#include <coroutine>
+#include <iostream>
+struct task {
+    struct promise_type {
+        task get_return_object() { return task{std::coroutine_handle<promise_type>::from_promise(*this)}; }
+        std::suspend_always initial_suspend() noexcept { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        void return_void() noexcept {}
+        void unhandled_exception() { std::terminate(); }
+    };
+    std::coroutine_handle<promise_type> h;
+    explicit task(std::coroutine_handle<promise_type> hh) : h(hh) {}
+    // 错误示范：拷贝构造浅拷贝句柄 → 两个 task 析构各 destroy 一次 → double free
+    // task(const task&) = default;   // ← 若允许拷贝即埋雷
+    ~task() { if (h) h.destroy(); }
+    task(task&& o) noexcept : h(o.h) { o.h = {}; }   // 正确：移动置空源
+};
+task make() { co_return; }
+int main() {
+    task t = make();          // 移动构造，句柄唯一所有权
+    std::cout << "handle owned uniquely, destroyed once at scope end\n";
+    return 0;
+}
+```
+
+**结论**：`coroutine_handle` 是**裸句柄**，无自动生命周期管理。RAII 包装必须：(1) 析构 `destroy()`；(2) **禁用拷贝、只允许移动并把源句柄置空**，避免 double-destroy；(3) 确保协程帧的生存期覆盖所有 `resume()` 调用。这是协程内存安全的三条铁律。

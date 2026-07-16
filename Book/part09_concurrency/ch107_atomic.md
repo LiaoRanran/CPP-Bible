@@ -935,60 +935,173 @@ A: CAS 是用户态原子操作(~20ns)；mutex 涉及系统调用 + 上下文切
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+用 `std::atomic<long>` 实现一个线程安全计数器，让 8 个线程各自 `+100000`，最终总和必须恰好 `800000`。说明为何 `counter = counter + 1;` 形式是错的，而 `fetch_add` 是对的。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`atomic<T>::fetch_add` 是单条**读-改-写（RMW）**原子操作，中途不可被打断；而 `counter = counter + 1` 展开为「原子 load → 普通加 → 原子 store」三步，两次 RMW 之间可插入其它线程的更新，导致丢失更新。
 
 ```cpp
+#include <atomic>
+#include <thread>
+#include <vector>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+int main() {
+    std::atomic<long> counter{0};
+    auto work = [&]{ for (int i = 0; i < 100000; ++i) counter.fetch_add(1, std::memory_order_relaxed); };
+    std::vector<std::thread> ts;
+    for (int i = 0; i < 8; ++i) ts.emplace_back(work);
+    for (auto& t : ts) t.join();
+    std::cout << counter.load() << '\n';   // 恰好 800000
+    return counter.load() == 800000 ? 0 : 1;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 纯计数无跨变量依赖，用 `memory_order_relaxed` 即可保证原子性与最终一致，且是最快选项（`[atomics.order]`）。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+标准库没有 `fetch_max`。用 `compare_exchange_weak` 自己实现一个无锁的「原子取最大值」`atomic_fetch_max`，使多线程写入不同值后，原子变量保存全局最大值。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+CAS 循环是实现任意 RMW 的通用范式：读当前值 → 本地算新值 → CAS 提交，失败则用被刷新的期望值重试。`compare_exchange_weak` 允许伪失败但在循环里代价更低。
 
 ```cpp
+#include <atomic>
+#include <thread>
+#include <vector>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+long atomic_fetch_max(std::atomic<long>& a, long v) {
+    long cur = a.load(std::memory_order_relaxed);
+    while (v > cur && !a.compare_exchange_weak(cur, v,
+               std::memory_order_release, std::memory_order_relaxed)) {}
+    return cur;   // cur 被 CAS 失败时自动刷新为最新值
+}
+int main() {
+    std::atomic<long> m{0};
+    std::vector<std::thread> ts;
+    for (long i = 1; i <= 8; ++i) ts.emplace_back([&, i]{ atomic_fetch_max(m, i * 1000); });
+    for (auto& t : ts) t.join();
+    std::cout << m.load() << '\n';   // 8000
+    return m.load() == 8000 ? 0 : 1;
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] CAS 失败时 `cur` 被写入内存现值，无需手动重载——这是 `compare_exchange` 的关键约定。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 `std::atomic_flag` 实现一个最小自旋锁 `SpinLock`（`lock`/`unlock`），并说明为何 `test_and_set` 用 `acquire`、`clear` 用 `release`。用它保护一个普通 `int` 累加，验证无数据竞争。
 
 <details><summary>答案与解析</summary>
 
+`atomic_flag` 是标准保证**无锁**的最小原子类型。`lock` 用 `test_and_set(acquire)` 保证临界区读写不会被重排到加锁之前；`unlock` 用 `clear(release)` 保证临界区写在释放锁前对下一个持有者可见——构成 release/acquire 同步对。
+
 ```cpp
+#include <atomic>
+#include <thread>
+#include <vector>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct SpinLock {
+    std::atomic_flag f = ATOMIC_FLAG_INIT;
+    void lock()   { while (f.test_and_set(std::memory_order_acquire)) { /* spin */ } }
+    void unlock() { f.clear(std::memory_order_release); }
+};
+int main() {
+    SpinLock sl;
+    int shared = 0;                       // 普通 int，靠锁保护
+    auto work = [&]{ for (int i = 0; i < 100000; ++i) { sl.lock(); ++shared; sl.unlock(); } };
+    std::vector<std::thread> ts;
+    for (int i = 0; i < 4; ++i) ts.emplace_back(work);
+    for (auto& t : ts) t.join();
+    std::cout << shared << '\n';           // 400000
+    return shared == 400000 ? 0 : 1;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[经验] 生产环境的自旋锁还应在自旋体内加 `_mm_pause()`/`std::this_thread::yield()` 降低总线争用与功耗；纯 busy-loop 仅用于极短临界区。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+> 本节把本章原子原语放进真实决策链：**选型场景 → 常见错误 → 修复代码 → 工程结论**。
+
+### 演绎 1：计数器该用 mutex、atomic 还是分片计数？
+
+**选型场景**：高频统计计数（如 QPS、命中数），写远多于读，无跨变量依赖。
+
+- `std::mutex + int`：正确但每次加锁有系统调用/争用开销，高频下成为瓶颈。
+- `std::atomic<long>` + `fetch_add(relaxed)`：单条 `lock xadd`，无锁、最省心，是**默认首选**。
+- 分片计数（每线程一个 cache-line 对齐的计数器，读时求和）：写零争用，但读需遍历、占内存——仅在 `fetch_add` 也成为热点时才上。
+
+**常见错误**：把「读改写」写成两步，误以为 `atomic` 就万事大吉。
+
+```cpp
+#include <atomic>
+#include <thread>
+#include <vector>
+#include <iostream>
+int main() {
+    std::atomic<long> c{0};
+    // 错误：c = c + 1 是 load + 普通加 + store，两次 RMW 间会丢更新
+    auto bad = [&]{ for (int i = 0; i < 100000; ++i) c = c + 1; };
+    std::vector<std::thread> ts;
+    for (int i = 0; i < 8; ++i) ts.emplace_back(bad);
+    for (auto& t : ts) t.join();
+    std::cout << "bad total = " << c.load() << " (通常 < 800000)\n";  // 丢更新
+    return 0;   // 编译通过，运行期结果错误——典型「原子变量非原子使用」
+}
+```
+
+**修复**：改为 `c.fetch_add(1, std::memory_order_relaxed);`（见练习 1），结果恒为 `800000`。
+
+**结论**：`atomic` 保证的是**单个操作**原子，不是「涉及该变量的任意表达式」原子。凡「读→算→写」必须落到一条 RMW（`fetch_add`/`fetch_or`/`compare_exchange`）。
+
+### 演绎 2：`atomic<BigStruct>` 为什么悄悄退化成带锁？
+
+**选型场景**：想把一个 24 字节的配置结构体做成原子快照，多线程读、偶尔整体替换。
+
+**常见错误**：直接 `std::atomic<Config>`，以为拿到无锁快照。
+
+```cpp
+#include <atomic>
+#include <iostream>
+struct Config { long a, b, c; };          // 24 字节，超过硬件宽 CAS（16 字节）
+int main() {
+    std::atomic<Config> cfg{};
+    std::cout << "is_lock_free = " << cfg.is_lock_free() << '\n';  // 多半为 0：内部用锁
+    Config c = cfg.load();                 // 语法合法，但退化为「加锁 memcpy」
+    (void)c;
+    return 0;
+}
+```
+
+对象超过平台宽 CAS 宽度（x86-64 上 `cmpxchg16b` 管 16 字节）时，`std::atomic<T>` 会退化为「内部锁 + memcpy」，`is_lock_free()` 返回 0，失去无锁初衷，还可能在信号处理中不安全。
+
+**修复**：改为**原子指针发布不可变快照**（RCU 式），读侧只读一个 8 字节原子指针：
+
+```cpp
+#include <atomic>
+#include <memory>
+#include <iostream>
+struct Config { long a, b, c; };
+int main() {
+    auto p = std::make_shared<const Config>(Config{1, 2, 3});
+    std::atomic<std::shared_ptr<const Config>> cur{p};   // C++20 原子 shared_ptr
+    auto snap = cur.load();                                // 8 字节原子读，读侧无锁
+    std::cout << snap->a << ' ' << snap->b << ' ' << snap->c << '\n';
+    cur.store(std::make_shared<const Config>(Config{4, 5, 6}));  // 整体替换
+    return 0;
+}
+```
+
+**结论**：宽对象不要硬塞 `atomic<T>`。用「原子指针 + 不可变对象」发布快照：读侧一条原子指针 load，替换是一次指针 CAS，天然无锁且信号安全。真正的回收安全见 ch112（HP/RCU）。
 
 ---
 
