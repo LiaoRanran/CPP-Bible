@@ -604,6 +604,8 @@ I 表最后 5 章：**ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_
 **Batch APP5（2026-07-16 完成）**：模板/编译期簇尾章 5 章 ch61/69/70/71/72 全覆盖 APP-A + APP-C。通用模板习题替换为章主题对齐难度阶梯（★★/★★★/★★★★）；每章追加「用法演绎」附录；靶向编译校验 30 注入块 0 fail；一致性门禁 147 章 0/0 维持；1 处真实缺陷修复（ch72 演绎1 最小化 Vec 缺 `Vec(const VecAdd&)` 转换构造，致 `Vec ab = a + b` 因 VecAdd→Vec 无可行转换失败，补转换构造后通过）。APP-A/APP-C 累计覆盖 34/147 章。
 
 **Batch APP6（2026-07-16 完成）**：内存管理簇 5 章 ch35/36/37/38/40 全覆盖 APP-A + APP-C。通用模板习题（max_safe/integral add/constexpr fact 与章主题严重错配）替换为章主题对齐难度阶梯（★★/★★★/★★★★）；每章追加「用法演绎」附录；靶向编译校验 25 注入块 0 fail（3 块 ch37 operator-new 命中 OPERATOR_REPLACE_RE 被门禁跳过，经 `_verify_ch37_manual.py` 独立 TU 编译 0 fail 确认）；一致性门禁 147 章 0/0 维持；1 处真实缺陷修复（ch38 演绎2 `std::pmr::vector<int> v(std::pmr::polymorphic_allocator<int>(&res));` 触发 most-vexing-parse，被解析为函数声明致 `v.push_back` 报 "non-class type"，改为先命名 allocator 变量 `pa` 再 `std::pmr::vector<int> v(pa);` 修复）。APP-A/APP-C 累计覆盖 39/147 章。
+
+**Batch APP7（2026-07-16 完成）**：语言基础簇 5 章 ch19/22/23/25/28 全覆盖 APP-A + APP-C。通用模板习题替换为章主题对齐难度阶梯（★★/★★★/★★★★）；每章追加「用法演绎」附录；靶向编译校验 25 注入块 0 fail（1 块 ch19 命中 CROSSBLOCK_INC_RE 跳过）；一致性门禁 147 章 0/0 维持；2 处真实缺陷修复（ch22 练习2 三元 `ref?f_ref():f_val()` 把 int& 与 int 统一为右值 int 致 decltype(auto) 推导为 int 而非 int&，改为 `return (g)` vs `return g` 演示 decltype((x)) 保引用；ch23 演绎2 `Handle` 因用户声明拷贝构造抑制默认构造致 `Handle a,b;` 报 no matching ctor，加 `Handle()=default;` 修复）。注入前先 `git checkout HEAD` 恢复干净态（这些章工业/ASM 附录在习题之前，删锚点至 EOF 不伤及）。APP-A/APP-C 累计覆盖 44/147 章。
 **滚动计划**：APP6+（剩余章节滚动覆盖）。目标：147 章习题全部主题对齐，重点章均有用法演绎 + 工业深挖。
 
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）、**WORKLIST_v4.md（质量收尾导航）**_

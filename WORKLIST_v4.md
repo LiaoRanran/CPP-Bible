@@ -331,8 +331,20 @@
 
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。靶向编译校验：25 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（ch35/36/37/38/40；其中 ch37 的 3 个 operator-new 块命中 OPERATOR_REPLACE_RE 被门禁跳过，经 `_verify_ch37_manual.py` 独立 TU 编译 0 fail 确认可编译）。1 处真实缺陷修复：ch38 演绎2 `std::pmr::vector<int> v(std::pmr::polymorphic_allocator<int>(&res));` 触发 most-vexing-parse（被解析为函数声明，`v.push_back` 报 "non-class type"），改为先命名 allocator 变量 `std::pmr::polymorphic_allocator<int> pa(&res);` 再 `std::pmr::vector<int> v(pa);` 修复。APP-A/APP-C 累计覆盖 39/147 章。
 
+**Batch APP7（已完成，2026-07-16）**：语言基础簇 5 章全覆盖 APP-A + APP-C（习题重写 + 用法演绎附录）
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP7 | ch19 变量与存储期 | 习题：static 局部状态/inline 变量跨 TU / SOIF 的 Meyers 单例；演绎：跨 TU 共享配置 + SOIF 兜底 |
+| APP7 | ch22 auto/decltype | 习题：auto& 遍历 / decltype(auto) 保引用 / vector<bool> 代理陷阱；演绎：auto 隐藏返回类型 + decltype(auto) 转发保真 |
+| APP7 | ch23 命名空间/ADL | 习题：ADL 发现 operator<< / std::swap 惯用法 / inline namespace ABI；演绎：ADL 让 << 可发现 + swap 异常安全 |
+| APP7 | ch25 union/variant | 习题：variant 安全访问 / visit+overload O(1) / valueless_by_exception；演绎：variant 替代 union+tag + monostate 默认构造 |
+| APP7 | ch28 生命周期/UB | 习题：返回局部引用悬垂 / string_view 绑临时悬垂 / launder 重建；演绎：返回值而非 const& + string_view 生命周期 |
+
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。靶向编译校验：25 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（ch19/22/23/25/28；其中 ch19 的 1 块命中 CROSSBLOCK_INC_RE 被跳过）。2 处真实缺陷修复：ch22 练习2 原三元 `ref?f_ref():f_val()` 把 int& 与 int 统一为右值 int 致 decltype(auto) 推导为 int 而非 int&，改为 `return (g)` vs `return g` 直接演示 decltype((x)) 保引用；ch23 演绎2 `Handle` 因用户声明拷贝构造抑制默认构造，`Handle a,b;` 报 no matching ctor，加 `Handle()=default;` 修复。APP-A/APP-C 累计覆盖 44/147 章。
+
 **后续批次（规划中）**
-- **APP7+**：滚动覆盖剩余章节，直至 147 章习题全部主题对齐、重点章均有用法演绎 + 工业深挖。
+- **APP8+**：滚动覆盖剩余章节，直至 147 章习题全部主题对齐、重点章均有用法演绎 + 工业深挖。
 
 ## 不纳入项（P2-，已评估）
 
@@ -370,7 +382,8 @@
 | APP4 | Phase APP 应用层增强第四批（模板核心簇 8 章习题重写+用法演绎） | 8 | 8 | 100% |
 | APP5 | Phase APP 应用层增强第五批（模板/编译期簇尾章 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP6 | Phase APP 应用层增强第六批（内存管理簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
-| **合计** | | **106** | **106** | **100%** |
+| APP7 | Phase APP 应用层增强第七批（语言基础簇 5 章习题重写+用法演绎） | 5 | 5 | 100% |
+| **合计** | | **111** | **111** | **100%** |
 
 ---
 
