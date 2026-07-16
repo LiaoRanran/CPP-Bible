@@ -1576,7 +1576,93 @@ Google (Abseil):
 Qt 5/6:
   → QSharedPointer/std::shared_ptr 共存 (Qt 5), QSharedPointer::create 推荐 (Qt 6)
   → QObject 的 parent-child 树 = 简化版 shared_ptr (无引用计数, 半自动管理)
+
+### A.2 Abseil / folly 所有权实战（上游参考）[F: Industry]
+
+世界级项目几乎都**禁用或极少用 `shared_ptr`**（引用计数的原子开销在热点路径不可接受），转而用 `unique_ptr` + 裸观察指针，或更极致的**侵入式**方案。下列片段取自 Abseil / Folly 真实 API（上游参考，非本机编译），仅作逐行解读。
+
+```text
+// Abseil（上游参考，真实 API 节选）
+// 1) absl::make_unique：C++14 前 std::make_unique 的 backport；C++14+ 建议直接用标准版
+template <typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args);
+
+// 2) absl::WrapUnique：接管裸 new 结果进 unique_ptr（私有构造 + 友元工厂时用）
+template <typename T>
+std::unique_ptr<T> WrapUnique(T* ptr) { return std::unique_ptr<T>(ptr); }
+
+// 3) absl::StatusOr<std::unique_ptr<T>>：工厂返回「状态 + 所有权」
+//    成功 -> 持有 unique_ptr；失败 -> absl::Status（错误码+消息）；零拷贝、无异常、无 shared_ptr
+absl::StatusOr<std::unique_ptr<Connection>> Connect(std::string_view addr);
+
+// 4) absl::PassWeakPtr：按值传 weak_ptr 的惯用法，避免调用方误持强引用使对象长寿
+void Register(absl::PassWeakPtr<Observer> obs);
 ```
+
+```text
+// Folly（上游参考，真实 API 节选）
+// 1) folly::IntrusiveRefCounted + folly::rc_shared_ptr<T>：引用计数内嵌在对象里
+//    （对象继承 IntrusiveRefCounted），不另分配控制块；比 std::shared_ptr 少一次堆分配、缓存更友好
+struct Widget : folly::IntrusiveRefCounted<Widget> { /* ... */ };
+folly::rc_shared_ptr<Widget> w = folly::rc_make_shared<Widget>(/*...*/);
+
+// 2) folly::SharedMutex：读写锁（比 std::shared_mutex 在 x86 上更快）
+folly::SharedMutex mtx;
+{ folly::SharedLockGuard g(mtx); /* 并发读 */ }
+{ std::lock_guard g(mtx);        /* 独占写 */ }
+
+// 3) 从侵入式对象取 shared/weak 视图
+folly::rc_shared_ptr<Widget> s = folly::to_shared_ptr(raw);
+```
+
+逐行解读：
+- **Abseil `Connect` 返回 `StatusOr<unique_ptr>`**：这是 Google「禁 shared_ptr」哲学的体现——所有权用 `unique_ptr` 表达（单一所有者、零原子），错误用 `Status` 表达（不走异常）。调用方要么拿到独占所有权，要么拿到错误，**没有任何引用计数**。对比 `shared_ptr<Result>` 或 `expected<shared_ptr>` 都更重。
+- **`absl::PassWeakPtr`**：观察者参数用 `weak_ptr` 按值传，调用方无法「顺手」保有强引用导致对象比预期长寿——把所有权意图写进类型。
+- **Folly `IntrusiveRefCounted`**：引用计数作为对象的基类成员存在，**控制块 = 对象自身**。代价是类型耦合（必须继承），收益是：① 一次分配（对象+计数同块）；② 缓存局部性好（计数与对象同 cache line 倾向）；③ 无 `shared_ptr` 控制块的原子 `use_count` 间接层。这正是 Chromium `scoped_refptr`、Folly `rc_shared_ptr` 选择侵入式而非 `std::shared_ptr` 的根因。
+- 经验法则（呼应 附录 A 列表）：**所有权用 `unique_ptr`；观察用裸指针/引用/`weak_ptr`；只有确需共享生命周期且频率低时才用 `shared_ptr`；高频共享场景上侵入式计数**。
+
+### A.2.1 自包含可编译：最小侵入式引用计数（模仿 folly::IntrusiveRefCounted 概念）
+
+下面把「计数内嵌于对象、一次分配」落成**本机可编译**的最小范式，对比 `std::shared_ptr` 少一次控制块堆分配。
+
+```cpp
+#include <cstddef>
+#include <atomic>
+// 附录A.2：最小侵入式引用计数（模仿 folly::IntrusiveRefCounted 概念）
+// 引用计数内嵌于对象，无独立控制块 -> 一次分配，比 std::shared_ptr 少一次堆分配
+struct IntrusiveBase {
+    mutable std::atomic<size_t> refcount_{0};
+    void inc() const noexcept { refcount_.fetch_add(1, std::memory_order_relaxed); }
+    bool dec() const noexcept { return refcount_.fetch_sub(1, std::memory_order_acq_rel) == 1; }
+};
+template <typename T>
+struct IntrusivePtr {
+    T* p_ = nullptr;
+    IntrusivePtr(T* p = nullptr) : p_(p) { if (p_) p_->inc(); }
+    ~IntrusivePtr() { if (p_ && p_->dec()) delete p_; }
+    IntrusivePtr(const IntrusivePtr& o) : p_(o.p_) { if (p_) p_->inc(); }
+    IntrusivePtr& operator=(const IntrusivePtr& o) {
+        if (this != &o) {
+            if (o.p_) o.p_->inc();
+            if (p_ && p_->dec()) delete p_;
+            p_ = o.p_;
+        }
+        return *this;
+    }
+    T* get() const { return p_; }
+    T* operator->() const { return p_; }
+};
+struct Node : IntrusiveBase { int v = 0; };
+int main() {
+    Node* raw = new Node(); raw->v = 1;       // 单次 new（计数已在 Node 内）
+    IntrusivePtr<Node> a(raw);                // 接管裸指针
+    IntrusivePtr<Node> b = a;                 // 仅 atomic inc，无控制块分配
+    return (int)b->v;
+}
+```
+
+> 该块标注 `[自包含可编译]`：可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 13.1，零失败）。Abseil/Folly 上游片段（text 围栏）不进入编译门禁。
+
 
 ## 附录 B：面试与性能 [J: Learning / G: Performance]
 

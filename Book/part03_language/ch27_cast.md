@@ -520,6 +520,76 @@ int main() {
 ```
 
 `[经验]` 工业里"同一缓冲复用不同类型"几乎总是 `reinterpret_cast` + `memcpy`/`bit_cast` 更安全；`launder` 只在 placement new 覆盖含 const/引用成员的对象时才必需。
+### 6.5 实战：reinterpret_cast 映射 MCU 寄存器（STM32F4 MMIO）
+
+`reinterpret_cast` 在嵌入式里最正经的用途是**内存映射 IO（MMIO）**：把芯片手册里写死的寄存器物理地址，重新解释成结构体指针，于是 `reg->FIELD` 直接落到正确的字节偏移。下面用 **STM32F407（RM0090 参考手册）** 的真实基地址与寄存器布局——本机可编译（裸 `volatile` 结构体，无 CMSIS 依赖）。
+
+```cpp
+#include <cstdint>
+// ⑥-5 STM32F4 真实寄存器布局（节选自 CMSIS stm32f4xx.h，已去 __IO 宏）
+#define __IO volatile
+struct RCC_TypeDef {            // 复位与时钟控制，基地址 0x40023800
+    __IO uint32_t CR;           // 0x00 时钟控制
+    __IO uint32_t PLLCFGR;      // 0x04 PLL 配置
+    __IO uint32_t CFGR;         // 0x08 时钟配置
+    __IO uint32_t CIR;          // 0x0C 时钟中断
+    __IO uint32_t AHB1RSTR;     // 0x10 AHB1 复位
+    __IO uint32_t AHB2RSTR;     // 0x14 AHB2 复位
+    __IO uint32_t AHB3RSTR;     // 0x18 AHB3 复位
+    uint32_t RESERVED0;         // 0x1C 保留
+    __IO uint32_t APB1RSTR;     // 0x20 APB1 复位
+    __IO uint32_t APB2RSTR;     // 0x24 APB2 复位
+    uint32_t RESERVED1[2];      // 0x28-0x2C 保留
+    __IO uint32_t AHB1ENR;      // 0x30 AHB1 外设时钟使能（GPIOAEN=bit0）
+};
+struct GPIO_TypeDef {           // 通用 IO，GPIOA 基地址 0x40020000
+    __IO uint32_t MODER;        // 0x00 模式（每脚 2 位）
+    __IO uint32_t OTYPER;       // 0x04 输出类型
+    __IO uint32_t OSPEEDR;      // 0x08 速度
+    __IO uint32_t PUPDR;        // 0x0C 上拉下拉
+    __IO uint32_t IDR;          // 0x10 输入数据
+    __IO uint32_t ODR;          // 0x14 输出数据
+    __IO uint32_t BSRR;         // 0x18 位置/复位
+};
+struct USART_TypeDef {          // 串口，USART2 基地址 0x40004400
+    __IO uint32_t SR;           // 0x00 状态（TXE=bit7, TC=bit6）
+    __IO uint32_t DR;           // 0x04 数据（低 9 位）
+    __IO uint32_t BRR;          // 0x08 波特率
+    __IO uint32_t CR1;          // 0x0C 控制 1（UE=bit13, TE=bit3）
+};
+// 真实物理基地址（RM0090 存储器映射表）
+constexpr std::uintptr_t RCC_BASE    = 0x40023800;
+constexpr std::uintptr_t GPIOA_BASE  = 0x40020000;
+constexpr std::uintptr_t USART2_BASE = 0x40004400;
+// reinterpret_cast 把固定地址重解释为结构体指针 —— MMIO 标准手法
+inline RCC_TypeDef*    RCC()    { return reinterpret_cast<RCC_TypeDef*>(RCC_BASE); }
+inline GPIO_TypeDef*   GPIOA()  { return reinterpret_cast<GPIO_TypeDef*>(GPIOA_BASE); }
+inline USART_TypeDef*  USART2() { return reinterpret_cast<USART_TypeDef*>(USART2_BASE); }
+// 点灯：使能 GPIOA 时钟 -> PA5 配输出 -> 拉高
+void led_on() {
+    RCC()->AHB1ENR |= (1u << 0);                       // RCC_AHB1ENR.GPIOAEN = bit0
+    GPIOA()->MODER = (GPIOA()->MODER & ~(3u << 10))    // 清 MODER5[11:10]
+                   |  (1u << 10);                       // 置 01 = 输出
+    GPIOA()->ODR  |= (1u << 5);                         // PA5 输出高（ODR bit5）
+}
+// 串口发一字节：等发送寄存器空（TXE）再写 DR
+void usart2_send(std::uint8_t b) {
+    while (!(USART2()->SR & (1u << 7))) {}             // SR.TXE = bit7，轮询
+    USART2()->DR = b;                                  // 写数据寄存器即触发发送
+}
+int main() { led_on(); usart2_send('A'); return 0; }
+```
+
+逐行解读（全部为 STM32F407 真实寄存器/位定义，可在 RM0090 与 stm32f4xx.h 核对）：
+- `AHB1ENR` 偏移 `0x30`：`RCC->AHB1ENR |= 1<<0` 置 `GPIOAEN`（bit0），开启 GPIOA 总线时钟——STM32 默认所有外设时钟关闭，不使能则后续写 GPIO 寄存器无效（写进被时钟门控的死了的寄存器）。
+- `MODER` 偏移 `0x00`：每脚占 2 位，`PA5` 对应 bits `[11:10]`。`~(3u<<10)` 先清零、`(1u<<10)` 置 `01` = 通用输出模式（`00`=输入、`10`=复用、`11`=模拟）。**必须用读-改-写**，否则会把其它脚的模式位冲掉。
+- `ODR` 偏移 `0x14`：输出数据寄存器，`PA5 = bit5`，置 1 即输出高电平点亮 LED。
+- `SR` 偏移 `0x00`：`TXE`（bit7）= 发送数据寄存器空。轮询它再写 `DR`，是串口发送的最小正确范式——若不等人发，数据会覆盖丢失。
+- `volatile` 是强制的：寄存器值可能被硬件/中断异步改变（如 `SR.TXE` 由硬件置位）。`volatile` 禁止编译器把 `while(!(SR & TXE))` 优化成「读一次就认为永远不变」的死循环，也禁止缓存写操作。这正对应 6.2/6.3 的别名规则——硬件寄存器不是 C++ 对象，必须用 `volatile` 访问。
+- 复杂度：每次 `reg->FIELD` 访问编译成单条 `ldr`/`str`（`O(1)`）；`usart2_send` 的 `while` 轮询次数由硬件发送节奏决定（波特率 115200 时每字节约 87µs），是**有界忙等**，不占调度。
+
+> 该块标注 `[自包含可编译]`：可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 13.1，零失败）。真实固件里这些指针会被放进 `.data`/映射到对应地址空间，链接脚本决定最终落点；此处用 `inline` 函数封装 `reinterpret_cast` 以规避全局动态初始化。
+
 
 ---
 

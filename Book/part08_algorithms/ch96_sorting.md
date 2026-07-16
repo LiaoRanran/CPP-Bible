@@ -92,6 +92,77 @@ int main() {
 - `[实现]`：introsort 的关键在 `depth_limit`——一旦快排递归过深（可能退化成 O(N²)），立刻切到 **堆排序**（最坏 O(N·log N)），从而保证**整体最坏复杂度 O(N·log N)** 且**平均接近快排**。
 - `[标准]`：标准只要求 `sort` 满足 O(N·log N) 与不稳定；introsort 是满足该契约的惯用实现策略。
 
+### ②-2 libstdc++ `__introsort_loop` 真实源码逐行（上游参考）[实现]
+
+`std::sort` 的工业实现（libstdc++ / libc++ / MS STL）都叫 introsort，但 libstdc++ 的命名最直白：`__introsort_loop`。下面片段取自 `bits/stl_algo.h`（上游参考，非本机编译），仅作逐行解读；本机不可编译（是标准库内部实现），故以 `text` 围栏呈现。
+
+```text
+// libstdc++ bits/stl_algo.h（上游参考，真实源码节选）
+template <typename _RandomAccessIterator, typename _Compare>
+void
+__introsort_loop(_RandomAccessIterator __first,
+                 _RandomAccessIterator __last,
+                 _Iter_diff_t<_RandomAccessIterator> __depth_limit,
+                 _Compare __comp)
+{
+    // _S_threshold = 16：小数组不再快排，留给收尾的插入排序
+    while (__last - __first > int(_S_threshold)) {
+        if (__depth_limit == 0) {
+            // 递归过深 -> 退化为堆排，杜绝 O(N^2)
+            std::partial_sort(__first, __last, __last, __comp);
+            return;
+        }
+        --__depth_limit;
+        // 三点取中选枢轴并分区，返回枢轴位置
+        _RandomAccessIterator __cut =
+            std::__unguarded_partition_pivot(__first, __last, __comp);
+        // 右半递归（深一层的 introsort）
+        __introsort_loop(__cut, __last, __depth_limit, __comp);
+        __last = __cut;   // 尾递归转循环：接着处理左半，避免额外栈帧
+    }
+}
+```
+
+逐行解读：
+- `while (__last - __first > _S_threshold)`：`_S_threshold = 16`。数组**大于 16**才进入快排分段；更小的段留给收尾的 `__final_insertion_sort`（小数组插入排序更快，因缓存友好且无递归开销）。
+- `if (__depth_limit == 0) { std::partial_sort(...); return; }`：**introsort 的灵魂**。当递归深度耗尽（初始 `depth_limit = 2·⌊log2 N⌋`），立即切到**堆排序**（`partial_sort` 内部即 heap）。堆排最坏 O(N·log N)，从而把整体最坏复杂度钉死在 O(N·log N)——快排单独用会在「已近似有序 + 坏枢轴」时退化成 O(N²)，introsort 用深度计数器消除这个尾部风险。
+- `__unguarded_partition_pivot`：内部先做 **median-of-three**（首/中/尾取中值）选枢轴，再把枢轴换到端点做无守卫分区（pivot 本身作 sentinel，分区循环不必每次判越界，更快）。
+- `__last = __cut` 而非递归处理左半：把右半交给递归、**左半用循环变量 `__last` 继续**——典型的**尾递归消除**，把 O(log N) 层递归压成一层，省栈空间、减少调用开销。
+- 整体结构：`O(log N)` 层递归 × 每层 `O(N)` 分区 = `O(N·log N)`；因深度上限，`N` 很大也不退化。
+
+### ②-2.1 自包含可编译：median-of-three 分区（对应 `__unguarded_partition_pivot`）
+
+下面把 libstdc++ 的「三点取中 + 无守卫分区」落成**本机可编译**的最小范式，返回枢轴最终位置（与 ② 的 introsort-lite 可拼成完整排序）。
+
+```cpp
+#include <algorithm>
+#include <iterator>
+#include <vector>
+// ②-2 对应 libstdc++ __unguarded_partition_pivot：三点取中后分区
+template <typename It, typename Cmp>
+It median3_partition(It first, It last, Cmp cmp) {
+    auto mid = first + (last - first) / 2;
+    if (cmp(*mid, *first)) std::iter_swap(mid, first);            // 排首/中
+    if (cmp(*(last - 1), *first)) std::iter_swap(last - 1, first); // 排首/尾
+    if (cmp(*(last - 1), *mid)) std::iter_swap(last - 1, mid);    // 排中/尾
+    std::iter_swap(mid, last - 1);                                // 枢轴放到端点
+    auto pivot = *(last - 1);
+    auto i = first;
+    for (auto j = first; j != last - 1; ++j)                      // 无守卫分区
+        if (cmp(*j, pivot)) std::iter_swap(i++, j);
+    std::iter_swap(i, last - 1);                                  // 枢轴归位
+    return i;                                                     // 枢轴最终位置
+}
+int main() {
+    std::vector<int> v{5, 3, 8, 1, 9, 2, 7};
+    auto p = median3_partition(v.begin(), v.end(), std::less<int>{});
+    return *p;   // 枢轴值（7 的某次分区结果）
+}
+```
+
+> 该块标注 `[自包含可编译]`：可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 13.1，零失败）。libstdc++ 上游片段（text 围栏）不进入编译门禁。把 ②-2.1 的 `median3_partition` 与 ② 的 `introsort` 拼起来即是一个可运行的 introsort 完整实现。
+
+
 ## ③ 复杂度与枢纽（pivot）选择 [标准]
 
 `std::sort` 要求 **O(N·log N)** 平均与最坏。枢纽选择决定快排段质量，libstdc++ 用 **三点取中（median-of-three）** 降低坏分区概率：
