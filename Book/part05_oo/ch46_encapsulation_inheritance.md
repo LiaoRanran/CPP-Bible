@@ -1541,57 +1541,170 @@ mov rdx, [rdi+0x0010]     ; 取 Derived 独有成员（偏移 0x0010）
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+写代码演示**对象切片（slicing）**：把派生对象赋给基类对象时派生部分丢失，并说明如何用引用/指针/智能指针保留完整对象。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+基类对象是派生对象前缀子对象的拷贝；赋值时只复制基类子对象，派生新增成员被丢弃。多态须经由引用或指针（或 `unique_ptr<Base>`）而非值。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct Base { int b = 1; virtual ~Base() = default; };
+struct Derived : Base { int d = 2; };
+int main() {
+    Derived der;
+    Base sliced = der;                       // 切片：仅复制 Base 子对象
+    std::cout << "sliced.b = " << sliced.b << '\n';   // 1，正常
+    // sliced.d 不存在：派生部分已丢失
+    Base& ref = der;                         // 引用保持完整对象
+    std::cout << "via ref d = "
+              << static_cast<Derived&>(ref).d << '\n'; // 2
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 切片是值语义的直接后果；维度⑩说明"引用/指针才多态"，维度⑪给出 `unique_ptr<Base>` 修复。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+演示**名字隐藏（name hiding）**：派生类定义同名函数会隐藏基类所有重载（而非重载），并用 `using` 恢复重载集。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+C++ 的名字查找在找到派生类作用域的 `f` 后即停止，不再向基类合并重载集。显式 `using Base::f;` 把基类重载引入派生作用域。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct Base { void f(int) { std::cout << "Base::f(int)\n"; } };
+struct Derived : Base {
+    void f(double) { std::cout << "Derived::f(double)\n"; }  // 隐藏 Base::f(int)
+};
+int main() {
+    Derived d;
+    d.f(1);    // 调 Derived::f(double)，Base::f(int) 被隐藏（非重载）
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+**修复**（恢复重载集）：
+
+```cpp
+#include <iostream>
+struct Base { void f(int) { std::cout << "Base::f(int)\n"; } };
+struct Derived : Base {
+    using Base::f;                              // 恢复基类重载集
+    void f(double) { std::cout << "Derived::f(double)\n"; }
+};
+int main() {
+    Derived d;
+    d.f(1);    // Base::f(int)
+    d.f(1.0);  // Derived::f(double)
+}
+```
+
+[标准] 名字隐藏是编译期作用域规则（维度⑬），与虚函数多态无关；忘了 `using` 是经典易错点。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 **NVI（Non-Virtual Interface）惯用法**实现模板方法模式：公共非虚接口负责前置/后置与不变式，派生类只实现受保护的虚步骤。
 
 <details><summary>答案与解析</summary>
 
+NVI 把契约（前置条件、后置条件、不变式、日志）收敛在非虚公共接口，用户无法绕过；派生类仅覆写虚步骤，降低误用面。
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cassert>
+class Algorithm {
+public:
+    void run() {                     // 非虚公共接口：不变式守卫
+        std::cout << "pre\n";
+        doRun();                     // 委托虚步骤
+        std::cout << "post\n";
+        assert(invariant());
+    }
+    virtual ~Algorithm() = default;
+protected:
+    virtual void doRun() = 0;
+    virtual bool invariant() const { return true; }
+};
+struct Impl : Algorithm {
+    void doRun() override { std::cout << "Impl::doRun\n"; }
+};
+int main() { Impl a; a.run(); }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] NVI 是维度⑯/⑰的核心惯用法；对比"直接暴露 virtual"更易维护契约，是封装边界（维度③）的工程落地。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：切片 bug——函数返回基类值
+
+**选型场景**：多态处理一组派生对象，想通过一个统一函数返回结果。
+
+**常见错误**：函数签名返回 `Base`（值），调用方拿到的是切片后的截断对象，丢失派生行为。
+
+```cpp
+#include <iostream>
+struct Base { int b = 1; virtual ~Base() = default; };
+struct Derived : Base { int d = 2; };
+Base process(Derived d) { return d; }   // 切片：返回的是 Base 子对象
+int main() {
+    Derived der;
+    Base r = process(der);
+    // 无法访问 d；多态被破坏
+}
+```
+
+**修复**：返回基指针 / `unique_ptr<Base>` / `Base&`，让多态经引用或指针传递。
+
+```cpp
+#include <iostream>
+#include <memory>
+struct Base { int b = 1; virtual ~Base() = default; };
+struct Derived : Base { int d = 2; };
+std::unique_ptr<Base> process(Derived d) {
+    return std::make_unique<Derived>(std::move(d));  // 完整对象经智能指针传递
+}
+int main() {
+    auto p = process(Derived{});
+    std::cout << static_cast<Derived*>(p.get())->d << '\n'; // 2，派生部分保留
+}
+```
+
+**结论**：切片是值语义的天然结果（维度⑩）；需要多态就必须走引用/指针/智能指针（维度⑪）。
+
+### 演绎 2：忘记 `override` 导致静默隐藏而非覆盖
+
+**选型场景**：派生类想覆写基类虚函数以定制行为。
+
+**常见错误**：派生类函数签名写错（如参数类型不符），未用 `override`；编译器将其视为**新函数**而非覆写，调用仍走基类版本——编译通过但行为错误。
+
+```cpp
+#include <iostream>
+struct Shape { virtual void draw() { std::cout << "Shape\n"; } };
+struct Circle : Shape {
+    void draw(int) { std::cout << "Circle(draw int)\n"; }  // 非 override：新重载，隐藏 draw()
+};
+int main() {
+    Shape* s = new Circle;
+    s->draw();        // 调 Shape::draw()——本想调 Circle，但签名不符未被覆盖
+}
+```
+
+**修复**：基类虚函数保持 `virtual`，派生加 `override`（签名不符立即编译错误）；用 `final` 锁死不再被进一步覆盖。
+
+```cpp
+#include <iostream>
+struct Shape { virtual void draw() = 0; };
+struct Circle : Shape {
+    void draw() override { std::cout << "Circle::draw\n"; }  // 编译期保证真正覆盖
+};
+int main() { Shape* s = new Circle; s->draw(); }
+```
+
+**结论**：`override`/`final`（维度⑮）把"是否真覆盖"从运行期隐患变成编译期强制，是封装与继承（维度⑧/⑮）的工程红线。

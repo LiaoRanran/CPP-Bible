@@ -933,62 +933,151 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+用 `dynamic_cast` 做**安全下行转换**：基类指针指向派生对象时转换成功，指向基类对象时返回 `nullptr`。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`dynamic_cast` 在运行时经 vtable 的 `type_info` 检查目标类型是否确实是对象的动态类型（或其派生）。源类型必须**多态**（含虚函数）。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct Base { virtual ~Base() = default; };
+struct Derived : Base { int tag = 7; };
+int main() {
+    Derived d;
+    Base* pb = &d;
+    if (Derived* pd = dynamic_cast<Derived*>(pb))
+        std::cout << "downcast OK, tag=" << pd->tag << '\n';   // 7
+    Base b;
+    Base* pb2 = &b;
+    if (auto* pd2 = dynamic_cast<Derived*>(pb2))
+        std::cout << pd2->tag << '\n';
+    else
+        std::cout << "null: pb2 不指向 Derived\n";             // 走这里
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `dynamic_cast` 失败对指针返回 `nullptr`、对引用抛 `std::bad_cast`（维度②前置知识 ch47 虚表槽1=typeinfo）。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+用 `typeid` 演示运行时类型识别依赖 vtable：对同一基类指针赋不同派生对象，`typeid(*p).name()` 反映**动态类型**；并说明无虚函数类会退化为静态类型。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+`typeid` 对多态左值/表达式返回动态类型信息（经 vtable 的 `type_info`）；对非多态类型退化为编译期静态类型，无法反映实际派生。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <typeinfo>
+struct Base { virtual ~Base() = default; };
+struct D1 : Base {};
+struct D2 : Base {};
+int main() {
+    Base* p = new D1;
+    std::cout << typeid(*p).name() << '\n';   // D1（运行时）
+    p = new D2;
+    std::cout << typeid(*p).name() << '\n';   // D2（运行时）
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] RTTI 成本来自 vtable 中的 `type_info` 指针（维度⑦ ASCII 图）；无虚函数则无 RTTI 数据。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 `std::variant` + `std::visit` **替代 `dynamic_cast`** 做类型分发，消除运行时 RTTI 开销，并让穷尽性由编译器保证。
 
 <details><summary>答案与解析</summary>
 
+`variant` 把"可能是哪几种类型"编码进类型系统；`visit` 在编译期对每种 alternative 生成分支，无 vtable 查询、无运行时类型检查，且漏处理一种类型会编译失败。
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <variant>
+struct Circle { int r = 2; };
+struct Square { int s = 3; };
+using Shape = std::variant<Circle, Square>;
+int area(const Shape& sh) {
+    return std::visit([](auto&& v) {
+        using T = std::decay_t<decltype(v)>;
+        if constexpr (std::is_same_v<T, Circle>) return 3 * v.r * v.r;
+        else return v.s * v.s;
+    }, sh);
+}
+int main() {
+    std::cout << area(Circle{}) << ' ' << area(Square{}) << '\n';  // 12 9
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 类型擦除/visitor（维度⑫/⑬）是 RTTI 的高性能替代；WG21 持续推动 `std::visit` 优化（维度⑭）。
 
 </details>
 
----
+## 附录：用法演绎（从选型到落地）
 
+### 演绎 1：用 `dynamic_cast` 做一长串类型分支（过度 RTTI）
+
+**选型场景**：处理异构对象集合，按具体类型执行不同逻辑。
+
+**常见错误**：用一长串 `if (auto* p = dynamic_cast<X*>(b)) ...` 做类型分支——脆弱（新增类型易漏）、慢（每次走 vtable 查询）。
+
+```cpp
+#include <iostream>
+struct Base { virtual ~Base() = default; };
+struct X : Base { void fx() { std::cout << "X\n"; } };
+void handle(Base* b) {
+    if (auto* p = dynamic_cast<X*>(b)) p->fx();
+    // 每加一种类型就加一个 if；运行时逐分支 dynamic_cast
+}
+int main() { X x; handle(&x); }
+```
+
+**修复**：把分支逻辑上提为虚函数（真正多态），或用 `std::variant`+`visit`（见练习3）做编译期分发。
+
+```cpp
+#include <iostream>
+struct Base { virtual ~Base() = default; virtual void handle() = 0; };
+struct X : Base { void handle() override { std::cout << "X\n"; } };
+int main() { X x; Base* b = &x; b->handle(); }  // 多态分发，无 RTTI
+```
+
+**结论**：RTTI 应作为"无法用虚函数表达"时的逃生舱，而非默认分发机制（维度⑱ 最佳实践）。
+
+### 演绎 2：对无虚函数类误用 `dynamic_cast`
+
+**选型场景**：想在两个有继承关系的普通类之间做下行转换。
+
+**常见错误**：源类型不含任何虚函数（非多态），`dynamic_cast` 直接编译失败。
+
+```
+// 错误：A 非多态（无虚函数），dynamic_cast 不允许
+struct A {};
+struct B : A {};
+int main() {
+    A a;
+    B* p = dynamic_cast<B*>(&a);   // 编译错误：源不是多态类型
+}
+```
+
+**修复**：`dynamic_cast` 要求源表达式为多态类型。若确实需要在已知层次内转换且自担保安全，用 `static_cast`（无运行时检查）；否则把基类改为多态（加虚析构）或重构为 `variant`/虚函数层次。
+
+```cpp
+#include <iostream>
+struct A { virtual ~A() = default; };
+struct B : A { int tag = 5; };
+int main() {
+    A a;
+    // 静态转换不检查：仅当确实指向 B 时才安全
+    B* p = static_cast<B*>(&a);     // 编译通过，但此处 &a 实为 A，解引用 UB
+    std::cout << "compile-ok, but unsafe without proof\n";
+}
+```
+
+**结论**：`dynamic_cast` 是运行时安全检查，前提是多态；非多态转换用 `static_cast` 但须自担安全证明（维度⑯ 易错点）。
 ## 附录 E：编译实证——`typeid` 与 `dynamic_cast` 的真实汇编 [C: Compiler / E: Low-level]
 
 > `[实测]` 编译：`g++ -std=c++23 -O2 -c ch48_rtti_test.cpp` + `objdump -dC`（GCC 15.3.0 / Win64 ABI，Itanium C++ ABI 布局）。产物 `_asm_demo/ch48_rtti_test.cpp`。

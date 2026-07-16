@@ -1447,57 +1447,144 @@ int main(){std::cout<<sizeof(B)<<","<<sizeof(D)<<std::endl;return 0;}
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+给定 `struct Packed { char a; int b; char c; };`，用 `sizeof` 与 `offsetof` 实证其内存布局，并解释填充从何而来。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+对象模型要求每个成员按其**对齐要求**放置；`int` 对齐到 4，编译器在 `a` 后插入 3 字节填充，使 `b` 落在偏移 4；`c` 落在偏移 8，结构尾再补 3 字节使整体对齐到 4，故 `sizeof==12`。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <cstddef>
+struct Packed { char a; int b; char c; };
+int main() {
+    std::cout << "sizeof   = " << sizeof(Packed) << '\n';       // 12
+    std::cout << "offsetof(b) = " << offsetof(Packed, b) << '\n'; // 4
+    std::cout << "offsetof(c) = " << offsetof(Packed, c) << '\n'; // 8
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 对齐与填充由实现定义，但须满足"成员地址是其对齐的整数倍"与"结构体大小是其对齐的整数倍"。布局规则是对象模型（维度⑤）的核心。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+证明**静态数据成员不计入对象大小**：定义含一个 `static int` 的类，比较 `sizeof` 与成员地址，说明静态成员存于 `.data`/`.bss` 而非对象内。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+静态成员属于类而非某个对象，所有实例共享同一份存储，因此 `sizeof` 不含它。取址 `&obj.shared` 得到的是类级存储位置。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct S {
+    int x = 0;
+    static int shared;   // 在 .data/.bss，不占对象字节
+};
+int S::shared = 0;
+int main() {
+    S a{1}, b{2};
+    S::shared = 9;
+    std::cout << "sizeof(S) = " << sizeof(S) << '\n';   // 4
+    std::cout << "a.x=" << a.x << " b.x=" << b.x
+              << " shared=" << S::shared << '\n';        // 1 2 9
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 静态数据成员具有外部链接与类作用域，布局上等价于文件级变量，对象模型（维度⑨）明确其不在对象内。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用空基类优化（EBO）解释：为什么 `struct Derived : Empty { int x; };` 的 `sizeof` 等于 `sizeof(int)`，而把 `Empty` 作为**成员**时尺寸却翻倍？写代码实证。
 
 <details><summary>答案与解析</summary>
 
+空基类子对象在满足"不与第一个非静态数据成员同地址冲突"时，编译器可将其优化为零字节；空**成员**则不行——C++ 要求每个完整对象具有唯一地址，故空成员至少占 1 字节并触发填充。
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct Empty {};
+struct Derived : Empty { int x; };
+struct AsMember { Empty e; int x; };
+int main() {
+    std::cout << "sizeof(Empty)    = " << sizeof(Empty) << '\n';    // 1
+    std::cout << "sizeof(Derived)  = " << sizeof(Derived) << '\n';  // 4  (EBO)
+    std::cout << "sizeof(AsMember) = " << sizeof(AsMember) << '\n'; // 8  (1 + 3 填充 + 4)
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] EBO 是标准明确允许的空基类优化（对象模型维度⑥），`std::vector` 的分配器即借此实现零开销混入。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：值语义返回 vs 引用语义返回
+
+**选型场景**：工厂函数需要把一个较大的聚合对象交给调用方，该返回值还是 `const&`？
+
+**常见错误**：返回指向局部对象的引用，导致悬垂引用（未定义行为，但编译通过）。
+
+```cpp
+#include <iostream>
+struct Big { int data[1024] = {}; };
+const Big& bad() {
+    Big b;                 // 局部对象
+    return b;              // 返回其引用——b 析构后引用悬垂（UB）
+}
+int main() {
+    const Big& r = bad();  // r 悬垂，任何访问都是 UB
+    std::cout << r.data[0] << '\n';
+}
+```
+
+**修复**：优先值语义返回。现代 C++ 编译器通过 NRVO / 移动语义消除拷贝，零开销且语义安全。
+
+```cpp
+#include <iostream>
+struct Big { int data[1024] = {}; };
+Big good() {
+    Big b{};
+    b.data[0] = 42;
+    return b;              // 值返回：NRVO 或移动，无拷贝开销
+}
+int main() {
+    Big v = good();
+    std::cout << v.data[0] << '\n';   // 42，安全
+}
+```
+
+**结论**：对象模型以**值语义优先、零开销**为哲学（维度①）。引用语义只用于非拥有的别名（参数 `const&`、观察者），切勿返回局部引用。
+
+### 演绎 2：误以为 `sizeof` 是成员字节简单求和
+
+**选型场景**：协议/序列化代码按"字段类型大小相加"预估结构尺寸，结果与实际不符。
+
+**常见错误**：以为 `char+int+char` 占 `1+4+1=6` 字节，直接按 6 做内存拷贝或偏移计算，踩对齐填充坑。
+
+```cpp
+#include <iostream>
+#include <cstddef>
+struct Wrong { char a; int b; char c; };
+int main() {
+    std::cout << "你以为: 6, 实际: " << sizeof(Wrong) << '\n'; // 实际 12
+}
+```
+
+**修复**：用 `offsetof` 实证真实布局；需要紧凑布局时用 `alignas` 控制或编译器 `#pragma pack`（注意可能牺牲访问性能与可移植性）。
+
+```cpp
+#include <iostream>
+#include <cstddef>
+struct Wrong { char a; int b; char c; };
+int main() {
+    std::cout << "offsetof(b)=" << offsetof(Wrong, b)
+              << " offsetof(c)=" << offsetof(Wrong, c)
+              << " sizeof=" << sizeof(Wrong) << '\n';
+}
+```
+
+**结论**：对象布局由对齐规则决定（维度⑤），永远用 `offsetof`/`sizeof` 实测，不要手算。

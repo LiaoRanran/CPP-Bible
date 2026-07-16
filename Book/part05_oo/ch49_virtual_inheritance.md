@@ -902,57 +902,137 @@ add rdi, 0x0008           ; 多继承调整 this
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+演示**菱形继承二义性**：`D` 经 `B1,B2` 各继承一份 `A`，直接访问 `d.a` 二义；用**虚继承**共享一份 `A` 消除二义。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+非虚继承下，`D` 内含两份 `A` 子对象，`d.a` 不知选哪份。虚继承让 `B1,B2` 共享同一份虚基类 `A`，`d.a` 唯一。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct A { int a = 1; };
+struct B1 : A {};
+struct B2 : A {};
+struct D : B1, B2 {};            // 两份 A 子对象
+int main() {
+    D d;
+    // d.a;                       // 错误：二义（B1::A 与 B2::A）
+    std::cout << d.B1::a << ' ' << d.B2::a << '\n';  // 须显式限定
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+**修复**（虚继承共享基类）：
+
+```cpp
+#include <iostream>
+struct A { int a = 1; };
+struct B1 : virtual A {};
+struct B2 : virtual A {};
+struct D : B1, B2 {};            // 共享一份 A
+int main() { D d; std::cout << d.a << '\n'; }  // 1，无二义
+```
+
+[标准] 虚继承引入虚基类指针（vbptr），使共享子对象唯一（维度⑦ ASCII 内存图）。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+演示**虚基类由最派生类直接构造**：中间类对虚基类的初始化被忽略，只有最派生类负责。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+虚基类的初始化控制权上移到最派生类；中间类构造函数里对虚基类的初始化列表不生效（或仅当该类恰为最派生时才生效）。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct A { A() { std::cout << "A\n"; } };
+struct B1 : virtual A { B1() { std::cout << "B1\n"; } };
+struct B2 : virtual A { B2() { std::cout << "B2\n"; } };
+struct D : B1, B2 { D() { std::cout << "D\n"; } };
+int main() { D d; }   // 输出 A B1 B2 D（A 只构造一次，由 D 直接负责）
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 构造顺序（维度⑫）：先虚基类，再非虚基类按声明序，最后派生类自身。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+演示**多重继承下的 this 调整**：不同基类子对象在派生对象内有不同偏移，跨基类 `dynamic_cast` 会自动调整指针。
 
 <details><summary>答案与解析</summary>
 
+多重继承时，第二个及以后的基类子对象相对对象首地址有非零偏移。`dynamic_cast` 在跨基类转换时插入 this 调整代码（比较 this 指针与子对象地址即见差异）。
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct L { int l = 0; };
+struct R { int r = 0; };
+struct D : L, R { int d = 0; };
+int main() {
+    D d;
+    L* pl = &d;
+    R* pr = &d;
+    std::cout << (void*)&d << '\n';   // 对象首地址
+    std::cout << (void*)pl << '\n';   // == 首地址（L 是首个基类）
+    std::cout << (void*)pr << '\n';   // != 首地址（R 子对象有偏移）
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] this 调整由编译器在 `dynamic_cast`/虚函数调用时插入（ch47 虚表/this 调整；维度⑨ 调用栈图）。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：菱形继承二义性踩坑
+
+**选型场景**：复用两个基类各自实现的公共能力，二者都源自同一个更底层基类。
+
+**常见错误**：直接 `d.a` 编译失败（二义），或随意 `d.B1::a` 仅消歧却不消除重复子对象，状态写入一个副本、读到另一个副本。
+
+```cpp
+#include <iostream>
+struct A { int a = 0; };
+struct B1 : A {};
+struct B2 : A {};
+struct D : B1, B2 {};
+int main() {
+    D d;
+    d.B1::a = 5;
+    // d.B2::a 仍是 0：两份 A 状态不一致
+}
+```
+
+**修复**：虚继承共享基类，状态唯一；配合"虚基类由最派生类初始化"规则，在 `D` 的初始化列表里构造 `A`。
+
+```cpp
+#include <iostream>
+struct A { int a = 0; };
+struct B1 : virtual A {};
+struct B2 : virtual A {};
+struct D : B1, B2 { D() : A() { a = 5; } };
+int main() { D d; std::cout << d.a << '\n'; }  // 5，单一状态
+```
+
+**结论**：需要"is-a 两份能力且共享底层状态"时用虚继承；否则优先考虑组合优于继承（ch46 维度⑰）。
+
+### 演绎 2：虚基类构造顺序错乱导致未初始化
+
+**选型场景**：在中间类构造函数里初始化虚基类成员，以为会生效。
+
+**常见错误**：在 `B1`/`B2` 的初始化列表里写 `A(初始值)`，实际最派生类 `D` 负责 `A` 构造，中间类的初始化被忽略，成员保持默认/未初始化。
+
+```cpp
+#include <iostream>
+struct A { int a; A(int v) : a(v) { std::cout << "A(" << v << ")\n"; } };
+struct B1 : virtual A { B1() : A(1) { std::cout << "B1\n"; } };  // A(1) 被忽略
+struct B2 : virtual A { B2() : A(2) { std::cout << "B2\n"; } };  // A(2) 被忽略
+struct D : B1, B2 { D() : A(99) { std::cout << "D a=" << a << '\n'; } };  // A(99) 生效
+int main() { D d; }   // 输出 A(99) B1 B2 D a=99
+```
+
+**修复**：虚基类的初始化列表**只写在最派生类**构造函数中（维度⑫ 构造顺序机制）。
+
+**结论**：虚继承把虚基类初始化责任上移；写错位置编译通过但初始化被静默覆盖，是经典隐蔽 bug。
