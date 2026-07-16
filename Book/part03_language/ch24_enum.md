@@ -1308,60 +1308,179 @@ int main(){Color c=Color::Red;std::cout<<static_cast<int>(c)<<","<<sizeof(c)<<st
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+`unscoped enum` 会隐式转换为整数，导致参与错误的算术或比较。请用 `enum class` 定义一个 RGB 三原色枚举，并实现 `to_string` 与底层值读取，使颜色类型无法被误当作 `int`。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`enum class` 不提供到整数的隐式转换，读取底层值需 `static_cast`：
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <string>
+enum class Color : unsigned char { Red = 1, Green = 2, Blue = 4 };
+std::string to_string(Color c) {
+    switch (c) {
+        case Color::Red:   return "Red";
+        case Color::Green: return "Green";
+        case Color::Blue:  return "Blue";
+    }
+    return "?";
+}
+int main() {
+    Color c = Color::Red;
+    std::cout << to_string(c) << " u=" << static_cast<unsigned>(c) << '\n';
+    // int x = c;            // 编译失败：无隐式转换（类型安全）
+    // if (c == 1) {}        // 编译失败：必须与同枚举比较
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[K03][K04] `enum class` 的强类型阻止了 `unscoped enum` 那种静默的整数提升与跨枚举比较，把一类整型误用错误从运行期提前到编译期。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+定义一组位掩码枚举（`enum class` + `[[flags]]` 风格），并为其重载 `|`、`&`、`~` 运算符，使其返回**原枚举类型**而非裸 `int`，从而保持类型安全。说明底层类型对 ABI 的影响。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+返回类型必须写回枚举本身，运算用 `std::underlying_type_t` 在整数域做位操作：
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <type_traits>
+enum class Perm : unsigned { Read = 1, Write = 2, Exec = 4 };
+constexpr Perm operator|(Perm a, Perm b) {
+    return static_cast<Perm>(std::underlying_type_t<Perm>(a) |
+                             std::underlying_type_t<Perm>(b));
+}
+constexpr Perm operator&(Perm a, Perm b) {
+    return static_cast<Perm>(std::underlying_type_t<Perm>(a) &
+                             std::underlying_type_t<Perm>(b));
+}
+int main() {
+    constexpr Perm rw = Perm::Read | Perm::Write;
+    std::cout << "has Write=" << ((rw & Perm::Write) == Perm::Write) << '\n';
+    // int x = rw;          // 仍编译失败：位运算结果也是 enum class
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[K13][K14][K06] 固定底层类型（`unsigned`）让枚举在 ABI 层面宽度确定，跨 TU 调用、序列化、与 C 互操作都稳定；若不写底层类型则由实现选择，宽度不一致会引发 ODR/链接错配。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+`enum class` 可以前向声明（指定底层类型后），从而在头文件中仅声明、在单一 TU 中定义枚举值。请写出一个跨 TU 的前向声明示例：头文件声明 `enum class Status : int;`，实现文件补全枚举值，并在另一 TU 中比较状态。
 
 <details><summary>答案与解析</summary>
 
+前向声明要求已知底层类型；枚举值定义可延迟到单一翻译单元。
+
+`status.fwd.hpp`：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+enum class Status : int;   // 前向声明：仅占位，不定义枚举值
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+`status.def.cpp`：
+
+```cpp
+#include <cstdint>
+enum class Status : int { Ok = 0, Pending = 1, Error = 2 };
+```
+
+`use.cpp`：
+
+```cpp
+#include <iostream>
+enum class Status : int;          // 前向声明：底层类型已知，类型已完整
+int main() {
+    Status s{};                    // 值初始化为 0，无需枚举值定义即可编译
+    std::cout << "status size=" << sizeof(Status) << '\n';  // 前向声明类型可求大小
+    // 若需使用 Status::Ok 等枚举值，其定义须在链接时由定义它的 TU 提供（跨 TU）
+}
+```
+
+[K15] 前向声明把"枚举类型的存在"与"枚举值的罗列"解耦，缩短依赖图、减少重编译；前提是底层类型已固定（否则宽度未知无法布局）。[K17] 跨 TU 使用同一枚举时，枚举值的定义必须只出现在一个 TU，否则违反 ODR。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：何时选 `enum class` 而非 `unscoped enum`
+
+**选型场景**：需要一组具名常量、且要求调用方不能把它们当整数随意运算或跨界比较（如协议字段、状态机、权限位）。
+
+**常见错误**：沿用 C 风格 `unscoped enum`，隐式转 `int` 导致 switch 漏 `default` 也不报错、不同枚举值可被相加：
+
+```cpp
+#include <iostream>
+enum Color { Red, Green, Blue };
+enum Level { Low, High };
+int main() {
+    Color c = Red;
+    int x = c + 1;            // 静默转为 int，失去类型
+    if (c == High) {}         // 不同枚举竟可比较（通常为 bug）
+    std::cout << x << '\n';
+}
+```
+
+**修复**：一律改用 `enum class`，强制 `static_cast` 才能取整数值，比较只能同类型：
+
+```cpp
+#include <iostream>
+enum class Color : unsigned char { Red, Green, Blue };
+enum class Level : unsigned char { Low, High };
+int main() {
+    Color c = Color::Red;
+    auto v = static_cast<unsigned>(c);   // 显式、可读的取整
+    // if (c == Level::Low) {}            // 编译失败：类型不同，杜绝误比
+    std::cout << v << '\n';
+}
+```
+
+**结论**：只要枚举参与接口（函数参数、返回值、类成员），首选 `enum class` 锁定类型边界；仅在与 C API 强耦合、必须隐式整型转换的边界处才退用 `unscoped enum`。
+
+### 演绎 2：位掩码枚举的零开销与惯用法
+
+**选型场景**：权限/标志位需要可组合（`Read | Write`），且希望结果仍是同一强类型，不退化成 `int`。
+
+**常见错误**：运算符返回 `int`，组合后表达式失去枚举类型，再次赋值或比较时类型退化、易与别的 `int` 混用：
+
+```cpp
+#include <iostream>
+enum class Perm : unsigned { R = 1, W = 2 };
+Perm operator|(Perm, Perm) { return Perm{0}; }   // 占位，见下
+int main() {
+    // 错误示范：返回 int 的版本会让 (R|W) 变成 int
+    Perm r = Perm::R;
+    std::cout << static_cast<unsigned>(r) << '\n';
+}
+```
+
+**修复**：运算符返回原 `enum class` 类型，位运算在 `underlying_type` 整数域进行，再 `static_cast` 回枚举：
+
+```cpp
+#include <iostream>
+#include <type_traits>
+enum class Perm : unsigned { R = 1, W = 2, X = 4 };
+constexpr Perm operator|(Perm a, Perm b) {
+    return static_cast<Perm>(std::underlying_type_t<Perm>(a) |
+                             std::underlying_type_t<Perm>(b));
+}
+constexpr Perm operator&(Perm a, Perm b) {
+    return static_cast<Perm>(std::underlying_type_t<Perm>(a) &
+                             std::underlying_type_t<Perm>(b));
+}
+constexpr bool has(Perm a, Perm b) { return (a & b) == b; }
+int main() {
+    constexpr Perm rwx = Perm::R | Perm::W | Perm::X;
+    std::cout << "has W=" << has(rwx, Perm::W) << '\n';
+}
+```
+
+**结论**：强类型位掩码枚举在 `-O2` 下位运算完全内联为零开销指令（参见本文章节 ⑲ 与 ⑦），既保住类型安全又无运行时成本；返回类型务必写回 `enum class`，不要退化为 `int`。
 
 ## 附录：enum class 真机汇编实证（ASM-24-enum · GCC 15.3.0 / C++26 / -O2）
 
@@ -1398,4 +1517,5 @@ ret
 |------|-----------|:----------:|:----:|
 | `enum class Color : uint8_t` | `movzx`/`mov`/`add`+越界 `cmovae` | 禁止（需 `static_cast`） | 零 |
 | 无作用域 `enum Plain` | `lea [rcx+1]` | 允许（免费） | 零，但无保护 |
-| `switch(c)` on enum class | `add` + 越界 `cmovae` | — | 零 |
+| `switch(c)` on enum class | `add` + 越界 `cmovae` | — | 零 |
+

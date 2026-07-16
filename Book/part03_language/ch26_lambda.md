@@ -1513,57 +1513,154 @@ call   sink(int)
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+`init-capture`（C++14）可以在捕获列表中直接"声明并初始化"一个变量，常用于移动捕获 `std::unique_ptr` 或按值捕获 `this` 的拷贝。请写一个 lambda，用 init-capture 移动捕获一个 `unique_ptr<int>`，并在 lambda 内解引用它。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`[p = std::move(up)]` 在捕获点构造新变量 `p`，把 `up` 的所有权移入：
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <memory>
+int main() {
+    auto up = std::make_unique<int>(42);
+    auto f = [p = std::move(up)] { std::cout << *p << '\n'; };
+    f();
+    // std::cout << *up << '\n';   // up 已空，再次解引用为 UB
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] init-capture 本质是"在闭包内声明一个成员并用初始化器初始化"，因此可以移动、可以 `std::move`，突破了旧式捕获只能按值/按引用的限制。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+C++20 的模板 lambda 允许在 lambda 上写显式模板参数（`[]<typename T>(T x){}`），并可配合 concept 约束。请写一个模板 lambda，仅接受整数类型，对浮点调用产生清晰编译错误。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+模板 lambda 的显式模板参数写在参数列表前的尖括号里，约束写在参数上：
 
 ```cpp
 #include <iostream>
 #include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+int main() {
+    auto print = []<std::integral T>(T x) {
+        std::cout << x << '\n';
+    };
+    print(7);        // OK
+    print(3L);       // OK：long 也是 integral
+    // print(2.5);   // 编译失败：double 不满足 std::integral，诊断清晰
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 模板 lambda 的 `operator()` 本身是函数模板；显式模板参数让你能对单个 lambda 施加与具名函数模板同等的约束，无需抽出独立模板函数。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+`std::function` 通过类型擦除存储任意可调用对象，但有 SBO（小对象优化）之外的堆分配成本。请对比两种方案：① 用模板/泛型参数传递 lambda（零开销）；② 用 `std::function`（类型擦除，可能有堆分配），并说明无捕获 lambda 可隐式转函数指针。
 
 <details><summary>答案与解析</summary>
 
+泛型参数保留原类型（内联、零分配）；`std::function` 擦除类型（可能堆分配、虚调用）：
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <functional>
+template <typename F>
+void apply_gen(F f, int x) { std::cout << f(x) << '\n'; }      // 零开销，内联
+void apply_erased(std::function<int(int)> f, int x) { std::cout << f(x) << '\n'; }
+int square(int x) { return x * x; }
+int main() {
+    apply_gen([](int x) { return x * x; }, 5);                 // 内联
+    apply_erased([](int x) { return x * x; }, 5);              // 类型擦除
+    void(*fp)(int) = [](int x) { std::cout << x << '\n'; };    // 无捕获可转函数指针
+    fp(9);
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[⑫][⑭] 无捕获 lambda 的闭包不含状态，可转换为匹配的函数指针，便于对接 C 风格回调；需要存储/传递未知类型回调时才用 `std::function`，但要接受类型擦除成本。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：`std::function` vs 模板回调的选型
+
+**选型场景**：回调类型在编译期已知（如算法内部调用、一次性传递），优先用模板/泛型参数或 `auto`；仅当回调需存入容器、作为成员、跨接口擦除类型时才用 `std::function`。
+
+**常见错误**：滥用 `std::function` 导致本可内联的回调被类型擦除、并可能因捕获过大触发堆分配：
+
+```cpp
+#include <iostream>
+#include <functional>
+#include <vector>
+int main() {
+    std::vector<std::function<int(int)>> fs;
+    fs.push_back([](int x) { return x + 1; });   // 每次 push 都可能类型擦除
+    std::cout << fs[0](10) << '\n';
+}
+```
+
+**修复**：编译期已知类型时用模板；确实需要擦除时才 `std::function`，并控制捕获体积在 SBO 内：
+
+```cpp
+#include <iostream>
+#include <functional>
+template <typename F>
+void each(F f, int n) { for (int i = 0; i < n; ++i) f(i); }   // 零开销内联
+int main() {
+    int sum = 0;
+    each([&](int i) { sum += i; }, 4);                        // 编译期展开
+    std::cout << sum << '\n';
+}
+```
+
+**结论**：`std::function` 是"运行期多态回调"的工具而非默认选择；性能敏感路径用模板/`auto`，把类型擦除成本留给真正需要存储异构回调的地方。
+
+### 演绎 2：悬垂 `this` 与循环引用
+
+**选型场景**：lambda 捕获 `this` 或 `shared_ptr` 时，必须确认被捕获对象的生命周期覆盖 lambda 的执行期。
+
+**常见错误**：用 `[=]` 捕获 `this` 后，lambda 被异步保存/执行，而对象已析构，访问悬垂 `this`；或 lambda 以值捕获 `shared_ptr` 又互相持有，形成循环引用导致内存泄漏：
+
+```cpp
+#include <iostream>
+#include <memory>
+struct Node : public std::enable_shared_from_this<Node> {
+    std::shared_ptr<Node> child;
+    void build() {
+        child = std::shared_ptr<Node>(new Node);
+        // 危险：lambda 值捕获 this 的 shared_from_this 须谨慎
+        auto cb = [self = shared_from_this()] { std::cout << "ok\n"; };
+    }
+    ~Node() { std::cout << "~Node\n"; }
+};
+int main() {
+    auto n = std::make_shared<Node>();
+    n->build();
+    // 若 child 也持有回指 n 的 shared_ptr，则 n 与 child 引用计数互锁 → 泄漏
+}
+```
+
+**修复**：异步场景用 `weak_ptr` 提升检查生命周期；避免双向 `shared_ptr` 强引用，改为单向或 `weak_ptr`：
+
+```cpp
+#include <iostream>
+#include <memory>
+struct Node {
+    std::weak_ptr<Node> parent;          // 弱引用，打破循环
+    void set_parent(std::shared_ptr<Node> p) { parent = p; }
+    ~Node() { std::cout << "~Node\n"; }
+};
+int main() {
+    auto n = std::make_shared<Node>();
+    auto c = std::make_shared<Node>();
+    c->set_parent(n);                     // 仅弱引用，n 析构时引用计数归零
+}
+```
+
+**结论**：捕获 `this`/智能指针的 lambda 必须做生命周期审计；跨对象回调优先 `weak_ptr` 提升，避免悬垂与循环引用两类典型缺陷。

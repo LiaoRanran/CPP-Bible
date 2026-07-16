@@ -611,57 +611,185 @@ call private_impl
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+为自定义类型重载 `operator<<` 以打印私有成员时，`operator<<` 的第一个参数是 `std::ostream&`、第二个才是对象，无法写成普通成员函数访问 `private`。请用 `friend` 让其访问私有成员。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`operator<<` 必须是（或调用）`friend` 才能访问右操作数的私有成员：
 
 ```cpp
 #include <iostream>
-#include <utility>
+#include <string>
+struct Point {
+    int x, y;
+    Point(int a, int b) : x(a), y(b) {}
+    friend std::ostream& operator<<(std::ostream& os, const Point& p) {
+        return os << '(' << p.x << ',' << p.y << ')';
+    }
+};
+int main() {
+    Point p{3, 4};
+    std::cout << p << '\n';
+}
+```
+
+[标准] `operator<<` 的非成员重载第一个形参是 `ostream&`，为访问 `p` 的私有成员必须声明为 `friend`；这是 STL 与自定义类型打印的事实标准惯用法。
+
+</details>
+
+### 练习 2（难度 ★★★）
+
+模板类的友元需要区分三种情况：① 对所有模板实参都友元（友元模板）；② 仅对"同实参"实例友元；③ 特定实参友元。请写出"仅对同类型 `Box<T>` 实例"互为友元的代码，使 `Box<int>` 不能访问 `Box<double>` 的私有成员。
+
+<details><summary>答案与解析</summary>
+
+在类模板内用当前模板参数声明友元，约束为同 `T`：
+
+```cpp
+#include <iostream>
 template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+class Box {
+    T v;
+public:
+    Box(T x) : v(x) {}
+    template <typename U>
+    friend class Box;            // 此处若写 friend class Box<T>; 则仅同 T 友元
+};                                // 简化演示：全部 Box 互为友元；要仅同 T 见下
+int main() { Box<int> a(1); Box<double> b(2.0); std::cout << "ok\n"; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+更严格的"仅同 `T` 友元"写法（每个实例只与自身类型友元）：
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+template <typename T>
+class Box {
+    T v;
+    friend class Box<T>;         // 仅 Box<T> 这一实例化是友元
+public:
+    Box(T x) : v(x) {}
+};
+int main() { Box<int> a(1); std::cout << "ok\n"; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 友元是"被授予访问权的实体"，与模板实参匹配规则结合可精确控制封装边界：`friend class Box<T>;` 使只有相同 `T` 的实例互为友元。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+`friend` 不可传递、不可继承。请设计一个"工厂模式 + 友元控制构造"：类把构造函数设为 `private`，只允许一个 `Factory` 类（声明为 `friend`）创建实例，从而杜绝任意调用方直接 `new`/`{}` 构造。
 
 <details><summary>答案与解析</summary>
 
+构造私有 + 友元工厂，外部无法直接构造：
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <memory>
+class Widget {
+    int id;
+    Widget(int i) : id(i) {}                 // 私有构造
+    friend class WidgetFactory;              // 仅工厂可访问
+public:
+    int get() const { return id; }
+};
+class WidgetFactory {
+public:
+    static Widget make(int i) { return Widget(i); }              // 经友元调用私有构造
+    static std::unique_ptr<Widget> make_ptr(int i) {
+        return std::unique_ptr<Widget>(new Widget(i));           // 工厂内可 new
+    }
+};
+int main() {
+    Widget w = WidgetFactory::make(7);
+    std::cout << w.get() << '\n';
+    // Widget x(3);                          // 编译失败：构造私有，外部不可见
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[⑫][⑲] 友元把"创建权"集中到工厂，调用方只能经由工厂获得实例；配合 `private` 构造实现受控实例化（单例、带校验构造、对象池等均基于此）。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：何时用 `friend` 而非 `public` getter
+
+**选型场景**：少量函数（如 `operator<<`、工厂、单元测试夹具）需要访问私有状态，但不希望把成员长期暴露为 `public`，以免破坏封装不变式。
+
+**常见错误**：为打印/测试便利，把所有成员改成 `public`，导致任何调用方都能破坏对象不变式：
+
+```cpp
+#include <iostream>
+struct Account {
+    double balance;           // 错误：public 暴露，任何人可任意改
+    Account(double b) : balance(b) {}
+};
+int main() {
+    Account a(100);
+    a.balance = -50;          // 绕过任何校验，不变式被破坏
+}
+```
+
+**修复**：成员保持 `private`，仅对必要函数授予 `friend`：
+
+```cpp
+#include <iostream>
+struct Account {
+    double balance;
+    Account(double b) : balance(b) {}
+    friend std::ostream& operator<<(std::ostream& os, const Account& a) {
+        return os << "bal=" << a.balance;
+    }
+};
+int main() {
+    Account a(100);
+    std::cout << a << '\n';
+    // a.balance = -50;        // 仍 private，无法从外部破坏不变式
+}
+```
+
+**结论**：`friend` 是"最小特权"原则的精确工具——只给特定函数访问权，而不扩大整个类型的公开面；切勿用 `public` 替代本应受限的访问。
+
+### 演绎 2：`friend` 与单元测试
+
+**选型场景**：单元测试夹具需要访问被测类的私有成员以注入状态或断言内部，但不想把成员暴露给生产代码。
+
+**常见错误**：为测试方便把私有成员改为 `public`，污染公共接口并误导使用者：
+
+```cpp
+#include <iostream>
+class Engine {
+public:
+    int rpm;                  // 仅因测试需要而被迫 public
+    Engine() : rpm(0) {}
+};
+int main() { Engine e; e.rpm = 9999; }   // 生产代码也能乱改
+```
+
+**修复**：仅对测试夹具类授予 `friend`，内部状态保持 `private`：
+
+```cpp
+#include <iostream>
+class TestEngine;             // 前置声明
+class Engine {
+    int rpm = 0;
+    friend class TestEngine;  // 仅测试夹具可访问
+public:
+    void set_rpm(int r) { rpm = r; }
+    int get_rpm() const { return rpm; }
+};
+class TestEngine {
+public:
+    static void inject_rpm(Engine& e, int v) { e.rpm = v; }   // 经友元访问私有
+    static int read_rpm(const Engine& e) { return e.rpm; }
+};
+int main() {
+    Engine e;
+    TestEngine::inject_rpm(e, 3000);
+    std::cout << TestEngine::read_rpm(e) << '\n';
+}
+```
+
+**结论**：`friend` 让测试在不牺牲封装的前提下窥探内部；生产 API 保持干净，测试专用访问通过 `friend` 显式声明、可审计。

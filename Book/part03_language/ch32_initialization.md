@@ -622,60 +622,139 @@ int main(){int x{};std::vector<int> v{1,2,3};std::cout<<x<<","<<v[0]<<std::endl;
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+`std::vector` 同时有 `(n)`（填充 n 个值）与 `{n}`（initializer_list 构造）两种语义，容易混淆。`auto` + 初始化列表会推导为 `std::initializer_list`。请演示 `vector<int> v(10)` 与 `vector<int> v{10}` 的区别，并说明 `auto il = {1,2,3}` 的类型。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+圆括号走"计数/值"构造，花括号优先匹配 `initializer_list` 构造：
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <vector>
+#include <initializer_list>
+int main() {
+    std::vector<int> a(10);          // 10 个 0
+    std::vector<int> b{10};          // 1 个元素 10（initializer_list 构造）
+    std::vector<int> c{1, 2, 3};     // 3 个元素
+    std::cout << "a.size=" << a.size() << " b.size=" << b.size() << " c.size=" << c.size() << '\n';
+    auto il = {1, 2, 3};             // 推导为 std::initializer_list<int>
+    std::cout << "il.size=" << il.size() << '\n';
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 当类有 `std::initializer_list` 参数的构造函数时，花括号初始化会优先选择它；这是 `vector` 的 `(n)`/`{n}` 歧义根源，需用圆括号表达"构造 n 个元素"。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+C++11 起有值初始化、默认初始化、零初始化的细分；C++20 聚合类型支持指定初始化器（designated initializer）。请写出一个聚合体并用指定初始化器只初始化部分成员，对比未指定成员的零值结果。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+聚合体（无用户声明构造、无私有非静态成员等）可用 `{ .成员 = 值 }` 指定初始化：
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct Point { int x; int y; int z; };    // 聚合体
+int main() {
+    Point p{.x = 1, .z = 3};              // 指定初始化；y 被值初始化为零
+    std::cout << p.x << ',' << p.y << ',' << p.z << '\n';   // 1,0,3
+    Point q{};                            // 值初始化：全部零
+    std::cout << q.x << ',' << q.y << ',' << q.z << '\n';   // 0,0,0
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[C++20][⑩] 指定初始化器必须按声明顺序、且只能用于聚合；未显式指定的成员按值初始化规则补零，避免未初始化垃圾值。注意：`Point` 一旦声明用户构造、含 `private` 成员或继承，便不再是聚合，指定初始化器编译失败。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+`std::initializer_list` 本身只是 `{const T* _M_array, size_t _M_len}` 的薄包装，**零堆分配**；`std::array` 是聚合、定长、可 `constexpr`。请对比 `std::array<int,3>` 与 `std::vector` 的初始化开销：前者在栈上定长、后者堆分配，并演示 `std::array` 的聚合初始化与下标访问。
 
 <details><summary>答案与解析</summary>
 
+`std::array` 是聚合、定长、无堆分配，`{}` 直接聚合初始化其底层数组：
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <array>
+#include <vector>
+int main() {
+    std::array<int, 3> a{1, 2, 3};        // 栈上定长，无堆分配，可 constexpr
+    std::vector<int>   v{1, 2, 3};        // 堆分配 3 个元素
+    int s = 0;
+    for (std::size_t i = 0; i < a.size(); ++i) s += a[i];
+    std::cout << "sum=" << s << " a.size=" << a.size() << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `std::array` 把 C 数组包进聚合结构体，保留定长零开销与栈分配，同时提供 `.size()`/迭代器/`at()` 等接口；`vector` 则负责运行期可变长度、以堆分配为代价。选型：长度编译期已知选 `array`，运行期变化选 `vector`。
 
 </details>
 
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：initializer_list 构造 vs 圆括号构造的歧义
+
+**选型场景**：构造容器/类时想表达"填充 n 个值"还是"传入一个元素列表"，必须区分 `()` 与 `{}`。
+
+**常见错误**：想构造 10 个默认元素却写了 `vector<int> v{10}`，结果得到"含单个元素 10"的向量——花括号优先匹配 `initializer_list` 构造：
+
+```cpp
+#include <iostream>
+#include <vector>
+int main() {
+    std::vector<int> v{10};               // 误以为 10 个 0，实际是 1 个元素 10
+    std::cout << "size=" << v.size() << " elem0=" << v[0] << '\n';   // size=1, elem0=10
+}
+```
+
+**修复**：明确意图——"n 个元素"用圆括号，"列表内容"用花括号：
+
+```cpp
+#include <iostream>
+#include <vector>
+int main() {
+    std::vector<int> fill(10);            // 圆括号：10 个 0
+    std::vector<int> list{1, 2, 3};       // 花括号：3 个元素
+    std::cout << "fill.size=" << fill.size() << " list.size=" << list.size() << '\n';
+}
+```
+
+**结论**：容器的 `()`/`{}` 语义必须分清；当类同时存在 `(size_type)` 与 `(initializer_list)` 构造时，花括号永远优先 initializer_list 版本——表达"计数构造"务必用圆括号。
+
+### 演绎 2：聚合初始化与指定初始化器的边界
+
+**选型场景**：用结构体聚合配置参数，希望只填关心的字段、其余按零值，且代码可读（按名赋值）。
+
+**常见错误**：给聚合体加了用户声明构造函数或 `private` 成员，破坏了聚合性，导致 `{}` 聚合初始化与指定初始化器全部编译失败：
+
+```cpp
+#include <iostream>
+struct Config { int port; bool tls;
+    Config(int p) : port(p), tls(false) {}   // 用户构造 → 不再是聚合
+};
+int main() {
+    // Config c{.port = 8080};   // 编译失败：有用户构造，不是聚合，指定初始化器不可用
+    Config c(8080);
+    std::cout << c.port << '\n';
+}
+```
+
+**修复**：保持聚合（移除用户构造、成员公开），使用 C++20 指定初始化器按需赋值，未指定成员自动零值：
+
+```cpp
+#include <iostream>
+struct Config { int port; bool tls; char host[8]; };   // 仍是聚合
+int main() {
+    Config c{.port = 8080, .tls = true};               // 指定初始化；host 自动零
+    std::cout << c.port << ',' << c.tls << ',' << c.host[0] << '\n';   // 8080,1,0
+}
+```
+
+**结论**：指定初始化器要求类型是聚合——避免给这类配置结构体声明用户构造或私有成员；保持聚合既能 `{}` 聚合初始化，又能按名按需赋值且未指定字段安全归零。
 
 ## 附录：std::initializer_list 真机汇编实证（ASM-32-init_list · GCC 15.3.0 / C++26 / -O2）
 
@@ -726,4 +805,5 @@ warning: returning temporary 'initializer_list' does not extend the lifetime of 
 |------|----------|:----:|------|
 | 传参 `f({a,b,c})` | 构造栈/静态临时数组 + 传 (ptr,len) | 无（仅临时数组） | 数组随完整表达式销毁 |
 | range-for | 指针自增循环 | 无 | 仅在该表达式内安全 |
-| `il.begin()` | `mov rax,[il]` | 无 | 返回的是**临时数组**地址 |
+| `il.begin()` | `mov rax,[il]` | 无 | 返回的是**临时数组**地址 |
+
