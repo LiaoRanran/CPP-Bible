@@ -690,57 +690,156 @@ _Z8null_ptrv:
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+C++11 用 `auto`、范围 for、`nullptr` 大幅降低样板代码。请写程序用这三者
+重写“遍历容器并统计”的逻辑，并说明 `nullptr` 相比 `NULL`/`0` 的类型安全优势。
 
 ```cpp
 #include <iostream>
+#include <vector>
+
+void f(int)        { std::cout << "f(int)\n"; }
+void f(const char*){ std::cout << "f(char*)\n"; }
+
+int main() {
+    std::vector<int> v{3, 1, 4, 1, 5};   // 列表初始化，也是 C++11
+    int sum = 0;
+    for (auto x : v) sum += x;           // 范围 for + auto
+    std::cout << "sum = " << sum << '\n';
+
+    f(nullptr);   // 明确调用 f(const char*)；若写 f(0) 会歧义/误入 f(int)
+    std::cout << "nullptr 有独立类型 std::nullptr_t，不会被当成整数 0。\n";
+}
+```
+
+[标准] 结论：`nullptr` 消除了 `NULL`（常被定义为 `0`）在重载决议中被当作 `int` 的历史陷阱；
+`auto` 让迭代器/复杂类型不必写全，`for(auto x : c)` 是最常用的现代遍历形态。
+
+### 练习 2（难度 ★★★）
+
+`std::unique_ptr` 表达独占所有权、零运行期开销、不可拷贝只可移动。
+请写程序演示所有权转移，并解释为何它能安全替代大多数裸 `new`/`delete`。
+
+```cpp
+#include <iostream>
+#include <memory>
+#include <utility>   // std::move
+
+struct Widget {
+    int id;
+    explicit Widget(int i) : id(i) { std::cout << "ctor " << id << '\n'; }
+    ~Widget()                      { std::cout << "dtor " << id << '\n'; }
+};
+
+int main() {
+    auto a = std::make_unique<Widget>(1);
+    std::cout << "a owns " << a->id << '\n';
+
+    std::unique_ptr<Widget> b = std::move(a);   // 所有权转移，a 变空
+    std::cout << "after move, a is " << (a ? "non-null" : "null") << '\n';
+    std::cout << "b owns " << b->id << '\n';
+    // 离开作用域：b 析构一次，不会 double free
+}
+```
+
+[标准] 结论：`unique_ptr` 的移动=转移指针+置空源，语义清晰且与裸指针同样快；
+配合 `make_unique` 可彻底告别显式 `delete`，是现代 C++ 资源管理默认选择。
+
+### 练习 3（难度 ★★★★）
+
+移动语义是 C++11 的性能核心。请为一个持有堆缓冲的类实现移动构造/移动赋值，
+用计数证明移动“偷取指针”而非深拷贝，并说明 `noexcept` 对容器扩容的影响。
+
+```cpp
+#include <iostream>
+#include <cstring>
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+
+class Buffer {
+    char*  data_;
+    std::size_t n_;
+public:
+    explicit Buffer(std::size_t n) : data_(new char[n]), n_(n) {
+        std::cout << "alloc " << n_ << '\n';
+    }
+    ~Buffer() { delete[] data_; }
+
+    Buffer(const Buffer& o) : data_(new char[o.n_]), n_(o.n_) {   // 深拷贝
+        std::memcpy(data_, o.data_, n_);
+        std::cout << "COPY " << n_ << '\n';
+    }
+    Buffer(Buffer&& o) noexcept : data_(o.data_), n_(o.n_) {      // 偷指针
+        o.data_ = nullptr; o.n_ = 0;
+        std::cout << "MOVE (no alloc)\n";
+    }
+    std::size_t size() const { return n_; }
+};
+
+int main() {
+    Buffer a(1024);
+    Buffer b = std::move(a);              // 触发 MOVE，无新分配
+    std::cout << "b.size = " << b.size() << ", a.size = " << a.size() << '\n';
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：移动把 O(n) 深拷贝降为 O(1) 指针转移；移动构造标 `noexcept` 后，
+`std::vector` 扩容才会用移动而非拷贝（否则为保证强异常安全会退回拷贝），性能差距显著。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
-### 练习 2（难度 ★★）
+### 演绎 1：lambda + std::function —— 可存储的回调
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+**场景**：需要把一段“带上下文的行为”存进变量、传给算法或延后执行。
+**选型**：lambda 就地写行为，`std::function` 做类型擦除的统一存储容器。
+**落地**：
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <functional>
+#include <vector>
+
+int main() {
+    int base = 100;
+    // 值捕获 base，按引用捕获会在 base 离开作用域后悬垂
+    std::function<int(int)> add = [base](int x) { return base + x; };
+
+    std::vector<std::function<void()>> tasks;
+    for (int i = 0; i < 3; ++i)
+        tasks.emplace_back([i]{ std::cout << "task " << i << '\n'; });
+
+    std::cout << "add(5) = " << add(5) << '\n';
+    for (auto& t : tasks) t();     // 延后执行
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+**结论**：lambda 是零开销的匿名 functor；`std::function` 提供统一类型但有一次间接调用/可能堆分配的代价——
+热路径优先用 `auto`/模板参数保留具体 lambda 类型，需要异构存储时才用 `std::function`。
 
-</details>
+### 演绎 2：shared_ptr 共享所有权与循环引用陷阱
 
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+**场景**：多个对象共享同一资源，谁最后用完谁释放。
+**选型**：`shared_ptr` 引用计数共享；但双向引用会形成计数环导致泄漏，用 `weak_ptr` 打破。
+**落地**：
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <memory>
+
+struct Node {
+    std::shared_ptr<Node> next;
+    std::weak_ptr<Node>   prev;   // 关键：反向用 weak_ptr，不增加计数
+    ~Node() { std::cout << "~Node\n"; }
+};
+
+int main() {
+    auto a = std::make_shared<Node>();
+    auto b = std::make_shared<Node>();
+    a->next = b;
+    b->prev = a;                  // 若这里也用 shared_ptr，a/b 计数永不归零 → 泄漏
+    std::cout << "a.use_count = " << a.use_count() << '\n';   // 1，未被 b 增计
+    std::cout << "b.use_count = " << b.use_count() << '\n';   // 2
+    // 离开作用域：两个 ~Node 都能打印，无泄漏
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
-
-</details>
-
+**结论**：`shared_ptr` 适合真正的共享所有权；一旦出现环，必须让其中一个方向持 `weak_ptr`。
+默认优先 `unique_ptr`，仅在确需共享时升级为 `shared_ptr`——引用计数是原子操作，有并发开销。

@@ -460,57 +460,123 @@ int main(){auto p=std::make_unique<int>(42);auto l=[](auto x){return x*2;};std::
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+C++14 的泛型 lambda 允许参数写 `auto`，使一个 lambda 适配多种类型。
+请写程序用泛型 lambda 实现一个通用打印器，并说明其等价于带模板 `operator()` 的 functor。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <string>
+
+int main() {
+    auto printer = [](const auto& x) { std::cout << x << '\n'; };  // C++14 泛型 lambda
+    printer(42);
+    printer(3.14);
+    printer(std::string("hello"));
+    std::cout << "等价于一个 struct{ template<class T> void operator()(const T&) const; }\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：泛型 lambda 的 `auto` 参数被编译器展开为模板化的 `operator()`，
+每种实参类型实例化一份；写法极简但仍是编译期多态、零运行期开销。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+C++14 放宽了返回类型推导（普通函数可写 `auto` 返回），并引入变量模板。
+请写程序用二者实现一个类型无关的“取中值”和一个编译期常量 `pi<T>`。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+
+template <class T>
+constexpr T pi = T(3.1415926535897932385L);   // C++14 变量模板
+
+auto mid(int a, int b) { return (a + b) / 2; } // C++14 auto 返回类型推导
+
+int main() {
+    std::cout << "mid(3,7) = " << mid(3, 7) << '\n';
+    std::cout << "pi<float>  = " << pi<float>  << '\n';
+    std::cout << "pi<double> = " << pi<double> << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：`auto` 返回类型由 `return` 表达式推导，多条 `return` 须类型一致；
+变量模板让“随类型变化的常量”不必再包在类里（旧法需 `struct Pi<T>{ static const ... };`）。
 
-</details>
+### 练习 3（难度 ★★★★）
 
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+请综合运用 C++14 的 `std::make_unique`、二进制字面量、数字分隔符，
+写一个位掩码权限系统，并解释这三项特性各自消除了什么样板/易错点。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <memory>
+
+int main() {
+    // 二进制字面量 0b... + 数字分隔符 ' 提升可读性
+    constexpr unsigned READ  = 0b0000'0001;
+    constexpr unsigned WRITE = 0b0000'0010;
+    constexpr unsigned EXEC  = 0b0000'0100;
+    constexpr unsigned large = 1'000'000;      // 分隔符只为可读，无语义
+
+    auto perm = std::make_unique<unsigned>(READ | WRITE);  // C++14 make_unique
+    std::cout << "perm = " << *perm << '\n';
+    std::cout << "can read?  " << bool(*perm & READ)  << '\n';
+    std::cout << "can exec?  " << bool(*perm & EXEC)  << '\n';
+    std::cout << "large = "    << large << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：`make_unique` 补齐了 C++11 只有 `make_shared` 的缺口，且异常安全（避免
+`f(new A, g())` 求值顺序泄漏）；二进制字面量让位运算意图直观；数字分隔符纯为可读性，编译期剥离。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
+### 演绎 1：泛型 lambda 做一次性通用比较器
+
+**场景**：`std::sort` 需要按结构体某字段排序，且字段类型不定。
+**选型**：C++14 泛型 lambda 就地写比较，免去为每种类型写 functor。
+**落地**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+
+struct Item { std::string name; int weight; };
+
+int main() {
+    std::vector<Item> v{{"b", 3}, {"a", 1}, {"c", 2}};
+    std::sort(v.begin(), v.end(),
+              [](const auto& x, const auto& y) { return x.weight < y.weight; });
+    for (const auto& it : v) std::cout << it.name << ':' << it.weight << ' ';
+    std::cout << '\n';
+}
+```
+
+**结论**：泛型 lambda 让比较逻辑贴着调用点，可读性最佳；若同一比较要复用多处，
+再提取成命名 functor 或函数模板。
+
+### 演绎 2：变量模板集中管理编译期物理常量
+
+**场景**：数值库需要不同精度的 π、e 等常量，避免 `double` 硬编码丢精度。
+**选型**：变量模板 `template<class T> constexpr T e = ...;` 按需实例化。
+**落地**：
+
+```cpp
+#include <iostream>
+#include <iomanip>
+
+template <class T> constexpr T e  = T(2.7182818284590452354L);
+template <class T> constexpr T ln2 = T(0.6931471805599453094L);
+
+int main() {
+    std::cout << std::setprecision(17);
+    std::cout << "e<double>   = " << e<double>   << '\n';
+    std::cout << "ln2<double> = " << ln2<double> << '\n';
+    std::cout << "e<float>    = " << e<float>    << " (float 精度自动截断)\n";
+}
+```
+
+**结论**：变量模板把“常量随类型变化”这一维度显式化，`e<float>` 与 `e<double>` 精度各自正确；
+比宏或类内静态常量更直接，且是真正的 `constexpr`，可用于编译期计算。

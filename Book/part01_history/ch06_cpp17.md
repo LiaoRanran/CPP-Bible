@@ -506,57 +506,147 @@ int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<",
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+C++17 的结构化绑定可一次解构 `pair`/`tuple`/聚合体到具名变量。
+请写程序用它遍历 `std::map` 并解构 `[key, value]`，说明它如何提升可读性。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <map>
+#include <string>
+
+int main() {
+    std::map<std::string, int> score{{"alice", 90}, {"bob", 85}};
+
+    // C++17：结构化绑定，无需 it->first / it->second
+    for (const auto& [name, pts] : score)
+        std::cout << name << " => " << pts << '\n';
+
+    auto [it, inserted] = score.insert({"carol", 77});   // 解构 insert 返回值
+    std::cout << "insert carol " << (inserted ? "ok" : "exists") << '\n';
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：结构化绑定按元素引用/拷贝绑定，避免 `.first/.second` 与冗长的
+`std::get<0>`；对自定义聚合体也生效，是现代遍历/多返回值的首选语法。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+`std::optional<T>` 显式表达“可能没有值”，比“用特殊值/裸指针/输出参数”更安全。
+请写程序用它实现一个可能失败的查表，并演示 `value_or` 与 `has_value`。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <optional>
+#include <string>
+
+std::optional<int> lookup(const std::string& k) {
+    if (k == "answer") return 42;      // 有值
+    return std::nullopt;               // 无值，语义明确
+}
+
+int main() {
+    if (auto r = lookup("answer"); r.has_value())
+        std::cout << "found = " << *r << '\n';
+
+    auto miss = lookup("none");
+    std::cout << "miss.value_or(-1) = " << miss.value_or(-1) << '\n';
+    std::cout << "has? " << miss.has_value() << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：`optional` 把“无值”编码进类型，调用方被迫处理缺失分支，消除了魔法值
+（如 `-1`/`nullptr`）的歧义；但它按值存储 `T`，大对象仍有拷贝成本。
 
-</details>
+### 练习 3（难度 ★★★★）
 
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+`if constexpr` + 折叠表达式让编译期分支和变参展开极为简洁。
+请写一个类型分派的 `stringify` 和一个变参 `sum`，并说明二者都在编译期完成。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <string>
+#include <type_traits>
+
+template <class T>
+std::string stringify(const T& x) {
+    if constexpr (std::is_same_v<T, bool>)          // 编译期择一分支
+        return x ? "true" : "false";
+    else if constexpr (std::is_arithmetic_v<T>)
+        return std::to_string(x);
+    else
+        return std::string(x);
+}
+
+template <class... Ts>
+auto sum(Ts... xs) { return (xs + ... + 0); }       // 折叠表达式
+
+int main() {
+    std::cout << stringify(true)  << '\n';
+    std::cout << stringify(3.5)   << '\n';
+    std::cout << stringify("hi")  << '\n';
+    std::cout << "sum = " << sum(1, 2, 3, 4) << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：`if constexpr` 只实例化命中的分支（未命中分支无需合法），取代了大量
+SFINAE/标签分派样板；折叠表达式把变参递归展开压成一行，二者均零运行期开销。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
+### 演绎 1：std::variant + std::visit —— 类型安全的“和类型”
+
+**场景**：一个值可能是多种类型之一（如 JSON 节点：数/串/布尔），需类型安全处理。
+**选型**：`std::variant` 替代 `union`+tag，`std::visit` 强制穷尽所有可能类型。
+**落地**：
+
+```cpp
+#include <iostream>
+#include <variant>
+#include <string>
+
+int main() {
+    using Value = std::variant<int, double, std::string>;
+    Value v = std::string("hello");
+
+    std::visit([](const auto& x) {                 // 泛型 visitor 覆盖所有备选
+        std::cout << "holds: " << x << '\n';
+    }, v);
+
+    v = 3.14;
+    std::cout << "index = " << v.index() << '\n';  // 当前活动类型下标
+    if (auto p = std::get_if<double>(&v))          // 安全按类型取
+        std::cout << "double = " << *p << '\n';
+}
+```
+
+**结论**：`variant` 比裸 `union` 安全（自动管理活动成员的构造/析构），`visit` 在漏处理某类型时
+编译报错——把运行期分支错误提前到编译期。代价是访问需一次分派。
+
+### 演绎 2：string_view 零拷贝子串与悬垂陷阱
+
+**场景**：解析函数只读字符串片段，不想为每个子串分配新 `std::string`。
+**选型**：`std::string_view` 是“指针+长度”视图，`substr` O(1) 不拷贝。
+**错误**：让 `string_view` 指向临时 `std::string`，临时销毁后视图悬垂。
+**落地**：
+
+```cpp
+#include <iostream>
+#include <string_view>
+#include <string>
+
+int main() {
+    std::string s = "key=value";
+    std::string_view sv = s;
+    auto pos = sv.find('=');
+    std::string_view key = sv.substr(0, pos);        // O(1)，不分配
+    std::string_view val = sv.substr(pos + 1);
+    std::cout << "key=[" << key << "] val=[" << val << "]\n";
+
+    // 反例（勿学）：std::string_view bad = std::string("tmp");
+    //   → 指向的临时 string 立即销毁，bad 悬垂，读它是 UB
+    std::cout << "string_view 不拥有数据，必须保证底层存活。\n";
+}
+```
+
+**结论**：`string_view` 在只读、底层存活可控时能显著减少分配；但它是非拥有视图，
+绝不能超过底层数据寿命——作为返回值/成员长期持有时尤其危险。
