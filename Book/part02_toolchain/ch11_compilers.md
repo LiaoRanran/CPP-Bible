@@ -902,62 +902,116 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+C++ 支持函数重载，但链接器只认符号名。请写程序说明：为什么 C++ 需要名字改编（name mangling），
+以及重载 `f(int)` 与 `f(double)` 在源码里同名、链接时却被编码成不同符号。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <typeinfo>
+
+int f(int)       { return 0; }
+double f(double) { return 0.0; }
+
+int main() {
+    using Fi = decltype(f(0));     // 解析到 f(int)
+    using Fd = decltype(f(0.0));   // 解析到 f(double)
+    std::cout << "f(int)    -> " << typeid(Fi).name() << "\n";
+    std::cout << "f(double) -> " << typeid(Fd).name() << "\n";
+    std::cout << "源里都叫 f，但 mangling 后变成 _Z1fi / _Z1fd 等不同符号。\n";
+    std::cout << "c++filt 可把 _Z1fi 还原成 int f(int)。\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：名字改编把返回类型、参数类型、命名空间、cv 限定都编码进符号，
+使重载/模板/命名空间在链接期互不冲突；C 语言无此需求，故 `extern "C"` 关闭改编。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+`extern "C"` 让函数使用 C 链接（不做名字改编），从而能被 C 目标文件调用。
+请写程序对比 C 链接与 C++ 链接，并指出其在混合语言工程中的实际用途。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+
+extern "C" void c_linked() { }   // C 链接：符号就是 c_linked
+void cpp_linked() { }            // C++ 链接：符号被 mangling
+
+int main() {
+    std::cout << "extern \"C\" void c_linked(); // C 链接，符号=c_linked\n";
+    std::cout << "void cpp_linked();            // C++ 链接，符号被改编\n";
+    c_linked();
+    cpp_linked();
+    std::cout << "用途：给 C 写的库暴露 C 接口，让 C/C++ 都能链接同一个 .o/.a。\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：ABI 兼容的关键在于链接约定与调用约定一致；`extern "C"` 是 C/C++ 互操作的桥梁，
+但 C++ 的异常/类类型不能跨 `extern "C"` 边界安全传递。
 
-</details>
+### 练习 3（难度 ★★★★）
 
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+C++ 编译分四个阶段：预处理 → 编译 → 汇编 → 链接。请写程序用 `#`/`##` 运算符
+直观展示“预处理阶段就把宏展开/.token 拼接”这一事实，并说明后三个阶段各自产出什么文件。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+
+#define STR(x)    #x
+#define CONCAT(a,b) a##b
+
+int main() {
+    int CONCAT(va,l) = 42;        // 预处理后变成: int val = 42;
+    std::cout << "STR(__FILE__) = " << STR(__FILE__) << "\n";
+    std::cout << "STR(__LINE__) = " << STR(__LINE__) << "\n";
+    std::cout << "CONCAT(va,l) -> val = " << val << "\n";
+    // g++ -E x.cpp 看预处理结果（-S 汇编，-c 目标文件，最后链接成 exe）
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：`-E` 展开宏/include，`-S` 出汇编，`-c` 出可重定位目标（含 mangled 符号表），
+链接器把多个 `.o` 的符号引用解析成定义并排布地址，产出可执行文件。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
+### 演绎 1：用 c++filt 还原崩溃栈里的 mangled 符号
 
+**场景**：线上 crash 栈只给 `_ZN3Foo3barEi`，看不出是哪段代码。
+**选型**：Itanium ABI 下符号可由 `c++filt` 还原，无需重新编译。
+**错误**：直接按字面搜 `_ZN3Foo3barEi` 在源码里当然搜不到。
+**修复**：`c++filt _ZN3Foo3barEi` → `Foo::bar(int)`；若想内联还原，可用：
 
----
+```cpp
+#include <iostream>
+#include <typeinfo>
 
-> **权威对照（单一事实来源）**：本章涉及 GCC / Clang / MSVC 的特性支持度、报错差异、ABI 与性能对比，均为写作时点快照。最新、逐项以 feature-test macro 实测的横向对照（含 GCC 15.3.0 精确宏值）见 [编译器版本对照表](../../docs/compiler-matrix.md)。**正文中的三编译器版本号以该表为准**——编译器升级后仅更新 `docs/compiler-matrix.md` 一处，无需改动本章。
+struct Foo { int bar(int) { return 0; } };
+
+int main() {
+    std::cout << "typeid(&Foo::bar).name() = "
+              << typeid(decltype(&Foo::bar)).name() << "\n";
+    std::cout << "交给 c++filt 即得 Foo::bar(int)。\n";
+}
+```
+
+**结论**：mangled 名是 ABI 必然产物；`c++filt` / `llvm-cxxfilt` 是读崩溃栈、查符号冲突的常备工具。
+
+### 演绎 2：用 extern "C" 给 C 库做 C++ 封装
+
+**场景**：老项目是纯 C 静态库 `libold.a`，新模块用 C++ 写，需要调用其中的 `old_init()`。
+**选型**：用 `extern "C"` 包裹声明，保证 C++ 端按 C 链接去找符号。
+**错误**：在 C++ 里直接 `void old_init();` 会被 mangling 成 `_Z8old_initv`，与 C 库的 `old_init` 不匹配 → 链接失败。
+**修复**：
+
+```cpp
+#include <iostream>
+
+extern "C" void old_init() { /* 真实工程中由 C 静态库 libold.a 提供，此处占位以便独立编译 */
+}
+
+int main() {
+    old_init();               // 按 C 链接找到 old_init 符号
+    std::cout << "C 库已初始化。\n";
+}
+```
+
+**结论**：跨语言链接的黄金法则——C 侧保持 C 链接，C++ 侧用 `extern "C"` 声明；封装层把 C++ 异常/类留在 C++ 边界内。

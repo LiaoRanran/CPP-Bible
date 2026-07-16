@@ -849,57 +849,103 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`std::vector::push_back` 在容量不足时会重新分配并拷贝。请写微基准对比“预 reserve”与“不 reserve”的耗时差异。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <vector>
+#include <chrono>
+
+int main() {
+    const int N = 1'000'000;
+    auto t0 = std::chrono::steady_clock::now();
+    std::vector<int> a; a.reserve(N);
+    for (int i = 0; i < N; ++i) a.push_back(i);
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << "with reserve: "
+              << std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count()
+              << " us\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：`reserve` 把多次 realloc+copy 降为一次，实测可快一倍；这正是 profiler 最常给出的第一条建议。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+编译器在 `-O2` 下会把标量求和循环自动向量化。请写程序用“单累加器”与“四路累加器”两种写法，
+说明多累加器如何缓解流水线依赖、提升 IPC。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <vector>
+#include <chrono>
+
+int main() {
+    const int N = 100'000'000;
+    std::vector<long long> v(N, 1);
+    long long s = 0;
+    for (int i = 0; i < N; ++i) s += v[i];   // -O2 可能展开为多条并行累加
+    std::cout << "sum=" << s << "\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：标量链每轮都依赖上一轮结果，吞吐受限于延迟；多累加器打破依赖链，给乱序执行更多并行空间。
 
-</details>
+### 练习 3（难度 ★★★★）
 
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+缓存命中对性能影响巨大。请写程序对比“行优先（cache 友好）”与“列优先（跨行跳跃）”遍历一个大矩阵，
+说明 stride 过大为何触发更多 cache miss。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+#include <chrono>
+
+int main() {
+    const int N = 2048;
+    std::vector<int> m(static_cast<size_t>(N) * N, 1);
+    long long sum = 0;
+    for (int i = 0; i < N; ++i)            // 行优先：连续访问，cache 友好
+        for (int j = 0; j < N; ++j)
+            sum += m[static_cast<size_t>(i) * N + j];
+    std::cout << "row-major sum=" << sum << "\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：连续访问命中预取与缓存行，跨大 stride 访问则频繁 miss；perf 的 `cache-misses` 计数器能定量证实。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
+### 演绎 1：用 perf 定位热点再针对性优化
+
+**场景**：程序整体慢，但不知道时间花在哪。
+**选型**：Linux `perf` 采样调用栈，按热点排序，避免“凭直觉优化”。
+**错误**：不测量就重写自以为慢的函数，结果瓶颈在别处。
+**修复**（命令示意）：
+
+```text
+perf record -g ./app          # 采样带调用栈
+perf report                   # 按自身+子函数耗时排序，锁定热点函数
+```
+
+```cpp
+#include <iostream>
+#include <vector>
+int main() { std::vector<int> v(1'000'000, 1); long long s = 0; for (int x : v) s += x; std::cout << s << "\n"; }
+```
+
+**结论**：先 profile 后优化（measure first）是性能工作的第一原则；perf/火焰图把“感觉慢”变成“知道哪慢”。
+
+### 演绎 2：用 Compiler Explorer 比对 -O0 与 -O2 汇编码
+
+**场景**：想知道某段热代码在 `-O2` 下到底有没有向量化。
+**选型**：Compiler Explorer (Godbolt) 并排看不同优化级别的汇编。
+**错误**：靠读 C++ 猜编译器行为，容易高估或低估优化。
+**修复**：把函数贴进 Godbolt，选 GCC/Clang + `-O2`，直接看是否出现 `ymm`/`zmm` 向量指令；
+
+```cpp
+#include <iostream>
+int main() { long long s = 0; for (int i = 0; i < 1000; ++i) s += i; std::cout << s << "\n"; }
+```
+
+**结论**：汇编是优化的最终裁判；Godbolt 让“零成本抽象是否真的零成本”一目了然。

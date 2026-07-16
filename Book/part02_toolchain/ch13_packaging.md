@@ -817,57 +817,115 @@ SSE 寄存器 `0x0010`（16 字节）宽、AVX `0x0020`、AVX-512 `0x0040`；数
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+vcpkg 用 manifest（`vcpkg.json`）声明依赖。请写出声明依赖 `fmt` 的 manifest，
+并说明 CMake 如何通过一个 toolchain 文件把包“注入”到 `find_package` 搜索路径。
 
-<details><summary>答案与解析</summary>
+```json
+{
+  "name": "myapp",
+  "version": "1.0.0",
+  "dependencies": ["fmt"]
+}
+```
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+```text
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+# vcpkg 把 installed/x64-windows/share/fmt/fmt-config.cmake 暴露给 find_package
+```
+
+[标准] 结论：manifest 模式把依赖写进版本控制，可复现；toolchain 文件把“包根目录”前置到 CMake 的搜索路径。
+
+### 练习 2（难度 ★★★）
+
+Conan 用 `conanfile` 描述依赖与生成器。请写出声明 `fmt/10.1.1` 的 `conanfile.txt`，
+并说明 `conan install` 产出的两类集成文件（CMakeDeps / CMakeToolchain）各自解决什么。
+
+```text
+[requires]
+fmt/10.1.1
+[generators]
+CMakeDeps
+CMakeToolchain
+```
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+int main() {
+    std::cout << "Conan 解析依赖图并产出 fmt-config.cmake 与 conan_toolchain.cmake\n";
+    std::cout << "CMake 用 find_package(fmt CONFIG REQUIRED) 拿到导入目标 fmt::fmt\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：`CMakeDeps` 产出 `find_package` 可用的 `*Config.cmake`（提供导入目标），
+`CMakeToolchain` 产出工具链文件（设定编译器/标准库/架构），二者解耦“依赖描述”与“工具链”。
 
-</details>
+### 练习 3（难度 ★★★★）
 
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+版本冲突是包管理的核心难题（如 A 要 `fmt/9`、B 要 `fmt/10`）。请写程序模拟“依赖图解析器”
+在冲突时如何按“取满足所有约束的最小上界”策略统一版本。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <string>
+#include <vector>
+#include <sstream>
+
+std::vector<int> parse(std::string s) {
+    std::vector<int> v; std::string t, num;
+    std::stringstream ss(s);
+    while (std::getline(ss, t, '-')) {
+        std::stringstream ps(t);
+        while (std::getline(ps, num, '.')) v.push_back(std::stoi(num));
+        break;
+    }
+    return v;
+}
+bool ge(const std::vector<int>& a, const std::vector<int>& b) {
+    size_t n = std::max(a.size(), b.size());
+    for (size_t i = 0; i < n; ++i) {
+        int x = i < a.size() ? a[i] : 0;
+        int y = i < b.size() ? b[i] : 0;
+        if (x != y) return x > y;
+    }
+    return true;
+}
+int main() {
+    auto need = parse("9.0.0");
+    auto have = parse("10.1.1");
+    std::cout << "A 要 fmt/9, B 要 fmt/10 -> 统一取 " << (ge(have, need) ? "10.1.1" : "冲突")
+              << "（满足双方的最小上界）\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：现代包管理器用有向依赖图 + 版本约束求解统一版本；无法统一时（如要求互斥范围）才报冲突，需人工升级/降级。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
-### 练习 3（难度 ★★）
+### 演绎 1：vcpkg manifest 模式替代“全局安装”
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**场景**：团队里有人 `vcpkg install fmt` 全局装，有人没装，构建结果不可复现。
+**选型**：manifest 模式（`vcpkg.json`）把依赖提交进仓库。
+**错误**：全局 `vcpkg install` 不随仓库走，CI 与本地不一致。
+**修复**：提交 `vcpkg.json` + 在 CMakePresets 里固定 `VCPKG_ROOT` 与三元组，
+CI 执行 `vcpkg install` 按 manifest 复现同一组版本。
 
-<details><summary>答案与解析</summary>
+**结论**：manifest 模式 = 依赖即代码，是 reproducible build 的前提。
+
+### 演绎 2：Conan 二进制缓存避免重复编译
+
+**场景**：CI 每次都从源码编译 `fmt`，慢且浪费。
+**选型**：Conan 的二进制缓存（`--build=missing` 仅缺则编）。
+**错误**：每次 `--build=*` 强制重编所有依赖。
+**修复**：
+
+```text
+conan install . --output-folder=build --build=missing
+# 已缓存的三元组( gcc 13, Release, x86_64 )直接命中二进制，跳过编译
+```
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main() { std::cout << "命中二进制缓存，省去源码编译。\n"; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
-
-</details>
-
+**结论**：Conan 以“设置(settings)×选项(options)×三元组”为键缓存预编译二进制，显著加速 CI。

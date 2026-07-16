@@ -813,57 +813,91 @@ call lookup_symbol       ; 递归查找定义
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+clang-tidy 能静态抓出“按值传参却被当 const 引用用”等性能反模式。请写一段会触发
+`performance-unnecessary-value-param` 的代码，并给出修复版本。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <string>
+
+std::string mirror_bad(std::string s)  { return s + s; }   // 触发告警：s 被拷贝
+std::string mirror_good(const std::string& s) { return s + s; }
+
+int main() { std::cout << mirror_good("ab") << "\n"; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：clang-tidy 在编译前基于 AST 做语义检查，能抓编译器不报、但影响质量/性能的写法。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 2（难度 ★★）
+clangd 需要 `compile_commands.json` 才能正确解析头文件与宏。请写出由 CMake 生成该文件的命令，
+并指出它为什么比“手写 include 路径”更可靠。
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+```text
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
+# 产出 build/compile_commands.json，每行一个 TU 的真实编译命令
+```
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+int main() { std::cout << "compile_commands.json 让 clangd 用真实命令解析本 TU\n"; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：`compile_commands.json` 记录每个源文件的真实 `-I`/`-D`/标准，clangd 据此精确跳转与补全；
+手写路径在条件宏/多标准下极易错。
 
-</details>
+### 练习 3（难度 ★★★★）
 
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+重构常把重复逻辑抽成函数。请写“重构前（内联重复）”与“重构后（提取 helper）”的对照，
+说明 IDE 的 extract-function 为何安全（基于 AST 而非文本）。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+
+int total(const std::vector<int>& v) { int s = 0; for (int x : v) s += x; return s; }
+
+int main() {
+    std::cout << "before: 重复写 for 求和；after: 调用 total()\n";
+    std::cout << total({1, 2, 3}) << "\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：基于 AST 的重构能正确处理作用域/重载/模板，比正则替换文本安全；CLion/VSCode+clangd 都提供此类操作。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
+### 演绎 1：用 .clang-format 统一团队风格
+
+**场景**：PR 里大量 diff 只是“别人的格式化风格不同”，review 噪音大。
+**选型**：提交 `.clang-format`，CI 跑 `clang-format --check` 强制统一。
+**错误**：靠口头约定“用 2 空格”，人人理解不同，仍有差异。
+**修复**：
+
+```text
+# .clang-format (基于 Google 衍生)
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 100
+```
+
+```cpp
+#include <iostream>
+int main() { std::cout << "格式化后 diff 只剩真正逻辑改动\n"; }
+```
+
+**结论**：格式化规则进版本控制 + 编辑器保存时自动格式化，把风格争论从 review 中彻底移除。
+
+### 演绎 2：用 compile_commands.json 让 VIM/Neovim 获得 IDE 级补全
+
+**场景**：用轻量 VIM 但想要 clangd 的精确补全/跳转。
+**选型**：装 clangd + 生成 `compile_commands.json`，LSP 即生效。
+**错误**：只在 `.vimrc` 里手写 `set path+=...`，条件宏/三方头解析错乱。
+**修复**：`cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON` 生成数据库，Neovim 的 lspconfig 指向 clangd；
+
+```cpp
+#include <iostream>
+int main() { std::cout << "clangd 用真实编译命令提供补全/诊断/跳转\n"; }
+```
+
+**结论**：LSP + 编译数据库 = 编辑器获得接近重量级 IDE 的语义能力，且配置可复现。

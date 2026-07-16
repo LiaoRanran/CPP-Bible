@@ -733,72 +733,110 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 
 ### 练习 1（难度 ★★）
 
-## 真实开源项目参考（可查证链接）
-
-> 交叉编译工具链与裸机 C 运行时的真实工程载体——下列链接指向可公开审阅的源码（L2 文件级）。
-
-- **LLVM/Clang 原生交叉编译**：[llvm/llvm-project · clang/lib/Driver/ToolChains](https://github.com/llvm/llvm-project/blob/main/clang/lib/Driver/ToolChains) —— Clang 是**单编译器多目标**架构，`clang --target=arm-none-eabi -mcpu=cortex-m4` 无需独立工具链即可交叉，是「② 目标三元组」「⑦ CMake 工具链文件」的现代工业做法（对比 GNU 需独立 `arm-none-eabi-g++`）。
-- **Google Android NDK（Clang 交叉工具链）**：[android/ndk · build/core/toolchains](https://github.com/android/ndk/blob/master/build/core/toolchains) —— Google 的官方交叉编译 SDK，底层即 LLVM/Clang 的 `--target=armv7-none-linux-androideabi`/`aarch64-linux-android`，对应「④ 裸机 vs Linux 目标」的 Linux 侧工业范例。
-- **newlib C 库**：[bminor/newlib · newlib/libc/stdlib/malloc.c](https://github.com/bminor/newlib/blob/master/newlib/libc/stdlib/malloc.c) —— 「⑧ newlib / picolibc 对比」「③ sysroot 与库」的裸机 `malloc` 实现源头；理解嵌入式 `sbrk` 缺省桩如何介入。
-- **picolibc**：[picolibc/picolibc · newlib/libc/stdlib/malloc.c](https://github.com/picolibc/picolibc/blob/main/newlib/libc/stdlib/malloc.c) —— newlib 的嵌入式优化分支，面向 Cortex-M 的小体积场景，对应「⑮ 嵌入式 C++ 子集」的内存约束。
-- **crosstool-NG GCC 构建脚本**：[crosstool-ng/crosstool-ng · scripts/build/gnu/gcc.sh](https://github.com/crosstool-ng/crosstool-ng/blob/master/scripts/build/gnu/gcc.sh) —— 「② 目标三元组」背后的工具链自动构建逻辑；展示如何为 `arm-none-eabi` 编译带 newlib 的 GCC。
-- **QEMU 用户态仿真**：[qemu/qemu · linux-user/main.c](https://github.com/qemu/qemu/blob/master/linux-user/main.c) —— 「⑨ QEMU 用户态模拟运行」的入口；解释如何把 ARM 二进制在 x86 主机上 syscall 转译执行。
-
-**最佳实践**：GNU 工具链文件必须显式设 `CMAKE_SYSTEM_NAME` + `CMAKE_CXX_COMPILER=arm-none-eabi-g++` 并使用独立 `sysroot`；LLVM/Clang 路线则用 `-DCMAKE_CXX_COMPILER=clang -DCMAKE_CXX_FLAGS="--target=arm-none-eabi"` 一步到位；体积优化统一用「⑭ `-Os -ffunction-sections -fdata-sections` + 链接 `--gc-sections`」三段式。
-
-> 交叉引用：本机构建配置见 [ch18](Book/part02_toolchain/ch18_buildconfig.md)；汇编取证方法见 [ch157](Book/part14_perf/ch157_compiler_explorer.md)。
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+交叉编译的目标三元组写成 `arch-vendor-os-abi`。请写程序用预定义宏探测本机架构，
+并说明三元组各部分对应什么。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+
+int main() {
+#if defined(__x86_64__) || defined(_M_X64)
+    std::cout << "host arch: x86-64\n";
+#elif defined(__aarch64__)
+    std::cout << "host arch: aarch64\n";
+#else
+    std::cout << "host arch: other\n";
+#endif
+    // arm-linux-gnueabihf = arch(arm) - vendor(linux) - os(gnueabihf)
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：三元组精确描述“为哪种 CPU/系统/ABI 生成代码”，是交叉工具链的身份证。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+嵌入式常需要紧凑结构体（省 RAM/带宽）。请写程序对比默认对齐与 `#pragma pack` 后的大小，
+说明网络/Flash 二进制布局为何要显式控制对齐。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <cstddef>
+
+#pragma pack(push, 1)
+struct Packed { char c; int i; };
+#pragma pack(pop)
+struct Normal { char c; int i; };
+
+int main() {
+    std::cout << "packed size=" << sizeof(Packed)
+              << " normal size=" << sizeof(Normal) << "\n";
+    std::cout << "offsetof(Packed.i)=" << offsetof(Packed, i) << "\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：默认对齐为访问效率插入 padding；跨设备/落盘二进制需 `#pragma pack` 或 `_Alignas` 固定布局，否则两端解释错位。
 
-</details>
+### 练习 3（难度 ★★★★）
 
-### 练习 3（难度 ★★）
+CMake 交叉编译靠 toolchain 文件设定 `CMAKE_SYSTEM_NAME` 与编译器前缀。请写出 ARM Linux 工具链文件，
+并用预定义宏在代码里区分“本机构建”与“交叉构建”。
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+```cmake
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR arm)
+set(CMAKE_C_COMPILER   arm-linux-gnueabihf-gcc)
+set(CMAKE_CXX_COMPILER arm-linux-gnueabihf-g++)
+```
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+
+int main() {
+#ifdef __arm__
+    std::cout << "交叉构建：目标 ARM\n";
+#else
+    std::cout << "本机构建（x86-64）；交叉时由 toolchain 设 -DCMAKE_SYSTEM_NAME=Linux\n";
+#endif
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：toolchain 文件把“编译器/系统/根目录(sysroot)”集中配置，使同一份 CMakeLists 既能本机也能交叉构建。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
+### 演绎 1：用 QEMU 用户态在 x86 上跑 ARM 二进制做冒烟测试
+
+**场景**：没有开发板，又想验证 ARM 交叉编译出的程序能跑。
+**选型**：QEMU user-mode 直接解释 ARM ELF，免板子。
+**错误**：每次改一行都烧录开发板，迭代慢。
+**修复**（命令示意）：
+
+```text
+arm-linux-gnueabihf-g++ app.cpp -o app_arm
+qemu-arm -L /usr/arm-linux-gnueabihf ./app_arm   # 在 x86 宿主机跑 ARM 二进制
+```
+
+```cpp
+#include <iostream>
+int main() { std::cout << "QEMU 用户态冒烟测试通过\n"; }
+```
+
+**结论**：QEMU user-mode 让交叉构建的“运行验证”留在宿主机，极大加速嵌入式迭代。
+
+### 演绎 2：sysroot 隔离目标系统的头与库
+
+**场景**：交叉编译时误链了宿主（x86）的 `/usr/include`，运行时崩溃。
+**选型**：toolchain 文件设 `CMAKE_SYSROOT` 指向目标根文件系统。
+**错误**：编译器默认搜宿主头/库，ABI/结构体布局与目标不一致。
+**修复**：
+
+```text
+set(CMAKE_SYSROOT /opt/arm-sysroot)   # 只搜目标的 include/lib
+```
+
+```cpp
+#include <iostream>
+int main() { std::cout << "sysroot 锁定目标头与库，避免宿主污染\n"; }
+```
+
+**结论**：sysroot 是交叉编译正确性的基石——它确保“用目标的眼睛看世界”。

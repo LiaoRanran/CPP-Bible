@@ -1117,57 +1117,93 @@ mov byte [rax+0x0000], 0xcc   ; 写入软件断点
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+AddressSanitizer 能在运行时捕获堆越界。请写一段含堆缓冲溢出的程序（编译期合法），
+并说明加上 `-fsanitize=address -g` 后运行会报什么。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <vector>
+
+int main() {
+    std::vector<int> v(4);
+    v[4] = 99;                     // BUG: heap-buffer-overflow（UB，但能编译）
+    std::cout << "value=" << v[4] << "\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：不加 sanitizer 时越界是静默 UB（可能碰巧不出错）；
+`g++ -fsanitize=address -g x.cpp -o x` 运行后 ASan 直接定位到越界行与影子内存信息。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+UndefinedBehaviorSanitizer 捕获有符号溢出等 UB。请写程序展示有符号溢出，
+并说明为什么“普通 `-O2` 构建”可能让这种 bug 更难发现。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+
+int main() {
+    int x = 2147483647;
+    x += 1;                        // BUG: 有符号溢出是 UB
+    std::cout << "x=" << x << "\n"; // -fsanitize=undefined 会在此报 signed integer overflow
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 结论：有符号溢出在优化下可能被“证明不可能”而整段消除，导致行为诡异；UBSan 在 IR 层插桩，
+无论优化级别都能抓住。
 
-</details>
+### 练习 3（难度 ★★★★）
 
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+`-g` 把源码行映射到机器指令，`strip` 会移除它。请写程序说明：同样一个崩溃，
+带 `-g` 与不带 `-g` 在调试器里能看到的差异（用断言验证不变量作示范）。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cassert>
+
+int main() {
+    int* p = new int(7);
+    assert(p != nullptr && "allocation must succeed");  // -g 让失败直接指到这一行
+    std::cout << "p=" << *p << "（-g 把崩溃映射到源码行；strip 后只剩地址）\n";
+    delete p;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 结论：`-g` 生成 DWARF 调试信息，GDB/LLDB 能显示文件名/行号/局部变量；
+`strip` 删掉后只剩裸地址，core dump 几乎不可读。发布版常保留 `-g` 再单独 `strip` 备份符号。
 
-</details>
+## 附录：用法演绎（从选型到落地）
 
+### 演绎 1：用 ASan 定位“偶发”堆破坏
+
+**场景**：程序偶尔输出乱码，重现不了，怀疑某处越界写坏了别的对象的元数据。
+**选型**：AddressSanitizer（红区 + 影子内存）能在越界发生的“第一时间”报错，而非等到崩溃。
+**错误**：只靠 `printf` 单步，越界与崩溃相隔甚远，定位无门。
+**修复**：
+
+```text
+g++ -std=c++23 -fsanitize=address -g bug.cpp -o bug
+./bug        # 越界那一行立即报 SUMMARY: AddressSanitizer: heap-buffer-overflow
+```
+
+```cpp
+#include <iostream>
+#include <vector>
+int main() { std::vector<int> v(3); v[3] = 1; std::cout << v[3] << "\n"; }
+```
+
+**结论**：内存类 bug 首选 ASan/UBSan 静态插桩，比事后分析高效一个数量级。
+
+### 演绎 2：用 TSan 抓数据竞争（命令示意）
+
+**场景**：多线程计数结果每次不同，疑似数据竞争。
+**选型**：ThreadSanitizer 在运行时记录内存访问的 happens-before 关系。
+**错误**：`-O2` 下单线程“看起来对”，加线程就偶发错——典型 race。
+**修复**（命令示意，需 `-pthread` 链接，故放 text 围栏）：
+
+```text
+g++ -std=c++23 -fsanitize=thread -g race.cpp -pthread -o race
+./race       # WARNING: Data race between two threads writing the same counter
+```
+
+**结论**：race 是时序相关 bug，TSan 通过记录同步边在首次发生时即报告，比复现后再调省力得多。

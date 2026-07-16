@@ -825,74 +825,106 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-## 真实开源项目参考（可查证链接）
-
-> 构建配置与编译器驱动的真实工程载体——下列链接均指向可公开审阅的源码文件（L2 文件级）。
-
-- **GCC 选项解析（`opts.cc`）**：[gcc-mirror/gcc · gcc/opts.cc](https://github.com/gcc-mirror/gcc/blob/master/gcc/opts.cc) —— `-O*`、`-f*`、`-m*` 等全部前端选项在此注册与分发，是「③ 优化级别」「⑭ 警告等级」章节的编译器实现源头。
-- **LLVM LTO 驱动（`LTO.cpp`）**：[llvm/llvm-project · llvm/lib/LTO/LTO.cpp](https://github.com/llvm/llvm-project/blob/main/llvm/lib/LTO/LTO.cpp) —— 「⑥ LTO 链接时优化」的工业实现；`-flto` 如何把整个程序重构为跨 TU 优化单元（旧版 `PassManagerBuilder.cpp` 已重构移除，此为其继任）。
-- **CMake 驱动源码**：[Kitware/CMake · Source/cmake.cxx](https://github.com/Kitware/CMake/blob/master/Source/cmake.cxx) —— 「⑰ 发布配置建议」对应的构建系统本体，`CMAKE_BUILD_TYPE` / `CMAKE_CXX_FLAGS` 由此消费。
-- **Compiler Explorer 编译器探测**：[compiler-explorer/compiler-explorer · lib/compiler-finder.js](https://github.com/compiler-explorer/compiler-explorer/blob/main/lib/compiler-finder.js) —— 「④/⑧ [实现]真实汇编对比」所用平台的源码，解释它如何定位并调用本机 `g++`/`clang++`。
-- **Bazel（bazelbuild/bazel，Google 出品）**：[BUILD](https://github.com/bazelbuild/bazel) 文件中 `copts = ["-O2","-DNDEBUG"]` 等价于 CMake 的 `CMAKE_CXX_FLAGS`；`cc_binary` 默认 `-c opt` 即 `-O2` + 头文件保护。
-- **Apache Mesos（github.com/apache/mesos）**：其 `cmake/Boost.cxx` 演示如何用 CMake 探测 Boost 依赖，是「⑮ 依赖管理」的工业样本。
-- **Abseil（abseil/abseil-cpp）**：`CMake/AbseilHelpers.cmake` 用 `target_compile_features` 钉死 C++ 标准，对应「⑯ C++ 标准版本」。
-- **DPDK（DPDK/dpdk）**：数据面套件用 meson/CMake 双构建，`meson_options.txt` 中的 `enable_docs` 等开关对应「⑰ 发布配置」。
-
-**最佳实践**：发布构建务必设 `-DCMAKE_BUILD_TYPE=Release` 且单独钉死 `-O2 -DNDEBUG`，避免 Debug 符号污染体积；CI 中用 `-Werror` 把警告当错误，配合「⑫ hardening」的 `-fstack-protector-strong -Wl,-z,relro,-z,now -fPIE` 形成可复现的供应链基线。
-
-> 交叉引用：交叉编译工具链见 [ch17](Book/part02_toolchain/ch17_crosscompile.md)；汇编取证方法见 [ch157](Book/part14_perf/ch157_compiler_explorer.md)。
-
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`NDEBUG` 宏会让 `assert` 在发布构建中被整体编译掉。请写程序说明断言在 Debug/Release 下的行为差异。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <cassert>
+
+int main() {
+    int x = 5;
+    assert(x == 5);     // Debug 校验；-DNDEBUG 时整条语句消失
+    std::cout << "assert 通过；发布版加 -DNDEBUG 可移除该检查。\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 结论：`assert` 是“开发期护栏”，靠 `NDEBUG` 零成本退出发布二进制；不要用它做运行期必须的错误恢复。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+LTO（链接期优化）让链接器跨 TU 内联/去虚化。请用 `constexpr` 体现“编译期可知”的优化前提，
+并写出开启 LTO 的命令。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+
+constexpr int square(int x) { return x * x; }   // 跨 TU 也能被 LTO 内联
+
+int main() { std::cout << "square(7) = " << square(7) << "\n"; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+```text
+# 全程序优化：编译与链接都加 -flto
+g++ -std=c++23 -flto -O2 -c a.cpp -o a.o
+g++ -std=c++23 -flto -O2 -c b.cpp -o b.o
+g++ -std=c++23 -flto -O2 a.o b.o -o app
+```
 
-</details>
+[标准] 结论：LTO 把优化视野从单 TU 扩展到全程序，能跨文件内联/去虚化，代价是更长的链接时间与内存。
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+PGO（剖面引导优化）先用训练数据收集热点，再据此重排代码/特化分支。请写程序并用命令示意两阶段流程。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+
+int main() {
+    std::vector<int> v(1000);
+    for (int i = 0; i < 1000; ++i) v[i] = i;
+    long long s = 0;
+    for (int x : v) s += x;
+    std::cout << "s=" << s << "\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+```text
+g++ -std=c++23 -fprofile-generate -O2 app.cpp -o app      # 阶段1：插桩收集
+./app                                                     # 跑代表性输入，产出 profile
+g++ -std=c++23 -fprofile-use -O2 app.cpp -o app          # 阶段2：按热点重优化
+```
 
-</details>
+[标准] 结论：PGO 用真实负载的剖面信息指导布局与内联，常比盲优化再快几个百分点；代价是需可复现的训练输入。
 
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：Debug 用 `_GLIBCXX_ASSERTIONS` 抓越界
+
+**场景**：`std::vector::operator[]` 越界在 Release 下静默，Debug 也未必报错。
+**选型**：GCC 提供 `_GLIBCXX_ASSERTIONS`（/ `_GLIBCXX_DEBUG`）在容器访问处插入边界检查。
+**错误**：只在出事后靠 valgrind 翻旧账。
+**修复**：
+
+```text
+g++ -std=c++23 -D_GGLIBCXX_ASSERTIONS -O2 app.cpp -o app
+# v[10] 访问 v(4) 时直接抛 std::out_of_range
+```
+
+```cpp
+#include <iostream>
+#include <vector>
+int main() { std::vector<int> v(4); std::cout << v[4] << "\n"; }  // 开启断言即报错
+```
+
+**结论**：调试期打开标准库断言，把“未定义行为”提前变成“明确的异常”，定位更快。
+
+### 演绎 2：把 PGO 接进 CI 做持续性能守护
+
+**场景**：某次改动让热路径变慢，但没人发现，直到用户投诉。
+**选型**：CI 里用 PGO 生成的二进制跑固定基准，对比历史数值设门禁。
+**错误**：只在本地偶尔手测，回归无人知晓。
+**修复**：
+
+```text
+g++ -std=c++23 -fprofile-generate -O2 bench.cpp -o bench && ./bench
+g++ -std=c++23 -fprofile-use -O2 bench.cpp -o bench
+./bench --benchmark_format=json | tee result.json   # 与基线 diff，超阈值则 CI 失败
+```
+
+```cpp
+#include <iostream>
+int main() { std::cout << "PGO + 基准门禁 = 性能回归早知道\n"; }
+```
+
+**结论**：构建配置（PGO/LTO/断言开关）与 CI 基准结合，把“性能”从一次性优化变成可守护的长期指标。
