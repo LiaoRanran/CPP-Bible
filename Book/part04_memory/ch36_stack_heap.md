@@ -1392,64 +1392,136 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+写程序对比栈对象与堆对象的生命周期：在函数中创建栈对象与堆对象，观察函数返回后二者是否仍可访问、是否需要手动释放。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+栈对象在离开作用域时自动析构；堆对象脱离创建它的作用域后依然存在，必须 `delete` 或交给智能指针管理，否则泄漏。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct T { ~T() { std::cout << "T destroyed\n"; } };
+T* leak() { T* p = new T(); return p; }   // 堆对象: 返回后仍存在
+void scope() { T s; }                      // 栈对象: 离开 scope() 自动析构
+int main() {
+    scope();
+    T* p = leak();
+    delete p;
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 栈对象生命周期由作用域绑定；堆对象生命周期由 `delete` 显式控制，二者本质不同。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用 RAII 包装一段需要释放的资源（如堆对象），保证无论正常返回还是中途抛异常都不会泄漏。
 
 <details><summary>答案与解析</summary>
+
+`std::unique_ptr` 在析构时自动释放，异常栈展开时也会调用析构，从而提供异常安全的资源回收。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <memory>
+struct T { ~T() { std::cout << "released\n"; } };
+void use() {
+    auto p = std::make_unique<T>();   // 离开 use() 自动释放
+    // 即使中间抛异常, unique_ptr 析构仍释放
+}
+int main() { use(); }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] RAII 把"资源获取"绑定到对象生命周期，是 C++ 异常安全的基础 idiom。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `noexcept` 移动构造函数，使 `std::vector` 扩容时走移动而非拷贝。
+写程序粗略计时：一百万次"仅栈"的小操作 vs 一百万次"每次在堆上分配/释放一个小 vector"，说明堆分配的开销来源。
 
 <details><summary>答案与解析</summary>
+
+栈分配只是指针/栈槽移动（O(1) 指令）；堆分配要进入分配器、搜索空闲链表、可能系统调用，开销高 1~2 个数量级。
 
 ```cpp
 #include <iostream>
 #include <vector>
-#include <utility>
-struct S {
-  int* p = new int[8];
-  S() = default;
-  S(S&& o) noexcept : p(o.p) { o.p = nullptr; }
-  ~S() { delete[] p; }
-};
-int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << "ok\n"; }
+#include <chrono>
+int main() {
+    const int N = 1000000;
+    auto t0 = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; ++i) { int x = i; (void)x; }
+    auto t1 = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < N; ++i) { std::vector<int> v(8); (void)v; }
+    auto t2 = std::chrono::high_resolution_clock::now();
+    auto d1 = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+    auto d2 = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
+    std::cout << "stack-only : " << d1 << " us\n";
+    std::cout << "heap-alloc : " << d2 << " us (远高于栈)\n";
+}
 ```
 
-[标准] `noexcept` 移动构造让 `vector` 在重新分配时移动元素；否则因强异常保证退化为拷贝。
+[标准] 高频小对象分配应优先考虑栈、对象池或 `std::pmr`，避免反复进入通用分配器。
 
 </details>
-
 
 ---
 
 > **UB 实证库**：堆内存（释放后使用 / 双重释放）与栈内存（栈对象越界使用）的**真实 UB 代码 + GCC 警告 + 修复**，见 [附录 UB 反例库](../../Appendix/ub/README.md)（UB-01/02/03）。
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：返回局部变量引用/指针 → 悬垂
+
+**场景**：你写一个返回计算结果的函数，图省事返回局部变量的引用，调用方拿到后程序偶发读到垃圾值。
+
+**常见错误**（朴素写法）：
+```text
+const int& bad() {
+    int x = 42;
+    return x;        // x 已销毁, 返回悬垂引用 -> UB
+}
+```
+
+**修复**：需要传值就按值返回（拷贝/移动）；需要跨作用域生命周期才用智能指针管理堆对象。
+
+```cpp
+#include <iostream>
+#include <memory>
+// 错误: const int& bad(){ int x=42; return x; }
+int good_val() { int x = 42; return x; }               // 按值返回
+std::unique_ptr<int> good_ptr() { return std::make_unique<int>(42); }
+int main() {
+    std::cout << good_val() << "\n";
+    std::cout << *good_ptr() << "\n";
+}
+```
+
+**结论**：永远不要返回局部变量的引用或指针。返回值让编译器选择拷贝或移动；需要堆生命周期才用智能指针。
+
+### 演绎 2：大小在运行时才确定的缓冲 → 选堆
+
+**场景**：你要读入用户指定长度 N 的数据，无法用编译期常量声明数组。
+
+**常见错误**（朴素写法）：
+```text
+int n = read_input();
+char buf[n];              // VLA, 非标准且易栈溢出
+```
+
+**修复**：大小运行时确定就用 `std::vector`（或 `std::unique_ptr<T[]>`），在堆上按需分配。
+
+```cpp
+#include <iostream>
+#include <vector>
+int main() {
+    int n = 1024;                       // 运行时确定的大小(此处以常量示意)
+    std::vector<int> v(n);              // 堆上分配, 自动管理生命周期
+    std::cout << "heap buffer = " << v.size() << " ints\n";
+}
+```
+
+**结论**：栈只适合大小已知且较小、生命周期随作用域的对象；其余交给堆与容器/智能指针。
+

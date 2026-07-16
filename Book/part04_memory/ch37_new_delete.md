@@ -1861,57 +1861,166 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+为某个类重载类域 `operator new` / `operator delete`，统计该类被分配的次数与字节数。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+类域 `operator new` 优先于全局版本；在其中调用 `std::malloc` 并累计计数，即可观测该类全部分配。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <cstdlib>
+#include <new>
+struct Counter {
+    static long allocs, bytes;
+    static void* operator new(std::size_t n) {
+        allocs++; bytes += (long)n;
+        return std::malloc(n);
+    }
+    static void operator delete(void* p, std::size_t) { std::free(p); }
+};
+long Counter::allocs = 0;
+long Counter::bytes = 0;
+int main() {
+    auto* c = new Counter();
+    delete c;
+    std::cout << "allocs=" << Counter::allocs
+              << " bytes=" << Counter::bytes << "\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 重载类域 `operator new/delete` 不影响 `sizeof`，仅改变该类的内存来源；`new`/`delete` 必须配对。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+使用 placement new 在一段预分配的缓冲区上构造对象，并手动调用析构。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+placement new 的 `new(p) T(args)` 形式在已存在的内存 `p` 上构造对象，不分配；因此必须手动调用析构函数，且缓冲区需满足对齐与大小。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <new>
+#include <cstddef>
+struct Point { int x, y; Point(int a, int b) : x(a), y(b) {} };
+int main() {
+    alignas(Point) static char pool[sizeof(Point) * 4];  // 预分配内存池
+    Point* p = new (pool) Point(1, 2);     // placement new: 在 pool 上构造
+    std::cout << p->x << "," << p->y << "\n";
+    p->~Point();                           // 必须手动析构(placement new 不自动)
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] placement new 把"内存分配"与"对象构造"解耦，是内存池/定制分配器的核心机制。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+为某个小对象实现简易空闲链表对象池：复用已释放的对象，避免反复进入系统分配器。
 
 <details><summary>答案与解析</summary>
 
+在类域 `operator new` 中优先从空闲链表取块，不足才 `malloc`；`operator delete` 把块挂回空闲链表。这样高频 new/delete 仅在首次触及系统分配器。
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cstdlib>
+#include <new>
+struct Node {
+    int v;
+    Node* next;
+    static Node* free_head;
+    void* operator new(std::size_t) {
+        if (free_head) { Node* p = free_head; free_head = free_head->next; return p; }
+        return std::malloc(sizeof(Node));
+    }
+    void operator delete(void* p) {
+        Node* n = static_cast<Node*>(p);
+        n->next = free_head; free_head = n;
+    }
+};
+Node* Node::free_head = nullptr;
+int main() {
+    Node* a = new Node{1, nullptr};
+    Node* b = new Node{2, nullptr};
+    delete a; delete b;        // 回收进空闲链表
+    Node* c = new Node{3, nullptr};   // 复用 b 的块
+    std::cout << "reused node v=" << c->v << "\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 固定大小对象池把分配器开销摊还到首次，并消除碎片；代价是需手动保证对象析构（或池统一回收）。
 
 </details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：new / delete 必须配对，数组用 delete[]
+
+**场景**：你用 `new[]` 分配了一个数组，释放时手滑写成 `delete`（少写方括号），程序偶发堆损坏。
+
+**常见错误**（朴素写法）：
+```text
+int* p = new int[10];
+delete p;          // 错误: 应 delete[] p; 否则 UB(仅释放首元素或破坏簿记)
+```
+
+**修复**：严格配对 `new`/`delete` 与 `new[]`/`delete[]`；更彻底的方案是根本不写裸 `new`，改用容器或智能指针。
+
+```cpp
+#include <iostream>
+#include <memory>
+#include <vector>
+int main() {
+    int* a = new int[10]; delete[] a;          // 配对
+    auto b = std::make_unique<int[]>(10);       // 智能指针, 自动 delete[]
+    std::vector<int> v(10);                      // 容器, 自动管理
+    std::cout << "ok: 配对 new[]+delete[] 或 vector\n";
+}
+```
+
+**结论**：裸数组 `new[]` 极易配错；`std::vector` / `std::unique_ptr<T[]>` 把数组生命周期交给 RAII，从根上消除配对错误。
+
+### 演绎 2：高频小对象 → 对象池 / placement new 降碎片
+
+**场景**：网络包处理对每个包都 `new`/`delete` 一个 Pkt 结构，运行一段时间后堆碎片上升、延迟抖动。
+
+**常见错误**（朴素写法）：
+```text
+void on_packet() {
+    Pkt* p = new Pkt{...};   // 每包进通用分配器, 碎片+系统调用
+    // ... use p ...
+    delete p;
+}
+```
+
+**修复**：用空闲链表对象池复用 Pkt 块，或 placement new 落预分配缓冲；分配次数从"每包一次"降到"池耗尽才一次"。
+
+```cpp
+#include <iostream>
+#include <cstdlib>
+#include <new>
+struct Pkt {
+    int len;
+    Pkt* next;
+    static Pkt* free_head;
+    void* operator new(std::size_t) {
+        if (free_head) { Pkt* p = free_head; free_head = p->next; return p; }
+        return std::malloc(sizeof(Pkt));
+    }
+    void operator delete(void* p) { Pkt* n = static_cast<Pkt*>(p); n->next = free_head; free_head = n; }
+};
+Pkt* Pkt::free_head = nullptr;
+int main() {
+    for (int i = 0; i < 3; ++i) delete new Pkt{i, nullptr};  // 分配即回收, 复用
+    Pkt* p = new Pkt{99, nullptr};
+    std::cout << "pooled pkt len=" << p->len << " (零系统调用)\n";
+}
+```
+
+**结论**：高频定长小对象是内存池/placement new 的典型受益者；复用把分配器开销与碎片降到最低。
 

@@ -1577,57 +1577,168 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+用 `std::pmr::monotonic_buffer_resource` 配合 `std::pmr::vector`，让一个 vector 的全部分配都落在栈上的固定缓冲区内，做到零堆分配。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`monotonic_buffer_resource` 在给定缓冲上单调分配（只增不减，销毁时整体回收）；把它的指针交给 pmr 容器的分配器，容器就在该缓冲上取内存。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <memory_resource>
+#include <vector>
+int main() {
+    char buf[1024];
+    std::pmr::monotonic_buffer_resource res(buf, sizeof(buf));
+    std::pmr::polymorphic_allocator<int> pa(&res);
+    std::pmr::vector<int> v(pa);     // 在 buf 上分配, 零堆
+    for (int i = 0; i < 10; ++i) v.push_back(i);
+    std::cout << "pmr vector size=" << v.size()
+              << " (栈缓冲, 零堆分配)\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `std::pmr` 把"分配策略"与"容器"解耦；`monotonic_buffer_resource` 适合请求内临时分配，请求结束一次性回收。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+自定义一个 `std::pmr::memory_resource`，在委托上游资源分配的同时累计分配字节数，从而观测某次操作的总分配量。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+继承 `std::pmr::memory_resource` 并重写 `do_allocate` / `do_deallocate` / `do_is_equal` 三个虚函数；在 `do_allocate` 里累加后委托上游。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <memory_resource>
+#include <vector>
+struct CountingResource : std::pmr::memory_resource {
+    std::pmr::memory_resource* upstream = std::pmr::get_default_resource();
+    long total = 0;
+    void* do_allocate(std::size_t bytes, std::size_t align) override {
+        total += (long)bytes;
+        return upstream->allocate(bytes, align);
+    }
+    void do_deallocate(void* p, std::size_t bytes, std::size_t align) override {
+        upstream->deallocate(p, bytes, align);
+    }
+    bool do_is_equal(const std::pmr::memory_resource& o) const noexcept override {
+        return this == &o;
+    }
+};
+int main() {
+    CountingResource cr;
+    std::pmr::polymorphic_allocator<int> pa(&cr);
+    std::pmr::vector<int> v(pa);
+    for (int i = 0; i < 5; ++i) v.push_back(i);
+    std::cout << "allocated bytes via pmr = " << cr.total << "\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] pmr 资源可任意组合（计数、池化、对齐、调试）；所有 pmr 容器都通过 `polymorphic_allocator` 间接使用资源。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+用自定义计数资源对比"不 reserve"与"预先 reserve"时 `std::pmr::vector` 的分配次数，说明扩容代价。
 
 <details><summary>答案与解析</summary>
 
+vector 容量不足时扩容会重新分配并搬运元素；`reserve` 一次到位则只分配一次。用计数资源可把这一点量化出来。
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <memory_resource>
+#include <vector>
+struct CountRes : std::pmr::memory_resource {
+    std::pmr::memory_resource* up = std::pmr::get_default_resource();
+    long calls = 0;
+    void* do_allocate(std::size_t b, std::size_t a) override { ++calls; return up->allocate(b, a); }
+    void do_deallocate(void* p, std::size_t b, std::size_t a) override { up->deallocate(p, b, a); }
+    bool do_is_equal(const std::pmr::memory_resource& o) const noexcept override { return this == &o; }
+};
+int main() {
+    CountRes cr;
+    std::pmr::polymorphic_allocator<int> pa(&cr);
+    std::pmr::vector<int> v(pa);
+    for (int i = 0; i < 1000; ++i) v.push_back(i);
+    std::cout << "pmr vector allocations = " << cr.calls << "\n";
+    CountRes cr2;
+    std::pmr::polymorphic_allocator<int> pa2(&cr2);
+    std::pmr::vector<int> w(pa2); w.reserve(1000);
+    for (int i = 0; i < 1000; ++i) w.push_back(i);
+    std::cout << "pmr vector (reserve) allocations = " << cr2.calls << "\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `reserve` 把分配次数从 O(log n) 降到 1；在已知规模的热点路径上应预先 reserve。
 
 </details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：高频临时容器 → pmr 池化降延迟
+
+**场景**：每个网络请求内都要构造若干临时 `std::vector` 做解析，默认分配器每处都走堆，带来延迟尖刺与碎片。
+
+**常见错误**（朴素写法）：
+```text
+void on_request() {
+    std::vector<int> tmp;        // 每次走堆分配
+    // ... 解析 ...
+}                                // 离开作用域逐个释放
+```
+
+**修复**：为请求准备一块 `monotonic_buffer_resource`，请求内所有临时 pmr 容器都从这块缓冲取内存；请求结束资源析构，一次性整体回收，零逐对象释放。
+
+```cpp
+#include <iostream>
+#include <memory_resource>
+#include <vector>
+void handle_request(char* buf, std::size_t n) {
+    std::pmr::monotonic_buffer_resource res(buf, n);
+    std::pmr::polymorphic_allocator<int> pa(&res);
+    std::pmr::vector<int> tmp(pa);
+    for (int i = 0; i < 4; ++i) tmp.push_back(i);
+    std::cout << "request used " << tmp.size() << " elems (零堆分配)\n";
+}
+int main() {
+    char buf[512];
+    handle_request(buf, sizeof(buf));
+}
+```
+
+**结论**：`monotonic_buffer_resource` 是"请求/帧作用域内临时分配"的理想选择——分配极快、回收一次性；代价是该资源上的内存不能单独释放（只增不减）。
+
+### 演绎 2：pmr 资源的生命周期陷阱
+
+**场景**：你把 `monotonic_buffer_resource` 声明为局部变量，却把依赖它的 pmr 容器存进了更长寿的对象（如 `shared_ptr`），资源先析构，容器再访问即悬垂。
+
+**常见错误**（朴素写法）：
+```text
+auto res = std::make_shared<std::pmr::monotonic_buffer_resource>(buf, n);
+auto vec = std::make_shared<std::pmr::vector<int>>(&*res);
+// ... res 先于 vec 销毁, vec 指向已失效资源 -> UB
+```
+
+**修复**：资源生命周期必须 ≥ 所有使用它的 pmr 容器；把资源与容器放在同一作用域，或把资源作为容器的成员/拥有者。
+
+```cpp
+#include <iostream>
+#include <memory_resource>
+#include <vector>
+int main() {
+    char buf[256];
+    std::pmr::monotonic_buffer_resource res(buf, sizeof(buf));  // 先建资源
+    std::pmr::polymorphic_allocator<int> pa(&res);              // 先命名 allocator 变量
+    std::pmr::vector<int> v(pa);                                // 同作用域: pa 为变量 -> 构造而非函数声明
+    v.push_back(7);
+    std::cout << "ok: 资源与 vector 同生命周期, v[0]=" << v[0] << "\n";
+}
+```
+
+**结论**：pmr 容器只持有资源的指针，不拥有它；"资源活得比容器久"是硬约束，违反即悬垂。
 

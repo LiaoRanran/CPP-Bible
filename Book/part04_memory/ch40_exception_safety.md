@@ -1568,57 +1568,147 @@ Contents of section .xdata
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+用 copy-and-swap 惯用法为某个持有资源的类实现强异常安全保证的赋值运算符。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+赋值运算符按值接收参数（发生拷贝），再与当前对象 `swap`；若拷贝阶段抛异常，当前对象原封不动（强保证）；`swap` 本身标 `noexcept`。
 
 ```cpp
 #include <iostream>
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <vector>
+struct Buf {
+    std::vector<int> d;
+    Buf(std::size_t n) : d(n) {}
+    void swap(Buf& o) noexcept { d.swap(o.d); }
+    Buf& operator=(Buf o) noexcept { d.swap(o.d); return *this; }  // 传值=拷贝, swap 提交
+};
+int main() {
+    Buf a(3), b(5);
+    a = b;
+    std::cout << "a size=" << a.d.size() << "\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 传值参数在调用处完成拷贝，异常发生在 swap 之前，从而天然满足强异常保证。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+演示：即使函数因异常提前返回，栈上的 RAII 对象仍会被析构（资源正确释放）。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+异常沿调用栈展开时会逐个析构已构造的栈对象（栈展开）；RAII 正是利用这一点保证资源释放。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <stdexcept>
+struct Guard { ~Guard() { std::cout << "cleanup\n"; } };
+void f() {
+    Guard g;                          // 无论 f 如何返回, g 都析构
+    throw std::runtime_error("boom");
+}
+int main() {
+    try { f(); }
+    catch (const std::exception& e) { std::cout << "caught: " << e.what() << "\n"; }
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 栈展开对每一个已构造的自动对象调用析构函数；这就是 C++ 异常安全的核心机制。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+实现一个事务式提交：把修改先放进暂存区，提交时以"拷贝旧状态→合并→原子 swap"的方式保证强异常安全（提交失败原状态不变）。
 
 <details><summary>答案与解析</summary>
 
+先复制已提交状态到局部副本，在副本上合并暂存区；只有合并成功才与 `committed` 交换。若合并过程抛异常，`committed` 完全不受影响。
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+struct Db {
+    std::vector<int> committed;
+    std::vector<int> stage;
+    void begin() { stage.clear(); }
+    void add(int x) { stage.push_back(x); }
+    void commit() {
+        auto next = committed;                          // 拷贝旧状态
+        next.insert(next.end(), stage.begin(), stage.end());
+        committed.swap(next);                           // 原子提交(强保证)
+    }
+};
+int main() {
+    Db db; db.begin(); db.add(1); db.add(2); db.commit();
+    std::cout << "committed=" << db.committed.size() << "\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] "先做再提交"把不可逆的破坏限定在 swap 之前，是强异常保证的经典实现。
 
 </details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：析构函数抛异常 → std::terminate
+
+**场景**：你在某个类的析构函数里做清理，清理失败时顺手 `throw`，结果程序在异常栈展开期间直接终止，还以为是别处 bug。
+
+**常见错误**（朴素写法）：
+```text
+~T() {
+    if (!cleanup()) throw std::runtime_error("cleanup failed");  // 栈展开期 -> terminate
+}
+```
+
+**修复**：析构函数默认就是 `noexcept`；清理失败应吞掉异常（或仅记日志），绝不能向外传播。需要时把"可能失败"的清理做成显式、可抛的 `close()` 成员，由调用者决定如何处理。
+
+```cpp
+#include <iostream>
+#include <stdexcept>
+struct T {
+    ~T() noexcept {                  // 析构不向外抛
+        try { /* 可能失败的清理 */ }
+        catch (...) { /* 吞掉, 记日志, 绝不抛 */ }
+    }
+};
+int main() { T t; std::cout << "dtor safe (no terminate)\n"; }
+```
+
+**结论**：两个异常同时存在（正在传播一个、析构又抛一个）会立即 `std::terminate`；析构函数必须是异常安全的终点。
+
+### 演绎 2：关键路径用 noexcept 承诺不抛，换取性能
+
+**场景**：你为某个资源管理类写了移动构造，却没标 `noexcept`；`std::vector` 扩容时发现移动可能抛，为保全强异常保证退化为拷贝，性能骤降。
+
+**常见错误**（朴素写法）：
+```text
+S(S&& o) : p(o.p) { o.p = nullptr; }   // 未标 noexcept -> vector 扩容退化为拷贝
+```
+
+**修复**：当底层资源的移动确实不抛时，显式把移动操作标 `noexcept`；容器据此选择移动而非拷贝。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <utility>
+struct S {
+    int* p = new int[8];
+    S() = default;
+    S(S&& o) noexcept : p(o.p) { o.p = nullptr; }   // noexcept: 承诺不抛
+    ~S() { delete[] p; }
+};
+int main() {
+    std::vector<S> v; v.reserve(4);
+    for (int i = 0; i < 4; ++i) v.push_back(S{});     // 扩容走移动(S 移动 noexcept)
+    std::cout << "vector grew via move (noexcept)\n";
+}
+```
+
+**结论**：`noexcept` 既是性能开关也是契约——它告诉标准库"此操作绝不抛"，从而启用移动、启用更快的算法路径。
 

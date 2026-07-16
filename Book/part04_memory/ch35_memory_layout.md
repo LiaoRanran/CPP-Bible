@@ -1443,57 +1443,131 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+写一个小程序，分别打印全局变量、静态变量、局部变量、堆对象的地址，并据此说明 C++ 进程虚拟地址空间各段（.text / .data / .bss / heap / stack）的相对高低关系。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+地址数值受 ASLR 随机化影响，但各存储期的相对区间稳定：代码与只读常量在最底；已初始化全局/静态在 .data、零初始化在 .bss；堆从低向高增长；栈从高向低增长，因此栈地址通常高于堆。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+int g = 1;          // .data
+int gb;             // .bss
+int main() {
+    int l = 2;      // 栈
+    int* h = new int(3);   // 堆
+    static int s = 4;      // .data(已初始化静态)
+    std::cout << "global .data : " << &g << "\n";
+    std::cout << "global .bss  : " << &gb << "\n";
+    std::cout << "static .data : " << &s << "\n";
+    std::cout << "local  stack : " << &l << "\n";
+    std::cout << "heap         : " << h << "\n";
+    delete h;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 不同存储期的对象落在不同地址区间；栈向低地址、堆向高地址增长，二者相向扩张。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+用 `offsetof` 打印一个含 `char/int/double` 成员的结构体各成员偏移，解释为何 `sizeof` 大于各成员字节之和。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+对齐要求（alignment）使编译器在成员间插入填充（padding），保证每个成员按其对齐边界存放；`sizeof` 还需是整体对齐的倍数。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <cstddef>
+struct A { char c; int i; double d; };
+int main() {
+    std::cout << "sizeof(A) = " << sizeof(A) << "\n";
+    std::cout << "offset c = " << offsetof(A, c) << "\n";
+    std::cout << "offset i = " << offsetof(A, i) << "\n";
+    std::cout << "offset d = " << offsetof(A, d) << "\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 成员大小之和 1+4+8=13，但 `int` 需 4 字节对齐、`double` 需 8 字节对齐，常见布局 `sizeof(A)=16` 或 `24`（含尾部填充）。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+写程序连续声明两个局部变量、连续 `new` 两个堆对象，分别打印其地址，验证"栈向低地址、堆向高地址"的增长方向。
 
 <details><summary>答案与解析</summary>
 
+局部变量 `b` 的地址通常低于 `a`（栈向下增长）；`new` 得到的 `p2` 通常高于 `p1`（堆向上增长）。
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main() {
+    int a = 0, b = 0;
+    int* p1 = new int(0);
+    int* p2 = new int(0);
+    std::cout << "stack: &a=" << &a << " &b=" << &b << " (b 通常低于 a)\n";
+    std::cout << "heap : p1=" << p1 << " p2=" << p2 << " (p2 通常高于 p1)\n";
+    delete p1; delete p2;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 栈与堆相向扩张；一旦二者相遇即栈溢出/堆耗尽，这就是为什么大对象不应放在栈上。
 
 </details>
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：嵌入式固件如何规划 RAM（.bss vs 栈）
+
+**场景**：你在写 STM32 固件的接收任务，需要一个 4KB 缓冲。若随手声明为局部数组，它会被放进栈——而 Cortex-M 默认栈仅 1~8KB，嵌套中断一来就溢出。
+
+**常见错误**（朴素写法）：
+```text
+void rx_task() {
+    uint8_t buf[4096];   // 4KB 落在栈上, 中断嵌套即 HardFault
+    // ...
+}
+```
+
+**修复**：把大缓冲提升为全局或静态，使其进入 .bss（启动即分配、不占栈）；或放进链接脚本指定的特定 RAM 区。
+
+```cpp
+#include <iostream>
+#include <cstddef>
+// 错误: void rx_task(){ uint8_t buf[4096]; }
+static uint8_t g_rx_buf[4096];   // 进 .bss, 启动即分配, 不占栈
+int main() {
+    std::cout << "g_rx_buf size = " << sizeof(g_rx_buf)
+              << " (位于 .bss, 不占栈)\n";
+}
+```
+
+**结论**：嵌入式固件中"大缓冲/长生命周期"对象应进 .bss/.data（全局或 static）；只有小块、短生命周期的临时变量才放栈。栈溢出在 MCU 上表现为随机 HardFault，极难复现。
+
+### 演绎 2：栈溢出的检测与规避
+
+**场景**：递归过深或局部大数组导致栈溢出，症状是随机崩溃，且只有在特定调用深度才触发。
+
+**常见错误**（朴素写法）：
+```text
+char buf[1 << 20];          // 1MB 局部数组, 远超栈容量
+void deep(int n){ deep(n+1); }  // 无终止递归, 必然溢出
+```
+
+**修复**：大对象改放堆（`std::vector`/智能指针，堆上只存 24B 句柄）；递归确保有终止条件；开 `-fstack-protector-strong` 让栈金丝雀在返回前检测破坏。
+
+```cpp
+#include <iostream>
+#include <vector>
+// 栈版本危险: char buf[1<<20];
+int main() {
+    std::vector<char> buf(1 << 20);   // 1MB 在堆, 栈仅 24B 句柄
+    std::cout << "heap buffer size = " << buf.size() << "\n";
+}
+```
+
+**结论**：栈容量有限且不可动态扩展；任何"大小可能较大或运行时确定"的对象都应落堆。链接脚本里划出 `.stack` 段并保留保护区，是定位栈溢出的最后一道防线。
 
