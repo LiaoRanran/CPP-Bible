@@ -50,6 +50,9 @@ MIN_EXAMPLES = 30
 # 废弃的 v1 老版本目录（已被 INDEX.md + v3 新章取代），不参与 v3 门禁扫描
 SKIP_DIRS = {"_legacy_ModernCppBible"}
 
+# 非章节的导航/索引文件（由 gen_indexes.py 生成，无标准章结构，不参与章节门禁）
+SKIP_FILES = {"SUMMARY.md", "GLOSSARY.md", "PREREQUISITES.md", "INDEX.md"}
+
 
 def find_book_root(explicit: str | None) -> Path:
     if explicit:
@@ -193,6 +196,8 @@ def check_duplicate_chapter_numbers(root: Path) -> list[str]:
     if not book.is_dir():
         return dups
     for f in book.rglob("*.md"):
+        if f.name in SKIP_FILES or any(s in f.parts for s in SKIP_DIRS):
+            continue
         for m in HEADING_NUM_RE.finditer(f.read_text(encoding="utf-8")):
             num = m.group(1)
             seen.setdefault(num, []).append(f.name)
@@ -219,6 +224,7 @@ def main():
 
     chapters = sorted(book.rglob("*.md")) if book.is_dir() else []
     chapters = [c for c in chapters if not any(s in c.parts for s in SKIP_DIRS)]
+    chapters = [c for c in chapters if c.name not in SKIP_FILES]
     print(f"[*] 扫描章节: {len(chapters)} 个\n")
 
     all_reps = []

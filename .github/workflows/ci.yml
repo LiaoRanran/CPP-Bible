@@ -41,6 +41,21 @@ jobs:
       run: python3 tools/crossref_audit.py
       continue-on-error: false
 
+    - name: Xref Gate (交叉引用完整性 + 孤儿/孤岛)
+      # 与 crossref_audit 互补：crossref_audit 看 part 级覆盖度；xref_check
+      # 校验全部可导航引用（Markdown [..](..) + ⟶ 箭头式）的目标存在性，
+      # 断裂链接 (指向不存在的 .md) 即 BLOCK（退出码 1，本 job 失败），
+      # 孤儿章(零入链)/信息孤岛(零出链) 仅 WARN 不阻断。
+      run: python3 tools/xref_check.py
+      continue-on-error: false
+
+    - name: Index Freshness (SUMMARY/GLOSSARY/PREREQUISITES 与章节同步)
+      # 三份索引由 gen_indexes.py 从文件系统确定性生成。若有人改了章标题/
+      # 前置元数据/增删章却忘记重跑生成器，--check 会发现磁盘与生成结果不一致
+      # 并 BLOCK，提示重跑 `python3 tools/gen_indexes.py`。
+      run: python3 tools/gen_indexes.py --check
+      continue-on-error: false
+
   compile:
     needs: quality
     runs-on: ubuntu-latest

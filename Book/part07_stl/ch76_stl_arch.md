@@ -36,7 +36,7 @@ STL（Standard Template Library）由**六大组件**构成，迭代器是连接
 ## ③ 后续依赖
 
 - `vector` 三指针与失效：⟶ Book/part07_stl/ch77_vector.md。
-- 有序/哈希容器迭代器失效差异：⟶ Book/part07_stl/ch84_set.md、ch85_unordered.md。
+- 有序/哈希容器迭代器失效差异：⟶ Book/part07_stl/ch84_set.md、Book/part07_stl/ch85_unordered.md。
 - 算法分类与复杂度：⟶ Book/part08_algorithms/ch95_algo_overview.md。
 - ranges 与投影：⟶ Book/part07_stl/ch90_ranges.md。
 

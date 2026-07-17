@@ -205,7 +205,7 @@ _Hashtable::_M_find_node(bkt, key, code)  // hashtable.h:812
 
 ## ⑪ STL 联系
 
-- 与 `set`/`map`：`unordered_*` 平均 O(1)、无序、缓存差、范围查询弱；`set`/`map` 有序、O(log n)、可范围遍历（⟶ Book/part07_stl/ch84_set.md、ch83_map.md）。
+- 与 `set`/`map`：`unordered_*` 平均 O(1)、无序、缓存差、范围查询弱；`set`/`map` 有序、O(log n)、可范围遍历（⟶ Book/part07_stl/ch84_set.md、Book/part07_stl/ch83_map.md）。
 - 与 `unordered_multiset`/`unordered_multimap`：键可重复，`count` 可能 >1，`equal_range` 返回同桶连续段。
 - 与 `vector`+`hash`（自写开放寻址）：`absl::flat_hash_map` 用开放寻址 + 探测，缓存更友好、无链表指针开销，但 C++ 标准 `unordered_*` 用的是开链法。
 - 与算法：无"有序区间"假设，不能对 `unordered_*` 用 `std::set_union` 等（需先拷到有序容器）。
