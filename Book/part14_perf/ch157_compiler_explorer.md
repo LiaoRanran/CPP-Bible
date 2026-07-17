@@ -536,12 +536,15 @@ int main(){
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part02_toolchain/ch11_compilers.md`（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part02_toolchain/ch15_profiling.md`（第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part14_perf/ch158_perf_antipatterns.md`（第158章 性能反模式与陷阱）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part14_perf/ch155_simd.md`（第155章　SIMD / AVX 向量化（C++/硬件））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part15_cases/ch159_threadpool.md`（第159章 从零实现线程池（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part14_perf/ch152_perf_model.md`（第152章　性能模型与测量学）—— 同模块下的其他主题。
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch152_perf_model.md（第152章　性能模型与测量学）
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch153_cpu_micro.md（第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行）
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch154_cache_opt.md（第154章　缓存优化与数据局部性（C++/硬件））
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch155_simd.md（第155章　SIMD / AVX 向量化（C++/硬件））
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch156_compiler_opt.md（第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC））
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch158_perf_antipatterns.md（第158章 性能反模式与陷阱）
+- **跨模块延伸**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））
+- **跨模块延伸**：⟶ Book/part02_toolchain/ch15_profiling.md（第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++））
+- **跨模块延伸**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
 
 ## 真实开源项目参考（可查证链接）
 

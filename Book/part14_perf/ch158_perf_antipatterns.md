@@ -424,11 +424,14 @@ int main(){std::vector<int> v;v.reserve(1000);for(int i=0;i<1000;++i)v.push_back
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part14_perf/ch157_compiler_explorer.md`（第157章 Compiler Explorer 实战）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part15_cases/ch159_threadpool.md`（第159章 从零实现线程池（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part14_perf/ch156_compiler_opt.md`（第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part15_cases/ch160_mempool.md`（第160章 从零实现内存池（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part14_perf/ch153_cpu_micro.md`（第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行）—— 同模块下的其他主题。
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch152_perf_model.md（第152章　性能模型与测量学）
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch153_cpu_micro.md（第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行）
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch154_cache_opt.md（第154章　缓存优化与数据局部性（C++/硬件））
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch155_simd.md（第155章　SIMD / AVX 向量化（C++/硬件））
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch156_compiler_opt.md（第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC））
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch157_compiler_explorer.md（第157章 Compiler Explorer 实战）
+- **跨模块延伸**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
+- **跨模块延伸**：⟶ Book/part15_cases/ch160_mempool.md（第160章 从零实现内存池（C++））
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
@@ -446,6 +449,14 @@ int main(){std::vector<int> v;v.reserve(1000);for(int i=0;i<1000;++i)v.push_back
 ### 重构建议
 
 全局 `s/\bstd::endl\b/'\\n'/` 除有意 flush 的行；`for (auto x: vec)` 补 `const auto&`；`vector<bool>` 替代为 `vector<char>`/`dynamic_bitset`；关键循环加 `__builtin_prefetch` 减少 cache miss。
+
+### 面试要点（速记·性能反模式）
+
+- **`std::endl` vs `\n`**：`std::endl` 等价于输出 `\n` 后追加 `std::flush`→触发 `fflush` 系统调用；高频日志用 `\n` 可避免无谓 syscall，吞吐差可达 10×。面试官常考「为什么日志里不用 endl」。
+- **`std::vector<bool>` 不是容器**：位压缩存储，迭代器返回 proxy 而非 `bool&`，不可取址、不可喂 `std::span`；热路径应改用 `std::vector<char>` 或 `std::bitset<N>`。常被问「vector<bool> 有什么坑」。
+- **range-for 按值拷贝**：`for (auto x : vec)` 逐元素拷贝→构造/析构对；应 `const auto&` 或 `auto&`。`-Wrange-loop-construct` 会警告。
+- **`std::map` 热路径 O(log n)`**：误用 `unordered_map` 但 `hash` 非 `const`→编译器无法内联哈希，退化为 `map` 性能；用 `perf record -e cache-misses` 看 L3 miss 激增定位。
+- **不 profile 就优化是反模式**：缓存/分支/SIMD 收益高度依赖真实访问模式，凭直觉加 `alignas`/`prefetch` 常常无效甚至有害；一切以 `perf`/VTune 实测为准。
 
 ## 自测练习（Exercises）
 

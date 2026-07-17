@@ -812,11 +812,14 @@ SIMD设计决策树:
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch76_stl_arch.md`（第76章　STL 架构与迭代器概念）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch87_bitset.md`（第87章　bitset：编译期定长位集）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part14_perf/ch153_cpu_micro.md`（第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part14_perf/ch157_compiler_explorer.md`（第157章 Compiler Explorer 实战）—— 编号相邻、主题接续。
-- **同模块**：`Book/part14_perf/ch152_perf_model.md`（第152章　性能模型与测量学）—— 同模块下的其他主题。
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch152_perf_model.md（第152章　性能模型与测量学）
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch153_cpu_micro.md（第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行）
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch154_cache_opt.md（第154章　缓存优化与数据局部性（C++/硬件））
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch156_compiler_opt.md（第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC））
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch157_compiler_explorer.md（第157章 Compiler Explorer 实战）
+- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch158_perf_antipatterns.md（第158章 性能反模式与陷阱）
+- **跨模块延伸**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）
+- **跨模块延伸**：⟶ Book/part07_stl/ch87_bitset.md（第87章　bitset：编译期定长位集）
 
 ## 附录 F：SIMD 工业实践与深度 [F: Industry / E: Low-level / B: Principle]
 
