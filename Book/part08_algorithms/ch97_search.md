@@ -882,9 +882,9 @@ A: 多个哈希函数→位数组; 假阳性(说不存在=true; 说存在=maybe)
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part08_algorithms/ch95_algo_overview.md`（第95章　STL 算法分类与复杂度（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part08_algorithms/ch99_numeric.md`（第99章　数值算法与并行执行策略（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part08_algorithms/ch100_ranges_algo.md`（第100章　Ranges 算法与投影（C++20））—— 同模块下的其他主题。
+- **后续依赖**：⟶ Book/part08_algorithms/ch95_algo_overview.md（第95章　STL 算法分类与复杂度（C++））—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part08_algorithms/ch99_numeric.md（第99章　数值算法与并行执行策略（C++））—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part08_algorithms/ch100_ranges_algo.md（第100章　Ranges 算法与投影（C++20））—— 同模块下的其他主题。
 
 ## 附录 C（工业级查找实战）
 

@@ -779,9 +779,9 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch86_adapters.md`（第86章　容器适配器：stack / queue / priority_queue）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part08_algorithms/ch100_ranges_algo.md`（第100章　Ranges 算法与投影（C++20））—— 编号相邻、主题接续。
-- **同模块**：`Book/part08_algorithms/ch95_algo_overview.md`（第95章　STL 算法分类与复杂度（C++））—— 同模块下的其他主题。
+- **后续依赖**：⟶ Book/part07_stl/ch86_adapters.md（第86章　容器适配器：stack / queue / priority_queue）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part08_algorithms/ch100_ranges_algo.md（第100章　Ranges 算法与投影（C++20））—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part08_algorithms/ch95_algo_overview.md（第95章　STL 算法分类与复杂度（C++））—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

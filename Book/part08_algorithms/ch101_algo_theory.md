@@ -907,10 +907,10 @@ C++ 特有: 优先使用 STL 容器而非裸数据结构。
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part08_algorithms/ch99_numeric.md`（第99章　数值算法与并行执行策略（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part08_algorithms/ch97_search.md`（第97章　查找与二分（C++））—— 同模块下的其他主题。
+- **相邻主题**：⟶ Book/part08_algorithms/ch99_numeric.md（第99章　数值算法与并行执行策略（C++））—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part08_algorithms/ch97_search.md（第97章　查找与二分（C++））—— 同模块下的其他主题。
 
-- **同模块**：`Book/part08_algorithms/ch98_heap.md`（第98章　堆算法 heap（C++））—— 同模块下的其他主题。
+- **同模块**：⟶ Book/part08_algorithms/ch98_heap.md（第98章　堆算法 heap（C++））—— 同模块下的其他主题。
 
 
 ## 附录 G（算法复杂度的硬件落地）

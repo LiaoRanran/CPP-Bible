@@ -1249,9 +1249,9 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part08_algorithms/ch97_search.md`（第97章　查找与二分（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part08_algorithms/ch101_algo_theory.md`（第101章　哈希、图、树、DP、贪心（算法思想））—— 编号相邻、主题接续。
-- **同模块**：`Book/part08_algorithms/ch96_sorting.md`（第96章　排序：sort / stable_sort / partial_sort（C++））—— 同模块下的其他主题。
+- **相邻主题**：⟶ Book/part08_algorithms/ch97_search.md（第97章　查找与二分（C++））—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part08_algorithms/ch101_algo_theory.md（第101章　哈希、图、树、DP、贪心（算法思想））—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part08_algorithms/ch96_sorting.md（第96章　排序：sort / stable_sort / partial_sort（C++））—— 同模块下的其他主题。
 
 ## 附录 G：工业数值计算生态
 

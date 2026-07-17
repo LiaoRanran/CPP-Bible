@@ -771,8 +771,8 @@ A: operator| 重载。view1 | view2 → view2(view1) → 返回组合后的 view
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part08_algorithms/ch98_heap.md`（第98章　堆算法 heap（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part08_algorithms/ch96_sorting.md`（第96章　排序：sort / stable_sort / partial_sort（C++））—— 同模块下的其他主题。
+- **相邻主题**：⟶ Book/part08_algorithms/ch98_heap.md（第98章　堆算法 heap（C++））—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part08_algorithms/ch96_sorting.md（第96章　排序：sort / stable_sort / partial_sort（C++））—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

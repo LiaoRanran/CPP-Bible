@@ -854,10 +854,10 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part08_algorithms/ch101_algo_theory.md`（第101章　哈希、图、树、DP、贪心（算法思想））—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part11_source/ch132_leveldb_rocksdb.md`（第132章　LevelDB / RocksDB 存储引擎（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part07_stl/ch94_stop_token.md`（第94章　stop_token 与协作取消 [标准]）—— 编号相邻、主题接续。
-- **同模块**：`Book/part08_algorithms/ch99_numeric.md`（第99章　数值算法与并行执行策略（C++））—— 同模块下的其他主题。
+- **后续依赖**：⟶ Book/part08_algorithms/ch101_algo_theory.md（第101章　哈希、图、树、DP、贪心（算法思想））—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：⟶ Book/part11_source/ch132_leveldb_rocksdb.md（第132章　LevelDB / RocksDB 存储引擎（C++））—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part07_stl/ch94_stop_token.md（第94章　stop_token 与协作取消 [标准]）—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part08_algorithms/ch99_numeric.md（第99章　数值算法与并行执行策略（C++））—— 同模块下的其他主题。
 
 
 ## 附录 C（排序算法底层）
