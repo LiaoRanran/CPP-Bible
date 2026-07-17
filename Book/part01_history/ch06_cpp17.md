@@ -471,9 +471,9 @@ int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<",
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part01_history/ch04_cpp11.md`（第04章　C++11：现代 C++ 革命）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part01_history/ch08_cpp23.md`（第08章　C++23：标准库大修）—— 编号相邻、主题接续。
-- **同模块**：`Book/part01_history/ch01_c_history.md`（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
+- **相邻主题**：⟶ Book/part01_history/ch04_cpp11.md（第04章　C++11：现代 C++ 革命）—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part01_history/ch08_cpp23.md（第08章　C++23：标准库大修）—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
 
 ## 附录 G（工业级 C++17 实战）
 

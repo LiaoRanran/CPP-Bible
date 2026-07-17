@@ -823,9 +823,9 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part02_toolchain/ch13_packaging.md`（第13章　包管理：vcpkg / Conan（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part02_toolchain/ch17_crosscompile.md`（第17章　交叉编译与嵌入式工具链（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part02_toolchain/ch11_compilers.md`（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 同模块下的其他主题。
+- **相邻主题**：⟶ Book/part02_toolchain/ch13_packaging.md（第13章　包管理：vcpkg / Conan（C++））—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part02_toolchain/ch17_crosscompile.md（第17章　交叉编译与嵌入式工具链（C++））—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

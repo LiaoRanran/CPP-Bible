@@ -807,11 +807,11 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part13_engineering/ch148_gitflow.md`（第148章 Git 工作流（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part02_toolchain/ch16_ide.md`（第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch20_reference_pointer.md`（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 编号相邻、主题接续。
-- **同模块**：`Book/part02_toolchain/ch11_compilers.md`（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 同模块下的其他主题。
+- **后续依赖**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part02_toolchain/ch16_ide.md（第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++））—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 同模块下的其他主题。
 
 ## 底层视角：编译旗标、SIMD 与二进制对齐 [E: Low-level]
 

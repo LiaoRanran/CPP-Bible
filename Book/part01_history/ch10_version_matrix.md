@@ -470,10 +470,10 @@ Q: 版本迁移最大风险? A: ABI断裂(GCC5.1)和SFINAE→concepts重写
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part02_toolchain/ch11_compilers.md`（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part01_history/ch08_cpp23.md`（第08章　C++23：标准库大修）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part02_toolchain/ch12_buildsystems.md`（第12章　构建系统：Make / Ninja / CMake（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part01_history/ch01_c_history.md`（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
+- **相邻主题**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part01_history/ch08_cpp23.md（第08章　C++23：标准库大修）—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part02_toolchain/ch12_buildsystems.md（第12章　构建系统：Make / Ninja / CMake（C++））—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
 
 ## 附录 H：版本矩阵工业实践与源码对照
 

@@ -771,8 +771,8 @@ int main(){std::cout<<"compile_commands.json=bridge build->IDE(LSP clangd reads 
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part02_toolchain/ch18_buildconfig.md`（第18章　构建配置：Debug / Release / LTO / PGO（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part02_toolchain/ch12_buildsystems.md`（第12章　构建系统：Make / Ninja / CMake（C++））—— 同模块下的其他主题。
+- **相邻主题**：⟶ Book/part02_toolchain/ch18_buildconfig.md（第18章　构建配置：Debug / Release / LTO / PGO（C++））—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part02_toolchain/ch12_buildsystems.md（第12章　构建系统：Make / Ninja / CMake（C++））—— 同模块下的其他主题。
 
 
 ## 附录 I（语言服务底层）

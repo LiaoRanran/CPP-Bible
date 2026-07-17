@@ -450,9 +450,9 @@ int main(){auto p=std::make_unique<int>(42);auto l=[](auto x){return x*2;};std::
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part01_history/ch03_cpp98_03.md`（第03章　C++98 / C++03：奠基时代）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part01_history/ch07_cpp20.md`（第07章　C++20：量级升级）—— 编号相邻、主题接续。
-- **同模块**：`Book/part01_history/ch01_c_history.md`（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
+- **相邻主题**：⟶ Book/part01_history/ch03_cpp98_03.md（第03章　C++98 / C++03：奠基时代）—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part01_history/ch07_cpp20.md（第07章　C++20：量级升级）—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
 
 ## 自测练习（Exercises）
 

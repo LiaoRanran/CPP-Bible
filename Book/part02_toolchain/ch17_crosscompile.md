@@ -712,9 +712,9 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part02_toolchain/ch15_profiling.md`（第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 编号相邻、主题接续。
-- **同模块**：`Book/part02_toolchain/ch12_buildsystems.md`（第12章　构建系统：Make / Ninja / CMake（C++））—— 同模块下的其他主题。
+- **相邻主题**：⟶ Book/part02_toolchain/ch15_profiling.md（第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++））—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part02_toolchain/ch12_buildsystems.md（第12章　构建系统：Make / Ninja / CMake（C++））—— 同模块下的其他主题。
 
 ## 附录 G：工业交叉编译生态
 

@@ -654,10 +654,10 @@ _Z8null_ptrv:
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part01_history/ch10_version_matrix.md`（第10章　版本特性全景对照表与迁移指南）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part01_history/ch02_standardization.md`（第02章　标准化组织、WG21 与提案流程）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part01_history/ch06_cpp17.md`（第06章　C++17：生产力跃升）—— 编号相邻、主题接续。
-- **同模块**：`Book/part01_history/ch01_c_history.md`（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
+- **后续依赖**：⟶ Book/part01_history/ch10_version_matrix.md（第10章　版本特性全景对照表与迁移指南）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part01_history/ch02_standardization.md（第02章　标准化组织、WG21 与提案流程）—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part01_history/ch06_cpp17.md（第06章　C++17：生产力跃升）—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
 
 ## 附录 I（工业级 C++11 实战）
 

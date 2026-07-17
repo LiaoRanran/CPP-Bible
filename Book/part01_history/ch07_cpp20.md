@@ -455,10 +455,10 @@ int main(){std::cout<<add(10,20)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part01_history/ch10_version_matrix.md`（第10章　版本特性全景对照表与迁移指南）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part01_history/ch05_cpp14.md`（第05章　C++14：小幅完善）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part01_history/ch09_cpp26.md`（第09章　C++26：已确定特性与方向）—— 编号相邻、主题接续。
-- **同模块**：`Book/part01_history/ch01_c_history.md`（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
+- **后续依赖**：⟶ Book/part01_history/ch10_version_matrix.md（第10章　版本特性全景对照表与迁移指南）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part01_history/ch05_cpp14.md（第05章　C++14：小幅完善）—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part01_history/ch09_cpp26.md（第09章　C++26：已确定特性与方向）—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
 
 ## 附录 G：C++20 工业实践与深度
 

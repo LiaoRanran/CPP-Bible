@@ -1037,9 +1037,9 @@ int main(){std::thread t1([]{x=1;});std::thread t2([]{x=2;});t1.join();t2.join()
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part02_toolchain/ch16_ide.md`（第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part02_toolchain/ch12_buildsystems.md`（第12章　构建系统：Make / Ninja / CMake（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part02_toolchain/ch11_compilers.md`（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 同模块下的其他主题。
+- **后续依赖**：⟶ Book/part02_toolchain/ch16_ide.md（第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++））—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part02_toolchain/ch12_buildsystems.md（第12章　构建系统：Make / Ninja / CMake（C++））—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

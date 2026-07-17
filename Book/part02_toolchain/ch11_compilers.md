@@ -861,12 +861,12 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part02_toolchain/ch16_ide.md`（第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++））—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part02_toolchain/ch17_crosscompile.md`（第17章　交叉编译与嵌入式工具链（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part01_history/ch10_version_matrix.md`（第10章　版本特性全景对照表与迁移指南）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part01_history/ch09_cpp26.md`（第09章　C++26：已确定特性与方向）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part02_toolchain/ch13_packaging.md`（第13章　包管理：vcpkg / Conan（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part02_toolchain/ch14_debugging.md`（第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++））—— 同模块下的其他主题。
+- **后续依赖**：⟶ Book/part02_toolchain/ch16_ide.md（第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++））—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：⟶ Book/part02_toolchain/ch17_crosscompile.md（第17章　交叉编译与嵌入式工具链（C++））—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part01_history/ch10_version_matrix.md（第10章　版本特性全景对照表与迁移指南）—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part01_history/ch09_cpp26.md（第09章　C++26：已确定特性与方向）—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part02_toolchain/ch13_packaging.md（第13章　包管理：vcpkg / Conan（C++））—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part02_toolchain/ch14_debugging.md（第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++））—— 同模块下的其他主题。
 
 ## 附录 F：工业实战复盘与设计取舍 [I: Practice / H: Design]
 
@@ -896,6 +896,14 @@ int main() {
 
 把「依赖实现定义的位操作」重构为 `<cstdint>` 固定宽度类型 + `std::bit_cast`；把 `-fpermissive` 容忍的含糊构造改为显式 `static_cast`，让 `-Werror` 能上 CI。
 
+
+## 最佳实践 [经验]
+
+- **把 `-Wall -Wextra` 当默认，而非可选**：警告是编译器替你做的免费代码审查；对警告零容忍（`-Werror`）能在 CI 早期拦下未初始化、签名不匹配等隐患。
+- **ABI 兼容性以「同一编译器＋同版本标准库」为契约**：GCC/Clang/MSVC 三者 ABI 不互操作；混链不同编译器产出的 `.o`/`.a` 会崩溃，跨工具链只走 C 接口或序列化边界。
+- **用 `cxx_status` 核对特性支持再写代码**：`<span>`/`<ranges>`/模块等特性在不同编译器版本才落地；上线前查 `gcc.gnu.org/projects/cxx-status.html` 与 Clang 对应表，避免「本地能编线上挂」。
+- **发布构建显式 `-O2 -g` 并保留符号**：`-g` 不拖慢运行，却让崩溃栈可解析；`-O2` 是性价比最优档，`-O3` 仅在热点被 profiling 证实收益时开启。
+- **`__attribute__`/`declspec` 用宏隔离**：平台相关属性（`always_inline`/`noinline`/`dllexport`）包进 `COMP_INLINE` 等宏按编译器分支定义，避免代码被专属语法污染。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

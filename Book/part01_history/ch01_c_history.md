@@ -559,9 +559,9 @@ int main(){int arr[5]={5,3,1,4,2};qsort(arr,5,4,cmp);std::cout<<arr[0]<<std::end
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part16_reading/ch165_roadmap.md`（第165章 C++ 进阶路线图（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part01_history/ch03_cpp98_03.md`（第03章　C++98 / C++03：奠基时代）—— 编号相邻、主题接续。
-- **同模块**：`Book/part01_history/ch04_cpp11.md`（第04章　C++11：现代 C++ 革命）—— 同模块下的其他主题。
+- **后续依赖**：⟶ Book/part16_reading/ch165_roadmap.md（第165章 C++ 进阶路线图（C++））—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part01_history/ch03_cpp98_03.md（第03章　C++98 / C++03：奠基时代）—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part01_history/ch04_cpp11.md（第04章　C++11：现代 C++ 革命）—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 
