@@ -994,6 +994,13 @@ int main() {
 
 这些实现均基于 `0x0008` 字宽位运算与 `0x0040`（64 字节）缓存行对齐；`GCC 13.1.0` / `Clang 17` 对位测试编译为 `bt`/`and` 指令（约 1 ns）。`C++20` `std::popcount` 映射为 `popcnt`（单周期）。
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 定长位集是该架构的编译期定长组件
+- **同模块相邻**：⟶ Book/part07_stl/ch80_array.md（第80章　array 与固定数组）—— array 是定长值序列，bitset 是定长位序列
+- **同模块相邻**：⟶ Book/part07_stl/ch89_tuple_any.md（第89章　tuple / pair / any / function / bind）—— tuple 等定长异构组件类比
+- **对比展示**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— bitset 通常不使用 allocator（栈/静态存储），对比展示 STL 内存后端
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
@@ -1138,4 +1145,5 @@ sete   al
 | `bitset.count()` | 两次 32 位 popcount 运行库调用 | 同（按字） | 无 |
 | `std::popcount(x)` | 32 位 popcount 运行库调用（SWAR） | `popcnt eax,ecx` 单指令 | — |
 | `std::byteswap(x)` | `bswap` | `bswap` | — |
-| `std::bit_cast<To>(x)` | `movd`（位直传） | 同 | — |
+| `std::bit_cast<To>(x)` | `movd`（位直传） | 同 | — |
+

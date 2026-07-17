@@ -950,6 +950,13 @@ int main() {
 
 **底层深度**：libstdc++ 的 `std::chrono::steady_clock::now()` 在 Linux 下调 `clock_gettime(CLOCK_MONOTONIC)`，经 vDSO 映射到用户态读取 TSC，避免 syscall 切换；`system_clock` 映射到 `CLOCK_REALTIME`，可受 NTP 跳变影响，因此计时基准一律用 steady_clock。Chromium 的 `base::Time` 在 Windows 以 1601-01-01 epoch 的 100ns 单位（FILETIME）存储，POSIX 以 1970 epoch 的 us 存储，跨平台统一经 `FromDeltaSinceWindowsEpoch` 转换；Abseil `absl::Time` 内部 `rep_` 为从 1970 epoch 起的 int64 纳秒，calendar 运算走 `cctz` 时区库（源自 Google 内部 Time Zone 实现）。时区数据库（IANA tzdb）在 C++20 中由 `<chrono>` 的 `std::chrono::get_tzdb()` 加载，libstdc++ 实现于 `src/c++20/time.cc`。
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch91_filesystem.md（第91章 文件系统 filesystem）—— filesystem 时间戳依赖 chrono
+- **同模块相邻**：⟶ Book/part07_stl/ch94_stop_token.md（第94章　stop_token 与协作取消 [标准]）—— stop_token 的超时基于 chrono 时长
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— chrono 是该架构外的标准库组件
+- **跨模块前置**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— PMR 可定制 chrono 的内存分配
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

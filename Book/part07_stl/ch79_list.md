@@ -1044,6 +1044,14 @@ struct __list_node {
 
 `splice` 仅改 3 个指针（`0x0008` × 3），复杂度 O(1) 常数；`merge` 为 O(n log n) 比较 + 指针重链，无元素拷贝。`GCC 13.1.0` 的 libstdc++ 节点用 `__gnu_cxx::__aligned_membuf` 对齐到 `0x0010`，减少跨行分裂。
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 节点迭代器满足双向/前向迭代器概念
+- **同模块相邻**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— 与 vector 的缓存局部性对比
+- **同模块相邻**：⟶ Book/part07_stl/ch78_deque.md（第78章　deque 与分段连续 [标准]）—— 与 deque 的中段插入成本对比
+- **同模块相邻**：⟶ Book/part07_stl/ch83_map.md（第83章　map / multimap（红黑树））—— 与有序关联容器的接口共性
+- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— 节点经 allocator 分配
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

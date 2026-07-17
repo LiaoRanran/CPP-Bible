@@ -687,11 +687,13 @@ int main(){std::string s="hello";std::cout<<s<<" ("<<s.capacity()<<" capacity, "
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch91_filesystem.md`（第91章 文件系统 filesystem）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part10_modern/ch122_pmr.md`（第122章　PMR 与多态分配器）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part07_stl/ch79_list.md`（第79章　list / forward_list [标准]）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part07_stl/ch83_map.md`（第83章　map / multimap（红黑树））—— 编号相邻、主题接续。
-- **同模块**：`Book/part07_stl/ch76_stl_arch.md`（第76章　STL 架构与迭代器概念）—— 同模块下的其他主题。
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— basic_string 是该架构的连续字符容器
+- **同模块相邻**：⟶ Book/part07_stl/ch79_list.md（第79章　list / forward_list [标准]）—— list 的节点式存储与 string 连续存储对比
+- **同模块相邻**：⟶ Book/part07_stl/ch83_map.md（第83章　map / multimap（红黑树））—— map 等关联容器的字符键常用 string
+- **同模块相邻**：⟶ Book/part07_stl/ch80_array.md（第80章　array 与固定数组）—— array 提供定长字符缓冲，与 string 互补
+- **同模块相邻**：⟶ Book/part07_stl/ch91_filesystem.md（第91章 文件系统 filesystem）—— filesystem 路径大量使用 string
+- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— SSO 之外的堆分配经 allocator
+- **跨模块前置**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— PMR 字符串可切换多态分配器后端
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

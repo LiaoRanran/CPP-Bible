@@ -600,11 +600,14 @@ A: value() = wide contract (has_value 检查 → 抛异常); operator* = narrow 
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part01_history/ch06_cpp17.md`（第06章　C++17：生产力跃升）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part01_history/ch08_cpp23.md`（第08章　C++23：标准库大修）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part07_stl/ch86_adapters.md`（第86章　容器适配器：stack / queue / priority_queue）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part07_stl/ch90_ranges.md`（第90章　ranges 与 views：惰性求值与管道组合）—— 编号相邻、主题接续。
-- **同模块**：`Book/part07_stl/ch76_stl_arch.md`（第76章　STL 架构与迭代器概念）—— 同模块下的其他主题。
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 可空/可辨别联合是该架构的值语义组件
+- **同模块相邻**：⟶ Book/part07_stl/ch89_tuple_any.md（第89章　tuple / pair / any / function / bind）—— tuple/pair/any 是其定长异构近亲
+- **同模块相邻**：⟶ Book/part07_stl/ch86_adapters.md（第86章　容器适配器：stack / queue / priority_queue）—— 适配器与这些组件常组合使用
+- **同模块相邻**：⟶ Book/part07_stl/ch90_ranges.md（第90章　ranges 与 views：惰性求值与管道组合）—— ranges 视图与这些类型配合表达惰性管道
+- **跨模块前置**：⟶ Book/part01_history/ch06_cpp17.md（第06章　C++17：生产力跃升）—— optional/variant 于 C++17 引入，本章为其前置
+- **跨模块前置**：⟶ Book/part01_history/ch08_cpp23.md（第08章　C++23：标准库大修）—— C++23 扩展与完善这些类型，本章为其前置
+- **相邻主题**：⟶ Book/part03_language/ch28_lifetime_ub.md（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— variant 的活性访问与对象生命周期/UB 紧密相关
+- **相邻主题**：⟶ Book/part04_memory/ch39_raii_rule.md（第 39 章　RAII 与 Rule of Zero/Three/Five）—— 这些类型以 RAII 管理内部资源
 
 ## 附录 E（工业级 optional / variant 实战）
 
@@ -737,6 +740,15 @@ dispatch_manual(std::variant<A,B,C> const&):
 | 手写 `switch(index)` | 同 `std::visit` | 1× 取标签 | 无 |
 
 **结论**：`std::variant` 的访问是**编译期已知的类型集上的常数时间直接分派**，无函数指针间接层、无堆分配、handler 可被内联；而虚调用要在运行时经 vtable 两级解引用后间接 `call`，流水线需排空。在“候选类型在编译期已知、且需值语义/异常安全”的场景，variant + `std::visit` 是虚多态的零开销替代；代价仅是 variant 体积 = max(备选) + 标签字节，且访问非活跃类型会抛 `bad_variant_access`（需保证穷尽）。
+
+### 最佳实践（速记 · optional / variant / expected）
+
+- **空值语义优先 `optional` 而非魔法值**：函数可能无结果时返回 `std::optional<T>`，调用方 `if (auto r = f())` 显式检查，避免 `-1`/特殊指针表示失败带来的歧义。`optional` 携带 bool+value 双状态，热路径注意其 `sizeof` 含对齐填充。
+- **`variant` 用 `std::visit` 活性访问**：编译期分发比手写 `holds_alternative` 链更安全、零运行时分支表；访问者必须覆盖所有 alternative，漏判会在编译期失败而非运行时 UB。替代 `std::get<Index>`（类型不符抛 `bad_variant_access`）。
+- **可恢复错误用 `expected`**：`std::expected<T,E>`（C++23）区分值与错误且错误自带信息，优于用异常表达可预期错误流；错误类型 `E` 应轻量、可拷贝/移动。
+- **`any` 是类型擦除的最后手段**：`std::any` 有堆分配 + RTTI 开销；能用 `variant`/`tuple` 静态多态就不要用 `any`。访问用 `std::any_cast<T>`（类型不符抛 `bad_any_cast`，可用指针重载避免抛异常）。
+- **按值返回依赖移动语义**：这些类型内部常持有堆资源（`string`/`vector`），按值返回经移动避免拷贝；传参大对象用 `T&&` 或按值 + `std::move`。
+- **与异常安全协同**：`optional`/`expected` 是「无异常错误传播」利器；`variant` 在构造失败时保证原状态不变（强异常安全），与 RAII 互补。
 
 ## 自测练习（Exercises）
 

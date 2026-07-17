@@ -1123,10 +1123,12 @@ int main(){std::jthread t([](std::stop_token st){while(!st.stop_requested()){std
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part08_algorithms/ch95_algo_overview.md`（第95章　STL 算法分类与复杂度（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part07_stl/ch92_chrono.md`（第92章 时间库 chrono）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part08_algorithms/ch96_sorting.md`（第96章　排序：sort / stable_sort / partial_sort（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part07_stl/ch76_stl_arch.md`（第76章　STL 架构与迭代器概念）—— 同模块下的其他主题。
+- **同模块相邻**：⟶ Book/part07_stl/ch93_thread_async.md（第93章　线程与异步：thread / future / async）—— stop_token 为 thread/async 提供协作取消
+- **同模块相邻**：⟶ Book/part07_stl/ch92_chrono.md（第92章 时间库 chrono）—— 超时取消基于 chrono 时长
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 协作取消是该架构外的标准库设施
+- **跨模块前置**：⟶ Book/part08_algorithms/ch95_algo_overview.md（第95章　STL 算法分类与复杂度（C++））—— 取消常与算法循环配合
+- **跨模块前置**：⟶ Book/part08_algorithms/ch96_sorting.md（第96章　排序：sort / stable_sort / partial_sort（C++））—— 排序等算法可响应取消
+- **相邻主题**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））—— 原子标志是 stop_token 的底层实现机制
 
 ## 底层视角：stop 状态原子检查与回调链表 [E: Low-level]
 

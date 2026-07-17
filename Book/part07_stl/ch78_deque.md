@@ -1042,6 +1042,14 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 - WG21 提案 P0202R3 规范容器接口
 
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 迭代器概念与分段缓冲架构
+- **同模块相邻**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— 与 vector 的连续/分段差异
+- **同模块相邻**：⟶ Book/part07_stl/ch79_list.md（第79章　list / forward_list [标准]）—— 与 list 的中段插入成本对比
+- **同模块相邻**：⟶ Book/part07_stl/ch83_map.md（第83章　map / multimap（红黑树））—— 与红黑树容器的接口共性
+- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— 分段缓冲块经 allocator 分配
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -1150,6 +1150,15 @@ int main(){std::map<int,int> m{{1,10}};std::unordered_map<int,int> um{{1,10}};st
 - **Abseil** — Abseil 同时提供 flat / node / parallel hash map
 - **Blink** — Blink 用 WTF::HashMap 管理 DOM 属性
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 有序关联容器满足双向迭代器
+- **同模块相邻**：⟶ Book/part07_stl/ch84_set.md（第84章　set / multiset：红黑树有序集合）—— set 是其键即值的同质变体
+- **同模块相邻**：⟶ Book/part07_stl/ch85_unordered.md（第85章　unordered_map / unordered_set：哈希开链集合）—— unordered_map 是其哈希无序版本
+- **同模块相邻**：⟶ Book/part07_stl/ch79_list.md（第79章　list / forward_list [标准]）—— list 节点式存储对比
+- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— 红黑树节点经 allocator 分配
+- **相邻主题**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 插入元素依赖移动语义
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

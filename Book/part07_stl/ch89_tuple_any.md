@@ -1119,6 +1119,14 @@ jne .bad_any
 - WG21 提案 P0202R3 引入 `std::any`
 
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 定长异构组件属于该架构的编译期工具集
+- **同模块相邻**：⟶ Book/part07_stl/ch88_optional_variant.md（第88章　optional / expected / variant：可空与可辨别联合）—— optional/variant 是定长异构近亲
+- **同模块相邻**：⟶ Book/part07_stl/ch90_ranges.md（第90章　ranges 与 views：惰性求值与管道组合）—— ranges 常与这些类型配合
+- **相邻主题**：⟶ Book/part04_memory/ch39_raii_rule.md（第 39 章　RAII 与 Rule of Zero/Three/Five）—— any 以 RAII 管理类型擦除的资源
+- **相邻主题**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 是这些组件的类型萃取基础
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

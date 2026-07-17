@@ -1099,6 +1099,14 @@ int main() {
 | [第115章](Book/part10_modern/ch115_move.md) | 向量化计算/图像处理 | 本章提供概念，第115章提供实现 |
 
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 无序关联容器满足前向迭代器
+- **同模块相邻**：⟶ Book/part07_stl/ch83_map.md（第83章　map / multimap（红黑树））—— map 是其有序红黑树版本
+- **同模块相邻**：⟶ Book/part07_stl/ch84_set.md（第84章　set / multiset：红黑树有序集合）—— set 是其同族有序版本
+- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— 桶与节点经 allocator 分配
+- **相邻主题**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 元素移动依赖移动语义
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

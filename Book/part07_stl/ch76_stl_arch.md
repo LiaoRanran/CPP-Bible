@@ -992,6 +992,16 @@ int main(){std::vector<int> v{1,2,3};std::map<int,int> m{{1,10}};std::cout<<v[0]
 
 架构共性：allocator 是关键抽象点——`std::polymorphic_allocator` + `std::memory_resource`（C++17）把 SSO/池化下沉到 `resource`，工业库普遍自定义 `memory_resource` 做 NUMA 感知分配。
 
+## 相关章节（交叉引用）
+
+- **同模块核心**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— vector 是该架构下连续内存容器的典型实现，迭代器类别为随机访问
+- **同模块核心**：⟶ Book/part07_stl/ch78_deque.md（第78章　deque 与分段连续 [标准]）—— deque 的分段缓冲体现同一架构下的另一种迭代器模型
+- **同模块核心**：⟶ Book/part07_stl/ch79_list.md（第79章　list / forward_list [标准]）—— list/forward_list 的节点迭代器满足同一套迭代器概念
+- **同模块核心**：⟶ Book/part07_stl/ch90_ranges.md（第90章　ranges 与 views：惰性求值与管道组合）—— ranges 在该架构之上叠加惰性管道与视图
+- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— allocator 是 STL 容器的可插拔内存后端，架构依赖它切分内存
+- **相邻主题**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 移动语义是该架构值传递的零拷贝基石
+- **相邻主题**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— PMR 多态分配器是该架构的现代内存后端
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -1084,6 +1084,13 @@ int main() {
 
 > 交叉引用：数组见 [ch80](Book/part07_stl/ch80_array.md)；连续内存见 [ch35](Book/part04_memory/ch35_memory_layout.md)。
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— span 是该架构下的轻量连续视图
+- **同模块相邻**：⟶ Book/part07_stl/ch80_array.md（第80章　array 与固定数组）—— span 是 array 数据的零拷贝视图
+- **同模块相邻**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— span 是 vector 数据的零拷贝视图
+- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— span 不拥有内存，其来源常由 allocator 分配
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

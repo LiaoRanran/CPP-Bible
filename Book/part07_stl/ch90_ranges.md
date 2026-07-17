@@ -937,6 +937,17 @@ int main(){auto v=std::views::iota(1,6)|std::views::transform([](int x){return x
 
 > 交叉引用：迭代器见 [ch76](Book/part07_stl/ch76_stl_arch.md)；算法见 [ch95](Book/part08_algorithms/ch95_algo_overview.md)；惰性求值见 [ch120](Book/part10_modern/ch120_coroutine_app.md)。
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— ranges 构建于该架构的迭代器概念之上
+- **同模块相邻**：⟶ Book/part07_stl/ch88_optional_variant.md（第88章　optional / expected / variant：可空与可辨别联合）—— optional/variant 常与 ranges 管道配合
+- **同模块相邻**：⟶ Book/part07_stl/ch89_tuple_any.md（第89章　tuple / pair / any / function / bind）—— tuple 等常与 ranges 配合
+- **跨模块前置**：⟶ Book/part10_modern/ch119_ranges_deep.md（第119章　Ranges 深入（C++20））—— C++20 ranges 深入讲解视图与适配器
+- **跨模块前置**：⟶ Book/part08_algorithms/ch95_algo_overview.md（第95章　STL 算法分类与复杂度（C++））—— ranges 算法是 STL 算法思想的惰性化重构
+- **跨模块前置**：⟶ Book/part08_algorithms/ch96_sorting.md（第96章　排序：sort / stable_sort / partial_sort（C++））—— 排序等算法在 ranges 下的管道表达
+- **相邻主题**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 管道元素移动依赖移动语义
+- **相邻主题**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— Concepts 约束 ranges 的迭代器/视图参数
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

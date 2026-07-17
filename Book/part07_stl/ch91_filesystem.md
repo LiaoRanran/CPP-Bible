@@ -983,6 +983,14 @@ jne .not_exist
 
 `std::error_code` 封装 `errno`（如 `ENOENT=0x0002`），零开销抽象；`copy_file` 经缓冲区拷贝，吞吐受 `0x0040` 缓存行与 DMA 带宽限制。`GCC 13.1.0` / `Clang 17` 的 `std::filesystem` 由 libstdc++/libc++ 实现，`constexpr` 路径拼接可在编译期求值。
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch92_chrono.md（第92章 时间库 chrono）—— chrono 为 filesystem 操作提供时间戳
+- **同模块相邻**：⟶ Book/part07_stl/ch81_string.md（第81章　std::string 与 SSO 短字符串优化）—— 路径与文件名大量使用 string
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— filesystem 是该架构外的标准库组件
+- **跨模块前置**：⟶ Book/part04_memory/ch40_exception_safety.md（第 40 章　异常安全（Exception Safety））—— 文件系统操作大量使用异常语义
+- **跨模块前置**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— PMR 可定制 filesystem 的内存分配
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

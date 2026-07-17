@@ -936,6 +936,13 @@ int main() {
 
 **底层深度**：`std::array` 与 C 数组在 ABI 层完全等价（相同的大小、对齐和成员排布）。GCC 13.1 `-O2` 下，`std::array<int,4>::operator[]` 编译为单条 `mov eax, [rdi + rsi*4]`，与 `int arr[4]; arr[i]` 生成完全相同的机器码——零开销抽象的典范。`std::array::data()` 返回指向内部 `T[N]` 的裸指针，可直接传给 C API（如 `memcpy`、`sendto`）。与 `std::span` 配合：`std::span{arr}.subspan(1,2)` 在 `-O2` 下被完全优化掉（内联为偏移计算，无额外间接层）。
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 固定容量连续容器的迭代器概念
+- **同模块相邻**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— 与 vector 的定长/变长对比
+- **同模块相邻**：⟶ Book/part07_stl/ch82_span.md（第82章　span 与裸数组视图）—— span 是其数据的零拷贝视图
+- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— array 不使用 allocator（栈/静态存储），对比展示 STL 内存后端
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

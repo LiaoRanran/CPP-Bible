@@ -1076,6 +1076,14 @@ int main() {
 
 > 交叉引用：映射见 [ch83](Book/part07_stl/ch83_map.md)；哈希见 [ch38](Book/part04_memory/ch38_allocator.md)。
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 有序集合满足双向迭代器
+- **同模块相邻**：⟶ Book/part07_stl/ch83_map.md（第83章　map / multimap（红黑树））—— map 是其键值分离的变体
+- **同模块相邻**：⟶ Book/part07_stl/ch85_unordered.md（第85章　unordered_map / unordered_set：哈希开链集合）—— unordered_set 是其哈希无序版本
+- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— 红黑树节点经 allocator 分配
+- **相邻主题**：⟶ Book/part04_memory/ch40_exception_safety.md（第 40 章　异常安全（Exception Safety））—— 插入的强异常保证依赖异常安全
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

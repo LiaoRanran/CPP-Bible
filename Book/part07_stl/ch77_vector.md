@@ -1075,6 +1075,16 @@ size_type _M_check_len(size_type __n, const char* __s) const {
 - **`reserve` 消除扩容分支**：`push_reserved` 仅 `reserve` 时一次 `operator new`，循环内 `push_back` 直接写槽、零 `call`——与附录 H 的"reserve 后零分配"结论在指令级互证。
 - **增长因子 2×**：libstdc++ 默认 `new_cap = 2*old_cap`（附录 H 已列各库因子），故 8 次 push 触发约 3 次扩容、峰值浪费可达 100%。已知元素数量时 `reserve(N)` 可把扩容次数降到 0。
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 迭代器概念与连续存储的架构背景
+- **同模块相邻**：⟶ Book/part07_stl/ch78_deque.md（第78章　deque 与分段连续 [标准]）—— deque 与 vector 的扩容/失效语义对比
+- **同模块相邻**：⟶ Book/part07_stl/ch80_array.md（第80章　array 与固定数组）—— array 是固定容量连续容器，无扩容
+- **同模块相邻**：⟶ Book/part07_stl/ch82_span.md（第82章　span 与裸数组视图）—— span 是 vector 数据的零拷贝只读视图
+- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— 扩容经 allocator 在堆上成长，allocator 决定后端
+- **跨模块前置**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈（stack）与堆（heap）的深度对比）—— 堆上扩容的内存来自堆，与栈对象的生命周期差异
+- **相邻主题**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 扩容时元素移动依赖移动语义避免拷贝
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

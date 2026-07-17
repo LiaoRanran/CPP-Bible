@@ -1108,6 +1108,16 @@ Win64 上 `__tls_get_addr` 属 `KERNEL32.dll`——动态查找当前线程的 T
 
 ---
 
+## 相关章节（交叉引用）
+
+- **同模块相邻**：⟶ Book/part07_stl/ch94_stop_token.md（第94章　stop_token 与协作取消 [标准]）—— stop_token 为 thread/async 提供协作取消
+- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 这些并发设施位于 STL 但跨模块
+- **跨模块前置**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））—— 线程同步底层依赖 atomic
+- **跨模块前置**：⟶ Book/part09_concurrency/ch108_memory_order.md（第108章　memory_order：六种内存序（C++11））—— 内存序决定异步结果的可见性
+- **跨模块前置**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））—— 无锁数据结构是线程/异步的高性能近亲
+- **相邻主题**：⟶ Book/part04_memory/ch40_exception_safety.md（第 40 章　异常安全（Exception Safety））—— 异步回调的异常安全需谨慎
+- **相邻主题**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— future 的移动依赖移动语义
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
