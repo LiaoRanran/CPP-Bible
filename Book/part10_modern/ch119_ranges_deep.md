@@ -1,7 +1,7 @@
 # 第119章　Ranges 深入（C++20）
 
-> 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
-> 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；本章 `[实现]` 级源码来自该目录真实文件，逐行标注路径与行号。
+> 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
+> 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；本章 `[实现]` 级源码来自该目录真实文件，逐行标注路径与行号。
 
 ## ① 概述：Ranges 解决了什么 [标准]
 
@@ -74,7 +74,7 @@ for (int x : r) std::cout << x << " ";   // 遍历时才对每个元素 *10
 
 ```cpp
 // 文件：Examples/_asm_ranges.cpp，行号：8（_Z10use_rangesv）/ 39（test cl,1 过滤）/ 47（imul 平方）
-// 编译：g++ -std=c++23 -O2 -S -masm=intel _asm_ranges.cpp -o _asm_ranges.asm
+// 编译：g++ 15.3.0 -std=c++23 -O2 -S -masm=intel _asm_ranges.cpp -o _asm_ranges.asm
 #include <ranges>
 #include <vector>
 int use_ranges() {
@@ -88,27 +88,36 @@ int use_ranges() {
 ```
 
 ```asm
-; 关键证据：filter 与 transform 在同一循环内融合，单次遍历
+; 关键证据（GCC 15.3.0 -O2 -masm=intel）：filter 与 transform 融合为单遍遍历
 _Z10use_rangesv:
-	...
-	call	_Znwy                  ; 仅 vector v 的一次堆分配
+	push	rbx
+	sub	rsp, 32
+	.seh_endprologue
+	mov	ecx, 24
+	call	_Znwy                  ; vector v 的一次堆分配（6×int = 24B）
+	...                              ; 用 movabs 写入 {1,2,3,4,5,6}，随后 jmp .L3
 .L14:
-	add	rdx, 4
-	cmp	r9, rdx
-	je	.L5
+	add	rax, 4
+	cmp	rax, r8
+	je	.L13
 .L3:
-	mov	ecx, DWORD PTR [rdx]
-	test	cl, 1                  ; filter：i % 2 == 0 ?（最低位为0）
+	mov	edx, DWORD PTR [rax]
+	mov	rcx, rax
+	test	dl, 1                  ; filter：i % 2 == 0 ?（最低位为 0）
 	jne	.L14                     ; 奇数 -> 跳过（继续下个元素）
-	cmp	r9, rdx
-	je	.L5
-.L9:
-	imul	ecx, ecx                ; transform：平方
-	add	ebx, ecx                 ; 累加
+	xor	ebx, ebx
+	cmp	rax, r8
+	je	.L4
+.L7:
+	imul	edx, edx                ; transform：平方
+	add	ebx, edx                 ; 累加
+	cmp	r8, rax
+	jne	.L6
+	jmp	.L4
 	...
 ```
 
-- `[实现]`：汇编中 `filter`（`test cl,1` + `jne`）与 `transform`（`imul`）在同一循环体 `.L9` 内**顺序执行**——两个 view 被融合为**单次遍历**，没有中间数组。
+- `[实现·GCC15.3.0]`：汇编中 `filter`（`test dl,1` + `jne`）与 `transform`（`imul` + `add ebx`）在循环体 `.L3`/`.L7` 内**顺序执行**——两个 view 被融合为**单次遍历**，没有中间数组。
 - `[标准]`：这印证 Ranges 的零开销——组合 view 不增加遍历次数，性能等于手写单循环。
 
 ## ⑥ 常用 view 适配器 [标准]
@@ -234,7 +243,7 @@ use(cached); use(cached);
 ## ⑫ 真实源码：view 的存储结构 [实现]
 
 ```cpp
-// 文件：bits/ranges_base.h / bits/ranges_util.h （GCC 13.1.0, libstdc++），行号：filter_view 存 _M_base/_M_pred（概念，参见 ⑬）
+// 文件：bits/ranges_base.h / bits/ranges_util.h （GCC 15.3.0, libstdc++），行号：filter_view 存 _M_base/_M_pred（概念，参见 ⑬）
 // 概念：filter_view 持有 _M_base（底层范围引用）+ _M_pred（谓词）
 //   struct filter_view : view_interface<filter_view> {
 //       _Vp _M_base;        // 底层范围
@@ -250,7 +259,7 @@ use(cached); use(cached);
 
 ```cpp
 #include <utility>
-// 文件：bits/ranges_util.h （GCC 13.1.0, libstdc++），行号：_RangeAdaptorClosure 重载 operator|（range|adaptor == adaptor(range)）
+// 文件：bits/ranges_util.h （GCC 15.3.0, libstdc++），行号：_RangeAdaptorClosure 重载 operator|（range|adaptor == adaptor(range)）
 // 概念：_RangeAdaptorClosure 重载 operator| 使 range | adaptor 成立
 //   template <typename _Tp, typename _Closure>
 //   auto operator|( _Tp&& __lhs, _Closure __rhs )

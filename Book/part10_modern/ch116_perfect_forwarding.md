@@ -246,17 +246,17 @@ int main() {
 
 ---
 
-## ⑩ 汇编分析（-O2）：forward 与 move 都"消失"
+## ⑩ 汇编分析（GCC 15.3.0 -O2）：forward 与 move 都"消失"
 
-下例在 `g++ -std=c++23 -O2 -S -masm=intel` 下编译（GCC 13.1.0，MinGW）：
+下例在 **GCC 15.3.0** `-std=c++23 -O2 -S -masm=intel` 下真实编译（objdump 反汇编；算子标 `[[gnu::noinline]]` 以保留三个独立符号）：
 
 ```cpp
-// ⑩-a move/forward 的汇编本质（GCC13.1 -O2 -masm=intel）
+// ⑩-a move/forward 的汇编本质（GCC 15.3.0 -O2 -masm=intel）
 #include <utility>
 int g_global = 0;
-void by_move(int&& x) { g_global = x; }
-void by_forward(int&& x) { by_move(std::move(x)); }
-void by_forward2(int&& x) { by_move(std::forward<int>(x)); }
+[[gnu::noinline]] void by_move(int&& x) { g_global = x; }
+[[gnu::noinline]] void by_forward(int&& x) { by_move(std::move(x)); }
+[[gnu::noinline]] void by_forward2(int&& x) { by_move(std::forward<int>(x)); }
 int main() {
     int a = 1;
     by_forward(std::move(a));
@@ -266,23 +266,18 @@ int main() {
 ```
 
 ```asm
-; 文件：_asm_probe.asm（g++ -std=c++23 -O2 -S -masm=intel）
-; 关键结论：std::move 与 std::forward 都编译成"无操作"，只剩一个 mov
-_Z7by_moveOi:
-        mov     eax, DWORD PTR [rcx]
-        mov     DWORD PTR g_global[rip], eax
-        ret
-_Z10by_forwardOi:                      ; std::move 版本
-        mov     eax, DWORD PTR [rcx]
-        mov     DWORD PTR g_global[rip], eax
-        ret
-_Z11by_forward2Oi:                     ; std::forward<int> 版本——与 move 完全一致
-        mov     eax, DWORD PTR [rcx]
-        mov     DWORD PTR g_global[rip], eax
-        ret
+; GCC 15.3.0 -O2 -masm=intel ；std::move 与 std::forward 运行时零指令（本体只有 mov，包装层 tail-call）
+<by_move(int&&)>:                             ; std::move 落点：本体只有 2 条 mov
+    mov    eax, DWORD PTR [rcx]
+    mov    DWORD PTR [rip+0x0], eax           ; g_global（链接期重定位）
+    ret
+<by_forward(int&&)>:                          ; std::move 版本包装层 —— tail-call 到 by_move
+    jmp    by_move(int&&)
+<by_forward2(int&&)>:                         ; std::forward<int> 版本 —— 与 move 逐字节相同
+    jmp    by_move(int&&)
 ```
 
-> `[实现·GCC13]`：**`std::move` 和 `std::forward` 在 `-O2` 下不生成任何指令**——它们是编译期 `static_cast`，运行时零成本。这正是"零开销抽象"的范例。区分它们**只在语义/可读性层面有意义**，不影响生成的机器码。
+> `[实现·GCC15.3.0]`：**`std::move` 和 `std::forward` 在 `-O2` 下不生成任何专属指令**——它们是编译期 `static_cast`，运行时零成本。GCC 15.3.0 进一步把 `by_forward`/`by_forward2` 包装层优化成 `jmp by_move` 的尾调用（与 move 逐字节相同），而 `by_move` 本体只有 `mov eax,[rcx]` + `mov [g_global],eax` 两条指令。区分二者**只在语义/可读性层面有意义**，不影响生成的机器码。
 > `[平台·x86-64]`：引用作为形参统一用 `rcx` 传址，函数体内 `mov eax,[rcx]` 取回值。
 
 ---

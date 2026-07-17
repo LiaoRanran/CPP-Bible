@@ -2,7 +2,7 @@
 
 > 元数据：标准基 C++23（GCC 13.1 / MinGW，`-std=c++23 -O2 -Wall -Wextra`）· 预计阅读 75 min · 前置 `ch60_template_basics` / `ch65_type_traits` / `ch67_concepts` / `ch69_constexpr` · 后续 `ch51_crtp` / `ch71_policy` / `ch118_modules` / `ch122_pmr` · 难度 ★★★★☆
 >
-> 真实编译器：MinGW GCC 13.1.0。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`，本章 `[实现]` 级源码来自该目录真实文件，逐行标注 `文件：` + `行号：`。
+> 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`，本章 `[实现]` 级源码来自该目录真实文件，逐行标注 `文件：` + `行号：`（⑩ 汇编证据按 GCC 15.3.0 真机重编译）。
 
 ## ① 学习目标 [标准]
 
@@ -220,16 +220,19 @@ int main() {
 ```
 
 ```asm
-; g++ -std=c++23 -O2 -S -masm=intel  (GCC 13.1, MinGW)
+; g++ -std=c++23 -O2 -S -masm=intel  (GCC 15.3.0, MinGW)
 ; 关键证据：factorial(5) 完全消失，没有任何递归/调用，直接是常量
-_Z4factIiEiT_ 不存在；main 中只见：
-        mov     edx, 120            ; factorial(5) 已经折叠为 120
-        mov     ecx, OFFSET FLAT:_ZSt4cout
-        call    _ZNSolsEi          ; 仅剩下 operator<<
+_Z4fact 不存在（consteval 立即函数不发射任何符号）；main 中只见：
+        sub     rsp, 40
+        call    __main
+        mov     rcx, QWORD PTR .refptr._ZSt4cout[rip]   ; std::cout 基址
+        mov     edx, 120                                 ; factorial(5) 已经折叠为 120
+        call    _ZNSolsEi                               ; 仅剩下 operator<<(int)
+        ...                                             ; 后续打印 "\n" 与返回
 ; 没有任何 call factorial、没有循环——编译期计算"消灭"了运行期代码
 ```
 
-> `[实现·GCC13]` 立即函数的调用在常量语境中必须产出常量表达式；`-O2` 下该常量被直接编码进指令，等价于手写 `int x = 120;`，零开销。
+> `[实现·GCC15.3.0]` 立即函数的调用在常量语境中必须产出常量表达式；`-O2` 下该常量被直接编码进指令，等价于手写 `int x = 120;`，零开销。
 
 ## ⑪ STL 联系：type traits 的工业用法 [标准]
 
@@ -437,10 +440,10 @@ int main() {
 
 ## ⑬ 源码分析：libstdc++ 的 traits 与 concepts 骨架 [实现]
 
-下列 `文件：` + `行号：` 取自 GCC 13.1.0 真实 `type_traits` 与 `concepts`。
+下列 `文件：` + `行号：` 取自 GCC 15.3.0 真实 `type_traits` 与 `concepts`（行号随 libstdc++ 版本更新）。
 
 ```
-文件：type_traits                          行号：62
+文件：type_traits                          行号：93
     template<typename _Tp, _Tp __v>
       struct integral_constant {
           static constexpr _Tp                  value = __v;
@@ -449,40 +452,40 @@ int main() {
           constexpr operator value_type() const noexcept { return value; }
           constexpr value_type operator()() const noexcept { return value; }
       };
-文件：type_traits                          行号：82 / 85
+文件：type_traits                          行号：117 / 120
     using true_type  = integral_constant<bool, true>;
     using false_type = integral_constant<bool, false>;
 ```
 
-- `integral_constant`（62）是**所有布尔型 traits 的基类**：把值 `value` 作为编译期常量，并支持隐式转 `bool`（用于 `if (trait::value)`）。
-- `true_type`/`false_type`（82/85）只是它的两个特化别名。
+- `integral_constant`（93）是**所有布尔型 traits 的基类**：把值 `value` 作为编译期常量，并支持隐式转 `bool`（用于 `if (trait::value)`）。
+- `true_type`/`false_type`（117/120）只是它的两个特化别名。
 
 ```
-文件：type_traits                          行号：106 / 111 / 2610
+文件：type_traits                          行号：134 / 139 / 2838
     template<bool _Cond, typename _Tp = void> struct enable_if { };
     template<typename _Tp> struct enable_if<true, _Tp> { typedef _Tp type; };
     template<bool _Cond, typename _Tp = void>
       using enable_if_t = typename enable_if<_Cond, _Tp>::type;
 ```
 
-- `enable_if`（106）是 SFINAE 的"开关"：当 `_Cond` 为真才定义 `::type`，否则**整个模板被静默移出重载集**。`enable_if_t`（2610）是便利别名。
+- `enable_if`（134）是 SFINAE 的"开关"：当 `_Cond` 为真才定义 `::type`，否则**整个模板被静默移出重载集**。`enable_if_t`（2838）是便利别名。
 
 ```
-文件：type_traits                          行号：441
+文件：type_traits                          行号：467
     template<typename _Tp> struct is_integral : public false_type { };
     // 对各整数类型（bool/char/short/int/...）特化为 true_type
-文件：type_traits                          行号：2235 / 2240
+文件：type_traits                          行号：2461 / 2466
     template<bool _Cond, typename _Iftrue, typename _Iffalse>
       struct conditional { typedef _Iftrue type; };
     template<typename _Iftrue, typename _Iffalse>
       struct conditional<false, _Iftrue, _Iffalse> { typedef _Iffalse type; };
 ```
 
-- `is_integral`（441）是"主模板=假，对各整型偏特化=真"的经典 TMP 分支模式。
-- `conditional`（2235）把"三元运算符"搬进类型系统：编译期按 `_Cond` 选 `type`。
+- `is_integral`（467）是"主模板=假，对各整型偏特化=真"的经典 TMP 分支模式。
+- `conditional`（2461）把"三元运算符"搬进类型系统：编译期按 `_Cond` 选 `type`。
 
 ```
-文件：concepts                             行号：100
+文件：concepts                             行号：109
     template<typename _Tp>
       concept integral = is_integral_v<_Tp>;
 文件：concepts                             行号：62
@@ -490,7 +493,7 @@ int main() {
       concept same_as = is_same_v<_Tp, _Up> && is_same_v<_Up, _Tp>;
 ```
 
-> `[实现·GCC13]` Concepts 在 libstdc++ 中**建立在 type traits 之上**：`concept integral`（concepts:100）直接复用了 `is_integral_v`。这说明"Concepts 不是另起炉灶，而是给 traits 加了语法糖 + 约束语义"。
+> `[实现·GCC15.3.0]` Concepts 在 libstdc++ 中**建立在 type traits 之上**：`concept integral`（concepts:109）直接复用了 `is_integral_v`。这说明"Concepts 不是另起炉灶，而是给 traits 加了语法糖 + 约束语义"。
 
 ```cpp
 // C14 用 traits 机制自己造一个 enable_if 风格的"编译期开关"
@@ -863,10 +866,10 @@ int main() {
 - 为什么 `consteval` 函数"拒绝运行期调用"反而是优点？什么场景下你会故意想要它？
 - 编译期计算把值烧进指令，这对 **cache 命中率 / 代码体积 / I-cache** 分别有何影响？
 
-**源码阅读建议（libstdc++ GCC 13.1.0）**
-- `type_traits`：`integral_constant`(62) → `true_type`/`false_type`(82/85) → `enable_if`(106) → `is_integral`(441) → `conditional`(2235) → `conjunction`(217)。
-- `concepts`：`same_as`(62) / `integral`(100) / `constructible_from`(152) / `copy_constructible`(171)。
-- `bits/cpp_type_traits.h`：`__is_integer`(127) 系列——这是 `is_integral` 的最底层编译器内建包装。
+**源码阅读建议（libstdc++ GCC 15.3.0）**
+- `type_traits`：`integral_constant`(93) → `true_type`/`false_type`(117/120) → `enable_if`(134) → `is_integral`(467) → `conditional`(2461) → `conjunction`(243)。
+- `concepts`：`same_as`(62) / `integral`(109) / `constructible_from`(159) / `copy_constructible`(178)。
+- `bits/cpp_type_traits.h`：`__is_integer`(121) 系列——这是 `is_integral` 的最底层编译器内建包装。
 
 > 自检提示：本章所有 ` ```cpp ` 块均可用 `g++ -std=c++23 -O2 -Wall -Wextra` 独立编译通过；consteval/constexpr 的编译期验证均用 `static_assert` 显式标注。
 

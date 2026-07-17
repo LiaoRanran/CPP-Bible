@@ -354,31 +354,31 @@ int main() {
 
 ---
 
-## ⑩ 汇编分析：移动 vs 拷贝（-O2 实测）
+## ⑩ 汇编分析：移动 vs 拷贝（GCC 15.3.0 -O2 实测）
 
-下面汇编由 `g++ 13.1 -O2 -masm=intel` 对 `Buf` 的**移动赋值**与**拷贝赋值**真实生成。最关键的区别：移动只做指针窃取（无 `call`），拷贝调用 `operator new[]`（`_Znay`）并逐元素循环。
+下面汇编由 **GCC 15.3.0** `-O2 -masm=intel -std=c++23` 对 `Buf` 的**移动赋值**与**拷贝赋值**真实生成（`objdump -d -M intel -C`；源码 `_asm_demo/_ch115_buf_gcc15_noinline.cpp`，算子标 `[[gnu::noinline]]` 以暴露算子本体——`-O2` 下平凡驱动会把算子整体内联消除）。最关键的区别：移动 = **释放旧资源(`delete[]`) + 指针窃取**，无 `new[]` 分配、无逐元素循环；拷贝 = **释放旧资源 + `new[]` 分配 + 逐元素循环 `O(n)`**。
 
 ```asm
-; g++ 13.1 -O2 -masm=intel ；移动赋值 Buf::operator=(Buf&&)
-; 关键片断：delete[] 之后仅是"指针复制 + 源置空"，无分配、无循环
-        call    _ZdaPv                 ; delete[] 旧资源
-        mov     rax, QWORD PTR [rsi]   ; rax = 源.p
-        mov     QWORD PTR [rbx], rax   ; 目标.p = 源.p  （窃取）
-        mov     rax, QWORD PTR 8[rsi]
-        mov     QWORD PTR 8[rbx], rax  ; 目标.n = 源.n
-        mov     QWORD PTR [rsi], 0     ; 源.p = nullptr
-        mov     QWORD PTR 8[rsi], 0    ; 源.n = 0
+; GCC 15.3.0 -O2 -masm=intel -std=c++23  ；移动赋值 Buf::operator=(Buf&&)  [this=rcx, 源=rdx]
+; 关键片断：delete[] 旧资源 + 指针窃取（无 new[]、无循环）
+        call    _ZdaPv                 ; delete[] 旧 this->p
+        mov     rcx, QWORD PTR [rdx]   ; rcx = 源.p
+        mov     QWORD PTR [rax], rcx   ; 目标.p = 源.p  （窃取）
+        mov     rcx, QWORD PTR 8[rdx]
+        mov     QWORD PTR 8[rax], rcx  ; 目标.n = 源.n
+        mov     QWORD PTR [rdx], 0     ; 源.p = nullptr
+        mov     QWORD PTR 8[rdx], 0    ; 源.n = 0
 
-; g++ 13.1 -O2 -masm=intel ；拷贝赋值 Buf::operator=(const Buf&)
-; 关键片断：先 call _Znay（operator new[]）分配，再 .L15 逐元素复制
+; GCC 15.3.0 -O2 -masm=intel  ；拷贝赋值 Buf::operator=(const Buf&)  [this=rcx, 源=rdx]
+; 关键片断：delete[] 旧资源 + call _Znay（new[]）分配 + 逐元素循环
         call    _Znay                  ; operator new[] 分配新堆内存
         ...
-        .L15:
-        mov     edx, DWORD PTR [r9+r8*4]
-        mov     DWORD PTR [rcx+r8*4], edx   ; 逐元素拷贝（循环）
+.L9:
+        mov     edx, DWORD PTR [r9+rax*4]
+        mov     DWORD PTR [rcx+rax*4], edx   ; 逐元素拷贝（循环）
 ```
 
-- `[实现·GCC13]`：汇编证实移动赋值的代价是**两条 `mov` + 源置空**（常数级），拷贝赋值则含 `call _Znay`（堆分配）+ 元素循环 `O(n)`。对大缓冲区，差距即"分配+复制" vs "两次指针赋值"。
+- `[实现·GCC15.3.0]`：汇编证实移动赋值的代价是 **`delete[]` 旧资源 + 两条 `mov` 窃取指针 + 源置空**（常数级），拷贝赋值则额外含 `call _Znay`（堆分配）+ 元素循环 `O(n)`。对大缓冲区，差距即"分配+复制" vs "两次指针赋值"。
 - `[标准]`：这正是移动语义把"深拷贝"降级为"指针转移"的性能收益来源。
 
 ```cpp
@@ -1094,52 +1094,61 @@ Big make_big_rvo() { return Big(1024); }              // ① RVO
 void move_into_consume(Big&& src) { consume_big(std::move(src)); } // ② 移动
 ```
 
-### 真实汇编（GCC15 -O2）
+### 真实汇编（GCC 15.3.0 -O2）
+
+> 以下由 **GCC 15.3.0** `-std=c++23 -O2 -c` 真实编译，经 `objdump -d -M intel -C` 反汇编（源码 `_asm_demo/ch115_appendixE.cpp`）。已剔除函数栈帧 prologue/epilogue，仅保留数据相关指令。
 
 **① RVO 构造 —— 内联到调用方栈槽**
 
-RVO 不产生函数调用在调用方生成对象。编译器在函数签名层面传递了**隐藏的返回槽指针**（Win64 ABI：`%rcx` = 目标地址）：
+RVO 不产生函数调用在调用方生成对象。编译器在函数签名层面传递了**隐藏的返回槽指针**（Win64 ABI：`rcx` = 目标地址）：
 
 ```asm
-<_Z12make_big_rvov>:
-    push   %rdi; push %rbx; sub $0x28,%rsp
-    mov    %rcx,%rbx                    ; [RVO] 保存返回槽指针
-    mov    $0x400,%ecx                  ; 1024 字节
-    call   operator new(1024)           ; 只分配一次
-    movq   $0x400,0x8(%rbx)            ; sz = 1024（直接写入返回槽）
-    lea    0x8(%rax),%rdx
-    mov    %rax,(%rbx)                  ; data = new char[1024]（写入返回槽）
-    ; memset 展开为两次 8B 零写（首尾 8 字节）——避免 memset 调用
-    and    $0xfffffffffffffff8,%rdx
-    movq   $0x0,(%rax)                  ; data[0..7] = 0
-    movq   $0x0,0x3f8(%rax)            ; data[1016..1023] = 0（编译器2×8B覆盖够了）
-    mov    %rbx,%rax; add $0x28,%rsp; pop %rbx; pop %rdi; ret
+<make_big_rvo()>:                              ; RVO：构造体直接内联到返回槽，无中间对象
+    mov    rbx, rcx                    ; 保存返回槽指针（Win64 ABI: rcx = 目标地址）
+    mov    ecx, 0x400                  ; 1024 字节
+    call   operator new                ; 只分配一次（new char[1024]）
+    mov    QWORD PTR [rbx+0x8], 0x400  ; sz = 1024（直接写入返回槽）
+    lea    rdx, [rax+0x8]
+    mov    QWORD PTR [rbx], rax        ; data = new char[1024]（写入返回槽）
+    and    rdx, 0xfffffffffffffff8     ; ↓ 以下将缓冲区清零（替代 memset 调用）
+    mov    QWORD PTR [rax], 0x0        ; data[0..7] = 0
+    mov    QWORD PTR [rax+0x3f8], 0x0  ; data[1016..1023] = 0
+    sub    rax, rdx
+    mov    rdi, rdx
+    lea    ecx, [rax+0x400]
+    xor    eax, eax
+    shr    ecx, 0x3
+    rep stos QWORD PTR es:[rdi], rax   ; rep stos 展开零写（首尾 8 字节对齐清零）
 ```
 
 **💡 关键观察**：
 - **零次拷贝/移动构造调用**——`Big` 的构造函数体（`new` + `memset` + 字段初始化）直接被编译到函数中，不通过任何中间对象。
-- **返回槽指针**`%rbx` 是调用方栈上预分配的 16 字节 `Big` 对象地址——RVO 是 ABI 层面的操作，不是编译器优化。
+- **返回槽指针**`rbx` 是调用方栈上预分配的 16 字节 `Big` 对象地址——RVO 是 ABI 层面的操作，不是编译器优化。
 
-**② 移动构造 —— 指针交换**
+**② 移动构造 —— 指针窃取**
 
-当 RVO 不适用时（如 `std::move(src)` 传参），移动构造器被调用：
+当 RVO 不适用时（如 `std::move(src)` 传参），移动构造器被调用（rcx = 目标 this，rdx = 源 this）：
 
 ```asm
-; 移动构造器 Big(Big&&) — 3 条关键 mov
-mov  (%rcx),%rax    ; dst->data = src->data（指针搬移）
-mov  %rax,(%rdx)
-mov  0x8(%rcx),%rax ; dst->sz  = src->sz（值搬移）
-mov  %rax,0x8(%rdx)
-movq $0x0,(%rcx)    ; src->data = nullptr（搬空源）
-movq $0x0,0x8(%rcx) ; src->sz   = 0
+<Big::Big(Big&&)>:                              ; 移动构造：指针窃取 + 源置空
+    mov    rax, QWORD PTR [rdx]        ; rax = 源.data
+    mov    QWORD PTR [rcx], rax         ; 目标.data = 源.data（窃取）
+    mov    rax, QWORD PTR [rdx+0x8]     ; rax = 源.sz
+    mov    QWORD PTR [rdx], 0x0         ; 源.data = nullptr（搬空源）
+    mov    QWORD PTR [rcx+0x8], rax     ; 目标.sz = 源.sz
+    mov    QWORD PTR [rdx+0x8], 0x0     ; 源.sz = 0
+    ret
 ```
 
 **③ 拷贝构造 —— 堆分配 + memcpy**
 
 ```asm
-; 拷贝构造器 Big(const Big&) — call 链
-call operator new(other.sz)   ; 新分配
-call memcpy(dst, src, sz)     ; 逐字节复制
+<Big::Big(Big const&)>:                        ; 拷贝构造：堆分配 + memcpy（GCC 克隆为 .isra.0 特化）
+    mov    rbx, rcx                    ; rbx = 目标 this
+    call   operator new                ; 新分配 new char[o.sz]
+    mov    QWORD PTR [rbx], rax        ; 目标.data = new
+    mov    QWORD PTR [rbx+0x8], r8      ; 目标.sz = o.sz
+    jmp    memcpy                       ; 尾跳 memcpy 逐字节复制（函数尾调用，无额外栈帧）
 ```
 
 ### 三层代价分层

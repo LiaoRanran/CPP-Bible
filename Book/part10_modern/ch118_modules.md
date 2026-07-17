@@ -1,7 +1,7 @@
 # 第118章　Modules 模块（C++20）
 
-> 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -fmodules-ts -O2 -S -masm=intel`）。
-> 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；Modules 是编译器特性，无 libstdc++ 源码可逐行，本章以真实编译产物（模块符号）为证据。
+> 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -fmodules-ts -O2 -S -masm=intel`）。
+> 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；Modules 是编译器特性，无 libstdc++ 源码可逐行，本章以真实编译产物（模块符号）为证据。
 
 ## ① 概述：Modules 要解决什么 [标准]
 
@@ -96,19 +96,29 @@ int main() { return std::cout ? 0 : 1; }
 
 ```cpp
 // 文件：Examples/_mod_use.cpp，行号：8（_Z7use_modv）/ 12（jmp _ZW4math6squarei）
-// 编译：g++ -std=c++23 -O2 -fmodules-ts -S -masm=intel _mod_use.cpp -o _mod_use.asm
+// 编译：g++ 15.3.0 -std=c++23 -O2 -fmodules-ts -S -masm=intel _mod_use.cpp -o _mod_use.asm
+//       （两步：先 g++ -fmodules-ts -c _mod_main.cpp 生成 BMI，再编译使用者）
 import math;
 int use_mod() { return square(7); }
 ```
 
 ```asm
-; 关键证据：导入函数在汇编中是直接跳转，无头文件文本展开
+; 关键证据（GCC 15.3.0 -O2 -fmodules-ts -masm=intel）：导入函数被编译为直接跳转，
+; 实参 7 在编译期折叠进 ecx，全程无 #include 头文本展开
 _Z7use_modv:
 	.seh_endprologue
-	jmp	_ZW4math6squarei        ; 跳转到模块 math 的 square（符号 W4math = module math）
+	mov	ecx, 7                  ; 实参 7 折叠进 ecx（调用约定：RCX = 第1个 int 参数）
+	jmp	_ZW4math6squarei        ; 尾调用模块 math 的 square(int)，符号 W4math = module math
+```
+```asm
+; 同一工程中模块接口单元 _mod_main.cpp 里的 square(int) 本体（GCC 15.3.0 截取）
+_ZW4math6squarei:
+	imul	ecx, ecx             ; ecx = ecx * ecx
+	mov	eax, ecx
+	ret
 ```
 
-- `[实现]`：模块 `math` 的 `square` 在目标文件中编码为 `_ZW4math6squarei`（`W4math` = 模块名 `math` 的编码，`6squarei` = `square(int)`）。`use_mod` 直接 `jmp`，**没有 `#include` 产生的任何头文本**。
+- `[实现·GCC15.3.0]`：模块 `math` 的 `square` 在目标文件中编码为 `_ZW4math6squarei`（`W4math` = 模块名 `math` 的编码，`6squarei` = `square(int)`）。`use_mod` 直接 `jmp`，**没有 `#include` 产生的任何头文本**。
 - `[标准]`：这证明 Modules 的导入是**语义引用**而非文本复制——`square` 的声明从模块 BMI（二进制模块接口）读取，编译一次、多处复用。
 
 ## ⑥ 模块分区（partitions） [标准]
@@ -244,7 +254,7 @@ g++ -std=c++23 -fmodules-ts -O2 -c Examples/_mod_use.cpp -o Examples/_mod_use.o
 g++ Examples/_mod_main.o Examples/_mod_use.o -o Examples/_mod_app
 ```
 
-- `[实现]`：GCC 13 的 `-fmodules-ts` 支持上述流程；`use_mod` 经 `jmp _ZW4math6squarei` 调用模块函数，证明模块导入在链接期解析为真实符号。
+- `[实现·GCC15.3.0]`：GCC 15.3.0 的 `-fmodules-ts` 支持上述流程；`use_mod` 经 `mov ecx,7; jmp _ZW4math6squarei` 调用模块函数，证明模块导入在链接期解析为真实符号。
 - `[平台]`：Clang 用 `-std=c++20 -fmodules`（更成熟）；MSVC 用 `/std:c++20 /interface` + `.ixx`。三者语法一致，构建命令不同。
 
 ## ⑯ 模块与模板 [标准]

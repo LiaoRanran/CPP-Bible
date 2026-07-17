@@ -1,6 +1,6 @@
 # 第120章 Coroutine 应用模式
 
-> 标准基: C++20 / 编译器: GCC 13.1 / 预计阅读: 75min / 前置: ⟶ Book/part09_concurrency/ch113_coroutine.md（协程基础）/ 后续: ⟶ Book/part10_modern/ch120_coroutine_app.md（纤程）/ 难度: ★★★★☆
+> 标准基: C++20 / 编译器: GCC 15.3.0（汇编重生；延迟表保留 GCC 13.1 实测）/ 预计阅读: 75min / 前置: ⟶ Book/part09_concurrency/ch113_coroutine.md（协程基础）/ 后续: ⟶ Book/part10_modern/ch120_coroutine_app.md（纤程）/ 难度: ★★★★☆
 
 ---
 
@@ -839,7 +839,7 @@ int main(){std::cout<<"co_await(ready=true) -> no suspension. sizeof(coro_handle
 
 ### 原理分析
 
-C++20 无栈协程：状态在**堆分配帧**上。GCC 13.1 实测简单 `generator<int>` 帧请求 `malloc` 大小为 **48–56 字节**（含 malloc 头；逻辑帧 < 48B）——验证了书中「~40–200B」的下界；含更多局部变量 / 大 `promise` 的复杂协程帧可达该范围上限 ~200B。
+C++20 无栈协程：状态在**堆分配帧**上。GCC 13.1 实测简单 `generator<int>` 帧请求 `malloc` 大小为 **48–56 字节**（含 malloc 头；逻辑帧 < 48B）——验证了书中「~40–200B」的下界；含更多局部变量 / 大 `promise` 的复杂协程帧可达该范围上限 ~200B。（GCC 15.3.0 重生汇编显示同一简单 `generator<int>` 帧请求降为 **40 字节**——编译器升级进一步压低了帧开销；见下方「汇编」。）
 
 帧布局：`promise`（含 `value_` 等成员）+ 跨 suspend 点的局部变量 + 编译器生成的 resume/destroy 函数指针 + switch-case 状态机跳转表。帧**分配发生在协程斜坡（ramp）**，即调用协程函数时由 `operator new`（本例被内联为 `malloc`）完成；自定义分配器 / 帧池可把分配降到亚纳秒。
 
@@ -847,7 +847,7 @@ C++20 无栈协程：状态在**堆分配帧**上。GCC 13.1 实测简单 `gener
 - `resume()` = **间接调用协程体**（`call *(handle)`），无堆操作、无锁。
 - `co_await(await_ready()==true)` 编译为**直接存储**（如 `await_resume()` 内联返回常量），**不分配帧、不调用 `await_suspend`、不触发 resume 派发** → 几乎零额外开销。
 
-### 性能（GCC 13.1 / MinGW-w64 / x86-64，TSC 2.395GHz，本机实测）
+### 性能（延迟：GCC 13.1 本机实测；汇编证据：GCC 15.3.0 重生）
 
 锚定程序：`Examples/_ch120_coro_perf.cpp`（RDTSC + steady_clock，noinline 锚点防优化消除）。
 
@@ -864,48 +864,48 @@ C++20 无栈协程：状态在**堆分配帧**上。GCC 13.1 实测简单 `gener
 
 ### 汇编
 
-真实产物：`Examples/_ch120_coro_perf.asm`（节选，GCC 13.1 `-O2 -m64`）。
+真实产物：`Examples/_ch120_coro_perf.asm`（节选，GCC 15.3.0 `-O2 -m64 -masm=intel`）。
 
 ```asm
-; ===== 帧分配斜坡：_Z13small_counteri（简单 generator 帧 = 56B）=====
-; 节选自 Examples/_ch120_coro_perf.asm
+; ===== 帧分配斜坡：_Z13small_counteri（简单 generator 帧 = 40B，GCC 15.3.0）=====
+; 节选自 Examples/_ch120_coro_perf.asm（GCC 15.3.0 -O2 -m64 -masm=intel）
 _Z13small_counteri:
-        cmpq    $55, _ZL11g_max_frame(%rip)
+        cmp     QWORD PTR _ZL11g_max_frame[rip], 39
         ...
-        movl    $56, %ecx        ; 帧请求大小 = 56 字节（infinite_counter 为 48B）
-        call    malloc           ; operator new 被内联为 malloc（无额外开销）
-        leaq    _Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.destroy(%rip), %rdx
-        leaq    _Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.actor(%rip), %rcx
-        movq    %rdx, %xmm1
-        movq    %rcx, %xmm0
-        punpcklqdq %xmm1, %xmm0
-        movups  %xmm0, (%rax)    ; 帧头写入 actor/destroy 两个函数指针
+        mov     ecx, 40             ; 帧请求大小 = 40 字节（GCC 15.3.0；GCC 13.1 为 48–56B）
+        call    malloc              ; operator new 被内联为 malloc（无额外开销）
+        lea     rdx, _Z13small_counterP24_Z13small_counteri.Frame.destroy[rip]
+        movq    xmm0, QWORD PTR .LC5[rip]
+        movq    xmm1, rdx
+        punpcklqdq xmm0, xmm1       ; 把 actor/destroy 两个函数指针打包进 xmm0
+        movups  XMMWORD PTR [rax], xmm0  ; 帧头写入 actor/destroy 函数指针
+        ...
 ```
 
 ```asm
-; ===== resume = 间接调用协程体：_Z10yield_stepR3GenIiE =====
+; ===== resume = 间接调用协程体：_Z10yield_stepR3GenIiE（GCC 15.3.0）=====
 ; 节选自 Examples/_ch120_coro_perf.asm
 _Z10yield_stepR3GenIiE:
-        movq    (%rcx), %rax     ; 取 coroutine_handle 内部指针
-        movq    %rcx, %rbx
-        movq    %rax, %rcx
-        call    *(%rax)          ; resume = 间接调用协程体（无堆分配 / 无锁）
-        movq    (%rbx), %rax
-        movl    16(%rax), %eax   ; 取 promise.value_
+        mov     rax, QWORD PTR [rcx]     ; 取 coroutine_handle 内部指针
+        mov     rbx, rcx
+        mov     rcx, rax
+        call    QWORD PTR [rax]          ; resume = 间接调用协程体（无堆分配 / 无锁）
+        mov     rax, QWORD PTR [rbx]
+        mov     eax, DWORD PTR 16[rax]   ; 取 promise.value_
         ret
 ```
 
 ```asm
-; ===== co_await(ready=true) 零开销：_Z10ready_task...Frame.actor =====
-; 节选自 Examples/_ch120_coro_perf.asm
-; 整个 actor 无 call operator new、无 await_suspend、无 resume 派发
-_Z10ready_taskPZ10ready_taskvE21_Z10ready_taskv.Frame.actor:
-        movzwl  32(%rcx), %eax   ; 读协程状态
-        ...
-.L11:
-        movl    $42, 40(%rcx)    ; await_resume() 内联为直接存储（无 suspend）
-        ...
-        jmp     free             ; 仅末尾 destroy 才 free 帧
+; ===== co_await(ready=true) 在 GCC 15.3.0 被彻底消除 =====
+; GCC 13.1 此处仍有 ready_task...Frame.actor（含 movl $42 / jmp free）；
+; GCC 15.3.0 因 await_ready() 恒为 true，整个协程帧被优化消失，
+; 函数体只剩基准 harness 的全局帧统计，无 operator new / 无 await_suspend / 无 resume 派发
+_Z10ready_taskv:
+        cmp     QWORD PTR _ZL11g_max_frame[rip], 39
+        ja      .L45
+        mov     QWORD PTR _ZL11g_max_frame[rip], 40
+.L45:
+        ret                             ; 协程机制整体被消除 → 真·零开销
 ```
 
 

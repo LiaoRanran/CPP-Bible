@@ -1,6 +1,6 @@
 # 第121章 Contracts 契约（方向，C++26）
 
-> 标准基: P2900 / 编译器: GCC 13.1（未实现，用 assert/宏模拟） / 预计阅读: 60min / 前置: ⟶ Book/part10_modern/ch120_coroutine_app.md / 后续: ⟶ Book/part10_modern/ch122_pmr.md / 难度: ★★★★☆
+> 标准基: P2900 / 编译器: GCC 13.1（未实现，用 assert/宏模拟）；**GCC 15.3.0 已原生支持 `-fcontracts`**（见 ⑩） / 预计阅读: 60min / 前置: ⟶ Book/part10_modern/ch120_coroutine_app.md / 后续: ⟶ Book/part10_modern/ch122_pmr.md / 难度: ★★★★☆
 
 ## ① 学习目标 [标准]
 
@@ -166,6 +166,58 @@ int main() {
     std::cout << process(a, 5) << std::endl;
     return 0;
 }
+## ⑩ 真实汇编：GCC 15.3.0 原生契约代码生成 [实现·GCC15.3.0]
+
+> 关键修正：第⑧⑨⑬ 节基于 GCC 13.1「未实现契约、用 assert/宏模拟」；但 **GCC 15.3.0 已原生支持契约**（实验性，旧式 `[[pre:]]` / `[[post:]]` / `[[assert:]]` 语法 + `-fcontracts`），下面用真实编译产物展示其代码生成。
+
+```cpp
+// ⑩ 原生契约：precondition 由编译器原生识别（GCC 15.3.0 -std=c++2c -fcontracts）
+// 编译：g++ 15.3.0 -std=c++2c -fcontracts -O2 -S -masm=intel
+int abs_pos(int x) [[pre: x >= 0]] {
+    return x;
+}
+int user(int v) {
+    return abs_pos(v);   // 调用点被内联，契约检查随之进入 user 本体
+}
+```
+
+```asm
+; 关键证据（GCC 15.3.0 -std=c++2c -fcontracts -O2 -masm=intel）
+; 函数本体：precondition 谓词本身被编译进热路径，仅 2 条指令
+_Z7abs_posi:
+        sub     rsp, 40
+        mov     eax, ecx
+        test    ecx, ecx            ; 谓词 x >= 0 编译为 test + 符号位判断
+        js      .L4                 ; 负数 -> 跳冷路径处理违例
+        add     rsp, 40
+        ret
+; 冷路径（.cold 段）：违例时跳入，调用违例处理子函数
+.L4:
+        call    _Z7abs_posi.part.0  ; 构造 contract_violation + 调 handler + terminate
+; 违例处理子函数 ._part.0（仅违例时执行，完全脱离热路径）
+_Z7abs_posi.part.0:
+        sub     rsp, 88
+        ...                         ; 构造 std::experimental::contract_violation（文件/行/谓词字符串）
+        call    _Z25handle_contract_violationRKNSt12experimental18contract_violationE
+        call    _ZSt9terminatev     ; handler 后默认 terminate
+; 调用方 user 也内联了同一契约检查（检查随内联复用到调用点）
+_Z4useri:
+        sub     rsp, 40
+        mov     eax, ecx
+        test    ecx, ecx
+        js      .L8
+        add     rsp, 40
+        ret
+.L8:
+        call    _Z7abs_posi.part.0
+```
+
+- `[实现·GCC15.3.0]`：GCC 15.3.0 的原生契约代码生成呈现**两段式隔离**：
+  1. **热路径**：precondition 谓词（`x >= 0`）被编译为 `test ecx,ecx; js`，与手写 `if (x < 0)` 开销一致——**零额外抽象成本**；
+  2. **冷路径隔离**：违例处理（构造 `contract_violation`、调用 `__handle_contract_violation`、最终 `std::terminate`）被整体搬进独立的 `._part.0` 子函数与 `.cold` 段，正常执行时**完全不进入**。
+- `[标准]`：这印证 P2900「契约不应拖慢正常路径」的设计目标——检查在热路径、处理在冷路径。对比第⑧⑨节的宏模拟（`do{ if(!x) abort(); }while(0)`），原生契约把违例处理**结构性地**隔离到冷段，分支预测器几乎不会误判，是优于宏模拟的工程实现。
+- `[经验]`：契约检查会随内联**复用到调用点**（`user` 内也出现 `test ecx,ecx; js .L8`），说明契约与优化器协同——开启 `-O2` 后调用方直接内联被调方含其契约，无需额外 thunk。
+
 ```
 
 ## ⑪ STL 联系：契约在标准库中的应用 [标准]

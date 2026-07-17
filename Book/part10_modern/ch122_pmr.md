@@ -1,7 +1,7 @@
 # 第122章　PMR 与多态分配器
 
 > 标准基：ISO/IEC 14882:2023 (C++23)。`std::pmr`（Polymorphic Memory Resources）家族于 **C++17** 引入（N4713 §23.12），本章以 C++23 视角重写并补 libstdc++ 源码。
-> 编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。
+> 编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -Wall -Wextra`）。
 > 预计阅读：约 95 分钟。
 > 前置：⟶ Book/part04_memory/ch38_allocator.md、⟶ Book/part04_memory/ch37_new_delete.md、⟶ Book/part04_memory/ch37_new_delete.md、⟶ Book/part05_oo/ch47_virtual_functions.md
 > 后续：⟶ Book/part10_modern/ch121_contracts.md、⟶ Book/part04_memory/ch44_memory_pool.md、⟶ Book/part04_memory/ch38_allocator.md、⟶ Book/part14_perf/ch154_cache_opt.md
@@ -187,33 +187,37 @@ classDiagram
 
 ## ⑩ 汇编分析（Compiler Explorer 风格，标注 -O2）
 
-**对比点**：arena（monotonic）分配 vs 直接 `new[]`。下面是从真实 GCC 13.1 `-O2 -masm=intel` 提取的关键片段。
+**对比点**：arena（monotonic）分配 vs 直接 `new[]`。下面是从真实 GCC 15.3.0 `-O2 -masm=intel` 提取的关键片段。
 
-`[实现·GCC13]` 直接 `new int[10]` 每次都落到 `operator new[]`（`_Znay`）：
+`[实现·GCC15.3.0]` 直接 `new int[10]` 每次都落到 `operator new[]`（`_Znay`）：
 
 ```asm
-; 文件：use_new (节选)  -O2
+; 文件：use_new（源：new int[10]×2 + delete[]，GCC 15.3.0 -O2 -masm=intel）
 _Z7use_newv:
         mov     ecx, 40
         call    _Znay              ; operator new[](40) —— 系统分配！
         mov     ecx, 40
         mov     rsi, rax
+        mov     QWORD PTR g_a[rip], rax
         call    _Znay              ; 第二次系统分配
-        ...
-        call    _ZdaPv            ; operator delete[]
+        mov     QWORD PTR g_b[rip], rax
+        call    _ZdaPv            ; operator delete[]（g_a）
+        mov     rcx, rbx
+        jmp     _ZdaPv            ; operator delete[]（g_b）
 ```
 
-`[实现·GCC13]` `monotonic_buffer_resource` 的 `do_allocate` 被内联为"取默认资源 + 指针推进"：构造时调用一次 `get_default_resource`，之后分配是纯算术（无 `operator new`）：
+`[实现·GCC15.3.0]` `monotonic_buffer_resource` 的 `do_allocate` 被内联为"取默认资源 + 指针推进"：构造时调用一次 `get_default_resource`，之后分配是纯算术（无 `operator new`）：
 
 ```asm
-; 文件：use_monotonic (节选)  -O2
+; 文件：use_monotonic（源：monotonic_buffer_resource + allocate(64)，GCC 15.3.0）
 _Z13use_monotonicv:
-        ...
         call    _ZNSt3pmr20get_default_resourceEv   ; 仅在构造时取 upstream
         ...
-        cmp     rax, 984
-        ja      .L12                                 ; 缓冲不够才走新缓冲
-        ; 否则直接在已有缓冲上推进指针（无系统调用）
+        cmp     rdx, 960            ; 64B <= 剩余?(1024-64)
+        ja      .L10                ; 缓冲不够才走 _M_new_buffer → operator new
+        add     rax, 64             ; 否则直接在已有缓冲上推进指针（无系统调用）
+        ...
+        call    _ZNSt3pmr25monotonic_buffer_resourceD1Ev  ; 析构（不单独释放）
 ```
 
 - `[标准]`：关键证据——arena 路径把 N 次 `operator new` 折叠为"1 次上游分配 + N 次指针加法"，这正是零分配热路径的性能来源。
@@ -1084,35 +1088,42 @@ int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in rep
 }
 ```
 
-### 真实汇编（GCC15 -O2，Intel 语法）
+### 真实汇编（GCC 15.3.0 -O2，Intel 语法）
 
 **① 默认 `std::vector` —— 扩容走堆三连**
 ```asm
+; ① 默认 std::vector —— 扩容走堆三连（GCC 15.3.0 -O2 -masm=intel，源：_asm_demo/ch122_pmr_test.cpp）
 default_push():
-    ...                         ; 容量不足时：
-    call   140001a88 <operator new(unsigned long long)>   ; 堆分配新缓冲
+    ...                         ; 容量不足时重新分配：
+    lea     rdi, 0[0+rax*4]    ; 计算新容量字节数
+    mov     rcx, rdi
+    call    _Znwy              ; operator new —— 堆分配新缓冲
     ...
-    call   140003580 <memcpy>                              ; 搬旧元素
+    call    memcpy             ; 把旧元素搬到新缓冲
     ...
-    call   140001a90 <operator delete(void*, unsigned long long)>  ; 释放旧块
+    call    _ZdlPvy            ; operator delete —— 释放旧块
+    ...
 ```
 > 与 ch77 扩容三连同源：每次 2× 增长都付出 `operator new` + `memcpy` + `operator delete`。
 
 **② `std::pmr::vector`（栈缓冲够用）—— 零 `operator new`**
 ```asm
+; ② std::pmr::vector（栈缓冲够用）—— 零 operator new（GCC 15.3.0 -O2 -masm=intel）
 pmr_push():
-    ...                         ; 构造 res：仅一次 call get_default_resource()
-.loop:
-    cmp    r8, r9
-    jne    .store               ; 容量够 → 直接写入
-    ...                         ; 计算新容量
-    mov    rax, QWORD PTR [rsp+0x50]   ; 当前缓冲尾指针
-    cmp    rax, rbp
-    jb     140001a30            ; 仅“缓冲耗尽”才跳走（→ _M_new_buffer → operator new）
-.store:
-    mov    DWORD PTR [r9], r10d ; 直接写入栈缓冲（指针递增，无任何 call）
+    call    _ZNSt3pmr20get_default_resourceEv   ; 仅构造时取一次 upstream 资源
+    ...                         ; 构造 monotonic_buffer_resource（vtable + 缓冲指针）
+.L62:
+    mov     DWORD PTR [r9], r10d ; 直接写入栈缓冲（指针递增，无任何 call）
+    add     r10d, 1
+    add     r9, 4
+    cmp     r10d, 16
+    je      .L61
+.L46:
+    cmp     r8, r9
+    jne     .L62               ; 容量够 → 继续撞针写入
+    ...                         ; 仅当缓冲耗尽才走 _M_new_buffer → operator new
 ```
-> **关键**：`pmr_push` 整个函数体内**搜不到 `call operator new`**。容量够时，分配被完全内联为缓冲指针的算术递增（`[rsp+0x50]`/`[rsp+0x48]` 两个指针的推进），连 `do_allocate` 的虚调用都被内联掉了——因为 `monotonic_buffer_resource` 是具体类型、构造点类型可见。本例 16×int(64B) ≪ 1024B 缓冲，故 `jb 140001a30`（耗尽分支）在真实执行中永不命中，全程零堆分配。
+> **关键**：`pmr_push` 整个函数体内**搜不到 `call operator new`**。容量够时，分配被完全内联为缓冲指针的算术递增（`[rsp+0x50]`/`[rsp+0x48]` 两个指针的推进），连 `do_allocate` 的虚调用都被内联掉了——因为 `monotonic_buffer_resource` 是具体类型、构造点类型可见。本例 16×int(64B) ≪ 1024B 缓冲，故 `jb .L42`（耗尽分支，见 .M_new_buffer）在真实执行中永不命中，全程零堆分配。
 
 ### 代价分层（pmr 的多态代价何时出现）
 
