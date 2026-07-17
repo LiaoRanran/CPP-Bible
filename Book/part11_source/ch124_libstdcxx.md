@@ -823,12 +823,20 @@ A: inline namespace (__cxx11) 版本隔离，新旧 ABI 通过 __cxx11::string v
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch85_unordered.md`（第85章　unordered_map / unordered_set：哈希开链集合）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch87_bitset.md`（第87章　bitset：编译期定长位集）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part10_modern/ch123_ct_programming.md`（第123章　Compile-Time 编程范式总览）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part10_modern/ch122_pmr.md`（第122章　PMR 与多态分配器）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part11_source/ch126_msstl.md`（第126章　MS STL 架构（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part11_source/ch127_llvm.md`（第127章　LLVM / Clang 架构（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch125_libcxx.md（第125章　libc++ 架构（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch126_msstl.md（第126章　MS STL 架构（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch127_llvm.md（第127章　LLVM / Clang 架构（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch128_boost.md（第128章　Boost 核心库（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch129_qt.md（第129章　Qt 对象模型与信号槽（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch130_chromium_abseil.md（第130章　Chromium / Abseil 基础设施（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch131_fmt_spdlog.md（第131章　fmt / spdlog 格式化与日志（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch132_leveldb_rocksdb.md（第132章　LevelDB / RocksDB 存储引擎（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch133_clickhouse_redis.md（第133章　ClickHouse / Redis 实现精读（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch134_unreal.md（第134章　Unreal Engine C++ 架构（C++））
+- **跨模块延伸（part07 STL）**：⟶ Book/part07_stl/ch85_unordered.md（第85章　unordered_map / unordered_set：哈希开链集合）—— STL 哈希容器开链实现的源码落点
+- **跨模块延伸（part07 STL）**：⟶ Book/part07_stl/ch87_bitset.md（第87章　bitset：编译期定长位集）—— 编译期定长位集的源码落点
+- **跨模块延伸（part10 现代）**：⟶ Book/part10_modern/ch123_ct_programming.md（第123章　Compile-Time 编程范式总览）—— 编译期编程范式是阅读 STL 源码的元编程底座
+- **跨模块延伸（part10 现代）**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— PMR 多态分配器是 STL 容器内存后端的现代实现
 
 ## 真实开源项目参考（可查证链接）
 

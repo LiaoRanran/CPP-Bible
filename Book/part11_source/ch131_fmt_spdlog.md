@@ -654,11 +654,18 @@ int main(){std::cout<<"fmt=5-10x faster than cout; spdlog=300ns/msg async"<<std:
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch79_list.md`（第79章　list / forward_list [标准]）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch92_chrono.md`（第92章 时间库 chrono）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part11_source/ch129_qt.md`（第129章　Qt 对象模型与信号槽（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part11_source/ch133_clickhouse_redis.md`（第133章　ClickHouse / Redis 实现精读（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part11_source/ch124_libstdcxx.md`（第124章　libstdc++ 架构与阅读入口（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch124_libstdcxx.md（第124章　libstdc++ 架构与阅读入口（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch125_libcxx.md（第125章　libc++ 架构（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch126_msstl.md（第126章　MS STL 架构（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch127_llvm.md（第127章　LLVM / Clang 架构（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch128_boost.md（第128章　Boost 核心库（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch129_qt.md（第129章　Qt 对象模型与信号槽（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch130_chromium_abseil.md（第130章　Chromium / Abseil 基础设施（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch132_leveldb_rocksdb.md（第132章　LevelDB / RocksDB 存储引擎（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch133_clickhouse_redis.md（第133章　ClickHouse / Redis 实现精读（C++））
+- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch134_unreal.md（第134章　Unreal Engine C++ 架构（C++））
+- **跨模块延伸（part07 STL）**：⟶ Book/part07_stl/ch79_list.md（第79章　list / forward_list [标准]）—— list / forward_list 节点式存储是日志缓冲区的常见底层
+- **跨模块延伸（part07 STL）**：⟶ Book/part07_stl/ch92_chrono.md（第92章 时间库 chrono）—— chrono 为日志时间戳提供时基
 
 ## 附录 F：工业实战复盘与设计取舍 [I: Practice / H: Design]
 
