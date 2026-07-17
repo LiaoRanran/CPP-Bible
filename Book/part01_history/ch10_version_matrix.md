@@ -492,6 +492,12 @@ Q: 版本迁移最大风险? A: ABI断裂(GCC5.1)和SFINAE→concepts重写
 
 **底层深度**：Boost.Config 在 `boost/config/compiler/gcc.hpp` 中依据 `__GNUC__` / `__GNUC_MINOR__` 与 `_GLIBCXX__` 宏定义 `BOOST_CXX_VARIADIC_TEMPLATES` 等探测宏，使同一份代码在 GCC 4.8–13 间自适应；Abseil 的 `absl/base/config.h` 用 `__cplusplus` 配合 `_MSC_VER` / `__GNUC__` 决定 `ABSL_LTS_RELEASE` 与最低标准，并在 CI 矩阵中覆盖 C++14/17/20；Chromium 通过 `build/config/compiler/BUILD.gn` 的 `cxx_version` 与目标强制最低标准，未达标直接编译失败而非警告。这种"探测宏 + 强制基线 + CI 矩阵"三层机制，是工业界保证多编译器可移植性的标准做法。
 
+
+## 叙事补遗 [J: Learning]
+
+- **三年代际自 C++11 固定**：11/14/17/20/23/26 的节奏让"何时能用某特性"变得可预期，但也意味着"标准发布"与"你用得上"之间总有时间差。
+- **语言版本 ≠ ABI 版本**：向后兼容是语言承诺，ABI 兼容是标准库实现承诺，二者独立；同一标准库不同大版本可能符号不兼容，混链必崩。
+- **读表要分两层**：先分"语言特性"与"库特性"（同编译器对两者支持进度不同），再查具体编译器 `cxx_status`，避免"标准说有、本地编不过"。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

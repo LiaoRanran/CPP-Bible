@@ -577,6 +577,12 @@ int main(){int arr[5]={5,3,1,4,2};qsort(arr,5,4,cmp);std::cout<<arr[0]<<std::end
 
 > 交叉引用：版本特性全景见 [ch10](Book/part01_history/ch10_version_matrix.md)；编译器实现见 [ch11](Book/part02_toolchain/ch11_compilers.md)。
 
+
+## 叙事补遗 [J: Learning]
+
+- **1979，Bell Labs 的一行冲动**：Bjarne Stroustrup 在做分布式系统模拟时，既想要 C 的效率与贴近硬件，又想要 Simula 的类与封装；"C with Classes" 由此诞生——它不是要取代 C，而是给 C 装上"可管理大型系统"的引擎。
+- **名字的玩笑**：1983 年 Rick Mascitti 建议用 `++`（C 的自增运算符）命名，寓意"比 C 更进一步"而非"大版本跃迁"；这个随手取的代号最终成了工业级语言的名字。
+- **CFront 与 1985**：第一本《The C++ Programming Language》与 CFront（C++→C 前端）1.0 同年问世，C++ 从 AT&T 内部工具走向公开工业语言——所谓"零开销抽象"从第一天就是设计信条。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

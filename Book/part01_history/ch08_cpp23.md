@@ -739,6 +739,12 @@ count_even(const std::vector<int>&) @ -O2 (98 B):
 - **跨part主题**：⟶ Book/part07_stl/ch82_span.md（第82章　span 与裸数组视图）—— C++23 核心库特性 `std::span` 的演进源头，跨 part 延伸。
 - **跨part主题**：⟶ Book/part07_stl/ch88_optional_variant.md（第88章　optional / expected / variant：可空与可辨别联合）—— C++23 `std::optional`/`std::variant` 增强的对应章节，跨 part 延伸。
 - **跨part主题**：⟶ Book/part10_modern/ch120_coroutine_app.md（第120章 Coroutine 应用模式）—— C++23 协程应用的落地章节，跨 part 延伸。
+
+## 叙事补遗 [J: Learning]
+
+- **标准库之年**：`std::expected`（用值/错代替异常）、`std::flat_map`（缓存友好的有序容器）、`std::mdspan`（多维视图）、`std::print`（终于有类型安全的打印）集中交付。
+- **语言层补完**：显式对象参数（deducing `this`）、多维下标、`if consteval`、`std::size_t` 字面量后缀，把 C++20 未及的边角补齐。
+- **稳定节奏确立**：C++23 之后固定三年一版，并首次批量交付"上一版未及"的库特性，社区终于有了可预期的进化曲线。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

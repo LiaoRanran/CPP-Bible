@@ -1111,6 +1111,12 @@ mov byte [rax+0x0000], 0xcc   ; 写入软件断点
 
 把「`printf` 调试 + 肉眼比对」重构为 CI 内置 `-fsanitize=address,undefined` 构建配置 + 每个 PR 自动跑；把 gdb 手工断点重构为 `.gdbinit` 脚本 + pretty-printer 配置；Linux 服务加 `core_pattern` + `systemd-coredump` 自动收集崩溃现场。
 
+
+## 叙事补遗 [J: Learning]
+
+- **GDB 与 LLDB 的两代**：GDB（1986, RMS）是 Unix 调试事实标准；LLDB 随 LLVM 而生，与 Clang 深度集成、启动更快。
+- **Sanitizer 把 UB 提前到开发期**：ASan/TSan/UBSan（Google, 2011 起）比 Valgrind 快一个数量级，且能抓数据竞争；`-fsanitize=address,undefined` 应进 CI 标配。
+- **调试是"读证据"不是"猜"**：崩溃栈 + Sanitizer 报告 + 核心转储，三者拼出"到底哪行越界"，比加 `printf` 高效十倍。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

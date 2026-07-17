@@ -468,6 +468,12 @@ jg     7b                    ; 失败→跳 0x7b 调用 handle_contract_violatio
 - **相邻主题**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 编号相邻、主题接续。
 - **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
 
+
+## 叙事补遗 [J: Learning]
+
+- **仍是草案（CD 阶段）**：契约（Contracts，`[[assert:]]` 回归）、扩展 `constexpr`、静态反射、模式匹配已确定方向，但文本尚未冻结，以 WG21 最新提案状态为准。
+- **静态反射是圣杯**：若落地，序列化/ORM/绑定生成的样板将由编译器替你写，而非靠宏或代码生成器——这是元编程从"运行时技巧"走向"编译期一等公民"的关键一步。
+- **迁移铁律不变**：C++26 未冻结前不要押宝；查 `cxx_status`、等编译器实装，再按瓶颈引入。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

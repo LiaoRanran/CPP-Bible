@@ -904,6 +904,12 @@ int main() {
 - **用 `cxx_status` 核对特性支持再写代码**：`<span>`/`<ranges>`/模块等特性在不同编译器版本才落地；上线前查 `gcc.gnu.org/projects/cxx-status.html` 与 Clang 对应表，避免「本地能编线上挂」。
 - **发布构建显式 `-O2 -g` 并保留符号**：`-g` 不拖慢运行，却让崩溃栈可解析；`-O2` 是性价比最优档，`-O3` 仅在热点被 profiling 证实收益时开启。
 - **`__attribute__`/`declspec` 用宏隔离**：平台相关属性（`always_inline`/`noinline`/`dllexport`）包进 `COMP_INLINE` 等宏按编译器分支定义，避免代码被专属语法污染。
+
+## 叙事补遗 [J: Learning]
+
+- **三足鼎立的来由**：GCC（1987, RMS 的 GNU 项目）长期是唯一免费 C++ 编译器；Clang（2007, Apple）因 GPLv3 与 GCC 插件模型分歧、基于 LLVM 另起炉灶，换来更快编译与友好诊断；MSVC 背靠 Windows 生态、ABI 自成体系。
+- **ABI 互不相通是根因**：三者调用约定与名字修饰（name mangling）不同，跨编译器链接 `.o`/`.a` 必崩——这就是为什么跨工具链只走 C 接口或序列化边界。
+- **选编译器是选生态**：开源社区默认 GCC/Clang，Windows 原生库常绑定 MSVC；项目早期定下编译器，就锁定了可链接的整个世界。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

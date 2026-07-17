@@ -454,6 +454,11 @@ int main(){auto p=std::make_unique<int>(42);auto l=[](auto x){return x*2;};std::
 - **相邻主题**：⟶ Book/part01_history/ch07_cpp20.md（第07章　C++20：量级升级）—— 编号相邻、主题接续。
 - **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
 
+
+## 叙事补遗 [J: Learning]
+
+- **C++11 的完成品**：泛型 lambda、`auto` 返回值推导、`constexpr` 放宽、二进制字面量、`std::make_unique` 补回上版遗漏——委员会确立了"大版本给特性、小版本修边角"的节奏。
+- **最无聊也最贴心**：C++14 没有惊艳特性，却把 C++11 的棱角磨平，让"刚能写"变成"写得舒服"；它是工程落地最顺滑的一站。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

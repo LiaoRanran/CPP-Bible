@@ -500,6 +500,11 @@ int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<",
 - **Chromium** — clusterfuzz 构建默认开启 C++17 全套警告
 - **Boost** — Boost.Mp11 用 C++17 变量模板做元编程
 
+
+## 叙事补遗 [J: Learning]
+
+- **把样板变成原生**：结构化绑定 `auto [a,b]`、折叠表达式、`if constexpr`、`std::optional`/`variant`/`string_view`、文件系统 TS 并入，昔日手写的模板技巧被收编为语言特性。
+- **`string_view` 的零开销哲学**：不拥有数据、不拷贝，仅 `(ptr,len)` 视图——它终结了 `const char*` 与 `std::string` 的参数撕裂，是"不给却更高效"的典范。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

@@ -727,6 +727,11 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 
 **底层深度**：交叉编译的关键是 sysroot——目标系统的头文件/库的镜像目录。GCC cross 构建时 `--with-sysroot=/path/to/aarch64-rootfs` 将 `#include` 解析根重定向到目标 sysroot，链接器从 `$sysroot/usr/lib` 搜索 `libc.so`。`CMAKE_TOOLCHAIN_FILE` 的本质是设置 `CMAKE_C_COMPILER_TARGET`（GCC triplet: `aarch64-linux-gnu`）与 `CMAKE_FIND_ROOT_PATH`。工具链文件的 `CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER` 禁止 CMake 从 sysroot 找 `g++` 等主机工具。
 
+
+## 叙事补遗 [J: Learning]
+
+- **在 x86 上生成 ARM 代码**：交叉编译的本质是"主机工具链 + 目标 sysroot（目标系统的头文件与库）+ 交叉链接器"，crosstool-NG 是经典构建器。
+- **sysroot 必须来自目标板 SDK**：混用主机库必崩；`-march`/`-mfpu`/`-mfloat-abi` 决定能否跑满硬件，配错就跑不起来或 silently 慢。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

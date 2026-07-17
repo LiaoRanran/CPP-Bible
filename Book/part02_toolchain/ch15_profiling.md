@@ -843,6 +843,11 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 
 > 交叉引用：基准方法见 [ch151](Book/part13_engineering/ch151_benchmark.md)；编译器优化见 [ch156](Book/part14_perf/ch156_compiler_opt.md)。
 
+
+## 叙事补遗 [J: Learning]
+
+- **先找热点再谈优化**：`perf`（Linux, 基于硬件 PMU）回答"时间花在哪"；VTune（Intel）深入微架构（前端/后端瓶颈、分支误判）；Compiler Explorer（godbolt.org, 2012）把"源码→汇编"搬进浏览器。
+- **别凭直觉优化**：没有剖面数据就改代码，多半在优化冷路径；先 `perf` 定位、再 Compiler Explorer 看生成汇编，才是正路。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

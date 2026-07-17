@@ -811,6 +811,12 @@ SSE 寄存器 `0x0010`（16 字节）宽、AVX `0x0020`、AVX-512 `0x0040`；数
 
 把「手工 `vcpkg install` + README 文档」重构为 `vcpkg.json` manifest 模式（`"builtin-baseline"` 锁定）+ CMake 自动集成；把 Conan 裸 `conanfile.txt` 重构为 `conanfile.py` recipe 显式声明 `requires(version_range)`；CI 加 triplet 校验步，确保 Debug/Release/x86/x64 四种配置全覆盖。
 
+
+## 叙事补遗 [J: Learning]
+
+- **C++ 的"依赖地狱"**：没有 Cargo/npm 级的官方包管理，头文件+二进制的碎片化为依赖分发留下历史包袱。
+- **两条主流出路**：vcpkg（Microsoft, 2016）以"装好即用"的二进制/源码混合见长；Conan（JFrog）是 C++ 原生、支持自建源与"配方"思想，更接近 Rust crate 的体验。
+- **ABI 碎片化是天花板**：C++ 难以"一次构建处处运行"，包管理只能在"源码构建"或"锁定工具链的二进制"之间权衡。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

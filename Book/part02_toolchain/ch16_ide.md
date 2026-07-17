@@ -807,6 +807,11 @@ call lookup_symbol       ; 递归查找定义
 - `constexpr` 将检查前移，减少 IDE 红色波浪
 
 
+
+## 叙事补遗 [J: Learning]
+
+- **从文本到懂代码的伙伴**：vi/emacs 视"文本即一切"；VSCode（2015, Microsoft, Electron）靠 LSP 统一语言服务，让任意编辑器获得跳转/补全；CLion（JetBrains）则上升到"理解 C++ 语义"级的重构。
+- **LSP 是分水岭**：语言服务器把"索引/补全/跳转"做成协议，IDE 与编辑器第一次共享同一套智能——大型 C++ 工程仍偏爱 CLion 的重构与 CMake 集成。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
