@@ -1264,10 +1264,15 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part02_toolchain/ch15_profiling.md`（第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++））—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch92_chrono.md`（第92章 时间库 chrono）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part13_engineering/ch149_ci_cd.md`（第149章 CI/CD 流水线（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part13_engineering/ch144_style.md`（第144章 代码风格与规范（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch147_code_review.md（第147章 代码审查（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch149_ci_cd.md（第149章 CI/CD 流水线（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））
+- **跨模块延伸（part02 工具链）**：⟶ Book/part02_toolchain/ch15_profiling.md（第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++））—— 基准测试需配合 perf/VTune 定位瓶颈
+- **跨模块延伸（part07 STL）**：⟶ Book/part07_stl/ch92_chrono.md（第92章 时间库 chrono）—— chrono 为基准提供稳定时基
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
@@ -1285,6 +1290,13 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 ### 重构建议
 
 把「单次跑时 + 眼看输出」重构为 `--benchmark_min_time=5` + `--benchmark_repetitions=5` 输出统计量（均值/标准差/中位数）；把「无约束 CPU 下的基线」重构为 `taskset -c 0` 绑核 + `cpupower frequency-set` 锁定频率；检验每个基准是否真的测量到目标路径（`perf stat -e instructions:u`）。
+
+### 面试要点（速记 · 基准测试与性能度量）
+
+- **微基准陷阱**：未 warming up、CPU 频率被 governor 调低（powersave）、测了 Debug 构建、被测结果未使用被编译器整体消除——任一都会让数字失真。
+- **时钟选择**：用 `std::chrono::steady_clock`（单调，不受 NTP 调时影响）而非 `system_clock`；高频小函数多次采样取均值 + 方差，单次测量无意义。
+- **工具分层**：谷歌 benchmark / Catch2 提供统计与离群值检测；profiler（perf/VTune/火焰图）看瓶颈在缓存/分支/锁，微基准只看吞吐，二者互补。
+- **别用 `time` 命令下结论**：shell `time` 包含噪声与系统波动，仅作粗筛；严谨对比必须固定环境、固定输入规模、多次取中位数。
 
 ## 自测练习（Exercises）
 

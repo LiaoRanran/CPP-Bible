@@ -1018,10 +1018,14 @@ int main(){std::cout<<"LLVM:Buildbot+GH Actions(15min pre,2h full);Chromium:LUCI
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part02_toolchain/ch18_buildconfig.md`（第18章　构建配置：Debug / Release / LTO / PGO（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part13_engineering/ch147_code_review.md`（第147章 代码审查（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part13_engineering/ch151_benchmark.md`（第151章 基准测试与性能度量（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part13_engineering/ch144_style.md`（第144章 代码风格与规范（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch147_code_review.md（第147章 代码审查（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch151_benchmark.md（第151章 基准测试与性能度量（C++））
+- **跨模块延伸（part02 工具链）**：⟶ Book/part02_toolchain/ch18_buildconfig.md（第18章　构建配置：Debug / Release / LTO / PGO（C++））—— CI/CD 构建配置依赖 Debug/Release/LTO/PGO 设定
 
 ## 附录 B：编译缓存与分布式构建深度 [E: Low-level / B: Principle]
 

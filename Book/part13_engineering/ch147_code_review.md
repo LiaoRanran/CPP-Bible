@@ -603,9 +603,13 @@ int main(){std::cout<<"CR checklist: RAII/noexcept/const/override/explicit"<<std
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part13_engineering/ch145_naming_api.md`（第145章 命名与 API 设计（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part13_engineering/ch149_ci_cd.md`（第149章 CI/CD 流水线（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part13_engineering/ch151_benchmark.md`（第151章 基准测试与性能度量（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch149_ci_cd.md（第149章 CI/CD 流水线（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch151_benchmark.md（第151章 基准测试与性能度量（C++））
 
 ## 真实开源项目参考（可查证链接）
 

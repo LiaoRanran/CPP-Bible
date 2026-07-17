@@ -1077,10 +1077,14 @@ P2895R0 (std::testing): 标准化测试框架提案 (2024, 早期讨论)
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part13_engineering/ch147_code_review.md`（第147章 代码审查（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part13_engineering/ch148_gitflow.md`（第148章 Git 工作流（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part14_perf/ch152_perf_model.md`（第152章　性能模型与测量学）—— 编号相邻、主题接续。
-- **同模块**：`Book/part13_engineering/ch144_style.md`（第144章 代码风格与规范（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch147_code_review.md（第147章 代码审查（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch149_ci_cd.md（第149章 CI/CD 流水线（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch151_benchmark.md（第151章 基准测试与性能度量（C++））
+- **跨模块延伸（part14 性能）**：⟶ Book/part14_perf/ch152_perf_model.md（第152章　性能模型与测量学）—— 测试策略需结合性能模型判断基准有效性
 
 ## 底层视角：测试开销、并行争用与 SIMD 校验 [E: Low-level]
 

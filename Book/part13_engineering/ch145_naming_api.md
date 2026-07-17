@@ -977,9 +977,14 @@ int main(){Widget w;w.doWork();std::cout<<"PIMPL: 2ns/call, 30x compile speedup"
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part12_patterns/ch143_dod.md`（第143章 面向数据设计 DOD（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part13_engineering/ch147_code_review.md`（第147章 代码审查（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part13_engineering/ch148_gitflow.md`（第148章 Git 工作流（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch147_code_review.md（第147章 代码审查（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch149_ci_cd.md（第149章 CI/CD 流水线（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch151_benchmark.md（第151章 基准测试与性能度量（C++））
+- **跨模块延伸（part12 模式）**：⟶ Book/part12_patterns/ch143_dod.md（第143章 面向数据设计 DOD（C++））—— DOD 结构暴露面受命名与 API 设计影响
 
 ## 附录 G：工业命名与 API 设计惯例
 

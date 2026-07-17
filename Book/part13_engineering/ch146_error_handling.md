@@ -835,10 +835,14 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch91_filesystem.md`（第91章 文件系统 filesystem）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part13_engineering/ch144_style.md`（第144章 代码风格与规范（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part13_engineering/ch148_gitflow.md`（第148章 Git 工作流（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part13_engineering/ch149_ci_cd.md`（第149章 CI/CD 流水线（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch147_code_review.md（第147章 代码审查（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch149_ci_cd.md（第149章 CI/CD 流水线（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））
+- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch151_benchmark.md（第151章 基准测试与性能度量（C++））
+- **跨模块延伸（part07 STL）**：⟶ Book/part07_stl/ch91_filesystem.md（第91章 文件系统 filesystem）—— 文件系统操作大量使用异常语义
 
 ## 附录 E（工业级错误处理实战）
 
@@ -898,6 +902,14 @@ call __cxa_throw          ; 触发展开
 - GCC 13.2 / Clang 18 用 SJLJ / DWARF 展开
 - `__cplusplus` = 202302L；`__attribute__((nothrow))` 等价 `noexcept`
 - WG21 提案 P0784R7 扩展 constexpr 错误处理
+
+### 最佳实践（速记 · 错误处理）
+
+- **异常用于真稀有错误**：可预期错误流（解析失败、未找到）优先 `std::expected`/`std::optional` 或错误码，别把异常当控制流；异常只表达「无法局部恢复」的失败。
+- **析构函数必须 `noexcept`**：析构中抛异常会 `std::terminate`；资源释放失败应吞掉或记日志，绝不向外抛。
+- **RAII 是错误安全基石**：资源获取即初始化，栈展开自动释放；明确基本/强/不抛三档异常安全保证，尤其赋值与交换。
+- **返回值语义要清楚**：避免「错误码 + 输出参数」混用；用 `[[nodiscard]]` 强制调用方检查可能失败的主返回值。
+- **`noexcept` 标注移动/交换**：承诺不抛的移动构造让 `std::vector` 扩容走移动而非拷贝，既是性能也是异常安全契约。
 
 ## 自测练习（Exercises）
 
