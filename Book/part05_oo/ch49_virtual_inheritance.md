@@ -860,9 +860,11 @@ mov    eax, DWORD PTR [rdi+0x8]    ; +8 跳过 B 的 vptr，取 int b
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part05_oo/ch51_crtp.md`（第51章　CRTP 与静态多态（Curiously Recurring Template Pattern））—— 编号相邻、主题接续。
-- **同模块**：`Book/part05_oo/ch52_ebo.md`（第52章　空基类优化 EBO（Empty Base Optimization））—— 同模块下的其他主题。
-
+- **同模块接续**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　C++ 面向对象总览与对象模型基础）—— 虚基类在对象模型中的共享布局（vbptr/vbtable）
+- **同模块接续**：⟶ Book/part05_oo/ch46_encapsulation_inheritance.md（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 虚继承是继承关系的特殊形态，解决菱形重复基类
+- **同模块接续**：⟶ Book/part05_oo/ch47_virtual_functions.md（第47章 虚函数与虚表（vtable）：动态多态的发动机）—— 虚继承下的虚函数调用涉及虚基类 this 调整
+- **同模块接续**：⟶ Book/part05_oo/ch50_multiple_inheritance.md（第50章　多重继承与对象模型（Multiple Inheritance））—— 菱形继承即虚继承+多重继承的组合
+- **同模块接续**：⟶ Book/part05_oo/ch51_crtp.md（第51章　CRTP 与静态多态（Curiously Recurring Template Pattern））—— CRTP 以静态多态替代虚继承的动态分发，规避虚基类开销
 
 ## 附录 G（vtable 底层与性能数据）
 

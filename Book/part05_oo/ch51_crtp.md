@@ -611,10 +611,13 @@ int main(){Widget w(7);auto c=w.clone();std::cout<<c->v<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part06_templates/ch72_expression_templates.md`（第72章　表达式模板 Expression Templates）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part12_patterns/ch139_crtp_pattern.md`（第139章 CRTP 与静态多态（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part05_oo/ch49_virtual_inheritance.md`（第49章 虚继承与菱形继承：共享虚基类）—— 编号相邻、主题接续。
-- **同模块**：`Book/part05_oo/ch45_oop_object_model.md`（第 45 章　C++ 面向对象总览与对象模型基础）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　C++ 面向对象总览与对象模型基础）—— CRTP 以静态多态替代虚函数动态分发，是对象模型的编译期视角
+- **同模块接续**：⟶ Book/part05_oo/ch49_virtual_inheritance.md（第49章 虚继承与菱形继承：共享虚基类）—— CRTP 是虚继承/虚函数的零开销替代
+- **同模块接续**：⟶ Book/part05_oo/ch52_ebo.md（第52章　空基类优化 EBO（Empty Base Optimization））—— CRTP 基类常为空的，EBO 使其零成本
+- **同模块接续**：⟶ Book/part05_oo/ch50_multiple_inheritance.md（第50章　多重继承与对象模型（Multiple Inheritance））—— CRTP 与多重继承组合实现静态接口叠加
+- **跨模块**：⟶ Book/part06_templates/ch68_tmp.md（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— 模板基础是 CRTP 的语法前提
+- **跨模块**：⟶ Book/part06_templates/ch72_expression_templates.md（第72章　表达式模板 Expression Templates）—— 表达式模板是 CRTP 的经典应用
+- **跨模块**：⟶ Book/part12_patterns/ch139_crtp_pattern.md（第139章 CRTP 与静态多态（C++））—— CRTP 设计模式详述其惯用法
 
 ## 附录 G（工业级 CRTP 实战）
 

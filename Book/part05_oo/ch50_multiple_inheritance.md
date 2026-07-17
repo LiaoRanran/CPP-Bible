@@ -661,9 +661,12 @@ int main(){Btn b;b.draw();return 0;}
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part05_oo/ch48_rtti.md`（第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part05_oo/ch52_ebo.md`（第52章　空基类优化 EBO（Empty Base Optimization））—— 编号相邻、主题接续。
-- **同模块**：`Book/part05_oo/ch46_encapsulation_inheritance.md`（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　C++ 面向对象总览与对象模型基础）—— 多重继承对象含多个基类子对象，布局直观
+- **同模块接续**：⟶ Book/part05_oo/ch46_encapsulation_inheritance.md（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 多重继承是封装/继承的进阶形态
+- **同模块接续**：⟶ Book/part05_oo/ch47_virtual_functions.md（第47章 虚函数与虚表（vtable）：动态多态的发动机）—— 多重继承的虚函数调用可能二义，需显式限定
+- **同模块接续**：⟶ Book/part05_oo/ch48_rtti.md（第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询）—— 多重继承下 dynamic_cast 跨分支依赖虚基类
+- **同模块接续**：⟶ Book/part05_oo/ch49_virtual_inheritance.md（第49章 虚继承与菱形继承：共享虚基类）—— 菱形继承=虚继承+多重继承
+- **同模块接续**：⟶ Book/part05_oo/ch52_ebo.md（第52章　空基类优化 EBO（Empty Base Optimization））—— EBO 在多重继承基类中仍有布局收益
 
 ## 附录 G：MI（多继承）工业实践与 ABI 深度
 

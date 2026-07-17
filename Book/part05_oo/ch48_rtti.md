@@ -916,10 +916,12 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part03_language/ch27_cast.md`（第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part05_oo/ch46_encapsulation_inheritance.md`（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part05_oo/ch50_multiple_inheritance.md`（第50章　多重继承与对象模型（Multiple Inheritance））—— 编号相邻、主题接续。
-- **同模块**：`Book/part05_oo/ch45_oop_object_model.md`（第 45 章　C++ 面向对象总览与对象模型基础）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　C++ 面向对象总览与对象模型基础）—— 对象模型中的 vtable 携带 RTTI 信息（type_info）
+- **同模块接续**：⟶ Book/part05_oo/ch46_encapsulation_inheritance.md（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 继承体系是 RTTI 查询的作用域
+- **同模块接续**：⟶ Book/part05_oo/ch47_virtual_functions.md（第47章 虚函数与虚表（vtable）：动态多态的发动机）—— dynamic_cast 对多态类型（含虚函数）才有效
+- **同模块接续**：⟶ Book/part05_oo/ch50_multiple_inheritance.md（第50章　多重继承与对象模型（Multiple Inheritance））—— 多重继承下 dynamic_cast 跨分支需虚基类
+- **跨模块**：⟶ Book/part03_language/ch27_cast.md（第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解）—— dynamic_cast 是转型四兄弟之一，依赖 RTTI
+- **跨模块**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 提供编译期类型查询，是 RTTI 的编译期对应物
 
 ## 底层视角：RTTI 指针、typeinfo 与 dynamic_cast 的指针追逐 [E: Low-level]
 

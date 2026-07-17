@@ -1419,11 +1419,14 @@ int main(){std::cout<<sizeof(B)<<","<<sizeof(D)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part05_oo/ch50_multiple_inheritance.md`（第50章　多重继承与对象模型（Multiple Inheritance））—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part11_source/ch129_qt.md`（第129章　Qt 对象模型与信号槽（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part04_memory/ch44_memory_pool.md`（第 44 章 内存池（Memory Pool）从零实现）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part04_memory/ch43_cache_locality.md`（第 43 章　CPU 缓存体系与内存局部性）—— 编号相邻、主题接续。
-- **同模块**：`Book/part05_oo/ch49_virtual_inheritance.md`（第49章 虚继承与菱形继承：共享虚基类）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part05_oo/ch46_encapsulation_inheritance.md（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 封装/继承的对象内存布局是对象模型的直接体现，本章给出布局基线
+- **同模块接续**：⟶ Book/part05_oo/ch47_virtual_functions.md（第47章 虚函数与虚表（vtable）：动态多态的发动机）—— 虚函数表(vtable)指针是对象模型的核心成员，本章解释其偏移
+- **同模块接续**：⟶ Book/part05_oo/ch49_virtual_inheritance.md（第49章 虚继承与菱形继承：共享虚基类）—— 虚继承在对象模型中引入虚基类表指针(vbptr)，布局最复杂
+- **同模块接续**：⟶ Book/part05_oo/ch50_multiple_inheritance.md（第50章　多重继承与对象模型（Multiple Inheritance））—— 多重继承的对象模型含多个基类子对象与 this 调整
+- **同模块接续**：⟶ Book/part05_oo/ch52_ebo.md（第52章　空基类优化 EBO（Empty Base Optimization））—— EBO 是对象模型层面的布局优化，空基类不占空间
+- **跨模块**：⟶ Book/part04_memory/ch43_cache_locality.md（第 43 章　CPU 缓存体系与内存局部性）—— 缓存局部性受对象布局与访问模式影响
+- **跨模块**：⟶ Book/part04_memory/ch44_memory_pool.md（第 44 章 内存池（Memory Pool）从零实现）—— 内存池常按对象模型定制分配
+- **跨模块**：⟶ Book/part11_source/ch129_qt.md（第129章　Qt 对象模型与信号槽（C++））—— Qt 对象模型（元对象系统）建立在 C++ 对象模型之上
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

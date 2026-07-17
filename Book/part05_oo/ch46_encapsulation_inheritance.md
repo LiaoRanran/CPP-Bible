@@ -1499,10 +1499,14 @@ int main(){D d;d.show();return 0;}
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part04_memory/ch44_memory_pool.md`（第 44 章 内存池（Memory Pool）从零实现）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part05_oo/ch48_rtti.md`（第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询）—— 编号相邻、主题接续。
-- **同模块**：`Book/part05_oo/ch49_virtual_inheritance.md`（第49章 虚继承与菱形继承：共享虚基类）—— 同模块下的其他主题。
-
+- **同模块接续**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　C++ 面向对象总览与对象模型基础）—— 对象模型解释继承后的子类内存布局
+- **同模块接续**：⟶ Book/part05_oo/ch47_virtual_functions.md（第47章 虚函数与虚表（vtable）：动态多态的发动机）—— 虚函数经继承体系重写，override/final 在此生效
+- **同模块接续**：⟶ Book/part05_oo/ch48_rtti.md（第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询）—— RTTI 在继承体系中查询动态类型
+- **同模块接续**：⟶ Book/part05_oo/ch49_virtual_inheritance.md（第49章 虚继承与菱形继承：共享虚基类）—— 虚继承解决菱形继承的重复基类子对象
+- **同模块接续**：⟶ Book/part05_oo/ch50_multiple_inheritance.md（第50章　多重继承与对象模型（Multiple Inheritance））—— 多重继承是封装/继承的进阶形态
+- **跨模块**：⟶ Book/part03_language/ch29_friend.md（第29章 友元 friend 与访问控制）—— 友元打破封装边界，与访问控制权衡
+- **跨模块**：⟶ Book/part04_memory/ch39_raii_rule.md（第 39 章　RAII 与 Rule of Zero/Three/Five）—— RAII 与构造/析构顺序直接承接继承体系
+- **跨模块**：⟶ Book/part04_memory/ch44_memory_pool.md（第 44 章 内存池（Memory Pool）从零实现）—— 内存池可封装为类内资源
 
 ## 附录 G（对象布局与继承）
 

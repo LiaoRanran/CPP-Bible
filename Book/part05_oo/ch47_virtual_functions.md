@@ -950,10 +950,13 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch91_filesystem.md`（第91章 文件系统 filesystem）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch92_chrono.md`（第92章 时间库 chrono）—— 本章为其前置，建议后续延伸阅读。
-- **同模块**：`Book/part05_oo/ch50_multiple_inheritance.md`（第50章　多重继承与对象模型（Multiple Inheritance））—— 同模块下的其他主题。
-
+- **同模块接续**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　C++ 面向对象总览与对象模型基础）—— 对象模型的 vtable 指针即虚函数的存储落点
+- **同模块接续**：⟶ Book/part05_oo/ch46_encapsulation_inheritance.md（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 虚函数经继承体系重写，override/final 约束重写
+- **同模块接续**：⟶ Book/part05_oo/ch48_rtti.md（第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询）—— dynamic_cast/typeid 依赖虚函数表的存在
+- **同模块接续**：⟶ Book/part05_oo/ch49_virtual_inheritance.md（第49章 虚继承与菱形继承：共享虚基类）—— 虚继承下的虚函数调用涉及虚基类 this 调整
+- **同模块接续**：⟶ Book/part05_oo/ch50_multiple_inheritance.md（第50章　多重继承与对象模型（Multiple Inheritance））—— 多重继承的虚函数调用可能存在二义性，需显式消歧
+- **跨模块**：⟶ Book/part07_stl/ch91_filesystem.md（第91章 文件系统 filesystem）—— filesystem 大量使用虚接口抽象
+- **跨模块**：⟶ Book/part07_stl/ch92_chrono.md（第92章 时间库 chrono）—— chrono 的时钟/时区用虚接口多态
 
 ## 附录 G（虚函数与 thunk）
 
