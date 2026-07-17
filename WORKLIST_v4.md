@@ -446,8 +446,20 @@
 
 > 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归；独立全链接校验（不裹命名空间，无 PRELUDE，include-hoist，真全链接）注入区 GCC 13.1 -O2 -Wall -Wextra 0 fail（无需 -pthread/-latomic）。APP-A/APP-C 累计覆盖 91/147 章（批次数累加；唯一覆盖 88 章）。简单替换(习题锚点→EOF, 工业附录在锚点前已保留)。所有 ```cpp 注入块自包含可编译且显式写全 `#include`。
 
+**Batch APP16（已完成，2026-07-17）**：收官批 5 章 legacy 半完成态收口 (ch132 LevelDB/RocksDB / ch143 DOD / ch150 测试 / ch163 网络 / ch165 路线图)。全量审计锁定 5 真实遗留章（其余 142 章已具 `练习 1` 结构），`练习 1/2/3` 习题 + `用法演绎` 附录主题对齐，结构覆盖达 147/147。
+
+| 子任务 | 章 | 内容 |
+|--------|:---:|------|
+| APP16 | ch132 132_leveldb_rocksdb | 习题：### 练习 1（难度 ★★）【WalWriter RAII 封装 fopen/fwrite/fclose，演示 LSM 写前日志的资源安全】 / ### 练习 2（难度 ★★★）【std::variant<PutOp,DeleteOp,MergeOp> + std::visit 类型安全操作分发】 / ### 练习 3（难度 ★★★★）【原子跳表 Node：std::atomic<Node*> next + release/acquire 内存序保证无锁查找】；演绎：演绎 Arena 批分配降低 malloc 次数【LevelDB 用单一大块内存池服务小对象，减少系统调用与碎片】 / 演绎 Compaction 写停顿状态机【Minor/Major compaction 在写缓冲满 / 层级超阈值时触发，L0 文件数达软硬阈值致写停顿】 |
+| APP16 | ch143 143_dod | 习题：### 练习 1（难度 ★★）【AoS→SoA 重构求平均分，演示缓存友好布局】 / ### 练习 2（难度 ★★★）【alignas(64) 消除 false sharing + alignof 取证】 / ### 练习 3（难度 ★★★★）【SoA 批量平移 SIMD 友好（连续同类型字段）】；演绎：演绎 粒子系统 AoS→SoA【粒子属性分桶存储，遍历更新同一属性时缓存命中率提升】 / 演绎 ECS 组件以 SoA 存储【组件数组独立分配，系统遍历单组件连续内存，避免为不用的组件付缓存代价】 |
+| APP16 | ch150 150_testing | 习题：### 练习 1（难度 ★★）【无框架迷你测试台（返回码驱动）】 / ### 练习 2（难度 ★★★）【parse_int 参数化测试】 / ### 练习 3（难度 ★★★★）【safe_add 模糊驱动（随机输入探边）】；演绎：演绎 Flaky Test 共享状态根因【测试间共享全局/静态状态导致偶发失败，用每测试 fixture 隔离修复】 / 演绎 TDD 红绿重构节奏【先写失败测试（红），最小实现通过（绿），再重构】 |
+| APP16 | ch163 163_net | 习题：### 练习 1（难度 ★★）【RingBuffer 环形缓冲（生产者/消费者索引）】 / ### 练习 2（难度 ★★★）【长度前缀协议 encode/decode】 / ### 练习 3（难度 ★★★★）【非阻塞状态机 ReadHeader/ReadBody/Done】；演绎：演绎 epoll vs io_uring【epoll 水平/边缘触发就绪通知，io_uring 提交/完成队列异步 I/O，C100K 下系统调用与拷贝次数差异】 / 演绎 Reactor C10K→C100K【事件循环 + 非阻塞 fd + 线程池，突破单线程 C10K 瓶颈】 |
+| APP16 | ch165 165_roadmap | 习题：### 练习 1（难度 ★★）【SafeArray 边界检查（at() 抛异常 vs 断言）】 / ### 练习 2（难度 ★★★）【std::source_location 日志宏】 / ### 练习 3（难度 ★★★★）【std::lower_bound 模拟 git bisect】；演绎：演绎 90 天计划项目映射【将路线图里程碑映射到可执行子项目，按依赖排序】 / 演绎 WG21 提案编号分区【P/R/D 文档编号体系与提案状态演进】 |
+
+> 一致性门禁：147 章 ERROR=0 / WARN=0 = 100/100（注入后复验通过）。双门禁：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归；独立全链接校验（不裹命名空间，无 PRELUDE，include-hoist，真全链接）25 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail（5 章 legacy 半完成态收口，简单替换习题锚点→EOF）。APP-A/APP-C 结构覆盖收官 147/147 章（全量习题主题对齐；唯一覆盖 147 章）。ch132 练习1 补 `<cstdint>` 修复 `uint32_t` 未声明。所有 ```cpp 注入块自包含可编译且显式写全 `#include`。
+
 **后续批次（规划中）**
-- **APP15+**：滚动覆盖剩余章节（part01_history ch01/02/08/09/10 + part07_stl / part08 / part09 余 / part10 余 / part11_source / part12_patterns / part13_engineering / part14_perf / part15_cases / part16_reading），直至 147 章习题全部主题对齐。
+- **收官**：APP16 为 Phase APP 终批，147/147 章习题全部主题对齐、重点章均有用法演绎，结构覆盖 100% 达成。后续仅维持性更新（纠错 / 新实证），无新增覆盖批次。
 
 ## 不纳入项（P2-，已评估）
 
@@ -494,7 +506,8 @@
 | APP13 | Phase APP 应用层增强第十三批（part02_toolchain 8 章习题重写+用法演绎） | 8 | 8 | 100% |
 | APP14 | Phase APP 应用层增强第十四批（part01_history 5 章习题重写+用法演绎） | 5 | 5 | 100% |
 | APP15 | Phase APP 应用层增强第十五批（part07_stl 8 章习题重写+用法演绎） | 8 | 8 | 100% |
-| **合计** | | **174** | **174** | **100%** |
+| APP16 | Phase APP 应用层增强第十六批（收官 5 章 legacy 半完成态收口） | 5 | 5 | 100% |
+| **合计** | | **179** | **179** | **100%** |
 
 ---
 
