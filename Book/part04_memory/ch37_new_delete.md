@@ -1835,9 +1835,12 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part04_memory/ch35_memory_layout.md`（第 35 章  C++ 程序的内存模型与操作系统视角）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch77_vector.md`（第77章　vector：扩容、失效、allocator 协作）—— 本章为其前置，建议后续延伸阅读。
-- **同模块**：`Book/part04_memory/ch40_exception_safety.md`（第 40 章　异常安全（Exception Safety））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章　内存模型与 OS 视角）—— 堆在进程地址空间中的落点。
+- **同模块接续**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈与堆对比）—— 何时该用 new 而非栈对象。
+- **同模块接续**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器与 PMR）—— allocator::allocate 与 operator new 的协作边界。
+- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 智能指针底层正是 new/delete + 控制块。
+- **同模块接续**：⟶ Book/part04_memory/ch44_memory_pool.md（第 44 章　内存池）—— placement new 是池化分配的核心原语。
+- **前置基础**：⟶ Book/part07_stl/ch77_vector.md（第 77 章　vector）—— vector 扩容经 allocator/new 在堆上成长。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

@@ -1727,11 +1727,12 @@ call    _Znwy                   ; operator new(24): 单次分配
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part04_memory/ch39_raii_rule.md`（第 39 章　RAII 与 Rule of Zero/Three/Five）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part04_memory/ch43_cache_locality.md`（第 43 章　CPU 缓存体系与内存局部性）—— 编号相邻、主题接续。
-- **同模块**：`Book/part04_memory/ch35_memory_layout.md`（第 35 章  C++ 程序的内存模型与操作系统视角）—— 同模块下的其他主题。
-
-- **同模块**：`Book/part04_memory/ch36_stack_heap.md`（第 36 章　栈（stack）与堆（heap）的深度对比）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part04_memory/ch39_raii_rule.md（第 39 章　RAII 与 Rule of Zero/Three/Five）—— 智能指针是 RAII 的核心范式。
+- **同模块接续**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章　动态内存分配原语）—— 控制块与对象经 new/delete 落地。
+- **同模块接续**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章　内存模型与 OS 视角）—— 堆上资源在地址空间中的视图。
+- **同模块接续**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈与堆对比）—— 默认堆持有 vs 栈句柄的权衡。
+- **同模块接续**：⟶ Book/part04_memory/ch44_memory_pool.md（第 44 章　内存池）—— 池 + 智能指针组合降低分配抖动。
+- **相邻主题**：⟶ Book/part04_memory/ch43_cache_locality.md（第 43 章　缓存局部性）—— 控制块布局影响缓存命中。
 
 ## 附录 C：编译实证——`unique_ptr` 的零开销证明 [E: Low-level]
 

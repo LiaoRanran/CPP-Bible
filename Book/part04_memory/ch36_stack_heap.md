@@ -1365,10 +1365,11 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part04_memory/ch43_cache_locality.md`（第 43 章　CPU 缓存体系与内存局部性）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part04_memory/ch38_allocator.md`（第 38 章　分配器（Allocator）模型与 PMR）—— 编号相邻、主题接续。
-- **同模块**：`Book/part04_memory/ch40_exception_safety.md`（第 40 章　异常安全（Exception Safety））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章　内存模型与 OS 视角）—— 地址空间划分决定栈底与堆起点。
+- **同模块接续**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章　动态内存分配原语）—— new 从堆取内存，是栈溢出时的逃生通道。
+- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 智能指针默认堆分配，选栈还是堆的封装决策。
+- **同模块接续**：⟶ Book/part04_memory/ch44_memory_pool.md（第 44 章　内存池）—— 实时场景用池替代通用堆，规避碎片与不确定延迟。
+- **前置基础**：⟶ Book/part04_memory/ch43_cache_locality.md（第 43 章　缓存局部性）—— 堆对象访问模式决定缓存命中率。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
@@ -1385,6 +1386,15 @@ int main() {
 ### 重构建议
 
 把「栈上的大数组」重构为 `std::vector`/`std::unique_ptr<T[]>`（堆分配、无栈溢风险）；碎片化场景用 `std::pmr::monotonic_buffer_resource` 池化（见 ch38）；CI 加 `-fstack-protector-strong` + `-D_FORTIFY_SOURCE=2` 防御栈溢出。
+
+### 面试要点（速记 · 栈与堆）
+
+- **生长方向与容量**：栈向低地址增长、容量固定（线程创建时定，常 1~8MB，受链接脚本/ulimit 限制）；堆向高地址增长、受可用虚拟内存限制。大对象或运行时大小对象必须落堆。
+- **栈溢出三板斧**：① `-fstack-protector-strong` 返回前用栈金丝雀检测越界；② 栈底设 guard page，越界触发 SIGSEGV 而非静默破坏；③ 递归必须有终止条件，深递归改堆（迭代 + 显式栈）。
+- **堆碎片**：内部碎片（分配器对齐/最小块导致浪费）、外部碎片（空闲块不连续无法满足大请求）。缓解：固定大小对象池、PMR `monotonic_buffer_resource`、jemalloc/tcmalloc。
+- **返回局部引用悬垂**：函数返回 `T&`/`T*` 指向局部变量，调用后栈帧回收 → UB。正确做法：返回值（移动/复制）或调用方提供的输出参数。
+- **线程栈 vs `thread_local`**：每线程独立栈；`thread_local` 存于 TLS 段（非栈非堆），生命周期同线程。多线程大栈易耗尽虚拟地址空间。
+- **ASLR 与安全**：栈/堆地址随机化使攻击者难以预测返回地址；配合 NX（栈不可执行）缓解 shellcode 注入。
 
 ## 自测练习（Exercises）
 

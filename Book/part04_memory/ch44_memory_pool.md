@@ -1982,10 +1982,12 @@ int main(){
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part05_oo/ch45_oop_object_model.md`（第 45 章　C++ 面向对象总览与对象模型基础）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part04_memory/ch42_strict_aliasing.md`（第 42 章 · 严格别名规则（Strict Aliasing）与编译器优化）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part05_oo/ch46_encapsulation_inheritance.md`（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 编号相邻、主题接续。
-- **同模块**：`Book/part04_memory/ch35_memory_layout.md`（第 35 章  C++ 程序的内存模型与操作系统视角）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章　动态内存分配原语）—— 池用 placement new 替代通用 new。
+- **同模块接续**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器与 PMR）—— pmr 资源可封装内存池。
+- **同模块接续**：⟶ Book/part04_memory/ch42_strict_aliasing.md（第 42 章　严格别名）—— 池内对象类型双关的 aliasing 边界。
+- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 池分配对象配智能指针管理所有权。
+- **相邻主题**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　对象模型）—— 池化对象的内存布局。
+- **相邻主题**：⟶ Book/part05_oo/ch46_encapsulation_inheritance.md（第 46 章　封装与继承）—— 池常作为类内封装资源。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

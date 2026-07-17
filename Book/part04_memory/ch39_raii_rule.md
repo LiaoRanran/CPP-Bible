@@ -1728,10 +1728,11 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part04_memory/ch35_memory_layout.md`（第 35 章  C++ 程序的内存模型与操作系统视角）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part04_memory/ch36_stack_heap.md`（第 36 章　栈（stack）与堆（heap）的深度对比）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part04_memory/ch41_smart_pointers.md`（第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this））—— 编号相邻、主题接续。
-- **同模块**：`Book/part04_memory/ch42_strict_aliasing.md`（第 42 章 · 严格别名规则（Strict Aliasing）与编译器优化）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章　内存模型与 OS 视角）—— 资源生命周期映射到栈/堆。
+- **同模块接续**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈与堆对比）—— 栈对象靠 RAII 自动析构，堆对象靠智能指针。
+- **同模块接续**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章　动态内存分配原语）—— RAII 把 new/delete 配对收敛为构造/析构。
+- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 智能指针是 RAII 最经典的实例化。
+- **相邻主题**：⟶ Book/part04_memory/ch42_strict_aliasing.md（第 42 章　严格别名）—— 底层类型双关优化与对象生命周期的交互。
 
 ## 底层视角：栈展开、析构代价与 noexcept [E: Low-level]
 

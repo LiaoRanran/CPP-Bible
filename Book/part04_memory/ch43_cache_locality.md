@@ -1613,10 +1613,12 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part10_modern/ch122_pmr.md`（第122章　PMR 与多态分配器）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part04_memory/ch41_smart_pointers.md`（第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part05_oo/ch45_oop_object_model.md`（第 45 章　C++ 面向对象总览与对象模型基础）—— 编号相邻、主题接续。
-- **同模块**：`Book/part04_memory/ch35_memory_layout.md`（第 35 章  C++ 程序的内存模型与操作系统视角）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 控制块的缓存局部性决定解引用开销。
+- **同模块接续**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器与 PMR）—— pmr 池化减少碎片、改善空间局部性。
+- **同模块接续**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章　内存模型与 OS 视角）—— 段/页与 CPU 缓存层级的关系。
+- **同模块接续**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈与堆对比）—— 栈连续分配天然缓存友好。
+- **相邻主题**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　对象模型）—— 对象内存布局与访问局部性。
+- **前置基础**：⟶ Book/part10_modern/ch122_pmr.md（第 122 章　PMR 与多态分配器）—— 池化资源降延迟的底层机制。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
@@ -1633,6 +1635,15 @@ int main() {
 ### 重构建议
 
 把「频繁遍历的 `std::list`」重构为 `std::vector`（compact、预取友好），仅当需要 O(1) 中间插入删除（且遍历少）才保留 list；把「多线程共享的独立标志」用 `__attribute__((aligned(64)))` 或 `alignas` 分到不同缓存行。
+
+### 面试要点（速记 · 缓存局部性）
+
+- **缓存行与伪共享**：x86 缓存行 64B。false sharing = 多线程各自修改同一缓存行内不同变量，触发 MESI 在核间反复失效 → 吞吐骤降。规避：`alignas(std::hardware_destructive_interference_size)` 让变量独占缓存行（C++17）。
+- **行主序 vs 列主序**：C++ 矩阵行主序，`for i for j mat[i][j]` 顺序访问连续内存 → cache 友好；调换 i/j 跨行跳跃 → cache miss 爆炸，实测可差 10×。
+- **时间/空间局部性**：刚访问的数据很快再用（时间）、相邻数据很快用（空间）→ 预取器与缓存高效。结构体数组(AoS)改数组结构体(SoA)可提升空间局部性。
+- **`std::vector` 连续存储**：元素紧凑、缓存命中率高；`std::list`/链表节点散落 → cache miss 多。高频遍历优先 vector。
+- **prefetch 与对齐**：`__builtin_prefetch` 手动预取隐藏延迟；`alignas(64)` 让热数据对齐缓存行，避免跨行拆分。
+- **false sharing 验证**：`perf stat -e cache-misses,L1-dcache-load-misses` 对比对齐前后，或用 false-sharing 微基准测吞吐差异。
 
 ## 自测练习（Exercises）
 

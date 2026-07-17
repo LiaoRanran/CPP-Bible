@@ -1536,11 +1536,12 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch76_stl_arch.md`（第76章　STL 架构与迭代器概念）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch77_vector.md`（第77章　vector：扩容、失效、allocator 协作）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part04_memory/ch36_stack_heap.md`（第 36 章　栈（stack）与堆（heap）的深度对比）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part04_memory/ch40_exception_safety.md`（第 40 章　异常安全（Exception Safety））—— 编号相邻、主题接续。
-- **同模块**：`Book/part04_memory/ch35_memory_layout.md`（第 35 章  C++ 程序的内存模型与操作系统视角）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈与堆对比）—— allocator 在堆上切分内存。
+- **同模块接续**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章　动态内存分配原语）—— allocate/deallocate 与 operator new 的关系。
+- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 容器可携自定义 allocator 影响控制块分配。
+- **同模块接续**：⟶ Book/part04_memory/ch44_memory_pool.md（第 44 章　内存池）—— pmr 的 monotonic_buffer_resource 等即池化资源。
+- **前置基础**：⟶ Book/part07_stl/ch76_stl_arch.md（第 76 章　STL 架构）—— allocator 是 STL 容器的可插拔内存后端。
+- **前置基础**：⟶ Book/part07_stl/ch77_vector.md（第 77 章　vector）—— vector 的扩容与 allocator 协作。
 
 ## 工业实现参考：真实通用分配器 [B: Principle]
 

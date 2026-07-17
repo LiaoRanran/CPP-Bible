@@ -1418,8 +1418,11 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 本章为其前置，建议后续延伸阅读。
-- **同模块**：`Book/part04_memory/ch40_exception_safety.md`（第 40 章　异常安全（Exception Safety））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈与堆深度对比）—— 本章地址空间布局直接决定栈/堆位置与相向扩张。
+- **同模块接续**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章　动态内存分配原语）—— 堆上对象由 new/delete 落地，是本章段视图的运行态体现。
+- **同模块接续**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器与 PMR）—— allocator 在堆上切分内存，依赖本章段/页视图。
+- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 智能指针默认在堆持有资源，是本章内存模型的典型消费者。
+- **前置基础**：⟶ Book/part03_language/ch19_variables.md（第 19 章　变量、存储期与链接）—— 自动/静态/动态存储期对应栈/.bss/堆，是本章的物理落点。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
