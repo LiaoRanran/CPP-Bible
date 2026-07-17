@@ -832,9 +832,11 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part15_cases/ch160_mempool.md`（第160章 从零实现内存池（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part15_cases/ch164_framework.md`（第164章 从零实现迷你框架（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part15_cases/ch159_threadpool.md`（第159章 从零实现线程池（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch160_mempool.md（第160章 从零实现内存池（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch161_logger.md（第161章 从零实现日志库（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch164_framework.md（第164章 从零实现迷你框架（C++））
 
 ## 附录 G：工业 JSON 库生态
 
@@ -847,6 +849,20 @@ int main() {
 | **Chromium** `base::Value`（github.com/chromium/chromium） | Chromium 内置 JSON 表示（`base::Value` / `base::JSONReader`） | Service Worker、扩展 API、DevTools 协议均使用 | `base/values.h` — `base::JSONReader::Read` |
 
 **底层深度**：解析性能瓶颈在 UTF-8 校验与数值解析。simdjson 的 stage-1 使用 SIMD 并行识别 JSON 结构字符（`{` `}` `[` `]` `:` `,` `"` `\`）——将 64 字节加载到 AVX2 `__m256i`，用 4 次 `_mm256_cmpeq_epi8` + `_mm256_movemask_epi8` 并行标记位置，峰值 3 周期/64 字节。RapidJSON 的 `Reader<UTF8<>>` 采用状态机 + `switch` 分派（`case kObjectBegin:` → `ParseMember` → `ParseValue`），递归深度受 `kParseStopWhenDoneFlag` 限制。`nlohmann/json` 的 `json::parse()` 内部使用 `lexer` 将输入流 Token 化（`token_string::parse()` 单字符循环逐字节处理），纯标量解析速度为 simdjson 的 ~1/8。
+
+### 面试要点（速记·JSON 库）
+
+- **解析两阶段**：tokenize（词法）→ parse（递归下降/状态机）建 DOM；SAX 流式解析省内存。
+- **类型表示**：`std::variant<null,bool,number,string,array,object>`（C++17）天然表达 JSON 值，类型安全优于裸 `void*`+标签。
+- **数字陷阱**：大整数可能超出 `double` 精度→保留原始字符串直到确需数值（关联 第162章 序列化）。
+- **性能**：惰性解析（parse-on-demand，如 simdjson）用 SIMD 做 whitespace skipping。
+- **转义**：序列化时正确转义 `"` `\` 与控制字符。
+
+### 最佳实践（速记·JSON 库）
+
+- **DOM 用 `std::variant`** 而非裸 `void*`+类型标签，类型安全、无 RTTI 开销。
+- **大文档用 SAX/流式** 避免整树驻留内存；提供 `operator[]`/`.at()` 友好访问。
+- **序列化正确转义**：对双引号与反斜杠正确反转义；解析对重复键/尾逗号严格定义行为。
 
 ## 自测练习（Exercises）
 

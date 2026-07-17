@@ -958,9 +958,26 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part14_perf/ch158_perf_antipatterns.md`（第158章 性能反模式与陷阱）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part15_cases/ch162_json.md`（第162章 从零实现 JSON 库（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part15_cases/ch163_net.md`（第163章 从零实现网络编程（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch161_logger.md（第161章 从零实现日志库（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch162_json.md（第162章 从零实现 JSON 库（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch164_framework.md（第164章 从零实现迷你框架（C++））
+- **跨模块延伸**：⟶ Book/part14_perf/ch158_perf_antipatterns.md（第158章 性能反模式与陷阱）
+
+### 面试要点（速记·内存池）
+
+- **为何内存池**：降低 `new/delete` 锁竞争与 `brk/mmap` 系统调用开销；嵌入式/高频分配场景必需。
+- **固定大小块池**：`free list` 单链表 + 位图，分配 O(1)、无外部碎片；回收整池而非逐块。
+- **对齐**：`alignas` 保证块对齐 cache line，避免 false sharing（关联 第158章 性能反模式）。
+- **与 `std::pmr`**：自定义 pool 继承 `std::pmr::memory_resource`（C++17）即可接入 `pmr` 分配器体系（关联 第122章 PMR）。
+- **线程安全**：热路径常用 thread-local 池避免全局锁。
+
+### 最佳实践（速记·内存池）
+
+- **分级 size class**：按对象大小分池，避免大对象浪费小池、小对象碎片大池。
+- **接入 `std::pmr`**：继承 `memory_resource` 让业务代码零侵入切换分配器，配合 `std::pmr::polymorphic_allocator`。
+- **析构安全**：回收整池而非逐块；确保无悬空引用后再释放。
 
 ## 自测练习（Exercises）
 

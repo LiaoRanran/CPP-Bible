@@ -1456,9 +1456,25 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part15_cases/ch159_threadpool.md`（第159章 从零实现线程池（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part15_cases/ch163_net.md`（第163章 从零实现网络编程（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part15_cases/ch164_framework.md`（第164章 从零实现迷你框架（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch160_mempool.md（第160章 从零实现内存池（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch162_json.md（第162章 从零实现 JSON 库（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch164_framework.md（第164章 从零实现迷你框架（C++））
+
+### 面试要点（速记·日志库）
+
+- **日志级别**：`trace/debug/info/warn/error/fatal`；生产默认 `info` 以上，避免 IO 淹没。
+- **异步日志**：后台线程 + 无锁环形队列（SPSC）接收日志，业务线程不阻塞在磁盘 IO（关联 第159章 线程池）。
+- **`std::endl` vs `\n`**：高频日志用 `\n`，避免每次 `fflush` 系统调用（关联 第158章 性能反模式）。
+- **格式化**：`std::format`/`fmt`（C++20）类型安全、零拷贝；避免 `operator<<` 拼接的性能与异常风险。
+- **轮转**：按大小/时间切分 `rotating file`，避免单文件膨胀。
+
+### 最佳实践（速记·日志库）
+
+- **用 `std::format`/`fmt`** 替代 `%` 与流拼接，类型安全且快。
+- **异步 sink 用无锁队列**，写线程不阻塞业务线程；提供 `LOG(LEVEL)` 宏 + 编译期级别过滤（`if constexpr`）。
+- **级别可配置**：运行期可调级别，生产默认 `info` 以上。
 
 ## 自测练习（Exercises）
 

@@ -1160,9 +1160,12 @@ int main(){std::cout<<"Framework=ch47+ch93+ch141+ch88+ch161"<<std::endl;return 0
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part16_reading/ch165_roadmap.md`（第165章 C++ 进阶路线图（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part15_cases/ch162_json.md`（第162章 从零实现 JSON 库（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part15_cases/ch160_mempool.md`（第160章 从零实现内存池（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch160_mempool.md（第160章 从零实现内存池（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch161_logger.md（第161章 从零实现日志库（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch162_json.md（第162章 从零实现 JSON 库（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））
+- **跨模块延伸**：⟶ Book/part16_reading/ch165_roadmap.md（第165章 C++ 进阶路线图（C++））
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1212,6 +1215,20 @@ call [rdx]
 - `__cplusplus` = 202302L；`-fwhole-program-vtables` 去虚化框架调用
 - `constexpr` 将框架配置前移到编译期（C++20）
 
+
+### 面试要点（速记·迷你框架）
+
+- **框架 vs 库**：框架「控制反转」——你实现回调，框架调你；库是你主动调用。
+- **生命周期**：RAII 管理对象树，框架持有根、统一析构（关联 第39章 RAII 规则）。
+- **扩展点**：回调/策略模式/模板方法（关联 第135/136/137章 设计模式）。
+- **整合**：线程池 + 日志 + 内存池 + JSON 配置 + 网络 = 可运行后端骨架。
+- **零开销扩展**：CRTP/策略模板做编译期静态扩展（关联 第51章 CRTP / 第71章 策略）。
+
+### 最佳实践（速记·迷你框架）
+
+- **RAII + 智能指针** 管理框架资源生命周期，杜绝裸 `new/delete`。
+- **扩展点用 `std::function`/策略/模板**，避免对全部扩展点施加 `virtual` 开销。
+- **配置用 JSON（第162章）解析注入**，运行期改行为不改代码。
 
 ## 自测练习（Exercises）
 

@@ -1041,9 +1041,12 @@ int main(){std::cout<<"Network=ch163+ch93+ch81+ch77+ch159"<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part15_cases/ch161_logger.md`（第161章 从零实现日志库（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part16_reading/ch165_roadmap.md`（第165章 C++ 进阶路线图（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part15_cases/ch160_mempool.md`（第160章 从零实现内存池（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch160_mempool.md（第160章 从零实现内存池（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch161_logger.md（第161章 从零实现日志库（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch162_json.md（第162章 从零实现 JSON 库（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch164_framework.md（第164章 从零实现迷你框架（C++））
+- **跨模块延伸**：⟶ Book/part16_reading/ch165_roadmap.md（第165章 C++ 进阶路线图（C++））
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
@@ -1083,6 +1086,14 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 [标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
 
 </details>
+
+### 面试要点（速记·网络编程）
+
+- **阻塞 vs 多路复用**：单线程 `select/poll/epoll` 管万级连接（C10K），替代一连接一线程。
+- **`epoll` ET vs LT**：边沿触发需非阻塞 + 循环读完，否则丢事件；水平触发更安全但无效唤醒多。
+- **Reactor vs Proactor**：Reactor 等「可读」后自己读；Proactor（IOCP）内核完成 IO 后通知（关联 第159章 线程池）。
+- **TCP 粘包**：用长度前缀或分隔符定界，不能假设一次 `recv` 收完整消息。
+- **`io_uring`**：把系统调用异步化进一步降开销；`TLS` 应用层加解密独立于传输。
 
 ### 练习 1（难度 ★★）
 

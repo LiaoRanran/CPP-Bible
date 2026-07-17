@@ -966,12 +966,15 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch93_thread_async.md`（第93章　线程与异步：thread / future / async）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch94_stop_token.md`（第94章　stop_token 与协作取消 [标准]）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part14_perf/ch158_perf_antipatterns.md`（第158章 性能反模式与陷阱）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part14_perf/ch157_compiler_explorer.md`（第157章 Compiler Explorer 实战）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part15_cases/ch161_logger.md`（第161章 从零实现日志库（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part15_cases/ch162_json.md`（第162章 从零实现 JSON 库（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch160_mempool.md（第160章 从零实现内存池（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch161_logger.md（第161章 从零实现日志库（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch162_json.md（第162章 从零实现 JSON 库（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））
+- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch164_framework.md（第164章 从零实现迷你框架（C++））
+- **跨模块延伸**：⟶ Book/part07_stl/ch93_thread_async.md（第93章　线程与异步：thread / future / async）
+- **跨模块延伸**：⟶ Book/part07_stl/ch94_stop_token.md（第94章　stop_token 与协作取消 [标准]）
+- **跨模块延伸**：⟶ Book/part14_perf/ch158_perf_antipatterns.md（第158章 性能反模式与陷阱）
+- **跨模块延伸**：⟶ Book/part14_perf/ch157_compiler_explorer.md（第157章 Compiler Explorer 实战）
 
 ## 附录 G（工业级线程池实战）
 
@@ -1013,6 +1016,14 @@ int main() {
 ### 重构建议
 
 把 `std::mutex + deque` 升级为 `concurrent_queue`（无锁 MPMC）+ `std::jthread`（自动 join）；把 `std::function<void()>` 升级为 `std::move_only_function<void()>` （C++23，零小对象堆分配）；支持 `enqueue_bulk` 批提交削减 notify 开销。
+
+### 面试要点（速记·线程池）
+
+- **线程池规模**：CPU 密集≈核数；IO 密集≈核数×(1+等待/计算)。常考「为何不能无限制开线程」——线程创建/上下文切换/竞争均有开销。
+- **任务队列**：`std::queue<Task>` + `std::mutex` + `std::condition_variable`；单任务唤醒用 `notify_one`，关闭用 `notify_all`。
+- **优雅关闭**：`stop` 标志 + `cv.notify_all()` 唤醒全部 worker 退出；析构中 `join` 所有线程，否则仍 joinable 的线程析构抛 `std::terminate`。
+- **`std::async` vs 自建池**：`async` 调度不可控、默认可能开新线程爆栈；自建池可控队列与拒绝策略。
+- **任务异常**：worker 内必须捕获任务异常，否则 `std::terminate`；用 `std::future` 把异常传回提交方。
 
 ## 自测练习（Exercises）
 
