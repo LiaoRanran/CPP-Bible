@@ -634,10 +634,12 @@ int main(){f(42);return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part06_templates/ch61_template_overload.md`（第61章　函数模板重载决议（Function Template Overload Resolution））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part06_templates/ch64_fold.md`（第64章　折叠表达式 Fold Expression（C++17））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part06_templates/ch68_tmp.md`（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— 编号相邻、主题接续。
-- **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— SFINAE 是模板基础的编译期分支手段
+- **同模块接续**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— SFINAE 在重载决议中剔除失败候选
+- **同模块接续**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 是 SFINAE 最常用的谓词
+- **同模块接续**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— concepts 以更清晰的方式替代 SFINAE
+- **同模块接续**：⟶ Book/part06_templates/ch68_tmp.md（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— TMP 用 SFINAE 实现编译期 if
+- **跨模块**：⟶ Book/part03_language/ch23_namespace_adl.md（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— ADL 与 SFINAE 共同决定模板候选
 
 ## 附录 J（工业级 SFINAE 实战）
 

@@ -724,10 +724,13 @@ A: && → true (逻辑与空集 = 真); || → false; , → void()
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part01_history/ch06_cpp17.md`（第06章　C++17：生产力跃升）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part06_templates/ch62_specialization.md`（第62章　类模板特化与偏特化（Class Template Specialization））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part06_templates/ch66_sfinae.md`（第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发）—— 编号相邻、主题接续。
-- **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part06_templates/ch63_variadic.md（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 折叠表达式是可变参数包展开的简化（C++17）
+- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— 折叠建立在模板基础之上
+- **同模块接续**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— 折叠参与包相关重载决议
+- **同模块接续**：⟶ Book/part06_templates/ch66_sfinae.md（第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发）—— SFINAE 可为折叠表达式加约束
+- **同模块接续**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— concepts 约束折叠中的包
+- **跨模块**：⟶ Book/part01_history/ch06_cpp17.md（第06章　C++17：生产力跃升）—— C++17 引入折叠表达式，是生产力跃升
+- **跨模块**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— vector 算法常用折叠表达归约
 
 ## 附录 G：Fold Expression 工业应用与编译器优化
 

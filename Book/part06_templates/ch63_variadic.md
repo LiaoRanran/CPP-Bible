@@ -719,11 +719,14 @@ int main(){std::cout<<sum(1,2,3,4,5,6,7,8,9,10)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part01_history/ch04_cpp11.md`（第04章　C++11：现代 C++ 革命）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch78_deque.md`（第78章　deque 与分段连续 [标准]）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part06_templates/ch61_template_overload.md`（第61章　函数模板重载决议（Function Template Overload Resolution））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part06_templates/ch65_type_traits.md`（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— 编号相邻、主题接续。
-- **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— 可变参数模板是模板基础的包推广
+- **同模块接续**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— 包展开参与模板重载决议
+- **同模块接续**：⟶ Book/part06_templates/ch64_fold.md（第64章　折叠表达式 Fold Expression（C++17））—— 折叠表达式是可变参数包展开的简化语法
+- **同模块接续**：⟶ Book/part06_templates/ch62_specialization.md（第62章　类模板特化与偏特化（Class Template Specialization））—— 特化常针对包做递归终止
+- **同模块接续**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 常对包做萃取
+- **跨模块**：⟶ Book/part01_history/ch04_cpp11.md（第04章　C++11：现代 C++ 革命）—— C++11 引入可变参数模板，是核心语言演进
+- **跨模块**：⟶ Book/part07_stl/ch78_deque.md（第78章　deque 与分段连续 [标准]）—— deque 等容器用可变参数包转发
+- **跨模块**：⟶ Book/part10_modern/ch116_perfect_forwarding.md（第116章　完美转发与万能引用）—— 完美转发与可变参数包协同
 
 ## 自测练习（Exercises）
 

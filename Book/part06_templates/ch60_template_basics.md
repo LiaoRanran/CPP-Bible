@@ -696,9 +696,13 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part06_templates/ch62_specialization.md`（第62章　类模板特化与偏特化（Class Template Specialization））—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch76_stl_arch.md`（第76章　STL 架构与迭代器概念）—— 本章为其前置，建议后续延伸阅读。
-- **同模块**：`Book/part06_templates/ch63_variadic.md`（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— 重载决议决定哪个模板实例化，是实例化流程的入口
+- **同模块接续**：⟶ Book/part06_templates/ch62_specialization.md（第62章　类模板特化与偏特化（Class Template Specialization））—— 特化/偏特化是实例化的分支终点
+- **同模块接续**：⟶ Book/part06_templates/ch63_variadic.md（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 可变参数模板的包展开依赖实例化机制
+- **同模块接续**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 建立在模板基础之上做编译期萃取
+- **同模块接续**：⟶ Book/part06_templates/ch68_tmp.md（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— 模板元编程是模板基础的递归延伸
+- **跨模块**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— STL 容器/算法全是模板，架构建立在模板基础之上
+- **跨模块**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— vector 等容器即类模板的典型实例化
 
 ## 附录 G：工业 C++ 模板生态
 

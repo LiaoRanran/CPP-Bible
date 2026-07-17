@@ -571,11 +571,12 @@ int main(){std::cout<<"Eigen: Matrix a=b+c*d → expression template → single 
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part06_templates/ch70_tag_dispatch.md`（第70章　std::integral_constant 与标签分发（Tag Dispatch））—— 编号相邻、主题接续。
-- **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
-
-- **同模块**：`Book/part06_templates/ch61_template_overload.md`（第61章　函数模板重载决议（Function Template Overload Resolution））—— 同模块下的其他主题。
-
+- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— 表达式模板建立在模板基础之上
+- **同模块接续**：⟶ Book/part06_templates/ch68_tmp.md（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— 表达式模板是 TMP 消除临时对象的经典应用
+- **同模块接续**：⟶ Book/part06_templates/ch70_tag_dispatch.md（第70章　std::integral_constant 与标签分发（Tag Dispatch））—— 表达式模板用标签选择实现分支
+- **同模块接续**：⟶ Book/part06_templates/ch63_variadic.md（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 可变参数表达式模板对包做惰性展开
+- **同模块接续**：⟶ Book/part06_templates/ch71_policy.md（第71章　策略设计 Policy-Based Design）—— policy 与表达式模板组合定制算子
+- **跨模块**：⟶ Book/part05_oo/ch51_crtp.md（第51章　CRTP 与静态多态（Curiously Recurring Template Pattern））—— CRTP 实现表达式模板的算子链式返回类型
 
 ## 附录 G（表达式模板实例化）
 

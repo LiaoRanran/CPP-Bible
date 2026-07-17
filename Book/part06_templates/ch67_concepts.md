@@ -610,11 +610,13 @@ A: SFINAE 可以操作任意类型属性；concepts 需要显式定义。concept
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part01_history/ch07_cpp20.md`（第07章　C++20：量级升级）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part06_templates/ch61_template_overload.md`（第61章　函数模板重载决议（Function Template Overload Resolution））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part06_templates/ch65_type_traits.md`（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part06_templates/ch69_constexpr.md`（第69章　编译期计算：constexpr / consteval / constinit）—— 编号相邻、主题接续。
-- **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— concepts 约束模板参数，建立在模板基础之上
+- **同模块接续**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— concepts 重写重载决议的约束层
+- **同模块接续**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— concepts 是 type_traits 的类型安全替代
+- **同模块接续**：⟶ Book/part06_templates/ch66_sfinae.md（第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发）—— concepts 以更清晰方式替代 SFINAE
+- **同模块接续**：⟶ Book/part06_templates/ch69_constexpr.md（第69章　编译期计算：constexpr / consteval / constinit）—— constexpr + concepts 约束编译期计算
+- **跨模块**：⟶ Book/part01_history/ch07_cpp20.md（第07章　C++20：量级升级）—— C++20 引入 concepts，是量级升级
+- **跨模块**：⟶ Book/part10_modern/ch119_ranges_deep.md（第119章　Ranges 深入（C++20））—— ranges 深度依赖 concepts 约束
 
 ## 附录 G：Concepts 工业实践与编译期性能
 

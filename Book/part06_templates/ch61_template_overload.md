@@ -587,9 +587,12 @@ P2593R0 (C++23): explicit object parameter (deducing this) → 简化CRTP重载
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part03_language/ch23_namespace_adl.md`（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part06_templates/ch63_variadic.md`（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 编号相邻、主题接续。
-- **同模块**：`Book/part06_templates/ch64_fold.md`（第64章　折叠表达式 Fold Expression（C++17））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— 模板基础定义实例化，重载决议在其上选择候选
+- **同模块接续**：⟶ Book/part06_templates/ch62_specialization.md（第62章　类模板特化与偏特化（Class Template Specialization））—— 全特化/偏特化是重载决议的最终落点
+- **同模块接续**：⟶ Book/part06_templates/ch66_sfinae.md（第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发）—— SFINAE 是重载决议中剔除失败候选的核心机制
+- **同模块接续**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— concepts 以更清晰的约束重写重载决议
+- **同模块接续**：⟶ Book/part06_templates/ch64_fold.md（第64章　折叠表达式 Fold Expression（C++17））—— 折叠表达式参与包展开相关的重载
+- **跨模块**：⟶ Book/part03_language/ch23_namespace_adl.md（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— ADL 在模板重载决议中决定候选函数集合
 
 ## 附录 G（工业级模板重载决议实战）
 
@@ -647,6 +650,14 @@ jbe .depth_error
 - GCC 13.2 / Clang 18 对 `absl::Overload` 完全支持
 - `__cplusplus` = 202302L；`_Pragma("once")` 加速头解析
 - WG21 提案 P0784R7 扩展 constexpr 模板能力
+
+### 面试要点（速记 · 模板重载决议）
+
+- **重载决议顺序**：非模板 > 模板特化 > 基模板；更特化的模板（partial ordering）优先。函数与模板函数同名时，先尝试普通函数，失败再走模板。
+- **SFINAE 本质**：替换失败不是错误，仅将该重载从候选集移除；配合 `std::enable_if` / `void_t` 做编译期 trait 分发。
+- **实参推导陷阱**：`vector<int>` 与 `initializer_list` 重载歧义、`T&` vs `T&&` 转发引用优先级；`auto` 参数（C++20 缩写函数模板）不参与偏序。
+- **concepts 替代 SFINAE**：`requires` 约束更清晰、编译错误信息更短、实例化更快（C++20）。
+- **二阶段查找**：模板定义期只查非依赖名，实例化期查依赖名；ADL 在实例化期对依赖调用生效。
 
 ## 自测练习（Exercises）
 

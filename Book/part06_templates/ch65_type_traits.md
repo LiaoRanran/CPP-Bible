@@ -641,11 +641,13 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part03_language/ch20_reference_pointer.md`（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part03_language/ch24_enum.md`（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part06_templates/ch63_variadic.md`（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part06_templates/ch67_concepts.md`（第67章　Concepts 与 requires —— C++20 的编译期约束）—— 编号相邻、主题接续。
-- **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— type_traits 建立在模板基础之上
+- **同模块接续**：⟶ Book/part06_templates/ch66_sfinae.md（第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发）—— SFINAE 常配合 traits 做条件分发
+- **同模块接续**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— concepts 是 traits 的类型安全替代
+- **同模块接续**：⟶ Book/part06_templates/ch63_variadic.md（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 可变参数 traits（如 common_type）对包萃取
+- **同模块接续**：⟶ Book/part06_templates/ch69_constexpr.md（第69章　编译期计算：constexpr / consteval / constinit）—— constexpr traits 提供编译期值查询
+- **跨模块**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 引用/指针 traits（remove_reference 等）建立在引用语义上
+- **跨模块**：⟶ Book/part03_language/ch24_enum.md（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— underlying_type 萃取枚举底层类型
 
 ## 附录 G（工业级 type_traits 实战）
 
@@ -687,6 +689,15 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 ### 重构建议
 
 把 `std::conditional` 多重嵌套重构为 `if constexpr`（C++17）或 `template<C T>` concept（C++20），诊断可读性提升 20×+；序列化用 `if constexpr (is_trivially_copyable_v<T>)` 分支 `memcpy` 快速路径 + `static_assert` 校验对齐。
+
+### 面试要点（速记 · Type Traits）
+
+- **编译期萃取分类**：类型属性（`is_pointer`/`is_const`）、类型关系（`is_base_of`/`is_convertible`）、类型变换（`remove_const`/`add_lvalue_reference`/`decay`）。
+- **`std::void_t` 惯用法**：用 SFINAE 检测成员/嵌套类型是否存在（C++17 前写 traits 的标准手法）。
+- **`decay` 做什么**：去引用/数组→指针/去 const，等价于值传参的类型变换；`std::move` 的参数类型常先 decay。
+- **traits 是编译期常量**：`value` 为 `static constexpr bool`/`size_t`，可在 `if constexpr`、模板非类型参数、数组维度中使用。
+- **concepts 替代**：`is_integral_v<T>` 这类布尔谓词在 C++20 多为 `integral<T>` concept 取代，但 traits 仍用于元编程组合。
+- **开销**：traits 全在编译期求值，零运行时成本；但过度嵌套会增加编译时间与实例化深度。
 
 ## 自测练习（Exercises）
 

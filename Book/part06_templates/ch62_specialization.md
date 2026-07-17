@@ -758,6 +758,14 @@ int main(){std::cout<<Traits<int>::name()<<std::endl;return 0;}
 
 模式：默认模板定义算法骨架，全/偏特化替换热点分支——比运行时 `if` 早到编译期，零开销。C++17 的 `if constexpr` 与 C++20 concepts 逐步把"特化地狱"收敛为 `requires` 约束。
 
+## 相关章节（交叉引用）
+
+- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— 特化是模板实例化的分支终点
+- **同模块接续**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— 重载决议在特化与基模板间选择
+- **同模块接续**：⟶ Book/part06_templates/ch63_variadic.md（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 可变参数模板常配合特化递归展开
+- **同模块接续**：⟶ Book/part06_templates/ch68_tmp.md（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— TMP 以特化实现编译期分支
+- **同模块接续**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 大量使用特化萃取类型
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

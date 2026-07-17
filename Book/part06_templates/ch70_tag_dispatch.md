@@ -660,9 +660,13 @@ int main(){std::vector<int> v{1,2,3};auto it=v.begin();std::advance(it,2);std::c
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part06_templates/ch68_tmp.md`（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part06_templates/ch72_expression_templates.md`（第72章　表达式模板 Expression Templates）—— 编号相邻、主题接续。
-- **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— 标签分发建立在模板重载基础之上
+- **同模块接续**：⟶ Book/part06_templates/ch68_tmp.md（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— 标签分发是 TMP 的经典应用
+- **同模块接续**：⟶ Book/part06_templates/ch72_expression_templates.md（第72章　表达式模板 Expression Templates）—— 表达式模板用标签选择实现
+- **同模块接续**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— 标签即重载决议的空类型参数
+- **同模块接续**：⟶ Book/part06_templates/ch66_sfinae.md（第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发）—— SFINAE 可为标签分发加约束
+- **跨模块**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— STL 算法大量用标签分发选最优实现（如 iterator_category）
+- **跨模块**：⟶ Book/part08_algorithms/ch95_algo_overview.md（第95章　STL 算法分类与复杂度（C++））—— 算法总览中标签分发决定复杂度保证
 
 ## 附录 K（工业级标签分发实战）
 

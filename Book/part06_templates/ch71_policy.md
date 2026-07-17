@@ -569,15 +569,29 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch76_stl_arch.md`（第76章　STL 架构与迭代器概念）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part06_templates/ch69_constexpr.md`（第69章　编译期计算：constexpr / consteval / constinit）—— 编号相邻、主题接续。
-- **同模块**：`Book/part06_templates/ch60_template_basics.md`（第60章　模板基础与实例化（Template Basics & Instantiation））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— Policy-Based Design 建立在模板组合之上
+- **同模块接续**：⟶ Book/part06_templates/ch69_constexpr.md（第69章　编译期计算：constexpr / consteval / constinit）—— policy 常为 constexpr 编译期策略
+- **同模块接续**：⟶ Book/part06_templates/ch68_tmp.md（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— policy 选择即 TMP 分支
+- **同模块接续**：⟶ Book/part06_templates/ch70_tag_dispatch.md（第70章　std::integral_constant 与标签分发（Tag Dispatch））—— 标签分发与 policy 互补选择实现
+- **同模块接续**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— concepts 可约束 policy 接口
+- **跨模块**：⟶ Book/part05_oo/ch51_crtp.md（第51章　CRTP 与静态多态（Curiously Recurring Template Pattern））—— CRTP 与 policy 组合实现静态接口叠加
+- **跨模块**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— STL 以 policy 类定制分配器/比较器
+- **跨模块**：⟶ Book/part12_patterns/ch140_policy_pattern.md（第140章 Policy-Based Design（C++））—— Policy-Based Design 设计模式详述其惯用法
 
 ## 底层视角：策略模板参数与静态派发 [E: Low-level]
 
 [标准] 策略作为模板实参在编译期绑定，`GCC 13.1.0` `-O2` 把策略方法直接内联（≈0.3 ns），消除 `0x0008` vptr 与 vtable 间接。`C++17` `if constexpr` 按策略分支静态派发，省一次 `0x0008` 虚查表；`C++20` `consteval` 把策略选择压到编译期。
 
 含 SIMD 策略时，`-mavx2`（`0x0020` 宽）/`-mavx512f`（`0x0040` 宽）指令要求 `alignas`，否则 `vmovdqa` 触发 #GP。缓存行 `0x0040`（64 字节）容纳多个策略状态字段，减少伪共享须 `alignas(0x0040)`。`Clang 17` / `MSVC 19.3` 对策略模板同样完全内联。
+
+### 面试要点（速记 · Policy-Based Design）
+
+- **核心思想**：把一个类的可变行为拆成多个 policy 模板参数（如 ThreadingModel、CheckingPolicy、StoragePolicy），组合出定制类型；源自 Andrei Alexandrescu《Modern C++ Design》。
+- **与 CRTP 配合**：policy 基类常用 CRTP 回指 host，实现静态多态回调（如 `SmartPtr` 的 `CheckingPolicy` 调 `Host::on_error()`）。
+- **policy vs traits**：traits 是被动萃取（只读属性），policy 是主动行为（可含状态/虚函数）；policy 选择发生在类型组合期，零运行时开销。
+- **编译期分发**：policy 方法多为 `static` 或非虚，调用被内联；相比运行时策略（虚函数/函数指针）零间接开销，但代码膨胀（每组合一个实例）。
+- **与 concepts 协同（C++20）**：用 concept 约束 policy 必须满足的接口（如 `has_on_error`），编译期保证组合合法。
+- **工程权衡**：comb 爆炸——N 个 policy 各 M 取值 = M^N 类型；仅对真正多变且性能敏感的维度做 policy 化，其余用运行时配置。
 
 ## 自测练习（Exercises）
 
