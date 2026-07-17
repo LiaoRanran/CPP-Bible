@@ -871,10 +871,14 @@ int main(){std::cout<<"Strategy: compile-time=Policy(zero cost), runtime=virtual
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part12_patterns/ch135_patterns_intro.md`（第135章 设计模式总论（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part12_patterns/ch136_creational.md`（第136章 创建型模式（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part12_patterns/ch140_policy_pattern.md`（第140章 Policy-Based Design（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part12_patterns/ch142_ecs.md`（第142章 实体组件系统 ECS（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch135_patterns_intro.md（第135章 设计模式总论（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch136_creational.md（第136章 创建型模式（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch137_structural.md（第137章 结构型模式（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch139_crtp_pattern.md（第139章 CRTP 与静态多态（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch140_policy_pattern.md（第140章 Policy-Based Design（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch141_di.md（第141章 依赖注入（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch142_ecs.md（第142章 实体组件系统 ECS（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch143_dod.md（第143章 面向数据设计 DOD（C++））
 
 ## 底层视角：行为型模式的多态代价与静态替代 [E: Low-level]
 
@@ -883,6 +887,14 @@ int main(){std::cout<<"Strategy: compile-time=Policy(zero cost), runtime=virtual
 Template Method 把不变骨架放基类、可变步放虚函数，仍走 vtable；可用 `C++17` `if constexpr` 把步选择压到编译期，省 `0x0008` 虚查表。`GCC 13.1.0` `-O2` 对 `final` 叶子类去虚化（`Clang 17` / `MSVC 19.3` 同理）。
 
 工业实现：Boost.Signals2（Boost）提供线程安全 Observer；folly（Facebook）的 `Executor` 用策略模式封装异步任务；Chromium 的 `base::Callback` 经 `0x0008` 状态指针间接调用。缓存行 `0x0040`（64 字节）容纳 8 个 vtable 槽（0x0040 / 0x0008 = 8）。
+
+### 最佳实践（速记 · 行为型模式）
+
+- **按「谁变化」选型**：变化在算法→策略(Strategy)；变化在通知→观察者(Observer)；变化在请求封装→命令(Command)；变化在对象结构→访问者(Visitor)。先定位变化轴再套模式。
+- **避免 Visitor 滥用**：C++ 有 `std::variant` + `std::visit` 做编译期分发，比手写 Visitor 更轻、零运行时分支表；仅当需双分派且类型稳定时才用 Visitor。
+- **命令模式与 undo**：维护命令栈，命令对象以 RAII 持有资源，撤销即弹栈并 `undo()`；注意命令生命周期长于执行上下文时的悬挂引用。
+- **状态模式 vs 枚举+switch**：状态多且转移复杂→状态模式（多态，易扩展）；状态少且固定→直接用状态枚举 + `switch`，避免过度设计。
+- **模板方法**：父类扩展点虚函数命名加 `do_` 前缀（如 `do_execute`），明确这是子类可覆写的钩子，区分框架固定流程。
 
 ## 自测练习（Exercises）
 

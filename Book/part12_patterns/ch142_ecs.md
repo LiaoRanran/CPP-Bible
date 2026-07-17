@@ -763,11 +763,17 @@ a alive after destroy? no
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch79_list.md`（第79章　list / forward_list [标准]）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part11_source/ch134_unreal.md`（第134章　Unreal Engine C++ 架构（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part12_patterns/ch140_policy_pattern.md`（第140章 Policy-Based Design（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part13_engineering/ch144_style.md`（第144章 代码风格与规范（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part12_patterns/ch135_patterns_intro.md`（第135章 设计模式总论（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch135_patterns_intro.md（第135章 设计模式总论（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch136_creational.md（第136章 创建型模式（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch137_structural.md（第137章 结构型模式（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch138_behavioral.md（第138章 行为型模式（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch139_crtp_pattern.md（第139章 CRTP 与静态多态（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch140_policy_pattern.md（第140章 Policy-Based Design（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch141_di.md（第141章 依赖注入（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch143_dod.md（第143章 面向数据设计 DOD（C++））
+- **跨模块延伸（part07 STL）**：⟶ Book/part07_stl/ch79_list.md（第79章　list / forward_list [标准]）—— list/forward_list 节点式存储是 ECS 组件池的常见底层
+- **跨模块延伸（part11 源码）**：⟶ Book/part11_source/ch134_unreal.md（第134章　Unreal Engine C++ 架构（C++））—— Unreal 的 actor 体系是 ECS 思想的近亲
+- **跨模块延伸（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））—— 代码风格与规范约束模式命名与接口
 
 ## 附录 G：ECS 工业实践与底层性能
 
@@ -821,6 +827,20 @@ a alive after destroy? no
 ### 重构建议
 
 把「`std::vector<Enemy*>` + 虚函数 `Update`」重构为 SoA 组件数组（`vector<Transform>`/`vector<Velocity>`）+ 系统函数批处理，用 `perf stat cache-misses` 验证命中率提升；把裸实体 ID 引用重构为「index + generation」句柄或框架实体引用，消除复用悬垂；按访问共现性合并组件减少 gather 开销。
+
+### 最佳实践（速记 · ECS 实体组件系统）
+
+- **组件是纯数据**：优先 SoA（结构体数组）布局以连续遍历、利用缓存；系统无状态，只操作匹配的组件子集。
+- **实体用整数 ID + 组件表**：archetype（同组件组合批存）或 sparse set（每组件独立稀疏数组）索引，彻底避免继承层次与虚调用。
+- **避免每帧分配**：实体与组件生命周期用对象池 / 环形缓冲管理，热路径零 `new`/`delete` 以降低碎片与停顿。
+- **与 OOP 取舍**：ECS 牺牲局部封装换数据局部性，适合仿真/游戏高频同构更新；业务 CRUD 仍用 OOP 更直观，勿为用而用。
+
+### 面试要点（速记 · ECS）
+
+- **三件套**：Entity（整数 ID）/ Component（纯数据）/ System（无状态逻辑）。与 OOP 继承比，ECS 把「数据」与「行为」解耦，按数据布局优化缓存。
+- **组件存储两派**：Archetype（同组件组合的实体批量同存，遍历快、结构清晰）vs Sparse Set（每组件独立稀疏数组，内存省、跨实体遍历高效）。
+- **为何游戏/仿真爱用 ECS**：缓存友好（连续组件批量处理）、并行友好（系统间无共享可变状态）、组合优于继承（运行时拼装能力）。
+- **陷阱**：把逻辑塞进组件（组件应无行为）、每帧动态分配实体、用继承表达实体类型——都违背 ECS 初衷。
 
 ## 自测练习（Exercises）
 

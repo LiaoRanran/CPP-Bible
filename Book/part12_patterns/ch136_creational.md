@@ -1027,9 +1027,15 @@ A: 构造参数 > 4 个; 构造多步骤; 不同配置生成不同表示
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part11_source/ch134_unreal.md`（第134章　Unreal Engine C++ 架构（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part12_patterns/ch138_behavioral.md`（第138章 行为型模式（C++））—— 编号相邻、主题接续。
-- **同模块**：`Book/part12_patterns/ch139_crtp_pattern.md`（第139章 CRTP 与静态多态（C++））—— 同模块下的其他主题。
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch135_patterns_intro.md（第135章 设计模式总论（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch137_structural.md（第137章 结构型模式（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch138_behavioral.md（第138章 行为型模式（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch139_crtp_pattern.md（第139章 CRTP 与静态多态（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch140_policy_pattern.md（第140章 Policy-Based Design（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch141_di.md（第141章 依赖注入（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch142_ecs.md（第142章 实体组件系统 ECS（C++））
+- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch143_dod.md（第143章 面向数据设计 DOD（C++））
+- **跨模块延伸（part11 源码）**：⟶ Book/part11_source/ch134_unreal.md（第134章　Unreal Engine C++ 架构（C++））—— Unreal 的创建逻辑是创建型模式的工业场
 
 ## 真实开源项目参考（可查证链接）
 
