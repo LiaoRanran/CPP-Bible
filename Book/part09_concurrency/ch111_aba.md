@@ -660,10 +660,13 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part09_concurrency/ch107_atomic.md`（第107章　std::atomic 原子类型（C++11））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part09_concurrency/ch109_fence.md`（第109章 内存屏障与 fence）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part09_concurrency/ch113_coroutine.md`（第113章　协程 coroutine：promise / awaiter（C++20））—— 编号相邻、主题接续。
-- **同模块**：`Book/part09_concurrency/ch108_memory_order.md`（第108章　memory_order：六种内存序（C++11））—— 同模块下的其他主题。
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch108_memory_order.md（第108章　memory_order：六种内存序（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch109_fence.md（第109章 内存屏障与 fence）
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch112_hazard_rcu.md（第112章　Hazard Pointer 与 RCU（C++11/实践））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch113_coroutine.md（第113章　协程 coroutine：promise / awaiter（C++20））
+- **硬件底座（part03）**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— ABA 的可见性本质是内存序问题，与架构强内存模型无关
 
 ## 真实开源项目参考（可查证链接）
 
@@ -705,6 +708,14 @@ int main() {
 ### 重构建议
 
 把裸「指针 CAS 循环」重构为「`atomic<struct{ptr, tag}>` 双字 CAS」或改用 `std::hazard_pointer`（C++26）保护回收；把 `relaxed` 误用改为 `acquire/release` 并附 fence 代价实测；用 `static_assert(is_always_lock_free)` 固化平台假设。
+
+### 面试要点（速记 · ABA 问题与解决）
+
+- **ABA 本质**：某地址的值经历 A→B→A，无锁算法只比较「值」误以为未变，实际中间已被释放/重用，CAS 通过却踩踏invalid 内存。它是**逻辑缺陷**而非内存序问题——即便 x86 TSO 强内存模型也会发生。
+- **CAS 的先天局限**：compare_exchange 仅比对值，不携带「版本/世代」信息；指针复用或内存重放即触发错误。
+- **四大解法**：①带标签指针（tagged pointer，指针高位或并行存版本计数，CAS 比较 {ptr,tag} 整体）；②Hazard Pointer（见 ch112）安全回收；③RCU 读侧无锁 + 宽限期回收；④在 CAS 循环外维护独立版本号/序列。
+- **实战判断**：面试常问「CAS 一定能写出无锁栈吗」——不能，单 CAS 无锁栈有 ABA；必须配 tagged pointer 或 Hazard Pointer 才算正确。
+- **与内存序协同**：ABA 修复后仍需正确 memory_order（acquire/release 或 seq_cst）保证指针与配套数据的可见性顺序。
 
 ## 自测练习（Exercises）
 

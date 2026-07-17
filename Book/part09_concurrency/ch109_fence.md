@@ -400,10 +400,13 @@ _Z13release_fencev:
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part09_concurrency/ch111_aba.md`（第111章　ABA 问题与解决（C++11））—— 编号相邻、主题接续。
-- **同模块**：`Book/part09_concurrency/ch112_hazard_rcu.md`（第112章　Hazard Pointer 与 RCU（C++11/实践））—— 同模块下的其他主题。
-
-- **同模块**：`Book/part09_concurrency/ch113_coroutine.md`（第113章　协程 coroutine：promise / awaiter（C++20））—— 同模块下的其他主题。
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch108_memory_order.md（第108章　memory_order：六种内存序（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch111_aba.md（第111章　ABA 问题与解决（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch112_hazard_rcu.md（第112章　Hazard Pointer 与 RCU（C++11/实践））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch113_coroutine.md（第113章　协程 coroutine：promise / awaiter（C++20））
+- **硬件底座（part03）**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— x86 TSO 与 ARM 弱内存模型决定 fence 的真实成本与正确性
 
 ## 附录 I：fence 工业实现与源码对照
 

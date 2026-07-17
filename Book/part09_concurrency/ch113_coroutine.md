@@ -775,10 +775,16 @@ int main(){hello();return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part15_cases/ch163_net.md`（第163章 从零实现网络编程（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part09_concurrency/ch111_aba.md`（第111章　ABA 问题与解决（C++11））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part10_modern/ch115_move.md`（第115章　移动语义与右值引用）—— 编号相邻、主题接续。
-- **同模块**：`Book/part09_concurrency/ch108_memory_order.md`（第108章　memory_order：六种内存序（C++11））—— 同模块下的其他主题。
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch108_memory_order.md（第108章　memory_order：六种内存序（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch109_fence.md（第109章 内存屏障与 fence）
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch111_aba.md（第111章　ABA 问题与解决（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch112_hazard_rcu.md（第112章　Hazard Pointer 与 RCU（C++11/实践））
+- **硬件底座（part03）**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— 协程帧的可见性与原子操作共享同一内存模型
+- **移动语义底座（part10）**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 协程帧与 await 结果的移动依赖移动语义
+- **协程模式深入（part10）**：⟶ Book/part10_modern/ch120_coroutine_app.md（第120章 Coroutine 应用模式）—— coroutine 应用模式（生成器/异步 IO）在 part10 展开
+- **异步 IO 落地（part15）**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））—— 网络编程大量使用协程实现异步
 
 ## 附录 G：工业实战复盘与设计取舍 [I: Practice / H: Design]
 
@@ -807,6 +813,14 @@ int main(){hello();return 0;}
 ### 重构建议
 
 把「裸 `std::future` + `.get()` 阻塞」重构为 `co_await task<T>` 链式无阻塞；把散落的 `try/catch` 吞异常重构为 `task<expected<T,E>>` 传播错误；对高频分配场景自定义 `promise_type::operator new` 走线程局部 frame 池，削减堆压力。
+
+### 面试要点（速记 · 协程 coroutine）
+
+- **协程 vs 线程**：协程是**用户态协作式**多任务，无内核抢占/切换，挂起/恢复只在 `co_await`/`co_yield` 点发生；线程由 OS 调度、有栈切换开销。协程适合高并发 IO，线程适合 CPU 并行。
+- **三件套**：`promise_type`（生产者，决定返回值与 `await_transform`/`return_value` 行为）、`awaiter`（`co_await` 右侧，提供 `await_ready`/`await_suspend`/`await_resume`）、`coroutine_handle`（恢复挂起协程帧）。三者满足规范即「可等待」。
+- **协程帧（coroutine frame）**：局部变量、`await` 点状态、promise 存在**堆分配**的帧中（编译器可能优化到栈，但不可依赖）；忘记 `co_await`/`co_return` 会导致帧不恢复或泄漏。
+- **标准库现状**：C++20 只给语言机制（`co_await`/`co_yield`/`co_return` + `std::coroutine_handle`），**没有自带 `task`/`generator`**——需自写 awaiter 或用 `std::future`/第三方库组合（应用模式见 ch120）。
+- **陷阱**：异常未在 promise 的 `unhandled_exception` 处理会 `std::terminate`；awaiter 的 `await_suspend` 返回 `bool`/`void`/协程句柄语义不同，写错会死锁或漏恢复。
 
 ## 自测练习（Exercises）
 

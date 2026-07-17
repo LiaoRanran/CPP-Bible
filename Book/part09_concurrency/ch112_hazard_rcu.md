@@ -665,9 +665,14 @@ A: (1) tagged pointer (ABA 防护 + 无 HP); (2) hazard pointers (C++26 方向);
 
 ## 相关章节（交叉引用）
 
-- **同模块**：`Book/part09_concurrency/ch107_atomic.md`（第107章　std::atomic 原子类型（C++11））—— 同模块下的其他主题。
-
-- **同模块**：`Book/part09_concurrency/ch109_fence.md`（第109章 内存屏障与 fence）—— 同模块下的其他主题。
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch108_memory_order.md（第108章　memory_order：六种内存序（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch109_fence.md（第109章 内存屏障与 fence）
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch111_aba.md（第111章　ABA 问题与解决（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch113_coroutine.md（第113章　协程 coroutine：promise / awaiter（C++20））
+- **硬件底座（part03）**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— RCU / Hazard Pointer 的发布-订阅依赖原子可见性
+- **无锁衔接（part09）**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））—— Hazard Pointer 是无锁编程的安全内存回收机制
 
 ## 附录 C：工业实战复盘与设计取舍 [I: Practice / H: Design]
 

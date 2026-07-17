@@ -739,9 +739,15 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch93_thread_async.md`（第93章　线程与异步：thread / future / async）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch94_stop_token.md`（第94章　stop_token 与协作取消 [标准]）—— 本章为其前置，建议后续延伸阅读。
-- **同模块**：`Book/part09_concurrency/ch111_aba.md`（第111章　ABA 问题与解决（C++11））—— 同模块下的其他主题。
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch109_fence.md（第109章 内存屏障与 fence）
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch111_aba.md（第111章　ABA 问题与解决（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch112_hazard_rcu.md（第112章　Hazard Pointer 与 RCU（C++11/实践））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch113_coroutine.md（第113章　协程 coroutine：promise / awaiter（C++20））
+- **硬件底座（part03）**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— 内存序的强弱最终映射到 x86 TSO / ARM 弱内存模型的真实屏障
+- **多线程落地（part07）**：⟶ Book/part07_stl/ch93_thread_async.md（第93章　线程与异步：thread / future / async）—— acquire/release 在线程/异步结果可见性中的用法
+- **协作取消衔接（part07）**：⟶ Book/part07_stl/ch94_stop_token.md（第94章　stop_token 与协作取消 [标准]）—— stop_token 的原子标志依赖内存序保证取消可见
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

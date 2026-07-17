@@ -858,9 +858,14 @@ A: CAS 是用户态原子操作(~20ns)；mutex 涉及系统调用 + 上下文切
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part07_stl/ch91_filesystem.md`（第91章 文件系统 filesystem）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch93_thread_async.md`（第93章　线程与异步：thread / future / async）—— 本章为其前置，建议后续延伸阅读。
-- **同模块**：`Book/part09_concurrency/ch112_hazard_rcu.md`（第112章　Hazard Pointer 与 RCU（C++11/实践））—— 同模块下的其他主题。
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch108_memory_order.md（第108章　memory_order：六种内存序（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch109_fence.md（第109章 内存屏障与 fence）
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch111_aba.md（第111章　ABA 问题与解决（C++11））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch112_hazard_rcu.md（第112章　Hazard Pointer 与 RCU（C++11/实践））
+- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch113_coroutine.md（第113章　协程 coroutine：promise / awaiter（C++20））
+- **硬件底座（part03）**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— volatile/atomic 与硬件寄存器的内存可见性语义，是原子操作的语言层地基
+- **多线程落地（part07）**：⟶ Book/part07_stl/ch93_thread_async.md（第93章　线程与异步：thread / future / async）—— 原子操作在线程/异步同步中的典型用法
 
 ## 附录 G：工业原子操作与 lock-free 数据结构
 
