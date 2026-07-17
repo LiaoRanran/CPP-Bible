@@ -4,7 +4,7 @@
   "phase_label": "第三阶段：质量收尾 + 高含金量升级 + Phase APP 应用层增强(习题/工业/演绎)",
   "total_chapters": 147,
   "last_updated": "2026-07-17",
-  "last_commit": "eb4c76abafb92274adfbb40da3444e0ce3e2b0e7",
+  "last_commit": "2c2a4c826393a02865b5d58787c33de2084e5c7e",
   "git_status": "local committed, pushing",
   "completed_phases": [
     "density_deepening",
@@ -660,5 +660,5 @@
     "application_layer_app15_chapters": "8/147 (ch79/ch80/ch81/ch82/ch83/ch84/ch85/ch86)",
     "application_layer_app16_chapters": "5/147 (ch132/ch143/ch150/ch163/ch165)"
   },
-  "ci_status": "Pushed Phase APP APP16 (收官 5 章 legacy 半完成态收口 ch132/143/150/163/165); 147/147 习题全部主题对齐; 一致性 100/100; 双门禁 0 fail/0 回归; CI run 待回填"
+  "ci_status": "Pushed Phase APP APP16 (收官 5 章 legacy 半完成态收口 ch132/143/150/163/165); 147/147 习题全部主题对齐; 一致性 100/100; 双门禁 0 fail/0 回归; CI run 29544850038 conclusion=success (compile gate green)"
 }
