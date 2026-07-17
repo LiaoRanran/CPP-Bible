@@ -571,11 +571,11 @@ T factorial(T n) { T r = 1; for (T i = 2; i <= n; ++i) r *= i; return r; }
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part10_modern/ch116_perfect_forwarding.md`（第116章　完美转发与万能引用）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part10_modern/ch120_coroutine_app.md`（第120章 Coroutine 应用模式）—— 编号相邻、主题接续。
-- **同模块**：`Book/part10_modern/ch115_move.md`（第115章　移动语义与右值引用）—— 同模块下的其他主题。
+- **相邻主题**：⟶ Book/part10_modern/ch116_perfect_forwarding.md（第116章　完美转发与万能引用）—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part10_modern/ch120_coroutine_app.md（第120章 Coroutine 应用模式）—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 同模块下的其他主题。
 
-- **同模块**：`Book/part10_modern/ch121_contracts.md`（第121章 Contracts 契约（方向，C++26））—— 同模块下的其他主题。
+- **同模块**：⟶ Book/part10_modern/ch121_contracts.md（第121章 Contracts 契约（方向，C++26））—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 
@@ -620,6 +620,13 @@ T factorial(T n) { T r = 1; for (T i = 2; i <= n; ++i) r *= i; return r; }
 
 把「几十个细粒度头文件模块」重构为「一库一接口模块 + 私有实现分区」；把跨模块依赖环抽取为 `module libx.common;`；CI 增加 `gcm.cache` 清理步，避免 BMI 失效遗漏。注意：`import std` 仅在 Clang 18+/MSVC 17.5+ 可用，GCC/MinGW 需回退 `#include <...>`。
 
+
+## 面试高频 [J: Learning]
+
+- **模块相比 `#include` 解决什么？** 头文件每次翻译单元都做文本展开与宏重扫描，模块通过 BMI（二进制模块接口）只解析一次且天然隔离宏，编译可并行、增量更快。
+- **`import` 与 `#include` 能否混用？** 可以；传统头文件可放入 `global module fragment` 引入，但模块单元本身不再受头文件宏污染。
+- **模块名是否必须对应文件名？** 否；`export module A.B;` 形成层级模块名，与文件系统解耦，但工程上常保持对应以便工具定位。
+- **模块分区如何避免循环导出？** 分区用 `module A:part;` 声明，主模块 `export module A;` 汇总；分区之间不可形成导出环，否则编译期报错。
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

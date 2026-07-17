@@ -1125,6 +1125,15 @@ pmr_push():
 
 **结论**：PMR 把“每次分配都进堆”换成“预分配大块 + 指针撞针”，**热路径零系统调用、零锁**；其多态代价（虚 `do_allocate`、或缓冲耗尽回退堆）只在“资源不透明”或“缓冲耗尽”时才付出。工程含义：Arena / 请求级内存池、`monotonic_buffer_resource` 是同一条思路——用生命周期整体管理换分配吞吐。注意 `monotonic_buffer_resource` 不单独释放，必须整体 reset，且 resource 生命周期须覆盖使用期。
 
+## 相关章节（交叉引用）
+
+- **后续依赖**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章 动态内存分配原语：`operator new` / `operator delete`）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：⟶ Book/part04_memory/ch43_cache_locality.md（第 43 章　CPU 缓存体系与内存局部性）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part10_modern/ch121_contracts.md（第121章 Contracts 契约（方向，C++26））—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part10_modern/ch123_ct_programming.md（第123章　Compile-Time 编程范式总览）—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part10_modern/ch118_modules.md（第118章　Modules 模块（C++20））—— 同模块下的其他主题。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

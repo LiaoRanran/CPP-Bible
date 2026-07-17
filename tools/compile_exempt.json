@@ -104,6 +104,12 @@
       "note": "教学用故意错误块"
     },
     {
+      "file": "ch35_memory_layout.md",
+      "block": 14,
+      "reason": "POSIX",
+      "note": "fork()/COW 演示依赖 <sys/wait.h>，MinGW/Windows 不可编译"
+    },
+    {
       "file": "ch39_raii_rule.md",
       "block": 34,
       "reason": "CROSS_BLOCK",

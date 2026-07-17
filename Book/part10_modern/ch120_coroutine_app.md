@@ -928,12 +928,12 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part01_history/ch08_cpp23.md`（第08章　C++23：标准库大修）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part10_modern/ch119_ranges_deep.md`（第119章　Ranges 深入（C++20））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part10_modern/ch121_contracts.md`（第121章 Contracts 契约（方向，C++26））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part10_modern/ch118_modules.md`（第118章　Modules 模块（C++20））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part10_modern/ch122_pmr.md`（第122章　PMR 与多态分配器）—— 编号相邻、主题接续。
-- **同模块**：`Book/part10_modern/ch115_move.md`（第115章　移动语义与右值引用）—— 同模块下的其他主题。
+- **后续依赖**：⟶ Book/part01_history/ch08_cpp23.md（第08章　C++23：标准库大修）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：⟶ Book/part10_modern/ch119_ranges_deep.md（第119章　Ranges 深入（C++20））—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part10_modern/ch121_contracts.md（第121章 Contracts 契约（方向，C++26））—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part10_modern/ch118_modules.md（第118章　Modules 模块（C++20））—— 编号相邻、主题接续。
+- **相邻主题**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

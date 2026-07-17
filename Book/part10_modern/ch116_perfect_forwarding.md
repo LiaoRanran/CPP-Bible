@@ -1055,6 +1055,14 @@ template void fwd_tmpl<S>(S&&);   // 右值实例化
 - **引用折叠保存值类别**：左值实例化走 `sink_l`（左值重载）、右值实例化走 `sink_r`（右值重载）。若改用 `const T&` 手写转发，只能落 `sink_l`，**丢失移动语义**——汇编上就是目标符号从 `sink_r` 变成 `sink_l`。这正是完美转发相对"const 引用转发"的不可替代之处。
 - **按值传递的隐藏代价**：`fwd_val(S)` 在调用方无法省略实参构造，进入函数后必须先 `movdqu`/`movaps` 把 S 拷到本地栈 `[rsp+0x20]`（一次 16 字节内存复制）再 `move` 给 `sink_r`；而完美转发（引用）直接 `jmp`，**完全避开这次拷贝**。对含非平凡成员的大对象，这一拷贝可能触发深层资源搬移，绝非免费。
 
+## 相关章节（交叉引用）
+
+- **后续依赖**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：⟶ Book/part06_templates/ch63_variadic.md（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 编号相邻、主题接续。
+- **同模块**：⟶ Book/part10_modern/ch117_copy_elision.md（第117章　RVO / NRVO 与拷贝消除（C++17））—— 同模块下的其他主题。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
