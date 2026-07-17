@@ -773,39 +773,151 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+工具链里的 AddressSanitizer 能在越界/泄漏发生的瞬间抓出来。请写一个 `SafeArray`，
+用 `operator[]` 做边界检查并在越界时抛异常，演示“早失败、定位准”比“裸数组悄悄越界”安全。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <vector>
+#include <stdexcept>
+#include <cstddef>
+
+template <typename T>
+class SafeArray {
+    std::vector<T> v_;
+public:
+    explicit SafeArray(std::size_t n) : v_(n) {}
+    T& operator[](std::size_t i) {
+        if (i >= v_.size()) throw std::out_of_range("SafeArray 越界");
+        return v_[i];
+    }
+    const T& operator[](std::size_t i) const {
+        if (i >= v_.size()) throw std::out_of_range("SafeArray 越界");
+        return v_[i];
+    }
+};
+
+int main() {
+    SafeArray<int> a(3);
+    a[0] = 10; a[1] = 20; a[2] = 30;
+    std::cout << "a[1]=" << a[1] << '\n';
+    try {
+        a[5] = 99;                       // 越界：立刻抛异常，定位到精确位置
+    } catch (const std::out_of_range& e) {
+        std::cout << "捕获越界: " << e.what() << '\n';
+    }
+    // 注：真实项目用 `g++ -fsanitize=address` 可在原生数组越界时也抓到，无需手写包装
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 工具链（ASan/UBSan/gdb）是工程效率的倍增器；`std::vector::at` 本身也做边界检查（关联 ⑫ 工具链）。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+调试时最怕“只看到一句 log，不知来自哪个文件哪一行”。C++20 的 `std::source_location`
+让日志自动携带调用点位置，是现代化诊断的基础。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <source_location>
+#include <string>
+
+void log(const std::string& msg,
+         const std::source_location& loc = std::source_location::current()) {
+    std::cout << "[" << loc.file_name() << ":" << loc.line() << " "
+              << loc.function_name() << "] " << msg << '\n';
+}
+
+int main() {
+    log("启动");                 // 自动带上本行文件:行:函数
+    log("加载配置");
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `std::source_location::current()` 是编译期内置，零运行时开销即可获得精确来源，
+取代宏拼接 `__FILE__`/`__LINE__` 的旧写法（关联 ⑫ 工具链精通）。
 
-</details>
+### 练习 3（难度 ★★★★）
 
+回归出现后，手工逐个 commit 试太低效。`git bisect` 本质是“在有序的‘通过→失败’序列上二分”。
+请用 `std::lower_bound` 找到“第一个失败提交”的索引。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cstddef>
+
+int main() {
+    // builds[i]==true 表示该 commit 编译/测试通过；失败后恒为 false
+    std::vector<bool> builds = {true, true, true, false, false, false};
+    // 找第一个 false：等价于在“通过段”之后第一个失败
+    auto it = std::lower_bound(builds.begin(), builds.end(), false);
+    std::size_t first_fail = static_cast<std::size_t>(it - builds.begin());
+    std::cout << "第一个失败提交索引=" << first_fail << '\n';
+    // 对应 git bisect：只需 log2(N) 次 checkout 即可定位，而非线性 N 次
+}
+```
+
+[标准] 把“定位回归”建模为有序序列上的二分，复杂度从 O(N) 降到 O(log N)；`git bisect` 即此思想的封装
+（关联 ⑭ 社区与开源 / ⑫ 工具链）。
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：把“90 天计划”落到具体可做的项目上
+
+**场景**：路线图列了一堆方向，但没有“这周写什么”就会永远停在收藏夹。
+**选型**：把阶段目标映射为“从零实现”项目（第 159–164 章），每完成一个就补一块能力拼图。
+**落地**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cstddef>
+
+int main() {
+    struct Project { const char* phase; const char* name; };
+    Project plan[] = {
+        {"第1月", "vector / string 容器自实现 (ch77)"},
+        {"第1月", "智能指针 unique_ptr/shared_ptr (ch41)"},
+        {"第2月", "线程池 ThreadPool (ch159)"},
+        {"第2月", "JSON 解析器 (ch162)"},
+        {"第3月", "网络 echo 服务器 (ch163)"},
+        {"第3月", "协程 async 调度 (ch164)"},
+    };
+    for (auto& p : plan)
+        std::cout << "[" << p.phase << "] " << p.name << '\n';
+}
+```
+
+**结论**：路线图的真正价值是“可执行的项目清单”，而非书单；每做一个从零实现，理解深度远超读十篇博文
+（关联 ⑪ 必做项目 / ⑱ 30/60/90 天计划）。
+
+### 演绎 2：如何读 WG21 提案——从“编号”读出“它在改什么”
+
+**场景**：标准在演进，但提案库（open-std.org）浩如烟海，新手无从下手。
+**选型**：按提案编号区间判断主题（语言特性 / 库 / 演化），先读“已合并进某版 C++”的，再读“活跃草案”。
+**落地**：
+
+```cpp
+#include <iostream>
+#include <string>
+
+const char* topic_of(int n) {
+    if (n >= 1000 && n < 2000) return "核心语言特性";
+    if (n >= 2000 && n < 3000) return "标准库（容器/算法/工具）";
+    if (n >= 3000 && n < 4000) return "C 兼容性 / 演化";
+    return "其他/跨领域";
+}
+
+int main() {
+    for (int n : {1390, 2673, 3307})            // 例：=delete 概念 / 标准库工具 / 演化
+        std::cout << "P" << n << " -> " << topic_of(n) << '\n';
+}
+```
+
+**结论**：提案编号有主题分区，先锁定“已被某版 C++ 采纳”的提案读，再跟进活跃草案，
+能高效跟进标准而不被信息淹没（关联 ⑬ 标准跟进 / ② 版本演进）。

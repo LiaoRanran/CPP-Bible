@@ -1182,39 +1182,146 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+DOD 的第一课是把“对象数组（AoS）”重排为“数组的结构（SoA）”，让同类字段在内存中连续，
+遍历时一次性喂饱缓存行。请把学生成绩从 AoS 重构为 SoA，并求平均分。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <vector>
+#include <cstddef>
+
+int main() {
+    // AoS：每个对象自含全部字段，遍历 score 时跨对象跳跃
+    struct StudentAoS { int id; float score; };
+    (void)sizeof(StudentAoS);
+
+    // SoA：id 与 score 各自连续存储
+    std::vector<int>   ids = {1, 2, 3, 4};
+    std::vector<float> scores = {88.0f, 92.5f, 77.0f, 95.5f};
+
+    float sum = 0.0f;
+    for (float s : scores) sum += s;               // 连续访问，缓存友好
+    std::cout << "平均分=" << (sum / static_cast<float>(scores.size())) << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] AoS 遍历某个字段时，相邻元素间隔 = sizeof(Student)，每读一个字段就跨过一个对象大小的空洞；
+SoA 把同字段聚在一起，顺序遍历的缓存命中率显著提升（关联 ④ SoA vs AoS）。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+两个线程各写一个独立计数器，若它们落在同一缓存行（64 B），CPU 会不停地让对方缓存行失效（false sharing），
+吞吐骤降。请用 `alignas(64)` 让每个计数器独占一个缓存行，并用 `alignof` 取证对齐生效。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cstddef>
+#include <cstdint>
+
+struct AlignedCounters {
+    alignas(64) std::size_t a = 0;   // 计数器 a 独占第 1 个缓存行
+    alignas(64) std::size_t b = 0;   // 计数器 b 独占第 2 个缓存行
+};
+
+int main() {
+    AlignedCounters c;
+    // 取地址低 6 位看是否同缓存行；alignas(64) 保证两者地址相差至少 64
+    std::cout << "alignof(a)=" << alignof(decltype(c.a))
+              << " offset(a)=" << (reinterpret_cast<std::uintptr_t>(&c.a) & 63)
+              << " offset(b)=" << (reinterpret_cast<std::uintptr_t>(&c.b) & 63) << '\n';
+    for (int i = 0; i < 1000000; ++i) { ++c.a; ++c.b; }
+    std::cout << "a=" << c.a << " b=" << c.b << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `alignas(64)` 把字段推到独立缓存行，消除核间无效化风暴；多线程计数/状态标志务必警惕 false sharing
+（关联 ⑬ false sharing / ⑫ alignas）。`std::uintptr_t` 来自 `<cstdint>`，取地址低 6 位可看是否同缓存行。
 
-</details>
+### 练习 3（难度 ★★★★）
 
+在 ECS/物理引擎里，组件以 SoA 存储；对全部实体的同一字段做“批量变换”时，连续内存让编译器更容易自动向量化。
+请对一组成员的 x 坐标统一施加位移（translation），体会 SoA 上“结构化的批处理”为何 SIMD 友好。
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <cstddef>
+
+int main() {
+    // SoA：x/y 各自连续
+    std::vector<float> x = {0.0f, 1.0f, 2.0f, 3.0f};
+    std::vector<float> y = {0.0f, 0.0f, 0.0f, 0.0f};
+    const float dx = 10.0f;                     // 整体平移量
+
+    // 连续遍历 x：无指针追踪、无跨字段空洞，利于 auto-vectorization
+    for (float& xi : x) xi += dx;
+
+    for (std::size_t i = 0; i < x.size(); ++i)
+        std::cout << "p" << i << "(" << x[i] << "," << y[i] << ")\n";
+}
+```
+
+[标准] SoA 上“对单一字段的循环”是编译器向量化的理想形态：内存连续、步长固定、无别名歧义；
+这正是 DOD 把“数据布局”置于“抽象”之上的原因（关联 ⑦ 批处理与 SIMD 友好 / ⑧ ECS）。
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：粒子系统 AoS→SoA——150K 到 600K 粒子的实战
+
+**场景**：某游戏引擎粒子系统用 AoS（`struct Particle { float pos[3]; float vel[3]; float life; };`），
+十万级粒子时帧时间爆掉。
+**选型**：改为 SoA，pos/vel/life 各成一维数组，更新循环只碰 pos 与 vel 两块连续内存。
+**错误**：AoS 下更新 `pos += vel*dt` 每次都要跨 `sizeof(Particle)` 跳跃，缓存行被大量无关字段（life 等）稀释。
+**落地**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <cstddef>
+
+int main() {
+    const int N = 200000;                  // 放大到二十万粒子量级
+    std::vector<float> px(N), py(N), pz(N);
+    std::vector<float> vx(N), vy(N), vz(N);
+    for (int i = 0; i < N; ++i) { px[i] = 0; vy[i] = 1; vx[i] = 1; }
+
+    // SoA 更新：pos += vel，两段连续内存，缓存命中高
+    const float dt = 0.016f;
+    for (int i = 0; i < N; ++i) { px[i] += vx[i]*dt; py[i] += vy[i]*dt; }
+
+    std::cout << "SoA 更新 " << N << " 粒子完成，p0=(" << px[0] << "," << py[0] << ")\n";
+}
+```
+
+**结论**：连续字段遍历把“每粒子一次缓存未命中”降为“每缓存行一批粒子命中”，
+实测粒子上限从 150K 提到 600K（关联 附录 I 工业案例）。代价是“按对象访问多个字段”变麻烦——用组件句柄（entity id）索引各数组即可（见演绎 2）。
+
+### 演绎 2：ECS 组件存储本质就是 SoA——用 entity id 做索引
+
+**场景**：ECS（Entity-Component-System）要求“同一系统只遍历它关心的组件”，且要缓存友好。
+**选型**：实体只是整数 id；每个组件类型是一个 SoA 数组，用 id 索引。
+**落地**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <cstddef>
+
+struct Velocity { float vx, vy; };
+
+int main() {
+    // 组件以 SoA 存储：所有实体的速度连续排布
+    std::vector<Velocity> velocities(3);
+    velocities[0] = {1, 0}; velocities[1] = {0, 1}; velocities[2] = {-1, 0};
+
+    // MovementSystem：只遍历 Velocity 组件（连续内存）
+    for (std::size_t e = 0; e < velocities.size(); ++e)
+        std::cout << "entity#" << e << " vel=(" << velocities[e].vx
+                  << "," << velocities[e].vy << ")\n";
+}
+```
+
+**结论**：ECS 的“组件数组 = SoA”是 DOD 的直接落地；系统即“对某一维连续数据的批处理”，
+天然契合缓存与 SIMD（关联 ⑧ ECS / ch142）。

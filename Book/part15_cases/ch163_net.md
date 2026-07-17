@@ -1084,45 +1084,181 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `noexcept` 移动构造函数，使 `std::vector` 扩容时走移动而非拷贝。
-
-<details><summary>答案与解析</summary>
+网络读写常遇到“一次 recv 只到半包”，需要把零散字节攒进应用层缓冲。
+请实现一个定长环形缓冲区 `RingBuffer`：`push` 写入、`pop` 取出，跨读写指针不越界。
 
 ```cpp
 #include <iostream>
 #include <vector>
-#include <utility>
-struct S {
-  int* p = new int[8];
-  S() = default;
-  S(S&& o) noexcept : p(o.p) { o.p = nullptr; }
-  ~S() { delete[] p; }
+#include <cstddef>
+
+class RingBuffer {
+    std::vector<char> buf_;
+    std::size_t head_ = 0, tail_ = 0, size_ = 0;
+public:
+    explicit RingBuffer(std::size_t cap) : buf_(cap) {}
+    bool push(char c) {
+        if (size_ == buf_.size()) return false;     // 满
+        buf_[tail_] = c;
+        tail_ = (tail_ + 1) % buf_.size();
+        ++size_;
+        return true;
+    }
+    bool pop(char& c) {
+        if (size_ == 0) return false;               // 空
+        c = buf_[head_];
+        head_ = (head_ + 1) % buf_.size();
+        --size_;
+        return true;
+    }
+    std::size_t size() const { return size_; }
 };
-int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << "ok\n"; }
+
+int main() {
+    RingBuffer rb(4);
+    rb.push('a'); rb.push('b');
+    char c; rb.pop(c); std::cout << "pop=" << c << " remain=" << rb.size() << '\n';
+}
 ```
 
-[标准] `noexcept` 移动构造让 `vector` 在重新分配时移动元素；否则因强异常保证退化为拷贝。
+[标准] 环形缓冲把“生产者（recv 线程）/消费者（解析线程）”解耦，是网络栈与设备驱动的标配缓冲原语（关联 ⑩ 缓冲区管理）。
 
-</details>
+### 练习 2（难度 ★★★）
 
+TCP 是字节流，应用层必须自己定界。长度前缀（先发 4 字节大端长度，再发载荷）是最常用的定界法。
+请实现 `encode`/`decode`：把一条消息序列化为 `[uint32 len][payload]`，再解析回来。
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cstdint>
+#include <cstddef>
+
+std::string encode(const std::string& msg) {
+    uint32_t n = static_cast<uint32_t>(msg.size());
+    std::string out(sizeof n, '\0');
+    out[0] = (n >> 24) & 0xFF; out[1] = (n >> 16) & 0xFF;   // 大端长度前缀
+    out[2] = (n >> 8) & 0xFF;  out[3] = n & 0xFF;
+    return out + msg;
+}
+
+std::string decode(const std::string& wire, std::size_t& pos) {
+    uint32_t n = (uint8_t)wire[pos] << 24 | (uint8_t)wire[pos+1] << 16
+               | (uint8_t)wire[pos+2] << 8 | (uint8_t)wire[pos+3];
+    pos += 4;
+    std::string s(wire.data() + pos, n);
+    pos += n;
+    return s;
+}
+
+int main() {
+    auto wire = encode("hello");
+    std::size_t pos = 0;
+    std::cout << "解码=" << decode(wire, pos) << " 剩余字节=" << (wire.size() - pos) << '\n';
+}
+```
+
+[标准] 长度前缀比“换行分隔符”更通用（可承载二进制）；注意字节序——网络协议约定大端（关联 ⑪ 协议设计）。
+
+### 练习 3（难度 ★★★★）
+
+非阻塞服务里，一个连接可能要跨多次 epoll 事件才能收齐一条消息。请用状态机表达
+“读头部 → 读载荷 → 处理”，并用分块输入的字节流驱动它，模拟非阻塞累积。
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cstdint>
+#include <cstddef>
+
+enum class State { ReadHeader, ReadBody, Done };
+
+std::string feed(State& st, std::vector<char>& buf, const std::vector<char>& chunk, uint32_t& body_len) {
+    buf.insert(buf.end(), chunk.begin(), chunk.end());
+    if (st == State::ReadHeader && buf.size() >= 4) {
+        body_len = (uint8_t)buf[0] << 24 | (uint8_t)buf[1] << 16
+                 | (uint8_t)buf[2] << 8 | (uint8_t)buf[3];
+        buf.erase(buf.begin(), buf.begin() + 4);
+        st = State::ReadBody;
+    }
+    if (st == State::ReadBody && buf.size() >= body_len) {
+        std::string msg(buf.data(), body_len);
+        buf.erase(buf.begin(), buf.begin() + body_len);
+        st = State::Done;
+        return msg;
+    }
+    return {};
+}
+
+int main() {
+    State st = State::ReadHeader;
+    std::vector<char> buf; uint32_t len = 0;
+    // 同一条消息被拆成 3 个 chunk 到达（模拟非阻塞分片）
+    std::vector<char> c1 = {0,0,0,5};
+    std::vector<char> c2 = {'h','e'};
+    std::vector<char> c3 = {'l','l','o'};
+    feed(st, buf, c1, len);
+    feed(st, buf, c2, len);
+    auto msg = feed(st, buf, c3, len);
+    std::cout << "收齐消息=" << (st == State::Done ? msg : std::string("(未收齐)")) << '\n';
+}
+```
+
+[标准] 非阻塞 IO 的核心心智模型就是“状态机 + 累积缓冲”：每次事件只推进能推进的部分，绝不阻塞等待整包
+（关联 ⑥ 阻塞 vs 非阻塞 / ⑦ I/O 多路复用）。真实 epoll 只是“何时可读”的通知者，定界仍靠本例逻辑。
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：epoll vs io_uring——从“等通知”到“交作业”
+
+**场景**：C10K 之后，epoll 的“每次循环都要把 fd 集合从用户态拷进内核态”成为新瓶颈。
+**选型**：io_uring 用“提交/完成两个共享环”让内核与应用零拷贝交接，减少系统调用与拷贝。
+**错误**：以为“多线程 + epoll”能无限扩展——上下文切换与拷贝开销先到顶（关联 附录 B 性能模型）。
+**落地**：
+
+```cpp
+#include <iostream>
+
+// 用常量表达两种模型的“每次事件系统调用/拷贝开销”量级差异
+struct Model { const char* name; int syscall_per_event; int copy_per_event; };
+
+int main() {
+    Model epoll    { "epoll",   1, 1 };   // 每次循环重传 fd 集：1 次调用 + 1 次拷贝
+    Model io_uring { "io_uring",0, 0 };   // 共享环：提交即完成，无每次重传
+    std::cout << epoll.name    << ": syscall/event=" << epoll.syscall_per_event
+              << " copy/event=" << epoll.copy_per_event << '\n';
+    std::cout << io_uring.name << ": syscall/event=" << io_uring.syscall_per_event
+              << " copy/event=" << io_uring.copy_per_event << " (共享环，近乎零拷贝)\n";
+}
+```
+
+**结论**：epoll 解决“怎么知道哪些 fd 就绪”，io_uring 进一步解决“就绪后怎么少拷贝/少切换”；
+模型选择取决于并发量级（关联 附录 B / ⑧ epoll 实战）。
+
+### 演绎 2：C10K 到 C100K——Reactor 用“一个线程管万连”代替“一连接一线程”
+
+**场景**：早期“每连接一线程”模型在 1 万连接时线程切换把 CPU 吃光（C10K 问题）。
+**选型**：Reactor（单/少数线程 + I/O 多路复用）用一个线程监管上万连接，连接元数据用哈希表索引。
+**落地**：
+
+```cpp
+#include <iostream>
+#include <unordered_map>
+
+struct Conn { int fd; /* 读写缓冲、状态机等 */ };
+
+int main() {
+    std::unordered_map<int, Conn> conns;          // fd -> 连接元数据
+    for (int fd = 3; fd < 8; ++fd) conns[fd] = Conn{fd};
+    // Reactor 主循环：epoll_wait 拿到就绪 fd 集合，逐个查表分发
+    std::cout << "Reactor 监管连接数=" << conns.size() << '\n';
+    std::cout << "单线程即可监管数万连接，避免线程爆炸（C10K->C100K 关键）\n";
+}
+```
+
+[标准] 把“连接状态”从线程栈搬到“集中数据结构 + 事件循环”，是突破 C10K 的根本手法
+（关联 附录 I 工业案例 / ⑨ 多线程服务）。

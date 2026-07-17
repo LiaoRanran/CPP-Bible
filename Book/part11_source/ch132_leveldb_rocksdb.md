@@ -1007,42 +1007,215 @@ int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 1（难度 ★★）
 
-实现一个 `File` RAII 包装，构造 `fopen`、析构 `fclose`，确保作用域结束自动关闭。
-
-<details><summary>答案与解析</summary>
+LevelDB 写路径第一步是把记录追加进 WAL（Write-Ahead Log），进程崩溃时靠 WAL 重放恢复。
+请用 RAII 封装一个 `WalWriter`：构造时以追加模式打开文件，提供 `Append(const std::string&)` 写入一条带长度前缀的记录，
+析构时保证 flush 并关闭文件——即便中途抛异常也不泄漏文件句柄。
 
 ```cpp
 #include <cstdio>
-struct File {
-  std::FILE* f;
-  File(const char* p) : f(std::fopen(p, "w")) {}
-  ~File() { if (f) std::fclose(f); }
+#include <cstdint>
+#include <string>
+#include <cstring>
+
+class WalWriter {
+    std::FILE* fp_ = nullptr;
+public:
+    explicit WalWriter(const char* path) : fp_(std::fopen(path, "ab")) {}
+    ~WalWriter() {
+        if (fp_) { std::fflush(fp_); std::fclose(fp_); }   // 析构即释放，异常安全
+    }
+    WalWriter(const WalWriter&) = delete;
+    WalWriter& operator=(const WalWriter&) = delete;
+    bool ok() const { return fp_ != nullptr; }
+    void Append(const std::string& rec) {
+        uint32_t n = static_cast<uint32_t>(rec.size());
+        std::fwrite(&n, sizeof n, 1, fp_);                  // 长度前缀，便于重放时定界
+        std::fwrite(rec.data(), 1, n, fp_);
+    }
 };
-int main() { File f("tmp.txt"); /* 离开作用域自动 fclose */ }
+
+int main() {
+    WalWriter w("wal_demo.log");
+    if (!w.ok()) { std::printf("open failed\n"); return 1; }
+    w.Append("k1=v1");
+    w.Append("k2=v2");
+    std::printf("WAL 写入 2 条记录，离开作用域自动 flush+close\n");
+}
 ```
 
-[经验] RAII 把资源生命周期绑定到对象作用域，是 C++ 异常安全的核心。
+[标准] WAL 的“先写日志再改内存”是崩溃一致性的基石；RAII 把 `fflush/fclose` 从所有控制流出口收拢到析构，
+是 C++ 异常安全的核心手段（关联 ⑧ RAII/智能指针）。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 3（难度 ★★）
-
-用 `std::unique_ptr` 管理动态数组，并说明为何不能用 `get_deleter` 之外的裸 `delete[]`。
-
-<details><summary>答案与解析</summary>
+MemTable 中的一条记录可能是 Put（带值）、Delete（墓碑）或 Merge（增量）。
+请用 `std::variant` 把这三类操作建模为一个 `Op` 类型，并统计一批操作中各类型的占比——
+体会用代数数据类型（sum type）替代“基类+继承”如何消除虚调用与堆分配。
 
 ```cpp
 #include <iostream>
-#include <memory>
+#include <variant>
+#include <string>
+#include <vector>
+#include <type_traits>
+
+struct Put   { std::string value; };
+struct Delete { };                       // 墓碑，无载荷
+struct Merge { std::string delta; };
+
+using Op = std::variant<Put, Delete, Merge>;
+
 int main() {
-  auto p = std::make_unique<int[]>(10);
-  p[0] = 42; std::cout << p[0] << '\n';
-}  // 自动 delete[]
+    std::vector<Op> log = { Put{"v1"}, Delete{}, Merge{"+1"}, Put{"v2"}, Delete{} };
+    int n_put = 0, n_del = 0, n_merge = 0;
+    for (const auto& op : log) {
+        // std::visit 编译期分派，零虚调用、零堆分配
+        std::visit([&](auto&& o) {
+            using T = std::decay_t<decltype(o)>;
+            if constexpr (std::is_same_v<T, Put>)        ++n_put;
+            else if constexpr (std::is_same_v<T, Delete>) ++n_del;
+            else ++n_merge;
+        }, op);
+    }
+    std::cout << "Put=" << n_put << " Delete=" << n_del << " Merge=" << n_merge << '\n';
+}
 ```
 
-[标准] `unique_ptr<T[]>` 特化使用 `delete[]`；裸 `delete` 会未定义行为。
+[标准] `std::variant`+`std::visit` 是零开销的“标签联合”：判别在编译期完成，无 vtable 间接跳转，
+比 `class Op { virtual ... }` 更贴合 MemTable 这类“少量固定类型、高频访问”的场景（关联 ⑧ 自定义分配器）。
 
-</details>
+### 练习 3（难度 ★★★★）
 
+LevelDB 的 MemTable 底层是跳表（SkipList），读路径无锁、写路径用 CAS 把新节点链入多层链表。
+请实现一个简化跳表：固定最大层数、`next` 指针用 `std::atomic` 标注内存序，
+插入时以 `memory_order_release` 发布、查找时以 `memory_order_acquire` 观察，保证发布-观察的 happens-before。
+
+```cpp
+#include <iostream>
+#include <atomic>
+#include <vector>
+#include <cstdint>
+
+struct Node {
+    int key;
+    std::atomic<Node*> next;           // 单层后继，发布用 release / 观察用 acquire
+    explicit Node(int k) : key(k), next(nullptr) {}
+};
+
+// 单层有序插入（演示内存序，不做多层随机高度）
+void insert(Node*& head, int key) {
+    Node* n = new Node(key);
+    if (!head || key < head->key) {    // 空表或新最小值 -> 成为新头
+        n->next.store(head, std::memory_order_relaxed);
+        head = n;
+        return;
+    }
+    Node* prev = head;
+    Node* cur = prev->next.load(std::memory_order_acquire);
+    while (cur && cur->key < key) { prev = cur; cur = cur->next.load(std::memory_order_acquire); }
+    n->next.store(cur, std::memory_order_relaxed);
+    prev->next.store(n, std::memory_order_release);   // 发布：后续 acquire 能看到 n 及之前写入
+}
+
+bool contains(Node* head, int key) {
+    Node* cur = head;                  // 从首节点开始遍历
+    while (cur) {
+        if (cur->key == key) return true;
+        if (cur->key > key) return false;
+        cur = cur->next.load(std::memory_order_acquire);
+    }
+    return false;
+}
+
+int main() {
+    Node* head = nullptr;
+    for (int k : {3, 1, 4, 1, 5}) insert(head, k);
+    std::cout << "contains(4)=" << contains(head, 4)
+              << " contains(2)=" << contains(head, 2) << '\n';
+}
+```
+
+[标准] 无锁读靠 `memory_order_acquire` 与写者 `memory_order_release` 配对建立同步；跳表因而支持“并发读+单写/受保护写”。
+真实 LevelDB 用 `AtomicPointer`（封装 `void*` + 内存序）而非 `std::atomic<Node*>`，语义等价（关联 ⑨ 跳表/SSTable）。
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：Arena 分配器——把 N 次 new 合并为少量大块分配
+
+**场景**：MemTable 每条记录都 `new`，高频小对象让通用分配器锁争用与碎片飙升。
+**选型**：LevelDB 的 `Arena` 一次向堆要一大块（如 4 KiB），记录从块内线性 bump 分配；块满再要下一块。
+**错误**：每条记录独立 `new/delete`，分配器成为瓶颈且碎片难回收。
+**落地**：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <cstddef>
+#include <cstring>
+
+// 简化 Arena：批量预留，记录从块内线性分配
+struct Arena {
+    std::vector<char*> blocks_;
+    char*  cur_ = nullptr;
+    size_t remain_ = 0;
+    static constexpr size_t kBlock = 4096;
+    void* alloc(size_t n) {
+        if (remain_ < n) {                       // 当前块不够，新开一块
+            char* b = new char[kBlock];
+            blocks_.push_back(b);
+            cur_ = b; remain_ = kBlock;
+        }
+        void* p = cur_;
+        cur_ += n; remain_ -= n;
+        return p;
+    }
+    ~Arena() { for (char* b : blocks_) delete[] b; }
+};
+
+int main() {
+    Arena a;
+    int allocs = 0;
+    for (int i = 0; i < 1000; ++i) {             // 1000 次“逻辑分配”
+        a.alloc(32);
+        ++allocs;
+    }
+    // 1000 次逻辑分配只触发 ceil(1000*32/4096)=8 次真实 new
+    std::cout << "逻辑分配=" << allocs
+              << " 真实 new 块数=" << a.blocks_.size() << '\n';
+}
+```
+
+**结论**：Arena 用“批量化 + 生命周期统一（Arena 析构一次性释放）”把分配器调用次数从 O(N) 降到 O(N/块大小)，
+是高吞吐存储引擎的标配（关联 ⑧ 自定义分配器）。
+
+### 演绎 2：Compaction 风暴与写停顿——从“会写”到“写不卡”
+
+**场景**：L0 文件堆积到阈值，RocksDB 触发 Compaction；若跟不上写入，进入“写停顿（Stall）”甚至“停止（Stop）”。
+**选型**：用状态机表达“写流量闸门”：普通 → 软停顿（降速）→ 硬停顿（阻塞写），按 L0 文件数切换。
+**错误**：不看后端压实进度，无脑全速写入，最终被反压拖垮（关联 附录 I 工业案例：Compaction 风暴）。
+**落地**：
+
+```cpp
+#include <iostream>
+
+enum class WriteGate { Normal, SoftStall, HardStop };
+
+// 依据 L0 文件数决定写闸门（阈值取 RocksDB 常见默认的量级）
+WriteGate gate_for(int l0_files) {
+    if (l0_files >= 20) return WriteGate::HardStop;   // L0>=20：硬停顿，先让 Compaction 追平
+    if (l0_files >= 12) return WriteGate::SoftStall;  // L0>=12：软停顿，写入降速
+    return WriteGate::Normal;
+}
+
+int main() {
+    for (int n : {4, 12, 20}) {
+        const char* s = n >= 20 ? "HardStop" : n >= 12 ? "SoftStall" : "Normal";
+        std::cout << "L0 文件数=" << n << " -> 写闸门=" << s << '\n';
+    }
+}
+```
+
+**结论**：存储引擎的“可观测反压”比“裸吞吐”更重要；把 Compaction 进度显式映射为写闸门，
+才能在大写入下保持尾延迟可控（关联 ⑦ Compaction 策略 / 附录 I 工业复盘）。

@@ -1127,39 +1127,165 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
+工业项目用 GoogleTest/Catch2，但理解“测试就是断言集合 + 退出码”能让你在无框架环境也能写测试。
+请写一个不依赖任何框架的迷你测试台：收集通过/失败数，`main` 返回非 0 表示有失败。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <string>
+
+static int g_pass = 0, g_fail = 0;
+void check(const std::string& name, bool cond) {
+    if (cond) { ++g_pass; std::cout << "[PASS] " << name << '\n'; }
+    else      { ++g_fail; std::cout << "[FAIL] " << name << '\n'; }
+}
+
+int add(int a, int b) { return a + b; }
+
+int main() {
+    check("add(2,3)==5", add(2,3) == 5);
+    check("add(-1,1)==0", add(-1,1) == 0);
+    check("add(0,0)==0", add(0,0) == 0);
+    std::cout << "pass=" << g_pass << " fail=" << g_fail << '\n';
+    return g_fail == 0 ? 0 : 1;          // 失败则非零退出，CI 立即可见
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 测试的本质是“可重复断言 + 明确退出码”；CI 只看退出码，故 `main` 返回非 0 即红灯（关联 ② 单元测试）。
 
-</details>
+### 练习 2（难度 ★★★）
 
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
+参数化测试用“一份逻辑 + 多组输入”覆盖边界，避免复制粘贴。请写一个 `parse_int`，
+并对一组用例（正常/空串/溢出/非数字）循环断言，模拟参数化执行。
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <optional>
+#include <string>
+#include <cstdint>
+#include <cstddef>
+
+std::optional<int> parse_int(const std::string& s) {
+    if (s.empty()) return std::nullopt;
+    bool neg = false; std::size_t i = 0;
+    if (s[0] == '-') { neg = true; i = 1; }
+    if (i >= s.size()) return std::nullopt;
+    long long v = 0;
+    for (; i < s.size(); ++i) {
+        if (s[i] < '0' || s[i] > '9') return std::nullopt;
+        v = v * 10 + (s[i] - '0');
+        if (v > 2147483647LL) return std::nullopt;   // 溢出防护
+    }
+    return static_cast<int>(neg ? -v : v);
+}
+
+int main() {
+    struct Case { std::string in; bool ok; int val; };
+    Case cases[] = { {"42", true, 42}, {"-7", true, -7}, {"", false, 0},
+                     {"abc", false, 0}, {"9999999999", false, 0} };
+    int fail = 0;
+    for (auto& c : cases) {
+        auto r = parse_int(c.in);
+        bool pass = (r.has_value() == c.ok) && (!c.ok || *r == c.val);
+        std::cout << (pass ? "[PASS] " : "[FAIL] ") << "parse_int(\"" << c.in << "\")\n";
+        if (!pass) ++fail;
+    }
+    return fail ? 1 : 0;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 参数化把“用例”数据化，新增用例只加一行；这正是 GoogleTest `TEST_P` / Catch2 `TEMPLATE_TEST_CASE` 的思想（关联 ⑬ 参数化测试）。
 
-</details>
+### 练习 3（难度 ★★★★）
 
+模糊测试用“海量随机/变异输入”轰炸程序，找平时走不到的崩溃。请写一个带溢出检查的 `safe_add`，
+再用一个“变异输入循环”持续调用并断言“绝不溢出、绝不崩溃”——这是 libFuzzer 思想的自包含等价。
+
+```cpp
+#include <iostream>
+#include <optional>
+#include <cstdint>
+#include <cstdlib>
+#include <ctime>
+
+// 带溢出检查的加法；溢出返回 nullopt 而非回绕
+std::optional<int> safe_add(int a, int b) {
+    long long r = (long long)a + (long long)b;
+    if (r < -2147483647LL - 1 || r > 2147483647LL) return std::nullopt;
+    return static_cast<int>(r);
+}
+
+int main() {
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    int crashes = 0;
+    for (int i = 0; i < 100000; ++i) {
+        int a = std::rand() % 2000 - 1000;     // 变异输入
+        int b = std::rand() % 2000 - 1000;
+        auto r = safe_add(a, b);
+        // 断言：要么在范围内、要么明确报告溢出，绝不回绕
+        if (r && ((long long)a + b) != *r) ++crashes;
+    }
+    std::cout << "模糊驱动 100000 次，异常回绕=" << crashes << '\n';
+    return crashes ? 1 : 0;
+}
+```
+
+[标准] fuzz 的价值是“用不可控输入逼出不可控分支”；`safe_add` 把 UB（有符号溢出回绕）变成显式失败，
+正是模糊测试最爱抓的那类缺陷（关联 ⑩ 模糊测试 libFuzzer）。
+
+## 附录：用法演绎（从选型到落地）
+
+### 演绎 1：Flaky Test——共享状态让红灯“时灵时不灵”
+
+**场景**：某测试本地常绿、CI 偶尔红，团队开始“重跑就行”，最终信任崩塌（关联 附录 I：gRPC 的 Flaky 教训）。
+**选型**：每个测试用“全新 fixture”，不读全局可变状态；失败时立刻查“是否依赖执行顺序/并发/时间”。
+**错误**：多个测试共享一个全局计数器且不清零，后跑的测试结果依赖先跑者的残留。
+**落地**：
+
+```cpp
+#include <iostream>
+
+// 反例：共享全局计数器，不清零 -> 结果依赖执行顺序（flaky 根源）
+int g_counter = 0;
+bool flaky_test() { g_counter += 1; return g_counter == 1; }  // 只在“第一个跑”时过
+
+// 正解：fixture 内局部状态，每次独立
+bool isolated_test() { int c = 0; c += 1; return c == 1; }
+
+int main() {
+    std::cout << "flaky_test (连续两次) = "
+              << flaky_test() << " " << flaky_test() << "  <- 第二次已失真\n";
+    std::cout << "isolated_test (连续两次) = "
+              << isolated_test() << " " << isolated_test() << "  <- 始终稳定\n";
+}
+```
+
+**结论**：Flaky 的根因几乎都是“测试间隐式耦合”（共享状态/时钟/并发/IO）；
+用 fixture 隔离 + 确定性输入，是消除 flaky 的系统方法（关联 ⑱ 反模式）。
+
+### 演绎 2：TDD 红-绿-重构——先写会失败的测试，再让它能过
+
+**场景**：实现一个 `truncate`（按字节安全截断字符串）时，容易先写实现再补测试，导致“测试迁就实现”。
+**选型**：先写断言（红），最小实现让它过（绿），再重构去重（重构）；测试即规格。
+**落地**：
+
+```cpp
+#include <iostream>
+#include <string>
+#include <cstddef>
+
+// 规格先行：截断到最多 n 个字符
+std::string truncate(const std::string& s, std::size_t n) {
+    return s.size() <= n ? s : s.substr(0, n);
+}
+
+int main() {
+    // 这些断言在“实现前”就该写好（此处直接给出通过版，演示红->绿）
+    std::cout << (truncate("hello", 3) == "hel" ? "[PASS]" : "[FAIL]") << " truncate(3)\n";
+    std::cout << (truncate("hi", 10) == "hi"   ? "[PASS]" : "[FAIL]") << " truncate(不截断)\n";
+}
+```
+
+**结论**：TDD 把“测试”前置为规格，重构时有安全网；注意 truncate 用 `std::string::substr`（关联 ⑫ TDD / ③ 测试夹具）。
