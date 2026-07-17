@@ -1347,12 +1347,11 @@ int main(){int*p=new int(42);delete p;std::cout<<"use-after-free=UB; ASan detect
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part03_language/ch29_friend.md`（第29章 友元 friend 与访问控制）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch26_lambda.md`（第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch30_volatile.md`（第30章 volatile / atomic 与硬件寄存器）—— 编号相邻、主题接续。
-- **同模块**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 同模块下的其他主题。
-
-- **同模块**：`Book/part03_language/ch20_reference_pointer.md`（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 存储期结束即生命周期结束，二者在本章合一
+- **同模块接续**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 返回局部引用/指针悬垂是生命周期头号案例
+- **同模块接续**：⟶ Book/part03_language/ch27_cast.md（第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解）—— 未定义转换产生 UB，是本章 UB 分类的重要来源
+- **同模块接续**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— volatile 与硬件寄存器访问涉及对象生存期与可见性
+- **同模块接续**：⟶ Book/part03_language/ch32_initialization.md（第32章 初始化与列表初始化）—— 初始化顺序直接决定对象生命周期起点，跨 TU 乱序即 SOIF
 
 ## 附录 G（工业级 UB / sanitizer 实战）
 
@@ -1378,6 +1377,15 @@ int main(){int*p=new int(42);delete p;std::cout<<"use-after-free=UB; ASan detect
 - **Mozilla** — Mozilla 提供 ASan 官方构建
 - **Abseil** — Abseil 要求编译器开启 UBSan 才合入
 - **Blink** — Blink 用 sanitizer 验证布局对象生命周期
+
+### 最佳实践（速记 · 生命周期与 UB）
+
+- **绝不返回局部引用/指针**（ch19/20 联动）；需延寿用返回值（RVO/NRVO）或智能指针。`std::string_view`/`std::span` 底层对象生命周期必须覆盖视图使用期，否则悬垂。
+- **容器扩容后迭代器/指针失效**：`vector::push_back` 在容量不足时重分配，所有引用/指针/迭代器失效——修改前重取或先 `reserve`。
+- **三大 UB 高发区**：未初始化读取、有符号整数溢出、数据竞争；CI 常驻 `-fsanitize=address,undefined` 拦截。
+- **释放后使用/双重释放**：裸指针仅作 non-owning 观察，所有权交给 `unique_ptr`/`shared_ptr`；禁止混用 `new`/`malloc` 释放。
+- **理解「无 UB 假设」优化**：编译器基于「程序无 UB」做激进优化，UB 会使结果与直觉背离且不可移植——写出明确定义的行为而非依赖巧合。
+- **跨 TU 初始化顺序**：进程级依赖用 `constinit`/函数内 `static`（Meyers）兜底 SOIF（ch19）。
 
 ## 自测练习（Exercises）
 

@@ -1281,9 +1281,12 @@ int main(){Color c=Color::Red;std::cout<<static_cast<int>(c)<<","<<sizeof(c)<<st
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part03_language/ch22_auto_decltype.md`（第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch26_lambda.md`（第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除）—— 编号相邻、主题接续。
-- **同模块**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part03_language/ch22_auto_decltype.md（第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导）—— enum 的底层类型与 auto 推导、类型关系紧密
+- **同模块接续**：⟶ Book/part03_language/ch23_namespace_adl.md（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— enum class 置于命名空间实现作用域隔离
+- **同模块接续**：⟶ Book/part03_language/ch25_union_variant.md（第25章　union 与 std::variant 深度详解）—— std::variant 常作为枚举标志组合的类型安全替代
+- **同模块接续**：⟶ Book/part03_language/ch26_lambda.md（第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除）—— lambda 状态机常以 enum 表示状态，配合模式匹配
+- **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 枚举对象占用的存储与对象表示由存储期决定
+- **跨模块**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— std::underlying_type 萃取枚举底层类型，是 type_traits 的典型应用
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

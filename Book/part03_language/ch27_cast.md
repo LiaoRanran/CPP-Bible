@@ -1684,10 +1684,13 @@ GCC实现13处理编译Clang实现14处理编译MSVC实现15处理编译ABI Name
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part10_modern/ch115_move.md`（第115章　移动语义与右值引用）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part03_language/ch25_union_variant.md`（第25章　union 与 std::variant 深度详解）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch29_friend.md`（第29章 友元 friend 与访问控制）—— 编号相邻、主题接续。
-- **同模块**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— const_cast/reinterpret_cast 直接作用于指针与引用
+- **同模块接续**：⟶ Book/part03_language/ch21_const_family.md（第21章　const / constexpr / consteval / constinit 深度详解）—— const_cast 专门移除 const，是 const 章的对立面
+- **同模块接续**：⟶ Book/part03_language/ch28_lifetime_ub.md（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— 未定义转换（如 reinterpret_cast 乱转换）是 UB 的高发区
+- **同模块接续**：⟶ Book/part03_language/ch31_operator_overloading.md（第31章 运算符重载）—— 用户定义转换运算符经 cast 触发，与转型协同
+- **同模块接续**：⟶ Book/part03_language/ch29_friend.md（第29章 友元 friend 与访问控制）—— 友元与访问控制在转型可见性上交互
+- **跨模块**：⟶ Book/part05_oo/ch48_rtti.md（第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询）—— dynamic_cast 依赖 RTTI，是多态向下转型的唯一安全手段
+- **跨模块**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— std::move 即 static_cast 到右值引用，是移动语义的入口
 
 ## 附录 H：编译实证——四种 cast 的真实汇编代价分层 [C: Compiler / E: Low-level / G: Performance]
 

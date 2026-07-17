@@ -1440,9 +1440,13 @@ Q: mutable lambda? A: 允许修改值捕获的变量(默认const operator())
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part03_language/ch24_enum.md`（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch28_lifetime_ub.md`（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— 编号相邻、主题接续。
-- **同模块**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— lambda 捕获按存储期持有变量，捕获的引用/值即存储期选择
+- **同模块接续**：⟶ Book/part03_language/ch22_auto_decltype.md（第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导）—— lambda 返回类型常由 auto/decltype 推导，泛型 lambda 即模板
+- **同模块接续**：⟶ Book/part03_language/ch24_enum.md（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— lambda 状态机以 enum 表达状态
+- **同模块接续**：⟶ Book/part03_language/ch27_cast.md（第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解）—— 泛型 lambda 的 auto 参数经转型规则推导，与 cast 协同
+- **同模块接续**：⟶ Book/part03_language/ch31_operator_overloading.md（第31章 运算符重载）—— lambda 闭包即带 operator() 的函数对象，是运算符重载的特例
+- **跨模块**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— std::vector 的排序/遍历大量配合 lambda 谓词
+- **跨模块**：⟶ Book/part10_modern/ch116_perfect_forwarding.md（第116章　完美转发与万能引用）—— 完美转发与泛型 lambda 协同实现零拷贝回调
 
 ## 附录 G（工业级 lambda 实战）
 
@@ -1506,6 +1510,15 @@ call   sink(int)
 2. **调用点代价**：按值捕获值在捕获时刻就把值实体化进闭包，调用点只需寄存器搬运（`mov ecx,r9d`，0 内存访问）；按引用捕获在调用点必须**经指针解引用**（`mov ecx,[r8]`），多出一次内存加载——且目标经别名改写时无法被优化掉。
 3. **优化器会看穿**：当被捕获目标可证明不变（局部变量、无别名写），GCC 把按引用捕获也折叠为直接加载，此时两者代价相近。真正的引用捕获代价出现在**目标可能被别名修改**（跨 TU / 经指针逃逸 / 实时读取）——嵌入式捕获对外设寄存器/共享状态的引用即此场景。
 4. **工程含义**：热点循环内捕获大对象优先按 `const&` 仅当真需实时读；纯快照语义用按值（小类型零差别，大类型注意复制）；能用无捕获就别捕获。
+
+### 最佳实践（速记 · lambda）
+
+- **捕获意图要明确**：`[=]` 捕获副本（C++11 中 `this` 也被值捕获副本，悬垂风险）；`[&]` 捕获引用（警惕生命周期）；C++14 起用初始化捕获 `[x = std::move(big)]` 移动大对象。
+- **禁止返回引用局部变量的 lambda**：捕获/返回对局部变量的引用，调用时局部已析构 → UB（见 ch28 生命周期）。
+- **`mutable` 仅当需修改值捕获对象**；泛型 lambda 用 `auto&&` + `decltype` 转发避免不必要拷贝。
+- **性能**：`[=]` 值捕获小对象廉价；`std::function` 类型擦除有堆分配，热路径优先模板/`auto` 参数或 `std::move_only_function`（C++23）。
+- **`constexpr` lambda（C++17）**可在编译期执行；无异常路径标 `noexcept` 提升内联与优化。
+- **递归 lambda**：C++14 用 `auto self = [self](auto... a){ ... self(...) ... };` 或 `std::function` 包装；避免在热路径用 `std::function` 递归（改用显式自引用或 Y 组合子）。
 
 ## 自测练习（Exercises）
 

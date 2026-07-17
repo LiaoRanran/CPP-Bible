@@ -585,11 +585,14 @@ int main(){int x{};std::vector<int> v{1,2,3};std::cout<<x<<","<<v[0]<<std::endl;
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part01_history/ch01_c_history.md`（第01章　C 语言遗产与 C with Classes）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part03_language/ch20_reference_pointer.md`（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part03_language/ch31_operator_overloading.md`（第31章 运算符重载）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch30_volatile.md`（第30章 volatile / atomic 与硬件寄存器）—— 编号相邻、主题接续。
-- **同模块**：`Book/part03_language/ch21_const_family.md`（第21章　const / constexpr / consteval / constinit 深度详解）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— static 初始化阶段（zero/constant/dynamic）是存储期章的子话题
+- **同模块接续**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 引用绑定与初始化顺序交互
+- **同模块接续**：⟶ Book/part03_language/ch21_const_family.md（第21章　const / constexpr / consteval / constinit 深度详解）—— constinit 强制常量初始化，是常量初始化的钉死手段
+- **同模块接续**：⟶ Book/part03_language/ch22_auto_decltype.md（第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导）—— auto 推导与列表初始化构成现代初始化习惯
+- **同模块接续**：⟶ Book/part03_language/ch28_lifetime_ub.md（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— 初始化顺序决定生命周期起点，跨 TU 乱序即 SOIF
+- **同模块接续**：⟶ Book/part03_language/ch31_operator_overloading.md（第31章 运算符重载）—— 构造函数/拷贝/移动赋值是初始化的核心运算符
+- **跨模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— C 的初始化语义是 C++ 列表初始化的遗产
+- **跨模块**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章 动态内存分配原语：`operator new` / `operator delete`）—— new/delete 的初始化语义在堆上落地
 
 ## 真实开源项目参考（可查证链接）
 

@@ -862,8 +862,13 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part03_language/ch23_namespace_adl.md`（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 编号相邻、主题接续。
-- **同模块**：`Book/part03_language/ch24_enum.md`（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— constinit 把变量钉死在常量初始化阶段，根治 static 初始化顺序灾难
+- **同模块接续**：⟶ Book/part03_language/ch22_auto_decltype.md（第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导）—— const 与类型推导协同：auto 与 const 的交互决定推导结果
+- **同模块接续**：⟶ Book/part03_language/ch27_cast.md（第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解）—— const_cast 专门移除 const，是本章 const 正确性的对立面
+- **同模块接续**：⟶ Book/part03_language/ch32_initialization.md（第32章 初始化与列表初始化）—— 常量初始化（constant-initialization）是 static 初始化的最早子阶段
+- **同模块接续**：⟶ Book/part03_language/ch29_friend.md（第29章 友元 friend 与访问控制）—— constexpr 友元函数把编译期计算注入类接口
+- **跨模块**：⟶ Book/part06_templates/ch69_constexpr.md（第69章　编译期计算：constexpr / consteval / constinit）—— constexpr 与 consteval/constinit 共同构成编译期计算体系
+- **跨模块**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 普遍以 const/volatile 修饰做特征萃取（remove_const 等）
 
 ## 自测练习（Exercises）
 

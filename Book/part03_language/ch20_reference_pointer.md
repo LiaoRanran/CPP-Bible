@@ -1266,11 +1266,15 @@ GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangli
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part03_language/ch24_enum.md`（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part07_stl/ch76_stl_arch.md`（第76章　STL 架构与迭代器概念）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part02_toolchain/ch18_buildconfig.md`（第18章　构建配置：Debug / Release / LTO / PGO（C++））—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch22_auto_decltype.md`（第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导）—— 编号相邻、主题接续。
-- **同模块**：`Book/part03_language/ch23_namespace_adl.md`（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 取地址/绑引用触发 ODR-use，是变量章存储期与 ODR 的入口
+- **同模块接续**：⟶ Book/part03_language/ch27_cast.md（第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解）—— const_cast/reinterpret_cast 直接作用于指针与引用，是转型四兄弟的核心战场
+- **同模块接续**：⟶ Book/part03_language/ch28_lifetime_ub.md（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— 返回局部引用/指针悬垂是生命周期章的头号案例
+- **同模块接续**：⟶ Book/part03_language/ch32_initialization.md（第32章 初始化与列表初始化）—— 引用绑定与初始化顺序交互，初始化章给出构造/绑定的完整语义
+- **同模块接续**：⟶ Book/part03_language/ch31_operator_overloading.md（第31章 运算符重载）—— operator-> 让智能指针/迭代器以指针语义访问，是运算符重载的典型应用
+- **跨模块**：⟶ Book/part02_toolchain/ch18_buildconfig.md（第18章　构建配置：Debug / Release / LTO / PGO（C++））—— 指针与引用在调用约定/ABI 上的体现受构建配置（Debug/Release/LTO）影响
+- **跨模块**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 大量基于引用折叠与指针特征（remove_reference 等）
+- **跨模块**：⟶ Book/part06_templates/ch69_constexpr.md（第69章　编译期计算：constexpr / consteval / constinit）—— constexpr 函数常返回引用/指针，需配合本章语义
+- **跨模块**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— STL 迭代器即广义指针，迭代器概念建立在引用类型之上
 
 ## 自测练习（Exercises）
 

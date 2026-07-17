@@ -1156,9 +1156,12 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：`Book/part03_language/ch21_const_family.md`（第21章　const / constexpr / consteval / constinit 深度详解）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch25_union_variant.md`（第25章　union 与 std::variant 深度详解）—— 编号相邻、主题接续。
-- **同模块**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 匿名命名空间与 inline 变量重塑链接三态，承接变量章链接主题
+- **同模块接续**：⟶ Book/part03_language/ch21_const_family.md（第21章　const / constexpr / consteval / constinit 深度详解）—— inline 变量/函数定义在命名空间作用域，是头文件共享状态的基础
+- **同模块接续**：⟶ Book/part03_language/ch24_enum.md（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— enum class 可置于命名空间内实现作用域隔离与版本化
+- **同模块接续**：⟶ Book/part03_language/ch25_union_variant.md（第25章　union 与 std::variant 深度详解）—— 匿名命名空间可包裹 union 等私有类型，避免跨 TU 冲突
+- **同模块接续**：⟶ Book/part03_language/ch29_friend.md（第29章 友元 friend 与访问控制）—— 友元函数经 ADL 被找到，是命名空间隐形查找的典范
+- **跨模块**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— ADL 在模板重载决议中决定候选函数集合，是泛型编程的隐形规则
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
@@ -1176,6 +1179,15 @@ int main() {
 ### 重构建议
 
 把头文件里的 `using namespace std;` 删除，改为实现文件内「函数级 `using std::xxx;`」或显式 `std::` 限定；把裸 `swap(a,b)` 重构为 `using std::swap; swap(a,b);` 消除 ADL 歧义；对库版本用 `inline namespace v1/v2` + 显式 `extern` 旧符号维持 ABI 兼容。
+
+### 面试要点（速记 · 命名空间与 ADL）
+
+- **匿名命名空间 vs `static`**：C++11 起匿名命名空间内名字具 external 链接，但被唯一 TU 实例包裹，实践中等价于 internal 链接，且**可包裹类型定义**；`static` 只能修饰变量/函数，不能作用于类型。
+- **ADL 触发条件**：函数调用中若任一实参类型来自某命名空间，该命名空间的候选函数也参与重载决议——含友元函数经类定义隐式注入所在命名空间。标准惯用法：`using std::swap; swap(a, b);` 让 ADL 选中 `T` 所在命名空间的特化（C++11 起）。
+- **`operator<<` 找不到的坑**：要支持 `std::cout << user_type`，须在与 `user_type` 同名的命名空间定义 `operator<<(std::ostream&, const user_type&)`，否则 ADL 找不到。
+- **inline 命名空间（C++11）**：`inline namespace v2 {}` 内的名字可免限定直接访问，用于库 ABI 版本化——升级实现不改接口，旧调用仍可解析到新版本。
+- **`using` 声明 vs 指令**：声明 `using N::f;` 引入单个名字（可被局部重载/遮蔽）；指令 `using namespace N;` 引入整个命名空间（易名字冲突，**禁止出现在头文件**）。
+- **未命名命名空间与 ODR**：每 TU 独立实体，避免与其他 TU 同名冲突；配合变量章 ODR 规则，是 internal 链接的推荐写法。
 
 ## 自测练习（Exercises）
 

@@ -1510,6 +1510,16 @@ void clear_status() {
 
 > 交叉引用：初始化见 [ch32](Book/part03_language/ch32_initialization.md)；auto 见 [ch22](Book/part03_language/ch22_auto_decltype.md)。
 
+## 相关章节（交叉引用）
+
+- **同模块接续**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 引用/指针的取地址与绑引用直接构成 ODR-use，是本章存储期与 ODR 的落地场景
+- **同模块接续**：⟶ Book/part03_language/ch21_const_family.md（第21章　const / constexpr / consteval / constinit 深度详解）—— constinit 在 static 存储期上强制常量初始化阶段，是 SOIF 的根治手段
+- **同模块接续**：⟶ Book/part03_language/ch28_lifetime_ub.md（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— 对象生命周期结束即存储期结束，返回局部引用悬垂本质是 storage duration 越界
+- **同模块接续**：⟶ Book/part03_language/ch32_initialization.md（第32章 初始化与列表初始化）—— 列表初始化与 constant expression 约束 static/thread 初始化的时机
+- **同模块接续**：⟶ Book/part03_language/ch23_namespace_adl.md（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 匿名命名空间与 inline 变量重塑链接三态，是本章链接主题的直接延伸
+- **跨模块**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章  C++ 程序的内存模型与操作系统视角）—— 变量的物理落位（.data/.bss/.rodata/.tbss）由目标文件段布局决定
+- **跨模块**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈（stack）与堆（heap）的深度对比）—— 栈/堆的相向扩张直接承接 automatic/dynamic 存储期
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

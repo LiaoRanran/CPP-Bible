@@ -1364,6 +1364,17 @@ int main() {
 
 > 交叉引用：decltype 与转发见 [ch116](Book/part10_modern/ch116_perfect_forwarding.md)；类型推导陷阱见 [ch65](Book/part06_templates/ch65_type_traits.md)。
 
+## 相关章节（交叉引用）
+
+- **同模块接续**：⟶ Book/part03_language/ch21_const_family.md（第21章　const / constexpr / consteval / constinit 深度详解）—— auto/decltype 与 const 的交互决定类型推导结果
+- **同模块接续**：⟶ Book/part03_language/ch24_enum.md（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— enum 的底层类型可由 auto 推导，decltype 可抽取枚举类型
+- **同模块接续**：⟶ Book/part03_language/ch26_lambda.md（第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除）—— lambda 返回类型常由 auto/decltype 推导，泛型 lambda 即模板
+- **同模块接续**：⟶ Book/part03_language/ch31_operator_overloading.md（第31章 运算符重载）—— 运算符重载的返回类型常借助 decltype(auto) 完美转发
+- **同模块接续**：⟶ Book/part03_language/ch32_initialization.md（第32章 初始化与列表初始化）—— 列表初始化 + auto 推导构成现代初始化习惯
+- **跨模块**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 大量以 decltype 抽取类型（invoke_result 等）
+- **跨模块**：⟶ Book/part06_templates/ch69_constexpr.md（第69章　编译期计算：constexpr / consteval / constinit）—— constexpr 函数返回类型常依赖 auto 推导
+- **跨模块**：⟶ Book/part10_modern/ch116_perfect_forwarding.md（第116章　完美转发与万能引用）—— 完美转发 std::forward 与 auto&& 协同，是转发的类型基础
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

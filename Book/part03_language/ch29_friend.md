@@ -552,13 +552,13 @@ int main(){X x;std::cout<<Test::get(x)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：`Book/part03_language/ch23_namespace_adl.md`（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：`Book/part13_engineering/ch150_testing.md`（第150章 测试策略（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：`Book/part03_language/ch28_lifetime_ub.md`（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch30_volatile.md`（第30章 volatile / atomic 与硬件寄存器）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch27_cast.md`（第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解）—— 编号相邻、主题接续。
-- **相邻主题**：`Book/part03_language/ch31_operator_overloading.md`（第31章 运算符重载）—— 编号相邻、主题接续。
-- **同模块**：`Book/part03_language/ch19_variables.md`（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 同模块下的其他主题。
+- **同模块接续**：⟶ Book/part03_language/ch21_const_family.md（第21章　const / constexpr / consteval / constinit 深度详解）—— constexpr 友元函数把编译期计算注入类接口
+- **同模块接续**：⟶ Book/part03_language/ch23_namespace_adl.md（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 友元函数经 ADL 被找到，是命名空间隐形查找的典范
+- **同模块接续**：⟶ Book/part03_language/ch27_cast.md（第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解）—— 用户定义转换运算符常声明为友元，与转型协同
+- **同模块接续**：⟶ Book/part03_language/ch31_operator_overloading.md（第31章 运算符重载）—— 运算符重载常声明为友元以访问私有成员
+- **同模块接续**：⟶ Book/part03_language/ch28_lifetime_ub.md（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— 友元与访问控制在对象生命期/可见性上交互
+- **跨模块**：⟶ Book/part05_oo/ch46_encapsulation_inheritance.md（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 封装与继承中友元破坏封装边界，需权衡设计
+- **跨模块**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））—— 测试中对私有成员常借友元做白盒测试，与测试策略联动
 
 ## 真实开源项目参考（可查证链接）
 
