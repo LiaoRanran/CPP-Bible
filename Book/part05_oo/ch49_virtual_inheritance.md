@@ -173,11 +173,17 @@ _Z10cross_castP2M1:
 
 ## ⑪ STL 联系
 
+⟶ Book/part05_oo/ch47_virtual_functions.md（虚函数与虚表）—— 虚继承下的虚调用涉及 this 调整
+⟶ Book/part05_oo/ch45_oop_object_model.md（对象模型基础）—— 虚基类在对象模型中的共享布局（vbptr/vbtable）
+
 - `std::iostream` 经典菱形：`ios` ← `istream`/`ostream`(virtual) ← `iostream`，靠虚继承让 `ios` 唯一（标准库内部就用虚继承）。
 - `std::optional`/`std::variant`/`std::any`（ch10/ch25）用组合而非继承，规避菱形，是现代替代方向。
 - 多继承 + 虚继承的 this 调整逻辑与 ch47 的 thunk 同源，都属「间接分派」成本。
 
 ## ⑫ 工业案例
+
+⟶ Book/part05_oo/ch50_multiple_inheritance.md（多重继承与对象模型）—— 菱形继承是虚继承+多重继承的组合
+⟶ Book/part05_oo/ch51_crtp.md（CRTP 与静态多态）—— 用静态多态规避虚基类开销的工业替代
 
 ### 工业案例 49-A：iostream 菱形（标准库真实用例）
 
@@ -381,6 +387,9 @@ struct D : M { D() : V(7) {} };   // D 的 V(7) 生效，M 的 V(1) 被忽略
 
 ## ⑬ 源码分析
 
+⟶ Book/part05_oo/ch48_rtti.md（RTTI 与 type_info）—— 虚继承的 type_info 层次由最派生类构建
+⟶ Book/part05_oo/ch45_oop_object_model.md（对象模型基础）—— 偏移表的底层存储语义
+
 #### 源码剖析 1：vbase offset 表布局 @ Itanium C++ ABI（规范层）
 
 > 文件：`https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable`（规范）
@@ -481,6 +490,9 @@ vtable for M1 (在 D 中):
 - 跨 ABI 模块避免导出含虚继承的类布局。
 
 ## ⑲ 性能分析
+
+⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— 虚调用能否去虚拟化取决于别名分析
+⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— vtable 间接取指对 I-cache/分支预测的影响
 
 【microbenchmark 设计（Google Benchmark，可复现）】
 
