@@ -169,6 +169,9 @@ extern "C" void hp_scan_and_reclaim() {
 
 ## ⑥ HP 性能特征与开销 [经验]
 
+⟶ Book/part13_engineering/ch151_benchmark.md（基准测试与性能度量）—— HP 开销须可复现基准量化
+⟶ Book/part14_perf/ch152_perf_model.md（性能模型与测量方法论）—— 原子写成本对应具体硬件与竞争度
+
 HP 的代价是**每个读者每次访问多一次原子写（登记）+ 一次原子写（清除）+ 回收者 O(retired × HP槽) 的扫描**。
 
 ```cpp
@@ -363,6 +366,9 @@ rcu_update:
 
 ## ⑫ HP vs RCU 对比 [标准]
 
+⟶ Book/part09_concurrency/ch111_aba.md（ABA 问题与解决）—— HP/RCU 是 ABA 的两种回收级解法
+⟶ Book/part09_concurrency/ch110_lockfree.md（无锁编程 lock-free/wait-free）—— 回收机制决定无锁结构的安全性
+
 | 维度 | Hazard Pointer | RCU |
 |---|---|---|
 | 读者开销 | 1 次 `seq_cst` 原子写 + 1 次释放写 | 1 次原子 load（近乎免费） |
@@ -487,6 +493,9 @@ struct HazardGuard {
 
 ## ⑰ 性能基准 [经验]
 
+⟶ Book/part13_engineering/ch151_benchmark.md（基准测试与性能度量）—— 量级示意须在本机用 `std::chrono` 实测并标注来源
+⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 指令成本与吞吐须结合微架构解读
+
 以下为**量级示意**（真实数字依赖硬件/负载，本机 GCC13 + x86-64 取证的是指令成本，非吞吐）。
 
 ```cpp
@@ -506,6 +515,9 @@ struct HazardGuard {
 - `[平台·x86-64]`：x86 强内存模型让 `acquire`/`release` 退化为普通 `mov`，HP 与 RCU 在 x86 上的优势主要来自"免 syscall"，弱内存架构（ARM）上差异更明显。
 
 ## ⑱ 选型指南 [经验]
+
+⟶ Book/part09_concurrency/ch110_lockfree.md（无锁编程）—— 先确认是否真需无锁再选回收机制
+⟶ Book/part09_concurrency/ch111_aba.md（ABA 问题与解决）—— 选型须评估 ABA 风险等级
 
 ```cpp
 // ⑱ 决策树（伪代码）
