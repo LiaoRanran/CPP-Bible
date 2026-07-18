@@ -315,7 +315,7 @@ _ZplI3SumI4FastS1_ES1_ES0_IT_T0_ERK4ExprIS3_ERKS6_IS4_E
 
 ## ⑪ STL 中的该模式
 
-⟶ Book/part11_source/ch116_perfect_forwarding.md（完美转发）—— ET 运算符链式返回用完美转发保持值类别
+⟶ Book/part10_modern/ch116_perfect_forwarding.md（完美转发）—— ET 运算符链式返回用完美转发保持值类别
 ⟶ Book/part05_oo/ch51_crtp.md（CRTP 与静态多态）—— valarray 的 `_Expr` 节点是 CRTP 静态多态的早期形态
 
 - **`std::valarray`**：运算符（`operator+` 等）返回**新的 `valarray`**（立即求值），**不是** ET；但其内部 `_Expr` 模板（如 `operator+=` 接受 `_Expr`）有部分惰性优化。标准选择"返回 `valarray`"是为语义简单、可预期（对比 ⑮）。
