@@ -381,6 +381,9 @@ template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ) ); }
 
 ## ⑪ STL 中的该模式
 
+⟶ Book/part06_templates/ch63_variadic.md（折叠是递归展开的归约替代）
+⟶ Book/part10_modern/ch116_perfect_forwarding.md（完美转发 + 包展开协同）
+
 ```cpp
 #include <iostream>
 #include <utility>
@@ -461,6 +464,9 @@ int main() {
 
 ## ⑭ 工业案例
 
+⟶ Book/part10_modern/ch116_perfect_forwarding.md（日志/格式化库以折叠做类型安全归约）
+⟶ Book/part06_templates/ch72_expression_templates.md（表达式模板的编译期归约近亲）
+
 ```cpp
 #include <iostream>
 #include <string>
@@ -488,6 +494,9 @@ int main() {
 ```
 
 ## ⑮ 源码剖析（libstdc++ 相关）
+
+⟶ Book/part06_templates/ch65_type_traits.md（traits 组合常借助折叠）
+⟶ Book/part06_templates/ch60_template_basics.md（实例化机制基础）
 
 ```cpp
 #include <iostream>
@@ -581,6 +590,9 @@ int main() {
 ```
 
 ## ⑲ 性能（编译期 / 运行期）
+
+⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化与内联对归约的影响）
+⟶ Book/part06_templates/ch63_variadic.md（与递归展开编译时间对比）
 
 ```cpp
 // 折叠完全编译期展开；(0+...+ts) 在 -O2 成单加法链或常量
