@@ -172,7 +172,7 @@ C with Classes 加入虚函数后（Itanium 风格，标注 `[平台]`）：
    │ &Circle::draw                 │
    └──────────────────────────────┘
 ```
-> 注：C with Classes 早期（1980）尚无真正 vtable，Stroustrup 最初用「函数指针表 + 内联展开」等方案，vtable 机制在后续演进中定型。详见 ch54。
+> 注：C with Classes 早期（1980）尚无真正 vtable，Stroustrup 最初用「函数指针表 + 内联展开」等方案，vtable 机制在后续演进中定型。详见 ch47。
 
 ## ⑧ 生命周期图（C 变量 vs C++ 对象）
 
@@ -221,7 +221,7 @@ add:
     lea     eax, [rdi + rsi]   ; x86-64 System V：a=rdi, b=rsi
     ret
 ```
-> 结论：C++ 在「非多态自由函数」层面与 C 零开销等价。多态（虚调用）才引入间接跳转，见 ch54。
+> 结论：C++ 在「非多态自由函数」层面与 C 零开销等价。多态（虚调用）才引入间接跳转，见 ch47。
 
 ## ⑪ STL 联系
 
@@ -239,6 +239,8 @@ void hi(){ std::cout << "hi\n"; }
 
 ## ⑫ 工业案例
 
+⟶ Book/part11_source/ch134_unreal.md
+
 ```cpp
 // 名字空间（后期加入）
 namespace lib { int f(){ return 1; } }
@@ -254,6 +256,8 @@ template<class T> T max(T a,T b){ return a>b?a:b; }
 
 ## ⑬ 源码分析
 
+⟶ Book/part11_source/ch124_libstdcxx.md
+
 ```cpp
 // const 限定
 const int N = 10; // N 不可改
@@ -267,6 +271,9 @@ void inc(int& r){ ++r; }
 - 现代 Clang/GCC 已是原生 C++ 前端，但**预处理 + 单独编译 + 头文件包含**模型完全继承自 C（ch11、ch118 对比 Modules 的变革）。
 
 ## ⑭ WG21 提案 / 标准背景
+
+⟶ Book/part01_history/ch03_cpp98_03.md
+⟶ Book/part01_history/ch04_cpp11.md
 
 ```cpp
 // 默认实参
@@ -317,7 +324,7 @@ class T { int v=0; public: T& self(){ return *this; } };
 
 - **Q：为什么不直接设计一门全新语言？** A：1979 年 C 已主导系统编程，复用其工具链、程序员、库能立刻落地；纯新语言无法调用现有 C 库， adoption 极低。
 - **Q：C with Classes 已经有 class，为何还要 struct？** A：兼容 C 的 `struct`，且 C++ 中 `struct` 默认 `public` 用于数据聚合（POD），`class` 默认 `private` 用于封装（ch50）。
-- **Q：虚函数是不是一开始就有的？** A：早期 C with Classes 已有 virtual 概念，但实现机制（vtable）随编译器成熟而定型（ch54）。
+- **Q：虚函数是不是一开始就有的？** A：早期 C with Classes 已有 virtual 概念，但实现机制（vtable）随编译器成熟而定型（ch47）。
 
 ## ⑱ 最佳实践（历史经验映射到现代）
 
@@ -331,13 +338,15 @@ class Vec { int d[3]={0,0,0}; public: int& at(int i){ return d[i]; } };
 
 ## ⑲ 性能分析
 
+⟶ Book/part14_perf/ch153_cpu_micro.md
+
 ```cpp
 // 全局对象构造顺序（历史坑）
 int g1=1; int g2=g1+1; // g2 依赖 g1 初始化序
 ```
 
 - C++ 自由函数/内联模板在 `-O2` 下生成的机器码与手写 C 等价（零开销原则，Bjarne 核心信条）。
-- 唯一开销来自运行时多态（虚调用，约 1 次间接跳转 + 可能破坏分支预测），详见 ch54、ch153。
+- 唯一开销来自运行时多态（虚调用，约 1 次间接跳转 + 可能破坏分支预测），详见 ch47、ch153。
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
 
 ```cpp
@@ -474,10 +483,10 @@ int main() {
 }
 ```
 
-汇编证明: qsort vs std::sort
-  C: qsort(arr, n, sizeof(int), cmp) → 每次比较call cmp函数指针(~5ns/call)
-  C++: std::sort(arr, arr+n) → 内联比较, 零call开销(~1ns/element)
-  速度差异: 对1M ints, std::sort快2-3× (GCC -O2)
+汇编证明: qsort vs std::sort（本机 GCC 15.3.0 -O2 实测, N=1'000'000, 取 5 轮最快）
+  C: qsort(arr, n, sizeof(int), cmp) → 每次比较经函数指针间接调用, 无法内联
+  C++: std::sort(arr, arr+n) → 比较器随 lambda 内联, 零间接调用开销
+  实测: qsort ≈ 171 ms vs std::sort ≈ 87.6 ms → 约 1.95× 加速 (比值随数据/编译器浮动)
 
 ## 附录 G：C vs C++设计取舍 [H: Design]
 
@@ -512,6 +521,9 @@ int main(){std::cout<<"C=simplicity, C++=abstraction. Use C for kernel, C++ for 
 
 ## 附录 I：C ABI兼容性深度
 
+⟶ Book/part11_source/ch124_libstdcxx.md
+⟶ Book/part11_source/ch126_msstl.md
+
 C ABI是操作系统最底层的接口约定。Linux kernel, Win32 API, POSIX全部使用C ABI。C++通过extern "C"与此交互。
 
 GCC name mangling: void f(int)→_Z1fi; MSVC: ?f@@YAXH@Z
@@ -528,16 +540,16 @@ int main() { c_func(42); return 0; }
 |---|---|---|---|
 | 调用Win32 API | #include <windows.h> | 直接调用(兼容) | 0 |
 | 调用POSIX | #include <unistd.h> | 直接调用 | 0 |
-| 从C调用C++ | extern "C" wrapper | 简单包装函数 | ~2ns(call) |
-| 跨DLL边界 | C ABI | COM/抽象接口 | ~5ns(vtable) |
+| 从C调用C++ | extern "C" wrapper | 简单包装函数 | 一次普通函数调用(可忽略) |
+| 跨DLL边界 | C ABI | COM/抽象接口 | 一次虚调用间接跳转(可忽略, 详见 ch47) |
 
 面试: extern "C"作用? 禁用mangling+异常+重载, 使C++函数可被C代码调用
 
 ## 附录 J：C vs C++性能与面试
 
-C qsort: 函数指针间接调用(~5ns/call), 无法内联
-C++ std::sort: lambda内联(~0ns/call), GCC -O2展开为循环
-1M ints: C qsort~800ms, C++ sort~450ms → 1.8x faster
+C qsort: 函数指针间接调用, 比较无法内联, 实测 N=1M 约 171 ms (GCC 15.3.0 -O2)
+C++ std::sort: lambda 比较器内联, 实测约 87.6 ms, 约 1.95× 加速 (详见 汇编证明节)
+（绝对毫秒数随 CPU/编译器浮动; 比值 1.5–2× 量级稳定）
 
 ```cpp
 #include <iostream>
