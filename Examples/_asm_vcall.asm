@@ -1,45 +1,6 @@
 	.file	"_asm_vcall.cpp"
 	.intel_syntax noprefix
 	.text
-	.section	.text$_ZNK7Derived3fooEv,"x"
-	.linkonce discard
-	.align 2
-	.p2align 4
-	.globl	_ZNK7Derived3fooEv
-	.def	_ZNK7Derived3fooEv;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZNK7Derived3fooEv
-_ZNK7Derived3fooEv:
-.LFB6:
-	.seh_endprologue
-	mov	eax, 3
-	ret
-	.seh_endproc
-	.section	.text$_ZN7DerivedD1Ev,"x"
-	.linkonce discard
-	.align 2
-	.p2align 4
-	.globl	_ZN7DerivedD1Ev
-	.def	_ZN7DerivedD1Ev;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZN7DerivedD1Ev
-_ZN7DerivedD1Ev:
-.LFB18:
-	.seh_endprologue
-	ret
-	.seh_endproc
-	.section	.text$_ZN7DerivedD0Ev,"x"
-	.linkonce discard
-	.align 2
-	.p2align 4
-	.globl	_ZN7DerivedD0Ev
-	.def	_ZN7DerivedD0Ev;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZN7DerivedD0Ev
-_ZN7DerivedD0Ev:
-.LFB19:
-	.seh_endprologue
-	mov	edx, 8
-	jmp	_ZdlPvy
-	.seh_endproc
-	.text
 	.p2align 4
 	.globl	_Z12call_virtualRK4Base
 	.def	_Z12call_virtualRK4Base;	.scl	2;	.type	32;	.endef
@@ -60,7 +21,6 @@ _Z15call_nonvirtualRK4Base:
 	mov	eax, 2
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
@@ -76,5 +36,5 @@ main:
 	add	rsp, 40
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
-	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
