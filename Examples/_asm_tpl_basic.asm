@@ -8,7 +8,7 @@
 	.def	_Z7max_valIiET_S0_S0_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z7max_valIiET_S0_S0_
 _Z7max_valIiET_S0_S0_:
-.LFB196:
+.LFB209:
 	.seh_endprologue
 	cmp	ecx, edx
 	mov	eax, edx
@@ -22,10 +22,11 @@ _Z7max_valIiET_S0_S0_:
 	.def	_Z7max_valIdET_S0_S0_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z7max_valIdET_S0_S0_
 _Z7max_valIdET_S0_S0_:
-.LFB197:
+.LFB210:
 	.seh_endprologue
-	maxsd	xmm1, xmm0
-	movapd	xmm0, xmm1
+	movapd	xmm2, xmm1
+	maxsd	xmm2, xmm0
+	movapd	xmm0, xmm2
 	ret
 	.seh_endproc
 	.text
@@ -34,7 +35,7 @@ _Z7max_valIdET_S0_S0_:
 	.def	_Z12use_implicitii;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z12use_implicitii
 _Z12use_implicitii:
-.LFB192:
+.LFB205:
 	.seh_endprologue
 	cmp	ecx, edx
 	mov	eax, edx
@@ -46,20 +47,20 @@ _Z12use_implicitii:
 	.def	_Z14use_implicit_ddd;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z14use_implicit_ddd
 _Z14use_implicit_ddd:
-.LFB193:
+.LFB206:
 	.seh_endprologue
-	maxsd	xmm1, xmm0
-	movapd	xmm0, xmm1
+	movapd	xmm2, xmm1
+	maxsd	xmm2, xmm0
+	movapd	xmm0, xmm2
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB195:
+.LFB208:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -68,4 +69,5 @@ main:
 	add	rsp, 40
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

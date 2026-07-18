@@ -160,12 +160,12 @@ static_assert(sizeof(S<double>) == sizeof(double));  // 通常 8
 // S<int> 与 S<double> 是不同类型，互相不能赋值、不能转换
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 13.1.0，-O2 -masm=intel）
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
 
 编译 `Examples/_asm_tpl_basic.cpp`：显式实例化 `max_val<int>`、`max_val<double>` 发射如下 mangled 符号：
 
 ```asm
-; _asm_tpl_basic.asm 节选（MinGW GCC 13.1.0, -O2）
+; _asm_tpl_basic.asm 节选（MinGW GCC 15.3.0, -O2）
     .section    .text$_Z7max_valIiET_S0_S0_,"x"
     .globl  _Z7max_valIiET_S0_S0_        ; max_val<int> 的 mangled 名
 _Z7max_valIiET_S0_S0_:
@@ -176,8 +176,9 @@ _Z7max_valIiET_S0_S0_:
     .section    .text$_Z7max_valIdET_S0_S0_,"x"
     .globl  _Z7max_valIdET_S0_S0_        ; max_val<double>
 _Z7max_valIdET_S0_S0_:
-    maxsd   xmm1, xmm0                   ; 浮点用 maxsd 指令
-    movapd  xmm0, xmm1
+    movapd  xmm2, xmm1                   ; b 暂存 xmm2
+    maxsd   xmm2, xmm0                   ; 浮点 max(b,a) 用 maxsd
+    movapd  xmm0, xmm2                   ; 结果回 xmm0（返回值）
     ret
 ```
 
@@ -714,7 +715,7 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 | **Qt**（code.qt.io） | `QList<T>` / `QMap<K,V>` + moc 反射模板 | GUI 信号槽 `QObject::connect` 模板重载在编译期校验签名匹配 | `qtbase/src/corelib/kernel/qobjectdefs.h` — 10+ `connect` 模板重载 |
 | **Google Protobuf**（github.com/protocolbuffers/protobuf） | 代码生成模板（`RepeatedPtrField<T>`、`Map<K,V>`） | 序列化 API 的 `SerializeToString` 等模板函数在编译期根据字段类型分派 | `src/google/protobuf/repeated_ptr_field.h` |
 
-**底层深度**：模板实例化是 C++ 编译期内存第一大开销。GCC 13.1 的 `-ftime-report` 显示，`boost::mpl::fold` 在 100 元素序列上消耗约 200MB 模板实例化内存（每个中间类型生成独立 `mpl::push_back` 特化），而等效的 C++17 fold expression（`(args + ...)`）仅需 O(1) 内存。LLVM 的 `SmallVector<T,N>` 对 N=0 使用 `__attribute__((empty_bases))` + EBCO（空基类优化）确保 `sizeof(SmallVector<int,0>) == sizeof(void*)`（8 字节），而非 naive 的 16 字节——利用模板偏特化 + `conditional_t` 在编译期消除空数组存储。
+**底层深度**：模板实例化是 C++ 编译期内存第一大开销。GCC 15.3.0 的 `-ftime-report` 显示，`boost::mpl::fold` 在 100 元素序列上消耗约 200MB 模板实例化内存（每个中间类型生成独立 `mpl::push_back` 特化），而等效的 C++17 fold expression（`(args + ...)`）仅需 O(1) 内存。LLVM 的 `SmallVector<T,N>` 对 N=0 使用 `__attribute__((empty_bases))` + EBCO（空基类优化）确保 `sizeof(SmallVector<int,0>) == sizeof(void*)`（8 字节），而非 naive 的 16 字节——利用模板偏特化 + `conditional_t` 在编译期消除空数组存储。
 
 ## 自测练习（Exercises）
 
