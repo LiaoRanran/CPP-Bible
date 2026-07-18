@@ -5,7 +5,7 @@
 	.def	_Z7use_tmpv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z7use_tmpv
 _Z7use_tmpv:
-.LFB192:
+.LFB204:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -42,7 +42,7 @@ _Z7use_tmpv:
 	.def	_Z7sum_seqIJLi0ELi1ELi2ELi3ELi4ELi5EEEiSt16integer_sequenceIiJXspT_EEE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z7sum_seqIJLi0ELi1ELi2ELi3ELi4ELi5EEEiSt16integer_sequenceIiJXspT_EEE
 _Z7sum_seqIJLi0ELi1ELi2ELi3ELi4ELi5EEEiSt16integer_sequenceIiJXspT_EEE:
-.LFB193:
+.LFB205:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -52,4 +52,4 @@ _Z7sum_seqIJLi0ELi1ELi2ELi3ELi4ELi5EEEiSt16integer_sequenceIiJXspT_EEE:
 	pop	rbp
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

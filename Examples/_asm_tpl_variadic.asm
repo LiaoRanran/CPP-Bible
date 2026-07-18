@@ -6,21 +6,20 @@
 	.def	_Z9print_allv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z9print_allv
 _Z9print_allv:
-.LFB16:
+.LFB17:
 	.seh_endprologue
 	mov	eax, DWORD PTR g_depth[rip]
 	add	eax, 1
 	mov	DWORD PTR g_depth[rip], eax
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB19:
+.LFB20:
 	sub	rsp, 56
 	.seh_stackalloc	56
 	.seh_endprologue
@@ -49,4 +48,5 @@ main:
 	.align 4
 g_depth:
 	.space 4
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

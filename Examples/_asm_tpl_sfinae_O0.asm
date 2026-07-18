@@ -5,7 +5,7 @@
 	.def	_Z10use_sfinaev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10use_sfinaev
 _Z10use_sfinaev:
-.LFB17:
+.LFB18:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -22,8 +22,8 @@ _Z10use_sfinaev:
 	movq	rax, xmm0
 	mov	QWORD PTR -16[rbp], rax
 	movsd	xmm0, QWORD PTR -16[rbp]
-	cvttsd2si	eax, xmm0
-	mov	edx, DWORD PTR -4[rbp]
+	cvttsd2si	edx, xmm0
+	mov	eax, DWORD PTR -4[rbp]
 	add	eax, edx
 	add	rsp, 48
 	pop	rbp
@@ -35,7 +35,7 @@ _Z10use_sfinaev:
 	.def	_Z8sfinae_fIiLi0EET_S0_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8sfinae_fIiLi0EET_S0_
 _Z8sfinae_fIiLi0EET_S0_:
-.LFB18:
+.LFB19:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -53,7 +53,7 @@ _Z8sfinae_fIiLi0EET_S0_:
 	.def	_Z8sfinae_fIdLi0EET_S0_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8sfinae_fIdLi0EET_S0_
 _Z8sfinae_fIdLi0EET_S0_:
-.LFB19:
+.LFB20:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -61,8 +61,6 @@ _Z8sfinae_fIdLi0EET_S0_:
 	.seh_endprologue
 	movsd	QWORD PTR 16[rbp], xmm0
 	movsd	xmm0, QWORD PTR 16[rbp]
-	movq	rax, xmm0
-	movq	xmm0, rax
 	pop	rbp
 	ret
 	.seh_endproc
@@ -71,4 +69,4 @@ _Z8sfinae_fIdLi0EET_S0_:
 .LC0:
 	.long	0
 	.long	1074003968
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

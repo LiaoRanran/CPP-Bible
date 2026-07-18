@@ -4,7 +4,7 @@
 ⟶ Book/part06_templates/ch65_type_traits.md
 
 > 文件路径：`Book/part06_templates/ch66_sfinae.md`
-> 用途：工业级讲解 SFINAE 机制与 std::enable_if 惯用法，含手写实现、标准库源码剖析、MinGW GCC 13.1.0 真实汇编证据。
+> 用途：工业级讲解 SFINAE 机制与 std::enable_if 惯用法，含手写实现、标准库源码剖析、MinGW GCC 15.3.0 真实汇编证据。
 > 作者：CPP-Bible 工程
 > 版本：v3.0（2026-07-08）
 
@@ -290,12 +290,12 @@ SFINAE 是**纯编译期**机制：它不产生任何运行期对象、不占内
 static_assert(sizeof(std::true_type) == 1, "trait 是空类");
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 13.1.0） [平台]
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0） [平台]
 
 编译 `Examples/_asm_tpl_sfinae.cpp`（`-std=c++23 -O2 -masm=intel`）。**结论一**：`-O2` 下 `use_sfinae` 把两个重载的「选择」在编译期完成，运行期只剩常量，分发彻底消失：
 
 ```asm
-; _Z10use_sfinaev （MinGW GCC 13.1.0, -O2）—— 分发已被编译期消除
+; _Z10use_sfinaev （MinGW GCC 15.3.0, -O2）—— 分发已被编译期消除
 _Z10use_sfinaev:
     sub     rsp, 24
     movsd   xmm0, QWORD PTR .LC0[rip]   ; .LC0 = 2.5（sfinae_f<double> 的结果）
@@ -312,7 +312,7 @@ _Z10use_sfinaev:
 **结论二**：`-O0`（不内联）下可见 mangled 符号——SFINAE 为 `int` 只实例化「integral 重载 A」、为 `double` 只实例化「非 integral 重载 B」；相反方向的重载被剔除，**根本不发射**：
 
 ```asm
-; _asm_tpl_sfinae_O0.asm 节选（MinGW GCC 13.1.0, -O0）
+; _asm_tpl_sfinae_O0.asm 节选（MinGW GCC 15.3.0, -O0）
     call    _Z8sfinae_fIiLi0EET_S0_   ; sfinae_f<int>  —— 来自「integral 重载 A」
     call    _Z8sfinae_fIdLi0EET_S0_   ; sfinae_f<double> —— 来自「非 integral 重载 B」
 ; 注意：不存在 _Z8sfinae_fIi... 的非 integral 版本，也不存在 double 的 integral 版本
@@ -399,7 +399,7 @@ to_json(const T& v) { return v.to_string(); }
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-`std::enable_if` 的真实定义（文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`，行号：106 主模板 / 111 `true` 偏特化 / 2610 `enable_if_t`）：
+`std::enable_if` 的真实定义（文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits`，行号：134 主模板 / 139 `true` 偏特化 / 2838 `enable_if_t`）：
 
 ```cpp
 // <type_traits> 行 106：主模板 B==false 无 type 成员

@@ -11,7 +11,7 @@
 	.def	_ZN7WrapperIiE4kindEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN7WrapperIiE4kindEv
 _ZN7WrapperIiE4kindEv:
-.LFB17:
+.LFB18:
 	.seh_endprologue
 	lea	rax, .LC0[rip]
 	ret
@@ -27,7 +27,7 @@ _ZN7WrapperIiE4kindEv:
 	.def	_ZN7WrapperIdE4kindEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN7WrapperIdE4kindEv
 _ZN7WrapperIdE4kindEv:
-.LFB21:
+.LFB22:
 	.seh_endprologue
 	lea	rax, .LC1[rip]
 	ret
@@ -43,7 +43,7 @@ _ZN7WrapperIdE4kindEv:
 	.def	_ZN7WrapperIPiE4kindEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN7WrapperIPiE4kindEv
 _ZN7WrapperIPiE4kindEv:
-.LFB22:
+.LFB23:
 	.seh_endprologue
 	lea	rax, .LC2[rip]
 	ret
@@ -59,19 +59,18 @@ _ZN7WrapperIPiE4kindEv:
 	.def	_ZN7WrapperIKdE4kindEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN7WrapperIKdE4kindEv
 _ZN7WrapperIKdE4kindEv:
-.LFB23:
+.LFB24:
 	.seh_endprologue
 	lea	rax, .LC3[rip]
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB20:
+.LFB21:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -113,4 +112,5 @@ b:
 	.align 8
 a:
 	.quad	_ZN7WrapperIdE4kindEv
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

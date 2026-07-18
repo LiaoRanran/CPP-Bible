@@ -6,7 +6,7 @@
 	.def	_Z7use_tagv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z7use_tagv
 _Z7use_tagv:
-.LFB2311:
+.LFB2369:
 	.seh_endprologue
 	mov	eax, DWORD PTR g_count[rip]
 	lea	edx, 101[rax]
@@ -26,4 +26,4 @@ g_step:
 	.align 4
 g_count:
 	.space 4
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

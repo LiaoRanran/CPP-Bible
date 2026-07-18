@@ -7,7 +7,7 @@
 	.def	_ZN14SingleThreaded4lockEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN14SingleThreaded4lockEv
 _ZN14SingleThreaded4lockEv:
-.LFB40:
+.LFB41:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -23,7 +23,7 @@ _ZN14SingleThreaded4lockEv:
 	.def	_ZN14SingleThreaded6unlockEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN14SingleThreaded6unlockEv
 _ZN14SingleThreaded6unlockEv:
-.LFB41:
+.LFB42:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -39,7 +39,7 @@ _ZN14SingleThreaded6unlockEv:
 	.def	_ZN13MultiThreaded4lockEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN13MultiThreaded4lockEv
 _ZN13MultiThreaded4lockEv:
-.LFB42:
+.LFB43:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -55,7 +55,7 @@ _ZN13MultiThreaded4lockEv:
 	.def	_ZN13MultiThreaded6unlockEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN13MultiThreaded6unlockEv
 _ZN13MultiThreaded6unlockEv:
-.LFB43:
+.LFB44:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -70,7 +70,7 @@ _ZN13MultiThreaded6unlockEv:
 	.def	_Z10use_policyv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10use_policyv
 _Z10use_policyv:
-.LFB48:
+.LFB49:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -109,7 +109,7 @@ _Z10use_policyv:
 	.def	_Z11use_virtualR5VBase;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z11use_virtualR5VBase
 _Z11use_virtualR5VBase:
-.LFB49:
+.LFB50:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -137,7 +137,7 @@ _Z11use_virtualR5VBase:
 	.def	_ZN6WidgetIi10NewCreator14SingleThreadedE4makeEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN6WidgetIi10NewCreator14SingleThreadedE4makeEv
 _ZN6WidgetIi10NewCreator14SingleThreadedE4makeEv:
-.LFB50:
+.LFB51:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -160,7 +160,7 @@ _ZN6WidgetIi10NewCreator14SingleThreadedE4makeEv:
 	.def	_ZN6WidgetIi13MallocCreator13MultiThreadedE4makeEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN6WidgetIi13MallocCreator13MultiThreadedE4makeEv
 _ZN6WidgetIi13MallocCreator13MultiThreadedE4makeEv:
-.LFB51:
+.LFB52:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -183,18 +183,30 @@ _ZN6WidgetIi13MallocCreator13MultiThreadedE4makeEv:
 	.def	_ZN10NewCreatorIiE6createEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN10NewCreatorIiE6createEv
 _ZN10NewCreatorIiE6createEv:
-.LFB52:
+.LFB53:
 	push	rbp
 	.seh_pushreg	rbp
-	mov	rbp, rsp
-	.seh_setframe	rbp, 0
-	sub	rsp, 32
-	.seh_stackalloc	32
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 40
+	.seh_stackalloc	40
+	lea	rbp, 32[rsp]
+	.seh_setframe	rbp, 32
 	.seh_endprologue
 	mov	ecx, 4
 	call	_Znwy
-	mov	DWORD PTR [rax], 0
-	add	rsp, 32
+	mov	rbx, rax
+	mov	DWORD PTR [rbx], 0
+	mov	eax, 0
+	test	al, al
+	je	.L16
+	mov	edx, 4
+	mov	rcx, rbx
+	call	_ZdlPvy
+.L16:
+	mov	rax, rbx
+	add	rsp, 40
+	pop	rbx
 	pop	rbp
 	ret
 	.seh_endproc
@@ -204,7 +216,7 @@ _ZN10NewCreatorIiE6createEv:
 	.def	_ZN13MallocCreatorIiE6createEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN13MallocCreatorIiE6createEv
 _ZN13MallocCreatorIiE6createEv:
-.LFB53:
+.LFB54:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -218,7 +230,7 @@ _ZN13MallocCreatorIiE6createEv:
 	pop	rbp
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
 	.def	free;	.scl	2;	.type	32;	.endef
 	.def	_Znwy;	.scl	2;	.type	32;	.endef

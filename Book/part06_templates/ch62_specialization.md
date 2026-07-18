@@ -168,12 +168,12 @@ int main() {
 }
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 13.1.0，-O2 -masm=intel）
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
 
 编译 `Examples/_asm_tpl_spec.cpp`：为 4 份特化逐一取 `kind()` 地址，强制发射各自 mangled 符号：
 
 ```asm
-; _asm_tpl_spec.asm 节选（MinGW GCC 13.1.0, -O2）
+; _asm_tpl_spec.asm 节选（MinGW GCC 15.3.0, -O2）
     .section .rdata,"dr"
 .LC0:   .ascii "full-int\0"
     .globl  _ZN7WrapperIiE4kindEv          ; Wrapper<int> 全特化

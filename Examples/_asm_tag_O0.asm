@@ -15,7 +15,7 @@ g_step:
 	.def	_Z7use_tagv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z7use_tagv
 _Z7use_tagv:
-.LFB2292:
+.LFB2330:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -46,7 +46,7 @@ _Z7use_tagv:
 	.def	_Z8dispatchIiEvT_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8dispatchIiEvT_
 _Z8dispatchIiEvT_:
-.LFB2593:
+.LFB2614:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -69,7 +69,7 @@ _Z8dispatchIiEvT_:
 	.def	_Z8dispatchIdEvT_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8dispatchIdEvT_
 _Z8dispatchIdEvT_:
-.LFB2594:
+.LFB2615:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -92,7 +92,7 @@ _Z8dispatchIdEvT_:
 	.def	_Z12adv_dispatchIPiEvT_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z12adv_dispatchIPiEvT_
 _Z12adv_dispatchIPiEvT_:
-.LFB2595:
+.LFB2616:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -115,7 +115,7 @@ _Z12adv_dispatchIPiEvT_:
 	.def	_Z4implIiEvT_St17integral_constantIbLb1EE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z4implIiEvT_St17integral_constantIbLb1EE
 _Z4implIiEvT_St17integral_constantIbLb1EE:
-.LFB2716:
+.LFB2752:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -135,7 +135,7 @@ _Z4implIiEvT_St17integral_constantIbLb1EE:
 	.def	_Z4implIdEvT_St17integral_constantIbLb0EE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z4implIdEvT_St17integral_constantIbLb0EE
 _Z4implIdEvT_St17integral_constantIbLb0EE:
-.LFB2717:
+.LFB2753:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -155,7 +155,7 @@ _Z4implIdEvT_St17integral_constantIbLb0EE:
 	.def	_Z3advIPiEvT_St26random_access_iterator_tag;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z3advIPiEvT_St26random_access_iterator_tag
 _Z3advIPiEvT_St26random_access_iterator_tag:
-.LFB2718:
+.LFB2754:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -170,14 +170,8 @@ _Z3advIPiEvT_St26random_access_iterator_tag:
 	ret
 	.seh_endproc
 	.section .rdata,"dr"
-_ZNSt8__detail30__integer_to_chars_is_unsignedIjEE:
-	.byte	1
-_ZNSt8__detail30__integer_to_chars_is_unsignedImEE:
-	.byte	1
-_ZNSt8__detail30__integer_to_chars_is_unsignedIyEE:
-	.byte	1
 	.align 8
 .LC0:
 	.long	0
 	.long	1074003968
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

@@ -5,7 +5,7 @@
 	.def	_Z12use_conceptsv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z12use_conceptsv
 _Z12use_conceptsv:
-.LFB21:
+.LFB22:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -14,19 +14,19 @@ _Z12use_conceptsv:
 	.seh_stackalloc	64
 	.seh_endprologue
 	mov	ecx, 21
-	call	_Z9concept_fIiET_S0_
+	call	_Z9concept_fITkSt8integraliET_S0_
 	mov	DWORD PTR -4[rbp], eax
 	mov	rax, QWORD PTR .LC0[rip]
 	movq	xmm0, rax
-	call	_Z9concept_fIdET_S0_
+	call	_Z9concept_fIdQnt8integralIT_EES0_S0_
 	movq	rax, xmm0
 	mov	QWORD PTR -16[rbp], rax
 	mov	ecx, 7
-	call	_Z9add_twiceIiET_S0_
+	call	_Z9add_twiceITk7AddableiET_S0_
 	mov	DWORD PTR -20[rbp], eax
 	movsd	xmm0, QWORD PTR -16[rbp]
-	cvttsd2si	eax, xmm0
-	mov	edx, DWORD PTR -4[rbp]
+	cvttsd2si	edx, xmm0
+	mov	eax, DWORD PTR -4[rbp]
 	add	edx, eax
 	mov	eax, DWORD PTR -20[rbp]
 	add	eax, edx
@@ -34,13 +34,13 @@ _Z12use_conceptsv:
 	pop	rbp
 	ret
 	.seh_endproc
-	.section	.text$_Z9concept_fIiET_S0_,"x"
+	.section	.text$_Z9concept_fITkSt8integraliET_S0_,"x"
 	.linkonce discard
-	.globl	_Z9concept_fIiET_S0_
-	.def	_Z9concept_fIiET_S0_;	.scl	2;	.type	32;	.endef
-	.seh_proc	_Z9concept_fIiET_S0_
-_Z9concept_fIiET_S0_:
-.LFB22:
+	.globl	_Z9concept_fITkSt8integraliET_S0_
+	.def	_Z9concept_fITkSt8integraliET_S0_;	.scl	2;	.type	32;	.endef
+	.seh_proc	_Z9concept_fITkSt8integraliET_S0_
+_Z9concept_fITkSt8integraliET_S0_:
+.LFB23:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -52,13 +52,16 @@ _Z9concept_fIiET_S0_:
 	pop	rbp
 	ret
 	.seh_endproc
-	.section	.text$_Z9concept_fIdET_S0_,"x"
+	.weak	_Z9concept_fIiET_S0_
+	.def	_Z9concept_fIiET_S0_;	.scl	2;	.type	32;	.endef
+	.set	_Z9concept_fIiET_S0_,_Z9concept_fITkSt8integraliET_S0_
+	.section	.text$_Z9concept_fIdQnt8integralIT_EES0_S0_,"x"
 	.linkonce discard
-	.globl	_Z9concept_fIdET_S0_
-	.def	_Z9concept_fIdET_S0_;	.scl	2;	.type	32;	.endef
-	.seh_proc	_Z9concept_fIdET_S0_
-_Z9concept_fIdET_S0_:
-.LFB23:
+	.globl	_Z9concept_fIdQnt8integralIT_EES0_S0_
+	.def	_Z9concept_fIdQnt8integralIT_EES0_S0_;	.scl	2;	.type	32;	.endef
+	.seh_proc	_Z9concept_fIdQnt8integralIT_EES0_S0_
+_Z9concept_fIdQnt8integralIT_EES0_S0_:
+.LFB24:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -66,18 +69,19 @@ _Z9concept_fIdET_S0_:
 	.seh_endprologue
 	movsd	QWORD PTR 16[rbp], xmm0
 	movsd	xmm0, QWORD PTR 16[rbp]
-	movq	rax, xmm0
-	movq	xmm0, rax
 	pop	rbp
 	ret
 	.seh_endproc
-	.section	.text$_Z9add_twiceIiET_S0_,"x"
+	.weak	_Z9concept_fIdET_S0_
+	.def	_Z9concept_fIdET_S0_;	.scl	2;	.type	32;	.endef
+	.set	_Z9concept_fIdET_S0_,_Z9concept_fIdQnt8integralIT_EES0_S0_
+	.section	.text$_Z9add_twiceITk7AddableiET_S0_,"x"
 	.linkonce discard
-	.globl	_Z9add_twiceIiET_S0_
-	.def	_Z9add_twiceIiET_S0_;	.scl	2;	.type	32;	.endef
-	.seh_proc	_Z9add_twiceIiET_S0_
-_Z9add_twiceIiET_S0_:
-.LFB24:
+	.globl	_Z9add_twiceITk7AddableiET_S0_
+	.def	_Z9add_twiceITk7AddableiET_S0_;	.scl	2;	.type	32;	.endef
+	.seh_proc	_Z9add_twiceITk7AddableiET_S0_
+_Z9add_twiceITk7AddableiET_S0_:
+.LFB25:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -89,9 +93,12 @@ _Z9add_twiceIiET_S0_:
 	pop	rbp
 	ret
 	.seh_endproc
+	.weak	_Z9add_twiceIiET_S0_
+	.def	_Z9add_twiceIiET_S0_;	.scl	2;	.type	32;	.endef
+	.set	_Z9add_twiceIiET_S0_,_Z9add_twiceITk7AddableiET_S0_
 	.section .rdata,"dr"
 	.align 8
 .LC0:
 	.long	0
 	.long	1074003968
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

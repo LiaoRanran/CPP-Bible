@@ -6,7 +6,7 @@
 	.def	_Z13use_constexprv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z13use_constexprv
 _Z13use_constexprv:
-.LFB19:
+.LFB21:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -40,4 +40,4 @@ g_global:
 .LC0:
 	.long	0
 	.long	1074003968
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

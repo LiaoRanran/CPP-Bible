@@ -8,7 +8,7 @@
 	.def	_ZN5NaiveC1Ey;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN5NaiveC1Ey
 _ZN5NaiveC1Ey:
-.LFB42:
+.LFB43:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -47,7 +47,7 @@ _ZN5NaiveC1Ey:
 	.def	_ZN5NaiveD1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN5NaiveD1Ev
 _ZN5NaiveD1Ev:
-.LFB45:
+.LFB46:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -77,7 +77,7 @@ _ZN5NaiveD1Ev:
 	.def	_ZNK5NaiveplERKS_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK5NaiveplERKS_
 _ZNK5NaiveplERKS_:
-.LFB46:
+.LFB47:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -97,21 +97,21 @@ _ZNK5NaiveplERKS_:
 	jmp	.L9
 .L10:
 	mov	rax, QWORD PTR 24[rbp]
-	mov	rdx, QWORD PTR [rax]
-	mov	rax, QWORD PTR -8[rbp]
-	sal	rax, 3
+	mov	rax, QWORD PTR [rax]
+	mov	rdx, QWORD PTR -8[rbp]
+	sal	rdx, 3
 	add	rax, rdx
 	movsd	xmm1, QWORD PTR [rax]
 	mov	rax, QWORD PTR 32[rbp]
-	mov	rdx, QWORD PTR [rax]
-	mov	rax, QWORD PTR -8[rbp]
-	sal	rax, 3
+	mov	rax, QWORD PTR [rax]
+	mov	rdx, QWORD PTR -8[rbp]
+	sal	rdx, 3
 	add	rax, rdx
 	movsd	xmm0, QWORD PTR [rax]
 	mov	rax, QWORD PTR 16[rbp]
-	mov	rdx, QWORD PTR [rax]
-	mov	rax, QWORD PTR -8[rbp]
-	sal	rax, 3
+	mov	rax, QWORD PTR [rax]
+	mov	rdx, QWORD PTR -8[rbp]
+	sal	rdx, 3
 	add	rax, rdx
 	addsd	xmm0, xmm1
 	movsd	QWORD PTR [rax], xmm0
@@ -121,7 +121,6 @@ _ZNK5NaiveplERKS_:
 	mov	rax, QWORD PTR 8[rax]
 	cmp	QWORD PTR -8[rbp], rax
 	jb	.L10
-	nop
 	mov	rax, QWORD PTR 16[rbp]
 	add	rsp, 48
 	pop	rbp
@@ -134,7 +133,7 @@ _ZNK5NaiveplERKS_:
 	.def	_ZN4FastC1Ey;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN4FastC1Ey
 _ZN4FastC1Ey:
-.LFB51:
+.LFB52:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -173,7 +172,7 @@ _ZN4FastC1Ey:
 	.def	_ZN4FastD1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN4FastD1Ev
 _ZN4FastD1Ev:
-.LFB54:
+.LFB55:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -203,7 +202,7 @@ _ZN4FastD1Ev:
 	.def	_ZNK4FastixEy;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK4FastixEy
 _ZNK4FastixEy:
-.LFB55:
+.LFB56:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -212,13 +211,11 @@ _ZNK4FastixEy:
 	mov	QWORD PTR 16[rbp], rcx
 	mov	QWORD PTR 24[rbp], rdx
 	mov	rax, QWORD PTR 16[rbp]
-	mov	rdx, QWORD PTR [rax]
-	mov	rax, QWORD PTR 24[rbp]
-	sal	rax, 3
+	mov	rax, QWORD PTR [rax]
+	mov	rdx, QWORD PTR 24[rbp]
+	sal	rdx, 3
 	add	rax, rdx
 	movsd	xmm0, QWORD PTR [rax]
-	movq	rax, xmm0
-	movq	xmm0, rax
 	pop	rbp
 	ret
 	.seh_endproc
@@ -229,7 +226,7 @@ _ZNK4FastixEy:
 	.def	_ZNK4Fast4sizeEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK4Fast4sizeEv
 _ZNK4Fast4sizeEv:
-.LFB56:
+.LFB57:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -246,7 +243,7 @@ _ZNK4Fast4sizeEv:
 	.def	_Z9use_naivei;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z9use_naivei
 _Z9use_naivei:
-.LFB62:
+.LFB63:
 	push	rbp
 	.seh_pushreg	rbp
 	push	rbx
@@ -258,21 +255,21 @@ _Z9use_naivei:
 	.seh_endprologue
 	mov	DWORD PTR 32[rbp], ecx
 	mov	eax, DWORD PTR 32[rbp]
-	movsx	rdx, eax
+	movsxd	rdx, eax
 	lea	rax, -48[rbp]
 	mov	rcx, rax
 .LEHB0:
 	call	_ZN5NaiveC1Ey
 .LEHE0:
 	mov	eax, DWORD PTR 32[rbp]
-	movsx	rdx, eax
+	movsxd	rdx, eax
 	lea	rax, -64[rbp]
 	mov	rcx, rax
 .LEHB1:
 	call	_ZN5NaiveC1Ey
 .LEHE1:
 	mov	eax, DWORD PTR 32[rbp]
-	movsx	rdx, eax
+	movsxd	rdx, eax
 	lea	rax, -80[rbp]
 	mov	rcx, rax
 .LEHB2:
@@ -281,30 +278,30 @@ _Z9use_naivei:
 	mov	DWORD PTR -4[rbp], 0
 	jmp	.L24
 .L25:
-	mov	rdx, QWORD PTR -48[rbp]
-	mov	eax, DWORD PTR -4[rbp]
-	cdqe
-	sal	rax, 3
+	mov	rax, QWORD PTR -48[rbp]
+	mov	edx, DWORD PTR -4[rbp]
+	movsxd	rdx, edx
+	sal	rdx, 3
 	add	rax, rdx
 	pxor	xmm0, xmm0
 	cvtsi2sd	xmm0, DWORD PTR -4[rbp]
 	movsd	QWORD PTR [rax], xmm0
 	mov	eax, DWORD PTR -4[rbp]
 	lea	ecx, 1[rax]
-	mov	rdx, QWORD PTR -64[rbp]
-	mov	eax, DWORD PTR -4[rbp]
-	cdqe
-	sal	rax, 3
+	mov	rax, QWORD PTR -64[rbp]
+	mov	edx, DWORD PTR -4[rbp]
+	movsxd	rdx, edx
+	sal	rdx, 3
 	add	rax, rdx
 	pxor	xmm0, xmm0
 	cvtsi2sd	xmm0, ecx
 	movsd	QWORD PTR [rax], xmm0
 	mov	eax, DWORD PTR -4[rbp]
 	lea	ecx, 2[rax]
-	mov	rdx, QWORD PTR -80[rbp]
-	mov	eax, DWORD PTR -4[rbp]
-	cdqe
-	sal	rax, 3
+	mov	rax, QWORD PTR -80[rbp]
+	mov	edx, DWORD PTR -4[rbp]
+	movsxd	rdx, edx
+	sal	rdx, 3
 	add	rax, rdx
 	pxor	xmm0, xmm0
 	cvtsi2sd	xmm0, ecx
@@ -333,11 +330,11 @@ _Z9use_naivei:
 	lea	rax, -32[rbp]
 	mov	rcx, rax
 	call	_ZN5NaiveD1Ev
-	mov	rdx, QWORD PTR -96[rbp]
-	mov	eax, DWORD PTR 32[rbp]
-	cdqe
-	sal	rax, 3
-	sub	rax, 8
+	mov	rax, QWORD PTR -96[rbp]
+	mov	edx, DWORD PTR 32[rbp]
+	movsxd	rdx, edx
+	sal	rdx, 3
+	sub	rdx, 8
 	add	rax, rdx
 	movsd	xmm0, QWORD PTR [rax]
 	cvttsd2si	ebx, xmm0
@@ -391,47 +388,46 @@ _Z9use_naivei:
 	pop	rbx
 	pop	rbp
 	ret
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA62:
+.LLSDA63:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE62-.LLSDACSB62
-.LLSDACSB62:
-	.uleb128 .LEHB0-.LFB62
+	.uleb128 .LLSDACSE63-.LLSDACSB63
+.LLSDACSB63:
+	.uleb128 .LEHB0-.LFB63
 	.uleb128 .LEHE0-.LEHB0
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB1-.LFB62
+	.uleb128 .LEHB1-.LFB63
 	.uleb128 .LEHE1-.LEHB1
-	.uleb128 .L31-.LFB62
+	.uleb128 .L31-.LFB63
 	.uleb128 0
-	.uleb128 .LEHB2-.LFB62
+	.uleb128 .LEHB2-.LFB63
 	.uleb128 .LEHE2-.LEHB2
-	.uleb128 .L32-.LFB62
+	.uleb128 .L32-.LFB63
 	.uleb128 0
-	.uleb128 .LEHB3-.LFB62
+	.uleb128 .LEHB3-.LFB63
 	.uleb128 .LEHE3-.LEHB3
-	.uleb128 .L33-.LFB62
+	.uleb128 .L33-.LFB63
 	.uleb128 0
-	.uleb128 .LEHB4-.LFB62
+	.uleb128 .LEHB4-.LFB63
 	.uleb128 .LEHE4-.LEHB4
-	.uleb128 .L34-.LFB62
+	.uleb128 .L34-.LFB63
 	.uleb128 0
-	.uleb128 .LEHB5-.LFB62
+	.uleb128 .LEHB5-.LFB63
 	.uleb128 .LEHE5-.LEHB5
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE62:
+.LLSDACSE63:
 	.text
 	.seh_endproc
 	.globl	_Z8use_expri
 	.def	_Z8use_expri;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8use_expri
 _Z8use_expri:
-.LFB63:
+.LFB64:
 	push	rbp
 	.seh_pushreg	rbp
 	push	rbx
@@ -443,21 +439,21 @@ _Z8use_expri:
 	.seh_endprologue
 	mov	DWORD PTR 32[rbp], ecx
 	mov	eax, DWORD PTR 32[rbp]
-	movsx	rdx, eax
+	movsxd	rdx, eax
 	lea	rax, -64[rbp]
 	mov	rcx, rax
 .LEHB6:
 	call	_ZN4FastC1Ey
 .LEHE6:
 	mov	eax, DWORD PTR 32[rbp]
-	movsx	rdx, eax
+	movsxd	rdx, eax
 	lea	rax, -80[rbp]
 	mov	rcx, rax
 .LEHB7:
 	call	_ZN4FastC1Ey
 .LEHE7:
 	mov	eax, DWORD PTR 32[rbp]
-	movsx	rdx, eax
+	movsxd	rdx, eax
 	lea	rax, -96[rbp]
 	mov	rcx, rax
 .LEHB8:
@@ -466,30 +462,30 @@ _Z8use_expri:
 	mov	DWORD PTR -4[rbp], 0
 	jmp	.L37
 .L38:
-	mov	rdx, QWORD PTR -64[rbp]
-	mov	eax, DWORD PTR -4[rbp]
-	cdqe
-	sal	rax, 3
+	mov	rax, QWORD PTR -64[rbp]
+	mov	edx, DWORD PTR -4[rbp]
+	movsxd	rdx, edx
+	sal	rdx, 3
 	add	rax, rdx
 	pxor	xmm0, xmm0
 	cvtsi2sd	xmm0, DWORD PTR -4[rbp]
 	movsd	QWORD PTR [rax], xmm0
 	mov	eax, DWORD PTR -4[rbp]
 	lea	ecx, 1[rax]
-	mov	rdx, QWORD PTR -80[rbp]
-	mov	eax, DWORD PTR -4[rbp]
-	cdqe
-	sal	rax, 3
+	mov	rax, QWORD PTR -80[rbp]
+	mov	edx, DWORD PTR -4[rbp]
+	movsxd	rdx, edx
+	sal	rdx, 3
 	add	rax, rdx
 	pxor	xmm0, xmm0
 	cvtsi2sd	xmm0, ecx
 	movsd	QWORD PTR [rax], xmm0
 	mov	eax, DWORD PTR -4[rbp]
 	lea	ecx, 2[rax]
-	mov	rdx, QWORD PTR -96[rbp]
-	mov	eax, DWORD PTR -4[rbp]
-	cdqe
-	sal	rax, 3
+	mov	rax, QWORD PTR -96[rbp]
+	mov	edx, DWORD PTR -4[rbp]
+	movsxd	rdx, edx
+	sal	rdx, 3
 	add	rax, rdx
 	pxor	xmm0, xmm0
 	cvtsi2sd	xmm0, ecx
@@ -500,7 +496,7 @@ _Z8use_expri:
 	cmp	eax, DWORD PTR 32[rbp]
 	jl	.L38
 	mov	eax, DWORD PTR 32[rbp]
-	movsx	rdx, eax
+	movsxd	rdx, eax
 	lea	rax, -112[rbp]
 	mov	rcx, rax
 .LEHB9:
@@ -524,11 +520,11 @@ _Z8use_expri:
 	mov	rcx, rax
 	call	_ZN4FastaSI3SumIS1_IS_S_ES_EEERS_RK4ExprIT_E
 .LEHE10:
-	mov	rdx, QWORD PTR -112[rbp]
-	mov	eax, DWORD PTR 32[rbp]
-	cdqe
-	sal	rax, 3
-	sub	rax, 8
+	mov	rax, QWORD PTR -112[rbp]
+	mov	edx, DWORD PTR 32[rbp]
+	movsxd	rdx, edx
+	sal	rdx, 3
+	sub	rdx, 8
 	add	rax, rdx
 	movsd	xmm0, QWORD PTR [rax]
 	cvttsd2si	ebx, xmm0
@@ -584,37 +580,37 @@ _Z8use_expri:
 	ret
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA63:
+.LLSDA64:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE63-.LLSDACSB63
-.LLSDACSB63:
-	.uleb128 .LEHB6-.LFB63
+	.uleb128 .LLSDACSE64-.LLSDACSB64
+.LLSDACSB64:
+	.uleb128 .LEHB6-.LFB64
 	.uleb128 .LEHE6-.LEHB6
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB7-.LFB63
+	.uleb128 .LEHB7-.LFB64
 	.uleb128 .LEHE7-.LEHB7
-	.uleb128 .L44-.LFB63
+	.uleb128 .L44-.LFB64
 	.uleb128 0
-	.uleb128 .LEHB8-.LFB63
+	.uleb128 .LEHB8-.LFB64
 	.uleb128 .LEHE8-.LEHB8
-	.uleb128 .L45-.LFB63
+	.uleb128 .L45-.LFB64
 	.uleb128 0
-	.uleb128 .LEHB9-.LFB63
+	.uleb128 .LEHB9-.LFB64
 	.uleb128 .LEHE9-.LEHB9
-	.uleb128 .L46-.LFB63
+	.uleb128 .L46-.LFB64
 	.uleb128 0
-	.uleb128 .LEHB10-.LFB63
+	.uleb128 .LEHB10-.LFB64
 	.uleb128 .LEHE10-.LEHB10
-	.uleb128 .L47-.LFB63
+	.uleb128 .L47-.LFB64
 	.uleb128 0
-	.uleb128 .LEHB11-.LFB63
+	.uleb128 .LEHB11-.LFB64
 	.uleb128 .LEHE11-.LEHB11
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE63:
+.LLSDACSE64:
 	.text
 	.seh_endproc
 	.section	.text$_ZplI4FastS0_E3SumIT_T0_ERK4ExprIS2_ERKS5_IS3_E,"x"
@@ -623,7 +619,7 @@ _Z8use_expri:
 	.def	_ZplI4FastS0_E3SumIT_T0_ERK4ExprIS2_ERKS5_IS3_E;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZplI4FastS0_E3SumIT_T0_ERK4ExprIS2_ERKS5_IS3_E
 _ZplI4FastS0_E3SumIT_T0_ERK4ExprIS2_ERKS5_IS3_E:
-.LFB64:
+.LFB65:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -651,7 +647,7 @@ _ZplI4FastS0_E3SumIT_T0_ERK4ExprIS2_ERKS5_IS3_E:
 	.def	_ZplI3SumI4FastS1_ES1_ES0_IT_T0_ERK4ExprIS3_ERKS6_IS4_E;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZplI3SumI4FastS1_ES1_ES0_IT_T0_ERK4ExprIS3_ERKS6_IS4_E
 _ZplI3SumI4FastS1_ES1_ES0_IT_T0_ERK4ExprIS3_ERKS6_IS4_E:
-.LFB65:
+.LFB66:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -680,7 +676,7 @@ _ZplI3SumI4FastS1_ES1_ES0_IT_T0_ERK4ExprIS3_ERKS6_IS4_E:
 	.def	_ZN4FastaSI3SumIS1_IS_S_ES_EEERS_RK4ExprIT_E;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN4FastaSI3SumIS1_IS_S_ES_EEERS_RK4ExprIT_E
 _ZN4FastaSI3SumIS1_IS_S_ES_EEERS_RK4ExprIT_E:
-.LFB66:
+.LFB67:
 	push	rbp
 	.seh_pushreg	rbp
 	push	rbx
@@ -696,10 +692,10 @@ _ZN4FastaSI3SumIS1_IS_S_ES_EEERS_RK4ExprIT_E:
 	jmp	.L54
 .L55:
 	mov	rax, QWORD PTR 32[rbp]
-	mov	rdx, QWORD PTR [rax]
-	mov	rax, QWORD PTR -8[rbp]
-	sal	rax, 3
-	lea	rbx, [rdx+rax]
+	mov	rax, QWORD PTR [rax]
+	mov	rdx, QWORD PTR -8[rbp]
+	sal	rdx, 3
+	lea	rbx, [rax+rdx]
 	mov	rdx, QWORD PTR -8[rbp]
 	mov	rax, QWORD PTR 40[rbp]
 	mov	rcx, rax
@@ -728,7 +724,7 @@ _ZN4FastaSI3SumIS1_IS_S_ES_EEERS_RK4ExprIT_E:
 	.def	_ZN3SumI4FastS0_EC1ERKS0_S3_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN3SumI4FastS0_EC1ERKS0_S3_
 _ZN3SumI4FastS0_EC1ERKS0_S3_:
-.LFB69:
+.LFB70:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -754,7 +750,7 @@ _ZN3SumI4FastS0_EC1ERKS0_S3_:
 	.def	_ZN3SumIS_I4FastS0_ES0_EC1ERKS1_RKS0_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN3SumIS_I4FastS0_ES0_EC1ERKS1_RKS0_
 _ZN3SumIS_I4FastS0_ES0_EC1ERKS1_RKS0_:
-.LFB72:
+.LFB73:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -780,7 +776,7 @@ _ZN3SumIS_I4FastS0_ES0_EC1ERKS1_RKS0_:
 	.def	_ZNK4ExprI3SumIS0_I4FastS1_ES1_EE4sizeEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK4ExprI3SumIS0_I4FastS1_ES1_EE4sizeEv
 _ZNK4ExprI3SumIS0_I4FastS1_ES1_EE4sizeEv:
-.LFB73:
+.LFB74:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -803,7 +799,7 @@ _ZNK4ExprI3SumIS0_I4FastS1_ES1_EE4sizeEv:
 	.def	_ZNK4ExprI3SumIS0_I4FastS1_ES1_EEixEy;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK4ExprI3SumIS0_I4FastS1_ES1_EEixEy
 _ZNK4ExprI3SumIS0_I4FastS1_ES1_EEixEy:
-.LFB74:
+.LFB75:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -817,8 +813,6 @@ _ZNK4ExprI3SumIS0_I4FastS1_ES1_EEixEy:
 	mov	rax, QWORD PTR 16[rbp]
 	mov	rcx, rax
 	call	_ZNK3SumIS_I4FastS0_ES0_EixEy
-	movq	rax, xmm0
-	movq	xmm0, rax
 	add	rsp, 32
 	pop	rbp
 	ret
@@ -830,7 +824,7 @@ _ZNK4ExprI3SumIS0_I4FastS1_ES1_EEixEy:
 	.def	_ZNK3SumIS_I4FastS0_ES0_E4sizeEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK3SumIS_I4FastS0_ES0_E4sizeEv
 _ZNK3SumIS_I4FastS0_ES0_E4sizeEv:
-.LFB75:
+.LFB76:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -854,7 +848,7 @@ _ZNK3SumIS_I4FastS0_ES0_E4sizeEv:
 	.def	_ZNK3SumIS_I4FastS0_ES0_EixEy;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK3SumIS_I4FastS0_ES0_EixEy
 _ZNK3SumIS_I4FastS0_ES0_EixEy:
-.LFB76:
+.LFB77:
 	push	rbp
 	.seh_pushreg	rbp
 	sub	rsp, 48
@@ -878,8 +872,6 @@ _ZNK3SumIS_I4FastS0_ES0_EixEy:
 	mov	rcx, rax
 	call	_ZNK4FastixEy
 	addsd	xmm0, xmm6
-	movq	rax, xmm0
-	movq	xmm0, rax
 	movaps	xmm6, XMMWORD PTR 0[rbp]
 	add	rsp, 48
 	pop	rbp
@@ -892,7 +884,7 @@ _ZNK3SumIS_I4FastS0_ES0_EixEy:
 	.def	_ZNK3SumI4FastS0_E4sizeEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK3SumI4FastS0_E4sizeEv
 _ZNK3SumI4FastS0_E4sizeEv:
-.LFB77:
+.LFB78:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -916,7 +908,7 @@ _ZNK3SumI4FastS0_E4sizeEv:
 	.def	_ZNK3SumI4FastS0_EixEy;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK3SumI4FastS0_EixEy
 _ZNK3SumI4FastS0_EixEy:
-.LFB78:
+.LFB79:
 	push	rbp
 	.seh_pushreg	rbp
 	sub	rsp, 48
@@ -940,14 +932,13 @@ _ZNK3SumI4FastS0_EixEy:
 	mov	rcx, rax
 	call	_ZNK4FastixEy
 	addsd	xmm0, xmm6
-	movq	rax, xmm0
-	movq	xmm0, rax
 	movaps	xmm6, XMMWORD PTR 0[rbp]
 	add	rsp, 48
 	pop	rbp
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	__cxa_throw_bad_array_new_length;	.scl	2;	.type	32;	.endef
 	.def	_Znay;	.scl	2;	.type	32;	.endef
 	.def	_ZdaPv;	.scl	2;	.type	32;	.endef

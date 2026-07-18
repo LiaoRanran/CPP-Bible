@@ -6,7 +6,7 @@
 	.def	_Z10use_traitsv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10use_traitsv
 _Z10use_traitsv:
-.LFB16:
+.LFB18:
 	sub	rsp, 24
 	.seh_stackalloc	24
 	.seh_endprologue
@@ -16,4 +16,4 @@ _Z10use_traitsv:
 	add	rsp, 24
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

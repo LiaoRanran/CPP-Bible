@@ -157,7 +157,7 @@ template <std::size_t... I> struct IndexSeq {};
 // 展开用于下标访问，零运行期开销
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 13.1.0）
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0）
 
 编译 `Examples/_asm_tpl_variadic.cpp`：`-O2` 把 `print_all(1,2.0,'c')` 完全内联为 **4 次 `g_depth+=1`**（对应四级展开），`fold_sum` 折叠为常量 10；`-O0` 暴露真实递归实例化链 mangled 名。
 
