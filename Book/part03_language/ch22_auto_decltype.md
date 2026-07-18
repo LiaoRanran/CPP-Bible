@@ -5,11 +5,11 @@
 
 > 工业级 C++ 圣经 · 第三部分「语言核心」· 目标读者：已掌握 ch19（变量）/ch20（引用）/ch21（const）的中高级工程师。
 >
-> 真实源码根（本书实测，GCC 13.1.0 / libstdc++ 13.1.0）：
-> `ROOT = C:/Program Files/JetBrains/CLion 2025.3.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++`
+> 真实源码根（本书实测，GCC 15.3.0 / libstdc++ 15.3.0）：
+> `ROOT = C:/Qt/Tools/mingw1530_64/include/c++/15.3.0`
 > 本章所有 `[贴真实源码]` 块均来自该根目录下的真实头文件，并标注文件路径与行号。
 
-> **编译标准提示**：全章示例默认需 `-std=c++17`（`std::is_same_v`、`invoke_result_t` 等）；标注 `C++20` 的示例（ex17 / ex18 / ex29 / ex30 及缩写函数模板相关内容）需 `-std=c++20`；`vector<bool>` 与 `auto` 基础示例（ex01–ex16、ex19–ex40 中除 C++20 标注者）在 `-std=c++17` 下即可编译。本书所有示例均以 GCC 13.1.0 实测通过。
+> **编译标准提示**：全章示例默认需 `-std=c++17`（`std::is_same_v`、`invoke_result_t` 等）；标注 `C++20` 的示例（ex17 / ex18 / ex29 / ex30 及缩写函数模板相关内容）需 `-std=c++20`；`vector<bool>` 与 `auto` 基础示例（ex01–ex16、ex19–ex40 中除 C++20 标注者）在 `-std=c++17` 下即可编译。本书所有示例均以 GCC 15.3.0 实测通过。
 
 ---
 
@@ -133,8 +133,8 @@ flowchart TD
 ```
 main()
  └─ make()                 // C++14 auto 返回工厂
-     └─ std::invoke(f, a)  // functional:108, 内部 __invoke (bits/invoke.h:88)
-         └─ __invoke_impl  // bits/invoke.h:58..85 按 tag 分派
+     └─ std::invoke(f, a)  // functional:117, 内部 __invoke (bits/invoke.h:90)
+         └─ __invoke_impl  // bits/invoke.h:60..87 按 tag 分派
              └─ 实际可调用体 operator()/成员指针
 ```
 
@@ -144,7 +144,7 @@ main()
 
 ## ⑨ 汇编
 
-**[实现-推断]** 以下为 GCC 13 `-O2 -std=c++20` 下 `auto` 与显式类型生成**完全相同**汇编的示意（已实测验证二者同构；具体字节取决于上下文）：
+**[实现-推断]** 以下为 GCC 15.3.0 `-O2 -std=c++20` 下 `auto` 与显式类型生成**完全相同**汇编的示意（已实测验证二者同构；具体字节取决于上下文）：
 
 ```asm
 ; auto x = compute();  与   int x = compute();  在 -O2 下均生成：
@@ -162,12 +162,12 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ## ⑩ STL 联系
 
-| STL 设施 | 依赖本章机制 | 真实源码位置（libstdc++ 13.1.0） |
+| STL 设施 | 依赖本章机制 | 真实源码位置（libstdc++ 15.3.0） |
 |---|---|---|
-| `std::declval` | `decltype` | `type_traits:902-903` |
-| `std::invoke_result` | `decltype` + `__invoke_result` | `type_traits:3059-3073` |
-| `std::invoke` | `decltype` + 转发 | `functional:108-115` + `bits/invoke.h:88` |
-| `std::result_of`(弃用) | `decltype` | `type_traits:2587-2590` |
+| `std::declval` | `decltype` | `type_traits:1014-1015` |
+| `std::invoke_result` | `decltype` + `__invoke_result` | `type_traits:3283-3297` |
+| `std::invoke` | `decltype` + 转发 | `functional:117-124` + `bits/invoke.h:90` |
+| `std::result_of`(弃用) | `decltype` | `type_traits:2816-2819` |
 | 范围 for | `auto` | 语言机制（见 KP「范围 for」） |
 | `std::function` 类型擦除 | `decltype`/`result_of` | `functional` |
 
@@ -188,114 +188,114 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ## ⑫ 源码分析（真实 libstdc++ 头文件）
 
-> 全部来自 `ROOT = C:/Program Files/JetBrains/CLion 2025.3.3/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++`，行号为该文件实测行号。
+> 全部来自 `ROOT = C:/Qt/Tools/mingw1530_64/include/c++/15.3.0`，行号为该文件实测行号。
 
-### 12.1 `std::declval`（文件 `type_traits`，行 892-903）
+### 12.1 `std::declval`（文件 `type_traits`，行 1004-1015）
 
 ```cpp
-// type_traits:892
+// type_traits:1004
   /// @cond undocumented
-  template<typename _Tp, typename _Up = _Tp&&>      // 892
-    _Up                                          // 893
-    __declval(int);                              // 894  ← 优先匹配(0 是 int)
+  template<typename _Tp, typename _Up = _Tp&&>      // 1005
+    _Up                                          // 1006
+    __declval(int);                              // 1007  ← 优先匹配(0 是 int)
 
-  template<typename _Tp>                         // 897
-    _Tp                                          // 898
-    __declval(long);                             // 899  ← 退化匹配(long)
+  template<typename _Tp>                         // 1009
+    _Tp                                          // 1010
+    __declval(long);                             // 1011  ← 退化匹配(long)
 
   /// @endcond
-  template<typename _Tp>                         // 902
-    auto declval() noexcept -> decltype(__declval<_Tp>(0));  // 903
+  template<typename _Tp>                         // 1014
+    auto declval() noexcept -> decltype(__declval<_Tp>(0));  // 1015
 ```
 
 逐行解读：
-- **892-894**：`__declval(int)` 返回 `_Up = _Tp&&`（右值引用）。当 `_Tp` 不可移动/不可构造时仍可用（因为只是声明，无定义、无求值）。
-- **897-899**：`__declval(long)` 是「保底」重载，返回 `_Tp` 值类型，仅在 `int` 重载失效（SFINAE）时由 `0` 的 `long` 匹配选中。
-- **902-903**：公开接口 `declval()` 返回 `decltype(__declval<_Tp>(0))`。因为 `0` 是 `int`，**优先选中 `int` 重载**，故 `declval<T>()` 的类型为 `T&&`（即 `add_rvalue_reference_t<T>`）。这是 `decltype` 在标准库内部「取一个不求值表达式的类型」的典范用法——`declval` 本身永不定义，因此只能在 `decltype`/`sizeof` 等不求值语境使用。
+- **1005-1007**：`__declval(int)` 返回 `_Up = _Tp&&`（右值引用）。当 `_Tp` 不可移动/不可构造时仍可用（因为只是声明，无定义、无求值）。
+- **1009-1011**：`__declval(long)` 是「保底」重载，返回 `_Tp` 值类型，仅在 `int` 重载失效（SFINAE）时由 `0` 的 `long` 匹配选中。
+- **1014-1015**：公开接口 `declval()` 返回 `decltype(__declval<_Tp>(0))`。因为 `0` 是 `int`，**优先选中 `int` 重载**，故 `declval<T>()` 的类型为 `T&&`（即 `add_rvalue_reference_t<T>`）。这是 `decltype` 在标准库内部「取一个不求值表达式的类型」的典范用法——`declval` 本身永不定义，因此只能在 `decltype`/`sizeof` 等不求值语境使用。
 
-### 12.2 `std::invoke_result`（文件 `type_traits`，行 3059-3073）
+### 12.2 `std::invoke_result`（文件 `type_traits`，行 3283-3297）
 
 ```cpp
-// type_traits:3059
-  /// std::invoke_result                    // 3059
-  template<typename _Functor, typename... _ArgTypes>   // 3060
-    struct invoke_result                    // 3061
-    : public __invoke_result<_Functor, _ArgTypes...>    // 3062
-    {                                       // 3063
-      static_assert(std::__is_complete_or_unbounded(   // 3064
-        __type_identity<_Functor>{}),              // 3065
-        "_Functor must be a complete class or an unbounded array"); // 3066
-      static_assert((std::__is_complete_or_unbounded( // 3067
-        __type_identity<_ArgTypes>{}) && ...),        // 3068
-        "each argument type must be a complete class or an unbounded array"); // 3069
-    };                                      // 3069/3070
+// type_traits:3283
+  /// std::invoke_result                    // 3283
+  template<typename _Functor, typename... _ArgTypes>   // 3284
+    struct invoke_result                    // 3285
+    : public __invoke_result<_Functor, _ArgTypes...>    // 3286
+    {                                       // 3287
+      static_assert(std::__is_complete_or_unbounded(   // 3288
+        __type_identity<_Functor>{}),              // 3289
+        "_Functor must be a complete class or an unbounded array"); // 3290
+      static_assert((std::__is_complete_or_unbounded( // 3291
+        __type_identity<_ArgTypes>{}) && ...),        // 3292
+        "each argument type must be a complete class or an unbounded array"); // 3293
+    };                                      // 3293/3294
 
-  /// std::invoke_result_t                  // 3071
-  template<typename _Fn, typename... _Args> // 3072
-    using invoke_result_t = typename invoke_result<_Fn, _Args...>::type; // 3073
+  /// std::invoke_result_t                  // 3295
+  template<typename _Fn, typename... _Args> // 3296
+    using invoke_result_t = typename invoke_result<_Fn, _Args...>::type; // 3297
 ```
 
 逐行解读：
-- **3061-3062**：`invoke_result` 直接继承自内部 `__invoke_result`。核心类型计算在 `__invoke_result`（`type_traits:2572-2584`）中，它根据 `_Functor` 是成员对象指针/成员函数指针/普通可调用体分发到 `__result_of_impl`，最终用 `decltype(_S_test<...>(0))` 这类**不求值 `decltype`** 来「算」出调用结果类型——这正是 `decltype` 作为类型级「求值器」的工业级用法。
+- **3285-3286**：`invoke_result` 直接继承自内部 `__invoke_result`。核心类型计算在 `__invoke_result`（`type_traits:2798-2808`）中，它根据 `_Functor` 是成员对象指针/成员函数指针/普通可调用体分发到 `__result_of_impl`，最终用 `decltype(_S_test<...>(0))` 这类**不求值 `decltype`** 来「算」出调用结果类型——这正是 `decltype` 作为类型级「求值器」的工业级用法。
 - **3064-3069**：C++17 起对完整类型做 `static_assert` 体检（不完整类型会给出清晰报错而非硬错误）。
-- **3072-3073**：便捷别名模板 `invoke_result_t`，返回 `::type`。
+- **3296-3297**：便捷别名模板 `invoke_result_t`，返回 `::type`。
 
-### 12.3 `std::invoke`（文件 `functional`，行 108-115）
-
-```cpp
-#include <utility>
-// functional:108
-  template<typename _Callable, typename... _Args>            // 108
-    inline _GLIBCXX20_CONSTEXPR invoke_result_t<_Callable, _Args...>  // 109
-    invoke(_Callable&& __fn, _Args&&... __args)              // 110
-    noexcept(is_nothrow_invocable_v<_Callable, _Args...>)    // 111
-    {                                           // 112
-      return std::__invoke(std::forward<_Callable>(__fn),    // 113
-               std::forward<_Args>(__args)...);              // 114
-    }                                           // 115
-```
-
-逐行解读：
-- **109**：返回类型用 `invoke_result_t`——编译期 `decltype` 派生的结果类型，保证 `std::invoke` 的返回类型与原调用表达式**完全一致**（包含引用与 cv，不会 decay）。
-- **110-111**：`&&` 转发引用 + `noexcept` 规范由 `is_nothrow_invocable_v` 推导，全部基于 `decltype` 体系。
-- **113-114**：把参数完美转发给内部 `std::__invoke`。
-
-### 12.4 内部 `__invoke` / `__invoke_impl`（文件 `bits/invoke.h`，行 58-98）
+### 12.3 `std::invoke`（文件 `functional`，行 117-124）
 
 ```cpp
 #include <utility>
-// bits/invoke.h:58
-  template<typename _Res, typename _Fn, typename... _Args>   // 58
-    constexpr _Res                                // 59
-    __invoke_impl(__invoke_other, _Fn&& __f, _Args&&... __args)  // 60
-    { return std::forward<_Fn>(__f)(std::forward<_Args>(__args)...); } // 61
-
-  template<typename _Res, typename _MemFun, typename _Tp, typename... _Args> // 63
-    constexpr _Res                                // 64
-    __invoke_impl(__invoke_memfun_ref, _MemFun&& __f, _Tp&& __t, // 65
-          _Args&&... __args)                      // 66
-    { return (__invfwd<_Tp>(__t).*__f)(std::forward<_Args>(__args)...); } // 67
-
-  // ... 成员对象指针、解引用成员指针等重载 (69-85) ...
-
-  template<typename _Callable, typename... _Args>        // 88
-    constexpr typename __invoke_result<_Callable, _Args...>::type  // 89
-    __invoke(_Callable&& __fn, _Args&&... __args)        // 90
-    noexcept(__is_nothrow_invocable<_Callable, _Args...>::value)   // 91
-    {                                       // 92
-      using __result = __invoke_result<_Callable, _Args...>;    // 93
-      using __type = typename __result::type;            // 94
-      using __tag = typename __result::__invoke_type;    // 95
-      return std::__invoke_impl<__type>(__tag{},         // 96
-            std::forward<_Callable>(__fn),           // 97
-            std::forward<_Args>(__args)...);             // 98
-    }                                       // 99
+// functional:117
+  template<typename _Callable, typename... _Args>            // 117
+    inline _GLIBCXX20_CONSTEXPR invoke_result_t<_Callable, _Args...>  // 118
+    invoke(_Callable&& __fn, _Args&&... __args)              // 119
+    noexcept(is_nothrow_invocable_v<_Callable, _Args...>)    // 120
+    {                                           // 121
+      return std::__invoke(std::forward<_Callable>(__fn),    // 122
+               std::forward<_Args>(__args)...);              // 123
+    }                                           // 124
 ```
 
 逐行解读：
-- **88-98**：`std::__invoke` 先用 `__invoke_result` 取出「结果类型 `__type`」与「分派 tag `__tag`」，再按 tag  dispatch 到对应 `__invoke_impl` 重载——这正是标准 `INVOKE` 概念的类型安全实现，全部建立在 `decltype` 推导的结果类型之上。
-- **60-61**：普通可调用体走 `__invoke_other`，直接 `forward` 后调用。
-- **63-67**：成员函数指针 + 对象引用走 `__invoke_memfun_ref`，用 `.*` 调用并 `forward` 剩余实参。
+- **118**：返回类型用 `invoke_result_t`——编译期 `decltype` 派生的结果类型，保证 `std::invoke` 的返回类型与原调用表达式**完全一致**（包含引用与 cv，不会 decay）。
+- **119-120**：`&&` 转发引用 + `noexcept` 规范由 `is_nothrow_invocable_v` 推导，全部基于 `decltype` 体系。
+- **122-123**：把参数完美转发给内部 `std::__invoke`。
+
+### 12.4 内部 `__invoke` / `__invoke_impl`（文件 `bits/invoke.h`，行 60-101）
+
+```cpp
+#include <utility>
+// bits/invoke.h:60
+  template<typename _Res, typename _Fn, typename... _Args>   // 60
+    constexpr _Res                                // 61
+    __invoke_impl(__invoke_other, _Fn&& __f, _Args&&... __args)  // 62
+    { return std::forward<_Fn>(__f)(std::forward<_Args>(__args)...); } // 63
+
+  template<typename _Res, typename _MemFun, typename _Tp, typename... _Args> // 65
+    constexpr _Res                                // 66
+    __invoke_impl(__invoke_memfun_ref, _MemFun&& __f, _Tp&& __t, // 67
+          _Args&&... __args)                      // 68
+    { return (__invfwd<_Tp>(__t).*__f)(std::forward<_Args>(__args)...); } // 69
+
+  // ... 成员对象指针、解引用成员指针等重载 (71-87) ...
+
+  template<typename _Callable, typename... _Args>        // 90
+    constexpr typename __invoke_result<_Callable, _Args...>::type  // 91
+    __invoke(_Callable&& __fn, _Args&&... __args)        // 92
+    noexcept(__is_nothrow_invocable<_Callable, _Args...>::value)   // 93
+    {                                       // 94
+      using __result = __invoke_result<_Callable, _Args...>;    // 95
+      using __type = typename __result::type;            // 96
+      using __tag = typename __result::__invoke_type;    // 97
+      return std::__invoke_impl<__type>(__tag{},         // 98
+            std::forward<_Callable>(__fn),           // 99
+            std::forward<_Args>(__args)...);             // 100
+    }                                       // 101
+```
+
+逐行解读：
+- **90-101**：`std::__invoke` 先用 `__invoke_result` 取出「结果类型 `__type`」与「分派 tag `__tag`」，再按 tag  dispatch 到对应 `__invoke_impl` 重载——这正是标准 `INVOKE` 概念的类型安全实现，全部建立在 `decltype` 推导的结果类型之上。
+- **62-63**：普通可调用体走 `__invoke_other`，直接 `forward` 后调用。
+- **65-69**：成员函数指针 + 对象引用走 `__invoke_memfun_ref`，用 `.*` 调用并 `forward` 剩余实参。
 
 > **libc++ / MS STL 说明（[实现-推断]）**：本书未在本机探测到 libc++ 与 MS STL 源码（Windows 环境仅有 libstdc++），下文「三 STL 对比」中对 libc++/MS STL 的实现描述均标注 `[实现-推断]`，并说明推断依据，未编造文件路径/行号。
 
@@ -451,11 +451,11 @@ BENCHMARK(BM_DecltypeAutoForward);
 
 > libstdc++ 描述基于**真实源码**（见「源码分析」）。libc++ 与 MS STL 为 **[实现-推断]**（本机未安装，按公开知识描述，未编造路径）。
 
-| 设施 | libstdc++ 13.1.0（真实） | libc++（[实现-推断]） | MS STL（[平台-推断]） |
+| 设施 | libstdc++ 15.3.0（真实） | libc++（[实现-推断]） | MS STL（[平台-推断]） |
 |---|---|---|---|
-| `declval` | `type_traits:902` `auto declval()->decltype(__declval<_Tp>(0))` | `<type_traits>` 内 `declval()` 同样返回 `add_rvalue_reference_t<T>`，机制一致 | `<type_traits>` 同语义，返回 `T&&` |
-| `invoke_result` | `type_traits:3059-3073` 继承 `__invoke_result` | `<type_traits>` `invoke_result` 亦基于内部 `__invoke_result` 的 `decltype` | `<type_traits>` 同；受 `/std` 版本门控 |
-| `std::invoke` | `functional:108-115` + `bits/invoke.h:88` | `<functional>` 内 `invoke` 调内部 `__invoke`，结构同源 | `<functional>` 内 `invoke`，逻辑一致 |
+| `declval` | `type_traits:1015` `auto declval()->decltype(__declval<_Tp>(0))` | `<type_traits>` 内 `declval()` 同样返回 `add_rvalue_reference_t<T>`，机制一致 | `<type_traits>` 同语义，返回 `T&&` |
+| `invoke_result` | `type_traits:3283-3297` 继承 `__invoke_result` | `<type_traits>` `invoke_result` 亦基于内部 `__invoke_result` 的 `decltype` | `<type_traits>` 同；受 `/std` 版本门控 |
+| `std::invoke` | `functional:117-124` + `bits/invoke.h:90` | `<functional>` 内 `invoke` 调内部 `__invoke`，结构同源 | `<functional>` 内 `invoke`，逻辑一致 |
 | `decltype(auto)` | 编译器前端支持，STL 仅消费 | 同 | 同 |
 
 **推断依据**：三者均实现 WG21 `[meta.trans.other]` 与 `[func.invoke]`，`declval`/`invoke_result`/`invoke` 的**语义**由标准锁定，故实现形态高度一致；差异仅在内部命名（`__invoke_result` vs `__INVOKE_RESULT` 等）与 `static_assert` 体检范围。
@@ -478,9 +478,9 @@ BENCHMARK(BM_DecltypeAutoForward);
 
 ## 源码阅读路线
 
-1. **libstdc++ `<type_traits>`**：从 `declval`（行 902）、`__invoke_result`（行 2572）、`invoke_result`（行 3059）入手，理解 `decltype` 如何在类型特性中充当「不求值类型计算器」。
-   - 文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`，行号：903（declval）/ 62（integral_constant）
-2. **libstdc++ `<functional>` + `<bits/invoke.h>`**：`std::invoke`（functional:108）→ `__invoke`（bits/invoke.h:88）→ `__invoke_impl` 各 tag 重载（bits/invoke.h:58-85）。
+1. **libstdc++ `<type_traits>`**：从 `declval`（行 1015）、`__invoke_result`（行 2798）、`invoke_result`（行 3283）入手，理解 `decltype` 如何在类型特性中充当「不求值类型计算器」。
+   - 文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits`，行号：1015（declval）/ 93（integral_constant）
+2. **libstdc++ `<functional>` + `<bits/invoke.h>`**：`std::invoke`（functional:117）→ `__invoke`（bits/invoke.h:90）→ `__invoke_impl` 各 tag 重载（bits/invoke.h:60-87）。
 3. **Clang 前端 `auto` 推导 AST**：`clang/lib/Sema/SemaTemplateDeduction.cpp` 中 `DeduceTemplateArgumentByDeclaration` 与 `clang/lib/Sema/SemaDecl.cpp` 的 `deduceVarTypeFromInitializer`（**[实现-推断]**：本书未安装 LLVM 源码，路径为公开已知结构，未读出具体行号）。
 4. **GCC 前端 `auto` 推导**：`gcc/cp/pt.cc` 的 `do_auto_deduction`（**[实现-推断]**：同理未读取）。
 
@@ -614,7 +614,7 @@ int main() {
 ```
 
 ```cpp
-// ex36_invoke_example.cpp —— std::invoke（真实源码 functional:108）
+// ex36_invoke_example.cpp —— std::invoke（真实源码 functional:117）
 #include <functional>
 #include <iostream>
 struct S { int val; int get() const { return val; } int mem = 0; };
@@ -894,7 +894,7 @@ int main() {
 - **CPU影响**：无。
 - **ABI**：类型参与 mangling，但 `decltype` 本身不引入新 ABI 实体。
 - **工程应用**：推导返回类型、写 traits、完美转发返回。
-- **真实源码**：`type_traits:903` `decltype(__declval<_Tp>(0))`；`type_traits:3062` 继承 `__invoke_result`（均为真实行号）。
+- **真实源码**：`type_traits:1015` `decltype(__declval<_Tp>(0))`；`type_traits:3286` 继承 `__invoke_result`（均为真实行号）。
 - **错误示例**：
   ```cpp
   int x; decltype(x) y;   // int（实体规则）
@@ -978,7 +978,7 @@ int main() { auto l = [](int& x) -> int& { return x; }; int v=1; int& r = call(l
 - **汇编 / 性能 / 复杂度**：纯编译期。
 - **异常安全 / 线程安全 / 缓存友好 / CPU影响 / ABI**：同 KP4（编译期）。
 - **工程应用**：「`decltype((x))` 是引用」是 `decltype(auto)` 返回 `(x)` 产生悬垂引用的根因（见 KP6）。
-- **真实源码**：语言特性；标准库用例见 `type_traits:903`（`decltype(__declval<_Tp>(0))` 中 `0` 是 prvalue → `T` 而非 `T&`）。
+- **真实源码**：语言特性；标准库用例见 `type_traits:1015`（`decltype(__declval<_Tp>(0))` 中 `0` 是 prvalue → `T` 而非 `T&`）。
 - **错误示例**：
   ```cpp
   int x = 0;

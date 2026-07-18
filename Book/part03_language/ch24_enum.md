@@ -477,15 +477,15 @@ int main() {
 
 ## ⑫ 真实 libstdc++ 源码逐行（已在本机探明）
 
-> 以下源码均来自本机 MinGW-w64 GCC 13.1.0 的 libstdc++，**真实路径 + 行号**，非编造。
-> 根：`/c/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`
+> 以下源码均来自本机 MinGW-w64 GCC 15.3.0 的 libstdc++，**真实路径 + 行号**，非编造。
+> 根：`/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/`
 
 ### 12.1 `std::errc`（枚举错误码）[K18]
 
 **文件**：`x86_64-w64-mingw32/bits/error_constants.h`，第 42 行起。
 
 ```cpp
-// x86_64-w64-mingw32/bits/error_constants.h:42  (libstdc++ 13.1.0, 本机实测)
+// x86_64-w64-mingw32/bits/error_constants.h:42  (libstdc++ 15.3.0, 本机实测)
   enum class errc
     {
       address_family_not_supported = 		EAFNOSUPPORT,
@@ -517,10 +517,10 @@ int main() {
 
 ### 12.2 `std::ios_base::fmtflags` 位掩码枚举 [K13]
 
-**文件**：`bits/ios_base.h`，第 57–109 行（含 `operator|` 等重载）。
+**文件**：`bits/ios_base.h`，第 59–117 行（含 `operator|` 等重载）。
 
 ```cpp
-// bits/ios_base.h:57  (libstdc++ 13.1.0, 本机实测)
+// bits/ios_base.h:59  (libstdc++ 15.3.0, 本机实测)
   enum _Ios_Fmtflags
     {
       _S_boolalpha 	= 1L << 0,
@@ -557,19 +557,19 @@ int main() {
 ```
 
 **[逐行讲解]**
-- 这是 **unscoped** 枚举（`enum _Ios_Fmtflags`，无 `class`）。注释（第 53–56 行）明确写道：用 enum 而非 int 是为了在 iostream 调用中提供**更好的类型安全**；副作用是 C++98 下涉及它们的表达式不是编译期常量（C++11 后因为加了 `constexpr` 已解决）。
-- 每个标志是 `1L << n`（第 59–73 行），即标准位掩码。
-- 第 74–76 行组合组（`_S_adjustfield` 等）用 `|` 组合基础位——因为 unscoped 枚举**能隐式转 int 再 `|`**，所以这些组合是原生允许的；`operator|` 再把 `int` 结果 `static_cast` 回枚举（第 88 行）。
-- 第 82–96 行的运算符都是 `inline _GLIBCXX_CONSTEXPR`（即 `constexpr`），所以 `std::ios::fixed | std::ios::hex` 在编译期就能算出，零运行时开销。
+- 这是 **unscoped** 枚举（`enum _Ios_Fmtflags`，无 `class`）。注释（第 55–58 行）明确写道：用 enum 而非 int 是为了在 iostream 调用中提供**更好的类型安全**；副作用是 C++98 下涉及它们的表达式不是编译期常量（C++11 后因为加了 `constexpr` 已解决）。
+- 每个标志是 `1L << n`（第 61–81 行），即标准位掩码。
+- 第 76–78 行组合组（`_S_adjustfield` 等）用 `|` 组合基础位——因为 unscoped 枚举**能隐式转 int 再 `|`**，所以这些组合是原生允许的；`operator|` 再把 `int` 结果 `static_cast` 回枚举（第 91 行）。
+- 第 84–117 行的运算符都是 `inline _GLIBCXX_CONSTEXPR`（即 `constexpr`），所以 `std::ios::fixed | std::ios::hex` 在编译期就能算出，零运行时开销。
 - 注意它用 `1L`（long）而不是 `1`——底层类型未固定，实现选择 long 以保证能容纳到 `1L<<16`。这是 `[实现]` 细节。
-- 同文件还有 `_Ios_Openmode`(111)、`_Ios_Iostate`(154)、`_Ios_Seekdir`(194) 三套同样的“unscoped 位掩码 + 运算符重载”模式。
+- 同文件还有 `_Ios_Openmode`(127)、`_Ios_Iostate`(179)、`_Ios_Seekdir`(226) 三套同样的“unscoped 位掩码 + 运算符重载”模式。
 
 ### 12.3 `std::io_errc` [K18]
 
-**文件**：`bits/ios_base.h`，第 204 行。
+**文件**：`bits/ios_base.h`，第 236 行。
 
 ```cpp
-// bits/ios_base.h:204  (libstdc++ 13.1.0, 本机实测)
+// bits/ios_base.h:236  (libstdc++ 15.3.0, 本机实测)
 #if __cplusplus >= 201103L
   /// I/O error code
   enum class io_errc { stream = 1 };
@@ -578,14 +578,14 @@ int main() {
 #endif
 ```
 
-**[讲解]** `io_errc` 是 **scoped** 枚举，单值 `stream = 1`。它特化了 `is_error_code_enum<io_errc>`（第 206 行），让 `io_errc` 能直接变成 `std::error_code`（第 14 章主题）。底层类型默认 `int`。
+**[讲解]** `io_errc` 是 **scoped** 枚举，单值 `stream = 1`。它特化了 `is_error_code_enum<io_errc>`（第 238 行），让 `io_errc` 能直接变成 `std::error_code`（第 14 章主题）。底层类型默认 `int`。
 
 ### 12.4 `std::chars_format`（enum class + 位掩码）[K13][K18]
 
-**文件**：`charconv`，第 635–665 行。
+**文件**：`charconv`，第 625–655 行。
 
 ```cpp
-// charconv:635  (libstdc++ 13.1.0, 本机实测)
+// charconv:625  (libstdc++ 15.3.0, 本机实测)
   enum class chars_format
   {
     scientific = 1, fixed = 2, hex = 4, general = fixed | scientific
@@ -614,17 +614,17 @@ int main() {
 ```
 
 **[逐行讲解]**
-- 第 635 行 `enum class chars_format`：scoped。但它是**带位掩码语义的 scoped 枚举**——这就是为什么它需要手写 `operator| & ^ ~`（示例 12 的惯用法在此被标准库亲自使用）。
-- 第 637 行 `general = fixed | scientific`：因为 scoped 不隐式转整数，`|` 能成立完全依赖第 640 行定义的重载（把两边 `(unsigned)` 强转再 `|` 再转回枚举）。
+- 第 625 行 `enum class chars_format`：scoped。但它是**带位掩码语义的 scoped 枚举**——这就是为什么它需要手写 `operator| & ^ ~`（示例 12 的惯用法在此被标准库亲自使用）。
+- 第 627 行 `general = fixed | scientific`：因为 scoped 不隐式转整数，`|` 能成立完全依赖第 632 行定义的重载（把两边 `(unsigned)` 强转再 `|` 再转回枚举）。
 - 所有运算符都标 `constexpr` + `noexcept`：编译期可算，且不抛异常——位掩码运算本就无失败可能。
 - 用 `(unsigned)` 而非底层类型转换：因为 `chars_format` 未指定底层类型（默认 `int`），这里直接转 `unsigned` 做位运算，结果转回枚举。**注意**：此处用的是 C 风格 `(unsigned)`，相当于 `static_cast<unsigned>`。
 
 ### 12.5 `std::is_scoped_enum`（C++23）[K19]
 
-**文件**：`type_traits`，第 3571–3591 行。
+**文件**：`type_traits`，第 3929–3959 行。
 
 ```cpp
-// type_traits:3571  (libstdc++ 13.1.0, 本机实测)
+// type_traits:3929  (libstdc++ 15.3.0, 本机实测)
 #define __cpp_lib_is_scoped_enum 202011L
   // ...
   template<typename _Tp>
@@ -637,13 +637,13 @@ int main() {
     inline constexpr bool is_scoped_enum_v = is_scoped_enum<_Tp>::value;
 ```
 
-**[讲解]** P1041 引入的 `std::is_scoped_enum`（C++23）区分 scoped / unscoped 枚举，与 `std::is_enum`、`std::underlying_type` 组成枚举 trait 三件套（见第 60 章）。它实际基于编译器内建 `__is_scoped_enum` 实现。旧 libstdc++ 曾有 `<bits/enum_traits.h>` 提供 `__is_enum` 等辅助，但 GCC 13 已移除该文件，统一进 `<type_traits>`。
+**[讲解]** P1041 引入的 `std::is_scoped_enum`（C++23）区分 scoped / unscoped 枚举，与 `std::is_enum`、`std::underlying_type` 组成枚举 trait 三件套（见第 60 章）。它实际基于编译器内建 `__is_scoped_enum` 实现。旧 libstdc++ 曾有 `<bits/enum_traits.h>` 提供 `__is_enum` 等辅助，但 GCC 13 起已移除该文件，统一进 `<type_traits>`。
 
 ---
 
 ## ⑬ 三 STL 实现对比：libstdc++ vs libc++ vs MS STL [K18]
 
-> **诚实声明（严禁编造）**：`[实现]` 节中 libstdc++ 的全部行号来自本机 GCC 13.1.0 实测（见 ⑫）。libc++ 与 MS STL 的源码未在本机安装，**以下为基于其公开仓库已知结构的设计层对比，不提供本地行号**；如需精确行号请在本机克隆 llvm-project / MS-STL 后按给出的相对路径核对。
+> **诚实声明（严禁编造）**：`[实现]` 节中 libstdc++ 的全部行号来自本机 GCC 15.3.0 实测（见 ⑫）。libc++ 与 MS STL 的源码未在本机安装，**以下为基于其公开仓库已知结构的设计层对比，不提供本地行号**；如需精确行号请在本机克隆 llvm-project / MS-STL 后按给出的相对路径核对。
 
 ### `std::errc`
 

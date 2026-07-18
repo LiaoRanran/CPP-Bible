@@ -1,6 +1,6 @@
 # 第29章 友元 friend 与访问控制
 
-> 标准基: C++23 / GCC 13.1 / 预计阅读: 40min / 前置: ⟶ Book/part05_oo/ch46_encapsulation_inheritance.md / 难度: ★★☆☆☆
+> 标准基: C++23 / GCC 15.3 / 预计阅读: 40min / 前置: ⟶ Book/part05_oo/ch46_encapsulation_inheritance.md / 难度: ★★☆☆☆
 
 ## ① 学习目标 [标准]
 
@@ -156,7 +156,7 @@ int main() {
 - `[经验]`：工厂模式 + 私有构造函数是 friend 的经典组合——确保对象只能通过指定工厂创建，同时又让工厂能访问构造函数（避免 `make_shared` 限制）。
 - `[标准]`：`std::make_shared` 本身不要求 friend（因为模板参数推导绕过访问控制），但用户定义的工厂类必须显式 friend。
 
-## ⑬ 源码分析：GCC friend 处理流程 [实现·GCC13]
+## ⑬ 源码分析：GCC friend 处理流程 [实现·GCC15.3.0]
 
 ```cpp
 // ⑬ GCC 编译器内部的 friend 处理路径（伪代码注释）
@@ -173,7 +173,7 @@ int main() {
 }
 ```
 
-- `[实现·GCC13]`：from 的访问权限存储在 `DECL_FRIENDLIST` 链表中，每次成员访问时 GCC 遍历该链表判定是否允许。这是**编译期纯元数据**——不影响任何目标代码生成。
+- `[实现·GCC15.3.0]`：from 的访问权限存储在 `DECL_FRIENDLIST` 链表中，每次成员访问时 GCC 遍历该链表判定是否允许。这是**编译期纯元数据**——不影响任何目标代码生成。
 
 ## ⑭ WG21 关键提案 [标准]
 
@@ -600,7 +600,7 @@ call private_impl
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 / MSVC 19.3 语义一致
+- GCC 15.3 / Clang 18 / MSVC 19.3 语义一致
 - `__cplusplus` = 202302L；`friend` 与 `constexpr` 可组合
 - WG21 提案 P0784R7 扩展 constexpr 友元
 

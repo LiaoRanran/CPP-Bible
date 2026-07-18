@@ -588,7 +588,7 @@ int main() { led_on(); usart2_send('A'); return 0; }
 - `volatile` 是强制的：寄存器值可能被硬件/中断异步改变（如 `SR.TXE` 由硬件置位）。`volatile` 禁止编译器把 `while(!(SR & TXE))` 优化成「读一次就认为永远不变」的死循环，也禁止缓存写操作。这正对应 6.2/6.3 的别名规则——硬件寄存器不是 C++ 对象，必须用 `volatile` 访问。
 - 复杂度：每次 `reg->FIELD` 访问编译成单条 `ldr`/`str`（`O(1)`）；`usart2_send` 的 `while` 轮询次数由硬件发送节奏决定（波特率 115200 时每字节约 87µs），是**有界忙等**，不占调度。
 
-> 该块标注 `[自包含可编译]`：可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 13.1，零失败）。真实固件里这些指针会被放进 `.data`/映射到对应地址空间，链接脚本决定最终落点；此处用 `inline` 函数封装 `reinterpret_cast` 以规避全局动态初始化。
+> 该块标注 `[自包含可编译]`：可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 15.3.0，零失败）。真实固件里这些指针会被放进 `.data`/映射到对应地址空间，链接脚本决定最终落点；此处用 `inline` 函数封装 `reinterpret_cast` 以规避全局动态初始化。
 
 
 ---
@@ -773,16 +773,16 @@ int main() {
 
 ## ⑧ 真实 libstdc++ 源码逐行（type_traits / bit / chrono）
 
-> 本节所有源码来自本机 MinGW GCC 13.1.0 的 libstdc++，路径前缀为
-> `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。
+> 本节所有源码来自本机 MinGW GCC 15.3.0 的 libstdc++，路径前缀为
+> `C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`。
 > 行号基于该文件实测。
 
 ### 8.1 `<type_traits>` 的 `is_convertible` / `is_nothrow_convertible`
 
-文件：`type_traits`，行号：**1414–1517**。
+文件：`type_traits`，行号：**1564–1610**。
 
 ```cpp
-// libstdc++ 13.1.0  —— type_traits:1414-1418（现代 GCC 走 __is_convertible 内置）
+// libstdc++ 15.3.0  —— type_traits:1564-1567（现代 GCC 走 __is_convertible 内置）
 #if __has_builtin(__is_convertible)
   template<typename _From, typename _To>
     struct is_convertible
@@ -794,20 +794,20 @@ int main() {
 ```
 
 **逐行讲解（[实现]）**：
-- **1414** `__has_builtin(__is_convertible)`：GCC 13 自带 `__is_convertible` 编译器内建，直接由前端判定"是否存在 `To test(){ return declval<From>(); }` 形式的合法隐式转换"，**比旧 SFINAE 回退更快、更准**（能正确处理 `void`、函数、数组等边界）。
-- **1417** `__bool_constant<...>`：`integral_constant<bool, X>` 的别名，把内建结果提升为类型特性。`is_convertible_v` 在 **3363** 行直接 `= __is_convertible(_From, _To);`。
-- **1420–1454**（回退分支，当编译器无此内建时）：核心是 `__is_convertible_helper<_From,_To,false>`（1431），用 `decltype(__test_aux<_To1>(std::declval<_From1>()))`（1437）做 **SFINAE**：若 `declval<From>()` 能隐式转为 `_To`，`__test(int)` 返回 `true_type`，否则 `...` 重载返回 `false_type`。`#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"`（1429）是为了在探测时压制私有构造函数的访问警告。
-- **1465–1516** `is_nothrow_convertible`：同样优先用 `__is_nothrow_convertible` 内建（1469）；回退版（1487）把 `noexcept(__test_aux<_To1>(declval<_From1>()))`（1494）包进 `__bool_constant`，即"转换合法**且**不抛异常"才为真。
-- **1460** `__is_array_convertible` 用 `is_convertible<FromElementType(*)[], ToElementType(*)[]>` 判定数组元素可转换（供 `unique_ptr<T[]>`/`span` 使用）。
+- **1564** `#if _GLIBCXX_USE_BUILTIN_TRAIT(__is_convertible)`：GCC 15.3.0 启用 `__is_convertible` 编译器内建，直接由前端判定"是否存在 `To test(){ return declval<From>(); }` 形式的合法隐式转换"，**比旧 SFINAE 回退更快、更准**（能正确处理 `void`、函数、数组等边界）。
+- **1567** `__bool_constant<...>`：`integral_constant<bool, X>` 的别名，把内建结果提升为类型特性。`is_convertible_v` 在 **3702** 行直接 `= __is_convertible(_From, _To);`。
+- **1573–1598**（回退分支，当编译器无此内建时）：核心是 `__is_convertible_helper<_From,_To,false>`（1581），用 `decltype(__test_aux<_To1>(std::declval<_From1>()))`（1587）做 **SFINAE**：若 `declval<From>()` 能隐式转为 `_To`，`__test(int)` 返回 `true_type`，否则 `...` 重载返回 `false_type`。`#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"`（1579）是为了在探测时压制私有构造函数的访问警告。
+- **1622–1664** `is_nothrow_convertible`：同样优先用 `__is_nothrow_convertible` 内建（1614）；回退版（1639）把 `noexcept(__test_aux<_To1>(declval<_From1>()))`（1643）包进 `__bool_constant`，即"转换合法**且**不抛异常"才为真。
+- **1609** `__is_array_convertible` 用 `is_convertible<FromElementType(*)[], ToElementType(*)[]>` 判定数组元素可转换（供 `unique_ptr<T[]>`/`span` 使用）。
 
 `[标准]` 等价于："`From` 可转换为 `To`" ≡ "能用 `To` 类型的对象/引用接收 `declval<From>()` 的隐式结果"。内建只是把这个语义提前到编译前端。
 
 ### 8.2 `<bit>` 的 `std::bit_cast`
 
-文件：`bit`，行号：**68–89**。
+文件：`bit`，行号：**78–98**。
 
 ```cpp
-// libstdc++ 13.1.0  —— bit:78-88
+// libstdc++ 15.3.0  —— bit:89-96
   template<typename _To, typename _From>
     [[nodiscard]]
     constexpr _To
@@ -822,61 +822,61 @@ int main() {
 ```
 
 **逐行讲解（[实现]）**：
-- **69** `#define __cpp_lib_bit_cast 201806L`：特性测试宏（P0476R2 合入 C++20）。
-- **68** 守卫：`__cplusplus > 201703L && __has_builtin(__builtin_bit_cast)`——只有 C++20 且编译器支持内建才提供。
-- **82–85** `requires` 子句（C++20 concepts）：**大小相等**且 **双方都平凡可复制**。这是 `[标准]` [bit.cast] 的硬约束；不满足在编译期直接 SFINAE/报错。
-- **87** 核心：`__builtin_bit_cast(_To, __from)`。注意 libstdc++ **没有手写 `memcpy` 回退**——它完全依赖编译器内建。在 GCC/Clang 中 `__builtin_bit_cast` 由中端实现：编译期常量即常量折叠；运行期则生成**逐字节拷贝（等价于 `memcpy` 到目标）**，并受 `is_constant_evaluated()` 分支控制（常量求值走位操作，运行期走内存拷贝）。`[实现]` 这与 libc++/MS STL 的"显式 `memcpy` + `is_constant_evaluated`"殊途同归（§9.3）。
+- **78** `#ifdef __cpp_lib_bit_cast`（特性测试宏，P0476R2/C++20）：特性测试宏（P0476R2 合入 C++20）。
+- **78** 守卫：`#ifdef __cpp_lib_bit_cast`（C++20 且编译器支持 `__builtin_bit_cast`）——只有 C++20 且编译器支持内建才提供。
+- **92–96** `requires` 子句（C++20 concepts）：**大小相等**且 **双方都平凡可复制**。这是 `[标准]` [bit.cast] 的硬约束；不满足在编译期直接 SFINAE/报错。
+- **96** 核心：`__builtin_bit_cast(_To, __from)`。注意 libstdc++ **没有手写 `memcpy` 回退**——它完全依赖编译器内建。在 GCC/Clang 中 `__builtin_bit_cast` 由中端实现：编译期常量即常量折叠；运行期则生成**逐字节拷贝（等价于 `memcpy` 到目标）**，并受 `is_constant_evaluated()` 分支控制（常量求值走位操作，运行期走内存拷贝）。`[实现]` 这与 libc++/MS STL 的"显式 `memcpy` + `is_constant_evaluated`"殊途同归（§9.3）。
 
 `[经验]` `bit_cast` 是 `reinterpret_cast` 类型双关的**唯一零 UB 替代**；任何"读对象比特"的需求都应首选它。
 
 ### 8.3 `<chrono>` 的 `duration_cast`
 
-文件：`bits/chrono.h`（被 `chrono` 包含），行号：**270–289**（主函数）+ **178–227**（`__duration_cast_impl` 特化）。
+文件：`bits/chrono.h`（被 `chrono` 包含），行号：**278–296**（主函数）+ **184–243**（`__duration_cast_impl` 特化）。
 
 ```cpp
-// libstdc++ 13.1.0  —— bits/chrono.h:270-289
+// libstdc++ 15.3.0  —— bits/chrono.h:278-296
     template<typename _ToDur, typename _Rep, typename _Period>
       _GLIBCXX_NODISCARD
-      constexpr __enable_if_is_duration<_ToDur>           // 272
+      constexpr __enable_if_is_duration<_ToDur>           // 278
       duration_cast(const duration<_Rep, _Period>& __d)
       {
 #if __cpp_inline_variables && __cpp_if_constexpr
     if constexpr (is_same_v<_ToDur, duration<_Rep, _Period>>)
-      return __d;                                         // 276 同类型直接返回
+      return __d;                                         // 283 同类型直接返回
     else
 #endif
         {
-          using __to_period = typename _ToDur::period;    // 281 目标单位（ratio）
-          using __to_rep    = typename _ToDur::rep;       // 282 目标计数类型
-          using __cf = ratio_divide<_Period, __to_period>;            // 283 周期之比
-          using __cr = typename common_type<__to_rep, _Rep, intmax_t>::type; // 284
+          using __to_period = typename _ToDur::period;    // 293 目标单位（ratio）
+          using __to_rep    = typename _ToDur::rep;       // 288 目标计数类型
+          using __cf = ratio_divide<_Period, __to_period>;            // 289 周期之比
+          using __cr = typename common_type<__to_rep, _Rep, intmax_t>::type; // 290
           using __dc = __duration_cast_impl<_ToDur, __cf, __cr,
-                                    __cf::num == 1, __cf::den == 1>;     // 285-286
-          return __dc::__cast(__d);                       // 287
+                                    __cf::num == 1, __cf::den == 1>;     // 291-292
+          return __dc::__cast(__d);                       // 293
         }
       }
 ```
 
-`__duration_cast_impl` 四个偏特化（**178–227**）按 `num==1`/`den==1` 组合优化：
+`__duration_cast_impl` 四个偏特化（**184–243**）按 `num==1`/`den==1` 组合优化：
 
 ```cpp
-// bits/chrono.h:178-188  （num!=1 且 den!=1：通用"先乘后除"路径，截断向零）
+// bits/chrono.h:184-194  （num!=1 且 den!=1：通用"先乘后除"路径，截断向零）
   return _ToDur(static_cast<__to_rep>(static_cast<_CR>(__d.count())
       * static_cast<_CR>(_CF::num)
       / static_cast<_CR>(_CF::den)));
-// bits/chrono.h:192-200  （num==1 且 den==1：单位相同，仅 rep 转换）
+// bits/chrono.h:198-210  （num==1 且 den==1：单位相同，仅 rep 转换）
   return _ToDur(static_cast<__to_rep>(__d.count()));
-// bits/chrono.h:204-214  （den==1：只乘 num，免除法）
+// bits/chrono.h:210-223  （den==1：只乘 num，免除法）
   return _ToDur(static_cast<__to_rep>(static_cast<_CR>(__d.count()) * static_cast<_CR>(_CF::num)));
-// bits/chrono.h:217-227  （num==1：只除 den，免乘法）
+// bits/chrono.h:223-243  （num==1：只除 den，免乘法）
   return _ToDur(static_cast<__to_rep>(static_cast<_CR>(__d.count()) / static_cast<_CR>(_CF::den)));
 ```
 
 **逐行讲解（[实现][标准]）**：
-- **283** `ratio_divide<_Period, __to_period>`：把源周期与目标周期之比算成编译期有理数 `num/den`（如 ms→s：`ratio<1,1000>` / `ratio<1,1>` = `1/1000`）。
-- **284** `common_type<...>`：选取能容纳乘积不溢出的最大整数类型 `__CR`，避免中间溢出——这是 `duration_cast` 数值安全的根基。
-- **285–286** 用 `num==1`/`den==1` 两个 bool 做标签分发（tag dispatch）到四个特化，**省去冗余乘除**（整数除法比乘法慢，且除法会改变截断语义）。
-- **178–188** 通用路径：`count()*num/den`，**整数除法向零截断**（即 §7.2 的 `1500ms→1s`）。浮点 `rep` 时除法保留小数，故浮点 `duration` 可表示 1.5s。
+- **289** `ratio_divide<_Period, __to_period>`：把源周期与目标周期之比算成编译期有理数 `num/den`（如 ms→s：`ratio<1,1000>` / `ratio<1,1>` = `1/1000`）。
+- **290** `common_type<...>`：选取能容纳乘积不溢出的最大整数类型 `__CR`，避免中间溢出——这是 `duration_cast` 数值安全的根基。
+- **291–292** 用 `num==1`/`den==1` 两个 bool 做标签分发（tag dispatch）到四个特化，**省去冗余乘除**（整数除法比乘法慢，且除法会改变截断语义）。
+- **184–194** 通用路径：`count()*num/den`，**整数除法向零截断**（即 §7.2 的 `1500ms→1s`）。浮点 `rep` 时除法保留小数，故浮点 `duration` 可表示 1.5s。
 - **276** `if constexpr` 同类型短路：避免无谓计算。
 
 `[经验]` 这解释了为何"整数 duration 转换会丢精度且向零截断"——若需四舍五入必须手动 `+0.5*period`（见 prog_18）。
@@ -1603,7 +1603,7 @@ int main() {
 
 `[实现]` 想从实现层彻底吃透转型，按以下路线阅读：
 
-1. **libstdc++ `<type_traits>`**（本机 `.../include/c++/type_traits`：1414–1517、3363）：`is_convertible`/`is_nothrow_convertible` 的内建与 SFINAE 双实现。
+1. **libstdc++ `<type_traits>`**（本机 `.../include/c++/type_traits`：1564–1610、3702）：`is_convertible`/`is_nothrow_convertible` 的内建与 SFINAE 双实现。
 2. **libstdc++ `<bit>`**（`:78–89`）：`bit_cast` 的 `requires` 约束与 `__builtin_bit_cast`。
 3. **libstdc++ `<bits/chrono.h>`**（`:178–289`）：`duration_cast` 与 `__duration_cast_impl` 四特化。
 4. **libstdc++ `libsupc++/dyncast.cc`**（或 LLVM `libcxxabi/src/private_typeinfo.cpp`）：`__dynamic_cast` 运行期遍历继承树算法——RTTI 的心脏。
@@ -1650,7 +1650,7 @@ int main() {
 
 - **20 元素（内化进正文）**：学习目标(§①地图)/前置(头部)/后续(头部)/知识图谱(§①)/流程图(§①调用栈图)/内存图(§⑪.1)/生命周期(§① dynamic 流程)/调用栈(§⑪.2)/汇编(§⑪.3)/STL联系(§⑧⑧.3、§⑨.3)/工业案例(§⑫ A–F)/源码分析(§⑧)/WG21(§⑧/§⑱)/面试题≥10(§⑭ 共16)/易错(§⑮)/FAQ≥10(§⑯ 共13)/最佳实践(§⑰)/性能(§⑩)/推荐阅读(已删除内化进 §⑱)。
 - **23 项核心知识点覆盖**：定义/历史/设计动机/标准规定/编译器行为/GCC实现/LLVM实现/MSVC实现/libstdc++实现/libc++实现/MS STL实现/内存模型/汇编/性能/复杂度/异常安全/线程安全/缓存友好/CPU影响/ABI/工程应用/真实源码/错误与正确示例——均已在对应小节展开。
-- **真实源码路径**：已贴 `type_traits:1414-1517,3363`、`bit:68-89`、`bits/chrono.h:178-289`，均来自本机 MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）；跨 STL/libc++/MS STL 对比基于已知实现事实标注，未编造路径。
+- **真实源码路径**：已贴 `type_traits:1564-1610,3702`、`bit:78-98`、`bits/chrono.h:184-296`，均来自本机 MinGW GCC 15.3.0（`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`）；跨 STL/libc++/MS STL 对比基于已知实现事实标注，未编造路径。
 - **可编译程序**：**50 个**完整程序（prog_01–prog_50），无 Hello World，覆盖多态下行安全包装/序列化位重解释/协议解析 bit_cast/传感器 reinterpret 等工业场景。
 
 

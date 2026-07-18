@@ -715,13 +715,13 @@ int main() { std::cout << sizeof(int) << "\n"; }  // 由实现规定(通常 4)
 
 `[标准][实现]` 这是全章最核心的认知转变：UB **不会**产生"标准规定的运行时异常"。相反，标准把"发生 UB 后的行为"完全留给实现——实现可以崩溃、可以静默给出错误结果、可以**删除相关代码**、可以**把循环变成无限循环**。
 
-`[经验]` 因此"我测试过没崩，所以这段代码安全"是**致命误区**：UB 在某次编译/某次输入下"恰好工作"，换优化级别、换编译器、换 CPU 就可能爆炸。下面两节用本机 GCC 13.1.0 的**真实汇编**证明。
+`[经验]` 因此"我测试过没崩，所以这段代码安全"是**致命误区**：UB 在某次编译/某次输入下"恰好工作"，换优化级别、换编译器、换 CPU 就可能爆炸。下面两节用本机 GCC 15.3.0 的**真实汇编**证明。
 
 ---
 
 ## ⑪ 优化武器化实例：时间旅行与代码删除
 
-`[实现]` 编译器在 `-O2` 下基于"UB 永不发生"的假设做推理。以下是**本机 GCC 13.1.0 实测**的汇编（节选）。
+`[实现]` 编译器在 `-O2` 下基于"UB 永不发生"的假设做推理。以下是**本机 GCC 15.3.0 实测**的汇编（节选）。
 
 ### 11.1 有符号溢出把"死循环"优化成真·无限循环
 
@@ -923,16 +923,16 @@ int main() { int a=0,b=0; (void)f(&a,&b); }
 
 ## ⑭ 真实 libstdc++ 源码逐行：`launder` / `operator new` / `addressof`
 
-`[实现]` 以下全部取自本机 **MinGW GCC 13.1.0** 的 libstdc++，路径前缀：
-`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`
+`[实现]` 以下全部取自本机 **MinGW GCC 15.3.0** 的 libstdc++，路径前缀：
+`/c/Qt/Tools/mingw1530_64/include/c++/15.3.0/`
 （下引行号基于该文件）。
 
-### 14.1 `std::launder`（`<new>`：188–208）
+### 14.1 `std::launder`（`<new>`：228–246）
 
 文件 `<new>`（即上面路径下的 `new`）：
 
 ```cpp
-// <new> :188-208  (libstdc++ 13.1.0, MinGW GCC 13.1.0)
+// <new> :228-246  (libstdc++ 15.3.0, MinGW GCC 15.3.0)
 #if __cplusplus >= 201703L
 namespace std
 {
@@ -942,7 +942,7 @@ namespace std
   template<typename _Tp>
     [[nodiscard]] constexpr _Tp*
     launder(_Tp* __p) noexcept
-    { return __builtin_launder(__p); }          // 第194行: 体即一个内建调用
+    { return __builtin_launder(__p); }          // 第243行: 体即一个内建调用
 
   // The program is ill-formed if T is a function type or
   // (possibly cv-qualified) void.
@@ -952,7 +952,7 @@ namespace std
   template<typename _Ret, typename... _Args _GLIBCXX_NOEXCEPT_PARM>
     void launder(_Ret (*)(_Args......) _GLIBCXX_NOEXCEPT_QUAL) = delete;
 
-  void launder(void*) = delete;                 // 第204行: 阻止对 void* 误用
+  void launder(void*) = delete;                 // 第235行: 阻止对 void* 误用
   void launder(const void*) = delete;
   void launder(volatile void*) = delete;
   void launder(const volatile void*) = delete;
@@ -960,66 +960,66 @@ namespace std
 ```
 
 `[实现]` 逐行要点：
-- **第 194 行** `launder` 的函数**体本身什么都没做**（直接 `return __p` 经内建）。它的作用**完全在于编译器内建 `__builtin_launder`**：这是一个"优化屏障"语义原语。即便汇编层面 `p` 没变，优化器也必须假定"返回的指针可能指向一个不同类型/已重建的对象"，从而**丢弃**基于旧对象推导出的事实（如"const 成员值不变"）。
-- **第 199–207 行** 用 `= delete` 禁止对**函数指针**和 **`void*`** 调用 `launder`，避免把"无类型指针"当对象指针用（那是另一类 UB）。
+- **第 243 行** `launder` 的函数**体本身什么都没做**（直接 `return __p` 经内建）。它的作用**完全在于编译器内建 `__builtin_launder`**：这是一个"优化屏障"语义原语。即便汇编层面 `p` 没变，优化器也必须假定"返回的指针可能指向一个不同类型/已重建的对象"，从而**丢弃**基于旧对象推导出的事实（如"const 成员值不变"）。
+- **第 235–240 行** 用 `= delete` 禁止对**函数指针**和 **`void*`** 调用 `launder`，避免把"无类型指针"当对象指针用（那是另一类 UB）。
 - `[[nodiscard]]` 提醒调用者必须用返回值——直接写 `std::launder(p);` 而不接返回值毫无意义（不会改 `p`）。
 
 `[标准]` 为什么需要它？见 §2.4：placement new 在同一存储重建**不相似类型**后，旧指针 `p` 在优化器眼中"仍指向旧对象"。若旧对象是 `const` 成员，优化器可能常量传播旧值。必须 `p = std::launder(p);` 才能让优化器"忘记"旧对象。
 
-### 14.2 `operator new` / `operator delete`（`<new>`：126–181）
+### 14.2 `operator new` / `operator delete`（`<new>`：137–222）
 
 ```cpp
 #include <cstddef>
-// <new> :126-181  (libstdc++ 13.1.0)
+// <new> :137-222  (libstdc++ 15.3.0)
 _GLIBCXX_NODISCARD void* operator new(std::size_t) _GLIBCXX_THROW (std::bad_alloc)
-  __attribute__((__externally_visible__));                 // 第126行: 普通 new
+  __attribute__((__externally_visible__));                 // 第137行: 普通 new
 _GLIBCXX_NODISCARD void* operator new[](std::size_t) _GLIBCXX_THROW (std::bad_alloc)
-  __attribute__((__externally_visible__));                 // 第128行: 数组 new
+  __attribute__((__externally_visible__));                 // 第140行: 数组 new
 void operator delete(void*) _GLIBCXX_USE_NOEXCEPT
-  __attribute__((__externally_visible__));                 // 第130行: 普通 delete
+  __attribute__((__externally_visible__));                 // 第143行: 普通 delete
 void operator delete[](void*) _GLIBCXX_USE_NOEXCEPT
-  __attribute__((__externally_visible__));                 // 第132行: 数组 delete
+  __attribute__((__externally_visible__));                 // 第145行: 数组 delete
 // ... sized/aligned/nothrow 重载略 ...
-// Default placement versions of operator new.              第173行起
+// Default placement versions of operator new.              第204行起
 _GLIBCXX_NODISCARD inline void* operator new(std::size_t, void* __p) _GLIBCXX_USE_NOEXCEPT
-{ return __p; }                                            // 第174-175行: placement new
+{ return __p; }                                            // 第206-208行: placement new
 _GLIBCXX_NODISCARD inline void* operator new[](std::size_t, void* __p) _GLIBCXX_USE_NOEXCEPT
 { return __p; }
-// Default placement versions of operator delete.          第179行起
-inline void operator delete  (void*, void*) _GLIBCXX_USE_NOEXCEPT { }   // 第180行: 空
+// Default placement versions of operator delete.          第216行起
+inline void operator delete  (void*, void*) _GLIBCXX_USE_NOEXCEPT { }   // 第217行: 空
 inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 ```
 
 `[实现]` 逐行要点：
-- **第 126–132 行** 是替换全局 `new`/`delete` 的声明（非 `inline`，在运行时库 `libstdc++.a` 中实现，内部调 `malloc`/`free` 并抛 `bad_alloc`）。
+- **第 137–145 行** 是替换全局 `new`/`delete` 的声明（非 `inline`，在运行时库 `libstdc++.a` 中实现，内部调 `malloc`/`free` 并抛 `bad_alloc`）。
 - **`__attribute__((__externally_visible__))`**：保证即使看似无副作用，该函数不被优化掉（它是程序对外的"可见"入口，里德-温伯格定理的反向：分配不能消失）。
-- **第 174 行** placement new 就是 `return __p;`——不分配内存，只返回传入的存储地址供构造用。这就是 §2 所有 placement new 示例的底层机制。
-- **第 180 行** placement delete 是空函数（不释放存储），符合标准语义。
+- **第 206 行** placement new 就是 `return __p;`——不分配内存，只返回传入的存储地址供构造用。这就是 §2 所有 placement new 示例的底层机制。
+- **第 217 行** placement delete 是空函数（不释放存储），符合标准语义。
 
-### 14.3 `std::addressof`（`<bits/move.h>`：47–50 与 142–151）
+### 14.3 `std::addressof`（`<bits/move.h>`：52–53 与 176–182）
 
 ```cpp
-// <bits/move.h> :47-50  (libstdc++ 13.1.0)
+// <bits/move.h> :52-53  (libstdc++ 15.3.0)
   template<typename _Tp>
     inline _GLIBCXX_CONSTEXPR _Tp*
     __addressof(_Tp& __r) _GLIBCXX_NOEXCEPT
-    { return __builtin_addressof(__r); }          // 第50行: 用内建取真实地址
+    { return __builtin_addressof(__r); }          // 第53行: 用内建取真实地址
 
-// <bits/move.h> :142-151
+// <bits/move.h> :176-182
   template<typename _Tp>
     _GLIBCXX_NODISCARD
     inline _GLIBCXX17_CONSTEXPR _Tp*
     addressof(_Tp& __r) noexcept
-    { return std::__addressof(__r); }             // 第146行: 委托给 __addressof
+    { return std::__addressof(__r); }             // 第177行: 委托给 __addressof
 
   template<typename _Tp>
-    const _Tp* addressof(const _Tp&&) = delete;   // 第151行: 禁止对临时调用
+    const _Tp* addressof(const _Tp&&) = delete;   // 第182行: 禁止对临时调用
 ```
 
 `[实现]` 逐行要点：
-- **第 50 行** `__builtin_addressof(__r)`：这是关键——它**绕过用户重载的 `operator&`**。普通的 `&x` 若 `T` 重载了 `operator&`，返回的是运算符结果（可能根本不是地址）；而 `__builtin_addressof` 直接取对象真实内存地址。
-- **第 146 行** 公开接口 `std::addressof` 委托给内部 `__addressof`，二者都 `constexpr`（C++17 起，`_GLIBCXX17_CONSTEXPR`），可在编译期使用。
-- **第 151 行** 删除 `addressof(const T&&)` 重载，阻止 `std::addressof(SomeTemporary())`——临时无稳定地址，误用会悬垂。
+- **第 53 行** `__builtin_addressof(__r)`：这是关键——它**绕过用户重载的 `operator&`**。普通的 `&x` 若 `T` 重载了 `operator&`，返回的是运算符结果（可能根本不是地址）；而 `__builtin_addressof` 直接取对象真实内存地址。
+- **第 177 行** 公开接口 `std::addressof` 委托给内部 `__addressof`，二者都 `constexpr`（C++17 起，`_GLIBCXX17_CONSTEXPR`），可在编译期使用。
+- **第 182 行** 删除 `addressof(const T&&)` 重载，阻止 `std::addressof(SomeTemporary())`——临时无稳定地址，误用会悬垂。
 
 `[标准]` 交叉 ch20（引用）：`addressof` 与 `std::launder` 是标准库里两个"看起来啥也没干、实则驯服优化器"的原语，其价值在 `-O2` 下才显形。
 
@@ -1041,7 +1041,7 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 `[实现]` **关键差异**：
 1. **严格别名**：GCC/Clang 默认 `-fstrict-aliasing`（prog_27 在 `-O2` 下会被优化出"正确但错误"的结果）；MSVC 的别名模型更宽松（历史上很少按严格别名优化），所以同一段别名违规代码在 MSVC 下"看似正常"、在 GCC/Clang 下崩溃——**绝不因此以为代码安全**。
 2. **`/permissive-`**：MSVC 默认 `/permissive`（兼容模式）会容忍一些非标准/潜在 UB 的写法；加上 `/permissive-` 可暴露更多问题，是 Windows 下逼近标准的手段。
-3. **Sanitizer 运行时**：本机 MinGW GCC 13.1.0 **未随附** `libubsan/libasan/libtsan`（见 §⑯ 实测 `-lubsan: No such file or directory`），故本机只能跑**编译期** UB 诊断（`-Waggressive-loop-optimizations` 等）与 §⑪ 的汇编级证据；完整运行时检测需 Linux/Clang 或 MSVC 的 ASan。
+3. **Sanitizer 运行时**：本机 GCC 15.3.0 **未随附** `libubsan/libasan/libtsan`（见 §⑯ 实测 `-lubsan: No such file or directory`），故本机只能跑**编译期** UB 诊断（`-Waggressive-loop-optimizations` 等）与 §⑪ 的汇编级证据；完整运行时检测需 Linux/Clang 或 MSVC 的 ASan。
 
 `[经验]` CI 矩阵必须覆盖 **GCC + Clang**（不同优化器对 UB 的反应不同），不能只测一个编译器。
 
@@ -1073,7 +1073,7 @@ int f() {
 | ASan | 释放后使用、越界、double-free | `-fsanitize=address` | 中–高 |
 | TSan | 数据竞争 | `-fsanitize=thread` | 高 |
 
-`[平台]` **本机实测**：在 MinGW GCC 13.1.0 上链接 sanitizer 失败：
+`[平台]` **本机实测**：在 GCC 15.3.0 上链接 sanitizer 失败：
 ```
 C:/Qt/.../ld.exe: cannot find -lubsan: No such file or directory
 collect2.exe: error: ld returned 1 exit status
@@ -1275,11 +1275,11 @@ int main() {
 `[实现]` 想真正理解"生命周期原语如何驯服优化器"，按此顺序读：
 
 1. **libstdc++ `<new>`（本机路径 `.../include/c++/new`）**：
-   - 第 188–208 行：`std::launder` 的 `__builtin_launder` 屏障（§⑭.1）。
-   - 第 126–181 行：`operator new`/`operator delete` 全家桶与 placement 版本（§⑭.2）。
+   - 第 228–246 行：`std::launder` 的 `__builtin_launder` 屏障（§⑭.1）。
+   - 第 137–222 行：`operator new`/`operator delete` 全家桶与 placement 版本（§⑭.2）。
 2. **libstdc++ `<bits/move.h>`（本机路径 `.../include/c++/bits/move.h`）**：
-   - 第 47–50 行：`__addressof` 用 `__builtin_addressof` 绕过 `operator&`。
-   - 第 142–151 行：`std::addressof` 与对临时的 `= delete`（§⑭.3）。
+   - 第 52–53 行：`__addressof` 用 `__builtin_addressof` 绕过 `operator&`。
+   - 第 176–182 行：`std::addressof` 与对临时的 `= delete`（§⑭.3）。
 3. **LLVM/Clang UBSan 源码**（`llvm-project/compiler-rt/lib/ubsan/`）：
    - `ubsan_handlers.cpp`：`handleIntegerOverflow`/`handleNullPointerUsage`——理解诊断文本如何生成（§⑯）。
 4. **C++ Core Guidelines**（`isocpp.github.io/CppCoreCheck`）：

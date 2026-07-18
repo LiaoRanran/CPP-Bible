@@ -2,7 +2,7 @@
 
 ⟶ Book/part09_concurrency/ch107_atomic.md
 
-> 标准基: C++23 / GCC 13.1 / 预计阅读: 50min / ⟶ Book/part09_concurrency/ch107_atomic.md / 难度: ★★★☆☆
+> 标准基: C++23 / GCC 15.3 / 预计阅读: 50min / ⟶ Book/part09_concurrency/ch107_atomic.md / 难度: ★★★☆☆
 
 ## ① 学习目标 [标准]
 
@@ -52,7 +52,7 @@ int main(){flag=1;std::cout<<(int)flag<<std::endl;return 0;}
 int main(){std::cout<<"volatile prevents register caching across setjmp/longjmp\n";return 0;}
 ```
 
-## ⑦ 编译器屏障 [实现·GCC13]
+## ⑦ 编译器屏障 [实现·GCC15.3.0]
 
 ```cpp
 #include <iostream>
@@ -147,7 +147,7 @@ int main() {
 
 - `[经验]`：所有主流嵌入式 SDK（STM32 HAL、ESP-IDF、nRF SDK）都使用此模式。不写 `volatile` 的话，GCC -O2 可能将连续的对同一地址的写操作优化为最后一次写入，导致外设看不到中间值。
 
-## ⑬ 源码分析：GCC 内部 volatile 处理 [实现·GCC13]
+## ⑬ 源码分析：GCC 内部 volatile 处理 [实现·GCC15.3.0]
 
 ```cpp
 // ⑬ GCC/LLVM 编译器内部如何对待 volatile
@@ -168,7 +168,7 @@ int main() {
 }
 ```
 
-- `[实现·GCC13]`：volatile 直接作用于编译器的中间表示（GIMPLE/LLVM-IR），通过 `TREE_SIDE_EFFECTS` / `setVolatile` 标志通知**所有优化 pass** 跳过该访问。这不是"提示"，是硬约束。
+- `[实现·GCC15.3.0]`：volatile 直接作用于编译器的中间表示（GIMPLE/LLVM-IR），通过 `TREE_SIDE_EFFECTS` / `setVolatile` 标志通知**所有优化 pass** 跳过该访问。这不是"提示"，是硬约束。
 
 ## ⑭ WG21 关键提案与演变 [标准]
 

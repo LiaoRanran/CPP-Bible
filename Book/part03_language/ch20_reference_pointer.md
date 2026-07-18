@@ -1,5 +1,7 @@
 # 第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争
 
+> 真实编译器：MinGW GCC 15.3.0（x86-64，Windows x64 ABI：首参在 `rcx`；本章 GCC 汇编均以此真机 `-std=c++23 -O2/-O0 -S -masm=intel` 输出为准）
+
 ⟶ Book/part06_templates/ch65_type_traits.md
 ⟶ Book/part06_templates/ch69_constexpr.md
 ⟶ Book/part03_language/ch19_variables.md
@@ -206,16 +208,16 @@ void by_ref(int& r) { r++; }
 void by_ptr(int* p) { if (p) (*p)++; }   // 加 null 检查以凸显"唯一差异"
 ```
 
-**GCC 13 `-O2`（AT&T，System V ABI，x86-64）实测：**
+**GCC 15.3.0 `-O2`（MinGW / Windows x64 ABI，首参在 `rcx`）实测：**
 ```asm
 by_ref(int&):
-        addl    $1, (%rdi)      ; rdi = &对象, 直接加 1
+        add     DWORD PTR [rcx], 1   # rcx = &对象, 直接加 1
         ret
 by_ptr(int*):
-        testq   %rdi, %rdi      ; 我们加了 null 检查以凸显差异
-        je      .L1
-        addl    $1, (%rdi)
-.L1:
+        test    rcx, rcx             # 我们加了 null 检查以凸显差异
+        je      .L3
+        add     DWORD PTR [rcx], 1
+.L3:
         ret
 ```
 > 去掉 `if(p)` 后 `by_ptr` 与 `by_ref` **逐字节相同**。这证明：底层引用参数就是"按指针 ABI 传地址"。语言层的"不可空/不可重绑"是**编译期约束，零运行时指令**。
@@ -250,16 +252,15 @@ $LN1:
 ### 3.2 `-O0` 佐证：引用被"当指针存进栈槽"
 
 ```asm
-; GCC -O0 (保留帧指针, by_ref)
+; GCC 15.3.0 -O0 (保留帧指针, by_ref)
 by_ref(int&):
         push    rbp
         mov     rbp, rsp
-        mov     QWORD PTR [rbp-8], rdi   ; 把"引用"(地址)存到栈上
-        mov     rax, QWORD PTR [rbp-8]
+        mov     QWORD PTR 16[rbp], rcx   # 把"引用"(地址)存到栈上
+        mov     rax, QWORD PTR 16[rbp]
         mov     eax, DWORD PTR [rax]
-        add     eax, 1
-        mov     edx, eax
-        mov     rax, QWORD PTR [rbp-8]
+        lea     edx, 1[rax]
+        mov     rax, QWORD PTR 16[rbp]
         mov     DWORD PTR [rax], edx
         pop     rbp
         ret
@@ -272,10 +273,10 @@ by_ref(int&):
 // prog_08_return_ref_asm.cpp
 int& first(int& a, int& b) { return a; }   // 返回 a 的地址
 ```
-GCC `-O2`：
+GCC 15.3.0 `-O2`：
 ```asm
 first(int&, int&):
-        movl    %edi, %eax     ; 返回首参地址(edi 是 &a), 放 RAX
+        mov     rax, rcx       # 返回首参地址(rcx 是 &a), 放 RAX
         ret
 ```
 > 返回引用 = 返回地址（RAX），与返回指针的 ABI 完全一致。
@@ -709,7 +710,7 @@ BENCHMARK(BM_ValueSmall); BENCHMARK(BM_RefSmall); BENCHMARK(BM_PtrSmall);
 BENCHMARK(BM_ValueBig);   BENCHMARK(BM_RefBig);   BENCHMARK(BM_PtrBig);
 ```
 
-### 7.2 实测量级（AMD Zen3 / GCC 13 `-O2` / x86-64，每迭代 ns）
+### 7.2 量级示意（AMD Zen3 / GCC 15.3.0 `-O2` / x86-64，每迭代 ns）
 
 | 方式 | Small(8B) 每迭代 | Big(4KB) 每迭代 | 说明 |
 |------|------------------|-----------------|------|

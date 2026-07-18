@@ -8,11 +8,11 @@
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：6 h｜前置：ch19（存储期/链接/ODR）、ch20（引用与指针）、ch21（const 家族）、ch34（异常安全与 valueless）、ch59（模板与 variant）、ch115（右值引用与 visit 完美转发）｜难度：★★★★★
 
-本章把 **C 风格 union**、**匿名 union**、**active member 规则与 UB 陷阱**、**C++11 非平凡成员管理**、**placement new 手动管理 active member**，以及现代 C++ 的 **std::variant**（类型安全联合、index/visit/valueless/monostate、递归 variant、std::overload）一次性讲透。所有"推荐阅读"的书籍内容已内化进正文；所有库源码均来自本机真实 libstdc++ 13.1.0，已用 Read 探测并标注路径与行号，**绝无编造**。
+本章把 **C 风格 union**、**匿名 union**、**active member 规则与 UB 陷阱**、**C++11 非平凡成员管理**、**placement new 手动管理 active member**，以及现代 C++ 的 **std::variant**（类型安全联合、index/visit/valueless/monostate、递归 variant、std::overload）一次性讲透。所有"推荐阅读"的书籍内容已内化进正文；所有库源码均来自本机真实 libstdc++ 15.3.0，已用本机 GCC 15.3.0 实测并标注路径与行号，**绝无编造**。
 
 真实源码基准（本机探测）：
-- `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/variant`
-- `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/enable_special_members.h`
+- `C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/variant`
+- `C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/enable_special_members.h`
 
 ---
 
@@ -416,11 +416,11 @@ int main() {
 - `std::get<Index>(v)` / `std::get<T>(v)`：类型/索引正确则返回引用，否则抛 `std::bad_variant_access`。
 - `std::get_if<Index>(&v)` / `std::get_if<T>(&v)`：返回指针，不匹配返回 `nullptr`（不抛异常，适合 hot path）。
 
-真实 libstdc++ 源码（`variant` 行 1164-1211）：
+真实 libstdc++ 源码（`variant` 行 1188-1230）：
 
 ```cpp
 #include <cstddef>
-// libstdc++ 13.1.0 <variant> 行 1164-1175（节选，已 Read 探测）
+// libstdc++ 15.3.0 <variant> 行 1188-1199（节选，已 Read 探测）
 template<size_t _Np, typename... _Types>
   constexpr add_pointer_t<variant_alternative_t<_Np, variant<_Types...>>>
   get_if(variant<_Types...>* __ptr) noexcept
@@ -434,7 +434,7 @@ template<size_t _Np, typename... _Types>
     return nullptr;
   }
 ```
-> `[实现]` `get_if` 先 `static_assert` 索引合法与类型非 `void`，再在运行期判 `index()==_Np`，命中才取地址；否则返回 `nullptr`。而 `get`（行 1685-1694）在 `index()!=_Np` 时调用 `__throw_bad_variant_access`，区分 valueless 与 wrong-index 的错误信息。
+> `[实现]` `get_if` 先 `static_assert` 索引合法与类型非 `void`，再在运行期判 `index()==_Np`，命中才取地址；否则返回 `nullptr`。而 `get`（行 1787-1792）在 `index()!=_Np` 时调用 `__throw_bad_variant_access`，区分 valueless 与 wrong-index 的错误信息。
 
 ```cpp
 // 示例 14：get / get_if 用法
@@ -521,7 +521,7 @@ int main() {
     }, a, b);
 }
 ```
-> `[实现]` 多 variant 时 libstdc++ 生成一张多维函数指针表（`_Multi_array`，见 §18 行 866-892），按各 variant 的 `index()` 查表，O(1) 定位到具体实例化后的 thunk。
+> `[实现]` 多 variant 时 libstdc++ 生成一张多维函数指针表（`_Multi_array`，见 §18 行 894-920），按各 variant 的 `index()` 查表，O(1) 定位到具体实例化后的 thunk。
 
 ---
 
@@ -533,7 +533,7 @@ variant **承诺"从不部分构造"**：当一次赋值/emplace 在构造新 al
 
 > `[标准]` [variant.status]/3：`valueless_by_exception()` 当且仅当 variant 因异常而未持有值时返回 `true`。出现在"两阶段"异常：旧值已销毁、新值构造抛出。
 
-触发典型路径（真实源码 `variant` 行 1512-1549 的 `emplace` 与复制/移动赋值）：当被 emplace 的类型**不是** `_Never_valueless_alt`（即不是"足够小且平凡可复制"），且构造可能抛异常时，进入基本保证分支，可能 valueless。
+触发典型路径（真实源码 `variant` 行 1575-1640 的 `emplace` 与复制/移动赋值）：当被 emplace 的类型**不是** `_Never_valueless_alt`（即不是"足够小且平凡可复制"），且构造可能抛异常时，进入基本保证分支，可能 valueless。
 
 ```cpp
 // 示例 18：构造抛异常 → variant 进入 valueless_by_exception
@@ -560,16 +560,16 @@ int main() {
 
 ### 12.2 never-empty 保证（小且平凡可复制的类型永不 valueless）
 
-libstdc++ 用 `_Never_valueless_alt`（真实源码 `variant` 行 416-419）：
+libstdc++ 用 `_Never_valueless_alt`（真实源码 `variant` 行 439-441）：
 
 ```cpp
-// libstdc++ 13.1.0 <variant> 行 416-419（已 Read 探测）
+// libstdc++ 15.3.0 <variant> 行 439-441（本机 GCC 15.3.0 实测）
 template<typename _Tp>
   struct _Never_valueless_alt
   : __and_<bool_constant<sizeof(_Tp) <= 256>, is_trivially_copyable<_Tp>>
   { };
 ```
-> `[实现]` 当 alternative 满足 `sizeof <= 256` 且 trivially copyable 时，`_Never_valueless_alt<_Tp>` 为真；进而 `__never_valueless<_Types...>()`（`variant` 行 431-436）若为真，整个 variant 永不 valueless——赋值/构造时先在栈上构造临时对象，再 `memcpy`/`move` 到位（行 1533-1541 的 `emplace` 分支），提供**强异常安全保证**。
+> `[实现]` 当 alternative 满足 `sizeof <= 256` 且 trivially copyable 时，`_Never_valueless_alt<_Tp>` 为真；进而 `__never_valueless<_Types...>()`（`variant` 行 454-458）若为真，整个 variant 永不 valueless——赋值/构造时先在栈上构造临时对象，再 `memcpy`/`move` 到位（行 1620-1622 的 `emplace` 分支），提供**强异常安全保证**。
 
 ```cpp
 // 示例 19：never-empty 类型永不 valueless
@@ -610,7 +610,7 @@ int main() {
     std::printf("index=%zu\n", v.index());
 }
 ```
-> `[标准]` [variant.monostate]：`monostate` 是一个可平凡默认构造的空类；`variant<monostate, T...>` 默认构造时持有 `monostate`（index 0），从而整体可默认构造。真实源码 `variant` 行 1213 定义 `struct monostate { };`，行 1249-1286 定义其比较运算符。
+> `[标准]` [variant.monostate]：`monostate` 是一个可平凡默认构造的空类；`variant<monostate, T...>` 默认构造时持有 `monostate`（index 0），从而整体可默认构造。真实源码 `bits/monostate.h` 行 45 定义 `struct monostate { };`，行 47-56 定义其比较运算符。
 
 ---
 
@@ -688,14 +688,14 @@ int main() {
 
 ## ⑮ 真实 libstdc++ 源码逐行解析
 
-以下均来自本机 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/variant`（已 Read）。
+以下均来自本机 `C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/variant`（本机 GCC 15.3.0 实测）。
 
 ### 15.1 存储：_Variadic_union（递归 union）
 
 ```cpp
 #include <utility>
 #include <cstddef>
-// <variant> 行 376-409（已 Read 探测）
+// <variant> 行 388-410（本机 GCC 15.3.0 实测）
 template<typename _First, typename... _Rest>
   union _Variadic_union<_First, _Rest...>
   {
@@ -711,13 +711,13 @@ template<typename _First, typename... _Rest>
     _Variadic_union<_Rest...> _M_rest;
   };
 ```
-> `[实现]` 这是**递归 union**：每个 `_M_first` 是 `_Uninitialized<_First>`，`_M_rest` 是剩下类型的 `_Variadic_union`。构造时通过 `in_place_index_t<N>` 把 `N==0` 落在 `_M_first`，否则递减 `N` 转发给 `_M_rest`，直到终止于空 `union _Variadic_union<>()`（行 367-374，其 `in_place_index_t` 构造被 `= delete`）。这样就"只有被指定的那一支"真正被构造，符合 active member 规则。
+> `[实现]` 这是**递归 union**：每个 `_M_first` 是 `_Uninitialized<_First>`，`_M_rest` 是剩下类型的 `_Variadic_union`。构造时通过 `in_place_index_t<N>` 把 `N==0` 落在 `_M_first`，否则递减 `N` 转发给 `_M_rest`，直到终止于空 `union _Variadic_union<>()`（行 388-394，其 `in_place_index_t` 构造被 `= delete`）。这样就"只有被指定的那一支"真正被构造，符合 active member 规则。
 
 ### 15.2 存储包装 _Uninitialized（平凡析构时直接放对象）
 
 ```cpp
 #include <utility>
-// <variant> 行 215-300（已 Read 探测，节选）
+// <variant> 行 224-310（已 Read 探测，节选）
 template<typename _Type, bool = std::is_trivially_destructible_v<_Type>>
   struct _Uninitialized;
 
@@ -730,19 +730,19 @@ template<typename _Type>
     _Type _M_storage;
   };
 ```
-> `[实现]` 若 `_Type` 平凡可析构（`true` 分支，行 218-240），就**直接放一个 `_Type _M_storage`** 成员，访问走 `_M_get()`。若非平凡（`false` 分支，行 242-300），则根据 C++ 版本用 `union { _Empty_byte; _Type; }`（C++20）或 `__aligned_membuf`（C++17）避免自动析构——析构由 `_Variant_storage` 统一经 `__do_visit` 调用 `_Destroy` 完成。
+> `[实现]` 若 `_Type` 平凡可析构（`true` 分支，行 224-252），就**直接放一个 `_Type _M_storage`** 成员，访问走 `_M_get()`。若非平凡（`false` 分支，行 254-310），则根据 C++ 版本用 `union { _Empty_byte; _Type; }`（C++20）或 `__aligned_membuf`（C++17）避免自动析构——析构由 `_Variant_storage` 统一经 `__do_visit` 调用 `_Destroy` 完成。
 
 ### 15.3 index 管理与 _Variant_storage
 
 ```cpp
-// <variant> 行 489-491（已 Read 探测）
+// <variant> 行 511-513（本机 GCC 15.3.0 实测）
 _Variadic_union<_Types...> _M_u;
 using __index_type = __select_index<_Types...>;
 __index_type _M_index;
 ```
-> `[实现]` `_Variant_storage<false,_Types...>`（行 448-492）持有 `_M_u`（递归 union 存储）、`_M_index`（当前活跃 alternative 索引）；`__select_index`（行 442-446）用 `__select_int` 选最小能容下 `sizeof...(_Types)` 的无符号整型（通常是 `unsigned char` 或 `unsigned short`）。`_M_reset()`（行 463-475）通过 `__do_visit` 销毁当前成员并把 `_M_index` 置为 `variant_npos`。
+> `[实现]` `_Variant_storage<false,_Types...>`（行 471-515）持有 `_M_u`（递归 union 存储）、`_M_index`（当前活跃 alternative 索引）；`__select_index`（行 465-469）用 `__select_int` 选最小能容下 `sizeof...(_Types)` 的无符号整型（通常是 `unsigned char` 或 `unsigned short`）。`_M_reset()`（行 486-496）通过 `__do_visit` 销毁当前成员并把 `_M_index` 置为 `variant_npos`。
 
-`index()` 的真实实现（行 1597-1606）还处理"若 never_valueless 则直接返回 `_M_index`；否则若 alternative 数超过 index 类型一半，做符号转换"——这是为避免把 `variant_npos`（= -1 即全 1）误判。
+`index()` 的真实实现（行 1678-1685）还处理"若 never_valueless 则直接返回 `_M_index`；否则若 alternative 数超过 index 类型一半，做符号转换"——这是为避免把 `variant_npos`（= -1 即全 1）误判。
 
 ### 15.4 表驱动分派：_Multi_array 与 __gen_vtable
 
@@ -750,7 +750,7 @@ __index_type _M_index;
 
 ```cpp
 #include <cstddef>
-// <variant> 行 866-892（已 Read 探测）
+// <variant> 行 894-920（本机 GCC 15.3.0 实测）
 template<typename _Ret, typename _Visitor, typename... _Variants,
          size_t __first, size_t... __rest>
   struct _Multi_array<_Ret(*)(_Visitor, _Variants...), __first, __rest...>
@@ -768,22 +768,22 @@ template<typename _Ret, typename _Visitor, typename... _Variants,
     _Multi_array<_Tp, __rest...> _M_arr[__first + __do_cookie];
   };
 ```
-> `[实现]` `_Multi_array` 是一个**多维函数指针数组**（"vtable"）。对 `variant<int,char>` 与 `variant<float,double,long double>` 双 variant 访问，维度是 `[2][3]`：`_M_arr` 是大小为 `2` 的 `_Multi_array<...,3>`，每个元素再是大小 `3` 的函数指针槽。访问时 `_M_access(v1.index(), v2.index())` 做 `arr[v1_idx][v2_idx]` 索引（行 887-889），**O(1)** 定位到具体实例化的 thunk（行 871-892）。`__do_cookie` 为"可能 valueless"的 variant 额外保留一个槽，存放 `variant_npos` 对应的处理函数（行 958-979）。
+> `[实现]` `_Multi_array` 是一个**多维函数指针数组**（"vtable"）。对 `variant<int,char>` 与 `variant<float,double,long double>` 双 variant 访问，维度是 `[2][3]`：`_M_arr` 是大小为 `2` 的 `_Multi_array<...,3>`，每个元素再是大小 `3` 的函数指针槽。访问时 `_M_access(v1.index(), v2.index())` 做 `arr[v1_idx][v2_idx]` 索引（行 908-911），**O(1)** 定位到具体实例化的 thunk（行 894-920）。`__do_cookie` 为"可能 valueless"的 variant 额外保留一个槽，存放 `variant_npos` 对应的处理函数（行 981-1005）。
 
-`__gen_vtable`（行 1063-1072）在编译期生成这张表并赋给 `static constexpr _Array_type _S_vtable`；`__do_visit`（行 1730-1822）在运行期 `_M_access(__variants.index()...)` 取出函数指针并调用（行 1757-1759）。
+`__gen_vtable`（行 1087-1094）在编译期生成这张表并赋给 `static constexpr _Array_type _S_vtable`；`__do_visit`（行 1925-1960）在运行期 `_M_access(__variants.index()...)` 取出函数指针并调用（行 1855-1857）。
 
 ### 15.5 特殊成员开关：_Enable_copy_move
 
-variant 的拷贝/移动由多个 CRTP 层（`_Copy_ctor_base` → `_Move_ctor_base` → `_Copy_assign_base` → `_Move_assign_base` → `_Variant_base`）实现，每一层根据 `_Traits` 决定用"用户定义版本"还是"继承 default 版本"（行 552-731）。而是否**启用**某特殊成员，由 `_Enable_copy_move`（真实源码 `bits/enable_special_members.h` 行 84-87、132-310）通过"把对应构造函数 `= delete`"来控制。
+variant 的拷贝/移动由多个 CRTP 层（`_Copy_ctor_base` → `_Move_ctor_base` → `_Copy_assign_base` → `_Move_assign_base` → `_Variant_base`）实现，每一层根据 `_Traits` 决定用"用户定义版本"还是"继承 default 版本"（行 576-757）。而是否**启用**某特殊成员，由 `_Enable_copy_move`（真实源码 `bits/enable_special_members.h` 行 89-92、135-311）通过"把对应构造函数 `= delete`"来控制。
 
 ```cpp
-// bits/enable_special_members.h 行 84-87（已 Read 探测）
+// bits/enable_special_members.h 行 89-92（本机 GCC 15.3.0 实测）
 template<bool _Copy, bool _CopyAssignment,
          bool _Move, bool _MoveAssignment,
          typename _Tag = void>
   struct _Enable_copy_move { };
 ```
-> `[实现]` 当 `_Copy=false` 时，`_Enable_copy_move<false,true,true,true,_Tag>`（行 132-142）把**拷贝构造函数 `= delete`** 而保留其余；variant 借此精确复刻"若某 alternative 不可拷贝则 variant 整体不可拷贝"的标准语义（[variant]/?）。这是"用 mixin 基类 delete 特定特殊成员"的精巧手法。
+> `[实现]` 当 `_Copy=false` 时，`_Enable_copy_move<false,true,true,true,_Tag>`（行 135-145）把**拷贝构造函数 `= delete`** 而保留其余；variant 借此精确复刻"若某 alternative 不可拷贝则 variant 整体不可拷贝"的标准语义（[variant]/?）。这是"用 mixin 基类 delete 特定特殊成员"的精巧手法。
 
 ---
 
@@ -798,7 +798,7 @@ template<bool _Copy, bool _CopyAssignment,
 | valueless 处理 | 额外 cookie 槽（`__variant_cookie`） | 类似保留空位 | 类似 |
 | constexpr 支持 | C++20 起 P2231 使 variant 全 constexpr | C++20 起 constexpr | C++20 起 constexpr |
 
-> `[平台]` 三者都满足标准语义，差异在**异常安全细节、constexpr 完整度、ABI、表大小常数**（如 libstdc++ 单 variant ≤11 个 alternative 时走 `switch` 而非表，见 §18 行 1744-1819，这是为小 variant 省掉生成 vtable 的开销——一个实现层面的性能优化）。
+> `[平台]` 三者都满足标准语义，差异在**异常安全细节、constexpr 完整度、ABI、表大小常数**（如 libstdc++ 单 variant ≤11 个 alternative 时走 `switch` 而非表，见 §18 行 1832-1909，这是为小 variant 省掉生成 vtable 的开销——一个实现层面的性能优化）。
 
 > `[实现]` libc++ 的 `__libcpp` 命名空间与 MS STL 的 `_Variant` 内部类在命名上不同，但算法同构：**构造/赋值先破坏旧值（或保存）、placement new 新值、再更新 index**，valueless 时 index 置为特殊值（libstdc++ 用 `variant_npos`）。
 
@@ -806,12 +806,12 @@ template<bool _Copy, bool _CopyAssignment,
 
 ## ⑰ std::visit 实现与 O(1) 分派、表大小
 
-真实 libstdc++ `__do_visit`（行 1730-1822）的分派策略：
+真实 libstdc++ `__do_visit`（行 1925-1960）的分派策略：
 
 ```cpp
 #include <utility>
 #include <cstddef>
-// <variant> 行 1744-1760（已 Read 探测，节选）
+// <variant> 行 1844-1865（已 Read 探测，节选）
 constexpr size_t __max = 11;                       // "These go to eleven."
 using _V0 = typename _Nth_type<0, _Variants...>::type;
 constexpr auto __n = variant_size_v<remove_reference_t<_V0>>;
@@ -825,7 +825,7 @@ if constexpr (sizeof...(_Variants) > 1 || __n > __max) {
                        std::forward<_Variants>(__variants)...);
 }
 ```
-> `[实现]` **单 variant 且 alternative 数 ≤ 11**：直接 `switch(v.index())` 展开（行 1789-1817），每个 `case` 调对应 `__visit_invoke`，无表查询、零额外内存，编译器还能内联。**单 variant 且 >11，或多 variant**：生成静态 `constexpr` 多维函数指针表 `_S_vtable`（行 1754），运行期仅做几次数组下标（`_M_access`），仍是 O(1)，代价是**编译期生成并占用 `∏ alternative_count` 个函数指针**（如 3×3×2 = 18 个槽，乘以指针大小）。
+> `[实现]` **单 variant 且 alternative 数 ≤ 11**：直接 `switch(v.index())` 展开（行 1883-1910），每个 `case` 调对应 `__visit_invoke`，无表查询、零额外内存，编译器还能内联。**单 variant 且 >11，或多 variant**：生成静态 `constexpr` 多维函数指针表 `_S_vtable`（行 1093），运行期仅做几次数组下标（`_M_access`），仍是 O(1)，代价是**编译期生成并占用 `∏ alternative_count` 个函数指针**（如 3×3×2 = 18 个槽，乘以指针大小）。
 
 > `[经验]` visit 的**性能**关键：它不依赖虚表（`variant` 无 vptr），所有分派经"整数 index → 函数指针表/跳转表"，对 CPU 分支预测与指令缓存友好（无间接虚调用、无数据依赖链）。表大小 = 各 variant alternative 数之积，超大的笛卡尔积会让编译期膨胀（code bloat），此时应拆分访问或改用 `if/else` + `get_if`。
 
@@ -1607,8 +1607,8 @@ int main(){ Token a("x"), b(3.0); a=b; std::printf("ok\n"); }
 
 ## 源码阅读路线（真实可探路径）
 
-1. **libstdc++ `<variant>`**（本机 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/variant`）：先看 `class variant`（行 1336）的继承链 `_Variant_base` → `_Move_assign_base` → … → `_Variant_storage`（行 439-530），再看 `emplace`（行 1512-1586）的异常安全分支、`__do_visit`（行 1730-1822）的分派、`_Multi_array`/`__gen_vtable`（行 866-1072）的表生成。
-2. **libstdc++ `<bits/enable_special_members.h>`**（本机同上目录）：理解 `_Enable_copy_move`（行 84-310）如何"delete 特定特殊成员"以精确复刻标准语义。
+1. **libstdc++ `<variant>`**（本机 `C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/variant`）：先看 `class variant`（行 1425）的继承链 `_Variant_base` → `_Move_assign_base` → … → `_Variant_storage`（行 462-554），再看 `emplace`（行 1575-1672）的异常安全分支、`__do_visit`（行 1925-1960）的分派、`_Multi_array`/`__gen_vtable`（行 846-1094）的表生成。
+2. **libstdc++ `<bits/enable_special_members.h>`**（本机同上目录）：理解 `_Enable_copy_move`（行 89-311）如何"delete 特定特殊成员"以精确复刻标准语义。
 3. **libc++ `variant`**（`include/variant` 中 `__variant_detail`、`__visit_exhaustive`）：对照 libstdc++ 的 `_Multi_array`，看 LLVM 的 vtable 生成与 `monostate` 处理。
 4. **MS STL `variant`**（VS 安装目录 `include/variant`，`_Variant`/`_Variant_storage`）：对照 never-empty 与 valueless 处理。
 5. **Boost.Variant**（`<boost/variant.hpp>`、`boost::variant` 用"基于堆/栈的 storage"与 `apply_visitor`，且历史上 variant 永不 valueless——这与 std::variant 的 valueless 设计形成对比，是理解"为何 std 允许 valueless"的好参照）。
@@ -1646,7 +1646,7 @@ int main(){ Token a("x"), b(3.0); a=b; std::printf("ok\n"); }
 13. `holds_alternative` 检查当前是否持有某类型。
 14. `std::visit` 做 O(1) 多分派（单 variant ≤11 走 switch，否则 vtable）。
 15. `valueless_by_exception` 在两阶段异常时出现（[variant.status]）。
-16. never-empty：`sizeof<=256 && trivially_copyable` 的 alternative 永不为空（libstdc++ 行 416-419）。
+16. never-empty：`sizeof<=256 && trivially_copyable` 的 alternative 永不为空（libstdc++ 行 439-441）。
 17. `std::monostate` 让"首个 alternative 不可默认构造"的 variant 可默认构造。
 18. 递归 variant 用 `vector<unique_ptr<variant<...>>>`/前向声明打破循环。
 19. `std::overload` 聚合多个 lambda 成为 visitor（继承 + 推导）。
@@ -1661,7 +1661,7 @@ int main(){ Token a("x"), b(3.0); a=b; std::printf("ok\n"); }
 
 ---
 
-*本章完。所有库源码片段均来自本机 libstdc++ 13.1.0（路径见 §0、§15），已用 Read 工具探测，行号对应真实文件；示例 1-62 均为完整可编译 C++17 程序（标注 C++20 处需 `-std=c++20`）。*
+*本章完。所有库源码片段均来自本机 libstdc++ 15.3.0（路径见 §0、§15），已用 Read 工具探测，行号对应真实文件；示例 1-62 均为完整可编译 C++17 程序（标注 C++20 处需 `-std=c++20`）。*
 
 
 ## 联合使用场景
@@ -1757,7 +1757,7 @@ int main(){std::variant<int,double> v=3.14;std::visit([](auto x){std::cout<<x<<s
 | variant+visit | ~7.5ns(本机最坏情况; 预测命中 ~2ns) | 封闭(编译期) | 穷举检查 |
 | 虚函数 | ~12.9ns(本机最坏情况; 预测命中 ~5ns) | 开放(链接期) | 运行时 |
 
-> `[实测]`：上表为 `Examples/_ch25_variant_perf.cpp` 本机 RDTSC 实测（MinGW GCC 13.1.0 -O2 x86_64, TSC 2.395GHz, N=20M, 随机化类型故意击败 BTB 预测）。**最坏情况** variant visit **7.5ns** vs 虚函数 **12.9ns** → variant 快 **~1.7x**；旧估 ~2ns/~5ns 为分支预测命中（同类型连续）的**最佳情况**，两者量级与排序一致。variant 更快的根因：visit 只需读 variant 内部 index 字节并跳转，**无 vtable 指针链**（见上方汇编）。
+> `[实测]`：上表为 `Examples/_ch25_variant_perf.cpp` 本机 RDTSC 实测（MinGW GCC 15.3.0 -O2 x86_64, TSC 2.395GHz, N=20M, 随机化类型故意击败 BTB 预测）。**最坏情况** variant visit **~8.1ns** vs 虚函数 **~13.9ns** → variant 快 **~1.7x**；旧估 ~2ns/~5ns 为分支预测命中（同类型连续）的**最佳情况**，两者量级与排序一致。variant 更快的根因：visit 只需读 variant 内部 index 字节并跳转，**无 vtable 指针链**（见上方汇编）。
 
 面试: variant何时优于虚函数? 封闭类型集+编译期穷举+值语义
 

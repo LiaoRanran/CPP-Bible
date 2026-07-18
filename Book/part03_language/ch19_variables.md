@@ -1,5 +1,7 @@
 # 第19章　变量、存储期、链接与 ODR（工业级深度版）
 
+> 真实编译器：MinGW GCC 15.3.0（x86-64；本章所有 GCC 汇编均以此真机 `-std=c++23 -O2 -S -masm=intel` 输出为准；`thread_local` 在本工具链默认走 emulated TLS）
+
 ⟶ Book/part03_language/ch32_initialization.md
 ⟶ Book/part03_language/ch21_const_family.md
 
@@ -178,19 +180,25 @@ int main() {
 }
 ```
 
-**汇编对照（程序 2 的 `foo` 等价体，GCC 13 -O0 AT&T）**
+**汇编对照（程序 2 的 `foo` 等价体，GCC 15.3.0 -O0）**
 
 ```asm
 foo(int):
-    pushq   %rbp
-    movq    %rsp, %rbp          # 建立栈帧
-    movl    %edi, -20(%rbp)     # 形参 x 存入 [rbp-20]
-    movl    $1, -4(%rbp)        # a = 1  → [rbp-4]
-    movl    $2, -8(%rbp)        # b = 2  → [rbp-8]
-    movl    -4(%rbp), %eax
-    addl    -8(%rbp), %eax
-    addl    -20(%rbp), %eax
-    popq    %rbp
+    push    rbp
+    mov     rbp, rsp
+    sub     rsp, 16
+    mov     DWORD PTR 16[rbp], ecx        # 形参 x（经 ecx 传入）
+    mov     DWORD PTR -4[rbp], 1          # a = 1  → [rbp-4]
+    mov     DWORD PTR -8[rbp], 2          # b = 2  → [rbp-8]
+    mov     edx, DWORD PTR -4[rbp]
+    mov     eax, DWORD PTR -8[rbp]
+    add     edx, eax
+    mov     eax, DWORD PTR 16[rbp]
+    add     eax, edx
+    mov     DWORD PTR -12[rbp], eax       # r = a + b + x
+    mov     eax, DWORD PTR -12[rbp]
+    add     rsp, 16
+    pop     rbp
     ret
 ```
 
@@ -291,13 +299,15 @@ int main() {
 }
 ```
 
-TLS 段访问（GCC 13 -O2，initial-exec 模型）：
+TLS 段访问（GCC 15.3.0 -O2，MinGW 默认 emulated TLS：`__emutls_get_address`，见 ⑨-3）：
 
 ```asm
 inc():
-    movq    %fs:0, %rax            # 取本线程 TLS 基址 (x86-64 System V ABI)
-    addq    $tls_counter@tpoff, %rax
-    incl    (%rax)                 # ++tls_counter
+    sub     rsp, 40
+    lea     rcx, __emutls_v.tls_counter[rip]   # 取本线程 TLS 控制块
+    call    __emutls_get_address               # emulated TLS：取本线程 tls_counter 副本地址
+    add     DWORD PTR [rax], 1                 # ++tls_counter
+    add     rsp, 40
     ret
 ```
 
@@ -724,26 +734,29 @@ Service& getServiceEx() {
 
 `[标准]` `[stmt.dcl]/3`：C++11 起，函数内 `static` 的初始化**线程安全**（块作用域静态对象的并发初始化保证）。
 
-### 8.1 汇编证据（GCC 13 -O2）
+### 8.1 汇编证据（GCC 15.3.0 -O2）
 
 ```asm
 getLogger():
-    movzbl  guard variable for getLogger()::instance(%rip), %eax
-    testb   %al, %al
-    jne     .L_ret_existing          # guard 已置位 → 直接返回
-    leaq    guard variable for getLogger()::instance(%rip), %rdi
-    call    __cxa_guard_acquire      # 进入守卫：原子测试 + 必要互斥
-    testl   %eax, %eax
-    jne     .L_ret_existing
-    leaq    getLogger()::instance(%rip), %rdi
-    call    std::string::string(...) # 构造
-    leaq    guard variable for getLogger()::instance(%rip), %rdi
-    call    __cxa_guard_release      # 置位 guard
-    leaq    getLogger()::instance(%rip), %rdi
-    movl    $__dso_handle, %esi
-    call    __cxa_atexit             # 注册析构, main 后逆序调用
-.L_ret_existing:
-    leaq    getLogger()::instance(%rip), %rax
+    sub     rsp, 40
+    movzx   eax, BYTE PTR _ZGVZ9getLoggervE8instance[rip]   # guard 字节
+    test    al, al
+    je      .L11                    # 未初始化 → 走守卫获取路径
+.L6:                                        # guard 已置位 → 直接返回已有对象
+    lea     rax, _ZZ9getLoggervE8instance[rip]
+    add     rsp, 40
+    ret
+.L11:
+    lea     rcx, _ZGVZ9getLoggervE8instance[rip]
+    call    __cxa_guard_acquire     # 进入守卫：原子测试 + 必要互斥
+    test    eax, eax
+    je      .L6                     # 获权失败(已被他人初始化) → 返回
+    lea     rcx, __tcf_ZZ9getLoggervE8instance[rip]
+    call    atexit                  # 注册析构, main 后逆序调用
+    lea     rcx, _ZGVZ9getLoggervE8instance[rip]
+    call    __cxa_guard_release     # 置位 guard
+    lea     rax, _ZZ9getLoggervE8instance[rip]
+    add     rsp, 40
     ret
 ```
 
@@ -751,7 +764,7 @@ getLogger():
 
 ### 8.2 真实 libstdc++ / libgcc 守卫源码逐行
 
-**文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cxxabi.h`（__cxa_guard_acquire 声明），行号：118**
+**文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/cxxabi.h`（__cxa_guard_acquire 声明），行号：120**
 
 ```cpp
 // libstdc++-v3/libsupc++/guard.h （真实声明）
@@ -763,7 +776,7 @@ namespace __cxxabiv1 {
 }
 ```
 
-**文件：`libstdc++-v3/libsupc++/guard.cc`（GCC 13 源码树，Linux futex 快速路径），行号：~110（__cxa_guard_acquire 实现）**
+**文件：`libstdc++-v3/libsupc++/guard.cc`（GCC 15.3.0 源码树，Linux futex 快速路径），行号：~110（__cxa_guard_acquire 实现）**
 
 ```cpp
 // libstdc++-v3/libsupc++/guard.cc （Linux/GLIBC 路径，保留真实结构）
@@ -890,15 +903,19 @@ int main() {
 
 > `[平台]` default 模型：可执行文件常用 `initial-exec`，共享库常用 `global-dynamic`。性能敏感库可用 `__attribute__((tls_model("initial-exec")))` 钉死。
 
-### 9.2 访问开销汇编（`initial-exec`，`%fs` 段前缀）
+### 9.2 访问开销汇编（GCC 15.3.0 -O2，MinGW emulated TLS）
 
 ```asm
 inc():
-    movq    %fs:0, %rax            # 取本线程 TLS 基址 (x86-64 System V ABI, %fs 指向 TCB)
-    addq    $tls_counter@tpoff, %rax   # TPOFF = 相对 TLS 基址的负偏移
-    incl    (%rax)                # ++tls_counter
+    sub     rsp, 40
+    lea     rcx, __emutls_v.tls_counter[rip]   # 取本线程 TLS 控制块
+    call    __emutls_get_address               # emulated TLS：取本线程 tls_counter 副本地址
+    add     DWORD PTR [rax], 1                 # ++tls_counter
+    add     rsp, 40
     ret
 ```
+
+> `[实现]` MinGW GCC 15.3.0 对 `thread_local` 默认走 **emulated TLS**（`__emutls_get_address`，机制见 ⑨-3），因此此处看不到 Linux 原生的 `%fs`+`@tpoff` 直接偏移；Linux/GCC 原生 TLS 才产生上式的 `%fs` 访问（本节前述 `%fs`/`%gs` 文字说明对应那种情形）。
 
 **MSVC（Intel，TEB 寻址，`gs` 段前缀）：**
 
@@ -918,7 +935,7 @@ inc PROC
 
 当目标不支持原生 TLS（或走 `global-dynamic`/`emulated TLS`，`-femulated-tls`）时，GCC 退化为 **emulated TLS**：每变量一份控制块，每线程首次访问 `malloc` 副本。
 
-**文件：`libgcc/emutls.c`（GCC 13 源码树，TLS 仿真），行号：~110（__emutls_get_address）**
+**文件：`libgcc/emutls.c`（GCC 15.3.0 源码树，TLS 仿真），行号：~110（__emutls_get_address）**
 
 ```cpp
 #include <cstdint>
@@ -1223,7 +1240,7 @@ static/全局数据常驻 `.data`，多对象共享只读页；dynamic 堆对象
 
 ### 13.C 标准库中的 inline 变量（`<numbers>`）
 
-**文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/numbers`（真实结构），行号：74（pi_v）/ 59（e_v）**
+**文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/numbers`（真实结构），行号：132（pi）/ 129（e）**
 
 ```cpp
 // libstdc++-v3/include/std/numbers

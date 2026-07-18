@@ -1,6 +1,6 @@
 # 第31章 运算符重载
 
-> 标准基: C++23 / GCC 13.1 / 预计阅读: 50min / ⟶ Book/part03_language/ch27_cast.md / 难度: ★★★☆☆
+> 标准基: C++23 / GCC 15.3 / 预计阅读: 50min / ⟶ Book/part03_language/ch27_cast.md / 难度: ★★★☆☆
 
 ## ① 学习目标 [标准]
 
@@ -162,7 +162,7 @@ int main(){S arr[]{{3},{1},{2}};std::sort(std::begin(arr),std::end(arr));std::co
 int main(){std::cout<<"Eigen: operator+ returns expression template. fmt: operator<<_format for custom types.\n";return 0;}
 ```
 
-## ⑬ 源码分析 [实现·GCC13]
+## ⑬ 源码分析 [实现·GCC15.3.0]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GCC resolving operator@: lookup + overload resolution, error messages in cp/call.cc.\n";return 0;}
@@ -436,7 +436,7 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 
 [标准] 成员运算符首参为隐式 `this`（`0x0008` 指针）；非成员 `operator@` 须至少一参为用户类型。含隐式转换的运算符（如 `T::operator U()`）每次上下文转换触发一次 `0x0008` 构造/拷贝（约数 ns~数十 ns），是性能陷阱。
 
-`C++20` `consteval` 运算符可在编译期求值（如 `operator""` 字面量），彻底省运行期 `0x0008` 间接；`C++17` `if constexpr` 按类型静态派发。`GCC 13.1.0` `-O2` 把内联运算符直接展开（≈0.3 ns），未内联的虚运算符走 vtable（见 ch47，约 1–3 ns + 跳转惩罚）。SIMD 不直接适用，但向量化的 `operator+` 可经 `-mavx2`（`0x0020` 宽）并行。
+`C++20` `consteval` 运算符可在编译期求值（如 `operator""` 字面量），彻底省运行期 `0x0008` 间接；`C++17` `if constexpr` 按类型静态派发。`GCC 15.3.0` `-O2` 把内联运算符直接展开（≈0.3 ns），未内联的虚运算符走 vtable（见 ch47，约 1–3 ns + 跳转惩罚）。SIMD 不直接适用，但向量化的 `operator+` 可经 `-mavx2`（`0x0020` 宽）并行。
 
 ## 自测练习（Exercises）
 

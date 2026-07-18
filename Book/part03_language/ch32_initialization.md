@@ -1,6 +1,6 @@
 # 第32章 初始化与列表初始化
 
-> 标准基: C++23 / GCC 13.1 / 预计阅读: 50min / ⟶ Book/part03_language/ch19_variables.md / 难度: ★★★☆☆
+> 标准基: C++23 / GCC 15.3 / 预计阅读: 50min / ⟶ Book/part03_language/ch19_variables.md / 难度: ★★★☆☆
 
 ## ① 学习目标 [标准]
 
@@ -150,7 +150,7 @@ int main() {
 }
 ```
 
-## ⑬ 源码分析：GCC 中 initializer_list 的实现 [实现·GCC13]
+## ⑬ 源码分析：GCC 中 initializer_list 的实现 [实现·GCC15.3.0]
 
 ```cpp
 // ⑬ libstdc++ 中 std::initializer_list 的核心实现
@@ -617,7 +617,7 @@ int main(){int x{};std::vector<int> v{1,2,3};std::cout<<x<<","<<v[0]<<std::endl;
 | **Abseil**（github.com/abseil/abseil-cpp） | `absl::make_unique<T>()` → C++14+ `std::make_unique<T>()` | 异常安全 + 消除裸 `new`——Google 代码库历史迁移记录 | `absl/memory/memory.h` |
 | **WebKit**（github.com/WebKit/WebKit） | `LazyNeverDestroyed<T>` + `static NeverDestroyed<T>` | JavaScriptCore 中编译期确定的单例用 `static` 局部变量（C++11 保证线程安全 Lazy Init） | `Source/WTF/wtf/NeverDestroyed.h` |
 
-**底层深度**：`T x{};` vs `T x = T{};` 在 GCC 13.1 `-O2` 下的差异——前者直接值初始化（零填充栈空间），后者可能触发临时对象 + 拷贝（C++17 强制 copy elision 后等价，但 `-fno-elide-constructors` 下仍产生额外 `mov`。`int x;` 的汇编：`sub rsp, 4`（仅分配栈空间，值来自栈残留）→ 读 `x` 即 UB。`int x{};`：`mov DWORD PTR [rsp], 0`（显式置零）。聚合初始化 `T{.a=1}` 在 `-O2` 下展开为逐字段 `mov` 序列（struct {int a; double b;} -> `mov [rdi],1; movq xmm0,XYZ; movsd [rdi+8],xmm0`），与 C 的 `= {0}` 完全等价。
+**底层深度**：`T x{};` vs `T x = T{};` 在 GCC 15.3.0 `-O2` 下的差异——前者直接值初始化（零填充栈空间），后者可能触发临时对象 + 拷贝（C++17 强制 copy elision 后等价，但 `-fno-elide-constructors` 下仍产生额外 `mov`。`int x;` 的汇编：`sub rsp, 4`（仅分配栈空间，值来自栈残留）→ 读 `x` 即 UB。`int x{};`：`mov DWORD PTR [rsp], 0`（显式置零）。聚合初始化 `T{.a=1}` 在 `-O2` 下展开为逐字段 `mov` 序列（struct {int a; double b;} -> `mov [rdi],1; movq xmm0,XYZ; movsd [rdi+8],xmm0`），与 C 的 `= {0}` 完全等价。
 
 ## 自测练习（Exercises）
 

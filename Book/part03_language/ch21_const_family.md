@@ -1,5 +1,7 @@
 # 第21章　const / constexpr / consteval / constinit 深度详解
 
+> 真实编译器：MinGW GCC 15.3.0（x86-64；本章 const 族汇编说明均以此真机 `-std=c++23 -O2` 语义为准；const 折叠为立即数是跨版本稳定的优化行为）
+
 ⟶ Book/part03_language/ch19_variables.md
 ⟶ Book/part03_language/ch31_operator_overloading.md
 
@@ -509,7 +511,7 @@ int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*
 
 ## ⑧ 跨编译器 / 跨 STL 对比
 
-| 特性 | GCC 13 | Clang 17 | MSVC 19.38 |
+| 特性 | GCC 15.3.0 | Clang 17 | MSVC 19.38 |
 |---|---|---|---|
 | constexpr 变量折叠 | ✅ -O1+ | ✅ -O1+ | ✅ /O2 |
 | constexpr 容器(vector) | ✅ C++20 | ✅ C++20 | ⚠ 部分滞后 |
@@ -517,7 +519,7 @@ int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*
 | consteval | ✅ C++20 | ✅ C++20 | ✅ 19.30+ |
 | constinit | ✅ C++20 | ✅ C++20 | ✅ 19.30+ |
 | if consteval | ✅ C++23 | ✅ C++23 | ⚠ 19.38 部分 |
-| `<format>` consteval 校验 | ✅ libstdc++ 13 | ✅ libc++ 14 | ✅ MS STL 19.30+ |
+| `<format>` consteval 校验 | ✅ libstdc++ 15.3.0 | ✅ libc++ 14 | ✅ MS STL 19.30+ |
 
 > `[实现]` MSVC 对 C++20 constexpr/consteval 的支持在 VS2019 16.10 后才较完整，旧项目若需跨编译，用 `#if defined(_MSC_VER) && _MSC_VER < 1930` 降级。
 
