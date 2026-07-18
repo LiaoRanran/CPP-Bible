@@ -105,7 +105,7 @@ classDiagram
                        └─────────────────────────┘
 ```
 
-[实现·GCC13/MinGW x86-64] 关键事实：每个含虚基类的子对象（M1/M2）头部是 **vbptr**（virtual base pointer），它指向该子对象 vtable 的「负偏移区」，那里存 **vbase offset**（从 D 头到共享虚基类 B 子对象的字节偏移）。访问 `d.b` 必须 `vbptr → vbase offset → 地址`，见 ⑩。
+[实现·GCC15.3.0/MinGW x86-64] 关键事实：每个含虚基类的子对象（M1/M2）头部是 **vbptr**（virtual base pointer），它指向该子对象 vtable 的「负偏移区」，那里存 **vbase offset**（从 D 头到共享虚基类 B 子对象的字节偏移）。访问 `d.b` 必须 `vbptr → vbase offset → 地址`，见 ⑩。
 
 ## ⑧ 生命周期图
 
@@ -131,7 +131,7 @@ classDiagram
   │◀──────────────────── 返回 b ─────────────────────│
 ```
 
-## ⑩ 汇编分析（MinGW GCC 13.1.0, -O2, -masm=intel，真实输出）
+## ⑩ 汇编分析（MinGW GCC 15.3.0, -O2, -masm=intel，真实输出）
 
 【编译命令】
 
@@ -162,7 +162,7 @@ _Z10cross_castP2M1:
         ret
 ```
 
-[实现·GCC13/MinGW x86-64] 关键事实：
+[实现·GCC15.3.0/MinGW x86-64] 关键事实：
 
 1. 访问虚基类成员 `x.b` 需**三步**：取 vbptr（`mov [rcx]`）→ 取 vbase offset（`mov -24[rax]`，即 vtable[-3]）→ 计算字段地址（`8[rcx+rax]`，+8 跳过 B 的 vptr 取到 `int b`）。比普通成员多一次间接取指。
 2. `vbase offset = -24`（即 vtable 负偏移 3 个槽）说明 vtable 的「负区」存虚基类偏移表；`-24` 是 M1 视角下 D 头到 B 子对象的偏移编码。
@@ -406,7 +406,7 @@ vtable for M1 (在 D 中):
 
 #### 源码剖析 2：vbptr 与 vtable 落位 @ libstdc++（实现层）
 
-> 文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`（vtable 由编译器生成）
+> 文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`（vtable 由编译器生成）
 > 行号：编译器后端 `gcc/cp/class.cc`（layout_virtual_bases）
 > 提取：`grep -n "virtual_base\|vbptr\|vbase" <gcc/cp/class.cc>`
 
