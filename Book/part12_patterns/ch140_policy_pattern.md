@@ -561,6 +561,8 @@ int use_sfinae() {
 
 ## ⑬ 政策设计真实案例（Loki / Blaze 上游参考）
 
+⟶ Book/part11_source/ch128_boost.md
+
 工业级 policy 设计并非纸上谈兵：
 - **Loki**（Alexandrescu 开源库）：`SmartPtr` 由 `OwnershipPolicy`、`ConversionPolicy`、`CheckingPolicy`、`StoragePolicy`、`DeleterPolicy` 等组合，并用 `Typelist` 生成线性/散乱继承层次。
 - **Blaze**（高性能线性代数）：矩阵/向量表达式通过 policy 选择存储布局（row-major/column-major）、计算后端（CPU/BLAS）与求值策略。
@@ -634,6 +636,8 @@ constexpr int c14 = Algo<true>::step(5) + Algo<false>::step(5);  // 20 + 10
 [标准] `constexpr` 函数内的 `if constexpr` 在编译期求值，被选中分支的结果可作为常量表达式用于数组大小、`static_assert` 等上下文（[expr.const]）。
 
 ## ⑮ 政策与代码膨胀（模板实例化成本）
+
+⟶ Book/part06_templates/ch63_variadic.md
 
 policy 的代价是**代码膨胀（code bloat）**：每套不同的 policy 组合都会独立实例化一份机器码。多 policy 正交组合时，组合数呈乘法增长。用 `nm` 可以直观看到每种组合生成的符号。
 
@@ -752,6 +756,8 @@ struct GoodPipeline {
 [经验] 反模式的共同特征：**契约不清、耦合隐含、膨胀无界**。对策是（1）用 concept 写明 policy 接口；（2）能静态共享的逻辑下沉为非模板函数；（3）用默认 policy 收敛常用组合。
 
 ## ⑱ 性能：零开销验证（对比手写虚函数版本）
+
+⟶ Book/part14_perf/ch153_cpu_micro.md
 
 policy 设计的口号是"零开销抽象"，但必须用工具验证、不能空口断言。下面把 ⑩ 的结论量化：policy 版 `set` 在 `-O2` 下与"手写内联版本"生成的机器码**逐条相同**，而虚函数版多出 vtable 间接调用与对象布局（vptr）开销。
 
