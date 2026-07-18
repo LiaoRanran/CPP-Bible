@@ -415,6 +415,8 @@ template <> struct D<void> { };
 
 ## ⑪ STL 中的该模式
 
+⟶ Book/part06_templates/ch65_type_traits.md
+
 ```cpp
 // STL 中大量使用特化实现「通用算法 -> 最优实现」替换
 #include <iostream>
@@ -488,6 +490,8 @@ template <typename T> struct B<T*> { };   // 若想只针对 int*，应写全特
 
 ## ⑭ 工业案例
 
+⟶ Book/part11_source/ch128_boost.md
+
 ```cpp
 // 工业案例：type traits 库全靠偏特化萃取类型属性；序列化框架按类型特化
 #include <iostream>
@@ -509,6 +513,8 @@ int main() {
 ```
 
 ## ⑮ 源码剖析（libstdc++ 相关）
+
+⟶ Book/part11_source/ch124_libstdcxx.md
 
 ```cpp
 // libstdc++ std::is_pointer（简化）+ 偏序比较机制演示
@@ -604,6 +610,8 @@ int main() {
 ```
 
 ## ⑲ 性能（编译期 / 运行期）
+
+⟶ Book/part14_perf/ch153_cpu_micro.md
 
 ```cpp
 #include <vector>
