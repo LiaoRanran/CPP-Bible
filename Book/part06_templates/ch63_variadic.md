@@ -56,6 +56,9 @@ static_assert(count() == 0);
 
 ## ④ 递归展开（C++11 经典写法）
 
+⟶ Book/part06_templates/ch64_fold.md（折叠表达式：C++17 归约替代递归，更优）
+⟶ Book/part06_templates/ch62_specialization.md（偏特化常做递归终止 base case）
+
 ```cpp
 #include <iostream>
 // 基线（0 参数）
@@ -344,6 +347,9 @@ template <typename... Ts> auto add(Ts... ts) { return (0 + ... + ts); }
 
 ## ⑪ STL 中的该模式
 
+⟶ Book/part10_modern/ch116_perfect_forwarding.md（emplace 的可变参数完美转发实现）
+⟶ Book/part06_templates/ch65_type_traits.md（对参数包做类型萃取）
+
 ```cpp
 #include <iostream>
 #include <utility>
@@ -427,6 +433,8 @@ template <typename... Ts> auto s(Ts... ts) { return (ts + ...); }   // 优于递
 ```
 
 ## ⑭ 工业案例
+
+⟶ Book/part10_modern/ch116_perfect_forwarding.md（日志/格式化库的可变参数转发底座）
 
 ```cpp
 #include <utility>
@@ -610,7 +618,11 @@ N2242 (C++11): Variadic templates (Douglas Gregor, 2007)
   template<typename... Ts> void f(Ts... ts) { g(ts...); }
   → GCC: 递归实例化 f(int, double, char) → f(int) + f(double, char) → ...
   → C++17折叠表达式: (ts + ...) → 编译器直接展开, 不递归实例化
-  → 编译时间: 折叠表达式比递归快10-20× (N=100参数时)
+  → 编译时间实测 (GCC 15.3.0 -O2, 取7次最快):
+      N=100  → fold≈111ms, rec≈125ms (1.1×)
+      N=500  → fold≈118ms, rec≈484ms (4.1×)
+      N=1000 → fold≈123ms, rec≈11.6s (94.5×)
+  → 结论: 差距随 N 近似线性放大; 旧资料「10–20× @ N=100」针对更重实例化体/旧编译器
 
 工业案例:
 - std::make_shared<T>(args...): 完美转发可变参数到构造函数
@@ -651,8 +663,11 @@ int main(){auto p=std::make_shared<S>(10,20);std::cout<<p->a<<","<<p->b<<std::en
 
 ### 编译器展开机制
 
-GCC实现: 递归模板实例化 O(N)编译时间
-C++17折叠表达式: 编译器直接展开, O(1)编译时间 → 100参数时快10-20x
+GCC实现: 递归模板实例化, 编译时间随 N 近似线性增长
+C++17折叠表达式: 编译器直接展开, 编译时间基本不随 N 变 (GCC 15.3.0 实测):
+  N=100  → fold≈111ms / rec≈125ms (1.1×)
+  N=500  → fold≈118ms / rec≈484ms (4.1×)
+  N=1000 → fold≈123ms / rec≈11.6s (94.5×)
 
 ```asm
 ; 递归: f(int,double,char) → f(int) + f(double,char) → f(int) + f(double) + f(char)
@@ -685,7 +700,7 @@ int main(){auto p=std::make_shared<S>(10,20);std::cout<<p->a<<","<<p->b<<std::en
 | sizeof...(Ts)? | 编译期常量(参数个数) |
 | 4种折叠? | unary left=(...+p), unary right=(p+...), binary left=(0+...+p), binary right=(p+...+0) |
 | 空包折叠? | &&=true, ||=false, +=error(需binary fold) |
-| 递归vs折叠? | 折叠=编译10-20x faster(O(1) vs O(N)) |
+| 递归vs折叠? | 折叠编译时间不随N增长; GCC15.3实测 N=100→1.1×, N=1000→95× |
 | make_shared参数? | 可变参数+完美转发→构造函数 |
 
 ```cpp
@@ -697,11 +712,13 @@ int main(){std::cout<<sum(1,2,3,4,5)<<std::endl;return 0;}
 ## 附录 I：可变参数性能与汇编
 
 ```asm
-; C++17 fold: (ts + ...)  → t0 + (t1 + (t2 + (t3 + 0)))
-; GCC -O2: add指令链(每参数1条add), 完全内联
-; 100参数: 100条add指令, 单次展开 → ~5ns total
-; 递归模板(100参数): 100层实例化 → ~500ms compile time
-; 折叠表达式: 1层实例化 → ~5ms compile time → 100x compile speedup
+; C++17 fold: (ts + ...) → t0 + (t1 + (t2 + ...))
+; GCC -O2: 每条 add 指令链, 完全内联 (运行期 O(N) add, 与递归相同)
+; 编译时间实测 (GCC 15.3.0 -O2, 取最快):
+;   N=100  fold≈111ms  rec≈125ms  (1.1×)
+;   N=500  fold≈118ms  rec≈484ms  (4.1×)
+;   N=1000 fold≈123ms  rec≈11.6s  (94.5×)
+; 结论: 递归实例化链随 N 线性变长, 折叠编译时间基本恒定
 ```
 
 ```cpp
@@ -710,11 +727,11 @@ template<typename...Ts> auto sum(Ts...ts){return (ts+...);}  // fold(C++17)
 int main(){std::cout<<sum(1,2,3,4,5,6,7,8,9,10)<<std::endl;return 0;}
 ```
 
-| 方案 | 编译时间(100参数) | 运行时间 | 二进制 |
+| 方案 | 编译时间(N=100, GCC15.3) | 运行时间 | 实例化份数 |
 |---|---|---|---|
-| 递归模板 | ~500ms | ~5ns | 同 |
-| 折叠表达式 | ~5ms | ~5ns | 同 |
-| 手写展开 | 无需模板 | ~5ns | 同 |
+| 递归模板 | ~125ms | O(N) add 指令 | N+1 份 |
+| 折叠表达式 | ~111ms | O(N) add 指令 | 1 份 |
+| 手写展开 | 无需模板 | O(N) add 指令 | — |
 
 
 ## 相关章节（交叉引用）
