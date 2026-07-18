@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generated_from": "compile_all.py --main-only",
-  "gcc": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.EXE",
+  "gcc": "mingw1530 / gcc-15.3.0",
   "taxonomy": {
     "MULTI_FILE": "示例引用同章/外部 .cpp/.h，需多文件联合编译",
     "MODULE": "C++20 模块示例，需模块编译管线",
@@ -214,11 +214,6 @@
       "file": "ch124_libstdcxx.md",
       "block": 4,
       "reason": "LIBSTDCPP"
-    },
-    {
-      "file": "ch125_libcxx.md",
-      "block": 29,
-      "reason": "MSVC"
     },
     {
       "file": "ch126_msstl.md",
