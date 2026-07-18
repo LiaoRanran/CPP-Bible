@@ -36,7 +36,7 @@
 | 提案 | 特性 | feature-test macro | GCC | Clang [DOC] | MSVC [DOC] | 备注 | 章节 |
 |------|------|-------------------|:---:|:---:|:---:|------|------|
 | P1938 | `if consteval` | `__cpp_if_consteval` | ✅ 202106 | ✅ 17 | ✅ 19.32 | GCC 实测 202106 | ch69 |
-| P0847 | Deducing `this` | `__cpp_explicit_this_parameter` | ✅ 202110 | ✅ 18 | ✅ 19.32 | GCC 15.3 **实测已支持** 202110（注意宏名是 `__cpp_explicit_this_parameter`，非 `__cpp_deducing_this`） | ch57 |
+| P0847 | Deducing `this` | `__cpp_explicit_this_parameter` | ✅ 202110 | ✅ 18 | ✅ 19.32 | GCC 15.3 **实测已支持** 202110（注意宏名是 `__cpp_explicit_this_parameter`，非 `__cpp_deducing_this`） | ch10 |
 | P2128 | 多维下标 `[]` | `__cpp_multidimensional_subscript` | ✅ 202211 | ✅ 17 | 🚧 | | ch77 |
 | P2242 | 非平凡在 constexpr | `__cpp_constexpr` | ✅ 202306 | ✅ 17 | ✅ 19.33 | GCC 实测放宽版 | ch69 |
 | P1102 | 省略 lambda `()` | — | ✅ | ✅ 13 | ✅ 19.33 | | ch27 |

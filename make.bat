@@ -102,7 +102,6 @@ echo [*] 清理临时文件 ...
 del /q *.cpp 2>nul
 del /q *.exe 2>nul
 rd /s /q Examples 2>nul
-rd /s /q Examples2 2>nul
 for /d %%d in (Book\part*) do (
     del /q %%d\*.cpp 2>nul
     del /q %%d\*.exe 2>nul
