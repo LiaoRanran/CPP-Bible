@@ -38,12 +38,11 @@ _ZN1DD1Ev:
 	.seh_stackalloc	32
 	.seh_endprologue
 	lea	rax, _ZTV1D[rip+64]
-	lea	rdx, -48[rax]
+	movq	xmm0, QWORD PTR .LC0[rip]
 	movq	xmm1, rax
-	movq	xmm0, rdx
 	punpcklqdq	xmm0, xmm1
-	mov	rbx, rcx
 	movups	XMMWORD PTR [rcx], xmm0
+	mov	rbx, rcx
 	lea	rcx, 8[rcx]
 	call	_ZN2B2D2Ev
 	mov	rcx, rbx
@@ -77,12 +76,11 @@ _ZN1DD0Ev:
 	.seh_stackalloc	32
 	.seh_endprologue
 	lea	rax, _ZTV1D[rip+64]
-	lea	rdx, -48[rax]
+	movq	xmm0, QWORD PTR .LC0[rip]
 	movq	xmm1, rax
-	movq	xmm0, rdx
 	punpcklqdq	xmm0, xmm1
-	mov	rbx, rcx
 	movups	XMMWORD PTR [rcx], xmm0
+	mov	rbx, rcx
 	lea	rcx, 8[rcx]
 	call	_ZN2B2D2Ev
 	mov	rcx, rbx
@@ -107,9 +105,8 @@ _ZThn8_N1DD0Ev:
 	.seh_stackalloc	32
 	.seh_endprologue
 	lea	rax, _ZTV1D[rip+64]
-	lea	rdx, -48[rax]
+	movq	xmm0, QWORD PTR .LC0[rip]
 	movq	xmm1, rax
-	movq	xmm0, rdx
 	punpcklqdq	xmm0, xmm1
 	lea	rbx, -8[rcx]
 	movups	XMMWORD PTR -8[rcx], xmm0
@@ -136,12 +133,11 @@ _ZThn8_N1DD1Ev:
 	.seh_stackalloc	32
 	.seh_endprologue
 	lea	rax, _ZTV1D[rip+64]
-	lea	rdx, -48[rax]
+	movq	xmm0, QWORD PTR .LC0[rip]
 	movq	xmm1, rax
-	movq	xmm0, rdx
 	punpcklqdq	xmm0, xmm1
-	lea	rbx, -8[rcx]
 	movups	XMMWORD PTR -8[rcx], xmm0
+	lea	rbx, -8[rcx]
 	call	_ZN2B2D2Ev
 	mov	rcx, rbx
 	add	rsp, 32
@@ -256,7 +252,11 @@ _ZTV1D:
 	.quad	_ZThn8_N1D1gEv
 	.quad	_ZThn8_N1DD1Ev
 	.quad	_ZThn8_N1DD0Ev
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.section .rdata,"dr"
+	.align 8
+.LC0:
+	.quad	_ZTV1D+16
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZN2B2D2Ev;	.scl	2;	.type	32;	.endef
 	.def	_ZN2B1D2Ev;	.scl	2;	.type	32;	.endef
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
