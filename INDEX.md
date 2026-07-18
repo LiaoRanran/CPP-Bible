@@ -104,7 +104,7 @@
 ```
 Python:  C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe
 mkdocs:  C:/Users/ASUS/.workbuddy/binaries/python/envs/default/Scripts/mkdocs.exe
-G++:     C:/Qt/Tools/mingw1310_64/bin/g++.exe  (13.1.0)
+G++:     C:/Qt/Tools/mingw1530_64/bin/g++.exe  (15.3.0)
 项目根:  C:/CodeLearnling/note/note/C++/CPP-Bible/
 ```
 

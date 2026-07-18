@@ -7,7 +7,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EX = os.path.join(ROOT, "Examples")
 RUN = os.path.join(ROOT, "_run")
 os.makedirs(RUN, exist_ok=True)
-GPP = r"C:/Qt/Tools/mingw1310_64/bin/g++.exe"
+GPP = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
 LOG = os.path.join(RUN, "ch150_mine.log")
 
 cpps = sorted(glob.glob(os.path.join(EX, "_ch150_*.cpp")))

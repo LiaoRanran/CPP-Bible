@@ -28,7 +28,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-GPP = r"C:/Qt/Tools/mingw1310_64/bin/g++.exe"
+GPP = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
 CPP_FENCE = re.compile(r'^\s*```cpp')
 FENCE_END = re.compile(r'^\s*```\s*$')
 H2_RE = re.compile(r'^##\s+(.*)')

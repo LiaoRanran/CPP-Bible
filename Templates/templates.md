@@ -56,7 +56,7 @@
 ## ⑬ 源码分析
 【libstdc++】`std::is_constant_evaluated` 的实现（<type_traits>）：
 \`\`\`cpp
-// C:/Qt/Tools/mingw1310_64/.../include/c++/bits/helper_traits.h
+// C:/Qt/Tools/mingw1530_64/.../include/c++/bits/helper_traits.h
 constexpr bool is_constant_evaluated() noexcept {
   return __builtin_is_constant_evaluated();  // 编译器内建，编译期路径返回 true
 }
@@ -200,9 +200,9 @@ auto s = good();
 ### ▌模板 C 真实渲染样例（libstdc++ reference_wrapper）
 
 ```markdown
-#### 源码剖析：std::reference_wrapper @ libstdc++ 13.1.0
+#### 源码剖析：std::reference_wrapper @ libstdc++ 15.3.0
 
-> 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/refwrap.h
+> 文件：C:/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/bits/refwrap.h
 > 行号：约 340-380（主模板）
 > 提取：grep -n "class reference_wrapper" <上述路径>
 

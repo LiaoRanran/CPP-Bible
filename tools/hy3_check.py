@@ -20,7 +20,7 @@ import os
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PYTHON = r"C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"
-GPP = r"C:/Qt/Tools/mingw1310_64/bin/g++.exe"
+GPP = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
 
 def run_tool(script, args=None, timeout=30):
     cmd = [PYTHON, str(ROOT / "tools" / script)]

@@ -63,8 +63,8 @@ C:/Users/ASUS/.workbuddy/binaries/python/envs/default/Scripts/python.exe
 # 但 mkdocs 通过 Python Path 直接调用：
 C:/Users/ASUS/.workbuddy/binaries/python/envs/default/Scripts/mkdocs.exe
 
-# C++ 编译器（MinGW GCC 13.1.0）
-C:/Qt/Tools/mingw1310_64/bin/g++.exe
+# C++ 编译器（MinGW GCC 15.3.0）
+C:/Qt/Tools/mingw1530_64/bin/g++.exe
 
 # 项目根目录
 C:/CodeLearnling/note/note/C++/CPP-Bible/

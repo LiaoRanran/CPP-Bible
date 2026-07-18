@@ -129,6 +129,26 @@ def gen_summary(parts):
     out.append("> 本文件由 `tools/gen_indexes.py` 自动生成，请勿手改。")
     total = sum(len(v) for v in parts.values())
     out.append(f"> 全书 {len(parts)} 部分 / {total} 章。链接路径相对本目录（Book/）。")
+    # 编号连续性说明：动态计算空缺，避免与磁盘漂移（红线下“不重排”设计）
+    all_ch = sorted({r["ch"] for rows in parts.values() for r in rows})
+    if all_ch:
+        lo, hi = all_ch[0], all_ch[-1]
+        miss = [n for n in range(lo, hi + 1) if n not in set(all_ch)]
+        segs, i = [], 0
+        while i < len(miss):
+            j = i
+            while j + 1 < len(miss) and miss[j + 1] == miss[j] + 1:
+                j += 1
+            segs.append(f"{miss[i]}" if miss[i] == miss[j] else f"{miss[i]}-{miss[j]}")
+            i = j + 1
+        if miss:
+            out.append(">")
+            out.append(f"> **编号连续性说明**：本章号并非从 1 连续递增，全书沿用“删章留空、不重排”的设计——"
+                       f"历史演进中淘汰或合并的章节，其编号被刻意保留为空缺，后续章节不回填，"
+                       f"以保证既有交叉引用（如 `⟶ Book/...chNN_...md`）与读者笔记的稳定性。"
+                       f"当前有效编号范围为 {lo}–{hi}，共 {total} 章；"
+                       f"**{len(miss)} 个编号空缺**：{ '、'.join(segs) }。"
+                       f"这些空缺是设计保留，并非笔误。")
     out.append("")
     for part, rows in parts.items():
         out.append(f"## {PART_NAMES.get(part, part)}")

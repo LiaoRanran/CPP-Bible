@@ -14,7 +14,7 @@
 | 做到哪了？ | **APP1–14 已完成（83 章批次 / 唯一 80 章），剩余 67 章** |
 | 下一步？ | **APP15**：从 `STATE.json` 的 `execution_order` 追加 `APP15`，选下一批剩余章（见 §剩余规划） |
 | HEAD？ | `eec614d`（已推送 `LiaoRanran/CPP-Bible` master，APP14 元数据提交） |
-| 编译器？ | MinGW GCC 13.1：`C:/Qt/Tools/mingw1310_64/bin/g++.exe -std=c++23` |
+| 编译器？ | MinGW GCC 15.3：`C:/Qt/Tools/mingw1530_64/bin/g++.exe -std=c++23` |
 | Python？ | `C:/Users/ASUS/.workbuddy/binaries/python/envs/default/Scripts/python.exe` |
 | PAT？ | 从项目 `.workbuddy/memory/MEMORY.md` 获取（push 用 URL 内联，remote 无 token） |
 

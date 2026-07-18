@@ -3,7 +3,7 @@ REM ============================================================
 REM 《现代 C++ 终极圣经》本地构建脚本
 REM 用法: make [check|compile|full|clean|crossref]
 REM 前置: Python 3.13+ at C:\Users\ASUS\.workbuddy\binaries\python\versions\3.13.12\python.exe
-REM       GCC 13.1 at C:\Qt\Tools\mingw1310_64\bin\g++.exe
+REM       GCC 15.3 at C:\Qt\Tools\mingw1530_64\bin\g++.exe
 REM ============================================================
 setlocal enabledelayedexpansion
 

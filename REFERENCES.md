@@ -15,7 +15,7 @@
 
 | 工具 | 用途 | 版本 |
 |---|---|---|
-| GCC 13.1 (MinGW) | 主编译器 | C:/Qt/Tools/mingw1310_64/ |
+| GCC 15.3 (MinGW) | 主编译器 | C:/Qt/Tools/mingw1530_64/ |
 | Python 3.13.12 | 工具链 | managed runtime |
 | godbolt.org | 在线汇编查看 | web |
 | perf | Linux 性能剖析 | — |

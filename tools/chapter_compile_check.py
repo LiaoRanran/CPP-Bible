@@ -14,7 +14,7 @@ int main(→int __main_(、包进 namespace chk_{stem}_{i}、前置 PRELUDE、
 """
 import pathlib, re, subprocess, sys, tempfile, os
 
-GPP = r"C:/Qt/Tools/mingw1310_64/bin/g++.exe"
+GPP = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
 PRELUDE = """#include <iostream>
 #include <vector>
 #include <string>

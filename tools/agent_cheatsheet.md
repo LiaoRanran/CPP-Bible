@@ -33,10 +33,10 @@
 
 **编译命令**：
 ```
-C:/Qt/Tools/mingw1310_64/bin/g++.exe -std=c++23 -O2 -Wall -Wextra
+C:/Qt/Tools/mingw1530_64/bin/g++.exe -std=c++23 -O2 -Wall -Wextra
 ```
 
-**GCC 13.1 限制（必须规避）**：
+**GCC 13.1 历史约束（当前主编译器 GCC 15.3.0，下述多数限制在 15.3 已解除；保留为历史参考）**：
 
 | 不可用 | 替代 |
 |---|---|
