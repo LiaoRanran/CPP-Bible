@@ -4,7 +4,7 @@
 ⟶ Book/part05_oo/ch47_virtual_functions.md
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜立场分层：`[标准]` 语言规定 · `[实现]` 编译器/库实现 · `[平台]` ABI/OS · `[经验]` 工程共识
-> 汇编证据：MinGW GCC 13.1.0，`-std=c++23 -O2 -S -masm=intel` 真实输出（见 `Examples/_asm_crtp.cpp` → `_asm_crtp.asm`）
+> 汇编证据：MinGW GCC 15.3.0，`-std=c++23 -O2 -S -masm=intel` 真实输出（见 `Examples/_asm_crtp.cpp` → `_asm_crtp.asm`）
 > 前置/后续：⟶ ch47（虚函数/动态多态）· ch50（多重继承 this 调整）· ch62（特化）· ch67（Concepts）· ch69（constexpr）· ch73（CRTP 进阶）
 
 ---
@@ -96,7 +96,7 @@ b.interface()（b: CrtpBase<Vec3>&）
 ─────────────────────────────────────
 ```
 
-## ⑩ 汇编分析（MinGW GCC 13.1.0, -O2, -masm=intel，真实输出）
+## ⑩ 汇编分析（MinGW GCC 15.3.0, -O2, -masm=intel，真实输出）
 
 【测试源 `Examples/_asm_crtp.cpp`】
 
