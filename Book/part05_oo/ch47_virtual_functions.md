@@ -120,7 +120,7 @@ classDiagram
   │◀──────────────────── 返回 ────────────────│
 ```
 
-## ⑩ 汇编分析（MinGW GCC 13.1.0, -O2, -masm=intel，真实输出）
+## ⑩ 汇编分析（MinGW GCC 15.3.0, -O2, -masm=intel，真实输出）
 
 【编译命令】
 
@@ -134,7 +134,7 @@ g++ -std=c++23 -O2 -S -masm=intel _asm_vcall.cpp -o _asm_vcall.asm
 ; int call_virtual(const Base& b) { return b.foo(); }
 _Z12call_virtualRK4Base:
         mov     rax, QWORD PTR [rcx]      ; rcx = this (Base&)，取对象头部 vptr
-        rex.W jmp     QWORD PTR 16[rax]    ; 间接跳转：vtable 偏移 16 处的函数指针
+        rex.W jmp     QWORD PTR [rax]      ; 间接跳转：经 vptr 指向的首虚函数槽（vtable 对象内 foo 在字节偏移 16，已被 vptr 初始化跳过，见要点2）
 
 ; int call_nonvirtual(const Base& b) { return b.bar(); }
 _Z15call_nonvirtualRK4Base:
@@ -147,10 +147,10 @@ _ZNK7Derived3fooEv:
         ret
 ```
 
-[实现·GCC13/MinGW x86-64] 关键事实：
+[实现·GCC15.3.0/MinGW x86-64] 关键事实：
 
 1. 虚调用由两条指令完成：`mov rax,[rcx]`（取 vptr）+ `jmp [16+rax]`（经 vtable 槽间接跳转）。`rcx` 是 x86-64 System V ABI 的第一个 this 指针寄存器（Windows x64 用 `rcx` 同样承载 this，但调用约定不同——见 ch36）。
-2. 偏移 `16` = 2 × 8 字节。Itanium C++ ABI 规定 vtable 起始两个条目为：槽0 `offset-to-top`（到对象顶部的偏移，单继承为0）、槽1 `typeinfo` 指针；真正的虚函数从槽2开始。故首虚函数 `foo` 在偏移 16。这从真实汇编得到印证。
+2. vtable 对象布局：槽0 `offset-to-top`（8字节）、槽1 `typeinfo` 指针（8字节），真正的虚函数从槽2起，故 `foo` 在 vtable 字节偏移 16。但 **vptr 被初始化为 `_ZTV4Base+16`**（见下文构造期重写），直接指向首虚函数槽，因此分派指令 `jmp [rax]` 位移为 0 即命中 `foo`。汇编中的「16」属 vtable 对象内部偏移，已被 vptr 初始化跳过——二者不矛盾，且经真实汇编印证。
 3. 非虚调用 `bar` 被常量折叠为 `mov eax,2; ret`——因为 `bar` 非虚且返回常量，编译器在编译期求值，连函数调用都消除。
 4. 间接 `jmp`（非 `call`）是因为 `call_virtual` 本身是个薄包装，跳转即尾调用；真实多态调用场景多为 `call qword ptr [...]`，多一次返回栈协调，但取指/分派成本性质相同。
 
@@ -408,7 +408,7 @@ vtable for C:
 
 #### 源码剖析 2：纯虚调用终止 @ libstdc++
 
-> 文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cxxabi.h`（声明 `__cxa_pure_virtual`）
+> 文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/cxxabi.h`（声明 `__cxa_pure_virtual`）
 > 行号：约 `extern "C" void __cxa_pure_virtual();`
 > 提取：`grep -n "__cxa_pure_virtual" <上述路径>`
 
@@ -1004,7 +1004,7 @@ call rax                ; 间接跳转，目标运行期才定
 
 缓存行 `0x0040`（64 字节）通常容纳 8 个 vtable 槽（0x0040 / 0x0008 = 8），热门类的 vtable 多驻留 L1/L2。
 
-去虚化：`GCC 13.1.0` 在 `-O2` 默认开启 `-fdevirtualize`，配合 LTO（`-flto`）或 `final` 可把虚调用改成直接 `call` 并内联；`Clang 17` / `MSVC 19.3` 同理。`C++20` 起 `consteval` 可在编译期彻底消除虚分派路径。
+去虚化：`GCC 15.3.0` 在 `-O2` 默认开启 `-fdevirtualize`，配合 LTO（`-flto`）或 `final` 可把虚调用改成直接 `call` 并内联；`Clang 17` / `MSVC 19.3` 同理。`C++20` 起 `consteval` 可在编译期彻底消除虚分派路径。
 
 [标准] 虚析构自 `C++98`；`override` / `final` 自 `C++11`；`consteval` 自 `C++20`。
 
