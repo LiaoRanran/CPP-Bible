@@ -584,6 +584,9 @@ int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*
 
 ## ⑫ 最佳实践（落地）
 
+⟶ Book/part13_engineering/ch144_style.md（代码风格）—— const 正确性是风格契约的核心护栏
+⟶ Book/part06_templates/ch69_constexpr.md（编译期计算 constexpr/consteval/constinit）—— 编译期计算的落地写法
+
 1. 能 constexpr 的常量/小函数就 constexpr（零运行期 + 隐式 inline 防 ODR）。
 2. 接口只读参数用 `const T&`；只读成员标 const；返回内部引用用 `const T&`。
 3. 全局/静态状态用 constinit/constexpr 防 SOIF。
@@ -713,6 +716,9 @@ probe(vi);   // T = volatile int（volatile 不被忽略）
 
 ## ⑰ 汇编视角（const 族的机器层真相）[实现][平台]
 
+⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— const 主要作为优化提示，现代优化器常自行推断
+⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 只读 .rodata 的缓存/共享特性
+
 `const`/`constexpr` 在 x86-64 上不是"指令"，而是"编译器优化决策 + 段属性"。
 
 1. **const 变量被优化消除**：`-O2` 下，未被 ODR 使用的 `const int x = 3;` 不会出现在 `.data`/`.rodata`，直接折成 `mov eax, 3` 立即数（见 ch19 §⑦、ch60 §⑦）。
@@ -729,6 +735,9 @@ mov  DWORD PTR [rbp-4], 3   ; y 有真实存储
 ---
 
 ## ⑱ 性能（const 族对运行期成本的真实影响）[经验][实现]
+
+⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— const 的优化收益有限，主价值是契约
+⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 性能须微基准量化，勿凭印象
 
 1. **`constexpr` 编译期折叠省运行期**：常量计算（如编译期斐波那契、查表生成）在翻译期完成，运行期只剩结果——零成本（见 ch60 §⑱、ch65 §⑱）。
 2. **const 引用延长减少拷贝**：`for (const auto& x : c)` 避免每个元素的拷贝构造，对大对象/非平凡类型显著省时（ch20 §⑩、ch25 §）。
@@ -749,6 +758,9 @@ for (const auto& b : bigs) use(b);         // 无拷贝，O(1) 引用遍历
 ---
 
 ## ⑲ 工业案例（const 族在真实项目中的用法与反模式）[经验]
+
+⟶ Book/part13_engineering/ch144_style.md（代码风格）—— 工业 const 规范是风格落地样本
+⟶ Book/part06_templates/ch69_constexpr.md（编译期计算）—— constinit 根治 static 初始化顺序灾难
 
 **案例 A：API 边界 const 正确（正确示范）**
 库接口对所有"只读输入"用 `const T&` / `const T*`，对"只读返回内部状态"用 `const T&`，明确所有权与可变性——这是大型 C++ 代码库（Chromium、LLVM）的硬性 Review 规则。
