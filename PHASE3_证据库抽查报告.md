@@ -46,6 +46,21 @@ P1（验证器别名映射）/ P2（补提取真实 `.s`）/ P3（modules/contra
 
 > v3 JSON（`_evidence_spotcheck_v3.json`）保留为基线；v4（`_evidence_spotcheck_v4.json`）为收口对照。DRIFT 逐行分类在 v4 上与 v3 完全一致（FRAME 55 / WRAPPER 87 / UNWIND 12 / CTRL 254 / DIRECTIVE 52 / CORE 86），因 DRIFT 案例集未变。
 
+### 2.2 P0 收口终态（19 DRIFT 重生成后，2026-07-18 收尾）
+
+P0 把 19 个 DRIFT 工件在 canonical `gcc-15.3.0 + -std=c++26 -O2 -masm=intel` 下用验证器同构命令重新生成（`GPP_S`→`g++ -S -masm=intel`；`OBJDUMP`→`g++ -c` 后派生 `objdump`），使存储工件与抽查参考逐字节同构。重跑验证器得终态：**DRIFT 全清、零差异覆盖率 69% → 96%**：
+
+| 状态 | v4（P1–P3 后） | post-P0（v4 终态）| 变化 |
+|---|---|---|---|
+| **MATCH** | 50 | **69** | +19（19 DRIFT 全转 MATCH）|
+| **DRIFT** | 19 | **0** | −19（全消解）|
+| **COMPILE_FAIL** | 0 | 0 | 0 |
+| **NO_ARTIFACT** | 2 | 2 | 0（ch08_mdspan / ch40_noexcept_nt 编译器/文件性质限制）|
+| **SPECIAL_SKIP** | 1 | 1 | 0（ch118 modules 工具链限制）|
+| **合计** | 72 | 72 | |
+
+> 体积印证一致性修复：部分原件为未优化膨胀汇编（如 `ch26_lambda_capture_test.s` 638KB→1.4KB、`ch50_vi_test.s` 639KB→2.9KB），重生成对齐 canonical `-O2` 后产出紧凑代码；`ch117_6.o` 21KB→14KB。复跑验证器确认 19 例全部 `MATCH`，无新引入差异。
+
 ---
 
 ## 3. MATCH（38 例，零差异，红线最硬证据）
@@ -160,7 +175,7 @@ P1（验证器别名映射）/ P2（补提取真实 `.s`）/ P3（modules/contra
 
 | 优先级 | 动作 | 状态 | 工作量 |
 |---|---|---|---|
-| P0 | 将 19 个 DRIFT 工件在 canonical gcc-15.3.0 + `-std=c++26 -O2`（含 `-masm=intel`）下**重新生成**，使证据与书称工具链严格一致；同步更新 `INDEX.md` 的「GCC 15.3.0」标注 | ⬜ 可选（非必需，红线下不强制）| 中 |
+| P0 | 将 19 个 DRIFT 工件在 canonical gcc-15.3.0 + `-std=c++26 -O2`（含 `-masm=intel`）下**重新生成**，使证据与书称工具链严格一致；同步更新 `INDEX.md` 的「GCC 15.3.0」标注 | ✅ 已完成（v5 终态 MATCH=69/DRIFT=0，commit 见 §11）| 中 |
 | P1 | 验证器 `find_stored` 加别名/后缀映射，纳入 6 例命名失配 | ✅ 已完成（v4 收口，6 例全转 MATCH）| 小 |
 | P2 | 裁定 6 例确无工件：补提取 asm 或标注「仅编译未提取」 | ✅ 部分完成（4 例真实提取 + 2 例诚实标注）| 小 |
 | P3 | 验证器补 modules(`-fmodules`)/contracts(`-fcontracts`) 特例，消除 3 例 COMPILE_FAIL 假阳 | ✅ 已完成（COMPILE_FAIL→0）| 小 |
@@ -206,6 +221,21 @@ P1（验证器别名映射）/ P2（补提取真实 `.s`）/ P3（modules/contra
 ### 10.3 P3 — modules/contracts 特例（COMPILE_FAIL 3 → 0）
 - `flags_for` 补 `"ctest"` → `-fcontracts`：`ch121_ctest`/`ch121_ctest2`（`[[pre/post]]` 契约）现可编译，转 MATCH。
 - `import` 开头源（如 `ch118_use_mod` 的 `import math;`）标 `SPECIAL_SKIP`：GCC 本工具链无 `math` 标准模块，需预编译模块单元，非 bit-rot，不计入 COMPILE_FAIL。
+
+---
+
+## 11. P0 收口明细（v5 终态依据）
+
+### 11.1 重生成命令（验证器同构）
+- `GPP_S` 工件（18 例，`.s`）：`g++ -std=c++26 -O2 -S -masm=intel <name>.cpp -o <name>.s`（AT&T 自适应，19 例均 Intel）。
+- `OBJDUMP` 工件（1 例，`ch117_6.o`）：`g++ -std=c++26 -O2 -c <name>.cpp -o <name>.o`（objdump 在抽查时派生）。
+- 工具：`_regen_drift.py`（复用 `_verify_asm_evidence.py` 的 `flags_for`/`STORED_ALIAS`，仅取路径不取内容）。
+
+### 11.2 复现性修复（重要）
+重生成时发现 **8 个文件（4 对源+工件）此前从未跟踪**：`_ch115_buf_gcc15_noinline.{cpp,s}`、`ch117_6.{cpp,o}`、`ch19_foo_gcc15.{cpp,s}`、`ch19_getlogger_gcc15.{cpp,s}`。若只提交工件不提交源，未来季度抽查将无法重编译。本次一并提交这 8 个文件 + 15 个已跟踪 `.s`（共 23 文件），使 19 例证据在 git 内完整可复现。
+
+### 11.3 终态红线裁定（更新）
+P0 后：**MATCH=69 / DRIFT=0 / COMPILE_FAIL=0 / NO_ARTIFACT=2 / SPECIAL_SKIP=1**。仅余 2 例非 gcc-15.3.0 可提取（ch08_mdspan 头缺失、ch40_noexcept_nt 说明文件）+ 1 例 modules 工具链限制，均非伪造。**「绝不伪造」红线在 72 例全量证据上终态确认未破**，证据库与书称 canonical gcc-15.3.0 严格一致。
 
 ### 10.4 最终裁定（v4）
 - **红线未破**：50/72 零差异（69%），DRIFT 19 例 100% 良性，CORE=86 经手验为 xor-zeroing/帧偏移/对齐 nop/lea↔mov 指令选择漂移。
