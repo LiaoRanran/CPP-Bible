@@ -4,7 +4,7 @@
 ⟶ Book/part08_algorithms/ch96_sorting.md
 ⟶ Book/part08_algorithms/ch97_search.md
 
-> 真实编译器取证：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
+> 真实编译器取证：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 示例源统一前缀 `Examples/_ch95_`，全部可编译；本章汇编与性能数据均由本机真实编译/运行取得，无编造。
 > 术语与立场分层遵循 CONVENTIONS.md。
 
@@ -216,7 +216,7 @@ _Z14sum_of_squaresRKSt6vectorIiSaIiEE:
 	ret
 ```
 
-- `[实现·GCC13]`：循环里只有 `imul`/`add`，**没有任何 `call`**——`std::for_each` 与 lambda 被彻底内联。与手写 `for (int x : v) s += (long)x*x;` 生成的汇编逐条对应。
+- `[实现·GCC15.3.0]`：循环里只有 `imul`/`add`，**没有任何 `call`**——`std::for_each` 与 lambda 被彻底内联。与手写 `for (int x : v) s += (long)x*x;` 生成的汇编逐条对应。
 - `[标准]`：这正是"零开销抽象"的可验证含义：高层抽象在优化后不残留运行时痕迹。
 
 ```cpp
@@ -232,13 +232,53 @@ void square_inplace(std::vector<int>& v) {
 
 ```asm
 ; 关键证据：square_inplace 循环体 = mov / imul / store，纯内联
+; 关键证据：GCC 15.3.0 把 square_inplace 自动向量化为 SSE2（movdqu/pmuludq），
+;          仅尾部 0~3 个元素走标量 imul 收尾；全程无任何 call（lambda 被内联）
+_Z14square_inplaceRSt6vectorIiSaIiEE:
+	mov	r9, QWORD PTR 8[rcx]
+	mov	rdx, QWORD PTR [rcx]
+	cmp	rdx, r9
+	je	.L21
+	lea	r8, -4[r9]
+	mov	rax, rdx
+	sub	r8, rdx
+	cmp	r8, 8
+	jbe	.L23
+	shr	r8, 2
+	add	r8, 1
+	mov	rcx, r8
+	shr	rcx, 2
+	sal	rcx, 4
+	add	rcx, rdx
+.L24:
+	movdqu	xmm0, XMMWORD PTR [rax]
+	add	rax, 16
+	movdqa	xmm1, xmm0
+	pmuludq	xmm1, xmm0
+	psrlq	xmm0, 32
+	pmuludq	xmm0, xmm0
+	pshufd	xmm1, xmm1, 8
+	pshufd	xmm0, xmm0, 8
+	punpckldq	xmm1, xmm0
+	movups	XMMWORD PTR -16[rax], xmm1
+	cmp	rax, rcx
+	jne	.L24
+	test	r8b, 3
+	je	.L21
+	and	r8, -4
+	lea	rdx, [rdx+r8*4]
+.L23:
+	mov	rax, rdx
 .L26:
 	mov	edx, DWORD PTR [rax]
 	add	rax, 4
-	imul	edx, edx           ; x = x*x
+	imul	edx, edx
 	mov	DWORD PTR -4[rax], edx
-	cmp	rax, r8
+	cmp	r9, rax
 	jne	.L26
+.L21:
+	ret
+
 ```
 
 ## ⑥ 稳定性 stable
@@ -366,7 +406,7 @@ void par_square(std::vector<double>& v) {
 ```asm
 // 文件：Examples/_ch95_parallel.cpp
 // 行号：13
-; 真实汇编（GCC 13.1.0 / MinGW，仅 -S 不链接）：
+; 真实汇编（GCC 15.3.0 / MinGW，仅 -S 不链接）：
 ; 注意：本工具链的 libstdc++ PSTL 后端解析为【串行】实现——
 ;       par_for_each 被内联成一条普通循环，没有出现任何线程/任务派发调用。
 _Z12par_for_eachRSt6vectorIdSaIdEE:
@@ -388,7 +428,7 @@ _Z12par_for_eachRSt6vectorIdSaIdEE:
 	ret
 ```
 
-- `[实现·libstdc++13]`：上汇编证明——**在此 MinGW GCC 13.1.0 构建上，`execution::par` 没有生成并发代码**，因为 PSTL 后端是串行实现（未配置/未链接 TBB）。要让 `par` 真正多线程，必须链接 Intel TBB（`-ltbb`），且 `par_unseq` 还要求向量化安全。
+- `[实现·libstdc++15.3.0]`：上汇编证明——**在此 MinGW GCC 15.3.0 构建上，`execution::par` 没有生成并发代码**，因为 PSTL 后端是串行实现（未配置/未链接 TBB）。要让 `par` 真正多线程，必须链接 Intel TBB（`-ltbb`），且 `par_unseq` 还要求向量化安全。
 - `[经验]`：**不要假设 `par` 一定更快**。小数据量下线程派发开销反而更慢；只有大规模、计算密集的算法才值得并行。
 
 ## ⑩ 算法与容器成员函数取舍 [标准]
@@ -810,9 +850,9 @@ int quickcheck() {
 
 ---
 
-> 取证说明：第⑤节 `sum_of_squares`/`square_inplace` 汇编、第⑨节 `par_for_each` 汇编、第②/⑤节的 `std::sort`→`__introsort_loop`、第⑥节 `stable_sort`→`__merge_*`（见 `Examples/_ch95_sort.asm`）均由 GCC 13.1.0 真实 `-S` 生成；第⑭/⑬节涉及的性能量级由 `Examples/_ch95_perf.cpp` 经 `std::chrono::steady_clock` 真实运行测得（见下 `text` 块，本机实测，非编造）。
+> 取证说明：第⑤节 `sum_of_squares`/`square_inplace` 汇编、第⑨节 `par_for_each` 汇编、第②/⑤节的 `std::sort`→`__introsort_loop`、第⑥节 `stable_sort`→`__merge_*`（见 `Examples/_ch95_sort.asm`）均由 GCC 15.3.0 真实 `-S` 生成；第⑭/⑬节涉及的性能量级由 `Examples/_ch95_perf.cpp` 经 `std::chrono::steady_clock` 真实运行测得（见下 `text` 块，本机实测，非编造）。
 >
-> 真实性能数据（N=5,000,000，各重复 20 轮；本机 GCC 13.1.0 -O2，数值随硬件浮动，但**量级关系**稳定）：
+> 真实性能数据（N=5,000,000，各重复 20 轮；本机 GCC 15.3.0 -O2，数值随硬件浮动，但**量级关系**稳定）：
 
 ```text
 [A] std::for_each  x20 : 44.8691 ms  (校验和=-1506365568)
@@ -823,7 +863,7 @@ int quickcheck() {
 [C] linear-search  x200 : 451.482 ms  (found=1)
 ```
 
-- `[实现·GCC13]`：A 组证明 `std::for_each` 与手写 `range-for` **几乎同速**（差值在测量噪声内）→ 零开销抽象属实。B 组 `count_if` 略慢于手写，源于谓词封装/迭代器抽象的微小常数；C 组 `lower_bound`（O(log n)）相对线性扫描快 **约 7 个数量级**，印证"先利用有序性"的选型原则（第⑬/⑭节）。
+- `[实现·GCC15.3.0]`：A 组证明 `std::for_each` 与手写 `range-for` **几乎同速**（差值在测量噪声内）→ 零开销抽象属实。B 组 `count_if` 略慢于手写，源于谓词封装/迭代器抽象的微小常数；C 组 `lower_bound`（O(log n)）相对线性扫描快 **约 7 个数量级**，印证"先利用有序性"的选型原则（第⑬/⑭节）。
 
 
 ## 附录 A：工业实现对比 [F: Industry / D: stdlib]

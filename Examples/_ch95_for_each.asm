@@ -6,14 +6,15 @@
 	.def	_Z14sum_of_squaresRKSt6vectorIiSaIiEE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z14sum_of_squaresRKSt6vectorIiSaIiEE
 _Z14sum_of_squaresRKSt6vectorIiSaIiEE:
-.LFB2661:
+.LFB2635:
 	.seh_endprologue
 	mov	r8, QWORD PTR 8[rcx]
 	mov	rdx, QWORD PTR [rcx]
 	xor	ecx, ecx
 	cmp	rdx, r8
 	je	.L1
-	.p2align 4,,10
+	.p2align 4
+	.p2align 4
 	.p2align 3
 .L3:
 	mov	eax, DWORD PTR [rdx]
@@ -31,13 +32,14 @@ _Z14sum_of_squaresRKSt6vectorIiSaIiEE:
 	.def	_Z8scale_byRSt6vectorIdSaIdEEd;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8scale_byRSt6vectorIdSaIdEEd
 _Z8scale_byRSt6vectorIdSaIdEEd:
-.LFB2663:
+.LFB2637:
 	.seh_endprologue
 	mov	rax, QWORD PTR [rcx]
 	mov	rdx, QWORD PTR 8[rcx]
 	cmp	rdx, rax
 	je	.L7
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
 .L9:
 	movsd	xmm0, QWORD PTR [rax]
@@ -54,28 +56,28 @@ _Z8scale_byRSt6vectorIdSaIdEEd:
 	.def	_Z10count_evenRKSt6vectorIiSaIiEE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10count_evenRKSt6vectorIiSaIiEE
 _Z10count_evenRKSt6vectorIiSaIiEE:
-.LFB2665:
+.LFB2639:
 	.seh_endprologue
 	mov	r8, QWORD PTR 8[rcx]
 	mov	rcx, QWORD PTR [rcx]
 	cmp	rcx, r8
-	je	.L15
+	je	.L14
 	xor	eax, eax
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
-.L14:
+.L13:
 	mov	edx, DWORD PTR [rcx]
+	add	rcx, 4
 	not	edx
 	and	edx, 1
-	cmp	dl, 1
-	sbb	rax, -1
-	add	rcx, 4
+	add	rax, rdx
 	cmp	r8, rcx
-	jne	.L14
+	jne	.L13
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L15:
+.L14:
 	xor	eax, eax
 	ret
 	.seh_endproc
@@ -84,21 +86,23 @@ _Z10count_evenRKSt6vectorIiSaIiEE:
 	.def	_Z5totalRKSt6vectorIiSaIiEE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z5totalRKSt6vectorIiSaIiEE
 _Z5totalRKSt6vectorIiSaIiEE:
-.LFB2669:
+.LFB2643:
 	.seh_endprologue
 	xor	edx, edx
-	mov	r8, QWORD PTR 8[rcx]
-	mov	rax, QWORD PTR [rcx]
-	cmp	rax, r8
-	je	.L19
-	.p2align 4,,10
+	mov	rax, rcx
+	mov	rcx, QWORD PTR 8[rcx]
+	mov	rax, QWORD PTR [rax]
+	cmp	rax, rcx
+	je	.L16
+	.p2align 4
+	.p2align 4
 	.p2align 3
-.L21:
+.L18:
 	add	edx, DWORD PTR [rax]
 	add	rax, 4
-	cmp	rax, r8
-	jne	.L21
-.L19:
+	cmp	rax, rcx
+	jne	.L18
+.L16:
 	mov	eax, edx
 	ret
 	.seh_endproc
@@ -107,22 +111,53 @@ _Z5totalRKSt6vectorIiSaIiEE:
 	.def	_Z14square_inplaceRSt6vectorIiSaIiEE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z14square_inplaceRSt6vectorIiSaIiEE
 _Z14square_inplaceRSt6vectorIiSaIiEE:
-.LFB2670:
+.LFB2644:
 	.seh_endprologue
-	mov	r8, QWORD PTR 8[rcx]
-	mov	rax, QWORD PTR [rcx]
-	cmp	rax, r8
-	je	.L24
-	.p2align 4,,10
+	mov	r9, QWORD PTR 8[rcx]
+	mov	rdx, QWORD PTR [rcx]
+	cmp	rdx, r9
+	je	.L21
+	lea	r8, -4[r9]
+	mov	rax, rdx
+	sub	r8, rdx
+	cmp	r8, 8
+	jbe	.L23
+	shr	r8, 2
+	add	r8, 1
+	mov	rcx, r8
+	shr	rcx, 2
+	sal	rcx, 4
+	add	rcx, rdx
+	.p2align 6
+	.p2align 4
 	.p2align 3
+.L24:
+	movdqu	xmm0, XMMWORD PTR [rax]
+	add	rax, 16
+	movdqa	xmm1, xmm0
+	pmuludq	xmm1, xmm0
+	psrlq	xmm0, 32
+	pmuludq	xmm0, xmm0
+	pshufd	xmm1, xmm1, 8
+	pshufd	xmm0, xmm0, 8
+	punpckldq	xmm1, xmm0
+	movups	XMMWORD PTR -16[rax], xmm1
+	cmp	rax, rcx
+	jne	.L24
+	test	r8b, 3
+	je	.L21
+	and	r8, -4
+	lea	rdx, [rdx+r8*4]
+.L23:
+	mov	rax, rdx
 .L26:
 	mov	edx, DWORD PTR [rax]
 	add	rax, 4
 	imul	edx, edx
 	mov	DWORD PTR -4[rax], edx
-	cmp	rax, r8
+	cmp	r9, rax
 	jne	.L26
-.L24:
+.L21:
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

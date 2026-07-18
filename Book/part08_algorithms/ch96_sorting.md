@@ -3,8 +3,8 @@
 ⟶ Book/part08_algorithms/ch98_heap.md
 ⟶ Book/part07_stl/ch77_vector.md
 
-> 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
-> 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；以真实编译产物（`__introsort_loop` 符号、内联比较器、chrono 实测）为证据。本章示例代码置于 `Examples/_ch96_*.cpp`（相对路径，非绝对路径）。
+> 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
+> 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；以真实编译产物（`__introsort_loop` 符号、内联比较器、chrono 实测）为证据。本章示例代码置于 `Examples/_ch96_*.cpp`（相对路径，非绝对路径）。
 
 ## ① 概述：排序在 `<algorithm>` 中的位置 [标准]
 
@@ -160,7 +160,7 @@ int main() {
 }
 ```
 
-> 该块标注 `[自包含可编译]`：可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 13.1，零失败）。libstdc++ 上游片段（text 围栏）不进入编译门禁。把 ②-2.1 的 `median3_partition` 与 ② 的 `introsort` 拼起来即是一个可运行的 introsort 完整实现。
+> 该块标注 `[自包含可编译]`：可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 15.3.0，零失败）。libstdc++ 上游片段（text 围栏）不进入编译门禁。把 ②-2.1 的 `median3_partition` 与 ② 的 `introsort` 拼起来即是一个可运行的 introsort 完整实现。
 
 
 ## ③ 复杂度与枢纽（pivot）选择 [标准]
@@ -295,7 +295,7 @@ _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_
 	push	rdi
 	push	rsi
 	push	rbx
-	sub	rsp, 56
+	sub	rsp, 40
 	.seh_endprologue
 	mov	rax, rdx
 	mov	rsi, rcx
@@ -479,17 +479,24 @@ std::sort(v.begin(), v.end(),
 ; 真实产物（g++ -std=c++23 -O2 -S -masm=intel Examples/_ch96_lambda_inline.cpp）
 ; 符号中编码了 lambda 类型：...Iter_comp_iterIZ18sort_points_inline...EUlRKS2_SC_E_...
 ; 排序循环内直接出现比较，无 call 到外部比较器：
-_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIP5PointSt6vectorIS2_SaIS2_EEEExNS0_5__ops15_Iter_comp_iterIZ18sort_points_inlineRS6_EUlRKS2_SC_E_EEEvT_SF_T0_T1_:
-	...
-.L39:
-	mov	r9, rax
-	mov	edx, DWORD PTR [rax]
-	add	rax, 8
-	cmp	edx, ecx
-	jl	.L39                       ; 内联的 a.x < b.x 比较（edx=next.x, ecx=pivot.x）
-	...
-	cmp	DWORD PTR 8[rax], ecx      ; 另一处内联比较（直接读 Point.x 字段）
-	jg	.L41
+_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIP5PointSt6vectorIS2_SaIS2_EEEExNS0_5__ops15_Iter_comp_iterIZ18sort_points_inlineRS6_EUlRKS2_SC_E_EEEvT_SF_T0_T1_
+.L83:
+	movq	xmm6, QWORD PTR [rdi]
+	mov	rdx, rdi
+	movd	ecx, xmm6
+	cmp	DWORD PTR 0[rbp], ecx
+	jg	.L103
+	cmp	DWORD PTR -8[rdi], ecx
+	jle	.L81
+	lea	rax, -8[rdi]
+.L82:
+	mov	rdx, QWORD PTR [rax]
+	mov	QWORD PTR 8[rax], rdx
+	mov	rdx, rax
+	sub	rax, 8
+	cmp	DWORD PTR [rax], ecx
+	jg	.L82
+
 ```
 
 - `[实现]`：比较器逻辑（`a.x < b.x`）被内联为排序循环里的 `cmp ... , ecx` / `jl .L39`，**完全没有 `call` 到独立比较函数**——这正是 `std::sort` 性能优于"每次循环调函数指针"的关键。对照：若把比较器写成**具名函数 `by_x`** 并以函数指针传入，汇编里会出现 `call _Z4by_xRK5PointS1_`（无法内联），性能更差。
@@ -605,7 +612,7 @@ int main() {
 
 ## ⑮ [经验] 性能实测：chrono 取证 [经验]
 
-用 `std::chrono` 实测 `std::sort` 在不同规模下的耗时（MinGW GCC 13.1.0，`-O2`，本机实测，非编造）：
+用 `std::chrono` 实测 `std::sort` 在不同规模下的耗时（MinGW GCC 15.3.0，`-O2`，本机实测，非编造）：
 
 ```cpp
 // ⑮ 性能取证代码（见 Examples/_ch96_bench.cpp）

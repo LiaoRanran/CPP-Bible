@@ -6,11 +6,11 @@
 	.def	_Z15lower_bound_idxPKiii;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z15lower_bound_idxPKiii
 _Z15lower_bound_idxPKiii:
-.LFB1544:
+.LFB1516:
 	.seh_endprologue
-	movsx	rdx, edx
+	movsxd	rdx, edx
 	mov	rax, rcx
-	.p2align 4,,10
+	.p2align 4
 	.p2align 3
 .L3:
 	test	rdx, rdx
@@ -18,11 +18,10 @@ _Z15lower_bound_idxPKiii:
 .L4:
 	mov	r9, rdx
 	sar	r9
-	lea	r10, [rax+r9*4]
-	cmp	DWORD PTR [r10], r8d
+	cmp	DWORD PTR [rax+r9*4], r8d
 	jge	.L5
-	lea	rax, 4[r10]
 	sub	rdx, r9
+	lea	rax, 4[rax+r9*4]
 	sub	rdx, 1
 	test	rdx, rdx
 	jg	.L4
@@ -36,4 +35,4 @@ _Z15lower_bound_idxPKiii:
 	mov	rdx, r9
 	jmp	.L3
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

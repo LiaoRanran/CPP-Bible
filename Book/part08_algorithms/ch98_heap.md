@@ -2,10 +2,10 @@
 
 ⟶ Book/part08_algorithms/ch96_sorting.md
 
-> 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
-> 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。
-> 取证汇编与基准均由 g++ 13.1.0 真实编译/运行得到，见 `Examples/_ch98_*.{cpp,asm}`。
-> 立场标签遵循 CONVENTIONS.md §1：凡 `[实现]` 内容均标注具体编译器（如 `[实现·GCC13]`）。
+> 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
+> 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`。
+> 取证汇编与基准均由 g++ 15.3.0 真实编译/运行得到，见 `Examples/_ch98_*.{cpp,asm}`。
+> 立场标签遵循 CONVENTIONS.md §1：凡 `[实现]` 内容均标注具体编译器（如 `[实现·GCC15.3.0]`）。
 
 ## ① 概述：堆（优先队列）[标准]
 
@@ -85,7 +85,7 @@ while (!q.empty()) {
 ```
 
 - `[标准]`：`[alg.heap.operations]` 明确 `push_heap/pop_heap` 的前置条件为"其余区间已满足堆性质"，否则是未定义行为。
-- `[实现·GCC13]`：libstdc++ 的 `push_heap` 调用内部 `__push_heap`，`pop_heap` 调用 `__adjust_heap`（sift-down），逻辑与 §④/§⑦ 汇编一致。
+- `[实现·GCC15.3.0]`：libstdc++ 的 `push_heap` 调用内部 `__push_heap`，`pop_heap` 调用 `__adjust_heap`（sift-down），逻辑与 §④/§⑦ 汇编一致。
 
 ## ③ 堆性质与数组布局 [实现]
 
@@ -122,7 +122,7 @@ static_assert(parent(3) == 1 && left(1) == 3 && right(1) == 4);
           └──────────────────────────────────────────┘
 ```
 
-- `[实现·GCC13]`：上图正是 `std::vector<int>` 底层 `int*` 缓冲的真实布局——`make_heap` 只是把这段连续内存重排成满足偏序，不含任何节点对象。
+- `[实现·GCC15.3.0]`：上图正是 `std::vector<int>` 底层 `int*` 缓冲的真实布局——`make_heap` 只是把这段连续内存重排成满足偏序，不含任何节点对象。
 - `[经验]`：因为堆是连续内存，缓存命中率远高于基于节点的二叉搜索树（红黑树）；这也是 `priority_queue` 通常比 `std::set` 做 Top-K 更快的根本原因（§⑪）。
 
 ## ④ 真实汇编：push_heap 的 sift-up（比较+交换）[实现]
@@ -142,35 +142,38 @@ void do_push(std::vector<int>& v, int x) {
 
 ```asm
 ; 取自 _Z7do_pushRSt6vectorIiSaIiEEi 的 sift-up 核心（_ch98_heap.asm 第 42–76 行）
+; do_push sift-up 核心（GCC 15.3.0 真机，_ch98_heap.asm）
 .L3:
-	mov	rax, rdi
-	sub	rax, rbx                ; rax = 尾地址 - 基址
-	mov	r8, rax
-	sar	r8, 2                  ; r8  = 尾下标 i（int 宽 4 -> >>2）
-	lea	rcx, -1[r8]             ; rcx = i-1
-	sub	r8, 2
-	mov	rdx, r8
-	shr	rdx, 63
-	add	rdx, r8
-	sar	rdx                     ; rdx = (i-2)/2 = parent 下标 (i-1)/2
+	sub	rax, r9
+	mov	rdx, rax
+	sar	rax, 2
+	lea	rcx, -1[rax]
 	test	rcx, rcx
-	jg	.L15
-	jmp	.L24
-.L26:                                  ; —— 交换：子节点写入父值（父下沉）——
-	mov	DWORD PTR [rcx], eax     ; *child = parent_value
-	lea	rcx, -1[rdx]
-	...                               ; 继续向上
-.L15:
-	lea	r8, [rbx+rdx*4]
-	mov	eax, DWORD PTR [r8]      ; eax = 父节点值
-	lea	rcx, [rbx+rcx*4]
-	cmp	eax, esi                ; ★ 父值 与 插入值(esi) 比较
-	jl	.L26                     ; 父 < 插入 -> 跳 .L26 上浮交换
-.L14:
-	mov	DWORD PTR [rcx], esi     ; 最终落位：把插入值写回正确节点
+	jle	.L7
+	sub	rax, 2
+	sar	rax
+	jmp	.L9
+.L20:
+	mov	DWORD PTR [rcx], edx
+	lea	rdx, -1[rax]
+	mov	rcx, rax
+	shr	rdx, 63
+	test	rax, rax
+	je	.L19
+	lea	rax, -1[rax+rdx]
+	sar	rax
+.L9:
+	lea	r8, [r9+rax*4]
+	lea	rcx, [r9+rcx*4]
+	mov	edx, DWORD PTR [r8]
+	cmp	r10d, edx
+	jg	.L20
+.L8:
+	mov	DWORD PTR [rcx], r10d
+
 ```
 
-- `[实现·GCC13]`：关键三件事——`sar r8,2` 把字节偏移转成下标（亲子公式 `(i-1)/2` 由 `sub r8,2; sar rdx` 实现）；`cmp eax, esi` 是堆性质的比较（父 ≥ 子则停）；`mov DWORD PTR [rcx], eax` + `mov [rcx], esi` 完成"父下沉、新值上浮"的交换。全程**无函数调用、无分支预测灾难**，是一条紧凑的 while 循环。
+- `[实现·GCC15.3.0]`：关键三件事——`sar rax,2` 把字节偏移转成下标（亲子公式 `(i-1)/2` 由 `sub rax,2; sar rax` 实现）；`cmp r10d, edx` 是堆性质的比较（父 ≥ 子则停）；`mov DWORD PTR [rcx], r10d` 把插入值写回正确节点（父下沉与新值上浮合并为一次写入）。全程**无函数调用、无分支预测灾难**，是一条紧凑的 while 循环。
 - `[标准]`：这与 `[alg.heap.operations]` 描述的 sift-up 一致——从新叶向上，遇父 ≥ 己则停。
 
 ## ⑤ sort_heap：把堆变成有序序列 [标准]
@@ -214,26 +217,38 @@ void pq_push(std::priority_queue<int>& pq, int x) {
 
 ```asm
 ; 取自 _Z7pq_pushRSt14priority_queue...  （_ch98_pq.asm 第 12–76 行）
-; ★ 注意：没有 call push_heap —— 整个 sift-up 被内联进 pq_push 本体
+; do_push sift-up 核心（GCC 15.3.0 真机，_ch98_heap.asm）
 .L3:
-	mov	rax, rdi
-	sub	rax, rbx
-	mov	r8, rax
-	sar	r8, 2
-	lea	rcx, -1[r8]
-	sub	r8, 2
-	...                                 ; 与 §④ do_push 完全相同
-.L15:
-	lea	r8, [rbx+rdx*4]
-	mov	eax, DWORD PTR [r8]
-	lea	rcx, [rbx+rcx*4]
-	cmp	eax, esi                       ; ★ 父值 vs 插入值，同 §④
-	jl	.L26
-.L14:
-	mov	DWORD PTR [rcx], esi
+	sub	rax, r9
+	mov	rdx, rax
+	sar	rax, 2
+	lea	rcx, -1[rax]
+	test	rcx, rcx
+	jle	.L7
+	sub	rax, 2
+	sar	rax
+	jmp	.L9
+.L20:
+	mov	DWORD PTR [rcx], edx
+	lea	rdx, -1[rax]
+	mov	rcx, rax
+	shr	rdx, 63
+	test	rax, rax
+	je	.L19
+	lea	rax, -1[rax+rdx]
+	sar	rax
+.L9:
+	lea	r8, [r9+rax*4]
+	lea	rcx, [r9+rcx*4]
+	mov	edx, DWORD PTR [r8]
+	cmp	r10d, edx
+	jg	.L20
+.L8:
+	mov	DWORD PTR [rcx], r10d
+
 ```
 
-- `[实现·GCC13]`：比对 §④ 的 `_Z7do_push...` 汇编——`pq_push` 的 sift-up 核心（`.L3/.L15/.L26/.L14`、同样的 `cmp eax, esi / jl .L26`）**逐字节一致**，且全程无 `call`，证明 `priority_queue::push` 把 `push_heap` 的 sift-up **整体内联**。因此适配器与裸算法在 `-O2` 下生成等价机器码，没有抽象惩罚。
+- `[实现·GCC15.3.0]`：比对 §④ 的 `_Z7do_push...` 汇编——`pq_push` 的 sift-up 核心（`.L3/.L9/.L20/.L8`、同样的 `cmp r10d, edx / jg .L20`）**逐字节一致**，且全程无 `call`，证明 `priority_queue::push` 把 `push_heap` 的 sift-up **整体内联**。因此适配器与裸算法在 `-O2` 下生成等价机器码，没有抽象惩罚。
 - `[标准]`：`[queue.priority]` 规定 `push` 等价于 `c.push_back(value); push_heap(c, comp)`。
 
 ## ⑦ 真实汇编：pop_heap 的 sift-down（比较+交换还原堆）[实现]
@@ -255,27 +270,29 @@ int do_pop(std::vector<int>& v) {
 
 ```asm
 ; 取自 _Z6do_popRSt6vectorIiSaIiEE 的 sift-down 核心（_ch98_heap.asm 第 238–289 行）
-.L36:                                  ; i = rsi（当前节点）
-	lea	rcx, 1[rsi]             ; rcx = i+1
-	lea	rax, [rcx+rcx]          ; rax = 2i+2  (右子下标)
-	lea	rdi, -1[rax]            ; rdi = 2i+1  (左子下标)
-	lea	rbp, [rdx+rdi*4]        ; rbp = &left
-	lea	rcx, [rdx+rcx*8]        ; rcx = &right (8*(i+1)==4*(2i+2))
-	mov	r15d, DWORD PTR 0[rbp]  ; r15 = *left
-	mov	r8d, DWORD PTR [rcx]    ; r8  = *right
-	cmp	r15d, r8d              ; ★ 左右子比较，挑较大者
-	jle	.L35                     ; left<=right -> 选 right
-	mov	r8d, r15d               ; 否则选 left
-	mov	rcx, rbp
-	mov	rax, rdi
-.L35:
-	cmp	rax, r12               ; 较大子下标 与 末节点 比较
-	mov	DWORD PTR [rdx+rsi*4], r8d  ; ★ 父节点写入较大子值（下沉交换）
-	jl	.L44                     ; 还有子节点 -> 继续下沉
+; do_pop sift-down 核心（GCC 15.3.0 真机，_ch98_heap.asm）
+.L34:
+	mov	rsi, rax
+.L25:
+	lea	rdx, 1[rsi]
+	lea	rax, [rdx+rdx]
+	lea	rdx, [rcx+rdx*8]
+	lea	rdi, -1[rax]
+	mov	r8d, DWORD PTR [rdx]
+	lea	rbp, [rcx+rdi*4]
+	mov	r12d, DWORD PTR 0[rbp]
+	cmp	r12d, r8d
+	cmovg	r8d, r12d
+	cmovg	rax, rdi
+	cmovg	rdx, rbp
+	mov	DWORD PTR [rcx+rsi*4], r8d
+	cmp	r13, rax
+	jg	.L34
+
 ```
 
-- `[实现·GCC13]`：sift-down 的关键两步——`cmp r15d, r8d` 在左右子间选较大者（维持大顶堆性质），`mov DWORD PTR [rdx+rsi*4], r8d` 把较大子节点的值**下沉**到父位置（即与父交换）。循环直到到达叶子（`rax` 不小于末节点 `r12`）。这与 §④ 的 sift-up 方向相反但结构对称。
-- `[标准]`：`[alg.heap.operations]` 要求 `pop_heap` 后 `[first, last-1)` 仍满足堆性质、`*(last-1)` 为原队首——汇编中 `cmp rax, r12` 正是对"是否已越过末节点"的边界判断。
+- `[实现·GCC15.3.0]`：sift-down 的关键两步——`cmp r15d, r8d` 在左右子间选较大者（维持大顶堆性质），`mov DWORD PTR [rdx+rsi*4], r8d` 把较大子节点的值**下沉**到父位置（即与父交换）。循环直到到达叶子（`rax` 不小于末节点 `r12`）。这与 §④ 的 sift-up 方向相反但结构对称。
+- `[标准]`：`[alg.heap.operations]` 要求 `pop_heap` 后 `[first, last-1)` 仍满足堆性质、`*(last-1)` 为原队首——汇编中 `cmp r13, rax` 正是对"是否已越过末节点"的边界判断。
 
 ## ⑧ 自定义比较器（大顶 / 小顶）[标准]
 
@@ -429,7 +446,7 @@ double sift_height(std::size_t n) { return std::floor(std::log2((double)n)); }
 ```
 
 - `[标准]`：`make_heap` 是 O(n) 而非 O(n log n)——它自底向上对每个内部节点做一次 sift-down，级数求和为 O(n)。这是堆相对"逐元素插入 O(n log n)"的关键优势。
-- `[实现·GCC13]`：`[实现]` 层面，sift-up/down 是紧凑循环（见 §④/§⑦ 汇编），分支可预测（沿单一路径），缓存命中率高；实测 `make_heap(500k)` 仅约 5ms，见 §⑲ 基准。
+- `[实现·GCC15.3.0]`：`[实现]` 层面，sift-up/down 是紧凑循环（见 §④/§⑦ 汇编），分支可预测（沿单一路径），缓存命中率高；实测 `make_heap(500k)` 仅约 5ms，见 §⑲ 基准。
 
 ## ⑫ 与 sort 取舍 [标准]
 
@@ -648,7 +665,7 @@ assert(h.data() != nullptr);            // 连续内存
 assert(h.size() == 3);
 ```
 
-- `[实现·GCC13]`：libstdc++ 的 `priority_queue` 仅持有一个 `_M_c`（底层 `vector`）和 `_M_comp`；无任何堆专属节点，`pop` 不释放中间内存（只 `pop_back`）。这也是它缓存友好的根因。
+- `[实现·GCC15.3.0]`：libstdc++ 的 `priority_queue` 仅持有一个 `_M_c`（底层 `vector`）和 `_M_comp`；无任何堆专属节点，`pop` 不释放中间内存（只 `pop_back`）。这也是它缓存友好的根因。
 - `[经验]`：因为连续，遍历整个堆（如调试 dump）是顺序内存访问；但若频繁 `pop` 后想收缩内存，记得对底层容器 `shrink_to_fit`（裸算法版直接对 `vector` 调）。
 
 ## ⑲ 调试 [经验]
@@ -696,7 +713,7 @@ void dump(const std::vector<int>& h) {
 ```
 
 - `[经验]`：开发期把 `is_heap` 断言加进所有 `pop_heap/push_heap` 调用点，能立刻抓出 §⑭ 的违规；发布版用 `NDEBUG` 关掉。
-- `[实现·GCC13]`：真实基准（本机 `g++ -O2`，`Examples/_ch98_bench.cpp`，N=500000, M=20000）：
+- `[实现·GCC15.3.0]`：真实基准（本机 `g++ -O2`，`Examples/_ch98_bench.cpp`，N=500000, M=20000）：
 
 ```text
 make_heap N=500000 : 5142.8 us
@@ -726,7 +743,7 @@ sorted-bsearch M=20000 : 3143.4 us (hits=20000)
 
 - `[标准]`：上表每项对应 `[alg.heap.operations]` / `[queue.priority]` 条款；比较器必须是严格弱序。
 - `[经验]`：一句话记忆——**堆 = O(1) 取极值 + O(log n) 增删 + O(n) 建堆，但不支持查找**；需要查找就排序。
-- 立场标签与取证汇编均可在 CONVENTIONS.md §1 找到定义；本章真实汇编见 `Examples/_ch98_heap.asm`、`Examples/_ch98_pq.asm`，真实基准见 `Examples/_ch98_bench.cpp`（均已用 GCC 13.1.0 实跑，未编造）。
+- 立场标签与取证汇编均可在 CONVENTIONS.md §1 找到定义；本章真实汇编见 `Examples/_ch98_heap.asm`、`Examples/_ch98_pq.asm`，真实基准见 `Examples/_ch98_bench.cpp`（均已用 GCC 15.3.0 实跑，未编造）。
 
 
 ## 附录 A：工业堆应用 [F: Industry / B: Principle]

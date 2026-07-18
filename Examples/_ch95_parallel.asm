@@ -6,14 +6,15 @@
 	.def	_Z12par_for_eachRSt6vectorIdSaIdEE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z12par_for_eachRSt6vectorIdSaIdEE
 _Z12par_for_eachRSt6vectorIdSaIdEE:
-.LFB6343:
+.LFB6391:
 	.seh_endprologue
 	mov	rdx, QWORD PTR 8[rcx]
 	mov	rax, QWORD PTR [rcx]
 	cmp	rax, rdx
 	je	.L1
 	movsd	xmm1, QWORD PTR .LC0[rip]
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
 .L3:
 	movsd	xmm0, QWORD PTR [rax]
@@ -31,4 +32,4 @@ _Z12par_for_eachRSt6vectorIdSaIdEE:
 .LC0:
 	.long	0
 	.long	1072693248
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

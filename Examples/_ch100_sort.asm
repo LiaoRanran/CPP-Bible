@@ -5,7 +5,7 @@
 	.def	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessEZ11sort_by_absRS5_EUliE_EEDaRT_RT0_EUlOSF_OSH_E_EEEvSF_SF_SH_T1_;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessEZ11sort_by_absRS5_EUliE_EEDaRT_RT0_EUlOSF_OSH_E_EEEvSF_SF_SH_T1_
 _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessEZ11sort_by_absRS5_EUliE_EEDaRT_RT0_EUlOSF_OSH_E_EEEvSF_SF_SH_T1_:
-.LFB5189:
+.LFB5225:
 	push	r15
 	.seh_pushreg	r15
 	push	r14
@@ -29,239 +29,242 @@ _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_
 	mov	r15, QWORD PTR 8[r9]
 	mov	rax, rdx
 	mov	rbx, rcx
-	mov	rsi, rdx
+	mov	rdi, r8
 	sub	rax, rcx
-	mov	r12, r8
-	mov	r11, rdx
 	cmp	rax, 64
 	jle	.L1
-	lea	rbp, 4[rcx]
-	test	r8, r8
-	lea	rdi, 48[rsp]
-	je	.L45
-.L4:
+	mov	r10, rax
 	sar	rax, 3
-	mov	r8d, DWORD PTR 4[rbx]
-	sub	r12, 1
+	sar	r10, 2
+	test	rdi, rdi
+	je	.L65
+.L3:
 	lea	r13, [rbx+rax*4]
-	mov	esi, DWORD PTR -4[r11]
-	mov	r10d, DWORD PTR 0[r13]
+	mov	r8d, DWORD PTR 4[rbx]
+	mov	r12d, DWORD PTR -4[rdx]
+	sub	rdi, 1
+	mov	ebp, DWORD PTR 0[r13]
 	movq	xmm0, QWORD PTR [rbx]
-	mov	ecx, r8d
-	mov	r9d, esi
+	lea	rcx, 4[rbx]
+	mov	r10d, r8d
+	mov	r11d, r12d
+	mov	r9d, ebp
 	movd	eax, xmm0
-	pshufd	xmm1, xmm0, 225
-	mov	edx, r10d
-	neg	edx
-	cmovs	edx, r10d
-	neg	ecx
-	cmovs	ecx, r8d
 	neg	r9d
-	cmovs	r9d, esi
-	cmp	edx, ecx
-	jle	.L31
-	cmp	edx, r9d
+	cmovs	r9d, ebp
+	neg	r10d
+	cmovs	r10d, r8d
+	neg	r11d
+	cmovs	r11d, r12d
+	cmp	r9d, r10d
+	jle	.L32
+	cmp	r9d, r11d
 	jl	.L37
-	cmp	ecx, r9d
-	jl	.L69
-.L34:
-	movq	QWORD PTR [rbx], xmm1
-	mov	edx, DWORD PTR -4[r11]
-.L33:
-	mov	r10, r11
-	mov	rcx, rbp
-	.p2align 4,,10
-	.p2align 3
+	cmp	r10d, r11d
+	jl	.L63
 .L35:
-	mov	r9d, r8d
-	sar	r9d, 31
-	xor	r8d, r9d
-	sub	r8d, r9d
-	mov	r9d, eax
-	neg	r9d
-	cmovs	r9d, eax
-	cmp	r8d, r9d
-	jle	.L55
+	pshufd	xmm0, xmm0, 225
+	movq	QWORD PTR [rbx], xmm0
+.L34:
+	mov	r11, rdx
+	mov	r10d, r8d
+	.p2align 4
+	.p2align 3
+.L36:
+	mov	r8d, r10d
+	neg	r8d
+	cmovns	r10d, r8d
+	mov	r8d, eax
+	neg	r8d
+	cmovs	r8d, eax
+	cmp	r8d, r10d
+	jge	.L53
 	add	rcx, 4
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
 .L39:
 	mov	eax, DWORD PTR [rcx]
-	mov	rsi, rcx
+	mov	rbp, rcx
 	add	rcx, 4
-	mov	r9d, eax
-	neg	r9d
-	cmovs	r9d, eax
-	cmp	r9d, r8d
+	mov	r8d, eax
+	neg	r8d
+	cmovs	r8d, eax
+	cmp	r8d, r10d
 	jl	.L39
 .L38:
-	mov	ecx, edx
-	neg	ecx
-	cmovs	ecx, edx
-	cmp	ecx, r8d
-	jle	.L40
-	lea	rcx, -8[r10]
-	.p2align 4,,10
+	mov	ecx, DWORD PTR -4[r11]
+	mov	r8d, ecx
+	neg	r8d
+	cmovs	r8d, ecx
+	cmp	r10d, r8d
+	jge	.L40
+	lea	r8, -8[r11]
+	.p2align 5
+	.p2align 4
 	.p2align 3
 .L41:
-	mov	edx, DWORD PTR [rcx]
-	mov	r10, rcx
-	sub	rcx, 4
-	mov	r9d, edx
+	mov	ecx, DWORD PTR [r8]
+	mov	r11, r8
+	sub	r8, 4
+	mov	r9d, ecx
 	neg	r9d
-	cmovs	r9d, edx
-	cmp	r9d, r8d
+	cmovs	r9d, ecx
+	cmp	r9d, r10d
 	jg	.L41
-	cmp	rsi, r10
-	jnb	.L71
+	cmp	rbp, r11
+	jnb	.L66
 .L43:
-	mov	DWORD PTR [rsi], edx
-	lea	rcx, 4[rsi]
-	mov	edx, DWORD PTR -4[r10]
-	mov	DWORD PTR [r10], eax
-	mov	r8d, DWORD PTR [rbx]
-	mov	eax, DWORD PTR 4[rsi]
-	jmp	.L35
-.L31:
-	cmp	ecx, r9d
-	jl	.L34
-	cmp	edx, r9d
+	mov	DWORD PTR 0[rbp], ecx
+	lea	rcx, 4[rbp]
+	mov	DWORD PTR [r11], eax
+	mov	eax, DWORD PTR 4[rbp]
+	mov	r10d, DWORD PTR [rbx]
+	jmp	.L36
+.L32:
+	cmp	r10d, r11d
+	jl	.L35
+	cmp	r9d, r11d
 	jge	.L37
-.L69:
-	mov	DWORD PTR [rbx], esi
-	mov	edx, eax
-	mov	DWORD PTR -4[r11], eax
+.L63:
+	mov	DWORD PTR [rbx], r12d
+	mov	DWORD PTR -4[rdx], eax
 	mov	r8d, DWORD PTR [rbx]
 	mov	eax, DWORD PTR 4[rbx]
-	jmp	.L33
+	jmp	.L34
 	.p2align 4,,10
 	.p2align 3
 .L40:
-	sub	r10, 4
-	cmp	rsi, r10
+	sub	r11, 4
+	cmp	rbp, r11
 	jb	.L43
-	.p2align 4,,10
+	.p2align 4
 	.p2align 3
-.L71:
-	mov	r9, rdi
-	mov	r8, r12
-	mov	rdx, r11
+.L66:
+	lea	r9, 48[rsp]
+	mov	r8, rdi
+	mov	rcx, rbp
 	mov	QWORD PTR 48[rsp], r14
-	mov	rcx, rsi
 	mov	QWORD PTR 56[rsp], r15
 	call	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessEZ11sort_by_absRS5_EUliE_EEDaRT_RT0_EUlOSF_OSH_E_EEEvSF_SF_SH_T1_
-	mov	rax, rsi
+	mov	rax, rbp
 	sub	rax, rbx
 	cmp	rax, 64
 	jle	.L1
-	test	r12, r12
-	je	.L45
-	mov	r11, rsi
-	jmp	.L4
+	mov	r10, rax
+	mov	rdx, rbp
+	sar	rax, 3
+	sar	r10, 2
+	test	rdi, rdi
+	jne	.L3
+.L65:
+	lea	rbp, -1[r10]
+	lea	rdi, -4[rbx+rax*4]
+	mov	rsi, rdx
+	lea	rcx, -1[rax]
+	sar	rbp
+	mov	edx, DWORD PTR [rdi]
+	mov	r9, rdi
+	mov	r8, rcx
+	cmp	rcx, rbp
+	jge	.L4
+.L69:
+	mov	QWORD PTR 32[rsp], rsi
+	mov	r12, rcx
+	mov	QWORD PTR 40[rsp], rcx
+	jmp	.L6
 	.p2align 4,,10
 	.p2align 3
-.L55:
-	mov	rsi, rcx
+.L47:
+	mov	r12, rax
+.L6:
+	lea	rcx, 1[r12]
+	lea	r14, [rcx+rcx]
+	lea	r15, [rbx+rcx*8]
+	lea	rax, -1[r14]
+	mov	r11d, DWORD PTR [r15]
+	lea	r9, [rbx+rax*4]
+	mov	ecx, DWORD PTR [r9]
+	mov	r13d, r11d
+	neg	r13d
+	mov	esi, ecx
+	cmovs	r13d, r11d
+	neg	esi
+	cmovs	esi, ecx
+	cmp	r13d, esi
+	cmovge	ecx, r11d
+	cmovge	rax, r14
+	cmovge	r9, r15
+	mov	DWORD PTR [rbx+r12*4], ecx
+	cmp	rax, rbp
+	jl	.L47
+	mov	rsi, QWORD PTR 32[rsp]
+	mov	rcx, QWORD PTR 40[rsp]
+	test	r10b, 1
+	jne	.L60
+	cmp	r8, rax
+	je	.L9
+.L60:
+	lea	r11, -1[rax]
+.L8:
+	sar	r11
+	cmp	rcx, rax
+	jge	.L10
+	mov	r13d, edx
+	neg	r13d
+	cmovs	r13d, edx
+	jmp	.L12
+	.p2align 6
+	.p2align 4,,10
+	.p2align 3
+.L68:
+	lea	rax, -1[r11]
+	mov	DWORD PTR [r14], r9d
+	shr	rax, 63
+	lea	r9, -1[rax+r11]
+	mov	rax, r11
+	cmp	rcx, r11
+	jge	.L67
+	mov	r11, r9
+	sar	r11
+.L12:
+	lea	r12, [rbx+r11*4]
+	lea	r14, [rbx+rax*4]
+	mov	r9d, DWORD PTR [r12]
+	mov	eax, r9d
+	neg	eax
+	cmovs	eax, r9d
+	cmp	eax, r13d
+	jl	.L68
+	mov	DWORD PTR [r14], edx
+	test	rcx, rcx
+	je	.L14
+.L13:
+	sub	rdi, 4
+	sub	rcx, 1
+	mov	edx, DWORD PTR [rdi]
+	mov	r9, rdi
+	cmp	rcx, rbp
+	jl	.L69
+.L4:
+	test	r10b, 1
+	jne	.L10
+	cmp	rcx, r8
+	je	.L70
+.L10:
+	mov	DWORD PTR [r9], edx
+	jmp	.L13
+	.p2align 4,,10
+	.p2align 3
+.L53:
+	mov	rbp, rcx
 	jmp	.L38
 .L37:
-	mov	DWORD PTR [rbx], r10d
+	mov	DWORD PTR [rbx], ebp
 	mov	DWORD PTR 0[r13], eax
 	mov	r8d, DWORD PTR [rbx]
 	mov	eax, DWORD PTR 4[rbx]
-	mov	edx, DWORD PTR -4[r11]
-	jmp	.L33
-.L15:
-	lea	r12, -4[rsi]
-	.p2align 4,,10
-	.p2align 3
-.L30:
-	mov	eax, DWORD PTR [rbx]
-	mov	rsi, r12
-	sub	rsi, rbx
-	mov	r8d, DWORD PTR [r12]
-	mov	rdx, rsi
-	sar	rdx, 2
-	mov	DWORD PTR [r12], eax
-	lea	rax, -1[rdx]
-	mov	rdi, rdx
-	mov	rbp, rax
-	and	edi, 1
-	shr	rbp, 63
-	add	rbp, rax
-	sar	rbp
-	cmp	rsi, 8
-	jle	.L18
-	xor	r11d, r11d
-	mov	QWORD PTR 32[rsp], r12
-	jmp	.L20
-	.p2align 4,,10
-	.p2align 3
-.L52:
-	mov	r11, rax
-.L20:
-	lea	rcx, 1[r11]
-	lea	rax, [rcx+rcx]
-	lea	r14, -1[rax]
-	lea	rcx, [rbx+rcx*8]
-	mov	r9d, DWORD PTR [rcx]
-	lea	r15, [rbx+r14*4]
-	mov	r10d, DWORD PTR [r15]
-	mov	r13d, r9d
-	neg	r13d
-	mov	r12d, r10d
-	cmovs	r13d, r9d
-	neg	r12d
-	cmovs	r12d, r10d
-	cmp	r13d, r12d
-	cmovl	rax, r14
-	cmovl	r9d, r10d
-	cmovl	rcx, r15
-	cmp	rax, rbp
-	mov	DWORD PTR [rbx+r11*4], r9d
-	jl	.L52
-	test	rdi, rdi
-	mov	r12, QWORD PTR 32[rsp]
-	je	.L24
-	lea	rdx, -1[rax]
-	mov	r9, rdx
-	shr	r9, 63
-	add	r9, rdx
-	sar	r9
-	test	rax, rax
-	je	.L72
-.L25:
-	mov	r11d, r8d
-	mov	rcx, rax
-	neg	r11d
-	cmovs	r11d, r8d
-	jmp	.L28
-	.p2align 4,,10
-	.p2align 3
-.L74:
-	mov	DWORD PTR [rcx], edx
-	lea	rdx, -1[r9]
-	mov	rcx, r9
-	mov	rax, rdx
-	shr	rax, 63
-	add	rax, rdx
-	sar	rax
-	test	r9, r9
-	je	.L73
-	mov	r9, rax
-.L28:
-	lea	r10, [rbx+r9*4]
-	mov	edx, DWORD PTR [r10]
-	lea	rcx, [rbx+rcx*4]
-	mov	eax, edx
-	neg	eax
-	cmovs	eax, edx
-	cmp	eax, r11d
-	jl	.L74
-.L23:
-	sub	r12, 4
-	cmp	rsi, 4
-	mov	DWORD PTR [rcx], r8d
-	jg	.L30
+	jmp	.L34
 .L1:
 	add	rsp, 72
 	pop	rbx
@@ -273,170 +276,143 @@ _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_
 	pop	r14
 	pop	r15
 	ret
-.L45:
-	sar	rax, 2
-	lea	rdx, -2[rax]
-	lea	r12, -1[rax]
-	not	rax
-	sar	rdx
-	sar	r12
-	mov	r10d, eax
-	mov	r8, rdx
-	lea	rdi, [rbx+rdx*4]
-	and	r10d, 1
-	cmp	rdx, r12
-	mov	ecx, DWORD PTR [rdi]
-	mov	r9, rdi
-	jge	.L49
-.L77:
-	mov	rbp, rdx
-	mov	QWORD PTR 32[rsp], r8
-	mov	QWORD PTR 40[rsp], rdx
-	jmp	.L7
+.L67:
+	mov	r14, r12
+	mov	DWORD PTR [r14], edx
+	test	rcx, rcx
+	jne	.L13
+.L14:
+	mov	rax, rsi
+	lea	rdx, -4[rsi]
+	sub	rax, rbx
+	cmp	rax, 4
+	jle	.L1
+	.p2align 4
+	.p2align 3
+.L31:
+	mov	rsi, rdx
+	mov	eax, DWORD PTR [rbx]
+	mov	r11d, DWORD PTR [rdx]
+	sub	rsi, rbx
+	mov	r15, rsi
+	mov	DWORD PTR [rdx], eax
+	sar	r15, 2
+	cmp	rsi, 8
+	jle	.L18
+	lea	r14, -1[r15]
+	xor	r13d, r13d
+	sar	r14
+	jmp	.L20
 	.p2align 4,,10
 	.p2align 3
 .L50:
-	mov	rbp, rax
-.L7:
-	lea	rdx, 1[rbp]
-	lea	rax, [rdx+rdx]
-	lea	r14, -1[rax]
-	lea	r9, [rbx+rdx*8]
-	mov	edx, DWORD PTR [r9]
-	lea	r15, [rbx+r14*4]
-	mov	r8d, DWORD PTR [r15]
-	mov	r13d, edx
-	neg	r13d
-	mov	r11d, r8d
-	cmovs	r13d, edx
-	neg	r11d
-	cmovs	r11d, r8d
-	cmp	r13d, r11d
-	cmovl	rax, r14
-	cmovl	edx, r8d
-	cmovl	r9, r15
-	cmp	rax, r12
-	mov	DWORD PTR [rbx+rbp*4], edx
-	jl	.L50
-	mov	r8, QWORD PTR 32[rsp]
-	mov	rdx, QWORD PTR 40[rsp]
-.L5:
-	cmp	r8, rax
-	jne	.L57
-	test	r10b, r10b
-	jne	.L8
-.L57:
-	lea	r11, -1[rax]
-	sar	r11
-	cmp	rdx, rax
-	jge	.L11
-.L78:
-	mov	r13d, ecx
-	mov	r14, rax
-	neg	r13d
-	cmovs	r13d, ecx
-	jmp	.L13
-	.p2align 4,,10
-	.p2align 3
-.L76:
-	mov	DWORD PTR [r14], r9d
-	lea	r9, -1[r11]
-	mov	r14, r11
-	mov	rax, r9
-	shr	rax, 63
-	add	rax, r9
-	sar	rax
-	cmp	rdx, r11
-	jge	.L75
-	mov	r11, rax
-.L13:
-	lea	rbp, [rbx+r11*4]
-	mov	r9d, DWORD PTR 0[rbp]
-	lea	r14, [rbx+r14*4]
-	mov	eax, r9d
-	neg	eax
-	cmovs	eax, r9d
-	cmp	eax, r13d
-	jl	.L76
-.L12:
-	test	rdx, rdx
-	mov	DWORD PTR [r14], ecx
-	je	.L15
-.L14:
-	sub	rdx, 1
-	sub	rdi, 4
-	mov	ecx, DWORD PTR [rdi]
-	cmp	rdx, r12
-	mov	r9, rdi
-	jl	.L77
-.L49:
-	mov	rax, rdx
-	jmp	.L5
-.L75:
-	mov	r14, rbp
-	jmp	.L12
-.L73:
-	mov	rcx, r10
-	sub	r12, 4
-	cmp	rsi, 4
-	mov	DWORD PTR [rcx], r8d
-	jg	.L30
-	jmp	.L1
-.L24:
-	sub	rdx, 2
-	sar	rdx
-	cmp	rdx, rax
-	je	.L27
-	lea	rdx, -1[rax]
-	mov	r9, rdx
-	shr	r9, 63
-	add	r9, rdx
-	sar	r9
+	mov	r13, rax
+.L20:
+	lea	rcx, 1[r13]
+	lea	rbp, [rcx+rcx]
+	lea	r12, [rbx+rcx*8]
+	lea	rax, -1[rbp]
+	mov	r8d, DWORD PTR [r12]
+	lea	r9, [rbx+rax*4]
+	mov	ecx, DWORD PTR [r9]
+	mov	edi, r8d
+	neg	edi
+	mov	r10d, ecx
+	cmovs	edi, r8d
+	neg	r10d
+	cmovs	r10d, ecx
+	cmp	edi, r10d
+	cmovge	ecx, r8d
+	cmovge	rax, rbp
+	cmovge	r9, r12
+	mov	DWORD PTR [rbx+r13*4], ecx
+	cmp	r14, rax
+	jg	.L50
+	and	r15d, 1
+	jne	.L62
+	mov	rcx, rsi
+	sar	rcx, 3
+	sub	rcx, 1
+	cmp	rcx, rax
+	je	.L26
+.L62:
+	lea	r8, -1[rax]
+	shr	r8, 63
+	lea	r8, -1[rax+r8]
+	sar	r8
 	test	rax, rax
-	jne	.L25
-	jmp	.L23
+	je	.L28
+.L27:
+	mov	edi, r11d
+	neg	edi
+	cmovs	edi, r11d
+	jmp	.L29
+	.p2align 6
 	.p2align 4,,10
 	.p2align 3
+.L72:
+	lea	rax, -1[r8]
+	mov	DWORD PTR [r9], ecx
+	shr	rax, 63
+	lea	rcx, -1[rax+r8]
+	mov	rax, r8
+	test	r8, r8
+	je	.L71
+	sar	rcx
+	mov	r8, rcx
+.L29:
+	lea	r10, [rbx+r8*4]
+	lea	r9, [rbx+rax*4]
+	mov	ecx, DWORD PTR [r10]
+	mov	eax, ecx
+	neg	eax
+	cmovs	eax, ecx
+	cmp	eax, edi
+	jl	.L72
+.L23:
+	mov	DWORD PTR [r9], r11d
+	cmp	rsi, 4
+	jle	.L1
+.L61:
+	sub	rdx, 4
+	jmp	.L31
+.L71:
+	mov	r9, r10
+	jmp	.L23
 .L18:
-	test	rdi, rdi
-	mov	rcx, rbx
+	and	r15d, 1
+	mov	r9, rbx
 	jne	.L23
-	cmp	rax, 2
-	ja	.L23
+	cmp	rsi, 8
+	jne	.L23
 	xor	eax, eax
-.L27:
-	lea	rdx, 1[rax+rax]
-	mov	r9d, DWORD PTR [rbx+rdx*4]
-	mov	DWORD PTR [rcx], r9d
-	mov	r9, rax
-	mov	rax, rdx
-	jmp	.L25
-.L8:
+.L26:
+	lea	rcx, 1[rax+rax]
+	mov	r8d, DWORD PTR [rbx+rcx*4]
+	mov	DWORD PTR [r9], r8d
+	mov	r8, rax
+	mov	rax, rcx
+	jmp	.L27
+.L70:
+	mov	rax, rcx
+.L9:
 	lea	r11, [rax+rax]
 	lea	rax, 1[r11]
-	sar	r11
-	lea	rbp, [rbx+rax*4]
-	cmp	rdx, rax
-	mov	r13d, DWORD PTR 0[rbp]
+	lea	r12, [rbx+rax*4]
+	mov	r13d, DWORD PTR [r12]
 	mov	DWORD PTR [r9], r13d
-	mov	r9, rbp
-	jl	.L78
-.L11:
-	mov	DWORD PTR [r9], ecx
-	jmp	.L14
-.L72:
-	mov	DWORD PTR [rcx], r8d
-	sub	r12, 4
-	jmp	.L30
+	mov	r9, r12
+	jmp	.L8
+.L28:
+	mov	DWORD PTR [r9], r11d
+	jmp	.L61
 	.seh_endproc
 	.p2align 4
 	.globl	_Z11sort_by_absRSt6vectorIiSaIiEE
 	.def	_Z11sort_by_absRSt6vectorIiSaIiEE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z11sort_by_absRSt6vectorIiSaIiEE
 _Z11sort_by_absRSt6vectorIiSaIiEE:
-.LFB4359:
-	push	r13
-	.seh_pushreg	r13
+.LFB4431:
 	push	r12
 	.seh_pushreg	r12
 	push	rbp
@@ -447,264 +423,277 @@ _Z11sort_by_absRSt6vectorIiSaIiEE:
 	.seh_pushreg	rsi
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 72
-	.seh_stackalloc	72
+	sub	rsp, 64
+	.seh_stackalloc	64
 	.seh_endprologue
 	mov	rbx, QWORD PTR 8[rcx]
 	mov	rdi, QWORD PTR [rcx]
-	lea	rax, 62[rsp]
-	lea	rdx, 63[rsp]
-	movq	xmm0, rax
+	lea	rdx, 62[rsp]
+	lea	rax, 63[rsp]
+	xchg	rdx, rax
 	cmp	rbx, rdi
-	movq	xmm1, rdx
-	punpcklqdq	xmm0, xmm1
-	je	.L80
+	je	.L74
 	mov	rbp, rbx
-	mov	r8, -2
+	mov	QWORD PTR 32[rsp], rax
 	sub	rbp, rdi
-	mov	rax, rbp
-	sar	rax, 2
-	test	rax, rax
-	je	.L81
-	bsr	rax, rax
-	cdqe
-	lea	r8, [rax+rax]
-.L81:
+	mov	QWORD PTR 40[rsp], rdx
+	mov	rcx, rbp
+	sar	rcx, 2
+	je	.L107
+	bsr	rcx, rcx
 	lea	r9, 32[rsp]
-	mov	rdx, rbx
-	mov	rcx, rdi
-	movaps	XMMWORD PTR 32[rsp], xmm0
-	call	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessEZ11sort_by_absRS5_EUliE_EEDaRT_RT0_EUlOSF_OSH_E_EEEvSF_SF_SH_T1_
 	lea	rsi, 4[rdi]
+	mov	rdx, rbx
+	movsxd	rcx, ecx
+	lea	r8, [rcx+rcx]
+	mov	rcx, rdi
+	call	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessEZ11sort_by_absRS5_EUliE_EEDaRT_RT0_EUlOSF_OSH_E_EEEvSF_SF_SH_T1_
 	cmp	rbp, 64
-	jg	.L113
-	cmp	rbx, rsi
-	je	.L80
-	mov	ebp, 4
-	jmp	.L102
+	jle	.L106
+	lea	rbp, 64[rdi]
+	jmp	.L83
 	.p2align 4,,10
 	.p2align 3
-.L114:
+.L109:
 	mov	r8, rsi
 	sub	r8, rdi
+	mov	rdx, r8
+	sal	rdx, 62
+	sub	rdx, r8
+	lea	rcx, 4[rsi+rdx]
 	cmp	r8, 4
-	jle	.L97
-	mov	rcx, rbp
+	jle	.L78
 	mov	rdx, rdi
-	sub	rcx, r8
-	add	rcx, rsi
 	call	memmove
-.L98:
+.L79:
 	add	rsi, 4
 	mov	DWORD PTR [rdi], r12d
-	cmp	rbx, rsi
-	je	.L80
-.L102:
+	cmp	rbp, rsi
+	je	.L108
+.L83:
 	mov	r12d, DWORD PTR [rsi]
-	mov	r9, rsi
 	mov	eax, DWORD PTR [rdi]
 	mov	r8d, r12d
-	neg	r8d
 	mov	edx, eax
+	neg	r8d
 	cmovs	r8d, r12d
 	neg	edx
 	cmovs	edx, eax
 	cmp	edx, r8d
-	jg	.L114
+	jg	.L109
 	mov	eax, DWORD PTR -4[rsi]
+	mov	edx, eax
+	neg	edx
+	cmovs	edx, eax
+	cmp	r8d, edx
+	jge	.L96
 	lea	rdx, -4[rsi]
+	.p2align 5
+	.p2align 4
+	.p2align 3
+.L82:
+	mov	DWORD PTR 4[rdx], eax
+	mov	r9, rdx
+	mov	eax, DWORD PTR -4[rdx]
+	sub	rdx, 4
+	mov	ecx, eax
+	neg	ecx
+	cmovs	ecx, eax
+	cmp	r8d, ecx
+	jl	.L82
+	mov	DWORD PTR [r9], r12d
+.L111:
+	add	rsi, 4
+	cmp	rbp, rsi
+	jne	.L83
+.L108:
+	cmp	rbx, rbp
+	je	.L74
+	.p2align 4
+	.p2align 3
+.L84:
+	mov	r10d, DWORD PTR 0[rbp]
+	mov	eax, DWORD PTR -4[rbp]
+	mov	r8d, r10d
+	mov	edx, eax
+	neg	r8d
+	cmovs	r8d, r10d
+	neg	edx
+	cmovs	edx, eax
+	cmp	r8d, edx
+	jge	.L97
+	lea	rdx, -4[rbp]
+	.p2align 5
+	.p2align 4
+	.p2align 3
+.L87:
+	mov	DWORD PTR 4[rdx], eax
+	mov	r9, rdx
+	mov	eax, DWORD PTR -4[rdx]
+	sub	rdx, 4
 	mov	ecx, eax
 	neg	ecx
 	cmovs	ecx, eax
 	cmp	ecx, r8d
-	jle	.L100
-	.p2align 4,,10
-	.p2align 3
-.L101:
-	mov	DWORD PTR 4[rdx], eax
-	mov	r9, rdx
-	mov	eax, DWORD PTR -4[rdx]
-	sub	rdx, 4
-	mov	ecx, eax
-	neg	ecx
-	cmovs	ecx, eax
-	cmp	r8d, ecx
-	jl	.L101
-.L100:
-	add	rsi, 4
-	mov	DWORD PTR [r9], r12d
-	cmp	rbx, rsi
-	jne	.L102
-.L80:
-	add	rsp, 72
+	jg	.L87
+	add	rbp, 4
+	mov	DWORD PTR [r9], r10d
+	cmp	rbx, rbp
+	jne	.L84
+.L74:
+	add	rsp, 64
 	pop	rbx
 	pop	rsi
 	pop	rdi
 	pop	rbp
 	pop	r12
-	pop	r13
 	ret
-	.p2align 4,,10
+.L90:
+	je	.L110
+	.p2align 4
 	.p2align 3
-.L113:
-	lea	rbp, 64[rdi]
-	mov	r12d, 4
-	jmp	.L89
-	.p2align 4,,10
-	.p2align 3
-.L116:
-	mov	r8, rsi
-	sub	r8, rdi
-	cmp	r8, 4
-	jle	.L84
-	mov	rcx, r12
-	mov	rdx, rdi
-	sub	rcx, r8
-	add	rcx, rsi
-	call	memmove
-.L85:
+.L91:
+	mov	DWORD PTR [rdi], ebp
+.L92:
 	add	rsi, 4
-	mov	DWORD PTR [rdi], r13d
-	cmp	rsi, rbp
-	je	.L115
-.L89:
-	mov	r13d, DWORD PTR [rsi]
-	mov	r9, rsi
+.L106:
+	cmp	rbx, rsi
+	je	.L74
+	mov	ebp, DWORD PTR [rsi]
 	mov	eax, DWORD PTR [rdi]
-	mov	r8d, r13d
-	neg	r8d
+	mov	r8d, ebp
 	mov	edx, eax
-	cmovs	r8d, r13d
+	neg	r8d
+	cmovs	r8d, ebp
 	neg	edx
 	cmovs	edx, eax
 	cmp	edx, r8d
-	jg	.L116
-	mov	eax, DWORD PTR -4[rsi]
-	lea	rdx, -4[rsi]
-	jmp	.L112
+	jle	.L89
+	mov	r8, rsi
+	sub	r8, rdi
+	mov	rdx, r8
+	sal	rdx, 62
+	sub	rdx, r8
+	lea	rcx, 4[rsi+rdx]
+	cmp	r8, 4
+	jle	.L90
+	mov	rdx, rdi
+	call	memmove
+	jmp	.L91
+.L107:
+	lea	r9, 32[rsp]
+	mov	rdx, rbx
+	lea	rsi, 4[rdi]
+	mov	rcx, rdi
+	mov	r8, -2
+	call	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessEZ11sort_by_absRS5_EUliE_EEDaRT_RT0_EUlOSF_OSH_E_EEEvSF_SF_SH_T1_
+	jmp	.L106
 	.p2align 4,,10
 	.p2align 3
-.L117:
+.L89:
+	mov	eax, DWORD PTR -4[rsi]
+	mov	edx, eax
+	neg	edx
+	cmovs	edx, eax
+	cmp	r8d, edx
+	jge	.L98
+	lea	rdx, -4[rsi]
+	.p2align 5
+	.p2align 4
+	.p2align 3
+.L94:
 	mov	DWORD PTR 4[rdx], eax
 	mov	r9, rdx
 	mov	eax, DWORD PTR -4[rdx]
 	sub	rdx, 4
-.L112:
 	mov	ecx, eax
 	neg	ecx
 	cmovs	ecx, eax
 	cmp	r8d, ecx
-	jl	.L117
-	add	rsi, 4
-	mov	DWORD PTR [r9], r13d
-	cmp	rsi, rbp
-	jne	.L89
-.L115:
-	cmp	rbx, rsi
-	mov	r8, rsi
-	je	.L80
+	jl	.L94
+	mov	DWORD PTR [r9], ebp
+	jmp	.L92
 	.p2align 4,,10
 	.p2align 3
-.L94:
-	mov	r11d, DWORD PTR [r8]
-	lea	rdx, -4[r8]
-	mov	r10, r8
-	mov	eax, DWORD PTR -4[r8]
-	mov	r9d, r11d
-	neg	r9d
-	mov	ecx, eax
-	cmovs	r9d, r11d
-	neg	ecx
-	cmovs	ecx, eax
-	cmp	r9d, ecx
-	jge	.L92
-	.p2align 4,,10
-	.p2align 3
-.L93:
-	mov	DWORD PTR 4[rdx], eax
-	mov	r10, rdx
-	mov	eax, DWORD PTR -4[rdx]
-	sub	rdx, 4
-	mov	ecx, eax
-	neg	ecx
-	cmovs	ecx, eax
-	cmp	ecx, r9d
-	jg	.L93
-.L92:
-	add	r8, 4
-	mov	DWORD PTR [r10], r11d
-	cmp	rbx, r8
-	jne	.L94
-	add	rsp, 72
-	pop	rbx
-	pop	rsi
-	pop	rdi
-	pop	rbp
-	pop	r12
-	pop	r13
-	ret
 .L97:
-	jne	.L98
-	mov	DWORD PTR [rsi], eax
-	jmp	.L98
-.L84:
-	jne	.L85
-	mov	DWORD PTR [rsi], eax
-	jmp	.L85
+	mov	r9, rbp
+	add	rbp, 4
+	mov	DWORD PTR [r9], r10d
+	cmp	rbx, rbp
+	jne	.L84
+	jmp	.L74
+.L96:
+	mov	r9, rsi
+	mov	DWORD PTR [r9], r12d
+	jmp	.L111
+.L98:
+	mov	r9, rsi
+	mov	DWORD PTR [r9], ebp
+	jmp	.L92
+.L78:
+	jne	.L79
+	mov	DWORD PTR [rcx], eax
+	jmp	.L79
+.L110:
+	mov	DWORD PTR [rcx], eax
+	jmp	.L91
 	.seh_endproc
 	.p2align 4
 	.globl	_Z8pipe_sumRKSt6vectorIiSaIiEE
 	.def	_Z8pipe_sumRKSt6vectorIiSaIiEE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8pipe_sumRKSt6vectorIiSaIiEE
 _Z8pipe_sumRKSt6vectorIiSaIiEE:
-.LFB4365:
+.LFB4437:
 	.seh_endprologue
 	mov	r8, QWORD PTR 8[rcx]
 	mov	rcx, QWORD PTR [rcx]
 	cmp	r8, rcx
-	jne	.L121
-	jmp	.L123
+	jne	.L115
+	jmp	.L120
+	.p2align 4
 	.p2align 4,,10
 	.p2align 3
-.L131:
+.L124:
 	add	rcx, 4
 	cmp	r8, rcx
-	je	.L123
-.L121:
+	je	.L120
+.L115:
 	mov	eax, DWORD PTR [rcx]
 	test	eax, eax
-	jle	.L131
+	jle	.L124
 	cmp	r8, rcx
-	je	.L123
+	je	.L120
 	mov	edx, DWORD PTR [rcx]
 	xor	r9d, r9d
-	.p2align 4,,10
+	.p2align 4
 	.p2align 3
-.L127:
+.L118:
 	lea	rax, 4[rcx]
 	lea	r9d, [r9+rdx*2]
 	cmp	r8, rax
-	jne	.L126
-	jmp	.L118
+	jne	.L117
+	jmp	.L112
+	.p2align 5
 	.p2align 4,,10
 	.p2align 3
-.L132:
+.L125:
 	add	rax, 4
 	cmp	r8, rax
-	je	.L118
-.L126:
+	je	.L112
+.L117:
 	mov	edx, DWORD PTR [rax]
 	mov	rcx, rax
 	test	edx, edx
-	jle	.L132
+	jle	.L125
 	cmp	rax, r8
-	jne	.L127
-.L118:
+	jne	.L118
+.L112:
 	mov	eax, r9d
 	ret
-.L123:
+.L120:
 	xor	r9d, r9d
-	jmp	.L118
+	mov	eax, r9d
+	ret
 	.seh_endproc
 	.section	.text$_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessESt8identityEEDaRT_RT0_EUlOSE_OSG_E_EEEvSE_SE_SG_T1_,"x"
 	.linkonce discard
@@ -713,7 +702,7 @@ _Z8pipe_sumRKSt6vectorIiSaIiEE:
 	.def	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessESt8identityEEDaRT_RT0_EUlOSE_OSG_E_EEEvSE_SE_SG_T1_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessESt8identityEEDaRT_RT0_EUlOSE_OSG_E_EEEvSE_SE_SG_T1_
 _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessESt8identityEEDaRT_RT0_EUlOSE_OSG_E_EEEvSE_SE_SG_T1_:
-.LFB5182:
+.LFB5219:
 	push	r15
 	.seh_pushreg	r15
 	push	r14
@@ -733,208 +722,213 @@ _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_
 	sub	rsp, 56
 	.seh_stackalloc	56
 	.seh_endprologue
-	mov	r14, QWORD PTR [r9]
-	mov	r15, QWORD PTR 8[r9]
+	mov	r12, QWORD PTR [r9]
+	mov	r13, QWORD PTR 8[r9]
 	mov	rax, rdx
-	mov	rbp, rcx
-	mov	rdi, rdx
-	sub	rax, rcx
-	mov	r12, r8
+	mov	rsi, rcx
+	mov	rdi, r8
 	mov	r11, rdx
+	sub	rax, rcx
 	cmp	rax, 64
-	jle	.L133
-	lea	rsi, 4[rcx]
-	test	r8, r8
-	lea	rbx, 32[rsp]
-	je	.L177
-.L136:
+	jle	.L126
+	mov	rbp, rax
 	sar	rax, 3
-	movq	xmm0, QWORD PTR 0[rbp]
-	sub	r12, 1
-	lea	r9, 0[rbp+rax*4]
-	mov	r8d, DWORD PTR -4[r11]
-	mov	eax, DWORD PTR [r9]
-	pshufd	xmm2, xmm0, 0xe5
-	movd	ecx, xmm2
-	movd	edx, xmm0
-	pshufd	xmm1, xmm0, 225
-	cmp	ecx, eax
-	jge	.L163
-	cmp	eax, r8d
-	jl	.L169
-	cmp	ecx, r8d
-	jl	.L199
-.L166:
-	movq	QWORD PTR 0[rbp], xmm1
+	sar	rbp, 2
+	test	rdi, rdi
+	je	.L189
+.L128:
+	movq	xmm0, QWORD PTR [rsi]
+	lea	r10, [rsi+rax*4]
 	mov	r9d, DWORD PTR -4[r11]
-.L165:
-	cmp	edx, ecx
+	sub	rdi, 1
+	mov	r8d, DWORD PTR [r10]
+	lea	rax, 4[rsi]
+	pshufd	xmm1, xmm0, 0xe5
+	movd	edx, xmm1
+	movd	ecx, xmm0
+	cmp	edx, r8d
+	jge	.L157
+	cmp	r8d, r9d
+	jl	.L162
+	cmp	edx, r9d
+	jl	.L188
+.L160:
+	pshufd	xmm0, xmm0, 225
+	movq	QWORD PTR [rsi], xmm0
+.L159:
 	mov	r10, r11
-	mov	rax, rsi
-	jge	.L187
-	.p2align 4,,10
+	cmp	ecx, edx
+	jge	.L178
+	.p2align 4
 	.p2align 3
-.L201:
+.L191:
 	add	rax, 4
-	.p2align 4,,10
+	.p2align 4
+	.p2align 4
 	.p2align 3
-.L171:
-	mov	rdi, rax
-	mov	edx, DWORD PTR [rax]
+.L164:
+	mov	r9, rax
+	mov	ecx, DWORD PTR [rax]
 	add	rax, 4
-	cmp	edx, ecx
-	jl	.L171
-	cmp	r9d, ecx
-	jle	.L172
-.L202:
+	cmp	ecx, edx
+	jl	.L164
+	mov	rbp, r9
+	mov	r9d, DWORD PTR -4[r10]
+	cmp	edx, r9d
+	jge	.L165
+.L192:
 	lea	rax, -8[r10]
-	.p2align 4,,10
+	.p2align 4
+	.p2align 4
 	.p2align 3
-.L173:
+.L166:
 	mov	r10, rax
 	mov	r9d, DWORD PTR [rax]
 	sub	rax, 4
-	cmp	r9d, ecx
-	jg	.L173
-	cmp	rdi, r10
-	jnb	.L200
-.L175:
-	mov	DWORD PTR [rdi], r9d
-	lea	rax, 4[rdi]
+	cmp	r9d, edx
+	jg	.L166
+	cmp	rbp, r10
+	jnb	.L190
+.L168:
+	mov	DWORD PTR 0[rbp], r9d
+	lea	rax, 4[rbp]
+	mov	DWORD PTR [r10], ecx
+	mov	edx, DWORD PTR [rsi]
+	mov	ecx, DWORD PTR 4[rbp]
+	cmp	ecx, edx
+	jl	.L191
+.L178:
 	mov	r9d, DWORD PTR -4[r10]
-	mov	DWORD PTR [r10], edx
-	mov	ecx, DWORD PTR 0[rbp]
-	mov	edx, DWORD PTR 4[rdi]
-	cmp	edx, ecx
-	jl	.L201
-.L187:
-	cmp	r9d, ecx
-	mov	rdi, rax
-	jg	.L202
+	mov	rbp, rax
+	cmp	edx, r9d
+	jl	.L192
+	.p2align 4
+	.p2align 3
+.L165:
+	sub	r10, 4
+	cmp	rbp, r10
+	jb	.L168
+	.p2align 4
+	.p2align 3
+.L190:
+	lea	r9, 32[rsp]
+	mov	r8, rdi
+	mov	rdx, r11
+	mov	rcx, rbp
+	mov	QWORD PTR 32[rsp], r12
+	mov	QWORD PTR 40[rsp], r13
+	call	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessESt8identityEEDaRT_RT0_EUlOSE_OSG_E_EEEvSE_SE_SG_T1_
+	mov	rax, rbp
+	sub	rax, rsi
+	cmp	rax, 64
+	jle	.L126
+	mov	r11, rbp
+	mov	rbp, rax
+	sar	rax, 3
+	sar	rbp, 2
+	test	rdi, rdi
+	jne	.L128
+.L189:
+	lea	r10, -1[rbp]
+	lea	rbx, -4[rsi+rax*4]
+	lea	r8, -1[rax]
+	sar	r10
+	mov	r9d, DWORD PTR [rbx]
+	mov	rcx, rbx
+	mov	rdi, r8
+	cmp	r8, r10
+	jge	.L129
+.L195:
+	mov	r12, r8
+	jmp	.L131
+	.p2align 6
 	.p2align 4,,10
 	.p2align 3
 .L172:
-	sub	r10, 4
-	cmp	rdi, r10
-	jb	.L175
-	.p2align 4,,10
-	.p2align 3
-.L200:
-	mov	r9, rbx
-	mov	r8, r12
-	mov	rdx, r11
-	mov	QWORD PTR 32[rsp], r14
-	mov	rcx, rdi
-	mov	QWORD PTR 40[rsp], r15
-	call	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessESt8identityEEDaRT_RT0_EUlOSE_OSG_E_EEEvSE_SE_SG_T1_
-	mov	rax, rdi
-	sub	rax, rbp
-	cmp	rax, 64
-	jle	.L133
-	test	r12, r12
-	je	.L177
-	mov	r11, rdi
-	jmp	.L136
-.L163:
-	cmp	ecx, r8d
-	jl	.L166
-	cmp	eax, r8d
-	jge	.L169
-.L199:
-	mov	DWORD PTR 0[rbp], r8d
-	mov	r9d, edx
-	mov	DWORD PTR -4[r11], edx
-	mov	ecx, DWORD PTR 0[rbp]
-	mov	edx, DWORD PTR 4[rbp]
-	jmp	.L165
-.L169:
-	mov	DWORD PTR 0[rbp], eax
-	mov	DWORD PTR [r9], edx
-	mov	edx, DWORD PTR 4[rbp]
-	mov	ecx, DWORD PTR 0[rbp]
-	mov	r9d, DWORD PTR -4[r11]
-	jmp	.L165
-.L147:
-	sub	rdi, 4
-	.p2align 4,,10
-	.p2align 3
-.L162:
-	mov	r9, rdi
-	mov	eax, DWORD PTR 0[rbp]
-	sub	r9, rbp
-	mov	r8d, DWORD PTR [rdi]
-	mov	r12, r9
-	sar	r12, 2
-	lea	rdx, -1[r12]
-	mov	DWORD PTR [rdi], eax
-	mov	r14, r12
-	mov	rax, rdx
-	and	r14d, 1
-	shr	rax, 63
-	add	rax, rdx
-	sar	rax
-	cmp	r9, 8
-	mov	r13, rax
-	jle	.L150
-	xor	r10d, r10d
-	jmp	.L152
-	.p2align 4,,10
-	.p2align 3
+	mov	r12, rax
+.L131:
+	lea	rdx, 1[r12]
+	lea	r13, [rdx+rdx]
+	lea	r14, [rsi+rdx*8]
+	lea	rax, -1[r13]
+	mov	r15d, DWORD PTR [r14]
+	lea	rcx, [rsi+rax*4]
+	mov	edx, DWORD PTR [rcx]
+	cmp	edx, r15d
+	cmovle	edx, r15d
+	cmovle	rax, r13
+	cmovle	rcx, r14
+	mov	DWORD PTR [rsi+r12*4], edx
+	cmp	rax, r10
+	jl	.L172
+	test	bpl, 1
+	jne	.L184
+	cmp	rdi, rax
+	je	.L134
 .L184:
-	mov	r10, rax
-.L152:
-	lea	rdx, 1[r10]
-	lea	rax, [rdx+rdx]
-	lea	r11, -1[rax]
-	lea	rbx, 0[rbp+r11*4]
-	lea	rdx, 0[rbp+rdx*8]
-	mov	esi, DWORD PTR [rbx]
-	mov	ecx, DWORD PTR [rdx]
-	cmp	esi, ecx
-	jle	.L151
-	mov	ecx, esi
-	mov	rdx, rbx
-	mov	rax, r11
-.L151:
-	cmp	rax, r13
-	mov	DWORD PTR 0[rbp+r10*4], ecx
-	jl	.L184
-	test	r14, r14
-	je	.L156
-	lea	r10, -1[rax]
-	mov	rcx, r10
-	shr	rcx, 63
-	add	rcx, r10
-	sar	rcx
-	test	rax, rax
-	jne	.L160
-	jmp	.L203
+	lea	rdx, -1[rax]
+.L133:
+	sar	rdx
+	cmp	r8, rax
+	jl	.L137
+	jmp	.L135
+	.p2align 6
 	.p2align 4,,10
 	.p2align 3
-.L205:
-	mov	DWORD PTR [rdx], r10d
-	lea	rdx, -1[rcx]
-	mov	rax, rdx
+.L194:
+	mov	DWORD PTR [rax], ecx
+	lea	rax, -1[rdx]
 	shr	rax, 63
-	add	rax, rdx
-	sar	rax
-	test	rcx, rcx
-	mov	rdx, rax
-	mov	rax, rcx
-	je	.L204
-	mov	rcx, rdx
-.L160:
-	lea	r11, 0[rbp+rcx*4]
-	mov	r10d, DWORD PTR [r11]
-	lea	rdx, 0[rbp+rax*4]
-	cmp	r8d, r10d
-	jg	.L205
-.L155:
-	sub	rdi, 4
-	cmp	r9, 4
-	mov	DWORD PTR [rdx], r8d
-	jg	.L162
-.L133:
+	lea	rcx, -1[rax+rdx]
+	mov	rax, rdx
+	cmp	r8, rdx
+	jge	.L193
+	mov	rdx, rcx
+	sar	rdx
+.L137:
+	lea	r12, [rsi+rdx*4]
+	lea	rax, [rsi+rax*4]
+	mov	ecx, DWORD PTR [r12]
+	cmp	r9d, ecx
+	jg	.L194
+	mov	DWORD PTR [rax], r9d
+	test	r8, r8
+	je	.L139
+.L138:
+	sub	rbx, 4
+	sub	r8, 1
+	mov	r9d, DWORD PTR [rbx]
+	mov	rcx, rbx
+	cmp	r8, r10
+	jl	.L195
+.L129:
+	test	bpl, 1
+	jne	.L135
+	cmp	r8, rdi
+	je	.L196
+.L135:
+	mov	DWORD PTR [rcx], r9d
+	jmp	.L138
+	.p2align 4,,10
+	.p2align 3
+.L157:
+	cmp	edx, r9d
+	jl	.L160
+	cmp	r8d, r9d
+	jge	.L162
+.L188:
+	mov	DWORD PTR [rsi], r9d
+	mov	DWORD PTR -4[r11], ecx
+	mov	ecx, DWORD PTR 4[rsi]
+	mov	edx, DWORD PTR [rsi]
+	jmp	.L159
+.L162:
+	mov	DWORD PTR [rsi], r8d
+	mov	DWORD PTR [r10], ecx
+	mov	ecx, DWORD PTR 4[rsi]
+	mov	edx, DWORD PTR [rsi]
+	jmp	.L159
+.L126:
 	add	rsp, 56
 	pop	rbx
 	pop	rsi
@@ -945,153 +939,127 @@ _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_
 	pop	r14
 	pop	r15
 	ret
-.L177:
-	sar	rax, 2
-	lea	rsi, -2[rax]
-	lea	r11, -1[rax]
-	sar	rsi
-	not	rax
-	sar	r11
-	mov	r9d, eax
-	mov	r8, rsi
-	lea	rbx, 0[rbp+rsi*4]
-	and	r9d, 1
-	cmp	r8, r11
-	mov	r10d, DWORD PTR [rbx]
-	mov	r12, rbx
-	jge	.L181
-.L209:
-	mov	rcx, r8
-	jmp	.L139
-	.p2align 4,,10
-	.p2align 3
-.L182:
-	mov	rcx, rax
-.L139:
-	lea	rdx, 1[rcx]
-	lea	rax, [rdx+rdx]
-	lea	r13, -1[rax]
-	lea	r14, 0[rbp+r13*4]
-	lea	r12, 0[rbp+rdx*8]
-	mov	r15d, DWORD PTR [r14]
-	mov	edx, DWORD PTR [r12]
-	cmp	r15d, edx
-	jle	.L138
-	mov	edx, r15d
-	mov	r12, r14
-	mov	rax, r13
-.L138:
-	cmp	rax, r11
-	mov	DWORD PTR 0[rbp+rcx*4], edx
-	jl	.L182
-.L137:
-	cmp	rsi, rax
-	jne	.L189
-	test	r9b, r9b
-	jne	.L140
-.L189:
-	lea	rcx, -1[rax]
-	sar	rcx
-	cmp	r8, rax
-	jl	.L145
-	jmp	.L206
-	.p2align 4,,10
-	.p2align 3
-.L208:
-	mov	DWORD PTR [rax], edx
-	lea	rdx, -1[rcx]
-	mov	rax, rdx
-	shr	rax, 63
-	add	rax, rdx
-	sar	rax
-	cmp	r8, rcx
-	mov	rdx, rax
-	mov	rax, rcx
-	jge	.L207
-	mov	rcx, rdx
-.L145:
-	lea	r12, 0[rbp+rcx*4]
-	mov	edx, DWORD PTR [r12]
-	lea	rax, 0[rbp+rax*4]
-	cmp	r10d, edx
-	jg	.L208
-.L144:
-	test	r8, r8
-	mov	DWORD PTR [rax], r10d
-	je	.L147
-.L146:
-	sub	r8, 1
-	sub	rbx, 4
-	mov	r10d, DWORD PTR [rbx]
-	cmp	r8, r11
-	mov	r12, rbx
-	jl	.L209
-.L181:
-	mov	rax, r8
-	jmp	.L137
-.L207:
+.L193:
 	mov	rax, r12
-	jmp	.L144
-.L204:
-	mov	rdx, r11
-	sub	rdi, 4
-	cmp	r9, 4
-	mov	DWORD PTR [rdx], r8d
-	jg	.L162
-	jmp	.L133
+	mov	DWORD PTR [rax], r9d
+	test	r8, r8
+	jne	.L138
+.L139:
+	mov	rax, r11
+	sub	r11, 4
+	sub	rax, rsi
+	cmp	rax, 4
+	jle	.L126
+	.p2align 4
+	.p2align 3
 .L156:
-	lea	rcx, -2[r12]
-	sar	rcx
-	cmp	rcx, rax
-	je	.L159
-	lea	r10, -1[rax]
-	mov	rcx, r10
-	shr	rcx, 63
-	add	rcx, r10
-	sar	rcx
-	test	rax, rax
-	jne	.L160
-	jmp	.L155
+	mov	r9, r11
+	mov	eax, DWORD PTR [rsi]
+	mov	r8d, DWORD PTR [r11]
+	sub	r9, rsi
+	mov	r13, r9
+	mov	DWORD PTR [r11], eax
+	sar	r13, 2
+	cmp	r9, 8
+	jle	.L143
+	lea	r12, -1[r13]
+	xor	ebp, ebp
+	sar	r12
+	jmp	.L145
+	.p2align 6
 	.p2align 4,,10
 	.p2align 3
-.L150:
-	test	r14, r14
-	jne	.L198
-	cmp	rdx, 2
-	ja	.L198
-	xor	eax, eax
-	mov	rdx, rbp
-.L159:
-	lea	r10, 1[rax+rax]
-	mov	ecx, DWORD PTR 0[rbp+r10*4]
-	mov	DWORD PTR [rdx], ecx
-	mov	rcx, rax
-	mov	rax, r10
-	jmp	.L160
-.L198:
-	mov	rdx, rbp
-	sub	rdi, 4
-	cmp	r9, 4
-	mov	DWORD PTR [rdx], r8d
-	jg	.L162
-	jmp	.L133
-.L140:
-	lea	rcx, [rax+rax]
-	lea	rax, 1[rcx]
+.L175:
+	mov	rbp, rax
+.L145:
+	lea	rdx, 1[rbp]
+	lea	r10, [rdx+rdx]
+	lea	rbx, [rsi+rdx*8]
+	lea	rax, -1[r10]
+	mov	edi, DWORD PTR [rbx]
+	lea	rcx, [rsi+rax*4]
+	mov	edx, DWORD PTR [rcx]
+	cmp	edx, edi
+	cmovle	edx, edi
+	cmovle	rax, r10
+	cmovle	rcx, rbx
+	mov	DWORD PTR [rsi+rbp*4], edx
+	cmp	r12, rax
+	jg	.L175
+	and	r13d, 1
+	jne	.L186
+	mov	rdx, r9
+	sar	rdx, 3
+	sub	rdx, 1
+	cmp	rdx, rax
+	je	.L151
+.L186:
+	lea	rdx, -1[rax]
+	shr	rdx, 63
+	lea	rdx, -1[rax+rdx]
+	sar	rdx
+	test	rax, rax
+	jne	.L154
+	jmp	.L197
+	.p2align 6
+	.p2align 4,,10
+	.p2align 3
+.L199:
+	mov	DWORD PTR [rax], ecx
+	lea	rax, -1[rdx]
+	shr	rax, 63
+	lea	rcx, -1[rax+rdx]
+	mov	rax, rdx
+	test	rdx, rdx
+	je	.L198
 	sar	rcx
-	lea	rdx, 0[rbp+rax*4]
-	cmp	r8, rax
-	mov	r13d, DWORD PTR [rdx]
-	mov	DWORD PTR [r12], r13d
-	mov	r12, rdx
-	jl	.L145
-.L206:
-	mov	DWORD PTR [r12], r10d
-	jmp	.L146
-.L203:
-	mov	DWORD PTR [rdx], r8d
-	sub	rdi, 4
-	jmp	.L162
+	mov	rdx, rcx
+.L154:
+	lea	r10, [rsi+rdx*4]
+	lea	rax, [rsi+rax*4]
+	mov	ecx, DWORD PTR [r10]
+	cmp	r8d, ecx
+	jg	.L199
+.L148:
+	mov	DWORD PTR [rax], r8d
+	cmp	r9, 4
+	jle	.L126
+.L185:
+	sub	r11, 4
+	jmp	.L156
+.L198:
+	mov	rax, r10
+	jmp	.L148
+.L143:
+	and	r13d, 1
+	jne	.L187
+	cmp	r9, 8
+	jne	.L187
+	mov	rcx, rsi
+	xor	eax, eax
+.L151:
+	lea	r10, 1[rax+rax]
+	mov	edx, DWORD PTR [rsi+r10*4]
+	mov	DWORD PTR [rcx], edx
+	mov	rdx, rax
+	mov	rax, r10
+	jmp	.L154
+.L187:
+	mov	rax, rsi
+	jmp	.L148
+.L196:
+	mov	rax, r8
+.L134:
+	lea	rdx, [rax+rax]
+	lea	rax, 1[rdx]
+	lea	r12, [rsi+rax*4]
+	mov	r13d, DWORD PTR [r12]
+	mov	DWORD PTR [rcx], r13d
+	mov	rcx, r12
+	jmp	.L133
+.L197:
+	mov	DWORD PTR [rcx], r8d
+	jmp	.L185
 	.seh_endproc
 	.text
 	.p2align 4
@@ -1099,9 +1067,7 @@ _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_
 	.def	_Z10sort_plainRSt6vectorIiSaIiEE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10sort_plainRSt6vectorIiSaIiEE
 _Z10sort_plainRSt6vectorIiSaIiEE:
-.LFB4344:
-	push	r13
-	.seh_pushreg	r13
+.LFB4416:
 	push	r12
 	.seh_pushreg	r12
 	push	rbp
@@ -1112,180 +1078,183 @@ _Z10sort_plainRSt6vectorIiSaIiEE:
 	.seh_pushreg	rsi
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 72
-	.seh_stackalloc	72
+	sub	rsp, 64
+	.seh_stackalloc	64
 	.seh_endprologue
 	mov	rsi, QWORD PTR 8[rcx]
 	mov	rbp, QWORD PTR [rcx]
-	lea	rax, 62[rsp]
-	lea	rdx, 63[rsp]
-	movq	xmm0, rax
+	lea	rdx, 62[rsp]
+	lea	rax, 63[rsp]
+	xchg	rdx, rax
 	cmp	rsi, rbp
-	movq	xmm1, rdx
-	punpcklqdq	xmm0, xmm1
-	je	.L234
+	je	.L201
 	mov	rdi, rsi
-	mov	r8, -2
+	mov	QWORD PTR 32[rsp], rax
 	sub	rdi, rbp
-	mov	rax, rdi
-	sar	rax, 2
-	test	rax, rax
-	je	.L212
-	bsr	rax, rax
-	cdqe
-	lea	r8, [rax+rax]
-.L212:
+	mov	QWORD PTR 40[rsp], rdx
+	mov	rcx, rdi
+	sar	rcx, 2
+	je	.L234
+	bsr	rcx, rcx
 	lea	r9, 32[rsp]
-	mov	rdx, rsi
-	mov	rcx, rbp
-	movaps	XMMWORD PTR 32[rsp], xmm0
-	call	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessESt8identityEEDaRT_RT0_EUlOSE_OSG_E_EEEvSE_SE_SG_T1_
 	lea	rbx, 4[rbp]
+	mov	rdx, rsi
+	movsxd	rcx, ecx
+	lea	r8, [rcx+rcx]
+	mov	rcx, rbp
+	call	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessESt8identityEEDaRT_RT0_EUlOSE_OSG_E_EEEvSE_SE_SG_T1_
 	cmp	rdi, 64
-	jg	.L243
-	cmp	rsi, rbx
-	je	.L234
-	mov	r12d, 4
-	jmp	.L231
-	.p2align 4,,10
-	.p2align 3
-.L244:
-	mov	r8, rbx
-	sub	r8, rbp
-	cmp	r8, 4
-	jle	.L226
-	mov	rcx, r12
-	mov	rdx, rbp
-	sub	rcx, r8
-	add	rcx, rbx
-	call	memmove
-.L227:
-	add	rbx, 4
-	mov	DWORD PTR 0[rbp], edi
-	cmp	rsi, rbx
-	je	.L234
-.L231:
-	mov	edi, DWORD PTR [rbx]
-	mov	rcx, rbx
-	mov	eax, DWORD PTR 0[rbp]
-	cmp	edi, eax
-	jl	.L244
-	mov	edx, DWORD PTR -4[rbx]
-	lea	rax, -4[rbx]
-	cmp	edi, edx
-	jge	.L229
-	.p2align 4,,10
-	.p2align 3
-.L230:
-	mov	DWORD PTR 4[rax], edx
-	mov	rcx, rax
-	mov	edx, DWORD PTR -4[rax]
-	sub	rax, 4
-	cmp	edi, edx
-	jl	.L230
-.L229:
-	add	rbx, 4
-	mov	DWORD PTR [rcx], edi
-	cmp	rsi, rbx
-	jne	.L231
-.L234:
-	add	rsp, 72
-	pop	rbx
-	pop	rsi
-	pop	rdi
-	pop	rbp
-	pop	r12
-	pop	r13
-	ret
-	.p2align 4,,10
-	.p2align 3
-.L243:
+	jle	.L233
 	lea	rdi, 64[rbp]
-	mov	r13d, 4
-	jmp	.L220
+	jmp	.L210
 	.p2align 4,,10
 	.p2align 3
-.L246:
+.L236:
 	mov	r8, rbx
 	sub	r8, rbp
+	mov	rax, r8
+	sal	rax, 62
+	sub	rax, r8
+	lea	rcx, 4[rbx+rax]
 	cmp	r8, 4
-	jle	.L215
-	mov	rcx, r13
+	jle	.L205
 	mov	rdx, rbp
-	sub	rcx, r8
-	add	rcx, rbx
 	call	memmove
-.L216:
+.L206:
 	add	rbx, 4
 	mov	DWORD PTR 0[rbp], r12d
-	cmp	rbx, rdi
-	je	.L245
-.L220:
+	cmp	rdi, rbx
+	je	.L235
+.L210:
 	mov	r12d, DWORD PTR [rbx]
-	mov	rcx, rbx
-	mov	eax, DWORD PTR 0[rbp]
-	cmp	r12d, eax
-	jl	.L246
-	mov	edx, DWORD PTR -4[rbx]
-	lea	rax, -4[rbx]
+	mov	edx, DWORD PTR 0[rbp]
 	cmp	r12d, edx
-	jge	.L218
-	.p2align 4,,10
+	jl	.L236
+	mov	edx, DWORD PTR -4[rbx]
+	cmp	r12d, edx
+	jge	.L223
+	lea	rax, -4[rbx]
+	.p2align 5
+	.p2align 4
 	.p2align 3
-.L219:
+.L209:
 	mov	DWORD PTR 4[rax], edx
 	mov	rcx, rax
 	mov	edx, DWORD PTR -4[rax]
 	sub	rax, 4
 	cmp	r12d, edx
-	jl	.L219
-.L218:
-	add	rbx, 4
+	jl	.L209
 	mov	DWORD PTR [rcx], r12d
-	cmp	rbx, rdi
-	jne	.L220
-.L245:
+.L238:
+	add	rbx, 4
+	cmp	rdi, rbx
+	jne	.L210
+.L235:
 	cmp	rsi, rdi
-	je	.L234
+	je	.L201
+	.p2align 4
+	.p2align 3
+.L211:
 	mov	ecx, DWORD PTR [rdi]
-	lea	rax, -4[rdi]
 	mov	edx, DWORD PTR -4[rdi]
 	cmp	ecx, edx
-	jge	.L233
-	.p2align 4,,10
+	jge	.L224
+	lea	rax, -4[rdi]
+	.p2align 5
+	.p2align 4
 	.p2align 3
-.L223:
+.L214:
 	mov	DWORD PTR 4[rax], edx
 	mov	r8, rax
 	mov	edx, DWORD PTR -4[rax]
 	sub	rax, 4
 	cmp	ecx, edx
-	jl	.L223
+	jl	.L214
 	add	rdi, 4
 	mov	DWORD PTR [r8], ecx
 	cmp	rsi, rdi
-	je	.L234
-.L242:
-	mov	ecx, DWORD PTR [rdi]
-	lea	rax, -4[rdi]
-	mov	edx, DWORD PTR -4[rdi]
-	cmp	ecx, edx
-	jl	.L223
+	jne	.L211
+.L201:
+	add	rsp, 64
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
+	pop	r12
+	ret
+	.p2align 4,,10
+	.p2align 3
+.L237:
+	mov	r8, rbx
+	sub	r8, rbp
+	mov	rax, r8
+	sal	rax, 62
+	sub	rax, r8
+	lea	rcx, 4[rbx+rax]
+	cmp	r8, 4
+	jle	.L217
+	mov	rdx, rbp
+	call	memmove
+.L218:
+	mov	DWORD PTR 0[rbp], edi
+.L219:
+	add	rbx, 4
 .L233:
+	cmp	rsi, rbx
+	je	.L201
+	mov	edi, DWORD PTR [rbx]
+	mov	edx, DWORD PTR 0[rbp]
+	cmp	edi, edx
+	jl	.L237
+	mov	edx, DWORD PTR -4[rbx]
+	cmp	edi, edx
+	jge	.L225
+	lea	rax, -4[rbx]
+	.p2align 5
+	.p2align 4
+	.p2align 3
+.L221:
+	mov	DWORD PTR 4[rax], edx
+	mov	rcx, rax
+	mov	edx, DWORD PTR -4[rax]
+	sub	rax, 4
+	cmp	edi, edx
+	jl	.L221
+	mov	DWORD PTR [rcx], edi
+	jmp	.L219
+.L234:
+	lea	r9, 32[rsp]
+	mov	rdx, rsi
+	lea	rbx, 4[rbp]
+	mov	rcx, rbp
+	mov	r8, -2
+	call	_ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEExNS0_5__ops15_Iter_comp_iterIZNSt6ranges8__detail16__make_comp_projINS9_4lessESt8identityEEDaRT_RT0_EUlOSE_OSG_E_EEEvSE_SE_SG_T1_
+	jmp	.L233
+	.p2align 4,,10
+	.p2align 3
+.L224:
 	mov	r8, rdi
 	add	rdi, 4
-	cmp	rsi, rdi
 	mov	DWORD PTR [r8], ecx
-	jne	.L242
-	jmp	.L234
-.L226:
-	jne	.L227
-	mov	DWORD PTR [rbx], eax
-	jmp	.L227
-.L215:
-	jne	.L216
-	mov	DWORD PTR [rbx], eax
-	jmp	.L216
+	cmp	rsi, rdi
+	jne	.L211
+	jmp	.L201
+.L205:
+	jne	.L206
+	mov	DWORD PTR [rcx], edx
+	jmp	.L206
+.L217:
+	jne	.L218
+	mov	DWORD PTR [rcx], edx
+	jmp	.L218
+.L223:
+	mov	rcx, rbx
+	mov	DWORD PTR [rcx], r12d
+	jmp	.L238
+.L225:
+	mov	rcx, rbx
+	mov	DWORD PTR [rcx], edi
+	jmp	.L219
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	memmove;	.scl	2;	.type	32;	.endef

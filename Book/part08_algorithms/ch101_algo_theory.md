@@ -3,8 +3,8 @@
 ⟶ Book/part08_algorithms/ch95_algo_overview.md
 ⟶ Book/part08_algorithms/ch96_sorting.md
 
-> 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
-> 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；本章以**真实编译产物**（手写开放寻址哈希表的线性探测汇编）与 **chrono 实测性能数字**为证据，绝不编造。
+> 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
+> 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；本章以**真实编译产物**（手写开放寻址哈希表的线性探测汇编）与 **chrono 实测性能数字**为证据，绝不编造。
 > 立场遵循 CONVENTIONS.md：凡 `[实现]`/`[平台]` 均标注具体工具链。
 
 ## ① 概述：算法思想总览 [标准]
@@ -91,7 +91,7 @@ struct OAHash {
 ```
 
 - `[标准]`：链地址在删除上简单（直接删节点），开放寻址需用"墓碑（deleted）"标记避免切断探测链。
-- `[实现·GCC13]`：libstdc++ 的 `std::unordered_map` 采用链地址 + 单链表（非红黑），平均 O(1)。
+- `[实现·GCC15.3.0]`：libstdc++ 的 `std::unordered_map` 采用链地址 + 单链表（非红黑），平均 O(1)。
 
 ## ③ 图（BFS/DFS） [标准]
 
@@ -297,7 +297,7 @@ int kruskal(std::vector<std::tuple<int,int,int>> edges, int n) {
 - `[标准]`：贪心正确性须证明；不能凭直觉。反例：0/1 背包不能用贪心（需用 DP，见 ⑥）。
 - `[经验]`：先问"局部最优能否推出全局最优"，否则退回 DP。
 
-## ⑧ [实现]真实：手写开放寻址哈希表编译（取汇编看 probe 循环） [实现·GCC13]
+## ⑧ [实现]真实：手写开放寻址哈希表编译（取汇编看 probe 循环） [实现·GCC15.3.0]
 
 下面是被真实编译的源（完整可编译见 `Examples/_ch101_open_addressing.cpp`）。`oah_find` 用线性探测：`for i in [0,cap): idx=(h+i)&(cap-1)`，遇空槽返回、遇同键返回。
 
@@ -322,29 +322,30 @@ static Entry* oah_find(OAHMap* m, int key) {
 ```asm
 ; g++ -std=c++23 -O2 -S -masm=intel Examples/_ch101_open_addressing.cpp
 ; 真实产物：main 内联 oah_find 后，key=7777 的线性探测循环（.L19）
-.L19:
-	cmp	BYTE PTR 9[rdx], 0       ; 比较 deleted 字段（偏移 9）
-	jne	.L11
-	cmp	DWORD PTR [rdx], 7777    ; 比较 key 字段（偏移 0）
-	je	.L12                     ; 命中 -> 取 val 返回
+; 真实产物：main 内联 oah_find 后，key=7777 的线性探测循环（.L11）
 .L11:
-	add	rax, 1                    ; i++  （探测步长 = 1，线性探测）
-	cmp	rax, 121361              ; i < (h + cap) 上界
-	je	.L14                     ; 越界 -> 未找到
-.L13:
 	movzx	edx, ax
 	lea	rdx, [rdx+rdx*2]
-	lea	rdx, [r8+rdx*4]          ; rdx = base + idx*12  (Entry=12 字节)
-	cmp	BYTE PTR 8[rdx], 0       ; 比较 used 字段（偏移 8）
-	jne	.L19                     ; 槽已占用 -> 继续探测
+	lea	rdx, [r8+rdx*4]
+	cmp	BYTE PTR 8[rdx], 0
+	je	.L12
+	cmp	BYTE PTR 9[rdx], 0
+	jne	.L9
+	cmp	DWORD PTR [rdx], 7777
+	je	.L10
+.L9:
+	add	rax, 1
+	cmp	rax, 121361
+	jne	.L11
+
 ```
 
-- `[实现·GCC13]`：汇编直接证明线性探测本质——`add rax,1`（步长恒为 1）逐槽试探，`lea rdx,[r8+rdx*4]` 按 `Entry=12` 字节步长寻址，`cmp BYTE PTR 8[rdx],0` 测试 `used` 决定是否继续。冲突时探测退化到 O(cap) 的代价在此循环中可见（循环上界 `h+cap`）。
+- `[实现·GCC15.3.0]`：汇编直接证明线性探测本质——`add rax,1`（步长恒为 1）逐槽试探，`lea rdx,[r8+rdx*4]` 按 `Entry=12` 字节步长寻址，`cmp BYTE PTR 8[rdx],0` 测试 `used` 决定是否继续。冲突时探测退化到 O(cap) 的代价在此循环中可见（循环上界 `h+cap`）。
 - `[平台·x86-64]`：槽地址计算 `idx*12` 由 `lea` 在 2 条指令内完成（`rdx+rdx*2` → `*3`，再 `*4` → `*12`），无乘法指令。
 
-## ⑨ [实现]真实：手写哈希表 vs std::unordered_map 性能（chrono 真实数字） [实现·GCC13]
+## ⑨ [实现]真实：手写哈希表 vs std::unordered_map 性能（chrono 真实数字） [实现·GCC15.3.0]
 
-真实基准（源 `Examples/_ch101_bench.cpp`，MinGW GCC 13.1.0，`-O2`，x86-64，N=300000 次插入+查找）：
+真实基准（源 `Examples/_ch101_bench.cpp`，MinGW GCC 15.3.0，`-O2`，x86-64，N=300000 次插入+查找）：
 
 ```cpp
 #include <map>
@@ -370,7 +371,7 @@ handwritten=5.8 ms  std_unordered=17.5 ms  N=300000  checksum=89999700000
 speedup(hand/std)=3.01x
 ```
 
-- `[实现·GCC13]`：本基准中手写开放寻址表比 `std::unordered_map` 快约 **3 倍**。原因：手写版节点内联在连续数组（缓存友好、无链表指针跳转），且哈希为整型乘性哈希、无 `std::hash` 间接与节点分配开销。
+- `[实现·GCC15.3.0]`：本基准中手写开放寻址表比 `std::unordered_map` 快约 **3 倍**。原因：手写版节点内联在连续数组（缓存友好、无链表指针跳转），且哈希为整型乘性哈希、无 `std::hash` 间接与节点分配开销。
 - `[经验]`：该数字**仅代表整型 key + 连续内存 + 无删除**这一特定场景；`std::unordered_map` 胜在通用、稳健、支持任意 key 与删除。生产环境先用 `unordered_map`，仅在 profiling 证明其为瓶颈且 key 简单时自写。
 - `[平台·x86-64]`：绝对毫秒数随 CPU/负载浮动，但"手写连续桶更快"的相对结论稳定可复现。
 

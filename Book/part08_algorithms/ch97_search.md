@@ -3,8 +3,8 @@
 ⟶ Book/part08_algorithms/ch96_sorting.md
 ⟶ Book/part07_stl/ch83_map.md
 
-> 真实编译器：MinGW GCC 13.1.0（`g++ -std=c++23 -O2 -S -masm=intel`）。
-> 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。
+> 真实编译器：MinGW GCC 15.3.0（`g++ -std=c++23 -O2 -S -masm=intel`）。
+> 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`。
 > 规范基线：CONVENTIONS.md（立场分层、20 元素模板）。
 > 本章所有 ```` ```asm ```` 与 ```` ```text ```` 均为本机真实取证，无任何编造。
 
@@ -167,7 +167,7 @@ bool binary_equiv(const std::vector<int>& v, int x) {
 
 ## ⑤ 真实汇编：lower_bound 在 -O2 下是真正的二分循环 [实现]
 
-下面是用 GCC 13.1.0 `-O2 -masm=intel` 对 `lower_bound_idx` 生成的**真实汇编**（已截去文件头）。注意它**没有被完全展开成常数表**，而是生成了标准的 `mid = n/2` 二分循环——因为区间长度 `n` 是运行时值。
+下面是用 GCC 15.3.0 `-O2 -masm=intel` 对 `lower_bound_idx` 生成的**真实汇编**（已截去文件头）。注意它**没有被完全展开成常数表**，而是生成了标准的 `mid = n/2` 二分循环——因为区间长度 `n` 是运行时值。
 
 ```cpp
 // 文件：Examples/_ch97_lower_bound.cpp
@@ -181,34 +181,34 @@ int lower_bound_idx(const int* first, int n, int value) {
 ```
 
 ```asm
-; GCC 13.1.0 -O2 -masm=intel，符号 _Z15lower_bound_idxPKiii
+; GCC 15.3.0 -O2 -masm=intel，符号 _Z15lower_bound_idxPKiii
 _Z15lower_bound_idxPKiii:
-	movsx	rdx, edx          ; n 符号扩展入 rdx（剩余长度）
-	mov	rax, rcx           ; first 指针入 rax（当前区间起点）
+	movsxd	rdx, edx
+	mov	rax, rcx
 .L3:
 	test	rdx, rdx
-	jle	.L7                ; 区间为空 (rdx<=0) -> 结束
+	jle	.L7
 .L4:
 	mov	r9, rdx
-	sar	r9                  ; r9 = n / 2（算术右移 = mid 下标）
-	lea	r10, [rax+r9*4]     ; r10 = &first[mid]
-	cmp	DWORD PTR [r10], r8d ; *mid 与 value(r8d) 比较
-	jge	.L5                 ; *mid >= value -> 走左半 (.L5)
-	lea	rax, 4[r10]         ; 右移：first = &first[mid] + 1
+	sar	r9
+	cmp	DWORD PTR [rax+r9*4], r8d
+	jge	.L5
 	sub	rdx, r9
-	sub	rdx, 1              ; n = n - mid - 1
+	lea	rax, 4[rax+r9*4]
+	sub	rdx, 1
 	test	rdx, rdx
-	jg	.L4                 ; 右半非空 -> 继续
+	jg	.L4
 .L7:
-	sub	rax, rcx            ; 终点指针 - 起点指针
-	sar	rax, 2              ; 字节差 /4 = 下标
+	sub	rax, rcx
+	sar	rax, 2
 	ret
 .L5:
-	mov	rdx, r9             ; 左半：n = mid（保留 [first, mid)）
+	mov	rdx, r9
 	jmp	.L3
+
 ```
 
-- `[实现·GCC13]`：循环体核心是 `mid = n/2`、`cmp [first+mid]`,`value`、按比较结果收缩到左半或右半。`sar r9` 即除以 2；`lea rax,4[r10]` 把起点右移到 `mid+1`。这是教科书二分，且 **不内联比较函数**（裸指针 + `int` 比较被直接译为目标码 `cmp`）。
+- `[实现·GCC15.3.0]`：循环体核心是 `mid = n/2`、`cmp [first+mid]`,`value`、按比较结果收缩到左半或右半。`sar r9` 即除以 2；`lea rax,4[rax+r9*4]` 把起点右移到 `mid+1`。这是教科书二分，且 **不内联比较函数**（裸指针 + `int` 比较被直接译为目标码 `cmp`）。
 - `[实现]`：每轮把区间折半，循环最多 log₂(n)+1 次——汇编层面印证 O(log N)。
 
 ## ⑥ 有序区间算法：集合操作 [标准]
@@ -379,7 +379,7 @@ int find_if_not_demo() {
 
 ## ⑩ 真实性能：二分 vs 线性（chrono 实测） [实现]
 
-下面是用 GCC 13.1.0 `-O2` 在本机运行的 **`std::chrono` 实测**（非示意）。对 1,048,576 个升序 `int` 做 200 次随机命中查找：
+下面是用 GCC 15.3.0 `-O2` 在本机运行的 **`std::chrono` 实测**（非示意）。对 1,048,576 个升序 `int` 做 200 次随机命中查找：
 
 ```cpp
 // 文件：Examples/_ch97_bench.cpp
@@ -431,7 +431,7 @@ speedup        : 1439.44x
 sink=77443
 ```
 
-- `[实现·GCC13]`：在 100 万元素上二分比线性快 **~1439 倍**，与理论 O(N)/O(log N) 之比（约 1e6 / 20 ≈ 5e4）同量级——差距被"线性查找每步 cache 友好、二分跳转随机"部分抵消，但仍悬殊。
+- `[实现·GCC15.3.0]`：在 100 万元素上二分比线性快 **~1439 倍**，与理论 O(N)/O(log N) 之比（约 1e6 / 20 ≈ 5e4）同量级——差距被"线性查找每步 cache 友好、二分跳转随机"部分抵消，但仍悬殊。
 - `[经验]`：阈值经验值：N 小于约 32~64 时，线性查找因**无分支预测惩罚、cache 友好**反而常胜二分；N 上千后二分碾压。先排序（O(N log N)）再多次二分，仅在查找次数足够多时才划算（见 ⑮）。
 
 ## ⑪ 哈希查找衔接：与 unordered 容器 [标准]

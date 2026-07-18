@@ -3,8 +3,8 @@
 ⟶ Book/part08_algorithms/ch95_algo_overview.md
 ⟶ Book/part13_engineering/ch151_benchmark.md
 
-> 真实编译器取证：MinGW **GCC 13.1.0**（`-std=c++23 -O2 -S -masm=intel`）。
-> 头文件根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；数值算法位于 `<numeric>`（与 `<algorithm>` 的并行 PSTL 胶水层 `pstl/glue_numeric_defs.h`）。
+> 真实编译器取证：MinGW **GCC 15.3.0**（`-std=c++23 -O2 -S -masm=intel`）。
+> 头文件根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；数值算法位于 `<numeric>`（与 `<algorithm>` 的并行 PSTL 胶水层 `pstl/glue_numeric_defs.h`）。
 > 本章遵循 `CONVENTIONS.md` 的立场分层与「20 元素」骨架；所有取证来自本机真实编译/运行，**绝不编造**。
 
 ## ① 概述：数值算法 [标准]
@@ -64,30 +64,87 @@ double accum_dbl(const double* p, std::size_t n) {
 ; 文件：Examples/_ch99_accumulate.asm  （g++ -std=c++23 -O2 -S -masm=intel，默认 x86-64 基线目标）
 ; 关键证据①：reduce_int 是标量 4 路展开（用 GPR rax/r8/rdx 累计），并未 SSE2 向量化
 _Z10reduce_intPKxy:
+	sal	rdx, 3
+	cmp	rdx, 24
+	lea	r9, [rcx+rdx]
+	mov	edx, 0
+	jle	.L9
 .L3:
 	mov	rax, QWORD PTR 8[rcx]
+	mov	r8, QWORD PTR 24[rcx]
 	add	rcx, 32
 	add	rax, QWORD PTR -32[rcx]
-	mov	r8, QWORD PTR -8[rcx]
 	add	r8, QWORD PTR -16[rcx]
 	add	rax, r8
-	add	rdx, rax            ; 累计到 rdx（标量整数 add）
-	...
+	add	rdx, rax
+	mov	rax, r9
+	sub	rax, rcx
+	cmp	rax, 24
+	jg	.L3
+	cmp	r9, rcx
+	je	.L11
+.L5:
+	add	rdx, QWORD PTR [rcx]
+	add	rcx, 8
+.L9:
+	cmp	r9, rcx
+	jne	.L5
+.L11:
+	mov	rax, rdx
+	ret
 ; 关键证据②：accum_int 是更朴素的标量循环（无展开）
 _Z9accum_intPKxy:
+	xor	eax, eax
+	lea	rdx, [rcx+rdx*8]
+	cmp	rdx, rcx
+	je	.L12
 .L14:
 	add	rax, QWORD PTR [rcx]
 	add	rcx, 8
 	cmp	rdx, rcx
 	jne	.L14
+.L12:
+	ret
 ; 关键证据③：reduce_dbl 用标量浮点 addsd（pxor 清零，addsd 累加），明确未向量化
 _Z10reduce_dblPKdy:
 	pxor	xmm1, xmm1
-	...
+	sal	rdx, 3
+	lea	r8, [rcx+rdx]
+	cmp	rdx, 24
+	jle	.L18
 .L19:
 	movsd	xmm0, QWORD PTR [rcx]
+	movsd	xmm2, QWORD PTR 16[rcx]
+	mov	rax, r8
+	add	rcx, 32
 	addsd	xmm0, QWORD PTR -24[rcx]
-	addsd	xmm2, xmm2 ...        ; 仍是 scalar double (SD)
+	addsd	xmm2, QWORD PTR -8[rcx]
+	sub	rax, rcx
+	addsd	xmm0, xmm2
+	addsd	xmm1, xmm0
+	cmp	rax, 24
+	jg	.L19
+.L18:
+	cmp	r8, rcx
+	je	.L17
+	mov	rax, r8
+	sub	rax, rcx
+	test	al, 8
+	je	.L21
+	addsd	xmm1, QWORD PTR [rcx]
+	add	rcx, 8
+	cmp	r8, rcx
+	je	.L17
+.L21:
+	addsd	xmm1, QWORD PTR [rcx]
+	add	rcx, 16
+	addsd	xmm1, QWORD PTR -8[rcx]
+	cmp	r8, rcx
+	jne	.L21
+.L17:
+	movapd	xmm0, xmm1
+	ret
+
 ```
 
 ```cpp
@@ -117,7 +174,7 @@ void init_type_trap() {
 }
 ```
 
-- `[实现·GCC13]`：本机 `-O2` 基线 x86-64 目标下，`reduce` 被内联并以**标量 GPR 4 路展开**（`add rax/r8/rdx`）呈现，并非 SIMD 向量化；浮点版则是 `addsd` 标量循环。要拿到 `vpaddq`/`vaddpd` 向量化，需要 `-O3 -mavx2 -ffast-math`（第⑥节对比）。
+- `[实现·GCC15.3.0]`：本机 `-O2` 基线 x86-64 目标下，`reduce` 被内联并以**标量 GPR 4 路展开**（`add rax/r8/rdx`）呈现，并非 SIMD 向量化；浮点版则是 `addsd` 标量循环。要拿到 `vpaddq`/`vaddpd` 向量化，需要 `-O3 -mavx2 -ffast-math`（第⑥节对比）。
 - `[标准]`：`reduce` 的二元运算必须是**可交换且可结合**的；若不满足（如浮点加法），结果在并行/分块下不确定（第⑭节）。
 
 ## ③ inner_product
@@ -326,8 +383,21 @@ long long tr_int(const long long* a, const long long* b, std::size_t n) {
 
 ```asm
 ; 文件：Examples/_ch99_transform_reduce.asm（g++ -std=c++23 -O2 -S -masm=intel，默认目标）
-; 关键证据：tr_square 在 -O2 下是标量 mulsd/addsd 循环（即便加 -ffast-math 仍是标量）
+; 文件：Examples/_ch99_transform_reduce.asm（GCC 15.3.0 真机，-O2 -S -masm=intel，默认目标）
 _Z9tr_squarePKdy:
+	pxor	xmm4, xmm4
+	sal	rdx, 3
+	lea	rax, [rcx+rdx]
+	cmp	rdx, 24
+	jle	.L9
+.L3:
+	movsd	xmm0, QWORD PTR 8[rcx]
+	movsd	xmm3, QWORD PTR [rcx]
+	mov	rdx, rax
+	add	rcx, 32
+	movsd	xmm1, QWORD PTR -8[rcx]
+	movsd	xmm2, QWORD PTR -16[rcx]
+	sub	rdx, rcx
 	mulsd	xmm0, xmm0
 	mulsd	xmm3, xmm3
 	mulsd	xmm1, xmm1
@@ -336,17 +406,109 @@ _Z9tr_squarePKdy:
 	addsd	xmm1, xmm2
 	addsd	xmm0, xmm1
 	addsd	xmm4, xmm0
+	cmp	rdx, 24
+	jg	.L3
+	cmp	rax, rcx
+	je	.L11
+.L5:
+	movsd	xmm0, QWORD PTR [rcx]
+	add	rcx, 8
+	mulsd	xmm0, xmm0
+	addsd	xmm4, xmm0
+.L9:
+	cmp	rax, rcx
+	jne	.L5
+.L11:
+	movapd	xmm0, xmm4
+	ret
 ; 结论：-O2 标量，未向量化。
+
 ```
 
 ```asm
 ; 文件：Examples/_ch99_transform_reduce_avx.asm（g++ -std=c++23 -O3 -mavx2 -ffast-math）对比
-; 关键证据：同一 tr_square 在 -O3 -mavx2 -ffast-math 下被向量化为 256-bit AVX2
+; 文件：Examples/_ch99_transform_reduce_avx.asm（GCC 15.3.0 真机，-O3 -mavx2 -ffast-math）
 _Z9tr_squarePKdy:
-	vmovupd	ymm5, YMMWORD PTR [rdx]
-	vmulpd	ymm0, ymm5, ymm5      ; 4 个 double 同时平方
-	vaddpd	ymm1, ymm1, ymm0      ; 4 个 double 同时累加
-; tr_mul 同理：vmulpd ymm5, ymm5, [rax]（a*b）后 vaddpd
+	vxorpd	xmm4, xmm4, xmm4
+	sal	rdx, 3
+	mov	rax, rcx
+	lea	rcx, [rcx+rdx]
+	cmp	rdx, 24
+	jle	.L2
+.L3:
+	vmovsd	xmm3, QWORD PTR 8[rax]
+	vmovsd	xmm0, QWORD PTR [rax]
+	mov	rdx, rcx
+	add	rax, 32
+	vmovsd	xmm2, QWORD PTR -8[rax]
+	vmovsd	xmm1, QWORD PTR -16[rax]
+	sub	rdx, rax
+	vmulsd	xmm0, xmm0, xmm0
+	vmulsd	xmm3, xmm3, xmm3
+	vmulsd	xmm1, xmm1, xmm1
+	vmulsd	xmm2, xmm2, xmm2
+	vaddsd	xmm0, xmm0, xmm3
+	vaddsd	xmm1, xmm1, xmm2
+	vaddsd	xmm0, xmm0, xmm1
+	vaddsd	xmm4, xmm4, xmm0
+	cmp	rdx, 24
+	jg	.L3
+.L2:
+	cmp	rcx, rax
+	je	.L1
+	lea	r9, -8[rcx]
+	mov	rdx, rax
+	sub	r9, rax
+	cmp	r9, 16
+	jbe	.L5
+	shr	r9, 3
+	vxorpd	xmm1, xmm1, xmm1
+	add	r9, 1
+	mov	r8, r9
+	shr	r8, 2
+	sal	r8, 5
+	add	r8, rax
+.L6:
+	vmovupd	ymm0, YMMWORD PTR [rdx]
+	add	rdx, 32
+	vmulpd	xmm0, ymm0, ymm0
+	vaddpd	xmm1, xmm1, xmm0
+	cmp	rdx, r8
+	jne	.L6
+	vextractf128	xmm0, ymm1, 0x1
+	vaddpd	xmm1, xmm0, xmm1
+	vunpckhpd	xmm0, xmm1, xmm1
+	vaddpd	xmm0, xmm0, xmm1
+	vaddsd	xmm4, xmm4, xmm0
+	test	r9b, 3
+	je	.L15
+	and	r9, -4
+	lea	rax, [rax+r9*8]
+	vzeroupper
+.L5:
+	vmovsd	xmm0, QWORD PTR [rax]
+	lea	rdx, 8[rax]
+	vmulsd	xmm0, xmm0, xmm0
+	vaddsd	xmm4, xmm4, xmm0
+	cmp	rcx, rdx
+	je	.L1
+	vmovsd	xmm0, QWORD PTR 8[rax]
+	lea	rdx, 16[rax]
+	vmulsd	xmm0, xmm0, xmm0
+	vaddsd	xmm4, xmm4, xmm0
+	cmp	rcx, rdx
+	je	.L1
+	vmovsd	xmm0, QWORD PTR 16[rax]
+	vmulsd	xmm0, xmm0, xmm0
+	vaddsd	xmm4, xmm4, xmm0
+.L1:
+	vmovapd	xmm0, xmm4
+	ret
+.L15:
+	vzeroupper
+	vmovapd	xmm0, xmm4
+	ret
+
 ```
 
 ```cpp
@@ -356,7 +518,7 @@ _Z9tr_squarePKdy:
 inline bool vectorized_only_at_o3() { return true; }   // 占位：结论见汇编对比
 ```
 
-- `[实现·GCC13]`：**本机实证**——`transform_reduce` 在 `-O2` 基线目标下是**标量 `mulsd`/`addsd` 循环**，加 `-ffast-math` 仍不向量化；只有在 `-O3 -mavx2 -ffast-math` 时才出现 `vmulpd`/`vaddpd`（256-bit AVX2，每次 4 个 double）。说明"用算法 ≠ 自动 SIMD"，向量化取决于优化级别、目标 ISA 与 FP 重排许可。
+- `[实现·GCC15.3.0]`：**本机实证**——`transform_reduce` 在 `-O2` 基线目标下是**标量 `mulsd`/`addsd` 循环**，加 `-ffast-math` 仍不向量化；只有在 `-O3 -mavx2 -ffast-math` 时才出现 `vmulpd`/`vaddpd`（256-bit AVX2，每次 4 个 double）。说明"用算法 ≠ 自动 SIMD"，向量化取决于优化级别、目标 ISA 与 FP 重排许可。
 - `[平台·x86-64]`：默认 x86-64 基线仅保证 SSE2；要 AVX2 必须显式 `-mavx2`（或 `-march=native`），否则编译器不敢用更宽向量。
 
 ## ⑦ 并行执行策略与数据竞争 [经验]
@@ -408,7 +570,7 @@ double par_safe(const std::vector<double>& a, double& n_written) {
 └──────────────────────────────────────────────────┘
 ```
 
-- `[经验]`：**本 MinGW（GCC 13.1.0 未捆绑 TBB）下，`execution::par` 实际是串行回退**——算法在单线程执行（第⑨节有真实计时佐证）。因此"写了 par 就快"在这里不成立，需链接 TBB 才真正多线程。
+- `[经验]`：**本 MinGW（GCC 15.3.0 未捆绑 TBB）下，`execution::par` 实际是串行回退**——算法在单线程执行（第⑨节有真实计时佐证）。因此"写了 par 就快"在这里不成立，需链接 TBB 才真正多线程。
 - `[标准]`：给 `par`/`par_unseq` 的二元运算必须满足**可结合且可交换**；否则结果不确定或错误。`par_unseq` 还允许向量化（SIMD），对运算要求更严。
 
 ## ⑧ 数值稳定性
@@ -527,7 +689,7 @@ int main() {
 ```
 
 ```text
-; ===== 本机真实运行输出（GCC 13.1.0 / Windows x64 / 32 逻辑核）=====
+; ===== 本机真实运行输出（GCC 15.3.0 / Windows x64 / 32 逻辑核）=====
 hardware_concurrency = 32
 seq  : 863.279 ms  result=1e+07
 par  : 855.056 ms  result=1e+07
@@ -751,7 +913,7 @@ void simd_hint() {
 }
 ```
 
-- `[实现·GCC13]`：第⑥节已实证——`transform_reduce`/`reduce` 在 `-O3 -mavx2 -ffast-math` 下生成 `vmulpd`/`vaddpd`/`vpaddq`（256-bit），每次处理 4 个 double / 4 个 int64；而 `-O2` 默认目标是标量。即：**SIMD 是编译选项的产物，不是算法本身**。
+- `[实现·GCC15.3.0]`：第⑥节已实证——`transform_reduce`/`reduce` 在 `-O3 -mavx2 -ffast-math` 下生成 `vmulpd`/`vaddpd`/`vpaddq`（256-bit），每次处理 4 个 double / 4 个 int64；而 `-O2` 默认目标是标量。即：**SIMD 是编译选项的产物，不是算法本身**。
 - `[平台·x86-64]`：`par_unseq` 允许编译器在多线程的每块内再用 SIMD；但同样受"本机无 TBB→仍串行"影响（第⑦/⑨节），只是 SIMD 那部分在 `-O3 -mavx2` 下依然生效。
 
 ## ⑭ 常见坑（reduce 因浮点不满足结合律而不确定）
@@ -1191,7 +1353,7 @@ void demo_c10(const std::vector<long long>& v) {
 | `ranges::fold_left` | `<algorithm>` | C++23 | 严格 | 否 | 现代 accumulate |
 
 - `[标准]`：`reduce`/`transform_reduce`/`*_scan` 接受 `execution::seq|par|par_unseq|unseq`；`accumulate`/`inner_product`/`partial_sum`/`iota` **不接受**执行策略。
-- `[经验]`：本机（GCC 13.1.0 / MinGW，无 TBB）`par` 串行回退——提速要靠链接 TBB；向量化要靠 `-O3 -mavx2 -ffast-math`（第②/⑥/⑬节实证）。浮点 `reduce` 结果不确定，比较须容差（第⑭节）。
+- `[经验]`：本机（GCC 15.3.0 / MinGW，无 TBB）`par` 串行回退——提速要靠链接 TBB；向量化要靠 `-O3 -mavx2 -ffast-math`（第②/⑥/⑬节实证）。浮点 `reduce` 结果不确定，比较须容差（第⑭节）。
 
 ## 附录 E：数值算法底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
@@ -1262,7 +1424,7 @@ int main() {
 | **CGAL**（github.com/CGAL/cgal） | 计算几何算法库 | CAD、GIS、3D 打印路径规划，4,000+ 数值算法 | 依赖 Eigen + BLAS，内核使用惰性精确数类型 |
 | **Intel oneMKL**（oneapi-src.github.io/oneMKL） | 高性能 BLAS/LAPACK/FFT | SIMD 优化矩阵乘法：`cblas_dgemm` 在 AVX-512 上达 ~95% 峰值 FLOPS | `oneapi::mkl::blas::gemm` |
 
-**底层深度**：`std::accumulate` 与 `std::reduce` 核心差异在浮点结合律。`std::accumulate` 保证 `((a+b)+c)+d` 严格左结合，GCC 13.1 `-O2` 下仅标量 `addsd` 递推；`std::reduce` 放弃结合律，GCC 自动向量化为 `vaddpd ymm0`（256 位 AVX2，一次 4 个 double），Godbolt 实测循环体缩减 4×。`std::transform_reduce` 在 Intel oneAPI 后端可卸载到 GPU（SYCL）。
+**底层深度**：`std::accumulate` 与 `std::reduce` 核心差异在浮点结合律。`std::accumulate` 保证 `((a+b)+c)+d` 严格左结合，GCC 15.3.0 `-O2` 下仅标量 `addsd` 递推；`std::reduce` 放弃结合律，GCC 自动向量化为 `vaddpd ymm0`（256 位 AVX2，一次 4 个 double），Godbolt 实测循环体缩减 4×。`std::transform_reduce` 在 Intel oneAPI 后端可卸载到 GPU（SYCL）。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
