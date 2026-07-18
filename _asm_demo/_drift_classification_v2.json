@@ -1,0 +1,165 @@
+{
+  "summary": {
+    "DIRECTIVE": 52,
+    "CORE": 86,
+    "FRAME": 55,
+    "CTRL": 254,
+    "WRAPPER": 87,
+    "UNWIND": 12
+  },
+  "core_hits": [
+    "_ch115_buf_gcc15_noinline",
+    "ch117_6",
+    "ch19_foo_gcc15",
+    "ch19_getlogger_gcc15",
+    "ch85_uset_test",
+    "ch86_pq_test"
+  ],
+  "per_case": {
+    "_ch115_buf_gcc15_noinline": {
+      "total_changed": 101,
+      "cats": {
+        "DIRECTIVE": 44,
+        "CORE": 38,
+        "FRAME": 19
+      }
+    },
+    "ch117_6": {
+      "total_changed": 51,
+      "cats": {
+        "FRAME": 22,
+        "CTRL": 1,
+        "CORE": 28
+      }
+    },
+    "ch19_foo_gcc15": {
+      "total_changed": 19,
+      "cats": {
+        "DIRECTIVE": 3,
+        "CORE": 3,
+        "FRAME": 13
+      }
+    },
+    "ch19_getlogger_gcc15": {
+      "total_changed": 16,
+      "cats": {
+        "DIRECTIVE": 5,
+        "CORE": 10,
+        "FRAME": 1
+      }
+    },
+    "ch26_lambda_capture_test": {
+      "total_changed": 14,
+      "cats": {
+        "WRAPPER": 8,
+        "CTRL": 6
+      }
+    },
+    "ch26_std_function_test": {
+      "total_changed": 16,
+      "cats": {
+        "UNWIND": 1,
+        "WRAPPER": 4,
+        "CTRL": 11
+      }
+    },
+    "ch50_vi_test": {
+      "total_changed": 6,
+      "cats": {
+        "WRAPPER": 4,
+        "CTRL": 2
+      }
+    },
+    "ch78_deque_test": {
+      "total_changed": 70,
+      "cats": {
+        "UNWIND": 2,
+        "CTRL": 57,
+        "WRAPPER": 11
+      }
+    },
+    "ch79_fwdlist_test": {
+      "total_changed": 20,
+      "cats": {
+        "UNWIND": 1,
+        "WRAPPER": 6,
+        "CTRL": 13
+      }
+    },
+    "ch79_list_test": {
+      "total_changed": 14,
+      "cats": {
+        "UNWIND": 1,
+        "WRAPPER": 5,
+        "CTRL": 8
+      }
+    },
+    "ch82_span_test": {
+      "total_changed": 2,
+      "cats": {
+        "WRAPPER": 2
+      }
+    },
+    "ch84_set_test": {
+      "total_changed": 36,
+      "cats": {
+        "UNWIND": 1,
+        "WRAPPER": 6,
+        "CTRL": 29
+      }
+    },
+    "ch85_uset_test": {
+      "total_changed": 46,
+      "cats": {
+        "UNWIND": 1,
+        "WRAPPER": 10,
+        "CTRL": 33,
+        "CORE": 2
+      }
+    },
+    "ch86_adapters_test": {
+      "total_changed": 62,
+      "cats": {
+        "UNWIND": 2,
+        "CTRL": 48,
+        "WRAPPER": 12
+      }
+    },
+    "ch86_pq_test": {
+      "total_changed": 25,
+      "cats": {
+        "UNWIND": 1,
+        "WRAPPER": 6,
+        "CTRL": 13,
+        "CORE": 5
+      }
+    },
+    "ch88_optional_test": {
+      "total_changed": 2,
+      "cats": {
+        "WRAPPER": 2
+      }
+    },
+    "ch88_variant_visit_test": {
+      "total_changed": 4,
+      "cats": {
+        "WRAPPER": 3,
+        "CTRL": 1
+      }
+    },
+    "ch89_any_test": {
+      "total_changed": 40,
+      "cats": {
+        "UNWIND": 2,
+        "WRAPPER": 6,
+        "CTRL": 32
+      }
+    },
+    "ch89_tuple_test": {
+      "total_changed": 2,
+      "cats": {
+        "WRAPPER": 2
+      }
+    }
+  }
+}

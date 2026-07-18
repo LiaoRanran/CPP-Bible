@@ -63,7 +63,10 @@ def full_diff(name):
     return changed, None
 
 def main():
-    data = json.load(open(os.path.join(V.DEMO, "_evidence_spotcheck_v3.json"), encoding="utf-8"))
+    spot = os.path.join(V.DEMO, "_evidence_spotcheck_v4.json")
+    if not os.path.exists(spot):
+        spot = os.path.join(V.DEMO, "_evidence_spotcheck_v3.json")
+    data = json.load(open(spot, encoding="utf-8"))
     drift = [r["name"] for r in data["results"] if r["status"] == "DRIFT"]
     summary = Counter()
     per = {}
@@ -89,7 +92,7 @@ def main():
             print(f"  [ERR ] {name:<28} {p['error']}")
         else:
             print(f"  [DRIFT] {name:<28} 改{str(p['total_changed']):>3}行  {p['cats']}")
-    out = os.path.join(V.DEMO, "_drift_classification.json")
+    out = os.path.join(V.DEMO, "_drift_classification_v2.json")
     json.dump({"summary": dict(summary), "core_hits": core_hits, "per_case": per},
               open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     print(f"\n-> {out}")

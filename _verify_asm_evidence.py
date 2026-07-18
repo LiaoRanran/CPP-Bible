@@ -18,6 +18,17 @@ GPP = "C:/Qt/Tools/mingw1530_64/bin/g++.EXE"
 OBJDUMP = "C:/Qt/Tools/mingw1530_64/bin/objdump.exe"
 DEMO = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_asm_demo"))
 
+# P1: 命名失配映射 —— 源文件名 ↔ 实际存储工件名（验证器默认按 <源名>.s/.o 查找会 NO_ARTIFACT）
+# 实测核对（非照信摘要）：ch20 真工件为 .s 非 .o；ch42 默认 -O2 strict-aliasing → 映射 ch42_sa.o。
+STORED_ALIAS = {
+    "ch42_aliasing_test": "ch42_sa.o",                       # strict-aliasing 变体（gcc -O2 默认）
+    "ch48_rtti_test": "ch48.o",
+    "ch52_ebo_test": "ch52.o",
+    "ch08_opt_expected": "ch08_opt_expected_o2.o",           # 默认 -O2 匹配 _o2
+    "ch20_asm_pair_gcc15": "ch20_asm_pair_o2.s",             # 实测工件为 .s 非 .o
+    "ch117_elision_test": "ch117_elision_test_gcc15.s",
+}
+
 CALL_RE = (r'\b(call|callq|jmp|jmpq|je|jne|jg|jl|jge|jle|ja|jb|jae|jbe|'
            r'jz|jnz|jo|jno|js|jns|jc|jnc|jcxz|jecxz|jrcxz|loop|loope|loopne)\s+'
            r'[0-9a-fA-F]+\s+(<[^>]+>)')
@@ -28,7 +39,8 @@ def flags_for(name: str) -> list:
     if "_o0" in low or low.endswith("o0"):   base = ["-std=c++26", "-O0"]
     elif "_o1" in low:                        base = ["-std=c++26", "-O1"]
     elif "_os" in low:                        base = ["-std=c++26", "-Os"]
-    if "ch09" in low or "contract" in low:    base += ["-fcontracts"]
+    if "ch09" in low or "contract" in low or "ctest" in low:
+        base += ["-fcontracts"]
     if "popcnt" in low:                       base += ["-mpopcnt"]
     return base
 
@@ -110,6 +122,14 @@ def objdump_o(o_path: str) -> str:
                           capture_output=True, text=True).stdout
 
 def find_stored(name: str):
+    if name in STORED_ALIAS:
+        a = STORED_ALIAS[name]
+        p = os.path.join(DEMO, a)
+        if not os.path.exists(p):
+            return None, "alias_missing"
+        if a.endswith(".s"):
+            return open(p, encoding="utf-8", errors="replace").read(), "stored_s:" + a
+        return objdump_o(p), "stored_o:" + a
     s_file = os.path.join(DEMO, name + ".s")
     if os.path.exists(s_file):
         return open(s_file, encoding="utf-8", errors="replace").read(), "stored_s"
@@ -124,6 +144,16 @@ def main():
     for cpp in cpp_files:
         name = os.path.splitext(os.path.basename(cpp))[0]
         if name.startswith("_pilot") or name.startswith("_chk"):
+            continue
+        # P3: modules 特例 —— import 开头且本工具链无对应预编译模块单元（如 import math;）
+        # 非 bit-rot，标 SPECIAL_SKIP 而非 COMPILE_FAIL。
+        try:
+            head = open(cpp, encoding="utf-8", errors="replace").read()
+        except Exception:
+            head = ""
+        if re.match(r'^\s*import\s', head):
+            results.append({"name": name, "status": "SPECIAL_SKIP",
+                            "detail": "modules: 源含 import，需预编译模块单元；本工具链无对应模块，跳过"})
             continue
         stored, kind = find_stored(name)
         if stored is None:
@@ -177,14 +207,17 @@ def main():
                             "flags": " ".join(flags),
                             "detail": f"真差异 {ndiff} 处; 示例: " + " | ".join(d[2:7])[:150]})
     cnt = Counter(r["status"] for r in results)
-    print("=== 证据库抽查汇总 v3 (mingw1530 GCC 15.3.0, 符号作用域比对) ===")
+    print("=== 证据库抽查汇总 v4 (mingw1530 GCC 15.3.0, 符号作用域比对 + P1/P2/P3 收口) ===")
     print(f"总检查 {len(results)} | MATCH={cnt['MATCH']} DRIFT={cnt['DRIFT']} "
-          f"COMPILE_FAIL={cnt['COMPILE_FAIL']} NO_ARTIFACT={cnt['NO_ARTIFACT']} FORMAT_SKIP={cnt['FORMAT_SKIP']}")
+          f"COMPILE_FAIL={cnt['COMPILE_FAIL']} NO_ARTIFACT={cnt['NO_ARTIFACT']} "
+          f"SPECIAL_SKIP={cnt['SPECIAL_SKIP']} FORMAT_SKIP={cnt['FORMAT_SKIP']}")
     print()
     for r in results:
         print(f"[{r['status']:<11}] {r['name']:<32} {r.get('fmt',''):<9} {r['detail'][:100]}")
-    out = os.path.join(DEMO, "_evidence_spotcheck_v3.json")
-    json.dump({"toolchain": "mingw1530 GCC 15.3.0", "summary": dict(cnt), "results": results},
+    out = os.path.join(DEMO, "_evidence_spotcheck_v4.json")
+    json.dump({"toolchain": "mingw1530 GCC 15.3.0",
+               "note": "P1+P2+P3 收口后快照；v3 为基线，本文件为改进后对照",
+               "summary": dict(cnt), "results": results},
               open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     print(f"\n详细 JSON -> {out}")
 

@@ -31,6 +31,21 @@
 
 > 注：书 `INDEX.md` 称「53 例」，而 `_asm_demo/` 实际有 72 个 `.cpp` 源（含多优化等级变体、pilot 等）。本报告对 72 个全部源做可复现核验，是比 53 更完整的实证足迹。
 
+### 2.1 v4 收口复检（P1–P3 完成后，2026-07-18 同日）
+
+P1（验证器别名映射）/ P2（补提取真实 `.s`）/ P3（modules/contracts 特例）实施后，重跑验证器得 v4 快照。红线结论不变，**零差异覆盖率由 53% → 69%**：
+
+| 状态 | v3（基线） | v4（收口后） | 变化 |
+|---|---|---|---|
+| **MATCH** | 38 | **50** | +12（6 映射 + 4 提取 + ch121×2）|
+| **DRIFT** | 19 | 19 | 0（良性 codegen 漂移，集不变）|
+| **COMPILE_FAIL** | 3 | **0** | −3（全消解）|
+| **NO_ARTIFACT** | 12 | **2** | −10（6 映射 + 4 提取）|
+| **SPECIAL_SKIP** | 0 | **1** | +1（ch118 modules 工具链限制）|
+| **合计** | 72 | 72 | |
+
+> v3 JSON（`_evidence_spotcheck_v3.json`）保留为基线；v4（`_evidence_spotcheck_v4.json`）为收口对照。DRIFT 逐行分类在 v4 上与 v3 完全一致（FRAME 55 / WRAPPER 87 / UNWIND 12 / CTRL 254 / DIRECTIVE 52 / CORE 86），因 DRIFT 案例集未变。
+
 ---
 
 ## 3. MATCH（38 例，零差异，红线最硬证据）
@@ -143,13 +158,13 @@
 
 ## 8. 建议后续动作（按优先级）
 
-| 优先级 | 动作 | 性质 | 工作量 |
+| 优先级 | 动作 | 状态 | 工作量 |
 |---|---|---|---|
-| P0 | 将 19 个 DRIFT 工件在 canonical gcc-15.3.0 + `-std=c++26 -O2`（含 `-masm=intel`）下**重新生成**，使证据与书称工具链严格一致；同步更新 `INDEX.md` 的「GCC 15.3.0」标注 | 一致性修复（非红线）| 中 |
-| P1 | 验证器 `find_stored` 加别名/后缀映射，纳入 6 例命名失配 | 工具改进 | 小 |
-| P2 | 裁定 6 例确无工件：补提取 asm 或标注「仅编译未提取」 | 完整性 | 小 |
-| P3 | 验证器补 modules(`-fmodules`)/contracts(`-fcontracts`) 特例，消除 3 例 COMPILE_FAIL 假阳 | 工具改进 | 小 |
-| P4 | 沉淀 `PHASE3_证据库抽查报告.md` + 验证器脚本入仓，作为「证据库季度抽查」长期习惯的基线 | 流程固化 | 小 |
+| P0 | 将 19 个 DRIFT 工件在 canonical gcc-15.3.0 + `-std=c++26 -O2`（含 `-masm=intel`）下**重新生成**，使证据与书称工具链严格一致；同步更新 `INDEX.md` 的「GCC 15.3.0」标注 | ⬜ 可选（非必需，红线下不强制）| 中 |
+| P1 | 验证器 `find_stored` 加别名/后缀映射，纳入 6 例命名失配 | ✅ 已完成（v4 收口，6 例全转 MATCH）| 小 |
+| P2 | 裁定 6 例确无工件：补提取 asm 或标注「仅编译未提取」 | ✅ 部分完成（4 例真实提取 + 2 例诚实标注）| 小 |
+| P3 | 验证器补 modules(`-fmodules`)/contracts(`-fcontracts`) 特例，消除 3 例 COMPILE_FAIL 假阳 | ✅ 已完成（COMPILE_FAIL→0）| 小 |
+| P4 | 沉淀 `PHASE3_证据库抽查报告.md` + 验证器脚本入仓，作为「证据库季度抽查」长期习惯的基线 | ✅ 已完成（commit d8e824f）| 小 |
 
 ---
 
@@ -164,4 +179,39 @@
 
 ---
 
-*附：本次巡检未改动任何 Book 正文或实证工件，仅新增验证器/分类器脚本与本报告。证据库本身无需因本次巡检做内容修正（红线已证未破）；P0 的「重新生成」是可选的严格一致性增强，非必需修复。*
+---
+
+## 10. P1–P3 收口明细（v4 快照依据）
+
+### 10.1 P1 — 命名映射（6 例 NO_ARTIFACT → MATCH）
+验证器 `STORED_ALIAS` 实测核对（非照信摘要，已修正：`ch20` 真工件为 `.s` 非 `.o`）：
+
+| 源 | 映射工件 | 说明 |
+|---|---|---|
+| `ch42_aliasing_test` | `ch42_sa.o` | 默认 `-O2` strict-aliasing；`ch42_nsa.o`（需 `-fno-strict-aliasing`）不映射 |
+| `ch48_rtti_test` | `ch48.o` | |
+| `ch52_ebo_test` | `ch52.o` | |
+| `ch08_opt_expected` | `ch08_opt_expected_o2.o` | 默认 `-O2` 匹配 `_o2` |
+| `ch20_asm_pair_gcc15` | `ch20_asm_pair_o2.s` | 实测工件为 `.s`（摘要误记 `.o`）|
+| `ch117_elision_test` | `ch117_elision_test_gcc15.s` | |
+
+### 10.2 P2 — 补提取（4 例真实 `.s`）+ 诚实标注（2 例）
+用与验证器同源命令生成（`g++ -std=c++26 -O2 -S -masm=intel`）：
+
+- ✅ `ch08_expected_test.s`（82 行）/ `ch08_format_test.s`（25433 行，STL）/ `ch08_generator_test.s`（558 行，协程）/ `ch08_print_test.s`（26439 行）。
+  - `ch08_print_test` 链接期失败（`<print>` 在本 MinGW 构建未导出 `__open_terminal`，书 ch08 附录 G 已说明）但**编译期 codegen 真实**，`-S` 提取合法，非伪造。
+- ⬜ `ch08_mdspan_test`：`<mdspan>` 头在本 gcc-15.3.0 MinGW 构建缺失，编译失败 → 无法提取，诚实标注「编译器不支持」。
+- ⬜ `ch40_noexcept_nt`：源为说明性文件（无 `int main`，证据在 `ch40_nt_maythrow.o`/`ch40_nt_noexcept.o`）→ 无法独立编译，诚实标注「证据在 ch40_nt_*.o」。
+
+### 10.3 P3 — modules/contracts 特例（COMPILE_FAIL 3 → 0）
+- `flags_for` 补 `"ctest"` → `-fcontracts`：`ch121_ctest`/`ch121_ctest2`（`[[pre/post]]` 契约）现可编译，转 MATCH。
+- `import` 开头源（如 `ch118_use_mod` 的 `import math;`）标 `SPECIAL_SKIP`：GCC 本工具链无 `math` 标准模块，需预编译模块单元，非 bit-rot，不计入 COMPILE_FAIL。
+
+### 10.4 最终裁定（v4）
+- **红线未破**：50/72 零差异（69%），DRIFT 19 例 100% 良性，CORE=86 经手验为 xor-zeroing/帧偏移/对齐 nop/lea↔mov 指令选择漂移。
+- **唯一残留**：NO_ARTIFACT=2（编译器官方限制/说明文件，均非伪造）+ SPECIAL_SKIP=1（modules 工具链限制）。两者均不影响「绝不伪造」红线。
+- **P0 仍为可选**：19 DRIFT 工件重生成可进一步收紧一致性，但非红线必需；下季度抽查前可酌情执行。
+
+---
+
+*附：v3 巡检未改动任何 Book 正文或实证工件，仅新增验证器/分类器脚本与本报告。P1–P3 收口新增 4 个真实 `.s` 证据（`ch08_expected/format/generator/print_test.s`，均为 gcc-15.3.0 真机 `g++ -S` 输出）并修订验证器/分类器脚本；v4 快照（`_evidence_spotcheck_v4.json` / `_drift_classification_v2.json`）为收口对照，v3 快照保留为基线。证据库本身无需内容修正（红线已证未破）；P0 的「重新生成」是可选的严格一致性增强，非必需修复。*

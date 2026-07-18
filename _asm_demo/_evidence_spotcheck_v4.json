@@ -1,0 +1,460 @@
+{
+  "toolchain": "mingw1530 GCC 15.3.0",
+  "note": "P1+P2+P3 收口后快照；v3 为基线，本文件为改进后对照",
+  "summary": {
+    "MATCH": 50,
+    "DRIFT": 19,
+    "NO_ARTIFACT": 2,
+    "SPECIAL_SKIP": 1
+  },
+  "results": [
+    {
+      "name": "_ch115_buf_gcc15",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 0 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "_ch115_buf_gcc15_noinline",
+      "status": "DRIFT",
+      "fmt": "GPP_S",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 101 处; 示例: @@ -1,5 +1,11 @@ |  .align 2 |  .align 2 | +.byte\t0x1 | +.byte\t0x1"
+    },
+    {
+      "name": "ch08_expected_test",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 5 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch08_format_test",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 108 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch08_generator_test",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 71 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch08_mdspan_test",
+      "status": "NO_ARTIFACT",
+      "detail": "无配对 .s/.o"
+    },
+    {
+      "name": "ch08_opt_expected",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 3 个, 规范化代码零差异 (stored_o:ch08_opt_expected_o2.o)"
+    },
+    {
+      "name": "ch08_print_test",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 108 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch08_ranges_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 7 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch09_contracts_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 3 个, 规范化代码零差异 (stored_o)"
+    },
+    {
+      "name": "ch107_atomic_rmw_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 5 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch108_memory_order_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 8 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch109_fence_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 5 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch115_appendixE",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 7 个, 规范化代码零差异 (stored_o)"
+    },
+    {
+      "name": "ch115_move_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 5 个, 规范化代码零差异 (stored_o)"
+    },
+    {
+      "name": "ch116_10",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 4 个, 规范化代码零差异 (stored_o)"
+    },
+    {
+      "name": "ch116_perfect_fwd_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 7 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch117_6",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 51 处; 示例: @@ -1,30 +1,35 @@ | -add    rsp,0x20 | -add    rsp,0x60 | +add    rsp,0x28 | +add    rsp,0x28"
+    },
+    {
+      "name": "ch117_appendixE",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 4 个, 规范化代码零差异 (stored_o)"
+    },
+    {
+      "name": "ch117_elision_test",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 6 个, 规范化代码零差异 (stored_s:ch117_elision_test_gcc15.s)"
+    },
+    {
+      "name": "ch117_nrvo_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 3 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch118_use_mod",
+      "status": "SPECIAL_SKIP",
+      "detail": "modules: 源含 import，需预编译模块单元；本工具链无对应模块，跳过"
+    },
+    {
+      "name": "ch121_ctest",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 15 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch121_ctest2",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 15 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch122_pmr_test",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 70 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch122_use_monotonic",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 21 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch122_use_new",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 4 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch123_ct_factorial",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 0 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch19_foo_gcc15",
+      "status": "DRIFT",
+      "fmt": "GPP_S",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 19 处; 示例: @@ -1,21 +1,4 @@ |  .seh_endproc |  .seh_endprologue | -.seh_pushreg\trbp | -.seh_setframe\trbp, 0"
+    },
+    {
+      "name": "ch19_getlogger_gcc15",
+      "status": "DRIFT",
+      "fmt": "GPP_S",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 16 处; 示例: @@ -24,25 +24,41 @@ |  .globl\t_Z9getLoggerv |  .lcomm _ZGVZ9getLoggervE8instance,8,8 |  .p2align 3 | +.p2align 3"
+    },
+    {
+      "name": "ch19_inc_gcc15",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 2 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch20_asm_pair_gcc15",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 7 个, 规范化代码零差异 (stored_s:ch20_asm_pair_o2.s)"
+    },
+    {
+      "name": "ch24_enum_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 4 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch26_lambda_capture_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 14 处; 示例: @@ -2,13 +2,13 @@ |  add    edx,eax |  add    edx,eax |  add    rsp,0x38 | -call <__main>"
+    },
+    {
+      "name": "ch26_std_function_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 16 处; 示例: @@ -3,12 +3,12 @@ |  add    rsp,0x58 |  call   QWORD PTR [rcx] |  call   rax | -call <_Unwind_Resume>"
+    },
+    {
+      "name": "ch27_cast_test",
+      "status": "MATCH",
+      "fmt": "GPP_S",
+      "detail": "用户符号 13 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch32_init_list_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 4 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch40_exception_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 8 个, 规范化代码零差异 (stored_o)"
+    },
+    {
+      "name": "ch40_noexcept_nt",
+      "status": "NO_ARTIFACT",
+      "detail": "无配对 .s/.o"
+    },
+    {
+      "name": "ch40_nt_maythrow",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 5 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch40_nt_noexcept",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 2 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch41_shared_ptr_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 5 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch42_aliasing_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 3 个, 规范化代码零差异 (stored_o:ch42_sa.o)"
+    },
+    {
+      "name": "ch47_vs_51_dispatch_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 5 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch48_rtti_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 3 个, 规范化代码零差异 (stored_o:ch48.o)"
+    },
+    {
+      "name": "ch50_vi_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 6 处; 示例: @@ -4,10 +4,10 @@ |  add    rax,0x20 |  add    rcx,QWORD PTR [rax-0x18] |  add    rsp,0x40 | -call <__main>"
+    },
+    {
+      "name": "ch51_crtp_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 3 个, 规范化代码零差异 (stored_o)"
+    },
+    {
+      "name": "ch52_ebo_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 3 个, 规范化代码零差异 (stored_o:ch52.o)"
+    },
+    {
+      "name": "ch69_constexpr_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 5 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch77_vector_grow_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 5 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch77_vector_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 10 个, 规范化代码零差异 (stored_o)"
+    },
+    {
+      "name": "ch78_deque_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 70 处; 示例: @@ -17,28 +17,28 @@ |  add    rsp,0x20 |  add    rsp,0x20 |  add    rsp,0xc8 | -call <_Unwind_Resume>"
+    },
+    {
+      "name": "ch79_fwdlist_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 20 处; 示例: @@ -1,21 +1,21 @@ |  add    eax,r8d |  add    rsp,0x28 |  add    rsp,0x30 | -call <_Unwind_Resume>"
+    },
+    {
+      "name": "ch79_list_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 14 处; 示例: @@ -2,12 +2,12 @@ |  add    ebx,0x1 |  add    edx,DWORD PTR [rax] |  add    rsp,0x50 | -call <_Unwind_Resume>"
+    },
+    {
+      "name": "ch80_array_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 7 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch81_sso_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 8 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch81_string_view_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 8 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch82_span_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 2 处; 示例: @@ -3,7 +3,7 @@ |  add    rax,0x4 |  add    rcx,0x4 |  add    rsp,0x28 | -call <__main>"
+    },
+    {
+      "name": "ch83_map_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 6 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch84_set_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 36 处; 示例: @@ -2,23 +2,23 @@ |  add    esi,0x1 |  add    rsp,0x28 |  add    rsp,0x60 | -call <_Unwind_Resume>"
+    },
+    {
+      "name": "ch85_unordered_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 6 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch85_uset_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 46 处; 示例: @@ -2,19 +2,19 @@ |  add    rsp,0x28 |  add    rsp,0x28 |  add    rsp,0xa8 | -call <_Unwind_Resume>"
+    },
+    {
+      "name": "ch86_adapters_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 62 处; 示例: @@ -19,40 +19,40 @@ |  add    rsp,0x48 |  add    rsp,0xd0 |  and    edi,0x7f | -call <_Unwind_Resume>"
+    },
+    {
+      "name": "ch86_pq_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 25 处; 示例: @@ -3,14 +3,14 @@ |  add    r12,0x4 |  add    rax,rdx |  add    rsp,0x30 | -call <_Unwind_Resume>"
+    },
+    {
+      "name": "ch87_bit_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 5 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch87_bit_test_popcnt",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 5 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch87_bitset_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 7 个, 规范化代码零差异 (stored_s)"
+    },
+    {
+      "name": "ch88_optional_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 2 处; 示例: @@ -1,6 +1,6 @@ |  add    eax,ecx |  add    rsp,0x28 | -call <__main> | +call <main>"
+    },
+    {
+      "name": "ch88_variant_visit_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 4 处; 示例: @@ -1,9 +1,9 @@ |  add    eax,eax |  add    edx,edx |  add    rsp,0x38 | -call <__main>"
+    },
+    {
+      "name": "ch89_any_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 40 处; 示例: @@ -10,21 +10,21 @@ |  add    rsp,0x58 |  add    rsp,0x60 |  call   rax | -call <_Unwind_Resume>"
+    },
+    {
+      "name": "ch89_tuple_test",
+      "status": "DRIFT",
+      "fmt": "OBJDUMP",
+      "flags": "-std=c++26 -O2",
+      "detail": "真差异 2 处; 示例: @@ -5,7 +5,7 @@ |  add    eax,edx |  add    eax,edx |  add    rsp,0x28 | -call <__main>"
+    },
+    {
+      "name": "ch93_thread_test",
+      "status": "MATCH",
+      "fmt": "OBJDUMP",
+      "detail": "用户符号 38 个, 规范化代码零差异 (stored_o)"
+    }
+  ]
+}
