@@ -200,6 +200,8 @@ using namespace std;   // ❌ 禁止
 
 ## ⑥ const 正确性（const/constexpr/mutable）
 
+⟶ Book/part03_language/ch21_const_family.md（const/constexpr/mutable 家族）—— 三个 const 语义来源与取舍
+
 const 正确性是 C++ 类型系统的核心护栏。`[标准]` const 成员函数保证不修改对象逻辑状态（[class.const]），从而可被 const 对象调用。
 
 ```cpp
@@ -432,6 +434,8 @@ struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实际 noex
 
 ## ⑪ 移动语义规范
 
+⟶ Book/part10_modern/ch115_move.md（移动语义与完美转发）—— 保证复制消除与 `reserve` 预分配的工程细节
+
 移动语义让"资源转让"代替"深拷贝"。`[标准]` 右值引用（`T&&`）绑定临时对象，配合 `std::move` 触发移动而非拷贝。
 
 ```cpp
@@ -579,6 +583,8 @@ inline void log_time() { /* 大段实现 */ }   // 非模板也应放 .cpp
 
 ## ⑮ 现代 C++ 特性取舍（C++11/14/17/20/23）
 
+⟶ Book/part06_templates/ch67_concepts.md（Concepts 与 requires）—— C++20 约束优先于 SFINAE 的特性取舍
+
 不同标准引入的特性，取舍依据是"团队工具链版本"与"收益/复杂度比"。`[标准]` 以 C++23 为基线，但应考虑部署目标。
 
 ```cpp
@@ -655,6 +661,9 @@ public:
 `[经验]` 黄金法则：**一个 `#ifdef` 也不许出现在核心算法/数据结构里**；平台差异只允许出现在 `os/` 或 `platform/` 子目录下，通过接口注入。
 
 ## ⑰ 静态分析集成（clang-tidy 上游参考）
+
+⟶ Book/part13_engineering/ch149_ci_cd.md（CI/CD 流水线）—— clang-tidy 检查应作为 PR 门禁强制
+⟶ Book/part13_engineering/ch147_code_review.md（代码审查）—— 静态分析覆盖不了的风格由人工 review 兜底
 
 静态分析把风格与缺陷检查前置到提交前。`[实现·Clang-Tidy]`（上游 LLVM 工具，非本机 g++ 工具链，此处给出命令与典型输出形态，供本地化落地）。
 
