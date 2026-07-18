@@ -213,6 +213,9 @@ g++ -std=c++23 -Iinclude -c src/app.cpp -o build/app.o
 
 ## ⑧ 代码格式化 clang-format [标准]
 
+⟶ Book/part13_engineering/ch144_style.md（代码风格）—— clang-format 是风格契约的工具化落地
+⟶ Book/part13_engineering/ch149_ci_cd.md（CI/CD 流水线）—— 格式化检查应作为 PR 门禁（--dry-run -Werror）
+
 `clang-format` 把**风格争议**变成可重入的机器规则。配置文件 `.clang-format` 基于 YAML，IDE 可绑定"保存时自动格式化"。
 
 ```yaml
@@ -243,6 +246,9 @@ int foo(int x, int y) {
 - `[经验]`：把"保存时格式化"（VSCode `editor.formatOnSave` + cpptools；CLion `Reformat Code` 绑定）设成强制，比 code review 里吵风格高效 100 倍。
 
 ## ⑨ 静态检查 clang-tidy [实现]
+
+⟶ Book/part13_engineering/ch144_style.md（代码风格）—— clang-tidy 覆盖风格工具管不到的语义约束
+⟶ Book/part13_engineering/ch147_code_review.md（代码审查）—— 静态分析前置到提交，review 聚焦设计
 
 `clang-tidy` 是基于 **Clang AST** 的 lint 工具，能抓到 g++ 不报的**语义异味**（悬空、窄化、冗余拷贝）。它同样读 `compile_commands.json`。
 
@@ -412,6 +418,8 @@ int main() { return has_print ? 0 : 1; }
 
 ## ⑭ 单元测试集成 [标准]
 
+⟶ Book/part13_engineering/ch150_testing.md（测试策略）—— 测试发现/单跑的底层是编译器把测试编成可执行文件
+
 IDE 把测试框架（GoogleTest / Catch2 / doctest）的**发现与单跑**做成一键。底层仍是编译器把测试编成可执行文件再运行。
 
 ```cpp
@@ -550,6 +558,9 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 - `[平台]`：Windows 下 `compile_commands.json` 的 `directory` 若用反斜杠且未转义，clangd 解析失败——统一用 `/`。
 
 ## ⑲ 最佳实践 [标准]
+
+⟶ Book/part13_engineering/ch144_style.md（代码风格）—— 工具链把风格写进 CI 而非口头约定
+⟶ Book/part13_engineering/ch149_ci_cd.md（CI/CD 流水线）—— 一切检查（format/tidy/test）进 PR 门禁
 
 把上面零散建议收敛为可执行的清单：
 
