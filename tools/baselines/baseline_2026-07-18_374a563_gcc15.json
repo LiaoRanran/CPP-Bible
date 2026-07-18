@@ -1,0 +1,715 @@
+{
+  "gcc": "C:\\Qt\\Tools\\mingw1530_64\\bin\\g++.EXE",
+  "flags": "-std=c++23 -O0 -fsyntax-only",
+  "main_only": true,
+  "partial": false,
+  "total_chapters": 147,
+  "passed_chapters": 113,
+  "failed_chapters": 34,
+  "total_blocks_checked": 3720,
+  "failed_blocks": 65,
+  "failures": [
+    {
+      "file": "ch11_compilers.md",
+      "path": "Book/part02_toolchain/ch11_compilers.md",
+      "failures": [
+        {
+          "block": 49,
+          "error": "'import' does not name a type",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch12_buildsystems.md",
+      "path": "Book/part02_toolchain/ch12_buildsystems.md",
+      "failures": [
+        {
+          "block": 20,
+          "error": "_ch12_mylib.h: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 21,
+          "error": "fmt/core.h: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch13_packaging.md",
+      "path": "Book/part02_toolchain/ch13_packaging.md",
+      "failures": [
+        {
+          "block": 1,
+          "error": "fmt/core.h: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 2,
+          "error": "fmt/core.h: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 18,
+          "error": "_ch13_packlib.hpp: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch14_debugging.md",
+      "path": "Book/part02_toolchain/ch14_debugging.md",
+      "failures": [
+        {
+          "block": 11,
+          "error": "'g_alloc' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch18_buildconfig.md",
+      "path": "Book/part02_toolchain/ch18_buildconfig.md",
+      "failures": [
+        {
+          "block": 13,
+          "error": "'compute' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch19_variables.md",
+      "path": "Book/part03_language/ch19_variables.md",
+      "failures": [
+        {
+          "block": 14,
+          "error": "counter.hpp: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch23_namespace_adl.md",
+      "path": "Book/part03_language/ch23_namespace_adl.md",
+      "failures": [
+        {
+          "block": 27,
+          "error": "'process' was not declared in this scope; did you mean 'thirdparty::process'?",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch26_lambda.md",
+      "path": "Book/part03_language/ch26_lambda.md",
+      "failures": [
+        {
+          "block": 15,
+          "error": "increment of read-only variable 'n'",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch28_lifetime_ub.md",
+      "path": "Book/part03_language/ch28_lifetime_ub.md",
+      "failures": [
+        {
+          "block": 5,
+          "error": "cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'",
+          "has_main": true
+        },
+        {
+          "block": 13,
+          "error": "declaration of 'arr' as array of references",
+          "has_main": true
+        },
+        {
+          "block": 17,
+          "error": "cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'",
+          "has_main": true
+        },
+        {
+          "block": 55,
+          "error": "overflow in constant expression [-fpermissive]",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch29_friend.md",
+      "path": "Book/part03_language/ch29_friend.md",
+      "failures": [
+        {
+          "block": 15,
+          "error": "'classA' does not name a type; did you mean 'class'?",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch35_memory_layout.md",
+      "path": "Book/part04_memory/ch35_memory_layout.md",
+      "failures": [
+        {
+          "block": 6,
+          "error": "sys/mman.h: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 14,
+          "error": "sys/wait.h: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch39_raii_rule.md",
+      "path": "Book/part04_memory/ch39_raii_rule.md",
+      "failures": [
+        {
+          "block": 34,
+          "error": "'SCOPE_EXIT' was not declared in this scope",
+          "has_main": true
+        },
+        {
+          "block": 53,
+          "error": "'m' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "path": "Book/part04_memory/ch44_memory_pool.md",
+      "failures": [
+        {
+          "block": 6,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 15,
+          "error": "'mutex' in namespace 'std' does not name a type",
+          "has_main": true
+        },
+        {
+          "block": 21,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 22,
+          "error": "program_07_segregated.cpp: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 23,
+          "error": "program_08_thread_local.cpp: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 25,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 29,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 37,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 38,
+          "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch65_type_traits.md",
+      "path": "Book/part06_templates/ch65_type_traits.md",
+      "failures": [
+        {
+          "block": 32,
+          "error": "'my_is_pointer' was not declared in this scope [-Wtemplate-body]",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch96_sorting.md",
+      "path": "Book/part08_algorithms/ch96_sorting.md",
+      "failures": [
+        {
+          "block": 4,
+          "error": "'introsort' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch108_memory_order.md",
+      "path": "Book/part09_concurrency/ch108_memory_order.md",
+      "failures": [
+        {
+          "block": 18,
+          "error": "'push' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch117_copy_elision.md",
+      "path": "Book/part10_modern/ch117_copy_elision.md",
+      "failures": [
+        {
+          "block": 6,
+          "error": "'Big' does not name a type",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch118_modules.md",
+      "path": "Book/part10_modern/ch118_modules.md",
+      "failures": [
+        {
+          "block": 5,
+          "error": "'import' does not name a type",
+          "has_main": true
+        },
+        {
+          "block": 10,
+          "error": "'import' does not name a type",
+          "has_main": true
+        },
+        {
+          "block": 24,
+          "error": "'module' does not name a type",
+          "has_main": true
+        },
+        {
+          "block": 25,
+          "error": "'module' does not name a type",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch124_libstdcxx.md",
+      "path": "Book/part11_source/ch124_libstdcxx.md",
+      "failures": [
+        {
+          "block": 4,
+          "error": "'struct std::_Vector_base<int, std::allocator<int> >::_Vector_impl_data' is inaccessible within this context",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch126_msstl.md",
+      "path": "Book/part11_source/ch126_msstl.md",
+      "failures": [
+        {
+          "block": 19,
+          "error": "'_MSC_VER' was not declared in this scope",
+          "has_main": true
+        },
+        {
+          "block": 22,
+          "error": "invalid type argument of unary '*' (have 'int')",
+          "has_main": true
+        },
+        {
+          "block": 32,
+          "error": "'_MSC_VER' was not declared in this scope",
+          "has_main": true
+        },
+        {
+          "block": 40,
+          "error": "request for member 'value_or' in 'e.std::expected<int, int>::error()', which is of non-class type 'int'",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch128_boost.md",
+      "path": "Book/part11_source/ch128_boost.md",
+      "failures": [
+        {
+          "block": 1,
+          "error": "boost/shared_ptr.hpp: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch129_qt.md",
+      "path": "Book/part11_source/ch129_qt.md",
+      "failures": [
+        {
+          "block": 11,
+          "error": "QApplication: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch131_fmt_spdlog.md",
+      "path": "Book/part11_source/ch131_fmt_spdlog.md",
+      "failures": [
+        {
+          "block": 1,
+          "error": "fmt/core.h: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 2,
+          "error": "spdlog/spdlog.h: No such file or directory",
+          "has_main": true
+        },
+        {
+          "block": 8,
+          "error": "spdlog/spdlog.h: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch135_patterns_intro.md",
+      "path": "Book/part12_patterns/ch135_patterns_intro.md",
+      "failures": [
+        {
+          "block": 11,
+          "error": "'area_of' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch136_creational.md",
+      "path": "Book/part12_patterns/ch136_creational.md",
+      "failures": [
+        {
+          "block": 23,
+          "error": "'Session' does not name a type",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch138_behavioral.md",
+      "path": "Book/part12_patterns/ch138_behavioral.md",
+      "failures": [
+        {
+          "block": 2,
+          "error": "'area_of' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch142_ecs.md",
+      "path": "Book/part12_patterns/ch142_ecs.md",
+      "failures": [
+        {
+          "block": 41,
+          "error": "variable or field 'movement_system' declared void",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch144_style.md",
+      "path": "Book/part13_engineering/ch144_style.md",
+      "failures": [
+        {
+          "block": 11,
+          "error": "_ch144_guard.h: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch145_naming_api.md",
+      "path": "Book/part13_engineering/ch145_naming_api.md",
+      "failures": [
+        {
+          "block": 42,
+          "error": "'log' was not declared in this scope; did you mean 'long'?",
+          "has_main": true
+        },
+        {
+          "block": 53,
+          "error": "'clamp' was not declared in this scope",
+          "has_main": true
+        },
+        {
+          "block": 57,
+          "error": "'UserId' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch146_error_handling.md",
+      "path": "Book/part13_engineering/ch146_error_handling.md",
+      "failures": [
+        {
+          "block": 57,
+          "error": "'divide_error_code' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch150_testing.md",
+      "path": "Book/part13_engineering/ch150_testing.md",
+      "failures": [
+        {
+          "block": 6,
+          "error": "gtest/gtest.h: No such file or directory",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch159_threadpool.md",
+      "path": "Book/part15_cases/ch159_threadpool.md",
+      "failures": [
+        {
+          "block": 40,
+          "error": "'ThreadPool' was not declared in this scope; did you mean 'thread_local'?",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch160_mempool.md",
+      "path": "Book/part15_cases/ch160_mempool.md",
+      "failures": [
+        {
+          "block": 6,
+          "error": "'malloc' is not a member of 'std'",
+          "has_main": true
+        },
+        {
+          "block": 14,
+          "error": "'FixedPool' was not declared in this scope",
+          "has_main": true
+        },
+        {
+          "block": 20,
+          "error": "'MemoryPool' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    },
+    {
+      "file": "ch161_logger.md",
+      "path": "Book/part15_cases/ch161_logger.md",
+      "failures": [
+        {
+          "block": 2,
+          "error": "'Level' does not name a type",
+          "has_main": true
+        },
+        {
+          "block": 18,
+          "error": "'log_if' was not declared in this scope",
+          "has_main": true
+        },
+        {
+          "block": 30,
+          "error": "'g_mtx' was not declared in this scope",
+          "has_main": true
+        },
+        {
+          "block": 36,
+          "error": "'now' was not declared in this scope",
+          "has_main": true
+        }
+      ]
+    }
+  ],
+  "processed_paths": [
+    "Book/part01_history/ch01_c_history.md",
+    "Book/part01_history/ch02_standardization.md",
+    "Book/part01_history/ch03_cpp98_03.md",
+    "Book/part01_history/ch04_cpp11.md",
+    "Book/part01_history/ch05_cpp14.md",
+    "Book/part01_history/ch06_cpp17.md",
+    "Book/part01_history/ch07_cpp20.md",
+    "Book/part01_history/ch08_cpp23.md",
+    "Book/part01_history/ch09_cpp26.md",
+    "Book/part01_history/ch10_version_matrix.md",
+    "Book/part02_toolchain/ch11_compilers.md",
+    "Book/part02_toolchain/ch12_buildsystems.md",
+    "Book/part02_toolchain/ch13_packaging.md",
+    "Book/part02_toolchain/ch14_debugging.md",
+    "Book/part02_toolchain/ch15_profiling.md",
+    "Book/part02_toolchain/ch16_ide.md",
+    "Book/part02_toolchain/ch17_crosscompile.md",
+    "Book/part02_toolchain/ch18_buildconfig.md",
+    "Book/part03_language/ch19_variables.md",
+    "Book/part03_language/ch20_reference_pointer.md",
+    "Book/part03_language/ch21_const_family.md",
+    "Book/part03_language/ch22_auto_decltype.md",
+    "Book/part03_language/ch23_namespace_adl.md",
+    "Book/part03_language/ch24_enum.md",
+    "Book/part03_language/ch25_union_variant.md",
+    "Book/part03_language/ch26_lambda.md",
+    "Book/part03_language/ch27_cast.md",
+    "Book/part03_language/ch28_lifetime_ub.md",
+    "Book/part03_language/ch29_friend.md",
+    "Book/part03_language/ch30_volatile.md",
+    "Book/part03_language/ch31_operator_overloading.md",
+    "Book/part03_language/ch32_initialization.md",
+    "Book/part04_memory/ch35_memory_layout.md",
+    "Book/part04_memory/ch36_stack_heap.md",
+    "Book/part04_memory/ch37_new_delete.md",
+    "Book/part04_memory/ch38_allocator.md",
+    "Book/part04_memory/ch39_raii_rule.md",
+    "Book/part04_memory/ch40_exception_safety.md",
+    "Book/part04_memory/ch41_smart_pointers.md",
+    "Book/part04_memory/ch42_strict_aliasing.md",
+    "Book/part04_memory/ch43_cache_locality.md",
+    "Book/part04_memory/ch44_memory_pool.md",
+    "Book/part05_oo/ch45_oop_object_model.md",
+    "Book/part05_oo/ch46_encapsulation_inheritance.md",
+    "Book/part05_oo/ch47_virtual_functions.md",
+    "Book/part05_oo/ch48_rtti.md",
+    "Book/part05_oo/ch49_virtual_inheritance.md",
+    "Book/part05_oo/ch50_multiple_inheritance.md",
+    "Book/part05_oo/ch51_crtp.md",
+    "Book/part05_oo/ch52_ebo.md",
+    "Book/part06_templates/ch60_template_basics.md",
+    "Book/part06_templates/ch61_template_overload.md",
+    "Book/part06_templates/ch62_specialization.md",
+    "Book/part06_templates/ch63_variadic.md",
+    "Book/part06_templates/ch64_fold.md",
+    "Book/part06_templates/ch65_type_traits.md",
+    "Book/part06_templates/ch66_sfinae.md",
+    "Book/part06_templates/ch67_concepts.md",
+    "Book/part06_templates/ch68_tmp.md",
+    "Book/part06_templates/ch69_constexpr.md",
+    "Book/part06_templates/ch70_tag_dispatch.md",
+    "Book/part06_templates/ch71_policy.md",
+    "Book/part06_templates/ch72_expression_templates.md",
+    "Book/part07_stl/ch76_stl_arch.md",
+    "Book/part07_stl/ch77_vector.md",
+    "Book/part07_stl/ch78_deque.md",
+    "Book/part07_stl/ch79_list.md",
+    "Book/part07_stl/ch80_array.md",
+    "Book/part07_stl/ch81_string.md",
+    "Book/part07_stl/ch82_span.md",
+    "Book/part07_stl/ch83_map.md",
+    "Book/part07_stl/ch84_set.md",
+    "Book/part07_stl/ch85_unordered.md",
+    "Book/part07_stl/ch86_adapters.md",
+    "Book/part07_stl/ch87_bitset.md",
+    "Book/part07_stl/ch88_optional_variant.md",
+    "Book/part07_stl/ch89_tuple_any.md",
+    "Book/part07_stl/ch90_ranges.md",
+    "Book/part07_stl/ch91_filesystem.md",
+    "Book/part07_stl/ch92_chrono.md",
+    "Book/part07_stl/ch93_thread_async.md",
+    "Book/part07_stl/ch94_stop_token.md",
+    "Book/part08_algorithms/ch100_ranges_algo.md",
+    "Book/part08_algorithms/ch101_algo_theory.md",
+    "Book/part08_algorithms/ch95_algo_overview.md",
+    "Book/part08_algorithms/ch96_sorting.md",
+    "Book/part08_algorithms/ch97_search.md",
+    "Book/part08_algorithms/ch98_heap.md",
+    "Book/part08_algorithms/ch99_numeric.md",
+    "Book/part09_concurrency/ch107_atomic.md",
+    "Book/part09_concurrency/ch108_memory_order.md",
+    "Book/part09_concurrency/ch109_fence.md",
+    "Book/part09_concurrency/ch110_lockfree.md",
+    "Book/part09_concurrency/ch111_aba.md",
+    "Book/part09_concurrency/ch112_hazard_rcu.md",
+    "Book/part09_concurrency/ch113_coroutine.md",
+    "Book/part10_modern/ch115_move.md",
+    "Book/part10_modern/ch116_perfect_forwarding.md",
+    "Book/part10_modern/ch117_copy_elision.md",
+    "Book/part10_modern/ch118_modules.md",
+    "Book/part10_modern/ch119_ranges_deep.md",
+    "Book/part10_modern/ch120_coroutine_app.md",
+    "Book/part10_modern/ch121_contracts.md",
+    "Book/part10_modern/ch122_pmr.md",
+    "Book/part10_modern/ch123_ct_programming.md",
+    "Book/part11_source/ch124_libstdcxx.md",
+    "Book/part11_source/ch125_libcxx.md",
+    "Book/part11_source/ch126_msstl.md",
+    "Book/part11_source/ch127_llvm.md",
+    "Book/part11_source/ch128_boost.md",
+    "Book/part11_source/ch129_qt.md",
+    "Book/part11_source/ch130_chromium_abseil.md",
+    "Book/part11_source/ch131_fmt_spdlog.md",
+    "Book/part11_source/ch132_leveldb_rocksdb.md",
+    "Book/part11_source/ch133_clickhouse_redis.md",
+    "Book/part11_source/ch134_unreal.md",
+    "Book/part12_patterns/ch135_patterns_intro.md",
+    "Book/part12_patterns/ch136_creational.md",
+    "Book/part12_patterns/ch137_structural.md",
+    "Book/part12_patterns/ch138_behavioral.md",
+    "Book/part12_patterns/ch139_crtp_pattern.md",
+    "Book/part12_patterns/ch140_policy_pattern.md",
+    "Book/part12_patterns/ch141_di.md",
+    "Book/part12_patterns/ch142_ecs.md",
+    "Book/part12_patterns/ch143_dod.md",
+    "Book/part13_engineering/ch144_style.md",
+    "Book/part13_engineering/ch145_naming_api.md",
+    "Book/part13_engineering/ch146_error_handling.md",
+    "Book/part13_engineering/ch147_code_review.md",
+    "Book/part13_engineering/ch148_gitflow.md",
+    "Book/part13_engineering/ch149_ci_cd.md",
+    "Book/part13_engineering/ch150_testing.md",
+    "Book/part13_engineering/ch151_benchmark.md",
+    "Book/part14_perf/ch152_perf_model.md",
+    "Book/part14_perf/ch153_cpu_micro.md",
+    "Book/part14_perf/ch154_cache_opt.md",
+    "Book/part14_perf/ch155_simd.md",
+    "Book/part14_perf/ch156_compiler_opt.md",
+    "Book/part14_perf/ch157_compiler_explorer.md",
+    "Book/part14_perf/ch158_perf_antipatterns.md",
+    "Book/part15_cases/ch159_threadpool.md",
+    "Book/part15_cases/ch160_mempool.md",
+    "Book/part15_cases/ch161_logger.md",
+    "Book/part15_cases/ch162_json.md",
+    "Book/part15_cases/ch163_net.md",
+    "Book/part15_cases/ch164_framework.md",
+    "Book/part16_reading/ch165_roadmap.md"
+  ],
+  "baseline_meta": {
+    "purpose": "阶段2 治理前编译基线 —— 大规模治理动作前的回归比对锚点（immutable）",
+    "commit": "374a563",
+    "commit_subject": "chore: 阶段1技术债清理 — 编号连续性说明 + mingw1310路径统一",
+    "archived_at": "2026-07-18T18:07:40+08:00",
+    "compiler_readable": "MinGW GCC 15.3.0 (mingw1530)",
+    "compiler_note": "本地审计编译器；CI 门禁用 Linux g++-15。POSIX 块（如 ch35#blk6/blk14）本地失败、Linux 可编，由 compile_gate AUTO_PATTERNS 吸收，不影响 CI 判定。",
+    "source_report": "tools/_audit_gcc15.json (full main-only, partial=False)",
+    "metrics": {
+      "total_chapters": 147,
+      "passed_chapters": 113,
+      "failed_chapters": 34,
+      "total_blocks_checked": 3720,
+      "failed_blocks": 65
+    },
+    "exempt_snapshot": {
+      "count": 65,
+      "audited": true,
+      "audited_at": "2026-07-18",
+      "file": "tools/compile_exempt.json"
+    },
+    "how_to_compare": "python3 tools/compile_gate.py --report tools/baselines/baseline_2026-07-18_374a563_gcc15.json --strict-stale",
+    "immutable": "请勿修改此文件；如需新基线，另建 baseline_<date>_<sha>_gcc<ver>.json。"
+  }
+}

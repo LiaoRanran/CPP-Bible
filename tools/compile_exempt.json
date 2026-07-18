@@ -105,6 +105,12 @@
     },
     {
       "file": "ch35_memory_layout.md",
+      "block": 6,
+      "reason": "POSIX",
+      "note": "mmap 演示依赖 <sys/mman.h>，MinGW/Windows 不可编译（Linux 可编）"
+    },
+    {
+      "file": "ch35_memory_layout.md",
       "block": 14,
       "reason": "POSIX",
       "note": "fork()/COW 演示依赖 <sys/wait.h>，MinGW/Windows 不可编译"
@@ -366,5 +372,8 @@
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义"
     }
-  ]
+  ],
+  "audited_at": "2026-07-18",
+  "audited_against": "_audit_gcc15.json (full main-only, gcc-15.3.0)",
+  "exempt_count": 65
 }
