@@ -21,6 +21,7 @@
 - 异常 (ch49) ⇄ 栈展开 ⇄ noexcept ⇄ 移动 (move_if_noexcept)
 
 ## 索引入口
-- 术语定义见 `GLOSSARY.md`
-- 误区见 `Index/MISCONCEPTIONS.md`
-- 全文章目见 `INDEX.md`
+- 术语定义见 `GLOSSARY.md`（本目录）
+- 误区见 `MISCONCEPTIONS.md`（本目录）
+- 全文章目见 `../Book/SUMMARY.md`
+- 索引体系总说明见 `README.md`（本目录）
