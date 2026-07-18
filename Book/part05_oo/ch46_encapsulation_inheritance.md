@@ -9,11 +9,11 @@
 立场分层约定：
 - **[标准]**　语言/库标准规定（ISO C++、CWG/LWG 决议）。
 - **[实现]**　libstdc++ / libc++ / MS STL 的具体代码行为。
-- **[平台]**　MinGW GCC 13.1.0、Windows、x86-64 ABI（System V / MS）相关事实。
+- **[平台]**　MinGW GCC 15.3.0、Windows、x86-64 ABI（System V / MS）相关事实。
 - **[经验]**　工程实践、坑与取舍。
 
-环境事实（本机探测）：MinGW **GCC 13.1.0**；libstdc++ 头文件根目录
-`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；本章所有 `[实现]` 级源码均来自该目录的真实文件，逐行标注路径与行号。libc++、MS STL 不在本机，相关对比以 `[实现-推断]` / `[平台-推断]` 标注。
+环境事实（本机探测）：MinGW **GCC 15.3.0**；libstdc++ 头文件根目录
+`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；本章所有 `[实现]` 级源码均来自该目录的真实文件，逐行标注路径与行号。libc++、MS STL 不在本机，相关对比以 `[实现-推断]` / `[平台-推断]` 标注。
 
 ---
 
@@ -1051,21 +1051,21 @@ int main() { Car c; c.drive(); }
 
 ## ⑱ 真实 libstdc++ 源码逐行：is_base_of / is_convertible / uses_allocator / stl_construct
 
-下面所有源码均来自本机 MinGW GCC 13.1.0 的 libstdc++，路径已标注。
+下面所有源码均来自本机 MinGW GCC 15.3.0 的 libstdc++，路径已标注。
 
 ### 18.1 `is_base_of` —— 派生到基关系的编译期探测
 
-文件 `type_traits:1408-1412`（本机路径 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`）：
+文件 `type_traits:1551-1553`（本机路径 `C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits`）：
 
 ```cpp
   /// is_base_of
   template<typename _Base, typename _Derived>
     struct is_base_of
-    : public integral_constant<bool, __is_base_of(_Base, _Derived)>
+    : public __bool_constant<__is_base_of(_Base, _Derived)>
     { };
 ```
 
-**[实现]**　libstdc++（GCC 13）直接委托给**编译器内建 `__is_base_of`**（由 GCC 前端在 `[class.derived]` 语义上实现）。`__is_base_of(B, D)` 在 `B` 是 `D` 的基类（含自身、含多继承、含虚基类）时为真。标准变量模板在 `type_traits:3361`：
+**[实现]**　libstdc++（GCC 15.3.0）直接委托给**编译器内建 `__is_base_of`**（由 GCC 前端在 `[class.derived]` 语义上实现）。`__is_base_of(B, D)` 在 `B` 是 `D` 的基类（含自身、含多继承、含虚基类）时为真。标准变量模板在 `type_traits:3695`：
 
 ```cpp
   template<typename _Base, typename _Derived>
@@ -1109,7 +1109,7 @@ int main() {
 
 ### 18.3 `is_convertible` —— 隐式可转换性
 
-文件 `type_traits:1414-1455`（GCC 13 优先用内建）：
+文件 `type_traits:1564-1602`（GCC 15.3.0 优先用内建）：
 
 ```cpp
 #if __has_builtin(__is_convertible)

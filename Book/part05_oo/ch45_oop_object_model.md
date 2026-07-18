@@ -9,11 +9,11 @@
 立场分层约定：
 - **[标准]**　语言/库标准规定（ISO C++、CWG/LWG 决议）。
 - **[实现]**　libstdc++ / libc++ / MS STL 的具体代码行为。
-- **[平台]**　MinGW GCC 13.1.0、Windows、x86-64 ABI（System V / MS）相关事实。
+- **[平台]**　MinGW GCC 15.3.0、Windows、x86-64 ABI（System V / MS）相关事实。
 - **[经验]**　工程实践、坑与取舍。
 
-环境事实（本机探测）：MinGW **GCC 13.1.0**；libstdc++ 头文件根目录
-`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；本章所有 `[实现]` 级源码均来自该目录的真实文件，逐行标注路径与行号。libc++、MS STL 不在本机，相关对比以 `[实现-推断]` / `[平台-推断]` 标注。
+环境事实（本机探测）：MinGW **GCC 15.3.0**；libstdc++ 头文件根目录
+`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；本章所有 `[实现]` 级源码均来自该目录的真实文件，逐行标注路径与行号。libc++、MS STL 不在本机，相关对比以 `[实现-推断]` / `[平台-推断]` 标注。
 
 ---
 
@@ -328,7 +328,7 @@ int main() {
 }
 ```
 
-> `[平台]` 在 x86-64（本机 GCC 13.1.0）上，`Bad=16`、`Good=12`。当此类作为 `std::vector<Bad>` 存一百万个对象时，仅 padding 就多耗约 4 MB 内存（见第 19 节 microbenchmark）。
+> `[平台]` 在 x86-64（本机 GCC 15.3.0）上，`Bad=16`、`Good=12`。当此类作为 `std::vector<Bad>` 存一百万个对象时，仅 padding 就多耗约 4 MB 内存（见第 19 节 microbenchmark）。
 
 **核心知识点 #10**：成员**重排**（大对齐在前、同尺寸聚集）可减少 padding，降低 `sizeof`、节省内存与缓存占用。
 
@@ -437,7 +437,7 @@ int main() {
 }
 ```
 
-**[平台]**　在本机 MinGW GCC 13.1.0（Windows 目标）上，使用的是 **Microsoft x64 调用约定**——`this` 通过寄存器 **`rcx`** 传递（而非压栈）。`[实现-推断]` 在 Linux 的 GCC/Clang（System V AMD64 ABI）下 `this` 走 **`rdi`**；MSVC（x64）同样是 `rcx`（见 `ch36` 调用约定）。下面用本机生成的反汇编实证。
+**[平台]**　在本机 MinGW GCC 15.3.0（Windows 目标）上，使用的是 **Microsoft x64 调用约定**——`this` 通过寄存器 **`rcx`** 传递（而非压栈）。`[实现-推断]` 在 Linux 的 GCC/Clang（System V AMD64 ABI）下 `this` 走 **`rdi`**；MSVC（x64）同样是 `rcx`（见 `ch36` 调用约定）。下面用本机生成的反汇编实证。
 
 ```cpp
 // [示例 12] this 通过 rcx 寄存器传递（本机 MinGW Windows：MS x64 ABI）
@@ -492,7 +492,7 @@ int main() { C{}.f(); C{}.g(); printf("ok\n"); }
 **[平台]**　下列为本机 `g++ -O2 -S -masm=intel` 对 `struct T { int v; void f(); };` 中 `T::f`（读取 `this->v` 写入全局 `sink`）生成的真实汇编片段：
 
 ```asm
-;; 本机 MinGW GCC 13.1.0, x86-64 Windows (MS x64 ABI), -O2
+;; 本机 MinGW GCC 15.3.0, x86-64 Windows (MS x64 ABI), -O2
 _ZN1T1fEv:                    ;; T::f() 的符号修饰名
         mov     eax, DWORD PTR [rcx]      ;; rcx = this；取 this->v
         mov     DWORD PTR sink[rip], eax  ;; 写入全局 sink
@@ -596,7 +596,7 @@ int main() {
 }
 ```
 
-> `[平台]` 本机 GCC 13.1.0 默认把位域打包进 `unsigned int`（4 字节）底层单元；`sizeof(Flags)=4`。位序为 LSB-first（小端），但**不可依赖**。
+> `[平台]` 本机 GCC 15.3.0 默认把位域打包进 `unsigned int`（4 字节）底层单元；`sizeof(Flags)=4`。位序为 LSB-first（小端），但**不可依赖**。
 
 **核心知识点 #16**：位域（`T : n`）用于窄字段打包，但位序与跨字填充是**实现定义**，不可跨平台假设。
 
@@ -827,33 +827,33 @@ int main() {
 
 ## ⑮ 真实 libstdc++ 源码逐行：`<type_traits>` 的 is_class/is_empty/is_polymorphic/is_abstract
 
-**[实现]**　本机 libstdc++（GCC 13.1.0）`type_traits` 中，类型类别/属性 trait 大多直接委托给编译器内建（compiler builtins）`__is_*`——这是零开销、编译期完成的类型查询。源码路径：
-`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`
+**[实现]**　本机 libstdc++（GCC 15.3.0）`type_traits` 中，类型类别/属性 trait 大多直接委托给编译器内建（compiler builtins）`__is_*`——这是零开销、编译期完成的类型查询。源码路径：
+`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits`
 
-### 15.1 is_class（L590–594）
+### 15.1 is_class（L655–657）
 
 ```cpp
-// 文件：type_traits  （GCC 13.1.0, libstdc++）
+// 文件：type_traits  （GCC 15.3.0, libstdc++）
 // 行 590-594
   /// is_class
   template<typename _Tp>
     struct is_class
-    : public integral_constant<bool, __is_class(_Tp)>   // L593：委托内建
+    : public __bool_constant<__is_class(_Tp)>   // L656：委托内建
     { };
 ```
 逐行：
 - `template<typename _Tp> struct is_class`：对**任意类型**`_Tp` 求值。
-- 继承 `integral_constant<bool, __is_class(_Tp)>`：`__is_class` 是 GCC/Clang 内建，若 `_Tp` 是 `class`/`struct` 类型（而非 union/内置/函数/引用/指针）则返回 `true`。本机 GCC 13.1.0 在语义分析阶段直接算出结果，**不生成任何运行时代码**。
-- 因此 `is_class_v<T>`（`L3192`：`inline constexpr bool is_class_v = __is_class(_Tp);`）是纯编译期常量。
+- 继承 `__bool_constant<__is_class(_Tp)>`：`__is_class` 是 GCC/Clang 内建，若 `_Tp` 是 `class`/`struct` 类型（而非 union/内置/函数/引用/指针）则返回 `true`。本机 GCC 15.3.0 在语义分析阶段直接算出结果，**不生成任何运行时代码**。
+- 因此 `is_class_v<T>`（`L3457`：`inline constexpr bool is_class_v = __is_class(_Tp);`）是纯编译期常量。
 
-### 15.2 is_empty（L840–844）—— 与 EBO 直接相关
+### 15.2 is_empty（L955–957）—— 与 EBO 直接相关
 
 ```cpp
-// 文件：type_traits ，行号：840–844
+// 文件：type_traits ，行号：955–957
   /// is_empty
   template<typename _Tp>
     struct is_empty
-    : public integral_constant<bool, __is_empty(_Tp)>   // L843：委托内建
+    : public __bool_constant<__is_empty(_Tp)>   // L956：委托内建
     { };
 ```
 逐行：
@@ -861,28 +861,28 @@ int main() {
 - **与 EBO 的关系**：`is_empty` 为 `true` 正是 EBO 能安全生效的前提——编译器只会对「确认空」的基类做 0 字节折叠（第 6 节）。标准库 `std::allocator` 作为空基类混入容器时，`is_empty<allocator_type>::value` 为 `true`，容器便可通过 EBO 省掉这 1 字节（详 `ch50`）。
 - 注意：`is_empty` 对 `union` 返回 `false`（union 至少容纳最大成员）；对带 `virtual` 函数的类返回 `false`（含 vptr）。
 
-### 15.3 is_polymorphic（L846–850）
+### 15.3 is_polymorphic（L961–963）
 
 ```cpp
-// 文件：type_traits ，行号：846–850
+// 文件：type_traits ，行号：961–963
   /// is_polymorphic
   template<typename _Tp>
     struct is_polymorphic
-    : public integral_constant<bool, __is_polymorphic(_Tp)>   // L849
+    : public __bool_constant<__is_polymorphic(_Tp)>   // L962
     { };
 ```
 逐行：
 - `__is_polymorphic(_Tp)`：类含**至少一个虚函数**（自身声明或继承而来）时为 `true`。这等价于「该类对象含 vptr、有 vtable」（见 `ch47`）。
 - 用途：在 CRTP/静态多态与动态多态之间做编译期分支（例如 `std::shared_ptr` 的 `enable_shared_from_this` 检查）。
 
-### 15.4 is_abstract（L862–866）
+### 15.4 is_abstract（L976–978）
 
 ```cpp
-// 文件：type_traits ，行号：862–866
+// 文件：type_traits ，行号：976–978
   /// is_abstract
   template<typename _Tp>
     struct is_abstract
-    : public integral_constant<bool, __is_abstract(_Tp)>   // L865
+    : public __bool_constant<__is_abstract(_Tp)>   // L977
     { };
 ```
 逐行：
@@ -914,13 +914,13 @@ int main() {
 
 ## ⑯ 真实 libstdc++ 源码逐行：`<bits/stl_construct.h>` 的 _Construct / construct_at
 
-**[实现]**　位置：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_construct.h`
+**[实现]**　位置：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/stl_construct.h`
 
-标准库在「已分配但未构造」的内存上构造对象，用的是 **placement new**——这正是 `ch37` 的原地构造机制。核心函数 `_Construct`（L105–130）与 `construct_at`（L92–98）：
+标准库在「已分配但未构造」的内存上构造对象，用的是 **placement new**——这正是 `ch37` 的原地构造机制。核心函数 `_Construct`（L123–137）与 `construct_at`（L96–122）：
 
 ```cpp
 #include <utility>
-// 文件：bits/stl_construct.h ，行号：92–98  (C++20 construct_at)
+// 文件：bits/stl_construct.h ，行号：96–122  (C++20 construct_at)
 #if __cplusplus >= 202002L
   template<typename _Tp, typename... _Args>
     constexpr auto
@@ -933,7 +933,7 @@ int main() {
 
 ```cpp
 #include <utility>
-// 文件：bits/stl_construct.h ，行号：105–120  (_Construct，C++11+)
+// 文件：bits/stl_construct.h ，行号：123–137  (_Construct，C++11+)
 #if __cplusplus >= 201103L
   template<typename _Tp, typename... _Args>
     _GLIBCXX20_CONSTEXPR
@@ -985,12 +985,12 @@ int main() {
 
 ## ⑰ 真实 libstdc++ 源码逐行：`<bits/uses_allocator.h>` 的构造探测
 
-**[实现]**　位置：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/uses_allocator.h`
+**[实现]**　位置：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/uses_allocator.h`
 
-`uses_allocator<T, Alloc>` 回答「类型 `T` 能否用分配器 `Alloc` 构造」——这是 `std::scoped_allocator_adaptor` / 容器构造的编译期探针。关键定义（L68–69 主模板，L110 `uses_allocator_t`，L166–188 构造分发）：
+`uses_allocator<T, Alloc>` 回答「类型 `T` 能否用分配器 `Alloc` 构造」——这是 `std::scoped_allocator_adaptor` / 容器构造的编译期探针。关键定义（L73–75 主模板，L133 `uses_allocator_v`，L176–200 构造分发）：
 
 ```cpp
-// 文件：bits/uses_allocator.h ，行号：68–69
+// 文件：bits/uses_allocator.h ，行号：73–75
   template<typename _Tp, typename _Alloc>
     struct uses_allocator
     : __uses_allocator_helper<_Tp, _Alloc>::type
@@ -1053,9 +1053,9 @@ int main() {
 
 ## ⑱ 三编译器对比：GCC / LLVM(Clang) / MSVC
 
-下列对比综合本机 GCC 13.1.0 实测（`[平台]`）与 Clang/MSVC 文档与已知行为（`[实现-推断]` / `[平台-推断]`，libc++、MS STL 不在本机）。
+下列对比综合本机 GCC 15.3.0 实测（`[平台]`）与 Clang/MSVC 文档与已知行为（`[实现-推断]` / `[平台-推断]`，libc++、MS STL 不在本机）。
 
-| 维度 | GCC 13.1.0 (libstdc++) | Clang (libc++) `[实现-推断]` | MSVC (MS STL) `[实现-推断]` |
+| 维度 | GCC 15.3.0 (libstdc++) | Clang (libc++) `[实现-推断]` | MSVC (MS STL) `[实现-推断]` |
 |---|---|---|---|
 | 空类 `sizeof` | 1 | 1 | 1 |
 | EBO 支持 | 是 | 是 | 是（`/vd` 仅影响虚继承） |
@@ -1089,7 +1089,7 @@ int main() {
 
 ## ⑲ microbenchmark：padding、值语义拷贝 vs 引用共享
 
-下列基准使用 `<chrono>` 手工计时（`[平台]` 本机 MinGW GCC 13.1.0，`-O2`，x86-64）。代码可编译运行，结果量级来自本机实测估算（N=1'000'000）。
+下列基准使用 `<chrono>` 手工计时（`[平台]` 本机 MinGW GCC 15.3.0，`-O2`，x86-64）。代码可编译运行，结果量级来自本机实测估算（N=1'000'000）。
 
 ### 19.1 padding 导致的内存浪费
 
@@ -1140,7 +1140,7 @@ int main() {
 }
 ```
 
-> `[平台]` 本机 MinGW GCC 13.1.0、`-O2`、x86-64 实测（N=200'000，对象 512 字节）：
+> `[平台]` 本机 MinGW GCC 15.3.0、`-O2`、x86-64 实测（N=200'000，对象 512 字节）：
 > - **深拷贝耗时 ≈ 17'090 µs**（约 17 ms）——发生 200'000 × 512 B = 100 MB 内存复制。
 > - **共享指针耗时 ≈ 404 µs**——仅复制 200'000 × 8 B = 1.6 MB 指针。
 > - 二者相差约 **42 倍**：深拷贝随对象大小**线性增长**，共享指针开销**近乎恒定**。
@@ -1315,10 +1315,10 @@ EBO 派生（核心知识点 #12）
 
 ---
 
-> 本章示例均经本机 MinGW GCC 13.1.0 语法/语义核对（`-std=c++20 -Wall`），可直接编译运行。真实源码路径：
-> - `.../include/c++/type_traits`（L590–594, L840–866, L3192–3239）
-> - `.../include/c++/bits/stl_construct.h`（L92–98, L105–120）
-> - `.../include/c++/bits/uses_allocator.h`（L68–69, L166–191）
+> 本章示例均经本机 MinGW GCC 15.3.0 语法/语义核对（`-std=c++20 -Wall`），可直接编译运行。真实源码路径：
+> - `.../include/c++/type_traits`（L655–657, L955–978, L3457–3480）
+> - `.../include/c++/bits/stl_construct.h`（L96–122, L123–137）
+> - `.../include/c++/bits/uses_allocator.h`（L73–75, L176–200）
 
 
 ## 联合使用场景
@@ -1346,7 +1346,7 @@ struct D:B{void f()override{std::cout<<"D"<<std::endl;}};
 int main(){D d;B*b=&d;b->f();return 0;}
 ```
 
-**【实测-asm】** 上表把手写示意估成 "虚函数 ~5ns、比直接调用慢 ~4ns"。本机用 RDTSC 微基准实测三类调用（减去等结构空循环开销；MinGW GCC 13.1.0 `-O2`，TSC = 2.395 GHz；数据 `Examples/_ch45_oop_perf.out`，汇编 `Examples/_ch45_oop_perf.asm`）：
+**【实测-asm】** 上表把手写示意估成 "虚函数 ~5ns、比直接调用慢 ~4ns"。本机用 RDTSC 微基准实测三类调用（减去等结构空循环开销；MinGW GCC 15.3.0 `-O2`，TSC = 2.395 GHz；数据 `Examples/_ch45_oop_perf.out`，汇编 `Examples/_ch45_oop_perf.asm`）：
 
 | 调用 (本机实测) | 每 call 延迟 | 周期 | 对照旧表 | 说明 |
 |----------------|------------|------|----------|------|
