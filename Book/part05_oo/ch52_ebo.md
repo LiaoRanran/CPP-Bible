@@ -3,7 +3,7 @@
 ⟶ Book/part05_oo/ch45_oop_object_model.md
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜立场分层：`[标准]` 语言规定 · `[实现]` 编译器/库实现 · `[平台]` ABI/OS · `[经验]` 工程共识
-> 汇编证据：MinGW GCC 13.1.0，`-std=c++23 -O2 -S -masm=intel` 真实输出（见 `Examples/_asm_ebo.cpp` → `_asm_ebo.asm`）
+> 汇编证据：MinGW GCC 15.3.0，`-std=c++23 -O2 -S -masm=intel` 真实输出（见 `Examples/_asm_ebo.cpp` → `_asm_ebo.asm`）
 > 前置/后续：⟶ ch19（对象大小/存储期）· ch45（对象模型）· ch50（多重继承布局）· ch71（Policy-Based Design）· ch41（allocator）
 
 ---
@@ -71,7 +71,7 @@ classDiagram
 ## ⑦ ASCII 内存图 / 对象布局
 
 ```
-x64 / GCC 13.1.0：
+x64 / GCC 15.3.0：
   struct Empty {};                    // 空类
   struct Derived : Empty { int x; };  // EBO：Empty 占 0
   struct AsMember { Empty e; int x; };// 作成员：Empty 占位 1B + 3 填充
@@ -112,7 +112,7 @@ x64 / GCC 13.1.0：
 ── EBO 直接让前者少一次 +4 位移、且对象整体小 4 字节 ──
 ```
 
-## ⑩ 汇编分析（MinGW GCC 13.1.0, -O2, -masm=intel，真实输出）
+## ⑩ 汇编分析（MinGW GCC 15.3.0, -O2, -masm=intel，真实输出）
 
 【测试源 `Examples/_asm_ebo.cpp`】
 
