@@ -102,7 +102,7 @@ classDiagram
         └────────────────────────────────────────┘
 ```
 
-[实现·GCC13/MinGW x86-64] 关键事实：`typeid(b)` 的真实取法是 `vptr[-1]`（即 vtable+8 = typeinfo 指针），再取 type_info 对象的偏移 8 字段得到 name 字符串。见 ⑩ 真实汇编。
+[实现·GCC15.3.0/MinGW x86-64] 关键事实：`typeid(b)` 的真实取法是 `vptr[-1]`（即 vtable+8 = typeinfo 指针），再取 type_info 对象的偏移 8 字段得到 name 字符串。见 ⑩ 真实汇编。
 
 ## ⑧ 生命周期图
 
@@ -129,7 +129,7 @@ classDiagram
   │◀────────────────────── 返目标指针或 nullptr ──────│
 ```
 
-## ⑩ 汇编分析（MinGW GCC 13.1.0, -O2, -masm=intel，真实输出）
+## ⑩ 汇编分析（MinGW GCC 15.3.0, -O2, -masm=intel，真实输出）
 
 【编译命令】
 
@@ -178,7 +178,7 @@ _Z13down_cast_refRK4Base:
         call    __cxa_bad_cast            ; 引用失败 ⟶ 抛 std::bad_cast
 ```
 
-[实现·GCC13/MinGW x86-64] 关键事实：
+[实现·GCC15.3.0/MinGW x86-64] 关键事实：
 
 1. `typeid(b).name()` 由三条取指完成：取 vptr → 取 `vtable[-1]`（即 vtable+8，typeinfo 指针）→ 取 `type_info` 对象的偏移 8（`__name`）。全程无函数调用，O(1)，且是去虚化后的内联结果。
 2. `dynamic_cast` 指针形态：先做**内联空指针检查**（`test rcx,rcx; je`），非空才 `jmp __dynamic_cast`（尾调用，非 call，省一次返回栈）。`__dynamic_cast` 在 `libsupc++` 中运行期遍历继承树比对 `type_info`——这是 RTTI 的主要成本来源。
@@ -441,7 +441,7 @@ void process(T v) {
 
 #### 源码剖析 1：type_info 对象布局 @ libstdc++（实现层）
 
-> 文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/typeinfo`
+> 文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/typeinfo`
 > 行号：约 `class type_info { ... const char* __name; ... };`
 > 提取：`grep -n "__name\|class type_info" <上述路径>`
 
@@ -467,7 +467,7 @@ public:
 
 #### 源码剖析 2：__dynamic_cast 比对逻辑 @ libsupc++（实现层）
 
-> 文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cxxabi.h`（声明 `__dynamic_cast`）
+> 文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/cxxabi.h`（声明 `__dynamic_cast`）
 > 行号：约 `extern "C" void* __dynamic_cast(const void* __src, ...);`
 
 ```cpp
@@ -927,7 +927,7 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 
 [标准] 开启 RTTI 时，vtable 首槽前藏一个 `0x0008` 的 `typeinfo` 指针（指向 `.rodata` 中唯一的 `std::type_info` 对象）。`typeid` 取其地址（`0x0008` 解引用，L1 ≈1 ns）；`dynamic_cast` 沿继承树走 RTTI 链做类型比对，深度 d 即 d 次 `0x0008` 指针追逐（冷路径落 L3 ≈12 ns 或主存 ≈100 ns）。
 
-`-fno-rtti` 省去 `0x0008` typeinfo 指针与 `.rodata` 表，二进制更小但禁 `dynamic_cast`/`typeid`。`GCC 13.1.0` / `Clang 17` 在 `-O2` 下对已知静态类型可把 `dynamic_cast` 优化为直接指针调整（见 ch50 thunk）。`C++98` 起 RTTI 标准，`C++20` `consteval` 可把类型查询压到编译期。
+`-fno-rtti` 省去 `0x0008` typeinfo 指针与 `.rodata` 表，二进制更小但禁 `dynamic_cast`/`typeid`。`GCC 15.3.0` / `Clang 17` 在 `-O2` 下对已知静态类型可把 `dynamic_cast` 优化为直接指针调整（见 ch50 thunk）。`C++98` 起 RTTI 标准，`C++20` `consteval` 可把类型查询压到编译期。
 
 ## 自测练习（Exercises）
 
