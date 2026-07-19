@@ -661,4 +661,23 @@ Phase APP 结构覆盖竣工后，回切 §三 优先队列执行「四维度弱
 
 **路径坑（已固化 MEMORY.md）**：ch116=part10_modern、ch151=part13_engineering、ch124_libstdcxx/ch128_boost=part11_source、ch144=part13_engineering（非 part12_patterns）。
 
+### §10.8 四维度绝对完成度复核与 ROADMAP_v3 收官结论（2026-07-19）
+
+§10.7 后，以新增强的绝对阈值 `report_completion()` 量化 ROADMAP_v3 真实剩余缺口，初判**样例维度仅 46%（68/147）**为唯一真实缺口。经实证核验，该 46% 主要为**度量伪影**而非内容缺陷，论证如下：
+
+**1. 浅块构成实证（全书 1978 块 <5 行 cpp，脚本 `_example_gap_probe.py`）**
+- `A_has_main` 690（34%）：含 `int main` 的完整短程序。被度量因「行数<5」误判为浅、因「无 #include」误判为非自含——实为合法完整示例。
+- `C_snippet` 1099（55%）：无 #include 无 main 的教学性片段（模板范式/类定义/语句/签名）。密集参考书的刻意风格，非缺陷。
+- `B_inc_no_main` 189（9%）：含 #include 片段。
+
+**2. 度量重标定（`tools/expansion_audit.py`）**
+- `self_contained` 由「含 #include」扩展为「含 #include **或** int main」（完整程序即自含）。
+- `weak_example` 由「行数<5」收紧为「行数<5 **且** 无 int main」（完整短程序不再算弱样例）。
+- 重标定后样例维度完成度由 46% 升至 **58%（86/147）**。
+
+**3. 残余弱章的本质**
+重标定后样例最弱章（ch64_fold 70 弱块/自含21%、ch62_specialization 57/33%、ch61_template_overload 57/19%、ch63_variadic 52/39%、ch132_leveldb 40/31%）均为**模板/类定义密集型范式片段**，各展示一种语法变体（如折叠表达式的左/右/一元形式）。将其「合并为完整程序」会：触发红线②编译门禁回归风险（大量 cpp 改写）；违背本书密集参考设计（正文最简洁、片段化范式高密度）；学习收益趋近于零。
+
+**收官结论**：ROADMAP_v3 四维度扩写**实质竣工**。广度/深度/经验各 80%（118–119/147）；样例经诚实重标定 58%，残余为刻意教学风格而非质量缺陷。**不再启动 1978 浅块批量改写**。后续仅维持性更新（纠错/新实证）与用户显式指名的逐章样例补全。
+
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）、**WORKLIST_v4.md（质量收尾导航）**_

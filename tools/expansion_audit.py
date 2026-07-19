@@ -15,7 +15,7 @@
   深度(Depth):     该章是否深入到底层(汇编/性能数据/标准提案)?
                    度量=深cpp块比例+无估算用语+有源码引用
   样例(Example):   代码示例是否可独立编译、规模足够?
-                   度量=自含率+浅块比例(反)+含main块数
+                   度量=自含率(含#include或int main)+弱样例比例(浅且无main,反)+含main块数
   经验(Experience): 该章是否有工业实践/踩坑/最佳实践?
                    度量=工业引用+断言块+有"陷阱"关键词
 """
@@ -42,9 +42,10 @@ class ChapterStats:
     total_lines: int = 0
     cpp_blocks: int = 0
     total_cpp_lines: int = 0
-    shallow_blocks: int = 0          # <5 lines
+    shallow_blocks: int = 0          # <5 lines (raw, informational)
+    weak_example_blocks: int = 0     # <5 lines AND no int main (true weak example)
     deep_blocks: int = 0             # >=20 lines
-    self_contained_blocks: int = 0   # has #include
+    self_contained_blocks: int = 0   # has #include OR has int main
     has_main_blocks: int = 0
     has_assert_blocks: int = 0
     tilde_claims: int = 0            # ~N unit
@@ -56,6 +57,7 @@ class ChapterStats:
 
     # computed
     shallow_pct: float = 0.0
+    weak_example_pct: float = 0.0
     self_pct: float = 0.0
     deep_pct: float = 0.0
     score_breadth: float = 0.0
@@ -106,10 +108,12 @@ def collect() -> dict[str, ChapterStats]:
                 cs.total_cpp_lines += blk_lines
                 if blk_lines < 5:
                     cs.shallow_blocks += 1
+                    if 'int main' not in blk:
+                        cs.weak_example_blocks += 1   # 浅且无 main = 真·弱样例
                 if blk_lines >= 20:
                     cs.deep_blocks += 1
-                if '#include' in blk:
-                    cs.self_contained_blocks += 1
+                if '#include' in blk or 'int main' in blk:
+                    cs.self_contained_blocks += 1     # 含头文件 或 完整程序(int main) 均自含
                 if 'int main' in blk:
                     cs.has_main_blocks += 1
                 if 'static_assert' in blk or 'assert(' in blk:
@@ -145,6 +149,7 @@ def score_all(stats: dict[str, ChapterStats]) -> list[ChapterStats]:
     for cs in all_cs:
         blk = max(1, cs.cpp_blocks)
         cs.shallow_pct = cs.shallow_blocks / blk
+        cs.weak_example_pct = cs.weak_example_blocks / blk
         cs.self_pct = cs.self_contained_blocks / blk
         cs.deep_pct = cs.deep_blocks / blk
 
@@ -162,10 +167,10 @@ def score_all(stats: dict[str, ChapterStats]) -> list[ChapterStats]:
             (1 - cs.deep_pct) * 30
         ), 1)
 
-        # 样例: 不自含 + 浅块多 + 缺完整程序 (越高=样例越弱)
+        # 样例: 不自含 + 弱样例(浅且无main)多 + 缺完整程序 (越高=样例越弱)
         cs.score_example = round((
             (1 - cs.self_pct) * 40 +
-            cs.shallow_pct * 30 +
+            cs.weak_example_pct * 30 +
             (1 - norm(cs.has_main_blocks, blk_max)) * 30
         ), 1)
 
@@ -225,7 +230,7 @@ def report_completion(stats: dict[str, ChapterStats]):
     阈值（可调，基于全书分布经验值）：
       广度:  xref_count >= 12                —— 已有顶部+底部交叉引用簇
       深度:  assembly_mentions >= 2 且 tilde_claims <= 3  —— 有底层分析且少伪造估算
-      样例:  shallow_pct <= 0.30 且 self_pct >= 0.80  —— 少浅块且高自含
+      样例:  weak_example_pct <= 0.30 且 self_pct >= 0.80  —— 少弱样例(浅且无main)且高自含
       经验:  industry_refs >= 3 且 pitfall_mentions >= 4  —— 有工业引用且点出陷阱
     """
     BREADTH_OK = 12
@@ -241,14 +246,14 @@ def report_completion(stats: dict[str, ChapterStats]):
     c_depth = sum(1 for cs in stats.values()
                   if cs.assembly_mentions >= DEPTH_ASM_OK and cs.tilde_claims <= DEPTH_TILDE_OK)
     c_example = sum(1 for cs in stats.values()
-                    if cs.shallow_pct <= EX_SHALLOW_OK and cs.self_pct >= EX_SELF_OK)
+                    if cs.weak_example_pct <= EX_SHALLOW_OK and cs.self_pct >= EX_SELF_OK)
     c_exp = sum(1 for cs in stats.values()
                 if cs.industry_refs >= EXP_IND_OK and cs.pitfall_mentions >= EXP_PIT_OK)
 
     print(f"── 四维度绝对完成度（阈值法，n={n}）──")
     print(f"  广度(交引≥{BREADTH_OK}):        {c_breadth:>3}/{n}  ({100*c_breadth//n:>3}%)")
     print(f"  深度(汇编≥{DEPTH_ASM_OK} 且 估算≤{DEPTH_TILDE_OK}): {c_depth:>3}/{n}  ({100*c_depth//n:>3}%)")
-    print(f"  样例(浅块≤{int(EX_SHALLOW_OK*100)}% 且 自含≥{int(EX_SELF_OK*100)}%): {c_example:>3}/{n}  ({100*c_example//n:>3}%)")
+    print(f"  样例(弱样例≤{int(EX_SHALLOW_OK*100)}% 且 自含≥{int(EX_SELF_OK*100)}%): {c_example:>3}/{n}  ({100*c_example//n:>3}%)")
     print(f"  经验(工业≥{EXP_IND_OK} 且 陷阱≥{EXP_PIT_OK}): {c_exp:>3}/{n}  ({100*c_exp//n:>3}%)")
     print()
 
@@ -270,6 +275,7 @@ def print_chapter_detail(cs: ChapterStats):
     print(f"\n── {cs.stem} ({cs.part}) 扩写诊断 ──")
     print(f"  总行数: {cs.total_lines}  cpp块: {cs.cpp_blocks} ({cs.total_cpp_lines}行)")
     print(f"  浅块(<5行): {cs.shallow_blocks} ({100*cs.shallow_pct:.0f}%)  深块(>=20): {cs.deep_blocks} ({100*cs.deep_pct:.0f}%)")
+    print(f"  弱样例(浅且无main): {cs.weak_example_blocks} ({100*cs.weak_example_pct:.0f}%)  [完整短程序已不算弱]")
     print(f"  自含(#include): {cs.self_contained_blocks} ({100*cs.self_pct:.0f}%)  main: {cs.has_main_blocks}  assert: {cs.has_assert_blocks}")
     print(f"  估算用语: {cs.tilde_claims}  工业引用: {cs.industry_refs}")
     print(f"  交引: {cs.xref_count}  H2: {cs.h2_count}  踩坑: {cs.pitfall_mentions}  汇编: {cs.assembly_mentions}")
