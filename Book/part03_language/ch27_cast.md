@@ -1670,9 +1670,6 @@ assembly: mov/call/ret/jmp/cmp/add/xor/lock/mfence指令级验证。Stack/Heap/C
 WG21 Proposal PxxxxRxx设计目标+标准演化。Google/LLVM/Chromium/Qt/Boost/Redis/ClickHouse工业案例。
 benchmark: ~5ns延迟+CPU Cost分析。Trade-off/设计权衡/反模式。面试: Q1-Q5。
 
-
-定义 基本语法 使用方式 注意事项。
-
 ## 相关章节（交叉引用）
 
 - **同模块接续**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— const_cast/reinterpret_cast 直接作用于指针与引用
