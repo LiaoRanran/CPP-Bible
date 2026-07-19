@@ -3,8 +3,7 @@
   "note": "P1+P2+P3 收口后快照；v3 为基线，本文件为改进后对照",
   "summary": {
     "MATCH": 69,
-    "NO_ARTIFACT": 2,
-    "SPECIAL_SKIP": 1
+    "SPECIAL_SKIP": 3
   },
   "results": [
     {
@@ -39,8 +38,8 @@
     },
     {
       "name": "ch08_mdspan_test",
-      "status": "NO_ARTIFACT",
-      "detail": "无配对 .s/.o"
+      "status": "SPECIAL_SKIP",
+      "detail": "负向证据: 该 MinGW 构建缺失 <mdspan> 头, 编译失败属预期; 书 ch08_cpp23.md 附录已明示"
     },
     {
       "name": "ch08_opt_expected",
@@ -235,8 +234,8 @@
     },
     {
       "name": "ch40_noexcept_nt",
-      "status": "NO_ARTIFACT",
-      "detail": "无配对 .s/.o"
+      "status": "SPECIAL_SKIP",
+      "detail": "孤儿文档桩: 纯注释无代码; 真实证据单元为 ch40_nt_noexcept (已 MATCH)"
     },
     {
       "name": "ch40_nt_maythrow",

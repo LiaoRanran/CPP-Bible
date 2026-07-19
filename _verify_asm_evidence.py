@@ -29,6 +29,16 @@ STORED_ALIAS = {
     "ch117_elision_test": "ch117_elision_test_gcc15.s",
 }
 
+# 已知"非证据缺口"特例 —— 验证器不予判 NO_ARTIFACT，显式标注原因（诚实、可逆）
+#   ch08_mdspan_test     : 负向证据。该 MinGW 构建缺失 <mdspan> 头，编译必然失败；
+#                          书 ch08_cpp23.md 附录 G 明示此失败并引用其错误串。非真缺口。
+#   ch40_noexcept_nt     : 孤儿文档桩（纯注释，无可执行代码）。真实证据单元为
+#                          ch40_nt_noexcept（已 MATCH，书 ch40_exception_safety.md 引用）。
+SPECIAL_SKIP_REASONS = {
+    "ch08_mdspan_test": "负向证据: 该 MinGW 构建缺失 <mdspan> 头, 编译失败属预期; 书 ch08_cpp23.md 附录已明示",
+    "ch40_noexcept_nt": "孤儿文档桩: 纯注释无代码; 真实证据单元为 ch40_nt_noexcept (已 MATCH)",
+}
+
 CALL_RE = (r'\b(call|callq|jmp|jmpq|je|jne|jg|jl|jge|jle|ja|jb|jae|jbe|'
            r'jz|jnz|jo|jno|js|jns|jc|jnc|jcxz|jecxz|jrcxz|loop|loope|loopne)\s+'
            r'[0-9a-fA-F]+\s+(<[^>]+>)')
@@ -154,6 +164,10 @@ def main():
         if re.match(r'^\s*import\s', head):
             results.append({"name": name, "status": "SPECIAL_SKIP",
                             "detail": "modules: 源含 import，需预编译模块单元；本工具链无对应模块，跳过"})
+            continue
+        if name in SPECIAL_SKIP_REASONS:
+            results.append({"name": name, "status": "SPECIAL_SKIP",
+                            "detail": SPECIAL_SKIP_REASONS[name]})
             continue
         stored, kind = find_stored(name)
         if stored is None:
