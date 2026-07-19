@@ -355,6 +355,9 @@ template void f<int>(double);              // 错误：实参类型不匹配
 
 ## ⑪ STL 中的该模式
 
+⟶ Book/part07_stl/ch76_stl_arch.md（STL 架构与迭代器概念）—— STL 容器/算法全是模板
+⟶ Book/part07_stl/ch77_vector.md（vector 扩容/失效/allocator）—— vector 即类模板典型实例化
+
 ```cpp
 // 本节覆盖：① vector 类模板独立实例化 ② std::max 函数模板推导
 //           ③ std::integral_constant 类模板+NTTP ④ std::pair 类模板
@@ -457,6 +460,9 @@ int main() {
 
 ## ⑭ 工业案例
 
+⟶ Book/part11_source/ch128_boost.md（Boost 库生态）—— Boost 是工业模板库的最大实践场
+⟶ Book/part12_patterns/ch140_policy_pattern.md（Policy-Based Design）—— 模板+policy 组合定制组件
+
 ```cpp
 // 案例：跨 TU 显式实例化，避免头文件模板在每个 .cpp 重复实例化、缩短编译时间
 // math.h
@@ -491,6 +497,8 @@ int main() {
 ```
 
 ## ⑮ 源码剖析（libstdc++ 相关）
+
+⟶ Book/part11_source/ch124_libstdcxx.md（libstdc++ 实现剖析）—— 标准库模板的统一实现底座
 
 ```cpp
 // libstdc++ 的 std::integral_constant 本质（简化）
@@ -597,6 +605,9 @@ int main() {
 ```
 
 ## ⑲ 性能（编译期 / 运行期）
+
+⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— 实例化成本取决于前端预算
+⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 运行期开销须微基准实测
 
 ```cpp
 // 性能要点（保留原 3 条）：实例化零运行期开销 / Code bloat / NTTP 编译期求值
