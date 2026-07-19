@@ -4,9 +4,10 @@
 ⟶ Book/part08_algorithms/ch96_sorting.md
 
 > 元数据：标准基 C++11/14/17 · 预计阅读 45min · 前置 第118章 Modules（仅文字提及，无交叉引用）· 难度 ★★★★
-> 真实编译器取证：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
+> 取证说明：本章 `leveldb::` / `rocksdb::` 片段为**上游源码摘录**（LevelDB / RocksDB 本机未安装），无本机编译器取证，行内标注「上游参考」。含 `int main` 的**纯 C++ 示意块**以 MinGW GCC 15.3.0（`-std=c++23 -O0`）验证可编译运行。
 > LevelDB / RocksDB 本机未安装，源码剖析引用上游仓库 URL + 行号，标注「上游参考」。
 > 源码根（上游）：`https://github.com/google/leveldb` 与 `https://github.com/facebook/rocksdb`。
+> **样例依赖说明**：本章所有 `leveldb::` / `rocksdb::` 代码块均为**上游 API 摘录**，需安装对应库方可编译，**不在本书 `--main-only` 编译门禁内**；标注 `[标准]` / `[实现·纯C++]` 的**纯 C++ 示意块含 `int main`，可直接编译运行**。
 
 ## ① 概述：LSM-Tree 存储引擎 [标准]
 
@@ -73,6 +74,67 @@ struct SkipNode {
 
 - `[实现·LevelDB]`：`MemTable` 用跳表（O(log n) 查找/插入），`Immutable MemTable` 在刷盘期间继续服务读，避免写停顿。
 - `[平台]`：WAL 直接 `write()` 系统调用顺序落盘；崩溃恢复重放 WAL 重建 MemTable。
+
+- `[实现·纯C++]`：下面跳表为**可独立编译运行**的纯 C++ 示意，对应 LevelDB `MemTable` 的跳表结构；不依赖 LevelDB，仅演示 O(log n) 查找 / 插入的核心机制（上游 `leveldb::SkipList` 用柔性数组 + `AtomicPointer` 保证无锁并发读，此处用 `std::vector` 简化）。
+
+```cpp
+// 纯 C++ 跳表示意（可编译运行，对应 LevelDB MemTable；不依赖 LevelDB）
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+
+struct Node {
+    int key;
+    std::vector<Node*> next;            // next[0..level]，多层前向指针
+    Node(int k, int level) : key(k), next(level + 1, nullptr) {}
+};
+
+class SkipList {
+    int max_level_;
+    float p_;
+    Node* head_;
+    int random_level() {
+        int lvl = 0;
+        while ((std::rand() / double(RAND_MAX)) < p_ && lvl < max_level_) ++lvl;
+        return lvl;
+    }
+public:
+    SkipList(int max_level = 4, float p = 0.5)
+        : max_level_(max_level), p_(p), head_(new Node(0, max_level)) {}
+    ~SkipList() {                        // 按 level-0 链表释放全部节点
+        Node* n = head_->next[0];
+        delete head_;
+        while (n) { Node* t = n->next[0]; delete n; n = t; }
+    }
+    void insert(int key) {
+        std::vector<Node*> update(max_level_ + 1, head_);
+        Node* cur = head_;
+        for (int i = max_level_; i >= 0; --i) {
+            while (cur->next[i] && cur->next[i]->key < key) cur = cur->next[i];
+            update[i] = cur;
+        }
+        Node* n = new Node(key, random_level());
+        for (size_t i = 0; i < n->next.size(); ++i) {
+            n->next[i] = update[i]->next[i];
+            update[i]->next[i] = n;
+        }
+    }
+    bool contains(int key) const {
+        Node* cur = head_;
+        for (int i = max_level_; i >= 0; --i)
+            while (cur->next[i] && cur->next[i]->key < key) cur = cur->next[i];
+        return cur->next[0] && cur->next[0]->key == key;
+    }
+};
+
+int main() {
+    SkipList sl;
+    for (int k : {3, 1, 4, 1, 5, 9, 2, 6}) sl.insert(k);
+    std::cout << "contains(4)=" << sl.contains(4)
+              << " contains(7)=" << sl.contains(7) << "\n";
+    return 0;
+}
+```
 
 ```cpp
 // ② 文件布局（磁盘目录，概念）

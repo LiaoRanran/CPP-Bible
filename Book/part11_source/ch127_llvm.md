@@ -6,6 +6,7 @@
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++20 -O0/-O2 -S -masm=intel`）。
 > 取证源码根：`Examples/_ch127_*.cpp`。LLVM/Clang 本机未安装，源码剖析一律引用上游仓库 `https://github.com/llvm/llvm-project/...` 并标注「上游参考」，行号为该文件中相关逻辑的代表性位置。
 > 工具链：`C:/Qt/Tools/mingw1310_64/bin/g++.exe`（GCC 13.1.0）。
+> **样例依赖说明**：本章 `llvm::` / `clang::` 代码块均为**上游源码摘录**（LLVM/Clang 本机未安装），需对应工具链方可编译，**不在本书 `--main-only` 编译门禁内**；含 `int main` 的**纯 C++ 示意块（如 ①）可直接编译运行**；⑨ 节的 `gcc -S` 汇编为本仓库 `Examples/_ch127_*.cpp` 的真实 GCC 取证（非示意）。
 
 ## ① 概述：LLVM 项目与 Clang [标准]
 
