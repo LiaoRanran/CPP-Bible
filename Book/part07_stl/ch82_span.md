@@ -389,8 +389,8 @@ int sum_ptr(const int* p, std::size_t n) {
 ```
 
 ```asm
-; g++ 13.1 -O2 -masm=intel ；两函数生成几乎相同循环
-_Z8sum_spanNSt6spanIKiiEE:
+; GCC 15.3.0 (MinGW-w64 x86-64) -O2 -masm=intel ；两函数生成几乎相同循环
+_Z8sum_spanSt4spanIKiLy18446744073709551615EE:
         mov     rdx, QWORD PTR [rdi+8]   ; 取 extent（span 第二成员）
         xor     eax, eax
         test    rdx, rdx
@@ -405,7 +405,7 @@ _Z8sum_spanNSt6spanIKiiEE:
         ret
 
 ; sum_ptr 的循环体与此完全一致（仅入参约定差异）
-_Z7sum_ptrPKim:
+_Z7sum_ptrPKiy:
         ... ; 同样的 add / add rsi,4 / sub rdx,1 / jne 循环
 ```
 
