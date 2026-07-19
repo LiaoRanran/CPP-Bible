@@ -1,13 +1,13 @@
 {
-  "gcc": "C:\\Qt\\Tools\\mingw1310_64\\bin\\g++.EXE",
+  "gcc": "C:\\Qt\\Tools\\mingw1530_64\\bin\\g++.EXE",
   "flags": "-std=c++23 -O0 -fsyntax-only",
   "main_only": true,
   "partial": false,
   "total_chapters": 147,
-  "passed_chapters": 112,
-  "failed_chapters": 35,
-  "total_blocks_checked": 3560,
-  "failed_blocks": 66,
+  "passed_chapters": 113,
+  "failed_chapters": 34,
+  "total_blocks_checked": 3720,
+  "failed_blocks": 65,
   "failures": [
     {
       "file": "ch11_compilers.md",
@@ -238,7 +238,7 @@
       "failures": [
         {
           "block": 32,
-          "error": "'my_is_pointer' was not declared in this scope",
+          "error": "'my_is_pointer' was not declared in this scope [-Wtemplate-body]",
           "has_main": true
         }
       ]
@@ -314,17 +314,6 @@
       ]
     },
     {
-      "file": "ch125_libcxx.md",
-      "path": "Book/part11_source/ch125_libcxx.md",
-      "failures": [
-        {
-          "block": 29,
-          "error": "print: No such file or directory",
-          "has_main": true
-        }
-      ]
-    },
-    {
       "file": "ch126_msstl.md",
       "path": "Book/part11_source/ch126_msstl.md",
       "failures": [
@@ -335,7 +324,7 @@
         },
         {
           "block": 22,
-          "error": "print: No such file or directory",
+          "error": "invalid type argument of unary '*' (have 'int')",
           "has_main": true
         },
         {
@@ -345,7 +334,7 @@
         },
         {
           "block": 40,
-          "error": "print: No such file or directory",
+          "error": "request for member 'value_or' in 'e.std::expected<int, int>::error()', which is of non-class type 'int'",
           "has_main": true
         }
       ]
