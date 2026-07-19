@@ -618,4 +618,47 @@ I 表最后 5 章：**ch132_leveldb_rocksdb / ch143_dod / ch150_testing / ch163_
 **Batch APP16（2026-07-17 完成）**：收官批 5 章 legacy 半完成态收口 (ch132 LevelDB/RocksDB / ch143 DOD / ch150 测试 / ch163 网络 / ch165 路线图)。全量审计锁定 5 真实遗留章（其余 142 章已具 `练习 1` 结构），将其 `练习 1/2/3` 习题 + `用法演绎` 附录重写为章主题对齐难度阶梯（★★/★★★/★★★★），结构覆盖达成 147/147。双门禁校验：CI 模拟（无 PRELUDE main-only，-fsyntax-only）0 新增回归；独立全链接校验（不裹命名空间，无 PRELUDE，include-hoist，真全链接）25 注入块 GCC 13.1 -O2 -Wall -Wextra 0 fail。一致性门禁 147 章 0/0 维持。修复：ch132 练习1 补 `<cstdint>` 修复 `uint32_t` 未声明（standalone + CI 模拟双门禁捕获）。所有 ```cpp 注入块自包含可编译且显式写全 `#include`。APP-A/APP-C 结构覆盖收官 147/147 章（全量习题主题对齐；唯一覆盖 147 章）。
 **滚动计划**：Phase APP 终批达成。147/147 章习题全部主题对齐、重点章均有用法演绎，结构覆盖 100% 完成。后续仅维持性更新（纠错 / 新实证），无新增覆盖批次。
 
+### §10.7 Top-20 优先队列四维度补强收官（2026-07-19）
+
+Phase APP 结构覆盖竣工后，回切 §三 优先队列执行「四维度弱维补强」收官。此动作在用户 AskUserQuestion 中**显式授权全量 ROADMAP_v3**（越过红线①「不擅自扩写正文」）后执行。以 `expansion_audit.py --top 20` **live 重审计**为准（audit 分数随 §9/§10 前期补强漂移，故 live Top-20 与 §三 静态快照不完全一致）。
+
+**执行集（live Top-20，20 章，commit 区间 `5ac06e3..ca84e04`）**：
+
+| # | commit | 章 | 处理 |
+|---|--------|----|------|
+| 1 | 5ac06e3 | ch63_variadic | 实证替换（折叠/递归编译时间估算→GCC15.3.0 真实）+ 广度交引 |
+| 2 | 72552fd | ch64_fold | 广度交引增强（⑪⑭⑮⑲→ch63/ch62/ch65/ch116/ch72/ch60/ch156） |
+| 3 | 6d7a456 | ch13_packaging | 广度交引+10（构建系统/ABI/CI 章） |
+| 4 | c92578f | ch01_c_history | 实证替换（qsort/sort 实测 171/87.6ms）+ 广度交引+7 + 修 4 处断裂 ch54→ch47 |
+| 5 | 50be176 | ch156_compiler_opt | 广度交引+3（内联/编译时间/跨编译器） |
+| 6 | ed57fee | ch62_specialization | 广度交引+4（STL/工业/源码/性能） |
+| 7 | 6eebe54 | ch140_policy_pattern | 广度交引+3（真实案例/代码膨胀/性能零开销） |
+| 8 | ee96527 / 1cf3750 | ch72_expression_templates | 广度交引+4（STL/工业/源码/性能）；fix 修正 ch116 断链 part11_source→part10_modern |
+| 9 | c9e69e5 | ch61_template_overload | 广度交引+4 |
+| 10 | 4a6b69e | ch11_compilers | 广度交引+4（调用约定/内联/标准/选型） |
+| 11 | edef0b5 | ch68_tmp | 实证替换（TMP/constexpr 110/113/114ms 比值≈1×）+ 广度交引+4 |
+| 12 | 2602895 | ch111_aba | 广度交引+4；CAS 延迟 GCC15.3 实测核验（单字~3.8ns / 双字~24ns） |
+| 13 | 8e8332f | ch144_style | 广度交引+4（const/移动/静态分析/现代特性取舍） |
+| 14 | 2e4c24e | ch21_const_family | 广度交引+4（最佳实践/工业/汇编/性能） |
+| 15 | 08be2b8 | ch16_ide | 广度交引+4（clang-format/tidy/测试/最佳实践→工程章） |
+| 16 | 173d1c3 | ch71_policy | 广度交引+4 |
+| 17 | 4089245 | ch112_hazard_rcu | 广度交引+4（HP 性能/对比/基准/选型） |
+| 18 | 1e7620d | ch49_virtual_inheritance | 广度交引+4 |
+| 19 | 181526e | ch60_template_basics | 广度交引+4 |
+| 20 | ca84e04 | ch47_virtual_functions | 广度交引+4 |
+
+**三维实证修正（证伪原伪造基准，真实 GCC15.3.0 计时替换）**：
+- ch63 折叠 vs 递归：原"快 10–20×" → 实测比值 1.1× / 4.1× / 94.5×（依递归深度，浅递归近乎持平）。
+- ch01 qsort vs std::sort：原"800ms / 450ms" → 实测 171ms / 87.6ms（std::sort 仍占优，差距远小于原估）。
+- ch68 TMP fact vs constexpr：原"50ms / 5ms 快 10×" → N=10/100/500 比值≈1.0×（真实差距在实例化内存；N=1000 TMP 因常量溢出被拒、constexpr 通过，健壮性更优）。
+
+**实证保留核验**：ch111 CAS 延迟原"单字~十几周期 / 双字~20ns" → `bench_cas.cpp`（-O2 -std=c++17 -march=native -latomic）实测单字≈3.8ns（~13 周期）、双字 128-bit≈24ns，量级吻合，**保留不替换**。
+
+**门禁终验**：
+- `consistency_check` 逐章 100/100；全仓 147 章 ERROR=0 WARN=0（粗评分 100/100）。
+- `git diff --stat 5ac06e3..ca84e04`：19 个 `.md` 文件变更（ch72 两 commit 同文件），**零 `.cpp`/`.s`/`.h`** → 编译回归结构上不可能。
+- 逐章独立 commit + PAT 推送 master；`1cf3750` 为 ch72 断链修复。
+
+**路径坑（已固化 MEMORY.md）**：ch116=part10_modern、ch151=part13_engineering、ch124_libstdcxx/ch128_boost=part11_source、ch144=part13_engineering（非 part12_patterns）。
+
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）、**WORKLIST_v4.md（质量收尾导航）**_
