@@ -215,6 +215,44 @@ def print_global(stats: dict[str, ChapterStats]):
     print()
 
 
+def report_completion(stats: dict[str, ChapterStats]):
+    """绝对阈值完成度报告（不依赖 max 归一化）。
+
+    归一化评分只能排序"相对最弱"，无法判断"是否已达标"。本函数用
+    绝对阈值给出四维度"已达标章数 / 147"，使 ROADMAP_v3 的真实剩余
+    缺口（样例浅块、深度估算用语）可见、可度量、可驱动。
+
+    阈值（可调，基于全书分布经验值）：
+      广度:  xref_count >= 12                —— 已有顶部+底部交叉引用簇
+      深度:  assembly_mentions >= 2 且 tilde_claims <= 3  —— 有底层分析且少伪造估算
+      样例:  shallow_pct <= 0.30 且 self_pct >= 0.80  —— 少浅块且高自含
+      经验:  industry_refs >= 3 且 pitfall_mentions >= 4  —— 有工业引用且点出陷阱
+    """
+    BREADTH_OK = 12
+    DEPTH_ASM_OK = 2
+    DEPTH_TILDE_OK = 3
+    EX_SHALLOW_OK = 0.30
+    EX_SELF_OK = 0.80
+    EXP_IND_OK = 3
+    EXP_PIT_OK = 4
+
+    n = len(stats)
+    c_breadth = sum(1 for cs in stats.values() if cs.xref_count >= BREADTH_OK)
+    c_depth = sum(1 for cs in stats.values()
+                  if cs.assembly_mentions >= DEPTH_ASM_OK and cs.tilde_claims <= DEPTH_TILDE_OK)
+    c_example = sum(1 for cs in stats.values()
+                    if cs.shallow_pct <= EX_SHALLOW_OK and cs.self_pct >= EX_SELF_OK)
+    c_exp = sum(1 for cs in stats.values()
+                if cs.industry_refs >= EXP_IND_OK and cs.pitfall_mentions >= EXP_PIT_OK)
+
+    print(f"── 四维度绝对完成度（阈值法，n={n}）──")
+    print(f"  广度(交引≥{BREADTH_OK}):        {c_breadth:>3}/{n}  ({100*c_breadth//n:>3}%)")
+    print(f"  深度(汇编≥{DEPTH_ASM_OK} 且 估算≤{DEPTH_TILDE_OK}): {c_depth:>3}/{n}  ({100*c_depth//n:>3}%)")
+    print(f"  样例(浅块≤{int(EX_SHALLOW_OK*100)}% 且 自含≥{int(EX_SELF_OK*100)}%): {c_example:>3}/{n}  ({100*c_example//n:>3}%)")
+    print(f"  经验(工业≥{EXP_IND_OK} 且 陷阱≥{EXP_PIT_OK}): {c_exp:>3}/{n}  ({100*c_exp//n:>3}%)")
+    print()
+
+
 def print_top(ranked: list[ChapterStats], top_n: int = 20):
     """优先队列"""
     print(f"── 扩写优先队列 (Top {top_n}) ──")
@@ -299,6 +337,7 @@ def main():
 
     print_header()
     print_global(stats)
+    report_completion(stats)
     print_top(ranked, args.top)
     print()
     print("  单章诊断: python3 tools/expansion_audit.py --chapter chXX_xxx")
