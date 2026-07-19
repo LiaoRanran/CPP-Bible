@@ -680,4 +680,27 @@ Phase APP 结构覆盖竣工后，回切 §三 优先队列执行「四维度弱
 
 **收官结论**：ROADMAP_v3 四维度扩写**实质竣工**。广度/深度/经验各 80%（118–119/147）；样例经诚实重标定 58%，残余为刻意教学风格而非质量缺陷。**不再启动 1978 浅块批量改写**。后续仅维持性更新（纠错/新实证）与用户显式指名的逐章样例补全。
 
+### §10.9 维持性质量审计：GCC15.3.0 双线实证复验（2026-07-19）
+
+ROADMAP_v3 收官（§10.8）后，按「后续仅维持性更新（纠错/新实证）」约定，对全书执行两条独立证据链的 GCC15.3.0 全量复验，确认无版本漂移、实证完整、编译诚实。
+
+**A. 汇编实证库复验（工具 `_verify_asm_evidence.py`，mingw1530 gcc 15.3.0）**
+- 72 个实证源 → **69 MATCH / 3 SPECIAL_SKIP**；**0 NO_ARTIFACT / 0 DRIFT / 0 COMPILE_FAIL**。
+- 两项原 `NO_ARTIFACT` 经实证重分类为预期特例（非真缺口）：
+  - `ch08_mdspan_test`：负向证据 —— 实测仍 `fatal error: mdspan: No such file`，书 `ch08_cpp23.md:593` 已引用其错误串。
+  - `ch40_noexcept_nt`：孤儿纯注释文档桩；真实证据单元 `ch40_nt_noexcept` 已 MATCH。
+- 验证器加 `SPECIAL_SKIP_REASONS` 白名单；commit `db2acfb`。
+
+**B. 全书编译门禁审计（工具 `compile_all.py` + `compile_gate.py`，mingw1530 gcc 15.3.0）**
+- 范围：147 章 / **3720 个含 `int main` 块**，`-std=c++23 -O0 -fsyntax-only`，`main-only`。
+- 结果：**65 失败块 = 65 条显式豁免 1:1 精确匹配**；**新增回归 0**、清单冗余 0、`partial=False`。
+- 与 2026-07-18 旧基线（147 章 / 3720 块 / 65 失败）**完全一致**，教科书级证明无编译器演进 bit-rot。
+- 交付物 `tools/COMPILE_HEALTH_REPORT.md`；commit `83af62d`。
+
+**C. 旧残留清理（长任务收尾，进行中）**
+- 跟踪文件 `tools/compile_report.json` 此前留存 mingw1310（gcc 13.1.0）旧审计（3560 块 / 66 失败），属误导残留。
+- 已用 mingw1530 gcc15.3.0 全量重跑覆盖（`compile_all.py --main-only --gcc <mingw1530> --json tools/compile_report.json`）；因后台并发出现两个写入进程竞写同一文件，已终止竞写、备份污染文件（`_compile_report_RACED_BACKUP.json`）、启动单一干净重跑（task `vUsJYP`），完成后归一 LF 并跑 `compile_gate.py` 确认 0 回归，再与本节同批提交。
+
+**结论**：本书在 GCC 15.3.0 工具链下**实证完整、编译诚实、无版本漂移**；A/B 两条独立证据链相互印证。
+
 _配套 ROADMAP_v2.md（竣工前）、HANDOVER.md（快照）、TASKS.md（看板）、**WORKLIST_v4.md（质量收尾导航）**_
