@@ -128,6 +128,8 @@ classDiagram
 g++ -std=c++23 -O2 -S -masm=intel _asm_vcall.cpp -o _asm_vcall.asm
 ```
 
+> 真实工件（GCC15.3.0 `-S` 输出，vcall 符号源，围栏⑩标号对照）：_asm_demo/ch47_vcall.s
+
 【真实汇编：虚调用 vs 非虚调用】
 
 ```asm
