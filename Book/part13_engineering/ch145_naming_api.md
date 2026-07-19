@@ -1058,3 +1058,37 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+### 补例：命名约定的自验证
+
+下面一段自包含程序演示本章核心命名规则：布尔谓词用 `Is`/`Has` 前缀、获取器用 `GetX`、可失败调用用 `[[nodiscard]]`、修改器 `SetX` 标脏。用 `assert` 在运行期自检命名契约：
+
+```cpp
+#include <string>
+#include <cassert>
+
+class Buffer {
+    std::string name_;
+    bool dirty_ = false;
+public:
+    // 命名约定：布尔谓词用 Is/Has 前缀；获取器 GetX；可失败调用 [[nodiscard]]
+    [[nodiscard]] bool IsDirty() const { return dirty_; }
+    [[nodiscard]] bool HasName() const { return !name_.empty(); }
+    void MarkClean() { dirty_ = false; }
+    const std::string& GetName() const { return name_; }
+    void SetName(std::string n) { name_ = std::move(n); dirty_ = true; }
+};
+
+int main() {
+    Buffer b;
+    assert(!b.IsDirty());
+    b.SetName("log");
+    assert(b.IsDirty());
+    assert(b.HasName());
+    b.MarkClean();
+    assert(!b.IsDirty());
+}
+```
+
+编译验证：`g++ -std=c++23 -O2 -Wall -Wextra` 零警告通过；`[[nodiscard]]` 让调用方忽略返回值（如漏写 `if (b.IsDirty())`）在 `-Wall` 下被诊断，正是命名约定要兜住的误用面。
+
