@@ -874,7 +874,7 @@ _Z13small_counteri:
         ...
         mov     ecx, 40             ; 帧请求大小 = 40 字节（GCC 15.3.0；GCC 13.1 为 48–56B）
         call    malloc              ; operator new 被内联为 malloc（无额外开销）
-        lea     rdx, _Z13small_counterP24_Z13small_counteri.Frame.destroy[rip]
+        lea     rdx, _Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.destroy[rip]
         movq    xmm0, QWORD PTR .LC5[rip]
         movq    xmm1, rdx
         punpcklqdq xmm0, xmm1       ; 把 actor/destroy 两个函数指针打包进 xmm0

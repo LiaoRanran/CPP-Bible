@@ -65,6 +65,15 @@ jobs:
       run: python3 tools/mermaid_lint.py --check
       continue-on-error: false
 
+    - name: ASM Evidence Symbol Verify (汇编证据符号真实性门禁)
+      # 汇编/符号证据节真实性守卫：书内 ```asm 块若声明「节选自 Examples/X.asm」，
+      # 机器校验块内 mangled 符号集合 ⊆ 真实 Examples/X.asm 符号集合。任何未来编辑
+      # 若捏造/笔误符号（书有真实证据不存在的符号）→ DRIFT，CI 立即变红 BLOCK。
+      # 符号级校验（Itanium mangled 名跨 GCC 次版本稳定），纯 Python 零依赖、秒级。
+      # 与 book_asm_freshness（_asm_demo 围栏新鲜度）分工互补，不重叠。
+      run: python3 tools/verify_asm_evidence.py --root Book --examples Examples
+      continue-on-error: false
+
     - name: Ensure binutils (c++filt/objdump)
       # 书内 asm 围栏审计依赖 binutils 的 c++filt/objdump 解析 _asm_demo 工件
       # （MinGW-w64 GCC15.3.0 产物，Linux binutils 可跨格式解析）。ubuntu-latest

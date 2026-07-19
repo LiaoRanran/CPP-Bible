@@ -1,24 +1,29 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-verify_asm_evidence.py — 汇编证据准确性守卫
+verify_asm_evidence.py — 汇编证据「符号真实性」守卫
 
-《现代 C++ 终极圣经》的 ⑩ 类「汇编 / 符号证据」节承诺其 asm 块来自
-"真实 MinGW GCC 13.1.0" 编译产物（Examples/*.asm）。本工具机器校验：
+《现代 C++ 终极圣经》的汇编/符号证据节承诺其 asm 块来自真实 GCC 编译产物
+（Examples/*.asm）。本工具机器校验：
   书内 asm 块引用的 mangled 符号集合 是否 ⊆ 真实 Examples/*.asm 的符号集合。
 
 - 书内符号全部能在真实产物中找到  → ACCURATE（书为节选/缩写，符合预期）
 - 书内有真实产物里没有的符号      → DRIFT（书捏造/笔误，HIGH，必须修）
 - 书内块无 mangled 符号           → EMPTY（纯注释节选，LOW，仅记录）
+- 引用文件在磁盘缺失              → MISSING_FILE（证据丢失，仅计数告警）
 - 未引用具体文件                  → UNANCHORED（无法机校，仅计数）
 
-只读取 Book/ 与 Examples/，只写 build/。不修改源文件。
-"""
-import re, json, pathlib, sys
+校验是「符号级」的：Itanium mangled 名在不同 GCC 次版本间稳定，
+故本工具对证据库的 GCC 版本不敏感。证据库 Examples/*.asm 目前为
+13.1.0 与 15.3.0 混合（以 13.1.0 为主，少量 15.3.0），版本一致性由
+独立审计负责，不在本工具范围。
 
-ROOT = pathlib.Path("Book")
-EX = pathlib.Path("Examples")
-OUT = pathlib.Path("build/asm_evidence_report.json")
+只读取 Book/ 与 Examples/，只写 build/。不修改源文件。
+退出码：存在 DRIFT → 1（CI 应阻断）；否则 → 0。
+
+CI 用法：python3 tools/verify_asm_evidence.py --root Book --examples Examples
+"""
+import re, json, pathlib, sys, argparse
 
 # Itanium mangled name: _Z 开头，后接编码字符；放宽以覆盖 _ZN/_ZSt/_ZTV 等
 MANGLE = re.compile(r"_Z[0-9A-Za-z_]{3,}")
@@ -45,6 +50,17 @@ def find_ref(block: str, before: str):
 
 
 def main():
+    ap = argparse.ArgumentParser(description="汇编证据符号真实性守卫")
+    ap.add_argument("--root", default="Book", help="Book 根目录（含 *.md）")
+    ap.add_argument("--examples", default="Examples", help="真实 .asm 工件目录")
+    ap.add_argument("--out", default="build/asm_evidence_report.json",
+                    help="JSON 报告输出路径")
+    args = ap.parse_args()
+
+    ROOT = pathlib.Path(args.root)
+    EX = pathlib.Path(args.examples)
+    OUT = pathlib.Path(args.out)
+
     # Windows 控制台（GBK）无法编码 emoji/中文，重导向为 utf-8 容错，避免本地验证崩溃
     # （CI 为 UTF-8 本就无碍；errors='replace' 保证任何环境都能跑完并 exit 0/1）
     try:
@@ -55,11 +71,10 @@ def main():
 
     records = []
     summary = {"accurate": 0, "drift": 0, "empty": 0, "unanchored": 0,
-               "chapters": 0, "blocks": 0}
+               "missing_file": 0, "chapters": 0, "blocks": 0}
     for f in sorted(ROOT.rglob("*.md")):
         t = f.read_text(encoding="utf-8", errors="ignore")
         # 逐块定位，并取块前 500 字符用于找引用
-        pos = 0
         for m in ASM_BLOCK.finditer(t):
             block = m.group(1)
             before = t[max(0, m.start() - 500):m.start()]
@@ -73,6 +88,7 @@ def main():
                 real = (EX / ref)
                 if not real.exists():
                     rec["status"] = "MISSING_FILE"
+                    summary["missing_file"] += 1
                 else:
                     real_syms = syms(real.read_text(encoding="utf-8", errors="ignore"))
                     rec["real_syms"] = sorted(real_syms)
@@ -105,6 +121,7 @@ def main():
     print(f"  ✅ ACCURATE (书⊆真实): {s['accurate']}")
     print(f"  ⚠️  DRIFT (书有捏造符号): {s['drift']}")
     print(f"  🟡 EMPTY (书块无符号):  {s['empty']}")
+    print(f"  🔴 MISSING_FILE (引用文件缺失): {s['missing_file']}")
     print(f"  ⚪ UNANCHORED (未引用文件): {s['unanchored']}")
     print(f"\n明细 → {OUT}")
     # 列出所有 DRIFT
