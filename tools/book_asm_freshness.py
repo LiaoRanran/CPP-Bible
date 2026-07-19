@@ -1,25 +1,55 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-书内 asm 围栏 vs _asm_demo 工件 符号一致性审计（修正版 v2）
+书内 asm 围栏 vs _asm_demo 工件 符号一致性审计（CI 可移植版 v3）
 
-修正 v1 的三类噪声：
-  1. 两侧统一 c++filt demangle（mangled↔demangled 对齐）。
-  2. 过滤 libstdc++/CRT/编译器内部符号（只保留"用户函数体"符号，
-     与阶段3 asm-evidence-spotcheck 的用户函数体比对口径一致）。
-  3. 只比对"用户函数定义标号"（书内 demo 函数必须仍定义于工件）；
-     忽略书内策展伪标号(found/done/bucket_chain...)与库调用。
+设计目标：
+  - 与阶段3 asm-evidence-spotcheck 的「用户函数体」比对口径一致。
+  - 跨平台可移植：CI 跑在 Ubuntu (Linux gcc-15, binutils 预装)，
+    本地跑在 Windows (MinGW-w64 gcc-15.3.0)。c++filt / objdump 路径
+    通过 shutil.which 自动探测，绝不硬编码 Windows 绝对路径。
+  - 若 c++filt 缺失，demangle 退化为恒等，并令 objdump 不带 -C，
+    保证「围栏侧」与「工件侧」在原始 mangled 名层面一致比对
+    （is_user_symbol 对 mangled/ demangled 两种形态都兼容过滤）。
 
 结论语义：若书内展示的某个用户 demo 函数，在当前 gcc15.3.0 工件中
 已无对应定义 -> 书内汇编过期（真漂移）。其余均判为策展/库噪声，不报错。
 """
-import os, re, json, subprocess
+import os, re, sys, json, shutil, subprocess
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # 仓库根（tools/ 的父目录）
 BOOK = os.path.join(ROOT, "Book")
 ASMDEMO = os.path.join(ROOT, "_asm_demo")
-OBJDUMP = r"C:/Qt/Tools/mingw1530_64/bin/objdump.exe"
-FILT = r"C:/Qt/Tools/mingw1530_64/bin/c++filt.exe"
+
+# ---- 可移植工具探测：c++filt / objdump ----
+def _find_first(candidates):
+    """依次尝试 which；再回退到显式绝对路径（Windows MinGW 安装位）。"""
+    for c in candidates:
+        p = shutil.which(c)
+        if p:
+            return p
+    for c in candidates:
+        # 显式绝对路径（仅当看起来像路径时）
+        if (len(c) > 1 and c[1] == ":") or c.startswith("/"):
+            if os.path.isfile(c):
+                return c
+    return None
+
+FILT = _find_first([
+    r"C:/Qt/Tools/mingw1530_64/bin/c++filt.exe",  # 与书内工件同源 GCC15.3.0，优先
+    "c++filt",
+    "x86_64-w64-mingw32-c++filt",
+    r"C:/Qt/Tools/mingw1310_64/bin/c++filt.exe",
+    "c++filt.exe",
+])
+OBJDUMP = _find_first([
+    r"C:/Qt/Tools/mingw1530_64/bin/objdump.exe",  # 与书内工件同源 GCC15.3.0，优先
+    "objdump",
+    "x86_64-linux-gnu-objdump",
+    r"C:/Qt/Tools/mingw1310_64/bin/objdump.exe",
+    "objdump.exe",
+])
+HAVE_FILT = FILT is not None
 
 DEF_RE = re.compile(r"^\s*([A-Za-z_][\w.@$]*):")          # 标号定义(符号不含冒号)
 CALL_RE = re.compile(r"\b(?:call|jmp)\s+([A-Za-z_][\w.@$]*)")
@@ -42,6 +72,9 @@ LIB_NAMES = {
 }
 
 def demangle(text):
+    """c++filt 可用则 demangle；否则恒等（与工件侧原始 mangled 名对齐）。"""
+    if not HAVE_FILT or not text:
+        return text
     try:
         p = subprocess.run([FILT], input=text, capture_output=True,
                             text=True, timeout=30)
@@ -50,7 +83,8 @@ def demangle(text):
         return text
 
 def is_user_symbol(name):
-    """用户函数判定：非库/CRT/内部，且非伪标号关键词。"""
+    """用户函数判定：非库/CRT/内部，且非伪标号关键词。
+    同时兼容 demangled（std::...）与原始 mangled（_ZSt/_ZNSt...）形态。"""
     n = name.strip()
     if not n or len(n) < 2:
         return False
@@ -75,11 +109,18 @@ def artifact_user_defs(path):
     if ext == ".s":
         raw = open(path, "r", encoding="utf-8", errors="replace").read()
     elif ext == ".o":
+        if OBJDUMP is None:
+            return set()  # 无 objdump 且无 .s 兜底时，该工件不参与比对
+        cmd = [OBJDUMP, "-d", "-M", "intel"]
+        if HAVE_FILT:
+            cmd.append("-C")  # 有 c++filt 才让 objdump 一并 demangle，保持双侧一致
+        cmd.append(path)
         try:
-            raw = subprocess.run([OBJDUMP, "-d", "-M", "intel", "-C", path],
-                                 capture_output=True, text=True, timeout=60).stdout
+            raw = subprocess.run(cmd, capture_output=True, text=True, timeout=60).stdout
         except Exception:
             raw = ""
+    else:  # .cpp：源文件无 asm 标号，仅占位（不影响比对）
+        raw = open(path, "r", encoding="utf-8", errors="replace").read()
     dm = demangle(raw)
     defs = set()
     for line in dm.splitlines():
@@ -99,6 +140,7 @@ def fence_user_defs(fence_text):
     return defs
 
 def main():
+    print(f"[asm-freshness] c++filt={FILT or 'MISSING'} objdump={OBJDUMP or 'MISSING'}")
     stale = []
     checked = 0
     for dp, _, fns in os.walk(BOOK):
@@ -114,13 +156,13 @@ def main():
             art_paths = []
             seen = set()
             for a in arts:
-                base = os.path.join(ASMDEMO, a)
-                root, ext = os.path.splitext(base)
-                # 优先编译产物 .o / .s（含真实标号），.cpp 仅兜底
-                if ext in (".o", ".s"):
-                    cands = [base]
-                else:  # .cpp
-                    cands = [root + ".o", root + ".s", base]
+                root = os.path.join(ASMDEMO, a)
+                # 优先级: .o (编译产物, 真实标号) > .s (文本 asm) > .cpp (兜底)
+                # 无 objdump 时跳过 .o，直接取 .s
+                if OBJDUMP:
+                    cands = [root + ".o", root + ".s", root + ".cpp"]
+                else:
+                    cands = [root + ".s", root + ".cpp"]
                 for c in cands:
                     if os.path.exists(c) and c not in seen:
                         art_paths.append(c)
@@ -149,7 +191,7 @@ def main():
         json.dump({"checked": checked, "stale": 0, "detail": []},
                   open(os.path.join(ROOT, "_book_asm_freshness.json"), "w", encoding="utf-8"),
                   ensure_ascii=False, indent=2)
-        return
+        return 0
     print(f"审计章数: {checked}")
     total = 0
     for s in stale:
@@ -159,6 +201,7 @@ def main():
     json.dump({"checked": checked, "stale": len(stale), "missing": total, "detail": stale},
               open(os.path.join(ROOT, "_book_asm_freshness.json"), "w", encoding="utf-8"),
               ensure_ascii=False, indent=2)
+    return 1
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -56,6 +56,20 @@ jobs:
       run: python3 tools/gen_indexes.py --check
       continue-on-error: false
 
+    - name: Ensure binutils (c++filt/objdump)
+      # 书内 asm 围栏审计依赖 binutils 的 c++filt/objdump 解析 _asm_demo 工件
+      # （MinGW-w64 GCC15.3.0 产物，Linux binutils 可跨格式解析）。ubuntu-latest
+      # 默认预装 binutils；此处仅作防御性兜底。
+      run: command -v c++filt && command -v objdump || sudo apt-get install -y binutils
+
+    - name: Book ASM Freshness (书内 asm 围栏 vs 工件符号一致性)
+      # 与 consistency/compile 门禁并列：验证书内 asm 围栏展示的「用户 demo 函数」
+      # 仍定义于对应 GCC15.3.0 工件（_asm_demo/）。若某 demo 函数已不在工件定义中
+      # （版本漂移 / 复制错贴），判为真过期并 BLOCK 本 job，阻断发布。
+      # 工件为符号层面比对，不重编译，纯 Python + binutils，秒级完成。
+      run: python3 tools/book_asm_freshness.py
+      continue-on-error: false
+
   compile:
     needs: quality
     runs-on: ubuntu-latest

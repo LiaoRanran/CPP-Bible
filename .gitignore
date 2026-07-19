@@ -39,6 +39,7 @@ book.toml       # mdBook 配置；本项目交付物为 MkDocs（CI 用 mkdocs b
 __pycache__/
 *.pyc
 .venv/
+_book_asm_freshness.json
 
 # 编辑器 / 系统
 .DS_Store
