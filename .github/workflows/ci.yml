@@ -56,6 +56,15 @@ jobs:
       run: python3 tools/gen_indexes.py --check
       continue-on-error: false
 
+    - name: Mermaid Lint (图表语法门禁)
+      # 预防性门禁：书内 ```mermaid 围栏（flowchart/classDiagram/sequenceDiagram/
+      # stateDiagram/timeline 共 88 块）逐块做结构化语法校验，纯 Python 零依赖、
+      # 秒级。任何未来编辑若引入未闭合围栏、非法箭头、悬空边、缺操作数关系、
+      # 非法时序消息等语法腐坏，CI 立即变红，阻断发布前发现（避免 pdf/epub 的
+      # mermaid-filter 渲染阶段才 FATAL）。不修改图表语义，仅守护语法健康。
+      run: python3 tools/mermaid_lint.py --check
+      continue-on-error: false
+
     - name: Ensure binutils (c++filt/objdump)
       # 书内 asm 围栏审计依赖 binutils 的 c++filt/objdump 解析 _asm_demo 工件
       # （MinGW-w64 GCC15.3.0 产物，Linux binutils 可跨格式解析）。ubuntu-latest
