@@ -168,12 +168,18 @@ g++ -std=c++23 -O2 -S -masm=intel _asm_ctor_vptr.cpp -o _asm_ctor_vptr.asm
 
 ## ⑪ STL 联系
 
+⟶ Book/part05_oo/ch45_oop_object_model.md（对象模型基础）—— vtable 指针即虚函数的对象模型落点
+⟶ Book/part07_stl/ch76_stl_arch.md（STL 架构与迭代器概念）—— STL 抽象基类大量用虚接口
+
 - `std::function` 内部用虚表/类型擦除实现调用（`ch26`），与虚函数机制同源但运行时更重。
 - `std::shared_ptr` 控制块、`std::variant` 的 `visit` 分派（ch25）用函数指针表替代虚表，避免虚调用但仍是间接分派。
 - 标准库容器（vector/map…）的析构依赖基类 `std::allocator_traits` 与虚析构无关，但 **`std::exception` 及派生异常类必须用虚析构**（否则 `catch` 捕获基类指针 delete 时泄漏——见 ⑬）。
 - `std::ios_base` 的格式化状态、流缓冲区 `std::streambuf` 均依赖虚函数实现可替换后端。
 
 ## ⑫ 工业案例
+
+⟶ Book/part05_oo/ch51_crtp.md（CRTP 与静态多态）—— 用静态多态替代虚接口规避虚调用开销
+⟶ Book/part05_oo/ch50_multiple_inheritance.md（多重继承与对象模型）—— 插件后端常用多重接口组合
 
 ### 工业案例 47-A：插件式渲染后端（虚接口 + RAII）
 
@@ -382,6 +388,9 @@ void demo_r() { B* b = new D; delete b; }  // 正确：先 ~D 再 ~B
 
 ## ⑬ 源码分析
 
+⟶ Book/part05_oo/ch48_rtti.md（RTTI 与 type_info）—— 虚表负偏移区存放 type_info 与 top_offset
+⟶ Book/part05_oo/ch45_oop_object_model.md（对象模型基础）—— vtable 在对象布局中的相对位置
+
 #### 源码剖析 1：虚析构与 vtable 生成 @ Itanium C++ ABI（规范层）
 
 > 文件：`https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable`（规范）
@@ -482,6 +491,9 @@ extern "C" void __cxa_pure_virtual() { std::terminate(); }
 - 避免虚函数默认参数。
 
 ## ⑲ 性能分析
+
+⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— 去虚化(devirtualization)依赖别名分析与 PGO
+⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 间接跳转对分支预测/I-cache 的影响
 
 【microbenchmark 设计（Google Benchmark，可复现）】
 
