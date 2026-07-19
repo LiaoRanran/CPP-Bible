@@ -1012,3 +1012,24 @@ int main(){
 纯接口用非虚 MI（零额外开销）。
 
 **工程含义**：virtual 继承不是默认选项——它引入运行期偏移解析成本；仅在"共享状态必须唯一"时使用。
+
+## 补例：自包含可编译验证（virtual 继承消解菱形歧义）
+
+下例验证「virtual 继承让共享基类唯一」：
+
+```cpp
+#include <iostream>
+
+struct Base { int id; };
+struct Left  : virtual Base {};   // 虚继承：Base 成为虚基类
+struct Right : virtual Base {};
+struct Diamond : Left, Right {};  // 整条继承链只有一份 Base
+
+int main(){
+    Diamond d;
+    d.id = 7;                     // 无歧义：virtual 使 Base 唯一
+    std::cout << d.id << "\n";   // 7
+}
+```
+
+若 `Left`/`Right` 用非虚 `: Base`，`Diamond` 会含两份 `Base`，`d.id` 因歧义无法编译——这正是正文「步骤 4」选择 virtual 的触发条件。代价：访问 `id` 经 vbtable 间接（见「[实现]」汇编），比非虚 MI 多 1~2 次内存间接。

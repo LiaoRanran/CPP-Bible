@@ -832,3 +832,24 @@ int main() { int n = 7; std::cout << deref(&n) << "\n"; }
 ```
 
 **结论**：类型相关分支优先 `if constexpr`（C++17+）；SFINAE 仅在与老标准兼容或需要"软失败"时保留。
+
+## 补例：自包含可编译验证（constexpr 编译期求值）
+
+下例用 `constexpr` 函数把计算搬到的编译期，并用 `static_assert` 固化结果：
+
+```cpp
+#include <iostream>
+
+constexpr int factorial(int n) {
+    int r = 1;
+    for (int i = 2; i <= n; ++i) r *= i;
+    return r;
+}
+
+int main(){
+    static_assert(factorial(5) == 120);   // 编译期求值，不占运行时
+    std::cout << factorial(5) << "\n";   // 120
+}
+```
+
+`factorial(5)` 在编译期就算出 120（循环体在 `constexpr` 上下文中合法），`static_assert` 可在常量语境使用其结果；若传入运行时变量则退化为运行时计算。这是元编程从 TMP 向 `constexpr` 迁移的典型获益（见正文「结论」）。

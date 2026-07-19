@@ -819,3 +819,24 @@ C++ 要求**同类型的两个不同对象有不同地址**。若 `NoEBO::e` 占
 - EBO 是 `std::allocator`、`std::default_delete`、`std::tuple`、`std::function` 等库设施能"零成本携带无状态策略"的底层机制——空分配器/空删除器不占对象一个字节。
 - C++20 前，想让**成员**（而非基类）享受零开销只能用继承（`private Empty`）；C++20 的 `[[no_unique_address]]` 让组合也能做到，代码更清晰。
 - 判断一个库类型是否用了 EBO，最直接的方法就是本附录的手法：`static_assert(sizeof(...))` + 看成员访问偏移。
+
+## 补例：自包含可编译验证（EBO 零开销）
+
+下例用 `static_assert` 把正文结论变成编译期可验证事实：
+
+```cpp
+#include <cstddef>
+#include <iostream>
+
+struct Empty {};                  // 空类：理论 0 字节，但至少占 1 字节
+struct A : Empty { int x; };     // A 享受 EBO：空基类不占空间
+struct B { Empty e; int x; };    // B 不享受：空成员至少 1 字节 + 对齐 -> 8
+
+int main(){
+    static_assert(sizeof(A) == sizeof(int), "EBO: 空基类子对象零开销");
+    static_assert(sizeof(B) == 2 * sizeof(int), "空成员至少 1 字节并参与对齐");
+    std::cout << sizeof(A) << " " << sizeof(B) << "\n";  // 4 8
+}
+```
+
+`sizeof(A)==4` 证明空基类 `Empty` 被完全吸收；`sizeof(B)==8` 证明作为成员的 `Empty` 至少占 1 字节并触发 4 字节对齐填充。这正是标准库 `std::allocator`/`std::default_delete` 能零成本携带无状态策略的底层原因。

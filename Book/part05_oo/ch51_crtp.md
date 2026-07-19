@@ -849,3 +849,34 @@ Boost.Operators 用 CRTP 自动生成 `==`/`<` 全套。它们选 CRTP 就是为
 需要运行时插件/异构容器 → 虚函数（灵活、失内联）。两者不是替代而是互补。
 
 **工程含义**：多态的"代价"并非必然——CRTP 证明在编译期可知类型时，动态分发的开销可被完全消除。
+
+## 补例：自包含可编译验证（CRTP 静态分发）
+
+下面一段完整程序直接验证「CRTP 在编译期决议、无 vtable 间接」：
+
+```cpp
+#include <iostream>
+
+// 基类模板以派生类为模板参数；编译期向下转型回调派生实现
+template <class Derived>
+struct Shape {
+    void draw() const {
+        static_cast<const Derived&>(*this).draw_impl();  // 编译期决议，零虚调用
+    }
+};
+
+struct Circle : Shape<Circle> {
+    void draw_impl() const { std::cout << "Circle\n"; }
+};
+struct Square : Shape<Square> {
+    void draw_impl() const { std::cout << "Square\n"; }
+};
+
+int main(){
+    Circle c; Square s;
+    c.draw();   // 调用 Circle::draw_impl，内联展开
+    s.draw();   // 调用 Square::draw_impl，内联展开
+}
+```
+
+`static_cast<const Derived&>` 在编译期确定目标类型，对 `draw_impl` 的调用被直接内联——对比虚函数版本需经 vtable 一次间接跳转。把 `Circle`/`Square` 放进同一容器会报类型不匹配，正是「CRTP 失运行时异构」的代价（见正文步骤 3）。

@@ -749,3 +749,28 @@ int main() {
 
 **结论**：优先用 concept 表达约束——可读性、错误诊断、编译速度都优于等价 SFINAE；SFINAE 仅用于 concept 表达不了的复杂探测。
 
+
+## 补例：自包含可编译验证（自定义 concept 约束）
+
+下例自定义 `Addable` concept，并用 `static_assert` 验证其对类型的满足情况：
+
+```cpp
+#include <concepts>
+#include <type_traits>
+
+// 要求 a+b 的结果类型与 T 自身相同
+template <class T>
+concept Addable = requires(T a, T b) {
+    { a + b } -> std::same_as<T>;
+};
+
+template <Addable T> T twice(T x) { return x + x; }
+
+int main(){
+    static_assert(Addable<int>);                 // int 满足
+    static_assert(!Addable<const char*>);        // 指针相加结果不是同类型 -> 不满足
+    (void)twice(21);
+}
+```
+
+`Addable` 把"可相加且结果同类型"这个约束显式命名；不满足时编译器直接报"约束未满足"，而非 SFINAE 那种一长串候选的晦涩诊断（见正文「对比」）。
