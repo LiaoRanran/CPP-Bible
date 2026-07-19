@@ -76,26 +76,26 @@
     {
       "file": "ch28_lifetime_ub.md",
       "block": 5,
-      "reason": "INTENTIONAL_UB",
-      "note": "教学用故意 UB 块"
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块"
     },
     {
       "file": "ch28_lifetime_ub.md",
       "block": 13,
-      "reason": "INTENTIONAL_UB",
-      "note": "教学用故意 UB 块"
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块"
     },
     {
       "file": "ch28_lifetime_ub.md",
       "block": 17,
-      "reason": "INTENTIONAL_UB",
-      "note": "教学用故意 UB 块"
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块"
     },
     {
       "file": "ch28_lifetime_ub.md",
       "block": 55,
-      "reason": "INTENTIONAL_UB",
-      "note": "教学用故意 UB 块"
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块"
     },
     {
       "file": "ch29_friend.md",

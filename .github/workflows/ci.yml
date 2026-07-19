@@ -115,6 +115,18 @@ jobs:
       continue-on-error: false
       run: python3 tools/compile_gate.py
 
+    - name: Exempt Audit (编译豁免有效性门禁)
+      # 闭合 compile_gate 的死角: compile_gate 只比对"当前失败块 vs 豁免清单",
+      # 从不反查豁免是否仍成立。本步用相同命令 (g++ -std=c++23 -O0 -fsyntax-only)
+      # 重编 65 条豁免, 检测三类翻转:
+      #   DRIFT  = INTENTIONAL_ERROR 块竟能编过 (正文"会报错"已成谎言, 内容漂移) -> 阻断
+      #   MISSING= 章节编辑致 block 号漂移, 豁免指向错块/越界 -> 阻断
+      #   STALE  = 其余 reason 块突然能编过 (豁免失效, 可清理) -> 默认 WARN
+      # 仅编 65 块, 秒级。gcc-15 与基线(mingw/Windows gcc-15.3.0)同 GCC C++ 前端,
+      # 核心语言错误两平台判定一致, 无跨平台误报; POSIX 类平台差异仅映射为 STALE(WARN)。
+      continue-on-error: false
+      run: python3 tools/exempt_audit.py --check
+
   # ---- 发布：静态站点（MkDocs Material）----
   site:
     needs: quality
