@@ -625,7 +625,7 @@ int main() {
 - GCC `cp/semantics.c`：折叠表达式（finish_fold_expr）
 - libstdc++ `bits/utility.h`：integer_sequence + 折叠用法
 - libstdc++ `bits/conjunction.hpp`：conjunction 偏特化短路（语义等价于 && 折叠）
-- 交叉引用占位：part06 ch63（可变参数）、ch65（type traits）
+- ⟶ Book/part06_templates/ch63_variadic.md（可变参数）　⟶ Book/part06_templates/ch65_type_traits.md（type traits）
 
 
 ## 附录 A：WG21 提案 [B: Principle]

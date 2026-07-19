@@ -604,7 +604,7 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 - libstdc++ `bits/tuple`：tuple 递归继承 + 包展开
 - libstdc++ `bits/invoke.h`：std::apply 实现
 - GCC `cp/pt.cc`：包展开（expand_pack）
-- 交叉引用占位：part06 ch64（折叠表达式）、ch51（CRTP，占位）
+- ⟶ Book/part06_templates/ch64_fold.md（折叠表达式）　⟶ Book/part05_oo/ch51_crtp.md（CRTP）
 
 ## 附录 A：底层与原理 [B: Principle / E: Lowlevel]
 
