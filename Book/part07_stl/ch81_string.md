@@ -713,7 +713,7 @@ int main(){std::string s="hello";std::cout<<s<<" ("<<s.capacity()<<" capacity, "
 
 ## 附录 J：GCC 15.3.0 真机汇编实证（ASM-81-sso） [C: Compiler / E: Low-level]
 
-> `[实测]` 编译：`g++ -std=c++26 -O2 ch81_sso_test.cpp -o ch81_sso_test.exe`（链接后 objdump 以显示符号名）+ `objdump -d -M intel -C`。`volatile g_obs` 强制 `std::string` 真实构造。产物 `_asm_demo/ch81_sso_test.{cpp,.s}`（`.o` 提交，`.exe` 仅本地链接验证）。
+> `[实测]` 编译：`g++ -std=c++26 -O2 ch81_sso_test.cpp -o ch81_sso_test.exe`（链接后 objdump 以显示符号名）+ `objdump -d -M intel -C`。`volatile g_obs` 强制 `std::string` 真实构造。产物 `_asm_demo/ch81_sso_test.cpp` 与 `_asm_demo/ch81_sso_test.s`（`.o` 提交，`.exe` 仅本地链接验证）。
 
 ### 测试源码（核心）
 

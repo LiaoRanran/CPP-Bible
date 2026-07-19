@@ -164,14 +164,14 @@ def artifact_user_defs(path):
     return _extract_defs(raw)
 
 def fence_user_defs(fence_text):
-    """书内围栏展示的『用户函数定义标号』（demangled + 滤库/伪标号）。"""
-    dm = demangle(fence_text)
-    defs = set()
-    for line in dm.splitlines():
-        m = DEF_RE.match(line)
-        if m and is_user_symbol(m.group(1)):
-            defs.add(m.group(1))
-    return defs
+    """书内围栏展示的『用户函数定义标号』（demangled + 滤库/伪标号）。
+
+    v4 起与工件侧共用 _extract_defs：既提取编译器文本汇编标号(_Z...: / foo():),
+    也提取 objdump 反汇编函数标号(<make_short()>:)。修复前本函数仅用 DEF_RE，
+    读不了 demangled 的 <foo()>: 形态，导致全书约半数 asm 围栏被静默跳过、
+    fence 侧近乎空转（覆盖缺口）。对称化后双侧口径一致，比对才真正生效。
+    """
+    return _extract_defs(fence_text)
 
 def main():
     print(f"[asm-freshness] c++filt={FILT or 'MISSING'} objdump={OBJDUMP or 'MISSING'}")
