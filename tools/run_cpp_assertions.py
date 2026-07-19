@@ -40,12 +40,22 @@ B) 运行期（assert 完整程序）：块含 `int main` 且含 `assert(`。作
   python tools/run_cpp_assertions.py                 # 全库并行扫描
   python tools/run_cpp_assertions.py --only static    # 仅编译期
   python tools/run_cpp_assertions.py --only runtime    # 仅运行期
+  python tools/run_cpp_assertions.py --gcc /usr/bin/g++-15   # 注入编译器 (CI/非 Windows)
   python tools/run_cpp_assertions.py Book/.../chXX.md  # 单章
+
+CI 适配说明
+==========
+默认 GPP 硬编码为 Windows mingw1530 路径 (chapter_compile_check.GPP)。在
+非 Windows 的 CI (ubuntu-latest) 上必须 --gcc 注入, 否则编译器找不到。
+运行期块若因环境不支持指令集 (如 CI runner 无 AVX512, 块被 -mavx512f 编译后
+执行触发 SIGILL) 而崩溃, 归 WARN 而非 FAIL —— 属环境限制, 不应阻断门禁。
 """
 from __future__ import annotations
 import re
 import sys
+import os
 import glob
+import signal
 import subprocess
 import tempfile
 import pathlib
@@ -67,7 +77,7 @@ ASSERT_RE = re.compile(r"\bassert\s*\(")
 ISOLATION_RE = re.compile(
     r"(does not name a type|was not declared|template argument \d+ is invalid)")
 # 已知教学反例（作者故意写失败断言来演示语义）：白名单 (stem, 块序号)
-EXPECTED_FAIL = {("ch52_ebo", 26), ("ch64_fold", 40)}
+EXPECTED_FAIL = {("ch52_ebo", 26), ("ch64_fold", 40), ("ch46_encapsulation_inheritance", 15)}
 # 行内标记识别：块内 static_assert 注释/上下文含这些词 → 教学反例
 DEMO_MARK_RE = re.compile(r"(❌|EXPECTED_FAIL|故意失败|编译期即 false|演示失败)")
 
@@ -175,11 +185,26 @@ def check_runtime(code: str, stem: str, idx: int, tmpdir: pathlib.Path) -> tuple
                 break
         return "WARN", first_err or "compile-error"
     try:
-        subprocess.run([str(exe)], capture_output=True, text=True, timeout=RUN_TIMEOUT)
+        r = subprocess.run([str(exe)], capture_output=True, text=True, timeout=RUN_TIMEOUT)
     except subprocess.TimeoutExpired:
         return "WARN", f"timeout>{RUN_TIMEOUT}s (疑似阻塞/死循环, 未验证)"
-    except subprocess.CalledProcessError as e:
-        return "FAIL", f"exit={e.returncode}"
+    # 关键: 必须检查进程返回码! subprocess.run 默认不抛异常, 断言 abort
+    # (rc!=0) 会被静默当成 PASS —— 此前版本漏检查 returncode, 导致运行期
+    # 声明验证形同虚设 (无论 assert 是否成立都报 PASS)。
+    # SIGILL (非法指令) 属运行环境限制而非书声明错误:
+    #   POSIX   : 被信号 4 杀死 -> returncode == -signal.SIGILL == -4
+    #   Windows : 崩溃码 0xC000001D (STATUS_ILLEGAL_INSTRUCTION)
+    # 这两种情况归 WARN, 不阻断门禁。
+    illegal_codes = {-signal.SIGILL}
+    if sys.platform == "win32":
+        illegal_codes.add(0xC000001D)
+    if r.returncode != 0:
+        if r.returncode in illegal_codes or "illegal instruction" in (r.stderr or ""):
+            return "WARN", "sigill (环境不支持指令集, 未验证)"
+        # 故意失败的运行时断言演示 (如 LSP 违反示例) 与 static 同处理: 归 DEMO
+        if (stem, idx) in EXPECTED_FAIL or DEMO_MARK_RE.search(code):
+            return "DEMO", f"exit={r.returncode} (故意失败演示)"
+        return "FAIL", f"exit={r.returncode}"
     return "PASS", ""
 
 
@@ -198,11 +223,21 @@ def check_one(job):
 def main() -> int:
     args = sys.argv[1:]
     only = None
+    gcc = None
     paths: list[str] = []
     if "--only" in args:
         i = args.index("--only")
         only = args[i + 1]
         args = args[:i] + args[i + 2:]
+    if "--gcc" in args:
+        i = args.index("--gcc")
+        gcc = args[i + 1]
+        args = args[:i] + args[i + 2:]
+    # CI 适配: 默认 GPP 硬编码为 Windows mingw1530 路径; 通过 --gcc 注入
+    # CI 编译器 (如 /usr/bin/g++-15), 否则非 Windows 环境全体编译失败。
+    if gcc:
+        global GPP
+        GPP = gcc
     for a in args:
         paths.append(a)
 
@@ -230,7 +265,7 @@ def main() -> int:
             jobs.append((kind, code, f.stem, idx))
 
     stat = {"static": {"PASS": 0, "FAIL": 0, "WARN": 0, "DEMO": 0},
-            "runtime": {"PASS": 0, "FAIL": 0, "WARN": 0}}
+            "runtime": {"PASS": 0, "FAIL": 0, "WARN": 0, "DEMO": 0}}
     fails: list[tuple[str, int, str, str]] = []
     warns: list[tuple[str, int, str, str]] = []
     demos: list[tuple[str, int, str, str]] = []

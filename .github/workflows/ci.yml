@@ -127,6 +127,18 @@ jobs:
       continue-on-error: false
       run: python3 tools/exempt_audit.py --check
 
+    - name: Assertion Claims Verification (书内声明契约门禁)
+      # 把书内 static_assert / assert() 当作单元测试跑, 验证"文档声明为真"。
+      # 修复前版本运行期不检查返回码 (subprocess.run 默认不抛异常), 导致验证
+      # 形同虚设 (无论 assert 是否成立都报 PASS); 现版:
+      #   返回码非零 + 非 SIGILL  -> FAIL (书声明错误, 阻断)
+      #   故意失败演示 (EXPECTED_FAIL 白名单, 如 ch46 LSP 违反示例) -> DEMO (不阻断)
+      #   SIGILL (CI runner 无 AVX512 却编译了 -mavx512f 的 SIMD 块) -> WARN (环境限制)
+      #   隔离伪影 (片段引用前文未定义符号) -> WARN (非独立可编译, 不计入书 bug)
+      # 仅 FAIL 阻断门禁; WARN/DEMO 不阻断。--gcc g++ 用本 job 装的 gcc-15。
+      continue-on-error: false
+      run: python3 tools/run_cpp_assertions.py --gcc g++
+
   # ---- 发布：静态站点（MkDocs Material）----
   site:
     needs: quality
