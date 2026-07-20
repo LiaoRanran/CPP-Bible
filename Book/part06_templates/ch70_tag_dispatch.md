@@ -219,8 +219,10 @@ template <typename T> void work(T v) { work(v, optimized{}); }
 // 致 sizeof 不恒为 1），其大小属实现定义，故此处用本地空类做可移植示范。
 struct MyTag {};
 static_assert(sizeof(MyTag) == 1);                   // 空类至少占 1 字节（C++ 对象模型保证）
-struct Holder : MyTag { int x; };                    // 空基类受 EBO 压缩
-static_assert(sizeof(Holder) == sizeof(int));        // EBO 使空基类占 0
+// 空类型作成员：C++20 [[no_unique_address]] 明确保证空成员可与其兄弟成员共享地址，
+// 从而占 0 字节。相比继承式 EBO，该属性跨 GCC/Clang/MSVC 行为完全一致，可移植。
+struct Holder { [[no_unique_address]] MyTag tag; int x; };
+static_assert(sizeof(Holder) == sizeof(int));        // 空成员占 0，Holder 与 int 同宽
 ```
 
 ## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
