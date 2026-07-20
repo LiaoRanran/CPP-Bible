@@ -214,15 +214,19 @@ template <typename T> void work(T v) { work(v, optimized{}); }
 - **静态存储**：标签类型本身不占静态存储；只有 `impl` 的实例化函数体占用 `.text`。
 
 ```cpp
-// 标签对象是空类型：本地空类 MyTag 不携带数据，EBO 将其压缩为 0 字节基类。
-// 注：标准库 std::true_type 内部结构因实现而异（某些 libstdc++ 会加隐藏成员，
-// 致 sizeof 不恒为 1），其大小属实现定义，故此处用本地空类做可移植示范。
+// 标签对象是空类型：本地空类 MyTag 不携带数据。
+// 空基类（EBO）在所有主流编译器上都被压缩为 0 字节；而 std::true_type 内部结构
+// 因实现而异（某些 libstdc++ 会加隐藏成员，致 sizeof 不恒为 1），其大小属实现定义。
 struct MyTag {};
-static_assert(sizeof(MyTag) == 1);                   // 空类至少占 1 字节（C++ 对象模型保证）
-// 空类型作成员：C++20 [[no_unique_address]] 明确保证空成员可与其兄弟成员共享地址，
-// 从而占 0 字节。相比继承式 EBO，该属性跨 GCC/Clang/MSVC 行为完全一致，可移植。
+static_assert(sizeof(MyTag) == 1);                   // 空类至少占 1 字节（C++ 对象模型保证，所有平台成立）
+
+// C++20 [[no_unique_address]]：允许空数据成员与其兄弟成员共享地址，从而"通常"被优化为 0 字节。
+// 但注意：该属性只是给实现的"许可"，并不强制保证 sizeof(Holder)==sizeof(int)
+// （实际布局仍属实现定义：GCC 15.3.0 给 4，部分 15.2.0/标准库组合给出带填充的 8）。
+// 因此绝不可对复合布局做精确断言——只能断言可移植的不变量。
 struct Holder { [[no_unique_address]] MyTag tag; int x; };
-static_assert(sizeof(Holder) == sizeof(int));        // 空成员占 0，Holder 与 int 同宽
+static_assert(sizeof(Holder) >= sizeof(int));        // 必然成立：Holder 至少含一个 int
+// 经验值（非标准保证）：现代 GCC/Clang/MSVC 通常使 sizeof(Holder) == sizeof(int)
 ```
 
 ## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
