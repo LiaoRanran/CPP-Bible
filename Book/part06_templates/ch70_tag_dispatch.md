@@ -217,13 +217,13 @@ template <typename T> void work(T v) { work(v, optimized{}); }
 // 标签对象零大小
 static_assert(sizeof(std::true_type) == 1);          // [实现] 空类至少 1 字节
 static_assert(sizeof(std::true_type{}) == 1);
-// 作为基类受 EBO 优化（ch52）：空基类被压缩，派生类不增大小
-struct Holder : std::true_type { int x; };           // tag 是基类，而非成员
-// EBO 应用时 sizeof(Holder)==sizeof(int)；标准库实现不同时
-// （如 libstdc++ 把 true_type 改成含隐藏成员）可能为 sizeof(int)+1。
-// 故接受两种合法结果，断言跨实现可移植：
-static_assert(sizeof(Holder) == sizeof(int)
-           || sizeof(Holder) == sizeof(int) + 1);
+// 作为基类受 EBO 优化（ch52）：空基类被压缩，派生类不增大小。
+// 注意：此处用本地空类示范 EBO 而非 std::true_type——标准库内部结构
+// 因实现而异（例如 libstdc++ 可能给 integral_constant 加隐藏成员），
+// 导致 EBO 不保证。本地空类则跨平台一定适用。
+struct MyTag {};
+struct Holder : MyTag { int x; };                    // 空基类受 EBO 压缩
+static_assert(sizeof(Holder) == sizeof(int));        // EBO 使空基类占 0
 ```
 
 ## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
