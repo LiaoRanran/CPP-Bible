@@ -286,8 +286,11 @@ void signed_int_only(T) {}
 SFINAE 是**纯编译期**机制：它不产生任何运行期对象、不占内存。被剔除的重载根本不会实例化，连代码都不发射（见 ⑩ 的 mangled 证据——`!integral` 版本的 `sfinae_f<int>` 不存在）。
 
 ```cpp
-// 被 SFINAE 剔除的重载不会占代码段；这是「零开销抽象」的体现
-static_assert(sizeof(std::true_type) == 1, "trait 是空类");
+// 被 SFINAE 剔除的重载不会占代码段；这是「零开销抽象」的体现。
+// 标准库 trait 本质是空类，但 std::true_type 的 sizeof 因 libstdc++ 实现而异
+// （某些版本含隐藏成员，不恒为 1），其大小属实现定义，故用本地空类示范：
+struct empty_trait {};
+static_assert(sizeof(empty_trait) == 1);             // 空类：不携带运行期数据，至少占 1 字节
 ```
 
 ## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0） [平台]

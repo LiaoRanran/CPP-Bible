@@ -214,14 +214,11 @@ template <typename T> void work(T v) { work(v, optimized{}); }
 - **静态存储**：标签类型本身不占静态存储；只有 `impl` 的实例化函数体占用 `.text`。
 
 ```cpp
-// 标签对象零大小
-static_assert(sizeof(std::true_type) == 1);          // [实现] 空类至少 1 字节
-static_assert(sizeof(std::true_type{}) == 1);
-// 作为基类受 EBO 优化（ch52）：空基类被压缩，派生类不增大小。
-// 注意：此处用本地空类示范 EBO 而非 std::true_type——标准库内部结构
-// 因实现而异（例如 libstdc++ 可能给 integral_constant 加隐藏成员），
-// 导致 EBO 不保证。本地空类则跨平台一定适用。
+// 标签对象是空类型：本地空类 MyTag 不携带数据，EBO 将其压缩为 0 字节基类。
+// 注：标准库 std::true_type 内部结构因实现而异（某些 libstdc++ 会加隐藏成员，
+// 致 sizeof 不恒为 1），其大小属实现定义，故此处用本地空类做可移植示范。
 struct MyTag {};
+static_assert(sizeof(MyTag) == 1);                   // 空类至少占 1 字节（C++ 对象模型保证）
 struct Holder : MyTag { int x; };                    // 空基类受 EBO 压缩
 static_assert(sizeof(Holder) == sizeof(int));        // EBO 使空基类占 0
 ```
