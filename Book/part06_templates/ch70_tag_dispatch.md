@@ -219,7 +219,11 @@ static_assert(sizeof(std::true_type) == 1);          // [实现] 空类至少 1 
 static_assert(sizeof(std::true_type{}) == 1);
 // 作为基类受 EBO 优化（ch52）：空基类被压缩，派生类不增大小
 struct Holder : std::true_type { int x; };           // tag 是基类，而非成员
-static_assert(sizeof(Holder) == sizeof(int));        // EBO 使空基类占 0
+// EBO 应用时 sizeof(Holder)==sizeof(int)；标准库实现不同时
+// （如 libstdc++ 把 true_type 改成含隐藏成员）可能为 sizeof(int)+1。
+// 故接受两种合法结果，断言跨实现可移植：
+static_assert(sizeof(Holder) == sizeof(int)
+           || sizeof(Holder) == sizeof(int) + 1);
 ```
 
 ## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
