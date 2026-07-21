@@ -283,7 +283,14 @@ std::list<int>   l(100);
 // distance(l.begin(), l.end())  → bidirectional → O(n) 步进
 auto dv = std::distance(v.begin(), v.end());
 auto dl = std::distance(l.begin(), l.end());
-static_assert(std::is_same_v<decltype(dv), long long>);
+// std::distance 的返回类型恒为 std::ptrdiff_t（C++11 起）。
+// 注意：ptrdiff_t 的具体“原名”随平台数据模型而变——
+//   LP64（Linux/macOS x86-64）：ptrdiff_t 即 long（64 位）
+//   LLP64（Windows x86-64）：  ptrdiff_t 即 long long（64 位）
+// 因此绝不能断言它“就是 long long”（Windows 成立、Linux 翻车），
+// 只能断言它等于 std::ptrdiff_t 这个标准差异类型（跨平台恒真）。
+static_assert(std::is_same_v<decltype(dv), std::ptrdiff_t>);
+static_assert(std::is_same_v<decltype(dl), std::ptrdiff_t>);
 ```
 
 ## ⑫ 变体（variant patterns）
