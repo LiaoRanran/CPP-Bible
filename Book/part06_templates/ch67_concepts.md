@@ -463,6 +463,52 @@ T process(T x) { return x; }
 static_assert(std::integral<int> == true);   // 编译期常量，无运行期成本
 ```
 
+## ⑲附　知识图谱与选型决策（可视化） [D6 / D3]
+
+> ch67 全章文字极深（WG21 / SFINAE 对比 / 工业 / 源码 / 性能），但**零图示**。本附节用两张 Mermaid 补上「知识连接（D6）」与「可视化决策（D3）」两个维度，便于建立概念网络、降低选型犹豫。
+
+### 概念生态知识图谱（D6）
+
+```mermaid
+graph LR
+    C["concept C++20"] --> R["requires 子句/表达式"]
+    C --> T["type trait C++11 is_integral"]
+    R --> SF["SFINAE C++11 enable_if void_t"]
+    R --> IF["if constexpr C++17"]
+    C --> A["constrained auto auto f(C c)"]
+    C --> O["重载决议 more-constrained 胜出"]
+    C --> STL["Ranges STL 约束 sort"]
+    T -.-> SF
+    IF -.-> SF
+    C ==> SF
+    style C fill:#1f6feb,color:#fff
+    style R fill:#2da44e,color:#fff
+```
+
+`[标准]`：concept 在 `[temp.concept]` 定义为「具名布尔谓词」；`requires` 既可写约束表达式也可写 *requires clause*。`[经验]`：concept 并非取代 trait/SFINAE，而是把散落在 `enable_if` 里的约束**命名化、可组合、可诊断**——图谱中 `==>` 表示"诊断体验质变"而非"功能互斥"（呼应 附录 C 的错误信息对比）。
+
+### 选型决策流（D3）：约束该用哪把刀
+
+```mermaid
+flowchart TD
+    Q["需要对类型/值加约束?"] -->|否| N["普通模板"]
+    Q -->|是| Q1["约束要复用/命名?"]
+    Q1 -->|是| C1["concept + requires"]
+    Q1 -->|否| Q2["仅单点分支?"]
+    Q2 -->|运行期已知| IF1["if constexpr"]
+    Q2 -->|编译期剪裁重载| SF1["SFINAE enable_if"]
+    C1 --> Q3["约束失败期望?"]
+    Q3 -->|清晰错误| C2["concept 报不满足 X"]
+    Q3 -->|晦涩错误| SF2["SFINAE 报 substitution failure"]
+    style C1 fill:#1f6feb,color:#fff
+    style IF1 fill:#2da44e,color:#fff
+    style SF1 fill:#cf222e,color:#fff
+```
+
+`[经验]`：现代 C++ 的默认选择是 **concept + requires**（可读、可诊断、可组合）；仅在"历史代码库必须 C++14/17"或"极致编译期元编程"时才退回 SFINAE；`if constexpr` 解决的是**运行期分支的编译期剪裁**，与约束是正交维度（见图谱虚线）。
+
+---
+
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
 - **练习题 1**：手写 `Derefable` concept，要求 `*t` 合法且结果可转换为 `T`。

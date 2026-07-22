@@ -114,6 +114,7 @@ ch21 const 家族 · ch26 lambda · ch45 对象模型 · ch60–63 模板体系 
 | ch107 | 原子 | ✅ | ✅ | ⬜(mer=1) | ✅(asm=10) | ⬜(待补基准) | ⬜ | 建议补 D3/D5/D6 |
 | ch67 | concepts | ✅ | ✅ | ⬜(mer=0) | ✅ | ⬜ | ⬜ | 建议补 D3/D6 |
 | ch30 | volatile | ✅ | ✅ | ⬜(mer=0) | ✅ | ✅ | ⬜ | 建议补 D3/D6 |
+| ch67 | concepts | ✅ | ✅ | ✅(本轮补知识图+决策流) | ✅ | ✅ | ✅(本轮补) | 达标(可视化补全 D3/D6) |
 
 追踪规则：每完成一章六维附录，在此打勾并更新 MEMORY.md；CI 门禁（mermaid_lint / compile_all --main-only / verify_asm_evidence）必须全绿方可标记达标。
 
