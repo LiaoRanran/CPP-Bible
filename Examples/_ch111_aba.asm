@@ -6,7 +6,7 @@
 	.def	_Z10pop_unsafev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10pop_unsafev
 _Z10pop_unsafev:
-.LFB668:
+.LFB671:
 	.seh_endprologue
 	mov	rax, QWORD PTR top[rip]
 .L2:
@@ -23,4 +23,4 @@ _Z10pop_unsafev:
 	.align 8
 top:
 	.space 8
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

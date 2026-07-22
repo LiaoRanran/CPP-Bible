@@ -6,7 +6,7 @@
 	.def	_Z8producerv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8producerv
 _Z8producerv:
-.LFB665:
+.LFB668:
 	.seh_endprologue
 	mov	DWORD PTR data[rip], 42
 	mov	DWORD PTR flag[rip], 1
@@ -17,7 +17,7 @@ _Z8producerv:
 	.def	_Z8consumerv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8consumerv
 _Z8consumerv:
-.LFB666:
+.LFB669:
 	.seh_endprologue
 	mov	eax, DWORD PTR flag[rip]
 	test	eax, eax
@@ -37,4 +37,4 @@ data:
 	.align 4
 flag:
 	.space 4
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

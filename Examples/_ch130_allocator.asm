@@ -6,7 +6,7 @@
 	.def	_Z10make_threeR5Arena;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10make_threeR5Arena
 _Z10make_threeR5Arena:
-.LFB18:
+.LFB19:
 	.seh_endprologue
 	mov	rdx, QWORD PTR 8[rcx]
 	lea	rax, 16[rdx]
@@ -17,14 +17,13 @@ _Z10make_threeR5Arena:
 	mov	QWORD PTR 8[rcx], rdx
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB19:
+.LFB20:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -33,4 +32,5 @@ main:
 	add	rsp, 40
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

@@ -1,29 +1,13 @@
 	.file	"_ch112_hp.cpp"
 	.intel_syntax noprefix
 	.text
-	.section	.text$_ZSt23__is_constant_evaluatedv,"x"
-	.linkonce discard
-	.globl	_ZSt23__is_constant_evaluatedv
-	.def	_ZSt23__is_constant_evaluatedv;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZSt23__is_constant_evaluatedv
-_ZSt23__is_constant_evaluatedv:
-.LFB1:
-	push	rbp
-	.seh_pushreg	rbp
-	mov	rbp, rsp
-	.seh_setframe	rbp, 0
-	.seh_endprologue
-	mov	eax, 0
-	pop	rbp
-	ret
-	.seh_endproc
 	.section	.text$_ZStanSt12memory_orderSt23__memory_order_modifier,"x"
 	.linkonce discard
 	.globl	_ZStanSt12memory_orderSt23__memory_order_modifier
 	.def	_ZStanSt12memory_orderSt23__memory_order_modifier;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZStanSt12memory_orderSt23__memory_order_modifier
 _ZStanSt12memory_orderSt23__memory_order_modifier:
-.LFB178:
+.LFB183:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -54,7 +38,7 @@ g_retired:
 	.def	hp_protect;	.scl	2;	.type	32;	.endef
 	.seh_proc	hp_protect
 hp_protect:
-.LFB682:
+.LFB687:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -64,7 +48,7 @@ hp_protect:
 	.seh_endprologue
 	mov	QWORD PTR 16[rbp], rcx
 	mov	DWORD PTR 24[rbp], edx
-.L6:
+.L4:
 	mov	rax, QWORD PTR 16[rbp]
 	mov	edx, 2
 	mov	rcx, rax
@@ -74,10 +58,10 @@ hp_protect:
 	cdqe
 	lea	rdx, 0[0+rax*8]
 	lea	rax, g_hp[rip]
-	add	rax, rdx
-	mov	rdx, QWORD PTR -8[rbp]
+	lea	rcx, [rdx+rax]
+	mov	rax, QWORD PTR -8[rbp]
 	mov	r8d, 5
-	mov	rcx, rax
+	mov	rdx, rax
 	call	_ZNSt6atomicIPvE5storeES0_St12memory_order
 	mov	rax, QWORD PTR 16[rbp]
 	mov	edx, 2
@@ -86,7 +70,7 @@ hp_protect:
 	cmp	QWORD PTR -8[rbp], rax
 	setne	al
 	test	al, al
-	jne	.L6
+	jne	.L4
 	mov	rax, QWORD PTR -8[rbp]
 	add	rsp, 48
 	pop	rbp
@@ -96,7 +80,7 @@ hp_protect:
 	.def	hp_clear;	.scl	2;	.type	32;	.endef
 	.seh_proc	hp_clear
 hp_clear:
-.LFB683:
+.LFB688:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -123,7 +107,7 @@ hp_clear:
 	.def	hp_scan_and_reclaim;	.scl	2;	.type	32;	.endef
 	.seh_proc	hp_scan_and_reclaim
 hp_scan_and_reclaim:
-.LFB684:
+.LFB689:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -131,22 +115,22 @@ hp_scan_and_reclaim:
 	sub	rsp, 80
 	.seh_stackalloc	80
 	.seh_endprologue
+	lea	rax, g_retired[rip]
 	mov	r8d, 2
 	mov	edx, 0
-	lea	rax, g_retired[rip]
 	mov	rcx, rax
 	call	_ZNSt6atomicIP7RetiredE8exchangeES1_St12memory_order
 	mov	QWORD PTR -8[rbp], rax
 	mov	QWORD PTR -16[rbp], 0
-	jmp	.L10
-.L18:
+	jmp	.L8
+.L16:
 	mov	rax, QWORD PTR -8[rbp]
 	mov	rax, QWORD PTR 8[rax]
 	mov	QWORD PTR -40[rbp], rax
 	mov	BYTE PTR -17[rbp], 0
 	mov	DWORD PTR -24[rbp], 0
-	jmp	.L11
-.L14:
+	jmp	.L9
+.L12:
 	mov	eax, DWORD PTR -24[rbp]
 	cdqe
 	lea	rdx, 0[0+rax*8]
@@ -155,81 +139,92 @@ hp_scan_and_reclaim:
 	mov	edx, 2
 	mov	rcx, rax
 	call	_ZNKSt6atomicIPvE4loadESt12memory_order
-	mov	rdx, QWORD PTR -8[rbp]
-	mov	rdx, QWORD PTR [rdx]
-	cmp	rax, rdx
+	mov	rdx, rax
+	mov	rax, QWORD PTR -8[rbp]
+	mov	rax, QWORD PTR [rax]
+	cmp	rdx, rax
 	sete	al
 	test	al, al
-	je	.L12
+	je	.L10
 	mov	BYTE PTR -17[rbp], 1
-	jmp	.L13
-.L12:
+	jmp	.L11
+.L10:
 	add	DWORD PTR -24[rbp], 1
-.L11:
+.L9:
 	cmp	DWORD PTR -24[rbp], 63
-	jle	.L14
-.L13:
+	jle	.L12
+.L11:
 	cmp	BYTE PTR -17[rbp], 0
-	je	.L15
+	je	.L13
 	mov	rax, QWORD PTR -8[rbp]
 	mov	rdx, QWORD PTR -16[rbp]
 	mov	QWORD PTR 8[rax], rdx
 	mov	rax, QWORD PTR -8[rbp]
 	mov	QWORD PTR -16[rbp], rax
-	jmp	.L16
-.L15:
+	jmp	.L14
+.L13:
 	mov	rax, QWORD PTR -8[rbp]
 	mov	rax, QWORD PTR [rax]
 	test	rax, rax
-	je	.L17
+	je	.L15
 	mov	edx, 16
 	mov	rcx, rax
 	call	_ZdlPvy
-.L17:
+.L15:
 	mov	rax, QWORD PTR -8[rbp]
 	test	rax, rax
-	je	.L16
+	je	.L14
 	mov	edx, 16
 	mov	rcx, rax
 	call	_ZdlPvy
-.L16:
+.L14:
 	mov	rax, QWORD PTR -40[rbp]
 	mov	QWORD PTR -8[rbp], rax
-.L10:
+.L8:
 	cmp	QWORD PTR -8[rbp], 0
-	jne	.L18
+	jne	.L16
 	cmp	QWORD PTR -16[rbp], 0
-	je	.L22
+	je	.L20
 	mov	rax, QWORD PTR -16[rbp]
 	mov	QWORD PTR -32[rbp], rax
-	jmp	.L20
-.L21:
+	jmp	.L18
+.L19:
 	mov	rax, QWORD PTR -32[rbp]
 	mov	rax, QWORD PTR 8[rax]
 	mov	QWORD PTR -32[rbp], rax
-.L20:
+.L18:
 	mov	rax, QWORD PTR -32[rbp]
 	mov	rax, QWORD PTR 8[rax]
 	test	rax, rax
-	jne	.L21
-	mov	edx, 0
+	jne	.L19
 	lea	rax, g_retired[rip]
+	mov	edx, 0
 	mov	rcx, rax
 	call	_ZNKSt6atomicIP7RetiredE4loadESt12memory_order
 	mov	rdx, QWORD PTR -32[rbp]
 	mov	QWORD PTR 8[rdx], rax
 	mov	rax, QWORD PTR -16[rbp]
+	lea	rcx, g_retired[rip]
 	mov	r8d, 3
 	mov	rdx, rax
-	lea	rax, g_retired[rip]
-	mov	rcx, rax
 	call	_ZNSt6atomicIP7RetiredE5storeES1_St12memory_order
-.L22:
+.L20:
 	nop
 	add	rsp, 80
 	pop	rbp
 	ret
 	.seh_endproc
+	.section .rdata,"dr"
+.LC0:
+	.ascii "__b != memory_order_release\0"
+	.align 8
+.LC1:
+	.ascii "_PTp* std::__atomic_base<_PTp*>::load(std::memory_order) const [with _PTp = void; __pointer_type = void*]\0"
+	.align 8
+.LC2:
+	.ascii "C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/atomic_base.h\0"
+.LC3:
+	.ascii "__b != memory_order_acq_rel\0"
 	.section	.text$_ZNKSt6atomicIPvE4loadESt12memory_order,"x"
 	.linkonce discard
 	.align 2
@@ -237,7 +232,7 @@ hp_scan_and_reclaim:
 	.def	_ZNKSt6atomicIPvE4loadESt12memory_order;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNKSt6atomicIPvE4loadESt12memory_order
 _ZNKSt6atomicIPvE4loadESt12memory_order:
-.LFB796:
+.LFB801:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -256,34 +251,48 @@ _ZNKSt6atomicIPvE4loadESt12memory_order:
 	mov	ecx, eax
 	call	_ZStanSt12memory_orderSt23__memory_order_modifier
 	mov	DWORD PTR -16[rbp], eax
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L24
 	cmp	DWORD PTR -16[rbp], 3
-	jne	.L24
-	mov	eax, 1
-	jmp	.L25
-.L24:
-	mov	eax, 0
-.L25:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L27
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L22
+	lea	rcx, .LC0[rip]
+	lea	rdx, .LC1[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 827
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L22:
 	cmp	DWORD PTR -16[rbp], 4
-	jne	.L27
-	mov	eax, 1
-	jmp	.L28
-.L27:
-	mov	eax, 0
-.L28:
-	test	al, al
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L23
+	lea	rcx, .LC3[rip]
+	lea	rdx, .LC1[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 828
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L23:
 	mov	rax, QWORD PTR -8[rbp]
 	mov	rax, QWORD PTR [rax]
 	add	rsp, 48
 	pop	rbp
 	ret
 	.seh_endproc
+	.section .rdata,"dr"
+.LC4:
+	.ascii "__b != memory_order_acquire\0"
+	.align 8
+.LC5:
+	.ascii "void std::__atomic_base<_PTp*>::store(__pointer_type, std::memory_order) [with _PTp = void; __pointer_type = void*]\0"
+.LC6:
+	.ascii "__b != memory_order_consume\0"
 	.section	.text$_ZNSt6atomicIPvE5storeES0_St12memory_order,"x"
 	.linkonce discard
 	.align 2
@@ -291,7 +300,7 @@ _ZNKSt6atomicIPvE4loadESt12memory_order:
 	.def	_ZNSt6atomicIPvE5storeES0_St12memory_order;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt6atomicIPvE5storeES0_St12memory_order
 _ZNSt6atomicIPvE5storeES0_St12memory_order:
-.LFB797:
+.LFB802:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -313,39 +322,48 @@ _ZNSt6atomicIPvE5storeES0_St12memory_order:
 	mov	ecx, eax
 	call	_ZStanSt12memory_orderSt23__memory_order_modifier
 	mov	DWORD PTR -24[rbp], eax
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L33
 	cmp	DWORD PTR -24[rbp], 2
-	jne	.L33
-	mov	eax, 1
-	jmp	.L34
-.L33:
-	mov	eax, 0
-.L34:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L36
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L27
+	lea	rcx, .LC4[rip]
+	lea	rdx, .LC5[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 802
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L27:
 	cmp	DWORD PTR -24[rbp], 4
-	jne	.L36
-	mov	eax, 1
-	jmp	.L37
-.L36:
-	mov	eax, 0
-.L37:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L39
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L28
+	lea	rcx, .LC3[rip]
+	lea	rdx, .LC5[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 803
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L28:
 	cmp	DWORD PTR -24[rbp], 1
-	jne	.L39
-	mov	eax, 1
-	jmp	.L40
-.L39:
-	mov	eax, 0
-.L40:
-	test	al, al
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L29
+	lea	rcx, .LC6[rip]
+	lea	rdx, .LC5[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 804
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L29:
 	mov	rdx, QWORD PTR -16[rbp]
 	mov	rax, QWORD PTR -8[rbp]
 	xchg	rdx, QWORD PTR [rax]
@@ -362,7 +380,7 @@ _ZNSt6atomicIPvE5storeES0_St12memory_order:
 	.def	_ZNSt6atomicIP7RetiredE8exchangeES1_St12memory_order;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt6atomicIP7RetiredE8exchangeES1_St12memory_order
 _ZNSt6atomicIP7RetiredE8exchangeES1_St12memory_order:
-.LFB798:
+.LFB803:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -379,13 +397,18 @@ _ZNSt6atomicIP7RetiredE8exchangeES1_St12memory_order:
 	mov	QWORD PTR -16[rbp], rax
 	mov	eax, DWORD PTR 32[rbp]
 	mov	DWORD PTR -20[rbp], eax
-	mov	rax, QWORD PTR -16[rbp]
-	mov	rdx, QWORD PTR -8[rbp]
-	xchg	rax, QWORD PTR [rdx]
+	mov	rdx, QWORD PTR -16[rbp]
+	mov	rax, QWORD PTR -8[rbp]
+	xchg	rdx, QWORD PTR [rax]
+	mov	rax, rdx
 	add	rsp, 32
 	pop	rbp
 	ret
 	.seh_endproc
+	.section .rdata,"dr"
+	.align 8
+.LC7:
+	.ascii "_PTp* std::__atomic_base<_PTp*>::load(std::memory_order) const [with _PTp = Retired; __pointer_type = Retired*]\0"
 	.section	.text$_ZNKSt6atomicIP7RetiredE4loadESt12memory_order,"x"
 	.linkonce discard
 	.align 2
@@ -393,7 +416,7 @@ _ZNSt6atomicIP7RetiredE8exchangeES1_St12memory_order:
 	.def	_ZNKSt6atomicIP7RetiredE4loadESt12memory_order;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNKSt6atomicIP7RetiredE4loadESt12memory_order
 _ZNKSt6atomicIP7RetiredE4loadESt12memory_order:
-.LFB799:
+.LFB804:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -412,34 +435,44 @@ _ZNKSt6atomicIP7RetiredE4loadESt12memory_order:
 	mov	ecx, eax
 	call	_ZStanSt12memory_orderSt23__memory_order_modifier
 	mov	DWORD PTR -16[rbp], eax
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L47
 	cmp	DWORD PTR -16[rbp], 3
-	jne	.L47
-	mov	eax, 1
-	jmp	.L48
-.L47:
-	mov	eax, 0
-.L48:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L50
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L35
+	lea	rcx, .LC0[rip]
+	lea	rdx, .LC7[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 827
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L35:
 	cmp	DWORD PTR -16[rbp], 4
-	jne	.L50
-	mov	eax, 1
-	jmp	.L51
-.L50:
-	mov	eax, 0
-.L51:
-	test	al, al
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L36
+	lea	rcx, .LC3[rip]
+	lea	rdx, .LC7[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 828
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L36:
 	mov	rax, QWORD PTR -8[rbp]
 	mov	rax, QWORD PTR [rax]
 	add	rsp, 48
 	pop	rbp
 	ret
 	.seh_endproc
+	.section .rdata,"dr"
+	.align 8
+.LC8:
+	.ascii "void std::__atomic_base<_PTp*>::store(__pointer_type, std::memory_order) [with _PTp = Retired; __pointer_type = Retired*]\0"
 	.section	.text$_ZNSt6atomicIP7RetiredE5storeES1_St12memory_order,"x"
 	.linkonce discard
 	.align 2
@@ -447,7 +480,7 @@ _ZNKSt6atomicIP7RetiredE4loadESt12memory_order:
 	.def	_ZNSt6atomicIP7RetiredE5storeES1_St12memory_order;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt6atomicIP7RetiredE5storeES1_St12memory_order
 _ZNSt6atomicIP7RetiredE5storeES1_St12memory_order:
-.LFB800:
+.LFB805:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -469,39 +502,48 @@ _ZNSt6atomicIP7RetiredE5storeES1_St12memory_order:
 	mov	ecx, eax
 	call	_ZStanSt12memory_orderSt23__memory_order_modifier
 	mov	DWORD PTR -24[rbp], eax
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L56
 	cmp	DWORD PTR -24[rbp], 2
-	jne	.L56
-	mov	eax, 1
-	jmp	.L57
-.L56:
-	mov	eax, 0
-.L57:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L59
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L40
+	lea	rcx, .LC4[rip]
+	lea	rdx, .LC8[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 802
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L40:
 	cmp	DWORD PTR -24[rbp], 4
-	jne	.L59
-	mov	eax, 1
-	jmp	.L60
-.L59:
-	mov	eax, 0
-.L60:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L62
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L41
+	lea	rcx, .LC3[rip]
+	lea	rdx, .LC8[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 803
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L41:
 	cmp	DWORD PTR -24[rbp], 1
-	jne	.L62
-	mov	eax, 1
-	jmp	.L63
-.L62:
-	mov	eax, 0
-.L63:
-	test	al, al
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L42
+	lea	rcx, .LC6[rip]
+	lea	rdx, .LC8[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 804
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L42:
 	mov	rdx, QWORD PTR -16[rbp]
 	mov	rax, QWORD PTR -8[rbp]
 	xchg	rdx, QWORD PTR [rax]
@@ -511,5 +553,6 @@ _ZNSt6atomicIP7RetiredE5storeES1_St12memory_order:
 	pop	rbp
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
+	.def	_ZSt21__glibcxx_assert_failPKciS0_S0_;	.scl	2;	.type	32;	.endef

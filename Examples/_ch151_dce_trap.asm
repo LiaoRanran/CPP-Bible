@@ -1,39 +1,6 @@
 	.file	"_ch151_dce_trap.cpp"
 	.intel_syntax noprefix
 	.text
-	.section	.text$_Z6printfPKcz,"x"
-	.linkonce discard
-	.p2align 4
-	.globl	_Z6printfPKcz
-	.def	_Z6printfPKcz;	.scl	2;	.type	32;	.endef
-	.seh_proc	_Z6printfPKcz
-_Z6printfPKcz:
-.LFB11:
-	push	rsi
-	.seh_pushreg	rsi
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 56
-	.seh_stackalloc	56
-	.seh_endprologue
-	lea	rsi, 88[rsp]
-	mov	rbx, rcx
-	mov	QWORD PTR 88[rsp], rdx
-	mov	ecx, 1
-	mov	QWORD PTR 96[rsp], r8
-	mov	QWORD PTR 104[rsp], r9
-	mov	QWORD PTR 40[rsp], rsi
-	call	[QWORD PTR __imp___acrt_iob_func[rip]]
-	mov	r8, rsi
-	mov	rdx, rbx
-	mov	rcx, rax
-	call	__mingw_vfprintf
-	add	rsp, 56
-	pop	rbx
-	pop	rsi
-	ret
-	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section .rdata,"dr"
 	.align 8
 .LC1:
@@ -44,7 +11,7 @@ _Z6printfPKcz:
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB5564:
+.LFB5831:
 	push	rbx
 	.seh_pushreg	rbx
 	sub	rsp, 32
@@ -54,14 +21,14 @@ main:
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
 	mov	rbx, rax
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
-	xor	r8d, r8d
 	pxor	xmm1, xmm1
+	xor	r8d, r8d
 	lea	rcx, .LC1[rip]
 	sub	rax, rbx
 	cvtsi2sd	xmm1, rax
 	divsd	xmm1, QWORD PTR .LC0[rip]
 	movq	rdx, xmm1
-	call	_Z6printfPKcz
+	call	__mingw_printf
 	xor	eax, eax
 	add	rsp, 32
 	pop	rbx
@@ -72,6 +39,6 @@ main:
 .LC0:
 	.long	0
 	.long	1093567616
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
-	.def	__mingw_vfprintf;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZNSt6chrono3_V212steady_clock3nowEv;	.scl	2;	.type	32;	.endef

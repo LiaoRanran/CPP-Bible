@@ -3,42 +3,17 @@
 	.text
 	.section .rdata,"dr"
 .LC0:
-	.ascii "caught: %s\12\0"
-	.section	.text.unlikely,"x"
-	.def	_ZL6printfPKcz.constprop.0;	.scl	3;	.type	32;	.endef
-	.seh_proc	_ZL6printfPKcz.constprop.0
-_ZL6printfPKcz.constprop.0:
-.LFB2611:
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 48
-	.seh_stackalloc	48
-	.seh_endprologue
-	mov	ecx, 1
-	lea	rbx, 72[rsp]
-	mov	QWORD PTR 72[rsp], rdx
-	mov	QWORD PTR 80[rsp], r8
-	mov	QWORD PTR 88[rsp], r9
-	mov	QWORD PTR 40[rsp], rbx
-	call	[QWORD PTR __imp___acrt_iob_func[rip]]
-	lea	rdx, .LC0[rip]
-	mov	r8, rbx
-	mov	rcx, rax
-	call	__mingw_vfprintf
-	add	rsp, 48
-	pop	rbx
-	ret
-	.seh_endproc
-	.section .rdata,"dr"
-.LC1:
 	.ascii "neg\0"
+	.section	.text.unlikely,"x"
+.LCOLDB1:
 	.text
+.LHOTB1:
 	.p2align 4
 	.globl	_Z9may_throwi
 	.def	_Z9may_throwi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z9may_throwi
 _Z9may_throwi:
-.LFB1997:
+.LFB2050:
 	push	rsi
 	.seh_pushreg	rsi
 	push	rbx
@@ -47,27 +22,46 @@ _Z9may_throwi:
 	.seh_stackalloc	40
 	.seh_endprologue
 	test	ecx, ecx
-	js	.L8
+	js	.L5
 	lea	eax, [rcx+rcx]
 	add	rsp, 40
 	pop	rbx
 	pop	rsi
 	ret
-.L8:
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDA2050:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSE2050-.LLSDACSB2050
+.LLSDACSB2050:
+.LLSDACSE2050:
+	.text
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	_Z9may_throwi.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z9may_throwi.cold
+	.seh_stackalloc	56
+	.seh_savereg	rbx, 40
+	.seh_savereg	rsi, 48
+	.seh_endprologue
+_Z9may_throwi.cold:
+.L5:
 	mov	ecx, 16
 	call	__cxa_allocate_exception
-	lea	rdx, .LC1[rip]
+	lea	rdx, .LC0[rip]
 	mov	rcx, rax
 	mov	rbx, rax
 .LEHB0:
 	call	_ZNSt13runtime_errorC1EPKc
 .LEHE0:
 	lea	r8, _ZNSt13runtime_errorD1Ev[rip]
-	mov	rcx, rbx
 	lea	rdx, _ZTISt13runtime_error[rip]
+	mov	rcx, rbx
 .LEHB1:
 	call	__cxa_throw
-.L5:
+.L4:
 	mov	rsi, rax
 	mov	rcx, rbx
 	call	__cxa_free_exception
@@ -75,32 +69,43 @@ _Z9may_throwi:
 	call	_Unwind_Resume
 	nop
 .LEHE1:
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA1997:
+.LLSDAC2050:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE1997-.LLSDACSB1997
-.LLSDACSB1997:
-	.uleb128 .LEHB0-.LFB1997
+	.uleb128 .LLSDACSEC2050-.LLSDACSBC2050
+.LLSDACSBC2050:
+	.uleb128 .LEHB0-.LCOLDB1
 	.uleb128 .LEHE0-.LEHB0
-	.uleb128 .L5-.LFB1997
+	.uleb128 .L4-.LCOLDB1
 	.uleb128 0
-	.uleb128 .LEHB1-.LFB1997
+	.uleb128 .LEHB1-.LCOLDB1
 	.uleb128 .LEHE1-.LEHB1
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE1997:
+.LLSDACSEC2050:
+	.section	.text.unlikely,"x"
 	.text
+	.section	.text.unlikely,"x"
 	.seh_endproc
+.LCOLDE1:
+	.text
+.LHOTE1:
+	.section .rdata,"dr"
+.LC2:
+	.ascii "caught: %s\12\0"
+	.section	.text.unlikely,"x"
+.LCOLDB3:
+	.text
+.LHOTB3:
 	.p2align 4
 	.globl	_Z9safe_calli
 	.def	_Z9safe_calli;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z9safe_calli
 _Z9safe_calli:
-.LFB1998:
+.LFB2051:
 	push	rbx
 	.seh_pushreg	rbx
 	sub	rsp, 32
@@ -110,74 +115,107 @@ _Z9safe_calli:
 	call	_Z9may_throwi
 .LEHE2:
 	add	eax, 1
-.L9:
+.L8:
 	add	rsp, 32
 	pop	rbx
 	ret
-.L14:
+.L13:
+	mov	rcx, rax
+	jmp	.L9
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+	.align 4
+.LLSDA2051:
+	.byte	0xff
+	.byte	0x9b
+	.uleb128 .LLSDATT2051-.LLSDATTD2051
+.LLSDATTD2051:
+	.byte	0x1
+	.uleb128 .LLSDACSE2051-.LLSDACSB2051
+.LLSDACSB2051:
+	.uleb128 .LEHB2-.LFB2051
+	.uleb128 .LEHE2-.LEHB2
+	.uleb128 .L13-.LFB2051
+	.uleb128 0x1
+.LLSDACSE2051:
+	.byte	0x1
+	.byte	0
+	.align 4
+	.long	.LDFCM0-.
+.LLSDATT2051:
+	.text
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	_Z9safe_calli.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z9safe_calli.cold
+	.seh_stackalloc	40
+	.seh_savereg	rbx, 32
+	.seh_endprologue
+_Z9safe_calli.cold:
+.L9:
 	sub	rdx, 1
-	mov	rcx, rax
-	jne	.L16
+	jne	.L15
 	call	__cxa_begin_catch
+	mov	rdx, QWORD PTR [rax]
 	mov	rcx, rax
-	mov	rax, QWORD PTR [rax]
-	call	[QWORD PTR 16[rax]]
-	lea	rcx, .LC0[rip]
+	call	[QWORD PTR 16[rdx]]
+	lea	rcx, .LC2[rip]
 	mov	rdx, rax
 .LEHB3:
-	call	_ZL6printfPKcz.constprop.0
+	call	__mingw_printf
 .LEHE3:
 	call	__cxa_end_catch
-	or	eax, -1
-	jmp	.L9
+	mov	eax, -1
+	jmp	.L8
 .L15:
+.LEHB4:
+	call	_Unwind_Resume
+.L14:
 	mov	rbx, rax
 	call	__cxa_end_catch
 	mov	rcx, rbx
-.L16:
-.LEHB4:
 	call	_Unwind_Resume
 	nop
 .LEHE4:
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
 	.align 4
-.LLSDA1998:
+.LLSDAC2051:
 	.byte	0xff
 	.byte	0x9b
-	.uleb128 .LLSDATT1998-.LLSDATTD1998
-.LLSDATTD1998:
+	.uleb128 .LLSDATTC2051-.LLSDATTDC2051
+.LLSDATTDC2051:
 	.byte	0x1
-	.uleb128 .LLSDACSE1998-.LLSDACSB1998
-.LLSDACSB1998:
-	.uleb128 .LEHB2-.LFB1998
-	.uleb128 .LEHE2-.LEHB2
-	.uleb128 .L14-.LFB1998
-	.uleb128 0x1
-	.uleb128 .LEHB3-.LFB1998
+	.uleb128 .LLSDACSEC2051-.LLSDACSBC2051
+.LLSDACSBC2051:
+	.uleb128 .LEHB3-.LCOLDB3
 	.uleb128 .LEHE3-.LEHB3
-	.uleb128 .L15-.LFB1998
+	.uleb128 .L14-.LCOLDB3
 	.uleb128 0
-	.uleb128 .LEHB4-.LFB1998
+	.uleb128 .LEHB4-.LCOLDB3
 	.uleb128 .LEHE4-.LEHB4
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE1998:
+.LLSDACSEC2051:
 	.byte	0x1
 	.byte	0
 	.align 4
 	.long	.LDFCM0-.
-.LLSDATT1998:
+.LLSDATTC2051:
+	.section	.text.unlikely,"x"
 	.text
+	.section	.text.unlikely,"x"
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
+.LCOLDE3:
+	.text
+.LHOTE3:
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB1999:
+.LFB2052:
 	push	rbx
 	.seh_pushreg	rbx
 	sub	rsp, 32
@@ -225,8 +263,9 @@ _ZTISt13runtime_error:
 	.align 8
 .LDFCM0:
 	.quad	_ZTISt9exception
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
-	.def	__mingw_vfprintf;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	__cxa_allocate_exception;	.scl	2;	.type	32;	.endef
 	.def	_ZNSt13runtime_errorC1EPKc;	.scl	2;	.type	32;	.endef
 	.def	_ZNSt13runtime_errorD1Ev;	.scl	2;	.type	32;	.endef
@@ -236,6 +275,7 @@ _ZTISt13runtime_error:
 	.def	__cxa_begin_catch;	.scl	2;	.type	32;	.endef
 	.def	__cxa_end_catch;	.scl	2;	.type	32;	.endef
 	.section	.rdata$.refptr._ZNSt13runtime_errorD1Ev, "dr"
+	.p2align	3, 0
 	.globl	.refptr._ZNSt13runtime_errorD1Ev
 	.linkonce	discard
 .refptr._ZNSt13runtime_errorD1Ev:

@@ -9,7 +9,7 @@
 	.def	_ZN4PoolD1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN4PoolD1Ev
 _ZN4PoolD1Ev:
-.LFB1735:
+.LFB1740:
 	push	rdi
 	.seh_pushreg	rdi
 	push	rsi
@@ -24,7 +24,7 @@ _ZN4PoolD1Ev:
 	mov	rdi, rcx
 	cmp	rsi, rbx
 	je	.L2
-	.p2align 4,,10
+	.p2align 4
 	.p2align 3
 .L3:
 	mov	rcx, QWORD PTR [rbx]
@@ -55,167 +55,177 @@ _ZN4PoolD1Ev:
 	.seh_endproc
 	.section .rdata,"dr"
 .LC0:
-	.ascii "vector::_M_realloc_insert\0"
+	.ascii "vector::_M_realloc_append\0"
+	.section	.text.unlikely,"x"
+.LCOLDB1:
 	.text
+.LHOTB1:
 	.p2align 4
 	.globl	_Z12hot_allocateR4Pool
 	.def	_Z12hot_allocateR4Pool;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z12hot_allocateR4Pool
 _Z12hot_allocateR4Pool:
-.LFB1737:
-	push	r13
-	.seh_pushreg	r13
-	push	r12
-	.seh_pushreg	r12
-	push	rbp
-	.seh_pushreg	rbp
+.LFB1742:
 	push	rdi
 	.seh_pushreg	rdi
 	push	rsi
 	.seh_pushreg	rsi
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 56
-	.seh_stackalloc	56
-	movaps	XMMWORD PTR 32[rsp], xmm6
-	.seh_savexmm	xmm6, 32
+	sub	rsp, 64
+	.seh_stackalloc	64
 	.seh_endprologue
-	mov	rsi, QWORD PTR [rcx]
-	test	rsi, rsi
-	mov	rbx, rcx
+	mov	rax, QWORD PTR [rcx]
+	mov	r10, rcx
+	test	rax, rax
 	je	.L8
-	mov	rcx, QWORD PTR [rsi]
-.L9:
-	mov	QWORD PTR [rbx], rcx
-	movaps	xmm6, XMMWORD PTR 32[rsp]
-	mov	rax, rsi
-	add	rsp, 56
+	mov	rcx, QWORD PTR [rax]
+	mov	QWORD PTR [r10], rcx
+	add	rsp, 64
 	pop	rbx
 	pop	rsi
 	pop	rdi
-	pop	rbp
-	pop	r12
-	pop	r13
 	ret
-	.p2align 4,,10
-	.p2align 3
 .L8:
 	mov	rcx, QWORD PTR 32[rcx]
+	mov	QWORD PTR 96[rsp], r10
 	sal	rcx, 12
 	call	_Znwy
-	mov	rdi, rax
-	mov	rax, QWORD PTR 16[rbx]
-	cmp	rax, QWORD PTR 24[rbx]
+	mov	r10, QWORD PTR 96[rsp]
+	mov	r11, rax
+	mov	r9, QWORD PTR 24[r10]
+	mov	rax, QWORD PTR 16[r10]
+	cmp	rax, r9
 	je	.L10
-	mov	QWORD PTR [rax], rdi
-	add	QWORD PTR 16[rbx], 8
+	mov	QWORD PTR [rax], r11
+	add	QWORD PTR 16[r10], 8
 .L11:
-	mov	r9, QWORD PTR 32[rbx]
-	mov	rax, rdi
+	mov	r9, QWORD PTR 32[r10]
+	mov	r8, QWORD PTR [r10]
+	mov	rax, r11
 	mov	edx, 4096
-	mov	r8, QWORD PTR [rbx]
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
-.L21:
+.L15:
 	mov	rcx, r8
 	mov	r8, rax
 	mov	QWORD PTR [rax], rcx
 	add	rax, r9
 	sub	rdx, 1
-	jne	.L21
-	mov	rsi, r9
-	sal	rsi, 12
-	sub	rsi, r9
-	add	rsi, rdi
-	jmp	.L9
+	jne	.L15
+	mov	rax, r9
+	mov	QWORD PTR [r10], rcx
+	sal	rax, 12
+	sub	rax, r9
+	add	rax, r11
+	add	rsp, 64
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	ret
 .L10:
-	mov	r12, QWORD PTR 8[rbx]
-	mov	r13, rax
-	movabs	rcx, 1152921504606846975
-	sub	r13, r12
-	mov	rdx, r13
+	mov	rdx, QWORD PTR 8[r10]
+	sub	rax, rdx
+	mov	rbx, rdx
+	mov	rdx, rax
+	mov	r8, rax
+	movabs	rax, 1152921504606846975
 	sar	rdx, 3
-	cmp	rdx, rcx
-	je	.L30
-	cmp	rax, r12
-	je	.L31
-	lea	rax, [rdx+rdx]
-	cmp	rax, rdx
-	jb	.L23
-	test	rax, rax
-	jne	.L29
-	xor	ebp, ebp
-.L17:
-	lea	rax, 8[rsi+r13]
-	movq	xmm6, rsi
-	test	r13, r13
-	mov	QWORD PTR [rsi+r13], rdi
-	movq	xmm0, rax
-	punpcklqdq	xmm6, xmm0
-	jg	.L32
-	test	r12, r12
-	jne	.L33
-.L20:
-	movups	XMMWORD PTR 8[rbx], xmm6
-	mov	QWORD PTR 24[rbx], rbp
-	jmp	.L11
-.L32:
-	mov	rdx, r12
-	mov	r8, r13
-	mov	rcx, rsi
-	call	memmove
-	mov	rdx, QWORD PTR 24[rbx]
-	sub	rdx, r12
-.L19:
-	mov	rcx, r12
-	call	_ZdlPvy
-	jmp	.L20
-.L29:
+	cmp	rdx, rax
+	je	.L23
+	test	rdx, rdx
+	mov	eax, 1
+	mov	QWORD PTR 56[rsp], r11
+	cmovne	rax, rdx
+	mov	QWORD PTR 96[rsp], r10
+	mov	QWORD PTR 48[rsp], r8
+	add	rax, rdx
+	mov	QWORD PTR 40[rsp], r9
 	movabs	rdx, 1152921504606846975
 	cmp	rax, rdx
 	cmova	rax, rdx
-	lea	rbp, 0[0+rax*8]
-.L16:
-	mov	rcx, rbp
+	lea	rcx, 0[0+rax*8]
+	lea	rdi, 0[0+rax*8]
 	call	_Znwy
+	mov	r8, QWORD PTR 48[rsp]
+	mov	r11, QWORD PTR 56[rsp]
+	mov	r9, QWORD PTR 40[rsp]
+	mov	r10, QWORD PTR 96[rsp]
+	mov	rcx, rax
 	mov	rsi, rax
-	add	rbp, rax
-	jmp	.L17
-.L31:
-	mov	rax, rdx
-	add	rax, 1
-	jnc	.L29
+	test	r8, r8
+	mov	QWORD PTR [rax+r8], r11
+	je	.L13
+	mov	rdx, rbx
+	mov	QWORD PTR 48[rsp], r9
+	mov	QWORD PTR 40[rsp], r8
+	call	memcpy
+	mov	r11, QWORD PTR 56[rsp]
+	mov	r10, QWORD PTR 96[rsp]
+	mov	r9, QWORD PTR 48[rsp]
+	mov	r8, QWORD PTR 40[rsp]
+.L13:
+	lea	rax, 8[rsi+r8]
+	mov	rcx, rbx
+	test	rbx, rbx
+	je	.L14
+	mov	rdx, r9
+	mov	QWORD PTR 48[rsp], r11
+	sub	rdx, rbx
+	mov	QWORD PTR 96[rsp], r10
+	mov	QWORD PTR 40[rsp], rax
+	call	_ZdlPvy
+	mov	r11, QWORD PTR 48[rsp]
+	mov	r10, QWORD PTR 96[rsp]
+	mov	rax, QWORD PTR 40[rsp]
+.L14:
+	mov	QWORD PTR 16[r10], rax
+	lea	rax, [rsi+rdi]
+	mov	QWORD PTR 8[r10], rsi
+	mov	QWORD PTR 24[r10], rax
+	jmp	.L11
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	_Z12hot_allocateR4Pool.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z12hot_allocateR4Pool.cold
+	.seh_stackalloc	88
+	.seh_savereg	rbx, 64
+	.seh_savereg	rsi, 72
+	.seh_savereg	rdi, 80
+	.seh_endprologue
+_Z12hot_allocateR4Pool.cold:
 .L23:
-	movabs	rbp, 9223372036854775800
-	jmp	.L16
-.L33:
-	mov	rdx, QWORD PTR 24[rbx]
-	sub	rdx, r12
-	jmp	.L19
-.L30:
 	lea	rcx, .LC0[rip]
 	call	_ZSt20__throw_length_errorPKc
 	nop
+	.text
+	.section	.text.unlikely,"x"
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
+.LCOLDE1:
+	.text
+.LHOTE1:
+	.section	.text.unlikely,"x"
+.LCOLDB2:
 	.section	.text.startup,"x"
+.LHOTB2:
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB1738:
+.LFB1743:
 	push	rbx
 	.seh_pushreg	rbx
 	sub	rsp, 80
 	.seh_stackalloc	80
 	.seh_endprologue
 	call	__main
-	mov	ecx, 262144
 	pxor	xmm0, xmm0
+	mov	ecx, 262144
+	mov	QWORD PTR 56[rsp], 0
 	mov	QWORD PTR 64[rsp], 64
-	movaps	XMMWORD PTR 32[rsp], xmm0
-	movaps	XMMWORD PTR 48[rsp], xmm0
+	movups	XMMWORD PTR 40[rsp], xmm0
 .LEHB0:
 	call	_Znwy
 	mov	ecx, 8
@@ -223,24 +233,23 @@ main:
 	call	_Znwy
 .LEHE0:
 	lea	rdx, 8[rax]
-	movq	xmm0, rax
 	mov	QWORD PTR [rax], rbx
-	xor	ecx, ecx
-	movq	xmm1, rdx
-	mov	QWORD PTR 56[rsp], rdx
-	mov	rax, rbx
-	punpcklqdq	xmm0, xmm1
 	lea	r8, 262144[rbx]
-	movups	XMMWORD PTR 40[rsp], xmm0
-	.p2align 4,,10
+	xor	ecx, ecx
+	mov	QWORD PTR 48[rsp], rdx
+	mov	QWORD PTR 56[rsp], rdx
+	mov	QWORD PTR 40[rsp], rax
+	mov	rax, rbx
+	.p2align 5
+	.p2align 4
 	.p2align 3
-.L35:
+.L25:
 	mov	rdx, rcx
 	mov	rcx, rax
 	add	rax, 64
 	mov	QWORD PTR -64[rax], rdx
-	cmp	r8, rax
-	jne	.L35
+	cmp	rax, r8
+	jne	.L25
 	lea	rcx, 32[rsp]
 	mov	QWORD PTR 32[rsp], rdx
 	call	_ZN4PoolD1Ev
@@ -248,39 +257,67 @@ main:
 	add	rsp, 80
 	pop	rbx
 	ret
-.L37:
-	lea	rcx, 32[rsp]
+.L27:
 	mov	rbx, rax
+	jmp	.L26
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDA1743:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSE1743-.LLSDACSB1743
+.LLSDACSB1743:
+	.uleb128 .LEHB0-.LFB1743
+	.uleb128 .LEHE0-.LEHB0
+	.uleb128 .L27-.LFB1743
+	.uleb128 0
+.LLSDACSE1743:
+	.section	.text.startup,"x"
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	main.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	main.cold
+	.seh_stackalloc	88
+	.seh_savereg	rbx, 80
+	.seh_endprologue
+main.cold:
+.L26:
+	xor	eax, eax
+	lea	rcx, 32[rsp]
+	mov	QWORD PTR 32[rsp], rax
 	call	_ZN4PoolD1Ev
 	mov	rcx, rbx
 .LEHB1:
 	call	_Unwind_Resume
 	nop
 .LEHE1:
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA1738:
+.LLSDAC1743:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE1738-.LLSDACSB1738
-.LLSDACSB1738:
-	.uleb128 .LEHB0-.LFB1738
-	.uleb128 .LEHE0-.LEHB0
-	.uleb128 .L37-.LFB1738
-	.uleb128 0
-	.uleb128 .LEHB1-.LFB1738
+	.uleb128 .LLSDACSEC1743-.LLSDACSBC1743
+.LLSDACSBC1743:
+	.uleb128 .LEHB1-.LCOLDB2
 	.uleb128 .LEHE1-.LEHB1
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE1738:
+.LLSDACSEC1743:
+	.section	.text.unlikely,"x"
 	.section	.text.startup,"x"
+	.section	.text.unlikely,"x"
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+.LCOLDE2:
+	.section	.text.startup,"x"
+.LHOTE2:
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZdlPv;	.scl	2;	.type	32;	.endef
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
 	.def	_Znwy;	.scl	2;	.type	32;	.endef
-	.def	memmove;	.scl	2;	.type	32;	.endef
+	.def	memcpy;	.scl	2;	.type	32;	.endef
 	.def	_ZSt20__throw_length_errorPKc;	.scl	2;	.type	32;	.endef
 	.def	_Unwind_Resume;	.scl	2;	.type	32;	.endef

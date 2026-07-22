@@ -1,36 +1,30 @@
 	.file	"_ch100_custom_view.cpp"
 	.intel_syntax noprefix
 	.text
-	.section	.text$_ZNSt12_Vector_baseIiSaIiEED2Ev,"x"
-	.linkonce discard
 	.align 2
 	.p2align 4
-	.globl	_ZNSt12_Vector_baseIiSaIiEED2Ev
-	.def	_ZNSt12_Vector_baseIiSaIiEED2Ev;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZNSt12_Vector_baseIiSaIiEED2Ev
-_ZNSt12_Vector_baseIiSaIiEED2Ev:
-.LFB4561:
+	.def	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0;	.scl	3;	.type	32;	.endef
+	.seh_proc	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
+_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0:
+.LFB7770:
 	.seh_endprologue
-	mov	rax, QWORD PTR [rcx]
-	test	rax, rax
+	test	rcx, rcx
 	je	.L1
-	mov	rdx, QWORD PTR 16[rcx]
-	mov	rcx, rax
-	sub	rdx, rax
+	sub	rdx, rcx
 	jmp	_ZdlPvy
-	.p2align 4,,10
-	.p2align 3
 .L1:
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
+	.section	.text.unlikely,"x"
+.LCOLDB0:
 	.section	.text.startup,"x"
+.LHOTB0:
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB4172:
+.LFB5523:
 	push	r12
 	.seh_pushreg	r12
 	push	rbp
@@ -41,41 +35,34 @@ main:
 	.seh_pushreg	rsi
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 96
-	.seh_stackalloc	96
+	sub	rsp, 48
+	.seh_stackalloc	48
 	.seh_endprologue
 	call	__main
-	movdqa	xmm0, XMMWORD PTR .LC0[rip]
 	mov	ecx, 16
-	mov	QWORD PTR 80[rsp], 0
-	movaps	XMMWORD PTR 48[rsp], xmm0
-	pxor	xmm0, xmm0
-	movaps	XMMWORD PTR 64[rsp], xmm0
 .LEHB0:
 	call	_Znwy
 .LEHE0:
-	mov	rbp, rax
-	mov	QWORD PTR 64[rsp], rax
-	mov	rsi, QWORD PTR .refptr._ZSt4cout[rip]
+	mov	r12, rax
 	lea	rdi, 16[rax]
-	mov	rax, QWORD PTR 48[rsp]
-	mov	rbx, rbp
-	mov	QWORD PTR 80[rsp], rdi
-	lea	r12, 47[rsp]
-	mov	QWORD PTR 72[rsp], rdi
-	mov	QWORD PTR 0[rbp], rax
-	mov	rax, QWORD PTR 56[rsp]
-	mov	QWORD PTR 8[rbp], rax
+	movabs	rdx, 17179869187
+	movabs	rax, 8589934593
+	mov	QWORD PTR [r12], rax
+	mov	rsi, QWORD PTR .refptr._ZSt4cout[rip]
+	mov	rbx, r12
+	lea	rbp, 46[rsp]
+	mov	QWORD PTR 8[r12], rdx
 	jmp	.L5
 	.p2align 4,,10
 	.p2align 3
 .L19:
 	mov	r8d, 1
-	mov	rdx, r12
+	mov	rdx, rbp
+	mov	rcx, rax
 .LEHB1:
 	call	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_x
 	add	rbx, 4
-	cmp	rbx, rdi
+	cmp	rdi, rbx
 	je	.L18
 .L5:
 	mov	eax, DWORD PTR [rbx]
@@ -83,92 +70,119 @@ main:
 	lea	edx, [rax+rax*4]
 	add	edx, edx
 	call	_ZNSolsEi
-	mov	rcx, rax
-	mov	rax, QWORD PTR [rax]
-	mov	BYTE PTR 47[rsp], 32
-	mov	rax, QWORD PTR -24[rax]
-	cmp	QWORD PTR 16[rcx+rax], 0
+	mov	rdx, QWORD PTR [rax]
+	mov	BYTE PTR 46[rsp], 32
+	mov	rdx, QWORD PTR -24[rdx]
+	cmp	QWORD PTR 16[rax+rdx], 0
 	jne	.L19
 	mov	edx, 32
+	mov	rcx, rax
 	call	_ZNSo3putEc
 	add	rbx, 4
-	cmp	rbx, rdi
+	cmp	rdi, rbx
 	jne	.L5
 .L18:
 	mov	rax, QWORD PTR [rsi]
-	mov	BYTE PTR 48[rsp], 10
+	mov	BYTE PTR 47[rsp], 10
 	mov	rax, QWORD PTR -24[rax]
 	cmp	QWORD PTR 16[rsi+rax], 0
-	jne	.L20
-	mov	edx, 10
+	je	.L10
+	lea	rdx, 47[rsp]
+	mov	r8d, 1
 	mov	rcx, rsi
-	call	_ZNSo3putEc
+	call	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_x
 .L11:
-	lea	rcx, 64[rsp]
-	call	_ZNSt12_Vector_baseIiSaIiEED2Ev
+	mov	rdx, rdi
+	mov	rcx, r12
+	call	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
 	xor	eax, eax
-	add	rsp, 96
+	add	rsp, 48
 	pop	rbx
 	pop	rsi
 	pop	rdi
 	pop	rbp
 	pop	r12
 	ret
-.L20:
-	lea	rdx, 48[rsp]
-	mov	r8d, 1
+.L10:
+	mov	edx, 10
 	mov	rcx, rsi
-	call	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_x
+	call	_ZNSo3putEc
 .LEHE1:
 	jmp	.L11
+.L14:
+	mov	rbx, rax
+	jmp	.L6
 .L13:
 	mov	rbx, rax
-	mov	rcx, rbp
-	mov	edx, 16
-	call	_ZdlPvy
+	jmp	.L12
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDA5523:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSE5523-.LLSDACSB5523
+.LLSDACSB5523:
+	.uleb128 .LEHB0-.LFB5523
+	.uleb128 .LEHE0-.LEHB0
+	.uleb128 .L14-.LFB5523
+	.uleb128 0
+	.uleb128 .LEHB1-.LFB5523
+	.uleb128 .LEHE1-.LEHB1
+	.uleb128 .L13-.LFB5523
+	.uleb128 0
+.LLSDACSE5523:
+	.section	.text.startup,"x"
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	main.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	main.cold
+	.seh_stackalloc	88
+	.seh_savereg	rbx, 48
+	.seh_savereg	rsi, 56
+	.seh_savereg	rdi, 64
+	.seh_savereg	rbp, 72
+	.seh_savereg	r12, 80
+	.seh_endprologue
+main.cold:
+.L6:
+	xor	ecx, ecx
+	xor	edx, edx
+	call	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
 	mov	rcx, rbx
 .LEHB2:
 	call	_Unwind_Resume
-.L14:
-	lea	rcx, 64[rsp]
-	mov	rbx, rax
-	call	_ZNSt12_Vector_baseIiSaIiEED2Ev
+.L12:
+	mov	rcx, r12
+	mov	rdx, rdi
+	call	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
 	mov	rcx, rbx
 	call	_Unwind_Resume
 	nop
 .LEHE2:
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA4172:
+.LLSDAC5523:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE4172-.LLSDACSB4172
-.LLSDACSB4172:
-	.uleb128 .LEHB0-.LFB4172
-	.uleb128 .LEHE0-.LEHB0
-	.uleb128 .L14-.LFB4172
-	.uleb128 0
-	.uleb128 .LEHB1-.LFB4172
-	.uleb128 .LEHE1-.LEHB1
-	.uleb128 .L13-.LFB4172
-	.uleb128 0
-	.uleb128 .LEHB2-.LFB4172
+	.uleb128 .LLSDACSEC5523-.LLSDACSBC5523
+.LLSDACSBC5523:
+	.uleb128 .LEHB2-.LCOLDB0
 	.uleb128 .LEHE2-.LEHB2
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE4172:
+.LLSDACSEC5523:
+	.section	.text.unlikely,"x"
 	.section	.text.startup,"x"
+	.section	.text.unlikely,"x"
 	.seh_endproc
-	.section .rdata,"dr"
-	.align 16
-.LC0:
-	.long	1
-	.long	2
-	.long	3
-	.long	4
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+.LCOLDE0:
+	.section	.text.startup,"x"
+.LHOTE0:
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
 	.def	_Znwy;	.scl	2;	.type	32;	.endef
 	.def	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_x;	.scl	2;	.type	32;	.endef
@@ -176,6 +190,7 @@ main:
 	.def	_ZNSo3putEc;	.scl	2;	.type	32;	.endef
 	.def	_Unwind_Resume;	.scl	2;	.type	32;	.endef
 	.section	.rdata$.refptr._ZSt4cout, "dr"
+	.p2align	3, 0
 	.globl	.refptr._ZSt4cout
 	.linkonce	discard
 .refptr._ZSt4cout:

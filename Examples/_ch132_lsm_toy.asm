@@ -1,47 +1,61 @@
 	.file	"_ch132_lsm_toy.cpp"
 	.intel_syntax noprefix
 	.text
+	.section	.text.unlikely,"x"
+	.align 2
+	.def	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0;	.scl	3;	.type	32;	.endef
+	.seh_proc	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
+_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0:
+.LFB5553:
+	.seh_endprologue
+	test	rcx, rcx
+	je	.L1
+	sub	rdx, rcx
+	jmp	_ZdlPvy
+.L1:
+	ret
+	.seh_endproc
+	.text
 	.p2align 4
 	.globl	_Z17skiplist_containsPK4Nodeii
 	.def	_Z17skiplist_containsPK4Nodeii;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z17skiplist_containsPK4Nodeii
 _Z17skiplist_containsPK4Nodeii:
-.LFB5059:
+.LFB4593:
 	.seh_endprologue
-	mov	rcx, QWORD PTR 8[rcx]
-	test	edx, edx
-	js	.L2
-	movsx	rdx, edx
-	xor	r9d, r9d
-	sal	rdx, 3
-	jmp	.L4
+	movsxd	rax, edx
+	mov	rdx, QWORD PTR 8[rcx]
+	test	eax, eax
+	js	.L5
+	lea	r9, -1[rax]
+	lea	rcx, 0[0+rax*8]
+	sub	r9, rax
+	sal	r9, 3
+	jmp	.L7
+	.p2align 5
 	.p2align 4,,10
 	.p2align 3
-.L14:
+.L16:
 	cmp	DWORD PTR [rax], r8d
-	jge	.L3
-	mov	rcx, QWORD PTR 8[rax]
-.L4:
-	mov	rax, QWORD PTR [rcx+rdx]
+	jge	.L6
+	mov	rdx, QWORD PTR 8[rax]
+.L7:
+	mov	rax, QWORD PTR [rdx+rcx]
 	test	rax, rax
-	jne	.L14
-.L3:
-	lea	rax, -8[rdx]
-	cmp	r9, rdx
-	je	.L2
-	mov	rdx, rax
-	jmp	.L4
-	.p2align 4,,10
-	.p2align 3
-.L2:
-	mov	rax, QWORD PTR [rcx]
+	jne	.L16
+.L6:
+	sub	rcx, 8
+	cmp	r9, rcx
+	jne	.L7
+.L5:
+	mov	rax, QWORD PTR [rdx]
 	test	rax, rax
-	je	.L9
+	je	.L11
 	cmp	DWORD PTR [rax], r8d
-	jne	.L9
+	jne	.L11
 	mov	eax, DWORD PTR 4[rax]
 	ret
-.L9:
+.L11:
 	mov	eax, -1
 	ret
 	.seh_endproc
@@ -50,77 +64,55 @@ _Z17skiplist_containsPK4Nodeii:
 	.def	_Z8run_findRK3Runi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8run_findRK3Runi
 _Z8run_findRK3Runi:
-.LFB5060:
+.LFB4594:
 	.seh_endprologue
 	mov	r9d, DWORD PTR 16[rcx]
 	sub	r9d, 1
-	js	.L21
+	js	.L23
 	mov	r11, QWORD PTR [rcx]
 	xor	r8d, r8d
-	jmp	.L20
+	jmp	.L22
 	.p2align 4,,10
 	.p2align 3
-.L24:
+.L26:
 	lea	r8d, 1[rax]
 	cmp	r9d, r8d
-	jl	.L21
-.L20:
+	jl	.L23
+.L22:
 	mov	eax, r9d
 	sub	eax, r8d
 	sar	eax
 	add	eax, r8d
-	movsx	r10, eax
+	movsxd	r10, eax
 	cmp	DWORD PTR [r11+r10*4], edx
-	je	.L23
-	jl	.L24
+	je	.L25
+	jl	.L26
 	lea	r9d, -1[rax]
 	cmp	r9d, r8d
-	jge	.L20
-.L21:
+	jge	.L22
+.L23:
 	mov	eax, -1
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L23:
+.L25:
 	mov	rax, QWORD PTR 8[rcx]
 	mov	eax, DWORD PTR [rax+r10*4]
 	ret
 	.seh_endproc
-	.section	.text$_ZNSt12_Vector_baseIiSaIiEED2Ev,"x"
-	.linkonce discard
-	.align 2
-	.p2align 4
-	.globl	_ZNSt12_Vector_baseIiSaIiEED2Ev
-	.def	_ZNSt12_Vector_baseIiSaIiEED2Ev;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZNSt12_Vector_baseIiSaIiEED2Ev
-_ZNSt12_Vector_baseIiSaIiEED2Ev:
-.LFB5492:
-	.seh_endprologue
-	mov	rax, QWORD PTR [rcx]
-	test	rax, rax
-	je	.L25
-	mov	rdx, QWORD PTR 16[rcx]
-	mov	rcx, rax
-	sub	rdx, rax
-	jmp	_ZdlPvy
-	.p2align 4,,10
-	.p2align 3
-.L25:
-	ret
-	.seh_endproc
 	.section .rdata,"dr"
-	.align 8
 .LC0:
-	.ascii "cannot create std::vector larger than max_size()\0"
-.LC1:
-	.ascii "vector::_M_realloc_insert\0"
+	.ascii "vector::_M_realloc_append\0"
+	.section	.text.unlikely,"x"
+.LCOLDB1:
 	.text
+.LHOTB1:
 	.p2align 4
 	.globl	_Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_
 	.def	_Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_
 _Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_:
-.LFB5061:
+.LFB4595:
 	push	r15
 	.seh_pushreg	r15
 	push	r14
@@ -137,225 +129,101 @@ _Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_:
 	.seh_pushreg	rsi
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 120
-	.seh_stackalloc	120
-	movaps	XMMWORD PTR 96[rsp], xmm6
-	.seh_savexmm	xmm6, 96
+	sub	rsp, 88
+	.seh_stackalloc	88
 	.seh_endprologue
-	mov	rax, QWORD PTR [rcx]
-	mov	r12, rdx
-	mov	rdx, QWORD PTR 8[rcx]
-	mov	r14, rcx
-	mov	r13, r8
-	movabs	r8, -6148914691236517205
-	mov	rcx, rdx
-	sub	rcx, rax
-	mov	r9, rcx
-	sar	r9, 3
-	imul	r9, r8
-	test	rcx, rcx
-	mov	QWORD PTR 40[rsp], r9
-	js	.L84
-	cmp	QWORD PTR 40[rsp], 0
-	pxor	xmm0, xmm0
-	movups	XMMWORD PTR 72[rsp], xmm0
-	je	.L85
-	sal	QWORD PTR 40[rsp], 2
-	mov	rdi, QWORD PTR 40[rsp]
-	mov	rcx, rdi
+	mov	rsi, QWORD PTR 8[rcx]
+	mov	rdi, QWORD PTR [rcx]
+	mov	rax, rsi
+	sub	rax, rdi
+	mov	rbp, rdx
+	sar	rax, 3
+	mov	r13, rcx
+	mov	r12, r8
+	movabs	rdx, -6148914691236517205
+	imul	rax, rdx
+	mov	QWORD PTR 64[rsp], rax
+	test	rax, rax
+	je	.L48
+	lea	r15, 0[0+rax*4]
+	mov	rcx, r15
+	mov	QWORD PTR 64[rsp], r15
 .LEHB0:
 	call	_Znwy
-.LEHE0:
+	mov	r8, r15
 	xor	edx, edx
-	mov	r8, rdi
-	lea	rbx, [rax+rdi]
-	mov	rcx, rax
-	mov	rsi, rax
-	mov	QWORD PTR 64[rsp], rax
-	mov	QWORD PTR 80[rsp], rbx
+	mov	rbx, rax
+	lea	rax, [rax+r15]
+	mov	rcx, rbx
+	mov	QWORD PTR 72[rsp], rax
 	call	memset
-	mov	rdx, QWORD PTR 8[r14]
-	mov	rax, QWORD PTR [r14]
-.L30:
+.L28:
 	movabs	r15, -6148914691236517205
-	mov	QWORD PTR 72[rsp], rbx
-	.p2align 4,,10
+	sub	rsi, rdi
+	je	.L29
+	.p2align 4
 	.p2align 3
-.L58:
-	mov	r8, rdx
-	sub	r8, rax
-	sar	r8, 3
-	imul	r8, r15
-	cmp	rax, rdx
-	je	.L31
-	xor	ebp, ebp
-	mov	ebx, -1
-	xor	edx, edx
-	mov	rdi, -1
-	.p2align 4,,10
+.L76:
+	sar	rsi, 3
+	mov	rcx, rdi
+	mov	edx, -1
+	xor	edi, edi
+	imul	rsi, r15
+	xor	eax, eax
+	mov	r9, rsi
+	mov	rsi, -1
+	.p2align 4
 	.p2align 3
-.L34:
-	movsx	rcx, DWORD PTR [rsi+rdx*4]
-	cmp	ecx, DWORD PTR 16[rax]
-	jge	.L32
-	mov	r9, QWORD PTR [rax]
-	mov	r9d, DWORD PTR [r9+rcx*4]
-	cmp	r9d, ebx
-	jl	.L68
-	cmp	ebx, -1
-	jne	.L32
-.L68:
-	mov	r10, QWORD PTR 8[rax]
-	movsx	rdi, edx
-	mov	ebx, r9d
-	mov	ebp, DWORD PTR [r10+rcx*4]
 .L32:
-	add	rdx, 1
-	add	rax, 24
-	cmp	rdx, r8
-	jb	.L34
-	cmp	edi, -1
-	je	.L35
-	mov	rax, QWORD PTR 8[r12]
-	cmp	rax, QWORD PTR 16[r12]
+	movsxd	r8, DWORD PTR [rbx+rax*4]
+	cmp	r8d, DWORD PTR 16[rcx]
+	jge	.L30
+	mov	r10, QWORD PTR [rcx]
+	mov	r10d, DWORD PTR [r10+r8*4]
+	cmp	edx, -1
+	je	.L50
+	cmp	r10d, edx
+	jge	.L30
+.L50:
+	mov	rdx, QWORD PTR 8[rcx]
+	movsxd	rsi, eax
+	mov	edi, DWORD PTR [rdx+r8*4]
+	mov	edx, r10d
+.L30:
+	add	rax, 1
+	add	rcx, 24
+	cmp	rax, r9
+	jb	.L32
+	cmp	esi, -1
+	je	.L34
+	mov	r8, QWORD PTR 8[rbp]
+	mov	r9, QWORD PTR 16[rbp]
+	cmp	r8, r9
 	je	.L36
-	mov	DWORD PTR [rax], ebx
+	mov	DWORD PTR [r8], edx
+	add	r8, 4
+	mov	r9, QWORD PTR 16[r12]
+	mov	QWORD PTR 8[rbp], r8
+	mov	rax, QWORD PTR 8[r12]
+	cmp	rax, r9
+	je	.L41
+.L78:
+	mov	DWORD PTR [rax], edi
 	add	rax, 4
 	mov	QWORD PTR 8[r12], rax
-	mov	rax, QWORD PTR 8[r13]
-	cmp	rax, QWORD PTR 16[r13]
-	je	.L47
-.L91:
-	mov	DWORD PTR [rax], ebp
-	add	rax, 4
-	mov	QWORD PTR 8[r13], rax
-.L48:
-	add	DWORD PTR [rsi+rdi*4], 1
-	mov	rdx, QWORD PTR 8[r14]
-	mov	rax, QWORD PTR [r14]
-	jmp	.L58
-	.p2align 4,,10
-	.p2align 3
-.L36:
-	mov	rcx, QWORD PTR [r12]
-	mov	rdx, rax
-	sub	rdx, rcx
-	mov	QWORD PTR 32[rsp], rcx
-	movabs	rcx, 2305843009213693951
-	mov	QWORD PTR 56[rsp], rdx
-	sar	rdx, 2
-	cmp	rdx, rcx
-	je	.L86
-	mov	rcx, QWORD PTR 32[rsp]
-	cmp	rax, rcx
-	je	.L87
-	lea	rax, [rdx+rdx]
-	cmp	rax, rdx
-	jb	.L62
-	mov	QWORD PTR 48[rsp], 0
-	xor	ecx, ecx
-	test	rax, rax
-	jne	.L88
-.L43:
-	mov	rax, QWORD PTR 56[rsp]
-	movq	xmm6, rcx
-	mov	DWORD PTR [rcx+rax], ebx
-	mov	rbx, rax
-	lea	rax, 4[rcx+rax]
-	test	rbx, rbx
-	movq	xmm1, rax
-	punpcklqdq	xmm6, xmm1
-	jg	.L89
-	cmp	QWORD PTR 32[rsp], 0
-	jne	.L90
-.L46:
-	mov	rax, QWORD PTR 48[rsp]
-	movups	XMMWORD PTR [r12], xmm6
-	mov	QWORD PTR 16[r12], rax
-	mov	rax, QWORD PTR 8[r13]
-	cmp	rax, QWORD PTR 16[r13]
-	jne	.L91
-	.p2align 4,,10
-	.p2align 3
-.L47:
-	mov	rbx, QWORD PTR 0[r13]
-	mov	rcx, rax
-	sub	rcx, rbx
-	mov	rdx, rcx
-	mov	QWORD PTR 48[rsp], rcx
-	movabs	rcx, 2305843009213693951
-	sar	rdx, 2
-	cmp	rdx, rcx
-	je	.L92
-	cmp	rax, rbx
-	je	.L93
-	lea	rax, [rdx+rdx]
-	cmp	rax, rdx
-	jb	.L65
-	mov	QWORD PTR 32[rsp], 0
-	xor	ecx, ecx
-	test	rax, rax
-	jne	.L94
-.L54:
-	mov	rdx, QWORD PTR 48[rsp]
-	movq	xmm6, rcx
-	lea	rax, 4[rcx+rdx]
-	test	rdx, rdx
-	mov	DWORD PTR [rcx+rdx], ebp
-	movq	xmm2, rax
-	punpcklqdq	xmm6, xmm2
-	jg	.L95
-	test	rbx, rbx
-	jne	.L96
-.L57:
-	mov	rax, QWORD PTR 32[rsp]
-	movups	XMMWORD PTR 0[r13], xmm6
-	mov	QWORD PTR 16[r13], rax
-	jmp	.L48
-	.p2align 4,,10
-	.p2align 3
-.L31:
-	test	rsi, rsi
-	jne	.L35
-	movaps	xmm6, XMMWORD PTR 96[rsp]
-	add	rsp, 120
-	pop	rbx
-	pop	rsi
-	pop	rdi
-	pop	rbp
-	pop	r12
-	pop	r13
-	pop	r14
-	pop	r15
-	ret
-.L62:
-	movabs	rax, 9223372036854775804
-	mov	QWORD PTR 48[rsp], rax
 .L42:
-	mov	rcx, QWORD PTR 48[rsp]
-.LEHB1:
-	call	_Znwy
-	mov	rcx, rax
-	mov	rax, QWORD PTR 48[rsp]
-	add	rax, rcx
-	mov	QWORD PTR 48[rsp], rax
-	jmp	.L43
-.L65:
-	movabs	rax, 9223372036854775804
-	mov	QWORD PTR 32[rsp], rax
-.L53:
-	mov	rcx, QWORD PTR 32[rsp]
-	call	_Znwy
-	mov	rcx, rax
-	mov	rax, QWORD PTR 32[rsp]
-	add	rax, rcx
-	mov	QWORD PTR 32[rsp], rax
-	jmp	.L54
-.L35:
-	mov	rdx, QWORD PTR 40[rsp]
-	mov	rcx, rsi
-	movaps	xmm6, XMMWORD PTR 96[rsp]
-	add	rsp, 120
+	add	DWORD PTR [rbx+rsi*4], 1
+	mov	rdi, QWORD PTR 0[r13]
+	mov	rsi, QWORD PTR 8[r13]
+	sub	rsi, rdi
+	jne	.L76
+.L29:
+	test	rbx, rbx
+	je	.L77
+.L34:
+	mov	rdx, QWORD PTR 64[rsp]
+	mov	rcx, rbx
+	add	rsp, 88
 	pop	rbx
 	pop	rsi
 	pop	rdi
@@ -365,118 +233,221 @@ _Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_:
 	pop	r14
 	pop	r15
 	jmp	_ZdlPvy
-.L89:
-	mov	r8, rbx
-	mov	rbx, QWORD PTR 32[rsp]
-	mov	rdx, rbx
-	call	memmove
-	mov	rax, QWORD PTR 16[r12]
-	sub	rax, rbx
-	mov	rdx, rax
-.L45:
-	mov	rcx, QWORD PTR 32[rsp]
-	call	_ZdlPvy
-	jmp	.L46
-.L85:
-	mov	QWORD PTR 64[rsp], 0
-	xor	esi, esi
-	xor	ebx, ebx
-	mov	QWORD PTR 80[rsp], 0
-	jmp	.L30
-.L95:
-	mov	r8, rdx
-	mov	rdx, rbx
-	call	memmove
-	mov	rdx, QWORD PTR 16[r13]
-	sub	rdx, rbx
-.L56:
-	mov	rcx, rbx
-	call	_ZdlPvy
-	jmp	.L57
-.L87:
-	add	rdx, 1
-	jc	.L62
+.LEHE0:
+	.p2align 4,,10
+	.p2align 3
+.L36:
+	movabs	rcx, 2305843009213693951
+	mov	r11, QWORD PTR 0[rbp]
+	sub	r8, r11
+	mov	rax, r8
+	sar	rax, 2
+	cmp	rax, rcx
+	je	.L72
+	test	rax, rax
+	mov	r14d, 1
+	mov	QWORD PTR 56[rsp], r8
+	cmovne	r14, rax
+	mov	QWORD PTR 48[rsp], r11
+	mov	QWORD PTR 40[rsp], r9
+	add	r14, rax
+	mov	DWORD PTR 32[rsp], edx
 	movabs	rax, 2305843009213693951
-	cmp	rdx, rax
-	cmova	rdx, rax
-	lea	rax, 0[0+rdx*4]
-	mov	QWORD PTR 48[rsp], rax
-	jmp	.L42
-.L93:
-	add	rdx, 1
-	jc	.L65
-	movabs	rax, 2305843009213693951
-	cmp	rdx, rax
-	cmova	rdx, rax
-	lea	rax, 0[0+rdx*4]
+	cmp	r14, rax
+	cmova	r14, rax
+	sal	r14, 2
+	mov	rcx, r14
+.LEHB1:
+	call	_Znwy
+	mov	r8, QWORD PTR 56[rsp]
+	mov	edx, DWORD PTR 32[rsp]
+	mov	r10, rax
+	mov	r9, QWORD PTR 40[rsp]
+	mov	r11, QWORD PTR 48[rsp]
+	test	r8, r8
+	mov	DWORD PTR [rax+r8], edx
+	je	.L39
+	mov	rdx, r11
+	mov	rcx, rax
+	mov	QWORD PTR 48[rsp], r9
+	mov	QWORD PTR 40[rsp], r8
+	mov	QWORD PTR 32[rsp], r11
+	call	memcpy
+	mov	r9, QWORD PTR 48[rsp]
+	mov	r8, QWORD PTR 40[rsp]
+	mov	r11, QWORD PTR 32[rsp]
+	mov	r10, rax
+.L39:
+	lea	rax, 4[r10+r8]
+	test	r11, r11
+	je	.L40
+	mov	rdx, r9
+	mov	rcx, r11
+	mov	QWORD PTR 40[rsp], r10
+	sub	rdx, r11
 	mov	QWORD PTR 32[rsp], rax
-	jmp	.L53
-.L90:
-	mov	rdx, QWORD PTR 16[r12]
+	call	_ZdlPvy
+	mov	r10, QWORD PTR 40[rsp]
 	mov	rax, QWORD PTR 32[rsp]
-	sub	rdx, rax
-	jmp	.L45
-.L96:
-	mov	rdx, QWORD PTR 16[r13]
-	sub	rdx, rbx
-	jmp	.L56
-.L88:
+.L40:
+	mov	QWORD PTR 0[rbp], r10
+	add	r10, r14
+	mov	QWORD PTR 8[rbp], rax
+	mov	rax, QWORD PTR 8[r12]
+	mov	QWORD PTR 16[rbp], r10
+	mov	r9, QWORD PTR 16[r12]
+	cmp	rax, r9
+	jne	.L78
+	.p2align 4
+	.p2align 3
+.L41:
 	movabs	rdx, 2305843009213693951
+	mov	r11, QWORD PTR [r12]
+	sub	rax, r11
+	mov	r8, rax
+	sar	rax, 2
 	cmp	rax, rdx
-	cmova	rax, rdx
-	sal	rax, 2
-	mov	QWORD PTR 48[rsp], rax
-	jmp	.L42
-.L94:
-	movabs	rdx, 2305843009213693951
-	cmp	rax, rdx
-	cmova	rax, rdx
-	sal	rax, 2
-	mov	QWORD PTR 32[rsp], rax
-	jmp	.L53
-.L86:
-	lea	rcx, .LC1[rip]
-	call	_ZSt20__throw_length_errorPKc
-.L92:
-	lea	rcx, .LC1[rip]
-	call	_ZSt20__throw_length_errorPKc
+	je	.L73
+	test	rax, rax
+	mov	r14d, 1
+	mov	QWORD PTR 48[rsp], r8
+	cmovne	r14, rax
+	mov	QWORD PTR 40[rsp], r11
+	mov	QWORD PTR 32[rsp], r9
+	add	r14, rax
+	movabs	rax, 2305843009213693951
+	cmp	r14, rax
+	cmova	r14, rax
+	sal	r14, 2
+	mov	rcx, r14
+	call	_Znwy
 .LEHE1:
-.L84:
-	lea	rcx, .LC0[rip]
-.LEHB2:
-	call	_ZSt20__throw_length_errorPKc
-.L67:
-	lea	rcx, 64[rsp]
-	mov	rbx, rax
-	call	_ZNSt12_Vector_baseIiSaIiEED2Ev
-	mov	rcx, rbx
-	call	_Unwind_Resume
-	nop
-.LEHE2:
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	mov	r8, QWORD PTR 48[rsp]
+	mov	r9, QWORD PTR 32[rsp]
+	mov	r10, rax
+	mov	r11, QWORD PTR 40[rsp]
+	test	r8, r8
+	mov	DWORD PTR [rax+r8], edi
+	je	.L44
+	mov	rdx, r11
+	mov	rcx, rax
+	mov	QWORD PTR 48[rsp], r9
+	mov	QWORD PTR 40[rsp], r8
+	mov	QWORD PTR 32[rsp], r11
+	call	memcpy
+	mov	r9, QWORD PTR 48[rsp]
+	mov	r8, QWORD PTR 40[rsp]
+	mov	r11, QWORD PTR 32[rsp]
+	mov	r10, rax
+.L44:
+	lea	rdi, 4[r10+r8]
+	test	r11, r11
+	je	.L45
+	mov	rdx, r9
+	mov	rcx, r11
+	mov	QWORD PTR 32[rsp], r10
+	sub	rdx, r11
+	call	_ZdlPvy
+	mov	r10, QWORD PTR 32[rsp]
+.L45:
+	mov	QWORD PTR [r12], r10
+	add	r10, r14
+	mov	QWORD PTR 8[r12], rdi
+	mov	QWORD PTR 16[r12], r10
+	jmp	.L42
+.L77:
+	add	rsp, 88
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
+	pop	r12
+	pop	r13
+	pop	r14
+	pop	r15
+	ret
+.L48:
+	mov	QWORD PTR 72[rsp], 0
+	xor	ebx, ebx
+	jmp	.L28
+.L70:
+	jmp	.L71
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA5061:
+.LLSDA4595:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE5061-.LLSDACSB5061
-.LLSDACSB5061:
-	.uleb128 .LEHB0-.LFB5061
+	.uleb128 .LLSDACSE4595-.LLSDACSB4595
+.LLSDACSB4595:
+	.uleb128 .LEHB0-.LFB4595
 	.uleb128 .LEHE0-.LEHB0
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB1-.LFB5061
+	.uleb128 .LEHB1-.LFB4595
 	.uleb128 .LEHE1-.LEHB1
-	.uleb128 .L67-.LFB5061
+	.uleb128 .L70-.LFB4595
 	.uleb128 0
-	.uleb128 .LEHB2-.LFB5061
-	.uleb128 .LEHE2-.LEHB2
-	.uleb128 0
-	.uleb128 0
-.LLSDACSE5061:
+.LLSDACSE4595:
 	.text
 	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	_Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_.cold
+	.seh_stackalloc	152
+	.seh_savereg	rbx, 88
+	.seh_savereg	rsi, 96
+	.seh_savereg	rdi, 104
+	.seh_savereg	rbp, 112
+	.seh_savereg	r12, 120
+	.seh_savereg	r13, 128
+	.seh_savereg	r14, 136
+	.seh_savereg	r15, 144
+	.seh_endprologue
+_Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_.cold:
+.L72:
+	lea	rcx, .LC0[rip]
+.LEHB2:
+	call	_ZSt20__throw_length_errorPKc
+.L73:
+	lea	rcx, .LC0[rip]
+	call	_ZSt20__throw_length_errorPKc
+.LEHE2:
+.L49:
+.L71:
+	mov	rdx, QWORD PTR 72[rsp]
+	mov	rsi, rax
+	mov	rcx, rbx
+	call	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
+	mov	rcx, rsi
+.LEHB3:
+	call	_Unwind_Resume
+	nop
+.LEHE3:
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDAC4595:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSEC4595-.LLSDACSBC4595
+.LLSDACSBC4595:
+	.uleb128 .LEHB2-.LCOLDB1
+	.uleb128 .LEHE2-.LEHB2
+	.uleb128 .L49-.LCOLDB1
+	.uleb128 0
+	.uleb128 .LEHB3-.LCOLDB1
+	.uleb128 .LEHE3-.LEHB3
+	.uleb128 0
+	.uleb128 0
+.LLSDACSEC4595:
+	.section	.text.unlikely,"x"
+	.text
+	.section	.text.unlikely,"x"
+	.seh_endproc
+.LCOLDE1:
+	.text
+.LHOTE1:
 	.section	.text$_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EE11_M_gen_randEv,"x"
 	.linkonce discard
 	.align 2
@@ -485,157 +456,144 @@ _Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_:
 	.def	_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EE11_M_gen_randEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EE11_M_gen_randEv
 _ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EE11_M_gen_randEv:
-.LFB5691:
-	sub	rsp, 40
-	.seh_stackalloc	40
+.LFB5190:
+	sub	rsp, 24
+	.seh_stackalloc	24
 	movaps	XMMWORD PTR [rsp], xmm6
 	.seh_savexmm	xmm6, 0
-	movaps	XMMWORD PTR 16[rsp], xmm7
-	.seh_savexmm	xmm7, 16
 	.seh_endprologue
-	mov	r8d, DWORD PTR [rcx]
-	lea	r9, 908[rcx]
-	mov	r10, rcx
-	.p2align 4,,10
+	pcmpeqd	xmm3, xmm3
+	movdqa	xmm5, xmm3
+	movdqa	xmm4, xmm3
+	pslld	xmm5, 31
+	psrld	xmm4, 1
+	psrld	xmm3, 31
+	mov	r9, rcx
+	lea	rdx, 896[rcx]
+	mov	rax, rcx
+	.p2align 4
 	.p2align 3
-.L98:
-	mov	edx, r8d
-	mov	r8d, DWORD PTR 4[rcx]
-	add	rcx, 4
-	and	edx, -2147483648
-	mov	eax, r8d
-	and	eax, 2147483647
-	or	edx, eax
-	and	eax, 1
-	shr	edx
-	xor	edx, DWORD PTR 1584[rcx]
-	neg	eax
-	and	eax, -1727483681
-	xor	eax, edx
-	mov	DWORD PTR -4[rcx], eax
-	cmp	rcx, r9
-	jne	.L98
-	movdqa	xmm7, XMMWORD PTR .LC2[rip]
-	lea	rax, 2492[r10]
-	pxor	xmm3, xmm3
-	movdqa	xmm6, XMMWORD PTR .LC3[rip]
-	movdqa	xmm5, XMMWORD PTR .LC4[rip]
-	movdqa	xmm4, XMMWORD PTR .LC5[rip]
-	.p2align 4,,10
+.L80:
+	movdqu	xmm1, XMMWORD PTR [rax]
+	movdqu	xmm0, XMMWORD PTR 4[rax]
+	add	rax, 16
+	movdqu	xmm2, XMMWORD PTR 1572[rax]
+	pand	xmm0, xmm4
+	pand	xmm1, xmm5
+	por	xmm1, xmm0
+	movdqa	xmm0, xmm1
+	pand	xmm1, xmm3
+	psrld	xmm0, 1
+	pxor	xmm2, xmm0
+	movdqa	xmm0, xmm1
+	pslld	xmm0, 3
+	paddd	xmm0, xmm1
+	pslld	xmm0, 9
+	paddd	xmm0, xmm1
+	pslld	xmm0, 5
+	paddd	xmm0, xmm1
+	pslld	xmm0, 2
+	psubd	xmm0, xmm1
+	pslld	xmm0, 3
+	psubd	xmm0, xmm1
+	movdqa	xmm6, xmm0
+	pslld	xmm6, 4
+	paddd	xmm0, xmm6
+	pslld	xmm0, 5
+	psubd	xmm0, xmm1
+	pxor	xmm2, xmm0
+	movups	XMMWORD PTR -16[rax], xmm2
+	cmp	rdx, rax
+	jne	.L80
+	mov	r10d, DWORD PTR 896[r9]
+	lea	rax, 908[r9]
+.L81:
+	and	r10d, -2147483648
+	add	rdx, 4
+	mov	r8d, r10d
+	mov	r10d, DWORD PTR [rdx]
+	mov	ecx, r10d
+	and	ecx, 2147483647
+	or	ecx, r8d
+	mov	r8d, ecx
+	and	ecx, 1
+	neg	ecx
+	shr	r8d
+	xor	r8d, DWORD PTR 1584[rdx]
+	and	ecx, -1727483681
+	xor	ecx, r8d
+	mov	DWORD PTR -4[rdx], ecx
+	cmp	rdx, rax
+	jne	.L81
+	pcmpeqd	xmm3, xmm3
+	lea	rdx, 2492[r9]
+	movdqa	xmm5, xmm3
+	movdqa	xmm4, xmm3
+	pslld	xmm5, 31
+	psrld	xmm4, 1
+	psrld	xmm3, 31
+	.p2align 4
 	.p2align 3
-.L99:
-	movdqu	xmm0, XMMWORD PTR [rcx]
-	add	rcx, 16
-	movdqu	xmm1, XMMWORD PTR -12[rcx]
-	movdqu	xmm2, XMMWORD PTR -924[rcx]
-	pand	xmm0, xmm7
-	pand	xmm1, xmm6
-	por	xmm0, xmm1
-	movdqa	xmm1, xmm0
-	pand	xmm0, xmm5
-	psrld	xmm1, 1
-	pxor	xmm1, xmm2
-	movdqa	xmm2, xmm3
-	psubd	xmm2, xmm0
-	pand	xmm2, xmm4
-	movdqa	xmm0, xmm2
-	pxor	xmm0, xmm1
-	movups	XMMWORD PTR -16[rcx], xmm0
-	cmp	rcx, rax
-	jne	.L99
-	mov	eax, DWORD PTR 2492[r10]
-	mov	QWORD PTR 2496[r10], 0
-	mov	edx, DWORD PTR [r10]
+.L82:
+	movdqu	xmm1, XMMWORD PTR [rax]
+	movdqu	xmm0, XMMWORD PTR 4[rax]
+	add	rax, 16
+	movdqu	xmm2, XMMWORD PTR -924[rax]
+	pand	xmm0, xmm4
+	pand	xmm1, xmm5
+	por	xmm1, xmm0
+	movdqa	xmm0, xmm1
+	pand	xmm1, xmm3
+	psrld	xmm0, 1
+	pxor	xmm2, xmm0
+	movdqa	xmm0, xmm1
+	pslld	xmm0, 3
+	paddd	xmm0, xmm1
+	pslld	xmm0, 9
+	paddd	xmm0, xmm1
+	pslld	xmm0, 5
+	paddd	xmm0, xmm1
+	pslld	xmm0, 2
+	psubd	xmm0, xmm1
+	pslld	xmm0, 3
+	psubd	xmm0, xmm1
+	movdqa	xmm6, xmm0
+	pslld	xmm6, 4
+	paddd	xmm0, xmm6
+	pslld	xmm0, 5
+	psubd	xmm0, xmm1
+	pxor	xmm2, xmm0
+	movups	XMMWORD PTR -16[rax], xmm2
+	cmp	rdx, rax
+	jne	.L82
+	mov	eax, DWORD PTR 2492[r9]
+	mov	edx, DWORD PTR [r9]
+	mov	QWORD PTR 2496[r9], 0
 	movaps	xmm6, XMMWORD PTR [rsp]
-	movaps	xmm7, XMMWORD PTR 16[rsp]
-	and	eax, -2147483648
 	and	edx, 2147483647
+	and	eax, -2147483648
 	or	eax, edx
 	mov	edx, eax
 	and	eax, 1
-	shr	edx
-	xor	edx, DWORD PTR 1584[r10]
 	neg	eax
+	shr	edx
+	xor	edx, DWORD PTR 1584[r9]
 	and	eax, -1727483681
 	xor	eax, edx
-	mov	DWORD PTR 2492[r10], eax
-	add	rsp, 40
+	mov	DWORD PTR 2492[r9], eax
+	add	rsp, 24
 	ret
 	.seh_endproc
-	.section	.text$_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EEclEv,"x"
-	.linkonce discard
-	.align 2
-	.p2align 4
-	.globl	_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EEclEv
-	.def	_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EEclEv;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EEclEv
-_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EEclEv:
-.LFB5496:
-	sub	rsp, 40
-	.seh_stackalloc	40
-	.seh_endprologue
-	mov	rax, QWORD PTR 2496[rcx]
-	cmp	rax, 623
-	mov	r11, rcx
-	ja	.L104
-.L103:
-	lea	rdx, 1[rax]
-	mov	eax, DWORD PTR [r11+rax*4]
-	mov	QWORD PTR 2496[r11], rdx
-	mov	edx, eax
-	shr	edx, 11
-	xor	edx, eax
-	mov	eax, edx
-	sal	eax, 7
-	and	eax, -1658038656
-	xor	eax, edx
-	mov	edx, eax
-	sal	edx, 15
-	and	edx, -272236544
-	xor	edx, eax
-	mov	eax, edx
-	shr	eax, 18
-	xor	eax, edx
-	add	rsp, 40
-	ret
-	.p2align 4,,10
-	.p2align 3
-.L104:
-	call	_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EE11_M_gen_randEv
-	mov	rax, QWORD PTR 2496[r11]
-	jmp	.L103
-	.seh_endproc
-	.section	.text$_ZNSt12_Vector_baseI3RunSaIS0_EED2Ev,"x"
-	.linkonce discard
-	.align 2
-	.p2align 4
-	.globl	_ZNSt12_Vector_baseI3RunSaIS0_EED2Ev
-	.def	_ZNSt12_Vector_baseI3RunSaIS0_EED2Ev;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZNSt12_Vector_baseI3RunSaIS0_EED2Ev
-_ZNSt12_Vector_baseI3RunSaIS0_EED2Ev:
-.LFB5702:
-	.seh_endprologue
-	mov	rax, QWORD PTR [rcx]
-	test	rax, rax
-	je	.L105
-	mov	rdx, QWORD PTR 16[rcx]
-	mov	rcx, rax
-	sub	rdx, rax
-	jmp	_ZdlPvy
-	.p2align 4,,10
-	.p2align 3
-.L105:
-	ret
-	.seh_endproc
+	.section	.text.unlikely,"x"
+.LCOLDB5:
 	.text
+.LHOTB5:
 	.p2align 4
 	.globl	_Z4demoi
 	.def	_Z4demoi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z4demoi
 _Z4demoi:
-.LFB5062:
-	push	r15
-	.seh_pushreg	r15
+.LFB4602:
 	push	r14
 	.seh_pushreg	r14
 	push	r13
@@ -650,230 +608,236 @@ _Z4demoi:
 	.seh_pushreg	rsi
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 2856
-	.seh_stackalloc	2856
-	movaps	XMMWORD PTR 2816[rsp], xmm6
-	.seh_savexmm	xmm6, 2816
-	movaps	XMMWORD PTR 2832[rsp], xmm7
-	.seh_savexmm	xmm7, 2832
+	sub	rsp, 2704
+	.seh_stackalloc	2704
 	.seh_endprologue
-	mov	edx, 1
-	mov	DWORD PTR 304[rsp], ecx
-	lea	rbx, 304[rsp]
-	.p2align 4,,10
+	mov	ebx, 1
+	mov	DWORD PTR 192[rsp], ecx
+	lea	rdx, 196[rsp]
+	.p2align 6
+	.p2align 4
 	.p2align 3
-.L108:
+.L87:
 	mov	eax, ecx
+	add	rdx, 4
 	shr	eax, 30
 	xor	eax, ecx
 	imul	eax, eax, 1812433253
-	lea	ecx, [rax+rdx]
-	mov	DWORD PTR [rbx+rdx*4], ecx
-	add	rdx, 1
-	cmp	rdx, 624
-	jne	.L108
+	lea	ecx, [rax+rbx]
+	add	rbx, 1
+	mov	DWORD PTR -4[rdx], ecx
+	cmp	rbx, 624
+	jne	.L87
 	mov	ecx, 32
-	mov	QWORD PTR 2800[rsp], 624
-.LEHB3:
-	call	_Znwy
-.LEHE3:
-	mov	ecx, 32
-	pxor	xmm0, xmm0
-	movups	XMMWORD PTR 72[rsp], xmm0
-	lea	rdx, 32[rax]
-	mov	rsi, rax
-	mov	DWORD PTR [rax], 0
-	mov	QWORD PTR 32[rsp], rax
-	lea	rax, 4[rax]
-	mov	QWORD PTR 4[rsi], 0
-	mov	QWORD PTR 8[rax], 0
-	mov	QWORD PTR 16[rax], 0
-	mov	DWORD PTR 24[rax], 0
-	mov	QWORD PTR 48[rsp], rdx
-	mov	QWORD PTR 40[rsp], rdx
+	mov	QWORD PTR 2688[rsp], 624
 .LEHB4:
 	call	_Znwy
 .LEHE4:
-	lea	rdx, 32[rax]
-	mov	rdi, rax
-	mov	DWORD PTR [rax], 0
-	mov	ecx, 32
-	mov	QWORD PTR 64[rsp], rax
-	lea	rax, 4[rax]
 	pxor	xmm0, xmm0
-	mov	QWORD PTR 4[rdi], 0
-	mov	QWORD PTR 8[rax], 0
-	mov	QWORD PTR 16[rax], 0
-	mov	DWORD PTR 24[rax], 0
-	mov	QWORD PTR 80[rsp], rdx
-	mov	QWORD PTR 72[rsp], rdx
-	movups	XMMWORD PTR 104[rsp], xmm0
+	mov	ecx, 32
+	mov	DWORD PTR [rax], 0
+	mov	rsi, rax
+	movups	XMMWORD PTR 4[rax], xmm0
+	movups	XMMWORD PTR 16[rax], xmm0
 .LEHB5:
 	call	_Znwy
 .LEHE5:
-	lea	rdx, 32[rax]
-	mov	rbp, rax
 	mov	DWORD PTR [rax], 0
-	mov	ecx, 32
-	mov	QWORD PTR 96[rsp], rax
-	lea	rax, 4[rax]
 	pxor	xmm0, xmm0
-	mov	QWORD PTR 4[rbp], 0
-	mov	QWORD PTR 8[rax], 0
-	mov	QWORD PTR 16[rax], 0
-	mov	DWORD PTR 24[rax], 0
-	mov	QWORD PTR 112[rsp], rdx
-	mov	QWORD PTR 104[rsp], rdx
-	movups	XMMWORD PTR 136[rsp], xmm0
+	mov	ecx, 32
+	mov	rdi, rax
+	movups	XMMWORD PTR 4[rax], xmm0
+	movups	XMMWORD PTR 16[rax], xmm0
 .LEHB6:
 	call	_Znwy
 .LEHE6:
-	lea	rdx, 32[rax]
-	movq	xmm7, rbp
-	movq	xmm1, rax
-	mov	QWORD PTR 128[rsp], rax
-	mov	r12, rax
-	movq	xmm6, rsi
-	movq	xmm2, rdi
-	mov	QWORD PTR 144[rsp], rdx
 	mov	DWORD PTR [rax], 0
-	xor	r13d, r13d
-	punpcklqdq	xmm7, xmm1
-	punpcklqdq	xmm6, xmm2
-	mov	QWORD PTR 4[rax], 0
-	mov	QWORD PTR 12[rax], 0
-	mov	QWORD PTR 20[rax], 0
-	mov	DWORD PTR 28[rax], 0
-	mov	QWORD PTR 136[rsp], rdx
-	.p2align 4,,10
-	.p2align 3
-.L109:
-	lea	eax, [r13+r13]
-	mov	rcx, rbx
-	mov	DWORD PTR [rsi+r13*4], eax
-	call	_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EEclEv
-	mov	edx, eax
-	imul	rdx, rdx, 1374389535
-	shr	rdx, 37
-	imul	edx, edx, 100
-	sub	eax, edx
-	mov	DWORD PTR [rdi+r13*4], eax
-	add	r13, 1
-	cmp	r13, 8
-	jne	.L109
-	xor	r14d, r14d
-	mov	r13d, 1
-	.p2align 4,,10
-	.p2align 3
-.L110:
-	mov	DWORD PTR 0[rbp+r14], r13d
-	mov	rcx, rbx
-	add	r13d, 2
-	call	_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EEclEv
-	mov	edx, eax
-	imul	rdx, rdx, 1374389535
-	shr	rdx, 37
-	imul	edx, edx, 100
-	sub	eax, edx
-	mov	DWORD PTR [r12+r14], eax
-	add	r14, 4
-	cmp	r13d, 17
-	jne	.L110
-	movaps	XMMWORD PTR 160[rsp], xmm6
-	mov	ecx, 48
-	mov	rax, QWORD PTR 168[rsp]
 	pxor	xmm0, xmm0
-	movq	QWORD PTR 256[rsp], xmm6
-	mov	QWORD PTR 272[rsp], 8
-	movups	XMMWORD PTR 280[rsp], xmm7
-	mov	QWORD PTR 264[rsp], rax
-	mov	DWORD PTR 296[rsp], 8
-	movaps	XMMWORD PTR 192[rsp], xmm0
-	mov	QWORD PTR 208[rsp], 0
+	mov	ecx, 32
+	mov	rbp, rax
+	movups	XMMWORD PTR 4[rax], xmm0
+	movups	XMMWORD PTR 16[rax], xmm0
 .LEHB7:
 	call	_Znwy
 .LEHE7:
-	mov	rdx, QWORD PTR 256[rsp]
-	mov	rbx, rax
-	mov	QWORD PTR 192[rsp], rax
-	lea	r15, 256[rsp]
-	mov	QWORD PTR 224[rsp], 0
-	lea	r14, 224[rsp]
-	mov	r8, r15
-	mov	QWORD PTR 232[rsp], 0
-	mov	QWORD PTR 240[rsp], 0
-	lea	rax, 48[rax]
-	mov	QWORD PTR [rbx], rdx
-	mov	rdx, QWORD PTR 264[rsp]
-	lea	r13, 192[rsp]
-	mov	rcx, r13
-	mov	QWORD PTR 208[rsp], rax
-	mov	QWORD PTR 200[rsp], rax
-	mov	QWORD PTR 256[rsp], 0
-	mov	QWORD PTR 8[rbx], rdx
-	mov	rdx, QWORD PTR 272[rsp]
-	mov	QWORD PTR 264[rsp], 0
-	mov	QWORD PTR 272[rsp], 0
-	mov	QWORD PTR 16[rbx], rdx
-	mov	rdx, QWORD PTR 280[rsp]
-	mov	QWORD PTR 24[rbx], rdx
-	mov	rdx, QWORD PTR 288[rsp]
-	mov	QWORD PTR 32[rbx], rdx
-	mov	rdx, QWORD PTR 296[rsp]
-	mov	QWORD PTR 40[rbx], rdx
-	mov	rdx, r14
-.LEHB8:
-	call	_Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_
-.LEHE8:
-	xor	edx, edx
-	mov	r8d, 7
-	jmp	.L111
+	pxor	xmm0, xmm0
+	mov	DWORD PTR [rax], 0
+	mov	r12, rax
+	xor	r14d, r14d
+	movups	XMMWORD PTR 4[rax], xmm0
+	movups	XMMWORD PTR 16[rax], xmm0
+	jmp	.L89
 	.p2align 4,,10
 	.p2align 3
-.L144:
+.L88:
+	lea	rbx, 1[rax]
+	mov	eax, DWORD PTR 192[rsp+rax*4]
+	mov	QWORD PTR 2688[rsp], rbx
+	mov	edx, eax
+	shr	edx, 11
+	xor	eax, edx
+	mov	edx, eax
+	sal	edx, 7
+	and	edx, -1658038656
+	xor	eax, edx
+	mov	edx, eax
+	sal	edx, 15
+	and	edx, -272236544
+	xor	eax, edx
+	mov	edx, eax
+	shr	edx, 18
+	xor	eax, edx
+	mov	edx, eax
+	imul	rdx, rdx, 1374389535
+	shr	rdx, 37
+	imul	edx, edx, 100
+	sub	eax, edx
+	mov	DWORD PTR [rdi+r14*4], eax
+	add	r14, 1
+	cmp	r14, 8
+	je	.L122
+.L89:
+	lea	eax, [r14+r14]
+	mov	DWORD PTR [rsi+r14*4], eax
+	mov	rax, rbx
+	cmp	rbx, 623
+	jbe	.L88
+	lea	rcx, 192[rsp]
+	call	_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EE11_M_gen_randEv
+	mov	rax, QWORD PTR 2688[rsp]
+	jmp	.L88
+	.p2align 4,,10
+	.p2align 3
+.L122:
+	xor	r14d, r14d
+	jmp	.L91
+	.p2align 4,,10
+	.p2align 3
+.L90:
+	lea	rbx, 1[rax]
+	mov	eax, DWORD PTR 192[rsp+rax*4]
+	mov	QWORD PTR 2688[rsp], rbx
+	mov	edx, eax
+	shr	edx, 11
+	xor	eax, edx
+	mov	edx, eax
+	sal	edx, 7
+	and	edx, -1658038656
+	xor	eax, edx
+	mov	edx, eax
+	sal	edx, 15
+	and	edx, -272236544
+	xor	eax, edx
+	mov	edx, eax
+	shr	edx, 18
+	xor	eax, edx
+	mov	edx, eax
+	imul	rdx, rdx, 1374389535
+	shr	rdx, 37
+	imul	edx, edx, 100
+	sub	eax, edx
+	mov	DWORD PTR [r12+r14*4], eax
+	add	r14, 1
+	cmp	r14, 8
+	je	.L123
+.L91:
+	lea	eax, 1[r14+r14]
+	mov	DWORD PTR 0[rbp+r14*4], eax
+	mov	rax, rbx
+	cmp	rbx, 623
+	jbe	.L90
+	lea	rcx, 192[rsp]
+	call	_ZNSt23mersenne_twister_engineIjLy32ELy624ELy397ELy31ELj2567483615ELy11ELj4294967295ELy7ELj2636928640ELy15ELj4022730752ELy18ELj1812433253EE11_M_gen_randEv
+	mov	rax, QWORD PTR 2688[rsp]
+	jmp	.L90
+	.p2align 4,,10
+	.p2align 3
+.L123:
+	mov	QWORD PTR 48[rsp], rsi
+	mov	ecx, 48
+	mov	QWORD PTR 56[rsp], rdi
+	movdqa	xmm1, XMMWORD PTR 48[rsp]
+	mov	QWORD PTR 64[rsp], 8
+	mov	QWORD PTR 160[rsp], 8
+	mov	QWORD PTR 168[rsp], rbp
+	mov	QWORD PTR 176[rsp], r12
+	mov	DWORD PTR 184[rsp], 8
+	movaps	XMMWORD PTR 144[rsp], xmm1
+.LEHB8:
+	call	_Znwy
+.LEHE8:
+	movdqa	xmm2, XMMWORD PTR 144[rsp]
+	mov	rbx, rax
+	mov	QWORD PTR 80[rsp], rax
+	pxor	xmm0, xmm0
+	lea	rax, 48[rax]
+	lea	rdx, 112[rsp]
+	movaps	XMMWORD PTR 112[rsp], xmm0
+	movdqa	xmm3, XMMWORD PTR 160[rsp]
+	movups	XMMWORD PTR [rbx], xmm2
+	lea	rcx, 80[rsp]
+	movdqa	xmm4, XMMWORD PTR 176[rsp]
+	lea	r8, 144[rsp]
+	movups	XMMWORD PTR 16[rbx], xmm3
+	movups	XMMWORD PTR 32[rbx], xmm4
+	mov	QWORD PTR 96[rsp], rax
+	mov	QWORD PTR 88[rsp], rax
+	mov	QWORD PTR 152[rsp], 0
+	mov	QWORD PTR 128[rsp], 0
+	mov	QWORD PTR 144[rsp], 0
+	mov	QWORD PTR 160[rsp], 0
+.LEHB9:
+	call	_Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_
+.LEHE9:
+	mov	r14, QWORD PTR 112[rsp]
+	mov	r11, QWORD PTR 120[rsp]
+	xor	edx, edx
+	mov	r10d, 7
+	mov	r9, QWORD PTR 144[rsp]
+	mov	r8, QWORD PTR 128[rsp]
+	jmp	.L96
+	.p2align 4,,10
+	.p2align 3
+.L126:
 	lea	edx, 1[rax]
-	cmp	edx, r8d
-	jg	.L142
-.L111:
-	mov	eax, r8d
+	cmp	edx, r10d
+	jg	.L124
+.L96:
+	mov	eax, r10d
 	sub	eax, edx
 	sar	eax
 	add	eax, edx
-	movsx	r9, eax
-	mov	ecx, DWORD PTR [rsi+r9*4]
+	movsxd	r13, eax
+	mov	ecx, DWORD PTR [rsi+r13*4]
 	cmp	ecx, 6
-	je	.L143
+	je	.L125
 	cmp	ecx, 5
-	jle	.L144
-	lea	r8d, -1[rax]
-	cmp	edx, r8d
-	jle	.L111
-.L142:
+	jle	.L126
+	lea	r10d, -1[rax]
+	cmp	edx, r10d
+	jle	.L96
+.L124:
 	mov	r13d, -2
-	jmp	.L115
-.L143:
-	mov	r13d, DWORD PTR [rdi+r9*4]
-	sub	r13d, 1
-.L115:
-	mov	r14, QWORD PTR 224[rsp]
-	mov	rax, QWORD PTR 232[rsp]
-	mov	rcx, QWORD PTR 256[rsp]
-	sub	rax, r14
-	sar	rax, 2
-	add	r13d, eax
-	test	rcx, rcx
-	je	.L118
-	mov	rdx, QWORD PTR 272[rsp]
-	sub	rdx, rcx
+.L93:
+	sub	r11, r14
+	sar	r11, 2
+	add	r13d, r11d
+	test	r9, r9
+	je	.L97
+	mov	rdx, QWORD PTR 160[rsp]
+	mov	rcx, r9
+	mov	QWORD PTR 40[rsp], r8
+	sub	rdx, r9
 	call	_ZdlPvy
-.L118:
+	mov	r8, QWORD PTR 40[rsp]
+.L97:
 	test	r14, r14
-	je	.L119
-	mov	rdx, QWORD PTR 240[rsp]
+	je	.L98
+	mov	rdx, r8
 	mov	rcx, r14
 	sub	rdx, r14
 	call	_ZdlPvy
-.L119:
+.L98:
 	mov	rcx, rbx
 	mov	edx, 48
 	call	_ZdlPvy
@@ -889,11 +853,8 @@ _Z4demoi:
 	mov	edx, 32
 	mov	rcx, rsi
 	call	_ZdlPvy
-	nop
-	movaps	xmm6, XMMWORD PTR 2816[rsp]
 	mov	eax, r13d
-	movaps	xmm7, XMMWORD PTR 2832[rsp]
-	add	rsp, 2856
+	add	rsp, 2704
 	pop	rbx
 	pop	rsi
 	pop	rdi
@@ -901,93 +862,135 @@ _Z4demoi:
 	pop	r12
 	pop	r13
 	pop	r14
-	pop	r15
 	ret
 .L125:
+	mov	r13d, DWORD PTR [rdi+r13*4]
+	sub	r13d, 1
+	jmp	.L93
+.L110:
+	jmp	.L99
+.L109:
 	mov	rbx, rax
-	jmp	.L123
-.L128:
-	mov	rcx, r15
+	jmp	.L100
+.L107:
 	mov	rbx, rax
-	call	_ZNSt12_Vector_baseIiSaIiEED2Ev
-	mov	rcx, r14
-	call	_ZNSt12_Vector_baseIiSaIiEED2Ev
-	mov	rcx, r13
-	call	_ZNSt12_Vector_baseI3RunSaIS0_EED2Ev
-.L113:
-	lea	rcx, 128[rsp]
-	call	_ZNSt12_Vector_baseIiSaIiEED2Ev
-.L121:
-	lea	rcx, 96[rsp]
-	call	_ZNSt12_Vector_baseIiSaIiEED2Ev
-.L122:
-	lea	rcx, 64[rsp]
-	call	_ZNSt12_Vector_baseIiSaIiEED2Ev
-.L123:
-	lea	rcx, 32[rsp]
-	call	_ZNSt12_Vector_baseIiSaIiEED2Ev
-	mov	rcx, rbx
-.LEHB9:
-	call	_Unwind_Resume
-.LEHE9:
-.L127:
+	jmp	.L102
+.L108:
 	mov	rbx, rax
-	jmp	.L121
-.L129:
-	lea	rcx, 192[rsp]
+	jmp	.L101
+.L106:
 	mov	rbx, rax
-	call	_ZNSt12_Vector_baseI3RunSaIS0_EED2Ev
-	jmp	.L113
-.L126:
-	mov	rbx, rax
-	jmp	.L122
+	jmp	.L103
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA5062:
+.LLSDA4602:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE5062-.LLSDACSB5062
-.LLSDACSB5062:
-	.uleb128 .LEHB3-.LFB5062
-	.uleb128 .LEHE3-.LEHB3
-	.uleb128 0
-	.uleb128 0
-	.uleb128 .LEHB4-.LFB5062
+	.uleb128 .LLSDACSE4602-.LLSDACSB4602
+.LLSDACSB4602:
+	.uleb128 .LEHB4-.LFB4602
 	.uleb128 .LEHE4-.LEHB4
-	.uleb128 .L125-.LFB5062
 	.uleb128 0
-	.uleb128 .LEHB5-.LFB5062
+	.uleb128 0
+	.uleb128 .LEHB5-.LFB4602
 	.uleb128 .LEHE5-.LEHB5
-	.uleb128 .L126-.LFB5062
+	.uleb128 .L106-.LFB4602
 	.uleb128 0
-	.uleb128 .LEHB6-.LFB5062
+	.uleb128 .LEHB6-.LFB4602
 	.uleb128 .LEHE6-.LEHB6
-	.uleb128 .L127-.LFB5062
+	.uleb128 .L107-.LFB4602
 	.uleb128 0
-	.uleb128 .LEHB7-.LFB5062
+	.uleb128 .LEHB7-.LFB4602
 	.uleb128 .LEHE7-.LEHB7
-	.uleb128 .L129-.LFB5062
+	.uleb128 .L108-.LFB4602
 	.uleb128 0
-	.uleb128 .LEHB8-.LFB5062
+	.uleb128 .LEHB8-.LFB4602
 	.uleb128 .LEHE8-.LEHB8
-	.uleb128 .L128-.LFB5062
+	.uleb128 .L109-.LFB4602
 	.uleb128 0
-	.uleb128 .LEHB9-.LFB5062
+	.uleb128 .LEHB9-.LFB4602
 	.uleb128 .LEHE9-.LEHB9
+	.uleb128 .L110-.LFB4602
 	.uleb128 0
-	.uleb128 0
-.LLSDACSE5062:
+.LLSDACSE4602:
 	.text
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
+	.section	.text.unlikely,"x"
+	.def	_Z4demoi.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z4demoi.cold
+	.seh_stackalloc	2760
+	.seh_savereg	rbx, 2704
+	.seh_savereg	rsi, 2712
+	.seh_savereg	rdi, 2720
+	.seh_savereg	rbp, 2728
+	.seh_savereg	r12, 2736
+	.seh_savereg	r13, 2744
+	.seh_savereg	r14, 2752
+	.seh_endprologue
+_Z4demoi.cold:
+.L99:
+	mov	r14, QWORD PTR 112[rsp]
+	mov	r13, QWORD PTR 128[rsp]
+	mov	QWORD PTR 40[rsp], rax
+	mov	rdx, QWORD PTR 160[rsp]
+	mov	rcx, QWORD PTR 144[rsp]
+	call	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
+	mov	rdx, r13
+	mov	rcx, r14
+	call	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
+	mov	rcx, rbx
+	mov	edx, 48
+	call	_ZdlPvy
+	mov	rbx, QWORD PTR 40[rsp]
+.L100:
+	lea	rdx, 32[r12]
+	mov	rcx, r12
+	call	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
+.L101:
+	lea	rdx, 32[rbp]
+	mov	rcx, rbp
+	call	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
+.L102:
+	lea	rdx, 32[rdi]
+	mov	rcx, rdi
+	call	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
+.L103:
+	mov	rcx, rsi
+	lea	rdx, 32[rsi]
+	call	_ZNSt12_Vector_baseIiSaIiEED2Ev.isra.0
+	mov	rcx, rbx
+.LEHB10:
+	call	_Unwind_Resume
+	nop
+.LEHE10:
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDAC4602:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSEC4602-.LLSDACSBC4602
+.LLSDACSBC4602:
+	.uleb128 .LEHB10-.LCOLDB5
+	.uleb128 .LEHE10-.LEHB10
+	.uleb128 0
+	.uleb128 0
+.LLSDACSEC4602:
+	.section	.text.unlikely,"x"
+	.text
+	.section	.text.unlikely,"x"
+	.seh_endproc
+.LCOLDE5:
+	.text
+.LHOTE5:
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB5113:
+.LFB4627:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -996,35 +999,12 @@ main:
 	add	rsp, 40
 	jmp	_Z4demoi
 	.seh_endproc
-	.section .rdata,"dr"
-	.align 16
-.LC2:
-	.long	-2147483648
-	.long	-2147483648
-	.long	-2147483648
-	.long	-2147483648
-	.align 16
-.LC3:
-	.long	2147483647
-	.long	2147483647
-	.long	2147483647
-	.long	2147483647
-	.align 16
-.LC4:
-	.long	1
-	.long	1
-	.long	1
-	.long	1
-	.align 16
-.LC5:
-	.long	-1727483681
-	.long	-1727483681
-	.long	-1727483681
-	.long	-1727483681
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
 	.def	_Znwy;	.scl	2;	.type	32;	.endef
 	.def	memset;	.scl	2;	.type	32;	.endef
-	.def	memmove;	.scl	2;	.type	32;	.endef
+	.def	memcpy;	.scl	2;	.type	32;	.endef
 	.def	_ZSt20__throw_length_errorPKc;	.scl	2;	.type	32;	.endef
 	.def	_Unwind_Resume;	.scl	2;	.type	32;	.endef

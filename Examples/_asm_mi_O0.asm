@@ -261,7 +261,7 @@ _ZTI2B1:
 	.linkonce same_size
 _ZTS2B1:
 	.ascii "2B1\0"
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZN2B2D2Ev;	.scl	2;	.type	32;	.endef
 	.def	_ZN2B1D2Ev;	.scl	2;	.type	32;	.endef
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef

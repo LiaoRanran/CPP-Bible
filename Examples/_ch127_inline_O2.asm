@@ -1,45 +1,12 @@
 	.file	"_ch127_inline.cpp"
 	.intel_syntax noprefix
 	.text
-	.section	.text$_Z6printfPKcz,"x"
-	.linkonce discard
-	.p2align 4
-	.globl	_Z6printfPKcz
-	.def	_Z6printfPKcz;	.scl	2;	.type	32;	.endef
-	.seh_proc	_Z6printfPKcz
-_Z6printfPKcz:
-.LFB11:
-	push	rsi
-	.seh_pushreg	rsi
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 56
-	.seh_stackalloc	56
-	.seh_endprologue
-	lea	rsi, 88[rsp]
-	mov	rbx, rcx
-	mov	QWORD PTR 88[rsp], rdx
-	mov	ecx, 1
-	mov	QWORD PTR 96[rsp], r8
-	mov	QWORD PTR 104[rsp], r9
-	mov	QWORD PTR 40[rsp], rsi
-	call	[QWORD PTR __imp___acrt_iob_func[rip]]
-	mov	r8, rsi
-	mov	rdx, rbx
-	mov	rcx, rax
-	call	__mingw_vfprintf
-	add	rsp, 56
-	pop	rbx
-	pop	rsi
-	ret
-	.seh_endproc
-	.text
 	.p2align 4
 	.globl	_Z12add_noinlineii
 	.def	_Z12add_noinlineii;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z12add_noinlineii
 _Z12add_noinlineii:
-.LFB49:
+.LFB24:
 	.seh_endprologue
 	lea	eax, [rcx+rdx]
 	ret
@@ -49,7 +16,7 @@ _Z12add_noinlineii:
 	.def	_Z11use_inlinedv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z11use_inlinedv
 _Z11use_inlinedv:
-.LFB51:
+.LFB26:
 	.seh_endprologue
 	mov	eax, 10
 	ret
@@ -59,13 +26,12 @@ _Z11use_inlinedv:
 	.def	_Z12use_noinlinev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z12use_noinlinev
 _Z12use_noinlinev:
-.LFB52:
+.LFB27:
 	.seh_endprologue
 	mov	edx, 4
 	mov	ecx, 3
 	jmp	_Z12add_noinlineii
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section .rdata,"dr"
 .LC0:
 	.ascii "%d %d\12\0"
@@ -75,7 +41,7 @@ _Z12use_noinlinev:
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB53:
+.LFB28:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -86,10 +52,10 @@ main:
 	mov	edx, 10
 	lea	rcx, .LC0[rip]
 	mov	r8d, eax
-	call	_Z6printfPKcz
+	call	__mingw_printf
 	xor	eax, eax
 	add	rsp, 40
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
-	.def	__mingw_vfprintf;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

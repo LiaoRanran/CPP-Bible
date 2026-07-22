@@ -6,7 +6,7 @@
 	.def	_Z4bumpv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z4bumpv
 _Z4bumpv:
-.LFB665:
+.LFB668:
 	.seh_endprologue
 	lock add	DWORD PTR c[rip], 1
 	ret
@@ -16,7 +16,7 @@ _Z4bumpv:
 	.def	_Z3getv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z3getv
 _Z3getv:
-.LFB666:
+.LFB669:
 	.seh_endprologue
 	mov	eax, DWORD PTR c[rip]
 	ret
@@ -26,4 +26,4 @@ _Z3getv:
 	.align 4
 c:
 	.space 4
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

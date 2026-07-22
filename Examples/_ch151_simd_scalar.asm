@@ -1,49 +1,19 @@
 	.file	"_ch151_simd_scalar.cpp"
 	.intel_syntax noprefix
 	.text
-	.section	.text$_Z6printfPKcz,"x"
-	.linkonce discard
-	.p2align 4
-	.globl	_Z6printfPKcz
-	.def	_Z6printfPKcz;	.scl	2;	.type	32;	.endef
-	.seh_proc	_Z6printfPKcz
-_Z6printfPKcz:
-.LFB11:
-	push	rsi
-	.seh_pushreg	rsi
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 56
-	.seh_stackalloc	56
-	.seh_endprologue
-	lea	rsi, 88[rsp]
-	mov	rbx, rcx
-	mov	QWORD PTR 88[rsp], rdx
-	mov	ecx, 1
-	mov	QWORD PTR 96[rsp], r8
-	mov	QWORD PTR 104[rsp], r9
-	mov	QWORD PTR 40[rsp], rsi
-	call	[QWORD PTR __imp___acrt_iob_func[rip]]
-	mov	r8, rsi
-	mov	rdx, rbx
-	mov	rcx, rax
-	call	__mingw_vfprintf
-	add	rsp, 56
-	pop	rbx
-	pop	rsi
-	ret
-	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section .rdata,"dr"
 .LC3:
 	.ascii "scalar: sum_ms=%.3f s=%.1f\12\0"
+	.section	.text.unlikely,"x"
+.LCOLDB4:
 	.section	.text.startup,"x"
+.LHOTB4:
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB5605:
+.LFB5862:
 	push	rbp
 	.seh_pushreg	rbp
 	push	rdi
@@ -65,38 +35,40 @@ main:
 	mov	DWORD PTR [rax], 0x00000000
 	lea	rcx, 4[rax]
 	mov	rdi, rax
+	mov	rbx, rdi
+	lea	rsi, 160000000[rdi]
 	call	memset
 	movss	xmm1, DWORD PTR .LC0[rip]
-	mov	rbx, rdi
 	mov	rax, rdi
-	lea	rsi, 160000000[rdi]
 	movaps	xmm0, xmm1
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
-.L4:
+.L2:
 	movss	DWORD PTR [rax], xmm0
 	add	rax, 4
 	addss	xmm0, xmm1
 	cmp	rax, rsi
-	jne	.L4
+	jne	.L2
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
 	mov	DWORD PTR 44[rsp], 0x00000000
 	mov	rbp, rax
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
-.L5:
+.L3:
 	movss	xmm0, DWORD PTR 44[rsp]
+	addss	xmm0, DWORD PTR [rbx]
 	add	rbx, 4
-	addss	xmm0, DWORD PTR -4[rbx]
-	cmp	rsi, rbx
 	movss	DWORD PTR 44[rsp], xmm0
-	jne	.L5
+	cmp	rbx, rsi
+	jne	.L3
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
 	movss	xmm2, DWORD PTR 44[rsp]
 	pxor	xmm3, xmm3
 	pxor	xmm1, xmm1
-	lea	rcx, .LC3[rip]
 	sub	rax, rbp
+	lea	rcx, .LC3[rip]
 	cvtss2sd	xmm3, xmm2
 	cvtsi2sd	xmm1, rax
 	movq	r8, xmm3
@@ -104,7 +76,7 @@ main:
 	movapd	xmm2, xmm3
 	movq	rdx, xmm1
 .LEHB1:
-	call	_Z6printfPKcz
+	call	__mingw_printf
 .LEHE1:
 	mov	edx, 160000000
 	mov	rcx, rdi
@@ -116,8 +88,39 @@ main:
 	pop	rdi
 	pop	rbp
 	ret
-.L7:
+.L5:
 	mov	rbx, rax
+	jmp	.L4
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDA5862:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSE5862-.LLSDACSB5862
+.LLSDACSB5862:
+	.uleb128 .LEHB0-.LFB5862
+	.uleb128 .LEHE0-.LEHB0
+	.uleb128 0
+	.uleb128 0
+	.uleb128 .LEHB1-.LFB5862
+	.uleb128 .LEHE1-.LEHB1
+	.uleb128 .L5-.LFB5862
+	.uleb128 0
+.LLSDACSE5862:
+	.section	.text.startup,"x"
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	main.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	main.cold
+	.seh_stackalloc	88
+	.seh_savereg	rbx, 56
+	.seh_savereg	rsi, 64
+	.seh_savereg	rdi, 72
+	.seh_savereg	rbp, 80
+	.seh_endprologue
+main.cold:
+.L4:
 	mov	rcx, rdi
 	mov	edx, 160000000
 	call	_ZdlPvy
@@ -126,30 +129,26 @@ main:
 	call	_Unwind_Resume
 	nop
 .LEHE2:
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA5605:
+.LLSDAC5862:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE5605-.LLSDACSB5605
-.LLSDACSB5605:
-	.uleb128 .LEHB0-.LFB5605
-	.uleb128 .LEHE0-.LEHB0
-	.uleb128 0
-	.uleb128 0
-	.uleb128 .LEHB1-.LFB5605
-	.uleb128 .LEHE1-.LEHB1
-	.uleb128 .L7-.LFB5605
-	.uleb128 0
-	.uleb128 .LEHB2-.LFB5605
+	.uleb128 .LLSDACSEC5862-.LLSDACSBC5862
+.LLSDACSBC5862:
+	.uleb128 .LEHB2-.LCOLDB4
 	.uleb128 .LEHE2-.LEHB2
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE5605:
+.LLSDACSEC5862:
+	.section	.text.unlikely,"x"
 	.section	.text.startup,"x"
+	.section	.text.unlikely,"x"
 	.seh_endproc
+.LCOLDE4:
+	.section	.text.startup,"x"
+.LHOTE4:
 	.section .rdata,"dr"
 	.align 4
 .LC0:
@@ -158,8 +157,9 @@ main:
 .LC2:
 	.long	0
 	.long	1093567616
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
-	.def	__mingw_vfprintf;	.scl	2;	.type	32;	.endef
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_Znwy;	.scl	2;	.type	32;	.endef
 	.def	memset;	.scl	2;	.type	32;	.endef
 	.def	_ZNSt6chrono3_V212steady_clock3nowEv;	.scl	2;	.type	32;	.endef

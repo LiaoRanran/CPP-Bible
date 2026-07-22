@@ -1,29 +1,13 @@
 	.file	"_ch112_rcu.cpp"
 	.intel_syntax noprefix
 	.text
-	.section	.text$_ZSt23__is_constant_evaluatedv,"x"
-	.linkonce discard
-	.globl	_ZSt23__is_constant_evaluatedv
-	.def	_ZSt23__is_constant_evaluatedv;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZSt23__is_constant_evaluatedv
-_ZSt23__is_constant_evaluatedv:
-.LFB1:
-	push	rbp
-	.seh_pushreg	rbp
-	mov	rbp, rsp
-	.seh_setframe	rbp, 0
-	.seh_endprologue
-	mov	eax, 0
-	pop	rbp
-	ret
-	.seh_endproc
 	.section	.text$_ZStanSt12memory_orderSt23__memory_order_modifier,"x"
 	.linkonce discard
 	.globl	_ZStanSt12memory_orderSt23__memory_order_modifier
 	.def	_ZStanSt12memory_orderSt23__memory_order_modifier;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZStanSt12memory_orderSt23__memory_order_modifier
 _ZStanSt12memory_orderSt23__memory_order_modifier:
-.LFB178:
+.LFB183:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -46,7 +30,7 @@ g_config:
 	.def	rcu_update;	.scl	2;	.type	32;	.endef
 	.seh_proc	rcu_update
 rcu_update:
-.LFB664:
+.LFB669:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -56,8 +40,8 @@ rcu_update:
 	.seh_endprologue
 	mov	DWORD PTR 16[rbp], ecx
 	mov	DWORD PTR 24[rbp], edx
-	mov	edx, 2
 	lea	rax, g_config[rip]
+	mov	edx, 2
 	mov	rcx, rax
 	call	_ZNKSt6atomicIP6ConfigE4loadESt12memory_order
 	mov	QWORD PTR -8[rbp], rax
@@ -67,20 +51,26 @@ rcu_update:
 	mov	DWORD PTR [rax], edx
 	mov	edx, DWORD PTR 24[rbp]
 	mov	DWORD PTR 4[rax], edx
+	mov	edx, 0
 	mov	QWORD PTR -16[rbp], rax
-	mov	rax, QWORD PTR -16[rbp]
-	mov	r8d, 3
-	mov	rdx, rax
-	lea	rax, g_config[rip]
-	mov	rcx, rax
-	call	_ZNSt6atomicIP6ConfigE5storeES1_St12memory_order
-	mov	rax, QWORD PTR -8[rbp]
-	test	rax, rax
-	je	.L7
+	test	dl, dl
+	je	.L4
 	mov	edx, 8
 	mov	rcx, rax
 	call	_ZdlPvy
-.L7:
+.L4:
+	mov	rax, QWORD PTR -16[rbp]
+	lea	rcx, g_config[rip]
+	mov	r8d, 3
+	mov	rdx, rax
+	call	_ZNSt6atomicIP6ConfigE5storeES1_St12memory_order
+	mov	rax, QWORD PTR -8[rbp]
+	test	rax, rax
+	je	.L6
+	mov	edx, 8
+	mov	rcx, rax
+	call	_ZdlPvy
+.L6:
 	nop
 	add	rsp, 48
 	pop	rbp
@@ -90,7 +80,7 @@ rcu_update:
 	.def	rcu_read;	.scl	2;	.type	32;	.endef
 	.seh_proc	rcu_read
 rcu_read:
-.LFB665:
+.LFB670:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -98,14 +88,25 @@ rcu_read:
 	sub	rsp, 32
 	.seh_stackalloc	32
 	.seh_endprologue
-	mov	edx, 2
 	lea	rax, g_config[rip]
+	mov	edx, 2
 	mov	rcx, rax
 	call	_ZNKSt6atomicIP6ConfigE4loadESt12memory_order
 	add	rsp, 32
 	pop	rbp
 	ret
 	.seh_endproc
+	.section .rdata,"dr"
+.LC0:
+	.ascii "__b != memory_order_release\0"
+	.align 8
+.LC1:
+	.ascii "_PTp* std::__atomic_base<_PTp*>::load(std::memory_order) const [with _PTp = Config; __pointer_type = Config*]\0"
+	.align 8
+.LC2:
+	.ascii "C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/atomic_base.h\0"
+.LC3:
+	.ascii "__b != memory_order_acq_rel\0"
 	.section	.text$_ZNKSt6atomicIP6ConfigE4loadESt12memory_order,"x"
 	.linkonce discard
 	.align 2
@@ -113,7 +114,7 @@ rcu_read:
 	.def	_ZNKSt6atomicIP6ConfigE4loadESt12memory_order;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNKSt6atomicIP6ConfigE4loadESt12memory_order
 _ZNKSt6atomicIP6ConfigE4loadESt12memory_order:
-.LFB777:
+.LFB782:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -132,34 +133,48 @@ _ZNKSt6atomicIP6ConfigE4loadESt12memory_order:
 	mov	ecx, eax
 	call	_ZStanSt12memory_orderSt23__memory_order_modifier
 	mov	DWORD PTR -16[rbp], eax
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L11
 	cmp	DWORD PTR -16[rbp], 3
-	jne	.L11
-	mov	eax, 1
-	jmp	.L12
-.L11:
-	mov	eax, 0
-.L12:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L14
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L10
+	lea	rcx, .LC0[rip]
+	lea	rdx, .LC1[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 827
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L10:
 	cmp	DWORD PTR -16[rbp], 4
-	jne	.L14
-	mov	eax, 1
-	jmp	.L15
-.L14:
-	mov	eax, 0
-.L15:
-	test	al, al
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L11
+	lea	rcx, .LC3[rip]
+	lea	rdx, .LC1[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 828
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L11:
 	mov	rax, QWORD PTR -8[rbp]
 	mov	rax, QWORD PTR [rax]
 	add	rsp, 48
 	pop	rbp
 	ret
 	.seh_endproc
+	.section .rdata,"dr"
+.LC4:
+	.ascii "__b != memory_order_acquire\0"
+	.align 8
+.LC5:
+	.ascii "void std::__atomic_base<_PTp*>::store(__pointer_type, std::memory_order) [with _PTp = Config; __pointer_type = Config*]\0"
+.LC6:
+	.ascii "__b != memory_order_consume\0"
 	.section	.text$_ZNSt6atomicIP6ConfigE5storeES1_St12memory_order,"x"
 	.linkonce discard
 	.align 2
@@ -167,7 +182,7 @@ _ZNKSt6atomicIP6ConfigE4loadESt12memory_order:
 	.def	_ZNSt6atomicIP6ConfigE5storeES1_St12memory_order;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt6atomicIP6ConfigE5storeES1_St12memory_order
 _ZNSt6atomicIP6ConfigE5storeES1_St12memory_order:
-.LFB778:
+.LFB783:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -189,39 +204,48 @@ _ZNSt6atomicIP6ConfigE5storeES1_St12memory_order:
 	mov	ecx, eax
 	call	_ZStanSt12memory_orderSt23__memory_order_modifier
 	mov	DWORD PTR -24[rbp], eax
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L20
 	cmp	DWORD PTR -24[rbp], 2
-	jne	.L20
-	mov	eax, 1
-	jmp	.L21
-.L20:
-	mov	eax, 0
-.L21:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L23
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L15
+	lea	rcx, .LC4[rip]
+	lea	rdx, .LC5[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 802
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L15:
 	cmp	DWORD PTR -24[rbp], 4
-	jne	.L23
-	mov	eax, 1
-	jmp	.L24
-.L23:
-	mov	eax, 0
-.L24:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L26
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L16
+	lea	rcx, .LC3[rip]
+	lea	rdx, .LC5[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 803
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L16:
 	cmp	DWORD PTR -24[rbp], 1
-	jne	.L26
-	mov	eax, 1
-	jmp	.L27
-.L26:
-	mov	eax, 0
-.L27:
-	test	al, al
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L17
+	lea	rcx, .LC6[rip]
+	lea	rdx, .LC5[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 804
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L17:
 	mov	rdx, QWORD PTR -16[rbp]
 	mov	rax, QWORD PTR -8[rbp]
 	xchg	rdx, QWORD PTR [rax]
@@ -231,6 +255,7 @@ _ZNSt6atomicIP6ConfigE5storeES1_St12memory_order:
 	pop	rbp
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_Znwy;	.scl	2;	.type	32;	.endef
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
+	.def	_ZSt21__glibcxx_assert_failPKciS0_S0_;	.scl	2;	.type	32;	.endef

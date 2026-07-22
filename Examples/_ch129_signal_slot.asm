@@ -5,7 +5,7 @@
 	.def	_ZNSt17_Function_handlerIFviEZ4mainEUliE_E10_M_managerERSt9_Any_dataRKS3_St18_Manager_operation;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZNSt17_Function_handlerIFviEZ4mainEUliE_E10_M_managerERSt9_Any_dataRKS3_St18_Manager_operation
 _ZNSt17_Function_handlerIFviEZ4mainEUliE_E10_M_managerERSt9_Any_dataRKS3_St18_Manager_operation:
-.LFB3770:
+.LFB5850:
 	.seh_endprologue
 	test	r8d, r8d
 	je	.L2
@@ -41,25 +41,29 @@ _ZNSt17_Function_handlerIFviEZ4mainEUliE_E10_M_managerERSt9_Any_dataRKS3_St18_Ma
 	.def	_ZNSt17_Function_handlerIFviEZ4mainEUliE_E9_M_invokeERKSt9_Any_dataOi;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZNSt17_Function_handlerIFviEZ4mainEUliE_E9_M_invokeERKSt9_Any_dataOi
 _ZNSt17_Function_handlerIFviEZ4mainEUliE_E9_M_invokeERKSt9_Any_dataOi:
-.LFB3765:
+.LFB5845:
+	push	rsi
+	.seh_pushreg	rsi
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 32
-	.seh_stackalloc	32
+	sub	rsp, 40
+	.seh_stackalloc	40
 	.seh_endprologue
-	mov	rcx, QWORD PTR .refptr._ZSt4cout[rip]
+	mov	rbx, QWORD PTR .refptr._ZSt4cout[rip]
 	mov	r8d, 18
-	mov	ebx, DWORD PTR [rdx]
+	mov	esi, DWORD PTR [rdx]
+	mov	rcx, rbx
 	lea	rdx, .LC0[rip]
 	call	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_x
-	mov	rcx, QWORD PTR .refptr._ZSt4cout[rip]
-	mov	edx, ebx
+	mov	edx, esi
+	mov	rcx, rbx
 	call	_ZNSolsEi
 	mov	r8d, 1
 	lea	rdx, .LC1[rip]
 	mov	rcx, rax
-	add	rsp, 32
+	add	rsp, 40
 	pop	rbx
+	pop	rsi
 	jmp	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_x
 	.seh_endproc
 	.section	.text$_ZNSt14_Function_baseD2Ev,"x"
@@ -70,7 +74,7 @@ _ZNSt17_Function_handlerIFviEZ4mainEUliE_E9_M_invokeERKSt9_Any_dataOi:
 	.def	_ZNSt14_Function_baseD2Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt14_Function_baseD2Ev
 _ZNSt14_Function_baseD2Ev:
-.LFB2455:
+.LFB4478:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -84,16 +88,15 @@ _ZNSt14_Function_baseD2Ev:
 .L10:
 	add	rsp, 40
 	ret
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA2455:
+.LLSDA4478:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE2455-.LLSDACSB2455
-.LLSDACSB2455:
-.LLSDACSE2455:
+	.uleb128 .LLSDACSE4478-.LLSDACSB4478
+.LLSDACSB4478:
+.LLSDACSE4478:
 	.section	.text$_ZNSt14_Function_baseD2Ev,"x"
 	.linkonce discard
 	.seh_endproc
@@ -105,7 +108,7 @@ _ZNSt14_Function_baseD2Ev:
 	.def	_ZNSt6vectorISt8functionIFviEESaIS2_EED1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt6vectorISt8functionIFviEESaIS2_EED1Ev
 _ZNSt6vectorISt8functionIFviEESaIS2_EED1Ev:
-.LFB3630:
+.LFB5612:
 	push	rdi
 	.seh_pushreg	rdi
 	push	rsi
@@ -120,7 +123,7 @@ _ZNSt6vectorISt8functionIFviEESaIS2_EED1Ev:
 	mov	rdi, rcx
 	cmp	rsi, rbx
 	je	.L16
-	.p2align 4,,10
+	.p2align 4
 	.p2align 3
 .L18:
 	mov	rax, QWORD PTR 16[rbx]
@@ -145,7 +148,9 @@ _ZNSt6vectorISt8functionIFviEESaIS2_EED1Ev:
 	pop	rbx
 	pop	rsi
 	pop	rdi
+.LEHB0:
 	jmp	_ZdlPvy
+.LEHE0:
 	.p2align 4,,10
 	.p2align 3
 .L15:
@@ -156,308 +161,162 @@ _ZNSt6vectorISt8functionIFviEESaIS2_EED1Ev:
 	ret
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA3630:
+.LLSDA5612:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE3630-.LLSDACSB3630
-.LLSDACSB3630:
-.LLSDACSE3630:
+	.uleb128 .LLSDACSE5612-.LLSDACSB5612
+.LLSDACSB5612:
+	.uleb128 .LEHB0-.LFB5612
+	.uleb128 .LEHE0-.LEHB0
+	.uleb128 0
+	.uleb128 0
+.LLSDACSE5612:
 	.section	.text$_ZNSt6vectorISt8functionIFviEESaIS2_EED1Ev,"x"
 	.linkonce discard
 	.seh_endproc
-	.section .rdata,"dr"
-.LC2:
-	.ascii "vector::_M_realloc_insert\0"
-	.section	.text$_ZNSt6vectorISt8functionIFviEESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_,"x"
-	.linkonce discard
-	.align 2
-	.p2align 4
-	.globl	_ZNSt6vectorISt8functionIFviEESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_
-	.def	_ZNSt6vectorISt8functionIFviEESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZNSt6vectorISt8functionIFviEESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_
-_ZNSt6vectorISt8functionIFviEESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_:
-.LFB3847:
-	push	r15
-	.seh_pushreg	r15
-	push	r14
-	.seh_pushreg	r14
-	push	r13
-	.seh_pushreg	r13
-	push	r12
-	.seh_pushreg	r12
-	push	rbp
-	.seh_pushreg	rbp
-	push	rdi
-	.seh_pushreg	rdi
-	push	rsi
-	.seh_pushreg	rsi
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 56
-	.seh_stackalloc	56
-	movaps	XMMWORD PTR 32[rsp], xmm6
-	.seh_savexmm	xmm6, 32
-	.seh_endprologue
-	mov	rdi, QWORD PTR 8[rcx]
-	mov	r12, QWORD PTR [rcx]
-	mov	rax, rdi
-	mov	rsi, rdx
-	mov	rbx, rdx
-	sub	rax, r12
-	mov	rbp, rcx
-	mov	r14, r8
-	movabs	rdx, 288230376151711743
-	sar	rax, 5
-	cmp	rax, rdx
-	je	.L57
-	mov	r15, rsi
-	sub	r15, r12
-	cmp	r12, rdi
-	je	.L58
-	lea	rdx, [rax+rax]
-	cmp	rdx, rax
-	jb	.L40
-	test	rdx, rdx
-	jne	.L59
-	mov	ecx, 32
-	xor	r13d, r13d
-	xor	r9d, r9d
-.L30:
-	mov	rdx, QWORD PTR 24[r14]
-	lea	rax, [r9+r15]
-	mov	QWORD PTR [rax], 0
-	mov	QWORD PTR 8[rax], 0
-	mov	QWORD PTR 16[rax], 0
-	mov	QWORD PTR 24[rax], rdx
-	mov	rdx, QWORD PTR 16[r14]
-	test	rdx, rdx
-	je	.L31
-	movdqu	xmm4, XMMWORD PTR [r14]
-	pxor	xmm0, xmm0
-	mov	QWORD PTR 16[rax], rdx
-	movups	XMMWORD PTR 16[r14], xmm0
-	movups	XMMWORD PTR [rax], xmm4
-.L31:
-	cmp	rsi, r12
-	je	.L32
-	mov	r8, rsi
-	mov	rdx, r12
-	mov	rax, r9
-	sub	r8, r12
-	.p2align 4,,10
-	.p2align 3
-.L38:
-	mov	rcx, QWORD PTR 24[rdx]
-	mov	QWORD PTR [rax], 0
-	mov	QWORD PTR 8[rax], 0
-	mov	QWORD PTR 16[rax], 0
-	mov	QWORD PTR 24[rax], rcx
-	mov	rcx, QWORD PTR 16[rdx]
-	test	rcx, rcx
-	je	.L33
-	movdqu	xmm1, XMMWORD PTR [rdx]
-	mov	QWORD PTR 16[rax], rcx
-	movups	XMMWORD PTR [rax], xmm1
-.L33:
-	add	rdx, 32
-	add	rax, 32
-	cmp	rsi, rdx
-	jne	.L38
-	lea	rcx, 32[r9+r8]
-.L32:
-	cmp	rsi, rdi
-	je	.L34
-	mov	r8, rdi
-	mov	rax, rcx
-	sub	r8, rsi
-	.p2align 4,,10
-	.p2align 3
-.L37:
-	mov	rdx, QWORD PTR 24[rbx]
-	mov	QWORD PTR [rax], 0
-	mov	QWORD PTR 8[rax], 0
-	mov	QWORD PTR 16[rax], 0
-	mov	QWORD PTR 24[rax], rdx
-	mov	rdx, QWORD PTR 16[rbx]
-	test	rdx, rdx
-	je	.L35
-	movdqu	xmm2, XMMWORD PTR [rbx]
-	mov	QWORD PTR 16[rax], rdx
-	movups	XMMWORD PTR [rax], xmm2
-.L35:
-	add	rbx, 32
-	add	rax, 32
-	cmp	rdi, rbx
-	jne	.L37
-	add	rcx, r8
-.L34:
-	movq	xmm6, r9
-	movq	xmm3, rcx
-	test	r12, r12
-	punpcklqdq	xmm6, xmm3
-	je	.L36
-	mov	rdx, QWORD PTR 16[rbp]
-	mov	rcx, r12
-	sub	rdx, r12
-	call	_ZdlPvy
-.L36:
-	movups	XMMWORD PTR 0[rbp], xmm6
-	mov	QWORD PTR 16[rbp], r13
-	movaps	xmm6, XMMWORD PTR 32[rsp]
-	add	rsp, 56
-	pop	rbx
-	pop	rsi
-	pop	rdi
-	pop	rbp
-	pop	r12
-	pop	r13
-	pop	r14
-	pop	r15
-	ret
-	.p2align 4,,10
-	.p2align 3
-.L40:
-	movabs	r13, 9223372036854775776
-.L29:
-	mov	rcx, r13
-	call	_Znwy
-	lea	rcx, 32[rax]
-	mov	r9, rax
-	add	r13, rax
-	jmp	.L30
-	.p2align 4,,10
-	.p2align 3
-.L58:
-	add	rax, 1
-	jc	.L40
-	movabs	rdx, 288230376151711743
-	cmp	rax, rdx
-	cmovbe	rdx, rax
-	mov	r13, rdx
-	sal	r13, 5
-	jmp	.L29
-.L59:
-	movabs	rax, 288230376151711743
-	cmp	rdx, rax
-	cmova	rdx, rax
-	sal	rdx, 5
-	mov	r13, rdx
-	jmp	.L29
-.L57:
-	lea	rcx, .LC2[rip]
-	call	_ZSt20__throw_length_errorPKc
-	nop
-	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
+	.section	.text.unlikely,"x"
+.LCOLDB3:
 	.section	.text.startup,"x"
+.LHOTB3:
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB3319:
-	push	rbp
-	.seh_pushreg	rbp
-	push	rdi
-	.seh_pushreg	rdi
+.LFB5183:
 	push	rsi
 	.seh_pushreg	rsi
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 120
-	.seh_stackalloc	120
+	sub	rsp, 136
+	.seh_stackalloc	136
 	.seh_endprologue
+	lea	rsi, _ZNSt17_Function_handlerIFviEZ4mainEUliE_E9_M_invokeERKSt9_Any_dataOi[rip]
 	call	__main
-	lea	rax, 47[rsp]
 	pxor	xmm0, xmm0
-	movaps	XMMWORD PTR 48[rsp], xmm0
-	lea	rdx, _ZNSt17_Function_handlerIFviEZ4mainEUliE_E10_M_managerERSt9_Any_dataRKS3_St18_Manager_operation[rip]
-	mov	QWORD PTR 80[rsp], rax
-	lea	rsi, 80[rsp]
-	movq	xmm0, rdx
-	xor	edx, edx
-	mov	QWORD PTR 64[rsp], 0
-	lea	rax, _ZNSt17_Function_handlerIFviEZ4mainEUliE_E9_M_invokeERKSt9_Any_dataOi[rip]
-	mov	r8, rsi
-	mov	QWORD PTR 88[rsp], 0
-	lea	rbp, 48[rsp]
-	movq	xmm1, rax
-	mov	rcx, rbp
+	movq	xmm1, rsi
+	lea	rax, 63[rsp]
+	movaps	XMMWORD PTR 64[rsp], xmm0
+	mov	ecx, 32
+	movq	xmm0, QWORD PTR .LC2[rip]
+	mov	QWORD PTR 80[rsp], 0
 	punpcklqdq	xmm0, xmm1
-	movaps	XMMWORD PTR 96[rsp], xmm0
-.LEHB0:
-	call	_ZNSt6vectorISt8functionIFviEESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_
-.LEHE0:
-	mov	rcx, rsi
-	mov	rdi, QWORD PTR 56[rsp]
-	call	_ZNSt14_Function_baseD2Ev
-	mov	rbx, QWORD PTR 48[rsp]
-	cmp	rdi, rbx
-	je	.L61
-	.p2align 4,,10
-	.p2align 3
-.L63:
-	cmp	QWORD PTR 16[rbx], 0
-	mov	DWORD PTR 80[rsp], 42
-	je	.L70
-	mov	rdx, rsi
-	mov	rcx, rbx
+	mov	QWORD PTR 96[rsp], rax
+	mov	QWORD PTR 104[rsp], 0
+	movaps	XMMWORD PTR 112[rsp], xmm0
 .LEHB1:
-	call	[QWORD PTR 24[rbx]]
-	add	rbx, 32
-	cmp	rdi, rbx
-	jne	.L63
-.L61:
-	mov	rcx, rbp
-	call	_ZNSt6vectorISt8functionIFviEESaIS2_EED1Ev
-	xor	eax, eax
-	add	rsp, 120
-	pop	rbx
-	pop	rsi
-	pop	rdi
-	pop	rbp
-	ret
-.L70:
-	call	_ZSt25__throw_bad_function_callv
+	call	_Znwy
 .LEHE1:
-.L66:
-	mov	rcx, rsi
+	mov	QWORD PTR 24[rax], rsi
 	mov	rbx, rax
+	lea	rdx, 96[rsp]
+	pxor	xmm0, xmm0
+	movdqa	xmm2, XMMWORD PTR 96[rsp]
+	lea	rsi, 32[rbx]
+	mov	rcx, rdx
+	mov	QWORD PTR 40[rsp], rdx
+	mov	QWORD PTR 80[rsp], rsi
+	movups	XMMWORD PTR [rax], xmm2
+	lea	rax, _ZNSt17_Function_handlerIFviEZ4mainEUliE_E10_M_managerERSt9_Any_dataRKS3_St18_Manager_operation[rip]
+	mov	QWORD PTR 16[rbx], rax
+	movaps	XMMWORD PTR 112[rsp], xmm0
 	call	_ZNSt14_Function_baseD2Ev
-.L65:
-	mov	rcx, rbp
-	call	_ZNSt6vectorISt8functionIFviEESaIS2_EED1Ev
+	mov	DWORD PTR 96[rsp], 42
+	cmp	QWORD PTR 16[rbx], 0
+	je	.L32
+	mov	rdx, QWORD PTR 40[rsp]
 	mov	rcx, rbx
 .LEHB2:
-	call	_Unwind_Resume
+	call	[QWORD PTR 24[rbx]]
 .LEHE2:
-.L67:
+	lea	rcx, 64[rsp]
+	mov	QWORD PTR 64[rsp], rbx
+	mov	QWORD PTR 72[rsp], rsi
+	call	_ZNSt6vectorISt8functionIFviEESaIS2_EED1Ev
+	xor	eax, eax
+	add	rsp, 136
+	pop	rbx
+	pop	rsi
+	ret
+.L28:
 	mov	rbx, rax
-	jmp	.L65
+	jmp	.L26
+.L30:
+	jmp	.L27
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA3319:
+.LLSDA5183:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE3319-.LLSDACSB3319
-.LLSDACSB3319:
-	.uleb128 .LEHB0-.LFB3319
-	.uleb128 .LEHE0-.LEHB0
-	.uleb128 .L66-.LFB3319
-	.uleb128 0
-	.uleb128 .LEHB1-.LFB3319
+	.uleb128 .LLSDACSE5183-.LLSDACSB5183
+.LLSDACSB5183:
+	.uleb128 .LEHB1-.LFB5183
 	.uleb128 .LEHE1-.LEHB1
-	.uleb128 .L67-.LFB3319
+	.uleb128 .L28-.LFB5183
 	.uleb128 0
-	.uleb128 .LEHB2-.LFB3319
+	.uleb128 .LEHB2-.LFB5183
 	.uleb128 .LEHE2-.LEHB2
+	.uleb128 .L30-.LFB5183
 	.uleb128 0
-	.uleb128 0
-.LLSDACSE3319:
+.LLSDACSE5183:
 	.section	.text.startup,"x"
 	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	main.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	main.cold
+	.seh_stackalloc	152
+	.seh_savereg	rbx, 136
+	.seh_savereg	rsi, 144
+	.seh_endprologue
+main.cold:
+.L32:
+.LEHB3:
+	call	_ZSt25__throw_bad_function_callv
+.LEHE3:
+.L26:
+	lea	rcx, 96[rsp]
+	xor	esi, esi
+	call	_ZNSt14_Function_baseD2Ev
+	mov	rax, rbx
+	xor	ebx, ebx
+.L27:
+	lea	rcx, 64[rsp]
+	mov	QWORD PTR 40[rsp], rax
+	mov	QWORD PTR 64[rsp], rbx
+	mov	QWORD PTR 72[rsp], rsi
+	call	_ZNSt6vectorISt8functionIFviEESaIS2_EED1Ev
+	mov	rcx, QWORD PTR 40[rsp]
+.LEHB4:
+	call	_Unwind_Resume
+.LEHE4:
+.L29:
+	jmp	.L27
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDAC5183:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSEC5183-.LLSDACSBC5183
+.LLSDACSBC5183:
+	.uleb128 .LEHB3-.LCOLDB3
+	.uleb128 .LEHE3-.LEHB3
+	.uleb128 .L29-.LCOLDB3
+	.uleb128 0
+	.uleb128 .LEHB4-.LCOLDB3
+	.uleb128 .LEHE4-.LEHB4
+	.uleb128 0
+	.uleb128 0
+.LLSDACSEC5183:
+	.section	.text.unlikely,"x"
+	.section	.text.startup,"x"
+	.section	.text.unlikely,"x"
+	.seh_endproc
+.LCOLDE3:
+	.section	.text.startup,"x"
+.LHOTE3:
 	.section .rdata,"dr"
 	.align 8
 _ZTIZ4mainEUliE_:
@@ -466,15 +325,20 @@ _ZTIZ4mainEUliE_:
 	.align 8
 _ZTSZ4mainEUliE_:
 	.ascii "*Z4mainEUliE_\0"
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.align 8
+.LC2:
+	.quad	_ZNSt17_Function_handlerIFviEZ4mainEUliE_E10_M_managerERSt9_Any_dataRKS3_St18_Manager_operation
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_x;	.scl	2;	.type	32;	.endef
 	.def	_ZNSolsEi;	.scl	2;	.type	32;	.endef
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
 	.def	_Znwy;	.scl	2;	.type	32;	.endef
-	.def	_ZSt20__throw_length_errorPKc;	.scl	2;	.type	32;	.endef
 	.def	_ZSt25__throw_bad_function_callv;	.scl	2;	.type	32;	.endef
 	.def	_Unwind_Resume;	.scl	2;	.type	32;	.endef
 	.section	.rdata$.refptr._ZSt4cout, "dr"
+	.p2align	3, 0
 	.globl	.refptr._ZSt4cout
 	.linkonce	discard
 .refptr._ZSt4cout:

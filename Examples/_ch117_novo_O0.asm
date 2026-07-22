@@ -1,44 +1,6 @@
 	.file	"_ch117_novo.cpp"
 	.intel_syntax noprefix
 	.text
-	.section	.text$_Z6printfPKcz,"x"
-	.linkonce discard
-	.globl	_Z6printfPKcz
-	.def	_Z6printfPKcz;	.scl	2;	.type	32;	.endef
-	.seh_proc	_Z6printfPKcz
-_Z6printfPKcz:
-.LFB11:
-	push	rbp
-	.seh_pushreg	rbp
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 56
-	.seh_stackalloc	56
-	lea	rbp, 48[rsp]
-	.seh_setframe	rbp, 48
-	.seh_endprologue
-	mov	QWORD PTR 32[rbp], rcx
-	mov	QWORD PTR 40[rbp], rdx
-	mov	QWORD PTR 48[rbp], r8
-	mov	QWORD PTR 56[rbp], r9
-	lea	rax, 40[rbp]
-	mov	QWORD PTR -16[rbp], rax
-	mov	rbx, QWORD PTR -16[rbp]
-	mov	ecx, 1
-	mov	rax, QWORD PTR __imp___acrt_iob_func[rip]
-	call	rax
-	mov	rcx, rax
-	mov	rax, QWORD PTR 32[rbp]
-	mov	r8, rbx
-	mov	rdx, rax
-	call	__mingw_vfprintf
-	mov	DWORD PTR -4[rbp], eax
-	mov	eax, DWORD PTR -4[rbp]
-	add	rsp, 56
-	pop	rbx
-	pop	rbp
-	ret
-	.seh_endproc
 	.section	.text$_ZN3BigC1Ev,"x"
 	.linkonce discard
 	.align 2
@@ -46,7 +8,7 @@ _Z6printfPKcz:
 	.def	_ZN3BigC1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN3BigC1Ev
 _ZN3BigC1Ev:
-.LFB49:
+.LFB23:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -69,7 +31,7 @@ _ZN3BigC1Ev:
 	.def	_ZN3BigC1ERKS_;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN3BigC1ERKS_
 _ZN3BigC1ERKS_:
-.LFB52:
+.LFB26:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -81,7 +43,7 @@ _ZN3BigC1ERKS_:
 	mov	QWORD PTR 24[rbp], rdx
 	lea	rax, .LC0[rip]
 	mov	rcx, rax
-	call	_Z6printfPKcz
+	call	__mingw_printf
 	mov	rax, QWORD PTR 24[rbp]
 	mov	edx, DWORD PTR [rax]
 	mov	rax, QWORD PTR 16[rbp]
@@ -96,7 +58,7 @@ _ZN3BigC1ERKS_:
 	.def	_Z9make_copyv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z9make_copyv
 _Z9make_copyv:
-.LFB53:
+.LFB27:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -108,9 +70,9 @@ _Z9make_copyv:
 	lea	rax, -32[rbp]
 	mov	rcx, rax
 	call	_ZN3BigC1Ev
-	lea	rax, -32[rbp]
-	mov	rcx, QWORD PTR 16[rbp]
-	mov	rdx, rax
+	lea	rdx, -32[rbp]
+	mov	rax, QWORD PTR 16[rbp]
+	mov	rcx, rax
 	call	_ZN3BigC1ERKS_
 	nop
 	mov	rax, QWORD PTR 16[rbp]
@@ -122,7 +84,7 @@ _Z9make_copyv:
 	.def	_Z11make_forcedRK3Big;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z11make_forcedRK3Big
 _Z11make_forcedRK3Big:
-.LFB54:
+.LFB28:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -142,12 +104,11 @@ _Z11make_forcedRK3Big:
 	pop	rbp
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB55:
+.LFB29:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -168,5 +129,5 @@ main:
 	pop	rbp
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
-	.def	__mingw_vfprintf;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

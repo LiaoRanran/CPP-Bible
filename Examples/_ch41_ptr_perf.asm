@@ -9,7 +9,7 @@
 	.def	_ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EED1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EED1Ev
 _ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EED1Ev:
-.LFB7429:
+.LFB7769:
 	.seh_endprologue
 	ret
 	.seh_endproc
@@ -21,7 +21,7 @@ _ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EED1Ev:
 	.def	_ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info
 _ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info:
-.LFB7433:
+.LFB7773:
 	.seh_endprologue
 	xor	eax, eax
 	ret
@@ -34,7 +34,7 @@ _ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9typ
 	.def	_ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EED1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EED1Ev
 _ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EED1Ev:
-.LFB7436:
+.LFB7776:
 	.seh_endprologue
 	ret
 	.seh_endproc
@@ -46,7 +46,7 @@ _ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EED1Ev:
 	.def	_ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv
 _ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv:
-.LFB7438:
+.LFB7778:
 	.seh_endprologue
 	ret
 	.seh_endproc
@@ -58,7 +58,7 @@ _ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeE
 	.def	_ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv
 _ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv:
-.LFB7431:
+.LFB7771:
 	.seh_endprologue
 	mov	rcx, QWORD PTR 16[rcx]
 	test	rcx, rcx
@@ -78,7 +78,7 @@ _ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv:
 	.def	_ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EED0Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EED0Ev
 _ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EED0Ev:
-.LFB7430:
+.LFB7770:
 	.seh_endprologue
 	mov	edx, 24
 	jmp	_ZdlPvy
@@ -91,7 +91,7 @@ _ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EED0Ev:
 	.def	_ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv
 _ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv:
-.LFB7432:
+.LFB7772:
 	.seh_endprologue
 	mov	edx, 24
 	jmp	_ZdlPvy
@@ -104,7 +104,7 @@ _ZNSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv:
 	.def	_ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev
 _ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev:
-.LFB7437:
+.LFB7777:
 	.seh_endprologue
 	mov	edx, 24
 	jmp	_ZdlPvy
@@ -117,30 +117,33 @@ _ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev:
 	.def	_ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info
 _ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info:
-.LFB7440:
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 32
-	.seh_stackalloc	32
+.LFB7780:
+	sub	rsp, 40
+	.seh_stackalloc	40
 	.seh_endprologue
 	lea	rax, _ZZNSt19_Sp_make_shared_tag5_S_tiEvE5__tag[rip]
-	mov	rbx, rcx
+	mov	r8, rcx
 	mov	rcx, rdx
-	add	rbx, 16
 	cmp	rdx, rax
-	je	.L11
+	je	.L14
 	lea	rax, _ZTSSt19_Sp_make_shared_tag[rip]
 	cmp	QWORD PTR 8[rdx], rax
-	je	.L11
+	je	.L14
 	lea	rdx, _ZTISt19_Sp_make_shared_tag[rip]
+	mov	QWORD PTR 48[rsp], r8
 	call	_ZNKSt9type_info7__equalERKS_
+	mov	r8, QWORD PTR 48[rsp]
 	test	al, al
-	mov	eax, 0
-	cmove	rbx, rax
-.L11:
-	mov	rax, rbx
-	add	rsp, 32
-	pop	rbx
+	je	.L15
+.L14:
+	lea	rax, 16[r8]
+	add	rsp, 40
+	ret
+	.p2align 4,,10
+	.p2align 3
+.L15:
+	xor	eax, eax
+	add	rsp, 40
 	ret
 	.seh_endproc
 	.section	.text$_ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv,"x"
@@ -151,42 +154,10 @@ _ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE14_M_get_dele
 	.def	_ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv
 _ZNSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv:
-.LFB7439:
+.LFB7779:
 	.seh_endprologue
 	mov	edx, 24
 	jmp	_ZdlPvy
-	.seh_endproc
-	.section	.text$_Z6printfPKcz,"x"
-	.linkonce discard
-	.p2align 4
-	.globl	_Z6printfPKcz
-	.def	_Z6printfPKcz;	.scl	2;	.type	32;	.endef
-	.seh_proc	_Z6printfPKcz
-_Z6printfPKcz:
-.LFB11:
-	push	rsi
-	.seh_pushreg	rsi
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 56
-	.seh_stackalloc	56
-	.seh_endprologue
-	lea	rsi, 88[rsp]
-	mov	rbx, rcx
-	mov	QWORD PTR 88[rsp], rdx
-	mov	ecx, 1
-	mov	QWORD PTR 96[rsp], r8
-	mov	QWORD PTR 104[rsp], r9
-	mov	QWORD PTR 40[rsp], rsi
-	call	[QWORD PTR __imp___acrt_iob_func[rip]]
-	mov	r8, rsi
-	mov	rdx, rbx
-	mov	rcx, rax
-	call	__mingw_vfprintf
-	add	rsp, 56
-	pop	rbx
-	pop	rsi
-	ret
 	.seh_endproc
 	.text
 	.p2align 4
@@ -194,14 +165,14 @@ _Z6printfPKcz:
 	.def	_Z18probe_unique_derefRKSt10unique_ptrIiSt14default_deleteIiEEi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z18probe_unique_derefRKSt10unique_ptrIiSt14default_deleteIiEEi
 _Z18probe_unique_derefRKSt10unique_ptrIiSt14default_deleteIiEEi:
-.LFB6024:
+.LFB6311:
 	.seh_endprologue
 	test	edx, edx
 	jle	.L20
 	mov	rax, QWORD PTR [rcx]
-	movsx	rdx, edx
+	movsxd	rdx, edx
 	xor	ecx, ecx
-	movsx	rax, DWORD PTR [rax]
+	movsxd	rax, DWORD PTR [rax]
 	lea	r8, [rdx+rax]
 	and	edx, 1
 	je	.L19
@@ -209,7 +180,8 @@ _Z18probe_unique_derefRKSt10unique_ptrIiSt14default_deleteIiEEi:
 	add	rax, 1
 	cmp	rax, r8
 	je	.L17
-	.p2align 4,,10
+	.p2align 4
+	.p2align 4
 	.p2align 3
 .L19:
 	lea	rcx, 1[rcx+rax*2]
@@ -231,7 +203,7 @@ _Z18probe_unique_derefRKSt10unique_ptrIiSt14default_deleteIiEEi:
 	.def	_Z20probe_raw_new_deletei;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z20probe_raw_new_deletei
 _Z20probe_raw_new_deletei:
-.LFB6049:
+.LFB6337:
 	push	rdi
 	.seh_pushreg	rdi
 	push	rsi
@@ -241,12 +213,12 @@ _Z20probe_raw_new_deletei:
 	sub	rsp, 32
 	.seh_stackalloc	32
 	.seh_endprologue
-	test	ecx, ecx
 	mov	edi, ecx
+	test	ecx, ecx
 	jle	.L30
 	xor	ebx, ebx
 	xor	esi, esi
-	.p2align 4,,10
+	.p2align 4
 	.p2align 3
 .L29:
 	mov	ecx, 4
@@ -283,7 +255,7 @@ _Z20probe_raw_new_deletei:
 	.def	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv
 _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv:
-.LFB6374:
+.LFB6718:
 	push	rbx
 	.seh_pushreg	rbx
 	sub	rsp, 32
@@ -315,42 +287,35 @@ _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_cold
 	.def	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv
 _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv:
-.LFB3802:
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 32
-	.seh_stackalloc	32
+.LFB4872:
+	sub	rsp, 56
+	.seh_stackalloc	56
 	.seh_endprologue
 	movabs	rdx, 4294967297
+	mov	r8, QWORD PTR 8[rcx]
 	lea	rax, 8[rcx]
-	mov	rbx, rcx
-	mov	rcx, QWORD PTR 8[rcx]
-	cmp	rcx, rdx
+	cmp	r8, rdx
 	je	.L37
 	lock sub	DWORD PTR [rax], 1
 	je	.L38
-	add	rsp, 32
-	pop	rbx
+	add	rsp, 56
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L37:
-	mov	rax, QWORD PTR [rbx]
-	mov	rcx, rbx
-	mov	QWORD PTR 8[rbx], 0
+	mov	rax, QWORD PTR [rcx]
+	mov	QWORD PTR 40[rsp], rcx
+	mov	QWORD PTR 8[rcx], 0
 	call	[QWORD PTR 16[rax]]
-	mov	rax, QWORD PTR [rbx]
-	mov	rcx, rbx
+	mov	rcx, QWORD PTR 40[rsp]
+	mov	rax, QWORD PTR [rcx]
 	mov	rax, QWORD PTR 24[rax]
-	add	rsp, 32
-	pop	rbx
+	add	rsp, 56
 	rex.W jmp	rax
 	.p2align 4,,10
 	.p2align 3
 .L38:
-	mov	rcx, rbx
-	add	rsp, 32
-	pop	rbx
+	add	rsp, 56
 	jmp	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv
 	.seh_endproc
 	.text
@@ -359,9 +324,7 @@ _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv:
 	.def	_Z17probe_shared_copyRKSt10shared_ptrIiEi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z17probe_shared_copyRKSt10shared_ptrIiEi
 _Z17probe_shared_copyRKSt10shared_ptrIiEi:
-.LFB6033:
-	push	r14
-	.seh_pushreg	r14
+.LFB6321:
 	push	r13
 	.seh_pushreg	r13
 	push	r12
@@ -374,74 +337,83 @@ _Z17probe_shared_copyRKSt10shared_ptrIiEi:
 	.seh_pushreg	rsi
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 32
-	.seh_stackalloc	32
+	sub	rsp, 40
+	.seh_stackalloc	40
 	.seh_endprologue
-	test	edx, edx
-	mov	r12, rcx
+	mov	rbp, rcx
 	mov	edi, edx
+	test	edx, edx
 	jle	.L46
-	movabs	r14, 4294967297
+	movabs	r13, 4294967297
 	xor	esi, esi
-	xor	r13d, r13d
+	xor	r12d, r12d
 	jmp	.L45
 	.p2align 4,,10
 	.p2align 3
 .L42:
-	lock sub	DWORD PTR [rax], 1
-	je	.L44
-.L43:
-	add	r13, rbp
+	lock sub	DWORD PTR [rcx], 1
+	je	.L51
 .L41:
 	add	esi, 1
 	cmp	edi, esi
 	je	.L39
 .L45:
-	mov	rbx, QWORD PTR 8[r12]
+	mov	rbx, QWORD PTR 8[rbp]
 	test	rbx, rbx
 	je	.L41
-	lea	rax, 8[rbx]
+	lea	rcx, 8[rbx]
 	lock add	DWORD PTR 8[rbx], 1
-	movsx	rbp, DWORD PTR 8[rbx]
-	mov	rdx, QWORD PTR 8[rbx]
-	cmp	rdx, r14
+	movsxd	rax, DWORD PTR 8[rbx]
+	add	r12, rax
+	mov	rax, QWORD PTR 8[rbx]
+	cmp	rax, r13
 	jne	.L42
 	mov	rax, QWORD PTR [rbx]
 	mov	rcx, rbx
 	mov	QWORD PTR 8[rbx], 0
+	add	esi, 1
 	call	[QWORD PTR 16[rax]]
 	mov	rax, QWORD PTR [rbx]
 	mov	rcx, rbx
 	call	[QWORD PTR 24[rax]]
-	jmp	.L43
-	.p2align 4,,10
-	.p2align 3
-.L46:
-	xor	r13d, r13d
+	cmp	edi, esi
+	jne	.L45
 .L39:
-	mov	rax, r13
-	add	rsp, 32
+	mov	rax, r12
+	add	rsp, 40
 	pop	rbx
 	pop	rsi
 	pop	rdi
 	pop	rbp
 	pop	r12
 	pop	r13
-	pop	r14
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L44:
+.L51:
 	mov	rcx, rbx
 	call	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv
-	jmp	.L43
+	jmp	.L41
+	.p2align 4,,10
+	.p2align 3
+.L46:
+	xor	r12d, r12d
+	mov	rax, r12
+	add	rsp, 40
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
+	pop	r12
+	pop	r13
+	ret
 	.seh_endproc
 	.p2align 4
 	.globl	_Z17probe_make_sharedi
 	.def	_Z17probe_make_sharedi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z17probe_make_sharedi
 _Z17probe_make_sharedi:
-.LFB6046:
+.LFB6334:
 	push	r14
 	.seh_pushreg	r14
 	push	r13
@@ -459,36 +431,36 @@ _Z17probe_make_sharedi:
 	sub	rsp, 32
 	.seh_stackalloc	32
 	.seh_endprologue
-	test	ecx, ecx
 	mov	ebp, ecx
-	jle	.L56
+	test	ecx, ecx
+	jle	.L57
 	mov	r14, QWORD PTR .LC0[rip]
 	xor	esi, esi
 	xor	edi, edi
-	movabs	r12, 4294967297
 	lea	r13, _ZTVSt23_Sp_counted_ptr_inplaceIiSaIvELN9__gnu_cxx12_Lock_policyE2EE[rip+16]
-	jmp	.L55
+	movabs	r12, 4294967297
+	jmp	.L56
 	.p2align 4,,10
 	.p2align 3
-.L53:
-	lock sub	DWORD PTR [rdx], 1
-	je	.L61
 .L54:
+	lock sub	DWORD PTR [rax], 1
+	je	.L62
+.L55:
 	add	esi, 1
 	cmp	esi, ebp
-	je	.L51
-.L55:
+	je	.L52
+.L56:
 	mov	ecx, 24
 	call	_Znwy
-	mov	QWORD PTR 8[rax], r14
-	lea	rdx, 8[rax]
 	mov	rbx, rax
-	mov	QWORD PTR [rax], r13
-	lea	rdi, 16[rax+rdi]
-	mov	DWORD PTR 16[rax], esi
-	mov	rax, QWORD PTR 8[rax]
-	cmp	rax, r12
-	jne	.L53
+	lea	rax, 8[rax]
+	mov	QWORD PTR 8[rbx], r14
+	lea	rdi, 16[rbx+rdi]
+	mov	QWORD PTR [rbx], r13
+	mov	DWORD PTR 16[rbx], esi
+	mov	rdx, QWORD PTR 8[rbx]
+	cmp	rdx, r12
+	jne	.L54
 	mov	rax, QWORD PTR [rbx]
 	mov	rcx, rbx
 	mov	QWORD PTR 8[rbx], 0
@@ -498,8 +470,8 @@ _Z17probe_make_sharedi:
 	mov	rcx, rbx
 	call	[QWORD PTR 24[rax]]
 	cmp	esi, ebp
-	jne	.L55
-.L51:
+	jne	.L56
+.L52:
 	mov	rax, rdi
 	add	rsp, 32
 	pop	rbx
@@ -512,22 +484,26 @@ _Z17probe_make_sharedi:
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L61:
+.L62:
 	mov	rcx, rbx
 	call	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv
-	jmp	.L54
+	jmp	.L55
 	.p2align 4,,10
 	.p2align 3
-.L56:
+.L57:
 	xor	edi, edi
-	jmp	.L51
+	jmp	.L52
 	.seh_endproc
+	.section	.text.unlikely,"x"
+.LCOLDB1:
+	.text
+.LHOTB1:
 	.p2align 4
 	.globl	_Z21probe_shared_from_newi
 	.def	_Z21probe_shared_from_newi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z21probe_shared_from_newi
 _Z21probe_shared_from_newi:
-.LFB6047:
+.LFB6335:
 	push	r15
 	.seh_pushreg	r15
 	push	r14
@@ -547,55 +523,55 @@ _Z21probe_shared_from_newi:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
-	test	ecx, ecx
 	mov	r12d, ecx
-	jle	.L70
+	test	ecx, ecx
+	jle	.L71
 	mov	r15, QWORD PTR .LC0[rip]
-	xor	edi, edi
+	xor	esi, esi
 	xor	ebp, ebp
-	movabs	r13, 4294967297
 	lea	r14, _ZTVSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE[rip+16]
-	jmp	.L69
+	movabs	r13, 4294967297
+	jmp	.L70
 	.p2align 4,,10
 	.p2align 3
-.L77:
+.L78:
 	lock sub	DWORD PTR [rax], 1
-	je	.L78
-.L68:
-	add	edi, 1
-	cmp	r12d, edi
-	je	.L62
+	je	.L79
 .L69:
+	add	esi, 1
+	cmp	r12d, esi
+	je	.L63
+.L70:
 	mov	ecx, 4
 .LEHB0:
 	call	_Znwy
 .LEHE0:
 	mov	ecx, 24
-	mov	DWORD PTR [rax], edi
-	mov	rsi, rax
+	mov	DWORD PTR [rax], esi
+	mov	rdi, rax
 .LEHB1:
 	call	_Znwy
 .LEHE1:
 	mov	rbx, rax
-	add	rbp, rsi
-	mov	QWORD PTR 8[rbx], r15
+	add	rbp, rdi
 	lea	rax, 8[rax]
+	mov	QWORD PTR 8[rbx], r15
 	mov	QWORD PTR [rbx], r14
-	mov	QWORD PTR 16[rbx], rsi
+	mov	QWORD PTR 16[rbx], rdi
 	mov	rdx, QWORD PTR 8[rbx]
 	cmp	rdx, r13
-	jne	.L77
+	jne	.L78
 	mov	rax, QWORD PTR [rbx]
 	mov	rcx, rbx
 	mov	QWORD PTR 8[rbx], 0
-	add	edi, 1
+	add	esi, 1
 	call	[QWORD PTR 16[rax]]
 	mov	rax, QWORD PTR [rbx]
 	mov	rcx, rbx
 	call	[QWORD PTR 24[rax]]
-	cmp	r12d, edi
-	jne	.L69
-.L62:
+	cmp	r12d, esi
+	jne	.L70
+.L63:
 	mov	rax, rbp
 	add	rsp, 40
 	pop	rbx
@@ -609,25 +585,69 @@ _Z21probe_shared_from_newi:
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L78:
+.L79:
 	mov	rcx, rbx
 	call	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv
-	jmp	.L68
+	jmp	.L69
 	.p2align 4,,10
 	.p2align 3
-.L70:
+.L71:
 	xor	ebp, ebp
-	jmp	.L62
-.L72:
+	jmp	.L63
+.L73:
+	jmp	.L67
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+	.align 4
+.LLSDA6335:
+	.byte	0xff
+	.byte	0x9b
+	.uleb128 .LLSDATT6335-.LLSDATTD6335
+.LLSDATTD6335:
+	.byte	0x1
+	.uleb128 .LLSDACSE6335-.LLSDACSB6335
+.LLSDACSB6335:
+	.uleb128 .LEHB0-.LFB6335
+	.uleb128 .LEHE0-.LEHB0
+	.uleb128 0
+	.uleb128 0
+	.uleb128 .LEHB1-.LFB6335
+	.uleb128 .LEHE1-.LEHB1
+	.uleb128 .L73-.LFB6335
+	.uleb128 0x1
+.LLSDACSE6335:
+	.byte	0x1
+	.byte	0
+	.align 4
+	.long	0
+
+.LLSDATT6335:
+	.text
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	_Z21probe_shared_from_newi.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z21probe_shared_from_newi.cold
+	.seh_stackalloc	104
+	.seh_savereg	rbx, 40
+	.seh_savereg	rsi, 48
+	.seh_savereg	rdi, 56
+	.seh_savereg	rbp, 64
+	.seh_savereg	r12, 72
+	.seh_savereg	r13, 80
+	.seh_savereg	r14, 88
+	.seh_savereg	r15, 96
+	.seh_endprologue
+_Z21probe_shared_from_newi.cold:
+.L67:
 	mov	rcx, rax
 	call	__cxa_begin_catch
 	mov	edx, 4
-	mov	rcx, rsi
+	mov	rcx, rdi
 	call	_ZdlPvy
 .LEHB2:
 	call	__cxa_rethrow
 .LEHE2:
-.L71:
+.L72:
 	mov	rbx, rax
 	call	__cxa_end_catch
 	mov	rcx, rbx
@@ -635,93 +655,67 @@ _Z21probe_shared_from_newi:
 	call	_Unwind_Resume
 	nop
 .LEHE3:
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
 	.align 4
-.LLSDA6047:
+.LLSDAC6335:
 	.byte	0xff
 	.byte	0x9b
-	.uleb128 .LLSDATT6047-.LLSDATTD6047
-.LLSDATTD6047:
+	.uleb128 .LLSDATTC6335-.LLSDATTDC6335
+.LLSDATTDC6335:
 	.byte	0x1
-	.uleb128 .LLSDACSE6047-.LLSDACSB6047
-.LLSDACSB6047:
-	.uleb128 .LEHB0-.LFB6047
-	.uleb128 .LEHE0-.LEHB0
-	.uleb128 0
-	.uleb128 0
-	.uleb128 .LEHB1-.LFB6047
-	.uleb128 .LEHE1-.LEHB1
-	.uleb128 .L72-.LFB6047
-	.uleb128 0x1
-	.uleb128 .LEHB2-.LFB6047
+	.uleb128 .LLSDACSEC6335-.LLSDACSBC6335
+.LLSDACSBC6335:
+	.uleb128 .LEHB2-.LCOLDB1
 	.uleb128 .LEHE2-.LEHB2
-	.uleb128 .L71-.LFB6047
+	.uleb128 .L72-.LCOLDB1
 	.uleb128 0
-	.uleb128 .LEHB3-.LFB6047
+	.uleb128 .LEHB3-.LCOLDB1
 	.uleb128 .LEHE3-.LEHB3
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE6047:
+.LLSDACSEC6335:
 	.byte	0x1
 	.byte	0
 	.align 4
 	.long	0
 
-.LLSDATT6047:
+.LLSDATTC6335:
+	.section	.text.unlikely,"x"
 	.text
+	.section	.text.unlikely,"x"
 	.seh_endproc
-	.section	.text$_ZNSt10unique_ptrIiSt14default_deleteIiEED1Ev,"x"
-	.linkonce discard
-	.align 2
-	.p2align 4
-	.globl	_ZNSt10unique_ptrIiSt14default_deleteIiEED1Ev
-	.def	_ZNSt10unique_ptrIiSt14default_deleteIiEED1Ev;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZNSt10unique_ptrIiSt14default_deleteIiEED1Ev
-_ZNSt10unique_ptrIiSt14default_deleteIiEED1Ev:
-.LFB6547:
-	.seh_endprologue
-	mov	rcx, QWORD PTR [rcx]
-	test	rcx, rcx
-	je	.L79
-	mov	edx, 4
-	jmp	_ZdlPvy
-	.p2align 4,,10
-	.p2align 3
-.L79:
-	ret
-	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
+.LCOLDE1:
+	.text
+.LHOTE1:
 	.section .rdata,"dr"
 	.align 8
-.LC3:
+.LC4:
 	.ascii "TSC_freq = %.3f GHz  (ns/cycle = %.4f)\12\0"
-.LC5:
-	.ascii "unique_deref\0"
 .LC6:
-	.ascii "%-22s : %8.3f ns/op\12\0"
+	.ascii "unique_deref\0"
 .LC7:
-	.ascii "shared_copy\0"
+	.ascii "%-22s : %8.3f ns/op\12\0"
 .LC8:
-	.ascii "make_shared\0"
+	.ascii "shared_copy\0"
 .LC9:
-	.ascii "shared_from_new\0"
+	.ascii "make_shared\0"
 .LC10:
-	.ascii "raw_new_delete\0"
+	.ascii "shared_from_new\0"
 .LC11:
+	.ascii "raw_new_delete\0"
+.LC12:
 	.ascii "sink=%llu\12\0"
+	.section	.text.unlikely,"x"
+.LCOLDB13:
 	.section	.text.startup,"x"
+.LHOTB13:
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB6050:
-	push	r12
-	.seh_pushreg	r12
-	push	rbp
-	.seh_pushreg	rbp
+.LFB6338:
 	push	rdi
 	.seh_pushreg	rdi
 	push	rsi
@@ -739,7 +733,7 @@ main:
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
 	mov	rbx, rax
 /APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
@@ -747,15 +741,15 @@ main:
 	mov	eax, eax
 	mov	rdi, rdx
 	or	rdi, rax
-	.p2align 4,,10
+	.p2align 4
 	.p2align 3
-.L82:
+.L81:
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
 	sub	rax, rbx
 	cmp	rax, 99999999
-	jle	.L82
+	jle	.L81
 /APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
@@ -765,16 +759,16 @@ main:
 	or	rsi, rax
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
 	sub	rsi, rdi
-	js	.L83
+	js	.L82
 	pxor	xmm1, xmm1
 	cvtsi2sd	xmm1, rsi
-.L84:
+.L83:
+	movsd	xmm2, QWORD PTR .LC2[rip]
 	sub	rax, rbx
 	pxor	xmm0, xmm0
-	movsd	xmm2, QWORD PTR .LC1[rip]
+	movsd	xmm6, QWORD PTR .LC3[rip]
 	cvtsi2sd	xmm0, rax
-	movsd	xmm6, QWORD PTR .LC2[rip]
-	lea	rcx, .LC3[rip]
+	lea	rcx, .LC4[rip]
 	divsd	xmm0, xmm2
 	divsd	xmm1, xmm0
 	divsd	xmm1, xmm2
@@ -783,7 +777,7 @@ main:
 	movapd	xmm2, xmm6
 	movq	r8, xmm6
 .LEHB4:
-	call	_Z6printfPKcz
+	call	__mingw_printf
 	mov	ecx, 4
 	call	_Znwy
 .LEHE4:
@@ -794,43 +788,41 @@ main:
 	call	_Znwy
 .LEHE5:
 	mov	DWORD PTR [rax], 7
+	movq	xmm0, rax
 	mov	ecx, 24
-	mov	rsi, rax
-	mov	QWORD PTR 48[rsp], rax
-	mov	QWORD PTR 56[rsp], 0
+	mov	rbx, rax
+	movaps	XMMWORD PTR 48[rsp], xmm0
 .LEHB6:
 	call	_Znwy
 .LEHE6:
-	lea	rbp, 40[rsp]
-	mov	rbx, rax
-	mov	rax, QWORD PTR .LC0[rip]
+	mov	rdx, QWORD PTR .LC0[rip]
+	lea	rdi, _ZTVSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE[rip+16]
+	mov	QWORD PTR 16[rax], rbx
+	lea	rcx, 40[rsp]
+	mov	QWORD PTR [rax], rdi
+	mov	QWORD PTR 8[rax], rdx
 	mov	edx, 1000
-	mov	QWORD PTR 16[rbx], rsi
-	mov	rcx, rbp
-	mov	QWORD PTR 56[rsp], rbx
-	mov	QWORD PTR 8[rbx], rax
-	lea	rax, _ZTVSt15_Sp_counted_ptrIPiLN9__gnu_cxx12_Lock_policyE2EE[rip+16]
-	mov	QWORD PTR [rbx], rax
+	mov	QWORD PTR 56[rsp], rax
 	call	_Z18probe_unique_derefRKSt10unique_ptrIiSt14default_deleteIiEEi
 	mov	rdx, rax
 	mov	rax, QWORD PTR _ZL6g_sink[rip]
 	add	rax, rdx
 	mov	QWORD PTR _ZL6g_sink[rip], rax
 /APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
 	sal	rdx, 32
 	mov	eax, eax
-	mov	rcx, rbp
+	lea	rcx, 40[rsp]
 	or	rdx, rax
 	mov	r9, rdx
 	mov	edx, 1000000
 	call	_Z18probe_unique_derefRKSt10unique_ptrIiSt14default_deleteIiEEi
-	mov	rsi, rax
+	mov	rbx, rax
 /APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
@@ -838,25 +830,23 @@ main:
 	mov	eax, eax
 	or	rdx, rax
 	sub	rdx, r9
-	js	.L85
+	js	.L84
 	pxor	xmm0, xmm0
 	cvtsi2sd	xmm0, rdx
-.L86:
+.L85:
 	mulsd	xmm0, xmm6
-	movsd	xmm7, QWORD PTR .LC4[rip]
-	lea	rdi, .LC6[rip]
-	lea	rdx, .LC5[rip]
-	mov	rcx, rdi
+	movsd	xmm7, QWORD PTR .LC5[rip]
+	lea	rdx, .LC6[rip]
+	lea	rcx, .LC7[rip]
 	divsd	xmm0, xmm7
 	movq	r8, xmm0
 	movapd	xmm2, xmm0
 .LEHB7:
-	call	_Z6printfPKcz
+	call	__mingw_printf
 	mov	rax, QWORD PTR _ZL6g_sink[rip]
-	lea	r12, 48[rsp]
 	mov	edx, 1000
-	mov	rcx, r12
-	add	rax, rsi
+	lea	rcx, 48[rsp]
+	add	rax, rbx
 	mov	QWORD PTR _ZL6g_sink[rip], rax
 	call	_Z17probe_shared_copyRKSt10shared_ptrIiEi
 	mov	rdx, rax
@@ -864,20 +854,20 @@ main:
 	add	rax, rdx
 	mov	QWORD PTR _ZL6g_sink[rip], rax
 /APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
 	sal	rdx, 32
-	mov	rcx, r12
 	mov	eax, eax
+	lea	rcx, 48[rsp]
 	mov	rsi, rdx
 	mov	edx, 1000000
 	or	rsi, rax
 	call	_Z17probe_shared_copyRKSt10shared_ptrIiEi
-	mov	r12, rax
+	mov	rbx, rax
 /APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
@@ -885,69 +875,28 @@ main:
 	mov	eax, eax
 	or	rdx, rax
 	sub	rdx, rsi
-	js	.L91
+	js	.L90
 	pxor	xmm0, xmm0
 	cvtsi2sd	xmm0, rdx
-.L92:
+.L91:
 	mulsd	xmm0, xmm6
-	mov	rcx, rdi
-	lea	rdx, .LC7[rip]
-	divsd	xmm0, xmm7
-	movq	r8, xmm0
-	movapd	xmm2, xmm0
-	call	_Z6printfPKcz
-	mov	rax, QWORD PTR _ZL6g_sink[rip]
-	mov	ecx, 1000
-	add	rax, r12
-	mov	QWORD PTR _ZL6g_sink[rip], rax
-	call	_Z17probe_make_sharedi
-	mov	rdx, rax
-	mov	rax, QWORD PTR _ZL6g_sink[rip]
-	add	rax, rdx
-	mov	QWORD PTR _ZL6g_sink[rip], rax
-/APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
-	rdtsc
- # 0 "" 2
-/NO_APP
-	sal	rdx, 32
-	mov	eax, eax
-	mov	ecx, 1000000
-	mov	rsi, rdx
-	or	rsi, rax
-	call	_Z17probe_make_sharedi
-	mov	r12, rax
-/APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
-	rdtsc
- # 0 "" 2
-/NO_APP
-	sal	rdx, 32
-	mov	eax, eax
-	or	rdx, rax
-	sub	rdx, rsi
-	js	.L93
-	pxor	xmm0, xmm0
-	cvtsi2sd	xmm0, rdx
-.L94:
-	mulsd	xmm0, xmm6
-	mov	rcx, rdi
 	lea	rdx, .LC8[rip]
+	lea	rcx, .LC7[rip]
 	divsd	xmm0, xmm7
 	movq	r8, xmm0
 	movapd	xmm2, xmm0
-	call	_Z6printfPKcz
+	call	__mingw_printf
 	mov	rax, QWORD PTR _ZL6g_sink[rip]
 	mov	ecx, 1000
-	add	rax, r12
+	add	rax, rbx
 	mov	QWORD PTR _ZL6g_sink[rip], rax
-	call	_Z21probe_shared_from_newi
+	call	_Z17probe_make_sharedi
 	mov	rdx, rax
 	mov	rax, QWORD PTR _ZL6g_sink[rip]
 	add	rax, rdx
 	mov	QWORD PTR _ZL6g_sink[rip], rax
 /APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
@@ -956,10 +905,10 @@ main:
 	mov	ecx, 1000000
 	mov	rsi, rdx
 	or	rsi, rax
-	call	_Z21probe_shared_from_newi
-	mov	r12, rax
+	call	_Z17probe_make_sharedi
+	mov	rbx, rax
 /APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
@@ -967,20 +916,61 @@ main:
 	mov	eax, eax
 	or	rdx, rax
 	sub	rdx, rsi
-	js	.L95
+	js	.L92
 	pxor	xmm0, xmm0
 	cvtsi2sd	xmm0, rdx
-.L96:
+.L93:
 	mulsd	xmm0, xmm6
-	mov	rcx, rdi
 	lea	rdx, .LC9[rip]
+	lea	rcx, .LC7[rip]
 	divsd	xmm0, xmm7
 	movq	r8, xmm0
 	movapd	xmm2, xmm0
-	call	_Z6printfPKcz
+	call	__mingw_printf
 	mov	rax, QWORD PTR _ZL6g_sink[rip]
 	mov	ecx, 1000
-	add	rax, r12
+	add	rax, rbx
+	mov	QWORD PTR _ZL6g_sink[rip], rax
+	call	_Z21probe_shared_from_newi
+	mov	rdx, rax
+	mov	rax, QWORD PTR _ZL6g_sink[rip]
+	add	rax, rdx
+	mov	QWORD PTR _ZL6g_sink[rip], rax
+/APP
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
+	rdtsc
+ # 0 "" 2
+/NO_APP
+	sal	rdx, 32
+	mov	eax, eax
+	mov	ecx, 1000000
+	mov	rsi, rdx
+	or	rsi, rax
+	call	_Z21probe_shared_from_newi
+	mov	rbx, rax
+/APP
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
+	rdtsc
+ # 0 "" 2
+/NO_APP
+	sal	rdx, 32
+	mov	eax, eax
+	or	rdx, rax
+	sub	rdx, rsi
+	js	.L94
+	pxor	xmm0, xmm0
+	cvtsi2sd	xmm0, rdx
+.L95:
+	mulsd	xmm0, xmm6
+	lea	rdx, .LC10[rip]
+	lea	rcx, .LC7[rip]
+	divsd	xmm0, xmm7
+	movq	r8, xmm0
+	movapd	xmm2, xmm0
+	call	__mingw_printf
+	mov	rax, QWORD PTR _ZL6g_sink[rip]
+	mov	ecx, 1000
+	add	rax, rbx
 	mov	QWORD PTR _ZL6g_sink[rip], rax
 	call	_Z20probe_raw_new_deletei
 	mov	rdx, rax
@@ -988,7 +978,7 @@ main:
 	add	rax, rdx
 	mov	QWORD PTR _ZL6g_sink[rip], rax
 /APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
@@ -998,9 +988,9 @@ main:
 	mov	rsi, rdx
 	or	rsi, rax
 	call	_Z20probe_raw_new_deletei
-	mov	r12, rax
+	mov	rbx, rax
 /APP
- # 10 "Examples/_ch41_ptr_perf.cpp" 1
+ # 10 "Examples\_ch41_ptr_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
@@ -1008,39 +998,44 @@ main:
 	mov	eax, eax
 	or	rdx, rax
 	sub	rdx, rsi
-	js	.L97
+	js	.L96
 	pxor	xmm2, xmm2
 	cvtsi2sd	xmm2, rdx
-.L98:
+.L97:
 	mulsd	xmm2, xmm6
-	mov	rcx, rdi
-	lea	rdx, .LC10[rip]
+	lea	rdx, .LC11[rip]
+	lea	rcx, .LC7[rip]
 	divsd	xmm2, xmm7
 	movq	r8, xmm2
-	call	_Z6printfPKcz
+	call	__mingw_printf
 	mov	rax, QWORD PTR _ZL6g_sink[rip]
-	lea	rcx, .LC11[rip]
-	add	rax, r12
+	lea	rcx, .LC12[rip]
+	add	rax, rbx
 	mov	QWORD PTR _ZL6g_sink[rip], rax
 	mov	rdx, QWORD PTR _ZL6g_sink[rip]
-	call	_Z6printfPKcz
+	call	__mingw_printf
 .LEHE7:
-	mov	rcx, rbx
+	mov	rcx, QWORD PTR 56[rsp]
+	test	rcx, rcx
+	je	.L98
 	call	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv
-	mov	rcx, rbp
-	call	_ZNSt10unique_ptrIiSt14default_deleteIiEED1Ev
+.L98:
+	mov	rcx, QWORD PTR 40[rsp]
+	test	rcx, rcx
+	je	.L113
+	mov	edx, 4
+	call	_ZdlPvy
 	nop
+.L113:
 	movaps	xmm6, XMMWORD PTR 64[rsp]
-	xor	eax, eax
 	movaps	xmm7, XMMWORD PTR 80[rsp]
+	xor	eax, eax
 	add	rsp, 96
 	pop	rbx
 	pop	rsi
 	pop	rdi
-	pop	rbp
-	pop	r12
 	ret
-.L83:
+.L82:
 	mov	rdx, rsi
 	and	esi, 1
 	pxor	xmm1, xmm1
@@ -1048,8 +1043,8 @@ main:
 	or	rdx, rsi
 	cvtsi2sd	xmm1, rdx
 	addsd	xmm1, xmm1
-	jmp	.L84
-.L97:
+	jmp	.L83
+.L96:
 	mov	rax, rdx
 	and	edx, 1
 	pxor	xmm2, xmm2
@@ -1057,8 +1052,8 @@ main:
 	or	rax, rdx
 	cvtsi2sd	xmm2, rax
 	addsd	xmm2, xmm2
-	jmp	.L98
-.L95:
+	jmp	.L97
+.L94:
 	mov	rax, rdx
 	and	edx, 1
 	pxor	xmm0, xmm0
@@ -1066,8 +1061,8 @@ main:
 	or	rax, rdx
 	cvtsi2sd	xmm0, rax
 	addsd	xmm0, xmm0
-	jmp	.L96
-.L93:
+	jmp	.L95
+.L92:
 	mov	rax, rdx
 	and	edx, 1
 	pxor	xmm0, xmm0
@@ -1075,99 +1070,146 @@ main:
 	or	rax, rdx
 	cvtsi2sd	xmm0, rax
 	addsd	xmm0, xmm0
-	jmp	.L94
-.L91:
-	mov	rax, rdx
-	and	edx, 1
-	pxor	xmm0, xmm0
-	shr	rax
-	or	rax, rdx
-	cvtsi2sd	xmm0, rax
-	addsd	xmm0, xmm0
-	jmp	.L92
-.L85:
-	mov	rax, rdx
-	and	edx, 1
-	pxor	xmm0, xmm0
-	shr	rax
-	or	rax, rdx
-	cvtsi2sd	xmm0, rax
-	addsd	xmm0, xmm0
-	jmp	.L86
-.L101:
-	mov	rsi, rax
-	mov	rcx, rbx
-	call	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv
-	mov	rbx, rsi
+	jmp	.L93
 .L90:
-	mov	rcx, rbp
-	call	_ZNSt10unique_ptrIiSt14default_deleteIiEED1Ev
-	mov	rcx, rbx
-.LEHB8:
-	call	_Unwind_Resume
-.LEHE8:
-.L103:
-	mov	rcx, rax
-	call	__cxa_begin_catch
-	mov	edx, 4
-	mov	rcx, rsi
-	call	_ZdlPvy
-.LEHB9:
-	call	__cxa_rethrow
-.LEHE9:
-.L100:
-	lea	rbp, 40[rsp]
+	mov	rax, rdx
+	and	edx, 1
+	pxor	xmm0, xmm0
+	shr	rax
+	or	rax, rdx
+	cvtsi2sd	xmm0, rax
+	addsd	xmm0, xmm0
+	jmp	.L91
+.L84:
+	mov	rax, rdx
+	and	edx, 1
+	pxor	xmm0, xmm0
+	shr	rax
+	or	rax, rdx
+	cvtsi2sd	xmm0, rax
+	addsd	xmm0, xmm0
+	jmp	.L85
+.L105:
 	mov	rbx, rax
-	jmp	.L90
-.L102:
-	lea	rbp, 40[rsp]
+	jmp	.L100
+.L107:
+	jmp	.L87
+.L108:
 	mov	rbx, rax
-	call	__cxa_end_catch
-	jmp	.L90
+	jmp	.L102
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
 	.align 4
-.LLSDA6050:
+.LLSDA6338:
 	.byte	0xff
 	.byte	0x9b
-	.uleb128 .LLSDATT6050-.LLSDATTD6050
-.LLSDATTD6050:
+	.uleb128 .LLSDATT6338-.LLSDATTD6338
+.LLSDATTD6338:
 	.byte	0x1
-	.uleb128 .LLSDACSE6050-.LLSDACSB6050
-.LLSDACSB6050:
-	.uleb128 .LEHB4-.LFB6050
+	.uleb128 .LLSDACSE6338-.LLSDACSB6338
+.LLSDACSB6338:
+	.uleb128 .LEHB4-.LFB6338
 	.uleb128 .LEHE4-.LEHB4
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB5-.LFB6050
+	.uleb128 .LEHB5-.LFB6338
 	.uleb128 .LEHE5-.LEHB5
-	.uleb128 .L100-.LFB6050
+	.uleb128 .L108-.LFB6338
 	.uleb128 0
-	.uleb128 .LEHB6-.LFB6050
+	.uleb128 .LEHB6-.LFB6338
 	.uleb128 .LEHE6-.LEHB6
-	.uleb128 .L103-.LFB6050
+	.uleb128 .L107-.LFB6338
 	.uleb128 0x1
-	.uleb128 .LEHB7-.LFB6050
+	.uleb128 .LEHB7-.LFB6338
 	.uleb128 .LEHE7-.LEHB7
-	.uleb128 .L101-.LFB6050
+	.uleb128 .L105-.LFB6338
 	.uleb128 0
-	.uleb128 .LEHB8-.LFB6050
-	.uleb128 .LEHE8-.LEHB8
-	.uleb128 0
-	.uleb128 0
-	.uleb128 .LEHB9-.LFB6050
-	.uleb128 .LEHE9-.LEHB9
-	.uleb128 .L102-.LFB6050
-	.uleb128 0
-.LLSDACSE6050:
+.LLSDACSE6338:
 	.byte	0x1
 	.byte	0
 	.align 4
 	.long	0
 
-.LLSDATT6050:
+.LLSDATT6338:
 	.section	.text.startup,"x"
 	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	main.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	main.cold
+	.seh_stackalloc	120
+	.seh_savereg	rbx, 96
+	.seh_savereg	rsi, 104
+	.seh_savereg	rdi, 112
+	.seh_savexmm	xmm6, 64
+	.seh_savexmm	xmm7, 80
+	.seh_endprologue
+main.cold:
+.L100:
+	mov	rcx, QWORD PTR 56[rsp]
+	test	rcx, rcx
+	je	.L89
+	call	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv
+	jmp	.L89
+.L87:
+	mov	rcx, rax
+	call	__cxa_begin_catch
+	mov	edx, 4
+	mov	rcx, rbx
+	call	_ZdlPvy
+.LEHB8:
+	call	__cxa_rethrow
+.LEHE8:
+.L102:
+	mov	rcx, QWORD PTR 40[rsp]
+.L103:
+	mov	edx, 4
+	call	_ZdlPvy
+.L104:
+	mov	rcx, rbx
+.LEHB9:
+	call	_Unwind_Resume
+.LEHE9:
+.L106:
+	mov	rbx, rax
+	call	__cxa_end_catch
+.L89:
+	mov	rcx, QWORD PTR 40[rsp]
+	test	rcx, rcx
+	jne	.L103
+	jmp	.L104
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+	.align 4
+.LLSDAC6338:
+	.byte	0xff
+	.byte	0x9b
+	.uleb128 .LLSDATTC6338-.LLSDATTDC6338
+.LLSDATTDC6338:
+	.byte	0x1
+	.uleb128 .LLSDACSEC6338-.LLSDACSBC6338
+.LLSDACSBC6338:
+	.uleb128 .LEHB8-.LCOLDB13
+	.uleb128 .LEHE8-.LEHB8
+	.uleb128 .L106-.LCOLDB13
+	.uleb128 0
+	.uleb128 .LEHB9-.LCOLDB13
+	.uleb128 .LEHE9-.LEHB9
+	.uleb128 0
+	.uleb128 0
+.LLSDACSEC6338:
+	.byte	0x1
+	.byte	0
+	.align 4
+	.long	0
+
+.LLSDATTC6338:
+	.section	.text.unlikely,"x"
+	.section	.text.startup,"x"
+	.section	.text.unlikely,"x"
+	.seh_endproc
+.LCOLDE13:
+	.section	.text.startup,"x"
+.LHOTE13:
 	.globl	_ZTSSt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE
 	.section	.rdata$_ZTSSt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE,"dr"
 	.linkonce same_size
@@ -1273,21 +1315,22 @@ _ZZNSt19_Sp_make_shared_tag5_S_tiEvE5__tag:
 	.long	1
 	.long	1
 	.align 8
-.LC1:
+.LC2:
 	.long	0
 	.long	1104006501
 	.align 8
-.LC2:
+.LC3:
 	.long	0
 	.long	1072693248
 	.align 8
-.LC4:
+.LC5:
 	.long	0
 	.long	1093567616
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
 	.def	_ZNKSt9type_info7__equalERKS_;	.scl	2;	.type	32;	.endef
-	.def	__mingw_vfprintf;	.scl	2;	.type	32;	.endef
 	.def	_Znwy;	.scl	2;	.type	32;	.endef
 	.def	__cxa_begin_catch;	.scl	2;	.type	32;	.endef
 	.def	__cxa_rethrow;	.scl	2;	.type	32;	.endef

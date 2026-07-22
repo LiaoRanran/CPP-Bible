@@ -6,20 +6,21 @@
 	.def	_Z10reduce_intPKxy;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10reduce_intPKxy
 _Z10reduce_intPKxy:
-.LFB484:
+.LFB1202:
 	.seh_endprologue
 	sal	rdx, 3
-	lea	r9, [rcx+rdx]
 	cmp	rdx, 24
+	lea	r9, [rcx+rdx]
 	mov	edx, 0
 	jle	.L9
-	.p2align 4,,10
+	.p2align 6
+	.p2align 4
 	.p2align 3
 .L3:
 	mov	rax, QWORD PTR 8[rcx]
+	mov	r8, QWORD PTR 24[rcx]
 	add	rcx, 32
 	add	rax, QWORD PTR -32[rcx]
-	mov	r8, QWORD PTR -8[rcx]
 	add	r8, QWORD PTR -16[rcx]
 	add	rax, r8
 	add	rdx, rax
@@ -29,7 +30,7 @@ _Z10reduce_intPKxy:
 	jg	.L3
 	cmp	r9, rcx
 	je	.L11
-	.p2align 4,,10
+	.p2align 4
 	.p2align 3
 .L5:
 	add	rdx, QWORD PTR [rcx]
@@ -46,13 +47,14 @@ _Z10reduce_intPKxy:
 	.def	_Z9accum_intPKxy;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z9accum_intPKxy
 _Z9accum_intPKxy:
-.LFB485:
+.LFB1203:
 	.seh_endprologue
 	xor	eax, eax
 	lea	rdx, [rcx+rdx*8]
 	cmp	rdx, rcx
 	je	.L12
-	.p2align 4,,10
+	.p2align 4
+	.p2align 4
 	.p2align 3
 .L14:
 	add	rax, QWORD PTR [rcx]
@@ -67,26 +69,27 @@ _Z9accum_intPKxy:
 	.def	_Z10reduce_dblPKdy;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10reduce_dblPKdy
 _Z10reduce_dblPKdy:
-.LFB486:
+.LFB1204:
 	.seh_endprologue
 	pxor	xmm1, xmm1
 	sal	rdx, 3
 	lea	r8, [rcx+rdx]
 	cmp	rdx, 24
 	jle	.L18
-	.p2align 4,,10
+	.p2align 6
+	.p2align 4
 	.p2align 3
 .L19:
 	movsd	xmm0, QWORD PTR [rcx]
+	movsd	xmm2, QWORD PTR 16[rcx]
 	mov	rax, r8
 	add	rcx, 32
 	addsd	xmm0, QWORD PTR -24[rcx]
-	movsd	xmm2, QWORD PTR -16[rcx]
 	addsd	xmm2, QWORD PTR -8[rcx]
 	sub	rax, rcx
-	cmp	rax, 24
 	addsd	xmm0, xmm2
 	addsd	xmm1, xmm0
+	cmp	rax, 24
 	jg	.L19
 .L18:
 	cmp	r8, rcx
@@ -99,7 +102,8 @@ _Z10reduce_dblPKdy:
 	add	rcx, 8
 	cmp	r8, rcx
 	je	.L17
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
 .L21:
 	addsd	xmm1, QWORD PTR [rcx]
@@ -116,7 +120,7 @@ _Z10reduce_dblPKdy:
 	.def	_Z9accum_dblPKdy;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z9accum_dblPKdy
 _Z9accum_dblPKdy:
-.LFB487:
+.LFB1205:
 	.seh_endprologue
 	pxor	xmm0, xmm0
 	lea	rax, [rcx+rdx*8]
@@ -126,11 +130,12 @@ _Z9accum_dblPKdy:
 	sub	rdx, rcx
 	and	edx, 8
 	je	.L32
-	movsd	xmm0, QWORD PTR [rcx]
+	addsd	xmm0, QWORD PTR [rcx]
 	add	rcx, 8
 	cmp	rax, rcx
 	je	.L30
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
 .L32:
 	addsd	xmm0, QWORD PTR [rcx]
@@ -141,4 +146,4 @@ _Z9accum_dblPKdy:
 .L30:
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

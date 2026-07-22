@@ -9,7 +9,7 @@
 	.def	_ZNK6Button4areaEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK6Button4areaEv
 _ZNK6Button4areaEv:
-.LFB3485:
+.LFB3534:
 	.seh_endprologue
 	mov	eax, 10
 	ret
@@ -22,7 +22,7 @@ _ZNK6Button4areaEv:
 	.def	_ZNK6Window4areaEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK6Window4areaEv
 _ZNK6Window4areaEv:
-.LFB3486:
+.LFB3535:
 	.seh_endprologue
 	mov	eax, 100
 	ret
@@ -35,7 +35,7 @@ _ZNK6Window4areaEv:
 	.def	_ZN6ButtonD1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN6ButtonD1Ev
 _ZN6ButtonD1Ev:
-.LFB4031:
+.LFB4040:
 	.seh_endprologue
 	ret
 	.seh_endproc
@@ -47,7 +47,7 @@ _ZN6ButtonD1Ev:
 	.def	_ZN6WindowD1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN6WindowD1Ev
 _ZN6WindowD1Ev:
-.LFB4060:
+.LFB4046:
 	.seh_endprologue
 	ret
 	.seh_endproc
@@ -59,7 +59,7 @@ _ZN6WindowD1Ev:
 	.def	_ZN6ButtonD0Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN6ButtonD0Ev
 _ZN6ButtonD0Ev:
-.LFB4032:
+.LFB4041:
 	.seh_endprologue
 	mov	edx, 8
 	jmp	_ZdlPvy
@@ -72,7 +72,7 @@ _ZN6ButtonD0Ev:
 	.def	_ZN6WindowD0Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN6WindowD0Ev
 _ZN6WindowD0Ev:
-.LFB4061:
+.LFB4047:
 	.seh_endprologue
 	mov	edx, 8
 	jmp	_ZdlPvy
@@ -83,15 +83,15 @@ _ZN6WindowD0Ev:
 	.def	_Z4makePKc;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z4makePKc
 _Z4makePKc:
-.LFB3495:
+.LFB3545:
 	push	rbx
 	.seh_pushreg	rbx
 	sub	rsp, 32
 	.seh_stackalloc	32
 	.seh_endprologue
-	cmp	BYTE PTR [rdx], 66
 	mov	rbx, rcx
 	mov	ecx, 8
+	cmp	BYTE PTR [rdx], 66
 	je	.L11
 	call	_Znwy
 	lea	rdx, _ZTV6Window[rip+16]
@@ -118,28 +118,18 @@ _Z4makePKc:
 	.def	_Z3runv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z3runv
 _Z3runv:
-.LFB3512:
-	push	rsi
-	.seh_pushreg	rsi
-	push	rbx
-	.seh_pushreg	rbx
+.LFB3726:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
 	mov	ecx, 8
 	call	_Znwy
-	mov	rbx, rax
-	lea	rax, _ZTV6Button[rip+16]
-	mov	rcx, rbx
-	mov	QWORD PTR [rbx], rax
-	call	_ZNK6Button4areaEv
-	mov	rcx, rbx
-	mov	esi, eax
+	lea	rdx, _ZTV6Button[rip+16]
+	mov	QWORD PTR [rax], rdx
+	mov	rcx, rax
 	call	_ZN6ButtonD0Ev
-	mov	eax, esi
+	mov	eax, 10
 	add	rsp, 40
-	pop	rbx
-	pop	rsi
 	ret
 	.seh_endproc
 	.globl	_ZTS6Widget
@@ -203,6 +193,6 @@ _ZTV6Window:
 	.quad	_ZN6WindowD1Ev
 	.quad	_ZN6WindowD0Ev
 	.quad	_ZNK6Window4areaEv
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
 	.def	_Znwy;	.scl	2;	.type	32;	.endef

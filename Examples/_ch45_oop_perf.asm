@@ -1,4 +1,5 @@
 	.file	"_ch45_oop_perf.cpp"
+	.intel_syntax noprefix
 	.text
 	.section	.text$_ZN7Derived4virtEi,"x"
 	.linkonce discard
@@ -8,9 +9,9 @@
 	.def	_ZN7Derived4virtEi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN7Derived4virtEi
 _ZN7Derived4virtEi:
-.LFB7551:
+.LFB8392:
 	.seh_endprologue
-	leal	-1(%rdx), %eax
+	lea	eax, -1[rdx]
 	ret
 	.seh_endproc
 	.section	.text$_ZN2D24virtEi,"x"
@@ -21,9 +22,9 @@ _ZN7Derived4virtEi:
 	.def	_ZN2D24virtEi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN2D24virtEi
 _ZN2D24virtEi:
-.LFB7552:
+.LFB8393:
 	.seh_endprologue
-	leal	7(%rdx), %eax
+	lea	eax, 7[rdx]
 	ret
 	.seh_endproc
 	.text
@@ -32,40 +33,41 @@ _ZN2D24virtEi:
 	.def	_Z7free_fni;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z7free_fni
 _Z7free_fni:
-.LFB7553:
+.LFB8394:
 	.seh_endprologue
-	leal	3(%rcx), %eax
+	lea	eax, 3[rcx]
 	ret
 	.seh_endproc
 	.p2align 4
 	.def	_ZL9probe_nopi;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZL9probe_nopi
 _ZL9probe_nopi:
-.LFB7567:
+.LFB8408:
 	.seh_endprologue
-	testl	%ecx, %ecx
+	test	ecx, ecx
 	jle	.L8
-	xorl	%edx, %edx
-	xorl	%eax, %eax
-	testb	$1, %cl
+	xor	edx, edx
+	xor	eax, eax
+	test	cl, 1
 	je	.L7
-	cmpl	$1, %ecx
-	movl	$1, %edx
+	mov	edx, 1
+	cmp	ecx, 1
 	je	.L15
-	.p2align 4,,10
+	.p2align 4
+	.p2align 4
 	.p2align 3
 .L7:
-	leal	1(%rax,%rdx,2), %eax
-	addl	$2, %edx
-	cmpl	%edx, %ecx
+	lea	eax, 1[rax+rdx*2]
+	add	edx, 2
+	cmp	ecx, edx
 	jne	.L7
 .L15:
-	cltq
+	cdqe
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L8:
-	xorl	%eax, %eax
+	xor	eax, eax
 	ret
 	.seh_endproc
 	.section	.text$_ZN7DerivedD1Ev,"x"
@@ -76,194 +78,162 @@ _ZL9probe_nopi:
 	.def	_ZN7DerivedD1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN7DerivedD1Ev
 _ZN7DerivedD1Ev:
-.LFB7571:
+.LFB8412:
 	.seh_endprologue
 	ret
 	.seh_endproc
 	.text
 	.p2align 4
-	.def	_ZL12probe_directi;	.scl	3;	.type	32;	.endef
-	.seh_proc	_ZL12probe_directi
-_ZL12probe_directi:
-.LFB7568:
+	.def	_ZL13probe_virtuali;	.scl	3;	.type	32;	.endef
+	.seh_proc	_ZL13probe_virtuali
+_ZL13probe_virtuali:
+.LFB8414:
+	push	rbp
+	.seh_pushreg	rbp
+	push	rdi
+	.seh_pushreg	rdi
+	push	rsi
+	.seh_pushreg	rsi
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 40
+	.seh_stackalloc	40
 	.seh_endprologue
-	testl	%ecx, %ecx
+	mov	ebp, ecx
+	test	ecx, ecx
 	jle	.L20
-	leal	(%rcx,%rcx), %r8d
-	xorl	%edx, %edx
-	xorl	%eax, %eax
-	andl	$1, %ecx
-	je	.L19
-	cmpl	$2, %r8d
-	movl	$2, %edx
-	je	.L27
-	.p2align 4,,10
+	mov	rdi, QWORD PTR g_obj[rip]
+	xor	ebx, ebx
+	xor	esi, esi
+	.p2align 4
 	.p2align 3
 .L19:
-	leal	2(%rax,%rdx,2), %eax
-	addl	$4, %edx
-	cmpl	%edx, %r8d
+	mov	rax, QWORD PTR [rdi]
+	mov	edx, ebx
+	mov	rcx, rdi
+	add	ebx, 1
+	call	[QWORD PTR 16[rax]]
+	add	esi, eax
+	cmp	ebp, ebx
 	jne	.L19
-.L27:
-	cltq
+	movsxd	rax, esi
+	add	rsp, 40
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L20:
-	xorl	%eax, %eax
-	ret
-	.seh_endproc
-	.p2align 4
-	.def	_ZL13probe_virtuali;	.scl	3;	.type	32;	.endef
-	.seh_proc	_ZL13probe_virtuali
-_ZL13probe_virtuali:
-.LFB7573:
-	pushq	%rbp
-	.seh_pushreg	%rbp
-	pushq	%rdi
-	.seh_pushreg	%rdi
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$40, %rsp
-	.seh_stackalloc	40
-	.seh_endprologue
-	movq	g_obj(%rip), %rdi
-	testl	%ecx, %ecx
-	movl	%ecx, %ebp
-	jle	.L31
-	xorl	%ebx, %ebx
-	xorl	%esi, %esi
-	.p2align 4,,10
-	.p2align 3
-.L30:
-	movq	(%rdi), %rax
-	movl	%ebx, %edx
-	movq	%rdi, %rcx
-	addl	$1, %ebx
-	call	*16(%rax)
-	addl	%eax, %esi
-	cmpl	%ebx, %ebp
-	jne	.L30
-	movslq	%esi, %rax
-	addq	$40, %rsp
-	popq	%rbx
-	popq	%rsi
-	popq	%rdi
-	popq	%rbp
-	ret
-	.p2align 4,,10
-	.p2align 3
-.L31:
-	xorl	%eax, %eax
-	addq	$40, %rsp
-	popq	%rbx
-	popq	%rsi
-	popq	%rdi
-	popq	%rbp
+	xor	eax, eax
+	add	rsp, 40
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
 	ret
 	.seh_endproc
 	.p2align 4
 	.def	_ZL11probe_fnptri;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZL11probe_fnptri
 _ZL11probe_fnptri:
-.LFB7574:
-	pushq	%rbp
-	.seh_pushreg	%rbp
-	pushq	%rdi
-	.seh_pushreg	%rdi
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$40, %rsp
+.LFB8415:
+	push	rbp
+	.seh_pushreg	rbp
+	push	rdi
+	.seh_pushreg	rdi
+	push	rsi
+	.seh_pushreg	rsi
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
-	movq	g_fn(%rip), %rbp
-	testl	%ecx, %ecx
-	movl	%ecx, %edi
-	jle	.L36
-	xorl	%ebx, %ebx
-	xorl	%esi, %esi
-	.p2align 4,,10
+	mov	edi, ecx
+	test	ecx, ecx
+	jle	.L25
+	mov	rbp, QWORD PTR g_fn[rip]
+	xor	ebx, ebx
+	xor	esi, esi
+	.p2align 4
 	.p2align 3
-.L35:
-	movl	%ebx, %ecx
-	addl	$1, %ebx
-	call	*%rbp
-	addl	%eax, %esi
-	cmpl	%ebx, %edi
-	jne	.L35
-	movslq	%esi, %rax
-	addq	$40, %rsp
-	popq	%rbx
-	popq	%rsi
-	popq	%rdi
-	popq	%rbp
+.L24:
+	mov	ecx, ebx
+	add	ebx, 1
+	call	rbp
+	add	esi, eax
+	cmp	edi, ebx
+	jne	.L24
+	movsxd	rax, esi
+	add	rsp, 40
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L36:
-	xorl	%eax, %eax
-	addq	$40, %rsp
-	popq	%rbx
-	popq	%rsi
-	popq	%rdi
-	popq	%rbp
+.L25:
+	xor	eax, eax
+	add	rsp, 40
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
 	ret
 	.seh_endproc
 	.p2align 4
 	.def	_ZL20probe_virtual_reloadi;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZL20probe_virtual_reloadi
 _ZL20probe_virtual_reloadi:
-.LFB7575:
-	pushq	%rbp
-	.seh_pushreg	%rbp
-	pushq	%rdi
-	.seh_pushreg	%rdi
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$40, %rsp
+.LFB8416:
+	push	rbp
+	.seh_pushreg	rbp
+	push	rdi
+	.seh_pushreg	rdi
+	push	rsi
+	.seh_pushreg	rsi
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
-	testl	%ecx, %ecx
-	movl	%ecx, %edi
-	jle	.L41
-	leaq	g_arr(%rip), %rbp
-	xorl	%ebx, %ebx
-	xorl	%esi, %esi
-	.p2align 4,,10
+	mov	edi, ecx
+	test	ecx, ecx
+	jle	.L30
+	xor	ebx, ebx
+	xor	esi, esi
+	lea	rbp, g_arr[rip]
+	.p2align 4
 	.p2align 3
-.L40:
-	movl	%ebx, %eax
-	movl	%ebx, %edx
-	addl	$1, %ebx
-	andl	$1, %eax
-	movq	0(%rbp,%rax,8), %rcx
-	movq	(%rcx), %rax
-	call	*16(%rax)
-	addl	%eax, %esi
-	cmpl	%ebx, %edi
-	jne	.L40
-	movslq	%esi, %rax
-	addq	$40, %rsp
-	popq	%rbx
-	popq	%rsi
-	popq	%rdi
-	popq	%rbp
+.L29:
+	mov	eax, ebx
+	mov	edx, ebx
+	add	ebx, 1
+	and	eax, 1
+	mov	rcx, QWORD PTR 0[rbp+rax*8]
+	mov	rax, QWORD PTR [rcx]
+	call	[QWORD PTR 16[rax]]
+	add	esi, eax
+	cmp	edi, ebx
+	jne	.L29
+	movsxd	rax, esi
+	add	rsp, 40
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L41:
-	xorl	%eax, %eax
-	addq	$40, %rsp
-	popq	%rbx
-	popq	%rsi
-	popq	%rdi
-	popq	%rbp
+.L30:
+	xor	eax, eax
+	add	rsp, 40
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
 	ret
 	.seh_endproc
 	.section	.text$_ZN2D2D1Ev,"x"
@@ -274,7 +244,7 @@ _ZL20probe_virtual_reloadi:
 	.def	_ZN2D2D1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN2D2D1Ev
 _ZN2D2D1Ev:
-.LFB7601:
+.LFB8444:
 	.seh_endprologue
 	ret
 	.seh_endproc
@@ -286,9 +256,9 @@ _ZN2D2D1Ev:
 	.def	_ZN7DerivedD0Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN7DerivedD0Ev
 _ZN7DerivedD0Ev:
-.LFB7572:
+.LFB8413:
 	.seh_endprologue
-	movl	$8, %edx
+	mov	edx, 8
 	jmp	_ZdlPvy
 	.seh_endproc
 	.section	.text$_ZN2D2D0Ev,"x"
@@ -299,9 +269,9 @@ _ZN7DerivedD0Ev:
 	.def	_ZN2D2D0Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN2D2D0Ev
 _ZN2D2D0Ev:
-.LFB7602:
+.LFB8445:
 	.seh_endprologue
-	movl	$8, %edx
+	mov	edx, 8
 	jmp	_ZdlPvy
 	.seh_endproc
 	.text
@@ -309,98 +279,107 @@ _ZN2D2D0Ev:
 	.def	_ZL5benchPFyiEii.constprop.0;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZL5benchPFyiEii.constprop.0
 _ZL5benchPFyiEii.constprop.0:
-.LFB7605:
-	pushq	%rbp
-	.seh_pushreg	%rbp
-	pushq	%rdi
-	.seh_pushreg	%rdi
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$40, %rsp
+.LFB8448:
+	push	rbp
+	.seh_pushreg	rbp
+	push	rdi
+	.seh_pushreg	rdi
+	push	rsi
+	.seh_pushreg	rsi
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
-	movl	$20, %esi
-	movq	$-1, %rbx
-	movq	%rcx, %rbp
+	mov	esi, 20
+	mov	rbx, -1
+	mov	rbp, rcx
+	.p2align 4
+	.p2align 3
+.L36:
+/APP
+ # 15 "Examples\_ch45_oop_perf.cpp" 1
+	rdtsc
+ # 0 "" 2
+/NO_APP
+	mov	ecx, 10000000
+	mov	rdi, rax
+	call	rbp
+	mov	QWORD PTR g_sink[rip], rax
+/APP
+ # 15 "Examples\_ch45_oop_perf.cpp" 1
+	rdtsc
+ # 0 "" 2
+/NO_APP
+	sub	rax, rdi
+	cmp	rbx, rax
+	cmova	rbx, rax
+	sub	esi, 1
+	jne	.L36
+	test	rbx, rbx
+	js	.L37
+	pxor	xmm0, xmm0
+	cvtsi2sd	xmm0, rbx
+.L38:
+	divsd	xmm0, QWORD PTR .LC0[rip]
+	add	rsp, 40
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
+	ret
+.L37:
+	mov	rax, rbx
+	and	ebx, 1
+	pxor	xmm0, xmm0
+	shr	rax
+	or	rax, rbx
+	cvtsi2sd	xmm0, rax
+	addsd	xmm0, xmm0
+	jmp	.L38
+	.seh_endproc
+	.align 2
+	.p2align 4
+	.def	_ZN4Base8concreteEi.isra.0;	.scl	3;	.type	32;	.endef
+	.seh_proc	_ZN4Base8concreteEi.isra.0
+_ZN4Base8concreteEi.isra.0:
+.LFB8449:
+	.seh_endprologue
+	lea	eax, [rcx+rcx]
+	ret
+	.seh_endproc
+	.p2align 4
+	.def	_ZL12probe_directi;	.scl	3;	.type	32;	.endef
+	.seh_proc	_ZL12probe_directi
+_ZL12probe_directi:
+.LFB8409:
+	sub	rsp, 40
+	.seh_stackalloc	40
+	.seh_endprologue
+	mov	r9d, ecx
+	test	ecx, ecx
+	jle	.L44
+	xor	edx, edx
+	xor	r8d, r8d
+	.p2align 4
+	.p2align 3
+.L43:
+	mov	ecx, edx
+	add	edx, 1
+	call	_ZN4Base8concreteEi.isra.0
+	add	r8d, eax
+	cmp	r9d, edx
+	jne	.L43
+	movsxd	rax, r8d
+	add	rsp, 40
+	ret
 	.p2align 4,,10
 	.p2align 3
-.L47:
-/APP
- # 15 "_ch45_oop_perf.cpp" 1
-	rdtsc
- # 0 "" 2
-/NO_APP
-	movl	$10000000, %ecx
-	movq	%rax, %rdi
-	call	*%rbp
-	movq	%rax, g_sink(%rip)
-/APP
- # 15 "_ch45_oop_perf.cpp" 1
-	rdtsc
- # 0 "" 2
-/NO_APP
-	subq	%rdi, %rax
-	cmpq	%rax, %rbx
-	cmova	%rax, %rbx
-	subl	$1, %esi
-	jne	.L47
-	testq	%rbx, %rbx
-	js	.L48
-	pxor	%xmm0, %xmm0
-	cvtsi2sdq	%rbx, %xmm0
-.L49:
-	divsd	.LC0(%rip), %xmm0
-	addq	$40, %rsp
-	popq	%rbx
-	popq	%rsi
-	popq	%rdi
-	popq	%rbp
-	ret
-.L48:
-	movq	%rbx, %rax
-	andl	$1, %ebx
-	pxor	%xmm0, %xmm0
-	shrq	%rax
-	orq	%rbx, %rax
-	cvtsi2sdq	%rax, %xmm0
-	addsd	%xmm0, %xmm0
-	jmp	.L49
-	.seh_endproc
-	.section	.text$_Z6printfPKcz,"x"
-	.linkonce discard
-	.p2align 4
-	.globl	_Z6printfPKcz
-	.def	_Z6printfPKcz;	.scl	2;	.type	32;	.endef
-	.seh_proc	_Z6printfPKcz
-_Z6printfPKcz:
-.LFB11:
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$56, %rsp
-	.seh_stackalloc	56
-	.seh_endprologue
-	leaq	88(%rsp), %rsi
-	movq	%rcx, %rbx
-	movq	%rdx, 88(%rsp)
-	movl	$1, %ecx
-	movq	%r8, 96(%rsp)
-	movq	%r9, 104(%rsp)
-	movq	%rsi, 40(%rsp)
-	call	*__imp___acrt_iob_func(%rip)
-	movq	%rsi, %r8
-	movq	%rbx, %rdx
-	movq	%rax, %rcx
-	call	__mingw_vfprintf
-	addq	$56, %rsp
-	popq	%rbx
-	popq	%rsi
+.L44:
+	xor	eax, eax
+	add	rsp, 40
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section .rdata,"dr"
 	.align 8
 .LC2:
@@ -437,219 +416,214 @@ _Z6printfPKcz:
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB7577:
-	pushq	%rdi
-	.seh_pushreg	%rdi
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$256, %rsp
-	.seh_stackalloc	256
-	movaps	%xmm6, 96(%rsp)
-	.seh_savexmm	%xmm6, 96
-	movaps	%xmm7, 112(%rsp)
-	.seh_savexmm	%xmm7, 112
-	movaps	%xmm8, 128(%rsp)
-	.seh_savexmm	%xmm8, 128
-	movaps	%xmm9, 144(%rsp)
-	.seh_savexmm	%xmm9, 144
-	movaps	%xmm10, 160(%rsp)
-	.seh_savexmm	%xmm10, 160
-	movaps	%xmm11, 176(%rsp)
-	.seh_savexmm	%xmm11, 176
-	movaps	%xmm12, 192(%rsp)
-	.seh_savexmm	%xmm12, 192
-	movaps	%xmm13, 208(%rsp)
-	.seh_savexmm	%xmm13, 208
-	movaps	%xmm14, 224(%rsp)
-	.seh_savexmm	%xmm14, 224
-	movaps	%xmm15, 240(%rsp)
-	.seh_savexmm	%xmm15, 240
+.LFB8418:
+	push	rsi
+	.seh_pushreg	rsi
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 264
+	.seh_stackalloc	264
+	movaps	XMMWORD PTR 96[rsp], xmm6
+	.seh_savexmm	xmm6, 96
+	movaps	XMMWORD PTR 112[rsp], xmm7
+	.seh_savexmm	xmm7, 112
+	movaps	XMMWORD PTR 128[rsp], xmm8
+	.seh_savexmm	xmm8, 128
+	movaps	XMMWORD PTR 144[rsp], xmm9
+	.seh_savexmm	xmm9, 144
+	movaps	XMMWORD PTR 160[rsp], xmm10
+	.seh_savexmm	xmm10, 160
+	movaps	XMMWORD PTR 176[rsp], xmm11
+	.seh_savexmm	xmm11, 176
+	movaps	XMMWORD PTR 192[rsp], xmm12
+	.seh_savexmm	xmm12, 192
+	movaps	XMMWORD PTR 208[rsp], xmm13
+	.seh_savexmm	xmm13, 208
+	movaps	XMMWORD PTR 224[rsp], xmm14
+	.seh_savexmm	xmm14, 224
+	movaps	XMMWORD PTR 240[rsp], xmm15
+	.seh_savexmm	xmm15, 240
 	.seh_endprologue
 	call	__main
-	leaq	72(%rsp), %rcx
-	call	*__imp_QueryPerformanceFrequency(%rip)
-	movq	__imp_QueryPerformanceCounter(%rip), %rsi
-	leaq	80(%rsp), %rcx
-	call	*%rsi
+	lea	rcx, 72[rsp]
+	call	[QWORD PTR __imp_QueryPerformanceFrequency[rip]]
+	mov	rsi, QWORD PTR __imp_QueryPerformanceCounter[rip]
+	lea	rcx, 80[rsp]
+	call	rsi
 /APP
- # 15 "_ch45_oop_perf.cpp" 1
+ # 15 "Examples\_ch45_oop_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	movl	$100, %ecx
-	movq	%rax, %rbx
-	call	*__imp_Sleep(%rip)
-	leaq	88(%rsp), %rcx
-	call	*%rsi
+	mov	ecx, 100
+	mov	rbx, rax
+	call	[QWORD PTR __imp_Sleep[rip]]
+	lea	rcx, 88[rsp]
+	call	rsi
 /APP
- # 15 "_ch45_oop_perf.cpp" 1
+ # 15 "Examples\_ch45_oop_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	subq	%rbx, %rax
-	js	.L53
-	pxor	%xmm6, %xmm6
-	cvtsi2sdq	%rax, %xmm6
-.L54:
-	movq	88(%rsp), %rax
-	pxor	%xmm0, %xmm0
-	pxor	%xmm1, %xmm1
-	leaq	.LC2(%rip), %rcx
-	subq	80(%rsp), %rax
-	leaq	.LC9(%rip), %rbx
-	cvtsi2sdq	72(%rsp), %xmm1
-	cvtsi2sdq	%rax, %xmm0
-	divsd	%xmm1, %xmm0
-	divsd	%xmm0, %xmm6
-	divsd	.LC1(%rip), %xmm6
-	movapd	%xmm6, %xmm1
-	movq	%xmm6, %rdx
-	call	_Z6printfPKcz
-	leaq	_ZL9probe_nopi(%rip), %rcx
+	sub	rax, rbx
+	js	.L47
+	pxor	xmm1, xmm1
+	cvtsi2sd	xmm1, rax
+.L48:
+	mov	rax, QWORD PTR 88[rsp]
+	pxor	xmm0, xmm0
+	sub	rax, QWORD PTR 80[rsp]
+	pxor	xmm2, xmm2
+	cvtsi2sd	xmm0, rax
+	cvtsi2sd	xmm2, QWORD PTR 72[rsp]
+	divsd	xmm0, xmm2
+	lea	rcx, .LC2[rip]
+	divsd	xmm1, xmm0
+	divsd	xmm1, QWORD PTR .LC1[rip]
+	movq	rdx, xmm1
+	movsd	QWORD PTR 56[rsp], xmm1
+	call	__mingw_printf
+	lea	rcx, _ZL9probe_nopi[rip]
 	call	_ZL5benchPFyiEii.constprop.0
-	leaq	_ZL12probe_directi(%rip), %rcx
-	movapd	%xmm0, %xmm7
+	lea	rcx, _ZL12probe_directi[rip]
+	movapd	xmm8, xmm0
 	call	_ZL5benchPFyiEii.constprop.0
-	leaq	_ZL13probe_virtuali(%rip), %rcx
-	movapd	%xmm0, %xmm10
+	lea	rcx, _ZL13probe_virtuali[rip]
+	movapd	xmm15, xmm0
 	call	_ZL5benchPFyiEii.constprop.0
-	leaq	_ZL11probe_fnptri(%rip), %rcx
-	movapd	%xmm10, %xmm11
-	movapd	%xmm0, %xmm15
+	lea	rcx, _ZL11probe_fnptri[rip]
+	movapd	xmm10, xmm15
+	movapd	xmm14, xmm0
 	call	_ZL5benchPFyiEii.constprop.0
-	leaq	_ZL20probe_virtual_reloadi(%rip), %rcx
-	movapd	%xmm15, %xmm9
-	movapd	%xmm0, %xmm14
+	lea	rcx, _ZL20probe_virtual_reloadi[rip]
+	movapd	xmm7, xmm14
+	movapd	xmm13, xmm0
 	call	_ZL5benchPFyiEii.constprop.0
-	subsd	%xmm7, %xmm11
-	leaq	.LC7(%rip), %rax
-	movapd	%xmm0, %xmm13
-	movapd	%xmm14, %xmm0
-	movq	%rax, 32(%rsp)
-	subsd	%xmm7, %xmm0
-	movapd	%xmm13, %xmm8
-	subsd	%xmm7, %xmm9
-	movapd	%xmm11, %xmm12
-	divsd	%xmm6, %xmm12
-	subsd	%xmm7, %xmm8
-	movapd	%xmm0, %xmm5
-	movsd	%xmm0, 56(%rsp)
-	leaq	.LC3(%rip), %r9
-	movapd	%xmm9, %xmm4
-	leaq	.LC4(%rip), %r8
-	movapd	%xmm8, %xmm7
-	leaq	.LC5(%rip), %rdx
-	leaq	.LC6(%rip), %rcx
-	divsd	%xmm6, %xmm4
-	divsd	%xmm6, %xmm5
-	movq	%xmm4, %rdi
-	divsd	%xmm6, %xmm7
-	movq	%xmm5, %rsi
-	call	_Z6printfPKcz
-	movsd	%xmm10, 32(%rsp)
-	movapd	%xmm12, %xmm3
-	movq	%xmm12, %r9
-	movapd	%xmm11, %xmm2
-	movq	%xmm11, %r8
-	movq	%rbx, %rcx
-	leaq	.LC8(%rip), %rdx
-	call	_Z6printfPKcz
-	movq	%rdi, %xmm3
-	movq	%rdi, %r9
-	movq	%rbx, %rcx
-	movsd	%xmm15, 32(%rsp)
-	movapd	%xmm9, %xmm2
-	movq	%xmm9, %r8
-	leaq	.LC10(%rip), %rdx
-	call	_Z6printfPKcz
-	movq	%rsi, %xmm3
-	movq	%rsi, %r9
-	movq	%rbx, %rcx
-	movsd	56(%rsp), %xmm0
-	movsd	%xmm14, 32(%rsp)
-	leaq	.LC11(%rip), %rdx
-	movapd	%xmm0, %xmm2
-	movq	%xmm0, %r8
-	call	_Z6printfPKcz
-	movsd	%xmm13, 32(%rsp)
-	movapd	%xmm8, %xmm2
-	movq	%rbx, %rcx
-	leaq	.LC12(%rip), %rdx
-	movq	%xmm8, %r8
-	movapd	%xmm7, %xmm3
-	movq	%xmm7, %r9
-	call	_Z6printfPKcz
-	movq	%rdi, %xmm1
-	subsd	%xmm11, %xmm9
-	subsd	%xmm12, %xmm1
-	leaq	.LC13(%rip), %rcx
-	movq	%xmm9, %r8
-	movapd	%xmm9, %xmm2
-	movq	%xmm1, %rdx
-	call	_Z6printfPKcz
-	subsd	%xmm11, %xmm8
-	leaq	.LC14(%rip), %rcx
-	subsd	%xmm12, %xmm7
-	movq	%xmm8, %r8
-	movapd	%xmm8, %xmm2
-	movapd	%xmm7, %xmm1
-	movq	%xmm7, %rdx
-	call	_Z6printfPKcz
+	movapd	xmm12, xmm13
+	subsd	xmm10, xmm8
+	subsd	xmm7, xmm8
+	subsd	xmm12, xmm8
+	movsd	xmm1, QWORD PTR 56[rsp]
+	movapd	xmm6, xmm0
+	lea	rax, .LC7[rip]
+	subsd	xmm6, xmm8
+	mov	QWORD PTR 32[rsp], rax
+	lea	r9, .LC3[rip]
+	movapd	xmm11, xmm10
+	movapd	xmm9, xmm7
+	lea	r8, .LC4[rip]
+	movsd	QWORD PTR 56[rsp], xmm0
+	movapd	xmm4, xmm12
+	lea	rdx, .LC5[rip]
+	lea	rcx, .LC6[rip]
+	divsd	xmm11, xmm1
+	movapd	xmm8, xmm6
+	divsd	xmm4, xmm1
+	divsd	xmm9, xmm1
+	movq	rbx, xmm4
+	divsd	xmm8, xmm1
+	call	__mingw_printf
+	movapd	xmm3, xmm11
+	movq	r9, xmm11
+	movsd	QWORD PTR 32[rsp], xmm15
+	movapd	xmm2, xmm10
+	movq	r8, xmm10
+	lea	rdx, .LC8[rip]
+	lea	rcx, .LC9[rip]
+	call	__mingw_printf
+	movsd	QWORD PTR 32[rsp], xmm14
+	movapd	xmm2, xmm7
+	movq	r8, xmm7
+	lea	rdx, .LC10[rip]
+	lea	rcx, .LC9[rip]
+	movapd	xmm3, xmm9
+	movq	r9, xmm9
+	call	__mingw_printf
+	movsd	QWORD PTR 32[rsp], xmm13
+	movq	xmm3, rbx
+	mov	r9, rbx
+	movapd	xmm2, xmm12
+	movq	r8, xmm12
+	lea	rdx, .LC11[rip]
+	lea	rcx, .LC9[rip]
+	call	__mingw_printf
+	movsd	xmm0, QWORD PTR 56[rsp]
+	movapd	xmm2, xmm6
+	movq	r8, xmm6
+	lea	rdx, .LC12[rip]
+	lea	rcx, .LC9[rip]
+	movsd	QWORD PTR 32[rsp], xmm0
+	movapd	xmm3, xmm8
+	movq	r9, xmm8
+	call	__mingw_printf
+	movapd	xmm1, xmm9
+	subsd	xmm7, xmm10
+	lea	rcx, .LC13[rip]
+	subsd	xmm1, xmm11
+	movq	r8, xmm7
+	movapd	xmm2, xmm7
+	movq	rdx, xmm1
+	call	__mingw_printf
+	movapd	xmm1, xmm8
+	subsd	xmm6, xmm10
+	lea	rcx, .LC14[rip]
+	subsd	xmm1, xmm11
+	movq	r8, xmm6
+	movapd	xmm2, xmm6
+	movq	rdx, xmm1
+	call	__mingw_printf
 	nop
-	movaps	96(%rsp), %xmm6
-	xorl	%eax, %eax
-	movaps	112(%rsp), %xmm7
-	movaps	128(%rsp), %xmm8
-	movaps	144(%rsp), %xmm9
-	movaps	160(%rsp), %xmm10
-	movaps	176(%rsp), %xmm11
-	movaps	192(%rsp), %xmm12
-	movaps	208(%rsp), %xmm13
-	movaps	224(%rsp), %xmm14
-	movaps	240(%rsp), %xmm15
-	addq	$256, %rsp
-	popq	%rbx
-	popq	%rsi
-	popq	%rdi
+	movaps	xmm6, XMMWORD PTR 96[rsp]
+	movaps	xmm7, XMMWORD PTR 112[rsp]
+	xor	eax, eax
+	movaps	xmm8, XMMWORD PTR 128[rsp]
+	movaps	xmm9, XMMWORD PTR 144[rsp]
+	movaps	xmm10, XMMWORD PTR 160[rsp]
+	movaps	xmm11, XMMWORD PTR 176[rsp]
+	movaps	xmm12, XMMWORD PTR 192[rsp]
+	movaps	xmm13, XMMWORD PTR 208[rsp]
+	movaps	xmm14, XMMWORD PTR 224[rsp]
+	movaps	xmm15, XMMWORD PTR 240[rsp]
+	add	rsp, 264
+	pop	rbx
+	pop	rsi
 	ret
-.L53:
-	movq	%rax, %rdx
-	andl	$1, %eax
-	pxor	%xmm6, %xmm6
-	shrq	%rdx
-	orq	%rax, %rdx
-	cvtsi2sdq	%rdx, %xmm6
-	addsd	%xmm6, %xmm6
-	jmp	.L54
+.L47:
+	mov	rdx, rax
+	and	eax, 1
+	pxor	xmm1, xmm1
+	shr	rdx
+	or	rdx, rax
+	cvtsi2sd	xmm1, rdx
+	addsd	xmm1, xmm1
+	jmp	.L48
 	.seh_endproc
 	.p2align 4
 	.def	_GLOBAL__sub_I__Z7free_fni;	.scl	3;	.type	32;	.endef
 	.seh_proc	_GLOBAL__sub_I__Z7free_fni
 _GLOBAL__sub_I__Z7free_fni:
-.LFB7604:
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$32, %rsp
+.LFB8447:
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 32
 	.seh_stackalloc	32
 	.seh_endprologue
-	leaq	16+_ZTV7Derived(%rip), %rbx
-	movl	$8, %ecx
+	mov	ecx, 8
+	lea	rbx, _ZTV7Derived[rip+16]
 	call	_Znwy
-	movl	$8, %ecx
-	movq	%rbx, (%rax)
-	movq	%rax, g_obj(%rip)
+	mov	ecx, 8
+	mov	QWORD PTR [rax], rbx
+	mov	QWORD PTR g_obj[rip], rax
 	call	_Znwy
-	movl	$8, %ecx
-	movq	%rbx, (%rax)
-	movq	%rax, g_arr(%rip)
+	mov	ecx, 8
+	mov	QWORD PTR [rax], rbx
+	mov	QWORD PTR g_arr[rip], rax
 	call	_Znwy
-	leaq	16+_ZTV2D2(%rip), %rdx
-	movq	%rdx, (%rax)
-	movq	%rax, 8+g_arr(%rip)
-	addq	$32, %rsp
-	popq	%rbx
+	lea	rdx, _ZTV2D2[rip+16]
+	mov	QWORD PTR [rax], rdx
+	mov	QWORD PTR g_arr[rip+8], rax
+	add	rsp, 32
+	pop	rbx
 	ret
 	.seh_endproc
 	.section	.ctors,"w"
@@ -742,7 +716,7 @@ g_obj:
 .LC1:
 	.long	0
 	.long	1104006501
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
-	.def	__mingw_vfprintf;	.scl	2;	.type	32;	.endef
 	.def	_Znwy;	.scl	2;	.type	32;	.endef

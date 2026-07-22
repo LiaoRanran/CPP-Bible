@@ -1,50 +1,11 @@
 	.file	"_ch127_inline.cpp"
 	.intel_syntax noprefix
 	.text
-	.section	.text$_Z6printfPKcz,"x"
-	.linkonce discard
-	.globl	_Z6printfPKcz
-	.def	_Z6printfPKcz;	.scl	2;	.type	32;	.endef
-	.seh_proc	_Z6printfPKcz
-_Z6printfPKcz:
-.LFB11:
-	push	rbp
-	.seh_pushreg	rbp
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 56
-	.seh_stackalloc	56
-	lea	rbp, 48[rsp]
-	.seh_setframe	rbp, 48
-	.seh_endprologue
-	mov	QWORD PTR 32[rbp], rcx
-	mov	QWORD PTR 40[rbp], rdx
-	mov	QWORD PTR 48[rbp], r8
-	mov	QWORD PTR 56[rbp], r9
-	lea	rax, 40[rbp]
-	mov	QWORD PTR -16[rbp], rax
-	mov	rbx, QWORD PTR -16[rbp]
-	mov	ecx, 1
-	mov	rax, QWORD PTR __imp___acrt_iob_func[rip]
-	call	rax
-	mov	rcx, rax
-	mov	rax, QWORD PTR 32[rbp]
-	mov	r8, rbx
-	mov	rdx, rax
-	call	__mingw_vfprintf
-	mov	DWORD PTR -4[rbp], eax
-	mov	eax, DWORD PTR -4[rbp]
-	add	rsp, 56
-	pop	rbx
-	pop	rbp
-	ret
-	.seh_endproc
-	.text
 	.globl	_Z12add_noinlineii
 	.def	_Z12add_noinlineii;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z12add_noinlineii
 _Z12add_noinlineii:
-.LFB47:
+.LFB21:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -64,7 +25,7 @@ _Z12add_noinlineii:
 	.def	_Z10add_inlineii;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10add_inlineii
 _Z10add_inlineii:
-.LFB48:
+.LFB22:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -83,7 +44,7 @@ _Z10add_inlineii:
 	.def	_Z11use_inlinedv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z11use_inlinedv
 _Z11use_inlinedv:
-.LFB49:
+.LFB23:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -93,17 +54,17 @@ _Z11use_inlinedv:
 	.seh_endprologue
 	mov	DWORD PTR -4[rbp], 0
 	mov	DWORD PTR -8[rbp], 0
-	jmp	.L8
-.L9:
+	jmp	.L6
+.L7:
 	mov	eax, DWORD PTR -8[rbp]
 	mov	edx, 1
 	mov	ecx, eax
 	call	_Z10add_inlineii
 	add	DWORD PTR -4[rbp], eax
 	add	DWORD PTR -8[rbp], 1
-.L8:
+.L6:
 	cmp	DWORD PTR -8[rbp], 3
-	jle	.L9
+	jle	.L7
 	mov	eax, DWORD PTR -4[rbp]
 	add	rsp, 48
 	pop	rbp
@@ -113,7 +74,7 @@ _Z11use_inlinedv:
 	.def	_Z12use_noinlinev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z12use_noinlinev
 _Z12use_noinlinev:
-.LFB50:
+.LFB24:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -128,7 +89,6 @@ _Z12use_noinlinev:
 	pop	rbp
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section .rdata,"dr"
 .LC0:
 	.ascii "%d %d\12\0"
@@ -137,7 +97,7 @@ _Z12use_noinlinev:
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB51:
+.LFB25:
 	push	rbp
 	.seh_pushreg	rbp
 	push	rbx
@@ -151,16 +111,16 @@ main:
 	call	_Z12use_noinlinev
 	mov	ebx, eax
 	call	_Z11use_inlinedv
-	mov	r8d, ebx
 	mov	edx, eax
 	lea	rax, .LC0[rip]
+	mov	r8d, ebx
 	mov	rcx, rax
-	call	_Z6printfPKcz
+	call	__mingw_printf
 	mov	eax, 0
 	add	rsp, 40
 	pop	rbx
 	pop	rbp
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
-	.def	__mingw_vfprintf;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

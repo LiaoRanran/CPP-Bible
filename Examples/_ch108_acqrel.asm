@@ -6,7 +6,7 @@
 	.def	_Z7publishi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z7publishi
 _Z7publishi:
-.LFB665:
+.LFB668:
 	.seh_endprologue
 	mov	DWORD PTR g[rip], ecx
 	ret
@@ -16,7 +16,7 @@ _Z7publishi:
 	.def	_Z7consumev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z7consumev
 _Z7consumev:
-.LFB666:
+.LFB669:
 	.seh_endprologue
 	mov	eax, DWORD PTR g[rip]
 	ret
@@ -26,4 +26,4 @@ _Z7consumev:
 	.align 4
 g:
 	.space 4
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

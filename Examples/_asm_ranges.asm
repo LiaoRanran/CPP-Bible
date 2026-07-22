@@ -6,86 +6,74 @@
 	.def	_Z10use_rangesv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10use_rangesv
 _Z10use_rangesv:
-.LFB3882:
+.LFB3988:
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 64
-	.seh_stackalloc	64
+	sub	rsp, 32
+	.seh_stackalloc	32
 	.seh_endprologue
-	mov	rax, QWORD PTR .LC1[rip]
 	mov	ecx, 24
-	movdqa	xmm0, XMMWORD PTR .LC0[rip]
-	mov	QWORD PTR 48[rsp], rax
-	movaps	XMMWORD PTR 32[rsp], xmm0
 	call	_Znwy
-	mov	rdx, QWORD PTR 32[rsp]
-	lea	r9, 24[rax]
-	mov	QWORD PTR [rax], rdx
-	mov	rdx, QWORD PTR 40[rsp]
-	mov	QWORD PTR 8[rax], rdx
-	mov	rdx, QWORD PTR 48[rsp]
-	mov	QWORD PTR 16[rax], rdx
-	mov	rdx, rax
+	movabs	rdx, 17179869187
+	mov	r9, rax
+	movabs	rax, 8589934593
+	mov	QWORD PTR [r9], rax
+	lea	r8, 24[r9]
+	movabs	rax, 25769803781
+	mov	QWORD PTR 16[r9], rax
+	mov	rax, r9
+	mov	QWORD PTR 8[r9], rdx
 	jmp	.L3
+	.p2align 5
 	.p2align 4,,10
 	.p2align 3
 .L14:
-	add	rdx, 4
-	cmp	r9, rdx
-	je	.L5
+	add	rax, 4
+	cmp	rax, r8
+	je	.L13
 .L3:
-	mov	ecx, DWORD PTR [rdx]
-	mov	r8, rdx
-	test	cl, 1
+	mov	edx, DWORD PTR [rax]
+	mov	rcx, rax
+	test	dl, 1
 	jne	.L14
-	cmp	r9, rdx
-	je	.L5
 	xor	ebx, ebx
-	.p2align 4,,10
+	cmp	rax, r8
+	je	.L4
+	.p2align 4
 	.p2align 3
-.L9:
-	imul	ecx, ecx
-	lea	rdx, 4[r8]
-	add	ebx, ecx
-	cmp	r9, rdx
-	jne	.L8
-	jmp	.L6
+.L7:
+	imul	edx, edx
+	lea	rax, 4[rcx]
+	add	ebx, edx
+	cmp	r8, rax
+	jne	.L6
+	jmp	.L4
+	.p2align 5
 	.p2align 4,,10
 	.p2align 3
 .L15:
-	add	rdx, 4
-	cmp	r9, rdx
-	je	.L6
-.L8:
-	mov	ecx, DWORD PTR [rdx]
-	mov	r8, rdx
-	test	cl, 1
-	jne	.L15
-	cmp	rdx, r9
-	jne	.L9
+	add	rax, 4
+	cmp	r8, rax
+	je	.L4
 .L6:
+	mov	edx, DWORD PTR [rax]
 	mov	rcx, rax
+	test	dl, 1
+	jne	.L15
+	cmp	r8, rax
+	jne	.L7
+.L4:
 	mov	edx, 24
+	mov	rcx, r9
 	call	_ZdlPvy
 	mov	eax, ebx
-	add	rsp, 64
+	add	rsp, 32
 	pop	rbx
 	ret
-.L5:
+.L13:
 	xor	ebx, ebx
-	jmp	.L6
+	jmp	.L4
 	.seh_endproc
-	.section .rdata,"dr"
-	.align 16
-.LC0:
-	.long	1
-	.long	2
-	.long	3
-	.long	4
-	.align 8
-.LC1:
-	.long	5
-	.long	6
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_Znwy;	.scl	2;	.type	32;	.endef
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef

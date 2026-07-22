@@ -1,49 +1,17 @@
 	.file	"_ch37_alloc_perf.cpp"
-	.text
-	.section	.text$_Z6printfPKcz,"x"
-	.linkonce discard
-	.p2align 4
-	.globl	_Z6printfPKcz
-	.def	_Z6printfPKcz;	.scl	2;	.type	32;	.endef
-	.seh_proc	_Z6printfPKcz
-_Z6printfPKcz:
-.LFB25:
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$56, %rsp
-	.seh_stackalloc	56
-	.seh_endprologue
-	leaq	88(%rsp), %rsi
-	movq	%rcx, %rbx
-	movq	%rdx, 88(%rsp)
-	movl	$1, %ecx
-	movq	%r8, 96(%rsp)
-	movq	%r9, 104(%rsp)
-	movq	%rsi, 40(%rsp)
-	call	*__imp___acrt_iob_func(%rip)
-	movq	%rsi, %r8
-	movq	%rbx, %rdx
-	movq	%rax, %rcx
-	call	__mingw_vfprintf
-	addq	$56, %rsp
-	popq	%rbx
-	popq	%rsi
-	ret
-	.seh_endproc
+	.intel_syntax noprefix
 	.text
 	.p2align 4
 	.globl	_Z10pool_allocv
 	.def	_Z10pool_allocv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10pool_allocv
 _Z10pool_allocv:
-.LFB5572:
+.LFB5839:
 	.seh_endprologue
-	movq	_ZL10g_pool_ptr(%rip), %rax
-	leaq	16(%rax), %rdx
-	movq	%rax, g_sink(%rip)
-	movq	%rdx, _ZL10g_pool_ptr(%rip)
+	mov	rax, QWORD PTR _ZL10g_pool_ptr[rip]
+	lea	rdx, 16[rax]
+	mov	QWORD PTR g_sink[rip], rax
+	mov	QWORD PTR _ZL10g_pool_ptr[rip], rdx
 	ret
 	.seh_endproc
 	.p2align 4
@@ -51,21 +19,21 @@ _Z10pool_allocv:
 	.def	_Z16probe_new_deletev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z16probe_new_deletev
 _Z16probe_new_deletev:
-.LFB5573:
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$32, %rsp
+.LFB5840:
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 32
 	.seh_stackalloc	32
 	.seh_endprologue
-	movl	$16, %ecx
+	mov	ecx, 16
 	call	_Znwy
-	movq	%rax, %rcx
-	movq	%rax, %rbx
-	movq	%rax, g_sink(%rip)
+	mov	rcx, rax
+	mov	rbx, rax
+	mov	QWORD PTR g_sink[rip], rax
 	call	_ZdlPv
-	movq	%rbx, g_sink(%rip)
-	addq	$32, %rsp
-	popq	%rbx
+	mov	QWORD PTR g_sink[rip], rbx
+	add	rsp, 32
+	pop	rbx
 	ret
 	.seh_endproc
 	.p2align 4
@@ -73,21 +41,21 @@ _Z16probe_new_deletev:
 	.def	_Z17probe_malloc_freev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z17probe_malloc_freev
 _Z17probe_malloc_freev:
-.LFB5574:
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$32, %rsp
+.LFB5841:
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 32
 	.seh_stackalloc	32
 	.seh_endprologue
-	movl	$16, %ecx
+	mov	ecx, 16
 	call	malloc
-	movq	%rax, %rcx
-	movq	%rax, %rbx
-	movq	%rax, g_sink(%rip)
+	mov	rcx, rax
+	mov	rbx, rax
+	mov	QWORD PTR g_sink[rip], rax
 	call	free
-	movq	%rbx, g_sink(%rip)
-	addq	$32, %rsp
-	popq	%rbx
+	mov	QWORD PTR g_sink[rip], rbx
+	add	rsp, 32
+	pop	rbx
 	ret
 	.seh_endproc
 	.p2align 4
@@ -95,11 +63,11 @@ _Z17probe_malloc_freev:
 	.def	_Z15probe_placementv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z15probe_placementv
 _Z15probe_placementv:
-.LFB5575:
+.LFB5842:
 	.seh_endprologue
-	leaq	_ZL4g_pb(%rip), %rax
-	movq	%rax, g_sink(%rip)
-	movq	$1, g_sink(%rip)
+	lea	rax, _ZL4g_pb[rip]
+	mov	QWORD PTR g_sink[rip], rax
+	mov	QWORD PTR g_sink[rip], 1
 	ret
 	.seh_endproc
 	.p2align 4
@@ -107,21 +75,20 @@ _Z15probe_placementv:
 	.def	_Z20probe_new_obj_deletev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z20probe_new_obj_deletev
 _Z20probe_new_obj_deletev:
-.LFB5576:
-	subq	$40, %rsp
+.LFB5843:
+	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
-	movl	$16, %ecx
+	mov	ecx, 16
 	call	_Znwy
-	movl	$16, %edx
-	movq	%rax, %rcx
-	movq	%rax, g_sink(%rip)
+	mov	edx, 16
+	mov	rcx, rax
+	mov	QWORD PTR g_sink[rip], rax
 	call	_ZdlPvy
-	movq	$1, g_sink(%rip)
-	addq	$40, %rsp
+	mov	QWORD PTR g_sink[rip], 1
+	add	rsp, 40
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section .rdata,"dr"
 .LC1:
 	.ascii "TSC calibrated = %.4f GHz\12\0"
@@ -146,364 +113,364 @@ _Z20probe_new_obj_deletev:
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB5578:
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$152, %rsp
+.LFB5845:
+	push	rsi
+	.seh_pushreg	rsi
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 152
 	.seh_stackalloc	152
-	movaps	%xmm6, 32(%rsp)
-	.seh_savexmm	%xmm6, 32
-	movaps	%xmm7, 48(%rsp)
-	.seh_savexmm	%xmm7, 48
-	movaps	%xmm8, 64(%rsp)
-	.seh_savexmm	%xmm8, 64
-	movaps	%xmm9, 80(%rsp)
-	.seh_savexmm	%xmm9, 80
-	movaps	%xmm10, 96(%rsp)
-	.seh_savexmm	%xmm10, 96
-	movaps	%xmm11, 112(%rsp)
-	.seh_savexmm	%xmm11, 112
-	movaps	%xmm12, 128(%rsp)
-	.seh_savexmm	%xmm12, 128
+	movaps	XMMWORD PTR 32[rsp], xmm6
+	.seh_savexmm	xmm6, 32
+	movaps	XMMWORD PTR 48[rsp], xmm7
+	.seh_savexmm	xmm7, 48
+	movaps	XMMWORD PTR 64[rsp], xmm8
+	.seh_savexmm	xmm8, 64
+	movaps	XMMWORD PTR 80[rsp], xmm9
+	.seh_savexmm	xmm9, 80
+	movaps	XMMWORD PTR 96[rsp], xmm10
+	.seh_savexmm	xmm10, 96
+	movaps	XMMWORD PTR 112[rsp], xmm11
+	.seh_savexmm	xmm11, 112
+	movaps	XMMWORD PTR 128[rsp], xmm12
+	.seh_savexmm	xmm12, 128
 	.seh_endprologue
 	call	__main
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
-	movq	%rax, %rbx
+	mov	rbx, rax
 /APP
- # 17 "_ch37_alloc_perf.cpp" 1
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	salq	$32, %rdx
-	movq	%rdx, %rsi
-	orq	%rax, %rsi
-	.p2align 4,,10
+	sal	rdx, 32
+	mov	rsi, rdx
+	or	rsi, rax
+	.p2align 4
 	.p2align 3
-.L9:
+.L8:
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
-	subq	%rbx, %rax
-	cmpq	$49999999, %rax
-	jle	.L9
+	sub	rax, rbx
+	cmp	rax, 49999999
+	jle	.L8
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
-	movq	%rax, %rcx
+	mov	rcx, rax
 /APP
- # 17 "_ch37_alloc_perf.cpp" 1
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	salq	$32, %rdx
-	orq	%rax, %rdx
-	subq	%rsi, %rdx
-	js	.L10
-	pxor	%xmm6, %xmm6
-	cvtsi2sdq	%rdx, %xmm6
+	sal	rdx, 32
+	or	rdx, rax
+	sub	rdx, rsi
+	js	.L9
+	pxor	xmm6, xmm6
+	cvtsi2sd	xmm6, rdx
+.L10:
+	movsd	xmm1, QWORD PTR .LC0[rip]
+	sub	rcx, rbx
+	pxor	xmm0, xmm0
+	mov	ebx, 100000
+	cvtsi2sd	xmm0, rcx
+	lea	rcx, .LC1[rip]
+	divsd	xmm0, xmm1
+	divsd	xmm6, xmm0
+	divsd	xmm6, xmm1
+	movapd	xmm1, xmm6
+	movq	rdx, xmm6
+	call	__mingw_printf
+	.p2align 4
+	.p2align 3
 .L11:
-	subq	%rbx, %rcx
-	pxor	%xmm0, %xmm0
-	movsd	.LC0(%rip), %xmm1
-	movl	$100000, %ebx
-	cvtsi2sdq	%rcx, %xmm0
-	leaq	.LC1(%rip), %rcx
-	divsd	%xmm1, %xmm0
-	divsd	%xmm0, %xmm6
-	divsd	%xmm1, %xmm6
-	movapd	%xmm6, %xmm1
-	movq	%xmm6, %rdx
-	call	_Z6printfPKcz
-	.p2align 4,,10
+	call	_Z16probe_new_deletev
+	call	_Z16probe_new_deletev
+	sub	ebx, 2
+	jne	.L11
+/APP
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
+	rdtsc
+ # 0 "" 2
+/NO_APP
+	sal	rdx, 32
+	mov	ebx, 2000000
+	mov	rsi, rdx
+	or	rsi, rax
+	.p2align 4
 	.p2align 3
 .L12:
 	call	_Z16probe_new_deletev
 	call	_Z16probe_new_deletev
-	subl	$2, %ebx
+	sub	ebx, 2
 	jne	.L12
 /APP
- # 17 "_ch37_alloc_perf.cpp" 1
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	salq	$32, %rdx
-	movl	$2000000, %ebx
-	movq	%rdx, %rsi
-	orq	%rax, %rsi
-	.p2align 4,,10
+	sal	rdx, 32
+	or	rdx, rax
+	sub	rdx, rsi
+	js	.L13
+	pxor	xmm11, xmm11
+	cvtsi2sd	xmm11, rdx
+.L14:
+	movsd	xmm12, QWORD PTR .LC2[rip]
+	mov	ebx, 100000
+	divsd	xmm11, xmm12
+	.p2align 4
 	.p2align 3
-.L13:
-	call	_Z16probe_new_deletev
-	call	_Z16probe_new_deletev
-	subl	$2, %ebx
-	jne	.L13
+.L15:
+	call	_Z17probe_malloc_freev
+	call	_Z17probe_malloc_freev
+	sub	ebx, 2
+	jne	.L15
 /APP
- # 17 "_ch37_alloc_perf.cpp" 1
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	salq	$32, %rdx
-	orq	%rax, %rdx
-	subq	%rsi, %rdx
-	js	.L14
-	pxor	%xmm11, %xmm11
-	cvtsi2sdq	%rdx, %xmm11
-.L15:
-	movsd	.LC2(%rip), %xmm12
-	movl	$100000, %ebx
-	divsd	%xmm12, %xmm11
-	.p2align 4,,10
+	sal	rdx, 32
+	mov	ebx, 2000000
+	mov	rsi, rdx
+	or	rsi, rax
+	.p2align 4
 	.p2align 3
 .L16:
 	call	_Z17probe_malloc_freev
 	call	_Z17probe_malloc_freev
-	subl	$2, %ebx
+	sub	ebx, 2
 	jne	.L16
 /APP
- # 17 "_ch37_alloc_perf.cpp" 1
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	salq	$32, %rdx
-	movl	$2000000, %ebx
-	movq	%rdx, %rsi
-	orq	%rax, %rsi
-	.p2align 4,,10
+	sal	rdx, 32
+	or	rdx, rax
+	sub	rdx, rsi
+	js	.L17
+	pxor	xmm10, xmm10
+	cvtsi2sd	xmm10, rdx
+.L18:
+	divsd	xmm10, xmm12
+	mov	edx, 100000
+	.p2align 4
 	.p2align 3
-.L17:
-	call	_Z17probe_malloc_freev
-	call	_Z17probe_malloc_freev
-	subl	$2, %ebx
-	jne	.L17
+.L19:
+	call	_Z15probe_placementv
+	call	_Z15probe_placementv
+	sub	edx, 2
+	jne	.L19
 /APP
- # 17 "_ch37_alloc_perf.cpp" 1
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	salq	$32, %rdx
-	orq	%rax, %rdx
-	subq	%rsi, %rdx
-	js	.L18
-	pxor	%xmm10, %xmm10
-	cvtsi2sdq	%rdx, %xmm10
-.L19:
-	divsd	%xmm12, %xmm10
-	movl	$100000, %edx
-	.p2align 4,,10
+	sal	rdx, 32
+	mov	rcx, rdx
+	mov	edx, 2000000
+	or	rcx, rax
+	.p2align 4
 	.p2align 3
 .L20:
 	call	_Z15probe_placementv
 	call	_Z15probe_placementv
-	subl	$2, %edx
+	sub	edx, 2
 	jne	.L20
 /APP
- # 17 "_ch37_alloc_perf.cpp" 1
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	salq	$32, %rdx
-	movq	%rdx, %rcx
-	movl	$2000000, %edx
-	orq	%rax, %rcx
-	.p2align 4,,10
+	sal	rdx, 32
+	or	rdx, rax
+	sub	rdx, rcx
+	js	.L21
+	pxor	xmm9, xmm9
+	cvtsi2sd	xmm9, rdx
+.L22:
+	divsd	xmm9, xmm12
+	mov	ebx, 100000
+	.p2align 4
 	.p2align 3
-.L21:
-	call	_Z15probe_placementv
-	call	_Z15probe_placementv
-	subl	$2, %edx
-	jne	.L21
+.L23:
+	call	_Z20probe_new_obj_deletev
+	call	_Z20probe_new_obj_deletev
+	sub	ebx, 2
+	jne	.L23
 /APP
- # 17 "_ch37_alloc_perf.cpp" 1
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	salq	$32, %rdx
-	orq	%rax, %rdx
-	subq	%rcx, %rdx
-	js	.L22
-	pxor	%xmm9, %xmm9
-	cvtsi2sdq	%rdx, %xmm9
-.L23:
-	divsd	%xmm12, %xmm9
-	movl	$100000, %ebx
-	.p2align 4,,10
+	sal	rdx, 32
+	mov	ebx, 2000000
+	mov	rsi, rdx
+	or	rsi, rax
+	.p2align 4
 	.p2align 3
 .L24:
 	call	_Z20probe_new_obj_deletev
 	call	_Z20probe_new_obj_deletev
-	subl	$2, %ebx
+	sub	ebx, 2
 	jne	.L24
 /APP
- # 17 "_ch37_alloc_perf.cpp" 1
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	salq	$32, %rdx
-	movl	$2000000, %ebx
-	movq	%rdx, %rsi
-	orq	%rax, %rsi
-	.p2align 4,,10
+	sal	rdx, 32
+	or	rdx, rax
+	sub	rdx, rsi
+	js	.L25
+	pxor	xmm8, xmm8
+	cvtsi2sd	xmm8, rdx
+.L26:
+	divsd	xmm8, xmm12
+	mov	ecx, 100000
+	.p2align 4
 	.p2align 3
-.L25:
-	call	_Z20probe_new_obj_deletev
-	call	_Z20probe_new_obj_deletev
-	subl	$2, %ebx
-	jne	.L25
+.L27:
+	call	_Z10pool_allocv
+	call	_Z10pool_allocv
+	sub	ecx, 2
+	jne	.L27
 /APP
- # 17 "_ch37_alloc_perf.cpp" 1
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	salq	$32, %rdx
-	orq	%rax, %rdx
-	subq	%rsi, %rdx
-	js	.L26
-	pxor	%xmm8, %xmm8
-	cvtsi2sdq	%rdx, %xmm8
-.L27:
-	divsd	%xmm12, %xmm8
-	movl	$100000, %ecx
-	.p2align 4,,10
+	sal	rdx, 32
+	mov	ecx, 2000000
+	or	rdx, rax
+	mov	r8, rdx
+	.p2align 4
 	.p2align 3
 .L28:
 	call	_Z10pool_allocv
 	call	_Z10pool_allocv
-	subl	$2, %ecx
+	sub	ecx, 2
 	jne	.L28
 /APP
- # 17 "_ch37_alloc_perf.cpp" 1
+ # 17 "Examples\_ch37_alloc_perf.cpp" 1
 	rdtsc
  # 0 "" 2
 /NO_APP
-	salq	$32, %rdx
-	movl	$2000000, %ecx
-	orq	%rax, %rdx
-	movq	%rdx, %r8
-	.p2align 4,,10
-	.p2align 3
-.L29:
-	call	_Z10pool_allocv
-	call	_Z10pool_allocv
-	subl	$2, %ecx
-	jne	.L29
-/APP
- # 17 "_ch37_alloc_perf.cpp" 1
-	rdtsc
- # 0 "" 2
-/NO_APP
-	salq	$32, %rdx
-	orq	%rax, %rdx
-	subq	%r8, %rdx
-	js	.L30
-	pxor	%xmm7, %xmm7
-	cvtsi2sdq	%rdx, %xmm7
-.L31:
-	movapd	%xmm11, %xmm3
-	movapd	%xmm11, %xmm1
-	movq	%xmm11, %rdx
-	divsd	%xmm6, %xmm3
-	leaq	.LC3(%rip), %rcx
-	divsd	%xmm12, %xmm7
-	movq	%xmm3, %r8
-	movapd	%xmm3, %xmm2
-	call	_Z6printfPKcz
-	movapd	%xmm10, %xmm4
-	movapd	%xmm10, %xmm1
-	movq	%xmm10, %rdx
-	leaq	.LC4(%rip), %rcx
-	divsd	%xmm6, %xmm4
-	movq	%xmm4, %r8
-	movapd	%xmm4, %xmm2
-	call	_Z6printfPKcz
-	movapd	%xmm9, %xmm5
-	movapd	%xmm9, %xmm1
-	movq	%xmm9, %rdx
-	divsd	%xmm6, %xmm5
-	leaq	.LC5(%rip), %rcx
-	movq	%xmm5, %r8
-	movapd	%xmm5, %xmm2
-	call	_Z6printfPKcz
-	movapd	%xmm8, %xmm3
-	movapd	%xmm8, %xmm1
-	movq	%xmm8, %rdx
-	divsd	%xmm6, %xmm3
-	leaq	.LC6(%rip), %rcx
-	movq	%xmm3, %r8
-	movapd	%xmm3, %xmm2
-	call	_Z6printfPKcz
-	movapd	%xmm7, %xmm4
-	movapd	%xmm7, %xmm1
-	movq	%xmm7, %rdx
-	divsd	%xmm6, %xmm4
-	leaq	.LC7(%rip), %rcx
-	movq	%xmm4, %r8
-	movapd	%xmm4, %xmm2
-	call	_Z6printfPKcz
-	nop
-	movaps	32(%rsp), %xmm6
-	xorl	%eax, %eax
-	movaps	48(%rsp), %xmm7
-	movaps	64(%rsp), %xmm8
-	movaps	80(%rsp), %xmm9
-	movaps	96(%rsp), %xmm10
-	movaps	112(%rsp), %xmm11
-	movaps	128(%rsp), %xmm12
-	addq	$152, %rsp
-	popq	%rbx
-	popq	%rsi
-	ret
-.L10:
-	movq	%rdx, %rax
-	andl	$1, %edx
-	pxor	%xmm6, %xmm6
-	shrq	%rax
-	orq	%rdx, %rax
-	cvtsi2sdq	%rax, %xmm6
-	addsd	%xmm6, %xmm6
-	jmp	.L11
+	sal	rdx, 32
+	or	rdx, rax
+	sub	rdx, r8
+	js	.L29
+	pxor	xmm7, xmm7
+	cvtsi2sd	xmm7, rdx
 .L30:
-	movq	%rdx, %rax
-	andl	$1, %edx
-	pxor	%xmm7, %xmm7
-	shrq	%rax
-	orq	%rdx, %rax
-	cvtsi2sdq	%rax, %xmm7
-	addsd	%xmm7, %xmm7
-	jmp	.L31
-.L26:
-	movq	%rdx, %rax
-	andl	$1, %edx
-	pxor	%xmm8, %xmm8
-	shrq	%rax
-	orq	%rdx, %rax
-	cvtsi2sdq	%rax, %xmm8
-	addsd	%xmm8, %xmm8
-	jmp	.L27
-.L22:
-	movq	%rdx, %rax
-	andl	$1, %edx
-	pxor	%xmm9, %xmm9
-	shrq	%rax
-	orq	%rdx, %rax
-	cvtsi2sdq	%rax, %xmm9
-	addsd	%xmm9, %xmm9
-	jmp	.L23
-.L18:
-	movq	%rdx, %rax
-	andl	$1, %edx
-	pxor	%xmm10, %xmm10
-	shrq	%rax
-	orq	%rdx, %rax
-	cvtsi2sdq	%rax, %xmm10
-	addsd	%xmm10, %xmm10
-	jmp	.L19
-.L14:
-	movq	%rdx, %rax
-	andl	$1, %edx
-	pxor	%xmm11, %xmm11
-	shrq	%rax
-	orq	%rdx, %rax
-	cvtsi2sdq	%rax, %xmm11
-	addsd	%xmm11, %xmm11
-	jmp	.L15
+	movapd	xmm3, xmm11
+	movapd	xmm1, xmm11
+	movq	rdx, xmm11
+	divsd	xmm3, xmm6
+	lea	rcx, .LC3[rip]
+	divsd	xmm7, xmm12
+	movq	r8, xmm3
+	movapd	xmm2, xmm3
+	call	__mingw_printf
+	movapd	xmm4, xmm10
+	movapd	xmm1, xmm10
+	movq	rdx, xmm10
+	lea	rcx, .LC4[rip]
+	divsd	xmm4, xmm6
+	movq	r8, xmm4
+	movapd	xmm2, xmm4
+	call	__mingw_printf
+	movapd	xmm5, xmm9
+	movapd	xmm1, xmm9
+	movq	rdx, xmm9
+	divsd	xmm5, xmm6
+	lea	rcx, .LC5[rip]
+	movq	r8, xmm5
+	movapd	xmm2, xmm5
+	call	__mingw_printf
+	movapd	xmm3, xmm8
+	movapd	xmm1, xmm8
+	movq	rdx, xmm8
+	divsd	xmm3, xmm6
+	lea	rcx, .LC6[rip]
+	movq	r8, xmm3
+	movapd	xmm2, xmm3
+	call	__mingw_printf
+	movapd	xmm4, xmm7
+	movapd	xmm1, xmm7
+	movq	rdx, xmm7
+	divsd	xmm4, xmm6
+	lea	rcx, .LC7[rip]
+	movq	r8, xmm4
+	movapd	xmm2, xmm4
+	call	__mingw_printf
+	nop
+	movaps	xmm6, XMMWORD PTR 32[rsp]
+	movaps	xmm7, XMMWORD PTR 48[rsp]
+	xor	eax, eax
+	movaps	xmm8, XMMWORD PTR 64[rsp]
+	movaps	xmm9, XMMWORD PTR 80[rsp]
+	movaps	xmm10, XMMWORD PTR 96[rsp]
+	movaps	xmm11, XMMWORD PTR 112[rsp]
+	movaps	xmm12, XMMWORD PTR 128[rsp]
+	add	rsp, 152
+	pop	rbx
+	pop	rsi
+	ret
+.L9:
+	mov	rax, rdx
+	and	edx, 1
+	pxor	xmm6, xmm6
+	shr	rax
+	or	rax, rdx
+	cvtsi2sd	xmm6, rax
+	addsd	xmm6, xmm6
+	jmp	.L10
+.L29:
+	mov	rax, rdx
+	and	edx, 1
+	pxor	xmm7, xmm7
+	shr	rax
+	or	rax, rdx
+	cvtsi2sd	xmm7, rax
+	addsd	xmm7, xmm7
+	jmp	.L30
+.L25:
+	mov	rax, rdx
+	and	edx, 1
+	pxor	xmm8, xmm8
+	shr	rax
+	or	rax, rdx
+	cvtsi2sd	xmm8, rax
+	addsd	xmm8, xmm8
+	jmp	.L26
+.L21:
+	mov	rax, rdx
+	and	edx, 1
+	pxor	xmm9, xmm9
+	shr	rax
+	or	rax, rdx
+	cvtsi2sd	xmm9, rax
+	addsd	xmm9, xmm9
+	jmp	.L22
+.L17:
+	mov	rax, rdx
+	and	edx, 1
+	pxor	xmm10, xmm10
+	shr	rax
+	or	rax, rdx
+	cvtsi2sd	xmm10, rax
+	addsd	xmm10, xmm10
+	jmp	.L18
+.L13:
+	mov	rax, rdx
+	and	edx, 1
+	pxor	xmm11, xmm11
+	shr	rax
+	or	rax, rdx
+	cvtsi2sd	xmm11, rax
+	addsd	xmm11, xmm11
+	jmp	.L14
 	.seh_endproc
 .lcomm _ZL4g_pb,16,4
 	.data
@@ -525,8 +492,8 @@ g_sink:
 .LC2:
 	.long	0
 	.long	1094616192
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
-	.def	__mingw_vfprintf;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_Znwy;	.scl	2;	.type	32;	.endef
 	.def	_ZdlPv;	.scl	2;	.type	32;	.endef
 	.def	malloc;	.scl	2;	.type	32;	.endef

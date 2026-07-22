@@ -34,13 +34,11 @@ _Z9manhattan5Point:
 _Z10make_pointll:
 .LFB2:
 	.seh_endprologue
-	movd	xmm0, ecx
-	movd	xmm1, edx
-	punpckldq	xmm0, xmm1
-	movq	rax, xmm0
+	sal	rdx, 32
+	mov	eax, ecx
+	or	rax, rdx
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
@@ -63,4 +61,5 @@ main:
 	add	rsp, 56
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

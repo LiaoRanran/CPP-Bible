@@ -6,40 +6,39 @@
 	.def	_Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE
 _Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE:
-.LFB695:
+.LFB1074:
 	.seh_endprologue
-	mov	rax, QWORD PTR 8[rcx]
-	mov	rdx, QWORD PTR [rcx]
-	add	rdx, rax
-	cmp	rdx, rax
-	mov	rcx, rdx
+	mov	rdx, QWORD PTR 8[rcx]
+	mov	rax, QWORD PTR [rcx]
+	add	rax, rdx
+	mov	rcx, rax
+	cmp	rax, rdx
 	je	.L5
-	movabs	r8, 4294977024
+	mov	r8d, 8388627
 	jmp	.L4
+	.p2align 5
 	.p2align 4,,10
 	.p2align 3
 .L3:
-	add	rax, 1
-	cmp	rcx, rax
+	add	rdx, 1
+	cmp	rcx, rdx
 	je	.L5
 .L4:
-	movzx	edx, BYTE PTR [rax]
-	cmp	dl, 32
+	movzx	eax, BYTE PTR [rdx]
+	sub	eax, 9
+	cmp	al, 23
 	ja	.L3
-	bt	r8, rdx
-	setc	dl
-	test	dl, dl
+	bt	r8, rax
+	setc	al
+	test	al, al
 	je	.L3
-	mov	eax, edx
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L5:
-	xor	edx, edx
-	mov	eax, edx
+	xor	eax, eax
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section .rdata,"dr"
 .LC0:
 	.ascii " \11\12\0"
@@ -49,14 +48,14 @@ _Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE:
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB696:
+.LFB1075:
 	sub	rsp, 56
 	.seh_stackalloc	56
 	.seh_endprologue
 	call	__main
 	lea	rax, .LC0[rip]
-	mov	QWORD PTR 32[rsp], 3
 	lea	rcx, 32[rsp]
+	mov	QWORD PTR 32[rsp], 3
 	mov	QWORD PTR 40[rsp], rax
 	call	_Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE
 	xor	eax, 1
@@ -64,4 +63,5 @@ main:
 	add	rsp, 56
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

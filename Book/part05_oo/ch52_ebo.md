@@ -770,15 +770,17 @@ int main() { std::cout << sizeof(Good) << '\n'; }
 ### 测试源码
 
 ```cpp
-struct Empty {};                        // sizeof == 1（独立时）
-struct WithEBO : Empty { int x; };      // 继承空基类 —— EBO: sizeof == 4
-struct NoEBO  { Empty e; int x; };      // 空类做成员 —— 无 EBO: sizeof == 8
-struct NoUniqAddr { [[no_unique_address]] Empty e; int x; };  // C++20: sizeof == 4
+struct Empty {};                        // sizeof == 1（独立时，空类至少 1 字节且本例无子对象，恰为 1）
+struct WithEBO : Empty { int x; };      // 继承空基类 —— EBO 通常使 sizeof == 4（实现许可，非强制）
+struct NoEBO  { Empty e; int x; };      // 空类做成员 —— 无 EBO/[[no_unique_address]]：空成员至少 1B+填充，必然 == 8
+struct NoUniqAddr { [[no_unique_address]] Empty e; int x; };  // C++20：空成员通常也被压到 0，sizeof 通常 == 4
 
-static_assert(sizeof(Empty)      == 1);
-static_assert(sizeof(WithEBO)    == 4);
-static_assert(sizeof(NoEBO)      == 8);
-static_assert(sizeof(NoUniqAddr) == 4);   // 全部通过 → 编译成功
+static_assert(sizeof(Empty)      == 1);                    // 空类恰 1 字节（C++ 保证）
+static_assert(sizeof(NoEBO)      == 8);                    // 无优化：空成员 1B+3 填充，必然 8（可移植保证）
+static_assert(sizeof(WithEBO)    < sizeof(NoEBO));         // EBO 生效：继承空基类使其严格小于非优化版
+static_assert(sizeof(NoUniqAddr) < sizeof(NoEBO));         // [[no_unique_address]] 生效：同样严格小于非优化版
+// 注：EBO 与 [[no_unique_address]] 都是"允许"而非"强制"的优化，故不对绝对大小做精确断言，
+// 只断言"优于非优化版"（WithEBO/NoUniqAddr 在主流编译器上通常 == sizeof(int)，但该值随实现而变）。
 ```
 
 ### 真实汇编：偏移即证据

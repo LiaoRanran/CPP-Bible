@@ -6,13 +6,14 @@
 	.def	_Z4bumpi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z4bumpi
 _Z4bumpi:
-.LFB665:
+.LFB668:
 	.seh_endprologue
 	test	ecx, ecx
 	jle	.L4
 	xor	eax, eax
 	xor	edx, edx
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
 .L3:
 	mov	r8d, 1
@@ -35,7 +36,7 @@ _Z4bumpi:
 	.def	_Z9read_stopv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z9read_stopv
 _Z9read_stopv:
-.LFB666:
+.LFB669:
 	.seh_endprologue
 	mov	eax, DWORD PTR g[rip]
 	ret
@@ -45,4 +46,4 @@ _Z9read_stopv:
 	.align 4
 g:
 	.space 4
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

@@ -1,7 +1,6 @@
 	.file	"_ch128_scope_exit.cpp"
 	.intel_syntax noprefix
 	.text
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section .rdata,"dr"
 .LC0:
 	.ascii "w\0"
@@ -9,13 +8,16 @@
 	.ascii "/tmp/x.log\0"
 .LC2:
 	.ascii "hi\0"
+	.section	.text.unlikely,"x"
+.LCOLDB3:
 	.section	.text.startup,"x"
+.LHOTB3:
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB53:
+.LFB28:
 	push	rsi
 	.seh_pushreg	rsi
 	push	rbx
@@ -29,8 +31,8 @@ main:
 .LEHB0:
 	call	fopen
 .LEHE0:
-	test	rax, rax
 	mov	rbx, rax
+	test	rax, rax
 	je	.L4
 	mov	r9, rax
 	mov	r8d, 2
@@ -52,6 +54,35 @@ main:
 	jmp	.L1
 .L5:
 	mov	rsi, rax
+	jmp	.L3
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDA28:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSE28-.LLSDACSB28
+.LLSDACSB28:
+	.uleb128 .LEHB0-.LFB28
+	.uleb128 .LEHE0-.LEHB0
+	.uleb128 0
+	.uleb128 0
+	.uleb128 .LEHB1-.LFB28
+	.uleb128 .LEHE1-.LEHB1
+	.uleb128 .L5-.LFB28
+	.uleb128 0
+.LLSDACSE28:
+	.section	.text.startup,"x"
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	main.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	main.cold
+	.seh_stackalloc	56
+	.seh_savereg	rbx, 40
+	.seh_savereg	rsi, 48
+	.seh_endprologue
+main.cold:
+.L3:
 	mov	rcx, rbx
 	call	fclose
 	mov	rcx, rsi
@@ -59,31 +90,29 @@ main:
 	call	_Unwind_Resume
 	nop
 .LEHE2:
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA53:
+.LLSDAC28:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE53-.LLSDACSB53
-.LLSDACSB53:
-	.uleb128 .LEHB0-.LFB53
-	.uleb128 .LEHE0-.LEHB0
-	.uleb128 0
-	.uleb128 0
-	.uleb128 .LEHB1-.LFB53
-	.uleb128 .LEHE1-.LEHB1
-	.uleb128 .L5-.LFB53
-	.uleb128 0
-	.uleb128 .LEHB2-.LFB53
+	.uleb128 .LLSDACSEC28-.LLSDACSBC28
+.LLSDACSBC28:
+	.uleb128 .LEHB2-.LCOLDB3
 	.uleb128 .LEHE2-.LEHB2
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE53:
+.LLSDACSEC28:
+	.section	.text.unlikely,"x"
 	.section	.text.startup,"x"
+	.section	.text.unlikely,"x"
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+.LCOLDE3:
+	.section	.text.startup,"x"
+.LHOTE3:
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	fopen;	.scl	2;	.type	32;	.endef
 	.def	fwrite;	.scl	2;	.type	32;	.endef
 	.def	fclose;	.scl	2;	.type	32;	.endef

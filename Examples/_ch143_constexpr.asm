@@ -1,391 +1,551 @@
 	.file	"_ch143_constexpr.cpp"
 	.intel_syntax noprefix
 	.text
+.Ltext0:
+	.cfi_sections	.debug_frame
+	.file 0 "C:/CodeLearnling/note/note/C++/CPP-Bible" "Examples/_ch143_constexpr.cpp"
 	.section	.text$_Z3fibi,"x"
 	.linkonce discard
-	.p2align 4
 	.globl	_Z3fibi
 	.def	_Z3fibi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z3fibi
 _Z3fibi:
 .LFB0:
-	push	r15
-	.seh_pushreg	r15
-	push	r14
-	.seh_pushreg	r14
-	push	r13
-	.seh_pushreg	r13
-	push	r12
-	.seh_pushreg	r12
+	.file 1 "Examples/_ch143_constexpr.cpp"
+	.loc 1 2 26
+	.cfi_startproc
 	push	rbp
 	.seh_pushreg	rbp
-	push	rdi
-	.seh_pushreg	rdi
-	push	rsi
-	.seh_pushreg	rsi
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 136
-	.seh_stackalloc	136
+	.cfi_def_cfa_offset 24
+	.cfi_offset 3, -24
+	sub	rsp, 40
+	.seh_stackalloc	40
+	.cfi_def_cfa_offset 64
+	lea	rbp, 32[rsp]
+	.seh_setframe	rbp, 32
+	.cfi_def_cfa 6, 32
 	.seh_endprologue
-	cmp	ecx, 1
-	mov	r12d, ecx
+	mov	DWORD PTR 32[rbp], ecx
+	.loc 1 3 18
+	cmp	DWORD PTR 32[rbp], 1
 	jle	.L2
-	lea	eax, -1[rcx]
-	mov	ebp, ecx
-	mov	esi, ecx
-	mov	edx, eax
-	xor	ebx, ebx
-	mov	edi, eax
-	and	edx, -2
-	sub	ebp, edx
-	cmp	esi, ebp
-	je	.L3
-.L64:
-	sub	esi, 2
-	mov	edx, edi
-	xor	r13d, r13d
-	mov	eax, esi
-	and	eax, -2
-	sub	edx, eax
-	mov	DWORD PTR 104[rsp], edx
-.L32:
-	mov	edx, DWORD PTR 104[rsp]
-	lea	eax, -1[rdi]
-	mov	r15d, eax
-	cmp	edi, edx
-	je	.L4
-.L63:
-	sub	edi, 2
-	mov	edx, r15d
-	mov	DWORD PTR 76[rsp], r13d
-	xor	r12d, r12d
-	mov	eax, edi
-	mov	r13d, esi
-	and	eax, -2
-	sub	edx, eax
-	mov	eax, r15d
-	mov	DWORD PTR 100[rsp], edx
-.L29:
-	cmp	DWORD PTR 100[rsp], eax
-	lea	edx, -1[rax]
-	mov	r8d, edx
-	je	.L5
-	lea	r14d, -2[rax]
-	mov	eax, r8d
-	xor	esi, esi
-	mov	DWORD PTR 80[rsp], ebx
-	mov	edx, r14d
-	mov	DWORD PTR 88[rsp], r14d
-	mov	r14d, esi
-	and	edx, -2
-	mov	DWORD PTR 84[rsp], r12d
-	sub	eax, edx
-	mov	DWORD PTR 96[rsp], eax
-.L26:
-	cmp	DWORD PTR 96[rsp], r8d
-	lea	edx, -1[r8]
-	mov	r10d, edx
-	je	.L6
-	lea	esi, -2[r8]
-	mov	r9d, r10d
-	mov	DWORD PTR 92[rsp], r14d
-	mov	r11d, ebp
-	mov	edx, esi
-	mov	ebp, esi
-	mov	r14d, r13d
-	and	edx, -2
-	xor	r12d, r12d
-	mov	r13d, r10d
-	sub	r9d, edx
-	mov	esi, r9d
-	mov	r9d, edi
-.L23:
-	lea	r8d, -1[r13]
-	cmp	esi, r13d
-	je	.L7
-	sub	r13d, 2
-	mov	r15d, r8d
-	xor	edi, edi
-	mov	eax, r13d
-	and	eax, -2
-	sub	r15d, eax
-.L20:
-	lea	eax, -1[r8]
-	cmp	r8d, r15d
-	mov	ebx, eax
-	je	.L8
-	lea	edx, -3[r8]
-	sub	r8d, 2
-	mov	ecx, ebx
-	mov	eax, r8d
-	mov	DWORD PTR 52[rsp], edx
-	xor	r10d, r10d
-	mov	edx, ebx
-	and	eax, -2
-	mov	ebx, r9d
-	sub	ecx, eax
-	mov	DWORD PTR 68[rsp], ecx
-.L17:
-	mov	r9d, DWORD PTR 68[rsp]
-	lea	ecx, -1[rdx]
-	mov	eax, ecx
-	cmp	edx, r9d
-	je	.L9
-	lea	ecx, -4[rdx]
-	mov	r9d, eax
-	mov	DWORD PTR 60[rsp], edx
-	mov	DWORD PTR 44[rsp], ecx
-	mov	ecx, DWORD PTR 52[rsp]
-	mov	DWORD PTR 48[rsp], 0
-	mov	DWORD PTR 64[rsp], r8d
-	and	ecx, -2
-	sub	r9d, ecx
-	mov	DWORD PTR 56[rsp], r9d
-.L14:
-	mov	ecx, DWORD PTR 56[rsp]
-	cmp	eax, ecx
-	je	.L10
-	mov	ecx, DWORD PTR 44[rsp]
-	lea	r8d, -2[rax]
-	sub	eax, 4
-	xor	edx, edx
-	mov	r9d, r8d
-	and	ecx, -2
-	sub	eax, ecx
-	mov	DWORD PTR 72[rsp], eax
-.L11:
-	mov	ecx, r9d
-	mov	DWORD PTR 124[rsp], r8d
-	mov	DWORD PTR 120[rsp], r11d
-	mov	DWORD PTR 116[rsp], edx
-	mov	DWORD PTR 112[rsp], r10d
-	mov	DWORD PTR 108[rsp], r9d
+	.loc 1 3 27 discriminator 1
+	mov	eax, DWORD PTR 32[rbp]
+	sub	eax, 1
+	mov	ecx, eax
 	call	_Z3fibi
-	mov	edx, DWORD PTR 116[rsp]
-	mov	r9d, DWORD PTR 108[rsp]
-	mov	r10d, DWORD PTR 112[rsp]
-	mov	r11d, DWORD PTR 120[rsp]
-	add	edx, eax
-	mov	r8d, DWORD PTR 124[rsp]
-	sub	r9d, 2
-	cmp	DWORD PTR 72[rsp], r9d
-	jne	.L11
-	mov	r9d, DWORD PTR 44[rsp]
-	mov	eax, r8d
-	mov	ecx, r9d
-	sub	r9d, 2
-	and	ecx, 1
-	mov	DWORD PTR 44[rsp], r9d
-	add	ecx, edx
-	add	DWORD PTR 48[rsp], ecx
-	cmp	r8d, 1
-	jne	.L14
-	mov	eax, DWORD PTR 48[rsp]
-	mov	edx, DWORD PTR 60[rsp]
-	mov	r8d, DWORD PTR 64[rsp]
-	add	eax, 1
-.L13:
-	sub	DWORD PTR 52[rsp], 2
-	sub	edx, 2
-	add	r10d, eax
-	cmp	edx, 1
-	jne	.L17
-	mov	r9d, ebx
-	add	r10d, 1
-.L16:
-	add	edi, r10d
-	cmp	r8d, 1
-	jne	.L20
-	add	edi, 1
-.L19:
-	add	r12d, edi
-	cmp	r13d, 1
-	jne	.L23
-	mov	r13d, r14d
-	mov	r14d, DWORD PTR 92[rsp]
-	mov	esi, ebp
-	mov	edi, r9d
-	mov	ebp, r11d
-	add	r12d, 1
-.L22:
-	add	r14d, r12d
-	cmp	esi, 1
-	mov	r8d, esi
-	jne	.L26
-	mov	esi, r14d
-	mov	ebx, DWORD PTR 80[rsp]
-	mov	r12d, DWORD PTR 84[rsp]
-	add	esi, 1
-	mov	r14d, DWORD PTR 88[rsp]
-.L25:
-	add	r12d, esi
-	cmp	r14d, 1
-	mov	eax, r14d
-	jne	.L29
-	mov	esi, r13d
-	mov	r13d, DWORD PTR 76[rsp]
-	add	r12d, 1
-	add	r13d, r12d
-	cmp	edi, 1
-	jne	.L32
-.L62:
-	mov	r14d, r13d
-	add	r14d, 1
-	add	ebx, r14d
-	cmp	esi, 1
-	jne	.L61
-.L52:
-	lea	r12d, 1[rbx]
-	jmp	.L2
-	.p2align 4,,10
-	.p2align 3
-.L8:
-	add	edi, eax
-	jmp	.L19
-	.p2align 4,,10
-	.p2align 3
-.L9:
-	mov	r9d, ebx
-	add	r10d, ecx
-	jmp	.L16
-	.p2align 4,,10
-	.p2align 3
-.L10:
-	mov	ecx, DWORD PTR 48[rsp]
-	mov	edx, DWORD PTR 60[rsp]
-	mov	r8d, DWORD PTR 64[rsp]
-	lea	eax, -1[rax+rcx]
-	jmp	.L13
-.L7:
-	mov	esi, ebp
-	mov	r13d, r14d
-	mov	edi, r9d
-	mov	r14d, DWORD PTR 92[rsp]
-	mov	ebp, r11d
-	add	r12d, r8d
-	jmp	.L22
-.L6:
-	mov	esi, r14d
-	mov	ebx, DWORD PTR 80[rsp]
-	mov	r12d, DWORD PTR 84[rsp]
-	add	esi, edx
-	mov	r14d, DWORD PTR 88[rsp]
-	jmp	.L25
-.L5:
-	mov	esi, r13d
-	mov	r13d, DWORD PTR 76[rsp]
-	add	r12d, edx
-	add	r13d, r12d
-	cmp	edi, 1
-	je	.L62
-	mov	edx, DWORD PTR 104[rsp]
-	lea	eax, -1[rdi]
-	mov	r15d, eax
-	cmp	edi, edx
-	jne	.L63
-.L4:
-	mov	r14d, r13d
-	add	r14d, eax
-	add	ebx, r14d
-	cmp	esi, 1
-	je	.L52
-.L61:
-	lea	eax, -1[rsi]
-	cmp	esi, ebp
-	mov	edi, eax
-	jne	.L64
-.L3:
-	lea	r12d, [rax+rbx]
+	mov	ebx, eax
+	.loc 1 3 40 discriminator 3
+	mov	eax, DWORD PTR 32[rbp]
+	sub	eax, 2
+	mov	ecx, eax
+	call	_Z3fibi
+	.loc 1 3 46 discriminator 4
+	add	eax, ebx
+	.loc 1 3 46 is_stmt 0
+	jmp	.L4
 .L2:
-	mov	eax, r12d
-	add	rsp, 136
+	.loc 1 3 46 discriminator 2
+	mov	eax, DWORD PTR 32[rbp]
+.L4:
+	.loc 1 4 1 is_stmt 1
+	add	rsp, 40
 	pop	rbx
-	pop	rsi
-	pop	rdi
+	.cfi_restore 3
 	pop	rbp
-	pop	r12
-	pop	r13
-	pop	r14
-	pop	r15
+	.cfi_restore 6
+	.cfi_def_cfa 7, -24
 	ret
+	.cfi_endproc
+.LFE0:
+	.seh_endproc
+	.section .rdata,"dr"
+	.align 4
+_ZL10kTableSize:
+	.long	55
+	.section	.text$_Z10make_tablei,"x"
+	.linkonce discard
+	.globl	_Z10make_tablei
+	.def	_Z10make_tablei;	.scl	2;	.type	32;	.endef
+	.seh_proc	_Z10make_tablei
+_Z10make_tablei:
+.LFB1:
+	.loc 1 10 33
+	.cfi_startproc
+	push	rbp
+	.seh_pushreg	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	mov	rbp, rsp
+	.seh_setframe	rbp, 0
+	.cfi_def_cfa_register 6
+	sub	rsp, 32
+	.seh_stackalloc	32
+	.seh_endprologue
+	mov	DWORD PTR 16[rbp], ecx
+	.loc 1 10 45
+	mov	eax, DWORD PTR 16[rbp]
+	mov	ecx, eax
+	call	_Z3fibi
+	.loc 1 10 50
+	add	rsp, 32
+	pop	rbp
+	.cfi_restore 6
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE1:
 	.seh_endproc
 	.text
-	.p2align 4
 	.globl	_Z9use_tablev
 	.def	_Z9use_tablev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z9use_tablev
 _Z9use_tablev:
 .LFB2:
-	push	r13
-	.seh_pushreg	r13
-	push	r12
-	.seh_pushreg	r12
+	.loc 1 12 17
+	.cfi_startproc
 	push	rbp
 	.seh_pushreg	rbp
-	push	rdi
-	.seh_pushreg	rdi
-	push	rsi
-	.seh_pushreg	rsi
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 264
-	.seh_stackalloc	264
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	sub	rsp, 272
+	.seh_stackalloc	272
+	.cfi_def_cfa_offset 288
+	lea	rbp, 128[rsp]
+	.seh_setframe	rbp, 128
+	.cfi_def_cfa 6, 160
 	.seh_endprologue
-	mov	r13d, -2
-	xor	edi, edi
-	lea	r12, 32[rsp]
-	.p2align 4,,10
-	.p2align 3
-.L66:
-	cmp	rdi, 1
-	jbe	.L74
-	lea	ebp, -3[rdi]
-	mov	eax, r13d
-	xor	esi, esi
-	lea	ebx, -1[rdi]
-	and	eax, -2
-	sub	ebp, eax
-.L67:
-	mov	ecx, ebx
-	sub	ebx, 2
-	call	_Z3fibi
-	add	esi, eax
-	cmp	ebx, ebp
-	jne	.L67
-	mov	eax, r13d
-	add	r13d, 1
-	and	eax, 1
-	add	eax, esi
-	mov	DWORD PTR [r12+rdi*4], eax
-	add	rdi, 1
-	cmp	rdi, 55
-	jne	.L66
-	lea	rcx, 252[rsp]
-	mov	rax, r12
-	xor	edx, edx
-	.p2align 4,,10
-	.p2align 3
-.L71:
-	add	edx, DWORD PTR [rax]
-	add	rax, 4
-	cmp	rax, rcx
-	jne	.L71
-	mov	eax, edx
-	add	rsp, 264
-	pop	rbx
-	pop	rsi
-	pop	rdi
+.LBB2:
+	.loc 1 14 14
+	mov	DWORD PTR 140[rbp], 0
+	.loc 1 14 5
+	jmp	.L8
+.L9:
+	.loc 1 14 61 discriminator 5
+	mov	eax, DWORD PTR 140[rbp]
+	mov	ecx, eax
+	call	_Z10make_tablei
+	.loc 1 14 49 discriminator 3
+	mov	edx, DWORD PTR 140[rbp]
+	movsxd	rdx, edx
+	mov	DWORD PTR -96[rbp+rdx*4], eax
+	.loc 1 14 5 discriminator 3
+	add	DWORD PTR 140[rbp], 1
+.L8:
+	.loc 1 14 23 discriminator 4
+	cmp	DWORD PTR 140[rbp], 54
+	jle	.L9
+.LBE2:
+	.loc 1 15 9
+	mov	DWORD PTR 136[rbp], 0
+.LBB3:
+	.loc 1 16 14
+	mov	DWORD PTR 132[rbp], 0
+	.loc 1 16 5
+	jmp	.L10
+.L11:
+	.loc 1 16 52 discriminator 3
+	mov	eax, DWORD PTR 132[rbp]
+	cdqe
+	mov	eax, DWORD PTR -96[rbp+rax*4]
+	.loc 1 16 44 discriminator 3
+	add	DWORD PTR 136[rbp], eax
+	.loc 1 16 5 discriminator 3
+	add	DWORD PTR 132[rbp], 1
+.L10:
+	.loc 1 16 23 discriminator 1
+	cmp	DWORD PTR 132[rbp], 54
+	jle	.L11
+.LBE3:
+	.loc 1 17 12
+	mov	eax, DWORD PTR 136[rbp]
+	.loc 1 18 1
+	add	rsp, 272
 	pop	rbp
-	pop	r12
-	pop	r13
+	.cfi_restore 6
+	.cfi_def_cfa 7, -264
 	ret
-	.p2align 4,,10
-	.p2align 3
-.L74:
-	mov	DWORD PTR [r12+rdi*4], edi
-	add	r13d, 1
-	add	rdi, 1
-	jmp	.L66
+	.cfi_endproc
+.LFE2:
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+.Letext0:
+	.section	.debug_info,"dr"
+.Ldebug_info0:
+	.long	0x1d0
+	.word	0x5
+	.byte	0x1
+	.byte	0x8
+	.secrel32	.Ldebug_abbrev0
+	.uleb128 0x5
+	.ascii "GNU C++23 15.3.0 -masm=intel -mtune=generic -march=x86-64 -g -O0 -std=c++23\0"
+	.byte	0x21
+	.byte	0x4
+	.long	0x3163e
+	.secrel32	.LASF0
+	.secrel32	.LASF1
+	.secrel32	.LLRL0
+	.quad	0
+	.secrel32	.Ldebug_line0
+	.uleb128 0x6
+	.ascii "kTableSize\0"
+	.byte	0x1
+	.byte	0x6
+	.byte	0xf
+	.long	0x9b
+	.uleb128 0x9
+	.byte	0x3
+	.quad	_ZL10kTableSize
+	.uleb128 0x2
+	.byte	0x4
+	.byte	0x5
+	.ascii "int\0"
+	.uleb128 0x7
+	.long	0x94
+	.uleb128 0x3
+	.ascii "use_table\0"
+	.byte	0xc
+	.byte	0x5
+	.ascii "_Z9use_tablev\0"
+	.long	0x94
+	.quad	.LFB2
+	.quad	.LFE2-.LFB2
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0x131
+	.uleb128 0x1
+	.ascii "arr\0"
+	.byte	0xd
+	.byte	0x9
+	.long	0x131
+	.uleb128 0x3
+	.byte	0x91
+	.sleb128 -256
+	.uleb128 0x1
+	.ascii "s\0"
+	.byte	0xf
+	.byte	0x9
+	.long	0x94
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -24
+	.uleb128 0x8
+	.quad	.LBB2
+	.quad	.LBE2-.LBB2
+	.long	0x112
+	.uleb128 0x1
+	.ascii "i\0"
+	.byte	0xe
+	.byte	0xe
+	.long	0x94
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -20
+	.byte	0
+	.uleb128 0x9
+	.quad	.LBB3
+	.quad	.LBE3-.LBB3
+	.uleb128 0x1
+	.ascii "i\0"
+	.byte	0x10
+	.byte	0xe
+	.long	0x94
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 -28
+	.byte	0
+	.byte	0
+	.uleb128 0xa
+	.long	0x94
+	.long	0x141
+	.uleb128 0xb
+	.long	0x141
+	.byte	0x36
+	.byte	0
+	.uleb128 0x2
+	.byte	0x8
+	.byte	0x7
+	.ascii "long long unsigned int\0"
+	.uleb128 0x3
+	.ascii "make_table\0"
+	.byte	0xa
+	.byte	0xf
+	.ascii "_Z10make_tablei\0"
+	.long	0x94
+	.quad	.LFB1
+	.quad	.LFE1-.LFB1
+	.uleb128 0x1
+	.byte	0x9c
+	.long	0x1a0
+	.uleb128 0x4
+	.ascii "i\0"
+	.byte	0xa
+	.byte	0x1e
+	.long	0x94
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 0
+	.byte	0
+	.uleb128 0xc
+	.ascii "fib\0"
+	.byte	0x1
+	.byte	0x2
+	.byte	0xf
+	.ascii "_Z3fibi\0"
+	.long	0x94
+	.quad	.LFB0
+	.quad	.LFE0-.LFB0
+	.uleb128 0x1
+	.byte	0x9c
+	.uleb128 0x4
+	.ascii "n\0"
+	.byte	0x2
+	.byte	0x17
+	.long	0x94
+	.uleb128 0x2
+	.byte	0x91
+	.sleb128 0
+	.byte	0
+	.byte	0
+	.section	.debug_abbrev,"dr"
+.Ldebug_abbrev0:
+	.uleb128 0x1
+	.uleb128 0x34
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x2
+	.uleb128 0x24
+	.byte	0
+	.uleb128 0xb
+	.uleb128 0xb
+	.uleb128 0x3e
+	.uleb128 0xb
+	.uleb128 0x3
+	.uleb128 0x8
+	.byte	0
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x6e
+	.uleb128 0x8
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x40
+	.uleb128 0x18
+	.uleb128 0x7c
+	.uleb128 0x19
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x4
+	.uleb128 0x5
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x5
+	.uleb128 0x11
+	.byte	0x1
+	.uleb128 0x25
+	.uleb128 0x8
+	.uleb128 0x13
+	.uleb128 0xb
+	.uleb128 0x90
+	.uleb128 0xb
+	.uleb128 0x91
+	.uleb128 0x6
+	.uleb128 0x3
+	.uleb128 0x1f
+	.uleb128 0x1b
+	.uleb128 0x1f
+	.uleb128 0x55
+	.uleb128 0x17
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x10
+	.uleb128 0x17
+	.byte	0
+	.byte	0
+	.uleb128 0x6
+	.uleb128 0x34
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x6c
+	.uleb128 0x19
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x7
+	.uleb128 0x26
+	.byte	0
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x8
+	.uleb128 0xb
+	.byte	0x1
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x9
+	.uleb128 0xb
+	.byte	0x1
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.byte	0
+	.byte	0
+	.uleb128 0xa
+	.uleb128 0x1
+	.byte	0x1
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0xb
+	.uleb128 0x21
+	.byte	0
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x2f
+	.uleb128 0xb
+	.byte	0
+	.byte	0
+	.uleb128 0xc
+	.uleb128 0x2e
+	.byte	0x1
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x6e
+	.uleb128 0x8
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x40
+	.uleb128 0x18
+	.uleb128 0x7c
+	.uleb128 0x19
+	.byte	0
+	.byte	0
+	.byte	0
+	.section	.debug_aranges,"dr"
+	.long	0x4c
+	.word	0x2
+	.secrel32	.Ldebug_info0
+	.byte	0x8
+	.byte	0
+	.word	0
+	.word	0
+	.quad	.Ltext0
+	.quad	.Letext0-.Ltext0
+	.quad	.LFB0
+	.quad	.LFE0-.LFB0
+	.quad	.LFB1
+	.quad	.LFE1-.LFB1
+	.quad	0
+	.quad	0
+	.section	.debug_rnglists,"dr"
+.Ldebug_ranges0:
+	.long	.Ldebug_ranges3-.Ldebug_ranges2
+.Ldebug_ranges2:
+	.word	0x5
+	.byte	0x8
+	.byte	0
+	.long	0
+.LLRL0:
+	.byte	0x7
+	.quad	.Ltext0
+	.uleb128 .Letext0-.Ltext0
+	.byte	0x7
+	.quad	.LFB0
+	.uleb128 .LFE0-.LFB0
+	.byte	0x7
+	.quad	.LFB1
+	.uleb128 .LFE1-.LFB1
+	.byte	0
+.Ldebug_ranges3:
+	.section	.debug_line,"dr"
+.Ldebug_line0:
+	.section	.debug_str,"dr"
+	.section	.debug_line_str,"dr"
+.LASF1:
+	.ascii "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\0"
+.LASF0:
+	.ascii "Examples\\_ch143_constexpr.cpp\0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

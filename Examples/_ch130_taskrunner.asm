@@ -5,7 +5,7 @@
 	.def	_ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E9_M_invokeERKSt9_Any_data;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E9_M_invokeERKSt9_Any_data
 _ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E9_M_invokeERKSt9_Any_data:
-.LFB2229:
+.LFB2554:
 	.seh_endprologue
 	mov	eax, DWORD PTR [rcx]
 	add	DWORD PTR _ZL9g_counter[rip], eax
@@ -15,7 +15,7 @@ _ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E9_M_invokeERKSt9_Any
 	.def	_ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation
 _ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation:
-.LFB2233:
+.LFB2558:
 	.seh_endprologue
 	test	r8d, r8d
 	je	.L4
@@ -49,7 +49,7 @@ _ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E10_M_managerERSt9_An
 	.def	_ZNSt14_Function_baseD2Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt14_Function_baseD2Ev
 _ZNSt14_Function_baseD2Ev:
-.LFB480:
+.LFB1067:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -63,28 +63,28 @@ _ZNSt14_Function_baseD2Ev:
 .L10:
 	add	rsp, 40
 	ret
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA480:
+.LLSDA1067:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE480-.LLSDACSB480
-.LLSDACSB480:
-.LLSDACSE480:
+	.uleb128 .LLSDACSE1067-.LLSDACSB1067
+.LLSDACSB1067:
+.LLSDACSE1067:
 	.section	.text$_ZNSt14_Function_baseD2Ev,"x"
 	.linkonce discard
 	.seh_endproc
+	.section	.text.unlikely,"x"
+.LCOLDB1:
 	.text
+.LHOTB1:
 	.p2align 4
 	.globl	_Z8run_loopR10TaskRunneri
 	.def	_Z8run_loopR10TaskRunneri;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8run_loopR10TaskRunneri
 _Z8run_loopR10TaskRunneri:
-.LFB2185:
-	push	r13
-	.seh_pushreg	r13
+.LFB2508:
 	push	r12
 	.seh_pushreg	r12
 	push	rbp
@@ -95,197 +95,203 @@ _Z8run_loopR10TaskRunneri:
 	.seh_pushreg	rsi
 	push	rbx
 	.seh_pushreg	rbx
-	sub	rsp, 136
-	.seh_stackalloc	136
+	add	rsp, -128
+	.seh_stackalloc	128
 	movaps	XMMWORD PTR 96[rsp], xmm6
 	.seh_savexmm	xmm6, 96
 	movaps	XMMWORD PTR 112[rsp], xmm7
 	.seh_savexmm	xmm7, 112
 	.seh_endprologue
-	lea	r12, _ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation[rip]
-	lea	rax, _ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E9_M_invokeERKSt9_Any_data[rip]
-	movq	xmm6, r12
-	movq	xmm7, rax
-	punpcklqdq	xmm6, xmm7
-	test	edx, edx
 	mov	rbx, rcx
 	mov	ebp, edx
+	test	edx, edx
 	jle	.L16
-	mov	eax, DWORD PTR 2056[rcx]
-	lea	rdi, 32[rsp]
+	movq	xmm6, QWORD PTR .LC0[rip]
+	lea	rax, _ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E9_M_invokeERKSt9_Any_data[rip]
 	xor	esi, esi
 	pxor	xmm7, xmm7
+	movq	xmm4, rax
+	punpcklqdq	xmm6, xmm4
 	jmp	.L20
 	.p2align 4,,10
 	.p2align 3
 .L17:
 	mov	r8d, 3
-	mov	rdx, rdi
-	mov	rcx, rdi
+	lea	rdx, 32[rsp]
+	lea	rcx, 32[rsp]
 	call	r9
-	mov	eax, DWORD PTR 2056[rbx]
 .L19:
-	lea	edx, 1[rsi]
-	cmp	ebp, edx
-	je	.L36
+	lea	eax, 1[rsi]
+	cmp	ebp, eax
+	je	.L40
 .L27:
-	mov	esi, edx
+	mov	esi, eax
 .L20:
-	cmp	eax, 63
-	mov	DWORD PTR 44[rsp], 0
-	mov	r9, r12
 	mov	QWORD PTR 36[rsp], 0
+	lea	r9, _ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation[rip]
+	mov	DWORD PTR 44[rsp], 0
 	mov	DWORD PTR 32[rsp], esi
 	movaps	XMMWORD PTR 48[rsp], xmm6
+	cmp	DWORD PTR 2056[rbx], 63
 	jg	.L17
-	movsx	rdx, DWORD PTR 2052[rbx]
-	movaps	XMMWORD PTR 48[rsp], xmm7
+	movsxd	rax, DWORD PTR 2052[rbx]
 	movdqa	xmm3, XMMWORD PTR 32[rsp]
-	mov	rcx, rdx
-	sal	rdx, 5
-	add	rdx, rbx
-	mov	r9, QWORD PTR 16[rdx]
-	movdqu	xmm2, XMMWORD PTR [rdx]
-	movups	XMMWORD PTR [rdx], xmm3
-	movdqu	xmm4, XMMWORD PTR 16[rdx]
-	movups	XMMWORD PTR 16[rdx], xmm6
+	movaps	XMMWORD PTR 48[rsp], xmm7
+	sal	rax, 5
+	add	rax, rbx
+	movdqu	xmm0, XMMWORD PTR 16[rax]
+	movdqu	xmm2, XMMWORD PTR [rax]
+	movups	XMMWORD PTR 16[rax], xmm6
+	movups	XMMWORD PTR [rax], xmm3
+	movq	r9, xmm0
 	movaps	XMMWORD PTR 64[rsp], xmm2
+	movaps	XMMWORD PTR 80[rsp], xmm0
 	test	r9, r9
-	movaps	XMMWORD PTR 80[rsp], xmm4
-	je	.L37
-	lea	r13, 64[rsp]
+	je	.L41
+	lea	rdx, 64[rsp]
 	mov	r8d, 3
-	mov	rdx, r13
-	mov	rcx, r13
+	lea	rcx, 64[rsp]
 	call	r9
-	mov	ecx, DWORD PTR 2052[rbx]
-	mov	eax, DWORD PTR 2056[rbx]
+	mov	eax, DWORD PTR 2052[rbx]
 	mov	r9, QWORD PTR 48[rsp]
-	lea	edx, 1[rcx]
-	mov	ecx, edx
+	add	DWORD PTR 2056[rbx], 1
 	add	eax, 1
-	sar	ecx, 31
-	movd	xmm5, eax
-	shr	ecx, 26
-	add	edx, ecx
-	and	edx, 63
-	sub	edx, ecx
+	cdq
+	shr	edx, 26
+	add	eax, edx
+	and	eax, 63
+	sub	eax, edx
+	mov	DWORD PTR 2052[rbx], eax
 	test	r9, r9
-	movd	xmm0, edx
-	punpckldq	xmm0, xmm5
-	movq	QWORD PTR 2052[rbx], xmm0
 	jne	.L17
-	lea	edx, 1[rsi]
-	cmp	ebp, edx
+	lea	eax, 1[rsi]
+	cmp	ebp, eax
 	jne	.L27
-	.p2align 4,,10
-	.p2align 3
-.L36:
-	lea	rbp, 64[rsp]
-	xor	edi, edi
+.L40:
+	xor	ebp, ebp
+	pxor	xmm7, xmm7
 	pxor	xmm6, xmm6
 	jmp	.L24
 	.p2align 4,,10
 	.p2align 3
-.L21:
-	lea	edx, 1[rdi]
-	cmp	esi, edi
-	je	.L16
-.L39:
-	mov	eax, DWORD PTR 2056[rbx]
-	mov	edi, edx
-.L24:
-	test	eax, eax
-	jle	.L21
-	mov	QWORD PTR 64[rsp], 0
-	movsx	rcx, DWORD PTR 2048[rbx]
-	mov	QWORD PTR 72[rsp], 0
-	mov	QWORD PTR 80[rsp], 0
-	mov	rdx, rcx
-	sal	rcx, 5
-	lea	r9, [rbx+rcx]
-	mov	r10, QWORD PTR 16[r9]
-	mov	r8, QWORD PTR 24[r9]
-	test	r10, r10
-	mov	QWORD PTR 88[rsp], r8
-	je	.L38
-	add	edx, 1
+.L42:
+	add	eax, 1
 	movdqu	xmm1, XMMWORD PTR [r9]
-	movups	XMMWORD PTR 16[rbx+rcx], xmm6
-	sub	eax, 1
-	mov	ecx, edx
+	movups	XMMWORD PTR 16[rbx+rdx], xmm6
+	sub	ecx, 1
+	cdq
+	mov	DWORD PTR 2056[rbx], ecx
+	lea	r12, 64[rsp]
+	lea	rcx, 64[rsp]
+	shr	edx, 26
 	mov	QWORD PTR 80[rsp], r10
-	mov	r13, rbp
-	sar	ecx, 31
+	add	eax, edx
 	movaps	XMMWORD PTR 64[rsp], xmm1
-	shr	ecx, 26
-	mov	DWORD PTR 2056[rbx], eax
-	add	edx, ecx
-	and	edx, 63
-	sub	edx, ecx
-	mov	rcx, rbp
-	mov	DWORD PTR 2048[rbx], edx
+	and	eax, 63
+	sub	eax, edx
+	mov	DWORD PTR 2048[rbx], eax
 .LEHB0:
 	call	r8
 .LEHE0:
 	mov	rax, QWORD PTR 80[rsp]
 	test	rax, rax
 	je	.L21
-	mov	rdx, rbp
 	mov	r8d, 3
-	mov	rcx, rbp
+	lea	rdx, 64[rsp]
+	lea	rcx, 64[rsp]
 	call	rax
-	lea	edx, 1[rdi]
-	cmp	esi, edi
-	jne	.L39
+.L21:
+	cmp	esi, ebp
+	je	.L16
+	add	ebp, 1
+.L24:
+	mov	ecx, DWORD PTR 2056[rbx]
+	test	ecx, ecx
+	jle	.L21
+	movsxd	rdx, DWORD PTR 2048[rbx]
+	movaps	XMMWORD PTR 64[rsp], xmm7
+	mov	QWORD PTR 80[rsp], 0
+	mov	rax, rdx
+	sal	rdx, 5
+	lea	r9, [rbx+rdx]
+	mov	r8, QWORD PTR 24[r9]
+	mov	r10, QWORD PTR 16[r9]
+	mov	QWORD PTR 88[rsp], r8
+	test	r10, r10
+	jne	.L42
+	jmp	.L22
+	.p2align 4,,10
+	.p2align 3
 .L16:
 	mov	eax, DWORD PTR _ZL9g_counter[rip]
 	movaps	xmm6, XMMWORD PTR 96[rsp]
 	movaps	xmm7, XMMWORD PTR 112[rsp]
-	add	rsp, 136
+	sub	rsp, -128
 	pop	rbx
 	pop	rsi
 	pop	rdi
 	pop	rbp
 	pop	r12
-	pop	r13
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L38:
-	lea	r13, 64[rsp]
-	add	edx, 1
-	sub	eax, 1
-	mov	ecx, edx
-	mov	DWORD PTR 2056[rbx], eax
-	sar	ecx, 31
-	shr	ecx, 26
-	add	edx, ecx
-	and	edx, 63
-	sub	edx, ecx
+.L41:
+	mov	eax, DWORD PTR 2052[rbx]
+	add	DWORD PTR 2056[rbx], 1
+	add	eax, 1
+	cdq
+	shr	edx, 26
+	add	eax, edx
+	and	eax, 63
+	sub	eax, edx
+	mov	DWORD PTR 2052[rbx], eax
+	jmp	.L19
+.L36:
+	jmp	.L37
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDA2508:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSE2508-.LLSDACSB2508
+.LLSDACSB2508:
+	.uleb128 .LEHB0-.LFB2508
+	.uleb128 .LEHE0-.LEHB0
+	.uleb128 .L36-.LFB2508
+	.uleb128 0
+.LLSDACSE2508:
+	.text
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	_Z8run_loopR10TaskRunneri.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z8run_loopR10TaskRunneri.cold
+	.seh_stackalloc	168
+	.seh_savereg	rbx, 128
+	.seh_savereg	rsi, 136
+	.seh_savereg	rdi, 144
+	.seh_savereg	rbp, 152
+	.seh_savexmm	xmm6, 96
+	.seh_savexmm	xmm7, 112
+	.seh_savereg	r12, 160
+	.seh_endprologue
+_Z8run_loopR10TaskRunneri.cold:
+.L22:
+	add	eax, 1
+	mov	r8d, 64
+	sub	ecx, 1
+	cdq
+	mov	DWORD PTR 2056[rbx], ecx
+	lea	r12, 64[rsp]
+	idiv	r8d
 	mov	DWORD PTR 2048[rbx], edx
 .LEHB1:
 	call	_ZSt25__throw_bad_function_callv
 .LEHE1:
-	.p2align 4,,10
-	.p2align 3
+.L29:
 .L37:
-	add	ecx, 1
-	add	eax, 1
-	mov	edx, ecx
-	movd	xmm5, eax
-	sar	edx, 31
-	shr	edx, 26
-	add	ecx, edx
-	and	ecx, 63
-	sub	ecx, edx
-	movd	xmm0, ecx
-	punpckldq	xmm0, xmm5
-	movq	QWORD PTR 2052[rbx], xmm0
-	jmp	.L19
-.L28:
 	mov	rbx, rax
-	mov	rcx, r13
+	mov	rcx, r12
 	call	_ZNSt14_Function_baseD2Ev
 	mov	rcx, rbx
 .LEHB2:
@@ -294,35 +300,38 @@ _Z8run_loopR10TaskRunneri:
 .LEHE2:
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA2185:
+.LLSDAC2508:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE2185-.LLSDACSB2185
-.LLSDACSB2185:
-	.uleb128 .LEHB0-.LFB2185
-	.uleb128 .LEHE0-.LEHB0
-	.uleb128 .L28-.LFB2185
-	.uleb128 0
-	.uleb128 .LEHB1-.LFB2185
+	.uleb128 .LLSDACSEC2508-.LLSDACSBC2508
+.LLSDACSBC2508:
+	.uleb128 .LEHB1-.LCOLDB1
 	.uleb128 .LEHE1-.LEHB1
-	.uleb128 .L28-.LFB2185
+	.uleb128 .L29-.LCOLDB1
 	.uleb128 0
-	.uleb128 .LEHB2-.LFB2185
+	.uleb128 .LEHB2-.LCOLDB1
 	.uleb128 .LEHE2-.LEHB2
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE2185:
+.LLSDACSEC2508:
+	.section	.text.unlikely,"x"
 	.text
+	.section	.text.unlikely,"x"
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
+.LCOLDE1:
+	.text
+.LHOTE1:
+	.section	.text.unlikely,"x"
+.LCOLDB2:
 	.section	.text.startup,"x"
+.LHOTB2:
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB2189:
+.LFB2512:
 	push	rdi
 	.seh_pushreg	rdi
 	push	rsi
@@ -332,20 +341,21 @@ main:
 	sub	rsp, 2096
 	.seh_stackalloc	2096
 	.seh_endprologue
-	call	__main
 	lea	rsi, 32[rsp]
 	lea	rbx, 2080[rsp]
+	call	__main
 	mov	rax, rsi
-	.p2align 4,,10
+	pxor	xmm0, xmm0
+	.p2align 5
+	.p2align 4
 	.p2align 3
-.L41:
-	mov	QWORD PTR [rax], 0
+.L44:
+	mov	QWORD PTR 16[rax], 0
 	add	rax, 32
-	mov	QWORD PTR -24[rax], 0
-	mov	QWORD PTR -16[rax], 0
+	movaps	XMMWORD PTR -32[rax], xmm0
 	mov	QWORD PTR -8[rax], 0
 	cmp	rax, rbx
-	jne	.L41
+	jne	.L44
 	mov	edx, 8
 	mov	rcx, rsi
 	mov	QWORD PTR 2080[rsp], 0
@@ -353,39 +363,63 @@ main:
 .LEHB3:
 	call	_Z8run_loopR10TaskRunneri
 .LEHE3:
-	lea	rbx, 2048[rsp]
 	mov	edi, eax
-	jmp	.L46
+	lea	rbx, 2016[rsi]
+	jmp	.L49
 	.p2align 4,,10
 	.p2align 3
-.L48:
-	mov	rbx, rax
-.L46:
+.L51:
+	sub	rbx, 32
+.L49:
 	mov	rax, QWORD PTR 16[rbx]
 	test	rax, rax
-	je	.L45
+	je	.L48
 	mov	r8d, 3
 	mov	rdx, rbx
 	mov	rcx, rbx
 	call	rax
-.L45:
-	lea	rax, -32[rbx]
+.L48:
 	cmp	rbx, rsi
-	jne	.L48
+	jne	.L51
 	mov	eax, edi
 	add	rsp, 2096
 	pop	rbx
 	pop	rsi
 	pop	rdi
 	ret
-.L49:
+.L52:
 	mov	rdi, rax
-.L44:
+	jmp	.L47
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDA2512:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSE2512-.LLSDACSB2512
+.LLSDACSB2512:
+	.uleb128 .LEHB3-.LFB2512
+	.uleb128 .LEHE3-.LEHB3
+	.uleb128 .L52-.LFB2512
+	.uleb128 0
+.LLSDACSE2512:
+	.section	.text.startup,"x"
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	main.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	main.cold
+	.seh_stackalloc	2120
+	.seh_savereg	rbx, 2096
+	.seh_savereg	rsi, 2104
+	.seh_savereg	rdi, 2112
+	.seh_endprologue
+main.cold:
+.L47:
 	sub	rbx, 32
 	mov	rcx, rbx
 	call	_ZNSt14_Function_baseD2Ev
 	cmp	rbx, rsi
-	jne	.L44
+	jne	.L47
 	mov	rcx, rdi
 .LEHB4:
 	call	_Unwind_Resume
@@ -393,23 +427,24 @@ main:
 .LEHE4:
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA2189:
+.LLSDAC2512:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE2189-.LLSDACSB2189
-.LLSDACSB2189:
-	.uleb128 .LEHB3-.LFB2189
-	.uleb128 .LEHE3-.LEHB3
-	.uleb128 .L49-.LFB2189
-	.uleb128 0
-	.uleb128 .LEHB4-.LFB2189
+	.uleb128 .LLSDACSEC2512-.LLSDACSBC2512
+.LLSDACSBC2512:
+	.uleb128 .LEHB4-.LCOLDB2
 	.uleb128 .LEHE4-.LEHB4
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE2189:
+.LLSDACSEC2512:
+	.section	.text.unlikely,"x"
 	.section	.text.startup,"x"
+	.section	.text.unlikely,"x"
 	.seh_endproc
+.LCOLDE2:
+	.section	.text.startup,"x"
+.LHOTE2:
 	.section .rdata,"dr"
 	.align 8
 _ZTIZ8run_loopR10TaskRunneriEUlvE_:
@@ -419,6 +454,11 @@ _ZTIZ8run_loopR10TaskRunneriEUlvE_:
 _ZTSZ8run_loopR10TaskRunneriEUlvE_:
 	.ascii "*Z8run_loopR10TaskRunneriEUlvE_\0"
 .lcomm _ZL9g_counter,4,4
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.align 8
+.LC0:
+	.quad	_ZNSt17_Function_handlerIFvvEZ8run_loopR10TaskRunneriEUlvE_E10_M_managerERSt9_Any_dataRKS5_St18_Manager_operation
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZSt25__throw_bad_function_callv;	.scl	2;	.type	32;	.endef
 	.def	_Unwind_Resume;	.scl	2;	.type	32;	.endef

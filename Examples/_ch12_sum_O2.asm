@@ -8,23 +8,25 @@
 _Z6sum_toi:
 .LFB0:
 	.seh_endprologue
+	mov	r8d, ecx
 	test	ecx, ecx
 	jle	.L4
-	lea	r8d, 1[rcx]
 	xor	edx, edx
-	and	ecx, 1
+	and	r8d, 1
+	lea	ecx, 1[rcx]
 	mov	eax, 1
 	je	.L3
 	mov	eax, 2
 	mov	edx, 1
-	cmp	eax, r8d
+	cmp	eax, ecx
 	je	.L2
-	.p2align 4,,10
+	.p2align 4
+	.p2align 4
 	.p2align 3
 .L3:
 	lea	edx, 1[rdx+rax*2]
 	add	eax, 2
-	cmp	eax, r8d
+	cmp	eax, ecx
 	jne	.L3
 .L2:
 	mov	rax, QWORD PTR .refptr.sink[rip]
@@ -40,8 +42,9 @@ _Z6sum_toi:
 	mov	eax, edx
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.section	.rdata$.refptr.sink, "dr"
+	.p2align	3, 0
 	.globl	.refptr.sink
 	.linkonce	discard
 .refptr.sink:

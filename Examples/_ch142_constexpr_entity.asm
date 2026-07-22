@@ -1,20 +1,562 @@
 	.file	"_ch142_constexpr_entity.cpp"
 	.intel_syntax noprefix
 	.text
-	.def	__main;	.scl	2;	.type	32;	.endef
-	.section	.text.startup,"x"
-	.p2align 4
+.Ltext0:
+	.cfi_sections	.debug_frame
+	.file 0 "C:/CodeLearnling/note/note/C++/CPP-Bible" "Examples/_ch142_constexpr_entity.cpp"
+	.section .rdata,"dr"
+	.align 4
+_ZL6PLAYER:
+	.long	3145735
+	.align 4
+_ZL6CAMERA:
+	.long	1048584
+	.text
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
 .LFB7:
-	sub	rsp, 40
-	.seh_stackalloc	40
+	.file 1 "Examples/_ch142_constexpr_entity.cpp"
+	.loc 1 20 12
+	.cfi_startproc
+	push	rbp
+	.seh_pushreg	rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	mov	rbp, rsp
+	.seh_setframe	rbp, 0
+	.cfi_def_cfa_register 6
+	sub	rsp, 32
+	.seh_stackalloc	32
 	.seh_endprologue
+	.loc 1 20 12
 	call	__main
+	.loc 1 21 33
 	mov	eax, 4194319
-	add	rsp, 40
+	.loc 1 22 1
+	add	rsp, 32
+	pop	rbp
+	.cfi_restore 6
+	.cfi_def_cfa 7, 8
 	ret
+	.cfi_endproc
+.LFE7:
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+.Letext0:
+	.file 2 "C:/Qt/Tools/mingw1530_64/x86_64-w64-mingw32/include/corecrt.h"
+	.file 3 "C:/Qt/Tools/mingw1530_64/x86_64-w64-mingw32/include/stdint.h"
+	.file 4 "C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/cstdint"
+	.file 5 "C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/x86_64-w64-mingw32/bits/c++config.h"
+	.section	.debug_info,"dr"
+.Ldebug_info0:
+	.long	0x46c
+	.word	0x5
+	.byte	0x1
+	.byte	0x8
+	.secrel32	.Ldebug_abbrev0
+	.uleb128 0x5
+	.ascii "GNU C++23 15.3.0 -masm=intel -mtune=generic -march=x86-64 -g -O0 -std=c++23\0"
+	.byte	0x21
+	.byte	0x4
+	.long	0x3163e
+	.secrel32	.LASF0
+	.secrel32	.LASF1
+	.quad	.Ltext0
+	.quad	.Letext0-.Ltext0
+	.secrel32	.Ldebug_line0
+	.uleb128 0x3
+	.byte	0x1
+	.byte	0x6
+	.ascii "char\0"
+	.uleb128 0x3
+	.byte	0x8
+	.byte	0x7
+	.ascii "long long unsigned int\0"
+	.uleb128 0x3
+	.byte	0x8
+	.byte	0x5
+	.ascii "long long int\0"
+	.uleb128 0x1
+	.ascii "intptr_t\0"
+	.byte	0x2
+	.byte	0x3e
+	.byte	0x23
+	.long	0x9d
+	.uleb128 0x1
+	.ascii "uintptr_t\0"
+	.byte	0x2
+	.byte	0x4b
+	.byte	0x2c
+	.long	0x83
+	.uleb128 0x3
+	.byte	0x2
+	.byte	0x7
+	.ascii "short unsigned int\0"
+	.uleb128 0x3
+	.byte	0x4
+	.byte	0x5
+	.ascii "int\0"
+	.uleb128 0x3
+	.byte	0x4
+	.byte	0x5
+	.ascii "long int\0"
+	.uleb128 0x3
+	.byte	0x2
+	.byte	0x7
+	.ascii "wchar_t\0"
+	.uleb128 0x3
+	.byte	0x4
+	.byte	0x7
+	.ascii "unsigned int\0"
+	.uleb128 0x3
+	.byte	0x4
+	.byte	0x7
+	.ascii "long unsigned int\0"
+	.uleb128 0x3
+	.byte	0x1
+	.byte	0x8
+	.ascii "unsigned char\0"
+	.uleb128 0x3
+	.byte	0x10
+	.byte	0x4
+	.ascii "long double\0"
+	.uleb128 0x1
+	.ascii "int8_t\0"
+	.byte	0x3
+	.byte	0x23
+	.byte	0x15
+	.long	0x159
+	.uleb128 0x3
+	.byte	0x1
+	.byte	0x6
+	.ascii "signed char\0"
+	.uleb128 0x1
+	.ascii "uint8_t\0"
+	.byte	0x3
+	.byte	0x24
+	.byte	0x19
+	.long	0x12a
+	.uleb128 0x1
+	.ascii "int16_t\0"
+	.byte	0x3
+	.byte	0x25
+	.byte	0x10
+	.long	0x188
+	.uleb128 0x3
+	.byte	0x2
+	.byte	0x5
+	.ascii "short int\0"
+	.uleb128 0x1
+	.ascii "uint16_t\0"
+	.byte	0x3
+	.byte	0x26
+	.byte	0x19
+	.long	0xd1
+	.uleb128 0x1
+	.ascii "int32_t\0"
+	.byte	0x3
+	.byte	0x27
+	.byte	0xe
+	.long	0xe7
+	.uleb128 0x1
+	.ascii "uint32_t\0"
+	.byte	0x3
+	.byte	0x28
+	.byte	0x14
+	.long	0x105
+	.uleb128 0x6
+	.long	0x1b6
+	.uleb128 0x1
+	.ascii "int64_t\0"
+	.byte	0x3
+	.byte	0x29
+	.byte	0x26
+	.long	0x9d
+	.uleb128 0x1
+	.ascii "uint64_t\0"
+	.byte	0x3
+	.byte	0x2a
+	.byte	0x30
+	.long	0x83
+	.uleb128 0x1
+	.ascii "int_least8_t\0"
+	.byte	0x3
+	.byte	0x2d
+	.byte	0x15
+	.long	0x159
+	.uleb128 0x1
+	.ascii "uint_least8_t\0"
+	.byte	0x3
+	.byte	0x2e
+	.byte	0x19
+	.long	0x12a
+	.uleb128 0x1
+	.ascii "int_least16_t\0"
+	.byte	0x3
+	.byte	0x2f
+	.byte	0x10
+	.long	0x188
+	.uleb128 0x1
+	.ascii "uint_least16_t\0"
+	.byte	0x3
+	.byte	0x30
+	.byte	0x19
+	.long	0xd1
+	.uleb128 0x1
+	.ascii "int_least32_t\0"
+	.byte	0x3
+	.byte	0x31
+	.byte	0xe
+	.long	0xe7
+	.uleb128 0x1
+	.ascii "uint_least32_t\0"
+	.byte	0x3
+	.byte	0x32
+	.byte	0x14
+	.long	0x105
+	.uleb128 0x1
+	.ascii "int_least64_t\0"
+	.byte	0x3
+	.byte	0x33
+	.byte	0x26
+	.long	0x9d
+	.uleb128 0x1
+	.ascii "uint_least64_t\0"
+	.byte	0x3
+	.byte	0x34
+	.byte	0x30
+	.long	0x83
+	.uleb128 0x1
+	.ascii "int_fast8_t\0"
+	.byte	0x3
+	.byte	0x3a
+	.byte	0x15
+	.long	0x159
+	.uleb128 0x1
+	.ascii "uint_fast8_t\0"
+	.byte	0x3
+	.byte	0x3b
+	.byte	0x17
+	.long	0x12a
+	.uleb128 0x1
+	.ascii "int_fast16_t\0"
+	.byte	0x3
+	.byte	0x3c
+	.byte	0x10
+	.long	0x188
+	.uleb128 0x1
+	.ascii "uint_fast16_t\0"
+	.byte	0x3
+	.byte	0x3d
+	.byte	0x19
+	.long	0xd1
+	.uleb128 0x1
+	.ascii "int_fast32_t\0"
+	.byte	0x3
+	.byte	0x3e
+	.byte	0xe
+	.long	0xe7
+	.uleb128 0x1
+	.ascii "uint_fast32_t\0"
+	.byte	0x3
+	.byte	0x3f
+	.byte	0x18
+	.long	0x105
+	.uleb128 0x1
+	.ascii "int_fast64_t\0"
+	.byte	0x3
+	.byte	0x40
+	.byte	0x26
+	.long	0x9d
+	.uleb128 0x1
+	.ascii "uint_fast64_t\0"
+	.byte	0x3
+	.byte	0x41
+	.byte	0x30
+	.long	0x83
+	.uleb128 0x1
+	.ascii "intmax_t\0"
+	.byte	0x3
+	.byte	0x44
+	.byte	0x26
+	.long	0x9d
+	.uleb128 0x1
+	.ascii "uintmax_t\0"
+	.byte	0x3
+	.byte	0x45
+	.byte	0x30
+	.long	0x83
+	.uleb128 0x7
+	.ascii "std\0"
+	.byte	0x5
+	.word	0x150
+	.byte	0xb
+	.long	0x422
+	.uleb128 0x2
+	.byte	0x35
+	.long	0x14a
+	.uleb128 0x2
+	.byte	0x36
+	.long	0x178
+	.uleb128 0x2
+	.byte	0x37
+	.long	0x1a6
+	.uleb128 0x2
+	.byte	0x38
+	.long	0x1cc
+	.uleb128 0x2
+	.byte	0x3a
+	.long	0x29f
+	.uleb128 0x2
+	.byte	0x3b
+	.long	0x2c8
+	.uleb128 0x2
+	.byte	0x3c
+	.long	0x2f3
+	.uleb128 0x2
+	.byte	0x3d
+	.long	0x31e
+	.uleb128 0x2
+	.byte	0x3f
+	.long	0x1ed
+	.uleb128 0x2
+	.byte	0x40
+	.long	0x218
+	.uleb128 0x2
+	.byte	0x41
+	.long	0x245
+	.uleb128 0x2
+	.byte	0x42
+	.long	0x272
+	.uleb128 0x2
+	.byte	0x44
+	.long	0x349
+	.uleb128 0x2
+	.byte	0x45
+	.long	0xae
+	.uleb128 0x2
+	.byte	0x47
+	.long	0x168
+	.uleb128 0x2
+	.byte	0x48
+	.long	0x195
+	.uleb128 0x2
+	.byte	0x49
+	.long	0x1b6
+	.uleb128 0x2
+	.byte	0x4a
+	.long	0x1dc
+	.uleb128 0x2
+	.byte	0x4c
+	.long	0x2b3
+	.uleb128 0x2
+	.byte	0x4d
+	.long	0x2dd
+	.uleb128 0x2
+	.byte	0x4e
+	.long	0x308
+	.uleb128 0x2
+	.byte	0x4f
+	.long	0x333
+	.uleb128 0x2
+	.byte	0x51
+	.long	0x202
+	.uleb128 0x2
+	.byte	0x52
+	.long	0x22e
+	.uleb128 0x2
+	.byte	0x53
+	.long	0x25b
+	.uleb128 0x2
+	.byte	0x54
+	.long	0x288
+	.uleb128 0x2
+	.byte	0x56
+	.long	0x35a
+	.uleb128 0x2
+	.byte	0x57
+	.long	0xbf
+	.byte	0
+	.uleb128 0x4
+	.ascii "PLAYER\0"
+	.byte	0xe
+	.long	0x1c7
+	.uleb128 0x9
+	.byte	0x3
+	.quad	_ZL6PLAYER
+	.uleb128 0x4
+	.ascii "CAMERA\0"
+	.byte	0xf
+	.long	0x1c7
+	.uleb128 0x9
+	.byte	0x3
+	.quad	_ZL6CAMERA
+	.uleb128 0x8
+	.ascii "main\0"
+	.byte	0x1
+	.byte	0x14
+	.byte	0x5
+	.long	0xe7
+	.quad	.LFB7
+	.quad	.LFE7-.LFB7
+	.uleb128 0x1
+	.byte	0x9c
+	.byte	0
+	.section	.debug_abbrev,"dr"
+.Ldebug_abbrev0:
+	.uleb128 0x1
+	.uleb128 0x16
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x2
+	.uleb128 0x8
+	.byte	0
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 4
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0x21
+	.sleb128 11
+	.uleb128 0x18
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x24
+	.byte	0
+	.uleb128 0xb
+	.uleb128 0xb
+	.uleb128 0x3e
+	.uleb128 0xb
+	.uleb128 0x3
+	.uleb128 0x8
+	.byte	0
+	.byte	0
+	.uleb128 0x4
+	.uleb128 0x34
+	.byte	0
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0x21
+	.sleb128 1
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0x21
+	.sleb128 25
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x6c
+	.uleb128 0x19
+	.uleb128 0x2
+	.uleb128 0x18
+	.byte	0
+	.byte	0
+	.uleb128 0x5
+	.uleb128 0x11
+	.byte	0x1
+	.uleb128 0x25
+	.uleb128 0x8
+	.uleb128 0x13
+	.uleb128 0xb
+	.uleb128 0x90
+	.uleb128 0xb
+	.uleb128 0x91
+	.uleb128 0x6
+	.uleb128 0x3
+	.uleb128 0x1f
+	.uleb128 0x1b
+	.uleb128 0x1f
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x10
+	.uleb128 0x17
+	.byte	0
+	.byte	0
+	.uleb128 0x6
+	.uleb128 0x26
+	.byte	0
+	.uleb128 0x49
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x7
+	.uleb128 0x39
+	.byte	0x1
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0x5
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x1
+	.uleb128 0x13
+	.byte	0
+	.byte	0
+	.uleb128 0x8
+	.uleb128 0x2e
+	.byte	0
+	.uleb128 0x3f
+	.uleb128 0x19
+	.uleb128 0x3
+	.uleb128 0x8
+	.uleb128 0x3a
+	.uleb128 0xb
+	.uleb128 0x3b
+	.uleb128 0xb
+	.uleb128 0x39
+	.uleb128 0xb
+	.uleb128 0x49
+	.uleb128 0x13
+	.uleb128 0x11
+	.uleb128 0x1
+	.uleb128 0x12
+	.uleb128 0x7
+	.uleb128 0x40
+	.uleb128 0x18
+	.uleb128 0x7c
+	.uleb128 0x19
+	.byte	0
+	.byte	0
+	.byte	0
+	.section	.debug_aranges,"dr"
+	.long	0x2c
+	.word	0x2
+	.secrel32	.Ldebug_info0
+	.byte	0x8
+	.byte	0
+	.word	0
+	.word	0
+	.quad	.Ltext0
+	.quad	.Letext0-.Ltext0
+	.quad	0
+	.quad	0
+	.section	.debug_line,"dr"
+.Ldebug_line0:
+	.section	.debug_str,"dr"
+	.section	.debug_line_str,"dr"
+.LASF1:
+	.ascii "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\0"
+.LASF0:
+	.ascii "Examples\\_ch142_constexpr_entity.cpp\0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

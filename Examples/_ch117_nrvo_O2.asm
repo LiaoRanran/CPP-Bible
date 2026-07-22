@@ -6,20 +6,19 @@
 	.def	_Z7computei;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z7computei
 _Z7computei:
-.LFB55:
+.LFB30:
 	.seh_endprologue
 	mov	rax, rcx
 	mov	DWORD PTR [rcx], edx
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB56:
+.LFB31:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -28,4 +27,5 @@ main:
 	add	rsp, 40
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

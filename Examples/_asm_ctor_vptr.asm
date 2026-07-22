@@ -1,7 +1,6 @@
 	.file	"_asm_ctor_vptr.cpp"
 	.intel_syntax noprefix
 	.text
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
@@ -17,4 +16,5 @@ main:
 	add	rsp, 40
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

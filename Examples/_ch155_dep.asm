@@ -9,20 +9,21 @@ _Z13add_dependentPfi:
 .LFB0:
 	.seh_endprologue
 	cmp	edx, 1
-	jle	.L5
-	vmovss	xmm0, DWORD PTR [rcx]
-	lea	rax, 4[rcx]
+	jle	.L1
 	sub	edx, 2
+	movss	xmm0, DWORD PTR [rcx]
+	lea	rax, 4[rcx]
 	lea	rdx, 8[rcx+rdx*4]
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
 .L3:
-	vaddss	xmm0, xmm0, DWORD PTR [rax]
+	addss	xmm0, DWORD PTR [rax]
 	add	rax, 4
-	vmovss	DWORD PTR -4[rax], xmm0
+	movss	DWORD PTR -4[rax], xmm0
 	cmp	rax, rdx
 	jne	.L3
-.L5:
+.L1:
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

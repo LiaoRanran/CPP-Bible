@@ -93,5 +93,5 @@ _ZTV3Dog:
 	.quad	_ZN3DogD1Ev
 	.quad	_ZN3DogD0Ev
 	.quad	_ZNK3Dog5speakEv
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef

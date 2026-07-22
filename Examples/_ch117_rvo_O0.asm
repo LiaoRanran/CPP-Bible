@@ -8,7 +8,7 @@
 	.def	_ZN3BigC1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN3BigC1Ev
 _ZN3BigC1Ev:
-.LFB49:
+.LFB23:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -26,7 +26,7 @@ _ZN3BigC1Ev:
 	.def	_Z4makev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z4makev
 _Z4makev:
-.LFB53:
+.LFB27:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -44,12 +44,11 @@ _Z4makev:
 	pop	rbp
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB54:
+.LFB28:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -66,4 +65,5 @@ main:
 	pop	rbp
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

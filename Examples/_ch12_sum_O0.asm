@@ -33,8 +33,9 @@ _Z6sum_toi:
 	pop	rbp
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.section	.rdata$.refptr.sink, "dr"
+	.p2align	3, 0
 	.globl	.refptr.sink
 	.linkonce	discard
 .refptr.sink:

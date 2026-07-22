@@ -6,12 +6,13 @@
 	.def	hp_protect;	.scl	2;	.type	32;	.endef
 	.seh_proc	hp_protect
 hp_protect:
-.LFB686:
+.LFB689:
 	.seh_endprologue
 	lea	rax, g_hp[rip]
-	movsx	rdx, edx
+	movsxd	rdx, edx
 	lea	rdx, [rax+rdx*8]
-	.p2align 4,,10
+	.p2align 5
+	.p2align 4
 	.p2align 3
 .L2:
 	mov	rax, QWORD PTR [rcx]
@@ -27,10 +28,10 @@ hp_protect:
 	.def	hp_clear;	.scl	2;	.type	32;	.endef
 	.seh_proc	hp_clear
 hp_clear:
-.LFB687:
+.LFB690:
 	.seh_endprologue
 	lea	rax, g_hp[rip]
-	movsx	rcx, ecx
+	movsxd	rcx, ecx
 	mov	QWORD PTR [rax+rcx*8], 0
 	ret
 	.seh_endproc
@@ -39,7 +40,7 @@ hp_clear:
 	.def	hp_scan_and_reclaim;	.scl	2;	.type	32;	.endef
 	.seh_proc	hp_scan_and_reclaim
 hp_scan_and_reclaim:
-.LFB688:
+.LFB691:
 	push	rbp
 	.seh_pushreg	rbp
 	push	rdi
@@ -55,15 +56,16 @@ hp_scan_and_reclaim:
 	xchg	rdi, QWORD PTR g_retired[rip]
 	test	rdi, rdi
 	je	.L6
-	lea	rsi, g_hp[rip+512]
 	xor	ebp, ebp
-	.p2align 4,,10
+	lea	rsi, g_hp[rip+512]
+	.p2align 4
 	.p2align 3
 .L11:
-	lea	rax, g_hp[rip]
 	mov	rbx, rdi
+	lea	rax, g_hp[rip]
 	mov	rdi, QWORD PTR 8[rdi]
 	jmp	.L9
+	.p2align 5
 	.p2align 4,,10
 	.p2align 3
 .L29:
@@ -83,7 +85,8 @@ hp_scan_and_reclaim:
 	test	rbp, rbp
 	je	.L6
 	mov	rax, rbp
-	.p2align 4,,10
+	.p2align 4
+	.p2align 4
 	.p2align 3
 .L14:
 	mov	rdx, rax
@@ -122,5 +125,5 @@ g_retired:
 	.align 64
 g_hp:
 	.space 512
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef

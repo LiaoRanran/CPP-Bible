@@ -6,7 +6,7 @@
 	.def	_Z4pushi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z4pushi
 _Z4pushi:
-.LFB668:
+.LFB671:
 	push	rbx
 	.seh_pushreg	rbx
 	sub	rsp, 32
@@ -15,9 +15,10 @@ _Z4pushi:
 	mov	ebx, ecx
 	mov	ecx, 16
 	call	_Znwy
+	mov	QWORD PTR [rax], 0
 	mov	rdx, rax
-	mov	DWORD PTR [rax], ebx
 	mov	QWORD PTR 8[rax], 0
+	mov	DWORD PTR [rax], ebx
 	mov	rax, QWORD PTR head[rip]
 .L2:
 	mov	QWORD PTR 8[rdx], rax
@@ -32,5 +33,5 @@ _Z4pushi:
 	.align 8
 head:
 	.space 8
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_Znwy;	.scl	2;	.type	32;	.endef

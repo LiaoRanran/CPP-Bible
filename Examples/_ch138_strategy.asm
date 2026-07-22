@@ -5,7 +5,7 @@
 	.def	_ZNSt17_Function_handlerIFddEZ4mainEUldE_E9_M_invokeERKSt9_Any_dataOd;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZNSt17_Function_handlerIFddEZ4mainEUldE_E9_M_invokeERKSt9_Any_dataOd
 _ZNSt17_Function_handlerIFddEZ4mainEUldE_E9_M_invokeERKSt9_Any_dataOd:
-.LFB4525:
+.LFB5991:
 	.seh_endprologue
 	movsd	xmm0, QWORD PTR .LC0[rip]
 	mulsd	xmm0, QWORD PTR [rdx]
@@ -15,7 +15,7 @@ _ZNSt17_Function_handlerIFddEZ4mainEUldE_E9_M_invokeERKSt9_Any_dataOd:
 	.def	_ZNSt17_Function_handlerIFddEZ4mainEUldE_E10_M_managerERSt9_Any_dataRKS3_St18_Manager_operation;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZNSt17_Function_handlerIFddEZ4mainEUldE_E10_M_managerERSt9_Any_dataRKS3_St18_Manager_operation
 _ZNSt17_Function_handlerIFddEZ4mainEUldE_E10_M_managerERSt9_Any_dataRKS3_St18_Manager_operation:
-.LFB4529:
+.LFB5995:
 	.seh_endprologue
 	test	r8d, r8d
 	je	.L4
@@ -41,7 +41,7 @@ _ZNSt17_Function_handlerIFddEZ4mainEUldE_E10_M_managerERSt9_Any_dataRKS3_St18_Ma
 	.def	_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_c.isra.0;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_c.isra.0
 _ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_c.isra.0:
-.LFB4679:
+.LFB7336:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -70,7 +70,7 @@ _ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_c.isra.0:
 	.def	_ZNSt14_Function_baseD2Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt14_Function_baseD2Ev
 _ZNSt14_Function_baseD2Ev:
-.LFB1060:
+.LFB1038:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -84,27 +84,28 @@ _ZNSt14_Function_baseD2Ev:
 .L10:
 	add	rsp, 40
 	ret
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA1060:
+.LLSDA1038:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE1060-.LLSDACSB1060
-.LLSDACSB1060:
-.LLSDACSE1060:
+	.uleb128 .LLSDACSE1038-.LLSDACSB1038
+.LLSDACSB1038:
+.LLSDACSE1038:
 	.section	.text$_ZNSt14_Function_baseD2Ev,"x"
 	.linkonce discard
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
+	.section	.text.unlikely,"x"
+.LCOLDB6:
 	.section	.text.startup,"x"
+.LHOTB6:
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB3949:
+.LFB5178:
 	push	rsi
 	.seh_pushreg	rsi
 	push	rbx
@@ -113,44 +114,41 @@ main:
 	.seh_stackalloc	104
 	.seh_endprologue
 	call	__main
-	lea	rsi, 64[rsp]
-	pxor	xmm0, xmm0
-	mov	QWORD PTR 32[rsp], 0
 	lea	rax, _ZNSt17_Function_handlerIFddEZ4mainEUldE_E9_M_invokeERKSt9_Any_dataOd[rip]
-	movaps	XMMWORD PTR 80[rsp], xmm0
-	mov	rcx, rsi
-	mov	QWORD PTR 40[rsp], 0
-	movdqa	xmm2, XMMWORD PTR 32[rsp]
-	movq	xmm3, rax
+	lea	rcx, 64[rsp]
+	movq	xmm0, QWORD PTR .LC5[rip]
+	mov	QWORD PTR 80[rsp], 0
+	movq	xmm2, rax
+	mov	QWORD PTR 64[rsp], 0
+	punpcklqdq	xmm0, xmm2
+	mov	QWORD PTR 72[rsp], 0
 	mov	QWORD PTR 32[rsp], 0
-	lea	rdx, _ZNSt17_Function_handlerIFddEZ4mainEUldE_E10_M_managerERSt9_Any_dataRKS3_St18_Manager_operation[rip]
-	movq	xmm0, rdx
-	movaps	XMMWORD PTR 64[rsp], xmm2
 	mov	QWORD PTR 40[rsp], 0
-	punpcklqdq	xmm0, xmm3
+	mov	QWORD PTR 88[rsp], 0
 	movaps	XMMWORD PTR 48[rsp], xmm0
 	call	_ZNSt14_Function_baseD2Ev
 	cmp	QWORD PTR 48[rsp], 0
 	je	.L18
 	mov	rax, QWORD PTR .LC1[rip]
 	lea	rbx, 32[rsp]
-	mov	rdx, rsi
+	lea	rdx, 64[rsp]
 	mov	rcx, rbx
 	mov	QWORD PTR 64[rsp], rax
 .LEHB0:
 	call	[QWORD PTR 56[rsp]]
 	movapd	xmm1, xmm0
 .L16:
-	mov	rcx, QWORD PTR .refptr._ZSt4cout[rip]
+	mov	rsi, QWORD PTR .refptr._ZSt4cout[rip]
+	mov	rcx, rsi
 	call	_ZNSo9_M_insertIdEERSoT_
-	mov	rcx, rax
 	mov	edx, 10
+	mov	rcx, rax
 	call	_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_c.isra.0
-	mov	rcx, QWORD PTR .refptr._ZSt4cout[rip]
 	movsd	xmm1, QWORD PTR .LC2[rip]
+	mov	rcx, rsi
 	call	_ZNSo9_M_insertIdEERSoT_
-	mov	rcx, rax
 	mov	edx, 10
+	mov	rcx, rax
 	call	_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_c.isra.0
 .LEHE0:
 	mov	rcx, rbx
@@ -166,6 +164,31 @@ main:
 	jmp	.L16
 .L19:
 	mov	rsi, rax
+	jmp	.L17
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDA5178:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSE5178-.LLSDACSB5178
+.LLSDACSB5178:
+	.uleb128 .LEHB0-.LFB5178
+	.uleb128 .LEHE0-.LEHB0
+	.uleb128 .L19-.LFB5178
+	.uleb128 0
+.LLSDACSE5178:
+	.section	.text.startup,"x"
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	main.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	main.cold
+	.seh_stackalloc	120
+	.seh_savereg	rbx, 104
+	.seh_savereg	rsi, 112
+	.seh_endprologue
+main.cold:
+.L17:
 	mov	rcx, rbx
 	call	_ZNSt14_Function_baseD2Ev
 	mov	rcx, rsi
@@ -175,23 +198,24 @@ main:
 .LEHE1:
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA3949:
+.LLSDAC5178:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE3949-.LLSDACSB3949
-.LLSDACSB3949:
-	.uleb128 .LEHB0-.LFB3949
-	.uleb128 .LEHE0-.LEHB0
-	.uleb128 .L19-.LFB3949
-	.uleb128 0
-	.uleb128 .LEHB1-.LFB3949
+	.uleb128 .LLSDACSEC5178-.LLSDACSBC5178
+.LLSDACSBC5178:
+	.uleb128 .LEHB1-.LCOLDB6
 	.uleb128 .LEHE1-.LEHB1
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE3949:
+.LLSDACSEC5178:
+	.section	.text.unlikely,"x"
 	.section	.text.startup,"x"
+	.section	.text.unlikely,"x"
 	.seh_endproc
+.LCOLDE6:
+	.section	.text.startup,"x"
+.LHOTE6:
 	.section .rdata,"dr"
 	.align 8
 _ZTIZ4mainEUldE_:
@@ -212,12 +236,18 @@ _ZTSZ4mainEUldE_:
 .LC2:
 	.long	0
 	.long	1079410688
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.align 8
+.LC5:
+	.quad	_ZNSt17_Function_handlerIFddEZ4mainEUldE_E10_M_managerERSt9_Any_dataRKS3_St18_Manager_operation
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_x;	.scl	2;	.type	32;	.endef
 	.def	_ZNSo3putEc;	.scl	2;	.type	32;	.endef
 	.def	_ZNSo9_M_insertIdEERSoT_;	.scl	2;	.type	32;	.endef
 	.def	_Unwind_Resume;	.scl	2;	.type	32;	.endef
 	.section	.rdata$.refptr._ZSt4cout, "dr"
+	.p2align	3, 0
 	.globl	.refptr._ZSt4cout
 	.linkonce	discard
 .refptr._ZSt4cout:

@@ -9,7 +9,7 @@
 	.def	_ZNK14VectorRenderer6renderEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNK14VectorRenderer6renderEv
 _ZNK14VectorRenderer6renderEv:
-.LFB3485:
+.LFB3534:
 	.seh_endprologue
 	ret
 	.seh_endproc
@@ -21,7 +21,7 @@ _ZNK14VectorRenderer6renderEv:
 	.def	_ZN14VectorRendererD1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN14VectorRendererD1Ev
 _ZN14VectorRendererD1Ev:
-.LFB4304:
+.LFB4316:
 	.seh_endprologue
 	ret
 	.seh_endproc
@@ -33,7 +33,7 @@ _ZN14VectorRendererD1Ev:
 	.def	_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EED1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EED1Ev
 _ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EED1Ev:
-.LFB4308:
+.LFB4320:
 	.seh_endprologue
 	ret
 	.seh_endproc
@@ -45,12 +45,11 @@ _ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2
 	.def	_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv
 _ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_disposeEv:
-.LFB4310:
+.LFB4322:
 	.seh_endprologue
 	mov	rax, QWORD PTR 16[rcx]
 	mov	rax, QWORD PTR [rax]
-	lea	rdx, 16[rcx]
-	mov	rcx, rdx
+	add	rcx, 16
 	rex.W jmp	rax
 	.seh_endproc
 	.section	.text$_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info,"x"
@@ -61,30 +60,33 @@ _ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2
 	.def	_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info
 _ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EE14_M_get_deleterERKSt9type_info:
-.LFB4312:
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 32
-	.seh_stackalloc	32
+.LFB4324:
+	sub	rsp, 40
+	.seh_stackalloc	40
 	.seh_endprologue
 	lea	rax, _ZZNSt19_Sp_make_shared_tag5_S_tiEvE5__tag[rip]
-	mov	rbx, rcx
+	mov	r8, rcx
 	mov	rcx, rdx
-	add	rbx, 16
 	cmp	rdx, rax
-	je	.L6
+	je	.L9
 	lea	rax, _ZTSSt19_Sp_make_shared_tag[rip]
 	cmp	QWORD PTR 8[rdx], rax
-	je	.L6
+	je	.L9
 	lea	rdx, _ZTISt19_Sp_make_shared_tag[rip]
+	mov	QWORD PTR 48[rsp], r8
 	call	_ZNKSt9type_info7__equalERKS_
+	mov	r8, QWORD PTR 48[rsp]
 	test	al, al
-	mov	eax, 0
-	cmove	rbx, rax
-.L6:
-	mov	rax, rbx
-	add	rsp, 32
-	pop	rbx
+	je	.L10
+.L9:
+	lea	rax, 16[r8]
+	add	rsp, 40
+	ret
+	.p2align 4,,10
+	.p2align 3
+.L10:
+	xor	eax, eax
+	add	rsp, 40
 	ret
 	.seh_endproc
 	.section	.text$_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev,"x"
@@ -95,7 +97,7 @@ _ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2
 	.def	_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev
 _ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EED0Ev:
-.LFB4309:
+.LFB4321:
 	.seh_endprologue
 	mov	edx, 24
 	jmp	_ZdlPvy
@@ -108,7 +110,7 @@ _ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2
 	.def	_ZN14VectorRendererD0Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZN14VectorRendererD0Ev
 _ZN14VectorRendererD0Ev:
-.LFB4305:
+.LFB4317:
 	.seh_endprologue
 	mov	edx, 8
 	jmp	_ZdlPvy
@@ -121,7 +123,7 @@ _ZN14VectorRendererD0Ev:
 	.def	_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv
 _ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2EE10_M_destroyEv:
-.LFB4311:
+.LFB4323:
 	.seh_endprologue
 	mov	edx, 24
 	jmp	_ZdlPvy
@@ -134,7 +136,7 @@ _ZNSt23_Sp_counted_ptr_inplaceI14VectorRendererSaIvELN9__gnu_cxx12_Lock_policyE2
 	.def	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv
 _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv:
-.LFB3807:
+.LFB3834:
 	push	rbx
 	.seh_pushreg	rbx
 	sub	rsp, 32
@@ -144,7 +146,7 @@ _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_cold
 	mov	rbx, rcx
 	call	[QWORD PTR 16[rax]]
 	lock sub	DWORD PTR 12[rbx], 1
-	jne	.L13
+	jne	.L14
 	mov	rax, QWORD PTR [rbx]
 	mov	rcx, rbx
 	mov	rax, QWORD PTR 24[rax]
@@ -153,7 +155,7 @@ _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_cold
 	rex.W jmp	rax
 	.p2align 4,,10
 	.p2align 3
-.L13:
+.L14:
 	add	rsp, 32
 	pop	rbx
 	ret
@@ -166,52 +168,47 @@ _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_cold
 	.def	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv
 _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv:
-.LFB2759:
-	push	rbx
-	.seh_pushreg	rbx
-	sub	rsp, 32
-	.seh_stackalloc	32
+.LFB2805:
+	sub	rsp, 56
+	.seh_stackalloc	56
 	.seh_endprologue
 	movabs	rdx, 4294967297
+	mov	r8, QWORD PTR 8[rcx]
 	lea	rax, 8[rcx]
-	mov	rbx, rcx
-	mov	rcx, QWORD PTR 8[rcx]
-	cmp	rcx, rdx
-	je	.L18
-	lock sub	DWORD PTR [rax], 1
+	cmp	r8, rdx
 	je	.L19
-	add	rsp, 32
-	pop	rbx
+	lock sub	DWORD PTR [rax], 1
+	je	.L20
+	add	rsp, 56
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L18:
-	mov	rax, QWORD PTR [rbx]
-	mov	rcx, rbx
-	mov	QWORD PTR 8[rbx], 0
+.L19:
+	mov	rax, QWORD PTR [rcx]
+	mov	QWORD PTR 40[rsp], rcx
+	mov	QWORD PTR 8[rcx], 0
 	call	[QWORD PTR 16[rax]]
-	mov	rax, QWORD PTR [rbx]
-	mov	rcx, rbx
+	mov	rcx, QWORD PTR 40[rsp]
+	mov	rax, QWORD PTR [rcx]
 	mov	rax, QWORD PTR 24[rax]
-	add	rsp, 32
-	pop	rbx
+	add	rsp, 56
 	rex.W jmp	rax
 	.p2align 4,,10
 	.p2align 3
-.L19:
-	mov	rcx, rbx
-	add	rsp, 32
-	pop	rbx
+.L20:
+	add	rsp, 56
 	jmp	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE24_M_release_last_use_coldEv
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
+	.section	.text.unlikely,"x"
+.LCOLDB1:
 	.section	.text.startup,"x"
+.LHOTB1:
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB3496:
+.LFB3545:
 	push	rsi
 	.seh_pushreg	rsi
 	push	rbx
@@ -246,9 +243,38 @@ main:
 	pop	rbx
 	pop	rsi
 	ret
+.L23:
+	mov	rsi, rax
+	jmp	.L22
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDA3545:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSE3545-.LLSDACSB3545
+.LLSDACSB3545:
+	.uleb128 .LEHB0-.LFB3545
+	.uleb128 .LEHE0-.LEHB0
+	.uleb128 0
+	.uleb128 0
+	.uleb128 .LEHB1-.LFB3545
+	.uleb128 .LEHE1-.LEHB1
+	.uleb128 .L23-.LFB3545
+	.uleb128 0
+.LLSDACSE3545:
+	.section	.text.startup,"x"
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	main.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	main.cold
+	.seh_stackalloc	56
+	.seh_savereg	rbx, 40
+	.seh_savereg	rsi, 48
+	.seh_endprologue
+main.cold:
 .L22:
 	mov	rcx, rbx
-	mov	rsi, rax
 	call	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv
 	mov	rcx, rbx
 	call	_ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv
@@ -257,30 +283,26 @@ main:
 	call	_Unwind_Resume
 	nop
 .LEHE2:
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA3496:
+.LLSDAC3545:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE3496-.LLSDACSB3496
-.LLSDACSB3496:
-	.uleb128 .LEHB0-.LFB3496
-	.uleb128 .LEHE0-.LEHB0
-	.uleb128 0
-	.uleb128 0
-	.uleb128 .LEHB1-.LFB3496
-	.uleb128 .LEHE1-.LEHB1
-	.uleb128 .L22-.LFB3496
-	.uleb128 0
-	.uleb128 .LEHB2-.LFB3496
+	.uleb128 .LLSDACSEC3545-.LLSDACSBC3545
+.LLSDACSBC3545:
+	.uleb128 .LEHB2-.LCOLDB1
 	.uleb128 .LEHE2-.LEHB2
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE3496:
+.LLSDACSEC3545:
+	.section	.text.unlikely,"x"
 	.section	.text.startup,"x"
+	.section	.text.unlikely,"x"
 	.seh_endproc
+.LCOLDE1:
+	.section	.text.startup,"x"
+.LHOTE1:
 	.globl	_ZTSSt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE
 	.section	.rdata$_ZTSSt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE,"dr"
 	.linkonce same_size
@@ -395,7 +417,9 @@ _ZZNSt19_Sp_make_shared_tag5_S_tiEvE5__tag:
 .LC0:
 	.long	1
 	.long	1
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZNKSt9type_info7__equalERKS_;	.scl	2;	.type	32;	.endef
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
 	.def	_Znwy;	.scl	2;	.type	32;	.endef

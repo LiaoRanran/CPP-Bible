@@ -6,7 +6,7 @@
 	.def	_Z14process_eventsP9FileEventy;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z14process_eventsP9FileEventy
 _Z14process_eventsP9FileEventy:
-.LFB16:
+.LFB17:
 	push	rdi
 	.seh_pushreg	rdi
 	push	rsi
@@ -16,12 +16,12 @@ _Z14process_eventsP9FileEventy:
 	sub	rsp, 32
 	.seh_stackalloc	32
 	.seh_endprologue
-	test	rdx, rdx
 	mov	rdi, rdx
+	test	rdx, rdx
 	je	.L1
 	mov	rbx, rcx
 	xor	esi, esi
-	.p2align 4,,10
+	.p2align 4
 	.p2align 3
 .L4:
 	mov	rax, QWORD PTR 8[rbx]
@@ -42,14 +42,13 @@ _Z14process_eventsP9FileEventy:
 	pop	rdi
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB17:
+.LFB18:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -58,4 +57,5 @@ main:
 	add	rsp, 40
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"

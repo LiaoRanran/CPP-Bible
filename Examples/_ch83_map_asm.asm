@@ -6,7 +6,7 @@
 	.def	_ZNSt8_Rb_treeIiSt4pairIKiiESt10_Select1stIS2_ESt4lessIiESaIS2_EE8_M_eraseEPSt13_Rb_tree_nodeIS2_E.isra.0;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZNSt8_Rb_treeIiSt4pairIKiiESt10_Select1stIS2_ESt4lessIiESaIS2_EE8_M_eraseEPSt13_Rb_tree_nodeIS2_E.isra.0
 _ZNSt8_Rb_treeIiSt4pairIKiiESt10_Select1stIS2_ESt4lessIiESaIS2_EE8_M_eraseEPSt13_Rb_tree_nodeIS2_E.isra.0:
-.LFB3458:
+.LFB3429:
 	push	r15
 	.seh_pushreg	r15
 	push	r14
@@ -26,8 +26,8 @@ _ZNSt8_Rb_treeIiSt4pairIKiiESt10_Select1stIS2_ESt4lessIiESaIS2_EE8_M_eraseEPSt13
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
-	test	rcx, rcx
 	mov	QWORD PTR 112[rsp], rcx
+	test	rcx, rcx
 	je	.L1
 .L19:
 	mov	rax, QWORD PTR 112[rsp]
@@ -47,19 +47,19 @@ _ZNSt8_Rb_treeIiSt4pairIKiiESt10_Select1stIS2_ESt4lessIiESaIS2_EE8_M_eraseEPSt13
 	test	rbx, rbx
 	je	.L6
 .L15:
-	mov	rsi, QWORD PTR 24[rbx]
-	test	rsi, rsi
+	mov	rdi, QWORD PTR 24[rbx]
+	test	rdi, rdi
 	je	.L7
 .L14:
-	mov	rbp, QWORD PTR 24[rsi]
+	mov	rbp, QWORD PTR 24[rdi]
 	test	rbp, rbp
 	je	.L8
 .L13:
-	mov	rdi, QWORD PTR 24[rbp]
-	test	rdi, rdi
+	mov	rsi, QWORD PTR 24[rbp]
+	test	rsi, rsi
 	je	.L9
 .L12:
-	mov	r12, QWORD PTR 24[rdi]
+	mov	r12, QWORD PTR 24[rsi]
 	test	r12, r12
 	je	.L10
 .L11:
@@ -72,13 +72,13 @@ _ZNSt8_Rb_treeIiSt4pairIKiiESt10_Select1stIS2_ESt4lessIiESaIS2_EE8_M_eraseEPSt13
 	test	r12, r12
 	jne	.L11
 .L10:
-	mov	r12, QWORD PTR 16[rdi]
+	mov	r12, QWORD PTR 16[rsi]
 	mov	edx, 40
-	mov	rcx, rdi
+	mov	rcx, rsi
 	call	_ZdlPvy
 	test	r12, r12
 	je	.L9
-	mov	rdi, r12
+	mov	rsi, r12
 	jmp	.L12
 .L7:
 	mov	rsi, QWORD PTR 16[rbx]
@@ -92,13 +92,13 @@ _ZNSt8_Rb_treeIiSt4pairIKiiESt10_Select1stIS2_ESt4lessIiESaIS2_EE8_M_eraseEPSt13
 	.p2align 4,,10
 	.p2align 3
 .L8:
-	mov	rdi, QWORD PTR 16[rsi]
+	mov	rsi, QWORD PTR 16[rdi]
 	mov	edx, 40
-	mov	rcx, rsi
+	mov	rcx, rdi
 	call	_ZdlPvy
-	test	rdi, rdi
+	test	rsi, rsi
 	je	.L7
-	mov	rsi, rdi
+	mov	rdi, rsi
 	jmp	.L14
 .L6:
 	mov	rbx, QWORD PTR 16[r15]
@@ -112,13 +112,13 @@ _ZNSt8_Rb_treeIiSt4pairIKiiESt10_Select1stIS2_ESt4lessIiESaIS2_EE8_M_eraseEPSt13
 	.p2align 4,,10
 	.p2align 3
 .L9:
-	mov	rdi, QWORD PTR 16[rbp]
+	mov	rsi, QWORD PTR 16[rbp]
 	mov	edx, 40
 	mov	rcx, rbp
 	call	_ZdlPvy
-	test	rdi, rdi
+	test	rsi, rsi
 	je	.L8
-	mov	rbp, rdi
+	mov	rbp, rsi
 	jmp	.L13
 .L5:
 	mov	rbx, QWORD PTR 16[r14]
@@ -165,44 +165,45 @@ _ZNSt8_Rb_treeIiSt4pairIKiiESt10_Select1stIS2_ESt4lessIiESaIS2_EE8_M_eraseEPSt13
 	.def	_Z14probe_map_findRKSt3mapIiiSt4lessIiESaISt4pairIKiiEEEi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z14probe_map_findRKSt3mapIiiSt4lessIiESaISt4pairIKiiEEEi
 _Z14probe_map_findRKSt3mapIiiSt4lessIiESaISt4pairIKiiEEEi:
-.LFB3277:
+.LFB3249:
 	.seh_endprologue
 	mov	rax, QWORD PTR 16[rcx]
-	lea	r10, 8[rcx]
 	test	rax, rax
-	je	.L62
-	mov	r9, r10
+	je	.L61
+	add	rcx, 8
+	mov	r10, rcx
 	jmp	.L60
+	.p2align 5
 	.p2align 4,,10
 	.p2align 3
 .L67:
-	mov	r9, rax
-	mov	rax, r8
+	mov	rax, r9
 	test	rax, rax
 	je	.L66
 .L60:
-	cmp	DWORD PTR 32[rax], edx
 	mov	r8, QWORD PTR 16[rax]
-	mov	rcx, QWORD PTR 24[rax]
-	jge	.L67
-	mov	rax, rcx
+	mov	r9, QWORD PTR 24[rax]
+	cmp	DWORD PTR 32[rax], edx
+	jl	.L67
+	mov	r10, rax
+	mov	rax, r8
 	test	rax, rax
 	jne	.L60
 .L66:
-	cmp	r10, r9
+	cmp	rcx, r10
 	je	.L57
-	cmp	DWORD PTR 32[r9], edx
-	jle	.L61
+	cmp	DWORD PTR 32[r10], edx
+	jle	.L68
 .L57:
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L61:
-	mov	eax, DWORD PTR 36[r9]
+.L68:
+	mov	eax, DWORD PTR 36[r10]
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L62:
+.L61:
 	xor	eax, eax
 	ret
 	.seh_endproc
@@ -211,51 +212,50 @@ _Z14probe_map_findRKSt3mapIiiSt4lessIiESaISt4pairIKiiEEEi:
 	.def	_Z15probe_flat_findRKSt6vectorISt4pairIiiESaIS1_EEi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z15probe_flat_findRKSt6vectorISt4pairIiiESaIS1_EEi
 _Z15probe_flat_findRKSt6vectorISt4pairIiiESaIS1_EEi:
-.LFB3281:
+.LFB3255:
 	.seh_endprologue
 	mov	r10, QWORD PTR 8[rcx]
 	mov	r9, QWORD PTR [rcx]
-	mov	rcx, r10
-	sub	rcx, r9
-	mov	rax, rcx
+	mov	rax, r10
+	sub	rax, r9
+	test	rax, rax
+	jle	.L70
 	sar	rax, 3
-	test	rcx, rcx
-	jg	.L73
-	jmp	.L69
+	jmp	.L74
 	.p2align 4,,10
 	.p2align 3
-.L70:
-	jle	.L75
 .L71:
-	lea	r9, 8[rcx]
-	sub	rax, r8
+	jle	.L76
+.L72:
+	sub	rax, rcx
+	lea	r9, 8[r8]
 	sub	rax, 1
 	test	rax, rax
-	jle	.L69
-.L73:
-	mov	r8, rax
-	sar	r8
-	lea	rcx, [r9+r8*8]
-	cmp	edx, DWORD PTR [rcx]
-	jne	.L70
-	mov	r11d, DWORD PTR 4[rcx]
+	jle	.L70
+.L74:
+	mov	rcx, rax
+	sar	rcx
+	lea	r8, [r9+rcx*8]
+	cmp	edx, DWORD PTR [r8]
+	jne	.L71
+	mov	r11d, DWORD PTR 4[r8]
 	test	r11d, r11d
-	js	.L71
-.L75:
-	mov	rax, r8
+	js	.L72
+.L76:
+	mov	rax, rcx
 	test	rax, rax
-	jg	.L73
-.L69:
+	jg	.L74
+.L70:
 	xor	eax, eax
 	cmp	r10, r9
-	je	.L68
+	je	.L69
 	cmp	DWORD PTR [r9], edx
-	je	.L79
-.L68:
+	je	.L80
+.L69:
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L79:
+.L80:
 	mov	eax, DWORD PTR 4[r9]
 	ret
 	.seh_endproc
@@ -264,79 +264,87 @@ _Z15probe_flat_findRKSt6vectorISt4pairIiiESaIS1_EEi:
 	.def	_Z15probe_umap_findRKSt13unordered_mapIiiSt4hashIiESt8equal_toIiESaISt4pairIKiiEEEi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z15probe_umap_findRKSt13unordered_mapIiiSt4hashIiESt8equal_toIiESaISt4pairIKiiEEEi
 _Z15probe_umap_findRKSt13unordered_mapIiiSt4hashIiESt8equal_toIiESaISt4pairIKiiEEEi:
-.LFB3291:
+.LFB3271:
 	push	rbx
 	.seh_pushreg	rbx
 	.seh_endprologue
-	cmp	QWORD PTR 24[rcx], 0
 	mov	r8d, edx
-	jne	.L81
-	mov	rax, QWORD PTR 16[rcx]
-	test	rax, rax
-	jne	.L84
-.L91:
-	xor	eax, eax
-.L80:
-	pop	rbx
-	ret
-	.p2align 4,,10
-	.p2align 3
-.L94:
-	mov	rax, QWORD PTR [rax]
-	test	rax, rax
-	je	.L80
-.L84:
-	cmp	DWORD PTR 8[rax], r8d
-	jne	.L94
-	mov	eax, DWORD PTR 12[rax]
-.L96:
-	pop	rbx
-	ret
-	.p2align 4,,10
-	.p2align 3
-.L81:
-	mov	r10, QWORD PTR 8[rcx]
-	movsx	rax, edx
+	cmp	QWORD PTR 24[rcx], 0
+	je	.L82
+	mov	r11, QWORD PTR 8[rcx]
+	movsxd	rax, edx
 	xor	edx, edx
-	div	r10
+	div	r11
 	mov	rax, QWORD PTR [rcx]
+	mov	rcx, QWORD PTR [rax+rdx*8]
 	mov	rbx, rdx
-	mov	r11, QWORD PTR [rax+rdx*8]
-	test	r11, r11
-	je	.L91
-	mov	rax, QWORD PTR [r11]
-	mov	ecx, DWORD PTR 8[rax]
-	cmp	r8d, ecx
+	test	rcx, rcx
+	je	.L92
+	mov	rax, QWORD PTR [rcx]
+	mov	r10d, DWORD PTR 8[rax]
+	cmp	r10d, r8d
 	je	.L85
-.L95:
+.L96:
 	mov	r9, QWORD PTR [rax]
 	test	r9, r9
-	je	.L91
-	mov	ecx, DWORD PTR 8[r9]
+	je	.L92
+	mov	r10d, DWORD PTR 8[r9]
+	mov	rcx, rax
 	xor	edx, edx
-	mov	r11, rax
-	movsx	rax, ecx
-	div	r10
-	cmp	rbx, rdx
-	jne	.L91
-	cmp	r8d, ecx
+	movsxd	rax, r10d
+	div	r11
+	cmp	rdx, rbx
+	jne	.L92
 	mov	rax, r9
-	jne	.L95
+	cmp	r10d, r8d
+	jne	.L96
+	.p2align 4
+	.p2align 3
 .L85:
-	mov	rax, QWORD PTR [r11]
+	mov	rdx, QWORD PTR [rcx]
+	xor	eax, eax
+	test	rdx, rdx
+	je	.L81
+	mov	eax, DWORD PTR 12[rdx]
+.L81:
+	pop	rbx
+	ret
+	.p2align 4,,10
+	.p2align 3
+.L82:
+	mov	rax, QWORD PTR 16[rcx]
 	test	rax, rax
-	je	.L91
-	mov	eax, DWORD PTR 12[rax]
-	jmp	.L96
+	jne	.L97
+.L92:
+	xor	eax, eax
+	pop	rbx
+	ret
+	.p2align 4,,10
+	.p2align 3
+.L97:
+	add	rcx, 16
+	jmp	.L86
+	.p2align 5
+	.p2align 4,,10
+	.p2align 3
+.L98:
+	mov	rdx, QWORD PTR [rax]
+	mov	rcx, rax
+	test	rdx, rdx
+	je	.L92
+	mov	rax, rdx
+.L86:
+	cmp	DWORD PTR 8[rax], r8d
+	jne	.L98
+	jmp	.L85
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section	.text.startup,"x"
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB3292:
+.LFB3273:
 	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
@@ -347,5 +355,6 @@ main:
 	add	rsp, 40
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef

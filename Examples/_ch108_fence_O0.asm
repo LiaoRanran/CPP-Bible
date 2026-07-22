@@ -1,29 +1,13 @@
 	.file	"_ch108_fence.cpp"
 	.intel_syntax noprefix
 	.text
-	.section	.text$_ZSt23__is_constant_evaluatedv,"x"
-	.linkonce discard
-	.globl	_ZSt23__is_constant_evaluatedv
-	.def	_ZSt23__is_constant_evaluatedv;	.scl	2;	.type	32;	.endef
-	.seh_proc	_ZSt23__is_constant_evaluatedv
-_ZSt23__is_constant_evaluatedv:
-.LFB1:
-	push	rbp
-	.seh_pushreg	rbp
-	mov	rbp, rsp
-	.seh_setframe	rbp, 0
-	.seh_endprologue
-	mov	eax, 0
-	pop	rbp
-	ret
-	.seh_endproc
 	.section	.text$_ZStanSt12memory_orderSt23__memory_order_modifier,"x"
 	.linkonce discard
 	.globl	_ZStanSt12memory_orderSt23__memory_order_modifier
 	.def	_ZStanSt12memory_orderSt23__memory_order_modifier;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZStanSt12memory_orderSt23__memory_order_modifier
 _ZStanSt12memory_orderSt23__memory_order_modifier:
-.LFB178:
+.LFB183:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -45,12 +29,25 @@ flag:
 	.align 4
 data:
 	.space 4
+	.section .rdata,"dr"
+.LC0:
+	.ascii "__b != memory_order_acquire\0"
+	.align 8
+.LC1:
+	.ascii "void std::__atomic_base<_IntTp>::store(__int_type, std::memory_order) [with _ITp = int; __int_type = int]\0"
+	.align 8
+.LC2:
+	.ascii "C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/atomic_base.h\0"
+.LC3:
+	.ascii "__b != memory_order_acq_rel\0"
+.LC4:
+	.ascii "__b != memory_order_consume\0"
 	.text
 	.globl	_Z8producerv
 	.def	_Z8producerv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8producerv
 _Z8producerv:
-.LFB661:
+.LFB666:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -69,53 +66,69 @@ _Z8producerv:
 	mov	ecx, eax
 	call	_ZStanSt12memory_orderSt23__memory_order_modifier
 	mov	DWORD PTR -12[rbp], eax
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L6
 	cmp	DWORD PTR -12[rbp], 2
-	jne	.L6
-	mov	eax, 1
-	jmp	.L7
-.L6:
-	mov	eax, 0
-.L7:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L9
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L4
+	lea	rcx, .LC0[rip]
+	lea	rdx, .LC1[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 473
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L4:
 	cmp	DWORD PTR -12[rbp], 4
-	jne	.L9
-	mov	eax, 1
-	jmp	.L10
-.L9:
-	mov	eax, 0
-.L10:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L12
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L5
+	lea	rcx, .LC3[rip]
+	lea	rdx, .LC1[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 474
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L5:
 	cmp	DWORD PTR -12[rbp], 1
-	jne	.L12
-	mov	eax, 1
-	jmp	.L13
-.L12:
-	mov	eax, 0
-.L13:
-	test	al, al
-	mov	edx, DWORD PTR -4[rbp]
-	lea	rax, flag[rip]
-	xchg	edx, DWORD PTR [rax]
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L6
+	lea	rcx, .LC4[rip]
+	lea	rdx, .LC1[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 475
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L6:
+	mov	eax, DWORD PTR -4[rbp]
+	lea	rdx, flag[rip]
+	xchg	eax, DWORD PTR [rdx]
 	nop
 	nop
 	add	rsp, 48
 	pop	rbp
 	ret
 	.seh_endproc
+	.section .rdata,"dr"
+.LC5:
+	.ascii "__b != memory_order_release\0"
+	.align 8
+.LC6:
+	.ascii "std::__atomic_base<_IntTp>::__int_type std::__atomic_base<_IntTp>::load(std::memory_order) const [with _ITp = int; __int_type = int]\0"
+	.text
 	.globl	_Z8consumerv
 	.def	_Z8consumerv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z8consumerv
 _Z8consumerv:
-.LFB662:
+.LFB667:
 	push	rbp
 	.seh_pushreg	rbp
 	mov	rbp, rsp
@@ -129,41 +142,48 @@ _Z8consumerv:
 	mov	ecx, eax
 	call	_ZStanSt12memory_orderSt23__memory_order_modifier
 	mov	DWORD PTR -8[rbp], eax
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L16
 	cmp	DWORD PTR -8[rbp], 3
-	jne	.L16
-	mov	eax, 1
-	jmp	.L17
-.L16:
-	mov	eax, 0
-.L17:
-	test	al, al
-	call	_ZSt23__is_constant_evaluatedv
-	test	al, al
-	je	.L19
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L8
+	lea	rcx, .LC5[rip]
+	lea	rdx, .LC6[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 498
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L8:
 	cmp	DWORD PTR -8[rbp], 4
-	jne	.L19
-	mov	eax, 1
-	jmp	.L20
-.L19:
-	mov	eax, 0
-.L20:
-	test	al, al
+	sete	al
+	movzx	eax, al
+	test	eax, eax
+	je	.L9
+	lea	rcx, .LC3[rip]
+	lea	rdx, .LC6[rip]
+	lea	rax, .LC2[rip]
+	mov	r9, rcx
+	mov	r8, rdx
+	mov	edx, 499
+	mov	rcx, rax
+	call	_ZSt21__glibcxx_assert_failPKciS0_S0_
+.L9:
 	lea	rax, flag[rip]
 	mov	eax, DWORD PTR [rax]
 	test	eax, eax
 	setne	al
 	test	al, al
-	je	.L24
+	je	.L12
 	mov	DWORD PTR -12[rbp], 2
 	lock or	QWORD PTR [rsp], 0
 	nop
-.L24:
+.L12:
 	nop
 	add	rsp, 48
 	pop	rbp
 	ret
 	.seh_endproc
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
+	.def	_ZSt21__glibcxx_assert_failPKciS0_S0_;	.scl	2;	.type	32;	.endef
