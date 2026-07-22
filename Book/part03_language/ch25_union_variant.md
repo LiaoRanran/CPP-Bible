@@ -1979,4 +1979,18 @@ int main() {
 ```
 
 **结论**：当 variant 需要一个"语义上的空/默认"状态且现有 alternative 都不适合默认构造时，把 `std::monostate` 作为**首个** alternative——它默认可构造且不占额外空间，使整个 variant 自然满足默认可构造约束。
+## 可视化速查图（Mermaid 补充）[实现][平台]
 
+> 补全附录 G/H/I 的 variant 底层实现文字。
+
+### 图 1 · std::variant 带标签联合（tagged union）内存模型
+
+```mermaid
+graph LR
+    V["variant"] --> T["tag 当前活跃下标"]
+    V --> ST["存储区 大小等于最大 alternative"]
+    ST --> A0["alternative 0"]
+    ST --> A1["alternative 1"]
+    ST --> A2["alternative 2"]
+    T --> A1
+```

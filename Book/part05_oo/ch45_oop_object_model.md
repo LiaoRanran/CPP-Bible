@@ -1591,3 +1591,18 @@ int main() {
 ```
 
 **结论**：对象布局由对齐规则决定（维度⑤），永远用 `offsetof`/`sizeof` 实测，不要手算。
+## 可视化速查图（Mermaid 补充）[实现][平台]
+
+> 补全附录 F/G vtable 文字描述的直观结构。
+
+### 图 1 · 单继承对象内存布局与 vtable 绑定
+
+```mermaid
+graph TD
+    OBJ["Derived 对象"] --> VPTR["vptr 指向 Derived vtable"]
+    VPTR --> VT["Derived vtable"]
+    VT --> F1["槽0 Base 虚函数或 override"]
+    VT --> F2["槽1 Derived 自有虚函数"]
+    OBJ --> BASE["Base 子对象 data"]
+    OBJ --> DD["Derived 自有 data"]
+```
