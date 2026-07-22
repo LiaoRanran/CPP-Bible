@@ -486,6 +486,49 @@ int main() {
 
 ---
 
+## ⑲附　真实微基准实证（GCC 15.3.0 / x86-64 / -O2） [E: Low-level / G: Performance]
+
+上面的 ⑲ 是复杂度与缓存的**定性**分析。下面用真实编译器跑出的数字把它落到**定量**：平台 mingw1530 **GCC 15.3.0**，`-O2 -std=c++17`，x86-64（TSO），单轮（`volatile sink` 防优化消除）。N=4'000'000 个 `int`，除非另注。
+
+| 操作 | `vector` | `deque` | 比值（deque/vector） | 读法 |
+|---|---|---|---|---|
+| 顺序迭代 + 求和 | 3.15 ms | 3.77 ms | **1.20x** | deque 仅慢 ~20% |
+| 随机访问 `operator[]` | 22.17 ms | 34.34 ms | **1.55x** | deque 慢 ~55% |
+| `push_back` ×4M | 4.40 ms | 12.64 ms | **2.87x** | **deque 反而慢近 3x** |
+| `push_front` ×200k | 2202.86 ms（O(n²)） | 0.70 ms | **vector/deque = 3150x** | deque 杀手锏 |
+
+`[经验]` 怎么读这张表（每条都反直觉，值得背）：
+
+- **迭代只慢 20%**：libstdc++ 的 buffer 约 512 字节（≈128 个 `int`），整段仍能落入 L1/L2；两级指针的额外解引用被 CPU 流水线吞掉。所以"deque 迭代很慢"是**误区**——它慢，但远没到 list 那种量级。
+- **随机访问慢 55%**：每次 `operator[]` 走 `node = map + i / buf_sz; off = i % buf_sz`（见 ⑩ 的除法/取模汇编），且跨段跳转打断硬件预取。热点随机下标路径别用 deque。
+- **`push_back` deque 反而慢 2.9x**：这是最容易被忽悠的一点。vector 连续内存 + 指数扩容 + 硬件预取对顺序写极度友好；deque 每个元素都要查 map、定位 buffer、处理段满。结论：**deque 不是为 `push_back` 设计的，别用它当 vector 替代品去追尾部**。
+- **`push_front` 是 deque 存在的唯一理由**：`vector::insert(begin)` 是 O(n²)（2203 ms vs 0.7 ms，差 3150 倍）。任何"双端频繁头插"场景，deque 碾压。
+
+`[平台·x86-64]`：以上比例在 ARM64（弱内存模型）上会变化——随机访问的除法/取模仍在，但 deque 的跨段访存更易触发访存停顿；相对地 `seq_cst` 原子在 ARM 上更贵（与 ch108 互参）。数字随 CPU/频率浮动，但**四个比值的大小关系稳定**。
+
+```mermaid
+graph TD
+    A["deque 分段连续内存模型"] --> B["map 中控指针数组"]
+    A --> C["固定 buffer ≈512B / 段"]
+    B --> D["四指针迭代器 cur/first/last/node"]
+    D --> E["operator[] : i/buf_sz 定位段 + i%buf_sz 段内偏移"]
+    C --> F["段内连续 : 缓存友好, 迭代仅慢 20%"]
+    C --> G["段间跳跃 : 打断预取, 随机访问慢 55%"]
+    A --> H["push_front O(1) : 杀手锏 3150x"]
+    A --> I["push_back O(1) : 但慢 vector 2.9x"]
+    H --> J["vector insert(begin) O(n^2) 灾难"]
+    A --> K["迭代器失效 : 仅 map 扩容时"]
+    K --> L["未删元素引用/指针不失效"]
+    A --> M["stack / queue 默认底层容器"]
+    style A fill:#1f6feb,color:#fff
+    style H fill:#2da44e,color:#fff
+    style J fill:#cf222e,color:#fff
+```
+
+`[标准]`：语义层面 deque 的复杂度保证来自 `[deque]`，本表是**实现级**量化，证明"O(1) 均摊"不等于"和 vector 一样快"——世界级的性能判断必须同时看大 O 与真实缓存/预取行为（呼应维度⑤：超越 O(n)）。
+
+---
+
 ## ⑳ 跨语言对比：双端队列实现 [标准]
 
 | 语言/库 | 类型 | 内存模型 | 随机访问 | 备注 |
