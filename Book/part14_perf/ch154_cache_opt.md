@@ -990,3 +990,92 @@ int main(){ int a=1; int* p=new int(2); /* ... */ delete p; }
 
 </details>
 
+
+## 附录 I：缓存优化 源码与真实基准（同规格 D4 + D5）[I: Source / D: Benchmark]
+
+> 本附录以 GCC 15.3.0（libstdc++ 15.3.0，本机 MinGW-W64 x86_64）一手源码与真实计时，补全正文 ⑧–⑭ 的"定性 / 标 GCC13.1"缺口：给出 `std::hardware_destructive_interference_size` 的真实定义出处（D4），并用本机 `-O2` 复跑三件套得到可复现数字（D5），同时揭示"优化器与硬件预取会抹平部分教科书惩罚"这一非显然事实。
+
+### I.1 D4 一手源码：`hardware_*_interference_size` 究竟从哪来
+
+正文 ⑩ 提到该常量"定义于 `<new>`"，但没给真身。其 libstdc++ 15.3.0 定义位于 `bits/.../c++/15.3.0/new`：
+
+```cpp
+// <new> (libstdc++ 15.3.0, 行 248–251)
+#ifdef __cpp_lib_hardware_interference_size        // C++ >= 17 && 编译器给出目标行大小
+  inline constexpr size_t hardware_destructive_interference_size  = __GCC_DESTRUCTIVE_SIZE;
+  inline constexpr size_t hardware_constructive_interference_size = __GCC_CONSTRUCTIVE_SIZE;
+#endif
+```
+
+- `__GCC_DESTRUCTIVE_SIZE` / `__GCC_CONSTRUCTIVE_SIZE` 是**编译器前端内建常量**（不是库里手写的 `64`），x86-64 上二者均为 `64`；ARM 等架构可能不同。因此"一行大小"的可移植性来自**标准库转发编译器内建**，而非硬编码。
+- 配套的库特性宏在 `x86_64-w64-mingw32/bits/c++config.h:1606`：
+  ```cpp
+  /* Define if global objects can be aligned to
+     std::hardware_destructive_interference_size. */
+  #define _GLIBCXX_CAN_ALIGNAS_DESTRUCTIVE_SIZE 1
+  ```
+  它决定 `alignas(std::hardware_destructive_interference_size)` 是否可用——本机为 `1`，故 ⑩-B 的 `alignas(...)` 合法。
+- **本机实测取值**（见 I.2 探针）：`hardware_destructive_interference_size = 64`，`hardware_constructive_interference_size = 64`。这与正文"GCC 13.1 值为 64"一致，证明从 13.1 到 15.3.0 该内建未变。
+
+### I.2 D5 真实基准（GCC 15.3.0 -O2，本机可复现）
+
+复跑正文三件套，迭代规模与正文一致（伪共享 IT=20M/线程、AoS/SoA N=4M、行列 M=4096），计时取 5 轮中位/最优。完整可复现命令：
+
+```bash
+g++ -std=c++20 -O2 -pthread _bench_cache.cpp -o _bench_cache.exe && ./_bench_cache.exe
+```
+
+**表 1　伪共享（2 线程，各跑 20M 次 `fetch_add`）**
+
+| 布局 | 耗时(ms, 5轮最优) | 相对 |
+|---|---|---|
+| `SharedBad`（a,b 同 64B 行） | 332.5 | 5.66× |
+| `SharedGood`（`alignas(64)`，各占一行） | 58.7 | 1.00× |
+
+**表 2　AoS vs SoA（N=4M，仅累加 x；及用满 x/y/z）**
+
+| 布局 | 单字段 x(ms) | 三字段 x/y/z(ms) | 相对 |
+|---|---|---|---|
+| AoS | 5.24 | 5.17 | 1.02× / 1.01× |
+| SoA | 5.14 | 5.15 | 1.00× |
+
+**表 3　行优先 vs 列优先（M=4096 整数矩阵，求和）**
+
+| 遍历 | 耗时(ms, 5轮中位) | 相对 |
+|---|---|---|
+| 行优先 `a[i*M+j]` | 2.34 | 1.00× |
+| 列优先 `a[i*M+j]`（步长 16KB） | 47.25 | 20.2× |
+
+### I.3 四条非显然结论（对正文"定性/上界"的校准）
+
+1. **伪共享是优化器抹不掉的硬成本**——`-O2` 下 5.66×，`-O3 -mavx2` 下仍 **5.63×**。不管怎么优化，`lock xadd` 对同一行的核间 MESI 弹动实实在在。这把正文 ⑨ 的"2~4 倍"在本机 15.3.0 上**上修为约 5.6 倍**（原文基于 GCC 13.1 的 2.9× 是偏低估计）。
+2. **行/列惩罚是"优化器敏感"的**——`-O2` 下列优先慢 **20.2×**，但 `-O3 -mavx2` 下骤降到 **1.06×**。原因是硬件 L2 流预取器能识别恒定 16KB 步长并提前搬行，编译器又把内层归约向量化。教学点：**"列优先必慢 10–30×"只在低优化/无预取时成立；高优化下必须实测**，不能想当然。
+3. **AoS vs SoA 的"1.8–2.5×"在本机简单归约下并未复现**——单字段 1.02×、三字段 1.01×，两种优化级别都接近 1。根因：归约只 sum 不乘，预取器已把 AoS 里 12B 跨度的 x 顺带流式送达（y,z 搭车进同一 cache line），带宽"浪费"被隐藏。SoA 的真实收益出现于**①大元素（AoS 跨度超过一行，y,z 把 x 挤出同行）②计算密集（向量化同字段乘加）**——正文 ⑪ 的"`-O3 -mavx2` 自动向量化"优势需这类条件才兑现，本基准证实"纯求和"不足以逼出它。
+4. **`hardware_destructive_interference_size == 64` 在 13.1→15.3.0 稳定**，可放心用于 `alignas`，不必手写为魔法数 `64`（`⑩-B` 写法更可移植）。
+
+### I.4 缓存优化技术选型流
+
+```mermaid
+flowchart TD
+    A["定位性能瓶颈"] --> B{"多线程并发写<br/>不同字段?"}
+    B -->|"是"| C["alignas(64) / hardware_destructive_interference_size<br/>消除伪共享（优化器也抹不掉）"]
+    B -->|"否"| D{"遍历只碰<br/>部分字段 / 元素大?"}
+    D -->|"是"| E["SoA / 字段拆分<br/>(大元素时收益显著)"]
+    D -->|"否"| F{"嵌套循环<br/>多维数组?"}
+    F -->|"是"| G["外层行 内层列<br/>扁平一维 + i*C+j"]
+    F -->|"否"| H{"大结构<br/>热/冷字段混?"}
+    H -->|"是"| I["热冷分离 / ECS<br/>字段重排减 padding"]
+    H -->|"否"| J["先 perf / cachegrind 取证<br/>再决定"]
+    C --> K["始终: 用目标 -O2/-O3 实测<br/>优化器与预取会改变结论"]
+    E --> K
+    G --> K
+    I --> K
+    J --> K
+```
+
+### I.5 方法学注
+
+- **基准命令即复现命令**：`-O2 -pthread`（本机 MinGW-W64 需 `-pthread` 才能 `std::thread`）。`-O3 -mavx2` 用于揭示向量化/预取对结论的影响，不作为主表（主表与 ch77/ch95/ch107 统一为 `-O2`）。
+- **抗噪**：伪共享取 5 轮**最优**（首发冷启动最慢，取最小贴近稳态争用）；AoS/SoA 与行列取 5 轮**中位**规避调度抖动；末尾 `volatile` 读取阻止死代码消除。
+- **"比值比绝对值更可移植"**：本机毫秒数随 CPU/内存而变，**加速比**（bad/good、col/row）才是跨机器可读信号；正文 ⑨⑫⑭ 的"量级"结论因此仍成立，只是具体倍数需以本机 15.3.0 数字为准。
+- **可复现件**：`_bench_cache.cpp`（库根，不进 `Book/` 编译门禁）；打印 `hardware_*_interference_size` 实测值 + 三件套计时。
