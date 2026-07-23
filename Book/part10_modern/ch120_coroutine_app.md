@@ -1193,3 +1193,16 @@ line_gen read_lines(std::istringstream& in) {
 - 协程帧在堆上，上下文切换是用户态函数调用；线程切换需内核介入——海量轻任务用协程。
 - `co_yield`/`co_await`/`co_return` 是恢复点，由编译器做 coroutine transform 生成状态机。
 - 协程 ≠ 并行：单线程上 N 个协程仍是并发非并行；要真并行需配合线程/执行器。
+## 可视化速查图（Mermaid 补充）[标准]
+
+> 把协程 transform 与帧结构浓缩为一张状态机恢复点图。
+
+### 图 1 · 协程帧与状态机恢复点
+
+```mermaid
+graph TD
+    C["co_await co_yield"] --> S["编译器生成状态机"]
+    S --> F["协程帧 堆分配"]
+    F --> R["resume 恢复点"]
+    V["协程 vs 线程"] --> D["用户态切换 无内核介入"]
+```

@@ -1154,4 +1154,16 @@ int main() {
 ```
 
 **结论**：并行算法要求操作无数据竞争。规约类需求用 `std::reduce`/`std::transform_reduce`（内部做线程安全分区求和），切勿用「共享变量 + `for_each`」的裸写法。
+## 可视化速查图（Mermaid 补充）[标准]
 
+> 把算法复杂度与选型浓缩为一张分层图。
+
+### 图 1 · 标准库算法复杂度分层与代表
+
+```mermaid
+graph LR
+    O1["O(1) 哈希容器"] --> Olog["O(log n) binary_search"]
+    Olog --> On["O(n) find count"]
+    On --> Onlog["O(n log n) sort"]
+    Onlog --> On2["O(n 平方) 朴素嵌套循环"]
+```

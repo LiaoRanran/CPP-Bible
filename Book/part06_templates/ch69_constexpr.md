@@ -853,3 +853,17 @@ int main(){
 ```
 
 `factorial(5)` 在编译期就算出 120（循环体在 `constexpr` 上下文中合法），`static_assert` 可在常量语境使用其结果；若传入运行时变量则退化为运行时计算。这是元编程从 TMP 向 `constexpr` 迁移的典型获益（见正文「结论」）。
+## 可视化速查图（Mermaid 补充）[标准]
+
+> 把"constexpr 何时真在编译期求值"浓缩为一张求值上下文图。
+
+### 图 1 · constexpr 函数求值上下文
+
+```mermaid
+graph TD
+    F["constexpr 函数"] --> CE["常量表达式上下文 编译期求值"]
+    CE --> C1["模板实参"]
+    CE --> C2["static_assert"]
+    CE --> C3["数组大小 非类型模板参数"]
+    F --> RT["传入运行时变量 退化为运行期"]
+```

@@ -729,4 +729,17 @@ int main() { int x = 7; process(x); process(&x); }
 ```
 
 **结论**：`if constexpr` 的条件必须是编译期常量表达式；被丢弃的分支不被实例化，因此 `*v` 在 `T=int` 时不报错——这是它优于 `#if`/运行时 `if` 的关键。
+## 可视化速查图（Mermaid 补充）[标准]
 
+> 把正文与附录的 TMP 原理浓缩为一张"编译期计算技术演进与构件"图。
+
+### 图 1 · TMP 三大构件与现代 constexpr 替代
+
+```mermaid
+graph TD
+    T["模板元编程 TMP"] --> R["递归元函数 编译期计算"]
+    T --> S["特化终止 防无限实例化"]
+    T --> X["类型萃取 traits"]
+    C["现代替代 constexpr"] --> CI["if constexpr 编译期分支"]
+    C --> CC["循环 constexpr 更可读"]
+```
