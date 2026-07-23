@@ -84,12 +84,19 @@
 
 - **已世界级维度**：D4 源码解析（多章源码命中 >250）、D1 内容深度（ch40 异常 362 / ch39 115 / ch115 92）、D2 工程案例（ch133/130/128 工业命中 >100）。
 - **全库性真缺口（这才是后续六维增强的发力点）**：
-  1. **D5 真实数字**：多数"性能分析"为定性（O(n)/缓存描述），缺真实量化基准。已补：ch32（移动 2.75–3.50x）、ch78（deque vs vector 四操作实测）。待补：ch77 vector、ch107 atomic、ch95 算法、ch154 cache 等。
+  1. **D5 真实数字**：多数"性能分析"为定性（O(n)/缓存描述），缺真实量化基准。已补：ch32（移动 2.75–3.50x）、ch78（deque vs vector 四操作实测）、**ch95（introsort vs 朴素快排，GCC15.3 真实基准：asc/desc 退化 O(n²) 外推 2M 慢 6.5万–8.9万倍）**。待补：ch77 vector、ch107 atomic、ch154 cache 等。
   2. **D3/D6 可视化知识图**：核心章普遍 `mer=0`（仅 ASCII 文字知识图），缺 Mermaid 概念图谱。已补：ch78 知识图谱。可作为通用补强手段推广到 ch67 concepts / ch30 volatile / ch63 variadic 等。
   3. **历史/参考章**（ch01–ch10）图示与工业语境偏薄，优先级低于核心章。
 
+> **⚠️ 关键教训（2026-07-23，用户原批"太糊弄我了"）**：**浅层 Mermaid ≠ 六维深度。**
+> 此前连补 ~17 张图，绝大多数是 3–6 节点的 `graph/flowchart`（如 const 族语义象限、fold 四类语法），
+> 只填了 D3 可视化的"数量"，却**完全没碰**用户六维寄望的硬货——D1 设计动机/历史、D2 工业深挖、
+> **D4 三标准库源码逐字解析**、**D5 真实基准**。把浅图包装成"六维增强"即糊弄。
+> **正确做法**：每次增强必须至少命中 D1/D2/D4/D5 之一且给出"可查证证据"（真实源码行号 / 真实基准数字 / 真实工业链接），
+> 浅图仅作辅助，不得作为深度本身。ch95 附录 J 是合格范例：逐字 libstdc++ 源码 + GCC15.3 实跑基准 + 控制流 Mermaid。
+
 ### Tier A — 高价值（建议补六维）
-ch21 const 家族 · ch26 lambda · ch45 对象模型 · ch60–63 模板体系 · ch90 ranges · ch35 内存模型 · **ch67 concepts（补知识图）** · **ch30 volatile（补"volatile≠线程同步"图）** · **ch95 算法（补 cache 分析）** · **ch107 atomic（补基准+知识图）** · **ch77 vector（补真实扩容基准）**。
+ch21 const 家族 · ch26 lambda · ch45 对象模型 · ch60–63 模板体系 · ch90 ranges · ch35 内存模型 · **ch67 concepts（补知识图）** · **ch30 volatile（补"volatile≠线程同步"图）** · **ch95 算法（D4/D5 已达标，cache 分析可选）** · **ch107 atomic（补基准+知识图）** · **ch77 vector（补真实扩容基准）**。
 
 ### Tier B/C — 按需
 其余语法/工具章；仅在用户指定或发现明显短板时补。
@@ -115,6 +122,7 @@ ch21 const 家族 · ch26 lambda · ch45 对象模型 · ch60–63 模板体系 
 | ch67 | concepts | ✅ | ✅ | ⬜(mer=0) | ✅ | ⬜ | ⬜ | 建议补 D3/D6 |
 | ch30 | volatile | ✅ | ✅ | ⬜(mer=0) | ✅ | ✅ | ⬜ | 建议补 D3/D6 |
 | ch67 | concepts | ✅ | ✅ | ✅(本轮补知识图+决策流) | ✅ | ✅ | ✅(本轮补) | 达标(可视化补全 D3/D6) |
+| ch95 | 算法总论 | ✅ | ✅ | ✅ | ✅(本轮补 introsort 源码) | ✅(本轮补 GCC15.3 真实基准) | ✅ | 达标（附录 J: libstdc++ introsort 逐字源码 + 真实基准 + 控制流 Mermaid） |
 
 追踪规则：每完成一章六维附录，在此打勾并更新 MEMORY.md；CI 门禁（mermaid_lint / compile_all --main-only / verify_asm_evidence）必须全绿方可标记达标。
 
