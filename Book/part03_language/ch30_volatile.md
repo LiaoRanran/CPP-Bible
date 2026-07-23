@@ -764,3 +764,21 @@ int main() {
 ```
 
 **结论**：`volatile` 阻止的是"编译器优化"，`atomic` 提供的是"机器级原子+顺序"；凡涉及多线程共享可变状态，一律 `std::atomic`，`volatile` 在此场景下是常见误解来源。
+## 可视化速查图（Mermaid 补充）[标准]
+
+> 把附录 A "volatile 与 atomic 对比" 与 ⑳ 跨语言对比 浓缩为一张能力边界图，直接破除"volatile=线程同步"的常见误解。
+
+### 图 1 · volatile / atomic / mutex 能力边界
+
+```mermaid
+graph TD
+    V["volatile"] --> V1["防编译器优化重读内存"]
+    V --> V2["不保证原子性"]
+    V --> V3["不保证跨线程可见性"]
+    V --> V4["不保证有序性"]
+    A["std::atomic"] --> A1["机器级原子操作"]
+    A --> A2["memory_order 顺序约束"]
+    A --> A3["跨线程可见性"]
+    M["std::mutex"] --> M1["互斥临界区"]
+    M --> M2["配条件变量做同步"]
+```

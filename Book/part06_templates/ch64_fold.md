@@ -869,4 +869,16 @@ int main() {
 ```
 
 **结论**：逻辑折叠的空包有明确语义（`&&`→`true`，`||`→`false`，逗号→`void()`）；这是 fold 比手写递归更省心之处。
+## 可视化速查图（Mermaid 补充）[标准]
 
+> 把附录 C 性能与折叠方向浓缩为一张分类图。
+
+### 图 1 · 折叠表达式四类语法
+
+```mermaid
+graph TD
+    U["一元折叠"] --> UL["左折 省略号 op pack"]
+    U --> UR["右折 pack op 省略号"]
+    B["二元折叠"] --> BL["init op 省略号 op pack"]
+    B --> BR["pack op 省略号 op init"]
+```
