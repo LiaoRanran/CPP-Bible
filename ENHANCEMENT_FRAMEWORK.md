@@ -96,13 +96,13 @@
 > 浅图仅作辅助，不得作为深度本身。ch95 附录 J 是合格范例：逐字 libstdc++ 源码 + GCC15.3 实跑基准 + 控制流 Mermaid。
 
 ### Tier A — 高价值（建议补六维）
-ch26 lambda · ch45 对象模型 · ch60–63 模板体系 · ch90 ranges（✅D5 基准已补 附录M） · ch35 内存模型 · **ch30 volatile（补"volatile≠线程同步"图）** · **ch107 atomic（✅D5 基准已补，⬜D6 知识图待补）**。
+ch26 lambda（✅ 已有 D5 基准 std::function≈8× + D4 源码，达标）· ch45 对象模型（✅ D4/D5/D6 自全）· ch60 模板基础（✅ D5 基准已补 附录⑲.1/⑲.2）· ch62 特化（⬜ 缺 D5 真实基准，有 D4）· ch63 可变参（✅ 已有编译期基准 fold vs rec N=1000 94.5× + D4，达标）· ch90 ranges（✅D5 基准已补 附录M） · ch35 内存模型（✅ D4/D5 自全） · **ch30 volatile（补"volatile≠线程同步"图）** · **ch107 atomic（✅D5 基准已补，⬜D6 知识图待补）**。
 > 已达标（2026-07-23 全库扫描校正，原 Tier A 误列）：ch21 const 家族（已有 ⑬ libstdc++ 源码 + ⑦ 基准 + 图1 mermaid）、ch67 concepts（D3/D6 知识图已补）、ch95/ch77/ch154/ch78 见上。
 
 ### Tier B/C — 按需
 其余语法/工具章；仅在用户指定或发现明显短板时补。
 
-> **已完成的补篇**：`ch32`（初始化语境×移动，真实基准 + 与 ch115 交叉引用）、`ch78`（真实微基准实证 + 知识图谱 Mermaid，填补定性→定量与可视化知识连接缺口）、`ch154`（缓存优化附录 I：libstdc++ 15.3.0 `hardware_interference_size` 源码 + 三件套 -O2 真实基准 + 选型流 Mermaid）、`ch90`（ranges 真实基准附录 M：惰性管线≈1.0× / 贪婪物化 4.5×，GCC 15.3.0 -O2 实跑 + 选型流 Mermaid）。
+> **已完成的补篇**：`ch32`（初始化语境×移动，真实基准 + 与 ch115 交叉引用）、`ch78`（真实微基准实证 + 知识图谱 Mermaid，填补定性→定量与可视化知识连接缺口）、`ch154`（缓存优化附录 I：libstdc++ 15.3.0 `hardware_interference_size` 源码 + 三件套 -O2 真实基准 + 选型流 Mermaid）、`ch90`（ranges 真实基准附录 M：惰性管线≈1.0× / 贪婪物化 4.5×，GCC 15.3.0 -O2 实跑 + 选型流 Mermaid）、`ch60`（模板基础附录 ⑲.1/⑲.2：零开销实证 1.0× + 类型擦除代价条件性 SBO内1.0×/越界堆3.6× + 选型流 Mermaid，GCC 15.3.0 -O2 实跑）。
 
 ---
 
@@ -121,6 +121,7 @@ ch26 lambda · ch45 对象模型 · ch60–63 模板体系 · ch90 ranges（✅D
 | ch77 | 扩容/失效 | ✅ | ✅ | ✅ | ✅(本轮补 _M_check_len/relocate 源码) | ✅(本轮补 move-counter 实证+墙钟基准) | ✅(本轮补 reserve 决策流) | 达标（附录 L: 探针实证扩容 move≈2N/noexcept 回退拷贝 + 256B 3.26× 加速 + libstdc++ 15.3.0 一手源码） |
 | ch154 | 缓存优化/局部性 | ✅ | ✅ | ✅ | ✅(补 new:248 hardware_interference_size 源码) | ✅(补 三件套 -O2 真实基准: 伪共享 5.66×/行列 20.2×/-O3 抹平) | ✅(补 缓存优化选型流 mermaid) | 达标（附录 I: libstdc++ 15.3.0 一手源码 + 三件套 -O2 真实数字 + 选型流） |
 | ch90 | ranges/views | ✅ | ✅ | ✅(4 mermaid) | ✅(⑬ libstdc++ 源码, GCC13.1 待迁15.3) | ✅(本轮补 附录M GCC15.3 真实基准) | ✅(本轮补 选型流 mermaid) | 达标（附录 M: 惰性管线≈1.0× / 贪婪物化 4.5× 真实基准 + 选型流；D4 源码待迁 15.3.0 版本治理） |
+| ch60 | 模板基础 | ✅ | ✅ | ✅(本轮补选型流 mermaid) | ✅(⑮ integral_constant NTTP 源码 + ⑩ 真实汇编) | ✅(本轮补 ⑲.1 GCC15.3 真实基准: 零开销1.0×/类型擦除SBO内1.0×越界堆3.6×) | ✅(本轮补 选型流 mermaid) | 达标（⑲.1/⑲.2: 零开销实证 + 类型擦除代价条件性 + 选型流 mermaid） |
 | ch21 | const 族 | ✅ | ✅ | ✅(图1 mermaid) | ✅(⑬ libstdc++ 源码) | ✅(⑦ 基准) | ✅ | 已达标（扫描校正：D4+D5+D6 自全，无需补篇） |
 | ch107 | 原子 | ✅ | ✅ | ✅(本轮补选型 Mermaid) | ✅(asm=10) | ✅(本轮补真实并发基准) | ⬜ | D4/D5 达标（附录 K: mutex/atomic/分片 扩展性对决 + 选型图; D6 知识图待补） |
 | ch30 | volatile | ✅ | ✅ | ⬜(mer=0) | ✅ | ✅ | ⬜ | 建议补 D3/D6 |

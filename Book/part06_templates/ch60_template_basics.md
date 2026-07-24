@@ -636,6 +636,55 @@ int main() {
 // Code bloat：每实例化一种 T，链接器就多一份函数体；用 extern template 收敛。
 ```
 
+### ⑲.1 真实基准：模板零开销实证（GCC 15.3.0 -O2）
+
+本基准把 ⑲ 的定性结论"零运行期开销"变成可查证数字。完整源码 `_bench_template.cpp` 存于库根，复跑：`g++ -std=c++20 -O2 _bench_template.cpp -o _bench_template && ./_bench_template`。
+
+**测量方法**：`std::chrono::steady_clock` 取微秒中位（5 轮取中位，抗冷启动）；`volatile` 汇果 sink 防优化消除；主表统一 `-O2`（与 ch77/ch95/ch107/ch154/ch90 一致）。N = 1e6 doubles / 1e6 `std::any`。
+
+**三个子基准**：
+- **T1 零开销**：模板 lambda `run_template([](double x){return x*2;}, v)` vs 手写 `hand_written(v)`（同算子 `x*2`）。
+- **T2 类型擦除代价**：SBO 内路径用 `double`（8B，落 `std::any` 16B 小缓冲）；越界路径用 `Big{4×double}`（32B，越过 SBO → 强制堆分配）。
+- **T3 NTTP**：编译期已知 `N` 的 `nttp_loop<4096>` vs `noinline` 运行期循环 `runtime_loop(p,4096)`。
+
+**结果（3 次复跑中位，比值稳定）**：
+
+| 子基准 | 策略 | 中位耗时 | 相对 |
+|---|---|---|---|
+| T1 零开销 | 模板 lambda | ~1.31 ms | **1.0×** |
+| T1 零开销 | 手写循环 | ~1.30 ms | 1.00× |
+| T2a SBO 内 | `std::any`(double) | ~1.35 ms | **1.0×** |
+| T2a SBO 内 | 直访 `vector<double>` | ~1.35 ms | 1.00× |
+| T2b 越界堆 | `std::any`(Big 32B) | ~5.7 ms | **3.6×** |
+| T2b 越界堆 | 直访 `vector<Big>` | ~1.6 ms | 1.00× |
+| T3 NTTP | `nttp_loop<4096>` | ~5 µs | **1.0×** |
+| T3 NTTP | `runtime_loop(4096)` | ~5 µs | 1.00× |
+
+**四条非显然结论**：
+1. **零开销原则在运行期成立**（T1 = 1.0×）。模板 `run_template<F>` 被单态化为与手写循环完全相同的 `add` 指令序列——这正是 ⑮ `integral_constant` / mangled 名分析（line 185）在机器码层的体现：实例化即生成专用代码，无运行期分派。
+2. **类型擦除代价是"条件性"的，不是恒定的**（T2a = 1.0× 但 T2b = 3.6×）。`std::any` 对 ≤16B 类型走 SBO（小缓冲优化，栈上存储、仅一次 `type_info` 指针比较），运行期几乎零代价；一旦对象 >16B 越过 SBO，每次 `any_cast` 触发**堆分配 + 类型校验**，慢 3.6×。朴素"std::any 慢"说法不精确——慢的是堆分配，不是类型擦除本身。
+3. **NTTP 的运行期收益常被优化器抹平**（T3 ≈ 1.0×）。对平凡累加循环，`-O2` 把运行期循环也向量化，模板编译期已知 `N` 带来的展开优势在微核上不可见；其真正价值在**编译期可知性**启用的大规模向量化 / 特化（见 ch156 编译器优化）。这与 ch154 行列测试中"-O3 抹平差异"同源。
+4. **模板的真实成本在编译期与代码体积，不在运行期**。每个独立实例化 = 链接器多一份函数体（符号计数可证：实例化 K 种类型发射 K 个 mangled 符号）；`extern template` 收敛。运行期零开销的代价是编译时间与二进制膨胀——工程上用"只实例化真正需要的类型"权衡。
+
+**设计动机**：模板的本质是"编译期代码生成器"（line 7），其零开销来自单态化（为每个具体类型生成专用机器码）。类型擦除（`std::any`/`std::function`）为换取"运行期存储异质对象"而付出堆分配/间接调用；虚函数为换取"运行期多态"付出 vtable 取指。三者是"运行期灵活性 ↔ 编译期开销"Pareto 边界上不同点。
+
+**方法学注**：比值是可移植证据，绝对值随 CPU/编译器波动；本基准在 MinGW GCC 15.3.0 x64 `-O2` 取得，Ubuntu gcc-15 应同量级（无平台相关整型陷阱）。`std::any` SBO 阈值 16B 为 libstdc++ 实现定义常量（`_Any_data` 联合体大小），非标准强制。代码膨胀维度（每实例化一份函数体）的符号计数论证见 [ch156 编译器优化](Book/part14_perf/ch156_compiler_opt.md)；运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)。
+
+### ⑲.2 选型流（何时用模板 / 类型擦除 / 虚函数）
+
+```mermaid
+flowchart TD
+    A["需要复用算法/数据结构<br/>到多种类型?"] --> B{"类型在<br/>编译期已知?"}
+    B -->|是| C["用模板 / auto 参数<br/>零开销·单态化·内联"]
+    B -->|否 运行期才知类型| D{"需要存储异质对象?<br/>回调注册/接口边界"}
+    D -->|是 且对象小 ≤16B| E["std::any / std::function<br/>SBO 内零堆分配·注意类型校验"]
+    D -->|是 且对象大 >16B| F["警惕堆分配 3.6x<br/>改用 unique_ptr/引用<br/>或 CRTP 编译期多态"]
+    D -->|否 仅多态行为| G["虚函数 / 接口类<br/>vtable 取指开销·运行期多态"]
+    C --> H["忌: 为少写代码而模板化<br/>单类型内部工具→拖慢编译"]
+```
+
+> 交叉引用：零开销与 mangled 名见 ⑩/⑮；类型擦除成本对照 [ch26 lambda](Book/part03_language/ch26_lambda.md)（std::function ≈ 8×）/ [ch45 对象模型](Book/part05_oo/ch45_oop_object_model.md)（虚函数 vtable）；编译期成本深潜见 [ch156 编译器优化](Book/part14_perf/ch156_compiler_opt.md)；NTTP 与偏特化见 [ch61 模板重载](Book/part06_templates/ch61_template_overload.md)、[ch62 特化](Book/part06_templates/ch62_specialization.md)。
+
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
 **练习题**
