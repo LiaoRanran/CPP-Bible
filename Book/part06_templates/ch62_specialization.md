@@ -627,6 +627,50 @@ int main() {
 // trait 偏特化多在编译期 ::value 求值，无运行期开销
 ```
 
+### ⑲.1 真实基准：特化的快路径与编译期分发（GCC 15.3.0 -O2）
+
+本基准把 ⑲ 的"特化选择纯编译期、零运行期分支"变成可查证数字。完整源码 `_bench_specialization.cpp` 存于库根，复跑：`g++ -std=c++20 -O2 _bench_specialization.cpp -o _bench_specialization && ./_bench_specialization`。
+
+**测量方法**：`std::chrono::steady_clock` 取微秒中位（5 轮取中位）；`volatile` sink 防优化消除；主表统一 `-O2`（与 ch60/ch77/ch95/ch107/ch154/ch90 一致）。N = 5e5 元素。
+
+**两个子基准**：
+- **T1 序列化快路径**：主模板 `to_string_generic<T>` 用 `ostringstream`（通用慢路径）；`to_string_generic<int>` 全特化改走 `std::to_string`（快路径）。对照 `to_string_nospec<T>` 永远走 ostringstream。
+- **T2 编译期分发 vs 运行期 RTTI**：`std::variant<int,double,string>` + `std::visit`（可选项列表在编译期展开成分发）vs `std::any` + 每元素 `any_cast`（运行期 `type_info` 校验）。
+
+**结果（6 次复跑中位，比值稳定）**：
+
+| 子基准 | 策略 | 中位耗时 | 相对 |
+|---|---|---|---|
+| T1 序列化 | int 全特化快路径 | ~5.8 ms | **1.0×** |
+| T1 序列化 | 通用 ostringstream | ~58 ms | **9.9×** |
+| T2 类型分发 | `std::variant` + visit | ~0.72 ms | **1.0×** |
+| T2 类型分发 | `std::any` + any_cast | ~5.3 ms | **7.3×** |
+
+**四条非显然结论**：
+1. **特化为热类型提供"快路径"**是真实且巨大的收益（T1 = 9.9×）。主模板的通用实现（`ostringstream`）为兼容任意类型付出格式化框架开销；对 `int` 的全特化绕过它，直接用整数→字符串的快速转换。这是 ⑮ `vector<bool>` 位压缩（以空间换时间）同构思想：特化让"常见情形"走最优实现。
+2. **编译期分发（variant/visit）秒杀运行期 RTTI（any）**（T2 = 7.3×）。`std::visit` 的分发由 `variant` 的候选项列表在编译期生成（模板递归展开为跳转表），运行期只需一次索引跳转；`std::any` 每元素做一次 `type_info` 指针比较（`any_cast` 校验）。代价差异正是"编译期已知可选项"vs"运行期才知类型"的 Pareto 边界。
+3. **特化的零运行期开销来自"分发在编译期完成"**。trait 偏特化（如 `is_pointer<T>`）的 `::value` 在编译期定值，运行期无分支、无查表——这与 ch60 T1 模板零开销同源，只是机制从"单态化"变成"编译期类型路由"。
+4. **代价仍是编译期**：每份特化 = 一份独立类型定义（符号计数可证）；特化地狱（深偏特化嵌套）拖慢编译、膨胀二进制。收敛靠 `if constexpr`（C++17）/ concepts（C++20）把"特化树"压平成约束——见 ch61/ch69。
+
+**设计动机**：模板特化的本质是"按类型在编译期选择实现"。它把运行期本要做的 `if (type==X)` 分发前移到编译期，换取零运行期分支与每类型最优代码。这与 ⑮ `libstdc++ is_pointer` 偏序比较、⑮ `vector<bool>` 位压缩完全一致：标准库自身就是用特化把"通用正确"与"特定高效"统一起来的范例。
+
+**方法学注**：比值是可移植证据，绝对值随 CPU/编译器波动；本基准在 MinGW GCC 15.3.0 x64 `-O2` 取得。ostringstream 的 9.9× 主要来自其格式化状态机开销，在任意合规实现上同量级；variant vs any 的 7.3× 来自 RTTI 校验，libstdc++/libc++ 均如此。运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)；编译期成本见 [ch156 编译器优化](Book/part14_perf/ch156_compiler_opt.md)。
+
+### ⑲.2 选型流（何时用特化 / 偏特化 / 运行期分发）
+
+```mermaid
+flowchart TD
+    A["需要按类型选择<br/>不同实现?"] --> B{"类型在<br/>编译期已知?"}
+    B -->|是 且类型集合封闭| C["用全/偏特化<br/>零运行期分支·每类型最优代码"]
+    B -->|是 但 Intent 约束复杂| D["用 concepts(C++20)<br/>压平特化树·约束分发"]
+    B -->|否 类型集合开放<br/>运行期才知| E{"需存储异质对象?"}
+    E -->|是| F["std::variant + visit<br/>编译期可选项·7.3x 快于 any"]
+    E -->|否 仅多态行为| G["虚函数 / std::any<br/>运行期 RTTI 代价见 ch26/ch45"]
+    C --> H["忌: 为微小差异<br/>深嵌套偏特化→特化地狱"]
+```
+
+> 交叉引用：零开销与单态化见 [ch60 模板基础](Book/part06_templates/ch60_template_basics.md)；类型擦除代价对照 [ch26 lambda](Book/part03_language/ch26_lambda.md)（std::function ≈ 8×）/ [ch45 对象模型](Book/part05_oo/ch45_oop_object_model.md)（虚函数 vtable）；concepts 压平特化树见 [ch61 模板重载](Book/part06_templates/ch61_template_overload.md)、[ch69 constexpr](Book/part06_templates/ch69_constexpr.md)。
+
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
 **练习题**
