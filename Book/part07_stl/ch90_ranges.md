@@ -994,7 +994,7 @@ unsigned long long bench_eager(const vector<int>& v) {
 
 ### M.5 交叉引用与方法学注
 
-- 性能基准范式见 [ch95 附录 J](Book/part08_algorithms/ch95_algo_overview.md)（introsort 真实基准）、[ch107 附录 K](Book/part07_stl/ch107_atomic.md)（并发基准）、[ch77 附录 L](Book/part07_stl/ch77_vector.md)（扩容实证）、[ch154 附录 I](Book/part14_perf/ch154_cache_opt.md)（局部性基准）。
+- 性能基准范式见 [ch95 附录 J](Book/part08_algorithms/ch95_algo_overview.md)（introsort 真实基准）、[ch107 附录 K](Book/part09_concurrency/ch107_atomic.md)（并发基准）、[ch77 附录 L](Book/part07_stl/ch77_vector.md)（扩容实证）、[ch154 附录 I](Book/part14_perf/ch154_cache_opt.md)（局部性基准）。
 - **版本治理注**：本章 ⑬ 源码摘录声明基于 GCC 13.1.0（mingw1310，见 line 4）；本 D5 基准基于 GCC 15.3.0（项目 canonical）。libstdc++ ranges 实现在两版本间语义一致，但行号可能偏移，建议将 ⑬ 摘录迁移到 15.3.0 以对齐全书版本基线。
 - 基准源 `_bench_ranges.cpp` 存于库根，复跑：`g++ -std=c++20 -O2 -pthread _bench_ranges.cpp -o _bench_ranges && ./_bench_ranges`。
 
@@ -1010,7 +1010,7 @@ flowchart TD
     C --> G["忌: 管道中插 collect<br/>→ 退化成贪婪物化 4.5x 慢"]
 ```
 
-> 交叉引用：惰性求值范式见 [ch120 协程应用](Book/part10_modern/ch120_coroutine_app.md)；表达式模板零开销见 [ch124 三标准库源码](Book/part14_perf/ch124_three_stdlibs.md)（Eigen 同构）。
+> 交叉引用：惰性求值范式见 [ch120 协程应用](Book/part10_modern/ch120_coroutine_app.md)；表达式模板零开销见 [ch124 libstdc++ 架构](Book/part11_source/ch124_libstdcxx.md)（Eigen 同构）。
 
 > 交叉引用：迭代器见 [ch76](Book/part07_stl/ch76_stl_arch.md)；算法见 [ch95](Book/part08_algorithms/ch95_algo_overview.md)；惰性求值见 [ch120](Book/part10_modern/ch120_coroutine_app.md)。
 
