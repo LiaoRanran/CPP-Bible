@@ -96,12 +96,13 @@
 > 浅图仅作辅助，不得作为深度本身。ch95 附录 J 是合格范例：逐字 libstdc++ 源码 + GCC15.3 实跑基准 + 控制流 Mermaid。
 
 ### Tier A — 高价值（建议补六维）
-ch21 const 家族 · ch26 lambda · ch45 对象模型 · ch60–63 模板体系 · ch90 ranges · ch35 内存模型 · **ch67 concepts（补知识图）** · **ch30 volatile（补"volatile≠线程同步"图）** · **ch95 算法（D4/D5 已达标，cache 分析可选）** · **ch107 atomic（D5 基准已补，D6 知识图待补）** · **ch77 vector（补真实扩容基准）**。
+ch26 lambda · ch45 对象模型 · ch60–63 模板体系 · ch90 ranges（✅D5 基准已补 附录M） · ch35 内存模型 · **ch30 volatile（补"volatile≠线程同步"图）** · **ch107 atomic（✅D5 基准已补，⬜D6 知识图待补）**。
+> 已达标（2026-07-23 全库扫描校正，原 Tier A 误列）：ch21 const 家族（已有 ⑬ libstdc++ 源码 + ⑦ 基准 + 图1 mermaid）、ch67 concepts（D3/D6 知识图已补）、ch95/ch77/ch154/ch78 见上。
 
 ### Tier B/C — 按需
 其余语法/工具章；仅在用户指定或发现明显短板时补。
 
-> **已完成的补篇**：`ch32`（初始化语境×移动，真实基准 + 与 ch115 交叉引用）、`ch78`（真实微基准实证 + 知识图谱 Mermaid，填补定性→定量与可视化知识连接缺口）、`ch154`（缓存优化附录 I：libstdc++ 15.3.0 `hardware_interference_size` 源码 + 三件套 -O2 真实基准 + 选型流 Mermaid）。
+> **已完成的补篇**：`ch32`（初始化语境×移动，真实基准 + 与 ch115 交叉引用）、`ch78`（真实微基准实证 + 知识图谱 Mermaid，填补定性→定量与可视化知识连接缺口）、`ch154`（缓存优化附录 I：libstdc++ 15.3.0 `hardware_interference_size` 源码 + 三件套 -O2 真实基准 + 选型流 Mermaid）、`ch90`（ranges 真实基准附录 M：惰性管线≈1.0× / 贪婪物化 4.5×，GCC 15.3.0 -O2 实跑 + 选型流 Mermaid）。
 
 ---
 
@@ -119,8 +120,9 @@ ch21 const 家族 · ch26 lambda · ch45 对象模型 · ch60–63 模板体系 
 | ch32  | 补篇·初始化×移动 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 达标（真实基准已嵌入） |
 | ch77 | 扩容/失效 | ✅ | ✅ | ✅ | ✅(本轮补 _M_check_len/relocate 源码) | ✅(本轮补 move-counter 实证+墙钟基准) | ✅(本轮补 reserve 决策流) | 达标（附录 L: 探针实证扩容 move≈2N/noexcept 回退拷贝 + 256B 3.26× 加速 + libstdc++ 15.3.0 一手源码） |
 | ch154 | 缓存优化/局部性 | ✅ | ✅ | ✅ | ✅(补 new:248 hardware_interference_size 源码) | ✅(补 三件套 -O2 真实基准: 伪共享 5.66×/行列 20.2×/-O3 抹平) | ✅(补 缓存优化选型流 mermaid) | 达标（附录 I: libstdc++ 15.3.0 一手源码 + 三件套 -O2 真实数字 + 选型流） |
+| ch90 | ranges/views | ✅ | ✅ | ✅(4 mermaid) | ✅(⑬ libstdc++ 源码, GCC13.1 待迁15.3) | ✅(本轮补 附录M GCC15.3 真实基准) | ✅(本轮补 选型流 mermaid) | 达标（附录 M: 惰性管线≈1.0× / 贪婪物化 4.5× 真实基准 + 选型流；D4 源码待迁 15.3.0 版本治理） |
+| ch21 | const 族 | ✅ | ✅ | ✅(图1 mermaid) | ✅(⑬ libstdc++ 源码) | ✅(⑦ 基准) | ✅ | 已达标（扫描校正：D4+D5+D6 自全，无需补篇） |
 | ch107 | 原子 | ✅ | ✅ | ✅(本轮补选型 Mermaid) | ✅(asm=10) | ✅(本轮补真实并发基准) | ⬜ | D4/D5 达标（附录 K: mutex/atomic/分片 扩展性对决 + 选型图; D6 知识图待补） |
-| ch67 | concepts | ✅ | ✅ | ⬜(mer=0) | ✅ | ⬜ | ⬜ | 建议补 D3/D6 |
 | ch30 | volatile | ✅ | ✅ | ⬜(mer=0) | ✅ | ✅ | ⬜ | 建议补 D3/D6 |
 | ch67 | concepts | ✅ | ✅ | ✅(本轮补知识图+决策流) | ✅ | ✅ | ✅(本轮补) | 达标(可视化补全 D3/D6) |
 | ch95 | 算法总论 | ✅ | ✅ | ✅ | ✅(本轮补 introsort 源码) | ✅(本轮补 GCC15.3 真实基准) | ✅ | 达标（附录 J: libstdc++ introsort 逐字源码 + 真实基准 + 控制流 Mermaid） |

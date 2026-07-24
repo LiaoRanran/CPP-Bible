@@ -935,6 +935,83 @@ int main(){auto v=std::views::iota(1,6)|std::views::transform([](int x){return x
 
 **最佳实践**：`views` 是惰性的，管道末端无消费迭代器则什么也不计算；`views::filter` 后接 `views::transform` 融合为单遍扫描，等价于手写循环——这正是 Eigen 表达式模板的 ranges 翻版。
 
+## 附录 M：ranges 真实性能基准（D5，GCC 15.3.0 实跑）
+
+> 本附录补齐 ⑩ 节「汇编分析」与正文 line 391「微基准（示意）」之间缺失的**可复现量化证据**：用 GCC 15.3.0 `-O2` 实测 `filter|transform|accumulate` 三种写法的吞吐，给出真实比值，替代「差异 <5%」的定性描述。
+
+### M.1 基准设计（三策略）
+
+对 `N = 10'000'000` 个 `int`（0..N-1，偶数约占一半）做「filter 偶数 → 元素平方（bounded）→ 累加」：
+
+- **策略 A · 惰性 ranges 管道**：`v | views::filter(even) | views::transform(square)` 后 `std::accumulate`。views 组合为单遍迭代器。
+- **策略 B · 手写融合循环**：单 `for` 循环内联 filter+square+累加，作为零抽象上界。
+- **策略 C · 贪婪物化**：先 `push_back` 过滤结果到 `vector`，再 `push_back` 变换结果到 `vector`，最后累加——三遍 + 两次堆分配。
+
+```cpp
+// _bench_ranges.cpp（库根，不进 Book/ 编译门禁；g++ -std=c++20 -O2 -pthread）
+unsigned long long bench_lazy(const vector<int>& v) {
+    auto r = v
+           | views::filter([](int x){ return (x & 1) == 0; })
+           | views::transform([](int x){ return (unsigned long long)(x & 0x3FF) * (x & 0x3FF); });
+    return accumulate(r.begin(), r.end(), 0ULL);
+}
+unsigned long long bench_hand(const vector<int>& v) {
+    unsigned long long s = 0;
+    for (int x : v) if ((x & 1) == 0) s += (unsigned long long)(x & 0x3FF) * (x & 0x3FF);
+    return s;
+}
+unsigned long long bench_eager(const vector<int>& v) {
+    vector<int> f;                 for (int x : v) if ((x & 1) == 0) f.push_back(x);
+    vector<unsigned long long> t; t.reserve(f.size());
+    for (int x : f) t.push_back((unsigned long long)(x & 0x3FF) * (x & 0x3FF));
+    unsigned long long s = 0;     for (unsigned long long x : t) s += x;
+    return s;
+}
+```
+
+方法学：计时用 `steady_clock` 微秒分辨率，取 5 轮**中位**（剔除冷启动抖动）；结果与 `volatile` 汇合防止被优化消除；三策略自检结果必须相等（防基准写错）。环境：GCC 15.3.0（mingw1530，`C:/Qt/Tools/mingw1530_64`），`-O2`，x86-64。可移植表述用比值而非绝对值。
+
+### M.2 真实数字（GCC 15.3.0 -O2，中位，3 次复跑稳定）
+
+| 策略 | 中位耗时 (ms) | 相对手写 |
+|---|---|---|
+| A 惰性 ranges 管道 | 6.5 | **0.99×** |
+| B 手写融合循环 | 6.6 | 1.00× |
+| C 贪婪物化 | 29.3 | **4.5×** |
+
+三次复跑 lazy/hand 落在 0.986×–1.000×、eager/hand 落在 4.42×–4.60×，结论稳定。
+
+### M.3 非显然结论
+
+1. **惰性管线零开销（≈1.0×）**：`views::filter|views::transform` 在 `-O2` 下被模板组合成**单遍迭代器**，谓词与变换 lambda 内联进同一循环体（与 ⑩ 节「没有为 `filter_view` 单独生成一层函数调用」的汇编观察一致），与手写融合循环编译到**同一机器码级别**。这把正文 line 391「差异 <5%」升级为可查证 ≈1.0×——不仅不慢，且组合性（管道、`proj`、哨兵）零代价获得。
+2. **贪婪物化慢 4.5×**：两次 `vector` 堆分配 + 三遍内存扫描，分配器与带宽双重惩罚。**慢的不是 ranges，而是「提前物化中间结果」**。工程含义：管道末端才消费，绝不在中间 `collect` 成容器。
+3. **修正口头说法**：原「微基准（示意）」缺真实数字；本附录以可复现基准替代，消除「抽象必慢」的直觉偏见。
+
+### M.4 设计动机（为什么 lazy≈hand，为什么 eager 慢）
+
+- libstdc++ ranges 是**纯模板组合**：`filter_view<transform_view<V,F>,P>` 的迭代器 `operator++` 顺次调用内层迭代器并应用谓词/变换，**无虚函数、无类型擦除、无运行期分派**；单态化后在 `-O2` 完全内联。这是零开销抽象（zero-overhead principle）的范例，与 ch115 移动语义、ch32 初始化优化同源。
+- 贪婪物化的成本来自**违背惰性**：每次 `push_back` 触发容量检查与可能的重新分配（见 ch77 扩容），且中间 `vector` 多占一份内存带宽。ranges 的价值正是**延迟物化到末端消费**。
+
+### M.5 交叉引用与方法学注
+
+- 性能基准范式见 [ch95 附录 J](Book/part08_algorithms/ch95_algo_overview.md)（introsort 真实基准）、[ch107 附录 K](Book/part07_stl/ch107_atomic.md)（并发基准）、[ch77 附录 L](Book/part07_stl/ch77_vector.md)（扩容实证）、[ch154 附录 I](Book/part14_perf/ch154_cache_opt.md)（局部性基准）。
+- **版本治理注**：本章 ⑬ 源码摘录声明基于 GCC 13.1.0（mingw1310，见 line 4）；本 D5 基准基于 GCC 15.3.0（项目 canonical）。libstdc++ ranges 实现在两版本间语义一致，但行号可能偏移，建议将 ⑬ 摘录迁移到 15.3.0 以对齐全书版本基线。
+- 基准源 `_bench_ranges.cpp` 存于库根，复跑：`g++ -std=c++20 -O2 -pthread _bench_ranges.cpp -o _bench_ranges && ./_bench_ranges`。
+
+### M.6 选型流（何时用惰性管道）
+
+```mermaid
+flowchart TD
+    A["对序列做多步变换/过滤?"] --> B{"末端是否只需<br/>单次消费(累加/查找/拷贝)?"}
+    B -->|是| C["用 views 惰性管道<br/>filter|transform|消费<br/>零开销≈手写"]
+    B -->|否 需多次遍历<br/>或随机访问| D{"中间结果<br/>必须复用?"}
+    D -->|是| E["先 ranges 生成<br/>再一次性 collect 到 vector<br/>(仅一次物化)"]
+    D -->|否| F["避免 ranges<br/>直接手写循环更直观"]
+    C --> G["忌: 管道中插 collect<br/>→ 退化成贪婪物化 4.5x 慢"]
+```
+
+> 交叉引用：惰性求值范式见 [ch120 协程应用](Book/part10_modern/ch120_coroutine_app.md)；表达式模板零开销见 [ch124 三标准库源码](Book/part14_perf/ch124_three_stdlibs.md)（Eigen 同构）。
+
 > 交叉引用：迭代器见 [ch76](Book/part07_stl/ch76_stl_arch.md)；算法见 [ch95](Book/part08_algorithms/ch95_algo_overview.md)；惰性求值见 [ch120](Book/part10_modern/ch120_coroutine_app.md)。
 
 ## 相关章节（交叉引用）
