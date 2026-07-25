@@ -1650,3 +1650,104 @@ int main() { (void)get_logger(); std::cout << "ok\n"; }
 
 **结论**：任何"跨 TU 静态对象互相依赖"的场景，把依赖改为"函数内 `static` 局部 + 访问函数"即可把初始化推迟到首次使用，顺序由调用关系决定，SOIF 彻底消失。
 
+
+---
+
+## 附录 J：变量与存储期决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A{"需要一个跨调用保活的状态?"}
+    B{"状态跨线程共享?"}
+    C{"状态需要进程级唯一(单例)?"}
+    D["用 thread_local (TLS)"]
+    E["用 static 局部 (Meyers 单例, __cxa_guard)"]
+    F["用 static 全局/命名空间变量"]
+    G{"初始化依赖其他 TU 的 static?"}
+    H["用 constinit 强制常量初始化阶段"]
+    I["用函数内 static 延迟初始化 (避免 SOIF)"]
+    J["用 automatic 局部变量 + RAII"]
+    K{"需要动态大小/生命周期由指针管理?"}
+    L["用 unique_ptr / 容器 (dynamic)"]
+    M{"需要跨 TU 共享同一实体?"}
+    N["用 inline / extern 处理 ODR (ch60)"]
+    Z["选择完成"]
+    A -->|否| J
+    A -->|是| B
+    B -->|是| D
+    B -->|否| C
+    C -->|是| E
+    C -->|否| F
+    F --> G
+    G -->|是| I
+    G -->|否| H
+    D --> Z
+    E --> Z
+    H --> Z
+    I --> Z
+    J --> K
+    K -->|否| Z
+    K -->|是| L
+    L --> M
+    M -->|是| N
+    M -->|否| Z
+    N --> Z
+```
+
+> 决策流说明：声明变量时先按"是否跨调用保活"选择存储期；跨调用再依"是否线程共享 / 是否进程唯一"分派到 thread_local 或 static。static 全局若跨 TU 初始化相互依赖，则用 constinit 或函数内 static 规避静态初始化顺序灾难（SOIF）；绝不在头文件定义非 inline 的 const 全局（默认 internal 链接会造成多份实体与二进制膨胀）。
+
+## 附录 K：变量与存储期知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    V1["存储期 storage duration"] --> V7["automatic 栈/RAII"]
+    V1 --> V4["static 存储期"]
+    V1 --> V5["thread_local TLS"]
+    V1 --> V6["dynamic 堆"]
+    V4 --> V13["三阶段静态初始化 zero/const/dynamic"]
+    V13 --> V8["SOIF 静态初始化顺序灾难"]
+    V8 --> V10["constinit 常量初始化阶段"]
+    V8 --> V9["__cxa_guard 线程安全初始化"]
+    V9 --> V4
+    V4 --> V3["ODR / ODR-use"]
+    V3 --> V14["ODR 合并 inline/模板"]
+    V4 --> V11[".data/.bss/.rodata 段布局"]
+    V5 --> V12["TLS 模型 local-exec/global-dynamic"]
+    V5 --> V11
+    V6 --> V7
+    V2["链接 linkage external/internal/none"] --> V1
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖含义 |
+|---|---|---|
+| 1 | V1 → V7 | automatic 是四种存储期之一，生命周期等于所在块/函数执行期，通常配合 RAII |
+| 2 | V1 → V4 | static 是存储期之一，对象在程序整个运行期存在，落 .data/.bss/.rodata |
+| 3 | V1 → V5 | thread_local 是存储期之一，每线程一份独立副本，线程创建构造、退出逆序析构 |
+| 4 | V1 → V6 | dynamic 是存储期之一，生命周期由 new/智能指针/delete 管理 |
+| 5 | V4 → V13 | static 对象经历 zero → constant → dynamic 三阶段初始化（main 之前） |
+| 6 | V13 → V8 | 跨 TU 的 dynamic-init 顺序标准未指定，是静态初始化顺序灾难（SOIF）的根源 |
+| 7 | V8 → V10 | constinit 把初始化强制提前到常量阶段，从源头消除 SOIF |
+| 8 | V8 → V9 | 函数内 static 用 __cxa_guard（double-checked locking + futex）做线程安全延迟初始化 |
+| 9 | V9 → V4 | 守卫机制保证 C++11 起局部 static 初始化具备正确同步，落回 static 语义 |
+| 10 | V4 → V3 | 取 static 变量地址或绑定引用即构成 ODR-use，触发多定义检查 |
+| 11 | V3 → V14 | inline 变量/函数与模板实体由 ODR 合并，与 static 的 ODR-use 同源机制 |
+| 12 | V4 → V11 | static 对象按是否常量初值落 .data（已初值）/ .bss（零初值）/ .rodata（只读） |
+| 13 | V5 → V12 | TLS 依链接模型选 local-exec / global-dynamic / initial-exec / local-dynamic |
+| 14 | V5 → V11 | TLS 对象落 .tbss 段，每线程一块，经 TEB 或 emulated TLS（__emutls）访问 |
+| 15 | V6 → V7 | dynamic 对象经 unique_ptr/容器等 RAII 管理，元素本身恒在堆 |
+| 16 | V2 → V1 | 链接（external/internal/none）与存储期共同决定实体身份与跨 TU 可见性 |
+
+### K.2 跨章闭环表
+
+| 目标章 | 关联主题 | 闭环关系 |
+|---|---|---|
+| ch32 | 初始化 | 存储期决定初始化阶段（static 三阶段、thread/automatic 各自生命周期），列表初始化/constexpr 约束 static/thread 初始化 |
+| ch60 | 模板与 ODR | 模板/inline 变量由 ODR 合并，与 static 的 ODR-use 同源；头文件 inline 变量避免多定义 |
+| ch48 | 动态内存 | dynamic 存储期由 new/智能指针管理，容器元素恒在堆；返回局部引用悬垂属 storage duration 结束 |
+| ch30 | volatile 与可见性 | 全局/static 变量跨线程可见性须用 std::atomic，C++ volatile 不提供原子性 |
+| ch43 | 缓存局部性 | .data/.bss 中静态对象与 TLS 的布局决定缓存行占用基线，大表优先进 .rodata 共享只读页 |
+| ch41 | 智能指针 | dynamic 存储期通过 unique_ptr/shared_ptr 管理生命周期，控制块缓存局部性影响解引用 |
+| ch45 | 对象模型 | 变量最终落位到对象的内存布局，vptr/成员偏移由存储期与基类共同决定 |
+| ch52 | 空基类优化 EBO | 空基类子对象布局受存储期与继承影响，EBO 不改变存储期语义 |

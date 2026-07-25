@@ -820,3 +820,85 @@ int main(){
 ```
 
 `Addable` 把"可相加且结果同类型"这个约束显式命名；不满足时编译器直接报"约束未满足"，而非 SFINAE 那种一长串候选的晦涩诊断（见正文「对比」）。
+
+## 附录 J：Concepts 决策流（D3 维度）
+
+> 当你需要给模板参数加约束时，用本决策流在「concept 命名 / if constexpr / SFINAE / 约束施加方式」之间选型。
+
+```mermaid
+flowchart TD
+    A["需要给模板参数加约束?"] --> B{"约束要复用/命名?"}
+    B -->|是| C["定义 concept 命名约束"]
+    B -->|否| D{"是否单点分支?"}
+    D -->|运行期已知类型| E["if constexpr 剪裁分支"]
+    D -->|编译期剪裁重载| F["SFINAE enable_if ch66"]
+    C --> G{"约束施加方式?"}
+    G -->|约束占位| H["template<C T> 最干净"]
+    G -->|尾置| I["requires 子句 尾置约束"]
+    H --> J["更受约束者优先 偏序"]
+    I --> J
+    E --> K["零运行期开销"]
+    F --> K
+    J --> L{"约束失败期望?"}
+    L -->|清晰错误| M["concept 报不满足 X"]
+    L -->|晦涩错误| N["SFINAE 报 substitution failure"]
+    M --> O["编译期约束求解 零运行期开销"]
+    N --> O
+    K --> O
+```
+
+> 决策流说明：约束需复用/命名时定义 concept（C++20）；否则单点分支用 if constexpr（运行期已知类型）或 SFINAE（编译期剪裁重载，ch66）。约束可写约束占位 `template<C T>` 或尾置 requires 子句，二者等价。调用时更受约束者优先（偏序）。约束失败期望清晰错误选 concept，否则退回 SFINAE——但二者 ABI 等价，运行期零开销。
+
+## 附录 K：Concepts 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    Y1["concept C++20"] --> Y2["requires 子句/表达式"]
+    Y1 --> Y3["type trait is_integral ch65"]
+    Y2 --> Y4["SFINAE enable_if ch66"]
+    Y2 --> Y5["if constexpr ch69"]
+    Y1 --> Y6["约束占位 template<C T>"]
+    Y1 --> Y7["更受约束者优先 偏序"]
+    Y3 --> Y8["bool 化编译期谓词"]
+    Y8 --> Y9["conjunction 组合 &&/||/!"]
+    Y4 --> Y10["void_t 探测 ch66"]
+    Y9 --> Y11["可变参数 concept Ts&&..."]
+    Y7 --> Y12["重载决议选更约束候选"]
+    Y11 --> Y13["Ranges STL 约束 sort ch119"]
+    Y2 --> Y14["约束失败报错可读 对比 ch66"]
+    Y13 --> Y14
+    Y12 --> Y14
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖含义 |
+|---|---|---|
+| 1 | concept → requires | concept 用 requires 表达式定义约束 |
+| 2 | concept → type trait | concept 底层建立在 is_integral 等 trait 之上 |
+| 3 | requires → SFINAE | requires 失败与 SFINAE 失败同机制（静默剔除） |
+| 4 | requires → if constexpr | 二者正交：concept 做重载剪裁，if constexpr 做函数内分支 |
+| 5 | concept → 约束占位 | `template<C T>` 把 concept 写在参数位，最干净 |
+| 6 | concept → 偏序 | 更受约束的 concept 在重载决议中优先 |
+| 7 | type trait → bool 化 | concept 本质是 bool 化编译期谓词 |
+| 8 | bool 化 → 组合 | concept 用 &&/||/! 组合原子约束 |
+| 9 | SFINAE → void_t | concept 可读替代 void_t 探测 |
+| 10 | 组合 → 可变参数 concept | `(Addable<Ts> && ...)` 约束包内每个类型 |
+| 11 | 偏序 → 重载决议 | 更受约束候选在决议中胜出 |
+| 12 | 可变参数 concept → Ranges | Ranges 用 concept 约束 sort 等算法 |
+| 13 | requires → 可读报错 | 约束失败直接报不满足 X，对比 SFINAE |
+| 14 | Ranges → 可读报错 | Ranges 约束失败同样给出可读诊断 |
+| 15 | 重载决议 → 可读报错 | 约束偏序失败也走可读诊断路径 |
+
+### K.2 跨章闭环表
+
+| 源章节 | 目标章节 | 闭环关系 |
+|---|---|---|
+| ch67 | ch65 | concepts 是 type_traits 的类型安全替代 |
+| ch67 | ch66 | concepts 以更清晰方式替代 SFINAE（ABI 等价） |
+| ch67 | ch62 | 偏特化是 concept 约束的载体 |
+| ch67 | ch69 | constexpr + concepts 约束编译期计算 |
+| ch67 | ch61 | concepts 重写重载决议约束层 |
+| ch67 | ch119 | Ranges 深度依赖 concepts 约束 |
+| ch67 | ch60 | concepts 约束模板参数 建立在模板基础 |
+| ch67 | ch68 | TMP 编译期计算与 concept 协同 |

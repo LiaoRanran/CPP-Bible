@@ -743,3 +743,89 @@ graph TD
     C["现代替代 constexpr"] --> CI["if constexpr 编译期分支"]
     C --> CC["循环 constexpr 更可读"]
 ```
+
+## 附录 J：模板元编程（TMP）决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需要编译期计算?"] -->|"否"| Z["运行时普通代码"]
+    A -->|"是"| B{"计算结果是类型还是值?"}
+    B -->|"类型"| C{"需要类型级分支/分发?"}
+    C -->|"是"| D["特化 / 偏特化 编译期分支"]
+    C -->|"否"| E["类型萃取 traits 派生"]
+    B -->|"值"| F{"能编译期求值?"}
+    F -->|"参数均常量"| G["constexpr 函数 优先"]
+    F -->|"参数含运行时"| H["运行期函数 不强行编译期"]
+    G --> I{"递归深度大?"}
+    I -->|"是"| J["折叠表达式 / 迭代 缓实例化爆炸"]
+    I -->|"否"| K["递归元函数 终止特化"]
+    D --> L{"需约束软失败?"}
+    L -->|"是"| M["SFINAE / enable_if"]
+    L -->|"否"| N["if constexpr 编译期分支"]
+    K --> O["零开销 编译期定值"]
+    J --> O
+    N --> O
+    M --> O
+    E --> O
+    O --> P["static_assert 校验"]
+```
+
+> 决策流说明：需要"类型级"结果且要编译期分发时选特化/SFINAE；能算"值"且参数都是常量时 constexpr 优先，递归深则用折叠表达式压制实例化爆炸。TMP 只在 traits/类型变换等必须类型计算处保留，其余交给 constexpr。
+
+## 附录 K：模板元编程（TMP）知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    TMP["模板元编程 TMP"] --> REC["递归元函数"]
+    TMP --> SPE["特化 / 偏特化"]
+    TMP --> TRA["类型萃取 traits"]
+    REC --> TERM["终止特化 防无限实例化"]
+    SPE --> COND["编译期条件分发"]
+    TRA --> IC["integral_constant 布尔载体"]
+    TRA --> TYP["type_traits 类型属性"]
+    COND --> SFINAE["SFINAE 替换失败非错误"]
+    COND --> IFCE["if constexpr 分支消除"]
+    TMP --> CE["constexpr 值级替代"]
+    CE --> FOLD["折叠表达式 迭代展开"]
+    FOLD --> INST["实例化爆炸 缓解"]
+    TRA --> TUP["tuple 类型序列"]
+    TUP --> VAR["variant 递归深度受限"]
+    REC --> POI["POI 实例化点"]
+    SPE --> TWO["两阶段查找"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边（依赖方向） | 解读 |
+|---|---|
+| TMP → 递归元函数 | 递归元函数是 TMP 实现编译期循环的基础构件。 |
+| TMP → 特化/偏特化 | 特化/偏特化提供编译期条件分支与终止。 |
+| TMP → 类型萃取 traits | 类型萃取在 TMP 中查询类型属性。 |
+| 递归元函数 → 终止特化 | 递归必须靠终止特化避免无限实例化。 |
+| 特化 → 编译期条件分发 | 偏/全特化实现编译期条件分发。 |
+| 类型萃取 → integral_constant | integral_constant 是 traits 布尔结果载体。 |
+| 类型萃取 → type_traits | type_traits 提供编译期类型判定。 |
+| 条件分发 → SFINAE | SFINAE 让约束失败静默退回其他重载。 |
+| 条件分发 → if constexpr | if constexpr 在编译期丢弃不采纳分支。 |
+| TMP → constexpr | 现代 C++ 用 constexpr 做值级计算替代类型递归。 |
+| constexpr → 折叠表达式 | 折叠表达式把包展开写成迭代，压低实例化深度。 |
+| 折叠表达式 → 实例化爆炸缓解 | 实例化爆炸靠迭代式展开/缓存缓解。 |
+| 类型萃取 → tuple | tuple 是 TMP 类型序列的代表。 |
+| tuple → variant | variant 复用类型序列递归，深度受限 256~1024。 |
+| 递归元函数 → POI | 递归实例化与 POI（实例化点）规则相关。 |
+| 特化 → 两阶段查找 | 偏特化依赖两阶段查找解析。 |
+
+### K.2 跨章闭环表
+
+| 章节 | 闭环关系 |
+|---|---|
+| ch60 模板基础 | TMP 的递归/特化建立在模板实例化机制之上。 |
+| ch62 特化 | 偏/全特化是 TMP 编译期分支的实现手段。 |
+| ch65 type_traits | 类型萃取是 TMP 查询类型属性的核心。 |
+| ch66 SFINAE | SFINAE 为 TMP 提供软失败的条件分发。 |
+| ch67 概念 | 概念取代部分 SFINAE 约束，更可读。 |
+| ch69 constexpr | constexpr 值级计算替代类型递归，缓解实例化爆炸。 |
+| ch70 标签分发 | integral_constant 标签是 TMP 的经典应用。 |
+| ch51 CRTP | CRTP 是 TMP 实现的静态多态惯用法。 |
+| ch124 libstdc++ | 标准库 tuple/variant 以 TMP 递归实现。 |
+```

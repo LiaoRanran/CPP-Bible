@@ -852,3 +852,83 @@ int main() {
 
 **结论**：`void_t` 探测的是"表达式是否合法"；要探测 callable 成员就用 `declval<T>().member()` 表达式，而非 `&T::member` 指针形态。
 
+## 附录 J：类型特性决策流（D3 维度）
+
+> 当你需要在编译期查询或修改类型属性时，用本决策流在「布尔/变换 trait、void_t 探测、SFINAE、if constexpr、Concepts」之间选型。
+
+```mermaid
+flowchart TD
+    A["需要在编译期查询/修改类型属性?"] --> B{"结果用 bool 还是 类型?"}
+    B -->|bool| C["布尔 trait 继承 true_type/false_type"]
+    B -->|类型| D["变换 trait 暴露 type 成员 + _t 别名"]
+    C --> E["用偏特化把特殊类型分流到 true"]
+    D --> E
+    E --> F{"需要检测成员/嵌套类型是否存在?"}
+    F -->|是| G["void_t 探测惯用法 ch66"]
+    F -->|否| H{"分发要复用/可读?"}
+    H -->|否| I["enable_if 重载分流 ch66"]
+    H -->|是| J["if constexpr 单函数内分支"]
+    I --> K["SFINAE 静默剔除失败候选"]
+    J --> K
+    G --> K
+    K --> L{"是否 C++20 可用?"}
+    L -->|是| M["Concepts requires 替代 报错可读"]
+    L -->|否| N["保留 SFINAE/trait 兼容"]
+    M --> O["零运行期开销 编译期常量折叠"]
+    N --> O
+```
+
+> 决策流说明：先判断要的是编译期 bool 值（布尔 trait 继承 true/false_type）还是新类型（变换 trait 暴露 type）。探测成员存在性用 void_t 惯用法（ch66）。同名多实现分发优先 if constexpr（可读）或 enable_if（ch66）；C++20 一律用 Concepts requires 替代，错误可读、约束可组合。所有 trait 运算在编译期完成，运行期只剩常量（如 use_traits=48）。
+
+## 附录 K：类型特性知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    Y1["integral_constant<T,v>"] --> Y2["true_type / false_type"]
+    Y1 --> Y3["operator bool() constexpr"]
+    Y2 --> Y4["布尔 trait 继承"]
+    Y2 --> Y5["类型变换 trait type 成员"]
+    Y4 --> Y6["偏特化分流特殊类型"]
+    Y5 --> Y7["_t 别名模板消噪"]
+    Y6 --> Y8["is_pointer/is_const 手写"]
+    Y8 --> Y9["SFINAE enable_if ch66"]
+    Y9 --> Y10["void_t 探测成员 ch66"]
+    Y10 --> Y11["Concepts requires ch67"]
+    Y11 --> Y12["替代 trait 分布 可读诊断"]
+    Y3 --> Y13["if constexpr 驱动分支 ch69"]
+    Y7 --> Y13
+    Y13 --> Y14["零运行期开销 常量折叠"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖含义 |
+|---|---|---|
+| 1 | integral_constant → true/false_type | true/false_type 是 integral_constant<bool,true/false> 别名 |
+| 2 | integral_constant → operator bool | 提供 constexpr 隐式转 bool，可运行期取用常量 |
+| 3 | true/false_type → 布尔 trait | 布尔 trait 继承 true/false_type 暴露 value |
+| 4 | true/false_type → 变换 trait | 变换 trait 继承并额外暴露 type 成员 |
+| 5 | 布尔 trait → 偏特化分流 | 主模板 false + 偏特化 true 完成类型分流 |
+| 6 | 变换 trait → _t 别名 | C++14 引入 `_t` 别名消减 typename::type 噪音 |
+| 7 | 偏特化 → 手写 is_pointer | is_pointer 主模板 false + `T*` 偏特化 true |
+| 8 | 手写 → SFINAE | enable_if 把 trait 作为编译期分发条件 |
+| 9 | SFINAE → void_t | void_t 探测成员建立在偏特化之上 |
+| 10 | void_t → Concepts | C++20 requires 替代 void_t 探测，可读更优 |
+| 11 | Concepts → 替代分布 | concepts 把 trait 分布压平为可读约束 |
+| 12 | operator bool → if constexpr | if constexpr 用 trait 常量驱动运行期分支 |
+| 13 | _t 别名 → if constexpr | 变换 trait 也参与 if constexpr 分支 |
+| 14 | if constexpr → 常量折叠 | trait 分支全编译期定值，零运行期开销 |
+
+### K.2 跨章闭环表
+
+| 源章节 | 目标章节 | 闭环关系 |
+|---|---|---|
+| ch65 | ch62 | 偏特化是 trait 的实现基石（is_pointer 靠偏特化） |
+| ch65 | ch66 | trait 是 SFINAE 最常用的谓词（enable_if 条件源） |
+| ch65 | ch67 | concepts 是 traits 的类型安全替代 |
+| ch65 | ch63 | 可变参数 traits（common_type）对包萃取 |
+| ch65 | ch69 | constexpr traits 提供编译期值查询 |
+| ch65 | ch60 | trait 建立在模板基础之上 |
+| ch65 | ch68 | trait 是 TMP 的零件 |
+| ch65 | ch64 | traits 组合常借助折叠（conjunction） |
+

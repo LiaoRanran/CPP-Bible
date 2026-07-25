@@ -806,3 +806,99 @@ int main() { load(42); load(std::string("hi")); }
 
 **结论**：SFINAE 重载集要求条件 partition 整个类型空间（互补且不重叠），否则出现"无 viable 重载"或"多义"硬错误。
 
+## 附录 U：SFINAE 决策流（D3 维度）
+
+> 当你需要按类型属性给同名函数多份实现时，用本决策流在「Concepts / enable_if 孔位 / void_t 探测」之间选型。
+
+```mermaid
+flowchart TD
+    A["需要按类型属性给同名函数多份实现?"] --> B{"约束是否 C++20 可用?"}
+    B -->|是| C["Concepts requires 替代 SFINAE"]
+    B -->|否| D{"约束放哪个孔位?"}
+    D -->|返回类型| E["enable_if_t<Cond> 返回类型孔位"]
+    D -->|多条件| F["默认模板参数孔位 错开避免旧 MSVC 坑"]
+    E --> G["替换失败 静默剔除该候选"]
+    F --> G
+    C --> H["约束不满足 剔除 报错可读"]
+    G --> I{"是否探测成员/嵌套类型存在?"}
+    I -->|是| J["void_t<decltype(...)> 探测惯用法"]
+    I -->|否| K{"进入函数体才失败?"}
+    K -->|是| L["硬错误 SFINAE 救不了"]
+    K -->|否| M["条件互补且完备 否则无候选/二义"]
+    J --> N["主模板 false_type + 偏特化 true_type"]
+    M --> O["零运行期开销 分发编译期完成"]
+    L --> O
+    N --> O
+```
+
+### U.1 决策流说明
+
+> SFINAE 只在「模板实参替换签名」阶段生效：约束失败仅静默剔除该候选，只有全部候选都失败才升级为硬错误。约束放返回类型孔位（C++11 最常用）或默认模板参数孔位（可叠多条件）。探测成员用 void_t 惯用法（主模板 false_type + 偏特化 true_type）。条件必须互补且完备，否则调用点无匹配或二义。C++20 优先用 Concepts（ABI 等价、报错可读）。
+
+### U.2 SFINAE 选型要点
+
+| 维度 | 选型 | 说明 |
+|---|---|---|
+| 约束可用 C++20 | Concepts requires | 报错可读、可组合、编译更快 |
+| 必须 C++11/14 | enable_if 返回类型孔位 | 经典写法，条件互补 |
+| 多条件叠加 | 默认模板参数孔位 | 合并为 enable_if_t<C1 && C2> 兼容旧 MSVC |
+| 探测成员存在 | void_t 惯用法 | 主模板 false + 偏特化 true |
+| 单函数内分支 | if constexpr | 不进重载集，避免 SFINAE 复杂性 |
+| 体内错误 | 硬错误 | 进入函数体即 SFINAE 无效，需放签名 |
+
+## 附录 V：SFINAE 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    Y1["SFINAE 替换失败非错误"] --> Y2["模板实参替换阶段"]
+    Y1 --> Y3["候选静默剔除 非硬错误"]
+    Y2 --> Y4["仅签名 不进函数体"]
+    Y3 --> Y5["enable_if 条件开关"]
+    Y5 --> Y6["返回类型孔位"]
+    Y5 --> Y7["默认模板参数孔位"]
+    Y6 --> Y8["手写 MyEnableIf 偏特化"]
+    Y7 --> Y8
+    Y1 --> Y9["void_t 探测惯用法"]
+    Y9 --> Y10["主模板 false_type + 偏特化 true_type"]
+    Y10 --> Y11["has_serialize/has_size 探测"]
+    Y8 --> Y12["type_traits 提供谓词 ch65"]
+    Y12 --> Y13["Concepts requires 替代 ch67"]
+    Y13 --> Y14["ABI 等价 仅胜出候选实例化"]
+    Y11 --> Y14
+    Y4 --> Y14
+```
+
+### V.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖含义 |
+|---|---|---|
+| 1 | SFINAE → 替换阶段 | 仅模板实参替换失败才算 SFINAE |
+| 2 | SFINAE → 静默剔除 | 失败仅剔除候选，非硬错误 |
+| 3 | 替换阶段 → 仅签名 | 替换发生在签名，不进函数体 |
+| 4 | 静默剔除 → enable_if | enable_if 条件失败触发替换失败 |
+| 5 | enable_if → 返回类型孔位 | 惯用法一：塞进返回类型 |
+| 6 | enable_if → 默认参数孔位 | 惯用法二：塞进默认模板参数 |
+| 7 | 返回类型 → 手写 MyEnableIf | 手写 enable_if 主模板无 type、偏特化有 type |
+| 8 | 默认参数 → 手写 MyEnableIf | 同手写实现，两孔位等价 |
+| 9 | SFINAE → void_t | void_t 把成员探测转成替换信号 |
+| 10 | void_t → 主+偏特化 | 主模板 false + 偏特化 void_t true |
+| 11 | 主+偏特化 → 探测 | has_serialize/has_size 用此惯用法 |
+| 12 | 手写 → type_traits | enable_if 条件源来自 trait 谓词 |
+| 13 | type_traits → Concepts | C++20 以 requires 替代 SFINAE |
+| 14 | Concepts → ABI 等价 | concepts 与 SFINAE 都为胜出候选发射一份实例 |
+| 15 | 探测 → ABI 等价 | 探测命中同样只实例化胜出者 |
+| 16 | 仅签名 → ABI 等价 | 体内错误才硬错，签名失败零开销 |
+
+### V.2 跨章闭环表
+
+| 源章节 | 目标章节 | 闭环关系 |
+|---|---|---|
+| ch66 | ch65 | type_traits 是 SFINAE 的谓词源（enable_if 条件） |
+| ch66 | ch67 | concepts 以更清晰方式替代 SFINAE（ABI 等价） |
+| ch66 | ch62 | 偏特化是 SFINAE 的载体（按 trait 选特化） |
+| ch66 | ch61 | SFINAE 在重载决议中剔除失败候选 |
+| ch66 | ch68 | TMP 用 SFINAE 实现编译期 if |
+| ch66 | ch69 | constexpr 条件等价 if constexpr |
+| ch66 | ch60 | SFINAE 是模板基础的编译期分支 |
+| ch66 | ch63 | 可变参数 + SFINAE 探测包 |
+

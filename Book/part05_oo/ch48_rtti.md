@@ -1149,3 +1149,100 @@ const std::type_info& static_who() { return typeid(Derived); }  // 非多态表�
 - 多态 RTTI 的全部秘密就是 **vtable[-1] 槽的 `type_info*`**——`-fno-rtti` 会去掉这个槽，`typeid`/`dynamic_cast` 随之不可用。
 - `dynamic_cast` 的成本来自 `__dynamic_cast` 的继承图搜索，热路径下行应优先考虑虚函数分派或 CRTP（见 ch51），而非反复 `dynamic_cast`。
 - 对确定类型用 `typeid(T)` 是编译期常量；只有对**多态左值/引用**取 `typeid` 才有运行期开销。
+
+---
+
+## 附录 J：RTTI 与类型查询决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A{"需要运行时查询类型?"}
+    B{"已知静态类型向上/同型?"}
+    C["上行转换 (static_cast 即可)"]
+    D{"需安全下行转换?"}
+    E["用 dynamic_cast (走 RTTI/__dynamic_cast)"]
+    F{"转换可能失败(null/bad_cast)?"}
+    G["检查返回值 (返回 nullptr/抛 bad_cast)"]
+    H{"跨虚基类/交叉转换?"}
+    I["dynamic_cast 经 vbase offset 调整 (ch49)"]
+    J{"需关闭 RTTI 缩减体积?"}
+    K["用 -fno-rtti + 替代 (CRTP/手写 type tag)"]
+    L{"需要轻量类型标识?"}
+    M["用 type_index / 手写 type enum (ch51)"]
+    Z["决策完成"]
+    A -->|否| J
+    A -->|是| B
+    B -->|是| C
+    B -->|否| D
+    C --> Z
+    D -->|是| E
+    D -->|否| H
+    E --> F
+    F -->|是| G
+    F -->|否| H
+    G --> Z
+    H -->|是| I
+    H -->|否| L
+    I --> Z
+    J -->|是| K
+    J -->|否| L
+    K --> Z
+    L -->|否| Z
+    L -->|是| M
+    M --> Z
+```
+
+> 决策流说明：上行转换用 static_cast 即可；需要安全下行时用 dynamic_cast（依赖 RTTI 与 __dynamic_cast，跨虚基类会经 vbase offset 调整）。转换可能失败必须判空或捕获 bad_cast。若需 -fno-rtti 缩减二进制，用 CRTP 或手写 type tag 替代运行时查询。
+
+## 附录 K：RTTI 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    V1["RTTI"] --> V2["typeid / std::type_info"]
+    V1 --> V3["dynamic_cast"]
+    V3 --> V4["静态类型 vs 动态类型"]
+    V3 --> V5["上行/下行/交叉/空指针 四形态"]
+    V3 --> V6["__dynamic_cast 运行时"]
+    V2 --> V7["vtable 中的 typeinfo 槽"]
+    V7 --> V13["虚函数分派 ch47"]
+    V3 --> V11["虚继承 type_info 层次 ch49"]
+    V8["-fno-rtti 构建"] --> V9["CRTP 静态替代 ch51"]
+    V9 --> V10["type_index / type_tag"]
+    V8 --> V10
+    V3 --> V12["dynamic 存储期 ch19"]
+    V13 --> V14["对象模型 ch45"]
+    V2 --> V14
+    V11 --> V13
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖含义 |
+|---|---|---|
+| 1 | V1 → V2 | RTTI 提供 typeid 查询对象动态类型信息 |
+| 2 | V1 → V3 | RTTI 提供 dynamic_cast 做运行时安全转换 |
+| 3 | V3 → V4 | dynamic_cast 结果取决于静态类型与动态类型是否一致 |
+| 4 | V3 → V5 | dynamic_cast 支持上行/下行/交叉/空指针四种形态 |
+| 5 | V3 → V6 | 下行/交叉转换失败回退到 __dynamic_cast 运行时遍历 |
+| 6 | V2 → V7 | type_info 对象指针就存放在 vtable 中 |
+| 7 | V7 → V13 | typeinfo 槽与虚调用同驻 vtable，由虚函数机制支撑 |
+| 8 | V3 → V11 | 跨虚基类的 dynamic_cast 依赖虚继承的 type_info 层次 |
+| 9 | V8 → V9 | 用 -fno-rtti 时改用 CRTP 在编译期完成多态 |
+| 10 | V9 → V10 | CRTP 可配合手写 type_index/type_tag 做轻量标识 |
+| 11 | V8 → V10 | 关闭 RTTI 后手写 type tag 取代 typeid |
+| 12 | V3 → V12 | 待查询对象的生命周期受 storage duration 约束 |
+| 13 | V13 → V14 | 虚分派落点由对象模型的内存布局决定 |
+| 14 | V2 → V14 | type_info 指针偏移由对象模型布局决定 |
+| 15 | V11 → V13 | 虚继承的 type_info 层次由最派生类构建并挂入 vtable |
+
+### K.2 跨章闭环表
+
+| 目标章 | 关联主题 | 闭环关系 |
+|---|---|---|
+| ch47 | 虚函数 | typeinfo 槽与虚调用同驻 vtable，dynamic_cast 依赖 vtable 布局 |
+| ch45 | 对象模型 | 对象内存布局决定 typeinfo 指针的偏移 |
+| ch49 | 虚继承 | 虚继承的 type_info 层次由最派生类构建，dynamic_cast 跨菱形走 vbase 调整 |
+| ch50 | 多重继承 | 多基类子表各自含 top_offset/typeinfo，dynamic_cast 据此做 this 调整 |
+| ch19 | 变量与存储期 | RTTI 对象与待查询对象同受存储期约束（automatic/static/heap） |
+| ch51 | CRTP | -fno-rtti 下用 CRTP 静态替代运行时类型查询 |
+| ch52 | 空基类优化 EBO | 空基类布局与 typeinfo 共存不冲突 |

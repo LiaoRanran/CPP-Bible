@@ -838,3 +838,94 @@ int main() { std::cout << pick(41) << "\n"; }
 ```
 
 **结论**：`if constexpr` 替代"布尔属性"标签；标签分发在需借重载决议消歧（如多迭代器类别）时仍不可替代。
+
+## 附录 U：标签分发（Tag Dispatch）决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需要按类型属性分流?"] -->|"否"| Z["普通函数/运行时逻辑"]
+    A -->|"是"| B{"属性是布尔还是类别?"}
+    B -->|"布尔属性"| C{"C++17 可用?"}
+    C -->|"是"| D["if constexpr 单函数分支"]
+    C -->|"否"| E["SFINAE / enable_if 重载"]
+    B -->|"类别(如迭代器类别)"| F{"需与重载/ADL 交互?"}
+    F -->|"是"| G["标签分发 空类型标签"]
+    F -->|"否"| H["concepts 约束重载"]
+    G --> I{"标签是 bool 型?"}
+    I -->|"是"| J["true_type/false_type 驱动"]
+    I -->|"否"| K["继承标签层级 iterator_category"]
+    D --> L["零运行期分支 可内联"]
+    E --> L
+    H --> L
+    J --> L
+    K --> L
+    L --> M["编译期定型 无虚表开销"]
+```
+
+### U.1 决策节点与取舍
+
+| 决策钻石 | 取舍要点 |
+|---|---|
+| A 是否需按类型属性分流 | 若否，类型无关用普通函数，避免模板膨胀。 |
+| B 布尔还是类别 | 决定用 if constexpr（布尔）还是标签（类别）。 |
+| C C++17 可用? | 可用则 if constexpr 远比 SFINAE 简洁可读。 |
+| F 需与重载/ADL 交互? | 标签分发在需借重载消歧时不可替代。 |
+| I 标签是否 bool 型 | bool 用 true_type/false_type，类别用继承标签层级。 |
+
+### U.2 结论
+
+> 标签分发在"需借重载决议消歧（如多迭代器类别）"时仍不可替代；纯布尔属性分支用 if constexpr 更简洁，老标准兼容才保留 SFINAE。标签是空类型、零运行期开销，调用点在编译期定型。
+
+## 附录 V：标签分发（Tag Dispatch）知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    TD["标签分发 Tag Dispatch"] --> ET["空类型标签 empty tag"]
+    TD --> OV["重载决议 overload resolution"]
+    TD --> TR["traits 类型萃取"]
+    ET --> IC["integral_constant true/false_type"]
+    OV --> IT["iterator_traits 类别"]
+    IT --> CAT["iterator_category 继承层级"]
+    CAT --> INP["input_iterator_tag"]
+    CAT --> FWD["forward_iterator_tag"]
+    CAT --> RA["random_access_iterator_tag"]
+    TR --> ISINT["is_integral 等谓词"]
+    TD --> ADL["参数依赖查找 ADL"]
+    TD --> CE["constexpr 布尔替代"]
+    CE --> IFC["if constexpr 分支"]
+    TD --> SF["SFINAE 约束"]
+    TD --> SEL["算法选最优实现"]
+    SEL --> STL["STL 算法复杂度保证"]
+```
+
+### V.1 概念依赖逐边解读
+
+| 边（依赖方向） | 解读 |
+|---|---|
+| 标签分发 → 空类型标签 | 标签是空类型，仅用于区分重载，零开销。 |
+| 标签分发 → 重载决议 | 标签通过在编译期选定重载实现分发。 |
+| 标签分发 → 类型萃取 | traits 产生标签（如 is_integral{}）。 |
+| 空类型标签 → integral_constant | true_type/false_type 是布尔标签载体。 |
+| 重载决议 → iterator_traits | iterator_traits 取出迭代器类别标签。 |
+| iterator_traits → iterator_category | iterator_category 由输入→连续迭代器继承。 |
+| iterator_category → input | input 在最底层，供 advance 等选 O(n) 实现。 |
+| iterator_category → random_access | random_access 在最顶层，供 advance 选 O(1) 实现。 |
+| 类型萃取 → is_integral | is_integral 等谓词产出 bool 标签。 |
+| 标签分发 → ADL | 标签参数参与 ADL，可定位关联命名空间。 |
+| 标签分发 → constexpr | 现代用 if constexpr 替代布尔标签。 |
+| constexpr → if constexpr | if constexpr 在编译期丢弃不采纳分支。 |
+| 标签分发 → SFINAE | SFINAE 可为标签分发加约束。 |
+| 标签分发 → 算法选最优实现 | 标签让算法在编译期选最优实现路径。 |
+| 算法选最优实现 → STL 复杂度 | STL 算法靠标签保证复杂度（如 advance）。 |
+
+### V.2 跨章闭环表
+
+| 章节 | 闭环关系 |
+|---|---|
+| ch65 type_traits | 标签常由 is_integral 等 traits 产生。 |
+| ch66 SFINAE | SFINAE 可为标签重载加编译期约束。 |
+| ch67 概念 | 概念约束重载是标签分发的现代替代。 |
+| ch68 TMP | integral_constant 标签是 TMP 的经典应用。 |
+| ch76 STL 架构 | STL 算法大量用标签选最优实现（iterator_category）。 |
+| ch60 模板基础 | 标签依赖模板实例化与重载决议。 |
+| ch51 CRTP | 标签分发与 CRTP 都属编译期多态技术。 |

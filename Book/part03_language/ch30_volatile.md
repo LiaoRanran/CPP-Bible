@@ -893,3 +893,100 @@ flowchart TD
 | mutex | ch41 shared_ptr / ch107 | 互斥与原子在同步谱上的位置 |
 | 内存模型 / MESI | ch154 缓存与伪共享 | ⑰ 伪共享的物理根 + 附录 K 负扩展 |
 | ⑬ GCC 内部处理 | ch95 三标准库源码 | 优化器实现层面的交叉印证 |
+
+---
+
+## 附录 J：volatile 选用决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A{"需要跨线程共享的内存可见性?"}
+    B{"需要硬件/编译器不可优化的副作用?"}
+    C{"访问内存映射 I/O (MMIO)?"}
+    D{"在信号处理函数中读改写?"}
+    E["用 std::atomic (顺序一致/获取-释放)"]
+    F["用 volatile (仅保证可见性, 不保证原子性)"]
+    G["用 volatile 限定 MMIO 寄存器访问"]
+    H["用 sig_atomic_t / volatile sig_atomic_t"]
+    I{"需要 setjmp/longjmp 间保活局部变量?"}
+    J["用 volatile 修饰 (防止被寄存器优化掉)"]
+    K{"跨语言(Java/C#) volatile 语义?"}
+    L["记住 C++ volatile != Java volatile, 改用 atomic"]
+    M{"单纯防止编译器重排?"}
+    N["用编译器屏障 asm volatile 或 atomic_signal_fence"]
+    Z["决策完成"]
+    A -->|否| B
+    A -->|是| E
+    B -->|否| M
+    B -->|是| C
+    C -->|是| G
+    C -->|否| D
+    D -->|是| H
+    D -->|否| I
+    I -->|是| J
+    I -->|否| K
+    K -->|是| L
+    K -->|否| N
+    G --> Z
+    H --> Z
+    J --> Z
+    L --> Z
+    N --> Z
+    E --> Z
+    M --> Z
+```
+
+> 决策流说明：volatile 解决的是"编译器/硬件不可优化、访问真实发生"的可见性，而非多线程原子性；跨线程共享状态应改用 std::atomic。MMIO 寄存器、信号处理中的 sig_atomic_t、setjmp/longjmp 间需保活的局部变量才是 volatile 的正当用途；若只是想阻止编译器重排，用编译器屏障或 atomic_signal_fence 更精确。
+
+## 附录 K：volatile 概念知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    V1["volatile 限定符"] --> V2["优化器屏障 防消除/重排"]
+    V1 --> V3["硬件可见性 真实内存访问"]
+    V1 --> V4["非原子性 读写可能撕裂"]
+    V4 --> V5["std::atomic 顺序一致/获取-释放"]
+    V3 --> V6["内存映射 I/O MMIO"]
+    V3 --> V7["信号处理 sig_atomic_t"]
+    V7 --> V8["setjmp/longjmp 局部保活"]
+    V8 --> V1
+    V2 --> V9["编译器屏障 asm volatile"]
+    V5 --> V10["acquire/release 语义"]
+    V1 --> V11["Java/C# volatile 等价 atomic"]
+    V5 --> V11
+    V11 --> V5
+    V1 --> V12["P1152/P2327/P1382 提案"]
+    V1 --> V13["const/volatile 限定族 ch21"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖含义 |
+|---|---|---|
+| 1 | V1 → V2 | volatile 首要作用是阻止优化器消除/重排对该内存的读写 |
+| 2 | V1 → V3 | volatile 保证每次访问都落到真实内存，对硬件可见 |
+| 3 | V1 → V4 | 但 volatile 不保证读-改-写原子，可能被撕裂（与 atomic 正交） |
+| 4 | V4 → V5 | 一旦出现并发原子需求，正确替代是 std::atomic 而非 volatile |
+| 5 | V3 → V6 | 硬件可见性的典型场景是内存映射寄存器（MMIO） |
+| 6 | V3 → V7 | 另一场景是信号处理函数中用 volatile sig_atomic_t 通信 |
+| 7 | V7 → V8 | 信号处理路径与 setjmp/longjmp 间的局部变量需 volatile 防被寄存器优化掉 |
+| 8 | V8 → V1 | 该保活需求正是 volatile 修饰局部变量的正当用途 |
+| 9 | V2 → V9 | 纯阻止编译器重排可用 asm volatile("":::"memory") 或 atomic_signal_fence |
+| 10 | V5 → V10 | atomic 通过 acquire/release 语义取代 volatile 的顺序意图 |
+| 11 | V1 → V11 | 跨语言对比：Java/C# 的 volatile 实际等价于 C++ 的 atomic |
+| 12 | V5 → V11 | 故跨语言移植时 C++ 侧应改 atomic，而非照搬 volatile |
+| 13 | V11 → V5 | 反向依赖同上，强调语义不可混淆 |
+| 14 | V1 → V12 | P1152/P2327/P1382 等提案在收紧/明确 volatile 的语义边界 |
+| 15 | V1 → V13 | volatile 与 const 同属 cv-限定符族，和 ch21 的 const 体系并列 |
+
+### K.2 跨章闭环表
+
+| 目标章 | 关联主题 | 闭环关系 |
+|---|---|---|
+| ch19 | 变量与存储期 | volatile 修饰的全局/static 变量落 .data，链接与存储期独立于 volatile 语义 |
+| ch32 | 初始化 | volatile 变量的初始化仍受列表初始化窄化规则与常量初始化约束 |
+| ch107 | 并发与原子（上） | std::atomic 与内存模型是 volatile 在多线程下的"正确替代" |
+| ch108 | 并发与原子（中） | acquire/release、内存序细节补足 volatile 缺失的原子语义 |
+| ch109 | 并发与原子（下） | 无锁编程与 volatile 的界限，澄清 volatile 不能做同步 |
+| ch48 | 动态内存 | volatile 不影响对象生命周期，MMIO 映射区常由 mmap/new 返回 |
+| ch43 | 缓存局部性 | volatile 访问绕过寄存器但缓存一致性仍由硬件 MESI 维护 |

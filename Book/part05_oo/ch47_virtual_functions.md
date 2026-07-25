@@ -1333,3 +1333,98 @@ struct GrayscaleS : FilterCrtp<GrayscaleS> { Image impl(const Image&) const { /*
 性能热点且类型编译期已知 → CRTP（零开销、失去异构）。两者不是替代关系，是按场景取用。
 
 **工程含义**：多态不是"面向对象必用"，而是"异构 + 运行时分发"需求的答案；误用 CRTP 会锁死扩展性。
+
+---
+
+## 附录 J：虚函数与多态决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A{"需要运行时多态 异构容器?"}
+    B{"基类要被多态删除?"}
+    C["基类析构必须 virtual"]
+    D["用 virtual 函数 (vtable)"]
+    E{"多重继承下 this 调整?"}
+    F["生成 thunk 跳板 (this 调整)"]
+    G{"能用编译期多态?"}
+    H["用 CRTP 替代 (零开销/可去虚化)"]
+    I{"热点路径虚调用可去虚化?"}
+    J["用 final / 封闭类辅助去虚化"]
+    K{"需要跨虚基类调用?"}
+    L["虚继承 + vbptr 调整 (见 ch49)"]
+    Z["决策完成"]
+    A -->|否| G
+    A -->|是| B
+    B -->|是| C
+    B -->|否| D
+    C --> D
+    D --> E
+    E -->|是| F
+    E -->|否| G
+    F --> G
+    G -->|是| H
+    G -->|否| I
+    H --> Z
+    I -->|是| J
+    I -->|否| K
+    J --> Z
+    K -->|是| L
+    K -->|否| Z
+    L --> Z
+```
+
+> 决策流说明：需要运行时多态时，基类析构必须为 virtual，否则多态 delete 泄漏；多重继承下虚调用伴随 thunk（this 调整）。若类型在编译期已知，用 CRTP 消除 vtable 与 this 调整获得零开销；热点虚调用可用 final/封闭类帮助去虚化。跨虚基类的调用则涉及 vbptr 调整（见 ch49）。
+
+## 附录 K：虚函数知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    V1["虚函数 virtual"] --> V2["vptr / vtable"]
+    V2 --> V3["动态分派 运行时"]
+    V1 --> V4["构造期 vptr 重写"]
+    V1 --> V5["虚析构函数 必须 virtual"]
+    V3 --> V6["this 调整 / thunk"]
+    V6 --> V7["多重继承 vtable 布局"]
+    V3 --> V8["去虚化 devirtualization"]
+    V8 --> V9["CRTP 静态多态 ch51"]
+    V8 --> V10["final / override"]
+    V3 --> V11["RTTI typeid/dynamic_cast ch48"]
+    V2 --> V12["虚继承 vbptr ch49"]
+    V2 --> V13["Itanium/MSVC ABI"]
+    V3 --> V14["对象模型 ch45"]
+    V5 --> V11
+    V7 --> V12
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖含义 |
+|---|---|---|
+| 1 | V1 → V2 | 虚函数通过对象内 vptr 指向的 vtable 实现分派 |
+| 2 | V2 → V3 | 运行期查 vtable 槽得到实际函数地址 |
+| 3 | V1 → V4 | 构造期间 vptr 自底向上逐层重写为当前类的 vtable |
+| 4 | V1 → V5 | 基类若被多态删除，析构必须 virtual 否则 UB 泄漏 |
+| 5 | V3 → V6 | 多重继承下虚调用需 this 调整，由 thunk 完成 |
+| 6 | V6 → V7 | thunk 是多重继承 vtable 布局的物理体现 |
+| 7 | V3 → V8 | 编译器在类型已知时可去虚化，直接静态调用 |
+| 8 | V8 → V9 | 若类型编译期已知，CRTP 从根上消除 vtable 与 thunk |
+| 9 | V8 → V10 | final/封闭类为去虚化提供别名分析依据 |
+| 10 | V3 → V11 | dynamic_cast/typeid 依赖 vtable 中的 typeinfo 槽 |
+| 11 | V2 → V12 | 虚继承复用 vtable 机制并叠加 vbptr 做 this 调整 |
+| 12 | V2 → V13 | vtable 的具体布局由 Itanium/MSVC ABI 规定 |
+| 13 | V3 → V14 | 动态分派的结果落点由对象模型的内存布局决定 |
+| 14 | V5 → V11 | 虚析构保证 delete 经正确动态类型路径析构 |
+| 15 | V7 → V12 | 多重继承与虚继承在布局上叠加（thunk + vbptr） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 关联主题 | 闭环关系 |
+|---|---|---|
+| ch19 | 变量与存储期 | vptr 作为对象成员，其存储期随对象（automatic/static/heap） |
+| ch45 | 对象模型 | vtable 指针是对象布局核心，决定虚调用偏移 |
+| ch48 | RTTI | typeid/dynamic_cast 依赖 vtable 中的 typeinfo 槽 |
+| ch49 | 虚继承 | 虚继承复用 vtable 机制并叠加 vbptr 做 this 调整 |
+| ch50 | 多重继承 | 多重继承下每基类子对象各一 vptr，thunk 重写地址 |
+| ch51 | CRTP 静态多态 | 编译期已知类型时用 CRTP 替代虚函数消除开销 |
+| ch43 | 缓存局部性 | vtable 取指走 I-cache，去虚化改善指令缓存命中 |
+| ch52 | 空基类优化 EBO | 空基类子对象布局不受 vptr 影响，EBO 仍成立 |

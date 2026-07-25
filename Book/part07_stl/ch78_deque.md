@@ -1195,3 +1195,85 @@ for (size_t i=0;i<n;++i) sum += q[i];   // deque 每次访问 2 次间接(map查
 尾部增删 + 随机访问密集 + 缓存敏感 → `vector`。不要因为"deque 也能随机访问"就无脑替换 vector。
 
 **工程含义**：容器选型看**访问模式**而非功能列表；deque 以"双端 O(1) + 无 realloc 抖动"换"随机访问常数更大 + 缓存更差"。
+
+## 附录 J：deque 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需要双端序列容器?"] -->|"否"| Z["按需选 vector/list"]
+    A -->|"是"| B{"头尾频繁增删?"}
+    B -->|"是"| C["deque 双端 O(1) 均摊"]
+    B -->|"否"| D{"随机访问密集+缓存敏感?"}
+    D -->|"是"| E["vector 更优"]
+    D -->|"否"| F["deque 仍可"]
+    C --> G{"需跨段随机访问?"}
+    G -->|"是"| H["deque 分段 map+block"]
+    G -->|"否"| I["deque 顺序双端即可"]
+    H --> J{"map 重分配?"}
+    J -->|"是"| K["仅 map 复制 元素引用不失效"]
+    J -->|"否"| L["引用稳定"]
+    C --> M{"中部插入/删除?"}
+    M -->|"是"| N["改用 list O(1)"]
+    M -->|"否"| O["deque 合适"]
+    E --> P["vector 单间接 缓存友好"]
+    K --> Q["deque 引用稳定 迭代器可能失效"]
+    L --> Q
+    N --> R["list 节点不连续 缓存差"]
+```
+
+> 决策流说明：双端频繁增删（队列、滑动窗口）选 deque，头尾均摊 O(1)；但随机访问密集且缓存敏感时应选 vector（单次寻址 vs deque 两次间接）。中部插入删除应改 list。deque 的 map 重分配只复制 map 不搬元素，元素引用不失效、仅迭代器可能失效。
+
+## 附录 K：deque 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    DQ["deque"] --> SEG["分段连续 map+buffers"]
+    DQ --> FOUR["四指针迭代器"]
+    DQ --> PUSH["push_front O(1)"]
+    DQ --> POP["pop_front O(1)"]
+    SEG --> BLOCK["块 ~512B"]
+    SEG --> MAP["中控 map 指针数组"]
+    MAP --> REALL["map 重分配"]
+    REALL --> REFOK["元素引用不失效"]
+    FOUR --> DIV["跨段 除法/取模定位"]
+    DIV --> IDX["block + offset 寻址"]
+    DQ --> INVAL["迭代器失效规则"]
+    INVAL --> MAPRE["map 重分配 迭代器失效"]
+    INVAL --> PUSHOK["头尾 push 不失效引用"]
+    DQ --> ADAPT["适配器 stack/queue 底层"]
+    DQ --> EQ["与 vector 对比"]
+    DQ --> LIST["与 list 对比"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边（依赖方向） | 解读 |
+|---|---|
+| deque → 分段连续 | deque 由中控 map 与分段 buffer 组成。 |
+| deque → 四指针迭代器 | 迭代器含四指针（首尾块+当前）。 |
+| deque → push_front | push_front 在头块前插，均摊 O(1)。 |
+| deque → pop_front | pop_front 释放头块槽，O(1)。 |
+| 分段连续 → 块 | 每块约 512 字节定长。 |
+| 分段连续 → map | map 是指向各块的指针数组。 |
+| map → map 重分配 | 块数超 map 容量时 map 重分配。 |
+| map 重分配 → 引用不失效 | map 重分配只复制指针，元素引用不失效。 |
+| 四指针迭代器 → 跨段定位 | 跨段随机访问用除法/取模定位块。 |
+| 跨段定位 → 寻址 | block_index + offset 完成寻址。 |
+| deque → 迭代器失效规则 | deque 有特定迭代器失效规则。 |
+| 迭代器失效规则 → map 重分配失效 | map 重分配使迭代器失效。 |
+| 迭代器失效规则 → 头尾不失效 | 头尾 push/pop 不使元素引用失效。 |
+| deque → 适配器底层 | stack/queue 默认以 deque 为底层。 |
+| deque → 与 vector 对比 | deque 对比 vector（双端 vs 缓存）。 |
+| deque → 与 list 对比 | deque 对比 list（连续块 vs 节点）。 |
+
+### K.2 跨章闭环表
+
+| 章节 | 闭环关系 |
+|---|---|
+| ch76 STL 架构 | deque 的分段缓冲体现同一架构下的另一迭代器模型。 |
+| ch77 vector | 随机访问密集且缓存敏感时 vector 优于 deque。 |
+| ch79 list | 中部插入删除频繁时 list 优于 deque。 |
+| ch86 适配器 | stack/queue 默认以 deque 为底层容器。 |
+| ch90 ranges | ranges 算法可作用于 deque 的随机访问迭代器。 |
+| ch83 map | 关联容器与 deque 是不同访问模式的选择。 |
+| ch80 array | 固定规模优先 array，动态双端才用 deque。 |

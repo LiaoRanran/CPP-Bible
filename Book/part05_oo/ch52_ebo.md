@@ -842,3 +842,93 @@ int main(){
 ```
 
 `sizeof(A)==4` 证明空基类 `Empty` 被完全吸收；`sizeof(B)==8` 证明作为成员的 `Empty` 至少占 1 字节并触发 4 字节对齐填充。这正是标准库 `std::allocator`/`std::default_delete` 能零成本携带无状态策略的底层原因。
+
+## 附录 J：空基类优化 EBO 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S["需要零开销存放一个无状态组件<br/>(策略/分配器/删除器/标签)"] --> Q1{"需要独立<br/>生命周期?"}
+    Q1 -->|"是(组合语义)"| M["普通成员: 空成员占 1B+填充<br/>浪费但语义清晰"]
+    Q1 -->|"否"| Q2{"组件有状态?"}
+    Q2 -->|"有状态数据"| M2["普通成员: EBO 不适用<br/>必须按成员存储"]
+    Q2 -->|"无状态"| Q3{"目标编译器<br/>支持 C++20?"}
+    Q3 -->|"是"| N["用 no_unique_address 属性 (C++20) 成员<br/>组合语义 + 零开销"]
+    Q3 -->|"否"| E["私有继承作空基类 (EBO)<br/>策略作空基类混入"]
+    N --> Q4{"有多个空组件?"}
+    E --> Q4
+    Q4 -->|"是"| ME["多继承多个空基类<br/>GCC/Clang 均压到 0"]
+    Q4 -->|"否"| SE["单继承空基类<br/>空基类子对象占 0 字节"]
+    ME --> Q5{"空基类后有<br/>命名数据成员?"}
+    SE --> Q5
+    Q5 -->|"有"| K["数据成员决定偏移<br/>空基类仍 @0 (EBO 生效)"]
+    Q5 -->|"无"| SL["仍是标准布局<br/>可 memcpy 概念"]
+    K --> Q6{"空基类含虚函数?"}
+    SL --> Q6
+    Q6 -->|"是"| X["EBO 失效: vptr 使类非空<br/>改用成员或 concept 约束"]
+    Q6 -->|"否"| Q7{"需跨编译器<br/>可移植?"}
+    Q7 -->|"是"| A1["加 static_assert(sizeof==...)<br/>固化布局防回归"]
+    Q7 -->|"否"| A2["直接采用 EBO"]
+    A1 --> L["落地: vector allocator / unique_ptr deleter<br/>零开销混入"]
+    A2 --> L
+    L --> V["用 offsetof/sizeof 编译期断言<br/>验证 x@0 证明 EBO 生效"]
+```
+
+> 决策流说明：无状态组件优先作私有空基类（EBO）或 C++20 的 `no_unique_address` 成员，二者都能把存储代价压到 0 字节；只有当需要独立生命周期、组件有状态、或空基类含虚函数时，才退回普通成员并接受 1 字节占位。跨编译器项目务必用 `static_assert(sizeof(...)==...)` 固化布局，避免 MSVC 旧版对第二个空基类不压缩导致的尺寸漂移。
+
+## 附录 K：空基类优化 EBO 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    A["空类"] --> B["对象大小 sizeof"]
+    A --> C["空基类"]
+    C --> D["EBO 空基类占 0"]
+    D --> E["多继承布局"]
+    D --> G["no_unique_address 属性"]
+    D --> H["偏移 offsetof"]
+    D --> F["对齐 填充"]
+    D --> I["标准布局"]
+    D --> J["策略混入 Policy-Based"]
+    D --> K["allocator 空基类"]
+    D --> L["unique_ptr 空删除器"]
+    D --> M["缓存密度"]
+    D --> O["static_assert 契约"]
+    D --> P["MSVC 差异"]
+    M --> N["CPU 缓存 缓存行"]
+    E --> R["虚继承"]
+    C --> Q["虚函数 vptr"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 工程含义 |
+|---|---|
+| 空类 → 对象大小 sizeof | 空类至少占 1 字节，源于 C++ 要求每个完整对象可寻址、同类型两对象地址不同 |
+| 空类 → 空基类 | 空类作基类时，标准豁免"基类子对象唯一地址"要求，这是 EBO 的前提 |
+| 空基类 → EBO 空基类占 0 | 空基类子对象可被布局到派生类首成员同址，从而占 0 字节 |
+| EBO → 多继承布局 | 多个空基类在 GCC/Clang 下均被压到偏移 0，取决于多重继承排列规则 |
+| EBO → no_unique_address 属性 | C++20 把"零开销压缩"从继承扩展到成员，组合优于继承时仍能省空间 |
+| EBO → 偏移 offsetof | `offsetof(Derived,x)==0` 是 EBO 的编译期可执行证据 |
+| EBO → 对齐 填充 | 空基类不增加对齐要求，对齐由最大成员/对齐说明符决定 |
+| EBO → 标准布局 | EBO 不破坏标准布局（首成员为数据成员时），仍可 memcpy 概念 |
+| EBO → 策略混入 Policy-Based | 空策略作空基类混入，是实现零开销策略组合的基础 |
+| EBO → allocator 空基类 | std::vector 把 allocator 作空基类嵌入，省去 8 字节指针 |
+| EBO → unique_ptr 空删除器 | default_delete 作空基类，使 unique_ptr 只等于裸指针大小 |
+| EBO → 缓存密度 | 对象更小 → 更多对象装入缓存行 → 减少 cache miss |
+| 缓存密度 → CPU 缓存 缓存行 | 64B 缓存行装 16 个 Derived vs 8 个 AsMember，密度翻倍 |
+| EBO → static_assert 契约 | 用 static_assert 锁 size，把 EBO 收益写进编译期契约防回归 |
+| EBO → MSVC 差异 | MSVC 旧版仅压首空基类，第二个可能占位，需实测或 no_unique_address |
+| 多继承布局 → 虚继承 | 虚继承引入 vbptr，与 EBO 布局交互需谨慎 |
+| 空基类 → 虚函数 vptr | 含 vptr 则类非空，EBO 不适用且引入 8 字节开销 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch19 对象大小/存储期 | ch52 EBO | 空类≥1字节由可寻址性决定，EBO 正是豁免该规则的特例 |
+| ch45 对象模型(布局/对齐) | ch52 EBO | 成员布局与对齐是 EBO 生效的底层承载 |
+| ch50 多继承布局 | ch52 EBO | 多空基类能否都压到 0 取决于多重继承排列 |
+| ch51 CRTP 空基类 | ch52 EBO | CRTP 基类常为空，EBO 使其零成本 |
+| ch52 EBO | ch71 Policy-Based Design | 空策略作空基类混入实现零开销策略组合 |
+| ch52 EBO | ch41 allocator | 容器把 allocator 作空基类嵌入省去指针 |
+| ch52 EBO | ch49 虚继承 | 空基类与虚继承布局的交互约束 |
+| ch52 EBO | ch48/49 unique_ptr | 空删除器作空基类实现零开销智能指针 |

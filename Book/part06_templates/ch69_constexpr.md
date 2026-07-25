@@ -867,3 +867,84 @@ graph TD
     CE --> C3["数组大小 非类型模板参数"]
     F --> RT["传入运行时变量 退化为运行期"]
 ```
+
+## 附录 J：constexpr/consteval/constinit 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["定义可在编译期用的逻辑?"] -->|"否"| Z["普通运行期函数"]
+    A -->|"是"| B{"是否必须编译期求值?"}
+    B -->|"必须"| C["consteval 强制编译期"]
+    B -->|"可选"| D["constexpr 双重身份"]
+    D --> E{"调用点参数均常量?"}
+    E -->|"是"| F["编译期定值 零运行指令"]
+    E -->|"否"| G["退化为运行期函数"]
+    C --> H{"需区分两阶段?"}
+    H -->|"是"| I["if consteval 检测"]
+    H -->|"否"| J["直接编译期使用"]
+    F --> K["用于 模板实参/static_assert/数组大小"]
+    G --> L["当普通函数调用"]
+    I --> M["运行期分支走常规实现"]
+    J --> M
+    K --> N["零开销抽象"]
+    L --> N
+    M --> N
+    D --> O["constinit 防 SIOF 静态初始化"]
+    O --> P["静态存储期变量 编译期初始化"]
+```
+
+> 决策流说明：必须编译期求值用 consteval 强制；可选时用 constexpr 但须确认调用点参数为常量否则退化为运行期（附录 F 汇编实证）。constinit 解决静态初始化顺序不确定（SIOF），if consteval 区分函数被编译期还是运行期调用。
+
+## 附录 K：constexpr/consteval/constinit 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    CX["constexpr"] --> CV["consteval 强制编译期"]
+    CX --> CI["constinit 静态初始化"]
+    CX --> FN["函数 双重身份"]
+    FN --> CE["常量表达式上下文"]
+    FN --> RT["运行时退化"]
+    CE --> TA["模板实参"]
+    CE --> SA["static_assert"]
+    CE --> AR["数组大小/非类型模板参数"]
+    CX --> IFE["if constexpr 分支消除"]
+    CX --> ICE["is_constant_evaluated 检测"]
+    CI --> SIOF["SIOF 静态初始化顺序"]
+    CV --> ICV["if consteval 区分"]
+    CX --> TMP["TMP 值级替代"]
+    TMP --> FOLD["折叠表达式迭代"]
+    CE --> LIB["库编译期 API"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边（依赖方向） | 解读 |
+|---|---|
+| constexpr → consteval | consteval 是 constexpr 的"强制编译期"子集。 |
+| constexpr → constinit | constinit 保证变量编译期初始化，配合 constexpr。 |
+| constexpr → 函数双重身份 | constexpr 函数可在编译期或运行期调用。 |
+| 函数 → 常量表达式上下文 | 常量表达式上下文触发编译期求值。 |
+| 函数 → 运行时退化 | 非常量参数时退化为运行期函数。 |
+| 常量表达式上下文 → 模板实参 | 模板实参要求编译期常量。 |
+| 常量表达式上下文 → static_assert | static_assert 需用常量表达式。 |
+| 常量表达式上下文 → 数组大小 | 数组大小/非类型模板参数为编译期常量。 |
+| constexpr → if constexpr | if constexpr 借助 constexpr 上下文消除分支。 |
+| constexpr → is_constant_evaluated | is_constant_evaluated 在运行期分支区分调用语境。 |
+| constinit → SIOF | constinit 消除静态初始化顺序不确定。 |
+| consteval → if consteval | if consteval 检测是否处于编译期求值。 |
+| constexpr → TMP | constexpr 值级计算替代类型级 TMP 递归。 |
+| TMP → 折叠表达式 | 折叠表达式把递归改为迭代缓解实例化。 |
+
+### K.2 跨章闭环表
+
+| 章节 | 闭环关系 |
+|---|---|
+| ch68 TMP | constexpr 值级计算替代 TMP 类型递归，缓解实例化爆炸。 |
+| ch70 标签分发 | integral_constant 标签可由 constexpr 产生。 |
+| ch67 概念 | 概念约束与 constexpr 配合做编译期校验。 |
+| ch65 type_traits | type_traits 谓词多为 constexpr，供编译期判定。 |
+| ch71 策略设计 | 编译期策略可用 constexpr 函数表达。 |
+| ch60 模板基础 | constexpr 函数模板依赖模板实例化。 |
+| ch123 编译期编程 | constexpr/consteval 是编译期编程核心。 |
+| ch19 变量与存储期 | constinit 解决 SIOF 关乎静态存储期。 |
+```

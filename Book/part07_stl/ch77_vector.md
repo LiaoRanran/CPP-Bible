@@ -1284,3 +1284,85 @@ flowchart TD
 - **"扩容迁移 = moves − N" 的口径**：`push_back(Probe(i))` 的临时对象贡献固定 N 次移动，扣除后剩余即扩容搬迁；实验 A 得 ≈N、实验 C 得 0，互为对照。
 - **计时抗优化**：`time_fill` 末尾用 `volatile` 读取 `v.back()` 阻止死代码消除；5 轮取中位规避冷启动/调度抖动。绝对值随机器而变，**加速比**（no_reserve÷reserve）比绝对毫秒更可移植。
 - **可复现**：`g++ -std=c++20 -O2 _bench_vector.cpp -o _bench_vector.exe && ./_bench_vector.exe`。
+
+## 附录 J：vector 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需要动态序列容器?"] -->|"否"| Z["array/定长"]
+    A -->|"是"| B{"规模已知或可估?"}
+    B -->|"是"| C["先 reserve(N) 零重分配"]
+    B -->|"否"| D{"元素迁移贵或大?"}
+    D -->|"是"| E["估上界再 reserve"]
+    D -->|"否"| F["直接 push_back 靠 2x 均摊"]
+    C --> G{"元素 move ctor noexcept?"}
+    E --> G
+    F --> G
+    G -->|"是"| H["扩容走移动 不拷贝"]
+    G -->|"否"| I["扩容回退拷贝 保强异常安全"]
+    H --> J["均摊 O(1) push_back"]
+    I --> J
+    A --> K{"需头插/头删?"}
+    K -->|"是"| L["改用 deque/list"]
+    K -->|"否"| M["vector 合适"]
+    J --> N["随机访问 O(1) 缓存友好"]
+    M --> N
+    L --> O["双端 O(1) 但缓存差"]
+```
+
+> 决策流说明：已知规模必 reserve 清零重分配；扩容代价取决于 move ctor 是否 noexcept——标 noexcept 走移动、否则 move_if_noexcept 回退拷贝（强异常安全代价）。头插/头删频繁应改 deque/list，否则 vector 的随机访问与缓存局部性更优。
+
+## 附录 K：vector 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    VEC["vector"] --> THREE["三指针模型 start/finish/end"]
+    VEC --> GROW["2x 扩容(GCC)"]
+    GROW --> REALL["realloc 迁移"]
+    REALL --> MOVE["移动构造迁移"]
+    REALL --> COPY["拷贝回退 非 noexcept"]
+    VEC --> INVAL["迭代器失效"]
+    INVAL --> REALLOC["realloc 全失效"]
+    INVAL --> PUSH["push_back 可能失效"]
+    VEC --> AMORT["均摊 O(1) push_back"]
+    VEC --> RES["reserve/shrink_to_fit"]
+    VEC --> NOEX["noexcept move ctor"]
+    NOEX --> MOVE
+    VEC --> ALLOC["allocator 协作"]
+    VEC --> EMPL["emplace_back 原位构造"]
+    VEC --> CONTIG["连续内存 缓存友好"]
+    VEC --> RA["随机访问 O(1)"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边（依赖方向） | 解读 |
+|---|---|
+| vector → 三指针模型 | 三指针(start/finish/end_of_storage)描述 vector 布局。 |
+| vector → 2x 扩容 | GCC 以 2x 因子扩容（_M_check_len）。 |
+| 2x 扩容 → realloc | 扩容触发 realloc 与元素迁移。 |
+| realloc → 移动构造 | 平凡可重定位/ noexcept move 走 memcpy/移动。 |
+| realloc → 拷贝回退 | 否则 move_if_noexcept 回退拷贝。 |
+| vector → 迭代器失效 | 扩容导致迭代器/引用失效。 |
+| 迭代器失效 → realloc 失效 | realloc 使所有迭代器失效。 |
+| 迭代器失效 → push_back 失效 | push_back 在满容时可能失效。 |
+| vector → 均摊 O(1) | 几何扩容使 push_back 均摊 O(1)。 |
+| vector → reserve | reserve 预分配、shrink_to_fit 回收。 |
+| vector → noexcept move | move ctor noexcept 决定迁移走移动。 |
+| noexcept move → 移动 | noexcept 移动是零拷贝迁移前提。 |
+| vector → allocator | vector 通过 allocator 分配内存。 |
+| vector → emplace_back | emplace_back 原位构造避免临时。 |
+| vector → 连续内存 | 连续内存带来缓存友好。 |
+| vector → 随机访问 | 连续内存支持随机访问 O(1)。 |
+
+### K.2 跨章闭环表
+
+| 章节 | 闭环关系 |
+|---|---|
+| ch76 STL 架构 | vector 是该架构下连续内存容器代表。 |
+| ch78 deque | 双端频繁增删时 deque 替代 vector 的头删 O(n)。 |
+| ch80 array | 固定规模用 array 免堆分配，vector 用于动态。 |
+| ch82 span | span 以零拷贝视图观察 vector 连续内存。 |
+| ch115 移动语义 | 扩容迁移依赖移动构造 noexcept。 |
+| ch87 bitset | 定长位集用 bitset 而非 vector<bool> 可省位压缩歧义。 |
+| ch154 缓存优化 | vector 连续内存对缓存局部性友好。 |

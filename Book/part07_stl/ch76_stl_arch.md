@@ -1062,3 +1062,89 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：STL 架构决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["写泛型算法/容器?"] -->|"否"| Z["专用实现"]
+    A -->|"是"| B{"操作需迭代器?"}
+    B -->|"否"| C["直接下标/指针"]
+    B -->|"是"| D{"迭代器类别已知?"}
+    D -->|"编译期已知"| E{"类别是连续/随机?"}
+    E -->|"是"| F["随机访问算法 O(1)"]
+    E -->|"否"| G["按类别标签分发"]
+    D -->|"运行期多态"| H["type erasure 迭代器"]
+    G --> I{"需最优实现?"}
+    I -->|"是"| J["iterator_category 标签分发"]
+    I -->|"否"| K["通用输入迭代器实现"]
+    J --> L["advance: +=n vs ++循环"]
+    K --> M["O(n) 通用但安全"]
+    F --> N["连续内存 缓存友好"]
+    L --> O["零运行期分支"]
+    M --> O
+    N --> O
+    H --> P["运行期灵活 有间接开销"]
+```
+
+> 决策流说明：STL 算法靠 iterator_category 标签在编译期选最优实现（如 advance 随机访问走 +=n 为 O(1)、输入迭代器走 ++ 循环为 O(n)），零运行期分支；连续/随机访问还额外获得缓存友好。需运行期多态则用类型擦除迭代器，代价是间接开销。
+
+## 附录 K：STL 架构知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    STL["STL 架构"] --> CONT["容器 Containers"]
+    STL --> ALGO["算法 Algorithms"]
+    STL --> ITER["迭代器 Iterators"]
+    STL --> FUNC["函数对象 Functors"]
+    STL --> ALLOC["分配器 Allocators"]
+    STL --> TRAITS["迭代器 traits"]
+    ITER --> CAT["迭代器类别层级"]
+    CAT --> INP["input"]
+    CAT --> FWD["forward"]
+    CAT --> BID["bidirectional"]
+    CAT --> RAND["random_access"]
+    CAT --> CONTIG["contiguous"]
+    TRAITS --> TAG["iterator_category 标签"]
+    TAG --> DISP["算法标签分发"]
+    ALLOC --> PMR["polymorphic_allocator"]
+    CONT --> VEC["vector 连续"]
+    CONT --> DEQ["deque 分段"]
+    ALGO --> RANGES["ranges 惰性管道"]
+    STL --> MOVE["移动语义 零拷贝"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边（依赖方向） | 解读 |
+|---|---|
+| STL → 容器 | 容器持有数据，是架构核心组件之一。 |
+| STL → 算法 | 算法操作迭代器区间，与容器解耦。 |
+| STL → 迭代器 | 迭代器是连接算法与容器的桥梁。 |
+| STL → 函数对象 | 函数对象定制算法行为（比较器/谓词）。 |
+| STL → 分配器 | 分配器是容器可插拔内存后端。 |
+| STL → 迭代器 traits | 迭代器 traits 暴露类别/差值类型。 |
+| 迭代器 → 类别层级 | 迭代器按能力分五类层级。 |
+| 类别层级 → input | input 在最底层，仅单遍。 |
+| 类别层级 → contiguous | contiguous 在最顶层，含连续内存。 |
+| 迭代器 traits → 标签 | traits 取出 iterator_category 标签。 |
+| 标签 → 算法分发 | 算法据标签编译期分发最优实现。 |
+| 分配器 → PMR | C++17 PMR 提供多态分配器。 |
+| 容器 → vector | vector 是连续内存容器代表。 |
+| 容器 → deque | deque 是分段连续另一迭代器模型。 |
+| 算法 → ranges | ranges 在架构上叠加惰性管道。 |
+| STL → 移动语义 | 移动语义是值传递零拷贝基石。 |
+
+### K.2 跨章闭环表
+
+| 章节 | 闭环关系 |
+|---|---|
+| ch19 变量与存储期 | 容器元素存储期关乎迭代器/引用失效。 |
+| ch60 模板基础 | STL 泛型建立在模板实例化之上。 |
+| ch67 概念 | 概念约束迭代器/算法接口。 |
+| ch77 vector | vector 是该架构下连续内存容器代表。 |
+| ch84 set | 关联容器复用同一套迭代器概念。 |
+| ch85 unordered | 无序容器迭代器类别为前向。 |
+| ch90 ranges | ranges 在 STL 架构上叠加惰性管道。 |
+| ch115 移动语义 | 移动语义是该架构值传递零拷贝基石。 |
+| ch122 PMR | PMR 是该架构的现代可插拔分配后端。 |
+

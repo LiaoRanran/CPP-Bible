@@ -880,3 +880,78 @@ int main(){
 ```
 
 `static_cast<const Derived&>` 在编译期确定目标类型，对 `draw_impl` 的调用被直接内联——对比虚函数版本需经 vtable 一次间接跳转。把 `Circle`/`Square` 放进同一容器会报类型不匹配，正是「CRTP 失运行时异构」的代价（见正文步骤 3）。
+
+## 附录 J：CRTP 静态多态决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需要类型相关的接口注入/运算符生成?"] --> B{"运行时需异构存储?"}
+    B -->|是| C["用虚函数/接口基类 (ch47)"]
+    B -->|否| D{"需零开销且编译期已知类型?"}
+    D -->|是| E{"需基类注入数据/接口?"}
+    D -->|否| H["运行期分派: variant/虚函数"]
+    E -->|是| F["用 CRTP 基类 (static_cast 转发)"]
+    E -->|否| G["用 deducing this C++23 P0847"]
+    F --> I{"派生类提供 impl()?"}
+    I -->|否 未约束| J["链接期/实例化期报错"]
+    I -->|是| K["零开销内联, 无 vtable"]
+    K --> L{"是否导致代码膨胀?"}
+    L -->|是| M["extern template 收敛/抽自由函数"]
+    L -->|否| N["完成: 编译期多态"]
+    C --> O["运行期灵活但失内联"]
+    G --> O
+```
+
+> 决策流说明：CRTP 的核心权衡是「编译期已知类型 → 零开销静态多态」与「运行期异构 → 虚函数」之间取舍。当类型在编译期固定、且需要基类注入接口/数据或自动生成运算符时，用 `static_cast<Derived*>` 把分派前移到编译期（无 vtable、全内联）；否则该用虚函数或 C++23 deducing this。用 Concepts(ch67) 约束派生类必须提供 `impl()`，可把链接期错误提前到实例化期。
+
+## 附录 K：CRTP 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    Y1["CRTP 基类模板"] --> Y2["派生类 Derived"]
+    Y2 --> Y3["static_cast 转回派生"]
+    Y1 --> Y3["基类用 static_cast 转发"]
+    Y1 --> Y4["虚函数/动态多态 (ch47)"]
+    Y1 --> Y5["EBO 空基类优化 (ch52)"]
+    Y1 --> Y6["Concepts 约束 (ch67)"]
+    Y1 --> Y7["constexpr 编译期求值 (ch69)"]
+    Y1 --> Y8["enable_shared_from_this"]
+    Y1 --> Y9["boost::operators"]
+    Y1 --> Y10["表达式模板 (ch72)"]
+    Y2 --> Y11["多重继承 this 调整 (ch50)"]
+    Y1 --> Y12["deducing this P0847"]
+    Y1 --> Y13["SFINAE 提前错误 (ch66)"]
+    Y3 --> Y14["模板实例化/代码膨胀 (ch68)"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+| --- | --- |
+| CRTP 基类模板 -> 派生类 Derived | 基类以派生类为模板实参，形成奇异递归 |
+| 派生类 Derived -> static_cast 转回派生 | 基类指针向下转回派生类，编译期已知类型 |
+| CRTP 基类模板 -> static_cast 转发 | 基类接口体通过 static_cast 调用派生实现 |
+| CRTP 基类模板 -> 虚函数/动态多态(ch47) | CRTP 是虚函数的静态替代，消除 vtable 间接 |
+| CRTP 基类模板 -> EBO 空基类优化(ch52) | CRTP 基类常为空的，依赖 EBO 零字节 |
+| CRTP 基类模板 -> Concepts 约束(ch67) | 用 concept 约束 Derived 必须提供 impl() |
+| CRTP 基类模板 -> constexpr 编译期求值(ch69) | constexpr 让 CRTP 静态分发在编译期定值 |
+| CRTP 基类模板 -> enable_shared_from_this | enable_shared_from_this 是 CRTP 标准库实例 |
+| CRTP 基类模板 -> boost::operators | boost::operators 用 CRTP 自动生成运算符 |
+| CRTP 基类模板 -> 表达式模板(ch72) | Eigen 表达式模板以 CRTP 消除临时对象 |
+| 派生类 Derived -> 多重继承 this 调整(ch50) | CRTP 混入组合时 this 偏移由多继承处理 |
+| CRTP 基类模板 -> deducing this P0847 | C++23 deducing this 可替代部分 CRTP |
+| CRTP 基类模板 -> SFINAE 提前错误(ch66) | SFINAE/concept 把派生类接口缺失错误提前 |
+| static_cast 转发 -> 模板实例化/代码膨胀(ch68) | 每组 Base<Derived> 独立实例化可能膨胀 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch52 EBO | ch51 CRTP | EBO 让 CRTP 空基类占 0 字节，避免对象膨胀 |
+| ch47 虚函数 | ch51 CRTP | CRTP 用静态分发替代虚函数动态分发，消除 vtable |
+| ch50 多重继承 | ch51 CRTP | CRTP 混入组合时 this 偏移/调整沿用多继承模型 |
+| ch67 Concepts | ch51 CRTP | Concepts 约束 Derived 提供 impl()，错误提前到实例化期 |
+| ch69 constexpr | ch51 CRTP | constexpr 使 CRTP 静态分发在编译期定值 |
+| ch66 SFINAE | ch51 CRTP | SFINAE 可探测派生类是否提供某接口，等价于 concept |
+| ch72 表达式模板 | ch51 CRTP | Eigen 表达式模板以 CRTP 消除临时对象 |
+| ch68 TMP | ch51 CRTP | CRTP 是 TMP 中基类注入行为的惯用法 |

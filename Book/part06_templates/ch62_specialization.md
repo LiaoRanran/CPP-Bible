@@ -989,3 +989,84 @@ int main() {
 
 **结论**：偏特化靠"更特化的模式"决胜；设计特化集时要保证对任意类型有唯一最特化匹配，否则出现偏序歧义硬错误。
 
+## 附录 J：类模板特化决策流（D3 维度）
+
+> 当你需要为某些类型提供不同实现时，用本决策流在「全特化 / 偏特化 / 运行期分发」之间选型。
+
+```mermaid
+flowchart TD
+    A["需要为某些类型提供不同实现?"] --> B{"类型在编译期已知?"}
+    B -->|否| B1["用运行期多态 或 std::variant + visit"]
+    B -->|是| C{"是否只有单一具体类型?"}
+    C -->|是| D["全特化 template<> struct C<X> 独立模板"]
+    C -->|否| E{"是否为一族类型 指针/引用/数组/const?"}
+    E -->|是| F["偏特化 template<U> struct C<U*>"]
+    E -->|否| G{"选择依据是否复杂 需 trait 组合?"}
+    G -->|是| H["偏特化 + enable_if(ch66) / requires(ch67)"]
+    G -->|否| I{"是否需要改变成员集?"}
+    I -->|是| J["全特化 可改成员集"]
+    I -->|否| K["偏特化 仅换实现"]
+    D --> L["偏序: 更特化者胜出"]
+    F --> L
+    H --> L
+    J --> L
+    K --> L
+    L --> M{"多份特化同样特化?"}
+    M -->|是| N["二义错误: 调整层次严格更特化"]
+    M -->|否| O["实例化选中者 各自独立布局 零运行期分支"]
+    N --> O
+```
+
+> 决策流说明：全特化（`template <>`）是独立模板，可改成员集；偏特化（`template <U> struct C<U*>`）针对一族类型。两者都经偏序选出「最特化者」，选中后各自为独立类型、零运行期分发。当约束复杂时改用 enable_if（ch66）或 concepts（ch67）；多份特化同样特化会导致二义，需保持严格更特化层次。
+
+## 附录 K：类模板特化知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    Y1["主模板 primary template"] --> Y2["全特化 full specialization"]
+    Y1 --> Y3["偏特化 partial specialization"]
+    Y2 --> Y4["独立类型定义 可改成员集"]
+    Y3 --> Y5["类型族模式 指针/引用/数组/const"]
+    Y3 --> Y6["偏序 partial ordering"]
+    Y6 --> Y7["最特化者胜出"]
+    Y2 --> Y8["mangled 符号独立发射 ch62 ⑩"]
+    Y3 --> Y8
+    Y3 --> Y9["type_traits 偏特化 ch65"]
+    Y9 --> Y10["is_pointer / is_array 萃取"]
+    Y10 --> Y11["SFINAE enable_if ch66"]
+    Y11 --> Y12["void_t 探测惯用法"]
+    Y12 --> Y13["Concepts requires ch67"]
+    Y13 --> Y14["压平特化树 更可读"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖含义 |
+|---|---|---|
+| 1 | 主模板 → 全特化 | 全特化必须基于已声明的主模板，是主模板的「独立替代定义」 |
+| 2 | 主模板 → 偏特化 | 偏特化保留参数列表，针对一类实参 |
+| 3 | 全特化 → 独立类型定义 | 全特化是独立模板，可改变成员集合 |
+| 4 | 偏特化 → 类型族模式 | 偏特化用 `U*`/`const T`/`T[N]` 匹配一族类型 |
+| 5 | 偏特化 → 偏序 | 多份偏特化并存时靠偏序决胜 |
+| 6 | 偏序 → 最特化者胜出 | 用一份特化的形参推导另一份，单向可推者更特化 |
+| 7 | 全特化 → mangled 符号 | 每份全特化发射独立 mangled 符号（见 ch62 ⑩） |
+| 8 | 偏特化 → mangled 符号 | 每份偏特化同样发射独立符号 |
+| 9 | 偏特化 → type_traits | type_traits 大量用偏特化实现萃取（is_pointer 等） |
+| 10 | type_traits → 萃取 | is_pointer/is_array 靠偏特化把特殊类型分流到 true |
+| 11 | 萃取 → SFINAE | 偏特化常与 enable_if 组合按 trait 选特化 |
+| 12 | SFINAE → void_t | void_t 探测惯用法建立在偏特化之上 |
+| 13 | void_t → Concepts | C++20 以 requires 替代 void_t 探测，可读性更优 |
+| 14 | Concepts → 压平特化树 | concepts 把层层偏特化压平为可读约束 |
+
+### K.2 跨章闭环表
+
+| 源章节 | 目标章节 | 闭环关系 |
+|---|---|---|
+| ch62 | ch65 | 偏特化是 type_traits 的主干（is_pointer/is_array 靠偏特化萃取） |
+| ch62 | ch66 | 特化 + enable_if 按 trait 选择特化版本分发 |
+| ch62 | ch67 | concepts 偏特化（std::integral<T>）压平 enable_if 特化树 |
+| ch62 | ch60 | 特化是模板实例化在编译期选中的分支终点 |
+| ch62 | ch61 | 重载决议在特化与基模板之间做选择 |
+| ch62 | ch68 | TMP 以偏特化实现编译期 if/分支 |
+| ch62 | ch63 | 可变参数模板常配合特化做递归终止 base case |
+| ch62 | ch52 | 空基类 EBO 可与特化结合（Wrapper : private T） |
