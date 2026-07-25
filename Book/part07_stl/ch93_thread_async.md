@@ -1234,3 +1234,103 @@ long total = std::accumulate(local.begin(), local.end(), 0L); // 无锁合并
 注意 false sharing——把 `local[t]` 放同一缓存行会互相失效，需 padding 隔离（见 ch110/111）。
 
 **工程含义**：并行化的第一原则不是"加锁"，而是"减少共享"；atomic 解决正确性，架构解决性能。
+
+## 附录 J：thread/jthread/async 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S["需要并发执行任务"]
+    D1{"是否需自动 join?"}
+    D2{"需返回值或异常传播?"}
+    D3{"启动策略 deferred 或 async?"}
+    D4{"任务量小且频繁?"}
+    T["std::thread 手动 join"]
+    J["std::jthread 自动 join 加取消"]
+    F["std::async 返回 future"]
+    POOL["线程池 复用"]
+    DEF["launch deferred 惰性"]
+    AS["launch async 真异步"]
+    E["选型完成"]
+    S --> D1
+    D1 -->|"是 自动"| J
+    D1 -->|"否 手动"| T
+    J --> D2
+    T --> D2
+    D2 -->|"需 future"| F
+    D2 -->|"仅需执行"| D4
+    F --> D3
+    D3 -->|"惰性"| DEF
+    D3 -->|"异步"| AS
+    D4 -->|"是"| POOL
+    D4 -->|"否"| T
+    DEF --> E
+    AS --> E
+    POOL --> E
+```
+
+> 决策流说明：jthread 在 C++20 中以 RAII 自动 join 并内建 stop_token，几乎总是应取代裸 thread；async 适合一次性带返回值的任务，但默认启动策略可能是 deferred（惰性于调用线程）——显式 launch::async 才真正并行。海量小任务用 thread/async 会因线程创建开销淹没收益，应交给线程池复用。
+
+## 附录 K：thread/async 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    C1["std::thread"]
+    C2["std::jthread"]
+    C3["std::future"]
+    C4["std::async"]
+    C5["std::promise"]
+    C6["packaged_task"]
+    C7["launch 策略"]
+    C8["stop_token 取消"]
+    C9["mutex 或 atomic 同步"]
+    C10["join 或 detach 生命周期"]
+    C11["硬件并发 并行度"]
+    C12["数据竞争 共享"]
+    C13["与 ch94 协作取消"]
+    C1 --> C2
+    C2 --> C8
+    C1 --> C10
+    C2 --> C10
+    C4 --> C3
+    C5 --> C3
+    C6 --> C3
+    C4 --> C7
+    C3 --> C9
+    C1 --> C11
+    C12 --> C9
+    C1 --> C12
+    C2 --> C13
+    C9 --> C11
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖关系说明 |
+|------|------|------|
+| C1→C2 | thread → jthread | jthread 基于 thread 增加自动 join |
+| C2→C8 | jthread → stop_token | jthread 内建 stop_token 取消 |
+| C1→C10 | thread → 生命周期 | thread 需手动 join/detach |
+| C2→C10 | jthread → 生命周期 | jthread 析构自动 join |
+| C4→C3 | async → future | async 返回 future |
+| C5→C3 | promise → future | promise 关联 future |
+| C6→C3 | packaged_task → future | packaged_task 包装可调用供 future |
+| C4→C7 | async → launch | async 受 launch 策略控制 |
+| C3→C9 | future → 同步 | future 与互斥/原子协作同步 |
+| C1→C11 | thread → 并行度 | thread 数受硬件并发限制 |
+| C12→C9 | 数据竞争 → 同步 | 数据竞争需 mutex/atomic 防护 |
+| C1→C12 | thread → 共享 | 共享状态引发数据竞争 |
+| C2→C13 | jthread → 协作取消 | jthread 连接到 ch94 协作取消 |
+| C9→C11 | 同步 → 并行度 | 同步开销影响可并行度 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|------|------|------|
+| ch45 RAII 对象生命周期 | ch93 thread/async | jthread 自动 join+释放 |
+| ch76 移动语义 | ch93 thread/async | future 移动传递结果 |
+| ch62 模板/可变参数 | ch93 thread/async | 可变参数线程函数 |
+| ch39 constexpr 编译期计算 | ch93 thread/async | 原子操作可 constexpr |
+| ch94 stop_token | ch93 thread/async | 协作取消注入线程 |
+| ch90 ranges | ch93 thread/async | 并行 range 分区 |
+| ch113 内存模型/原子 | ch93 thread/async | 同步原语的原子性基础 |
+

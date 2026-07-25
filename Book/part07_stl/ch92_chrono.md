@@ -1017,3 +1017,107 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：chrono 时钟/时长决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S["需要度量或表示时间"]
+    D1{"测量时长还是绝对时刻?"}
+    D2{"是否用于 monotone 超时?"}
+    D3{"是否跨进程或墙钟?"}
+    D4{"需避免截断误差?"}
+    DUR["duration 时长"]
+    TP["time_point 时刻"]
+    STEADY["steady_clock 单调"]
+    SYS["system_clock 墙钟可调整"]
+    HI["high_resolution_clock"]
+    CAST["duration_cast 截断"]
+    ROUND["floor ceil round 取舍"]
+    E["选型完成"]
+    S --> D1
+    D1 -->|"时长"| DUR
+    D1 -->|"时刻"| TP
+    DUR --> D2
+    TP --> D2
+    D2 -->|"超时或计时"| STEADY
+    D2 -->|"墙钟或日志"| D3
+    D3 -->|"需可序列化"| SYS
+    D3 -->|"仅高精度"| HI
+    STEADY --> D4
+    SYS --> D4
+    HI --> D4
+    D4 -->|"要精确舍入"| ROUND
+    D4 -->|"可接受截断"| CAST
+    ROUND --> E
+    CAST --> E
+```
+
+> 决策流说明：steady_clock 不可替代用于超时与基准计时——它单调不被 NTP 回调篡改；system_clock 是唯一可转为 time_t/日历用于日志与跨进程的时刻。duration 混合运算常被截断：用 duration_cast 明确截断或 floor/ceil/round 做有界舍入，避免隐式精度丢失造成的累计偏差。
+
+## 附录 K：chrono 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    C1["duration 时长"]
+    C2["time_point 时刻"]
+    C3["clock 时钟接口"]
+    C4["system_clock 墙钟"]
+    C5["steady_clock 单调"]
+    C6["high_resolution_clock"]
+    C7["duration_cast 转换"]
+    C8["floor ceil round 舍入"]
+    C9["period ratio 精度"]
+    C10["time_t 日历转换"]
+    C11["operator 运算重载"]
+    C12["字面值 1h 1s"]
+    C13["与 C time API 对照"]
+    C1 --> C3
+    C2 --> C3
+    C3 --> C4
+    C3 --> C5
+    C4 --> C6
+    C5 --> C6
+    C1 --> C7
+    C7 --> C8
+    C1 --> C9
+    C2 --> C10
+    C1 --> C11
+    C2 --> C11
+    C12 --> C1
+    C1 --> C13
+    C2 --> C13
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖关系说明 |
+|------|------|------|
+| C1→C3 | duration → clock | duration 基于时钟周期 |
+| C2→C3 | time_point → clock | time_point 基于时钟起点 |
+| C3→C4 | clock → system_clock | clock 含 system_clock 墙钟 |
+| C3→C5 | clock → steady_clock | 以及 steady_clock 单调 |
+| C4→C6 | system_clock → high_resolution | 常与 high_resolution 同源 |
+| C5→C6 | steady_clock → high_resolution | 常与 high_resolution 同源 |
+| C1→C7 | duration → duration_cast | duration 间转换用 duration_cast |
+| C7→C8 | duration_cast → 舍入 | 截断后可做 floor/ceil/round |
+| C1→C9 | duration → period | period 决定精度与截断 |
+| C2→C10 | time_point → time_t | time_point 可转 time_t/日历 |
+| C1→C11 | duration → 运算 | duration 支持算术运算 |
+| C2→C11 | time_point → 运算 | time_point 支持差值运算 |
+| C12→C1 | 字面值 → duration | 字面值 1h/1s 生成 duration |
+| C1→C13 | duration → C API | duration 替代 C time 计算 |
+| C2→C13 | time_point → C API | time_point 替代 C time 表示 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|------|------|------|
+| ch39 constexpr 编译期计算 | ch92 chrono | duration 运算可 constexpr |
+| ch62 模板/ratio | ch92 chrono | period 由 ratio 模板表达 |
+| ch45 RAII 对象生命周期 | ch92 chrono | 作用域计时守卫 |
+| ch92 chrono | ch91 filesystem | file_time_type 基于时钟 |
+| ch92 chrono | ch93 thread/async | 超时使用 steady_clock |
+| ch92 chrono | ch94 stop_token | 超时取消计时 |
+| ch113 内存模型/原子 | ch92 chrono | 时钟读取的原子性 |
+
+

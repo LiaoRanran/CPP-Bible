@@ -1033,3 +1033,93 @@ std::sort(a.begin()+a.size()-100, a.end());
 盲目 `sort` 取 top-k 是把 O(n) 问题做成了 O(n log n)。
 
 **工程含义**：算法选型先看"我到底需要什么不变量"——多数 top-k/中位数场景根本不需要完全有序。
+
+## 附录 J：排序算法选型决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["待排序区间 [first, last)"] --> B{"需要保持相等元素原始相对顺序(稳定性)?"}
+    B -->|是| B1["stable_sort (归并思路, O(n log n), 稳定)"]
+    B -->|否| C{"只要前 k 个有序 (top-k)?"}
+    C -->|是| C1["partial_sort(first, middle, last) O(n log k)"]
+    C -->|否| D{"只要第 k 小/中位数就位, 不要求全有序?"}
+    D -->|是| D1["nth_element(first, nth, last) O(n)"]
+    D -->|否| E{"需要整体有序?"}
+    E -->|否| Z1["无需排序: 用 nth_element/堆选 等更轻原语"]
+    E -->|是| I{"迭代器为随机存取?"}
+    I -->|否| J["std::list::sort / 先拷到 vector 再 sort"]
+    I -->|是| G{"元素可移动且比较器满足严格弱序?"}
+    G -->|否| H["提供 noexcept 移动 + 自定义 Comp 严格弱序"]
+    G -->|是| K{"需要并行加速大区间?"}
+    K -->|是| N["std::sort(std::execution::par) C++17"]
+    K -->|否| F["std::sort (introsort 平均/最坏 O(n log n))"]
+    H --> F
+    J --> F
+    N --> F
+    B1 --> X["落地: 调用算法并断言不变量"]
+    C1 --> X
+    D1 --> X
+    Z1 --> X
+    F --> X
+```
+
+> 决策流说明：排序选型的第一问是「稳定性」——相等元素相对顺序必须保留时只能 `stable_sort`；之后按「需要多强的有序保证」降级：`nth_element`(O(n)，仅第 k 就位) → `partial_sort`(O(n log k)，前 k 有序) → `sort`(全有序)。盲目 `sort` 取 top-k 是把 O(n) 问题做成了 O(n log n)，而 `partial_sort` 内部的 heap sort 正是 introsort 深度耗尽时的兜底原语。
+
+## 附录 K：排序知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    CM["比较器 / 严格弱序"] --> SORT["std::sort"]
+    CM --> STABLE["std::stable_sort"]
+    CM --> PART["std::partial_sort"]
+    CM --> NTH["std::nth_element"]
+    RAI["随机存取迭代器"] --> SORT
+    RAI --> PART
+    RAI --> NTH
+    MV["移动语义 (move)"] --> SORT
+    STB["稳定性需求"] --> STABLE
+    INTRO["introsort (quicksort+heapsort+insertion)"] --> SORT
+    HEAP["堆不变量"] --> PART
+    TOPK["top-k 需求"] --> PART
+    MED["中位数/分位数需求"] --> NTH
+    PAR["执行策略 (par/unseq)"] --> SORT
+    SORT --> LB["std::lower_bound (ch97)"]
+    STABLE --> SORT
+    PART --> TOPK
+    NTH --> MED
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+|---|---|---|
+| 比较器 / 严格弱序 | std::sort | sort 依赖比较器满足严格弱序，否则结果未定义 |
+| 比较器 / 严格弱序 | std::stable_sort | 稳定排序同样依赖严格弱序比较器 |
+| 比较器 / 严格弱序 | std::partial_sort | partial_sort 用同一比较器判定堆序 |
+| 比较器 / 严格弱序 | std::nth_element | nth_element 用比较器划分第 k 小 |
+| 随机存取迭代器 | std::sort | sort 要求随机存取迭代器以做下标分区 |
+| 随机存取迭代器 | std::partial_sort | partial_sort 需要随机存取定位 middle |
+| 随机存取迭代器 | std::nth_element | nth_element 需要随机存取定位 nth |
+| 移动语义 (move) | std::sort | iter_swap 对重型元素走移动而非拷贝 |
+| 稳定性需求 | std::stable_sort | 稳定性是 stable_sort 存在的根本理由 |
+| introsort | std::sort | libstdc++ 的 sort 由 introsort 实现 |
+| 堆不变量 | std::partial_sort | partial_sort 内部以 heap sort 维护堆不变量 |
+| top-k 需求 | std::partial_sort | top-k 场景是 partial_sort 的典型驱动 |
+| 中位数/分位数需求 | std::nth_element | 中位数/分位数是 nth_element 的典型驱动 |
+| 执行策略 (par/unseq) | std::sort | C++17 起 sort 可接受执行策略并行化 |
+| std::sort | std::lower_bound (ch97) | 全有序结果是二分查找的前置不变量 |
+| std::stable_sort | std::sort | 稳定排序与快排共享分区思想 |
+| std::partial_sort | top-k 需求 | partial_sort 落地 top-k 不变量 |
+| std::nth_element | 中位数/分位数需求 | nth_element 落地中位数/分位数不变量 |
+
+### K.2 章节闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch19（迭代器） | ch96 | 随机存取迭代器是 sort/partial_sort/nth_element 的准入前提 |
+| ch77（vector） | ch96 | 连续内存使 introsort 打满缓存线，小数组阈值同理 |
+| ch115（移动语义） | ch96 | iter_swap 对重型元素走移动，决定排序常数 |
+| ch96（排序） | ch97（查找） | 全有序区间是 lower_bound/二分查找的前置不变量 |
+| ch98（堆） | ch96 | 堆不变量支撑 partial_sort 的 heap-sort 原语 |
+| ch95（算法总论） | ch96 | 算法总论对六大算法族与复杂度的统一分类 |
+| ch154（缓存优化） | ch96 | 缓存友好与小数组阈值的工程取舍来自缓存优化章 |

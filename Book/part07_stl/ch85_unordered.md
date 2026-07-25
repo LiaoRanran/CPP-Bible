@@ -1307,4 +1307,83 @@ bucket_chain:
 
 **工程含义**：unordered_set find 是平均 O(1) 但实际受桶链长度影响。整数 key 的 hash 是恒等函数（无 hash 运算），瓶颈在 `div` 指令（30-40 cycle）和桶内链表追逐的 cache miss。负载因子 < 1 时桶链极短（0-1 次循环），优于 set 的 7 步树追逐；但 rehash 是 O(n) 的全局操作——**插入触发 rehash 时瞬间代价是 set 的数倍**（全量重新分配桶数组 + 迁移所有节点）。
 
+## 附录 J：std::unordered_map / unordered_set 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需求:哈希关联容器"] --> D1{"自定义类型作 key?"}
+    D1 -->|是| D2{"是否提供良好 hash / eq?"}
+    D1 -->|否 内建类型| F1["直接用 unordered_map / set"]
+    D2 -->|否| G1["实现 hash + == 避免碰撞攻击"]
+    D2 -->|是| G2["提供 std::hash 特化"]
+    F1 --> D3{"负载因子是否接近上限?"}
+    D3 -->|是| H1["reserve / rehash 预扩容"]
+    D3 -->|否| H2["保持低负载因子"]
+    G2 --> D3
+    H1 --> D4{"插入触发 rehash 尖峰?"}
+    D4 -->|是| I1["预 reserve 或改 map / flat"]
+    D4 -->|否| I2["unordered 均摊 O(1)"]
+    H2 --> D5{"需要有序遍历?"}
+    D5 -->|是| J1["改 std::map 有序"]
+    D5 -->|否| J2["unordered 满足"]
+    G1 --> Z["结论:低负载+好 hash 用 unordered"]
+    I1 --> Z
+    I2 --> Z
+    J1 --> Z
+    J2 --> Z
+    F1 --> Z
+```
+
+> 决策流说明：哈希容器靠「低负载因子 + 高质量 hash」兑现均摊 O(1)；自定义类型必须提供良好 `hash` 与 `==` 以防碰撞攻击与聚类。插入前用 `reserve` 预扩容避免 rehash 尖峰（整表迁移、迭代器全失效）。若需要有序遍历或频繁增删致 rehash 抖动，则退回 `map` 或排序 `vector`（flat_map）。
+
+## 附录 K：std::unordered_map / unordered_set 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    N1["开链哈希 _Hashtable"] --> N2["桶数组 + 链表"]
+    N2 --> N3["load_factor / max_load_factor"]
+    N3 --> N4["rehash / reserve"]
+    N4 --> N5["重哈希 O(n) 全失效"]
+    N1 --> N6["自定义 hash 函数"]
+    N6 --> N7["碰撞攻击 / 聚类"]
+    N2 --> N8["bucket 局部迭代器"]
+    N1 --> N9["平均 O(1) 但 div+链追逐"]
+    N9 --> N10["缓存不友好"]
+    N1 --> N11["unordered_multiset 可重复"]
+    N10 --> N12["flat_map 连续替代"]
+    N5 --> N13["迭代器/引用失效规则"]
+    N7 --> N14["透明哈希 C++20"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 上游概念 | 下游概念 | 依赖关系说明 |
+|---|---|---|---|
+| 1 | 开链哈希 | 桶数组+链表 | 每个桶是单链表头，冲突元素挂同桶 |
+| 2 | 桶数组+链表 | 负载因子 | 负载因子 = 元素数/桶数 |
+| 3 | 负载因子 | rehash/reserve | 超 max_load_factor 触发 rehash |
+| 4 | rehash/reserve | 全失效 | 重哈希迁移所有节点，迭代器全失 |
+| 5 | 开链哈希 | 自定义 hash | 自定义 key 需提供 hash 函数 |
+| 6 | 自定义 hash | 碰撞/聚类 | 劣质 hash 致桶链退化为链表 |
+| 7 | 桶数组+链表 | 局部迭代器 | begin(n)/end(n) 遍历单桶 |
+| 8 | 开链哈希 | 平均 O(1) | 一次 div + 短链追逐 |
+| 9 | 平均 O(1) | 缓存不友好 | 桶随机散布，div 与链追逐都易 miss |
+| 10 | 开链哈希 | unordered_multiset | 允许重复 key |
+| 11 | 缓存不友好 | flat_map | 连续内存替代缓解缓存惩罚 |
+| 12 | 全失效 | 失效规则 | 失效规则区别于 map 的节点稳定 |
+| 13 | 自定义 hash | 透明哈希 | is_transparent 异构查找 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch84 set | ch85 unordered | 有序集合的哈希对照 |
+| ch83 map | ch85 unordered | unordered_map 是 map 的哈希版 |
+| ch76 STL 架构 | ch85 unordered | 前向/双向迭代器概念 |
+| ch154 缓存优化 | ch85 unordered | 桶随机散布缓存命中率低 |
+| ch115 移动语义 | ch85 unordered | extract/merge 节点句柄 |
+| ch124 libstdcxx | ch85 unordered | _Hashtable 源码阅读入口 |
+| ch98 堆算法 | ch85 unordered | 哈希与堆两种结构取舍 |
+
+
 

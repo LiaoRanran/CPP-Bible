@@ -1233,3 +1233,80 @@ at_span(std::span<int const, N>, unsigned long long):
 **3. 布局**：`sizeof(std::span<const int>)` = **16**（指针 8 + `size_t` 8）。按值传递 span 拷贝 16 字节（略多于裸指针，但换来 `.size()`/`.subspan()`/`.first()`）。
 
 **工程含义**：span 性能等价于裸指针+长度，适合做"不拥有、零拷贝"的缓冲区视图（嵌入式中传 DMA 缓冲区、外设 FIFO 区段极佳）。**但 `span[i]` 与原始数组一样不查边界——越界是静默 UB，不是异常**；需要运行时防护时应显式 `if (i < s.size())` 或改用带检查封装。
+
+## 附录 J：std::span 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需求:把一段连续数据交给函数/算法"] --> D1{"函数内是否修改底层数据?"}
+    D1 -->|只读| D2{"是否长期持有该内存?"}
+    D1 -->|读写| D3{"是否拥有该内存?"}
+    D2 -->|否 局部借用| F1["std::span<const T> 零拷贝"]
+    D2 -->|是 长期| F2["传 const vector<T>& 或返回 vector"]
+    D3 -->|否 借用修改| F3["std::span<T> 视图"]
+    D3 -->|是 拥有| F4["用 vector / array 拥有"]
+    F1 --> D4{"底层来源类型多样?"}
+    D4 -->|是 数组/vector/array| G1["span 统一接收"]
+    D4 -->|否 单一类型| G2["直接用该容器引用"]
+    F3 --> D5{"需要切片?"}
+    D5 -->|是| H1["first / last / subspan O(1)"]
+    D5 -->|否| H2["直接遍历"]
+    F4 --> Z["结论:只读传 span<const T>"]
+    F2 --> Z
+    G1 --> Z
+    G2 --> Z
+    H1 --> Z
+    H2 --> Z
+```
+
+> 决策流说明：`span` 是「非拥有连续视图」，核心权衡是零拷贝但把生命周期责任交给调用方。只读场景一律 `span<const T>`，可同时接收 vector/array/裸数组；需要持久化或返回新数据时改用 `vector` 或 `const vector<T>&`。切片用 `first/last/subspan`（O(1) 无拷贝）替代手工指针算术；绝不可把 span 存为成员后让底层被释放或扩容。
+
+## 附录 K：std::span 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    N1["非拥有视图 ptr,extent"] --> N2["零开销抽象"]
+    N2 --> N3["与裸指针+长度等价"]
+    N1 --> N4["动态 extent vs 静态 extent"]
+    N4 --> N5["sizeof(span)=16 / 8"]
+    N1 --> N6["生命周期绑定底层存储"]
+    N6 --> N7["悬垂 span 陷阱"]
+    N1 --> N8["first / last / subspan 切片"]
+    N8 --> N9["O(1) 无拷贝"]
+    N1 --> N10["contiguous_range 概念"]
+    N10 --> N11["喂给 ranges 算法"]
+    N1 --> N12["string_view 字符特化"]
+    N12 --> N13["与 span 同源设计"]
+    N3 --> N14["borrowed_range"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 上游概念 | 下游概念 | 依赖关系说明 |
+|---|---|---|---|
+| 1 | 非拥有视图 | 零开销抽象 | 仅存指针+长度，无堆分配无虚调用 |
+| 2 | 零开销抽象 | 裸指针等价 | -O2 下与 ptr+len 生成相同循环 |
+| 3 | 非拥有视图 | 动态/静态 extent | 静态 extent 长度编入类型不占存储 |
+| 4 | 动态/静态 | sizeof | 动态 16B、静态 8B |
+| 5 | 非拥有视图 | 生命周期绑定 | span 不延长任何对象生命周期 |
+| 6 | 生命周期绑定 | 悬垂陷阱 | 底层释放/扩容后 span 失效 |
+| 7 | 非拥有视图 | 切片 | first/last/subspan 仅移动指针 |
+| 8 | 切片 | O(1) 无拷贝 | 切片是地址算术，不复制元素 |
+| 9 | 非拥有视图 | contiguous_range | 满足连续范围概念 |
+| 10 | contiguous_range | ranges 算法 | 可直接喂给 std::ranges |
+| 11 | 非拥有视图 | string_view | string_view 是字符特化 |
+| 12 | string_view | 同源设计 | 二者设计同源、接口互补 |
+| 13 | 裸指针等价 | borrowed_range | 不拥有故满足 borrowed_range |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch80 array | ch82 span | array 可零成本转 span 视图 |
+| ch77 vector | ch82 span | vector .data()+.size() 是 span 最常见来源 |
+| ch81 string | ch82 span | string_view 是 span 的字符特化 |
+| ch76 STL 架构 | ch82 span | span 是该架构下轻量连续视图 |
+| ch90 ranges | ch82 span | span 满足 contiguous_range 喂给 ranges |
+| ch88 受限接口 | ch82 span | 非拥有视图与所有权边界思想 |
+| ch115 移动语义 | ch82 span | span 拷贝是浅复制，与移动语义呼应 |
+

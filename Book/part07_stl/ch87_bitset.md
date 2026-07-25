@@ -1147,3 +1147,104 @@ sete   al
 | `std::byteswap(x)` | `bswap` | `bswap` | — |
 | `std::bit_cast<To>(x)` | `movd`（位直传） | 同 | — |
 
+## 附录 J：bitset 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S["需要表示一组比特位"]
+    D1{"比特数N编译期已知?"}
+    D2{"N≤64?"}
+    D3{"需要运行时可变大小?"}
+    D4{"是否频繁做popcount?"}
+    U["uint64_t 裸位掩码 最快但无类型安全"]
+    B["std::bitset 模板N 类型安全成员函数"]
+    V["std::vector 特化bool 压缩存储 代理迭代器陷阱"]
+    Y["boost::dynamic_bitset 堆分配 运行时大小"]
+    P["std::bit popcount 单指令"]
+    BC["bitset count 运行库SWAR"]
+    L["需外部加锁保证线程安全"]
+    E["选型完成"]
+    S --> D1
+    D1 -->|"是"| D2
+    D1 -->|"否"| D3
+    D2 -->|"是"| U
+    D2 -->|"否"| B
+    B --> V
+    D3 -->|"是"| D4
+    D3 -->|"否"| Y
+    D4 -->|"位宽小或需整数运算"| P
+    D4 -->|"仅集合语义"| BC
+    U --> L
+    B --> L
+    V --> L
+    Y --> L
+    P --> E
+    BC --> E
+    L --> E
+```
+
+> 决策流说明：bitset 的选型核心在编译期可知位数 N——N≤64 时裸 uint64_t 掩码性能最优但牺牲类型安全，N 较大且固定用 std::bitset<N> 兼得类型安全与 constexpr；只有真正需要运行时大小才引入 boost::dynamic_bitset 或 vector<bool> 的堆成本。注意 vector<bool> 的代理迭代器与 bitset 的线程不安全（无内建原子）是两条共同的工程红线。
+
+## 附录 K：bitset 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    C1["std::bitset 模板N"]
+    C2["编译期常量N"]
+    C3["底层array存储"]
+    C4["位运算 set/reset/flip/test"]
+    C5["count/popcount"]
+    C6["std::bit 工具 popcount/byteswap"]
+    C7["位字段 对照"]
+    C8["std::vector<bool> 特化陷阱"]
+    C9["constexpr 编译期"]
+    C10["uint64_t 裸掩码"]
+    C11["boost::dynamic_bitset"]
+    C12["to_ullong/hash 导出"]
+    C13["线程安全 需外部"]
+    C2 --> C1
+    C1 --> C3
+    C1 --> C4
+    C4 --> C5
+    C6 --> C5
+    C1 --> C9
+    C10 --> C7
+    C8 --> C1
+    C11 --> C1
+    C1 --> C12
+    C4 --> C10
+    C1 --> C13
+    C9 --> C6
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖关系说明 |
+|------|------|------|
+| C2→C1 | 编译期常量N → bitset | 非类型模板参数 N 决定位数与类型 |
+| C1→C3 | bitset → array | 底层由 N 位组成的数组实现 |
+| C1→C4 | bitset → 位运算 | set/reset/flip/test 是核心操作 |
+| C4→C5 | 位运算 → count | 位计数依赖 count/popcount |
+| C6→C5 | std::bit → count | std::popcount 提供高效位计数原语 |
+| C1→C9 | bitset → constexpr | 所有操作 constexpr 可编译期求值 |
+| C10→C7 | 裸掩码 → 位字段 | uint64_t 掩码是位字段的对照方案 |
+| C8→C1 | vector<bool> → bitset | 压缩特化与 bitset 同源但代理迭代器有坑 |
+| C11→C1 | dynamic_bitset → bitset | 提供运行时大小变体 |
+| C1→C12 | bitset → 导出 | to_ullong/hash 导出整数或哈希 |
+| C4→C10 | 位运算 → 裸掩码 | 位运算语义与裸掩码一致 |
+| C1→C13 | bitset → 线程安全 | 本身非线程安全需外部同步 |
+| C9→C6 | constexpr → std::bit | 编译期位算法常配合 std::bit |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|------|------|------|
+| ch62 模板与非类型参数 | ch87 bitset | 非类型模板参数 N 决定 bitset 位数 |
+| ch63 可变参数模板 | ch87 bitset | 编译期整型序列驱动位位置展开 |
+| ch39 constexpr 编译期计算 | ch87 bitset | constexpr 位算法在编译期求值 |
+| ch45 RAII 对象生命周期 | ch87 bitset | bitset 值语义与 RAII 析构 |
+| ch87 bitset | ch90 ranges | 集合/视图惰性遍历思想 |
+| ch87 bitset | ch93 thread/async | 共享 bitset 需外部互斥同步 |
+| ch87 bitset | ch88 optional/variant | 多标志可用 variant/optional 替代魔法位 |
+
+

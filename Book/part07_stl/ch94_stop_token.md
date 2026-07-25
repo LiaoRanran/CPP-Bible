@@ -1199,5 +1199,105 @@ int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << 
 
 [标准] `noexcept` 移动构造让 `vector` 在重新分配时移动元素；否则因强异常保证退化为拷贝。
 
+## 附录 J：stop_token 协作取消决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S["需支持任务中途取消"]
+    D1{"使用 C++20 jthread?"}
+    D2{"取消需中断阻塞等待?"}
+    D3{"谁持有 stop_source?"}
+    D4{"需多回调同时响应?"}
+    JT["jthread 自动传 stop_token"]
+    TH["thread 手动 stop_source"]
+    CB["stop_callback 中断等待"]
+    COND["condition_variable 等待"]
+    OWN["内部自建 stop_source"]
+    EXT["外部传入 stop_source"]
+    MULTI["多个 stop_callback 注册"]
+    E["选型完成"]
+    S --> D1
+    D1 -->|"是"| JT
+    D1 -->|"否"| TH
+    JT --> D2
+    TH --> D2
+    D2 -->|"是 中断等待"| CB
+    D2 -->|"否 轮询"| COND
+    CB --> D3
+    COND --> D3
+    D3 -->|"任务自管"| OWN
+    D3 -->|"调用方控制"| EXT
+    OWN --> D4
+    EXT --> D4
+    D4 -->|"是"| MULTI
+    D4 -->|"否"| E
+    MULTI --> E
+```
+
+> 决策流说明：协作式取消的前提是任务主动轮询 stop_token 或在阻塞点注册 stop_callback 中断等待——无法被强制杀死。jthread 自动把 stop_token 注入线程函数并析构时请求停止；若用裸 thread，须自建 stop_source 并手动传递。多个关注方需在取消时联动，可注册多个 stop_callback 于同一 stop_source。
+
+## 附录 K：stop_token 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    C1["stop_token"]
+    C2["stop_source"]
+    C3["stop_callback"]
+    C4["jthread 自动注入"]
+    C5["request_stop 请求"]
+    C6["stop_callback 中断 wait"]
+    C7["condition_variable_any 等待"]
+    C8["轮询 stop_requested"]
+    C9["与 thread 对照"]
+    C10["与 ch93 异步关联"]
+    C11["可中断 sleep_for"]
+    C12["一次性停止状态"]
+    C13["RAII 资源释放"]
+    C1 --> C2
+    C2 --> C5
+    C1 --> C3
+    C3 --> C6
+    C6 --> C7
+    C1 --> C8
+    C4 --> C1
+    C4 --> C9
+    C3 --> C11
+    C2 --> C12
+    C5 --> C13
+    C4 --> C10
+    C9 --> C10
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖关系说明 |
+|------|------|------|
+| C1→C2 | stop_token → stop_source | stop_token 由 stop_source 产生 |
+| C2→C5 | stop_source → request_stop | stop_source 调用 request_stop |
+| C1→C3 | stop_token → stop_callback | stop_token 可注册 stop_callback |
+| C3→C6 | stop_callback → 中断 | stop_callback 在停止时中断等待 |
+| C6→C7 | 中断 → 条件变量 | 中断针对 condition_variable_any 等待 |
+| C1→C8 | stop_token → 轮询 | 也可轮询 stop_requested 而非回调 |
+| C4→C1 | jthread → stop_token | jthread 自动注入 stop_token |
+| C4→C9 | jthread → thread | jthread 替代裸 thread 并内建取消 |
+| C3→C11 | stop_callback → sleep | stop_callback 可中断 sleep_for |
+| C2→C12 | stop_source → 状态 | stop_source 停止态为一次性 |
+| C5→C13 | request_stop → RAII | request_stop 触发的清理走 RAII |
+| C4→C10 | jthread → 异步 | jthread 与 ch93 异步执行关联 |
+| C9→C10 | thread → 异步 | 裸 thread 同样可接 stop_source |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|------|------|------|
+| ch93 thread/async | ch94 stop_token | 异步执行接入协作取消 |
+| ch45 RAII 对象生命周期 | ch94 stop_token | jthread 自动 join+停止 |
+| ch62 模板/可变参数 | ch94 stop_token | 回调模板 stop_callback |
+| ch39 constexpr 编译期计算 | ch94 stop_token | 停止态原子可 constexpr |
+| ch94 stop_token | ch92 chrono | 超时取消基于时钟计时 |
+| ch94 stop_token | ch90 ranges | 可取消 range 遍历 |
+| ch113 内存模型/原子 | ch94 stop_token | 停止态的原子性保证 |
+
+
 </details>
 

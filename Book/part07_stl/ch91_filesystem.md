@@ -1054,3 +1054,106 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：filesystem 接口决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S["需要操作文件或目录路径"]
+    D1{"路径含符号链接或需真实路径?"}
+    D2{"错误用异常还是 error_code?"}
+    D3{"拷贝或移动需原子?"}
+    D4{"需跨平台路径规范化?"}
+    PATH["path 词法规范化"]
+    SEM["canonical 语义解析"]
+    EXC["抛异常接口"]
+    EC["error_code 接口"]
+    CP["copy 非原子"]
+    MV["rename 原子"]
+    QU["等效判断 lexically"]
+    E["选型完成"]
+    S --> D1
+    D1 -->|"含链接需真实路径"| SEM
+    D1 -->|"仅词法"| PATH
+    PATH --> D2
+    SEM --> D2
+    D2 -->|"异常安全优先"| EXC
+    D2 -->|"性能或可恢复"| EC
+    EXC --> D3
+    EC --> D3
+    D3 -->|"需原子"| MV
+    D3 -->|"可非原子"| CP
+    MV --> D4
+    CP --> D4
+    D4 --> QU
+    QU --> E
+```
+
+> 决策流说明：filesystem 接口几乎都提供异常版与 error_code 版双形态——库/工具代码用 error_code 避免异常开销与不可恢复性，应用层用异常更简洁。rename 在同级目录是原子操作适合做事务性替换，copy 则可能中断留下半截文件；路径含符号链接时必须用 canonical/weakly_canonical 做语义解析而非词法比较。
+
+## 附录 K：filesystem 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    C1["std::filesystem path"]
+    C2["path 词法规范化"]
+    C3["canonical 语义解析"]
+    C4["directory_entry"]
+    C5["recursive_directory_iterator"]
+    C6["error_code 接口"]
+    C7["异常接口"]
+    C8["file_status 权限"]
+    C9["copy 或 rename 操作"]
+    C10["space 磁盘用量"]
+    C11["file_time_type 时间戳"]
+    C12["跨平台 分隔符"]
+    C13["与 C 文件 API 对照"]
+    C1 --> C2
+    C1 --> C3
+    C2 --> C12
+    C3 --> C4
+    C5 --> C4
+    C2 --> C6
+    C3 --> C7
+    C4 --> C8
+    C9 --> C6
+    C9 --> C7
+    C9 --> C8
+    C3 --> C11
+    C1 --> C13
+    C6 --> C13
+    C9 --> C10
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖关系说明 |
+|------|------|------|
+| C1→C2 | path → 词法规范化 | path 先词法规范化 |
+| C1→C3 | path → 语义解析 | path 可语义解析 |
+| C2→C12 | 词法 → 跨平台分隔符 | 词法处理跨平台分隔符 |
+| C3→C4 | 语义解析 → entry | canonical 得到真实路径与 directory_entry |
+| C5→C4 | 递归迭代 → entry | 递归迭代产生 directory_entry |
+| C2→C6 | 词法 → error_code | 词法操作用 error_code 版 |
+| C3→C7 | 语义解析 → 异常 | 语义解析可抛异常 |
+| C4→C8 | entry → file_status | entry 暴露 file_status 权限 |
+| C9→C6 | 操作 → error_code | copy/rename 提供 error_code 版 |
+| C9→C7 | 操作 → 异常 | 以及异常版 |
+| C9→C8 | 操作 → file_status | 操作改变文件状态 |
+| C3→C11 | 语义解析 → 时间戳 | canonical 读取 file_time_type |
+| C1→C13 | path → C API | path 替代 C 文件 API |
+| C6→C13 | error_code → C API | error_code 便于与传统 C API 混用 |
+| C9→C10 | 操作 → space | 大文件操作需关注 space 磁盘 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|------|------|------|
+| ch45 RAII 对象生命周期 | ch91 filesystem | 文件流 RAII 自动关闭 |
+| ch76 移动语义 | ch91 filesystem | path 移动构造零拷贝 |
+| ch62 模板/泛型 | ch91 filesystem | 泛型文件处理封装 |
+| ch91 filesystem | ch93 thread/async | 异步 IO 需同步 |
+| ch91 filesystem | ch90 ranges | 目录迭代可视为 range |
+| ch91 filesystem | ch92 chrono | file_time_type 基于时钟 |
+| ch91 filesystem | ch94 stop_token | 可取消的文件监听 |
+
+

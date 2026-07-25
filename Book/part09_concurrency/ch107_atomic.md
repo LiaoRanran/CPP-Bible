@@ -1216,3 +1216,81 @@ flowchart TD
 | is_lock_free / 进度保证 | **ch115 移动语义**、**ch122 pmr** | 无锁数据结构要求移动/析构 `noexcept`（异常安全）；pmr 多态分配器与原子协同做无锁内存池 |
 | RMW 指令 | **附录 J 真机汇编** | 图谱中 `lock xadd/cmpxchg` 的逐指令实证在附录 J；本图谱是「为什么」、附录 J 是「长什么样」 |
 
+## 附录 U：原子类型与无锁选型决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["多线程共享变量需要同步"] --> B{"单变量原子操作就够?"}
+    B -->|是 单变量| C{"类型 trivially copyable 且 <= 机器字?"}
+    B -->|否 多变量事务| D["用 mutex / 自旋锁 保护临界区"]
+    C -->|是 小字| C1["std::atomic<T> (通常 lock-free)"]
+    C -->|否 大字| C2["atomic<T> 可能加锁 -> 拆分/用指针"]
+    C1 --> E{"需要无锁进度保证?"}
+    E -->|是| F{"is_lock_free() 为真?"}
+    F -->|是| F1["CAS 循环 (compare_exchange_weak)"]
+    F -->|否| F2["退化为锁 / 改设计"]
+    E -->|否| G["直接用 load/store/exchange"]
+    A --> H{"需要自定义内存序?"}
+    H -->|是| H1["memory_order_acquire/release/seq_cst"]
+    H -->|否| H2["默认 seq_cst 安全"]
+    C1 --> X["落地: 选原子操作并守内存序/无锁前提"]
+    C2 --> X
+    D --> X
+    F1 --> X
+    F2 --> X
+    G --> X
+    H1 --> X
+    H2 --> X
+```
+
+> 决策流说明：原子选型第一问是「单变量还是多变量事务」——单变量用 `std::atomic<T>`，多变量必须上锁（原子无法跨变量保持一致性）。对单变量再看类型大小：`is_lock_free()` 为假时 `atomic<T>` 内部加锁，大结构应拆成机器字字段或改用指针。需要无锁进度保证时用 CAS 循环，但务必处理 ABA 与 `compare_exchange` 的自旋；内存序默认 `seq_cst` 最安全，只在已论证热点处放宽到 acquire/release。
+
+## 附录 V：原子操作知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    LF["is_lock_free()"] --> AT["std::atomic<T>"]
+    CAS["compare_exchange / CAS 循环"] --> AT
+    RMW["fetch_add / exchange (RMW)"] --> AT
+    FLAG["atomic_flag (无锁保证)"] --> AT
+    MO["memory_order"] --> SW["synchronizes-with / happens-before"]
+    SW --> AT
+    CAS --> ABA["ABA 问题"]
+    FALSE["伪共享"] --> CACHE["缓存行 / MESI"]
+    CACHE --> CH154["缓存优化 ch154"]
+    MUTEX["mutex (退化路径)"] --> AT
+    RMW --> CH108["内存序总论 ch108"]
+    AT --> CH41["智能指针 ch41"]
+    MO --> CH108
+```
+
+### V.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+|---|---|---|
+| is_lock_free() | std::atomic<T> | 无锁判定决定 atomic 是否真无锁还是内部加锁 |
+| compare_exchange / CAS 循环 | std::atomic<T> | CAS 是无锁更新的核心原语 |
+| fetch_add / exchange (RMW) | std::atomic<T> | RMW 是原子读-改-写操作族 |
+| atomic_flag (无锁保证) | std::atomic<T> | atomic_flag 是唯一标准保证无锁的原子布尔 |
+| memory_order | synchronizes-with / happens-before | 内存序建立同步与先行关系 |
+| synchronizes-with / happens-before | std::atomic<T> | 原子操作通过这些关系提供跨线程可见性 |
+| compare_exchange / CAS 循环 | ABA 问题 | CAS 循环在复用节点时可能受 ABA 干扰 |
+| 伪共享 | 缓存行 / MESI | 伪共享源于多核竞争同一缓存行 |
+| 缓存行 / MESI | 缓存优化 ch154 | 缓存行/伪共享的实证在 ch154 |
+| mutex (退化路径) | std::atomic<T> | is_lock_free 为假时原子内部退化为锁 |
+| fetch_add / exchange (RMW) | 内存序总论 ch108 | RMW 指令的语义成本在 ch108 量化 |
+| std::atomic<T> | 智能指针 ch41 | shared_ptr 控制块引用计数即 atomic |
+| memory_order | 内存序总论 ch108 | memory_order 三角的 WG21 来源在 ch108 |
+
+### V.2 章节闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch108（内存序总论） | ch107（原子） | memory_order 三角的 WG21 来源与成本量化在 ch108 |
+| ch154（缓存优化） | ch107 | 伪共享/缓存行在 ch154 附录 I 实证 |
+| ch41（智能指针） | ch107 | shared_ptr 控制块引用计数是 atomic（附录 K 负扩展同样适用） |
+| ch40（异常安全） | ch107 | 锁与异常安全的回滚语义强相关 |
+| ch30（volatile） | ch107 | volatile 只挡编译器重排、不建立 happens-before，反衬 atomic 必要 |
+| ch95（内省排序） | ch107 | 无锁原语的工程落点在本书算法章 |
+| ch115（移动语义） | ch107 | 无锁数据结构要求移动/析构 noexcept，与 pmr 协同做无锁内存池 |
+

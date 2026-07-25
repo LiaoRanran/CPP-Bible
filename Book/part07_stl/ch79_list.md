@@ -1222,4 +1222,89 @@ main+0x14d:  call   operator new(unsigned long long)  ; 新节点
 
 **工程含义**：forward_list 比 list 省 8 字节/节点（少一个 prev 指针，实际从 24→16 字节），但只能正向遍历、插入/删除只能在给定位置**之后**操作。适用场景：纯前向遍历 + 频繁头部操作 + 内存敏感。
 
+## 附录 J：std::list / forward_list 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需求:存储线性序列"] --> D1{"增删后是否需要迭代器/引用保持稳定?"}
+    D1 -->|是| D2{"是否频繁在任意位置 insert/erase?"}
+    D1 -->|否| D3{"是否主要做随机下标访问?"}
+    D2 -->|是| D4{"遍历是否是热点,高频顺序访问?"}
+    D2 -->|否| E1["优先 vector / deque"]
+    D4 -->|否 遍历少| F1["std::list / forward_list"]
+    D4 -->|是 遍历多| F2["vector / deque,缓存友好"]
+    D3 -->|是| F3["vector,随机访问 O(1)"]
+    D3 -->|否| D5{"需要单向还是双向遍历?"}
+    D5 -->|单向 省内存| F4["std::forward_list"]
+    D5 -->|双向| F5["std::list"]
+    F1 --> D6{"是否在链表间搬移大量数据?"}
+    D6 -->|是| G1["用 splice O(1) 零拷贝"]
+    D6 -->|否| G2["普通 insert / erase"]
+    F4 --> H1["注意:无 size / push_back"]
+    F5 --> H2["成员 sort 归并排序"]
+    G1 --> Z["结论:链表在稳定引用+低频遍历胜出"]
+    F2 --> Z
+    F3 --> Z
+    E1 --> Z
+    G2 --> Z
+    H1 --> Z
+    H2 --> Z
+```
+
+> 决策流说明：链表的唯一结构性优势是「节点独立堆分配 → 增删只改指针、迭代器与引用不失效」。因此只有当「需要稳定引用」且「遍历不是热点」同时成立时，list 才真正优于 vector/deque；一旦遍历成为性能关键路径，连续内存的 vector/deque 凭缓存预取碾压链表；在链表间搬移大量数据则用 `splice`（O(1) 零拷贝）进一步放大优势。
+
+## 附录 K：std::list / forward_list 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    N1["迭代器稳定"] --> N2["节点布局 prev/next/value"]
+    N2 --> N3["环形哨兵头节点"]
+    N2 --> N4["缓存不友好 指针追逐"]
+    N3 --> N5["splice 零拷贝搬移"]
+    N2 --> N5
+    N6["双向迭代器"] --> N1
+    N7["forward_list 单向"] --> N2
+    N8["成员 sort/merge 归并"] --> N6
+    N9["移动语义"] --> N5
+    N10["算法失效规则"] --> N1
+    N11["适配器底层容器"] --> N1
+    N12["侵入式链表"] --> N2
+    N13["红黑树节点对比"] --> N2
+    N14["deque 分段连续"] --> N4
+    N15["allocator 节点分配"] --> N2
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 上游概念 | 下游概念 | 依赖关系说明 |
+|---|---|---|---|
+| 1 | 迭代器稳定 | 节点布局 | 迭代器不失效的根因是元素独立堆分配，增删只改指针 |
+| 2 | 节点布局 | 环形哨兵 | 哨兵头节点把双向链表首尾串成环 |
+| 3 | 节点布局 | 缓存不友好 | 节点散落堆上，遍历是指针追逐、易 cache miss |
+| 4 | 环形哨兵 | splice | splice 靠重接哨兵与节点指针实现 O(1) 搬移 |
+| 5 | 节点布局 | splice | 节点可整体搬迁，元素对象原地不动 |
+| 6 | 双向迭代器 | 迭代器稳定 | 双向迭代器是链表对外承诺的遍历能力 |
+| 7 | forward_list | 节点布局 | forward_list 省一个 prev 指针，节点仅 next+value |
+| 8 | 成员 sort | 双向迭代器 | list 用归并排序，forward_list 无成员 sort |
+| 9 | 移动语义 | splice | splice 不拷贝/不移动 T，只搬节点所有权 |
+| 10 | 算法失效规则 | 迭代器稳定 | 理解为何 list 不能用 std::sort（需随机访问） |
+| 11 | 适配器底层 | 迭代器稳定 | list 可作 stack/queue 底层但默认仍是 deque |
+| 12 | 侵入式链表 | 节点布局 | Linux list_head 把节点嵌入用户结构体 |
+| 13 | 红黑树节点 | 节点布局 | map 节点同样分散堆上，对比链表思想 |
+| 14 | deque 分段连续 | 缓存不友好 | 对比链表完全不连续与 deque 分段连续 |
+| 15 | allocator 分配 | 节点布局 | 每个 list 节点经 allocator 独立堆分配 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch76 STL 架构 | ch79 list | 双向/前向迭代器概念，使 list 满足 BidirectionalIterator |
+| ch78 deque | ch79 list | 对比「分段连续」与「完全不连续但迭代器稳定」 |
+| ch77 vector | ch79 list | 对比缓存友好连续存储与链表指针追逐 |
+| ch83 map | ch79 list | 节点式存储思想对比（红黑树 vs 链表） |
+| ch86 adapters | ch79 list | list 可作 stack/queue 底层，依赖迭代器稳定 |
+| ch95 算法概览 | ch79 list | 为何 list 不能用 std::sort（需随机访问） |
+| ch115 移动语义 | ch79 list | splice 节点搬移不拷贝，依赖移动/不拷贝语义 |
+
+
 

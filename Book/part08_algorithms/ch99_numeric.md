@@ -1579,3 +1579,80 @@ int main() {
 
 **结论**：`accumulate`/`reduce` 的 `init` 类型即结果类型。浮点累加用 `0.0`；大整数用 `0LL`；字符串拼接用 `std::string("")`。初值类型选错会静默截断或产生意外类型。
 
+## 附录 J：数值归约选型决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["数值归约 / 扫描需求"] --> B{"需要并行或 SIMD 加速?"}
+    B -->|是| C{"二元操作可交换且结合?"}
+    C -->|是| C1["std::reduce / transform_reduce(par/unseq)"]
+    C -->|否 需确定序| C2["std::accumulate (串行, 确定序)"]
+    B -->|否| D{"需要点积/乘加融合?"}
+    D -->|是| D1["std::inner_product / transform_reduce"]
+    D -->|否 单序列求和| E{"结果类型需大整数/浮点?"}
+    E -->|是| E1["accumulate(init=0.0 / 0LL) 指定 init 类型"]
+    E -->|否| E2["accumulate(init=0)"]
+    A --> F{"需要相邻差分/前缀和?"}
+    F -->|是| F1["adjacent_difference / inclusive_scan / exclusive_scan"]
+    H["执行策略 execution"] --> C1
+    C1 --> X["落地: 守 init 类型与迭代器/结合性"]
+    C2 --> X
+    D1 --> X
+    E1 --> X
+    E2 --> X
+    F1 --> X
+```
+
+> 决策流说明：数值归约的第一问是「能否并行」——可交换可结合的操作（如 `plus`）用 `std::reduce`/`transform_reduce` 配执行策略吃满 SIMD 与多核；但若要**确定序**（金融级累加）必须用串行 `std::accumulate`。第二易错点是 `init` 类型即结果类型：浮点用 `0.0`、大整数用 `0LL`，否则静默截断。并行还额外要求随机存取迭代器，对非随机存取容器传 `par` 直接编译失败。
+
+## 附录 K：数值算法知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    INIT["init 类型决定结果类型"] --> ACC["std::accumulate"]
+    INIT --> RED["std::reduce"]
+    ASSOC["可交换/结合律"] --> RED
+    ASSOC --> TRR["std::transform_reduce"]
+    EXEC["执行策略 par/unseq"] --> RED
+    EXEC --> TRR
+    RAI["随机存取迭代器 (并行前提)"] --> EXEC
+    ACC --> DET["确定序 vs 非确定"]
+    RED --> DET
+    FLOAT["浮点结合律误差"] --> ACC
+    FLOAT --> RED
+    SIMD["SIMD 向量化"] --> RED
+    TRR --> IP["std::inner_product"]
+    SCAN["inclusive/exclusive_scan / adjacent_difference"] --> ACC
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+|---|---|---|
+| init 类型决定结果类型 | std::accumulate | accumulate 的结果类型由 init 决定 |
+| init 类型决定结果类型 | std::reduce | reduce 的结果类型同样由 init 决定 |
+| 可交换/结合律 | std::reduce | reduce 放弃结合序，要求操作可交换结合 |
+| 可交换/结合律 | std::transform_reduce | transform_reduce 并行化同样要求结合性 |
+| 执行策略 par/unseq | std::reduce | reduce 有执行策略重载，可并行/SIMD |
+| 执行策略 par/unseq | std::transform_reduce | transform_reduce 有执行策略重载 |
+| 随机存取迭代器 (并行前提) | 执行策略 par/unseq | 并行执行策略要求随机存取迭代器，否则编译错 |
+| std::accumulate | 确定序 vs 非确定 | accumulate 严格左结合，序确定 |
+| std::reduce | 确定序 vs 非确定 | reduce 不保证结合序，浮点结果非确定 |
+| 浮点结合律误差 | std::accumulate | 浮点严格左结合导致累加误差累积 |
+| 浮点结合律误差 | std::reduce | reduce 重排结合序改变浮点误差分布 |
+| SIMD 向量化 | std::reduce | 放弃结合序后编译器可自动向量化为 SIMD |
+| std::transform_reduce | std::inner_product | transform_reduce 是 inner_product 的并行泛化 |
+| inclusive/exclusive_scan / adjacent_difference | std::accumulate | 扫描/差分是 accumulate 的相邻推广 |
+
+### K.2 章节闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch77（vector） | ch99（数值） | 连续内存使 reduce 自动 SIMD 向量化 |
+| ch100（ranges） | ch99 | 数值规约与 ranges 管道协同（组合方式见 ch99） |
+| ch98（堆） | ch99 | 向量化/图像处理共用数值计算概念 |
+| ch95（算法总论） | ch99 | 数值算法独立成族，由总论给出边界 |
+| ch151（基准） | ch99 | 数据局部性/缓存友好设计加速 reduce |
+| ch115（移动语义） | ch99 | 自定义二元操作对重型类型走移动 |
+| ch154（缓存优化） | ch99 | 缓存友好（非伪共享）进一步加速归约 |
+

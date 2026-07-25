@@ -1270,4 +1270,109 @@ use_agg(P const&):                 ; struct P{int a; double b; char c;}
 
 **工程含义**：`any` 是 C++17 最"重"的类型擦除容器——SBO 路径（≤ 16B）几乎零开销（与 `variant<int, double, string>` 同级），但**超 SBO 边界后的每次构造/赋值/拷贝均触发 operator new**，性能劣化为带 typeid 分发的 `void*`。核心使用规则：**仅当预知存储类型 ≤ 16B 时用 any 替代 variant**，否则优先用 `variant<...>`（编译期穷举、无堆分配）。
 
+## 附录 J：tuple/any 类型擦除决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S["需要异构值或调用存储"]
+    D1{"类型集合编译期已知?"}
+    D2{"需要运行时未知类型?"}
+    D3{"需要存储可调用对象?"}
+    D4{"对象尺寸≤小对象阈值?"}
+    T["std::tuple A,B 编译期异构"]
+    P["std::pair 两元素"]
+    AN["std::any 运行时类型擦除"]
+    VA["std::variant 固定类型集"]
+    FN["std::function 擦除可调用"]
+    LM["lambda 直接捕获 零开销"]
+    BD["std::bind 绑定参数"]
+    HEAP["超 SBO 触发堆分配"]
+    E["选型完成"]
+    S --> D1
+    D1 -->|"是"| T
+    D1 -->|"两元素"| P
+    D1 -->|"否"| D2
+    D2 -->|"是"| AN
+    D2 -->|"否 固定集"| VA
+    T --> D3
+    P --> D3
+    AN --> D4
+    VA --> D4
+    D3 -->|"是"| FN
+    D3 -->|"否 直接调用"| LM
+    FN --> BD
+    BD --> D4
+    D4 -->|"否"| HEAP
+    D4 -->|"是"| E
+    HEAP --> E
+    AN --> E
+    VA --> E
+    LM --> E
+```
+
+> 决策流说明：tuple/variant 在类型编译期已知时零开销且可穷举；any/function 用类型擦除换取运行时灵活，但超过小对象阈值（any 16B / function 32B）即退化为堆分配并付出虚调用成本。bind 几乎所有场景都应被 lambda 取代——lambda 直接捕获更短、更内联、更易优化。
+
+## 附录 K：tuple/any 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    C1["std::tuple"]
+    C2["std::pair"]
+    C3["std::tie 解包"]
+    C4["std::any 类型擦除"]
+    C5["std::function 擦除可调用"]
+    C6["std::bind 绑定"]
+    C7["lambda 闭包"]
+    C8["SBO 小对象优化"]
+    C9["typeid 或 any_cast 校验"]
+    C10["std::variant 对照"]
+    C11["std::reference_wrapper"]
+    C12["constexpr 结构化绑定"]
+    C13["RAII 资源管理"]
+    C1 --> C2
+    C1 --> C3
+    C1 --> C12
+    C4 --> C8
+    C4 --> C9
+    C5 --> C8
+    C5 --> C6
+    C6 --> C7
+    C7 --> C13
+    C10 --> C4
+    C1 --> C11
+    C3 --> C2
+    C5 --> C13
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖关系说明 |
+|------|------|------|
+| C1→C2 | tuple → pair | tuple 泛化自 pair |
+| C1→C3 | tuple → tie | tie 解包 tuple |
+| C1→C12 | tuple → 结构化绑定 | 结构化绑定依赖 tuple 协议与 constexpr |
+| C4→C8 | any → SBO | any SBO 阈值内免堆 |
+| C4→C9 | any → any_cast | any_cast 用 typeid 校验 |
+| C5→C8 | function → SBO | function SBO 阈值内免堆 |
+| C5→C6 | function → bind | bind 是 function 的可调用来源之一 |
+| C6→C7 | bind → lambda | bind 多数可被 lambda 替代 |
+| C7→C13 | lambda → RAII | lambda 捕获资源由 RAII 管理 |
+| C10→C4 | variant → any | variant 与 any 类型擦除对照 |
+| C1→C11 | tuple → reference_wrapper | reference_wrapper 让 tuple 存引用 |
+| C3→C2 | tie → pair | tie 常用于 pair 返回解包 |
+| C5→C13 | function → RAII | function 持有可调用并管理其资源 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|------|------|------|
+| ch76 移动语义 | ch89 tuple/any | 移动构造支撑 any/function 内部缓冲 |
+| ch39 constexpr 编译期计算 | ch89 tuple/any | 结构化绑定可 constexpr |
+| ch62 模板/可变参数 | ch89 tuple/any | tuple 可变参数展开 |
+| ch45 RAII 对象生命周期 | ch89 tuple/any | any/function 析构释放资源 |
+| ch89 tuple/any | ch90 ranges | range 可能返回 tuple |
+| ch89 tuple/any | ch88 optional/variant | any 与 variant 类型擦除对照 |
+| ch89 tuple/any | ch93 thread/async | 可调用对象传递给 async |
+
+
 

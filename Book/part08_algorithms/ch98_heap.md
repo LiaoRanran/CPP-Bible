@@ -967,3 +967,83 @@ int main() {
 
 **结论**：`make_heap` 后的容器是「堆结构」而非普通序列。增删元素必须用 `push_heap`/`pop_heap` 维护不变量，绝不能裸 `push_back`/`erase`，否则堆性质失效、算法结果不可信。
 
+## 附录 J：堆算法选型决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需要动态优先队列 / 流式 top-k"] --> B{"用容器适配器还是裸堆算法?"}
+    B -->|容器适配器| B1["std::priority_queue (push/pop/top)"]
+    B -->|裸堆算法| C{"区间是否已经建堆?"}
+    C -->|否| C1["make_heap 先建堆"]
+    C -->|是| D{"主要操作是插入?"}
+    D -->|是 插入| D1["push_heap 后再 push_back"]
+    D -->|否 取最大| E{"取走堆顶?"}
+    E -->|是| E1["pop_heap 再 pop_back"]
+    E -->|否 全排序| F["sort_heap O(n log n)"]
+    A --> G{"需要最小堆?"}
+    G -->|是| G1["greater<> 比较器 或 取负得最小堆"]
+    H["比较器 Comp 严格弱序"] --> B1
+    H --> C1
+    H --> D1
+    H --> E1
+    B1 --> X["落地: 始终用堆算法维护不变量"]
+    C1 --> X
+    D1 --> X
+    E1 --> X
+    F --> X
+    G1 --> X
+```
+
+> 决策流说明：堆用法的第一分叉是「容器适配器 `priority_queue` 还是裸堆算法」——前者封装好 push/pop/top 且不可遍历内部，后者（`make_heap`/`push_heap`/`pop_heap`）允许手动控制并可与 `sort_heap` 衔接。无论哪种，增删元素都必须经 `push_heap`/`pop_heap` 维护堆不变量；裸 `push_back`/`erase` 会静默破坏堆性质。需要最小堆时把比较器换成 `greater<>` 或存负值即可，无需重写算法。
+
+## 附录 K：堆知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    NODE["堆 = 完全二叉树 数组表示"] --> HEAPINV["堆不变量 (父>=子)"]
+    HEAPINV --> MH["make_heap"]
+    HEAPINV --> PH["push_heap"]
+    HEAPINV --> POPH["pop_heap"]
+    MH --> SH["sort_heap"]
+    RAI["随机存取迭代器"] --> MH
+    RAI --> PH
+    COMP["比较器 / 严格弱序"] --> MH
+    VEC["vector 底层容器"] --> PQ["std::priority_queue"]
+    PQ --> TOPK["top-k 流式"]
+    MH --> TOPK
+    POPH --> TOPK
+    SH --> SORT["std::sort (ch96)"]
+    COMPLEX["复杂度 O(log n) push/pop, O(n) build, O(n log n) sort_heap"] --> MH
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+|---|---|---|
+| 堆 = 完全二叉树 数组表示 | 堆不变量 (父>=子) | 数组布局定义父子下标关系，是堆不变量的基础 |
+| 堆不变量 (父>=子) | make_heap | make_heap 负责把区间整理为满足堆不变量 |
+| 堆不变量 (父>=子) | push_heap | push_heap 在尾部插入后上浮恢复堆不变量 |
+| 堆不变量 (父>=子) | pop_heap | pop_heap 把堆顶换到尾部并下沉恢复堆不变量 |
+| make_heap | sort_heap | sort_heap 在已建堆上反复 pop_heap 得全有序 |
+| 随机存取迭代器 | make_heap | 堆算法需要随机存取做父子下标跳变 |
+| 随机存取迭代器 | push_heap | push_heap 需要随机存取定位上浮路径 |
+| 比较器 / 严格弱序 | make_heap | 堆序由比较器定义（默认 less，得最大堆） |
+| vector 底层容器 | std::priority_queue | priority_queue 默认以 vector 作底层容器 |
+| std::priority_queue | top-k 流式 | 优先队列天然支撑流式 top-k 抽取 |
+| make_heap | top-k 流式 | 裸堆算法同样支撑流式 top-k |
+| pop_heap | top-k 流式 | 每次 pop_heap 取走当前最大元素 |
+| sort_heap | std::sort (ch96) | sort_heap 输出与 sort 同构，本质都是全有序 |
+| 复杂度 O(log n)... | make_heap | 建堆 O(n)、push/pop O(log n) 是选型量化依据 |
+
+### K.2 章节闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch77（vector） | ch98（堆） | vector 作 priority_queue/裸堆的底层连续容器 |
+| ch96（排序） | ch98 | sort_heap 输出与 sort 同构；introsort 兜底亦用堆 |
+| ch19（迭代器） | ch98 | 随机存取迭代器准入 make_heap/push_heap/pop_heap |
+| ch115（移动语义） | ch98 | pop_heap/push_heap 对重型元素走移动 |
+| ch95（算法总论） | ch98 | 堆算法归入修改序列算法族，由总论定位 |
+| ch96（排序） | ch98 | partial_sort 内部 heap sort 复用堆不变量 |
+| ch152（基准） | ch98 | 优先队列与堆算法的性能基准方法 |
+

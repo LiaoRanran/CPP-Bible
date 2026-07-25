@@ -902,4 +902,79 @@ call   <...>             ; _M_create / _M_copy（分配或拷贝）
 | `sv.substr(p,c)` | 指针+长度算术 | O(1) | 无 |
 | `s.substr(p,c)` | 长度守卫 + `_M_copy`/`_M_create` | O(n) | 超 SSO 时堆分配 |
 | `sv[i]` | `movzx eax,[ptr+i]`，无检查 | O(1) | 无 |
+
+## 附录 U：std::string / SSO 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需求:处理文本字符串"] --> D1{"需要拥有并修改字符串?"}
+    D1 -->|否 只读查看| D2{"生命周期是否确定覆盖使用?"}
+    D1 -->|是| D3{"字符串长度通常超过 SSO 阈值?"}
+    D2 -->|是| F1["std::string_view 零拷贝"]
+    D2 -->|否| F2["std::string 持有副本"]
+    D3 -->|否 短串| F3["std::string SSO 栈内联"]
+    D3 -->|是 长串| F4["std::string 堆分配"]
+    F3 --> D4{"拼接多个串?"}
+    F4 --> D4
+    D4 -->|是| G1["先 reserve 再 += / append"]
+    D4 -->|否| G2["直接构造 / operator+"]
+    F1 --> Z["结论:只读用 view,拥有用 string"]
+    F2 --> Z
+    F3 --> Z
+    F4 --> Z
+    G1 --> Z
+    G2 --> Z
+```
+
+> 决策流说明：`string_view` 与 `std::string` 是「借用 vs 拥有」的分工——只读解析且生命周期可保证时用 `string_view` 零拷贝；需要修改或长期持有才用 `string`。短串走 SSO 零堆分配，长串才堆分配；拼接多个串务必先 `reserve` 再 `+=`，避免 `operator+` 链式临时与多次重分配。
+
+## 附录 V：std::string / SSO 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    N1["SSO 短字符串优化"] --> N2["联合体内联缓冲 / 堆指针"]
+    N2 --> N3["sizeof(string)=32 GCC"]
+    N1 --> N4["COW 被 C++11 禁止"]
+    N3 --> N5["阈值 15 GCC / 22 Clang"]
+    N4 --> N6["深拷贝语义"]
+    N6 --> N7["移动语义 窃取存储"]
+    N7 --> N8["NRVO 返回值优化"]
+    N1 --> N9["data() / c_str() 连续 null 终止"]
+    N9 --> N10["string_view 零拷贝切片"]
+    N10 --> N11["substr O(1) vs string::substr O(n)"]
+    N5 --> N12["跨 STL ABI 差异陷阱"]
+    N2 --> N13["扩容几何增长"]
+    N13 --> N14["迭代器失效 同 vector"]
+```
+
+### V.1 概念依赖逐边解读
+
+| 边 | 上游概念 | 下游概念 | 依赖关系说明 |
+|---|---|---|---|
+| 1 | SSO | 联合体内联/堆 | 短串用内联缓冲，长串用堆指针，靠联合体共享内存 |
+| 2 | 联合体 | sizeof=32 | GCC 下指针+长度+联合体共 32 字节 |
+| 3 | SSO | COW 禁止 | C++11 禁止 COW，SSO 成为标准策略 |
+| 4 | sizeof | 阈值差异 | 不同 STL 的 SSO 阈值不同（15/22） |
+| 5 | COW 禁止 | 深拷贝语义 | 现代 string 拷贝必独立深拷贝 |
+| 6 | 深拷贝 | 移动语义 | 移动窃取存储，长串 O(1) |
+| 7 | 移动语义 | NRVO | 返回值优化避免多余拷贝 |
+| 8 | SSO | data/c_str | 两种存储都返回连续 null 终止缓冲 |
+| 9 | data/c_str | string_view | string 可零拷贝转 string_view |
+| 10 | string_view | substr 差异 | view::substr O(1)，string::substr O(n) |
+| 11 | 阈值差异 | ABI 陷阱 | 跨 STL 阈值不同导致行为差异 |
+| 12 | 联合体 | 扩容几何 | 超 SSO 阈值走堆并几何增长 |
+| 13 | 扩容几何 | 迭代器失效 | 重分配使迭代器/指针/引用失效（同 vector） |
+
+### V.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch80 array | ch81 string | array 提供定长字符缓冲，与 string 变长互补 |
+| ch82 span | ch81 string | string_view 是 span 的字符特化，string 可转 view |
+| ch83 map | ch81 string | map/set 等关联容器常用 string 作键 |
+| ch76 STL 架构 | ch81 string | basic_string 是该架构的连续字符容器 |
+| ch122 PMR | ch81 string | PMR 字符串可切换多态分配器后端 |
+| ch124 libstdcxx | ch81 string | _Hashtable/字符串源码阅读入口 |
+| ch98 堆算法 | ch81 string | 连续容器与缓冲区思想相通 |
+
 | `sv.size()` | `mov rax,[sv+0]`（取 len 字段） | O(1) | 无 |

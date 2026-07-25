@@ -1097,3 +1097,88 @@ int main() {
 
 **结论**：二分系列（`lower_bound`/`upper_bound`/`equal_range`/`binary_search`）的前置条件是区间已按同一比较器排序。工业代码应在调试构建中用 `assert(std::is_sorted(...))` 守护该不变量。
 
+## 附录 J：查找算法选型决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["查找需求: 在集合中定位 key"] --> B{"区间已排序?"}
+    B -->|否 但需要二分| BS["若需二分先 std::sort 再走二分"]
+    B -->|是| C{"需要精确命中 key 还是范围?"}
+    C -->|精确命中| C1["binary_search 或 lower_bound+== 检查"]
+    C -->|范围| C2["lower_bound/upper_bound/equal_range 取子区间"]
+    B -->|否 不想排序| D{"是否允许额外空间建索引?"}
+    D -->|是 哈希| D1["unordered_set/map 哈希查找 O(1) 均摊"]
+    D -->|是 有序容器| D2["set/map 有序容器 O(log n)"]
+    D -->|否| E{"是子串/模式匹配?"}
+    E -->|是| E1["std::search / Boyer-Moore"]
+    E -->|否| F["std::find 线性 O(n)"]
+    F --> G{"区间极大且只读一次?"}
+    G -->|是| H["并行 std::find(std::execution::par)"]
+    G -->|否| Fend["std::find 单线程"]
+    BS --> C
+    C1 --> X["落地: 选算法并断言前置不变量"]
+    C2 --> X
+    D1 --> X
+    D2 --> X
+    E1 --> X
+    H --> X
+    Fend --> X
+```
+
+> 决策流说明：查找选型的第一问是「区间是否已排序」——已排序则二分系列（`lower_bound`/`equal_range`）把复杂度降到 O(log n)，但必须先用 `is_sorted` 守护；若不想排序且允许建索引，哈希容器 `unordered_*` 提供 O(1) 均摊；都不满足才退回线性 `std::find`。最常见的谬误是「对未排序区间直接调 `binary_search`」——编译通过但结果随机，因二分前置不变量被破坏。
+
+## 附录 K：查找知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    SORT["std::sort (ch96)"] --> SORTED["区间已排序不变量"]
+    SORTED --> BIN["二分 lower_bound/upper_bound/equal_range"]
+    SORTED --> BS["binary_search"]
+    BIN --> BS
+    KEY["key 类型严格弱序/等价"] --> BIN
+    KEY --> HASH["哈希查找 unordered_*"]
+    HASHFN["哈希函数 / 相等"] --> HASH
+    HASH --> HIDX["索引构建/内存开销"]
+    ORDERED["有序容器 set/map"] --> HIDX
+    ITER["迭代器类别"] --> FIND["线性 std::find"]
+    ITER --> SEARCH["std::search 子串"]
+    ITER --> BIN
+    SEARCH --> STR["字符串/范围"]
+    COMPLEX["复杂度 O(log n)/O(1)/O(n)"] --> BIN
+    COMPLEX --> HASH
+    PARA["执行策略"] --> FIND
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+|---|---|---|
+| std::sort (ch96) | 区间已排序不变量 | 二分查找的前置是区间已由 sort 全有序 |
+| 区间已排序不变量 | 二分 lower_bound 系列 | lower_bound/upper_bound/equal_range 依赖有序 |
+| 区间已排序不变量 | binary_search | binary_search 内部即二分，依赖有序 |
+| 二分 lower_bound 系列 | binary_search | binary_search 可用 lower_bound+== 表达 |
+| key 类型严格弱序/等价 | 二分 lower_bound 系列 | 二分依赖同一比较器的严格弱序 |
+| key 类型严格弱序/等价 | 哈希查找 unordered_* | 哈希容器依赖 key 的等价关系 |
+| 哈希函数 / 相等 | 哈希查找 unordered_* | 哈希查找依赖哈希函数与相等谓词 |
+| 哈希查找 unordered_* | 索引构建/内存开销 | 哈希容器需额外桶数组，有空间成本 |
+| 有序容器 set/map | 索引构建/内存开销 | 有序容器需节点开销维持有序 |
+| 迭代器类别 | 线性 std::find | find 依赖输入迭代器即可 |
+| 迭代器类别 | std::search 子串 | search 依赖前向迭代器 |
+| 迭代器类别 | 二分 lower_bound 系列 | 二分要求随机存取迭代器做下标 |
+| std::search 子串 | 字符串/范围 | 子串查找作用在字符串/字符范围上 |
+| 复杂度 O(log n)/O(1)/O(n) | 二分 lower_bound 系列 | 二分复杂度 O(log n) 是其选型依据 |
+| 复杂度 O(log n)/O(1)/O(n) | 哈希查找 unordered_* | 哈希均摊 O(1) 是其选型依据 |
+| 执行策略 | 线性 std::find | C++17 起 find 可接受 par 并行化 |
+
+### K.2 章节闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch96（排序） | ch97（查找） | 全有序区间是二分查找的前置不变量 |
+| ch19（迭代器） | ch97 | 迭代器类别决定 find/search/binary 的可用性 |
+| ch77（vector） | ch97 | 连续内存使二分缓存友好、分支可预测 |
+| ch95（算法总论） | ch97 | 算法总论对查找族的复杂度分类与定位 |
+| ch101（算法思想：哈希） | ch97 | 哈希思想支撑 unordered 系列 O(1) 查找 |
+| ch115（移动语义） | ch97 | key/value 在有序/哈希容器的插入走移动 |
+| ch97（查找） | ch100（ranges） | 查找原语在 ranges 中以 views/算法形式复用 |
+

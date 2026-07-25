@@ -964,3 +964,81 @@ int main() {
 
 **结论**：ranges 视图是底层范围的轻量视图（**不拥有数据**）。必须确保底层范围的生命周期长于视图的使用；把视图返回/存为成员引用局部容器会导致悬垂，是典型 UB。
 
+## 附录 J：ranges 算法选型决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需要算法 / 管道处理区间"] --> B{"惰性视图还是立即算法?"}
+    B -->|惰性 可组合| C{"需要过滤/变换/分割?"}
+    B -->|立即| D{"需要查找/计数?"}
+    C -->|是| C1["views::filter / transform / split (惰性)"]
+    C -->|否 投影排序| C2["ranges::sort 带 projection"]
+    D -->|是| D1["ranges::find / count (带投影)"]
+    D -->|否 排序| D2["ranges::sort (C++20)"]
+    A --> E{"底层范围生命周期?"}
+    E -->|长寿命安全| E1["视图可返回/存储"]
+    E -->|短 局部容器| E2["禁止悬垂: 先物化 to vector"]
+    F["投影 projection"] --> C2
+    F --> D1
+    G["管道 operator| 组合"] --> C1
+    C1 --> X["落地: 守护生命周期 / 不悬垂"]
+    C2 --> X
+    D1 --> X
+    D2 --> X
+    E1 --> X
+    E2 --> X
+```
+
+> 决策流说明：ranges 的第一问是「惰性还是立即」——`views::filter/transform/split` 是惰性视图，配合 `|` 管道零拷贝组合；而 `ranges::sort/find` 是立即算法。最危险的陷阱是**悬垂视图**：视图不拥有数据，若底层局部容器先析构，视图即 UB。规则是「视图的生命周期必须短于底层范围」，需要长期持有就先 `ranges::to<vector>` 物化。投影（projection）则让我们在排序/查找时直接按成员键提取，省去手写比较器。
+
+## 附录 K：ranges 算法知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    OWN["视图不拥有数据"] --> VIEW["view 惰性"]
+    LIFETIME["底层范围生命周期 > 视图"] --> VIEW
+    PIPE["管道 operator|"] --> FILT["views::filter"]
+    PIPE --> TR["views::transform"]
+    PIPE --> SPLIT["views::split"]
+    VIEW --> FILT
+    VIEW --> TR
+    VIEW --> SPLIT
+    PROJ["projection 投影"] --> RSORT["ranges::sort"]
+    PROJ --> RFIND["ranges::find / count"]
+    ITER["迭代器 / 哨兵 (ch19)"] --> VIEW
+    RSORT --> CH96["std::sort (ch96)"]
+    RFIND --> CH97["std::find (ch97)"]
+    SENT["sentinel / 半区间"] --> VIEW
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+|---|---|---|
+| 视图不拥有数据 | view 惰性 | 惰性源于视图仅引用底层范围而非拥有 |
+| 底层范围生命周期 > 视图 | view 惰性 | 视图安全的前提是底层活得更久 |
+| 管道 operator| | views::filter | `|` 把 filter 接到前驱范围形成管道 |
+| 管道 operator| | views::transform | `|` 把 transform 接到前驱范围 |
+| 管道 operator| | views::split | `|` 把 split 接到前驱范围 |
+| view 惰性 | views::filter | filter 是惰性视图的一种 |
+| view 惰性 | views::transform | transform 是惰性视图的一种 |
+| view 惰性 | views::split | split 是惰性视图的一种 |
+| projection 投影 | ranges::sort | 投影让 sort 按键提取后比较 |
+| projection 投影 | ranges::find / count | 投影让 find 按键提取后匹配 |
+| 迭代器 / 哨兵 (ch19) | view 惰性 | 视图建立在迭代器/哨兵概念之上 |
+| ranges::sort | std::sort (ch96) | ranges::sort 复用 introsort 内核并加投影 |
+| ranges::find / count | std::find (ch97) | ranges::find 复用线性查找并加投影 |
+| sentinel / 半区间 | view 惰性 | 哨兵让视图可表达无已知终点范围 |
+
+### K.2 章节闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch96（排序） | ch100（ranges） | ranges::sort 复用 introsort 内核并加投影 |
+| ch97（查找） | ch100 | ranges::find 复用线性查找并加投影 |
+| ch19（迭代器） | ch100 | 迭代器/哨兵是 ranges 概念基础 |
+| ch99（数值） | ch100 | 数值规约与 ranges 管道协同 |
+| ch115（移动语义） | ch100 | 视图惰性避免中间容器拷贝，靠移动语义 |
+| ch95（算法总论） | ch100 | ranges 是各算法族的惰性升级表达 |
+| ch77（vector） | ch100 | 底层连续范围决定视图缓存友好 |
+

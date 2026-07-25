@@ -1208,4 +1208,84 @@ find_loop:  mov    rcx,QWORD PTR [rax+0x10]   ; left  child @ offset 0x10
 
 **工程含义**：set::find 是 O(log n) 的**纯指针追逐**——100 元素 `find` 约 7 步比较、每步可能 cache miss。与 vector 二分查找的单次指针间接 + 连续内存预取相比，set 的 find 在小 n 下反而**更慢**（cache miss 惩罚约 50-100 cycle vs 2-3 cycle）。仅当插入/删除频繁且 n > 1000 时，set 的 O(log n) 才超 vector 的 O(n) 插入。
 
+## 附录 J：std::set / multiset 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需求:去重/成员判定的集合"] --> D1{"是否允许重复键?"}
+    D1 -->|是| F1["std::multiset"]
+    D1 -->|否| D2{"是否需要有序遍历/范围查询?"}
+    D2 -->|是| F2["std::set 红黑树"]
+    D2 -->|否| D3{"单点查找是否热点?"}
+    D3 -->|是| D4{"数据量大且哈希好?"}
+    D3 -->|否| F3["std::set 稳妥"]
+    D4 -->|是| F4["std::unordered_set 哈希"]
+    D4 -->|否| F5["std::set 避免 rehash"]
+    F2 --> D5{"遍历是否热点?"}
+    D5 -->|是| G1["flat_set / 排序 vector 缓存友好"]
+    D5 -->|否| G2["set 节点稳定"]
+    F4 --> D6{"频繁插入触发 rehash?"}
+    D6 -->|是| H1["prefer set / flat"]
+    D6 -->|否| H2["unordered_set 均摊 O(1)"]
+    G1 --> Z["结论:有序+稳定+去重选 set"]
+    G2 --> Z
+    F3 --> Z
+    F5 --> Z
+    H1 --> Z
+    H2 --> Z
+    F1 --> Z
+```
+
+> 决策流说明：`set` 是「键即值」的有序唯一集合，与 `map` 同源——适合需要有序遍历、范围查询或稳定迭代器的去重场景。仅判存在且数据量大用 `unordered_set`；允许重复键用 `multiset`；遍历成为热点时排序 `vector`（flat_set）靠连续内存反超红黑树。
+
+## 附录 K：std::set / multiset 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    N1["红黑树 _Rb_tree"] --> N2["键即值 value=key"]
+    N2 --> N3["set 唯一 / multiset 可重复"]
+    N1 --> N4["有序中序遍历"]
+    N4 --> N5["lower_bound / equal_range"]
+    N1 --> N6["节点稳定性"]
+    N6 --> N7["extract / merge 零拷贝重定位"]
+    N1 --> N8["O(log N) 树下降"]
+    N8 --> N9["缓存不友好"]
+    N3 --> N10["透明比较器 C++20"]
+    N1 --> N11["严格弱序 Compare"]
+    N11 --> N12["std::less 默认"]
+    N9 --> N13["flat_set 排序 vector 替代"]
+    N3 --> N14["unordered_set 哈希对照"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 上游概念 | 下游概念 | 依赖关系说明 |
+|---|---|---|---|
+| 1 | 红黑树 | 键即值 | set 只存 key，value 即 key 本身 |
+| 2 | 键即值 | set/multiset | 唯一性差异决定有无重复键 |
+| 3 | 红黑树 | 有序遍历 | 中序遍历得到升序集合 |
+| 4 | 有序遍历 | 范围查询 | equal_range 取某键的连续区间 |
+| 5 | 红黑树 | 节点稳定性 | 插入/删除不使既有迭代器失效 |
+| 6 | 节点稳定性 | extract/merge | 节点级移动不拷贝 key |
+| 7 | 红黑树 | O(log N) | 树高受限，查找稳定对数级 |
+| 8 | O(log N) | 缓存不友好 | 节点散落堆上，指针追逐 |
+| 9 | set/multiset | 透明比较器 | is_transparent 异构查找提速 |
+| 10 | 红黑树 | 严格弱序 | Compare 必须满足严格弱序 |
+| 11 | 严格弱序 | std::less | 默认比较器即 std::less |
+| 12 | 缓存不友好 | flat_set | 连续内存替代缓解缓存惩罚 |
+| 13 | set/multiset | unordered_set | 有序集合的哈希对照 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch83 map | ch84 set | set 是键即值的 map，底层同为 _Rb_tree |
+| ch85 unordered | ch84 set | unordered_set 是有序集合的哈希对照 |
+| ch76 STL 架构 | ch84 set | 双向迭代器概念 |
+| ch154 缓存优化 | ch84 set | RB 树节点散落堆，缓存命中率低 |
+| ch115 移动语义 | ch84 set | extract 节点句柄依赖移动 |
+| ch86 adapters | ch84 set | priority_queue 用堆，与 set 平衡对比 |
+| ch98 堆算法 | ch84 set | 平衡树与堆两种有序结构的取舍 |
+
+
 

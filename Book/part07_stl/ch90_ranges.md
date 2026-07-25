@@ -1085,3 +1085,101 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：ranges 管道决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S["需要对序列做变换或过滤"]
+    D1{"是否多步组合变换?"}
+    D2{"是否关注惰性求值?"}
+    D3{"是否需要所有权避免dangling?"}
+    D4{"编译器支持 C++20 ranges?"}
+    R["ranges 管道 view 惰性"]
+    IT["传统迭代器算法 急切"]
+    LV["lazy view 零拷贝"]
+    DAN["borrowed_range dangling 陷阱"]
+    CP["借助 C++20 范围库"]
+    ALGO["std::algorithms 加循环"]
+    E["选型完成"]
+    S --> D1
+    D1 -->|"是"| D2
+    D1 -->|"否 单步"| ALGO
+    D2 -->|"是"| R
+    D2 -->|"否"| IT
+    R --> D3
+    IT --> D3
+    D3 -->|"需借用避免悬垂"| DAN
+    D3 -->|"安全"| LV
+    LV --> E
+    DAN --> E
+    R --> D4
+    D4 -->|"支持"| CP
+    D4 -->|"不支持"| ALGO
+    IT --> E
+```
+
+> 决策流说明：ranges 管道把多步变换组合为零拷贝的惰性 view，可读性高且易组合；代价是 borrowed_range 规则——返回局部容器的 view 会 dangling，必须配合 std::ref/静态生命周期或 ref_view。单步、热路径或编译器不支持 C++20 时，传统迭代器算法仍更直接可控。
+
+## 附录 K：ranges 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    C1["ranges 管道"]
+    C2["view 惰性视图"]
+    C3["range adaptor 算子"]
+    C4["borrowed_range"]
+    C5["dangling 悬垂"]
+    C6["iterator 迭代器"]
+    C7["algorithm 急切算法"]
+    C8["constexpr 范围"]
+    C9["lazy 零拷贝"]
+    C10["filter 或 transform"]
+    C11["common_range"]
+    C12["sentinel 哨兵"]
+    C13["与传统 STL 互操作"]
+    C1 --> C2
+    C2 --> C3
+    C3 --> C10
+    C1 --> C4
+    C4 --> C5
+    C2 --> C9
+    C6 --> C7
+    C1 --> C6
+    C2 --> C8
+    C1 --> C11
+    C11 --> C12
+    C2 --> C13
+    C7 --> C13
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖关系说明 |
+|------|------|------|
+| C1→C2 | ranges → view | ranges 由 view 组成 |
+| C2→C3 | view → adaptor | view 通过 adaptor 组合 |
+| C3→C10 | adaptor → 算子 | filter/transform 是核心算子 |
+| C1→C4 | ranges → borrowed_range | ranges 区分 borrowed_range |
+| C4→C5 | borrowed_range → dangling | 非 borrowed 返回会 dangling |
+| C2→C9 | view → lazy | view 惰性零拷贝 |
+| C6→C7 | iterator → algorithm | 迭代器支撑急切算法 |
+| C1→C6 | ranges → iterator | ranges 建立在迭代器之上 |
+| C2→C8 | view → constexpr | view 可 constexpr |
+| C1→C11 | ranges → common_range | common_range 兼容传统算法 |
+| C11→C12 | common_range → sentinel | common_range 提供哨兵 |
+| C2→C13 | view → 互操作 | view 与传统 STL 互操作 |
+| C7→C13 | algorithm → 互操作 | 算法复用迭代器抽象 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|------|------|------|
+| ch62 模板/概念 | ch90 ranges | 概念约束 range/iterator |
+| ch39 constexpr 编译期计算 | ch90 ranges | view 可 constexpr |
+| ch76 移动语义 | ch90 ranges | view 所有权与移动 |
+| ch90 ranges | ch88 optional | 变换可能返回 optional |
+| ch90 ranges | ch93 thread/async | 并行 range 分区 |
+| ch90 ranges | ch89 tuple/any | range 可能返回 tuple |
+| ch87 bitset | ch90 ranges | 集合/视图惰性遍历思想 |
+
+

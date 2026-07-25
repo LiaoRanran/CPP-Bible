@@ -1286,3 +1286,82 @@ jne    <loop>
 | 访问 | O(log n) 指针追逐 | O(1) 下标（单条 mov） |
 | 有序 | 是（中序有序） | 插入序 |
 | 代价 | 分配 + 指针 chase + 比较 | 仅内存搬运 |
+
+## 附录 J：std::map 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需求:键值关联存储与查找"] --> D1{"是否需要按 key 有序遍历/范围查询?"}
+    D1 -->|是| F1["std::map 红黑树"]
+    D1 -->|否| D2{"单点查找是否绝对热点?"}
+    D2 -->|是| D3{"数据量大且哈希质量好?"}
+    D2 -->|否| F2["std::map 稳妥"]
+    D3 -->|是| F3["std::unordered_map 哈希"]
+    D3 -->|否| F4["std::map 避免 rehash 抖动"]
+    F1 --> D4{"遍历是否热点?"}
+    D4 -->|是| G1["flat_map / 排序 vector 缓存友好"]
+    D4 -->|否| G2["map 节点稳定优势"]
+    F3 --> D5{"频繁插入触发 rehash?"}
+    D5 -->|是| H1["prefer map / flat 避免尖峰"]
+    D5 -->|否| H2["unordered_map 均摊 O(1)"]
+    G1 --> Z["结论:有序+稳定选 map"]
+    G2 --> Z
+    F2 --> Z
+    F4 --> Z
+    H1 --> Z
+    H2 --> Z
+```
+
+> 决策流说明：`map` 的核心价值在「有序性 + 节点稳定迭代器」，而非单点查找速度——单点查找 `unordered_map` 通常更快。需要范围扫描（`lower_bound`/`equal_range`）或长期持有引用时选 `map`；纯高频单点查找且数据量大用 `unordered_map`；遍历成为热点时排序 `vector`（flat_map）靠连续内存反超二者。
+
+## 附录 K：std::map 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    N1["红黑树 _Rb_tree"] --> N2["节点稳定性 插入不失效"]
+    N2 --> N3["迭代器稳定"]
+    N1 --> N4["有序中序遍历"]
+    N4 --> N5["lower_bound / upper_bound 范围"]
+    N1 --> N6["O(log N) 树下降"]
+    N6 --> N7["缓存不友好 指针追逐"]
+    N1 --> N8["节点堆分配"]
+    N8 --> N9["空间放大 40B/节点"]
+    N2 --> N10["extract / merge 节点级移动"]
+    N10 --> N11["try_emplace / insert_or_assign"]
+    N5 --> N12["透明比较器 is_transparent"]
+    N1 --> N13["multimap 无 operator[]"]
+    N3 --> N14["set 同源 键即值"]
+    N7 --> N15["flat_map 排序 vector 替代"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 上游概念 | 下游概念 | 依赖关系说明 |
+|---|---|---|---|
+| 1 | 红黑树 | 节点稳定性 | 再平衡只重连指针，不动其他节点内存 |
+| 2 | 节点稳定性 | 迭代器稳定 | 插入/删除不使既有迭代器失效 |
+| 3 | 红黑树 | 有序中序遍历 | 中序遍历即按键升序 |
+| 4 | 有序遍历 | 范围查询 | lower/upper_bound 做区间扫描 |
+| 5 | 红黑树 | O(log N) | 树高受限，查找稳定对数级 |
+| 6 | O(log N) | 缓存不友好 | 节点散落堆上，树下降是 cache miss |
+| 7 | 红黑树 | 节点堆分配 | 每元素一次独立堆分配 |
+| 8 | 节点堆分配 | 空间放大 | 40B/节点，远大于 pair 本身 |
+| 9 | 节点稳定 | extract/merge | 节点级移动不拷贝 value |
+| 10 | extract/merge | try_emplace | C++17 节点句柄避免多余构造 |
+| 11 | 范围查询 | 透明比较器 | is_transparent 异构查找提速 |
+| 12 | 红黑树 | multimap | multimap 允许重复 key 故无 [] |
+| 13 | 迭代器稳定 | set 同源 | set 是键即值的 map |
+| 14 | 缓存不友好 | flat_map | 连续内存替代缓解缓存惩罚 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch76 STL 架构 | ch83 map | 双向迭代器概念，map 满足 BidirectionalIterator |
+| ch84 set | ch83 map | set 是键即值的 map，底层同为 _Rb_tree |
+| ch85 unordered | ch83 map | unordered_map 是哈希无序版本 |
+| ch79 list | ch83 map | 节点式存储思想对比（链表 vs 红黑树） |
+| ch86 adapters | ch83 map | priority_queue 的节点/堆思想对照 |
+| ch90 ranges | ch83 map | views::keys/values 投影 map 的键或值 |
+| ch115 移动语义 | ch83 map | 插入元素依赖移动，extract 节点句柄转移 |
+

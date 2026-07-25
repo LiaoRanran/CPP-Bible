@@ -1295,4 +1295,82 @@ push_sift:
 
 **工程含义**：适配器是纯编译期委托——`stack::push` 展开为 `c.push_back` 的**直接调用**，无虚函数表、无转型、无额外栈帧。与手写 `deque.push_back()` 编译结果逐指令相同。适配器的价值在**语义约束**——禁止不安全的 `c[5] = x` 破坏栈序——而非运行时开销。
 
+## 附录 J：stack / queue / priority_queue 底层容器决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需求:受限接口容器适配器"] --> D1{"需要 LIFO 栈?"}
+    D1 -->|是| D2{"是否介意顶部不缩容?"}
+    D1 -->|否| D3{"需要 FIFO 队列?"}
+    D2 -->|否| F1["stack 默认 deque<T>"]
+    D2 -->|是 用 vector| F2["stack<vector<T>> 不自缩"]
+    D3 -->|是| D4{"是否需随机访问底层?"}
+    D3 -->|否| D5{"需要优先级出队?"}
+    D4 -->|否| F3["queue 默认 deque<T>"]
+    D4 -->|是| F4["queue<vector> 不满足 无 pop_front"]
+    D5 -->|是| D6{"大顶还是小顶?"}
+    D5 -->|否| F5["选普通容器而非适配器"]
+    D6 -->|大顶 默认| G1["priority_queue<vector<T>,less>"]
+    D6 -->|小顶| G2["priority_queue<vector<T>,greater>"]
+    F1 --> Z["结论:stack/queue 默认 deque"]
+    F2 --> Z
+    F3 --> Z
+    F4 --> Z
+    F5 --> Z
+    G1 --> Z
+    G2 --> Z
+```
+
+> 决策流说明：适配器是「包装底层 Sequence 并只暴露受限接口」——`stack`/`queue` 默认 `deque`（两端 O(1)、头删不搬移），`priority_queue` 默认 `vector`（随机访问+缓存友好，堆算法依赖 `operator[]`）。`list` 可作底层但每元素代价翻倍且无缓存优势；除非需要自定义语义，否则沿用默认最稳妥。
+
+## 附录 K：stack / queue / priority_queue 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    N1["容器适配器 非容器"] --> N2["包装底层 Sequence"]
+    N2 --> N3["只暴露受限接口 无迭代器"]
+    N1 --> N4["stack LIFO 默认 deque"]
+    N1 --> N5["queue FIFO 默认 deque"]
+    N1 --> N6["priority_queue 默认 vector"]
+    N6 --> N7["二叉堆 + 比较器"]
+    N7 --> N8["less 大顶 / greater 小顶"]
+    N4 --> N9["deque 两端 O(1)"]
+    N5 --> N10["deque 头删 O(1)"]
+    N6 --> N11["vector 随机访问 + 缓存友好"]
+    N3 --> N12["语义约束防误用"]
+    N7 --> N13["make_heap / push_heap / pop_heap"]
+    N2 --> N14["list 可作底层但代价高"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 上游概念 | 下游概念 | 依赖关系说明 |
+|---|---|---|---|
+| 1 | 容器适配器 | 包装底层 | 适配器不是容器，只包装 Sequence |
+| 2 | 包装底层 | 受限接口 | 剥离迭代器，只暴露 push/top 等 |
+| 3 | 容器适配器 | stack | LIFO，默认 deque 底层 |
+| 4 | 容器适配器 | queue | FIFO，默认 deque 底层 |
+| 5 | 容器适配器 | priority_queue | 优先级出队，默认 vector 底层 |
+| 6 | priority_queue | 二叉堆 | 底层用 make_heap 维护堆性质 |
+| 7 | 二叉堆 | 比较器 | less 大顶、greater 小顶 |
+| 8 | stack | deque 两端 | push/pop 都走 deque 两端 O(1) |
+| 9 | queue | deque 头删 | front/pop 走 deque 头部 O(1) |
+| 10 | priority_queue | vector | 堆算法依赖随机访问 operator[] |
+| 11 | 受限接口 | 语义约束 | 禁止越界改写，保护栈/队列序 |
+| 12 | 二叉堆 | 堆算法 | 适配底层调用 push_heap/pop_heap |
+| 13 | 包装底层 | list 底层 | list 可满足接口但代价高 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch76 STL 架构 | ch86 adapters | 适配器属容器大类，刻意剥离迭代器 |
+| ch78 deque | ch86 adapters | stack/queue 默认底层 deque 两端 O(1) |
+| ch77 vector | ch86 adapters | priority_queue 默认底层 vector（随机访问） |
+| ch98 堆算法 | ch86 adapters | 适配器底层调用 make_heap/push_heap/pop_heap |
+| ch88 受限接口 | ch86 adapters | 受限接口+值语义的同类设计思想 |
+| ch115 移动语义 | ch86 adapters | emplace 原地构造依赖移动语义 |
+| ch154 缓存优化 | ch86 adapters | vector 底层缓存友好，list 底层代价高 |
+
+
 

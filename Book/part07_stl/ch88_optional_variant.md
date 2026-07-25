@@ -848,3 +848,108 @@ get_raw(int const*):
 两者均为 **1 条"存在性"测试 + 1 条值 `mov`**，时间代价几乎相同。`opt_use` 中 `*o + (o.has_value()?1:0)` 仅 `movzx eax,al`（复用同一标志字节）+ `add eax,ecx`，`has_value()` 无独立存储——值就在对象内，不经指针。
 
 **工程含义**：optional 的"零开销抽象"指**时间零开销**，但**空间非零**——`optional<int>` 是 8 字节而非 4。嵌入式 RAM/寄存器受限场景用 optional 表达"可能无值"需接受 2× 膨胀；若类型本就指针，优先用空指针哨兵更省空间。
+
+## 附录 J：optional/variant 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S["函数可能失败或返回空值"]
+    D1{"是否需要携带错误原因?"}
+    D2{"是否存在多种替代类型?"}
+    D3{"失败是常态还是异常?"}
+    D4{"是否要求零开销值语义?"}
+    O["std::optional T 仅表示有无"]
+    EX["std::expected T,E 值或错误 C++23"]
+    V["std::variant 多类型之一"]
+    EC["error_code 加 bool 轻量错误"]
+    E1["抛异常 异常安全"]
+    VT["std::visit 访问 variant"]
+    POLY["variant 替代虚函数多态"]
+    SZ["optional 空间2倍膨胀"]
+    E["选型完成"]
+    S --> D1
+    D1 -->|"否"| D3
+    D1 -->|"是"| D2
+    D2 -->|"否"| EX
+    D2 -->|"是"| V
+    D3 -->|"常态可预期"| O
+    D3 -->|"异常"| E1
+    EX --> D4
+    O --> D4
+    EC --> D4
+    V --> VT
+    VT --> POLY
+    D4 -->|"是"| SZ
+    D4 -->|"否"| E
+    SZ --> E
+    E1 --> E
+```
+
+> 决策流说明：optional 适合"可能无值"的常态缺失（如查找未命中），零运行时分支成本但空间翻倍；expected/variant 在需要携带错误原因或多类型结果时更诚实，代价是 visit 分发与更大的对象；异常只在真正不可恢复或极罕见时使用，否则破坏零开销假设。
+
+## 附录 K：optional/variant 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    C1["std::optional T"]
+    C2["std::expected T,E"]
+    C3["std::variant A,B"]
+    C4["std::visit 访问"]
+    C5["std::monostate 空状态"]
+    C6["std::get 或 get_if"]
+    C7["异常 throw try"]
+    C8["error_code 轻量错误"]
+    C9["值语义 对比堆"]
+    C10["constexpr 支持"]
+    C11["SBO 小对象优化"]
+    C12["类型安全 编译期穷举"]
+    C13["与指针哨兵对照"]
+    C1 --> C9
+    C2 --> C8
+    C2 --> C9
+    C3 --> C4
+    C3 --> C5
+    C3 --> C6
+    C1 --> C10
+    C2 --> C10
+    C3 --> C10
+    C4 --> C12
+    C6 --> C12
+    C7 --> C13
+    C1 --> C13
+    C8 --> C11
+    C9 --> C11
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点 → 终点 | 依赖关系说明 |
+|------|------|------|
+| C1→C9 | optional → 值语义 | optional 值语义无堆分配 |
+| C2→C8 | expected → error_code | expected 携带 error_code 类错误 |
+| C2→C9 | expected → 值语义 | expected 值语义 |
+| C3→C4 | variant → visit | variant 由 visit 分派 |
+| C3→C5 | variant → monostate | variant 可用 monostate 表示空 |
+| C3→C6 | variant → get_if | variant 可用 get_if 安全访问 |
+| C1→C10 | optional → constexpr | optional 支持 constexpr |
+| C2→C10 | expected → constexpr | expected 支持 constexpr |
+| C3→C10 | variant → constexpr | variant 支持 constexpr |
+| C4→C12 | visit → 类型安全 | visit 强制编译期穷举 |
+| C6→C12 | get_if → 类型安全 | get_if 运行时检查替代穷举 |
+| C7→C13 | 异常 → 指针哨兵 | 异常与裸指针哨兵对照 |
+| C1→C13 | optional → 指针哨兵 | optional 替代空指针哨兵 |
+| C8→C11 | error_code → SBO | error_code 轻量无 SBO 需求 |
+| C9→C11 | 值语义 → SBO | 值语义避免 SBO/堆 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|------|------|------|
+| ch76 移动语义/值语义 | ch88 optional | 移动构造支撑 optional 值语义 |
+| ch39 constexpr 编译期计算 | ch88 optional | constexpr 容器在编译期求值 |
+| ch62 模板与非类型参数 | ch88 optional | 模板类 optional/expected/variant |
+| ch45 RAII 对象生命周期 | ch88 optional | optional 析构自动释放 |
+| ch88 optional | ch93 thread/async | 异常跨线程传播需注意 |
+| ch88 optional | ch90 ranges | 变换可能返回 optional |
+| ch88 optional | ch89 tuple/any | variant 与 any 类型擦除对照 |
+
