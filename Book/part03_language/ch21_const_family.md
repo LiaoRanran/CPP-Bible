@@ -1034,3 +1034,83 @@ graph TD
     KE --> KV["consteval 立即函数 仅编译期"]
     KI --> KV
 ```
+
+
+
+## 附录 J：const 家族 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["声明一个名字 变量/成员/参数?"] --> D1{"它的值在运行期是否会改变?"}
+    D1 -->|会改| MUT["普通可变变量"]
+    D1 -->|不改| D2{"是否希望编译期就能求值?"}
+    D2 -->|否| C["const 运行期只读契约"]
+    D2 -->|是| D3{"结果是否必须仅编译期可用?"}
+    D3 -->|是| CEV["consteval 立即函数 仅编译期"]
+    D3 -->|否 可两用| CE["constexpr 编译期优先 运行期回退"]
+    C --> D4{"它是全局/静态变量?"}
+    D4 -->|是 有 SIOF 风险| CI["constinit 强制常量初始化"]
+    D4 -->|否| OK1["const 即可"]
+    CE --> D5{"用于函数参数?"}
+    D5 -->|是| FP["constexpr 参数 调用方可传编译期值"]
+    D5 -->|否| OK2["constexpr 变量/函数"]
+    CEV --> D6{"需要运行期也调用?"}
+    D6 -->|是| FB["回退 改用 constexpr 支持两用"]
+    D6 -->|否| OK3["保持 consteval"]
+    CI --> D7{"初值是否为编译期常量?"}
+    D7 -->|否| FB2["回退 改为 const 或修复初值"]
+    D7 -->|是| OK4["constinit 安全"]
+    FB --> D2
+    FB2 --> C
+```
+
+> 决策流说明：闸门依次是“是否可变 → 是否需编译期求值 → 是否仅编译期”，派生出 const / constexpr / consteval；静态变量额外经 constinit 闸门规避 SIOF。
+
+## 附录 K：const 家族 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    MUT["可变状态"] --> CV["const 只读契约"]
+    CV --> RO["只读接口 防止误改"]
+    CEXPR["constexpr 两用求值"] --> CT["编译期计算"]
+    CEXPR --> RT["运行期回退"]
+    CEVAL["consteval 立即函数"] --> CT
+    CEXPR --> CEVAL
+    CINIT["constinit"] --> CV
+    SIOF["静态初始化顺序失败"] --> CINIT
+    FUNC["函数参数/返回值"] --> CEXPR
+    TMPL["模板实参"] --> CEXPR
+    TYPE["类型系统 cv 限定"] --> CV
+    RO --> API["API 契约 自说明意图"]
+    CT --> OBJ["常量对象/值"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|----|------|
+| MUT → CV | const 把可变状态锁定为只读 |
+| CV → RO | const 形成只读接口契约 |
+| CEXPR → CT | constexpr 优先在编译期求值 |
+| CEXPR → RT | constexpr 失败时可回退到运行期 |
+| CEVAL → CT | consteval 强制编译期求值 |
+| CEXPR → CEVAL | 需要“仅编译期”时由 constexpr 升级到 consteval |
+| CINIT → CV | constinit 是 const 在静态变量上的常量初始化变体 |
+| SIOF → CINIT | 静态初始化顺序问题催生 constinit |
+| FUNC → CEXPR | constexpr 参数让函数既接受运行期也接受编译期实参 |
+| TMPL → CEXPR | 模板实参常借助 constexpr 在编译期计算 |
+| TYPE → CV | cv 限定属于类型系统的一部分 |
+| RO → API | 只读契约成为 API 自说明意图 |
+| CT → OBJ | 编译期计算产生常量对象/值 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|--------|--------|-------------|
+| ch19 | ch21 | 变量与存储期：是 const 只读契约的基础 |
+| ch21 | ch32 | const 家族：const/constinit 变量必须立即初始化 |
+| ch21 | ch39 | const 家族：const 成员与 const 正确性贯穿 RAII 资源管理 |
+| ch21 | ch41 | const 家族：const shared_ptr 与 const 正确性交互 |
+| ch21 | ch60 | const 家族：constexpr/模板实参在编译期元编程中耦合 |
+| ch21 | ch65 | const 家族：const/volatile 是类型萃取的核心修饰 |
+| ch21 | ch27 | const 家族：const_cast 专门修改 cv 限定 |

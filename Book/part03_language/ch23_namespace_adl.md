@@ -1321,3 +1321,80 @@ int main() { using std::swap; Handle a, b; swap(a, b); (void)a; (void)b; }
 
 **结论**：异常安全赋值 = 让形参 `o` 按值（=拷贝）传入，再 `noexcept swap`；`using std::swap; swap(a,b)` 让 ADL 优先选中你的 O(1) 重载。`noexcept` 是 `std::vector` 在重分配时选择 move 还是 copy 的关键信号。
 
+
+
+
+## 附录 J：命名空间与 ADL 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["要组织符号/调用一个函数?"] --> D1{"符号属于哪个逻辑域?"}
+    D1 -->|单一库| NS["放入专属 namespace"]
+    D1 -->|跨域协作| D2{"是否希望关联类型的运算符被自动找到?"}
+    D2 -->|是| ADL["依赖 ADL 按实参类型定位"]
+    D2 -->|否| EXP["显式限定调用 a::f()"]
+    NS --> D3{"namespace 嵌套过深?"}
+    D3 -->|是| ALIAS["namespace 别名 / 内联 namespace"]
+    D3 -->|否| OK1["保持扁平层次"]
+    ADL --> D4{"普通查找已能找到吗?"}
+    D4 -->|是| OK2["直接调用 无需 using"]
+    D4 -->|否| D5{"是否要定制 swap/运算符?"}
+    D5 -->|是| US["using std::swap; 再调用 swap"]
+    D5 -->|否| FB["回退 把符号移入可见 namespace"]
+    US --> D6{"定制函数与 std 同名?"}
+    D6 -->|是 需防隐藏| OK3["ADL 自动优先定制版本"]
+    D6 -->|否| OK4["正常重载解析"]
+    ALIAS --> D7{"需要版本兼容?"}
+    D7 -->|是| INL["inline namespace 做版本"]
+    D7 -->|否| OK5["普通 namespace"]
+    FB --> NS
+```
+
+> 决策流说明：闸门为“逻辑域归属 → 是否依赖 ADL → 是否需 using 引入定制”，嵌套过深时经别名/内联 namespace 闸门收敛层次。
+
+## 附录 K：命名空间与 ADL 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    NS["namespace 作用域"] --> NEST["嵌套层次"]
+    NEST --> ALIAS["namespace 别名"]
+    NEST --> INL["inline namespace 版本"]
+    UQ["无限定查找"] --> ADL["ADL 按实参扩展"]
+    ADL --> ARG["实参类型驱动查找"]
+    ARG --> OVL["重载解析 选最佳"]
+    SWAP["定制 swap/运算符"] --> USING["using std::x; 引入"]
+    USING --> OVL
+    NS --> KOE["二阶段/名字隐藏"]
+    TPL["模板"] --> KOE
+    OVL --> API["接口边界 可被发现"]
+    NS --> LINK["链接可见性"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|----|------|
+| NS → NEST | namespace 通过嵌套形成层次 |
+| NEST → ALIAS | 深层嵌套用别名简化 |
+| NEST → INL | 版本管理用 inline namespace |
+| UQ → ADL | 无限定查找失败处由 ADL 按实参扩展 |
+| ADL → ARG | ADL 的查找集合由实参类型决定 |
+| ARG → OVL | 找到的候选进入重载解析 |
+| SWAP → USING | 定制 swap 通过 using std::swap 引入 |
+| USING → OVL | using 把定制版本加入重载集 |
+| NS → KOE | 模板中的名字受二阶段查找与隐藏约束 |
+| TPL → KOE | 模板依赖型名字在实例化期二次查找 |
+| OVL → API | 解析结果决定对外接口的实际行为 |
+| NS → LINK | namespace 影响符号的链接可见性 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|--------|--------|-------------|
+| ch19 | ch23 | 变量与作用域：作用域是 namespace 划分符号的前提 |
+| ch23 | ch31 | 命名空间与 ADL：运算符通过 ADL 被关联类型自动找到 |
+| ch23 | ch60 | 命名空间与 ADL：依赖型名字的二阶段查找影响模板编写 |
+| ch23 | ch70 | 命名空间与 ADL：标签类型常置于专属 namespace 供 ADL 选中 |
+| ch23 | ch107 | 命名空间与 ADL：标准符号组织依赖 inline namespace 与版本 |
+| ch23 | ch125 | 命名空间与 ADL：实战库用 namespace 隔离实现细节 |
+| ch23 | ch20 | 命名空间与 ADL：swap 通过引用形参与 ADL 协同 |

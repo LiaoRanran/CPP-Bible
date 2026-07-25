@@ -1712,3 +1712,66 @@ int main() { Shape* s = new Circle; s->draw(); }
 ```
 
 **结论**：`override`/`final`（维度⑮）把"是否真覆盖"从运行期隐患变成编译期强制，是封装与继承（维度⑧/⑮）的工程红线。
+
+## 附录 J：封装与继承 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    START["类间需复用行为?"] --> D1{"是 is-a 关系?"}
+    D1 -->|是| PUB["public 继承 接口契约"]
+    D1 -->|否| D2{"仅复用实现?"}
+    D2 -->|是| COMP["组合 成员委托"]
+    D2 -->|否| D3{"需改写行为?"}
+    D3 -->|是| VIRT["虚函数 override"]
+    D3 -->|否| D4{"基类接口稳定?"}
+    D4 -->|是| BASE["抽象基类 保护成员"]
+    D4 -->|否| D5{"需访问控制?"}
+    D5 -->|是| PRIV["private/protected 封装"]
+    D5 -->|否| LEAK["过度暴露 脆弱耦合"]
+    LEAK --> FALLBACK["降级: 友元最小暴露"]
+    FALLBACK -->|"收紧接口"| D5
+```
+
+> 决策流说明：关键闸门 D1 区分 is-a（public 继承）与仅复用（组合）；D5 决定封装边界；FALLBACK 在过度暴露时回退到友元最小暴露并收紧接口。
+
+## 附录 K：封装与继承 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    ENC["封装"] --> PRIV["private"]
+    ENC --> PROT["protected"]
+    INH["继承"] --> PUB["public 继承"]
+    INH --> COMP["组合"]
+    PUB --> IFACE["抽象接口"]
+    INH --> VIRT["虚函数 override"]
+    INH --> OM["对象模型"]
+    PROT --> VIRT
+    ENC --> REVIEW["代码评审"]
+    REVIEW --> ENC
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|---|---|
+| ENC --> PRIV | 封装以 private 隐藏实现 |
+| ENC --> PROT | 封装以 protected 给派生类受控访问 |
+| INH --> PUB | 仅 is-a 用 public 继承 |
+| INH --> COMP | 仅复用实现优先组合 |
+| PUB --> IFACE | public 继承常契约于抽象接口 |
+| INH --> VIRT | 继承通过虚函数实现多态改写 |
+| INH --> OM | 继承改变对象模型布局 |
+| PROT --> VIRT | protected 常修饰可覆写钩子 |
+| ENC --> REVIEW | 封装强度需代码评审把关 |
+| REVIEW --> ENC | 评审回归校验封装边界 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch45 对象模型 | ch46 封装继承 | 继承直接改变子对象布局 |
+| ch47 虚函数 | ch46 封装继承 | override 是继承多态的实现 |
+| ch46 封装继承 | ch147 代码评审 | 继承耦合度需评审把关 |
+| ch39 RAII 规则 | ch46 封装继承 | 基类析构须 virtual/protected |
+| ch32 初始化 | ch46 封装继承 | 构造顺序影响基类子对象 |
+| ch115 move 语义 | ch46 封装继承 | 派生类移动需调用基类 |

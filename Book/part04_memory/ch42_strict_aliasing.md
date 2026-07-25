@@ -1496,3 +1496,67 @@ void axpy(int n, double* __restrict y, const double* __restrict a,
 **结论**：看位模式 → `bit_cast`/`memcpy`；跨类型读写对象 → 必 UB；想帮编译器向量化 → `__restrict`（并自担承诺）。
 
 **工程含义**：严格别名不是学术细节——它直接决定你的序列化/网络/数值代码在 `-O2` 下是否正确与多快。
+
+## 附录 J：严格别名规避 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    START["需在同一内存上 reinterpret 类型?"] --> D1{"类型间有继承或标准布局兼容?"}
+    D1 -->|是| COMPAT["用 memcpy / std::bit_cast (C++20)"]
+    D1 -->|否| D2{"确为不同动态类型?"}
+    D2 -->|是| CAST["用 char* 或 unsigned char* 别名通道"]
+    D2 -->|否| D3{"需强制类型双关?"}
+    D3 -->|是| UNION["用共用体 (POD) 或 memcpy"]
+    D3 -->|否| D4{"编译器乐观优化?"}
+    D4 -->|是| OPT["启用 -fstrict-aliasing 的风险"]
+    D4 -->|否| UB["未定义行为: 错误优化"]
+    OPT --> UB
+    UNION --> D5{"能否改数据结构?"}
+    D5 -->|是| REDES["重设计: 标签联合体 访存分离"]
+    D5 -->|否| FALLBACK["降级: -fno-strict-aliasing"]
+    FALLBACK -->|"优先重构"| D5
+```
+
+> 决策流说明：关键闸门 D1 判断是否可用 bit_cast/memcpy；D4 揭示未定义行为风险；FALLBACK 在无法重构时退到 -fno-strict-aliasing 并提示优先重设计。
+
+## 附录 K：严格别名 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    SA["严格别名规则"] --> UB["未定义行为"]
+    SA --> MA["memcpy / bit_cast"]
+    SA --> BC["char* 别名通道"]
+    MA --> CP["类型双关"]
+    UNI["共用体双关"] --> CP
+    SA --> OPT["优化假设"]
+    OPT --> ALIAS["别名分析"]
+    ALIAS --> UB
+    SA --> TP["类型系统"]
+    LAYOUT["对象内存布局"] --> SA
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|---|---|
+| SA --> UB | 违反严格别名即未定义行为 |
+| SA --> MA | 安全类型重解释首选 memcpy/bit_cast |
+| SA --> BC | char* 是允许的别名通道 |
+| MA --> CP | memcpy 实现类型双关 |
+| UNI --> CP | 共用体用于 POD 双关 |
+| SA --> OPT | 规则支撑编译器别名优化假设 |
+| OPT --> ALIAS | 优化假设进入别名分析 |
+| ALIAS --> UB | 错误别名分析导致 UB 级误优化 |
+| SA --> TP | 严格别名是类型系统的一部分 |
+| LAYOUT --> SA | 对象内存布局决定别名可行性 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch35 内存布局 | ch42 严格别名 | 对象内存布局决定何种别名合法 |
+| ch45 对象模型 | ch42 严格别名 | 子对象布局与别名通道相关 |
+| ch32 初始化 | ch42 严格别名 | memcpy 目标需正确构造 |
+| ch42 严格别名 | ch41 智能指针 | 控制块别名需防 UB |
+| ch42 严格别名 | ch61 模板重载 | 类型双关常用于模板萃取 |
+| ch115 move 语义 | ch42 严格别名 | 重解释对象布局影响 move |

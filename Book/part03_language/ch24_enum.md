@@ -1522,3 +1522,85 @@ ret
 | 无作用域 `enum Plain` | `lea [rcx+1]` | 允许（免费） | 零，但无保护 |
 | `switch(c)` on enum class | `add` + 越界 `cmovae` | — | 零 |
 
+
+
+
+## 附录 J：枚举 enum 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["需要一个离散取值集合?"] --> D1{"是否要求强类型与无隐式转换?"}
+    D1 -->|是| EC["enum class 作用域枚举"]
+    D1 -->|否 兼容 C| D2{"是否需要隐式转 int?"}
+    D2 -->|是| UE["无作用域 enum 传统"]
+    D2 -->|否| EC
+    EC --> D3{"是否关心底层存储大小?"}
+    D3 -->|是| ECB["enum class : uint8_t 定底层类型"]
+    D3 -->|否| ECD["默认 int 底层"]
+    UE --> D4{"是否用作标志位集合?"}
+    D4 -->|是| FLG["enum + 位运算 或 std::bitset"]
+    D4 -->|否| OK1["普通无作用域 enum"]
+    ECB --> D5{"需要越界保护?"}
+    D5 -->|是| SW["switch + default 越界处理"]
+    D5 -->|否| OK2["直接 switch"]
+    ECD --> D5
+    SW --> D6{"越界时如何处理?"}
+    D6 -->|抛异常/断言| TH["抛出 std::out_of_range"]
+    D6 -->|回退安全值| FB["回退到已知合法枚举值"]
+    FB --> OK2
+    FLG --> D7{"位运算类型安全?"}
+    D7 -->|否 易错| FB2["回退 改用强类型封装"]
+    D7 -->|是| OK3["位标志 enum"]
+    FB2 --> EC
+```
+
+> 决策流说明：闸门为“是否强类型 → 是否需隐式转 int → 是否定底层类型”，位标志与越界处理都设有回退到强类型枚举的安全路径。
+
+## 附录 K：枚举 enum 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    ENUM["枚举 离散集合"] --> EC["enum class 强类型"]
+    ENUM --> UE["无作用域 enum"]
+    EC --> SCOPE["作用域隔离名字"]
+    EC --> UND["可指定底层类型"]
+    UE --> IMPL["隐式转 int"]
+    UND --> RANGE["取值区间/大小"]
+    FLAG["位标志集合"] --> UE
+    SWITCH["switch 分发"] --> RANGE
+    CAST["static_cast 转整/枚举"] --> EC
+    TYPE["类型系统"] --> EC
+    TRAITS["类型萃取 is_enum"] --> ENUM
+    IO["序列化 读写整值"] --> UND
+    EC --> API["强类型接口 防误用"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|----|------|
+| ENUM → EC | 强类型枚举是枚举的现代默认选择 |
+| ENUM → UE | 需 C 兼容时退化为无作用域枚举 |
+| EC → SCOPE | enum class 把枚举量限制在类型作用域内 |
+| EC → UND | enum class 可指定底层整型控制大小 |
+| UE → IMPL | 无作用域枚举隐式转换为整型 |
+| UND → RANGE | 底层类型决定取值宽度与区间 |
+| FLAG → UE | 位标志常借无作用域枚举做位运算 |
+| SWITCH → RANGE | switch 依取值区间分发并处理越界 |
+| CAST → EC | 枚举↔整型需 static_cast 显式转换 |
+| TYPE → EC | 强类型枚举增强类型系统安全 |
+| TRAITS → ENUM | 类型萃取 is_enum/underlying_type 反射枚举 |
+| IO → UND | 序列化依赖底层整型布局 |
+| EC → API | 强类型枚举构成防误用的接口契约 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|--------|--------|-------------|
+| ch23 | ch24 | 命名空间与 ADL：枚举量作用域与 namespace 协同 |
+| ch24 | ch31 | 枚举 enum：枚举常重载位/比较运算符 |
+| ch24 | ch48 | 枚举 enum：typeid/枚举反射可配合枚举分发 |
+| ch24 | ch65 | 枚举 enum：is_enum/underlying_type 萃取枚举属性 |
+| ch24 | ch60 | 枚举 enum：枚举作为非类型模板实参 |
+| ch24 | ch20 | 枚举 enum：枚举常用于安全索引替代裸整型 |
+| ch24 | ch135 | 枚举 enum：枚举是状态/策略模式的天然载体 |

@@ -1713,3 +1713,70 @@ int main() {
 
 **结论**：`noexcept` 既是性能开关也是契约——它告诉标准库"此操作绝不抛"，从而启用移动、启用更快的算法路径。
 
+
+## 附录 U：异常安全 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    START["函数可能抛异常?"] --> D1{"操作需强保证<br/>(提交或回滚)?"}
+    D1 -->|是| D2{"可用 copy-and-swap?"}
+    D1 -->|否| D3{"可避免抛异常?"}
+    D2 -->|是| SW["copy-and-swap 实现强保证"]
+    D2 -->|否| BASIC["基本保证: 不泄漏不 UB"]
+    D3 -->|是| NOTHROW["标记 noexcept / 提供 nothrow 路径"]
+    D3 -->|否| D4{"资源获取?"}
+    D4 -->|是| RAII["用 RAII / 智能指针"]
+    D4 -->|否| BASIC
+    SW --> STRONG["强保证: 成功或原状"]
+    RAII --> LEAK["裸资源 易泄漏风险"]
+    LEAK --> FALLBACK["降级为基本保证并记录"]
+    FALLBACK -->|"重构: 分离业务与资源"| D1
+```
+
+> 决策流说明：关键闸门 D1 决定是否需要强保证，D2 以 copy-and-swap 实现，D4 用 RAII 兜底；当无法提供强保证时走 FALLBACK 回到 D1 形成重构闭环。
+
+## 附录 V：异常安全 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    ES["异常安全保证"] --> STR["强保证"]
+    ES --> BAS["基本保证"]
+    ES --> NO["noexcept 不抛"]
+    STR --> SW["copy-and-swap"]
+    SW --> RAII["RAII"]
+    BAS --> RAII
+    RAII --> SP["智能指针"]
+    SP --> NO
+    ES --> UNW["栈展开"]
+    UNW --> VEC["std::vector"]
+    STR --> CTOR["构造期安全"]
+    ES --> DOC["文档化保证"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|---|---|
+| ES --> STR | 异常安全保证包含强保证这一级别 |
+| ES --> BAS | 异常安全保证包含基本保证这一级别 |
+| ES --> NO | 异常安全保证包含不抛保证 (noexcept) |
+| STR --> SW | 强保证常由 copy-and-swap 实现 |
+| SW --> RAII | copy-and-swap 依赖 RAII 管理临时副本 |
+| BAS --> RAII | 基本保证依赖 RAII 防止资源泄漏 |
+| RAII --> SP | RAII 的典型载体是智能指针 |
+| SP --> NO | 智能指针析构通常 noexcept |
+| ES --> UNW | 异常安全建立在栈展开之上 |
+| UNW --> VEC | vector 扩容依赖强异常安全保证 |
+| STR --> CTOR | 构造失败须回滚到原状（强保证） |
+| ES --> DOC | 保证级别必须写入文档契约 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch39 RAII 规则 | ch40 异常安全 | RAII 是异常安全基本保证的基石 |
+| ch41 智能指针 | ch40 异常安全 | 智能指针以 noexcept 析构强化不抛保证 |
+| ch40 异常安全 | ch77 vector | vector 扩容采用强异常安全保证 |
+| ch45 对象模型 | ch40 异常安全 | 构造期子对象安全影响强保证 |
+| ch46 封装继承 | ch40 异常安全 | 基类析构 noexcept 影响派生类展开 |
+| ch115 move 语义 | ch40 异常安全 | move 常标 noexcept 以保不抛 |

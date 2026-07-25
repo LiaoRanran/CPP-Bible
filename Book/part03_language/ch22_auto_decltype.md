@@ -1491,3 +1491,84 @@ int main() {
 
 **结论**：需要"返回类型精确等于某表达式的值类别"时，唯一正确工具是 `decltype(auto)`；裸 `auto` 永远按值，会无声地剥掉引用语义。
 
+
+
+
+## 附录 J：auto 与 decltype 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["需要一个变量/返回类型/形参类型?"] --> D1{"能否从初始化器推断? 还是必须写死?"}
+    D1 -->|必须写死| EXP["显式写出类型"]
+    D1 -->|可推断| D2{"需要保留引用/值类别吗?"}
+    D2 -->|保留 精确值类别| DA["decltype(auto)"]
+    D2 -->|按值即可| D3{"初值是否依赖模板参数?"}
+    D3 -->|是 泛型| AU["auto + 模板 推导"]
+    D3 -->|否 普通| AV["auto 按值简化"]
+    DA --> D4{"推断结果含引用却期望独立值?"}
+    D4 -->|是 易悬垂| FB["回退 显式 auto 按值或加作用域"]
+    D4 -->|否| OK1["decltype(auto) 正确"]
+    AU --> D5{"需函数返回类型后置?"}
+    D5 -->|是| TRAIL["auto 返回类型 + 后置 decltype"]
+    D5 -->|否| OK2["auto 形参/变量"]
+    AV --> D6{"想禁止拷贝只看接口?"}
+    D6 -->|是| CREF["const auto& 或 auto&& 转发"]
+    D6 -->|否| OK3["auto 值"]
+    EXP --> D7{"类型名极长或类型私密?"}
+    D7 -->|是| AU2["auto 隐藏实现类型"]
+    D7 -->|否| OK4["保留显式类型 可读性"]
+    FB --> D2
+```
+
+> 决策流说明：闸门为“能否推断 → 是否保留值类别 → 是否泛型”，decltype(auto) 专门保留精确值类别，推断结果悬垂时回退到按值 auto。
+
+## 附录 K：auto 与 decltype 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    TINIT["初始化器/表达式"] --> AUTO["auto 占位符"]
+    TINIT --> DECL["decltype 取表达式类型"]
+    DECL --> DAA["decltype(auto) 精确值类别"]
+    AUTO --> INF["类型推断规则"]
+    TMPL["模板实参"] --> INF
+    INF --> REF["引用/值类别决策"]
+    REF --> XVAL["值类别 lvalue/xvalue/prvalue"]
+    TRAIL["返回类型后置"] --> AUTO
+    CVR["cv 限定"] --> INF
+    RANGE["ranges 算法"] --> AUTO
+    MOVE["移动语义"] --> XVAL
+    CAST["类型转换"] --> DECL
+    DAA --> API["隐藏复杂返回类型 提升接口"]
+    AUTO --> API
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|----|------|
+| TINIT → AUTO | auto 必须依赖初始化器推断 |
+| TINIT → DECL | decltype 直接抽取已有表达式的类型 |
+| DECL → DAA | decltype(auto) 用 decltype 规则保留 auto 的值类别 |
+| AUTO → INF | auto 触发类型推断 |
+| TMPL → INF | 模板实参推断与 auto 共享规则 |
+| INF → REF | 推断结果决定引用/值类别 |
+| REF → XVAL | 引用与值类别归结为 lvalue/xvalue/prvalue |
+| TRAIL → AUTO | 返回类型后置常与 auto 配合写出复杂类型 |
+| CVR → INF | cv 限定参与推断与退化 |
+| RANGE → AUTO | ranges 算法大量用 auto 接收迭代器/谓词 |
+| MOVE → XVAL | 移动语义基于 xvalue 值类别 |
+| CAST → DECL | 转换后常用 decltype 固定结果类型 |
+| DAA → API | decltype(auto) 隐藏复杂返回类型、稳定接口 |
+| AUTO → API | auto 隐藏实现细节、简化 API |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|--------|--------|-------------|
+| ch20 | ch22 | 引用与指针：auto&& 转发引用依赖引用类别 |
+| ch22 | ch60 | auto 与 decltype：auto 与模板推断共享同一套规则 |
+| ch22 | ch65 | auto 与 decltype：decltype/decltype(auto) 常用于萃取结果类型 |
+| ch22 | ch90 | auto 与 decltype：ranges 算法与管道大量使用 auto 形参 |
+| ch22 | ch100 | auto 与 decltype：范围算法返回类型常借助 auto 推导 |
+| ch22 | ch115 | auto 与 decltype：auto&& 转发与 xvalue 共同支撑移动 |
+| ch22 | ch27 | auto 与 decltype：转型结果常以 decltype 固定类型 |

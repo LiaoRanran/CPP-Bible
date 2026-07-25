@@ -1677,3 +1677,85 @@ int main() {
 ```
 
 **结论**：捕获 `this`/智能指针的 lambda 必须做生命周期审计；跨对象回调优先 `weak_ptr` 提升，避免悬垂与循环引用两类典型缺陷。
+
+
+
+## 附录 J：lambda 表达式 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["需要一个可调用对象/回调?"] --> D1{"逻辑只在局部使用一次?"}
+    D1 -->|是| LAM["lambda 表达式"]
+    D1 -->|否 多处复用| FUN["命名函数/函数对象"]
+    LAM --> D2{"需要捕获局部状态?"}
+    D2 -->|否| ST["无捕获 lambda / 可转函数指针"]
+    D2 -->|是| D3{"捕获方式?"}
+    D3 -->|值拷贝| CV["[=] 或显式 [x] 按值"]
+    D3 -->|引用| CR["[&] 或显式 [&x] 按引用"]
+    D3 -->|完美转发 泛型| GEN["[auto] / 模板 lambda C++20"]
+    CV --> D4{"捕获对象昂贵或需共享?"}
+    D4 -->|是| SP["捕获 shared_ptr / 智能指针"]
+    D4 -->|否| OK1["按值捕获即可"]
+    CR --> D5{"引用目标生命周期 > lambda?"}
+    D5 -->|否 可能悬垂| FB["回退 改按值捕获或 weak_ptr"]
+    D5 -->|是| OK2["按引用捕获安全"]
+    GEN --> D6{"需要递归?"}
+    D6 -->|是| YC["[y=...] 局部变量递归 / 命名"]
+    D6 -->|否| OK3["普通泛型 lambda"]
+    LAM --> D7{"作为算法谓词?"}
+    D7 -->|是| ALG["传入 ranges/STL 算法"]
+    D7 -->|否| OK4["直接调用"]
+    FB --> CV
+```
+
+> 决策流说明：闸门为“是否仅局部 → 是否捕获 → 捕获方式（值/引用/泛型）”，引用捕获生命周期不足时回退到按值或 weak_ptr。
+
+## 附录 K：lambda 表达式 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    LAM["lambda 表达式"] --> CLO["闭包类型 匿名"]
+    CAP["捕获子句"] --> LAM
+    CAP --> CV["按值捕获 拷贝状态"]
+    CAP --> CR["按引用捕获 别名"]
+    CAP --> GEN["泛型 lambda 转发"]
+    CLO --> CALL["operator() 调用"]
+    CALL --> FUNC["统一可调用概念"]
+    ST["无捕获 lambda"] --> FUNC
+    LIFE["生命周期"] --> CR
+    SMART["智能指针捕获"] --> LIFE
+    ALGO["算法谓词"] --> LAM
+    MV["移动语义"] --> CLO
+    TPL["模板"] --> GEN
+    GEN --> TPL
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|----|------|
+| LAM → CLO | lambda 生成一个唯一闭包类型 |
+| CAP → LAM | 捕获子句决定闭包持有哪些状态 |
+| CAP → CV | 按值捕获把外部变量拷贝进闭包 |
+| CAP → CR | 按引用捕获让闭包持有别名 |
+| CAP → GEN | 泛型 lambda 通过 auto 形参转发 |
+| CLO → CALL | 闭包通过 operator() 被调用 |
+| CALL → FUNC | operator() 使 lambda 归入可调用体系 |
+| ST → FUNC | 无捕获 lambda 可退化为函数指针 |
+| LIFE → CR | 引用捕获的生命周期必须长于闭包 |
+| SMART → LIFE | 捕获智能指针以安全延长生命周期 |
+| ALGO → LAM | 算法谓词常以 lambda 内联表达 |
+| MV → CLO | 闭包对象可被移动（如跨线程传递） |
+| GEN → TPL | 泛型 lambda 本质是编译器生成的模板 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|--------|--------|-------------|
+| ch20 | ch26 | 引用与指针：引用捕获依赖引用类别与生命周期 |
+| ch26 | ch90 | lambda 表达式：ranges 算法与管道大量使用 lambda 谓词 |
+| ch26 | ch100 | lambda 表达式：范围算法把 lambda 作为投影/谓词 |
+| ch26 | ch115 | lambda 表达式：闭包可移动，lambda 常用于 move-only 回调 |
+| ch26 | ch60 | lambda 表达式：泛型 lambda 与模板实参推导同源 |
+| ch26 | ch70 | lambda 表达式：lambda + 标签可模拟局部分发 |
+| ch26 | ch65 | lambda 表达式：decltype 可萃取 lambda 闭包类型 |

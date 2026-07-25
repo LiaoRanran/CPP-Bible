@@ -1743,3 +1743,156 @@ int main() {
 
 **结论**：pmr 容器只持有资源的指针，不拥有它；"资源活得比容器久"是硬约束，违反即悬垂。
 
+
+## 附录 J：分配器与 PMR 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S["容器需要内存来源"] --> D1{"分配策略固定？"}
+    D1 -->|"是，与默认一致"| DEF["std::allocator（默认）"]
+    D1 -->|"否，需多态"| PMR{"运行时换来源"}
+    PMR -->|"是"| MR["pmr::memory_resource 派生"]
+    PMR -->|"否"| CUS["自定义 Allocator 类型"]
+    MR --> RB["rebind 到容器值类型"]
+    CUS --> RB
+    DEF --> RB
+    RB --> CONT["容器持有分配器"]
+    CONT --> LIFE{"资源活过容器？"}
+    LIFE -->|"是"| OK["pmr 容器仅借资源"]
+    LIFE -->|"否"| FIX["延长资源生命周期"]
+    FIX --> LIFE
+    OK --> POOL{"高频定长？"}
+    POOL -->|"是"| MP["monotonic_buffer / 池资源"]
+    POOL -->|"否"| DONE["完成"]
+    DONE --> LOOP["回溯：rebind 是否正确"]
+    LOOP -->|"错"| RB2["修正 rebind traits"]
+    RB2 --> CONT
+    RB2 --> S
+```
+> 决策流说明：以"是否需多态决定 PMR 还是静态自定义分配器；rebind 适配值类型；pmr 容器只借资源，必须活得比容器久"为主线。
+
+## 附录 K：分配器与 PMR 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    C1["std::allocator"] -->|"默认"| C2["容器内存来源"]
+    C3["自定义 Allocator"] -->|"特化"| C2
+    C4["pmr::memory_resource"] -->|"派生"| C5["具体资源（堆/池/栈）"]
+    C6["polymorphic_allocator"] -->|"绑定"| C4
+    C7["rebind"] -->|"适配"| C8["容器值类型"]
+    C2 -->|"依赖"| C7
+    C9["容器"] -->|"持有"| C6
+    C9 -->|"持有"| C1
+    C10["内存池"] -->|"实现为"| C5
+    C11["PMR 不拥有资源"] -->|"约束"| C5
+    C12["allocate/deallocate"] -->|"接口"| C4
+    C13["traits propagate_on_copy"] -->|"控制"| C2
+```
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+| --- | --- |
+| C1 → C2 | 默认分配器是容器来源 |
+| C3 → C2 | 自定义分配器特化来源 |
+| C4 → C5 | 资源派生出具体后端 |
+| C6 → C4 | 多态分配器绑定资源 |
+| C7 → C8 | rebind 把分配器适配值类型 |
+| C2 → C7 | 容器分配依赖 rebind |
+| C9 → C6 | 容器持有多态分配器 |
+| C9 → C1 | 容器也可持有默认分配器 |
+| C10 → C5 | 内存池即一种资源后端 |
+| C11 → C5 | PMR 容器不拥有资源 |
+| C12 → C4 | 分配接口由资源提供 |
+| C13 → C2 | propagate traits 控制分配器拷贝 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch36 栈与堆 | ch38 | 分配器在堆上切分内存 |
+| ch37 operator new/delete | ch38 | 分配器底层复用 new 的字节分配 |
+| ch39 RAII 与规则 | ch38 | 资源生命周期需 RAII 守护 |
+| ch31 运算符重载 | ch38 | 容器比较依赖分配器相等语义 |
+| ch44 内存池 | ch38 | 池资源是分配器的典型后端 |
+| ch41 智能指针 | ch38 | 智能指针与分配器协同管理资源 |
+| ch40 异常安全 | ch38 | 分配失败时的异常传播语义 |
+
+## 附录 J：分配器选择与 rebind 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["容器需分配内存"] --> B{"是否标准容器<br>默认即可?"}
+    B -->|是| C["用 std::allocator<br>默认分配器"]
+    B -->|否| D{"是否需共享<br>同一内存资源?"}
+    D -->|是| E["用 pmr::polymorphic_allocator<br>+ memory_resource"]
+    D -->|否| F{"是否需定制<br>分配策略?"}
+    F -->|是| G["自定义 Allocator<br>满足要件"]
+    F -->|否| C
+    G --> H{"是否需要为<br>不同 T 分配?"}
+    E --> H
+    C --> H
+    H -->|是| I["提供 rebind 或<br>allocator_traits 推导"]
+    H -->|否| J["单类型分配即可"]
+    I --> K{"分配是否可能<br>失败抛异常?"}
+    J --> K
+    K -->|是| L["捕获异常或<br>noexcept 分支"]
+    K -->|否| M["正常返回内存"]
+    L --> N{"是否跨容器<br>传递同一分配器?"}
+    M --> N
+    N -->|是| O["确保相等语义<br>propagate_on_container_copy"]
+    N -->|否| P["各容器独立持有"]
+    O --> Q["完成：分配策略一致"]
+    P --> Q
+    Q --> B
+```
+
+> 决策流说明：标准容器默认 std::allocator；需共享资源走 pmr::polymorphic_allocator；为不同 T 分配需 rebind/allocator_traits；跨容器传递要定好相等语义，形成分配策略闭环。
+
+## 附录 K：分配器选择与 rebind 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    Y1["分配器"] --> Y2["std::allocator"]
+    Y1 --> Y3["pmr::polymorphic_allocator"]
+    Y3 --> Y4["memory_resource"]
+    Y4 --> Y5["单帧资源"]
+    Y4 --> Y6["内存池资源"]
+    Y1 --> Y7["allocator_traits"]
+    Y7 --> Y8["rebind 重绑定"]
+    Y8 --> Y9["为不同 T 分配"]
+    Y1 --> Y10["相等语义"]
+    Y10 --> Y11["propagate_on_copy"]
+    Y11 --> Y12["跨容器传递"]
+    Y2 --> Y13["自定义分配器"]
+    Y13 --> Y14["满足分配器要件"]
+    Y2 --> Y15["字节分配复用 new"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+| --- | --- |
+| 分配器 → std::allocator | 默认标准分配器 |
+| 分配器 → pmr::polymorphic_allocator | PMR 多态分配器 |
+| pmr::polymorphic_allocator → memory_resource | PMR 后端为 memory_resource |
+| memory_resource → 内存池资源 | 内存池是典型资源 |
+| 分配器 → allocator_traits | traits 统一分配器接口 |
+| allocator_traits → rebind | rebind 为不同 T 重绑定 |
+| rebind → 为不同 T 分配 | 容器节点类型不同于元素 |
+| 分配器 → 相等语义 | 相等决定能否混用内存 |
+| 相等语义 → propagate_on_copy | 控制拷贝时是否传递 |
+| std::allocator → 自定义分配器 | 可定制分配器实现 |
+| 自定义分配器 → 满足分配器要件 | 需满足 C++ 分配器要件 |
+| std::allocator → 字节分配复用 new | 底层复用 operator new |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch36 栈与堆 | ch38 | 分配器在堆上切分内存 |
+| ch37 operator new/delete | ch38 | 分配器底层复用 new 的字节分配 |
+| ch39 RAII 与规则 | ch38 | 资源生命周期需 RAII 守护 |
+| ch31 运算符重载 | ch38 | 容器比较依赖分配器相等语义 |
+| ch44 内存池 | ch38 | 池资源是分配器的典型后端 |
+| ch41 智能指针 | ch38 | 智能指针与分配器协同管理资源 |
+| ch40 异常安全 | ch38 | 分配失败时的异常传播语义 |

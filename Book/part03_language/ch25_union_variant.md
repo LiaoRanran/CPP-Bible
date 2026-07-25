@@ -1994,3 +1994,86 @@ graph LR
     ST --> A2["alternative 2"]
     T --> A1
 ```
+
+
+
+## 附录 U：联合与 variant 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["需要在固定存储上表示多种类型之一?"] --> D1{"是否可用 std::variant 替代裸 union?"}
+    D1 -->|是| VAR["std::variant 类型安全联合"]
+    D1 -->|否 必须裸 union| D2{"能否保证活跃成员跟踪?"}
+    D2 -->|能 手动标记| U["裸 union + 判别式/active 标志"]
+    D2 -->|不能| FB["回退 改用 std::variant"]
+    VAR --> D3{"访问时需要编译期完备?"}
+    D3 -->|是| VIS["std::visit + 访客"]
+    D3 -->|否| IDX["index()/get_if 检查"]
+    U --> D4{"切换活跃成员?"}
+    D4 -->|是| DEST["手动调用析构再布置新值"]
+    D4 -->|否| OK1["读取当前活跃成员"]
+    DEST --> D5{"涉及非平凡类型?"}
+    D5 -->|是| PLACE["std::construct_at / 显式构造"]
+    D5 -->|否| OK2["平凡拷贝即可"]
+    VAR --> D6{"需要错误而非异常?"}
+    D6 -->|是| MONO["使用 std::monostate 占位"]
+    D6 -->|否| OK3["普通 variant"]
+    VIS --> D7{"访客覆盖所有 alternative?"}
+    D7 -->|否| FB2["回退 补全覆盖或 get_if 兜底"]
+    D7 -->|是| OK4["完整分发"]
+    FB --> VAR
+    FB2 --> IDX
+```
+
+> 决策流说明：首选闸门是“能否用 variant”，不能时才退到裸 union 并手动跟踪活跃成员；variant 访问又分 visit 完备分发与 get_if 兜底两条路径。
+
+## 附录 V：联合与 variant 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    UNION["联合 共享存储"] --> RAWU["裸 union 手动管理"]
+    UNION --> VAR["std::variant 类型安全"]
+    RAWU --> ACTIVE["活跃成员 手动跟踪"]
+    ACTIVE --> DISCR["判别式/标志"]
+    VAR --> ALT["alternative 集合"]
+    VAR --> VIS["std::visit 访客分发"]
+    VIS --> DISCR
+    NTP["非平凡类型"] --> LIF["生命周期 构造/析构"]
+    LIF --> ACTIVE
+    GETIF["get_if / index"] --> VAR
+    MONO["monostate 占位"] --> VAR
+    ALT --> TRAITS["variant_traits / 元编程"]
+    CAST["位转换 reinterpret"] --> RAWU
+    VAR --> RANGE["ranges 适配 variant 视图"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|----|------|
+| UNION → RAWU | 裸 union 是最朴素的共享存储形式 |
+| UNION → VAR | variant 在 union 之上加类型安全 |
+| RAWU → ACTIVE | 裸 union 必须手动知道当前活跃成员 |
+| ACTIVE → DISCR | 判别式记录了当前活跃成员 |
+| VAR → ALT | variant 由一组 alternative 构成 |
+| VAR → VIS | 访问 variant 优先用 visit 完整分发 |
+| VIS → DISCR | visit 内部依据判别式分派访客 |
+| NTP → LIF | 非平凡类型在 union 中需显式生命周期管理 |
+| LIF → ACTIVE | 生命周期管理保证活跃成员有效 |
+| GETIF → VAR | get_if/index 提供不安全但灵活的检查 |
+| MONO → VAR | monostate 让 variant 可默认构造 |
+| ALT → TRAITS | 元编程可反射 alternative 列表 |
+| CAST → RAWU | 裸 union 常与 reinterpret_cast 混用（危险） |
+| VAR → RANGE | ranges 可适配 variant 构成的视图 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|--------|--------|-------------|
+| ch24 | ch25 | 枚举 enum：判别式常与枚举配合标记活跃成员 |
+| ch25 | ch65 | 联合与 variant：variant 元编程依赖 traits 反射 |
+| ch25 | ch27 | 联合与 variant：裸 union 依赖 reinterpret_cast 重解释 |
+| ch25 | ch48 | 联合与 variant：访问 variant 可借 typeid 辅助 |
+| ch25 | ch115 | 联合与 variant：variant 在赋值/visit 中移动 alternative |
+| ch25 | ch28 | 联合与 variant：裸 union 活跃成员误用是典型 UB |
+| ch25 | ch42 | 联合与 variant：union 类型双关触碰严格别名规则 |

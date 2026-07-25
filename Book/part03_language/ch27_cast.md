@@ -1939,3 +1939,86 @@ flowchart TD
     Q4 -->|是| RC["reinterpret_cast 极危险"]
     Q4 -->|否| BC["优先 std::bit_cast 类型安全"]
 ```
+
+
+
+## 附录 J：类型转换 cast 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["需要转换类型/重新解释对象?"] --> D1{"只是移除/添加 const volatile?"}
+    D1 -->|是| CC["const_cast 仅动 cv"]
+    D1 -->|否| D2{"相关类型间有继承/转换?"}
+    D2 -->|是 向上/向下/跨| D3{"运行时需检查?"}
+    D3 -->|是| DY["dynamic_cast 带 RTTI 检查"]
+    D3 -->|否 已知安全| STC["static_cast 静态转换"]
+    D2 -->|否 无关类型| D4{"是否位模式重解释?"}
+    D4 -->|是 同尺寸类型安全| BI["std::bit_cast 类型安全"]
+    D4 -->|是 极危险底层| RC["reinterpret_cast 重解释"]
+    D4 -->|否| FB["回退 重构设计 避免转换"]
+    STC --> D5{"转换可能窄化/丢信息?"}
+    D5 -->|是| WARN["加断言/检查或改用安全 API"]
+    D5 -->|否| OK1["static_cast 安全"]
+    DY --> D6{"转换失败?"}
+    D6 -->|是 返回 nullptr/抛| FB2["回退 改 static_cast 或处理空"]
+    D6 -->|否| OK2["dynamic_cast 成功"]
+    CC --> D7{"被去 const 的对象本就 const?"}
+    D7 -->|是| UB["未定义行为! 严禁写回"]
+    D7 -->|否| OK3["const_cast 安全去 const"]
+    FB --> STC
+    FB2 --> D2
+```
+
+> 决策流说明：首选闸门是“是否仅动 cv”，再依类型相关性选择 static/dynamic_cast，无关类型才考虑 bit_cast 或危险的 reinterpret_cast，均设有回退。
+
+## 附录 K：类型转换 cast 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    CAST["类型转换"] --> CVC["const_cast 仅 cv"]
+    CAST --> STC["static_cast 静态"]
+    CAST --> DYC["dynamic_cast RTTI"]
+    CAST --> REC["reinterpret_cast 重解释"]
+    CAST --> BIT["std::bit_cast 安全"]
+    DYC --> RTTI["typeid/RTTI 检查"]
+    STC --> INH["继承体系内转换"]
+    STC --> NAR["可能窄化"]
+    REC --> ALIAS["触碰严格别名规则"]
+    REC --> PTR["指针位重解释"]
+    OBJ["对象模型"] --> CAST
+    DYC --> OBJ
+    SAFE["类型安全"] --> BIT
+    SAFE --> STC
+    BIT --> API["安全重解释替代 reinterpret"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|----|------|
+| CAST → CVC | 只动 cv 限定用 const_cast |
+| CAST → STC | 相关类型间的静态转换用 static_cast |
+| CAST → DYC | 含运行期检查的多态下行用 dynamic_cast |
+| CAST → REC | 位模式重解释用 reinterpret_cast |
+| CAST → BIT | 同尺寸类型安全重解释优先用 bit_cast |
+| DYC → RTTI | dynamic_cast 依赖 RTTI 做运行期检查 |
+| STC → INH | static_cast 完成继承体系内上下行 |
+| STC → NAR | static_cast 可能窄化需谨慎 |
+| REC → ALIAS | reinterpret_cast 易违反严格别名规则 |
+| REC → PTR | reinterpret_cast 常用于指针位重解释 |
+| OBJ → CAST | 对象模型决定转换的合法性 |
+| DYC → OBJ | dynamic_cast 的结果仍是合法对象 |
+| SAFE → BIT | 类型安全优先选 bit_cast |
+| SAFE → STC | static_cast 比 C 风格转换更安全 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|--------|--------|-------------|
+| ch45 | ch27 | 对象模型：对象布局决定指针/引用的合法转换 |
+| ch27 | ch48 | 类型转换 cast：dynamic_cast 依赖 typeid 与 RTTI |
+| ch27 | ch42 | 类型转换 cast：reinterpret_cast 触及严格别名底线 |
+| ch27 | ch35 | 类型转换 cast：转换行为由对象内存布局决定 |
+| ch27 | ch20 | 类型转换 cast：const_cast 常在指针/引用上去 cv |
+| ch27 | ch115 | 类型转换 cast：std::move 本质是无条件 static_cast 到右值引用 |
+| ch27 | ch60 | 类型转换 cast：模板中常用 static_cast 做性质转换 |

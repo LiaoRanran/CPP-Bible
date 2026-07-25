@@ -2150,3 +2150,69 @@ std::pmr::vector<Packet> v{&res};    // vector 内存全部来自池, 零系统�
 通用程序则无需提前优化，用系统分配器即可。
 
 **工程含义**：嵌入式内存管理的第一原则是"可预测"而非"峰值利用率"；池化是确定性系统的标配。
+
+## 附录 J：内存池选型 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    START["频繁分配同尺寸对象?"] --> D1{"分配尺寸固定或有限档?"}
+    D1 -->|是| FIX["固定尺寸池: 自由链表"]
+    D1 -->|否| D2{"热点路径需低延迟?"}
+    D2 -->|是| LOW["线程本地池 无锁"]
+    D2 -->|否| D3{"跨线程分配?"}
+    D3 -->|是| TL["thread-local 池避免竞争"]
+    D3 -->|否| D4{"标准容器适用?"}
+    D4 -->|是| ALLOC["自定义 std::allocator 接入"]
+    D4 -->|否| D5{"通用不规则分配?"}
+    D5 -->|是| MALLOC["回退 malloc/free"]
+    D5 -->|否| FRAG["碎片 缓存未命中风险"]
+    MALLOC --> FRAG
+    FRAG --> FALLBACK["降级: 直接用全局 new"]
+    FALLBACK -->|"先测再重构"| D1
+```
+
+> 决策流说明：关键闸门 D1 判断固定尺寸池可行性；D4 决定以 allocator 接入容器；FALLBACK 在通用分配时回退全局 new 并提示先测量再重构。
+
+## 附录 K：内存池 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    POOL["内存池"] --> FL["自由链表"]
+    POOL --> TLP["线程本地池"]
+    POOL --> SIZE["尺寸档位"]
+    FL --> FRAG["内存碎片"]
+    FL --> CACHE["缓存局部性"]
+    POOL --> ALLOC["定制 allocator"]
+    ALLOC --> STL["STL 容器"]
+    ALLOC --> PMR["std::pmr"]
+    POOL --> NEW["new/delete"]
+    NEW --> FRAG
+    PMR --> ALLOC
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|---|---|
+| POOL --> FL | 固定池以自由链表管理空闲块 |
+| POOL --> TLP | 线程本地池减少锁竞争 |
+| POOL --> SIZE | 池按尺寸档位划分 |
+| FL --> FRAG | 不当归还策略导致碎片 |
+| FL --> CACHE | 自由链表布局影响缓存局部性 |
+| POOL --> ALLOC | 池可封装为 allocator |
+| ALLOC --> STL | 定制 allocator 接入 STL 容器 |
+| ALLOC --> PMR | C++17 pmr 是 allocator 标准接口 |
+| POOL --> NEW | 池底层仍调用 new/delete |
+| NEW --> FRAG | 通用 new 易产生碎片 |
+| PMR --> ALLOC | pmr 复用 allocator 抽象 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch37 new/delete | ch44 内存池 | 池底层复用 new/delete 减少调用 |
+| ch38 allocator | ch44 内存池 | 池常封装为定制 allocator |
+| ch44 内存池 | ch77 vector | 为 vector 提供 pool allocator |
+| ch45 对象模型 | ch44 内存池 | 对象尺寸/对齐决定档位 |
+| ch35 内存布局 | ch44 内存池 | 布局影响缓存局部性 |
+| ch44 内存池 | ch147 代码评审 | 池引入需评审线程安全 |

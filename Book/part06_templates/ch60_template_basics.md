@@ -932,3 +932,66 @@ int main() {
 
 **结论**：非类型模板参数只能是编译期常量（整型、枚举、指针、引用、`auto` 受约束类型）；这保证维度是类型的一部分、可被 `static_assert`/数组大小直接使用。
 
+
+## 附录 J：模板基础选型 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    START["需处理多种类型或值?"] --> D1{"计算可在编译期完成?"}
+    D1 -->|是| CONST["constexpr / consteval 编译期计算"]
+    D1 -->|否| D2{"类型在编译期已知?"}
+    D2 -->|是| TPL["函数/类模板 单态化"]
+    D2 -->|否| D3{"需运行期异质存储?"}
+    D3 -->|是| TE["类型擦除 std::any/function"]
+    D3 -->|否| D4{"需接口约束?"}
+    D4 -->|是| CONC["C++20 concepts 约束"]
+    D4 -->|否| D5{"实例化膨胀?"}
+    D5 -->|是| PRUNE["extern template 显式实例化收敛"]
+    D5 -->|否| BLOAT["代码膨胀 编译慢"]
+    BLOAT --> FALLBACK["降级: void* 加宏(不推荐)"]
+    FALLBACK -->|"优先模板"| D2
+```
+
+> 决策流说明：关键闸门 D1 判断是否走编译期 constexpr；D2 走模板单态化；D5 用显式实例化收敛膨胀，FALLBACK 仅在极端场景回退并提示优先模板化。
+
+## 附录 K：模板基础 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    TPL["模板"] --> SPEC["特化/偏特化"]
+    TPL --> VARI["可变参数"]
+    TPL --> TRAITS["类型萃取"]
+    TPL --> CONC["concepts"]
+    TRAITS --> META["元编程"]
+    TPL --> CT["编译期计算"]
+    CONC --> SFIN["SFINAE"]
+    TPL --> INST["实例化"]
+    INST --> CONSEP["关注点分离"]
+    SPEC --> TRAITS
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|---|---|
+| TPL --> SPEC | 模板通过特化覆盖特例 |
+| TPL --> VARI | 模板通过可变参数接受任意数量参数 |
+| TPL --> TRAITS | 模板借助类型萃取做编译期分支 |
+| TPL --> CONC | C++20 以 concepts 约束模板参数 |
+| TRAITS --> META | 类型萃取是元编程基础 |
+| TPL --> CT | 模板支撑 constexpr 编译期计算 |
+| CONC --> SFIN | concepts 取代 SFINAE 做重载约束 |
+| TPL --> INST | 每个实例化生成独立代码 |
+| INST --> CONSEP | 显式实例化收敛关注点 |
+| SPEC --> TRAITS | 特化常与 traits 配合 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch62 特化 | ch60 模板基础 | 偏特化建立在模板之上 |
+| ch63 可变参数 | ch60 模板基础 | 可变参数模板扩展参数包 |
+| ch65 类型萃取 | ch60 模板基础 | traits 是模板元编程核心 |
+| ch67 concepts | ch60 模板基础 | concepts 约束模板参数 |
+| ch60 模板基础 | ch69 constexpr | 模板与 constexpr 协同做编译期计算 |
+| ch61 模板重载 | ch60 模板基础 | 重载解析是模板核心机制 |

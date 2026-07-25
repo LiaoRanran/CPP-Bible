@@ -1606,3 +1606,68 @@ graph TD
     OBJ --> BASE["Base 子对象 data"]
     OBJ --> DD["Derived 自有 data"]
 ```
+
+## 附录 J：对象模型多态选型 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    START["需多态行为?"] --> D1{"类型在编译期已知?"}
+    D1 -->|是| CRTP["CRTP 静态多态 零开销"]
+    D1 -->|否| D2{"需运行期多态?"}
+    D2 -->|是| VIRT["虚函数 vtable 动态派发"]
+    D2 -->|否| D3{"需值语义或切片安全?"}
+    D3 -->|是| VAL["用 unique_ptr 接口 避免切片"]
+    D3 -->|否| D4{"需多接口?"}
+    D4 -->|是| MI["多重继承 接口类"]
+    D4 -->|否| D5{"需对象布局紧凑?"}
+    D5 -->|是| PACK["调整对齐/字段序 EBO"]
+    D5 -->|否| DIAMOND["菱形继承歧义"]
+    DIAMOND --> FALLBACK["降级: 类型擦除"]
+    FALLBACK -->|"评估虚函数"| D2
+```
+
+> 决策流说明：关键闸门 D1 区分静态（CRTP）与动态（虚函数）多态；D5 用 EBO/对齐压缩布局；FALLBACK 在菱形继承困境时回退到类型擦除再评估虚函数。
+
+## 附录 K：对象模型 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    OM["对象模型"] --> VT["虚函数表 vtable"]
+    OM --> CRTP["CRTP 静态多态"]
+    OM --> MI["多重继承"]
+    VT --> LAYOUT["内存布局"]
+    CRTP --> LAYOUT
+    MI --> DIAMOND["菱形继承歧义"]
+    SLICE["对象切片"] --> MOVE["移动语义"]
+    INIT["初始化"] --> OM
+    LAYOUT --> ALIAS["别名"]
+    EBO["空基类优化"] --> LAYOUT
+    VT --> EBO
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|---|---|
+| OM --> VT | 对象模型以 vtable 实现动态多态 |
+| OM --> CRTP | 对象模型支持 CRTP 静态多态 |
+| OM --> MI | 对象模型支持多重继承 |
+| VT --> LAYOUT | 虚表指针影响对象内存布局 |
+| CRTP --> LAYOUT | CRTP 零运行期布局开销 |
+| MI --> DIAMOND | 菱形继承产生歧义需 virtual 继承 |
+| SLICE --> MOVE | 切片风险用移动/指针接口规避 |
+| INIT --> OM | 构造顺序决定子对象布局 |
+| LAYOUT --> ALIAS | 布局影响严格别名可行性 |
+| EBO --> LAYOUT | 空基类优化压缩布局 |
+| VT --> EBO | 含虚函数的类常含 vptr 影响 EBO |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch32 初始化 | ch45 对象模型 | 构造顺序决定子对象布局 |
+| ch115 move 语义 | ch45 对象模型 | 移动影响对象生命周期与布局 |
+| ch47 虚函数 | ch45 对象模型 | vtable 是对象模型的核心 |
+| ch46 封装继承 | ch45 对象模型 | 继承改变子对象布局 |
+| ch42 严格别名 | ch45 对象模型 | 布局决定别名通道 |
+| ch45 对象模型 | ch77 vector | 多态对象常以指针存入容器 |

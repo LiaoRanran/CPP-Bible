@@ -2002,3 +2002,68 @@ auto f = std::unique_ptr<FILE, decltype(&fclose)>(fopen("x","r"), fclose);
 
 **工程含义**：裸 `new/delete` 在 modern C++ 中基本只应出现在 `make_unique/make_shared` 内部；
 所有权语义不清是 C++ 历史泄漏的头号来源。
+
+## 附录 J：智能指针选型 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    START["需要管理单对象或数组生命周期?"] --> D1{"所有权唯一?"}
+    D1 -->|是| U["unique_ptr: 独占所有权 零开销"]
+    D1 -->|否| D2{"需共享所有权?"}
+    D2 -->|是| S["shared_ptr: 引用计数 共享"]
+    D2 -->|否| D3{"需观察而不持有?"}
+    D3 -->|是| W["weak_ptr: 打破循环 观察"]
+    D3 -->|否| D4{"需自定义删除器?"}
+    D4 -->|是| DEL["定制 deleter 或数组 deleter"]
+    D4 -->|否| D5{"可能循环引用?"}
+    D5 -->|是| CYC["用 weak_ptr 打断环"]
+    D5 -->|否| LEAK["循环引用 内存泄漏风险"]
+    LEAK --> FALLBACK["退化: 裸指针观察(非拥有)"]
+    FALLBACK -->|"重构为 weak_ptr"| D3
+```
+
+> 决策流说明：关键闸门 D1 决定独占（unique_ptr）还是共享（shared_ptr）；D5 检测循环引用并借 weak_ptr 打断，FALLBACK 在误用裸观察指针时回退重构。
+
+## 附录 K：智能指针 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    SP["智能指针"] --> UP["unique_ptr 独占"]
+    SP --> SH["shared_ptr 共享"]
+    SP --> WP["weak_ptr 弱引用"]
+    SH --> RN["引用计数"]
+    SH --> CP["循环引用"]
+    WP -.->|"打断"| CP
+    UP --> MOVE["移动语义"]
+    SH --> RAII["RAII"]
+    SP --> DL["自定义删除器"]
+    UP --> ALLOC["分配器或 delete"]
+    RAII --> ALLOC
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+|---|---|
+| SP --> UP | 智能指针家族含独占所有权 unique_ptr |
+| SP --> SH | 智能指针家族含共享所有权 shared_ptr |
+| SP --> WP | 智能指针家族含弱引用 weak_ptr |
+| SH --> RN | shared_ptr 以引用计数实现共享 |
+| SH --> CP | 共享所有权易形成循环引用 |
+| WP -.->|"打断"| CP | weak_ptr 用于打断循环引用 |
+| UP --> MOVE | unique_ptr 依赖移动语义转移所有权 |
+| SH --> RAII | shared_ptr 是 RAII 的典型体现 |
+| SP --> DL | 智能指针支持自定义删除器 |
+| UP --> ALLOC | unique_ptr 可携带数组/分配器删除器 |
+| RAII --> ALLOC | RAII 最终落到 delete/free |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch37 new/delete | ch41 智能指针 | 智能指针封装 new/delete 防止泄漏 |
+| ch39 RAII 规则 | ch41 智能指针 | 智能指针是 RAII 的标准载体 |
+| ch115 move 语义 | ch41 智能指针 | unique_ptr 靠移动转移所有权 |
+| ch41 智能指针 | ch45 对象模型 | 控制块与对象布局影响性能 |
+| ch41 智能指针 | ch77 vector | vector<unique_ptr<T>> 常见组合 |
+| ch67 concepts | ch41 智能指针 | deleter 约束可用 concepts 表达 |

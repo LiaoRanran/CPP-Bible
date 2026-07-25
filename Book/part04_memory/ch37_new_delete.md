@@ -2027,3 +2027,159 @@ int main() {
 
 **结论**：高频定长小对象是内存池/placement new 的典型受益者；复用把分配器开销与碎片降到最低。
 
+
+## 附录 J：operator new/delete 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S["需要一块动态内存"] --> D1{"是否已知类型"}
+    D1 -->|"是，类型化"| TN["new T / new T[n]"]
+    D1 -->|"否，原始字节"| MAL["malloc / ::operator new(size)"]
+    TN --> EX{"可能抛异常"}
+    MAL --> EX
+    EX -->|"是，需不抛"| NT["nothrow new / 检查返回"]
+    EX -->|"否"| OK1["正常返回"]
+    TN --> PL{"已有缓冲区"}
+    PL -->|"是，原地构造"| PN["placement new"]
+    PL -->|"否"| DEF["默认全局 operator new"]
+    DEF --> AL{"需自定义对齐 / 策略"}
+    AL -->|"是"| OV["重载 operator new"]
+    AL -->|"否"| OK2["完成"]
+    OV --> POOL{"高频定长小对象"}
+    POOL -->|"是"| MP["内存池 / 池分配"]
+    POOL -->|"否"| OK2
+    OK1 --> LOOP["回溯：配对释放"]
+    OK2 --> LOOP
+    LOOP -->|"new 配 delete"| REL["匹配释放避免 UB"]
+    REL --> S
+    PN -->|"需显式析构"| DT["手动调用析构 + 释放"]
+    DT --> S
+```
+> 决策流说明：以"类型化→new，原始→malloc；placement new 需手动析构；自定义重载后高频小对象走内存池"为主线，释放必须配对。
+
+## 附录 K：operator new/delete 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    C1["operator new"] -->|"分配"| C2["原始字节"]
+    C1 -->|"重载为"| C3["类专属 new"]
+    C4["new T"] -->|"调用"| C1
+    C5["new T[n]"] -->|"调用"| C6["operator new[]"]
+    C7["placement new"] -->|"不分配"| C8["在已有缓冲区构造"]
+    C9["nothrow new"] -->|"变体"| C1
+    C10["delete / delete[]"] -->|"配对"| C1
+    C11["内存池"] -->|"构建于"| C1
+    C12["对齐分配"] -->|"特化"| C1
+    C13["malloc/free"] -->|"底层"| C1
+    C14["RAII 包装"] -->|"封装"| C4
+```
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+| --- | --- |
+| C1 → C2 | operator new 本质是拿字节 |
+| C1 → C3 | 可重载类专属 new |
+| C4 → C1 | new T 调用 operator new |
+| C5 → C6 | 数组 new 调用 operator new[] |
+| C7 → C8 | placement new 原地构造不分配 |
+| C9 → C1 | nothrow 是 new 的不抛变体 |
+| C10 → C1 | delete 必须与 new 配对 |
+| C11 → C1 | 内存池建立在 operator new 之上 |
+| C12 → C1 | 对齐分配是 new 的特化 |
+| C13 → C1 | malloc 是更底层的分配 |
+| C14 → C4 | 智能指针封装 new T |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch28 生命周期与 UB | ch37 | 错误释放配对触发 UB |
+| ch35 内存布局 | ch37 | 动态分配落入堆区 |
+| ch36 栈与堆 | ch37 | new 在堆上创建对象 |
+| ch38 分配器 | ch37 | 分配器复用 new 的字节分配 |
+| ch39 RAII 与规则 | ch37 | 智能指针在内部调用 new |
+| ch40 异常安全 | ch37 | new 抛异常时的回滚语义 |
+| ch44 内存池 | ch37 | 池分配构建于 operator new |
+
+## 附录 J：new/delete 与自定义分配 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需要动态对象"] --> B{"是否使用<br>标准 new/delete?"}
+    B -->|是| C{"是否需构造<br>语义 new?"}
+    C -->|是| D["用 new T()<br>调用构造"]
+    C -->|否| E["用 ::operator new<br>仅分配字节"]
+    B -->|否| F{"是否需自定义<br>分配策略?"}
+    F -->|是| G["重载 operator new<br>或提供 allocator"]
+    F -->|否| H["直接 new / delete"]
+    D --> I{"是否需数组<br>或多维?"}
+    E --> I
+    G --> I
+    H --> I
+    I -->|数组| J["new[] / delete[]<br>严格配对"]
+    I -->|单对象| K["new / delete<br>严格配对"]
+    J --> L{"是否可能<br>分配失败?"}
+    K --> L
+    E --> L
+    L -->|是| M["捕获 bad_alloc<br>或 noexcept 处理"]
+    L -->|否| N["正常继续"]
+    M --> O{"资源是否在<br>异常路径释放?"}
+    N --> O
+    O -->|是| P["用智能指针包裹<br>RAII 兜底"]
+    O -->|否| Q["裸指针短生命周期"]
+    P --> R["完成：无泄漏"]
+    Q --> R
+    R --> B
+```
+
+> 决策流说明：区分 new 表达式（带构造）与 ::operator new（仅字节）；数组必须 new[]/delete[] 配对，分配失败处理 bad_alloc；异常路径以智能指针兜底，形成无泄漏闭环。
+
+## 附录 K：new/delete 与自定义分配 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    X1["动态内存"] --> X2["new 表达式"]
+    X1 --> X3["delete 表达式"]
+    X2 --> X4["operator new"]
+    X3 --> X5["operator delete"]
+    X2 --> X6["构造函数调用"]
+    X3 --> X7["析构函数调用"]
+    X4 --> X8["字节分配"]
+    X8 --> X9["bad_alloc"]
+    X4 --> X10["自定义 operator new"]
+    X10 --> X11["内存池后端"]
+    X2 --> X12["new[] 数组"]
+    X12 --> X13["delete[] 配对"]
+    X6 --> X14["智能指针包裹"]
+    X14 --> X3
+    X8 --> X15["对齐分配"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 含义 |
+| --- | --- |
+| 动态内存 → new 表达式 | 创建对象使用 new |
+| 动态内存 → delete 表达式 | 销毁对象使用 delete |
+| new 表达式 → operator new | new 底层调用 operator new |
+| new 表达式 → 构造函数调用 | new 会调用构造函数 |
+| operator new → 字节分配 | operator new 仅分配字节 |
+| 字节分配 → bad_alloc | 分配失败抛出 bad_alloc |
+| operator new → 自定义 operator new | 可重载定制分配策略 |
+| 自定义 operator new → 内存池后端 | 内存池是典型后端 |
+| new 表达式 → new[] 数组 | 数组使用 new[] |
+| new[] 数组 → delete[] 配对 | 必须用 delete[] 配对 |
+| 构造函数调用 → 智能指针包裹 | 智能指针接管构造结果 |
+| 字节分配 → 对齐分配 | operator new 支持对齐分配 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch28 生命周期与 UB | ch37 | 错误释放配对触发 UB |
+| ch35 内存布局 | ch37 | 动态分配落入堆区 |
+| ch36 栈与堆 | ch37 | new 在堆上创建对象 |
+| ch38 分配器 | ch37 | 分配器复用 new 的字节分配 |
+| ch39 RAII 与规则 | ch37 | 智能指针在内部调用 new |
+| ch40 异常安全 | ch37 | new 抛异常时的回滚语义 |
+| ch44 内存池 | ch37 | 池分配构建于 operator new |
