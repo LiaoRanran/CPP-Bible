@@ -1167,3 +1167,52 @@ flowchart TD
 - **防循环被优化**：分片若用裸 `long l; for(...) l+=1;` 再回写，`-O2` 会把循环强度削减为 `l = N/T` 单条赋值，吞吐虚高几个数量级（首版即踩此坑，虚报 38 万 M/s）。改用 `std::atomic_ref<long>` 落每线程私有槽，既是真实内存 RMW（不可消除），又无跨线程争用，公平代表「分片」本质。
 - **隔离线程创建开销**：用 `std::atomic<bool> start` 旗，所有线程自旋等待同一时刻释放再计时，避免 `std::thread` 构造/销毁时间混入并行段。
 - **正确性校验**：每种策略末态和必须恒等于 `N=50,000,000`，否则说明有数据竞争或被优化掉；本基准四策略均通过。
+
+---
+
+## 附录 L：原子操作知识图谱（D6 知识连接） [J: Learning / H: Design / G: Performance]
+
+> 本附录把本章散落的「重排 / memory_order / RMW / 缓存 / 锁 / 无锁 / ABA」串成一张**概念依赖图**，回答三个 D6 问题：① 这些概念谁依赖谁？② 一条 `std::atomic` 写到底牵动哪些硬件/编译器机制？③ 与本书哪些章构成知识闭环？
+> 它不是装饰图——每条边都带**依赖方向**（A → B 表示「B 的成立依赖 A 的约束/支撑」），下文逐边解读。图与 ch108 内存序总论、⑰ 伪共享、附录 K 基准互为表里。
+
+```mermaid
+flowchart TD
+    REORD["编译器重排 / CPU 重排<br/>(乱序执行 · store 缓冲 · 写合并)"] -->|被 memory_order 约束| MO["memory_order<br/>relaxed / acq-rel / seq_cst"]
+    MO -->|决定可见性强度| AT["std::atomic&lt;T&gt;<br/>(RMW: lock xadd / lock cmpxchg)"]
+    AT -->|acquire/release 配对建立| SW["synchronizes-with<br/>(跨线程同步关系)"]
+    SW -->|推导| HB["happens-before<br/>(跨线程偏序保证)"]
+    AT -->|运行于硬件之上| MESI["cache 一致性 (MESI)<br/>独占行弹跳 = 争用成本"]
+    MO -->|可由显式屏障表达| FENCE["atomic_thread_fence<br/>(批量刷新可见性)"]
+    MUTEX["std::mutex / 锁<br/>(互斥 + 隐含 acq/rel)"] -->|提供更强 synchronizes-with| HB
+    AT -->|CAS/RMW 支撑| LF["lock-free / wait-free<br/>(无阻塞进度保证)"]
+    LF -->|依赖 CAS 实现| CAS["compare_exchange<br/>(无锁算法原语)"]
+    CAS -->|固有陷阱| ABA["ABA 问题<br/>(指针复用致 CAS 误判)"]
+    AT -.->|共享写触发| FS["伪共享 (false sharing)<br/>⑰ / ch154: 缓存行乒乓"]
+    MESI -.->|争用放大| FS
+```
+
+### L.1 逐边解读（依赖方向为何成立）
+
+1. **重排 → memory_order**：`memory_order` 存在的唯一理由就是约束编译器与 CPU 的重排自由度。relaxed 允许任意重排（只保原子性），acq-rel 约束临界区边界，seq_cst 加全局顺序。没有重排，memory_order 无意义——这也解释了 ch30 ⑮「volatile 不建立 happens-before」：volatile 只挡编译器重排，**完全不挡 CPU 重排**，更不约束可见性。
+2. **memory_order → atomic**：同一原子对象，用不同 memory_order 读写作出的**可见性承诺**不同。例：单生产者单消费者队列用 `store(release)` + `load(acquire)` 即可，无需 seq_cst 的全局开销——这是「按需付费」原则。
+3. **atomic → synchronizes-with**：只有 **release/acquire/seq_cst** 配对才建立 synchronizes-with；relaxed 的 RMW 不建立任何同步。这正是 ⑮/附录 J 里 `fetch_add` 无论 memory_order 都编译成 `lock xadd`，但**可见性语义**随 memory_order 而变的原因。
+4. **synchronizes-with → happens-before**：synchronizes-with 是 happens-before 的主要来源之一。一旦 A 线程 release、B 线程 acquire 到同一原子，A 在 release 前的所有写对 B 在 acquire 后可见——数据竞争 UB（⑩）由此被消除。
+5. **atomic → MESI（硬件 substrate）**：任何原子 RMW 最终落到硬件原子指令（x86 `lock` 前缀 / ARM `ldaxr`+`stlxr`）。`lock` 强制独占缓存行，于是「争用」在硬件层表现为 MESI 在核间反复弹跳——这是附录 K 中「共享 atomic 8 线程仅 55 M/s、比 1 线程慢 6.5×」的**物理根源**，而非算法问题。
+6. **memory_order → fence**：`atomic_thread_fence` 是 memory_order 的「区间/批量」形式——一条 fence 刷新一批操作，而非逐个标 memory_order。批量边界清晰时用 fence 更省标注成本（注意：x86 TSO 下 fence 收益有限，见附录 K 关键反直觉点）。
+7. **mutex → happens-before**：`std::mutex` 的 lock/unlock 隐含 acquire/release，且**额外提供互斥**（同一时刻仅一线程进临界区）。所以 mutex 给出的 synchronizes-with 比 atomic 更强——代价是可能阻塞（附录 K 单线程慢 5.9× 的由来）。
+8. **atomic → lock-free**：`is_lock_free()` 的进度保证来自 RMW 指令；`compare_exchange` 是无锁算法基石。⑬ 无锁栈、无锁队列都建在这条边上。
+9. **CAS → ABA**：基于 CAS 的无锁结构（⑬ 无锁栈）会踩 ABA——指针被复用（A→B→A）使 CAS 误判「没变」。解法：hazard pointer / 带版本标签的原子 / 改用风险指针（见 ⑭ ABA 预告）。
+10. **atomic → 伪共享**：多个原子落在同一缓存行会被 MESI 弹跳拖慢——即 ⑰ 伪共享，也是附录 K 分片计数用 `alignas(64)` 拆槽的直接动机。
+
+### L.2 跨章知识闭环（D6 连接方向）
+
+| 本图谱节点 | 连接章 | 关系 |
+|---|---|---|
+| memory_order / synchronizes-with / happens-before | **ch108 内存序（总论）** | 三角的 WG21 来源与成本量化在 ch108 附录 A/B；本图谱是其「概念层」，ch108 是其「证据层」 |
+| MESI / 伪共享 | **ch154 缓存优化**、**⑰ 伪共享** | 三方印证：ch154 附录 I 给 `hardware_interference_size` 源码 + 伪共享 5.66× 基准；本图谱给机制位置 |
+| mutex → happens-before | **ch41 智能指针**、**ch40 异常安全** | `shared_ptr` 控制块引用计数是 atomic（附录 K 负扩展同样适用）；锁与异常安全的回滚语义强相关 |
+| CAS / ABA | **⑬ 无锁栈**、**ch95 内省排序** | 无锁数据结构与无锁原语的工程落点 |
+| 重排起点 | **ch30 volatile（⑮）** | volatile 只挡编译器重排、不建立 happens-before——图谱起点反衬 atomic 的必要性 |
+| is_lock_free / 进度保证 | **ch115 移动语义**、**ch122 pmr** | 无锁数据结构要求移动/析构 `noexcept`（异常安全）；pmr 多态分配器与原子协同做无锁内存池 |
+| RMW 指令 | **附录 J 真机汇编** | 图谱中 `lock xadd/cmpxchg` 的逐指令实证在附录 J；本图谱是「为什么」、附录 J 是「长什么样」 |
+
