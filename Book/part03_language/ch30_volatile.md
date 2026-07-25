@@ -340,14 +340,30 @@ int main() {
     std::cout << "volatile write: ~" << vol_ns << "ns/op\n";
     std::cout << "plain write:    ~" << plain_ns << "ns/op (may be optimized to single final store)\n\n";
 
-    std::cout << "Assembly evidence (GCC -O2):\n";
-    std::cout << "volatile: mov DWORD PTR [g_vol], eax   ← every iteration\n";
-    std::cout << "plain:    mov DWORD PTR [g_plain], eax  ← may be hoisted / combined\n\n";
-    std::cout << "Bottom line: volatile prevents register promotion (~3-5 cycles saved)\n";
-    std::cout << "but costs L1 cache latency (~4 cycles). Net difference: ~1-2ns on x86.\n";
+    // 真实汇编证据见下方「⑲·真实汇编（GCC 15.3.0 -O2）」：volatile 每次迭代都生成
+    // 真实 store；plain 被优化为单次最终 store。计时本身受优化干扰，仅作定性说明。
+    std::cout << "volatile write: forced memory store per iteration (no register promotion)\n";
+    std::cout << "plain write:    optimized to single final store (loop eliminated)\n";
     return 0;
 }
 ```
+
+> **⑲·真实汇编证据**（GCC 15.3.0 -O2，`objdump -d -M intel -C`，节选自 `_asm_vol_probe.cpp` 的 `main`）：
+
+```asm
+; g_vol 是 volatile：循环未提升，每次迭代都生成真实 store
+mov DWORD PTR [rip+0x5daa], 0x0   # g_vol = 0   (iter 0)
+mov DWORD PTR [rip+0x5da0], 0x1   # g_vol = 1   (iter 1)
+mov DWORD PTR [rip+0x5d96], 0x2   # g_vol = 2   (iter 2)
+mov DWORD PTR [rip+0x5d8c], 0x3   # g_vol = 3   (iter 3)
+mov DWORD PTR [rip+0x5d82], 0x4   # g_vol = 4   (iter 4)
+mov edx, DWORD PTR [rip+0x5d7c]   # int x = g_vol  ← 强制重读内存
+
+; g_plain 非 volatile：循环被完全优化，仅单次最终 store
+mov DWORD PTR [rip+0x5d6e], 0x4   # g_plain = 4  (单次最终值)
+```
+
+- **关键差异**：`volatile` 写入**不可被优化器省略或合并**（每轮真穿内存）；非 `volatile` 写入被**寄存器提升 + 循环消除**为单次最终 store；`int x = g_vol` 的读取强制重新加载，证明编译器未复用缓存值。这正是 ⑲ 计时差异的底层根源——而非「附带的 cycles 估算」。
 
 - `[平台·x86-64]`：volatile 的单次访问成本与普通内存访问相同（～4 cycles L1, ～200 cycles DRAM）。代价不在单次访问，而在**禁止编译器进行循环优化、寄存器提升、公共子表达式消除**——这是真正的性能差距来源。
 
@@ -782,3 +798,98 @@ graph TD
     M["std::mutex"] --> M1["互斥临界区"]
     M --> M2["配条件变量做同步"]
 ```
+
+### 图 2 · MMIO 寄存器轮询与中断时序（sequenceDiagram）
+
+> 把 ③ MMIO 读写 / ⑫ 工业案例 / ⑤ 信号处理 浓缩为一张**时序图**：`volatile` 的强制重读语义是主循环轮询与外设交互正确性的根基。若去掉 `volatile`，编译器会把循环里的「读 STATUS」提升为**单次读取并缓存**，导致永远看不到硬件状态变化——这正是图 1「不保证可见性」在嵌入式侧的具体失效模式。
+
+```mermaid
+sequenceDiagram
+    participant HW as 硬件外设
+    participant REG as volatile 映射寄存器 (0x40021000)
+    participant ISR as ISR (中断服务)
+    participant MAIN as 主循环
+    Note over MAIN,REG: 主循环轮询状态位（volatile 强制每次真读内存）
+    MAIN->>REG: 读 STATUS（第1次）
+    REG-->>MAIN: 0x00 (busy)
+    MAIN->>REG: 读 STATUS（第2次，volatile 禁止复用上次值）
+    REG-->>MAIN: 0x01 (ready)
+    MAIN->>REG: 写 DATA = 0xAB
+    Note over HW,REG: 硬件完成 → 置位并触发中断
+    HW->>REG: 置位 DONE 位
+    REG->>ISR: 触发 IRQ
+    ISR->>REG: 读 DONE（volatile 重读确认）
+    ISR->>REG: 写 CLEAR 清除中断标志
+```
+
+### 图 3 · 三原语选型决策流（flowchart TD）
+
+> 图 1 是「能力边界」，本图是「选型逻辑」——**什么目标该选谁、volatile 误用于多线程为何必定失败**。呼应 ch60 / ch62 的选型流风格，形成模板系→并发系的图谱闭环。
+
+```mermaid
+flowchart TD
+    Q["目标：访问一个内存位置?"] --> Q1{"需要编译器<br/>每次真读/真写?"}
+    Q1 -->|是·硬件/ISR/信号| V["volatile<br/>(MMIO·信号处理·setjmp)"]
+    Q1 -->|否·普通变量| P["普通变量<br/>(交给优化器提速)"]
+    Q --> Q2{"多线程共享?"}
+    Q2 -->|是·单变量简单状态| A["std::atomic<br/>(memory_order 控序)"]
+    Q2 -->|是·多变量不变式| M["std::mutex<br/>(临界区保护)"]
+    V -.->|误用于多线程| X["✗ 数据竞争<br/>volatile 不保证原子/可见/有序"]
+    A -.->|需要更强同步| M
+```
+
+---
+
+## 附录 E：volatile 概念知识图谱（D6）
+
+> 本图谱把全书与 `volatile` 相关的概念织成一张**带依赖方向**的网络：箭头 `A → B` 表示「B 的正确成立依赖 A 的约束/支撑」。逐边解读见 E.1，跨章闭环见 E.2。规格对齐 ch107 附录 L。
+
+```mermaid
+flowchart TD
+    OPT["编译器优化器<br/>(寄存器提升·循环消除·CSE)"] --> VOL["volatile 限定符<br/>(语义: 每次真访内存)"]
+    VOL --> MMIO["MMIO 映射寄存器<br/>(硬件地址)"]
+    VOL --> ISR["ISR / 中断服务<br/>共享变量"]
+    VOL --> SIG["信号处理<br/>sig_atomic_t"]
+    VOL --> SJ["setjmp/longjmp<br/>跨跳转变量"]
+    VOL --> CONST["volatile const<br/>(ROM 映射只读)"]
+    OPT --> FENCE["编译器屏障<br/>asm volatile('':::'memory')"]
+    FENCE -->|更强约束| VOL
+    VOL --> ATOM["std::atomic<br/>(多线程正确超集)"]
+    ATOM --> MO["memory_order<br/>(六种内存序)"]
+    ATOM --> MUTEX["std::mutex<br/>(互斥临界区)"]
+    ATOM --> MM["内存模型<br/>happens-before"]
+    MM --> MESI["缓存一致性 / MESI<br/>(伪共享物理根)"]
+    VOL -.->|误用| UB["数据竞争 / UB<br/>volatile≠线程同步"]
+    SJ --> UB
+    CONST --> MMIO
+```
+
+### E.1 逐边依赖解读
+
+| 边 | 依赖含义 |
+|---|---|
+| 优化器 → volatile | `volatile` 本质是给优化器的一条**约束指令**：禁止对它做寄存器提升、循环不变外提、公共子表达式消除（见 ⑬ GCC 内部处理、⑲ 真实汇编证据）。 |
+| volatile → MMIO | 内存映射寄存器的值由硬件改写，必须每次真读真写；无 `volatile` 则被优化成单次访问而失效（见 ③ / ⑫ 工业案例）。 |
+| volatile → ISR / 信号 / setjmp | 这些控制流路径会「在编译器看不到的地方」改变/读取变量，必须用 `volatile` 防止优化器缓存旧值（见 ⑤ / ⑥）。 |
+| volatile → volatile const | `volatile const` 表示「初始化后由硬件改写的只读映射」，是 ROM/寄存器映射的惯用法（见 ⑩）。 |
+| 优化器 → 编译器屏障 | `asm volatile("" ::: "memory")` 是比单变量 `volatile` **更强**的全程序编译器屏障（见 ⑦）。 |
+| volatile → atomic | `std::atomic` 是 `volatile` 在多线程场景的**正确超集**：既强制真访，又额外保证原子性/可见性/有序性（见 ⑪ / 附录 A）。 |
+| atomic → memory_order | `atomic` 的可选 `memory_order` 参数精确控制同步与排序强度（见 ch108）。 |
+| atomic → mutex | 多变量不变式超出单 `atomic` 能力时，升级到 `mutex` 临界区（见 ch41 / ch107）。 |
+| atomic → 内存模型 | `atomic` 的可见性/有序性建立在语言内存模型 `happens-before` 之上（见 ch108）。 |
+| 内存模型 → MESI | `happens-before` 的硬件落地依赖缓存一致性协议（MESI），伪共享是其物理失效模式（见 ⑰ / ch154 附录 K）。 |
+| volatile ⇢ UB | 把 `volatile` 用于多线程共享是**经典误用**：它不保证原子/可见/有序，必然引发数据竞争（见 ⑭ / ⑯ / 图 3 的 ✗ 分支）。 |
+
+### E.2 跨章闭环表
+
+| 图谱节点 | 回链章节 | 关系 |
+|---|---|---|
+| MMIO / ISR | ch17 交叉编译与嵌入式工具链 | 工具链决定映射地址有效性 |
+| volatile 语义 | ch19 变量/存储期/ODR | 存储类与映射变量的承接 |
+| volatile const | ch27 显式转型 | `volatile` 指针转型协同 |
+| 误用 → UB | ch28 生命周期与 UB | 误用 `volatile` 是 UB 高发区 |
+| 编译器屏障 | ch107 atomic / ch109 fence | 编译器屏障与 CPU fence 的层级关系 |
+| atomic / memory_order | ch108 memory_order | `volatile` 的多线程正确替代总论 |
+| mutex | ch41 shared_ptr / ch107 | 互斥与原子在同步谱上的位置 |
+| 内存模型 / MESI | ch154 缓存与伪共享 | ⑰ 伪共享的物理根 + 附录 K 负扩展 |
+| ⑬ GCC 内部处理 | ch95 三标准库源码 | 优化器实现层面的交叉印证 |
