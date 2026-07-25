@@ -585,3 +585,98 @@ int main() {
 
 **结论**：变量模板把“常量随类型变化”这一维度显式化，`e<float>` 与 `e<double>` 精度各自正确；
 比宏或类内静态常量更直接，且是真正的 `constexpr`，可用于编译期计算。
+
+## 附录 J：C++14 完善决策流（D3 维度）
+
+本节把第⑤节（Mermaid）与第⑭节（WG21 提案）收敛为「哪些 C++11 特性需要小步修补」的决策流。
+
+```mermaid
+flowchart TD
+  N1["C++14 发布 (2014)"]
+  N2["泛型 lambda (ch26)"]
+  N3["返回类型推导 (auto)"]
+  N4["变量模板"]
+  N5["constexpr 扩展 (ch69)"]
+  N6["shared/weak_ptr 改进 (ch41)"]
+  N7["二进制字面量 0b"]
+  N8["deprecated 属性"]
+  N9{"需要泛型可调用?"}
+  N10["用泛型 lambda 替代 bind"]
+  N11{"常量表达式需更灵活?"}
+  N12["放宽 constexpr 限制"]
+  N13{"C++11 特性需修补?"}
+  N14["进入 C++14 小版本 (ch05)"]
+  N15["或等待 C++17 (ch06)"]
+  N1 --> N2
+  N1 --> N3
+  N1 --> N4
+  N1 --> N5
+  N1 --> N6
+  N1 --> N7
+  N1 --> N8
+  N2 --> N9
+  N9 -->|是| N10
+  N5 --> N11
+  N11 -->|是| N12
+  N13 --> N14
+  N13 --> N15
+```
+
+> 决策流说明：第⑭节显示 C++14 是「小步完善」——只有 C++11 特性确有修补点（或门判定）才进本版，否则转入 ch06；泛型 lambda 与 constexpr 放宽属于「低成本高收益」的与门特性。
+
+
+## 附录 K：C++14 完善概念依赖网（D6 维度）
+
+以「C++14 完善」为核心，连接其扩展的 C++11 设施与上下游版本，形成概念网。
+
+```mermaid
+flowchart TD
+  CORE["C++14 完善"]
+  K1["泛型 lambda (ch26)"]
+  K2["变量模板 (ch68 tmp)"]
+  K3["constexpr 放宽 (ch69)"]
+  K4["返回类型推导 (ch22)"]
+  K5["shared_ptr 改进 (ch41)"]
+  K6["二进制字面量"]
+  K7["deprecated 属性 (ch145)"]
+  K8["上游: C++11 (ch04)"]
+  K9["下游: C++17 (ch06)"]
+  CORE --> K1
+  CORE --> K2
+  CORE --> K3
+  CORE --> K4
+  CORE --> K5
+  CORE --> K6
+  CORE --> K7
+  CORE --> K8
+  CORE --> K9
+  K1 --> K4
+  K3 --> K2
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → K1 | 泛型 lambda 让 lambda 参数可自动推导，见 ch26。 |
+| CORE → K2 | 变量模板支持编译期常量族，见 ch68。 |
+| CORE → K3 | constexpr 限制放宽，见 ch69。 |
+| CORE → K4 | 返回类型推导简化函数签名，见 ch22。 |
+| CORE → K5 | shared/weak_ptr 的原子与构造函数改进，见 ch41。 |
+| CORE → K6 | 二进制字面量提升位运算可读性。 |
+| CORE → K7 | [[deprecated]] 是 API 演进管理工具，见 ch145。 |
+| CORE → K8 | 所有 C++14 特性建立在 ch04 现代化基础之上。 |
+| CORE → K9 | C++14 的完善在 ch06 进一步扩展（如 if constexpr）。 |
+| K1 → K4 | 泛型 lambda 借助返回类型推导表达更复杂的可调用对象。 |
+| K3 → K2 | 放宽后的 constexpr 与变量模板共同支撑编译期计算。 |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch26 lambda | CORE→K1 | ch26 的泛型 lambda 是 ch05 对 ch04 lambda 的直接扩展。 |
+| ch69 constexpr | CORE→K3 | ch05 放宽 constexpr 为 ch69 的编译期计算铺路。 |
+| ch41 智能指针 | CORE→K5 | ch41 在 ch05 获得共享/弱指针的原子改进。 |
+| ch04 C++11 | CORE→K8 | ch05 所有特性建立在 ch04 现代化基础上。 |
+| ch06 C++17 | CORE→K9 | ch05 的完善在 ch06 进一步扩展（如 if constexpr）。 |
+| ch145 命名与 API | CORE→K7 | [[deprecated]] 是 ch145 API 演进管理的工具。 |

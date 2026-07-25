@@ -1039,3 +1039,107 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+
+
+## 附录 J：内存池分配决策流（D3 维度）
+
+> 本图把第③节（固定块池 free list）、第④节（union 省元数据）、第⑤节（对齐到 max_align_t / alignas 64）、第⑥节（size class 分级）、第⑦节（mutex 与无锁 CAS）、第⑬⑰节（析构释放与双重释放防护）收敛成一条"申请→判尺寸→切块/回退→使用→回收"的分配流水线，并标出多线程与缓存行两条回退边。
+
+```mermaid
+flowchart TD
+  A["allocate n 调用方申请"] --> B{"n 超过单块上限?"}
+  B -->|是| F["回退 系统 operator new n"]
+  B -->|否| C{"free_list_ 为空?"}
+  C -->|是| G["grow 批量 operator new 一大块"]
+  G --> S["切块串成 FreeNode 链表"]
+  S --> D["摘头节点返回 O(1)"]
+  C -->|否| D
+  D --> R["返回给用户 对齐 max_align_t"]
+  R --> U["用户使用对象"]
+  U --> E["deallocate p 头插回 free_list_"]
+  E --> Z{"进程退出?"}
+  Z -->|否| A
+  Z -->|是| X["析构 逐个 operator delete chunks_"]
+  F -->|deallocate| E2["operator delete p"]
+  E2 --> Z
+  C -.->|多线程| M["mutex 加锁 或 无锁 CAS ch107"]
+  G -.->|缓存行| P["alignas 64 防 false sharing ch43"]
+```
+
+> 决策流说明：尺寸判定与 free_list 状态之间是「与/或」组合——只有"未超上限「且」free_list 空"才触发 grow 批量切块，否则直接摘头（O(1)）；析构释放与回退释放两条边在"进程退出"闸门「或」汇合。跨章外推：无锁路径依赖第107章 atomic 与第110章 lock-free，对齐外推第43章 cache_locality。
+
+
+
+## 附录 K：内存池知识图谱（D6 维度）
+
+
+
+> 本图以本章主题为中心，上游列出其依赖的底层机制（分配/并发/格式化/解析原语），下游列出消费它的系统（框架/网络/日志/测试），并标出跨章外推边。
+
+
+
+```mermaid
+flowchart TD
+  CORE["内存池 (ch160)"]
+  OPNEW["operator new delete ch37"]
+  ALLOC["std allocator ch38"]
+  FREELIST["free list union"]
+  PMR["std pmr ch122"]
+  ATOMIC["std atomic ch107"]
+  LOCKFREE["无锁 CAS ch110"]
+  ALIGN["对齐 cache line ch43"]
+  MEMRED["memory_pool ch44"]
+  OBJ["对象生命周期 RAII ch39"]
+  BENCH["基准 ch151"]
+  SIZECLASS["size class tcmalloc"]
+  GTEST["调试泄漏检测 ch150"]
+  CORE --> OPNEW
+  CORE --> FREELIST
+  FREELIST --> MEMRED
+  CORE --> ALLOC
+  ALLOC --> PMR
+  CORE --> ATOMIC
+  ATOMIC --> LOCKFREE
+  CORE --> ALIGN
+  ALIGN --> MEMRED
+  CORE --> OBJ
+  CORE --> BENCH
+  CORE --> SIZECLASS
+  CORE --> GTEST
+```
+
+
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → OPNEW | 池底层批量 operator new 切块 |
+| CORE → FREELIST | free list 单链表串空闲块 |
+| FREELIST → MEMRED | union 节点与 ch44 同思想 |
+| CORE → ALLOC | PoolAllocator 对接 std allocator |
+| ALLOC → PMR | 继承 memory_resource 接入 pmr |
+| CORE → ATOMIC | 线程安全池用 atomic CAS |
+| ATOMIC → LOCKFREE | 无锁池 = Treiber 栈 CAS |
+| CORE → ALIGN | 块对齐 max_align_t 加 alignas 64 防 false sharing |
+| ALIGN → MEMRED | 缓存行对齐思想同 ch44 |
+| CORE → OBJ | 整池析构释放 = RAII 生命周期 |
+| CORE → BENCH | chrono 基准 3.58x 量化 |
+| CORE → SIZECLASS | 混合尺寸走 size class 分级 |
+| CORE → GTEST | 泄漏检测用 unordered_set 守卫 |
+
+
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| 第37章 new/delete | Book/part04_memory/ch37_new_delete.md | 池底层批量 operator new 切块，析构 operator delete 整池释放 |
+| 第38章 allocator | Book/part04_memory/ch38_allocator.md | PoolAllocator 实现 allocate/deallocate 对接 STL 容器 |
+| 第122章 pmr | Book/part10_modern/ch122_pmr.md | 继承 memory_resource 即可接入 std pmr 分配器体系 |
+| 第107章 atomic | Book/part09_concurrency/ch107_atomic.md | 无锁池的 CAS 依赖 atomic compare_exchange |
+| 第110章 lock-free | Book/part09_concurrency/ch110_lockfree.md | Treiber 栈无锁 free list 是本章第⑦的工业升级 |
+| 第43章 cache_locality | Book/part04_memory/ch43_cache_locality.md | alignas 64 防 false sharing，与缓存行对齐思想同源 |
+| 第39章 RAII | Book/part04_memory/ch39_raii_rule.md | 整池析构 = RAII，保证无泄漏 |
+| 第151章 benchmark | Book/part13_engineering/ch151_benchmark.md | 3.58x 加速基准方法同源 |

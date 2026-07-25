@@ -1039,3 +1039,105 @@ int main() {
 ```
 
 **结论**：跨语言链接的黄金法则——C 侧保持 C 链接，C++ 侧用 `extern "C"` 声明；封装层把 C++ 异常/类留在 C++ 边界内。
+
+## 附录 J：C++ 编译器编译流水线决策流（D3 维度）
+
+本图把第⑤节"预处理→编译→汇编→链接"主线与第②⑫⑰节的前端/优化/后端/调试信息分支收敛为一条带闸门的流水线。
+
+```mermaid
+flowchart TD
+  SRC["源代码 .cpp/.h (①)"]
+  PRE["预处理 cpp: 宏/头包含 (⑤)"]
+  LEX["词法分析 (② GCC前端)"]
+  PAR["语法分析 AST (②)"]
+  SEM["语义分析/类型检查 (②)"]
+  MANG["名字改编 name mangling (⑦)"]
+  IR["中间表示 IR (② GIMPLE/LLVM IR)"]
+  OPT{"优化级别?"}
+  O0["-O0 无优化 (③/⑫)"]
+  O2["-O2/-O3 优化管道 (⑫)"]
+  INL["内联展开 (⑫)"]
+  CGE["代码生成 codegen (②后端)"]
+  ASM["汇编 .s (⑤)"]
+  OBJ["目标文件 .o ELF/COFF (⑥)"]
+  LINK{"链接方式?"}
+  STAT["静态链接 .a (⑮)"]
+  DYN["动态链接 .so (⑮)"]
+  EXE["可执行文件/库"]
+  DBG["调试信息 DWARF/PDB (⑰)"]
+  SRC --> PRE --> LEX --> PAR --> SEM --> MANG --> IR --> OPT
+  OPT --> O0
+  OPT --> O2 --> INL --> CGE
+  O0 --> CGE
+  CGE --> ASM --> OBJ --> LINK
+  LINK --> STAT
+  LINK --> DYN
+  STAT --> EXE
+  DYN --> EXE
+  OBJ --> DBG
+```
+
+> 决策流说明：优化级别闸门（OPT）决定 -O0 直通还是 -O2 优化管道（含内联）后进入 codegen，链接方式闸门（LINK）决定静态/动态产物；调试信息 DWARF/PDB 与可执行产物并行产出，并与第⑰节及 ch14 调试、ch156 编译优化形成外推闭环。
+
+## 附录 K：C++ 编译器知识图谱（D6 维度）
+
+以"编译器"为枢纽，向上承接源码与 ABI 约定，向下产出目标文件/调试信息，并外推到构建系统、包管理与跨平台三元组。
+
+```mermaid
+flowchart TD
+  CORE["C++ 编译器 (①)"]
+  FRONT["前端 词法/语法/语义 (②③)"]
+  OPTM["中端优化管道 (⑫)"]
+  BACK["后端 代码生成 (②)"]
+  MANG["名字改编 Itanium ABI (⑦)"]
+  EH["异常处理模型 (⑨)"]
+  RTTI["RTTI 与 vtable (⑩)"]
+  CALL["调用约定 (⑪)"]
+  MODS["模块 Modules (⑮)"]
+  TRIPLE["target triple (⑯)"]
+  DBG["调试信息 DWARF/PDB (⑰)"]
+  BUILD["构建系统 (ch12)"]
+  PKG["包管理 (ch13)"]
+  CORE --> FRONT
+  FRONT --> OPTM
+  OPTM --> BACK
+  FRONT --> MANG
+  FRONT --> EH
+  FRONT --> RTTI
+  BACK --> CALL
+  OPTM --> MODS
+  CORE --> TRIPLE
+  CORE --> DBG
+  CORE --> BUILD
+  CORE --> PKG
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → FRONT | 编译器入口是前端，负责把源码转成 AST（第②③节） |
+| FRONT → OPTM | 前端产出 IR 后交给中端优化管道（第⑫节） |
+| OPTM → BACK | 优化后的 IR 交由后端生成目标代码（第②节） |
+| FRONT → MANG | 前端按 Itanium ABI 做名字改编以支撑重载（第⑦节） |
+| FRONT → EH | 前端实现异常展开所需的栈表与类型信息（第⑨节） |
+| FRONT → RTTI | 前端布置 vtable 与 RTTI 元数据（第⑩节） |
+| BACK → CALL | 后端按调用约定生成形参传递与栈帧（第⑪节） |
+| OPTM → MODS | 模块编译依赖中端对 module 单元的处理（第⑮节） |
+| CORE → TRIPLE | 三元组决定目标架构/OS/ABI（第⑯节） |
+| CORE → DBG | 编译器生成 DWARF/PDB 调试信息（第⑰节） |
+| CORE → BUILD | 构建系统驱动编译器完成编译（第⑱节） |
+| CORE → PKG | 包管理拉取的库需经编译器编译（第⑰节） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](Book/part02_toolchain/ch12_buildsystems.md) | CMake 调用编译器完成编译（第⑱节与 ch12 ⑮/⑰衔接） |
+| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](Book/part02_toolchain/ch13_packaging.md) | vcpkg/Conan 拉取的库经编译器编译（第⑰节） |
+| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | DWARF 调试信息供 GDB/LLDB 使用（第⑰节与 ch14 ⑫衔接） |
+| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 优化管道与 -O2/-O3 实证对照（第⑫节） |
+| ch157 Compiler Explorer | [Book/part14_perf/ch157_compiler_explorer.md](Book/part14_perf/ch157_compiler_explorer.md) | 在线对比不同编译器汇编码（第⑬节外推） |
+| ch118 模块 | [Book/part10_modern/ch118_modules.md](Book/part10_modern/ch118_modules.md) | C++20 Modules 编译模型（第⑮节） |
+| ch17 交叉编译 | [Book/part02_toolchain/ch17_crosscompile.md](Book/part02_toolchain/ch17_crosscompile.md) | 三元组决定目标架构（第⑯节与 ch17 ②衔接） |
+

@@ -845,3 +845,114 @@ int main() { std::cout << "sysroot 锁定目标头与库，避免宿主污染\n"
 ```
 
 **结论**：sysroot 是交叉编译正确性的基石——它确保“用目标的眼睛看世界”。
+
+## 附录 U：交叉编译搭建决策流（D3 维度）
+
+本图把第①②③④⑥⑦⑧⑨⑩⑬⑭⑮⑰节收敛为"目标三元组→目标类型→sysroot/C库→toolchain 文件→交叉编译→运行/烧写"链路，含三道闸门。
+
+```mermaid
+flowchart TD
+  TARGET["目标平台 (①)"]
+  TRIPLE["target triple (②)"]
+  KIND{"目标类型?"}
+  BARE["裸机 bare-metal (④)"]
+  LIN["Linux 用户态 (④)"]
+  SYS["sysroot 头/库 (③)"]
+  LIBC{"C 库?"}
+  NEWL["newlib/picolibc (⑧)"]
+  GLIBC["glibc (③)"]
+  TC["CMake toolchain file (⑦)"]
+  TOOL["交叉工具链 gcc/ld (⑥)"]
+  COMPILE["交叉编译 (⑥)"]
+  QEMU{"可模拟?"}
+  RUN["QEMU 用户态 (⑨)"]
+  FLASH["烧写固件/镜像 (⑩)"]
+  SIZE["体积优化 -Os (⑭)"]
+  SUBSET["C++ 子集限制 (⑮)"]
+  DBG["调试 openocd/J-Link (⑬)"]
+  HOST["host tool 辅助 (⑰)"]
+  TARGET --> TRIPLE --> KIND
+  KIND --> BARE
+  KIND --> LIN
+  BARE --> SYS
+  LIN --> SYS
+  SYS --> LIBC
+  LIBC --> NEWL
+  LIBC --> GLIBC
+  BARE --> TC
+  LIN --> TC
+  TC --> TOOL --> COMPILE
+  COMPILE --> QEMU
+  COMPILE --> FLASH
+  QEMU --> RUN
+  COMPILE --> SIZE
+  COMPILE --> SUBSET
+  COMPILE --> DBG
+  TOOL --> HOST
+```
+
+> 决策流说明：目标类型闸门（KIND）区分裸机/Linux，C 库闸门（LIBC）选 newlib/picolibc 或 glibc，QEMU 闸门决定模拟运行还是烧写固件，并外推到 ch12 构建系统与 ch18 构建配置。
+
+## 附录 V：交叉编译知识图谱（D6 维度）
+
+以"交叉编译"为枢纽，承接三元组、sysroot、工具链与 CMake toolchain，向下区分裸机/Linux、C 库、QEMU、体积优化与 C++ 子集，外推到编译器与构建系统。
+
+```mermaid
+flowchart TD
+  CORE["交叉编译 (①)"]
+  TRIPLE["target triple (②)"]
+  SYSROOT["sysroot (③)"]
+  BARE["裸机 vs Linux (④)"]
+  TOOL["交叉工具链 (⑥)"]
+  TC["CMake toolchain (⑦)"]
+  LIBC["newlib/picolibc (⑧)"]
+  QEMU["QEMU 模拟 (⑨)"]
+  SIZE["体积优化 (⑭)"]
+  SUBSET["C++ 子集 (⑮)"]
+  COMPILER["编译器 ch11"]
+  BUILD["构建系统 ch12"]
+  CONFIG["构建配置 ch18"]
+  CORE --> TRIPLE
+  CORE --> SYSROOT
+  CORE --> BARE
+  CORE --> TOOL
+  TOOL --> TC
+  SYSROOT --> LIBC
+  CORE --> QEMU
+  CORE --> SIZE
+  CORE --> SUBSET
+  TOOL --> COMPILER
+  TC --> BUILD
+  SIZE --> CONFIG
+  SUBSET --> COMPILER
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → TRIPLE | 交叉编译始于目标三元组（第②节） |
+| CORE → SYSROOT | 目标头/库隔离在 sysroot（第③节） |
+| CORE → BARE | 区分裸机与 Linux 目标（第④节） |
+| CORE → TOOL | 需目标平台交叉工具链（第⑥节） |
+| TOOL → TC | 工具链由 CMake toolchain 文件描述（第⑦节） |
+| SYSROOT → LIBC | sysroot 内含 C 库 newlib/glibc（第⑧节） |
+| CORE → QEMU | QEMU 用户态模拟运行（第⑨节） |
+| CORE → SIZE | 嵌入式强调体积优化 -Os（第⑭节） |
+| CORE → SUBSET | 嵌入式常用 C++ 子集（第⑮节） |
+| TOOL → COMPILER | 交叉工具链本质是目标编译器（第⑥节与 ch11 衔接） |
+| TC → BUILD | toolchain 文件由构建系统读取（第⑦节与 ch12 ⑭衔接） |
+| SIZE → CONFIG | 体积优化与目标配置协同（第⑭节与 ch18 衔接） |
+| SUBSET → COMPILER | C++ 子集约束优化空间（第⑮节与 ch156 衔接） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](Book/part02_toolchain/ch11_compilers.md) | 交叉工具链本质是目标平台的编译器（第⑥节与 ch11 衔接） |
+| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](Book/part02_toolchain/ch12_buildsystems.md) | CMake toolchain 文件由构建系统读取（第⑦节与 ch12 ⑭衔接） |
+| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | -Os 与目标配置协同（第⑭节与 ch18 衔接） |
+| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 嵌入式子集约束优化空间（第⑮节与 ch156 衔接） |
+| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | 交叉调试经 gdbserver/openocd（第⑬节与 ch14 衔接） |
+| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](Book/part02_toolchain/ch13_packaging.md) | 目标 sysroot 内库由包管理提供（第③节与 ch13 衔接） |
+

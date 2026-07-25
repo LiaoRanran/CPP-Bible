@@ -954,3 +954,116 @@ int main() { long long s = 0; for (int i = 0; i < 1000; ++i) s += i; std::cout <
 ```
 
 **结论**：汇编是优化的最终裁判；Godbolt 让“零成本抽象是否真的零成本”一目了然。
+
+## 附录 J：性能剖析工作流决策流（D3 维度）
+
+本图把第①②④⑥⑦⑧⑨⑩⑫⑭节收敛为"目标→采样/插桩→瓶颈域→优化→CI"链路，含方法、瓶颈域与 CI 三道闸门。
+
+```mermaid
+flowchart TD
+  GOAL["性能目标 (①)"]
+  METHOD{"分析方法?"}
+  SAMP["采样 perf (②)"]
+  INST["插桩 instrument (⑧)"]
+  HW["硬件计数器 (③)"]
+  FLAME["火焰图 (④)"]
+  VTUNE["VTune 微架构 (⑥)"]
+  CE["Compiler Explorer (⑦)"]
+  BENCH["Google Benchmark (⑧)"]
+  HOT["热点识别 (⑨)"]
+  MICRO{"瓶颈域?"}
+  FE["前端 bound (⑩)"]
+  BE["后端 bound (⑩)"]
+  MEM["内存 bound (⑫)"]
+  OPT["定向优化 (⑪)"]
+  CI{"进 CI?"}
+  CION["CI 回归守护 (⑭)"]
+  GUARD["基准门禁 (⑭)"]
+  GOAL --> METHOD
+  METHOD --> SAMP
+  METHOD --> INST
+  SAMP --> HW --> FLAME
+  SAMP --> VTUNE
+  INST --> BENCH
+  CE --> BENCH
+  FLAME --> HOT
+  VTUNE --> HOT
+  BENCH --> HOT
+  HOT --> MICRO
+  MICRO --> FE
+  MICRO --> BE
+  MICRO --> MEM
+  FE --> OPT
+  BE --> OPT
+  MEM --> OPT
+  OPT --> CI
+  CI --> CION
+  CI --> GUARD
+```
+
+> 决策流说明：方法闸门（METHOD）选采样（perf/VTune）或插桩（Google Benchmark/CE），瓶颈域闸门（MICRO）区分前端/后端/内存 bound 决定优化方向，最终 CI 闸门决定是否纳入回归守护。
+
+## 附录 K：性能剖析知识图谱（D6 维度）
+
+以"性能剖析"为枢纽，向上承接 perf/VTune/Compiler Explorer，向下产出热点与微架构瓶颈结论，外推到编译优化、性能反模式与基准章节。
+
+```mermaid
+flowchart TD
+  CORE["性能剖析 (①)"]
+  PERF["perf 采样 (②)"]
+  HW["硬件计数器 (③)"]
+  FLAME["火焰图 (④)"]
+  VTUNE["VTune (⑥)"]
+  CE["Compiler Explorer (⑦)"]
+  BENCH["Google Benchmark (⑧)"]
+  HOT["热点识别 (⑨)"]
+  MICRO["微架构瓶颈 (⑩)"]
+  CACHE["缓存分析 (⑫)"]
+  COMPILER["编译优化 ch156"]
+  EXPLORER["Compiler Explorer ch157"]
+  ANTIPAT["性能反模式 ch158"]
+  BENCHCH["基准 ch151"]
+  CORE --> PERF
+  PERF --> HW
+  PERF --> FLAME
+  CORE --> VTUNE
+  CORE --> CE
+  CORE --> BENCH
+  HOT --> MICRO
+  MICRO --> CACHE
+  CE --> COMPILER
+  CORE --> EXPLORER
+  CORE --> ANTIPAT
+  BENCH --> BENCHCH
+  HOT --> COMPILER
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → PERF | 剖析基础是 perf 采样（第②节） |
+| PERF → HW | perf 读取硬件计数器（第③节） |
+| PERF → FLAME | perf 数据生成火焰图（第④节） |
+| CORE → VTUNE | VTune 做微架构级剖析（第⑥节） |
+| CORE → CE | Compiler Explorer 看汇编码（第⑦节） |
+| CORE → BENCH | Google Benchmark 做插桩微基准（第⑧节） |
+| HOT → MICRO | 热点识别后定位瓶颈域（第⑨⑩节） |
+| MICRO → CACHE | 内存 bound 关联缓存分析（第⑫节） |
+| CE → COMPILER | CE 对比验证编译优化（第⑪节与 ch156 衔接） |
+| CORE → EXPLORER | 外推到 ch157 Compiler Explorer |
+| CORE → ANTIPAT | 规避微基准陷阱（第⑯节与 ch158 衔接） |
+| BENCH → BENCHCH | 基准接入 ch151 体系（第⑧节外推） |
+| HOT → COMPILER | 热点驱动针对性编译优化（第⑪节与 ch156 衔接） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 汇编对比验证优化是否生效（第⑪节与 ch156 衔接） |
+| ch157 Compiler Explorer | [Book/part14_perf/ch157_compiler_explorer.md](Book/part14_perf/ch157_compiler_explorer.md) | 在线对比不同编译旗标汇编码（第⑦节外推） |
+| ch158 性能反模式 | [Book/part14_perf/ch158_perf_antipatterns.md](Book/part14_perf/ch158_perf_antipatterns.md) | 规避微基准陷阱/温度计效应（第⑯节与 ch158 衔接） |
+| ch151 基准 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | Google Benchmark 接入基准体系（第⑧节外推） |
+| ch152 性能模型 | [Book/part14_perf/ch152_perf_model.md](Book/part14_perf/ch152_perf_model.md) | 微架构瓶颈对应性能模型（第⑩节与 ch152 衔接） |
+| ch153 CPU 微架构 | [Book/part14_perf/ch153_cpu_micro.md](Book/part14_perf/ch153_cpu_micro.md) | 硬件计数器解释 CPU 行为（第③节与 ch153 衔接） |
+

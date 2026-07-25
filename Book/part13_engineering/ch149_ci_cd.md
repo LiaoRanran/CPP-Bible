@@ -1176,3 +1176,100 @@ int main() { f(); }  // 触发 std::terminate
 
 C++23 约束：`static_assert` 在 CI 中作为编译期门禁（如 `static_assert(std::is_trivial_v<T>)`），配合 `-Wall -Wextra -Werror` 让接口契约在合并前失效即红。这呼应 [ch18](Book/part02_toolchain/ch18_buildconfig.md) 的构建配置与 [ch151](Book/part13_engineering/ch151_benchmark.md) 的基准门禁。
 
+
+
+
+## 附录 J：CI/CD 流水线阶段图（D3 维度）
+
+把第③–⑯节的流水线画成带 fail-fast 的阶段流：每次 push/PR 依次过构建、测试门禁（ch150）、静态分析门禁（ch147）、覆盖率，再制品化走 CD（ch149⑩）；任一阶段失败立即中断。
+
+```mermaid
+flowchart TD
+  START["git push / PR"]
+  BUILD["构建 build (ccache ch149④)"]
+  TEST["测试门禁 (ch150)"]
+  STAT["静态分析门禁 (ch147)"]
+  COV["覆盖率 gcov/lcov"]
+  PKG["制品 package"]
+  DEPLOY["CD: 部署 / 交付 (ch149⑩)"]
+  FAIL["fail-fast 中断"]
+  START --> BUILD
+  BUILD -->|失败| FAIL
+  BUILD --> TEST
+  TEST -->|失败| FAIL
+  TEST --> STAT
+  STAT -->|失败| FAIL
+  STAT --> COV
+  COV --> PKG
+  PKG --> DEPLOY
+```
+
+> 阶段图说明：构建缓存（第④节）与矩阵构建（第⑤节）压低单次成本；fail-fast（第⑯节）保证最快反馈；静态分析与测试两道门禁分别外推 ch147/ch150。
+
+## 附录 K：CI/CD 知识图谱（D6 维度）
+
+CI/CD 是一张以"阶段编排"为骨架的网：持续集成原则统领 build/test/static/pkg 四阶段，构建缓存、矩阵构建、静态分析门禁、测试门禁、覆盖率、性能回归门禁、增量构建七条专项并行服务于阶段，CD、容器化、密钥管理为发布三件套，Git 触发（ch148）是入口。
+
+```mermaid
+flowchart TD
+  CI["CI/CD 流水线"]
+  INT["持续集成原则"]
+  STAGE["流水线阶段 build/test/static/pkg"]
+  CACHE["构建缓存 ccache (ch149④)"]
+  MAT["矩阵构建 多编译器/平台"]
+  STATG["静态分析门禁 (ch147)"]
+  TESTG["测试门禁 (ch150)"]
+  COV["覆盖率 gcov/lcov"]
+  ART["制品与发布"]
+  CD["持续部署 / 交付"]
+  CONT["容器化 Docker"]
+  SEC["密钥管理"]
+  PERFG["性能回归门禁 (ch151)"]
+  INC["增量构建"]
+  GIT["Git 触发 (ch148)"]
+  CI --> INT
+  CI --> STAGE
+  STAGE --> CACHE
+  STAGE --> MAT
+  STAGE --> STATG
+  STAGE --> TESTG
+  STAGE --> COV
+  STAGE --> ART
+  CI --> CD
+  CD --> CONT
+  CI --> SEC
+  STAGE --> PERFG
+  STAGE --> INC
+  GIT --> CI
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CI → INT | 持续集成原则是哲学底座（第②节） |
+| CI → STAGE | 阶段编排是 CI 骨架（第③节） |
+| STAGE → CACHE | 构建缓存加速（第④节） |
+| STAGE → MAT | 矩阵构建覆盖多环境（第⑤节） |
+| STAGE → STATG | 静态分析门禁（第⑥节，外推 ch147） |
+| STAGE → TESTG | 测试门禁（第⑦节，外推 ch150） |
+| STAGE → COV | 覆盖率量化（第⑧节） |
+| STAGE → ART | 制品是 CD 输入（第⑨节） |
+| CI → CD | CD 是 CI 的自然延伸（第⑩节） |
+| CD → CONT | 容器化承载部署（第⑪节） |
+| CI → SEC | 密钥管理保安全（第⑬节） |
+| STAGE → PERFG | 性能回归门禁（第⑭节，外推 ch151） |
+| STAGE → INC | 增量构建省时（第⑮节） |
+| GIT → CI | Git 推送触发流水线（外推 ch148） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](Book/part13_engineering/ch147_code_review.md) | §⑥⑫ 静态分析门禁 |
+| ch148 Git 工作流 | [Book/part13_engineering/ch148_gitflow.md](Book/part13_engineering/ch148_gitflow.md) | §⑮ Git 触发 / §⑩ CD |
+| ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | §⑥⑦⑲ 测试/覆盖率门禁 |
+| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | §⑭ 性能回归门禁 |
+| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | 构建系统集成 |
+| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](Book/part02_toolchain/ch12_buildsystems.md) | CMake/CTest 进 CI |
+| ch156 编译器优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 矩阵构建跨优化等级 |

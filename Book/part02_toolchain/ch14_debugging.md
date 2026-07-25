@@ -1213,3 +1213,117 @@ g++ -std=c++23 -fsanitize=thread -g race.cpp -pthread -o race
 ```
 
 **结论**：race 是时序相关 bug，TSan 通过记录同步边在首次发生时即报告，比复现后再调省力得多。
+
+## 附录 U：缺陷分诊与调试决策流（D3 维度）
+
+本图把第①②④⑤⑥⑦⑧⑨⑩⑫⑬⑭⑯⑰节收敛为"症状分诊→工具选定→符号可用性→远程/IDE"链路，体现分诊与符号两道闸门。
+
+```mermaid
+flowchart TD
+  BUG["缺陷症状 (①)"]
+  TRIAGE{"症状类型?"}
+  CRASH["崩溃 SEGV/ABRT (⑯)"]
+  RACE["数据竞争/死锁 (⑧)"]
+  LEAK["内存泄漏 (⑩)"]
+  UB["未定义行为 (⑦)"]
+  CORE["core dump 分析 (⑤)"]
+  GDB["GDB 断点/backtrace (②)"]
+  LLDB["LLDB (④)"]
+  ASAN["ASan 地址消毒 (⑥)"]
+  UBSAN["UBSan 未定义检测 (⑦)"]
+  TSAN["TSan 竞争检测 (⑧)"]
+  VAL["Valgrind memcheck (⑨)"]
+  SYM{"有调试符号?"}
+  G["-g 符号 (⑫)"]
+  STRIP["strip 后无符号 (⑫)"]
+  REMOTE["远程/嵌入式 gdbserver (⑬)"]
+  IDE["IDE 集成 (⑰)"]
+  ASSERT["断言 assert (⑭)"]
+  BUG --> TRIAGE
+  TRIAGE --> CRASH
+  TRIAGE --> RACE
+  TRIAGE --> LEAK
+  TRIAGE --> UB
+  CRASH --> CORE --> GDB
+  CRASH --> LLDB
+  RACE --> TSAN
+  LEAK --> VAL
+  LEAK --> ASAN
+  UB --> UBSAN
+  GDB --> SYM
+  LLDB --> SYM
+  SYM --> G
+  SYM --> STRIP
+  G --> REMOTE
+  STRIP --> REMOTE
+  G --> IDE
+  STRIP --> IDE
+  ASSERT --> GDB
+```
+
+> 决策流说明：分诊闸门（TRIAGE）按崩溃/竞争/泄漏/UB 选择 GDB/TSan/Valgrind/UBSan，符号闸门（SYM）依 -g 或 strip 决定能否获得可读栈，并外推到 ch15 性能陷阱定位与 ch28 生命周期/UB。
+
+## 附录 V：调试知识图谱（D6 维度）
+
+以"调试"为枢纽，汇聚 GDB/LLDB/core/Sanitizer/Valgrind 等工具，向上依赖调试符号与编译器，向下衔接构建配置、性能剖析与未定义行为章节。
+
+```mermaid
+flowchart TD
+  CORE["调试 (①)"]
+  GDB["GDB 断点/backtrace (②)"]
+  LLDB["LLDB (④)"]
+  CORE2["core dump (⑤)"]
+  ASAN["ASan 地址消毒 (⑥)"]
+  UBSAN["UBSan (⑦)"]
+  TSAN["TSan 竞争 (⑧)"]
+  VAL["Valgrind (⑨)"]
+  SYM["调试符号 -g/strip (⑫)"]
+  ASSERT["assert 断言 (⑭)"]
+  COMPILER["编译器 ch11"]
+  BUILD["构建配置 ch18"]
+  PROFILE["性能剖析 ch15"]
+  SANITIZER["sanitizer ch18"]
+  CORE --> GDB
+  CORE --> LLDB
+  CORE --> CORE2
+  CORE --> ASAN
+  CORE --> UBSAN
+  CORE --> TSAN
+  ASAN --> VAL
+  CORE --> SYM
+  CORE --> ASSERT
+  GDB --> COMPILER
+  SYM --> BUILD
+  CORE --> PROFILE
+  ASAN --> SANITIZER
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → GDB | 调试核心工具是 GDB 断点/回溯（第②节） |
+| CORE → LLDB | macOS/Clang 生态用 LLDB（第④节） |
+| CORE → CORE2 | 崩溃后靠 core dump 离线分析（第⑤节） |
+| CORE → ASAN | 内存越界用 ASan 捕获（第⑥节） |
+| CORE → UBSAN | 未定义行为用 UBSan 捕获（第⑦节） |
+| CORE → TSAN | 数据竞争用 TSan 捕获（第⑧节） |
+| ASAN → VAL | ASan 与 Valgrind 同属内存检查（第⑨节） |
+| CORE → SYM | 调试依赖 -g 符号与 strip 取舍（第⑫节） |
+| CORE → ASSERT | assert 提供前置诊断（第⑭节） |
+| GDB → COMPILER | GDB 解析编译器生成的 DWARF（第⑫节与 ch11 ⑰衔接） |
+| SYM → BUILD | 符号由构建配置控制（第⑫节与 ch18 ⑩衔接） |
+| CORE → PROFILE | 性能陷阱定位与调试协同（第⑱节外推） |
+| ASAN → SANITIZER | ASan 属 sanitizer 家族（第⑥节与 ch18 ⑮衔接） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](Book/part02_toolchain/ch11_compilers.md) | 调试依赖编译器生成的 DWARF（第⑫节与 ch11 ⑰衔接） |
+| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | -g/strip 由构建配置控制（第⑫节与 ch18 ⑩衔接） |
+| ch15 性能剖析 | [Book/part02_toolchain/ch15_profiling.md](Book/part02_toolchain/ch15_profiling.md) | 性能陷阱定位与调试协同（第⑱节外推） |
+| ch28 生命周期/UB | [Book/part03_language/ch28_lifetime_ub.md](Book/part03_language/ch28_lifetime_ub.md) | UBSan 捕获未定义行为（第⑦节与 ch28 衔接） |
+| ch150 测试 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | 调试驱动测试失败定位（第⑰节外推） |
+| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 优化下 sanitizer 行为差异（第⑥节与 ch156 衔接） |
+

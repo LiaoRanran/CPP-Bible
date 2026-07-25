@@ -952,3 +952,113 @@ int main() { std::cout << "命中二进制缓存，省去源码编译。\n"; }
 ```
 
 **结论**：Conan 以“设置(settings)×选项(options)×三元组”为键缓存预编译二进制，显著加速 CI。
+
+## 附录 U：包管理依赖解析决策流（D3 维度）
+
+本图把第①②⑦⑧⑬⑭⑯⑰节收敛为"需求→分发模式→包管理器→版本解析→构建→ABI 校验"链路，含四道选择闸门。
+
+```mermaid
+flowchart TD
+  REQ["依赖需求 (①)"]
+  MODE{"分发模式?"}
+  SRC["源码分发 (⑦)"]
+  BIN["二进制分发 (⑦)"]
+  PM{"包管理器?"}
+  VCP["vcpkg manifest/triplet (②)"]
+  CON["Conan recipe/settings (④)"]
+  SYS["系统 apt/brew (⑩)"]
+  HO["头-only 库 (⑪)"]
+  VER["版本解析与冲突 (⑧)"]
+  LOCK{"可重现?"}
+  LOCKF["锁文件 pin (⑬)"]
+  RESOLVE["依赖图解析 (⑤)"]
+  CACHE["二进制缓存 (④)"]
+  BUILD["编译（交构建系统）(⑰)"]
+  ABI{"ABI 一致?"}
+  OK["链接成功 (⑭)"]
+  FAIL["ABI 不匹配/混链 (⑯)"]
+  LIC["许可证合规 (⑭)"]
+  REQ --> MODE
+  MODE --> SRC
+  MODE --> BIN
+  SRC --> PM
+  BIN --> PM
+  PM --> VCP
+  PM --> CON
+  PM --> SYS
+  HO --> PM
+  VCP --> VER
+  CON --> VER
+  VER --> LOCK
+  LOCK --> LOCKF
+  VER --> RESOLVE --> CACHE --> BUILD
+  BUILD --> ABI
+  ABI --> OK
+  ABI --> FAIL
+  BUILD --> LIC
+```
+
+> 决策流说明：分发模式闸门（MODE）选源码/二进制，包管理器闸门（PM）在 vcpkg/Conan/系统间择一，可重现闸门（LOCK）决定是否锁文件固定，最终 ABI 闸门校验 Debug/Release 混链与符号兼容性（FAIL 分支对应第⑯节陷阱）。
+
+## 附录 V：包管理知识图谱（D6 维度）
+
+以"包管理"为根，向下分化为 vcpkg/Conan，承接版本解析、可重现构建、ABI 与头-only 约定，外推到构建系统、编译器与交叉编译。
+
+```mermaid
+flowchart TD
+  CORE["C++ 包管理 (①)"]
+  VCP["vcpkg 端口/manifest (②)"]
+  CONAN["Conan recipe/缓存 (④)"]
+  VER["版本解析 (⑧)"]
+  REPRO["可重现构建/锁 (⑬)"]
+  ABI["ABI 与符号布局 (⑭)"]
+  HEAD["头-only 约定 (⑪)"]
+  BUILD["构建系统 ch12"]
+  COMPILER["编译器 ch11"]
+  LICENSE["许可证合规 (⑭)"]
+  CROSS["交叉编译 ch17"]
+  CI["CI/CD ch149"]
+  CORE --> VCP
+  CORE --> CONAN
+  VCP --> VER
+  CONAN --> VER
+  VER --> REPRO
+  CORE --> ABI
+  VCP --> HEAD
+  VCP --> BUILD
+  CONAN --> BUILD
+  BUILD --> COMPILER
+  CORE --> LICENSE
+  VCP --> CROSS
+  CORE --> CI
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → VCP | 包管理主流之一是 vcpkg 端口模型（第②节） |
+| CORE → CONAN | 另一主流是 Conan recipe 模型（第④节） |
+| VCP → VER | vcpkg 参与版本解析与冲突解决（第⑧节） |
+| CONAN → VER | Conan 按 settings 解析版本（第⑧节） |
+| VER → REPRO | 版本解析结果由锁文件固定可重现（第⑬节） |
+| CORE → ABI | 包分发必须考虑 ABI 兼容性（第⑭节） |
+| VCP → HEAD | vcpkg 支持头-only 库约定（第⑪节） |
+| VCP → BUILD | vcpkg 经 CMake find_package 接入构建（第③⑰节） |
+| CONAN → BUILD | Conan 集成 CMake/MSBuild（第⑥⑰节） |
+| BUILD → COMPILER | 包内源码需编译器编译（第⑰节与 ch11 ⑱衔接） |
+| CORE → LICENSE | 分发须做许可证合规（第⑭节） |
+| VCP → CROSS | vcpkg triplet 决定目标架构二进制（第②节与 ch17 ②衔接） |
+| CORE → CI | 二进制缓存接入持续集成（第⑲节） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](Book/part02_toolchain/ch12_buildsystems.md) | vcpkg/Conan 经 CMake find_package 接入构建（第③⑰节） |
+| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](Book/part02_toolchain/ch11_compilers.md) | 包内源码需编译器编译（第⑰节与 ch11 ⑱衔接） |
+| ch17 交叉编译 | [Book/part02_toolchain/ch17_crosscompile.md](Book/part02_toolchain/ch17_crosscompile.md) | triplet 决定目标架构二进制（第②节与 ch17 ②衔接） |
+| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | Debug/Release 混链陷阱（第⑯节与 ch18 衔接） |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | 二进制缓存接入持续集成（第⑲节） |
+| ch124 libstdcxx / ch125 libcxx | [Book/part11_source/ch124_libstdcxx.md](Book/part11_source/ch124_libstdcxx.md) | 标准库实现影响 ABI 兼容（第⑭节外推） |
+

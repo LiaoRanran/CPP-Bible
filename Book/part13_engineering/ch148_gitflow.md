@@ -971,3 +971,99 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+
+
+## 附录 J：从提交到发布的生命周期时序图（D3 维度）
+
+把第②–⑯节的 Git 工作流画成端到端时序：开发者在特性分支做原子提交，推送后开 PR 触发 CI（ch149），审查者（ch147）批准后合并，最后打 tag 走语义化版本与 CD（ch149⑩）。
+
+```mermaid
+sequenceDiagram
+  participant 开发者
+  participant 本地 as 本地仓库
+  participant 远程 as 远程 origin
+  participant PR
+  participant CI as CI 门禁 (ch149)
+  participant 审查者 as 审查者 (ch147)
+  participant 发布 as 发布/标签
+  开发者->>本地: 特性分支 + 原子提交 (ch148④)
+  本地->>远程: push 特性分支
+  远程->>PR: 开 PR (Conventional Commits ch148⑤)
+  PR->>CI: 触发流水线 (ch149)
+  CI-->PR: 构建/测试/静态全绿
+  PR->>审查者: 请求审查 (ch147)
+  审查者-->PR: 批准
+  PR->>远程: 合并至主干
+  远程->>发布: 打 tag + 语义化版本 (ch148⑧)
+  发布-->远程: 发布分支 / CD (ch149⑩)
+```
+
+> 时序说明：原子提交（第④节）与 Conventional Commits（第⑤节）是后续所有自动化的前提；CI 与审查是合并前的双闸（外推 ch149/ch147）。
+
+## 附录 K：Git 工作流知识图谱（D6 维度）
+
+Git 工作流是一张以"对象模型"为地基的网：分支策略、原子提交、提交信息、rebase/merge、语义化版本、子模块、钩子、bisect 八类能力并列，分支策略与提交信息分别驱动 CI 触发（ch149）与代码审查（ch147），最终汇入发布管理。
+
+```mermaid
+flowchart TD
+  GIT["Git 工作流"]
+  OBJ["对象模型 SHA-1 / 三区"]
+  BR["分支策略 Flow/Hub/Trunk"]
+  ATOM["提交原子性"]
+  MSG["提交信息 Conventional (ch148⑤)"]
+  RB["rebase vs merge"]
+  VER["语义化版本 / tag"]
+  SUB["子模块 / monorepo"]
+  HOOK["钩子 pre-commit"]
+  BISECT["bisect 二分"]
+  CI["CI 触发 (ch149)"]
+  REV["代码审查 (ch147)"]
+  REL["发布分支管理"]
+  GIT --> OBJ
+  GIT --> BR
+  GIT --> ATOM
+  ATOM --> MSG
+  GIT --> RB
+  GIT --> VER
+  GIT --> SUB
+  GIT --> HOOK
+  GIT --> BISECT
+  BR --> CI
+  MSG --> REV
+  CI --> REV
+  VER --> REL
+  REL --> CI
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| GIT → OBJ | 一切能力建在对象模型上（第②节） |
+| GIT → BR | 分支策略决定协作拓扑（第③节） |
+| GIT → ATOM | 原子提交保证可追溯（第④节） |
+| ATOM → MSG | 原子提交配规范信息（第⑤节） |
+| GIT → RB | rebase/merge 决定历史形态（第⑥节） |
+| GIT → VER | tag 与语义化版本（第⑧节） |
+| GIT → SUB | 子模块/monorepo 放大规模（第⑨节） |
+| GIT → HOOK | 钩子自动化预提交（第⑩节） |
+| GIT → BISECT | bisect 定位回归（第⑪节） |
+| BR → CI | 分支推送触发 CI（第⑮节，外推 ch149） |
+| MSG → REV | 规范信息助审查（第⑤节，外推 ch147） |
+| CI → REV | CI 绿是审查前提（外推 ch147） |
+| VER → REL | 版本号驱动发布（第⑯节） |
+| REL → CI | 发布分支回灌 CI（外推 ch149） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](Book/part13_engineering/ch147_code_review.md) | §⑩ 提交信息规范驱动审查 |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | §⑮ Git 触发流水线 / §⑩ CD |
+| ch144 代码风格 | [Book/part13_engineering/ch144_style.md](Book/part13_engineering/ch144_style.md) | pre-commit 钩子接风格工具 |
+| ch145 命名与 API | [Book/part13_engineering/ch145_naming_api.md](Book/part13_engineering/ch145_naming_api.md) | 分支命名与 API 稳定性 |
+| ch146 错误处理 | [Book/part13_engineering/ch146_error_handling.md](Book/part13_engineering/ch146_error_handling.md) | 提交信息描述错误修复 |
+| ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | CI 跑测试门禁 |
+| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | CI 跑性能回归 |
+| ch156 编译器优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 矩阵构建跨编译器版本 |

@@ -1293,3 +1293,95 @@ int main() {
 ```
 
 **结论**：TDD 把“测试”前置为规格，重构时有安全网；注意 truncate 用 `std::string::substr`（关联 ⑫ TDD / ③ 测试夹具）。
+
+
+## 附录 J：测试金字塔与 TDD 循环图（D3 维度）
+
+把第①节与第⑫节合并成一张图：左侧是测试金字塔（单元测试最多、集成居中、端到端最少），右侧是 TDD 红-绿-重构闭环，两者都汇入 CI（ch149）。
+
+```mermaid
+flowchart TD
+  subgraph PYR["测试金字塔 (数量递减)"]
+    direction TB
+    E2E["端到端测试 顶层-少"]
+    INT["集成测试 中层-中"]
+    UNIT["单元测试 底层-多"]
+  end
+  UNIT --> INT
+  INT --> E2E
+  TDD["TDD 红-绿-重构循环"]
+  UNIT --> TDD
+  TDD -->|红: 先写失败测试| RED["实现让测试通过 (绿)"]
+  RED --> REF["重构并保绿"]
+  REF --> TDD
+```
+
+> 图表说明：金字塔强调"底层多、顶层少"的投资分布（第①节）；TDD 把单元测试推到开发最前端（第⑫节），二者都依赖 CI 门禁（ch149）持续运行。
+
+## 附录 K：测试策略知识图谱（D6 维度）
+
+测试策略是一张以"测试类型"为根的网：单元/集成/端到端三类主体，夹具、Mock/依赖注入、断言、参数化、异常测试五条单元内专项，模糊测试、基准测试、TDD 三条横向能力，覆盖率与 CI 集成（ch149）是收口两闸。
+
+```mermaid
+flowchart TD
+  TEST["测试策略"]
+  UNIT["单元测试 GoogleTest/Catch2"]
+  FIX["测试夹具 fixture"]
+  MOCK["Mock / 依赖注入 (ch141)"]
+  ASSRT["断言风格"]
+  COV["覆盖率 (ch149)"]
+  INTG["集成测试"]
+  E2E["端到端测试"]
+  FUZZ["模糊测试 libFuzzer"]
+  BENCH["基准测试 (ch151)"]
+  TDD["TDD 红-绿-重构"]
+  PARA["参数化测试"]
+  EXCT["异常测试"]
+  CI["CI 集成 (ch149)"]
+  TEST --> UNIT
+  UNIT --> FIX
+  UNIT --> MOCK
+  UNIT --> ASSRT
+  UNIT --> COV
+  TEST --> INTG
+  TEST --> E2E
+  TEST --> FUZZ
+  TEST --> BENCH
+  TEST --> TDD
+  UNIT --> PARA
+  UNIT --> EXCT
+  COV --> CI
+  BENCH --> CI
+  TDD --> CI
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| TEST → UNIT | 单元测试是金字塔底座（第②节） |
+| UNIT → FIX | 夹具复用测试上下文（第③节） |
+| UNIT → MOCK | Mock/DI 隔离依赖（第④节，外推 ch141） |
+| UNIT → ASSRT | 断言风格决定可读性（第⑤节） |
+| UNIT → COV | 覆盖率量化单元覆盖（第⑦节，外推 ch149） |
+| TEST → INTG | 集成测试验证组合（第⑧节） |
+| TEST → E2E | 端到端覆盖关键路径（第⑨节） |
+| TEST → FUZZ | 模糊测试挖边界（第⑩节） |
+| TEST → BENCH | 基准测试防性能退化（第⑪节，外推 ch151） |
+| TEST → TDD | TDD 反转开发顺序（第⑫节） |
+| UNIT → PARA | 参数化扩用例（第⑬节） |
+| UNIT → EXCT | 异常测试验错误路径（第⑭节） |
+| COV → CI | 覆盖率门禁进 CI（外推 ch149） |
+| BENCH → CI | 基准进 CI 防回归（外推 ch149） |
+| TDD → CI | 红绿循环由 CI 守护（外推 ch149） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch141 依赖注入 | [Book/part12_patterns/ch141_di.md](Book/part12_patterns/ch141_di.md) | §④ Mock 与依赖注入 |
+| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](Book/part13_engineering/ch147_code_review.md) | §⑨ 测试覆盖审查 |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | §⑥⑦⑲ 测试/覆盖率门禁 |
+| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | §⑪ 基准测试衔接 |
+| ch121 契约与断言 | [Book/part10_modern/ch121_contracts.md](Book/part10_modern/ch121_contracts.md) | §⑭ 异常测试与契约 |
+| ch29 友元 | [Book/part03_language/ch29_friend.md](Book/part03_language/ch29_friend.md) | 友元与白盒测试访问 |

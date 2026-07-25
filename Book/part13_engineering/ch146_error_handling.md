@@ -971,3 +971,101 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+
+
+## 附录 J：错误处理策略选型流（D3 维度）
+
+把第②–⑯节的表征选择收敛为一条分流流：先判是否编程错误（用 assert/contract），再判是否可恢复且由调用方处理（用异常+RAII），再判是否性能敏感或跨 C 边界（用返回值/error_code），否则用 optional/expected 表达"可能无值/可能失败"。
+
+```mermaid
+flowchart TD
+  START["出现错误路径"]
+  Q1{"是编程错误?"}
+  ASS["assert / contract (ch121)"]
+  Q2{"可恢复 + 调用方处理?"}
+  EXC["抛异常 + RAII (ch146④⑤)"]
+  Q3{"性能敏感 / C 边界?"}
+  CODE["返回值 / std::error_code (ch146⑥)"]
+  OPT["std::optional / expected (ch88/ch91)"]
+  DONE["选择表征并文档化"]
+  START --> Q1
+  Q1 -->|是| ASS
+  Q1 -->|否| Q2
+  Q2 -->|是| EXC
+  Q2 -->|否| Q3
+  Q3 -->|是| CODE
+  Q3 -->|否| OPT
+  ASS --> DONE
+  EXC --> DONE
+  CODE --> DONE
+  OPT --> DONE
+```
+
+> 选型流说明：三道分叉对应"错误的性质"（编程错/可恢复/性能敏感），与第②节的"返回值 vs 异常 vs 枚举"三角度直接对应；异常路径的零开销由第⑪节汇编实证支撑。
+
+## 附录 K：错误处理知识图谱（D6 维度）
+
+错误处理是一张以"表征选择"为核心的网：返回值/异常/error_code/expected/optional/assert 六种表征并列，异常经 RAII 串起栈展开与异常安全等级，最终汇入日志（ch161）、审查（ch147）与 CI（ch149）。
+
+```mermaid
+flowchart TD
+  ERR["错误处理策略"]
+  RET["返回值 / 错误码"]
+  EXC["异常 throw/try/catch"]
+  EC["std::error_code / category"]
+  EXP["std::expected (C++23)"]
+  OPT["std::optional 无值"]
+  ASRT["assert / contract (ch121)"]
+  RAII["RAII 与栈展开"]
+  SAFE["异常安全等级"]
+  NOEXC["noexcept"]
+  LOG["日志与错误 (ch161)"]
+  REV["审查 (ch147)"]
+  CI["CI 门禁 (ch149)"]
+  ERR --> RET
+  ERR --> EXC
+  ERR --> EC
+  ERR --> EXP
+  ERR --> OPT
+  ERR --> ASRT
+  EXC --> RAII
+  RAII --> SAFE
+  SAFE --> NOEXC
+  EXC --> NOEXC
+  ERR --> LOG
+  LOG --> REV
+  RET --> REV
+  REV --> CI
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| ERR → RET | 返回值是最廉价、最显式的表征（第②节） |
+| ERR → EXC | 异常适合不可恢复/跨层错误（第③节） |
+| ERR → EC | error_code 桥接系统错误（第⑥节） |
+| ERR → EXP | expected 把错误当值传递（第⑦节） |
+| ERR → OPT | optional 表达"无值"轻量表征（第⑧节） |
+| ERR → ASRT | 断言锁定编程不变量（第⑨节，外推 ch121） |
+| EXC → RAII | 异常安全靠 RAII 保证资源释放（第④节） |
+| RAII → SAFE | 栈展开决定异常安全等级（第⑤节） |
+| SAFE → NOEXC | noexcept 是强异常安全保证（第⑩节） |
+| EXC → NOEXC | 不抛异常的接口标 noexcept（第⑫节） |
+| ERR → LOG | 错误需落日志便于诊断（第⑰节，外推 ch161） |
+| LOG → REV | 日志策略在审查中核对（外推 ch147） |
+| RET → REV | 错误返回路径在审查中核对（外推 ch147） |
+| REV → CI | 错误处理门禁进 CI（外推 ch149） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch121 契约与断言 | [Book/part10_modern/ch121_contracts.md](Book/part10_modern/ch121_contracts.md) | §⑨ assert / contract 边界 |
+| ch161 日志库 | [Book/part15_cases/ch161_logger.md](Book/part15_cases/ch161_logger.md) | §⑰ 日志与错误联动 |
+| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](Book/part13_engineering/ch147_code_review.md) | 错误路径审查 |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | 异常/警告门禁 |
+| ch88 optional | [Book/part07_stl/ch88_optional_variant.md](Book/part07_stl/ch88_optional_variant.md) | §⑧ optional 无值表征 |
+| ch144 代码风格 | [Book/part13_engineering/ch144_style.md](Book/part13_engineering/ch144_style.md) | §⑩ noexcept 风格约定 |
+| ch145 命名与 API | [Book/part13_engineering/ch145_naming_api.md](Book/part13_engineering/ch145_naming_api.md) | §⑬ noexcept API 规范 |

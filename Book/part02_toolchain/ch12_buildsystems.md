@@ -1020,3 +1020,113 @@ int main() { std::vector<std::string> v{"pch"}; std::cout << v[0] << "\n"; }
 ```
 
 **结论**：PCH 把“不变的标准头”编译一次复用；Unity build 减少 TU 数，二者都是降低预处理/解析开销的杠杆。
+
+## 附录 U：构建系统编排决策流（D3 维度）
+
+本图把第⑤⑩⑪⑭⑮⑯节收敛为"configure→生成器→依赖图→编译→链接"主链，体现生成器、交叉编译与链接三道闸门。
+
+```mermaid
+flowchart TD
+  SRC["源码 + CMakeLists (⑤)"]
+  CONF["配置 configure (⑤)"]
+  GEN{"生成器选择?"}
+  NIN["Ninja (④)"]
+  MAK["Make (②)"]
+  BAZ["Bazel BUILD (⑩)"]
+  DAG["依赖图 DAG (⑪)"]
+  SCAN["扫描源依赖 .d (⑨ MMD)"]
+  PCH["预编译头 PCH (⑫)"]
+  UNITY["Unity build 合并 (⑬)"]
+  COMP["编译 COMPILE (②/④)"]
+  TC{"交叉编译?"}
+  HOST["主机编译 (⑭)"]
+  XTC["toolchain file 交叉 (⑭)"]
+  LINK{"链接方式?"}
+  STAT["静态库 .a (⑮)"]
+  DYN["动态库 .so (⑮)"]
+  PKG["find_package 取依赖 (⑯)"]
+  INST["安装/导出 (⑧)"]
+  SRC --> CONF --> GEN
+  GEN --> NIN
+  GEN --> MAK
+  GEN --> BAZ
+  NIN --> DAG
+  MAK --> DAG
+  BAZ --> DAG
+  DAG --> SCAN --> PCH --> UNITY --> COMP
+  COMP --> TC
+  TC --> HOST
+  TC --> XTC
+  COMP --> LINK
+  LINK --> STAT
+  LINK --> DYN
+  PKG --> COMP
+  LINK --> INST
+```
+
+> 决策流说明：生成器闸门（GEN）在 Ninja/Make/Bazel 间择一，依赖图经 MMD 扫描与 PCH/Unity 加速后进入编译；交叉编译闸门（TC）决定主机还是 toolchain file 目标，链接闸门（LINK）决定静态/动态，且 find_package（PKG）在编译前注入外部依赖。
+
+## 附录 V：构建系统知识图谱（D6 维度）
+
+以"构建系统"为根，向下分化为 Make/Ninja/CMake/Bazel，并承接增量构建、PCH、Unity、交叉编译、链接与包查找等能力，外推到编译器与调试。
+
+```mermaid
+flowchart TD
+  CORE["构建系统 (①)"]
+  MAKE["Make 规则/自动变量 (②)"]
+  NINJA["Ninja 依赖图 (④)"]
+  CMAKE["CMake target-based (⑤)"]
+  BAZEL["Bazel action 图 (⑩)"]
+  INC["增量/依赖扫描 (⑪)"]
+  PCH["PCH 预编译头 (⑫)"]
+  UNITY["Unity build (⑬)"]
+  TC["交叉编译 toolchain (⑭)"]
+  LINKG["静态/动态链接 (⑮)"]
+  FIND["find_package (⑯)"]
+  COMP["编译器 ch11"]
+  DEBUG["调试 ch14"]
+  PKG["包管理 ch13"]
+  CORE --> MAKE
+  CORE --> NINJA
+  CORE --> CMAKE
+  CORE --> BAZEL
+  CMAKE --> INC
+  INC --> PCH
+  INC --> UNITY
+  CMAKE --> TC
+  CMAKE --> LINKG
+  CMAKE --> FIND
+  CMAKE --> COMP
+  CORE --> DEBUG
+  CMAKE --> PKG
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → MAKE | 构建系统最基础形态是 Make 规则（第②节） |
+| CORE → NINJA | Ninja 以紧凑依赖图追求速度（第④节） |
+| CORE → CMAKE | CMake 以 target 为抽象组织构建（第⑤节） |
+| CORE → BAZEL | Bazel 以 action 图做密封构建（第⑩节） |
+| CMAKE → INC | CMake 生成后由增量扫描决定重编（第⑪节） |
+| INC → PCH | 增量构建结合预编译头加速（第⑫节） |
+| INC → UNITY | 增量构建结合 Unity 合并源（第⑬节） |
+| CMAKE → TC | CMake 通过 toolchain 文件支持交叉编译（第⑭节） |
+| CMAKE → LINKG | CMake 决定静态/动态链接产物（第⑮节） |
+| CMAKE → FIND | CMake 用 find_package 取外部依赖（第⑯节） |
+| CMAKE → COMP | CMake 最终调用编译器完成编译（第⑮节） |
+| CORE → DEBUG | 构建产出带符号供调试（第⑫节衔接 ch14） |
+| CMAKE → PKG | CMake 与 vcpkg/Conan 集成（第⑯/⑰节） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](Book/part02_toolchain/ch11_compilers.md) | CMake 调用编译器完成编译（第⑮节） |
+| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](Book/part02_toolchain/ch13_packaging.md) | vcpkg/Conan 与 CMake find_package 集成（第⑯/⑰节） |
+| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | 构建产出的符号供调试（第⑫节衔接 ch14） |
+| ch17 交叉编译 | [Book/part02_toolchain/ch17_crosscompile.md](Book/part02_toolchain/ch17_crosscompile.md) | CMake toolchain file 跨平台（第⑭节与 ch17 ⑦衔接） |
+| ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | -O0/-O2 由构建系统注入（第⑰节与 ch18 衔接） |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | 构建系统驱动持续集成（第⑲节外推） |
+

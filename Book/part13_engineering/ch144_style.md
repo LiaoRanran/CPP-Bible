@@ -930,3 +930,110 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+
+
+## 附录 J：代码风格合规提交决策流（D3 维度）
+
+把第②–⑱节散落的规范收敛成一条"提交前必经"的决策流：任何新代码必须依次通过格式化、静态分析、零警告、const 正确性与命名一致性五道闸门，才进入 ch147 审查。
+
+```mermaid
+flowchart TD
+  START["新代码 / PR"]
+  F1{"过 clang-format?"}
+  F2{"过 clang-tidy?"}
+  F3{"-Wall -Wextra -Werror 零警告?"}
+  F4{"const 正确?"}
+  F5{"命名一致 (ch145)?"}
+  OK["提交 → 进入 ch147 审查"]
+  R1["格式化: clang-format -i"]
+  R2["修告警: clang-tidy 建议"]
+  R3["清警告: 消除 -W 项"]
+  R4["补 const / constexpr"]
+  R5["对齐命名规范 (ch145)"]
+  START --> F1
+  F1 -->|否| R1
+  R1 --> F1
+  F1 -->|是| F2
+  F2 -->|否| R2
+  R2 --> F2
+  F2 -->|是| F3
+  F3 -->|否| R3
+  R3 --> F3
+  F3 -->|是| F4
+  F4 -->|否| R4
+  R4 --> F4
+  F4 -->|是| F5
+  F5 -->|否| R5
+  R5 --> F5
+  F5 -->|是| OK
+```
+
+> 决策流说明：五道闸门是"与"关系（任一不过即回退修正），其中 F3 的零警告依赖第⑰–⑱节的 clang-tidy / clang-format 工具链，F5 把命名一致性责任外推到第145章。
+
+## 附录 K：代码风格知识图谱（D6 维度）
+
+代码风格不是孤立审美，而是一张以"可读/可维护/ABI 稳定"为目标的依赖网：工具链与 const 正确性是落地的两条硬杠杆，命名一致性（ch145）、异常规范（ch146）、审查（ch147）与 CI 门禁（ch149）是其下游消费者。
+
+```mermaid
+flowchart TD
+  STYLE["代码风格与规范"]
+  READ["可读性与可维护性"]
+  ABI["ABI / API 稳定性"]
+  TOOL["工具链: clang-format / clang-tidy"]
+  CMP["编译器警告 -Wall (ch14)"]
+  CONST["const 正确性 (ch21)"]
+  NAME["命名一致性 (ch145)"]
+  INC["头文件与 include 守卫"]
+  EXC["异常规范 noexcept (ch146)"]
+  REV["代码审查 (ch147)"]
+  CI["CI 门禁 (ch149)"]
+  MOVE["移动语义规范 (ch115)"]
+  STYLE --> READ
+  STYLE --> ABI
+  STYLE --> TOOL
+  TOOL --> CMP
+  STYLE --> CONST
+  STYLE --> NAME
+  STYLE --> INC
+  STYLE --> EXC
+  STYLE --> MOVE
+  CONST --> EXC
+  NAME --> ABI
+  READ --> REV
+  REV --> CI
+  TOOL --> REV
+  EXC --> CI
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| STYLE → READ | 风格首要目标是可读性与可维护性（第①节） |
+| STYLE → ABI | 风格中的 ABI 边界约定保护二进制兼容（第⑧/⑯节） |
+| STYLE → TOOL | 风格靠 clang-format / clang-tidy 自动化落地（第⑰–⑱节） |
+| TOOL → CMP | 静态分析工具与 `-Wall -Wextra` 警告同源（第⑰节） |
+| STYLE → CONST | const 正确性是风格硬约束（第⑥节） |
+| STYLE → NAME | 命名一致性是风格核心（第③节，外推 ch145） |
+| STYLE → INC | include 守卫规范防重定义（第④节） |
+| STYLE → EXC | noexcept 标注纳入风格约定（第⑩节，外推 ch146） |
+| STYLE → MOVE | 移动语义规范避免不必要的拷贝（第⑪节，外推 ch115） |
+| CONST → EXC | const 成员函数常需配 noexcept（异常安全） |
+| NAME → ABI | 命名即 API 面，改名破坏 ABI（外推 ch145） |
+| READ → REV | 可读性直接决定审查效率（外推 ch147） |
+| REV → CI | 审查是 CI 门禁的人工环节（外推 ch149） |
+| TOOL → REV | 工具预筛降低人工审查负担（外推 ch147） |
+| EXC → CI | noexcept 违规可由 CI 静态检查拦截（外推 ch149） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch145 命名与 API 设计 | [Book/part13_engineering/ch145_naming_api.md](Book/part13_engineering/ch145_naming_api.md) | §③ 命名一致性约束风格落地 |
+| ch146 错误处理 | [Book/part13_engineering/ch146_error_handling.md](Book/part13_engineering/ch146_error_handling.md) | §⑩ 异常规范 noexcept 纳入风格 |
+| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](Book/part13_engineering/ch147_code_review.md) | §⑫ 自动化门禁承接风格工具链 |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | §⑫ 风格检查进 CI 门禁 |
+| ch21 const 家族 | [Book/part03_language/ch21_const_family.md](Book/part03_language/ch21_const_family.md) | const/constexpr 理论根基 |
+| ch115 移动语义 | [Book/part10_modern/ch115_move.md](Book/part10_modern/ch115_move.md) | §⑪ 移动语义规范 |
+| ch14 调试与诊断 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | -Wall -Wextra 警告取证 |

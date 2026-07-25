@@ -924,3 +924,112 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+
+
+## 附录 J：JSON 解析决策流（D3 维度）
+
+> 本图把第④节（递归下降分派）、第⑥节（数组/对象解析）、第⑦节（字符串转义与 uXXXX/UTF-8）、第⑧节（序列化 writer）、第⑭节（ParseError 携带位置）、第⑪节（DOM vs SAX）收敛成一条"入口→跳过空白→按首字符分派→复合类型递归→转义/UTF-8→构建 variant 树→尾部校验"的解析流水线，并标出各非法输入的失败回退边。
+
+```mermaid
+flowchart TD
+  A["parse json_text 入口"] --> W["skip_ws 跳过空白"]
+  W --> V{"首字符分派?"}
+  V -->|左花括号| OBJ["parse_object"]
+  V -->|左方括号| ARR["parse_array"]
+  V -->|双引号| STR["parse_string 加 转义"]
+  V -->|数字或负号| NUM["parse_number 严格校验"]
+  V -->|true false| LIT["字面量"]
+  V -->|null| NUL["null"]
+  OBJ --> KP{"键是字符串?"}
+  KP -->|否| ERR1["fail 对象键必须字符串"]
+  KP -->|是| COL{"有冒号?"}
+  COL -->|否| ERR2["fail 缺冒号"]
+  COL -->|是| V2["递归 parse_value 取值"]
+  ARR --> V3["递归 parse_value 元素"]
+  NUM --> CHK{"尾部有多余字符?"}
+  CHK -->|是| ERR3["fail 残留字符"]
+  CHK -->|否| OK["构建 Value variant 树"]
+  V2 --> OK
+  V3 --> OK
+  STR --> ESC{"含 uXXXX 转义?"}
+  ESC -->|是| UTF["合并代理对 转 UTF-8"]
+  ESC -->|否| RAW["原样存入 string"]
+  RAW --> OK
+  UTF --> OK
+```
+
+> 决策流说明：首字符分派是「或」关系——六种值类型各走一边；对象解析内部"键为字符串「且」有冒号"才是「与」闸门，否则失败回退（ERR1/ERR2/ERR3 是三条错误边）。跨章外推：值建模依赖第88章 variant，零拷贝解析外推第82章 span，性能外推第155章 SIMD。
+
+
+
+## 附录 K：JSON 库知识图谱（D6 维度）
+
+
+
+> 本图以本章主题为中心，上游列出其依赖的底层机制（分配/并发/格式化/解析原语），下游列出消费它的系统（框架/网络/日志/测试），并标出跨章外推边。
+
+
+
+```mermaid
+flowchart TD
+  CORE["JSON 库 (ch162)"]
+  VARIANT["std variant ch88"]
+  STRING["std string ch81"]
+  SPAN["std span ch82"]
+  RANGES["std ranges ch90"]
+  OPTIONAL["std optional ch88"]
+  FORMAT["std format ch131"]
+  UTF8["UTF-8 校验"]
+  BENCH["基准 ch151"]
+  SIMD["SIMD ch155"]
+  PARSER["递归下降"]
+  SERIALIZE["序列化 writer"]
+  ERROR["错误 expected ch146"]
+  CORE --> VARIANT
+  CORE --> OPTIONAL
+  CORE --> STRING
+  PARSER --> SPAN
+  SERIALIZE --> FORMAT
+  CORE --> UTF8
+  CORE --> BENCH
+  CORE --> SIMD
+  PARSER --> RANGES
+  CORE --> ERROR
+  SERIALIZE --> STRING
+  VARIANT --> OPTIONAL
+```
+
+
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → VARIANT | JSON 值用 std variant 6 型建模 |
+| CORE → OPTIONAL | 缺键处理借鉴 optional 思想 |
+| CORE → STRING | string 存文本与转义 |
+| PARSER → SPAN | 零拷贝解析用 string_view span |
+| SERIALIZE → FORMAT | 序列化可借 std format 搭骨架 |
+| CORE → UTF8 | 解析前校验 UTF-8 合法性 |
+| CORE → BENCH | chrono 基准量化解析速度 |
+| CORE → SIMD | 超大文档可走 SIMD 加速 |
+| PARSER → RANGES | 字符扫描可结合 ranges 算法 |
+| CORE → ERROR | 解析失败用 expected 或异常传播 |
+| SERIALIZE → STRING | 序列化回写 std string |
+| VARIANT → OPTIONAL | variant 与 optional 同属 tagged union 族 |
+
+
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| 第88章 optional/variant | Book/part07_stl/ch88_optional_variant.md | JSON 值用 std variant 6 型建模，与 optional 同族 |
+| 第81章 string | Book/part07_stl/ch81_string.md | 字符串存文本与转义处理 |
+| 第82章 span | Book/part07_stl/ch82_span.md | 零拷贝解析用 string_view/span 引用缓冲区 |
+| 第90章 ranges | Book/part07_stl/ch90_ranges.md | 字符扫描可结合 ranges 算法 |
+| 第131章 fmt/spdlog | Book/part11_source/ch131_fmt_spdlog.md | 序列化可借 std format 搭 JSON 骨架（需先转义） |
+| 第146章 error_handling | Book/part13_engineering/ch146_error_handling.md | 解析失败用 expected 或异常传播错误 |
+| 第151章 benchmark | Book/part13_engineering/ch151_benchmark.md | 5.88us/文档基准方法同源 |
+| 第155章 SIMD | Book/part14_perf/ch155_simd.md | 超大文档可走 SIMD 加速（simdjson 思想） |

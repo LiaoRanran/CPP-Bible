@@ -1273,3 +1273,114 @@ int main() {
 
 [标准] 把“连接状态”从线程栈搬到“集中数据结构 + 事件循环”，是突破 C10K 的根本手法
 （关联 附录 I 工业案例 / ⑨ 多线程服务）。
+
+
+## 附录 J：TCP 连接处理决策流（D3 维度）
+
+> 本图把第④⑤节（echo server/client）、第⑥节（阻塞 vs 非阻塞）、第⑦⑧节（select/poll/epoll/kqueue/io_uring 多路复用）、第⑩节（环形缓冲）、第⑪节（长度前缀/分隔符 framing）、第⑫节（JSON 序列化）、第⑨节（线程池服务）收敛成一条"建 socket→bind/listen→accept→多路复用就绪→收字节流→定界消息→解析→回显"的连接处理流水线，并标出阻塞/非阻塞与多种多路复用的回退边。
+
+```mermaid
+flowchart TD
+  A["socket 创建端点"] --> B["bind 加 listen SO_REUSEADDR"]
+  B --> ACC["accept 等待连接"]
+  ACC --> N{"阻塞 或 非阻塞?"}
+  N -->|阻塞| T1["一连接一线程 或 线程池 ch159"]
+  N -->|非阻塞| MUX{"多路复用?"}
+  MUX -->|select poll| SL["O(n) 轮询"]
+  MUX -->|epoll kqueue| EP["O(1) 事件就绪"]
+  MUX -->|io_uring| IU["共享环 零拷贝"]
+  T1 --> RECV["recv 收字节流"]
+  SL --> RECV
+  EP --> RECV
+  IU --> RECV
+  RECV --> FR{"如何定界消息?"}
+  FR -->|长度前缀| LP["4B 大端 加 payload"]
+  FR -->|分隔符| DL["按换行符 切分"]
+  LP --> PARSE["JSON 解析 ch162"]
+  DL --> PARSE
+  PARSE --> H{"处理完毕?"}
+  H -->|否| RECV
+  H -->|是| SND["send 回显 或 响应"]
+  SND --> C{"对端关闭 recv 等于 0?"}
+  C -->|是| CL["closesocket 释放 fd"]
+  C -->|否| RECV
+  CL --> RAII["Socket RAII 析构即关闭"]
+```
+
+> 决策流说明：阻塞/非阻塞是第一道闸门，非阻塞下又按平台在 select/poll/epoll/kqueue/io_uring 之间「或」择一；定界方式（长度前缀「或」分隔符）决定如何把字节流切成消息，两条边在"JSON 解析"处汇合。跨章外推：线程池服务外推第159章，JSON 载荷外推第162章，无锁计数外推第107章。
+
+
+
+## 附录 K：网络编程知识图谱（D6 维度）
+
+
+
+> 本图以本章主题为中心，上游列出其依赖的底层机制（分配/并发/格式化/解析原语），下游列出消费它的系统（框架/网络/日志/测试），并标出跨章外推边。
+
+
+
+```mermaid
+flowchart TD
+  CORE["网络编程 (ch163)"]
+  SOCKET["Berkeley Socket Winsock"]
+  THREAD["std thread ch93"]
+  THREADPOOL["线程池 ch159"]
+  COROUTINE["协程 ch113"]
+  ATOMIC["std atomic ch107"]
+  JSON["JSON 解析 ch162"]
+  MEMRED["内存池 ch44"]
+  VECTOR["std vector 缓冲 ch77"]
+  BUFFER["环形缓冲"]
+  REACTOR["Reactor Proactor"]
+  ASIO["Boost.Asio 上游"]
+  EPOLL["epoll kqueue"]
+  CORE --> SOCKET
+  CORE --> THREAD
+  CORE --> THREADPOOL
+  THREADPOOL --> ATOMIC
+  CORE --> COROUTINE
+  CORE --> JSON
+  CORE --> MEMRED
+  BUFFER --> VECTOR
+  CORE --> REACTOR
+  REACTOR --> EPOLL
+  REACTOR --> ASIO
+  CORE --> MEMRED
+  REACTOR --> THREAD
+  SOCKET --> BUFFER
+```
+
+
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → SOCKET | 一切基于 Berkeley Socket 或 Winsock |
+| CORE → THREAD | 阻塞模型一连接一线程 |
+| CORE → THREADPOOL | 高并发升级线程池复用线程 |
+| THREADPOOL → ATOMIC | 连接计数用 atomic |
+| CORE → COROUTINE | C++20 协程做异步回显 |
+| CORE → JSON | payload 用 JSON 序列化 |
+| CORE → MEMRED | 缓冲管理借鉴内存池思想 |
+| BUFFER → VECTOR | 环形缓冲底层用 vector |
+| CORE → REACTOR | 事件循环 Reactor/Proactor |
+| REACTOR → EPOLL | Linux 用 epoll O(1) 就绪 |
+| REACTOR → ASIO | Boost.Asio 统一 proactor 抽象 |
+| CORE → MEMRED | 组件缓冲借鉴内存池 |
+| REACTOR → THREAD | 事件循环内回调由线程执行 |
+| SOCKET → BUFFER | recv 字节流入应用层环形缓冲 |
+
+
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| 第93章 thread/async | Book/part07_stl/ch93_thread_async.md | 阻塞模型一连接一线程，事件循环靠线程 |
+| 第159章 threadpool | Book/part15_cases/ch159_threadpool.md | 高并发把每连接封装成线程池任务 |
+| 第113章 coroutine | Book/part09_concurrency/ch113_coroutine.md | C++20 协程做异步回显消除回调嵌套 |
+| 第107章 atomic | Book/part09_concurrency/ch107_atomic.md | 连接与回显字节计数用 atomic |
+| 第162章 json | Book/part15_cases/ch162_json.md | payload 用 JSON 序列化加 长度前缀帧 |
+| 第44章 memory_pool | Book/part04_memory/ch44_memory_pool.md | 缓冲管理借鉴内存池与环形缓冲思想 |
+| 第77章 vector | Book/part07_stl/ch77_vector.md | 环形缓冲底层用 vector 扩容 |

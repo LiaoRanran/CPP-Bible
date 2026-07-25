@@ -655,3 +655,105 @@ int main() {
 
 **结论**：`string_view` 在只读、底层存活可控时能显著减少分配；但它是非拥有视图，
 绝不能超过底层数据寿命——作为返回值/成员长期持有时尤其危险。
+
+## 附录 J：C++17 特性选型决策流（D3 维度）
+
+本节把第⑤节（结构化绑定解构）与第⑭节（WG21 提案）收敛为「面对具体需求选哪个 C++17 设施」的决策流。
+
+```mermaid
+flowchart TD
+  N1["C++17 发布 (2017)"]
+  N2["结构化绑定"]
+  N3["std::optional/variant/any (ch88)"]
+  N4["std::string_view (ch82)"]
+  N5["std::filesystem (ch91)"]
+  N6["if constexpr (ch69)"]
+  N7["折叠表达式 (ch64)"]
+  N8["并行算法 (ch100)"]
+  N9{"需要表示可能空缺的值?"}
+  N10["用 optional 替代 nullptr 哨兵"]
+  N11{"需要零拷贝子串?"}
+  N12["用 string_view 防悬垂 (ch82)"]
+  N13{"需要编译期分支?"}
+  N14["用 if constexpr 消除 SFINAE (ch66)"]
+  N15{"需要文件系统操作?"}
+  N16["用 filesystem (ch91)"]
+  N1 --> N2
+  N1 --> N3
+  N1 --> N4
+  N1 --> N5
+  N1 --> N6
+  N1 --> N7
+  N1 --> N8
+  N3 --> N9
+  N9 -->|是| N10
+  N4 --> N11
+  N11 -->|是| N12
+  N6 --> N13
+  N13 -->|是| N14
+  N5 --> N15
+  N15 -->|是| N16
+```
+
+> 决策流说明：第⑤节把「结构化绑定解构」作为统一入口；第⑨节指出 if constexpr 让编译期分支取代 ch66 的 SFINAE 技巧，是「可读性」与「老技巧」的或门选择；string_view 必须配合 ch82 的悬垂意识。
+
+
+## 附录 K：C++17 生产力概念依赖网（D6 维度）
+
+以「C++17 生产力」为核心，连接其标准库增强与上下游版本/替代技巧，形成概念网。
+
+```mermaid
+flowchart TD
+  CORE["C++17 生产力"]
+  K1["结构化绑定 (ch32 初始化)"]
+  K2["optional/variant/any (ch88)"]
+  K3["string_view (ch82)"]
+  K4["filesystem (ch91)"]
+  K5["if constexpr (ch69)"]
+  K6["折叠表达式 (ch64)"]
+  K7["并行算法 (ch100)"]
+  K8["class 模板推导 (ch60)"]
+  K9["上游: C++14 (ch05)"]
+  K10["下游: C++20 (ch07)"]
+  K11["SFINAE 替代 (ch66)"]
+  CORE --> K1
+  CORE --> K2
+  CORE --> K3
+  CORE --> K4
+  CORE --> K5
+  CORE --> K6
+  CORE --> K7
+  CORE --> K8
+  CORE --> K9
+  CORE --> K10
+  K5 --> K11
+  K2 --> K6
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → K1 | 结构化绑定解构聚合/元组，见 ch32。 |
+| CORE → K2 | optional/variant/any 提供类型安全容器，见 ch88。 |
+| CORE → K3 | string_view 提供零拷贝字符串视图，见 ch82。 |
+| CORE → K4 | filesystem 标准化文件操作，见 ch91。 |
+| CORE → K5 | if constexpr 让编译期分支显式化，见 ch69。 |
+| CORE → K6 | 折叠表达式简化可变参数处理，见 ch64。 |
+| CORE → K7 | 并行算法为 STL 算法加入执行策略，见 ch100。 |
+| CORE → K8 | class 模板参数推导减少冗余类型，见 ch60。 |
+| CORE → K9 | C++17 建立在 ch05 完善的基础之上。 |
+| CORE → K10 | C++17 打底后 ch07 引入 concepts/ranges。 |
+| K5 → K11 | if constexpr 在多数场景替代 ch66 的 SFINAE 技巧。 |
+| K2 → K6 | variant 常与折叠表达式配合做类型分发。 |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch88 optional_variant | CORE→K2 | ch88 的 sum type 在 ch06 正式稳定。 |
+| ch82 span/string_view | CORE→K3 | ch82 的 string_view 是 ch06 零拷贝视图代表。 |
+| ch91 filesystem | CORE→K4 | ch91 把 ch06 的 filesystem 投入工业使用。 |
+| ch64 折叠表达式 | CORE→K6 | ch64 的 fold 是 ch06 可变参数处理的语法糖。 |
+| ch69 constexpr | CORE→K5 | if constexpr 扩展 ch69 的编译期能力。 |
+| ch07 C++20 | CORE→K10 | ch06 打底后 ch07 引入 concepts/ranges。 |
