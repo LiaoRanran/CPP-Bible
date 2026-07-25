@@ -801,3 +801,108 @@ int main() { std::cout << sum(1, 2, 3, 4) << '\n'; }
 
 </details>
 
+
+
+## 附录 J：C++23 错误处理与库增强决策流（D3 维度）
+
+本节把第⑤节（expected 错误处理流）与第⑭节（WG21 提案）收敛为「失败如何表达、库如何增强」的决策流。
+
+```mermaid
+flowchart TD
+  N1["C++23 发布 (2023)"]
+  N2["std::expected (错误处理)"]
+  N3["std::print / format"]
+  N4["Ranges 深化 (ch119)"]
+  N5["std::flat_map/flat_set"]
+  N6["std::generator (ch113)"]
+  N7["std::mdspan (ch82 多维视图)"]
+  N8["import std"]
+  N9{"函数可能失败?"}
+  N10["用 expected 替代异常 (ch146)"]
+  N11{"需要惰性序列?"}
+  N12["用 generator 协程 (ch113)"]
+  N13{"需要连续 map?"}
+  N14["用 flat_map (ch76)"]
+  N15{"需要多维数组视图?"}
+  N16["用 mdspan (ch82)"]
+  N1 --> N2
+  N1 --> N3
+  N1 --> N4
+  N1 --> N5
+  N1 --> N6
+  N1 --> N7
+  N1 --> N8
+  N2 --> N9
+  N9 -->|是| N10
+  N6 --> N11
+  N11 -->|是| N12
+  N5 --> N13
+  N13 -->|是| N14
+  N7 --> N15
+  N15 -->|是| N16
+```
+
+> 决策流说明：第⑤节用 expected 表达「成功/失败」双通道；第⑭节显示 expected 与 ch146 异常不是非此即彼（或门）——热路径用 expected、罕见错误仍用异常，flat_map 与 mdspan 则是「连续内存」与「零拷贝视图」的与门优化。
+
+
+## 附录 K：C++23 标准库大修概念依赖网（D6 维度）
+
+以「C++23 标准库大修」为核心，连接 expected/ranges/generator 等增强与其依赖的现代章节，形成概念网。
+
+```mermaid
+flowchart TD
+  CORE["C++23 标准库大修"]
+  K1["std::expected (ch146)"]
+  K2["std::print/format (ch81 string)"]
+  K3["Ranges 深化 (ch119)"]
+  K4["flat_map (ch76 stl_arch)"]
+  K5["generator (ch113)"]
+  K6["mdspan (ch82)"]
+  K7["import std (ch118)"]
+  K8["上游: C++20 (ch07)"]
+  K9["下游: C++26 (ch09)"]
+  K10["contracts 预告 (ch121)"]
+  K11["并行算法增强 (ch100)"]
+  CORE --> K1
+  CORE --> K2
+  CORE --> K3
+  CORE --> K4
+  CORE --> K5
+  CORE --> K6
+  CORE --> K7
+  CORE --> K8
+  CORE --> K9
+  CORE --> K10
+  CORE --> K11
+  K3 --> K1
+  K5 --> K3
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → K1 | std::expected 提供类型安全的失败通道，见 ch146。 |
+| CORE → K2 | std::print/format 统一文本格式化，见 ch81。 |
+| CORE → K3 | Ranges 深化增加新适配器，见 ch119。 |
+| CORE → K4 | flat_map/flat_set 用连续内存提升查找性能，见 ch76。 |
+| CORE → K5 | generator 基于协程产出惰性序列，见 ch113。 |
+| CORE → K6 | mdspan 提供多维非拥有视图，见 ch82。 |
+| CORE → K7 | import std 让标准库以模块方式导入，见 ch118。 |
+| CORE → K8 | C++23 建立在 ch07 四大特性之上。 |
+| CORE → K9 | C++23 库的完善在 ch09 继续（contracts 等）。 |
+| CORE → K10 | contracts 在 ch09 正式落地，见 ch121。 |
+| CORE → K11 | 并行算法继续增强，见 ch100。 |
+| K3 → K1 | Ranges 算法可返回 expected 风格的错误。 |
+| K5 → K3 | generator 可作为 ranges 的惰性数据源。 |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch146 错误处理 | CORE→K1 | ch146 把 expected 纳入现代错误处理谱系。 |
+| ch119 ranges 深化 | CORE→K3 | ch119 是 ch08 ranges 增强的底层展开。 |
+| ch113 coroutine | CORE→K5 | ch113 支撑 ch08 的 generator。 |
+| ch82 span | CORE→K6 | mdspan 是 ch82 多维视图的推广。 |
+| ch118 modules | CORE→K7 | import std 依赖 ch118 的模块机制。 |
+| ch09 C++26 | CORE→K9 | ch08 库的完善在 ch09 继续（contracts 等）。 |

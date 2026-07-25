@@ -1536,3 +1536,110 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+
+
+## 附录 J：日志处理决策流（D3 维度）
+
+> 本图把第②节（级别门控 enum class）、第⑩节（LOG 宏注入文件行号）、第⑤节（std format 格式化）、第⑥节（异步队列+后台线程）、第⑦节（按大小/时间轮转）、第⑧节（mutex/无锁线程安全）、第⑨节（if constexpr 零开销关闭级别）、第⑭节（错误报告与错误处理衔接）收敛成一条"业务调用→级别判定→格式化→同步/异步落地→轮转→线程安全"的日志流水线，并标出背压与零开销两条回退边。
+
+```mermaid
+flowchart TD
+  A["LOG_xxx 业务调用"] --> L{"级别 不低于 阈值?"}
+  L -->|否| DROP["编译期 或 运行期 丢弃 零开销"]
+  L -->|是| SRC["捕获 FILE LINE ch146"]
+  SRC --> FMT["std format 格式化 C++20"]
+  FMT --> TS["加时间戳 ts"]
+  TS --> Q{"同步 或 异步?"}
+  Q -->|同步| OUT["直接写 console/file sink"]
+  Q -->|异步| ENQ["入 BoundedQueue 生产者"]
+  ENQ --> W["后台 worker 出队"]
+  W --> ROT{"超过 max_bytes 或 间隔?"}
+  ROT -->|是| ROTATE["轮转 改名备份 开新文件"]
+  ROT -->|否| OUT
+  OUT --> M{"多线程?"}
+  M -->|是| LK["mutex shared_mutex 保护"]
+  M -->|否| DONE["直接落地"]
+  LK --> DONE
+  DROP --> END["结束"]
+  DONE --> END
+  Q -.->|背压| BP["队列过长丢弃低级别 防 OOM"]
+  W -.->|零开销| L0["if constexpr 关闭级别 汇编消除"]
+```
+
+> 决策流说明：级别判定是第一道闸门——只有"不低于阈值"才进入格式化与落地（否则在编译期或运行期直接丢弃，零开销）；同步与异步落地两条边在"输出"处「或」汇合，异步路径又把昂贵的 sink IO 从生产者移走。跨章外推：异步依赖第93章 thread，线程安全依赖第107章 atomic，结构化外推第131章 fmt/spdlog。
+
+
+
+## 附录 K：日志库知识图谱（D6 维度）
+
+
+
+> 本图以本章主题为中心，上游列出其依赖的底层机制（分配/并发/格式化/解析原语），下游列出消费它的系统（框架/网络/日志/测试），并标出跨章外推边。
+
+
+
+```mermaid
+flowchart TD
+  CORE["日志库 (ch161)"]
+  LEVEL["日志级别 enum class"]
+  FORMAT["std format ch131"]
+  SINK["sink 抽象 console/file/network"]
+  ASYNC["异步队列 ch93"]
+  ATOMIC["std atomic ch107"]
+  CHRONO["std chrono ch92"]
+  STRING["std string ch81"]
+  ERROR["错误处理 ch146"]
+  SOURCE["source_location C++20"]
+  SPDLOG["spdlog fmt ch131"]
+  FILESYS["std filesystem ch91"]
+  BENCH["基准 ch151"]
+  CORE --> LEVEL
+  CORE --> FORMAT
+  FORMAT --> SPDLOG
+  CORE --> SINK
+  CORE --> ASYNC
+  ASYNC --> THREAD
+  ASYNC --> ATOMIC
+  CORE --> CHRONO
+  FORMAT --> STRING
+  CORE --> ERROR
+  SOURCE --> LEVEL
+  CORE --> FILESYS
+  CORE --> BENCH
+```
+
+
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → LEVEL | 级别门控用 enum class 整数序 |
+| CORE → FORMAT | 格式化用 std format 类型安全 |
+| FORMAT → SPDLOG | std format 源自 fmt 同 spdlog |
+| CORE → SINK | sink 抽象解耦产生与落地 |
+| CORE → ASYNC | 异步把格式化加 入队移出生产者 |
+| ASYNC → THREAD | 后台 worker 由 std thread 驱动 |
+| ASYNC → ATOMIC | 无锁计数器用 atomic fetch_add |
+| CORE → CHRONO | 时间戳用 std chrono system_clock |
+| FORMAT → STRING | 格式化拼接 std string |
+| CORE → ERROR | 日志不等于错误处理 错误用返回值或异常 |
+| SOURCE → LEVEL | source_location 自动注入文件行号 |
+| CORE → FILESYS | file sink 轮转用 filesystem |
+| CORE → BENCH | steady_clock 基准量化同步vs异步 |
+
+
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| 第131章 fmt/spdlog | Book/part11_source/ch131_fmt_spdlog.md | std format 源自 fmt，spdlog 是异步日志工业标杆 |
+| 第93章 thread/async | Book/part07_stl/ch93_thread_async.md | 异步后台 worker 由 std thread 驱动 |
+| 第107章 atomic | Book/part09_concurrency/ch107_atomic.md | 无锁计数器与队列 CAS 依赖 atomic |
+| 第92章 chrono | Book/part07_stl/ch92_chrono.md | 时间戳与基准都用 std chrono |
+| 第146章 error_handling | Book/part13_engineering/ch146_error_handling.md | 日志不等于错误处理，错误靠返回值或异常传，日志只留痕 |
+| 第81章 string | Book/part07_stl/ch81_string.md | 格式化与转义都基于 std string |
+| 第91章 filesystem | Book/part07_stl/ch91_filesystem.md | file sink 轮转依赖 filesystem 路径操作 |
+| 第151章 benchmark | Book/part13_engineering/ch151_benchmark.md | 同步vs异步基准方法同源 |

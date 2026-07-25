@@ -628,3 +628,107 @@ int main() {
 
 **结论**：指派初始化让聚合体初始化自文档化，尤其适合含默认值的配置结构；
 约束：必须按声明顺序指派、不能跳跃回填、仅适用于聚合体（无用户定义构造函数）。
+
+## 附录 J：C++20 四大特性集成决策流（D3 维度）
+
+本节把第⑤节（Ranges 管道）与第⑭节（WG21 提案）收敛为「四大特性如何按需求单独或组合采用」的决策流。
+
+```mermaid
+flowchart TD
+  N1["C++20 发布 (2020)"]
+  N2["Concepts (ch67)"]
+  N3["Ranges (ch90)"]
+  N4["Coroutines (ch113)"]
+  N5["Modules (ch118)"]
+  N6["std::span (ch82)"]
+  N7["designated init (ch32)"]
+  N8["constexpr/constinit (ch69)"]
+  N9{"需要约束模板参数?"}
+  N10["用 concept 替代 SFINAE (ch66)"]
+  N11{"需要惰性序列处理?"}
+  N12["用 Ranges 管道 (ch90)"]
+  N13{"需要挂起/恢复?"}
+  N14["用 Coroutine (ch113)"]
+  N15{"需要缩短编译?"}
+  N16["用 Modules (ch118)"]
+  N1 --> N2
+  N1 --> N3
+  N1 --> N4
+  N1 --> N5
+  N1 --> N6
+  N1 --> N7
+  N1 --> N8
+  N2 --> N9
+  N9 -->|是| N10
+  N3 --> N11
+  N11 -->|是| N12
+  N4 --> N13
+  N13 -->|是| N14
+  N5 --> N15
+  N15 -->|是| N16
+```
+
+> 决策流说明：第⑭节指出四大特性相互独立（或门）——可单独采用 concepts 或 coroutines；但 concepts 与 ranges 是「与门」组合（ch90 的 view 需 concept 约束），modules 与 constexpr 结合可把更多代码移入编译期（ch69）。
+
+
+## 附录 K：C++20 四大特性概念依赖网（D6 维度）
+
+以「C++20 四大特性」为核心，连接 concepts/ranges/coroutines/modules 及其依赖的现代章节，形成概念网。
+
+```mermaid
+flowchart TD
+  CORE["C++20 四大特性"]
+  K1["Concepts (ch67)"]
+  K2["Ranges (ch90)"]
+  K3["Coroutines (ch113)"]
+  K4["Modules (ch118)"]
+  K5["span (ch82)"]
+  K6["constexpr/constinit (ch69)"]
+  K7["三路比较 <=> (ch31)"]
+  K8["上游: C++17 (ch06)"]
+  K9["下游: C++23 (ch08)"]
+  K10["内存模型 (ch108)"]
+  K11["模板约束替代 SFINAE (ch66)"]
+  CORE --> K1
+  CORE --> K2
+  CORE --> K3
+  CORE --> K4
+  CORE --> K5
+  CORE --> K6
+  CORE --> K7
+  CORE --> K8
+  CORE --> K9
+  CORE --> K10
+  K1 --> K11
+  K1 --> K2
+  K3 --> K10
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → K1 | Concepts 给模板参数加语义约束，见 ch67。 |
+| CORE → K2 | Ranges 提供可组合的惰性序列，见 ch90。 |
+| CORE → K3 | Coroutines 支持挂起/恢复，见 ch113。 |
+| CORE → K4 | Modules 重构编译模型，见 ch118。 |
+| CORE → K5 | span 成为标准非拥有视图，见 ch82。 |
+| CORE → K6 | constexpr/constinit 扩展编译期能力，见 ch69。 |
+| CORE → K7 | 三路比较 <=> 简化比较运算符，见 ch31。 |
+| CORE → K8 | 四大特性建立在 ch06 生产力基础之上。 |
+| CORE → K9 | C++20 基础在 ch08 继续扩展（ranges 深化等）。 |
+| CORE → K10 | 协程与原子涉及 ch108 内存序。 |
+| K1 → K11 | Concepts 替代 ch66 的 SFINAE 约束写法。 |
+| K1 → K2 | Ranges 的 view 用 concept 约束迭代器类别。 |
+| K3 → K10 | Coroutine 帧的发布依赖 ch108 内存序保证。 |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch67 concepts | CORE→K1→K11 | ch67 是 ch07 对 ch66 SFINAE 的现代化替代。 |
+| ch90 ranges | CORE→K2 | ch90 的管道依赖 ch67 concept 约束。 |
+| ch113 coroutine | CORE→K3→K10 | ch113 的挂起帧涉及 ch108 内存序。 |
+| ch118 modules | CORE→K4 | ch118 重构编译模型，缩短 ch156 编译时间。 |
+| ch82 span | CORE→K5 | ch82 span 在 ch07 成为标准视图。 |
+| ch08 C++23 | CORE→K9 | ch07 基础在 ch08 扩展（ranges 深化等）。 |

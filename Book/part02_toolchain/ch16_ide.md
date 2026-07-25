@@ -917,3 +917,110 @@ int main() { std::cout << "clangd 用真实编译命令提供补全/诊断/跳�
 ```
 
 **结论**：LSP + 编译数据库 = 编辑器获得接近重量级 IDE 的语义能力，且配置可复现。
+
+## 附录 J：IDE/语言服务配置决策流（D3 维度）
+
+本图把第①②③④⑤⑥⑦⑧⑨⑫⑬⑭⑰节收敛为"选编辑器→提供 compile_commands→clangd 驱动下游能力"链路，含编辑器与选型两道闸门。
+
+```mermaid
+flowchart TD
+  DEV["开发者环境 (①)"]
+  EDITOR{"编辑器选择?"}
+  VS["VSCode + cpptools (②)"]
+  CL["CLion (④)"]
+  QC["QtCreator (⑤)"]
+  VIM["VIM/Neovim + LSP (⑥)"]
+  CC["compile_commands.json (⑦)"]
+  CLANGD["clangd 语言服务 (⑦)"]
+  FMT["clang-format (⑧)"]
+  TIDY["clang-tidy (⑨)"]
+  REF["重构 (⑩)"]
+  DBG["调试器集成 (⑫)"]
+  REMOTE["远程开发 (⑬)"]
+  TEST["测试集成 (⑭)"]
+  PICK{"选型?"}
+  REC["推荐组合 (⑰)"]
+  DEV --> EDITOR
+  EDITOR --> VS
+  EDITOR --> CL
+  EDITOR --> QC
+  EDITOR --> VIM
+  VS --> CC
+  VIM --> CC
+  CC --> CLANGD
+  CLANGD --> FMT
+  CLANGD --> TIDY
+  CLANGD --> REF
+  CLANGD --> DBG
+  CLANGD --> REMOTE
+  CLANGD --> TEST
+  DBG --> PICK
+  TEST --> PICK
+  PICK --> REC
+```
+
+> 决策流说明：编辑器闸门（EDITOR）在 VSCode/CLion/QtCreator/Neovim 择一，clangd 以 compile_commands.json 为中枢串联格式化/检查/重构/调试/远程/测试，最终选型闸门（PICK）给出推荐组合并外推到 ch144 代码风格与 ch145 命名。
+
+## 附录 K：IDE/语言服务知识图谱（D6 维度）
+
+以"IDE/语言服务"为根，向下分化为各编辑器与 clangd，clangd 再串联格式化、检查、调试等能力，外推到编译器、构建系统与代码风格章节。
+
+```mermaid
+flowchart TD
+  CORE["IDE / 语言服务 (①)"]
+  VS["VSCode cpptools (②)"]
+  CLION["CLion (④)"]
+  CLANGD["clangd + compile_commands (⑦)"]
+  FMT["clang-format (⑧)"]
+  TIDY["clang-tidy (⑨)"]
+  DBG["调试集成 (⑫)"]
+  REMOTE["远程开发 (⑬)"]
+  TESTI["测试集成 (⑭)"]
+  COMPILER["编译器 ch11"]
+  BUILD["构建系统 ch12"]
+  STYLE["代码风格 ch144"]
+  NAMING["命名/API ch145"]
+  CORE --> VS
+  CORE --> CLION
+  CORE --> CLANGD
+  CLANGD --> FMT
+  CLANGD --> TIDY
+  CLANGD --> DBG
+  CLANGD --> REMOTE
+  CLANGD --> TESTI
+  CLANGD --> COMPILER
+  VS --> BUILD
+  CORE --> STYLE
+  CORE --> NAMING
+  TIDY --> BUILD
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → VS | VSCode + cpptools 是主流轻量方案（第②节） |
+| CORE → CLION | CLion 提供全功能索引/重构（第④节） |
+| CORE → CLANGD | clangd 是现代 LSP 中枢（第⑦节） |
+| CLANGD → FMT | clangd 驱动 clang-format（第⑧节） |
+| CLANGD → TIDY | clangd 驱动 clang-tidy（第⑨节） |
+| CLANGD → DBG | clangd 与调试器集成（第⑫节） |
+| CLANGD → REMOTE | clangd 支持远程开发（第⑬节） |
+| CLANGD → TESTI | clangd 集成单元测试（第⑭节） |
+| CLANGD → COMPILER | clangd 复用编译器前端做诊断（第⑦节与 ch11 衔接） |
+| VS → BUILD | 构建系统生成 compile_commands.json（第⑦节与 ch12 衔接） |
+| CORE → STYLE | clang-format 落地团队风格（第⑧节外推） |
+| CORE → NAMING | IDE 辅助 API 一致性（第⑩节外推） |
+| TIDY → BUILD | clang-tidy 检查依赖构建编译命令（第⑨节与 ch12 衔接） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](Book/part02_toolchain/ch11_compilers.md) | clangd 复用编译器前端做诊断（第⑦节与 ch11 衔接） |
+| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](Book/part02_toolchain/ch12_buildsystems.md) | 构建系统生成 compile_commands.json（第⑦节与 ch12 衔接） |
+| ch144 代码风格 | [Book/part13_engineering/ch144_style.md](Book/part13_engineering/ch144_style.md) | clang-format 落地团队风格（第⑧节外推） |
+| ch145 命名/API | [Book/part13_engineering/ch145_naming_api.md](Book/part13_engineering/ch145_naming_api.md) | IDE 辅助 API 一致性（第⑩节外推） |
+| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | IDE 封装 GDB/LLDB 调试（第⑫节与 ch14 衔接） |
+| ch150 测试 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | IDE 运行单元测试（第⑭节外推） |
+

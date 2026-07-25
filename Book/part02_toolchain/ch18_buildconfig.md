@@ -933,3 +933,121 @@ int main() { std::cout << "PGO + 基准门禁 = 性能回归早知道\n"; }
 ```
 
 **结论**：构建配置（PGO/LTO/断言开关）与 CI 基准结合，把“性能”从一次性优化变成可守护的长期指标。
+
+## 附录 J：构建配置决策流（D3 维度）
+
+本图把第①②③⑤⑥⑦⑨⑪⑫⑮⑯⑰节收敛为"档位→优化/LTO/PGO→断言→链接→加固/可重现"链路，含档位、LTO、PGO、断言与链接五道闸门。
+
+```mermaid
+flowchart TD
+  BUILD["构建配置 (①)"]
+  PROFILE{"构建档?"}
+  DBG["Debug -O0 -g (②)"]
+  REL["Release -O2 (③)"]
+  FAST["-Ofast 浮点 (⑤)"]
+  LTO{"LTO?"}
+  LTOON["-flto 跨 TU (⑥)"]
+  LTOOFF["无 LTO (⑥)"]
+  PGO{"PGO?"}
+  PGOON["-fprofile 训练 (⑦)"]
+  PGOOFF["无 PGO (⑦)"]
+  ASSERT{"断言?"}
+  NDB["NDEBUG 关闭 (②)"]
+  ASRT["assert 开启 (⑨)"]
+  LINK{"链接?"}
+  STAT["静态 .a (⑪)"]
+  DYN["动态 .so (⑪)"]
+  HARD["hardening PIE/RELRO (⑫)"]
+  SAN["sanitizer -fsanitize (⑮)"]
+  REPRO["可重现 -ffile-prefix-map (⑯)"]
+  RELC["发布配置 (⑰)"]
+  BUILD --> PROFILE
+  PROFILE --> DBG
+  PROFILE --> REL
+  REL --> FAST
+  REL --> LTO
+  LTO --> LTOON
+  LTO --> LTOOFF
+  REL --> PGO
+  PGO --> PGOON
+  PGO --> PGOOFF
+  DBG --> ASSERT
+  REL --> ASSERT
+  ASSERT --> NDB
+  ASSERT --> ASRT
+  REL --> LINK
+  DBG --> LINK
+  LINK --> STAT
+  LINK --> DYN
+  REL --> HARD
+  DBG --> SAN
+  REL --> REPRO
+  REL --> RELC
+```
+
+> 决策流说明：档位闸门（PROFILE）选 Debug/Release，LTO 与 PGO 闸门决定是否启用跨 TU 优化与训练，断言闸门（ASSERT）依 NDEBUG 开关，并外推到 ch156 编译优化实证与 ch149 CI 持续守护。
+
+## 附录 K：构建配置知识图谱（D6 维度）
+
+以"构建配置"为枢纽，汇聚 Debug/Release、优化级别、LTO/PGO、断言、链接、hardening 与 sanitizer，外推到编译器、构建系统与发布流水线。
+
+```mermaid
+flowchart TD
+  CORE["构建配置 (①)"]
+  DEBUG["Debug/Release NDEBUG (②)"]
+  OPT["优化级别 -O0/-O2 (③)"]
+  LTO["LTO (⑥)"]
+  PGO["PGO (⑦)"]
+  ASSERT["断言/契约 (⑨)"]
+  SYM["符号/strip (⑩)"]
+  LINKG["静态/动态链接 (⑪)"]
+  HARD["hardening (⑫)"]
+  WARN["警告等级 (⑭)"]
+  SAN["sanitizer (⑮)"]
+  COMPILER["编译器 ch11"]
+  BUILD["构建系统 ch12"]
+  RELEASE["发布 ch149"]
+  CORE --> DEBUG
+  CORE --> OPT
+  OPT --> LTO
+  OPT --> PGO
+  CORE --> ASSERT
+  CORE --> SYM
+  CORE --> LINKG
+  CORE --> HARD
+  CORE --> WARN
+  CORE --> SAN
+  OPT --> COMPILER
+  DEBUG --> BUILD
+  CORE --> RELEASE
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → DEBUG | 构建配置首分 Debug/Release（第②节） |
+| CORE → OPT | 优化级别是核心维度（第③节） |
+| OPT → LTO | 优化可叠加 LTO（第⑥节） |
+| OPT → PGO | 优化可叠加 PGO（第⑦节） |
+| CORE → ASSERT | 断言受 NDEBUG 控制（第⑨节） |
+| CORE → SYM | 符号与 strip 取舍（第⑩节） |
+| CORE → LINKG | 静态/动态链接选择（第⑪节） |
+| CORE → HARD | hardening 加固选项（第⑫节） |
+| CORE → WARN | 警告等级提升代码质量（第⑭节） |
+| CORE → SAN | sanitizer 集成（第⑮节） |
+| OPT → COMPILER | 优化级别即编译器旗标（第③节与 ch11 ⑫衔接） |
+| DEBUG → BUILD | 构建系统注入配置档（第⑰节与 ch12 衔接） |
+| CORE → RELEASE | 发布配置接入 CI（第⑰节外推） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch11 编译器 | [Book/part02_toolchain/ch11_compilers.md](Book/part02_toolchain/ch11_compilers.md) | 优化级别即编译器旗标（第③节与 ch11 ⑫衔接） |
+| ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](Book/part02_toolchain/ch12_buildsystems.md) | 构建系统注入配置档（第⑰节与 ch12 衔接） |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | 发布配置接入持续集成（第⑰节外推） |
+| ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | LTO/PGO 优化实证对照（第⑥⑦节与 ch156 衔接） |
+| ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | -g/strip 影响调试体验（第⑩节与 ch14 ⑫衔接） |
+| ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](Book/part02_toolchain/ch13_packaging.md) | 链接方式影响包二进制分发（第⑪节与 ch13 衔接） |
+

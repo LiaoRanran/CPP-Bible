@@ -849,3 +849,110 @@ int main() {
 
 **结论**：`shared_ptr` 适合真正的共享所有权；一旦出现环，必须让其中一个方向持 `weak_ptr`。
 默认优先 `unique_ptr`，仅在确需共享时升级为 `shared_ptr`——引用计数是原子操作，有并发开销。
+
+## 附录 J：C++11 现代化特性落地决策流（D3 维度）
+
+本节把第③节（后续依赖）所列 ch115/ch26/ch22/ch41/ch60/ch107 与第⑤节（移动语义数据流）收敛为「何时启用哪个现代设施」的决策流。
+
+```mermaid
+flowchart TD
+  N1["C++11 发布 (2011)"]
+  N2["移动语义 (ch115)"]
+  N3["右值引用 / 完美转发 (ch116)"]
+  N4["auto / decltype (ch22)"]
+  N5["lambda (ch26)"]
+  N6["智能指针 (ch41)"]
+  N7{"右值引用是否可用?"}
+  N8["启用移动构造"]
+  N9{"需要可调用对象?"}
+  N10["用 lambda 替代 functor"]
+  N11{"需要共享所有权?"}
+  N12["shared_ptr"]
+  N13["unique_ptr (零开销)"]
+  N14["并发: atomic/线程 (ch107/ch93)"]
+  N15["模板: variadic (ch60/ch63)"]
+  N16["constexpr 雏形 (ch69)"]
+  N1 --> N2
+  N1 --> N3
+  N1 --> N4
+  N1 --> N5
+  N1 --> N6
+  N2 --> N7
+  N7 -->|是| N8
+  N7 -->|否| N9
+  N5 --> N9
+  N9 -->|是| N10
+  N6 --> N11
+  N11 -->|是| N12
+  N11 -->|否| N13
+  N1 --> N14
+  N1 --> N15
+  N1 --> N16
+```
+
+> 决策流说明：第③节把 C++11 的「现代 C++ 革命」收敛为若干与门——只有存在右值引用（与门前提）才启用移动构造（N8），只有需要共享所有权才付出 shared_ptr 的原子成本（否走 unique_ptr），否则按 ch41 选择零开销方案。
+
+
+## 附录 K：C++11 现代革命概念依赖网（D6 维度）
+
+以「C++11 现代革命」为核心，连接其引入的关键设施与下游版本，形成概念依赖网。
+
+```mermaid
+flowchart TD
+  CORE["C++11 现代革命"]
+  K1["移动语义 (ch115)"]
+  K2["完美转发 (ch116)"]
+  K3["auto/decltype (ch22)"]
+  K4["lambda (ch26)"]
+  K5["智能指针 (ch41)"]
+  K6["模板 variadic (ch63)"]
+  K7["原子/线程 (ch107/ch93)"]
+  K8["constexpr 雏形 (ch69)"]
+  K9["强类型枚举 (ch24)"]
+  K10["统一初始化 (ch32)"]
+  K11["下游: C++14 (ch05)"]
+  CORE --> K1
+  CORE --> K2
+  CORE --> K3
+  CORE --> K4
+  CORE --> K5
+  CORE --> K6
+  CORE --> K7
+  CORE --> K8
+  CORE --> K9
+  CORE --> K10
+  K1 --> K4
+  K5 --> K7
+  K1 --> K2
+  CORE --> K11
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → K1 | 移动语义是 C++11 最核心的零拷贝抽象（第⑤节数据流）。 |
+| CORE → K2 | 完美转发配合右值引用实现透明参数传递，见 ch116。 |
+| CORE → K3 | auto/decltype 简化类型书写，见 ch22。 |
+| CORE → K4 | lambda 提供内联可调用对象，见 ch26。 |
+| CORE → K5 | unique_ptr/shared_ptr 接管所有权，见 ch41。 |
+| CORE → K6 | variadic 模板支持参数包，见 ch63。 |
+| CORE → K7 | atomic 与线程库提供并发原语，见 ch107/ch93。 |
+| CORE → K8 | constexpr 雏形把计算移入编译期，见 ch69。 |
+| CORE → K9 | 强类型枚举修复 C 枚举缺陷，见 ch24。 |
+| CORE → K10 | 统一初始化收敛初始化语法，见 ch32。 |
+| K1 → K4 | 移动语义让 lambda 可移动捕获对象（见 ch26）。 |
+| K5 → K7 | shared_ptr 控制块依赖 ch107 原子计数。 |
+| K1 → K2 | 完美转发建立在移动语义的右值引用之上。 |
+| CORE → K11 | C++11 的所有设施被 ch05 延续完善。 |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch115 移动语义 | CORE→K1 | ch115 是 C++11 最核心的零拷贝抽象，第⑤节数据流图即其展开。 |
+| ch41 智能指针 | CORE→K5→K7 | ch41 的 shared_ptr 控制块依赖 ch107 原子。 |
+| ch26 lambda | CORE→K1→K4 | 移动语义让 lambda 捕获可移动对象，见 ch26。 |
+| ch22 auto_decltype | CORE→K3 | auto 大幅简化 ch60 模板代码。 |
+| ch05 C++14 | CORE→K11 | ch05 的泛型 lambda 建立在 ch04 lambda 之上。 |
+| ch60 模板基础 | CORE→K6 | variadic 模板是 ch60 基础能力的扩展。 |

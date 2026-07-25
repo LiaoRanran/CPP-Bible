@@ -1085,3 +1085,108 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+
+
+## 附录 J：线程池任务处理决策流（D3 维度）
+
+> 本图把第②节（任务队列/worker）、第⑤节（push/pop 与谓词防虚假唤醒）、第⑥⑫节（submit 与 future）、第⑧⑨节（stop 与 jthread 协作取消）、第⑭⑱节（无锁队列与 work-stealing）收敛成一条"提交→唤醒→取任务→执行→取结果"的处理流水线，并标出同步/无锁两条回退边。
+
+```mermaid
+flowchart TD
+  S["submit task 调用方投递"] --> Q{"队列空 且 stop_?"}
+  Q -->|否 入队| P["push 到 TaskQueue"]
+  P --> N["cv notify_one 唤醒一个 worker"]
+  N --> W["worker 循环 cv wait 被唤醒"]
+  W --> D{"stop load 且 队列空?"}
+  D -->|是| X["worker 退出 return"]
+  D -->|否| G["pop 取任务 谓词防虚假唤醒"]
+  G --> E{"任务内抛异常?"}
+  E -->|是| F["packaged_task 捕获 存入 future"]
+  E -->|否| R["直接执行任务"]
+  F --> C["调用方 future get 取结果或异常"]
+  R --> C
+  C --> S2{"submit 时 stop_?"}
+  S2 -->|是| ERR["抛 runtime_error 拒绝提交"]
+  S2 -->|否| OK["入队成功 返回 future"]
+  N -.->|高竞争| LS["work-stealing 从其他 worker 偷任务"]
+  D -.->|无锁队列| L["CAS enqueue dequeue lock-free"]
+```
+
+> 决策流说明：submit 与 worker 唤醒之间是「与」关系——只有 stop_ 为假「且」队列非空才真正取任务执行；异常分支与正常分支在 future.get 处「或」汇合（任务内抛错由 packaged_task 捕获转发，否则直接返回结果）。跨章外推：无锁路径依赖第107章 atomic 与第110章 lock-free，停止语义外推第94章 stop_token。
+
+
+
+## 附录 K：线程池知识图谱（D6 维度）
+
+
+
+> 本图以本章主题为中心，上游列出其依赖的底层机制（分配/并发/格式化/解析原语），下游列出消费它的系统（框架/网络/日志/测试），并标出跨章外推边。
+
+
+
+```mermaid
+flowchart TD
+  CORE["线程池 (ch159)"]
+  TASK["任务队列 TaskQueue"]
+  FUTURE["std future packaged_task"]
+  JTHREAD["std jthread C++20"]
+  ATOMIC["std atomic ch107"]
+  MEMORY["内存序 ch108"]
+  LOCKFREE["无锁队列 ch110"]
+  ASYNC["std async ch93"]
+  THREAD["std thread ch93"]
+  POOLMEM["内存池 ch44"]
+  BENCH["性能基准 ch151"]
+  STOP["stop_token ch94"]
+  WORKSTEAL["work-stealing TBB"]
+  CORE --> TASK
+  CORE --> FUTURE
+  CORE --> THREAD
+  CORE --> STOP
+  STOP --> ATOMIC
+  ATOMIC --> MEMORY
+  TASK --> LOCKFREE
+  LOCKFREE --> MEMORY
+  FUTURE --> ASYNC
+  ASYNC --> THREAD
+  JTHREAD --> STOP
+  CORE --> BENCH
+  CORE --> WORKSTEAL
+  CORE --> POOLMEM
+```
+
+
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → TASK | 线程池依赖任务队列解耦生产者与消费者 |
+| CORE → FUTURE | submit 返回 future 取回任务结果 |
+| CORE → THREAD | worker 由 std thread 常驻驱动 |
+| CORE → STOP | stop_ 用 atomic bool 表达停止语义 |
+| STOP → ATOMIC | stop_ 是 std atomic 避免 data race |
+| ATOMIC → MEMORY | CAS 内存序对应 fetch_add acquire 汇编 |
+| TASK → LOCKFREE | 无锁队列用 atomic CAS 实现 |
+| LOCKFREE → MEMORY | lock-free 必须正确选 memory_order |
+| FUTURE → ASYNC | packaged_task 与 async 同源思想 |
+| ASYNC → THREAD | async 内部起 std thread |
+| JTHREAD → STOP | jthread 自动注入 stop_token 协作取消 |
+| CORE → BENCH | steady_clock 基准量化 4.41x 加速 |
+| CORE → WORKSTEAL | 进阶 work-stealing 减负中心队列 |
+| CORE → POOLMEM | 任务对象生命周期靠内存池或智能指针 |
+
+
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| 第107章 atomic | Book/part09_concurrency/ch107_atomic.md | 无锁队列的 CAS 与 stop_ 标志都基于 std atomic，避免 data race |
+| 第108章 memory_order | Book/part09_concurrency/ch108_memory_order.md | fetch_add 编译为 lock xadd、acquire load 编译为 mov，对应本张汇编取证 |
+| 第110章 lock-free | Book/part09_concurrency/ch110_lockfree.md | Vyukov 有界环形队列是 F2 无锁路径的工业级升级 |
+| 第93章 thread/async | Book/part07_stl/ch93_thread_async.md | 线程池与 std async 的取舍，是本张第⑱对比主题 |
+| 第44章 memory_pool | Book/part04_memory/ch44_memory_pool.md | 任务对象生命周期由内存池或智能指针接管，避免悬垂 |
+| 第151章 benchmark | Book/part13_engineering/ch151_benchmark.md | 4.41x 加速数字来自 steady_clock 基准，方法同源 |
+| 第94章 stop_token | Book/part07_stl/ch94_stop_token.md | jthread 的 stop_token 是 C++20 语言级停止语义 |

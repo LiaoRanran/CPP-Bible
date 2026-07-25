@@ -1290,3 +1290,113 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+
+
+## 附录 J：框架启动与运行决策流（D3 维度）
+
+> 本图把第③节（插件自注册）、第④节（reactor 事件总线）、第⑤节（INI 配置）、第⑥节（DI 容器）、第⑨节（MiniFW 完整生命周期）、第⑩节（RAII 生命周期）、第⑪节（中间件扩展点）、第⑫节（内置测试）收敛成一条"加载配置→静态期自注册→start 实例化→事件循环→扩展点拦截→stop 逆序析构"的框架运行流水线，并标出无组件可启动的失败回退边。
+
+```mermaid
+flowchart TD
+  A["main 加载配置 mini.conf"] --> CFG["Config load INI/JSON"]
+  CFG --> REG{"有自注册组件?"}
+  REG -->|静态构造期| AUTO["AutoReg 自注册进 Registry"]
+  AUTO --> START["Framework start"]
+  REG -->|无| ERR["无组件可启动"]
+  START --> INST["遍历 factories 实例化组件"]
+  INST --> DI["注入 Container DI ch141"]
+  DI --> PUB["bus publish startup"]
+  PUB --> RUN["run ticks 主循环"]
+  RUN --> TICK{"每帧?"}
+  TICK --> DISP["bus publish tick 到 各 handler"]
+  DISP --> EXT{"扩展点拦截?"}
+  EXT -->|中间件管道| MW["Auth/Log/Block 链式处理"]
+  EXT -->|否| COMP["组件 onTick 执行业务"]
+  MW --> COMP
+  COMP --> STOP{"ticks 用尽 或 stop?"}
+  STOP -->|否| TICK
+  STOP -->|是| SHUT["framework stop 逆序 stop 组件"]
+  SHUT --> RAII["RAII 析构释放 socket/file/thread"]
+```
+
+> 决策流说明：自注册是「与」前置条件——只有 Registry 里有组件，start 才能实例化；每帧的扩展点拦截是「或」分支（中间件管道「或」直接业务），tick 循环持续到 ticks 用尽或显式 stop 才进入逆序析构。跨章外推：DI 外推第141章，事件循环外推第93章，配置/日志/网络外推第162/161/163章。
+
+
+
+## 附录 K：迷你框架知识图谱（D6 维度）
+
+
+
+> 本图以本章主题为中心，上游列出其依赖的底层机制（分配/并发/格式化/解析原语），下游列出消费它的系统（框架/网络/日志/测试），并标出跨章外推边。
+
+
+
+```mermaid
+flowchart TD
+  CORE["迷你框架 (ch164)"]
+  DI["依赖注入 ch141"]
+  PATTERNS["设计模式 ch135"]
+  CRTP["CRTP ch51"]
+  POLICY["策略模板 ch71"]
+  VIRTUAL["虚函数 ch47"]
+  THREAD["std thread 事件循环 ch93"]
+  LOGGER["日志 ch161"]
+  NET["网络 ch163"]
+  JSON["配置 JSON ch162"]
+  MEMRED["内存池 ch44"]
+  TEST["测试 ch150"]
+  RAII["RAII 生命周期 ch39"]
+  CORE --> DI
+  CORE --> PATTERNS
+  CORE --> CRTP
+  CORE --> POLICY
+  CORE --> VIRTUAL
+  CORE --> THREAD
+  CORE --> LOGGER
+  CORE --> NET
+  CORE --> JSON
+  CORE --> MEMRED
+  CORE --> TEST
+  CORE --> RAII
+  DI --> VIRTUAL
+```
+
+
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → DI | 框架用依赖注入容器解耦 |
+| CORE → PATTERNS | 扩展点用设计模式 |
+| CORE → CRTP | 零开销扩展用 CRTP 静态多态 |
+| CORE → POLICY | 策略模板做编译期可配 |
+| CORE → VIRTUAL | 插件接口用虚函数分派 |
+| CORE → THREAD | 事件循环由 std thread 驱动 |
+| CORE → LOGGER | 框架集成日志做可观测 |
+| CORE → NET | 框架集成网络做后端 |
+| CORE → JSON | 配置用 JSON 解析注入 |
+| CORE → MEMRED | 组件缓冲借鉴内存池 |
+| CORE → TEST | 内置测试运行器做回归 |
+| CORE → RAII | 生命周期用 RAII 统一释放 |
+| DI → VIRTUAL | DI 按接口解析，接口即虚基类 |
+
+
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| 第141章 DI | Book/part12_patterns/ch141_di.md | 框架依赖注入容器按接口解析服务 |
+| 第135章 patterns | Book/part12_patterns/ch135_patterns_intro.md | 扩展点用观察者/策略/模板方法等模式 |
+| 第51章 CRTP | Book/part05_oo/ch51_crtp.md | 零开销扩展用 CRTP 静态多态 |
+| 第71章 policy | Book/part06_templates/ch71_policy.md | 策略模板做编译期可配 |
+| 第47章 virtual | Book/part05_oo/ch47_virtual_functions.md | 插件接口用虚函数分派 |
+| 第93章 thread/async | Book/part07_stl/ch93_thread_async.md | 事件循环由 std thread 驱动 |
+| 第161章 logger | Book/part15_cases/ch161_logger.md | 框架集成日志做可观测 |
+| 第163章 net | Book/part15_cases/ch163_net.md | 框架集成网络做后端 |
+| 第162章 json | Book/part15_cases/ch162_json.md | 配置用 JSON 解析注入 |
+| 第44章 memory_pool | Book/part04_memory/ch44_memory_pool.md | 组件缓冲借鉴内存池 |
+| 第150章 testing | Book/part13_engineering/ch150_testing.md | 内置测试运行器做回归 |
+| 第39章 RAII | Book/part04_memory/ch39_raii_rule.md | 生命周期用 RAII 统一释放 |

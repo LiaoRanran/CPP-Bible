@@ -534,3 +534,110 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+
+## 附录 J：C++26 方向性特性评估决策流（D3 维度）
+
+本节把第⑤节（sender/receiver 执行器）、第⑨节（调用栈）与第⑭节（WG21 提案，可能变动）收敛为「方向性特性如何评估取舍」的决策流。
+
+```mermaid
+flowchart TD
+  N1["C++26 草案 (可能变动)"]
+  N2["std::execution 执行器 (P2300)"]
+  N3["Contracts (P2900, ch121)"]
+  N4["静态反射 (编译期)"]
+  N5["constexpr 扩展 (ch69)"]
+  N6["Hazard Pointers (ch112)"]
+  N7["RCU (ch112)"]
+  N8{"需要异步流水线?"}
+  N9["用 sender/receiver (ch93 async)"]
+  N10{"需要前置/后置条件?"}
+  N11["用 Contracts 替代断言 (ch121)"]
+  N12{"需要编译期类型内省?"}
+  N13["用静态反射 (ch123 ct_programming)"]
+  N14{"需要无锁安全回收?"}
+  N15["用 hazard/RCU (ch112)"]
+  N16["进入版本 train (ch10)"]
+  N1 --> N2
+  N1 --> N3
+  N1 --> N4
+  N1 --> N5
+  N1 --> N6
+  N1 --> N7
+  N2 --> N8
+  N8 -->|是| N9
+  N3 --> N10
+  N10 -->|是| N11
+  N4 --> N12
+  N12 -->|是| N13
+  N6 --> N14
+  N14 -->|是| N15
+  N1 --> N16
+```
+
+> 决策流说明：第⑭节强调 C++26 提案「可能变动」——execution 与 contracts 是或门独立特性；contracts 取代手工断言（与 ch121 衔接），反射+constexpr 把更多运行期逻辑前移（ch69/ch123），hazard/RCU 收敛 ch112 的无锁回收难题。
+
+
+## 附录 K：C++26 方向概念依赖网（D6 维度）
+
+以「C++26 方向」为核心，连接 execution/contracts/反射等方向性特性与它们依赖的现代章节，形成概念网。
+
+```mermaid
+flowchart TD
+  CORE["C++26 方向"]
+  K1["std::execution (ch93 async)"]
+  K2["Contracts (ch121)"]
+  K3["静态反射 (ch123 ct_programming)"]
+  K4["constexpr 扩展 (ch69)"]
+  K5["Hazard/RCU (ch112)"]
+  K6["上游: C++23 (ch08)"]
+  K7["版本 train (ch10)"]
+  K8["并发基础 (ch107 atomic)"]
+  K9["内存序 (ch108)"]
+  K10["模板约束 (ch67 concepts)"]
+  K11["下游工业采纳 (ch156)"]
+  CORE --> K1
+  CORE --> K2
+  CORE --> K3
+  CORE --> K4
+  CORE --> K5
+  CORE --> K6
+  CORE --> K7
+  CORE --> K8
+  CORE --> K9
+  CORE --> K10
+  CORE --> K11
+  K1 --> K8
+  K5 --> K9
+  K3 --> K4
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CORE → K1 | std::execution 提供 sender/receiver 异步模型，见 ch93。 |
+| CORE → K2 | Contracts 在标准层提供前置/后置条件，见 ch121。 |
+| CORE → K3 | 静态反射在编译期暴露类型元数据，见 ch123。 |
+| CORE → K4 | constexpr 进一步扩展，见 ch69。 |
+| CORE → K5 | Hazard Pointers/RCU 提供无锁安全回收，见 ch112。 |
+| CORE → K6 | C++26 建立在 ch08 标准库大修之上。 |
+| CORE → K7 | 方向性特性最终并入版本 train，见 ch10。 |
+| CORE → K8 | 执行器建立在 ch107 原子与线程之上。 |
+| CORE → K9 | 无锁回收依赖 ch108 内存序。 |
+| CORE → K10 | 约束与反射仍基于 ch67 concepts。 |
+| CORE → K11 | 工业采纳度影响最终优化质量，见 ch156。 |
+| K1 → K8 | execution 的调度器依赖 ch107 并发原语。 |
+| K5 → K9 | hazard/RCU 的正确性由 ch108 内存序保证。 |
+| K3 → K4 | 静态反射常与 constexpr 配合做编译期内省。 |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch121 contracts | CORE→K2 | ch121 是 C++26 contracts 的提前落地参考。 |
+| ch93 thread_async | CORE→K1→K8 | std::execution 建立在 ch93 异步模型之上。 |
+| ch112 hazard_rcu | CORE→K5→K9 | hazard/RCU 依赖 ch108 内存序保证。 |
+| ch123 ct_programming | CORE→K3→K4 | 静态反射是 ch123 编译期编程的高阶形态。 |
+| ch10 版本矩阵 | CORE→K7 | ch10 记录 C++26 何时并入 train。 |
+| ch156 编译器优化 | CORE→K11 | ch156 决定 C++26 特性的最终优化质量。 |
