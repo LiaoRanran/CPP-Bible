@@ -726,3 +726,101 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+
+
+## 附录 J：审查管线时序图（D3 维度）
+
+把第②–⑲节的审查流程画成一条端到端时序：作者推送分支后用静态分析与编译器警告预筛，审查者按清单核对的同类缺陷，最后由 CI 门禁（ch149）做硬性收口，才批准合并。
+
+```mermaid
+sequenceDiagram
+  participant 作者
+  participant PR
+  participant 静态分析 as clang-tidy
+  participant 编译器 as g++ -Wall
+  participant 审查者
+  participant CI as CI 门禁 (ch149)
+  作者->>PR: 推送分支 + Conventional Commit (ch148)
+  PR->>静态分析: 触发 clang-tidy
+  静态分析-->PR: 返回告警 / 坏味道
+  PR->>编译器: 编译 -Wall -Wextra -Werror
+  编译器-->PR: 返回零警告确认
+  审查者->>PR: 按清单审查 (正确性/安全/性能/可读)
+  PR->>CI: 进入门禁 (ch149)
+  CI-->审查者: 全绿
+  审查者->>PR: 批准并合并
+```
+
+> 时序说明：静态分析与编译器是"机器预筛"两道闸，审查者聚焦机器难判的可读性与设计，CI 是最后不可绕过的硬门（外推 ch149）。
+
+## 附录 K：代码审查知识图谱（D6 维度）
+
+代码审查是一张以"多维度清单"为根的网：正确性/安全/性能/可读四类人工审查，外加静态分析、编译器警告、坏味道、并发缺陷、内存安全、API 兼容、测试覆盖、提交规范八条专项，最终全部汇入 CI 门禁（ch149）。
+
+```mermaid
+flowchart TD
+  CR["代码审查"]
+  CORR["正确性审查"]
+  SEC["安全审查 CVE/OWASP"]
+  PERF["性能回归审查 (ch151)"]
+  READ["可读性审查"]
+  STAT["静态分析 clang-tidy"]
+  WARN["编译器警告 -Wall (ch14)"]
+  SMELL["坏味道 / 重构"]
+  CONC["并发缺陷审查 (ch107)"]
+  MEM["内存安全 UB 审查"]
+  API["API 兼容审查 (ch145)"]
+  TEST["测试覆盖审查 (ch150)"]
+  COMMIT["提交规范 (ch148)"]
+  CI["CI 门禁 (ch149)"]
+  CR --> CORR
+  CR --> SEC
+  CR --> PERF
+  CR --> READ
+  CR --> STAT
+  STAT --> WARN
+  CR --> SMELL
+  CR --> CONC
+  CR --> MEM
+  CR --> API
+  CR --> TEST
+  CR --> COMMIT
+  COMMIT --> CI
+  TEST --> CI
+  PERF --> CI
+  API --> CI
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| CR → CORR | 正确性是审查第一优先级（第②节） |
+| CR → SEC | 安全审查覆盖 CVE/OWASP（第⑭节） |
+| CR → PERF | 性能回归由审查兜底（第⑬节，外推 ch151） |
+| CR → READ | 可读性是长期维护成本（第②节） |
+| CR → STAT | 静态分析是机器预筛（第③节） |
+| STAT → WARN | clang-tidy 与编译器警告同源（第④节） |
+| CR → SMELL | 坏味道触发重构建议（第⑤节） |
+| CR → CONC | 并发缺陷需专项审查（第⑥节，外推 ch107） |
+| CR → MEM | 内存安全/UB 是硬伤（第⑦节） |
+| CR → API | API 兼容性防破坏（第⑧节，外推 ch145） |
+| CR → TEST | 测试覆盖不足即缺陷（第⑨节，外推 ch150） |
+| CR → COMMIT | 提交规范影响可追溯（第⑩节，外推 ch148） |
+| COMMIT → CI | 提交信息进 CI 检查（外推 ch149） |
+| TEST → CI | 覆盖率门禁进 CI（外推 ch149） |
+| PERF → CI | 性能回归门禁进 CI（外推 ch149） |
+| API → CI | API 兼容门禁进 CI（外推 ch149） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch145 命名与 API | [Book/part13_engineering/ch145_naming_api.md](Book/part13_engineering/ch145_naming_api.md) | §⑧ API 兼容性审查 |
+| ch148 Git 工作流 | [Book/part13_engineering/ch148_gitflow.md](Book/part13_engineering/ch148_gitflow.md) | §⑩ 提交信息规范 |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | §⑫ 自动化门禁 |
+| ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | §⑨ 测试覆盖审查 |
+| ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | §⑬ 性能回归审查 |
+| ch107 原子操作 | [Book/part09_concurrency/ch107_atomic.md](Book/part09_concurrency/ch107_atomic.md) | §⑥ 并发缺陷审查 |
+| ch14 调试与诊断 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | §④ 编译器警告实证 |

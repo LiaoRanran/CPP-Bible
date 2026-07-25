@@ -1358,3 +1358,110 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+
+
+
+## 附录 J：可信基准六步法（D3 维度）
+
+把第②–⑲节的方法学收敛成一条带反馈环的流程：写基准后依次确认防优化、预热、多次运行三要件，做统计与 DCE 校验，最后出报告并接入 CI 回归（ch149）。任一环缺失都回退补做。
+
+```mermaid
+flowchart TD
+  START["编写基准"]
+  Q1{"防优化?"}
+  GUARD["volatile / asm volatile 屏障 (ch30 / ch151③)"]
+  Q2{"已预热?"}
+  WARM["预热 + 稳定"]
+  Q3{"多次运行?"}
+  RUN["重复测量 N 次"]
+  STAT["统计 中位数/方差 (ch151⑥)"]
+  DCE["确认无 DCE (ch151⑭)"]
+  REP["报告 + 可视化"]
+  CI["接入 CI 回归 (ch149)"]
+  START --> Q1
+  Q1 -->|否| GUARD
+  GUARD --> Q1
+  Q1 -->|是| Q2
+  Q2 -->|否| WARM
+  WARM --> Q2
+  Q2 -->|是| Q3
+  Q3 -->|否| RUN
+  RUN --> Q3
+  Q3 -->|是| STAT
+  STAT --> DCE
+  DCE -->|未消除| GUARD
+  DCE -->|已消除| REP
+  REP --> CI
+```
+
+> 六步法说明：防优化（第③节）与 DCE 校验（第⑭节）是可信度的两条命门，二者都依赖 ch30 的 volatile 屏障知识；预热（第⑤节）与统计（第⑥节）决定数字的代表性。
+
+## 附录 K：基准测试知识图谱（D6 维度）
+
+基准测试是一张以"可信度量"为目标的网：微/宏基准、防优化、chrono 计时、预热、统计、Google Benchmark、perf/cachegrind 七条方法学并列，编译器优化（ch156）向下串联 cache miss、虚函数 vs 内联（ch47）、SIMD（ch155）、多线程（ch142）四类底层因素，最终汇入 CI 回归（ch149）与测试（ch150）。
+
+```mermaid
+flowchart TD
+  BENCH["基准测试与性能度量"]
+  MICRO["微基准 vs 宏基准"]
+  GUARD["防优化 volatile/asm (ch30)"]
+  CHRONO["std::chrono 计时 (ch92)"]
+  WARM["预热与稳定"]
+  STAT["统计 均值/中位数/方差"]
+  GB["Google Benchmark"]
+  PERF["perf / cachegrind"]
+  OPT["编译器优化 -O2/-O3 (ch156)"]
+  CACHE["内存带宽 / cache miss"]
+  VF["虚函数 vs 内联 (ch47)"]
+  SIMD["SIMD 向量化 (ch155)"]
+  MT["多线程基准 (ch142)"]
+  CI["CI 回归门禁 (ch149)"]
+  TEST["测试门禁 (ch150)"]
+  BENCH --> MICRO
+  BENCH --> GUARD
+  BENCH --> CHRONO
+  BENCH --> WARM
+  BENCH --> STAT
+  BENCH --> GB
+  BENCH --> PERF
+  BENCH --> OPT
+  OPT --> CACHE
+  OPT --> VF
+  OPT --> SIMD
+  BENCH --> MT
+  BENCH --> CI
+  BENCH --> TEST
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| BENCH → MICRO | 先定微/宏基准边界（第②节） |
+| BENCH → GUARD | 防优化是可信前提（第③节，外推 ch30） |
+| BENCH → CHRONO | 计时靠 std::chrono（第④节，外推 ch92） |
+| BENCH → WARM | 预热消除冷启动噪声（第⑤节） |
+| BENCH → STAT | 统计给出稳健中心（第⑥节） |
+| BENCH → GB | Google Benchmark 框架化（第⑦节） |
+| BENCH → PERF | perf/cachegrind 挖底层（第⑧节） |
+| BENCH → OPT | 编译器优化决定结果（第⑨节，外推 ch156） |
+| OPT → CACHE | -O2/-O3 改变 cache 行为（第⑩节） |
+| OPT → VF | 优化影响虚函数去虚拟化（第⑪节，外推 ch47） |
+| OPT → SIMD | 自动向量化依赖优化等级（第⑫节，外推 ch155） |
+| BENCH → MT | 多线程基准独立维度（第⑬节，外推 ch142） |
+| BENCH → CI | 基准进 CI 防回归（外推 ch149） |
+| BENCH → TEST | 基准与测试互补（外推 ch150） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch30 volatile | [Book/part03_language/ch30_volatile.md](Book/part03_language/ch30_volatile.md) | §③ volatile/asm 防优化屏障 |
+| ch92 chrono | [Book/part07_stl/ch92_chrono.md](Book/part07_stl/ch92_chrono.md) | §④ 高精度计时 |
+| ch47 虚函数 | [Book/part05_oo/ch47_virtual_functions.md](Book/part05_oo/ch47_virtual_functions.md) | §⑪ 虚函数 vs 内联开销 |
+| ch155 SIMD | [Book/part14_perf/ch155_simd.md](Book/part14_perf/ch155_simd.md) | §⑫ 向量化基准 |
+| ch142 ECS | [Book/part12_patterns/ch142_ecs.md](Book/part12_patterns/ch142_ecs.md) | §⑬ 多线程基准 |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | §⑭ 性能回归门禁 |
+| ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | §⑪ 基准测试衔接 |
+| ch156 编译器优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | §⑨ 优化等级影响 |
+| ch143 DOD | [Book/part12_patterns/ch143_dod.md](Book/part12_patterns/ch143_dod.md) | 数据布局基准对照 |

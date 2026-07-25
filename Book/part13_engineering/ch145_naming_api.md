@@ -1092,3 +1092,106 @@ int main() {
 
 编译验证：`g++ -std=c++23 -O2 -Wall -Wextra` 零警告通过；`[[nodiscard]]` 让调用方忽略返回值（如漏写 `if (b.IsDirty())`）在 `-Wall` 下被诊断，正是命名约定要兜住的误用面。
 
+
+
+
+## 附录 J：API 设计取舍决策流（D3 维度）
+
+把第⑧–⑱节的接口设计原则收敛为一条提交前的取舍流：先判 ABI 稳定性决定是否引入 Pimpl，再判异常安全性，再用强类型防误用，最后补齐文档与 concepts 约束，才发布。
+
+```mermaid
+flowchart TD
+  START["设计新接口"]
+  Q1{"需要 ABI 稳定?"}
+  PIMPL["采用 Pimpl 惯用法 (ch145⑩)"]
+  Q2{"可能抛异常?"}
+  NOEXC["标 noexcept / 改用错误码 (ch146)"]
+  Q3{"易误用?"}
+  STRONG["强类型 / =delete 防误用 (ch145⑯)"]
+  Q4{"文档完备?"}
+  DOC["Doxygen 注解 + concepts 约束 (ch145⑮)"]
+  DONE["发布 API → 进入 ch147 审查 / ch149 CI"]
+  START --> Q1
+  Q1 -->|是| PIMPL
+  Q1 -->|否| Q2
+  PIMPL --> Q2
+  Q2 -->|是| NOEXC
+  Q2 -->|否| Q3
+  NOEXC --> Q3
+  Q3 -->|是| STRONG
+  Q3 -->|否| Q4
+  STRONG --> Q4
+  Q4 -->|否| DOC
+  Q4 -->|是| DONE
+  DOC --> DONE
+```
+
+> 决策流说明：ABI 稳定性（第⑧节）是最高优先级分叉——一旦需要稳定，Pimpl 会成为结构性选择；异常安全性（第⑬节）与防误用（第⑯节）是质量的两条加固线。
+
+## 附录 K：命名与 API 设计知识图谱（D6 维度）
+
+命名是 API 的面孔，API 设计是命名的系统工程化：类型/函数/变量/常量/命名空间五类命名法构成基础，ABI 稳定性、Pimpl、noexcept、返回值策略、强类型与文档是其六条工程约束，最终由审查（ch147）与 CI（ch149）守住兼容边界。
+
+```mermaid
+flowchart TD
+  API["命名与 API 设计"]
+  TYPE["类型命名 PascalCase"]
+  FN["函数命名 动词/动宾"]
+  VAR["变量 snake_case"]
+  CONST["常量 kXxx / UPPER_CASE"]
+  NS["命名空间分层"]
+  ABI["ABI 稳定性"]
+  PIMPL["Pimpl 隐藏实现"]
+  EXC["noexcept 与异常规范 (ch146)"]
+  RT["返回值策略 optional/expected (ch88)"]
+  STRONG["强类型防误用"]
+  DOC["API 文档 Doxygen"]
+  REV["API 兼容性审查 (ch147)"]
+  CI["CI 门禁 (ch149)"]
+  API --> TYPE
+  API --> FN
+  API --> VAR
+  API --> CONST
+  API --> NS
+  API --> ABI
+  ABI --> PIMPL
+  API --> EXC
+  API --> RT
+  API --> STRONG
+  API --> DOC
+  DOC --> REV
+  STRONG --> REV
+  REV --> CI
+  EXC --> CI
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 依赖含义 |
+|----|----------|
+| API → TYPE | 类型命名定调整体观感（第③节） |
+| API → FN | 函数命名揭示意图（第④节） |
+| API → VAR | 变量命名降低认知负荷（第⑤节） |
+| API → CONST | 常量/宏命名区分作用域（第⑥节） |
+| API → NS | 命名空间分层隔离 API 面（第⑦节） |
+| API → ABI | ABI 稳定性是 API 契约的硬约束（第⑧节） |
+| ABI → PIMPL | Pimpl 在稳定 ABI 同时隐藏实现（第⑩节） |
+| API → EXC | noexcept 是 API 异常规范的边界（第⑬节，外推 ch146） |
+| API → RT | 返回值策略决定错误表征（第⑭节，外推 ch88） |
+| API → STRONG | 强类型防误用提升安全（第⑯节） |
+| API → DOC | 文档是 API 可用性的后半（第⑱节） |
+| DOC → REV | 文档与签名一起被兼容性审查（外推 ch147） |
+| STRONG → REV | 防误用设计在审查中被验证（外推 ch147） |
+| REV → CI | API 兼容门禁进 CI（外推 ch149） |
+| EXC → CI | noexcept 违规由 CI 拦截（外推 ch149） |
+
+### K.2 跨章闭环表
+
+| 目标章 | 路径 | 闭环点 |
+|--------|------|--------|
+| ch144 代码风格 | [Book/part13_engineering/ch144_style.md](Book/part13_engineering/ch144_style.md) | §③ 命名一致性被风格门禁覆盖 |
+| ch146 错误处理 | [Book/part13_engineering/ch146_error_handling.md](Book/part13_engineering/ch146_error_handling.md) | §⑬ noexcept 与异常规范 |
+| ch147 代码审查 | [Book/part13_engineering/ch147_code_review.md](Book/part13_engineering/ch147_code_review.md) | §⑧ API 兼容性审查 |
+| ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | §⑥ 静态分析门禁查 API 兼容 |
+| ch88 optional/variant | [Book/part07_stl/ch88_optional_variant.md](Book/part07_stl/ch88_optional_variant.md) | §⑭ 返回值策略 optional |
+| ch67 概念约束 | [Book/part06_templates/ch67_concepts.md](Book/part06_templates/ch67_concepts.md) | §⑮ concepts 作为接口文档 |
