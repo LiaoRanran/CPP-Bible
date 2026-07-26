@@ -1287,3 +1287,91 @@ int main() {
 
 **结论**：存储引擎的“可观测反压”比“裸吞吐”更重要；把 Compaction 进度显式映射为写闸门，
 才能在大写入下保持尾延迟可控（关联 ⑦ Compaction 策略 / 附录 I 工业复盘）。
+
+## 附录 J：LevelDB / RocksDB LSM 存储引擎 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["项目需嵌入式 KV 存储"] --> D1{"写吞吐优先还是读优先?"}
+    D1 -->|写优先| A1["选 LSM 引擎 LevelDB/RocksDB"]
+    D1 -->|读优先| A2["评估 B+Tree 类引擎"]
+    A1 --> D2{"是否需要丰富可调参数?"}
+    A2 --> D2
+    D2 -->|是| B1["选 RocksDB 调参"]
+    D2 -->|否| B2["选 LevelDB 轻量实现"]
+    B1 --> D3{"是否需要事务 / 合并算子?"}
+    B2 --> D3
+    D3 -->|是| C1["RocksDB 事务与 Merge"]
+    D3 -->|否| C2["基础 Put/Get/Delete"]
+    C1 --> D4{"是否旁路压缩加速?"}
+    C2 --> D4
+    D4 -->|是| E1["集成 zstd 等压缩"]
+    D4 -->|否| E2["默认压缩策略"]
+    E1 --> F1["按 SSTable 分层组织"]
+    E2 --> F1
+    F1 --> G1["MemTable + WAL 写路径"]
+    G1 --> G2["Compaction 控制写放大"]
+    G2 --> H1["监控 L0 与写停顿"]
+    H1 --> Z["选型闭环: 负载画像 → 引擎 → 调参 → 写放大治理"]
+```
+
+> 决策流说明：LSM 引擎以写吞吐见长，但 Compaction 带来写放大与尾延迟抖动，需用 L0 文件数与写闸门做反压。RocksDB 调参空间远大于 LevelDB，适合需要事务、合并与压缩加速的复杂场景；LevelDB 则以极简实现与易嵌入取胜。
+
+## 附录 K：LevelDB / RocksDB LSM 存储引擎 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    lsm["LSM-Tree 分层结构"] --> mem["MemTable 内存表"]
+    mem --> wal["WAL 预写日志"]
+    wal --> sst["SSTable 持久层"]
+    sst --> l0["L0 层无序"]
+    l0 --> l1["L1+ 层有序归并"]
+    l1 --> comp["Compaction 压实"]
+    comp --> amp["写放大 / 空间放大"]
+    amp --> tune["调参: 层大小与阈值"]
+    lsm --> arena["Arena 分配器"]
+    arena --> skiplist["SkipList 索引"]
+    skiplist --> atom["AtomicPointer 内存序"]
+    atom --> conc["并发读单写"]
+    comp --> bloom["Bloom Filter 读优化"]
+    bloom --> readp["读路径点查"]
+    readp --> cache["BlockCache"]
+    cache --> users["用户 KV 接口"]
+    tune --> users
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+| --- | --- | --- |
+| LSM-Tree 分层结构 | MemTable 内存表 | 写入先进入内存 MemTable |
+| MemTable 内存表 | WAL 预写日志 | MemTable 落盘前先写 WAL 保持久性 |
+| WAL 预写日志 | SSTable 持久层 | WAL 与 SSTable 共同构成持久化 |
+| SSTable 持久层 | L0 层无序 | 内存写满后刷成 L0 SSTable |
+| L0 层无序 | L1+ 层有序归并 | Compaction 把 L0 归并进更深层 |
+| L1+ 层有序归并 | Compaction 压实 | 深层由 Compaction 维持有序 |
+| Compaction 压实 | 写放大 / 空间放大 | 重写带来写放大与空间放大 |
+| 写放大 / 空间放大 | 调参: 层大小与阈值 | 调参缓解放大系数 |
+| LSM-Tree 分层结构 | Arena 分配器 | MemTable 记录由 Arena 批量分配 |
+| Arena 分配器 | SkipList 索引 | MemTable 用跳表组织记录 |
+| SkipList 索引 | AtomicPointer 内存序 | 跳表节点用原子指针保证可见性 |
+| AtomicPointer 内存序 | 并发读单写 | 原子指针支撑无锁读 |
+| Compaction 压实 | Bloom Filter 读优化 | Bloom Filter 减少无效 SSTable 读取 |
+| Bloom Filter 读优化 | 读路径点查 | 点查经 Bloom Filter 短路 |
+| 读路径点查 | BlockCache | 读路径命中 BlockCache |
+| BlockCache | 用户 KV 接口 | 缓存服务用户读请求 |
+| 调参: 层大小与阈值 | 用户 KV 接口 | 调参结果直接影响用户读写表现 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch19 | ch132 | 对象模型与值语义支撑 KV 记录设计 |
+| ch39 | ch132 | 模板与 trait 影响 SkipList/容器实现 |
+| ch62 | ch132 | Ranges 思路对照 SSTable 归并迭代 |
+| ch90 | ch132 | 并发原语与 AtomicPointer 内存序对照 |
+| ch115 | ch132 | 构建系统用于 LevelDB/RocksDB 编译 |
+| ch116 | ch132 | 测试方法论验证存储引擎正确性 |
+| ch124 | ch132 | 标准库实现总览衔接分配器/PMR |
+| ch125 | ch132 | libc++ PMR 与 Arena 分配器设计对照 |
+| ch131 | ch132 | fmt 用于引擎内部日志与可观测性 |

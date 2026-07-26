@@ -644,3 +644,79 @@ int main() {
 **修复**：跨线程改用 `std::atomic_thread_fence`（生成 `dmb`/隐含屏障），或直接让 `flag` 操作自带 `release`/`acquire`。
 
 **结论**：`atomic_signal_fence` = **同线程**防编译器重排（信号/中断）；`atomic_thread_fence` = **跨线程/跨核**可见性。二者不可互换，选错在强内存平台会被掩盖、弱内存平台才暴露。
+
+## 附录 U：atomic_thread_fence / atomic_signal_fence 选用 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["起点：需要约束重排或可见性"] --> D1{"约束发生在同线程内?"}
+    D1{"约束发生在同线程内?"} -->|是| A1["atomic_signal_fence"]
+    D1{"约束发生在同线程内?"} -->|否| D2{"需要跨线程/跨核可见性?"}
+    D2{"需要跨线程/跨核可见性?"} -->|否| A2["无需 fence 或仅 relaxed"]
+    D2{"需要跨线程/跨核可见性?"} -->|是| D3{"是否配对 release/acquire?"}
+    D3{"是否配对 release/acquire?"} -->|是| A3["atomic_thread_fence(release/acquire)"]
+    D3{"是否配对 release/acquire?"} -->|否| D4{"是否单全序 seq_cst?"}
+    D4{"是否单全序 seq_cst?"} -->|否| A4["atomic_thread_fence 单向"]
+    D4{"是否单全序 seq_cst?"} -->|是| A5["atomic_thread_fence(seq_cst)"]
+    A3 --> D5{"是否信号/中断上下文?"}
+    D5{"是否信号/中断上下文?"} -->|是| A6["追加 signal_fence 防编译器重排"]
+    D5{"是否信号/中断上下文?"} -->|否| A7["仅 thread_fence 即可"]
+    A1 --> END["结束：栅栏选型确定"]
+    A2 --> END
+    A5 --> END
+    A4 --> END
+    A6 --> END
+    A7 --> END
+```
+
+> 决策流说明：signal fence 只约束编译器、不发射硬件屏障，因此只适用于同线程（信号/中断）场景；thread fence 才产生跨核可见性。二者绝不可互换——弱内存平台上选错会暴露为偶发数据竞争。当既需要跨线程同步又处于中断上下文时，两份栅栏叠加才是正确组合。
+
+## 附录 V：atomic_thread_fence / atomic_signal_fence 选用 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    M1["atomic_thread_fence"] --> M2["硬件内存屏障"]
+    M3["atomic_signal_fence"] --> M4["编译器重排约束"]
+    M2 --> M5["跨核可见性"]
+    M4 --> M6["同线程顺序"]
+    M1 --> M7["release/acquire 配对"]
+    M3 --> M8["信号处理程序"]
+    M5 --> M9["无锁同步"]
+    M7 --> M9
+    M6 --> M10["中断安全"]
+    M9 --> M11["队列所有权传递"]
+    M1 --> M12["seq_cst 全序"]
+    M12 --> M13["Dekker 模式"]
+    M8 --> M14["标志轮询"]
+    M10 --> M15["ISR 数据通道"]
+```
+
+### V.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+| --- | --- | --- |
+| atomic_thread_fence | 硬件内存屏障 | 线程栅栏发射 CPU 屏障指令 |
+| atomic_signal_fence | 编译器重排约束 | 信号栅栏仅约束编译器 |
+| 硬件内存屏障 | 跨核可见性 | 屏障强制写缓冲排空 |
+| 编译器重排约束 | 同线程顺序 | 限制本线程内读写顺序 |
+| atomic_thread_fence | release/acquire 配对 | 配对形成跨线程同步 |
+| atomic_signal_fence | 信号处理程序 | 信号上下文防重排 |
+| 跨核可见性 | 无锁同步 | 无锁结构依赖可见性 |
+| release/acquire 配对 | 无锁同步 | 配对传递所有权 |
+| 同线程顺序 | 中断安全 | 中断内防止逻辑错乱 |
+| 无锁同步 | 队列所有权传递 | 队列靠同步移交节点 |
+| atomic_thread_fence | seq_cst 全序 | 线程栅栏可升级为全序 |
+| seq_cst 全序 | Dekker 模式 | 多变量互斥需要全序 |
+| 信号处理程序 | 标志轮询 | 信号内轮询共享标志 |
+| 中断安全 | ISR 数据通道 | 中断服务例程数据通路 |
+
+### V.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch108 | ch109 | release/acquire 可由 thread_fence 等价表达 |
+| ch109 | ch108 | fence 可作为内存序的升级手段 |
+| ch109 | ch110 | 无锁 CAS 用 fence 强化序约束 |
+| ch109 | ch111 | ABA 版本发布依赖 acquire fence |
+| ch93 | ch109 | std::async 内部隐式栅栏同步 |
+| ch39 | ch109 | RAII 析构跨线程可见性靠 fence |

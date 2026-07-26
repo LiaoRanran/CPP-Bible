@@ -694,3 +694,87 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：LLVM / libc++ 基础设施 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["项目需引入编译器基础设施 / 工具链"] --> D1{"是否自建 LLVM 工具链?"}
+    D1 -->|是| A1["拉取 LLVM  monorepo 并配置 CMake"]
+    D1 -->|否| D2{"是否仅消费 clang / libc++?"}
+    D2 -->|是| A2["安装发行版 clang + libc++"]
+    D2 -->|否| A3["评估其他前端如 GCC / MSVC"]
+    A1 --> D3{"是否编写自定义 Pass / 后端?"}
+    A3 --> D3
+    D3 -->|是| B1["基于 LLVM IR 与 TableGen 开发"]
+    D3 -->|否| B2["仅使用 clang 驱动与 sanitizer"]
+    B1 --> C1["依赖 Support / ADT / 后端库"]
+    B2 --> C2["依赖 clang 驱动与运行时"]
+    C1 --> D4{"是否联动 libc++ 源码?"}
+    C2 --> D4
+    D4 -->|是| E1["并行构建 libc++ 与 LLVM"]
+    D4 -->|否| E2["独立使用 LLVM 库"]
+    E1 --> F1["用 LIT 测试驱动验证"]
+    E2 --> F2["用单元测试框架验证"]
+    F1 --> G1["纳入 CI 门禁与基准"]
+    F2 --> G1
+    G1 --> Z["选型决策闭环: 工具链 → 构建模式 → LLVM 组件 → 验证"]
+```
+
+> 决策流说明：是否自建 LLVM monorepo 取决于是否需要自定义 Pass 或后端；仅做普通编译消费时发行版 clang + libc++ 更省心。与 libc++ 联动构建能统一 sanitizer 与 ABI，但也显著拉长构建时间，需要权衡 CI 成本。
+
+## 附录 K：LLVM / libc++ 基础设施 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    mono["LLVM monorepo"] --> cmake["CMake 构建系统"]
+    cmake --> clang["clang 驱动"]
+    clang --> rt["运行时 / sanitizer"]
+    cmake --> tbl["TableGen 代码生成"]
+    tbl --> ir["LLVM IR 与 Pass 框架"]
+    ir --> adt["Support / ADT 基础库"]
+    adt --> be["目标后端库"]
+    be --> codegen["指令选择与代码生成"]
+    cmake --> libcxx["libc++ 源码树"]
+    libcxx --> inc["include/ 公开头"]
+    inc --> impl["__ 实现细节头"]
+    rt --> tsan["ThreadSanitizer / ASan"]
+    tsan --> tests["LIT 测试套件"]
+    codegen --> tests
+    impl --> tests
+    tests --> ci["CI 门禁与基准"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+| --- | --- | --- |
+| LLVM monorepo | CMake 构建系统 | 所有组件通过统一 CMake 配置构建 |
+| CMake 构建系统 | clang 驱动 | clang 由 CMake 生成构建目标 |
+| clang 驱动 | 运行时 / sanitizer | clang 链接运行时与 sanitizer 库 |
+| CMake 构建系统 | TableGen 代码生成 | TableGen 在构建期生成描述文件 |
+| TableGen 代码生成 | LLVM IR 与 Pass 框架 | 后端描述经 TableGen 产出 IR/Pass 表 |
+| LLVM IR 与 Pass 框架 | Support / ADT 基础库 | Pass 框架依赖 ADT 容器与工具 |
+| Support / ADT 基础库 | 目标后端库 | 后端实现复用 ADT 数据结构 |
+| 目标后端库 | 指令选择与代码生成 | 后端负责指令选择与代码发射 |
+| CMake 构建系统 | libc++ 源码树 | libc++ 可与 LLVM 同源构建 |
+| libc++ 源码树 | include/ 公开头 | 源码树产出公开头文件 |
+| include/ 公开头 | __ 实现细节头 | 公开头转发到实现头 |
+| 运行时 / sanitizer | ThreadSanitizer / ASan | sanitizer 是运行时组件之一 |
+| ThreadSanitizer / ASan | LIT 测试套件 | sanitizer 测试纳入 LIT |
+| 指令选择与代码生成 | LIT 测试套件 | 代码生成用例由 LIT 验证 |
+| __ 实现细节头 | LIT 测试套件 | libc++ 实现头被测试覆盖 |
+| LIT 测试套件 | CI 门禁与基准 | 测试套件构成 CI 回归基准 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch19 | ch127 | 对象模型是 LLVM IR 类型系统的语义根基 |
+| ch39 | ch127 | 模板与 ADT 影响 LLVM 容器设计 |
+| ch90 | ch127 | 并发原语与 sanitizer 检测能力相关 |
+| ch115 | ch127 | 构建系统知识用于 LLVM CMake 配置 |
+| ch124 | ch127 | 标准库实现总览衔接 libc++ 源码树 |
+| ch125 | ch127 | libc++ 与 LLVM 同源构建与测试 |
+| ch126 | ch127 | Clang-CL 与 MS STL 的协同工具链 |
+| ch132 | ch127 | 存储引擎借助 sanitizer 验证并发安全 |
+

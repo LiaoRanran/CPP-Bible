@@ -982,3 +982,83 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：libstdc++ 阅读与改动决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需要理解标准库实现 排查行为"] --> D1{"目标是定位某容器 算法?"}
+    D1 -->|是 具体组件| B["从 bits 实现头定位"]
+    D1 -->|否 整体架构| D2{"想看对象布局?"}
+    D2 -->|是| C["读 vector 内部布局"]
+    D2 -->|否 看特性| E["对比 libc++ MS STL"]
+    B --> D3{"是否用调试符号 汇编?"}
+    C --> D3
+    D3 -->|是| F["编译加 g 看 STL 展开"]
+    D3 -->|否| G["静态读源 加文档"]
+    F --> D4{"需对比其他实现?"}
+    G --> D4
+    D4 -->|是| E
+    D4 -->|否| H["聚焦单实现内部契约"]
+    E --> D5{"关注 ABI 兼容?"}
+    H --> D5
+    D5 -->|是| I["查 dual ABI CXX11 ABI"]
+    D5 -->|否| J["仅语义层"]
+    I --> D6{"要改 扩展标准库?"}
+    J --> D6
+    D6 -->|是| Y1["尊重内部分层 别破坏 ABI"]
+    D6 -->|否| Y2["仅阅读理解 不改动"]
+    Y1 --> Z["选定阅读 改动策略"]
+    Y2 --> Z
+```
+
+> 决策流说明：读 libstdc++ 先分清"公开头（include/）"与"实现头（bits/）"，具体组件从 bits 入手最省力；涉及布局或 ABI 时务必打开 `-g` 看模板展开与双 ABI 宏。若要改标准库，内部分层与 `_GLIBCXX_USE_CXX11_ABI` 是红线，破坏即 ABI 不兼容。
+
+## 附录 K：libstdc++ 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    N1["libstdc++"] --> N2["include 公开头"]
+    N1 --> N3["bits 实现头"]
+    N2 --> N4["c++config.h 宏"]
+    N3 --> N5["vector.tcc 模板实现"]
+    N5 --> N6["vector 内部布局"]
+    N6 --> N7["分配器协作 ch77"]
+    N3 --> N8["memory_resource pmr"]
+    N8 --> N9["PMR 多态分配 ch122"]
+    N4 --> N10["dual ABI 宏"]
+    N10 --> N11["CXX11 ABI 切换"]
+    N11 --> N12["链接兼容 ch19"]
+    N3 --> N13["ranges 实现 ch90"]
+    N5 --> N14["迭代器失效 ch77"]
+    N2 --> N13
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+|---|---|---|
+| libstdc++ | include 公开头 | 公开头是用户包含入口 |
+| libstdc++ | bits 实现头 | 实现细节藏在 bits 下 |
+| include 公开头 | c++config.h 宏 | 公开头依赖配置宏 |
+| bits 实现头 | vector.tcc 模板实现 | vector 模板实现位于 tcc |
+| vector.tcc 模板实现 | vector 内部布局 | tcc 决定内存布局 |
+| vector 内部布局 | 分配器协作 ch77 | 布局与 ch77 分配器协作 |
+| bits 实现头 | memory_resource pmr | pmr 实现位于 bits |
+| memory_resource pmr | PMR 多态分配 ch122 | 实现承接 ch122 的 PMR |
+| c++config.h 宏 | dual ABI 宏 | 配置宏定义双 ABI 开关 |
+| dual ABI 宏 | CXX11 ABI 切换 | 宏控制新旧 ABI 切换 |
+| CXX11 ABI 切换 | 链接兼容 ch19 | ABI 切换影响 ch19 链接 |
+| bits 实现头 | ranges 实现 ch90 | ranges 实现位于 bits 呼应 ch90 |
+| vector.tcc 模板实现 | 迭代器失效 ch77 | 实现决定 ch77 失效规则 |
+| include 公开头 | ranges 实现 ch90 | 公开 ranges 头关联 ch90 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch77 vector 扩容与 allocator | ch124 libstdc++ | vector 实现细节在 libstdc++ |
+| ch122 PMR 分配器 | ch124 libstdc++ | pmr 实现落在 libstdc++ bits |
+| ch90 ranges 与 views | ch124 libstdc++ | ranges 实现在 libstdc++ |
+| ch19 变量存储期与 ODR | ch124 libstdc++ | 双 ABI 与 ch19 链接模型耦合 |
+| ch117 复制消除 | ch124 libstdc++ | 标准库内部依赖消除优化 |
+| ch113 协程 promise awaiter | ch124 libstdc++ | 协程实现依赖标准库设施 |

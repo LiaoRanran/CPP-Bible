@@ -1025,3 +1025,83 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：编译期编程范式决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["需要编译期抽象 约束"] --> D1{"是类型约束 接口约束?"}
+    D1 -->|是 C++20 可用| B["concepts 约束"]
+    D1 -->|否 旧标准| D2{"是类型计算 递归?"}
+    D2 -->|是 元函数| C["template 元编程"]
+    D2 -->|否 值计算| E["constexpr 函数"]
+    B --> D3{"约束需组合?"}
+    C --> D3
+    D3 -->|是| F["requires 表达式组合"]
+    D3 -->|否| G["单概念"]
+    E --> D4{"需报错友好?"}
+    F --> D4
+    D4 -->|是 早期失败| H["concepts 优先 清晰诊断"]
+    D4 -->|否 可接受 SFINAE| I["TMP 回退"]
+    H --> D5{"需编译期计算?"}
+    I --> D5
+    D5 -->|是| J["constexpr 加元编程"]
+    D5 -->|否| Y1["纯约束 写接口"]
+    J --> D6{"可维护性优先?"}
+    Y1 --> D6
+    D6 -->|是| Y2["concepts 表达意图"]
+    D6 -->|否| K["TMP 极致控制"]
+    Y2 --> Z["选定编译期范式 写注释"]
+    K --> Z
+```
+
+> 决策流说明：能用 concepts 表达的类型约束就不要用 TMP/SFINAE——前者诊断信息清晰、失败早、可读性好；只有需要真正的类型计算或递归元函数时才动用模板元编程，值计算则尽量下沉到 `constexpr` 函数。可维护性应优先于炫技式控制。
+
+## 附录 K：编译期编程知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    N1["编译期编程"] --> N2["template 元编程"]
+    N1 --> N3["concepts"]
+    N1 --> N4["constexpr"]
+    N2 --> N5["SFINAE 替换失败"]
+    N3 --> N6["requires 约束"]
+    N4 --> N7["编译期求值"]
+    N5 --> N8["类型计算递归"]
+    N6 --> N9["清晰错误诊断"]
+    N8 --> N10["类模板特化 ch62"]
+    N7 --> N11["static_assert 检查"]
+    N9 --> N12["接口约束边界"]
+    N10 --> N13["偏特化 ch62"]
+    N11 --> N14["移动语义 ch115"]
+    N3 --> N4
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+|---|---|---|
+| 编译期编程 | template 元编程 | TMP 是最早的编译期抽象手段 |
+| 编译期编程 | concepts | concepts 是 C++20 的类型约束 |
+| 编译期编程 | constexpr | constexpr 提供编译期求值 |
+| template 元编程 | SFINAE 替换失败 | TMP 借 SFINAE 做重载选择 |
+| concepts | requires 约束 | concepts 由 requires 表达式定义 |
+| constexpr | 编译期求值 | constexpr 函数在常量期求值 |
+| template 元编程 | 类型计算递归 | TMP 用递归做类型计算 |
+| requires 约束 | 清晰错误诊断 | requires 失败给出清晰诊断 |
+| 类型计算递归 | 类模板特化 ch62 | 递归常落到 ch62 特化 |
+| 编译期求值 | static_assert 检查 | constexpr 与 static_assert 配合 |
+| 清晰错误诊断 | 接口约束边界 | 诊断明确接口约束边界 |
+| 类模板特化 ch62 | 偏特化 ch62 | 特化与偏特化同出 ch62 |
+| static_assert 检查 | 移动语义 ch115 | 编译期检查覆盖 ch115 移动 |
+| concepts | constexpr | concepts 与 constexpr 常协同 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch62 类模板特化与偏特化 | ch123 编译期编程 | 特化是 TMP 的核心落点 |
+| ch115 移动语义与右值引用 | ch123 编译期编程 | 编译期检查覆盖移动语义 |
+| ch116 完美转发与万能引用 | ch123 编译期编程 | 转发与编译期类型推导协同 |
+| ch19 变量存储期与 ODR | ch123 编译期编程 | 编译期实体受 ODR 约束 |
+| ch39 RAII 与 Rule of Five | ch123 编译期编程 | 编译期构造需满足 RAII |
+| ch118 Modules | ch123 编译期编程 | 编译期接口可借模块导出 |

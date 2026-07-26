@@ -874,3 +874,88 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：Boost 库生态与典型组件 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["项目需引入第三方 C++ 库能力"] --> D1{"所需能力是否已进标准库?"}
+    D1 -->|是| A1["优先使用 std 等价组件"]
+    D1 -->|否| D2{"是否为头文件仅依赖库?"}
+    D2 -->|是| A2["引入 Boost.HeaderOnly 组件"]
+    D2 -->|否| A3["评估需要编译的 Boost 库"]
+    A2 --> D3{"是否担心编译时间与二进制尺寸?"}
+    A3 --> D3
+    D3 -->|是| B1["裁剪 Boost 并禁用不需要模块"]
+    D3 -->|否| B2["全量引入所需 Boost 库"]
+    B1 --> C1["核对 Boost 版本与 C++ 标准"]
+    B2 --> C1
+    C1 --> D4{"是否需序列化 / 协程 / 计算几何?"}
+    D4 -->|是| E1["引入 Boost.Serialization / Coroutine / Geometry"]
+    D4 -->|否| E2["仅引入算法 / 容器增强"]
+    E1 --> F1["对接 Boost.Build 或 CMake Fetch"]
+    E2 --> F2["直接包含头文件"]
+    F1 --> G1["在标准库成熟后制定迁移路线"]
+    F2 --> G1
+    G1 --> Z["选型决策闭环: 标准覆盖 → 头-only 优先 → 版本治理 → 平滑迁移"]
+```
+
+> 决策流说明：Boost 的黄金法则是“能进标准就用标准”——很多 Boost 组件已有 std 等价物。头文件-only 组件引入成本最低，而需编译的库（如 Serialization）会带来构建复杂度，应在标准库对应能力成熟后规划迁移。
+
+## 附录 K：Boost 库生态与典型组件 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    std["C++ 标准库"] --> boost["Boost 元库与基础设施"]
+    boost --> hana["MPL / Hana 元编程"]
+    hana --> type["类型列表与 trait"]
+    type --> algo["算法与容器增强"]
+    boost --> asio["Asio 异步 I/O"]
+    asio --> coro["Coroutine / 协程"]
+    boost --> ser["Serialization 序列化"]
+    boost --> geom["Geometry 计算几何"]
+    boost --> bbuild["Boost.Build 构建系统"]
+    bbuild --> cmake["CMake Fetch 集成"]
+    boost --> test["Test / 单元测试框架"]
+    test --> ci["CI 回归"]
+    algo --> users["用户代码消费"]
+    coro --> users
+    ser --> users
+    geom --> users
+    users --> migrate["向标准库等价物迁移"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+| --- | --- | --- |
+| C++ 标准库 | Boost 元库与基础设施 | Boost 常以标准库为基底并补足其不足 |
+| Boost 元库与基础设施 | MPL / Hana 元编程 | 元编程库是 Boost 能力中枢 |
+| MPL / Hana 元编程 | 类型列表与 trait | 元编程产出类型列表与 trait |
+| 类型列表与 trait | 算法与容器增强 | 容器增强依赖 trait 分发 |
+| Boost 元库与基础设施 | Asio 异步 I/O | Asio 建立于 Boost 基础设施之上 |
+| Asio 异步 I/O | Coroutine / 协程 | 协程以 Asio 的异步原语驱动 |
+| Boost 元库与基础设施 | Serialization 序列化 | 序列化依赖 Boost 类型系统 |
+| Boost 元库与基础设施 | Geometry 计算几何 | 几何库复用 Boost 算法组件 |
+| Boost 元库与基础设施 | Boost.Build 构建系统 | Boost.Build 构建全部 Boost 组件 |
+| Boost.Build 构建系统 | CMake Fetch 集成 | 现代项目用 CMake 拉取 Boost |
+| Boost 元库与基础设施 | Test / 单元测试框架 | 测试框架是 Boost 一部分 |
+| Test / 单元测试框架 | CI 回归 | 测试驱动 CI 回归 |
+| 算法与容器增强 | 用户代码消费 | 用户直接包含增强组件 |
+| Coroutine / 协程 | 用户代码消费 | 用户代码使用协程 |
+| Serialization 序列化 | 用户代码消费 | 用户代码使用序列化 |
+| Geometry 计算几何 | 用户代码消费 | 用户代码使用几何计算 |
+| 用户代码消费 | 向标准库等价物迁移 | 标准成熟后用户代码可平滑迁移 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch19 | ch128 | 对象模型支撑 Boost 值语义组件设计 |
+| ch39 | ch128 | 模板与 trait 是 MPL/Hana 的基石 |
+| ch62 | ch128 | Ranges 思路影响 Boost 算法增强 |
+| ch115 | ch128 | 构建系统知识用于 Boost.Build / CMake |
+| ch116 | ch128 | 测试方法论用于 Boost.Test 回归 |
+| ch124 | ch128 | 标准库实现总览衔接 Boost 补位定位 |
+| ch125 | ch128 | libc++ 对 Boost 头-only 的兼容验证 |
+| ch131 | ch128 | fmt 与 Boost 格式化能力的对比取舍 |
+

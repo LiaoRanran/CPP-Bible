@@ -762,3 +762,89 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：fmt / spdlog 格式化与日志 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["项目需类型安全格式化 / 日志"] --> D1{"是否仅需格式化字符串?"}
+    D1 -->|是| A1["引入 fmt 库"]
+    D1 -->|否| D2{"是否需要完整日志框架?"}
+    D2 -->|是| A2["引入 spdlog"]
+    D2 -->|否| A3["使用 iostream / 标准格式化"]
+    A1 --> D3{"是否使用 C++20 std::format?"}
+    A2 --> D3
+    D3 -->|是| B1["以 std::format 为主、fmt 兜底"]
+    D3 -->|否| B2["以 fmt 作为唯一格式化后端"]
+    B1 --> C1["核对 fmt 与 std 格式串兼容"]
+    B2 --> C1
+    C1 --> D4{"日志是否需异步与多 sink?"}
+    D4 -->|是| E1["spdlog 异步 + 多 sink 配置"]
+    D4 -->|否| E2["spdlog 同步单 sink"]
+    E1 --> F1["评估吞吐与背压策略"]
+    E2 --> F2["直接落盘或控制台"]
+    F1 --> G1["按 fmt 格式串统一日志模板"]
+    F2 --> G1
+    G1 --> Z["选型决策闭环: 需求 → fmt/std 选择 → 日志形态 → 性能策略"]
+```
+
+> 决策流说明：fmt 是 spdlog 的格式化底座，选型时先区分“只格式化”还是“要完整日志框架”。C++20 std::format 与 fmt 格式串高度兼容，可优先用标准、以 fmt 兜底；日志侧是否异步、多 sink 决定吞吐与复杂度。
+
+## 附录 K：fmt / spdlog 格式化与日志 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    stdfmt["C++20 std::format"] --> fmt["fmt 格式化核心"]
+    fmt --> spec["格式说明符与解析"]
+    spec --> args["类型擦除参数包"]
+    args --> out["输出缓冲与写入"]
+    fmt --> spd["spdlog 日志框架"]
+    spd --> logger["logger 对象"]
+    logger --> sink["sink 输出目标"]
+    sink --> async["异步日志队列"]
+    async --> thr["后台写入线程"]
+    sink --> sync["同步落盘 / 控制台"]
+    logger --> level["日志级别过滤"]
+    level --> out
+    thr --> out
+    spd --> pat["日志格式模板"]
+    pat --> spec
+    fmt --> bench["性能基准与编译期格式"]
+    bench --> users["用户代码消费"]
+    out --> users
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+| --- | --- | --- |
+| C++20 std::format | fmt 格式化核心 | fmt 与 std::format 共享格式语义 |
+| fmt 格式化核心 | 格式说明符与解析 | 核心先解析格式说明符 |
+| 格式说明符与解析 | 类型擦除参数包 | 解析后由参数包承载实参 |
+| 类型擦除参数包 | 输出缓冲与写入 | 参数被格式化写入缓冲 |
+| fmt 格式化核心 | spdlog 日志框架 | spdlog 以 fmt 作为格式化后端 |
+| spdlog 日志框架 | logger 对象 | spdlog 提供 logger 接口 |
+| logger 对象 | sink 输出目标 | logger 把日志送到 sink |
+| sink 输出目标 | 异步日志队列 | 异步 sink 入队日志 |
+| 异步日志队列 | 后台写入线程 | 队列由后台线程消费 |
+| sink 输出目标 | 同步落盘 / 控制台 | 同步 sink 直接输出 |
+| logger 对象 | 日志级别过滤 | logger 按级别过滤 |
+| 日志级别过滤 | 输出缓冲与写入 | 过滤后写入缓冲 |
+| 后台写入线程 | 输出缓冲与写入 | 后台线程执行写入 |
+| spdlog 日志框架 | 日志格式模板 | spdlog 定义日志模板 |
+| 日志格式模板 | 格式说明符与解析 | 模板复用 fmt 格式说明符 |
+| fmt 格式化核心 | 性能基准与编译期格式 | fmt 支持编译期格式检查 |
+| 性能基准与编译期格式 | 用户代码消费 | 性能优化惠及用户代码 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch19 | ch131 | 对象模型支撑 fmt 值语义格式化 |
+| ch39 | ch131 | 模板与参数包是 fmt 类型擦除的基石 |
+| ch62 | ch131 | Ranges 与格式化输出的一致性思路 |
+| ch115 | ch131 | 构建系统接入 fmt / spdlog 依赖 |
+| ch116 | ch131 | 测试方法论验证日志行为 |
+| ch124 | ch131 | 标准库实现总览衔接 std::format |
+| ch125 | ch131 | libc++ 对 std::format 的支持验证 |
+| ch128 | ch131 | Boost 格式化组件与 fmt 的取舍对照 |
+

@@ -1299,3 +1299,81 @@ int main() {
 - `polymorphic_allocator` 沿嵌套容器递归传播 `memory_resource*`，形成共享 arena 的对象森林。
 - 选型：批创建同销毁 → `monotonic_buffer_resource`；高频小对象反复分配 → `unsynchronized_pool_resource` / `synchronized_pool_resource`。
 - 单块不能提前释放是 arena 的固有取舍；需复用中间块要换池资源。
+
+## 附录 J：pmr 多态分配器选型决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    A["频繁 批量分配 性能敏感"] --> D1{"分配模式 同生同灭?"}
+    D1 -->|是 批创建同销毁| B["monotonic_buffer_resource"]
+    D1 -->|否 高频小对象| D2{"是否多线程并发?"}
+    D2 -->|是 并发| C["synchronized_pool_resource"]
+    D2 -->|否 单线程| E["unsynchronized_pool_resource"]
+    B --> D3{"需复用中间块?"}
+    C --> D3
+    E --> D3
+    D3 -->|否 arena 够| F["共享 arena 对象森林"]
+    D3 -->|是 需回收| G["换池或默认 allocator"]
+    F --> D4{"嵌套容器递归传播?"}
+    G --> D4
+    D4 -->|是| H["polymorphic_allocator 传 memory_resource*"]
+    D4 -->|否| I["普通容器默认 allocator"]
+    H --> D5{"与既有 allocator 代码兼容?"}
+    I --> D5
+    D5 -->|兼容| Y1["迁移到 pmr 接口"]
+    D5 -->|不兼容| Y2["保留默认 operator new"]
+    Y1 --> Z["选定分配器策略 写基准"]
+    Y2 --> Z
+```
+
+> 决策流说明：pmr 把"每次 `operator new`"变成"arena 指针推进"，分配 O(1)、无锁、无碎片，但代价是单块不能提前释放。选型第一判据是"批创建同销毁"（monotonic）还是"高频小对象反复分配"（pool），其次才是并发维度。
+
+## 附录 K：pmr 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    N1["分配"] --> N2["默认 operator new"]
+    N1 --> N3["pmr 多态分配器"]
+    N2 --> N4["全局堆 锁竞争"]
+    N3 --> N5["memory_resource 抽象"]
+    N5 --> N6["monotonic_buffer_resource"]
+    N5 --> N7["pool_resource 池"]
+    N6 --> N8["arena 指针推进 O(1)"]
+    N7 --> N9["高频小对象复用"]
+    N3 --> N10["polymorphic_allocator"]
+    N10 --> N11["memory_resource 传播"]
+    N11 --> N12["嵌套容器对象森林"]
+    N8 --> N13["vector 扩容 ch77"]
+    N12 --> N14["allocator 感知容器"]
+    N9 --> N2
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+|---|---|---|
+| 分配 | 默认 operator new | 默认路径走全局堆分配 |
+| 分配 | pmr 多态分配器 | pmr 提供可替换分配策略 |
+| 默认 operator new | 全局堆 锁竞争 | 默认分配存在锁竞争开销 |
+| pmr 多态分配器 | memory_resource 抽象 | pmr 以 memory_resource 为抽象基类 |
+| memory_resource 抽象 | monotonic_buffer_resource | monotonic 是一次性 arena 资源 |
+| memory_resource 抽象 | pool_resource 池 | pool 是高频小对象池资源 |
+| monotonic_buffer_resource | arena 指针推进 O(1) | monotonic 用指针推进实现 O(1) |
+| pool_resource 池 | 高频小对象复用 | pool 缓存小对象复用 |
+| pmr 多态分配器 | polymorphic_allocator | 容器用 polymorphic_allocator 接入 |
+| polymorphic_allocator | memory_resource 传播 | 分配器沿嵌套容器传播资源指针 |
+| memory_resource 传播 | 嵌套容器对象森林 | 传播形成共享 arena 对象森林 |
+| arena 指针推进 O(1) | vector 扩容 ch77 | arena 与 ch77 vector 扩容协作 |
+| 嵌套容器对象森林 | allocator 感知容器 | 对象森林要求容器 allocator 感知 |
+| 高频小对象复用 | 默认 operator new | pool 复用降低对默认分配依赖 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+|---|---|---|
+| ch77 vector 扩容与 allocator | ch122 PMR | allocator 协作是 PMR 落点 |
+| ch39 RAII 与 Rule of Five | ch122 PMR | 资源释放语义与 RAII 一致 |
+| ch19 变量存储期与 ODR | ch122 PMR | arena 生命周期受存储期约束 |
+| ch115 移动语义与右值引用 | ch122 PMR | 对象森林中移动需正确 |
+| ch120 协程应用模式 | ch122 PMR | 协程帧分配可走 PMR arena |
+| ch124 libstdc++ | ch122 PMR | 标准库 PMR 实现位于 libstdc++ |

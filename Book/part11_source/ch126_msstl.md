@@ -943,3 +943,85 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：MS STL 实现特征与源码结构 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["项目需选型 Windows 平台 C++ 工具链"] --> D1{"是否锁定 MSVC / Visual Studio?"}
+    D1 -->|是| A1["采用 MS STL 作为标准库"]
+    D1 -->|否| D2{"是否交叉编译到非 MSVC 前端?"}
+    D2 -->|是| A2["改用 libc++ / libstdc++ 跨平台"]
+    D2 -->|否| A3["评估 Clang-CL + MS STL"]
+    A1 --> D3{"是否启用最新标准与模块?"}
+    A3 --> D3
+    D3 -->|模块优先| B1["开启 C++20 Modules 与 ifc 输出"]
+    D3 -->|标准优先| B2["仅启用已稳定的 C++ 标准特性"]
+    B1 --> C1["核对 stl/ 与 xstddef 配置宏"]
+    B2 --> C1
+    C1 --> D4{"是否追求极限吞吐?"}
+    D4 -->|是| E1["启用并行算法 + 向量化后端"]
+    D4 -->|否| E2["使用默认串行实现"]
+    E1 --> F1["结合 PGO / LTCG 优化"]
+    E2 --> F2["常规 /O2 构建"]
+    F1 --> G1["对标 libc++ 做性能回归"]
+    F2 --> G1
+    G1 --> H1["按 MS STL 源码分层定位问题"]
+    H1 --> Z["选型决策闭环: 工具链 → 标准库 → 模块开关 → 性能后端"]
+```
+
+> 决策流说明：MS STL 与 MSVC 深度绑定，模块与 ifc 输出依赖 Visual Studio 版本，跨平台场景往往被迫转向 libc++。性能取向上，并行算法与 LTCG/PGO 收益显著，但需与上游源码分层（stl/ 与 xstddef）对齐以便定位问题。
+
+## 附录 K：MS STL 实现特征与源码结构 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    msvc["MSVC / Visual Studio 工具链"] --> stlconf["stl/ 与 xstddef 配置宏"]
+    stlconf --> inc["公开头文件层"]
+    inc --> impl["实现细节与 xstddef"]
+    impl --> algo["算法与容器实现"]
+    impl --> alloc["分配器与内存设施"]
+    alloc --> pmem["PMR / 多态分配器"]
+    algo --> pstl["并行算法后端"]
+    stlconf --> mods["C++20 Modules 与 ifc"]
+    mods --> build["构建系统 / LTCG / PGO"]
+    build --> opt["向量化与吞吐优化"]
+    opt --> pstl
+    inc --> src["预编译实现单元"]
+    src --> tests["MS STL 测试套件"]
+    tests --> gh["GitHub 上游与问题跟踪"]
+    pmem --> pmruse["用户代码消费 PMR"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+| --- | --- | --- |
+| MSVC / Visual Studio 工具链 | stl/ 与 xstddef 配置宏 | 配置宏由 MSVC 版本与宏定义驱动 |
+| stl/ 与 xstddef 配置宏 | 公开头文件层 | 头文件依据配置宏选择实现分支 |
+| 公开头文件层 | 实现细节与 xstddef | 公开接口转发到实现头 xstddef 等 |
+| 实现细节与 xstddef | 算法与容器实现 | 实现头承载算法与容器代码 |
+| 实现细节与 xstddef | 分配器与内存设施 | 分配器抽象位于实现层 |
+| 分配器与内存设施 | PMR / 多态分配器 | PMR 建立在分配器抽象之上 |
+| 算法与容器实现 | 并行算法后端 | 并行算法复用容器与算法的可并行原语 |
+| stl/ 与 xstddef 配置宏 | C++20 Modules 与 ifc | 模块导出受配置宏与 ifc 控制 |
+| C++20 Modules 与 ifc | 构建系统 / LTCG / PGO | 模块需构建系统支持 ifc 与优化 |
+| 构建系统 / LTCG / PGO | 向量化与吞吐优化 | LTCG/PGO 提升向量化收益 |
+| 向量化与吞吐优化 | 并行算法后端 | 优化手段直接作用于并行后端 |
+| 公开头文件层 | 预编译实现单元 | 部分实例化落到预编译单元 |
+| 预编译实现单元 | MS STL 测试套件 | 实现单元纳入测试回归 |
+| MS STL 测试套件 | GitHub 上游与问题跟踪 | 测试失败反馈到上游 issue |
+| PMR / 多态分配器 | 用户代码消费 PMR | 用户代码通过 PMR 接口使用分配器 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch19 | ch126 | 对象模型与值类别是 MS STL 容器实现基础 |
+| ch62 | ch126 | Ranges 在 MS STL 算法层的约束实现 |
+| ch90 | ch126 | 并发原语支撑 MS STL 并行算法后端 |
+| ch116 | ch126 | 测试方法论用于 MS STL 测试套件回归 |
+| ch124 | ch126 | 标准库实现总览为 MS STL 分层提供上下文 |
+| ch125 | ch126 | libc++ 与 MS STL 的模块 / ABI 策略对照 |
+| ch127 | ch126 | LLVM/Clang-CL 与 MS STL 的协同构建 |
+| ch132 | ch126 | 存储引擎对 PMR 的需求反哺 MS STL 分配器 |
+

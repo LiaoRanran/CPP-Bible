@@ -856,3 +856,91 @@ int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << 
 
 </details>
 
+## 附录 J：Chromium / Abseil 基础设施 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["项目需大规模 C++ 基础设施 / 基础库"] --> D1{"是否构建类浏览器大型工程?"}
+    D1 -->|是| A1["采用 Chromium 基础设施栈"]
+    D1 -->|否| D2{"是否需要跨平台基础库?"}
+    D2 -->|是| A2["引入 Abseil 作为 std 补充"]
+    D2 -->|否| A3["使用标准库即可"]
+    A1 --> D3{"是否需 GN / Ninja 构建?"}
+    A2 --> D3
+    D3 -->|是| B1["配置 GN 与隔离头"]
+    D3 -->|否| B2["用 Bazel / CMake 接入 Abseil"]
+    B1 --> C1["采用 Chromium 风格与 clang 插件"]
+    B2 --> C1
+    C1 --> D4{"是否需字符串 / 时间 / 容器增强?"}
+    D4 -->|是| E1["使用 Abseil 对应组件"]
+    D4 -->|否| E2["仅用核心 base 库"]
+    E1 --> F1["对齐 C++17/20 标准迁移路线"]
+    E2 --> F2["最小化依赖面"]
+    F1 --> G1["以 Abseil 桥接 std 差异"]
+    F2 --> G1
+    G1 --> Z["选型决策闭环: 工程规模 → 基础设施栈 → 构建系统 → 标准迁移"]
+```
+
+> 决策流说明：Chromium 的基础设施（GN/Ninja、clang 插件、隔离头）适合超大型工程，但构建门槛高；中小项目用 Abseil 以较小的代价补上 std 尚缺的字符串、时间、容器能力，并随标准演进逐步迁移到 std 等价物。
+
+## 附录 K：Chromium / Abseil 基础设施 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    gn["GN / Ninja 构建系统"] --> chrom["Chromium base 库"]
+    chrom --> clangp["clang 插件与静态检查"]
+    clangp --> hdr["隔离头与 IWYU"]
+    hdr --> src["源码模块化边界"]
+    src --> bl["base / 日志 / 回调"]
+    bl --> task["任务与线程池"]
+    task --> loop["消息循环与 RunLoop"]
+    gn --> absl["Abseil 基础库"]
+    absl --> str["字符串与cord"]
+    absl --> time["时间与时区"]
+    absl --> cont["容器与哈希"]
+    absl --> sync["同步原语 / 栅栏"]
+    str --> stdbridge["向 std 等价物迁移"]
+    time --> stdbridge
+    cont --> stdbridge
+    sync --> task
+    loop --> chrom
+    stdbridge --> users["用户代码消费"]
+    bl --> users
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+| --- | --- | --- |
+| GN / Ninja 构建系统 | Chromium base 库 | base 库由 GN 构建并约束接口 |
+| Chromium base 库 | clang 插件与静态检查 | 构建中运行 clang 插件检查 |
+| clang 插件与静态检查 | 隔离头与 IWYU | 插件强制包含你所用头 |
+| 隔离头与 IWYU | 源码模块化边界 | IWYU 促成清晰模块边界 |
+| 源码模块化边界 | base / 日志 / 回调 | 模块边界划分基础组件 |
+| base / 日志 / 回调 | 任务与线程池 | 任务系统建立在 base 之上 |
+| 任务与线程池 | 消息循环与 RunLoop | 任务由消息循环驱动 |
+| GN / Ninja 构建系统 | Abseil 基础库 | Abseil 也可经 GN 接入 |
+| Abseil 基础库 | 字符串与cord | 字符串组件是 Abseil 核心 |
+| Abseil 基础库 | 时间与时区 | 时间组件提供安全时钟 |
+| Abseil 基础库 | 容器与哈希 | 容器补充标准库不足 |
+| Abseil 基础库 | 同步原语 / 栅栏 | 同步原语支撑并发 |
+| 字符串与cord | 向 std 等价物迁移 | cord 随标准演进可迁移 |
+| 时间与时区 | 向 std 等价物迁移 | time 点向 std::chrono 对齐 |
+| 容器与哈希 | 向 std 等价物迁移 | 容器向标准库迁移 |
+| 同步原语 / 栅栏 | 任务与线程池 | 同步原语支撑任务并发 |
+| 消息循环与 RunLoop | Chromium base 库 | 消息循环回归 base 体系 |
+| 向 std 等价物迁移 | 用户代码消费 | 迁移让用户代码更标准 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch19 | ch130 | 对象模型支撑 Abseil 值类型设计 |
+| ch39 | ch130 | 模板元编程影响 Abseil 容器实现 |
+| ch90 | ch130 | 并发原语与 Abseil 同步设施对照 |
+| ch115 | ch130 | 构建系统知识用于 GN / Ninja 配置 |
+| ch116 | ch130 | 测试方法论用于 Chromium 测试套件 |
+| ch124 | ch130 | 标准库实现总览衔接 Abseil 补位 |
+| ch126 | ch130 | MS STL 与 Abseil Windows 适配对照 |
+| ch131 | ch130 | Abseil 字符串与 fmt 的协作取舍 |
+

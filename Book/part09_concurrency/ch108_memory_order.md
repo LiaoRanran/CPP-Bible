@@ -991,3 +991,82 @@ int main() {
 **修复**：独立计数改 `fetch_add(1, std::memory_order_relaxed)`。x86 上 `seq_cst` 与 `relaxed` 的 RMW 都是 `lock xadd`（差别在编译器围栏），但在 ARM 上 `relaxed` 省掉 `dmb`，吞吐显著提升；即便 x86，也避免编译器为 seq_cst 施加的重排限制。
 
 **结论**：内存序按需最弱化——`relaxed`（独立计数）＜ `acq/rel`（发布/消费配对）＜ `seq_cst`（需要跨变量单一全序，如 Dekker）。默认 `seq_cst` 是「正确但可能慢」，热点路径应精确降级。
+
+## 附录 U：C++11 内存序 memory_order_relaxed/acquire/release/seq_cst 选型 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["起点：定义共享 atomic 变量"] --> D1{"需要跨线程同步?"}
+    D1{"需要跨线程同步?"} -->|否| A1["memory_order_relaxed 仅保原子性"]
+    D1{"需要跨线程同步?"} -->|是| D2{"建立发布/订阅 happens-before?"}
+    D2{"建立发布/订阅 happens-before?"} -->|否| A2["relaxed + 显式 fence 兜底"]
+    D2{"建立发布/订阅 happens-before?"} -->|是| D3{"单生产者单消费者?"}
+    D3{"单生产者单消费者?"} -->|是| A3["release / acquire 配对"]
+    D3{"单生产者单消费者?"} -->|否| D4{"多变量需单一全序?"}
+    D4{"多变量需单一全序?"} -->|否| A4["release / acquire 配对同步"]
+    D4{"多变量需单一全序?"} -->|是| A5["memory_order_seq_cst"]
+    A4 --> D5{"含读-改-写 RMW?"}
+    D5{"含读-改-写 RMW?"} -->|是| A6["memory_order_acq_rel"]
+    D5{"含读-改-写 RMW?"} -->|否| A7["单侧 acquire 或 release"]
+    A1 --> END["结束：序已确定"]
+    A2 --> END
+    A3 --> END
+    A5 --> END
+    A6 --> END
+    A7 --> END
+```
+
+> 决策流说明：内存序选型的核心权衡是「同步强度 vs 性能」——能弱则弱，仅在确实需要跨线程 happens-before 时才升级到 release/acquire，需要多变量单一全序（如 Dekker 互斥）才用 seq_cst。强内存平台（x86）会掩盖错误选择，弱内存平台（ARM）才暴露，因此应按最弱正确序显式标注而非依赖默认。
+
+## 附录 V：C++11 内存序 memory_order_relaxed/acquire/release/seq_cst 选型 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    N1["atomic 原子类型"] --> N2["内存位置可见性"]
+    N2 --> N3["happens-before 关系"]
+    N3 --> N4["release 语义"]
+    N3 --> N5["acquire 语义"]
+    N1 --> N6["memory_order_relaxed"]
+    N4 --> N7["memory_order_release"]
+    N5 --> N8["memory_order_acquire"]
+    N7 --> N9["发布-订阅配对"]
+    N8 --> N9
+    N1 --> N10["memory_order_seq_cst"]
+    N10 --> N11["单一全序 SC"]
+    N9 --> N12["无锁栈/队列"]
+    N11 --> N13["Dekker 互斥"]
+    N13 --> N14["线性一致性"]
+    N6 --> N15["计数器 fetch_add"]
+```
+
+### V.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+| --- | --- | --- |
+| atomic 原子类型 | 内存位置可见性 | 原子操作提供跨线程的确定性读写 |
+| 内存位置可见性 | happens-before 关系 | 可见性是实现 happens-before 的基础 |
+| happens-before 关系 | release 语义 | 写端 release 建立同步边 |
+| happens-before 关系 | acquire 语义 | 读端 acquire 消费同步边 |
+| atomic 原子类型 | memory_order_relaxed | relaxed 只保原子性不保同步 |
+| release 语义 | memory_order_release | release 是序的写侧标签 |
+| acquire 语义 | memory_order_acquire | acquire 是序的读侧标签 |
+| memory_order_release | 发布-订阅配对 | 配对形成一次同步传递 |
+| memory_order_acquire | 发布-订阅配对 | 配对消费本次同步 |
+| atomic 原子类型 | memory_order_seq_cst | seq_cst 在 relaxed 之上加全序 |
+| memory_order_seq_cst | 单一全序 SC | 所有 seq_cst 操作全局有序 |
+| 发布-订阅配对 | 无锁栈/队列 | 无锁结构靠配对传递所有权 |
+| 单一全序 SC | Dekker 互斥 | 多变量互斥需要全序 |
+| Dekker 互斥 | 线性一致性 | 全序逼近线性一致 |
+| memory_order_relaxed | 计数器 fetch_add | 计数器累加只需原子性 |
+
+### V.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch107 | ch108 | 原子类型与 RMW 原语是内存序的载体 |
+| ch108 | ch109 | 内存序标签与 atomic_thread_fence 等价转换 |
+| ch108 | ch110 | CAS 循环需 release/acquire 配对保证无锁正确 |
+| ch108 | ch111 | ABA 版本号依赖 relaxed 原子计数 |
+| ch108 | ch93 | std::async 内部以 seq_cst 隐式同步结果 |
+| ch39 | ch108 | RAII 管理共享状态生命周期与可见性窗口 |
+| ch77 | ch108 | vector 并发扩容需内存序保证读者不悬垂 |

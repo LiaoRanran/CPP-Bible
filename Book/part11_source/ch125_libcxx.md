@@ -874,3 +874,89 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：libc++ 实现特征与源码结构 决策流（D3 维度）
+
+```mermaid
+flowchart TD
+    S0["项目需选型 C++ 标准库实现"] --> D1{"目标平台含 Apple / LLVM 生态?"}
+    D1 -->|是| A1["采用 libc++ 为默认标准库"]
+    D1 -->|否| D2{"是否要求与 system libstdc++ 二进制共存?"}
+    D2 -->|是| A2["保留 libstdc++ 并隔离 ABI"]
+    D2 -->|否| D3{"是否需前沿 C++ 特性 / 模块支持?"}
+    D3 -->|是| A3["采用 libc++ 并启用 -stdlib=libc++"]
+    D3 -->|否| A4["沿用供应商默认标准库"]
+    A1 --> D4{"是否启用 libc++ 模块 / 并行 STL?"}
+    A3 --> D4
+    D4 -->|模块优先| B1["开启 C++20 Modules 与 <module> 实验"]
+    D4 -->|并行优先| B2["启用 -fexperimental-library + 并行算法后端"]
+    B1 --> C1["核对 __config 宏与 _LIBCPP_VERSION"]
+    B2 --> C1
+    A2 --> C2["用 inline namespace 隔离 ABI 版本"]
+    A4 --> C2
+    C1 --> E1["阅读 src/ 与 include/ 分层源码"]
+    C2 --> E2["仅消费公开头文件接口"]
+    E1 --> F1["基于 libc++ 实现特征做性能调优"]
+    E2 --> F2["遵循标准语义编写可移植代码"]
+    F1 --> G1["贡献上游或维护本地补丁"]
+    F2 --> G2["跨实现回归测试"]
+    G1 --> H1["回归验证经 libc++ CI 门禁"]
+    G2 --> H1
+    H1 --> Z["选型决策闭环: 平台约束 → 标准库 → 构建开关 → 源码分层"]
+```
+
+> 决策流说明：在 Apple 平台 libc++ 几乎是唯一默认选项，但在 Linux 上与系统 libstdc++ 共存时必须谨慎处理 ABI（inline namespace 与 `_LIBCPP_VERSION`），否则会引发 ODR 违规。是否开启模块与并行 STL 是第二条关键取舍——能拿到前沿特性，但也依赖较新的 clang 与实验性库开关。
+
+## 附录 K：libc++ 实现特征与源码结构 知识图谱（D6 维度）
+
+```mermaid
+flowchart TD
+    plat["平台 / Apple-LLVM 生态"] --> abi["libc++ ABI 层 inline namespace"]
+    abi --> conf["__config 宏与 _LIBCPP_VERSION"]
+    conf --> inc["include/ 公开头文件层"]
+    inc --> impl["__ 实现细节头"]
+    impl --> algo["算法与容器实现"]
+    impl --> alloc["分配器与内存设施"]
+    alloc --> pmem["PMR / 多态分配器"]
+    algo --> pstl["并行 STL 后端"]
+    conf --> mods["C++20 Modules 实验"]
+    mods --> build["构建系统开关 -stdlib=libc++"]
+    build --> exp["实验性库 -fexperimental-library"]
+    exp --> pstl
+    inc --> src["src/ 编译单元层"]
+    src --> tests["libc++ CI 与测试套件"]
+    tests --> upstream["上游社区与补丁流程"]
+```
+
+### K.1 概念依赖逐边解读
+
+| 上游概念 | 下游概念 | 依赖含义 |
+| --- | --- | --- |
+| 平台 / Apple-LLVM 生态 | libc++ ABI 层 inline namespace | Apple 平台默认 libc++，ABI 命名空间由平台工具链决定 |
+| libc++ ABI 层 inline namespace | __config 宏与 _LIBCPP_VERSION | ABI 版本通过 inline namespace 与配置宏共同锁定 |
+| __config 宏与 _LIBCPP_VERSION | include/ 公开头文件层 | 头文件依据配置宏条件展开不同实现分支 |
+| include/ 公开头文件层 | __ 实现细节头 | 公开头转发到以双下划线命名的实现头 |
+| __ 实现细节头 | 算法与容器实现 | 实现头承载算法与容器的具体代码 |
+| __ 实现细节头 | 分配器与内存设施 | 实现头同样包含分配器与内存工具 |
+| 分配器与内存设施 | PMR / 多态分配器 | PMR 建立在分配器抽象之上 |
+| 算法与容器实现 | 并行 STL 后端 | 并行算法依赖容器与算法的可并行原语 |
+| __config 宏与 _LIBCPP_VERSION | C++20 Modules 实验 | 模块化的可见性受配置宏约束 |
+| C++20 Modules 实验 | 构建系统开关 -stdlib=libc++ | 启用模块需构建系统切换到 libc++ |
+| 构建系统开关 -stdlib=libc++ | 实验性库 -fexperimental-library | 实验特性需额外的编译开关 |
+| 实验性库 -fexperimental-library | 并行 STL 后端 | 并行后端以实验库形式提供 |
+| include/ 公开头文件层 | src/ 编译单元层 | 部分模板实例化落到 src/ 中的 .cpp 单元 |
+| src/ 编译单元层 | libc++ CI 与测试套件 | 编译单元纳入 CI 回归 |
+| libc++ CI 与测试套件 | 上游社区与补丁流程 | 测试失败决定补丁能否合入上游 |
+
+### K.2 跨章闭环表
+
+| 上游章 | 下游章 | 传递的知识 |
+| --- | --- | --- |
+| ch19 | ch125 | 值类别与对象模型是 libc++ 容器/分配器实现的基础 |
+| ch62 | ch125 | Ranges 概念在 libc++ 算法层的实现与约束检查 |
+| ch90 | ch125 | 并发原语为 libc++ 并行 STL 后端提供线程模型 |
+| ch116 | ch125 | 测试方法论用于 libc++ CI 套件的回归验证 |
+| ch124 | ch125 | 标准库实现总览为 libc++ 源码分层提供上下文 |
+| ch126 | ch125 | MS STL 与 libc++ 的 ABI 与模块策略对照 |
+| ch127 | ch125 | LLVM 基础设施支撑 libc++ 的构建与测试 |
+| ch132 | ch125 | 存储引擎对分配器的需求反哺 libc++ PMR 设计 |
+
