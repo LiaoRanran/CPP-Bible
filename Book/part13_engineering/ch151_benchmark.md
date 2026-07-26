@@ -1465,3 +1465,47 @@ flowchart TD
 | ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | §⑪ 基准测试衔接 |
 | ch156 编译器优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | §⑨ 优化等级影响 |
 | ch143 DOD | [Book/part12_patterns/ch143_dod.md](Book/part12_patterns/ch143_dod.md) | 数据布局基准对照 |
+
+## 附录 U：基准测试工具与噪声控制决策流（D3 维度）
+
+本决策流帮性能工程师选型基准方案：先定微基准还是宏基准，再决定是否需 perf 硬件计数器，按规模选 Google Benchmark 或自定义计时，最后通过隔离噪声与统计显著性控制可信度并接入 CI 回归（ch149）。
+
+```mermaid
+flowchart TD
+  START["要做性能测量"]
+  Q1{"测量目标?"}
+  MICRO["微基准: 单函数 / 热点 (ch151②)"]
+  MACRO["宏基准: 端到端吞吐 (ch151⑮)"]
+  Q2{"是否需硬件计数器? (cache/分支/IPC)"}
+  PERF["perf / PMU: 顶层剖析 (ch151⑯)"]
+  Q3{"基准规模?"}
+  GB["Google Benchmark: 参数化 + 统计 (ch151③)"]
+  CUST["自定义计时: 纳秒级手测 (ch151④)"]
+  Q4{"噪声是否可控? (隔离CPU/固定频)"}
+  ISO["隔离: taskset / 关闭睿频 / 最小干扰 (ch151⑤)"]
+  Q5{"统计显著? (多次 / 离群剔除)"}
+  STAT["中位数 + 方差 + 置信区间 (ch151⑥)"]
+  REP["出报告 + 接入 CI 回归 (ch149)"]
+  DONE["测量方案确定"]
+
+  START --> Q1
+  Q1 -->|微| MICRO
+  Q1 -->|宏| MACRO
+  MICRO --> Q2
+  MACRO --> Q2
+  Q2 -->|是| PERF
+  Q2 -->|否| Q3
+  PERF --> Q3
+  Q3 -->|小| GB
+  Q3 -->|大| CUST
+  GB --> Q4
+  CUST --> Q4
+  Q4 -->|是| Q5
+  Q4 -->|否| ISO
+  ISO --> Q5
+  Q5 -->|否| STAT
+  Q5 -->|是| REP
+  STAT --> REP
+  REP --> DONE
+```
+

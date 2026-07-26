@@ -1385,3 +1385,43 @@ flowchart TD
 | ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | §⑪ 基准测试衔接 |
 | ch121 契约与断言 | [Book/part10_modern/ch121_contracts.md](Book/part10_modern/ch121_contracts.md) | §⑭ 异常测试与契约 |
 | ch29 友元 | [Book/part03_language/ch29_friend.md](Book/part03_language/ch29_friend.md) | 友元与白盒测试访问 |
+
+## 附录 U：测试类型选型决策流（D3 维度）
+
+本决策流帮开发者为一段代码选定测试金字塔中的合适层级：从独立性、外部依赖、端到端行为、可描述不变量到性能回归敏感度逐层分流，在单元/集成/端到端/属性/性能基准之间做有据决策。
+
+```mermaid
+flowchart TD
+  START["决定如何测试一段代码"]
+  Q1{"被测单元是否独立?"}
+  UNIT["单元测试: 快 / 隔离 / mock (ch150②)"]
+  Q2{"是否依赖外部系统? (DB/网络/FS)"}
+  INTG["集成测试: 真实依赖 / 契约 (ch150④)"]
+  MOCK["注入 mock / 测试替身"]
+  Q3{"是否验证跨组件端到端行为?"}
+  E2E["端到端测试: 关键用户路径 (ch150⑤)"]
+  Q4{"性质是否可用不变量描述?"}
+  PROP["属性测试: 随机生成 + 不变量 (ch150⑨)"]
+  Q5{"是否性能回归敏感?"}
+  PERF["性能基准测试 + CI 回归 (ch151)"]
+  DONE["测试策略确定"]
+
+  START --> Q1
+  Q1 -->|是| UNIT
+  Q1 -->|否| Q2
+  UNIT --> Q4
+  Q2 -->|是| INTG
+  Q2 -->|否| MOCK
+  INTG --> Q3
+  MOCK --> Q3
+  Q3 -->|是| E2E
+  Q3 -->|否| Q4
+  E2E --> Q4
+  Q4 -->|是| PROP
+  Q4 -->|否| Q5
+  PROP --> Q5
+  Q5 -->|是| PERF
+  Q5 -->|否| DONE
+  PERF --> DONE
+```
+

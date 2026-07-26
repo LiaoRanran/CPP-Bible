@@ -818,3 +818,100 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 J：Unreal Engine C++ 架构 决策流（D3 维度）
+
+> 以 UE 的 UObject / 反射 / GC 与游戏框架为主线，给出"何时用何种 UE 机制"的工程决策流。
+
+```mermaid
+flowchart TD
+    A["需要持久化/序列化/编辑器可见的对象?"] --> D1{"需要 UE 反射与 GC 管理?"}
+    D1 -->|"是"| B["继承 UObject 并用 UPROPERTY/UFUNCTION"]
+    D1 -->|"否"| C["用普通 C++ 对象 + RAII"]
+    B --> D2{"需要组件组合还是单类继承?"}
+    D2 -->|"组件组合"| E["Actor + 多个 UActorComponent"]
+    D2 -->|"单类"| F["直接 UCLASS 派生"]
+    E --> D3{"需要跨网络同步?"}
+    D3 -->|"是"| G["加 Replicated 属性 + RPC"]
+    D3 -->|"否"| H["仅本地逻辑"]
+    F --> D4{"需要蓝图可调用?"}
+    D4 -->|"是"| I["标记 BlueprintCallable"]
+    D4 -->|"否"| J["保持纯 C++"]
+    C --> D5{"需要每帧 Tick?"}
+    D5 -->|"是"| K["实现 Tick 并注册"]
+    D5 -->|"否"| L["事件驱动 / Timer"]
+    G --> M["处理 RPC 时序与预测"]
+    H --> M
+    I --> M
+    J --> M
+    K --> M
+    L --> M
+```
+
+## 附录 K：Unreal Engine C++ 架构 知识图谱（D6 维度）
+
+> 以下概念图谱梳理本章与全书的依赖关系；K.1 逐边解读依赖，K.2 给出跨章闭环。
+
+```mermaid
+flowchart TD
+    N1["UObject 基类"]
+    N2["反射元数据"]
+    N3["GC 标记清除"]
+    N4["UPROPERTY"]
+    N5["UCLASS"]
+    N6["Actor"]
+    N7["UActorComponent"]
+    N8["蓝图虚拟机"]
+    N9["委托 Delegate"]
+    N10["TSharedPtr"]
+    N11["RTTI 运行时类型"]
+    N12["内存池 FMemory"]
+    N13["虚函数表"]
+    N14["序列化 Serialize"]
+    N1 --> N2
+    N2 --> N3
+    N4 --> N2
+    N5 --> N2
+    N1 --> N6
+    N6 --> N7
+    N5 --> N8
+    N7 --> N9
+    N10 --> N12
+    N11 --> N1
+    N13 --> N5
+    N1 --> N14
+    N3 --> N12
+    N8 --> N9
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 上游概念 | 下游概念 | 依赖含义 |
+|----|----------|----------|----------|
+| 1 | UObject | 反射元数据 | UClass 在编译期收集字段/函数元数据供反射 |
+| 2 | 反射元数据 | GC 标记清除 | GC 遍历 UPROPERTY 引用完成标记 |
+| 3 | UPROPERTY | 反射元数据 | 属性宏把字段登记进反射系统 |
+| 4 | UCLASS | 反射元数据 | 类宏把类型登记进反射系统 |
+| 5 | UObject | Actor | Actor 是 UObject 在游戏世界中的具象 |
+| 6 | Actor | UActorComponent | 组合优于继承，能力拆解到组件 |
+| 7 | UCLASS | 蓝图虚拟机 | 蓝图基于 UClass 生成可执行字节码 |
+| 8 | UActorComponent | 委托 Delegate | 组件通过委托向外界广播事件 |
+| 9 | TSharedPtr | 内存池 | 共享指针后端用 FMemory 内存池 |
+| 10 | RTTI | UObject | UObject 的运行时类型依赖 RTTI |
+| 11 | 虚函数表 | UCLASS | UFunction 调用走虚表分派 |
+| 12 | UObject | 序列化 | UObject 借反射实现序列化 |
+| 13 | GC 标记清除 | 内存池 | 回收对象内存归还 FMemory 池 |
+| 14 | 蓝图虚拟机 | 委托 | 蓝图事件节点底层即委托调用 |
+
+### K.2 跨章闭环表
+
+| 源章 | 目标章 | 闭环关系 |
+|------|--------|----------|
+| ch134 UObject | ch47 虚函数 | UObject 虚表与 ch47 虚函数机制同源 |
+| ch134 反射元数据 | ch48 RTTI | UClass 反射基于运行时类型信息，闭环 ch48 |
+| ch134 GC | ch39 RAII | 对象生命周期与 ch39 RAII 互补 |
+| ch134 组件组合 | ch46 封装继承 | 组合优于继承，见 ch46 |
+| ch134 内存分配 | ch44 内存池 | UE FMemory 用内存池，呼应 ch44 |
+| ch134 委托 | ch26 lambda | 委托常以 lambda 作回调，关联 ch26 |
+| ch134 序列化 | ch32 初始化 | 反序列化即构造 + 赋值，闭环 ch32 |
+| ch134 TSharedPtr | ch41 智能指针 | 共享所有权思想同源，见 ch41 |
+

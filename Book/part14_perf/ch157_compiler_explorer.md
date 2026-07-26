@@ -653,3 +653,118 @@ int main() { f(); }  // 触发 std::terminate
 
 </details>
 
+## 附录 J：Compiler Explorer 验证决策流（D3 维度）
+
+> 本节给出"何时、如何借助 Compiler Explorer 验证编译器实际生成代码"的决策路径，强调先量化后看汇编、跨级别跨编译器对比，并把证据固化进 CI。
+
+```mermaid
+flowchart TD
+    START["怀疑编译器未生成预期代码？"]
+    Q1{"是否先看汇编确认？"}
+    CMP["贴源码到 Compiler Explorer"]
+    Q2{"是否对比多优化级别？"}
+    MULTI["对比 -O0/-O2/-O3 输出"]
+    Q3{"是否跨编译器对比？"}
+    GCC["对比 GCC/Clang/MSVC"]
+    Q4{"是否验证向量化？"}
+    VEC["查 asm 是否出现 SIMD 指令"]
+    Q5{"是否验证内联/去虚化？"}
+    INL["查是否仍存在 call/vcall"]
+    DOC["截图存证进 ch149 CI 门禁"]
+    REG["提交回归用例"]
+    BENCH["用 ch151 量化"]
+    ISSUE["提 issue/改代码"]
+    KNOW["对照 ch153 微架构"]
+    DONE["关闭疑问"]
+    START -->|"是"| Q1
+    START -->|"否"| CMP
+    Q1 -->|"否"| CMP
+    Q1 -->|"是"| Q2
+    CMP --> Q2
+    Q2 -->|"是"| MULTI
+    Q2 -->|"否"| Q3
+    MULTI --> Q3
+    Q3 -->|"是"| GCC
+    Q3 -->|"否"| Q4
+    GCC --> Q4
+    Q4 -->|"是"| VEC
+    Q4 -->|"否"| Q5
+    VEC --> Q5
+    Q5 -->|"是"| INL
+    Q5 -->|"否"| DOC
+    INL --> DOC
+    DOC --> REG
+    REG --> BENCH
+    BENCH --> ISSUE
+    ISSUE --> KNOW
+    KNOW --> DONE
+```
+
+## 附录 K：Compiler Explorer 知识图谱（D6 维度）
+
+> Compiler Explorer 是连接"源码意图—汇编事实—跨编译器差异"的枢纽，其结论需回到微架构、SIMD、基准与 CI 才能闭环。
+
+```mermaid
+flowchart TD
+    CE["Compiler Explorer"]
+    ASM["汇编输出"]
+    OPT["优化级别 -O0/-O2/-O3"]
+    GCC["GCC"]
+    CLANG["Clang"]
+    MSVC["MSVC"]
+    VEC["SIMD 向量化"]
+    INL["内联/去虚化"]
+    DOC["截图存证"]
+    CI["CI 门禁 ch149"]
+    BENCH["基准测试 ch151"]
+    MICRO["微架构 ch153"]
+    SIMD["SIMD 章 ch155"]
+    VF["虚函数 ch47"]
+    CE --> ASM
+    ASM --> OPT
+    OPT --> GCC
+    OPT --> CLANG
+    OPT --> MSVC
+    ASM --> VEC
+    ASM --> INL
+    VEC --> SIMD
+    INL --> VF
+    CE --> DOC
+    DOC --> CI
+    ASM --> BENCH
+    MICRO --> VEC
+    MICRO --> INL
+```
+
+### K.1 概念依赖逐边解读
+
+| 边 | 起点概念 | 终点概念 | 依赖含义 |
+|----|---------|---------|---------|
+| 1 | Compiler Explorer | 汇编输出 | 工具核心价值是展示真实汇编 |
+| 2 | 汇编输出 | 优化级别 | 同一代码不同级别 asm 不同 |
+| 3 | 优化级别 | GCC | 级别需在具体编译器上观察 |
+| 4 | 优化级别 | Clang | 同上，跨编译器对比 |
+| 5 | 优化级别 | MSVC | 同上，跨编译器对比 |
+| 6 | 汇编输出 | SIMD 向量化 | 看是否生成向量指令 |
+| 7 | 汇编输出 | 内联/去虚化 | 看是否仍存在 call/vcall |
+| 8 | SIMD 向量化 | SIMD 章 | 向量化对应 ch155 主题 |
+| 9 | 内联/去虚化 | 虚函数 | 去虚化关联 ch47 虚调用 |
+| 10 | Compiler Explorer | 截图存证 | 证据需截图留存 |
+| 11 | 截图存证 | CI 门禁 | 证据固化进 ch149 门禁 |
+| 12 | 汇编输出 | 基准测试 | 汇编改善须基准量化 |
+| 13 | 微架构 | SIMD 向量化 | 向量化收益取决于微架构 |
+| 14 | 微架构 | 内联/去虚化 | 去虚化收益取决于流水线 |
+
+### K.2 跨章闭环表
+
+| 关联章 | 本章角色 | 对方章角色 | 闭环说明 |
+|-------|---------|-----------|---------|
+| ch156 | 验证效果 | 编译器优化 | Compiler Explorer 验证优化效果 |
+| ch153 | 解读汇编 | 微架构 | 汇编需结合微架构理解 |
+| ch155 | 验证向量化 | SIMD | 验证 SIMD 指令生成 |
+| ch151 | 量化改善 | 基准测试 | 汇编优化需基准量化 |
+| ch149 | 证据固化 | CI 流程 | 截图存证纳入 CI |
+| ch47 | 验证去虚化 | 虚函数 | 验证虚函数去虚化 |
+| ch15 | 定位热点 | 性能剖析 | 剖析定位待验证热点 |
+| ch154 | 汇编可见 | 缓存优化 | 缓存优化在汇编可见 |
+

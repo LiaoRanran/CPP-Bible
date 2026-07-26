@@ -906,3 +906,123 @@ int main() { std::cout << sizeof(Base) << '\n'; }  // 通常 16 = 8(vptr)+4(int)
 
 </details>
 
+## 附录 J：SIMD 向量化决策流（D3 维度）
+
+把热点循环向量化收敛为"数据连续→对齐→可自动向量化→控制流规则→库/intrinsics"五道分流。
+
+```mermaid
+flowchart TD
+  START["热点循环待向量化"]
+  Q1{"数据连续?"}
+  CONT["连续数组 → 向量化友好"]
+  GATHER["不规则 → gather/scatter"]
+  Q2{"对齐?"}
+  ALIGNED["对齐加载"]
+  UNALIGN["未对齐 → 对齐填充/拆分"]
+  Q3{"可自动向量化?"}
+  AUTO["-O3 + pragma omp simd"]
+  MANUAL["手写 intrinsics"]
+  Q4{"控制流规则?"}
+  REG["无数据依赖分支 → 直接向量化"]
+  IRREG["有分支 → 掩码/拆分路径"]
+  Q5{"库 or intrinsics?"}
+  LIB["std::simd / Eigen"]
+  INTR["底层 intrinsics"]
+  DONE["落地并测吞吐"]
+  START --> Q1
+  Q1 -->|"是"| CONT
+  Q1 -->|"否"| GATHER
+  CONT --> Q2
+  GATHER --> Q2
+  Q2 -->|"是"| ALIGNED
+  Q2 -->|"否"| UNALIGN
+  ALIGNED --> Q3
+  UNALIGN --> Q3
+  Q3 -->|"是"| AUTO
+  Q3 -->|"否"| MANUAL
+  AUTO --> Q4
+  MANUAL --> Q4
+  Q4 -->|"是"| REG
+  Q4 -->|"否"| IRREG
+  REG --> Q5
+  IRREG --> Q5
+  Q5 -->|"库"| LIB
+  Q5 -->|"底层"| INTR
+  LIB --> DONE
+  INTR --> DONE
+```
+
+## 附录 K：SIMD 向量化知识图谱（D6 维度）
+
+SIMD 向量化是一张以"向量宽度"为核心的网：数据连续性与对齐喂给自动/手动向量化，掩码处理控制流，gather/scatter 处理不规则，缓存友好与微架构共同决定吞吐，并汇入编译器优化与基准验证。
+
+```mermaid
+flowchart TD
+  SIMD["SIMD 向量化"]
+  WIDTH["向量宽度"]
+  CONTIG["数据连续性"]
+  ALIGN["内存对齐"]
+  AUTOV["自动向量化"]
+  INTR["intrinsics"]
+  LIB["std::simd / Eigen"]
+  MASK["掩码/预测"]
+  GATHER["gather/scatter"]
+  CACHE["缓存友好"]
+  UARCH["CPU 微架构"]
+  CMPLR["编译器优化"]
+  BENCH["基准验证"]
+  PROFILE["性能剖析"]
+  SIMD --> WIDTH
+  SIMD --> CONTIG
+  SIMD --> ALIGN
+  SIMD --> AUTOV
+  SIMD --> INTR
+  SIMD --> LIB
+  WIDTH --> UARCH
+  CONTIG --> CACHE
+  ALIGN --> CACHE
+  AUTOV --> CMPLR
+  INTR --> MASK
+  LIB --> MASK
+  MASK --> GATHER
+  CACHE --> UARCH
+  CMPLR --> UARCH
+  BENCH --> SIMD
+  PROFILE --> SIMD
+```
+
+### K.1 概念依赖逐边解读
+
+| 起点概念 | 终点概念 | 依赖说明 |
+|---|---|---|
+| SIMD 向量化 | 向量宽度 | 向量化受硬件宽度约束 |
+| SIMD 向量化 | 数据连续性 | 连续内存才能 packed load |
+| SIMD 向量化 | 内存对齐 | 对齐加载更高效 |
+| SIMD 向量化 | 自动向量化 | 编译器可自动生成 |
+| SIMD 向量化 | intrinsics | 手写可精细控制 |
+| SIMD 向量化 | std::simd / Eigen | 库提供可移植抽象 |
+| 向量宽度 | CPU 微架构 | 宽度由微架构决定 |
+| 数据连续性 | 缓存友好 | 连续访问提升缓存命中 |
+| 内存对齐 | 缓存友好 | 对齐减少跨行/跨页 |
+| 自动向量化 | 编译器优化 | 自动向量化属优化 pass |
+| intrinsics | 掩码/预测 | 掩码处理剩余元素 |
+| std::simd / Eigen | 掩码/预测 | 库也用掩码 |
+| 掩码/预测 | gather/scatter | 不规则用 gather |
+| 缓存友好 | CPU 微架构 | 缓存命中影响实测吞吐 |
+| 编译器优化 | CPU 微架构 | 生成指令依赖微架构 |
+| 基准验证 | SIMD 向量化 | 基准确认向量化加速 |
+| 性能剖析 | SIMD 向量化 | 剖析确认向量化发生 |
+
+### K.2 跨章闭环表
+
+| 本图谱概念 | 关联章 | 闭环说明 |
+|---|---|---|
+| SIMD 向量化 | ch153 CPU 微架构 | 向量宽度由执行端口决定 |
+| SIMD 向量化 | ch154 缓存优化 | 连续访问提升缓存命中 |
+| SIMD 向量化 | ch156 编译器优化 | 自动向量化是优化 pass |
+| SIMD 向量化 | ch77 vector | 向量化加载连续容器 |
+| SIMD 向量化 | ch151 基准测试 | 基准验证吞吐提升 |
+| SIMD 向量化 | ch15 性能剖析 | 计数器确认向量化 |
+| SIMD 向量化 | ch149 CI/CD | 向量化基准进回归 |
+| SIMD 向量化 | ch47 虚函数 | 去虚调用利于向量化 |
+

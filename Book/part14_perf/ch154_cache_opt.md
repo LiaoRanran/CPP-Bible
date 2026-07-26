@@ -1079,3 +1079,129 @@ flowchart TD
 - **抗噪**：伪共享取 5 轮**最优**（首发冷启动最慢，取最小贴近稳态争用）；AoS/SoA 与行列取 5 轮**中位**规避调度抖动；末尾 `volatile` 读取阻止死代码消除。
 - **"比值比绝对值更可移植"**：本机毫秒数随 CPU/内存而变，**加速比**（bad/good、col/row）才是跨机器可读信号；正文 ⑨⑫⑭ 的"量级"结论因此仍成立，只是具体倍数需以本机 15.3.0 数字为准。
 - **可复现件**：`_bench_cache.cpp`（库根，不进 `Book/` 编译门禁）；打印 `hardware_*_interference_size` 实测值 + 三件套计时。
+
+## 附录 J：缓存优化决策流（D3 维度）
+
+把缓存优化收敛为"瓶颈类型→访问模式→结构可重排→多线程冲突→先取证"五道分流。
+
+```mermaid
+flowchart TD
+  START["缓存问题待优化"]
+  Q1{"瓶颈类型?"}
+  CAP["容量缺失 → 降工作集/分块"]
+  CONF["冲突缺失 → 改映射/填充"]
+  BAND["带宽 bound → 降访存量"]
+  FALSE["伪共享 → 对齐/拆分"]
+  Q2{"访问可预测?"}
+  SEQ["顺序/步长规则 → 预取友好"]
+  RAND["随机 → 改布局/哈希"]
+  Q3{"结构可重排?"}
+  SOA["SoA/字段拆分"]
+  HOT["热冷分离/ECS"]
+  Q4{"多线程写冲突?"}
+  ALIGN["alignas/干涉尺寸"]
+  OK["无冲突 → 维持"]
+  Q5{"先取证?"}
+  PROF["perf/cachegrind 取证"]
+  GUESS["直接按经验改"]
+  DONE["落地并复测"]
+  START --> Q1
+  Q1 -->|"容量"| CAP
+  Q1 -->|"冲突"| CONF
+  Q1 -->|"带宽"| BAND
+  Q1 -->|"伪共享"| FALSE
+  CAP --> Q2
+  CONF --> Q2
+  BAND --> Q2
+  FALSE --> Q2
+  Q2 -->|"是"| SEQ
+  Q2 -->|"否"| RAND
+  SEQ --> Q3
+  RAND --> Q3
+  Q3 -->|"是"| SOA
+  Q3 -->|"否"| HOT
+  SOA --> Q4
+  HOT --> Q4
+  Q4 -->|"是"| ALIGN
+  Q4 -->|"否"| OK
+  ALIGN --> Q5
+  OK --> Q5
+  Q5 -->|"是"| PROF
+  Q5 -->|"否"| GUESS
+  PROF --> DONE
+  GUESS --> DONE
+```
+
+## 附录 K：缓存优化知识图谱（D6 维度）
+
+缓存优化是一张以"缺失与带宽"为核心的网：三类缺失驱动循环分块，SoA/冷热分离连 ECS，伪共享连对齐与带宽，TLB 与缓存层级连 CPU 微架构，并汇入编译器优化与基准验证。
+
+```mermaid
+flowchart TD
+  CACHEOPT["缓存优化"]
+  CACHE["缓存层级"]
+  MISS["三类缺失"]
+  PREFETCH["硬件预取"]
+  SOA["SoA/AoS"]
+  FALSE["伪共享/对齐"]
+  BAND["内存带宽"]
+  TLB["TLB"]
+  ECS["ECS/数据导向"]
+  PROFILE["cachegrind/perf"]
+  CMPLR["编译器优化"]
+  SIMD["SIMD 友好"]
+  UARCH["CPU 微架构"]
+  LOOP["循环分块"]
+  CACHEOPT --> CACHE
+  CACHEOPT --> MISS
+  CACHEOPT --> SOA
+  CACHEOPT --> FALSE
+  CACHE --> PREFETCH
+  CACHE --> TLB
+  CACHE --> BAND
+  MISS --> LOOP
+  SOA --> ECS
+  FALSE --> BAND
+  BAND --> UARCH
+  TLB --> UARCH
+  LOOP --> CMPLR
+  SOA --> SIMD
+  PREFETCH --> UARCH
+  PROFILE --> CACHEOPT
+  CMPLR --> CACHEOPT
+```
+
+### K.1 概念依赖逐边解读
+
+| 起点概念 | 终点概念 | 依赖说明 |
+|---|---|---|
+| 缓存优化 | 缓存层级 | 缓存优化作用于层级结构 |
+| 缓存优化 | 三类缺失 | 优化直接针对缺失类型 |
+| 缓存优化 | SoA/AoS | 布局选择是缓存优化手段 |
+| 缓存优化 | 伪共享/对齐 | 伪共享是多线程缓存陷阱 |
+| 缓存层级 | 硬件预取 | 预取器掩盖缺失延迟 |
+| 缓存层级 | TLB | TLB 缺失也走页表游走 |
+| 缓存层级 | 内存带宽 | 缺失最终落到带宽 |
+| 三类缺失 | 循环分块 | 分块消除容量/冲突缺失 |
+| SoA/AoS | ECS/数据导向 | SoA 是 ECS 的缓存友好基础 |
+| 伪共享/对齐 | 内存带宽 | 伪共享放大无效带宽 |
+| 内存带宽 | CPU 微架构 | 带宽由内存控制器决定 |
+| TLB | CPU 微架构 | TLB 属微架构部件 |
+| 循环分块 | 编译器优化 | 分块可手写或由编译器做 |
+| SoA/AoS | SIMD 友好 | SoA 提升向量加载效率 |
+| 硬件预取 | CPU 微架构 | 预取器是微架构特性 |
+| cachegrind/perf | 缓存优化 | 剖析定位缺失来源 |
+| 编译器优化 | 缓存优化 | 优化器影响实测缓存行为 |
+
+### K.2 跨章闭环表
+
+| 本图谱概念 | 关联章 | 闭环说明 |
+|---|---|---|
+| 缓存优化 | ch43 缓存局部性 | 局部性是缺失根因 |
+| 缓存优化 | ch143 数据导向设计 | SoA/ECS 是缓存友好布局 |
+| 缓存优化 | ch153 CPU 微架构 | 缓存层级属微架构 |
+| 缓存优化 | ch155 SIMD | SoA 提升向量化效率 |
+| 缓存优化 | ch156 编译器优化 | 优化器改变缓存行为 |
+| 缓存优化 | ch15 性能剖析 | cachegrind 取证 |
+| 缓存优化 | ch151 基准测试 | 优化靠基准复测 |
+| 缓存优化 | ch149 CI/CD | 缓存基准进回归门禁 |

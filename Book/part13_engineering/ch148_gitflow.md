@@ -1067,3 +1067,51 @@ flowchart TD
 | ch150 测试策略 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | CI 跑测试门禁 |
 | ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | CI 跑性能回归 |
 | ch156 编译器优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 矩阵构建跨编译器版本 |
+
+## 附录 U：分支模型与发布策略决策流（D3 维度）
+
+本决策流帮团队为一项任务选择分支模型与发布策略：先按变更类型（功能/热修复/发布）分流，再据团队规模定主干开发还是 Git Flow，按发布频率与多版本维护需求确定发布节奏，最后为线上紧急修复开出 hotfix 分支。
+
+```mermaid
+flowchart TD
+  START["接到开发任务 / 发布需求"]
+  Q1{"变更类型?"}
+  FEAT["功能开发"]
+  HOT["紧急热修复"]
+  REL["版本发布 / 打 tag"]
+  Q2{"团队规模 / 协作复杂度?"}
+  TRUNK["主干开发 trunk-based + 短生命周期分支 (ch148③)"]
+  FLOW["Git Flow: develop/main/release/hotfix 多分支 (ch148②)"]
+  Q3{"发布频率?"}
+  CONT["持续交付: 直接主干发布 (ch149⑩)"]
+  SCHED["固定节奏: 发布分支 + 候选 (ch148⑧)"]
+  Q4{"需要多版本长期维护?"}
+  MAINT["维护分支 + 反向移植 backport"]
+  Q5{"需紧急修复线上?"}
+  HBR["hotfix 分支: 从 tag 切出 (ch148⑦)"]
+  MERGE["合并回 main / develop"]
+  DONE["分支策略与流转确定"]
+
+  START --> Q1
+  Q1 -->|功能| FEAT
+  Q1 -->|热修复| HOT
+  Q1 -->|发布| REL
+  FEAT --> Q2
+  HOT --> Q5
+  REL --> Q3
+  Q2 -->|小/快| TRUNK
+  Q2 -->|大/多| FLOW
+  TRUNK --> Q3
+  FLOW --> Q3
+  Q3 -->|高频| CONT
+  Q3 -->|低频| SCHED
+  CONT --> Q4
+  SCHED --> Q4
+  Q4 -->|是| MAINT
+  Q4 -->|否| DONE
+  MAINT --> DONE
+  Q5 --> HBR
+  HBR --> MERGE
+  MERGE --> DONE
+```
+

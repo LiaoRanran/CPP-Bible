@@ -824,3 +824,45 @@ flowchart TD
 | ch151 基准测试 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | §⑬ 性能回归审查 |
 | ch107 原子操作 | [Book/part09_concurrency/ch107_atomic.md](Book/part09_concurrency/ch107_atomic.md) | §⑥ 并发缺陷审查 |
 | ch14 调试与诊断 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | §④ 编译器警告实证 |
+
+## 附录 U：代码审查深度与检查单决策流（D3 维度）
+
+本决策流帮审查者在收到 PR 时快速定级：依据变更规模、是否核心路径、安全敏感度、是否公共 API 与是否涉并发/内存，自动升级审查深度与检查单（轻量→标准→安全审计→架构评审），并把机器可判项交给自动门禁（ch149）。
+
+```mermaid
+flowchart TD
+  START["收到 PR / 变更"]
+  Q1{"变更规模?"}
+  S1["小改动: 轻量审查 (逐行 1 人)"]
+  BIG["大改动: 拆分或分段审查"]
+  Q2{"是否核心路径 / 热点?"}
+  STD["标准审查: 正确性 + 可读 (ch147⑤)"]
+  Q3{"是否安全敏感? (内存/并发/注入)"}
+  SEC["安全审计 + 威胁建模 (ch147⑨)"]
+  Q4{"是否公共 API?"}
+  API["API 契约 + 兼容评审 (ch145)"]
+  Q5{"是否触及并发 / 内存?"}
+  CONC["数据竞争 + UB 专项 (ch107/ch150)"]
+  AUTO["自动门禁优先: clang-tidy + CI (ch149)"]
+  DONE["审查结论: 批准 / 打回"]
+
+  START --> Q1
+  Q1 -->|小| S1
+  Q1 -->|大| BIG
+  S1 --> Q2
+  BIG --> Q2
+  Q2 -->|否| STD
+  Q2 -->|是| Q3
+  Q3 -->|否| STD
+  Q3 -->|是| SEC
+  STD --> Q4
+  SEC --> Q4
+  Q4 -->|否| Q5
+  Q4 -->|是| API
+  API --> Q5
+  Q5 -->|否| AUTO
+  Q5 -->|是| CONC
+  CONC --> AUTO
+  AUTO --> DONE
+```
+

@@ -1069,3 +1069,46 @@ flowchart TD
 | ch88 optional | [Book/part07_stl/ch88_optional_variant.md](Book/part07_stl/ch88_optional_variant.md) | §⑧ optional 无值表征 |
 | ch144 代码风格 | [Book/part13_engineering/ch144_style.md](Book/part13_engineering/ch144_style.md) | §⑩ noexcept 风格约定 |
 | ch145 命名与 API | [Book/part13_engineering/ch145_naming_api.md](Book/part13_engineering/ch145_naming_api.md) | §⑬ noexcept API 规范 |
+
+## 附录 U：错误处理处置与传播决策流（D3 维度）
+
+本决策流帮工程师在错误发生的那一刻决定如何处置与传播：先甄别是否为编程错误，再判断可恢复性与调用方能否处理，最后结合跨语言边界与瞬时故障选择具体表征（异常、std::expected、error_code 或 terminate），避免无脑抛异常或悄悄吞错。
+
+```mermaid
+flowchart TD
+  START["出现错误 / 异常路径"]
+  Q1{"是编程错误? (前置条件违例)"}
+  A1["assert / std::terminate (ch121)"]
+  Q2{"可恢复?"}
+  Q3{"调用方能处理? (错误语义属调用者)"}
+  EXP["返回 std::expected<T,E> (ch91)"]
+  EXC["抛异常 + RAII 栈展开 (ch146④)"]
+  Q4{"跨 C / FFI 边界?"}
+  CODE["返回 std::error_code / 整数码 (ch146⑥)"]
+  Q5{"瞬时故障? 可重试?"}
+  RETRY["退避重试 + 日志 (ch146⑫)"]
+  LOG["记录日志 + 上报 + 降级"]
+  PROP["向上透传不吞没"]
+  DONE["处置完成"]
+
+  START --> Q1
+  Q1 -->|是| A1
+  Q1 -->|否| Q2
+  A1 --> DONE
+  Q2 -->|否| A1
+  Q2 -->|是| Q3
+  Q3 -->|是| EXP
+  Q3 -->|否| EXC
+  EXP --> Q4
+  EXC --> Q4
+  Q4 -->|是| CODE
+  Q4 -->|否| Q5
+  CODE --> DONE
+  Q5 -->|是| RETRY
+  Q5 -->|否| LOG
+  RETRY -->|达上限| LOG
+  RETRY --> DONE
+  LOG --> PROP
+  PROP --> DONE
+```
+

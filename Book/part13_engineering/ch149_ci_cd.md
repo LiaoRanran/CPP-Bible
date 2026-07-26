@@ -1273,3 +1273,50 @@ flowchart TD
 | ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | 构建系统集成 |
 | ch12 构建系统 | [Book/part02_toolchain/ch12_buildsystems.md](Book/part02_toolchain/ch12_buildsystems.md) | CMake/CTest 进 CI |
 | ch156 编译器优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 矩阵构建跨优化等级 |
+
+## 附录 U：流水线阶段与门禁设计决策流（D3 维度）
+
+本决策流帮平台工程师设计 CI/CD 流水线：依据构建时长决定是否上缓存/分布式编译，按测试分层设定门禁深度，按部署风险选自动或人工审批发布，并按是否需要多平台矩阵扩展构建维度。
+
+```mermaid
+flowchart TD
+  START["设计一条 CI/CD 流水线"]
+  Q1{"构建时长?"}
+  CACHE["引入 ccache / 分布式编译 (ch149④⑤)"]
+  FAST["直连构建"]
+  Q2{"测试门禁深度?"}
+  UNIT["单元门禁: 快反馈 (ch150)"]
+  INTG["集成门禁: 接口契约 (ch150)"]
+  E2E["端到端门禁: 关键路径 (ch150)"]
+  Q3{"部署风险?"}
+  AUTO["自动部署 / 蓝绿 (ch149⑩)"]
+  GATE["发布门禁: 人工审批 + 金丝雀"]
+  Q5{"需人工审批 / 金丝雀?"}
+  APPROVE["审批 + 金丝雀发布"]
+  Q4{"需多平台 / 编译器矩阵?"}
+  MATRIX["矩阵构建: GCC/Clang/MSVC × 优化等级"]
+  DONE["流水线定稿"]
+
+  START --> Q1
+  Q1 -->|长| CACHE
+  Q1 -->|短| FAST
+  CACHE --> Q2
+  FAST --> Q2
+  Q2 -->|浅| UNIT
+  Q2 -->|中| INTG
+  Q2 -->|深| E2E
+  UNIT --> Q3
+  INTG --> Q3
+  E2E --> Q3
+  Q3 -->|低| AUTO
+  Q3 -->|高| GATE
+  AUTO --> Q5
+  GATE --> Q5
+  Q5 -->|否| Q4
+  Q5 -->|是| APPROVE
+  APPROVE --> Q4
+  Q4 -->|否| DONE
+  Q4 -->|是| MATRIX
+  MATRIX --> DONE
+```
+
