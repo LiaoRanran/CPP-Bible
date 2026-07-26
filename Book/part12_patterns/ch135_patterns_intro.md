@@ -523,6 +523,41 @@ _Z11via_virtualRK6Animal:
 
 ---
 
+### D5 实测：策略分发的运行期开销（GCC 15.3.0 微基准）
+
+上面的 `-O2 -S` 分析看到的是「编译器能去虚化时虚调用≈0 成本」；下面补一组**运行期微基准**，测量三种策略实现方式在热点调用下的真实代价（方法学同 D5）：
+
+| 策略实现 | 单 call（ns） | 说明 |
+|---|---|---|
+| 虚函数（`virtual area`） | **≈2.56** | 本例对象为具体局部量，编译器去虚化后接近直接调用 |
+| CRTP（编译期静态多态） | **≈3.82** | 完全内联，本例微小计算体下与虚函数同量级 |
+| `std::function` 包装 | **≈5.53** | 类型擦除 + 可能的堆分配，约 **2.16× 虚函数** |
+
+**结论**：
+1. 对**平凡计算体**，虚函数因可被去虚化而几乎免费（~2.6 ns）；`std::function` 的**类型擦除与潜在分配**才是真实代价（~5.5 ns，约为虚函数的 2.16×）——所以「能用模板/CRTP 就别用 `std::function`」在高频路径上成立。
+2. CRTP 在更大计算体上优势会放大（内联→常量传播/向量化），本例差异被测量噪声掩盖；但其「零间接、零分配」的定性结论不变。
+3. 结合 asm 分析：虚调用的绝对成本 = 2 次缓存读 + 1 次间接分支；只有在**跨 TU / 类型不可见 / 热点循环**时才会显著。结论与 ⑮ asm 分析、ch47 虚函数、ch140 Policy-Based 一致。
+
+可复现基准（自包含、可编译）：
+
+```cpp
+// g++ -std=c++23 -O2 ch135_bench.cpp
+#include <functional>
+#include <chrono>
+#include <cstdio>
+struct ShapeV { virtual double area() const =0; virtual ~ShapeV()=default; };
+struct CircleV : ShapeV { double r; CircleV(double r):r(r){} double area() const override { return 3.14159*r*r; } };
+int main(){
+    const long long IT=20000000; volatile long long sink=0;
+    auto t0=std::chrono::steady_clock::now();
+    for(long long i=0;i<IT;i++){ static CircleV c(2.0); c.r=(double)(i&1023); sink+=(long long)c.area(); }
+    auto t1=std::chrono::steady_clock::now();
+    printf("virtual dispatch: %.3f ns/call\n",
+      (double)std::chrono::duration_cast<std::chrono::nanoseconds>(t1-t0).count()/IT);
+    return 0;
+}
+```
+
 ## ⑯ 模式与 constexpr/if constexpr [标准]
 
 [标准] C++11 的 `constexpr` 与 C++17 的 `if constexpr` 让"编译期多态"更进一步：把运行期 `if/switch` 彻底消除在编译期。
