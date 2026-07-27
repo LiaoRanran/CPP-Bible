@@ -1744,6 +1744,122 @@ int main() {
 **结论**：pmr 容器只持有资源的指针，不拥有它；"资源活得比容器久"是硬约束，违反即悬垂。
 
 
+## 附录 D4：allocator 的三标准库源码解析（D4 维度）
+
+> 目的：揭示 `std::allocator` 如何继承 `__gnu_cxx::new_allocator` 并最终调用**编译器内建** `__builtin_operator_new`（而非裸 `::operator new`），以及 `allocator_traits` 的转发机制。
+
+### D4.1 真实源码摘录（libstdc++ 15.3.0）
+
+摘自 `bits/allocator.h:132` 起（GCC 15.3.0）—— `std::allocator` 继承结构与 C++20 constexpr 路径：
+
+```text
+template<typename _Tp>
+  class allocator : public __allocator_base<_Tp>
+  {
+  public:
+    typedef _Tp        value_type;
+    typedef size_t     size_type;
+    typedef ptrdiff_t  difference_type;
+
+#if __cplusplus > 201703L
+    [[nodiscard]] constexpr _Tp*
+    allocate(size_t __n)
+    {
+      if (std::__is_constant_evaluated())
+        {
+          if (__builtin_mul_overflow(__n, sizeof(_Tp), &__n))
+            std::__throw_bad_array_new_length();
+          return static_cast<_Tp*>(::operator new(__n));
+        }
+      return __allocator_base<_Tp>::allocate(__n, 0);
+    }
+#endif
+    // Inherit everything else.
+  };
+```
+
+摘自 `bits/new_allocator.h:115` 起（GCC 15.3.0）—— 真正的分配走内建：
+
+```text
+#if __has_builtin(__builtin_operator_new) >= 201802L
+# define _GLIBCXX_OPERATOR_NEW __builtin_operator_new
+#else
+# define _GLIBCXX_OPERATOR_NEW ::operator new
+#endif
+
+_GLIBCXX_NODISCARD _Tp*
+allocate(size_type __n, const void* = static_cast<const void*>(0))
+{
+  static_assert(sizeof(_Tp) != 0, "cannot allocate incomplete types");
+  if (__builtin_expect(__n > this->_M_max_size(), false))
+    {
+      if (__n > (std::size_t(-1) / sizeof(_Tp)))
+        std::__throw_bad_array_new_length();
+      std::__throw_bad_alloc();
+    }
+#if __cpp_aligned_new && __cplusplus >= 201103L
+  if (alignof(_Tp) > __STDCPP_DEFAULT_NEW_ALIGNMENT__)
+    {
+      std::align_val_t __al = std::align_val_t(alignof(_Tp));
+      return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp), __al));
+    }
+#endif
+  return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+}
+```
+
+### D4.2 设计动机
+
+| 设计点 | 动机 |
+|--------|------|
+| `allocator` 继承 `__allocator_base` | 复用 `__gnu_cxx::new_allocator` 的分配逻辑，`allocator` 自身仅补 traits/构造 |
+| C++20 `if (__is_constant_evaluated())` 分支 | 编译期分配用 `::operator new` 以支持 constexpr 容器 |
+| `_GLIBCXX_OPERATOR_NEW` 宏 | GCC15 优先用内建 `__builtin_operator_new`，编译器可内联/省调用 |
+| `_M_max_size()` 溢出检查 | 防 `__n * sizeof(_Tp)` 溢出导致分配过小 |
+| C++17 对齐分配分支 | 过对齐类型用 `align_val_t` 版本 |
+
+> 考据如实说明：书中若写 `new_allocator` 调用 `::operator new`，在 GCC15 下**不准确**——实际经宏展开为 `__builtin_operator_new`，仅不支持该内建时才回退 `::operator new`。
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++（已知公开实现行为） | MSVC STL（已知公开实现行为） |
+|------|------------------|---------------------------|------------------------------|
+| 底层分配 | `__builtin_operator_new`（回退 `::operator new`） | `__builtin_operator_new` | `::operator new` |
+| 继承结构 | `allocator : __gnu_cxx::new_allocator` | 独立 `allocator` | 独立 `allocator` |
+| 对齐分配 | `align_val_t` 分支 | 同 | 同 |
+
+三库对外语义一致，libstdc++ 特色是继承 `new_allocator` 且优先内建分配。
+
+### D4.4 可编译验证
+
+```cpp
+#include <memory>
+#include <iostream>
+
+int main() {
+    std::allocator<int> a;
+    // allocate/deallocate 往返
+    int* p = a.allocate(4);
+    for (int i = 0; i < 4; ++i)
+        std::allocator_traits<std::allocator<int>>::construct(a, p + i, i * 10);
+    for (int i = 0; i < 4; ++i)
+        std::cout << p[i] << " ";
+    std::cout << std::endl;
+    for (int i = 0; i < 4; ++i)
+        std::allocator_traits<std::allocator<int>>::destroy(a, p + i);
+    a.deallocate(p, 4);
+
+    // rebind：int 分配器 rebind 到 double
+    using DAlloc = std::allocator_traits<std::allocator<int>>::rebind_alloc<double>;
+    DAlloc da;
+    double* dp = da.allocate(2);
+    dp[0] = 3.14; dp[1] = 2.71;
+    std::cout << dp[0] << " " << dp[1] << std::endl;
+    da.deallocate(dp, 2);
+    return 0;
+}
+```
+
 ## 附录 J：分配器与 PMR 决策流（D3 维度）
 
 ```mermaid

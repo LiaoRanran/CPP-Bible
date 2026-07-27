@@ -744,6 +744,90 @@ graph TD
     C --> CC["循环 constexpr 更可读"]
 ```
 
+## 附录 D4：编译期整数序列的三标准库源码解析（D4 维度）
+
+> 目的：以 `integer_sequence` / `make_index_sequence` 为例，揭示 TMP 在标准库中的真实落地——尤其"生成 0..N-1 序列"如何依赖编译器内建 `__integer_pack` 而非纯库递归。
+
+### D4.1 真实源码摘录（libstdc++ 15.3.0）
+
+摘自 `bits/utility.h:160-192`（GCC 15.3.0）—— `integer_sequence` 及其生成别名：
+
+```text
+template<typename _Tp, _Tp... _Idx>
+  struct integer_sequence
+  {
+    using value_type = _Tp;
+    static constexpr size_t size() noexcept { return sizeof...(_Idx); }
+  };
+
+template<typename _Tp, size_t _Num>
+  using make_integer_sequence
+#if __has_builtin(__make_integer_seq)
+    = __make_integer_seq<integer_sequence, _Tp, _Num>;
+#else
+    = integer_sequence<_Tp, __integer_pack(_Num)...>;
+#endif
+
+template<size_t... _Idx>
+  using index_sequence = integer_sequence<size_t, _Idx...>;
+
+template<size_t _Num>
+  using make_index_sequence = make_integer_sequence<size_t, _Num>;
+
+template<typename... _Types>
+  using index_sequence_for = make_index_sequence<sizeof...(_Types)>;
+```
+
+### D4.2 设计动机
+
+| 设计点 | 动机 |
+|--------|------|
+| `integer_sequence` 仅聚合 | 它只是编译期整数包的载体，`size()` 用 `sizeof...` 免递归 |
+| `make_index_sequence` 用内建 | 纯库递归生成 0..N-1 会 O(N) 深实例化，GCC 用内建 `__integer_pack(_Num)...` O(1) 展开 |
+| `#if __has_builtin` 分发 | Clang 有 `__make_integer_seq`，GCC 用 `__integer_pack`，各取所长 |
+| `index_sequence_for` | 便捷：对参数包直接生成等长下标序列，配合 `tuple`/`apply` 展开 |
+
+> 考据如实说明：本 mingw64 GCC 15.3.0 构建中 `__has_builtin(__make_integer_seq)` 为假，实际走 `#else` 分支即 `__integer_pack`。这是编译器内建而非纯 TMP 递归。
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++（已知公开实现行为） | MSVC STL（已知公开实现行为） |
+|------|------------------|---------------------------|------------------------------|
+| 0..N-1 生成 | GCC `__integer_pack` / Clang `__make_integer_seq` | `__make_integer_seq` 内建 | `__make_integer_seq` 内建 |
+| 是否纯库递归 | 否（内建加速） | 否 | 否 |
+| `size()` 实现 | `sizeof...(_Idx)` | 同 | 同 |
+
+三库均放弃纯 TMP 递归改用编译器内建，因大 N 下递归实例化编译成本高。
+
+### D4.4 可编译验证
+
+```cpp
+#include <utility>
+#include <tuple>
+#include <iostream>
+
+// 用 index_sequence 展开 tuple 打印
+template<typename Tuple, size_t... I>
+void print_impl(const Tuple& t, std::index_sequence<I...>) {
+    ((std::cout << std::get<I>(t) << " "), ...);
+    std::cout << std::endl;
+}
+
+template<typename... Ts>
+void print_tuple(const std::tuple<Ts...>& t) {
+    print_impl(t, std::index_sequence_for<Ts...>{});
+}
+
+int main() {
+    auto seq = std::make_index_sequence<4>{};
+    std::cout << "seq.size() = " << seq.size() << std::endl;
+    print_tuple(std::make_tuple(1, 2.5, 'c', "hi"));
+    static_assert(std::make_index_sequence<3>{}.size() == 3);
+    return 0;
+}
+```
+
+
 ## 附录 J：模板元编程（TMP）决策流（D3 维度）
 
 ```mermaid

@@ -933,6 +933,85 @@ int main() {
 **结论**：非类型模板参数只能是编译期常量（整型、枚举、指针、引用、`auto` 受约束类型）；这保证维度是类型的一部分、可被 `static_assert`/数组大小直接使用。
 
 
+## 附录 D4：模板形参绑定的三标准库源码解析（D4 维度）
+
+> 目的：以 `std::move` / `std::forward` 为例，揭示模板类型形参 `_Tp` 经推导后如何配合 `remove_reference` 完成值类别变换，并对比三大标准库实现差异。
+
+### D4.1 真实源码摘录（libstdc++ 15.3.0）
+
+摘自 `bits/move.h:135-139`（GCC 15.3.0）—— `std::move`：
+
+```text
+template<typename _Tp>
+  [[__nodiscard__,__gnu__::__always_inline__]]
+  constexpr typename std::remove_reference<_Tp>::type&&
+  move(_Tp&& __t) noexcept
+  { return static_cast<typename std::remove_reference<_Tp>::type&&>(__t); }
+```
+
+摘自 `bits/move.h:70-90`（GCC 15.3.0）—— `std::forward` 双重载：
+
+```text
+template<typename _Tp>
+  constexpr _Tp&&
+  forward(typename std::remove_reference<_Tp>::type& __t) noexcept
+  { return static_cast<_Tp&&>(__t); }
+
+template<typename _Tp>
+  constexpr _Tp&&
+  forward(typename std::remove_reference<_Tp>::type&& __t) noexcept
+  {
+    static_assert(!std::is_lvalue_reference<_Tp>::value,
+        "std::forward must not be used to convert an rvalue to an lvalue");
+    return static_cast<_Tp&&>(__t);
+  }
+```
+
+### D4.2 设计动机
+
+| 设计点 | 动机 |
+|--------|------|
+| `_Tp&&` 转发引用 | 让同一模板同时绑定左值/右值，`_Tp` 推导保留值类别信息 |
+| `remove_reference<_Tp>::type&&` | 去掉推导出的引用后强制转右值引用，实现"无条件转右值" |
+| `forward` 用非推导语境形参 | 形参写成 `remove_reference<_Tp>::type&`，使 `_Tp` 不可从实参推导，必须显式指定，保证还原正确值类别 |
+| `static_assert` 防误用 | 阻止把右值经 `forward<T&>` 转成左值 |
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++（已知公开实现行为） | MSVC STL（已知公开实现行为） |
+|------|------------------|---------------------------|------------------------------|
+| `move` 返回类型 | `remove_reference<_Tp>::type&&` | `__libcpp_remove_reference_t<_Tp>&&`（用编译器内建加速） | `remove_reference_t<_Tp>&&` |
+| 属性标注 | `[[__nodiscard__]]` + `__always_inline__` | `_LIBCPP_NODISCARD` + `inline` | `_NODISCARD` + `constexpr` |
+| `forward` 断言 | `static_assert(!is_lvalue_reference)` | 同 | 同 |
+
+三库语义完全一致（标准强制），差异仅在内建加速与属性宏命名。
+
+### D4.4 可编译验证
+
+```cpp
+#include <utility>
+#include <type_traits>
+#include <iostream>
+
+template<typename T>
+void probe(T&& x) {
+    // T 推导：传左值时 T=U&，传右值时 T=U
+    std::cout << "is_lvalue_ref(T&&) = "
+              << std::is_lvalue_reference<T&&>::value << std::endl;
+}
+
+int main() {
+    int a = 42;
+    probe(a);          // 左值 -> T=int&
+    probe(123);        // 右值 -> T=int
+    // move 恒转右值引用
+    static_assert(std::is_rvalue_reference<decltype(std::move(a))>::value);
+    std::cout << "moved value = " << std::move(a) << std::endl;
+    return 0;
+}
+```
+
+
 ## 附录 J：模板基础选型 决策流（D3 维度）
 
 ```mermaid

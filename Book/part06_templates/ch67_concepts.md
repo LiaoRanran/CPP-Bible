@@ -821,6 +821,88 @@ int main(){
 
 `Addable` 把"可相加且结果同类型"这个约束显式命名；不满足时编译器直接报"约束未满足"，而非 SFINAE 那种一长串候选的晦涩诊断（见正文「对比」）。
 
+## 附录 D4：标准概念的三标准库源码解析（D4 维度）
+
+> 目的：以 `same_as` / `convertible_to` / `derived_from` 为例，揭示 `<concepts>` 中标准概念的真实定义技巧（尤其 `same_as` 的对称实现）。
+
+### D4.1 真实源码摘录（libstdc++ 15.3.0）
+
+摘自 `concepts:58-65`（GCC 15.3.0）—— `same_as` 对称实现：
+
+```text
+namespace __detail
+{
+  template<typename _Tp, typename _Up>
+    concept __same_as = std::is_same_v<_Tp, _Up>;
+} // namespace __detail
+
+/// [concept.same], concept same_as
+template<typename _Tp, typename _Up>
+  concept same_as
+    = __detail::__same_as<_Tp, _Up> && __detail::__same_as<_Up, _Tp>;
+```
+
+摘自 `concepts:74-82` 与 `concepts:108-109`（GCC 15.3.0）—— `derived_from` / `convertible_to` / `integral`：
+
+```text
+/// [concept.derived], concept derived_from
+template<typename _Derived, typename _Base>
+  concept derived_from = __is_base_of(_Base, _Derived)
+    && is_convertible_v<const volatile _Derived*, const volatile _Base*>;
+
+/// [concept.convertible], concept convertible_to
+template<typename _From, typename _To>
+  concept convertible_to = is_convertible_v<_From, _To>
+    && requires { static_cast<_To>(std::declval<_From>()); };
+
+template<typename _Tp>
+  concept integral = is_integral_v<_Tp>;
+```
+
+### D4.2 设计动机
+
+| 设计点 | 动机 |
+|--------|------|
+| `same_as` 双向 `__same_as` | 保证 `same_as<A,B>` 与 `same_as<B,A>` 归一（子概念对称），避免包展开单侧偏差 |
+| `convertible_to` 加 `requires static_cast` | 隐式可转换 (`is_convertible_v`) 之外，还要求显式转换合法，覆盖标准两项要求 |
+| `derived_from` 用 `__is_base_of` 内建 | 编译器内建判基类，再叠加指针可转换性排除私有/歧义继承 |
+| `integral` 直接复用 `is_integral_v` | 概念是类型特征的语法糖，零额外成本 |
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++（已知公开实现行为） | MSVC STL（已知公开实现行为） |
+|------|------------------|---------------------------|------------------------------|
+| `same_as` | 双向 `__detail::__same_as` | 双向 `__same_as`（同构） | 双向 `_Same_impl` |
+| `convertible_to` | `is_convertible_v` + `requires static_cast` | 同 | 同 |
+| `derived_from` | `__is_base_of` 内建 | `__is_base_of` 内建 | `__is_base_of` 内建 |
+
+三库因均遵循标准措辞 [concept.*]，实现高度一致。
+
+### D4.4 可编译验证
+
+```cpp
+#include <concepts>
+#include <iostream>
+
+template<std::same_as<int> T>
+void needs_int(T) { std::cout << "got exactly int" << std::endl; }
+
+template<std::convertible_to<double> T>
+double as_double(T x) { return static_cast<double>(x); }
+
+int main() {
+    std::cout << std::boolalpha;
+    std::cout << "same_as<int,int>     = " << std::same_as<int, int> << std::endl;
+    std::cout << "same_as<int,long>    = " << std::same_as<int, long> << std::endl;
+    std::cout << "convertible<int,dbl> = " << std::convertible_to<int, double> << std::endl;
+    std::cout << "derived vector<->..  = " << std::derived_from<std::true_type, std::true_type> << std::endl;
+    needs_int(42);
+    std::cout << "as_double(3) = " << as_double(3) << std::endl;
+    return 0;
+}
+```
+
+
 ## 附录 J：Concepts 决策流（D3 维度）
 
 > 当你需要给模板参数加约束时，用本决策流在「concept 命名 / if constexpr / SFINAE / 约束施加方式」之间选型。

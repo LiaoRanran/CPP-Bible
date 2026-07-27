@@ -883,6 +883,96 @@ graph TD
     B --> BR["pack op 省略号 op init"]
 ```
 
+## 附录 D4：标准库内部"折叠语义"的真实实现（D4 维度）
+
+> 关键考据：C++17 折叠表达式 `(... && bs)` 语法优雅，但 libstdc++ 15.3.0 的核心逻辑 trait（`__and_`/`__or_`/`conjunction`/`disjunction`）**并未使用字面折叠表达式**，而是用「包展开 + SFINAE 重载分发 / 偏特化递归」实现短路。本附录如实揭示这一工程真相。
+
+### D4.1 真实源码摘录（libstdc++ 15.3.0）
+
+摘自 `type_traits:198-211`（GCC 15.3.0）—— `__and_`/`__or_` 靠函数返回类型推导：
+
+```text
+template<typename... _Bn>
+  struct __or_
+  : decltype(__detail::__or_fn<_Bn...>(0))
+  { };
+
+template<typename... _Bn>
+  struct __and_
+  : decltype(__detail::__and_fn<_Bn...>(0))
+  { };
+```
+
+摘自 `type_traits:173-193`（GCC 15.3.0）—— 短路的真正机制是包展开 + SFINAE：
+
+```text
+namespace __detail
+{
+  template<typename _Tp, typename...>
+    using __first_t = _Tp;
+
+  template<typename... _Bn>
+    auto __or_fn(int) -> __first_t<false_type,
+                                   __enable_if_t<!bool(_Bn::value)>...>;
+  template<typename... _Bn>
+    auto __or_fn(...) -> true_type;
+
+  template<typename... _Bn>
+    auto __and_fn(int) -> __first_t<true_type,
+                                    __enable_if_t<bool(_Bn::value)>...>;
+  template<typename... _Bn>
+    auto __and_fn(...) -> false_type;
+}
+```
+
+### D4.2 设计动机
+
+| 设计点 | 动机 |
+|--------|------|
+| 不用 `(... && ...)` 折叠 | 该逻辑需在 C++11 可用（折叠是 C++17），故用包展开兼容旧标准 |
+| `__enable_if_t<...>...` 包展开 | 把每个 `_Bn` 展开成一串 `enable_if` 约束，任一失败即触发 SFINAE |
+| `(int)` vs `(...)` 重载 | `int` 重载优先；其约束失败时回退到 `...` 重载，实现"短路" |
+| `decltype(...(0))` 作基类 | 用 `decltype` 推导而非实例化类模板，避免深层递归实例化爆栈 |
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++（已知公开实现行为） | MSVC STL（已知公开实现行为） |
+|------|------------------|---------------------------|------------------------------|
+| `conjunction` 短路 | `__enable_if_t` 偏特化递归 | 递归继承 `_And`/`_Or` 辅助 | `_Conjunction` 递归 + `conditional` |
+| 是否用字面折叠表达式 | 否（兼容 C++11） | 否 | 否 |
+| C++17 折叠真实使用处 | `<tuple>`/`<variant>` 等聚合逻辑 | 同 | 同 |
+
+结论：折叠表达式在**用户代码**中最常见，但标准库核心 trait 出于跨标准兼容多用更古老的包展开技巧。
+
+### D4.4 可编译验证（用户侧折叠表达式 vs 标准 trait 等价性）
+
+```cpp
+#include <type_traits>
+#include <iostream>
+
+// 用户侧：C++17 折叠表达式实现 all_true
+template<typename... Bs>
+constexpr bool all_true_fold() { return (... && Bs::value); }
+
+int main() {
+    using T = std::true_type;
+    using F = std::false_type;
+    // 标准库 conjunction 与用户折叠等价
+    std::cout << std::boolalpha;
+    std::cout << "conjunction<T,T,T> = "
+              << std::conjunction_v<T, T, T> << std::endl;
+    std::cout << "fold all_true<T,T,T> = "
+              << all_true_fold<T, T, T>() << std::endl;
+    std::cout << "conjunction<T,F,T> = "
+              << std::conjunction_v<T, F, T> << std::endl;
+    std::cout << "fold all_true<T,F,T> = "
+              << all_true_fold<T, F, T>() << std::endl;
+    static_assert(std::conjunction_v<T, T> == all_true_fold<T, T>());
+    return 0;
+}
+```
+
+
 ## 附录 J：折叠表达式决策流（D3 维度）
 
 ```mermaid

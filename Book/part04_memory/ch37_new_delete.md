@@ -2028,6 +2028,97 @@ int main() {
 **结论**：高频定长小对象是内存池/placement new 的典型受益者；复用把分配器开销与碎片降到最低。
 
 
+## 附录 D4：operator new/delete 的三标准库源码解析（D4 维度）
+
+> 目的：揭示 `<new>` 头中可替换全局 `operator new/delete` 的真实声明（属性、对齐版本、nothrow 版本）与 placement new 的定义。
+
+### D4.1 真实源码摘录（libstdc++ 15.3.0）
+
+摘自 `new:137` 起（GCC 15.3.0）—— 可替换全局 new/delete 声明（节选）：
+
+```text
+_GLIBCXX_NODISCARD void* operator new(std::size_t)
+  _GLIBCXX_TXN_SAFE _GLIBCXX_THROW (std::bad_alloc)
+  __attribute__((__externally_visible__, __malloc__));
+void operator delete(void*) _GLIBCXX_TXN_SAFE _GLIBCXX_USE_NOEXCEPT
+  __attribute__((__externally_visible__));
+
+_GLIBCXX_NODISCARD void* operator new(std::size_t, const std::nothrow_t&)
+  _GLIBCXX_TXN_SAFE _GLIBCXX_USE_NOEXCEPT
+  __attribute__((__externally_visible__, __alloc_size__ (1), __malloc__));
+
+#if __cpp_aligned_new
+_GLIBCXX_NODISCARD void* operator new(std::size_t, std::align_val_t)
+  _GLIBCXX_TXN_SAFE
+  __attribute__((__externally_visible__, __alloc_size__ (1),
+                 __alloc_align__ (2), __malloc__));
+void operator delete(void*, std::align_val_t) _GLIBCXX_TXN_SAFE
+  _GLIBCXX_USE_NOEXCEPT __attribute__((__externally_visible__));
+#endif
+```
+
+摘自 `new:204-222`（GCC 15.3.0）—— placement new/delete 定义：
+
+```text
+// Default placement versions of operator new.
+_GLIBCXX_NODISCARD _GLIBCXX_PLACEMENT_CONSTEXPR
+void* operator new(std::size_t, void* __p)
+  _GLIBCXX_TXN_SAFE _GLIBCXX_USE_NOEXCEPT
+{ return __p; }
+
+// Default placement versions of operator delete.
+inline void operator delete  (void*, void*)
+  _GLIBCXX_TXN_SAFE _GLIBCXX_USE_NOEXCEPT
+{ }
+```
+
+### D4.2 设计动机
+
+| 设计点 | 动机 |
+|--------|------|
+| 全局 new/delete 声明为 replaceable | 用户可在自己 TU 定义同签名以全局替换分配策略 |
+| `_GLIBCXX_NODISCARD` | 分配结果不可丢弃，防内存泄漏 |
+| `__malloc__` 属性 | 告知优化器返回指针不与既有指针别名，助力优化 |
+| C++17 对齐 new（`align_val_t`） | 支持过对齐类型（如 SIMD），受 `__cpp_aligned_new` 守卫 |
+| placement new 仅 `{ return __p; }` | 不分配，只在给定地址构造；不可被用户替换 |
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++（已知公开实现行为） | MSVC STL（已知公开实现行为） |
+|------|------------------|---------------------------|------------------------------|
+| 全局 new 声明位置 | `<new>` 头，libsupc++ 提供实现 | `<new>`，libc++abi 实现 | `<new>`，vcruntime 实现 |
+| 对齐 new | `__cpp_aligned_new` 守卫 | 同 | 同 |
+| placement new | `{ return __p; }` inline | 同 | 同 |
+
+三库声明均遵循标准 [new.delete]，实现体分别由各自运行时库提供。
+
+### D4.4 可编译验证
+
+```cpp
+#include <new>
+#include <cstddef>
+#include <iostream>
+
+struct Widget {
+    int id;
+    Widget(int i) : id(i) { std::cout << "ctor " << id << std::endl; }
+    ~Widget() { std::cout << "dtor " << id << std::endl; }
+};
+
+int main() {
+    // placement new：在栈缓冲上构造
+    alignas(Widget) unsigned char buf[sizeof(Widget)];
+    Widget* w = new (buf) Widget(7);   // 调用 operator new(size_t, void*)
+    std::cout << "w->id = " << w->id << std::endl;
+    w->~Widget();                      // 手动析构（placement 无自动 delete）
+
+    // 常规 new/delete
+    Widget* h = new Widget(99);
+    delete h;
+    return 0;
+}
+```
+
 ## 附录 J：operator new/delete 决策流（D3 维度）
 
 ```mermaid

@@ -868,6 +868,101 @@ graph TD
     F --> RT["传入运行时变量 退化为运行期"]
 ```
 
+## 附录 D4：constexpr 在标准库中的双路径源码解析（D4 维度）
+
+> 目的：以 `char_traits<char>::length`/`compare` 为例，揭示 constexpr 在标准库中的经典范式——编译期走可 constexpr 求值的循环、运行期走 `__builtin_*` 高速内建。
+
+### D4.1 真实源码摘录（libstdc++ 15.3.0）
+
+摘自 `bits/char_traits.h:386-394`（GCC 15.3.0）—— `length` 双路径：
+
+```text
+static _GLIBCXX17_CONSTEXPR size_t
+length(const char_type* __s)
+{
+#if __cplusplus >= 201703L
+  if (std::__is_constant_evaluated())
+    return __gnu_cxx::char_traits<char_type>::length(__s);
+#endif
+  return __builtin_strlen(__s);
+}
+```
+
+摘自 `bits/char_traits.h:367-384`（GCC 15.3.0）—— `compare` 双路径：
+
+```text
+static _GLIBCXX17_CONSTEXPR int
+compare(const char_type* __s1, const char_type* __s2, size_t __n)
+{
+  if (__n == 0)
+    return 0;
+#if __cplusplus >= 201703L
+  if (std::__is_constant_evaluated())
+    {
+      for (size_t __i = 0; __i < __n; ++__i)
+        if (lt(__s1[__i], __s2[__i]))
+          return -1;
+        else if (lt(__s2[__i], __s1[__i]))
+          return 1;
+      return 0;
+    }
+#endif
+  return __builtin_memcmp(__s1, __s2, __n);
+}
+```
+
+### D4.2 设计动机
+
+| 设计点 | 动机 |
+|--------|------|
+| `_GLIBCXX17_CONSTEXPR` 宏 | C++17 起该函数是 `constexpr`，旧标准退化为普通函数 |
+| `std::__is_constant_evaluated()` | 库级封装（底层 `__builtin_is_constant_evaluated()`），运行期返回 false |
+| 编译期走 `for` 循环 | `__builtin_strlen`/`memcmp` 不能 constexpr 求值，故编译期改用可 constexpr 的循环 |
+| 运行期走 `__builtin_*` | 运行期用内建获得最优机器码（SIMD/rep 指令），零开销 |
+
+> 考据如实说明：源码调用的是 `std::__is_constant_evaluated()`（libstdc++ 封装），非裸 `__builtin_is_constant_evaluated()`；语义等价，写法不同。
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++（已知公开实现行为） | MSVC STL（已知公开实现行为） |
+|------|------------------|---------------------------|------------------------------|
+| 常量求值判定 | `std::__is_constant_evaluated()` | `__libcpp_is_constant_evaluated()` | `_STD is_constant_evaluated()` |
+| 编译期 length | `__gnu_cxx` 库循环 | 库内 `constexpr` 循环 | 库内 `constexpr` 循环 |
+| 运行期 length | `__builtin_strlen` | `__builtin_strlen` | `__builtin_strlen` |
+
+三库范式一致（双路径），仅常量求值判定入口的封装名不同。
+
+### D4.4 可编译验证
+
+```cpp
+#include <string_view>
+#include <iostream>
+
+// 编译期：char_traits::length 走 constexpr 循环
+constexpr size_t compile_len(const char* s) {
+    return std::char_traits<char>::length(s);
+}
+
+int main() {
+    // 编译期求值
+    constexpr size_t n = compile_len("hello world");
+    static_assert(n == 11);
+    std::cout << "compile-time length = " << n << std::endl;
+
+    // 运行期求值（走 __builtin_strlen）
+    const char* rt = "runtime string";
+    std::cout << "runtime  length = "
+              << std::char_traits<char>::length(rt) << std::endl;
+
+    // constexpr string_view 依赖 char_traits
+    constexpr std::string_view sv = "abc";
+    static_assert(sv.size() == 3);
+    std::cout << "sv.size() = " << sv.size() << std::endl;
+    return 0;
+}
+```
+
+
 ## 附录 J：constexpr/consteval/constinit 决策流（D3 维度）
 
 ```mermaid

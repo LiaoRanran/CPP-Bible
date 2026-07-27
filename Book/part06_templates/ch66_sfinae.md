@@ -806,6 +806,104 @@ int main() { load(42); load(std::string("hi")); }
 
 **结论**：SFINAE 重载集要求条件 partition 整个类型空间（互补且不重叠），否则出现"无 viable 重载"或"多义"硬错误。
 
+## 附录 D4：SFINAE 惯用法的三标准库源码解析（D4 维度）
+
+> 目的：揭示 libstdc++ 15.3.0 如何用 `void_t` 实现检测惯用法（detection idiom），这是 SFINAE 在工业标准库中最系统的落地。
+
+### D4.1 真实源码摘录（libstdc++ 15.3.0）
+
+摘自 `type_traits:851-852` 与 `type_traits:2857-2860`（GCC 15.3.0）—— `void_t` 定义：
+
+```text
+// __void_t (std::void_t for C++11)
+template<typename...> using __void_t = void;
+
+#ifdef __cpp_lib_void_t // C++ >= 17
+// A metafunction that always yields void, used for detecting valid types.
+template<typename...> using void_t = void;
+#endif
+```
+
+摘自 `type_traits:2894-2912`（GCC 15.3.0）—— detection idiom 的核心 `__detector`：
+
+```text
+// Implementation of the detection idiom (positive case).
+template<typename _Default, template<typename...> class _Op,
+          typename... _Args>
+  struct __detector<_Default, __void_t<_Op<_Args...>>, _Op, _Args...>
+  {
+    using type = _Op<_Args...>;
+    using __is_detected = true_type;
+  };
+
+template<typename _Default, template<typename...> class _Op,
+         typename... _Args>
+  using __detected_or = __detector<_Default, void, _Op, _Args...>;
+```
+
+摘自 `type_traits:2914-2926`（GCC 15.3.0）—— `void_t` SFINAE 嵌套类型探测宏：
+
+```text
+#define _GLIBCXX_HAS_NESTED_TYPE(_NTYPE)                       \
+  template<typename _Tp, typename = __void_t<>>                \
+    struct __has_##_NTYPE                                      \
+    : false_type                                              \
+    { };                                                      \
+  template<typename _Tp>                                       \
+    struct __has_##_NTYPE<_Tp, __void_t<typename _Tp::_NTYPE>> \
+    : true_type                                               \
+    { };
+```
+
+### D4.2 设计动机
+
+| 设计点 | 动机 |
+|--------|------|
+| `void_t<...>` 恒为 `void` | 提供一个"只要模板参数全部合法就成立"的 SFINAE 探针 |
+| `__detector` 偏特化 | 用 `__void_t<_Op<_Args...>>` 作偏特化实参，`_Op<_Args...>` 合法则匹配正例 |
+| 正例置 `__is_detected=true_type` | 供 `is_detected` 复用，把"是否可检测"编码进类型 |
+| 宏批量生成 `__has_xxx` | 标准库大量嵌套类型探测（如 `__has_value_type`）复用同一 SFINAE 骨架 |
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++（已知公开实现行为） | MSVC STL（已知公开实现行为） |
+|------|------------------|---------------------------|------------------------------|
+| `void_t` 别名 | `template<typename...> using void_t = void;` | 同 | 同 |
+| detection idiom | `__detector` + `__detected_or` | `__void_t` + `_MetaBase` 分发 | `void_t` + `_Meta_*` |
+| 公开 `is_detected` | 仅 `<experimental/type_traits>` | 仅 experimental | 仅 experimental |
+
+三库 `void_t` 定义逐字相同（标准强制），detection idiom 内部命名不同但骨架一致。
+
+### D4.4 可编译验证
+
+```cpp
+#include <type_traits>
+#include <iostream>
+
+// 用 void_t 检测类型是否有嵌套 ::value_type
+template<typename T, typename = void>
+struct has_value_type : std::false_type {};
+
+template<typename T>
+struct has_value_type<T, std::void_t<typename T::value_type>>
+    : std::true_type {};
+
+struct WithVT { using value_type = int; };
+struct WithoutVT {};
+
+int main() {
+    std::cout << std::boolalpha;
+    std::cout << "WithVT    has value_type = "
+              << has_value_type<WithVT>::value << std::endl;
+    std::cout << "WithoutVT has value_type = "
+              << has_value_type<WithoutVT>::value << std::endl;
+    static_assert(has_value_type<WithVT>::value);
+    static_assert(!has_value_type<WithoutVT>::value);
+    return 0;
+}
+```
+
+
 ## 附录 U：SFINAE 决策流（D3 维度）
 
 > 当你需要按类型属性给同名函数多份实现时，用本决策流在「Concepts / enable_if 孔位 / void_t 探测」之间选型。
