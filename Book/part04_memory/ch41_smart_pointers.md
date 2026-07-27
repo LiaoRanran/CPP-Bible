@@ -1556,7 +1556,7 @@ int main() {
 
 ## 附录 A：工业智能指针使用 [F: Industry / B: Principle]
 
-```
+```text
 世界级项目中的智能指针模式和教训:
 
 LLVM (C++14 migration, 2019):
@@ -1580,6 +1580,8 @@ Qt 5/6:
 ### A.2 Abseil / folly 所有权实战（上游参考）[F: Industry]
 
 世界级项目几乎都**禁用或极少用 `shared_ptr`**（引用计数的原子开销在热点路径不可接受），转而用 `unique_ptr` + 裸观察指针，或更极致的**侵入式**方案。下列片段取自 Abseil / Folly 真实 API（上游参考，非本机编译），仅作逐行解读。
+
+```
 
 ```text
 // Abseil（上游参考，真实 API 节选）
@@ -2090,14 +2092,14 @@ _Sp_counted_base<_S_atomic>::_M_release() noexcept
 ```cpp
 #include <memory>
 #include <iostream>
-struct Foo { ~Foo() { std::cout << "Foo destroyed\n"; } };
+struct Foo { ~Foo() { std::cout << "Foo destroyed" << std::endl; } };
 int main() {
     auto sp = std::make_shared<Foo>();
     std::weak_ptr<Foo> wp = sp;
     std::cout << "use_count=" << sp.use_count()
-              << " expired=" << std::boolalpha << wp.expired() << "\n";
+              << " expired=" << std::boolalpha << wp.expired() << std::endl;
     auto sp2 = sp;                                   // 仅原子 +1，无新控制块
-    std::cout << "use_count after copy=" << sp.use_count() << "\n";
+    std::cout << "use_count after copy=" << sp.use_count() << std::endl;
     return 0;                                         // sp/sp2 析构：use_count 归零 → Foo 销毁
 }
 ```
