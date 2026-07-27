@@ -903,6 +903,64 @@ call   <...>             ; _M_create / _M_copy（分配或拷贝）
 | `s.substr(p,c)` | 长度守卫 + `_M_copy`/`_M_create` | O(n) | 超 SSO 时堆分配 |
 | `sv[i]` | `movzx eax,[ptr+i]`，无检查 | O(1) | 无 |
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — `std::string` SSO（三标准库对比）[E: Low-level / H: Design]
+
+> 源码来自 GCC 15.3.0 libstdc++ `bits/basic_string.h`。摘录块为引用性质（`text` 围栏），不参与编译；
+> 仅下方"第一方可编译验证"为独立 `cpp` 块。
+
+### 1. SSO 缓冲的真实布局（union 复用容量字段）
+
+摘录自 `bits/basic_string.h:218`（GCC 15.3.0）：
+
+```text
+// bits/basic_string.h:218  (GCC 15.3.0)
+enum { _S_local_capacity = 15 / sizeof(_CharT) };
+
+union
+{
+  _CharT           _M_local_buf[_S_local_capacity + 1]; // 16 字节本地缓冲
+  size_type        _M_allocated_capacity;              // 堆模式时存容量
+};
+```
+
+`_CharT=char` 时 `_S_local_capacity==15`，本地缓冲为 16 字节。短字符串直接存进这个 union；
+一旦需要堆分配，`_M_allocated_capacity` **复用同一块内存**记录堆容量——不浪费字节。
+对象头为 `_M_dataplus`（指针 8B）+ `_M_string_length`（8B）+ 此 union（16B），共 32 字节（64 位）。
+
+### 2. 本地缓冲访问
+
+摘录自 `bits/basic_string.h:242`：
+
+```text
+// bits/basic_string.h:242  (GCC 15.3.0)
+pointer _M_local_data()
+{ return std::pointer_traits<pointer>::pointer_to(*_M_local_buf); }
+```
+
+### 3. 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| SSO 容量（64 位，`char`） | 15 字符 | 22 字符（size 存于缓冲尾） | 15 字符 |
+| 布局 | 指针 + size + union(16B) = 32B | 指针 + size + 缓冲（size 在尾）= 24B | 指针 + size + 缓冲 = 32B |
+| 判定本地/堆 | `data()==_M_local_buf` | 借布局标志 | 同 libstdc++ 思路 |
+
+### 4. 第一方可编译验证（观察 SSO 阈值 15）
+
+```cpp
+#include <string>
+#include <iostream>
+int main() {
+    std::string s;
+    std::cout << "empty capacity (SSO reserve)=" << s.capacity() << "\n";
+    s = "hello";              // len 5 <= 15 → 留在本地缓冲
+    std::cout << "small len=" << s.size() << " cap=" << s.capacity() << "\n";
+    s = "this string is longer than fifteen characters!!"; // >15 → 堆
+    std::cout << "large len=" << s.size() << " cap=" << s.capacity() << "\n";
+    return 0;
+}
+```
+
 ## 附录 U：std::string / SSO 决策流（D3 维度）
 
 ```mermaid

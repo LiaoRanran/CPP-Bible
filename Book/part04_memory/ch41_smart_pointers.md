@@ -2003,6 +2003,105 @@ auto f = std::unique_ptr<FILE, decltype(&fclose)>(fopen("x","r"), fclose);
 **工程含义**：裸 `new/delete` 在 modern C++ 中基本只应出现在 `make_unique/make_shared` 内部；
 所有权语义不清是 C++ 历史泄漏的头号来源。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — `shared_ptr` 控制块（三标准库对比）[E: Low-level / H: Design]
+
+> 源码来自 GCC 15.3.0 libstdc++ `bits/shared_ptr_base.h`。摘录块为引用性质（`text` 围栏），不参与编译；
+> 仅下方"第一方可编译验证"为独立 `cpp` 块。
+
+### 1. 控制块的真实成员（原子引用计数）
+
+摘录自 `bits/shared_ptr_base.h:236`（GCC 15.3.0）：
+
+```text
+// bits/shared_ptr_base.h:236  (GCC 15.3.0)
+private:
+  _Atomic_word  _M_use_count;     // #shared
+  _Atomic_word  _M_weak_count;    // #weak + (#shared != 0)
+```
+
+控制块把**强引用计数**与**弱引用计数**合并在 8 字节（2×`_Atomic_word`）中，
+紧跟 vptr 之后、按 `alignof(void*)` 对齐。
+
+### 2. 引用递增：一条原子加
+
+摘录自 `bits/shared_ptr_base.h:149`：
+
+```text
+// bits/shared_ptr_base.h:149  (GCC 15.3.0)
+void _M_add_ref_copy()
+{ __gnu_cxx::__atomic_add_dispatch(&_M_use_count, 1); }
+```
+
+`shared_ptr` 拷贝构造/拷贝赋值只做**一次原子加**，绝不分配新控制块——
+这是"共享所有权"零额外堆分配的基石（附录 D 的 ASM 实证已展示该原子递增被编译为 `lock xadd`）。
+
+### 3. 引用递减：强+弱一次性释放（热路径优化）
+
+摘录自 `bits/shared_ptr_base.h:316`（`_S_atomic` 策略，x86-64 快速路径）：
+
+```text
+// bits/shared_ptr_base.h:316  (GCC 15.3.0)
+_Sp_counted_base<_S_atomic>::_M_release() noexcept
+{
+  ...
+  constexpr bool __lock_free = __atomic_always_lock_free(sizeof(long long),0)
+                             && __atomic_always_lock_free(sizeof(_Atomic_word),0);
+  constexpr bool __double_word = sizeof(long long) == 2*sizeof(_Atomic_word);
+  constexpr bool __aligned = __alignof(long long) <= alignof(void*);
+  if _GLIBCXX17_CONSTEXPR (__lock_free && __double_word && __aligned)
+  {
+    constexpr long long __unique_ref = 1LL + (1LL << __shiftbits); // use=1,weak=1
+    auto __both_counts = reinterpret_cast<long long*>(&_M_use_count);
+    if (__atomic_load_n(__both_counts, __ATOMIC_ACQUIRE) == __unique_ref)
+    {
+      // 无弱引用且强引用为 1：最后一次释放，无竞争可能
+      _M_weak_count = _M_use_count = 0;
+      _M_dispose();   // 释放被管理对象
+      _M_destroy();   // 释放控制块自身
+      return;
+    }
+    if (__gnu_cxx::__exchange_and_add_dispatch(&_M_use_count, -1) == 1)
+      { _M_release_last_use_cold(); return; }
+  }
+  ...
+}
+```
+
+关键设计：**把 use_count 与 weak_count 当作一个 64 位字**，当两者都为 1 时单次 `ACQUIRE` 读即可判定
+"这是最后一次释放"，避免两次原子操作——libstdc++ 针对 x86-64 的精细优化。
+
+### 4. `make_shared` 的"单分配"从何而来
+
+`make_shared<T>` 通过 `_Sp_counted_ptr_inplace` 把**控制块与 T 对象在同一块内存中就地构造**
+（`_M_storage` 为 `aligned_storage_t<sizeof(T), alignof(T)>` + 控制块头），因此一次 `new` 同时得到对象与控制块；
+`use_count()` 读到的是同一块里的 `_M_use_count`。三个主流实现都采用此"单分配"设计。
+
+### 5. 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| 控制块计数类型 | `_Atomic_word`（int32） | `atomic<long>`/`atomic<int>` | `_Atomic_counter_t`（machine word） |
+| 强+弱合并优化 | 是（64 位一次性判断） | 是（分离或合并，随版本） | 是（`_Ref_count_base`） |
+| `make_shared` 单分配 | 是（`_Sp_counted_ptr_inplace`） | 是（`__shared_ptr_emplace`） | 是（`_Ref_count_obj`/`_Ref_count_obj2`） |
+| 删除器/分配器存储 | 控制块模板参数多态 | 同左 | 同左 |
+
+### 6. 第一方可编译验证（观察共享所有权与 weak 失效）
+
+```cpp
+#include <memory>
+#include <iostream>
+struct Foo { ~Foo() { std::cout << "Foo destroyed\n"; } };
+int main() {
+    auto sp = std::make_shared<Foo>();
+    std::weak_ptr<Foo> wp = sp;
+    std::cout << "use_count=" << sp.use_count()
+              << " expired=" << std::boolalpha << wp.expired() << "\n";
+    auto sp2 = sp;                                   // 仅原子 +1，无新控制块
+    std::cout << "use_count after copy=" << sp.use_count() << "\n";
+    return 0;                                         // sp/sp2 析构：use_count 归零 → Foo 销毁
+}
+```
+
 ## 附录 J：智能指针选型 决策流（D3 维度）
 
 ```mermaid

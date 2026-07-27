@@ -849,6 +849,101 @@ get_raw(int const*):
 
 **工程含义**：optional 的"零开销抽象"指**时间零开销**，但**空间非零**——`optional<int>` 是 8 字节而非 4。嵌入式 RAM/寄存器受限场景用 optional 表达"可能无值"需接受 2× 膨胀；若类型本就指针，优先用空指针哨兵更省空间。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — `optional`/`variant` 存储（三标准库对比）[E: Low-level / H: Design]
+
+> 源码来自 GCC 15.3.0 libstdc++ `optional` 与 `variant`（顶层头内联）。
+> 摘录块为引用性质（`text` 围栏），不参与编译；仅下方"第一方可编译验证"为独立 `cpp` 块。
+
+### 1. `optional`：engaged 标志位 + 联合存储
+
+摘录自 `optional:291`（GCC 15.3.0）：
+
+```text
+// optional:291  (GCC 15.3.0)
+_Storage<_Stored_type> _M_payload;
+bool _M_engaged = false;
+
+template<typename... _Args>
+constexpr void _M_construct(_Args&&... __args) noexcept(...)
+{
+  std::_Construct(std::__addressof(this->_M_payload._M_value),
+                  std::forward<_Args>(__args)...);
+  this->_M_engaged = true;          // 构造成功才置位
+}
+
+constexpr void _M_destroy() noexcept
+{ _M_engaged = false; this->_M_payload._M_value.~_Stored_type(); }
+```
+
+`_M_payload` 是一个 union（含 `_M_empty` 空字节占位 + `_M_value`），外加独立的 `bool _M_engaged` 标志。
+"有值"由**标志位**表达，而非指针——这正是附录 F 测到的 `optional<int>` 占 8 字节（4 值 + 1 标志 + 3 填充）的源码级原因。
+
+### 2. `variant`：联合 + 活跃索引 + valueless
+
+摘录自 `variant:462`（GCC 15.3.0）：
+
+```text
+// variant:462  (GCC 15.3.0)
+template<typename... _Types>
+struct _Variant_storage<false, _Types...>
+{
+  constexpr _Variant_storage()
+  : _M_index(static_cast<__index_type>(variant_npos)) { }
+
+  _Variadic_union<false, _Types...> _M_u;   // 联合：存任一 alternative
+  using __index_type = __select_index<_Types...>;
+  __index_type _M_index;                    // 活跃 alternative 的下标
+
+  constexpr bool _M_valid() const noexcept
+  {
+    if constexpr (__variant::__never_valueless<_Types...>()) return true;
+    return this->_M_index != __index_type(variant_npos);
+  }
+};
+```
+
+`_Variadic_union` 是所有 alternative 的联合；`_M_index` 记录当前活跃下标；
+当构造/移动**抛出异常**导致无活跃值时，`_M_index` 被置为 `variant_npos`，`valueless_by_exception()` 即读此标志。
+`__index_type` 按 alternative 数量自动选 `unsigned char` 或 `unsigned short`，极小开销。
+
+### 3. 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| optional 标志 | 独立 `bool _M_engaged` | 同（`bool` 标志） | 同 |
+| variant 索引 | `unsigned char/short` 下标 | 同 | 同 |
+| valueless | `index==variant_npos` | 同 | 同 |
+| 小类型优化 | trivial 时 trivially_copyable 存储 | 同 | 同 |
+
+### 4. 第一方可编译验证（观察 variant index / valueless 常态 + optional engaged 标志）
+
+> 注：`valueless_by_exception()` 为真的唯一路径是**构造/移动 contained value 抛异常**（源码见 §2 的 `variant_npos`）。
+> 该路径依赖异常传播，在 MinGW/SEH 下不会回绕到用户 `catch`，故此处只演示常态 API；
+> 抛异常导致 valueless 的机制已由源码摘录覆盖。
+
+```cpp
+#include <variant>
+#include <optional>
+#include <iostream>
+#include <string>
+int main() {
+    // 1) variant：_M_index 反映活跃 alternative
+    std::variant<int, std::string> v = 42;
+    std::cout << "index=" << v.index() << "\n";          // 0
+    v = std::string("hi");
+    std::cout << "index after string=" << v.index() << "\n";        // 1
+    std::cout << "valueless=" << std::boolalpha
+              << v.valueless_by_exception() << "\n";     // false（常态无异常）
+
+    // 2) optional：_M_engaged 标志（源码 optional:291）
+    std::optional<int> o;
+    std::cout << "optional engaged=" << o.has_value() << "\n";       // false
+    o = 7;
+    std::cout << "optional engaged after assign=" << o.has_value() << "\n"; // true
+    return 0;
+}
+```
+
 ## 附录 J：optional/variant 决策流（D3 维度）
 
 ```mermaid

@@ -1285,6 +1285,88 @@ flowchart TD
 - **计时抗优化**：`time_fill` 末尾用 `volatile` 读取 `v.back()` 阻止死代码消除；5 轮取中位规避冷启动/调度抖动。绝对值随机器而变，**加速比**（no_reserve÷reserve）比绝对毫秒更可移植。
 - **可复现**：`g++ -std=c++20 -O2 _bench_vector.cpp -o _bench_vector.exe && ./_bench_vector.exe`。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — `std::vector` 扩容（三标准库对比）[E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+>（`.../include/c++/15.3.0/bits/`），标注精确到 `文件:行号`。
+> libc++ / MSVC STL 仅给出"已知公开实现行为"对比，非逐字摘录，避免伪造。
+> 摘录块为引用性质（`text` 围栏），不参与编译；仅下方"第一方可编译验证"为独立 `cpp` 块。
+
+### 1. 容量增长的真实公式（指数倍增）
+
+摘录自 `bits/stl_vector.h:2202`（GCC 15.3.0）：
+
+```text
+// bits/stl_vector.h:2202  (GCC 15.3.0)
+_M_check_len(size_type __n, const char* __s) const
+{
+  if (max_size() - size() < __n)
+    __throw_length_error(__N(__s));
+
+  const size_type __len = size() + (std::max)(size(), __n);
+  return (__len < size() || __len > max_size()) ? max_size() : __len;
+}
+```
+
+当 `__n == 1`（一次 `push_back`）时 `__len = size() + max(size(), 1)`：
+`size()==0→1`、`==1→2`、`==2→4`、`==4→8`…… 即**几何级数倍增（≈2×）**，
+这是 `push_back` 摊还 O(1) 的根本保证——每个学生都应能背出"为什么 vector 是 O(1) 摊销"。
+
+### 2. 重分配时如何搬运旧元素
+
+摘录自 `bits/vector.tcc:1169`（此为 `vector<bool>` 特化的 `_M_reallocate`；
+通用 `vector<T>` 的重分配在 `_M_realloc_insert`/`_M_realloc_append` 中采用同构逻辑）：
+
+```text
+// bits/vector.tcc:1169  (GCC 15.3.0, vector<bool> 特化示例)
+_M_reallocate(size_type __n)
+{
+  const iterator __begin = begin(), __end = end();
+  ...
+  _Bit_pointer __q = this->_M_allocate(__n);
+  iterator __start(std::__addressof(*__q), 0);
+  iterator __finish(_M_copy_aligned(__begin, __end, __start)); // 搬运旧元素
+  this->_M_deallocate();                                       // 释放旧块
+  ...
+}
+```
+
+通用 `vector<T>` 在 `_M_realloc_insert`（vector.tcc:461）中调用 `_M_allocate_and_copy`，
+对旧元素执行 **move 构造**（C++11 起），而非 copy——这正是附录 L 中 move-counter 实证测到的"零次 copy"的源码来源。
+
+### 3. 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| 增长策略 | `size()+max(size(),n)`（≈2×） | `2*__cap`（下限 1） | `max(2*__cap, __n)`（≈2×） |
+| 重分配搬运 | move 构造（`is_nothrow_move_constructible` 时） | 同左 | 同左 |
+| `capacity()` 语义 | 无 SSO（vector 无短缓冲） | 同左 | 同左 |
+| 收缩 | `shrink_to_fit()` 非强制 | 同左 | 同左 |
+
+> 上述 libc++/MSVC 行为为**公开实现常识**，非逐字摘录；具体常量随版本变动。
+
+### 4. 第一方可编译验证（观察 2× 倍增）
+
+```cpp
+#include <vector>
+#include <iostream>
+int main() {
+    std::vector<int> v;
+    std::size_t prev = 0;
+    for (int i = 0; i < 16; ++i) {
+        v.push_back(i);
+        if (v.capacity() != prev) {
+            std::cout << "size=" << v.size()
+                      << " capacity=" << v.capacity() << "\n";
+            prev = v.capacity();
+        }
+    }
+    return 0;
+}
+```
+
+预期输出（libstdc++）：容量在 1→2→4→8→16 处跳变，直接印证 `_M_check_len` 的指数公式。
+
 ## 附录 J：vector 决策流（D3 维度）
 
 ```mermaid

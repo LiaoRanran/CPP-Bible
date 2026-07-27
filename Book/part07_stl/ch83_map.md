@@ -1287,6 +1287,92 @@ jne    <loop>
 | 有序 | 是（中序有序） | 插入序 |
 | 代价 | 分配 + 指针 chase + 比较 | 仅内存搬运 |
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — `std::map` 红黑树（三标准库对比）[E: Low-level / H: Design]
+
+> 源码来自 GCC 15.3.0 libstdc++ `bits/stl_tree.h`。摘录块为引用性质（`text` 围栏），不参与编译；
+> 仅下方"第一方可编译验证"为独立 `cpp` 块。
+
+### 1. 节点颜色与节点结构
+
+摘录自 `bits/stl_tree.h:105`（GCC 15.3.0）：
+
+```text
+// bits/stl_tree.h:105  (GCC 15.3.0)
+enum _Rb_tree_color { _S_red = false, _S_black = true };
+
+struct _Rb_tree_node_base
+{
+  typedef _Rb_tree_node_base* _Base_ptr;
+  _Rb_tree_color  _M_color;
+  _Base_ptr       _M_parent;
+  _Base_ptr       _M_left;
+  _Base_ptr       _M_right;
+  ...
+};
+```
+
+注意：**红 = false，黑 = true**（用 bool 编码，省内存）。每个节点含 父/左/右三指针 + 颜色位，标准 RB-tree 结构。
+
+### 2. 插入与再平衡（新节点染红 → 双红则旋转/重染）
+
+摘录自 `bits/stl_tree.h:765`（插入主体）：
+
+```text
+// bits/stl_tree.h:765  (GCC 15.3.0)
+// 新节点初始染红
+__x->_M_color = _S_red;
+...
+// Rebalance. 当父为红时进入修正
+while (__x != __root && __x->_M_parent->_M_color == _S_red)
+{
+  const _Base_ptr __xpp = __x->_M_parent->_M_parent;
+  if (__x->_M_parent == __xpp->_M_left)
+  {
+    const _Base_ptr __y = __xpp->_M_right;       // 叔节点
+    if (__y && __y->_M_color == _S_red) {        // 叔红 → 重染，上移
+      __x->_M_parent->_M_color = _S_black;
+      __y->_M_color = _S_black;
+      __xpp->_M_color = _S_red;
+      __x = __xpp;
+    } else {
+      if (__x == __x->_M_parent->_M_right) {
+        __x = __x->_M_parent;
+        _Rotate_left(__x, __root);               // 左旋
+      }
+      __x->_M_parent->_M_color = _S_black;
+      __xpp->_M_color = _S_red;
+      _Rotate_right(__xpp, __root);               // 右旋
+    }
+  }
+  ...
+}
+```
+
+教科书 RB-tree 插入修正的标准实现：叔红则**重染上移**，叔黑则**旋转 + 重染**。
+`_Rotate_left`/`_Rotate_right` 是经典指针重接（stl_tree.h 中另有定义）。
+
+### 3. 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| 底层 | RB-tree（`_Rb_tree`） | RB-tree（近代 `__tree`） | RB-tree（`_Tree`） |
+| 排序 | 严格弱序 `<` | 同左 | 同左 |
+| 迭代器 | 双向（中序有序） | 同左 | 同左 |
+| 复杂度 | 插入/查找/删除 O(log n) | 同左 | 同左 |
+
+### 4. 第一方可编译验证（观察中序有序）
+
+```cpp
+#include <map>
+#include <iostream>
+int main() {
+    std::map<int,int> m{{3,1},{1,1},{2,1},{5,1},{4,1}};
+    for (auto const& kv : m) std::cout << kv.first << " ";  // 1 2 3 4 5
+    std::cout << "\n";
+    return 0;
+}
+```
+
 ## 附录 J：std::map 决策流（D3 维度）
 
 ```mermaid

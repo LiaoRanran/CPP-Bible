@@ -1352,6 +1352,95 @@ int main(){
 }
 ```
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — `unordered_*` 开链哈希（三标准库对比）[E: Low-level / H: Design]
+
+> 源码来自 GCC 15.3.0 libstdc++ `bits/hashtable.h` 与 `bits/hashtable_policy.h`。
+> 摘录块为引用性质（`text` 围栏），不参与编译；仅下方"第一方可编译验证"为独立 `cpp` 块。
+
+### 1. 桶数增长：向上取 2 的幂
+
+摘录自 `bits/hashtable_policy.h:687`（`__clp2` = ceil power-of-two）：
+
+```text
+// bits/hashtable_policy.h:687  (GCC 15.3.0)
+_M_next_bkt(size_t __n) noexcept
+{
+  if (__n == 0) return 1;
+  ...
+  size_t __res = __clp2(__n);          // 向上取最近的 2 的幂
+  if (__res == 1) __res = 2;
+  ...
+  _M_next_resize = __builtin_floor(__res * (double)_M_max_load_factor);
+  return __res;
+}
+```
+
+默认 `max_load_factor()==1.0`，因此桶数随元素数按 **2 的幂**扩张（1→2→4→8→…），
+与 `vector` 的指数倍增异曲同工，但目标是让 `% bucket_count` 变成更便宜的位与。
+
+### 2. rehash：把节点搬到新桶数组
+
+摘录自 `bits/hashtable.h:2752`（唯一键版本）：
+
+```text
+// bits/hashtable.h:2752  (GCC 15.3.0, unique-keys)
+_M_rehash(size_type __bkt_count, true_type /* __uks */)
+{
+  __buckets_ptr __new_buckets = _M_allocate_buckets(__bkt_count);
+  __node_ptr __p = _M_begin();
+  _M_before_begin._M_nxt = nullptr;
+  while (__p)
+  {
+    __node_ptr __next = __p->_M_next();
+    std::size_t __bkt = __hash_code_base::_M_bucket_index(*__p, __bkt_count);
+    if (!__new_buckets[__bkt]) {
+      __p->_M_nxt = _M_before_begin._M_nxt;
+      _M_before_begin._M_nxt = __p;                 // 链头挂到 _M_before_begin
+      __new_buckets[__bkt] = &_M_before_begin;
+    } else {
+      __p->_M_nxt = __new_buckets[__bkt]->_M_nxt;
+      __new_buckets[__bkt]->_M_nxt = __p;            // 挂到桶链尾
+    }
+    __p = __next;
+  }
+  _M_deallocate_buckets();
+  _M_bucket_count = __bkt_count;
+  _M_buckets = __new_buckets;
+}
+```
+
+关键：**rehash 不复制节点内存**，只是把既有节点（`_M_nxt` 指针）改挂到新桶数组——
+这正是附录 D5 中"rehash 代价是常数指针重排而非元素拷贝"的源码级证据。
+
+### 3. 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| 冲突解决 | 开链（separate chaining） | 开链 | 开链 |
+| 桶数 | 2 的幂（`__clp2`） | 近代版 2 的幂（旧版质数） | 2 的幂 |
+| rehash | 仅改挂指针，不搬值 | 同左 | 同左 |
+| 默认 max_load_factor | 1.0 | 1.0 | 1.0 |
+
+### 4. 第一方可编译验证（观察桶数 2 的幂扩张）
+
+```cpp
+#include <unordered_map>
+#include <iostream>
+int main() {
+    std::unordered_map<int,int> m;
+    std::cout << "initial buckets=" << m.bucket_count()
+              << " max_load=" << m.max_load_factor() << "\n";
+    for (int i = 0; i < 100; ++i) {
+        m[i] = i;
+        if (i == 0 || i == 1 || i == 3 || i == 7 || i == 15 || i == 31 || i == 63)
+            std::cout << "n=" << (i+1)
+                      << " buckets=" << m.bucket_count()
+                      << " load=" << m.load_factor() << "\n";
+    }
+    return 0;
+}
+```
+
 ## 附录 J：std::unordered_map / unordered_set 决策流（D3 维度）
 
 ```mermaid
