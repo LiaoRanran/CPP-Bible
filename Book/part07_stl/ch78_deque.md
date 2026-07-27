@@ -1196,6 +1196,98 @@ for (size_t i=0;i<n;++i) sum += q[i];   // deque 每次访问 2 次间接(map查
 
 **工程含义**：容器选型看**访问模式**而非功能列表；deque 以"双端 O(1) + 无 realloc 抖动"换"随机访问常数更大 + 缓存更差"。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — std::deque 分段连续存储
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/stl_deque.h`。
+
+### D4.1 迭代器四指针布局
+
+deque 迭代器维护四个指针，实现 O(1) 随机访问与 O(1) 头尾插入：
+
+```text
+// bits/stl_deque.h  L145-148  (libstdc++ 15.3.0)
+      _Elt_pointer _M_cur;     // 当前元素位置
+      _Elt_pointer _M_first;   // 当前 chunk 起始
+      _Elt_pointer _M_last;    // 当前 chunk 末尾（越界位置）
+      _Map_pointer _M_node;    // 指向 map 数组中的当前节点（二级指针）
+```
+
+### D4.2 两级 map 结构
+
+deque 通过一个指针数组（map）管理多个固定大小的 chunk（缓冲区），实现逻辑连续、物理分段：
+
+```text
+// bits/stl_deque.h  L512-540  (libstdc++ 15.3.0)
+      struct _Deque_impl_data
+      {
+	_Map_pointer _M_map;      // 指向 chunk 指针数组
+	size_t _M_map_size;        // map 数组容量
+	iterator _M_start;         // 起始迭代器
+	iterator _M_finish;        // 末尾迭代器
+      };
+```
+
+### D4.3 operator+= — 跨 chunk 跳转核心
+
+```text
+// bits/stl_deque.h  L232-249  (libstdc++ 15.3.0)
+      _Self&
+      operator+=(difference_type __n) _GLIBCXX_NOEXCEPT
+      {
+	const difference_type __offset = __n + (_M_cur - _M_first);
+	if (__offset >= 0 && __offset < difference_type(_S_buffer_size()))
+	  _M_cur += __n;                    // 同一 chunk 内：直接位移
+	else
+	  {
+	    const difference_type __node_offset =
+	      __offset > 0 ? __offset / difference_type(_S_buffer_size())
+			   : -difference_type((-__offset - 1)
+					      / _S_buffer_size()) - 1;
+	    _M_set_node(_M_node + __node_offset);  // 跨 chunk：切换 map 节点
+	    _M_cur = _M_first + (__offset - __node_offset
+				 * difference_type(_S_buffer_size()));
+	  }
+	return _this;
+      }
+```
+
+### D4.4 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| 分段连续（chunk 数组） | 兼顾"中间插删不需移动全部元素"与"随机访问 O(1)" |
+| 固定 chunk 大小 `_S_buffer_size()` | `512 / sizeof(T)`（或最少 1），编译期确定，避免运行时分支 |
+| map 二级指针 | 扩容时只需重分配 map 数组（指针的指针），不需搬运元素 |
+| 迭代器四指针 | `_M_first`/`_M_last` 缓存 chunk 边界，避免每次解引用都查 map |
+
+### D4.5 跨实现对比
+
+| 实现 | chunk 大小 | map 扩容策略 |
+|------|-----------|-------------|
+| libstdc++ 15.3.0 | `max(1, 512/sizeof(T))` | map 满时双倍扩容，复制旧指针 |
+| libc++ (LLVM) | 固定 4096 字节 / `sizeof(T)` | 类似双倍策略 |
+| MSVC STL | `16` 元素（固定） | map 满时双倍扩容 |
+
+### D4.6 编译验证
+
+```cpp
+#include <deque>
+#include <iostream>
+int main() {
+    std::deque<int> d;
+    for (int i = 1; i <= 5; ++i) d.push_back(i);
+    d.push_front(0);
+    std::cout << "d[0]=" << d[0] << std::endl;       // 0 (front)
+    std::cout << "d[5]=" << d[5] << std::endl;       // 5 (back)
+    std::cout << "size=" << d.size() << std::endl;    // 6
+    d.pop_front();
+    std::cout << "after pop_front d[0]=" << d[0] << std::endl;  // 1
+    return 0;
+}
+```
+
+---
+
 ## 附录 J：deque 决策流（D3 维度）
 
 ```mermaid

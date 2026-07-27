@@ -1234,6 +1234,118 @@ at_span(std::span<int const, N>, unsigned long long):
 
 **工程含义**：span 性能等价于裸指针+长度，适合做"不拥有、零拷贝"的缓冲区视图（嵌入式中传 DMA 缓冲区、外设 FIFO 区段极佳）。**但 `span[i]` 与原始数组一样不查边界——越界是静默 UB，不是异常**；需要运行时防护时应显式 `if (i < s.size())` 或改用带检查封装。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — std::span 零开销视图
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `span`。
+
+### D4.1 类模板声明与 dynamic_extent
+
+```text
+// span  L57-60  (libstdc++ 15.3.0)
+  inline constexpr size_t dynamic_extent = static_cast<size_t>(-1);
+
+  template<typename _Type, size_t _Extent>
+    class span;
+```
+
+### D4.2 固定 extent 存储（零大小，编译期常量）
+
+```text
+// span  L76-98  (libstdc++ 15.3.0)
+    template<size_t _Extent>
+      class __extent_storage
+      {
+      public:
+	constexpr
+	__extent_storage([[maybe_unused]] size_t __n) noexcept
+	{ __glibcxx_assert(__n == _Extent); }
+
+	consteval
+	__extent_storage(integral_constant<size_t, _Extent>) noexcept
+	{ }
+
+	static constexpr size_t
+	_M_extent() noexcept
+	{ return _Extent; }  // 编译期常量，不占存储
+      };
+```
+
+### D4.3 动态 extent 存储（运行时 size_t）
+
+```text
+// span  L100-117  (libstdc++ 15.3.0)
+    template<>
+      class __extent_storage<dynamic_extent>
+      {
+      public:
+	constexpr
+	__extent_storage(size_t __extent) noexcept
+	: _M_extent_value(__extent)
+	{ }
+
+	constexpr size_t
+	_M_extent() const noexcept
+	{ return this->_M_extent_value; }
+
+      private:
+	size_t _M_extent_value;
+      };
+```
+
+### D4.4 span 数据成员 — 指针 + [[no_unique_address]] extent
+
+```text
+// span  L461-477  (libstdc++ 15.3.0)
+    private:
+      pointer _M_ptr;
+      [[no_unique_address]] __detail::__extent_storage<extent> _M_extent;
+```
+
+### D4.5 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| `[[no_unique_address]]` extent 存储 | 固定 extent 时 `__extent_storage` 无数据成员 → `sizeof(span<T, N>) == sizeof(T*)`，零开销 |
+| `dynamic_extent = size_t(-1)` | 哨兵值区分编译期/运行期，同一模板统一处理 |
+| 指针 + 可选 size | 比 `pair<T*, size_t>` 更紧凑（固定 extent 省去 size） |
+| consteval 构造 | 固定 extent 必须编译期已知，`consteval` 强制保证 |
+
+### D4.6 跨实现对比
+
+| 实现 | 固定 extent sizeof | 动态 extent sizeof |
+|------|-------------------|-------------------|
+| libstdc++ 15.3.0 | `sizeof(T*)` | `sizeof(T*) + sizeof(size_t)` |
+| libc++ (LLVM) | `sizeof(T*)` | `sizeof(T*) + sizeof(size_t)` |
+| MSVC STL | `sizeof(T*)` | `sizeof(T*) + sizeof(size_t)` |
+
+三大实现均利用 EBO/`[[no_unique_address]]` 实现固定 extent 零开销。
+
+### D4.7 编译验证
+
+```cpp
+#include <span>
+#include <array>
+#include <iostream>
+int main() {
+    int arr[] = {10, 20, 30, 40, 50};
+    std::span<int, 5> fixed_span(arr);          // 固定 extent
+    std::span<int> dynamic_span(arr, 3);        // 动态 extent
+
+    std::cout << "fixed size=" << fixed_span.size() << std::endl;     // 5
+    std::cout << "dynamic size=" << dynamic_span.size() << std::endl; // 3
+    std::cout << "fixed[0]=" << fixed_span[0] << std::endl;          // 10
+    std::cout << "dynamic[2]=" << dynamic_span[2] << std::endl;      // 30
+    std::cout << "sizeof(fixed)=" << sizeof(fixed_span) << std::endl;   // 8 (x64 指针)
+    std::cout << "sizeof(dynamic)=" << sizeof(dynamic_span) << std::endl; // 16
+
+    // subspan
+    auto sub = fixed_span.subspan(1, 3);
+    std::cout << "subspan size=" << sub.size() << std::endl;  // 3
+    std::cout << "subspan[0]=" << sub[0] << std::endl;       // 20
+    return 0;
+}
+```
+
 ## 附录 J：std::span 决策流（D3 维度）
 
 ```mermaid

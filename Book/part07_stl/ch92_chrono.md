@@ -1017,6 +1017,124 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — std::chrono duration/time_point
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/chrono.h`。
+
+### D4.1 duration 类模板声明
+
+```text
+// bits/chrono.h  L67-68  (libstdc++ 15.3.0)
+    template<typename _Rep, typename _Period = ratio<1>>
+      class duration;
+```
+
+### D4.2 duration 数据成员与 count()
+
+```text
+// bits/chrono.h  L688-690  数据成员
+      private:
+	rep __r;                    // 仅一个成员：表示值
+
+// bits/chrono.h  L591-594  观察器
+	constexpr rep
+	count() const
+	{ return __r; }
+```
+
+### D4.3 duration_cast — 编译期 ratio 转换
+
+```text
+// bits/chrono.h  L181-195  通用模板（num/den 均非 1）
+    template<typename _ToDur, typename _CF, typename _CR,
+	     bool _NumIsOne = false, bool _DenIsOne = false>
+      struct __duration_cast_impl
+      {
+	template<typename _Rep, typename _Period>
+	  static constexpr _ToDur
+	  __cast(const duration<_Rep, _Period>& __d)
+	  {
+	    typedef typename _ToDur::rep __to_rep;
+	    return _ToDur(static_cast<__to_rep>(static_cast<_CR>(__d.count())
+	      * static_cast<_CR>(_CF::num)
+	      / static_cast<_CR>(_CF::den)));
+	  }
+      };
+
+// bits/chrono.h  L197-207  num=1 且 den=1（恒等转换，零开销）
+    template<typename _ToDur, typename _CF, typename _CR>
+      struct __duration_cast_impl<_ToDur, _CF, _CR, true, true>
+      {
+	template<typename _Rep, typename _Period>
+	  static constexpr _ToDur
+	  __cast(const duration<_Rep, _Period>& __d)
+	  {
+	    return _ToDur(static_cast<typename _ToDur::rep>(__d.count()));
+	  }
+      };
+```
+
+### D4.4 time_point — duration + clock 标签
+
+```text
+// bits/chrono.h  L925-1006  (libstdc++ 15.3.0)
+    template<typename _Clock, typename _Dur>
+      class time_point
+      {
+      public:
+	typedef _Clock    clock;
+	typedef _Dur      duration;
+	// ...
+	constexpr time_point() : __d(duration::zero()) { }
+	constexpr explicit time_point(const duration& __dur) : __d(__dur) { }
+
+	constexpr duration
+	time_since_epoch() const
+	{ return __d; }
+
+      private:
+	duration __d;               // 仅持有 duration，Clock 是类型标签不占存储
+      };
+```
+
+### D4.5 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| `rep __r` 单成员 | duration 退化为裸算术类型，零开销抽象 |
+| `ratio<num, den>` 编译期分数 | 单位转换在编译期完成，运行时零除法 |
+| `__duration_cast_impl` 四特化 | num=1/den=1 时省略乘除 → 恒等转换零开销 |
+| `_Clock` 仅作类型标签 | 不同时钟（steady/system/high_resolution）编译期隔离，运行时零开销 |
+
+### D4.6 跨实现对比
+
+| 实现 | duration 存储 | cast 优化 |
+|------|-------------|---------|
+| libstdc++ 15.3.0 | 单 `rep __r` | 四特化（恒等/仅乘/仅除/通用） |
+| libc++ (LLVM) | 单 `rep __r` | 类似 `__duration_cast` 特化 |
+| MSVC STL | 单 `rep __r` | 类似特化 |
+
+### D4.7 编译验证
+
+```cpp
+#include <chrono>
+#include <iostream>
+int main() {
+    using namespace std::chrono;
+    auto t0 = steady_clock::now();
+    auto ms = milliseconds(1500);
+    auto sec = duration_cast<seconds>(ms);
+    std::cout << "ms.count=" << ms.count() << std::endl;       // 1500
+    std::cout << "sec.count=" << sec.count() << std::endl;     // 1 (truncation)
+    std::cout << "ms as double=" << duration_cast<duration<double>>(ms).count() << std::endl;  // 1.5
+    std::cout << "sizeof(ms)=" << sizeof(ms) << std::endl;     // 8 (long long)
+    auto t1 = steady_clock::now();
+    auto elapsed = duration_cast<microseconds>(t1 - t0);
+    std::cout << "elapsed us=" << elapsed.count() << std::endl;
+    return 0;
+}
+```
+
 ## 附录 J：chrono 时钟/时长决策流（D3 维度）
 
 ```mermaid

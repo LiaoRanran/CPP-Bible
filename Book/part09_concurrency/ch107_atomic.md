@@ -1216,6 +1216,155 @@ flowchart TD
 | is_lock_free / 进度保证 | **ch115 移动语义**、**ch122 pmr** | 无锁数据结构要求移动/析构 `noexcept`（异常安全）；pmr 多态分配器与原子协同做无锁内存池 |
 | RMW 指令 | **附录 J 真机汇编** | 图谱中 `lock xadd/cmpxchg` 的逐指令实证在附录 J；本图谱是「为什么」、附录 J 是「长什么样」 |
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — std::atomic 原子操作内建映射
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/atomic_base.h` 与 `atomic`。
+
+### D4.1 __atomic_base 存储成员与对齐
+
+```text
+// bits/atomic_base.h  L337-358  (libstdc++ 15.3.0)
+  template<typename _ITp>
+    struct __atomic_base
+    {
+    private:
+      typedef _ITp __int_type;
+
+      static constexpr int _S_alignment =
+	sizeof(_ITp) > alignof(_ITp) ? sizeof(_ITp) : alignof(_ITp);
+
+      alignas(_S_alignment) __int_type _M_i _GLIBCXX20_INIT(0);
+```
+
+### D4.2 is_lock_free() — 运行时无锁判定
+
+```text
+// bits/atomic_base.h  L452-460  (libstdc++ 15.3.0)
+      bool
+      is_lock_free() const noexcept
+      {
+	return __atomic_is_lock_free(sizeof(_M_i),
+	    reinterpret_cast<void *>(-_S_alignment));
+      }
+```
+
+### D4.3 load() / store() — 转发到 GCC 内建函数
+
+```text
+// bits/atomic_base.h  L468-491  store
+      void
+      store(__int_type __i, memory_order __m = memory_order_seq_cst) noexcept
+      {
+	__atomic_store_n(&_M_i, __i, int(__m));
+      }
+
+// bits/atomic_base.h  L493-513  load
+      __int_type
+      load(memory_order __m = memory_order_seq_cst) const noexcept
+      {
+	return __atomic_load_n(&_M_i, int(__m));
+      }
+```
+
+### D4.4 compare_exchange — weak vs strong
+
+```text
+// bits/atomic_base.h  L530-565  weak（第4参数=1，允许伪失败）
+      bool
+      compare_exchange_weak(__int_type& __i1, __int_type __i2,
+			    memory_order __m1, memory_order __m2) noexcept
+      {
+	return __atomic_compare_exchange_n(&_M_i, &__i1, __i2, 1,
+					   int(__m1), int(__m2));
+      }
+
+// bits/atomic_base.h  L567-602  strong（第4参数=0，不允许伪失败）
+      bool
+      compare_exchange_strong(__int_type& __i1, __int_type __i2,
+			      memory_order __m1, memory_order __m2) noexcept
+      {
+	return __atomic_compare_exchange_n(&_M_i, &__i1, __i2, 0,
+					   int(__m1), int(__m2));
+      }
+```
+
+### D4.5 atomic<T> 通用主模板 — 通用内建函数
+
+```text
+// atomic  L198-230  (libstdc++ 15.3.0)
+  template<typename _Tp>
+    struct atomic
+    {
+    private:
+      static constexpr int _S_min_alignment
+	= (sizeof(_Tp) & (sizeof(_Tp) - 1)) || sizeof(_Tp) > 16
+	? 0 : sizeof(_Tp);
+
+      static constexpr int _S_alignment
+        = _S_min_alignment > alignof(_Tp) ? _S_min_alignment : alignof(_Tp);
+
+      alignas(_S_alignment) _Tp _M_i;
+```
+
+### D4.6 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| `alignas(_S_alignment)` | 确保原子变量对齐到 `sizeof(T)`，硬件可直接 CAS → 无锁 |
+| `__atomic_*_n` 内建函数 | 编译器映射到最优机器指令（x86 LOCK CMPXCHG / ARM LDREX-STREX） |
+| weak vs strong 分离 | CAS 循环中用 weak 省去重试开销（伪失败可接受）；单次 CAS 用 strong |
+| 通用 `atomic<T>` 用非 `_n` 内建 | 处理可能有 padding 的自定义类型（`__atomic_load` vs `__atomic_load_n`） |
+
+### D4.7 跨实现对比
+
+| 实现 | 整型特化 | 通用 T | 内建函数 |
+|------|---------|--------|---------|
+| libstdc++ 15.3.0 | `__atomic_base<T>` 公有继承 | `alignas _M_i` | GCC `__atomic_*` |
+| libc++ (LLVM) | `__atomic_base<T>` | `__cxx_atomic<T>` | Clang `__atomic_*` |
+| MSVC STL | `_Atomic_impl<T>` | `_Atomic_storage<T>` | MSVC intrinsics |
+
+三大实现均依赖编译器内建函数映射到硬件原子指令，API 层面一致。
+
+### D4.8 编译验证
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+#include <vector>
+int main() {
+    std::atomic<int> counter{0};
+
+    std::cout << "is_lock_free=" << counter.is_lock_free() << std::endl;  // 1
+    std::cout << "is_always_lock_free=" << std::atomic<int>::is_always_lock_free << std::endl;  // 1
+
+    counter.store(10);
+    std::cout << "after store=" << counter.load() << std::endl;  // 10
+
+    int expected = 10;
+    bool ok = counter.compare_exchange_strong(expected, 20);
+    std::cout << "cas(10->20)=" << ok << " val=" << counter.load() << std::endl;  // 1 20
+
+    expected = 99;  // wrong expected
+    ok = counter.compare_exchange_strong(expected, 30);
+    std::cout << "cas(99->30)=" << ok << " val=" << counter.load() << std::endl;  // 0 20
+
+    counter.fetch_add(5);
+    std::cout << "after fetch_add(5)=" << counter.load() << std::endl;  // 25
+
+    // multi-thread increment
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 4; ++i) {
+        threads.emplace_back([&counter]() {
+            for (int j = 0; j < 1000; ++j) counter.fetch_add(1, std::memory_order_relaxed);
+        });
+    }
+    for (auto& t : threads) t.join();
+    std::cout << "after 4x1000 increment=" << counter.load() << std::endl;  // 4025
+    return 0;
+}
+```
+
 ## 附录 U：原子类型与无锁选型决策流（D3 维度）
 
 ```mermaid

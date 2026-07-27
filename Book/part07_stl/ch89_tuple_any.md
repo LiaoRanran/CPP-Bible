@@ -1270,6 +1270,126 @@ use_agg(P const&):                 ; struct P{int a; double b; char c;}
 
 **工程含义**：`any` 是 C++17 最"重"的类型擦除容器——SBO 路径（≤ 16B）几乎零开销（与 `variant<int, double, string>` 同级），但**超 SBO 边界后的每次构造/赋值/拷贝均触发 operator new**，性能劣化为带 typeid 分发的 `void*`。核心使用规则：**仅当预知存储类型 ≤ 16B 时用 any 替代 variant**，否则优先用 `variant<...>`（编译期穷举、无堆分配）。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — std::tuple 递归继承与 EBO
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `tuple`。
+
+### D4.1 _Head_base — EBO 两种策略
+
+```text
+// tuple  L85-87  前向声明
+  template<size_t _Idx, typename _Head,
+	   bool = __empty_not_final<_Head>::value>
+    struct _Head_base;
+
+// tuple  L89-143  空类型特化（使用 [[__no_unique_address__]]）
+  template<size_t _Idx, typename _Head>
+    struct _Head_base<_Idx, _Head, true>
+    {
+      [[__no_unique_address__]] _Head _M_head_impl;
+      // ...static _M_head() 返回 _M_head_impl 引用...
+    };
+
+// tuple  L199-252  非空类型特化（直接持有成员）
+  template<size_t _Idx, typename _Head>
+    struct _Head_base<_Idx, _Head, false>
+    {
+      _Head _M_head_impl;
+      // ...static _M_head() 返回 _M_head_impl 引用...
+    };
+```
+
+### D4.2 _Tuple_impl 递归继承（多元素）
+
+```text
+// tuple  L280-300  (libstdc++ 15.3.0)
+  template<size_t _Idx, typename _Head, typename... _Tail>
+    struct _Tuple_impl<_Idx, _Head, _Tail...>
+    : public _Tuple_impl<_Idx + 1, _Tail...>,     // 递归继承剩余元素
+      private _Head_base<_Idx, _Head>              // 当前元素
+    {
+      typedef _Tuple_impl<_Idx + 1, _Tail...> _Inherited;
+      typedef _Head_base<_Idx, _Head> _Base;
+
+      static constexpr _Head&
+      _M_head(_Tuple_impl& __t) noexcept { return _Base::_M_head(__t); }
+
+      static constexpr _Inherited&
+      _M_tail(_Tuple_impl& __t) noexcept { return __t; }
+```
+
+### D4.3 _Tuple_impl 叶子（单元素，终止递归）
+
+```text
+// tuple  L544-560  (libstdc++ 15.3.0)
+  // Basis case of inheritance recursion.
+  template<size_t _Idx, typename _Head>
+    struct _Tuple_impl<_Idx, _Head>
+    : private _Head_base<_Idx, _Head>
+    {
+      typedef _Head_base<_Idx, _Head> _Base;
+      // 不再有 _Inherited —— 递归终止
+```
+
+### D4.4 get<I>() — O(1) 编译期索引
+
+```text
+// tuple  L2426-2445  (libstdc++ 15.3.0)
+  template<size_t __i, typename _Head, typename... _Tail>
+    constexpr _Head&
+    __get_helper(_Tuple_impl<__i, _Head, _Tail...>& __t) noexcept
+    { return _Tuple_impl<__i, _Head, _Tail...>::_M_head(__t); }
+
+  template<size_t __i, typename... _Elements>
+    constexpr __tuple_element_t<__i, tuple<_Elements...>>&
+    get(tuple<_Elements...>& __t) noexcept
+    { return std::__get_helper<__i>(__t); }
+```
+
+### D4.5 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| 递归继承（非递归组合） | 继承链在编译期展开，`get<I>()` 通过模板推导直接定位第 I 层 → O(1) |
+| `_Head_base` EBO | 空类型（如 `std::less<>`）零开销，`sizeof(tuple<int, less<>>)==sizeof(int)` |
+| `[[__no_unique_address__]]` | C++20 起替代继承式 EBO，支持 final 类型的空成员优化 |
+| 索引 `_Idx` 模板参数 | 使每层 `_Tuple_impl` 类型唯一，`__get_helper<I>` 精确匹配 |
+
+### D4.6 跨实现对比
+
+| 实现 | 递归方式 | EBO 策略 |
+|------|---------|---------|
+| libstdc++ 15.3.0 | 递归继承 `_Tuple_impl` | `[[__no_unique_address__]]` 或继承回退 |
+| libc++ (LLVM) | 递继承 `__tuple_impl` | 继承式 EBO |
+| MSVC STL | 递归继承 | 继承式 EBO |
+
+### D4.7 编译验证
+
+```cpp
+#include <tuple>
+#include <iostream>
+#include <string>
+int main() {
+    auto t = std::make_tuple(42, std::string("hello"), 3.14);
+    std::cout << "get<0>=" << std::get<0>(t) << std::endl;   // 42
+    std::cout << "get<1>=" << std::get<1>(t) << std::endl;   // hello
+    std::cout << "get<2>=" << std::get<2>(t) << std::endl;   // 3.14
+
+    // tuple_size
+    std::cout << "tuple_size=" << std::tuple_size_v<decltype(t)> << std::endl;  // 3
+
+    // structured binding
+    auto [a, b, c] = t;
+    std::cout << "a=" << a << " b=" << b << " c=" << c << std::endl;
+
+    // EBO: tuple with empty type
+    struct Empty {};
+    std::cout << "sizeof(tuple<int,Empty>)=" << sizeof(std::tuple<int, Empty>) << std::endl;
+    std::cout << "sizeof(int)=" << sizeof(int) << std::endl;
+    return 0;
+}
+```
+
 ## 附录 J：tuple/any 类型擦除决策流（D3 维度）
 
 ```mermaid

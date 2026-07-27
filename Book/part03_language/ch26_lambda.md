@@ -1680,6 +1680,165 @@ int main() {
 
 
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — lambda 闭包与 std::function 类型擦除
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/std_function.h` 与 `bits/invoke.h`。
+> 注：lambda 表达式本身由编译器生成闭包类，无标准库源码；本附录解析 `std::function` 如何存储和调用任意闭包。
+
+### D4.1 类型擦除存储 — _Any_data 就地缓冲
+
+```text
+// bits/std_function.h  L77-102  (libstdc++ 15.3.0)
+  union _Nocopy_types
+  {
+    void*       _M_object;
+    const void* _M_const_object;
+    void (*_M_function_pointer)();
+    void (_Undefined_class::*_M_member_pointer)();
+  };
+
+  union [[gnu::may_alias]] _Any_data
+  {
+    void*       _M_access()       noexcept { return &_M_pod_data[0]; }
+    const void* _M_access() const noexcept { return &_M_pod_data[0]; }
+
+    template<typename _Tp>
+      _Tp& _M_access() noexcept
+      { return *static_cast<_Tp*>(_M_access()); }
+
+    _Nocopy_types _M_unused;
+    char _M_pod_data[sizeof(_Nocopy_types)];   // SBO 就地缓冲区
+  };
+```
+
+### D4.2 SBO 判定 — __stored_locally
+
+```text
+// bits/std_function.h  L126-130  (libstdc++ 15.3.0)
+	static const bool __stored_locally =
+	(__is_location_invariant<_Functor>::value
+	 && sizeof(_Functor) <= _M_max_size
+	 && __alignof__(_Functor) <= _M_max_align
+	 && (_M_max_align % __alignof__(_Functor) == 0));
+```
+
+### D4.3 就地构造 vs 堆分配
+
+```text
+// bits/std_function.h  L150-164  (libstdc++ 15.3.0)
+	// SBO：placement new 在 _Any_data 缓冲内构造
+	template<typename _Fn>
+	  static void
+	  _M_create(_Any_data& __dest, _Fn&& __f, true_type)
+	  { ::new (__dest._M_access()) _Functor(std::forward<_Fn>(__f)); }
+
+	// 非 SBO：堆分配，存储指针
+	template<typename _Fn>
+	  static void
+	  _M_create(_Any_data& __dest, _Fn&& __f, false_type)
+	  { __dest._M_access<_Functor*>() = new _Functor(std::forward<_Fn>(__f)); }
+```
+
+### D4.4 _M_manager — clone/destroy/get_type_info
+
+```text
+// bits/std_function.h  L181-209  (libstdc++ 15.3.0)
+	static bool
+	_M_manager(_Any_data& __dest, const _Any_data& __source,
+		   _Manager_operation __op)
+	{
+	  switch (__op)
+	    {
+	    case __get_type_info:
+	      __dest._M_access<const type_info*>() = &typeid(_Functor);
+	      break;
+	    case __clone_functor:
+	      _M_init_functor(__dest,
+		  *const_cast<const _Functor*>(_M_get_pointer(__source)));
+	      break;
+	    case __destroy_functor:
+	      _M_destroy(__dest, _Local_storage());
+	      break;
+	    }
+	  return false;
+	}
+```
+
+### D4.5 _M_invoke — 调用被擦除的闭包
+
+```text
+// bits/std_function.h  L289-294  (libstdc++ 15.3.0)
+      static _Res
+      _M_invoke(const _Any_data& __functor, _ArgTypes&&... __args)
+      {
+	return std::__invoke_r<_Res>(*_Base::_M_get_pointer(__functor),
+				     std::forward<_ArgTypes>(__args)...);
+      }
+```
+
+### D4.6 function::operator() — 分派到 _M_invoker
+
+```text
+// bits/std_function.h  L588-594  (libstdc++ 15.3.0)
+      _Res
+      operator()(_ArgTypes... __args) const
+      {
+	if (_M_empty())
+	  __throw_bad_function_call();
+	return _M_invoker(_M_functor, std::forward<_ArgTypes>(__args)...);
+      }
+```
+
+### D4.7 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| `_Any_data` SBO 缓冲 | 小闭包（无捕获 / 少量捕获）就地存储，免堆分配 |
+| `__stored_locally` 编译期判定 | 类型擦除不影响小闭包性能 |
+| `_M_manager` 函数指针 | 统一 clone/destroy/get_type_info，类型擦除的核心 |
+| `__invoke_r` 而非直接调用 | 统一处理成员指针 / 成员对象 / 普通可调用对象 |
+| `_M_invoker` 函数指针 | `operator()` 一次间接调用，无虚函数开销 |
+
+### D4.8 跨实现对比
+
+| 实现 | SBO 缓冲大小 | 策略 |
+|------|-------------|------|
+| libstdc++ 15.3.0 | `sizeof(_Nocopy_types)` ≈ 2×指针 | location-invariant + 尺寸/对齐检查 |
+| libc++ (LLVM) | 通常 3×指针 | 类似 SBO + 堆回退 |
+| MSVC STL | 通常 2×指针 | 类似 SBO |
+
+### D4.9 编译验证
+
+```cpp
+#include <functional>
+#include <iostream>
+int main() {
+    int x = 10;
+    auto lambda = [x](int v) { return x + v; };
+
+    std::function<int(int)> f = lambda;
+    std::cout << "f(5)=" << f(5) << std::endl;           // 15
+    std::cout << "sizeof(f)=" << sizeof(f) << std::endl;  // 32 (2 ptrs + 2 func ptrs on x64)
+
+    // empty function
+    std::function<int(int)> g;
+    std::cout << "g is " << (g ? "valid" : "empty") << std::endl;  // empty
+
+    // chained capture
+    int y = 20;
+    auto add = [y](int a, int b) { return a + b + y; };
+    std::function<int(int,int)> h = add;
+    std::cout << "h(1,2)=" << h(1, 2) << std::endl;  // 23
+
+    // member function
+    struct Calc { int mul(int a, int b) const { return a * b; } };
+    Calc calc;
+    std::function<int(int,int)> m = std::bind(&Calc::mul, &calc, std::placeholders::_1, std::placeholders::_2);
+    std::cout << "m(3,4)=" << m(3, 4) << std::endl;  // 12
+    return 0;
+}
+```
+
 ## 附录 J：lambda 表达式 决策流（D3 维度）
 
 ```mermaid

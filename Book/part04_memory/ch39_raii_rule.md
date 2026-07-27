@@ -1915,6 +1915,138 @@ int main(){
 **工程含义**：异常安全不是"加 try/catch"，而是"每个资源都有 RAII 守护"；
 这正是现代 C++ 相比 C 在系统可靠性上的核心优势之一。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — std::unique_ptr 无控制块设计
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/unique_ptr.h`。
+
+### D4.1 类模板声明与存储成员
+
+```text
+// bits/unique_ptr.h  L269-276  (libstdc++ 15.3.0)
+  template <typename _Tp, typename _Dp = default_delete<_Tp>>
+    class unique_ptr
+    {
+      __uniq_ptr_data<_Tp, _Dp> _M_t;   // 唯一存储成员
+```
+
+### D4.2 tuple<pointer, deleter> 存储
+
+```text
+// bits/unique_ptr.h  L224-225  __uniq_ptr_impl 内部
+    private:
+      tuple<pointer, _Dp> _M_t;          // 指针 + 删除器打包为 tuple
+
+// bits/unique_ptr.h  L189-196  访问器
+      pointer&   _M_ptr() noexcept { return std::get<0>(_M_t); }
+      pointer    _M_ptr() const noexcept { return std::get<0>(_M_t); }
+      _Dp&       _M_deleter() noexcept { return std::get<1>(_M_t); }
+      const _Dp& _M_deleter() const noexcept { return std::get<1>(_M_t); }
+```
+
+### D4.3 reset() — 所有权转移与销毁
+
+```text
+// bits/unique_ptr.h  L198-213  (libstdc++ 15.3.0)
+      void reset(pointer __p) noexcept
+      {
+	const pointer __old_p = _M_ptr();
+	_M_ptr() = __p;
+	if (__old_p)
+	  _M_deleter()(__old_p);    // 用旧指针调用删除器
+      }
+
+      pointer release() noexcept
+      {
+	pointer __p = _M_ptr();
+	_M_ptr() = nullptr;          // 释放所有权，不销毁
+	return __p;
+      }
+```
+
+### D4.4 析构函数 — 调用删除器
+
+```text
+// bits/unique_ptr.h  L398-410  (libstdc++ 15.3.0)
+      ~unique_ptr() noexcept
+      {
+	auto& __ptr = _M_t._M_ptr();
+	if (__ptr != nullptr)
+	  get_deleter()(std::move(__ptr));
+	__ptr = pointer();
+      }
+```
+
+### D4.5 数组特化与 default_delete<T[]>
+
+```text
+// bits/unique_ptr.h  L104-135  数组删除器
+  template<typename _Tp>
+    struct default_delete<_Tp[]>
+    {
+      template<typename _Up>
+	typename enable_if<is_convertible<_Up(*)[], _Tp(*)[]>::value>::type
+	operator()(_Up* __ptr) const
+	{
+	  static_assert(sizeof(_Tp)>0,
+			"can't delete pointer to incomplete type");
+	  delete [] __ptr;
+	}
+    };
+```
+
+### D4.6 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| `tuple<pointer, _Dp>` 无控制块 | 无引用计数开销，`sizeof(unique_ptr<T>)==sizeof(T*)`（默认删除器 EBO） |
+| 删除器作模板参数 | 编译期确定删除策略，零运行时分发；支持自定义删除器（如 `fclose`） |
+| `release()` 不销毁 | 转移所有权给裸指针，调用者负责释放（兼容 C API） |
+| 数组特化 `delete[]` | 类型安全：`unique_ptr<int[]>` 调用 `delete[]`，`unique_ptr<int>` 调用 `delete` |
+| 无拷贝构造/赋值 | 独占所有权语义由类型系统强制，编译期阻止误拷贝 |
+
+### D4.7 跨实现对比
+
+| 实现 | 存储 | 删除器 EBO | 数组特化 |
+|------|------|-----------|---------|
+| libstdc++ 15.3.0 | `tuple<pointer, _Dp>` | 是（`_Dp` 空时零开销） | `default_delete<T[]>` 用 `delete[]` |
+| libc++ (LLVM) | `compressed_pair<pointer, _Dp>` | 是 | 同 |
+| MSVC STL | `tuple<pointer, _Dp>` | 是 | 同 |
+
+三大实现均利用 EBO 实现默认删除器零开销。
+
+### D4.8 编译验证
+
+```cpp
+#include <memory>
+#include <iostream>
+struct Resource {
+    int id;
+    Resource(int i) : id(i) { std::cout << "Resource " << id << " acquired" << std::endl; }
+    ~Resource() { std::cout << "Resource " << id << " released" << std::endl; }
+};
+int main() {
+    {
+        auto p1 = std::make_unique<Resource>(1);
+        std::cout << "p1->id=" << p1->id << std::endl;
+        std::cout << "sizeof(p1)=" << sizeof(p1) << std::endl;  // 8 (pointer only, EBO)
+    }  // p1析构, Resource 1 released
+
+    {
+        std::unique_ptr<Resource> p2;
+        p2 = std::make_unique<Resource>(2);
+        auto p3 = std::move(p2);  // 转移所有权
+        std::cout << "p2 is " << (p2 ? "non-null" : "null") << std::endl;  // null
+        std::cout << "p3->id=" << p3->id << std::endl;  // 2
+    }  // p3析构, Resource 2 released
+
+    // 数组版本
+    auto arr = std::make_unique<int[]>(5);
+    for (int i = 0; i < 5; ++i) arr[i] = i * 10;
+    std::cout << "arr[3]=" << arr[3] << std::endl;  // 30
+    return 0;
+}
+```
+
 ## 附录 J：RAII 与三五法则决策流（D3 维度）
 
 ```mermaid

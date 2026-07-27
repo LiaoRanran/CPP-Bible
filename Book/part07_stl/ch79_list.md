@@ -1222,6 +1222,107 @@ main+0x14d:  call   operator new(unsigned long long)  ; 新节点
 
 **工程含义**：forward_list 比 list 省 8 字节/节点（少一个 prev 指针，实际从 24→16 字节），但只能正向遍历、插入/删除只能在给定位置**之后**操作。适用场景：纯前向遍历 + 频繁头部操作 + 内存敏感。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — std::list 侵入式双向链表
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/stl_list.h`。
+
+### D4.1 侵入式节点基类
+
+list 节点不持有数据容器，而是将 `prev`/`next` 指针嵌入节点本身（侵入式设计）：
+
+```text
+// bits/stl_list.h  L94-119  (libstdc++ 15.3.0)
+    struct _List_node_base
+    {
+      typedef _List_node_base* _Base_ptr;
+
+      _List_node_base* _M_next;
+      _List_node_base* _M_prev;
+
+      void _M_transfer(_List_node_base* const __first,
+		       _List_node_base* const __last) _GLIBCXX_USE_NOEXCEPT;
+      void _M_hook(_List_node_base* const __position) _GLIBCXX_USE_NOEXCEPT;
+      void _M_unhook() _GLIBCXX_USE_NOEXCEPT;
+    };
+```
+
+### D4.2 数据节点（派生自基类）
+
+```text
+// bits/stl_list.h  L549-562  (libstdc++ 15.3.0)
+  template<typename _Tp>
+    struct _List_node : public __detail::_List_node_base
+    {
+      __gnu_cxx::__aligned_membuf<_Tp> _M_storage;
+      _Tp*       _M_valptr()       { return _M_storage._M_ptr(); }
+      _Tp const* _M_valptr() const { return _M_storage._M_ptr(); }
+    };
+```
+
+### D4.3 哨兵节点自引用（空链表初始化）
+
+```text
+// bits/stl_list.h  L166-171  (libstdc++ 15.3.0)
+      void
+      _M_init() _GLIBCXX_NOEXCEPT
+      {
+	this->_M_next = this->_M_prev = this;  // 空链表：哨兵指向自身
+	_List_size::operator=(_List_size());
+      }
+```
+
+### D4.4 begin() / end() — 哨兵驱动迭代
+
+```text
+// bits/stl_list.h  L1455-1478  (libstdc++ 15.3.0)
+      iterator
+      begin() _GLIBCXX_NOEXCEPT
+      { return iterator(this->_M_impl._M_node._M_next); }  // 第一个实际元素
+
+      iterator
+      end() _GLIBCXX_NOEXCEPT
+      { return iterator(this->_M_impl._M_node._M_base()); } // 哨兵自身
+```
+
+### D4.5 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| 侵入式节点（`_List_node_base` 基类） | `_M_transfer`/`_M_hook`/`_M_unhook` 仅操作指针，不拷贝数据 → O(1) splice |
+| 哨兵节点（sentinel） | `begin() == end()` 天然处理空链表，无需 nullptr 特判 |
+| `__aligned_membuf` 存储 | C++11 起避免联合体 hack，支持非可默认构造类型 |
+| 环形结构 | 任意节点均可 O(1) 前插/后删，无需头尾特判 |
+
+### D4.6 跨实现对比
+
+| 实现 | 节点布局 | 哨兵策略 |
+|------|---------|---------|
+| libstdc++ 15.3.0 | `_List_node_base` + `_M_storage` | 环形自引用 |
+| libc++ (LLVM) | 类似侵入式 | 环形自引用 |
+| MSVC STL | 节点含 `_Next`/`_Prev` | 环形自引用 |
+
+三大实现均采用环形哨兵设计，差异极小。
+
+### D4.7 编译验证
+
+```cpp
+#include <list>
+#include <iostream>
+int main() {
+    std::list<int> l{3, 1, 4, 1, 5};
+    l.push_front(0);
+    l.push_back(9);
+    std::cout << "front=" << l.front() << std::endl;  // 0
+    std::cout << "back=" << l.back() << std::endl;     // 9
+    std::cout << "size=" << l.size() << std::endl;     // 7
+    l.sort();
+    std::cout << "after sort front=" << l.front() << std::endl;  // 0
+    return 0;
+}
+```
+
+---
+
 ## 附录 J：std::list / forward_list 决策流（D3 维度）
 
 ```mermaid
