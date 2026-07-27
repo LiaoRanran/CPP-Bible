@@ -889,6 +889,79 @@ graph LR
     I["索引序列"] --> I1["make_index_sequence 转发元组"]
 ```
 
+## 附录 D4：可变参数模板 三标准库源码解析（D4 维度 · libstdc++ 15.3.0）
+
+> 可变参数模板之所以能"接受任意个数/任意类型"，关键在于**参数包在编译期被逐层展开**。标准库里最经典的真实范例就是 `std::tuple`——它用"主模板剥离头部 + 递归继承余下包"把 `_Tail...` 在编译期展开成一条继承链。下面看 libstdc++ 15.3.0 的真实实现。
+
+### D4.1 libstdc++ 真实源码摘录
+
+// 摘自 libstdc++ 15.3.0：tuple:280（_Tuple_impl 递归继承展开参数包）
+```
+  template<size_t _Idx, typename _Head, typename... _Tail>
+    struct _Tuple_impl<_Idx, _Head, _Tail...>
+    : public _Tuple_impl<_Idx + 1, _Tail...>,   // 剥离头部，递归余下
+      private _Head_base<_Idx, _Head>           // 存当前头部元素
+    {
+      typedef _Tuple_impl<_Idx + 1, _Tail...> _Inherited;
+      typedef _Head_base<_Idx, _Head> _Base;
+    };
+```
+
+// 摘自 libstdc++ 15.3.0：tuple:546（递归基：单元素终止特化）
+```
+  template<size_t _Idx, typename _Head>
+    struct _Tuple_impl<_Idx, _Head>
+    : private _Head_base<_Idx, _Head>
+    { };
+```
+
+### D4.2 设计动机
+
+| 源码构造 | 设计意图 | 若不这样做的代价 |
+|---|---|---|
+| `: public _Tuple_impl<_Idx+1, _Tail...>` | 把 `_Tail...` 递归地"压"进基类子对象，每剥一层就少一个类型，直至单元素 | 若把全部元素平铺为成员，无法表达"参数包任意长度"，tuple 只能写死固定数量版本 |
+| `_Head_base<_Idx, _Head>` 私有继承存当前头部 | 每个元素按编译期索引 `_Idx` 隔离为独立基类子对象，便于 `get<I>` 按类型定位 | 若共用一个联合存储，会丢失"每个元素独立地址与生命周期"，且 `get` 无法按索引 O(1) 取 |
+| `_Idx` 递增 | 用整数标签区分同一继承链中不同位置的同名基类，避免歧义 | 没有 `_Idx` 时多个 `_Head_base` 基类无法被 `get` 唯一选中和访问 |
+| 单元素终止特化 `_Tuple_impl<_Idx,_Head>` | 提供递归"出口"，让 `_Tail...` 缩减到空时正常结束，不无限实例化 | 缺终止特化会无限递归实例化，编译爆栈/失败 |
+
+> 一句话：C++11 用"主模板剥离头部 `_Head` + 公有继承 `_Tuple_impl<_Idx+1,_Tail...>` 递归余下"实现编译期展开，索引 `_Idx` 区分每个基类子对象，到单元素终止特化结束——这是标准库"参数包递归展开"最典型的真实范例。
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ (GCC) | libc++ (Clang) | MSVC STL |
+|---|---|---|---|
+| 参数包展开策略 | 递归继承链 `_Tuple_impl<_Idx,_Head,_Tail...>` 公有继承 `_Tuple_impl<_Idx+1,_Tail...>` | 扁平多继承 `__tuple_leaf<_Idx,_Tp>` 多重继承（非递归链） | 递归继承链（与主模板剥离头部 + 递归余下思路相同） |
+| 头部元素存储 | 私有继承 `_Head_base<_Idx,_Head>` | 每个 `__tuple_leaf` 直接含元素 | 递归基类各含元素 |
+| 索引机制 | 编译期 `_Idx` 递增标签 | 编译期 `_Idx` 模板参数（每个 leaf 一个） | 编译期索引标签 |
+| 终止方式 | 单元素偏特化 `_Tuple_impl<_Idx,_Head>` | 递归到空 leaf 列表终止 | 递归终止特化 |
+
+> 三家都用"递归继承/递归成员链 + 编译期索引"展开参数包；libc++ 的 tuple 用 `__tuple_leaf` 多重继承（扁平化，非递归链），MSVC 与 libstdc++ 用递归继承链——展开策略不同但都是纯编译期完成。
+
+### D4.4 可编译验证
+
+```cpp
+#include <iostream>
+#include <tuple>
+#include <cstddef>
+
+int main() {
+    std::tuple<int, double, const char*> t{42, 3.14, "hi"};
+    std::cout << std::get<0>(t) << std::endl;
+    std::cout << std::get<1>(t) << std::endl;
+    std::cout << std::get<2>(t) << std::endl;
+    std::cout << std::tuple_size<decltype(t)>::value << std::endl;
+    return 0;
+}
+```
+
+预期输出：
+```
+42
+3.14
+hi
+3
+```
+
 ## 附录 J：可变参数模板决策流（D3 维度）
 
 ```mermaid

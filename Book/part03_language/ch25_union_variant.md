@@ -1997,6 +1997,102 @@ graph LR
 
 
 
+## 附录 D4：std::variant 三标准库源码解析（D4 维度 · libstdc++ 15.3.0）
+
+> `std::variant` 本质是"判别联合"：所有备选类型叠放在同一块共享内存里，再加一个整数判别式记录当前活跃的是第几个。libstdc++ 用递归 `union _Variadic_union` 做共享存储，`_Variant_storage` 持 union + index。下面看 libstdc++ 15.3.0 的真实实现。
+
+### D4.1 libstdc++ 真实源码摘录
+
+// 摘自 libstdc++ 15.3.0：variant:398（_Variadic_union 递归 union 共享存储）
+```
+  template<bool __trivially_destructible, typename _First, typename... _Rest>
+    union _Variadic_union<__trivially_destructible, _First, _Rest...>
+    {
+      constexpr _Variadic_union() : _M_rest() { }
+
+      template<typename... _Args>
+	constexpr
+	_Variadic_union(in_place_index_t<0>, _Args&&... __args)
+	: _M_first(in_place_index<0>, std::forward<_Args>(__args)...)
+	{ }
+
+      template<size_t _Np, typename... _Args>
+	constexpr
+	_Variadic_union(in_place_index_t<_Np>, _Args&&... __args)
+	: _M_rest(in_place_index<_Np-1>, std::forward<_Args>(__args)...)
+	{ }
+
+      _Uninitialized<_First> _M_first;
+      _Variadic_union<__trivially_destructible, _Rest...> _M_rest;
+    };
+```
+
+// 摘自 libstdc++ 15.3.0：variant:470（_Variant_storage 持 union + index 判别式）
+```
+  template<typename... _Types>
+    struct _Variant_storage<false, _Types...>
+    {
+      _Variadic_union<false, _Types...> _M_u;   // 所有备选类型叠放
+      using __index_type = __select_index<_Types...>;
+      __index_type _M_index;                    // 当前活跃第几个
+    };
+```
+
+### D4.2 设计动机
+
+| 源码构造 | 设计意图 | 若不这样做的代价 |
+|---|---|---|
+| `_Variadic_union` 递归 union | 把所有备选类型叠放在同一块内存（`_M_first` 第 0 个，`_M_rest` 去头递归），只占最大备选大小 | 若每个备选各占独立存储，variant 大小 = 全部备选之和，内存翻倍且无法表达"任一时刻仅一个有效" |
+| `_M_first` 存第 0 个 + `_M_rest` 递归 | 用递归把参数包逐个嵌进嵌套 union，编译期确定布局 | 没有递归 union，就无法在编译期把"任意长度的备选列表"叠成单一重叠存储 |
+| `_Variant_storage` 持 `_M_index` | 记录当前活跃类型下标，读写/析构时据 index 访问对应成员 | 没有判别式，访问时会读错成员（回到裸 union 的 UB） |
+| `__select_index` 选最小无符号整型 | 按备选个数压缩判别式（1-2 字节足以表示 index），省内存 | 若恒用 `size_t`，variant 凭空多几个字节，且对齐填充更大 |
+
+> 一句话：variant 用递归 union `_Variadic_union` 把所有备选类型叠放在同一块内存（`_M_first` 存第 0 个，`_M_rest` 是去头递归 union），只占最大备选大小；`_Variant_storage` 持一个整数判别式 `_M_index` 记录当前活跃类型，读写/析构据 index 访问对应成员；`__select_index` 按备选个数选 `unsigned char`/`short` 压缩判别式。
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ (GCC) | libc++ (Clang) | MSVC STL |
+|---|---|---|---|
+| 共享存储结构 | 递归 `union _Variadic_union` | 共享存储 + 索引（libc++ 内部 `__variant_storage`，已知公开实现行为） | 共享存储 + 索引（MSVC 内部 `_Variant`，已知公开实现行为） |
+| index 判别式 | `__select_index` 选最小无符号整型 | 视实现选 `unsigned`/`size_t`（已知公开实现行为） | 多为 `size_t`（已知公开实现行为） |
+| valueless_by_exception | 额外 cookie 槽保留 `variant_npos` 处理函数 | 类似保留空位（已知公开实现行为） | 类似（已知公开实现行为） |
+| visit 分派 | 多维函数指针表 `_Multi_array` + `__gen_vtable` | 同样表驱动（已知公开实现行为） | 表驱动 + index helper |
+| 递归 union vs aligned_storage | 用递归 union 叠加 | 用共享存储缓冲（递归 union vs aligned_storage 差异，实现细节，未逐版本核实） | 用共享存储缓冲（实现细节，未逐版本核实） |
+
+> 三家 variant 都是"共享存储（union 或对齐字节缓冲）+ index 判别"模型；libstdc++ 用递归 union，libc++/MSVC 也用共享存储 + 索引；差异在 valueless_by_exception 处理、递归 union vs aligned_storage、visit 分派表实现。
+
+### D4.4 可编译验证
+
+```cpp
+#include <iostream>
+#include <variant>
+#include <string>
+#include <cstddef>
+
+int main() {
+    std::variant<int, std::string, double> v = 42;
+    std::cout << v.index() << std::endl;
+    std::cout << std::get<int>(v) << std::endl;
+
+    v = std::string("hi");
+    std::cout << v.index() << std::endl;
+    std::cout << std::get<std::string>(v) << std::endl;
+
+    std::cout << sizeof(v) << std::endl;
+    return 0;
+}
+```
+
+预期输出：
+```
+0
+42
+1
+hi
+40
+```
+> 注：`sizeof(v)` 约 = 最大备选（`std::string` 32B）+ 判别式对齐，按本机布局通常打印 40；不同标准库/平台可能略有差异。
+
 ## 附录 U：联合与 variant 决策流（D3 维度）
 
 ```mermaid

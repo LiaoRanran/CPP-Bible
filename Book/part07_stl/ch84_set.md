@@ -1208,6 +1208,99 @@ find_loop:  mov    rcx,QWORD PTR [rax+0x10]   ; left  child @ offset 0x10
 
 **工程含义**：set::find 是 O(log n) 的**纯指针追逐**——100 元素 `find` 约 7 步比较、每步可能 cache miss。与 vector 二分查找的单次指针间接 + 连续内存预取相比，set 的 find 在小 n 下反而**更慢**（cache miss 惩罚约 50-100 cycle vs 2-3 cycle）。仅当插入/删除频繁且 n > 1000 时，set 的 O(log n) 才超 vector 的 O(n) 插入。
 
+## 附录 D4：std::set 三标准库源码解析（D4 维度 · libstdc++ 15.3.0）
+
+`std::set` 本身几乎不持有数据——它只是红黑树 `_Rb_tree` 的一层薄封装，通过"键即值"复用同一棵树的实现。下面看 libstdc++ 真实源码如何组织。
+
+### D4.1 libstdc++ 真实源码摘录
+
+// 摘自 libstdc++ 15.3.0：bits/stl_set.h:97（节选）
+```text
+  template<typename _Key, typename _Compare = std::less<_Key>,
+	   typename _Alloc = std::allocator<_Key> >
+    class set
+    {
+    public:
+      typedef _Key     key_type;
+      typedef _Key     value_type;   // 键即值
+    private:
+      typedef _Rb_tree<key_type, value_type, _Identity<value_type>,
+		       key_compare, _Key_alloc_type> _Rep_type;
+      _Rep_type _M_t;  // Red-black tree representing set.
+    };
+```
+
+// 摘自 libstdc++ 15.3.0：bits/stl_set.h:532 / 839（转发给 _M_t）
+```text
+      std::pair<iterator, bool>
+      insert(const value_type& __x)
+      {
+	std::pair<typename _Rep_type::iterator, bool> __p =
+	  _M_t._M_insert_unique(__x);
+	return std::pair<iterator, bool>(__p.first, __p.second);
+      }
+
+      iterator find(const key_type& __x) { return _M_t.find(__x); }
+```
+
+// 摘自 libstdc++ 15.3.0：bits/stl_tree.h:213（节点存储）
+```text
+  template<typename _Val>
+    struct _Rb_tree_node : public _Rb_tree_node_base
+    {
+      __gnu_cxx::__aligned_membuf<_Val> _M_storage;
+      _Val* _M_valptr() { return _M_storage._M_ptr(); }
+    };
+```
+
+这三段展示：`set` 唯一数据成员是 `_Rep_type _M_t`（一棵红黑树），所有接口都转发给它；节点用对齐存储缓冲 `__aligned_membuf` 就地构造值。
+
+### D4.2 设计动机
+
+| 源码构造 | 设计意图 | 若不这样做的代价 |
+|---|---|---|
+| `set` 仅含 `_Rep_type _M_t` 一个成员 | 容器本身极薄，所有逻辑下沉红黑树，复用成熟实现 | 若每容器重写树逻辑，则代码膨胀、bug 倍增 |
+| `_Identity<value_type>` 表示"键即值" | set 的 key 与 value 同一对象，复用 map 的红黑树 | 若另写一套以 key 提值的树，则重复维护两棵相似树 |
+| `insert` 转发 `_M_t._M_insert_unique` | 唯一键语义由树保证，set 层零额外判断 | 若 set 自己判断重复，则插入路径重复且易不一致 |
+| `find` 直接返回 `_M_t.find(__x)` | 查找逻辑统一在树，set 只是别名接口 | 否则查询与树实现脱节，难以保证 O(log n) |
+| `_Rb_tree_node` 含 `_Rb_tree_node_base` | 节点 = 颜色 + 三指针 + 对齐值存储，标准 RB 节点 | 若把值放基类外，则访问需二次跳转、布局不紧凑 |
+| `__aligned_membuf<_Val>` 对齐存储 | 值在节点内就地构造，满足对齐且支持非常量类型 | 若用裸 `char` 缓冲则对齐错误、构造 placement new 风险 |
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ (GCC) | libc++ (Clang) | MSVC STL |
+|---|---|---|---|
+| 底层结构 | `set` 组合 `_Rb_tree _M_t` | 已知公开实现行为：基于内部 `__tree`（红黑树） | 已知公开实现行为：基于内部 `_Tree`（红黑树） |
+| 节点布局 | `_Rb_tree_node_base`(color+3 ptr) + `_Rb_tree_node<_Val>` | 已知公开实现行为：节点含父/左/右指针 + 颜色位 | （实现细节，未逐版本核实） |
+| "键即值"复用 | `_Identity<value_type>` 接入同一棵树（map 用 `_Select1st`） | 已知公开实现行为：同样用键即值适配器复用唯一树实现 | （实现细节，未逐版本核实） |
+| 有序 O(log n) 不变式 | 红黑树平衡，中序有序 | 已知公开实现行为：同 RB 平衡，O(log n) 不变式一致 | 已知公开实现行为：同 RB 平衡，O(log n) 不变式一致 |
+| 迭代器实现 | 节点指针包装，双向迭代 | 已知公开实现行为：迭代器也是节点指针遍历 | （实现细节，未逐版本核实） |
+| 节点分配 | 经 `allocator` 每次 `new` 一个节点 | 已知公开实现行为：同样每节点分配 | （实现细节，未逐版本核实） |
+
+三家 `set` 均基于红黑树，节点都含父/左/右指针 + 颜色，有序 O(log n) 不变式一致；差异仅在节点具体布局、迭代器实现与零长/透明比较细节。
+
+### D4.4 可编译验证
+
+```cpp
+// D4-verify：验证 set 去重+升序与 size（独立可编译）
+#include <set>
+#include <iostream>
+
+int main() {
+    std::set<int> s{30, 10, 20, 10};
+    for (int x : s) std::cout << x << " ";   // 10 20 30（去重+升序）
+    std::cout << std::endl;
+    std::cout << "size==3: " << (s.size() == 3) << std::endl;  // 1
+    return 0;
+}
+```
+
+预期输出：
+```
+10 20 30
+size==3: 1
+```
+
 ## 附录 J：std::set / multiset 决策流（D3 维度）
 
 ```mermaid

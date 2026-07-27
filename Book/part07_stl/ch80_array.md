@@ -1089,6 +1089,105 @@ ret
 | `a.data()` | `mov rax,rcx` | 无 | 零 |
 | 按值传参 | 整段 N×sizeof(T) 拷贝 | — | O(N) 内存搬运 |
 
+## 附录 D4：std::array 三标准库源码解析（D4 维度 · libstdc++ 15.3.0）
+
+`std::array` 的本质是「单个内联定长 C 数组 + 零用户声明构造函数的聚合体」，下面从 libstdc++ 真实源码看它如何做到零开销且可 `constexpr`。
+
+### D4.1 libstdc++ 真实源码摘录
+
+// 摘自 libstdc++ 15.3.0：array:60
+```text
+  template<typename _Tp, size_t _Nm>
+    struct __array_traits
+    {
+      using _Type = _Tp[_Nm];
+    };
+
+  template<typename _Tp>
+    struct __array_traits<_Tp, 0>
+    {
+      // Empty type used instead of _Tp[0] for std::array<_Tp, 0>.
+      struct _Type
+      {
+        _Tp& operator[](size_t) const noexcept { __builtin_trap(); }
+        constexpr explicit operator _Tp*() const noexcept { return nullptr; }
+      };
+    };
+```
+
+// 摘自 libstdc++ 15.3.0：array:101（节选）
+```text
+  template<typename _Tp, std::size_t _Nm>
+    struct array
+    {
+      typedef _Tp value_type;
+      // Support for zero-sized arrays mandatory.
+      typename __array_traits<_Tp, _Nm>::_Type _M_elems;
+
+      // No explicit construct/copy/destroy for aggregate type.
+
+      constexpr size_type size() const noexcept { return _Nm; }
+
+      _GLIBCXX17_CONSTEXPR reference
+      operator[](size_type __n) noexcept
+      { return _M_elems[__n]; }
+
+      _GLIBCXX17_CONSTEXPR pointer
+      data() noexcept
+      { return static_cast<pointer>(_M_elems); }
+    };
+```
+
+上面两段展示了 `array` 的全部实现要点：`_M_elems` 是唯一数据成员，且没有任何用户声明的构造函数，因此它是一个聚合类型。
+
+### D4.2 设计动机
+
+| 源码构造 | 设计意图 | 若不这样做的代价 |
+|---|---|---|
+| `_M_elems` 是唯一数据成员（内联 C 数组） | 与裸 C 数组逐字节同布局，`sizeof(array<T,N>)==N*sizeof(T)` | 若改用指针+堆，则失去零开销与 ABI 兼容，且退化指针 |
+| 无用户声明构造函数 → 聚合类型 | 支持 `array<int,3>{1,2,3}` 聚合初始化、可 `constexpr` | 若提供构造函数，则不能用 `{}` 直接透传、且阻碍平凡可复制 |
+| `__array_traits<_Tp,0>::_Type` 空类型替代 `_Tp[0]` | C++ 不允许 `_Tp[0]`，用空类型让 `array<T,0>` 合法 | 若直接用 `_Tp[0]` 则编译失败，无法表达空定长缓冲 |
+| `operator[]` / `data()` 直接返回 `_M_elems` 偏移 | 下标即编译期偏移计算，零运行时边界检查 | 若每次访问走函数间接，则失去"零开销抽象"承诺 |
+| `size()` 返回编译期常量 `_Nm` | 长度编入类型，`size()` 为 `constexpr` | 若存运行期 size 字段，则多 4/8 字节且语义退化为 vector |
+| `constexpr explicit operator _Tp*()`（零长特化） | 让 `array<T,0>::data()` 安全返回空指针 | 否则 `data()` 对空数组可能产生悬垂/UB 指针 |
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ (GCC) | libc++ (Clang) | MSVC STL |
+|---|---|---|---|
+| 底层结构 | 单个内联定长数组成员的聚合体，唯一成员 `_M_elems` | 已知公开实现行为：同样为单内联数组成员的聚合体 | 已知公开实现行为：同样为单内联数组成员的聚合体 |
+| 零开销布局 | `sizeof==N*sizeof(T)`，无隐藏字段 | 已知公开实现行为：布局一致，`sizeof` 相同 | 已知公开实现行为：布局一致，`sizeof` 相同 |
+| 零长特化 `array<T,0>` | `__array_traits<_Tp,0>` 空类型替代 `_Tp[0]` | 已知公开实现行为：另有内部空类型替代非法零长数组 | （实现细节，未逐版本核实） |
+| `data()` 对越界/空数组 | 直接强转成员地址；零长时返回空指针 | 已知公开实现行为：语义等价，空数组返回可解引用但无元素的指针 | （实现细节，未逐版本核实） |
+| 聚合初始化 | 无用户构造 → 支持 `{}` | 已知公开实现行为：同样支持聚合 `{}` | 已知公开实现行为：同样支持聚合 `{}` |
+| `constexpr` 支持 | C++17 起 `operator[]`/`data` 可 `constexpr` | 已知公开实现行为：同等 `constexpr` 能力 | （实现细节，未逐版本核实） |
+
+三家实现核心一致：都是「单个内联定长数组成员的聚合体」，`sizeof` 零开销；差异只在零长特化的具体空类型与 `data()` 的 UB 边界处理。
+
+### D4.4 可编译验证
+
+```cpp
+// D4-verify：验证 array 的聚合/零开销/连续布局（独立可编译）
+#include <array>
+#include <iostream>
+
+int main() {
+    std::array<int, 3> a{10, 20, 30};
+    std::cout << "size=" << a.size() << std::endl;                          // 3
+    std::cout << "&a[1]-&a[0]=" << (&a[1] - &a[0]) << std::endl;           // 1（证连续）
+    std::cout << "sizeof==N*sizeof(int): "
+              << (sizeof(a) == sizeof(int) * 3) << std::endl;             // 1
+    return 0;
+}
+```
+
+预期输出：
+```
+size=3
+&a[1]-&a[0]=1
+sizeof==N*sizeof(int): 1
+```
+
 ## 附录 J：std::array 决策流（D3 维度）
 
 ```mermaid

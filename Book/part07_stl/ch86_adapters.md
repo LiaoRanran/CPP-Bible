@@ -1343,6 +1343,127 @@ int main(){
 }
 ```
 
+## 附录 D4：容器适配器 三标准库源码解析（D4 维度 · libstdc++ 15.3.0）
+
+> 本附录从"三标准库真实实现"角度精读容器适配器——`stack` / `queue` / `priority_queue`。适配器是标准库中最极致的"零开销抽象"：它们本身不产生任何运行时代码，只是把受限接口**转发**到底层序列容器 `c`（以及 `priority_queue` 的比较器 `comp`）。下面用 libstdc++ 15.3.0 的真实源码逐层拆解。
+
+### D4.1 libstdc++ 真实源码摘录
+
+// 摘自 libstdc++ 15.3.0：bits/stl_stack.h:106（节选）
+```
+  template<typename _Tp, typename _Sequence = deque<_Tp> >
+    class stack
+    {
+    protected:
+      _Sequence c;   // 唯一底层容器，标准规定名为 c
+
+    public:
+      reference top() { return c.back(); }
+      void push(const value_type& __x) { c.push_back(__x); }
+      void pop() { c.pop_back(); }
+    };
+```
+
+// 摘自 libstdc++ 15.3.0：bits/stl_queue.h:103（节选）
+```
+  template<typename _Tp, typename _Sequence = deque<_Tp> >
+    class queue
+    {
+    protected:
+      _Sequence c;
+
+    public:
+      void push(const value_type& __x) { c.push_back(__x); }
+      void pop() { c.pop_front(); }   // FIFO：从头出
+    };
+```
+
+// 摘自 libstdc++ 15.3.0：bits/stl_queue.h:550（节选）
+```
+  template<typename _Tp, typename _Sequence = vector<_Tp>,
+	   typename _Compare = less<typename _Sequence::value_type> >
+    class priority_queue
+    {
+    protected:
+      _Sequence  c;
+      _Compare   comp;   // 比 stack/queue 多一个比较器
+
+    public:
+      void push(const value_type& __x)
+      {
+	c.push_back(__x);
+	std::push_heap(c.begin(), c.end(), comp);
+      }
+      void pop()
+      {
+	std::pop_heap(c.begin(), c.end(), comp);
+	c.pop_back();
+      }
+    };
+```
+
+以上三段源码是适配器"薄转发"本质的最直接证据：`stack`/`queue` 的所有操作都只是对成员 `c` 的一层调用；`priority_queue` 则额外持有一个比较器 `comp`，在 `push`/`pop` 时配合 `std::push_heap`/`std::pop_heap` 维护二叉堆不变量。
+
+### D4.2 设计动机
+
+| 源码构造 | 设计意图 | 若不这样做的代价 |
+|---|---|---|
+| `class stack { protected: _Sequence c; }`：适配器只包装一个底层序列 `c` | 把"受限接口"与"完整容器"隔离，对外只暴露 `top/push/pop`，禁止任意遍历 | 若直接暴露容器，用户可 `c[5]=x` 破坏栈/队列语义，无法保证不变量 |
+| 默认 `_Sequence = deque<_Tp>`（stack/queue）、`= vector<_Tp>`（priority_queue） | deque 两端 O(1) 且头删不搬移；vector 提供随机访问+缓存友好，堆算法依赖 `operator[]` | 若 stack 用 list，每元素独立堆分配代价约 10×；若 priority_queue 用 list，缺随机访问迭代器，堆算法无法编译 |
+| `void push(...){ c.push_back(__x); }` 等操作全转发 | 零开销抽象：适配器编译期内联为底层容器的直接调用，无虚函数/无委托 | 若用运行时接口（虚函数、委托）转发，会引入间接调用与额外栈帧 |
+| `priority_queue` 额外持 `_Compare comp` + `push_heap/pop_heap` | 在插入/删除时即时维护堆序，取顶 O(1) 而非排序 O(n log n) | 若每次取顶都排序，单操作退化到 O(n log n) |
+| `c`/`comp` 为 `protected` 且命名由标准规定 | 允许派生类以受限方式访问底层（如清空、派生自定义行为） | 若 `private` 或改名，用户无法在标准框架内做受控扩展 |
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ (GCC) | libc++ (Clang) | MSVC STL |
+|---|---|---|---|
+| 适配器本质 | 薄转发：操作全转发到成员 `c` | 已知公开实现行为：同样薄转发到成员容器 `__c`（libc++ 内名） | 已知公开实现行为：同样薄转发到成员容器 `c` |
+| 默认底层 | `stack`/`queue` = `deque<T>`；`priority_queue` = `vector<T>` | 已知公开实现行为：默认完全一致（deque / vector） | 已知公开实现行为：默认完全一致（deque / vector） |
+| 堆算法 | `std::push_heap` / `std::pop_heap` 维护堆 | 已知公开实现行为：同样调用 `std::push_heap`/`std::pop_heap`（等价语义） | 已知公开实现行为：同样基于 `make_heap` 系列算法（等价语义） |
+| 比较器 | `_Compare comp`，默认 `less` → 大顶堆 | 已知公开实现行为：默认 `less` → 大顶堆 | 已知公开实现行为：默认 `less` → 大顶堆 |
+| 主要差异 | 调试断言宏 `__glibcxx_requires_nonempty` | 已知公开实现行为：内联/Dbg 断言细节不同 | 已知公开实现行为：内联/调试层（Iterator Debugging）细节不同 |
+
+> 三家实现语义完全由 ISO 标准约束，差异仅在**内联程度、调试断言与 `noexcept` 边界**；不杜撰任何行号。
+
+### D4.4 可编译验证
+
+```cpp
+// D4-demo：验证 stack 的 LIFO 与 priority_queue 的默认大顶堆
+#include <stack>
+#include <queue>
+#include <vector>
+#include <iostream>
+
+int main() {
+    std::stack<int> st;
+    st.push(1);
+    st.push(2);
+    std::cout << "stack top after push 1,2 = " << st.top() << std::endl;  // 2
+    st.pop();
+    std::cout << "stack top after pop = " << st.top() << std::endl;       // 1
+
+    std::priority_queue<int> pq;
+    pq.push(3);
+    pq.push(1);
+    pq.push(2);
+    std::cout << "priority_queue pop order: ";
+    while (!pq.empty()) {
+        std::cout << pq.top() << " ";   // 3 2 1（默认大顶堆）
+        pq.pop();
+    }
+    std::cout << std::endl;
+    return 0;
+}
+```
+
+预期输出：
+```
+stack top after push 1,2 = 2
+stack top after pop = 1
+priority_queue pop order: 3 2 1
+```
+
 ## 附录 J：stack / queue / priority_queue 底层容器决策流（D3 维度）
 
 ```mermaid

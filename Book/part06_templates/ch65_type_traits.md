@@ -852,6 +852,112 @@ int main() {
 
 **结论**：`void_t` 探测的是"表达式是否合法"；要探测 callable 成员就用 `declval<T>().member()` 表达式，而非 `&T::member` 指针形态。
 
+## 附录 D4：type_traits 三标准库源码解析（D4 维度 · libstdc++ 15.3.0）
+
+> `<type_traits>` 整张体系的根基，是 `integral_constant` 把"编译期常量"封装成一个类型；`true_type`/`false_type` 是其 `bool` 实例，作为所有布尔 trait 的公共基类；`conditional`/`enable_if`/`is_same` 则分别用偏特化完成"编译期三元、SFINAE 开关、类型相等判定"。下面看 libstdc++ 15.3.0 的真实实现。
+
+### D4.1 libstdc++ 真实源码摘录
+
+// 摘自 libstdc++ 15.3.0：type_traits:92（integral_constant——所有 trait 基石）
+```
+  template<typename _Tp, _Tp __v>
+    struct integral_constant
+    {
+      static constexpr _Tp value = __v;
+      using value_type = _Tp;
+      using type = integral_constant<_Tp, __v>;
+      constexpr operator value_type() const noexcept { return value; }
+      constexpr value_type operator()() const noexcept { return value; }
+    };
+
+  template<bool __v>
+    using __bool_constant = integral_constant<bool, __v>;
+  using true_type =  __bool_constant<true>;
+  using false_type = __bool_constant<false>;
+```
+
+// 摘自 libstdc++ 15.3.0：type_traits:2458（conditional 编译期三元）
+```
+  template<bool _Cond, typename _Iftrue, typename _Iffalse>
+    struct conditional
+    { using type = _Iftrue; };
+
+  template<typename _Iftrue, typename _Iffalse>
+    struct conditional<false, _Iftrue, _Iffalse>
+    { using type = _Iffalse; };
+```
+
+// 摘自 libstdc++ 15.3.0：type_traits:132（enable_if SFINAE 开关）
+```
+  template<bool, typename _Tp = void>
+    struct enable_if
+    { };
+
+  template<typename _Tp>
+    struct enable_if<true, _Tp>
+    { using type = _Tp; };
+```
+
+// 摘自 libstdc++ 15.3.0：type_traits:1538（is_same 类型相等判定）
+```
+  template<typename _Tp, typename _Up>
+    struct is_same : public false_type { };
+
+  template<typename _Tp>
+    struct is_same<_Tp, _Tp> : public true_type { };
+```
+
+### D4.2 设计动机
+
+| 源码构造 | 设计意图 | 若不这样做的代价 |
+|---|---|---|
+| `integral_constant` 封装 `value` + `type` + `operator value_type()` | 把编译期常量包装成类型，既能当值用（隐式转换/调用）又能当类型通道（`.type`） | 没有统一封装，每个 trait 各自定义常量/类型接口，元编程组合无法泛型化 |
+| `true_type`/`false_type` 作为公共基类 | 所有布尔 trait 继承它们，统一 `::value` 语义并支持标签分派 | 各 trait 返回值类型不一致，无法用 `true_type{}`/`false_type{}` 做重载选路 |
+| `conditional` 用 `_Cond=false` 偏特化翻面 | 编译期三元：条件为真取 `_Iftrue`，为假取 `_Iffalse` | 没有编译期三元，类型选择只能靠手写多层偏特化，冗长且易错 |
+| `enable_if<false>` 主模板无 `type` 成员 | 条件为假时 `::type` 不存在 → 触发 SFINAE 把该重载静默剔除 | 若 false 也有 `type`，SFINAE 失效，重载集产生二义性或错误匹配 |
+| `is_same` 主模板 `false` + 同型偏特化 `true` | 两类型严格相同才命中 `true`，否则回退 `false` | 没有"主模板 false + 同型特化 true"结构，就无法在编译期判定类型相等 |
+
+> 要点：`integral_constant` 是基石；`true_type`/`false_type` 是其 `bool` 实例，作为所有 bool trait 公共基类；`conditional` 用偏特化做编译期三元；`enable_if` 仅 `true` 特化暴露 `type` → `false` 时无 `type` 触发 SFINAE 剔除；`is_same` 用"主模板 false + 同型偏特化 true"判定类型相等。
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ (GCC) | libc++ (Clang) | MSVC STL |
+|---|---|---|---|
+| 核心 trait 语义 | 由标准强制，三库一致 | 由标准强制，一致 | 由标准强制，一致 |
+| `integral_constant` 实现 | 手写 `value`/`type`/转换运算符 | 类似手写（已知公开实现行为） | 类似手写（已知公开实现行为） |
+| `conditional`/`enable_if` 写法 | 纯库偏特化（如上） | 纯库偏特化（与上几乎相同，已知公开实现行为） | 纯库偏特化（与上几乎相同，已知公开实现行为） |
+| 热点 trait（is_same 等） | 现代版改走编译器内建 `__is_same` 加速 | 同样走内建 `__is_same` 等（已知公开实现行为） | 同样走内建（已知公开实现行为） |
+| `is_same` 库实现 | 主模板 false + 同型特化 true（纯库回退） | 同形（或不走库直连内建，实现细节，未逐版本核实） | 同形（实现细节，未逐版本核实） |
+
+> 三家 type_traits 语义由标准强制一致（`value`/`type` 成员、SFINAE 行为）；现代实现（含 libstdc++ 15）大量 trait 已改用编译器内建（`__is_same`/`__is_base_of` 等）加速编译，libc++/MSVC 同样走内建；纯库实现（如 `conditional`/`enable_if`）三家写法几乎相同。可点出"热点 trait 走 `__builtin`，冷门 trait 走库偏特化"。
+
+### D4.4 可编译验证
+
+```cpp
+#include <iostream>
+#include <type_traits>
+
+int main() {
+    std::cout << std::boolalpha;
+    std::cout << std::is_same_v<int, int> << std::endl;
+    std::cout << std::is_same_v<int, long> << std::endl;
+    std::cout << (sizeof(std::conditional_t<true, int, double>) == sizeof(int)) << std::endl;
+
+    using Enabled = std::enable_if_t<true, int>;
+    Enabled x = 7;
+    std::cout << x << std::endl;
+    return 0;
+}
+```
+
+预期输出：
+```
+true
+false
+true
+7
+```
+
 ## 附录 J：类型特性决策流（D3 维度）
 
 > 当你需要在编译期查询或修改类型属性时，用本决策流在「布尔/变换 trait、void_t 探测、SFINAE、if constexpr、Concepts」之间选型。

@@ -1085,6 +1085,113 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 D4：std::ranges 视图 三标准库源码解析（D4 维度 · libstdc++ 15.3.0）
+
+Ranges 视图的核心工程价值是「零拷贝 + 惰性求值」：视图对象本身不拥有、不复制元素，只持有"底层视图 + 计算规则"；变换与过滤推迟到迭代器解引用/递增的那一刻才逐元素执行。本附录从 libstdc++ 15.3.0 真实源码印证这一模型。
+
+### D4.1 libstdc++ 真实源码摘录
+
+// 摘自 libstdc++ 15.3.0：bits/ranges_util.h:67（view_interface CRTP 基类，节选）
+```text
+  template<typename _Derived>
+    requires is_class_v<_Derived> && same_as<_Derived, remove_cv_t<_Derived>>
+    class view_interface
+    {
+    private:
+      constexpr _Derived& _M_derived() noexcept
+      { return static_cast<_Derived&>(*this); }   // CRTP 向下转型
+    public:
+      constexpr decltype(auto) front() requires forward_range<_Derived>
+      { return *ranges::begin(_M_derived()); }
+
+      template<random_access_range _Range = _Derived>
+	constexpr decltype(auto)
+	operator[](range_difference_t<_Range> __n)
+	{ return ranges::begin(_M_derived())[__n]; }
+    };
+```
+
+// 摘自 libstdc++ 15.3.0：ranges:1888 / 2183（transform_view 只持有底层视图 + 可调用对象）
+```text
+  template<input_range _Vp, move_constructible _Fp>
+    requires view<_Vp> && is_object_v<_Fp>
+      && regular_invocable<_Fp&, range_reference_t<_Vp>>
+    class transform_view : public view_interface<transform_view<_Vp, _Fp>>
+    {
+      // ...
+      _Vp _M_base = _Vp();                             // 底层视图（不拥有元素）
+      [[no_unique_address]] __detail::__box<_Fp> _M_fun;  // 变换函数
+    };
+```
+
+// 摘自 libstdc++ 15.3.0：ranges:1995（transform 迭代器解引用时才计算——惰性）
+```text
+	  constexpr decltype(auto)
+	  operator*() const
+	  { return std::__invoke(*_M_parent->_M_fun, *_M_current); }
+```
+
+// 摘自 libstdc++ 15.3.0：ranges:1724（filter 迭代器递增时跳过不满足谓词者）
+```text
+	constexpr _Iterator&
+	operator++()
+	{
+	  _M_current = ranges::find_if(std::move(++_M_current),
+				       ranges::end(_M_parent->_M_base),
+				       std::ref(*_M_parent->_M_pred));
+	  return *this;
+	}
+```
+
+### D4.2 设计动机
+
+| 源码构造 | 设计意图 | 若不这样做的代价 |
+|---|---|---|
+| `view_interface` CRTP 基类 | 一次性为所有视图提供 empty/front/back/operator[]/size/data，转发到 ranges::begin/end | 每个视图重复实现便利接口，代码膨胀且易不一致 |
+| `_Vp _M_base`（transform/filter 只持底层视图） | 视图不拥有元素，构造/拷贝视图是 O(1) 零元素拷贝 | 若缓存元素则每次组合管道都产生副本，退化为 eager |
+| `__box<_Fp> _M_fun`（optional-like 包装函数） | 视图要求 semiregular，但 lambda 无拷贝赋值，用 __box 使视图可赋值 | 无法把 lambda 存进视图，视图无法满足 view 概念 |
+| transform `operator*` 解引用才 `__invoke` | 惰性：读一个算一个，不读的尾段永不计算 | 预先计算全部元素，浪费不消费部分的算力与内存 |
+| filter `operator++` 用 `find_if` 跳过 | 惰性过滤：递增时实时寻找下一个满足谓词者 | 需预扫描并物化过滤结果，失去流式与短路优势 |
+| `[[no_unique_address]]` 修饰函数成员 | 无状态 lambda 不占额外空间，视图尽量小 | 空函数对象仍占 1 字节并引入填充，视图变大 |
+
+### D4.3 三标准库实现对比
+
+| 维度 | libstdc++ (GCC) | libc++ (Clang) | MSVC STL |
+|---|---|---|---|
+| 便利接口复用 | `view_interface` CRTP 基类 | `view_interface` CRTP（已知公开实现行为） | `_View_interface` CRTP（已知公开实现行为） |
+| 视图存储 | 底层视图 + `__box` 函数，无元素缓冲 | 同为"底层视图 + 函数包装"（已知公开实现行为） | 同为"底层视图 + 函数包装"（已知公开实现行为） |
+| 求值时机 | 迭代器解引用/递增时惰性计算 | 惰性（已知公开实现行为） | 惰性（已知公开实现行为） |
+| filter begin 缓存 | `_CachedPosition` 缓存首元素位置 | 有等价缓存（实现细节，未逐版本核实） | 有等价缓存（实现细节，未逐版本核实） |
+| 概念约束诊断 | requires 子句 + concepts | concepts，诊断信息各异（实现细节，未逐版本核实） | concepts（实现细节，未逐版本核实） |
+
+### D4.4 可编译验证
+
+```cpp
+#include <ranges>
+#include <vector>
+#include <iostream>
+
+int main()
+{
+    std::vector<int> v{1, 2, 3, 4, 5, 6};
+
+    // 管道构造本身 O(1)：只搭出"底层视图 + 计算规则"，不拷贝、不计算元素
+    auto r = v | std::views::filter([](int x){ return x % 2 == 0; })
+               | std::views::transform([](int x){ return x * x; });
+
+    // 惰性求值：真正的过滤与平方在这里逐元素发生
+    for (int x : r)
+        std::cout << x << " ";
+    std::cout << std::endl;
+
+    return 0;
+}
+```
+
+预期输出：`4 16 36 `（偶数 2/4/6 被平方为 4/16/36；奇数被 filter 惰性跳过，从不进入 transform）
+
+---
+
 ## 附录 J：ranges 管道决策流（D3 维度）
 
 ```mermaid
