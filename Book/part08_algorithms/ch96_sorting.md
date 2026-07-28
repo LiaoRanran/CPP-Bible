@@ -1123,3 +1123,195 @@ flowchart TD
 | ch98（堆） | ch96 | 堆不变量支撑 partial_sort 的 heap-sort 原语 |
 | ch95（算法总论） | ch96 | 算法总论对六大算法族与复杂度的统一分类 |
 | ch154（缓存优化） | ch96 | 缓存友好与小数组阈值的工程取舍来自缓存优化章 |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — std::sort 的 introsort 三段式[E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+> （`.../include/c++/15.3.0/bits/stl_algo.h`），标注精确到 `文件 L行号`。libc++ / MSVC STL 仅给出"已知公开实现行为"对比，非逐字摘录。
+> 摘录块为 `text` 围栏，不参与编译；仅下方"第一方可编译验证"为独立 `cpp` 块。
+
+### D4.1 小数组阈值与收尾插入排序（bits/stl_algo.h L1806-1823）
+
+introsort 对大区间用快排递归，但当子区间长度降到 `_S_threshold`（16）以内，递归/分区的固定开销就不划算了，改由插入排序收尾。
+
+```text
+// bits/stl_algo.h L1806-1823  (GCC 15.3.0)
+  enum { _S_threshold = 16 };
+
+  /// This is a helper function for the sort routine.
+  template<typename _RandomAccessIterator, typename _Compare>
+    _GLIBCXX20_CONSTEXPR
+    void
+    __final_insertion_sort(_RandomAccessIterator __first,
+			   _RandomAccessIterator __last, _Compare __comp)
+    {
+      if (__last - __first > int(_S_threshold))
+	{
+	  std::__insertion_sort(__first, __first + int(_S_threshold), __comp);
+	  std::__unguarded_insertion_sort(__first + int(_S_threshold), __last,
+					  __comp);
+	}
+      else
+	std::__insertion_sort(__first, __last, __comp);
+    }
+```
+
+- `_S_threshold = 16`：超过 16 时把前 16 个做普通插入排序、其余做无边界检查的 `unguarded` 版本（省去每次比较越界的开销）；不超过 16 直接整体插入排序。
+
+### D4.2 分区与三点取中（bits/stl_algo.h L1829-1858）
+
+```text
+// bits/stl_algo.h L1829-1858  (GCC 15.3.0)
+    __unguarded_partition(_RandomAccessIterator __first,
+			  _RandomAccessIterator __last,
+			  _RandomAccessIterator __pivot, _Compare __comp)
+    {
+      while (true)
+	{
+	  while (__comp(__first, __pivot))
+	    ++__first;
+	  --__last;
+	  while (__comp(__pivot, __last))
+	    --__last;
+	  if (!(__first < __last))
+	    return __first;
+	  std::iter_swap(__first, __last);
+	  ++__first;
+	}
+    }
+
+  /// This is a helper function...
+  template<typename _RandomAccessIterator, typename _Compare>
+    _GLIBCXX20_CONSTEXPR
+    inline _RandomAccessIterator
+    __unguarded_partition_pivot(_RandomAccessIterator __first,
+				_RandomAccessIterator __last, _Compare __comp)
+    {
+      _RandomAccessIterator __mid = __first + (__last - __first) / 2;
+      std::__move_median_to_first(__first, __first + 1, __mid, __last - 1,
+				  __comp);
+      return std::__unguarded_partition(__first + 1, __last, __first, __comp);
+    }
+```
+
+- `__unguarded_partition_pivot` 先用 `__move_median_to_first` 取**首、中、尾三点取中**放到 `__first` 作 pivot（避免已排序/逆序时退化成 O(n²)），再对 `[first+1, last)` 做无边界检查分区。
+- 分区内部 `while (__comp(__first, __pivot)) ++__first;` 与 `while (__comp(__pivot, __last)) --__last;` 是经典 Hoare 分区，两端夹逼、`iter_swap` 交换。
+
+### D4.3 堆排兜底（bits/stl_algo.h L1863-1870）
+
+当递归深度耗尽（`__depth_limit == 0`），不再快排，改为局部堆排，保证整体最坏复杂度 O(n log n)：
+
+```text
+// bits/stl_algo.h L1863-1870  (GCC 15.3.0)
+    __partial_sort(_RandomAccessIterator __first,
+		   _RandomAccessIterator __middle,
+		   _RandomAccessIterator __last,
+		   _Compare __comp)
+    {
+      std::__heap_select(__first, __middle, __last, __comp);
+      std::__sort_heap(__first, __middle, __comp);
+    }
+```
+
+`__heap_select` 把 `[first, last)` 中最小的 `[first, middle)` 建成堆并选出，`__sort_heap` 再把这部分收尾成有序——这就是 introsort 防退化的"堆排兜底"。
+
+### D4.4 __introsort_loop：快排 + 深度限制（bits/stl_algo.h L1876-1893）
+
+```text
+// bits/stl_algo.h L1876-1893  (GCC 15.3.0)
+    __introsort_loop(_RandomAccessIterator __first,
+		     _RandomAccessIterator __last,
+		     _Size __depth_limit, _Compare __comp)
+    {
+      while (__last - __first > int(_S_threshold))
+	{
+	  if (__depth_limit == 0)
+	    {
+	      std::__partial_sort(__first, __last, __last, __comp);
+	      return;
+	    }
+	  --__depth_limit;
+	  _RandomAccessIterator __cut =
+	    std::__unguarded_partition_pivot(__first, __last, __comp);
+	  std::__introsort_loop(__cut, __last, __depth_limit, __comp);
+	  __last = __cut;
+	}
+    }
+```
+
+- `__depth_limit` 初始值为 `2 * log2(n)`（见 D4.5 中 `__sort` 调用 `__lg`）。每下探一层 `--__depth_limit`；归零即改堆排。这是 introsort 的灵魂：**用深度预算把快排的 O(n²) 最坏情况摁回 O(n log n)**。
+- 尾递归式写法：`__introsort_loop(__cut, __last, ...)` 处理右半，`__last = __cut` 后循环继续处理左半，避免递归爆炸。
+
+### D4.5 __sort 内核与公共壳（bits/stl_algo.h L1900-1910 / L4828-4842）
+
+```text
+// bits/stl_algo.h L1900-1910  (GCC 15.3.0)
+    __sort(_RandomAccessIterator __first, _RandomAccessIterator __last,
+	   _Compare __comp)
+    {
+      if (__first != __last)
+	{
+	  std::__introsort_loop(__first, __last,
+				std::__lg(__last - __first) * 2,
+				__comp);
+	  std::__final_insertion_sort(__first, __last, __comp);
+	}
+    }
+```
+
+```text
+// bits/stl_algo.h L4828-4842  (GCC 15.3.0)
+  template<typename _RandomAccessIterator>
+    _GLIBCXX20_CONSTEXPR
+    inline void
+    sort(_RandomAccessIterator __first, _RandomAccessIterator __last)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_Mutable_RandomAccessIteratorConcept<
+	    _RandomAccessIterator>)
+      __glibcxx_function_requires(_LessThanComparableConcept<
+	    typename iterator_traits<_RandomAccessIterator>::value_type>)
+      __glibcxx_requires_valid_range(__first, __last);
+      __glibcxx_requires_irreflexive(__first, __last);
+
+      std::__sort(__first, __last, __gnu_cxx::__ops::__iter_less_iter());
+    }
+```
+
+- 公共 `sort` 只做概念检查，把比较器包成 `__iter_less_iter()` 传入 `__sort` 内核；comp 版（`sort(first, last, comp)`）则传 `__iter_comp_iter(__comp)`——与 ch95 的谓词包装器机制同源。
+- `__lg(n) * 2` 给出深度上限：`__lg` 是 ⌊log₂⌋，乘以 2 即经典 introsort 的 `2·log₂ n` 预算。
+
+### D4.6 跨实现对比（introsort）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| 总体策略 | introsort：快排 + 堆排兜底 + 插入排序收尾 | introsort；自 LLVM 14 起改用 **BlockQuickSort** 变体（已知公开行为） | introsort（已知公开行为） |
+| 小数组阈值 | `_S_threshold = 16` | 类似小阈值（实现细节未公开核对） | 类似小阈值（实现细节未公开核对） |
+| 防退化 | `__depth_limit = 2·log2(n)` 触发 `__partial_sort` 堆排 | 同样用深度预算触发堆排（实现细节未公开核对） | 同样深度预算触发堆排 |
+| pivot | `__move_median_to_first` 三点取中 | 同样三点取中（实现细节未公开核对） | 同样三点取中 |
+
+> libc++ / MSVC 行为为**已知公开实现行为**（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录；宏名与版本细节随发行版变动。
+
+### D4.7 第一方可编译验证（introsort + 堆排兜底）
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+int main() {
+    std::vector<int> v{5,3,8,1,9,2,7,4,6,0};
+    std::sort(v.begin(), v.end());
+    for (int x : v) std::cout << x << ' ';
+    std::cout << std::endl;                 // 0 1 2 3 4 5 6 7 8 9
+
+    // 堆排兜底对应物：partial_sort 内部 __partial_sort -> __heap_select + __sort_heap
+    std::vector<int> w{5,3,8,1,9,2,7,4,6,0};
+    std::partial_sort(w.begin(), w.begin() + 3, w.end());
+    for (int x : w) std::cout << x << ' ';
+    std::cout << std::endl;                 // 前 3 个最小且有序: 0 1 2 ...
+    return 0;
+}
+```
+
+预期输出第一行为 `0 1 2 3 4 5 6 7 8 9`（introsort 收尾有序），第二行为 `0 1 2 ...`（`partial_sort` 把最小 3 个排到最前并有序）——印证快排+堆排兜底+插入排序的三段式与 D4.1–D4.5 源码一致。

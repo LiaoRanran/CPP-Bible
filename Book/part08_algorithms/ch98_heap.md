@@ -1047,3 +1047,181 @@ flowchart TD
 | ch96（排序） | ch98 | partial_sort 内部 heap sort 复用堆不变量 |
 | ch152（基准） | ch98 | 优先队列与堆算法的性能基准方法 |
 
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 堆算法（三标准库对比）[E: Low-level / H: Design]
+
+> 本附录源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+> （`.../include/c++/15.3.0/`），标注精确到 `文件 L行号`。
+> 堆算法的复杂度契约（push/pop O(log n)、make_heap O(n)）由标准规定；
+> 下方摘录只解释 libstdc++ 如何**实现**这些契约。libc++ / MSVC 仅给出
+> "已知公开实现行为"对比，非逐字摘录。
+
+### D4.1 `__push_heap`：经典上滤（sift up）
+
+```text
+// bits/stl_heap.h L131-147  (GCC 15.3.0)
+  template<typename _RandomAccessIterator, typename _Distance, typename _Tp,
+	   typename _Compare>
+    _GLIBCXX20_CONSTEXPR
+    void
+    __push_heap(_RandomAccessIterator __first,
+		_Distance __holeIndex, _Distance __topIndex, _Tp __value,
+		_Compare& __comp)
+    {
+      _Distance __parent = (__holeIndex - 1) / 2;
+      while (__holeIndex > __topIndex && __comp(__first + __parent, __value))
+	{
+	  *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __parent));
+	  __holeIndex = __parent;
+	  __parent = (__holeIndex - 1) / 2;
+	}
+      *(__first + __holeIndex) = _GLIBCXX_MOVE(__value);
+    }
+```
+
+- 上滤只在"新元素比父节点更优"时把父节点**下移**一格，自己向上爬；循环到根（`__topIndex`）或不再需要交换为止。
+- 全程只比较 `__comp(__first + __parent, __value)`，不比较兄弟——因为上滤路径上的父链已经满足堆序，只需找到新值的归属洞位。
+- 末行把暂存的 `__value` 写入最终洞位，`_GLIBCXX_MOVE` 在 C++11 起对可移动元素省一次拷贝。
+- `push_heap` 外层（L159-181 / L195-218）先把 `* (__last-1)` 取出为 `__value` 再调 `__push_heap`，所以上滤搬动的是"被挤下来的父节点"，新值只落位一次。
+
+### D4.2 `__adjust_heap`：为何"先下滤到底、再上滤回插"
+
+```text
+// bits/stl_heap.h L220-249  (GCC 15.3.0)
+  template<typename _RandomAccessIterator, typename _Distance,
+	   typename _Tp, typename _Compare>
+    _GLIBCXX20_CONSTEXPR
+    void
+    __adjust_heap(_RandomAccessIterator __first, _Distance __holeIndex,
+		  _Distance __len, _Tp __value, _Compare __comp)
+    {
+      const _Distance __topIndex = __holeIndex;
+      _Distance __secondChild = __holeIndex;
+      while (__secondChild < (__len - 1) / 2)
+	{
+	  __secondChild = 2 * (__secondChild + 1);
+	  if (__comp(__first + __secondChild,
+		     __first + (__secondChild - 1)))
+	    __secondChild--;
+	  *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first + __secondChild));
+	  __holeIndex = __secondChild;
+	}
+      if ((__len & 1) == 0 && __secondChild == (__len - 2) / 2)
+	{
+	  __secondChild = 2 * (__secondChild + 1);
+	  *(__first + __holeIndex) = _GLIBCXX_MOVE(*(__first
+						     + (__secondChild - 1)));
+	  __holeIndex = __secondChild - 1;
+	}
+      __decltype(__gnu_cxx::__ops::__iter_comp_val(_GLIBCXX_MOVE(__comp)))
+	__cmp(_GLIBCXX_MOVE(__comp));
+      std::__push_heap(__first, __holeIndex, __topIndex,
+		       _GLIBCXX_MOVE(__value), __cmp);
+    }
+```
+
+- 第一段（`while` 循环）是**下滤**：把更优的那个子节点搬上来、洞位下沉，直到 `__secondChild` 越过最后一个内部节点 `(__len - 1) / 2`。这就是经典"筛下去"过程。
+- 它不是"逐层比较父/左/右三者取最值"的就地交换写法，而是**只搬子节点、留下洞**，因为真正的根值（`__value`）还没落位——避免途中反复搬动它。
+- 第二段（`if (__len & 1) == 0 ...`）专门处理**偶数长度**的末节点：当洞位到了倒数第二层的最后一个父节点且其只有"左孩子"、右孩子实为越界时，补一次把左孩子搬上来，把洞修正到正确的叶子。
+- 末三行把"下滤到底找到的洞位"交给 `__push_heap`，让暂存的 `__value` **上滤回插**到正确位置。两段式 = 下滤找洞 + 上滤落值，全程 `__value` 只移动一次到位，比"每步交换父子"少约一半的赋值。
+
+### D4.3 `__pop_heap` 与 `__make_heap`：O(n) 建堆的关键
+
+```text
+// bits/stl_heap.h L251-267  (GCC 15.3.0)
+  template<typename _RandomAccessIterator, typename _Compare>
+    _GLIBCXX20_CONSTEXPR
+    inline void
+    __pop_heap(_RandomAccessIterator __first, _RandomAccessIterator __last,
+	       _RandomAccessIterator __result, _Compare& __comp)
+    {
+      typedef typename iterator_traits<_RandomAccessIterator>::value_type
+	_ValueType;
+      _ValueType __value = _GLIBCXX_MOVE(*__result);
+      *__result = _GLIBCXX_MOVE(*__first);
+      std::__adjust_heap(__first, _DistanceType(0),
+			 _DistanceType(__last - __first),
+			 _GLIBCXX_MOVE(__value), __comp);
+    }
+```
+
+- `pop_heap` 把堆顶 `*__first` 换到末尾 `__result`，原末尾值暂存为 `__value`，再对 `[__first, __last)` 做 `__adjust_heap` 恢复堆序——堆顶被"挤"出到范围末端，留给调用方 `pop_back`。
+
+```text
+// bits/stl_heap.h L337-362  (GCC 15.3.0)
+  template<typename _RandomAccessIterator, typename _Compare>
+    _GLIBCXX20_CONSTEXPR
+    void
+    __make_heap(_RandomAccessIterator __first, _RandomAccessIterator __last,
+		_Compare& __comp)
+    {
+      typedef typename iterator_traits<_RandomAccessIterator>::value_type
+	_ValueType;
+      typedef typename iterator_traits<_RandomAccessIterator>::difference_type
+	_DistanceType;
+
+      if (__last - __first < 2)
+	return;
+
+      const _DistanceType __len = __last - __first;
+      _DistanceType __parent = (__len - 2) / 2;
+      while (true)
+	{
+	  _ValueType __value = _GLIBCXX_MOVE(*(__first + __parent));
+	  std::__adjust_heap(__first, __parent, __len, _GLIBCXX_MOVE(__value),
+			     __comp);
+	  if (__parent == 0)
+	    return;
+	  __parent--;
+	}
+    }
+```
+
+- 建堆从**最后一个内部节点** `(__len - 2) / 2` 起，向根方向递减，对每个子树根做一次 `__adjust_heap`。因为下标大于该节点的位置都是叶子，已是平凡堆，无需处理。
+- 数学上，这种"自底向上逐层下滤"的总比较次数是 O(n) 而非 O(n log n)：越靠近根的节点越少、子树越大，二者恰好抵消，求和收敛到 ~2n 次比较。这是 `make_heap` 复杂度契约为 O(n) 的实证来源。
+
+### D4.4 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| make_heap 复杂度 | O(n)，自 `(__len-2)/2` 逆序下滤 | O(n)（标准契约，公开实现同采自底向上下滤） | O(n)（实现细节未公开核对） |
+| pop_heap 内核 | `__adjust_heap` 两段式下滤+回插 | 同类两段式（公开源码可核） | 实现细节未公开核对 |
+| push_heap 内核 | `__push_heap` 上滤 | 同类上滤（公开源码可核） | 实现细节未公开核对 |
+| 比较器形式 | `__gnu_cxx::__ops` 包装（迭代器/值比较分离） | `std::comp` 包装 | 实现细节未公开核对 |
+
+> libc++/MSVC 行为为**公开实现常识**（LLVM/libc++ 与 MSVC STL 仓库可核实），非逐字摘录；标注"实现细节未公开核对"者为未逐行核对项。
+
+### D4.5 第一方可编译验证（堆四件套）
+
+```cpp
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+int main() {
+    std::vector<int> v{5, 3, 8, 1, 9, 2};
+    std::make_heap(v.begin(), v.end());
+    std::cout << "after make_heap: ";
+    for (int x : v) std::cout << x << ' ';
+    std::cout << std::endl;
+
+    std::pop_heap(v.begin(), v.end());
+    std::cout << "popped top: " << v.back() << std::endl;
+    v.pop_back();
+    std::cout << "after pop_heap: ";
+    for (int x : v) std::cout << x << ' ';
+    std::cout << std::endl;
+
+    v.push_back(7);
+    std::push_heap(v.begin(), v.end());
+    std::cout << "after push_heap(7): ";
+    for (int x : v) std::cout << x << ' ';
+    std::cout << std::endl;
+
+    std::sort_heap(v.begin(), v.end());
+    std::cout << "after sort_heap: ";
+    for (int x : v) std::cout << x << ' ';
+    std::cout << std::endl;
+    return 0;
+}
+```

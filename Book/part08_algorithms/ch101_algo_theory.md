@@ -1114,3 +1114,168 @@ flowchart TD
 
 </details>
 
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 序列相等/字典序的 memcmp 快路径（三标准库对比）[E: Low-level / H: Design]
+
+> 本附录源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+> （`.../include/c++/15.3.0/`），标注精确到 `文件 L行号`。
+> 考据焦点：`std::equal` / `std::lexicographical_compare` 如何在保持 O(n)
+> 复杂度契约的同时，对平凡可比较类型**降级为 `memcmp`** 快路径。libc++ / MSVC
+> 仅给出"已知公开实现行为"对比，非逐字摘录。
+
+### D4.1 `__memcmp`：constexpr 的 memcmp 包装
+
+```text
+// bits/stl_algobase.h L91-110  (GCC 15.3.0)
+  template<typename _Tp, typename _Up>
+    _GLIBCXX14_CONSTEXPR
+    inline int
+    __memcmp(const _Tp* __first1, const _Up* __first2, size_t __num)
+    {
+#if __cplusplus >= 201103L
+      static_assert(sizeof(_Tp) == sizeof(_Up), "can be compared with memcmp");
+#endif
+#ifdef __cpp_lib_is_constant_evaluated
+      if (std::is_constant_evaluated())
+	{
+	  for(; __num > 0; ++__first1, ++__first2, --__num)
+	    if (*__first1 != *__first2)
+	      return *__first1 < *__first2 ? -1 : 1;
+	  return 0;
+	}
+      else
+#endif
+	return __builtin_memcmp(__first1, __first2, sizeof(_Tp) * __num);
+    }
+```
+
+- 这是整条快路径的底座：`__num` 是**元素个数**（非字节数），字节量由 `sizeof(_Tp) * __num` 算出。
+- C++20 `constexpr` 语境下（`is_constant_evaluated()`）不能用 `memcmp`，于是退化为逐元素循环；运行期则走 `__builtin_memcmp` 让编译器生成最优块比较。
+- 这就解释了"复杂度契约与 memcmp 如何共存"：对外仍是 O(n) 顺序比较的语义，对内对平凡类型换成一条块比较指令。
+
+### D4.2 `std::equal` 的 memcmp 特化
+
+```text
+// bits/stl_algobase.h L1183-1209  (GCC 15.3.0, 节选)
+  template<bool _BoolType>
+    struct __equal
+    {
+      template<typename _II1, typename _II2>
+	_GLIBCXX20_CONSTEXPR
+	static bool
+	equal(_II1 __first1, _II1 __last1, _II2 __first2)
+	{
+	  for (; __first1 != __last1; ++__first1, (void) ++__first2)
+	    if (!(*__first1 == *__first2))
+	      return false;
+	  return true;
+	}
+    };
+
+  template<>
+    struct __equal<true>
+    {
+      template<typename _Tp>
+	_GLIBCXX20_CONSTEXPR
+	static bool
+	equal(const _Tp* __first1, const _Tp* __last1, const _Tp* __first2)
+	{
+	  if (const size_t __len = (__last1 - __first1))
+	    return !std::__memcmp(__first1, __first2, __len);
+	  return true;
+	}
+    };
+```
+
+- 泛型 `__equal<false>` 是朴素逐元素 `==` 循环（O(n)，标准契约）。
+- 特化 `__equal<true>` 只在编译期判定"两序列是平凡可 memcmp 的指针区间"时才启用，直接调 `__memcmp` 一次比较整段——零逐元素循环。
+- 何时为 `true`？看 `__equal_aux1`（L1231-1247）：
+
+```text
+// bits/stl_algobase.h L1231-1247  (GCC 15.3.0, 节选)
+  template<typename _II1, typename _II2>
+    _GLIBCXX20_CONSTEXPR
+    inline bool
+    __equal_aux1(_II1 __first1, _II1 __last1, _II2 __first2)
+    {
+      typedef typename iterator_traits<_II1>::value_type _ValueType1;
+      const bool __simple = ((__is_integer<_ValueType1>::__value
+#if _GLIBCXX_USE_BUILTIN_TRAIT(__is_pointer)
+				|| __is_pointer(_ValueType1)
+#endif
+#if __glibcxx_byte && __glibcxx_type_trait_variable_templates
+				|| is_same_v<_ValueType1, byte>
+#endif
+			     ) && __memcmpable<_II1, _II2>::__value);
+      return std::__equal<__simple>::equal(__first1, __last1, __first2);
+    }
+```
+
+- `__simple` = "value_type 是整数 / 指针 / `std::byte`，且两个迭代器满足 `__memcmpable`"。满足则走 memcmp 特化，否则退化朴素循环。这就是"算法契约不变、实现按类型择优"的实证。
+
+### D4.3 `std::lexicographical_compare` 的 memcmp 3-way
+
+```text
+// bits/stl_algobase.h L1376-1399  (GCC 15.3.0, 节选)
+  template<>
+    struct __lexicographical_compare<true>
+    {
+      …
+      template<typename _Tp, typename _Up>
+	_GLIBCXX20_CONSTEXPR
+	static ptrdiff_t
+	__3way(const _Tp* __first1, const _Tp* __last1,
+	       const _Up* __first2, const _Up* __last2)
+	{
+	  const size_t __len1 = __last1 - __first1;
+	  const size_t __len2 = __last2 - __first2;
+	  if (const size_t __len = std::min(__len1, __len2))
+	    if (int __result = std::__memcmp(__first1, __first2, __len))
+	      return __result;
+	  return ptrdiff_t(__len1 - __len2);
+	}
+    };
+```
+
+- 字典序需要"首个不同位置"的比较结果，因此用 memcmp 的 **3-way** 返回：先比较公共前缀（`min(len1,len2)`），非零即返回差异；前缀相等则按长度差定胜负（短者更小）。仍是 O(n)，但平凡类型下是一条块比较。
+- 启用条件在 `__lexicographical_compare_aux1`（L1401-1427）：`__is_memcmp_ordered_with<_ValueType1,_ValueType2>` 且两端都是指针、且非 `volatile`。`volatile` 被排除是因为 `memcmp` 不能安全比较 `volatile` 数据（C++20 迭代器 `value_type` 去除了 volatile，但引用可能仍 volatile）。
+
+### D4.4 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| equal 快路径 | `__simple` 检测 → `__memcmp` | 同类 memcmp/char_traits 优化（公开可核） | 同类 memcmp 优化 |
+| lexicographical_compare | memcmp 3-way（公共前缀 + 长度差） | 同类 3-way 优化（公开可核） | 同类优化 |
+| 触发条件 | `__is_integer`/`__is_pointer`/`byte` + `__memcmpable` | `__is_memcmp_ordered_with` 同类 trait | 实现细节未公开核对 |
+| constexpr 支持 | `is_constant_evaluated` 退化为循环 | 同类退化（公开可核） | 实现细节未公开核对 |
+
+> libc++/MSVC 行为为**已知公开实现行为**（主流实现均对平凡类型走 memcmp 快路径），非逐字摘录。
+
+### D4.5 第一方可编译验证（equal / lexicographical_compare）
+
+```cpp
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <string>
+
+int main() {
+    std::vector<int> a{1, 2, 3, 4};
+    std::vector<int> b{1, 2, 3, 4};
+    std::cout << "equal: " << std::equal(a.begin(), a.end(), b.begin()) << std::endl;
+
+    std::vector<int> c{1, 2, 3, 5};
+    std::cout << "lexicographical_compare(a<c): "
+              << std::lexicographical_compare(a.begin(), a.end(),
+                                              c.begin(), c.end())
+              << std::endl;
+
+    std::string s1 = "apple";
+    std::string s2 = "apply";
+    std::cout << "compare apple vs apply: "
+              << std::lexicographical_compare(s1.begin(), s1.end(),
+                                              s2.begin(), s2.end())
+              << std::endl;
+    return 0;
+}
+```

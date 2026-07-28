@@ -1148,3 +1148,309 @@ flowchart TD
 | ch115 移动语义 | 移动语义是该架构值传递零拷贝基石。 |
 | ch122 PMR | PMR 是该架构的现代可插拔分配后端。 |
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — traits 与标签分发（STL 静态多态地基）[E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+> （`.../include/c++/15.3.0/`），标注精确到 `文件 L行号`。libc++ / MSVC STL 仅给出"已知公开实现行为"对比，非逐字摘录。
+> 摘录块为 `text` 围栏，不参与编译；仅下方"第一方可编译验证"为独立 `cpp` 块。
+
+### D4.1 iterator_traits 主模板与 __iterator_traits 间接层（bits/stl_iterator_base_types.h L151-192）
+
+`iterator_traits` 是 STL 静态多态的总入口：算法不关心迭代器具体类型，只通过 traits 取出 `iterator_category` 决定走哪套实现。C++11 起 libstdc++ 在 `__iterator_traits` 间接层上做 SFINAE 友好化（L2408 决议），指针另有特化。
+
+```text
+// bits/stl_iterator_base_types.h L151-192  (GCC 15.3.0)
+  template<typename _Iterator>
+    struct iterator_traits;
+
+#if __cplusplus >= 201103L
+  // _GLIBCXX_RESOLVE_LIB_DEFECTS
+  // 2408. SFINAE-friendly common_type/iterator_traits is missing in C++14
+  template<typename _Iterator, typename = __void_t<>>
+    struct __iterator_traits { };
+
+#if ! __cpp_lib_concepts
+
+  template<typename _Iterator>
+    struct __iterator_traits<_Iterator,
+			     __void_t<typename _Iterator::iterator_category,
+				      typename _Iterator::value_type,
+				      typename _Iterator::difference_type,
+				      typename _Iterator::pointer,
+				      typename _Iterator::reference>>
+    {
+      typedef typename _Iterator::iterator_category iterator_category;
+      typedef typename _Iterator::value_type        value_type;
+      typedef typename _Iterator::difference_type   difference_type;
+      typedef typename _Iterator::pointer           pointer;
+      typedef typename _Iterator::reference         reference;
+    };
+#endif // ! concepts
+
+  template<typename _Iterator>
+    struct iterator_traits
+    : public __iterator_traits<_Iterator> { };
+
+#else // ! C++11
+  template<typename _Iterator>
+    struct iterator_traits
+    {
+      typedef typename _Iterator::iterator_category iterator_category;
+      typedef typename _Iterator::value_type        value_type;
+      typedef typename _Iterator::difference_type   difference_type;
+      typedef typename _Iterator::pointer           pointer;
+      typedef typename _Iterator::reference         reference;
+    };
+#endif // C++11
+```
+
+设计动机四要点：
+
+1. **`__iterator_traits` 间接层（L157-175）**：主模板 `iterator_traits` 改为 `: public __iterator_traits<_Iterator>`。当 `_Iterator` 没有全部五个嵌套类型时，`__iterator_traits` 的偏特化（带 `__void_t<...>`）匹配失败，回落到空主模板 `struct __iterator_traits { };`——于是 `iterator_traits<T>` 仍**可命名**（不再是硬错误），只是各 typedef 不存在，供 `enable_if`/`concept` 安静地排除。这是 P2408 的 SFINAE 友好化。
+2. **`#if ! __cpp_lib_concepts`**：C++20  Concepts 模式下 traits 改由 `iterator_concept`/`iterator_category` 概念约束提供更优诊断（本摘录保留非 concepts 分支，最接近常见教科书形态）。
+3. **`#else // ! C++11`（L182-192）**：C++98 路径下没有间接层，主模板直接展开五个 typedef——印证"间接层是 C++11 后加的"。
+4. **指针特化（见 D4.2）**独立于用户类型，给出 `random_access_iterator_tag`（C++20 还加 `contiguous_iterator_tag`），使裸指针直接享有随机访问能力。
+
+### D4.2 指针特化（bits/stl_iterator_base_types.h L194-231）
+
+```text
+// bits/stl_iterator_base_types.h L194-231  (GCC 15.3.0)
+#if __cplusplus > 201703L
+  /// Partial specialization for object pointer types.
+  template<typename _Tp>
+#if __cpp_concepts >= 201907L
+    requires is_object_v<_Tp>
+#endif
+    struct iterator_traits<_Tp*>
+    {
+      using iterator_concept  = contiguous_iterator_tag;
+      using iterator_category = random_access_iterator_tag;
+      using value_type	      = remove_cv_t<_Tp>;
+      using difference_type   = ptrdiff_t;
+      using pointer	      = _Tp*;
+      using reference	      = _Tp&;
+    };
+#else
+  /// Partial specialization for pointer types.
+  template<typename _Tp>
+    struct iterator_traits<_Tp*>
+    {
+      typedef random_access_iterator_tag iterator_category;
+      typedef _Tp                         value_type;
+      typedef ptrdiff_t                   difference_type;
+      typedef _Tp*                        pointer;
+      typedef _Tp&                        reference;
+    };
+
+  /// Partial specialization for const pointer types.
+  template<typename _Tp>
+    struct iterator_traits<const _Tp*>
+    {
+      typedef random_access_iterator_tag iterator_category;
+      typedef _Tp                         value_type;
+      typedef ptrdiff_t                   difference_type;
+      typedef const _Tp*                  pointer;
+      typedef const _Tp&                  reference;
+    };
+#endif
+```
+
+- C++20（`> 201703L`）分支额外暴露 `iterator_concept = contiguous_iterator_tag`：支撑 `contiguous_iterator` 概念（连续内存迭代器），`value_type` 用 `remove_cv_t` 剥掉 const，使 `int*` 与 `const int*` 的 `value_type` 都是 `int`。
+- C++17 及更早走 `#else`：`const _Tp*` 单独特化，`pointer`/`reference` 带 const，与 `int*` 区分。
+- 摘录中 `using value_type	      =` 的 `	` 是原始源码续行缩进（libstdc++ 对 `using ... =` 对齐用 tab），诚实保留。
+
+### D4.3 __iterator_category 辅助（bits/stl_iterator_base_types.h L237-242）
+
+标签分发需要"从迭代器取出类别标签的纯函数"，libstdc++ 用这个内联辅助统一实现：
+
+```text
+// bits/stl_iterator_base_types.h L237-242  (GCC 15.3.0)
+  template<typename _Iter>
+    __attribute__((__always_inline__))
+    inline _GLIBCXX_CONSTEXPR
+    typename iterator_traits<_Iter>::iterator_category
+    __iterator_category(const _Iter&)
+    { return typename iterator_traits<_Iter>::iterator_category(); }
+```
+
+返回类型是 `iterator_category` 的**值**（默认构造的标签对象，如 `random_access_iterator_tag()`），用于后续重载决议选择 `__advance`/`__distance` 的对应版本。`__always_inline__` + `_GLIBCXX_CONSTEXPR` 保证零开销。
+
+### D4.4 std::advance / std::distance 的标签分发（bits/stl_iterator_base_funcs.h）
+
+公共壳把 `__iterator_category(__i)` 算出的标签传给 `__advance`/`__distance`，后者按标签重载——这就是"编译期多态"。
+
+```text
+// bits/stl_iterator_base_funcs.h L80-109  (GCC 15.3.0)
+  template<typename _InputIterator>
+    inline _GLIBCXX14_CONSTEXPR
+    typename iterator_traits<_InputIterator>::difference_type
+    __distance(_InputIterator __first, _InputIterator __last,
+               input_iterator_tag)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+
+      typename iterator_traits<_InputIterator>::difference_type __n = 0;
+      while (__first != __last)
+	{
+	  ++__first;
+	  ++__n;
+	}
+      return __n;
+    }
+
+  template<typename _RandomAccessIterator>
+    __attribute__((__always_inline__))
+    inline _GLIBCXX14_CONSTEXPR
+    typename iterator_traits<_RandomAccessIterator>::difference_type
+    __distance(_RandomAccessIterator __first, _RandomAccessIterator __last,
+               random_access_iterator_tag)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_RandomAccessIteratorConcept<
+				  _RandomAccessIterator>)
+      return __last - __first;
+    }
+```
+
+```text
+// bits/stl_iterator_base_funcs.h L146-155  (GCC 15.3.0)
+  template<typename _InputIterator>
+    _GLIBCXX_NODISCARD __attribute__((__always_inline__))
+    inline _GLIBCXX17_CONSTEXPR
+    typename iterator_traits<_InputIterator>::difference_type
+    distance(_InputIterator __first, _InputIterator __last)
+    {
+      // concept requirements -- taken care of in __distance
+      return std::__distance(__first, __last,
+			     std::__iterator_category(__first));
+    }
+```
+
+```text
+// bits/stl_iterator_base_funcs.h L157-198  (GCC 15.3.0)
+  template<typename _InputIterator, typename _Distance>
+    inline _GLIBCXX14_CONSTEXPR void
+    __advance(_InputIterator& __i, _Distance __n, input_iterator_tag)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+      __glibcxx_assert(__n >= 0);
+      while (__n-- > 0)
+	++__i;
+    }
+
+  template<typename _BidirectionalIterator, typename _Distance>
+    inline _GLIBCXX14_CONSTEXPR void
+    __advance(_BidirectionalIterator& __i, _Distance __n,
+	      bidirectional_iterator_tag)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_BidirectionalIteratorConcept<
+				  _BidirectionalIterator>)
+      if (__n > 0)
+        while (__n--)
+	  ++__i;
+      else
+        while (__n++)
+	  --__i;
+    }
+
+  template<typename _RandomAccessIterator, typename _Distance>
+    inline _GLIBCXX14_CONSTEXPR void
+    __advance(_RandomAccessIterator& __i, _Distance __n,
+              random_access_iterator_tag)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_RandomAccessIteratorConcept<
+				  _RandomAccessIterator>)
+      if (__builtin_constant_p(__n) && __n == 1)
+	++__i;
+      else if (__builtin_constant_p(__n) && __n == -1)
+	--__i;
+      else
+	__i += __n;
+    }
+```
+
+```text
+// bits/stl_iterator_base_funcs.h L219-227  (GCC 15.3.0)
+  template<typename _InputIterator, typename _Distance>
+    __attribute__((__always_inline__))
+    inline _GLIBCXX17_CONSTEXPR void
+    advance(_InputIterator& __i, _Distance __n)
+    {
+      // concept requirements -- taken care of in __advance
+      typename iterator_traits<_InputIterator>::difference_type __d = __n;
+      std::__advance(__i, __d, std::__iterator_category(__i));
+    }
+```
+
+- 三个 `__advance` 重载仅靠第三个形参 `input_iterator_tag` / `bidirectional_iterator_tag` / `random_access_iterator_tag` 区分：`input` 只能 `++` 逐个走（O(n)）；`bidirectional` 允许 `--`；`random_access` 直接 `__i += __n`（O(1)）。`__builtin_constant_p` 对 `+1/-1` 再特化，进一步省指令。
+- `output_iterator_tag` 版本的 `__distance`/`__advance` 在 C++11 起被 `= delete`（L128-131、L202-204），因为输出迭代器不可测距/回退——编译期直接拒绝。
+- `distance` 把"算距离"按标签分发：`input` 是循环计数，`random_access` 是减法。
+
+### D4.5 跨实现对比（traits + 标签分发）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| SFINAE 友好 | `__iterator_traits` 间接层（P2408） | `iterator_traits` 同样 SFINAE 友好（P2408 后一致） | `iterator_traits` 主模板对所有类型可命名，失败嵌套类型缺省 |
+| 指针特化 | `iterator_traits<_Tp*>` + C++20 `contiguous_iterator_tag` | `iterator_traits<T*>` 等同，C++20 加 `contiguous_iterator_tag` | `iterator_traits<T*>` 等同 |
+| 标签分发 | `__advance`/`__distance` 三重载 + `__iterator_category` | `__advance`/`__distance` 同构标签分发 | `std::advance`/`std::distance` 同构标签分发 |
+| 输出迭代器 | C++11 起 `= delete` | 同构 `= delete` 拒绝 | 同构拒绝 |
+
+> libc++ / MSVC 行为为**公开实现常识**（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录；宏名与版本细节随发行版变动。
+
+### D4.6 第一方可编译验证（traits 提取 + 标签分发）
+
+```cpp
+#include <iostream>
+#include <iterator>
+#include <vector>
+#include <list>
+#include <type_traits>
+
+template<typename T>
+struct MyIter {
+    using iterator_category = std::input_iterator_tag;
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = T*;
+    using reference = T&;
+    T* p;
+    reference operator*() const { return *p; }
+    MyIter& operator++() { ++p; return *this; }
+    bool operator!=(const MyIter& o) const { return p != o.p; }
+};
+
+int main() {
+    // 1) traits 对裸指针：类别是 random_access_iterator_tag（指针特化）
+    using ptr_cat = std::iterator_traits<int*>::iterator_category;
+    std::cout << (std::is_same_v<ptr_cat, std::random_access_iterator_tag>
+                    ? "ptr:RA" : "ptr:?") << std::endl;
+
+    // 2) traits 对自定义迭代器：提取嵌套 input_iterator_tag
+    using my_cat = std::iterator_traits<MyIter<int>>::iterator_category;
+    std::cout << (std::is_same_v<my_cat, std::input_iterator_tag>
+                    ? "my:Input" : "my:?") << std::endl;
+
+    // 3) 标签分发：vector 随机访问 -> __i += __n (O(1))
+    std::vector<int> v{1,2,3,4,5};
+    auto vi = v.begin();
+    std::advance(vi, 3);
+    std::cout << *vi << std::endl;                 // 4
+
+    // 4) list 双向 -> 逐次 ++ (O(n))，同样一句 advance
+    std::list<int> l{1,2,3,4,5};
+    auto li = l.begin();
+    std::advance(li, 3);
+    std::cout << *li << std::endl;                 // 4
+
+    // 5) distance 同样按标签分发
+    std::cout << std::distance(v.begin(), vi) << std::endl;  // 3
+    std::cout << std::distance(l.begin(), li) << std::endl;  // 3
+    return 0;
+}
+```
+
+预期输出依次为 `ptr:RA / my:Input / 4 / 4 / 3 / 3`——`iterator_traits` 正确地从指针与自定义迭代器取出类别标签，`std::advance`/`std::distance` 据标签在编译期选到 O(1) 或 O(n) 实现，与 D4.1–D4.4 源码一致。

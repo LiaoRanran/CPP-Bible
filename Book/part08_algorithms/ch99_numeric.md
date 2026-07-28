@@ -1656,3 +1656,200 @@ flowchart TD
 | ch115（移动语义） | ch99 | 自定义二元操作对重型类型走移动 |
 | ch154（缓存优化） | ch99 | 缓存友好（非伪共享）进一步加速归约 |
 
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 数值算法（三标准库对比）[E: Low-level / H: Design]
+
+> 本附录源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+> （`.../include/c++/15.3.0/`），标注精确到 `文件 L行号`。
+> 重点考据两点：`accumulate` 在 C++20 起对累加器做 `std::move`（DR 2055）；
+> `std::reduce`（非执行策略版）**不在** `bits/stl_numeric.h`，而位于顶层
+> `numeric` 头文件。libc++ / MSVC 仅给出"已知公开实现行为"对比，非逐字摘录。
+
+### D4.1 `accumulate` 与 `_GLIBCXX_MOVE_IF_20` 宏
+
+```text
+// bits/stl_numeric.h L109-115  (GCC 15.3.0)
+#if __cplusplus > 201703L
+// _GLIBCXX_RESOLVE_LIB_DEFECTS
+// DR 2055. std::move in std::accumulate and other algorithms
+# define _GLIBCXX_MOVE_IF_20(_E) std::move(_E)
+#else
+# define _GLIBCXX_MOVE_IF_20(_E) _E
+#endif
+```
+
+```text
+// bits/stl_numeric.h L131-143  (GCC 15.3.0)
+  template<typename _InputIterator, typename _Tp>
+    _GLIBCXX20_CONSTEXPR
+    inline _Tp
+    accumulate(_InputIterator __first, _InputIterator __last, _Tp __init)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+      __glibcxx_requires_valid_range(__first, __last);
+
+      for (; __first != __last; ++__first)
+	__init = _GLIBCXX_MOVE_IF_20(__init) + *__first;
+      return __init;
+    }
+```
+
+- C++20 前 `__init` 在每次迭代被**拷贝**参与 `+`；C++20 起（宏展开为 `std::move(__init)`）改为移动，对 `std::string`、大矩阵等可移动但拷贝昂贵的累加器省下大量拷贝（DR 2055）。
+- 注意是移动 `__init` 而非移动 `*__first`：输入序列元素是只读的，累加器才是被反复改写的状态。
+- 带运算符重载版本（L158-171）同样用 `__binary_op(_GLIBCXX_MOVE_IF_20(__init), *__first)`，保证自定义二元运算也享此优化。
+
+### D4.2 `inner_product` 与 `partial_sum`
+
+```text
+// bits/stl_numeric.h L187-201  (GCC 15.3.0)
+  template<typename _InputIterator1, typename _InputIterator2, typename _Tp>
+    _GLIBCXX20_CONSTEXPR
+    inline _Tp
+    inner_product(_InputIterator1 __first1, _InputIterator1 __last1,
+		  _InputIterator2 __first2, _Tp __init)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_InputIteratorConcept<_InputIterator1>)
+      __glibcxx_function_requires(_InputIteratorConcept<_InputIterator2>)
+      __glibcxx_requires_valid_range(__first1, __last1);
+
+      for (; __first1 != __last1; ++__first1, (void)++__first2)
+	__init = _GLIBCXX_MOVE_IF_20(__init) + (*__first1 * *__first2);
+      return __init;
+    }
+```
+
+- `inner_product` 两步合一：`*__first1 * *__first2` 先算乘积，再累加到 `__init`，同样套用 `__GLIBCXX_MOVE_IF_20`。`(void)++__first2` 的 `(void)` 是为了抑制后缀自增的返回值，避免在概念检查/警告上产生副作用。
+
+```text
+// bits/stl_numeric.h L253-277  (GCC 15.3.0)
+  template<typename _InputIterator, typename _OutputIterator>
+    _GLIBCXX20_CONSTEXPR
+    _OutputIterator
+    partial_sum(_InputIterator __first, _InputIterator __last,
+		_OutputIterator __result)
+    {
+      typedef typename iterator_traits<_InputIterator>::value_type _ValueType;
+
+      // concept requirements
+      __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+      __glibcxx_function_requires(_OutputIteratorConcept<_OutputIterator,
+				                         _ValueType>)
+      __glibcxx_requires_valid_range(__first, __last);
+
+      if (__first == __last)
+	return __result;
+      _ValueType __value = *__first;
+      *__result = __value;
+      while (++__first != __last)
+	{
+	  __value = _GLIBCXX_MOVE_IF_20(__value) + *__first;
+	  *++__result = __value;
+	}
+      return ++__result;
+    }
+```
+
+- `partial_sum` 把"上一次的部分和"保存在局部 `__value`，每步只对 `__value` 累加再写出，因此输出序列第 k 项为前 k 项之和；`__value` 同样走 `__GLIBCXX_MOVE_IF_20`。
+
+### D4.3 `iota` 与 `reduce` 的真实落点
+
+```text
+// bits/stl_numeric.h L85-102  (GCC 15.3.0)
+  template<typename _ForwardIterator, typename _Tp>
+    _GLIBCXX20_CONSTEXPR
+    void
+    iota(_ForwardIterator __first, _ForwardIterator __last, _Tp __value)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_Mutable_ForwardIteratorConcept<
+				  _ForwardIterator>)
+      __glibcxx_function_requires(_ConvertibleConcept<_Tp,
+	    typename iterator_traits<_ForwardIterator>::value_type>)
+      __glibcxx_requires_valid_range(__first, __last);
+
+      for (; __first != __last; ++__first)
+	{
+	  *__first = __value;
+	  ++__value;
+	}
+    }
+```
+
+- `iota` 与上方的 `accumulate` 等分属不同命名空间版本（`_GLIBCXX_BEGIN_NAMESPACE_ALGO` 之后），逻辑极简：从 `__value` 起逐元素赋值并自增。
+
+```text
+// numeric L290-315  (GCC 15.3.0, 节选, 顶层头文件非 bits/stl_numeric.h)
+  template<typename _InputIterator, typename _Tp, typename _BinaryOperation>
+    _GLIBCXX20_CONSTEXPR
+    _Tp
+    reduce(_InputIterator __first, _InputIterator __last, _Tp __init,
+	   _BinaryOperation __binary_op)
+    {
+      using __ref = typename iterator_traits<_InputIterator>::reference;
+      static_assert(is_invocable_r_v<_Tp, _BinaryOperation&, _Tp&, __ref>);
+      …
+      if constexpr (__is_random_access_iter<_InputIterator>::value)
+	{
+	  while ((__last - __first) >= 4)
+	    {
+	      _Tp __v1 = __binary_op(__first[0], __first[1]);
+	      _Tp __v2 = __binary_op(__first[2], __first[3]);
+	      _Tp __v3 = __binary_op(__v1, __v2);
+	      __init = __binary_op(__init, __v3);
+	      __first += 4;
+	    }
+	}
+      for (; __first != __last; ++__first)
+	__init = __binary_op(__init, *__first);
+      return __init;
+    }
+```
+
+- **诚实考据**：`std::reduce` 的非执行策略重载**不在** `bits/stl_numeric.h`（该文件 grep 无 `reduce` 匹配），而是定义在顶层 `numeric` 头（L290-352），执行策略重载另在 `pstl/glue_numeric_impl.h` 转发 `transform_reduce`。
+- 与 `accumulate` 的关键区别：文档注释明确"values are not necessarily processed in order"。对随机访问迭代器，`reduce` 用 **4 路展开**（每次合并 4 个元素）并允许重排——这对浮点求和可能得到与 `accumulate` 不同的结果（结合律不严格成立），但换取并行/向量化友好。
+
+### D4.4 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| accumulate C++20 move | DR 2055，C++20 起 `std::move(init)` | C++20 同采用 move（标准变更，公开可核） | C++20 同采用 move（标准变更） |
+| reduce 与 accumulate 区别 | 允许乱序、随机访问 4 路展开 | 允许乱序（标准契约） | 允许乱序（标准契约） |
+| reduce 落点 | 顶层 `numeric`（非 `stl_numeric.h`） | 实现细节未公开核对 | 实现细节未公开核对 |
+| partial_sum 输出 | 原地写结果序列，O(n) | 同契约 | 同契约 |
+
+> libc++/MSVC 行为为**已知公开实现行为**（C++20 DR 2055 对所有主流实现生效），非逐字摘录。
+
+### D4.5 第一方可编译验证（accumulate / reduce / partial_sum）
+
+```cpp
+#include <iostream>
+#include <numeric>
+#include <vector>
+#include <string>
+
+int main() {
+    std::vector<int> v{1, 2, 3, 4, 5};
+    int sum = std::accumulate(v.begin(), v.end(), 0);
+    std::cout << "accumulate sum: " << sum << std::endl;
+
+    std::vector<std::string> words{"a", "b", "c"};
+    std::string cat = std::accumulate(words.begin(), words.end(), std::string{},
+        [](std::string acc, const std::string& w) {
+            acc += w;
+            return acc;
+        });
+    std::cout << "accumulate cat: " << cat << std::endl;
+
+    int r = std::reduce(v.begin(), v.end(), 0);
+    std::cout << "reduce sum: " << r << std::endl;
+
+    std::vector<int> ps(v.size());
+    std::partial_sum(v.begin(), v.end(), ps.begin());
+    std::cout << "partial_sum: ";
+    for (int x : ps) std::cout << x << ' ';
+    std::cout << std::endl;
+    return 0;
+}
+```

@@ -1042,3 +1042,93 @@ flowchart TD
 | ch95（算法总论） | ch100 | ranges 是各算法族的惰性升级表达 |
 | ch77（vector） | ch100 | 底层连续范围决定视图缓存友好 |
 
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — ranges 算法（三标准库对比）[E: Low-level / H: Design]
+
+> 本附录源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+> （`.../include/c++/15.3.0/`），标注精确到 `文件 L行号`。
+> 考据焦点：`ranges::sort` 是 **niebloid（定制点对象）**，且**复用**经典
+> `std::__sort`（introsort）内核，而非另写一份排序。libc++ / MSVC 仅给出
+> "已知公开实现行为"对比，非逐字摘录。
+
+### D4.1 niebloid `ranges::sort` 的真实定义
+
+```text
+// bits/ranges_algo.h L1815-1841  (GCC 15.3.0)
+  struct __sort_fn
+  {
+    template<random_access_iterator _Iter, sentinel_for<_Iter> _Sent,
+	     typename _Comp = ranges::less, typename _Proj = identity>
+      requires sortable<_Iter, _Comp, _Proj>
+      constexpr _Iter
+      operator()(_Iter __first, _Sent __last,
+		 _Comp __comp = {}, _Proj __proj = {}) const
+      {
+	auto __lasti = ranges::next(__first, __last);
+	_GLIBCXX_STD_A::sort(std::move(__first), __lasti,
+			     __detail::__make_comp_proj(__comp, __proj));
+	return __lasti;
+      }
+
+    template<random_access_range _Range,
+	     typename _Comp = ranges::less, typename _Proj = identity>
+      requires sortable<iterator_t<_Range>, _Comp, _Proj>
+      constexpr borrowed_iterator_t<_Range>
+      operator()(_Range&& __r, _Comp __comp = {}, _Proj __proj = {}) const
+      {
+	return (*this)(ranges::begin(__r), ranges::end(__r),
+		       std::move(__comp), std::move(__proj));
+      }
+  };
+
+  inline constexpr __sort_fn sort{};
+```
+
+- `struct __sort_fn` 是一个**函数对象类型**，成员 `operator()` 才是算法本体；最后的 `inline constexpr __sort_fn sort{}` 把其实例化为一个全局常量。**这就是 niebloid**：用户拿到的是对象 `std::ranges::sort`，不是函数模板。
+- 双重载：第一重载接受 `(迭代器, 哨兵)`，第二重载接受整个 `(range)` 并以 `ranges::begin/end` 转发到第一重载——range 版本只是迭代器版的语法糖。
+- 关键一行：`_GLIBCXX_STD_A::sort(std::move(__first), __lasti, __detail::__make_comp_proj(__comp, __proj))`。`ranges::sort` **没有**自带排序实现，而是把 `(first, last)` 连同"比较器+投影"打包后，转发给经典 `std::__sort`（introsort 内核）。`ranges::next(__first, __last)` 把哨兵折算成随机访问迭代器，满足 `std::sort` 的随机访问要求。
+
+### D4.2 投影与经典内核的桥接
+
+- `__detail::__make_comp_proj(__comp, __proj)` 把"投影 `__proj`"和"比较器 `__comp`"合成一个**单参数比较器**：对每个元素先投影再比较，于是经典 `std::sort` 完全无需知道 ranges 投影的存在。
+- 投影（`_Proj __proj = {}`，默认 `identity`）是 ranges 算法相对传统 `std::sort` 的核心增量：调用方可写 `ranges::sort(v, {}, &T::key)` 按成员排序，而无需定义 `operator<` 或手写 comparator。
+- niebloid 还带来两个传统函数模板没有的好处：① **抑制 ADL**（参数依赖查找找不到这个对象，避免意外重载冲突）；② 可作为**谓词/参数**传递（如传给算法管道），而函数模板名不能这样用。
+
+### D4.3 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| sort 形态 | niebloid：`struct __sort_fn` + `inline constexpr sort{}` | niebloid（定制点对象，C++20 标准形态） | niebloid（定制点对象） |
+| 内核复用 | 转发 `_GLIBCXX_STD_A::sort`（introsort） | 复用经典 introsort 内核（公开可核） | 复用自身 introsort 内核 |
+| 投影 | `__make_comp_proj` 合成比较器 | 同类投影包装（公开可核） | 同类投影包装 |
+| 哨兵处理 | `ranges::next` 折算为迭代器 | 同类折算 | 同类折算 |
+
+> libc++/MSVC 行为为**已知公开实现行为**（C++20 ranges 定制点对象的统一形态），非逐字摘录。
+
+### D4.4 第一方可编译验证（ranges::sort 带投影）
+
+```cpp
+#include <algorithm>
+#include <iostream>
+#include <ranges>
+#include <vector>
+#include <string>
+
+struct Person { std::string name; int age; };
+
+int main() {
+    std::vector<Person> people{{"Bob", 30}, {"Alice", 25}, {"Carol", 35}};
+    std::ranges::sort(people, {}, &Person::age);
+    std::cout << "sorted by age: ";
+    for (const auto& p : people)
+	std::cout << p.name << '(' << p.age << ") ";
+    std::cout << std::endl;
+
+    std::vector<int> nums{5, 3, 8, 1};
+    std::ranges::sort(nums);
+    std::cout << "sorted nums: ";
+    for (int x : nums) std::cout << x << ' ';
+    std::cout << std::endl;
+    return 0;
+}
+```

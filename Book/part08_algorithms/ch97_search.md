@@ -1182,3 +1182,184 @@ flowchart TD
 | ch115（移动语义） | ch97 | key/value 在有序/哈希容器的插入走移动 |
 | ch97（查找） | ch100（ranges） | 查找原语在 ranges 中以 views/算法形式复用 |
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 二分查找族（lower/upper/equal_range/binary_search）[E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+> （`.../include/c++/15.3.0/`），标注精确到 `文件 L行号`。libc++ / MSVC STL 仅给出"已知公开实现行为"对比，非逐字摘录。
+> 摘录块为 `text` 围栏，不参与编译；仅下方"第一方可编译验证"为独立 `cpp` 块。
+> 诚实考据：`std::lower_bound` 在 libstdc++ 中**已从 `stl_algo.h` 迁到 `stl_algobase.h`**（源文件 `stl_algo.h` 有注释 `// lower_bound moved to stl_algobase.h`，见 L1943），其内核 `__lower_bound` 在 `stl_algobase.h`；`upper_bound`/`equal_range`/`binary_search` 仍在 `stl_algo.h`。
+
+### D4.1 __lower_bound：无溢出半分（bits/stl_algobase.h L1496-1519）
+
+```text
+// bits/stl_algobase.h L1496-1519  (GCC 15.3.0)
+    __lower_bound(_ForwardIterator __first, _ForwardIterator __last,
+		  const _Tp& __val, _Compare __comp)
+    {
+      typedef typename iterator_traits<_ForwardIterator>::difference_type
+	_DistanceType;
+
+      _DistanceType __len = std::distance(__first, __last);
+
+      while (__len > 0)
+	{
+	  _DistanceType __half = __len >> 1;
+	  _ForwardIterator __middle = __first;
+	  std::advance(__middle, __half);
+	  if (__comp(__middle, __val))
+	    {
+	      __first = __middle;
+	      ++__first;
+	      __len = __len - __half - 1;
+	    }
+	  else
+	    __len = __half;
+	}
+      return __first;
+    }
+```
+
+- **`__len >> 1` 无溢出半分**：用右移而非 `/ 2` 求中点，且全程只维护 `__len` 与 `__half`，**从不计算 `__first + (__last - __first)/2`**，因此即使区间内元素极多也不会有 `(last-first)` 溢出（这是 C++ 标准库二分与"手写 mid=(l+r)/2 溢出"经典坑的关键区别）。
+- 比较器语义是 `__comp(__middle, __val)`：中点小于目标时向右收缩（`__first = __middle + 1`，`__len -= __half + 1`），否则向左收缩（`__len = __half`）。最终 `__first` 是首个**不小于** `__val` 的位置。
+
+### D4.2 __upper_bound：对称半分（bits/stl_algo.h L1979-2003）
+
+```text
+// bits/stl_algo.h L1979-2003  (GCC 15.3.0)
+    _ForwardIterator
+    __upper_bound(_ForwardIterator __first, _ForwardIterator __last,
+		  const _Tp& __val, _Compare __comp)
+    {
+      typedef typename iterator_traits<_ForwardIterator>::difference_type
+	_DistanceType;
+
+      _DistanceType __len = std::distance(__first, __last);
+
+      while (__len > 0)
+	{
+	  _DistanceType __half = __len >> 1;
+	  _ForwardIterator __middle = __first;
+	  std::advance(__middle, __half);
+	  if (__comp(__val, __middle))
+	    __len = __half;
+	  else
+	    {
+	      __first = __middle;
+	      ++__first;
+	      __len = __len - __half - 1;
+	    }
+	}
+      return __first;
+    }
+```
+
+与 `__lower_bound` 几乎镜像：比较改为 `__comp(__val, __middle)`，使向右收缩发生在"目标小于中点"时，最终返回首个**大于** `__val` 的位置。
+
+### D4.3 __equal_range：双界联动（bits/stl_algo.h L2068-2101）
+
+`equal_range` 不分别调公开 `lower_bound`/`upper_bound`，而是在一次二分命中等价元素时，**同时收窄左右两界**——左界用 `__lower_bound`、右界用 `__upper_bound`，各只处理剩余半区间。
+
+```text
+// bits/stl_algo.h L2068-2101  (GCC 15.3.0)
+    __equal_range(_ForwardIterator __first, _ForwardIterator __last,
+		  const _Tp& __val,
+		  _CompareItTp __comp_it_val, _CompareTpIt __comp_val_it)
+    {
+      typedef typename iterator_traits<_ForwardIterator>::difference_type
+	_DistanceType;
+
+      _DistanceType __len = std::distance(__first, __last);
+
+      while (__len > 0)
+	{
+	  _DistanceType __half = __len >> 1;
+	  _ForwardIterator __middle = __first;
+	  std::advance(__middle, __half);
+	  if (__comp_it_val(__middle, __val))
+	    {
+	      __first = __middle;
+	      ++__first;
+	      __len = __len - __half - 1;
+	    }
+	  else if (__comp_val_it(__val, __middle))
+	    __len = __half;
+	  else
+	    {
+	      _ForwardIterator __left
+		= std::__lower_bound(__first, __middle, __val, __comp_it_val);
+	      std::advance(__first, __len);
+	      _ForwardIterator __right
+		= std::__upper_bound(++__middle, __first, __val, __comp_val_it);
+	      return pair<_ForwardIterator, _ForwardIterator>(__left, __right);
+	    }
+	}
+      return pair<_ForwardIterator, _ForwardIterator>(__first, __first);
+    }
+```
+
+- 前两个分支与 `lower_bound`/`upper_bound` 完全相同；仅当 `__middle` 与 `__val` **等价**（既不 `<` 也不 `>`）时进入 `else`：用 `__lower_bound` 在左半 `[first, middle)` 收左界、用 `__upper_bound` 在右半 `(middle, first+len)` 收右界。
+- 由于命中后即缩小搜索范围，整体仍是 **O(log n)**，且只需一次"走到等价点"的二分，比"先 lower 再 upper"各做一遍略省。
+
+### D4.4 binary_search：用 lower_bound 一行合成（bits/stl_algo.h L2194-2208）
+
+```text
+// bits/stl_algo.h L2194-2208  (GCC 15.3.0)
+    binary_search(_ForwardIterator __first, _ForwardIterator __last,
+		  const _Tp& __val)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_ForwardIteratorConcept<_ForwardIterator>)
+      __glibcxx_function_requires(_LessThanOpConcept<
+	_Tp, typename iterator_traits<_ForwardIterator>::value_type>)
+      __glibcxx_requires_partitioned_lower(__first, __last, __val);
+      __glibcxx_requires_partitioned_upper(__first, __last, __val);
+
+      _ForwardIterator __i
+	= std::__lower_bound(__first, __last, __val,
+			     __gnu_cxx::__ops::__iter_less_val());
+      return __i != __last && !(__val < *__i);
+    }
+```
+
+- 直接复用 `__lower_bound` 找到首个 `>= val` 的位置 `__i`；若 `__i` 未到 `last` 且 `__val < *__i` 不成立（即 `*__i == val`），则存在。一行合成，零重复逻辑。
+
+### D4.5 跨实现对比（二分查找族）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| 无溢出半分 | `__len >> 1`，不计算 `last-first` 中点 | 同样维护长度用 `>>1`（已知公开行为） | 同样维护长度用 `>>1`（已知公开行为） |
+| lower_bound 位置 | 已迁至 `stl_algobase.h` | 在其 `<algorithm>` 实现内（组织不同，实现细节未公开核对） | 在其 `<algorithm>` 实现内（实现细节未公开核对） |
+| equal_range 双界 | 命中即同时收窄左右界（D4.3） | 同样在一次二分内双界联动（已知公开行为） | 同样双界联动（已知公开行为） |
+| binary_search | 复用 lower_bound + `!(val < *i)` | 同样复用 lower_bound（已知公开行为） | 同样复用 lower_bound |
+
+> libc++ / MSVC 行为为**已知公开实现行为**（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录；宏名与版本细节随发行版变动。
+
+### D4.6 第一方可编译验证（二分查找族）
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+int main() {
+    std::vector<int> v{1,2,2,2,3,4,5};
+    std::cout << std::boolalpha;
+    // binary_search 用 lower_bound + !comp
+    std::cout << std::binary_search(v.begin(), v.end(), 2) << std::endl;  // true
+    std::cout << std::binary_search(v.begin(), v.end(), 9) << std::endl;  // false
+
+    // lower_bound / upper_bound 边界
+    auto lo = std::lower_bound(v.begin(), v.end(), 2);
+    auto up = std::upper_bound(v.begin(), v.end(), 2);
+    std::cout << (lo - v.begin()) << std::endl;   // 1
+    std::cout << (up - v.begin()) << std::endl;   // 4
+
+    // equal_range 双界联动
+    auto rng = std::equal_range(v.begin(), v.end(), 2);
+    std::cout << (rng.first - v.begin()) << ' '
+              << (rng.second - v.begin()) << std::endl;  // 1 4
+    return 0;
+}
+```
+
+预期输出依次为 `true / false / 1 / 4 / 1 4`——`lower_bound` 落在首个 `2`（下标 1）、`upper_bound` 落在首个 `>2`（下标 4）、`equal_range` 双界恰为 `[1,4)`、`binary_search` 借 `lower_bound` 正确判定存在性，与 D4.1–D4.4 源码一致。

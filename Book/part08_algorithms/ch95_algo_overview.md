@@ -1470,3 +1470,209 @@ flowchart TD
 | ch99（数值） | ch95 | 数值算法独立成族，由总论给出归约族边界 |
 | ch100（ranges） | ch95 | ranges 是各算法族的惰性表达，扩展总论的能力边界 |
 | ch115（移动语义） | ch95 | 算法对可移动元素走移动而非拷贝，决定算法常数 |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 谓词包装器与 copy 快路径[E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+> （`.../include/c++/15.3.0/`），标注精确到 `文件 L行号`。libc++ / MSVC STL 仅给出"已知公开实现行为"对比，非逐字摘录。
+> 摘录块为 `text` 围栏，不参与编译；仅下方"第一方可编译验证"为独立 `cpp` 块。
+
+### D4.1 谓词包装器：默认 `<` 版与 comp 版汇合到同一内核（bits/predefined_ops.h）
+
+所有 `_GLIBCXX` 算法都提供"默认用 `<`"与"用用户比较器"两版，二者并非各写一遍，而是通过 `_Iter_less_iter` / `_Iter_comp_iter` 这层包装把"比较器"统一成"接受迭代器、解引用后比较"的函数对象，再喂给同一个 `__` 内核。
+
+```text
+// bits/predefined_ops.h L39-51  (GCC 15.3.0)
+  struct _Iter_less_iter
+  {
+    template<typename _Iterator1, typename _Iterator2>
+      _GLIBCXX14_CONSTEXPR
+      bool
+      operator()(_Iterator1 __it1, _Iterator2 __it2) const
+      { return *__it1 < *__it2; }
+  };
+
+  _GLIBCXX14_CONSTEXPR
+  inline _Iter_less_iter
+  __iter_less_iter()
+  { return _Iter_less_iter(); }
+```
+
+```text
+// bits/predefined_ops.h L144-165  (GCC 15.3.0)
+  template<typename _Compare>
+    struct _Iter_comp_iter
+    {
+      _Compare _M_comp;
+
+      explicit _GLIBCXX14_CONSTEXPR
+      _Iter_comp_iter(_Compare __comp)
+	: _M_comp(_GLIBCXX_MOVE(__comp))
+      { }
+
+      template<typename _Iterator1, typename _Iterator2>
+        _GLIBCXX14_CONSTEXPR
+        bool
+        operator()(_Iterator1 __it1, _Iterator2 __it2)
+        { return bool(_M_comp(*__it1, *__it2)); }
+    };
+
+  template<typename _Compare>
+    _GLIBCXX14_CONSTEXPR
+    inline _Iter_comp_iter<_Compare>
+    __iter_comp_iter(_Compare __comp)
+    { return _Iter_comp_iter<_Compare>(_GLIBCXX_MOVE(__comp)); }
+```
+
+设计动机三要点：
+
+1. **统一签名**：`std::sort` 默认版传 `__iter_less_iter()`（内部用 `*a < *b`），comp 版传 `__iter_comp_iter(__comp)`（内部用 `__comp(*a, *b)`）。两者都满足"接受两个迭代器、返回比较结果"的同一接口，于是 `__sort` 内核只写一份。
+2. **`_M_comp` 按值持有 + `move` 构造**：`_Iter_comp_iter` 把用户比较器存为成员，构造时 `_GLIBCXX_MOVE` 避免拷贝大谓词。
+3. **还有配套 `_Iter_less_val` / `_Iter_comp_val` / `_Val_less_iter`** 等：当算法需要"迭代器 vs 值"（如 `lower_bound` 的 `__iter_less_val`），也走同一包装哲学，不另起炉灶。
+
+### D4.2 std::copy 的分发链：公共壳 → __copy_move_a → __copy_move_a2 → __builtin_memmove（bits/stl_algobase.h）
+
+公开 `copy` 极薄：只做概念检查，立刻下沉到 `__copy_move_a`。
+
+```text
+// bits/stl_algobase.h L630-643  (GCC 15.3.0)
+  template<typename _II, typename _OI>
+    _GLIBCXX20_CONSTEXPR
+    inline _OI
+    copy(_II __first, _II __last, _OI __result)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_InputIteratorConcept<_II>)
+      __glibcxx_function_requires(_OutputIteratorConcept<_OI,
+	    typename iterator_traits<_II>::reference>)
+      __glibcxx_requires_can_increment_range(__first, __last, __result);
+
+      return std::__copy_move_a<__is_move_iterator<_II>::__value>
+	     (std::__miter_base(__first), std::__miter_base(__last), __result);
+    }
+```
+
+`__copy_move_a` 包一层 debug 迭代器解包，再调 `__copy_move_a1`，后者直接转 `__copy_move_a2`——真正的快路径在 `__copy_move_a2`：
+
+```text
+// bits/stl_algobase.h L410-464  (GCC 15.3.0)
+  template<bool _IsMove, typename _InIter, typename _Sent, typename _OutIter>
+    _GLIBCXX20_CONSTEXPR
+    inline _OutIter
+    __copy_move_a2(_InIter __first, _Sent __last, _OutIter __result)
+    {
+      typedef __decltype(*__first) _InRef;
+      typedef __decltype(*__result) _OutRef;
+      if _GLIBCXX_CONSTEXPR (!__is_trivially_assignable(_OutRef, _InRef))
+	{ } /* Skip the optimizations and use the loop at the end. */
+      else if (std::__is_constant_evaluated())
+	{ } /* Skip the optimizations and use the loop at the end. */
+      else if _GLIBCXX_CONSTEXPR (__memcpyable<_OutIter, _InIter>::__value)
+	{
+	  ptrdiff_t __n = std::distance(__first, __last);
+	  if (__builtin_expect(__n > 1, true))
+	    {
+	      __builtin_memmove(_GLIBCXX_TO_ADDR(__result),
+				_GLIBCXX_TO_ADDR(__first),
+				__n * sizeof(*__first));
+	      _GLIBCXX_ADVANCE(__result, __n);
+	    }
+	  else if (__n == 1)
+	    {
+	      std::__assign_one<_IsMove>(__result, __first);
+	      ++__result;
+	    }
+	  return __result;
+	}
+#if __cpp_lib_concepts
+      else if constexpr (__memcpyable_iterators<_OutIter, _InIter, _Sent>)
+	{
+	  if (auto __n = __last - __first; __n > 1) [[likely]]
+	    {
+	      void* __dest = std::to_address(__result);
+	      const void* __src = std::to_address(__first);
+	      size_t __nbytes = __n * sizeof(iter_value_t<_InIter>);
+	      // Advance the iterators and convert to pointers first.
+	      // This gives the iterators a chance to do bounds checking.
+	      (void) std::to_address(__result += __n);
+	      (void) std::to_address(__first += __n);
+	      __builtin_memmove(__dest, __src, __nbytes);
+	    }
+	  else if (__n == 1)
+	    {
+	      std::__assign_one<_IsMove>(__result, __first);
+	      ++__result;
+	    }
+	  return __result;
+	}
+#endif
+
+      for (; __first != __last; ++__result, (void)++__first)
+	std::__assign_one<_IsMove>(__result, __first);
+      return __result;
+    }
+```
+
+```text
+// bits/stl_algobase.h L494-504  (GCC 15.3.0)
+  template<bool _IsMove, typename _II, typename _OI>
+    __attribute__((__always_inline__))
+    _GLIBCXX20_CONSTEXPR
+    inline _OI
+    __copy_move_a(_II __first, _II __last, _OI __result)
+    {
+      return std::__niter_wrap(__result,
+		std::__copy_move_a1<_IsMove>(std::__niter_base(__first),
+					     std::__niter_base(__last),
+					     std::__niter_base(__result)));
+    }
+```
+
+设计动机四要点：
+
+1. **`if _GLIBCXX_CONSTEXPR` 静态分支**：非平凡可赋值类型（有用户拷贝赋值/不可平凡拷贝）直接落到最末的 `for` 循环逐个 `assign_one`；其余情况在编译期即被剪除。
+2. **`std::__is_constant_evaluated()` 分支**：编译期求值（如 `constexpr` 上下文）不能调 `__builtin_memmove`，退回循环——保证 `copy` 在 `constexpr` 下仍可用。
+3. **`__memcpyable<...>::__value` 触发 `__builtin_memmove`**：当源/目标迭代器可转为指针且元素平凡可拷贝，`copy` 退化为 `memmove`，这是 vector/array 大块拷贝飞快的根本原因（O(n) 但常数极小、可 SIMD）。
+4. **`__copy_move_a` 是 thin wrapper**：仅做 `niter_base`/`niter_wrap` 把 debug 模式迭代器剥壳/回包，`__copy_move_a1` 再透传给 `__copy_move_a2`——三层都是内联，最终零抽象开销。
+
+### D4.3 跨实现对比（copy + 谓词包装）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| 双版本机制 | `_Iter_less_iter`/`_Iter_comp_iter` 包装迭代器解引用后比较 | 类似 `__less`/`__debug_less` 包装器（实现细节未公开核对） | 类似 `std::_Comp`/`_Proj 内部包装（实现细节未公开核对） |
+| copy 快路径 | `__memcpyable` 触发 `__builtin_memmove` | 对平凡可拷贝连续区间用 `std::memmove` 快路径（已知公开行为） | 对平凡可拷贝区间用 `memmove` 快路径（已知公开行为） |
+| constexpr 支持 | `__is_constant_evaluated()` 退回循环 | 同样在常量求值走元素循环 | 同样支持 constexpr 并走元素循环 |
+
+> libc++ / MSVC 行为为**已知公开实现行为**（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录；宏名与版本细节随发行版变动。
+
+### D4.4 第一方可编译验证（copy 快路径 + 双版本 sort）
+
+```cpp
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+int main() {
+    int a[] = {5, 3, 8, 1, 9, 2};
+    int b[6];
+    // copy 公共壳 -> __copy_move_a -> __copy_move_a2 -> __builtin_memmove（平凡可赋值）
+    std::copy(a, a + 6, b);
+    for (int i = 0; i < 6; ++i) std::cout << b[i] << ' ';
+    std::cout << std::endl;
+
+    // 谓词包装器机制：默认 < 版 与 comp 版 汇合到同一 __sort 内核
+    std::vector<int> v{5, 3, 8, 1, 9, 2};
+    std::sort(v.begin(), v.end());                   // __iter_less_iter()
+    for (int x : v) std::cout << x << ' ';
+    std::cout << std::endl;
+
+    std::vector<int> w{5, 3, 8, 1, 9, 2};
+    std::sort(w.begin(), w.end(),
+              [](int p, int q) { return p > q; });    // __iter_comp_iter(comp)
+    for (int x : w) std::cout << x << ' ';
+    std::cout << std::endl;
+    return 0;
+}
+```
+
+预期输出依次为 `5 3 8 1 9 2` / `1 2 3 5 8 9` / `9 8 5 3 2 1`——`copy` 在平凡类型上走 `memmove` 快路径结果与逐元素一致；`std::sort` 默认版（`<`）与 comp 版（`>`）经 `_Iter_less_iter` / `_Iter_comp_iter` 包装落到同一排序内核，与 D4.1–D4.2 源码一致。
