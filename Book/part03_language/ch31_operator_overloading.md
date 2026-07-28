@@ -773,3 +773,134 @@ flowchart TD
 | ch39 RAII 与规则 | ch31 | 运算符返回智能指针依赖 RAII |
 | ch40 异常安全 | ch31 | 先算后提交实现强异常安全 |
 | ch61 模板与重载 | ch31 | 模板参数推导驱动运算符重载决议 |
+
+## 附录 D4：libstdc++ 源码实证
+
+本章（ch31 运算符重载）讨论 `operator` 关键字的各种重载形式。其中**最特殊、也最常被忽视的一组重载是全局 `::operator new` 与 `::operator delete`**：它们不是普通成员函数，而是 C++ 标准规定的“可替换（replaceable）全局运算符”。任何标准容器、任何分配器，在内存不足或被释放时的底层动作，最终都会汇聚到这对运算符上。下文以 libstdc++ 15.3.0 的 `new_allocator` 与顶层 `new` 头实证这条“分配器 → 运算符重载”的调用链。
+
+```text
+// bits/new_allocator.h L115-121 (GCC 15.3.0)
+#if __has_builtin(__builtin_operator_new) >= 201802L
+# define _GLIBCXX_OPERATOR_NEW __builtin_operator_new
+# define _GLIBCXX_OPERATOR_DELETE __builtin_operator_delete
+#else
+# define _GLIBCXX_OPERATOR_NEW ::operator new
+# define _GLIBCXX_OPERATOR_DELETE ::operator delete
+#endif
+// bits/new_allocator.h L125-152 (GCC 15.3.0)
+      _GLIBCXX_NODISCARD _Tp*
+      allocate(size_type __n, const void* = static_cast<const void*>(0))
+      {
+#if __cplusplus >= 201103L
+	// _GLIBCXX_RESOLVE_LIB_DEFECTS
+	// 3308. std::allocator<void>().allocate(n)
+	static_assert(sizeof(_Tp) != 0, "cannot allocate incomplete types");
+#endif
+
+	if (__builtin_expect(__n > this->_M_max_size(), false))
+	  {
+	    // _GLIBCXX_RESOLVE_LIB_DEFECTS
+	    // 3190. allocator::allocate sometimes returns too little storage
+	    if (__n > (std::size_t(-1) / sizeof(_Tp)))
+	      std::__throw_bad_array_new_length();
+	    std::__throw_bad_alloc();
+	  }
+
+#if __cpp_aligned_new && __cplusplus >= 201103L
+	if (alignof(_Tp) > __STDCPP_DEFAULT_NEW_ALIGNMENT__)
+	  {
+	    std::align_val_t __al = std::align_val_t(alignof(_Tp));
+	    return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp),
+							   __al));
+	  }
+#endif
+	return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+      }
+// bits/new_allocator.h L154-173 (GCC 15.3.0)
+      // __p is not permitted to be a null pointer.
+      void
+      deallocate(_Tp* __p, size_type __n __attribute__ ((__unused__)))
+      {
+#if __cpp_sized_deallocation
+# define _GLIBCXX_SIZED_DEALLOC(p, n) (p), (n) * sizeof(_Tp)
+#else
+# define _GLIBCXX_SIZED_DEALLOC(p, n) (p)
+#endif
+
+#if __cpp_aligned_new && __cplusplus >= 201103L
+	if (alignof(_Tp) > __STDCPP_DEFAULT_NEW_ALIGNMENT__)
+	  {
+	    _GLIBCXX_OPERATOR_DELETE(_GLIBCXX_SIZED_DEALLOC(__p, __n),
+				     std::align_val_t(alignof(_Tp)));
+	    return;
+	  }
+#endif
+	_GLIBCXX_OPERATOR_DELETE(_GLIBCXX_SIZED_DEALLOC(__p, __n));
+      }
+```
+
+```text
+// new L137-146 (GCC 15.3.0)
+_GLIBCXX_NODISCARD void* operator new(std::size_t)
+  _GLIBCXX_TXN_SAFE _GLIBCXX_THROW (std::bad_alloc)
+  __attribute__((__externally_visible__, __malloc__));
+_GLIBCXX_NODISCARD void* operator new[](std::size_t)
+  _GLIBCXX_TXN_SAFE _GLIBCXX_THROW (std::bad_alloc)
+  __attribute__((__externally_visible__, __malloc__));
+void operator delete(void*) _GLIBCXX_TXN_SAFE _GLIBCXX_USE_NOEXCEPT
+  __attribute__((__externally_visible__));
+void operator delete[](void*) _GLIBCXX_TXN_SAFE _GLIBCXX_USE_NOEXCEPT
+  __attribute__((__externally_visible__));
+```
+
+### 设计动机
+
+`operator new` / `operator delete` 是 C++ 内存模型的“万能分配钩子”：语言规定它们是唯一一对可由用户**全局替换**且被链接器优先选用的运算符重载（[new.delete]）。任何标准分配器、任何 `new` 表达式，最终都归结为对这两个全局符号的调用；反过来，任何想要接管“整个程序内存来源”的代码，只需替换这两个运算符即可，无需改动任何上层容器。
+
+`std::allocator` 在 libstdc++ 中的默认基类正是 `__new_allocator`（见 `bits/new_allocator.h` 文档注释 L45-61：“all allocation calls `operator new` / all deallocation calls `operator delete`”）。它是一个**极薄的包装器**：`allocate` 仅做上限检查（`_M_max_size`、溢出时抛 `bad_array_new_length` / `bad_alloc`），然后把真正的活儿交给 `_GLIBCXX_OPERATOR_NEW`，即 `__builtin_operator_new`（编译期可识别的内建）或退化为 `::operator new`。这正是“分配器最终都落到运算符重载”的落地证明。
+
+`__builtin_operator_new` 这一层宏说明了一个重要事实：即便库用内建形式写出，它仍然解析到**可替换的** `::operator new` 符号，因此用户定义的全局 `::operator new` 一定会被调用。换句话说，自定义分配器可以绕过 `std::allocator` 直接调用 `malloc`，但**只要**走标准 `std::allocator`（以及所有标准容器默认使用的它），就必然经过 `::operator new` 这条全局运算符重载通道。
+
+`deallocate` 则对称地处理释放：在支持 sized deallocation 时把对象个数折算成字节数传给 `_GLIBCXX_OPERATOR_DELETE`，对齐类型走带 `align_val_t` 的重载。分配与释放在运算符层面的对称，正是 ch31 所强调的“运算符重载应成对出现、语义对称”原则在库内部的体现。
+
+### 跨实现对比（libstdc++ / libc++ / MSVC STL）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+| --- | --- | --- | --- |
+| 默认 `std::allocator` 底层 | `__new_allocator` → `_GLIBCXX_OPERATOR_NEW` → `::operator new`（见上 L115-152 逐字摘录） | `std::allocator` 直接包装 `::operator new`（已知公开实现行为，非逐字摘录） | `std::allocator` 亦直接调用 `::operator new`（已知公开实现行为，非逐字摘录） |
+| 对齐 `new` 支持 | 用 `__cpp_aligned_new` 分支，调用 `::operator new(size, align_val_t)`（L143-150 逐字摘录） | 同样在分配对齐类型时走对齐 `::operator new`（已知公开实现行为，非逐字摘录） | 同样支持对齐 `::operator new`（已知公开实现行为，非逐字摘录） |
+| sized deallocation | 支持：释放时传 `(p), (n)*sizeof(_Tp)`（L158-159、L172 逐字摘录） | 支持 sized `::operator delete`（已知公开实现行为，非逐字摘录） | 支持 sized `::operator delete`（已知公开实现行为，非逐字摘录） |
+| 全局 `operator new` 可替换性 | 是，链接优先用户定义版本（见 `new` L137-146 声明的 replaceable signatures） | 是，等价的标准可替换语义（已知公开实现行为，非逐字摘录） | 是，等价的标准可替换语义（已知公开实现行为，非逐字摘录） |
+| 顶层声明位置 | `bits/new_allocator.h` 与 `new` 头 | `<new>` 头内等价声明（已知公开实现行为，非逐字摘录） | `<new>` 头内等价声明（已知公开实现行为，非逐字摘录） |
+
+### 可编译实证
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <new>
+#include <cstdlib>
+
+// 替换全局 ::operator new，打印探针标记：
+// 若 std::allocator 真的走全局运算符重载，则容器分配内存时会触发此标记。
+void* operator new(std::size_t size) {
+    std::cout << "[probe] ::operator new called, bytes = " << size << std::endl;
+    void* p = std::malloc(size);
+    if (p == nullptr) throw std::bad_alloc();
+    return p;
+}
+
+void operator delete(void* p) noexcept {
+    std::free(p);
+}
+
+int main() {
+    std::vector<int, std::allocator<int>> v;
+    v.push_back(10);
+    v.push_back(20);
+    v.push_back(30);
+    std::cout << "vector size = " << v.size() << std::endl;
+    std::cout << "sum = " << (v[0] + v[1] + v[2]) << std::endl;
+    return 0;
+}
+```

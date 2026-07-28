@@ -874,3 +874,134 @@ flowchart TD
 | ch65 类型萃取 | ch61 模板重载 | SFINAE 常借助 traits |
 | ch63 可变参数 | ch61 模板重载 | 参数包展开参与匹配 |
 | ch61 模板重载 | ch69 constexpr | 编译期 if 简化重载分支 |
+
+## 附录 D4：libstdc++ 源码实证
+
+本章通过 libstdc++ 15.3.0 顶层头文件 `type_traits` 的逐字摘录，实证函数模板重载决议赖以运转的 SFINAE 机械结构：`std::enable_if` 的元函数开关、`conjunction`/`disjunction`/`negation` 的短路变长特质，以及 `void_t` 的表达存在性探测。下面每一段 `text` 中的代码均按原始行号逐行摘录，未做任何改写或省略。
+
+```text
+// type_traits L134-135 (GCC 15.3.0)
+    struct enable_if
+    { };
+
+// type_traits L137-140 (GCC 15.3.0)
+  // Partial specialization for true.
+  template<typename _Tp>
+    struct enable_if<true, _Tp>
+    { using type = _Tp; };
+```
+
+```text
+// type_traits L242-265 (GCC 15.3.0)
+  template<typename... _Bn>
+    struct conjunction
+    : __detail::__conjunction_impl<void, _Bn...>::type
+    { };
+
+  template<>
+    struct conjunction<>
+    : true_type
+    { };
+
+  template<typename... _Bn>
+    struct disjunction
+    : __detail::__disjunction_impl<void, _Bn...>::type
+    { };
+
+  template<>
+    struct disjunction<>
+    : false_type
+    { };
+
+  template<typename _Pp>
+    struct negation
+    : __not_<_Pp>::type
+    { };
+```
+
+```text
+// type_traits L222-239 (GCC 15.3.0)
+  namespace __detail
+  {
+
+    template<typename /* = void */, typename _B1, typename... _Bn>
+      struct __disjunction_impl
+      { using type = _B1; };
+
+    template<typename _B1, typename _B2, typename... _Bn>
+      struct __disjunction_impl<__enable_if_t<!bool(_B1::value)>, _B1, _B2, _Bn...>
+      { using type = typename __disjunction_impl<void, _B2, _Bn...>::type; };
+
+    template<typename /* = void */, typename _B1, typename... _Bn>
+      struct __conjunction_impl
+      { using type = _B1; };
+
+    template<typename _B1, typename _B2, typename... _Bn>
+      struct __conjunction_impl<__enable_if_t<bool(_B1::value)>, _B1, _B2, _Bn...>
+      { using type = typename __conjunction_impl<void, _B2, _Bn...>::type; };
+  } // namespace __detail
+```
+
+```text
+// type_traits L2836-2838 (GCC 15.3.0)
+  /// Alias template for enable_if
+  template<bool _Cond, typename _Tp = void>
+    using enable_if_t = typename enable_if<_Cond, _Tp>::type;
+```
+
+```text
+// type_traits L2857-2859 (GCC 15.3.0)
+#ifdef __cpp_lib_void_t // C++ >= 17 || GNU++ >= 11
+  /// A metafunction that always yields void, used for detecting valid types.
+  template<typename...> using void_t = void;
+```
+
+### 设计动机
+
+SFINAE（Substitution Failure Is Not An Error）是模板元编程中重载选择的脊梁：当模板实参替换导致无效类型或表达式时，该重载并非编译错误，而是被 silently 从候选集中剔除，从而让编译器去尝试其它可行的重载。`std::enable_if` 正是利用这一机制做开关——其主模板（L134）不定义任何 `type` 成员，仅在条件为真时由偏特化（L139）提供 `type = _Tp`。把 `typename enable_if<Cond, T>::type`（或其别名 `enable_if_t`，L2838）放在函数返回类型或模板默认实参位置，当 `Cond` 为假时替换失败、该重载出局，于是重载决议便能在编译期被条件性地启用或禁用。
+
+`std::conjunction`/`disjunction`/`negation`（L242–L265）是短路求值的变长布尔特质，用于在不实例化全部实参的前提下组合多个条件。其底层由 `__detail::__conjunction_impl`/`__disjunction_impl`（L222–L239）实现：以 `__enable_if_t<bool(_B1::value)>` 或 `__enable_if_t<!bool(_B1::value)>` 作为首个模板实参触发偏特化，一旦 `_B1::value` 已决定整体结果就停止递归，其余实参根本不会被求值。这与 `std::is_same<bool(_B1::value), std::true_type>` 之类的“先全部实例化再 `&&`”写法形成对比——后者会对每一个实参都进行实例化，可能在昂贵或不可成立的类型上白白产生硬错误。`negation` 则包裹 `__not_` 提供单目取反，三者可任意嵌套组合，是 `enable_if` 条件体的自然搭档。
+
+`std::void_t`（L2859）是存在性探测的基石：它对任意包展开都恒等于 `void`。把它作为偏特化的首个实参（例如 `template<typename T, typename = void_t<decltype(T::foo())>> struct has_foo : true_type {}`），当内部表达式合法时替换成功、选出该偏特化，否则退回主模板，从而在不触发硬错误的情况下“探测”某个成员类型、成员函数或表达式是否存在。综合来看，`enable_if` 负责“开关”，`conjunction`/`disjunction`/`negation` 负责“短路组合条件”，`void_t` 负责“探测存在性”，三者共同构成函数模板重载决议在 libstdc++ 中的可实证实现基础。
+
+### 跨实现对比（libstdc++ / libc++ / MSVC STL）
+
+| 机制 | libstdc++ 15.3.0（逐字摘录） | libc++（已知公开实现行为，非逐字摘录） | MSVC STL（已知公开实现行为，非逐字摘录） |
+| --- | --- | --- | --- |
+| `enable_if` 主模板 | `struct enable_if { };`（无 `type`） | 主模板同样不提供 `type` 成员，条件为假时替换失败（已知公开实现行为，非逐字摘录） | 主模板同样不提供 `type`，等价 SFINAE 开关语义（已知公开实现行为，非逐字摘录） |
+| `enable_if<true, _Tp>` | `struct enable_if<true, _Tp> { using type = _Tp; };` | 偏特化提供 `type = _Tp`（已知公开实现行为，非逐字摘录） | 偏特化提供 `type`（已知公开实现行为，非逐字摘录） |
+| `conjunction` | 继承 `__detail::__conjunction_impl<void, _Bn...>::type`；空包为 `true_type` | 以递归偏特化短路实现，空包归约到 `true_type`（已知公开实现行为，非逐字摘录） | 以递归偏特化短路实现，空包归约到 `true_type`（已知公开实现行为，非逐字摘录） |
+| `disjunction` | 继承 `__detail::__disjunction_impl<void, _Bn...>::type`；空包为 `false_type` | 以递归偏特化短路实现，空包归约到 `false_type`（已知公开实现行为，非逐字摘录） | 以递归偏特化短路实现，空包归约到 `false_type`（已知公开实现行为，非逐字摘录） |
+| `negation` | 继承 `__not_<_Pp>::type` | 同样包裹内部 `__not_` 取反（已知公开实现行为，非逐字摘录） | 同样取反内部布尔特质（已知公开实现行为，非逐字摘录） |
+| `enable_if_t` | `using enable_if_t = typename enable_if<_Cond, _Tp>::type;` | 提供同名别名模板（已知公开实现行为，非逐字摘录） | 提供同名别名模板（已知公开实现行为，非逐字摘录） |
+| `void_t` | `template<typename...> using void_t = void;` | 提供同名别名模板，恒为 `void`（已知公开实现行为，非逐字摘录） | 提供同名别名模板，恒为 `void`（已知公开实现行为，非逐字摘录） |
+
+三者语义与设计完全等价，差异仅在内部递归辅助类名（libstdc++ 用 `__detail::__conjunction_impl`/`__enable_if_t`；libc++ 与 MSVC STL 使用各自私有命名），不影响用户可见行为。
+
+### 可编译实证
+
+```cpp
+#include <iostream>
+#include <type_traits>
+
+template <typename T>
+std::enable_if_t<std::is_integral_v<T>, void>
+describe(T v) {
+  std::cout << "integral overload fired: " << v << std::endl;
+}
+
+template <typename T>
+std::enable_if_t<std::is_floating_point_v<T>, void>
+describe(T v) {
+  std::cout << "floating_point overload fired: " << v << std::endl;
+}
+
+int main() {
+  describe(42);
+  describe(3.14);
+  std::cout << "conjunction<is_integral<int>, true_type>::value = "
+            << std::conjunction<std::is_integral<int>, std::true_type>::value
+            << std::endl;
+  return 0;
+}
+```

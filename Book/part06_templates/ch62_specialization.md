@@ -1070,3 +1070,110 @@ flowchart TD
 | ch62 | ch68 | TMP 以偏特化实现编译期 if/分支 |
 | ch62 | ch63 | 可变参数模板常配合特化做递归终止 base case |
 | ch62 | ch52 | 空基类 EBO 可与特化结合（Wrapper : private T） |
+
+## 附录 D4：libstdc++ 源码实证
+
+本附录以 GCC 15.3.0 的 `type_traits` 头文件为实证对象，展示第 62 章「类模板特化与偏特化」在真实标准库中的运用。`type_traits` 中的绝大多数类型特性，其本质就是「主模板给出默认/否定答案，偏特化把真正有趣的情形剥离出来」这一手法。
+
+```text
+// type_traits L1774-1786 (GCC 15.3.0)
+#else
+  template<typename _Tp>
+    struct remove_reference
+    { using type = _Tp; };
+
+  template<typename _Tp>
+    struct remove_reference<_Tp&>
+    { using type = _Tp; };
+
+  template<typename _Tp>
+    struct remove_reference<_Tp&&>
+    { using type = _Tp; };
+#endif
+```
+
+```text
+// type_traits L1686-1692 (GCC 15.3.0)
+  template<typename _Tp>
+    struct remove_const
+    { using type = _Tp; };
+
+  template<typename _Tp>
+    struct remove_const<_Tp const>
+    { using type = _Tp; };
+```
+
+```text
+// type_traits L557-577 (GCC 15.3.0)
+#else
+  template<typename _Tp>
+    struct is_pointer
+    : public false_type { };
+
+  template<typename _Tp>
+    struct is_pointer<_Tp*>
+    : public true_type { };
+
+  template<typename _Tp>
+    struct is_pointer<_Tp* const>
+    : public true_type { };
+
+  template<typename _Tp>
+    struct is_pointer<_Tp* volatile>
+    : public true_type { };
+
+  template<typename _Tp>
+    struct is_pointer<_Tp* const volatile>
+    : public true_type { };
+#endif
+```
+
+### 设计动机
+
+libstdc++ 的类型特性几乎全部建立在（偏）模板特化之上：主模板提供安全、保守的默认答案，而偏特化则针对「值得关注」的类型模式给出精确结果。以 `remove_reference` 为例，主模板 `struct remove_reference { using type = _Tp; };` 对「非引用」类型给出恒等映射；随后两个偏特化 `remove_reference<_Tp&>` 与 `remove_reference<_Tp&&>` 分别捕获左值引用与右值引用模式，把 `type` 还原为被引用的底层类型。这种方式把「模式匹配」交给编译器在实例化阶段完成，无需任何运行时开销。
+
+`is_pointer` 是另一个典型：主模板继承自 `false_type`，即「默认不是指针」；而偏特化 `is_pointer<_Tp*>` 继承自 `true_type`，当实参恰好是指针类型时模板参数推导会命中该偏特化，从而得到 `true`。`const`/`volatile` 修饰的指针另有对应偏特化，进一步保证 cv 限定指针仍被正确识别。
+
+`remove_const` 同理：主模板是原样透传；偏特化 `remove_const<_Tp const>` 仅在类型带有顶层 `const` 时匹配，剥离该限定符。注意源码写作 `_Tp const` 而非 `const _Tp`，二者在模板参数位置语义完全等价，只是 libstdc++ 的惯用写法。
+
+值得补充的是，GCC 15.3.0 默认通过 `_GLIBCXX_USE_BUILTIN_TRAIT(__remove_reference)` 等编译器内建特性走 `#if` 分支，上述 `#else` 分支中的（偏）特化实现是纯标准 C++ 的「教科书版」后备实现，恰好最清晰地展示了第 62 章所讲的机制，因此本附录逐字摘录该分支。
+
+### 跨实现对比（libstdc++ / libc++ / MSVC STL）
+
+| 类型特性 | libstdc++ (GCC 15.3.0, 逐字摘录 `#else` 分支) | libc++（已知公开实现行为，非逐字摘录） | MSVC STL（已知公开实现行为，非逐字摘录） |
+| --- | --- | --- | --- |
+| `remove_reference` | 主模板 + 偏特化 `<_Tp&>` / `<_Tp&&>`，`type` 剥离引用 | 同样以主模板给出恒等类型、并用两个偏特化剥离 `&`/`&&`（已知公开实现行为，非逐字摘录） | 同样基于主模板加 `&`/`&&` 偏特化实现（已知公开实现行为，非逐字摘录） |
+| `remove_const` | 主模板 + 偏特化 `<_Tp const>` 剥离顶层 const | 主模板透传、以偏特化匹配 `const` 限定并剥离（已知公开实现行为，非逐字摘录） | 以偏特化匹配 `const` 并剥离顶层 const（已知公开实现行为，非逐字摘录） |
+| `is_pointer` | 主模板继承 `false_type`，偏特化 `<_Tp*>`(及 cv 变体) 继承 `true_type` | 主模板默认 `false`、偏特化 `<_Tp*>` 系列返回 `true`（已知公开实现行为，非逐字摘录） | 主模板默认 `false`、指针偏特化返回 `true`（已知公开实现行为，非逐字摘录） |
+| 实现策略 | 优先内建 `__remove_reference`/`__is_pointer`，`#else` 后备为纯特化实现 | 较新版本同样优先编译器内建/概念，后备实现等价（已知公开实现行为，非逐字摘录） | 优先编译器内建特性，后备实现等价（已知公开实现行为，非逐字摘录） |
+
+> 说明：libc++ 与 MSVC STL 单元格仅描述其公开的、与本主题等价的**设计行为**，并未逐字摘录其源码；具体行号与字面文本以各自发行版为准。
+
+### 可编译实证
+
+```cpp
+#include <type_traits>
+#include <iostream>
+
+int main()
+{
+  // remove_reference：主模板 + & / && 偏特化
+  typedef typename std::remove_reference<int&>::type rr_lref;
+  typedef typename std::remove_reference<int&&>::type rr_rref;
+  static_assert(std::is_same<rr_lref, int>::value, "remove_reference<int&> == int");
+  static_assert(std::is_same<rr_rref, int>::value, "remove_reference<int&&> == int");
+
+  // is_pointer：主模板默认 false，偏特化 <_Tp*> 为 true
+  static_assert(std::is_pointer<int*>::value, "is_pointer<int*> == true");
+  static_assert(!std::is_pointer<int>::value, "is_pointer<int> == false");
+
+  std::cout << "remove_reference<int&>::type  == int : "
+            << std::is_same<rr_lref, int>::value << std::endl;
+  std::cout << "remove_reference<int&&>::type == int : "
+            << std::is_same<rr_rref, int>::value << std::endl;
+  std::cout << "is_pointer<int*>::value  : " << std::is_pointer<int*>::value << std::endl;
+  std::cout << "is_pointer<int>::value   : " << std::is_pointer<int>::value << std::endl;
+
+  return 0;
+}
+```

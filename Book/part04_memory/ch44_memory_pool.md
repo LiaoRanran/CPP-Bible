@@ -2216,3 +2216,247 @@ flowchart TD
 | ch45 对象模型 | ch44 内存池 | 对象尺寸/对齐决定档位 |
 | ch35 内存布局 | ch44 内存池 | 布局影响缓存局部性 |
 | ch44 内存池 | ch147 代码评审 | 池引入需评审线程安全 |
+
+## 附录 D4：libstdc++ 源码实证
+
+下面逐字摘录 GCC 15.3.0 自带的 pool allocator 实现（`ext/pool_allocator.h`），与 ch44 从零手写的定长内存池互为镜像：libstdc++ 把它做成标准 `Allocator` 概念的一个真实、可用于容器的分配器。
+
+```text
+// ext/pool_allocator.h L77-118 (GCC 15.3.0)
+    class __pool_alloc_base
+    {
+      typedef std::size_t size_t;
+    protected:
+
+      enum { _S_align = 8 };
+      enum { _S_max_bytes = 128 };
+      enum { _S_free_list_size = (size_t)_S_max_bytes / (size_t)_S_align };
+
+      union _Obj
+      {
+        union _Obj* _M_free_list_link;
+        char        _M_client_data[1];    // The client sees this.
+      };
+
+      static _Obj* volatile         _S_free_list[_S_free_list_size];
+
+      // Chunk allocation state.
+      static char*                  _S_start_free;
+      static char*                  _S_end_free;
+      static size_t                 _S_heap_size;
+
+      size_t
+      _M_round_up(size_t __bytes)
+      { return ((__bytes + (size_t)_S_align - 1) & ~((size_t)_S_align - 1)); }
+
+      _GLIBCXX_CONST _Obj* volatile*
+      _M_get_free_list(size_t __bytes) throw ();
+
+      __mutex&
+      _M_get_mutex() throw ();
+
+      // Returns an object of size __n, and optionally adds to size __n
+      // free list.
+      void*
+      _M_refill(size_t __n);
+
+      // Allocates a chunk for nobjs of size size.  nobjs may be reduced
+      // if it is inconvenient to allocate the requested number.
+      char*
+      _M_allocate_chunk(size_t __n, int& __nobjs);
+    };
+```
+
+```text
+// ext/pool_allocator.h L126-128 (GCC 15.3.0)
+    class __pool_alloc : private __pool_alloc_base
+    {
+    private:
+// ext/pool_allocator.h L130-196 (GCC 15.3.0)
+    public:
+      typedef std::size_t     size_type;
+      typedef std::ptrdiff_t  difference_type;
+      typedef _Tp*       pointer;
+      typedef const _Tp* const_pointer;
+      typedef _Tp&       reference;
+      typedef const _Tp& const_reference;
+      typedef _Tp        value_type;
+
+      template<typename _Tp1>
+        struct rebind
+        { typedef __pool_alloc<_Tp1> other; };
+
+#if __cplusplus >= 201103L
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 2103. propagate_on_container_move_assignment
+      typedef std::true_type propagate_on_container_move_assignment;
+#endif
+
+      __pool_alloc() _GLIBCXX_USE_NOEXCEPT { }
+
+      __pool_alloc(const __pool_alloc&) _GLIBCXX_USE_NOEXCEPT { }
+
+      template<typename _Tp1>
+        __pool_alloc(const __pool_alloc<_Tp1>&) _GLIBCXX_USE_NOEXCEPT { }
+
+      ~__pool_alloc() _GLIBCXX_USE_NOEXCEPT { }
+
+      pointer
+      address(reference __x) const _GLIBCXX_NOEXCEPT
+      { return std::__addressof(__x); }
+
+      const_pointer
+      address(const_reference __x) const _GLIBCXX_NOEXCEPT
+      { return std::__addressof(__x); }
+
+      size_type
+      max_size() const _GLIBCXX_USE_NOEXCEPT
+      { return std::size_t(-1) / sizeof(_Tp); }
+
+#if __cplusplus >= 201103L
+      template<typename _Up, typename... _Args>
+        void
+        construct(_Up* __p, _Args&&... __args)
+        { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+
+      template<typename _Up>
+        void
+        destroy(_Up* __p) { __p->~_Up(); }
+#else
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 402. wrong new expression in [some_] allocator::construct
+      void
+      construct(pointer __p, const _Tp& __val)
+      { ::new((void *)__p) _Tp(__val); }
+
+      void
+      destroy(pointer __p) { __p->~_Tp(); }
+#endif
+
+      _GLIBCXX_NODISCARD pointer
+      allocate(size_type __n, const void* = 0);
+
+      void
+      deallocate(pointer __p, size_type __n);
+    };
+// ext/pool_allocator.h L214-266 (GCC 15.3.0)
+  template<typename _Tp>
+    _GLIBCXX_NODISCARD _Tp*
+    __pool_alloc<_Tp>::allocate(size_type __n, const void*)
+    {
+      using std::size_t;
+      pointer __ret = 0;
+      if (__builtin_expect(__n != 0, true))
+        {
+          if (__n > this->max_size())
+            std::__throw_bad_alloc();
+
+          const size_t __bytes = __n * sizeof(_Tp);
+
+#if __cpp_aligned_new && __cplusplus >= 201103L
+          if (alignof(_Tp) > __STDCPP_DEFAULT_NEW_ALIGNMENT__)
+            {
+              std::align_val_t __al = std::align_val_t(alignof(_Tp));
+              return static_cast<_Tp*>(::operator new(__bytes, __al));
+            }
+#endif
+
+          // If there is a race through here, assume answer from getenv
+          // will resolve in same direction.  Inspired by techniques
+          // to efficiently support threading found in basic_string.h.
+          if (_S_force_new == 0)
+            {
+              if (std::getenv("GLIBCXX_FORCE_NEW"))
+                __atomic_add_dispatch(&_S_force_new, 1);
+              else
+                __atomic_add_dispatch(&_S_force_new, -1);
+            }
+
+          if (__bytes > size_t(_S_max_bytes) || _S_force_new > 0)
+            __ret = static_cast<_Tp*>(::operator new(__bytes));
+          else
+            {
+              _Obj* volatile* __free_list = _M_get_free_list(__bytes);
+
+              __scoped_lock sentry(_M_get_mutex());
+              _Obj* __restrict__ __result = *__free_list;
+              if (__builtin_expect(__result == 0, 0))
+                __ret = static_cast<_Tp*>(_M_refill(_M_round_up(__bytes)));
+              else
+                {
+                  *__free_list = __result->_M_free_list_link;
+                  __ret = reinterpret_cast<_Tp*>(__result);
+                }
+              if (__ret == 0)
+                std::__throw_bad_alloc();
+            }
+        }
+      return __ret;
+    }
+// ext/pool_allocator.h L268-295 (GCC 15.3.0)
+  template<typename _Tp>
+    void
+    __pool_alloc<_Tp>::deallocate(pointer __p, size_type __n)
+    {
+      using std::size_t;
+      if (__builtin_expect(__n != 0 && __p != 0, true))
+        {
+#if __cpp_aligned_new && __cplusplus >= 201103L
+          if (alignof(_Tp) > __STDCPP_DEFAULT_NEW_ALIGNMENT__)
+            {
+              ::operator delete(__p, std::align_val_t(alignof(_Tp)));
+              return;
+            }
+#endif
+          const size_t __bytes = __n * sizeof(_Tp);
+          if (__bytes > static_cast<size_t>(_S_max_bytes) || _S_force_new > 0)
+            ::operator delete(__p);
+          else
+            {
+              _Obj* volatile* __free_list = _M_get_free_list(__bytes);
+              _Obj* __q = reinterpret_cast<_Obj*>(__p);
+
+              __scoped_lock sentry(_M_get_mutex());
+              __q ->_M_free_list_link = *__free_list;
+              *__free_list = __q;
+            }
+        }
+    }
+```
+
+### 设计动机
+
+libstdc++ 提供了一款**生产级**的池分配器 `__gnu_cxx::__pool_alloc`，它正好对应 ch44 手写的定长内存池：把众多小对象（≤ `_S_max_bytes = 128` 字节，按 `_S_align = 8` 对齐）的分配请求，先 `round_up` 到 8 的倍数，再从 `_S_free_list` 这一组空闲链表里直接摘取/归还节点，从而把对 `::operator new` 的调用次数降到最低。当对象过大或设置了环境变量 `GLIBCXX_FORCE_NEW` 时，则退化为直接 `::operator new`/`::operator delete`，与 ch44 讨论的「大块直接走系统分配器」策略一致。
+
+与 ch44 单线程的演示实现不同，libstdc++ 的实现通过 `__scoped_lock(_M_get_mutex())` 在每一次取/还链表节点时加锁，因此可被多线程容器安全使用；而 `_S_force_new` 借助 `getenv` 与 `__atomic_add_dispatch` 做一次性的全局旁路开关，避免了每次分配都查询环境变量的开销。空闲链表节点复用 `union _Obj` 把 `_M_free_list_link` 与用户数据 `_M_client_data` 重叠在同一块内存上，这一点与 ch44「空闲节点自身承载 next 指针」的思路完全相同——说明手写池并非玩具，而是标准库真实采用的成熟手法。
+
+### 跨实现对比（libstdc++ / libc++ / MSVC STL）
+
+| 实现 | 池分配器 / 行为 | 备注 |
+|------|----------------|------|
+| libstdc++ (GCC 15.3.0) | 提供 `__gnu_cxx::__pool_alloc`，基于 `_S_free_list[16]` 空闲链表 + `_M_refill` 批量向系统申请，单锁保护 | 上文逐字摘录的源码 |
+| libc++ (LLVM) | 不提供名为 `__pool_alloc` 的扩展分配器；标准容器默认使用 `__allocator`/`std::allocator`，其底层委托系统 `::operator new`，并以 `malloc` 实现小对象缓存（known tcmalloc/jemalloc 思路由平台 malloc 提供池化） | （已知公开实现行为，非逐字摘录） |
+| MSVC STL | 不提供 `pool_alloc` 扩展；`std::allocator` 直接委托 `_Allocate` → `::operator new`，小对象池化依赖系统 `malloc`/CRT 堆（如 LFH） | （已知公开实现行为，非逐字摘录） |
+
+三者的共同点是：标准 `std::allocator` 本身都**不做应用层的逐对象池化**，池化由底层 `malloc` 实现（或如 libstdc++ 通过扩展分配器显式提供）。libstdc++ 的 `__pool_alloc` 因此是一个独特且可直接挂到 `std::vector` 等容器上的「用户态池」，而 libc++/MSVC 仅在系统分配器层面具备等价能力（已知公开实现行为，非逐字摘录）。
+
+### 可编译实证
+
+```cpp
+#include <ext/pool_allocator.h>
+#include <vector>
+#include <iostream>
+
+int main()
+{
+  // libstdc++ 真实的池分配器：批量分配小对象，减少对 ::operator new 的调用。
+  std::vector<int, __gnu_cxx::__pool_alloc<int>> v;
+  for (int i = 0; i < 10; ++i)
+    v.push_back(i * i);
+
+  std::cout << "size = " << v.size() << std::endl;
+  std::cout << "v[0] = " << v[0] << std::endl;
+  std::cout << "v[9] = " << v[9] << std::endl;
+  return 0;
+}
+```

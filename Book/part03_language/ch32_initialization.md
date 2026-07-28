@@ -1071,3 +1071,95 @@ flowchart TD
 | ch48 | 动态内存 | 容器初始化时元素在堆（dynamic），initializer_list 临时数组的生命周期陷阱 |
 | ch43 | 缓存局部性 | 初始化顺序影响对象在内存中的布局与缓存行占用 |
 | ch45 | 对象模型 | 聚合/指定初始化直接映射到对象的内存布局 |
+
+## 附录 D4：libstdc++ 源码实证
+
+下面两段 `text` 块逐字摘录自 GCC 15.3.0 的顶层头文件 `initializer_list`（相对路径 `initializer_list`，位于 `mingw64/include/c++/15.3.0/` 之下）。
+
+```text
+// initializer_list L46-80 (GCC 15.3.0)
+  template<class _E>
+    class initializer_list
+    {
+    public:
+      typedef _E 		value_type;
+      typedef const _E& 	reference;
+      typedef const _E& 	const_reference;
+      typedef size_t 		size_type;
+      typedef const _E* 	iterator;
+      typedef const _E* 	const_iterator;
+
+    private:
+      iterator			_M_array;
+      size_type			_M_len;
+
+      // The compiler can call a private constructor.
+      constexpr initializer_list(const_iterator __a, size_type __l)
+      : _M_array(__a), _M_len(__l) { }
+
+    public:
+      constexpr initializer_list() noexcept
+      : _M_array(0), _M_len(0) { }
+
+      // Number of elements.
+      constexpr size_type
+      size() const noexcept { return _M_len; }
+
+      // First element.
+      constexpr const_iterator
+      begin() const noexcept { return _M_array; }
+
+      // One past the last element.
+      constexpr const_iterator
+      end() const noexcept { return begin() + size(); }
+    };
+```
+
+```text
+// initializer_list L88-102 (GCC 15.3.0)
+  template<class _Tp>
+    constexpr const _Tp*
+    begin(initializer_list<_Tp> __ils) noexcept
+    { return __ils.begin(); }
+
+  template<class _Tp>
+    constexpr const _Tp*
+    end(initializer_list<_Tp> __ils) noexcept
+    { return __ils.end(); }
+```
+
+### 设计动机
+
+`std::initializer_list` 是一个由编译器"施法"的类型：库代码（上引头文件）只声明了它的"形状"——成员类型、私有成员 `_M_array`/`_M_len`、两个公有成员函数，以及一个**私有构造函数** `initializer_list(const_iterator, size_type)`。任何用户代码都无法调用这个私有构造函数，因此你永远不能凭空用两个指针（或指针+长度）自己构造出一个 `initializer_list`。
+
+真正的"魔法"发生在大括号初始化 `{1,2,3}` 处：编译器在调用点自动生成一个匿名 `const` 数组（通常置于只读/静态存储区），然后合成对该私有构造函数的调用，把数组首地址与元素个数传进去。也就是说，对象本身只是那块编译器托管数组的"视图（view）"，它不拥有、不拷贝、不释放底层存储。
+
+正因为底层数组是编译器临时物化的，`initializer_list` 的生命周期被严格绑定到那次初始化表达式：一旦离开 `{...}` 所在的完整表达式，数组就可能失效，之后再用 `begin()`/`end()` 解引用就是悬垂访问。这解释了为何 `size()`、`begin()`、`end()` 都标了 `constexpr noexcept`——它们只是读取 `_M_len`/`_M_array`，是零开销的薄封装。
+
+自由函数 `std::begin` / `std::end` 只是转发到成员 `begin()`/`end()`，使 `initializer_list` 能无缝接入基于范围的 `for` 与标准算法。它们的存在进一步说明：`initializer_list` 的全部"能力"都源于编译器与这条私有构造契约，库只是按标准把接口摆出来。
+
+### 跨实现对比（libstdc++ / libc++ / MSVC STL）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ | MSVC STL |
+| --- | --- | --- | --- |
+| 私有构造参数 | `initializer_list(const_iterator __a, size_type __l)`（指针 + 长度） | `initializer_list(const value_type* __b, size_type __s)`（指针 + 长度，已知公开实现行为，非逐字摘录） | `initializer_list(const _Elem* _First_arg, const _Elem* _Last_arg)`（首指针 + 尾指针，已知公开实现行为，非逐字摘录） |
+| backing 数组来源 | 编译器在 `{...}` 处物化匿名 `const` 数组并调用私有构造 | 编译器在 `{...}` 处物化匿名 `const` 数组并调用私有构造（等价设计，已知公开实现行为，非逐字摘录） | 编译器在 `{...}` 处物化匿名 `const` 数组并调用私有构造（等价设计，已知公开实现行为，非逐字摘录） |
+| 迭代器类型 | `const _E*`（即 `const_iterator`） | `const value_type*`（已知公开实现行为，非逐字摘录） | `const _Elem*`（已知公开实现行为，非逐字摘录） |
+| 自由 `begin`/`end` | 提供，转发至成员 | 提供，转发至成员（等价设计，已知公开实现行为，非逐字摘录） | 提供，转发至成员（等价设计，已知公开实现行为，非逐字摘录） |
+| 核心契约 | 构造私有、仅编译器可调用 | 构造私有、仅编译器可调用 | 构造私有、仅编译器可调用 |
+
+### 可编译实证
+
+```cpp
+#include <iostream>
+#include <initializer_list>
+
+int main()
+{
+  std::initializer_list<int> il = {1, 2, 3, 4, 5};
+  std::cout << "size = " << il.size() << std::endl;
+  for (auto it = std::begin(il); it != std::end(il); ++it)
+    std::cout << *it << std::endl;
+  return 0;
+}
+```

@@ -955,3 +955,160 @@ flowchart TD
 | ch66 SFINAE | ch51 CRTP | SFINAE 可探测派生类是否提供某接口，等价于 concept |
 | ch72 表达式模板 | ch51 CRTP | Eigen 表达式模板以 CRTP 消除临时对象 |
 | ch68 TMP | ch51 CRTP | CRTP 是 TMP 中基类注入行为的惯用法 |
+
+## 附录 D4：libstdc++ 源码实证
+
+本章聚焦 CRTP（Curiously Recurring Template Pattern）。`std::enable_shared_from_this<T>` 是标准库中最接近 CRTP 心智模型的组件：用户类型 `Foo` 继承自 `enable_shared_from_this<Foo>`，即基类被参数化为派生类自身。下面用 GCC 15.3.0 的 libstdc++ 源码逐字实证其实现。
+
+### 源码实证
+
+```text
+// bits/shared_ptr_base.h L402-403 (GCC 15.3.0)
+  template<typename _Tp>
+    class enable_shared_from_this;
+```
+
+```text
+// bits/shared_ptr_base.h L2181-2229 (GCC 15.3.0)
+  template<typename _Tp, _Lock_policy _Lp>
+    class __enable_shared_from_this
+    {
+    protected:
+      constexpr __enable_shared_from_this() noexcept { }
+
+      __enable_shared_from_this(const __enable_shared_from_this&) noexcept { }
+
+      __enable_shared_from_this&
+      operator=(const __enable_shared_from_this&) noexcept
+      { return *this; }
+
+      ~__enable_shared_from_this() { }
+
+    public:
+      __shared_ptr<_Tp, _Lp>
+      shared_from_this()
+      { return __shared_ptr<_Tp, _Lp>(this->_M_weak_this); }
+
+      __shared_ptr<const _Tp, _Lp>
+      shared_from_this() const
+      { return __shared_ptr<const _Tp, _Lp>(this->_M_weak_this); }
+
+#if __cplusplus > 201402L || !defined(__STRICT_ANSI__) // c++1z or gnu++11
+      __weak_ptr<_Tp, _Lp>
+      weak_from_this() noexcept
+      { return this->_M_weak_this; }
+
+      __weak_ptr<const _Tp, _Lp>
+      weak_from_this() const noexcept
+      { return this->_M_weak_this; }
+#endif
+
+    private:
+      template<typename _Tp1>
+	void
+	_M_weak_assign(_Tp1* __p, const __shared_count<_Lp>& __n) const noexcept
+	{ _M_weak_this._M_assign(__p, __n); }
+
+      friend const __enable_shared_from_this*
+      __enable_shared_from_this_base(const __shared_count<_Lp>&,
+				     const __enable_shared_from_this* __p)
+      { return __p; }
+
+      template<typename, _Lock_policy>
+	friend class __shared_ptr;
+
+      mutable __weak_ptr<_Tp, _Lp>  _M_weak_this;
+    };
+```
+
+```text
+// bits/shared_ptr.h L917-971 (GCC 15.3.0)
+  template<typename _Tp>
+    class enable_shared_from_this
+    {
+    protected:
+      constexpr enable_shared_from_this() noexcept { }
+
+      enable_shared_from_this(const enable_shared_from_this&) noexcept { }
+
+      enable_shared_from_this&
+      operator=(const enable_shared_from_this&) noexcept
+      { return *this; }
+
+      ~enable_shared_from_this() { }
+
+    public:
+      shared_ptr<_Tp>
+      shared_from_this()
+      { return shared_ptr<_Tp>(this->_M_weak_this); }
+
+      shared_ptr<const _Tp>
+      shared_from_this() const
+      { return shared_ptr<const _Tp>(this->_M_weak_this); }
+
+#ifdef __glibcxx_enable_shared_from_this // C++ >= 17 && HOSTED
+      weak_ptr<_Tp>
+      weak_from_this() noexcept
+      { return this->_M_weak_this; }
+
+      weak_ptr<const _Tp>
+      weak_from_this() const noexcept
+      { return this->_M_weak_this; }
+#endif
+
+    private:
+      template<typename _Tp1>
+	void
+	_M_weak_assign(_Tp1* __p, const __shared_count<>& __n) const noexcept
+	{ _M_weak_this._M_assign(__p, __n); }
+
+      friend const enable_shared_from_this*
+      __enable_shared_from_this_base(const __shared_count<>&,
+				     const enable_shared_from_this* __p)
+      { return __p; }
+
+      template<typename, _Lock_policy>
+	friend class __shared_ptr;
+
+      mutable weak_ptr<_Tp>  _M_weak_this;
+    };
+```
+
+### 设计动机
+
+CRTP 的本质是让基类在编译期就“知道”派生类的真实类型：`Foo` 继承 `enable_shared_from_this<Foo>`，于是 `enable_shared_from_this` 被实例化为 `enable_shared_from_this<Foo>`，其成员函数可以精确地以 `Foo` 作为模板实参构造返回类型，而无需任何虚函数表或运行时类型查询。
+
+`std::enable_shared_from_this<T>` 借助这一机制，把一个 `mutable weak_ptr<T> _M_weak_this` 钩子埋入用户对象内部。当 `shared_ptr` 的构造函数创建托管对象时，会通过 ADL 找到 `__enable_shared_from_this_base` 友元并把自身控制块写入该钩子（`_M_weak_assign` / `_M_enable_shared_from_this_with`）。之后 `shared_from_this()` 直接以 `_M_weak_this` 为参数构造 `shared_ptr<T>`，从而拿到与原始 `shared_ptr` 共享同一控制块的新句柄。
+
+整个过程零虚派发：返回类型 `shared_ptr<T>` 在编译期由模板参数 `T` 明确决定，`shared_from_this()` 内联展开为一次 `weak_ptr` 提升。对比“基类持有 `void*` 再运行时 down-cast”的等价方案，CRTP 版本既类型安全又零开销，正是标准库选用它的根本原因。
+
+### 跨实现对比（libstdc++ / libc++ / MSVC STL）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ | MSVC STL |
+| --- | --- | --- | --- |
+| 内部弱引用钩子成员 | `mutable weak_ptr<_Tp> _M_weak_this;`（见上方逐字摘录） | `mutable weak_ptr<_Tp> __weak_this_;` （已知公开实现行为，非逐字摘录） | `mutable weak_ptr<_Ty> _Wptr;` （已知公开实现行为，非逐字摘录） |
+| `shared_from_this()` 实现 | `return shared_ptr<_Tp>(this->_M_weak_this);`（见上方逐字摘录） | 以 `__weak_this_` 提升构造 `shared_ptr<_Tp>`，语义等价 （已知公开实现行为，非逐字摘录） | 以 `_Wptr` 提升构造 `shared_ptr<_Ty>`，语义等价 （已知公开实现行为，非逐字摘录） |
+| CRTP 参数化方式 | 基类 `enable_shared_from_this<T>` 被派生类 `Foo` 以自身类型实例化；内部另设策略化基类 `__enable_shared_from_this<T,_Lp>`（见上方逐字摘录） | `enable_shared_from_this<_Tp>` 同样以派生类类型为模板实参，设计等价 （已知公开实现行为，非逐字摘录） | `enable_shared_from_this<_Ty>` 同样以派生类类型为模板实参，设计等价 （已知公开实现行为，非逐字摘录） |
+| 钩子注入时机 | `shared_ptr` 构造时经 ADL 调用 `__enable_shared_from_this_base` 写入 `_M_weak_this`（见上方逐字摘录） | `shared_ptr` 构造时同样向 `__weak_this_` 注入控制块，设计等价 （已知公开实现行为，非逐字摘录） | `shared_ptr` 构造时同样向 `_Wptr` 注入控制块，设计等价 （已知公开实现行为，非逐字摘录） |
+
+三者均为“基类按派生类类型参数化的 CRTP 钩子 + 编译期确定返回类型 + 零虚派发”的同一设计，差异仅在私有成员命名与是否额外暴露策略化内部基类。
+
+### 可编译实证
+
+```cpp
+#include <memory>
+#include <iostream>
+
+struct Foo : std::enable_shared_from_this<Foo> {
+    int x = 42;
+};
+
+int main() {
+    auto p = std::make_shared<Foo>();
+    auto q = p->shared_from_this();
+    std::cout << "q->x = " << q->x << std::endl;
+    std::cout << "same object: " << (p.get() == q.get()) << std::endl;
+    std::cout << "use_count = " << p.use_count() << std::endl;
+    return 0;
+}
+```

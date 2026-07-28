@@ -1105,3 +1105,73 @@ flowchart TD
 | ch19 变量存储期与 ODR | ch123 编译期编程 | 编译期实体受 ODR 约束 |
 | ch39 RAII 与 Rule of Five | ch123 编译期编程 | 编译期构造需满足 RAII |
 | ch118 Modules | ch123 编译期编程 | 编译期接口可借模块导出 |
+
+## 附录 D4：libstdc++ 源码实证
+
+本章实证 `std::integral_constant` 及其衍生类型 `true_type` / `false_type` 在 libstdc++ 15.3.0 中的真实实现。所有 `text` 段均为 GCC 15.3.0 源码逐字摘录（行号取自 `type_traits` 顶层头文件）。
+
+```text
+// type_traits L92-103 (GCC 15.3.0)
+  template<typename _Tp, _Tp __v>
+    struct integral_constant
+    {
+      static constexpr _Tp value = __v;
+      using value_type = _Tp;
+      using type = integral_constant<_Tp, __v>;
+      constexpr operator value_type() const noexcept { return value; }
+
+#ifdef __cpp_lib_integral_constant_callable // C++ >= 14
+      constexpr value_type operator()() const noexcept { return value; }
+#endif
+    };
+
+// type_traits L117-120 (GCC 15.3.0)
+  using true_type =  __bool_constant<true>;
+
+  /// The type used as a compile-time boolean with false value.
+  using false_type = __bool_constant<false>;
+```
+
+### 设计动机
+
+`std::integral_constant` 是整个 `<type_traits>` 体系——乃至整个 C++ 元编程——的基石。它把"一个编译期常量值"提升为一个"类型"：模板参数 `_Tp __v` 在实例化时即被固化进类型本身，于是 `integral_constant<bool, true>` 与 `integral_constant<bool, false>` 是两个不同的类型。这种"值即类型"的映射，使得我们能够在编译期用**重载决议（overload resolution）**而非运行时 `if` 来分派逻辑：函数参数只需写成 `integral_constant<bool, true>` 或 `false_type`，编译器便会在重载集合中挑选匹配的那一个，这就是 tag dispatch 的本质。
+
+正因如此，`true_type` 与 `false_type` 并非孤立工具，而是所有类型特质返回值的统一载体。标准规定每个 trait 必须暴露一个 `value` 成员常量和一个 `type` 成员类型，而 `integral_constant<bool, X>` 恰好同时提供了 `value`、`value_type`、`type` 三者，并额外提供向 `value_type` 的 `constexpr` 转换运算符。于是 `std::is_pointer<T>` 只需继承自 `true_type` 或 `false_type`，就自动满足了 trait 的全部接口契约。
+
+C++14 起 `integral_constant` 又被赋予了 `constexpr operator()`（代码中由 `__cpp_lib_integral_constant_callable` 守护），使它能作为可调用对象直接返回常量值；这进一步让 trait 既能用于 SFINAE/标签分发，也能在 `constexpr` 上下文中当作值工厂使用，体现了"一个基类贯穿全库"的设计经济性。
+
+### 跨实现对比（libstdc++ / libc++ / MSVC STL）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ | MSVC STL |
+| --- | --- | --- | --- |
+| `integral_constant` 主模板 | `template<typename _Tp, _Tp __v> struct integral_constant { static constexpr _Tp value = __v; using value_type = _Tp; using type = integral_constant<_Tp, __v>; constexpr operator value_type() const noexcept; };` | 同形态主模板，`integral_constant<T, v>` 提供 `value` / `value_type` / `type` 及常量转换运算符（已知公开实现行为，非逐字摘录） | 同形态主模板，`std::integral_constant` 暴露 `value` / `value_type` / `type` 及 `constexpr` 转换（已知公开实现行为，非逐字摘录） |
+| `true_type` / `false_type` | 经 `__bool_constant<true>` / `__bool_constant<false>` 别名定义（见上表逐字摘录） | 直接定义为 `integral_constant<bool, true>` / `integral_constant<bool, false>` 的别名（已知公开实现行为，非逐字摘录） | 直接定义为 `integral_constant<bool, true>` / `integral_constant<bool, false>` 的别名（已知公开实现行为，非逐字摘录） |
+| C++14 可调用支持 | 由宏 `__cpp_lib_integral_constant_callable`（`// C++ >= 14`）守护 `constexpr operator()` | 同样在 `operator()` 上以特性测试宏守护，标准一致（已知公开实现行为，非逐字摘录） | 同样以特性测试宏守护 `constexpr operator()`，标准一致（已知公开实现行为，非逐字摘录） |
+| 存储（`value` 外联定义） | 当无内联变量（`! __cpp_inline_variables`）时外联定义 `constexpr _Tp integral_constant<_Tp, __v>::value;`，兼容 C++11 ODR | 历史版本对 C++11 亦提供兼容外联定义，行为等价（已知公开实现行为，非逐字摘录） | 通过宏在 C++11 模式下同样提供兼容外联定义，行为等价（已知公开实现行为，非逐字摘录） |
+
+### 可编译实证
+
+```cpp
+#include <iostream>
+#include <type_traits>
+
+int main()
+{
+  // integral_constant 把编译期布尔值提升为类型。
+  using ic = std::integral_constant<bool, true>;
+  std::cout << "integral_constant<bool,true>::value = "
+            << ic::value << std::endl;
+
+  // true_type / false_type 是 trait 返回值的统一载体。
+  std::cout << "true_type::value  = " << std::true_type::value  << std::endl;
+  std::cout << "false_type::value = " << std::false_type::value << std::endl;
+
+  // 类型特质本身即继承自 integral_constant<bool, ...>。
+  std::cout << "is_pointer<int*>::value = "
+            << std::is_pointer<int*>::value << std::endl;
+  std::cout << "is_pointer<int>::value  = "
+            << std::is_pointer<int>::value  << std::endl;
+
+  return 0;
+}
+```

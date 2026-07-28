@@ -1062,3 +1062,119 @@ flowchart TD
 | ch19 变量存储期与 ODR | ch124 libstdc++ | 双 ABI 与 ch19 链接模型耦合 |
 | ch117 复制消除 | ch124 libstdc++ | 标准库内部依赖消除优化 |
 | ch113 协程 promise awaiter | ch124 libstdc++ | 协程实现依赖标准库设施 |
+
+## 附录 D4：libstdc++ 源码实证
+
+本章展示 libstdc++ 15.3.0 中两个“总开关”配置文件 —— `bits/c++config.h`（ABI / 发行版本 / 双 ABI 宏）与 `bits/version.h`（特性测试宏机制）—— 的真实源码片段。读懂这两个文件，是阅读 libstdc++ 任何一个头文件的前提。
+
+```text
+// x86_64-w64-mingw32/bits/c++config.h L44-49 (GCC 15.3.0)
+// The major release number for the GCC release the C++ library belongs to.
+#define _GLIBCXX_RELEASE 15
+
+// The datestamp of the C++ library in compressed ISO date format.
+#undef __GLIBCXX__ /* The testsuite defines it to 99999999 to block PCH.  */
+#define __GLIBCXX__ 20260612
+```
+
+```text
+// x86_64-w64-mingw32/bits/c++config.h L359-386 (GCC 15.3.0)
+#if ! _GLIBCXX_USE_DUAL_ABI
+// Ignore any pre-defined value of _GLIBCXX_USE_CXX11_ABI
+# undef _GLIBCXX_USE_CXX11_ABI
+#endif
+
+#ifndef _GLIBCXX_USE_CXX11_ABI
+# define _GLIBCXX_USE_CXX11_ABI 1
+#endif
+
+#if _GLIBCXX_USE_CXX11_ABI
+namespace std
+{
+  inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
+}
+namespace __gnu_cxx
+{
+  inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
+}
+# define _GLIBCXX_NAMESPACE_CXX11 __cxx11::
+# define _GLIBCXX_BEGIN_NAMESPACE_CXX11 namespace __cxx11 {
+# define _GLIBCXX_END_NAMESPACE_CXX11 }
+# define _GLIBCXX_DEFAULT_ABI_TAG _GLIBCXX_ABI_TAG_CXX11
+#else
+# define _GLIBCXX_NAMESPACE_CXX11
+# define _GLIBCXX_BEGIN_NAMESPACE_CXX11
+# define _GLIBCXX_END_NAMESPACE_CXX11
+# define _GLIBCXX_DEFAULT_ABI_TAG
+#endif
+```
+
+```text
+// bits/version.h L34-45 (GCC 15.3.0)
+// Usage guide:
+//
+// In your usual header, do something like:
+//
+//   #define __glibcxx_want_ranges
+//   #define __glibcxx_want_concepts
+//   #include <bits/version.h>
+//
+// This will generate the FTMs you named, and let you use them in your code as
+// if it was user code.  All macros are also exposed under __glibcxx_NAME even
+// if unwanted, to permit bits and other FTMs to depend on them for condtional
+// computation without exposing extra FTMs to user code.
+```
+
+```text
+// bits/version.h L158-166 (GCC 15.3.0)
+#if !defined(__cpp_lib_coroutine)
+# if (__cplusplus >= 201402L) && (__cpp_impl_coroutine)
+#  define __glibcxx_coroutine 201902L
+#  if defined(__glibcxx_want_all) || defined(__glibcxx_want_coroutine)
+#   define __cpp_lib_coroutine 201902L
+#  endif
+# endif
+#endif /* !defined(__cpp_lib_coroutine) && defined(__glibcxx_want_coroutine) */
+#undef __glibcxx_want_coroutine
+```
+
+### 设计动机
+
+libstdc++ 的头文件几乎全部以 `bits/c++config.h` 与 `bits/version.h` 为根基。`c++config.h` 由 `configure` 在构建 GCC 时生成，承载发行版本宏（`_GLIBCXX_RELEASE`）、日期戳（`__GLIBCXX__`）、目标架构相关的 `__GLIBCXX_USE_*` 开关，以及双 ABI 控制；`version.h` 则由 AutoGen 从 `version.def` 自动生成，是全部 `__cpp_lib_*` 特性测试宏（FTM）的唯一权威来源。先看清这两份文件的机制，再去读 `<vector>`、`<string>` 之类才会明白那些 `#if _GLIBCXX_USE_CXX11_ABI` 与 `#ifdef __cpp_lib_xxx` 从何而来。
+
+双 ABI 机制是阅读 libstdc++ 的第二道门槛。GCC 5 起的“新 ABI”把 `std::string`、`std::list` 等类型迁入 `inline namespace __cxx11` 并打上 `abi_tag("cxx11")`，由 `_GLIBCXX_USE_CXX11_ABI`（默认 1）驱动；当 `_GLIBCXX_USE_DUAL_ABI` 为 0 时，用户代码不可覆盖该宏。这意味着在 `L368-386` 的 `#if _GLIBCXX_USE_CXX11_ABI` 分支里，标准库类型被放进 `__cxx11` 内联命名空间，老 ABI 则将其留在全局 `std`。这正是混链不同 GCC 版本目标文件时出现符号未定义/多重定义的症结所在。
+
+`version.h` 的机制则把“特性可用性”与“是否向用户暴露 FTM”解耦。`L38-45` 的用法注释说明：库内部只要 `#define __glibcxx_want_xxx` 再 `#include <bits/version.h>`，即可生成对应 `__cpp_lib_xxx`，且无论是否被 want，内部宏 `__glibcxx_xxx` 始终定义，供其他 FTM 依赖计算。`L158-166` 的 coroutine 实例展示了惯用模板：`#if !defined(__cpp_lib_coroutine)` 下，先按语言级别与 `__cpp_impl_coroutine` 定义内部值，再仅在被 want 时把 `__cpp_lib_coroutine` 暴露给用户 —— 这是阅读任何 C++17/20/23 头文件时判断“该特性当前是否可用”的核心路径。
+
+### 跨实现对比（libstdc++ / libc++ / MSVC STL）
+
+| 关注点 | libstdc++ (GCC) | libc++ (LLVM) | MSVC STL (Microsoft) |
+| --- | --- | --- | --- |
+| 发行版本宏 | `_GLIBCXX_RELEASE` + `__GLIBCXX__`（日期戳） | 无等价单点宏；版本随 LLVM 发布号走（已知公开实现行为，非逐字摘录） | 无等价宏；版本绑定 VC 工具集 `_MSC_VER`（已知公开实现行为，非逐字摘录） |
+| 双 ABI / 内联命名空间 | `_GLIBCXX_USE_CXX11_ABI` 控制 `std::__cxx11` | 始终使用内联命名空间 `std::__1`（已知公开实现行为，非逐字摘录） | 无双 ABI 切换；单一 ABI（已知公开实现行为，非逐字摘录） |
+| FTM 生成机制 | AutoGen 的 `bits/version.h` + `__glibcxx_want_*` | 头文件中手工/脚本维护 `__cpp_lib_*`（已知公开实现行为，非逐字摘录） | `yvals_core.h` 等集中定义 `__cpp_lib_*`（已知公开实现行为，非逐字摘录） |
+| 配置入口 | 构建期生成 `c++config.h` | 构建期 `__config_site` + `.__config`（已知公开实现行为，非逐字摘录） | 编译器内建 + `yvals*.h`（已知公开实现行为，非逐字摘录） |
+
+### 可编译实证
+
+```cpp
+#include <version>
+#include <iostream>
+
+int main()
+{
+#ifdef __cpp_lib_coroutine
+  std::cout << "coroutine supported" << std::endl;
+#else
+  std::cout << "coroutine not supported" << std::endl;
+#endif
+
+#ifdef __cpp_lib_ranges
+  std::cout << "ranges supported" << std::endl;
+#else
+  std::cout << "ranges not supported" << std::endl;
+#endif
+
+  return 0;
+}
+```
