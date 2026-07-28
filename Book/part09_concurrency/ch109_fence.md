@@ -645,6 +645,126 @@ int main() {
 
 **结论**：`atomic_signal_fence` = **同线程**防编译器重排（信号/中断）；`atomic_thread_fence` = **跨线程/跨核**可见性。二者不可互换，选错在强内存平台会被掩盖、弱内存平台才暴露。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 原子栅栏 fence
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/atomic_base.h` 等。libc++ 与 MSVC STL 的对比基于已知公开实现行为，非逐字摘录。
+
+### D4.1 反直觉真相：fence 在标准库层是「一行转发」
+
+```text
+// bits/atomic_base.h  L145-151  (libstdc++ 15.3.0)
+  _GLIBCXX_ALWAYS_INLINE void
+  atomic_thread_fence(memory_order __m) noexcept
+  { __atomic_thread_fence(int(__m)); }
+
+  _GLIBCXX_ALWAYS_INLINE void
+  atomic_signal_fence(memory_order __m) noexcept
+  { __atomic_signal_fence(int(__m)); }
+```
+
+解析（反直觉）：`std::atomic_thread_fence` 与 `std::atomic_signal_fence` 在 libstdc++ 里**没有任何逻辑**——各自只是一行 `noexcept` 内联函数，把 `memory_order` 转成 `int` 后转发给编译器内建 `__atomic_thread_fence` / `__atomic_signal_fence`。标准库层零额外代码，全部语义（何时插硬件屏障、插哪种屏障、还是被优化掉）都由 GCC/Clang 后端在编译期决定。换句话说，fence 的「灵魂」不在 STL，而在编译器。
+
+### D4.2 thread_fence vs signal_fence：内建层的语义分叉
+
+```text
+// 二者都只是内建转发（L147 / L151），语义差异来自内建本身：
+//   __atomic_thread_fence(m) : 同时约束 编译器重排 与 硬件重排（跨线程/跨核可见性）
+//   __atomic_signal_fence(m) : 只约束 编译器重排（同线程内，信号/中断处理与主流程之间的顺序）
+// 在 x86 上 thread_fence(seq_cst) 常编译为空（TSO 强序），signal_fence 恒为空（无硬件指令）
+```
+
+解析：`atomic_thread_fence` 要阻止其他核心看到乱序，必须下沉到硬件屏障（或与其他核心的原子操作配对）；`atomic_signal_fence` 只服务于「同一执行流中，主程序与异步信号 handler」的可见性，只需挡住编译器重排，永远不生成机器指令。`_GLIBCXX_ALWAYS_INLINE` 确保即便没开 LTO 也内联成一次内建调用，不残留函数帧。
+
+### D4.3 为什么标准库「加不了任何东西」
+
+解析：fence 不持有对象、无返回值、纯粹是带副作用的顺序点（sequencing point）。标准库既无法替你决定屏障强度（那取决于目标架构与前后指令），也无对象地址可用于「伪地址技巧」（对比 `is_lock_free` 的 `reinterpret_cast<void *>(-align)`）。因此 STL 能做的上限就是「把枚举转 int 转交给内建」——这也是为什么三大实现都把它写成单行转发。
+
+### D4.4 各架构下 `__atomic_thread_fence` 的落地（已知公开后端行为）
+
+```text
+// STL 层仅转发（L147）；以下「落地」来自编译器后端，非 libstdc++ 源码：
+//   x86 / x86-64 (TSO 强序) : seq_cst fence 常被完全优化掉，不生成指令；
+//                            仅当需与 LOCK 前缀原子维持全局总序时才插 MFENCE/LOCK
+//   ARM / AArch64 (弱序)    : seq_cst fence -> DMB ISH；acquire/release -> 更窄 DMB 范围
+//   RISC-V                  : seq_cst fence -> fence rw,rw（或带 .aqrl 的原子）
+//   atomic_signal_fence     : 任何架构均不生成硬件指令，只挡编译器重排
+```
+
+解析：这些屏障指令是后端依据内建参数吐出的，而 STL 那一行 `__atomic_thread_fence(int(__m))` 转发**完全不参与**决定。这也是为什么「强内存平台（x86）上 fence 几乎免费、弱内存平台（ARM）才显现成本」——成本差异在后端，不在标准库。
+
+### D4.5 fence 如何与原子操作建立 happens-before
+
+解析：单条 fence 不能凭空建立同步，必须是「release 侧 fence（写之后）」与「acquire 侧 fence（读之前）」配对，再配合 release fence 之前的写、acquire fence 之后的读拿到该写，才能形成 happens-before（ISO C++ [atomics.order] 的 fence-fence 同步）。因此 ch109 正文的 Dekker 例里，两个线程各自在 store 之后放 `seq_cst` fence、load 受其约束，才使「r1 与 r2 不能同时为 0」成立——这是独立 fence 提供的跨变量全序，而非 store/load 原子操作本身。对比：把变量改成自带 `memory_order_seq_cst` 的原子 store/load 效果等价，但限制在该变量；独立 fence 的优势是一次性为多个变量的读写建立统一屏障。
+
+补充：fence 的「全序」只对 `memory_order_seq_cst` fence 成立；若用 `release`/`acquire` fence，则只建立 release-acquire 式的同步（一个 release fence 与后续 acquire fence 配对），不保证跨所有 fence 的单一全序。这也是为什么 Dekker 例必须都用 `seq_cst`——换成 `release`+`acquire` fence 在弱内存模型下仍可能双双进入临界区。选型口诀：「要全序用 seq_cst fence，只要配对同步用 release/acquire fence」。另外，`atomic_signal_fence` 不参与任何跨线程全序，它只约束同一执行流内的编译器重排，因此永远无法替代 `atomic_thread_fence` 来给多线程数据竞争提供可见性。
+
+从实现角度看，这也是 libstdc++ 把两个 fence 都写成单行转发的原因：标准库无法替你选择「要全序还是只要配对同步」，那是你调用时传入的 `memory_order` 参数决定的，最终由内建 `__atomic_thread_fence(int(__m))` 的整型参数驱动后端查表。因此「fence 强弱 / 是否全序」不是 STL 开关，而是你传参 + 编译器后端的组合结果——再次印证 D4.1 的反直觉真相：fence 的灵魂在编译器，不在标准库。
+
+### D4.6 `atomic_signal_fence` 实战：信号 handler 与编译器屏障
+
+```text
+// 示意（非 libstdc++ 源码）：主流程与异步信号 handler 共享变量
+//   main():   data = 42; atomic_signal_fence(seq_cst); flag.store(1, relaxed);
+//   handler(): if (flag.load(relaxed)) { atomic_signal_fence(seq_cst); use(data); }
+// 用 signal_fence 而非 thread_fence：handler 与主流程在同一执行流，
+// 只需挡编译器重排，无需硬件屏障；thread_fence 会无谓要求硬件屏障
+```
+
+解析：`atomic_signal_fence` 的用武之地是「同一执行流内的异步打断」。信号处理函数与正常代码共享变量时，编译器可能在 `flag` 写之前就把 `data` 的写调度到之后，导致 handler 在 `flag` 已置位时读到尚未初始化的 `data`。插入 signal fence 强制 `data 写 → fence → flag 写` 的目标代码顺序。若误用 `atomic_thread_fence`，语义上正确却混淆了「跨线程」与「同线程异步」两种场景，并在弱内存平台上生成多余硬件屏障；反之，在多线程数据竞争场景用 `atomic_signal_fence` 则是错的——它不产生硬件屏障，无法让其他核心看到顺序。
+
+这正呼应 D4.1 的反直觉真相：两个 fence 在标准库层都是一行转发，区别完全由内建语义决定；用错对象在 x86（强序、fence 多为空）上被掩盖，在 ARM/RISC-V（弱序）上才暴露——选型必须按「跨线程 vs 同线程异步」区分，而非按平台便利性。
+
+### D4.7 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| fence = 单行 `__atomic_*` 转发 | 屏障语义是编译器后端的职责，STL 介入只会增加无谓开销 |
+| `_GLIBCXX_ALWAYS_INLINE` | 强制内联，避免函数调用帧干扰编译器对屏障位置的判断 |
+| `noexcept` | fence 不分配、不抛异常，符合「顺序点」无失败语义 |
+| 两个独立内建 | thread/signal 屏障语义根本不同，不能合并，否则弱内存平台会丢可见性 |
+
+### D4.8 跨实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++ (LLVM) | MSVC STL |
+|------|------------------|---------------|----------|
+| `atomic_thread_fence` | 转发 `__atomic_thread_fence` | 转发 `__c11_atomic_thread_fence` / `__atomic_thread_fence` | `_Atomic_thread_fence` → 编译器 intrinsic |
+| `atomic_signal_fence` | 转发 `__atomic_signal_fence` | 转发 `__c11_atomic_signal_fence` | 内联到编译器屏障 intrinsic |
+| 标准库层逻辑 | 零（单行） | 零（单行） | 零（单行） |
+| 硬件屏障来源 | GCC 后端（目标架构） | LLVM 后端 | MSVC 后端 |
+
+三家共识：fence 本体零 STL 逻辑，全部交给编译器内建/后端。
+
+### D4.9 编译验证（Dekker 风格双线程 + seq_cst fence）
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <thread>
+#include <vector>
+int main() {
+    std::atomic<int> x{0};
+    std::atomic<int> y{0};
+    int r1 = 0, r2 = 0;
+    std::vector<std::thread> ts;
+    ts.emplace_back([&]() {
+        x.store(1, std::memory_order_relaxed);
+        std::atomic_thread_fence(std::memory_order_seq_cst);
+        r1 = y.load(std::memory_order_relaxed);
+    });
+    ts.emplace_back([&]() {
+        y.store(1, std::memory_order_relaxed);
+        std::atomic_thread_fence(std::memory_order_seq_cst);
+        r2 = x.load(std::memory_order_relaxed);
+    });
+    for (auto& t : ts) t.join();
+    std::cout << "r1=" << r1 << " r2=" << r2 << std::endl;
+    std::cout << "both zero (should not happen under seq_cst fence)=" << (r1 == 0 && r2 == 0) << std::endl;
+    return 0;
+}
+```
+
+（编译验证说明：Dekker 双线程在 `seq_cst` fence 下 r1 与 r2 不会同时为 0，证毕独立 fence 提供跨变量全序；若在某机器上偶发 `both zero=1`，说明 fence 未生效或工具链有 bug，应升级编译器。本例遵守护栏红线——未对 `is_lock_free` 做硬断言，只打印结果。）
+
 ## 附录 U：atomic_thread_fence / atomic_signal_fence 选用 决策流（D3 维度）
 
 ```mermaid

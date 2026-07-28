@@ -1235,6 +1235,345 @@ long total = std::accumulate(local.begin(), local.end(), 0L); // 无锁合并
 
 **工程含义**：并行化的第一原则不是"加锁"，而是"减少共享"；atomic 解决正确性，架构解决性能。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — std::thread / std::async / std::future
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/std_thread.h` 与 `future`。libc++ 与 MSVC STL 的对比基于已知公开实现行为，非逐字摘录。
+
+### D4.1 thread 构造与类型抹除
+
+std::thread 用 `_State` 抽象基类 + `_State_impl<_Callable>` 抹除类型：decay 后的目标与参数经 `_Call_wrapper` 打包，线程入口 `_M_run()` 直接调用；`_M_start_thread` 在 `.cc` 里 `__gthread_create` 拉线程。
+
+```text
+// bits/std_thread.h  L162-178  线程构造函数
+    template<typename _Callable, typename... _Args,
+	     typename = _Require<__not_same<_Callable>>>
+      explicit
+      thread(_Callable&& __f, _Args&&... __args)
+      {
+	static_assert( __is_invocable<typename decay<_Callable>::type,
+				      typename decay<_Args>::type...>::value,
+	  "std::thread arguments must be invocable after conversion to rvalues"
+	  );
+
+	using _Wrapper = _Call_wrapper<_Callable, _Args...>;
+	// Create a call wrapper with DECAY_COPY(__f) as its target object
+	// and DECAY_COPY(__args)... as its bound argument entities.
+	_M_start_thread(_State_ptr(new _State_impl<_Wrapper>(
+	      std::forward<_Callable>(__f), std::forward<_Args>(__args)...)),
+	    _M_thread_deps_never_run);
+      }
+…
+// bits/std_thread.h  L236-256  _State 抽象基类 + _State_impl
+    struct _State
+    {
+      virtual ~_State();
+      virtual void _M_run() = 0;
+    };
+    using _State_ptr = unique_ptr<_State>;
+
+  private:
+    template<typename _Callable>
+      struct _State_impl : public _State
+      {
+	_Callable		_M_func;
+
+	template<typename... _Args>
+	  _State_impl(_Args&&... __args)
+	  : _M_func(std::forward<_Args>(__args)...)
+	  { }
+
+	void
+	_M_run() { _M_func(); }
+      };
+```
+
+### D4.2 _Invoker：tuple + index_sequence 展开
+
+`_Invoker` 把可调用对象与参数 decay 后塞进 `tuple`，用 `_Build_index_tuple` 生成的 `index_sequence` 逐个 `std::get` 再 `__invoke`——整包完美转发的机制；`std::async` 复用同一 `_Call_wrapper`。
+
+```text
+// bits/std_thread.h  L300-317  _Invoker::_M_invoke + _Call_wrapper
+	template<size_t... _Ind>
+	  typename __result<_Tuple>::type
+	  _M_invoke(_Index_tuple<_Ind...>)
+	  { return std::__invoke(std::get<_Ind>(std::move(_M_t))...); }
+
+	typename __result<_Tuple>::type
+	operator()()
+	{
+	  using _Indices
+	    = typename _Build_index_tuple<tuple_size<_Tuple>::value>::__type;
+	  return _M_invoke(_Indices());
+	}
+      };
+
+  public:
+    /// @cond undocumented
+    template<typename... _Tp>
+      using _Call_wrapper = _Invoker<tuple<typename decay<_Tp>::type...>>;
+```
+
+### D4.3 __future_base::_State_baseV2 共享状态
+
+future/promise/async 的核心是引用计数的共享状态。`_State_baseV2` 用 `__atomic_futex_unsigned` 状态字 `_M_status`、`atomic_flag _M_retrieved`、`once_flag _M_once`（结果只设一次）。`wait()` 先 `_M_complete_async()` 再自旋等 `__ready`。C++20 起它取代旧 `_State_base`（原用 `condition_variable`），未 ready 不分配内核对象。
+
+```text
+// future  L334-364  _State_baseV2（节选）
+    class _State_baseV2
+    {
+      typedef _Ptr<_Result_base> _Ptr_type;
+
+      enum _Status : unsigned {
+	__not_ready,
+	__ready
+      };
+
+      _Ptr_type			_M_result;
+      __atomic_futex_unsigned<>	_M_status;
+      atomic_flag         	_M_retrieved = ATOMIC_FLAG_INIT;
+      once_flag			_M_once;
+
+    public:
+      _State_baseV2() noexcept : _M_result(), _M_status(_Status::__not_ready)
+	{ }
+      _State_baseV2(const _State_baseV2&) = delete;
+      _State_baseV2& operator=(const _State_baseV2&) = delete;
+      virtual ~_State_baseV2() = default;
+
+      _Result_base&
+      wait()
+      {
+	// Run any deferred function or join any asynchronous thread:
+	_M_complete_async();
+	// Acquire MO makes sure this synchronizes with the thread that made
+	// the future ready.
+	_M_status._M_load_when_equal(_Status::__ready, memory_order_acquire);
+	return *_M_result;
+      }
+```
+
+### D4.4 _Deferred_state：惰性执行（不新开线程）
+
+`launch::deferred` 的共享状态只存 `_M_fn` 与结果，构造不建线程；被等待时 `_M_complete_async()` 就地跑函数，`_M_is_deferred_future()` 恒真使 `wait_for` 返回 `deferred`。
+
+```text
+// future  L1694-1727  _Deferred_state（节选）
+  template<typename _BoundFn, typename _Res>
+    class __future_base::_Deferred_state final
+    : public __future_base::_State_base
+    {
+    public:
+      template<typename... _Args>
+	explicit
+	_Deferred_state(_Args&&... __args)
+	: _M_result(new _Result<_Res>()),
+	  _M_fn(std::forward<_Args>(__args)...)
+	{ }
+
+    private:
+      typedef __future_base::_Ptr<_Result<_Res>> _Ptr_type;
+      _Ptr_type _M_result;
+      _BoundFn _M_fn;
+
+      // Run the deferred function.
+      virtual void
+      _M_complete_async()
+      {
+	// Multiple threads can call a waiting function on the future and
+	// reach this point at the same time. The call_once in _M_set_result
+	// ensures only the first one run the deferred function, stores the
+	// result in _M_result, swaps that with the base _M_result and makes
+	// the state ready. Tell _M_set_result to ignore failure so all later
+	// calls do nothing.
+	_M_set_result(_S_task_setter(_M_result, _M_fn), true);
+      }
+
+      // Caller should check whether the state is ready first, because this
+      // function will return true even after the deferred function has run.
+      virtual bool _M_is_deferred_future() const { return true; }
+    };
+```
+
+### D4.5 _Async_state_impl：构造即启动线程
+
+`launch::async` 的共享状态继承 `_Async_state_commonV2`，构造即 `std::thread{&_Async_state_impl::_M_run, this}` 拉线程；`_M_run` 写结果并处理线程取消（`__forced_unwind`）时置 broken promise；`wait()` 经 `_M_join()` 满足"异步 future 等待像 join 一样阻塞"。
+
+```text
+// future  L1730-1804  _Async_state_commonV2 + _Async_state_impl（节选）
+  class __future_base::_Async_state_commonV2
+    : public __future_base::_State_base
+  {
+  protected:
+    ~_Async_state_commonV2() = default;
+
+    // Make waiting functions block until the thread completes, as if joined.
+    //
+    // This function is used by wait() to satisfy the first requirement below
+    // and by wait_for() / wait_until() to satisfy the second.
+    //
+    // [futures.async]:
+    //
+    // - a call to a waiting function on an asynchronous return object that
+    // shares the shared state created by this async call shall block until
+    // the associated thread has completed, as if joined, or else time out.
+    //
+    // - the associated thread completion synchronizes with the return from
+    // the first function that successfully detects the ready status of the
+    // shared state or with the return from the last function that releases
+    // the shared state, whichever happens first.
+    virtual void _M_complete_async() { _M_join(); }
+
+    void _M_join() { std::call_once(_M_once, &thread::join, &_M_thread); }
+
+    thread _M_thread;
+    once_flag _M_once;
+  };
+
+  // Shared state created by std::async().
+  // Starts a new thread that runs a function and makes the shared state ready.
+  template<typename _BoundFn, typename _Res>
+    class __future_base::_Async_state_impl final
+    : public __future_base::_Async_state_commonV2
+    {
+    public:
+      template<typename... _Args>
+	explicit
+	_Async_state_impl(_Args&&... __args)
+	: _M_result(new _Result<_Res>()),
+	  _M_fn(std::forward<_Args>(__args)...)
+	{
+	  _M_thread = std::thread{&_Async_state_impl::_M_run, this};
+	}
+
+      // Must not destroy _M_result and _M_fn until the thread finishes.
+      // Call join() directly rather than through _M_join() because no other
+      // thread can be referring to this state if it is being destroyed.
+      ~_Async_state_impl()
+      {
+	if (_M_thread.joinable())
+	  _M_thread.join();
+      }
+
+    private:
+      void
+      _M_run()
+      {
+	__try
+	  {
+	    _M_set_result(_S_task_setter(_M_result, _M_fn));
+	  }
+	__catch (const __cxxabiv1::__forced_unwind&)
+	  {
+	    // make the shared state ready on thread cancellation
+	    if (static_cast<bool>(_M_result))
+	      this->_M_break_promise(std::move(_M_result));
+	    __throw_exception_again;
+	  }
+      }
+
+      typedef __future_base::_Ptr<_Result<_Res>> _Ptr_type;
+      _Ptr_type _M_result;
+      _BoundFn _M_fn;
+    };
+```
+
+### D4.6 std::async 真实实现 —— 反直觉真相
+
+教科书常称 libstdc++ 的 `std::async` 内部有 `_S_make_async_state` / `_S_make_deferred_state` 工厂函数分发。15.3.0 中**这两个函数不存在**：`async` 直接 `make_shared<_Async_state_impl<_Wr>>` / `make_shared<_Deferred_state<_Wr>>`，按 `__policy` 位掩码 `if` 分发，资源不足且策略含 `deferred` 时回落。
+
+```text
+// future  L1808-1839  std::async 真实实现（无 _S_make_async_state 工厂）
+  template<typename _Fn, typename... _Args>
+    _GLIBCXX_NODISCARD future<__async_result_of<_Fn, _Args...>>
+    async(launch __policy, _Fn&& __fn, _Args&&... __args)
+    {
+      using _Wr = std::thread::_Call_wrapper<_Fn, _Args...>;
+      using _As = __future_base::_Async_state_impl<_Wr>;
+      using _Ds = __future_base::_Deferred_state<_Wr>;
+
+      std::shared_ptr<__future_base::_State_base> __state;
+      if ((__policy & launch::async) == launch::async)
+	{
+	  __try
+	    {
+	      __state = std::make_shared<_As>(std::forward<_Fn>(__fn),
+					      std::forward<_Args>(__args)...);
+	    }
+#if __cpp_exceptions
+	  catch(const system_error& __e)
+	    {
+	      if (__e.code() != errc::resource_unavailable_try_again
+		  || (__policy & launch::deferred) != launch::deferred)
+		throw;
+	    }
+#endif
+	}
+      if (!__state)
+	{
+	  __state = std::make_shared<_Ds>(std::forward<_Fn>(__fn),
+					  std::forward<_Args>(__args)...);
+	}
+      return future<__async_result_of<_Fn, _Args...>>(std::move(__state));
+    }
+```
+
+（对比：libc++ 的 `async` 确有 `__make_async_state` / `__make_deferred_assoc_state` 工厂；MSVC STL 用 `_Task_async_state` / `_Deferred_async_state`。"工厂函数"是 libc++/旧版习惯，非 libstdc++ 15.3.0 事实。）
+
+### D4.7 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| `_State` + `_State_impl` 类型抹除 | 构造函数是模板而 `std::thread` 非模板，需把任意可调用+参数压成统一基类指针交给 `.cc` |
+| `_Invoker` + `index_sequence` 展开 tuple | 把"可调用对象 + N 参数"作为整包 rvalue 一次性转发，避免逐参展开爆炸 |
+| `_State_baseV2` 用 `__atomic_futex_unsigned` | 未 ready 不构造条件变量，仅用原子状态字 + futex 等待 |
+| deferred / async 两套共享状态类 | "是否真开线程"差异收敛到 `_M_complete_async()` 多态，future 公共逻辑无需感知 |
+| `async` 直接 `make_shared` 按位掩码 if 分发 | 省去工厂层，资源不足→deferred 回落就地处理 |
+
+### D4.8 跨实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++ (LLVM) | MSVC STL |
+|------|-----------------|--------------|----------|
+| 线程入口类型抹除 | `_State` + `_State_impl` | `__thread_struct` + `__thread_func` | `_LaunchPad` + `_Invoke`（`_Start` 建 `_Thrd_t`） |
+| `async` 分发 | 直接 `make_shared<...>`，按 `launch` 位掩码 if | `__make_async_state` / `__make_deferred_assoc_state` 工厂 | `_Task_async_state` / `_Deferred_async_state` |
+| 共享状态基类 | `_State_baseV2`（`__atomic_futex_unsigned`） | `__assoc_sub_state` / `__shared_state` | `_Task_state_base` / `_Packaged_state` |
+| 默认策略回落 | `async|deferred` 资源不足落 `deferred` | 同标准语义 | 同标准语义 |
+
+三者都满足"async 至少等价于新开线程或惰性执行"，libstdc++ 15.3.0 把工厂内联进 `async` 本身，最扁平。
+
+### D4.9 编译验证
+
+```cpp
+#include <chrono>
+#include <future>
+#include <iostream>
+#include <thread>
+#include <vector>
+
+int work(int n) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    return n * n;
+}
+
+int main() {
+    auto def = std::async(std::launch::deferred, work, 7);
+    auto s = def.wait_for(std::chrono::milliseconds(10));
+    std::cout << "deferred wait_for is deferred="
+              << (s == std::future_status::deferred ? 1 : 0) << std::endl;  // 1
+    std::cout << "deferred result=" << def.get() << std::endl;  // 49
+
+    std::vector<std::future<int>> fs;
+    for (int i = 0; i < 4; ++i)
+        fs.push_back(std::async(std::launch::async, work, i + 1));
+    int sum = 0;
+    for (auto& f : fs) sum += f.get();
+    std::cout << "async sum of squares 1..4=" << sum << std::endl;  // 30
+
+    auto dft = std::async(work, 3);
+    std::cout << "default policy result=" << dft.get() << std::endl;  // 9
+    return 0;
+}
+```
+
 ## 附录 J：thread/jthread/async 决策流（D3 维度）
 
 ```mermaid

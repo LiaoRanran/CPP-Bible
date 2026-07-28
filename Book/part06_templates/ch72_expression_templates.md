@@ -799,6 +799,206 @@ int main() { Vec a(3), b(3); a[0]=1; b[0]=2;
 
 **结论**：表达式模板以"代理寿命约束 + 调试难度"换取性能；临时结果务必在使用前物化为具体类型。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 表达式模板（valarray）
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `valarray`、`bits/valarray_before.h` 与 `bits/valarray_after.h`。libc++ 与 MSVC STL 的对比基于已知公开实现行为，非逐字摘录。
+
+### D4.1 闭包如何持有叶子：`_ValArrayRef` 的真相
+
+```text
+// bits/valarray_before.h  L411-423  (libstdc++ 15.3.0)
+namespace __detail
+{
+  // Closure types already have reference semantics and are often short-lived,
+  // so store them by value to avoid (some cases of) dangling references to
+  // out-of-scope temporaries.
+  template<typename _Tp>
+    struct _ValArrayRef
+    { typedef const _Tp __type; };
+
+  // Use real references for std::valarray objects.
+  template<typename _Tp>
+    struct _ValArrayRef< valarray<_Tp> >
+    { typedef const valarray<_Tp>& __type; };
+```
+
+这是「反直觉」所在：叶子**不是**一律按值拷贝。`_ValArrayRef` 对普通闭包类型 `const _Tp __type`（按值），但**对 `std::valarray` 特化为 `const valarray<_Tp>&`（按引用）**。也就是说，`a + b` 中的 `a`、`b` 是以引用挂进闭包的，**元素数据不会被拷贝**；而嵌套闭包（如把 `_Expr` 当操作数）才按值持有其轻量闭包结构——该结构内部又引用着真正的 `valarray`。结论：表达式树构造阶段只复制指针/引用大小的闭包元数据，从不复制元素存储。
+
+### D4.2 `_BinBase`：二元闭包 + 惰性求值核心
+
+```text
+// bits/valarray_before.h  L539-557  (libstdc++ 15.3.0)
+  template<class _Oper, class _FirstArg, class _SecondArg>
+    class _BinBase
+    {
+      typedef typename _FirstArg::value_type _Vt;
+      typedef typename __fun<_Oper, _Vt>::result_type value_type;
+      _BinBase(const _FirstArg& __e1, const _SecondArg& __e2)
+      : _M_expr1(__e1), _M_expr2(__e2) {}
+      value_type operator[](size_t __i) const
+      { return _Oper()(_M_expr1[__i], _M_expr2[__i]); }
+      size_t size() const { return _M_expr1.size(); }
+    private:
+      typename _ValArrayRef<_FirstArg>::__type _M_expr1;
+      typename _ValArrayRef<_SecondArg>::__type _M_expr2;
+    };
+```
+
+`_M_expr1` / `_M_expr2` 的类型是 `typename _ValArrayRef<...>::__type`：叶子是 `valarray` 时即 `const valarray&`（引用），是嵌套闭包时即 `const _Clos`（值）。`operator[]` 在索引 `i` 处才真正计算 `_Oper()(_M_expr1[i], _M_expr2[i])`——**惰性核心在此**，它不预存结果，每次索引都重新归约子树。
+
+### D4.3 `operator+`：返回 `_Expr` 而非 `valarray`
+
+```text
+// valarray  L1164-1198  (_DEFINE_BINARY_OPERATOR 宏，libstdc++ 15.3.0)
+#define _DEFINE_BINARY_OPERATOR(_Op, _Name)				\
+  template<typename _Tp>						\
+    inline _Expr<_BinClos<_Name, _ValArray, _ValArray, _Tp, _Tp>,	\
+		 typename __fun<_Name, _Tp>::result_type>		\
+    operator _Op(const valarray<_Tp>& __v, const valarray<_Tp>& __w)	\
+    {									\
+      __glibcxx_assert(__v.size() == __w.size());			\
+      typedef _BinClos<_Name, _ValArray, _ValArray, _Tp, _Tp> _Closure;	\
+      typedef typename __fun<_Name, _Tp>::result_type _Rt;		\
+      return _Expr<_Closure, _Rt>(_Closure(__v, __w));			\
+    }									\
+									\
+  template<typename _Tp>						\
+    inline _Expr<_BinClos<_Name, _ValArray,_Constant, _Tp, _Tp>,	\
+		 typename __fun<_Name, _Tp>::result_type>		\
+    operator _Op(const valarray<_Tp>& __v,				\
+		 const typename valarray<_Tp>::value_type& __t)		\
+    {									\
+      typedef _BinClos<_Name, _ValArray, _Constant, _Tp, _Tp> _Closure;	\
+      typedef typename __fun<_Name, _Tp>::result_type _Rt;		\
+      return _Expr<_Closure, _Rt>(_Closure(__v, __t));			\
+    }									\
+									\
+  template<typename _Tp>						\
+    inline _Expr<_BinClos<_Name, _Constant, _ValArray, _Tp, _Tp>,	\
+		 typename __fun<_Name, _Tp>::result_type>		\
+    operator _Op(const typename valarray<_Tp>::value_type& __t,		\
+		 const valarray<_Tp>& __v)				\
+    {									\
+      typedef _BinClos<_Name, _Constant, _ValArray, _Tp, _Tp> _Closure;	\
+      typedef typename __fun<_Name, _Tp>::result_type _Rt;		\
+      return _Expr<_Closure, _Rt>(_Closure(__t, __v));			\
+    }
+
+_DEFINE_BINARY_OPERATOR(+, __plus)
+```
+
+`a + b` 不立刻算结果，而是构造一个 `_Expr<_BinClos<__plus, _ValArray, _ValArray, T, T>, T>`，闭包里只挂着对 `a`、`b` 的引用。宏还生成 `(valarray, 标量)`、`(标量, valarray)` 重载，统一返回 `_Expr`。
+
+### D4.4 `_Expr` 按值持有闭包 + `valarray(const _Expr&)` 触发求值
+
+```text
+// bits/valarray_after.h  L165-211  (libstdc++ 15.3.0)
+  template<class _Clos, typename _Tp>
+    class _Expr
+    {
+    public:
+      typedef _Tp value_type;
+
+      _Expr(const _Clos&);
+
+      const _Clos& operator()() const;
+
+      value_type operator[](size_t) const;
+      valarray<value_type> operator[](slice) const;
+      valarray<value_type> operator[](const gslice&) const;
+      valarray<value_type> operator[](const valarray<bool>&) const;
+      valarray<value_type> operator[](const valarray<size_t>&) const;
+
+      _Expr<_UnClos<__unary_plus, std::_Expr, _Clos>, value_type>
+      operator+() const;
+
+      _Expr<_UnClos<__negate, std::_Expr, _Clos>, value_type>
+      operator-() const;
+
+      _Expr<_UnClos<__bitwise_not, std::_Expr, _Clos>, value_type>
+      operator~() const;
+
+      _Expr<_UnClos<__logical_not, std::_Expr, _Clos>, bool>
+      operator!() const;
+
+      size_t size() const;
+      value_type sum() const;
+
+      valarray<value_type> shift(int) const;
+      valarray<value_type> cshift(int) const;
+
+      value_type min() const;
+      value_type max() const;
+
+      valarray<value_type> apply(value_type (*)(const value_type&)) const;
+      valarray<value_type> apply(value_type (*)(value_type)) const;
+
+    private:
+      const _Clos _M_closure;
+    };
+
+  template<class _Clos, typename _Tp>
+    inline
+    _Expr<_Clos, _Tp>::_Expr(const _Clos& __c) : _M_closure(__c) {}
+```
+
+```text
+// valarray  L714-716  (libstdc++ 15.3.0)
+    valarray<_Tp>::valarray(const _Expr<_Dom, _Tp>& __e)
+    : _M_size(__e.size()), _M_data(__valarray_get_storage<_Tp>(_M_size))
+    { std::__valarray_copy_construct(__e, _M_size, _Array<_Tp>(_M_data)); }
+```
+
+`_Expr` 把 `_Clos` 按值存进 `_M_closure`，而该闭包内对 `valarray` 叶子的引用仍指向原始数组——所以临时 `_Expr` 只要其引用的 `valarray` 还活着，求值就安全。**求值触发点**是 `valarray(const _Expr&)`：它用 `__valarray_copy_construct` 逐元素调用 `__e[i]`，递归进入 `_BinBase::operator[]` 完成归约。这正是「表达式模板」把多次遍历合并为一次遍历的本质。
+
+> 实现细节：`valarray(const _Expr&)` 非 `explicit`，故 `_Expr` 可隐式转为 `valarray`。`(a+b)*2` 这类「`_Expr` 再接二元运算」会先隐式物化 `a+b` 为临时 `valarray` 再做标量乘——并非单一惰性闭包，但结果仍正确。只有 `valarray op valarray` / `valarray op 标量` 才是纯惰性。
+
+### D4.5 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| `operator+` 返回 `_Expr` 而非 `valarray` | 把 `a+b+c` 的中间结果延迟，避免每步产生临时数组 |
+| `_ValArrayRef` 对 `valarray` 用引用 | 表达式树不复制元素数据，仅持引用/指针 |
+| `_BinBase::operator[]` 现场归约 | 惰性：一次遍历完成整棵表达式，避免多次 pass |
+| `_Expr::_M_closure` 按值 | 闭包是轻量 POD 式结构，值语义便于临时对象传递 |
+| `valarray(const _Expr&)` 为求值边界 | 显式物化点，把惰性表达式定稿为连续存储 |
+
+### D4.6 跨实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++ (LLVM) | MSVC STL |
+|------|------------------|---------------|----------|
+| 表达式模板机制 | `_Expr` / `_BinClos` 闭包，`valarray` 构造触发求值 | 等价 `_Expr` 风格闭包 + `valarray` 构造求值 | 等价 `__val_expr` 内部表达式模板 |
+| 叶子持有方式 | `valarray` 用引用，嵌套闭包用值 | 等价（引用/值混合） | 等价 |
+| `operator+` 返回类型 | `_Expr<...>` 代理 | `_Expr<...>` 代理 | 等价代理类型 |
+| 求值触发点 | `valarray(const _Expr&)` 构造 | 等价构造器 | 等价构造器 |
+
+三大实现都用「代理表达式 + 物化构造器」实现 valarray 惰性求值，API 行为一致。
+
+### D4.7 编译验证
+
+```cpp
+#include <valarray>
+#include <iostream>
+
+int main() {
+    std::valarray<int> a = {1, 2, 3, 4};
+    std::valarray<int> b = {10, 20, 30, 40};
+
+    std::valarray<int> c = a + b;     // a+b 返回 _Expr，由 valarray 构造器惰性求值
+    std::cout << "a+b[0]=" << c[0] << std::endl;   // 11
+    std::cout << "a+b[3]=" << c[3] << std::endl;   // 44
+
+    std::valarray<int> d = a * 2;     // valarray * 标量，同样返回 _Expr
+    std::cout << "a*2[2]=" << d[2] << std::endl;   // 6
+
+    std::valarray<int> e = b - a;
+    std::cout << "b-a[1]=" << e[1] << std::endl;   // 18
+    return 0;
+}
+```
+
+`a + b`、`a * 2`、`b - a` 均经 `_Expr` 代理后由 `valarray` 构造器惰性求值，结果与手工逐元素计算一致。
+
 ## 附录 J：表达式模板（Expression Templates）决策流（D3 维度）
 
 ```mermaid

@@ -992,6 +992,140 @@ int main() {
 
 **结论**：内存序按需最弱化——`relaxed`（独立计数）＜ `acq/rel`（发布/消费配对）＜ `seq_cst`（需要跨变量单一全序，如 Dekker）。默认 `seq_cst` 是「正确但可能慢」，热点路径应精确降级。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — memory_order 内存序
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/atomic_base.h` 等。libc++ 与 MSVC STL 的对比基于已知公开实现行为，非逐字摘录。
+
+### D4.1 `memory_order` 枚举：C++20 起为 enum class + 6 个兼容别名常量
+
+```text
+// bits/atomic_base.h  L63-91  (libstdc++ 15.3.0)
+  /// Enumeration for memory_order
+#if __cplusplus > 201703L
+  enum class memory_order : int
+    {
+      relaxed,
+      consume,
+      acquire,
+      release,
+      acq_rel,
+      seq_cst
+    };
+
+  inline constexpr memory_order memory_order_relaxed = memory_order::relaxed;
+  inline constexpr memory_order memory_order_consume = memory_order::consume;
+  inline constexpr memory_order memory_order_acquire = memory_order::acquire;
+  inline constexpr memory_order memory_order_release = memory_order::release;
+  inline constexpr memory_order memory_order_acq_rel = memory_order::acq_rel;
+  inline constexpr memory_order memory_order_seq_cst = memory_order::seq_cst;
+#else
+  enum memory_order : int
+    {
+      memory_order_relaxed,
+      memory_order_consume,
+      memory_order_acquire,
+      memory_order_release,
+      memory_order_acq_rel,
+      memory_order_seq_cst
+    };
+#endif
+```
+
+解析：C++20 之前 `memory_order` 是普通 `enum`，枚举值自带 `memory_order_` 前缀；C++20 起改为 `enum class`（强类型、作用域隔离），并用 6 个 `inline constexpr` 别名常量 `memory_order_relaxed` 等保持向后兼容——这些别名正是你写 `std::memory_order_relaxed` 时实际引用的实体。底层存储类型固定为 `int`，因此内建函数统一以 `int(__m)` 传参。
+
+### D4.2 compare_exchange 失败序自动推导：`__cmpexch_failure_order2` / `__cmpexch_failure_order`
+
+```text
+// bits/atomic_base.h  L117-130  (libstdc++ 15.3.0)
+  // Drop release ordering as per [atomics.types.operations.req]/21
+  constexpr memory_order
+  __cmpexch_failure_order2(memory_order __m) noexcept
+  {
+    return __m == memory_order_acq_rel ? memory_order_acquire
+      : __m == memory_order_release ? memory_order_relaxed : __m;
+  }
+
+  constexpr memory_order
+  __cmpexch_failure_order(memory_order __m) noexcept
+  {
+    return memory_order(__cmpexch_failure_order2(__m & __memory_order_mask)
+      | __memory_order_modifier(__m & __memory_order_modifier_mask));
+  }
+```
+
+解析：标准规定 `compare_exchange` 的失败内存序不能比成功内存序「强」（[atomics.types.operations.req]/21）。库函数据此推导：成功序是 `acq_rel` → 失败序降为 `acquire`；是 `release` → 降为 `relaxed`；其余原样透传。`__cmpexch_failure_order2` 先按 `__memory_order_mask` 剥掉 HLE 修饰位再做映射，`__cmpexch_failure_order` 再把修饰位（`__memory_order_modifier_mask`）原样拼回。这就是为什么写 `compare_exchange_weak(x, y, memory_order_acq_rel)` 单序重载时，失败侧自动变成 `acquire` 而非 `acq_rel`。
+
+### D4.3 失败序合法性校验与 store/load 的非法内存序断言
+
+```text
+// bits/atomic_base.h  L132-137  (libstdc++ 15.3.0)
+  constexpr bool
+  __is_valid_cmpexch_failure_order(memory_order __m) noexcept
+  {
+    return (__m & __memory_order_mask) != memory_order_release
+	&& (__m & __memory_order_mask) != memory_order_acq_rel;
+  }
+
+// bits/atomic_base.h  L471-475  store 断言：禁止 acquire / acq_rel / consume
+	memory_order __b __attribute__ ((__unused__))
+	  = __m & __memory_order_mask;
+	__glibcxx_assert(__b != memory_order_acquire);
+	__glibcxx_assert(__b != memory_order_acq_rel);
+	__glibcxx_assert(__b != memory_order_consume);
+
+// bits/atomic_base.h  L496-499  load 断言：禁止 release / acq_rel
+	memory_order __b __attribute__ ((__unused__))
+	  = __m & __memory_order_mask;
+	__glibcxx_assert(__b != memory_order_release);
+	__glibcxx_assert(__b != memory_order_acq_rel);
+```
+
+解析：store 是「写」操作，不可能「获取」数据，故断言禁止 `acquire`/`acq_rel`/`consume`；load 是「读」操作，不可能「释放」数据，故断言禁止 `release`/`acq_rel`。`__is_valid_cmpexch_failure_order` 则在 `compare_exchange` 两序重载里校验失败序不能是 `release`/`acq_rel`（否则直接违反 /21）。注意这些 `__glibcxx_assert` 在 Release 模式（未定义 `_GLIBCXX_ASSERTIONS`）会被编译掉——是调试期护栏，不是运行期强制。load/store 真正落到硬件靠 `__atomic_load_n(&_M_i, int(__m))` / `__atomic_store_n(&_M_i, __i, int(__m))`（与 ch107 内建映射一致），断言只是转发前的「护栏」。
+
+### D4.4 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| C++20 `enum class` + 别名常量 | 强类型隔离命名空间，同时用 `inline constexpr` 别名保持 C++17 及之前 `memory_order_relaxed` 写法兼容 |
+| `: int` 底层类型 | 让所有内存序以 `int` 透传给 `__atomic_*` 内建，零转换开销 |
+| `__cmpexch_failure_order` 推导 | 把标准「失败序不比成功序强」规则固化进库，单序调用不会误用非法组合 |
+| `__glibcxx_assert` 非法序护栏 | 转发内建前拦掉 `store(acquire)`、`load(release)` 这类逻辑不可能的组合，调试期快速报错 |
+
+### D4.5 跨实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++ (LLVM) | MSVC STL |
+|------|------------------|---------------|----------|
+| `memory_order` 类型 | `enum class`(C++20) / `enum`(C++17-) | 同 libstdc++（C++20 起 `enum class`） | 强类型枚举 |
+| 别名常量 | `inline constexpr memory_order_*` | `constexpr memory_order_*` | `constexpr` 枚举值 |
+| 失败序推导 | `__cmpexch_failure_order` | 类似内部函数 `__cmpexch_failure_order` | 类似逻辑，落 `_Atomic_compare_exchange_*` |
+| 非法序断言 | `__glibcxx_assert`（需 `_GLIBCXX_ASSERTIONS`） | `_LIBCPP_ASSERT` | `_STL_ASSERT` |
+
+三家都把内存序映射为整型、把 `compare_exchange` 失败序推导规则内化进库函数，差异仅在断言宏与内建名。
+
+### D4.6 编译验证
+
+```cpp
+#include <atomic>
+#include <iostream>
+int main() {
+    std::atomic<int> a{0};
+    a.store(1, std::memory_order_relaxed);
+    a.store(2, std::memory_order_release);
+    a.store(3, std::memory_order_seq_cst);
+    std::cout << "store ok, load=" << a.load(std::memory_order_acquire) << std::endl;
+    std::cout << "load relaxed=" << a.load(std::memory_order_relaxed) << std::endl;
+
+    int expected = 3;
+    bool ok = a.compare_exchange_weak(expected, 10, std::memory_order_acq_rel);
+    std::cout << "cas(3->10)=" << ok << " val=" << a.load() << std::endl;
+
+    expected = 99;  // wrong expected, single-order overload auto derives failure order
+    ok = a.compare_exchange_strong(expected, 20, std::memory_order_release);
+    std::cout << "cas(99->20)=" << ok << " val=" << a.load() << std::endl;
+    return 0;
+}
+```
+
 ## 附录 U：C++11 内存序 memory_order_relaxed/acquire/release/seq_cst 选型 决策流（D3 维度）
 
 ```mermaid

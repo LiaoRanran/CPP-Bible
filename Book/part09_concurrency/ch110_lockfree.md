@@ -1095,6 +1095,132 @@ int main() { std::cout << fact(5) << '\n'; }
 
 </details>
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 无锁编程原语
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/atomic_base.h` 等。libc++ 与 MSVC STL 的对比基于已知公开实现行为，非逐字摘录。
+
+### D4.1 compare_exchange weak/strong：仅差第 4 个 bool 形参
+
+```text
+// bits/atomic_base.h  L859-901  (libstdc++ 15.3.0)  atomic<pointer> 偏特化（节选）
+      _GLIBCXX_ALWAYS_INLINE bool
+      compare_exchange_weak(__pointer_type& __p1, __pointer_type __p2,
+			    memory_order __m1, memory_order __m2) noexcept
+      {
+	__glibcxx_assert(__is_valid_cmpexch_failure_order(__m2));
+	return __atomic_compare_exchange_n(&_M_p, &__p1, __p2, 1,
+					   int(__m1), int(__m2));
+      }
+
+      _GLIBCXX_ALWAYS_INLINE bool
+      compare_exchange_strong(__pointer_type& __p1, __pointer_type __p2,
+			      memory_order __m1, memory_order __m2) noexcept
+      {
+	__glibcxx_assert(__is_valid_cmpexch_failure_order(__m2));
+	return __atomic_compare_exchange_n(&_M_p, &__p1, __p2, 0,
+					   int(__m1), int(__m2));
+      }
+```
+
+解析（反直觉）：`weak` 与 `strong` 的实现完全一致，**唯一区别是第 4 个 `bool` 实参**——`1` 表示 weak（允许伪失败 spurious failure，便于 CAS 循环省去重试负担），`0` 表示 strong（不允许伪失败，语义等价于「真相等价才成功」）。两者都转发到同一个内建 `__atomic_compare_exchange_n`，强弱之分完全由内建的第 4 参数决定。整型特化（`__atomic_base`，L536/573）、指针特化（L866/888）、引用包装（`__atomic_ref`）如出一辙——所以「CAS 循环用 weak、单次 CAS 用 strong」是性能习惯而非功能差异。
+
+### D4.2 is_lock_free：负对齐值「伪地址」技巧
+
+```text
+// bits/atomic_base.h  L779-793  (libstdc++ 15.3.0)  atomic<pointer> 偏特化
+      bool
+      is_lock_free() const noexcept
+      {
+	// Produce a fake, minimally aligned pointer.
+	return __atomic_is_lock_free(sizeof(_M_p),
+	    reinterpret_cast<void *>(-__alignof(_M_p)));
+      }
+
+// bits/atomic_base.h  L1078-1084  (libstdc++ 15.3.0)  __atomic_ref 辅助
+    template<size_t _Size, size_t _Align>
+      _GLIBCXX_ALWAYS_INLINE bool
+      is_lock_free() noexcept
+      {
+	// Produce a fake, minimally aligned pointer.
+	return __atomic_is_lock_free(_Size, reinterpret_cast<void *>(-_Align));
+      }
+```
+
+解析（反直觉）：`is_lock_free` 的第二参数**不是真实对象地址**，而是一个「伪地址」`reinterpret_cast<void *>(-__alignof(_M_p))`——对一个负对齐值取地址。其意图是告诉内建 `__atomic_is_lock_free`：「请按这个对齐量（低地址位恰好编码了对齐信息）去判断此类对象能否无锁」，而非查询某个具体变量。整型特化用 `-_S_alignment`、指针特化用 `-__alignof(_M_p)`、通用辅助用模板参数 `-_Align`，本质都是「用对齐值构造伪地址」的同一种 trick。内建据此在编译期/运行期查表返回 `true`/`false`。
+
+### D4.3 is_always_lock_free：编译期常量
+
+```text
+// bits/atomic_base.h  L1533-1534  (libstdc++ 15.3.0)  atomic<T> 主模板
+      static constexpr bool is_always_lock_free
+	= __atomic_always_lock_free(sizeof(_Tp), 0);
+```
+
+解析：`is_always_lock_free` 是 `static constexpr`，由内建 `__atomic_always_lock_free(sizeof(_Tp), 0)` 在编译期求值——第二参 `0` 表示「不针对具体对象、仅看类型宽度」。它不依赖任何运行期对象，因此可用在 `static_assert` / 模板分支。与 `is_lock_free()`（运行期、依赖伪地址）形成「编译期必然 vs 运行期可能」的互补。
+
+### D4.4 atomic_flag::test_and_set：转发 __atomic_test_and_set
+
+```text
+// bits/atomic_base.h  L224-234  (libstdc++ 15.3.0)  atomic_flag
+    _GLIBCXX_ALWAYS_INLINE bool
+    test_and_set(memory_order __m = memory_order_seq_cst) noexcept
+    {
+      return __atomic_test_and_set (&_M_i, int(__m));
+    }
+
+    _GLIBCXX_ALWAYS_INLINE bool
+    test_and_set(memory_order __m = memory_order_seq_cst) volatile noexcept
+    {
+      return __atomic_test_and_set (&_M_i, int(__m));
+    }
+```
+
+解析：`atomic_flag` 是标准**唯一保证无锁**的原子布尔。`test_and_set` 把 `_M_i`（底层 `unsigned char`）与内存序转 `int` 后直接转发内建 `__atomic_test_and_set`——没有 lock-free 判定、没有伪地址，因为标准已承诺它必然无锁。它正是实现自旋锁、无锁栈「标记位」的基石原语。
+
+### D4.5 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| weak/strong 共用内建 + 第 4 bool 参数 | 一套代码两种语义，强弱由内建参数切换，避免重复实现 |
+| `is_lock_free` 负对齐伪地址 | 无真实对象时向内建「传递对齐信息」以判定无锁能力，而非查具体地址 |
+| `is_always_lock_free` 编译期常量 | 类型层面恒定无锁可用 `static_assert` 静态验证，零运行期成本 |
+| `atomic_flag` 直转 `__atomic_test_and_set` | 标准保证无锁，无需任何回退路径，是最简原子原语 |
+
+### D4.6 跨实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++ (LLVM) | MSVC STL |
+|------|------------------|---------------|----------|
+| weak/strong 差异 | 第 4 参数 1/0 转发 `__atomic_compare_exchange_n` | 同（转发 `__atomic_compare_exchange`/`__c11`） | 同（`_Atomic_compare_exchange_*` 第 4 参） |
+| `is_lock_free` 伪地址 | `reinterpret_cast<void *>(-align)` | 类似伪地址传给 `__atomic_is_lock_free` | 类似，传给运行时 intrinsic |
+| `is_always_lock_free` | `__atomic_always_lock_free(sizeof,0)` 编译期 | `__atomic_always_lock_free` 编译期 | 基于 `ATOMIC_*_LOCK_FREE` 宏 |
+| `atomic_flag` | `__atomic_test_and_set` | `__c11_atomic_exchange`/test_and_set | 编译器 intrinsic |
+
+三家对「weak/strong 仅差一个参数」「伪地址判定无锁」「atomic_flag 保证无锁」高度一致。
+
+### D4.7 编译验证
+
+```cpp
+#include <atomic>
+#include <iostream>
+int main() {
+    std::cout << "int always_lock_free=" << std::atomic<int>::is_always_lock_free << std::endl;
+    std::cout << "void* always_lock_free=" << std::atomic<void*>::is_always_lock_free << std::endl;
+    std::cout << "char always_lock_free=" << std::atomic<char>::is_always_lock_free << std::endl;
+    std::cout << "long long always_lock_free=" << std::atomic<long long>::is_always_lock_free << std::endl;
+
+    std::atomic<int> counter{0};
+    for (int i = 0; i < 1000; ++i) {
+        int expected = counter.load(std::memory_order_relaxed);
+        while (!counter.compare_exchange_weak(expected, expected + 1,
+                std::memory_order_relaxed, std::memory_order_relaxed)) {
+            // expected 已被 CAS 刷新为当前值，重试
+        }
+    }
+    std::cout << "cas loop counter=" << counter.load() << std::endl;
+    return 0;
+}
+```
+
 ## 附录 J：无锁数据结构：CAS 循环 vs 互斥锁 选型 决策流（D3 维度）
 
 ```mermaid

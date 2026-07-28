@@ -1199,6 +1199,397 @@ int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << 
 
 [标准] `noexcept` 移动构造让 `vector` 在重新分配时移动元素；否则因强异常保证退化为拷贝。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — std::stop_token 协作取消
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `stop_token`。libc++ 与 MSVC STL 的对比基于已知公开实现行为，非逐字摘录。
+
+### D4.1 _Stop_cb：侵入式回调节点
+
+每个 `stop_callback` 内部持有 `_Stop_cb` 基类子对象，自带前后向指针直接挂到状态机双向链表（侵入式，无额外分配）；`_M_destroyed` 回写"我已被析构"的栈布尔量，`_M_done` 是回调执行中析构时同步用的二进制信号量。
+
+```text
+// stop_token  L135-151  _Stop_cb：侵入式双向链表节点
+    struct _Stop_cb
+    {
+      using __cb_type = void(_Stop_cb*) noexcept;
+      __cb_type* _M_callback;
+      _Stop_cb* _M_prev = nullptr;
+      _Stop_cb* _M_next = nullptr;
+      bool* _M_destroyed = nullptr;
+      binary_semaphore _M_done{0};
+
+      [[__gnu__::__nonnull__]]
+      explicit
+      _Stop_cb(__cb_type* __cb)
+      : _M_callback(__cb)
+      { }
+
+      void _M_run() noexcept { _M_callback(this); }
+    };
+```
+
+### D4.2 _Stop_state_t：两个原子，而非一个
+
+反直觉真相：`_Stop_state_t` **不是**"一个 atomic 编码请求位 + 引用计数"。它用**两个** `uint32_t` 原子：`_M_value` 位打包（bit0=stop-requested，bit1=内部自旋锁位，bit2 起=stop_source 计数，每次 +4），`_M_owners` 是 token/source 的**总**引用计数，归零 `delete this`。
+
+```text
+// stop_token  L153-204  _Stop_state_t：两原子 + 位打包（节选）
+    struct _Stop_state_t
+    {
+      using value_type = uint32_t;
+      static constexpr value_type _S_stop_requested_bit = 1;
+      static constexpr value_type _S_locked_bit = 2;
+      static constexpr value_type _S_ssrc_counter_inc = 4;
+
+      std::atomic<value_type> _M_owners{1};
+      std::atomic<value_type> _M_value{_S_ssrc_counter_inc};
+      _Stop_cb* _M_head = nullptr;
+      std::thread::id _M_requester;
+
+      _Stop_state_t() = default;
+
+      bool
+      _M_stop_possible() noexcept
+      {
+	// true if a stop request has already been made or there are still
+	// stop_source objects that would allow one to be made.
+	return _M_value.load(memory_order::acquire) & ~_S_locked_bit;
+      }
+
+      bool
+      _M_stop_requested() noexcept
+      {
+	return _M_value.load(memory_order::acquire) & _S_stop_requested_bit;
+      }
+
+      void
+      _M_add_owner() noexcept
+      {
+	_M_owners.fetch_add(1, memory_order::relaxed);
+      }
+
+      void
+      _M_release_ownership() noexcept
+      {
+	if (_M_owners.fetch_sub(1, memory_order::acq_rel) == 1)
+	  delete this;
+      }
+
+      void
+      _M_add_ssrc() noexcept
+      {
+	_M_value.fetch_add(_S_ssrc_counter_inc, memory_order::relaxed);
+      }
+
+      void
+      _M_sub_ssrc() noexcept
+      {
+	_M_value.fetch_sub(_S_ssrc_counter_inc, memory_order::release);
+      }
+```
+
+### D4.3 自旋锁：对 _M_value 的 bit1 做 CAS，含 yield 退避
+
+状态机的"锁"不是 `mutex`，而是对 `_M_value` 的 `_S_locked_bit`（bit1）做 CAS 自旋。`_M_do_try_lock` 在锁位已置时 `_S_yield()`（x86 即 `__builtin_ia32_pause()` + `this_thread::yield()`）后重试；解锁即 `fetch_sub(_S_locked_bit, release)`。
+
+```text
+// stop_token  L206-222, L379-392  自旋锁
+      // Obtain lock.
+      void
+      _M_lock() noexcept
+      {
+	// Can use relaxed loads to get the current value.
+	// The successful call to _M_try_lock is an acquire operation.
+	auto __old = _M_value.load(memory_order::relaxed);
+	while (!_M_try_lock(__old, memory_order::relaxed))
+	  { }
+      }
+
+      // Precondition: calling thread holds the lock.
+      void
+      _M_unlock() noexcept
+      {
+	_M_value.fetch_sub(_S_locked_bit, memory_order::release);
+      }
+…
+// stop_token  L379-392  _M_do_try_lock
+      bool
+      _M_do_try_lock(value_type& __curval, value_type __newbits,
+		     memory_order __success, memory_order __failure) noexcept
+      {
+	if (__curval & _S_locked_bit)
+	  {
+	    _S_yield();
+	    __curval = _M_value.load(__failure);
+	    return false;
+	  }
+	__newbits |= _S_locked_bit;
+	return _M_value.compare_exchange_weak(__curval, __curval | __newbits,
+					      __success, __failure);
+      }
+```
+
+### D4.4 _M_request_stop：LIFO 遍历 + 自毁边界
+
+`request_stop()` 拿锁后从链表头 `_M_head` 逐个执行（head 是最晚注册的，**后注册先执行 = LIFO**）。执行前先 `_M_unlock()` 允许回调期间反注册，并把栈上 `__destroyed` 地址写入 `__cb->_M_destroyed`——若回调内部析构了 `stop_callback`，`_M_remove_callback` 通过 `*_M_destroyed = true` 感知"已自毁"。
+
+```text
+// stop_token  L224-278  _M_request_stop（节选）
+      bool
+      _M_request_stop() noexcept
+      {
+	// obtain lock and set stop_requested bit
+	auto __old = _M_value.load(memory_order::acquire);
+	do
+	  {
+	    if (__old & _S_stop_requested_bit) // stop request already made
+	      return false;
+	  }
+	while (!_M_try_lock_and_stop(__old));
+
+	_M_requester = this_thread::get_id();
+
+	while (_M_head)
+	  {
+	    bool __last_cb;
+	    _Stop_cb* __cb = _M_head;
+	    _M_head = _M_head->_M_next;
+	    if (_M_head)
+	      {
+		_M_head->_M_prev = nullptr;
+		__last_cb = false;
+	      }
+	    else
+	      __last_cb = true;
+
+	    // Allow other callbacks to be unregistered while __cb runs.
+	    _M_unlock();
+
+	    bool __destroyed = false;
+	    __cb->_M_destroyed = &__destroyed;
+
+	    // run callback
+	    __cb->_M_run();
+
+	    if (!__destroyed)
+	      {
+		__cb->_M_destroyed = nullptr;
+
+		// synchronize with destructor of stop_callback that owns *__cb
+		if (!__gnu_cxx::__is_single_threaded())
+		  __cb->_M_done.release();
+	      }
+
+	    // Avoid relocking if we already know there are no more callbacks.
+	    if (__last_cb)
+	      return true;
+
+	    _M_lock();
+	  }
+
+	_M_unlock();
+	return true;
+      }
+```
+
+### D4.5 注册 / 反注册：侵入式链表头插
+
+`_M_register_callback` 拿锁后把新节点插到链表**头**（`->next` 指向旧 head，再让 `_M_head`=自己）——这是 LIFO 来源；若 stop 已发生则同步就地执行并返回 false。`_M_remove_callback` 处理 head/中间/已被取走三种情况，被取走时若不在请求线程则 `_M_done.acquire()` 等回调跑完。
+
+```text
+// stop_token  L280-353  _M_register_callback / _M_remove_callback（节选）
+      [[__gnu__::__nonnull__]]
+      bool
+      _M_register_callback(_Stop_cb* __cb) noexcept
+      {
+	auto __old = _M_value.load(memory_order::acquire);
+	do
+	  {
+	    if (__old & _S_stop_requested_bit) // stop request already made
+	      {
+		__cb->_M_run(); // run synchronously
+		return false;
+	      }
+
+	    if (__old < _S_ssrc_counter_inc) // no stop_source owns *this
+	      // No need to register callback if no stop request can be made.
+	      // Returning false also means the stop_callback does not share
+	      // ownership of this state, but that's not observable.
+	      return false;
+	  }
+	while (!_M_try_lock(__old));
+
+        __cb->_M_next = _M_head;
+        if (_M_head)
+          {
+            _M_head->_M_prev = __cb;
+          }
+        _M_head = __cb;
+	_M_unlock();
+        return true;
+      }
+
+      // Called by ~stop_callback just before destroying *__cb.
+      [[__gnu__::__nonnull__]]
+      void
+      _M_remove_callback(_Stop_cb* __cb)
+      {
+	_M_lock();
+
+        if (__cb == _M_head)
+          {
+            _M_head = _M_head->_M_next;
+            if (_M_head)
+	      _M_head->_M_prev = nullptr;
+	    _M_unlock();
+	    return;
+          }
+	else if (__cb->_M_prev)
+          {
+            __cb->_M_prev->_M_next = __cb->_M_next;
+            if (__cb->_M_next)
+	      __cb->_M_next->_M_prev = __cb->_M_prev;
+	    _M_unlock();
+	    return;
+          }
+
+	_M_unlock();
+
+	// Callback is not in the list, so must have been removed by a call to
+	// _M_request_stop.
+
+	// Despite appearances there is no data race on _M_requester. The only
+	// write to it happens before the callback is removed from the list,
+	// and removing it from the list happens before this read.
+	if (!(_M_requester == this_thread::get_id()))
+	  {
+	    // Synchronize with completion of callback.
+	    __cb->_M_done.acquire();
+	    // Safe for ~stop_callback to destroy *__cb now.
+	    return;
+	  }
+
+	if (__cb->_M_destroyed)
+	  *__cb->_M_destroyed = true;
+      }
+```
+
+### D4.6 stop_callback：注册时机与析构
+
+用户层 `stop_callback` 构造时若共享状态存在则 `_M_register_callback`，返回 true 才 `_M_state.swap(__state)` 共享所有权；析构时 `_M_remove_callback`。执行体 `_Cb_impl::_S_execute` 把 `_Stop_cb*` 向下转型回 `_Cb_impl` 再 `std::forward` 调用——保证"后构造的 stop_callback 先被调用"的 LIFO。
+
+```text
+// stop_token  L586-647  stop_callback 构造/析构/执行体（节选）
+	stop_callback(const stop_token& __token, _Cb&& __cb)
+        noexcept(is_nothrow_constructible_v<_Callback, _Cb>)
+	: _M_cb(std::forward<_Cb>(__cb))
+        {
+	  if (auto __state = __token._M_state)
+	    {
+	      if (__state->_M_register_callback(&_M_cb))
+		_M_state.swap(__state);
+	    }
+        }
+
+      template<typename _Cb,
+               enable_if_t<is_constructible_v<_Callback, _Cb>, int> = 0>
+        explicit
+	stop_callback(stop_token&& __token, _Cb&& __cb)
+        noexcept(is_nothrow_constructible_v<_Callback, _Cb>)
+	: _M_cb(std::forward<_Cb>(__cb))
+	{
+	  if (auto& __state = __token._M_state)
+	    {
+	      if (__state->_M_register_callback(&_M_cb))
+		_M_state.swap(__state);
+	    }
+	}
+
+      ~stop_callback()
+      {
+	if (_M_state)
+	  {
+	    _M_state->_M_remove_callback(&_M_cb);
+	  }
+      }
+
+      stop_callback(const stop_callback&) = delete;
+      stop_callback& operator=(const stop_callback&) = delete;
+      stop_callback(stop_callback&&) = delete;
+      stop_callback& operator=(stop_callback&&) = delete;
+
+    private:
+      struct _Cb_impl : stop_token::_Stop_cb
+      {
+	template<typename _Cb>
+	  explicit
+	  _Cb_impl(_Cb&& __cb)
+	  : _Stop_cb(&_S_execute),
+	    _M_cb(std::forward<_Cb>(__cb))
+	  { }
+
+	_Callback _M_cb;
+
+	[[__gnu__::__nonnull__]]
+	static void
+	_S_execute(_Stop_cb* __that) noexcept
+	{
+	  _Callback& __cb = static_cast<_Cb_impl*>(__that)->_M_cb;
+	  std::forward<_Callback>(__cb)();
+	}
+      };
+
+      _Cb_impl _M_cb;
+      stop_token::_Stop_state_ref _M_state;
+    };
+```
+
+### D4.7 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| `_M_value` / `_M_owners` 拆两个原子 | 位打包值（请求位+锁位+source 计数）与所有权计数生命周期不同，拆开避免纠缠 |
+| 对 bit1 做 CAS 自旋锁 + yield | 临界区极小（只改链表头），自旋比互斥量廉价且不依赖内核对象 |
+| 侵入式双向链表 `_Stop_cb` | 注册/反注册 O(1) 且无额外节点分配 |
+| `_M_destroyed` + `_M_done` 信号量 | 解决"回调运行期间析构 stop_callback"：运行线程感知自毁、析构线程等回调结束 |
+| 头插 → LIFO | 标准规定后注册先调用，头插天然满足 |
+
+### D4.8 跨实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++ (LLVM) | MSVC STL |
+|------|-----------------|--------------|----------|
+| 共享状态表示 | `_Stop_state_t`：`_M_value`+`_M_owners` 两原子 | `__stop_state`：`atomic<uintptr_t> __state_` 打包位+链表指针，`atomic<uint32_t> __count_` | `_Stop_state`：`_Atomic_counter_t` + 互斥/条件变量 |
+| 锁机制 | 对 `_M_value` bit1 的 CAS 自旋锁（pause+yield） | 对 `__state_` locked 位的 CAS 自旋锁 | 内部互斥（`_Mutex`/`_Cnd_t`），非自旋 |
+| 回调注册 | 侵入式双向链表 `_Stop_cb`，头插 LIFO | 侵入式双向链表 `__stop_callback_base` | 侵入式双向链表 `_Stop_callback_base` |
+| 引用计数 | `_M_owners` 总引用计数，归零 `delete this` | `__count_` 原子计数 | `_Atomic_counter_t` |
+| 回调执行中自毁 | `_M_destroyed` 栈标志 + `_M_done` 信号量 | `__in_use_` 标志 | 调用方状态判断并同步 |
+
+三大实现都满足"协作取消 + LIFO 回调"；libstdc++ 与 libc++ 用无锁自旋 CAS，MSVC 用互斥+条件变量，差异最显著。
+
+### D4.9 编译验证
+
+```cpp
+#include <chrono>
+#include <iostream>
+#include <stop_token>
+#include <thread>
+#include <vector>
+
+int main() {
+    std::vector<int> order;
+    std::jthread worker([](std::stop_token st) {
+        while (!st.stop_requested())
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    });
+    std::stop_callback cb1(worker.get_stop_token(), [&] { order.push_back(1); });
+    std::stop_callback cb2(worker.get_stop_token(), [&] { order.push_back(2); });
+    worker.request_stop();  // 主线程显式请求停止 -> 同步触发回调（LIFO）
+    for (int v : order)
+        std::cout << "callback fired order=" << v << std::endl;  // 2 然后 1
+    return 0;
+}
+```
+
 ## 附录 J：stop_token 协作取消决策流（D3 维度）
 
 ```mermaid

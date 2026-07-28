@@ -839,6 +839,224 @@ int main() { std::cout << pick(41) << "\n"; }
 
 **结论**：`if constexpr` 替代"布尔属性"标签；标签分发在需借重载决议消歧（如多迭代器类别）时仍不可替代。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 标签分发（Tag Dispatch）
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/stl_iterator_base_funcs.h` 与 `bits/ranges_base.h`。libc++ 与 MSVC STL 的对比基于已知公开实现行为，非逐字摘录。
+
+### D4.1 `__::__distance` 按迭代器标签分三套重载
+
+```text
+// bits/stl_iterator_base_funcs.h  L80-109  (libstdc++ 15.3.0)
+  template<typename _InputIterator>
+    inline _GLIBCXX14_CONSTEXPR
+    typename iterator_traits<_InputIterator>::difference_type
+    __distance(_InputIterator __first, _InputIterator __last,
+               input_iterator_tag)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+
+      typename iterator_traits<_InputIterator>::difference_type __n = 0;
+      while (__first != __last)
+	{
+	  ++__first;
+	  ++__n;
+	}
+      return __n;
+    }
+
+  template<typename _RandomAccessIterator>
+    __attribute__((__always_inline__))
+    inline _GLIBCXX14_CONSTEXPR
+    typename iterator_traits<_RandomAccessIterator>::difference_type
+    __distance(_RandomAccessIterator __first, _RandomAccessIterator __last,
+               random_access_iterator_tag)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_RandomAccessIteratorConcept<
+				  _RandomAccessIterator>)
+      return __last - __first;
+    }
+```
+
+两个重载仅靠第三个形参类型（`input_iterator_tag` / `random_access_iterator_tag`）区分。输入迭代器只能线性 `++`，随机访问迭代器直接 `__last - __first` 得到 O(1) 距离。中间还有 `bidirectional` 分支（`_List_iterator` 特化，L111 之后）以及把 `output_iterator_tag` 重载标为 `= delete`（L130）以给出更好的错误信息。
+
+### D4.2 外层 `std::distance` 用 `__iterator_category` 取标签
+
+```text
+// bits/stl_iterator_base_funcs.h  L146-155  (libstdc++ 15.3.0)
+  template<typename _InputIterator>
+    _GLIBCXX_NODISCARD __attribute__((__always_inline__))
+    inline _GLIBCXX17_CONSTEXPR
+    typename iterator_traits<_InputIterator>::difference_type
+    distance(_InputIterator __first, _InputIterator __last)
+    {
+      // concept requirements -- taken care of in __distance
+      return std::__distance(__first, __last,
+                             std::__iterator_category(__first));
+    }
+```
+
+`std::__iterator_category(__i)` 从迭代器萃取出一个**空标签对象**（如 `random_access_iterator_tag{}`），再把它作为实参加进 `__distance` 的重载决议——这就是标签分发的两步：「取标签 → 分派」。标签值本身不携带数据，只用于选择函数特化。
+
+### D4.3 `__advance` 同样三标签重载
+
+```text
+// bits/stl_iterator_base_funcs.h  L157-198  (libstdc++ 15.3.0)
+  template<typename _InputIterator, typename _Distance>
+    inline _GLIBCXX14_CONSTEXPR void
+    __advance(_InputIterator& __i, _Distance __n, input_iterator_tag)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_InputIteratorConcept<_InputIterator>)
+      __glibcxx_assert(__n >= 0);
+      while (__n-- > 0)
+	++__i;
+    }
+
+  template<typename _BidirectionalIterator, typename _Distance>
+    inline _GLIBCXX14_CONSTEXPR void
+    __advance(_BidirectionalIterator& __i, _Distance __n,
+	      bidirectional_iterator_tag)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_BidirectionalIteratorConcept<
+				  _BidirectionalIterator>)
+      if (__n > 0)
+        while (__n--)
+	  ++__i;
+      else
+        while (__n++)
+	  --__i;
+    }
+
+  template<typename _RandomAccessIterator, typename _Distance>
+    inline _GLIBCXX14_CONSTEXPR void
+    __advance(_RandomAccessIterator& __i, _Distance __n,
+              random_access_iterator_tag)
+    {
+      // concept requirements
+      __glibcxx_function_requires(_RandomAccessIteratorConcept<
+				  _RandomAccessIterator>)
+      if (__builtin_constant_p(__n) && __n == 1)
+	++__i;
+      else if (__builtin_constant_p(__n) && __n == -1)
+	--__i;
+      else
+	__i += __n;
+    }
+```
+
+随机访问分支用 `__builtin_constant_p` 对 `+1/-1` 常量步长做微调，但主路径仍是 `__i += __n`。输入迭代器只能正向，故断言 `__n >= 0`；双向迭代器允许负步长。
+
+### D4.4 外层 `std::advance` 取标签分派
+
+```text
+// bits/stl_iterator_base_funcs.h  L219-227  (libstdc++ 15.3.0)
+  template<typename _InputIterator, typename _Distance>
+    __attribute__((__always_inline__))
+    inline _GLIBCXX17_CONSTEXPR void
+    advance(_InputIterator& __i, _Distance __n)
+    {
+      typename iterator_traits<_InputIterator>::difference_type __d = __n;
+      std::__advance(__i, __d, std::__iterator_category(__i));
+    }
+```
+
+`std::advance` 把任意 `_Distance` 先收窄为 `difference_type`，再靠 `__iterator_category(__i)` 把调用导向 D4.3 三套重载之一。这是标签分发教科书实现。
+
+### D4.5 反直觉真相：C++20 `ranges::advance` 已彻底弃用标签分发
+
+```text
+// bits/ranges_base.h  L846-880  (libstdc++ 15.3.0)
+  struct __advance_fn final
+  {
+    template<input_or_output_iterator _It>
+      constexpr void
+      operator()(_It& __it, iter_difference_t<_It> __n) const
+      {
+	if constexpr (random_access_iterator<_It>)
+	  __it += __n;
+	else if constexpr (bidirectional_iterator<_It>)
+	  {
+	    if (__n > 0)
+	      {
+		do
+		  {
+		    ++__it;
+		  }
+		while (--__n);
+	      }
+	    else if (__n < 0)
+	      {
+		do
+		  {
+		    --__it;
+		  }
+		while (++__n);
+	      }
+	  }
+	else
+	  {
+	    // cannot decrement a non-bidirectional iterator
+	    __glibcxx_assert(__n >= 0);
+	    while (__n-- > 0)
+	      ++__it;
+	  }
+      }
+```
+
+`std::ranges::advance` 是 C++20 定制点对象 `advance{}`，它**完全不再使用标签重载**：分支由 `if constexpr (random_access_iterator<_It>)` / `bidirectional_iterator<_It>` 这些 concepts 在编译期决定。`random_access_iterator` 概念本身已隐含「支持 `+=`／`--`」的约束，无需再用空标签对象选函数。也就是说，同一份 libstdc++ 15.3.0 里，**legacy `std::advance` 用标签分发，`std::ranges::advance` 用 concepts + if constexpr**——两套机制并存，后者是前者在语言特性成熟后的替代。
+
+### D4.6 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| 重载第三形参为 `*_iterator_tag` 空类型 | 把「迭代器能力」编码进函数选择，零运行时开销 |
+| `std::__iterator_category(__i)` 取标签 | 「能力查询」与「算法体」解耦，算法只写一次，分派交给重载 |
+| 随机访问分支用 `__last - __first` | 把 O(n) 距离/前进降为 O(1) |
+| `output_iterator_tag` 重载 `= delete` | 防止对不可读迭代器误调 `distance`/`advance` |
+| `ranges::advance` 改用 `if constexpr` | concepts 直接表达能力约束，代码更短、报错更清晰，且天然支持 `sentinel` 重载 |
+
+### D4.7 跨实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++ (LLVM) | MSVC STL |
+|------|------------------|---------------|----------|
+| legacy `std::advance`/`distance` | 标签分发三重载（`stl_iterator_base_funcs.h`） | 同样保留标签分发 legacy 实现 | 同样基于标签分发 |
+| `random_access` 分支优化 | `__builtin_constant_p` 微调 | 概念等价优化 | 等价优化 |
+| `ranges::advance` | `if constexpr` + concepts | `if constexpr` + concepts | `if constexpr` + concepts |
+| 标签对象来源 | `std::__iterator_category` | 等价 `__iterator_category` | 等价 `__iterator_category` |
+
+三大实现的 legacy 接口都仍用标签分发（ABI/历史兼容），而 2020 后的 `ranges` 版本在三者中一致改用 concepts + `if constexpr`。
+
+### D4.8 编译验证
+
+```cpp
+#include <iterator>
+#include <list>
+#include <vector>
+#include <iostream>
+
+int main() {
+    std::vector<int> v = {1, 2, 3, 4, 5};
+    std::list<int>   l = {1, 2, 3, 4, 5};
+
+    auto vi = v.begin();
+    std::advance(vi, 3);
+    std::cout << "vector advance(3) -> " << *vi << std::endl;   // 4
+
+    auto li = l.begin();
+    std::advance(li, 3);
+    std::cout << "list advance(3) -> " << *li << std::endl;     // 4
+
+    std::cout << "vector distance=" << std::distance(v.begin(), vi) << std::endl; // 3
+    std::cout << "list distance=" << std::distance(l.begin(), li) << std::endl;   // 3
+    return 0;
+}
+```
+
+`vector` 走随机访问分支（`vi += 3`），`list` 走双向分支（`++` 三次），验证同一 `std::advance` 调用按迭代器标签分派到不同实现。
+
 ## 附录 U：标签分发（Tag Dispatch）决策流（D3 维度）
 
 ```mermaid

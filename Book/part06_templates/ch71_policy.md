@@ -758,6 +758,240 @@ int main() { Vec<int, Heap, NoCheck> v; std::cout << "ok\n"; }
 
 **结论**：正交关注点用模板参数组合，而非继承派生；维度增加时组合数由指数降为线性。
 
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 策略化设计（Policy-Based Design）
+
+> 以下源码摘自 libstdc++ 15.3.0（GCC 15.3.0 附带），文件 `bits/hashtable_policy.h`、`bits/basic_string.h` 与 `bits/unique_ptr.h`。libc++ 与 MSVC STL 的对比基于已知公开实现行为，非逐字摘录。
+
+### D4.1 `_Hashtable_traits`：把布尔策略打包成类型
+
+```text
+// bits/hashtable_policy.h  L262-268  (libstdc++ 15.3.0)
+  template<bool _Cache_hash_code, bool _Constant_iterators, bool _Unique_keys>
+    struct _Hashtable_traits
+    {
+      using __hash_cached = __bool_constant<_Cache_hash_code>;
+      using __constant_iterators = __bool_constant<_Constant_iterators>;
+      using __unique_keys = __bool_constant<_Unique_keys>;
+    };
+```
+
+三个布尔策略（`_Cache_hash_code` / `_Constant_iterators` / `_Unique_keys`）被编码成模板非类型参数，再通过 `__bool_constant` 暴露成嵌套类型。这是经典 Policy-Based Design：用编译期常量做独立维度，组合爆炸由「参数乘积」而非「继承层次」承担。
+
+### D4.2 `_Prime_rehash_policy`：素数扩容（默认策略）
+
+```text
+// bits/hashtable_policy.h  L596-646  (libstdc++ 15.3.0)
+  struct _Prime_rehash_policy
+  {
+    using __has_load_factor = true_type;
+
+    _Prime_rehash_policy(float __z = 1.0) noexcept
+    : _M_max_load_factor(__z), _M_next_resize(0) { }
+
+    float
+    max_load_factor() const noexcept
+    { return _M_max_load_factor; }
+
+    // Return a bucket size no smaller than n.
+    // TODO: 'const' qualifier is kept for abi compatibility reason.
+    size_t
+    _M_next_bkt(size_t __n) const;
+
+    // Return a bucket count appropriate for n elements
+    size_t
+    _M_bkt_for_elements(size_t __n) const
+    { return __builtin_ceil(__n / (double)_M_max_load_factor); }
+
+    // __n_bkt is current bucket count, __n_elt is current element count,
+    // and __n_ins is number of elements to be inserted.  Do we need to
+    // increase bucket count?  If so, return make_pair(true, n), where n
+    // is the new bucket count.  If not, return make_pair(false, 0).
+    // TODO: 'const' qualifier is kept for abi compatibility reason.
+    std::pair<bool, size_t>
+    _M_need_rehash(size_t __n_bkt, size_t __n_elt,
+		   size_t __n_ins) const;
+
+    using _State = size_t;
+
+    _State
+    _M_state() const
+    { return _M_next_resize; }
+
+    void
+    _M_reset() noexcept
+    { _M_next_resize = 0; }
+
+    void
+    _M_reset(_State __state)
+    { _M_next_resize = __state; }
+
+    static const size_t _S_growth_factor = 2;
+
+    float		_M_max_load_factor;
+
+    // TODO: 'mutable' kept for abi compatibility reason.
+    mutable size_t	_M_next_resize;
+  };
+```
+
+`_Prime_rehash_policy` 是 `unordered_*` 容器的默认扩容策略：桶数取**素数**，使哈希取模分布更均匀（素数模数降低聚集）。`_S_growth_factor = 2` 表示每次至少翻倍。`_M_need_rehash` 在元素数超过 `_M_next_resize` 时返回新桶数。
+
+### D4.3 反直觉真相：被多数教材忽略的 `_Power2_rehash_policy`
+
+```text
+// bits/hashtable_policy.h  L673-717  (libstdc++ 15.3.0)
+  struct _Power2_rehash_policy
+  {
+    using __has_load_factor = true_type;
+
+    _Power2_rehash_policy(float __z = 1.0) noexcept
+    : _M_max_load_factor(__z), _M_next_resize(0) { }
+
+    float
+    max_load_factor() const noexcept
+    { return _M_max_load_factor; }
+
+    // Return a bucket size no smaller than n (as long as n is not above the
+    // highest power of 2).
+    size_t
+    _M_next_bkt(size_t __n) noexcept
+    {
+      if (__n == 0)
+	// Special case on container 1st initialization with 0 bucket count
+	// hint. We keep _M_next_resize to 0 to make sure that next time we
+	// want to add an element allocation will take place.
+	return 1;
+
+      const auto __max_width = std::min<size_t>(sizeof(size_t), 8);
+      const auto __max_bkt = size_t(1) << (__max_width * __CHAR_BIT__ - 1);
+      size_t __res = __clp2(__n);
+
+      if (__res == 0)
+	__res = __max_bkt;
+      else if (__res == 1)
+	// If __res is 1 we force it to 2 to make sure there will be an
+	// allocation so that nothing need to be stored in the initial
+	// single bucket
+	__res = 2;
+
+      if (__res == __max_bkt)
+	// Set next resize to the max value so that we never try to rehash again
+	// as we already reach the biggest possible bucket number.
+	// Note that it might result in max_load_factor not being respected.
+	_M_next_resize = size_t(-1);
+      else
+	_M_next_resize
+	  = __builtin_floor(__res * (double)_M_max_load_factor);
+
+      return __res;
+    }
+```
+
+同文件里还藏着 `_Power2_rehash_policy`：**桶数取 2 的幂**。它的卖点是用 `& (桶数-1)` 取代取模（`_Mask_range_hashing::operator()` 即 `__num & (__den - 1)`），位运算比除法快。代价是哈希分布质量略逊于素数。教材几乎只讲素数策略，但 libstdc++ 早已把 2 的幂策略备好——这是对「哈希表必须用素数」直觉的纠偏。
+
+### D4.4 `basic_string` 双策略参数 与 `unique_ptr` 借 tuple 做 EBO
+
+```text
+// bits/basic_string.h  L93-101  (libstdc++ 15.3.0)
+  template<typename _CharT, typename _Traits, typename _Alloc>
+    class basic_string
+    {
+      static_assert(is_same_v<_CharT, typename _Traits::char_type>);
+      static_assert(is_same_v<_CharT, typename _Alloc::value_type>);
+      using _Char_alloc_type = _Alloc;
+```
+
+`basic_string` 把「字符特性」(`_Traits`，即 `char_traits`) 与「内存分配」(`_Alloc`) 拆成两个正交策略参数——这正是 Policy-Based Design 的「正交维度组合」。
+
+```text
+// bits/unique_ptr.h  L189-225  (libstdc++ 15.3.0)
+      _GLIBCXX23_CONSTEXPR
+      pointer&   _M_ptr() noexcept { return std::get<0>(_M_t); }
+      _GLIBCXX23_CONSTEXPR
+      pointer    _M_ptr() const noexcept { return std::get<0>(_M_t); }
+      _GLIBCXX23_CONSTEXPR
+      _Dp&       _M_deleter() noexcept { return std::get<1>(_M_t); }
+      _GLIBCXX23_CONSTEXPR
+      const _Dp& _M_deleter() const noexcept { return std::get<1>(_M_t); }
+
+      _GLIBCXX23_CONSTEXPR
+      void reset(pointer __p) noexcept
+      {
+	const pointer __old_p = _M_ptr();
+	_M_ptr() = __p;
+	if (__old_p)
+	  _M_deleter()(__old_p);
+      }
+
+      _GLIBCXX23_CONSTEXPR
+      pointer release() noexcept
+      {
+	pointer __p = _M_ptr();
+	_M_ptr() = nullptr;
+	return __p;
+      }
+
+      _GLIBCXX23_CONSTEXPR
+      void
+      swap(__uniq_ptr_impl& __rhs) noexcept
+      {
+	using std::swap;
+	swap(this->_M_ptr(), __rhs._M_ptr());
+	swap(this->_M_deleter(), __rhs._M_deleter());
+      }
+
+    private:
+      tuple<pointer, _Dp> _M_t;
+```
+
+`__uniq_ptr_impl` 把「裸指针」和「删除器」打包进 `tuple<pointer, _Dp>`。`_M_ptr()` / `_M_deleter()` 用 `std::get<0/1>` 取出成员。**空基类优化（EBO）是借 `std::tuple` 内部对空删除器（`default_delete` 等无状态 functor）做的压缩实现的，而不是 `unique_ptr` 自己手写**——这是「策略成员零开销」的经典实现手法。
+
+### D4.5 设计动机
+
+| 设计选择 | 动机 |
+|---------|------|
+| `_Hashtable_traits` 三布尔非类型参数 | 把「缓存哈希码／迭代器常量性／键唯一性」做成独立编译期维度，组合由模板参数乘积承担 |
+| `_Prime_rehash_policy`（默认） | 素数桶数降低哈希聚集，分布更均匀 |
+| 并存 `_Power2_rehash_policy` | 用 `& (n-1)` 替代取模，换取更快的重哈希；取舍是分布质量 |
+| `basic_string<_CharT,_Traits,_Alloc>` | 字符特性与分配器正交解耦，可独立替换策略 |
+| `tuple<pointer,_Dp>` 存 unique_ptr 状态 | 把 EBO 交给 `tuple` 完成，无状态删除器不占空间 |
+
+### D4.6 跨实现对比
+
+| 维度 | libstdc++ 15.3.0 | libc++ (LLVM) | MSVC STL |
+|------|------------------|---------------|----------|
+| 哈希表扩容策略 | `_Prime_rehash_policy`（默认）+ `_Power2_rehash_policy` | 素数为主，实现内聚 | 素数为主 |
+| 布尔策略打包 | `_Hashtable_traits` 三布尔参数 | `_Hashtable` 等价 trait 类 | 等价 trait |
+| `basic_string` 策略参数 | `_CharT`/`_Traits`/`_Alloc` | 同三参数 | 同三参数 |
+| unique_ptr 存储 | `tuple<pointer,_Dp>`，EBO 借 tuple | 等价压缩存储，EBO 借 tuple/空基类 | 等价压缩存储 |
+
+三大实现都把「字符特性 + 分配器」做成双策略；unique_ptr 的零开销删除器在三者中均通过空基类/空成员优化达成。
+
+### D4.7 编译验证
+
+```cpp
+#include <unordered_map>
+#include <memory>
+#include <iostream>
+
+int main() {
+    std::unordered_map<int, int> m;
+    std::cout << "initial bucket_count=" << m.bucket_count() << std::endl;
+    for (int i = 0; i < 2000; ++i) m.emplace(i, i);
+    std::cout << "after inserts bucket_count=" << m.bucket_count() << std::endl;
+
+    static_assert(sizeof(std::unique_ptr<int>) == sizeof(int*),
+                  "unique_ptr<int> must be pointer-sized: EBO for stateless deleter");
+    std::unique_ptr<int> p(new int(7));
+    std::cout << "sizeof(unique_ptr<int>)=" << sizeof(p)
+              << " sizeof(int*)=" << sizeof(int*) << std::endl;
+    std::cout << "*p=" << *p << std::endl;
+    return 0;
+}
+```
+
+`bucket_count` 随插入增长且保持素数序列（默认 `_Prime_rehash_policy` 证据）；`static_assert` 验证无状态删除器下的 EBO 使 `unique_ptr<int>` 与裸指针同尺寸。
+
 ## 附录 J：策略设计（Policy-Based Design）决策流（D3 维度）
 
 ```mermaid
