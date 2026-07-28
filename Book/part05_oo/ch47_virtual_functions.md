@@ -1428,3 +1428,144 @@ flowchart TD
 | ch51 | CRTP 静态多态 | 编译期已知类型时用 CRTP 替代虚函数消除开销 |
 | ch43 | 缓存局部性 | vtable 取指走 I-cache，去虚化改善指令缓存命中 |
 | ch52 | 空基类优化 EBO | 空基类子对象布局不受 vptr 影响，EBO 仍成立 |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 虚函数运行时支撑（三标准库对比）[E: Low-level / H: Design]
+
+> 本附录源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+>（`.../include/c++/15.3.0/`），标注精确到 `文件 L行号`。
+> **诚实边界**：vtable 的布局与生成由 **GCC 前端按 Itanium C++ ABI** 完成，随包的 MinGW 发行版
+> 不含 libsupc++ 的 `.cc` 实现文件（如 `vtable.cc`），因此 vtable 本体一律以下方真实
+> `objdump` 反汇编/重定位记录实证，绝不虚构"源码"。libc++ / MSVC 仅给出
+> "已知公开实现行为"对比，非逐字摘录。
+
+### D4.1 纯虚兜底函数的真实声明（cxxabi.h L147-152）
+
+```text
+// cxxabi.h L147-152  (GCC 15.3.0)
+  // Pure virtual functions.
+  void
+  __cxa_pure_virtual(void) __attribute__ ((__noreturn__));
+
+  void
+  __cxa_deleted_virtual(void) __attribute__ ((__noreturn__));
+```
+
+- 抽象类的 vtable 中，纯虚函数槽位**不能留空**——编译器填入 `__cxa_pure_virtual` 的地址。若在构造/析构期间经由尚未"降级/升级"完成的 vptr 调到纯虚槽位，该兜底函数被执行：打印诊断并 `std::terminate()`（`__noreturn__` 属性即此含义）。这就是运行期报 `pure virtual method called` 的完整链路。
+- C++11 的 `= delete` 虚函数同理由 `__cxa_deleted_virtual` 兜底。
+- 注意：正文 ⑬ 中的 `{ std::terminate(); }` 是**语义示意**；此处才是随包头文件的逐字声明——实现体在 libsupc++ 的二进制库中，随包不发布其 `.cc` 源。
+
+### D4.2 `std::type_info`：每个多态类 vtable 都指向它（typeinfo L93-148）
+
+```text
+// typeinfo L93-148  (GCC 15.3.0, 节选)
+  class type_info
+  {
+  public:
+    /** Destructor first. Being the first non-inline virtual function, this
+     *  controls in which translation unit the vtable is emitted. The
+     *  compiler makes use of that information to know where to emit
+     *  the runtime-mandated type_info structures in the new-abi.  */
+    virtual ~type_info();
+
+    /** Returns an @e implementation-defined byte string; this is not
+     *  portable between compilers!  */
+    const char* name() const _GLIBCXX_NOEXCEPT
+    { return __name[0] == '*' ? __name + 1 : __name; }
+
+    /** Returns true if `*this` precedes `__arg` in the implementation's
+     *  collation order.  */
+    bool before(const type_info& __arg) const _GLIBCXX_NOEXCEPT;
+
+    _GLIBCXX23_CONSTEXPR
+    bool operator==(const type_info& __arg) const _GLIBCXX_NOEXCEPT;
+
+    ... （L114-130 省略：operator!= 与 hash_code）
+
+    // Return true if this is a pointer type of some kind
+    virtual bool __is_pointer_p() const;
+
+    // Return true if this is a function type
+    virtual bool __is_function_p() const;
+
+    ... （中略：__do_catch 注释）
+
+    virtual bool __do_catch(const type_info *__thr_type, void **__thr_obj,
+			    unsigned __outer) const;
+
+    // Internally used during catch matching
+    virtual bool __do_upcast(const __cxxabiv1::__class_type_info *__target,
+			     void **__obj_ptr) const;
+```
+
+四个工程要点：
+
+1. **析构函数放第一个的注释是金句**：`type_info` 把虚析构作为"第一个非内联虚函数"，正是利用 Itanium ABI 的 **key function 规则**——vtable 只在定义 key function 的翻译单元发射一次，避免每个包含 `<typeinfo>` 的 TU 都复制一份。
+2. **`name()` 的 `'*'` 前缀判断**：libstdc++ 有两种 typeinfo 名字比较模式（`__GXX_MERGED_TYPEINFO_NAMES`）；前缀 `'*'` 标记"名字指针唯一、可按地址比较"的快路径，`name()` 对外剥掉该内部标记。
+3. **`__do_catch`/`__do_upcast` 是异常匹配与 `dynamic_cast` 的底座**：`catch(Base&)` 能接住 `Derived` 异常、交叉转型能横跨继承格，全部经由这两个虚函数在 `__class_type_info` 派生体系中的重写实现。
+4. **返回的 `name()` 是 mangled 名**（如 `7Derived`），跨编译器不可移植；可读名需 `abi::__cxa_demangle`。
+
+### D4.3 vtable 本体实证（真实 GCC 15.3.0 objdump）
+
+对最小样例（`Base{f,g,~} / Derived{override f}`，`g++ -std=c++23 -O1 -fno-inline`）取证，
+源码与编译产物见 `Examples/_ch47_d4_vtable.cpp` 与 `Examples/_ch47_d4_vtable.asm`（GCC 15.3.0）。
+虚调用点 `call_f(const Base* p){ return p->f(); }` 的完整机器码（objdump -d -M intel -C 节选自 Examples/_ch47_d4_vtable.asm 同源目标文件）：
+
+```asm
+0000000000000000 <call_f(Base const*)>:
+   0:	48 83 ec 28          	sub    rsp,0x28
+   4:	48 8b 01             	mov    rax,QWORD PTR [rcx]   ; 取 vptr（对象头 8 字节）
+   7:	ff 10                	call   QWORD PTR [rax]       ; 间接调用槽位 0（f）
+   9:	48 83 c4 28          	add    rsp,0x28
+   d:	c3                   	ret
+```
+
+虚分发的全部运行时成本 = **一次装载 + 一次间接调用**。再看 `Derived` 的 vtable 重定位记录（`objdump -r`，PE-COFF，同源 Examples/_ch47_d4_vtable.asm 目标文件）：
+
+```asm
+RELOCATION RECORDS FOR [.rdata$_ZTV7Derived]:
+OFFSET           TYPE                      VALUE
+0000000000000008 IMAGE_REL_AMD64_ADDR64  _ZTI7Derived      ; typeinfo 指针
+0000000000000010 IMAGE_REL_AMD64_ADDR64  _ZNK7Derived1fEv  ; 槽0: Derived::f (override)
+0000000000000018 IMAGE_REL_AMD64_ADDR64  _ZNK4Base1gEv     ; 槽1: 继承 Base::g
+0000000000000020 IMAGE_REL_AMD64_ADDR64  _ZN7DerivedD1Ev   ; 槽2: 完整析构 D1
+0000000000000028 IMAGE_REL_AMD64_ADDR64  _ZN7DerivedD0Ev   ; 槽3: 删除析构 D0
+```
+
+逐字段对照 Itanium ABI：偏移 0 是 offset-to-top（值 0，无重定位）；偏移 8 指向 D4.2 的 `type_info` 派生对象（`typeid`/`dynamic_cast` 的数据源）；偏移 16 起才是函数指针数组——vptr 指向偏移 16（address point），所以槽位 0 的 `f` 用 `call [rax]` 零偏移即中。析构分裂为 D1（不 `delete`）/D0（含 `delete`）双入口。
+
+### D4.4 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| ABI 规范 | Itanium C++ ABI | Itanium C++ ABI | Microsoft ABI（自有布局） |
+| vtable 头部 | offset-to-top + typeinfo 指针，随后函数槽 | 同左（同一 ABI） | 无 offset-to-top；RTTI 经 vftable[-1] 的 Complete Object Locator |
+| 纯虚兜底 | `__cxa_pure_virtual` | 同名（libc++abi 提供） | `_purecall`（报 R6025） |
+| typeinfo 名字比较 | 指针快路径 + `strcmp` 回退（`'*'` 前缀区分） | 类似双模式 | 按修饰名字符串（跨 DLL 需比较内容） |
+| 析构入口 | D1/D0 双入口双槽位 | 同左 | 单一"vector deleting destructor"（标志位参数） |
+
+> libc++/MSVC 行为为**公开实现常识**（llvm-project libc++abi 与 MSVC 文档可核实），非逐字摘录。
+
+### D4.5 第一方可编译验证（type_info 三能力）
+
+```cpp
+#include <iostream>
+#include <typeinfo>
+
+struct Base { virtual ~Base() = default; };
+struct Derived : Base {};
+
+int main() {
+    Derived d;
+    Base& b = d;
+    const std::type_info& ti = typeid(b);          // 经 vtable 偏移 8 取 typeinfo
+    std::cout << "name: " << ti.name() << std::endl;               // mangled 名
+    std::cout << "is Derived: " << (ti == typeid(Derived)) << std::endl;  // 1
+    std::cout << "hash equal: "
+              << (ti.hash_code() == typeid(Derived).hash_code()) << std::endl; // 1
+    Derived* p = dynamic_cast<Derived*>(&b);       // 底层走 __do_upcast 体系
+    std::cout << "dynamic_cast ok: " << (p != nullptr) << std::endl;   // 1
+    return 0;
+}
+```
+
+`typeid(b)` 对多态左值求值时，编译器生成的正是 D4.3 中"取 vptr → 读偏移 8 处 typeinfo 指针"的代码；`ti == typeid(Derived)` 命中 D4.2 的 `operator==` 快路径。三个输出均为 1，`name()` 输出 `7Derived`（GCC mangling，跨编译器不可移植）。

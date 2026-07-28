@@ -1194,3 +1194,99 @@ flowchart TD
 | ch45 | ch116 | OOP 构造委托依赖转发 |
 | ch19 | ch116 | 变量与值类别是转发基础 |
 
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — `std::forward` / `std::move`（三标准库对比）[E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+>（`.../include/c++/15.3.0/bits/move.h`），标注精确到 `文件 L行号`。
+> libc++ / MSVC STL 仅给出"已知公开实现行为"对比，非逐字摘录，避免伪造。
+> 摘录块为引用性质（`text` 围栏），不参与编译；仅下方"第一方可编译验证"为独立 `cpp` 块。
+> 注：正文 ⑬ 源码分析成稿时参照 GCC 13.1.0 行号，本附录一律以 15.3.0 实测行号为准。
+
+### D4.1 `std::forward` 的两个重载（bits/move.h L69-90）
+
+```text
+// bits/move.h L69-90  (GCC 15.3.0)
+  template<typename _Tp>
+    [[__nodiscard__,__gnu__::__always_inline__]]
+    constexpr _Tp&&
+    forward(typename std::remove_reference<_Tp>::type& __t) noexcept
+    { return static_cast<_Tp&&>(__t); }
+
+  /**
+   *  @brief  Forward an rvalue.
+   *  @return The parameter cast to the specified type.
+   *
+   *  This function is used to implement "perfect forwarding".
+   *  @since C++11
+   */
+  template<typename _Tp>
+    [[__nodiscard__,__gnu__::__always_inline__]]
+    constexpr _Tp&&
+    forward(typename std::remove_reference<_Tp>::type&& __t) noexcept
+    {
+      static_assert(!std::is_lvalue_reference<_Tp>::value,
+	  "std::forward must not be used to convert an rvalue to an lvalue");
+      return static_cast<_Tp&&>(__t);
+    }
+```
+
+设计动机四要点：
+
+1. **参数写 `remove_reference<_Tp>::type&` 而非 `_Tp&&`**：`_Tp` 落在非推导语境，编译器无法从实参推导模板实参——这正是刻意的，强制调用者显式写 `std::forward<T>(x)`。忘写 `<T>` 是编译错误，而不是静默转错值类别。
+2. **为何要第二个（右值形参）重载**：左值重载覆盖最常见的"转发具名形参"（具名形参本身是左值）；右值重载覆盖转发一个右值**表达式**（而非具名形参）的少见但合法场景。
+3. **`static_assert` 只放在右值重载**：若实参是右值而 `_Tp` 被显式指定为左值引用（`_Tp&& = U& && = U&`），右值会被悄悄"洗白"为左值引用——绑定临时对象即成悬垂隐患。libstdc++ 把它硬化为编译期错误。
+4. **`[[__gnu__::__always_inline__]]`（GCC 扩展属性）**：即使 `-O0` 也强制内联展开，保证 `forward` 真零开销；`[[__nodiscard__]]` 拦截"调用了却丢弃结果"的无意义写法。
+
+### D4.2 `std::move`（bits/move.h L135-139）
+
+```text
+// bits/move.h L135-139  (GCC 15.3.0)
+  template<typename _Tp>
+    [[__nodiscard__,__gnu__::__always_inline__]]
+    constexpr typename std::remove_reference<_Tp>::type&&
+    move(_Tp&& __t) noexcept
+    { return static_cast<typename std::remove_reference<_Tp>::type&&>(__t); }
+```
+
+- 与 `forward` 相反：`move` 的形参**就是**万能引用 `_Tp&&`（需要推导、接受一切实参），返回类型无条件"剥引用再加 `&&`"——无论传入什么，产出一定是 xvalue。
+- **move 不移动、forward 不转发**：两者本体都只是一次 `static_cast`，真正的资源转移发生在其后被重载决议选中的移动构造/移动赋值中（见 ch115）。
+- GCC 12 起，C++ 前端将 `std::move`/`std::forward` 调用直接折叠为隐式转换（`-ffold-simple-inlines`，默认开启，可用 `-fno-fold-simple-inlines` 关闭），连调用节点都不再生成——编译更快、调试栈更干净。
+
+### D4.3 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| `forward` 所在文件 | `bits/move.h` | `__utility/forward.h` | `<type_traits>` 内定义，经 `<utility>` 暴露 |
+| 防"右值→左值" | 右值重载内 `static_assert` | 双重载 + 同类 `static_assert` | 双重载 + 同类 `static_assert` |
+| 零开销手段 | `always_inline` 属性 + GCC 12 前端折叠 | 内联标注；Clang 15 起对 `std::move`/`forward` 做同类内建折叠 | `[[msvc::intrinsic]]` 标注（VS 2022 17.5 起） |
+| 丢弃结果告警 | `[[__nodiscard__]]` | nodiscard 宏封装 | `[[nodiscard]]` |
+
+> 上述 libc++/MSVC 行为为**公开实现常识**（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录；宏名与版本细节随发行版变动。
+
+### D4.4 第一方可编译验证（值类别还原）
+
+```cpp
+#include <iostream>
+#include <utility>
+#include <type_traits>
+
+void sink(int&)  { std::cout << "sink(int&)  <- 左值" << std::endl; }
+void sink(int&&) { std::cout << "sink(int&&) <- 右值" << std::endl; }
+
+template<typename T>
+void relay(T&& x) {
+    sink(std::forward<T>(x));  // T=int& 时还原左值；T=int 时还原右值
+}
+
+int main() {
+    int a = 42;
+    relay(a);             // 推导 T=int&：int& && 折叠为 int&
+    relay(7);             // 推导 T=int：转发后仍是右值
+    relay(std::move(a));  // move 产出 xvalue，同样走右值分支
+    static_assert(std::is_same_v<decltype(std::move(a)), int&&>);
+    return 0;
+}
+```
+
+预期输出依次为 `左值 / 右值 / 右值`——`forward<T>` 依 `T` 的推导结果（左值实参→`T=int&`、右值实参→`T=int`）经引用折叠精确还原实参的值类别，与 D4.1 的双重载源码一一对应。
