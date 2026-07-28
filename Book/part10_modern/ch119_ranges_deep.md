@@ -974,3 +974,385 @@ flowchart TD
 | ch115 移动语义与右值引用 | ch119 Ranges 深入 | 物化移动依赖 ch115 语义 |
 | ch39 RAII 与 Rule of Five | ch119 Ranges 深入 | 管道资源满足 RAII |
 | ch122 PMR 分配器 | ch119 Ranges 深入 | 物化分配可走 PMR |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — Ranges 深入 [E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++（`.../include/c++/15.3.0/ranges`、`bits/ranges_base.h`、`bits/ranges_util.h`），标注精确到 `相对路径 L行号`。libc++ / MSVC STL 仅给出“已知公开实现行为”对比，非逐字摘录。
+> 摘录块为 `text` 围栏，不参与编译；仅下方“第一方可编译验证”为独立 `cpp` 块。
+
+### D4.1 `ranges::begin` 的三分支决策（bits/ranges_base.h L112-144）
+
+`ranges::begin` 是一个 CPO（`_Begin`），其 `operator()` 用 `if constexpr` 在三个分支间静态分派：（1）内建数组 → `__t + 0`；（2）有成员 `begin()` → `__t.begin()`；（3）否则 ADL 找 `begin(__t)`。`requires` 子句（L128-130）正好是这三者的析取。
+
+```text
+// bits/ranges_base.h L112-144  (GCC 15.3.0)
+    struct _Begin
+    {
+    private:
+      template<typename _Tp>
+	static constexpr bool
+	_S_noexcept()
+	{
+	  if constexpr (is_array_v<remove_reference_t<_Tp>>)
+	    return true;
+	  else if constexpr (__member_begin<_Tp>)
+	    return noexcept(__decay_copy(std::declval<_Tp&>().begin()));
+	  else
+	    return noexcept(__decay_copy(begin(std::declval<_Tp&>())));
+	}
+
+    public:
+      template<__maybe_borrowed_range _Tp>
+	requires is_array_v<remove_reference_t<_Tp>> || __member_begin<_Tp>
+	  || __adl_begin<_Tp>
+	constexpr auto
+	operator()[[nodiscard]](_Tp&& __t) const noexcept(_S_noexcept<_Tp&>())
+	{
+	  if constexpr (is_array_v<remove_reference_t<_Tp>>)
+	    {
+	      static_assert(is_lvalue_reference_v<_Tp>);
+	      return __t + 0;
+	    }
+	  else if constexpr (__member_begin<_Tp>)
+	    return __t.begin();
+	  else
+	    return begin(__t);
+	}
+    };
+```
+
+- 数组分支要求 `is_lvalue_reference_v`（L136），确保 `__t + 0` 拿到合法地址；成员/`__adl_begin` 分支分别走 `.begin()` 或 ADL。
+- L153 的 `void end() = delete;` 是“毒药丸”：阻止无限制查找把 `std::end` 拉进来，逼 `end` 只能来自类型的关联命名空间——与 `begin` 对称。
+- `_S_noexcept` 按分支分别计算 `noexcept`，使 `ranges::begin` 的异常规格精确贴合实参。
+
+### D4.2 `view_interface` 的 CRTP 默认成员（bits/ranges_util.h L67-160）
+
+`view_interface<_Derived>` 用 CRTP 给每个 view 提供一批**按需启用**的默认接口（`empty`/`operator bool`/`data`/`size`/`front`...）。`_M_derived()` 把 `*this` 向下转型为 `_Derived&` 并断言 `derived_from` 与 `view`。
+
+```text
+// bits/ranges_util.h L67-160  (GCC 15.3.0)
+  /// The ranges::view_interface class template
+  template<typename _Derived>
+    requires is_class_v<_Derived> && same_as<_Derived, remove_cv_t<_Derived>>
+    class view_interface
+    {
+    private:
+      constexpr _Derived& _M_derived() noexcept
+      {
+	static_assert(derived_from<_Derived, view_interface<_Derived>>);
+	static_assert(view<_Derived>);
+	return static_cast<_Derived&>(*this);
+      }
+
+      constexpr const _Derived& _M_derived() const noexcept
+      {
+	static_assert(derived_from<_Derived, view_interface<_Derived>>);
+	static_assert(view<_Derived>);
+	return static_cast<const _Derived&>(*this);
+      }
+
+      static constexpr bool
+      _S_bool(bool) noexcept; // not defined
+
+      template<typename _Tp>
+	static constexpr bool
+	_S_empty(_Tp& __t)
+	noexcept(noexcept(_S_bool(ranges::begin(__t) == ranges::end(__t))))
+	{ return ranges::begin(__t) == ranges::end(__t); }
+
+      template<typename _Tp>
+	static constexpr auto
+	_S_size(_Tp& __t)
+	noexcept(noexcept(ranges::end(__t) - ranges::begin(__t)))
+	{ return ranges::end(__t) - ranges::begin(__t); }
+
+    public:
+      constexpr bool
+      empty()
+      noexcept(noexcept(_S_empty(_M_derived())))
+      requires forward_range<_Derived> && (!sized_range<_Derived>)
+      { return _S_empty(_M_derived()); }
+
+      constexpr bool
+      empty()
+      noexcept(noexcept(ranges::size(_M_derived()) == 0))
+      requires sized_range<_Derived>
+      { return ranges::size(_M_derived()) == 0; }
+
+      constexpr bool
+      empty() const
+      noexcept(noexcept(_S_empty(_M_derived())))
+      requires forward_range<const _Derived> && (!sized_range<const _Derived>)
+      { return _S_empty(_M_derived()); }
+
+      constexpr bool
+      empty() const
+      noexcept(noexcept(ranges::size(_M_derived()) == 0))
+      requires sized_range<const _Derived>
+      { return ranges::size(_M_derived()) == 0; }
+
+      constexpr explicit
+      operator bool() noexcept(noexcept(ranges::empty(_M_derived())))
+      requires requires { ranges::empty(_M_derived()); }
+      { return !ranges::empty(_M_derived()); }
+
+      constexpr explicit
+      operator bool() const noexcept(noexcept(ranges::empty(_M_derived())))
+      requires requires { ranges::empty(_M_derived()); }
+      { return !ranges::empty(_M_derived()); }
+
+      constexpr auto
+      data() noexcept(noexcept(ranges::begin(_M_derived())))
+      requires contiguous_iterator<iterator_t<_Derived>>
+      { return std::to_address(ranges::begin(_M_derived())); }
+
+      constexpr auto
+      data() const noexcept(noexcept(ranges::begin(_M_derived())))
+      requires range<const _Derived>
+	&& contiguous_iterator<iterator_t<const _Derived>>
+      { return std::to_address(ranges::begin(_M_derived())); }
+
+      constexpr auto
+      size() noexcept(noexcept(_S_size(_M_derived())))
+      requires forward_range<_Derived>
+	&& sized_sentinel_for<sentinel_t<_Derived>, iterator_t<_Derived>>
+      { return _S_size(_M_derived()); }
+
+      constexpr auto
+      size() const noexcept(noexcept(_S_size(_M_derived())))
+      requires forward_range<const _Derived>
+	&& sized_sentinel_for<sentinel_t<const _Derived>,
+			      iterator_t<const _Derived>>
+      { return _S_size(_M_derived()); }
+
+```
+
+- `empty()` 有两组重载：对 `forward_range && !sized_range` 比较 `begin()==end()`（L103-107），对 `sized_range` 用 `size()==0`（L109-113）；`const` 版本同理（L115-125）。`operator bool` 即 `!empty()`（L127-135）。
+- 一切通过 CRTP 在编译期分发到派生 view 的 `begin/end/size`，**零运行时开销**；约束不满足时该重载直接不参与重载集。
+
+### D4.3 `_CachedPosition`：惰性 view 的 begin 缓存（ranges L1543-1620）
+
+`filter_view`/`take_view` 等用 `__detail::_CachedPosition<_Vp>` 缓存第一次 `begin()` 的结果，避免重复扫描谓词。它针对 range 类别有**三套特化**。
+
+```text
+// ranges L1543-1620  (GCC 15.3.0)
+    template<range _Range>
+      struct _CachedPosition
+      {
+	constexpr bool
+	_M_has_value() const
+	{ return false; }
+
+	constexpr iterator_t<_Range>
+	_M_get(const _Range&) const
+	{
+	  __glibcxx_assert(false);
+	  __builtin_unreachable();
+	}
+
+	constexpr void
+	_M_set(const _Range&, const iterator_t<_Range>&) const
+	{ }
+      };
+
+    template<forward_range _Range>
+      struct _CachedPosition<_Range>
+	: protected __non_propagating_cache<iterator_t<_Range>>
+      {
+	constexpr bool
+	_M_has_value() const
+	{ return this->_M_is_engaged(); }
+
+	constexpr iterator_t<_Range>
+	_M_get(const _Range&) const
+	{
+	  __glibcxx_assert(_M_has_value());
+	  return **this;
+	}
+
+	constexpr void
+	_M_set(const _Range&, const iterator_t<_Range>& __it)
+	{
+	  __glibcxx_assert(!_M_has_value());
+	  std::construct_at(std::__addressof(this->_M_payload._M_payload),
+			    in_place, __it);
+	  this->_M_payload._M_engaged = true;
+	}
+      };
+
+    template<random_access_range _Range>
+      requires (sizeof(range_difference_t<_Range>)
+		<= sizeof(iterator_t<_Range>))
+      struct _CachedPosition<_Range>
+      {
+      private:
+	range_difference_t<_Range> _M_offset = -1;
+
+      public:
+	_CachedPosition() = default;
+
+	constexpr
+	_CachedPosition(const _CachedPosition&) = default;
+
+	constexpr
+	_CachedPosition(_CachedPosition&& __other) noexcept
+	{ *this = std::move(__other); }
+
+	constexpr _CachedPosition&
+	operator=(const _CachedPosition&) = default;
+
+	constexpr _CachedPosition&
+	operator=(_CachedPosition&& __other) noexcept
+	{
+	  // Propagate the cached offset, but invalidate the source.
+	  _M_offset = __other._M_offset;
+	  __other._M_offset = -1;
+	  return *this;
+	}
+
+	constexpr bool
+	_M_has_value() const
+	{ return _M_offset >= 0; }
+
+```
+
+- 一般 `range`：`_M_has_value()` 恒 `false`，每次 `begin()` 重算（input range 不可重放）。
+- `forward_range`：继承 `__non_propagating_cache<iterator_t>`（L1564）——缓存**不随拷贝/移动传播**：复制一个 view 会使缓存失效，契合“view 不拥有数据”。
+- `random_access_range`（且 `sizeof(diff) <= sizeof(iterator)`）：只存一个偏移 `_M_offset`（默认 -1=空，L1593）；移动时偏移传播但源被置 -1（L1611-1613），同样非传播。
+
+### D4.4 `filter_view` 的惰性结构（ranges L1663-1704）
+
+`filter_view<Vp,Pred>` 继承 `view_interface<filter_view<...>>`，持 `_Vp _M_base`、`__box<_Pred> _M_pred`、`_CachedPosition<_Vp> _M_cached_begin`。迭代器 `_Iterator` 只存 `_Vp_iter _M_current` 和 `filter_view* _M_parent`（回指，不拥有）。
+
+```text
+// ranges L1663-1704  (GCC 15.3.0)
+  template<input_range _Vp,
+	   indirect_unary_predicate<iterator_t<_Vp>> _Pred>
+    requires view<_Vp> && is_object_v<_Pred>
+    class filter_view : public view_interface<filter_view<_Vp, _Pred>>
+    {
+    private:
+      struct _Sentinel;
+
+      struct _Iterator : __detail::__filter_view_iter_cat<_Vp>
+      {
+      private:
+	static constexpr auto
+	_S_iter_concept()
+	{
+	  if constexpr (bidirectional_range<_Vp>)
+	    return bidirectional_iterator_tag{};
+	  else if constexpr (forward_range<_Vp>)
+	    return forward_iterator_tag{};
+	  else
+	    return input_iterator_tag{};
+	}
+
+	friend filter_view;
+
+	using _Vp_iter = iterator_t<_Vp>;
+
+	_Vp_iter _M_current = _Vp_iter();
+	filter_view* _M_parent = nullptr;
+
+      public:
+	using iterator_concept = decltype(_S_iter_concept());
+	// iterator_category defined in __filter_view_iter_cat
+	using value_type = range_value_t<_Vp>;
+	using difference_type = range_difference_t<_Vp>;
+
+	_Iterator() requires default_initializable<_Vp_iter> = default;
+
+	constexpr
+	_Iterator(filter_view* __parent, _Vp_iter __current)
+	  : _M_current(std::move(__current)),
+	    _M_parent(__parent)
+	{ }
+```
+
+- 惰性体现于 `operator++`（L1724-1731）：每步用 `ranges::find_if` 跳过不匹配元素——工作在**递增时**支付，构造 `filter_view` 本身 O(1)。
+- `_S_iter_concept` 按 `_Vp` 能力在 `bidirectional/forward/input` 间降级（L1674-1683）；`operator--`（L1745-1752）仅在双向 range 上可用。
+
+### D4.5 `filter_view::begin()` 的缓存命中（ranges L1805-1843）
+
+```text
+// ranges L1805-1843  (GCC 15.3.0)
+      _Vp _M_base = _Vp();
+      [[no_unique_address]] __detail::__box<_Pred> _M_pred;
+      [[no_unique_address]] __detail::_CachedPosition<_Vp> _M_cached_begin;
+
+    public:
+      filter_view() requires (default_initializable<_Vp>
+			      && default_initializable<_Pred>)
+	= default;
+
+      constexpr
+      filter_view(_Vp __base, _Pred __pred)
+	: _M_base(std::move(__base)), _M_pred(std::move(__pred))
+      { }
+
+      constexpr _Vp
+      base() const& requires copy_constructible<_Vp>
+      { return _M_base; }
+
+      constexpr _Vp
+      base() &&
+      { return std::move(_M_base); }
+
+      constexpr const _Pred&
+      pred() const
+      { return *_M_pred; }
+
+      constexpr _Iterator
+      begin()
+      {
+	if (_M_cached_begin._M_has_value())
+	  return {this, _M_cached_begin._M_get(_M_base)};
+
+	__glibcxx_assert(_M_pred.has_value());
+	auto __it = ranges::find_if(ranges::begin(_M_base),
+				    ranges::end(_M_base),
+				    std::ref(*_M_pred));
+	_M_cached_begin._M_set(_M_base, __it);
+	return {this, std::move(__it)};
+      }
+```
+
+- `begin()`（L1831-1843）先查 `_M_cached_begin._M_has_value()`：命中即返回；否则一次性 `ranges::find_if` 跳过开头的非匹配，用 `_M_cached_begin._M_set` 缓存后返回。于是第一次 `begin()` 付初始扫描代价，后续（如 range-for 拷贝后）直接复用——但仅对 forward range 生效（见 D4.3 特化）。
+- `_M_pred` 用 `__box` 包裹（L1806）：一种在谓词为 `empty` 类时做空基类优化、否则存储的盒子，同样不传播。
+
+### D4.6 跨实现对比（Ranges）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| `ranges::begin` | `_Begin` CPO，数组/成员/ADL 三分支 `if constexpr` | 同名 CPO，类似三分支（已知公开行为） | 类似（已知公开行为） |
+| `view_interface` | CRTP，约束启用 `empty/operator bool/data/size` | 同名 CRTP（已知公开行为） | 同名 CRTP（已知公开行为） |
+| view 缓存 | `_CachedPosition` 三特化（含 RA 偏移版），非传播 | 各自 `cached` 机制（未逐字核对） | 各自机制（未逐字核对） |
+| `filter_view` | `view_interface` 派生，`__box` 存谓词，`find_if` 惰性 | 同名同构（已知公开行为） | 同名同构（已知公开行为） |
+
+> libc++ / MSVC 行为为**已知公开实现行为**（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录。
+
+### D4.7 第一方可编译验证（Ranges 深入）
+
+```cpp
+#include <iostream>
+#include <ranges>
+#include <vector>
+
+int main() {
+    std::vector<int> v{1,2,3,4,5,6,7,8,9,10};
+
+    auto r = v
+        | std::views::filter([](int x) { return x % 3 == 0; })
+        | std::views::take(2);
+
+    int count = 0;
+    for (int x : r) { std::cout << x << ' '; ++count; }
+    std::cout << std::endl;
+    std::cout << "count: " << count << std::endl;
+    std::cout << "r empty ? " << r.empty() << std::endl;
+    return 0;
+}
+```
+
+输出印证：惰性组合只在遍历时求值——`filter(%3==0)` 取 3/6/9，`take(2)` 截前 2 个得 `3 6`；`r.empty()` 来自 `view_interface` 的 CRTP 默认实现（D4.2），与 D4.4–D4.5 源码一致。

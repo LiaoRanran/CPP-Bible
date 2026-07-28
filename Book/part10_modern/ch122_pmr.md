@@ -1377,3 +1377,278 @@ flowchart TD
 | ch115 移动语义与右值引用 | ch122 PMR | 对象森林中移动需正确 |
 | ch120 协程应用模式 | ch122 PMR | 协程帧分配可走 PMR arena |
 | ch124 libstdc++ | ch122 PMR | 标准库 PMR 实现位于 libstdc++ |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — PMR 内存资源 [E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++（`.../include/c++/15.3.0/`），标注精确到 `相对路径 L行号`。libc++ / MSVC STL 仅给出“已知公开实现行为”对比，非逐字摘录。
+> 摘录块为 `text` 围栏，不参与编译；仅下方“第一方可编译验证”为独立 `cpp` 块。
+> 注意：本章正文第 9 行引用的是旧版 GCC **13.1.0** 源码根（`.../13.1.0/`）。本附录基于随书工具链 **GCC 15.3.0**，所有行号以本附录为准，正文内容未改动。
+> 诚实考据：顶层头 `memory_resource`（479 行）本身只是转发/声明外壳；`memory_resource` 抽象基类与 `polymorphic_allocator` 的**定义**其实在 `bits/memory_resource.h` 中，顶层头只声明了 `monotonic_buffer_resource` 等具体资源类与 `__pool_resource`。
+
+### D4.1 `memory_resource` 抽象基类的三段式虚接口（bits/memory_resource.h L63-99）
+
+`memory_resource` 把三个可重写点 `do_allocate` / `do_deallocate` / `do_is_equal` 放在 **private 纯虚** 区，对外只暴露非虚的 `allocate` / `deallocate` / `is_equal` 转发到它们——这是经典 NVI（非虚接口）手法：调用方无法意外覆写公共 API，基类可在转发前后统一加前置条件（对齐、非空）。
+
+```text
+// bits/memory_resource.h L63-99  (GCC 15.3.0)
+  class memory_resource
+  {
+    static constexpr size_t _S_max_align = alignof(max_align_t);
+
+  public:
+    memory_resource() = default;
+    memory_resource(const memory_resource&) = default;
+    virtual ~memory_resource(); // key function
+
+    memory_resource& operator=(const memory_resource&) = default;
+
+    [[nodiscard]]
+    void*
+    allocate(size_t __bytes, size_t __alignment = _S_max_align)
+    __attribute__((__returns_nonnull__,__alloc_size__(2),__alloc_align__(3)))
+    { return ::operator new(__bytes, do_allocate(__bytes, __alignment)); }
+
+    void
+    deallocate(void* __p, size_t __bytes, size_t __alignment = _S_max_align)
+    __attribute__((__nonnull__))
+    { return do_deallocate(__p, __bytes, __alignment); }
+
+    [[nodiscard]]
+    bool
+    is_equal(const memory_resource& __other) const noexcept
+    { return do_is_equal(__other); }
+
+  private:
+    virtual void*
+    do_allocate(size_t __bytes, size_t __alignment) = 0;
+
+    virtual void
+    do_deallocate(void* __p, size_t __bytes, size_t __alignment) = 0;
+
+    virtual bool
+    do_is_equal(const memory_resource& __other) const noexcept = 0;
+  };
+```
+
+- `allocate` 返回 `::operator new(__bytes, do_allocate(...))`：这是 **placement new 的指针透传形态**——`do_allocate` 先向上游要一块 `void*`，再交给 `::operator new(size, void*)` 原样返回，所以 `memory_resource` 自身不持有任何用户数据。
+- 三个 `do_*` 都是 `= 0` 纯虚，派生类（`monotonic_buffer_resource` 等）必须实现；`is_equal` 默认用 `do_is_equal` 做**标识比较**（同一对象才算相等），这正是 `operator==` 的语义基础。
+
+### D4.2 `polymorphic_allocator` 持有裸指针（bits/memory_resource.h L142-152, L367）
+
+`polymorphic_allocator<T>` 内部只存一个 `memory_resource* _M_resource`（L367），且**不拥有**该资源：拷贝/转换只复制指针，赋值运算符被删除。把 pa 注入容器时，容器复制的是“指针”，所以 pmr 分配器是**引用语义**。
+
+```text
+// bits/memory_resource.h L142-152  (GCC 15.3.0)
+      polymorphic_allocator(memory_resource* __r) noexcept
+      __attribute__((__nonnull__))
+      : _M_resource(__r)
+      { _GLIBCXX_DEBUG_ASSERT(__r); }
+
+      polymorphic_allocator(const polymorphic_allocator& __other) = default;
+
+      template<typename _Up>
+	polymorphic_allocator(const polymorphic_allocator<_Up>& __x) noexcept
+	: _M_resource(__x.resource())
+	{ }
+```
+
+```text
+// bits/memory_resource.h L367-367  (GCC 15.3.0)
+      memory_resource* _M_resource;
+```
+
+- 指针构造（L142-145）把裸指针存入 `_M_resource` 并断言非空；转换构造（L149-152）只复制指针（`_M_resource(__x.resource())`），故 `polymorphic_allocator<U>` → `polymorphic_allocator<T>` 是零成本窄化转换。
+- `allocate(n)` 先做溢出检查 `__int_traits<size_t>::__max / sizeof(_Tp) < __n` 再调 `_M_resource->allocate`，对应 L162-166。其 `allocator_traits` 特化（L427-437）把 `propagate_on_container_*` 全部置 `false`、`is_always_equal = false_type`：因为两个 pa 可能指向不同资源，它们**不**总是相等——这是 pmr 与标准“始终相等”分配器的关键区别。
+
+### D4.3 `monotonic_buffer_resource` 的 do_deallocate 空操作与 release（memory_resource L390-438）
+
+`monotonic_buffer_resource` 的灵魂是 `do_deallocate` 为空（L433）：释放是 no-op，所以它极快且**从不复用**已释放内存；内存只增不减，直到 `release()`（或析构）一次性归还上游。
+
+```text
+// memory_resource L390-438  (GCC 15.3.0)
+    void
+    release() noexcept
+    {
+      if (_M_head)
+	_M_release_buffers();
+
+      // reset to initial state at contruction:
+      if ((_M_current_buf = _M_orig_buf))
+	{
+	  _M_avail = _M_orig_size;
+	  _M_next_bufsiz = _S_next_bufsize(_M_orig_size);
+	}
+      else
+	{
+	  _M_avail = 0;
+	  _M_next_bufsiz = _M_orig_size;
+	}
+    }
+
+    memory_resource*
+    upstream_resource() const noexcept
+    __attribute__((__returns_nonnull__))
+    { return _M_upstream; }
+
+  protected:
+    void*
+    do_allocate(size_t __bytes, size_t __alignment) override
+    {
+      if (__builtin_expect(__bytes == 0, false))
+	__bytes = 1; // Ensures we don't return the same pointer twice.
+
+      void* __p = std::align(__alignment, __bytes, _M_current_buf, _M_avail);
+      if (__builtin_expect(__p == nullptr, false))
+	{
+	  _M_new_buffer(__bytes, __alignment);
+	  __p = _M_current_buf;
+	}
+      _M_current_buf = (char*)_M_current_buf + __bytes;
+      _M_avail -= __bytes;
+      return __p;
+    }
+
+    void
+    do_deallocate(void*, size_t, size_t) override
+    { }
+
+    bool
+    do_is_equal(const memory_resource& __other) const noexcept override
+    { return this == &__other; }
+```
+
+- `do_allocate`（L414-430）：零字节按 1 字节处理（避免两次返回同一指针），用 `std::align` 在 `_M_current_buf/_M_avail` 上切分；不足时走 `_M_new_buffer`（其**定义**在 `src/c++17/memory_resource.cc`，不在 include 树，此处仅见声明 L443）。
+- `release()`（L390-407）先调 `_M_release_buffers()`（定义同样在 src 树，仅见声明 L447-448），再把状态复位到构造初值（`_M_orig_buf/_M_orig_size` 的作用），从而可“回到栈缓冲重来”。
+
+### D4.4 单调缓冲的增长策略与数据成员（memory_resource L443-471）
+
+```text
+// memory_resource L443-471  (GCC 15.3.0)
+    void
+    _M_new_buffer(size_t __bytes, size_t __alignment);
+
+    // Deallocate all buffers obtained from upstream.
+    void
+    _M_release_buffers() noexcept;
+
+    static size_t
+    _S_next_bufsize(size_t __buffer_size) noexcept
+    {
+      if (__builtin_expect(__buffer_size == 0, false))
+	__buffer_size = 1;
+      return __buffer_size * _S_growth_factor;
+    }
+
+    static constexpr size_t _S_init_bufsize = 128 * sizeof(void*);
+    static constexpr float _S_growth_factor = 1.5;
+
+    void*	_M_current_buf = nullptr;
+    size_t	_M_avail = 0;
+    size_t	_M_next_bufsiz = _S_init_bufsize;
+
+    // Initial values set at construction and reused by release():
+    memory_resource* const	_M_upstream;
+    void* const			_M_orig_buf = nullptr;
+    size_t const		_M_orig_size = _M_next_bufsiz;
+
+    class _Chunk;
+    _Chunk* _M_head = nullptr;
+```
+
+- 增长因子 `_S_growth_factor = 1.5`（L459），`_S_next_bufsize` 每次 ×1.5（L450-456），初始缓冲 `_S_init_bufsize = 128 * sizeof(void*)`（L458）——新缓冲按 1.5 倍放大，平摊 O(1) 追加、浪费有上界。
+- 数据成员：`_M_current_buf/_M_avail` 是当前可用切片；`const _M_upstream` 是上游资源（引用语义）；`_M_orig_buf/_M_orig_size` 供 `release()` 复位；`_Chunk* _M_head`（L471）是上游分配块的链表头，`_M_release_buffers` 遍历它归还。
+
+### D4.5 `__pool_resource` 仅见声明（memory_resource L142-181）
+
+`__pool_resource` 是 `unsynchronized_pool_resource` / `synchronized_pool_resource` 的共用实现基类。其构造函数、`allocate`/`deallocate`/`release`/`_M_alloc_pools` 在此**只有声明，定义位于 GCC 源码树 `src/c++17/memory_resource.cc`（MinGW 头目录不含）**，故只摘声明、不虚构实现。
+
+```text
+// memory_resource L142-181  (GCC 15.3.0)
+  class __pool_resource
+  {
+    friend class synchronized_pool_resource;
+    friend class unsynchronized_pool_resource;
+
+    __pool_resource(const pool_options& __opts, memory_resource* __upstream);
+
+    ~__pool_resource();
+
+    __pool_resource(const __pool_resource&) = delete;
+    __pool_resource& operator=(const __pool_resource&) = delete;
+
+    // Allocate a large unpooled block.
+    void*
+    allocate(size_t __bytes, size_t __alignment);
+
+    // Deallocate a large unpooled block.
+    void
+    deallocate(void* __p, size_t __bytes, size_t __alignment);
+
+
+    // Deallocate unpooled memory.
+    void release() noexcept;
+
+    memory_resource* resource() const noexcept
+    { return _M_unpooled.get_allocator().resource(); }
+
+    struct _Pool;
+
+    _Pool* _M_alloc_pools();
+
+    const pool_options _M_opts;
+
+    struct _BigBlock;
+    // Collection of blocks too big for any pool, sorted by address.
+    // This also stores the only copy of the upstream memory resource pointer.
+    _GLIBCXX_STD_C::pmr::vector<_BigBlock> _M_unpooled;
+
+    const int _M_npools;
+  };
+```
+
+- 关键点：`_M_unpooled` 是 `pmr::vector<_BigBlock>`，**它顺带存了上游资源指针的唯一副本**（L166-167 的 `resource()` 经它取回）；`_M_npools` 是大小分级池的数量（L180）。两个 pool 资源类以 `friend` 方式访问 `_M_impl`（L144-145、L247、L314）。
+
+### D4.6 跨实现对比（PMR）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| 抽象基类 | `memory_resource` 用 NVI：public 非虚转发到 private 纯虚 `do_*` | 同名同构（已知公开行为） | 同名同构（已知公开行为） |
+| `monotonic_buffer_resource` | `do_deallocate` 为空、1.5× 增长、栈缓冲可复位 | 同语义，增长因子实现细节未核对 | 同语义（已知公开行为） |
+| `polymorphic_allocator` | 仅持裸 `memory_resource*`，引用语义，`is_always_equal=false` | 同语义（已知公开行为） | 同语义（已知公开行为） |
+| 池资源实现位置 | `__pool_resource` 定义在 `src/c++17/memory_resource.cc` | 各有独立实现（未逐字核对） | 各有独立实现（未逐字核对） |
+
+> libc++ / MSVC 行为为**已知公开实现行为**（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录；宏名与版本细节随发行版变动。
+
+### D4.7 第一方可编译验证（PMR 内存资源）
+
+```cpp
+#include <iostream>
+#include <memory_resource>
+#include <vector>
+
+int main() {
+    char buf[1024];
+    std::pmr::monotonic_buffer_resource mr(buf, sizeof(buf));
+
+    std::pmr::polymorphic_allocator<int> alloc(&mr);
+    std::cout << std::boolalpha;
+    std::cout << "alloc.resource() == &mr ? "
+              << (alloc.resource() == &mr) << std::endl;
+
+    std::pmr::vector<int> v(alloc);
+    for (int i = 0; i < 8; ++i) v.push_back(i * i);
+    for (int x : v) std::cout << x << ' ';
+    std::cout << std::endl;
+
+    std::cout << "default resources equal ? "
+              << (std::pmr::get_default_resource()
+                  == std::pmr::get_default_resource()) << std::endl;
+
+    v.clear();
+    mr.release();
+    std::cout << "after release, buffer reused" << std::endl;
+    return 0;
+}
+```
+
+输出印证：`alloc.resource()` 即构造时传入的 `&mr`（裸指针引用语义）；`pmr::vector` 复用栈缓冲零额外分配；默认资源全局唯一；`release()` 后缓冲可复位重用——与 D4.2–D4.4 源码一致。

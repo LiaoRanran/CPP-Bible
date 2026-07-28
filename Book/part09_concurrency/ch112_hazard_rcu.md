@@ -978,3 +978,244 @@ flowchart TD
 | ch109 | ch112 | fence 强化宽限期边界 |
 | ch39 | ch112 | RAII 管理 hazard 槽生命周期 |
 | ch77 | ch112 | vector 节点回收避免并发悬垂 |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — Hazard Pointer / RCU：未实装与标准库内替代路线 [E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+> （`.../include/c++/15.3.0/bits/shared_ptr_atomic.h`、`bits/atomic_wait.h`），标注精确到 `文件 L行号`。libc++ / MSVC STL 仅给出"已知公开实现行为"对比，非逐字摘录。
+>
+> **诚实前提：C++26 的 `std::hazard_pointer` 与 `std::rcu_domain` 在 GCC 15.3.0 的 libstdc++ 中尚未实装。** 验证方式见 D4.1（Glob 源码树无 `hazard*`/`rcu*` 头文件，Grep `hazard_pointer|rcu_domain|class hazard|struct rcu` 仅命中一处占位注释）。因此本附录不虚构 hazard/RCU 源码，转而解析 libstdc++ "在没有 hazard/RCU 的情况下"如何靠 `atomic<shared_ptr>` 的锁位打包（安全回收）与 `atomic_wait` 的等待池（阻塞等待）来应对同类问题。
+
+### D4.1 否定性结论：hazard/rcu 头文件不存在（验证方法与证据）
+
+在随书工具链的 libstdc++ 根目录下执行的核查：
+
+- `Glob **/*hazard*` 与 `Glob **/*rcu*` 均**返回空**——不存在任何名为 hazard/rcu 的头文件。
+- `Grep hazard_pointer|rcu_domain|class hazard|struct rcu|using rcu` 在整个 `15.3.0/` 目录下**唯一**命中处如下：
+
+```text
+// bits/std.cc L1498  (GCC 15.3.0)
+// <hazard_pointer> FIXME
+```
+
+- 该命中位于 C++ 模块导出映射 `bits/std.cc`，是一条尚未完成的 `FIXME` 占位注释，说明 `<hazard_pointer>` 的导出槽位都已欠奉，更无实现。
+
+结论：GCC 15.3.0 libstdc++ **未实装** C++26 的 `std::hazard_pointer` / `std::rcu_domain`（对应提案 P1122 / P2530 在该版本尚未落地）。下文所有源码均为"现有、可用"的替代路线，绝非 hazard/RCU 本身。
+
+### D4.2 _Sp_atomic 的 unlock / _M_swap_unlock 生命周期（bits/shared_ptr_atomic.h L473-493）
+
+`atomic<shared_ptr>` 的"安全回收"秘密在锁协议里：任何写操作都先 `lock()`，做完后再 `unlock()`（把锁位 `fetch_sub 1` 复位）或 `_M_swap_unlock`（交换值并复位锁位）。旧控制块的释放发生在持锁窗口内，因而不会有读者看到半释放的指针。
+
+```text
+// bits/shared_ptr_atomic.h L472-493  (GCC 15.3.0)
+	// Precondition: caller holds lock!
+	void
+	unlock(memory_order __o) const noexcept
+	{
+	  _GLIBCXX_TSAN_MUTEX_PRE_UNLOCK(&_M_val);
+	  _M_val.fetch_sub(1, __o);
+	  _GLIBCXX_TSAN_MUTEX_POST_UNLOCK(&_M_val);
+	}
+
+	// Swaps the values of *this and __c, and unlocks *this.
+	// Precondition: caller holds lock!
+	void
+	_M_swap_unlock(__count_type& __c, memory_order __o) noexcept
+	{
+	  if (__o != memory_order_seq_cst)
+	    __o = memory_order_release;
+	  auto __x = reinterpret_cast<uintptr_t>(__c._M_pi);
+	  _GLIBCXX_TSAN_MUTEX_PRE_UNLOCK(&_M_val);
+	  __x = _M_val.exchange(__x, __o);
+	  _GLIBCXX_TSAN_MUTEX_POST_UNLOCK(&_M_val);
+	  __c._M_pi = reinterpret_cast<pointer>(__x & ~_S_lock_bit);
+	}
+```
+
+- `unlock()`：`_M_val.fetch_sub(1, __o)` 把锁位（LSB）清掉即释放锁——注意它只减 1（锁位），不动指针高位，所以"解锁"和"还原指针值"是同一原子操作的两面。
+- `_M_swap_unlock()`：`_M_val.exchange(__x, __o)` 原子换入新控制块、换出旧值，旧值经 `& ~_S_lock_bit` 剥掉锁位后写回调用方 `__c`；随后调用方析构时按引用计数安全释放旧块。整个过程发生在"持锁"前提下，等价于 hazard/RCU 想解决的"安全回收"目标，只是用锁而非无锁读侧协议达成。
+
+### D4.3 _M_wait_unlock 与 wait/notify 生命周期（bits/shared_ptr_atomic.h L497-504 + L605-627）
+
+`atomic<shared_ptr>` 还提供阻塞式 `wait/notify`（编译期受 `__glibcxx_atomic_wait` 控制）。`wait` 在值匹配时调用 `_M_wait_unlock`：先解锁再在"去锁位的值"上阻塞，直到被 `notify_one/notify_all` 唤醒。这给出了一条"等读者离开"的标准库内通道——与 RCU 的宽限期（grace period）在意图上同源。
+
+```text
+// bits/shared_ptr_atomic.h L496-504  (GCC 15.3.0)
+	// Precondition: caller holds lock!
+	void
+	_M_wait_unlock(memory_order __o) const noexcept
+	{
+	  _GLIBCXX_TSAN_MUTEX_PRE_UNLOCK(&_M_val);
+	  auto __v = _M_val.fetch_sub(1, memory_order_relaxed);
+	  _GLIBCXX_TSAN_MUTEX_POST_UNLOCK(&_M_val);
+	  _M_val.wait(__v & ~_S_lock_bit, __o);
+	}
+```
+
+```text
+// bits/shared_ptr_atomic.h L605-627  (GCC 15.3.0)
+#if __glibcxx_atomic_wait
+      void
+      wait(value_type __old, memory_order __o) const noexcept
+      {
+	auto __pi = _M_refcount.lock(memory_order_acquire);
+	if (_M_ptr == __old._M_ptr && __pi == __old._M_refcount._M_pi)
+	  _M_refcount._M_wait_unlock(__o);
+	else
+	  _M_refcount.unlock(memory_order_relaxed);
+      }
+
+      void
+      notify_one() noexcept
+      {
+	_M_refcount.notify_one();
+      }
+
+      void
+      notify_all() noexcept
+      {
+	_M_refcount.notify_all();
+      }
+#endif
+```
+
+- `wait(__old)`：先持锁读出当前值，若与 `__old` 完全一致才 `_M_wait_unlock`（解锁并阻塞在"去锁位原值"上）；否则说明值已变，直接解锁返回。这保证只有"确实在等这个旧值"的线程才会睡下，避免丢失唤醒。
+- `notify_one/notify_all` 转发到 `_M_refcount.notify_*`，最终落到 `bits/atomic_wait.h` 的等待池（D4.4）。这就是"在没有 RCU 宽限期原语时，用原子等待/通知实现受控阻塞"的库内路线。
+
+### D4.4 __waiter_pool 等待池（bits/atomic_wait.h L195-282）
+
+所有 `atomic::wait/notify` 的底层都汇聚到一个**等待池**：按地址哈希到 16 个 pool 之一，每个 pool 自带一个等待计数 `_M_wait` 与版本字 `_M_ver`。`wait` 在值未变时睡在条件变量/futex 上，`notify` 先自增版本再唤醒。
+
+```text
+// bits/atomic_wait.h L195-282  (GCC 15.3.0)
+    struct __waiter_pool_base
+    {
+      // Don't use std::hardware_destructive_interference_size here because we
+      // don't want the layout of library types to depend on compiler options.
+      static constexpr auto _S_align = 64;
+
+      alignas(_S_align) __platform_wait_t _M_wait = 0;
+
+#ifndef _GLIBCXX_HAVE_PLATFORM_WAIT
+      mutex _M_mtx;
+#endif
+
+      alignas(_S_align) __platform_wait_t _M_ver = 0;
+
+#ifndef _GLIBCXX_HAVE_PLATFORM_WAIT
+      __condvar _M_cv;
+#endif
+      __waiter_pool_base() = default;
+
+      void
+      _M_enter_wait() noexcept
+      { __atomic_fetch_add(&_M_wait, 1, __ATOMIC_SEQ_CST); }
+
+      void
+      _M_leave_wait() noexcept
+      { __atomic_fetch_sub(&_M_wait, 1, __ATOMIC_RELEASE); }
+
+      bool
+      _M_waiting() const noexcept
+      {
+	__platform_wait_t __res;
+	__atomic_load(&_M_wait, &__res, __ATOMIC_SEQ_CST);
+	return __res != 0;
+      }
+
+      void
+      _M_notify(__platform_wait_t* __addr, [[maybe_unused]] bool __all,
+		bool __bare) noexcept
+      {
+#ifdef _GLIBCXX_HAVE_PLATFORM_WAIT
+	if (__addr == &_M_ver)
+	  {
+	    __atomic_fetch_add(__addr, 1, __ATOMIC_SEQ_CST);
+	    __all = true;
+	  }
+
+	if (__bare || _M_waiting())
+	  __platform_notify(__addr, __all);
+#else
+	{
+	  lock_guard<mutex> __l(_M_mtx);
+	  __atomic_fetch_add(__addr, 1, __ATOMIC_RELAXED);
+	}
+	if (__bare || _M_waiting())
+	  _M_cv.notify_all();
+#endif
+      }
+
+      static __waiter_pool_base&
+      _S_for(const void* __addr) noexcept
+      {
+	constexpr __UINTPTR_TYPE__ __ct = 16;
+	static __waiter_pool_base __w[__ct];
+	auto __key = ((__UINTPTR_TYPE__)__addr >> 2) % __ct;
+	return __w[__key];
+      }
+    };
+
+    struct __waiter_pool : __waiter_pool_base
+    {
+      void
+      _M_do_wait(const __platform_wait_t* __addr, __platform_wait_t __old) noexcept
+      {
+#ifdef _GLIBCXX_HAVE_PLATFORM_WAIT
+	__platform_wait(__addr, __old);
+#else
+	__platform_wait_t __val;
+	__atomic_load(__addr, &__val, __ATOMIC_SEQ_CST);
+	if (__val == __old)
+	  {
+	    lock_guard<mutex> __l(_M_mtx);
+	    __atomic_load(__addr, &__val, __ATOMIC_RELAXED);
+	    if (__val == __old)
+	      _M_cv.wait(_M_mtx);
+	  }
+#endif // __GLIBCXX_HAVE_PLATFORM_WAIT
+      }
+    };
+```
+
+- `_S_for(__addr)`：把地址右移 2 位对 16 取模，分发到 `__w[16]` 之一——把海量原子变量的等待者打散到有限个 pool，降低争用（典型"地址→桶"分片）。
+- `_M_waiting()` 用原子计数 `_M_wait` 判定是否有等待者；`_M_notify` 仅在有等待者（或 `__bare`）时才真正通知，避免无谓唤醒。无 futex 平台（`_GLIBCXX_HAVE_PLATFORM_WAIT` 未定义）退化为 `mutex + condition_variable`。
+- 这条基础设施是 libstdc++ 对"安全阻塞等待"的统一回答：它不叫 RCU，也不叫 hazard，却是 `atomic<shared_ptr>` 实现 wait/notify（进而实现"等读者离开再推进"语义）的真正底座。
+
+### D4.5 跨实现对比（安全回收与阻塞等待）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| std::hazard_pointer | 未实装（已验证：无头文件，仅 std.cc FIXME） | 部分实现处于实验/演进中（已知公开行为，以仓库为准） | 视版本（已知公开行为，以仓库为准） |
+| std::rcu_domain | 未实装（同上已验证） | 同上（已知公开行为，以仓库为准） | 同上（已知公开行为，以仓库为准） |
+| 安全回收替代 | `atomic<shared_ptr>` 锁位打包，写时持锁释放旧块 | 类似内部加锁（已知公开行为） | 类似内部加锁（已知公开行为） |
+| 阻塞等待 | `__waiter_pool` 16 桶等待池 + futex/condvar 回退 | 自有等待实现（已知公开行为） | 自有等待实现（已知公开行为） |
+
+> libc++ / MSVC 行为为**已知公开实现行为**（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录；libstdc++ 未实装 hazard/RCU 的结论为本书在 GCC 15.3.0 源码树中实测验证。
+
+### D4.6 第一方可编译验证（安全回收 + 等待池）
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <memory>
+#include <thread>
+
+int main() {
+  // 标准库内"安全回收"替代路线：atomic<shared_ptr> 锁位打包
+  std::atomic<std::shared_ptr<int>> sp{std::make_shared<int>(5)};
+  std::cout << std::boolalpha << sp.is_lock_free() << std::endl;  // false
+  auto p = sp.load();
+  std::cout << *p << std::endl;   // 5
+
+  // 标准库内"阻塞等待"替代路线：atomic wait/notify 经 __waiter_pool
+  std::atomic<int> flag{0};
+  std::thread t([&] { flag.store(1); flag.notify_one(); });
+  flag.wait(0);                   // 值变 1 后返回（不依赖 hazard/RCU）
+  std::cout << flag.load() << std::endl;   // 1
+  t.join();
+  return 0;
+}
+```
+
+预期输出第一行 `false`（印证 D4.2：`atomic<shared_ptr>` 因锁位打包非 lock-free，以此提供安全回收），第二行 `5`（持锁下安全 load），第三行 `1`（`flag.wait(0)` 在 `notify_one` 后返回，印证 D4.3/D4.4 的等待池机制）。`is_lock_free()` 返回 `false` 为 libstdc++ 真实行为；本例需 `-pthread`。

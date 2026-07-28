@@ -1157,3 +1157,285 @@ flowchart TD
 | ch91 filesystem | ch94 stop_token | 可取消的文件监听 |
 
 
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — filesystem 路径与迭代器 [E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++（`.../include/c++/15.3.0/bits/fs_path.h`、`fs_dir.h`、`fs_ops.h`），标注精确到 `相对路径 L行号`。libc++ / MSVC STL 仅给出“已知公开实现行为”对比，非逐字摘录。
+> 摘录块为 `text` 围栏，不参与编译；仅下方“第一方可编译验证”为独立 `cpp` 块。
+> 诚实考据：`<filesystem>` 的**实现体**（路径解析、`_Dir` 句柄、所有 `fs_ops.h` 操作函数）位于 GCC 源码树 `src/filesystem/*.cc`，**不在 MinGW 的 include 目录中**；本附录只摘头文件可见的声明/内联部分，绝不虚构实现。
+
+### D4.1 `path` 的 `_M_pathname + _M_cmpts` 组件缓存与 `_Type`（bits/fs_path.h L599-601, L672-726）
+
+`path` 同时缓存“整串”与“组件列表”：`_M_pathname` 是原生全路径字符串，`_M_cmpts` 是 `_List`（组件缓存）。`_Type` 枚举把整条路径分类为 `_Multi/_Root_name/_Root_dir/_Filename`；`_List::type()` 甚至把 `_Type` **偷藏在 `_M_impl` 指针的低 2 位**（指针标签技巧）。
+
+```text
+// bits/fs_path.h L599-601  (GCC 15.3.0)
+    enum class _Type : unsigned char {
+      _Multi = 0, _Root_name, _Root_dir, _Filename
+    };
+```
+
+```text
+// bits/fs_path.h L672-726  (GCC 15.3.0)
+    _Type _M_type() const noexcept { return _M_cmpts.type(); }
+
+    string_type _M_pathname;
+
+    struct _Cmpt;
+
+    struct _List
+    {
+      using value_type = _Cmpt;
+      using iterator = value_type*;
+      using const_iterator = const value_type*;
+
+      _List();
+      _List(const _List&);
+      _List(_List&&) = default;
+      _List& operator=(const _List&);
+      _List& operator=(_List&&) = default;
+      ~_List() = default;
+
+      _Type type() const noexcept
+      { return _Type(reinterpret_cast<__UINTPTR_TYPE__>(_M_impl.get()) & 0x3); }
+
+      void type(_Type) noexcept;
+
+      int size() const noexcept; // zero unless type() == _Type::_Multi
+      bool empty() const noexcept; // true unless type() == _Type::_Multi
+      void clear();
+      void swap(_List& __l) noexcept { _M_impl.swap(__l._M_impl); }
+      int capacity() const noexcept;
+      void reserve(int, bool); ///< @pre type() == _Type::_Multi
+
+      // All the member functions below here have a precondition !empty()
+      // (and they should only be called from within the library).
+
+      iterator begin() noexcept;
+      iterator end() noexcept;
+      const_iterator begin() const noexcept;
+      const_iterator end() const noexcept;
+
+      value_type& front() noexcept;
+      value_type& back() noexcept;
+      const value_type& front() const noexcept;
+      const value_type& back() const noexcept;
+
+      void pop_back();
+      void _M_erase_from(const_iterator __pos); // erases [__pos,end())
+
+      struct _Impl;
+      struct _Impl_deleter
+      {
+	void operator()(_Impl*) const noexcept;
+      };
+      unique_ptr<_Impl, _Impl_deleter> _M_impl;
+    };
+    _List _M_cmpts;
+```
+
+- `_Type _M_type()` 经 `_M_cmpts.type()` 取回整条路径类型（L672）；`_M_pathname` 是 `string_type`（L674）。
+- `_List`（L678-726）只是 `unique_ptr<_Impl>` 的薄封装；其 `type()`（L691-692）用 `reinterpret_cast<__UINTPTR_TYPE__>(_M_impl.get()) & 0x3` 读回低 2 位——前提是 `_Impl` 分配时至少 4 字节对齐，低 2 位恒 0。
+- 因 `_Type::_Multi` 才需要拆分组件，故 `begin()/end()` 仅在多组件路径上遍历 `_M_cmpts`（L1344-1354）。
+
+### D4.2 `directory_iterator` 与 `__shared_ptr<_Dir>` 浅拷贝语义（bits/fs_dir.h L404-431, L444-471）
+
+`directory_iterator` 唯一数据成员是 `std::__shared_ptr<_Dir> _M_dir`（L471）。所有拷贝/移动特殊成员都是 `= default`（L404-431），因此复制迭代器只是**浅拷贝那个 shared_ptr**——两个迭代器共享同一个底层 `_Dir`（打开的目录句柄 + 当前位置）。
+
+```text
+// bits/fs_dir.h L404-431  (GCC 15.3.0)
+    directory_iterator() = default;
+
+    explicit
+    directory_iterator(const path& __p)
+    : directory_iterator(__p, directory_options::none, nullptr) { }
+
+    directory_iterator(const path& __p, directory_options __options)
+    : directory_iterator(__p, __options, nullptr) { }
+
+    directory_iterator(const path& __p, error_code& __ec)
+    : directory_iterator(__p, directory_options::none, __ec) { }
+
+    directory_iterator(const path& __p, directory_options __options,
+		       error_code& __ec)
+    : directory_iterator(__p, __options, &__ec) { }
+
+    directory_iterator(const directory_iterator& __rhs) = default;
+
+    directory_iterator(directory_iterator&& __rhs) noexcept = default;
+
+    ~directory_iterator() = default;
+
+    directory_iterator&
+    operator=(const directory_iterator& __rhs) = default;
+
+    directory_iterator&
+    operator=(directory_iterator&& __rhs) noexcept = default;
+
+```
+
+```text
+// bits/fs_dir.h L444-471  (GCC 15.3.0)
+    friend bool
+    operator==(const directory_iterator& __lhs,
+               const directory_iterator& __rhs) noexcept
+    {
+      return !__rhs._M_dir.owner_before(__lhs._M_dir)
+	&& !__lhs._M_dir.owner_before(__rhs._M_dir);
+    }
+
+#if __cplusplus >= 202002L
+    // _GLIBCXX_RESOLVE_LIB_DEFECTS
+    // 3719. Directory iterators should be usable with default sentinel
+    bool operator==(default_sentinel_t) const noexcept
+    { return !_M_dir; }
+#endif
+
+#if __cpp_impl_three_way_comparison < 201907L
+    friend bool
+    operator!=(const directory_iterator& __lhs,
+	       const directory_iterator& __rhs) noexcept
+    { return !(__lhs == __rhs); }
+#endif
+
+  private:
+    directory_iterator(const path&, directory_options, error_code*);
+
+    friend class recursive_directory_iterator;
+
+    std::__shared_ptr<_Dir> _M_dir;
+```
+
+- `operator==`（L444-450）用 `_M_dir.owner_before` 双向比较，即 shared_ptr **同一控制块**判等（不是值相等），恰好对应“共享句柄”的语义。
+- `_Dir` 本身只在头里前向声明 `struct _Dir;`（L97），其**完整定义**在 `src/filesystem/dir.cc` 等实现文件中——故这里的“浅拷贝”由 shared_ptr 实现，真正的目录读取逻辑不在 include 树。
+
+### D4.3 `fs_ops.h` 的双 throwing / error_code 重载（bits/fs_ops.h L48-117）
+
+几乎所有操作都成对被声明：一个**抛异常**版本（无 `error_code&`），一个**不抛**版本（带 `error_code& __ec`，常 `noexcept`）。抛异常版本内部一般转发到 `error_code` 版本并在出错时 `throw filesystem_error`。
+
+```text
+// bits/fs_ops.h L48-117  (GCC 15.3.0)
+  path absolute(const path& __p);
+
+  [[nodiscard]]
+  path absolute(const path& __p, error_code& __ec);
+
+  [[nodiscard]]
+  path canonical(const path& __p);
+
+  [[nodiscard]]
+  path canonical(const path& __p, error_code& __ec);
+
+  inline void
+  copy(const path& __from, const path& __to)
+  { copy(__from, __to, copy_options::none); }
+
+  inline void
+  copy(const path& __from, const path& __to, error_code& __ec)
+  { copy(__from, __to, copy_options::none, __ec); }
+
+  void copy(const path& __from, const path& __to, copy_options __options);
+  void copy(const path& __from, const path& __to, copy_options __options,
+	    error_code& __ec);
+
+  inline bool
+  copy_file(const path& __from, const path& __to)
+  { return copy_file(__from, __to, copy_options::none); }
+
+  inline bool
+  copy_file(const path& __from, const path& __to, error_code& __ec)
+  { return copy_file(__from, __to, copy_options::none, __ec); }
+
+  bool copy_file(const path& __from, const path& __to, copy_options __option);
+  bool copy_file(const path& __from, const path& __to, copy_options __option,
+		 error_code& __ec);
+
+  void copy_symlink(const path& __existing_symlink, const path& __new_symlink);
+  void copy_symlink(const path& __existing_symlink, const path& __new_symlink,
+		    error_code& __ec) noexcept;
+
+  bool create_directories(const path& __p);
+  bool create_directories(const path& __p, error_code& __ec);
+
+  bool create_directory(const path& __p);
+  bool create_directory(const path& __p, error_code& __ec) noexcept;
+
+  bool create_directory(const path& __p, const path& __attributes);
+  bool create_directory(const path& __p, const path& __attributes,
+			error_code& __ec) noexcept;
+
+  void create_directory_symlink(const path& __to, const path& __new_symlink);
+  void create_directory_symlink(const path& __to, const path& __new_symlink,
+				error_code& __ec) noexcept;
+
+  void create_hard_link(const path& __to, const path& __new_hard_link);
+  void create_hard_link(const path& __to, const path& __new_hard_link,
+			error_code& __ec) noexcept;
+
+  void create_symlink(const path& __to, const path& __new_symlink);
+  void create_symlink(const path& __to, const path& __new_symlink,
+		      error_code& __ec) noexcept;
+
+  [[nodiscard]]
+  path current_path();
+
+  [[nodiscard]]
+  path current_path(error_code& __ec);
+
+  void current_path(const path& __p);
+  void current_path(const path& __p, error_code& __ec) noexcept;
+
+```
+
+- 例：`absolute`（L48-51）、`canonical`（L53-57）、`create_directory`（L90-91）、`current_path`（L109-116）均成对出现；`copy`/`copy_file`（L59-81）还多了 `copy_options` 重载，内联壳把 `none` 选项补上再转发。
+- 这些全是**声明**；定义位于 `src/filesystem/ops.cc`。双接口正是标准“要么抛 `filesystem_error`，要么写入 `error_code`”模型的落点。
+
+### D4.4 跨实现对比（filesystem）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| `path` 存储 | `_M_pathname` + `_M_cmpts` 组件缓存；`_Type` 用指针低 2 位标签 | 类似“原串 + 缓存”设计（细节未逐字核对） | 类似（已知公开行为） |
+| 目录迭代 | 单 `shared_ptr<_Dir>`，拷贝即浅拷贝共享句柄 | `directory_iterator` 亦持共享状态（已知公开行为） | 类似（已知公开行为） |
+| 错误模型 | 每个 ops 函数双 throwing/error_code 重载 | 同双接口（已知公开行为） | 同双接口（已知公开行为） |
+| 实现体位置 | `src/filesystem/*.cc`，不在 include 树 | 各自独立实现（未逐字核对） | 各自独立实现（未逐字核对） |
+
+> libc++ / MSVC 行为为**已知公开实现行为**（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录。
+
+### D4.5 第一方可编译验证（filesystem）
+
+```cpp
+#include <iostream>
+#include <filesystem>
+#include <fstream>
+#include <cstddef>
+
+int main() {
+    namespace fs = std::filesystem;
+    std::error_code ec;
+    fs::path dir = fs::temp_directory_path(ec);
+    if (ec) { std::cout << "temp failed: " << ec.message() << std::endl; return 0; }
+    dir /= "cpp_bible_d4_fs";
+    fs::create_directory(dir, ec);
+    if (ec) { std::cout << "create failed: " << ec.message() << std::endl; return 0; }
+
+    std::ofstream(dir / "a.txt") << "hello";
+    std::ofstream(dir / "b.txt") << "world";
+
+    std::size_t n = 0;
+    for (auto it = fs::directory_iterator(dir);
+         it != fs::directory_iterator(); ++it) {
+        std::cout << it->path().filename() << std::endl;
+        ++n;
+    }
+    std::cout << "entries: " << n << std::endl;
+
+    fs::file_status s = fs::status(dir, ec);
+    std::cout << "is_directory: " << fs::is_directory(s) << std::endl;
+
+    fs::remove_all(dir, ec);
+    std::cout << "cleaned" << std::endl;
+    return 0;
+}
+```
+
+输出印证：双接口都可用——`directory_iterator` 遍历出 `a.txt`/`b.txt`（共享句柄的浅拷贝语义由 `_M_dir` 保证），`status(..., ec)` 走 error_code 版本不抛异常，最后 `remove_all` 清理——与 D4.2–D4.3 源码一致。

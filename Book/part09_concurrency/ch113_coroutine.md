@@ -1106,3 +1106,263 @@ flowchart TD
 | ch110 | ch113 | 事件循环常与无锁队列协作 |
 | ch115 | ch113 | 协程句柄依赖移动语义 |
 | ch39 | ch113 | RAII 管理协程帧生命周期 |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 协程 <coroutine> 的编译器内建薄封装 [E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+> （`.../include/c++/15.3.0/coroutine`），标注精确到 `文件 L行号`。libc++ / MSVC STL 仅给出"已知公开实现行为"对比，非逐字摘录。
+> 摘录块为 `text` 围栏，不参与编译；仅下方"第一方可编译验证"为独立 `cpp` 块。
+
+### D4.1 coroutine_handle<void>：整个类型只存一个 void* 帧指针（coroutine L102-148）
+
+<coroutine> 里 `coroutine_handle<void>` 的特化极简：唯一数据成员就是 `void* _M_fr_ptr`（协程帧指针）。所有恢复/销毁/完成查询都不是"算法"，而是一行转发到编译器内建函数。
+
+```text
+// coroutine L102-148  (GCC 15.3.0)
+  template <> struct
+    coroutine_handle<void>
+    {
+    public:
+      // [coroutine.handle.con], construct/reset
+      constexpr coroutine_handle() noexcept : _M_fr_ptr(nullptr) {}
+
+      constexpr coroutine_handle(std::nullptr_t __h) noexcept
+	: _M_fr_ptr(__h)
+      {}
+
+      coroutine_handle& operator=(std::nullptr_t) noexcept
+      {
+	_M_fr_ptr = nullptr;
+	return *this;
+      }
+
+    public:
+      // [coroutine.handle.export.import], export/import
+      constexpr void* address() const noexcept { return _M_fr_ptr; }
+
+      constexpr static coroutine_handle from_address(void* __a) noexcept
+      {
+	coroutine_handle __self;
+	__self._M_fr_ptr = __a;
+	return __self;
+      }
+
+    public:
+      // [coroutine.handle.observers], observers
+      constexpr explicit operator bool() const noexcept
+      {
+	return bool(_M_fr_ptr);
+      }
+
+      bool done() const noexcept { return __builtin_coro_done(_M_fr_ptr); }
+
+      // [coroutine.handle.resumption], resumption
+      void operator()() const { resume(); }
+
+      void resume() const { __builtin_coro_resume(_M_fr_ptr); }
+
+      void destroy() const { __builtin_coro_destroy(_M_fr_ptr); }
+
+    protected:
+      void* _M_fr_ptr;
+  };
+```
+
+- 三者 `resume`/`destroy`/`done` 分别转发到 `__builtin_coro_resume`/`_destroy`/`_done`；`operator bool()`、`address()`/`from_address()` 也只是对 `_M_fr_ptr` 的判空与无类型出入——运行期 `coroutine_handle<void>` 就是"一个指针的大小"，libstdc++ 不含任何协程机器码，仅把帧指针喂给编译器内建。
+
+### D4.2 from_promise 的偏移魔法：__builtin_coro_promise（coroutine L197-261）
+
+带 `_Promise` 的通用 `coroutine_handle<_Promise>` 同样只持有 `void* _M_fr_ptr`，但它能凭帧指针反解出 promise 对象——靠的是 `__builtin_coro_promise` 这个编译器内建，传入"相对帧起始的偏移"和对齐，由前端算出 promise 的真实地址。
+
+```text
+// coroutine L197-261  (GCC 15.3.0)
+  template <typename _Promise>
+    struct coroutine_handle
+    {
+      // [coroutine.handle.con], construct/reset
+
+      constexpr coroutine_handle() noexcept { }
+
+      constexpr coroutine_handle(nullptr_t) noexcept { }
+
+      static coroutine_handle
+      from_promise(_Promise& __p)
+      {
+	coroutine_handle __self;
+	__self._M_fr_ptr
+	  = __builtin_coro_promise((char*) &__p, __alignof(_Promise), true);
+	return __self;
+      }
+
+      coroutine_handle& operator=(nullptr_t) noexcept
+      {
+	_M_fr_ptr = nullptr;
+	return *this;
+      }
+
+      // [coroutine.handle.export.import], export/import
+
+      constexpr void* address() const noexcept { return _M_fr_ptr; }
+
+      constexpr static coroutine_handle from_address(void* __a) noexcept
+      {
+	coroutine_handle __self;
+	__self._M_fr_ptr = __a;
+	return __self;
+      }
+
+      // [coroutine.handle.conv], conversion
+      constexpr operator coroutine_handle<>() const noexcept
+      { return coroutine_handle<>::from_address(address()); }
+
+      // [coroutine.handle.observers], observers
+      constexpr explicit operator bool() const noexcept
+      {
+	return bool(_M_fr_ptr);
+      }
+
+      bool done() const noexcept { return __builtin_coro_done(_M_fr_ptr); }
+
+      // [coroutine.handle.resumption], resumption
+      void operator()() const { resume(); }
+
+      void resume() const { __builtin_coro_resume(_M_fr_ptr); }
+
+      void destroy() const { __builtin_coro_destroy(_M_fr_ptr); }
+
+      // [coroutine.handle.promise], promise access
+      _Promise& promise() const
+      {
+	void* __t
+	  = __builtin_coro_promise (_M_fr_ptr, __alignof(_Promise), false);
+	return *static_cast<_Promise*>(__t);
+      }
+
+    private:
+      void* _M_fr_ptr = nullptr;
+    };
+```
+
+- `from_promise`（第 3 参 `true`：由 promise 地址求帧地址）与 `promise()`（第 3 参 `false`：由帧地址反求 promise 地址）共用 `__builtin_coro_promise`，只靠那一个 bool 切换方向——这就是"偏移魔法"：libstdc++ 完全不记得布局，布局是编译器前端在编译期钉死的。
+
+### D4.3 noop_coroutine 的静态帧：根本没有真正的协程（coroutine L263-320）
+
+`std::noop_coroutine()` 返回一个"什么都不做"的句柄。它不消耗任何堆/栈帧——`_M_fr_ptr` 直接指向一个**编译期静态**的 `__frame _S_fr`，`resume`/`destroy`/`done` 全是空实现。
+
+```text
+// coroutine L263-320  (GCC 15.3.0)
+  /// [coroutine.noop]
+  struct noop_coroutine_promise
+  {
+  };
+
+  // 17.12.4.1 Class noop_coroutine_promise
+  /// [coroutine.promise.noop]
+  template <>
+    struct coroutine_handle<noop_coroutine_promise>
+    {
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 3460. Unimplementable noop_coroutine_handle guarantees
+      // [coroutine.handle.noop.conv], conversion
+      constexpr operator coroutine_handle<>() const noexcept
+      { return coroutine_handle<>::from_address(address()); }
+
+      // [coroutine.handle.noop.observers], observers
+      constexpr explicit operator bool() const noexcept { return true; }
+
+      constexpr bool done() const noexcept { return false; }
+
+      // [coroutine.handle.noop.resumption], resumption
+      void operator()() const noexcept {}
+
+      void resume() const noexcept {}
+
+      void destroy() const noexcept {}
+
+      // [coroutine.handle.noop.promise], promise access
+      noop_coroutine_promise& promise() const noexcept
+      { return _S_fr.__p; }
+
+      // [coroutine.handle.noop.address], address
+      constexpr void* address() const noexcept { return _M_fr_ptr; }
+
+    private:
+      friend coroutine_handle noop_coroutine() noexcept;
+
+      struct __frame
+      {
+	static void __dummy_resume_destroy() { }
+
+	void (*__r)() = __dummy_resume_destroy;
+	void (*__d)() = __dummy_resume_destroy;
+	struct noop_coroutine_promise __p;
+      };
+
+      static __frame _S_fr;
+
+      explicit coroutine_handle() noexcept = default;
+
+      void* _M_fr_ptr = &_S_fr;
+    };
+
+  using noop_coroutine_handle = coroutine_handle<noop_coroutine_promise>;
+
+  inline noop_coroutine_handle::__frame
+  noop_coroutine_handle::_S_fr{};
+```
+
+- `_S_fr` 是 `static __frame`，在程序生命周期内常驻；`address()` 返回 `&_S_fr`。所谓"noop 协程帧"根本不是由前端为某个 `co_await` 生成的真实帧，而是一块静态假帧，`resume`/`destroy` 都是 `{ }` 空函数——它存在的意义只是给"需要一个协程句柄但不做任何事"的库设施（如某些 awaitable）一个零成本占位符。
+
+### D4.4 跨实现对比（coroutine handle）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| 句柄底层 | `void* _M_fr_ptr` 单一指针 | 同样单一指针句柄（已知公开行为） | 同样单一指针句柄（已知公开行为） |
+| resume/destroy/done | 转发 `__builtin_coro_resume/_destroy/_done` | 转发等价前端内建/底层调用（已知公开行为） | 转发编译器协程运行时（已知公开行为） |
+| from_promise / promise | `__builtin_coro_promise` 偏移 + 对齐 | 等价内建/布局约定（已知公开行为） | 等价机制（已知公开行为） |
+
+### D4.5 第一方可编译验证（coroutine_handle 行为）
+
+```cpp
+#include <coroutine>
+#include <iostream>
+#include <utility>
+
+struct Generator {
+  struct promise_type {
+    int _value;
+    auto get_return_object() {
+      return Generator{std::coroutine_handle<promise_type>::from_promise(*this)};
+    }
+    auto initial_suspend() { return std::suspend_always{}; }
+    auto final_suspend() noexcept { return std::suspend_always{}; }
+    void return_void() {}
+    void unhandled_exception() { throw; }
+    auto yield_value(int v) { _value = v; return std::suspend_always{}; }
+  };
+  std::coroutine_handle<promise_type> _h;
+  explicit Generator(std::coroutine_handle<promise_type> h) : _h(h) {}
+  ~Generator() { if (_h) _h.destroy(); }
+  bool next() {
+    if (!_h || _h.done()) return false;
+    _h.resume();
+    return !_h.done();
+  }
+  int value() const { return _h.promise()._value; }
+};
+
+Generator seq() {
+  for (int i = 1; i <= 3; ++i)
+    co_yield i;
+}
+
+int main() {
+  auto g = seq();
+  while (g.next())
+    std::cout << g.value() << ' ';
+  std::cout << std::endl;                 // 1 2 3
+  return 0;
+}
+```
+
+预期输出 `1 2 3`：`from_promise` 在 `get_return_object` 时由 promise 地址算出帧指针，`resume()` 驱动协程到下一个 `co_yield`，`done()` 在 final_suspend 后返回 true 终止——与 D4.1–D4.3 源码中 `coroutine_handle` 对 `__builtin_coro_*` 的薄封装一致。注意本例需 `-fcoroutines`（`<coroutine>` 头在缺该开关时直接 `#error`）。

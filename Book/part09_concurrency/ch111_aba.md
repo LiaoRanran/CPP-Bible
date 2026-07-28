@@ -962,3 +962,211 @@ flowchart TD
 | ch107 | ch111 | 双字 CAS 基于原子 RMW |
 | ch39 | ch111 | RAII 管理 hazard 槽生命周期 |
 | ch93 | ch111 | 并发读侧与 async 协作 |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — ABA 问题：CAS 原语层与标准库内部规避 [E: Low-level / H: Design]
+
+> 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
+> （`.../include/c++/15.3.0/bits/atomic_base.h`、`bits/shared_ptr_atomic.h`），标注精确到 `文件 L行号`。libc++ / MSVC STL 仅给出"已知公开实现行为"对比，非逐字摘录。
+>
+> **诚实前提：C++ 标准库与 libstdc++ 都没有任何"ABA 专用"组件**——既无 `std::aba_guard`，也无版本号/标记指针的封装。ABA 是 CAS 原语固有的弱点的*名称*，而非一个可调用设施。因此本附录解析两件事：(1) ABA 赖以发生的原语层——`compare_exchange_weak/strong` 如何逐字转发到 GCC 内建 `__atomic_compare_exchange_n`；(2) 标准库自己在实现 `atomic<shared_ptr>` 时如何用药位打包（lock-bit packing）规避并发竞态——这恰是"标准库内部规避 ABA 式风险"的真实案例。
+
+### D4.1 CAS 原语层：weak/strong 仅差第 4 个 bool 形参 1/0（bits/atomic_base.h L530-586）
+
+`std::atomic<T>` 的 `compare_exchange_weak` / `compare_exchange_strong` 对整型路径直接转发到 GCC 内建 `__atomic_compare_exchange_n`。注意第 4 个实参：`weak` 版本传 `1`，`strong` 版本传 `0`——这是两者**唯一**的区别（其余五实参完全一致）。
+
+```text
+// bits/atomic_base.h L530-586  (GCC 15.3.0)
+      _GLIBCXX_ALWAYS_INLINE bool
+      compare_exchange_weak(__int_type& __i1, __int_type __i2,
+			    memory_order __m1, memory_order __m2) noexcept
+      {
+	__glibcxx_assert(__is_valid_cmpexch_failure_order(__m2));
+
+	return __atomic_compare_exchange_n(&_M_i, &__i1, __i2, 1,
+					   int(__m1), int(__m2));
+      }
+
+      _GLIBCXX_ALWAYS_INLINE bool
+      compare_exchange_weak(__int_type& __i1, __int_type __i2,
+			    memory_order __m1,
+			    memory_order __m2) volatile noexcept
+      {
+	__glibcxx_assert(__is_valid_cmpexch_failure_order(__m2));
+
+	return __atomic_compare_exchange_n(&_M_i, &__i1, __i2, 1,
+					   int(__m1), int(__m2));
+      }
+
+      _GLIBCXX_ALWAYS_INLINE bool
+      compare_exchange_weak(__int_type& __i1, __int_type __i2,
+			    memory_order __m = memory_order_seq_cst) noexcept
+      {
+	return compare_exchange_weak(__i1, __i2, __m,
+				     __cmpexch_failure_order(__m));
+      }
+
+      _GLIBCXX_ALWAYS_INLINE bool
+      compare_exchange_weak(__int_type& __i1, __int_type __i2,
+		   memory_order __m = memory_order_seq_cst) volatile noexcept
+      {
+	return compare_exchange_weak(__i1, __i2, __m,
+				     __cmpexch_failure_order(__m));
+      }
+
+      _GLIBCXX_ALWAYS_INLINE bool
+      compare_exchange_strong(__int_type& __i1, __int_type __i2,
+			      memory_order __m1, memory_order __m2) noexcept
+      {
+	__glibcxx_assert(__is_valid_cmpexch_failure_order(__m2));
+
+	return __atomic_compare_exchange_n(&_M_i, &__i1, __i2, 0,
+					   int(__m1), int(__m2));
+      }
+
+      _GLIBCXX_ALWAYS_INLINE bool
+      compare_exchange_strong(__int_type& __i1, __int_type __i2,
+			      memory_order __m1,
+			      memory_order __m2) volatile noexcept
+      {
+	__glibcxx_assert(__is_valid_cmpexch_failure_order(__m2));
+
+	return __atomic_compare_exchange_n(&_M_i, &__i1, __i2, 0,
+					   int(__m1), int(__m2));
+      }
+```
+
+- `__atomic_compare_exchange_n(ptr, expected, desired, weak, success_order, failure_order)` 的第 4 参 `weak`：为 `1` 时允许在*未改动内存*的情况下因伪失败（spurious failure）返回 false（典型于 LL/SC 架构）；为 `0` 时只在确实不相等时才失败。这正是 `weak`/`strong` 语义差异的落点——考据"两者仅差第 4 个 bool 形参 1/0"由此逐字坐实。
+- **ABA 发生处**：CAS 只读"值是否等于 expected"。若某线程读 `expected=A` 后被抢占，`A` 被释放、同地址又被复用为 `A`（值相等但身份已变），CAS 会"成功"地写入——这就是 ABA。标准库不在此处做任何防护，因为防护是*算法层*（版本号/标记指针/hazard）的责任，而非 CAS 原语的责任。
+
+### D4.2 锁位打包：把锁位塞进指针最低位（bits/shared_ptr_atomic.h L400-433）
+
+`atomic<shared_ptr<T>>` 内部用 `_Sp_atomic::_Atomic_count` 持有控制块指针。它刻意**不**要求 lock-free，而是把"是否被加锁"这一状态复用进指针的最低位（LSB）——因为控制块至少按指针对齐，`alignof > 1` 保证 LSB 永远是 0、可挪用为锁位。
+
+```text
+// bits/shared_ptr_atomic.h L398-433  (GCC 15.3.0)
+      // An atomic version of __shared_count<> and __weak_count<>.
+      // Stores a _Sp_counted_base<>* but uses the LSB as a lock.
+      struct _Atomic_count
+      {
+	// Either __shared_count<> or __weak_count<>
+	using __count_type = decltype(_Tp::_M_refcount);
+	using uintptr_t = __UINTPTR_TYPE__;
+
+	// _Sp_counted_base<>*
+	using pointer = decltype(__count_type::_M_pi);
+
+	// Ensure we can use the LSB as the lock bit.
+	static_assert(alignof(remove_pointer_t<pointer>) > 1);
+
+	constexpr _Atomic_count() noexcept = default;
+
+	explicit
+	_Atomic_count(__count_type&& __c) noexcept
+	: _M_val(reinterpret_cast<uintptr_t>(__c._M_pi))
+	{
+	  __c._M_pi = nullptr;
+	}
+
+	~_Atomic_count()
+	{
+	  auto __val = _M_val.load(memory_order_relaxed);
+	  _GLIBCXX_TSAN_MUTEX_DESTROY(&_M_val);
+	  __glibcxx_assert(!(__val & _S_lock_bit));
+	  if (auto __pi = reinterpret_cast<pointer>(__val))
+	    {
+	      if constexpr (__is_shared_ptr<_Tp>)
+		__pi->_M_release();
+	      else
+		__pi->_M_weak_release();
+	    }
+	}
+```
+
+- `static_assert(alignof(remove_pointer_t<pointer>) > 1)`：编译期断言控制块指针对齐大于 1，确保 LSB 恒为 0、可安全当锁位。这是"锁位打包"成立的**前提**。
+- `_M_val` 是 `uintptr_t`（`L523-526` 处声明，见 D4.3），把"指针值 + 锁位"合并成一个整数原子量。于是一次 CAS 就能原子地同时观察/修改"指针身份"与"锁状态"——这正是它能规避 ABA 式竞态的根因：用户面对的 `atomic<shared_ptr>` 操作全程串行于这一把"位锁"之下，不存在无锁 CAS 循环里"读 A→被抢→A 复用→误成功"的窗口。
+
+### D4.3 lock()：用 CAS 翻转最低位夺取锁位（bits/shared_ptr_atomic.h L440-470 + L523-526）
+
+锁的获取就是一次对 `_M_val` 的 `compare_exchange_strong`：把"当前值"改成"当前值 | 锁位"，自旋直到成功。因为锁位和指针在同一整数里，这一步是原子的，且不会因"指针恰好等于某旧值"而误判。
+
+```text
+// bits/shared_ptr_atomic.h L440-470  (GCC 15.3.0)
+	pointer
+	lock(memory_order __o) const noexcept
+	{
+	  // To acquire the lock we flip the LSB from 0 to 1.
+
+	  auto __current = _M_val.load(memory_order_relaxed);
+	  while (__current & _S_lock_bit)
+	    {
+#if __glibcxx_atomic_wait
+	      __detail::__thread_relax();
+#endif
+	      __current = _M_val.load(memory_order_relaxed);
+	    }
+
+	  _GLIBCXX_TSAN_MUTEX_TRY_LOCK(&_M_val);
+
+	  while (!_M_val.compare_exchange_strong(__current,
+						 __current | _S_lock_bit,
+						 __o,
+						 memory_order_relaxed))
+	    {
+	      _GLIBCXX_TSAN_MUTEX_TRY_LOCK_FAILED(&_M_val);
+#if __glibcxx_atomic_wait
+	      __detail::__thread_relax();
+#endif
+	      __current = __current & ~_S_lock_bit;
+	      _GLIBCXX_TSAN_MUTEX_TRY_LOCK(&_M_val);
+	    }
+	  _GLIBCXX_TSAN_MUTEX_LOCKED(&_M_val);
+	  return reinterpret_cast<pointer>(__current);
+	}
+```
+
+```text
+// bits/shared_ptr_atomic.h L523-526  (GCC 15.3.0)
+      private:
+	mutable __atomic_base<uintptr_t> _M_val{0};
+	static constexpr uintptr_t _S_lock_bit{1};
+      };
+```
+
+- `lock()` 自旋读 `_M_val`，若 LSB 已置位说明别人持锁，先 `__thread_relax()`；随后用 CAS 把 LSB 从 0 翻到 1 夺取锁位。失败则清掉本地副本里的锁位（`__current & ~_S_lock_bit`）重试——注意它清的是*本地副本*的位，绝不动真实内存，所以不会误把别人的锁清掉。
+- **与 ABA 的关系**：这里 CAS 比较的是"整个 uintptr_t（含锁位）"，而锁位在任一持锁瞬间恒为 1。即便控制块指针因复用而"值相等"，只要锁位状态不同，CAS 就不会把别人的锁误判成自己的——标准库借此把"指针复用导致的 ABA"消弭在锁协议内部，无需任何版本号。这正是"标准库自己规避并发竞态"的真实范例。代价是 `atomic<shared_ptr>` 不是 lock-free（`is_lock_free()` 恒为 false，见 D4.5）。
+
+### D4.4 跨实现对比（CAS 原语与 shared_ptr 锁位）
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| CAS 转发 | `compare_exchange_*` → `__atomic_compare_exchange_n`，weak/strong 差第 4 参 1/0 | 等价内建/intrinsic（已知公开行为） | 等价编译器 intrinsic（已知公开行为） |
+| ABA 专用组件 | 无 | 无（标准未规定） | 无（标准未规定） |
+| atomic<shared_ptr> | 非 lock-free，`_M_val` 低位做锁位打包 | 同样非 lock-free，内部加锁（已知公开行为） | 同样非 lock-free，内部加锁（已知公开行为） |
+| 规避竞态手法 | 锁位打包 + CAS 翻转 LSB | 内部锁（实现细节未公开核对） | 内部锁（实现细节未公开核对） |
+
+> libc++ / MSVC 行为为**已知公开实现行为**（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录；三者均不在 CAS 层解决 ABA，而是把 `atomic<shared_ptr>` 做成"内部加锁"以规避竞态。
+
+### D4.5 第一方可编译验证（CAS 原语 + atomic<shared_ptr> 锁位代价）
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <memory>
+
+int main() {
+  std::atomic<int> a{7};
+  int expected = 7;
+  // 这就是 ABA 赖以发生的原语层：CAS 循环
+  bool ok = a.compare_exchange_strong(expected, 42);
+  std::cout << ok << ' ' << a.load() << std::endl;   // 1 42
+
+  // libstdc++ 用低位锁位打包实现 atomic<shared_ptr>，注定非 lock-free
+  std::atomic<std::shared_ptr<int>> sp{std::make_shared<int>(99)};
+  std::cout << std::boolalpha << sp.is_lock_free() << std::endl;  // false
+  auto p = sp.load();
+  std::cout << *p << std::endl;   // 99
+  return 0;
+}
+```
+
+预期输出第一行 `1 42`（CAS 成功地将 7 改为 42，印证 D4.1 的原语层），第二行 `false`（印证 D4.2/D4.3：`atomic<shared_ptr>` 因锁位打包而非 lock-free），第三行 `99`（在锁保护下安全 load 出共享指针）。`is_lock_free()` 返回 `false` 是 libstdc++ 的真实行为，不依赖具体平台字长。
