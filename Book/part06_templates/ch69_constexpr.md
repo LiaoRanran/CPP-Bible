@@ -1042,4 +1042,3 @@ flowchart TD
 | ch60 模板基础 | constexpr 函数模板依赖模板实例化。 |
 | ch123 编译期编程 | constexpr/consteval 是编译期编程核心。 |
 | ch19 变量与存储期 | constinit 解决 SIOF 关乎静态存储期。 |
-```

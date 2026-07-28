@@ -28,7 +28,7 @@ JSON（JavaScript Object Notation，RFC 8259）是一种与语言无关的轻量
           ▲                     │  vector,map>        │
           │  serialize          └────────────────────┘
           └──────────────────────────────────────────
-```text
+```
 
 ```cpp
 // ① JSON 类型到 C++ 类型的标准映射（参考 RFC 8259 §1）
@@ -42,7 +42,7 @@ const char* json_type_name(int idx) {
     static const char* n[] = {"null","bool","number","string","array","object"};
     return (idx>=0 && idx<6) ? n[idx] : "?";
 }
-```cpp
+```
 
 ## ② JSON 类型（null/bool/number/string/array/object）
 
@@ -70,7 +70,7 @@ struct JsonValue {
     std::variant<std::nullptr_t, bool, double, std::string,
                  std::vector<JsonValue>, JsonObject> data{nullptr};
 };
-```text
+```
 
 **工程直觉**：`number` 在标准中允许任意精度，但 C++ 没有原生"任意精度十进制"类型。工业库（如 nlohmann/json）默认用 `double`，需要精确十进制时会提供 `std::string` 或整数/浮点分离选项。本章为聚焦解析算法，统一用 `double`。
 
@@ -95,7 +95,7 @@ struct JsonValue {
 };
 
 // 默认构造即 null；赋值为 object 后 index() 变为 5（object 在 variant 中排第 6）
-```text
+```
 
 **为什么不用继承多态？** 一个 `class JsonValue { virtual ... }` 基类 + 6 个派生类也能表达，但会引入：虚表指针（每对象 +8 字节）、堆分配（派生类要 new）、缓存不友好。`std::variant` 把整个值内联存于栈上（小对象零分配），对解析 hot path 更友好。**[经验]** 在 DOM 型 JSON 库里，variant/标记联合几乎总是优于继承多态。
 
@@ -109,7 +109,7 @@ struct JsonValue {
    array := "[" (value)* "]"
    string:= '"' chars '"'
    number:= '-'? digit+ ('.' digit+)? ('e' sign digit+)?
-```text
+```
 
 ```text
          parse_value
@@ -117,7 +117,7 @@ struct JsonValue {
     object array string number  true   false  null
        |      |                         (字面量)
    parse_pair  parse_elems
-```text
+```
 
 ```cpp
 // ④ 解析器骨架（自包含可编译，Examples/_ch162_json.cpp 的 Parser 类）
@@ -138,7 +138,7 @@ public:
 private:
     Value parse_value();          // 按首字符分派到 6 类
 };
-```text
+```
 
 **[经验]** 递归下降最大的优点是**错误位置天然精确**——解析失败时 `pos_` 就在出错字符处，这正是 ⑭ 错误报告的基础。
 
@@ -181,14 +181,14 @@ std::vector<Token> tokenize(std::string_view s) {
     }
     return out;
 }
-```text
+```
 
 本机 `Examples/_ch162_tokenizer.cpp` 真实输出（`tokenize(R"({"a":[1,true]})")`）：
 
 ```text
 token 数: 9
 [{] [a] [:] [[] [1] [,] [true] []] [}]
-```cpp
+```
 
 ## ⑥ 语法分析（parser）
 
@@ -235,7 +235,7 @@ Value parse_object() {
     }
     return Value(std::move(obj));
 }
-```text
+```
 
 **正确性要点**：对象键重复在 RFC 8259 中是"实现定义"行为，本章采用"后写覆盖"（`emplace` 实际是插入；工业库通常显式报错或覆盖，需文档说明）。主库用 `emplace` 后到者不覆盖前者；若需覆盖可改用 `obj[key] = ...`。
 
@@ -276,7 +276,7 @@ std::string escape(const std::string& in) {
     }
     return out;
 }
-```text
+```
 
 主库对 `\uXXXX` 的处理（节选，含代理对合并）：
 
@@ -291,14 +291,14 @@ if (cp >= 0xD800 && cp <= 0xDBFF) {            // 高代理
     cp = 0x10000 + ((cp - 0xD800) << 10) + (lo - 0xDC00);
 }
 return codepoint_to_utf8(cp);                  // 1/2/3/4 字节 UTF-8 编码
-```text
+```
 
 本机 `Examples/_ch162_escape.cpp` 真实输出：
 
 ```text
 转义后: 行1\nTab	\"引号\"
 回转义: 行1\nTab	\"引号\"
-```cpp
+```
 
 ## ⑧ 序列化（writer）
 
@@ -330,13 +330,13 @@ std::string write(const Value& v) {
     if (s.back() == ',') s.pop_back();
     return s + "}";
 }
-```text
+```
 
 本机 `Examples/_ch162_writer.cpp` 真实输出：
 
 ```text
 {"list":[1,2],"ok":true,"x":1.5}
-```text
+```
 
 > **精度提示**：`%.17g` 能往返保真 `double`（C++ `std::num_put` 同样用 17 位有效数字保证往返），代价是输出较长。若只要"好看"，可用 `%.6g` 但会丢失精度。
 
@@ -352,7 +352,7 @@ nlohmann::json j = {{"name", "小明"}, {"age", 30}};
 j["age"] = j["age"].get<int>() + 1;          // 透明下标 + 类型转换
 std::string s = j.dump(2);                    // 美化序列化（缩进 2）
 auto obj = j.get<MyStruct>();                 // 自动反序列化到 struct（需宏/特化）
-```text
+```
 
 | 维度 | 本章 mini_json（自制） | nlohmann/json（上游） |
 |---|---|---|
@@ -377,7 +377,7 @@ auto obj = j.get<MyStruct>();                 // 自动反序列化到 struct（
    │ 驻留内存 │                     │ 不建树   │ on_string("小明")
    └─────────┘                     └─────────┘
    随机访问 ✅   内存 O(n)          流式 ✅      内存 O(1)
-```text
+```
 
 ```cpp
 // ⑩ SAX 风格的流式回调骨架（真实可编译片段，仅演示结构）
@@ -396,7 +396,7 @@ struct Handler {
 };
 // 实际解析器在 parse_value 内按需调用 handler.* —— 这就是 SAX 的核心：
 // 用回调替代"返回整棵树"，从而把内存压到常数级。
-```cpp
+```
 
 ## ⑪ 性能（解析速度基准，std::chrono）
 
@@ -416,7 +416,7 @@ for (int i = 0; i < N; ++i) {
 }
 auto t1 = std::chrono::high_resolution_clock::now();
 double ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
-```text
+```
 
 本机 `g++ 13.1.0 -O2` 真实输出（硬件：本机 x86-64，文档约 120 字节）：
 
@@ -425,7 +425,7 @@ double ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
 总耗时   = 1175.85 ms
 单文档均 = 5.87926 us
 吞吐     ≈ 170089 文档/秒
-```text
+```
 
 **优化方向（经验）**：① 减少 `std::map` 的红黑树分配——用 `std::vector` 暂存键值对、或改用 `std::unordered_map`/扁平数组；② 字符串避免反复 `push_back` 小对象，可预估容量；③ `std::variant` 的 `std::get` 在 `-O2` 下被优化为直接偏移访问（见 ⑩ 汇编）；④ 对超大文档优先 SAX（⑩）避免建树。注意：上述数字**仅代表本机本编译器**，迁移到 ARM/不同输入分布会变，勿当通用结论。
 
@@ -454,14 +454,14 @@ bool is_valid_utf8(std::string_view s) {
     }
     return true;
 }
-```text
+```
 
 本机 `Examples/_ch162_utf8.cpp` 真实输出（`"中文"` 合法，`"\xe4\xb8"` 截断非法）：
 
 ```text
 合法序列 : 1
 截断序列 : 0
-```cpp
+```
 
 ## ⑬ 真实完整实现（自包含 g++ 可编译 mini JSON，单文件可跑）
 
@@ -489,7 +489,7 @@ struct Value {
     bool is_object() const { return std::holds_alternative<Object>(data); }
     // ... as_xxx() 取值函数见源文件
 };
-```text
+```
 
 ```cpp
 // ⑬-B 数字解析（严格，拒绝 1.2.3 / 1e 等非法形式，Examples/_ch162_json.cpp）
@@ -510,7 +510,7 @@ double parse_number() {
     if (!has_digit) fail("非法数字字面量：缺少数字");
     return std::stod(std::string(s_.substr(start, pos_ - start)));
 }
-```text
+```
 
 ```cpp
 // ⑬-C 序列化入口（Examples/_ch162_json.cpp）
@@ -528,7 +528,7 @@ std::string serialize(const Value& v, int indent, int depth) {
     // array / object 递归见源文件
     return out;
 }
-```text
+```
 
 编译与运行（本机真实命令与输出）：
 
@@ -544,7 +544,7 @@ unicode= 中文
 [错误演示]
   '{' -> pos=1 : 输入意外结束
   '1.2.3' -> pos=3 : 解析完成后仍有尾部多余字符
-```cpp
+```
 
 ## ⑭ 错误报告（位置/消息）
 
@@ -559,7 +559,7 @@ struct ParseError : std::runtime_error {
     ParseError(size_t p, const std::string& m)
         : std::runtime_error(m), pos(p) {}
 };
-```text
+```
 
 本机 `Examples/_ch162_json.cpp` 错误演示真实输出（每个 `pos` 都精确指向出错字符）：
 
@@ -569,7 +569,7 @@ struct ParseError : std::runtime_error {
   '"abc' -> pos=4 : 字符串未闭合
   'tru' -> pos=0 : 期望字面量 true/false
   '1.2.3' -> pos=3 : 解析完成后仍有尾部多余字符
-```text
+```
 
 **[标准]** 异常是 C++ 惯用的错误传播机制；若库需用于 `-fno-exceptions` 环境（嵌入式/内核），可改成返回 `std::expected<Value, ParseError>`（C++23 `<expected>`），调用方用 `if (auto r = parse(s); r) ...` 处理，零异常开销。
 
@@ -586,14 +586,14 @@ std::string build(int age, double score, const std::string& name) {
     // 注意：name 若含 " 或 \ 仍需先 escape，format 不负责转义
     return std::format(R"({{"name":"{}","age":{},"score":{:.2f}}})", name, age, score);
 }
-```text
+```
 
 本机 `Examples/_ch162_format.cpp` 真实输出：
 
 ```text
 {"name":"小明","age":30,"score":9.50}
 [diag] type=string len=6
-```cpp
+```
 
 ## ⑯ 反序列化到 struct
 
@@ -612,13 +612,13 @@ User from_object(const JsonObject& o) {
     u.score = o.at("score").as_number();
     return u;
 }
-```text
+```
 
 本机 `Examples/_ch162_deserialize.cpp` 真实输出：
 
 ```text
 id=1 name=alice score=9.81
-```text
+```
 
 > **类型安全**：`o.at("id")` 若缺键抛 `std::out_of_range`；生产代码应先用 `find` 判存在再取值，或提供带默认值的 `get_or`。
 
@@ -638,7 +638,7 @@ std::vector<int> unsafe_split(const std::string& s) {
     }
     return out;
 }
-```text
+```
 
 ```cpp
 // ⑰ ✅ 正确做法：边界检查 + 用本章 Parser 的 fail() 抛精确错误
@@ -650,7 +650,7 @@ Value parse(const std::string_view s) {
         throw;                       // 或返回 std::expected
     }
 }
-```text
+```
 
 **JSON 注入**：把用户输入直接拼进 JSON 字符串而不转义，会破坏结构甚至篡改语义（如把 `"` 提前闭合键）。永远走 `escape_string`，绝不用字符串拼接构造 JSON。本机 `Examples/_ch162_antipattern.cpp` 良性输入可跑出 `12 34 56`，但一旦输入越界就是 UB——这正是它被列为"反模式"的原因。
 
@@ -672,7 +672,7 @@ std::string read_binary(const char* path) {
     return std::string((std::istreambuf_iterator<char>(f)),
                         std::istreambuf_iterator<char>());
 }
-```cpp
+```
 
 ## ⑲ 真实案例（用 g++ 跑出真实解析输出）
 
@@ -690,7 +690,7 @@ Obj root = std::get<Obj>(pv().d);
 std::cout << "[config] host=" << gs(root,"host")
           << " port=" << (int)gn(root,"port")
           << " tls=" << (std::get<bool>(root.at("tls").d) ? "on" : "off") << "\n";
-```text
+```
 
 本机真实输出：
 
@@ -700,7 +700,7 @@ std::cout << "[config] host=" << gs(root,"host")
   - 10.0.0.1:9000
   - 10.0.0.2:9000
 [config] timeout_ms=1500
-```text
+```
 
 **热点汇编证据**（⑩ 供参考）：`is_whitespace` 在 `-O2` 下被内联进 `any_ws`，编译器把四种空白判断合成位掩码比较（`Examples/_ch162_asm.asm`）：
 
@@ -713,7 +713,7 @@ _Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE:
     cmp     rdx, rax
     je      .L5
     movabs  r8, 4294977024             ; 0x100002000：空格/制表/换行/回车位掩码
-```text
+```
 
 `movabs r8, 4294977024` 即 `(1<<0x20)|(1<<0x09)|(1<<0x0a)|(1<<0x0d)` 的位掩码——编译器把四个字符比较优化成一次位测试，是 `-O2` 对词法热点的典型优化。
 

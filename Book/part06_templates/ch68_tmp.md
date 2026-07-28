@@ -912,4 +912,3 @@ flowchart TD
 | ch70 标签分发 | integral_constant 标签是 TMP 的经典应用。 |
 | ch51 CRTP | CRTP 是 TMP 实现的静态多态惯用法。 |
 | ch124 libstdc++ | 标准库 tuple/variant 以 TMP 递归实现。 |
-```
