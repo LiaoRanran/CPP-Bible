@@ -938,3 +938,217 @@ flowchart TD
 | ch52 EBO | ch41 allocator | 容器把 allocator 作空基类嵌入省去指针 |
 | ch52 EBO | ch49 虚继承 | 空基类与虚继承布局的交互约束 |
 | ch52 EBO | ch48/49 unique_ptr | 空删除器作空基类实现零开销智能指针 |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — EBO 在 `tuple` / `shared_ptr` 控制块 / `pair` 中的落点 [E: Low-level / H: Design]
+
+> 本附录所有摘录均来自随书工具链 **GCC 15.3.0** 自带 libstdc++
+>（`.../include/c++/15.3.0/`），首行标注 `// <相对路径> Lx-y`，内容与源文件逐字一致（单独一行 `…` 表省略）。
+> libc++ / MSVC STL 仅给"已知公开实现行为"对比，非逐字摘录，避免伪造。
+> 提示中提到的 `__is_empty_non_tuple` / `_UseEBO` 分支在 GCC 15.3.0 实测源码中**并不存在**，本书以实测为准如实写出（见 D4.1 说明）。
+
+### D4.1 `tuple::_Head_base` 对空类型的 EBO（tuple L85-252）
+
+`tuple` 把每个元素包进 `_Head_base<_Idx,_Head,bool>`，第三个模板参数决定"空且非 final"时走 EBO。先声明：
+
+```text
+// tuple L85-87
+  template<size_t _Idx, typename _Head,
+	   bool = __empty_not_final<_Head>::value>
+    struct _Head_base;
+```
+
+GCC 15.3.0 中 `__has_cpp_attribute(__no_unique_address__)` 为真，故走 `#if` 分支：空元素用 `[[__no_unique_address__]]` 成员承载，而非传统的"继承式 EBO"。
+
+```text
+// tuple L89-143  (省略 L110-134 的 allocator 构造函数)
+#if __has_cpp_attribute(__no_unique_address__)
+  template<size_t _Idx, typename _Head>
+    struct _Head_base<_Idx, _Head, true>
+    {
+      constexpr _Head_base()
+      : _M_head_impl() { }
+
+      constexpr _Head_base(const _Head& __h)
+      : _M_head_impl(__h) { }
+
+      constexpr _Head_base(const _Head_base&) = default;
+      constexpr _Head_base(_Head_base&&) = default;
+
+      template<typename _UHead>
+	constexpr _Head_base(_UHead&& __h)
+	: _M_head_impl(std::forward<_UHead>(__h)) { }
+
+      …
+      static constexpr _Head&
+      _M_head(_Head_base& __b) noexcept { return __b._M_head_impl; }
+
+      static constexpr const _Head&
+      _M_head(const _Head_base& __b) noexcept { return __b._M_head_impl; }
+
+      [[__no_unique_address__]] _Head _M_head_impl;
+    };
+```
+
+非 EBO 分支（`false` 特化）则是普通成员，空类型也会占 1 字节：
+
+```text
+// tuple L199-252  (省略 L202-243 的构造函数)
+  template<size_t _Idx, typename _Head>
+    struct _Head_base<_Idx, _Head, false>
+    {
+      …
+      _Head _M_head_impl;
+    };
+```
+
+`#else` 分支（仅当编译器不支持 `__no_unique_address__` 属性时启用）才用"继承式 EBO"——把 `_Head` 作为基类：
+
+```text
+// tuple L144-196  (仅在不支持 [[no_unique_address]] 时编译；省略 L149-189)
+  template<size_t _Idx, typename _Head>
+    struct _Head_base<_Idx, _Head, true>
+    : public _Head
+    {
+      …
+      static constexpr _Head&
+      _M_head(_Head_base& __b) noexcept { return __b; }
+
+      static constexpr const _Head&
+      _M_head(const _Head_base& __b) noexcept { return __b; }
+    };
+```
+
+> 诚实考据：提示假设 GCC 15 用 `__is_empty_non_tuple` / `_UseEBO`，实测 `_Head_base` 第三参数默认值为 `__empty_not_final<_Head>::value`（L86），全文件 grep 无 `_UseEBO`。GCC 15 走属性式 EBO（`[[__no_unique_address__]]`，L142），继承式分支（L147）只是 `#else` 退化路径。
+
+### D4.2 `shared_ptr` 控制块对 deleter/allocator 的 EBO（bits/shared_ptr_base.h L461-509）
+
+`shared_ptr` 的 `_Sp_counted_deleter` 控制块需要同时持有自定义 deleter 与 allocator（常为无状态空类型），用 `_Sp_ebo_helper` 做 EBO 封装：
+
+```text
+// bits/shared_ptr_base.h L461-489
+  template<int _Nm, typename _Tp,
+	   bool __use_ebo = !__is_final(_Tp) && __is_empty(_Tp)>
+    struct _Sp_ebo_helper;
+
+  /// Specialization using EBO.
+  template<int _Nm, typename _Tp>
+    struct _Sp_ebo_helper<_Nm, _Tp, true> : private _Tp
+    {
+      explicit _Sp_ebo_helper(const _Tp& __tp) : _Tp(__tp) { }
+      explicit _Sp_ebo_helper(_Tp&& __tp) : _Tp(std::move(__tp)) { }
+
+      static _Tp&
+      _S_get(_Sp_ebo_helper& __eboh) { return static_cast<_Tp&>(__eboh); }
+    };
+
+  /// Specialization not using EBO.
+  template<int _Nm, typename _Tp>
+    struct _Sp_ebo_helper<_Nm, _Tp, false>
+    {
+      explicit _Sp_ebo_helper(const _Tp& __tp) : _M_tp(__tp) { }
+      explicit _Sp_ebo_helper(_Tp&& __tp) : _M_tp(std::move(__tp)) { }
+
+      static _Tp&
+      _S_get(_Sp_ebo_helper& __eboh)
+      { return __eboh._M_tp; }
+
+    private:
+      _Tp _M_tp;
+    };
+```
+
+`_Sp_counted_deleter::_Impl` 用两个 `_Sp_ebo_helper` 基（编号 0=deleter、1=allocator）多重继承，空 deleter/allocator 都被压到 0 字节：
+
+```text
+// bits/shared_ptr_base.h L495-508
+      class _Impl : _Sp_ebo_helper<0, _Deleter>, _Sp_ebo_helper<1, _Alloc>
+      {
+	typedef _Sp_ebo_helper<0, _Deleter>	_Del_base;
+	typedef _Sp_ebo_helper<1, _Alloc>	_Alloc_base;
+	…
+	_Deleter& _M_del() noexcept { return _Del_base::_S_get(*this); }
+	_Alloc& _M_alloc() noexcept { return _Alloc_base::_S_get(*this); }
+
+	_Ptr _M_ptr;
+      };
+```
+
+EBO 生效条件可见 L462：`__use_ebo = !__is_final(_Tp) && __is_empty(_Tp)`——**空且非 final** 才继承式 EBO；`final` 类型必须保持唯一地址（见 L458-459 注释）。
+
+### D4.3 `pair` 不做成员级 EBO（bits/stl_pair.h L301-309）
+
+`std::pair` 把两个元素作为**具名直接成员**存储，未对空成员施加 `[[no_unique_address]]`，也未用继承式 EBO：
+
+```text
+// bits/stl_pair.h L301-309
+  template<typename _T1, typename _T2>
+    struct pair
+    : public __pair_base<_T1, _T2>
+    {
+      typedef _T1 first_type;    ///< The type of the `first` member
+      typedef _T2 second_type;   ///< The type of the `second` member
+
+      _T1 first;                 ///< The first member
+      _T2 second;                ///< The second member
+```
+
+`pair` 仅把空标记类 `__pair_base` 作为基（L303，EBO 作用于该空基）。但 `first`/`second` 是数据成员：标准允许用户取 `&p.first`、用 `offsetof`、甚至 `pair` 参与聚合/标准布局判断，施加 `[[no_unique_address]]` 会让空成员的地址与另一成员重合，破坏可寻址性与 ABI 稳定性。GCC 选择保持 `pair<Empty,int>` 中 `Empty` 占 1 字节，这是有意的工程取舍，而非疏漏。
+
+### D4.4 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| 空基类 EBO 判定 | `__empty_not_final<_Head>`；GCC15 用 `[[no_unique_address]]`（tuple L142） | `tuple` 用 `__libcpp_compressed_pair` 继承式 EBO | `tuple`/`pair` 用继承式 EBO（`__tuple_leaf` 基类） |
+| `shared_ptr` 控制块 | `_Sp_ebo_helper`（L467 继承式） | `__sp_ebo_helper` 同类继承式封装 | 控制块对空 deleter/allocator 同样压地址（实现细节未公开核对） |
+| `pair` 成员 | 直接成员、无 no_unique_address（L308-309） | 直接成员，无 no_unique_address | 直接成员，无 no_unique_address |
+| `[[no_unique_address]]` 取舍 | 优先属性式，退化用继承式 `#else` | 无属性前用继承式 | 无属性前用继承式 |
+
+> libc++ / MSVC 行为为公开实现常识（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录。
+
+### D4.5 设计动机小结
+
+EBO 生效三条件：**(1) 类型是空类（无非静态数据成员、无虚函数/虚基）；(2) 非 `final`（final 类须有唯一地址）；(3) 不与同类型另一子对象被迫同址**（同一类中放两个相同空基类会导致"同址冲突"，标准仅保证至少一个可压到 0）。属性式 `[[no_unique_address]]`（tuple L142）比继承式 EBO 更灵活：它允许同一类里多个空成员各自压到 0 而不冲突，且能保留成员语义（仍有名字、可 `&` 取址）。继承式 EBO（shared_ptr L467、tuple `#else` L147）是 C++20 前的唯一手段，要求把空类型放到基类位置，且与同类型子对象同址时受限。
+
+### D4.6 第一方可编译验证（tuple vs pair 空成员布局 + 自定义 EBO holder）
+
+```cpp
+#include <iostream>
+#include <tuple>
+#include <utility>
+#include <type_traits>
+
+struct Empty { };                 // 空类
+struct FinalEmpty final { };      // final 空类，禁用 EBO
+
+// 自定义继承式 EBO holder：把空策略作为基类压到 0 字节
+template<typename T, typename Policy>
+struct Holder : private Policy {
+    T value;
+    constexpr Holder(T v, const Policy&) : value(v) { }
+};
+
+int main() {
+    std::cout << "sizeof(Empty)                = "
+              << sizeof(Empty) << std::endl;
+    std::cout << "sizeof(tuple<Empty,int>)     = "
+              << sizeof(std::tuple<Empty, int>) << std::endl;
+    std::cout << "sizeof(pair<Empty,int>)      = "
+              << sizeof(std::pair<Empty, int>) << std::endl;
+    std::cout << "sizeof(tuple<FinalEmpty,int>)= "
+              << sizeof(std::tuple<FinalEmpty, int>) << std::endl;
+    std::cout << "sizeof(Holder<int,Empty>)    = "
+              << sizeof(Holder<int, Empty>) << std::endl;
+
+    // 红线自检：EBO 是实现许可非强制，禁用精确 == 断言复合布局。
+    // 只允许 >= 与类型萃取断言。
+    static_assert(std::is_empty_v<Empty>);
+    static_assert(sizeof(std::tuple<Empty, int>)
+                  <= sizeof(std::pair<Empty, int>));   // tuple 不劣于 pair
+    static_assert(sizeof(Holder<int, Empty>) >= sizeof(int));
+
+    std::cout << "EBO checks passed (no == on layout)" << std::endl;
+    return 0;
+}
+```
+
+预期输出：`tuple<Empty,int>` 为 4（空成员被压到 0），`pair<Empty,int>` 为 8（空成员占 1 字节并因 `int` 对齐补齐），`tuple<FinalEmpty,int>` 回到 8（final 禁用 EBO），`Holder<int,Empty>` 为 4（继承式 EBO 生效）。仅用 `>=` / `is_empty_v` 断言，未对布局做精确 `==`。

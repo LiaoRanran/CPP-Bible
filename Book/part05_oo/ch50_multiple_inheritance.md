@@ -1129,3 +1129,155 @@ flowchart TD
 | ch52 | 空基类优化 EBO | 空基类在 MI 中仍可被压缩，改善布局 |
 | ch19 | 变量与存储期 | MI 不改变存储期，但增加子对象数量与地址 |
 | ch41 | 智能指针 | 管理 MI 对象生命周期需虚析构以防切片删除 |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析
+
+> 边界声明：以下 verbatim 摘录全部来自 GCC 15.3.0 的 libstdc++ 头文件树
+>（`_gcc15/mingw64/include/c++/15.3.0/`）。行号相对 `include/c++/15.3.0/`。
+> thunk / this 调整的具体代码由编译器生成于 vtable，不在 include 树内逐字摘录，仅描述行为。
+
+### D4.1 `basic_iostream` 的多继承侧面：this 调整 / thunk（<istream>）
+
+`basic_iostream` 同时公开继承 `basic_istream` 与 `basic_ostream`（`basic_ios` 那一臂是
+虚继承，见 ch49）。当把 `basic_iostream*` 转成右侧基类 `basic_ostream*` 时，指针必须
+**加上偏移**才能对准 `basic_ostream` 子对象的头部——这就是多继承的 this 调整。
+
+```text
+// istream L984-987
+  template<typename _CharT, typename _Traits>
+    class basic_iostream
+    : public basic_istream<_CharT, _Traits>,
+      public basic_ostream<_CharT, _Traits>
+```
+
+动机：
+
+1. **静态 this 调整**：`basic_iostream` 对象布局里，`basic_istream` 子对象（首基类）
+   与 `basic_ostream` 子对象地址不同。`static_cast<basic_ostream*>(p)` 在编译期被加上
+   固定偏移，无需运行期查表。
+2. **虚函数 thunk**：当经 `basic_ostream*` 调用一个在 `basic_iostream` 中重写、且签名
+   来自 `basic_ostream` 的虚函数时，vtable 槽指向一个 thunk——它先把 `this` 调回完整的
+   `basic_iostream` 子对象地址，再跳进真实函数体。thunk 与静态 this 调整同源，都是为解决
+   “不同基类子对象头部不一致”。
+
+### D4.2 `std::tuple` 的递归多基类布局与 EBO（<tuple>）
+
+`tuple` 把“第 N 个元素”做成一层基类：`_Tuple_impl` 公开继承“剩余元素”的 `_Tuple_impl`
+（`_Idx+1`），并私有继承 `_Head_base<_Idx,_Head>`。这样 N 元组 = N 层递归单基类链，而非
+把 N 个元素塞进一个结构体内——便于空基类优化（EBO）层层压缩。
+
+```text
+// tuple L85-87
+  template<size_t _Idx, typename _Head,
+	   bool = __empty_not_final<_Head>::value>
+    struct _Head_base;
+
+// tuple L89-142 (C++20 __no_unique_address__ 路径)
+#if __has_cpp_attribute(__no_unique_address__)
+  template<size_t _Idx, typename _Head>
+    struct _Head_base<_Idx, _Head, true>
+    {
+      …
+      [[__no_unique_address__]] _Head _M_head_impl;
+    };
+// tuple L199-200 (空基类不可作唯一地址时退化为含成员)
+  template<size_t _Idx, typename _Head>
+    struct _Head_base<_Idx, _Head, false>
+
+// tuple L280-283 (递归主模板)
+  template<size_t _Idx, typename _Head, typename... _Tail>
+    struct _Tuple_impl<_Idx, _Head, _Tail...>
+    : public _Tuple_impl<_Idx + 1, _Tail...>,
+      private _Head_base<_Idx, _Head>
+
+// tuple L544-547 (递归基例)
+  template<size_t _Idx, typename _Head>
+    struct _Tuple_impl<_Idx, _Head>
+    : private _Head_base<_Idx, _Head>
+```
+
+动机：
+
+- **EBO 递归压缩**：当某元素是空类（无数据成员）时，`_Head_base` 用
+  `[[__no_unique_address__]]` 将其成员 `_M_head_impl` 标为可共享地址，或（旧路径）直接
+  `: public _Head` 继承该空类。于是 `tuple<Empty, int>` 的大小约等于单个 `int`，空类不占
+  额外字节。
+- **与多继承 this 调整的分别**：`_Tuple_impl` 的多基类是**非虚、单链**结构，每层只有一个
+  父基类（`_Idx+1` 侧）和私有 `_Head_base`，子对象地址在编译期可静态确定，不需要 thunk。
+这与 D4.1 的 `basic_iostream` 双基类偏移调整是不同机制：tuple 靠 EBO 压布局，MI 靠
+偏移/thunk 解决二义。
+
+### D4.2.1 静态 this 调整 vs 虚函数 thunk
+
+多继承下有两种“指针修正”，来源不同：
+
+1. **静态 this 调整（`static_cast` / `reinterpret_cast` 安全子集）**：将派生类指针转成
+   “非首基类”指针时，编译器在生成的代码里直接加一个编译期常量偏移。无需任何运行期
+   信息，零成本，但结果指向的是那个基类子对象的头部，而非完整对象头部。
+2. **虚函数 thunk**：当经“非首基类指针”调用一个在派生类重写、且签名来自该基类的虚函数
+   时，`this` 必须先被调回完整对象头部，再进入函数体。vtable 中该槽存的是一个 thunk
+   跳板而非函数本身；thunk 内部执行“减去同样那个偏移”的调整。代价是一次间接跳转。
+
+示意：
+
+```text
+// 概念示意（非 verbatim）
+struct M : L, R { void g() override; };
+M m;
+R* pr = &m;        // 静态调整：pr = (char*)&m + offsetof(R-in-M)
+pr->g();           // 经 R* 调 g：thunk 先把 this 调回 &m，再进 M::g
+```
+
+若 `M` 对 `R` 是**虚继承**，情况更复杂：调整量在编译期未必可知（取决于运行期完整对象
+类型），GCC 会生成“虚 thunk”，从 vtable 读调整量；MSVC 则以 `vtordisp` 字段记录该调整。
+这进一步说明：this 调整/thunk 是为解决“多基类子对象头部不一致”，而 tuple 的递归单基类
+链根本不存在此问题，因而走 EBO 而非调整。
+
+### D4.3 跨实现对比表
+
+| 行为 | libstdc++ (GCC 15.3.0) | libc++ (已知公开实现行为) | MSVC (已知公开实现行为) |
+|---|---|---|---|
+| MI 静态 this 调整 | 编译期固定偏移（`static_cast`） | 同样编译期偏移 | 同样编译期偏移（含 vtordisp 处理虚继承） |
+| 虚函数 thunk | vtable 槽指向调整 thunk | 同样有 thunk | 同样有 thunk / vtordisp |
+| `tuple` 布局 | `_Tuple_impl` 递归多基类 + EBO | 递归继承 + EBO（细节未公开核对） | 递归继承 + EBO（细节未公开核对） |
+| 空基优化手段 | `[[__no_unique_address__]]` 或 `: public _Head` | 同样 `__no_unique_address__` | 同样空基优化（细节未公开核对） |
+
+### D4.4 可编译 demo：双基类指针值证明 this 调整 + tuple<EBO> sizeof
+
+```cpp
+#include <iostream>
+#include <tuple>
+#include <type_traits>
+
+struct L { int x = 1; virtual ~L() = default; virtual void f() { } };
+struct R { int y = 2; virtual ~R() = default; virtual void g() { } };
+struct M : L, R { };
+
+struct Empty { };
+
+int main() {
+  M m;
+
+  // 双基类子对象头部地址不同 == this 调整
+  L* pl = static_cast<L*>(&m);
+  R* pr = static_cast<R*>(&m);
+  std::cout << "addr M      =" << &m << std::endl;
+  std::cout << "addr L sub  =" << pl << std::endl;
+  std::cout << "addr R sub  =" << pr << std::endl;   // 必异于 &m
+  std::cout << "R adjusted? " << (static_cast<void*>(pr) != static_cast<void*>(&m)
+                                 ? "yes" : "no") << std::endl;
+
+  // 经 R* 调虚函数，thunk 把 this 调回 M 再分派，结果正确
+  pr->g();
+  std::cout << "R.y via pr =" << pr->y << std::endl;
+
+  // tuple 的 EBO：空类不占额外空间
+  std::cout << "sizeof(tuple<Empty,int>) =" << sizeof(std::tuple<Empty, int>)
+            << std::endl;
+  std::cout << "sizeof(int)              =" << sizeof(int) << std::endl;
+  std::cout << "EBO ok?                  "
+            << (sizeof(std::tuple<Empty, int>) <= sizeof(int) * 2 ? "yes" : "no")
+            << std::endl;
+  return 0;
+}
+```

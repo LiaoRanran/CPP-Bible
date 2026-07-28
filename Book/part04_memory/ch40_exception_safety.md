@@ -1780,3 +1780,272 @@ flowchart TD
 | ch45 对象模型 | ch40 异常安全 | 构造期子对象安全影响强保证 |
 | ch46 封装继承 | ch40 异常安全 | 基类析构 noexcept 影响派生类展开 |
 | ch115 move 语义 | ch40 异常安全 | move 常标 noexcept 以保不抛 |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析 — 异常传播与容器强保证的落点 [E: Low-level / H: Design]
+
+> 本附录所有摘录均来自随书工具链 **GCC 15.3.0** 自带 libstdc++
+>（`.../include/c++/15.3.0/`），首行标注 `// <相对路径> Lx-y`，内容与源文件逐字一致（单独一行 `…` 表省略）。
+> libc++ / MSVC STL 仅给"已知公开实现行为"对比，非逐字摘录，避免伪造。
+
+### D4.1 `exception_ptr` 的引用计数本质（bits/exception_ptr.h L97-208）
+
+`exception_ptr` 是一个**不透明句柄**，内部只持有一个 `void*` 指向 `__cxa_exception` 异常对象，拷贝时走引用计数 `_M_addref()`，析构走 `_M_release()`：
+
+```text
+// bits/exception_ptr.h L97-184  (省略 L128-159 兼容/比较成员)
+    class exception_ptr
+    {
+      void* _M_exception_object;
+
+      explicit exception_ptr(void* __e) _GLIBCXX_USE_NOEXCEPT;
+
+      void _M_addref() _GLIBCXX_USE_NOEXCEPT;
+      void _M_release() _GLIBCXX_USE_NOEXCEPT;
+
+      void *_M_get() const _GLIBCXX_NOEXCEPT __attribute__ ((__pure__));
+
+      friend exception_ptr std::current_exception() _GLIBCXX_USE_NOEXCEPT;
+      friend void std::rethrow_exception(exception_ptr);
+      template<typename _Ex>
+      friend exception_ptr std::make_exception_ptr(_Ex) _GLIBCXX_USE_NOEXCEPT;
+
+    public:
+      exception_ptr() _GLIBCXX_USE_NOEXCEPT;
+
+      exception_ptr(const exception_ptr&) _GLIBCXX_USE_NOEXCEPT;
+      …
+      exception_ptr(exception_ptr&& __o) noexcept
+      : _M_exception_object(__o._M_exception_object)
+      { __o._M_exception_object = nullptr; }
+      …
+      ~exception_ptr() _GLIBCXX_USE_NOEXCEPT;
+      …
+    };
+```
+
+拷贝/析构实现（L192-208）：拷贝只增引用计数，交接（move）仅把 `_M_exception_object` 置空：
+
+```text
+// bits/exception_ptr.h L192-208
+    exception_ptr::exception_ptr(const exception_ptr& __other)
+    _GLIBCXX_USE_NOEXCEPT
+    : _M_exception_object(__other._M_exception_object)
+    {
+      if (_M_exception_object)
+	_M_addref();
+    }
+
+    exception_ptr::~exception_ptr() _GLIBCXX_USE_NOEXCEPT
+    {
+      if (_M_exception_object)
+	_M_release();
+    }
+```
+
+### D4.2 `make_exception_ptr` 的快路径：直接构造 + 不抛出捕获（bits/exception_ptr.h L246-276）
+
+C++26 前 GCC 的 `make_exception_ptr` 有两种实现：**有 RTTI 时走 `__cxa_init_primary_exception` 快路径**（当场 `new` 出异常对象并直接返回，不再 throw+catch）；**无 RTTI/异常时退化成 throw+catch 当场捕获**：
+
+```text
+// bits/exception_ptr.h L246-276
+  template<typename _Ex>
+    exception_ptr
+    make_exception_ptr(_Ex __ex) _GLIBCXX_USE_NOEXCEPT
+    {
+#if __cplusplus >= 201103L && __cpp_rtti
+      using _Ex2 = typename decay<_Ex>::type;
+      void* __e = __cxxabiv1::__cxa_allocate_exception(sizeof(_Ex));
+      (void) __cxxabiv1::__cxa_init_primary_exception(
+	  __e, const_cast<std::type_info*>(&typeid(_Ex)),
+	  __exception_ptr::__dest_thunk<_Ex2>);
+      __try
+	{
+	  ::new (__e) _Ex2(__ex);
+	  return exception_ptr(__e);
+	}
+      __catch(...)
+	{
+	  __cxxabiv1::__cxa_free_exception(__e);
+	  return current_exception();
+	}
+#else
+      try
+	{
+          throw __ex;
+	}
+      catch(...)
+	{
+	  return current_exception();
+	}
+#endif
+    }
+```
+
+> 诚实考据：GCC 15.3.0 的 `make_exception_ptr` **已经**包含 `__cxa_init_primary_exception` 快路径（L253-255），提示假设的"throw+catch 当场捕获"只是 `#else` 退化分支（L267-274），并非主路径。这与早期 libstdc++ 不同。
+### D4.3 `nested_exception` 与 `throw_with_nested`（bits/nested_exception.h L59-167）
+
+`nested_exception` 在构造时存下 `current_exception()`；`throw_with_nested` 对"类、非 final、且未继承自 `nested_exception`"的类型，抛出同时继承 `_Except` 与 `nested_exception` 的 `_Nested_exception`：
+
+```text
+// bits/nested_exception.h L59-101
+  class nested_exception
+  {
+    exception_ptr _M_ptr;
+
+  public:
+    nested_exception() noexcept : _M_ptr(current_exception()) { }
+    nested_exception(const nested_exception&) noexcept = default;
+    nested_exception& operator=(const nested_exception&) noexcept = default;
+    virtual ~nested_exception() noexcept;
+
+    [[noreturn]]
+    void
+    rethrow_nested() const
+    {
+      if (_M_ptr)
+	rethrow_exception(_M_ptr);
+      std::terminate();
+    }
+
+    exception_ptr
+    nested_ptr() const noexcept
+    { return _M_ptr; }
+  };
+
+  template<typename _Except>
+    struct _Nested_exception : public _Except, public nested_exception
+    {
+      explicit _Nested_exception(const _Except& __ex)
+      : _Except(__ex)
+      { }
+      explicit _Nested_exception(_Except&& __ex)
+      : _Except(static_cast<_Except&&>(__ex))
+      { }
+    };
+```
+
+`throw_with_nested`（C++17 起用 `if constexpr` 分发，L156-161）决定是否包裹；`rethrow_if_nested`（L222-233）对非多态/不可达类型直接返回，否则 `dynamic_cast` 到 `nested_exception` 重抛：
+
+```text
+// bits/nested_exception.h L145-167 (节选) 与 L222-233 (节选)
+  template<typename _Tp>
+    [[noreturn]]
+    inline void
+    throw_with_nested(_Tp&& __t)
+    {
+      using _Up = typename decay<_Tp>::type;
+      using _CopyConstructible
+	= __and_<is_copy_constructible<_Up>, is_move_constructible<_Up>>;
+      static_assert(_CopyConstructible::value,
+	  "throw_with_nested argument must be CopyConstructible");
+#if __cplusplus >= 201703L && __cpp_if_constexpr
+      if constexpr (is_class_v<_Up>)
+	if constexpr (!is_final_v<_Up>)
+	  if constexpr (!is_base_of_v<nested_exception, _Up>)
+	    throw _Nested_exception<_Up>{std::forward<_Tp>(__t)};
+      throw std::forward<_Tp>(__t);
+      …
+    }
+
+// bits/nested_exception.h L222-233
+      if constexpr (!is_polymorphic_v<_Ex>)
+	return;
+      …
+      else if (auto __ne_ptr = dynamic_cast<const nested_exception*>(__ptr))
+	__ne_ptr->rethrow_nested();
+```
+### D4.4 `vector` 扩容的强异常保证落点：`__uninitialized_move_if_noexcept_a`（bits/vector.tcc L525-535）
+
+`vector::_M_realloc_insert` 在新缓冲构造新元素后，用 `__uninitialized_move_if_noexcept_a` 搬运旧元素——**仅当元素的 move 构造函数 `noexcept` 时才 move，否则退回 copy**，从而保证"中途抛异常时旧元素仍完整"（强保证）：
+
+```text
+// bits/vector.tcc L525-535
+	    __new_finish = std::__uninitialized_move_if_noexcept_a(
+			     __old_start, __position.base(),
+			     __new_start, _M_get_Tp_allocator());
+
+	    ++__new_finish;
+	    __guard_elts._M_first = __new_start;
+
+	    __new_finish = std::__uninitialized_move_if_noexcept_a(
+			      __position.base(), __old_finish,
+			      __new_finish, _M_get_Tp_allocator());
+```
+
+`__uninitialized_move_if_noexcept_a` 内部调用 `std::move_if_noexcept`：`is_nothrow_move_constructible_v` 为真才 move，否则走 `const&` 拷贝构造——正是 move-if-noexcept 语义在容器扩容处的经典落点。
+### D4.5 跨实现对比
+
+| 维度 | libstdc++ (GCC 15.3.0) | libc++ (LLVM) | MSVC STL |
+|------|------------------------|---------------|----------|
+| `exception_ptr` 底层 | `void* _M_exception_object` 指向 `__cxa_exception`，引用计数（`_M_addref`/`_M_release`） | 同样是不透明句柄 + 引用计数；基于 libc++abi 的 `__cxxabiv1` | 基于 CRT 异常对象 + `shared_ptr` 语义的引用计数（实现细节未公开核对） |
+| `make_exception_ptr` | RTTI 下 `__cxa_init_primary_exception` 快路径；否则 throw/catch | 同类快路径（clang 亦直接构造异常对象） | 实现细节未公开核对 |
+| `nested_exception` | `_Nested_exception` 多重继承 + `dynamic_cast` 展开 | 同结构（`__nested_exception` 组合） | 同结构（`_Nested_exception` 组合） |
+| `vector` 强保证 | `__uninitialized_move_if_noexcept_a`（L525/533） | `__uninitialized_move_if_noexcept` 同语义 | `std::_Uninitialized_move_if_noexcept` 同语义 |
+
+> libc++ / MSVC 行为为公开实现常识（可在 llvm-project / microsoft/STL 仓库核实），非逐字摘录。
+### D4.6 第一方可编译验证
+
+```cpp
+#include <iostream>
+#include <exception>
+#include <stdexcept>
+#include <vector>
+#include <utility>
+
+// ---- 1) exception_ptr 跨函数传递并重抛 ----
+std::exception_ptr produce() {
+    try { throw std::runtime_error("boom from producer"); }
+    catch (...) { return std::current_exception(); }
+}
+void consume() {
+    auto ep = produce();
+    try { std::rethrow_exception(ep); }
+    catch (const std::exception& e) {
+        std::cout << "rethrow_exception: " << e.what() << std::endl;
+    }
+}
+
+void inner() { throw std::runtime_error("inner failure"); }
+void outer() {
+    try { inner(); }
+    catch (...) { std::throw_with_nested(std::runtime_error("outer context")); }
+}
+void unwrap() {
+    try { outer(); }
+    catch (const std::exception& e) {
+        std::cout << "outer: " << e.what() << std::endl;
+        try { std::rethrow_if_nested(e); }
+        catch (const std::exception& ne) {
+            std::cout << "nested: " << ne.what() << std::endl;
+        }
+    }
+}
+
+struct CopyHeavy {
+    static int copies;
+    int id;
+    CopyHeavy(int i = 0) : id(i) { }
+    CopyHeavy(const CopyHeavy& o) : id(o.id) { ++copies; }       // 拷贝计数
+    CopyHeavy(CopyHeavy&& o) noexcept(false) : id(o.id) { }      // 非 noexcept move
+};
+int CopyHeavy::copies = 0;
+
+int main() {
+    consume();
+    unwrap();
+
+    std::vector<CopyHeavy> v;
+    v.reserve(1);
+    for (int i = 0; i < 4; ++i) v.push_back(CopyHeavy(i));  // 多次扩容
+    std::cout << "CopyHeavy copies during reallocation = "
+              << CopyHeavy::copies << std::endl;
+
+    // 对照：若 move 标 noexcept，拷贝数应为 0。此处非 noexcept => 走拷贝，>0。
+    if (CopyHeavy::copies > 0)
+        std::cout << "strong-guarantee fallback: move_if_noexcept chose copy"
+                  << std::endl;
+    return 0;
+}
+```
+
+预期输出：先打印 `rethrow_exception: boom from producer`；再 `outer: outer context` 与 `nested: inner failure` 证明嵌套展开；最后 `CopyHeavy copies during reallocation` 为 `>0`（如 3~4），证实 **move 构造 `noexcept(false)` 时，vector 扩容经 `move_if_noexcept` 回退到拷贝构造**，从而维持强异常安全保证（一旦拷贝抛异常，旧缓冲仍完整可还原）。

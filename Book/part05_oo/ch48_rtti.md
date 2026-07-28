@@ -1246,3 +1246,259 @@ flowchart TD
 | ch19 | 变量与存储期 | RTTI 对象与待查询对象同受存储期约束（automatic/static/heap） |
 | ch51 | CRTP | -fno-rtti 下用 CRTP 静态替代运行时类型查询 |
 | ch52 | 空基类优化 EBO | 空基类布局与 typeinfo 共存不冲突 |
+## 附录 D4：libstdc++ 15.3.0 源码解析 — RTTI 运行时支撑（三标准库对比）[E: Low-level / H: Design]
+> verbatim 摘录来自 GCC 15.3.0 的 libstdc++ 头文件树（`_gcc15/mingw64/include/c++/15.3.0/`，行号相对
+> `include/c++/15.3.0/`）。`__dynamic_cast` 实现体在 libsupc++/dyncast.cc（GCC 源码树），不在随包 include
+> 树内，此处只摘录其声明（`cxxabi.h`）与语义，实现行为在文字描述，不逐字伪造。libc++ / MSVC 仅给“已知公开实现
+> 行为”，非逐字摘录。`…` 单独一行表示源码此处有省略。
+### D4.1 `std::type_info` 成员与比较语义（typeinfo）
+`type_info` 把虚析构放在第一个非内联虚函数（key-function 规则，vtable 只发射一次）；`name()` 直返内部 NTBS，`'*'` 前缀是“名字指针唯一、可地址比较”的快路径标记；比较语义由 `__GXX_MERGED_TYPEINFO_NAMES` 与 `__GXX_TYPEINFO_EQUALITY_INLINE` 两宏控制——跨动态库（dlopen）名字是否唯一合并的分水岭。
+
+```text
+// typeinfo L93-112
+  class type_info
+  {
+  public:
+    /** Destructor first. Being the first non-inline virtual function, this
+     *  controls in which translation unit the vtable is emitted. The
+     *  compiler makes use of that information to know where to emit
+     *  the runtime-mandated type_info structures in the new-abi.  */
+    virtual ~type_info();
+
+    /** Returns an @e implementation-defined byte string; this is not
+     *  portable between compilers!  */
+    const char* name() const _GLIBCXX_NOEXCEPT
+    { return __name[0] == '*' ? __name + 1 : __name; }
+
+    /** Returns true if `*this` precedes `__arg` in the implementation's
+     *  collation order.  */
+    bool before(const type_info& __arg) const _GLIBCXX_NOEXCEPT;
+
+    _GLIBCXX23_CONSTEXPR
+    bool operator==(const type_info& __arg) const _GLIBCXX_NOEXCEPT;
+…
+// typeinfo L120-128
+    size_t hash_code() const noexcept
+    {
+#  if !__GXX_MERGED_TYPEINFO_NAMES
+      return _Hash_bytes(name(), __builtin_strlen(name()),
+			 static_cast<size_t>(0xc70f6907UL));
+#  else
+      return reinterpret_cast<size_t>(__name);
+#  endif
+    }
+```
+
+（L113-118 的 `operator!=` 与 `#endif`、L129-169 的 `__is_pointer_p`/`__do_catch`/`__do_upcast`/保护段以 `…` 省略。）`hash_code` 函数体始于 L120（外层 `#if __cplusplus >= 201103L` 在 L119）：非合并名字时对整个 NTBS 做字符串哈希（种子 `0xc70f6907`）；合并名字时退化为把 `__name` 指针当散列值。
+
+```text
+// typeinfo L170-190
+#if __GXX_TYPEINFO_EQUALITY_INLINE
+  inline bool
+  type_info::before(const type_info& __arg) const _GLIBCXX_NOEXCEPT
+  {
+#if !__GXX_MERGED_TYPEINFO_NAMES
+    …
+    if (__name[0] != '*' || __arg.__name[0] != '*')
+      return __builtin_strcmp (__name, __arg.__name) < 0;
+#else
+    …
+#endif
+    …
+    return __name < __arg.__name;
+  }
+#endif
+```
+
+`before()` 非合并名字且不以 `*` 打头时走 `strcmp`；否则比名字指针地址。名字未合并（支持 dlopen）须按字符串排序，合并后只比地址即唯一。
+
+```text
+// typeinfo L196-212
+  _GLIBCXX23_CONSTEXPR inline bool
+  type_info::operator==(const type_info& __arg) const _GLIBCXX_NOEXCEPT
+  {
+    if (std::__is_constant_evaluated())
+      return this == &__arg;
+
+    if (__name == __arg.__name)
+      return true;
+#if !__GXX_TYPEINFO_EQUALITY_INLINE
+    …
+    return __equal(__arg);
+#elif !__GXX_MERGED_TYPEINFO_NAMES
+    …
+    return __name[0] != '*' && __builtin_strcmp (__name, __arg.name()) == 0;
+#else
+    return false;
+#endif
+  }
+```
+
+（外层 `#if __GXX_TYPEINFO_EQUALITY_INLINE || __cplusplus > 202002L` 与 `[[__gnu__::__always_inline__]]`、尾部 `#endif` 省略。）`operator==` 编译期（`__is_constant_evaluated`）只比对象地址；运行期先比名字指针，非内联走 `__equal`，非合并才 `strcmp`。动机：**等价由名字决定，非 `type_info` 对象地址**——dlopen 的同一类型会有多对象，地址比较会错判。
+### D4.2 运行时类型层次（`__cxxabiv1`，cxxabi.h）
+每个多态类在 `type_info` 下挂 `__class_type_info` 派生节点描述基类拓扑，供 `dynamic_cast`/`catch` 遍历；`__base_class_type_info` 用 `offset_flags` 低 8 位编码虚/公有/偏移：
+
+```text
+// cxxabi.h L374-409
+  class __base_class_type_info
+  {
+  public:
+    const __class_type_info* 	__base_type;  // Base class type.
+#ifdef _GLIBCXX_LLP64
+    long long			__offset_flags;  // Offset and info.
+#else
+    long 			__offset_flags;  // Offset and info.
+#endif
+    enum __offset_flags_masks
+      {
+	__virtual_mask = 0x1,
+	__public_mask = 0x2,
+	__hwm_bit = 2,
+	__offset_shift = 8          // Bits to shift offset.
+      };
+
+    bool
+    __is_virtual_p() const
+    { return __offset_flags & __virtual_mask; }
+
+    bool
+    __is_public_p() const
+    { return __offset_flags & __public_mask; }
+
+    ptrdiff_t
+    __offset() const
+    {
+      // This shift, being of a signed type, is implementation
+      // defined. GCC implements such shifts as arithmetic, which is
+      // what we want.
+      return static_cast<ptrdiff_t>(__offset_flags) >> __offset_shift;
+    }
+  };
+```
+
+继承拓扑分三类节点（单非虚 / 单虚 / 多重或虚基类），在 `__class_type_info` 下派生 `__si`/`__vmi`：
+
+```text
+// cxxabi.h L412-449
+  class __class_type_info : public std::type_info
+  {
+  public:
+    explicit
+    __class_type_info (const char *__n) : type_info(__n) { }
+    virtual
+    ~__class_type_info ();
+    enum __sub_kind
+      {
+	__unknown = 0,
+	__not_contained,
+	__contained_ambig,
+	__contained_virtual_mask = __base_class_type_info::__virtual_mask,
+	__contained_public_mask = __base_class_type_info::__public_mask,
+	__contained_mask = 1 << __base_class_type_info::__hwm_bit,
+	__contained_private = __contained_mask,
+	__contained_public = __contained_mask | __contained_public_mask
+      };
+…
+// cxxabi.h L505-538
+  class __si_class_type_info : public __class_type_info
+  {
+  public:
+    const __class_type_info* __base_type;
+    explicit
+    __si_class_type_info(const char *__n, const __class_type_info *__base)
+    : __class_type_info(__n), __base_type(__base) { }
+    virtual
+    ~__si_class_type_info();
+  };
+…
+// cxxabi.h L541-565
+  class __vmi_class_type_info : public __class_type_info
+  {
+  public:
+    unsigned int 		__flags;  // Details about the class hierarchy.
+    unsigned int 		__base_count;  // Number of direct bases.
+    __base_class_type_info 	__base_info[1];  // Array of bases.
+    explicit
+    __vmi_class_type_info(const char* __n, int ___flags)
+    : __class_type_info(__n), __flags(___flags), __base_count(0) { }
+    virtual
+    ~__vmi_class_type_info();
+    enum __flags_masks
+      {
+	__non_diamond_repeat_mask = 0x1, // Distinct instance of repeated base.
+	__diamond_shaped_mask = 0x2, // Diamond shaped multiple inheritance.
+	__flags_unknown_mask = 0x10
+      };
+  };
+```
+
+（`__class_type_info` 虚函数 `__do_upcast`/`__do_dyncast`/`__do_find_public_src` 与 `__si`/`__vmi` 重写约 L450-583，以 `…` 省略；节点声明如上。）`dynamic_cast` 运行时（libsupc++/dyncast.cc）经这些虚函数递归遍历 `dst_type` 基类链；`__sub_kind` 的 `virtual_mask`/`public_mask` 与 `__base_class_type_info` 掩码共用，即 from-基类到-对象 的包含关系判定来源。
+
+`__dynamic_cast` 声明与 `src2dst` hint 语义（实现体在 libsupc++/dyncast.cc，不逐字摘录）：
+
+```text
+// cxxabi.h L595-605
+  // src2dst has the following possible values
+  //  >-1: src_type is a unique public non-virtual base of dst_type
+  //       dst_ptr + src2dst == src_ptr
+  //   -1: unspecified relationship
+  //   -2: src_type is not a public base of dst_type
+  //   -3: src_type is a multiple public non-virtual base of dst_type
+  void*
+  __dynamic_cast(const void* __src_ptr, // Starting object.
+		 const __class_type_info* __src_type, // Static type of object.
+		 const __class_type_info* __dst_type, // Desired target type.
+		 ptrdiff_t __src2dst); // How src and dst are related.
+```
+
+`src2dst` 是编译期静态算出、运行期复用的偏移/关系缓存：`>-1` 时直接 `dst_ptr + src2dst` 得 `src_ptr` 跳过遍历；`-3` 表示多基类二义须走完整搜索——把“最常见、可静态确定的基类关系”做成 O(1) 偏移加法。
+### D4.3 跨实现对比表
+| 行为 | libstdc++ (GCC 15.3.0) | libc++ (已知公开实现行为) | MSVC (已知公开实现行为) |
+|---|---|---|---|
+| type_info 名字合并 | 默认 `__GXX_MERGED_TYPEINFO_NAMES=0`（不合并，需 strcmp） | 单模块内名字唯一，等价按名字 | 各模块独立，`/GR` 下按类型名匹配 |
+| `operator==` 判定 | 名字指针优先，非合并走 `strcmp` | 按类型名比较 | 按完整类型描述比较 |
+| `hash_code` | 非合并 `_Hash_bytes`，合并走指针 | 实现细节未公开核对 | 实现细节未公开核对 |
+| `dynamic_cast` 运行时 | `__dynamic_cast` + 三类节点 | 自有 vtable 描述结构 | 自有 RTTI 与 `vfcast`，含 vtordisp |
+| `src2dst` hint | 支持 `>-1/-1/-2/-3` | 不以此接口暴露 | 不以此接口暴露 |
+### D4.4 可编译 demo：上下行 cast + typeid 比较 + hash_code
+```cpp
+#include <iostream>
+#include <typeinfo>
+#include <cstddef>
+struct Base { virtual ~Base() = default; };
+struct Derived : Base { int x = 7; };
+
+int main() {
+  Derived d;
+  Base* pb = &d;                       // 上行：隐式，无 RTTI 开销
+
+  // 下行：依赖 vtable 中的 type_info 节点
+  Derived* pd = dynamic_cast<Derived*>(pb);
+  if (pd) {
+    std::cout << "downcast ok, x=" << pd->x << std::endl;
+  }
+
+  // typeid 比较：等价由名字决定，而非对象地址
+  const std::type_info& a = typeid(*pb);
+  const std::type_info& b = typeid(Derived);
+  std::cout << "name=" << a.name() << std::endl;
+  std::cout << "same type? " << (a == b ? "yes" : "no") << std::endl;
+  std::cout << "hash_code equal? "
+            << (a.hash_code() == b.hash_code() ? "yes" : "no") << std::endl;
+
+  // 上行 typeid 始终看见动态类型
+  std::cout << "typeid(Base).name()=" << typeid(Base).name() << std::endl;
+  std::cout << "typeid(*pb).name()=" << typeid(*pb).name() << std::endl;
+
+  // 非法下行返回 nullptr
+  Base b2;
+  std::cout << "bad downcast null? "
+            << (dynamic_cast<Derived*>(&b2) == nullptr ? "yes" : "no")
+            << std::endl;
+  return 0;
+}
+```
+
+`typeid(*pb)` 经 vtable 偏移取 typeinfo 指针；`a == b` 命中 D4.1 的 `operator==` 快路径。实测：`name=7Derived`、
+`same type? yes`、`hash_code equal? yes`、`typeid(Base).name()=4Base`、`typeid(*pb).name()=7Derived`、
+`bad downcast null? yes`（mangling 不可移植；末项触发 `-Wall` 提示 “can never succeed”，属预期演示）。

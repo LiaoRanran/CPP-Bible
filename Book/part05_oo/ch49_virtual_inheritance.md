@@ -1144,3 +1144,158 @@ flowchart TD
 | ch51 | CRTP | 以静态多态替代虚继承的动态分发，规避虚基类开销 |
 | ch19 | 变量与存储期 | 虚继承子对象的存储期随最派生对象，受 static/heap 约束 |
 | ch52 | 空基类优化 EBO | 空基类在虚继承布局中仍受 EBO 影响 |
+
+## 附录 D4：libstdc++ 15.3.0 源码解析
+
+> 边界声明：以下 verbatim 摘录全部来自 GCC 15.3.0 的 libstdc++ 头文件树
+>（`_gcc15/mingw64/include/c++/15.3.0/`）。行号相对 `include/c++/15.3.0/`。
+> vtable 中 vbase offset 的具体落位由编译器生成，不在 include 树内逐字摘录，仅描述行为。
+
+### D4.1 `basic_iostream` 的虚继承菱形（<istream>/<bits/ostream.h>/<bits/basic_ios.h>）
+
+`basic_iostream` 的菱形顶端是 `basic_ios`，两条继承臂 `basic_istream` 与 `basic_ostream`
+各自 `virtual public basic_ios`——这正是标准库自己给出的虚继承菱形范例。
+
+```text
+// bits/basic_ios.h L68-69
+  template<typename _CharT, typename _Traits>
+    class basic_ios : public ios_base
+```
+
+```text
+// bits/ostream.h L65-66
+  template<typename _CharT, typename _Traits>
+    class basic_ostream : virtual public basic_ios<_CharT, _Traits>
+```
+
+```text
+// istream L61-62, L984-987
+  template<typename _CharT, typename _Traits>
+    class basic_istream : virtual public basic_ios<_CharT, _Traits>
+
+  template<typename _CharT, typename _Traits>
+    class basic_iostream
+    : public basic_istream<_CharT, _Traits>,
+      public basic_ostream<_CharT, _Traits>
+```
+
+注意：`basic_ostream` 的真实类定义在 `bits/ostream.h`，`ostream` 主文件仅 `#include`
+它；摘录必须指向 `bits/ostream.h` 的 L66，而非 `ostream` 主文件。三处 `virtual public`
+确保 `basic_ios` 子对象在 `basic_iostream` 中**唯一**——读写流共享同一份格式化状态与
+缓冲区指针（存于 `basic_ios`），否则 `cin`/`cout` 同时作输入输出时会得到两份互不关联的
+流状态。
+
+### D4.2 vbase offset 落位与构造顺序
+
+动机有三：
+
+1. **虚基唯一性**：因为两条臂都虚继承 `basic_ios`，`basic_iostream` 只持有一份
+   `basic_ios` 子对象。非虚继承会得到两份，缓冲区和格式化标志分裂。
+2. **vbase offset 落位**：编译器在 `basic_iostream` 的 vtable 中写入“到虚基类
+   `basic_ios` 子对象的偏移（vbase offset）”。当通过 `basic_istream&` 或 `basic_ostream&`
+   调用需要触达 `basic_ios` 成员的函数时，运行时按该偏移定位唯一虚基。
+3. **构造顺序**：最派生类 `basic_iostream` 的构造函数**直接**调用虚基类 `basic_ios`
+   的构造函数（跳过中间臂），再由两个中间臂构造各自的非虚部分。这保证虚基只被初始化
+   一次。析构顺序相反。
+
+该机制完全由 `basic_ios` 顶端（最终派生自 `ios_base`）及其派生链决定，与 ch48 的
+`type_info` 节点正交：RTTI 描述“是什么”，虚继承布局描述“子对象在哪”。
+
+### D4.2.1 虚基偏移的固定性
+
+`basic_iostream` 对象在运行期的布局大致如下（地址由低到高，偏移为示意）：
+
+```
++---------------------------+  <- &obj  (== &B == &basic_istream 子对象头)
+| basic_istream 子对象       |
+|   vptr_istream (含 vbase  |
+|     offset 槽)            |
++---------------------------+  <- &C == &basic_ostream 子对象头 (偏移 +k)
+| basic_ostream 子对象       |
+|   vptr_ostream            |
++---------------------------+  <- 虚基 A == basic_ios 子对象头 (偏移 +m)
+| basic_ios 子对象 (唯一)    |
+|   vptr_ios / 缓冲区指针 /  |
+|   格式化标志              |
++---------------------------+
+```
+
+关键点：虚基类 `basic_ios` 的偏移（`+m`）被写进最派生类的 vtable，作为“vbase offset”
+常量。无论经由 `basic_istream&` 还是 `basic_ostream&` 取 `basic_ios` 成员，都先按这个
+固定偏移定位——因此两条臂共享同一份流状态，且偏移在编译/链接期就确定，运行期零查表。
+
+构造顺序举例：
+
+```text
+// 概念示意（非 verbatim）：最派生类直接先构造虚基
+D() : A(), B(), C() { /* B、C 不再构造 A */ }
+```
+
+因为 `B`、`C` 都虚继承 `A`，它们的构造函数体内对 `A` 的初始化被抑制，改由 `D` 直接调用
+`A` 的构造。这保证 `A` 只被初始化一次；析构沿反序，且 `A` 最后析构。若改为非虚继承，
+`B()`、`C()` 各自构造自己的 `A`，`D` 将拥有两份 `basic_ios`，`std::cin` 类的读写状态
+就会分裂——这正是标准强制 `basic_iostream` 走虚继承的根因。
+
+### D4.2.2 虚继承的代价
+
+共享虚基不是免费的：
+
+- **布局膨胀**：`basic_iostream` 每个对象比非虚版本多承载一份虚基类定位信息（vtable 中的
+  vbase offset 槽，或独立的 vbptr），对象尺寸增大。
+- **访问间接**：经 `basic_istream`/`basic_ostream` 访问 `basic_ios` 成员（如 `tie()`、
+  `rdbuf()`）时，需先按 vbase offset 做一次加法定位虚基，比直接偏移多一步。
+- **构造复杂**：最派生类必须显式/隐式负责虚基构造，中间类对虚基的初始化被抑制，初始化
+  顺序规则更严格。
+
+权衡是明确的：为换取“单一流状态”，支付一份布局与一次间接的代价。对 `iostream` 这类
+长生命周期、高频访问的对象，这远比“状态分裂导致难以调试的 bug”划算。
+
+### D4.3 跨实现对比表
+
+| 行为 | libstdc++ (GCC 15.3.0) | libc++ (已知公开实现行为) | MSVC (已知公开实现行为) |
+|---|---|---|---|
+| 虚基共享 | `virtual public` 保证单一虚基子对象 | 同样保证单一虚基 | 同样保证单一虚基（含 vtordisp 补偿） |
+| vbase offset 存储 | 存于最派生类 vtable | 存于 vtable（布局细节未公开核对） | 存于 vbtable（独立虚基类表） |
+| 构造责任 | 最派生类直接构造虚基 | 最派生类直接构造虚基 | 最派生类直接构造虚基 |
+| `basic_iostream` 菱形 | `istream`/`ostream` 各虚继承 `ios` | 同结构 | 同结构（细节未公开核对） |
+
+### D4.4 可编译 demo：菱形虚继承 + 共享虚基地址 + sizeof 对比
+
+```cpp
+#include <iostream>
+
+struct A { int a = 1; virtual ~A() = default; };
+struct B : virtual A { int b = 2; };
+struct C : virtual A { int c = 3; };
+struct D : B, C { int d = 4; };
+
+int main() {
+  D obj;
+
+  // 取各子对象地址：B、C 各自独立，但虚基 A 共享同一份
+  A* pa = static_cast<A*>(&obj);          // 经 D 调整指向唯一虚基
+  B* pb = static_cast<B*>(&obj);
+  C* pc = static_cast<C*>(&obj);
+
+  std::cout << "addr D      =" << &obj << std::endl;
+  std::cout << "addr B sub  =" << pb << std::endl;
+  std::cout << "addr C sub  =" << pc << std::endl;
+  std::cout << "addr A (vb) =" << pa << std::endl;   // 应异于 B、C 的头部
+
+  // 经不同臂访问同一虚基，数值必须一致 —— 证明共享
+  std::cout << "A via B.a   =" << pb->a << std::endl;
+  std::cout << "A via C.a   =" << pc->a << std::endl;
+
+  // 构造自 A 的指针，从 B 路径与从 C 路径指向同一对象
+  A* pa2 = static_cast<A*>(static_cast<C*>(&obj));
+  std::cout << "share vb?   " << (pa == pa2 ? "yes" : "no") << std::endl;
+
+  // sizeof 对比：虚继承引入 vtable/vbptr，D 必不小于各成员之和
+  std::cout << "sizeof(D)   =" << sizeof(D) << std::endl;
+  std::cout << "sizeof(A)   =" << sizeof(A) << std::endl;
+  std::cout << "D >= A+B+C+mems? "
+            << (sizeof(D) >= sizeof(A) + sizeof(int) * 3 ? "yes" : "no")
+            << std::endl;
+  return 0;
+}
+```
