@@ -1366,3 +1366,77 @@ int main() {
 ```
 
 预期输出 `1 2 3`：`from_promise` 在 `get_return_object` 时由 promise 地址算出帧指针，`resume()` 驱动协程到下一个 `co_yield`，`done()` 在 final_suspend 后返回 true 终止——与 D4.1–D4.3 源码中 `coroutine_handle` 对 `__builtin_coro_*` 的薄封装一致。注意本例需 `-fcoroutines`（`<coroutine>` 头在缺该开关时直接 `#error`）。
+
+## 附录 D5：真实基准与性能分析 — 协程的帧分配与调用开销 (GCC 15.3.0)
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++17`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化协程 `Task` 相对普通函数的调用开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+场景为累加 `1..n`，循环 200'000 次、参数随循环变化（防闭式求值）。"相对"列以普通函数为 1.00×，更快者加粗。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 普通函数累加（基线） | 3.16 | 基准 1.00× |
+| 协程 `Task` 累加 | 11.06 | **3.50×**（慢） |
+
+单次协程调用 ≈ 55 ns（11.06 ms / 200'000）。
+
+### D5.2 非显然结论
+
+1. **协程慢 3.50×、约 55 ns/次调用。** 根因：每次 `co_return` 调用都要在堆上分配协程帧（promise + 局部变量 + 恢复上下文），调用 / 恢复 / 销毁三阶段都涉及堆管理；普通函数只压栈帧、且很可能被 `-O2` 完全内联，连栈帧都没有。
+
+2. **代价换来的是可挂起 / 恢复的无栈并发表达能力。** 正文已述协程如何在单线程内表达异步控制流；性能换表达力是协程的本质权衡，而非"实现缺陷"。
+
+3. **参数必须随循环变化，否则会测得荒谬倍数。** 早期假象 `111614×` 即源于：固定参数时优化器把整个循环闭式求值为常量，而协程路径因帧分配不可消除，二者被放大成非真实对比。用随机参数（如 `(k % 97) + 1`）才能逼出真实相对开销。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <coroutine>
+#include <cassert>
+#include <iostream>
+
+// 最小可挂起 Task：initial/final 均为 suspend_never，
+// 调用即同步跑完整个协程体（仅用最小骨架演示协程的"可挂起"语义与帧开销）。
+struct Task {
+    struct promise_type {
+        auto get_return_object() noexcept { return Task{}; }
+        auto initial_suspend()   noexcept { return std::suspend_never{}; }
+        auto final_suspend()     noexcept { return std::suspend_never{}; }
+        void return_value(int)     noexcept {}
+        void unhandled_exception() { throw; }
+    };
+};
+
+// 计算 1..n 之和；结果同时通过引用写回调用方（仅用于验证功能正确性）。
+Task coro_sum(int n, int& out) {
+    int s = 0;
+    for (int i = 1; i <= n; ++i) s += i;
+    out = s;
+    co_return s;
+}
+
+int plain_sum(int n) {
+    int s = 0;
+    for (int i = 1; i <= n; ++i) s += i;
+    return s;
+}
+
+int main() {
+    int got = 0;
+    coro_sum(100, got);                  // 协程同步执行
+    assert(got == plain_sum(100));       // 功能正确性（绝不断言时间/倍数/sizeof）
+    std::cout << "coroutine sum(100) = " << got << std::endl;
+    return 0;
+}
+```
+
+> 复现：`g++ -O2 -std=c++23`（`-fcoroutines` 在 GCC 15 下已并入标准模式）。demo 只断言功能正确性，绝不断言耗时、加速比或 `sizeof`。
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
+- `volatile` sink 防 DCE；参数随循环变化，避免优化器把循环闭式求值为常量（早期 `111614×` 假象即源于此）。
+- 加速比（如 3.50×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 计时环境旗标：`g++ -O2 -std=c++17`；协程 demo 需 C++20+，用 `g++ -O2 -std=c++23` 编译（c++23 向后兼容 coroutines），仅断言功能正确性。

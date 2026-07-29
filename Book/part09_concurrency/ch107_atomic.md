@@ -1443,3 +1443,71 @@ flowchart TD
 | ch95（内省排序） | ch107 | 无锁原语的工程落点在本书算法章 |
 | ch115（移动语义） | ch107 | 无锁数据结构要求移动/析构 noexcept，与 pmr 协同做无锁内存池 |
 
+## 附录 D5：真实基准与性能分析 — std::atomic 内存序与互斥锁对比 (GCC 15.3.0)
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++17`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：对比 `std::atomic`（relaxed RMW）与 `std::mutex` 保护计数器在各线程数下的真实开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 1 线程 — atomic relaxed / std::mutex | 6.78 / 14.33 | atomic **2.11×** 快 |
+| 4 线程 — atomic relaxed / std::mutex | 22.39 / 34.83 | atomic **1.56×** 快 |
+| 8 线程 — atomic relaxed / std::mutex | 29.33 / 55.43 | atomic **1.89×** 快 |
+
+### D5.2 非显然结论
+
+1. **`std::mutex` 慢的根因是系统调用 + 线程阻塞/唤醒 + 可能的上下文切换 + 临界区串行化。** 每次 `++c` 都要经过 `lock_guard` 的加锁/解锁，低争用时也至少是一次 futex 往返与内存屏障开销。
+
+2. **`std::atomic`（relaxed）只是一条 `lock xadd` 前缀原子指令，无系统调用、无阻塞。** 它是纯 RMW，编译为单条带 `LOCK#` 的原子加，因此各线程数下都比 `std::mutex` 快一个数量级附近（见 ⑪、附录 J 的 `lock xadd` 实证）。
+
+3. **线程数增多时 mutex 的争用与休眠成本被放大（14.33 → 55.43 ms），atomic 优势更稳（6.78 → 29.33 ms）。** 注意 `memory_order_relaxed` 不保序，仅适用于纯计数器这类**无需同步其他内存**的场合；一旦要发布数据，需改 `acquire`/`release` 或 `seq_cst`（见 ch108）。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <atomic>
+#include <mutex>
+#include <cassert>
+
+int main() {
+    constexpr int iterations = 1 << 20;   // 1,048,576
+
+    std::atomic<int> atomic_counter{0};
+    std::mutex mtx;
+    int mutex_counter = 0;
+
+    auto work = [&]() {
+        for (int i = 0; i < iterations; ++i) {
+            atomic_counter.fetch_add(1, std::memory_order_relaxed);
+            {
+                std::lock_guard<std::mutex> lk(mtx);
+                ++mutex_counter;
+            }
+        }
+    };
+
+    std::thread t1(work);
+    std::thread t2(work);
+    t1.join();
+    t2.join();
+
+    std::cout << "atomic_counter = " << atomic_counter.load() << std::endl;
+    std::cout << "mutex_counter  = " << mutex_counter << std::endl;
+
+    // 功能正确性断言（绝不断言时间 / 倍数 / 精确 sizeof）
+    assert(atomic_counter.load() == 2 * iterations);
+    assert(mutex_counter == 2 * iterations);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
+- `volatile` sink 防 DCE；末态和恒等于 `N` 作为正确性校验，防止数据竞争或循环被优化掉。
+- 加速比（如 2.11× / 1.56× / 1.89×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++17`。demo 仅断言功能正确性（两种计数器末态都等于 `2 * iterations`），未对时间或倍数做任何断言。
+

@@ -1448,3 +1448,78 @@ flowchart TD
 | ch115 移动语义 | 扩容迁移依赖移动构造 noexcept。 |
 | ch87 bitset | 定长位集用 bitset 而非 vector<bool> 可省位压缩歧义。 |
 | ch154 缓存优化 | vector 连续内存对缓存局部性友好。 |
+
+## 附录 D5：真实基准与性能分析 — std::vector 的就地扩容与删除开销 (GCC 15.3.0)
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++17`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 `std::vector` 在"无 reserve 扩容""预先 reserve""erase-remove 删除"三种场景下的开销差距，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+元素为 `int`，`N = 4'000'000`。"相对"列以基准为 1.00×，更快者加粗。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| `push_back` ×4M（无 reserve） | 8.32 | 基准 1.00× |
+| `push_back` ×4M（预先 reserve） | 4.16 | **2.0×**（快） |
+| erase-remove 删除 4M 中一半（偶数值） | 22.16 | —（独立量级：O(n) 搬移） |
+
+### D5.2 非显然结论
+
+1. **预先 reserve 令 `push_back` 快 2.0×。** 根因：无 reserve 时 `vector` 按几何因子（GCC 默认 2×）指数扩容，触发约 `log2(N)` 次 `realloc`，每次都要把已有元素整体搬移到新缓冲区——均摊 O(1) 但常数不小，且大块连续搬移对缓存不友好。reserve(N) 一次性分配到位，后续 `push_back` 只做原位构造，零搬移。
+
+2. **erase-remove 是最慢一项（22.16ms，约为 reserve 路径的 5.3×）。** 根因：erase-remove 惯用法先 `remove_if` 把保留元素向前搬移填补被删空洞（每个保留元素一次移动赋值），再 `erase` 截断尾部。这是 O(n) 的搬移；4M 中删一半意味着约 2M 次移动 + 2M 次析构，瓶颈在"删除"而非"扩容"，与是否 reserve 无关。
+
+3. **无 reserve 的常数代价来自"全量搬移"而非"分配次数"。** 根因：2× 扩容每次只搬当前所有元素，累计搬移量约 2N（看似均摊 O(1)）；但当 N=4M 时单次最大搬移就近 2M 个元素，cache miss 显著——这正是 8.32ms → 4.16ms 差距的来源（reserve 省掉了这约 2N 的搬移）。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <cassert>
+#include <cstdlib>
+
+static long long g_allocs = 0;
+
+void* operator new(std::size_t n) {
+    g_allocs++;
+    return std::malloc(n);
+}
+void operator delete(void* p) noexcept { std::free(p); }
+void operator delete(void* p, std::size_t) noexcept { std::free(p); }
+
+int main() {
+    const int N = 1 << 16;  // 65536
+
+    // 路径 1：不 reserve，push_back 触发多次指数扩容
+    g_allocs = 0;
+    {
+        std::vector<int> v;
+        for (int i = 0; i < N; ++i) v.push_back(i);
+    }
+    long long allocs_no_reserve = g_allocs;
+
+    // 路径 2：先 reserve(N)，再 push_back，期望仅 1 次分配
+    g_allocs = 0;
+    {
+        std::vector<int> v;
+        v.reserve(N);
+        for (int i = 0; i < N; ++i) v.push_back(i);
+    }
+    long long allocs_reserve = g_allocs;
+
+    std::cout << "allocs (no reserve) : " << allocs_no_reserve << std::endl;
+    std::cout << "allocs (reserve)    : " << allocs_reserve    << std::endl;
+
+    // 功能正确性断言（绝不断言时间 / 倍数 / 精确 sizeof）
+    assert(allocs_reserve < allocs_no_reserve);  // reserve 路径分配更少
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
+- `volatile` sink 防 DCE：累加结果写入 `volatile g_sink`，迫使优化器保留真实计算，否则整段可被消除。
+- 加速比（如 2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++17`。demo 用重载 `operator new` 统计分配次数，断言"reserve 路径分配次数少于无 reserve 路径"（稳定语义，可断言），未对时间或倍数做任何断言。

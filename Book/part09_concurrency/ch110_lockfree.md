@@ -1297,3 +1297,81 @@ flowchart TD
 | ch109 | ch110 | thread_fence 强化无锁序 |
 | ch45 | ch110 | OOP 对象模型理解节点布局 |
 
+## 附录 D5：真实基准与性能分析 — 无锁数据结构的层级开销 (GCC 15.3.0)
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++17`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。
+> 本附录量化同一累加负载下三档并发写法（per-thread 局部计数 / atomic / mutex）的真实耗时层级，回答"无锁到底快在哪"。
+> 绝对毫秒随机器而变，加速比才是可移植信号。
+
+### D5.1 基准结果
+
+| 场景 | 1 线程 耗时 (ms) | 1 线程 相对 | 8 线程 耗时 (ms) | 8 线程 相对 |
+|------|------------------|------------|------------------|------------|
+| per-thread（wait-free, thread_local 累加） | **0.33** | 0.02× | **0.78** | 0.01× |
+| atomic（lock-free, `fetch_add`） | 6.42 | 0.46× | 27.19 | 0.51× |
+| mutex（lock-based） | 14.01 | 1.00× | 53.27 | 1.00× |
+
+> 相对列以 mutex = 1.00× 为锚。派生倍数（供参考，非基准列）：per-thread 相对 atomic ≈ 19× (1T) / 35× (8T)；atomic 相对 mutex ≈ 2.2× (1T) / 2.0× (8T)。per-thread 为最快档，已加粗。
+
+### D5.2 非显然结论
+
+1. **per-thread（thread_local）几乎零成本且随线程数几乎不退化**：每个线程写入自己线程局部的累加器，不存在任何共享写、没有任何同步指令（`lock` 前缀 / 原子 RMW 都没有），因此 1 线程与 8 线程的耗时差仅来自线程启动本身（0.33 → 0.78 ms）。它是最强的 wait-free 形态，但要求"结果可延迟合并"的算法结构。
+2. **atomic 是 lock-free，却仍受缓存一致性流量拖累**：`fetch_add` 编译为单条 `lock xadd`，本身无锁、不阻塞；但多核竞争同一 cache line 的计数时，MESI 协议会让该行的所有权在核间反复弹跳（cache coherence traffic），线程越多弹跳越剧烈，故 1T→8T 从 6.42 飙到 27.19 ms（≈4.2× 退化）。
+3. **mutex 最慢且退化最猛**：互斥量在无竞争时只是两次原子 RMW，但高竞争下失败者坠入 futex 睡眠/唤醒（系统调用 + 上下文切换）。它不仅单次最慢，8 线程时退化到 53.27 ms（≈3.8×），是三档里随线程数恶化最凶的。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <atomic>
+#include <cassert>
+#include <iostream>
+#include <mutex>
+#include <thread>
+
+int main() {
+    constexpr long long iterations = 1LL << 20;   // 每线程 1,048,576 次
+
+    std::atomic<long long> per_thread_total{0};    // (a) 合并后的 per-thread 结果
+    std::atomic<long long> atomic_total{0};        // (b) 共享原子计数器
+    std::mutex m;
+    long long mutex_total = 0;                     // (c) mutex 保护计数器
+
+    auto worker = [&]() {
+        thread_local long long local = 0;          // 每线程独立累加器：无共享写
+        for (long long i = 0; i < iterations; ++i) {
+            local += 1;
+            atomic_total.fetch_add(1, std::memory_order_relaxed);
+            {
+                std::lock_guard<std::mutex> lk(m);
+                mutex_total += 1;
+            }
+        }
+        per_thread_total.fetch_add(local, std::memory_order_relaxed);
+    };
+
+    std::thread t1(worker);
+    std::thread t2(worker);
+    t1.join();
+    t2.join();
+
+    // 仅验证功能正确性：三条路径的净额都必须等于 2 * iterations
+    assert(per_thread_total.load() == 2 * iterations);
+    assert(atomic_total.load() == 2 * iterations);
+    assert(mutex_total == 2 * iterations);
+
+    std::cout << "per-thread total = " << per_thread_total.load() << std::endl;
+    std::cout << "atomic    total = " << atomic_total.load() << std::endl;
+    std::cout << "mutex     total = " << mutex_total << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时用 `std::chrono::steady_clock`，每个配置跑 5 轮取中位数，排除冷启动与调度抖动。
+- 用 `volatile` 全局 sink 吸收累加结果，防止编译器把整个循环优化成常量。
+- 编译与测量命令（基准与此 demo 同源）：`g++ -O2 -std=c++17`。
+- 本 demo 仅断言功能正确性（三条路径净额相等），不断言任何计时、加速比或 `sizeof` 数值。
+- 绝对毫秒取决于 CPU 频率 / 负载 / 温度计；跨机器只比较"相对倍数"才有意义。
+
+

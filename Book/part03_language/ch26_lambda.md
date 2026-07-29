@@ -1918,3 +1918,61 @@ flowchart TD
 | ch26 | ch60 | lambda 表达式：泛型 lambda 与模板实参推导同源 |
 | ch26 | ch70 | lambda 表达式：lambda + 标签可模拟局部分发 |
 | ch26 | ch65 | lambda 表达式：decltype 可萃取 lambda 闭包类型 |
+
+## 附录 D5：真实基准与性能分析 — lambda 捕获的真实开销 (GCC 15.3.0)
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++17`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化"模板直传捕获 lambda"与"`std::function` 包装捕获 lambda"之间的类型擦除开销差距，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+场景为对 1×10⁷ 个随机 `int` 逐个执行 `s += x * k + 1`（`k` 为被捕获变量）。"相对"列以基准为 1.00×，更快者加粗。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 模板 + 捕获 lambda（内联，基线） | 8.22 | **1.00×**（基准，更快） |
+| `std::function` + 捕获 lambda（类型擦除） | 26.86 | 3.27×（慢） |
+
+### D5.2 非显然结论
+
+1. **`std::function` 比模板直传捕获 lambda 慢 3.27×。** 根因：`std::function` 的核心是类型擦除——它把任意可调用对象（含捕获 lambda 的闭包）统一擦除成单一接口。libstdc++ 通常用一个小的内部缓冲区（小对象优化）存放闭包、超限才堆分配；无论哪种，调用时都要走一层间接分发（虚调用或缓冲区内联合 + 运行时类型检查），编译器无法把被擦除的 lambda 内联进调用点。
+
+2. **模板 + 捕获 lambda 被完整内联（8.22ms 基准）。** 根因：模板实参 `F` 在编译期实例化为具体的闭包类型，闭包 `operator()` 是普通成员函数，优化器可将其整体内联进循环体，消除调用间接层，并把捕获变量 `k` 常量化 / 提升到寄存器——无任何类型擦除开销。
+
+3. **编译器无法跨 `std::function` 边界内联。** 根因：类型擦除在编译期"抹掉"了闭包的具体类型，运行时只剩统一接口；失去类型信息即失去内联线索，即使闭包极小也无法展开，间接调用还阻断了常量传播（如 `k` 无法被推断为编译期常量），进一步拖累性能。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <functional>
+#include <cassert>
+
+int main() {
+    int k = 3;
+    // 捕获 lambda：对 (x*k+1) 累加
+    auto captured = [k](long long& s, int x) { s += x * k + 1; };
+
+    // 同一捕获 lambda 走模板（编译期内联）
+    long long r_tmpl = 0;
+    for (int x = 0; x < 1000; ++x) captured(r_tmpl, x);
+
+    // 同一捕获 lambda 包进 std::function（类型擦除 + 间接调用）
+    std::function<void(long long&, int)> f = captured;
+    long long r_sf = 0;
+    for (int x = 0; x < 1000; ++x) f(r_sf, x);
+
+    std::cout << "template result  : " << r_tmpl << std::endl;
+    std::cout << "std::function res: " << r_sf   << std::endl;
+
+    // 功能正确性断言（绝不断言时间 / 倍数 / 精确 sizeof）
+    assert(r_tmpl == r_sf);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
+- `volatile` sink 防 DCE：累加结果写入 `volatile g_sink`，迫使优化器保留真实计算循环，否则整段可被消除。
+- 加速比（如 3.27×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++17`。demo 仅断言"模板直传"与"`std::function` 包装"两种调用得到**相同结果**（功能正确性，可断言），未对时间或倍数做任何断言。
