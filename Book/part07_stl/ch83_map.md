@@ -1451,3 +1451,97 @@ flowchart TD
 | ch90 ranges | ch83 map | views::keys/values 投影 map 的键或值 |
 | ch115 移动语义 | ch83 map | 插入元素依赖移动，extract 节点句柄转移 |
 
+## 附录 D5：真实基准与性能分析 — 红黑树 vs 哈希表（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++17`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化红黑树 `std::map` 与哈希表 `std::unordered_map` 的性能差异，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+1M 随机 `long long` 键（string 键为 25 字符堆串）。下表"相对"列以同类中较慢者为基准（更快者加粗）。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 插入 1M int 键 — `map` | 780.269 | 基准 1.00× |
+| 插入 1M int 键 — `unordered_map`（含 rehash） | 287.591 | **2.71×** |
+| 插入 1M int 键 — `unordered_map` + reserve | 235.088 | **3.32×** |
+| 命中查找 1M int 键（乱序探测）— `map` | 829.257 | 基准 1.00× |
+| 命中查找 1M int 键（乱序探测）— `unordered_map` | 36.834 | **22.5×** |
+| 命中查找 200K 25字符 string 键 — `map` | 208.454 | 基准 1.00× |
+| 命中查找 200K 25字符 string 键 — `unordered_map` | 57.087 | **3.65×** |
+| 有序遍历 1M — `map` 顺序扫 | 130.380 | **1.50×**（map 更快） |
+| 有序遍历 1M — `unordered_map` 拷出 + sort | 196.220 | 基准 1.00× |
+
+### D5.2 非显然结论
+
+1. **查找差距（22.5×）远大于插入差距（2.71×）。** 根因：查找是纯结构对比 —— `map` 查找走约 20 层红黑树指针追逐（log2(1M)≈20），每层都是一次潜在 cache miss；`unordered_map` 只需 1 次哈希 + ~1–2 次访存。插入时两者都要分配一个堆节点，分配器的固定成本稀释了结构本身的差距，所以倍率被拉平。
+
+2. **string 键把 22.5× 缩到 3.65×。** 根因：当键是 25 字节堆串时，哈希与比较都要先把键内容从堆上读进来 —— 25 字节哈希计算 + 堆串间接寻址成为两侧的共同大头。键越"贵"，容器结构差距越被键处理成本稀释。
+
+3. **reserve 只再快约 18%（287→235ms）。** 根因：libstdc++ 的 `unordered_map` 是节点式哈希表，rehash 仅重排桶指针、不搬运元素，因此 rehash 没有想象中贵。reserve 的主要意义是避免峰值内存抖动，而非显著提速。
+
+4. **"需要有序输出"场景 `map` 仍赢（1.50×）且代码更简。** 根因：`map` 中序遍历天然有序，零额外成本；`unordered_map` 须拷出再 `sort`。但若只是偶尔需要有序，`unordered_map` + 一次性 `sort` 的摊销成本仍可能更优 —— 选型看"有序访问频率"。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <map>
+#include <unordered_map>
+#include <vector>
+#include <random>
+#include <chrono>
+#include <cassert>
+
+int main() {
+    const int N = 50'000;
+    std::vector<long long> keys(N);
+    std::mt19937_64 rng(42);
+    for (int i = 0; i < N; ++i) keys[i] = static_cast<long long>(rng());
+
+    auto t0 = std::chrono::steady_clock::now();
+    std::map<long long, int> m;
+    for (int i = 0; i < N; ++i) m[keys[i]] = i;
+    auto t1 = std::chrono::steady_clock::now();
+    std::unordered_map<long long, int> um;
+    um.reserve(N);
+    for (int i = 0; i < N; ++i) um[keys[i]] = i;
+    auto t2 = std::chrono::steady_clock::now();
+
+    auto ms = [](auto a, auto b) {
+        return std::chrono::duration<double, std::milli>(b - a).count();
+    };
+    std::cout << "map insert      : " << ms(t0, t1) << " ms" << std::endl;
+    std::cout << "umap insert+res : " << ms(t1, t2) << " ms" << std::endl;
+
+    volatile int sink = 0;
+    auto t3 = std::chrono::steady_clock::now();
+    for (int i = 0; i < N; ++i) sink += m.find(keys[N - 1 - i])->second;
+    auto t4 = std::chrono::steady_clock::now();
+    for (int i = 0; i < N; ++i) sink += um.find(keys[N - 1 - i])->second;
+    auto t5 = std::chrono::steady_clock::now();
+    std::cout << "map find        : " << ms(t3, t4) << " ms" << std::endl;
+    std::cout << "umap find       : " << ms(t4, t5) << " ms" << std::endl;
+
+    // 仅验证功能正确性，绝不断言时间 / 倍数 / sizeof
+    assert(m.size() == static_cast<size_t>(N));
+    assert(um.size() == static_cast<size_t>(N));
+    assert(m.find(keys[0]) != m.end());
+    assert(um.find(keys[0]) != um.end());
+    long long prev = m.begin()->first;
+    for (auto it = std::next(m.begin()); it != m.end(); ++it) {
+        assert(it->first >= prev);
+        prev = it->first;
+    }
+    (void)sink;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
+- `volatile` sink（`volatile int sink`）吸收计算结果，防止编译器以"结果未使用"为由将整段循环死代码消除（DCE）。
+- 加速比（如 22.5×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++17`。demo 已把规模缩到 50K 以在 CI 秒级跑完，仅作结构对照，不承诺与主控 1M 基准成线性比例。
+
+

@@ -1203,4 +1203,107 @@ flowchart TD
 | ch108 | ch111 | ABA 版本号依赖 relaxed 原子计数 |
 | ch108 | ch93 | std::async 内部以 seq_cst 隐式同步结果 |
 | ch39 | ch108 | RAII 管理共享状态生命周期与可见性窗口 |
-| ch77 | ch108 | vector 并发扩容需内存序保证读者不悬垂 |
+| ch77 | ch108 | vector 并发扩容需内存序保证读者不悬垂
+
+## 附录 D5：真实基准与性能分析 — x86-64 上各内存序的真实价格（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；编译命令 `g++ -O2 -std=c++17 -pthread`；计时用 `steady_clock` 跑 5 轮取中位数；结果经 volatile sink 防 DCE。绝对毫秒数随机器而变，**只有比值才可移植**，下文所有「×」倍数才是你应该记住的结论。
+
+### D5.1 基准结果
+
+| 场景 | 耗时 (ms) | 相对 |
+| --- | --- | --- |
+| 单线程 store ×2 亿 — relaxed | 43.226 | 1.00× |
+| 单线程 store ×2 亿 — release | 172.753 | **4.00×** |
+| 单线程 store ×2 亿 — seq_cst | 669.714 | **15.49×** |
+| 单线程 load ×2 亿 — relaxed | 131.716 | 1.00× |
+| 单线程 load ×2 亿 — seq_cst | 120.582 | 0.92×（同价） |
+| 单线程 fetch_add ×1 亿 — relaxed | 355.073 | 1.00× |
+| 单线程 fetch_add ×1 亿 — seq_cst | 357.062 | **1.01×**（同价） |
+| 非原子 load+add+store ×1 亿（volatile 逃逸强制每轮 load+add+store） | 74.652 | 对照基线 |
+| lock xadd 惩罚（relaxed fetch_add vs 非原子） | — | **4.8×** |
+| 双线程真争用 fetch_add 共 1 亿 — relaxed | 1213.792 | 比单线程慢 3.42× |
+| 双线程真争用 fetch_add 共 1 亿 — seq_cst | 1183.519 | 与 relaxed 0.98×（仍同价） |
+
+### D5.2 反汇编铁证
+
+节选自 `Examples/_ch108_d5_store.asm`（GCC 15.3.0 -O2，`objdump -d -M intel -C`）。
+
+store_relaxed 热循环（GCC 二路展开，每迭代 2 个普通 mov store）：
+
+```asm
+  40:	48 89 05 00 00 00 00 	mov    QWORD PTR [rip+0x0],rax
+  47:	48 8d 50 01          	lea    rdx,[rax+0x1]
+  4b:	48 83 c0 02          	add    rax,0x2
+  4f:	48 89 15 00 00 00 00 	mov    QWORD PTR [rip+0x0],rdx
+  56:	48 39 c1             	cmp    rcx,rax
+  59:	75 e5                	jne    40 <store_relaxed(long long)+0x40>
+```
+
+store_release 热循环（同为普通 mov，但未展开，每迭代 1 store）：
+
+```asm
+  70:	48 89 05 00 00 00 00 	mov    QWORD PTR [rip+0x0],rax
+  77:	48 83 c0 01          	add    rax,0x1
+  7b:	48 39 c1             	cmp    rcx,rax
+  7e:	75 f0                	jne    70 <store_release(long long)+0x10>
+```
+
+store_seqcst 热循环（xchg，隐式 lock 全屏障）：
+
+```asm
+  a0:	48 89 c2             	mov    rdx,rax
+  a3:	48 87 15 00 00 00 00 	xchg   QWORD PTR [rip+0x0],rdx
+  aa:	48 83 c0 01          	add    rax,0x1
+  ae:	48 39 c1             	cmp    rcx,rax
+  b1:	75 ed                	jne    a0 <store_seqcst(long long)+0x10>
+```
+
+fetch_add relaxed 与 seq_cst 的热循环核心指令完全相同：`f0 4c 0f c1 05 ... lock xadd QWORD PTR [rip+0x0],r8`（两函数逐字节同码，仅循环对齐 nop 不同）。
+
+### D5.3 非显然结论
+
+1. **x86-TSO 下 relaxed/release store 生成同一条普通 mov** —— 4.00× 差距不是指令差异，而是编译器许可差异：relaxed 允许重排/合并，GCC 借此把循环二路展开且两次 store 只隔 1 个 `lea`；release 禁止 store-store 重排，GCC 保守不展开。教学点：**内存序的第一重成本是「优化器束手」，第二重才是 CPU 屏障**；本例 4× 全部来自第一重（微基准放大了这一效应，真实代码中 release store 通常接近免费）。
+2. **seq_cst store 15.5×**：`xchg` 隐式 lock = 全屏障 + store buffer 排空，是 x86 上唯一真正贵的序。这就是「读多写少用默认 seq_cst load 没事，热路径 store 要三思」的数字依据。
+3. **load 三种序同价（0.92×≈1）**：x86 普通 `mov` load 天然 acquire。
+4. **fetch_add 各序同码同价（1.01×）**：`lock xadd` 本身就是全屏障，RMW 上选 relaxed 不省时间——省的是**给未来移植 ARM 留下的语义准确性**（ARM 上 `ldadd` vs `ldaddal` 真有差价）。计数器用 relaxed 的理由是「语义最小化」，不是 x86 提速。
+5. **双线程争用 3.42×**：cache line 在两核间弹动（MESI），且争用下序别差异仍为 0（0.98×）——争用成本淹没一切序别成本。
+6. **lock xadd 单线程也比普通内存自增贵 4.8×**：lock 前缀的本地成本（流水线序列化）即使无争用也存在。
+
+### 下一节 可复现 demo
+
+```cpp
+#include <atomic>
+#include <iostream>
+#include <cstdint>
+
+int main() {
+    // 单线程下各内存序 store 的最终可见值必须一致
+    {
+        std::atomic<long long> a_relaxed{0}, a_release{0}, a_seqcst{0};
+        for (int i = 0; i < 1000; ++i) {
+            a_relaxed.store(i, std::memory_order_relaxed);
+            a_release.store(i, std::memory_order_release);
+            a_seqcst.store(i, std::memory_order_seq_cst);
+        }
+        std::cout << "store end relaxed = " << a_relaxed.load() << std::endl;
+        std::cout << "store end release = " << a_release.load() << std::endl;
+        std::cout << "store end seq_cst = " << a_seqcst.load() << std::endl;
+    }
+    // 单线程下各内存序 fetch_add 的最终累加值必须一致
+    {
+        std::atomic<long long> f_relaxed{0}, f_seqcst{0};
+        for (int i = 0; i < 1000; ++i) {
+            f_relaxed.fetch_add(1, std::memory_order_relaxed);
+            f_seqcst.fetch_add(1, std::memory_order_seq_cst);
+        }
+        std::cout << "fetch_add relaxed = " << f_relaxed.load() << std::endl;
+        std::cout << "fetch_add seq_cst = " << f_seqcst.load() << std::endl;
+    }
+    return 0;
+}
+```
+
+### 最后 方法学注
+
+本附录的 store 数字来自单线程微基准，它把「优化器束手」这项本属于编译器许可差异的成本放大成了 4×——真实多生产者代码里 release store 往往接近免费。记住：**绝对毫秒随机器而变，只有比值才可移植**；不要在别的 CPU/编译器上照抄毫秒数，但「seq_cst store 最贵、load 各序同价、RMW 各序同码」这三条结构性结论在 x86-TSO 上稳定成立。 |

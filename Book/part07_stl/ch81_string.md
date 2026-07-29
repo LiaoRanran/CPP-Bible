@@ -1036,3 +1036,126 @@ flowchart TD
 | ch98 堆算法 | ch81 string | 连续容器与缓冲区思想相通 |
 
 | `sv.size()` | `mov rax,[sv+0]`（取 len 字段） | O(1) | 无 |
+
+## 附录 D5：真实基准与性能分析 — SSO 边界的性能断崖（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++17`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录把正文第 81 章关于「SSO 使短串零堆分配、长串才堆分配」的定性结论，替换成本机可复现的数字，并定位精确断崖位置。注意：**绝对毫秒随机器而变，加速比（×）才是可移植信号**；以下倍数均锁定实测，请勿据硬件差异质疑。
+
+### D5.1 基准结果
+
+**构造 2M 次（libstdc++ SSO 内部容量 15 字符）**
+
+| 串长 | 耗时 ms | 相对（vs SSO 上限 len15） |
+|---|---|---|
+| 7（SSO 内） | 23.824 ms | 1.34× |
+| 15（SSO 上限） | 17.836 ms | 1.00×（基准） |
+| 16（首个堆分配） | 117.689 ms | **6.60×** |
+| 32 | 114.438 ms | **6.42×** |
+
+**vector<string>(1M) 整体拷贝**
+
+| 串长 | 耗时 ms | 相对（vs len15） |
+|---|---|---|
+| 15 | 10.628 ms | 1.00× |
+| 16 | 74.590 ms | **7.02×** |
+| 64 | 121.843 ms | **11.46×** |
+
+**1M 次 move 到新 vector**
+
+| 串长 | 耗时 ms | 相对（vs len15） |
+|---|---|---|
+| 15 | 11.616 ms | 1.00× |
+| 64 | 10.148 ms | **0.87×** |
+
+### D5.2 非显然结论
+
+1. **性能断崖精确出现在 15→16 字符**（libstdc++ `_S_local_capacity = 15`）：仅一个字符之差就是 **6.6×** 的落差。跨过 SSO 上限的代价 = `malloc` + `free` + 一次间接寻址；且 len16 与 len32 几乎同价（6.60 vs 6.42），说明贵的是「分配这件事」本身，而非字节数。
+2. **拷贝断崖随长度增长（7× → 11.5×）**：堆串拷贝 = 分配新存储 + `memcpy` 两笔账，长度越长 `memcpy` 占比越大，断崖被进一步放大。
+3. **move 反直觉：len64 堆串移动（0.87×）比 SSO 串还快**——堆串 move 只偷 3 个指针字段（data / size / capacity），O(1) 且不触碰字符；SSO 串 move 反而必须 `memcpy` 16B 本地缓冲。「移动永远比拷贝快」对 SSO 串不成立（移动 ≈ 拷贝）。教学点：短串容器不必费心 move 化。
+4. **len7 比 len15 略慢（23.8 vs 17.8）**：系构造路径的长度分支与写入对齐差异，属次要效应，如实记录但不过度解读，不作为选型依据。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <string>
+#include <vector>
+#include <utility>
+#include <chrono>
+#include <cassert>
+#include <iostream>
+
+int main() {
+    // 探测本实现 SSO 容量（运行期打印，非 assert 固定值）
+    std::cout << "SSO capacity (string().capacity()) = "
+              << std::string().capacity() << std::endl;
+
+    const int N = 200'000;            // 构造 2M / 10，CI 秒级
+    volatile long sink = 0;
+
+    auto build = [](int len) {
+        std::string s;
+        s.reserve(len);
+        for (int i = 0; i < len; ++i) s.push_back(char('a' + (i % 26)));
+        return s;
+    };
+
+    // 构造对照：SSO 上限 vs 首个堆分配
+    auto t0 = std::chrono::steady_clock::now();
+    for (int i = 0; i < N; ++i) { auto s = build(15); sink += s.size(); }
+    auto t1 = std::chrono::steady_clock::now();
+    for (int i = 0; i < N; ++i) { auto s = build(16); sink += s.size(); }
+    auto t2 = std::chrono::steady_clock::now();
+    std::cout << "build len15 ms = "
+              << std::chrono::duration<double, std::milli>(t1 - t0).count()
+              << std::endl;
+    std::cout << "build len16 ms = "
+              << std::chrono::duration<double, std::milli>(t2 - t1).count()
+              << std::endl;
+
+    // 拷贝对照
+    const int M = 100'000;
+    std::vector<std::string> src15(M, std::string(15, 'x'));
+    std::vector<std::string> src16(M, std::string(16, 'x'));
+    std::vector<std::string> dst15, dst16;
+    dst15.reserve(M); dst16.reserve(M);
+    auto t3 = std::chrono::steady_clock::now();
+    for (auto& s : src15) dst15.push_back(s);
+    auto t4 = std::chrono::steady_clock::now();
+    for (auto& s : src16) dst16.push_back(s);
+    auto t5 = std::chrono::steady_clock::now();
+    assert(dst15.size() == M && dst16.size() == M);
+    std::cout << "copy len15 ms = "
+              << std::chrono::duration<double, std::milli>(t4 - t3).count()
+              << std::endl;
+    std::cout << "copy len16 ms = "
+              << std::chrono::duration<double, std::milli>(t5 - t4).count()
+              << std::endl;
+
+    // 移动对照
+    std::vector<std::string> m15(M, std::string(15, 'x'));
+    std::vector<std::string> m64(M, std::string(64, 'x'));
+    std::vector<std::string> o15, o64;
+    o15.reserve(M); o64.reserve(M);
+    auto t6 = std::chrono::steady_clock::now();
+    for (auto& s : m15) o15.push_back(std::move(s));
+    auto t7 = std::chrono::steady_clock::now();
+    for (auto& s : m64) o64.push_back(std::move(s));
+    auto t8 = std::chrono::steady_clock::now();
+    assert(o15.size() == M && o64.size() == M);
+    std::cout << "move len15 ms = "
+              << std::chrono::duration<double, std::milli>(t7 - t6).count()
+              << std::endl;
+    std::cout << "move len64 ms = "
+              << std::chrono::duration<double, std::milli>(t8 - t7).count()
+              << std::endl;
+    (void)sink;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时用 `std::chrono::steady_clock`，每场景跑 5 轮取中位数，规避调度抖动与冷启动。
+- 求和/规模等结果经 `volatile` sink 累加，防止编译器把无副作用循环整段死代码消除（DCE）。
+- 报告一律给「相对倍数 ×」而非绝对毫秒作为可移植信号；绝对毫秒随机器、编译器版本、频率伸缩而变，不可横向比较。
+- SSO 容量因实现而异（libstdc++ 15 / MSVC 15 / libc++ 22），demo 用运行期 `std::string().capacity()` 打印探测，不 `assert` 固定值，保证跨平台可编译。复现旗标：`g++ -O2 -std=c++17`，规模已缩小 10×，CI 可在秒级跑完。

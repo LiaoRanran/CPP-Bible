@@ -2168,3 +2168,85 @@ flowchart TD
 | ch41 智能指针 | ch45 对象模型 | 控制块与对象布局影响性能 |
 | ch41 智能指针 | ch77 vector | vector<unique_ptr<T>> 常见组合 |
 | ch67 concepts | ch41 智能指针 | deleter 约束可用 concepts 表达 |
+
+## 附录 D5：真实基准与性能分析 — 智能指针的真实开销（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++17`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 `unique_ptr` / `shared_ptr` / `weak_ptr` 的相对开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+对象为 32B 的 `Node{long long[4]}`。"相对"列以同类基准为 1.00×，更快者加粗。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 分配 + 释放 1M 次 — raw `new`/`delete`（指针逃逸到 volatile） | 49.930 | 基准 1.00× |
+| 分配 + 释放 1M 次 — `make_unique` | 49.272 | **1.0×**（零开销实证） |
+| 同循环但指针不逃逸 — raw 与 `make_unique` | 0.000 | 被 -O2 整体消除 |
+| 同循环 — `shared_ptr(new)`（无法消除） | 101.471 | 基准 |
+| 同循环 — `make_shared`（无法消除） | 51.220 | 基准 |
+| `shared_ptr(new T)` vs `make_shared`（合并分配） | 101.471 / 51.220 | **1.98×** |
+| 传参 50M 次 — 按值拷贝 `shared_ptr` | 684.861 | **24×**（比 const& 贵） |
+| 传参 50M 次 — `const&` | 28.478 | 基准 1.00× |
+| `weak_ptr::lock()` 20M 次 | 287.824 | ≈14.4ns/次（内部 CAS 循环） |
+
+### D5.2 非显然结论
+
+1. **`make_unique` 与裸 `new` 逐 ns 等价（49.27 vs 49.93ms）。** 根因：`unique_ptr` 只是栈上薄包装，析构时调用 `delete` 的指令序列与手写完全一致，是"真零开销抽象"的实测铁证。
+
+2. **未逃逸的 `new`/`delete` 被 -O2 整体消除（0.000ms）。** 根因：C++14 起允许 allocation elision，若分配出的指针从不逃逸、结果不被观测，优化器可整段删去。这同时解释了为何 `shared_ptr` 测不出 0 —— 控制块的原子引用计数操作是可观测副作用，优化器不敢删。
+
+3. **`make_shared` 比 `shared_ptr(new)` 快 1.98×。** 根因：一次分配同时放下对象与控制块（合并分配），而 `shared_ptr(new T)` 是两次 `malloc`（对象一次、控制块一次）。代价是 `weak_ptr` 长期持有时对象内存无法提前归还（正文已述），性能与语义要一起权衡。
+
+4. **`shared_ptr` 按值传参贵 24×。** 根因：每次拷贝 = 两条 `lock` 前缀原子指令（inc 引用计数 + dec 旧计数）+ 引用计数 cache line 写争用。这给"只有 sink（接管所有权）参数才按值传 `shared_ptr`，观察用 `const&` 或裸指针"提供了数字依据。
+
+5. **`weak_ptr::lock()` ≈14.4ns/次，比拷贝 `shared_ptr`（≈13.7ns）略贵。** 根因：它走 CAS 循环而非无条件 `inc`，目的是防止 `use_count` 从 0 被"复活"，原子重试带来轻微额外开销。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <memory>
+#include <cassert>
+#include <cstdlib>
+
+static long long g_alloc_count = 0;
+
+void* operator new(std::size_t n) {
+    g_alloc_count++;
+    return std::malloc(n);
+}
+void operator delete(void* p) noexcept { std::free(p); }
+void operator delete(void* p, std::size_t) noexcept { std::free(p); }
+
+struct Node { long long v[4]; };
+
+int main() {
+    long long a0 = g_alloc_count;
+    auto p1 = std::make_shared<Node>();
+    long long a1 = g_alloc_count;
+    auto p2 = std::shared_ptr<Node>(new Node);
+    long long a2 = g_alloc_count;
+
+    std::cout << "make_shared allocs : " << (a1 - a0) << std::endl;
+    std::cout << "shared_ptr(new) al : " << (a2 - a1) << std::endl;
+
+    // 功能正确性断言（绝不断言时间 / 倍数 / 精确 sizeof）
+    assert(p1.use_count() == 1);
+    assert(p2.use_count() == 1);
+    // 稳定语义：make_shared 合并分配，次数更少（1 < 2）
+    assert((a1 - a0) < (a2 - a1));
+
+    std::weak_ptr<Node> w = p1;
+    auto l = w.lock();
+    assert(l.use_count() == 2);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
+- `volatile` sink 防 DCE；**ch41 特别提示**：本附录还依赖"指针逃逸"来区分真实开销与被消除的假象 —— 只有逃逸到 `volatile` 的指针才会迫使优化器保留分配，从而测出 `unique_ptr` 与裸 `new` 的等价真值。
+- 加速比（如 1.98×、24×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++17`。demo 用重载 `operator new` 统计分配次数，断言 `make_shared` 分配次数少于 `shared_ptr(new)`（这是稳定语义，可断言），未对时间或倍数做任何断言。
+
