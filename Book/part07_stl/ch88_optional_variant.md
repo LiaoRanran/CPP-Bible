@@ -1048,3 +1048,65 @@ flowchart TD
 | ch88 optional | ch90 ranges | 变换可能返回 optional |
 | ch88 optional | ch89 tuple/any | variant 与 any 类型擦除对照 |
 
+## 附录 D5：真实基准与性能分析 — variant 分发与 optional 访问（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 `std::variant` 访问器相对虚函数派发的开销、`std::optional` 访问相对裸指针空检查的开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+负载：500 万次派发 / 500 万次访问。"相对"列以各分组最快者为 1.00×。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 虚函数派发 `vptr->op()`（开集，堆对象） | 46.17 | 基准 1.00× |
+| `std::visit` 访问 `variant`（闭集，内联存储） | 32.79 | **1.41×** |
+| `std::optional` 空检查 + 取值（内联 payload） | 27.19 | 基准 |
+| 裸指针空检查 + 解引用 | 26.12 | 基准 **1.04×** |
+
+### D5.2 非显然结论
+
+1. **`std::visit` 比虚调用快 ~1.41×。** 根因：`variant` 是闭集分发，编译器在编译期已知所有可能类型，可将 `visit` 编译成跳转表或条件分支；对象**按值内联存储**于 `variant` 本身，无堆分配、无 `vptr` 间接寻址、缓存局部性好。虚多态是开集 + 堆对象指针追逐（`new`/`delete` 分配、运行期查虚表），每次调用都付出间接跳转与可能的缓存未命中代价。
+
+2. **`std::optional` 访问 ≈ 裸指针解引用（27.19 vs 26.12，差 ~4%）。** 根因：`has_value()` 的分支高度可预测，`optional` 的 payload 与判别符同处栈上/内联存储，`*opt` 本质是一次带判空的指针解引用；与裸指针空检查的指令序列几乎重合，故差距极小。
+
+3. **诚实标注 `variant` 的劣势（不是银弹）：** ① 大小 = 最大成员 + 判别符，可能比最大的成员还胖；② `visit` 的调用目标组合随类型数组合爆炸，编译期特化膨胀、二进制体积增大；③ 闭集不可开放扩展——新增备选类型要改所有 `visit` 调用点，而虚多态可在运行期动态挂接新子类。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <variant>
+#include <optional>
+#include <cassert>
+
+struct A { int op() const { return 1; } };
+struct B { int op() const { return 2; } };
+using Var = std::variant<A, B>;
+
+int main() {
+    Var v = A{};
+    int r1 = std::visit([](const auto& x) { return x.op(); }, v);
+    assert(r1 == 1);                       // visit 正确分发到 A
+
+    v = B{};
+    int r2 = std::visit([](const auto& x) { return x.op(); }, v);
+    assert(r2 == 2);                       // visit 正确分发到 B
+
+    std::optional<int> some = 42;
+    assert(some.has_value());
+    assert(*some == 42);                   // 非空 optional 取值正确
+
+    std::optional<int> none;
+    assert(!none.has_value());             // 空 optional 语义正确
+    std::cout << "visit dispatch OK: " << r1 << "," << r2 << std::endl;
+    std::cout << "optional nonempty=" << *some << " empty=" << (none.has_value() ? 1 : 0) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（1.41×、~1.04×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源文件：库根 `_bench_d5_88_variant.cpp`。demo 仅断言 `visit` 分发结果与 `optional` 空/非空语义（功能正确性），未对时间、倍数或 `sizeof` 做任何断言。
+

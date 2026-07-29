@@ -1519,5 +1519,73 @@ flowchart TD
 | ch124 libstdcxx | ch85 unordered | _Hashtable 源码阅读入口 |
 | ch98 堆算法 | ch85 unordered | 哈希与堆两种结构取舍 |
 
+## 附录 D5：真实基准与性能分析 — unordered_map vs map 实测（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取最快；`volatile` sink 防死代码消除。本附录目的：量化 `unordered_map`（哈希开链）与 `map`（红黑树）在插入/查找上的相对开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+规模为 100 万元素（随机键）。"相对"列以同类基准为 1.00×。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| umap_insert_noreserve（无 reserve，含 rehash） | 407.07 | 基准 |
+| umap_insert_reserve（reserve(N) 预分配） | 304.63 | **较上条 -25%** |
+| map_insert（红黑树插入） | 836.82 | 较 umap 无 reserve 慢 **2.1×** |
+| umap_lookup（哈希查找） | 38.91 | 基准 |
+| map_lookup（红黑树查找 ~20 层） | 721.36 | 慢 **18.5×** |
+
+### D5.2 非显然结论
+
+1. **查找 18.5×：哈希 O(1) 一次桶定位 vs 红黑树 ~20 层指针追逐。** 根因：`unordered_map::find` 算哈希后一次寻址到桶、链内短比较即命中；`map::find` 沿红黑树下行约 log2(1M)≈20 层，每层一次指针解引用且几乎必 cache miss，内存延迟主导，18.5× 主要来自这约 20 次随机内存访问。
+
+2. **rehash 代价是常数指针重排而非元素拷贝（兑现正文 L1413 前向引用）。** 根因：`reserve(N)` 消除重复 rehash，插入仅从 407→305 ms（提速 25%）。若 rehash 需要拷贝全部已插入元素的值，1M 次值移动的代价会远大于 25%；实测仅 25% 差距，说明 rehash 只把节点 `_M_nxt` 指针改挂到新桶数组、不搬值（源码级证据见正文 L1412-1413）。诚实表述：这 25% 来自桶数组自身的分配/释放与指针改挂，而非值拷贝。
+
+3. **插入 umap 比 map 快 ~2.1×。** 根因：哈希插入是"算哈希 + 挂链表"，均摊 O(1)；红黑树插入要定位、可能旋转重平衡、维护颜色，常数显著更大。`reserve` 后差距进一步拉大（umap 304.63 vs map 836.82 ≈ 2.7×）。
+
+4. **unordered_map 的诚实劣势：** 迭代顺序不确定；极端/恶意哈希会退化到 O(n)（链攻击）；节点仍逐个堆分配（libstdc++ 节点型），大量插入时分配器压力大；必须 `reserve` 才能稳定发挥哈希的 O(1) 优势。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <unordered_map>
+#include <cassert>
+
+int main() {
+    std::unordered_map<int, int> um;
+    std::size_t before = um.bucket_count();
+
+    um.reserve(1'000'000);
+    std::size_t after_reserve = um.bucket_count();
+
+    // 功能语义：reserve 不应减少桶数（保证容量，只增不减）
+    assert(after_reserve >= before);
+    assert(after_reserve > 0);
+
+    for (int i = 0; i < 1000; ++i) um[i] = i * 2;
+
+    // 插入后可查到对应键值
+    for (int i = 0; i < 1000; ++i) {
+        auto it = um.find(i);
+        assert(it != um.end());
+        assert(it->second == i * 2);
+    }
+    // 遍历规模正确
+    assert(um.size() == 1000);
+
+    std::cout << "reserve bucket_count = " << after_reserve << std::endl;
+    std::cout << "lookup consistent: " << (um.find(42)->second == 84) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮最快（best），规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（18.5×、2.1×、25%）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_85_unordered.cpp`（库根目录）。
+- demo 断言 `reserve` 后 `bucket_count` 不减、插入后可查到键值等功能语义（稳定语义，可断言），未对时间或倍数做任何断言；并兑现正文 L1413 关于"rehash 只重挂指针不拷值"的前向引用。
+
 
 

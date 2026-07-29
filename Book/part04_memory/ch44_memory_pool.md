@@ -2460,3 +2460,81 @@ int main()
   return 0;
 }
 ```
+
+## 附录 D5：真实基准与性能分析 — 内存池 vs 通用分配器（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化手撸 free-list 内存池相比通用 `malloc`/`free` 的吞吐优势，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+对象为 32B 的 `Node{Node* next}`（含一次逃逸写），样本量 2M 次分配+释放。"相对"列以通用分配器为 1.00×，更快者加粗。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 通用 `malloc`/`free` — 2M 次 32B 分配+释放（指针逃逸 volatile） | 193.84 | 基准 1.00× |
+| free-list 内存池 — 2M 次 32B 分配+释放（同样逃逸） | 64.30 | **3.01×** |
+
+### D5.2 非显然结论
+
+1. **free-list 池比通用 `malloc` 快 3.01×。** 根因：通用分配器要应对任意尺寸请求，内部做 size class 查找、bin 管理、线程安全锁或 tcache 取还，释放时还要做空闲块合并与元数据校验；free-list 池的 `alloc` 只是"弹出单链表头"、`dealloc` 只是"把节点压回链表头"，两三条指令即完成，且节点被反复复用带来天然的缓存热命中（分配出的地址很快又被访问）。
+
+2. **加速比的代价是灵活性。** free-list 池只支持固定大小对象（本例 32B `Node`），且批量 `malloc` 后直到池析构才把内存归还 OS，亦无任何越界检测——越界写会静默踩坏 `next` 指针进而摧毁整条空闲链表。它适合"大量同尺寸、短生命周期"场景（如节点池、对象池），通用分配器在尺寸多样、需归还时更稳。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <cassert>
+#include <cstdlib>
+#include <vector>
+
+struct Node { Node* next; int tag; };
+
+struct Pool {
+    Node* free_list = nullptr;
+    std::vector<void*> blocks;
+    Pool(std::size_t n) {
+        blocks.reserve(n);
+        for (std::size_t i = 0; i < n; ++i) {
+            Node* p = static_cast<Node*>(std::malloc(sizeof(Node)));
+            p->next = free_list; free_list = p;
+            blocks.push_back(p);
+        }
+    }
+    void* alloc() { Node* n = free_list; if (n) free_list = n->next; return n; }
+    void dealloc(void* p) { Node* n = static_cast<Node*>(p); n->next = free_list; free_list = n; }
+    ~Pool() { for (void* p : blocks) std::free(p); }
+};
+
+int main() {
+    const int N = 1000;
+    Pool pool(N);
+    std::vector<void*> ptrs; ptrs.reserve(N);
+    for (int i = 0; i < N; ++i) {
+        void* p = pool.alloc();
+        assert(p != nullptr);              // 池内仍有空闲节点
+        static_cast<Node*>(p)->tag = i;    // 写入可观测内容
+        ptrs.push_back(p);
+    }
+    assert(pool.free_list == nullptr);     // 全部分配后空闲链表清空
+
+    for (int i = 0; i < N; ++i)            // 内容正确：tag 仍可逐条读回
+        assert(static_cast<Node*>(ptrs[i])->tag == i);
+
+    for (void* p : ptrs) pool.dealloc(p);  // 回收后地址复用
+    assert(pool.free_list != nullptr);
+    void* reused = pool.alloc();
+    bool ok = false;
+    for (void* p : ptrs) if (p == reused) { ok = true; break; }
+    assert(ok);                            // 地址被真实复用
+    std::cout << "pool reused addr : " << ok << std::endl;
+    std::cout << "all functional checks passed" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（3.01×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_44_mempool.cpp`（位于库根）。demo 仅断言功能正确性（空闲链表清空、内容写回、地址复用），未对时间、倍数或精确 `sizeof` 做任何断言。

@@ -1112,3 +1112,68 @@ int main() {
     return 0;
 }
 ```
+
+## 附录 D5：真实基准与性能分析 — CRTP 静态分发 vs 虚函数（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取最快；`volatile` sink 防死代码消除。本附录目的：量化 CRTP 静态分发与 vtable 虚派发的相对开销，并解释非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+场景为 1,000 万次 `compute` 调用的归约求和（混合动态类型阻止去虚拟化）。"相对"列以虚派发为基准 1.00×。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| virtual_dispatch（vtable 间接派发） | 35.09 | 基准 1.00× |
+| crtp_static（CRTP 静态分发，可内联） | 2.60 | **13.5×** |
+
+### D5.2 非显然结论
+
+1. **13.5× 的大头来自"内联解锁的二次优化"，而非省掉一次跳转。** 根因：虚调用是 vtable 间接跳转，编译器无法内联、对循环体内的 `compute` 语义不可知（不能假设无副作用/无别名），只能逐次经间接分支调用，整个归约循环无法被自动向量化，乘法与累加都被锁死在循环内。CRTP 的 `compute` 是模板非虚方法，被完全内联，`x*3+1` 暴露给 -O2，归约循环被自动向量化（SIMD）+ 强度折减等循环级优化——这才是加速的主因。
+
+2. **与 ch47 的 D5 不矛盾（ch47：CRTP == 直接调用 1.0×、混排虚调用 7.14×）。** 根因同源：差距都来自"优化器能否内联展开循环体"。本附录是纯净算术归约循环，向量化收益最大，故测得 13.5× > 7.14×；倍数随循环体是否可被向量化而浮动，机制完全一致，并非"CRTP 调用本身快 13.5 倍"。
+
+3. **CRTP 红利在"可内联 + 可被向量化"时最大化。** 若把 `compute` 换成优化器无法化简的重逻辑、或关闭 -O2，间接跳转与内联的差距会显著收窄。结论：选 CRTP 不是为了省一次分支，而是为了把函数体交给优化器。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <cassert>
+
+// 虚函数多态
+struct VBase { virtual ~VBase() = default; virtual int compute(int x) const { return x; } };
+struct VDerived : VBase { int compute(int x) const override { return x * 3 + 1; } };
+struct VOther  : VBase { int compute(int x) const override { return x * 2; } };
+
+// CRTP 静态多态
+template <typename D>
+struct CRTPBase { int compute(int x) const { return static_cast<const D*>(this)->compute(x); } };
+struct CDerived : CRTPBase<CDerived> { int compute(int x) const { return x * 3 + 1; } };
+
+int main() {
+    VDerived vd;
+    VOther  vo;
+    CDerived cd;
+
+    // 同一语义：VDerived 与 CDerived 实现相同公式，结果必须一致
+    for (int i = 0; i < 1000; ++i) {
+        int a = vd.compute(i);
+        int b = cd.compute(i);
+        assert(a == b);
+        assert(a == i * 3 + 1);
+    }
+    // VOther 的语义（x*2）也须稳定
+    for (int i = 0; i < 1000; ++i) {
+        assert(vo.compute(i) == i * 2);
+    }
+    std::cout << "CRTP vs virtual result consistent: " << true << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮最快（best），规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（13.5×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_51_crtp.cpp`（库根目录）。
+- demo 用功能断言验证 CRTP 与虚函数对同一输入给出一致结果（稳定语义，可断言），未对时间或倍数做任何断言。

@@ -2049,3 +2049,77 @@ int main() {
 ```
 
 预期输出：先打印 `rethrow_exception: boom from producer`；再 `outer: outer context` 与 `nested: inner failure` 证明嵌套展开；最后 `CopyHeavy copies during reallocation` 为 `>0`（如 3~4），证实 **move 构造 `noexcept(false)` 时，vector 扩容经 `move_if_noexcept` 回退到拷贝构造**，从而维持强异常安全保证（一旦拷贝抛异常，旧缓冲仍完整可还原）。
+
+## 附录 D5：真实基准与性能分析 — 异常的真实代价（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化"零开销异常模型"在 happy path 的零成本与在真实抛出路径的昂贵代价，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+规模为 2'000'000 次整数累加；异常场景约每 7 次走一次抛/捕（低频但仍可观测）。
+
+| 场景 | 耗时 ms | 说明 |
+|---|---|---|
+| plain_loop（无 try 基线） | 12.0509 | 基准 |
+| try_nothrow（有 try/catch 但从不抛） | 12.3906 | 与基线差 < 3%，happy path 零开销实证 |
+| errcode_thrown（错误码分支返回） | 12.3613 | 错误码风格 |
+| exception_thrown（真实 throw/catch） | 635.175 | 约 **51.4×** 于错误码路径 |
+
+### D5.2 非显然结论
+
+1. **存在 try 块的正常路径与裸循环逐 ms 等价（12.39 vs 12.05ms，差 < 3%）。** 根因：Itanium C++ ABI 采用 table-driven zero-cost EH —— 不抛异常时运行时完全不插桩，try 块不产生任何指令，仅因优化器在异常边界处略受抑制（如少做某些跨边界重排）而带来 < 3% 的微弱差异，这正是"零开销异常"的实测含义：你不为不发生的异常买单。
+
+2. **真实抛出路径慢约 51.4×。** 根因：一旦 throw，运行时必须调用 `__cxa_throw` → 在堆上分配并构造异常对象 → 查 `.eh_frame` 展开表，做"两阶段展开"（先查找能做 `std::terminate` 防护的栈帧，再真正 unwind）→ 逐帧执行析构与清理。这条路径天生比一个 `if (err) return code` 慢 2~3 个数量级，因为它是为"罕见"而设计，而非为吞吐。
+
+3. **错误码（12.36ms）与 try 不抛（12.39ms）几乎一致。** 根因：错误码分支只是普通条件跳转，而 try 不抛同样无运行时成本，二者都落在 happy path 的噪声带内。这正是"高频、可预期的失败用错误码 / `std::expected`，低频、真正意外的失败才用异常"的量化依据。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <cassert>
+
+struct MyErr {};
+
+int main() {
+    // 场景 A：try 块存在，但不抛 —— 功能结果应与无 try 完全一致
+    long long s_no_try = 0;
+    for (int i = 0; i < 100; ++i) s_no_try += i;
+
+    long long s_try = 0;
+    try {
+        for (int i = 0; i < 100; ++i) s_try += i;
+    } catch (...) {}
+
+    // 场景 B：真实抛/捕 —— 结果正确且被捕获
+    long long s_caught = 0;
+    bool caught = false;
+    try {
+        for (int i = 0; i < 100; ++i) {
+            if (i == 50) throw MyErr{};
+            s_caught += i;
+        }
+    } catch (const MyErr&) {
+        caught = true;
+        s_caught = -1; // 标记异常分支被走
+    }
+
+    std::cout << "no_try  : " << s_no_try << std::endl;
+    std::cout << "try     : " << s_try << std::endl;
+    std::cout << "caught  : " << (caught ? 1 : 0) << std::endl;
+
+    // 功能正确性断言（绝不断言时间 / 倍数 / sizeof）
+    assert(s_no_try == s_try);   // try 块不影响正常路径结果
+    assert(caught);              // 异常被成功捕获
+    assert(s_caught == -1);      // 捕获分支正确执行
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
+- `volatile` sink（聚合四路结果）防 DCE，确保循环体不被优化器整段删除。
+- 异常对象故意取空结构体 `MyErr{}`，避免字符串/堆消息分配掩盖 `__cxa_throw` 本身的展开成本。
+- 加速比（51.4×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_40_exception.cpp`。demo 仅演示功能语义（try 块不改变正常结果、抛出可被捕获），未对时间或倍数做任何断言。

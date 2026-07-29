@@ -1501,4 +1501,72 @@ int main() {
 
 `typeid(*pb)` 经 vtable 偏移取 typeinfo 指针；`a == b` 命中 D4.1 的 `operator==` 快路径。实测：`name=7Derived`、
 `same type? yes`、`hash_code equal? yes`、`typeid(Base).name()=4Base`、`typeid(*pb).name()=7Derived`、
-`bad downcast null? yes`（mangling 不可移植；末项触发 `-Wall` 提示 “can never succeed”，属预期演示）。
+`bad downcast null? yes`（mangling 不可移植；末项触发 `-Wall` 提示 "can never succeed"，属预期演示）。
+
+## 附录 D5：真实基准与性能分析 — dynamic_cast 与 typeid 的真实开销（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 `dynamic_cast` / `typeid` 相对虚函数派发的真实开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+继承层级为一层单继承（`Derived`/`Other` : `Base`），各 5M 次调用/比较，指针经随机化分布。"相对"列以虚函数派发为 1.00×，更快者加粗。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 虚函数派发（无 RTTI）— 5M 次 `objs[i]->op(i)` | 74.14 | 基准 1.00× |
+| `dynamic_cast` 向下转型 — 5M 次（命中则加、否则虚调用） | 89.11 | ≈1.20× |
+| `typeid` 精确比较 — 5M 次 `typeid(*p) == typeid(Derived)` | 22.29 | **≈0.30×**（最快） |
+
+### D5.2 非显然结论
+
+1. **`dynamic_cast` 比虚调用贵约 20%（89.11 vs 74.14ms）。** 根因：虚调用是一次经 vptr 的间接跳转；`dynamic_cast<Derived*>` 要走运行库函数 `__dynamic_cast`（实现体在 GCC 源码树的 libsupc++，本附录不伪造其源码），运行时遍历 `type_info` 继承图来确认"是否可安全转成 `Derived`"。本例仅一层单继承就已多约 20%，继承更深、含虚继承/菱形继承时开销通常更高。
+
+2. **`typeid` 比较比虚调用还快约 3.3×。** 根因：`typeid(*p)` 仅经 vptr 取对象的 `type_info` 指针，`operator==` 在同一翻译单元/同一动态库内通常可直接指针比较，是极廉价的指针判等；但它只能判"精确同型"，**不能判 is-a**（基类实例 ≠ 派生类类型）。
+
+3. **三者都含循环与随机化成本，绝对值不可直接外推。** 基准里每个分支都背负 5M 次循环索引、指针解引用与逃逸求和，因此毫秒差反映的是"相对开销结构"而非单条操作裸成本。选型指引：**能用虚函数就虚函数**（零 RTTI、最快）；**只判精确类型**用 `typeid`（快且无需转型）；**只有跨层级向下转型**才用 `dynamic_cast`（语义正确优先于这点开销）。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <typeinfo>
+#include <cassert>
+
+struct Base { virtual ~Base() = default; virtual int op(int x) const { return x; } };
+struct Derived : Base { int op(int x) const override { return x + 1; } };
+struct Other : Base { int op(int x) const override { return x * 2; } };
+
+int main() {
+    Derived d;
+    Base* pb = &d;
+
+    // dynamic_cast 成功：指针确实指向 Derived
+    Derived* pd = dynamic_cast<Derived*>(pb);
+    assert(pd != nullptr);
+    assert(pd->op(10) == 11);
+
+    // dynamic_cast 失败：跨兄弟类型转型返回 nullptr（指针版不抛异常）
+    Other* po = dynamic_cast<Other*>(pb);
+    assert(po == nullptr);
+
+    // typeid 精确比较：只判"精确同型"，不判 is-a
+    const std::type_info& td = typeid(Derived);
+    assert((typeid(*pb) == td));
+    assert(!(typeid(*pb) == typeid(Other)));
+
+    // 注意：typeid 不能替代 is-a 判定
+    Base b;
+    assert(!(typeid(b) == td));
+
+    std::cout << "dynamic_cast ok : " << (pd != nullptr) << std::endl;
+    std::cout << "cross cast null : " << (po == nullptr) << std::endl;
+    std::cout << "all functional checks passed" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（≈1.20×、≈0.30×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_48_rtti.cpp`（位于库根）。demo 仅断言功能正确性（`dynamic_cast` 成功/失败返回 `nullptr`、typeid 精确比较），未对时间、倍数或精确 `sizeof` 做任何断言；`__dynamic_cast` 实现细节仅做行为描述，未伪造源码摘录。

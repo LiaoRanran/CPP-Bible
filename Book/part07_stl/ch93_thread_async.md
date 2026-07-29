@@ -1673,3 +1673,58 @@ flowchart TD
 | ch90 ranges | ch93 thread/async | 并行 range 分区 |
 | ch113 内存模型/原子 | ch93 thread/async | 同步原语的原子性基础 |
 
+## 附录 D5：真实基准与性能分析 — async 每次建线程的真实代价（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23 -pthread`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 `std::async(launch::async)` 每次调用新建 OS 线程的代价，并与预建线程池复用、`launch::deferred` 对照。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+负载：1 万次任务（每任务 100 次累加），分批 256 并发。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| `std::async(launch::async)` 每次调用都建线程 | 814.93 | 基准 1.00× |
+| 预建线程池（单 worker 复用，K=16） | 1.37 | **595×** |
+| `std::async(launch::deferred)` 惰性同步执行 | 4.50 | **181×** |
+
+### D5.2 非显然结论
+
+1. **`std::async(launch::async)` 每次调用开销 ≈ 线程复用 595×。** 根因：每次调用都要创建 + 销毁一个 OS 线程——内核对象分配、默认栈保留（Windows 上常达 MB 级）、调度器注册/注销，单次在 Windows 上即达百微秒级；1 万次累加便是数百毫秒。而预建线程池只付一次建线程成本，任务通过队列复用同一组线程。
+
+2. **`launch::deferred` 最快（4.50ms）——但它是"假并发"。** 根因：deferred 不创建任何线程，任务被推迟到 `get()`/`wait()` 时**在调用线程内同步执行**，仅剩下 `future`/共享状态的最小簿记开销。它不是并发方案，不能降延迟，只能表达"将来求值"。
+
+3. **结论与教训：** 高频小任务必须上线程池（`std::async` 只适合低频、粗粒度、跨线程取结果的场景）。诚实标注：MinGW 的 winpthreads 兼容层可能在原生线程 API 之上再叠一层开销，且这些数字随标准库实现（libstdc++/MSVC/不同 pthread 移植）而变，跨平台不宜直接套用绝对值。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <future>
+#include <cassert>
+
+int main() {
+    auto f = std::async(std::launch::async, [] { return 6 * 7; });
+    int r = f.get();
+    assert(r == 42);                       // async 返回值正确
+
+    bool ran = false;
+    auto fd = std::async(std::launch::deferred, [&] { ran = true; return 1; });
+    assert(!ran);                          // get() 之前尚未执行
+    int rd = fd.get();
+    assert(ran);                           // 直到 get() 才真正执行
+    assert(rd == 1);
+    std::cout << "async result=" << r << " deferred ran=" << (ran ? 1 : 0) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（595×、181×）是可移植信号；绝对毫秒随 CPU、OS 调度、标准库实现而变，请勿跨机器直接比较毫秒。
+- 实测 595× 是 `async_percall` 与 `thread_reuse` 的比值；两者任务体量完全一致（同一 `trivial` 累加），故比值直接反映"每调用创建+销毁线程"的摊销开销，而非算法差异。
+- `thread_reuse` 此处是 K=16 固定 worker 的近似线程池；生产线程池还需任务队列、工作窃取与亲和性调优，但"复用远优于每次新建"的定性结论不受影响。
+- `deferred` 虽快却不是并发：它把任务推迟到 `get()` 在本线程同步跑，只能省"线程创建"不能省"计算量"，切勿用它以图降延迟。
+- 复现旗标：`g++ -O2 -std=c++23 -pthread`。基准源文件：库根 `_bench_d5_93_async.cpp`。demo 用副作用标志 `ran` 验证 `deferred` 直到 `get()` 才执行，并断言 `async` 返回值正确（均为功能正确性），未对时间、倍数或 `sizeof` 做任何断言。
+

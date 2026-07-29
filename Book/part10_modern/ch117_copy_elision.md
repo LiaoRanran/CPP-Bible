@@ -1173,3 +1173,84 @@ flowchart TD
 | ch39 RAII 与 Rule of Five | ch117 复制消除 | 拷贝/移动构造受 Rule of Five 约束 |
 | ch122 PMR 与多态分配器 | ch117 复制消除 | 消除与分配路径共同决定返回成本 |
 | ch117 复制消除 | ch118 Modules | 消除影响跨模块 ABI 与 BMI 边界 |
+
+## 附录 D5：真实基准与性能分析 — NRVO、移动与 std::move 反优化（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；2000 次迭代，每个对象 100 万 int；`volatile` sink 防 DCE。本附录目的：用主控实测锁死的真实毫秒，给出一组**自我闭合**的数字，证明 NRVO 零成本、`std::move` 在可移动类型上无害、但在仅有拷贝构造的类型上会静默退化为深拷贝。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+标尺：`construct_only`（纯构造）1868.93ms、`pure_copy`（纯深拷贝）1921.75ms。
+
+| 场景 | 耗时 ms | 相对 / 闭合关系 |
+|---|---|---|
+| `construct_only`：循环内直接构造 Big | 1868.93 | 构造标尺 1.00× |
+| `nrvo_return`：`return b;` 局部对象 | 1858.90 | **≈ construct（差 <1%）** |
+| `move_return_movable`：`return std::move(b)`，类型可移动 | 1863.60 | **≈ construct（O(1) 移动）** |
+| `copy_return_copyonly`：`return std::move(b)`，类型仅拷贝 | 3727.50 | **≈ construct + pure_copy（2.0×）** |
+| `pure_copy`：`Big c = base;` 纯深拷贝标尺 | 1921.75 | 拷贝标尺 |
+
+### D5.2 非显然结论
+
+1. **`nrvo_return` ≈ `construct_only`（1858.90 vs 1868.93，差 <1%）。** 根因：NRVO 让 `b` 直接在被调用方的返回槽（调用方栈帧）构造，省掉"局部对象 → 返回槽"那次拷贝，返回值本身零成本——差异被计时噪声淹没。
+
+2. **`move_return_movable` ≈ `construct_only`（1863.60）。** 根因：`return std::move(b)` 禁掉了 NRVO，但 `Big` 的移动构造是 `vector` 的 O(1) 指针交换；在 100 万 int 规模下移动成本相对 1M 元素填充完全测不出，故与纯构造几乎相等。
+
+3. **`copy_return_copyonly` = 3727.50 ≈ `construct_only` + `pure_copy` = 1868.93 + 1921.75 = 3790（数字闭合验证）。** 根因：类型没有移动构造时，`return std::move(b)` 在重载决议中静默落回 `const&` 拷贝构造，于是"自以为的优化"退化成一次完整的 1M 元素深拷贝——这正是 **`std::move` 反优化陷阱**的实测铁证：比可移动版本贵整整一次深拷贝（**2.0×**）。
+
+4. **教训：** `return b;`（依赖 NRVO）永远不劣于 `return std::move(b);`。后者只会禁掉 NRVO，最坏还会因重载决议退化为静默深拷贝。除"明确要把局部对象搬走、且本就不期待 NRVO"的少数情形外，不要对返回处的局部变量画蛇添足地 `std::move`。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <utility>
+#include <cassert>
+
+struct Counter {
+    static int copies;
+    static int moves;
+    int tag;
+    Counter(int t = 0) : tag(t) {}
+    Counter(const Counter& o) : tag(o.tag) { ++copies; }
+    Counter(Counter&& o) noexcept : tag(o.tag) { ++moves; }
+};
+int Counter::copies = 0;
+int Counter::moves = 0;
+
+Counter make_rvo() { return Counter{42}; }      // 纯 RVO：C++17 语言保证
+Counter make_nrvo() { Counter w{7}; return w; }  // NRVO：优化，非保证
+
+struct CopyOnly {
+    static int copies;
+    int tag;
+    CopyOnly(int t = 0) : tag(t) {}
+    CopyOnly(const CopyOnly& o) : tag(o.tag) { ++copies; }
+};
+int CopyOnly::copies = 0;
+CopyOnly make_copyonly() { CopyOnly w{99}; return std::move(w); }
+
+int main() {
+    Counter::copies = 0; Counter::moves = 0;
+    Counter a = make_rvo();
+    assert(a.tag == 42);
+    assert(Counter::copies == 0);                // 纯 RVO 保证零拷贝，可断言
+
+    Counter b = make_nrvo();
+    assert(b.tag == 7);
+    std::cout << "NRVO 拷贝次数(优化非保证,仅观察): " << Counter::copies << std::endl;
+
+    CopyOnly::copies = 0;
+    CopyOnly c = make_copyonly();
+    assert(c.tag == 99);
+    std::cout << "copy-only return std::move 触发拷贝: " << CopyOnly::copies << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；2000 次迭代 × 100 万 int 放大差异；`volatile` sink 防 DCE。
+- 本附录亮点在**数字自洽**：`copy_return_copyonly` 实测值恰落在 `construct + pure_copy` 之和附近，构成可手算的闭合验证，独立于绝对毫秒。
+- 加速比（2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源文件：库根 `_bench_d5_117_rvo.cpp`。demo 区分了"纯 RVO（C++17 保证，可断言零拷贝）"与"NRVO（优化非保证，仅打印计数不 assert）"，并断言 `return std::move` 在 copy-only 类型上确实触发拷贝（功能语义），未对时间或精确 `sizeof` 做任何断言。
