@@ -1026,3 +1026,122 @@ flowchart TD
 | SIMD 向量化 | ch149 CI/CD | 向量化基准进回归 |
 | SIMD 向量化 | ch47 虚函数 | 去虚调用利于向量化 |
 
+
+## 附录 D5：真实基准与性能分析 — SIMD 向量化的真实收益（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（Zen 4，支持 AVX2）；本机 MinGW-W64 GCC 15.3.0；基准文件用两种旗标各编译一次：`-O2 -std=c++23 -mavx2`（AVX2 版）与 `-O2 -std=c++23`（SSE2 基线版，AVX2 intrinsics 路径被 `#if defined(__AVX2__)` 排除）；`std::chrono::steady_clock` 计时，每场景 5 轮取中位；`volatile` sink 防死代码消除；数据运行期随机填充；标量对照组用 `#pragma GCC novector` 禁止向量化。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+场景 1：`y[i] += a * x[i]`（saxpy 形，8M `float`，每轮 8 遍）；场景 2：`float` 求和归约（8M，每轮 8 遍）；场景 3：条件累加 `if (x[i] > 500) s += x[i]`（16M 随机 `int`，每轮 4 遍，分支预测失败率高）。
+
+**`-O2 -std=c++23 -mavx2` 版：**
+
+| 场景 | 中位耗时 ms | 相对 |
+|---|---|---|
+| saxpy — 标量（`novector`） | 35.959 | 基准 1.00× |
+| saxpy — 自动向量化路径 | 35.734 | ≈1.0×（实际未被循环向量化，见 D5.2） |
+| saxpy — AVX2 intrinsics 手写 | 32.799 | 1.10× 快（内存带宽墙） |
+| 求和 — 标量严格 FP（`novector`） | 85.729 | 基准 1.00× |
+| 求和 — 自动向量化（函数级 `optimize("fast-math")`） | **11.425** | **7.5× 快**（32 字节向量） |
+| 求和 — AVX2 intrinsics（8 路累加器） | 11.499 | 7.5× 快（与自动向量化持平） |
+| 条件累加 — 分支写法（`novector`） | 61.411 | 基准 1.00× |
+| 条件累加 — 无分支写法（自动向量化） | **9.421** | **6.5× 快** |
+
+**`-O2 -std=c++23`（SSE2 基线）版：**
+
+| 场景 | 中位耗时 ms | 相对 |
+|---|---|---|
+| saxpy — 标量（`novector`） | 60.092 | 基准 1.00× |
+| saxpy — 自动向量化路径 | 58.279 | ≈1.0×（未向量化） |
+| 求和 — 标量严格 FP | 85.760 | 基准 1.00× |
+| 求和 — `fast-math` 路径 | 85.691 | ≈1.0×（**未向量化**，见 D5.2） |
+| 条件累加 — 分支写法 | 65.597 | 基准 1.00× |
+| 条件累加 — 无分支写法 | 50.305 | 1.30× 快（仅标量 cmov，未向量化） |
+
+### D5.2 非显然结论
+
+1. **"GCC `-O2` 不向量化"的正文口径（基于 GCC 13）在 GCC 15 上需要修正为："`-O2` 已默认打开自动向量化，但用 very-cheap 代价模型，只接受不需要循环版本化/剥离的循环。"** 证据链（`-fopt-info-vec`）：裸 `-O2` 下本文件三个热循环全部落选（saxpy 报 "couldn't vectorize loop"——指针可能别名，需要版本化，very-cheap 不允许）；加 `-fvect-cost-model=cheap` 或换 `-O3` 后同样的 SSE2 目标全部向量化成功；而 ch82 基准中迭代次数编译期已知的定长 16 循环在裸 `-O2` 下就报 "loop vectorized using 16 byte vectors"。结论：GCC 15 的 `-O2` 向量化器是"开着的但很挑剔"，不是"关着的"。
+
+2. **saxpy 上 SIMD 几乎白给（35.7 vs 36.0 ms，AVX2 手写也只快 1.10×）。** 根因：工作集 64 MB 远超缓存，每字节都要走 DRAM，瓶颈是内存带宽不是 ALU——把 4 条标量乘加换成 1 条 256 位 FMA 省下的只是发射口，总线还是那条总线。SIMD 只在计算密集或数据驻留缓存时才兑现倍数；这是"先看算术强度再谈向量化"的实测注脚。
+
+3. **求和归约 7.5×（85.7 → 11.4 ms）的前提不是 SIMD 本身，而是"允许浮点重结合"。** 严格 IEEE 语义下 `s += x[i]` 是一条串行依赖链，瓶颈是加法延迟（每次加必须等上一次）；函数级 `__attribute__((optimize("fast-math")))` 允许 GCC 把链拆成多路部分和并用 32 字节向量累加，收益 = 向量宽度 × 打断依赖链。手写 AVX2 8 路累加器（11.5 ms）与自动向量化持平——**编译器要的只是许可，不是替它写 intrinsics**。代价：求和顺序改变，结果与严格序在 ULP 级别不同（demo 里只打印不断言相等）。
+
+4. **无分支化在 AVX2 下 6.5×（61.4 → 9.4 ms），在 SSE2 基线下只有 1.30×（65.6 → 50.3 ms）。** 同一份无分支源码，`-mavx2` 时被 32 字节向量化（比较结果当 0/1 掩码乘进累加），裸 `-O2` 时落选向量化、只赚到标量 cmov 消除分支预测失败的钱。随机数据下分支写法约一半迭代预测失败（每次 ~十几周期罚金），这是 61.4 ms 基线的主要成分。
+
+5. **诚实标注（跨二进制反常现象，未完全解释）：同一段 `novector` 标量 saxpy，在 `-mavx2` 二进制里跑 36.0 ms，在 SSE2 二进制里跑 60.1 ms。** 可部分归因于 AVX 标量编码（`vmulss`/`vaddss` 三操作数省去寄存器搬运）与代码布局差异，但 1.7× 的幅度超出该解释的常见量级，且求和场景的标量版在两个二进制里几乎一致（85.7 vs 85.8 ms）。因此两张表**只应各自纵向比较，不应横向跨表比毫秒**。
+
+### D5.3 可复现 demo
+
+```cpp
+// 本 demo 只需 g++ -O2 -std=c++23，不需要 -mavx2，可移植
+#include <cassert>
+#include <cstdint>
+#include <iostream>
+#include <random>
+#include <vector>
+
+// 分支写法：随机数据下分支预测失败率高
+std::uint64_t cond_branch(const int* x, std::size_t n) {
+    std::uint64_t s = 0;
+    for (std::size_t i = 0; i < n; ++i) {
+        if (x[i] > 500) s += static_cast<std::uint32_t>(x[i]);
+    }
+    return s;
+}
+
+// 无分支写法：比较结果 0/1 直接乘进累加，可被向量化 / cmov 化
+std::uint64_t cond_branchless(const int* x, std::size_t n) {
+    std::uint64_t s = 0;
+    for (std::size_t i = 0; i < n; ++i) {
+        s += static_cast<std::uint32_t>(x[i]) * static_cast<std::uint32_t>(x[i] > 500);
+    }
+    return s;
+}
+
+int main() {
+    std::mt19937 rng(std::random_device{}());
+    std::uniform_int_distribution<int> di(0, 1000);
+    std::vector<int> xi(100000);
+    for (auto& v : xi) v = di(rng);
+
+    // 1) 分支与无分支语义完全等价（整数精确，稳定语义，可断言）
+    const std::uint64_t sb = cond_branch(xi.data(), xi.size());
+    const std::uint64_t sn = cond_branchless(xi.data(), xi.size());
+    assert(sb == sn);
+    std::cout << "branchy    sum = " << sb << std::endl;
+    std::cout << "branchless sum = " << sn << std::endl;
+
+    // 2) 浮点求和：顺序求和 vs 4 路部分和（模拟向量化的重结合）
+    //    两者数学上等价，但 IEEE 浮点下可能有 ULP 级差异 —— 只打印，不断言相等
+    std::uniform_real_distribution<float> df(0.0f, 1.0f);
+    std::vector<float> xf(100000);
+    for (auto& v : xf) v = df(rng);
+
+    float s_seq = 0.0f;
+    for (float v : xf) s_seq += v;
+
+    float p0 = 0, p1 = 0, p2 = 0, p3 = 0;
+    std::size_t i = 0;
+    for (; i + 4 <= xf.size(); i += 4) {
+        p0 += xf[i]; p1 += xf[i + 1]; p2 += xf[i + 2]; p3 += xf[i + 3];
+    }
+    float s_par = p0 + p1 + p2 + p3;
+    for (; i < xf.size(); ++i) s_par += xf[i];
+
+    std::cout << "sequential  sum = " << s_seq << std::endl;
+    std::cout << "4-way partial   = " << s_par << std::endl;
+    std::cout << "difference      = " << (s_seq - s_par) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；数据量（8M float / 16M int，每轮 4~8 遍）保证单轮 ≥ 数十 ms；结果累入 `volatile` sink。
+- **ch155 特别提示一**：基准源文件含 AVX2 intrinsics，编译需加 `-mavx2`（`g++ -O2 -std=c++23 -mavx2`）；SSE2 基线表由同一文件不加 `-mavx2` 编译测得（intrinsics 路径被条件编译排除）。上方 D5.3 demo 特意不含任何 intrinsics，裸 `-O2 -std=c++23` 即可编译。
+- **ch155 特别提示二**：重复调用纯函数（求和、条件累加）会被 IPA pure-const 折叠成一次，本基准在每次调用前对输入做 `volatile` 触写破坏折叠（第一版测试的场景 2/3 曾被折叠出 8× 假快，已修复重测）。
+- 标量对照用 `#pragma GCC novector`（GCC 15 支持）；浮点归约向量化用函数级 `optimize("fast-math")` 局部放开重结合，全局旗标保持 `-O2` 不变。
+- 向量化判定证据来自 `-fopt-info-vec-optimized` / `-fopt-info-vec-missed`，非猜测。
+- 加速比是可移植信号，绝对毫秒请勿跨机器比较；两张表不可横向互比（D5.2 第 5 条）。
+- 复现旗标：`g++ -O2 -std=c++23 -mavx2`（基准）/ `g++ -O2 -std=c++23`（SSE2 基线与 demo）。基准源码见库根 `_bench_d5_ch155_simd.cpp`。

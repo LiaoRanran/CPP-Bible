@@ -1643,3 +1643,77 @@ flowchart TD
 | 第81章 string | Book/part07_stl/ch81_string.md | 格式化与转义都基于 std string |
 | 第91章 filesystem | Book/part07_stl/ch91_filesystem.md | file sink 轮转依赖 filesystem 路径操作 |
 | 第151章 benchmark | Book/part13_engineering/ch151_benchmark.md | 同步vs异步基准方法同源 |
+
+## 附录 D5：真实基准与性能分析 — 日志格式化与落地策略的真实开销（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23 -pthread`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除；200000 条消息写入真实临时文件。本附录目的：用主控实测锁死的真实毫秒，量化「格式化方式（ostringstream / snprintf / std::format）」与「落地策略（同步 flush / 缓冲批量 / 异步后台线程）」的相对开销，并诚实呈现「朴素 mutex 异步反而更慢」的反常。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+N=200000 条消息。格式化维度各方式独立计时；落地维度以「同步逐条 flush」为基准。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 格式化：ostringstream | 228.86 | 基准（最慢） |
+| 格式化：snprintf | 222.61 | 0.97×（与 oss 持平） |
+| 格式化：std::format | 65.98 | **3.47× 快** |
+| 落地：同步逐条 flush | 82.03 | 基准 1.00× |
+| 落地：缓冲批量写 | 75.23 | 1.09× 快 |
+| 落地：异步后台线程（生产者耗时） | 122.16 | 0.67× 慢 |
+
+（正确性校验：异步落地后文件行数 = 200000，与同步/缓冲一致；三种落地「写什么」完全相同，仅「何时写」不同。）
+
+### D5.2 非显然结论
+
+1. **std::format 比 ostringstream 快 3.47×**（本机 GCC 15 libstdc++ 实测），且比传统 snprintf 也更快。根因：`ostringstream` 每次构造都付 locale/sentry 开销、产生多个临时对象；`std::format` 在 libstdc++ 中走更高效的格式化路径，避免这些开销。呼应正文 ④⑤「优先 std::format」。**诚实标注**：这 3.47× 是 GCC 15 的 libstdc++ 特例，其他标准库（如 MSVC STL、老版 libstdc++）具体倍数会变；方向（std::format ≥ snprintf > ostringstream 通常成立）稳定，绝对倍数不可移植。
+
+2. **缓冲批量写仅比同步逐条快 1.09×——真实但不大。** 根因：本机文件系统快，单次 `flush` 不是瓶颈；批量真正的收益是「把 N 次 `write` 系统调用合并成 1 次」，在慢 IO / 网络 sink 上差距会被放大。呼应正文 ⑯「异步把昂贵 sink IO 移出生产者路径」的前提——IO 越贵，批量/异步收益越大。
+
+3. **诚实反常：朴素 mutex 队列的异步反而更慢（生产者 0.67×）。** 根因：生产者路径仍要「格式化 + 加锁 + 入队 + notify」，比「格式化 + 写」更重；昂贵的文件写只是被挪到后台线程，并不缩短生产者延迟，反而多付了锁/唤醒开销。这恰好与正文 §16 用朴素 mutex 队列跑出 **0.20×** 的结论同源——**异步要赢，队列本身必须是无等待的**（spdlog 用无锁 SPSC 环形队列，生产者路径无锁），而非一把全局 mutex。
+
+4. **三种落地策略行数一致（均 200000 行）。** 证明异步只改变「何时写」，不改变「写什么」；正确性由行数校验保证，与正文 ⑥「生产者入队即返回，后台线程负责落地」的语义一致。
+
+### D5.3 可复现 demo
+
+```cpp
+// D5.3 可复现 demo — ch161 日志库
+// 演示：std::format 与 ostringstream 生成相同文本（语义等价）；
+//       批量写 N 行到临时文件，行数必须与 N 一致。正确性断言（非时间/倍数）。
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <format>
+#include <fstream>
+#include <sstream>
+#include <string>
+
+int main() {
+    int id = 42;
+    std::string a = std::format("id={} extra={}", id, id * 2);
+    std::ostringstream os;
+    os << "id=" << id << " extra=" << (id * 2);
+    assert(a == os.str());                 // 两种格式化方式文本等价
+
+    const int N = 1000;
+    std::string buf;
+    buf.reserve((size_t)N * 32);
+    for (int i = 0; i < N; ++i) buf += std::format("line {}\n", i);
+
+    const char* tmp = "_bench_tmp_demo161.log";
+    { std::ofstream ofs(tmp, std::ios::trunc); ofs << buf; }
+    long lines = 0;
+    { std::ifstream f(tmp); char c; while (f.get(c)) if (c == '\n') ++lines; }  // 离开作用域即关闭，避免 Windows 下删除失败
+    assert(lines == N);                    // 批量写行数正确
+    std::remove(tmp);                      // 清理临时文件
+    std::printf("demo ch161: format==ostringstream: %s, lines=%ld OK\n", a.c_str(), lines);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；每个场景单次运行内也跑 5 轮再取中位，最终表值为 5 次独立运行的中位之中位。
+- `volatile` sink 防 DCE；落地维度交叉校验文件行数（200000），断言「三种策略行数一致」这一稳定语义（可断言），未对时间或倍数做任何断言。
+- 复现旗标：`g++ -O2 -std=c++23 -pthread _bench_d5_ch161_logger.cpp -o bench && ./bench`。**基准源码见库根 `_bench_d5_ch161_logger.cpp`**（与附录 D5 同源，已在本机 GCC 15.3.0 真实编译运行）。
+- 临时日志 `_bench_tmp_logger.log` 在基准结束时由 `std::remove` 清理；demo 内临时文件 `_bench_tmp_demo161.log` 同样用完即删。
+- 线程相关基准需 `-pthread`；加速比随机器/文件系统波动，方向性结论稳定可移植。

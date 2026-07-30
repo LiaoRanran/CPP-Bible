@@ -1260,3 +1260,85 @@ flowchart TD
 | ch90 ranges | ch80 array | array 满足 contiguous_range 喂给 ranges 算法 |
 | ch88 受限接口 | ch80 array | 值语义拥有与视图的所有权边界思想 |
 
+
+## 附录 D5：真实基准与性能分析 — std::array 的真实开销（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-w64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：实测验证"`std::array` 是零开销抽象"，并量化 `.at()`、按值传参、栈上 array 对堆上 vector 的真实差价。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+数据规模：400 万个运行期随机 `uint32_t`，顺序求和重复 25 遍；传参组为 64 字节 `std::array<uint32_t,16>` 跨 `noinline` 边界调用 2000 万次；创建组为 64 元素容器新建+填充+求和+销毁 200 万次。"相对"列以同组更快者为 1.00×，更快者加粗。
+
+| 场景 | 中位耗时 ms | 相对 |
+|---|---|---|
+| 400 万×25 顺序求和 — C 数组 | 17.892 | 1.01× |
+| 400 万×25 顺序求和 — `std::array` | 20.114 | 1.13×（轮间波动所致，见 D5.2-1） |
+| 400 万×25 顺序求和 — `std::vector` | 17.785 | **1.00×** |
+| 400 万×25 顺序求和 — `std::array` 用 `operator[]` | 18.352 | 1.02× |
+| 400 万×25 顺序求和 — `std::array` 用 `.at()` | 17.905 | **1.00×** |
+| 2000 万次调用 — 64B `array` 按值传参（noinline） | 369.577 | 1.26× |
+| 2000 万次调用 — 同函数按 `const&` 传参（noinline） | 293.732 | **1.00×** |
+| 200 万次 新建+用完即弃 — 栈上 `std::array<uint32_t,64>` | 91.469 | **1.00×** |
+| 200 万次 新建+用完即弃 — 堆上 `std::vector<uint32_t>(64)` | 319.604 | 3.49× |
+
+### D5.2 非显然结论
+
+1. **C 数组、`std::array`、`std::vector` 顺序求和同速（17.89 / 20.11 / 17.79ms）。** `std::array` 一轮 13% 的偏差来自轮间波动（其 5 轮最快为 17.81ms，与另两者最快值重合）。根因：三者的热循环在 -O2 下编译成相同的向量化求和——`std::array` 的 `operator[]` 内联后就是 C 数组下标，`vector` 遍历时数据同样连续。零开销抽象在**访问已存在的数据**这一维度上三者无差别；差别在下一条和第 4 条。
+
+2. **`.at()` 在这个循环里居然不要钱（17.91 vs 18.35ms）。** 这是本附录最反直觉的数字。根因：循环边界 `i < N` 与 `.at()` 的检查 `i >= N` 在同一归纳变量上，GCC 的值域分析能证明检查恒假，把整条越界分支删除。**但这不可推广**：当下标来自函数参数、间接计算或运行期输入时，编译器证明不了，`.at()` 的分支就会真实存在。正确的结论是"可被证明安全的 `.at()` 免费"，而非"`.at()` 永远免费"。
+
+3. **64 字节 `array` 按值传参比 `const&` 慢 26%（369.6 vs 293.7ms）。** 根因：`std::array` 是值语义聚合，按值传参要在调用点整块拷贝 64 字节到实参区（Windows x64 ABI 下按隐藏引用传递副本），2000 万次调用就是 2000 万次 64B 拷贝；`const&` 只传 8 字节指针。本章"array 拷贝是深拷贝"的忠告在 64B 这个不大的尺寸上就已可测——尺寸再大，差距按线性放大。
+
+4. **"用完即弃"的小容器，栈上 `array` 比堆上 `vector` 快 3.49×（91.5 vs 319.6ms）。** 根因：`vector` 每次构造都要 `operator new`、析构都要 `operator delete`，200 万次往返分配器；`array` 的"分配"只是移动栈指针，且同一栈地址反复复用、缓存常驻。这是"大小编译期已知就用 `std::array`"的最强量化理由——差价不在访问，全在生命周期两端。
+
+### D5.3 可复现 demo
+
+下面的独立程序不测时间，验证的是本章可移植的稳定语义：`std::array` 无隐藏开销的布局特征、值语义深拷贝、以及 `.at()` 的越界保护行为。
+
+```cpp
+// demo_d5_ch80.cpp
+// g++ -O2 -std=c++23 demo_d5_ch80.cpp && ./a.out
+#include <array>
+#include <cassert>
+#include <iostream>
+#include <stdexcept>
+#include <vector>
+
+int main() {
+    // 1) 布局：array 不携带隐藏指针，元素直接内嵌
+    std::array<int, 8> a{1, 2, 3, 4, 5, 6, 7, 8};
+    static_assert(sizeof(a) == sizeof(int) * 8); // 聚合布局 == 裸元素总大小
+    assert(static_cast<void*>(&a) == static_cast<void*>(a.data())); // 首元素就在对象开头
+
+    // 对照：vector 对象本体不含元素（句柄 + 堆数据）
+    std::vector<int> v{1, 2, 3, 4, 5, 6, 7, 8};
+    assert(static_cast<void*>(&v) != static_cast<void*>(v.data()));
+
+    // 2) 值语义：拷贝是深拷贝，互不影响（C 数组做不到直接赋值）
+    std::array<int, 8> b = a;
+    b[0] = 100;
+    assert(a[0] == 1);
+    assert(b[0] == 100);
+
+    // 3) .at() 越界抛异常，operator[] 不检查
+    bool caught = false;
+    try {
+        (void)a.at(8); // 越界
+    } catch (const std::out_of_range&) {
+        caught = true;
+    }
+    assert(caught);
+
+    std::cout << "sizeof(array<int,8>) = " << sizeof(a) << std::endl;
+    std::cout << "deep copy verified, at() throws on OOB" << std::endl;
+    std::cout << "all assertions passed" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时用 `std::chrono::steady_clock`，每个子基准跑 5 轮取中位数；累加值写入 `volatile` sink；全部数据由运行期 `std::mt19937` 生成，防止编译期折叠。传参组用 `__attribute__((noinline))` 制造真实调用边界，否则 -O2 会把两个版本都内联成相同代码，测不出传参方式的差异。
+- 400 万元素的 C 数组与 `std::array` 放在静态存储区（避免爆栈），`vector` 数据在堆上——三者物理位置不同但均为连续内存，顺序访问模式下预取行为一致。
+- 诚实标注：①`.at()` 与 `[]` 同速的结论**仅**对"编译器可证明下标安全"的循环成立，不可推广到任意下标来源；②`std::array` 求和一轮 13% 的偏差为轮间波动（其最快轮 17.81ms 与 C 数组最快轮重合），不构成三者有差的证据；③创建组的 3.49× 测的是"新建+填充+求和+销毁"整个生命周期，其中填充与求和两边同担，纯分配/释放差价比 3.49× 更大；④按值传参组每次调用前改写 `small[0]`，防止编译器缓存上次求和结果。
+- 复现：`g++ -O2 -std=c++23 _bench_d5_ch80_array.cpp`。基准源码见库根 `_bench_d5_ch80_array.cpp`。

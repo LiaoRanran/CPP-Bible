@@ -1422,3 +1422,98 @@ flowchart TD
 | ch88 受限接口 | ch82 span | 非拥有视图与所有权边界思想 |
 | ch115 移动语义 | ch82 span | span 拷贝是浅复制，与移动语义呼应 |
 
+
+## 附录 D5：真实基准与性能分析 — span 视图的真实开销（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，每场景 5 轮取中位；结果累入 `volatile` sink 防死代码消除；数据用 `mt19937 + random_device` 运行期随机填充防闭式折叠；被测接口函数标 `__attribute__((noinline))` 模拟跨 TU 调用边界（同一 TU 内，见 D5.4 诚实标注）。**绝对毫秒随机器而变，"是否同速/相对倍数"才是可移植信号。**
+
+### D5.1 基准结果
+
+数据 16M 个 `int`（64 MB）。场景 1 每轮整块扫 12 遍；场景 2 对 262144 个 64 元素窗口做 3 级切片链取中间 32 个求和；场景 3 按 16 元素块扫全数组（1048576 块）。
+
+| 场景 | 中位耗时 ms | 相对 |
+|---|---|---|
+| 整块求和 — `std::span<const int>` 传参 | 119.585 | ≈1.0×（噪声内同速） |
+| 整块求和 — `const std::vector<int>&` 传参 | 120.907 | ≈1.0×（噪声内同速） |
+| 整块求和 — 裸指针 + 长度传参 | 113.783 | 基准 1.00× |
+| 3 级 `subspan` 切片链（`subspan→subspan→first`） | 16.422 | ≈1.0×（噪声内同速） |
+| 手工指针偏移 `p + w*64 + 16`，长度 32 | 17.504 | 基准 1.00× |
+| 16 元素块求和 — `span<const int, 16>`（静态 extent） | **3.881** | **2.36× 快** |
+| 16 元素块求和 — `span<const int>`（动态 extent） | 9.138 | 基准 1.00× |
+
+另实测：`sizeof(std::span<const int>) == 16`，`sizeof(std::span<const int, 16>) == 8`（仅供参考，不作断言）。
+
+### D5.2 非显然结论
+
+1. **span / `vector&` / 裸指针三方在调用边界上逐 ns 等价（119.6 / 120.9 / 113.8 ms，差异 <6%，且复跑一轮排序会翻转）。** 根因：`span<const int>` 就是 `{指针, 长度}` 二元组，Windows x64 调用约定下按引用传 16 字节结构，被调方取两个字段后循环体与裸指针版完全一致——正文 §⑩ 的汇编结论在 5 轮计时下成立。诚实标注：两次全程复跑中三者排序会互换（±10% 噪声），因此只能下"噪声内同速"结论，不能声称某一方更快。
+
+2. **基准陷阱实录：第一版测试中 `const vector&` 曾"快 12 倍"（8.672 ms ≈ 104/12），是 GCC 的 IPA pure-const 分析把 12 次同参纯函数调用 CSE 成了 1 次。** `noinline` 只阻止内联，不阻止过程间"纯函数"判定：编译器证明 `sum_vecref(data)` 无副作用且参数未变，就只调用一次并复用结果；而 span/裸指针版每次重新构造实参逃过了折叠。修复：每次调用前对数组做一次 `volatile` 自写（值不变但清除"未修改"事实）。这条对所有"跨调用边界零成本"类基准都适用。
+
+3. **静态 extent `span<const int, 16>` 比动态 extent 稳定快 2.36×（3.881 vs 9.138 ms，两次全程复跑均复现）。** 根因有二：其一，`-fopt-info-vec` 证实定长 16 的循环被 GCC 15 在**裸 `-O2` 下就用 16 字节向量（SSE2）向量化**——迭代次数编译期已知、无需尾循环，能通过 `-O2` 默认的 very-cheap 向量化代价模型；动态长度版本则被拒绝，逐元素标量累加。其二，静态 extent 的 span 只存指针（`sizeof == 8`），长度在类型里，传参少一个寄存器。这也是"把 extent 编进类型"从理论优势变成实测 2.4× 的少见直接证据。
+
+4. **3 级 `subspan` 切片链与手工指针偏移同速（16.4 vs 17.5 ms，复跑会翻转排序）。** 根因：`subspan/first` 全是 `constexpr` 的指针加法与长度减法，三级链在 -O2 下折叠成一次 `base + w*64 + 16`，与手写表达式生成同样的地址计算。切片链的可读性是免费的。
+
+5. **本基准所有"同速"结论都在 64 MB 内存受限工况下取得**——瓶颈是内存带宽而非指令数，这本身就是 span 类薄抽象最常见的真实工况；若数据全在 L1，微小的指令差异可能重新显形（未测，诚实标注）。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <numeric>
+#include <span>
+#include <vector>
+#include <random>
+#include <cassert>
+#include <cstdint>
+
+// 三种只读视图接口，语义应完全等价
+std::uint64_t sum_span(std::span<const int> sp) {
+    std::uint64_t s = 0;
+    for (int v : sp) s += static_cast<std::uint32_t>(v);
+    return s;
+}
+std::uint64_t sum_ptr(const int* p, std::size_t n) {
+    std::uint64_t s = 0;
+    for (std::size_t i = 0; i < n; ++i) s += static_cast<std::uint32_t>(p[i]);
+    return s;
+}
+
+int main() {
+    std::mt19937 rng(std::random_device{}());
+    std::uniform_int_distribution<int> dist(0, 1000);
+    std::vector<int> data(4096);
+    for (auto& v : data) v = dist(rng);
+
+    // 1) span / 裸指针求和结果逐位一致（稳定语义，可断言）
+    const std::uint64_t a = sum_span(std::span<const int>(data));
+    const std::uint64_t b = sum_ptr(data.data(), data.size());
+    assert(a == b);
+    std::cout << "sum via span = " << a << std::endl;
+    std::cout << "sum via ptr  = " << b << std::endl;
+
+    // 2) 3 级 subspan 切片链 == 手工指针偏移（同一窗口）
+    std::span<const int> whole(data);
+    auto sliced = whole.subspan(64, 64).subspan(16).first(32);
+    const std::uint64_t c = sum_span(sliced);
+    const std::uint64_t d = sum_ptr(data.data() + 64 + 16, 32);
+    assert(c == d);
+    assert(sliced.data() == data.data() + 80);   // 视图不拷贝：指针指向原数组
+    assert(sliced.size() == 32);
+    std::cout << "sliced sum   = " << c << std::endl;
+
+    // 3) 静态 extent 与动态 extent 的观感差异（只打印，不做精确 sizeof 断言）
+    std::span<const int, 16> fixed(data.data(), 16);
+    std::cout << "sizeof(span<const int>)     = " << sizeof(std::span<const int>) << std::endl;
+    std::cout << "sizeof(span<const int,16>)  = " << sizeof(fixed) << std::endl;
+    std::cout << "fixed extent sum            = " << sum_span(fixed) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；数据 64 MB 保证单轮 ≥ 数毫秒~百毫秒量级；结果累入 `volatile` sink。
+- **ch82 特别提示**：本附录的接口函数是同一 TU 内的 `noinline` 函数，只模拟"跨 TU 非内联"的调用边界；且必须配合调用间 `volatile` 触写，否则 IPA pure-const 会折叠重复调用（D5.2 第 2 条实录）。真正跨 TU + LTO 关闭的工况未单独测，诚实标注。
+- 静态 extent 2.36× 的机制证据来自 `-fopt-info-vec-optimized`：定长循环在裸 `-O2` 下报告 "loop vectorized using 16 byte vectors"，动态版无此报告。
+- 加速比是可移植信号，绝对毫秒请勿跨机器比较。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_ch82_span.cpp`。

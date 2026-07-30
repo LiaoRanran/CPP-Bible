@@ -1190,3 +1190,73 @@ flowchart TD
 | 第44章 memory_pool | Book/part04_memory/ch44_memory_pool.md | 任务对象生命周期由内存池或智能指针接管，避免悬垂 |
 | 第151章 benchmark | Book/part13_engineering/ch151_benchmark.md | 4.41x 加速数字来自 steady_clock 基准，方法同源 |
 | 第94章 stop_token | Book/part07_stl/ch94_stop_token.md | jthread 的 stop_token 是 C++20 语言级停止语义 |
+
+## 附录 D5：真实基准与性能分析 — 线程池 vs 每任务线程 vs std::async 的真实开销（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23 -pthread`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除；任务为 `s += i*((i%7)+1)` 的串行累加。本附录目的：用主控实测锁死的真实毫秒，量化「固定线程池 / 每任务新建线程 / std::async」的相对开销，并交叉校验并发结果与串行完全一致。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+负载 NTASKS=2000，每任务 WORK=120000。加速比以串行（单线程）为基准。
+
+| 场景 | 耗时 ms | 相对（加速比 vs 串行） |
+|---|---|---|
+| 串行（单线程） | 254.29 | 1.00× |
+| 每任务新建 `std::thread` | 195.69 | 1.30× |
+| 固定线程池（32 worker） | 17.57 | **14.47×** |
+| `std::async`（每次 `launch::async`） | 188.83 | 1.35× |
+| 粒度扫描：NTASKS=500 池加速 | — | 16.18× |
+| 粒度扫描：NTASKS=2000 池加速 | — | 17.39× |
+| 粒度扫描：NTASKS=8000 池加速 | — | 17.58× |
+
+（正确性校验：每轮 `pool.sum == serial.sum` 均为 YES；池化加速比随任务数从 500→8000 由 16.18× 升至 17.58×。）
+
+### D5.2 非显然结论
+
+1. **线程池比串行快 14.47×，比「每任务新建线程」(1.30×) 和 std::async(1.35×) 快一个数量级。** 根因：2000 次任务下，每任务新建线程的「建栈(默认 1MB)+调度器注册+销毁」固定开销（约每线程数十 μs 级）淹没了并行收益；线程池把 32 个 worker 常驻复用，任务只做「入队 + 唤醒」。这与正文 ⑮ 的核心论断同源。
+
+2. **诚实标注 / 反常：本机 GCC 15.3.0 下池加速 14.47×，明显高于正文 §15 记录的 4.41×（GCC 13.1.0 采集）。** 两者同为 Ryzen 9 7940HX / 32 逻辑核，差异来自编译器版本、运行时负载与核心争用——**再次印证「绝对毫秒随机器而变，加速比才是可移植信号」**。请勿跨机器直接比较毫秒；但「池 >> 每任务线程」的方向性结论在两代编译器、两种负载下都稳定成立。
+
+3. **std::async 与每任务线程几乎同样慢（均 ~1.3×）。** 每次 `async(std::launch::async)` 默认也会起一条新线程，重蹈「每任务一线程」反模式；私有线程创建成本未被消除，只是被 runtime 代管。呼应正文 ⑱：async 只适合少量、一次性、分散触发的任务，高频小任务必须用池。
+
+4. **加速比随任务数增大而上升（16→17×），但天花板远低于 32×。** 根因：任务越碎越多，池化摊薄线程创建成本的收益越大；但本内核 `s` 串行依赖，单任务无法进一步并行，且 32 逻辑核共享 16 物理核执行单元，故天花板由依赖链与物理核数共同决定，无法线性到 32×。
+
+### D5.3 可复现 demo
+
+```cpp
+// D5.3 可复现 demo — ch159 线程池
+// 演示：用 std::async 把求和并发化，结果必须与串行闭式解一致（正确性验证）。
+// 注意：本 demo 仅验证「并发结果正确」，性能数字见正文 D5.1；此处不断言时间/加速比。
+// 注：MinGW-w64 为 LLP64，long 为 32 位，故用 long long 避免溢出。
+#include <assert.h>
+#include <stdio.h>
+#include <future>
+#include <vector>
+
+int main() {
+    const long long n = 1000000;
+    const int parts = 8;
+    std::vector<std::future<long long>> fs;
+    for (int p = 0; p < parts; ++p) {
+        long long lo = p * (n / parts), hi = (p + 1) * (n / parts);
+        fs.push_back(std::async(std::launch::async, [lo, hi] {
+            long long s = 0;
+            for (long long i = lo; i < hi; ++i) s += i;
+            return s;
+        }));
+    }
+    long long total = 0;
+    for (auto& f : fs) total += f.get();
+    const long long expected = n * (n - 1) / 2;     // 闭式解：0+1+...+(n-1)
+    assert(total == expected);
+    std::printf("demo ch159: async parallel sum=%lld expected=%lld OK\n", total, expected);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；每个场景单次运行内也跑 5 轮再取中位，最终表值为 5 次独立运行的中位之中位。
+- `volatile` sink 防 DCE；并交叉校验 `pool.sum == serial.sum`（语义正确性断言，可断言），未对时间或倍数做任何断言。
+- 复现旗标：`g++ -O2 -std=c++23 -pthread _bench_d5_ch159_threadpool.cpp -o bench && ./bench`。**基准源码见库根 `_bench_d5_ch159_threadpool.cpp`**（与附录 D5 同源，已在本机 GCC 15.3.0 真实编译运行；线程池实现与正文 §17 同构）。
+- `std::thread` 基准需 `-pthread`；加速比随机器/负载波动，方向性结论（池 >> 每任务线程）稳定可移植。

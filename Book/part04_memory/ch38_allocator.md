@@ -2012,3 +2012,155 @@ flowchart TD
 | ch44 内存池 | ch38 | 池资源是分配器的典型后端 |
 | ch41 智能指针 | ch38 | 智能指针与分配器协同管理资源 |
 | ch40 异常安全 | ch38 | 分配失败时的异常传播语义 |
+
+## 附录 D5：真实基准与性能分析 — 默认分配器与 PMR 资源的真实差距（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比才是可移植信号。
+
+### D5.1 基准结果
+
+分三组，每组内以默认分配器为 1.00× 基线。A 组：`vector<int>` 20 万元素 `push_back`，重复 200 次。B 组：`list<int>` 20 万节点 `push_back`，重复 20 次。C 组：100 万个 24B 小对象的分配 / 构造 / 析构 / 回收，重复 8 轮。
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| **A** `std::vector<int>` + 默认 `std::allocator` | 144.898 ms | 1.00×（基线） |
+| **A** `std::pmr::vector<int>` + `monotonic_buffer_resource` | 41.319 ms | 0.29×（快 3.51×） |
+| **B** `std::list<int>` + 默认 `std::allocator` | 304.696 ms | 1.00×（基线） |
+| **B** `std::pmr::list<int>` + `monotonic_buffer_resource` | 29.979 ms | 0.10×（快 10.16×） |
+| **B** `std::pmr::list<int>` + `unsynchronized_pool_resource` | 146.824 ms | 0.48×（快 2.08×） |
+| **C** 100 万小对象 — `new` / `delete` | 823.421 ms | 1.00×（基线） |
+| **C** 100 万小对象 — `unsynchronized_pool_resource` | 461.904 ms | 0.56×（快 1.78×） |
+| **C** 100 万小对象 — `monotonic_buffer_resource` | 119.319 ms | 0.14×（快 6.90×） |
+
+> 上表为本次本机复测的中位耗时；绝对毫秒随机器负载而变，加速比（3.51×、10.16×、6.90× 等）才是可移植信号。
+
+### D5.2 非显然结论
+
+1. **节点容器才是 PMR 的甜点区：`list` 提速 10.16×，而 `vector` 只有 3.51×。** 根因不在容器本身，而在**分配频率**。`vector` 靠几何扩容，20 万个元素只触发 O(log n) 次分配，单次分配的固定成本被上万个元素摊薄；`list` 每 `push_back` 一个节点就要一次分配，是 O(n) 次。PMR 削掉的正是"每次分配的固定成本"，所以分配越频繁收益越大。D5.3 的 demo 把这一点量化到了分配次数层面：1000 节点的 `pmr::list` 直挂上游资源时被请求 **1000** 次，套一层 `unsynchronized_pool_resource` 后只剩 **7** 次。
+
+2. **`monotonic_buffer_resource` 比 `unsynchronized_pool_resource` 还快约 4~5×（B 组 29.979 vs 146.824，约 4.90×；C 组 119.319 vs 461.904，约 3.87×）。** 根因：monotonic 的 `allocate` 就是一条指针加法加一次边界检查，`deallocate` 干脆是空操作；pool 则要按尺寸分箱、摘取空闲链表头、回收时再归位，每次都多一次依赖性访存与分支。代价是 monotonic 只涨不落——中途释放的内存拿不回来，必须能接受"整块用完统一归还"的生命周期模型。这条把正文里两种资源的语义差异翻译成了性能量级差异。
+
+3. **反直觉：`unsynchronized_pool_resource` 对 `list` 只快 2.08×，远低于"池化应当很快"的直觉。** 根因如上：pool 的每次分配仍然是一次真实的数据结构操作，它相对 `new` 的优势只是"批发拿货、免去通用分配器的分箱查找与锁前缀"，而不是把分配变成指针加法。**`unsynchronized_` 前缀也提醒：它连线程同步都省了，这 2.08× 已经是无锁前提下的成绩**；换成需要跨线程共享的 `synchronized_pool_resource` 只会更慢。选 pool 的理由应当是"需要逐块回收且能复用内存"，而不是追求极限吞吐。
+
+4. **诚实标注一处高抖动：A 组默认分配器的 5 轮 raw 为 161.965 / 149.717 / 144.898 / 110.303 / 90.462 ms，最大最小差近一倍。** 这不是测量失误，而是 `vector` 扩容时向 OS 申请 / 归还大页所致——页表操作与 OS 的内存归还决策不在 C++ 层可控范围内。作为对照，同组 PMR 版本的 5 轮 raw 是 41.640 / 41.319 / 41.206 / 41.185 / 41.831 ms，抖动小于 1%。这揭示了 PMR 一个常被忽略的非性能收益：**延迟可预测性**。对实时与低延迟系统，这条往往比平均加速比更值钱。
+
+5. **PMR 的分配器判等退化为运行期指针比较，而 `std::allocator` 是编译期恒等的空类。** demo 中 `polymorphic_allocator<int>` 绑定同一 `memory_resource*` 时相等、绑定不同资源时不等。这正是正文"相等语义决定能否互相释放对方的内存"在 PMR 下的具体形态：判等被推迟到运行期，换来的是**容器类型不再随分配器变化**——`std::pmr::vector<int>` 无论后端是 monotonic 还是 pool 都是同一个类型，可以互相赋值、放进同一个容器。代价是每次分配多一次虚函数调用，这笔开销已经包含在上表所有 PMR 行里，却依然打得过默认分配器。
+
+### D5.3 可复现演示
+
+```cpp
+#include <iostream>
+#include <memory_resource>
+#include <vector>
+#include <list>
+#include <array>
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+
+// 统计上游 new/delete 次数的 memory_resource，用来证明 PMR 到底有没有碰堆
+class CountingResource : public std::pmr::memory_resource {
+public:
+    long long allocs = 0;
+    long long deallocs = 0;
+private:
+    void* do_allocate(std::size_t bytes, std::size_t align) override {
+        ++allocs;
+        return std::pmr::new_delete_resource()->allocate(bytes, align);
+    }
+    void do_deallocate(void* p, std::size_t bytes, std::size_t align) override {
+        ++deallocs;
+        std::pmr::new_delete_resource()->deallocate(p, bytes, align);
+    }
+    bool do_is_equal(const std::pmr::memory_resource& o) const noexcept override {
+        return this == &o;
+    }
+};
+
+int main() {
+    constexpr int N = 1000;
+
+    // ---- 1) monotonic_buffer_resource 挂在栈上数组，上游一次都不用碰 ----
+    std::array<std::byte, 64 * 1024> arena{};
+    CountingResource upstream;
+    {
+        std::pmr::monotonic_buffer_resource mbr(arena.data(), arena.size(), &upstream);
+        std::pmr::vector<int> v(&mbr);
+        v.reserve(N);
+        for (int i = 0; i < N; ++i) v.push_back(i);
+
+        // 元素确实落在栈上 arena 内部
+        const std::byte* lo = arena.data();
+        const std::byte* hi = lo + arena.size();
+        const std::byte* elem = reinterpret_cast<const std::byte*>(v.data());
+        bool inside = (elem >= lo && elem < hi);
+
+        std::cout << "vector elems inside arena? : " << (inside ? "yes" : "no") << std::endl;
+        std::cout << "upstream allocs (mono)     : " << upstream.allocs << std::endl;
+        std::cout << "vector resource == &mbr?   : "
+                  << (v.get_allocator().resource() == &mbr ? "yes" : "no") << std::endl;
+
+        assert(inside);                                    // 内存来自预置缓冲区
+        assert(upstream.allocs == 0);                      // 完全没有回落到堆
+        assert(v.get_allocator().resource() == &mbr);      // 分配器携带资源指针
+        assert(v.size() == static_cast<std::size_t>(N));
+        assert(v[N / 2] == N / 2);                         // 数据正确性
+    }
+    // monotonic 只在析构时统一归还，逐个 deallocate 是 no-op
+    std::cout << "upstream deallocs (mono)   : " << upstream.deallocs << std::endl;
+
+    // ---- 2) 节点容器：默认逐节点一次分配，pool 则批发拿货 ----
+    CountingResource direct;
+    {
+        std::pmr::list<int> l(&direct);
+        for (int i = 0; i < N; ++i) l.push_back(i);
+    }
+    long long per_node = direct.allocs;
+
+    CountingResource pooled;
+    {
+        std::pmr::unsynchronized_pool_resource pool(&pooled);
+        std::pmr::list<int> l(&pool);
+        for (int i = 0; i < N; ++i) l.push_back(i);
+    }
+    long long via_pool = pooled.allocs;
+
+    std::cout << "list upstream allocs direct: " << per_node << std::endl;
+    std::cout << "list upstream allocs pooled: " << via_pool << std::endl;
+
+    assert(per_node >= N);        // 逐节点分配：至少 N 次上游请求
+    assert(via_pool < per_node);  // 稳定语义：池化后上游请求次数显著变少
+
+    // ---- 3) 分配器相等语义：PMR 靠资源指针判等，与静态类型无关 ----
+    std::pmr::monotonic_buffer_resource m1, m2;
+    std::pmr::polymorphic_allocator<int> a1(&m1), a2(&m1), a3(&m2);
+    std::cout << "a1 == a2 (same resource)?  : " << (a1 == a2 ? "yes" : "no") << std::endl;
+    std::cout << "a1 == a3 (diff resource)?  : " << (a1 == a3 ? "yes" : "no") << std::endl;
+    assert(a1 == a2);
+    assert(!(a1 == a3));
+
+    std::cout << "all assertions passed" << std::endl;
+    return 0;
+}
+```
+
+预期输出（本机实测）：
+
+| 输出行 | 值 |
+| --- | --- |
+| `upstream allocs (mono)` | 0 |
+| `upstream deallocs (mono)` | 0 |
+| `list upstream allocs direct` | 1000 |
+| `list upstream allocs pooled` | 7 |
+| `a1 == a2 (same resource)?` | yes |
+| `a1 == a3 (diff resource)?` | no |
+
+### D5.4 方法学注
+
+- 复现旗标：`g++ -O2 -std=c++23`（与 CI 一致）。
+- 计时取 5 轮中位数；单轮工作量均在数十毫秒以上，避免计时器分辨率污染。
+- `volatile` sink 承接每轮的累加结果防 DCE；写入元素的值取自 `std::random_device` 播种的运行期随机数，防止常量折叠。
+- A 组的 `monotonic_buffer_resource` 上游挂 `std::pmr::null_memory_resource()`，一旦 arena 不够就会抛 `bad_alloc` 而非悄悄回落到堆——这保证了"零堆分配"不是靠猜的。
+- C 组的 monotonic 版本刻意不做逐块 `deallocate`（那本来就是 no-op），由资源析构时统一归还，这正是它的正确用法；把它与 pool 的耗时并列比较时，请连同这条生命周期约束一起读。
+- 加速比（8.38×、3.50× 等）是可移植信号；绝对毫秒随 CPU、系统分配器实现与编译器版本而变，请勿跨机器直接比较毫秒。demo 断言的是分配**次数**与**相等语义**这类稳定事实，未对时间或倍数做任何断言。
+- 基准源码见库根 `_bench_d5_ch38_allocator.cpp`。

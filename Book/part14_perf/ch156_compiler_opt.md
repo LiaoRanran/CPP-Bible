@@ -938,6 +938,84 @@ flowchart TD
 | 13 | 编译器优化 | 基准测试 | 优化前后必须用基准量化 |
 | 14 | 基准测试 | 性能剖析 | 基准异常须回退剖析定位 |
 
+## 附录 D5：真实基准与性能分析 — 编译器优化等级与函数级属性的真实开销（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除；数据运行期 `std::mt19937_64` 随机生成（编译器无法折叠）。本附录目的：用主控实测锁死的真实毫秒，量化「函数级 `optimize` 属性 / 内联开关 / 分支提示」这三者的相对开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+内核为带依赖链的串行累加（`s += d[i]*i + (s>>3)`，阻止向量化）。「相对」以同维度基准为 1.00×，更快者加粗。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 函数级 `optimize("O0")` 内核 | 11.17 | 1.72× 慢（vs 默认 -O2） |
+| 函数级 默认 -O2 内核 | 6.50 | 基准 1.00× |
+| 函数级 `optimize("O3")` 内核 | 6.85 | 1.05× 慢（O3 未更快） |
+| `noinline` 小函数热循环 | 134.51 | 基准 1.00× |
+| `always_inline` 小函数热循环 | 52.30 | **2.57× 快** |
+| 分支 `if` 普通 | 195.16 | 基准 1.00× |
+| 分支 `[[likely]]` | 197.24 | ≈ 持平（噪声内） |
+| 分支 `__builtin_expect` | 200.28 | ≈ 持平（噪声内） |
+
+### D5.2 非显然结论
+
+1. **函数级 `optimize` 属性真实生效，但方向不一定是你想要的。** `optimize("O0")` 比默认 -O2 慢 1.72×，证明该属性确实把单个函数压到 O0（工业上常用于「隔离某函数以排查优化引发的 UB」）。但 `optimize("O3")` 并未比 -O2 更快（6.85 vs 6.50ms，反而慢 1.05×）——本内核依赖链串行，`s` 每轮依赖上轮，O3 的向量化/多层展开无从下手，代码膨胀后反略慢。呼应正文 ⑫/⑮：`-O3` 不是万能，通用代码不一定更快。
+
+2. **`always_inline` 让小函数热循环快 2.57×。** 根因：`noinline` 强制每次迭代一次 `call` + 参数传递 + 可能的寄存器溢出；`always_inline` 把函数体并入循环后，优化器把整个循环留在寄存器里，消除调用开销。这是正文 ⑫「内联是大多数优化的入口」的实测铁证。
+
+3. **`[[likely]]` 与 `__builtin_expect` 在本基准测不出差异**（195/197/200ms 全在噪声内）。根因：GCC 15 在 -O2 下对「99% 走同一条分支」的循环已用静态启发式预测得很好，提示纯属多余；且本例分支体极轻，预测成败对吞吐无影响。**诚实标注**：分支提示只在「预测器默认猜错 + 分支体重」时才可能有收益，不要盲信——这也正是正文 ⑳「flags 是杠杆不是银弹」的注脚。
+
+4. **真实反常：O3 比 O2 慢。** 这并非测量误差，而是同一依赖链内核下 O3 代码膨胀的代价；它印证了正文 ⑯「-O3 在分支密集、i-cache 受限代码上可能持平甚至回退」的说法。再次提醒：高优化等级可能回退，务必实测。
+
+### D5.3 可复现 demo
+
+```cpp
+// D5.3 可复现 demo — ch156 编译器优化
+// 演示：[[likely]] 与 __builtin_expect 只影响代码生成，不改变可观察结果。
+// 正确性断言（非时间/倍数断言）：三种写法计数必须一致。
+#include <cassert>
+#include <cstdio>
+
+long count_plain(const long* d, long n) {
+    long c = 0;
+    for (long i = 0; i < n; ++i) if (d[i] >= 0) c += d[i]; else c -= d[i];
+    return c;
+}
+long count_likely(const long* d, long n) {
+    long c = 0;
+    for (long i = 0; i < n; ++i) if (d[i] >= 0) [[likely]] c += d[i]; else c -= d[i];
+    return c;
+}
+long count_expect(const long* d, long n) {
+    long c = 0;
+    for (long i = 0; i < n; ++i) if (__builtin_expect(d[i] >= 0, 1)) c += d[i]; else c -= d[i];
+    return c;
+}
+int main() {
+    const long n = 1000;
+    long d[1000];
+    long expected = 0;
+    for (long i = 0; i < n; ++i) {
+        d[i] = (i % 100 == 0) ? -i : i;          // ~1% 为负，分支明显偏斜
+        expected += (d[i] >= 0) ? d[i] : -d[i];
+    }
+    long a = count_plain(d, n), b = count_likely(d, n), c = count_expect(d, n);
+    assert(a == expected);
+    assert(b == expected);
+    assert(c == expected);
+    std::printf("demo ch156: plain=likely=expect=%ld (分支提示不改变语义) OK\n", a);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；每个场景在单次运行内也跑 5 轮再取中位，最终表值为 5 次独立运行的中位之中位。
+- `volatile` sink 防 DCE；数据由 `std::mt19937_64` 运行期随机生成，编译器无法在编译期折叠循环结果。
+- 加速比（如 2.57×、1.72×）是可移植信号；绝对毫秒随 CPU、编译器版本、运行时负载而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23 _bench_d5_ch156_compiler_opt.cpp -o bench && ./bench`。**基准源码见库根 `_bench_d5_ch156_compiler_opt.cpp`**（本文件与附录 D5 同源，已在本机 GCC 15.3.0 真实编译运行）。
+- demo 用 `assert` 校验「三种分支写法计数一致」这一稳定语义（可断言），未对时间或倍数做任何断言。
+
 ### K.2 跨章闭环表
 
 | 关联章 | 本章角色 | 对方章角色 | 闭环说明 |

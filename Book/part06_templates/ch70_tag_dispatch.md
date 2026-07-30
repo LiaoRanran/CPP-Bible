@@ -1147,3 +1147,95 @@ flowchart TD
 | ch76 STL 架构 | STL 算法大量用标签选最优实现（iterator_category）。 |
 | ch60 模板基础 | 标签依赖模板实例化与重载决议。 |
 | ch51 CRTP | 标签分发与 CRTP 都属编译期多态技术。 |
+
+## 附录 D5：真实基准与性能分析 — 标签分发的真实开销（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-w64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：量化同一 `advance` 工作负载下四种分发方式的真实成本——标签分发、`if constexpr`、运行期 `if`、函数指针表——并验证"标签分发零开销"是否属实。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+工作负载：在 100 万元素 `vector` 上做 4000 万次随机步长（1~16，运行期随机序列）的 `advance` + 解引用累加；第 2 组换成 20 万节点 `list`（bidirectional 迭代器，走逐步 `++` 路径）做 40 万次。"相对"列以同组更快者为 1.00×，更快者加粗。
+
+| 场景 | 中位耗时 ms | 相对 |
+|---|---|---|
+| 4000 万次 advance — 标签分发（`iterator_category` 重载决议） | 63.471 | 1.13×（复跑后差异消失，见 D5.2-1） |
+| 4000 万次 advance — `if constexpr` 编译期选路 | 56.274 | **1.00×** |
+| 4000 万次 advance — 运行期 `if`（volatile 标志，分支可预测） | 58.361 | 1.04× |
+| 4000 万次 advance — 函数指针表分发（每次查表间接调用） | 99.878 | 1.77× |
+| 40 万次 advance — `list` 迭代器走标签分发（input 路径逐步 `++`） | 13.215 | 1.10×（噪声级） |
+| 40 万次 advance — `list` 迭代器手写 `++` 循环 | 11.977 | **1.00×** |
+
+### D5.2 非显然结论
+
+1. **标签分发与 `if constexpr` 生成等价代码，首轮 13% 的差距是测量噪声。** 首轮实测 63.47 vs 56.27ms，但同一可执行文件复跑一轮变为 68.51 vs 69.02ms——两者互有胜负、差异完全落入轮间波动。根因：标签实参（如 `random_access_iterator_tag{}`）是空类，重载决议在编译期完成后，-O2 直接把选中的实现内联，空标签对象连一个字节都不会传递。ch69 说两者"殊途同归"，这里给出实测背书。
+
+2. **运行期 `if` 在分支完美可预测时同样免费（58.36ms，与编译期选路同档）。** 根因：`volatile` 标志强迫每次调用都做真实加载和比较，但方向永远相同，硬件分支预测命中率接近 100%，预测正确的分支在乱序核上近乎零延迟。编译期分发的真正优势不在"省一次 if"，而在**死分支不参与实例化**——运行期 `if` 的两个分支都必须对所有迭代器类型合法编译（`it += n` 对 `list` 迭代器直接编译失败），这是本章第 17 节强调的语义差异，性能反而是次要理由。
+
+3. **函数指针表是唯一显著变慢的方案（99.88ms，稳定 1.7× 上下）。** 且此劣势在两轮复跑中稳定复现。根因：经函数指针的调用无法内联，每次 `advance` 都付出真实的 call/ret、参数按 ABI 传递、以及间接调用对预测资源的占用；被调函数体只有一条 `it += n`，调用开销远大于工作本身。这正是"能静态分发就不要动态分发"的量化依据。
+
+4. **`list` 上标签分发与手写 `++` 循环同速（13.21 vs 11.98ms，复跑后 17.42 vs 17.65ms 反超）。** 根因：标签分发选中的 input 版本内联后就是同一个 `while (n--) ++it` 循环，耗时全部来自链表节点的指针追逐本身。标签分发不改变算法成本，它的价值是**自动选中**每种迭代器能负担的最优算法——vector 走 O(1)，list 走 O(n)，调用方写同一行代码。
+
+### D5.3 可复现 demo
+
+下面的独立程序不测时间，验证的是本章可移植的稳定语义：标签分发在编译期按迭代器类别选中不同实现，且空标签类的传递不增加对象大小负担。
+
+```cpp
+// demo_d5_ch70.cpp
+// g++ -O2 -std=c++23 demo_d5_ch70.cpp && ./a.out
+#include <cassert>
+#include <iostream>
+#include <iterator>
+#include <list>
+#include <string_view>
+#include <vector>
+
+// 返回所选路径名，证明重载决议按标签选中不同实现
+template <typename It>
+const char* adv_impl(It& it, long n, std::input_iterator_tag) {
+    while (n-- > 0) ++it;
+    return "input(step-by-step)";
+}
+template <typename It>
+const char* adv_impl(It& it, long n, std::random_access_iterator_tag) {
+    it += n;
+    return "random_access(O(1))";
+}
+template <typename It>
+const char* my_advance(It& it, long n) {
+    return adv_impl(it, n, typename std::iterator_traits<It>::iterator_category{});
+}
+
+int main() {
+    std::vector<int> v{0, 1, 2, 3, 4, 5, 6, 7};
+    std::list<int> l{0, 1, 2, 3, 4, 5, 6, 7};
+
+    auto vi = v.begin();
+    auto li = l.begin();
+    const char* path_vec = my_advance(vi, 5);
+    const char* path_lst = my_advance(li, 5);
+
+    // 两条路径都正确到达第 5 个元素
+    assert(*vi == 5);
+    assert(*li == 5);
+
+    // vector 选中 O(1) 路径，list 选中逐步路径
+    assert(std::string_view(path_vec) == "random_access(O(1))");
+    assert(std::string_view(path_lst) == "input(step-by-step)");
+
+    // 标签是空类：作为参数传递不携带任何数据
+    static_assert(std::is_empty_v<std::random_access_iterator_tag>);
+    static_assert(std::is_empty_v<std::input_iterator_tag>);
+
+    std::cout << "vector path: " << path_vec << std::endl;
+    std::cout << "list   path: " << path_lst << std::endl;
+    std::cout << "all assertions passed" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时用 `std::chrono::steady_clock`，每个子基准跑 5 轮取中位数；累加值写入 `volatile` sink；步长序列由运行期 `std::mt19937` 预生成（1~16 循环取用），防止编译器把 advance 折叠为常量步进。
+- 运行期 `if` 组用 `volatile bool` 标志阻止编译器把分支常量化，但标志方向不变、分支完美可预测——这是刻意设计：度量的是"保留分支但预测全中"的下界成本；若方向随机，该组会显著变慢。
+- 诚实标注：①D5.1 表中第 1、2 行的 13% 差距在第二轮完整复跑中消失（68.51 vs 69.02ms），故结论 1 以"两者等价"为准，表格保留首轮原始数字以示真实；②函数指针表组的 1.7× 在两轮中均稳定复现，是本附录最可信的相对差；③"运行期 if"组无法真正按运行期信息切换迭代器类别（类型是编译期属性），它度量的是分支保留成本，不是功能等价方案。
+- 复现：`g++ -O2 -std=c++23 _bench_d5_ch70_tag_dispatch.cpp`。基准源码见库根 `_bench_d5_ch70_tag_dispatch.cpp`。

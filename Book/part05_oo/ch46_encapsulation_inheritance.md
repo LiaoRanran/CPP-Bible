@@ -1775,3 +1775,80 @@ flowchart TD
 | ch39 RAII 规则 | ch46 封装继承 | 基类析构须 virtual/protected |
 | ch32 初始化 | ch46 封装继承 | 构造顺序影响基类子对象 |
 | ch115 move 语义 | ch46 封装继承 | 派生类移动需调用基类 |
+
+## 附录 D5：真实基准与性能分析 — 封装与继承的真实开销（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-w64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用真实实测毫秒回答本章最常被质疑的三个问题——getter/setter 有没有开销、虚函数比非虚函数贵多少、深继承链访问成员要不要付钱。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+数据规模：400 万个对象，热循环重复 20 遍，元素为运行期随机 `uint32_t`（防编译期折叠）。"相对"列以同组更快者为 1.00×，更快者加粗。
+
+| 场景 | 中位耗时 ms | 相对 |
+|---|---|---|
+| 400 万×20 次成员读取 — `public` 成员直接访问 | 20.174 | **1.00×** |
+| 400 万×20 次成员读取 — `private` + 内联 getter | 20.483 | 1.02×（噪声级，零成本实证） |
+| 400 万×20 次调用 — 非虚 getter（打乱的多态指针数组） | 781.313 | **1.00×** |
+| 400 万×20 次调用 — 虚 getter（同一打乱数组，3 种派生类混排） | 2426.350 | 3.11× |
+| 400 万×20 次 5 成员求和 — 5 层继承链（每层 1 个成员） | 58.257 | 1.10×（接近噪声） |
+| 400 万×20 次 5 成员求和 — 扁平结构体（5 成员平铺） | 53.027 | **1.00×** |
+
+### D5.2 非显然结论
+
+1. **getter/setter 与 `public` 直接访问逐毫秒等价（20.48 vs 20.17ms，差异 2% 在噪声内）。** 根因：内联 getter 在 -O2 下被完全展开，生成的机器码与直接读成员一条不差——`private` 只是编译期的访问检查，检查完就消失，不在运行期留下任何指令。这是本章"封装是编译期契约而非运行期保险箱"的实测铁证。
+
+2. **虚 getter 比非虚 getter 慢 3.11×（2426 vs 781ms），但这个倍数必须正确解读。** 根因有三层：虚调用要先读对象头部的 vptr、再读 vtable 槽、再间接跳转（两次额外内存访问）；3 种派生类随机混排使间接跳转目标不可预测，分支目标缓冲器（BTB）大量失效；而非虚版本被内联后只剩一次成员加载。注意两组基准都在遍历打乱的 `unique_ptr` 数组——指针追逐的缓存失效成本两边同担，因此 3.11× 反映的是"虚机制本身 + 预测失败"的净差。若数组不打乱（同类型连续），GCC 的去虚化与硬件预测会把差距缩到远小于此。
+
+3. **5 层继承链与扁平结构体求和几乎同速（58.3 vs 53.0ms，差异 10% 接近本机运行间波动）。** 根因：无虚函数的单继承下，派生类布局就是把基类子对象平铺在前面——`L5` 与 `Flat5` 的内存布局完全相同（各 5 个连续 `uint32_t`），成员偏移在编译期解析为常量，继承深度不产生任何运行期寻址成本。"继承很深所以访问成员慢"对非虚单继承是伪命题。
+
+4. **贵的从来不是封装，是间接。** 三组数据合看：访问控制（0 成本）、继承层级（0 成本）、虚分发（3× 成本）——本章核心知识点"封装与继承都是编译期机制，仅虚函数引入运行期结构"在数字上完整成立。为多态付费应当是设计决策，而不是默认习惯。
+
+### D5.3 可复现 demo
+
+下面的独立程序不测时间，验证的是本章可移植的稳定语义：非虚函数按**静态类型**在编译期绑定，虚函数按**动态类型**在运行期绑定——这正是 3.11× 开销差的语义来源。
+
+```cpp
+// demo_d5_ch46.cpp
+// g++ -O2 -std=c++23 demo_d5_ch46.cpp && ./a.out
+#include <cassert>
+#include <iostream>
+#include <string>
+
+struct Base {
+    virtual ~Base() = default;
+    virtual std::string who_virtual() const { return "Base"; }
+    std::string who_nonvirtual() const { return "Base"; }
+};
+
+struct Derived : Base {
+    std::string who_virtual() const override { return "Derived"; }
+    std::string who_nonvirtual() const { return "Derived"; } // 名字隐藏，非覆盖
+};
+
+int main() {
+    Derived d;
+    const Base& b = d; // 静态类型 Base，动态类型 Derived
+
+    // 虚函数：运行期查 vtable，按动态类型选 Derived 版本
+    assert(b.who_virtual() == "Derived");
+
+    // 非虚函数：编译期按静态类型 Base 直接绑定，零间接
+    assert(b.who_nonvirtual() == "Base");
+
+    // 直接用派生类对象调用时，两者都选 Derived 版本
+    assert(d.who_virtual() == "Derived");
+    assert(d.who_nonvirtual() == "Derived");
+
+    std::cout << "virtual  via Base&: " << b.who_virtual() << std::endl;
+    std::cout << "nonvirt  via Base&: " << b.who_nonvirtual() << std::endl;
+    std::cout << "all assertions passed" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时用 `std::chrono::steady_clock`，每个子基准跑 5 轮取中位数；每轮结果累加进 `volatile` sink 防止死代码消除；所有输入数据来自运行期 `std::mt19937`，防止编译器把闭式求和折叠成常量。
+- 虚调用基准把 3 种派生类随机 `shuffle` 后经 `unique_ptr<Base>` 数组访问，专门破坏去虚化与间接分支预测；非虚对照组走同一数组，保证内存访问模式一致。
+- 诚实标注：①第 2 组的 3.11× 含指针追逐背景成本，纯"虚机制税"在缓存友好场景下会明显更小；②第 3 组 10% 的差异接近本机 5 轮的轮间波动（对照组自身波动约 ±8%），只能得出"深继承链无显著额外成本"而非"扁平一定更快"；③虚版本 getter 各返回 `v+1/v+2/v+3`（防止三个覆盖体被合并），额外一次加法对结论无影响。
+- 复现：`g++ -O2 -std=c++23 _bench_d5_ch46_encapsulation.cpp`。基准源码见库根 `_bench_d5_ch46_encapsulation.cpp`。

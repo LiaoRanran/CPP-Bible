@@ -1281,3 +1281,155 @@ int main() {
   return 0;
 }
 ```
+
+## 附录 D5：真实基准与性能分析 — thunk 调整与虚继承的真实代价（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比才是可移植信号。
+
+### D5.1 基准结果
+
+每个场景 20,000 个对象 × 4,000 遍，共 8,000 万次虚调用。对象指针数组事先随机洗牌且派生类型两两混杂，杜绝去虚拟化与内联；工作集刻意压进 L2，否则 cache miss 会淹没被测的那几条指令。
+
+**组一 / 组二：虚调用分派路径**（基线 = 单继承）
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| 单继承，经 `Base*` 虚调用 | 891.381 ms | 1.00×（基线） |
+| 多重继承，经**第一**基类 `L*` 虚调用（无需调整 this） | 945.804 ms | 1.06× |
+| 多重继承，经**第二**基类 `R*` 虚调用（需 thunk 调整 this） | 990.005 ms | 1.11× |
+
+**组三：基类成员访问**（基线 = 非虚继承）
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| 非虚继承链，访问基类成员 + 虚调用 | 890.312 ms | 1.00×（基线） |
+| 虚继承菱形，访问**虚基类**成员 + 虚调用 | 1022.586 ms | 1.15× |
+
+> 上表为本次本机复测（OBJ=20000 / REP=4000，单次运行 5 轮取中位）的中位耗时。thunk 一项的 1.11× 是相对单继承基线的读数；若改与第一基类路径相比（990.005 / 945.804）仅为 1.05×，且跨 3 次运行在 0.97×~1.05× 间反复翻号（见 D5.2 第 1 条），故不可当作结论。绝对毫秒随机器负载而变，加速比才是可移植信号。
+
+**对象体积观测**（仅记录，不作断言）：单继承 16 B，多重继承 32 B，非虚继承链 16 B，虚继承菱形 32 B。
+
+### D5.2 非显然结论
+
+1. **thunk 的 `this` 调整在实测中量不出来——而这本身就是结论。** 第二基类路径 990.005 ms 对第一基类路径 945.804 ms，比值 1.05×，即"经过 thunk 的那条反而略快"。重复整轮运行时该比值在 **0.97× ~ 1.05×** 之间来回翻号（本机 3 次独立运行：1.047×、0.974×、1.052×），说明它完全落在噪声内。**正确的读法不是"第二基类更快"，而是"差异不可测"。** 根因：thunk 在跳转前只多一条 `sub` 形式的常量减法，在乱序核上与间接跳转的 BTB 预测、vtable 载入完全重叠，占不到额外的执行周期。正文里"第二基类指针需要调整"是布局事实，但把它当成运行期性能顾虑是错的。
+
+2. **thunk 的成本不为零，只是不在本基准能看见的地方。** 它是每个需要调整的虚函数额外生成的一段代码桩，抬高的是二进制体积与指令缓存压力，而非单次调用的周期数。本基准的热循环只涉及两个虚函数，i-cache 压力可忽略，所以量不出来。要让它显形，必须构造"虚函数数量多到打满 i-cache"的场景——这也说明：担心 thunk 时该测的是 i-cache miss，不是调用延迟。
+
+3. **虚继承稳定贵约 1.1× 量级，且方向从不翻转。** 1022.586 vs 890.312 ms，比值 1.15×；本机 3 次独立运行该比值落在 **1.07× ~ 1.15×**（1.149×、1.072×、1.112×），与 thunk 那条的随机翻号形成鲜明对照。根因：访问虚基类成员**不能**使用编译期常量偏移——必须先从 vtable 里读出 vbase offset，再把它加到 `this` 上。这多出的一次访存是**依赖性**的：地址算不出来就发不出后续的取数请求，而它又与虚调用本身的 vtable 载入串在同一条依赖链上，乱序引擎藏不掉。这就是正文"虚继承把静态偏移换成动态查表"的性能代价。
+
+4. **虚继承的代价是"每次访问多一跳"，而不是"每个对象多一个字段"。** 实测 `sizeof` 显示虚继承菱形与普通多重继承同为 32 B。原因是在 GCC 采用的 Itanium ABI 下，vbase offset 存放在 **vtable** 里而非对象内部，对象增大只来自额外的 vptr。这条纠正了一个常见误解：虚继承的开销主要落在**访问时的间接跳转**上，靠"对象变大了多少"来估算它会严重低估。
+
+5. **诚实标注一次方法学返工。** 本附录第一版用 200,000 个对象（约 6 MB，越过 L2 直落 LLC/内存），测出三组比值分别为 1.03× / 1.08× / 1.24×，但重复运行时前两项方向随机翻转——因为耗时被 cache miss 主导，被测的那几条指令的差异被完全淹没。把对象数压到 20,000（约 0.6 MB，稳居 L2）、遍历遍数提到 4,000 以保持总调用数不变之后，虚继承那条才稳定下来。**教训：测微观分派开销时，工作集大小是比循环次数更关键的旋钮。** 另一面也要诚实：正因为把工作集压进了 L2，多重继承对象体积翻倍（32 B vs 16 B）这件事在组一/组二里几乎没有体现（1.02×）；一旦对象规模把工作集推出 LLC，这 2× 的体积差会直接兑现为 2× 的访存量。
+
+### D5.3 可复现演示
+
+```cpp
+#include <iostream>
+#include <cassert>
+#include <cstdint>
+
+struct L {
+    long long x = 1;
+    virtual ~L() = default;
+    virtual long long f() const { return x + 10; }
+};
+struct R {
+    long long y = 2;
+    virtual ~R() = default;
+    virtual long long g() const { return y + 20; }
+};
+struct M : L, R {
+    long long f() const override { return x + 100; }
+    long long g() const override { return y + 200; }
+};
+
+// 虚继承菱形：VB 子对象只有一份
+struct VB { long long z = 3; virtual ~VB() = default; };
+struct VL : virtual VB { };
+struct VR : virtual VB { };
+struct VD : VL, VR { };
+
+// 非虚继承菱形：VB 子对象有两份
+struct NL : VB { };
+struct NR : VB { };
+struct ND : NL, NR { };
+
+int main() {
+    M m;
+
+    // 1) 第二基类子对象不在对象首地址 —— this 需要调整
+    L* pl = static_cast<L*>(&m);
+    R* pr = static_cast<R*>(&m);
+    auto base = reinterpret_cast<std::uintptr_t>(&m);
+    auto off_l = reinterpret_cast<std::uintptr_t>(pl) - base;
+    auto off_r = reinterpret_cast<std::uintptr_t>(pr) - base;
+
+    std::cout << "offset of L subobject : " << off_l << std::endl;
+    std::cout << "offset of R subobject : " << off_r << std::endl;
+    std::cout << "R needs this-adjust?  : " << (off_r != 0 ? "yes" : "no") << std::endl;
+
+    assert(off_l == 0);   // 第一基类与派生类共享首地址
+    assert(off_r != 0);   // 第二基类必须偏移 —— thunk 存在的根本原因
+
+    // 2) 经第二基类指针的虚调用仍然正确分派到 M::g（thunk 把 this 调回来）
+    std::cout << "pl->f() = " << pl->f() << std::endl;
+    std::cout << "pr->g() = " << pr->g() << std::endl;
+    assert(pl->f() == 101);
+    assert(pr->g() == 202);
+
+    // 3) 反向转换回派生类，地址复原
+    M* back = static_cast<M*>(pr);
+    std::cout << "static_cast<M*>(pr) == &m? : " << (back == &m ? "yes" : "no") << std::endl;
+    assert(back == &m);
+
+    // 4) 虚继承：两条路径抵达同一个 VB 子对象
+    VD vd;
+    VB* v_via_l = static_cast<VB*>(static_cast<VL*>(&vd));
+    VB* v_via_r = static_cast<VB*>(static_cast<VR*>(&vd));
+    std::cout << "virtual-inherit: same VB? : "
+              << (v_via_l == v_via_r ? "yes" : "no") << std::endl;
+    assert(v_via_l == v_via_r);      // 虚基类共享唯一子对象
+
+    // 5) 非虚继承：两条路径抵达不同 VB 子对象（菱形歧义的来源）
+    ND nd;
+    VB* n_via_l = static_cast<VB*>(static_cast<NL*>(&nd));
+    VB* n_via_r = static_cast<VB*>(static_cast<NR*>(&nd));
+    std::cout << "non-virtual   : same VB? : "
+              << (n_via_l == n_via_r ? "yes" : "no") << std::endl;
+    assert(n_via_l != n_via_r);      // 两份独立副本
+
+    // 6) 虚继承下改写虚基类成员，两条路径同时可见
+    v_via_l->z = 77;
+    std::cout << "z via VR path = " << static_cast<VR*>(&vd)->z << std::endl;
+    assert(static_cast<VR*>(&vd)->z == 77);
+
+    // 虚继承对象通常更大（多出一个 vptr），但不断言精确 sizeof
+    std::cout << "sizeof(VD) >= sizeof(VB)? : "
+              << (sizeof(VD) >= sizeof(VB) ? "yes" : "no") << std::endl;
+
+    std::cout << "all assertions passed" << std::endl;
+    return 0;
+}
+```
+
+预期输出（本机实测）：
+
+| 输出行 | 值 |
+| --- | --- |
+| `offset of L subobject` | 0 |
+| `offset of R subobject` | 16 |
+| `pl->f()` / `pr->g()` | 101 / 202 |
+| `virtual-inherit: same VB?` | yes |
+| `non-virtual   : same VB?` | no |
+| `z via VR path` | 77 |
+
+### D5.4 方法学注
+
+- 复现旗标：`g++ -O2 -std=c++23`（与 CI 一致）。
+- 计时取 5 轮中位数；单轮耗时约 0.85 s，刻意拉长以压低相对抖动——微观分派差异只有百分之几，短跑根本分不开。
+- `volatile` sink 承接累加结果防 DCE。**ch50 特别提示**：防内联/去虚拟化靠的是"多态指针数组 + 固定种子洗牌 + 两个派生类型混杂"三件套；只要指针数组的动态类型可被编译器推断唯一，GCC 就会去虚拟化并内联，整个基准立刻失去意义。
+- 组一/组二的两个指针数组（`L*` 与 `R*`）由**同一批对象**按**同一随机顺序**构造，保证访存序列逐字节一致，唯一差异就是 this 是否需要调整。
+- 工作集大小是本附录最关键的旋钮：20,000 对象稳居 L2。改大对象数会让 cache miss 主导耗时，测出的比值不再反映分派开销（见 D5.2 第 5 条）。
+- 加速比 / 相对倍数是可移植信号；绝对毫秒随 CPU、ABI 与编译器版本而变，请勿跨机器直接比较毫秒。落在噪声内的比值（如本附录的 thunk 一项）不得当作结论使用。
+- demo 只断言子对象偏移非零、虚调用分派结果、虚基类共享性这类稳定语义，未对时间、倍数或精确 `sizeof` 做任何断言。
+- 基准源码见库根 `_bench_d5_ch50_multiple_inheritance.cpp`。

@@ -1132,3 +1132,107 @@ int main() {
     return 0;
 }
 ```
+
+## 附录 D5：真实基准与性能分析 — Ranges 算法与视图管道的真实开销（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，每场景 5 轮取中位；结果累入 `volatile` sink 防死代码消除；数据用 `mt19937 + random_device` 运行期随机填充防闭式折叠。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+场景 1 对 4M 随机 `int` 排序（每轮先拷贝再计时，拷贝不计入）；场景 2 对 16M 随机 `int`（0~100）取偶数并平方求和；场景 3 对 0..2×10⁸ 序列求 `v ^ (v >> 3)` 之和（上界经 `volatile` 读入，防闭式折叠）。
+
+| 场景 | 中位耗时 ms | 相对 |
+|---|---|---|
+| `std::ranges::sort`（4M int） | 406.245 | ≈1.0×（噪声内同速） |
+| `std::sort`（4M int） | 403.643 | 基准 1.00× |
+| `views::filter \| views::transform` 惰性管道 | 92.577 | ≈1.0×（慢 1.3%，噪声内） |
+| 手写单循环（`if` + 累加） | 91.394 | 基准 1.00× |
+| `copy_if` + `transform`（急切，双中间容器） | 128.166 | 1.40× 慢 |
+| `views::iota` 惰性序列直接累加 | **97.877** | **7.5× 快** |
+| 预填充 `vector`（分配+`std::iota`）再遍历 | 737.041 | 基准 1.00× |
+
+### D5.2 非显然结论
+
+1. **`ranges::sort` 与 `std::sort` 逐 ns 等价（406.2 vs 403.6 ms，差 0.6%）。** 根因：libstdc++ 中 `ranges::sort` 最终走同一个 `__introsort_loop` 内核（正文附录 D4 已从源码确认），投影与约束检查全在编译期溶解。"ranges 版算法更慢"在 GCC 15 的随机 `int` 排序上不成立。
+
+2. **`filter | transform` 管道与手写循环同速（92.6 vs 91.4 ms，差 1.3%，在轮间噪声内）。** 理论上 filter 迭代器有"双重判断"开销：`operator++` 要找下一个满足谓词的元素，`operator!=` 还要再比对 `end`。实测差距消失的根因：谓词是无捕获 lambda，`-O2` 下全部内联后，GCC 把重复的谓词求值 CSE 掉，控制流化简后与手写 `if` 同构。诚实标注：这是"谓词廉价 + 元素为 `int` + 全内联"的最好情况；重谓词、有状态视图（如 `views::reverse | filter`）或跨 TU 传递 `view` 对象时，双重判断可能重新显形（本轮未测）。正文 §⑧ 在另一工况（filter|transform vs copy_if+transform，5M 元素）测得 lazy 11.23 vs eager 14.45 ms，与本表 1.40× 的方向一致。
+
+3. **急切两段式（`copy_if` + `transform` + 中间容器）慢 1.40×（128.2 vs 91.4 ms）。** 根因：两个中间 `vector`（约 8M 元素的 `int` + 8M 的 `uint64_t`，合计 ≈96 MB 额外读写流量）加一次 `reserve` 后仍存在的 `back_inserter` 逐元素长度检查。惰性管道单遍融合，无中间物化。这就是"视图管道省的不是 CPU 指令而是内存流量"的实测注脚。
+
+4. **`views::iota` 比"预填充 vector 再遍历"快 7.5×（97.9 vs 737.0 ms）。** 根因：预填充要分配 1.6 GB（2×10⁸ 个 `uint64_t`）、写一遍、再读一遍——首次触页的缺页中断 + 三倍内存流量；`views::iota` 的"序列"只活在寄存器里，从不落内存。诚实标注：两次全程复跑该比值在 5.2×~7.5× 间波动（首轮含系统冷页时更接近 5×），但方向与量级稳定。
+
+5. **排序场景把 `vector` 拷贝移出计时窗口是必要的**：4M `int` 拷贝约数 ms 且带缺页噪声，若计入会把 0.6% 的真实差距淹没成随机结论。对比类基准应只计"被比较的那段"。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <algorithm>
+#include <cassert>
+#include <cstdint>
+#include <iostream>
+#include <numeric>
+#include <random>
+#include <ranges>
+#include <vector>
+
+int main() {
+    std::mt19937 rng(std::random_device{}());
+    std::uniform_int_distribution<int> dist(0, 100);
+    std::vector<int> data(100000);
+    for (auto& v : data) v = dist(rng);
+
+    auto even = [](int x) { return x % 2 == 0; };
+    auto sq   = [](int x) { return static_cast<std::uint64_t>(x) * x; };
+
+    // 1) 惰性管道
+    std::uint64_t s_pipe = 0;
+    for (auto v : data | std::views::filter(even) | std::views::transform(sq))
+        s_pipe += v;
+
+    // 2) 手写循环
+    std::uint64_t s_hand = 0;
+    for (int x : data)
+        if (x % 2 == 0) s_hand += static_cast<std::uint64_t>(x) * x;
+
+    // 3) 急切两段式（中间容器）
+    std::vector<int> tmp;
+    std::copy_if(data.begin(), data.end(), std::back_inserter(tmp), even);
+    std::vector<std::uint64_t> tmp2(tmp.size());
+    std::transform(tmp.begin(), tmp.end(), tmp2.begin(), sq);
+    std::uint64_t s_eager = std::accumulate(tmp2.begin(), tmp2.end(), std::uint64_t{0});
+
+    // 三种写法语义等价（稳定语义，可断言）
+    assert(s_pipe == s_hand);
+    assert(s_pipe == s_eager);
+    std::cout << "pipe  sum = " << s_pipe << std::endl;
+    std::cout << "hand  sum = " << s_hand << std::endl;
+    std::cout << "eager sum = " << s_eager << std::endl;
+
+    // 4) ranges::sort 与 std::sort 结果一致
+    std::vector<int> a = data, b = data;
+    std::ranges::sort(a);
+    std::sort(b.begin(), b.end());
+    assert(a == b);
+    std::cout << "sorted equal, median = " << a[a.size() / 2] << std::endl;
+
+    // 5) views::iota 与预填充 vector 语义等价
+    std::uint64_t s_iota = 0;
+    for (auto v : std::views::iota(std::uint64_t{0}, std::uint64_t{100000}))
+        s_iota += v ^ (v >> 3);
+    std::vector<std::uint64_t> seq(100000);
+    std::iota(seq.begin(), seq.end(), std::uint64_t{0});
+    std::uint64_t s_vec = 0;
+    for (auto v : seq) s_vec += v ^ (v >> 3);
+    assert(s_iota == s_vec);
+    std::cout << "iota  sum = " << s_iota << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；场景 2/3 数据量（16M / 2×10⁸）保证单轮 ≥ 90 ms；结果累入 `volatile` sink。
+- **ch100 特别提示**：iota 场景的循环上界必须从 `volatile` 变量读入——上界若是编译期常量，GCC 可能把 `Σ v^(v>>3)` 部分折叠，测出假数字。排序场景每轮从同一 `base` 拷贝，保证两种 sort 面对完全相同的输入序列。
+- "管道 == 手写"结论仅在廉价谓词 + 全内联工况下成立（D5.2 第 2 条已诚实标注适用范围）。
+- 加速比（1.40×、7.5×）是可移植信号，绝对毫秒请勿跨机器比较。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_ch100_ranges.cpp`。
