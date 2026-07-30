@@ -406,3 +406,73 @@ part09 并发/无锁章群（ch107/108/110/111/112）应作为 **Wave 7 对抗�
 Wave 6 的 12 章 `Book/*.md`（M）+ 15 个未跟踪 `_bench_d5_*.cpp` 一律不 stage，
 待后续独立收口。
 
+---
+
+## 后续开发最佳策略（2026-07-30，#653/#654/#655）
+
+工具链升级的两大新轮子（`d5_appendix_audit.py`、`wave_intake_check.py`）已落地，
+现将"后续 Wave / P 级治理如何稳推进"固化成 SOP，避免重蹈 Wave 6 子 agent 派发
+499 canceled、且"自称编译通过实则失败"的覆辙。
+
+### A. Wave SOP（派发 → 复验 → 收口，五步强制）
+
+每次 Wave（D5 性能附录 / D4 三标准库源码 / P 级治理）统一走五步：
+
+1. **派发清单**：明确章号、目标（D5 四段 / D4 摘录 / 治理项），附本文件红线与模板
+   ——D5 模板见 ch41 L2172（四段 `D5.1`–`D5.4` + blockquote 签名句 + D5.3 恰好 1 个
+   cpp demo + `<<"\n"`→`<<std::endl`）；D4 段头格式
+   `// <相对路径> Lx-y (GCC 15.3.0)`。
+2. **子 agent 写稿**：交付 `Book/*.md` 改动 + 库根 `_bench_d5_*.cpp`（如需）。
+   **严禁交付说明只写"已编译通过"**——必须附本机复验证据，否则视为未交付。
+3. **复验闸门（强制，本机跑）**：
+   - `python3 tools/wave_intake_check.py --auto` —— 围栏偶数 / LF·BOM / g++ 真编译
+     （涉线程自动 +pthread）。**任一 FAIL 即打回，不进收口。**
+   - 仅当本 Wave 动 D5 时追加 `python3 tools/d5_appendix_audit.py --porcelain`，
+     **0 ERROR 才放行**；WARN/INFO 进报告人工处置（不阻断）。
+4. **收口提交**：仅 `git add` 本 Wave 精确文件（改的 md + 新增 bench cpp + 必要的
+   ROADMAP/记忆），`git -c commit.gpgsign=false commit`，内联 PAT 推送，
+   `git update-ref refs/remotes/origin/master HEAD`。**禁 `git add .`**。
+5. **CI 核验**：推送后必查 GitHub Actions 真实 conclusion（六 job 全 success 才算过）。
+   本地绿 ≠ CI 绿（平台 ABI/数据模型差异）；pdf job apt 挂起走取消重跑 SOP。
+
+> 红线重申：**子 agent 自称编译通过不可信，必须 `wave_intake_check.py` 本机复验。**
+
+### B. P1 Wave7 对抗审查流程
+
+P1（外部双评审最高优先级）：part09 并发 / 无锁章（ch107/108/109/110/112/113）的
+**对抗式正确性审查**——逐条核验"无锁结构难度极高""生产优先复用 mutex"等强声明是否
+有真基准 / 真反汇编支撑，而非模板填空。流程：
+
+1. 取 MEMORY.md 第 46 行已审定的 Claude 对抗审查提示词，对 P1 批次逐章跑。
+2. 对每条"强声明"要求三选一佐证：**真实 GCC 15.3.0 objdump** / **基准源码** /
+   **行号出处**。缺佐证即缺口。
+3. 缺口章回炉补 D5 基准或 D4 摘录；仍无法佐证的声明降级为"实现依赖，未跨平台保证"。
+4. 收口同样走 Wave SOP 的 3–5 步（复验闸门 + CI 核验）。
+
+### C. 工具矩阵（门禁型 + 离线报告型）
+
+| 工具 | 类型 | 入 CI | 用途 | 当前基线 |
+|---|---|---|---|---|
+| consistency_check.py | 门禁 | ✅ quality | 全文一致性 100/100 | 持续门禁 |
+| compile_gate.py | 门禁 | ✅ compile | 6800+ cpp 块独立可编译 | 持续门禁 |
+| preflight_check.py | 门禁 | ✅ quality | 前置校验 / 围栏奇偶 / 红线 | 持续门禁 |
+| crossref_audit.py | 门禁 | ✅ quality | 交叉引用闭环 | 持续门禁 |
+| chapter_lint.py | 门禁 | ✅ quality | 章结构 lint | 持续门禁 |
+| disclaimer_audit.py | 报告 | ❌ | P2 通用免责声明套话 | 2 处 / 2 章 |
+| title_style_lint.py | 报告 | ❌ | P3 标题营销词 | 49 处 / 40 章 |
+| d5_appendix_audit.py | 报告 | ❌ | D5 四段结构校验（#653） | 57 章, 0E/10W/12I |
+| wave_intake_check.py | 报告 | ❌ | Wave 收口复验：围栏/LF/BOM/g++ 真编译（#655） | 随跑随验 |
+
+> 报告型工具统一定位"定期跑、看报告、人工处置"，**不接入 `ci.yml` 六 job 门禁**，
+> 避免把风格/治理偏好固化成阻断、阻碍内容迭代。门禁型为正确性底线，必须留 CI。
+
+### D. 提交范围（本轮 #654）
+
+仅 stage 三个文件，不碰 Wave 6 残留：
+- `tools/d5_appendix_audit.py`（新增，#653）
+- `tools/wave_intake_check.py`（新增，#655）
+- `tools/ROADMAP.md`（本段追加）
+
+Wave 6 的 12 章 `Book/*.md`（M）+ 15 个未跟踪 `_bench_d5_*.cpp` 一律不 stage，
+待后续独立收口（其 12 个 `BENCH_UNTRACKED` INFO 已由 `d5_appendix_audit.py` 标出）。
+
