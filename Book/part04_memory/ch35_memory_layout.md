@@ -1728,3 +1728,69 @@ flowchart TD
 | ch37 operator new/delete | ch35 | 动态分配落在堆区 |
 | ch38 分配器 | ch35 | 分配器在堆上切分内存 |
 | ch43 缓存局部性 | ch35 | 布局重排改善缓存命中 |
+
+## 附录 D5：真实基准与性能分析 — 对象内存布局与填充（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化结构体字段重排对 `sizeof` 与遍历吞吐的影响，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+`Bad{char c1;double d;char c2;int i;}`、`Good{double d;int i;char c1;char c2;}`、`Fat{同 Good + char pad[48];}`。`N=4M` 元素 `vector` 遍历求和，`REPS=10`。
+
+| 结构体 | sizeof | N=4M 遍历求和 (ms) | 相对 Good |
+|---|---|---|---|
+| Bad {char;double;char;int} | 24 | 44.861 | 慢 1.21× |
+| Good {double;int;char;char} | 16 | 36.962 | 1.00× |
+| Fat {Good + pad[48]} | 64 | 104.599 | 慢 2.83× |
+
+### D5.2 非显然结论
+
+1. **字段重排消除 padding 后，单位缓存行能装载更多对象。** 根因：64B 缓存行装 4 个 Good（16B）vs 2.67 个 Bad（24B）vs 仅 1 个 Fat（64B）。在带宽受限的遍历循环里，每缓存行可并行处理的有效对象数直接决定吞吐，因而 Good 比 Bad 快 1.21×。
+
+2. **吞吐与 sizeof 近似成反比但不完全（16→64B 数据量 4×，实测仅 2.83×）。** 根因：硬件 stride 预取器在规则访问模式下提前搬入后续缓存行，部分掩盖了带宽放大；而 Bad vs Good 差距小（1.21×），预取难以进一步补偿，更接近理想反比。
+
+3. **padding 不是免费的。** 根因：`Fat` 用 `pad[48]` 把对象撑到 64B，看似“对齐友好”，实则每个对象恰好占满一行缓存——相同元素数下消耗 4× 内存带宽。填充字节占据真实的缓存容量与 DRAM 带宽预算，在 cache-line-bound 循环里直接放大遍历时间。
+
+### D5.3 验证 demo
+
+```cpp
+#include <iostream>
+#include <cstddef>
+#include <cassert>
+#include <vector>
+
+struct Bad  { char c1; double d; char c2; int i; };
+struct Good { double d; int i; char c1; char c2; };
+
+int main() {
+    std::cout << "sizeof(Bad)  = " << sizeof(Bad)  << std::endl;
+    std::cout << "sizeof(Good) = " << sizeof(Good) << std::endl;
+    std::cout << "offsetof(Bad,d)  = " << offsetof(Bad, d)  << std::endl;
+    std::cout << "offsetof(Good,d) = " << offsetof(Good, d) << std::endl;
+
+    // 功能正确性断言（绝不断言时间 / 倍数 / 精确 sizeof==）
+    assert(sizeof(Good) <= sizeof(Bad));
+
+    std::vector<Bad>  vb(1024);
+    std::vector<Good> vg(1024);
+    for (std::size_t k = 0; k < vb.size(); ++k) {
+        vb[k].d = static_cast<double>(k);
+        vb[k].i = static_cast<int>(k);
+        vg[k].d = static_cast<double>(k);
+        vg[k].i = static_cast<int>(k);
+    }
+    double sb = 0, sg = 0;
+    for (auto& e : vb) sb += e.d + e.i;
+    for (auto& e : vg) sg += e.d + e.i;
+    std::cout << "sum Bad  = " << sb << std::endl;
+    std::cout << "sum Good = " << sg << std::endl;
+    assert(sb == sg);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 字段重排的收益是可移植信号（相对加速比），绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_35_layout.cpp`。

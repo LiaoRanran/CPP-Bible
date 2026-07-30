@@ -1696,3 +1696,73 @@ flowchart TD
 | ch38 分配器 | ch36 | 分配器在堆上切分内存 |
 | ch39 RAII 与规则 | ch36 | 智能指针把堆对象纳入栈式管理 |
 | ch41 智能指针 | ch36 | unique_ptr / shared_ptr 是堆管理归口 |
+
+## 附录 D5：真实基准与性能分析 — 栈与堆分配成本（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 与 `volatile int* g_escape` 逃逸防死代码消除。本附录目的：量化栈与堆分配的真实相对开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+| 场景 | 耗时 ms | 备注 |
+|---|---|---|
+| heap `new`/`delete` int ×10M | 480.446 | 单 int 最坏情形 ≈48ns/次 |
+| stack local int ×10M | 0.000 | 被 -O2 完全折叠为寄存器运算 —— **非“栈分配零耗时”证据** |
+| heap `new int[1024]`+write ×200K | 32.354 | |
+| stack `int[1024]`+write ×200K | 25.576 | 栈堆比 1.26× |
+| `vector<int>(1024)` 每轮新建 ×200K | 29.730 | |
+| `vector` 复用 clear+resize ×200K | 21.748 | 比新建快 1.37× |
+
+### D5.2 非显然结论
+
+1. **栈“分配”只是 `sub rsp`，甚至被折叠成寄存器。** `stack local int ×10M` 测得 0.000ms，但这是 -O2 把从未逃逸的栈变量提升为寄存器、整段消除的结果，**不是栈分配耗时为零的证据**。根因：`sub rsp` 本就只改 SP、无访存；变量不逃逸且结果不观测时，分配与读写被 DCE 与寄存器分配整体消去。
+
+2. **堆分配走 allocator 慢路径，单 int 最坏。** 根因：每次 `new`/`delete` 需走 malloc 元数据、桶查找、可能的系统调用，且指针经 `volatile int* g_escape` 逃逸防折叠，开销可观测（≈48ns/次），优化器无法消除。
+
+3. **数组情形栈堆差距缩小到 1.26×。** 根因：1024 次存储的 write 成本（含 cache 行为）占主导，分配开销被摊薄；栈仅省下 allocator 慢路径，故差距远小于单 int 情形。
+
+4. **`vector` 复用比每轮新建快 1.37×。** 根因：复用 `clear`+`resize` 避免重复 allocate/deallocate 与构造，仅覆盖已有容量；每轮新建都走分配器慢路径。
+
+### D5.3 验证 demo
+
+```cpp
+#include <iostream>
+#include <cassert>
+#include <vector>
+
+int main() {
+    const int N = 1024;
+    int* heap = new int[N];
+    int stack[N];
+    long long sh = 0, ss = 0;
+    for (int k = 0; k < N; ++k) {
+        heap[k] = k;
+        stack[k] = k;
+        sh += heap[k];
+        ss += stack[k];
+    }
+    std::cout << "heap sum  = " << sh << std::endl;
+    std::cout << "stack sum = " << ss << std::endl;
+    assert(sh == ss);
+    delete[] heap;
+
+    std::vector<int> v;
+    v.resize(N);
+    for (int k = 0; k < N; ++k) v[k] = k;
+    long long s1 = 0;
+    for (int x : v) s1 += x;
+    v.clear();
+    v.resize(N);
+    for (int k = 0; k < N; ++k) v[k] = k;
+    long long s2 = 0;
+    for (int x : v) s2 += x;
+    std::cout << "vec reuse sum = " << s2 << std::endl;
+    assert(s1 == s2);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；`volatile int* g_escape` 逃逸迫使堆分配保留，避免被 -O2 消除而测得假象 0.000ms。务必注意：栈变量测得 0.000ms 是“被折叠”，不是“零成本”。
+- 相对加速比（1.26×、1.37×）是可移植信号；绝对毫秒随 CPU/内存/编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_36_stackheap.cpp`。

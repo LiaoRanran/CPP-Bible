@@ -1541,5 +1541,87 @@ flowchart TD
 | ch115 移动语义 | ch86 adapters | emplace 原地构造依赖移动语义 |
 | ch154 缓存优化 | ch86 adapters | vector 底层缓存友好，list 底层代价高 |
 
+## 附录 D5：真实基准与性能分析 — 容器适配器底层容器的选择（GCC 15.3.0）
 
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化不同底层容器对适配器性能的影响，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
+### D5.1 基准结果
+
+各适配器 1000 万次 push/pop（或等价语义）混合操作。checksum 4296639446930364 一致。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| stack<deque>（默认）push/pop | 45.346 | 基准 1.00× |
+| stack<vector> | 32.314 | 快 1.40× |
+| queue<deque>（默认） | 46.228 | — |
+| queue<list> | 817.920 | 慢 17.7×（vs queue<deque>） |
+| priority_queue | 318.357 | — |
+| multiset（同取最大语义） | 2179.291 | 慢 6.85×（vs priority_queue） |
+
+### D5.2 非显然结论
+
+1. **`stack<vector>` 比默认 `stack<deque>` 快 1.40×。** 根因（数据结构 + 微架构层）：`stack` 只在尾端 `push/pop`，`vector` 的 `push_back` 在容量内是纯顺序写入（均摊 O(1)，一次 mov 指令），连续内存让硬件预取器高效；而 `deque` 由分段定长块 + 中央映射数组组成，每次访问要先经一级间接寻址（找块指针再找元素），这层索引间接 + 块边界跨越的额外分支拖慢尾端操作。
+
+2. **`queue<list>` 比默认 `queue<deque>` 慢 17.7×——灾难级（反直觉）。** 根因（微架构层）：`list` 每 `push` 一次就向堆独立 `malloc` 一个节点，元素散落于内存各处；`pop`/`front` 是纯指针追逐（pointer chasing），CPU 无法有效预取，且每个节点除数据外还背负 2 个指针（16B）。`deque` 虽然也分段，但块内仍是连续块，访问局部性远优于逐节点堆分配。
+
+3. **`priority_queue` 比 `multiset` 的取最大语义快 6.85×。** 根因（数据结构 + 微架构层）：`priority_queue` 是 `vector` 上的隐式二叉堆，`siftup/siftdown` 在连续数组上父子按下标计算（2i+1 / 2i+2），缓存行友好、无额外元数据；`multiset` 是红黑树，每节点除键值外还背负父/左/右/颜色等 40+B 元数据，每次插入删除都要沿树指针追逐并触发旋转再平衡，常数大得多。
+
+4. **默认底层容器（deque）并非处处最优，但换成 `list` 几乎永远是错的。** 教训（设计层）：适配器把"选底层容器"暴露给用户是双刃剑——`stack` 换 `vector` 可加速（因只尾端用），但 `queue`/`priority_queue` 换 `list` 是反向优化。选底层容器应看其访问模式与内存布局，而非直觉。
+
+### D5.3 验证 demo
+
+```cpp
+#include <iostream>
+#include <queue>
+#include <stack>
+#include <set>
+#include <vector>
+#include <deque>
+#include <cassert>
+
+int main() {
+    std::vector<int> data{5, 3, 8, 1, 9, 2, 7};
+
+    // priority_queue：连续内存上的隐式二叉堆（大顶堆）
+    std::priority_queue<int> pq(std::less<int>(), data);
+    std::vector<int> from_pq;
+    while (!pq.empty()) { from_pq.push_back(pq.top()); pq.pop(); }
+
+    // multiset：红黑树，每次取最大（--end）并删除
+    std::multiset<int> ms(data.begin(), data.end());
+    std::vector<int> from_ms;
+    while (!ms.empty()) {
+        auto it = ms.end(); --it;
+        from_ms.push_back(*it);
+        ms.erase(it);
+    }
+
+    std::cout << "priority_queue max-seq size: " << from_pq.size() << std::endl;
+    std::cout << "multiset    max-seq size: " << from_ms.size() << std::endl;
+    assert(from_pq.size() == from_ms.size());
+    for (std::size_t i = 0; i < from_pq.size(); ++i) {
+        std::cout << "k=" << i << " pq=" << from_pq[i]
+                  << " ms=" << from_ms[i] << std::endl;
+        assert(from_pq[i] == from_ms[i]);   // 同序列降序最大（绝不断言时间）
+    }
+
+    // stack<vector> 与 stack<deque> 的 LIFO 行为一致
+    std::stack<int, std::vector<int>> sv;
+    std::stack<int, std::deque<int>> sd;
+    for (int v : {1, 2, 3}) { sv.push(v); sd.push(v); }
+    std::cout << "stack<vector> top: " << sv.top() << std::endl;
+    std::cout << "stack<deque>  top: " << sd.top() << std::endl;
+    assert(sv.top() == sd.top());
+    while (!sv.empty()) { assert(sv.top() == sd.top()); sv.pop(); sd.pop(); }
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
+- `volatile` sink 防 DCE；所有适配器操作结果写回 `volatile` 以保留真实开销。
+- 加速比（1.40×、17.7×、6.85×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 反直觉点已在 D5.2 第 2 条诚实标注：`list` 底层在队列语义下是灾难级反向优化。
+- 复现旗标：`g++ -O2 -std=c++23`。demo 仅断言 `priority_queue` 与 `multiset` 弹出的降序最大序列逐元素一致、以及 `stack<vector>` 与 `stack<deque>` 的 LIFO 一致，未断言运行时间或加速比。
+- 基准源码见库根 `_bench_d5_86_adapters.cpp`。

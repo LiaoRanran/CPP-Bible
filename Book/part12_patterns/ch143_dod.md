@@ -1442,3 +1442,87 @@ flowchart TD
 | ch143 批处理 | ch93 thread/async | 批处理可入线程池，关联 ch93 |
 | ch143 对齐 | ch37 new/delete | 对齐分配依赖 operator new 对齐版，关联 ch37 |
 | ch143 缓存行 | ch107 原子 | 伪共享需原子/对齐避免，关联 ch107 |
+
+## 附录 D5：真实基准与性能分析 — 数据导向设计 AoS vs SoA（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位数；`volatile` sink 防死代码消除。本附录对比 `Particle` AoS（64B = 恰好一整条缓存行）与 `ParticlesSoA` 分离数组，N=4M、REPS=20。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+`sizeof(Particle)=64`。相对列以 AoS 为 1.00×，更快者标注 SoA 加速倍数。
+
+| 场景 | AoS ms | SoA ms | SoA 加速 |
+|---|---|---|---|
+| partial update（只动 x/vx 两字段） | 611.612 | 59.282 | **10.3×** |
+| reduce sum(x) | 243.623 | 102.418 | 2.38× |
+| full update（x,y,z += v*dt 六字段） | 594.549 | 164.631 | 3.61× |
+
+### D5.2 非显然结论
+
+1. **partial update 是 SoA 的杀手锏：10.3× 几乎精确对应 1/8 有效带宽比。** 根因：AoS 每碰 8B 有效数据就要拉整条 64B 缓存行（仅 1/8 有效带宽），而 SoA 的 `x[]`/`vx[]` 数组致密连续，一次缓存行装下 8 个有效元素，10.3× 是带宽比的实测镜像。
+
+2. **reduce 场景 AoS 仍浪费 7/8 带宽，但只慢 2.38×。** 根因：硬件预取器能沿 AoS 的连续 `x` 字段流式预取，部分掩盖了"整行加载但只读 x"的浪费；读带宽被掩盖，故惩罚小于 partial update。
+
+3. **full update 触碰 6/16 字段仍达 3.61×，且 SoA 使 GCC 自动向量化。** 根因：SIMD 的先决条件是连续同类型数组，SoA 的 `x[]`/`vx[]` 天然满足，GCC 可发射向量指令；AoS 的 64B stride 让同一次迭代内字段类型交错，无法被单条向量指令覆盖，只能标量。
+
+4. **反直觉标注：** "SoA 永远更快"是错的。若访问模式总是整对象读写（六字段全碰），AoS 不吃亏且对象局部性更好；布局选择的对错由**访问模式**决定，而非数组本身。本基准的 3.61× full update 已低于 partial 的 10.3×，正是这个信号的体现。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <cassert>
+
+struct Particle {
+    double x, y, z;
+    double vx, vy, vz;
+    char pad[16]; // 凑满 64B = 恰好一整条缓存行
+};
+
+int main() {
+    const int N = 1024;
+    const double dt = 0.01;
+
+    std::vector<Particle> aos(N);
+    std::vector<double> soa_x(N), soa_y(N), soa_z(N);
+    std::vector<double> soa_vx(N), soa_vy(N), soa_vz(N);
+
+    for (int i = 0; i < N; ++i) {
+        aos[i].x = soa_x[i] = static_cast<double>(i);
+        aos[i].vx = soa_vx[i] = static_cast<double>(i) * 0.5;
+    }
+
+    // AoS partial update：只动 x / vx 两字段
+    for (int i = 0; i < N; ++i) {
+        aos[i].vx += 1.0 * dt;
+        aos[i].x  += aos[i].vx * dt;
+    }
+    // SoA partial update：同样只动 x / vx
+    for (int i = 0; i < N; ++i) {
+        soa_vx[i] += 1.0 * dt;
+        soa_x[i]  += soa_vx[i] * dt;
+    }
+
+    double sum_aos = 0.0, sum_soa = 0.0;
+    for (int i = 0; i < N; ++i) {
+        sum_aos += aos[i].x;
+        sum_soa += soa_x[i];
+    }
+
+    // 功能正确性：两种布局跑同一算法，结果必须一致（浮点容差）
+    assert(std::fabs(sum_aos - sum_soa) < 1e-6);
+    std::cout << "AoS sum(x) = " << sum_aos << std::endl;
+    std::cout << "SoA sum(x) = " << sum_soa << std::endl;
+    std::cout << "DOD layout demo ok" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；`volatile` sink 防 DCE；N=4M、REPS=20 以淹没缓存与调度噪声。
+- 加速比（如 10.3×、3.61×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较。
+- 复现旗标：`g++ -O2 -std=c++23`。本 demo 用 AoS 与 SoA 各跑同一 partial update + reduce，仅断言两布局结果一致（浮点容差），未对时间或倍数、也未对 `sizeof` 做任何断言。
+- 基准源码见库根 `_bench_d5_143_dod.cpp`。

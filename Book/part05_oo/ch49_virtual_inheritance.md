@@ -1299,3 +1299,75 @@ int main() {
   return 0;
 }
 ```
+
+
+## 附录 D5：真实基准与性能分析 — 虚继承的运行时成本（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化菱形虚继承下访问/上溯虚基类的运行时代价，并给出微架构根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+对象布局 sizeof（B）；"遍历"指在堆上构造并 `std::shuffle` 指针数组强制指针追逐，再遍历做 `VD1*→VB*` / `ND1*→NB*` upcast 或 exact type 直接成员访问。
+
+| 类型 | sizeof (B) | 说明 |
+|---|---|---|
+| VB（虚基类） | 16 | 含 vptr |
+| VD1（虚派生） | 32 | 虚基类偏移表使对象膨胀 |
+| VM（多虚继承） | 48 | 两条虚继承链 |
+| NB（普通基类） | 16 | 含 vptr |
+| ND1（普通派生） | 16 | 编译期常量偏移 |
+| NM（普通多继承） | 24 | — |
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 虚继承 upcast 遍历（VD1*→VB*，查 vtable 负偏移） | 1412.048 | 虚继承慢 2.21× |
+| 非虚 upcast 遍历（ND1*→NB*，编译期常量偏移） | 639.132 | 基准 1.00× |
+| exact type 直接访问（VM* 直接成员） | 1398.358 | ≈ 虚继承 |
+
+### D5.2 非显然结论
+
+1. **虚基类偏移不是编译期常量，须经 vptr 间接加载。** 根因：vbase offset 存于 vtable 负偏移区，每次 `VD1*→VB*` upcast 需先经 vptr 取虚基类偏移再算地址，比 `ND1*→NB*` 的编译期常量偏移多一次依赖加载；在指针追逐（cache miss 主导）场景下这条额外加载形成两级依赖链，把基准从 639ms 拉到 1412ms。
+
+2. **对象膨胀本身降低缓存密度。** 根因：`VD1` 32B vs `ND1` 16B，同样 64B 缓存行可容纳的活跃对象数减半，乱序核的硬件预取与 MLP（memory-level parallelism）利用率下降，带宽受限的遍历进一步吃亏——这是"慢 2.21×"里除间接加载外的第二贡献。
+
+3. **exact type（1398ms）≈ 虚继承（1412ms）是反直觉信号，须诚实标注。** 根因：本基准瓶颈主要在乱序指针追逐的内存延迟（两者做同样的指针追逐），upcast 那次额外 vtable 间接加载差价（≈14ms）只是叠加其上；换言之虚继承的"慢"在本基准里更多来自内存延迟而非 vtable 查表本身——若换成紧密数组访问，upcast 差价占比会显著上升。
+
+### D5.3 验证 demo
+
+```cpp
+#include <iostream>
+#include <cassert>
+
+struct VB { int x = 7; virtual ~VB() = default; };
+struct VD1 : virtual VB { int d1 = 1; };
+struct VM : VD1, virtual VB { int m = 9; };
+
+struct NB { int x = 7; virtual ~NB() = default; };
+struct ND1 : NB { int d1 = 1; };
+
+int main() {
+    VM vm;
+    VD1& rd1 = vm;
+    VB* pa_via_d1 = static_cast<VB*>(&rd1);
+    VB* pa_via_vm = static_cast<VB*>(&vm);
+
+    std::cout << "VB addr via VD1 = " << pa_via_d1 << std::endl;
+    std::cout << "VB addr via VM  = " << pa_via_vm << std::endl;
+    std::cout << "shared virtual base? "
+              << (pa_via_d1 == pa_via_vm ? "yes" : "no") << std::endl;
+    assert(pa_via_d1 == pa_via_vm);
+    assert(pa_via_d1->x == 7);
+
+    std::cout << "sizeof(VD1)=" << sizeof(VD1)
+              << " sizeof(ND1)=" << sizeof(ND1) << std::endl;
+    assert(sizeof(VD1) > sizeof(ND1));
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 指针追逐场景用堆上构造 + `std::shuffle` 指针数组强制乱序访存，避免硬件预取掩盖 vtable 间接加载代价。
+- 加速比（如 2.21×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_49_vinherit.cpp`。

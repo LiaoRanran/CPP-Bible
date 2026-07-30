@@ -1031,3 +1031,78 @@ flowchart TD
 | CPU 微架构 | ch149 CI/CD | 微基准进回归门禁 |
 | CPU 微架构 | ch142 ECS | 数据布局影响缓存/预取 |
 
+## 附录 D5：真实基准与性能分析 — 分支预测微架构实证（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位数；`volatile` sink 防死代码消除。本附录复现经典"sorted vs unsorted"实验并做关键修正。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+| 场景 | 耗时 ms | 说明 |
+|---|---|---|
+| sum-if unsorted | 16.599 | 基准 |
+| sum-if sorted | 16.733 | ≈ 完全相等！经典实验在 -O2 下失效 |
+| sum branchless（算术掩码） | 11.172 | 1.49× 于 sum-if |
+| compact-if unsorted | 932.829 | 真实分支预测惩罚 |
+| compact-if sorted | 110.151 | **8.47× 于 unsorted** |
+
+### D5.2 非显然结论
+
+1. **反直觉标注（本章核心发现）：网上流传的"sorted 数组快 6×"在现代 GCC -O2 下无法复现 —— sum-if 在 sorted 与 unsorted 上几乎完全相等（16.733 vs 16.599ms）。** 根因：编译器对简单 `if (v>=128) sum+=v` 做了 if-conversion，生成 `cmov`/SIMD 掩码，分支根本没活到机器码里，自然没有分支预测可言，经典结论的前提被优化器悄悄拆掉了。
+
+2. **要暴露真实分支缺失惩罚，分支体必须含无法被 if-conversion 消除的副作用。** 本基准改用 compaction：`out[cursor++]=v`（存储 + 游标推进），这两个操作都有可观测副作用，强制保留真分支；此时 unsorted 的 8.47× 惩罚重现（932.829 vs 110.151ms）。
+
+3. **8.47× 惩罚的根因是流水线冲刷。** 根因：unsorted 数据约 50% 错预测率，每次错预测触发 15–20 周期的流水线清空（front-end 重定向），累计成数量级差距；sorted 数据分支高度可预测，惩罚近乎消失。
+
+4. **branchless 手写算术掩码仍比 sum-if 快 1.49×。** 根因：掩码版更易被编译器彻底向量化（无数据依赖的分支），SIMD 吞吐碾压标量 `cmov` 版；这也反证 sum-if 已非"分支"，而是"未充分向量化"。
+
+5. **方法论教训：微基准结论必须先看编译器生成了什么。** "分支慢"的前提是分支活到了机器码；若被 if-conversion 抹掉，测到的只是掩码/SIMD 的差异。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cassert>
+
+// 分支体含存储副作用 + 游标推进：无法被 if-conversion 消除的真分支
+std::size_t compact_if(const std::vector<int>& in, std::vector<int>& out) {
+    std::size_t cursor = 0;
+    for (int v : in) {
+        if (v >= 128) {
+            out[cursor++] = v; // 副作用：存储 + 游标推进
+        }
+    }
+    return cursor;
+}
+
+int main() {
+    std::vector<int> in(4096);
+    for (std::size_t i = 0; i < in.size(); ++i) {
+        in[i] = static_cast<int>(i * 37 % 256); // 伪随机 0..255
+    }
+    std::vector<int> sorted = in;
+    std::sort(sorted.begin(), sorted.end());
+
+    std::vector<int> out_unsorted(in.size()), out_sorted(in.size());
+    std::size_t n1 = compact_if(in, out_unsorted);
+    std::size_t n2 = compact_if(sorted, out_sorted);
+    assert(n1 == n2);
+
+    std::sort(out_unsorted.begin(), out_unsorted.begin() + n1);
+    std::sort(out_sorted.begin(), out_sorted.begin() + n2);
+    for (std::size_t i = 0; i < n1; ++i) {
+        assert(out_unsorted[i] == out_sorted[i]);
+    }
+    std::cout << "compact_if selected = " << n1 << " elements" << std::endl;
+    std::cout << "order-independent multiset ok" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；`volatile` sink 防 DCE；每组对输出做 checksum 一致性校验（如 15316648465 与 15996885 在 sorted/unsorted 各组一致），确保只测量分支开销而非算法差异。
+- 加速比（如 8.47×、1.49×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较。
+- 复现旗标：`g++ -O2 -std=c++23`。本 demo 用 compact_if 在 sorted/unsorted 输入上产出一致的元素多重集（排序后比较），仅断言顺序无关的正确性，未对时间或倍数做任何断言。
+- 基准源码见库根 `_bench_d5_153_branch.cpp`。

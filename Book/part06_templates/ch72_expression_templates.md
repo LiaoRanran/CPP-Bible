@@ -1080,3 +1080,84 @@ flowchart TD
 | ch60 模板基础 | 表达式模板建立在模板基础之上。 |
 | ch43 缓存局部性 | 单次遍历对缓存局部性友好。 |
 | ch154 SIMD | 合并循环利于向量化加速。 |
+
+## 附录 D5：真实基准与性能分析 — 表达式模板消除临时对象（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化表达式模板消除临时对象的收益，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+对象为 `double` 向量（长度 4M）。`a+b+c+d` 链式相加；"临时/遍历"为表达式树产生的临时 vector 数量与完整内存遍历趟数。checksum 三者一致 1.427187。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| naive（3 临时 3 遍历） | 1097.868 | 基准 1.00× |
+| 表达式模板（单循环融合） | 261.366 | 4.20× 加速 |
+| 手写融合循环 | 247.115 | ≈4.44× 加速（最快） |
+
+### D5.2 非显然结论
+
+1. **朴素 `a+b+c+d` 触发 3 次堆分配 + 3 趟完整内存读写（1097.868ms）。** 根因（数据结构 + 微架构层）：`NaiveVec::operator+` 按值返回全新 `Vec`，每次都走 `allocator` 分配一块连续内存并做一次"读源 + 写目标"的完整遍历；链式表达式把同一份数据在内存中搬移 3 次，既付出 3 次 `malloc/free` 的固定成本，又让 3× 内存带宽被浪费，并污染 L1/L2 缓存（新分配的向量挤占热点数据）。
+
+2. **表达式模板把表达式树编码进类型，赋值时仅 1 读 1 写（261.366ms）。** 根因（编译器 + 数据结构层）：`AddExpr` 是惰性代理，只保存左右操作数的引用（不分配），真正物化发生在 `operator=`；编译器顺着 `Expr` 类型树做模板实例化，`operator[]` 被内联为 `(a[i]+b[i])`，赋值时生成单个融合循环，内存流量从 3 读 3 写降到 1 读 1 写，缓存命中率显著提高。
+
+3. **ET 261.366ms ≈ 手写融合循环 247.115ms（仅差 ~6%），抽象近乎零开销（反直觉）。** 根因（编译器层）：`AddExpr` 在 `-O2` 下被完全内联展开，生成的机器码与手写单循环同构——没有虚函数、没有间接调用、没有额外分配，差异仅来自内联体积极限与寄存器分配的次要差别。这正是 Eigen / Blaze 用表达式模板换取"可读性 + 性能兼得"的核心机制；反直觉之处在于"看起来很重的模板抽象"实测几乎不付代价。
+
+### D5.3 验证 demo
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <cassert>
+
+struct Vec {
+    std::vector<double> d;
+    Vec() : d(4) {}
+    Vec(std::initializer_list<double> il) : d(il) {}
+    double operator[](std::size_t i) const { return d[i]; }
+    double& operator[](std::size_t i) { return d[i]; }
+    std::size_t size() const { return d.size(); }
+};
+
+// 朴素：operator+ 立即计算并返回新 Vec（产生临时）
+Vec naive_add(const Vec& a, const Vec& b) {
+    Vec r;
+    for (std::size_t i = 0; i < a.size(); ++i) r[i] = a[i] + b[i];
+    return r;
+}
+
+// 表达式模板：惰性 AddExpr，物化点才求值
+struct AddExpr {
+    const Vec& a;
+    const Vec& b;
+    AddExpr(const Vec& x, const Vec& y) : a(x), b(y) {}
+    double operator[](std::size_t i) const { return a[i] + b[i]; }
+    std::size_t size() const { return a.size(); }
+};
+
+int main() {
+    Vec x{1.1, 2.2, 3.3, 4.4};
+    Vec y{0.1, 0.2, 0.3, 0.4};
+
+    Vec n = naive_add(x, y);          // 朴素：产生临时
+    AddExpr e(x, y);                  // 表达式模板：惰性
+    Vec et;                           // 默认构造即 4 元素
+    for (std::size_t i = 0; i < e.size(); ++i) et[i] = e[i];  // 单循环物化
+
+    for (std::size_t i = 0; i < x.size(); ++i) {
+        std::cout << "i=" << i << " naive=" << n[i]
+                  << " et=" << et[i] << std::endl;
+        assert(n[i] == et[i]);        // 功能正确性：结果一致（绝不断言时间/倍数）
+    }
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
+- `volatile` sink 防 DCE；`a+b+c+d` 的链式临时是否被优化器消除，取决于 `Vec` 是否逃逸——本基准中结果写回 `volatile` 以保留真实内存流量。
+- 加速比（4.20×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 反直觉点已在 D5.2 第 3 条诚实标注：看似"重"的模板抽象实测近乎零开销。
+- 复现旗标：`g++ -O2 -std=c++23`。demo 仅断言朴素与 ET 结果一致，未断言运行时间、加速比或精确 `sizeof`。
+- 基准源码见库根 `_bench_d5_72_exprtmpl.cpp`。

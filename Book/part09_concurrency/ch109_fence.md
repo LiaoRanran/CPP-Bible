@@ -840,3 +840,77 @@ flowchart TD
 | ch109 | ch111 | ABA 版本发布依赖 acquire fence |
 | ch93 | ch109 | std::async 内部隐式栅栏同步 |
 | ch39 | ch109 | RAII 析构跨线程可见性靠 fence |
+
+## 附录 D5：真实基准与性能分析 — 内存栅栏的真实成本（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位数；`volatile` sink 防死代码消除。本附录对 `std::atomic<std::uint64_t>` 做 ×100M 次 store，量化各内存序/栅栏组合的真实花销。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+相对列以 relaxed store 为 1.00×。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| relaxed store | 21.364 | 1.00× |
+| relaxed store + `atomic_thread_fence(release)` | 42.659 | ≈2.0× |
+| relaxed store + `atomic_thread_fence(acquire)` | 42.660 | ≈2.0× |
+| relaxed store + `atomic_thread_fence(seq_cst)` | 350.074 | **8.2× 于 relaxed** |
+| `seq_cst` store | 369.184 | ≈17.3× |
+| `release` store | 47.461 | ≈2.2× |
+
+### D5.2 非显然结论
+
+1. **x86-TSO 下 release/acquire fence 不生成任何指令，却仍慢约 2× —— 零指令 ≠ 零成本。** 根因：`atomic_thread_fence` 在 x86 上仅作为编译器屏障（compiler barrier），不发射 `mfence`/`lock`；但它禁止编译器跨迭代做寄存器提升（register hoisting）与读写合并，于是 store 每一轮都真实落到内存而非被提升到循环外，开销来自被迫的每轮内存往返，是"屏障语义 ≠ 指令数"的活教材。
+
+2. **`seq_cst` fence 实测 350.074ms（8.2×），根因是它发射 `mfence`，强制排空 store buffer 并等所有写对所有核可见。** 这是 x86 上唯一真正昂贵的栅栏 —— 全序（sequential consistency）的硬件代价在此集中体现。
+
+3. **GCC 对 `seq_cst` store 用 `xchg`（隐式 `lock` 前缀，369.184ms）而非 `mov`+`mfence`。** 根因：`xchg` 自带 lock 语义、天然提供全序与原子性，单指令达成 SC，但 lock 前缀触发缓存行独占与总线锁，比单独 `mfence` 再略贵。
+
+4. **`release` store 在 x86 就是普通 `mov`（47.461ms，≈2× relaxed，同为编译器屏障效应）。** 根因：x86 的 TSO 模型本就保证 release 语义无需额外指令，昂贵的仍是编译器屏障禁止的合并优化。
+
+5. **反直觉标注：** 在 x86 上挑内存序，真正的决策边界在 `seq_cst` 与非 `seq_cst` 之间；`release`/`acquire` 在指令层面几乎免费。把性能预算花在避免 `seq_cst` 上，远比对 `release`/`acquire` 锱铢必较更有效。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <atomic>
+#include <cassert>
+
+std::atomic<std::uint64_t> data(0);
+std::atomic<std::uint64_t> flag(0);
+
+void producer() {
+    data.store(42, std::memory_order_relaxed);
+    std::atomic_thread_fence(std::memory_order_release);
+    flag.store(1, std::memory_order_relaxed);
+}
+
+void consumer() {
+    while (flag.load(std::memory_order_relaxed) == 0) {
+        // 自旋，直到看到 release 侧写出的 flag
+    }
+    std::atomic_thread_fence(std::memory_order_acquire);
+    std::uint64_t observed = data.load(std::memory_order_relaxed);
+    // fence 同步语义正确性：观察到 flag 后，release 前的 data 写必可见
+    assert(observed == 42);
+    std::cout << "consumer observed data = " << observed << std::endl;
+}
+
+int main() {
+    std::thread t1(producer);
+    std::thread t2(consumer);
+    t1.join();
+    t2.join();
+    std::cout << "fence sync demo ok" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（如 8.2×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较。
+- 复现旗标：`g++ -O2 -std=c++23 -pthread`。本 demo 用两线程 relaxed store + release/acquire fence 配对传递 flag+data，仅断言"观察到 flag 后 data 必可见"这一同步语义正确性，未对时间或倍数做任何断言。
+- 基准源码见库根 `_bench_d5_109_fence.cpp`。

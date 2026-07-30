@@ -1560,3 +1560,75 @@ flowchart TD
 | ch42 严格别名 | ch41 智能指针 | 控制块别名需防 UB |
 | ch42 严格别名 | ch61 模板重载 | 类型双关常用于模板萃取 |
 | ch115 move 语义 | ch42 严格别名 | 重解释对象布局影响 move |
+
+## 附录 D5：真实基准与性能分析 — 严格别名与 restrict（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：量化严格别名规则与 `restrict` 对计数/向量化循环的真实影响，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+`count_via_ptr`（`++*counter` 每元素递增可别名的计数器）/ `count_via_local`（局部累加末尾一次写回）/ `count_via_restrict`（用 `__restrict`）；`add3` 三数组逐元素相加（无 `restrict` vs `__restrict`）。均 `__attribute__((noinline))`，checksums 全部一致为 `80014270`。
+
+| 计数方式 | 耗时 ms | 相对 / 说明 |
+|---|---|---|
+| `++*counter`（可别名指针） | 884.813 | 基准 |
+| 局部变量累加、末尾一次写回 | 52.872 | 16.7× 加速 |
+| `__restrict counter` | 932.627 | 反直觉：比可别名版还慢约 5% |
+| `add3` 无 `restrict` | 66.477 | |
+| `add3 __restrict` | 68.013 | 几乎无差 |
+
+### D5.2 非显然结论
+
+1. **真正的性能来源是“消除每轮内存 store”（局部累加 52.872ms vs 可别名 884.813ms，16.7×），而非 `restrict` 关键字本身。** 根因：`++*counter` 每轮把计数器写回内存，形成 store→load 依赖链，且计数器 cache line 被频繁回写；局部累加仅在末尾一次 `store`，循环体无内存依赖，可被充分流水线化与向量化。
+
+2. **`__restrict` 版反而比可别名版慢约 5%（932.627 vs 884.813）—— 反直觉，须诚实标注。** 根因：本模式下 GCC 并未利用 `__restrict` 把计数器提升到寄存器，生成代码仍逐次 `store`；微小差异来自代码布局与 micro-op 对齐，而非 restrict 生效。`restrict` 只是给编译器的承诺，编译器可用可不用。
+
+3. **`add3` 加不加 `restrict` 几乎无差（66.477 vs 68.013）—— 反直觉，须诚实标注。** 根因：-O2 下 GCC 用运行时别名检查（runtime aliasing check）版本化该循环，确认三数组不重叠后走向量化路径；`restrict` 提供的静态承诺未带来额外收益，因编译器已自行证明不别名。
+
+4. **教训——测量而非信仰关键字。** 根因：`restrict` 的收益取决于编译器是否真的消费该承诺；现代 GCC 常用运行时别名检查版本化循环，使静态 `restrict` 收益缩水。对热循环应实测而非假设关键字生效。
+
+### D5.3 验证 demo
+
+```cpp
+#include <iostream>
+#include <cassert>
+#include <cstddef>
+
+__attribute__((noinline))
+long long count_via_ptr([[maybe_unused]] const int* arr, std::size_t n, int* counter) {
+    for (std::size_t k = 0; k < n; ++k) ++*counter;   // 可别名计数器
+    return *counter;
+}
+
+__attribute__((noinline))
+long long count_via_local([[maybe_unused]] const int* arr, std::size_t n, int* counter) {
+    long long local = 0;
+    for (std::size_t k = 0; k < n; ++k) ++local;      // 局部累加
+    *counter = static_cast<int>(local);
+    return local;
+}
+
+int main() {
+    const std::size_t N = 4096;
+    int* data = new int[N];
+    for (std::size_t k = 0; k < N; ++k) data[k] = 1;
+
+    int c1 = 0, c2 = 0;
+    long long r1 = count_via_ptr(data, N, &c1);
+    long long r2 = count_via_local(data, N, &c2);
+
+    std::cout << "count via ptr   = " << r1 << std::endl;
+    std::cout << "count via local = " << r2 << std::endl;
+    // 功能正确性断言：两种计数方式结果相等（绝不断言时间 / 倍数）
+    assert(r1 == r2);
+    assert(c1 == c2);
+    delete[] data;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；`volatile` sink 防 DCE；所有被测函数 `__attribute__((noinline))`，避免内联掩盖 aliasing 假设差异。
+- 相对加速比（16.7×）是可移植信号；反直觉点（restrict 版反而更慢、add3 几乎无差）已如实标注，根因在于编译器是否真正消费该承诺。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_42_aliasing.cpp`。

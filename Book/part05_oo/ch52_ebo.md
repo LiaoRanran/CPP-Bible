@@ -1152,3 +1152,70 @@ int main() {
 ```
 
 预期输出：`tuple<Empty,int>` 为 4（空成员被压到 0），`pair<Empty,int>` 为 8（空成员占 1 字节并因 `int` 对齐补齐），`tuple<FinalEmpty,int>` 回到 8（final 禁用 EBO），`Holder<int,Empty>` 为 4（继承式 EBO 生效）。仅用 `>=` / `is_empty_v` 断言，未对布局做精确 `==`。
+
+
+## 附录 D5：真实基准与性能分析 — 空基类优化与 [[no_unique_address]]（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化空基类优化与 `[[no_unique_address]]` 对对象布局与遍历带宽的影响，并给出根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+`Plain`/`Squeezed`/`Inherit` 各含一个 `long long` 与一个空成员；"遍历求和"指对数组累积该 `long long`。
+
+| 类型 | sizeof (B) | 说明 |
+|---|---|---|
+| `Plain{v; Empty e;}` | 16 | 空成员占 8B 对齐填充 |
+| `Squeezed{v; [[no_unique_address]] Empty e;}` | 8 | 空成员压到 0 |
+| `Inherit : Empty {v;}` | 8 | 继承式 EBO |
+| `unique_ptr<int>` | 8 | 无状态删除器句柄 |
+| `unique_ptr<int, void(*)(int*)>` | 16 | 函数指针删除器使句柄翻倍 |
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 遍历求和 — Squeezed | 39.571 | 基准（最快） |
+| 遍历求和 — Inherit | 42.135 | 1.06× |
+| 遍历求和 — Plain | 59.261 | Plain 慢 1.50× |
+
+### D5.2 非显然结论
+
+1. **未压缩空成员每对象浪费 8B，缓存行密度减半直接变现为 1.50×。** 根因：`Plain` 16B vs `Squeezed` 8B，同样 64B 缓存行从容纳 4 个对象降到 2 个，带宽受限的线性遍历的 L1/L2 缺失率近乎翻倍，把 39.6ms 推到 59.3ms——这是布局膨胀经缓存层次放大的实测证据，与虚函数/间接无关。
+
+2. **EBO 继承与 `[[no_unique_address]]` 效果等价（本例均 8B），后者不需扭曲继承结构。** 根因：两者底层都是"允许空子对象与其邻位成员共享地址"，但继承式 EBO 必须把空类型放到基类位置、且同类型多子对象会触发同址冲突；`[[no_unique_address]]` 是属性式，保持成员语义（有名字、可 `&` 取址），适用面更广。
+
+3. **`unique_ptr` 的"零成本"取决于删除器是否有状态，须诚实标注。** 根因：无状态 lambda/函数对象删除器被空基类优化吞掉，`unique_ptr<int>` 保持 8B；而函数指针删除器是 8B 真实状态，`unique_ptr<int, void(*)(int*)>` 涨到 16B——同样的"句柄"概念，尺寸随删除器状态翻倍，与"零成本抽象"是否兑现直接挂钩。
+
+### D5.3 验证 demo
+
+```cpp
+#include <iostream>
+#include <memory>
+#include <cassert>
+
+struct Empty { };
+struct Plain { long long v; Empty e; };
+struct Squeezed { long long v; [[no_unique_address]] Empty e; };
+struct Inherit : Empty { long long v; };
+
+int main() {
+    std::cout << "sizeof(Plain)   =" << sizeof(Plain) << std::endl;
+    std::cout << "sizeof(Squeezed)=" << sizeof(Squeezed) << std::endl;
+    std::cout << "sizeof(Inherit) =" << sizeof(Inherit) << std::endl;
+    std::cout << "sizeof(unique_ptr<int>)               ="
+              << sizeof(std::unique_ptr<int>) << std::endl;
+    std::cout << "sizeof(unique_ptr<int,void(*)(int*)>) ="
+              << sizeof(std::unique_ptr<int, void(*)(int*)>) << std::endl;
+
+    assert(sizeof(Squeezed) <= sizeof(Plain));
+    assert(sizeof(Inherit) <= sizeof(Plain));
+    assert(sizeof(std::unique_ptr<int>)
+           <= sizeof(std::unique_ptr<int, void(*)(int*)>));
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；`volatile` sink 防 DCE；遍历用紧凑数组避免指针追逐掩盖带宽差异。
+- 断言仅用相对尺寸（`<=`），禁用精确 `sizeof ==`（EBO 是实现许可非强制，复合布局不可移植）。
+- 加速比（如 1.50×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_52_ebo.cpp`。

@@ -1042,3 +1042,86 @@ flowchart TD
 | ch60 模板基础 | constexpr 函数模板依赖模板实例化。 |
 | ch123 编译期编程 | constexpr/consteval 是编译期编程核心。 |
 | ch19 变量与存储期 | constinit 解决 SIOF 关乎静态存储期。 |
+
+
+## 附录 D5：真实基准与性能分析 — constexpr 编译期计算的运行时收益（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 `constexpr` 编译期表与运行时 `std::sin`/自写 `csin` 的差距，并给出反直觉根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+`CT_TABLE` 为 `constexpr` 生成的编译期表，落 `.rodata`；对照运行时 `std::sin` 调用与自写 `csin` 泰勒展开。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| runtime table init ×1000 | 71.048 | — |
+| lookup `CT_TABLE` ×100M | 127.684 | 查表 ≈1.28ns/次（L1 命中） |
+| call `std::sin` ×100M | 6845.629 | 查表快 53.6× |
+| call 自写 `csin` ×100M | 2040.683 | 慢于查表 |
+| max|`CT_TABLE` − `std::sin`| | 1.035e-11 | 最大绝对误差 |
+
+### D5.2 非显然结论
+
+1. **`CT_TABLE` 查表 ≈1.28ns/次，比 `std::sin` 快 53.6×。** 根因：`CT_TABLE` 是 `.rodata` 里的常量数组，运行时零初始化成本、查表即为一次 L1 命中的加载；而 `std::sin` 是 libm 调用，内部走参数规约 + 多项式逼近 + 精度分支，约 68ns/次——差距来自"内存读取"与"函数调用 + 数值计算"两个量级的本质区别。
+
+2. **自写 `csin` 虽标 `constexpr`，运行时调用仍 ≈20ns/次，并不比查表快——这是反直觉点，须诚实标注。** 根因：`constexpr` 仅是"可在编译期求值"的许可，运行时语境里它被当作普通函数，仍要完整执行泰勒级数；其收益只在"编译期语境"（如生成 `CT_TABLE`、做 `static_assert`）中兑现，运行时直接调用它不会更快。
+
+3. **精度 1.035e-11 说明 11 项泰勒 + 范围折叠对表格用途绰绰有余。** 根因：范围折叠把自变量收敛到 `[-π, π]`，11 项泰勒在表用途的采样密度下截断误差远低于 `1e-9`，证明"编译期算表 + 运行时查表"在工程上既快又够准，且表本身零运行时初始化开销。
+
+### D5.3 验证 demo
+
+```cpp
+#include <iostream>
+#include <cmath>
+#include <cassert>
+
+constexpr double csin(double x) {
+    const double pi = 3.14159265358979323846;
+    double xx = x;
+    while (xx >  pi) xx -= 2.0 * pi;
+    while (xx < -pi) xx += 2.0 * pi;
+    double sum = xx;
+    double f = xx;
+    double x2 = xx * xx;
+    for (int n = 1; n <= 12; ++n) {
+        f *= -x2 / ((2 * n) * (2 * n + 1));
+        sum += f;
+    }
+    return sum;
+}
+
+constexpr int N = 64;
+struct CT {
+    double t[N];
+    constexpr CT() : t{} {
+        for (int i = 0; i < N; ++i)
+            t[i] = csin(static_cast<double>(i) * 0.1);
+    }
+};
+constexpr CT CT_TABLE{};
+
+int main() {
+    // 编译期可验证特征（static_assert）
+    static_assert(CT_TABLE.t[0] == 0.0, "sin(0) must be 0");
+    static_assert(CT_TABLE.t[1] != 0.0, "nonzero entry");
+
+    // 运行时精度断言（< 1e-9，非时间 / 倍数 / 精确 sizeof）
+    double max_diff = 0.0;
+    for (int i = 0; i < N; ++i) {
+        double x = static_cast<double>(i) * 0.1;
+        double d = std::fabs(CT_TABLE.t[i] - std::sin(x));
+        if (d > max_diff) max_diff = d;
+        assert(d < 1e-9);
+    }
+    std::cout << "constexpr table max diff = " << max_diff << std::endl;
+    std::cout << "constexpr table precision check passed" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数；`volatile` sink 防 DCE；`CT_TABLE` 经 `constexpr` 构造落入 `.rodata`，运行时查表零初始化成本。
+- 断言只验证编译期表特征与运行时精度（`static_assert` + `< 1e-9`），绝不断言时间、倍数或精确 `sizeof`。
+- 加速比（如 53.6×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_69_constexpr.cpp`。

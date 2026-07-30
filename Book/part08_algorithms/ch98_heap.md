@@ -1225,3 +1225,95 @@ int main() {
     return 0;
 }
 ```
+
+## 附录 D5：真实基准与性能分析 — 堆算法与 topK 策略（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化不同 topK 策略的开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+N = 1000 万，取 top-100（K=100）。checksum 214746090999 四策略一致。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| full sort 后取前 K | 1101.810 | 基准 1.00× |
+| nth_element + sort 前 K | 88.245 | ≈12.5× 加速 |
+| partial_sort | 13.671 | ≈80.6× 加速 |
+| 流式 K-小顶堆（make_heap/pop_heap 维护 100 元素） | 10.319 | 快 106.8× |
+| heapsort（make_heap + 逐个 pop_heap 全排序） | 3673.579 | 慢 3.34×（vs full sort） |
+| introsort（std::sort） | 1035.394 | — |
+
+### D5.2 非显然结论
+
+1. **`full sort` 后取前 K 是 O(N log N) 全量工作只为拿 K 个（1101.810ms）。** 根因（算法层）：它先对整个 10M 数组做完整排序（比较与写回都覆盖全部 N 个元素），却只用前 K 个结果，剩余 N−K 个元素的有序性是白做的——典型"杀鸡用牛刀"反例。
+
+2. **`partial_sort` 只维护 K 元素堆，O(N log K)，比 full sort 快约 80×。** 根因（算法 + 数据结构层）：`partial_sort` 内部对前 K 个位置维护一个堆，扫描剩余 N−K 个元素时每个只与堆顶比较，命中才替换并 `sift`，堆规模恒为 K，比较/移动总量为 O(N log K) 而非 O(N log N)，内存只访问必要的元素。
+
+3. **流式 K-小顶堆最快（10.319ms，比 full sort 快 106.8×）。** 根因（微架构 + 算法层）：小顶堆规模恒为 K=100，绝大多数元素只需与堆顶一次比较即被淘汰；堆操作的实际发生频率 ≈ K·ln(N/K)/N（约 0.07%），分支预测高度友好，且堆数组连续、缓存命中极佳——这是 topK 的工程最优解。
+
+4. **同为 O(N log N)，`heapsort` 却比 `introsort`（std::sort）慢 3.55×（反直觉）。** 根因（微架构层）：二者渐近复杂度相同，但 `heapsort` 的 `siftdown` 是父→子的"跳步"访问（下标 2i+1 / 2i+2），步长不固定、缓存行利用差，且比较-交换模式难以被 CPU 流水线/乱序执行充分利用；`std::sort` 的 introsort 以快速排序为主、堆排仅作递归过深（深度 > 2·log₂N）时的兜底，正是因其平均缓存行为与局部性更优。
+
+### D5.3 验证 demo
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <cassert>
+
+int main() {
+    const int N = 20, K = 5;
+    std::vector<int> base;
+    for (int i = 0; i < N; ++i) base.push_back((i * 7) % 13);
+
+    // 策略 A：full sort 取前 K（大顶）
+    std::vector<int> a = base;
+    std::sort(a.begin(), a.end(), std::greater<int>());
+    std::vector<int> rA(a.begin(), a.begin() + K);
+
+    // 策略 B：nth_element + sort 前 K
+    std::vector<int> b = base;
+    std::nth_element(b.begin(), b.begin() + K - 1, b.end(), std::greater<int>());
+    std::sort(b.begin(), b.begin() + K, std::greater<int>());
+    std::vector<int> rB(b.begin(), b.begin() + K);
+
+    // 策略 C：partial_sort
+    std::vector<int> c = base;
+    std::partial_sort(c.begin(), c.begin() + K, c.end(), std::greater<int>());
+    std::vector<int> rC(c.begin(), c.begin() + K);
+
+    // 策略 D：流式 K-小顶堆
+    std::vector<int> d = base;
+    std::priority_queue<int, std::vector<int>, std::greater<int>> minheap;
+    for (int v : d) {
+        if ((int)minheap.size() < K) minheap.push(v);
+        else if (v > minheap.top()) { minheap.pop(); minheap.push(v); }
+    }
+    std::vector<int> rD;
+    while (!minheap.empty()) { rD.push_back(minheap.top()); minheap.pop(); }
+    std::sort(rD.begin(), rD.end(), std::greater<int>());
+
+    std::cout << "topK size A=" << rA.size()
+              << " B=" << rB.size()
+              << " C=" << rC.size()
+              << " D=" << rD.size() << std::endl;
+    assert(rA.size() == K && rB.size() == K && rC.size() == K && rD.size() == K);
+    for (int i = 0; i < K; ++i) {
+        std::cout << "k=" << i << " A=" << rA[i]
+                  << " B=" << rB[i] << " C=" << rC[i]
+                  << " D=" << rD[i] << std::endl;
+        assert(rA[i] == rB[i] && rA[i] == rC[i] && rA[i] == rD[i]);  // 绝不断言时间
+    }
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
+- `volatile` sink 防 DCE；四策略结果写回 `volatile` 以保留真实开销，并交叉校验 checksum 一致。
+- 加速比（106.8×、3.55×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 反直觉点已在 D5.2 第 4 条诚实标注：同为 O(N log N)，heapsort 比 introsort 慢 3.55×。
+- 复现旗标：`g++ -O2 -std=c++23`。demo 仅断言四策略得到的 top-K 值集合排序后逐元素一致，未断言运行时间或加速比。
+- 基准源码见库根 `_bench_d5_98_heap.cpp`。
