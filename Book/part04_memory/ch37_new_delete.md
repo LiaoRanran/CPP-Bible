@@ -2302,7 +2302,7 @@ flowchart TD
 
 3. **反直觉：`nothrow new` 并不比普通 `new` 快（102.239 vs 96.363 ms，比值仅 1.06×）。** 很多人以为省掉异常就该更便宜，实测几乎无差别。本机 5 轮 raw 为：nothrow 98.552 / 100.144 / 102.239 / 104.055 / 103.152，单对象 94.598 / 95.403 / 96.363 / 96.572 / 97.049 —— 两者量级相同、跨运行频繁互换先后，说明没有稳定的性能差异。根因：两者调用的是同一个底层分配器，唯一区别是失败路径从 `throw std::bad_alloc` 换成 `return nullptr`；而在成功路径上，GCC 的表驱动异常实现本来就是零成本——不抛异常时一条额外指令都不执行。选 `nothrow` 应当基于错误处理风格，而不是性能幻想。
 
-4. **`alignas(64)` 的对齐 `new` 贵 34%。** 根因：过对齐类型走的是另一个重载 `operator new(std::size_t, std::align_val_t)`，在 MinGW 下最终映射到 `_aligned_malloc`。它必须多申请一段 padding 把返回地址推到 64 字节边界，并在返回指针的前方回写原始块地址，供 `_aligned_free` 反查。这是"过对齐不是免费的"的数字依据：为了避免伪共享而给热点结构加 `alignas(64)` 时，若该结构是高频短命对象，要把这 34% 计入账。
+4. **`alignas(64)` 的对齐 `new` 贵 34%。** 根因：过对齐类型走的是另一个重载 `operator new(std::size_t, std::align_val_t)`，在 Windows 下映射到 `_aligned_malloc`，在 POSIX（glibc）下映射到 `aligned_alloc`。它必须多申请一段 padding 把返回地址推到 64 字节边界，并在返回指针的前方回写原始块地址，供 `_aligned_free` 反查。这是"过对齐不是免费的"的数字依据：为了避免伪共享而给热点结构加 `alignas(64)` 时，若该结构是高频短命对象，要把这 34% 计入账。
 
 5. **诚实标注两处被优化器折叠的坑。** 其一：本附录第一版循环体写作 `p->v[0] = seed + i; s += p->v[0];`，placement new 与栈对照双双测出 **0.000 ms** —— 累加和存在闭式解，-O2 直接把整个循环化简成常数，即使 `seed` 是运行期随机值也拦不住。改成依赖链后才测出真值（与 ch36 附录中栈局部变量被折叠为 0 ms 是同一类现象）。其二：D5.3 的 demo 中，若统计计数器不是 `volatile`，GCC 会把成对的 `new`/`delete` **整体消除**，六项计数全为 0 —— 而且这发生在指针已经逃逸到 `volatile void*` 之后。只有让 `operator new` 内部含有可观测副作用（写 `volatile` 计数器），分配才被强制保留。这正是 C++14 起允许的 allocation elision 在真实编译器上的表现。
 
@@ -2314,12 +2314,40 @@ flowchart TD
 #include <cassert>
 #include <cstdlib>
 #include <cstdint>
-#include <malloc.h>
 
 // 计数器必须是 volatile：这样 operator new 内部就有"可观测副作用"，
 // 否则 -O2 会把成对的 new/delete 整体消除，计数结果全为 0。
 static volatile long long g_alloc = 0;
 static volatile long long g_align_alloc = 0;
+
+// 对齐分配的可移植包装：Windows（MSVC/MinGW）提供 _aligned_malloc/_aligned_free，
+// POSIX（glibc）提供 C11 的 std::aligned_alloc/std::free。注意两者实参顺序相反，
+// 且 std::aligned_alloc 要求 size 为 alignment 的整数倍（本 demo 的 alignas(64)
+// 已保证 sizeof(Node64)==64）。
+#if defined(_WIN32)
+  #include <malloc.h>
+  static void* aligned_alloc_impl(std::size_t align, std::size_t size) {
+      return _aligned_malloc(size, static_cast<std::size_t>(align));
+  }
+  static void aligned_free_impl(void* p) { _aligned_free(p); }
+#else
+  // 不依赖 C11/POSIX 特性宏的手动对齐分配：多申请 (align-1 + sizeof(void*)) 字节，
+  // 把首地址向上取到 align 边界，并在对齐地址前的间隙字保存原始指针供释放。
+  // 在 MinGW 与 glibc 下行为一致，均可编译运行。
+  static void* aligned_alloc_impl(std::size_t align, std::size_t size) {
+      if (align < sizeof(void*)) align = sizeof(void*);
+      void* raw = std::malloc(size + align - 1 + sizeof(void*));
+      if (!raw) return nullptr;
+      std::uintptr_t base = reinterpret_cast<std::uintptr_t>(raw) + sizeof(void*);
+      std::uintptr_t aligned = (base + align - 1) & ~(std::uintptr_t)(align - 1);
+      *reinterpret_cast<void**>(aligned - sizeof(void*)) = raw;
+      return reinterpret_cast<void*>(aligned);
+  }
+  static void aligned_free_impl(void* p) {
+      if (p) std::free(*reinterpret_cast<void**>(
+          reinterpret_cast<std::uintptr_t>(p) - sizeof(void*)));
+  }
+#endif
 
 void* operator new(std::size_t n) {
     g_alloc = g_alloc + 1;
@@ -2335,7 +2363,7 @@ void* operator new[](std::size_t n) {
 }
 void* operator new(std::size_t n, std::align_val_t a) {
     g_align_alloc = g_align_alloc + 1;
-    void* p = _aligned_malloc(n ? n : 1, static_cast<std::size_t>(a));
+    void* p = aligned_alloc_impl(static_cast<std::size_t>(a), n ? n : 1);
     if (!p) throw std::bad_alloc();
     return p;
 }
@@ -2343,8 +2371,8 @@ void operator delete(void* p) noexcept { std::free(p); }
 void operator delete[](void* p) noexcept { std::free(p); }
 void operator delete(void* p, std::size_t) noexcept { std::free(p); }
 void operator delete[](void* p, std::size_t) noexcept { std::free(p); }
-void operator delete(void* p, std::align_val_t) noexcept { _aligned_free(p); }
-void operator delete(void* p, std::size_t, std::align_val_t) noexcept { _aligned_free(p); }
+void operator delete(void* p, std::align_val_t) noexcept { aligned_free_impl(p); }
+void operator delete(void* p, std::size_t, std::align_val_t) noexcept { aligned_free_impl(p); }
 
 struct Node { long long v[4]; };
 struct alignas(64) Node64 { long long v[4]; };
@@ -2418,7 +2446,7 @@ int main() {
 
 ### D5.4 方法学注
 
-- 复现旗标：`g++ -O2 -std=c++23`（与 CI 一致）。demo 依赖 MinGW 的 `_aligned_malloc` / `_aligned_free`，移植到 POSIX 时换成 `std::aligned_alloc` + `std::free` 即可。
+- 复现旗标：`g++ -O2 -std=c++23`（与 CI 一致）。demo 通过对 `_WIN32` 的条件编译，在 Windows（`_aligned_malloc`/`_aligned_free`）与 POSIX（`std::aligned_alloc`/`std::free`）双平台均可编译运行。
 - 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；单轮工作量均在数十毫秒以上，避免计时器分辨率污染。
 - `volatile` sink 防 DCE，指针另行逃逸到 `volatile void*` 防 allocation elision；**ch37 特别提示**：仅有指针逃逸并不足够，还必须让 `operator new` 自身含可观测副作用，否则成对的 `new`/`delete` 仍会被整体删除（见 D5.2 第 5 条）。
 - 写入值取自 `std::random_device` 播种的运行期随机数，并串成依赖链，杜绝常量折叠。

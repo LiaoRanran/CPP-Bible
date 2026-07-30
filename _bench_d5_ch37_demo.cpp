@@ -3,12 +3,35 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstdint>
-#include <malloc.h>
 
 // 计数器必须是 volatile：这样 operator new 内部就有"可观测副作用"，
 // 否则 -O2 会把成对的 new/delete 整体消除，计数结果全为 0。
 static volatile long long g_alloc = 0;
 static volatile long long g_align_alloc = 0;
+
+// 对齐分配的可移植包装：Windows（MSVC/MinGW）提供 _aligned_malloc/_aligned_free，
+// POSIX（glibc）提供手动对齐分配（std::malloc + 指针运算，无 C11/POSIX 特性宏依赖）。
+#if defined(_WIN32)
+  #include <malloc.h>
+  static void* aligned_alloc_impl(std::size_t align, std::size_t size) {
+      return _aligned_malloc(size, static_cast<std::size_t>(align));
+  }
+  static void aligned_free_impl(void* p) { _aligned_free(p); }
+#else
+  static void* aligned_alloc_impl(std::size_t align, std::size_t size) {
+      if (align < sizeof(void*)) align = sizeof(void*);
+      void* raw = std::malloc(size + align - 1 + sizeof(void*));
+      if (!raw) return nullptr;
+      std::uintptr_t base = reinterpret_cast<std::uintptr_t>(raw) + sizeof(void*);
+      std::uintptr_t aligned = (base + align - 1) & ~(std::uintptr_t)(align - 1);
+      *reinterpret_cast<void**>(aligned - sizeof(void*)) = raw;
+      return reinterpret_cast<void*>(aligned);
+  }
+  static void aligned_free_impl(void* p) {
+      if (p) std::free(*reinterpret_cast<void**>(
+          reinterpret_cast<std::uintptr_t>(p) - sizeof(void*)));
+  }
+#endif
 
 void* operator new(std::size_t n) {
     g_alloc = g_alloc + 1;
@@ -24,7 +47,7 @@ void* operator new[](std::size_t n) {
 }
 void* operator new(std::size_t n, std::align_val_t a) {
     g_align_alloc = g_align_alloc + 1;
-    void* p = _aligned_malloc(n ? n : 1, static_cast<std::size_t>(a));
+    void* p = aligned_alloc_impl(static_cast<std::size_t>(a), n ? n : 1);
     if (!p) throw std::bad_alloc();
     return p;
 }
@@ -32,8 +55,8 @@ void operator delete(void* p) noexcept { std::free(p); }
 void operator delete[](void* p) noexcept { std::free(p); }
 void operator delete(void* p, std::size_t) noexcept { std::free(p); }
 void operator delete[](void* p, std::size_t) noexcept { std::free(p); }
-void operator delete(void* p, std::align_val_t) noexcept { _aligned_free(p); }
-void operator delete(void* p, std::size_t, std::align_val_t) noexcept { _aligned_free(p); }
+void operator delete(void* p, std::align_val_t) noexcept { aligned_free_impl(p); }
+void operator delete(void* p, std::size_t, std::align_val_t) noexcept { aligned_free_impl(p); }
 
 struct Node { long long v[4]; };
 struct alignas(64) Node64 { long long v[4]; };
