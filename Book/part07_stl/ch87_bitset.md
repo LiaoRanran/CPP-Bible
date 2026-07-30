@@ -1342,4 +1342,76 @@ flowchart TD
 | ch87 bitset | ch93 thread/async | 共享 bitset 需外部互斥同步 |
 | ch87 bitset | ch88 optional/variant | 多标志可用 variant/optional 替代魔法位 |
 
+## 附录 D5：真实基准与性能分析 — bitset vs vector<bool> vs vector<char> 位运算成本（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 Windows / MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，多轮取稳定值（串行实测，无并发干扰）；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 `bitset` / `vector<bool>` / `vector<char>` 在位 `set` 与 `count` 上的成本差异，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准数据
+
+1 亿位；1000 万次随机 `set`；`count` 各重复 10 次。三容器对同一随机下标集合统计的置位总数一致（c1=c2=c3=95166490），故加速比仅反映操作本身开销，不受数据差异干扰。
+
+| 场景 | bitset ms | vector<bool> ms | vector<char> ms | 加速比（vs bitset） |
+|---|---|---|---|---|
+| `set` ×1000 万（随机位） | 45.82 | 45.18 | 90.76 | vector<char> 慢 2.0× |
+| `count` ×10（计 true / 1） | 107.1 | 1137.2 | 270.8 | vector<bool> 慢 10.6×，vector<char> 慢 2.5× |
+| 一致性校验（置位总数） | 95166490 | 95166490 | 95166490 | 三者一致 |
+
+### D5.2 非显然结论
+
+1. **`count` 慢 10.6×：硬件 popcount vs 逐位提取。** 根因：`bitset::count` 走 `__builtin_popcountll`，每个 64 位字一条指令（Zen4 硬件 POPCNT）；而 `vector<bool>` 用 `std::count` 走通用迭代器，逐位做一次 mask + shift + 比较。libstdc++ 未对 `vector<bool>::iterator` 特化 `std::count`，抽象层锁死了本可"一次位并行 64 位"的能力，于是慢了整整一个数量级。
+
+2. **`vector<char>` `set` 慢 2×：内存带宽瓶颈。** 根因：1 亿 `char` = 100MB，超过本机 L3 缓存，随机写被内存带宽与 cache 容量双重压制；而位存储只需 12.5MB，整段可驻留缓存层级，故 `set` 阶段 bitset / vector<bool> 显著更快。
+
+3. **`set` 阶段 bitset ≈ vector<bool>（45.82 vs 45.18 ms）。** 候选解释：随机位写都是对一个 64 位字的 read-modify-write，成本被 cache miss 主导而非位操作本身；bitset 与 vector<bool> 底层都按 64 位字组织，故随机写延迟几乎相同。确切微架构级差异需进一步的 perf 计数器佐证，此处诚实标记为候选解释。
+
+4. **1 亿位 bitset 是静态存储，vector<bool> 是堆。** 根因：`std::bitset<N>` 的大小在编译期固定，通常作为对象内部数组（栈上放不下 1 亿位，需 `static` 或全局）；`vector<bool>` 始终是堆分配。编译期固定尺寸是 bitset 的能力（可 constexpr、零堆开销），也是其限制（不能运行时改变位数）。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <bitset>
+#include <vector>
+#include <iostream>
+#include <cassert>
+#include <random>
+
+int main() {
+    // 小规模避免栈溢出：bitset<N> 大小编译期固定，用 static 置于静态存储
+    static std::bitset<(1 << 20)> bs;          // 1M 位
+    std::vector<bool> vb(1 << 20, false);
+    std::vector<char> vc(1 << 20, 0);
+
+    std::mt19937 rng(20240701);
+    std::uniform_int_distribution<int> dist(0, (1 << 20) - 1);
+    for (int k = 0; k < 100000; ++k) {
+        int idx = dist(rng);
+        bs.set(idx);
+        vb[idx] = true;
+        vc[idx] = 1;
+    }
+
+    std::size_t c1 = bs.count();
+    std::size_t c2 = 0;
+    for (bool b : vb) if (b) ++c2;
+    std::size_t c3 = 0;
+    for (char c : vc) if (c) ++c3;
+
+    std::cout << "bitset count   : " << c1 << std::endl;
+    std::cout << "vector<bool> c : " << c2 << std::endl;
+    std::cout << "vector<char> c : " << c3 << std::endl;
+
+    // 稳定语义：三者对相同随机下标集合统计的置位总数一致
+    assert(c1 == c2);
+    assert(c2 == c3);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（10.6× / 2.5× / 2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_87_bitset.cpp`。
+
+
 

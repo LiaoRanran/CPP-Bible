@@ -1238,4 +1238,64 @@ flowchart TD
 | ch92 chrono | ch94 stop_token | 超时取消计时 |
 | ch113 内存模型/原子 | ch92 chrono | 时钟读取的原子性 |
 
+## 附录 D5：真实基准与性能分析 — 三时钟 now() 与 rdtsc 的调用成本（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 Windows / MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，多轮取稳定值（串行实测，无并发干扰）；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 steady_clock / system_clock / high_resolution_clock 的 `now()` 与 `__rdtsc` 单次调用成本，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准数据
+
+2000 万次调用；"单次成本"由总耗时 ÷ 2000 万换算。加速比以 `__rdtsc`（最快）为 1.00× 基准。
+
+| 场景 | 耗时 ms | 单次 ns | 加速比（vs rdtsc） |
+|---|---|---|---|
+| steady_clock::now ×20M | 1034.2 | 51.7 | 3.4× |
+| system_clock::now ×20M | 1246.0 | 62.3 | 4.0× |
+| high_resolution_clock::now ×20M | 1255.9 | 62.8 | 4.1× |
+| __rdtsc ×20M | 308.3 | 15.4 | 1.00× |
+
+### D5.2 非显然结论
+
+1. **三时钟 50–63 ns/次，对纳秒级微基准本身就是重扰动。** 根因：Windows/MinGW 下 libstdc++ 的 steady/system/high_resolution 都走 `QueryPerformanceCounter` 类内核调用路径——每次 `now()` 是一次用户态↔内核态切换 + 内核读取稳定计数器；在热循环里随手插 `now()` 会显著扭曲被测操作本身（"观察者效应"）。正确做法是批量：循环内只做被测操作，循环外取两端 `now()` 求差。
+
+2. **`__rdtsc` 15.4 ns 仍非零成本。** 根因：`rdtsc` 本身是用户态指令（无陷内核），但防乱序的序列化（`cpuid`/`lfence`）与 TSC 周期 → 纳秒的换算责任全在用户侧；且跨核 TSC 是否同步要看 `constant_tsc`/`invariant_tsc`，裸 `rdtsc` 裸用仍可能拿到错误时间。
+
+3. **high_resolution_clock 62.8 ns ≈ system_clock 62.3 ns 是同一实现的噪声。** 根因：libstdc++ 中 `high_resolution_clock` 就是 `system_clock` 的别名（`using high_resolution_clock = system_clock;`，可在 chrono 头核验），二者同一条代码路径，差值落在计时噪声内。
+
+4. **测耗时唯一正确选择是 steady_clock（51.7 ns，最快且单调不回拨）。** 根因：steady_clock 是单调时钟，NTP 校时/系统休眠不会使其回拨，超时与基准计时绝不会因墙钟跳变得到负值；system_clock 只用于挂钟/日志等需要可序列化时刻的场景。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <chrono>
+#include <type_traits>
+#include <cassert>
+
+int main() {
+    // 功能正确性（稳定，可断言）：steady_clock 单调——后一次 now() 必 >= 前一次
+    auto a = std::chrono::steady_clock::now();
+    auto b = std::chrono::steady_clock::now();
+    std::cout << "steady monotonic : " << (b >= a) << std::endl;
+    assert(b >= a);  // 单调时钟：后 >= 前
+
+    // 运行期确认 high_resolution_clock 与 system_clock 是否为同一类型
+    // （不做硬 static_assert，因实现差异；仅运行期输出）
+    bool same_type = std::is_same_v<std::chrono::high_resolution_clock,
+                                     std::chrono::system_clock>;
+    std::cout << "high_res == system_clock type : " << std::boolalpha << same_type << std::endl;
+
+    // 功能正确性：steady_clock 可求时长（duration），用于计时
+    auto d = std::chrono::steady_clock::now() - a;
+    std::cout << "elapsed us : "
+              << std::chrono::duration_cast<std::chrono::microseconds>(d).count() << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE，且基准让所有累加和逃逸到 `g_esc` 以保留真实 `now()` 调用。
+- 加速比（3.4× / 4.0× / 4.1×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_92_chrono.cpp`。
+
 

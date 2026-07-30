@@ -1363,3 +1363,78 @@ int main() {
 ```
 
 预期输出依次为 `true / false / 1 / 4 / 1 4`——`lower_bound` 落在首个 `2`（下标 1）、`upper_bound` 落在首个 `>2`（下标 4）、`equal_range` 双界恰为 `[1,4)`、`binary_search` 借 `lower_bound` 正确判定存在性，与 D4.1–D4.4 源码一致。
+
+## 附录 D5：真实基准与性能分析 — sorted vector / set / unordered_set 查找（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 Windows / MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，多轮取稳定值（串行实测，无并发干扰）；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 sorted vector + lower_bound、set、unordered_set 三类查找的相对开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准数据
+
+400 万键，200 万次查询全命中，mt19937 随机键。"加速比"以 sorted vector lower_bound 为 1.00× 基准。
+
+| 场景 | 耗时 ms | 加速比 |
+|---|---|---|
+| sorted vector + `lower_bound` | 643.5 | 1.00×（基准） |
+| `set::find` | 2593.9 | 0.25×（比 lower_bound 慢 4.03×） |
+| `unordered_set::find` | 154.4 | 4.17×（比 lower_bound 快 4.17×，比 set 快 16.8×） |
+
+### D5.2 非显然结论
+
+1. **同为 O(log N) 二分，set 比 sorted vector 慢 4.03×。** 根因是节点离散堆分配：红黑树每步跳转都是一次不可预取的随机指针追逐（400 万节点 × 每节点 40+ 字节控制块，缓存命中率极低）；sorted vector 二分虽也随机访问，但数据连续、最后几步落在同一 cache line，且无指针依赖链，预取器与硬件能部分掩盖延迟。
+
+2. **unordered_set 快在 O(1) 桶直达。** 根因：一次哈希 + 一次桶头指针 + 平均 <1 次链表跳转，约 77ns/查询 ≈ 一两次 cache miss 的成本，性能被内存延迟而非哈希函数主导——哈希计算本身几乎可忽略。
+
+3. **工程决策表：** 只查不改 / 批量建一次 → sorted vector（缓存友好、内存紧凑）；需有序遍历 + 频繁增删 → set（顺序迭代免费）；纯点查 → unordered_set（但迭代慢、无序、最坏 O(n) 退化）。
+
+4. **与 ch83 D5「map vs unordered_map 22.5×」互证。** 那边测的是 map（红黑树，节点更肥、控制块更大），故比 unordered_map 慢到 22.5×；本章 set 节点也离散，但键为 int、控制块相对 map 的 pair 更瘦，故"仅"慢 16.8×——结论一致：离散节点查找的瓶颈在缓存，而非算法阶数。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <set>
+#include <unordered_set>
+#include <algorithm>
+#include <random>
+#include <cassert>
+
+int main() {
+    const std::size_t N = 4'000'000;   // 400 万键
+    std::vector<int> keys(N);
+    std::mt19937 gen(20240701);
+    for (std::size_t i = 0; i < N; ++i) keys[i] = static_cast<int>(gen());
+
+    std::vector<int> sorted = keys;
+    std::sort(sorted.begin(), sorted.end());
+    std::set<int> s(keys.begin(), keys.end());
+    std::unordered_set<int> us(keys.begin(), keys.end());
+
+    // 200 万次查询全命中：取容器内真实存在的键
+    std::size_t found_vec = 0, found_set = 0, found_us = 0;
+    const std::size_t Q = 2'000'000;
+    std::mt19937 qgen(987654321);
+    for (std::size_t i = 0; i < Q; ++i) {
+        int q = keys[qgen() % keys.size()];
+        if (std::binary_search(sorted.begin(), sorted.end(), q)) ++found_vec;
+        if (s.find(q) != s.end()) ++found_set;
+        if (us.find(q) != us.end()) ++found_us;
+    }
+
+    std::cout << "found by vector : " << found_vec << std::endl;
+    std::cout << "found by set    : " << found_set << std::endl;
+    std::cout << "found by unord  : " << found_us << std::endl;
+
+    // 功能正确性：全命中场景下三者查找结果必须一致，绝不断言时间/倍数
+    assert(found_vec == Q);
+    assert(found_set == Q);
+    assert(found_us == Q);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（4.03× / 4.17× / 16.8×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_97_search.cpp`。

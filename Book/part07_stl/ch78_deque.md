@@ -1369,3 +1369,79 @@ flowchart TD
 | ch90 ranges | ranges 算法可作用于 deque 的随机访问迭代器。 |
 | ch83 map | 关联容器与 deque 是不同访问模式的选择。 |
 | ch80 array | 固定规模优先 array，动态双端才用 deque。 |
+
+## 附录 D5：真实基准与性能分析 — deque vs vector 的真实代价与唯一优势（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 Windows / MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，多轮取稳定值（串行实测，无并发干扰）；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 `deque` 与 `vector` 在 `push_back` / 遍历 / 随机访问 / 头插上的真实代价，并指出 deque 的唯一结构性优势。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准数据
+
+200 万次 `push_back` / 顺序遍历 / `mt19937` 随机下标访问；头插单独用 10 万规模（因 `vector` 的 `insert(begin)` 为 O(N²) 总量，规模再大不具可读性）。"加速比"以 `vector` 同场景为基准 1.00×，deque 慢于 vector 即 >1.00×。
+
+| 场景 | vector ms | deque ms | 加速比（deque vs vector） |
+|---|---|---|---|
+| `push_back` ×2M | 4.33 | 5.25 | deque 慢 1.21× |
+| 顺序遍历 ×2M | 0.91 | 2.06 | deque 慢 2.27× |
+| 随机下标访问 ×2M | 5.67 | 13.32 | deque 慢 2.35× |
+| 头插（`push_front` / `insert(begin)`）×100K | 540.5 | 0.366 | deque 快 1477× |
+
+### D5.2 非显然结论
+
+1. **遍历慢 2.27×：二级间接 + 块边界分支。** 根因：libstdc++ 的 deque 块大小 = 512 字节 / 元素大小（`_GLIBCXX_DEQUE_BUF_SIZE=512`），`int` 每块 128 个。顺序遍历每跨一个块都要经中控 `map` 指针数组做二级间接寻址，并每次判断"是否到达块尾"的分支，cache 局部性远差于 vector 的单一连续数组。
+
+2. **随机访问慢 2.35×：`operator[]` 的除法/取模等价计算。** 根因：deque 的 `operator[]` 不能像 vector 那样指针 + 偏移，而要先 `(i / 每块元素数)` 定位块、再 `(i % 每块元素数)` 取块内偏移——即便编译器优化为乘逆元，仍比 vector 的单一加法贵一截，随机访问越密集差距越明显。
+
+3. **`push_back` 只慢 1.21×：重分配成本被抵消。** 根因：`vector` 在容量耗尽时要分配更大缓冲并搬移全部旧元素，而 `deque` 只需切一块新缓冲、永不搬移旧元素（二者迭代器/引用失效语义不同）。vector 的搬移惩罚与 deque 的稳定新块分配成本互相抵消，故尾部追加差距很小。
+
+4. **1477× 不是 deque 神奇，是复杂度差。** 根因：`vector` 头插每次 `insert(begin)` 都要把其后全体元素 `memmove` 后移 O(N)，10 万次累计 ≈ O(N²) ≈ 50 亿次搬移；`deque::push_front` 是分摊 O(1) 的头块前插。同一"头插"操作，算法复杂度差带来三个数量级的实测差距。
+
+5. **工程铁律：默认 `vector`，仅"双端插入删除都是热路径"才用 `deque`。** 根因：上述 2.27× / 2.35× 的遍历与随机访问劣势是结构性、必须付出的；deque 换来的只是摊还 O(1) 双端增删，若只有头或只有尾是热路径，vector 或配合 `reserve`/`emplace_back` 往往更优。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <deque>
+#include <vector>
+#include <iostream>
+#include <cassert>
+
+int main() {
+    // deque 双端 O(1) 均摊：头尾都能高效插入
+    std::deque<int> d;
+    for (int i = 0; i < 5; ++i) d.push_back(i);   // 0..4
+    d.push_front(-1);                              // 头部插入
+    std::cout << "deque front : " << d.front() << std::endl;
+    std::cout << "deque back  : " << d.back() << std::endl;
+    std::cout << "deque size  : " << d.size() << std::endl;
+    assert(d.front() == -1);
+    assert(d.back() == 4);
+    assert(d.size() == 6);
+
+    // vector 同样数据（仅尾部插入）：验证功能等价
+    std::vector<int> v;
+    v.push_back(-1);
+    for (int i = 0; i < 5; ++i) v.push_back(i);
+    std::cout << "vector front: " << v.front() << std::endl;
+    std::cout << "vector back : " << v.back() << std::endl;
+    std::cout << "vector size : " << v.size() << std::endl;
+    assert(v.front() == -1);
+    assert(v.back() == 4);
+    assert(v.size() == d.size());
+
+    // 稳定语义：deque 头插后元素序列与 vector 一致
+    bool same = true;
+    for (std::size_t i = 0; i < d.size(); ++i) {
+        if (d[i] != v[i]) { same = false; break; }
+    }
+    std::cout << "sequence equal: " << std::boolalpha << same << std::endl;
+    assert(same);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（1.21× / 2.27× / 2.35× / 1477×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_78_deque.cpp`。
+

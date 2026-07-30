@@ -1853,3 +1853,86 @@ int main() {
     return 0;
 }
 ```
+
+## 附录 D5：真实基准与性能分析 — accumulate vs reduce 的求值顺序（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 Windows / MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，多轮取稳定值（串行实测，无并发干扰）；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 `accumulate` 与 `reduce` 在 float / int 上的相对开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准数据
+
+3200 万元素，mt19937 随机数据，各重复 5 遍（表中为 ×5 总耗时）。"加速比"以同类 `accumulate` 为 1.00× 基准。
+
+| 场景 | 耗时 ms（×5 总） | 加速比 |
+|---|---|---|
+| `accumulate` float ×5 | 89.21 | 基准 1.00× |
+| `reduce` float ×5 | 55.65 | **1.60×**（比 accumulate 快） |
+| `accumulate` int ×5 | 42.47 | 基准 1.00× |
+| `reduce` int ×5 | 43.80 | 0.97×（同速，差异 3% 在噪声内） |
+
+### D5.2 非显然结论
+
+1. **accumulate 的 float 慢 1.60× 不在算法阶数，在求值顺序。** 根因：标准规定 `accumulate` 严格从左到右折叠；float 加法不可结合（`(a+b)+c ≠ a+(b+c)`），编译器被语义锁死不能向量化——每次加法依赖上一次结果，循环退化为一条串行依赖链，吞吐受限于 FP add 延迟而非吞吐。
+
+2. **reduce 快在 GENERALIZED_SUM 的自由度。** 根因：标准明文允许任意结合与交换，`reduce` 可做 4/8 路部分和并行；Zen4 的 AVX 单元每周期能吞多组 `vaddps`，故浮点拿到 1.60×。
+
+3. **"reduce 一定更快"是错的——只有浮点有差价。** 根因：int 加法天然可结合，GCC 对 `accumulate` 的 int 版早已能做重结合向量化（对整数是合法优化），所以两者同速（0.97×，3% 在噪声内）。差价只来自浮点不可结合性。
+
+4. **reduce 的浮点结果与 accumulate 不 bit 相同——而且本例中 reduce 精度高 35 倍。** 同数据集（3200 万个 float，均值约 71.4）用 `double` 算出的参考真值为 `2282970873`；`accumulate` 得 `2190118144`（相对误差 **4.07%**），`reduce` 得 `2280369920`（相对误差 **0.114%**）。根因是"大数吃小数"：`accumulate` 串行折叠时 running sum 单调涨到 2.2e9 量级，float 只有 24 位有效尾数（相对精度约 6e-8），此时最低有效位的权重已达 ~128，而每个待加元素只有 0~142 —— 后半程绝大多数元素被舍入直接吞掉；`reduce` 分成若干路部分和，每路只累到总量的 1/K，量级小得多，被吞的元素显著减少。
+
+5. **因此"reduce 牺牲精度换速度"是彻底的误解。** 分组求和（pairwise / 部分和）本就是数值分析里比朴素串行更稳的求和策略——误差随 N 的增长从 O(N·ε) 降到约 O(log N·ε)。`reduce` 在这里是既快 1.60× 又准 35× 的严格改进。`accumulate` 的真正不可替代之处不是"更准"，而是**结果确定**：严格从左到右意味着同一输入在任何平台、任何优化等级下 bit 完全一致，这才是回归测试、金融对账、跨机复现要它的原因。要又快又准又确定，用 Kahan/Neumaier 补偿求和。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <numeric>
+#include <vector>
+#include <random>
+#include <cmath>
+#include <cassert>
+
+int main() {
+    const std::size_t N = 32'000'000;   // 3200 万元素
+    std::vector<float> vf(N);
+    std::vector<int>   vi(N);
+    std::mt19937 gen(20240701);
+    for (std::size_t i = 0; i < N; ++i) {
+        vf[i] = static_cast<float>(gen() % 1000) / 7.0f;
+        vi[i] = static_cast<int>(gen() % 1000);
+    }
+
+    // 参考真值：用 double 逐元素累加（相对精度 1.1e-16，对 float 数据足够充当基准）
+    double truth = 0.0;
+    for (float x : vf) truth += static_cast<double>(x);
+
+    float fa = std::accumulate(vf.begin(), vf.end(), 0.0f);
+    float fr = std::reduce(vf.begin(), vf.end(), 0.0f);
+    double err_acc = std::fabs(static_cast<double>(fa) - truth) / truth;
+    double err_red = std::fabs(static_cast<double>(fr) - truth) / truth;
+    std::cout.precision(10);
+    std::cout << "truth (double)   : " << truth << std::endl;
+    std::cout << "accumulate float : " << fa << "  relerr=" << err_acc << std::endl;
+    std::cout << "reduce     float : " << fr << "  relerr=" << err_red << std::endl;
+
+    int ia = std::accumulate(vi.begin(), vi.end(), 0);
+    int ir = std::reduce(vi.begin(), vi.end(), 0);
+    std::cout << "int accumulate   : " << ia << std::endl;
+    std::cout << "int reduce       : " << ir << std::endl;
+
+    // int：加法可结合，两者必须 bit 相同（稳定语义，可断言 ==）
+    assert(ia == ir);
+
+    // float：分组求和的误差不会劣于严格串行折叠。
+    // 若实现未做重结合（如 -O0），两者相等，<= 仍成立；做了重结合则 reduce 严格更准。
+    // 故此断言可移植；而 "relerr < 1e-5" 之类的绝对阈值在大 N 上必然失败。
+    assert(err_red <= err_acc);
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取 5 轮稳定值，规避调度抖动；`volatile` sink 防 DCE。
+- 精度对比中的"真值"由同一批 `float` 数据用 `double` 逐元素累加得到（`double` 相对精度 1.1e-16，对 float 量级数据足以充当基准），非解析解。
+- 加速比（1.60× 浮点 / 0.97× 整数）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_99_numeric.cpp`。

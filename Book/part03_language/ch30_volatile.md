@@ -990,3 +990,62 @@ flowchart TD
 | ch109 | 并发与原子（下） | 无锁编程与 volatile 的界限，澄清 volatile 不能做同步 |
 | ch48 | 动态内存 | volatile 不影响对象生命周期，MMIO 映射区常由 mmap/new 返回 |
 | ch43 | 缓存局部性 | volatile 访问绕过寄存器但缓存一致性仍由硬件 MESI 维护 |
+
+## 附录 D5：真实基准与性能分析 — volatile vs atomic 的真实成本（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 Windows / MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，多轮取稳定值（串行实测，无并发干扰）；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 plain 局部 / volatile / atomic relaxed / atomic seq_cst 四种自增的相对成本，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准数据
+
+1 亿次自增；"加速比"以 volatile_counter 为基准 1.00×。plain_counter 的 0.0002 ms 来自 -O2 将整段循环闭式折叠为常量（循环被完全优化消除，数字仅示意"不可测"）。
+
+| 场景 | 耗时 ms | 加速比（vs volatile） |
+|---|---|---|
+| plain 局部自增（被 -O2 折叠） | 0.0002 | 不可比（循环消失） |
+| volatile 自增（每轮 load+add+store） | 43.28 | 1.00× |
+| atomic fetch_add relaxed | 313.6 | 7.2× |
+| atomic fetch_add seq_cst | 312.8 | 7.2× |
+
+### D5.2 非显然结论
+
+1. **atomic relaxed 与 seq_cst 几乎同价（313.6 vs 312.8 ms，均 ≈7.2× volatile）。** 根因：x86 上 `fetch_add` 无论内存序都编译成同一条 `lock xadd`；`memory_order` 只约束编译器重排许可，不改变生成的指令（与 ch108 D5 的 x86-TSO 结论互证：store 才有 seq_cst=`xchg` 的 15.5× 差价，fetch_add 路径没有这条差价）。
+
+2. **atomic 比 volatile 贵 7.2× 是 `lock` 前缀的总线/缓存行锁定成本。** 根因：volatile 的每次 load+add+store 无 lock 前缀，约 0.43 ns/次纯内存往返；atomic 的 `lock add`/`lock xadd` 要获取缓存行独占权并广播使其他核失效，单次成本被总线锁定主导。
+
+3. **volatile 保证"访存不被省略/重排"，不保证原子性。** 根因：volatile 的语义边界只在编译器/硬件可见性——多线程计数若用 volatile，读-改-写之间可被其他线程插入，导致更新丢失（撕裂/丢更新）；它的正当领域是单线程防优化与 MMIO，不是同步原语。
+
+4. **plain 0.0002 ms 证明"用普通变量计数测性能"是幻觉。** 根因：基准若用普通局部变量累加计次，优化器会识破结果不可观测，把整段循环折叠成 `c = N`，测出来的"耗时"是零；防 DCE 必须让计数逃逸（volatile sink 或原子），否则任何"基准结论"都是编译器优化假象。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <atomic>
+#include <cassert>
+
+int main() {
+    // 功能正确性：volatile 单线程自增得到终值 N
+    volatile long long v = 0;
+    const long long N = 1'000'000;
+    for (long long i = 0; i < N; ++i) v = v + 1;
+    std::cout << "volatile final : " << v << std::endl;
+    assert(v == N);  // 单线程下 volatile 自增终值必然等于 N
+
+    // 功能正确性：atomic fetch_add 终值等于 N（原子保证不丢更新）
+    std::atomic<long long> a{0};
+    for (long long i = 0; i < N; ++i) a.fetch_add(1, std::memory_order_relaxed);
+    std::cout << "atomic  final : " << a.load() << std::endl;
+    assert(a.load() == N);
+
+    // 关键语义区分（稳定，可断言）：单线程下二者终值相等；
+    // 但 volatile 不提供原子保证，多线程下可能丢更新，atomic 提供
+    assert(v == a.load());
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE，且基准刻意让四个计数器全部逃逸到 `g_esc` 以迫使优化器保留真实访存。
+- 加速比（7.2×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_30_volatile.cpp`。

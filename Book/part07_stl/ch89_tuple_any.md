@@ -1496,3 +1496,70 @@ flowchart TD
 
 
 
+
+## 附录 D5：真实基准与性能分析 — int/variant/any 类型擦除成本阶梯（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 Windows / MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，多轮取稳定值（串行实测，无并发干扰）；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 int → variant → any 类型擦除成本阶梯，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准数据
+
+1000 万元素 `vector` 构造 + 求和；any 装 64 字符 `string`（超 SSO）单独 100 万规模。"加速比"以 int 同场景为 1.00× 基准。
+
+| 场景 | 耗时 ms | 加速比（vs int） |
+|---|---|---|
+| 构造 vector — `int` | 7.11 | 1.00× |
+| 构造 vector — `variant<int,double>` | 32.56 | 4.6× |
+| 构造 vector — `any` | 40.18 | 5.7× |
+| 求和遍历 — `int` | 2.33 | 1.00× |
+| 求和遍历 — `variant` `get_if` | 8.61 | 3.7× |
+| 求和遍历 — `any_cast<int>` | 17.51 | 7.5× |
+| `any` 装 64 字符 `string`（100 万，超 SBO） | 140.1 | —（每元素两次堆分配） |
+
+### D5.2 非显然结论
+
+1. **`int` 走 any SBO 仍慢 5.7×。** 根因：libstdc++ `any` 内部小缓冲区 = `sizeof(void*)*2`（`_M_storage`，16 字节），且要求类型可平凡移动才启用 SBO——`int` 满足，故 SBO 命中、无堆分配；但每次访问仍付出 manager 函数指针间接调用 + `typeid` 比较，这才是 5.7× 的来源，而非堆分配。
+
+2. **`any_cast` 比 `variant` 的整型索引分支贵约 2×。** 根因：GCC 下 `any_cast` 每次做 manager 指针比对——同一 `so` 内是指针相等比较，跨 `so` 退化为 `typeid` 字符串比较；`variant` 的 `get_if` 只是编译期整型索引比较 + 指针算术，无运行期类型校验。
+
+3. **闭集永远比开集便宜。** 根因：`variant` 是闭集（编译期已知所有候选类型，`get_if` 仅是索引比较），`any` 是开集（运行期任意类型，需 manager/typeid 校验）。选型铁律：类型集合编译期可枚举一律 `variant`。
+
+4. **64 字符 `string` 触发两跳分配 + 两跳解引用。** 根因：64 字符 > 16 字节 SBO，`any` 必堆分配存储 `string` 对象外壳本身；而该 `string` 又为 64 字符数据区做一次堆分配。于是每个元素 = 两次堆分配 + 两次间接解引用（先取 any 堆对象，再取 string 内部数据）。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <any>
+#include <variant>
+#include <iostream>
+#include <typeinfo>
+
+int main() {
+    // any 类型擦除功能语义：存 int，取回 int
+    std::any a = 42;
+    int v = std::any_cast<int>(a);
+    std::cout << "any_cast<int>      : " << v << std::endl;
+
+    // 错误类型 any_cast 必须抛 bad_any_cast（稳定语义，可断言）
+    bool threw = false;
+    try { (void)std::any_cast<double>(a); }
+    catch (const std::bad_any_cast&) { threw = true; }
+    std::cout << "bad_any_cast thrown: " << std::boolalpha << threw << std::endl;
+    if (!threw) return 1;  // 断言：错误类型取回必然抛 bad_any_cast
+
+    // variant 闭集：get_if 对错误类型索引返回 nullptr（稳定语义，可断言）
+    std::variant<int, double> var = 3.14;
+    auto pi = std::get_if<double>(&var);
+    std::cout << "variant get_if     : " << *pi << std::endl;
+    if (std::get_if<int>(&var) != nullptr) return 1;
+
+    return 0;
+}
+```
+
+> 注意：`any` 是否命中 SBO（如 `int` 走 16 字节 `_M_storage`）属实现细节，随标准库版本而变，故 demo 不对其做 `sizeof`/`SBO` 断言，只断言功能语义（错误类型 `any_cast` 抛异常、`variant` 错索引 `get_if` 返回空）。
+
+### D5.4 方法学注
+
+- 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（4.6× / 5.7× / 3.7× / 7.5×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_89_any.cpp`。

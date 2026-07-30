@@ -1290,3 +1290,81 @@ int main() {
 ```
 
 预期输出依次为 `左值 / 右值 / 右值`——`forward<T>` 依 `T` 的推导结果（左值实参→`T=int&`、右值实参→`T=int`）经引用折叠精确还原实参的值类别，与 D4.1 的双重载源码一一对应。
+
+
+## 附录 D5：真实基准与性能分析 — push_back vs emplace_back 的诚实测量（反炒作）（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 Windows / MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，多轮取稳定值（串行实测，无并发干扰）；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，诚实测量 `push_back` 与 `emplace_back` 在可移动类型（64 字符 `string`，超 SSO 必堆分配，`reserve` 消除重分配）上的差异，戳破"emplace 永远更快"的教科书叙事。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准数据
+
+500 万元素 `vector`，均 `reserve(N)` 消除重分配噪声；`string` = 64 字符超 SSO 必堆分配。"加速比"分组以同组首个场景为 1.00× 基准。
+
+| 场景 | 耗时 ms | 加速比 |
+|---|---|---|
+| `push_back(const char*)`（隐式构造临时 + 移动） | 713.7 | 基准 1.00× |
+| `emplace_back(const char*)`（原位构造） | 718.9 | 1.01×（≈持平） |
+| `push_back(左值 string)`（深拷贝） | 772.5 | 1.08× |
+| pair：`push_back(make_pair(i, string(s64)))` | 742.0 | 基准 1.00× |
+| pair：`emplace_back(i, s64)` | 1070.2 | 1.44× |
+| pair：`emplace_back` 3 次复测区间 | 919 / 1014 / 1070 | 方向一致：emplace 更慢 |
+
+单 `string` 三场景差异 < 8%（713.7 / 718.9 / 772.5 ms），全部被 64 字节堆分配（~140 ns/次）淹没；pair 场景中 `emplace_back` 反而慢 1.44×，且 3 次复测 919 / 1014 / 1070 ms 稳定复现同一方向。
+
+### D5.2 非显然结论
+
+1. **"emplace_back 更快"在可移动类型上基本不成立。** 根因：`push_back(临时)` = 构造临时 `string` + 一次 O(1) 移动；`string` 的移动仅是 3 个指针拷贝（~1 ns），而 64 字节堆分配约 ~140 ns。省下的"一次移动"与堆分配成本相差两个数量级，测不出来——713.7 vs 718.9 ms 的 5.2 ms 差异纯属噪声。
+
+2. **pair 场景 `emplace_back` 反慢 1.44× 是本机可复现的反直觉事实。** 两路径堆分配次数相同（各 1 次），故非分配量差异。候选解释（诚实标注，非定论）：`emplace_back` 的完美转发模板经 `allocator_traits::construct` → placement-new `pair(int&&, const char*&)` 的深层模板实例化，在 GCC -O2 下该构造路径的内联决策 / 代码布局劣于"显式临时 `make_pair` + `pair` 移动构造"的扁平路径。这是实现 / 优化器行为，非标准语义差异，换编译器版本可能反转——结论本身（"emplace 不保证不慢"）比具体数字更重要。
+
+3. **emplace 的真实收益只有两类，本场景都被掩盖。** (a) 免中间对象的多参原位构造：本场景因堆分配主导而不可测，只有在无堆分配的小对象（如 `pair<int,int>`）上才可观测；(b) 语义差异：`emplace_back` 能调用 `explicit` 构造函数，`push_back` 不能——这是功能差异而非性能差异（见 D5.3）。
+
+4. **方法学教训：测 push/emplace 差异必须先 `reserve`。** 根因：`vector` 增长触发 O(log N) 次指数重分配，其噪声远大于被测差值；本基准全部 `reserve(N)`，否则 713.7 / 718.9 / 772.5 的微小差异会被重分配抖动彻底淹没。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+#include <utility>
+#include <cassert>
+
+struct ExplicitInt {
+    int v;
+    explicit ExplicitInt(int x) : v(x) {}   // 显式构造函数
+};
+
+int main() {
+    const char* s64 =
+        "0123456789012345678901234567890123456789012345678901234567890123";  // 64 字符，超 SSO
+
+    // (1) push_back 与 emplace_back 构造出的向量内容必须相等（稳定语义，可断言）
+    std::vector<std::string> vp, ve;
+    vp.reserve(3); ve.reserve(3);
+    vp.push_back(s64);
+    ve.emplace_back(s64);
+    std::cout << "push_back  -> " << vp.back() << std::endl;
+    std::cout << "emplace_bac-> " << ve.back() << std::endl;
+    assert(vp.size() == ve.size());
+    assert(vp.back() == ve.back());          // 内容一致
+
+    // (2) explicit 构造：push_back 不能隐式转换，emplace_back 可原位构造
+    std::vector<ExplicitInt> ep, ee;
+    // ep.push_back(7);                       // 编译错误：不能隐式 int -> ExplicitInt
+    ep.push_back(ExplicitInt(7));             // 必须显式转换
+    ee.emplace_back(7);                       // emplace 直接转发到 explicit 构造
+    std::cout << "push_back(explicit) val: " << ep.back().v << std::endl;
+    std::cout << "emplace_back val     : " << ee.back().v << std::endl;
+    assert(ep.back().v == ee.back().v);       // 值正确且一致
+
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
+- 加速比（1.01× / 1.08× / 1.44×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
+- pair_emplace 反慢 1.44× 为本机可复现事实，3 次复测 919 / 1014 / 1070 ms 方向一致；其根因（见 D5.2 第 2 条）为候选解释，换编译器 / 版本可能反转，请勿当作通用铁律。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_116_forwarding.cpp`。
