@@ -17,6 +17,13 @@ ch42 unused param 警告、GCC 版本不一致等）。教训写进 MEMORY.md：
   3. 本机 g++ 真编译：对 md 内"含 int main 的 cpp demo"与基准 cpp 文件，用本机
      `g++ -O2 -std=c++23`（涉线程自动加 -pthread）真实编译，复验"编译通过"声称。
 
+  豁免意识（避免假阳性）
+  ======================
+  本闸门会对照 tools/compile_exempt.json：命中（章文件名, 1-based 块序）的 demo 只报
+  [WAIVED] 而不计入 fails。原因：CI 的 compile_gate 本就对 CROSS_BLOCK（符号在前序块
+  定义，顺读可编）等块放行；若本闸门把它们当 FAIL，会制造假阳性、阻碍合法提交。未命中
+  豁免却又编译失败的 demo 才是真正须修的新缺陷。
+
 设计约束（对齐 AGENT.md 红线）
 ==============================
 - 只读 + 临时编译（写到 build/_wave_intake/，结束清理），不污染源码树。
@@ -30,7 +37,7 @@ ch42 unused param 警告、GCC 版本不一致等）。教训写进 MEMORY.md：
   python3 tools/wave_intake_check.py Book/partXX/chNN.md _bench_d5_nn.cpp
   python3 tools/wave_intake_check.py --auto --no-compile   # 只做围栏/LF/BOM
 """
-import re, sys, os, shutil, subprocess, argparse, tempfile
+import re, sys, os, shutil, subprocess, argparse, tempfile, json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -56,6 +63,46 @@ def find_gpp():
 GPP = find_gpp()
 
 
+def load_exempt():
+    """读取 tools/compile_exempt.json，返回 set[(章文件名, 1-based 块序)]。
+
+    CI 的 compile_gate 已对 CROSS_BLOCK / MULTI_FILE 等"隔离审计看不到、但顺读可编"
+    的块放行。本闸门若也把它们报成 FAIL，会制造假阳性、阻碍合法提交。因此命中豁免
+    列表的块只报 [WAIVED]，不计入 fails。
+    """
+    p = ROOT / 'tools' / 'compile_exempt.json'
+    s = set()
+    if not p.exists():
+        return s
+    try:
+        d = json.load(open(p, encoding='utf-8'))
+    except Exception:
+        return s
+    for e in d.get('exempt', []):
+        f = e.get('file')
+        b = e.get('block')
+        if f and isinstance(b, int):
+            s.add((f, b))
+    return s
+
+
+def cpp_block_index(text, fence_line_1based):
+    """给定 ```cpp 围栏的 1-based 行号，返回它在文件中按出现顺序的 1-based 序号。
+
+    与 compile_exempt.json 的 block 字段对齐（1-based）。
+    """
+    cnt = 0
+    for idx, l in enumerate(text.split('\n'), 1):
+        if idx > fence_line_1based:
+            break
+        if FENCE_RE.match(l) and l.strip().lstrip('`').strip().startswith('cpp'):
+            cnt += 1
+    return cnt
+
+
+EXEMPT = load_exempt()
+
+
 def fence_even_ok(text):
     cnt = sum(1 for l in text.split('\n') if FENCE_RE.match(l))
     return cnt % 2 == 0, cnt
@@ -72,7 +119,11 @@ def text_health(path: Path):
 
 
 def extract_cpp_demos(text):
-    """提取 md 内所有 ```cpp 块内容；返回 list[(start_line, code)]。"""
+    """提取 md 内所有 ```cpp 块内容；返回 list[(fence_line_1based, code)]。
+
+    fence_line_1based 是开围栏 ```cpp 的 1-based 行号，用于对齐 compile_exempt.json
+    的 1-based 块序。
+    """
     lines = text.split('\n')
     demos = []
     i = 0
@@ -80,13 +131,13 @@ def extract_cpp_demos(text):
     while i < n:
         m = FENCE_RE.match(lines[i])
         if m and lines[i].strip().lstrip('`').strip().startswith('cpp'):
-            start = i + 1
+            fence_line = i + 1
             buf = []
             j = i + 1
             while j < n and not FENCE_RE.match(lines[j]):
                 buf.append(lines[j])
                 j += 1
-            demos.append((start, '\n'.join(buf)))
+            demos.append((fence_line, '\n'.join(buf)))
             i = j + 1
         else:
             i += 1
@@ -156,6 +207,7 @@ def main():
     print("=" * 72)
 
     fails = 0
+    waived_total = 0
     tmp_root = ROOT / 'build' / '_wave_intake'
     tmp_root.mkdir(parents=True, exist_ok=True)
 
@@ -188,25 +240,36 @@ def main():
         text = p.read_text(encoding='utf-8')
         demos = extract_cpp_demos(text)
         compiled = 0
-        for ln, code in demos:
+        waived = 0
+        for fence_line, code in demos:
             if 'int main' not in code:
                 continue
             compiled += 1
             with_pthread = ('<thread>' in code or 'std::thread' in code
                             or '#include <pthread' in code or 'pthread_' in code)
+            # 命中 compile_exempt.json（CROSS_BLOCK 等）：CI 已放行，不计入 fails
+            bidx = cpp_block_index(text, fence_line)
+            if (Path(rel).name, bidx) in EXEMPT:
+                print(f"  [WAIVED] L{fence_line} demo 命中 compile_exempt.json "
+                      f"block#{bidx}（跨块依赖，CI 已放行）")
+                waived += 1
+                waived_total += 1
+                continue
             d = tempfile.mkdtemp(dir=str(tmp_root))
             ok, err = compile_cpp(code, with_pthread, Path(d))
             shutil.rmtree(d, ignore_errors=True)
             if ok:
-                print(f"  [OK]   L{ln} demo 编译通过"
+                print(f"  [OK]   L{fence_line} demo 编译通过"
                       + (" (+pthread)" if with_pthread else ""))
             else:
-                print(f"  [FAIL] L{ln} demo 编译失败:")
+                print(f"  [FAIL] L{fence_line} demo 编译失败:")
                 for e in err:
                     print(f"          {e}")
                 fails += 1
         if compiled == 0:
             print(f"  [INFO] 无含 int main 的 cpp demo 可编译复验")
+        elif waived:
+            print(f"  [INFO] {waived} 个 demo 命中豁免（不计入失败）")
 
     # ---- cpp 基准源文件检查 ----
     for rel in cpps:
@@ -245,9 +308,11 @@ def main():
 
     print("\n" + "=" * 72)
     if fails == 0:
-        print(f"复验通过 ✅  0 失败（md {len(mds)}, cpp {len(cpps)}）")
+        print(f"复验通过 ✅  0 失败（md {len(mds)}, cpp {len(cpps)}"
+              + (f"，{waived_total} 个命中豁免" if waived_total else "") + "）")
     else:
-        print(f"复验失败 ❌  {fails} 项须修（md {len(mds)}, cpp {len(cpps)}）")
+        print(f"复验失败 ❌  {fails} 项须修（md {len(mds)}, cpp {len(cpps)}"
+              + (f"，{waived_total} 个命中豁免" if waived_total else "") + "）")
     print("=" * 72)
     sys.exit(1 if fails else 0)
 
