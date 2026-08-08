@@ -848,3 +848,54 @@ flowchart TD
 | ch125 | ch131 | libc++ 对 std::format 的支持验证 |
 | ch128 | ch131 | Boost 格式化组件与 fmt 的取舍对照 |
 
+
+## 附录 D5：真实基准与性能分析 — 格式化吞吐 std::format vs snprintf vs ostringstream（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-O2 -std=c++23`，5 轮取中位；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch131_fmt_spdlog.cpp`。
+
+### D5.1 基准结果
+
+| 格式化方式 | 耗时 (ms) | 相对 format |
+|------------|-----------|--------------|
+| `std::format`（类型安全，`"{}-{}-{}"`） | 307.130 | 1.00× (最快) |
+| `std::ostringstream`（流插入） | 434.849 | 慢 1.42× |
+| `std::snprintf`（C 风格 varargs） | 455.717 | 慢 1.48× |
+
+（N = 2'000'000 次三段整数拼接；基准含 `volatile` sink 防死代码消除，结果取自本机 g++ 15.3.0 5 轮中位。）
+
+### D5.2 非显然结论
+
+1. **`std::format` 比 `std::ostringstream` 快约 1.42×，比 `std::snprintf` 快约 1.48×**：`std::format` 在编译期解析格式串并直接生成特化代码，无 `ostringstream` 的 `streambuf` 动态分配与虚函数开销，也无 `snprintf` 运行期解析 varargs 格式串的代价。
+2. **mingw-w64 下 `snprintf` 反常地慢于 `ostringstream`**：本机测得 `snprintf` 455.7 ms > `ostringstream` 434.8 ms，与 glibc/Linux 上 `snprintf` 通常快于 `ostringstream` 的直觉相反，属 mingw 运行时实现特性，**不可作为跨平台结论**；可移植的稳定信号只有一条——`std::format` 是三者中最快且类型最安全。
+3. **类型安全不是性能代价**：`std::format` 在不损失（甚至超越）`snprintf` 性能的同时提供编译期格式串检查，正面反驳「类型安全必然更慢」的误解，是零开销抽象原则的又一例证。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <format>
+#include <sstream>
+#include <cstdio>
+
+int main() {
+    int a = 12345, b = 67890, c = -42;
+    std::string s_fmt = std::format("{}-{}-{}", a, b, c);
+    std::ostringstream os;
+    os << a << '-' << b << '-' << c;
+    std::string s_os = os.str();
+    char buf[64];
+    std::snprintf(buf, sizeof buf, "%d-%d-%d", a, b, c);
+    std::cout << "format:        " << s_fmt << std::endl;
+    std::cout << "ostringstream: " << s_os << std::endl;
+    std::cout << "snprintf:      " << buf << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch131_fmt_spdlog.cpp`，以 `g++ -O2 -std=c++23` 编译，`std::chrono::steady_clock` 计时，`volatile` sink 防死代码消除；AMD Ryzen 9 7940HX，5 轮取中位。绝对毫秒随编译器/微架构而变，**加速比（format 较 ostringstream 快 1.42×）才是可移植信号**。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |

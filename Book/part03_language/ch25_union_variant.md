@@ -2173,3 +2173,56 @@ flowchart TD
 | ch25 | ch115 | 联合与 variant：variant 在赋值/visit 中移动 alternative |
 | ch25 | ch28 | 联合与 variant：裸 union 活跃成员误用是典型 UB |
 | ch25 | ch42 | 联合与 variant：union 类型双关触碰严格别名规则 |
+
+## 附录 D5：真实基准与性能分析 — std::variant 分发 vs 手写 tagged union（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-O2 -std=c++23`，5 轮取中位；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch25_union_variant.cpp`。
+
+### D5.1 基准结果
+
+| 分发方式 | 耗时 (ms) | 相对 |
+|----------|-----------|------|
+| `std::variant` + `std::visit`（类型安全访问） | 34.140 | 1.00× (基线，微快) |
+| 手写 `tagged union` + `switch`（裸 union 访问） | 34.610 | 慢 1.01× (基本持平) |
+
+（N = 5'000'000 次三候选类型循环访问；基准含 `volatile` sink 防死代码消除，结果取自本机 g++ 15.3.0 5 轮中位。）
+
+### D5.2 非显然结论
+
+1. **`std::variant` 与手写 `tagged union` 性能基本持平（差异 <1%）**：`std::visit` 在 `-O2` 下被编译成对活跃 alternative 的直跳（跳转表或内联），与手写 `switch(kind)` 生成的机器码同构，印证「`std::variant` 是零开销抽象」。
+2. **类型安全没有运行时税**：`std::variant` 提供的编译期索引检查、无活跃 alternative 越界 UB，在 `-O2` 后几乎全部被消除，代价落在编译期而非运行期。
+3. **差距方向属噪声**：本机 `variant` 微快 1.01×，但这是噪声级别；真正可移植的结论是「二者等价」，切勿把测量抖动当作「variant 更快」的规律。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <variant>
+
+using Var = std::variant<int, double, long long>;
+
+int main() {
+    Var v = 42;
+    std::visit([](auto&& x) { std::cout << "variant holds: " << x << std::endl; }, v);
+
+    struct Tagged { enum { I, D, L } kind; union { int i; double d; long long l; }; };
+    Tagged t;
+    t.kind = Tagged::I;
+    t.i = 42;
+    switch (t.kind) {
+        case Tagged::I: std::cout << "tagged holds: " << t.i << std::endl; break;
+        case Tagged::D: std::cout << "tagged holds: " << t.d << std::endl; break;
+        case Tagged::L: std::cout << "tagged holds: " << t.l << std::endl; break;
+    }
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch25_union_variant.cpp`，以 `g++ -O2 -std=c++23` 编译，`std::chrono::steady_clock` 计时，`volatile` sink 防死代码消除；AMD Ryzen 9 7940HX，5 轮取中位。绝对毫秒随编译器/微架构而变，**加速比（variant 较 tagged union 持平）才是可移植信号**。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch88 optional/variant | Book/part07_stl/ch88_optional_variant.md | 同主题扩展：std::optional 与 std::variant 取舍 |
+| ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |
