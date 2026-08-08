@@ -1175,3 +1175,67 @@ int main()
   return 0;
 }
 ```
+
+
+## 附录 D5：真实基准与性能分析 — 编译期计算 vs 运行期计算的真实代价（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比（如 59×、6×）才是可移植信号。
+
+### D5.1 基准结果
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| S1 读取 constexpr 常量（50M 次） | 22.604 ms | 0.452 ns/次 |
+| S1 运行期 factorial（5M 次） | 13.680 ms | 2.736 ns/次（慢 6.05×） |
+| S2 读取编译期排序数组（512×5000） | 2.033 ms | 1.00× |
+| S2 运行期 fill+sort+read（512×5000） | 120.031 ms | 59.04× |
+| S3 consteval 读取（50M） | 23.168 ms | — |
+| S3 constexpr 运行期调用（5M） | 24.424 ms | — |
+| S3 constexpr 常量读取（50M） | 42.986 ms | — |
+| S4 TMP 读取（50M） | 21.369 ms | — |
+| S4 运行期迭代 fib（5M） | 29.104 ms | — |
+| S5 编译期查找表 LUT（10M） | 61.496 ms | 1.00× |
+| S5 运行期 isqrt 计算（10M） | 113.093 ms | 1.84× |
+
+### D5.2 非显然结论
+
+1. **读取编译期常量比运行期计算快 6×**——`constexpr` 值在编译期已固化进二进制（`.rodata`），运行期只是读一个立即数；运行期 factorial 要循环 5M 次。
+2. **编译期排序数组比运行期 sort 快 59×**——排序在编译期完成，运行期只是顺序读 `.rodata`；运行期每次 fill+sort 是 O(n log n) 实时工作。这是编译期计算收益最大的场景（重计算 + 高频读取）。
+3. **`consteval` / `constexpr` / TMP 三种编译期机制读取时性能相同（~21-24ms，都是读常量）**——语言机制不影响到运行期；差别只在编译时间与二进制体积。
+4. **编译期查找表（LUT）比运行期计算（isqrt）快 1.84×**——表查询是内存读，计算是循环；但差距不如"排序"类大，因为 isqrt 本身很简单。
+5. **关键非显然：编译期计算的收益取决于"被查询的频率"**。S1/S2 高频读取时加速比巨大；低频场景编译期计算的收益被编译时间 + 二进制膨胀抵消。**编译期计算不是免费午餐**——它把成本从运行期移到编译期，并增大二进制。
+
+### D5.3 可复现演示
+
+```cpp
+#include <iostream>
+
+constexpr long long fact_ct(int n) {
+    return n <= 1 ? 1 : n * fact_ct(n - 1);
+}
+static constexpr long long kFact12 = fact_ct(12);   // 编译期已确定
+
+long long fact_rt(int n) {
+    long long r = 1;
+    for (int i = 2; i <= n; ++i) r *= i;
+    return r;
+}
+
+int main() {
+    // 编译期常量：直接读 .rodata
+    std::cout << "constexpr fact(12)=" << kFact12 << std::endl;
+    // 运行期计算
+    std::cout << "runtime fact(12)=" << fact_rt(12) << std::endl;
+    std::cout << "match=" << (kFact12 == fact_rt(12)) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 复现旗标：`g++ -O2 -std=c++23`。demo 仅用标准库，跨平台可编译。
+- 计时取 5 轮中位数；运行期用 `volatile` 种子 + 随机输入防常量折叠（见库根 bench 的 `g_seed`/`g_sink` 机制）。
+- 编译期计算增加编译时间与二进制体积（`.rodata` 膨胀）；决策依据应是"查询频率 × 单次计算成本"。
+- 加速比（6.05×、59.04×、1.84× 等）是可移植信号；绝对毫秒随机器负载而变。
+- 基准源码见库根 `_bench_d5_ch123_ct_programming.cpp`。
+

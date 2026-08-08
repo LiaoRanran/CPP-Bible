@@ -1076,3 +1076,68 @@ flowchart TD
 | ch69 constexpr | 编译期策略可用 constexpr 表达。 |
 | ch52 EBO | 无状态空策略受益于空基类优化。 |
 | ch76 STL 架构 | 分配器等可插拔组件即 policy 思想。 |
+
+
+## 附录 D5：真实基准与性能分析 — 策略模式 vs 虚函数 vs 函数指针的真实开销（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比（如 14×）才是可移植信号。
+
+### D5.1 基准结果
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| S1a policy_sort（模板 Cmp） | 147.973 ms | 1.00× |
+| S1b func_sort（std::function） | 487.992 ms | 3.30× |
+| S2a policy_container（模板） | 13.780 ms | 1.00× |
+| S2b virtual_container（vtable） | 18.140 ms | 1.32× |
+| S3a policy_transform（内联） | 17.292 ms | 1.00× |
+| S3b fptr_transform（间接调用） | 39.170 ms | 2.27× |
+| S4a policy_worker（3 策略，全 noop） | 85.788 ms | 1.00× |
+| S4b virtual_worker（4 次 vtable 分派） | 1208.154 ms | 14.08× |
+
+### D5.2 非显然结论
+
+1. **策略模板（编译期多态）全面优于 `std::function` 与虚函数**。`std::function` 最慢：S1 487 vs 148（3.3×）、S4 1208 vs 86（14×）。根因是 `std::function` 的**类型擦除**带来堆分配（小对象优化失败时）+ 双重间接调用 + 无法内联。
+2. **虚函数比策略模板慢但和 `std::function` 接近**：S2 18 vs 13.8（1.32×），S4 虚函数也慢。开销来自一次 vtable 间接 + 阻断内联。
+3. **函数指针（S3 39.17）比策略模板（17.29）慢 2.27×**——函数指针阻断内联且无法携带状态（需全局变量），策略模板把比较器直接内联进 `sort`。
+4. **S4 差距最大（14×）**：策略 worker 把 3 个 noop 策略**完全内联优化掉**（85ms 几乎全是循环本身开销），而虚函数 worker 每轮 4 次 vtable 查找无法被优化 → 1208ms。证明"热路径上的间接调用是性能杀手"，能用模板就别用虚函数。
+
+### D5.3 可复现演示
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <functional>
+
+template <typename Cmp>
+long long tmpl_sort(std::vector<int>& v, Cmp cmp) {
+    std::sort(v.begin(), v.end(), cmp);
+    return v.empty() ? 0 : v.back();
+}
+
+long long func_sort(std::vector<int>& v, std::function<bool(int,int)> cmp) {
+    std::sort(v.begin(), v.end(), cmp);
+    return v.empty() ? 0 : v.back();
+}
+
+int main() {
+    std::vector<int> a(8);
+    for (int i = 0; i < 8; ++i) a[i] = 8 - i;
+    auto lam = [](int x, int y) { return x < y; };
+    std::cout << "tmpl back=" << tmpl_sort(a, lam) << std::endl;
+    std::vector<int> b(8);
+    for (int i = 0; i < 8; ++i) b[i] = 8 - i;
+    std::cout << "func back=" << func_sort(b, lam) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 复现旗标：`g++ -O2 -std=c++23`。demo 仅用标准库，跨平台可编译。
+- 计时取 5 轮中位数；`volatile` sink 防 DCE。`std::function` 的堆分配发生在策略对象较大时，小 lambda 可能命中小对象优化——本基准用较大策略放大差异。
+- `std::sort` 接受函数对象时若可内联（模板/lambda）则无间接开销；`std::function` 必有类型擦除成本。
+- 加速比（3.30×、14.08× 等）是可移植信号；绝对毫秒随机器负载而变。
+- 基准源码见库根 `_bench_d5_ch71_policy.cpp`。
+

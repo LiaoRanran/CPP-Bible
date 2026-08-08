@@ -1038,3 +1038,77 @@ flowchart TD
 | ch65 | ch68 | trait 是 TMP 的零件 |
 | ch65 | ch64 | traits 组合常借助折叠（conjunction） |
 
+
+
+## 附录 D5：真实基准与性能分析 — 类型萃取与编译期分派的运行时代价（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比（如 2.08×）才是可移植信号。
+
+### D5.1 基准结果
+
+N=1'000'000（拷贝元素），VN=200'000（vector push_back）。`sizeof TrivialPod=24 NonTrivial=24 CompactPod=8 PaddedPod=64`。
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| S1a trait→memcpy（trivial POD） | 4.244 ms | 1.00× |
+| S1b trait→element-loop（non-trivial） | 5.049 ms | 1.19× |
+| S1c 手写 memcpy（control） | 4.106 ms | 0.97× |
+| S1d 原始 memcpy（同布局） | 4.079 ms | 0.96× |
+| S2a if constexpr 分派 | 4.011 ms | 1.00× |
+| S2b runtime-if（可预测） | 4.133 ms | 1.03× |
+| S2c runtime-if（不可预测 50/50） | 7.000 ms | 1.75× |
+| S3a copy compact（8B, conditional_t） | 2.857 ms | 1.00× |
+| S3b copy padded（64B, conditional_t） | 8.629 ms | 3.02× |
+| S3c copy CompactPod 直接 | 2.323 ms | 0.81× |
+| S4a vector<NoexceptMove> push_back | 19.036 ms | 1.00× |
+| S4b vector<ThrowingMove> push_back | 39.563 ms | 2.08× |
+| S5a trait 分派拷贝 | 3.842 ms | 1.00× |
+| S5b 手写 memcpy | 3.559 ms | 0.93× |
+| S5c trait 链（conjunction）拷贝 | 3.785 ms | 0.99× |
+
+### D5.2 非显然结论
+
+1. **`is_trivially_copyable` 分派是零成本的**：trait 路径（4.244）与手写 memcpy（4.106）几乎相同（0.97×）；non-trivial 走逐元素循环（5.049）慢 1.19×。根因是 trivial 类型下 trait 路径在**编译期**就选了 memcpy，运行期无任何分支——类型萃取把决策前移到编译期。
+2. **`if constexpr` 只在分支"不可预测"时才赢**：可预测 runtime-if（4.133）与 if constexpr（4.011）几乎相同（1.03×），但不可预测的 runtime-if（7.000）因分支预测失败慢 1.75×。若输入可预测，写 `if constexpr` 不会更快。
+3. **`conditional_t` 选对类型比选对算法更重要**：padded（64B）比 compact（8B）慢 3.02×——根因是 64B 结构体拷贝带宽是 8 倍且占满缓存行。一次正确的类型萃取能带来 3× 收益。
+4. **`is_nothrow_move_constructible` 决定 `vector` 扩容时 move 还是 copy**：throwing move 被迫 copy（39.563）比 noexcept move（19.036）慢 2.08×。这是"为移动构造标 `noexcept`"的硬道理——否则 `vector` 为安全退回拷贝。
+5. **trait 链（conjunction 等）运行期开销≈0**（3.785 vs 手写 3.559，0.99×）——编译期逻辑完全不进入运行期。
+
+### D5.3 可复现演示
+
+```cpp
+#include <iostream>
+#include <type_traits>
+#include <cstring>
+
+struct TrivialPod { int a, b, c; };          // trivially copyable
+struct NonTrivial { NonTrivial(const NonTrivial&); int a, b, c; };
+
+template <typename T>
+void copy_dispatch(T* dst, const T* src, std::size_t n) {
+    if constexpr (std::is_trivially_copyable_v<T>)
+        std::memcpy(dst, src, n * sizeof(T));   // 编译期选定
+    else
+        for (std::size_t i = 0; i < n; ++i) dst[i] = src[i];
+}
+
+int main() {
+    TrivialPod a[3]{{1,2,3},{4,5,6},{7,8,9}};
+    TrivialPod b[3];
+    copy_dispatch(b, a, 3);
+    std::cout << "is_trivially_copyable<TrivialPod>="
+              << std::is_trivially_copyable_v<TrivialPod> << std::endl;
+    std::cout << "b[1].b=" << b[1].b << std::endl;
+    std::cout << "sizeof(TrivialPod)=" << sizeof(TrivialPod) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 复现旗标：`g++ -O2 -std=c++23`。demo 仅用标准库，跨平台可编译。
+- 计时取 5 轮中位数；`volatile` sink 防 DCE。`if constexpr` 与 trait 分派的"零成本"体现在编译期消除分支，运行期数字差异极小（属测量噪声）。
+- 注意：`std::memcpy` 用于 trivial 类型是良构的；non-trivial 类型必须走逐元素拷贝（或逐字段移动），否则未定义行为。
+- 加速比（1.19×、3.02×、2.08× 等）是可移植信号；绝对毫秒随机器负载而变。
+- 基准源码见库根 `_bench_d5_ch65_type_traits.cpp`。
+

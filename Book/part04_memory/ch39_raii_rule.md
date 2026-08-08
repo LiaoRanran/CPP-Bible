@@ -2197,3 +2197,70 @@ flowchart TD
 | ch21 const 与类型族 | ch39 | const 限定影响拷贝 / 移动重载决议 |
 | ch40 异常安全 | ch39 | 栈展开释放是异常安全基础 |
 | ch42 strict aliasing | ch39 | 共享资源别名需与 RAII 协同 |
+
+
+## 附录 D5：真实基准与性能分析 — RAII 与移动语义的真实开销（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比（如 109×）才是可移植信号。
+
+### D5.1 基准结果
+
+BigData 为 1KB 缓冲（5 个 int 字段 + 1KB `std::vector<char>`），N=500'000。
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| S1 copy-ctor（BigData 1KB） | 327 ms | 1.000×（基线） |
+| S1 move-ctor（BigData 1KB） | 3 ms | 0.009×（快 109×） |
+| S2 trivially-copyable 32B copy | 19 ms | 1.000× |
+| S2 trivially-copyable 32B move | 19 ms | 1.000×（=copy） |
+| S3 R5 copy / R0 copy | 337 / 387 ms | R0 慢 1.148× |
+| S3 R5 move / R0 move | 4 / 6 ms | R0 慢 1.5× |
+| S4 NRVO / std::move 返回 | 168 / 173 ms | move 慢 1.030× |
+| S5 push_back(copy) / push_back(move) | 100 / 1 ms | move 快 100× |
+| S6 vector<string> push_back copy / move | 37 / 2 ms | move 快 18.5× |
+
+### D5.2 非显然结论
+
+1. **移动 1KB 对象比拷贝快 109×**——移动只拷贝 3 个指针（浅拷贝），拷贝要深拷贝 1KB 缓冲。这是 Rule of 5/Rule of 0 的核心收益：凡有资源的类型必须提供移动语义。
+2. **trivially-copyable 类型移动 == 拷贝（都是 memcpy 32B，1×）**——移动语义对 trivial 类型毫无意义，编译器直接按位拷贝。
+3. **Rule of 0 比 Rule of 5 仅略慢（copy 1.148×、move 1.5×）**——差异极小，说明"优先 Rule of 0（让编译器合成）"的工程建议成立：你写得少，性能几乎一致，还避免了手写 bug。
+4. **NRVO 几乎免费（1.030×），对返回值滥用 `std::move` 反而更慢**——编译器在返回局部对象时直接把它构造到调用方栈帧（具名返回值优化），`std::move(ret)` 强制一次移动并破坏 NRVO。结论：返回局部对象时不要写 `std::move`。
+5. **push_back(move) 比 copy 快 100×（1KB）/ 18.5×（256B string）**——`emplace_back` / `push_back(std::move)` 避免临时对象的深拷贝，是容器操作的黄金法则。
+
+### D5.3 可复现演示
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <utility>
+
+struct BigData {
+    int id;
+    std::vector<char> buf;
+    BigData(int i, std::size_t n) : id(i), buf(n, 'x') {}
+    BigData(const BigData& o) : id(o.id), buf(o.buf) {}          // 深拷贝
+    BigData(BigData&& o) noexcept : id(o.id), buf(std::move(o.buf)) {}  // 浅移动
+};
+
+int main() {
+    std::vector<BigData> v;
+    v.reserve(4);
+    BigData a(1, 1024);
+    v.push_back(a);                 // 拷贝：深拷贝 1KB
+    v.push_back(std::move(a));      // 移动：仅转移指针
+
+    std::cout << "size=" << v.size() << std::endl;
+    std::cout << "a.buf empty after move? " << a.buf.empty() << std::endl;
+    std::cout << "v[1].buf size=" << v[1].buf.size() << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 复现旗标：`g++ -O2 -std=c++23`。demo 仅用标准库，跨平台可编译。
+- 计时取 5 轮中位数；`volatile` sink 防 DCE；1KB 缓冲确保深/浅拷贝差异显著。
+- 注意移动构造标了 `noexcept`——否则 `std::vector` 扩容时会因"移动可能抛异常"而退回拷贝（见 ch65 D5 的 noexcept 分析）。
+- 加速比（109×、18.5× 等）是可移植信号；绝对毫秒随机器负载而变。
+- 基准源码见库根 `_bench_d5_ch39_raii_rule.cpp`。
+

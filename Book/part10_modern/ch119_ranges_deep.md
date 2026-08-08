@@ -1356,3 +1356,63 @@ int main() {
 ```
 
 输出印证：惰性组合只在遍历时求值——`filter(%3==0)` 取 3/6/9，`take(2)` 截前 2 个得 `3 6`；`r.empty()` 来自 `view_interface` 的 CRTP 默认实现（D4.2），与 D4.4–D4.5 源码一致。
+
+
+## 附录 D5：真实基准与性能分析 — ranges 管道 vs 手写循环的真实开销（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。数据 10'000'000 ints，排序 1'000'000，take 500'000。绝对毫秒随机器而变，比值（如 1.315×）才是可移植信号。
+
+### D5.1 基准结果
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| S1 filter\|transform（全扫描 10M） | Ranges 8.321 ms / Hand 9.631 ms | 0.864×（ranges 快 1.16×） |
+| S2 filter\|transform\|take(500K)（提前终止） | Ranges 1.520 ms / Hand 1.155 ms | 1.315×（ranges 略慢） |
+| S3 4 级管道 | Ranges 12.499 ms / Hand 13.479 ms | 0.927× |
+| S4 ranges::sort vs std::sort（1M） | Ranges 99.022 ms / Std 96.963 ms | 1.021× |
+| S5 iota\|transform vs for 循环（10M） | Ranges 4.717 ms / Hand 4.775 ms | 0.988× |
+
+### D5.2 非显然结论
+
+1. **ranges 管道与手写循环性能基本持平（0.86× ~ 1.02×）**，多数场景 ranges 略快或持平——GCC 把 ranges 管道优化得很好：视图是零成本抽象，迭代器被融合（loop fusion），没有中间容器。
+2. **唯一 ranges 明显慢的是 S2 提前终止（1.315×）**——`filter|transform|take` 管道中 `take` 的提前终止与手写循环的 `break` 语义略有额外开销；但差异仅 30%，非数量级。
+3. **`ranges::sort` 与 `std::sort` 几乎相同（1.021×）**——ranges 版只是适配器，底层仍是同一排序算法。
+4. **结论：ranges 不是性能陷阱**，可放心用于可读性；只有极端热路径（且 ranges 恰好 1.3× 慢的场景）才值得退回手写循环。不要因为"抽象"而预先排斥 ranges。
+
+### D5.3 可复现演示
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <ranges>
+
+int main() {
+    std::vector<int> v(10);
+    for (int i = 0; i < 10; ++i) v[i] = i;
+
+    // ranges 管道：过滤偶数并乘 2
+    int rsum = 0;
+    for (int x : v | std::views::filter([](int n){ return n % 2 == 0; })
+                   | std::views::transform([](int n){ return n * 2; })) {
+        rsum += x;
+    }
+
+    // 手写等价
+    int hsum = 0;
+    for (int n : v) {
+        if (n % 2 == 0) hsum += n * 2;
+    }
+
+    std::cout << "ranges sum=" << rsum << " hand sum=" << hsum << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 复现旗标：`g++ -O2 -std=c++23`。demo 需 `#include <ranges>`（C++20），跨平台可编译。
+- 计时取 5 轮中位数；`volatile` sink 防 DCE。ranges 管道无中间容器，故无额外分配开销。
+- 注意：ranges 视图是惰性求值的，管道组合是编译期类型运算，运行期无动态分发。
+- 比值（0.864×、1.315× 等）是可移植信号；绝对毫秒随机器负载而变。
+- 基准源码见库根 `_bench_d5_ch119_ranges.cpp`。
+

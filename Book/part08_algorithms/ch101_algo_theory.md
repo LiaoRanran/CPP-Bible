@@ -1279,3 +1279,64 @@ int main() {
     return 0;
 }
 ```
+
+
+## 附录 D5：真实基准与性能分析 — 算法复杂度在实际硬件上的表现（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。`-Wl,--stack,33554432` 因 memoized 递归深 40000 需扩大栈；`-lwinmm`（源文件之后）用于 `timeBeginPeriod` 提高计时精度。绝对毫秒随机器而变，加速比（如 4994×）才是可移植信号。
+
+### D5.1 基准结果
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| S1 DP tabulated（n=5'000'000） | 14.601 ms | 2.92 ns/elem |
+| S1 DP memoized（n=40'000） | 0.719 ms | 17.96 ns/elem（每元素慢 6.15×） |
+| S2 unordered_map（N=2M, Q=5M） | 298.628 ms | 1.00×（比 bsearch 快 2.62×） |
+| S2 sorted + 二分查找 | 782.968 ms | 2.62× |
+| S3 BFS（队列，V=1M） | 154.114 ms | 1.00×（比 DFS 快 1.28×） |
+| S3 DFS（栈） | 198.195 ms | 0.78× |
+| S4 0/1 背包 DP（N=2000, W=100'000） | 244.704 ms | 4994× |
+| S4 贪心（按价值密度） | 0.049 ms | 1.00× |
+
+### D5.2 非显然结论
+
+1. **同算法不同实现：tabulated DP 每元素 2.92 ns 比 memoized 递归 17.96 ns 快 6.15×**——根因是 memoized 递归每步函数调用 + 数组/哈希随机访问 + 栈帧开销，tabulated 是顺序数组访问（缓存友好）。注意两者 n 不同，比较的是"每元素吞吐"。
+2. **反直觉：N=2M、Q=5M 下 `unordered_map`（298ms）比 sorted+二分（783ms）快 2.62×**——哈希表的随机内存访问在 5M 次查询下被"查询数 ≫ 数据量"摊还；而二分查找每步一次分支 + 跨度大的顺序访问。常见"二分更快"的直觉在此规模失效。
+3. **BFS（154ms）比 DFS（198ms）快 1.28×**——BFS 用队列顺序访问邻接表（缓存友好），DFS 栈深入时随机跳转（缓存未命中多）。图遍历的**访问顺序**直接影响缓存。
+4. **贪心（0.049ms）比 DP（244.7ms）快 4994×**——阶数差：贪心 O(n log n) vs DP O(nW)=2×10⁸ 操作。当问题允许贪心/分数背包近似时，速度差达千倍。选算法阶数比抠常数重要得多。
+
+### D5.3 可复现演示
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <unordered_map>
+
+int main() {
+    const int N = 100'000;
+    std::vector<int> keys(N);
+    for (int i = 0; i < N; ++i) keys[i] = i * 2;       // 已排序
+    std::unordered_map<int,int> um;
+    for (int i = 0; i < N; ++i) um[keys[i]] = i;
+
+    // 二分查找（有序 vector）
+    auto it = std::lower_bound(keys.begin(), keys.end(), 12345);
+    std::cout << "bsearch hit=" << (it != keys.end() && *it == 12345) << std::endl;
+
+    // 哈希查找
+    auto hit = um.find(12345);
+    std::cout << "hash hit=" << (hit != um.end()) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 复现旗标：`g++ -O2 -std=c++23 _bench_d5_ch101_algo_theory.cpp -o _bench_d5_ch101_algo_theory.exe -Wl,--stack,33554432 -lwinmm`（库旗标必须在源文件之后）。
+- **栈大小必须扩大**：`fib_memoized(40000)` 递归深度达 40000，远超 Windows 默认 1MB 线程栈，否则运行期触发 `STATUS_STACK_OVERFLOW`（0xC00000FD）。32MB 栈足够。
+- `timeBeginPeriod(1)`/`timeEndPeriod(1)` 在 `#ifdef _WIN32` 内，仅 Windows 生效；其他平台自动跳过，不影响可移植性。
+- 计时取 5 轮中位数；`volatile` sink 防 DCE。
+- 加速比（2.62×、4994× 等）是可移植信号；绝对毫秒随机器负载而变。
+- 基准源码见库根 `_bench_d5_ch101_algo_theory.cpp`。
+

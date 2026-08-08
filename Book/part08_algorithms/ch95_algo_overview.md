@@ -1676,3 +1676,159 @@ int main() {
 ```
 
 预期输出依次为 `5 3 8 1 9 2` / `1 2 3 5 8 9` / `9 8 5 3 2 1`——`copy` 在平凡类型上走 `memmove` 快路径结果与逐元素一致；`std::sort` 默认版（`<`）与 comp 版（`>`）经 `_Iter_less_iter` / `_Iter_comp_iter` 包装落到同一排序内核，与 D4.1–D4.2 源码一致。
+
+## 附录 D5：真实基准与性能分析 — STL 算法选择的复杂度差异（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比才是可移植信号。
+>
+> 交叉引用：ch98 已覆盖堆/流式排序的专项基准；本附录聚焦**同一问题的不同算法选择**之间的复杂度差异。
+
+### D5.1 基准结果
+
+以下数据由库根 `_bench_d5_ch95_stl_algorithms.cpp` 真实编译运行取得（5 轮取中位，volatile sink 防优化）。
+
+**表 D5.1　场景 1 — Top-K 取舍：`nth_element` vs `partial_sort` vs `sort`（N=2,000,000，K=100）**
+
+| 算法 | 复杂度 | 中位耗时 (ms) | 相对 `sort` 加速比 |
+|---|---|---|---|
+| `nth_element` | O(n) | 11.82 | 17.54× |
+| `partial_sort` | O(n log k) | 3.52 | 58.91× |
+| `sort` | O(n log n) | 207.35 | 1.0×（基准） |
+
+**表 D5.2　场景 2 — 分区 vs 排序+过滤：`partition` vs `sort`+`copy_if`（N=2,000,000）**
+
+| 算法 | 复杂度 | 中位耗时 (ms) | 相对加速比 |
+|---|---|---|---|
+| `partition` | O(n) | 14.76 | 8.93× |
+| `sort` + `filter` | O(n log n) + O(n) | 131.84 | 1.0×（基准） |
+
+**表 D5.3　场景 3 — 查找策略：`find` vs `lower_bound`（N=2,000,000，200 次查询）**
+
+| 算法 | 复杂度（单次） | 中位耗时 (ms) | 相对加速比 |
+|---|---|---|---|
+| `std::find` | O(n) | 115.54 | 1.0×（基准） |
+| `std::lower_bound` | O(log n) | 0.0119 | ≈9709× |
+
+**表 D5.4　场景 4 — 归约：`std::accumulate` vs 手写循环（N=10,000,000）**
+
+| 方式 | 中位耗时 (ms) | 比值 |
+|---|---|---|
+| `std::accumulate` | 2.55 | 1.52× |
+| 手写 `for` 循环 | 1.68 | 1.00×（基准） |
+
+**表 D5.5　场景 5 — 拷贝：`std::copy` vs `memcpy`（N=10,000,000 ints，预分配目标）**
+
+| 方式 | 中位耗时 (ms) | 比值 |
+|---|---|---|
+| `std::copy` | 4.55 | 1.06× |
+| `memcpy` | 4.31 | 1.00×（基准） |
+
+### D5.2 非显然结论
+
+**结论 1：`partial_sort`（O(n log k)）在小 K 时反超 `nth_element`（O(n)）——渐进复杂度更低者未必更快。**
+
+表 D5.1 中 `partial_sort`（3.52 ms）比 `nth_element`（11.82 ms）快 3.36 倍，尽管前者复杂度 O(n log k) 高于后者 O(n)。根因：`partial_sort` 内部维护一个 K=100 元素的**最大堆**（约 400 字节，完全驻留 L1 缓存），对剩余 N−K 个元素仅做"与堆顶比较 + 条件下筛"——每次堆筛选 `sift_down` 只触碰 L1 内的 100 个元素，主循环是对 N 个元素的**顺序扫描**（预取友好）。反观 `nth_element` 的 introselect 做 2~3 轮**全数组分区**，每轮需随机读写整个 8 MB 数组（2M × 4B），缓存未命中率高，常数因子远大于堆路径。当 K 足够小（堆驻留 L1），O(n log k) 的常数可以低于 O(n) 的常数。
+
+**结论 2：`lower_bound` 比 `find` 快约 9700 倍——有序前提的价值被严重低估。**
+
+表 D5.3 中 200 次查询，`find` 耗时 115.54 ms，`lower_bound` 仅 0.0119 ms。根因：N=2M 时，`find` 每次平均扫描 ~100 万个元素（命中时）或 200 万个（未命中时），200 次查询共触碰 ~2 亿次比较；`lower_bound` 每次仅 log₂(2M) ≈ 21 次比较，200 次查询共 4200 次比较。比较次数差 5 个数量级，且 `lower_bound` 的二分访问模式虽非顺序但数据量小（21 次随机访问全在 L2/L3 内）。这印证了第⑬/⑭节的选型原则：**已排序区间必须用二分族**，用 `find` 等于白白浪费有序性。
+
+**结论 3：`std::accumulate` 与手写循环在 `-O2` 下并非完全同速——零开销抽象需以实测为准。**
+
+表 D5.4 中 `accumulate`（2.55 ms）比手写循环（1.68 ms）慢 1.52×，差异超出测量噪声。根因：`accumulate` 走 `vector<long>::iterator`（指针抽象层 + `__binary_op` 包装 `std::plus`），GCC `-O2` 对其向量化不如裸索引循环 `data[i]` 确定；手写循环被干净向量化为 SIMD 归约。两者复杂度与数量级相同，但泛型包装引入可测常数因子——提示：极致热点归约路径优先手循环或 `std::reduce`（可并行策略），而非盲信泛型零开销。
+
+**结论 4：`std::copy` 对 trivially copyable 类型退化为 `memmove`——与手写 `memcpy` 几乎无差异。**
+
+表 D5.5 中 `std::copy`（4.55 ms）仅比 `memcpy`（4.31 ms）慢约 6%（1.06×）。根因见附录 D4.2 源码：`__copy_move_a2` 在编译期检测 `__memcpyable<OutIter, InIter>::__value` 为 `true`（`int*` → `int*` 满足），直接调用 `__builtin_memmove`。两者生成等价的 `rep movsb` 或 SIMD 拷贝指令。微小差异来自 `memmove` 的重叠检测分支（虽然此处不重叠，但分支仍被执行一次）以及迭代器到指针的转换开销（编译期消除大部分，但非全部）。
+
+**结论 5：`partition` 比 `sort`+`filter` 快 8.93 倍——能用 O(n) 就不要用 O(n log n)。**
+
+表 D5.2 中 `partition`（14.76 ms）比 `sort`+`filter`（131.84 ms）快 8.93 倍。根因：`partition` 是单趟原地交换，一次顺序扫描即可；`sort`+`filter` 先做 O(n log n) 全排序（introsort 的多轮分区 + 插入排序收尾），再做 O(n) 过滤拷贝，两部分都有开销。当需求仅是"把满足条件的元素集中到一起"（不要求有序）时，`partition` 是唯一正确选择。
+
+### D5.3 可复现演示
+
+```cpp
+// D5 演示：STL 算法选择的功能验证（不断言时间，仅验证语义正确性）
+#include <iostream>
+#include <algorithm>
+#include <numeric>
+#include <vector>
+#include <cstring>
+
+int main() {
+    // --- 场景 1: Top-K 三种取法语义一致性 ---
+    std::vector<int> v{5, 3, 8, 1, 9, 2, 7, 4, 6, 0};
+    int k = 3;
+
+    std::vector<int> a = v;
+    std::nth_element(a.begin(), a.begin() + k, a.end(), std::greater<int>());
+    std::cout << "nth_element top-" << k << ": ";
+    for (int i = 0; i < k; ++i) std::cout << a[i] << ' ';
+    std::cout << std::endl;
+
+    std::vector<int> b = v;
+    std::partial_sort(b.begin(), b.begin() + k, b.end(), std::greater<int>());
+    std::cout << "partial_sort top-" << k << ": ";
+    for (int i = 0; i < k; ++i) std::cout << b[i] << ' ';
+    std::cout << std::endl;
+
+    std::vector<int> c = v;
+    std::sort(c.begin(), c.end(), std::greater<int>());
+    std::cout << "sort top-" << k << ": ";
+    for (int i = 0; i < k; ++i) std::cout << c[i] << ' ';
+    std::cout << std::endl;
+
+    // --- 场景 2: partition 语义 ---
+    std::vector<int> p{5, 3, 8, 1, 9, 2, 7, 4, 6, 0};
+    auto pit = std::partition(p.begin(), p.end(), [](int x) { return x > 5; });
+    std::cout << "partition (>5): ";
+    for (auto it = p.begin(); it != pit; ++it) std::cout << *it << ' ';
+    std::cout << "| ";
+    for (auto it = pit; it != p.end(); ++it) std::cout << *it << ' ';
+    std::cout << std::endl;
+
+    // --- 场景 3: find vs lower_bound ---
+    std::vector<int> s{0, 2, 4, 6, 8, 10, 12, 14, 16, 18};
+    int key = 12;
+    auto fit = std::find(s.begin(), s.end(), key);
+    std::cout << "find " << key << ": index=" << (fit - s.begin()) << std::endl;
+    auto lit = std::lower_bound(s.begin(), s.end(), key);
+    std::cout << "lower_bound " << key << ": index=" << (lit - s.begin())
+              << " found=" << (lit != s.end() && *lit == key) << std::endl;
+
+    // --- 场景 4: accumulate vs hand-loop ---
+    std::vector<long> d{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    long acc = std::accumulate(d.begin(), d.end(), 0L);
+    long hand = 0;
+    for (size_t i = 0; i < d.size(); ++i) hand += d[i];
+    std::cout << "accumulate=" << acc << " hand-loop=" << hand << std::endl;
+
+    // --- 场景 5: copy vs memcpy ---
+    int src[] = {10, 20, 30, 40, 50};
+    int dst1[5], dst2[5];
+    std::copy(src, src + 5, dst1);
+    std::memcpy(dst2, src, 5 * sizeof(int));
+    std::cout << "copy: ";
+    for (int i = 0; i < 5; ++i) std::cout << dst1[i] << ' ';
+    std::cout << "| memcpy: ";
+    for (int i = 0; i < 5; ++i) std::cout << dst2[i] << ' ';
+    std::cout << std::endl;
+
+#ifdef _WIN32
+    std::cout << "platform: Windows" << std::endl;
+#else
+    std::cout << "platform: Linux/Unix" << std::endl;
+#endif
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 基准源码见库根 `_bench_d5_ch95_stl_algorithms.cpp`。
+- 每场景独立函数，5 轮取中位（`measure_ms` 内部排序后取 `times[rounds/2]`）。
+- `volatile` 全局 sink（`g_sink_int` / `g_sink_long` / `g_sink_ptr`）防止编译器消除"看似无用"的计算结果。
+- 场景 1/2 每轮重新拷贝原始数据（`std::vector<int> v = base`），确保各算法在相同输入上运行；拷贝开销计入测量但对所有算法均等，不影响相对结论。
+- 场景 3 使用随机数据排序后查询，避免编译器推导出确定性 pattern 而优化掉 `find`；200 次查询放大 O(n) 与 O(log n) 的差距至可测量范围。
+- 场景 5 预分配目标缓冲，仅测拷贝本身（排除 `vector` 构造开销）。
+- 绝对毫秒受 CPU 频率、缓存状态、后台负载影响，跨机器不可直接比较；**加速比**（同一机器同一轮的相对值）才是可移植信号。

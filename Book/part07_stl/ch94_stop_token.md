@@ -1692,3 +1692,62 @@ flowchart TD
 
 </details>
 
+
+
+## 附录 D5：真实基准与性能分析 — stop_token / jthread 取消的真实开销（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23 -pthread`，5 轮取中位。绝对毫秒随机器而变，加速比（如 115×）才是可移植信号。
+
+### D5.1 基准结果
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| s1 jthread 协作取消 | 390.726 ms | 0.893×（比裸 thread 快 12%） |
+| s1 裸 thread + atomic 标志取消 | 437.443 ms | 1.00×（基线） |
+| s2 注册 1000 个 stop_callback | 0.2091 ms | —（0.209 µs/回调） |
+| s2 触发 1000 个 stop_callback | 0.2938 ms | —（0.294 µs/回调） |
+| s3 request_stop ×100k | 9.7761 ms | 115.69× |
+| s3 单次 atomic store ×100k | 0.0845 ms | 1.00×（基线） |
+| s5 共享 stop_token（8 线程） | 3.3572 ms | 0.962×（≈私有 atomic） |
+| s5 每线程私有 atomic（8 线程） | 3.4898 ms | 1.00× |
+
+### D5.2 非显然结论
+
+1. **`jthread` 的协作取消比"裸 `thread` + atomic 标志"略快（0.893×）**——`jthread` 通过引用把 `stop_token` 传入，取消检查是单次 atomic load；裸方案额外有 `join` 等待 + 手动 flag 轮询，反而略慢。协程化取消既安全又高效。
+2. **注册/触发回调极便宜**：注册 0.209 µs/回调，触发 0.294 µs/回调——`stop_callback` 是一次链表插入/遍历，开销在亚微秒级，可放心用于细粒度取消点。
+3. **但 `request_stop` 本身比单次 atomic store 慢 115.69×（9.78ms vs 0.084ms @100k）**——`stop_source::request_stop` 要遍历所有注册的 `stop_callback` 并原子通知，是"广播"语义；而裸 atomic store 只设一个标志。若只需通知**一个**消费者，裸 atomic 更合适。
+4. **共享 `stop_token` vs 每线程私有 atomic：几乎相同（0.962×）**——8 线程下争用不显，`stop_token` 的内部 atomic 与手写 atomic 等价。结论：`stop_token` 在易用性与性能间取得了合理平衡，不会因"优雅"而显著变慢。
+
+### D5.3 可复现演示
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <stop_token>
+#include <chrono>
+
+int main() {
+    std::stop_source src;
+    std::jthread worker([stoken = src.get_token()]() {
+        long long count = 0;
+        while (!stoken.stop_requested()) {        // 协作取消点
+            ++count;
+        }
+        std::cout << "worker stopped at count=" << count << std::endl;
+    });
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    src.request_stop();   // 广播取消
+    worker.join();        // jthread 自动 join
+    std::cout << "main: cancellation delivered" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 复现旗标：`g++ -O2 -std=c++23 -pthread`。demo 仅用标准库，跨平台可编译。
+- 计时取 5 轮中位数；`volatile` sink 防 DCE。
+- 注意：本基准原包含一个 `std::condition_variable` + `cv.wait_for` 场景，但在 MinGW GCC 15.3.0 下，当 `condition_variable` 与 `jthread`/`stop_callback`/`atomic` 共存于同一翻译单元时，进程会在进入 `main` 前被加载器拒绝（exit 127，零输出）——这是该工具链的已知缺陷，故已移除该场景，仅保留 s1/s2/s3/s5。
+- 加速比（115.69× 等）是可移植信号；绝对毫秒随机器负载而变。
+- 基准源码见库根 `_bench_d5_ch94_stop_token.cpp`。
+

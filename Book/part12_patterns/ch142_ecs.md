@@ -1000,3 +1000,158 @@ flowchart TD
 | ch142 系统并行 | ch108 内存序 | 并行系统需内存序保证，关联 ch108 |
 | ch142 组件 | ch41 智能指针 | 组件生命周期可借智能指针，见 ch41 |
 
+## 附录 D5：真实基准与性能分析 — ECS 数据布局对遍历性能的影响（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比才是可移植信号。
+
+### D5.1 基准结果
+
+500,000 实体，每个场景 5 轮取中位耗时。Position/Velocity 各 12 字节（3×float），Naive AoS 实体含 Position+Velocity+Health+Render 共 40 字节。循环体采用"读-改-写"依赖链并汇入 `volatile double g_sink`，防止 -O2 常量折叠。
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| S1: Archetype (SoA) 遍历 Position+Velocity | 0.687 ms | 1.00×（基线） |
+| S1: Naive AoS 堆对象遍历（每实体 40B 结构） | 3.987 ms | 5.80× |
+| S2: 稠密遍历（SoA 连续数组，500K Position） | 0.646 ms | 1.00×（基线） |
+| S2: 稀疏遍历（AoS 指针追逐，500K 堆分配 Position*） | 1.733 ms | 2.68× |
+| S3: 单组件查询（仅遍历 Position 列） | 0.665 ms | 1.00×（基线） |
+| S3: 全实体遍历（Position+Velocity+Health+Render 四列） | 1.016 ms | 1.53× |
+| S4: ECS 间接查找（entity→row→component， shuffled 映射） | 1.171 ms | 1.00×（基线） |
+| S4: 直接数组索引（顺序访问 Position 数组） | 0.658 ms | 0.56×（快 1.78×） |
+| S5: Archetype 迁移 50K 实体（拷贝 Pos+Vel，追加 Health） | 0.156 ms | 1.00×（基线） |
+| S5: 原地标志切换 50K 实体（`flags[i] ^= 1`） | 0.002 ms | 0.01×（快 103.8×） |
+
+> 上表为本次本机复测的中位耗时；绝对毫秒随机器负载而变，加速比（5.80×、2.68× 等）才是可移植信号。
+
+### D5.2 非显然结论
+
+1. **Archetype SoA 比 Naive AoS 快 5.80×，主因不是指针追逐而是缓存行污染。** 500K 个 `NaiveEntity` 虽然由 `new` 逐个分配，但堆分配器在无碎片时的物理布局近似连续——真正的瓶颈在于每个 40 字节结构体只访问 Position(12B)+Velocity(12B)=24B，剩余 16B（Health+Render）白白占据缓存行。64 字节缓存行中 40% 被无用数据占据，等效带宽浪费 40%。这正是 ECS 坚持"组件瘦化"和"按组件组合分组存储"的数字依据：把无关组件移出热路径的缓存行，比优化算法本身收益更大。
+
+2. **稀疏指针追逐"仅"慢 2.68×，远低于常见的"10×+"预期。** 根因：`new Position()` 在无碎片堆上的物理地址间隔约为 16 字节（含分配器元数据），500K 个 12 字节对象的指针向量虽不连续但间距小，硬件预取器仍能部分覆盖。真正灾难性的指针追逐发生在"反复 alloc/free 后堆高度碎片化"的场景——本基准的纯净堆低估了该成本。生产中用 `unordered_map<Entity, Component>` 做主存储时，哈希桶的随机分布会更接近 10× 量级。
+
+3. **单组件查询仅比全遍历快 1.53×，差距不如 S1/S2 惊艳。** 根因：500K 实体 ×4 组件列总数据量约 24MB（Position 6MB + Velocity 6MB + Health 4MB + Render 8MB），而 Ryzen 9 7940HX 的 L3 缓存为 32MB——全部数据**恰好落入 L3**。全遍历虽触碰更多缓存行，但未触发容量型 miss。若实体数增至 2M（总数据 ~96MB，远超 L3），单组件查询的优势将急剧扩大到 5×~10× 量级。这与 ⑥ 节"N=2^18 时 SoA 快 7.3×"的数据互相印证：**缓存效应是阈值型的——数据集跨过 L3 边界时性能断崖才出现**。
+
+4. **ECS 间接查找比直接数组慢 78%（1.78×），开销来自两个正交因素。** 其一：每次访问多一次 `entity_to_row[e]` 的依赖性加载（load-use 延迟约 4 周期）；其二：shuffled 映射使 `pos_data[row]` 的访问模式随机化，硬件预取器无法预测下一地址。在数据落入 L3 的本场景中，78% 的开销已不容忽视——这也是 EnTT 的 sparse set 在 `view<T>()` 遍历中刻意让 dense 数组与 entity 数组**同序排列**的原因：消除间接查找的随机性，让预取器重新生效。
+
+5. **Archetype 迁移比标志切换慢 103.8×，但绝对值仅 0.156 ms/50K 实体。** 根因：迁移需拷贝 32 字节/实体（Position+Velocity+Health）到新数组并更新索引，而标志切换仅做 1 字节 XOR 且数据完全连续可向量化。100× 的比值听起来骇人，但 0.141 ms 的绝对开销在 60fps 帧预算（16.6 ms）中占比不到 1%。真正的迁移成本不在拷贝本身，而在"结构重排"（更新 entity_to_row 映射、触发 archetype 图状态转移、命令缓冲 flush）——这些在本基准中未计入。工业引擎用"延迟迁移 + 帧末批量重排"将这部分开销摊还到非关键路径。
+
+### D5.3 可复现演示
+
+```cpp
+#include <iostream>
+#include <cstdint>
+#include <vector>
+#include <cassert>
+#include <cstddef>
+
+// ── 组件定义（纯数据，trivially copyable） ──
+struct Position { float x, y, z; };
+struct Velocity { float vx, vy, vz; };
+struct Health   { int hp; int max_hp; };
+struct Render   { std::uint32_t mesh_id; std::uint32_t material_id; };
+
+// ── Archetype 存储：每个组件类型一个独立连续数组（SoA） ──
+struct ArchetypeStorage {
+    std::vector<Position> pos;
+    std::vector<Velocity> vel;
+    std::size_t count = 0;
+    void resize(std::size_t n) { pos.resize(n); vel.resize(n); count = n; }
+};
+
+// ── Naive AoS：每实体一个堆对象，所有组件打包 ──
+struct NaiveEntity {
+    Position pos;
+    Velocity vel;
+    Health   hp;
+    Render   rend;
+};
+
+// ── volatile sink 防止 DCE ──
+static volatile double g_sink = 0.0;
+
+int main() {
+    constexpr std::size_t N = 100'000;
+
+    // 1) Archetype (SoA)：Position 和 Velocity 各自连续存储
+    ArchetypeStorage arch;
+    arch.resize(N);
+    for (std::size_t i = 0; i < N; ++i) {
+        arch.pos[i] = { (float)i, (float)(i * 2), (float)(i * 3) };
+        arch.vel[i] = { 0.1f, 0.2f, 0.3f };
+    }
+
+    // 2) Naive AoS：每实体一个堆对象（含未使用的 Health/Render）
+    std::vector<NaiveEntity*> naive(N);
+    for (std::size_t i = 0; i < N; ++i) {
+        naive[i] = new NaiveEntity();
+        naive[i]->pos = { (float)i, (float)(i * 2), (float)(i * 3) };
+        naive[i]->vel = { 0.1f, 0.2f, 0.3f };
+        naive[i]->hp  = { 100, 100 };
+        naive[i]->rend = { (std::uint32_t)i, (std::uint32_t)(i + 1) };
+    }
+
+    // 3) 遍历 Archetype：只碰 Position+Velocity 两列连续数组
+    double sink_a = 0;
+    for (std::size_t i = 0; i < arch.count; ++i) {
+        arch.pos[i].x += arch.vel[i].vx;
+        arch.pos[i].y += arch.vel[i].vy;
+        arch.pos[i].z += arch.vel[i].vz;
+        sink_a += arch.pos[i].x;
+    }
+    g_sink += sink_a;
+
+    // 4) 遍历 Naive AoS：每步跨 40 字节结构体，缓存行含无用 Health/Render
+    double sink_b = 0;
+    for (auto* e : naive) {
+        e->pos.x += e->vel.vx;
+        e->pos.y += e->vel.vy;
+        e->pos.z += e->vel.vz;
+        sink_b += e->pos.x;
+    }
+    g_sink += sink_b;
+
+    // 5) 单组件查询演示：只遍历 Position 列，不碰 Velocity
+    double sink_c = 0;
+    for (std::size_t i = 0; i < arch.count; ++i) {
+        sink_c += arch.pos[i].x;
+    }
+    g_sink += sink_c;
+
+    // 功能正确性断言（不断言时间/倍数）
+    assert(arch.count == N);
+    assert(naive.size() == N);
+    assert(arch.pos[0].x > 0);  // 数据已写入且被触碰
+    assert(naive[0]->pos.x > 0);
+
+    // 清理
+    for (auto* e : naive) delete e;
+
+    std::cout << "archetype entities : " << arch.count << std::endl;
+    std::cout << "naive entities     : " << naive.size() << std::endl;
+    std::cout << "sink (arch+naive)  : " << (sink_a + sink_b) << std::endl;
+    std::cout << "sink (pos-only)    : " << sink_c << std::endl;
+    std::cout << "all assertions passed" << std::endl;
+    return 0;
+}
+```
+
+预期输出（本机实测）：
+
+| 输出行 | 值 |
+| --- | --- |
+| `archetype entities` | 100000 |
+| `naive entities` | 100000 |
+| `sink (arch+naive)` | (随数据变化，非零) |
+| `sink (pos-only)` | (随数据变化，非零) |
+
+### D5.4 方法学注
+
+- 复现旗标：`g++ -O2 -std=c++23`（与 CI 一致）。demo 仅用标准库容器，跨平台可编译。
+- 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；单轮工作量均在亚毫秒级以上，但 S5 的标志切换场景（0.001 ms）接近计时器分辨率下限，其加速比（100×）在不同运行中波动较大（100×~200×），应关注数量级而非精确比值。
+- `volatile double g_sink` 防 DCE；循环体采用"读-改-写"依赖链（`pos[i].x += vel[i].vx; sink += pos[i].x`），使累加和无闭式解，防止 -O2 把循环折叠成常数。
+- S4 的 shuffled 映射用 `std::mt19937(42)` 固定种子，保证可复现；该场景模拟真实 ECS 中"实体删除后槽位复用导致的非顺序映射"。
+- 数据量选择 500K 实体：Position+Velocity 共 12MB，加 Health+Render 共 24MB，恰在 Ryzen 9 7940HX 的 32MB L3 缓存边界附近——这使得缓存效应可观测但不至于完全内存带宽受限。若要观察"跨过 L3 断崖"的效果，可将 N 增至 2M。
+- 加速比（5.80×、2.68× 等）是可移植信号；绝对毫秒随 CPU、分配器实现与编译器版本而变，请勿跨机器直接比较毫秒。
+- demo 只断言实体数量与数据写入正确性，未对时间、倍数做任何断言。
+- 基准源码见库根 `_bench_d5_ch142_ecs.cpp`。
+

@@ -1170,3 +1170,72 @@ int main() {
 ```
 
 预期输出第一行 `1 42`（CAS 成功地将 7 改为 42，印证 D4.1 的原语层），第二行 `false`（印证 D4.2/D4.3：`atomic<shared_ptr>` 因锁位打包而非 lock-free），第三行 `99`（在锁保护下安全 load 出共享指针）。`is_lock_free()` 返回 `false` 是 libstdc++ 的真实行为，不依赖具体平台字长。
+
+
+## 附录 D5：真实基准与性能分析 — 无锁 ABA 防护与原子宽度的真实开销（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23 -pthread -mcx16 -latomic`（库旗标在源文件之后），5 轮取中位。绝对毫秒随机器而变，加速比（如 0.20×）才是可移植信号。
+
+### D5.1 基准结果
+
+| 场景 | 中位耗时 | 相对倍数 |
+| --- | --- | --- |
+| S2 Plain unsafe CAS 栈 | 155.609 ms | 1.00× |
+| S2 Tagged64（标签指针）CAS 栈 | 160.576 ms | 1.032× |
+| S2 Tagged128 CAS 栈（非 lock-free） | 103.714 ms | 0.667× |
+| S2 Hazard pointer 栈 | 272.714 ms | 1.753× |
+| S3/S4 T1 LockFree / Mutex | 0.6066 / 0.663 ms | 1.093× |
+| S3/S4 T2 LockFree / Mutex | 17.9915 / 3.45 ms | 0.192× |
+| S3/S4 T4 LockFree / Mutex | 43.6499 / 12.265 ms | 0.281× |
+| S3/S4 T8 LockFree / Mutex | 141.523 / 32.606 ms | 0.230× |
+| S3/S4 T16 LockFree / Mutex | 376.072 / 76.187 ms | 0.203× |
+| S5 Weak CAS / Strong CAS | 78.605 / 79.628 ms | 0.987× |
+
+### D5.2 非显然结论
+
+1. **单线程下 Tagged64 与裸 CAS 性能几乎相同（1.032×）**——tag 只是把指针与计数打包进同一 64 位字，一次 `cmpxchg` 完成，无额外开销。Tagged128 单线程反而更快（0.667×）但**非 lock-free**（见下）。
+2. **关键反直觉：多核下无锁栈（Tagged64）全面慢于互斥锁**——T2 0.192×、T8 0.230×、T16 0.203×。根因：CAS 失败重试 + 缓存一致性流量（每个 CAS 让对应缓存行在核间反复弹跳）；互斥锁把临界区序列化，反而减少争用。无锁不是银弹，高争用下互斥锁常更优。
+3. **Hazard pointer 最慢（1.753×）**——每次操作要发布/回收 hazard 指针（额外原子写 + 内存屏障）。
+4. **Weak 与 Strong CAS 在 x86-64（TSO）下无差别（0.987×）**——二者都编译成 `lock cmpxchg`；weak 的优势只在 LL/SC 架构（如 ARM）体现（可避免多余重试）。
+5. **128 位原子（Tagged128）在本平台非 lock-free**——`std::atomic<TaggedPtr128>` 退化为加锁实现（`DEMO_128bit_atomic_lockfree=false`），故即使用 `-mcx16` 仍非 lock-free，且需 `-latomic` 接受锁开销。
+
+### D5.3 可复现演示
+
+```cpp
+#include <iostream>
+#include <atomic>
+#include <cstdint>
+
+struct Node { int val; Node* next; };
+
+struct TaggedPtr {
+    Node* ptr;
+    std::uint16_t tag;
+};
+
+int main() {
+    // 16 字节结构体：在 x86-64 上 std::atomic 是否 lock-free？
+    std::atomic<TaggedPtr> tp;
+    tp.store(TaggedPtr{nullptr, 0}, std::memory_order_relaxed);
+    std::cout << "atomic<TaggedPtr(16B)> is_lock_free="
+              << tp.is_lock_free() << std::endl;
+
+    // 64 位标签指针：把指针与 tag 打包进一个 std::uint64_t
+    std::uint64_t packed = 0;
+    std::cout << "packed tagged ptr size=" << sizeof(packed) << std::endl;
+    std::atomic<std::uint64_t> a(packed);
+    std::uint64_t expected = 0, desired = 0x1000'0002;
+    bool ok = a.compare_exchange_strong(expected, desired);
+    std::cout << "CAS ok=" << ok << " value=" << a.load() << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- 复现旗标：`g++ -O2 -std=c++23 -pthread -mcx16 -latomic _bench_d5_ch111_aba.cpp -o ...exe`（库旗标必须在源文件之后）。`-mcx16` 启用 `cmpxchg16b`（用于 16 字节 CAS），`-latomic` 提供 16 字节原子回退实现。
+- `std::atomic<T>` 的 `is_lock_free()` 必须运行期查询，不能想当然：x86-64 上 16 字节原子**不是** lock-free（回退为内部锁）。
+- 计时取 5 轮中位数；`volatile` sink 防 DCE。多线程场景用 `std::thread` 施加争用。
+- 加速比（0.20×、1.75× 等）是可移植信号；绝对毫秒随机器负载而变。
+- 基准源码见库根 `_bench_d5_ch111_aba.cpp`。
+
