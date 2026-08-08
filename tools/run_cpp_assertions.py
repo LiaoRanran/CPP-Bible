@@ -121,6 +121,9 @@ def _first_static_fail(stderr: str) -> str:
 
 def check_static(code: str, stem: str, idx: int, tmpdir: pathlib.Path) -> tuple[str, str]:
     """返回 (result, detail)。result ∈ {PASS, FAIL, WARN}。"""
+    # 与 check_runtime 保持一致: SIMD 旗标仅作用于含 <experimental/simd> 的块,
+    # 避免对非 SIMD 静态断言块强加 -mavx512f 等导致误向量化/误判。
+    simd = "experimental/simd" in code
     includes, body = sanitize(code)
     tu = PRELUDE
     if includes:
@@ -129,11 +132,12 @@ def check_static(code: str, stem: str, idx: int, tmpdir: pathlib.Path) -> tuple[
     cpp = tmpdir / f"{stem}_{idx}.cpp"
     cpp.write_text(tu, encoding="utf-8")
     exe = tmpdir / f"{stem}_{idx}.exe"
+    cmd = [GPP, "-std=c++23", "-O2", "-Wall", "-Wextra"]
+    if simd:
+        cmd += ["-mavx2", "-mavx512f", "-mfma"]
     try:
         r = subprocess.run(
-            [GPP, "-std=c++23", "-O2", "-Wall", "-Wextra",
-             "-mavx2", "-mavx512f", "-mfma",
-             "-o", str(exe), str(cpp)],
+            cmd + ["-o", str(exe), str(cpp)],
             capture_output=True, text=True, timeout=COMPILE_TIMEOUT)
     except subprocess.TimeoutExpired:
         return "WARN", f"compile-timeout>{COMPILE_TIMEOUT}s"
@@ -162,18 +166,26 @@ def check_static(code: str, stem: str, idx: int, tmpdir: pathlib.Path) -> tuple[
 
 def check_runtime(code: str, stem: str, idx: int, tmpdir: pathlib.Path) -> tuple[str, str]:
     """返回 (result, detail)。result ∈ {PASS, FAIL, WARN}。"""
+    # SIMD 旗标必须与头文件一致地仅作用于含 <experimental/simd> 的块。
+    # 历史缺陷: 对所有块无条件强加 -mavx512f/-mavx2/-mfma, 会触发 gcc 对
+    # 普通累加/算术循环的错误自动向量化 (静默算错, 非崩溃 SIGILL), 误伤正确
+    # 程序 (如 ch100_ranges_algo 手循环断言因向量化错位而 s_hand!=s_pipe)。
+    # 该误算未被 illegal-instruction 检测捕获, 表现为 exit=-6 (断言 abort)→
+    # 被误判为书声明错误。修正: 旗标跟随 experimental/simd 头文件同步限定。
+    simd = "experimental/simd" in code
     tu = PRELUDE
-    if "experimental/simd" in code:
+    if simd:
         tu += "\n" + SIMD_INC
     tu += "\n" + code  # 保留 int main，作为独立程序
     cpp = tmpdir / f"{stem}_{idx}.cpp"
     cpp.write_text(tu, encoding="utf-8")
     exe = tmpdir / f"{stem}_{idx}.exe"
+    cmd = [GPP, "-std=c++23", "-O2", "-Wall", "-Wextra"]
+    if simd:
+        cmd += ["-mavx2", "-mavx512f", "-mfma"]
     try:
         rc = subprocess.run(
-            [GPP, "-std=c++23", "-O2", "-Wall", "-Wextra",
-             "-mavx2", "-mavx512f", "-mfma",
-             "-o", str(exe), str(cpp)],
+            cmd + ["-o", str(exe), str(cpp)],
             capture_output=True, text=True, timeout=COMPILE_TIMEOUT)
     except subprocess.TimeoutExpired:
         return "WARN", f"compile-timeout>{COMPILE_TIMEOUT}s"
