@@ -1,16 +1,13 @@
 {
   "description": "ASM 漂移基线：asm_prepush_guard.py 已知的 DRIFT 文件集（非回归）。新增漂移即判红；基线内的已知漂移仅 WARN。",
   "generated_at": "2026-08-09",
+  "updated_at": "2026-08-09",
   "toolchain": "MinGW GCC 15.3.0 (C:/Qt/Tools/mingw1530_64/bin/g++.exe)",
+  "note": "ch47_d4_vtable 原为 DRIFT（-O2 内联析构导致符号消失），已通过 flags_for 增加文件级 -O1 -fno-inline 覆盖修复（书 D4.3 显记），现判为 MATCH。仅 ch99 AVX 指令调度漂移保留。",
   "known_drift": [
     {
-      "file": "_ch47_d4_vtable.asm",
-      "reason": "stored asm 用 -O0 或 -fno-inline 编译，保留独立 .text 段 per virtual function；asm_regen 以 -O2 重编丢失 4 个符号 (DerivedD0/D1, Base::g, Derived::f)。需人工确认原始编译标志后重生成。",
-      "lost_symbols": ["_ZN7DerivedD0Ev", "_ZN7DerivedD1Ev", "_ZNK4Base1gEv", "_ZNK7Derived1fEv"]
-    },
-    {
       "file": "_ch99_transform_reduce_avx.asm",
-      "reason": "AVX 指令重排差异：符号集 MATCH 但代码体细微不同（指令调度/寄存器分配变化）。不影响书内声明。",
+      "reason": "AVX 指令重排差异：符号集 MATCH (5/5) 但代码体 ndiff=276（指令调度/寄存器分配变化）。stored 用 ymm0-5（更多并行度），fresh -march=native 仅 ymm0-3。SIMD 自动向量化是编译器版本与目标架构敏感的，非书稿错误。书内引用的是符号级声明（tr_square/tr_mul/tr_int），不受指令体漂移影响。",
       "lost_symbols": [],
       "new_symbols": []
     }

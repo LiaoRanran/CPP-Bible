@@ -112,12 +112,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        gcc: ['15']
+        include:
+          - compiler: gcc
+            version: '15'
+            name: 'GCC-15'
+          - compiler: clang
+            version: '19'
+            name: 'Clang-19'
+    name: Compile (${{ matrix.name }})
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Install GCC
+      if: matrix.compiler == 'gcc'
       run: |
         sudo apt-get update
         # ubuntu-latest (24.04) 默认源没有 gcc-15；apt 的包名替代机制会把 g++-15
@@ -126,20 +134,34 @@ jobs:
         sudo apt-get install -y software-properties-common
         sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
         sudo apt-get update
-        sudo apt-get install -y gcc-${{ matrix.gcc }} g++-${{ matrix.gcc }}
-        test -f /usr/bin/g++-${{ matrix.gcc }}
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ matrix.gcc }} 100
+        sudo apt-get install -y gcc-${{ matrix.version }} g++-${{ matrix.version }}
+        test -f /usr/bin/g++-${{ matrix.version }}
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ matrix.version }} 100
+
+    - name: Install Clang
+      if: matrix.compiler == 'clang'
+      run: |
+        # Clang-19 是当前 LLVM 稳定版，C++23 支持完备（<print>/<expected>/<format>）
+        sudo apt-get update
+        wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 19
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-19 100
+        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100
+        g++ --version | head -1
 
     - name: Compile Audit (全量隔离块语法检查)
       # --main-only 仅验证含 int main 的完整程序；设计性豁免（多文件工程/
       # 模块/MSVC/POSIX 专属/外部库/故意错误·UB/跨块增量）由 compile_gate
       # 依据 tools/compile_exempt.json 放行，避免误伤。
+      # Clang 矩阵以 g++ 别名调用 clang++-19，C++23 支持完备但诊断风格
+      # 与 GCC 有差异，初期 continue-on-error 观察基线。
       run: python3 tools/compile_all.py --main-only
+      continue-on-error: ${{ matrix.compiler == 'clang' }}
 
     - name: Compile Gate (防回归门禁)
       # 未来任何编辑若引入新的 SYNTAX/TYPE_MISMATCH 内容 bug，CI 立即变红；
       # 已知豁免不阻断。门禁失败则本 job 失败，阻断后续发布任务。
-      continue-on-error: false
+      # Clang 矩阵下设为 continue-on-error（GCC 是主编译器，Clang 仅供交叉验证）。
+      continue-on-error: ${{ matrix.compiler == 'clang' }}
       run: python3 tools/compile_gate.py
 
     - name: Exempt Audit (编译豁免有效性门禁)
