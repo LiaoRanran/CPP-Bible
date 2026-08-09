@@ -218,15 +218,15 @@ int main() {
 // [示例 4] 静态多态：函数重载 + 模板（编译期决议，零开销）
 #include <cstdio>
 
-void log(int v)    { printf("int: %d\n", v); }
-void log(double v) { printf("double: %f\n", v); }   // 重载：编译期选择
+void log_val(int v)    { printf("int: %d\n", v); }
+void log_val(double v) { printf("double: %f\n", v); }   // 重载：编译期选择
 
 template <class T>
-void print(const T& v) { log(v); }                  // 模板：编译期实例化
+void print(const T& v) { log_val(v); }                  // 模板：编译期实例化
 
 int main() {
-    print(42);      // 调用 log(int)
-    print(3.14);    // 调用 log(double)
+    print(42);      // 调用 log_val(int)
+    print(3.14);    // 调用 log_val(double)
 }
 ```
 

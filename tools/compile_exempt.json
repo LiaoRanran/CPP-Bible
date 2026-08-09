@@ -398,18 +398,12 @@
     },
     {
       "file": "ch45_oop_object_model.md",
-      "block": 6,
-      "reason": "CROSS_BLOCK",
-      "note": "章节上下文前缀累积误注入：前序块亦定义 log()，--chapter-context 假阳性重声明歧义"
-    },
-    {
-      "file": "ch45_oop_object_model.md",
       "block": 53,
       "reason": "INTENTIONAL_UB",
       "note": "故意演示悬垂引用 UB（返回局部对象引用）"
     }
   ],
   "audited_at": "2026-08-09",
-  "audited_against": "_audit_gcc15.json (full main-only, gcc-15.3.0) + T1-1 ch126 link-fail (blocks 21/39 std::print) + T1-1 ch27/ch45 runtime UB + chapter-context 假阳性",
-  "exempt_count": 71
+  "audited_against": "_audit_gcc15.json (full main-only, gcc-15.3.0) + T1-1 ch126 link-fail (blocks 21/39 std::print) + T1-1 ch27/ch45 runtime UB + chapter-context 假阳性; ch45#6 log()命名冲突已修复(log_val)，豁免移出",
+  "exempt_count": 70
 }

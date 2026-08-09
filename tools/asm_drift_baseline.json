@@ -1,0 +1,19 @@
+{
+  "description": "ASM 漂移基线：asm_prepush_guard.py 已知的 DRIFT 文件集（非回归）。新增漂移即判红；基线内的已知漂移仅 WARN。",
+  "generated_at": "2026-08-09",
+  "toolchain": "MinGW GCC 15.3.0 (C:/Qt/Tools/mingw1530_64/bin/g++.exe)",
+  "known_drift": [
+    {
+      "file": "_ch47_d4_vtable.asm",
+      "reason": "stored asm 用 -O0 或 -fno-inline 编译，保留独立 .text 段 per virtual function；asm_regen 以 -O2 重编丢失 4 个符号 (DerivedD0/D1, Base::g, Derived::f)。需人工确认原始编译标志后重生成。",
+      "lost_symbols": ["_ZN7DerivedD0Ev", "_ZN7DerivedD1Ev", "_ZNK4Base1gEv", "_ZNK7Derived1fEv"]
+    },
+    {
+      "file": "_ch99_transform_reduce_avx.asm",
+      "reason": "AVX 指令重排差异：符号集 MATCH 但代码体细微不同（指令调度/寄存器分配变化）。不影响书内声明。",
+      "lost_symbols": [],
+      "new_symbols": []
+    }
+  ],
+  "known_compile_fail": []
+}
