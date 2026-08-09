@@ -1485,3 +1485,48 @@ flowchart TD
 | ch20 | ch45 | 引用与指针：引用常作为 this 与成员访问的底层别名 |
 | ch20 | ch28 | 引用与指针：悬垂引用/指针是典型 UB 来源 |
 | ch20 | ch27 | 引用与指针：指针与引用的相互转换依赖 const_cast/reinterpret_cast |
+
+## 附录 D5：真实基准与性能分析 — 大对象按值传递 vs const 引用（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；同一热循环（2×10⁷ 次求和）对 64 字节 `Big` 分别按值传递 / const 引用传递，调用点强制发生按值拷贝；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch20_passval.cpp`。
+
+### D5.1 基准结果
+
+| 传递方式 | 每次调用的实参 materialization | 耗时 (ms) | 相对 by_cref |
+|----------|-------------------------------|-----------|--------------|
+| `by_value(Big)` 按值（栈拷贝 64 B） | 调用点 memcpy 64 B + 求和 | 508.78 | 6.32× 更慢 |
+| `by_cref(const Big&)` const 引用（传指针） | 仅传 8 B 指针 + 求和 | 80.51 | 1.00× (基线) |
+
+### D5.2 非显然结论
+
+1. **大对象按值传递慢约 6.3×**：64 字节结构体按值传递时，System V AMD64 ABI 要求调用点在栈上 memcpy 整个对象（本基准每轮修改 `b.a[0]` 使拷贝不可被提升到循环外），而 const 引用只压一个 8 字节指针；6.3× 正是「拷贝成本」被单独孤立出来的结果。
+2. **小对象（≤16 B，可装入 2 寄存器）按值常常更快**：≤16 字节的实参走寄存器（%rdi/%rsi…），既无栈拷贝也无指针解引用；此时按值反而省一次间接访存。因此「一律用 const&」是过时经验——应以「类型大小是否越过 ABI 寄存器阈值（通常 16 B）」为判据。
+3. **`noinline` 可暴露但无法消除该差**：即使函数内联，按值仍要在调用栈帧构造形参副本；想彻底避免拷贝应改传 `const&`，或改用视图类型 / `[[no_unique_address]]` 穿透式成员。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+
+struct Big { double a[8]; };
+
+double by_value(Big b) { double s = 0; for (double x : b.a) s += x; return s; }
+double by_cref(const Big& b) { double s = 0; for (double x : b.a) s += x; return s; }
+
+int main() {
+    Big b{1, 2, 3, 4, 5, 6, 7, 8};
+    double s1 = by_value(b);   // 调用点发生 64 字节栈拷贝
+    double s2 = by_cref(b);    // 仅传指针
+    std::cout << "by_value sum = " << s1 << ", by_cref sum = " << s2 << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch20_passval.cpp`，`g++ -O2 -std=c++23` 编译（求和函数标 `__attribute__((noinline))` 防止整体内联掩盖拷贝），`std::chrono::steady_clock` 计时；每轮修改 `b.a[0]` 使按值拷贝不可被提升到循环外，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。绝对毫秒随对象大小而变，**加速比（by_value 慢 6.32×）才是可移植信号**；小于 ABI 寄存器阈值的小对象结论相反，见 D5.2.2。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch37 new/delete | Book/part04_memory/ch37_new_delete.md | 裸指针常作堆对象所有权句柄 |
+| ch41 智能指针 | Book/part04_memory/ch41_smart_pointers.md | 指针所有权问题催生 unique_ptr/shared_ptr |

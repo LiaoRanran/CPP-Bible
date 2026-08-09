@@ -1000,3 +1000,56 @@ flowchart TD
 | ch66 | ch60 | SFINAE 是模板基础的编译期分支 |
 | ch66 | ch63 | 可变参数 + SFINAE 探测包 |
 
+## 附录 D5：真实基准与性能分析 — SFINAE / if-constexpr / tag 分派 vs virtual / variant（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；当类型在编译期已知时，SFINAE / if-constexpr / tag 分派三者都解析为同一段直接调用机器码；当类型在运行时才确定（通过 `std::variant` 或基类指针）才产生真实分派开销。同一处理器 handler 重复 2×10⁸ 次；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch66_sfinae.cpp`。
+
+### D5.1 基准结果
+
+| 分派机制 | 类型已知时机 | 耗时 (ms) | 相对 if-constexpr |
+|----------|--------------|-----------|-------------------|
+| if-constexpr（编译期定类型） | 编译期 | 255.64 | 1.00× (基线) |
+| tag 分派（重载决议） | 编译期 | 255.83 | 1.00× |
+| SFINAE 重载集 | 编译期 | 255.68 | 1.00× |
+| `std::variant` + `std::visit` | 运行时 | 351.87 | 1.38× |
+| virtual（vtable 间接） | 运行时 | 4544.37 | 17.8× |
+
+### D5.2 非显然结论
+
+1. **三种"编译期分派"机制在运行时零差异（≈1.00×）**。if-constexpr / tag / SFINAE 选中的都是同一个具体函数，编译器在实例化阶段就把分支定死，热点循环里只留下一条直接 `call` 或内联体——三者本机中位 255.6–255.8 ms 几乎不可分。选型依据应是可读性与错误诊断（concepts / if-constexpr 报错更友好），而非性能。
+2. **`std::variant` + `visit` 远没有"虚函数那么贵"**。两候选变体的 visit 本机仅 1.38× 于直接调用：GCC 把 2 候选 visit 编译成一个基于 `index()` 的两路跳转，预测命中率极高；而 virtual 因 vtable 间接调用 + 阻止内联，慢到 17.8×。需要值语义、封闭类型集时，variant 是虚函数的强力零堆分配替代，性能代价远小于传闻。
+3. **真正的运行时分派成本只在"类型到运行时才揭晓"时出现**。若你的类型在编译期就确定了（模板参数已知），任何现代静态分派机制都免费；只有把类型藏进基类指针或 variant 才付 vtable / 访问器代价。延迟绑定不可免时，优先 variant（值语义、无堆、≈1.4×）而非 virtual（≈17.8× 且强制堆分配多态对象）。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+
+struct Cat { double sound() const { return 1.0; } };
+struct Dog { double sound() const { return 2.0; } };
+
+// if-constexpr：类型 T 在编译期已知，无运行时分派
+template <class T>
+double handle(T a) {
+    if constexpr (true) return a.sound() * 10.0;
+    else                return a.sound() * 20.0;
+}
+
+int main() {
+    Cat cat;
+    // 编译期已定类型 -> 直接调用，与手写展开等价
+    std::cout << "dispatch result = " << handle(cat) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch66_sfinae.cpp`，`g++ -O2 -std=c++23` 编译，`std::chrono::steady_clock` 计时，5 轮取中位；运行时分派通过 `volatile int` 选择器强制 vtable / 访问器间接，避免编译器去虚拟化；累加经 `volatile long long` 汇出防死代码消除。AMD Ryzen 9 7940HX。绝对毫秒随微架构而变，**加速比（static 三机制≈1.00×；variant/ifce≈1.1–1.4×；virt/ifce≈14–18×）才是可移植信号**；virtual 的精确倍数受间接分支预测与内联抑制影响而波动，但"显著慢于静态分派与 variant"的结论稳定。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch67 Concepts | Book/part06_templates/ch67_concepts.md | 编译期约束的"零运行时成本"对照 |
+| ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 重载决议与 SFINAE 前置 |
+| ch69 constexpr | Book/part06_templates/ch69_constexpr.md | if-constexpr 的编译期求值机制 |
+| ch89 variant/any | Book/part07_stl/ch89_tuple_any.md | `std::variant` 存储布局与 SBO |

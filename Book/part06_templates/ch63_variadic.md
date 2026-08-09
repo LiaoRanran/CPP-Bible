@@ -1048,3 +1048,47 @@ flowchart TD
 | ch63 可变参数 | ch65 type_traits | 对参数包做类型萃取（如 common_type、conjunction） |
 | ch63 可变参数 | ch116 完美转发 | 可变参数 + 万能引用实现 emplace 转发构造 |
 | ch63 可变参数 | ch78 deque | 容器用可变参数包把实参转发给元素 in-place 构造 |
+
+## 附录 D5：真实基准与性能分析 — std::tuple 字段访问 vs 等价 struct（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；同一「4×double 求和」热循环（1×10⁸ 次）分别对等价 `struct` 与 `std::tuple<double,double,double,double>` 计时；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch63_tuple_struct.cpp`。
+
+### D5.1 基准结果
+
+| 聚合类型 | 字段访问方式 | 耗时 (ms) | 相对 struct |
+|----------|--------------|-----------|-------------|
+| `struct Rec { double x,y,z,w; }` | 直接偏移 `r.x` | 127.45 | 1.00× (基线) |
+| `std::tuple<double,double,double,double>` | `std::get<N>(t)` 编译期分派 | 138.30 | 1.09× 略慢 |
+
+### D5.2 非显然结论
+
+1. **std::tuple 并非零开销，但 -O2 下仅比等价 struct 慢约 9%**：`std::get<N>` 在编译期通过递归继承布局（`_Tuple_impl` 链）定位第 N 个基类子对象，该函数被内联，但「嵌套继承 + 编译期分派」的骨架无法被完全消除，残余约 9% 开销。这远小于「tuple 慢几十倍」的常见传言。
+2. **开销来自布局而非运行时**：`get<N>` 的所有索引在编译期确定，没有任何运行时查表或虚调用；9% 的差距主要是 tuple 的递归基类链导致的内存布局/寄存器分配略逊于扁平 struct，而非算法差异。
+3. **选型判据**：需要【编译期异构索引 / 与 `std::apply`、折叠展开、`std::tie` 配合】时用 tuple（9% 代价可接受）；需要【最高密度、最可预测的布局、频繁逐字段访问】时用扁平 struct 或 `std::array`（同质）。不要因「tuple 慢」的传言而回避它——它的代价是已知且可控的。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <tuple>
+
+struct Rec { double x, y, z, w; };
+
+int main() {
+    Rec r{1, 2, 3, 4};
+    std::tuple<double, double, double, double> t{1, 2, 3, 4};
+    double sr = r.x + r.y + r.z + r.w;
+    double st = std::get<0>(t) + std::get<1>(t) + std::get<2>(t) + std::get<3>(t);
+    std::cout << "struct sum = " << sr << ", tuple sum = " << st << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch63_tuple_struct.cpp`，`g++ -O2 -std=c++23` 编译（求和函数标 `__attribute__((noinline))` 防止整体内联掩盖调用约定差异），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。绝对毫秒随字段数与类型而异，**加速比（tuple 为 struct 的 1.09×）才是可移植信号**；-O0 下 tuple 因未内联 `get<N>` 差距会更大，故本基准固定 -O2。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch64 折叠表达式 | Book/part06_templates/ch64_fold.md | 折叠表达式是包展开的归约替代 |
+| ch116 完美转发 | Book/part10_modern/ch116_perfect_forwarding.md | 可变参数 + 万能引用实现 emplace 转发构造 |

@@ -912,3 +912,50 @@ flowchart TD
 | ch70 标签分发 | integral_constant 标签是 TMP 的经典应用。 |
 | ch51 CRTP | CRTP 是 TMP 实现的静态多态惯用法。 |
 | ch124 libstdc++ | 标准库 tuple/variant 以 TMP 递归实现。 |
+
+## 附录 D5：真实基准与性能分析 — 模板元编程(TMP) vs constexpr vs 运行时计算（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；同一递归定义（Fibonacci）分别用「模板元编程在编译期折成常量 / constexpr 在编译期折成常量 / 运行时迭代每轮重算」三种方式使用，重复 5×10⁷ 次；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch68_tmp.cpp`。
+
+### D5.1 基准结果
+
+| 计算方式 | 计算发生时机 | 耗时 (ms) | 相对 TMP |
+|----------|--------------|-----------|----------|
+| 模板元编程 `Fib<30>::value` | 编译期（实例化折常量） | 42.44 | 1.00× (基线) |
+| `constexpr` `fib_ce(30)` | 编译期（常量折叠） | 42.45 | 1.00× |
+| 运行时迭代 `fib_rt_iter(i%30)` | 运行时（每轮重算） | 393.92 | 9.28× |
+
+### D5.2 非显然结论
+
+1. **TMP 与 constexpr 在运行时产物完全相同（1.00×）**。`Fib<30>::value` 和 `constexpr fib_ce(30)` 都被编译器在编译期折成同一个整型常量 `832040`；热点循环里只是"加一个常量"，两者中位 42.44 / 42.45 ms 不可分。运行期行为上 TMP 不比 constexpr 快一丝一毫。
+2. **TMP 的真正代价在编译期，不在运行时**。TMP 通过模板递归实例化（本例展开出 `Fib<30>`…`Fib<0>` 共 31 个特化）膨胀编译时间与目标文件；constexpr 用普通函数语义完成同样折叠，编译更轻、更易调试、可设断点。因此"能用 constexpr 就别写 TMP"在现代 C++ 是性能中立且工程更优的选择——TMP 仅在你必须做类型计算（如基于类型的编译期分支、类型列表）时才必要。
+3. **把工作从运行时搬到编译期能省约 9.3×**（本机运行时版 393.9 ms vs 编译期版 42.4 ms）。但这 9.3× 不是"TMP 比运行时快"，而是"编译期常量 vs 运行时递归"的差——任何把结果折成常量的手段（TMP 或 constexpr）都拿到这块收益；运行时版每轮都要重新展开迭代计算，才是慢的根因。代价权衡：编译期计算增加编译时长与二进制体积，适合结果稳定、被热点反复使用的常量。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+
+// 模板元编程：编译期递归，value 在编译期折成常量
+template <int N>
+struct Fib { static const long long value = Fib<N-1>::value + Fib<N-2>::value; };
+template <> struct Fib<0> { static const long long value = 0; };
+template <> struct Fib<1> { static const long long value = 1; };
+
+int main() {
+    // Fib<30>::value 已是编译期常量 832040，运行时只是读取它
+    std::cout << "Fib<30> = " << Fib<30>::value << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch68_tmp.cpp`，`g++ -O2 -std=c++23` 编译，`std::chrono::steady_clock` 计时，5 轮取中位；循环累加经 `volatile long long` 汇出防死代码消除并规避 32 位 `long` 溢出（Fib<30>=832040 适配 `long long`）。AMD Ryzen 9 7940HX。绝对毫秒随微架构而变，**加速比（TMP≈constexpr 为 1.00×；runtime/TMP≈9.3×）才是可移植信号**；TMP 与 constexpr 的运行期等价性稳定，差异仅在编译期（实例化膨胀 vs 轻量折叠）。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch69 constexpr | Book/part06_templates/ch69_constexpr.md | 编译期折叠的等价 / 更优替代 |
+| ch63 可变参数模板 | Book/part06_templates/ch63_variadic.md | 包展开常与 TMP 配合 |
+| ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 模板实例化机制前置 |
+| ch70 tag dispatch | Book/part06_templates/ch70_tag_dispatch.md | 编译期分派的另一种形态 |

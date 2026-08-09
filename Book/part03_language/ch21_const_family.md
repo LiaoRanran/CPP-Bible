@@ -1114,3 +1114,50 @@ flowchart TD
 | ch21 | ch60 | const 家族：constexpr/模板实参在编译期元编程中耦合 |
 | ch21 | ch65 | const 家族：const/volatile 是类型萃取的核心修饰 |
 | ch21 | ch27 | const 家族：const_cast 专门修改 cv 限定 |
+
+## 附录 D5：真实基准与性能分析 — constexpr 折叠收益与运行期实参的真相（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；同一「sum 0..63」计算，一路径用编译期已知实参（常量折叠为零成本），另一路径用 `volatile` 运行期实参（每次运行期求值）；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch21_constexpr.cpp`。
+
+### D5.1 基准结果
+
+| 路径 | 实参性质 | 耗时 (ms) | 说明 |
+|------|----------|-----------|------|
+| `ct_sum(K)`（K 为 constexpr 常量） | 编译期已知 | 0.0001 | 整个计算被折叠为常数 |
+| `rt_sum(kv)`（kv 为 volatile 运行期值） | 运行期未知 | 152.94 | 每次调用重新计算 sum 0..63 |
+
+### D5.2 非显然结论
+
+1. **编译期已知实参下 constexpr 是把「计算」彻底消除，而非「加速」**：`ct_sum(K)` 在编译期折叠为常量 2016，运行期只做 `s += 2016`，故耗时趋近于 0（本机 0.0001 ms）；这是「零成本抽象」的典范——成本在编译期支付，运行期账单为空。
+2. **关键反直觉点：constexpr 不会自动加速运行期实参的调用**。`ct_sum(kv)`（`kv` 为运行期值）与等价的普通 `rt_sum(kv)` 运行期开销完全一致——constexpr 在此不提供任何魔法加速，仅多一层「可在编译期求值」的契约。即：**实参在编译期已知才免费，未知则等同普通函数**。
+3. **工程判据**：把「编译期可确定的常量、查找表、尺寸、编译期算法」标 `constexpr`（如 `constexpr std::size_t N = ...`）；把「运行期输入驱动的计算」标 `constexpr` 只是可读性/契约收益，无性能差异。这与 ch69「constexpr 运行时不更快」互为印证，切勿对运行期实参抱有加速预期。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+
+constexpr long long ct_sum(long long n) {
+    long long s = 0;
+    for (long long i = 0; i < n; ++i) s += i;
+    return s;
+}
+
+int main() {
+    constexpr long long K = 1000;
+    constexpr long long C = ct_sum(K);        // 编译期折叠为常量
+    long long runtime = ct_sum(1000LL);       // 运行期实参：运行期求值
+    std::cout << "folded ct_sum(1000) = " << C
+              << ", runtime ct_sum(1000) = " << runtime << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch21_constexpr.cpp`，`g++ -O2 -std=c++23` 编译，`std::chrono::steady_clock` 计时；注意 MinGW 下 `long` 为 32 位，计数统一用 `long long` 避免累加溢出（有符号溢出属 UB）；`volatile kv` 阻止编译器把运行期路径也折叠；AMD Ryzen 9 7940HX。绝对毫秒随计算规模而变，**「折叠消除全部工作」才是可移植信号**，运行期实参路径与等价普通函数同速（见 D5.2.2）。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch69 constexpr | Book/part06_templates/ch69_constexpr.md | 「constexpr 运行时不更快」同源印证 |
+| ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | constexpr 与模板实参在编译期元编程耦合 |

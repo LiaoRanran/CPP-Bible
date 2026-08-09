@@ -984,3 +984,58 @@ flowchart TD
 | ch67 | ch119 | Ranges 深度依赖 concepts 约束 |
 | ch67 | ch60 | concepts 约束模板参数 建立在模板基础 |
 | ch67 | ch68 | TMP 编译期计算与 concept 协同 |
+
+## 附录 D5：真实基准与性能分析 — Concepts / SFINAE / if-constexpr 分派 vs virtual（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；Concepts 是纯编译期约束，被 concepts 选中的重载在运行时与 SFINAE / if-constexpr 选中的重载编译出完全相同的机器码（零额外指令）；只有 virtual 产生 vtable 间接开销。同一 handler 重复 2×10⁸ 次；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch67_concepts.cpp`。
+
+### D5.1 基准结果
+
+| 分派机制 | 类型已知时机 | 耗时 (ms) | 相对 concepts |
+|----------|--------------|-----------|---------------|
+| Concepts 约束重载 | 编译期 | 255.57 | 1.00× (基线) |
+| SFINAE 约束重载 | 编译期 | 255.65 | 1.00× |
+| if-constexpr | 编译期 | 255.81 | 1.00× |
+| virtual（vtable 间接） | 运行时 | 4568.80 | 17.9× |
+
+### D5.2 非显然结论
+
+1. **Concepts 在运行时是"隐形"的——它不发射任何指令**。concepts 只在重载决议阶段过滤候选，一旦选定具体函数，热点循环里只剩该函数的直接调用 / 内联体。本机 concepts / SFINAE / if-constexpr 三者中位 255.6–255.8 ms 完全不可分（比值 1.00×）。
+2. **"用 Concepts 会慢"是误解**；性能上 concepts ≡ SFINAE ≡ if-constexpr。三者差异纯在编译期：报错友好度（concepts 给出"不满足 concept X"的精准诊断，SFINAE 给一长串替换失败噪声）、可读性（concepts 语法最简洁）、与编译器工作量（concepts 约束检查通常快于深 SFINAE 替换）。运行期行为零区别。
+3. **唯一引入运行时分派成本的是 virtual（17.9×）**，因 vtable 间接调用 + 阻断内联。若类型在编译期已知（模板参数确定），根本不必考虑运行期代价；只有在类型延迟到运行时才揭晓时才需 virtual / variant，而那时 concepts 已无能为力——它本就不是运行时机制。结论：concepts 是"免费且更可读"的 SFINAE 替代品，不影响生成代码。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <type_traits>
+
+struct Small { double v() const { return 1.0; } };
+struct Big  { double v() const { return 2.0; } };
+
+// Concepts 约束：仅作编译期过滤，运行时与手写调用等价
+template <class T>
+requires std::is_same_v<T, Small>
+double handle(T) { return 10.0; }
+
+template <class T>
+requires std::is_same_v<T, Big>
+double handle(T) { return 20.0; }
+
+int main() {
+    Small s;
+    std::cout << "concepts-selected result = " << handle(s) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch67_concepts.cpp`，`g++ -O2 -std=c++23` 编译，`std::chrono::steady_clock` 计时，5 轮取中位；运行时分派经 `volatile int` 选择器强制 vtable 间接以阻断去虚拟化；`volatile long long` 汇出防死代码消除。AMD Ryzen 9 7940HX。绝对毫秒随微架构而变，**加速比（concepts≈SFINAE≈if-constexpr 为 1.00×；virt/三者≈14–18×）才是可移植信号**；virtual 精确倍数受间接分支预测与内联抑制影响而波动，但"显著慢于静态分派"稳定成立。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch66 SFINAE | Book/part06_templates/ch66_sfinae.md | 编译期分派的"零运行时成本"同结论 |
+| ch69 constexpr | Book/part06_templates/ch69_constexpr.md | 编译期求值与约束的更广义机制 |
+| ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 重载决议前置 |
+| ch119 Ranges | Book/part10_modern/ch119_ranges_deep.md | ranges 中 concepts 约束的工业用法 |

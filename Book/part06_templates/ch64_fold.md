@@ -1050,3 +1050,50 @@ flowchart TD
 | ch64 折叠 | ch65 type_traits | all_integral 等 trait 组合用 && 折叠实现 |
 | ch64 折叠 | ch77 vector | vector 算法常用折叠表达归约（如求和/全满足） |
 | ch64 折叠 | ch66 SFINAE | SFINAE 可为折叠中的参数包加约束 |
+
+## 附录 D5：真实基准与性能分析 — 折叠表达式 vs 手写循环 vs 递归变参（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；同一组 8 个 `double` 字面量（1.1…8.8）分别用「折叠表达式 / 手写循环(遍历 const 局部数组) / 递归变参 / 手写立即数展开」四种写法各重复 2×10⁸ 次；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch64_fold.cpp`。
+
+### D5.1 基准结果
+
+| 写法 | 操作数来源 | 耗时 (ms) | 相对 fold |
+|------|------------|-----------|-----------|
+| 折叠表达式 `(0.0 + ... + ts)` | 编译期字面量（立即数） | 255.49 | 1.00× (基线) |
+| 递归变参 `rec_sum(...)` | 编译期字面量（立即数） | 255.45 | 1.00× |
+| 手写展开 `1.1+2.2+…+8.8` | 编译期字面量（立即数） | 255.42 | 1.00× |
+| 手写循环 `for i: a[i]` | `const` 局部数组（栈物化） | 742.72 | 2.91× |
+
+### D5.2 非显然结论
+
+1. **折叠表达式不是"语法糖税"——它与最优手写形式位级等价**。fold / 递归变参 / 手写立即数展开三者在本机 -O2 下中位耗时几乎完全一致（255.4–255.5 ms，比值 1.00×）。编译器把参数包的 8 个字面量直接当作加法立即数，生成 8 条标量 `addsd` 或一条向量化归约，三者产物相同。
+2. **"手写循环更可控"在这里反而更慢 2.9×**。遍历 `const double a[8]` 的写法慢，根因是编译器把 8 个操作数物化到了栈上（每轮 8 次 `movsd` 加载），而 fold / 递归 / 展开版本操作数始终留在寄存器 / 立即数。这不是"循环 vs 折叠"的普适结论，而是"栈上数组 vs 立即数"的差异——把 `const` 数组改成 `constexpr` 或 `std::array` 字面量初始化常能让循环追平 fold。
+3. **真实数据没有 fold 等价物**。上面的 2.9× 只在"操作数是编译期字面量"时出现；当元素是运行时从 `std::vector` / 输入读取时，fold 不适用，手写循环是唯一选择，且此时同样要从内存加载，与 fold 的"立即数优势"不再相关。教学点：用 fold 处理编译期已知参数包时零成本，处理运行时序列请用 `std::accumulate` / `ranges`。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+
+// 折叠表达式：参数包字面量直接参与加法，编译期为立即数
+template <class... Ts>
+double sum(Ts... ts) { return (0.0 + ... + ts); }
+
+int main() {
+    // 与手写展开 1.1+2.2+...+8.8 在本机 -O2 下生成等价机器码
+    double s = sum(1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8);
+    std::cout << "fold sum of 8 literals = " << s << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch64_fold.cpp`，`g++ -O2 -std=c++23` 编译，`std::chrono::steady_clock` 计时，5 轮取中位；累加器经 `volatile long long` 汇出防死代码消除，并规避 32 位 `long` 溢出。AMD Ryzen 9 7940HX。绝对毫秒随 CPU 微架构 / 温度而变，**加速比（fold≈recursion≈unrolled 为 1.00×；loop/fold 在 2.2–2.9× 间随散热波动）才是可移植信号**；循环写法慢的根因是栈上数组物化而非循环本身，改用 `constexpr` 数组可消除该差距。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 参数包与实例化的前置知识 |
+| ch63 可变参数模板 | Book/part06_templates/ch63_variadic.md | 包展开与递归变参的对比对象 |
+| ch69 constexpr | Book/part06_templates/ch69_constexpr.md | 编译期折叠的更广义机制 |
+| ch65 type_traits | Book/part06_templates/ch65_type_traits.md | 编译期布尔与 `all_integral` 等 trait 配合 fold |

@@ -1751,3 +1751,52 @@ flowchart TD
 | ch41 | 智能指针 | dynamic 存储期通过 unique_ptr/shared_ptr 管理生命周期，控制块缓存局部性影响解引用 |
 | ch45 | 对象模型 | 变量最终落位到对象的内存布局，vptr/成员偏移由存储期与基类共同决定 |
 | ch52 | 空基类优化 EBO | 空基类子对象布局受存储期与继承影响，EBO 不改变存储期语义 |
+
+## 附录 D5：真实基准与性能分析 — 存储期与 thread_local 的访问开销（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；同一热循环（2×10⁸ 次 `counter += i&1`）分别对「函数内自动局部 / 全局 static / thread_local」三种存储期变量计时；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch19_threadlocal.cpp`。
+
+### D5.1 基准结果
+
+| 存储期 | 变量位置 | 耗时 (ms) | 相对 local |
+|--------|----------|-----------|------------|
+| 自动局部 `volatile long long`（栈 RSP 相对） | 函数栈帧 | 102.78 | 1.00× (基线) |
+| 全局 `static volatile long long`（GOT/RIP 相对） | .bss / .data | 103.81 | 0.99× |
+| `thread_local volatile long long`（%gs 段相对） | 线程局部存储 | 84.93 | 0.83× |
+
+### D5.2 非显然结论
+
+1. **「thread_local 必有显著访问开销」的直觉在标量场景不成立**：本机 tls（84.9 ms）反而比栈局部（102.8 ms）与全局 static（103.8 ms）都快约 1.2×。根因是寻址模式——默认可见性的全局 static 经由 GOT 间接寻址（先取 GOT 项再访存），而 `thread_local` 走单条 `%gs` 段相对指令，少一次间接访存。
+2. **TLS 的真正代价不在热循环里的每次访问，而在两处**：① 线程创建时分配线程局部存储（TLS）块；② 带动态初始化的 TLS 变量首访有守卫分支（`guard` 检查 + 一次初始化）。若用 `constinit` 把 TLS 变量设为编译期常量初始化，可消除守卫分支，热路径上它和普通变量无异。
+3. **延迟敏感热路径要规避的是「TLS 变量的动态初始化」，不是 TLS 本身**；把 `thread_local T x = runtime_expensive();` 改为 `thread_local constinit T x = compile_time_cheap();`，即可兼得线程私有与零守卫开销。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+
+static int            g_counter = 0;
+static thread_local int t_counter = 0;
+
+int main() {
+    // 自动局部 / 全局 static / thread_local 三种存储期在热循环中的使用方式
+    volatile int sink = 0;
+    long long iters = 10'000'000LL;
+    int local = 0;
+    for (long long i = 0; i < iters; ++i) local    += (i & 1);
+    for (long long i = 0; i < iters; ++i) g_counter += (i & 1);
+    for (long long i = 0; i < iters; ++i) t_counter += (i & 1);
+    sink = local + g_counter + t_counter;
+    std::cout << "three storage durations exercised, sink = " << sink << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch19_threadlocal.cpp`，`g++ -O2 -std=c++23` 编译，`std::chrono::steady_clock` 计时，三类计数器统一为 `volatile long long`（宽度一致，防死代码消除且规避 32 位 `long` 溢出）；AMD Ryzen 9 7940HX。绝对毫秒随寻址模式与 CPU 微架构而变，**加速比（tls 仅 0.83× local）才是可移植信号**；跨线程场景的 TLS 块分配与守卫初始化开销不在此单线程微基准上体现。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch43 缓存局部性 | Book/part04_memory/ch43_cache_locality.md | 存储布局与缓存行占用基线 |
+| ch32 初始化 | Book/part03_language/ch32_initialization.md | 存储期决定静态/线程初始化阶段 |
