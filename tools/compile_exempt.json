@@ -371,6 +371,11 @@
       "block": 36,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义"
+    },
+    {
+      "file": "ch118_modules.md",
+      "block": 42,
+      "reason": "MODULE"
     }
   ],
   "audited_at": "2026-07-18",
