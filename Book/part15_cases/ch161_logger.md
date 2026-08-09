@@ -1328,6 +1328,14 @@ int main() {
 #include <string>
 #include <string_view>
 // ⑲ 真实案例：HTTP 访问日志（按状态码自动分级）
+#include <ctime>
+std::string now() {                       // 缺失符号补定义：返回 HH:MM:SS 时间戳
+    std::time_t t = std::time(nullptr);
+    char buf[32];
+    std::strftime(buf, sizeof(buf), "%H:%M:%S", std::localtime(&t));
+    return buf;
+}
+struct Req { std::string method, path; int status; double ms; };  // 缺失符号补定义
 enum class Lv { info = 2, warn = 3, error = 4 };
 constexpr Lv THR = Lv::info;
 void log(Lv l, std::string_view msg) {

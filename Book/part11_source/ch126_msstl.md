@@ -380,7 +380,7 @@ MS STL 在 VS 17.8+ 基本完备支持 C++23：`std::print`/`<print>`、`std::ex
 int main() {
     std::print("hello C++23 from MS STL\n");
     std::expected<int, int> e = std::unexpected(7);
-    return e.has_value() ? 0 : *e.error();
+    return e.has_value() ? 0 : e.error();   // error() 返回 E 值，无需解引用
 }
 ```
 
@@ -640,7 +640,7 @@ int main() { std::vector<int> v{1,2}; return (int)v.at(0); }
 // S10 C++23 print + expected（对应 ⑭，需 /std:c++latest）
 #include <print>
 #include <expected>
-int main() { std::print("ok\n"); std::expected<int,int> e = std::unexpected(1); return e.error().value_or(0); }
+int main() { std::print("ok\n"); std::expected<int,int> e = std::unexpected(1); return e.value_or(0); }
 ```
 
 ```cpp

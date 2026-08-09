@@ -13,7 +13,8 @@
     "INTENTIONAL_UB": "故意演示未定义行为以教学",
     "CROSS_BLOCK": "符号定义在更早代码块，顺读可编；隔离审计看不到",
     "LIBSTDCPP": "窥探 libstdc++ 内部实现，非标准接口",
-    "GUARDED_COMPILE": "需额外编译宏(如 -DTRACK_LEAK)才成立的受控示例"
+    "GUARDED_COMPILE": "需额外编译宏(如 -DTRACK_LEAK)才成立的受控示例",
+    "BARE_METAL": "bare-metal 嵌入式外设寄存器访问（内存映射 I/O），无法在 x86 主机运行（如 STM32 RCC/USART）"
   },
   "exempt": [
     {
@@ -228,6 +229,12 @@
     },
     {
       "file": "ch126_msstl.md",
+      "block": 21,
+      "reason": "MSVC",
+      "note": "std::print 链接失败于 MinGW GCC 15.3.0 (undefined __open_terminal/__write_to_terminal)，MSVC-only"
+    },
+    {
+      "file": "ch126_msstl.md",
       "block": 22,
       "reason": "MSVC"
     },
@@ -235,6 +242,12 @@
       "file": "ch126_msstl.md",
       "block": 32,
       "reason": "MSVC"
+    },
+    {
+      "file": "ch126_msstl.md",
+      "block": 39,
+      "reason": "MSVC",
+      "note": "std::print 链接失败于 MinGW GCC 15.3.0 (undefined __open_terminal/__write_to_terminal)"
     },
     {
       "file": "ch126_msstl.md",
@@ -376,9 +389,27 @@
       "file": "ch118_modules.md",
       "block": 42,
       "reason": "MODULE"
+    },
+    {
+      "file": "ch27_cast.md",
+      "block": 16,
+      "reason": "BARE_METAL",
+      "note": "STM32 寄存器映射 demo：向 0x40023800 等外设地址写信，x86 主机触发访问违例(0xC0000005)"
+    },
+    {
+      "file": "ch45_oop_object_model.md",
+      "block": 6,
+      "reason": "CROSS_BLOCK",
+      "note": "章节上下文前缀累积误注入：前序块亦定义 log()，--chapter-context 假阳性重声明歧义"
+    },
+    {
+      "file": "ch45_oop_object_model.md",
+      "block": 53,
+      "reason": "INTENTIONAL_UB",
+      "note": "故意演示悬垂引用 UB（返回局部对象引用）"
     }
   ],
-  "audited_at": "2026-07-18",
-  "audited_against": "_audit_gcc15.json (full main-only, gcc-15.3.0)",
-  "exempt_count": 65
+  "audited_at": "2026-08-09",
+  "audited_against": "_audit_gcc15.json (full main-only, gcc-15.3.0) + T1-1 ch126 link-fail (blocks 21/39 std::print) + T1-1 ch27/ch45 runtime UB + chapter-context 假阳性",
+  "exempt_count": 71
 }

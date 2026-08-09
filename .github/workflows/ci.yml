@@ -19,6 +19,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0   # 增量门禁需完整 git 历史（--changed 用 HEAD~1..HEAD）
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -88,6 +90,22 @@ jobs:
       run: python3 tools/book_asm_freshness.py
       continue-on-error: false
 
+    - name: Dangling Chapter-Ref Lint (T1-2 悬空章节引用软门禁)
+      # 扫描全书正文对「第N章 / chN」的引用，核对编号是否落在有效章节集合内。
+      # 设计性「删章留空、不重排」导致 18 个编号空缺被正文引用 → 已知债务，
+      # 存于 tools/ci_baseline.json 作为基线；增量回归（新增悬空引用）即判红。
+      # 与 crossref_audit（part 级覆盖）/ xref_check（链接目标存在性）互补：
+      # 本门禁看的是 *编号* 层面的悬空，与链接路径解耦。
+      run: python3 tools/dangling_ref_linter.py --json outputs/t1_2_dangling.json
+      continue-on-error: true   # 软门禁：基线已知债务不阻断，仅报告
+
+    - name: Prerequisite Topology Check (T1-3 前置依赖拓扑软门禁)
+      # 校验各章 `前置：` 元数据：前置编号 > 自身编号（拓扑倒置）或指向不存在
+      # 的章节（悬空前置）。当前已知：6 处倒置 + 1 处悬空前置，存于基线；
+      # 增量回归即判红。
+      run: python3 tools/prereq_topo_check.py --json outputs/t1_3_topo.json
+      continue-on-error: true   # 软门禁
+
   compile:
     needs: quality
     runs-on: ubuntu-latest
@@ -135,6 +153,20 @@ jobs:
       # 核心语言错误两平台判定一致, 无跨平台误报; POSIX 类平台差异仅映射为 STALE(WARN)。
       continue-on-error: false
       run: python3 tools/exempt_audit.py --check
+
+    - name: Compile + Link + Run + Sanitizer (T1-1 运行期门禁)
+      # 对自包含 main 块做完整 编译+链接+运行， 并叠加 ASan/UBSan/TSan。
+      # 现有 compile_all/compile_gate 仅作 *语法级* 静态检查（-fsyntax-only）；
+      # 本步补充 *运行期* 验证：“能编译”≠“能跑对”。在 Linux 运行器下 GCC-15
+      # 具备完整 sanitizer 运行时与 std::print/threading 支持（本地 MinGW 15.3.0
+      # 存在 std::print 链接缺口与 winpthreads 线程崩溃缺陷，T1-1 于本地做
+      # toolchain-skip 降级，见 compile_run_sanitize_pipeline.py）。
+      # --chapter-context 让教学书“增量式定义”的同章前向引用不误判为失败。
+      # --changed 仅编译 git diff 变更的章节（CI 在 fetch-depth:0 下有完整历史，
+      # fallback 到 HEAD~1..HEAD）。初期 continue-on-error 观察全书基线；
+      # 固化后可去掉本标记。如需全量扫描，用 --all-run。
+      run: python3 tools/compile_run_sanitize_pipeline.py --changed --chapter-context
+      continue-on-error: true
 
     - name: Assertion Claims Verification (书内声明契约门禁)
       # 把书内 static_assert / assert() 当作单元测试跑, 验证"文档声明为真"。
