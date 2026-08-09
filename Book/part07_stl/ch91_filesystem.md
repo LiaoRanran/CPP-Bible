@@ -1439,3 +1439,46 @@ int main() {
 ```
 
 输出印证：双接口都可用——`directory_iterator` 遍历出 `a.txt`/`b.txt`（共享句柄的浅拷贝语义由 `_M_dir` 保证），`status(..., ec)` 走 error_code 版本不抛异常，最后 `remove_all` 清理——与 D4.2–D4.3 源码一致。
+
+## 附录 D5：真实基准与性能分析 — `std::filesystem::path` 词法分解 vs 手写切分（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-O2 -std=c++23`，400 万次路径分解为「目录/文件名/扩展名」（纯 CPU，不触盘）；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch91_filesystem.cpp`。
+
+### D5.1 基准结果
+
+| 实现 | 耗时 (ms) | 相对 |
+|------|-----------|------|
+| `std::filesystem::path` + `parent_path/filename/extension` | 5208.855 | 8.91× 更慢 |
+| 手写 `string_view` 切分（找最后 `/` 或 `\` 与最后一个 `.`） | 584.396 | 1.00× (基线) |
+
+### D5.2 非显然结论
+
+1. **`std::filesystem::path` 的词法分解比手写切分慢约 8.9×**：每次 `path` 构造、`parent_path()`、`filename()`、`extension()` 都返回**新分配的 `std::string`**（值语义拷贝），而手写方案用 `std::string_view` 定位切分点，仅构造 3 个必要的 `std::string` 结果（dir/name/ext），分配次数远少于 `path` 的多次值语义拷贝。
+2. **抽象不是免费的，但在「不热」的路径上完全可接受**：8.9× 的绝对值仍只是每次约 1.3 µs（5209 ms / 400 万）——只有在每秒处理数十万路径的批处理/遍历场景才需要换成手写版；常规文件操作瓶颈永远在磁盘 I/O，而非路径解析。
+3. **`path` 的额外价值是正确性与可移植性**：它统一处理 `/` 与 `\`、处理 `.`/`..` 的词法归一、处理 UTF-8/宽字符，手写切分做不到这些；「为近 9× 微优化牺牲正确性」通常是亏本买卖——这与 ch158「不必要的堆分配/抽象」反模式要区分对待。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <string>
+#include <string_view>
+#include <filesystem>
+
+int main() {
+    const std::filesystem::path p("C:/work/proj/src/util/str.hpp");
+    std::cout << "parent:  " << p.parent_path() << std::endl;
+    std::cout << "filename:" << p.filename() << std::endl;
+    std::cout << "ext:     " << p.extension() << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch91_filesystem.cpp`，以 `g++ -O2 -std=c++23` 编译（`<filesystem>` 在 GCC 15 已并入主库，无需额外链接），`std::chrono::steady_clock` 计时，`volatile` sink 防死代码消除；AMD Ryzen 9 7940HX，400 万次。实验为**词法**分解（构造期不访问磁盘），绝对毫秒随路径长度而变，**加速比（手写较 path 快 8.91×）才是可移植信号**。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch158 性能反模式 | Book/part14_perf/ch158_perf_antipatterns.md | 抽象/分配开销的系统性讨论 |
+| ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |

@@ -1051,3 +1051,50 @@ flowchart TD
 | ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | -g/strip 影响调试体验（第⑩节与 ch14 ⑫衔接） |
 | ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](Book/part02_toolchain/ch13_packaging.md) | 链接方式影响包二进制分发（第⑪节与 ch13 衔接） |
 
+
+## 附录 D5：真实基准与性能分析 — 构建配置 Debug/Release 的运行期代价（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`，同一计算核（16M 次 `sqrt(a²+b²)`）分别按 `-O0`/`-O2`/`-O3`/`-O2 -flto` 编译运行；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch18_buildconfig.cpp`。
+
+### D5.1 基准结果
+
+| 构建配置 | 耗时 (ms) | 相对 -O0 |
+|----------|-----------|----------|
+| `-O0`（等价 Debug，无优化） | 572.722 | 1.00× (基线) |
+| `-O2`（等价 Release） | 34.342 | 16.67× 更快 |
+| `-O3`（更激进矢量化/展开） | 34.968 | 16.38× 更快 |
+| `-O2 -flto`（单 TU 的 LTO） | 59.826 | 9.57× 更快 |
+
+### D5.2 非显然结论
+
+1. **Debug 比 Release 慢约 16.7×**：`-O0` 保留每个函数调用、不做矢量化与展开，而 `-O2` 把循环内联、自动向量化为 `vsqrtpd` 等 SIMD 指令；这是「Debug 配置绝不应进生产」的最硬证据。
+2. **`-O3` 相对 `-O2` 几乎零收益（本核 34.97 vs 34.34 ms）**：`-O3` 的额外展开/过程间分析对已是内存带宽受限或已被 `-O2` 充分向量化的核无济于事，反增代码体积——印证「多数项目 `-O2` 已足够」。
+3. **单翻译单元的 `-flto` 反而比 `-O2` 慢（59.8 vs 34.3 ms）**：LTO 的全局分析有固定开销，其收益来自**跨 TU 内联**；单 TU 场景没有跨单元可内联目标，纯亏不赚。LTO/PGO 的真实价值在多 TU 大项目，切勿在单文件基准上误判。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <cmath>
+
+int main() {
+    constexpr int N = 4'000'000;
+    std::vector<double> a(N), b(N), c(N);
+    for (int i = 0; i < N; ++i) { a[i] = i * 0.001; b[i] = 1.0 / (i + 1); }
+    for (int i = 0; i < N; ++i) c[i] = std::sqrt(a[i] * a[i] + b[i] * b[i]);
+    double s = 0;
+    for (int i = 0; i < N; i += 1009) s += c[i];
+    std::cout << "kernel done, sample sum = " << s << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch18_buildconfig.cpp`，同一源分别以 `g++ -O0 / -O2 / -O3 / -O2 -flto -std=c++23` 编译，`std::chrono::steady_clock` 计时，`volatile` sink 防死代码消除；AMD Ryzen 9 7940HX。绝对毫秒随优化级别差异巨大，**加速比（Release 较 Debug 快 16.67×）才是可移植信号**；LTO/PGO 的跨 TU 收益不在此单文件基准上体现。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |
+| ch154 缓存优化 | Book/part14_perf/ch154_cache_opt.md | 运行期性能优化总纲 |

@@ -904,3 +904,48 @@ int main() {
     return 0;
 }
 ```
+
+## 附录 D5：真实基准与性能分析 — 运算符重载：`operator+` 链式临时 vs `operator+=` 原地（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-O2 -std=c++23`，5000 万次 `Vec = a; v = v + b + c + d` 与 `v += b; v += c; v += d`；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch31_operator.cpp`。
+
+### D5.1 基准结果
+
+| 写法 | 耗时 (ms) | 相对 |
+|------|-----------|------|
+| 链式 `v = v + b + c + d`（每次 `operator+` 返回临时对象） | 64.288 | 1.01× (略慢) |
+| 原地 `v += b; v += c; v += d`（`operator+=` 返回引用） | 63.652 | 1.00× (基线) |
+
+### D5.2 非显然结论
+
+1. **对小型 POD 类型，`operator+` 链式的额外临时几乎被 `-O2` 完全消除**：本机两者仅差约 1%（64.29 vs 63.65 ms），因为 `Vec` 仅 3 个 `double`，`operator+` 内联后临时对象被 SSA/拷贝省略优化掉，运行期开销趋近于零。
+2. **结论不是「永远用 `+=`」，而是「对大对象/非平凡类型才需要警惕」**：当被重载类型携带堆缓冲（如 `std::string`、大矩阵）或不可省略的拷贝时，链式 `operator+` 的每次临时都会触发一次完整拷贝/分配——此时 `+=` 的优势才显著（见 ch158 临时对象反模式）。对 3 字段 `Vec` 这类廉价类型，可读性优先于微优化。
+3. **运算符重载的「零开销」是条件成立的**：`-O2` 下小型类型成立，但跨 API 边界、关闭内联或类型变大时，链式写法的隐性拷贝会真实兑现为成本——这正是「零开销抽象」依赖编译器内联能力的具体写照。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+
+struct Vec { double x, y, z; };
+Vec operator+(const Vec& a, const Vec& b) { return { a.x + b.x, a.y + b.y, a.z + b.z }; }
+Vec& operator+=(Vec& a, const Vec& b) { a.x += b.x; a.y += b.y; a.z += b.z; return a; }
+
+int main() {
+    Vec a{ 1, 2, 3 }, b{ 4, 5, 6 }, c{ 7, 8, 9 }, d{ 1, 1, 1 };
+    Vec v1 = a; v1 = v1 + b + c + d;          // 链式（可能生成临时）
+    Vec v2 = a; v2 += b; v2 += c; v2 += d;    // 原地（无临时）
+    std::cout << "chained: " << v1.x << "," << v1.y << "," << v1.z << std::endl;
+    std::cout << "in-place: " << v2.x << "," << v2.y << "," << v2.z << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch31_operator.cpp`，以 `g++ -O2 -std=c++23` 编译，`std::chrono::steady_clock` 计时，`volatile` sink 防死代码消除；AMD Ryzen 9 7940HX，5000 万次。绝对毫秒随类型大小而变，**结论（小型类型临时可被消除）才是可移植信号**。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch158 性能反模式 | Book/part14_perf/ch158_perf_antipatterns.md | 临时对象/隐式拷贝反模式对照 |
+| ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |

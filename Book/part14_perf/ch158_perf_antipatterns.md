@@ -664,3 +664,52 @@ flowchart TD
 | ch150 | 补测试 | 测试 | 补测试防反模式回归 |
 | ch47 | 虚调用 | 虚函数 | 虚函数调用是常见反模式 |
 
+
+## 附录 D5：真实基准与性能分析 — 性能反模式：行优先 vs 列优先 2D 遍历（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-O2 -std=c++23`，4096×4096 `int` 矩阵的两种遍历；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch158_perf_antipatterns.cpp`。
+
+### D5.1 基准结果
+
+| 遍历顺序 | 耗时 (ms) | 相对 |
+|----------|-----------|------|
+| 行优先（顺序访问，缓存友好） | 3.795 | 1.00× (基线) |
+| 列优先（跨步访问，缓存失效反模式） | 41.152 | 10.84× 更慢 |
+
+### D5.2 非显然结论
+
+1. **把「列优先」当反模式不是修辞，而是 10.84× 的真实代价**：`int` 每行 4096×4 = 16 KB，远大于 64 B 缓存行；列优先每读一个元素就要跳 16 KB 到下一行同列，几乎每次访存都未命中 L1/L2，退化为内存带宽受限——而本机 L3 仅 16 MB，64 MB 工作集早已溢出。
+2. **「反模式」的定量定义就是 cache miss rate」**：同一份数据、同一套指令，仅交换循环嵌套顺序就差出一个数量级，证明「算法复杂度相同 ≠ 运行期相同」——性能要看**内存访问模式**而非只看大 O。
+3. **修复极廉价**：把 `for i for j`（行优先）而非 `for j for i`（列优先）写对即可，无需改数据结构；这正是 ch154 缓存优化正文强调的「先让热点顺序访问连续内存」原则的可测量证据。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <vector>
+
+int main() {
+    constexpr int M = 512, N = 512;
+    std::vector<int> a(static_cast<std::size_t>(M) * N, 1);
+    long long s = 0;
+    for (int i = 0; i < M; ++i)        // 行优先：顺序访问
+        for (int j = 0; j < N; ++j)
+            s += a[static_cast<std::size_t>(i) * N + j];
+    std::cout << "row-major sum = " << s << std::endl;
+    s = 0;
+    for (int j = 0; j < N; ++j)        // 列优先：跨步访问（反模式）
+        for (int i = 0; i < M; ++i)
+            s += a[static_cast<std::size_t>(i) * N + j];
+    std::cout << "column-major sum = " << s << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch158_perf_antipatterns.cpp`，以 `g++ -O2 -std=c++23` 编译，`std::chrono::steady_clock` 计时，`volatile` sink 防死代码消除；AMD Ryzen 9 7940HX，4096×4096 `int`。绝对毫秒随矩阵尺寸/微架构而变，**加速比（行优先较列优先快 10.84×）才是可移植信号**。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch154 缓存优化 | Book/part14_perf/ch154_cache_opt.md | 同一现象的「正面优化」写法 |
+| ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |
