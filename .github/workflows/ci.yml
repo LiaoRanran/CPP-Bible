@@ -58,14 +58,27 @@ jobs:
       run: python3 tools/gen_indexes.py --check
       continue-on-error: false
 
-    - name: Mermaid Lint (图表语法门禁)
-      # 预防性门禁：书内 ```mermaid 围栏（flowchart/classDiagram/sequenceDiagram/
-      # stateDiagram/timeline 共 88 块）逐块做结构化语法校验，纯 Python 零依赖、
-      # 秒级。任何未来编辑若引入未闭合围栏、非法箭头、悬空边、缺操作数关系、
-      # 非法时序消息等语法腐坏，CI 立即变红，阻断发布前发现（避免 pdf/epub 的
-      # mermaid-filter 渲染阶段才 FATAL）。不修改图表语义，仅守护语法健康。
-      run: python3 tools/mermaid_lint.py --check
-      continue-on-error: false
+    - name: Density Audit (内容密度质量门禁)
+      # density_audit.py v3 门禁模式：扫描全书 147 章，计算 dim(认知密度)/depth(代码深度)
+      # 复合得分。avg < 20 或存在 shallow chapter (dim≥10 且 depth<8) 时 exit 1。
+      # 预防性门禁：若未来编辑因删节/软文化腿，降低书籍核心信息密度，CI 立即变红。
+      # 纯 Python 零依赖，<15s。
+      run: python3 tools/density_audit.py --check 20
+
+    - name: D5 Appendix Structure Audit (性能附录格式合规门禁)
+      # 校验所有含 D5 附录的章节：4-段结构 (D5.1 基准结果 / D5.2 非显然结论 /
+      # D5.3 可复现 demo / D5.4 方法论+xref)、标准区块引文
+      # "绝对毫秒随机器而变，加速比才是可移植信号。"、5-试验中位数约束。
+      # ERROR 级问题 (结构缺失/引文错误/非复现 demo) → exit 1 BLOCK。
+      # WARN 级 (模板偏离) 不阻断，仅报告。
+      run: python3 tools/d5_appendix_audit.py
+
+    - name: D5 Coverage Scanner (D5 覆盖差距报告)
+      # 扫描缺少 D5 附录但含有性能信号的章节，按信号强度排序。
+      # 咨询模式：不阻断 CI，仅输出 build/d5_gap_report.json 供作者排期。
+      # 豁免 part01/part02/part14（历史/工具链/性能方法论章）+ 源码导读章。
+      run: python3 tools/d5_gap_scanner.py
+      continue-on-error: true   # 咨询模式：D5 覆盖是长期目标，不阻断每次提交
 
     - name: ASM Evidence Symbol Verify (汇编证据符号真实性门禁)
       # 汇编/符号证据节真实性守卫：书内 ```asm 块若声明「节选自 Examples/X.asm」，

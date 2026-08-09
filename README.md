@@ -1,5 +1,7 @@
 # 现代 C++ 终极圣经 (The Ultimate Modern C++ Bible)
 
+[![CI](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml/badge.svg)](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml)
+
 > **147 章 · 16 part · 约 14.7 万行 · 6840 个可编译 cpp 代码块**
 > 密度审计 v3 均分 **24.2/30**，浅章（<15 分）**0** 个
 

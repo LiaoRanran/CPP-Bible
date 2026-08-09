@@ -7,7 +7,9 @@ Key changes from v3:
 - Quality gate: actual depth analysis, not just keyword count
 
 Usage: python3 tools/density_audit.py [N] [dim_filter] [part_filter]
-       python3 tools/density_audit.py --json  → machine-readable output"""
+       python3 tools/density_audit.py --json  → machine-readable output
+       python3 tools/density_audit.py --check [avg_min]  → CI gate mode
+                                                        exit 1 if avg < threshold or shallow > 0"""
 
 import os, re, sys, json
 from collections import Counter
@@ -130,6 +132,21 @@ def main():
     for s in sorted(dist):
         bar = '#' * dist[s]
         print(f"  {s:>2}/30: {bar} ({dist[s]})")
+
+    # CI gate mode: exit nonzero if quality threshold not met
+    if '--check' in sys.argv:
+        idx = sys.argv.index('--check') + 1
+        avg_min = float(sys.argv[idx]) if idx < len(sys.argv) else 20.0
+        failures = []
+        if avg < avg_min:
+            failures.append(f"avg density {avg:.1f} < {avg_min} threshold")
+        if shallow_count > 0:
+            sh_names = [c[5] for c in chapters if c[4]]
+            failures.append(f"{shallow_count} shallow chapter(s): {sh_names[:5]}")
+        if failures:
+            print(f"\n[FAIL] density gate: {'; '.join(failures)}")
+            sys.exit(1)
+        print(f"\n[PASS] density gate: avg={avg:.1f}/{avg_min}, shallow={shallow_count}")
 
 if __name__ == '__main__':
     main()

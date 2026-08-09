@@ -269,6 +269,11 @@ def main():
             ensure_ascii=False, indent=2), encoding='utf-8')
         print(f"\n[json] -> {out}")
 
+    # CI gate: exit 1 if any ERROR-level issue
+    if counts['ERROR'] > 0:
+        sys.exit(1)
+        print(f"\n[json] -> {out}")
+
 
 if __name__ == '__main__':
     main()
