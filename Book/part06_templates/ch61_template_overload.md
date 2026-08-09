@@ -1005,3 +1005,70 @@ int main() {
   return 0;
 }
 ```
+
+
+## 附录 D5：真实基准与性能分析 — 编译期重载决议直接内联 vs 运行期函数指针表间接分派（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch61_overload_dispatch.cpp`。
+
+### D5.1 基准结果
+
+| 策略 | 分派方式 | 耗时 (ms) | 相对 |
+|------|----------|-----------|------|
+| `if constexpr` 编译期分派 | 单态化 + 内联 | 13.99 | 1.00x (基线) |
+| 函数指针表 `table[tag](x)` | 运行期间接调用 | 59.66 | ~4.3x 慢 |
+
+### D5.2 非显然结论
+
+1. **函数指针表慢 ~4.3x 的根源是间接调用阻止内联 + 分支预测惩罚**：`if constexpr` 在编译期消除了分支——`run_constexpr<0>` 只含 `op_add` 的内联体，`run_constexpr<1>` 只含 `op_mul`，每个 Tag 实例化一份单态化代码。函数指针表 `table[tags[i]](v[i])` 每次迭代：(1) 从 `tags[i]` 取索引；(2) 从 `table` 数组取函数地址；(3) 间接 `call` 该地址。间接调用阻止编译器内联 `op_add/op_mul/op_xor`，且随机 tag 令分支预测器无法稳定预测目标地址 → ~4.3x 代价。
+2. **差距小于 ch62（10.4x）的原因：函数指针表不经过 L1i cache miss**：函数指针表的三个目标函数（`op_add/op_mul/op_xor`）地址固定且紧凑，CPU 分支目标缓冲器（BTB）能较好缓存；而 ch62 的 if/else 链每元素一次条件跳转，随机 tag 导致高 misprediction 率。因此 ch61 的 4.3x < ch62 的 10.4x——前者是『间接调用 + 无内联』，后者叠加了『分支预测失败惩罚』。
+3. **编译期分派的代价是每种 Tag 实例化一份代码**：`run_constexpr<0>` / `run_constexpr<1>` / `run_constexpr<2>` 是三份独立的函数体——链接器发射三个 mangled 符号。这正是 ch61 模板重载决议在代码层的体现：每个 Tag 值参与 mangled 名（`_Z15run_constexprILi0EE...`），独立实例化。函数指针表只有一份代码、三份地址。
+4. **选型判据：操作集合编译期已知且封闭用 if constexpr / 重载；运行期动态决定用函数指针表**：函数指针表的不可替代场景是插件系统（运行期注册新函数地址）、命令分发表（用户输入决定执行哪个命令）。但在编译期已知操作集合的热路径（如固定指令集解释器），`if constexpr` 或模板重载分派可获得 ~4.3x 加速。C++20 concepts 可进一步约束可重载的操作集合，提升可读性。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <vector>
+
+static inline int op_add(int x) { return x + 7; }
+static inline int op_mul(int x) { return x * 3; }
+
+template <int Tag>
+long long run_constexpr(std::vector<int> const& v) {
+    long long acc = 0;
+    for (int x : v) {
+        if constexpr (Tag == 0) acc += op_add(x);
+        else if constexpr (Tag == 1) acc += op_mul(x);
+    }
+    return acc;
+}
+
+using FnPtr = int (*)(int);
+static FnPtr table[2] = { &op_add, &op_mul };
+
+long long run_ptrtable(std::vector<int> const& v, std::vector<int> const& tags) {
+    long long acc = 0;
+    for (size_t i = 0; i < v.size(); ++i) acc += table[tags[i]](v[i]);
+    return acc;
+}
+
+int main() {
+    std::vector<int> v = {1, 2, 3, 4, 5};
+    std::vector<int> tags = {0, 1, 0, 1, 0};
+    std::cout << "constexpr=" << run_constexpr<0>(v) + run_constexpr<1>(v)
+              << " ptrtable=" << run_ptrtable(v, tags) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch61_overload_dispatch.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch61_overload_dispatch.cpp -o _bench_d5_ch61.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~4.3x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。函数指针表的间接调用开销在所有 x86-64 实现中均存在（call 寄存器地址），跨实现同量级。`op_add/op_mul/op_xor` 标 `static inline` 但经函数指针调用时编译器无法跨间接边界内联——这正是间接调用的固有代价。运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 模板单态化是编译期分派的基础 |
+| ch62 特化 | Book/part06_templates/ch62_specialization.md | 特化与 if constexpr 是编译期分派的两种形式 |
+| ch69 constexpr | Book/part06_templates/ch69_constexpr.md | constexpr 与 if constexpr 的编译期计算能力 |
+

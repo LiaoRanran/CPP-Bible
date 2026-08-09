@@ -1074,3 +1074,60 @@ flowchart TD
 | ch67 concepts | ch60 模板基础 | concepts 约束模板参数 |
 | ch60 模板基础 | ch69 constexpr | 模板与 constexpr 协同做编译期计算 |
 | ch61 模板重载 | ch60 模板基础 | 重载解析是模板核心机制 |
+
+
+## 附录 D5：真实基准与性能分析 — 模板回调单态化内联 vs std::function 类型擦除间接调用（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch60_template_callback.cpp`。
+
+### D5.1 基准结果
+
+| 策略 | 分派方式 | 耗时 (ms) | 相对 |
+|------|----------|-----------|------|
+| 模板 `run_template<F>` | 单态化 + 内联 | 5.79 | 1.00x (基线) |
+| `std::function<int(int)>` | 类型擦除 + 间接调用 | 45.24 | ~7.8x 慢 |
+
+### D5.2 非显然结论
+
+1. **std::function 慢 ~7.8x 的代价来自三重间接：类型擦除封装、SBO 判定、函数指针间接调用**：模板回调 `run_template<F>(v, lambda)` 的 `F` 在编译期确定，lambda 的 `operator()` 被 `-O2` 完全内联——整个循环变成 `add + lea` 指令序列，零间接跳转。`std::function` 内部用类型擦除（vtable-like 结构）存储 callable，每次 `f(x)` 需要：(1) 检查 SBO（小缓冲优化）判定 callable 在栈上还是堆上；(2) 通过内部函数指针间接调用目标。7.8x 的差距量化了『编译期已知类型直接内联』vs『运行期类型擦除间接调用』的边界。
+2. **std::function 的 SBO 把『堆分配』代价移到构造期，但调用期仍付间接代价**：libstdc++ 的 `std::function` 对 ≤16 字节的 callable 走 SBO（栈上存储，无堆分配），但调用期的间接性无法消除——因为它必须支持运行期替换 callable 类型（如把 lambda 换成函数指针）。模板回调没有这个灵活性：`F` 在编译期绑定，无法运行期更换——正是这种『不灵活性』换来了零间接开销。
+3. **模板回调的代价是每种 F 类型实例化一份代码（code bloat）**：`run_template<LambdaA>` 和 `run_template<LambdaB>` 是两个完全独立的函数，链接器发射两份机器码。如果回调用在泛型库的热路径中（如 `std::sort` 的比较器），每种比较器类型实例化一份——这正是 ch60 中『模板的真实成本在编译期与代码体积，不在运行期』的实证。
+4. **选型判据：回调类型编译期已知用模板；需运行期存储/替换异质回调用 std::function**：`std::function` 的不可替代场景是回调队列（`std::vector<std::function<int(int)>>`）、运行期注册不同类型的 callable（如事件系统）。但在编译期已知回调类型的热路径（如排序比较器、数值积分核），模板参数化可获得 ~7.8x 加速。`std::function` 对小 callable（≤16B）的构造期代价可接受，调用期间接代价在热循环中不可接受。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <functional>
+
+template <typename F>
+long long run_template(int n, F f) {
+    long long acc = 0;
+    for (int i = 0; i < n; ++i) acc += f(i);
+    return acc;
+}
+
+long long run_stdfunc(int n, std::function<int(int)> f) {
+    long long acc = 0;
+    for (int i = 0; i < n; ++i) acc += f(i);
+    return acc;
+}
+
+int main() {
+    auto lambda = [](int x) { return x * 3 + 1; };
+    std::cout << "template=" << run_template(100, lambda)
+              << " stdfunc=" << run_stdfunc(100, lambda) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch60_template_callback.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch60_template_callback.cpp -o _bench_d5_ch60.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~7.8x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。std::function 的调用期间接开销在 libstdc++/libc++/MSVC STL 中均存在（类型擦除的固有代价），跨实现同量级。lambda 为无捕获（可转换为函数指针），但 std::function 仍走 SBO + 间接调用路径。运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch26 lambda | Book/part03_language/ch26_lambda.md | lambda 是模板回调的典型 F 类型 |
+| ch61 模板重载 | Book/part06_templates/ch61_template_overload.md | 重载决议决定哪个模板实例化 |
+| ch156 编译器优化 | Book/part14_perf/ch156_compiler_opt.md | 内联与单态化的编译器机制 |
+

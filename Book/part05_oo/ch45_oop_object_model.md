@@ -1671,3 +1671,54 @@ flowchart TD
 | ch46 封装继承 | ch45 对象模型 | 继承改变子对象布局 |
 | ch42 严格别名 | ch45 对象模型 | 布局决定别名通道 |
 | ch45 对象模型 | ch77 vector | 多态对象常以指针存入容器 |
+
+
+## 附录 D5：真实基准与性能分析 — 虚函数 vtable 间接调用 vs CRTP 编译期静态分派（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch45_final_devirt.cpp`。
+
+### D5.1 基准结果
+
+| 策略 | 分派方式 | 耗时 (ms) | 相对 |
+|------|----------|-----------|------|
+| `virtual work()` | vtable 间接调用 | 43.88 | 1.00x (基线) |
+| CRTP `work_impl` | 编译期内联单态化 | 4.94 | ~8.9x 快 |
+
+### D5.2 非显然结论
+
+1. **CRTP 快 ~8.9x 的根源是消除了两次间接：vtable 取指 + 函数指针间接跳转**：虚函数调用经 `mov rax,[rdi]`（取 vtable 指针）→ `call [rax+offset]`（间接调用）两步；CRTP 的 `static_cast<Derived const*>(this)->work_impl(x)` 在编译期单态化，`work_impl` 被 `-O2` 完全内联进调用者——零间接跳转、零函数调用开销。8.9x 的差距精确量化了『运行期多态间接性』vs『编译期多态直接性』的代价边界。
+2. **编译器去虚化（devirtualization）会使差距缩小——但本基准用 noinline 工厂阻止它**：如果编译器能在编译期推导出对象的确切动态类型（如 `Derived d; d.work()` 局部对象），它会消除 vtable 间接、直接调用甚至内联——此时 virtual 和 CRTP 同速。本基准通过 `[[gnu::noinline]] Base* make_virtual()` 隐藏对象动态类型，使编译器在 `run_virtual` 内无法确定 `p->work()` 的目标，强制保留真正的 vtable 间接调用。这解释了为什么生产代码中虚函数的实测开销方差很大：可去虚化的场景几乎免费，不可去虚化的热循环付全价。
+3. **CRTP 的代价是编译期耦合与可读性**：CRTP 要求派生类在定义时即暴露给基类（`struct D : CRTPBase<D>`），基类与派生类在头文件层紧耦合，且错误信息（模板实例化失败）晦涩。它是用编译期复杂度换运行期速度的典型权衡。`final` 关键字（ch45 对象模型）能在不牺牲可读性的前提下帮助编译器去虚化，是介于纯虚函数与 CRTP 之间的中间方案。
+4. **选型判据：需要运行期多态（容器存异质对象指针）用虚函数；编译期已知确切类型用 CRTP 或模板**：虚函数的不可替代场景是 `std::vector<Base*>` / `std::vector<std::unique_ptr<Base>>` 存储异质对象——此时类型在运行期才确定，CRTP 无法工作。但在编译期已知类型的热路径（如数值计算、策略模式），CRTP 或直接模板参数化可获得近一个数量级的加速。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+
+struct Base { virtual ~Base() = default; virtual int work(int x) const { return x * 2; } };
+struct Derived : Base { int work(int x) const override { return x * 2; } };
+
+template <typename D>
+struct CRTPBase { int work(int x) const { return static_cast<D const*>(this)->work_impl(x); } };
+struct CRTPDerived : CRTPBase<CRTPDerived> { int work_impl(int x) const { return x * 2; } };
+
+int main() {
+    Derived d;
+    Base* p = &d;
+    CRTPDerived c;
+    std::cout << "virtual=" << p->work(5) << " crtp=" << c.work(5) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch45_final_devirt.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch45_final_devirt.cpp -o _bench_d5_ch45.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~8.9x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。关键防优化：`make_virtual()` 标 `[[gnu::noinline]]` 阻止编译器去虚化 virtual 路径，使两条路径的差距反映真实的 vtable 间接开销。若编译器成功去虚化（如对象类型在调用点可见），差距会显著缩小——这也是生产代码中虚函数开销方差大的根源。运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch47 虚函数 | Book/part05_oo/ch47_virtual_functions.md | vtable 间接调用机制详述 |
+| ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | CRTP 是模板静态多态的典型应用 |
+| ch27 cast | Book/part03_language/ch27_cast.md | static_cast 在 CRTP 中做编译期下转 |
+

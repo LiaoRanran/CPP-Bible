@@ -1177,3 +1177,75 @@ int main()
   return 0;
 }
 ```
+
+
+## 附录 D5：真实基准与性能分析 — 模板特化编译期路由 vs 运行期 if/else 类型标签分支链（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch62_spec_branch.cpp`。
+
+### D5.1 基准结果
+
+| 策略 | 分派方式 | 耗时 (ms) | 相对 |
+|------|----------|-----------|------|
+| `if constexpr` 编译期路由 | 单态化 + 无分支 | 14.19 | 1.00x (基线) |
+| 运行期 if/else 链 | 随机 tag → 高 misprediction | 147.79 | ~10.4x 慢 |
+
+### D5.2 非显然结论
+
+1. **if/else 链慢 ~10.4x 的最大单项是分支预测失败（misprediction），不是间接调用**：ch62 的 if/else 链使用直接条件跳转（`cmp + je/jne`），不是间接调用——但随机洗排的 tag 令 CPU 分支预测器无法学习（均匀分布 3 路 → 预测命中率约 33%，misprediction 率约 67%）。每次 misprediction 触发流水线冲刷（~15-20 周期），在 2e7 次迭代中累计成巨大开销。`if constexpr` 在编译期消除所有分支——每个 batch 是单态化的直线代码，零条件跳转、零 misprediction。
+2. **差距（10.4x）大于 ch61（4.3x）证明分支预测惩罚 >> 间接调用惩罚**：ch61 的函数指针表虽有间接调用（阻止内联），但目标地址集合小且固定，BTB 缓存有效；ch62 的 if/else 链每元素 2 次条件跳转 + 随机 tag → 高 misprediction。这量化了两类运行期开销的量级差异：间接调用 ~4x，分支预测失败 ~10x。工程上，消除不可预测分支的收益通常大于消除间接调用。
+3. **if constexpr 的公平性：本基准按 tag 预分区到 3 个 batch，总迭代 = N**：为公平对比，constexpr 路径把数据按 tag 预分区到 `add_v/mul_v/xor_v` 三个同构 batch，每个 batch 单态化循环，3 循环总迭代 = N。if/else 链在随机洗排的 tag 数组上单次扫描（迭代 = N）。两侧总迭代相同，差异纯粹来自分支开销 vs 无分支单态化。
+4. **选型判据：tag 值在编译期已知用特化/if constexpr；运行期动态 tag 且可预测用 if/else；不可预测用 jump table**：if/else 链在 tag 高度可预测时（如连续相同 tag 的 batch）几乎免费（预测命中）；在随机 tag 下灾难性慢。如果运行期 tag 不可预测但操作集合封闭，jump table（函数指针表，见 ch61）比 if/else 链更优——间接调用（4.3x）远好于分支预测失败（10.4x）。模板特化/if constexpr 是编译期路由的终极形式，零运行期代价。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+#include <vector>
+
+enum OpType : int { OP_ADD = 0, OP_MUL = 1 };
+static inline int do_add(int x) { return x + 7; }
+static inline int do_mul(int x) { return x * 3; }
+
+template <OpType Tag>
+long long run_constexpr_route(std::vector<int> const& v) {
+    long long acc = 0;
+    for (int x : v) {
+        if constexpr (Tag == OP_ADD) acc += do_add(x);
+        else if constexpr (Tag == OP_MUL) acc += do_mul(x);
+    }
+    return acc;
+}
+
+long long run_ifelse_chain(std::vector<int> const& v, std::vector<int> const& tags) {
+    long long acc = 0;
+    for (size_t i = 0; i < v.size(); ++i) {
+        int x = v[i], t = tags[i];
+        if (t == OP_ADD) acc += do_add(x);
+        else             acc += do_mul(x);
+    }
+    return acc;
+}
+
+int main() {
+    std::vector<int> v = {1, 2, 3, 4, 5};
+    std::vector<int> add_v = {1, 3, 5};
+    std::vector<int> mul_v = {2, 4};
+    std::vector<int> tags = {0, 1, 0, 1, 0};
+    std::cout << "constexpr=" << run_constexpr_route<OP_ADD>(add_v) + run_constexpr_route<OP_MUL>(mul_v)
+              << " ifelse=" << run_ifelse_chain(v, tags) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch62_spec_branch.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch62_spec_branch.cpp -o _bench_d5_ch62.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~10.4x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。关键公平性：tag 数组经 `std::mt19937(42)` 随机洗排，使 if/else 链的分支不可预测（misprediction 率约 67%），放大分支预测惩罚；constexpr 路径按 tag 预分区到 3 个 batch（一次性 setup，不计入计时），总迭代 = N。分支预测惩罚高度依赖 CPU 微架构（Zen4 流水线 19 级，misprediction ~16 周期），跨代际 CPU 比值会有波动，但『编译期路由消除分支 >> 运行期分支』的方向不变。运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch61 模板重载 | Book/part06_templates/ch61_template_overload.md | 重载决议与 if constexpr 是编译期分派的两种形式 |
+| ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 模板特化是编译期路由的底层机制 |
+| ch69 constexpr | Book/part06_templates/ch69_constexpr.md | if constexpr 是 C++17 编译期条件分派 |
+| ch153 CPU 微基准 | Book/part14_perf/ch153_cpu_micro.md | 分支预测惩罚的微架构量化 |
+

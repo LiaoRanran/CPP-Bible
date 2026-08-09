@@ -2022,3 +2022,52 @@ flowchart TD
 | ch27 | ch20 | 类型转换 cast：const_cast 常在指针/引用上去 cv |
 | ch27 | ch115 | 类型转换 cast：std::move 本质是无条件 static_cast 到右值引用 |
 | ch27 | ch60 | 类型转换 cast：模板中常用 static_cast 做性质转换 |
+
+
+## 附录 D5：真实基准与性能分析 — static_cast 编译期偏移 vs dynamic_cast RTTI 验证（GCC 15.3.0）
+
+> 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch27_cast_depth.cpp`。
+
+### D5.1 基准结果
+
+| 策略 | 分派方式 | 耗时 (ms) | 相对 |
+|------|----------|-----------|------|
+| `static_cast<D4*>` | 编译期指针偏移 | 11.02 | 1.00x (基线) |
+| `dynamic_cast<D4*>` | RTTI type_info 验证 | 113.81 | ~10.3x 慢 |
+
+### D5.2 非显然结论
+
+1. **dynamic_cast 的 ~10x 开销全部来自 RTTI 验证，不是虚调用本身**：两条路径都执行相同的虚调用 `d->id()`（通过不透明工厂 `get_base()` 隐藏动态类型，编译器无法去虚化），唯一差异是 `static_cast<D4*>(p)`（编译期指针偏移，单继承链零偏移、机器码无额外指令）vs `dynamic_cast<D4*>(p)`（运行期遍历 type_info 继承链比对）。10.3x 的差距精确隔离了 RTTI 验证开销——这正是 ch27 cast 一节中『dynamic_cast 依赖 typeid 与 RTTI』在机器码层的量化体现。
+2. **dynamic_cast 的代价是『每次调用都付』**：`static_cast` 的偏移调整在编译期完成、零运行期指令；`dynamic_cast` 每次调用都走 RTTI 查找（libstdc++ 用继承链遍历，非 O(1) 哈希）。在热循环中每迭代一次 dynamic_cast = 一次完整 RTTI 检查，开销随继承深度增长。工程上应把 dynamic_cast 移出热路径（一次性验证后缓存为 static_cast 指针），或用 `std::variant` + `std::visit` 替代运行期类型判别。
+3. **static_cast 的零开销前提是『程序员保证类型安全』**：`static_cast` 不做任何运行期检查——如果实际类型不是 D4，结果是未定义行为。它的『免费』是以放弃安全检查换来的。只有当类型可通过编译期逻辑或单次 dynamic_cast 确认时，才应下转用 static_cast。这与 ch27 中『static_cast 是编译期已知安全的转换』的定位一致。
+4. **选型判据：编译期已知的下转用 static_cast；运行期才知的下转首选 variant/visit，次选 dynamic_cast**：dynamic_cast 保留是因为它是唯一能在开放继承体系中做安全下转的标准手段（variant 需要封闭候选列表）。但在热循环中，10x 的代价不可接受——把类型判别移到循环外，或重构为 variant 设计。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <iostream>
+
+struct Base { virtual ~Base() = default; virtual int id() const { return 0; } };
+struct D1 : Base { int id() const override { return 1; } };
+struct D4 : D1 { int id() const override { return 4; } };
+
+int main() {
+    D4 obj;
+    Base* p = &obj;
+    D4* sc = static_cast<D4*>(p);      // 编译期偏移，零运行期检查
+    D4* dc = dynamic_cast<D4*>(p);     // RTTI 验证（安全但慢 ~10x）
+    std::cout << "static_cast id=" << sc->id() << " dynamic_cast ok=" << (dc != nullptr) << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+基准源码见库根 `_bench_d5_ch27_cast_depth.cpp`，`g++ -O2 -std=c++23` 编译（`g++ -O2 -std=c++23 _bench_d5_ch27_cast_depth.cpp -o _bench_d5_ch27.exe`），`std::chrono::steady_clock` 计时，`volatile` sink 防 DCE；AMD Ryzen 9 7940HX。比值（~10.3x）是可移植证据，绝对毫秒随 CPU/编译器波动；本基准在 AMD Ryzen 9 7940HX + MinGW GCC 15.3.0 x64 `-O2` 取得。dynamic_cast 的开销在 libstdc++/libc++ 中均来自 RTTI 继承链遍历，跨实现同量级。关键防优化：`get_base()` 标 `[[gnu::noinline]]` 隐藏对象动态类型，使两条路径的虚调用 `d->id()` 均不可被去虚化，从而隔离出 cast 本身的开销差异。运行期微架构深潜见 [ch153 CPU 微基准](Book/part14_perf/ch153_cpu_micro.md)。
+
+| 关联章 | 路径 | 关系 |
+| --- | --- | --- |
+| ch45 对象模型 | Book/part05_oo/ch45_oop_object_model.md | 对象布局决定指针/引用的合法转换路径 |
+| ch47 虚函数 | Book/part05_oo/ch47_virtual_functions.md | dynamic_cast 依赖 typeid 与 RTTI，虚函数表 |
+| ch42 严格别名 | Book/part04_memory/ch42_strict_aliasing.md | reinterpret_cast 触及严格别名底线 |
+
