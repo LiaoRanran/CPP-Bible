@@ -903,57 +903,72 @@ add rdi, 0x0040              ; 步进一个缓存行
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你正在把一款单机图像处理工具改造成多线程批处理器。经 `perf`/基准剖析，只有 80% 的工作量可并行化（剩余 20% 是必须串行的 IO 与初始化）。请用 **Amdahl 定律** 估算：在 16 核机器上理论最大加速比是多少？写出公式并用一小段代码验证。这种"串行比例决定天花板"的现象会在哪些现实系统里成为瓶颈？
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+Amdahl 定律：`S(n) = 1 / ((1 - p) + p / n)`，其中 `p` 为可并行比例，`n` 为核数。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+int main() {
+    double p = 0.80, n = 16.0;
+    double s = 1.0 / ((1.0 - p) + p / n);   // = 1/(0.2 + 0.05) = 4.0
+    std::cout << "max speedup = " << s << "x\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+串行 20% 把加速比锁死在 4×——再加核也无用。现实里常见于"串行初始化 + 并行计算"的流水线、带全局锁的临界区、以及强一致分布式协议。
+
+[标准] 加速比由串行比例决定，与核数无关地收敛于 `1/(1-p)`；属于分析性性能模型而非语言规则。
+
+[引用] Amdahl, G.M. *Validity of the Single Processor Approach to Achieving Large Scale Computing Capabilities*, 1967；并行原语 `std::thread` 见 <https://en.cppreference.com/w/cpp/thread/thread>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 团队在选型：稠密矩阵乘法内核 vs 大向量逐元素相加，哪个更该优先上 SIMD/多核？用 **Roofline 模型** 的算术强度 `I = FLOP / Byte` 判断二者分别撞"算力墙"还是"带宽墙"。写代码算出 1024×1024 双精度矩阵乘的算术强度（操作数 ≈ `2N³`，访存量 ≈ `3N²·8` 字节）。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+算术强度 `I ≈ 2N³ / (3N²·8) = N/12`。N=1024 时 `I ≈ 85 FLOP/Byte`，远高于典型带宽墙拐点（约 1–10），属**算力 bound**，应优先加 SIMD 与核数；向量加法 `I≈1/8`，属**带宽 bound**，加核不如优化缓存/访存。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+int main() {
+    double N = 1024.0;
+    double I = (2.0 * N * N * N) / (3.0 * N * N * 8.0);
+    std::cout << "arithmetic intensity ≈ " << I << " FLOP/Byte\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] Roofline 是可视化性能模型，算力/带宽天花板来自目标微架构，与 C++ 语义无关。
+
+[引用] Williams, S. et al. *Roofline: An Insightful Visual Performance Model* (UC Berkeley, 2009)；峰值算力/带宽基线参见 Agner Fog 微架构指南 <https://www.agner.org/optimize/microarchitecture.pdf>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 渲染农场每增加一倍机器，产品就要求把输出分辨率翻倍（问题规模随资源同步增长）。这是 **Gustafson 定律** 的"弱扩展"场景：为何此时几乎能线性加速，而 Amdahl 强扩展却不行？写代码按 `S = p + (1-p)·n` 验证 `p=0.8, n=16` 时的吞吐提升。
 
 <details><summary>答案与解析</summary>
 
+Gustafson 定律假设问题规模随核数增大：`S(n) = p + (1-p)·n`。`p=0.8, n=16` → `0.8 + 0.2·16 = 4.0` 倍（固定时间下的吞吐）；`n` 越大越接近线性——串行部分被摊薄到更大的总工作量上。
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main() {
+    double p = 0.80, n = 16.0;
+    double s = p + (1.0 - p) * n;   // = 4.0（弱扩展吞吐）
+    std::cout << "weak-scaling throughput = " << s << "x\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 弱扩展与强扩展是两种不同问题设定，不能混用同一条曲线下结论。
+
+[引用] Gustafson, J.L. *Reevaluating Amdahl's Law*, 1988；并行算法策略见 cppreference <https://en.cppreference.com/w/cpp/algorithm/execution>。
 
 </details>
 

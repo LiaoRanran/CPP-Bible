@@ -753,7 +753,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-单线程模拟 ABA 问题：用一个「值 + 原始指针」的裸 CAS，构造 `A → B → A` 的中间变化，让 CAS **错误地成功**，说明为什么单纯比较指针/值无法察觉中间发生过的改动。
+**真实场景**：无锁栈的 `pop` 用 `head.compare_exchange(old, old->next)` 时，若 `old` 指向的节点被另一线程 pop 并 `delete`、再 `new` 复用同一地址，CAS 会因"地址又变回原值"而误成功——随后把 head 设成已释放节点的 `next`，直接 use-after-free。这正是 ABA 在真实无锁代码里的落地点。请单线程模拟 ABA 问题：用一个「值 + 原始指针」的裸 CAS，构造 `A → B → A` 的中间变化，让 CAS **错误地成功**，说明为什么单纯比较指针/值无法察觉中间发生过的改动。
 
 <details><summary>答案与解析</summary>
 
@@ -781,11 +781,13 @@ int main() {
 
 [标准] ABA 的根源：指针值相等 ≠ 所指对象未被回收/复用。无锁栈里被 pop 的节点若被 free 后同地址 new 回来，pop 端 CAS 会张冠李戴。
 
+[引用] cppreference `std::atomic::compare_exchange_strong`：`https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange`。ABA 问题的经典剖析见 D. Dechev et al., *Understanding and Exploiting Optimal Parallelism* 及 M. M. Michael 的相关工作。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用**版本号标签（tagged pointer / version counter）**修复 ABA：把 `{指针, 版本号}` 打包进一个可原子 CAS 的结构，每次修改版本号 +1，使 `A→B→A` 因版本号不同而被 CAS 拒绝。
+**真实场景**：把"指针 + 版本号"打包进同一个原子量，是无锁数据结构对抗 ABA 最常用的一招——即使地址复用，版本号也已不同，CAS 会拒绝假成功。请用**版本号标签（tagged pointer / version counter）**修复 ABA：把 `{指针, 版本号}` 打包进一个可原子 CAS 的结构，每次修改版本号 +1，使 `A→B→A` 因版本号不同而被 CAS 拒绝。为什么单用 32 位版本号在超高更新频率下仍有"回绕漏检"风险？
 
 <details><summary>答案与解析</summary>
 
@@ -814,11 +816,13 @@ int main() {
 
 [标准] 版本号法是最常用的 ABA 对策；代价是需要「宽 CAS」同时原子更新指针与版本（这里用打包进 64 位规避）。
 
+[引用] cppreference `std::atomic::compare_exchange_strong`：`https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange`。tagged pointer 的硬件基础见 ISO §32.5（[atomics]）及 DCAS/宽 CAS 的讨论。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 `__int128` 双字 CAS 实现真正的「64 位指针 + 64 位版本」带标签指针结构 `TaggedPtr`，并给出其 `compare_exchange` 更新范式。说明为何需要 `-mcx16` / `cmpxchg16b` 及其对齐要求。
+**真实场景**：64 位平台上指针本身占满 64 位、没有空闲位打包版本，要"指针 + 版本"真正原子更新就必须用 128 位宽 CAS（x86-64 的 `cmpxchg16b`，要求 16 字节对齐）。这正是工业级无锁结构（如 Harris 链表）的底层依赖。请用 `__int128` 双字 CAS 实现真正的「64 位指针 + 64 位版本」带标签指针结构 `TaggedPtr`，并给出其 `compare_exchange` 更新范式。说明为何需要 `-mcx16` / `cmpxchg16b` 及其对齐要求——未对齐的 `cmpxchg16b` 会触发什么异常？
 
 <details><summary>答案与解析</summary>
 
@@ -847,6 +851,8 @@ int main() {
 ```
 
 [实现] 需以 `-mcx16` 编译才让 `atomic<16字节>` 无锁；`alignas(16)` 不可省——未对齐的 `cmpxchg16b` 触发 `#GP` 异常。ARM 上对应 `casp`（LSE）或 `ldxp/stxp` 对。
+
+[引用] Intel SDM 中 `cmpxchg16b` 指令说明：`https://www.felixcloutier.com/x86/cmpxchg8b:cmpxchg16b`。宽 CAS 与 tagged pointer 见 ISO §32.5（[atomics]）及 M. M. Michael 的 hazard pointer / lock-free 链表工作。
 
 </details>
 

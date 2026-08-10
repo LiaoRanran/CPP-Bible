@@ -875,53 +875,78 @@ SIMD设计决策树:
 
 ### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 你有一个超长的 `float` 数组要求和，怀疑编译器是否已自动向量化。写一段**连续、无分支、无别名**的求和循环，说明在 `-O3` 下它通常会被展开成 SIMD 指令；并给出你会在 Compiler Explorer（ch157）里查什么来确认（如是否出现 `ymm`/`zmm` 寄存器与 `vaddps` 之类指令）。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+连续数组 + 简单累加 + 无数据依赖分支，是最易被自动向量化的形态。编译器在 `-O3` 下会把循环展开并对多个元素并行 `vaddps`。
 
 ```cpp
+#include <numeric>
+#include <vector>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+int main() {
+    std::vector<float> a(1'000'000, 1.0f);
+    float s = 0; for (float v : a) s += v;          // 连续、无分支 → 易向量化
+    std::cout << s << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 自动向量化是编译器优化，C++ 标准不保证；`-O3` 通常开启更多向量化 pass。
+
+[引用] GCC 自动向量化文档 <https://gcc.gnu.org/projects/tree-ssa/vectorization.html>；LLVM <https://llvm.org/docs/Vectorizers.html>；对照 ch157 用 <https://godbolt.org/> 看汇编。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你不想手写 intrinsics，但想利用多核 + 向量化并行化上面的归约。写代码用 C++17 **并行执行策略** `std::execution::par` 配合 `std::reduce` 做并行求和，并说明它和手写 `#pragma omp simd` 的异同（前者是标准、后者是 OpenMP 编译指示）。
 
 <details><summary>答案与解析</summary>
 
+`std::execution::par` 把归约拆到多线程，库实现底层通常会结合向量化；相对 OpenMP 的 `#pragma omp simd`，它是标准库设施、可移植性更好，但优化力度依赖标准库后端。
+
 ```cpp
+#include <numeric>
+#include <vector>
+#include <execution>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main() {
+    std::vector<float> a(1'000'000, 1.0f);
+    float s = std::reduce(std::execution::par, a.begin(), a.end(), 0.0f);
+    std::cout << s << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 并行执行策略定义于 `<execution>`（C++17，[exec]），`std::reduce` 允许重组运算顺序。
+
+[引用] cppreference <https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag>；OpenMP `simd` <https://www.openmp.org/spec-html/5.0/openmpse14.html>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-解释虚函数表（vtable）的内存开销：一个含虚函数的类对象通常增加多少字节（64 位）？写代码打印 `sizeof`。
+**真实场景：** 自动向量化无法满足精度/指令控制需求时，工程师会下手写 **intrinsics**（如 AVX 的 `_mm256_add_ps`）。请说明 intrinsics 与"纯标准 C++"的边界：编写练习 1 的向量化版本时，**若只能用标准库**，你能做到哪一步？为何 intrinsics 代码块通常不能进 CI 编译门禁（需要 `<immintrin.h>` 等非标准头）？用一段仍保持纯标准的循环写出"可被向量化"的写法，并在解析里列出你会在生产里引用的真实资料。
 
 <details><summary>答案与解析</summary>
 
+纯标准 C++ 只能写出"对编译器友好、等待其自动向量化"的代码（如练习 1 的连续循环）；要精确控制 AVX/AVX-512 指令必须 `#include <immintrin.h>`，这属于实现特定头，会破坏"仅 std::"的 CI 门禁，因此本手册练习不纳入。
+
 ```cpp
+#include <vector>
 #include <iostream>
-struct Base { virtual ~Base()=default; int x; };
-int main() { std::cout << sizeof(Base) << '\n'; }  // 通常 16 = 8(vptr)+4(int)+填充
+int main() {
+    // 仍保持纯标准：连续、对齐友好、无分支，交给 -O3 向量化
+    std::vector<float> a(1'000'000, 1.0f);
+    alignas(32) float buf[1024];           // 对齐提示，便于宽加载
+    float s = 0; for (float v : a) s += v;
+    (void)buf; std::cout << s << '\n';
+}
 ```
 
-[实现·GCC13] [平台·x86-64] 64 位下 vptr 占 8 字节，虚调用为一次间接 call。
+[标准] 对齐说明符 `alignas` 属标准（[dcl.align]）；具体 SIMD 指令集由实现与编译选项决定。
+
+[引用] Intel Intrinsics Guide <https://www.intel.com/content/www/us/en/docs/intrinsics-guide/>；AVX 编程见 Agner Fog *optimizing_assembly.pdf* <https://www.agner.org/optimize/>；GCC 向量扩展 <https://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html>。
 
 </details>
 

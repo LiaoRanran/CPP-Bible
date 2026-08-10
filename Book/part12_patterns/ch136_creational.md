@@ -1098,57 +1098,79 @@ A: 构造参数 > 4 个; 构造多步骤; 不同配置生成不同表示
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：插件式日志后端。** 配置决定用控制台 / 文件 / 网络三种日志器之一，运行期选定、调用方只依赖抽象 `Logger`。请用工厂方法返回 `std::unique_ptr<Logger>`，并对比 GoF 经典「虚工厂 + 裸 `new`」与 C++ 现代「工厂返回 `unique_ptr`」两种写法在所有权与异常安全上的差异。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <memory>
+#include <string>
+struct Logger { virtual ~Logger() = default; virtual void log(const char*) = 0; };
+struct Console : Logger { void log(const char* m) override { std::cout << m << '\n'; } };
+struct File    : Logger { void log(const char* m) override { std::cout << "[file]" << m << '\n'; } };
+std::unique_ptr<Logger> make_logger(const std::string& kind) {
+    if (kind == "console") return std::make_unique<Console>();
+    if (kind == "file")    return std::make_unique<File>();
+    return nullptr;
+}
+int main() { if (auto l = make_logger("console")) l->log("hi"); }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 工厂把创建封装起来，返回 `unique_ptr` 由调用方独占所有权，无需手动释放；即便创建途中抛异常，已构造部分也能被正确析构（RAII）。
+
+[引用] 工厂方法见 GoF《Design Patterns》Factory Method；现代 C++ 落地参见 C++ Core Guidelines「I.27 优先使用工厂函数」与 cppreference「`std::unique_ptr` / `std::make_unique`」。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：游戏敌人生成器。** 每种敌人有十几项配置（血量、武器、AI 等级、掉落表……），若用「telescoping constructor」（一堆带默认值的重载构造函数）会越来越不可维护。请用建造者（Builder）流式 API 组装一个 `Enemy`，并指出它如何消除 telescoping constructor 与可选参数的可读性灾难。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <string>
+struct Enemy { int hp; std::string weapon; int ai; };
+struct EnemyBuilder {
+    int hp_ = 100; std::string weapon_ = "fist"; int ai_ = 1;
+    EnemyBuilder& hp(int v){ hp_=v; return *this; }
+    EnemyBuilder& weapon(std::string w){ weapon_=std::move(w); return *this; }
+    EnemyBuilder& ai(int v){ ai_=v; return *this; }
+    Enemy build() { return {hp_, weapon_, ai_}; }
+};
+int main() {
+    Enemy e = EnemyBuilder{}.hp(500).weapon("sword").ai(3).build();
+    std::cout << e.hp << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] Builder 把「多步构造」变成链式调用，必填 / 可选参数一目了然，避免一组签名爆炸的构造函数；返回 `Enemy` 值类型（NRVO）零额外开销。
+
+[引用] 建造者模式见 GoF《Design Patterns》Builder；链式返回 `*this` 的 fluent API 风格在 Qt、`std::ostream` 等处普遍使用，参见 Google C++ Style Guide 对可读构造的讨论。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：全局配置对象。** 一个网络库有 6 个翻译单元共享同一份超时阈值与日志级别，全程序唯一、运行期可改。请分别用「Meyers 单例（函数内 `static` 局部）」与「依赖注入」两种方案实现，并说明 C++ Core Guidelines 为何把单例称作「披着羊皮的全局变量」、何时该用 DI 替代它。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct Config { int timeout_ms = 3000; };
+Config& config() { static Config c; return c; }   // Meyers 单例：首次使用才构造
+int main() {
+    config().timeout_ms = 5000;                   // 全程序共享同一实例
+    std::cout << config().timeout_ms << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 函数内 `static` 局部由编译器 guard 保证线程安全的一次初始化，且天然规避跨 TU 的静态初始化顺序问题（SOIF）；但它是全局可变状态，测试时难以替换。
+
+[引用] 单例见 GoF《Design Patterns》Singleton；C++ Core Guidelines 指出单例本质是全局状态、应优先考虑依赖注入（ch141）或 C++17 `inline` 变量（提案 P0607）；Meyers 单例的线程安全初始化见 ISO/IEC 14882:2023 `[basic.stc.static]` 与 `[stmt.dcl]` 常量初始化条款。
 
 </details>
 

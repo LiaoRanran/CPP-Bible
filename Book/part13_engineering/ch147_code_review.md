@@ -691,57 +691,63 @@ SIMD 审查：`-mavx2`（32 字节 `0x0020` 宽）/ `-mavx512f`（64 字节 `0x0
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：把告警当门禁。** 团队要求 `g++ -Wall -Wextra -Werror` 零告警合并，但有人提交了「定义了却没用」的变量、触发 `-Wunused`。请写出一个会触发该告警的片段并修复，并说明为何把警告升级为错误（`-Werror`）能在 code review 前就拦下低级缺陷（关联 ch149 ⑥ 静态分析门禁）。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+int main() {
+    int unused = 42;          // -Wunused：定义却未使用，应删或用 (void) 标明
+    std::cout << "hi\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `-Wall -Wextra` 覆盖大量可疑构造；`-Werror` 把警告转成编译失败，使「带隐患的代码」无法进入主干。`(void)unused;` 是告知编译器「我故意不用」的标准写法，可消除此类告警。
+
+[引用] GCC/Clang 警告选项见各自官方文档；`clang-tidy` 等静态分析工具见 LLVM 官网（clang.llvm.org/extra/clang-tidy）；C++ Core Guidelines 的「P 性能 / ES 表达式」等章节要求消除未定义与可疑构造；ch147 ④ 用 `g++` 实证 `-Wall -Wextra -Werror`。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：审查并发数据竞争。** 一段「多线程累加计数器」的代码看似正确，却没有同步，是典型 data race（未定义行为）。请用 `std::mutex` 修复，并说明如何用 `-Wthread-safety`（Clang 线程安全注解）或 ThreadSanitizer（TSAN）在审查 / CI 中自动发现这类缺陷。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <mutex>
+#include <thread>
+struct Counter { std::mutex m; long c = 0;
+    void inc() { std::lock_guard<std::mutex> lk(m); ++c; } };  // 加锁消除 data race
+int main() { Counter x; std::thread t1([&]{ for(int i=0;i<1000;++i) x.inc(); });
+    std::thread t2([&]{ for(int i=0;i<1000;++i) x.inc(); }); t1.join(); t2.join(); }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 无同步的并发写是 data race（UB）；`std::mutex` + `lock_guard` 把临界区互斥化；Clang 的 `-Wthread-safety` 配合 `GUARDED_BY` 注解能在编译期标出「未持锁访问受保护字段」，TSAN 则在运行期侦测竞争。
+
+[引用] 并发缺陷审查见 C++ Core Guidelines 的「CP 并发与并行」章节（如 CP.20–CP.22 用锁保护共享数据）；ThreadSanitizer 见 Clang/GCC 官方文档；ch147 ⑥ 专讲并发缺陷审查。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：API 兼容性审查。** 你给一个被广泛使用的函数加了新参数却没给默认值，导致所有旧调用方编译失败；又给即将废弃的接口忘了标 `[[deprecated]]`。请重写使其「向后兼容」：新参数带默认值、废弃接口标 `[[deprecated]]`，并说明它与 Semantic Versioning（MAJOR 才允许破坏性变更）的关系。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cstdio>
+#include <string>
+[[deprecated("use send(std::string, timeout) instead")]]
+void send(const char* body) { std::printf("%s\n", body); }
+void send(std::string body, int timeout = 3000) { (void)timeout; std::printf("%s\n", body); }
+int main() { send("hi"); }   // 仍匹配旧单参数重载，仅触发弃用告警；新调用可传 timeout
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 默认参数让「加参数」成为非破坏性变更，旧调用仍可编译；`[[deprecated]]` 在编译期给出迁移提示而不立即破坏；破坏性改动只能落在 MAJOR 版本（SemVer），保持 ABI/API 契约。
+
+[引用] `[[deprecated]]` 见 ISO/IEC 14882:2023 属性规范与 cppreference；API 兼容性审查见 ch147 ⑧ 与 ch145 ⑧（ABI/API 边界）；Semantic Versioning 见 semver.org；ch147 ⑩ 讲提交与版本纪律。
 
 </details>
 

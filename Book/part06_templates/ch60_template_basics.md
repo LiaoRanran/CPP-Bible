@@ -801,7 +801,7 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 
 ### 练习 1（难度 ★★）
 
-写一个 `clamp` 函数模板，把 `value` 约束到 `[lo, hi]` 区间；再用**默认模板参数**让比较准则可替换（默认 `Less`）。
+**真实场景：游戏伤害值/UI 数值的"区间钳制"。** 你的引擎要把任意输入值（角色血量、音量、分辨率缩放）约束到合法区间 `[lo, hi]`；不同子系统比较准则不同（血量用普通 `<`，某些权重用反向比较）。请写一个 `clamp` 函数模板，把 `value` 约束到 `[lo, hi]` 区间；再用**默认模板参数**让比较准则可替换（默认 `Less`）。
 
 <details><summary>答案与解析</summary>
 
@@ -828,11 +828,13 @@ int main() {
 
 > 注意：C++20 起 `std::clamp` 提供四参重载（`clamp(v, lo, hi, comp)`）。若你的函数也叫 `clamp` 且传入 `std` 里的比较器（如 `std::greater<int>`），实参的 ADL 会把 `std::clamp` 也拉成候选 → 歧义。实战中改用自定义比较器（如上 `Greater`）或改名即可规避——这正是"命名与 std 冲突"的典型陷阱。
 
+[引用] 标准库 `std::clamp` 自 C++17 起提供，并带 `comp` 重载（cppreference "std::clamp"）。其返回值语义为"若 `value` 在 `[lo,hi]` 内返回 `value`，否则返回边界"——与本题一致。ISO/IEC 14882:2023 §[alg.clamp] 规定其行为；WG21 论文 P0297 引入该设施。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用**非类型模板参数**（维度 `R`、`C` 编译期固定）实现 `Matrix<T, R, C>`，提供 `at(r,c)` 访问与编译期 `rows()`/`cols()``；说明为何维度用非类型参数而非 `std::vector` 运行时维度。
+**真实场景：图形/物理的固定尺寸变换矩阵。** 你的渲染层大量使用 `3×4` 世界变换矩阵；尺寸在编译期固定、且希望 `Matrix<double,3,4>` 与 `Matrix<double,4,4>` 是不同类型（避免误把不同维矩阵相乘）。请用**非类型模板参数**（维度 `R`、`C` 编译期固定）实现 `Matrix<T, R, C>`，提供 `at(r,c)` 访问与编译期 `rows()`/`cols()``；说明为何维度用非类型参数而非 `std::vector` 运行时维度。
 
 <details><summary>答案与解析</summary>
 
@@ -857,11 +859,13 @@ int main() {
 
 [标准] 非类型参数参与类型身份（`Matrix<double,2,3>` 与 `Matrix<double,3,2>` 是不同类型）。维度是编译期常量，`rows()/cols()` 为 `constexpr`，可被 `static_assert`/数组大小直接使用，零运行期开销。
 
+[引用] `Eigen::Matrix<double,3,4>` 正是用非类型模板参数固定行列数，使维度成为类型的一部分、编译期阻止维度不匹配的运算（eigen.tuxfamily.org）。`std::array<T,N>` 同样用非类型参数 `N` 固定大小（cppreference "std::array"）。ISO/IEC 14882:2023 §[temp.arg.non-type] 规定非类型模板参数的约束。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用**变量模板** `pi<T>` 与**别名模板** `Vec<T>` 构造泛型几何工具，并 `static_assert` 验证类型与值；解释变量模板相对 `constexpr` 全局常量的优势。
+**真实场景：跨精度的几何常量库（float/double/long double 共用 π）。** 你写物理/几何工具，需要 `pi` 在不同浮点精度下都是"该类型最精确的字面量"，且类型明确。请用**变量模板** `pi<T>` 与**别名模板** `Vec<T>` 构造泛型几何工具，并 `static_assert` 验证类型与值；解释变量模板相对 `constexpr` 全局常量的优势。
 
 <details><summary>答案与解析</summary>
 
@@ -882,6 +886,8 @@ int main() {
 ```
 
 [标准] 变量模板让"依赖于类型的常量"拥有唯一符号名 `pi<T>`，对所有实例化类型只生成一份；别名模板 `Vec<T>` 是类型别名而非新类型，零开销。
+
+[引用] 标准库 `<numbers>` 自 C++20 起提供变量模板 `std::numbers::pi_v<T>`、`std::numbers::pi`（inline constexpr），正是变量模板的典型用例（cppreference "std::numbers"）。变量模板比"每个类型一个 `constexpr` 全局常量"更省心：符号名唯一、随类型实例化。ISO/IEC 14882:2023 §[temp.var] 规定变量模板。
 
 </details>
 

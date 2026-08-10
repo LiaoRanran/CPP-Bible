@@ -953,7 +953,7 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 
 ### 练习 1（难度 ★★）
 
-用 `dynamic_cast` 做**安全下行转换**：基类指针指向派生对象时转换成功，指向基类对象时返回 `nullptr`。
+**真实场景：插件系统加载的"未知对象"安全下行。** 你的应用从共享库按基类指针 `Plugin*` 加载模块，偶尔加载到旧版 SDK 编译的插件，并不真的指向你期望的 `AudioPlugin` 派生类。此时若直接用 `static_cast` 强转并访问成员会触发 UB。请用 `dynamic_cast` 做**安全下行转换**：基类指针指向派生对象时转换成功，指向基类对象时返回 `nullptr`，避免误转崩溃。
 
 <details><summary>答案与解析</summary>
 
@@ -979,11 +979,13 @@ int main() {
 
 [标准] `dynamic_cast` 失败对指针返回 `nullptr`、对引用抛 `std::bad_cast`（维度②前置知识 ch47 虚表槽1=typeinfo）。
 
+[引用] `dynamic_cast` 是"无法用虚函数表达"时的逃生舱——Qt 的 `qobject_cast` 即其定制版（要求 `Q_OBJECT` 宏、走 moc 元数据而非 vtable，doc.qt.io/qt-6/qobject.html#qobject_cast）。LLVM 的 `dyn_cast<>` 则是编译期模板化的安全下行（llvm.org/docs/ProgrammersManual.html）。ISO/IEC 14882:2023 §[expr.dynamic.cast] 规定其语义与失败返回值。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用 `typeid` 演示运行时类型识别依赖 vtable：对同一基类指针赋不同派生对象，`typeid(*p).name()` 反映**动态类型**；并说明无虚函数类会退化为静态类型。
+**真实场景：日志/调试器里给"未知基类指针"打类型名。** 你写一个通用错误回调，收到 `const std::exception&` 或通用 `Base*`，需要在日志里打印"这个对象到底是 D1 还是 D2"。请用 `typeid` 演示运行时类型识别依赖 vtable：对同一基类指针赋不同派生对象，`typeid(*p).name()` 反映**动态类型**；并说明无虚函数类会退化为静态类型（这正是为何基类必须带虚析构才能拿到真实类型）。
 
 <details><summary>答案与解析</summary>
 
@@ -1005,11 +1007,13 @@ int main() {
 
 [标准] RTTI 成本来自 vtable 中的 `type_info` 指针（维度⑦ ASCII 图）；无虚函数则无 RTTI 数据。
 
+[引用] `typeid` 依赖 Itanium C++ ABI 下 vtable 首槽之前的 `type_info` 指针；Itanium C++ ABI 规范定义了 vtable 布局（itanium-cxx-abi.github.io）。Boost.TypeIndex 提供可移植、可读的 `type_name()` 以弥补 `typeid().name()` 的编译器修饰名问题（boost.org/doc/libs）。ISO/IEC 14882:2023 §[expr.typeid] 规定返回静态/动态类型的规则。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 `std::variant` + `std::visit` **替代 `dynamic_cast`** 做类型分发，消除运行时 RTTI 开销，并让穷尽性由编译器保证。
+**真实场景：游戏事件分发——"可能是输入/伤害/UI 等固定几种"的消息。** 事件系统已知只会是有限几种具体类型，用 `dynamic_cast` 一长串 `if` 既慢（每次查 vtable）又脆弱（新增类型易漏判）。请用 `std::variant` + `std::visit` **替代 `dynamic_cast`** 做类型分发，消除运行时 RTTI 开销，并让穷尽性由编译器保证（漏处理一种事件直接编译失败）。
 
 <details><summary>答案与解析</summary>
 
@@ -1034,6 +1038,8 @@ int main() {
 ```
 
 [标准] 类型擦除/visitor（维度⑫/⑬）是 RTTI 的高性能替代；WG21 持续推动 `std::visit` 优化（维度⑭）。
+
+[引用] `std::variant`/`std::visit` 是"封闭类型集合"分发的现代首选，穷尽性由编译器强制（cppreference "std::visit"）。LLVM 的 `llvm::VariadicVisitor` 与许多 ECS 事件总线采用类似"编译期分派"思路替代 RTTI（llvm.org/docs）。ISO/IEC 14882:2023 §[variant] 与 §[visit] 规定其语义；WG21 论文 P0088 引入 `std::variant`。
 
 </details>
 

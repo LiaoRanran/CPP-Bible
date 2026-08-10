@@ -1493,6 +1493,8 @@ int main(){
 
 [标准] Berkeley Socket API 是 POSIX 网络编程事实标准；`SOCK_STREAM` 对应 TCP 的字节流语义。
 
+[引用] Beej's Guide to Network Programming <https://beej.us/guide/bgnet/>；POSIX `socket(2)`/`listen(2)` 手册 <https://man7.org/linux/man-pages/man2/socket.2.html>；Boost.Asio 的 Proactor 模型 <https://www.boost.org/doc/libs/release/doc/html/boost_asio.html>。
+
 </details>
 
 ### 练习 2（难度 ★★★）
@@ -1512,5 +1514,7 @@ int main(){
 ```
 
 [标准] 非阻塞 + I/O 多路复用是高并发网络服务的基石；跨平台需封装 POSIX/Winsock 差异（见 ch163 ③）。
+
+[引用] POSIX `fcntl(2)`（设 `O_NONBLOCK`）<https://man7.org/linux/man-pages/man2/fcntl.2.html>；Microsoft Winsock `ioctlsocket` <https://learn.microsoft.com/windows/win32/api/winsock2/nf-winsock2-ioctlsocket>；C10K 问题综述 <https://daniel.haxx.se/docs/poll/。
 
 </details>

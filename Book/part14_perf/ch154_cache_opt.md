@@ -958,54 +958,86 @@ int main(){std::cout<<sizeof(CacheFriendly)<<" (prevents false sharing)"<<std::e
 
 ### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 两个工作线程各自高频自增一个独立计数器，但二者被放在同一 64 字节缓存行里。结果比预期慢数倍——这就是**伪共享（false sharing）**。写代码用 `std::hardware_destructive_interference_size` 把两个原子计数器对齐到不同缓存行，并说明为何能消除行在核间反复"弹来弹去"。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+两个计数器若同处一个缓存行，任一核写入都会让其他核该行失效（MESI 协议），引发缓存行在核间来回失效。用 `alignas` 到干扰尺寸让它们各占一行即可解耦。
 
 ```cpp
+#include <atomic>
+#include <new>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct alignas(std::hardware_destructive_interference_size) Counter {
+    std::atomic<int> v{};
+};
+int main() {
+    Counter a, b;            // 各占独立缓存行
+    a.v.fetch_add(1); b.v.fetch_add(1);
+    std::cout << a.v << ' ' << b.v << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `std::hardware_destructive_interference_size` 定义于 `<new>`（C++17，[support.limits]），是编译器给出的目标行大小，x86-64 通常为 64。
+
+[引用] cppreference <https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size>；伪共享原理见 Agner Fog *microarchitecture.pdf* <https://www.agner.org/optimize/microarchitecture.pdf>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你有一百万个粒子，每个含 `x,y,z` 坐标。现在既要算所有 `x` 之和、也要遍历全部 `x/y/z`。用 **AoS（`struct Particle{float x,y,z;}` 数组）** 与 **SoA（三个独立 `float` 数组）** 两种布局写遍历，解释为何"只碰 x"时 SoA 对缓存更友好。
 
 <details><summary>答案与解析</summary>
 
+AoS 遍历 `x` 时仍把 `y,z` 一起载入缓存行，浪费带宽；SoA 的 `x` 数组连续紧凑，一次缓存行装入更多有效 `x`。需要全字段时才各有利弊。
+
 ```cpp
+#include <vector>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct Particle { float x, y, z; };
+int main() {
+    std::vector<Particle> aos(1'000'000);
+    float sx = 0; for (auto& p : aos) sx += p.x;          // 带走 y,z
+    std::vector<float> soa_x(1'000'000);
+    sx = 0; for (float v : soa_x) sx += v;                // 仅 x，缓存高效
+    std::cout << sx << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 布局影响访存模式，标准不规定缓存行为；这是数据局部性（locality）层面的优化。
+
+[引用] 缓存行与空间局部性综述见 Agner Fog *microarchitecture.pdf* <https://www.agner.org/optimize/microarchitecture.pdf>；`std::vector` <https://en.cppreference.com/w/cpp/container/vector>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-解释栈对象与堆对象生命周期差异：`{ int a; }` 与 `new int` 的销毁时机有何不同？
+**真实场景：** 你做 `N×N` 矩阵求和（或乘），按"行优先"遍历却发现比"分块（tiling）"慢很多。为何大矩阵直接遍历会频繁踩缓存容量上限？写代码给出分块尺寸 `B` 的估算思路（让一个 `B×B` 块能放进 L1/L2），并解释分块如何提升命中率。
 
 <details><summary>答案与解析</summary>
 
-栈对象在作用域结束自动析构；`new` 分配的对象直到 `delete` 才释放：
+直接遍历大矩阵时工作集远超缓存容量，反复驱逐；分块把计算限制在小块内，使块内数据反复命中后再换块，大幅降 miss。块大小 `B` 应使 `B²·sizeof(T)` 约等于目标缓存级容量。
 
 ```cpp
+#include <vector>
 #include <iostream>
-int main(){ int a=1; int* p=new int(2); /* ... */ delete p; }
+int main() {
+    const int N = 512, B = 32;
+    std::vector<std::vector<double>> m(N, std::vector<double>(N, 1.0));
+    double s = 0;
+    for (int ii = 0; ii < N; ii += B)
+        for (int jj = 0; jj < N; jj += B)
+            for (int i = ii; i < ii + B; ++i)
+                for (int j = jj; j < jj + B; ++j)
+                    s += m[i][j];          // 块内局部性高
+    std::cout << s << '\n';
+}
 ```
 
-[标准] 遗漏 `delete` 即内存泄漏；这是 RAII/智能指针存在的根本动机。
+[标准] 分块是访存局部性优化，不改语义，只改遍历顺序与缓存命中。
+
+[引用] 缓存层级与容量见 Agner Fog *microarchitecture.pdf*；分块（loop tiling）属经典优化，LLVM 循环优化文档 <https://llvm.org/docs/Passes.html>。
 
 </details>
 

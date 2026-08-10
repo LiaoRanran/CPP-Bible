@@ -981,57 +981,71 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：超时控制与耗时测量——`steady_clock` 不受系统时间回拨影响。** 给一个网络调用计时时，必须用单调时钟；用 `duration_cast` 把 `steady_clock::now()` 的差值换算成毫秒/微秒。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <chrono>
+int main() {
+    using namespace std::chrono;
+    auto t0 = steady_clock::now();
+    volatile int s = 0; for (int i=0;i<1'000'000;++i) s+=i;
+    auto d = steady_clock::now() - t0;
+    std::cout << duration_cast<microseconds>(d).count() << "\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `steady_clock` 是单调时钟（不可能回拨，`is_steady == true`），适合测时长；`duration` 是 `rep + period` 的编译期比例，`duration_cast` 做单位转换（见本章附录 D4 源码）。
+
+[引用] ISO/IEC 14882:2023 §[time]、§[time.clock]（`steady_clock` 单调语义）与 §[time.duration]（`duration_cast`）；测时长务必用 `steady_clock` 而非 `system_clock`；cppreference "chrono/steady_clock"。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：定时任务调度——`system_clock` 表示墙钟触发时刻。** 一个每天定点跑的备份任务，用 `system_clock::time_point` 表示"绝对触发时刻"，与 `steady_clock`（相对时长）区分使用。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <chrono>
+int main() {
+    using namespace std::chrono;
+    auto next = system_clock::now() + seconds(30);  // 30s 后触发（墙钟）
+    std::cout << "scheduled\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `system_clock` 反映挂钟时间（可被 NTP/用户回拨），适合表示绝对时刻与转 `time_t`；调度"多久后"用 `steady_clock`，调度"几点"用 `system_clock`。
+
+[引用] ISO/IEC 14882:2023 §[time.clock]（`system_clock` 与 `to_time_t`/`from_time_t`）；C++20 日历扩展（§[time.cal]）源自 Howard Hinnant 的 date 库（github.com/HowardHinnant/date）；cppreference "chrono/system_clock"。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：周期性 tick——`duration` 与时钟差算截止时刻。** 一个轮询循环要每 100ms 执行一次，用 `steady_clock::now() + 100ms` 算截止点并 `sleep_until`，避免 `sleep_for` 累积漂移。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <chrono>
+#include <thread>
+int main() {
+    using namespace std::chrono;
+    auto deadline = steady_clock::now() + 100ms;
+    std::this_thread::sleep_until(deadline);
+    std::cout << "done\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `sleep_until(tp)` 睡到绝对时刻，配合"每次重新计算 `now()+周期`"可消除 `sleep_for` 的调度/执行漂移；`100ms` 是 C++14 起的字面量运算符（`std::chrono_literals`）。
+
+[引用] ISO/IEC 14882:2023 §[time.duration]（时长字面量 `100ms`）与 §[thread.this]（`sleep_until`）；消除漂移的定时循环见 cppreference "chrono/operator\"\"ms" 与 "thread/sleep_until"。
 
 </details>
 

@@ -919,57 +919,81 @@ Template Method 把不变骨架放基类、可变步放虚函数，仍走 vtable
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：电商促销折扣引擎。** 折扣规则随大促活动频繁变化（满减、会员折扣、限时秒杀），且要在运行期切换。请用策略模式实现可替换的折扣算法，并对比 GoF 经典「虚接口策略」与 C++ `std::function` 策略在易用性与内联性上的差异。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <functional>
+double apply_discount(double price, std::function<double(double)> policy) {
+    return policy(price);
+}
+int main() {
+    auto member = [](double p){ return p * 0.9; };
+    auto full   = [](double p){ return p; };
+    std::cout << apply_discount(100.0, member) << '\n';
+    std::cout << apply_discount(100.0, full)   << '\n';
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 策略把「易变算法」参数化；`std::function` 做类型擦除的运行期多态，调用点无需知道具体策略类型，比虚接口更轻量地接入 lambda。
+
+[引用] 策略模式见 GoF《Design Patterns》Strategy；C++ 落地见 cppreference「`std::function`」，以及 ch138 ③ 关于 `if constexpr` 编译期分发的讨论。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：领域事件总线。** 订单创建后，库存扣减、用户通知、审计日志三个模块都要响应，但它们不该直接相互依赖。请用观察者模式实现「一个事件多订阅者」的事件总线，并说明它与 Qt `QObject::connect` 信号槽、Boost.Signals2 的对应关系。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <vector>
+#include <functional>
+#include <string>
+struct Bus {
+    std::vector<std::function<void(const std::string&)>> subs;
+    void subscribe(std::function<void(const std::string&)> f){ subs.push_back(std::move(f)); }
+    void publish(const std::string& e){ for (auto& s: subs) s(e); }
+};
+int main() {
+    Bus b;
+    b.subscribe([](const std::string& e){ std::cout << "stock:" << e << '\n'; });
+    b.subscribe([](const std::string& e){ std::cout << "notify:" << e << '\n'; });
+    b.publish("order_created");
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 观察者把「事件源」与「处理逻辑」解耦；订阅用 `std::function` 列表保存，发布时遍历广播，新增响应者无需改动发布方。
+
+[引用] 观察者模式见 GoF《Design Patterns》Observer；工业实现有 Qt 信号槽（Qt 官方 `doc.qt.io` Signals & Slots）与 Boost.Signals2（boost.org），二者都提供自动断开、线程安全等增强。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：游戏 AI 状态机。** 一个敌人有 idle / patrol / chase 三种状态，状态间按感知到的事件迁移。请用表驱动状态模式实现，并指出它与 `std::variant` + `std::visit`、虚函数三种分发方式在「可维护性」与「调用开销」上的权衡（关联 ch138 ⑲ 用 `g++ -O2 -S` 取证的基准）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+enum class State { idle, patrol, chase };
+State on_enemy_spotted(State s){ (void)s; return State::chase; }
+State on_lost_target (State s){ (void)s; return State::patrol; }
+int main() {
+    State s = State::idle;
+    s = on_enemy_spotted(s);                 // 表驱动 / 函数式迁移
+    std::cout << (s == State::chase) << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 状态机把「状态 + 迁移」显式建模；简单场景可用 `enum` + 函数表（零虚调用），复杂层级可用 `std::variant` + `std::visit` 获得编译期穷尽检查，运行期多态才需虚函数。
+
+[引用] 状态模式见 GoF《Design Patterns》State；`std::variant` / `std::visit` 分发见 cppreference，其代价对比见 ch138 ⑲ 的 GCC 实测汇编与 ch138 ⑭。
 
 </details>
 

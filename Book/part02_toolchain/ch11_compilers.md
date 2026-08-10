@@ -949,8 +949,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-C++ 支持函数重载，但链接器只认符号名。请写程序说明：为什么 C++ 需要名字改编（name mangling），
-以及重载 `f(int)` 与 `f(double)` 在源码里同名、链接时却被编码成不同符号。
+**真实场景：崩溃栈里的 mangled 符号。** 线上 crash 栈只给 `_Z1fi` 这样的符号，你看不出是哪个函数；同时两个不同命名空间的 `f` 不能撞名。请写程序说明：为什么 C++ 需要名字改编（name mangling），以及重载 `f(int)` 与 `f(double)` 在源码里同名、链接时却被编码成不同符号。
 
 ```cpp
 #include <iostream>
@@ -972,10 +971,11 @@ int main() {
 [标准] 结论：名字改编把返回类型、参数类型、命名空间、cv 限定都编码进符号，
 使重载/模板/命名空间在链接期互不冲突；C 语言无此需求，故 `extern "C"` 关闭改编。
 
+[引用] Itanium C++ ABI 名字改编规范（https://itanium-cxx-abi.github.io/cxx-abi/abi.html#mangling）；`c++filt`/`llvm-cxxfilt` 可还原符号。GCC/Clang 遵循 Itanium ABI，MSVC 使用自有修饰方案。
+
 ### 练习 2（难度 ★★★）
 
-`extern "C"` 让函数使用 C 链接（不做名字改编），从而能被 C 目标文件调用。
-请写程序对比 C 链接与 C++ 链接，并指出其在混合语言工程中的实际用途。
+**真实场景：给 C 库做 C++ 封装（FFI）。** 老项目是纯 C 静态库 `libold.a`，新模块用 C++ 写，需要调用其中的 `old_init()`；若按 C++ 默认 mangling 去找符号会链接失败。请用 `extern "C"` 对比 C 链接与 C++ 链接，并指出其在混合语言工程中的实际用途（跨语言互操作桥梁）。
 
 ```cpp
 #include <iostream>
@@ -995,10 +995,11 @@ int main() {
 [标准] 结论：ABI 兼容的关键在于链接约定与调用约定一致；`extern "C"` 是 C/C++ 互操作的桥梁，
 但 C++ 的异常/类类型不能跨 `extern "C"` 边界安全传递。
 
+[引用] ISO C++ §[dcl.link]（语言链接）；cppreference "语言链接"（https://en.cppreference.com/w/cpp/language/language_linkage）。`extern "C"` 的跨语言互操作约束见 Itanium C++ ABI 与各自平台 ABI 文档。
+
 ### 练习 3（难度 ★★★★）
 
-C++ 编译分四个阶段：预处理 → 编译 → 汇编 → 链接。请写程序用 `#`/`##` 运算符
-直观展示“预处理阶段就把宏展开/.token 拼接”这一事实，并说明后三个阶段各自产出什么文件。
+**真实场景：调试宏展开 bug。** 你用 X-Macro / token paste 生成大量样板代码，结果某处展开不符合预期。请用 `#`/`##` 运算符直观展示"预处理阶段就把宏展开/token 拼接"这一事实，并说明后三个阶段（编译→汇编→链接）各自产出什么文件（`g++ -E`/`-S`/`-c`）。
 
 ```cpp
 #include <iostream>
@@ -1017,6 +1018,8 @@ int main() {
 
 [标准] 结论：`-E` 展开宏/include，`-S` 出汇编，`-c` 出可重定位目标（含 mangled 符号表），
 链接器把多个 `.o` 的符号引用解析成定义并排布地址，产出可执行文件。
+
+[引用] GCC 手册《预处理选项》（https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html）讲解 `-E`；cppreference "预处理器"（https://en.cppreference.com/w/cpp/preprocessor）讲解 `#`/`##` 运算符。四阶段流水线（预处理/编译/汇编/链接）的产出文件见 GCC/Clang 文档。
 
 ## 附录：用法演绎（从选型到落地）
 

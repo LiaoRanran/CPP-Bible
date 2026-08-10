@@ -990,57 +990,76 @@ int main(){std::cout<<compile_only(7)<<std::endl;return 0;}
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 嵌入式/配置系统里，协议版本号、缓冲区大小等常量要在编译期算好并校验，避免运行时再判断。请写一个 `constexpr` 函数计算 `ceil(N / Block)` 的块数，并用 `static_assert` 在编译期验证。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
+constexpr unsigned blocks_for(unsigned n, unsigned block) {
+    return (n + block - 1) / block;   // 向上取整
+}
+static_assert(blocks_for(1000, 256) == 4);
+static_assert(blocks_for(1024, 256) == 4);
+int main() { std::cout << blocks_for(1000, 256) << '\n'; }
+```
+
+[标准] `constexpr` 函数在常量表达式上下文（模板实参、`static_assert`、数组大小）中于编译期求值，且可同时用于运行期（`[expr.const]`）。
+[引用] cppreference `constexpr`：<https://en.cppreference.com/w/cpp/language/constexpr>；见 ch69 `constexpr` 章与 WG21 N4471（保守 constexpr 演进）。
+
+</details>
+
+### 练习 2（难度 ★★★）
+
+**真实场景：** 写一个泛型工具想"只对容器类型启用、对 `int`/`double` 禁用"。这要靠编译期类型特性在重载/约束层分流——请写一个 `is_container` 检测 traits，并用它区分 `std::vector<int>` 与 `int`。
+
+<details><summary>答案与解析</summary>
+
+用 `void_t` + SFINAE 探测 `value_type` / `begin()` / `end()` 是否存在：
+
+```cpp
+#include <type_traits>
+#include <vector>
+template <typename T, typename = void>
+struct is_container : std::false_type {};
 template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct is_container<T, std::void_t<typename T::value_type,
+                                   decltype(std::declval<T>().begin()),
+                                   decltype(std::declval<T>().end())>> : std::true_type {};
+int main() {
+    static_assert(is_container<std::vector<int>>::value);
+    static_assert(!is_container<int>::value);
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] SFINAE 在替换失败时不报错而是从候选集剔除；`std::void_t` 把"成员是否存在"映射为类型（`[meta.detection]`、`[temp.deduct]`）。
+[引用] cppreference `std::void_t`：<https://en.cppreference.com/w/cpp/types/void_t>；type traits 设计见 ch65 `type_traits` 章。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 编译期需要"在类型列表里数元素个数"或"计算阶乘"这类递归计算——即传统模板元编程（TMP）。请用模板递归实现一个 `type_list_size`，并在编译期断言长度。
 
 <details><summary>答案与解析</summary>
 
+类型列表用递归特化累加长度，`type_list_size<Ts...>` 在编译期产出整数常量：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cstddef>
+template <typename... Ts> struct type_list { };
+template <typename... Ts>
+struct type_list_size { static constexpr std::size_t value = 0; };
+template <typename T, typename... Ts>
+struct type_list_size<type_list<T, Ts...>> {
+    static constexpr std::size_t value = 1 + type_list_size<type_list<Ts...>>::value;
+};
+static_assert(type_list_size<type_list<int, double, char>>::value == 3);
+int main() { return 0; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 模板偏特化 + 递归实例化在编译期展开；`static constexpr` 成员作为整型常量可用于 `static_assert`（`[temp.class.spec]`、`[expr.const]`）。
+[引用] cppreference「Partial specialization」：<https://en.cppreference.com/w/cpp/language/partial_specialization>；现代等价写法可下沉到 `constexpr` 函数（见 ch69）。
 
 </details>
 

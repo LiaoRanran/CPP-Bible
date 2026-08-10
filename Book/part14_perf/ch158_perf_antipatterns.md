@@ -483,61 +483,75 @@ int main(){std::vector<int> v;v.reserve(1000);for(int i=0;i<1000;++i)v.push_back
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你在循环里反复拼一个日志行/SQL：`s += " " + to_string(i)`，结果比预想慢一个量级。这触犯了"循环内隐式堆分配 + 不必要的临时 `std::string`"反模式。写代码对比"每次都创建临时 `string` 拼接"与"预分配 `reserve` 后原地 `+=`"两种写法，解释后者为何更快。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`" " + to_string(i)` 每次都构造临时 `std::string` 并分配；反复拼接触发多次重分配与拷贝。预先 `reserve` 并直接 `+=` 可复用同一缓冲区，避免冗余分配。
 
 ```cpp
+#include <string>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+int main() {
+    std::string bad;
+    for (int i = 0; i < 100000; ++i) bad = bad + " " + std::to_string(i); // 反复分配
+    std::string good; good.reserve(1'000'000);
+    for (int i = 0; i < 100000; ++i) good += ' ', good += std::to_string(i); // 复用缓冲
+    std::cout << bad.size() << ' ' << good.size() << '\n';
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `std::string` 的 `operator+` 产生新对象（[string.concat]）；`reserve` 预保留容量（[string.capacity]）。
+
+[引用] C++ Core Guidelines R.14/K.1（避免不必要分配）；Chromium `base::` 的内存纪律 <https://github.com/chromium/chromium>；Abseil 字符串建议 <https://abseil.io/tips>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你用 `std::list` 存一百万个整数并求和，比 `std::vector` 慢很多。这是"指针追逐 / 缓存不友好"反模式。写代码对比 `std::list` 与 `std::vector` 的遍历求和，解释链表节点散落堆中、每次解引用都踩缓存未命中。
 
 <details><summary>答案与解析</summary>
 
+`std::vector` 元素连续，预取器与缓存行高效；`std::list` 节点各自 `new`，遍历是随机访存，几乎每次都 miss。这就是"盲目用链表"反模式。
+
 ```cpp
+#include <list>
+#include <vector>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main() {
+    std::vector<int> v(1'000'000, 1);
+    std::list<int>   l(1'000'000, 1);
+    long sv = 0; for (int x : v) sv += x;     // 连续、缓存友好
+    long sl = 0; for (int x : l) sl += x;     // 指针追逐、缓存不友好
+    std::cout << sv << ' ' << sl << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 容器遍历语义相同，但内存布局影响实测性能；标准不规定节点分配策略。
+
+[引用] 缓存友好容器对比见 Abseil `InlinedVector` <https://github.com/abseil/abseil-cpp>；Redis `ziplist`/`listpack` 紧凑编码反例 <https://github.com/redis/redis>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `noexcept` 移动构造函数，使 `std::vector` 扩容时走移动而非拷贝。
+**真实场景：** 你有一段 `if (rare_condition) do_expensive();` 的热循环，性能上不去。除了"分支不可预测"，更隐蔽的反模式是**隐藏的虚调用**——一个看似普通的接口函数实际走了 vtable 间接跳转，阻碍内联。写代码构造一个"基接口 + 单实现"的场景，说明为何把实现标 `final` 或改用 CRTP/模板能消除这次间接调用，并列出你会在 CE（ch157）里查什么来确认虚调用是否消失。
 
 <details><summary>答案与解析</summary>
 
+单实现的虚函数几乎必然是去虚化（devirtualize）的好候选：标 `final` 或改用模板/CRTP 让编译器静态决议，消除 `vcall`，从而允许内联与后续常量传播。
+
 ```cpp
 #include <iostream>
-#include <vector>
-#include <utility>
-struct S {
-  int* p = new int[8];
-  S() = default;
-  S(S&& o) noexcept : p(o.p) { o.p = nullptr; }
-  ~S() { delete[] p; }
-};
-int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << "ok\n"; }
+struct Base { virtual ~Base() = default; virtual int f(int x) const { return x * 2; } };
+struct Der : Base { int f(int x) const final override { return x * 2; } };  // final → 可去虚化
+int main() { Der d; std::cout << d.f(21) << '\n'; }
 ```
 
-[标准] `noexcept` 移动构造让 `vector` 在重新分配时移动元素；否则因强异常保证退化为拷贝。
+[标准] 虚调用经 vtable 间接跳转（[class.virtual]）；`final`/单实现帮助优化器静态决议。`noexcept` 移动同理影响容器选择（见 ch157 练习 3）。
+
+[引用] LLVM 去虚化 <https://llvm.org/docs/Passes.html>；对照 ch157 在 <https://godbolt.org/> 查汇编是否仍存在 `call`/vcall；Intel TBB 的静态多态实践 <https://github.com/oneapi-src/oneTBB>。
 
 </details>
 

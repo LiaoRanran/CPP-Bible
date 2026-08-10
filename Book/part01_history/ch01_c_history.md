@@ -625,7 +625,7 @@ int main(){int arr[5]={5,3,1,4,2};qsort(arr,5,4,cmp);std::cout<<arr[0]<<std::end
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：跨边界的整数比较陷阱。** 你在维护一个跨平台网络库，把 `size_t` 长度的请求体与 `int` 计数混用时，直接用 `a < b` 在有符号/无符号混合比较中会被提升为无符号，造成隐蔽的 UB。请写一个对任意可比较类型通用、且对混合符号比较安全的 `max` 风格比较工具。
 
 <details><summary>答案与解析</summary>
 
@@ -641,11 +641,13 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 
 [标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
 
+[引用] ISO C++20 §[temp.deduct]（模板参数推导）；cppreference "std::cmp_less"（https://en.cppreference.com/w/cpp/utility/intcmp/cmp_less）与 "函数模板"（https://en.cppreference.com/w/cpp/language/function_template）。混合符号比较陷阱可对照 C++ 核心指南 P.Sign 系列条目。
+
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：对外 API 的类型护栏。** 你写一个供多个团队调用的数值聚合工具 `add`，若有人误传 `std::string` 或自定义类型，旧的 SFINAE 报错是一堆难读的替换失败噪声。请用 `std::integral` 概念约束它，使浮点/非数值调用在编译期被清晰拒绝。
 
 <details><summary>答案与解析</summary>
 
@@ -660,11 +662,13 @@ int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
 
 [标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
 
+[引用] ISO C++20 §[concepts]（概念）；cppreference "std::integral"（https://en.cppreference.com/w/cpp/concepts/integral）与 "约束与概念"（https://en.cppreference.com/w/cpp/language/constraints）。概念取代 C++11/14 的 `enable_if`/SFINAE 写法，错误信息直接指向不满足的约束。
+
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：编译期常量表。** DSP/信号处理的标定代码需要一个「阶乘查找表」，但表项必须在编译期算好、不能留到运行期，否则每次启动都重算。请写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`，证明它真的在编译期定值。
 
 <details><summary>答案与解析</summary>
 
@@ -676,6 +680,8 @@ int main() { std::cout << fact(5) << '\n'; }
 ```
 
 [标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+
+[引用] ISO C++ §[expr.const] 与 §[dcl.constexpr]；cppreference "constexpr"（https://en.cppreference.com/w/cpp/language/constexpr）与 "static_assert"（https://en.cppreference.com/w/cpp/language/static_assert）。编译期求值能力是后续 C++14/17/20 constexpr 扩展的基础。
 
 </details>
 

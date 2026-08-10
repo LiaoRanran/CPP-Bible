@@ -1493,6 +1493,8 @@ flowchart TD
 
 LSM-Tree 的「读放大（read amplification）」主要来自哪里？给出一次 `Get(key)` 在最坏情况下需要访问的组件数量级，并解释为什么 Leveled compaction 比 Tiered 读放大更高。
 
+**真实场景：** 你为时序数据库选型 compaction 策略：Leveled 读放大低但写放大高、Tiered 反之。理解「层数 × 每层文件数」的读放大量级，才能在「点查延迟」与「写吞吐」之间做正确权衡。
+
 <details><summary>答案与解析</summary>
 
 读放大来自「同一 key 的多版本分布在多层、每层多个 SSTable」：`Get` 必须从上到下逐层查找（MemTable → L0 → L1 → …），每层可能要打开多个 SSTable 的索引/布隆过滤器，最坏情况访问「层数 × 每层文件数」。Leveled compaction 每层容量固定、层间重叠需反复重写，导致层级更深、单 key 跨层更多，读放大高于 Tiered（Tiered 层数少、只在满层才合并）。
@@ -1508,11 +1510,15 @@ int main() { std::cout << "worst probes=" << probe_cost(6, 10) << '\n'; }
 
 [标准] LSM-Tree 以「写放大 / 读放大 / 空间放大」三角权衡；compaction 策略直接决定三者比例。
 
+[引用] RocksDB Wiki（Compaction）：<https://github.com/facebook/rocksdb/wiki/Compaction>；LevelDB 实现：<https://github.com/google/leveldb>。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
 SSTable 归并（merge）是 compaction 的核心：给定两个已排序的 `std::vector<int>`（代表两个有序 run），写一个 2-way 归并，输出合并后的有序序列。
+
+**真实场景：** compaction 后台线程要把多个有序 SSTable 合成一个更大的有序 run，核心就是 2-way/多路归并。你实现 compaction 时复用的正是这段归并原语，外部排序与 LSM 共用它。
 
 <details><summary>答案与解析</summary>
 
@@ -1537,5 +1543,7 @@ int main() {
 这正是 compaction 把多个有序 SSTable 合成一个更大有序 run 的算法核心；多路时可推广为最小堆的 k-way merge（见 ch96 排序）。
 
 [标准] 归并是稳定 O(n) 操作；外部排序与 LSM compaction 共用该原语。
+
+[引用] RocksDB（Compaction 与 SSTable）：<https://github.com/facebook/rocksdb/wiki>；cppreference `std::merge`：<https://en.cppreference.com/w/cpp/algorithm/merge>。
 
 </details>

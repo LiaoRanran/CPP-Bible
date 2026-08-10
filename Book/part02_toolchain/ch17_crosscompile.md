@@ -761,8 +761,7 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 
 ### 练习 1（难度 ★★）
 
-交叉编译的目标三元组写成 `arch-vendor-os-abi`。请写程序用预定义宏探测本机架构，
-并说明三元组各部分对应什么。
+**真实场景：CI 矩阵里的目标鉴别。** 你在 CI 里同时给 x86-64 和 aarch64 构建，需要代码能自报架构以选择正确的内联汇编 / intrinsics。请用预定义宏探测本机架构，并说明交叉编译目标三元组 `arch-vendor-os-abi` 各部分对应什么。
 
 ```cpp
 #include <iostream>
@@ -779,12 +778,13 @@ int main() {
 }
 ```
 
-[标准] 结论：三元组精确描述“为哪种 CPU/系统/ABI 生成代码”，是交叉工具链的身份证。
+[标准] 结论：三元组精确描述"为哪种 CPU/系统/ABI 生成代码"，是交叉工具链的身份证。
+
+[引用] 三元组约定来自 GNU `config.sub`（autotools）；GCC 预定义宏手册（https://gcc.gnu.org/onlinedocs/cpp/Predefined-Macros.html ，如 `__x86_64__`/`__aarch64__`）用于探测本机架构。
 
 ### 练习 2（难度 ★★★）
 
-嵌入式常需要紧凑结构体（省 RAM/带宽）。请写程序对比默认对齐与 `#pragma pack` 后的大小，
-说明网络/Flash 二进制布局为何要显式控制对齐。
+**真实场景：固件里的紧凑报文布局。** 你要把一个状态结构体通过 SPI/网络发出去，两端必须用完全一致的字节布局，否则解释错位。请写程序对比默认对齐与 `#pragma pack` 后的大小，说明网络/Flash 二进制布局为何要显式控制对齐。
 
 ```cpp
 #include <iostream>
@@ -804,10 +804,11 @@ int main() {
 
 [标准] 结论：默认对齐为访问效率插入 padding；跨设备/落盘二进制需 `#pragma pack` 或 `_Alignas` 固定布局，否则两端解释错位。
 
+[引用] ISO C++ §[basic.align] 与 cppreference 对齐（https://en.cppreference.com/w/cpp/language/object#Alignment ）讲对象对齐；MSVC `#pragma pack`（https://learn.microsoft.com/en-us/cpp/preprocessor/pack ）讲如何显式压缩结构体布局。
+
 ### 练习 3（难度 ★★★★）
 
-CMake 交叉编译靠 toolchain 文件设定 `CMAKE_SYSTEM_NAME` 与编译器前缀。请写出 ARM Linux 工具链文件，
-并用预定义宏在代码里区分“本机构建”与“交叉构建”。
+**真实场景：一份 CMakeLists 双端构建。** 你既要能在开发机本机跑测试，又要交叉出 ARM Linux 固件，不想为两端维护两套构建脚本。请写出 ARM Linux 工具链文件，并用预定义宏在代码里区分"本机构建"与"交叉构建"。
 
 ```cmake
 set(CMAKE_SYSTEM_NAME Linux)
@@ -828,7 +829,9 @@ int main() {
 }
 ```
 
-[标准] 结论：toolchain 文件把“编译器/系统/根目录(sysroot)”集中配置，使同一份 CMakeLists 既能本机也能交叉构建。
+[标准] 结论：toolchain 文件把"编译器/系统/根目录(sysroot)"集中配置，使同一份 CMakeLists 既能本机也能交叉构建。
+
+[引用] CMake《交叉编译工具链》（https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html ）讲 `CMAKE_SYSTEM_NAME`/编译器前缀/`CMAKE_SYSROOT` 的集中配置；GCC 预定义宏（https://gcc.gnu.org/onlinedocs/cpp/Predefined-Macros.html ，如 `__arm__`）用于区分交叉构建。
 
 ## 附录：用法演绎（从选型到落地）
 

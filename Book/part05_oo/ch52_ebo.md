@@ -654,7 +654,7 @@ int main(){std::cout<<sizeof(std::unique_ptr<int>)<<" bytes (EBO=默认deleter�
 
 ### 练习 1（难度 ★★）
 
-实证**基本 EBO**：空基类子对象可被优化为零字节，而空**成员**至少占 1 字节并触发填充。
+**真实场景：STL 容器"免费携带"分配器/比较器。** `std::vector<int>` 内部混入一个 `std::allocator<int>`，但你 `sizeof(std::vector<int>)` 并没有多出一个分配器对象的字节——因为无状态分配器被 EBO 优化掉。请实证**基本 EBO**：空基类子对象可被优化为零字节，而空**成员**至少占 1 字节并触发填充。
 
 <details><summary>答案与解析</summary>
 
@@ -674,11 +674,13 @@ int main() {
 
 [标准] EBO 是标准明确允许的空基类优化（维度⑥、维度⑪ 源码逐行），`std::vector` 的 allocator 即借此零开销混入。
 
+[引用] `std::vector` 以空基类混入分配器，使无状态分配器不增加容器尺寸（libstdc++ `<bits/stl_vector.h>`、cppreference "std::vector"）。C++20 还引入 `[[no_unique_address]]` 让空**成员**也能被压缩（cppreference "no_unique_address"）。ISO/IEC 14882:2023 §[class] 允许空基类子对象零尺寸。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-实证**多个空基类**都能被同时优化，而等价空成员会因"每对象唯一地址"逐个膨胀。
+**真实场景：Policy-Based 容器混入"多个无状态策略"。** 你的 `Vector<type, Alloc, Cmp, Traits>` 同时混入分配器、比较器、特性类等多个空策略；若把它们当成员，每个至少 1 字节、还会各自触发填充，尺寸爆膨。请实证**多个空基类**都能被同时优化，而等价空成员会因"每对象唯一地址"逐个膨胀。
 
 <details><summary>答案与解析</summary>
 
@@ -698,11 +700,13 @@ int main() {
 
 [标准] 多空基类 EBO（维度⑪）支撑 Policy-Based 设计；空成员膨胀是"每对象唯一地址"规则的代价。
 
+[引用] `boost::compressed_pair` 正是利用多空基类 EBO 把"可能为空"的两个类型压缩存储（Boost.Compressed_Pair 文档，boost.org/doc/libs）。这与 Andrei Alexandrescu《Modern C++ Design》中 Policy-Based 设计对零开销策略组合的要求一致。ISO/IEC 14882:2023 §[class] 规定空基类可被优化为零。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 **Policy-Based 设计**：把策略类作为**空基类**混入，构造 `Vector<type, Alloc, Cmp>`，实证零状态开销（对比作成员会膨胀）。
+**真实场景：policy-based 数值容器 `Vector<type, Alloc, Cmp>`。** 你的数值库用策略类定制"栈分配 vs 堆分配"，策略类本身无数据成员。若当作成员，每个策略至少 1 字节、容器尺寸膨胀；正确做法是作**空基类**混入。请用 **Policy-Based 设计**：把策略类作为**空基类**混入，构造 `Vector<type, Alloc, Cmp>`，实证零状态开销（对比作成员会膨胀）。
 
 <details><summary>答案与解析</summary>
 
@@ -724,6 +728,8 @@ int main() {
 ```
 
 [标准] Policy-Based 设计（维度⑪ 后续依赖 ch71/ch50）依赖 EBO 实现零开销策略组合；作成员则每策略至少 1 字节。
+
+[引用] Policy-Based 设计由 Andrei Alexandrescu 在 *Modern C++ Design*（2001）系统提出，`std::vector`/`std::map` 的分配器与比较器即无状态策略经 EBO 混入的实例（cppreference "std::allocator"）。C++20 `[[no_unique_address]]` 进一步让空成员也能压缩（cppreference）。ISO/IEC 14882:2023 §[class] 与 §[dcl.attr.uniqueaddr] 规定相关机制。
 
 </details>
 

@@ -895,57 +895,64 @@ A: 无性能差异。C++ 标准库用 snake_case; Qt/Unreal 用 CamelCase → �
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：多人协作的代码格式化。** 一个 30 人团队因缩进风格（K&R 大括号独占行 vs Allman 同换行）每天在 code review 里吵架、diff 噪声巨大。请用 `clang-format` 写一份 `.clang-format`，统一 BasedOnStyle 与缩进宽度，并说明它如何把「风格争论」从人脑移到工具、纳入 CI 门禁（关联 ch149 ⑥ 静态分析门禁）。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
+// .clang-format （示意，纯配置非 C++）
+// BasedOnStyle: Google
+// IndentWidth: 4
+// 团队成员只需 `clang-format -i` 即可格式化，CI 用 --dry-run 拦截未格式化提交
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+int main() { std::cout << "formatted\n"; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 格式化是纯排版、不改变语义；`clang-format` 把风格固化成文件，任何人 `git diff` 只看逻辑变更，消除无谓争论。
+
+[引用] 风格工具见 LLVM/Clang 官方 `clang-format` 文档（clang.llvm.org）；Google C++ Style Guide（google.github.io/styleguide/cppguide.html）的「Formatting」章节给出可量化规则；ch144 ⑱ 详述 `clang-format` 命令与典型输出。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：头文件的包含守卫。** 一个被 20 个 `.cpp` 包含的公共头若没有守卫会触发重定义。请分别用 `#pragma once` 与传统的 `#ifndef/#define/#endif` 守卫，并用 `g++ -E` 观察预处理展开，说明二者的取舍（`#pragma once` 非标准但被所有主流编译器支持）。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
+#pragma once
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct Config { int v = 0; };          // 头文件内容，多次 include 也只展开一次
+int main() { std::cout << Config{}.v << '\n'; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `#pragma once` 让编译器在翻译单元内只处理该文件一次；传统 `ifndef` 守卫是标准、可移植的方案，但宏名需全局唯一以防冲突。用 `g++ -E` 可见被守卫内容仅出现一次。
+
+[引用] 包含守卫见 cppreference「Replacing text macros」与 GCC/Clang 文档的 `#pragma once`；C++ Core Guidelines 的「SF 源文件与宏」章节讨论头文件组织；ch144 ④ 用 `g++ -E` 实证展开。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：const 正确性的审查红线。** 一个 `get_size()` 本应只读却被写成返回非 const 引用、可被意外修改；同时一个编译期常量被写成运行期 `const` 而非 `constexpr`。请重写让其「最小可变性」：只读访问返回 `const&`、编译期常量用 `constexpr`，并指出 `mutable` 只在「逻辑 const」场景下才合理。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+struct Box {
+    std::vector<int> data_;
+    const std::vector<int>& get_data() const { return data_; }  // 只读返回 const&
+    constexpr int capacity() const { return 16; }               // 编译期常量用 constexpr
+};
+int main() { Box b; std::cout << b.capacity() << '\n'; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `const` 成员函数承诺不修改对象逻辑状态；返回 `const&` 防止调用方改内部；`constexpr` 让值在编译期确定（`const` 只是运行期只读）；`mutable` 仅用于缓存等「逻辑 const 但物理可变」的场景。
+
+[引用] const 正确性见 C++ Core Guidelines 的「Con 常量与不可变性」章节（如 Con.1–Con.4）；`constexpr` 见 cppreference 与 C++ 标准 `[dcl.constexpr]`；ch144 ⑥、⑪ 详述 const/constexpr/mutable 规范。
 
 </details>
 

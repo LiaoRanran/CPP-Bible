@@ -936,57 +936,72 @@ call __cxa_throw          ; 触发展开
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：解析用户输入的整数。** 一个命令行工具要把字符串解析成 `int`，失败时要携带「为什么失败」（空串 / 溢出 / 非法字符）。请用 C++23 的 `std::expected<int, ParseErr>` 返回「值或错误」，对比「抛异常」与「返回 bool + 输出参数」两种旧写法在可读性与错误传播上的差异。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <expected>
+#include <string>
+enum class ParseErr { Empty, Overflow, Invalid };
+std::expected<int, ParseErr> parse_int(const std::string& s) {
+    if (s.empty()) return std::unexpected(ParseErr::Empty);
+    int v = 0;
+    for (char c : s) { if (c < '0' || c > '9') return std::unexpected(ParseErr::Invalid); v = v*10 + (c-'0'); }
+    return v;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `std::expected<T,E>` 把「成功值」与「错误值」装进同一类型，调用方必须显式处理失败（`operator*` / `error()`），错误沿调用栈自然传播而不必抛异常；失败路径无栈展开开销。
+
+[引用] `std::expected` 为 C++23 新增（提案 P0323），见 ISO/IEC 14882:2023 `[expected]` 与 cppreference「std::expected」；ch146 ⑦ 专讲 `std::expected` 用法。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：跨 ABI 边界的错误返回。** 你维护一个被多种编译器 / 语言调用的底层库，异常无法安全跨越 ABI（不同端的栈展开表不兼容）。请用 `std::error_code` / `std::error_category` 在边界返回错误，说明它为何比「抛异常」更适合系统级 / 跨模块接口。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <system_error>
+#include <string>
+std::error_code open_file(const std::string&) {
+    return std::make_error_code(std::errc::no_such_file_or_directory);  // 示意失败
+}
+int main() {
+    if (auto ec = open_file("x"); ec) { /* 跨 ABI 安全：仅传整数码 + 类别 */ }
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `std::error_code` 本质是「整型错误值 + 类别指针」，是可平凡拷贝的轻量值，能安全跨 ABI / 跨语言传递；异常则依赖本端的栈展开与类型信息，跨编译器边界极易 UB。
+
+[引用] `<system_error>` 与 `std::error_code` 见 ISO/IEC 14882:2023 `[syserr]` 与 cppreference；C++ Core Guidelines 的「E 错误处理」章节（如 E.4 用错误码表达接口契约）讨论边界策略；ch146 ⑥ 详述 `error_code`/`error_category`。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：吞异常的隐蔽 Bug。** 一段代码用 `catch(...){}` 默默吞掉所有异常，导致上游永远不知道资源分配失败、后续逻辑在坏状态下继续跑。请改写它：用 RAII（`unique_ptr`/`lock_guard`）保证栈展开时资源被释放，并说明为什么空的 `catch` 是反模式、`noexcept` 又该如何正确使用。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <memory>
+#include <mutex>
+std::mutex m;
+void safe() {
+    auto p = std::make_unique<int>(1);     // 若后续抛异常，p 仍被 RAII 释放
+    std::lock_guard<std::mutex> lk(m);     // 锁随作用域自动释放，不依赖手动
+    // 不要写 catch(...) {} 吞掉错误
+}
+int main() { safe(); }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] RAII 让资源释放与栈展开绑定，异常安全等级（基本 / 强）由「是否仍保持有效状态」决定；空 `catch(...)` 吞异常会掩盖真实故障、破坏不变量；`noexcept` 应只标在确实不抛、且调用方依赖其不抛的函数（如移动构造、析构）。
+
+[引用] 错误处理反模式（吞异常 / 空 catch）见 C++ Core Guidelines「E 错误处理」（如 E.6 用 RAII 防泄漏、E.12 正确用 `noexcept`）；cppreference「RAII」「std::lock_guard」；ch146 ⑲ 列反模式。
 
 </details>
 

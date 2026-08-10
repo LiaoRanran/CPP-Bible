@@ -472,7 +472,7 @@ _Z13release_fencev:
 
 ### 练习 1（难度 ★★）
 
-用 `std::atomic_thread_fence` 配合 **relaxed** 原子操作，实现与练习「release store / acquire load」等价的同步：生产者 `relaxed store 数据 → release fence → relaxed store flag`，消费者 `relaxed load flag → acquire fence → relaxed load 数据`。
+**真实场景**：在"一批 relaxed 写 + 一个发布标志"的批量发布场景里，与其给每个原子操作都升级内存序，不如用一个 `release` fence 统一兜底——独立 fence 把"序"从具体操作里剥离出来。请用 `std::atomic_thread_fence` 配合 **relaxed** 原子操作，实现与练习「release store / acquire load」等价的同步：生产者 `relaxed store 数据 → release fence → relaxed store flag`，消费者 `relaxed load flag → acquire fence → relaxed load 数据`。为什么 fence 与"操作自带 memory_order"语义等价、却又不能互相替代？
 
 <details><summary>答案与解析</summary>
 
@@ -504,11 +504,13 @@ int main() {
 
 [标准] fence 与原子操作的组合语义见 `[atomics.fences]`：release fence + 后续 relaxed store，配 acquire fence + 前置 relaxed load，建立 synchronizes-with。
 
+[引用] cppreference `std::atomic_thread_fence`：`https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence`。fence 语义见 ISO §32.6（[atomics.fences]）。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-说明「独立 fence」与「操作自带 memory_order」的区别：为什么一个 `fetch_add(acq_rel)` 不完全等同于 `relaxed fetch_add` 前后各加一个 fence？给出何时必须用独立 fence 的场景。
+**真实场景**：当你要"一次围栏统一发布一批 relaxed 写"（如写完一组配置字段后再发一个 ready 标志），独立 fence 比给每个写都加 release 序更省、也更清晰。请说明「独立 fence」与「操作自带 memory_order」的区别：为什么一个 `fetch_add(acq_rel)` 不完全等同于 `relaxed fetch_add` 前后各加一个 fence？给出何时必须用独立 fence 的场景。
 
 <details><summary>答案与解析</summary>
 
@@ -542,11 +544,13 @@ int main() {
 
 [标准] 单操作有序化：`x.store(v, release)`；批量有序化：一次 `atomic_thread_fence(release)` 覆盖前面所有 relaxed 写——后者是 fence 不可被操作序替代的价值点。
 
+[引用] cppreference `std::atomic_thread_fence`：`https://en.cppreference.com/w/cpp/atomic/atomic_thread_fence`。关于 fence 与单操作序的对比见 ISO §32.6（[atomics.fences]）。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-对比 `std::atomic_thread_fence` 与 `std::atomic_signal_fence`：写一个「主线程与同线程信号处理函数共享 relaxed 原子」的场景，说明为什么此处应用 `atomic_signal_fence` 而非 `atomic_thread_fence`。
+**真实场景**：在信号处理函数（signal handler）里读取被中断代码刚写下的标志时，你只需阻止**编译器**重排（同一线程上下文），不需要任何 CPU 屏障——`std::atomic_signal_fence` 正是为此而生，零运行时指令。请对比 `std::atomic_thread_fence` 与 `std::atomic_signal_fence`：写一个「主线程与同线程信号处理函数共享 relaxed 原子」的场景，说明为什么此处应用 `atomic_signal_fence` 而非 `atomic_thread_fence`。误用后者于纯信号场景会白白付出什么代价？
 
 <details><summary>答案与解析</summary>
 
@@ -576,6 +580,8 @@ int main() {
 ```
 
 [平台] 同线程信号/中断场景用 `atomic_signal_fence`（零指令）即可；跨线程一律 `atomic_thread_fence`。误用后者于纯信号场景会白白付出屏障指令开销。
+
+[引用] cppreference `std::atomic_signal_fence`：`https://en.cppreference.com/w/cpp/atomic/atomic_signal_fence`。signal_fence 与 thread_fence 的区别见 ISO §32.6（[atomics.fences]）。
 
 </details>
 

@@ -984,57 +984,75 @@ struct Tracer {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你封装了一个不可拷贝也不可移动的文件句柄 `ScopedFd`（RAII 管理 `open()`/`close()`）。工厂 `open_file(path)` 必须返回它——但拷贝/移动都被删了，还能返回吗？
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+C++17 guaranteed copy elision 让"返回不可移动类型的 prvalue"合法：直接在调用方存储构造，根本不调用任何构造器：
 
 ```cpp
-#include <iostream>
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct ScopedFd {
+    int fd;
+    explicit ScopedFd(int f) : fd(f) {}
+    ScopedFd(const ScopedFd&) = delete;
+    ScopedFd(ScopedFd&&) = delete;
+    ~ScopedFd() {}
+};
+ScopedFd open_file() { return ScopedFd(3); }   // C++17 OK：强制消除
+int main() { ScopedFd f = open_file(); (void)f; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `[class.copy.elision]/3`：用 prvalue 初始化同类型对象时拷贝/移动被强制省略，删除拷贝/移动构造也不影响（`[expr.return]`）。
+[引用] cppreference「Copy elision」：<https://en.cppreference.com/w/cpp/language/copy_elision>；WG21 P0135R1（Richard Smith）。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 查询构建器 `QueryBuilder::build()` 把拼接好的 SQL 字符串作为局部变量返回。你希望它零拷贝地落到调用方——请写出正确写法并说明它命中了哪种消除。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+返回局部对象名字，让 NRVO 把它直接构造在调用方返回槽：
 
 ```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <string>
+struct QueryBuilder {
+    std::string table_, cols_;
+    std::string build() {
+        std::string result = "SELECT ";
+        result += cols_ + " FROM " + table_;
+        return result;        // ✅ NRVO：零拷贝零移动
+    }
+};
+int main() { QueryBuilder q; q.table_ = "users"; q.cols_ = "id"; (void)q.build(); }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] NRVO 允许把具名局部对象的构造合并进返回槽（`[class.copy.elision]/1`），非强制但主流编译器在单返回路径下都命中。
+[引用] Google C++ Style Guide 允许返回大对象并依赖 RVO、不强制 `std::move` 返回：<https://google.github.io/styleguide/cppguide.html#Return_Values>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 同事写了 `return std::move(local);` 想"加速返回"，结果 benchmark 反而变慢、移动构造的副作用（计数/日志）还出现了。解释为什么这是反模式。
 
 <details><summary>答案与解析</summary>
 
+`std::move(local)` 把具名对象变成右值，使 `[class.copy.elision]` 的省略规则不再适用（省略只针对"返回局部对象 id 表达式"），编译器被迫调用移动构造：
+
 ```cpp
+#include <utility>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct Big { Big() {} Big(const Big&) { std::cout << "copy\n"; } Big(Big&&) { std::cout << "move\n"; } };
+Big bad()  { Big b; return std::move(b); }   // ❌ 抑制 NRVO → 移动构造
+Big good() { Big b; return b; }              // ✅ 允许 NRVO → 零拷贝零移动
+int main() { bad(); good(); }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `[class.copy.elision]` 仅对"返回局部对象 id 表达式"省略；右值表达式（如 `std::move(x)`）不触发 NRVO，且省略失败时才回退移动（`[class.copy]`）。
+[引用] cppreference「Copy elision」"Returning a move"陷阱：<https://en.cppreference.com/w/cpp/language/copy_elision>。
 
 </details>
 

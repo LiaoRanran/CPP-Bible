@@ -886,7 +886,9 @@ int main(){std::cout<<"C++26 contracts(P2900): proof-carrying code for safety-cr
 
 ### 练习 1（难度 ★★）
 
-为 `element_at(v, i)` 表达"下标必须合法"这一前置条件。先用当下的 `assert` 写出可编译版本，再给出 C++26 `pre` 契约的等价写法（契约语法用 ```text，因本机 GCC 13.1 尚不支持），并说明二者在 release 构建下的行为差异。
+为 `element_at(v, i)` 表达"下标必须合法"这一前置条件。
+
+**真实场景：** 你写一个库函数 `element_at`，文档要求调用方保证下标合法——这是 API 契约。用 `pre` 把"下标合法"声明为前置条件，让编译器/静态分析器能核验调用点，比 `assert`（release 下直接消失）更可靠、可被优化器利用。先用当下的 `assert` 写出可编译版本，再给出 C++26 `pre` 契约的等价写法（契约语法用 ```text，因本机 GCC 13.1 尚不支持），并说明二者在 release 构建下的行为差异。
 
 <details><summary>答案与解析</summary>
 
@@ -918,11 +920,15 @@ int element_at(const std::vector<int>& v, std::size_t i)
 
 [标准] 契约三要素 `pre`/`post`/`assert` 是函数级声明式检查；C++26 P2900 把"前置/后置/断言"统一为可配置机制，当前为方向特性。
 
+[引用] C++26 契约提案 P2900：<https://wg21.link/P2900>；cppreference `assert`：<https://en.cppreference.com/w/cpp/error/assert>。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-区分"前置违反 = 调用方 bug（应终止）"与"可恢复错误 = 应抛异常"。写一段 `parse_int(s)`：字符串为空属**调用方 bug**（用契约/断言终止），字符串非空但含非数字属**可恢复输入错误**（抛异常），并说明为何两者不该混用。
+区分"前置违反 = 调用方 bug（应终止）"与"可恢复错误 = 应抛异常"。
+
+**真实场景：** 你实现公共解析 API：空输入是调用方违反约定（bug，应快速失败），而"含非法字符"是用户可能的正常错误（应抛异常让上层重试）。分清二者避免把 bug 当业务错误兜底、或把用户输入当 bug 直接崩溃。写一段 `parse_int(s)`：字符串为空属**调用方 bug**（用契约/断言终止），字符串非空但含非数字属**可恢复输入错误**（抛异常），并说明为何两者不该混用。
 
 <details><summary>答案与解析</summary>
 
@@ -948,11 +954,15 @@ int parse_int(const std::string& s) {
 
 [标准] 契约（terminate 类）用于"绝不该发生"的不变量；异常用于"可能发生且调用方应处理"的可恢复条件。
 
+[引用] C++26 契约提案 P2900：<https://wg21.link/P2900>；cppreference 异常：<https://en.cppreference.com/w/cpp/error/exception>。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-契约能向优化器提供**额外不变量**，使其删除恒真/恒假分支。用 `[[unlikely]]` 写出一个带"输入恒非空"假设的快速路径，并说明 C++26 契约/`[[assume]]` 如何让编译器据此消除分支（语法用 ```text）。
+契约能向优化器提供**额外不变量**，使其删除恒真/恒假分支。
+
+**真实场景：** 性能敏感的序列化/编解码热路径里，你确信某指针非空（由上层前置保证）。用契约/`[[assume]]` 告诉编译器消除冗余判空分支，在 `-O2` 下减少指令；但必须保证不变量真的成立，否则 `assume` 会引入 UB。用 `[[unlikely]]` 写出一个带"输入恒非空"假设的快速路径，并说明 C++26 契约/`[[assume]]` 如何让编译器据此消除分支（语法用 ```text）。
 
 <details><summary>答案与解析</summary>
 
@@ -982,6 +992,8 @@ std::size_t len(const int* p)
 要点：契约不仅是"运行时检查"，更是**给编译器的证明**——一旦 `pre (p != nullptr)` 被编译器采信，所有防御性 `if (!p)` 会被当作死代码删掉（等价于 `[[assume(p != nullptr)]`）。这在 `-O2` 高频路径上能去掉冗余判空，但**必须保证不变量真实成立**，否则 `assume` 会让 UB 静默蔓延。
 
 [标准] 契约与 `[[assume]]` 是"程序员向优化器担保的不变式"，区别于 `assert`（仅运行期检查）；担保错误会转化为未定义行为，务必谨慎。
+
+[引用] `[[assume]]` 提案 P1774：<https://wg21.link/P1774>；cppreference `[[assume]]`：<https://en.cppreference.com/w/cpp/language/attributes/assume>。
 
 </details>
 

@@ -719,8 +719,7 @@ _Z8null_ptrv:
 
 ### 练习 1（难度 ★★）
 
-C++11 用 `auto`、范围 for、`nullptr` 大幅降低样板代码。请写程序用这三者
-重写“遍历容器并统计”的逻辑，并说明 `nullptr` 相比 `NULL`/`0` 的类型安全优势。
+**真实场景：老代码现代化。** 你把一个 C++98 的 `std::vector` 统计循环（手写迭代器 + `NULL` 哨兵）升级到 C++11。请用 `auto`、范围 for、`nullptr` 重写"遍历容器并统计"的逻辑，并说明 `nullptr` 相比 `NULL`/`0` 的类型安全优势（避免重载决议把 `0` 当成 `int`）。
 
 ```cpp
 #include <iostream>
@@ -743,10 +742,11 @@ int main() {
 [标准] 结论：`nullptr` 消除了 `NULL`（常被定义为 `0`）在重载决议中被当作 `int` 的历史陷阱；
 `auto` 让迭代器/复杂类型不必写全，`for(auto x : c)` 是最常用的现代遍历形态。
 
+[引用] ISO C++11 §[lex.nullptr] / §[stmt.ranged]；cppreference "nullptr"（https://en.cppreference.com/w/cpp/language/nullptr）与 "范围 for 循环"（https://en.cppreference.com/w/cpp/language/range-for）。`nullptr` 的类型为 `std::nullptr_t`，消除 `NULL`/`0` 的重载歧义。
+
 ### 练习 2（难度 ★★★）
 
-`std::unique_ptr` 表达独占所有权、零运行期开销、不可拷贝只可移动。
-请写程序演示所有权转移，并解释为何它能安全替代大多数裸 `new`/`delete`。
+**真实场景：工厂返回独占资源。** 你写一个 `open_connection()` 工厂，返回一条连接/文件句柄；调用方拿到后独占使用、用完即释放，绝不能有两个持有者。请用 `std::unique_ptr` 演示所有权从工厂转移到调用方，并解释为何它能安全替代大多数裸 `new`/`delete`（离开作用域自动释放，无泄漏）。
 
 ```cpp
 #include <iostream>
@@ -773,10 +773,11 @@ int main() {
 [标准] 结论：`unique_ptr` 的移动=转移指针+置空源，语义清晰且与裸指针同样快；
 配合 `make_unique` 可彻底告别显式 `delete`，是现代 C++ 资源管理默认选择。
 
+[引用] ISO C++11 §[util.smartptr.unique]；cppreference "std::unique_ptr"（https://en.cppreference.com/w/cpp/memory/unique_ptr）与 "std::make_unique"（https://en.cppreference.com/w/cpp/memory/make_unique）。独占所有权模型见 C++ 核心指南 R.20–R.24。
+
 ### 练习 3（难度 ★★★★）
 
-移动语义是 C++11 的性能核心。请为一个持有堆缓冲的类实现移动构造/移动赋值，
-用计数证明移动“偷取指针”而非深拷贝，并说明 `noexcept` 对容器扩容的影响。
+**真实场景：图像/缓冲解码返回大对象。** 你的解码函数产出一个持有大堆缓冲的 `Buffer`，若按值返回走深拷贝会极慢；应让返回"偷走"内部指针。请为 `Buffer` 实现移动构造/移动赋值，用计数证明移动"偷取指针"而非深拷贝，并说明 `noexcept` 对 `std::vector` 扩容时选择移动还是拷贝的影响。
 
 ```cpp
 #include <iostream>
@@ -812,6 +813,8 @@ int main() {
 
 [标准] 结论：移动把 O(n) 深拷贝降为 O(1) 指针转移；移动构造标 `noexcept` 后，
 `std::vector` 扩容才会用移动而非拷贝（否则为保证强异常安全会退回拷贝），性能差距显著。
+
+[引用] ISO C++11 §[class.copy.ctor]（移动构造）与 §[expr.move]；cppreference "std::move"（https://en.cppreference.com/w/cpp/utility/move）与 "移动构造函数"（https://en.cppreference.com/w/cpp/language/move_constructor）。`noexcept` 移动对容器扩容的影响见标准库 [vector.capacity] 对重新分配的要求。
 
 ## 附录：用法演绎（从选型到落地）
 

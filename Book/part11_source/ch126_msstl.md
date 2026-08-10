@@ -973,57 +973,76 @@ int main(){std::cout<<"MS STL: 0=Release, 1=Debug, 2=Full. Parallel via Windows 
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你的 CI 在 Windows 上跑 MSVC，需要针对特定 MS STL 版本启用 workaround（比如某版 `std::format` 有已知问题）。请用 MS STL 的 `_MSVC_STL_VERSION` 宏做编译期版本分支，仅在低于某版本时启用兼容代码。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`_MSVC_STL_VERSION` 形如 `202206`（年月）的实现专属宏；在非 MS STL 环境下未定义，分支自动跳过，因此跨平台仍可编译：
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <version>
+#if defined(_MSVC_STL_VERSION)
+  // 低于 202206 的旧 MS STL 启用 workaround
+  #if _MSVC_STL_VERSION < 202206
+    #define MSSTL_FORMAT_WORKAROUND
+  #endif
+#endif
+#include <format>
+int main() { return 0; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 预处理条件编译；实现专属版本宏用于编译期分支。
+
+[引用] MS STL 仓库 microsoft/STL 的 README 与 `<version>`；cppreference 头文件 `<version>`：<https://en.cppreference.com/w/cpp/header/version>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 你的库要向后兼容到 C++17，但又用了 C++20 的 `std::integral` 概念做约束。请用 MS STL 的 `_HAS_CXX20` 特性宏让概念约束代码在禁用 C++20 时退化为普通模板，且对浮点调用仍给出清晰错误。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+MS STL 用 `_HAS_CXX20` 等宏门控标准特性；C++20 开启时用概念约束，关闭时退化为 `typename` 模板——注意退化后浮点不再被概念拦截，需额外 `static_assert`/`requires` 保语义：
 
 ```cpp
-#include <iostream>
 #include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#if defined(_HAS_CXX20) && _HAS_CXX20
+template <std::integral T>
+#else
+template <typename T>
+#endif
+T add(T a, T b) { return a + b; }
+int main() { return add(2, 3) == 5 ? 0 : 1; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误（更可读的诊断）；特性宏用于条件启用。
+
+[引用] cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>；MS STL 仓库 microsoft/STL 的宏说明。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你的查表逻辑要在编译期用标准库容器完成，希望确认所用 MS STL 版本支持 `std::array` 的 constexpr 访问。请用 `constexpr` 函数 + `static_assert` 在编译期验证对 `std::array` 的随机访问。
 
 <details><summary>答案与解析</summary>
 
+`std::array` 自 C++11 起即 constexpr 友好，可在常量表达式上下文构造并下标访问；下列 `static_assert` 在编译期直接求值：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <array>
+constexpr int lookup() {
+    std::array<int, 4> t{2, 4, 6, 8};
+    return t[2];
+}
+static_assert(lookup() == 6);
+int main() { return 0; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `constexpr` 函数在常量表达式上下文（`static_assert` 实参）中于编译期求值；`std::array` 为聚合类型、天然 constexpr。
+
+[引用] cppreference `std::array`：<https://en.cppreference.com/w/cpp/container/array>；提案 P1004R2（标准库类型的 constexpr 化）。
 
 </details>
 

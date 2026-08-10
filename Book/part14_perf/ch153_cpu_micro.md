@@ -879,53 +879,81 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 
 ### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 你写了一个按"是否为奇数"分支求和的循环，发现对**随机顺序**数据很慢、对**已排序**数据快一倍。这就是分支预测误预测的代价。写代码构造交替 `0/1` 数据（不可预测）与排序后数据（可预测），分别统计命中次数差异，并解释为何排序后快。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+交替 `0/1` 让分支方向频繁翻转，预测器误预测率高；排序后同值成段，预测器几乎全中。现代 CPU 的投机执行与分支目标缓冲（BTB）依赖历史局部性。
 
 ```cpp
+#include <algorithm>
+#include <vector>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+int main() {
+    std::vector<int> v(1 << 20);
+    for (std::size_t i = 0; i < v.size(); ++i) v[i] = static_cast<int>(i % 2); // 交替
+    long s = 0;
+    for (int x : v) if (x) ++s;          // 不可预测分支
+    std::sort(v.begin(), v.end());        // 成段
+    s = 0; for (int x : v) if (x) ++s;    // 可预测分支
+    std::cout << s << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 这属于微架构行为，C++ 标准不规定分支预测；排序改变访存/分支局部性从而改变实测吞吐。
+
+[引用] Agner Fog *The microarchitecture of Intel, AMD and VIA CPUs* <https://www.agner.org/optimize/microarchitecture.pdf>；`std::sort` 见 <https://en.cppreference.com/w/cpp/algorithm/sort>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你有一个长整数累加链 `a += i`，性能远不如预期。为何多发射端口帮不上忙？写代码对比"单条依赖链"与"两条独立累加链"，解释**依赖链长度**如何限制指令级并行（ILP）。
 
 <details><summary>答案与解析</summary>
 
+单条 `a += i` 每轮都依赖上一轮结果，形成串行依赖链，吞吐被单条链的延迟（而非端口数）卡死；拆成两条互不依赖的链后，乱序引擎可让它们重叠执行。
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main() {
+    unsigned long a = 0;
+    for (unsigned i = 0; i < 1000000000u; ++i) a += i;   // 串行依赖链
+    unsigned long x = 0, y = 0;
+    for (unsigned i = 0; i < 500000000u; ++i) { x += i; y += i * 2u; } // 两条独立链
+    std::cout << (a + x + y) << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 依赖链是数据依赖导致的串行化，标准不规定，但决定实际 IPC。
+
+[引用] Agner Fog *Instruction tables* <https://www.agner.org/optimize/instruction_tables.pdf>；LLVM 调度模型文档 <https://llvm.org/docs/CodeGenerator.html>。
 
 </details>
 
 ### 练习 3（难度 ★★★）
 
-用折叠表达式写一个 `sum` 可变参数函数，计算任意个数实参之和。
+**真实场景：** 在剖析工具（如 Linux `perf`）里你看到 `store buffer` 与 `memory disambiguation` 相关停顿。用一段代码制造"先读后写同一地址"的写后读（WAR）假依赖，并讨论乱序执行 + 存储缓冲区如何让两条本无真实数据依赖的指令并发，却仍受别名猜测失败惩罚。
 
 <details><summary>答案与解析</summary>
 
+把累加结果立刻回读会制造别名/假依赖；乱序引擎靠 store buffer 把写缓冲、靠内存歧义预测判断后续读是否命中未提交写，预测失败时回滚。拆分读写目标可消除该依赖。
+
 ```cpp
 #include <iostream>
-template <typename... Ts> auto sum(Ts... ts) { return (0 + ... + ts); }
-int main() { std::cout << sum(1, 2, 3, 4) << '\n'; }
+int main() {
+    unsigned long acc = 0;
+    for (unsigned i = 0; i < 1000000000u; ++i) {
+        acc += i;
+        volatile unsigned long probe = acc;   // 读回刚写的变量 → 潜在别名依赖
+    }
+    std::cout << acc << '\n';
+}
 ```
 
-[标准] 一元左折叠 `(init + ... + ts)` 展开为 `((((0+1)+2)+3)+4)`。
+[标准] 内存模型（`[intro.races]`）只规定可见性/顺序约束，具体如何重叠由微架构实现。
+
+[引用] Agner Fog *microarchitecture.pdf* <https://www.agner.org/optimize/microarchitecture.pdf>；`perf` 事件见 <https://man7.org/linux/man-pages/man1/perf.1.html>。
 
 </details>
 

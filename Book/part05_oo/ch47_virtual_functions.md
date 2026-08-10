@@ -1235,8 +1235,7 @@ long c_loop<RectC>(RectC const*, int):
 
 ### 练习 1（难度 ★★）
 
-写一个基类 `Shape` 含 `virtual double area()`，派生 `Circle` 与 `Rect`，用基类指针容器演示多态分发。
-结合本书实证说明：一次虚调用在汇编层发生了什么（vtable 查找）。
+**真实场景：游戏渲染管线的"可绘制对象"异构集合。** 你的引擎把玩家、地形、特效都当作 `Drawable`，统一存进 `std::vector<std::unique_ptr<Drawable>>`，每帧只调用 `draw()` 而不关心具体类型——这正是运行期多态的典型战场。请写一个基类 `Shape` 含 `virtual double area()`，派生 `Circle` 与 `Rect`，用基类指针容器演示多态分发，并结合本书实证说明：一次虚调用在汇编层发生了什么（vtable 查找）。
 
 <details><summary>答案与解析</summary>
 
@@ -1260,11 +1259,13 @@ int main(){
 
 [标准] 虚函数经 vtable 间接分发；override 必须签名一致（C++11 起建议显式 `override`）。
 
+[引用] 异质容器 + 基类指针是运行期多态的不可替代场景，Unreal Engine 的 `UObject` 派生体系（Actor、Component）正是以基类指针图管理异构对象（dev.epicgames.com/documentation）。Qt 的 `QObject` 事件分发同样走虚函数（doc.qt.io/qt-6/qobject.html）。ISO/IEC 14882:2023 §[class.virtual] 规定虚函数机制；cppreference "Virtual function" 词条给出 vtable 模型说明。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-为何在**构造函数体内**调用虚函数不会触发动态绑定（不会调到派生类 override）？给出输出并解释。
+**真实场景：基类构造函数里初始化子系统，却"调不到派生配置"。** 你写一个 `DatabaseConnection` 基类，构造时调用 `virtual void setupOptions()` 来应用派生类（MySQL/Postgres）特有的连接选项；但发现无论派生什么，永远只执行基类默认版本，连接参数从未被定制。请解释为何在**构造函数体内**调用虚函数不会触发动态绑定，给出输出并说明：这正是为何"构造期配置"必须改走 NVI/工厂两阶段构造。
 
 <details><summary>答案与解析</summary>
 
@@ -1280,11 +1281,13 @@ int main(){ Der d; }   // 输出 "Base::f", 不是 "Der::f"
 
 [标准] 在构造/析构函数中，虚函数调用绑定到当前构造/析构的类，不向下分发。
 
+[引用] C++ Core Guidelines C.82 明确"不要在构造/析构中调用虚函数"（isocpp.github.io）。若需在构造期应用派生配置，常见做法是两阶段构造（先默认构造、再调一个非虚 `init(options)`）或 NVI 工厂函数（参见 ch46）。ISO/IEC 14882:2023 §[class.base.init] 规定构造顺序与虚调用绑定；Meyers《Effective C++》条款 9 详述此坑。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-CRTP 静态多态 vs 虚函数动态多态：各写一个 `add` 示例，指出前者零虚表开销但失去运行时异构，并说明何时选哪个。
+**真实场景：数值内核的"零开销加法算子" vs 插件滤镜的"运行时可替换算法"。** 性能敏感的线性代数库（Eigen 风格）希望 `add` 完全内联、无间接跳转；而图像处理滤镜框架希望运行期按用户选择替换算法（异构容器）。请对比 CRTP 静态多态 vs 虚函数动态多态：各写一个 `add` 示例，指出前者零虚表开销但失去运行时异构，并说明何时选哪个。
 
 <details><summary>答案与解析</summary>
 
@@ -1299,6 +1302,8 @@ struct IntA : AddableCrtp<IntA> { int impl(int x){ return x+1; } };
 选 CRTP：性能敏感、类型在编译期确定（如数值库 Eigen）；选虚函数：需要运行时多态、异构容器（如插件系统）。
 
 [标准] CRTP 把虚调用转为静态分发（见 ch51 实证）；代价是失去运行时类型擦除能力。
+
+[引用] Eigen 的 `Eigen::MatrixBase<Derived>` 即 CRTP，使算术表达式在编译期单态化、零虚调用开销（eigen.tuxfamily.org）。标准库 `std::vector<Base*>` 存储异构对象则必须走虚函数（cppreference "std::vector"）。LLVM 的 `Pass` 体系用虚函数支持运行期可插拔的分析/优化 Pass（llvm.org/docs）。ISO/IEC 14882:2023 §[class.virtual] 与 §[temp] 分别规定虚函数与模板机制。
 
 </details>
 

@@ -863,8 +863,7 @@ SSE 寄存器 `0x0010`（16 字节）宽、AVX `0x0020`、AVX-512 `0x0040`；数
 
 ### 练习 1（难度 ★★）
 
-vcpkg 用 manifest（`vcpkg.json`）声明依赖。请写出声明依赖 `fmt` 的 manifest，
-并说明 CMake 如何通过一个 toolchain 文件把包“注入”到 `find_package` 搜索路径。
+**真实场景：依赖即代码（reproducible build）。** 团队里有人 `vcpkg install fmt` 全局装、有人没装，CI 与本地结果不可复现。请用 manifest 模式把依赖写进版本控制，写出声明依赖 `fmt` 的 `vcpkg.json`，并说明 CMake 如何通过一个 toolchain 文件把包"注入"到 `find_package` 搜索路径。
 
 ```json
 {
@@ -879,12 +878,13 @@ cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.c
 # vcpkg 把 installed/x64-windows/share/fmt/fmt-config.cmake 暴露给 find_package
 ```
 
-[标准] 结论：manifest 模式把依赖写进版本控制，可复现；toolchain 文件把“包根目录”前置到 CMake 的搜索路径。
+[标准] 结论：manifest 模式把依赖写进版本控制，可复现；toolchain 文件把"包根目录"前置到 CMake 的搜索路径。
+
+[引用] vcpkg 官方文档（https://learn.microsoft.com/en-us/vcpkg/ 、 https://vcpkg.io/ ）讲 manifest 模式（`vcpkg.json`）与 `vcpkg.cmake` toolchain 集成：manifest 把依赖锁定进版本控制，toolchain 文件把包根目录前置到 CMake 搜索路径。
 
 ### 练习 2（难度 ★★★）
 
-Conan 用 `conanfile` 描述依赖与生成器。请写出声明 `fmt/10.1.1` 的 `conanfile.txt`，
-并说明 `conan install` 产出的两类集成文件（CMakeDeps / CMakeToolchain）各自解决什么。
+**真实场景：CI 里依赖图必须可复现。** 你用 `conanfile.txt` 描述 `fmt/10.1.1`，并要在 CMake 工程中拿到导入目标。请写出声明 `fmt/10.1.1` 的 `conanfile.txt`，并说明 `conan install` 产出的两类集成文件（CMakeDeps / CMakeToolchain）各自解决什么。
 
 ```text
 [requires]
@@ -903,12 +903,13 @@ int main() {
 ```
 
 [标准] 结论：`CMakeDeps` 产出 `find_package` 可用的 `*Config.cmake`（提供导入目标），
-`CMakeToolchain` 产出工具链文件（设定编译器/标准库/架构），二者解耦“依赖描述”与“工具链”。
+`CMakeToolchain` 产出工具链文件（设定编译器/标准库/架构），二者解耦"依赖描述"与"工具链"。
+
+[引用] Conan 2 官方文档（https://docs.conan.io/2/ ）中 CMakeDeps 生成器（https://docs.conan.io/2/reference/conanfile/tools/cmake/cmakedeps.html ）产出 `*Config.cmake` 导入目标；CMakeToolchain 生成器（https://docs.conan.io/2/reference/conanfile/tools/cmake/cmaketoolchain.html ）产出工具链文件，二者解耦依赖描述与工具链。
 
 ### 练习 3（难度 ★★★★）
 
-版本冲突是包管理的核心难题（如 A 要 `fmt/9`、B 要 `fmt/10`）。请写程序模拟“依赖图解析器”
-在冲突时如何按“取满足所有约束的最小上界”策略统一版本。
+**真实场景：依赖地狱中的版本统一。** 你的项目里库 A 要 `fmt/9`、库 B 要 `fmt/10`，包管理器必须算出唯一可用版本。请写程序模拟"依赖图解析器"在冲突时如何按"取满足所有约束的最小上界"策略统一版本。
 
 ```cpp
 #include <iostream>
@@ -944,6 +945,8 @@ int main() {
 ```
 
 [标准] 结论：现代包管理器用有向依赖图 + 版本约束求解统一版本；无法统一时（如要求互斥范围）才报冲突，需人工升级/降级。
+
+[引用] Conan 2 文档（https://docs.conan.io/2/ ）讲 `requires(version_range)` 的版本约束求解；vcpkg / Conan / Cargo 等均以"满足所有约束的最小上界"策略统一版本，无法统一才报冲突。
 
 ## 附录：用法演绎（从选型到落地）
 

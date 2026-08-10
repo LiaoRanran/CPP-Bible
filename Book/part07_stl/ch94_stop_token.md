@@ -1161,60 +1161,77 @@ int main(){std::jthread t([](std::stop_token st){while(!st.stop_requested()){std
 
 ### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：协作取消——`jthread` + `stop_token` 让工作线程在取消时干净退出。** 一个后台数据同步线程定期检查 `stop_requested()`，主线程结束时 `jthread` 自动 `request_stop()` + `join()`，避免忘记 join 的泄漏或强制终止的 UB。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <thread>
+int main() {
+    std::jthread worker([](std::stop_token st) {
+        while (!st.stop_requested()) { /* 工作 */ }
+    });
+    // worker 析构自动 request_stop() + join()
+    std::cout << "stopping\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `std::jthread`（C++20）在构造时把 `stop_token` 传给可调用对象，析构时自动 `request_stop()` 再 `join()`；`stop_token::stop_requested()` 供循环协作式轮询。
+
+[引用] ISO/IEC 14882:2023 §[thread.stoptoken] 与 §[thread.jthread]（协作取消与自动 join）；源自 P0660 协作取消提案；cppreference "thread/stop_token"、"thread/jthread"。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：`stop_callback` 注册取消时的清理。** 取消信号到达时，自动执行一段清理（释放资源/通知完成），无需在工作循环里反复手写检查——回调在 `request_stop()` 时同步触发。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <thread>
+#include <stop_token>
+int main() {
+    std::jthread t([](std::stop_token st) {
+        std::stop_callback cb(st, []{ std::cout << "cleanup\n"; });
+        while (!st.stop_requested()) {}
+    });
+    std::cout << "ok\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `stop_callback` 在构造时注册回调，关联 `stop_token`；当 `request_stop()` 被调用（且回调尚未析构）时，回调同步执行。回调须 `noexcept`。
+
+[引用] ISO/IEC 14882:2023 §[thread.stoptoken]（`stop_callback` 的注册与触发语义）；其侵入式回调节点见本章附录 D4.1 源码；cppreference "thread/stop_callback"。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `noexcept` 移动构造函数，使 `std::vector` 扩容时走移动而非拷贝。
+**真实场景：`stop_source` 显式请求停止——线程池关闭信号。** 主线程持有 `stop_source`，把 `get_token()` 分发给所有 worker 的 `jthread`；关闭时一次 `request_stop()` 广播给全部线程，无需逐个 `join` 前手动通知。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-#include <vector>
-#include <utility>
-struct S {
-  int* p = new int[8];
-  S() = default;
-  S(S&& o) noexcept : p(o.p) { o.p = nullptr; }
-  ~S() { delete[] p; }
-};
-int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << "ok\n"; }
+#include <thread>
+#include <stop_token>
+int main() {
+    std::stop_source src;
+    std::jthread a([t = src.get_token()]{ while(!t.stop_requested()){} });
+    std::jthread b([t = src.get_token()]{ while(!t.stop_requested()){} });
+    src.request_stop();   // 广播给 a、b
+    std::cout << "broadcast stop\n";
+}
 ```
 
-[标准] `noexcept` 移动构造让 `vector` 在重新分配时移动元素；否则因强异常保证退化为拷贝。
+[标准] `stop_source` 持有可共享的停止状态，复制/移动共享同一状态；`get_token()` 得到关联 `stop_token`，`request_stop()` 一次性通知所有持有 token 的线程。
+
+[引用] ISO/IEC 14882:2023 §[thread.stoptoken]（`stop_source`/`stop_token` 的共享状态与 `request_stop`）；协作取消模型见 cppreference "thread/stop_source"。
+
+</details>
 
 ## 附录 D4：libstdc++ 15.3.0 源码解析 — std::stop_token 协作取消
 

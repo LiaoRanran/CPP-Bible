@@ -897,57 +897,70 @@ int main(){std::cout<<"Boost=167库, ~80%进入C++标准. shared_ptr→C++11, op
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你正在把遗留代码里"用 -1 / nullptr 表示缺失"的接口迁移到 Boost.Optional / `std::optional` 语义（避免哨兵值带来的正确性风险，见本章 D5 基准）。请写一个函数模板 `maybe_parse`，对任意类型，解析失败时返回 `std::nullopt`。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+函数模板按实参推导返回类型；`std::optional` 以强类型表达"可能缺失"，替代易错的哨兵值：
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <optional>
+#include <string_view>
+template <class T>
+std::optional<T> maybe_parse(std::string_view /*s*/) {
+    // 真实实现按 T 解析；此处示意：失败返回 nullopt
+    return std::nullopt;
+}
+int main() {
+    auto r = maybe_parse<int>("");
+    return r.has_value() ? 1 : 0;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 函数模板按实参推导；`std::optional` 表达可能缺失的值，编译期强类型安全。
+
+[引用] Boost.Optional：<https://www.boost.org/doc/libs/release/libs/optional/>；cppreference `std::optional`：<https://en.cppreference.com/w/cpp/utility/optional>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 你在用 Boost.Accumulators 做统计聚合，需要一个只接受整数样本计数的工具（计数语义上不应是浮点）。请用 `std::integral` 概念约束模板，使浮点调用给出清晰编译错误。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
 
 ```cpp
-#include <iostream>
 #include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+template <std::integral T>
+T sample_count(T n) { return n > 0 ? n : 0; }
+int main() { return sample_count(10) == 10 ? 0 : 1; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 概念约束为编译期硬错误（而非 SFINAE 静默失败），诊断信息更易读。
+
+[引用] Boost.Accumulators：<https://www.boost.org/doc/libs/release/libs/accumulators/>；cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** Boost.MPL / Boost.Hana 推崇"类型层面的数值计算"。请用 `constexpr` 阶乘（Hana 时代标准库已原生支持）配合 `static_assert` 在编译期验证 `fact(5)==120`，体现编译期求值的思想。
 
 <details><summary>答案与解析</summary>
 
+`constexpr` 递归函数在常量表达式上下文（如 `static_assert` 实参）中于编译期求值：
+
 ```cpp
-#include <iostream>
 constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
 static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main() { return fact(5); }
 ```
 
 [标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+
+[引用] Boost.Hana：<https://www.boost.org/doc/libs/release/libs/hana/>；cppreference `constexpr`：<https://en.cppreference.com/w/cpp/language/constexpr>。
 
 </details>
 

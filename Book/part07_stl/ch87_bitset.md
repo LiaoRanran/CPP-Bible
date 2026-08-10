@@ -1024,57 +1024,69 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：权限位标志集——用 `bitset` 表示 64 个功能开关。** 一个系统能力掩码 `bitset<64>` 每位代表一个权限（读/写/执行/网络），用 `set`/`test`/`|`/`&`/`~` 组合授权与鉴权；注意 `test/set` 带边界检查（越界抛异常）。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <bitset>
+int main() {
+    std::bitset<64> caps;
+    caps.set(0); caps.set(3);          // 开启第 0、3 号能力
+    caps |= std::bitset<64>(1) << 7;   // 第 7 号能力
+    std::cout << "has cap3=" << caps.test(3)
+              << " count=" << caps.count() << "\n"; // 1 3
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `bitset<N>` 是 N 位固定大小序列，`set`/`test` 带下标边界检查（越界抛 `out_of_range`），`count()` 返回置位个数，`| & ^ ~` 为位级运算。
+
+[引用] ISO/IEC 14882:2023 §[template.bitset]（固定大小位集与位运算成员）；运行时大小位集见 Boost `dynamic_bitset`（boost.org 文档）；cppreference "utility/bitset"。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：活跃连接位图——用 `bitset<N>::count()` 统计置位个数。** 一个网关用 32 位掩码表示 32 条链路是否活跃，需实时统计活跃数；注意 `count()` 默认走软件 popcount（低/高 32 位各一次），开启 `-mpopcnt` 才变硬件单指令（见本章附录 ASM 实证）。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <bitset>
+int main() {
+    std::bitset<32> active{0b1101};      // 活跃位掩码
+    std::cout << "active=" << active.count() << "\n"; // 3
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `bitset::count()` 返回值为 1 的位数；其实现是否走硬件 `popcnt` 取决于编译旗标与基线 ISA（见本章附录结论 3）。
+
+[引用] ISO/IEC 14882:2023 §[template.bitset]（成员 `count`）与 §[bit]（`std::popcount`，C++20 `<bit>`）；`count()` 与 `popcount` 同样受 `-mpopcnt` 影响；cppreference "utility/bitset"、"numeric/popcount"。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：网络协议标志字段——`bitset` 与 `<bit>` 配合写入/旋转报文。** 把 32 位标志位 `bitset<32>` 转 `unsigned long` 写入报文头，并用 `std::rotl`/`std::popcount` 做位运算（注意 `to_ulong` 位数 > 32 时抛 `overflow_error`）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <bitset>
+#include <bit>
+int main() {
+    std::bitset<32> flags{"10000000000000000000000000000010"};
+    unsigned long v = flags.to_ulong();      // 写入报文
+    std::cout << "popcount=" << std::popcount(v) << "\n"; // 2
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `to_ulong()`/`to_ullong()` 把位集转整数，位数超出目标类型时抛 `std::overflow_error`；`<bit>` 提供 `popcount`/`rotl`/`has_single_bit` 等可移植位工具。
+
+[引用] ISO/IEC 14882:2023 §[template.bitset]（`to_ulong`/`to_ullong` 转换与异常）与 §[bit]（C++20 `<bit>` 工具）；cppreference "utility/bitset"、"bit"。
 
 </details>
 

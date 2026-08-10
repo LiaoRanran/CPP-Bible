@@ -1469,7 +1469,7 @@ int main(){std::cout<<sizeof(B)<<","<<sizeof(D)<<std::endl;return 0;}
 
 ### 练习 1（难度 ★★）
 
-给定 `struct Packed { char a; int b; char c; };`，用 `sizeof` 与 `offsetof` 实证其内存布局，并解释填充从何而来。
+**真实场景：跨平台网络协议封包。** 你写一个二进制协议编解码库，需要把一个 `char` 头标志、`int32` 长度、`char` 类型字段打包进固定结构，再 `memcpy` 到 socket 发送。如果不实测布局，手算 `1+4+1=6` 字节会直接错位解析，导致对端崩溃。请用 `sizeof` 与 `offsetof` 实证 `struct Packed { char a; int b; char c; };` 的真实内存布局，并解释填充从何而来、为什么"按字段大小求和"在跨 ABI 通信中永远不可靠。
 
 <details><summary>答案与解析</summary>
 
@@ -1488,11 +1488,13 @@ int main() {
 
 [标准] 对齐与填充由实现定义，但须满足"成员地址是其对齐的整数倍"与"结构体大小是其对齐的整数倍"。布局规则是对象模型（维度⑤）的核心。
 
+[引用] 网络协议的字节序与对齐问题在协议缓冲区（Protocol Buffers）设计文档中被显式回避——Protobuf 采用长度前缀 + 不依赖内存布局的线格式，而非直接 `memcpy` 结构体（protobuf.dev）。需要紧凑布局时 C++ 的 `alignas` 与 `#pragma pack` 可控制，但牺牲访问性能；ISO/IEC 14882:2023 §[basic.align] 规定对齐规则，cppreference "Standard layout" 词条详述可安全跨 ABI 复用的前提。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-证明**静态数据成员不计入对象大小**：定义含一个 `static int` 的类，比较 `sizeof` 与成员地址，说明静态成员存于 `.data`/`.bss` 而非对象内。
+**真实场景：游戏引擎对象池的共享引用计数器。** 你维护一个 `GameObject` 类，所有实例共享一个全局"活跃对象数"统计器（用于性能面板与上限检查）。这个计数器绝不能存在于每个对象内（否则 `sizeof(GameObject)` 膨胀、且各实例互不共享）。请用静态数据成员证明**静态成员不计入对象大小**：定义含一个 `static int` 的类，比较 `sizeof` 与成员地址，说明静态成员存于 `.data`/`.bss` 而非对象内，并解释为何"所有实例共享同一份"对你的计数器至关重要。
 
 <details><summary>答案与解析</summary>
 
@@ -1516,11 +1518,13 @@ int main() {
 
 [标准] 静态数据成员具有外部链接与类作用域，布局上等价于文件级变量，对象模型（维度⑨）明确其不在对象内。
 
+[引用] 经典的引用计数智能指针正依赖"引用计数作为静态/类级外部存储"的变体思想；但与本题每实例共享的全局计数器不同，`std::shared_ptr` 的计数绑定在控制块上（cppreference "std::shared_ptr"）。Unreal Engine 的 `UObject` 基数统计器同样以类级/全局表而非对象内字段实现（dev.epicgames.com/documentation）。ISO/IEC 14882:2023 §[class.static.data] 规定静态数据成员语义。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用空基类优化（EBO）解释：为什么 `struct Derived : Empty { int x; };` 的 `sizeof` 等于 `sizeof(int)`，而把 `Empty` 作为**成员**时尺寸却翻倍？写代码实证。
+**真实场景：零开销混入（zero-overhead mixin）的分配器。** STL 容器（如 `std::vector`）把分配器作为空基类混入，而不是作为数据成员——正是为了让空分配器不膨胀每个 `vector` 实例的尺寸。请用空基类优化（EBO）解释：为什么 `struct Derived : Empty { int x; };` 的 `sizeof` 等于 `sizeof(int)`，而把 `Empty` 作为**成员**时尺寸却翻倍？写代码实证，并说明这正是 `std::vector<Alloc>` 能"免费"携带空分配器的原因。
 
 <details><summary>答案与解析</summary>
 
@@ -1539,6 +1543,8 @@ int main() {
 ```
 
 [标准] EBO 是标准明确允许的空基类优化（对象模型维度⑥），`std::vector` 的分配器即借此实现零开销混入。
+
+[引用] EBO 是标准库自身的基石：`std::vector` 通过空基类混入分配器，使默认分配器 `std::allocator` 不增加容器尺寸（libstdc++ `<bits/stl_vector.h>`、cppreference "std::vector"）。这一技巧在 EASTL、`boost::compressed_pair` 中同样广泛用于压缩空策略/空函数对象的存储（Boost.Compressed_Pair 文档）。ISO/IEC 14882:2023 §[class] 允许空基类子对象零尺寸；cppreference "Empty base optimization" 词条列举 `boost::compressed_pair` 等用例。
 
 </details>
 

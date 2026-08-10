@@ -716,7 +716,7 @@ A: 编译时间显著增加 (模板实例化级), 但生成代码更优 (编译�
 
 ### 练习 1（难度 ★★）
 
-**constexpr 用于编译期大小**
+**真实场景：编译期固定 LUT 尺寸。** 你的渲染器要用 `std::array` 存一张 25 项的颜色查找表，尺寸由常量 `sq(5)` 决定——必须在编译期确定、零运行期计算。请思考：**constexpr 用于编译期大小**：
 
 ```cpp
 constexpr int sq(int n) { return n * n; }
@@ -738,13 +738,14 @@ int main() {
 }
 ```
 [标准] `constexpr` 函数若实参是常量表达式，其调用结果也是常量表达式，可用于模板实参。
+
+[引用] `std::array` 的大小必须是编译期常量表达式（cppreference "std::array"），因此 `constexpr` 计算是其自然搭配。标准库 `<numbers>`、`std::integer_sequence` 尺寸也依赖编译期常量。ISO/IEC 14882:2023 §[expr.const] 规定常量表达式的判定。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-**consteval 强制编译期求值**
-
-`consteval` 与 `constexpr` 有何区别？为何 `int x = 5; auto y = cube(x);`（`cube` 为 `consteval`）会编译失败？
+**真实场景：零开销"编译期校验字符串哈希"。** 你的资源键要在编译期把字符串算成 FNV 哈希（绝不留到运行期），这样热路径只做整数比较。请思考：**consteval 强制编译期求值**。`consteval` 与 `constexpr` 有何区别？为何 `int x = 5; auto y = cube(x);`（`cube` 为 `consteval`）会编译失败？
 
 <details>
 <summary>参考答案</summary>
@@ -761,11 +762,14 @@ int main() {
 }
 ```
 [标准] `consteval` 保证零运行期开销，但禁止任何运行期实参。
+
+[引用] `consteval`（C++20，P1073 "Immediate functions"）保证函数"immediate"、绝不生成运行期代码，常用于编译期字符串/哈希/格式化（cppreference "consteval"）。标准库 `std::source_location` 的构造即 `consteval`（cppreference）。ISO/IEC 14882:2023 §[expr.const] 与 §[dcl.consteval] 规定其语义。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-**if constexpr 分支消除**
+**真实场景：类型擦除回调"get 值或解引用"。** 你的统一访问器 `deref` 对指针类型要"返回解引用结果"、对值类型"原样返回"——两个分支返回类型不同。请思考：**if constexpr 分支消除**：
 
 ```cpp
 template <class T> auto deref(T v) {
@@ -795,6 +799,9 @@ int main() {
 }
 ```
 [标准] `if constexpr` 是编译期分支，避免用 SFINAE/tag 表达"类型相关分支"，但要求两分支语法均合法。
+
+[引用] `if constexpr` 的丢弃分支不被实例化，故 `*v` 在 `T=int` 时免检（cppreference "if constexpr"）。这也是 ch68 中 `process` 用法的同款机制，替代了 ch66 的 SFINAE/tag dispatch。ISO/IEC 14882:2023 §[stmt.if] 规定丢弃分支的语义检查豁免。
+
 </details>
 
 

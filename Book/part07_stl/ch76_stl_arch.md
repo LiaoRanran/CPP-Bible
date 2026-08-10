@@ -1026,7 +1026,7 @@ int main(){std::vector<int> v{1,2,3};std::map<int,int> m{{1,10}};std::cout<<v[0]
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：跨设备有符号/无符号序号比较。** 一个采集网关要把两路传感器样本对齐：一路用 `int16_t`（负值表示"未校准"），另一路用 `uint16_t` 帧计数。直接 `a < b` 混比会触发有符号—无符号整型提升陷阱（负数被当成巨大正数）。请写一个对任意同类型可比较、且对混比安全的 `max` 模板，并用 `std::cmp_less` 规避 UB。
 
 <details><summary>答案与解析</summary>
 
@@ -1042,11 +1042,13 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 
 [标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
 
+[引用] ISO/IEC 14882:2023 §[expr]（usual arithmetic conversions）规定混比时的整型提升；`std::cmp_less`/`std::cmp_greater`（C++20 `<utility>`）提供无符号安全比较，见 cppreference "utility/cmp" 词条。
+
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：配置流水线的编译期类型闸门。** 你写一个通用累加配置项的函数，只应接受整数型（计数、端口号、采样率）；一旦误传 `double` 或 `std::string` 必须在编译期给出清晰错误，而不是 SFINAE 静默失败导致后续诡异实例化。
 
 <details><summary>答案与解析</summary>
 
@@ -1061,11 +1063,13 @@ int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
 
 [标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
 
+[引用] ISO/IEC 14882:2023 §[concepts]/core language concepts 定义 `std::integral`；违反概念为硬错误（§[temp.constr]），诊断优于 SFINAE，见 cppreference "concepts" 词条。
+
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：编译期查表（DSP/动画缓动）。** 一个音频包络或 UI 缓动曲线需要把 `fact(n)` 等系数在编译期算好放进 `constexpr` 数组，运行期零成本查表。请用 `constexpr` 阶乘并 `static_assert(fact(5)==120)` 证明它在编译期求值。
 
 <details><summary>答案与解析</summary>
 
@@ -1077,6 +1081,8 @@ int main() { std::cout << fact(5) << '\n'; }
 ```
 
 [标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+
+[引用] ISO/IEC 14882:2023 §[expr.const] 定义常量表达式与 constexpr 函数；可在 `static_assert`/模板实参中编译期求值，见 cppreference "constexpr" 词条。
 
 </details>
 

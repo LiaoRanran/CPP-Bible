@@ -966,7 +966,7 @@ int main() {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-用 std::to_array 从 C 数组构造 std::array，演示编译期固定长度、`.size()` 与 `.data()` 零开销桥接 C API。
+**真实场景：嵌入式查表——把 C 数组零开销桥接进类型安全容器。** 固件里一个 `int[4]` 查找表要传给只接受 `std::array` 的算法，且长度须编译期固定、可无缝传给 C API（`.data()`）。请用 `std::to_array` 构造并演示 `.size()`/`.data()`。
 
 ```cpp
 #include <iostream>
@@ -981,8 +981,10 @@ int main() {
 
 [标准] 结论：`std::array<T,N>` 是聚合类型，长度 N 是类型的一部分（编译期常量）；`.data()` 返回底层 C 数组指针，可无缝传给 C API，`.size()` 是 `constexpr`，比 C 数组的 `sizeof/strlen` 更安全。
 
+[引用] ISO/IEC 14882:2023 §[array] 与 §[array.creation]（`std::to_array`，C++20）；`.data()`/`.size()` 为零开销桥接，见 cppreference "container/array" 词条。
+
 ### 练习 2（难度 ★★★）
-用 C++17 结构化绑定解构 array，并用 `std::get<N>` 按索引取元素，演示编译期下标访问。
+**真实场景：协议头解析——把固定 3 字段报文头解构到具名变量。** 网络协议头 `array<byte,3>` 用结构化绑定避免魔法下标，并用 `std::get<N>` 做编译期下标访问。
 
 ```cpp
 #include <iostream>
@@ -998,8 +1000,10 @@ int main() {
 
 [标准] 结论：`std::array` 满足 tuple-like 协议，`std::get<N>(a)` 在编译期完成下标访问（非运行时循环），`N` 必须是编译期常量；`auto [x,y,z]` 把每个元素绑定到独立变量，避免魔法下标。
 
+[引用] ISO/IEC 14882:2023 §[array.tuple]（tuple-like 协议与 `std::get`/`tuple_size`）；C++17 结构化绑定见 §[dcl.struct.bind]；见 cppreference "container/array"。
+
 ### 练习 3（难度 ★★★★）
-用 alignas 让 array 满足 SIMD 对齐要求（32 字节对齐适配 AVX 加载），演示栈上定长缓冲的可预测内存布局。
+**真实场景：SIMD 批处理缓冲——栈上定长 32 字节对齐数组喂 AVX。** 信号处理用 `array<float,8>` 配 `alignas(32)` 直接做 AVX 加载，零堆分配、生命周期随作用域结束。
 
 ```cpp
 #include <iostream>
@@ -1012,6 +1016,8 @@ int main() {
 ```
 
 [标准] 结论：`std::array` 的存储是对象的一部分（不是指针），配合 `alignas` 可直接获得对齐的定长缓冲，适合 SIMD 向量化；相比 `std::vector` 它不产生堆分配、生命周期随作用域自动结束。
+
+[引用] ISO/IEC 14882:2023 §[array] 与 §[decl.attr.align]（`alignas` 对齐说明符）；SIMD 加载要求对齐缓冲，见 cppreference "container/array" 与 "alignas" 词条。
 
 ## 附录：用法演绎（从选型到落地）
 

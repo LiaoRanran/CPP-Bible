@@ -1137,7 +1137,7 @@ int main() {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-用 vector 作底层容器构造 stack，用默认 deque 构造 queue，对比二者接口（LIFO vs FIFO）。
+**真实场景：撤销栈（LIFO）与任务队列（FIFO）。** 编辑器撤销用 `stack`（底层 `vector`），打印/IO 任务派发用 `queue`，对比二者受限接口。
 
 ```cpp
 #include <iostream>
@@ -1155,8 +1155,10 @@ int main() {
 
 [标准] 结论：`std::stack`/`std::queue` 是容器适配器，包装一个序列容器并暴露受限接口；`stack` 默认底层 `deque`，`queue` 默认 `deque`。`stack` 只允许栈顶访问（LIFO），`queue` 只允许队首出/队尾入（FIFO）。
 
+[引用] ISO/IEC 14882:2023 §[stack] 与 §[queue]（容器适配器与默认底层 `deque`）；见 cppreference "container/stack"、"container/queue"。
+
 ### 练习 2（难度 ★★★）
-用 std::greater 把 priority_queue 变成最小堆，演示比较器决定堆序。
+**真实场景：定时器最小堆——最近到期先触发。** 调度器用 `priority_queue` + `greater` 取最早定时器（`top()` 为最小延迟），演示比较器决定堆序。
 
 ```cpp
 #include <iostream>
@@ -1172,8 +1174,10 @@ int main() {
 
 [标准] 结论：`std::priority_queue` 默认是最大堆（`std::less`），`top()` 总是当前极值；传入 `std::greater` 即变最小堆。底层容器必须是随机访问容器（默认 `vector`）。
 
+[引用] ISO/IEC 14882:2023 §[priqueue] 与 §[priqueue.members]（`top`/`push`/`pop` 与比较器）；底层须满足随机访问（默认 `vector`），见 cppreference "container/priority_queue"。
+
 ### 练习 3（难度 ★★★★）
-用最大堆实现 Top-K：持续压入，超过 K 就弹出堆顶，最终堆中即最大的 K 个。
+**真实场景：实时监控 Top-K hottest URLs。** 用最大堆维护访问量前 K，超过 K 弹堆顶，最终堆中即最大的 K 个。
 
 ```cpp
 #include <iostream>
@@ -1192,6 +1196,8 @@ int main() {
 ```
 
 [标准] 结论：适配器不提供遍历，只能从受限端点访问；Top-K、调度优先级等场景用 `priority_queue` 最自然。需要遍历时改用底层容器（如 `std::make_heap` + `vector`）。
+
+[引用] ISO/IEC 14882:2023 §[priqueue]；`std::make_heap`/`std::pop_heap`（§[alg.heap]）提供可遍历堆；对更多堆容器见 Boost.Heap（boost.org 文档）。
 
 ## 附录：用法演绎（从选型到落地）
 

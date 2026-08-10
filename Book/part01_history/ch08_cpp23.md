@@ -773,7 +773,7 @@ count_even(const std::vector<int>&) @ -O2 (98 B):
 
 ### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：构建工具的整数配置聚合。** 你写一个 C++23 构建/版本工具，把若干个整数配置计数器（超时、重试、并发度）相加；误传浮点/字符串时应被编译期拒绝而非运行期崩溃。请用 `std::integral` 概念约束 `add`，使浮点调用给出清晰的错误。
 
 <details><summary>答案与解析</summary>
 
@@ -788,11 +788,13 @@ int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
 
 [标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
 
+[引用] ISO C++20 §[concepts]；cppreference "std::integral"（https://en.cppreference.com/w/cpp/concepts/integral）。C++23 延续并扩展了概念生态（如论文 P0847R3 的推导指引）。
+
 </details>
 
 ### 练习 2（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：编译期常量表生成。** 你写一个 C++23 数值/组合工具，需要把"阶乘"等常量在编译期算好塞进 `constexpr` 表（呼应本章 `std::expected`/`std::generator` 等大量编译期增强）。请写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
 
 <details><summary>答案与解析</summary>
 
@@ -805,11 +807,13 @@ int main() { std::cout << fact(5) << '\n'; }
 
 [标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
 
+[引用] ISO C++ §[expr.const]；cppreference "constexpr"（https://en.cppreference.com/w/cpp/language/constexpr）。C++23 进一步放宽 constexpr（如部分容器可在常量表达式中使用，见论文 P2448R2），与本章 `std::expected`/`std::generator` 的编译期能力呼应。
+
 </details>
 
 ### 练习 3（难度 ★★★）
 
-用折叠表达式写一个 `sum` 可变参数函数，计算任意个数实参之和。
+**真实场景：多指标聚合/哈希种子合并。** 你写一个 C++23 小工具，要把任意个整数指标（或哈希种子）汇总成一个总和，调用点传入个数不定。请用折叠表达式写一个 `sum` 可变参数函数，计算任意个数实参之和。
 
 <details><summary>答案与解析</summary>
 
@@ -820,6 +824,8 @@ int main() { std::cout << sum(1, 2, 3, 4) << '\n'; }
 ```
 
 [标准] 一元左折叠 `(init + ... + ts)` 展开为 `((((0+1)+2)+3)+4)`。
+
+[引用] ISO C++17 §[expr.prim.fold]；cppreference "折叠表达式"（https://en.cppreference.com/w/cpp/language/fold）。折叠表达式语法在 C++23 亦支持二元右折叠等扩展，仍是零开销的变参聚合手段。
 
 </details>
 

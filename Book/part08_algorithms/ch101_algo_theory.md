@@ -986,7 +986,7 @@ add rdi, 0x0008             ; 收缩左界
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景**：跨模块/跨 API 边界经常要比较两个"类型可能不同、且一个有符号一个无符号"的量（例如把 `size_t` 下标和 `int` 阈值比大小），直接用 `a < b` 在符号混合时会触发危险的"通常算术转换"误判。`std::cmp_less` 等安全比较工具正是为堵这个坑而生。请写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。为什么裸 `a < b` 在有符号/无符号混用时可能得出错误结果？
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1025,11 +1025,13 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 
 [标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
 
+[引用] cppreference `std::cmp_less`：`https://en.cppreference.com/w/cpp/utility/intcmp/cmp_less`。符号安全比较的背景见 WG21 提案 P0518R1（`<utility>` 中的整数比较函数）。
+
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景**：库接口最怕"用户传了个浮点进来、编译期却通过了、运行时才出怪问题"。C++20 概念（concepts）把这种"类型约束"从运行期前移到编译期，并给出人类可读的错误。请用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。相比传统的 SFINAE/`enable_if`，概念报错好在哪里？
 
 <details><summary>答案与解析</summary>
 
@@ -1044,11 +1046,13 @@ int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
 
 [标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
 
+[引用] cppreference `std::integral`：`https://en.cppreference.com/w/cpp/concepts/integral`。概念机制见 ISO §13.5（[temp.concept]）。
+
 </details>
 
 ### 练习 3（难度 ★★）
 
-解释栈对象与堆对象生命周期差异：`{ int a; }` 与 `new int` 的销毁时机有何不同？
+**真实场景**：排查内存泄漏或"函数返回后还能不能访问局部变量"这类 bug，本质就是搞清栈对象与堆对象的生命周期——`{ int a; }` 在作用域结束自动析构，而 `new int` 分配的对象直到 `delete` 才释放，漏掉 `delete` 即泄漏。这也是 RAII/智能指针存在的根本动机。请解释栈对象与堆对象生命周期差异：`{ int a; }` 与 `new int` 的销毁时机有何不同？
 
 <details><summary>答案与解析</summary>
 
@@ -1060,6 +1064,10 @@ int main(){ int a=1; int* p=new int(2); /* ... */ delete p; }
 ```
 
 [标准] 遗漏 `delete` 即内存泄漏；这是 RAII/智能指针存在的根本动机。
+
+[引用] cppreference 存储期与对象生命周期：`https://en.cppreference.com/w/cpp/language/lifetime`。RAII 惯用法见 C++ 核心指南（C++ Core Guidelines）"R.1–R.5"（资源管理规则）。
+
+</details>
 
 ## 附录 J：算法思想选型决策流（D3 维度）
 
@@ -1130,8 +1138,6 @@ flowchart TD
 | ch19（迭代器） | ch101 | 图/树的遍历依赖迭代器 |
 | ch100（ranges） | ch101 | 惰性管道表达回溯/分治的组合 |
 | ch115（移动语义） | ch101 | 状态对象移动影响 DP/回溯的性能 |
-
-</details>
 
 
 ## 附录 D4：libstdc++ 15.3.0 源码解析 — 序列相等/字典序的 memcmp 快路径（三标准库对比）[E: Low-level / H: Design]

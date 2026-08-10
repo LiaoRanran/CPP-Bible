@@ -1147,8 +1147,7 @@ mov byte [rax+0x0000], 0xcc   ; 写入软件断点
 
 ### 练习 1（难度 ★★）
 
-AddressSanitizer 能在运行时捕获堆越界。请写一段含堆缓冲溢出的程序（编译期合法），
-并说明加上 `-fsanitize=address -g` 后运行会报什么。
+**真实场景：偶发的堆破坏。** 程序偶尔输出乱码、重现不了，怀疑某处越界写坏了别的对象的元数据。请用 AddressSanitizer 在运行时抓堆越界：写一段含堆缓冲溢出的程序（编译期合法），并说明加上 `-fsanitize=address -g` 后运行会报什么。
 
 ```cpp
 #include <iostream>
@@ -1164,10 +1163,11 @@ int main() {
 [标准] 结论：不加 sanitizer 时越界是静默 UB（可能碰巧不出错）；
 `g++ -fsanitize=address -g x.cpp -o x` 运行后 ASan 直接定位到越界行与影子内存信息。
 
+[引用] Google Sanitizers wiki《AddressSanitizer》（https://github.com/google/sanitizers/wiki/AddressSanitizer ）讲红区 + 影子内存如何在越界发生瞬间报错（heap-buffer-overflow / use-after-free）。
+
 ### 练习 2（难度 ★★★）
 
-UndefinedBehaviorSanitizer 捕获有符号溢出等 UB。请写程序展示有符号溢出，
-并说明为什么“普通 `-O2` 构建”可能让这种 bug 更难发现。
+**真实场景：发布档里的整数溢出。** 一段计数逻辑在 Debug 下正常、`-O2` 下结果诡异，怀疑有符号溢出被优化消除。请用 UndefinedBehaviorSanitizer 抓这类 UB：写程序展示有符号溢出，并说明为什么"普通 `-O2` 构建"可能让这种 bug 更难发现。
 
 ```cpp
 #include <iostream>
@@ -1179,13 +1179,14 @@ int main() {
 }
 ```
 
-[标准] 结论：有符号溢出在优化下可能被“证明不可能”而整段消除，导致行为诡异；UBSan 在 IR 层插桩，
+[标准] 结论：有符号溢出在优化下可能被"证明不可能"而整段消除，导致行为诡异；UBSan 在 IR 层插桩，
 无论优化级别都能抓住。
+
+[引用] Clang《UndefinedBehaviorSanitizer》（https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html ）与 GCC《Instrumentation Options》（https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html ，`-fsanitize=undefined`）说明 UBSan 在 IR 层插桩、不受优化消除影响。
 
 ### 练习 3（难度 ★★★★）
 
-`-g` 把源码行映射到机器指令，`strip` 会移除它。请写程序说明：同样一个崩溃，
-带 `-g` 与不带 `-g` 在调试器里能看到的差异（用断言验证不变量作示范）。
+**真实场景：线上 core dump 分析。** 一台服务器崩了只留下 core 文件，你需要从中还原崩溃位置。请用 `-g` 把源码行映射到机器指令、用 `strip` 演示移除前后差异：写程序说明同样一个崩溃，带 `-g` 与不带 `-g` 在调试器里能看到的差异（用断言验证不变量作示范）。
 
 ```cpp
 #include <iostream>
@@ -1201,6 +1202,8 @@ int main() {
 
 [标准] 结论：`-g` 生成 DWARF 调试信息，GDB/LLDB 能显示文件名/行号/局部变量；
 `strip` 删掉后只剩裸地址，core dump 几乎不可读。发布版常保留 `-g` 再单独 `strip` 备份符号。
+
+[引用] GCC《Debugging Options》（https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html ，`-g` 生成调试信息）；DWARF 调试格式标准（https://dwarfstd.org/ ）定义源码行 / 变量如何映射到机器指令。
 
 ## 附录：用法演绎（从选型到落地）
 

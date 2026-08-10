@@ -1025,57 +1025,82 @@ DI 常被误当成"一个 C++ 技巧"，实则是一条源自 1980 年代的软�
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：Web 请求处理器。** 一个 `Handler` 需要访问数据库与日志器，但不该自己 `new` 它们（否则难替换、难测试）。请用构造函数注入：以 `std::unique_ptr` 把 `Storage` 与 `Logger` 传入，说明所有权如何随注入清晰转移，以及它如何践行 C++ Core Guidelines 关于「明确资源所有权」的原则。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <memory>
+#include <string>
+struct Storage { virtual ~Storage()=default; virtual void put(const std::string&,const std::string&)=0; };
+struct MemStorage : Storage { void put(const std::string&,const std::string&) override {} };
+struct Handler {
+    std::unique_ptr<Storage> db;
+    explicit Handler(std::unique_ptr<Storage> s) : db(std::move(s)) {}
+    void run() { db->put("k","v"); }
+};
+int main() { Handler h(std::make_unique<MemStorage>()); h.run(); }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 构造函数注入把依赖的「创建」与「拥有」分离：依赖由外部提供、`unique_ptr` 表达独占所有权，处理器析构时自动释放，无裸指针泄漏风险。
+
+[引用] 依赖注入见 Martin Fowler 的「Inversion of Control Containers and the Dependency Injection pattern」；C++ 落地与所有权规范见 C++ Core Guidelines（Resource management / F 章）与 Boost.DI（boost.org）；ch141 ⑦ 详述 `unique_ptr` 所有权。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：可测的业务逻辑。** 你的订单服务依赖真实数据库，但单元测试不该连库。请用「依赖接口 + 注入内存 fake（或 mock）」让被测单元脱离真实依赖，并说明它与 GoogleTest 的 `Mock` 机制、以及 ch150 ④ Mock 与依赖注入章节的关系。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <cassert>
+#include <string>
+#include <unordered_map>
+struct Storage { virtual ~Storage()=default;
+    virtual void put(const std::string&,const std::string&)=0;
+    virtual std::string get(const std::string&) const=0; };
+struct MemStorage : Storage { std::unordered_map<std::string,std::string> m;
+    void put(const std::string&k,const std::string&v) override { m[k]=v; }
+    std::string get(const std::string&k) const override { auto it=m.find(k);
+        return it==m.end()?"":it->second; } };
+int main() {
+    MemStorage db;                 // 注入 fake，替换真实 DB
+    db.put("a","1");
+    assert(db.get("a")=="1");
+    assert(db.get("x")=="");
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 面向接口编程 + 虚函数多态，使替换实现（fake / mock）在编译期类型安全；测试零外部依赖、可重复、秒内完成。
+
+[引用] Mock 与 DI 见 ch150 ④ 与 GoogleTest 官方文档（google.github.io/googletest）；依赖注入容器 Boost.DI（boost.org）可在编译期把 fake 绑进接口；ch141 ⑧ 专讲「DI 与测试（mock 注入）」。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：ECS 游戏系统的可注入依赖。** 一个 `MovementSystem` 需要「时钟」与「随机数发生器」，但不同场景（回放 / 测试 / 正式运行）要用不同实现。请用模板参数（编译期绑定）注入这两个依赖，避免虚调用开销，并指出这与 ch142 ECS 中「系统依赖基础设施」的衔接点。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct SysClock { double now() const { return 0.0; } };
+struct Rng      { int next() const { return 1; } };
+template <typename Clock, typename Random>
+struct MovementSystem {
+    Clock clk; Random rng;
+    void tick() { (void)clk.now(); (void)rng.next(); std::cout << "tick\n"; }
+};
+int main() { MovementSystem<SysClock, Rng> sys; sys.tick(); }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 模板参数注入在编译期把依赖「焊死」进系统类型，编译器可内联 `now()` / `next()`，比虚接口少一次间接调用；代价是系统类型随依赖组合翻倍（见 ch140 ⑮）。
+
+[引用] 该编译期 DI 思路与 EnTT（skypjack/entt）等 ECS 库的系统设计一致；ch142 ⑰ 给出 ECS 真实库参考，ch141 ④ 讲「模板参数注入（编译期绑定）」。
 
 </details>
 

@@ -898,63 +898,79 @@ int main(){std::cout<<"Chromium=no exceptions+RTTI; Abseil=SwissTable+StatusOr"<
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** Chromium / Abseil 代码库默认禁用异常与 RTTI，移动操作从不抛异常、因而总是比拷贝便宜。请写一个函数模板 `relocate`，用 `std::is_nothrow_move_constructible` 在编译期判断：当移动不抛异常时优先 `std::move`，否则退回拷贝。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+用 `if constexpr` + 类型特性在编译期分支，避免运行期开销：
 
 ```cpp
-#include <iostream>
+#include <type_traits>
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+// 无异常/RTTI 环境下移动安全，优先移动；否则退回拷贝
+template <class T>
+void relocate(T& dst, T& src) {
+    if constexpr (std::is_nothrow_move_constructible_v<T>)
+        dst = std::move(src);
+    else
+        dst = src;
+}
+int main() { int a = 1, b = 2; relocate(a, b); return a == 2 ? 0 : 1; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `if constexpr` 编译期分支；变量模板 `std::is_nothrow_move_constructible_v` 做类型特性判断。
+
+[引用] Abseil 文档：<https://abseil.io/docs/cpp/guides>; cppreference `std::is_nothrow_move_constructible`：<https://en.cppreference.com/w/cpp/types/is_move_constructible>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** Abseil 的 `absl::Duration` 由整数 tick 计数构造（如 `absl::Nanoseconds(int64_t)`），"时长"语义上不应是浮点。请用 `std::integral` 概念约束模板，使浮点 tick 调用给出清晰编译错误。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
 
 ```cpp
-#include <iostream>
 #include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+template <std::integral T>
+T ticks_to_ms(T ticks) { return ticks / 1000; }  // 示意：整数 tick 计数换算
+int main() { return ticks_to_ms(5000) == 5 ? 0 : 1; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 概念约束为编译期硬错误（而非 SFINAE 静默失败），诊断信息更易读。
+
+[引用] Abseil Time 指南：<https://abseil.io/docs/cpp/guides/time>；cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `noexcept` 移动构造函数，使 `std::vector` 扩容时走移动而非拷贝。
+**真实场景：** Chromium 的 `base::OnceClosure` 是 move-only 类型，被投递到 `base::TaskRunner` 的任务队列中。队列扩容时需 `noexcept` 移动构造来 relocate 闭包而不拷贝（move-only 类型本就不能拷贝）。请实现这样一个 move-only 类型。
 
 <details><summary>答案与解析</summary>
 
+`noexcept` 移动构造让 `std::vector` 在重新分配时移动元素；move-only 类型删除拷贝、仅保留移动：
+
 ```cpp
-#include <iostream>
 #include <vector>
 #include <utility>
-struct S {
-  int* p = new int[8];
-  S() = default;
-  S(S&& o) noexcept : p(o.p) { o.p = nullptr; }
-  ~S() { delete[] p; }
+// 类比 base::OnceClosure：move-only，任务队列可 noexcept 移动它
+struct Closure {
+  int* p = new int(0);
+  Closure() = default;
+  Closure(Closure&& o) noexcept : p(o.p) { o.p = nullptr; }
+  Closure(const Closure&) = delete;
+  Closure& operator=(const Closure&) = delete;
+  ~Closure() { delete p; }
 };
-int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << "ok\n"; }
+int main() { std::vector<Closure> v; v.emplace_back(); v.emplace_back(); return 0; }
 ```
 
-[标准] `noexcept` 移动构造让 `vector` 在重新分配时移动元素；否则因强异常保证退化为拷贝。
+[标准] `noexcept` 移动构造让 `vector` 重新分配时移动元素；删除拷贝构造使类型 move-only。
+
+[引用] Chromium `base::OnceClosure`（`base/callback.h`）：<https://chromium.googlesource.com/chromium/src/+/main/base/callback.h>；cppreference `std::vector`：<https://en.cppreference.com/w/cpp/container/vector>。
 
 </details>
 

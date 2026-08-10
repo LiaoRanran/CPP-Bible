@@ -839,7 +839,7 @@ A: operator| 重载。view1 | view2 → view2(view1) → 返回组合后的 view
 
 ### 练习 1（难度 ★★）
 
-用 `std::ranges::sort` 配合**投影**（projection）按结构体成员排序。给定 `Person{{"Bob",30},{"Alice",25},{"Carol",35}}`，按 `age` 升序排序，输出应为 `Alice:25 Bob:30 Carol:35`。
+**真实场景**：从数据库/API 拿到一批记录后，最常见需求是"按某个字段排序展示"——比如用户列表按年龄排序。`std::ranges::sort` 的投影让你不必手写 lambda 取成员，直接把"按什么排序"声明出来。请用 `std::ranges::sort` 配合**投影**（projection）按结构体成员排序。给定 `Person{{"Bob",30},{"Alice",25},{"Carol",35}}`，按 `age` 升序排序，输出应为 `Alice:25 Bob:30 Carol:35`。`&Person::age` 这种成员指针投影相比手写 lambda 好在哪里？
 
 <details><summary>答案与解析</summary>
 
@@ -859,11 +859,13 @@ int main() {
 
 [标准] `ranges::sort(range, comp={}, proj={})` 的第三参数是投影，先对元素应用投影再比较——`&Person::age` 是成员指针投影，免去手写 lambda 取成员。比传统 `sort(v.begin(), v.end(), [](auto&a,auto&b){return a.age<b.age;})` 更简洁。
 
+[引用] cppreference `std::ranges::sort`：`https://en.cppreference.com/w/cpp/algorithm/ranges/sort`。投影（projection）语义见 ISO §25.7.2（[alg.sorting]）与 §26.2（ranges）。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用 `std::views::filter` + `std::views::transform` 组成**惰性管道**：取偶数并平方，且零中间容器、单次遍历。给定 `v{1..8}`，输出应为 `4 16 36 64`。
+**真实场景**：数据清洗常是"筛选→变换→再筛选"的链式处理（如先过滤无效请求、再把剩余请求换算成内部单位）。`std::views` 的惰性管道让你用 `|` 把多个步骤串起来，既不物化中间容器、又只遍历一次。请用 `std::views::filter` + `std::views::transform` 组成**惰性管道**：取偶数并平方，且零中间容器、单次遍历。给定 `v{1..8}`，输出应为 `4 16 36 64`。为什么说它是"惰性"的、遍历前什么都没算？
 
 <details><summary>答案与解析</summary>
 
@@ -882,11 +884,13 @@ int main() {
 
 [标准] `views` 是惰性（lazy）的——`filter`/`transform` 不物化新容器，只在遍历 `r` 时按需计算；管道用 `|` 组合，可读性强。底层仍是原 `v`，无额外内存分配。
 
+[引用] cppreference `std::views::filter`：`https://en.cppreference.com/w/cpp/ranges/filter_view`；`std::views::transform`：`https://en.cppreference.com/w/cpp/ranges/transform_view`。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 `std::ranges::find` 配合投影在结构体数组中按成员查找。给定 `Person{{"Bob",30},{"Alice",25},{"Carol",35}}`，查找 `age==25` 的人，应输出 `Alice`。注意 `ranges::find` 返回 `borrowed_iterator`，可与 `end()` 比较。
+**真实场景**：配置中心里常要在"按名查找"和"按某属性查找"之间切换——`std::ranges::find` 的投影让你直接写"按 age 找这个人"，而不必先手写比较器。请用 `std::ranges::find` 配合投影在结构体数组中按成员查找。给定 `Person{{"Bob",30},{"Alice",25},{"Carol",35}}`，查找 `age==25` 的人，应输出 `Alice`。为什么 `ranges::find` 返回 `borrowed_iterator`、能与 `end()` 安全比较而不悬垂？
 
 <details><summary>答案与解析</summary>
 
@@ -904,6 +908,8 @@ int main() {
 ```
 
 [标准] `ranges::find(range, value, proj)` 直接接受范围（无需 `begin()/end()`），第三参投影同样适用。返回 `borrowed_iterator`——对 `vector` 等拥有型范围，可安全与 `end()` 比较而不悬垂。
+
+[引用] cppreference `std::ranges::find`：`https://en.cppreference.com/w/cpp/algorithm/ranges/find`；`std::ranges::borrowed_iterator_t`：`https://en.cppreference.com/w/cpp/ranges/borrowed_iterator`。
 
 </details>
 

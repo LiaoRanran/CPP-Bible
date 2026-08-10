@@ -1130,7 +1130,7 @@ int main() {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-为自定义 key 提供哈希与相等，演示 unordered_set 的最小接口（默认 std::equal_to 即可）。
+**真实场景：会话 ID 去重集合——为自定义 key 提供哈希。** 用自定义哈希的 `unordered_set<SessionId>` 做连接去重；字符串等标准类型可复用 `std::hash`/`std::equal_to`。
 
 ```cpp
 #include <iostream>
@@ -1149,8 +1149,10 @@ int main() {
 
 [标准] 结论：`std::unordered_set` 需要 `Hash` 与 `KeyEqual`；字符串这类标准类型可直接复用 `std::hash`/`std::equal_to`。均摊插入/查找 O(1)，但最坏（哈希冲突）退化到 O(n)。
 
+[引用] ISO/IEC 14882:2023 §[unord.req]（`Hash`/`KeyEqual` 要求与均摊 O(1)）；开放寻址替代见 Abseil `absl::flat_hash_set`（abseil.io 文档）；cppreference "container/unordered_set"。
+
 ### 练习 2（难度 ★★★）
-用 C++20 异构查找（is_transparent）让 unordered_set 直接以 string_view 查询，避免为查询构造临时 std::string。
+**真实场景：高频查找避免临时 string 构造。** 热点路径用 `string_view` 直接 `contains`，不经 `std::string` 分配（异构查找 `is_transparent`）。
 
 ```cpp
 #include <iostream>
@@ -1175,8 +1177,10 @@ int main() {
 
 [标准] 结论：哈希/相等都定义 `is_transparent` 后，`find/contains` 接受任意可透明比较的类型（如 `string_view`），省去为查询临时构造 `std::string` 的分配，适合高频查找热点。
 
+[引用] ISO/IEC 14882:2023 §[unord.req]（异构查找 `is_transparent`，C++20）；避免临时对象分配见 cppreference "container/unordered_set" 的 heterogeneous lookup 专节。
+
 ### 练习 3（难度 ★★★★）
-用 reserve 预分配桶以避免多次 rehash，演示 load_factor 与 bucket_count 的关系。
+**真实场景：预分配桶避免 rehash 抖动。** 已知规模先 `reserve` 防 rehash 使迭代器失效；`load_factor = size/bucket_count`，超过 `max_load_factor`（默认 1.0）即触发扩容。
 
 ```cpp
 #include <iostream>
@@ -1191,6 +1195,8 @@ int main() {
 ```
 
 [标准] 结论：`reserve(n)` 使桶数足以容纳 n 个元素而不触发 rehash（rehash 会使所有迭代器失效并重新分布）；`load_factor = size/bucket_count`，超过 `max_load_factor`（默认 1.0）即触发扩容。
+
+[引用] ISO/IEC 14882:2023 §[unord.req]（`reserve`/`bucket_count`/`load_factor`/`max_load_factor` 与 rehash 的迭代器失效）；见 cppreference "container/unordered_set"。
 
 ## 附录：用法演绎（从选型到落地）
 

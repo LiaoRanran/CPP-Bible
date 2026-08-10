@@ -987,57 +987,77 @@ A: 零开销——删除器无 vtable，调用可内联。sizeof 与裸指针相
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：可配置的智能指针。** 你要把「所有权策略（独占 / 共享）」与「线程安全策略（单线程 / 加锁）」做成可组合的选项，而不为每种组合写一个新类。请用 policy-based design：以模板参数传入两个 policy 类，让 `SmartPtr<T, Ownership, Threading>` 在编译期拼装出对应行为，并说明它源自 Alexandrescu《Modern C++ Design》的 Loki 库思路。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct Unique { template<class T> using ptr = T*; };      // 独占：裸指针语义
+struct Shared { template<class T> using ptr = T*; };      // 示意：真实应含引用计数
+template <typename T, typename Ownership, typename Threading>
+struct SmartPtr {
+    typename Ownership::template ptr<T> p{};
+    void reset(T* q) { p = q; }
+};
+int main() { SmartPtr<int, Unique, Shared> sp; std::cout << "ok\n"; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] policy 类把「正交的横切行为」做成模板参数，编译期组合；不同 policy 生成不同类型实例，零运行期分发开销，但模板实例化数量随组合增长（见 ch140 ⑮ 代码膨胀）。
+
+[引用] Policy-Based Design 见 Alexandrescu《Modern C++ Design》(2001) 与 Loki 库；C++ 模板参数与默认模板参数见 cppreference；ch140 ②–④ 给出完整形态。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：数值线性代数库。** 像 Eigen / Blaze 那样，矩阵需要「存储布局（行主 / 列主）」与「标量类型（float/double/cfloat）」在编译期自由组合，且不能引入运行期分支。请用 policy 选择存储布局，并演示同一算法对两种布局都能正确遍历。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <type_traits>
+struct RowMajor; struct ColMajor;        // 布局 policy 标签，须在使用前声明
+template <int Rows, int Cols, typename Layout>
+struct Mat {
+    double d[Rows * Cols];                              // 示意存储
+    int idx(int r, int c) const {
+        if constexpr (std::is_same_v<Layout, RowMajor>) return r * Cols + c;
+        else                                              return c * Rows + r;
+    }
+};
+int main() {
+    Mat<2,3,RowMajor> a; Mat<2,3,ColMajor> b;
+    std::cout << a.idx(1,2) << ' ' << b.idx(1,2) << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 布局 policy 通过 `if constexpr` 在编译期决定下标公式，运行时无分支；`std::is_same_v` 做编译期类型判别（见 ch140 ⑤）。
+
+[引用] 该手法即 Eigen 的 `Eigen::StorageOptions`（RowMajor/ColMajor）与 Blaze 的存储 policy；`if constexpr` 见 C++17（P0292）与 cppreference；ch140 ⑧ 给出智能指针 / 分配器的 policy 实例。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：编译期策略 vs 运行期策略。** 同样是「选择一种序列化格式（JSON / 二进制）」，分别用 policy-based design（编译期固定）与 GoF 策略模式（`std::function`，运行期切换）实现，并量化二者取舍：何时 policy 的零开销值得牺牲运行期灵活性？
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <functional>
+struct Json { static void write() { std::cout << "json\n"; } };
+struct Bin  { static void write() { std::cout << "bin\n"; } };
+template <typename Fmt> void save() { Fmt::write(); }          // 编译期 policy
+void save_rt(std::function<void()> f) { f(); }                 // 运行期策略
+int main() { save<Json>(); save_rt(Bin::write); }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 编译期 policy 把 `write` 直接内联进 `save`，无间接调用；运行期 `std::function` 多一次类型擦除调用，但可在运行期换格式。Policy 适合「格式在编译期就定死、且要极致性能」的场景。
+
+[引用] policy（编译期）与策略模式（运行期）的对比见 ch140 ⑩；`std::function` 的开销见 cppreference 与 ch138 ⑲ 基准；C++ Core Guidelines 讨论按「是否需要运行期变化」选择静态或动态多态。
 
 </details>
 

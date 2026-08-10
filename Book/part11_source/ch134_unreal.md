@@ -885,57 +885,65 @@ call [rcx+0x0018]         ; 反射访问属性
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** Unreal Engine 在 `Math/UnrealMathUtility.h` 提供 `TMax`/`TMin` 模板工具，对任意可比较类型取最值（配合其 `TArray` 等容器）。请写一个函数模板 `t_max`，对任意同类型可比较值取最大值。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+函数模板按实参推导类型；两实参同类型时 `T` 唯一确定，与 UE 的 `TMax` 等数学模板同源：
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+template <class T>
+const T& t_max(const T& a, const T& b) { return (b < a) ? a : b; }
+int main() { int x = 3, y = 7; return t_max(x, y) == 7 ? 0 : 1; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 函数模板按实参推导；两实参同类型时 `T` 唯一确定。
+
+[引用] UE `UnrealMathUtility`（TMax/TMin）：<https://docs.unrealengine.com/5.3/en-US/API/Runtime/Core/Math/UnrealMathUtility/>；cppreference 函数模板：<https://en.cppreference.com/w/cpp/language/function_template>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** UE 游戏框架大量使用整数句柄（如网络复制的 `Actor` 实例 ID、枚举型 `EObjectTypeQuery`）。请用一个被 `std::integral` 概念约束的 `set_net_id`，使其只接受整数 ID，浮点传入给出清晰编译错误。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
 
 ```cpp
-#include <iostream>
 #include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+template <std::integral T>
+T set_net_id(T id) { return id; }   // 约束为整型网络 ID
+int main() { return set_net_id(42) == 42 ? 0 : 1; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 概念约束为编译期硬错误（而非 SFINAE 静默失败），诊断信息更易读。
+
+[引用] UE Actor 复制 / 网络标识：<https://docs.unrealengine.com/5.3/en-US/networking-and-multiplayer-in-unreal-engine/>；cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** UE 的内存设施（`FMemory`、`FMemory::Malloc` 对齐分配）需要把请求大小向上对齐到特定边界。请用 `constexpr` 函数 `align_up` 在编译期计算对齐后的尺寸，并用 `static_assert` 验证（对齐分配思想的编译期雏形）。
 
 <details><summary>答案与解析</summary>
 
+`constexpr` 函数在常量表达式上下文（如 `static_assert` 实参）中于编译期求值；向上对齐用 `(n + a - 1) / a * a`：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+constexpr unsigned align_up(unsigned n, unsigned a) {
+    return (n + a - 1) / a * a;
+}
+static_assert(align_up(13, 8) == 16);
+static_assert(align_up(16, 8) == 16);
+int main() { return 0; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `constexpr` 函数在常量表达式上下文（`static_assert` 实参）中于编译期求值；对齐计算服务于内存分配。
+
+[引用] UE `FMemory` / 对齐分配：<https://docs.unrealengine.com/5.3/en-US/API/Runtime/Core/HAL/FMemory/>；cppreference `constexpr`：<https://en.cppreference.com/w/cpp/language/constexpr>。
 
 </details>
 

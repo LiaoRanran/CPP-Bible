@@ -694,7 +694,7 @@ int main(){f(42);return 0;}
 
 ### 练习 1（难度 ★★）
 
-用 `std::enable_if_t` 给 `load` 写两个重载：一个接受**算术标量**（`is_arithmetic`），一个接受**非算术**类型（如字符串），实现编译期分流。
+**真实场景：存档读取"标量 vs 结构"分流。** 你的反序列化器 `load` 对 `int`/`float` 等算术标量走"定长二进制读"，对字符串/自定义结构走"长度前缀读"，二者代码路径完全不同、绝不可混。请用 `std::enable_if_t` 给 `load` 写两个重载：一个接受**算术标量**（`is_arithmetic`），一个接受**非算术**类型（如字符串），实现编译期分流。
 
 <details><summary>答案与解析</summary>
 
@@ -716,11 +716,13 @@ int main() { load(42); load(std::string("hi")); }
 
 [标准] 两个重载的 SFINAE 条件互补（`arithmetic` vs `!arithmetic`），对每个 `T` 恰好一个启用；`enable_if_t` 把约束失败变成"该重载从候选集静默移除"，而非硬错误。
 
+[引用] `std::is_arithmetic`（cppreference "std::is_arithmetic"）是 `<type_traits>` 提供的标量分类 trait。这种 SFINAE 分流正是标准库 `std::advance`/`std::distance` 对迭代器类别做编译期分流的前身手法。ISO/IEC 14882:2023 §[meta.unary.prop] 与 §[temp.deduct] 规定 trait 与 SFINAE 移除规则。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用 **`void_t` 惯用法**写 `has_iterator<T>` trait，探测类型是否存在可调用成员 `begin()` / `end()`，并 `static_assert` 验证 `std::vector`（有）与 `int`（无）。
+**真实场景：类型擦除容器"只接受可迭代对象"。** 你写一个 `print_range` 工具，希望只对具备 `begin()`/`end()` 的类型（如 `std::vector`、自定义容器）启用，对 `int` 等标量直接禁用。请用 **`void_t` 惯用法**写 `has_iterator<T>` trait，探测类型是否存在可调用成员 `begin()` / `end()`，并 `static_assert` 验证 `std::vector`（有）与 `int`（无）。
 
 <details><summary>答案与解析</summary>
 
@@ -744,11 +746,13 @@ int main() {
 
 [标准] `void_t<decltype(begin()), decltype(end())>` 在两者都合法时为 `void`、特化命中；任一缺失则替换失败、回退主模板——这是"探测成员函数"的标准 SFINAE 手法。
 
+[引用] `std::begin`/`std::end` 是所有标准容器的统一可迭代接口（cppreference "std::begin"）。`void_t` 探测惯用法也是标准库 `<experimental/type_traits>` 中 `std::experimental::is_detected` 的检测习惯用法（Detection Idiom）的基础——libstdc++ 用 `__detector` 实现它（见本章附录 D4）。ISO/IEC 14882:2023 §[iterator.range] 与 §[meta.trans.other] 规定相关设施。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用**优先级标签分发**（tag dispatch）实现 `foo`：整数走 `std::true_type` 分支，其余走 `std::false_type` 分支，主入口以 `std::bool_constant` 选择，避免 SFINAE 复杂性。
+**真实场景：算法对"整数 vs 浮点"走不同数值内核。** 你的数学库 `foo` 对整数走"定点快速路径"、对浮点走"IEEE 精确路径"，希望错误信息清晰、不依赖 SFINAE 晦涩报错。请用**优先级标签分发**（tag dispatch）实现 `foo`：整数走 `std::true_type` 分支，其余走 `std::false_type` 分支，主入口以 `std::bool_constant` 选择，避免 SFINAE 复杂性。
 
 <details><summary>答案与解析</summary>
 
@@ -765,6 +769,8 @@ int main() { foo(1); foo(1.0); }
 ```
 
 [标准] tag dispatch 用空标签类型在编译期选分支，错误信息比 SFINAE 更干净，且不需要 `enable_if`；是 Concepts 之前的标准"编译期重载选择"手法。
+
+[引用] 标签分发是标准库 `std::advance`（随机/双向/输入迭代器各一个重载 + `std::random_access_iterator_tag` 等标签）的经典手法（cppreference "std::advance"）。它在 C++20 Concepts 之前是"编译期选分支"的主力，错误信息远优于 SFINAE（见 ch70）。ISO/IEC 14882:2023 §[temp.fct] 与迭代器标签体系规定其机制。
 
 </details>
 

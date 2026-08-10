@@ -1550,7 +1550,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-解释 AoS（Array of Structures）与 SoA（Structure of Arrays）在缓存局部性上的根本差异，并说明为什么对「只读取部分字段的批量遍历」SoA 更优。
+**真实场景：物理引擎的批量粒子更新。** 一个物理引擎每帧遍历数十万粒子，但热点循环只读取 `position`、很少读 `color`。请解释 AoS（Array of Structures）与 SoA（Structure of Arrays）在缓存局部性上的根本差异，并说明为什么对这种「只读取部分字段的批量遍历」SoA 更优。
 
 <details><summary>答案与解析</summary>
 
@@ -1573,11 +1573,13 @@ int main() {
 
 [标准] 对象布局（layout）由非静态数据成员声明顺序决定；缓存行（典型 64B）是硬件预取与命中率的基本单位，数据布局直接决定两者。
 
+[引用] 数据导向设计（DOD）见 Mike Acton「Data-Oriented Design」演讲与 Unity DOTS 文档（unity.com）；对象布局规则见 ISO/IEC 14882:2023 `[class.mem]` 与 cppreference「Data members」；ch143 ⑤ 给出 AoS/SoA 的真实基准。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-「冷热数据分离」要求把高频访问的热字段从大结构体中抽出来单独成组。给定一个含热字段 `hit` 与冷字段组 `Cold` 的结构体数组，给出一种重构，使热遍历只触碰热字段所在数组，并解释其对缓存利用率与 False Sharing 的意义。
+**真实场景：网络游戏实体的状态同步。** 服务器每帧要同步十万实体的「在线 / 血量」等热字段，但 `meta` 等冷字段几秒才动一次。请做「冷热数据分离」：把高频访问的热字段 `hit` 从大结构体 `Entity{int hit; Cold cold;}` 中抽出独立成组，使热遍历只触碰热字段数组，并解释其对缓存利用率与 False Sharing 的意义。
 
 <details><summary>答案与解析</summary>
 
@@ -1603,5 +1605,7 @@ int main() {
 热数组 `hits` 每个元素仅 4B，一个 64B 缓存行装 16 个热字段，命中率与带宽利用率远高于「热冷同体」；若多线程各自遍历不同 `hits` 区间且按缓存行对齐（`alignas(64)`），还能消除 False Sharing（见 ch154）。
 
 [标准] 成员布局影响对象大小与缓存行为；数据导向设计按「访问模式」而非「实体」组织内存。
+
+[引用] 冷热分离与缓存利用率见 Tony Albrecht「Pitfalls of Object-Oriented Programming」（Sony 技术报告）；False Sharing 的 `alignas(64)` 隔离见 ch143 ⑬ 与 ch143 ⑯ 反模式；ISO 对齐规则见 `[expr.align]` 与 cppreference `alignas`。
 
 </details>

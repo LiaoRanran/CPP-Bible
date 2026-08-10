@@ -1116,57 +1116,67 @@ Q: LSM Tree vs B-tree? A: LSM=写快(顺序)+读慢(多层merge); B-tree=读写�
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** ClickHouse 以列块（Column/IColumn）为单位做向量化聚合，等价地你需要对任意数值类型的"一列数据"求最大值（类比其 `std::vector` 列批处理）。请写一个函数模板 `column_max`，对任意可比较类型求列中最大值。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+函数模板按实参推导类型；`std::max_element` 做泛型比较，正是列式聚合的雏形：
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <vector>
+#include <algorithm>
+template <class T>
+T column_max(const std::vector<T>& col) {
+    return *std::max_element(col.begin(), col.end());
+}
+int main() { std::vector<int> c{3, 7, 1}; return column_max(c) == 7 ? 0 : 1; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 函数模板按实参推导；`std::max_element` 对任意可比较类型泛型求最大值。
+
+[引用] ClickHouse 源码（`Columns`/`IColumn` 聚合）：<https://github.com/ClickHouse/ClickHouse>；cppreference `std::max_element`：<https://en.cppreference.com/w/cpp/algorithm/max_element>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** ClickHouse 的 granule（数据颗粒）行数、Redis 的对象编码（`OBJ_ENCODING_*`）都是整数语义，浮点传入属逻辑错误。请用 `std::integral` 概念约束模板，仅接受整数类型。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
 
 ```cpp
-#include <iostream>
 #include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+template <std::integral T>
+T granule_rows(T rows) { return rows; }   // granule 行数恒为整数
+int main() { return granule_rows(8192) == 8192 ? 0 : 1; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 概念约束为编译期硬错误（而非 SFINAE 静默失败），诊断信息更易读。
+
+[引用] ClickHouse 设置（`min_insert_block_size_rows` 等）：<https://clickhouse.com/docs>; Redis 对象编码 `object.c`：<https://github.com/redis/redis>；cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** Redis 的哈希表 `dict` 容量恒为 2 的幂（掩码取模），ClickHouse 也有大量编译期常量。请用 `constexpr` 函数 `is_pow2` 在编译期判断一个数是否为 2 的幂，并用 `static_assert` 验证。
 
 <details><summary>答案与解析</summary>
 
+`constexpr` 函数在常量表达式上下文（如 `static_assert` 实参）中于编译期求值；2 的幂判定用经典的 `n & (n-1)` 位运算：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+constexpr bool is_pow2(unsigned n) { return n != 0 && (n & (n - 1)) == 0; }
+static_assert(is_pow2(16));
+static_assert(!is_pow2(12));
+int main() { return 0; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `constexpr` 函数在常量表达式上下文（`static_assert` 实参）中于编译期求值；编译期位运算可服务于哈希表尺寸策略。
+
+[引用] Redis `dict.c`（哈希表大小为 2 的幂）：<https://github.com/redis/redis>；cppreference `constexpr`：<https://en.cppreference.com/w/cpp/language/constexpr>。
 
 </details>
 

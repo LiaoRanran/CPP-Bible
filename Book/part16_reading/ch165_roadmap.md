@@ -1084,6 +1084,8 @@ flowchart TD
 
 [标准] 每个标准版本都有"必须掌握"的核心特性，按版本演进顺序学可避免跳过地基。
 
+[引用] ISO/IEC 14882（C++ 标准各版）；cppreference 版本特性索引 <https://en.cppreference.com/w/cpp/compiler_support>；C++ Core Guidelines <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>。
+
 </details>
 
 ### 练习 2（难度 ★★★）
@@ -1095,5 +1097,7 @@ flowchart TD
 路径：C++ 基础（指针/引用/类/RAII，ch19–ch39）→ 内存与对象模型（ch35–ch45）→ 并发与无锁（ch107–ch112）→ 性能与缓存（ch152–ch154）→ 系统编程实战（ch163 网络、ch164 框架）。前置：能读懂 datasheet/内存映射（ch27 `reinterpret_cast` 硬件寄存器）、理解缓存与对齐（ch42/ch154）、掌握交叉编译（ch17）。必读章：ch27（cast 与硬件寄存器）、ch42（严格别名）、ch154（缓存优化）、ch163（网络）、ch17（交叉编译）——它们直接决定嵌入式代码在 `-O2` 下是否正确与高效。
 
 [标准] 学习路径应按"能力地图"而非"章节顺序"组织；系统编程方向对内存模型与工具链的要求高于应用层。
+
+[引用] C++ Core Guidelines（嵌入式/系统编程约束）<https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>；交叉编译与工具链见本手册 ch17；缓存与对齐见 ch42/ch154；网络实战见 ch163。
 
 </details>

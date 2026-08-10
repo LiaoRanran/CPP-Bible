@@ -842,57 +842,86 @@ Q: 本章核心? A: 见附录A-F中的深度分析(工业原理/性能/汇编/�
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：跨平台渲染后端插件。** 一个图形库要同时支持 Vulkan、D3D、Metal 三种渲染后端，运行期按配置文件选定其一，调用方只想拿到统一接口 `Renderer` 而不关心具体类型。请写一个工厂函数，按字符串键创建对应后端并以 `std::unique_ptr<Renderer>` 返回，并说明它相比「`new` + `switch` 裸写法」在可扩展性与异常安全上的收益。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <memory>
+#include <string>
+struct Renderer { virtual ~Renderer() = default; virtual void draw() = 0; };
+struct Vulkan : Renderer { void draw() override { std::cout << "Vulkan\n"; } };
+struct D3D    : Renderer { void draw() override { std::cout << "D3D\n"; } };
+std::unique_ptr<Renderer> make_renderer(const std::string& name) {
+    if (name == "vulkan") return std::make_unique<Vulkan>();
+    if (name == "d3d")    return std::make_unique<D3D>();
+    return nullptr;                       // 未知后端：返回空而非抛异常，调用方决定兜底
+}
+int main() { auto r = make_renderer("vulkan"); if (r) r->draw(); }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 工厂把「对象创建」与「对象使用」解耦：返回 `unique_ptr` 转移所有权，调用方无需手动 `delete`，且析构路径唯一，避免裸 `new` 的泄漏与异常安全陷阱。
+
+[引用] 工厂模式见 GoF（Gamma、Helm、Johnson、Vlissides，1994）《Design Patterns》Factory Method；现代 C++ 写法参见 C++ Core Guidelines「I.27 优先使用工厂函数」与 cppreference 的 `std::unique_ptr` 词条。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：交易系统的订单排序器。** 订单需要按「价格优先」「时间优先」「自定义权重」三种规则排序，规则在运行期切换、未来还会增加。请用策略模式实现可插拔的比较策略，并对比 GoF 经典虚接口写法与 C++ 的 `std::function` / 编译期 `if constexpr` 两种替代写法各自的取舍。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <vector>
+#include <algorithm>
+#include <functional>
+struct Order { int price; int seq; };
+using Cmp = std::function<bool(const Order&, const Order&)>;
+std::vector<Order> sort_by(const std::vector<Order>& v, Cmp cmp) {
+    auto r = v; std::sort(r.begin(), r.end(), cmp); return r;
+}
+int main() {
+    std::vector<Order> o{{100,1},{90,2},{100,3}};
+    auto byPrice = sort_by(o, [](const Order&a,const Order&b){ return a.price < b.price; });
+    std::cout << byPrice.size() << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 策略把「会变的行为」抽成可替换的函数对象；`std::function` 提供类型擦除的运行期多态、零侵入接口；若策略在编译期已知，可用模板 / `if constexpr` 消除一次间接调用（见 ch135 ⑭、ch138 ③）。
+
+[引用] 策略模式见 GoF《Design Patterns》Strategy；C++ 落地参见 cppreference `std::function`、`std::sort`，以及 C++ Core Guidelines 关于「用非成员算法 + 策略」的论述。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：GUI 框架的按钮点击事件。** 窗口管理器要在「不修改按钮类」的前提下，让日志、音效、统计三个订阅者同时响应同一个点击事件。请用观察者模式（signal/slot 订阅列表）实现，并说明它与 Qt `QObject::connect` 信号槽机制的对应关系，以及相比直接函数调用的解耦收益。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+#include <functional>
+struct Button {
+    std::vector<std::function<void()>> slots;
+    void connect(std::function<void()> f) { slots.push_back(std::move(f)); }
+    void click() { for (auto& s : slots) s(); }   // 广播给所有订阅者
+};
+int main() {
+    Button b;
+    b.connect([]{ std::cout << "log\n"; });
+    b.connect([]{ std::cout << "sfx\n"; });
+    b.click();                                     // 两个订阅者都被通知
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 观察者把「事件源」与「响应逻辑」双向解耦：按钮不知道订阅者是谁，新增响应只需 `connect`，符合开闭原则。
+
+[引用] 观察者模式见 GoF《Design Patterns》Observer；Qt 的信号槽（`QObject::connect`）是其工业实现，文档见 Qt 官方 `doc.qt.io` 的 Signals & Slots 章节；标准库等价思路见 `std::function`（cppreference）。
 
 </details>
 

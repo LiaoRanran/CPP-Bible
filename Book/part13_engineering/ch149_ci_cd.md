@@ -1118,56 +1118,59 @@ SIMD 旗标 `-mavx2`（32 字节 `0x0020` 宽）/ `-mavx512f`（64 字节 `0x004
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：CI 流水线的阶段门禁。** 你要把「提交合并到主干」之前必经的检查拆成 `build → test → static-analysis` 三个阶段，任一阶段失败就阻断合并。请写一个 GitHub Actions 风格的 YAML 流水线骨架（jobs 依赖关系），说明「fail-fast」与「矩阵构建（多编译器）」如何缩短反馈回路（关联 ch149 ②–③、⑯）。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+```yaml
+# .github/workflows/ci.yml （示意 YAML，非 C++）
+jobs:
+  build: { runs-on: ubuntu-latest, steps: [checkout, cmake, make] }
+  test:  { needs: build, steps: [run unit tests] }
+  static:{ needs: build, steps: [clang-tidy, -Wall -Wextra -Werror] }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 流水线把「能最早失败的检查」前置，阶段间用 `needs` 表达依赖；任一阶段红即整条红，避免「构建都过不了还跑去跑测试」的浪费。
+
+[引用] GitHub Actions 语法见 docs.github.com/actions；GitLab CI 见 docs.gitlab.com/ci；ch149 ③ 详述「build/test/static/package」阶段、⑯ 讲 fail-fast、⑫ 讲矩阵构建。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：测试 + 静态分析门禁。** 一个 PR 必须通过全部单元测试、且 `clang-tidy` / `-Wall -Wextra -Werror` 零告警才能合并，否则 CI 直接失败。请说明这个门禁如何把「低级缺陷」与「风格违规」挡在 code review 之前，并指出它与 ch150 测试策略、ch147 代码评审的衔接。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+```text
+# 示意 CI 步骤（非空 C++，仅步骤文本）
+# 1) ctest --output-on-failure        # 单元测试门禁（ch150）
+# 2) clang-tidy -p build **/*.cpp     # 静态分析门禁（ch147）
+# 3) g++ -Wall -Wextra -Werror ...    # 警告即错误
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 把测试与静态分析放进「合并前必经」的流程，缺陷在被人工评审前就由机器拦截；门禁是「自动化、可重复、零情绪」的质量底线。
+
+[引用] 测试门禁见 ch149 ⑦ 与 ch150 测试金字塔；静态分析门禁见 ch149 ⑥ 与 ch147；Clang/LLVM 工具见 clang.llvm.org。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `noexcept` 函数，内部 `throw`，观察其调用后果（`std::terminate`）。
+**真实场景：性能回归门禁。** 某次「看似无害」的重构让热路径慢了 15%，但没人注意到。请在 CI 里加一道「性能回归门禁」：每次 PR 跑同一份基准，若相对主干退化超过阈值（如 5%）就阻断合并，并说明它如何依赖 ch151 的可信基准（预热 / 多次采样 / 防 DCE）。
 
 <details><summary>答案与解析</summary>
 
-```cpp
-#include <stdexcept>
-void f() noexcept { throw std::runtime_error("x"); }
-int main() { f(); }  // 触发 std::terminate
+```text
+# 示意 CI 步骤（非空 C++，仅步骤文本）
+# 1) 取主干基准基线 baseline.json
+# 2) 在当前 PR 跑同一基准，得 candidate.json
+# 3) 若 (candidate-baseline)/baseline > 5% 则 exit 1（阻断合并）
 ```
 
-[标准] `noexcept` 函数内抛异常（且未就地捕获）直接 `std::terminate`，不展开栈。
+[标准] 性能回归门禁把「性能」也当成可断言的正确性维度；但它必须建立在可信基准之上——单次测量、未预热、被 DCE 优化掉的数字都不该作为阈值依据（见 ch151 ③、⑭ 反模式）。
+
+[引用] 性能回归门禁见 ch149 ⑭ 与 ch151 基准测试；Google Benchmark（github.com/google/benchmark）提供稳定计时与多次采样，可作为门禁底座；ch151 ⑱ 专讲「与 CI 集成」。
 
 </details>
 

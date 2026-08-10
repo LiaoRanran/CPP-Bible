@@ -1323,57 +1323,81 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：微基准被编译器「优化掉」。** 你写了一个测量某函数耗时的微基准，但编译器发现结果没人用，直接把整个调用删了（死代码消除 DCE），测出来是 0。请用 `volatile` 汇聚 / 编译器屏障防止 DCE，并说明为何「可信基准」必须先证明被测代码真的被执行了（关联 ch151 ③ 用 `g++` 实证 DCE）。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <chrono>
+double work(double x) { return x * 1.0000001; }
+int main() {
+    volatile double sink = 0;                 // volatile：阻止编译器删掉调用
+    auto t0 = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < 1000000; ++i) sink = work(sink + 1);
+    auto t1 = std::chrono::high_resolution_clock::now();
+    std::cout << (t1 - t0).count() << '\n';
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 编译器会消除「结果未被观察」的计算；把结果写进 `volatile` 变量（或 `asm volatile("" ::: "memory")` 屏障）强制保留，否则基准测的是空气。
+
+[引用] 防 DCE 与基准陷阱见 ch151 ③（volatile / 编译器屏障 / `asm volatile`）；Google Benchmark（github.com/google/benchmark）内置 `DoNotOptimize` 做同样的事；cppreference「std::chrono」提供高精度计时。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：`std::vector` vs `std::list` 遍历。** 有人在论坛上断言「链表遍历更快」，你决定用基准证伪。请写一个对比两者顺序遍历耗时的微基准，并注意 `-O2` 优化、预热与多次采样，说明 vector 为何因缓存局部性碾压 list（关联 ch151 ⑰ 真实案例）。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <vector>
+#include <list>
+#include <chrono>
+int main() {
+    const int N = 1 << 20;
+    std::vector<int> v(N, 1); std::list<int> l(N, 1);
+    volatile long sink = 0;
+    auto t0 = std::chrono::high_resolution_clock::now();
+    for (int x : v) sink += x;                // 连续内存：缓存友好
+    auto t1 = std::chrono::high_resolution_clock::now();
+    for (int x : l) sink += x;                // 节点散落：缓存不友好
+    auto t2 = std::chrono::high_resolution_clock::now();
+    std::cout << (t1 - t0).count() << ' ' << (t2 - t1).count() << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `vector` 元素连续存放，遍历时预取命中、少 cache miss；`list` 节点各自 new、指针跳跃、缓存命中率低——即便链表「理论上」少搬移，顺序遍历也远慢于 vector（ch151 ⑰ 有真实数字）。
+
+[引用] vector/list 遍历基准见 ch151 ⑰；缓存与 cache miss 见 ch151 ⑩ 与 ch143 DOD；`-O2` 优化影响见 ch151 ⑨（用 `g++` 实证）。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：多线程基准的噪声与 False Sharing。** 你并行跑两段独立计数，却发现线程越多越慢——因为两个计数器落在同一缓存行，核心间反复 invalidate（False Sharing）。请用 `alignas(64)` 把计数器隔离到不同缓存行，并说明 `perf` / cachegrind 如何定位这类伪共享（关联 ch143 ⑬、ch151 ⑧ 外部工具）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <thread>
+struct Aligned { alignas(64) long c = 0; };   // 每计数器独占一个缓存行
+int main() {
+    Aligned a, b;
+    std::thread t1([&]{ for(int i=0;i<1000000;++i) ++a.c; });
+    std::thread t2([&]{ for(int i=0;i<1000000;++i) ++b.c; });
+    t1.join(); t2.join();
+    std::cout << a.c + b.c << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `alignas(64)` 让两个计数器各占一个 64B 缓存行，消除跨核 invalidate 风暴；否则两个逻辑独立的计数器会因共享缓存行而互相拖慢（详见 ch143 ⑬ 用 `std::chrono` 取证）。
+
+[引用] False Sharing 与对齐见 ch143 ⑬、ch151 ⑩（内存带宽与 cache miss）；性能剖析工具 `perf` / `valgrind --tool=cachegrind` 见 ch151 ⑧；`alignas` 见 ISO/IEC 14882:2023 与 cppreference。
 
 </details>
 

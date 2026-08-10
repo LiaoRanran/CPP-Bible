@@ -1027,6 +1027,8 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 
 用协程实现一个最小 `generator<int>`，写出 `iota(n)` 生成 `0..n-1` 并用 range-for 打印。要求复用 `std::coroutine_handle` 与 `suspend_always`，不依赖任何第三方库。
 
+**真实场景：** 你要"惰性流式"产出数据——例如逐行读取超大文件、或生成无限序列（斐波那契/素数），不希望一次性把所有元素载入内存。生成器每次 `co_yield` 只产出当前值、调用方按需推进。
+
 <details><summary>答案与解析</summary>
 
 最小生成器：promise 存当前值，`yield_value` 暂存并返回 `suspend_always`（每次产出后挂起），迭代器 `++` 时 `resume()` 恢复协程到下一 `co_yield`：
@@ -1067,11 +1069,15 @@ int main() {
 
 [标准] 协程函数由编译器做 **coroutine transform**：把函数体拆成"协程帧（堆上）"+"状态机"，`co_yield`/`co_await` 是恢复点。`initial_suspend` 返回 `suspend_always` 让 `begin()` 时先 `resume()` 才产出首个值。
 
+[引用] ISO/IEC 14882:2023 §9.5.4 [coroutine]；cppreference `std::coroutine_handle`：<https://en.cppreference.com/w/cpp/coroutine/coroutine_handle>。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
 `co_await` 表达式背后是 **awaitable 三段式协议**：`await_ready` / `await_suspend` / `await_resume`。写出 `awaitable_int` 类型，使 `co_await awaitable_int{42}` 在 `await_suspend` 中立即 `resume()` 并返回 `42`，并说明三段各自职责。
+
+**真实场景：** 异步 I/O 框架（网络库/事件循环）正是靠 awaitable 协议工作的：等待 socket 就绪时 `await_suspend` 把协程挂起并注册回调，I/O 就绪后在事件循环里 `resume()`，使"异步等待"写成同步风格。
 
 <details><summary>答案与解析</summary>
 
@@ -1112,11 +1118,15 @@ int main() { std::cout << use().get() << '\n'; }   // 43
 
 [标准] `await_suspend` 的返回类型可为 `void`/`bool`/协程句柄；返回 `void` 时语义"挂起后由调用方决定何时 resume"，这里直接 resume 形成同步链。
 
+[引用] ISO/IEC 14882:2023 §7.6.2.3 [expr.await]；cppreference `co_await`：<https://en.cppreference.com/w/cpp/language/coroutines>。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
 为什么说"协程适合海量轻量任务，而线程不适合"？用 `iota(100000)` 演示一个生成器在**单个线程/单个栈**上顺序产出 10 万个值并求和，并对比"若用 10 万个 `std::thread` 会怎样"。
+
+**真实场景：** 高并发服务器常"每连接一协程"地处理百万级长连接——每连接状态存在堆帧、切换是用户态 `resume()`；若"每连接一线程"则内存与调度开销直接 OOM/雪崩。协程把海量短任务的成本压到接近普通函数调用。
 
 <details><summary>答案与解析</summary>
 
@@ -1159,6 +1169,8 @@ int main() {
 对比：若改用 10 万个 `std::thread`，每个线程默认栈 1–8 MB → 需 100–800 GB 内存，直接 OOM；且内核调度 10 万上下文切换的开销远超协程的 `resume()` 函数调用。
 
 [标准] 协程把"任务状态"存在堆帧，上下文切换是用户态函数调用；线程把状态存在内核栈，切换需内核介入。故"海量短任务"用协程（如异步 I/O、生成器、流水线），"真并行算量"才用线程。
+
+[引用] ISO/IEC 14882:2023 §9.5.4 [coroutine]；cppreference 协程：<https://en.cppreference.com/w/cpp/language/coroutines>。
 
 </details>
 

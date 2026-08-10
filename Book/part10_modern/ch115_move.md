@@ -1200,57 +1200,85 @@ RVO 不产生函数调用在调用方生成对象。编译器在函数签名层�
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 网络服务里，解析线程从 socket 读出一个请求包（持有 `std::unique_ptr<std::vector<char>>` 缓冲），要交给工作线程处理。连接与缓冲只能独占、不可拷贝——你该怎么把它"移交"出去而不触发百万字节的深拷贝？
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`std::unique_ptr` 只能移动、不能拷贝（Rule of Five 中拷贝构造/赋值被 `=delete`）。用 `std::move` 把所有权从解析线程移交到任务队列，零拷贝：
 
 ```cpp
-#include <iostream>
+#include <memory>
+#include <vector>
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <iostream>
+struct Request { std::unique_ptr<std::vector<char>> body = std::make_unique<std::vector<char>>(1'000'000); };
+int main() {
+    Request r;
+    std::vector<Request> queue;
+    queue.push_back(std::move(r));   // 仅转移内部指针，无百万字节拷贝
+    std::cout << (r.body == nullptr) << '\n';   // 1：移交后源为空壳
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `unique_ptr` 的移动构造/赋值转移资源所有权（`[unique.ptr]`）；移动后源处于"有效但未指定"状态，本例置空（`[lib.types.movedfrom]`）。
+[引用] libstdc++ `bits/unique_ptr.h` 中拷贝被 `=delete`、仅留 `noexcept` 移动；见 cppreference `std::unique_ptr`：<https://en.cppreference.com/w/cpp/memory/unique_ptr> 与 WG21 N1377（Howard Hinnant，右值引用与移动语义）。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 数据库/存储引擎要把一批 WAL 段作为大对象塞进 `std::vector` 并频繁扩容。若你的 `Segment` 移动构造没标 `noexcept`，扩容会退回拷贝、刷盘变慢。请写出 `noexcept` 移动，保证扩容走移动而非拷贝。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+`std::vector` 扩容前用 `std::move_if_noexcept` 决策：移动构造 `noexcept` 才移动，否则为强异常安全退回拷贝：
 
 ```cpp
+#include <vector>
+#include <utility>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct Segment {
+    std::vector<unsigned char> data;
+    Segment(std::size_t n) : data(n) {}
+    Segment(Segment&&) noexcept = default;        // ✅ 关键：noexcept
+    Segment(const Segment&) = default;
+};
+int main() {
+    std::vector<Segment> log;
+    log.reserve(8);
+    for (int i = 0; i < 5; ++i) log.push_back(Segment(4096));  // 移动入容器，无拷贝
+    std::cout << log.size() << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `[vector.modifiers]` 通过 `move_if_noexcept` 选择移动或拷贝，保证强异常安全（`[std.forward]`）。
+[引用] libstdc++ `bits/stl_vector.h` 扩容路径调用 `move_if_noexcept`（`bits/move.h:125`）；见 cppreference `std::move_if_noexcept`：<https://en.cppreference.com/w/cpp/utility/move_if_noexcept>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 工厂函数 `load_config()` 要从文件/网络读出一个大配置对象并返回。C++17 起返回 prvalue 会被强制拷贝消除——但如果你写成 `return std::move(local);` 反而画蛇添足。请写出一个免拷贝的工厂，并说明为什么不要对返回值 `move`。
 
 <details><summary>答案与解析</summary>
 
+直接返回局部对象名字（或 prvalue），让 NRVO/强制消除生效；绝不对局部对象 `std::move`：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <string>
+#include <utility>
+struct Config { std::string host; std::string payload; };
+Config load_config() {
+    Config c;
+    c.host = "db.internal";
+    c.payload = "very long generated content ......";
+    return c;                       // ✅ NRVO/隐式移动，无拷贝
+}
+int main() { Config c = load_config(); (void)c; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `[class.copy.elision]`：返回具名局部对象允许 NRVO；返回 prvalue 自 C++17 起强制消除。对局部对象 `return std::move(x)` 会把 x 变成右值、抑制 NRVO，反而强制一次移动构造（`[expr.return]`）。
+[引用] 见 cppreference「Copy elision」：<https://en.cppreference.com/w/cpp/language/copy_elision> 与 WG21 P0135R1（guaranteed copy elision，Richard Smith）。
 
 </details>
 

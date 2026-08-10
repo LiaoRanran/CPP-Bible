@@ -731,9 +731,7 @@ int main(){std::vector<int> v{1,2,3};auto it=v.begin();std::advance(it,2);std::c
 
 ### 练习 1（难度 ★★）
 
-**手写标签分发**
-
-定义两个空标签类型 `fast` / `safe`，重载 `algo(T, tag)` 让编译器在编译期选对版本。
+**真实场景：游戏引擎"快速路径 vs 安全路径"算法选择。** 你的碰撞检测 `algo` 要提供 `fast`（无边界检查、SIMD）与 `safe`（带越界保护）两套实现，调用方显式选策略、零运行期分支。请**手写标签分发**：定义两个空标签类型 `fast` / `safe`，重载 `algo(T, tag)` 让编译器在编译期选对版本。
 
 <details>
 <summary>参考答案</summary>
@@ -750,13 +748,14 @@ int main() {
 }
 ```
 [标准] 标签是空类型，仅用于重载决议；零运行期开销，调用点在编译期定型。
+
+[引用] 标签分发是标准库的基石手法，`std::advance`/`std::distance` 即用 `std::random_access_iterator_tag` 等空标签在编译期选最优实现（cppreference "std::advance"）。ISO/IEC 14882:2023 §[temp.fct] 规定空类型参与重载决议。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-**iterator_category 式分发**
-
-仿 `std::advance`，用 `std::random_access_iterator_tag` / `std::input_iterator_tag` 让随机访问迭代器走 `it += n`（O(1)）、输入迭代器走 `++it` 循环（O(n)）。
+**真实场景：通用容器"随机访问 O(1) vs 前向 O(n) 前进"。** 你的 `my_advance` 工具对 `std::vector` 的迭代器应直接 `it += n`，对链表/输入迭代器只能 `++it` 循环——若用运行期 `if` 分支会有分支预测抖动且难内联。请仿 `std::advance`，用 `std::random_access_iterator_tag` / `std::input_iterator_tag` 让随机访问迭代器走 `it += n`（O(1)）、输入迭代器走 `++it` 循环（O(n)）。
 
 <details>
 <summary>参考答案</summary>
@@ -784,13 +783,14 @@ int main() {
 }
 ```
 [标准] 标准库算法靠标签 traits 在编译期选最优实现，避免运行期 `if` 分支。
+
+[引用] 这正是 `std::advance` 的精确机制：外层用 `std::iterator_traits<It>::iterator_category` 取标签，再分派到不同复杂度的实现（cppreference "std::advance"、libstdc++ `bits/stl_iterator_base_funcs.h` 的 `__distance`）。ISO/IEC 14882:2023 §[iterator.traits] 规定迭代器标签体系。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-**标签 + traits 组合**
-
-用 `std::true_type` / `std::false_type` 作为标签，结合 `std::is_integral` 在编译期选算法分支。
+**真实场景：数值内核"整数走定点、浮点走 IEEE"。** 你的 `process` 对整数走快速定点路径、对浮点走精确路径，希望编译期据类型属性选分支。请用**标签 + traits 组合**：用 `std::true_type` / `std::false_type` 作为标签，结合 `std::is_integral` 在编译期选算法分支。
 
 <details>
 <summary>参考答案</summary>
@@ -804,6 +804,9 @@ template <class T> void process(T v) { process(v, std::is_integral<T>{}); }
 int main() { process(42); process(3.14); }
 ```
 [标准] `std::is_integral<T>{}` 产生 `true_type`/`false_type` 标签，驱动重载决议。
+
+[引用] `std::is_integral`（cppreference "std::is_integral"）继承自 `std::integral_constant`，其默认构造即产生 `true_type`/`false_type` 标签，这是 traits+tag 组合的惯用法（见 ch66）。ISO/IEC 14882:2023 §[meta.unary.prop] 与 §[meta.help] 规定之。
+
 </details>
 
 

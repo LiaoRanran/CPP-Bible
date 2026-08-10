@@ -986,57 +986,80 @@ CRTP 不是被"设计"出来的，而是被"发现"的——它是模板机制�
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：数学向量库的公共运算符。** 你有一组 `Vec2` / `Vec3` / `Vec4` 派生自同一个 CRTP 基类，希望「只写一次」就给所有派生类自动获得 `operator<` 与 `operator==`（Barton–Nackman 惯用法）。请用 CRTP 基类注入这些运算符，并说明 Eigen 的 `Eigen::MatrixBase` 正是用这一手法为所有矩阵 / 向量类型统一提供运算的。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+template <typename D>
+struct VecBase {
+    bool operator<(const D& o) const {                 // 基类调用派生类成员
+        const D& self = static_cast<const D&>(*this);
+        return self.x() < o.x();
+    }
+};
+struct Vec2 : VecBase<Vec2> {
+    double x() const { return x_; }  double x_ = 0;
+};
+int main() { Vec2 a, b; std::cout << (a < b) << '\n'; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] CRTP 让基类在编译期知道自己将被实例化成哪个派生类，从而「向下转换」调用派生类的接口，把公共运算符写成一份；这是静态多态，无虚函数开销。
+
+[引用] CRTP 见 Coplien 1995 原始提案与《C++ Templates》；工业典范是 Eigen 的 `Eigen::MatrixBase`（源码见 eigen.tuxfamily.org），ch139 ⑥ 亦专门讲解 Barton–Nackman。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：性能敏感的粒子系统。** 每帧要对数十万粒子调用 `update()`，用虚函数会带来 vtable 间接与阻碍内联。请用 CRTP 实现静态接口的 `update()`，并用 C++20 `static_assert(requires{...})` 在编译期强制派生类提供 `step()`，指出它与 EBO（空基类优化）如何把基类开销压到 0。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <type_traits>
+template <typename D>
+struct ParticleBase {
+    void update() { static_cast<D&>(*this).step(); }   // 编译期绑定，可内联
+};
+struct Fire : ParticleBase<Fire> { void step() { /* 推进火焰 */ } };
+static_assert(std::is_empty_v<ParticleBase<Fire>>, "EBO: 空基类不占空间");
+int main() { Fire f; f.update(); std::cout << "ok\n"; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] CRTP 把调用在编译期绑定，编译器能把 `step()` 内联进 `update()`，消除虚调用；`ParticleBase` 是空类，`std::is_empty_v` 验证 EBO 使其不增加派生类大小（见 ch139 ⑫ `sizeof` 取证）。
+
+[引用] EBO 自 C++98 起保证（空基类不计入大小），详见 cppreference「empty base optimization」；`static_assert` + `requires` 编译期接口检查见 ch139 ⑤，`std::is_empty` 见 `<type_traits>`。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：统计所有 `GameObject` 的存活实例数。** 许多引擎需要在不污染每个派生类的情况下，统一计数构造 / 析构。请用 CRTP 基类在构造 / 析构时增减一个静态计数器，并说明 CRTP 的硬限制——它无法在「运行期根据数据动态选择派生类型」，此时为何必须退回虚函数或 `std::variant`（关联 ch139 ⑬）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+template <typename D>
+struct Counted {
+    inline static long alive = 0;
+    Counted() { ++alive; }
+    ~Counted() { --alive; }
+};
+struct Monster : Counted<Monster> {};
+struct Tower  : Counted<Tower> {};
+int main() {
+    { Monster m1, m2; Tower t; std::cout << Monster::alive << '\n'; }  // 2
+    std::cout << Monster::alive << '\n';                                // 0
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 每个 `Counted<D>` 实例化出独立的 `alive` 计数器，构造 / 析构自动维护；但 `Counted<Monster>` 与 `Counted<Tower>` 是不同类型，不能在运行期把同一个容器既能装 Monster 又能装 Tower——动态异构集合只能用虚基类或 `std::variant`。
+
+[引用] CRTP 静态多态的局限见 ch139 ⑬「不能动态多态 / 运行时选择」；动态异构集合的替代见 GoF 与 ch138 关于 `std::variant` 的讨论；`inline static` 成员变量为 C++17 特性（提案 P0607）。
 
 </details>
 

@@ -1151,57 +1151,68 @@ jne .bad_any
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：多返回值解析——`tuple` 返回 `(成功, 值, 错误码)。** 一个 `parse()` 需同时返回"是否成功""解析出的值""错误码"三样东西，用 `std::tuple` + 结构化绑定 `auto [ok, val, err]` 一次取回，避免输出参数或自定义 struct 的样板。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <tuple>
+std::tuple<bool,int,const char*> parse(const char* s) {
+    return {true, 42, "ok"};
+}
+int main() {
+    auto [ok, val, err] = parse("x");
+    std::cout << ok << ' ' << val << ' ' << err << "\n"; // 1 42 ok
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `std::tuple` 是异构定长聚合，`std::get<N>` 在编译期完成偏移访问（零运行时索引，见本章附录 ASM 实证）；C++17 结构化绑定 `auto [a,b,c]` 给每个元素独立别名。
+
+[引用] ISO/IEC 14882:2023 §[tuple]（`tuple`/`get`/`make_tuple`）与 §[dcl.struct.bind]（结构化绑定）；cppreference "utility/tuple"。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：异构日志字段打包——`tuple` 聚合不同类型事件。** 把 `(时间戳, 级别, 消息)` 三类不同字段打包进一个 `tuple` 入队，再用结构化绑定解构处理，避免为每种事件定义 struct。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <tuple>
+int main() {
+    std::tuple<int,double,char> t{1, 2.5, 'z'};
+    auto [a, b, c] = t;
+    std::cout << a << ' ' << b << ' ' << c << "\n"; // 1 2.5 z
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `get<N>` 是编译期偏移访问（与裸 struct 成员访问逐字节相同，见本章附录 ASM 实证）；结构化绑定是编译期别名，无运行时分发开销。注意 libstdc++ 递归继承使"末参在底地址"布局。
+
+[引用] ISO/IEC 14882:2023 §[tuple] 与 §[dcl.struct.bind]；libstdc++ 的"末参最底地址"布局（与裸聚合相反）见 cppreference "utility/tuple"。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：类型擦除配置——`any` 存任意类型运行时值（SBO）。** 插件系统用 `std::any` 携带用户数据，≤16 字节类型走小缓冲优化（SBO）内联存储、零堆分配；>16 字节才走 `any` 外部管理 + `operator new`。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <any>
+int main() {
+    std::any a = 42;                 // int ≤16B → SBO 内联，无堆分配
+    std::cout << std::any_cast<int>(a) << "\n"; // 42
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `std::any` 是类型擦除的单值容器；`any_cast<T>` 校验类型并取值，类型不符抛 `std::bad_any_cast`。libstdc++ SBO 缓冲为 16 字节（见本章附录 ASM 实证），超过才堆分配。
+
+[引用] ISO/IEC 14882:2023 §[any]（`any`/`any_cast`/`bad_any_cast`）；SBO 边界与 `_Manager_internal`/`_Manager_external` 见 cppreference "utility/any"；类型擦除思想可对照 Boost.Any（boost.org）。
 
 </details>
 

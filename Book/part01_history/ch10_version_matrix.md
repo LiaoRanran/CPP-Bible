@@ -526,7 +526,7 @@ Q: 版本迁移最大风险? A: ABI断裂(GCC5.1)和SFINAE→concepts重写
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：用特性测试宏选实现。** 你维护一份要跨 C++17/20/23 的头文件，需要"有 `<compare>` 就用 `std::cmp_less`、没有就手写分支"。请先写一个对任意可比较类型通用、且对混合符号比较安全的 `max` 风格比较，并思考它应被 `__cpp_lib_cmp` 之类的特性测试宏如何切换。
 
 <details><summary>答案与解析</summary>
 
@@ -542,11 +542,13 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 
 [标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
 
+[引用] WG21 SD-6《特性测试宏推荐》（`__cpp_lib_cmp` 等）让代码按编译器实际能力选实现；cppreference "特性测试"（https://en.cppreference.com/w/cpp/feature_test）与 "std::cmp_less"（https://en.cppreference.com/w/cpp/utility/intcmp/cmp_less）。
+
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：跨版本编译的 API 护栏。** 你的库必须用同一份源码在 C++17（无概念、回退 `enable_if`）与 C++20+（概念）下都编译，靠 `__cpp_concepts` 分支。请写出 C++20+ 一侧用概念约束 `add` 的版本，使浮点调用给出清晰错误。
 
 <details><summary>答案与解析</summary>
 
@@ -561,11 +563,13 @@ int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
 
 [标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
 
+[引用] ISO C++20 §[concepts]；特性测试宏 `__cpp_concepts`（SD-6）用于跨版本检测概念是否可用；cppreference "std::integral"（https://en.cppreference.com/w/cpp/concepts/integral）。
+
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：迁移测试套件里的编译期契约。** 升级编译器后你担心某些常量不再在编译期定值。请写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`，把它作为"新工具链仍支持编译期求值"的可执行断言，纳入版本矩阵对照。
 
 <details><summary>答案与解析</summary>
 
@@ -577,6 +581,8 @@ int main() { std::cout << fact(5) << '\n'; }
 ```
 
 [标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+
+[引用] ISO C++ §[expr.const]；特性测试宏 `__cpp_constexpr`（SD-6）可探测当前 constexpr 能力；cppreference "static_assert"（https://en.cppreference.com/w/cpp/language/static_assert）。它是迁移测试套件里"编译期契约"的基石。
 
 </details>
 

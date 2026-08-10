@@ -1082,57 +1082,83 @@ template void fwd_tmpl<S>(S&&);   // 右值实例化
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** RPC 框架从 socket 读出字节后，要把方法名、负载、超时等参数"原样"构造出一个 `Request` 对象交给业务 handler。若用拷贝/移动会多一次构造——用完美转发在函数已分配的内存上原位构造。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`Args&&...` 万能引用 + `std::forward` 把每个实参按原值类别（左值拷贝、右值移动）转交给 `Request` 构造函数：
 
 ```cpp
-#include <iostream>
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <string>
+#include <memory>
+struct Context { int trace_id; int timeout_ms; };
+struct Request {
+    std::string method, payload; Context ctx;
+    Request(std::string m, std::string p, Context c)
+        : method(std::move(m)), payload(std::move(p)), ctx(std::move(c)) {}
+};
+template <class... Args>
+std::unique_ptr<Request> build_request(Args&&... args) {
+    return std::make_unique<Request>(std::forward<Args>(args)...);
+}
+int main() {
+    auto req = build_request(std::string("GET"), std::string("/v1/ping"), Context{1, 500});
+    (void)req;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 万能引用 `T&&` 在模板推导下经引用折叠还原值类别，`std::forward<T>` 据此选择拷贝或移动（`[temp.deduct.call]`、`[forward]`）。
+[引用] libstdc++ `bits/move.h:74-105` 的 `forward` 双重载；见 cppreference `std::forward`：<https://en.cppreference.com/w/cpp/utility/forward> 与 WG21 N2027（A Proposal to add Perfect Forwarding）。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 线程池的 `post_task` 要把任意可调用对象及其参数整体转发进 worker 线程执行，参数可能是左值（要拷贝）也可能是右值（要移动），绝不能丢值类别。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+把 `F&&` 与 `Args&&...` 都用 `std::forward` 还原后交给 `std::async`：
 
 ```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <utility>
+#include <future>
+int add(int a, int b) { return a + b; }
+template <class F, class... Args>
+auto post_task(F&& f, Args&&... args) {
+    return std::async(std::launch::async,
+        std::forward<F>(f), std::forward<Args>(args)...);
+}
+int main() { auto f = post_task(add, 3, 4); (void)f.get(); }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `std::async` 内部按 decay 存储，转发保持调用方传入的值类别；`std::forward` 确保右值走移动（`[futures.async]`、`[forward]`）。
+[引用] cppreference `std::async`：<https://en.cppreference.com/w/cpp/thread/async>；Abseil 的 `absl::AnyInvocable` 同样依赖完美转发（<https://abseil.io/docs/cpp/guides/any_invocable>）。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你写了一个 `probe(T&&)` 包装器想区分"传进来的到底是左值还是右值"——这在日志/序列化里用来决定拷贝还是移动。写出推导结果，并解释为何 `T&&` 既能是右值引用又能是万能引用。
 
 <details><summary>答案与解析</summary>
 
+`int x; probe(x);` 推导 `T = int&`，折叠为 `int&`（左值）；`probe(42);` 推导 `T = int`，为 `int&&`（右值）：
+
 ```cpp
+#include <type_traits>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+template <class T>
+void probe(T&&) {
+    if constexpr (std::is_lvalue_reference_v<T>) std::cout << "lvalue\n";
+    else std::cout << "rvalue\n";
+}
+int main() { int x = 0; probe(x); probe(42); }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 引用折叠：`& && → &`、`&& && → &&`（`[dcl.ref]`）；模板形参 `T&&` 是转发引用，普通函数形参 `void f(Widget&&)` 才是右值引用（`[temp.deduct.call]`）。
+[引用] Scott Meyers《Effective Modern C++》Item 24 称其为"universal reference"；标准术语见 `[temp.deduct.call]`。cppreference「Forwarding references」：<https://en.cppreference.com/w/cpp/language/reference#Forwarding_references>。
 
 </details>
 

@@ -1109,7 +1109,7 @@ size_type _M_check_len(size_type __n, const char* __s) const {
 
 ### 练习 1（难度 ★★）
 
-解释 `reserve(1000)` 后再 `push_back` 1000 次的复杂度；对比**不** reserve 时发生的扩容拷贝次数（假设 2× 扩容）。
+**真实场景：行情快照 / 网络批量报文预分配。** 一个行情网关每秒要落地数万笔 tick，若 `vector` 不 `reserve` 会因几何扩容反复搬迁旧元素；请在接收前预分配足够容量，并对比不 reserve 时（假设 2× 扩容）元素被整体拷贝的次数。
 
 <details><summary>答案与解析</summary>
 
@@ -1124,11 +1124,13 @@ for (int i=0;i<1000;++i) a.push_back(i);   // 0 次重分配
 
 [标准] `reserve` 改变 `capacity` 不触发元素构造；扩容是"分配新缓冲 + 移动/拷贝 + 释放旧缓冲"。
 
+[引用] ISO/IEC 14882:2023 §[vector.capacity]（`reserve`/`capacity` 语义）；§[vector.modifiers]（`push_back` 扩容时的迭代器失效规则）；见 cppreference "container/vector" 词条。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-写出在 `for` 循环中 `v.push_back` 导致**迭代器失效**的 bug，并给出两种修复（用索引 / 先 reserve）。
+**真实场景：日志采集循环中边遍历边追加。** 一个日志采集器在遍历 `vector<Event>` 时按条件再 `push_back` 新事件，扩容会让仍在用的迭代器失效，产生未定义行为。请写出这个 bug，并给出两种修复（用索引 / 先 reserve）。
 
 <details><summary>答案与解析</summary>
 
@@ -1146,11 +1148,13 @@ v.reserve(v.size()*2 + 4);
 
 [标准] `push_back` 触发扩容会使所有迭代器/引用/指针失效；未扩容时仅 `end()` 失效。
 
+[引用] ISO/IEC 14882:2023 §[container.requirements]（迭代器失效总表）与 §[vector.modifiers]（`push_back` 失效条款）；见 cppreference "container/vector" 词条。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-实现 `erase_remove_if` 惯用法删除所有偶数；并解释 `vector<bool>` 的位压缩特化陷阱（proxy reference）。
+**真实场景：订单簿撤单——删除所有已成交偶数档位；以及标志位的位压缩陷阱。** 交易系统用 `vector<bool>` 存 64 档买卖盘"激活"标志，结果 `operator[]` 返回代理对象而非 `bool&`，绑 `auto&` 直接编译失败。请用 `erase`+`remove_if` 惯用法删偶数，并解释 `vector<bool>` 的代理引用陷阱。
 
 <details><summary>答案与解析</summary>
 
@@ -1165,6 +1169,8 @@ v.erase(std::remove_if(v.begin(), v.end(), [](int x){ return x%2==0; }), v.end()
 需要真实 bool 语义时用 `std::vector<char>` 或 `std::bitset`/`dynamic_bitset`。
 
 [标准] `vector<bool>` 是显性特化，元素非独立地址able 对象；属历史设计失误，工业代码慎用。
+
+[引用] ISO/IEC 14882:2023 §[vector.bool]（位压缩特化与代理引用 `reference`）；需真实 bool 语义时改用 `std::vector<char>` 或 `std::bitset`，见 cppreference "container/vector" 的 `vector<bool>` 专节。
 
 </details>
 

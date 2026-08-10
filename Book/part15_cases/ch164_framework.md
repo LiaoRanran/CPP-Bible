@@ -1260,57 +1260,93 @@ call [rdx]
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你的迷你框架希望"插件在 `main` 之前自动注册进全局 Registry"，这样 `Framework::start()` 一启动就能发现所有组件，无需手动 `register(new X)`。请用**静态对象自注册**实现：定义一个 `AutoReg` 辅助类，其全局实例的构造函数把组件工厂塞进 `Registry`，从而 `main` 运行前注册已完成。写代码说明为何靠"静态初始化顺序"能办到。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+在命名空间作用域定义 `AutoReg<Component>` 的全局/静态实例，其构造函数于程序启动的静态初始化阶段执行，把工厂存入全局 `Registry`；`main` 里 `start()` 时直接遍历 Registry 即可。
 
 ```cpp
+#include <map>
+#include <string>
 #include <iostream>
-#include <utility>
+#include <functional>
+struct Registry {
+    std::map<std::string, std::function<void()>> facts;
+    void add(std::string n, std::function<void()> f) { facts.emplace(n, f); }
+} reg;
 template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct AutoReg { AutoReg(std::string n) { reg.add(n, [n] { std::cout << n << " ready\n"; }); } };
+struct PluginA { static AutoReg<PluginA> r; };
+AutoReg<PluginA> PluginA::r{"PluginA"};   // 静态初始化期注册
+int main() { reg.facts.at("PluginA")(); }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 命名空间作用域对象的初始化在 `main` 之前（[basic.start.init]）；跨 TU 的初始化顺序是实现定义的，故注册应只依赖本 TU 内的静态对象。
+
+[引用] 自注册模式广泛用于框架/插件系统；DI 与组件生命周期见本手册 ch141；Qt 的 `Q_PLUGIN_METADATA` 同理 <https://doc.qt.io/>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 框架要把 `Logger`、`Config`、`Net` 等组件**自动注入**到需要它们的服务里（依赖注入），而不是让每个服务自己 `new`。请实现一个极简 **DI 容器**：用 `std::map<type_index, std::any>` 存单例，按类型取出。写代码说明"按类型取单例"如何解耦构造与使用。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+DI 容器在启动时注册各组件的构造方式，运行时按类型返回同一单例，服务只声明"我要 Logger"而不关心谁创建。下面用 `type_index`+`any` 按类型索引。
 
 ```cpp
+#include <any>
+#include <map>
+#include <typeindex>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct Logger { void log() { std::cout << "log\n"; } };
+struct Container {
+    std::map<std::type_index, std::any> singletons;
+    template <typename T> T& get() {
+        auto k = std::type_index(typeid(T));
+        if (!singletons.count(k)) singletons.emplace(k, T{});
+        return std::any_cast<T&>(singletons[k]);
+    }
+};
+int main() { Container c; c.get<Logger>().log(); }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `std::type_index`（[type.index]）与 `std::any`（[any]）提供运行时类型擦除与安全取回。
+
+[引用] 依赖注入属设计模式；C++ Core Guidelines 关于接口与依赖 <https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines>；Spring DI 思想对照 <https://spring.io/>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你的框架用**事件总线（reactor）** 解耦生产者与消费者：组件 `publish("tick", data)`，多个 `Handler` 各自 `subscribe` 响应。请用 `std::unordered_map<std::string, std::vector<callback>>` 实现一个最小事件总线，说明它如何让"网络收到包""定时器触发""配置变更"等互不认识的事件被统一分发，并指出回调里抛异常的风险与对策。
 
 <details><summary>答案与解析</summary>
 
+事件总线把"事件名 → 一组回调"建表，发布时遍历调用；组件无需互相持有指针。风险：某个 handler 抛异常会打断后续 handler，故需在分发处捕获并隔离（或要求 handler 自身不抛）。
+
 ```cpp
+#include <unordered_map>
+#include <vector>
+#include <string>
+#include <functional>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct Bus {
+    std::unordered_map<std::string, std::vector<std::function<void()>>> subs;
+    void subscribe(std::string e, std::function<void()> f) { subs[e].push_back(f); }
+    void publish(std::string e) { for (auto& f : subs[e]) f(); }   // 异常需隔离
+};
+int main() {
+    Bus bus; bus.subscribe("tick", [] { std::cout << "tick!\n"; });
+    bus.publish("tick");
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `std::unordered_map`/`std::function` 为标准库设施（[unord]、[func.wrap]）；异常传播按 `[except]` 规则，未被捕获将沿调用栈展开。
+
+[引用] Reactor/事件总线属经典并发模式；Boost.Signals2 提供类型安全信号槽 <https://www.boost.org/doc/libs/release/doc/html/signals2.html>；对照 ch159 线程池做后台分发。
 
 </details>
 

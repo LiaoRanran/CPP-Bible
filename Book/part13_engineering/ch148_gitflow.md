@@ -936,57 +936,59 @@ mov rdx, [rcx]            ; 取对象头（类型+大小）
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：团队协作的特性分支工作流。** 一个新功能要在独立分支开发、经 PR 评审后合入主干，且提交历史要能被工具自动生成 CHANGELOG。请用「Git Flow / GitHub Flow」组织分支，并按 Conventional Commits 规范写一条 `feat:` / `fix:` 开头的提交信息，说明它如何让「为什么改、改哪类」一目了然。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+```text
+# 示意：特性分支 + 规范提交（非空 C++，仅提交信息文本）
+git checkout -b feat/order-cache
+git commit -m "feat(cache): add LRU order cache to cut p99 latency"
+git checkout main && git merge --no-ff feat/order-cache
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 特性分支隔离未完成工作、主干保持可发布；Conventional Commits 的 `type(scope): description` 让提交可机器解析，「feat」进 minor、「fix」进 patch，自动生成变更日志。
+
+[引用] 分支策略见 Git Flow（nvie.com 原始博文）与 GitHub Flow（docs.github.com）；Conventional Commits 规范见 conventionalcommits.org；ch148 ③、⑤ 详述分支策略与提交信息规范。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：定位一次性能回归。** 上周基准还正常，这周某个 PR 合并后 `std::vector` 遍历慢了 30%，但你无法确定是哪次提交引入的。请用 `git bisect` 在「好 / 坏」两个提交之间二分自动运行基准脚本，快速锁定罪魁提交，并指出它与 ch151 基准测试、ch149 CI 的联动。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+```text
+# 示意命令（非空 C++）
+git bisect start
+git bisect bad HEAD            # 当前（慢）为坏
+git bisect good v1.2          # 已知好的历史标签
+git bisect run ./bench.sh     # 每步自动编译+跑基准，返回 0/1 决定好坏
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `git bisect` 利用「有序的提交历史 + 可判定好坏的脚本」做对数级二分，把 O(N) 人工排查降到 O(log N)；把基准脚本交给 `bisect run` 可无人值守定位。
+
+[引用] `git bisect` 见 Git 官方文档（git-scm.com/docs/git-bisect）；ch148 ⑪ 给出 `git bisect` 命令与典型输出；联动见 ch151 基准与 ch149 CI 门禁。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：巨型 monorepo 的 CI 提速。** 一个几 GB 的单仓库每次 CI 都要拉全量，队列排队几小时。请用 `git clone --depth 1`（shallow）与 `sparse-checkout` 只取本次流水线需要的子目录，说明它如何压低检出时间与磁盘占用，并指出 Google / Microsoft 等超大仓库为何普遍采用单体仓库 + 部分检出策略。
 
 <details><summary>答案与解析</summary>
 
-```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+```text
+# 示意命令（非空 C++）
+git clone --depth 1 --filter=blob:none <repo> work
+cd work
+git sparse-checkout set libs/order services/api
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `--depth 1` 只取最新提交、省略历史；`--filter` 与 `sparse-checkout` 按需拉取文件/目录，CI 检出从「全量」变为「本次所需」，时间随仓库增长仍接近常数。
+
+[引用] shallow clone 与 sparse-checkout 见 Git 官方文档（git-scm.com/docs）；大型仓库实践见 Microsoft（Windows 单体仓库）与 Google 的工程博客；ch148 ⑨、⑬ 详述子模块 / monorepo 与 sparse checkout。
 
 </details>
 

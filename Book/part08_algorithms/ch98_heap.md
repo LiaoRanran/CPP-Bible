@@ -837,7 +837,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-用 `std::make_heap` + `std::sort_heap` 对一个整数向量做升序排序。给定 `v{5,3,8,1,9,2,7}`，输出应为 `1 2 3 5 7 8 9`。说明 `make_heap` 默认建最大堆。
+**真实场景**：调度器需要周期性地把一批任务按优先级"整理成堆"后再一次性吐出有序序列——堆排序常被用作"按需取最大"与"最终全排序"之间的折中。请用 `std::make_heap` + `std::sort_heap` 对一个整数向量做升序排序。给定 `v{5,3,8,1,9,2,7}`，输出应为 `1 2 3 5 7 8 9`。并说明 `make_heap` 默认建的是最大堆还是最小堆。
 
 <details><summary>答案与解析</summary>
 
@@ -856,11 +856,13 @@ int main() {
 
 [标准] `make_heap` 将区间重排为满足堆性质的序列（默认 `std::less` → 最大堆，根在 `front()`）；`sort_heap` 反复 `pop_heap` 把最大值移到末尾，得到升序序列。复杂度 O(n log n)。
 
+[引用] cppreference `std::make_heap`：`https://en.cppreference.com/w/cpp/algorithm/make_heap`；`std::sort_heap`：`https://en.cppreference.com/w/cpp/algorithm/sort_heap`。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-手动维护一个动态优先队列：用 `push_heap` 插入新元素、用 `pop_heap` + `pop_back` 取出并删除最大值。依次插入 `5,3,9,1`，应依次取出 `9` 然后 `5`。
+**真实场景**：事件驱动系统（如游戏主循环、网络 IO 多路复用）需要一个能随时插入、随时取出"当前最高优先级事件"的容器——这正是优先队列的日常用途。请手动维护一个动态优先队列：用 `push_heap` 插入新元素、用 `pop_heap` + `pop_back` 取出并删除最大值。依次插入 `5,3,9,1`，应依次取出 `9` 然后 `5`。为什么必须先 `push_back` 再 `push_heap`？
 
 <details><summary>答案与解析</summary>
 
@@ -880,11 +882,13 @@ int main() {
 
 [标准] `push_heap` 假定 `[begin, end-1)` 已是堆、仅 `end-1` 待上浮，故必须先 `push_back` 再 `push_heap`；`pop_heap` 把最大值换到 `end-1` 并下沉根，随后需 `pop_back` 真正删除。复杂度 O(log n)。
 
+[引用] cppreference `std::push_heap`：`https://en.cppreference.com/w/cpp/algorithm/push_heap`；`std::pop_heap`：`https://en.cppreference.com/w/cpp/algorithm/pop_heap`。容器适配器 `std::priority_queue`：`https://en.cppreference.com/w/cpp/container/priority_queue`。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-实现 **Top-K（取最大的 K 个）**：用「最小堆」维护大小不超过 K 的窗口——每插入一个元素，若堆大小超过 K 则弹出当前最小值。给定 `v{5,3,8,1,9,2,7,6,4,0}`、`K=3`，最终 Top-3 应为 `7 8 9`。
+**真实场景**：推荐系统/热榜只需保留"全网最热的 K 条"而无需对全量排序——用最小堆维护一个大小为 K 的窗口即可在 O(n log K) 内得到 Top-K，是大数据下比全排序省得多的做法。请实现 **Top-K（取最大的 K 个）**：用「最小堆」维护大小不超过 K 的窗口——每插入一个元素，若堆大小超过 K 则弹出当前最小值。给定 `v{5,3,8,1,9,2,7,6,4,0}`、`K=3`，最终 Top-3 应为 `7 8 9`。
 
 <details><summary>答案与解析</summary>
 
@@ -910,6 +914,8 @@ int main() {
 ```
 
 [标准] 用最小堆维护「当前最大的 K 个」：堆顶始终是当前窗口最小者，超过 K 就弹堆顶，最终留下全局最大的 K 个。复杂度 O(n log K)，远优于全排序 O(n log n)（当 K≪n）。
+
+[引用] cppreference `std::priority_queue`：`https://en.cppreference.com/w/cpp/container/priority_queue`。堆操作的规范与复杂度见 ISO §27.7.3（[alg.heap.operations]）。
 
 </details>
 

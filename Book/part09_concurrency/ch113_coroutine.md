@@ -858,7 +858,7 @@ int main(){hello();return 0;}
 
 ### 练习 1（难度 ★★）
 
-手写一个最简 `generator<int>`（`promise_type` + `co_yield`），惰性产出 `1..N`，在 `main` 中遍历打印。说明 `promise_type` 的四个必需成员各自的作用。
+**真实场景**：要产出"可能无限长"的序列（如斐波那契、文件行流），预先物化到 `vector` 既占内存又无法表达无限序列——协程 `generator` 用 `co_yield` 把"生成"写成普通循环、却只在被请求时才算下一个值，内存 O(1)。请手写一个最简 `generator<int>`（`promise_type` + `co_yield`），惰性产出 `1..N`，在 `main` 中遍历打印。说明 `promise_type` 的四个必需成员（`get_return_object`/`initial_suspend`/`yield_value`/`final_suspend`）各自的作用。
 
 <details><summary>答案与解析</summary>
 
@@ -895,11 +895,13 @@ int main() {
 
 [标准] `co_yield e` 等价于 `co_await promise.yield_value(e)`；`initial_suspend` 返回 `suspend_always` 使协程创建时不立即执行，实现惰性求值。
 
+[引用] cppreference `std::coroutine_handle`：`https://en.cppreference.com/w/cpp/coroutine/coroutine_handle`。协程机制总览见 Lewis Baker 的系列博客：`https://lewissbaker.github.io/`（C++ Coroutines）。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-实现一个自定义 **awaiter**（`await_ready`/`await_suspend`/`await_resume`），演示 `co_await` 一个「立即就绪、直接返回值」的对象，说明三个接口的调用时机。
+**真实场景**：`co_await` 的右侧只要满足 awaiter 协议就能被挂起/恢复——你可以把"一次异步 IO 完成"、"一个线程池任务结果"都包装成 awaiter，从而用同步写法表达异步等待。请实现一个自定义 **awaiter**（`await_ready`/`await_suspend`/`await_resume`），演示 `co_await` 一个「立即就绪、直接返回值」的对象，说明三个接口的调用时机。`await_ready` 返回 `true` 时为什么 `await_suspend` 根本不会被调用？
 
 <details><summary>答案与解析</summary>
 
@@ -932,11 +934,13 @@ int main() { demo(); return 0; }
 
 [标准] `co_await e` 依次求值 `e.await_ready()`；若 `false` 则挂起并调 `await_suspend`；恢复后 `await_resume()` 的返回值即整个表达式的值（`[expr.await]`）。
 
+[引用] cppreference `std::suspend_always`：`https://en.cppreference.com/w/cpp/coroutine/suspend_always`。awaiter 三接口语义见 ISO §9.5.4（[expr.await]）及 Lewis Baker 协程博客。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-演示协程帧生命周期的经典悬垂坑：一个协程 `co_await`/`co_yield` 后引用了**按值传入却被当引用捕获**或**指向已析构局部**的数据。给出正确写法（协程按值持有需跨挂起点存活的数据）。
+**真实场景**：协程参数若是引用/指针，指向的对象在调用者作用域结束后就失效，而协程可能在挂起恢复后才去解引用它——这是协程最隐蔽的悬垂坑（比普通 lambda 捕获更危险，因为控制流"看起来"是同步的）。请演示协程帧生命周期的经典悬垂坑：一个协程 `co_await`/`co_yield` 后引用了**按值传入却被当引用捕获**或**指向已析构局部**的数据。给出正确写法（协程按值持有需跨挂起点存活的数据）。
 
 <details><summary>答案与解析</summary>
 
@@ -976,6 +980,8 @@ int main() {
 ```
 
 [标准] 协程参数的拷贝/移动进协程帧发生在帧构造时；**引用参数不延长被引用对象寿命**，跨挂起点使用引用/指针参数是悬垂高发区。
+
+[引用] cppreference 协程帧与 `std::coroutine_handle`：`https://en.cppreference.com/w/cpp/coroutine/coroutine_handle`。协程参数/局部变量生命周期陷阱见 ISO §9.5.5（[dcl.fct.def.coroutine]）及 C++ Core Guidelines CP.51。
 
 </details>
 

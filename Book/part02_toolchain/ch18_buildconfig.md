@@ -853,7 +853,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-`NDEBUG` 宏会让 `assert` 在发布构建中被整体编译掉。请写程序说明断言在 Debug/Release 下的行为差异。
+**真实场景：发布二进制里的断言成本。** 你在性能敏感的发布路径上用 `assert` 做开发期不变量校验，但担心它留在发布二进制里拖慢。请用程序说明断言在 Debug/Release 下的行为差异（靠 `NDEBUG` 整体编译掉）。
 
 ```cpp
 #include <iostream>
@@ -866,12 +866,13 @@ int main() {
 }
 ```
 
-[标准] 结论：`assert` 是“开发期护栏”，靠 `NDEBUG` 零成本退出发布二进制；不要用它做运行期必须的错误恢复。
+[标准] 结论：`assert` 是"开发期护栏"，靠 `NDEBUG` 零成本退出发布二进制；不要用它做运行期必须的错误恢复。
+
+[引用] cppreference《std::assert》（https://en.cppreference.com/w/cpp/error/assert ）说明 `NDEBUG` 未定义时 `assert` 校验、定义时整条被预处理移除（ISO C++ §[cassert.syn]）。
 
 ### 练习 2（难度 ★★★）
 
-LTO（链接期优化）让链接器跨 TU 内联/去虚化。请用 `constexpr` 体现“编译期可知”的优化前提，
-并写出开启 LTO 的命令。
+**真实场景：跨文件的内联与去虚化。** 你的库把 `square()` 放在头、调用方在另一个 TU，想让发布构建跨文件内联掉这层调用。请用 `constexpr` 体现"编译期可知"的优化前提，并写出开启 LTO 的命令。
 
 ```cpp
 #include <iostream>
@@ -890,9 +891,11 @@ g++ -std=c++23 -flto -O2 a.o b.o -o app
 
 [标准] 结论：LTO 把优化视野从单 TU 扩展到全程序，能跨文件内联/去虚化，代价是更长的链接时间与内存。
 
+[引用] GCC《Optimize Options》（https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html ，`-flto` 链接期优化）与 ISO C++ §[expr.const]（`constexpr` 编译期可知，是跨 TU 内联的前提）。
+
 ### 练习 3（难度 ★★★★）
 
-PGO（剖面引导优化）先用训练数据收集热点，再据此重排代码/特化分支。请写程序并用命令示意两阶段流程。
+**真实场景：用真实负载喂出最优布局。** 你的服务有典型的请求分布，想让发布二进制按真实热点重排代码。请用 PGO（剖面引导优化）先收集热点再重优化：写程序并用命令示意两阶段流程。
 
 ```cpp
 #include <iostream>
@@ -914,6 +917,8 @@ g++ -std=c++23 -fprofile-use -O2 app.cpp -o app          # 阶段2：按热点�
 ```
 
 [标准] 结论：PGO 用真实负载的剖面信息指导布局与内联，常比盲优化再快几个百分点；代价是需可复现的训练输入。
+
+[引用] GCC《Optimize Options》（https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html ，`-fprofile-generate`/`-fprofile-use` 两阶段剖面引导优化）说明如何用训练输入重排代码与特化分支。
 
 ## 附录：用法演绎（从选型到落地）
 

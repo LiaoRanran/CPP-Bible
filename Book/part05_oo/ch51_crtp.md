@@ -729,8 +729,7 @@ void final_call(DogFinal* d) { d->speak(); }        // ③ final 类去虚拟化
 
 ### 练习 1（难度 ★★）
 
-用 CRTP 写 `template<class D> struct Printable { void print() const { static_cast<const D*>(this)->do_print(); } };`，
-派生类提供 `do_print()`，演示编译期多态（无 vtable、无虚函数）。
+**真实场景：ECS 组件的"统一 `serialize()/deserialize()` 接口"。** 你的序列化框架希望每个组件（Transform、Velocity）都能用一条 `save()` 泛型接口写盘，但绝不能承担 vtable 间接（组件可能成千上万）。请用 CRTP 写 `template<class D> struct Printable { void print() const { static_cast<const D*>(this)->do_print(); } };`，派生类提供 `do_print()`，演示编译期多态（无 vtable、无虚函数）。
 
 <details><summary>答案与解析</summary>
 
@@ -752,12 +751,13 @@ int main(){ Point p; p.print(); }   // 调用链在编译期确定, 无 vtable
 
 [标准] CRTP（Curiously Recurring Template Pattern）：基类以派生类为模板参数，静态分发。
 
+[引用] CRTP 是标准库与大型库的基础设施：`std::enable_shared_from_this<T>` 即 CRTP（cppreference "std::enable_shared_from_this"）。Eigen 的 `Eigen::MatrixBase<Derived>` 同样用它实现零开销静态多态（eigen.tuxfamily.org）。ISO/IEC 14882:2023 §[temp] 规定模板参数化的静态分发机制。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用 CRTP 实现 Barton–Nackman trick：基类提供 `operator<` 调用派生类的 `compare`，
-让派生类自动获得 `<` 且能用于模板，避免虚函数开销。
+**真实场景：版本号/标识符的"只写一次比较原语，自动获得全套运算符"。** 你写 `Version`、`SemVer` 等类型，希望每个类型只实现核心 `compare()`，就自动拥有 `<` 且能被 `std::sort`/`std::map` 直接使用——这正是 Boost.Operators 的思路。请用 CRTP 实现 Barton–Nackman trick：基类提供 `operator<` 调用派生类的 `compare`，让派生类自动获得 `<` 且能用于模板，避免虚函数开销。
 
 <details><summary>答案与解析</summary>
 
@@ -781,13 +781,13 @@ Barton–Nackman 把"运算符"放在基类、把"核心比较"留给派生类�
 
 [标准] Barton–Nackman：基类定义运算符、调用派生类原语；友元自由函数经 ADL 参与重载。
 
+[引用] Boost.Operators 库用 CRTP+Barton-Nackman 自动生成 `==`、`<=`、`<` 全套关系/算数运算符，避免用户重复实现（`boost/operators.hpp`，boost.org/doc/libs）。该技巧由 Barton 与 Nackman 在 1994 年 *Scientific and Engineering C++* 中提出。ISO/IEC 14882:2023 §[temp.friend] 规定友元函数模板的实例化与 ADL。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-对比 CRTP 与虚函数的性能与局限：写数值算子 `Square`（CRTP）与虚函数版 `Op`，
-指出 CRTP 循环体被内联、零间接、但容器必须同类型；虚函数可异构但有 vtable 调用、阻止跨边界内联
-（见本书 ch47/ch51 ASM 实证）。说明 Eigen/Boost 为何选 CRTP。
+**真实场景：线性代数内核的"零开销算子组合"。** 你的数值库（Eigen 风格）要把 `a + b * c` 编译成不含临时对象、可被向量化的求值循环，而非每次 `eval` 都走 vtable 间接。请对比 CRTP 与虚函数的性能与局限：写数值算子 `Square`（CRTP）与虚函数版 `Op`，指出 CRTP 循环体被内联、零间接、但容器必须同类型；虚函数可异构但有 vtable 调用、阻止跨边界内联（见本书 ch47/ch51 ASM 实证）。说明 Eigen/Boost 为何选 CRTP。
 
 <details><summary>答案与解析</summary>
 
@@ -807,6 +807,8 @@ CRTP 把虚调用变成静态 `static_cast` + 内联，循环中无 `call [vtabl
 把"运算符组合"在编译期展开成零开销代码。
 
 [标准] CRTP = 零开销静态多态（失异构）；虚函数 = 运行时多态（失内联）。按场景取用。
+
+[引用] Eigen 的 `MatrixBase<Derived>` 用 CRTP 把 `a + b` 编译期展开为延迟求值的表达式模板，零临时对象、可向量化（eigen.tuxfamily.org）。Boost.Proto/Boost.Operators 同走 CRTP。这与本书 ch47/ch51 的 D5 基准一致：CRTP 比虚函数快约一个数量级。ISO/IEC 14882:2023 §[temp] 给出模板静态单态化的依据。
 
 </details>
 

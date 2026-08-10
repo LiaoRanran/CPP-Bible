@@ -1179,57 +1179,72 @@ int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=c
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：接入一个接口不一致的第三方 HTTP 库。** 你已有项目统一的 `HttpSender`（方法 `send(url, body)`），但新引入的库暴露的是 `post(target, payload)` 且命名风格不同。请用适配器（Adapter）把这层旧接口包成统一接口，使业务代码零改动，并对比「类适配器（私有继承）」与「对象适配器（成员组合）」的取舍。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <string>
+struct HttpSender { virtual ~HttpSender()=default; virtual void send(const std::string&,const std::string&)=0; };
+struct LegacyLib { void post(const std::string& t, const std::string& p){ std::cout << t << p << '\n'; } };
+struct Adapter : HttpSender {                 // 对象适配器：持有被适配者
+    LegacyLib lib;
+    void send(const std::string& u, const std::string& b) override { lib.post(u, b); }
+};
+int main() { Adapter a; a.send("u", "b"); }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 适配器在「不改动双方源码」的前提下转换接口；对象适配器通过成员组合比私有继承更松耦合，易于替换被适配实现。
+
+[引用] 适配器模式见 GoF《Design Patterns》Adapter；标准库迭代器适配器（`std::back_inserter` 等）即同类思想，见 cppreference「Iterator library」；Boost 亦大量使用适配器。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：UI 组件树。** 一个窗口包含面板、面板又包含按钮与文本框，业务需要「统一遍历整棵树并应用主题 / 禁用」。请用组合模式（Composite）让「叶子节点（按钮）」与「容器节点（面板）」实现同一接口，并对比它与 `std::variant` + `std::visit` 的写法。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <memory>
+#include <vector>
+struct Widget { virtual ~Widget()=default; virtual void apply_theme()=0; };
+struct Button : Widget { void apply_theme() override { std::cout << "btn\n"; } };
+struct Panel  : Widget { std::vector<std::unique_ptr<Widget>> kids;
+    void add(std::unique_ptr<Widget> w){ kids.push_back(std::move(w)); }
+    void apply_theme() override { for (auto& k : kids) k->apply_theme(); } };
+int main() { Panel p; p.add(std::make_unique<Button>()); p.apply_theme(); }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 组合让「单个对象」与「对象集合」对待方式一致，递归 `apply_theme` 自然遍历整棵子树；`unique_ptr` 管理子树生命周期。
+
+[引用] 组合模式见 GoF《Design Patterns》Composite；现代替代见 `std::variant` 与 `std::visit`（cppreference），以及 ch138 ⑭ 关于 variant 分发代价的讨论。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：给已有 `Image` 类动态叠加功能。** 需要在不修改 `Image` 的前提下，按顺序叠加「边框」「缓存」「访问日志」三种增强。请用装饰器（Decorator）层层包裹，并对比它与 `std::stack` 容器适配器、`std::shared_ptr` 的写法，指出装饰链调用的额外间接开销（关联 ch137 ⑱ 基准）。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <memory>
+struct Image { virtual ~Image()=default; virtual void render()=0; };
+struct Raw : Image { void render() override { std::cout << "raw\n"; } };
+struct Border : Image { std::shared_ptr<Image> inner;
+    explicit Border(std::shared_ptr<Image> i):inner(std::move(i)){}
+    void render() override { std::cout << "border+"; inner->render(); } };
+int main() { auto img = std::make_shared<Border>(std::make_shared<Raw>()); img->render(); }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 装饰器用「持有同一接口的成员」递归包裹，开闭原则友好；每层多一次虚调用 / 智能指针解引用，装饰链越长开销线性增长（见 ch137 ⑱ 用 `std::chrono` 实测）。
+
+[引用] 装饰器模式见 GoF《Design Patterns》Decorator；标准库 `std::stack` 即容器适配器（adapter）的典型，见 cppreference「Container adaptors」。
 
 </details>
 

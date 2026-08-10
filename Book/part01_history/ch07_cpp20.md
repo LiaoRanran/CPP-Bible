@@ -512,8 +512,7 @@ C++20 的 concepts / ranges / coroutines / modules 在主流工具链与大型�
 
 ### 练习 1（难度 ★★）
 
-C++20 的 concepts 用可读的约束替代晦涩的 SFINAE。请写程序定义一个
-`Number` 概念并约束一个 `add` 模板，展示非数值类型调用时的清晰错误意图。
+**真实场景：数值聚合 API 的清晰报错。** 你写一个 `add` 聚合接口供全公司调用，传错类型时旧的 SFINAE 报错没人看得懂。请用 C++20 concepts 定义一个 `Number` 概念并约束 `add` 模板，展示非数值类型调用时被概念明确拒绝、错误信息直指"不满足 Number"。
 
 ```cpp
 #include <iostream>
@@ -536,10 +535,11 @@ int main() {
 [标准] 结论：concepts 把模板约束前移到接口声明，错误信息直接指出“不满足哪个概念”，
 可读性远胜 SFINAE 的一堆替换失败噪声；且概念可组合、可命名复用。
 
+[引用] ISO C++20 §[temp.concept]（概念）；cppreference "约束与概念"（https://en.cppreference.com/w/cpp/language/constraints）。标准库概念见头文件 `<concepts>`，语言概念由 WG21 论文 P0734R0 定稿。
+
 ### 练习 2（难度 ★★★）
 
-C++20 Ranges 让容器变换像管道一样组合。请写程序用 `views::filter` + `views::transform`
-构建“取偶数再平方”的惰性管道，并说明惰性求值的意义。
+**真实场景：事件流的惰性处理管道。** 你处理一条日志/指标流，要先"过滤出错误事件"再"转成错误码计数"，但不想为每步生成中间 `vector`。请用 C++20 Ranges 的 `views::filter` + `views::transform` 构建"取偶数再平方"的惰性管道，并说明惰性求值（不生成中间容器）的意义。
 
 ```cpp
 #include <iostream>
@@ -561,10 +561,11 @@ int main() {
 [标准] 结论：Ranges 管道用 `|` 组合视图，惰性求值避免了每步生成中间容器的内存/时间开销；
 视图是轻量非拥有对象，底层数据须存活。
 
+[引用] ISO C++20 §[range] / §[range.adaptors]；cppreference "std::ranges"（https://en.cppreference.com/w/cpp/ranges）与 "std::views::filter"（https://en.cppreference.com/w/cpp/ranges/filter）。Ranges 由 WG21 论文 P0896R4（Ranges）与 P2011R1（视图）引入。
+
 ### 练习 3（难度 ★★★★）
 
-C++20 三路比较 `<=>`（宇宙飞船运算符）可一次生成全部关系运算符。
-请为一个版本号类型实现 `<=>` 与 `==`，并说明 `= default` 如何自动派生 `< > <= >=`。
+**真实场景：依赖/库版本兼容性比较。** 你的包管理器或构建系统要判断"依赖 A 的版本 ≥ 要求的最低版本"，版本号是 `major.minor.patch` 三元组。请用 C++20 `<=>` 为 `Version` 实现三路比较与 `==`，并说明 `= default` 如何一次性自动派生 `< > <= >=`。
 
 ```cpp
 #include <iostream>
@@ -590,6 +591,8 @@ int main() {
 
 [标准] 结论：`<=> = default` 一行替代手写 6 个比较运算符，且保证一致性（不会出现
 `a<b` 与 `a>b` 同真的矛盾）；返回类型 `strong_ordering`/`partial_ordering` 表达可比性强弱。
+
+[引用] ISO C++20 §[expr.spaceship]；cppreference "operator<=>"（https://en.cppreference.com/w/cpp/language/operator_comparison）与 "默认比较"（https://en.cppreference.com/w/cpp/language/default_comparison）。三路比较由 WG21 论文 P0515R3（<=> 与 <compare>）引入。
 
 ## 附录：用法演绎（从选型到落地）
 

@@ -1015,60 +1015,70 @@ jne .not_exist
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
-
-- **跨章关联**：文件 I/O → `Book/part07_stl/ch90_ranges.md`；时间戳 → `Book/part07_stl/ch92_chrono.md`。
-- **常见陷阱**：`fs::path` 在 Windows 用 `wchar_t` 内码——跨平台 `path::string()` vs `path::u8string()` 混用导致 Mojibake；`recursive_directory_iterator` 在遍历中删除文件引发 `filesystem_error`。
+**真实场景：递归遍历日志目录——`recursive_directory_iterator` 收集今日日志。** 一个日志归档工具要遍历某目录下所有 `.log`（含子目录），对符合 `is_regular_file()` 的条目做处理；注意遍历中删除文件会抛 `filesystem_error`。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <filesystem>
+namespace fs = std::filesystem;
+int main() {
+    for (auto& e : fs::recursive_directory_iterator("."))
+        if (e.is_regular_file()) std::cout << e.path().filename() << "\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `recursive_directory_iterator` 递归枚举目录项；`directory_entry` 缓存了 `file_status`，`is_regular_file()` 不额外 stat。遍历中修改目录结构（删除/改名）会抛 `filesystem_error`。
+
+[引用] ISO/IEC 14882:2023 §[filesystem]（`recursive_directory_iterator`/`directory_entry`）；遍历中修改目录的坑见 cppreference "filesystem/recursive_directory_iterator"；Boost.Filesystem（boost.org）是其前身。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：跨平台路径规范化——`canonical` 解析符号链接避免 Mojibake。** `fs::path` 在 Windows 用 `wchar_t` 内码，混用 `path::string()` 与 `path::u8string()` 会产生乱码；含符号链接时必须用 `canonical`/`weakly_canonical` 做语义解析而非词法比较。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <filesystem>
+namespace fs = std::filesystem;
+int main() {
+    std::error_code ec;
+    fs::path p = fs::canonical("link_to_file", ec);  // 解析符号链接
+    if (!ec) std::cout << p << "\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `canonical` 解析所有符号链接与 `.`/`..` 得到绝对规范路径，失败返回空路径并以 `error_code` 报告；`path::string()` 返回原生编码（`wstring` on Windows），`path::u8string()` 返回 UTF-8——混用即乱码。
+
+[引用] ISO/IEC 14882:2023 §[filesystem]（`path` 编码与 `canonical`/`weakly_canonical`）；跨平台编码陷阱见 cppreference "filesystem/path"；C++ Core Guidelines 关于路径处理。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：原子替换——`rename` 做事务性配置发布。** 写配置时先写临时文件，再 `rename` 原子替换目标（同级目录 `rename` 原子），避免半截文件被读；对比 `copy` 可能中断留半截。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <filesystem>
+namespace fs = std::filesystem;
+int main() {
+    fs::path tmp = "config.tmp", dst = "config.ini";
+    // 先写 tmp，再原子 rename 替换（同级目录 rename 原子）
+    fs::rename(tmp, dst);
+    std::cout << "published\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `rename` 在同卷/同目录内是原子操作，适合事务性替换；`copy`/`copy_file` 非原子，可能中断留半截文件。所有接口都有异常版与 `error_code` 版双形态。
+
+[引用] ISO/IEC 14882:2023 §[filesystem]（`rename` 原子性语义与 `error_code` 双形态）；原子替换模式见 cppreference "filesystem/rename"；选择异常 vs error_code 见本章附录决策流。
 
 </details>
 

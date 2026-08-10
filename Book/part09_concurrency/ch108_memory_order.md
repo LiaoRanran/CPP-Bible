@@ -842,7 +842,7 @@ fadd_seqcst():
 
 ### 练习 1（难度 ★★）
 
-用 **release/acquire** 配对实现「生产者填数据后置 ready 标志，消费者见到 ready 后读数据」，保证消费者读到的数据一定是生产者写完的（无撕裂/无未初始化可见）。
+**真实场景**：后台线程构造好一个大对象后，写一个全局原子指针/标志"发布"给工作线程——这是无锁编程里最经典的"发布-订阅"。若发布端用了 `relaxed` 而非 `release`，在 ARM 弱内存平台上工作线程可能拿到非空指针却读到未初始化数据。请用 **release/acquire** 配对实现「生产者填数据后置 ready 标志，消费者见到 ready 后读数据」，保证消费者读到的数据一定是生产者写完的（无撕裂/无未初始化可见）。为什么这一对是"无锁编程第一定律"？
 
 <details><summary>答案与解析</summary>
 
@@ -872,11 +872,13 @@ int main() {
 
 [标准] `②` release 与 `③` acquire 读到同一值构成 synchronizes-with，于是 `① happens-before ④`（`[atomics.order]`）。
 
+[引用] cppreference `std::memory_order`：`https://en.cppreference.com/w/cpp/atomic/memory_order`。经典讲解见 Herb Sutter, *Atomic Weapons: The C++ Memory Model and Modern Hardware*：`https://herbsutter.com/2013/02/11/atomic-weapons-the-c-memory-model-and-modern-hardware/`。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-给出一个「两个 `relaxed` 原子在不同线程写、另两线程读」会观察到不一致顺序的场景（IRIW 变体），并说明为何需要 `seq_cst` 才能恢复单一全序。
+**真实场景**：多写者/多读者缓存一致性的极端情形（IRIW，Independent Reads of Independent Writes）在 x86 TSO 上几乎不可能出现，但在 ARM/POWER 等弱内存模型上真实可见——它揭示了"每个变量各自有序"不等于"全局有一致视角"。请给出「两个 `relaxed` 原子在不同线程写、另两线程读」会观察到不一致顺序的场景（IRIW 变体），并说明为何需要 `seq_cst` 才能恢复单一全序。为什么把全部换成 `relaxed` 时 `z==0` 在标准下是允许的结果？
 
 <details><summary>答案与解析</summary>
 
@@ -904,11 +906,13 @@ int main() {
 
 [标准] 若把上面全部换成 `relaxed`，`z==0`（两读者互相看不到对方）在标准下是**允许**的结果。
 
+[引用] cppreference `std::memory_order`：`https://en.cppreference.com/w/cpp/atomic/memory_order`。IRIW 与 seq_cst 的全局总序见 ISO §32.4（[atomics.order]）及 P. Sewell 等对 C/C++ 内存模型的形式化研究。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 `acquire`/`release`/`acq_rel` 为一个无锁栈的 `push`/`pop` 标注正确内存序，解释：为何 `push` 的 CAS 用 `release`、`pop` 的 CAS 用 `acquire`。
+**真实场景**：无锁栈/无锁链表是 lock-free 数据结构的基础，而"指针发布用 release、指针消费用 acquire"是其内存序的核心——一旦标错，在弱内存平台上 pop 端可能解引用到一个还没写完的节点。请用 `acquire`/`release`/`acq_rel` 为一个无锁栈的 `push`/`pop` 标注正确内存序，解释：为何 `push` 的 CAS 用 `release`、`pop` 的 CAS 用 `acquire`。为什么真正多线程的 `pop` 还额外需要解决 ABA 与 use-after-free（见 ch111/ch112）？
 
 <details><summary>答案与解析</summary>
 
@@ -941,6 +945,8 @@ int main() {
 ```
 
 [实现] 本例单线程演示序标注；真正多线程 `pop` 存在 ABA 与 use-after-free，须配 tagged pointer（ch111）或 HP/RCU（ch112）。
+
+[引用] cppreference `std::memory_order`：`https://en.cppreference.com/w/cpp/atomic/memory_order`。无锁栈的内存序与回收见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
 
 </details>
 

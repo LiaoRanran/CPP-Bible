@@ -938,8 +938,7 @@ jge .ok
 
 ### 练习 1（难度 ★★）
 
-`std::sort` 与 `std::stable_sort` 的稳定性有何差异？对一个 `(年龄, 姓名)` 的 pair 序列排序，
-演示稳定性如何保留同年龄元素的原有相对顺序。
+**真实场景**：在多语言 UI 里按"地区"分组展示用户列表时，你希望同一地区的用户保留他们原本的注册先后（稳定），而不是被排序打乱——稳定性差异就落在产品体验上。请回答：`std::sort` 与 `std::stable_sort` 的稳定性有何差异？对一个 `(年龄, 姓名)` 的 pair 序列排序，演示稳定性如何保留同年龄元素的原有相对顺序。
 
 <details><summary>答案与解析</summary>
 
@@ -954,12 +953,14 @@ std::stable_sort(v.begin(), v.end(), [](auto&a,auto&b){ return a.first<b.first; 
 
 [标准] `stable_sort` 复杂度上限 O(n·log²n)，内存不足时退化但仍稳定；`sort` 平均 O(n log n)。
 
+[引用] cppreference `std::stable_sort`：`https://en.cppreference.com/w/cpp/algorithm/stable_sort`。稳定性语义与复杂度保证见 ISO §25.7.2（[alg.sorting]）。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-introsort（introspective sort）为何混合 quick / heap / insertion？
-解释它在什么条件下从 quick 切换到 heap（递归深度超限），这解决了快排的什么最坏情况？
+**真实场景**：标准库 `std::sort` 必须在"几乎有序"或"恶意构造"的输入下也不退化成 O(n²)——否则一次精心投喂的排序就能拖垮服务（基于排序的拒绝服务）。introsort 正是标准库为堵死这个最坏情况而采用的混合策略。请解释：introsort 为何混合 quick / heap / insertion？
+它在什么条件下从 quick 切换到 heap（递归深度超限），这解决了快排的什么最坏情况？
 
 <details><summary>答案与解析</summary>
 
@@ -975,11 +976,13 @@ else                       quick_sort_partition + recurse(depth_limit-1);
 
 [标准] introsort = introspective sort；libstdc++ `std::sort` 即此实现（见 ch96 附录 A 工业源码）。
 
+[引用] libstdc++ `std::sort` 工业实现（introsort）：`https://github.com/gcc-mirror/gcc/blob/master/libstdc++-v3/include/bits/stl_algo.h`。经典论文：D. R. Musser, *Introspective Sorting and Selection Algorithms*, Software—Practice & Experience 27(8), 1997。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-求 top-k 与中位数时，全排序是浪费的。分别用 `std::partial_sort` 与 `std::nth_element` 实现"找中位数"，
+**真实场景**：实时排行榜只需展示热度最高的前 100 名、或监控系统只需知道延迟的 P50 中位数，根本不需要把全部数据排好序——全排序是把 O(n) 问题做成了 O(n log n) 的浪费。请分别用 `std::partial_sort` 与 `std::nth_element` 实现"找中位数"，
 对比复杂度，并说明 introselect 的 pivot 选择为何影响最坏情况。
 
 <details><summary>答案与解析</summary>
@@ -1000,6 +1003,8 @@ int medB = b[b.size()/2];
 找中位数应用 `nth_element`。introselect 在快排式选择中同样用"深度超限转 heap select"防止 O(n²)。
 
 [标准] `nth_element` 实现 introselect（median-of-medians 或 introspective pivot）；平均/最坏视实现而定。
+
+[引用] cppreference `std::partial_sort`：`https://en.cppreference.com/w/cpp/algorithm/partial_sort`；`std::nth_element`：`https://en.cppreference.com/w/cpp/algorithm/nth_element`。
 
 </details>
 

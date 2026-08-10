@@ -934,7 +934,7 @@ add rdi, 0x0008           ; 多继承调整 this
 
 ### 练习 1（难度 ★★）
 
-演示**菱形继承二义性**：`D` 经 `B1,B2` 各继承一份 `A`，直接访问 `d.a` 二义；用**虚继承**共享一份 `A` 消除二义。
+**真实场景：UI 组件同时需要"可绘制"与"可点击"，二者又都继承自 `Widget`。** 你的 GUI 框架里 `Drawable` 和 `Clickable` 各自继承自公共基类 `Widget`；当你写 `class Button : public Drawable, public Clickable` 时，对象里会出现**两份** `Widget` 子对象，直接访问 `b.x` 二义，且坐标状态写入一份、读到另一份。请演示**菱形继承二义性**，并用**虚继承**共享一份 `Widget` 消除二义与状态分裂。
 
 <details><summary>答案与解析</summary>
 
@@ -966,11 +966,13 @@ int main() { D d; std::cout << d.a << '\n'; }  // 1，无二义
 
 [标准] 虚继承引入虚基类指针（vbptr），使共享子对象唯一（维度⑦ ASCII 内存图）。
 
+[引用] 菱形继承是多重继承的现实难题；C++ 标准库本身刻意规避了它——`std::iostream` 经 `std::ios_base` ← `std::ios` 的虚继承层级共享单一流状态（cppreference "std::ios_base"）。Java/C# 干脆禁多重继承、改用接口以绕开此坑。ISO/IEC 14882:2023 §[class.mi] 规定虚基类共享语义。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-演示**虚基类由最派生类直接构造**：中间类对虚基类的初始化被忽略，只有最派生类负责。
+**真实场景：日志基类 `Logger` 被两个混合（mixin）基类复用，初始化却"不生效"。** 你写 `B1 : virtual Logger`、`B2 : virtual Logger`，并各自在初始化列表里给 `Logger` 设置日志级别；结果最派生类 `D` 构造后，级别始终是默认值——中间类的初始化被静默忽略。请演示**虚基类由最派生类直接构造**：中间类对虚基类的初始化被忽略，只有最派生类负责。
 
 <details><summary>答案与解析</summary>
 
@@ -987,11 +989,13 @@ int main() { D d; }   // 输出 A B1 B2 D（A 只构造一次，由 D 直接负�
 
 [标准] 构造顺序（维度⑫）：先虚基类，再非虚基类按声明序，最后派生类自身。
 
+[引用] 虚基类初始化权上移至最派生类是 C++ 标准强制规则，违反直觉地"忽略中间类初始化器"（cppreference "virtual base class"）。这常导致隐蔽 bug：开发者在中间类设置虚基类成员却从不生效。ISO/IEC 14882:2023 §[class.base.init] 规定虚基类由最派生类初始化。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-演示**多重继承下的 this 调整**：不同基类子对象在派生对象内有不同偏移，跨基类 `dynamic_cast` 会自动调整指针。
+**真实场景：COM/接口风格的"对象同时实现多个不相关接口"。** 你的组件 `D` 同时继承 `ILockable`（锁接口）与 `ISerializable`（序列化接口）两个空基类；当你把一个 `D` 对象分别转成这两个接口指针并比较地址时，发现指针值不同——这正说明第二个基类子对象相对对象首地址有偏移。请演示**多重继承下的 this 调整**：不同基类子对象在派生对象内有不同偏移，跨基类 `dynamic_cast` 会自动调整指针。
 
 <details><summary>答案与解析</summary>
 
@@ -1013,6 +1017,8 @@ int main() {
 ```
 
 [标准] this 调整由编译器在 `dynamic_cast`/虚函数调用时插入（ch47 虚表/this 调整；维度⑨ 调用栈图）。
+
+[引用] 多重继承的 this 指针调整由编译器生成 thunk 或内联偏移代码完成，是 COM `QueryInterface` 背后地址差异的根源（Microsoft COM 文档）。Itanium C++ ABI 用 thunk 处理非首基类偏移（itanium-cxx-abi.github.io）。ISO/IEC 14882:2023 §[class.cdtor] 与 §[expr.dynamic.cast] 规定 this 调整语义。
 
 </details>
 

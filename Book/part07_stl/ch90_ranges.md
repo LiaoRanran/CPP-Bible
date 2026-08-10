@@ -1049,57 +1049,73 @@ flowchart TD
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：日志过滤+变换管道——ranges 惰性零拷贝。** 处理大日志流时，用 `views::filter` 选出错误级、`views::transform` 抽出时间戳，整条管道不物化中间容器，读一个算一个。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <ranges>
+#include <vector>
+int main() {
+    std::vector<int> v{1,2,3,4,5};
+    auto r = v | std::views::filter([](int x){ return x%2==0; })
+                | std::views::transform([](int x){ return x*10; });
+    for (int x : r) std::cout << x << ' ';  // 20 40
+    std::cout << "\n";
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `views::filter`/`views::transform` 返回视图，只持有底层范围与 callable；元素在迭代器解引用时才计算（惰性），不拥有、不复制元素（见本章附录 D4 源码：`operator*` 解引用才 `__invoke`）。
+
+[引用] ISO/IEC 14882:2023 §[ranges] 与 §[range.adaptors]（`filter`/`transform` 视图）；range-v3（github.com/ericniebler/range-v3）是其前身；cppreference "header/ranges"。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：惰性求值的短路——只取前 N 个匹配。** 从海量记录中只要前 3 条满足条件的，用 `views::take` 避免扫描全部（管道在取到第 3 个后即停止推进上游）。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <ranges>
+#include <vector>
+int main() {
+    std::vector<int> v{1,2,3,4,5};
+    for (int x : v | std::views::take(3)) std::cout << x << ' '; // 1 2 3
+    std::cout << "\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `views::take(n)` 是惰性适配器：上游推进到 n 个元素即停止，不会为取前 N 个而遍历剩余元素；与 `filter` 组合时实现"短路"求值。
+
+[引用] ISO/IEC 14882:2023 §[range.adaptors]（`take` 视图的惰性语义）；cppreference "ranges/take_view"；惰性短路思想见 range-v3 文档。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：分词——`views::split` 按分隔符切分指令流。** 解析以空格分隔的命令行 `"a bb ccc"`，用 `views::split` 得到子视图序列，配合 `ranges::distance` 求每段长度，全程零拷贝。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <ranges>
+#include <string_view>
+int main() {
+    std::string_view s = "a bb ccc";
+    for (auto w : s | std::views::split(' '))
+        std::cout << std::ranges::distance(w) << ' '; // 1 2 3
+    std::cout << "\n";
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `views::split` 把范围按分隔符切成"子范围视图"序列，不复制元素；每个子范围是 `subrange`，可用 `ranges::distance` 取长度。C++20 起 `split` 的惰性实现避免物化。
+
+[引用] ISO/IEC 14882:2023 §[range.adaptors]（`split` 视图）；老代码常用 `std::istringstream` 分词，ranges 更零分配；cppreference "ranges/split_view"。
 
 </details>
 

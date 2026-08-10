@@ -798,57 +798,65 @@ spdlog 异步 logger 用有界 MPSC 队列。队列满时的 **设计权衡** �
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你正把遗留的 `printf`/iostream 代码迁移到类型安全的格式化（fmt 已进入 C++20 标准的 `std::format`）。请写一个函数模板 `show`，对任意类型用 `std::format` 生成统一格式的字符串。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+函数模板按实参推导类型；`std::format` 在编译期校验格式串、类型安全，避免 `printf` 的实参与格式符不匹配：
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <format>
+#include <string>
+template <class T>
+std::string show(const T& v) { return std::format("value={}", v); }
+int main() { return show(42) == "value=42" ? 0 : 1; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 函数模板按实参推导；`std::format` 提供类型安全、可编译期校验的格式化（源自 fmt 库）。
+
+[引用] {fmt} 库：<https://fmt.dev/latest/index.html>；cppreference `std::format`：<https://en.cppreference.com/w/cpp/utility/format>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** spdlog 的日志级别（trace/debug/info/...）本质是整型级别码。请写一个被 `std::integral` 概念约束的 `set_level`，使其只接受整数级别码，浮点调用给出清晰编译错误。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
 
 ```cpp
-#include <iostream>
 #include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+template <std::integral T>
+T set_level(T lvl) { return lvl; }   // 约束为整型日志级别码
+int main() { return set_level(2) == 2 ? 0 : 1; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 概念约束为编译期硬错误（而非 SFINAE 静默失败），诊断信息更易读。
+
+[引用] spdlog 仓库：<https://github.com/gabime/spdlog>；cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** fmt / `std::format` 能在编译期校验格式字符串（如 `FMT_COMPILE` / 标准库对格式串字面量的编译期检查）。请用 `constexpr` 函数配合 `static_assert` 在编译期计算一个"格式化字段宽度"，体现编译期求值思想。
 
 <details><summary>答案与解析</summary>
 
+`constexpr` 函数在常量表达式上下文（如 `static_assert` 实参）中于编译期求值；格式宽度预计算可避免运行期分支：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+constexpr int field_width(int n) { return n < 0 ? -n : n; }  // 示意：计算整数字段宽度
+static_assert(field_width(120) == 120);
+static_assert(field_width(-7) == 7);
+int main() { return 0; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `constexpr` 函数在常量表达式上下文（`static_assert` 实参）中于编译期求值；std::format 对格式串做编译期校验。
+
+[引用] {fmt} 编译期格式检查：<https://fmt.dev/latest/api.html#compile-time-format-string-checks>；cppreference `std::format`：<https://en.cppreference.com/w/cpp/utility/format>。
 
 </details>
 

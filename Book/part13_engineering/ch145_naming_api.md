@@ -1023,57 +1023,71 @@ int main(){Widget w;w.doWork();std::cout<<"PIMPL: 2ns/call, 30x compile speedup"
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：设计一个 `FileCache` 的公共 API。** 它缓存磁盘文件内容，调用方会读取、写入、并查询「是否命中」。请为它设计符合主流规范的命名：获取器 `GetX`、设置器 `SetX`、布尔谓词 `Is/Has` 前缀、可能失败且结果不可忽略的调用标 `[[nodiscard]]`，并指出 Google Style 与 C++ Core Guidelines 对大小写与命名一致性的要求。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <string>
+#include <cassert>
+class FileCache {
+    std::string last_;
+public:
+    [[nodiscard]] bool Has(const std::string& key) const { (void)key; return !last_.empty(); }
+    [[nodiscard]] const std::string& Get(const std::string& key) const { (void)key; return last_; }
+    void Set(std::string key, std::string val) { (void)key; last_ = std::move(val); }
+};
+int main() { FileCache c; c.Set("a","1"); assert(c.Has("a")); }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `[[nodiscard]]` 在调用方忽略返回值时由编译器报警，正好兜住「是否能命中」这类不可忽略的布尔结果；`Get/Set/Is/Has` 前缀让 API 的「读/写/判断」语义一眼可辨。
+
+[引用] 命名规范见 Google C++ Style Guide「Naming」章节（类型 PascalCase、变量/函数 snake_case）；C++ Core Guidelines 的 NL（Naming and Layout）章节（如 NL.16「使用一致命名约定」）；ch145 ②–⑥ 详述各类命名法则。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：库的 ABI 稳定性。** 你发布了一个被上百个二进制依赖的动态库，若把 `class Impl` 的私有成员直接放进头文件，任何增删字段都会破坏 ABI、迫使所有下游重新编译。请用 Pimpl 惯用法把实现细节移出头文件，并说明它如何让「头文件不变 ≡ ABI 不变」。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <memory>
+#include <string>
+class FileCache {                       // 头文件只暴露接口与稳定布局
+    struct Impl;                       // 仅前向声明
+    std::unique_ptr<Impl> p_;
+public:
+    FileCache();
+    ~FileCache();
+    [[nodiscard]] std::string Get(const std::string&) const;
+};
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] Pimpl 把不稳定的成员塞进 `*Impl`，头文件里只剩 `unique_ptr<Impl>`（大小固定），增删私有字段只触碰 `.cpp`，从而「头不变则 ABI 不变」，下游无需重编。
+
+[引用] Pimpl 惯用法见 Herb Sutter《GotW》与 C++ Core Guidelines 的「C 类」（如 C.30 把实现细节封装进 PImpl）；ch145 ⑩ 用 `g++ -O2 -S` 实证间接调用与布局；ABI 稳定性亦见 ch145 ⑧ 的 API/ABI 边界讨论。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：参数错位的隐蔽 Bug。** 一个函数 `void assign(UserId, OrderId)`，但调用方把两个参数写反，编译器毫无察觉、运行时才暴露。请用「强类型 + `=delete`」把 `UserId` 与 `OrderId` 做成互不隐式转换的包装类型，使参数错位在编译期就被拒绝，并指出何时用 `=delete` 显式禁用危险重载。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct UserId  { int v; };
+struct OrderId { int v; };
+void assign(UserId, OrderId) { std::cout << "ok\n"; }
+int main() { assign(UserId{1}, OrderId{2}); }      // 写反类型则编译失败
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 强类型让「语义不同但底层同型」的标识无法互相替代，把整类参数错位 Bug 推到编译期；`=delete` 则可显式禁止危险的重载/转换（如禁止 `T→bool` 的意外转换）。
+
+[引用] 强类型与防误用设计见 C++ Core Guidelines 的「ES 表达式与语句」章节（如 ES.46 避免「魔法常量」）与「防误用设计」；ch145 ⑯ 专讲强类型 / `=delete` 防误用。
 
 </details>
 

@@ -663,6 +663,8 @@ T factorial(T n) { T r = 1; for (T i = 2; i <= n; ++i) r *= i; return r; }
 
 模块系统把"包含文本"换成"导入已编译的符号"。请说明 **模块接口单元（module interface unit）**、**模块实现单元（module implementation unit）** 与 **模块分区（module partition）** 三者的职责，并写出 `math` 模块的最小接口单元与使用单元的骨架。
 
+**真实场景：** 你维护一个被 80+ 翻译单元 `#include` 的 `core.h`，任意一行改动都触发全量重编，且头内宏随文本包含泄漏、悄悄破坏了某些 TU 的 STL 代码。引入模块接口/实现/分区三件套，把 API 以 BMI 形式分发，从根本消除文本包含带来的重编与宏污染。
+
 <details><summary>答案与解析</summary>
 
 三类单元职责：
@@ -691,11 +693,15 @@ int main() { return square(add(2, 3)); }
 
 [标准] 模块名是全局命名空间中的独立名字空间（不是 C++ 普通 `namespace`），`import` 的符号不会泄漏宏（宏不是模块实体，只活在 preprocessor，模块彻底绕开文本包含）。
 
+[引用] ISO/IEC 14882:2023 §10.1 [module.unit]；cppreference 模块：<https://en.cppreference.com/w/cpp/language/modules>。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
 解释 **export 粒度** 如何影响封装与 ABI：若 `math` 模块接口只 `export square`，而内部 helper `sq` 不导出，外部翻译单元为什么既不能调用 `sq`，也**不会因修改 `sq` 的实现而触发重编译**？
+
+**真实场景：** 你发布一个预编译模块 SDK，内部 helper 随版本迭代频繁改写。希望客户在只链接 BMI、不重新编译的前提下享受 helper 实现优化——这正是"未导出符号不触重编"带来的稳定 ABI 红利。
 
 <details><summary>答案与解析</summary>
 
@@ -723,11 +729,15 @@ int main() {
 
 [标准] 模块的封装边界在**编译期（名字可见性）+ 链接期（符号导出）** 双层生效，比 `#ifndef` 头卫士更彻底，且不污染全局宏名字空间。
 
+[引用] ISO/IEC 14882:2023 §10.2 [module.interface]；cppreference 模块：<https://en.cppreference.com/w/cpp/language/modules>。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
 当单接口单元过大（如 5000 行、含数十个 `export`）导致 BMI 臃肿、编译慢时，如何用 **模块分区** 拆分？写出把 `app` 模块拆成 `app:ui` 与 `app:core` 两个分区、并由接口单元再导出的骨架，并说明分区对编译时间的好处。
+
+**真实场景：** CI 里一个万行模块单 TU 编译超时，墙钟时间成为发布瓶颈。把它拆成可并行编译的分区，让构建系统多核并发、改动只重编受影响分区，直接缩短集成时间。
 
 <details><summary>答案与解析</summary>
 
@@ -757,6 +767,8 @@ export int compute();
 - **BMI 体积分散**：单个 BMI 片段更小，解析更快。
 
 [标准] 分区名 `app:ui` 中 `app` 是模块名、`:ui` 是分区标识；分区接口单元必须以 `export module` 声明（实现分区才用 `module`）。主接口单元不重复 `export` 分区的实体，而是 `export import` 再导出，避免二次定义。
+
+[引用] ISO/IEC 14882:2023 §10.1 [module.partition]；cppreference 模块：<https://en.cppreference.com/w/cpp/language/modules>。
 
 </details>
 

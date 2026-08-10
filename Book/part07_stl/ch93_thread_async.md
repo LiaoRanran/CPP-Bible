@@ -1142,8 +1142,7 @@ Win64 上 `__tls_get_addr` 属 `KERNEL32.dll`——动态查找当前线程的 T
 
 ### 练习 1（难度 ★★）
 
-用 `std::thread` 并行求 `0..N` 的和；指出若改用 `detach()` 而非 `join()` 会有什么风险，
-并说明 `std::jthread`(C++20) 如何自动避免它。
+**真实场景：并行预处理——把数据分块给 `std::thread` 求和。** 图像处理/数值积分把大数组分块并行累加；忘记 `join` 或误用 `detach()` 会让线程访问已销毁栈而悬垂，`jthread`(C++20) 自动 `request_stop()`+`join()` 规避。
 
 <details><summary>答案与解析</summary>
 
@@ -1164,11 +1163,13 @@ int main(){
 
 [标准] `thread` 析构若仍 joinable 则 `std::terminate`；`jthread`(C++20) 自动 join。
 
+[引用] ISO/IEC 14882:2023 §[thread.thread]（joinable 析构 terminate 规则）与 §[thread.jthread]（C++20 自动 join 的协作线程）；见 cppreference "thread/thread"、"thread/jthread"。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-`std::async` 返回的 `future` 在析构时为何会**阻塞**？写一个"忘记保存 future"导致意外同步的 bug。
+**真实场景：即发即忘后台任务——`std::async` 的 future 析构会阻塞。** 日志异步写若只写 `std::async(std::launch::async, ...)` 不持有 future，临时对象析构时反而同步等待，把"异步"变成"同步"。
 
 <details><summary>答案与解析</summary>
 
@@ -1183,12 +1184,13 @@ void fire_and_forget(){
 
 [标准] `async` 返回的 `future` 析构行为：若共享状态未就绪则阻塞（阻塞析构语义）。
 
+[引用] ISO/IEC 14882:2023 §[futures.async]（future 析构的阻塞语义）与 §[futures.unique_future]；见 cppreference "thread/async" 的"Notes"专段。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-两个线程对 `int counter` 各做 `++counter` 十万次，结果为何小于 20 万（丢失更新）？
-用 `std::atomic<int>` 修复，并指出相比 `std::mutex` 的取舍（含 false sharing）。
+**真实场景：并发计数器——多工作线程累加统计。** 非原子 `++counter`（读-改-写三步）交错导致丢失更新，结果小于 20 万；用 `std::atomic<int>` 修复，并指出相比 `std::mutex` 的取舍（含 false sharing）。
 
 <details><summary>答案与解析</summary>
 
@@ -1203,6 +1205,8 @@ void worker(){ for(int i=0;i<100000;++i) ++counter; } // 正确累加到 200000
 会因缓存行在核间反复失效而变慢——此时应 padding 隔离（见 ch110/ch111 无锁章节）。
 
 [标准] 数据竞争是 UB；`atomic` 提供无锁 RMW，`mutex` 提供临界区；false sharing 需缓存行对齐。
+
+[引用] ISO/IEC 14882:2023 §[atomics]（无锁 RMW 与 `lock xadd`）；false sharing 属硬件缓存行效应，EASTL（github.com/electronicarts/EASTL）文档讨论了无锁容器设计；cppreference "atomic"。
 
 </details>
 

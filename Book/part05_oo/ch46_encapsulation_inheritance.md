@@ -1563,7 +1563,7 @@ mov rdx, [rdi+0x0010]     ; 取 Derived 独有成员（偏移 0x0010）
 
 ### 练习 1（难度 ★★）
 
-写代码演示**对象切片（slicing）**：把派生对象赋给基类对象时派生部分丢失，并说明如何用引用/指针/智能指针保留完整对象。
+**真实场景：ECS 之外的传统"实体基类"存储。** 你的游戏用 `std::vector<Entity>` 把派生角色（玩家、敌人）存进同一个数组以批量更新。但值容器会触发**对象切片（slicing）**——派生数据丢失、虚函数被静默降级。请写代码演示切片：把派生对象赋给基类对象时派生部分丢失，并说明为何必须用 `std::vector<std::unique_ptr<Entity>>` 或引用/指针保留完整对象。
 
 <details><summary>答案与解析</summary>
 
@@ -1586,11 +1586,13 @@ int main() {
 
 [标准] 切片是值语义的直接后果；维度⑩说明"引用/指针才多态"，维度⑪给出 `unique_ptr<Base>` 修复。
 
+[引用] 标准库容器以值语义存储，故"存派生对象"天然触发切片——`std::vector<Base>` 只保留基类子对象（cppreference "std::vector"）。Unreal Engine 的 `UObject` 管理同样以指针（而非值）承载异质派生类型（dev.epicgames.com/documentation）。ISO/IEC 14882:2023 §[class.copy] 规定拷贝语义，切片即派生子对象不在拷贝目标中存在。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-演示**名字隐藏（name hiding）**：派生类定义同名函数会隐藏基类所有重载（而非重载），并用 `using` 恢复重载集。
+**真实场景：GUI 控件的事件处理器重载集。** 你写一个 `Widget` 基类，提供 `onEvent(ClickEvent)`、`onEvent(HoverEvent)` 多套重载；派生 `Button` 只想新增 `onEvent(KeyEvent)`。结果一加就发现基类的点击/悬停处理器全部"消失"了——这是**名字隐藏（name hiding）**。请演示该现象，并用 `using` 恢复基类的完整重载集。
 
 <details><summary>答案与解析</summary>
 
@@ -1626,11 +1628,13 @@ int main() {
 
 [标准] 名字隐藏是编译期作用域规则（维度⑬），与虚函数多态无关；忘了 `using` 是经典易错点。
 
+[引用] 名字隐藏在 Qt 的信号/槽与事件体系里尤其致命——派生 `QWidget` 新增同名槽函数可能遮蔽基类重载（doc.qt.io/qt-6/qwidget.html）。C++ 核心指南 C.138 建议"用 `using` 为派生类引入重载以避免隐藏"（isocpp.github.io）。ISO/IEC 14882:2023 §[basic.lookup] 规定名字查找的"先到先停"规则。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 **NVI（Non-Virtual Interface）惯用法**实现模板方法模式：公共非虚接口负责前置/后置与不变式，派生类只实现受保护的虚步骤。
+**真实场景：序列化框架的"写前校验、写后记账"。** 你写一个可向磁盘刷写对象的 `Serializer`，要求每次 `serialize()` 前后都强制做字节序检查与"已写字节数"累计，且派生类只能提供"如何写该类型"的步骤、不能绕过这套前后约束。请用 **NVI（Non-Virtual Interface）惯用法**实现模板方法模式：公共非虚接口负责前置/后置与不变式，派生类只实现受保护的虚步骤。
 
 <details><summary>答案与解析</summary>
 
@@ -1659,6 +1663,8 @@ int main() { Impl a; a.run(); }
 ```
 
 [标准] NVI 是维度⑯/⑰的核心惯用法；对比"直接暴露 virtual"更易维护契约，是封装边界（维度③）的工程落地。
+
+[引用] NVI 是 Herb Sutter 在 *C++ Coding Standards*（条目 39 "Consider making virtual functions nonpublic"）中系统化的惯用法；标准库的 `std::basic_ios::clear`/`std::streambuf::sync` 等也采用"公共非虚 + 受保护虚"的结构。Boost.Serialization 的 `serialize` 归档接口同样依赖基类固定流程包裹派生类型的具体读写（boost.org/doc/libs）。ISO/IEC 14882:2023 §[class.virtual] 规定虚函数与访问控制的交互。
 
 </details>
 

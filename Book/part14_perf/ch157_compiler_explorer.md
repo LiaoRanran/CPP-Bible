@@ -618,11 +618,11 @@ ret
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你写了一个 `max` 函数模板，怀疑它在 `-O0` 和 `-O3` 下生成的代码差异巨大。请在 **Compiler Explorer（godbolt.org）** 上把同一份代码分别设为 `-O0` 与 `-O3`，截屏对比：哪个级别把比较+三元运算符优化成了 `cmp`/`cmov` 甚至内联展开？为何这种"看汇编验证"比只看基准数字更可靠？
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`-O0` 几乎逐语句翻译（多次 `call`、栈上反复存取）；`-O3` 把 `max` 内联、用 `cmp`+条件移动或 `maxss` 之类指令直接算。看汇编能确认"到底生成了什么"，避免被基准噪声误导。
 
 ```cpp
 #include <iostream>
@@ -632,43 +632,60 @@ const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
 int main() { std::cout << max_safe(3, 7) << '\n'; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 模板参数推导按实参进行（[temp.deduct]）；优化级别不影响可观察行为，只影响生成的指令。
+
+[引用] Compiler Explorer <https://godbolt.org/>；对比方法见本手册 ch157 附录 J 决策流；`std::cmp_less` 见 <https://en.cppreference.com/w/cpp/utility/cmp/cmp_less>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-实现一个 `File` RAII 包装，构造 `fopen`、析构 `fclose`，确保作用域结束自动关闭。
+**真实场景：** 你写了一个连续数组求和循环，想确认编译器真的把它**向量化**了，而不是只做了标量展开。请在 CE 上把优化级别调到 `-O3`，在汇编输出里查找什么特征（如 `ymm`/`zmm` 寄存器、`vaddps`/`vaddss`）来判定已向量化？写一段"对向量化友好"的代码放进去验证。
 
 <details><summary>答案与解析</summary>
 
+向量化成功的标志是出现宽向量寄存器（`xmm`/`ymm`/`zmm`）与 packed 指令（`vaddps`、`vmulps`）。循环需连续、无分支、无指针别名；若出现一堆标量 `addss` 则说明未向量化。
+
 ```cpp
-#include <cstdio>
-struct File {
-  std::FILE* f;
-  File(const char* p) : f(std::fopen(p, "w")) {}
-  ~File() { if (f) std::fclose(f); }
-};
-int main() { File f("tmp.txt"); /* 离开作用域自动 fclose */ }
+#include <vector>
+#include <iostream>
+int main() {
+    std::vector<float> a(1024, 1.0f);
+    float s = 0; for (float v : a) s += v;   // 连续、无分支 → 易出现 vaddps
+    std::cout << s << '\n';
+}
 ```
 
-[经验] RAII 把资源生命周期绑定到对象作用域，是 C++ 异常安全的核心。
+[标准] 向量化是优化器行为，标准不保证；`-O3` 通常开启自动向量化。
+
+[引用] Compiler Explorer <https://godbolt.org/>；GCC 向量化 <https://gcc.gnu.org/projects/tree-ssa/vectorization.html>；LLVM <https://llvm.org/docs/Vectorizers.html>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `noexcept` 函数，内部 `throw`，观察其调用后果（`std::terminate`）。
+**真实场景：** 同一份 `noexcept` 移动构造代码，在 **GCC** 与 **Clang** 下生成的移动/拷贝选择是否一致？请在 CE 上把编译器切到 GCC 与 Clang（均 `-O2`）对比：当 `std::vector` 扩容时，二者是否都把元素**移动**而非拷贝？为何跨编译器核对能暴露"仅靠一个编译器"会漏掉的语义差异？
 
 <details><summary>答案与解析</summary>
 
+`noexcept` 移动构造让 `std::vector` 重新分配时移动元素（否则退化为拷贝）。GCC 与 Clang 都应据此消除拷贝调用；跨编译器核对能确认该选择是标准语义驱动、而非某编译器的偶然优化。
+
 ```cpp
-#include <stdexcept>
-void f() noexcept { throw std::runtime_error("x"); }
-int main() { f(); }  // 触发 std::terminate
+#include <iostream>
+#include <vector>
+#include <utility>
+struct S {
+  int* p = new int[8];
+  S() = default;
+  S(S&& o) noexcept : p(o.p) { o.p = nullptr; }
+  ~S() { delete[] p; }
+};
+int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << "ok\n"; }
 ```
 
-[标准] `noexcept` 函数内抛异常（且未就地捕获）直接 `std::terminate`，不展开栈。
+[标准] `noexcept` 移动构造使 `vector` 在重分配时移动（[container.reqmts] 的强异常保证前提）；`noexcept` 函数内未捕获异常直接 `std::terminate`（[except.spec]）。
+
+[引用] Compiler Explorer 支持 GCC/Clang/MSVC 对比 <https://godbolt.org/>；`std::vector` 重分配语义见 <https://en.cppreference.com/w/cpp/container/vector/push_back>。
 
 </details>
 

@@ -1008,57 +1008,80 @@ Code Review 清单：
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你在排查一个"明明没调用移动构造却发生了移动"的 bug，想知道 `std::move(x)` 到底生成了什么代码。请到 libstdc++ 的 `bits/move.h` 里定位 `std::move` 的实现，并说明它为什么零运行期开销。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`std::move` 只是一次 `static_cast`，编译期转型、运行期无指令（GCC 13 在 `bits/move.h:104`）：
 
 ```cpp
-#include <iostream>
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <iostream>
+struct Tracer { Tracer() = default; Tracer(Tracer&&) { std::cout << "move\n"; } Tracer(const Tracer&) { std::cout << "copy\n"; } };
+int main() {
+    Tracer a;
+    auto&& r = std::move(a);        // 仅转型，不打印任何 ctor
+    Tracer b = r;                   // 此处才调用移动构造
+    (void)b;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `[utility]`：`std::move` 等价于 `static_cast<remove_reference_t<T>&&>(t)`，不生成任何运行期代码。
+[引用] GCC 源码镜像 `libstdc++/include/bits/move.h`：<https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B/include/std/utility>；逐行解读见本章 §⑬ 与 cppreference `std::move`：<https://en.cppreference.com/w/cpp/utility/move>。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** `std::vector` 扩容时到底走移动还是拷贝？这决定了你的热路径性能。请读 `bits/stl_vector.h` 与 `bits/move.h:125` 的 `move_if_noexcept`，解释为什么移动构造非 `noexcept` 时扩容会退回拷贝。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+`vector` 用 `std::move_if_noexcept`：移动构造 `noexcept` 才移动，否则为强异常安全退回拷贝：
 
 ```cpp
+#include <vector>
+#include <utility>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct Slow {
+    int* p = new int(0);
+    Slow() = default;                          // 需默认构造以构造/扩容
+    Slow(Slow&&) { /* 未标 noexcept */ }     // ❌ 扩容退回拷贝
+    Slow(const Slow&) {}
+    ~Slow() { delete p; }
+};
+int main() {
+    std::vector<Slow> v(3);
+    v.push_back(Slow());          // 扩容时退回拷贝构造
+    std::cout << v.size() << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `[vector.modifiers]` 通过 `move_if_noexcept` 选择移动/拷贝，保证强异常安全（`[std.forward]`）。
+[引用] libstdc++ `bits/stl_vector.h` 扩容路径调用 `move_if_noexcept`（`bits/move.h:125`）；见 cppreference `std::move_if_noexcept`：<https://en.cppreference.com/w/cpp/utility/move_if_noexcept>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你链接了用不同 GCC 版本编译的库，运行时 `std::string` 偶发 ABI 错乱。请解释 libstdc++ 的"双 ABI"机制（`_GLIBCXX_USE_CXX11_ABI`）如何导致此问题，以及如何对齐。
 
 <details><summary>答案与解析</summary>
 
+GCC 5 起 libstdc++ 引入新 ABI：`std::string` 改为 SSO 内联存储、用 `std::basic_string` 的 `std::__cxx11` inline namespace 隔离。旧 ABI 的 `std::string` 是 `std::basic_string<char>` 的 `std::string`（COW 外置缓冲）：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <string>
+#include <type_traits>
+int main() {
+    // 新 ABI：std::__cxx11::basic_string<char>
+    // 旧 ABI：std::basic_string<char>（COW）
+    static_assert(std::is_same_v<std::string, decltype(std::string{})>);
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] inline namespace 改变 mangled name，不同 `_GLIBCXX_USE_CXX11_ABI` 设置的 TU 之间 `std::string` 的 mangled 名不同，混链即 ODR/ABI 不兼容。
+[引用] GCC 官方「Dual ABI」文档：<https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html>；见 ch19 变量与 ODR 章。
 
 </details>
 

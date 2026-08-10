@@ -1466,7 +1466,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-`std::accumulate` 可指定初始值并自定义二元操作。写出程序：对 `vector<int>{1,2,3,4,5}` 求和（应为 15）；并用 `accumulate` 把 `vector<string>{"a","b","c"}` 拼接为 `"abc"`。
+**真实场景**：ETL 流水线里常要把一批记录"折叠"成单个汇总值——例如把一组成交额累加、或把若干日志片段拼接成一条完整报文。`std::accumulate` 就是标准库的"左折叠"原语，且初值类型决定了结果类型。请写出程序：对 `vector<int>{1,2,3,4,5}` 求和（应为 15）；并用 `accumulate` 把 `vector<string>{"a","b","c"}` 拼接为 `"abc"`。为什么字符串拼接必须用 `std::string("")` 作初值、而不能用空字符串字面量 `""`？
 
 <details><summary>答案与解析</summary>
 
@@ -1487,11 +1487,13 @@ int main() {
 
 [标准] `accumulate(first, last, init, op=plus)` 以 `init` 为初值，对区间元素依次 `op(acc, x)`。初值类型即结果类型；拼接字符串用 `std::string("")` 作初值。
 
+[引用] cppreference `std::accumulate`：`https://en.cppreference.com/w/cpp/algorithm/accumulate`。`init` 类型即结果类型的行为见 ISO §27.10.2（[numeric.ops.accumulate]）。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用 `std::inner_product` 计算两个等长轴向量的点积。给定 `a{1,2,3}`、`b{4,5,6}`，输出应为 `32`（=4+10+18）。
+**真实场景**：搜索引擎/推荐模型里"向量点积"是相似度打分的核心运算（如用内积衡量查询向量与文档向量的匹配度）。`std::inner_product` 正是标准库对"乘后加"点对点运算的封装。请用 `std::inner_product` 计算两个等长轴向量的点积。给定 `a{1,2,3}`、`b{4,5,6}`，输出应为 `32`（=4+10+18）。为什么两区间长度必须匹配、否则会越界？
 
 <details><summary>答案与解析</summary>
 
@@ -1508,11 +1510,13 @@ int main() {
 
 [标准] `inner_product` 同时做「乘后加」与「加后乘」两个可定制操作，默认即点积 `Σ a[i]*b[i]`。初值 0 决定结果类型（整数）。注意两区间长度须匹配，否则越界。
 
+[引用] cppreference `std::inner_product`：`https://en.cppreference.com/w/cpp/algorithm/inner_product`。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 `std::transform_reduce` 配合 `std::execution::par` 并行计算 1'000'000 个浮点数的平方和（对比串行 `accumulate`）。需给出 `0.0` 浮点初值以保证结果类型。
+**真实场景**：科学计算/图形管线里常要对海量浮点做"映射后归约"（如求平方和、L2 范数），单线程累加既慢又不必要——`std::transform_reduce` 把 `transform` 与 `reduce` 融合，并可配合 `par` 并行。`std::accumulate` 没有执行策略重载，硬塞 `par` 会直接编译失败。请用 `std::transform_reduce` 配合 `std::execution::par` 并行计算 1'000'000 个浮点数的平方和（对比串行 `accumulate`）。需给出 `0.0` 浮点初值以保证结果类型——为什么用整数 `0` 作初值会静默截断？
 
 <details><summary>答案与解析</summary>
 
@@ -1532,6 +1536,8 @@ int main() {
 ```
 
 [标准] `transform_reduce` 是 `transform` + `reduce` 的融合，支持执行策略实现并行规约；`0.0` 初值确保结果为 `double` 而非被截断为 `int`。相比「先 transform 到中间容器再 accumulate」，它单次遍历且不物化中间序列。
+
+[引用] cppreference `std::transform_reduce`：`https://en.cppreference.com/w/cpp/algorithm/transform_reduce`；执行策略：`https://en.cppreference.com/w/cpp/algorithm/execution`。`reduce` 不保证结合顺序，故二元操作必须可交换/结合（见 ISO §25.3.1）。
 
 </details>
 

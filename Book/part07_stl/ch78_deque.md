@@ -1116,7 +1116,7 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 
 ### 练习 1（难度 ★★）
 
-对比 `deque` 与 `vector` 在**头部插入**的复杂度；用 `deque` 实现一个先进先出的队列。
+**真实场景：交易委托队列的双端吞吐。** 撮合引擎的委托队列头部被频繁 `pop`、尾部被频繁 `push`；若误用 `vector`，头删要把全部元素后移成 O(n)。请用 `deque` 实现先进先出队列，并对比它与 `vector` 在头部插入的复杂度。
 
 <details><summary>答案与解析</summary>
 
@@ -1132,11 +1132,13 @@ int head = q.front(); q.pop_front(); // 出队头 O(1)
 
 [标准] `deque` 由分段连续缓冲区组成（见 ch78 批 L 实证），头/尾插入均摊 O(1)。
 
+[引用] ISO/IEC 14882:2023 §[deque] 与 §[deque.modifiers]（`push_front`/`pop_front` 摊还 O(1)）；见 cppreference "container/deque" 词条。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-为何 `deque` 随机访问仍是 O(1) 但带"双间接"常数开销？结合批 L 实证中 `sar rdx, 0x7` 的分块映射解释。
+**真实场景：实时风控滑动窗口的随机回看。** 风控模块要在双端队列上按偏移回看历史若干笔委托（随机访问），但 `deque` 的分块结构带来"双间接"常数开销。请解释它随机访问为何仍是 O(1) 却比 `vector` 慢一跳，结合分块映射（块号 `i/块长` + 块内偏移）说明。
 
 <details><summary>答案与解析</summary>
 
@@ -1150,11 +1152,13 @@ elem  = block[ i & 0x7f ];    // 第二跳: 块内索引
 
 [标准] `deque` 随机访问摊还 O(1)，但比 `vector` 多一次间接；无 `data()` 连续视图。
 
+[引用] ISO/IEC 14882:2023 §[deque.access]（随机访问仍为 O(1)）；EASTL（Electronic Arts 标准库，github.com/electronicarts/EASTL）同样以分块实现 `deque`，可作工程对照；见 cppreference "container/deque"。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 `deque` 实现**单调队列**（滑动窗口最大值），分析窗口滑动的均摊复杂度；并对比用 `vector` 的代价。
+**真实场景：行情滑动窗口最高买价。** 撮合系统需要在最近 K 笔报价中实时求最大值（滑动窗口最大值）。请用 `deque` 实现单调队列，分析窗口滑动的均摊复杂度，并对比若改用 `vector`（头部 `pop_front` 为 O(n)）的代价。
 
 <details><summary>答案与解析</summary>
 
@@ -1173,6 +1177,8 @@ for (int i = 0; i < n; ++i) {
 若用 `vector`：头部 `pop_front` 是 O(n) 拷贝，整体退化到 O(n·k)。
 
 [标准] 单调队列是"双端 + 单调性"的经典技巧；`deque` 的 O(1) 双端弹出是关键。
+
+[引用] ISO/IEC 14882:2023 §[deque]（`pop_front`/`push_back` 均为 O(1)）；算法思想见 cppreference "container/deque"；单调队列是《算法竞赛》经典滑动窗口技巧。
 
 </details>
 

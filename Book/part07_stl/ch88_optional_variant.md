@@ -774,58 +774,70 @@ dispatch_manual(std::variant<A,B,C> const&):
 
 ### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：查找可能无结果——`optional` 表达"找不到"。** 配置读取 `find(key)` 可能找不到对应项，用 `std::optional<std::string>` 返回"有值/无值"，避免哨兵值（空字符串）与魔法数。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
-```
-
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-用 `std::is_pointer` 在编译期区分指针与非指针，并通过 `if constexpr` 走不同分支。
-
-<details><summary>答案与解析</summary>
-
-```cpp
-#include <iostream>
-#include <type_traits>
-template <typename T>
-void inspect(T v) {
-  if constexpr (std::is_pointer_v<T>) std::cout << "pointer\n";
-  else std::cout << "non-pointer\n";
+#include <optional>
+#include <string>
+std::optional<std::string> find(const char* key) {
+    if (key[0] == 'x') return std::string("value");
+    return std::nullopt;
 }
-int main() { int x=0; inspect(x); inspect(&x); }
+int main() {
+    if (auto v = find("x")) std::cout << *v << "\n";   // value
+}
 ```
 
-[标准] `if constexpr` 在模板内丢弃未采用分支，避免对非指针类型调用 `*` 等非法操作。
+[标准] `std::optional<T>` 持有可能为空的 `T`；`nullopt` 表示无值，`operator bool`/`has_value()` 判存在。值内联存储，访问时间零间接（见本章附录 ASM 实证），代价在内存占用（`optional<int>` 为 8 字节）。
+
+[引用] ISO/IEC 14882:2023 §[optional]（`optional`/`nullopt`/`value_or`）；Abseil 提供 `absl::optional`（abseil.io 文档）作同源实现；cppreference "utility/optional"。
+
+</details>
+
+### 练习 2（难度 ★★★）
+
+**真实场景：JSON 值多类型——`variant` 表达联合类型。** 一个轻量解析器把值存为 `variant<null_t, int, std::string>`，用 `std::visit` 按活跃类型分发处理，避免裸 `union` 的手动生命周期管理。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <variant>
+#include <string>
+using Val = std::variant<int, std::string>;
+int main() {
+    Val v = std::string("ok");
+    std::visit([](auto&& x){ std::cout << x << "\n"; }, v); // ok
+}
+```
+
+[标准] `std::variant` 是类型安全的联合，始终持有其中一个备选类型；`std::visit` 对活跃类型调用访问者；访问错误类型抛 `std::bad_variant_access`。
+
+[引用] ISO/IEC 14882:2023 §[variant]（`variant`/`visit`/`get`/`holds_alternative`）；Abseil `absl::variant`（abseil.io）同源；cppreference "utility/variant"。
+
+</details>
+
+### 练习 3（难度 ★★★）
+
+**真实场景：配置项类型安全的"可选值"——`optional` vs 哨兵值的取舍与空间代价。** 嵌入式用 `optional<int>` 表达"可选采样率"，但需接受 2× 膨胀（`optional<int>` 8 字节 vs `int` 4 字节）；对比指针哨兵更省空间。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <optional>
+int main() {
+    std::optional<int> o;
+    std::cout << "sizeof opt<int>=" << sizeof(o) << "\n"; // 8（值4+engaged4）
+}
+```
+
+[标准] `optional<T>` 用独立的 engaged 标志位表达"有值"，值内联存储；时间零开销但空间非零（见本章附录 ASM 实证表）。`T` 本身是指针时优先用空指针哨兵更省空间。
+
+[引用] ISO/IEC 14882:2023 §[optional]（布局与 `engaged` 标志）；时间零开销/空间非零的权衡见 cppreference "utility/optional" 的 Notes；嵌入式取舍参考 C++ Core Guidelines ES.107。
 
 </details>
 

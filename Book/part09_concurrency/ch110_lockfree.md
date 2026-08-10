@@ -1059,57 +1059,109 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景**：高性能日志/音频 DSP 管线里，生产者线程持续写入、消费者线程独立读取，若每次都用互斥量会带来系统调用与争用开销。单生产者单消费者（SPSC）环形队列只需两个原子下标就能无锁跑通——生产者只写 `head`、消费者只写 `tail`，二者无共享写。请实现一个最小 SPSC 环形队列，让一个生产者 `push`、一个消费者 `pop` 正确流转数据。为什么 SPSC 可以不用 CAS、只用 acquire/release 配对就正确？
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+生产者与消费者各自只更新自己那一端下标，没有"两个线程同时写同一原子"的争用，因此无需 CAS，用 relaxed 读 + acquire/release 发布即可建立 happens-before：
 
 ```cpp
+#include <atomic>
+#include <vector>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct SPSC {
+    std::vector<int> buf;
+    std::atomic<unsigned> head{0}, tail{0};   // 生产者写 head，消费者写 tail
+    SPSC(unsigned n) : buf(n) {}
+    bool push(int v) {
+        unsigned h = head.load(std::memory_order_relaxed);
+        unsigned t = tail.load(std::memory_order_acquire);
+        if (h - t == buf.size()) return false;        // 满
+        buf[h % buf.size()] = v;
+        head.store(h + 1, std::memory_order_release); // 发布写
+        return true;
+    }
+    bool pop(int& v) {
+        unsigned t = tail.load(std::memory_order_relaxed);
+        unsigned h = head.load(std::memory_order_acquire);
+        if (h == t) return false;                     // 空
+        v = buf[t % buf.size()];
+        tail.store(t + 1, std::memory_order_release);
+        return true;
+    }
+};
+int main() {
+    SPSC q(4);
+    q.push(10); q.push(20);
+    int x; while (q.pop(x)) std::cout << x << ' ';  // 10 20
+    std::cout << '\n';
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] SPSC 中两端下标无共享写，单调计数器用无符号自然回绕；`release` 发布写、`acquire` 读取已发布数据，无需任何 CAS。这是无锁队列最简单的正确形态。
+
+[引用] cppreference `std::atomic`：`https://en.cppreference.com/w/cpp/atomic/atomic`。经典并发队列算法见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景**：你想给一个 24 字节的配置结构体做"无锁快照"，于是直接写了 `std::atomic<Config>`，以为拿到无锁。但超过平台宽 CAS 宽度（x86-64 上 16 字节 `cmpxchg16b`）的对象，`std::atomic<T>` 会**静默退化**成"内部锁 + memcpy"——`is_lock_free()` 返回 false，既失去无锁初衷，又可能在信号处理中不安全。请用 `is_always_lock_free` 探测 `int`、`long long`、`void*` 与你的 24 字节结构体，并解释平台/CAS 宽度限制。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
+#include <atomic>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct Big { long a, b, c; };   // 24 字节，超过 x86-64 的 16 字节宽 CAS
+int main() {
+    std::cout << "int     : " << std::atomic<int>::is_always_lock_free << '\n';
+    std::cout << "llong   : " << std::atomic<long long>::is_always_lock_free << '\n';
+    std::cout << "void*   : " << std::atomic<void*>::is_always_lock_free << '\n';
+    std::cout << "Big(24B): " << std::atomic<Big>::is_always_lock_free << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `is_always_lock_free` 在编译期给出该类型能否无锁；超过目标平台宽 CAS 宽度的对象，`atomic<T>` 退化为内部锁 + memcpy，`is_lock_free()` 返回 false。因此宽对象应改为"原子指针 + 不可变快照"（RCU 式，见 ch112）。
+
+[引用] cppreference `std::atomic::is_always_lock_free`：`https://en.cppreference.com/w/cpp/atomic/atomic/is_always_lock_free`。宽对象退化的讨论见 ISO §32.5（[atomics]）。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景**：无锁栈（Treiber stack）是无锁数据结构的"Hello World"——`push` 用 CAS 把新节点头插，`pop` 用 CAS 取头节点。它展示了"系统级进度保证"（lock-free）：只要至少有一个线程在前进，整个系统就不会卡死。但单 CAS `pop` 在真正多线程下还有 ABA 与 use-after-free（见 ch111/ch112）。请用 CAS 实现一个 Treiber 栈的 `push`/`pop`，并解释为什么它是 lock-free 而非 wait-free。
 
 <details><summary>答案与解析</summary>
 
+`push` 读当前 head 作 `n->next`，CAS 把 head 从旧值改成 `n`；失败说明被别的线程抢先，重试即可。`pop` 同理取头节点：
+
 ```cpp
+#include <atomic>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct Node { int v; Node* next; };
+std::atomic<Node*> head{nullptr};
+void push(int x) {
+    Node* n = new Node{x, head.load(std::memory_order_relaxed)};
+    while (!head.compare_exchange_weak(n->next, n,
+               std::memory_order_release, std::memory_order_relaxed)) {}
+}
+int pop() {                                   // 单线程演示；真实多线程需 HP/RCU（ch112）
+    Node* old = head.load(std::memory_order_acquire);
+    while (old && !head.compare_exchange_weak(old, old->next,
+                   std::memory_order_acquire, std::memory_order_relaxed)) {}
+    if (!old) return -1;
+    int v = old->v; delete old; return v;
+}
+int main() {
+    push(1); push(2); push(3);
+    std::cout << pop() << pop() << pop() << '\n';   // 321
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 每次 CAS 失败都代表"有别的线程成功了"，因此系统整体始终有线程在前进——这是 lock-free；但单个线程可能被无限重试，故不是 wait-free。多线程 `pop` 还须解决节点回收（HP/RCU）与 ABA（tagged pointer）。
+
+[引用] cppreference `std::atomic::compare_exchange_weak`：`https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange`。Treiber 栈与 lock-free 定义见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
 
 </details>
 

@@ -769,7 +769,7 @@ int main(){std::cout<<sum(1,2,3,4,5,6,7,8,9,10)<<std::endl;return 0;}
 
 ### 练习 1（难度 ★★）
 
-用**递归可变参数模板**（base case + 递归 case）写一个 `print_all`，依次打印所有参数，参数间用空格分隔。
+**真实场景：日志宏的"任意参数打印"。** 你的引擎日志函数要能一次打印任意个数、任意类型的字段（位置、血量、状态字符串），像 `LOG(1, "hp", 3.0, 'x')` 这样。请用**递归可变参数模板**（base case + 递归 case）写一个 `print_all`，依次打印所有参数，参数间用空格分隔。
 
 <details><summary>答案与解析</summary>
 
@@ -788,11 +788,13 @@ int main() { print_all(1, "two", 3.0, 'x'); std::cout << '\n'; }
 
 [标准] 每次递归剥掉一个参数，剩余包 `rest...` 逐层变短，直到空包命中 base case；递归深度 = 参数个数，会实例化 N 份函数。
 
+[引用] 可变参数模板即 `std::tuple`、`std::make_shared`、fmt/absl 格式化库背后的机制；libstdc++ 的 `std::tuple` 用"剥离头部 + 递归继承余下包"在编译期展开（cppreference "std::tuple"）。ISO/IEC 14882:2023 §[temp.variadic] 规定参数包与包展开语法。
+
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 **C++17 fold expression** 重写 `print_all`（`(std::cout << ... << xs)`），并额外写一个 `sum` 折叠；对比递归版本说明 fold 的优势。
+**真实场景：ECS 批处理"一次性聚合多个组件值"。** 你的系统要把若干同类型数值（如多个实体速度）一次性求和或拼接，希望零代码膨胀、编译期展开。请用 **C++17 fold expression** 重写 `print_all`（`(std::cout << ... << xs)`），并额外写一个 `sum` 折叠；对比递归版本说明 fold 的优势。
 
 <details><summary>答案与解析</summary>
 
@@ -810,11 +812,13 @@ int main() { print_all(1, 2, 3); std::cout << sum(1, 2, 3, 4) << '\n'; }
 
 [标准] fold 只实例化一个函数，编译期展开为线性序列，无递归 N 份实例化的代码膨胀；`(xs + ...)` 为一元左折叠，从首个元素起累加。
 
+[引用] 折叠表达式（C++17，P0036）是 foldl/foldr 式的编译期聚合，标准库 `std::min`/`std::max` 的变参重载即借其实现（cppreference "std::min"）。Abseil/fmt 的大量变参工具也依赖 fold（abseil.io/docs）。ISO/IEC 14882:2023 §[expr.prim.fold] 规定折叠表达式语法与求值。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用包展开 + `std::index_sequence` 实现一个 `make_array(args...)`，把所有参数存入 `std::array`，元素类型取公共类型（`std::common_type_t`）。
+**真实场景：构建"同构固定数组"的工具 `make_array`。** 你的序列化/数学代码需要把一个参数包的若干数值收集进 `std::array<T,N>`，元素类型取公共类型（如 `int`+`long` → `long`）。请用包展开 + `std::index_sequence` 实现一个 `make_array(args...)`，把所有参数存入 `std::array`，元素类型取公共类型（`std::common_type_t`）。
 
 <details><summary>答案与解析</summary>
 
@@ -838,6 +842,8 @@ int main() {
 ```
 
 [标准] `sizeof...(xs)` 是编译期包大小；`static_cast<T>(xs)...` 是包展开 + 转换，保证所有元素同类型后构造 `std::array`。
+
+[引用] 这正是 `std::make_array`（C++20，P0357）的思路——从参数包推导 `std::array` 的元素类型与大小（cppreference "std::make_array"）。`std::index_sequence`/`std::make_index_sequence` 则用于"按编译期索引转发元组元素"（cppreference "std::index_sequence"）。ISO/IEC 14882:2023 §[tuple.helper] 与 §[temp.variadic] 规定相关设施。
 
 </details>
 

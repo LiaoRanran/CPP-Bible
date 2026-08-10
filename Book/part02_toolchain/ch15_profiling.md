@@ -877,7 +877,7 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 
 ### 练习 1（难度 ★★）
 
-`std::vector::push_back` 在容量不足时会重新分配并拷贝。请写微基准对比“预 reserve”与“不 reserve”的耗时差异。
+**真实场景：海量日志写入的扩容抖动。** 你往 `vector` 里逐条 push 百万条日志，发布前想确认扩容开销。请用微基准对比"预 reserve"与"不 reserve"的耗时差异，写程序体现 `std::vector::push_back` 在容量不足时重新分配并拷贝的代价。
 
 ```cpp
 #include <iostream>
@@ -898,10 +898,11 @@ int main() {
 
 [标准] 结论：`reserve` 把多次 realloc+copy 降为一次，实测可快一倍；这正是 profiler 最常给出的第一条建议。
 
+[引用] cppreference《std::vector::reserve》（https://en.cppreference.com/w/cpp/container/vector/reserve ）说明 reserve 预分配容量、避免反复 realloc+copy。
+
 ### 练习 2（难度 ★★★）
 
-编译器在 `-O2` 下会把标量求和循环自动向量化。请写程序用“单累加器”与“四路累加器”两种写法，
-说明多累加器如何缓解流水线依赖、提升 IPC。
+**真实场景：数值热点的向量化。** 一段求和热循环在采样里占比很高，你想确认编译器是否把它向量化、以及多累加器能否提 IPC。请写程序用"单累加器"和"四路累加器"两种写法，说明多累加器如何缓解流水线依赖、提升 IPC（可用 Compiler Explorer 比对 `-O2` 汇编码）。
 
 ```cpp
 #include <iostream>
@@ -919,10 +920,11 @@ int main() {
 
 [标准] 结论：标量链每轮都依赖上一轮结果，吞吐受限于延迟；多累加器打破依赖链，给乱序执行更多并行空间。
 
+[引用] GCC《Optimize Options》（https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html ，`-ftree-vectorize` 自动向量化、`-O2`/`-O3` 优化级别）说明多累加器如何给乱序执行更多并行空间。
+
 ### 练习 3（难度 ★★★★）
 
-缓存命中对性能影响巨大。请写程序对比“行优先（cache 友好）”与“列优先（跨行跳跃）”遍历一个大矩阵，
-说明 stride 过大为何触发更多 cache miss。
+**真实场景：图像处理内核的缓存友好性。** 你对一个大矩阵（图像/张量）做逐元素运算，希望避免跨行大 stride 访问拖慢热点。请写程序对比"行优先（cache 友好）"与"列优先（跨行跳跃）"遍历，说明 stride 过大为何触发更多 cache miss。
 
 ```cpp
 #include <iostream>
@@ -941,6 +943,8 @@ int main() {
 ```
 
 [标准] 结论：连续访问命中预取与缓存行，跨大 stride 访问则频繁 miss；perf 的 `cache-misses` 计数器能定量证实。
+
+[引用] Linux `perf` Wiki（https://perf.wiki.kernel.org/ ）讲 `perf stat -e cache-misses` 等硬件计数器，可定量证实 stride 过大导致的 cache miss。
 
 ## 附录：用法演绎（从选型到落地）
 

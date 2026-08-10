@@ -1114,7 +1114,7 @@ int main() {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-用 std::span 写统一接口，同一函数接收 C 数组、std::array、std::vector，演示连续序列的零成本抽象。
+**真实场景：底层二进制帧解析——同一函数接收栈缓冲/array/vector。** 网络包负载可能是 `uint8_t[]`、定长 `array` 或动态 `vector`，用 `span` 统一接收，避免为每种容器重载。
 
 ```cpp
 #include <iostream>
@@ -1135,8 +1135,10 @@ int main() {
 
 [标准] 结论：`std::span<T>` 是连续序列的视图（指针+长度），可隐式从任意连续容器构造；`span<const T>` 接受只读视图，是"我想读一段连续 int"的标准签名，避免为每种容器重载。
 
+[引用] ISO/IEC 14882:2023 §[views.span]（`span` 的连续视图与隐式构造）；其零成本布局见本章附录 ASM 实证；cppreference "container/span"。
+
 ### 练习 2（难度 ★★★）
-用动态 extent 的 span 做 subspan 切片，演示不拷贝地取子区间。
+**真实场景：协议分块——不拷贝取载荷子区间。** 从整帧 `span` 切出 payload 段做 CRC 校验，`subspan` 在原缓冲上滑动视图，复杂度 O(1)。
 
 ```cpp
 #include <iostream>
@@ -1153,8 +1155,10 @@ int main() {
 
 [标准] 结论：`std::span` 的 extent 可是编译期常量（静态）或 `dynamic_extent`（运行时）；`subspan/first/last` 在原缓冲区上滑动视图，复杂度 O(1)，适合算法分块。
 
+[引用] ISO/IEC 14882:2023 §[views.span]（`subspan`/`first`/`last` 与原缓冲区上的视图）；见 cppreference "container/span" 词条。
+
 ### 练习 3（难度 ★★★★）
-用 span 实现二维矩阵的"行视图"（无拷贝），演示把扁平 buffer 按列数切成逻辑行。
+**真实场景：图像行视图——把扁平 RGB 缓冲按宽切成逻辑行，无拷贝。** 图像处理把 `vector<byte>` 当二维，按列数出每行 `span`。
 
 ```cpp
 #include <iostream>
@@ -1172,6 +1176,8 @@ int main() {
 ```
 
 [标准] 结论：`span` 可指向缓冲区的任意偏移，配合"步长"概念能表达二维行视图而无需分配新容器；`at()` 提供有界检查（越界抛 `std::out_of_range`），`operator[]` 无检查更快。
+
+[引用] ISO/IEC 14882:2023 §[views.span]（`at()`/`operator[]` 的有界/无界差异）；`span` 的"视图"思想源自 GSL/`std::span` 提案（P0122），见 cppreference "container/span"。
 
 ## 附录：用法演绎（从选型到落地）
 

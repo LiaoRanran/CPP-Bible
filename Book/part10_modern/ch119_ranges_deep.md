@@ -753,6 +753,8 @@ sentinel使range不必提供同类型的end迭代器——这对复杂数据结�
 
 用 `std::views::filter` + `std::views::transform` 管道，把 `std::vector<int>` 中的偶数平方，只取前 3 个结果，写出单行管道并说明它为何**不分配任何中间容器、且单遍完成**。
 
+**真实场景：** 你在写一个日志/ETL 流水线，要对千万级事件"过滤异常 → 抽取字段 → 截断前 N 条"再聚合。用 ranges 单遍、零中间容器，内存占用从"两个全量临时 vector"降到几乎为零，延迟显著下降。
+
 <details><summary>答案与解析</summary>
 
 ```cpp
@@ -784,11 +786,15 @@ int main() {
 
 [标准] view 满足 `std::ranges::view` 概念（语义上"廉价拷贝/无拥有"）；延迟求值保证"不遍历就不计算"，`take(3)` 让即使 `v` 有十亿个元素也只处理前若干。
 
+[引用] ISO/IEC 14882:2023 §26.7 [range.adaptors]；cppreference `std::ranges::views`：<https://en.cppreference.com/w/cpp/ranges>。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
 给定 `struct Person { std::string name; int age; };`，写一段代码按 `age` 升序排序并打印名字，要求**用 `std::ranges::sort` 的 projection 参数**而非手写比较器或临时拷贝。
+
+**真实场景：** 你在做数据分析/游戏实体列表，需要按某字段（如 `age`、分数、坐标）排序实体数组。用 projection 直接"取成员作键"，省掉手写 lambda 比较器与任何 `Person` 临时拷贝。
 
 <details><summary>答案与解析</summary>
 
@@ -812,11 +818,15 @@ int main() {
 
 [标准] projection 是 ranges 算法的统一扩展点（`std::ranges::sort`/`find`/`max` 等几乎都带 `proj`）；`&Person::age` 作为投影会被 `std::invoke` 解析为"取该成员"。
 
+[引用] ISO/IEC 14882:2023 §26.8 [alg.sort]；cppreference `std::ranges::sort`：<https://en.cppreference.com/w/cpp/algorithm/ranges/sort>。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
 `auto r = vec | std::views::filter(...)` 返回的是**悬垂 view（dangling）**——它引用 `vec` 而非拥有元素。写出"返回 view 但底层容器已析构"的错误示例，并给出两种安全做法（绑定生命周期 / 物化）。
+
+**真实场景：** 你写一个"预处理后返回数据"的工厂函数，若直接 `return vec | views::filter(...)` 把 view 交出去，而 `vec` 是局部变量，调用方拿到的是悬垂引用、遍历即 UB。务必让容器与 view 同作用域，或把结果物化进 `vector` 再返回。
 
 <details><summary>答案与解析</summary>
 
@@ -860,6 +870,8 @@ std::vector<int> safe() {
 ```
 
 [标准] `std::ranges::range` 分"拥有（如 `vector`）"与"非拥有（view）"；view 廉价但不延长底层生命周期。`std::ranges::dangling` 是某些返回 view 的算法在接收临时范围时的防护类型，但**管道运算符不会自动帮你拦截**——生命周期责任在写代码的人。
+
+[引用] ISO/IEC 14882:2023 §26.7.19 [range.dangling]；cppreference `std::ranges::dangling`：<https://en.cppreference.com/w/cpp/ranges/dangling>。
 
 </details>
 

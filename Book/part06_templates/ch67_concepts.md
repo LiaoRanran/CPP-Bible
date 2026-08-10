@@ -701,7 +701,7 @@ A: SFINAE 可以操作任意类型属性；concepts 需要显式定义。concept
 
 ### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束 `add`，使其只接受整数类型；再故意用浮点调用，观察约束失败的诊断。
+**真实场景：vectorized 数学内核"只接受整数 SIMD 通道"。** 你的数值内核 `add` 要被编译成整数向量指令，绝不能让 `double` 误进来破坏指令选择。请用 `std::integral` 概念约束 `add`，使其只接受整数类型；再故意用浮点调用，观察约束失败的诊断。
 
 <details><summary>答案与解析</summary>
 
@@ -719,11 +719,13 @@ int main() {
 
 [标准] 违反概念约束是**硬错误**（而非 SFINAE 静默失败），编译器能直接指出"实参不满足 integral 概念"，诊断远优于 SFINAE。
 
+[引用] `std::integral` 是 C++20 `<concepts>` 标准概念（cppreference "std::integral"）。Ranges 算法（`std::ranges::sort` 等）大量用 concept 约束迭代器/元素类型，使约束失败诊断清晰（cppreference "std::ranges"）。ISO/IEC 14882:2023 §[concept] 与 §[temp.concept] 规定概念机制。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用 `requires` 表达式定义两个原子概念 `Addable` / `Printable`，再用 `&&` 组合成复合概念 `Reportable`，约束 `report`。
+**真实场景：ECS 调试工具"既能量加、又能打印"的组件。** 你的 `report` 调试器希望只接受"可相加 + 可打印到流"的类型（如 `int`、自定义带 `operator<<` 的组件），其他类型直接禁用。请用 `requires` 表达式定义两个原子概念 `Addable` / `Printable`，再用 `&&` 组合成复合概念 `Reportable`，约束 `report`。
 
 <details><summary>答案与解析</summary>
 
@@ -742,11 +744,13 @@ int main() { report(21); }
 
 [标准] `requires` 表达式在编译期检查"该表达式是否合法"；复合概念通过 `&&`/`||` 组合原子概念，约束语义清晰、可复用。
 
+[引用] 复合概念（concept composition）是 C++20 表达"类型须同时满足多能力"的惯用法（cppreference "Constraints and concepts"）。标准库 `std::sortable` 即由 `std::permutable` + `std::weakly_incrementable` 等复合而成（cppreference "std::sortable"）。ISO/IEC 14882:2023 §[concept] 规定 `&&`/`||` 组合语义。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用概念**重写** ch65 的 `to_string`：以 `std::integral` 与 `std::floating_point` 两个 disjoint 概念分别约束，消除 SFINAE 样板。
+**真实场景：数值存档"整数 vs 浮点"走不同编码格式。** 你的 `to_string` 对整数写定长二进制、对浮点写 IEEE 754 十六进制——两种线格式完全不同。请用概念**重写** ch65 的 `to_string`：以 `std::integral` 与 `std::floating_point` 两个 disjoint 概念分别约束，消除 SFINAE 样板。
 
 <details><summary>答案与解析</summary>
 
@@ -762,6 +766,8 @@ int main() { std::cout << to_string(42) << ' ' << to_string(3.14) << '\n'; }
 ```
 
 [标准] 概念重载彼此 disjoint，编译器直接按约束匹配，无需 `enable_if`；相比 ch65 的 SFINAE 写法，可读性与错误诊断都显著改善。
+
+[引用] 概念重载的 disjoint 匹配是对 ch65 SFINAE 写法的现代化替代；`std::floating_point`/`std::integral` 均为 `<concepts>` 标准概念（cppreference）。Google Abseil、Ranges 等现代库已优先用 concept 表达约束（abseil.io/docs）。ISO/IEC 14882:2023 §[temp.func.order] 规定约束重载的偏序选择。
 
 </details>
 

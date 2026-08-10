@@ -1009,57 +1009,78 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你的游戏每帧要创建/销毁成千上万个相同大小的小对象，直接 `new`/`delete` 既慢又碎片多。请用**固定块内存池**：把一大块内存切成等长的 `FreeNode`，用 `union` 让"空闲节点"与"用户数据"共用同一段存储（省去独立 next 指针元数据），`allocate` 摘头、`deallocate` 头插。写代码给出核心结构并说明为何是 O(1) 且无额外头开销。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+空闲时用 `union` 把首字节当 `next` 指针，使用时不冲突，从而不额外浪费每对象头。分配只摘链表头，回收只头插——O(1)。
 
 ```cpp
+#include <cstddef>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+struct FreeNode { FreeNode* next; };
+struct Pool {
+    FreeNode* head = nullptr;
+    void* allocate() { FreeNode* p = head; head = head->next; return p; }      // O(1) 摘头
+    void  deallocate(void* p) { auto* n = static_cast<FreeNode*>(p); n->next = head; head = n; } // 头插
+};
+int main() { Pool pool; /* grow() 时把大块串成 FreeNode 链挂到 head */ std::cout << "ok\n"; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `union` 允许同一存储表示多种类型（[class.union]）；对象生命周期由 `new`/`delete` 与存储期管理（[basic.stc]）。
+
+[引用] dlmalloc/tcmalloc 的 size-class 思想 <https://github.com/google/tcmalloc>；EASTL `fixed_pool` <https://github.com/electronicarts/EASTL>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 你的内存池被多个线程同时 `allocate`，性能却比预期差——原因是空闲链表头的 `head` 指针与相邻计数器落在同一缓存行，线程间互相使对方行失效（伪共享）。用 `alignas(std::hardware_destructive_interference_size)` 把 `head` 单独对齐到一行，写代码说明如何消除这个争用。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+把共享写热点各自对齐到独立缓存行，避免一行在核间反复失效。下面是把池头指针隔离到独立行的示意。
 
 ```cpp
+#include <new>
+#include <atomic>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct alignas(std::hardware_destructive_interference_size) PaddedHead {
+    void* head = nullptr;   // 独占一行，避免与其它字段伪共享
+};
+int main() { PaddedHead h; std::cout << "head aligned\n"; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `hardware_destructive_interference_size` 定义于 `<new>`（C++17，[support.limits]），给出可破坏干扰的行大小。
+
+[引用] cppreference <https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size>；伪共享与对齐见 Agner Fog *microarchitecture.pdf* <https://www.agner.org/optimize/microarchitecture.pdf>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你不想手写整套池，但想要"一次性分配、统一释放"的 Arena 语义（解析请求时临时对象很多、请求结束整体回收）。C++17 的 **`std::pmr`（多态分配器）** 正好提供 `monotonic_buffer_resource`。写代码用 `std::pmr::monotonic_buffer_resource` + `std::pmr::vector`，说明为何它比反复 `new` 快且零碎片，并指出它的回收限制（只能随 resource 整体释放）。
 
 <details><summary>答案与解析</summary>
 
+`monotonic_buffer_resource` 在预分配的缓冲上线性推进指针分配，几乎零开销、无碎片；代价是单个对象不能单独 `deallocate`，只能等整个 resource 析构时一次性归还。
+
 ```cpp
+#include <memory_resource>
+#include <vector>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main() {
+    std::pmr::monotonic_buffer_resource pool;
+    std::pmr::polymorphic_allocator<int> alloc{&pool};
+    std::pmr::vector<int> v{alloc};
+    for (int i = 0; i < 1000; ++i) v.push_back(i);   // 全部来自 pool，无逐次 new
+    std::cout << v.size() << '\n';
+}   // pool 析构 → 整块缓冲一次性回收
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `std::pmr` 定义于 `<memory_resource>`（C++17，[mem.res]）；`monotonic_buffer_resource` 仅整体释放（[mem.res.monotonic.buffer]）。
+
+[引用] cppreference `std::pmr` <https://en.cppreference.com/w/cpp/memory/memory_resource>；jemalloc/tcmalloc 的 arena 与之思想相通 <https://github.com/google/tcmalloc>。
 
 </details>
 

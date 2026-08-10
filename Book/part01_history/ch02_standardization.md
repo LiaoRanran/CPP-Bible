@@ -530,7 +530,7 @@ int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/S
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：跨标准版本的可移植比较。** 你的头文件要同时喂给 C++17 与 C++20 工具链，C++17 还没有 `<compare>` 的 `std::cmp_less`。请先写一个对任意可比较类型通用、且对混合符号比较安全的最大化比较，并思考它在不同标准版本下如何被特性测试宏切换实现。
 
 <details><summary>答案与解析</summary>
 
@@ -546,11 +546,13 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 
 [标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
 
+[引用] ISO C++20 §[temp.deduct]；cppreference "std::cmp_less"（https://en.cppreference.com/w/cpp/utility/intcmp/cmp_less）。跨标准移植可用特性测试宏（`__cpp_*`）探测 `<compare>` 是否可用，再决定走 `std::cmp_less` 还是手写分支。
+
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：库 API 的可读错误。** 你发布一个被多个团队依赖的数值工具 `add`，误用时最怕编译器吐出一片 SFINAE 替换失败噪声。请用 `std::integral` 概念约束它，让浮点/非数值调用在编译期被清晰拒绝——这正是 C++20 概念相比旧式 `enable_if` 的核心卖点之一。
 
 <details><summary>答案与解析</summary>
 
@@ -565,11 +567,13 @@ int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
 
 [标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
 
+[引用] ISO C++20 §[concepts]；cppreference "std::integral"（https://en.cppreference.com/w/cpp/concepts/integral）。概念由 WG21 论文 P0734R0 定稿，标准库概念集见头文件 `<concepts>`。
+
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：迁移测试套件里的编译期契约。** 升级编译器后你担心某些常量不再在编译期定值。请写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`，把它作为"新工具链仍支持编译期求值"的可执行断言。
 
 <details><summary>答案与解析</summary>
 
@@ -581,6 +585,8 @@ int main() { std::cout << fact(5) << '\n'; }
 ```
 
 [标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+
+[引用] ISO C++ §[expr.const]；cppreference "static_assert"（https://en.cppreference.com/w/cpp/language/static_assert）。`static_assert` 自 C++11 起可用于命名空间作用域常量校验，是迁移测试套件里"编译期契约"的基石。
 
 </details>
 

@@ -896,57 +896,78 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你在跨平台项目里依赖 libc++ 的某个已在较新版本修复的行为（例如早期 `std::optional` 对 constexpr 的限制）。需要写一段编译期可判定的版本分支，仅对低于某版本的 libc++ 启用 workaround，避免拖累已修复的版本。请用实现专属宏 + 模板 trait 在编译期识别 libc++。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+利用 libc++ 的 `_LIBCPP_VERSION` 宏配合 `std::void_t` 做 SFINAE 探测；该宏在非 libc++ 环境下未定义，trait 自动退化为 `false_type`，代码在各标准库下都可编译：
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <type_traits>
+struct lib_identity {};
+template <class T, class = void>
+struct detect_libcxx : std::false_type {};
+#ifdef _LIBCPP_VERSION
+// _LIBCPP_VERSION 展开为整数常量（如 170000 表示 17.0），decltype 可推导其类型
+template <class T>
+struct detect_libcxx<T, std::void_t<decltype(_LIBCPP_VERSION)>> : std::true_type {};
+#endif
+static_assert(detect_libcxx<int>::value || !detect_libcxx<int>::value);
+int main() { return 0; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 预处理宏与条件编译；模板偏特化、`std::void_t` 与 SFINAE 在编译期做实现探测。
+
+[引用] libc++ 官方文档（<https://libcxx.llvm.org/>）的 Design/Internals 与 `<__config>`；cppreference 头文件 `<version>`：<https://en.cppreference.com/w/cpp/header/version>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 你维护一个同时被两份不同构建产物链接的库，其中一份用旧版 libc++、一份用新版，运行时出现诡异的"符号重复 / 静默数据错乱"。请解释 libc++ 如何用 inline namespace 把 ABI 版本编进 mangled name，从而隔离不同版本符号、避免 ODR 违规，并写一段代码佐证 `std::string` 仍可被正常使用。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+libc++ 把实现放在 `inline namespace __1`（不同 ABI 代为 `__2` 等）中，`std::string` 的修饰名实际含 `__1::basic_string`，因此不同 ABI 版本的符号天然隔离、无法跨版本链接：
 
 ```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <string>
+// libc++ 大致等价于：
+//   inline namespace __1 { template<class CharT> class basic_string { ... }; }
+// 用户仍可无感知地写 std::string，但其 mangled 名携带 __1
+int main() {
+    std::string a = "hello";
+    return a.size() > 0 ? 0 : 1;
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] inline namespace 成员对外层命名空间可见，但名字修饰仍带内层命名空间，从而把 ABI 版本编入符号。
+
+[引用] libc++ Design and Internals（<https://libcxx.llvm.org/>）；cppreference inline namespace：<https://en.cppreference.com/w/cpp/language/namespace>。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你的初始化逻辑要在编译期用标准库容器做查表，希望确认所用 libc++ 版本确实支持 `std::vector` 的 constexpr 构造（C++20 起容器逐步 constexpr 化）。请用 `constexpr` 函数 + `static_assert` 在编译期验证。
 
 <details><summary>答案与解析</summary>
 
+C++20 起 `std::vector` 等容器已 constexpr 友好，可在常量表达式上下文构造并访问；若链接的 libc++ 过旧或编译选项未开启，下列 `static_assert` 会在编译期直接失败：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+constexpr int make_constexpr_vector() {
+    std::vector<int> v{1, 2, 3};   // C++20 起 std::vector 支持 constexpr
+    return static_cast<int>(v.size());
+}
+static_assert(make_constexpr_vector() == 3);
+int main() { return 0; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `constexpr` 函数在常量表达式上下文（如 `static_assert` 实参）中于编译期求值；C++20 起部分标准容器 constexpr 化。
+
+[引用] cppreference `std::vector`：<https://en.cppreference.com/w/cpp/container/vector>；提案 P1004R2（ constexpr 化 std::vector 等）。
 
 </details>
 

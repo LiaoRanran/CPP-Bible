@@ -896,57 +896,93 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你要实现一个 JSON 值容器。JSON 有六种类型（null/bool/number/string/array/object），类型在运行时才确定。请用 `std::variant` 把"任意 JSON 值"建模成一个只分配一次的类型安全联合体，并写代码构造一个含字符串与数组的 `Value`。为何比 `void*` + 类型枚举更安全？
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`std::variant` 在编译期枚举可能的备选项、运行时记录当前活跃类型，访问前可 `std::holds_alternative` 检查，避免 `void*` 的裸转型与类型错配 UB。
 
 ```cpp
+#include <variant>
+#include <string>
+#include <vector>
+#include <memory>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+
+struct Value;                                  // 前置声明，支持递归嵌套
+using Array  = std::vector<std::unique_ptr<Value>>;
+using Object = std::vector<std::pair<std::string, std::unique_ptr<Value>>>;
+
+struct Value {                                // JSON 值：类型安全联合体，原生支持嵌套
+    std::variant<std::nullptr_t, bool, double, std::string, Array, Object> data;
+};
+
+int main() {
+    Value s;  s.data = std::string{"hello"};
+    Value num; num.data = 1.0;
+    std::cout << std::holds_alternative<std::string>(s.data) << ' '
+              << std::holds_alternative<double>(num.data) << '\n';
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `std::variant` 是类型安全的 discriminated union（[variant]）；访问非活跃可选项抛 `bad_variant_access`。
+
+[引用] cppreference <https://en.cppreference.com/w/cpp/utility/variant>；nlohmann/json 的 `basic_json` 即基于类似 tagged union <https://github.com/nlohmann/json>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 你的解析器遇到字符串 `"\u4e2d\u6587"`（"中文"），需要把两个 UTF-16 代理项合并成码点再编码成 UTF-8 写入结果。写代码用 `std::string` 实现一个 `append_utf8(uint32_t cp)`，正确处理 BMP 字符（1–3 字节）与代理对（4 字节），说明为何不能直接按字节拷贝。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+JSON 字符串的 `\uXXXX` 是 UTF-16 码元；BMP 直接映射，代理对需合成码点再转 UTF-8。UTF-8 按码点长度用 1–4 字节编码，不能把 UTF-16 的 2 字节当 UTF-8 用。
 
 ```cpp
+#include <string>
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+void append_utf8(std::string& out, unsigned cp) {
+    if (cp < 0x80)            out.push_back(static_cast<char>(cp));
+    else if (cp < 0x800)      { out.push_back(char(0xC0 | cp >> 6));  out.push_back(char(0x80 | (cp & 0x3F))); }
+    else                      { out.push_back(char(0xE0 | cp >> 12)); out.push_back(char(0x80 | ((cp >> 6) & 0x3F))); out.push_back(char(0x80 | (cp & 0x3F))); }
+}
+int main() { std::string s; append_utf8(s, 0x4e2d); std::cout << s << '\n'; }  // "中"
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 字符串是 `char` 序列（[strings]）；字符编码属程序约定，标准不强制 UTF-8，但 UTF-8 是事实标准。
+
+[引用] RFC 8259（JSON 必须 UTF-8）<https://www.rfc-editor.org/rfc/rfc8259>；UTF-8 编码规则见 <https://en.wikipedia.org/wiki/UTF-8>；rapidjson 转义处理 <https://github.com/Tencent/rapidjson>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你要解析几个 GB 的 JSON 日志。把整棵 DOM 建进内存（如 nlohmann/json）会爆内存；更省的是 **SAX/流式** 解析：边读边回调 `OnObjectStart`/`OnKey`/`OnString`。写代码说明 DOM 与 SAX 的取舍，并给出一个"只统计某几个 key 出现次数"的 SAX 风格回调骨架（用 `std::string_view` 零拷贝看 token）。
 
 <details><summary>答案与解析</summary>
 
+DOM 易用但占内存、需先全量建树；SAX 边解析边回调，内存恒定、可早期剪枝，适合大文件与只取部分字段。下面用 `string_view` 把键名当只读视图传给回调，避免拷贝。
+
 ```cpp
+#include <string_view>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+struct Handler {
+    void on_key(std::string_view k) {
+        if (k == "level") ++count;     // 只关心 level 键，零拷贝比较
+    }
+    int count = 0;
+};
+int main() {
+    Handler h;
+    h.on_key("level"); h.on_key("ts");  // 模拟解析器回调
+    std::cout << "level seen: " << h.count << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `std::string_view` 是非拥有只读视图（C++17，[string.view]），零拷贝引用既有缓冲。
+
+[引用] simdjson 的流式/on-demand 解析 <https://github.com/simdjson/simdjson>；SAX vs DOM 对比见 rapidjson 文档 <https://github.com/Tencent/rapidjson>。
 
 </details>
 

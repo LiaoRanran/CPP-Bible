@@ -533,8 +533,7 @@ int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<",
 
 ### 练习 1（难度 ★★）
 
-C++17 的结构化绑定可一次解构 `pair`/`tuple`/聚合体到具名变量。
-请写程序用它遍历 `std::map` 并解构 `[key, value]`，说明它如何提升可读性。
+**真实场景：解析配置/HTTP 头键值对。** 你处理一个 `std::map` 里的配置项（超时、重试次数），`it->first`/`it->second` 写法又长又易错。请用 C++17 结构化绑定遍历并解构 `[key, value]`，说明它如何提升可读性并减少 `it->` 噪音。
 
 ```cpp
 #include <iostream>
@@ -556,10 +555,11 @@ int main() {
 [标准] 结论：结构化绑定按元素引用/拷贝绑定，避免 `.first/.second` 与冗长的
 `std::get<0>`；对自定义聚合体也生效，是现代遍历/多返回值的首选语法。
 
+[引用] ISO C++17 §[dcl.struct.bind]；cppreference "结构化绑定"（https://en.cppreference.com/w/cpp/language/structured_binding）。结构化绑定由 WG21 论文 P0217R3 引入。
+
 ### 练习 2（难度 ★★★）
 
-`std::optional<T>` 显式表达“可能没有值”，比“用特殊值/裸指针/输出参数”更安全。
-请写程序用它实现一个可能失败的查表，并演示 `value_or` 与 `has_value`。
+**真实场景：缓存/配置查表可能缺失。** 你写一个 `lookup(key)`：查缓存命中返回结果，未命中不应返回 `-1` 之类魔法值（调用方容易忘判）。请用 `std::optional<T>` 实现一个可能失败的查表，并演示 `value_or` 与 `has_value` 如何强制处理缺失分支。
 
 ```cpp
 #include <iostream>
@@ -584,10 +584,11 @@ int main() {
 [标准] 结论：`optional` 把“无值”编码进类型，调用方被迫处理缺失分支，消除了魔法值
 （如 `-1`/`nullptr`）的歧义；但它按值存储 `T`，大对象仍有拷贝成本。
 
+[引用] ISO C++17 §[optional]；cppreference "std::optional"（https://en.cppreference.com/w/cpp/utility/optional）。`optional` 由 WG21 论文 P0220R1（Library Fundamentals v1 入标准）引入。
+
 ### 练习 3（难度 ★★★★）
 
-`if constexpr` + 折叠表达式让编译期分支和变参展开极为简洁。
-请写一个类型分派的 `stringify` 和一个变参 `sum`，并说明二者都在编译期完成。
+**真实场景：类型安全的序列化/JSON 编码。** 你写一个把异构值转成字符串的小编码器，`stringify` 要按类型分支、`sum` 要把任意个指标聚合成总和。请用 `if constexpr` + 折叠表达式实现，并说明二者都在编译期完成、零运行期开销。
 
 ```cpp
 #include <iostream>
@@ -617,6 +618,8 @@ int main() {
 
 [标准] 结论：`if constexpr` 只实例化命中的分支（未命中分支无需合法），取代了大量
 SFINAE/标签分派样板；折叠表达式把变参递归展开压成一行，二者均零运行期开销。
+
+[引用] ISO C++17 §[stmt.if]（if constexpr）与 §[expr.prim.fold]（折叠表达式）；cppreference "if constexpr"（https://en.cppreference.com/w/cpp/language/if）与 "折叠表达式"（https://en.cppreference.com/w/cpp/language/fold）。二者分别由 WG21 论文 P0292R2 / P0036R0 引入。
 
 ## 附录：用法演绎（从选型到落地）
 

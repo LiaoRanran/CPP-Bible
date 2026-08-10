@@ -947,8 +947,7 @@ int main(){std::cout<<"CMake=PUBLIC(传递)/PRIVATE(不传递)/INTERFACE(仅依�
 
 ### 练习 1（难度 ★★）
 
-请用 target-based 思想写一个最小 `CMakeLists.txt`，并给出对应的 C++ 源文件。
-体会“以 target 为中心”与“以变量为中心（旧式 Make）”的区别。
+**真实场景：把全局变量污染的旧 Make 迁到 target-based CMake。** 你接手一个用一堆 `CXXFLAGS`/`INCLUDES` 全局变量的旧 Makefile，新增目标时总漏包含目录。请用 target-based 思想写一个最小 `CMakeLists.txt`，并给出对应的 C++ 源文件，体会"以 target 为中心"与"以变量为中心"的区别。
 
 ```cmake
 cmake_minimum_required(VERSION 3.16)
@@ -964,10 +963,11 @@ int main() { std::cout << "minimal cmake target\n"; }
 [标准] 结论：CMake 的 `add_executable` / `target_link_libraries` 把“源文件、包含目录、链接库”绑定到 target，
 自动沿 target 传播 `PUBLIC/PRIVATE/INTERFACE` 属性，比手写 Make 变量更不易漏依赖。
 
+[引用] CMake 官方文档《cmake-buildsystem(7)》（https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html）讲 target-based 模型；`target_link_libraries`（https://cmake.org/cmake/help/latest/command/target_link_libraries.html）讲 PUBLIC/PRIVATE/INTERFACE 属性传播。
+
 ### 练习 2（难度 ★★★）
 
-增量构建依赖“头文件依赖图”。请写程序说明 `g++ -MMD -c` 生成的 `.d` 文件作用，
-并指出它如何让 `make`/`ninja` 在头文件改动时只重编受影响的源。
+**真实场景：CI 里的增量构建。** 大型仓库每次提交都要重建，太慢。增量构建依赖"头文件依赖图"：只重编受改动头影响的目标文件。请写程序说明 `g++ -MMD -c` 生成的 `.d` 文件作用，并指出它如何让 `make`/`ninja` 在头文件改动时只重编受影响的源。
 
 ```cpp
 #include <iostream>
@@ -983,10 +983,11 @@ int main() {
 [标准] 结论：`.d` 把 `#include` 关系写成 Make 规则，`make` include 它后，
 任一被列头改动都会触发本 `.o` 重编；无 `.d` 则只能靠手写依赖或全量重编。
 
+[引用] GCC 手册《预处理选项》中的 `-MMD`/`-MP`（https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html）；Ninja 手册（https://ninja-build.org/manual.html）说明构建图如何消费 `.d` 做增量。增量构建是 `make`/`ninja` 的基础能力。
+
 ### 练习 3（难度 ★★★★）
 
-静态库（`.a`）把目标文件直接并入可执行文件，动态库（`.so`/`.dll`）运行时再解析。
-请在单个自包含程序里体现“库函数”的调用形态，并写出分离成静态库的真实命令。
+**真实场景：发布形态选型。** 你要把一个 `square` 工具函数交付出去：做成静态库 `.a` 让调用方程序自包含，或做成动态库 `.so` 便于单独升级。请在单个自包含程序里体现"库函数"的调用形态，并写出分离成静态库的真实命令。
 
 ```cpp
 #include <iostream>
@@ -1004,6 +1005,8 @@ g++ -std=c++23 main.cpp libmath.a -o app      # 静态：square 代码已并入 
 ```
 
 [标准] 结论：静态库零运行时依赖、体积大；动态库体积小、可单独升级但需部署 `.so`/`.dll` 并处理好 ABI 兼容。
+
+[引用] GNU `ar` 手册讲静态库归档；CMake 文档 `add_library`（https://cmake.org/cmake/help/latest/command/add_library.html）讲 STATIC/SHARED 目标。动态库分发须保证 ABI 一致（同编译器/标准库/构建档），见 ch13 包管理与 ch18 构建配置。
 
 ## 附录：用法演绎（从选型到落地）
 

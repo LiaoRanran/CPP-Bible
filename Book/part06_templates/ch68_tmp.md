@@ -628,7 +628,7 @@ P2448R2 (C++23): 放宽constexpr限制 → 允许非constexpr函数在constexpr�
 
 ### 练习 1（难度 ★★）
 
-写一个编译期阶乘**元函数** `Fact<N>`，以静态成员 `value` 暴露结果，并用 `static_assert` 验证 `Fact<5>::value == 120`。
+**真实场景：编译期"固定尺寸缓冲容量"查询。** 你的 ECS 组件池要在编译期算出"每个 chunk 容纳 N 个实体"所需的总字节/容量（与类型无关的纯整数元计算）。请写一个编译期阶乘**元函数** `Fact<N>`，以静态成员 `value` 暴露结果，并用 `static_assert` 验证 `Fact<5>::value == 120`。
 
 <details><summary>答案与解析</summary>
 
@@ -646,11 +646,13 @@ int main() {
 
 [标准] 元函数是"在类型系统上运行的函数"；递归特化 `Fact<0>` 作为终止条件，`value` 为 `constexpr` 可在编译期使用。
 
+[引用] 编译期元函数即 TMP 的核心，现代 C++ 多以 `constexpr` 函数替代（见 ch69）。标准库 `std::integer_sequence` 的生成也依赖编译期整数序列元编程（cppreference "std::integer_sequence"）。ISO/IEC 14882:2023 §[temp] 规定模板递归实例化与特化终止。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用可变参数模板实现一个编译期 `TypeList<Ts...>`，以 `static constexpr size_t size = sizeof...(Ts)` 暴露元素个数，`static_assert` 验证。
+**真实场景：类型擦除回调"注册支持的类型集合"。** 你的事件总线要在编译期记录"本总线能投递哪些组件类型"，以便生成类型安全的 `dispatch` 表。请用可变参数模板实现一个编译期 `TypeList<Ts...>`，以 `static constexpr size_t size = sizeof...(Ts)` 暴露元素个数，`static_assert` 验证。
 
 <details><summary>答案与解析</summary>
 
@@ -667,11 +669,13 @@ int main() {
 
 [标准] `sizeof...(Ts)` 是编译期包大小；`TypeList` 本身不占运行期内存，纯粹在类型系统记录类型集合，是 TMP 的基础构件。
 
+[引用] `TypeList` 是 Andrei Alexandrescu《Modern C++ Design》中 typelist 的雏形，是 policy-based 与编译期分派的基石（Boost.MPL 的 `boost::mpl::vector` 即其扩展，boost.org/doc/libs）。标准库 `std::tuple` 也用类似"参数包类型集合"结构（cppreference "std::tuple"）。ISO/IEC 14882:2023 §[temp.variadic] 规定参数包。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 **`if constexpr`** 实现 `process(T)`：指针类型解引用后打印，非指针类型直接打印；对比"全特化"方案说明其简洁性。
+**真实场景：序列化"指针解引用 vs 值直接写"。** 你的存档器 `process` 对裸指针类型要"先解引用再写目标"，对值类型"直接写字节"——两条路径代码完全不同。请用 **`if constexpr`** 实现 `process(T)`：指针类型解引用后打印，非指针类型直接打印；对比"全特化"方案说明其简洁性。
 
 <details><summary>答案与解析</summary>
 
@@ -690,6 +694,8 @@ int main() { int x = 7; process(x); process(&x); }
 ```
 
 [标准] `if constexpr` 在编译期丢弃不采纳的分支，被弃分支**不被实例化**（故 `*v` 在 `T=int` 时不报错）；相比为指针/非指针写两份全特化，单函数即可表达。
+
+[引用] `if constexpr`（C++17，P0292）让"编译期分支"无需写多份特化，标准库 `std::visit`、`std::apply` 的实现大量使用它（cppreference "if constexpr"）。它取代了 ch66 中 `void_t`/SFINAE 的许多分支探测场景。ISO/IEC 14882:2023 §[stmt.if] 规定 `if constexpr` 的丢弃分支不被实例化。
 
 </details>
 

@@ -852,8 +852,7 @@ call lookup_symbol       ; 递归查找定义
 
 ### 练习 1（难度 ★★）
 
-clang-tidy 能静态抓出“按值传参却被当 const 引用用”等性能反模式。请写一段会触发
-`performance-unnecessary-value-param` 的代码，并给出修复版本。
+**真实场景：Code Review 自动化。** 你想在 CI 里用 clang-tidy 挡住"按值传参却被当 const 引用用"这类性能反模式，避免每次靠人眼 review。请写一段会触发 `performance-unnecessary-value-param` 的代码，并给出修复版本。
 
 ```cpp
 #include <iostream>
@@ -867,10 +866,11 @@ int main() { std::cout << mirror_good("ab") << "\n"; }
 
 [标准] 结论：clang-tidy 在编译前基于 AST 做语义检查，能抓编译器不报、但影响质量/性能的写法。
 
+[引用] clang-tidy 文档（https://clang.llvm.org/extra/clang-tidy/ ）与具体检查项 `performance-unnecessary-value-param`（https://clang.llvm.org/extra/clang-tidy/checks/performance/unnecessary-value-param.html ）说明其基于 AST 的语义检查。
+
 ### 练习 2（难度 ★★★）
 
-clangd 需要 `compile_commands.json` 才能正确解析头文件与宏。请写出由 CMake 生成该文件的命令，
-并指出它为什么比“手写 include 路径”更可靠。
+**真实场景：编辑器的精确补全/跳转。** 你用 VSCode/Neovim + clangd，希望点函数能跳到正确定义、补全能识别条件宏。请写出由 CMake 生成 `compile_commands.json` 的命令，并指出它为什么比"手写 include 路径"更可靠。
 
 ```text
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
@@ -885,10 +885,11 @@ int main() { std::cout << "compile_commands.json 让 clangd 用真实命令解�
 [标准] 结论：`compile_commands.json` 记录每个源文件的真实 `-I`/`-D`/标准，clangd 据此精确跳转与补全；
 手写路径在条件宏/多标准下极易错。
 
+[引用] clangd 文档（https://clangd.llvm.org/ ）说明它依赖编译数据库；CMake 变量 `CMAKE_EXPORT_COMPILE_COMMANDS`（https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html ）讲如何由 CMake 一键生成 `compile_commands.json`。
+
 ### 练习 3（难度 ★★★★）
 
-重构常把重复逻辑抽成函数。请写“重构前（内联重复）”与“重构后（提取 helper）”的对照，
-说明 IDE 的 extract-function 为何安全（基于 AST 而非文本）。
+**真实场景：提取重复逻辑成 helper。** 你发现多处重复写 `for` 求和，想用 IDE 的 extract-function 抽成 `total()`，又担心正则式替换会改错作用域。请写"重构前（内联重复）"与"重构后（提取 helper）"的对照，说明 IDE 的 extract-function 为何安全（基于 AST 而非文本）。
 
 ```cpp
 #include <iostream>
@@ -903,6 +904,8 @@ int main() {
 ```
 
 [标准] 结论：基于 AST 的重构能正确处理作用域/重载/模板，比正则替换文本安全；CLion/VSCode+clangd 都提供此类操作。
+
+[引用] Language Server Protocol 规范（https://microsoft.github.io/language-server-protocol/ ）定义 rename/refactor 等基于 AST 的操作；clangd（https://clangd.llvm.org/ ）据此提供安全的 extract-function / rename。
 
 ## 附录：用法演绎（从选型到落地）
 

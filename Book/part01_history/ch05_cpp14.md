@@ -487,8 +487,7 @@ int main(){auto p=std::make_unique<int>(42);auto l=[](auto x){return x*2;};std::
 
 ### 练习 1（难度 ★★）
 
-C++14 的泛型 lambda 允许参数写 `auto`，使一个 lambda 适配多种类型。
-请写程序用泛型 lambda 实现一个通用打印器，并说明其等价于带模板 `operator()` 的 functor。
+**真实场景：日志/追踪系统的异构打印。** 你的追踪工具要把 `int`、`double`、临时 `std::string` 混在一起打到日志，但不想为每种类型写重载。请用 C++14 泛型 lambda 实现一个通用打印器，并说明其等价于带模板 `operator()` 的 functor。
 
 ```cpp
 #include <iostream>
@@ -506,10 +505,11 @@ int main() {
 [标准] 结论：泛型 lambda 的 `auto` 参数被编译器展开为模板化的 `operator()`，
 每种实参类型实例化一份；写法极简但仍是编译期多态、零运行期开销。
 
+[引用] ISO C++14 §[expr.prim.lambda]（泛型 lambda）；cppreference "lambda 表达式"（https://en.cppreference.com/w/cpp/language/lambda）。泛型 lambda 由 WG21 论文 N3649 引入，其闭包类含模板化的 `operator()`。
+
 ### 练习 2（难度 ★★★）
 
-C++14 放宽了返回类型推导（普通函数可写 `auto` 返回），并引入变量模板。
-请写程序用二者实现一个类型无关的“取中值”和一个编译期常量 `pi<T>`。
+**真实场景：数值库的多精度 π 常量。** 你写一个几何/物理数值库，坐标计算既可能用 `float` 也可能用 `double`，硬编码 `double` 字面量会丢精度或浪费。请用 C++14 放宽返回类型推导（普通函数可写 `auto` 返回）+ 变量模板，实现一个类型无关的"取中值"和一个编译期常量 `pi<T>`。
 
 ```cpp
 #include <iostream>
@@ -529,10 +529,11 @@ int main() {
 [标准] 结论：`auto` 返回类型由 `return` 表达式推导，多条 `return` 须类型一致；
 变量模板让“随类型变化的常量”不必再包在类里（旧法需 `struct Pi<T>{ static const ... };`）。
 
+[引用] ISO C++14 §[dcl.spec.auto]（返回类型推导）与 §[temp.variadic]（变量模板）；cppreference "变量模板"（https://en.cppreference.com/w/cpp/language/variable_template）。变量模板由 WG21 论文 N3651 引入。
+
 ### 练习 3（难度 ★★★★）
 
-请综合运用 C++14 的 `std::make_unique`、二进制字面量、数字分隔符，
-写一个位掩码权限系统，并解释这三项特性各自消除了什么样板/易错点。
+**真实场景：OS/文件权限位掩码。** 你在写一个系统工具，用位掩码表达"读/写/执行"权限（类比 Linux `chmod` 的 `rwx`）。请用 C++14 的 `std::make_unique`、二进制字面量、数字分隔符，写一个位掩码权限系统，并解释这三项特性各自消除了什么样的样板与易错点。
 
 ```cpp
 #include <iostream>
@@ -555,6 +556,8 @@ int main() {
 
 [标准] 结论：`make_unique` 补齐了 C++11 只有 `make_shared` 的缺口，且异常安全（避免
 `f(new A, g())` 求值顺序泄漏）；二进制字面量让位运算意图直观；数字分隔符纯为可读性，编译期剥离。
+
+[引用] ISO C++14 §[util.smartptr]（make_unique）/ §[lex.ccon]（二进制字面量与数字分隔符 `'`）；cppreference "std::make_unique"（https://en.cppreference.com/w/cpp/memory/make_unique）。二进制字面量（`0b…`）与单引号分隔符由 WG21 论文 N3472 引入。
 
 ## 附录：用法演绎（从选型到落地）
 

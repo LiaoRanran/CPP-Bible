@@ -1019,7 +1019,7 @@ A: std::sort 需要随机访问迭代器。list::sort 利用链表特性做归�
 
 ### 练习 1（难度 ★★）
 
-`std::count_if` 配合 `std::execution::par` 可按策略并行统计。写一个程序：生成 1'000'000 个整数 `v[i]=i`，用并行 `std::count_if` 统计其中偶数的个数，并输出结果（应为 500000）。注意并行算法对无共享可变状态的纯谓词是安全的。
+**真实场景**：线上服务常要把一批已读进内存的日志/埋点做实时聚合（如统计其中 VIP 用户的命中数），数据量千万级且聚合逻辑是"只读、无副作用"的纯谓词——这正是 C++17 并行算法的天然用武之地。请写一个程序：生成 1'000'000 个整数 `v[i]=i`，用 `std::execution::par` 配合 `std::count_if` 并行统计其中偶数的个数（结果应为 500000）。为什么这里用 `par` 是安全的，而若把"统计"改成"带共享计数器 `for_each` 累加"就会数据竞争？
 
 <details><summary>答案与解析</summary>
 
@@ -1039,11 +1039,13 @@ int main() {
 
 [标准] `std::execution::par` 允许算法将工作分派到多线程；`count_if` 的归约结果由各分块汇总，谓词无副作用故无数据竞争。GCC 在无 TBB 时自动降级为串行，仍可正确编译运行。
 
+[引用] cppreference `std::count_if`：`https://en.cppreference.com/w/cpp/algorithm/count`；并行执行策略总览：`https://en.cppreference.com/w/cpp/algorithm/execution`。C++17 并行算法"元素访问函数不得引发数据竞争"的前置条件见 ISO §25.3.1（[algorithms.parallel]）。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用自定义比较器配合 `std::sort` 实现「按绝对值降序」排序。要求比较器必须满足**严格弱序**（用 `<` 表达「前者应先于后者」，严禁用 `>=`/`<=`）。给定 `v{3,-1,-4,2,0}`，输出应为 `-4 3 -1 2 0`。
+**真实场景**：后台任务调度常需要"按某种派生指标排序、但保留原始对象"——例如按文件大小的绝对值降序展示目录，或为一组传感器读数按偏离零点的幅度排序以优先处理异常值。请自定义一个比较器，用 `std::sort` 实现「按绝对值降序」排序，要求比较器严格满足**严格弱序**（用 `<` 表达「前者应先于后者」，严禁用 `>=`/`<=`）。给定 `v{3,-1,-4,2,0}`，输出应为 `-4 3 -1 2 0`。为什么用 `>=` 比较会触发 `std::sort` 的未定义行为？
 
 <details><summary>答案与解析</summary>
 
@@ -1065,11 +1067,13 @@ int main() {
 
 [标准] 比较器 `comp(a,b)` 返回 true 表示 a 排在 b 前，必须满足严格弱序（非自反、非对称、可传递）。用 `>` 表达「降序先于」仍是合法严格弱序；若误用 `>=` 会破坏非自反性，导致 `std::sort` 出现未定义行为。
 
+[引用] cppreference `std::sort`：`https://en.cppreference.com/w/cpp/algorithm/sort`。严格弱序的形式定义与对比较器的要求见 ISO §25.7.2（[alg.sorting]）及 §27.2.1（Compare 概念）。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-`std::for_each_n` 可只处理前 N 个元素而不触碰其余，且不修改容器（无迭代器失效风险）。写出一个程序：只读遍历 `vector` 前 5 个元素并输出；随后用 **erase–remove 惯用法**删除所有偶数（注意 `remove_if` 只重排、不真正删除，必须 `erase` 收尾）。
+**真实场景**：流式处理里经常"只看前几条抽样预览"或"先过滤再真正删除"——例如后台仅对一批请求的前 5 条做采样日志，再批量剔除已失效的偶数编号任务。`std::for_each_n` 可只处理前 N 个元素而不触碰其余（只读、无迭代器失效风险）。写出一个程序：只读遍历 `vector` 前 5 个元素并输出；随后用 **erase–remove 惯用法**删除所有偶数（注意 `remove_if` 只重排、不真正删除，必须 `erase` 收尾）。
 
 <details><summary>答案与解析</summary>
 
@@ -1091,6 +1095,8 @@ int main() {
 ```
 
 [标准] `remove_if` 将保留元素前移、返回新的逻辑尾迭代器；真正删除需 `erase(新尾, end())`。在遍历过程中若修改同一容器导致迭代器/引用/指针失效，则属未定义行为——故「只读遍历」与「删除」须分阶段进行。
+
+[引用] cppreference `std::remove`：`https://en.cppreference.com/w/cpp/algorithm/remove`；`std::for_each_n`：`https://en.cppreference.com/w/cpp/algorithm/for_each_n`。erase–remove 惯用法见 ISO §27.7.5（[alg.remove]）。
 
 </details>
 

@@ -738,7 +738,7 @@ A: (1) tagged pointer (ABA 防护 + 无 HP); (2) hazard pointers (C++26 方向);
 
 ### 练习 1（难度 ★★）
 
-实现一个最简 **Hazard Pointer** 登记/清除流程（单读者、单槽位）：读者在解引用共享指针前把它登记到全局 HP 槽，用完清除；回收者删除节点前先检查 HP 槽是否仍指向它。用单线程模拟「登记保护 → 回收被拒」。
+**真实场景**：无锁链表/栈里，读者正解引用一个节点、写者却想 `delete` 它——这就是 use-after-free 的根源。Hazard Pointer 让"正在被读的节点"在被读期间绝不被回收：读者先登记、再解引用，回收者先扫描 HP 表、被引用者推迟删除。请实现一个最简 **Hazard Pointer** 登记/清除流程（单读者、单槽位）：读者在解引用共享指针前把它登记到全局 HP 槽，用完清除；回收者删除节点前先检查 HP 槽是否仍指向它。用单线程模拟「登记保护 → 回收被拒」。
 
 <details><summary>答案与解析</summary>
 
@@ -770,11 +770,13 @@ int main() {
 
 [实现] 真实 HP 库有每线程多个 HP 槽 + 每线程 retire 列表 + 批量扫描回收（阈值触发），此处简化为单槽演示核心不变式。
 
+[引用] 经典论文：M. M. Michael, *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects*, ISMM 2004。C++26 标准化提案见 WG21 P1122：`https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1122r4.html`。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用单线程模拟 **RCU** 的「读侧免锁、写侧 copy-update + 宽限期」：写者复制→修改→原子替换指针，旧版本在「所有读者退出临界区（宽限期结束）」后才回收。
+**真实场景**：Linux 内核的路由表、文件系统元数据大量使用 RCU——读多写少时，读侧几乎零开销（不抢锁、不写原子），写侧"复制-修改-原子替换指针"，旧版本等"所有读者都退出了旧临界区"（宽限期）才回收。请用单线程模拟 **RCU** 的「读侧免锁、写侧 copy-update + 宽限期」：写者复制→修改→原子替换指针，旧版本在「所有读者退出临界区（宽限期结束）」后才回收。为什么 RCU 读侧比 Hazard Pointer 更省、但回收延迟更不可控？
 
 <details><summary>答案与解析</summary>
 
@@ -805,11 +807,13 @@ int main() {
 
 [标准] 此处用 `shared_ptr` 引用计数模拟宽限期；真实 RCU（如 Linux 内核）用「静止态检测」而非引用计数，读侧开销更低但回收延迟由 `synchronize_rcu()` 控制。
 
+[引用] Linux 内核 RCU 文档：`https://docs.kernel.org/RCU/`。RCU 形式化语义见 P. E. McKenney 等关于 RCU 的系列论文。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-实现 HP 的**批量回收**：读者可能登记多个指针，回收者维护一个 retire 列表，扫描全部 HP 槽后，只删除「不在任何 HP 槽中」的节点，其余留待下轮。给出核心扫描逻辑。
+**真实场景**：工业级 Hazard Pointer 不会在每次 `retire` 时都全表扫描——那样是 O(N·H) 的浪费。正确做法是把 retired 节点累积到阈值，再一次性收集所有活跃 HP 槽、批量判定哪些能删、哪些留待下轮。请实现 HP 的**批量回收**：读者可能登记多个指针，回收者维护一个 retire 列表，扫描全部 HP 槽后，只删除「不在任何 HP 槽中」的节点，其余留待下轮。给出核心扫描逻辑。
 
 <details><summary>答案与解析</summary>
 
@@ -853,6 +857,8 @@ int main() {
 ```
 
 [实现] 批量扫描把「每次 retire 都全表扫描」的 O(N·H) 摊薄为阈值触发的 O(N+H)，是 HP 可用性的关键工程优化。
+
+[引用] 经典论文：M. M. Michael, *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects*, ISMM 2004（批量回收与每线程 retire 列表的设计出处）。
 
 </details>
 

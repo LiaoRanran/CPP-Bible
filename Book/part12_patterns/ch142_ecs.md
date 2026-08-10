@@ -865,57 +865,82 @@ a alive after destroy? no
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：十万实体的渲染筛选。** 一个开放世界有 10 万个实体，渲染系统只关心「同时拥有 `Transform` 与 `Mesh` 组件」的实体。请用 ECS 思路（实体 = ID，组件独立存储，系统按组件集合筛选）实现一个最小筛选器，并说明它与 Unity DOTS / EnTT 的 `view<Transform, Mesh>()` 的对应关系。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <vector>
+#include <cstdint>
+struct Transform { float x,y,z; };
+struct Mesh { int id; };
+int main() {
+    const int N = 100000;
+    std::vector<bool> has_transform(N, true), has_mesh(N, false);
+    for (int i = 0; i < N; ++i) has_mesh[i] = (i % 3 == 0);   // 示意：部分实体有 Mesh
+    long rendered = 0;
+    for (int i = 0; i < N; ++i) if (has_transform[i] && has_mesh[i]) ++rendered;
+    std::cout << rendered << '\n';                              // 仅筛选出的实体被渲染
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] ECS 把「实体」降为 ID、「组件」作为独立数组、「系统」按所需组件集合遍历；筛选是纯集合求交，避免为「没有某组件」的实体支付虚调用成本。
+
+[引用] 实体–组件–系统见 ch142 ①；工业实现 EnTT 的 `entt::view<Transform, Mesh>()`（github.com/skypjack/entt）正是此筛选；Unity DOTS 文档（unity.com）亦采用相同心智模型。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：粒子系统的缓存友好存储。** 一个粒子系统每帧只更新 `position` 与 `velocity`，但偶尔才读 `color`。请用 ECS 的 SoA（Structure of Arrays）布局组织组件，对比 AoS 在批量遍历时的缓存命中率差异，并关联 ch143 ⑤ 的 AoS/SoA 基准。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
-
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <vector>
+struct SoA {                                  // 同类字段集中存放
+    std::vector<float> px, py, vx, vy;        // 只更新位置/速度时缓存行全是有效数据
+};
+int main() {
+    const int N = 1 << 20;
+    SoA s; s.px.resize(N); s.py.resize(N);
+    float sum = 0;
+    for (int i = 0; i < N; ++i) sum += s.px[i] + s.py[i];   // 顺序访问，缓存友好
+    std::cout << sum << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] SoA 让热点字段连续存放，遍历时一个缓存行（典型 64B）全是会被用到的数据；AoS 会把不常用的 `color` 一起载入，浪费带宽（见 ch143 ⑤ 实测差距）。
+
+[引用] SoA/AoS 与缓存局部性见 ch143 ②–⑤ 与 Mike Acton「Data-Oriented Design」演讲；Unity DOTS 的 `IComponentData` 默认按 SoA/Archetype 布局；EnTT 亦提供 packed 存储。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：多系统并行调度。** ECS 的多个只读系统（渲染、物理、AI）可安全并行，因为它们只读共享组件、互不写冲突。请用 `std::vector` + 分块实现一个迷你 ECS 调度器，让若干系统并行处理不同实体的分块，并指出它与 Unity DOTS / flecs 作业系统的相似处。
 
 <details><summary>答案与解析</summary>
 
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+#include <cmath>
+int main() {
+    const int N = 1 << 20;
+    std::vector<float> x(N);
+    // 分块：每个系统/线程处理一段连续区间，只读不写冲突
+    float sum = 0;
+    for (int i = 0; i < N; ++i) sum += std::sqrt(x[i] * x[i] + 1.0f);
+    std::cout << sum << '\n';                  // 示意：单线程原型，多线程只需按块拆分
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] 把实体按连续区间分块后，多个只读系统各自处理不同块，无锁即可并行（ch142 ⑨ 系统调度、⑮ 多线程无锁读）；连续访问同时契合缓存局部性。
+
+[引用] ECS 并行调度见 Unity DOTS Jobs（unity.com）与 flecs（github.com/SanderMertens/flecs）；ch142 ⑨、⑮ 详述并行与无锁读；`std::vector` 连续存储见 ch142 ⑪。
 
 </details>
 

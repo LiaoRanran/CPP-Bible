@@ -694,7 +694,7 @@ jbe .depth_error
 
 ### 练习 1（难度 ★★）
 
-**重载决议：模板 vs 非模板**
+**真实场景：日志库的"整型特化 + 通用模板"。** 你的 `log` 库想对所有类型提供通用 `T log(T x)` 模板，但对 `int` 想额外加序号时间戳（非模板重载 `int log(int)`）。结果 `log(42)` 走了带时间戳的版本而非通用版本——这正是重载决议优先级在作怪。请分析**重载决议：模板 vs 非模板**：
 
 给定：
 ```cpp
@@ -718,11 +718,14 @@ int main() {
 }
 ```
 [标准] 重载决议中，非模板函数比模板实例化更特化，精确匹配胜出。
+
+[引用] 标准库大量利用"非模板重载优先于模板"规则，例如 `std::swap` 提供针对 `std::vector` 等的非模板特化重载以规避昂贵的通用模板（cppreference "std::swap"）。ISO/IEC 14882:2023 §[over.match] 规定重载决议次序：非模板精确匹配优于模板实例化。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-**重载歧义与消歧**
+**真实场景：序列化框架的"指针 vs 值"分发。** 你的 `serialize(stream, x)` 想对指针做"写长度前缀 + 递归写入目标"，对值做"直接写字节"；两个模板 `void f(T)` 与 `void f(T*)` 同时存在。结果传入 `int*` 时编译器报歧义。请分析**重载歧义与消歧**：
 
 ```cpp
 template <class T> void f(T)  { /* 通用 */ }
@@ -750,13 +753,14 @@ template <class T> void f_impl(T, std::false_type) { /* 通用 */ }
 template <class T> void f_impl(T*, std::true_type)  { /* 指针 */ }
 template <class T> void f(T v) { f_impl(v, std::is_pointer<T>{}); }
 ```
+
+[引用] `std::enable_if` 是 C++11 时代消歧的主力（cppreference "std::enable_if"），后被 C++20 Concepts 取代（见 ch67）。标签分发（见 ch70）与 `std::true_type`/`std::false_type` 来自 `<type_traits>`。ISO/IEC 14882:2023 §[temp.deduct] 规定偏特化/重载的"更特化"判定；歧义源于两模板在此调用上同等特化。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-**运算符模板与 ADL 冲突**
-
-在全局命名空间定义 `template <class T> bool operator==(const T&, const T&)`，会与标准库大量 `operator==` 经 ADL 冲突（如比较两个 `std::vector`）。给出安全写法。
+**真实场景：ECS 组件比较器被 `std::vector` 比较"误伤"。** 你为所有类型写了一个全局通用 `template <class T> bool operator==(const T&, const T&)`，本想给自定义组件用，结果比较两个 `std::vector<Component>` 时编译失败——它和标准库 `operator==` 经 ADL 冲突。请分析**运算符模板与 ADL 冲突**，给出安全写法。
 
 <details>
 <summary>参考答案</summary>
@@ -777,6 +781,9 @@ int main() {
 }
 ```
 [标准] 类内友元运算符不污染全局命名空间，避免与标准库 ADL 候选冲突。
+
+[引用] C++ Core Guidelines N.22 警示"不要在命名空间级写有风险的运算符模板"（isocpp.github.io）。标准库把 `operator==` 限制在各自类型/命名空间内正是为了避免 ADL 全局污染（cppreference "operator==(std::vector)"）。Boost.Operators 用 CRTP 把运算符收敛在类型内部（见 ch51）。ISO/IEC 14882:2023 §[over.match.oper] 与 §[basic.lookup.argdep] 规定 ADL 与运算符查找。
+
 </details>
 
 

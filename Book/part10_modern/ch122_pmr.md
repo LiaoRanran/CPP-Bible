@@ -1171,6 +1171,8 @@ pmr_push():
 
 用 `std::pmr::vector<int>` + `std::pmr::monotonic_buffer_resource` 在一个**栈上缓冲区**里 `push_back` 100 个元素，对比默认 `std::vector<int>`（每次 `push_back` 触发堆分配）。说明 pmr 如何把"每次 `push_back` 的 `operator new`"换成"缓冲区指针推进"。
 
+**真实场景：** 游戏/实时系统每帧要往一个临时 `vector` 塞几百个坐标点，默认 `vector` 每次扩容都 `operator new`+`memcpy`，帧时间抖动明显。改用栈上 `monotonic_buffer_resource`，整帧分配只是指针推进、帧末随缓冲一起回收，无堆竞争。
+
 <details><summary>答案与解析</summary>
 
 ```cpp
@@ -1192,11 +1194,15 @@ int main() {
 
 [标准] `polymorphic_allocator` 是"类型擦除的分配器"，持有 `memory_resource*`；`monotonic_buffer_resource` 是资源的一种，语义"单调、不释放单块、整体一次性回收"。
 
+[引用] ISO/IEC 14882:2023 §20.4 [mem.res]；cppreference `std::pmr::monotonic_buffer_resource`：<https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource>。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
 写一段代码：在一个 `monotonic_buffer_resource` arena 上构造多个临时 `pmr::vector`/`pmr::string`，函数返回前**整个 arena 一次性释放**（零次单个 `delete`）。解释 arena 为何能消除分配碎片与释放开销。
+
+**真实场景：** 网络服务器处理一个请求时要建几十个临时容器/字符串（解析头、拼响应、记日志），请求结束全丢弃。每请求一个 arena，结束时整体一次性释放，省去 N 次 `delete` 与全局堆锁竞争——这正是"请求级 Arena"模式。
 
 <details><summary>答案与解析</summary>
 
@@ -1226,11 +1232,15 @@ arena 的"整体回收"是关键：它不追踪每块单独释放，只在 `mono
 
 [标准] 这正是"请求级 Arena"模式（网络服务器每请求一个 arena，请求结束整体释放），代价是 arena 内的单个对象**不能提前单独释放**（单调资源不回收中间块）。
 
+[引用] ISO/IEC 14882:2023 §20.4 [mem.res]；cppreference `std::pmr::memory_resource`：<https://en.cppreference.com/w/cpp/memory/memory_resource>。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
 解释 `polymorphic_allocator` 如何**沿容器元素递归传播**：写一个 `pmr::vector<pmr::string>`，使所有 `string` 元素与外层 `vector` 共用同一个 arena；对比默认 `std::vector<std::string>`，后者每个 `string` 各自向全局堆 `operator new`。
+
+**真实场景：** 解析一个大 JSON：外层 `vector` 与内层每个 `string` 字段若各自向全局堆分配，N 个字段 = N 次堆分配且碎片分散。用 `pmr::vector<pmr::string>` 让所有字段共享同一 arena，分配 O(1)、释放 O(1)、缓存更友好。
 
 <details><summary>答案与解析</summary>
 
@@ -1258,6 +1268,8 @@ int main() {
 对比默认 `std::vector<std::string>`：外层 `vector` 扩容走全局堆，每个 `string` 的 `push_back`/`emplace` 也各自 `operator new`，N 个 string = N 次独立堆分配，且彼此碎片分散、带锁竞争。pmr 版本则全部落在同一块 arena，分配 O(1)、释放 O(1)、缓存更友好。
 
 [标准] `polymorphic_allocator` 的传播靠 `allocator_traits::construct` 在构造元素时把 `resource()` 透传；嵌套 STL 容器（vector/string/map…）的 `pmr` 别名都遵循此约定，形成"共享 arena 的对象森林"。
+
+[引用] ISO/IEC 14882:2023 §20.4 [mem.poly.allocator]；cppreference `std::pmr::polymorphic_allocator`：<https://en.cppreference.com/w/cpp/memory/polymorphic_allocator>。
 
 </details>
 

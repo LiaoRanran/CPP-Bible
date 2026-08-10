@@ -756,8 +756,7 @@ thunk 是一小段 `sub` + `jmp`，成本约 0.3 ns（一次 ALU + 一次跳转�
 
 ### 练习 1（难度 ★★）
 
-写非虚 MI：`struct A{int a;}; struct B:A{}; struct C:A{};`（注意非虚）与 `struct D:B,C{};`。
-演示 `D` 含**两份** `A` 子对象，`d.B::a` 与 `d.C::a` 是不同成员；指出 `D*` 转 `B*`/`C*` 需要指针调整。
+**真实场景：DOM 节点同时"可脚本包装 + 可回收标记"。** 浏览器引擎（Blink/WebKit）里 `Node` 经多重继承混入 `ScriptWrappable`（暴露给 JS）与垃圾回收标记基类（`Trace`）；二者各自又间接继承公共根。当你写非虚 MI `struct D:B,C{}`（`B`、`C` 各含一份公共根）时，`D` 含**两份**根子对象。请演示 `D` 含两份子对象，`d.B::a` 与 `d.C::a` 是不同成员，并指出 `D*` 转 `B*`/`C*` 需要指针调整。
 
 <details><summary>答案与解析</summary>
 
@@ -780,12 +779,13 @@ int main(){
 
 [标准] 非虚 MI 复制每个基类子对象；跨子对象指针转型需偏移调整（thunk）。
 
+[引用] Blink 的 `blink::Node` 通过多重继承组合 `ScriptWrappable` 等能力接口，是 MI 在浏览器引擎的大规模实践场（chromium.googlesource.com/chromium/src/+/main/third_party/blink）。Itanium C++ ABI 规定了非虚 MI 的固定偏移 thunk 布局（itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable-layout）。ISO/IEC 14882:2023 §[class.mi] 规定 MI 语义。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-菱形 `A<-B, A<-C, D:B,C` 但**不**用 virtual 继承时，`D d; d.a = 1;` 为何编译失败（二义性）？
-如何用 `d.B::a = 1` 消歧义，又为何这会造成"数据重复"问题。
+**真实场景：游戏角色同时"可序列化 + 可网络同步"，二者都继承 `Identifiable`（带全局 ID）。** 菱形 `A<-B, A<-C, D:B,C` 但**不**用 virtual 继承时：`D d; d.id = 1;` 编译失败（二义性）。你用 `d.B::id = 1` 消歧义能编译，却发现"同一角色的网络 ID 与存档 ID 是两份独立计数"——这正是数据重复的工程灾难。请解释二义性成因，并说明为何消歧不解决"身份 ID 必须唯一"的本质问题。
 
 <details><summary>答案与解析</summary>
 
@@ -807,12 +807,13 @@ int main(){
 
 [标准] 二义性源于重复基类子对象；显式消歧不解决"数据重复"的本质问题。
 
+[引用] 当基类代表"必须唯一"的共享状态（如对象身份、流缓冲）时，非虚 MI 的两份副本会导致状态分裂——这正是 `std::iostream` 改用虚继承共享 `std::ios_base` 的原因（cppreference "std::ios_base"）。C++ Core Guidelines C.129 建议"用虚继承让基类共享"（isocpp.github.io）。ISO/IEC 14882:2023 §[class.mi] 规定二义性规则。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 **virtual 继承** 解决二义性：`struct B:virtual A{}; struct C:virtual A{}; struct D:B,C{};`
-此时 `d.a` 无歧义（只有一份 `A`）。指出代价：this 调整 thunk + vbtable 间接访问（见本章「[实现]」汇编）。
+**真实场景：日志/追踪混入必须唯一，但热路径虚调用要快。** `std::iostream` 同时是 `istream` 与 `ostream`，二者共享唯一 `std::ios_base` 状态——这正是 virtual 继承的经典用例。请用 **virtual 继承** 解决二义性：`struct B:virtual A{}; struct C:virtual A{}; struct D:B,C{};` 此时 `d.a` 无歧义（只有一份 `A`）。并指出代价：this 调整 thunk + vbtable 间接访问（见本章「[实现]」汇编）。
 
 <details><summary>答案与解析</summary>
 
@@ -833,6 +834,8 @@ int main(){
 适用：当基类代表**必须唯一**的共享状态（如 `std::iostream` 共享 `std::ios_base`）。
 
 [标准] virtual 继承共享单一虚基类子对象，消除二义性；代价是运行期偏移解析与 thunk 开销。
+
+[引用] `std::iostream` 经 `std::ios` 虚继承共享单一 `std::ios_base` 流状态，是标准库里 virtual 继承的招牌实例（cppreference "std::basic_ios"）。Itanium C++ ABI 的 `vbase_offset` 条目定义了虚基类运行时偏移的编码（itanium-cxx-abi.github.io）。ISO/IEC 14882:2023 §[class.mi] 与 §[class.virtual] 规定 virtual 继承语义与代价。
 
 </details>
 ## [实现]真实：MI vtable 汇编与 this 调整 thunk（含 0x 地址）

@@ -1074,7 +1074,7 @@ struct __list_node {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-用 list::splice 把第 k 个节点前移到表头，演示 O(1) 节点搬迁（仅改指针，不拷贝值），对比 vector 必须 O(n) 拷贝。
+**真实场景：LRU 缓存命中提升——把最近访问的节点 O(1) 搬到表头。** 一个 LRU 用 `list` 维护使用顺序，命中时 `splice` 把节点搬到表头，仅改指针不拷贝值（对比 `vector` 须 O(n) 搬移）。请用 `list::splice` 把第 k 个节点前移到表头。
 
 ```cpp
 #include <iostream>
@@ -1093,8 +1093,10 @@ int main() {
 
 [标准] 结论：`std::list` 没有 `operator[]`，取第 k 个必须 `std::advance`（O(k)）；但其节点是独立堆对象，`splice` 可在 O(1) 内把节点在链表间/链内搬迁，迭代器与引用保持有效，这是它相对 `vector` 的核心优势。
 
+[引用] ISO/IEC 14882:2023 §[list.ops]（`splice` 的 O(1) 节点搬迁语义与迭代器保持有效）；见 cppreference "container/list" 词条；LRU 缓存是 `list` + `map` 的经典用例（本章附录演绎 1）。
+
 ### 练习 2（难度 ★★★）
-把源链表中一个半开区间 `[first, last)` 整体搬到目标链表末尾，验证 splice 区间版同样是 O(1) 且源/目标迭代器均不失效。
+**真实场景：两个待办链表的区间合并。** 把源链表一个半开区间 `[first,last)` 整体搬到目标链尾（如把"已处理"区间从工作链摘走），验证 splice 区间版同样 O(1) 且源/目标迭代器均不失效。
 
 ```cpp
 #include <iostream>
@@ -1112,8 +1114,10 @@ int main() {
 
 [标准] 结论：区间版 `splice(pos, src, first, last)` 把 `[first,last)` 内的节点从 `src` 摘除并接到 `pos` 之前，复杂度 O(1)；被搬移区间内的迭代器、引用、指针在搬移后仍然有效，只是归属到了新链表。
 
+[引用] ISO/IEC 14882:2023 §[list.ops]（区间版 `splice` 的 O(1) 复杂度与迭代器有效性保证）；见 cppreference "container/list" 词条。
+
 ### 练习 3（难度 ★★★★）
-用 splice 把原链表中的奇数节点稳定地搬到另一条链表（保持原相对顺序，即稳定分区），全程不拷贝节点值。
+**真实场景：稳定分区——把奇数 ID 节点搬到另一条链保持原序。** 如把"异常订单"稳定迁到审查链而不破坏相对顺序。请用 `splice` 把原链表中奇数节点稳定搬到另一条链表，全程不拷贝节点值。
 
 ```cpp
 #include <iostream>
@@ -1138,6 +1142,8 @@ int main() {
 ```
 
 [标准] 结论：借助 `splice` 实现稳定分区（`stable_partition` 的链表特化）只需 O(n) 指针操作，且奇数节点的相对顺序被完整保留；若用 `vector` 则需额外缓冲或多次搬移，无法在原地 O(1) 维护节点所有权。
+
+[引用] ISO/IEC 14882:2023 §[list.ops]；`std::stable_partition` 对前向迭代器（含 `list`）有链表特化路径，见 cppreference "container/list" 与 "stable_partition" 词条。
 
 ## 附录：用法演绎（从选型到落地）
 

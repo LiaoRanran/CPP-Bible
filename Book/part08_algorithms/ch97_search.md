@@ -973,7 +973,7 @@ A: 多个哈希函数→位数组; 假阳性(说不存在=true; 说存在=maybe)
 
 ### 练习 1（难度 ★★）
 
-在**已排序** `vector` 中用 `std::lower_bound` 与 `std::upper_bound` 配合 `std::distance` 统计某 key 的出现次数。给定 `v{1,2,2,2,3,3,5}`、`key=2`，输出应为 3。
+**真实场景**：用户画像系统常要在已按用户 ID 排序的明细里快速统计"某个 ID 出现了几次"（如某用户的历史订单数），不能每次线性扫描千万级数据。请利用**已排序** `vector`，用 `std::lower_bound` 与 `std::upper_bound` 配合 `std::distance` 统计某 key 的出现次数。给定 `v{1,2,2,2,3,3,5}`、`key=2`，输出应为 3。为什么必须先保证区间已排序、否则二分结果不可信？
 
 <details><summary>答案与解析</summary>
 
@@ -993,11 +993,13 @@ int main() {
 
 [标准] 对有序区间，`[lower_bound, upper_bound)` 恰好是等于 key 的元素半开区间；`distance` 得其长度即出现次数。复杂度 O(log n + k)。
 
+[引用] cppreference `std::lower_bound`：`https://en.cppreference.com/w/cpp/algorithm/lower_bound`；`std::upper_bound`：`https://en.cppreference.com/w/cpp/algorithm/upper_bound`。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-`std::equal_range` 一次性返回 `[lower, upper)` 的 `pair`，比分别调用 `lower_bound`/`upper_bound` 只扫描一次、效率更高。重复练习 1 的计数，但改用 `std::equal_range`。
+**真实场景**：同练习 1 的画像统计，但你想"既拿到区间又拿到计数"且只做一次二分——`std::equal_range` 一次性返回 `[lower, upper)` 的 `pair`，内部只做约一次对称二分，比分别调用 `lower_bound`/`upper_bound` 少约一半比较。请用 `std::equal_range` 重复练习 1 的计数（给定 `v{1,2,2,2,3,3,5}`、`key=2`，输出应为 3）。
 
 <details><summary>答案与解析</summary>
 
@@ -1015,11 +1017,13 @@ int main() {
 
 [标准] `equal_range` 等价于「同时返回 lower/upper」，内部只做约一次二分（左右边界对称推进），相比两次独立二分少约一半比较，是「既取区间又求计数」的最优写法。
 
+[引用] cppreference `std::equal_range`：`https://en.cppreference.com/w/cpp/algorithm/equal_range`。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 `std::search` 在「母序列」中查找「模式序列」首次出现的位置；未找到返回 `end()`。给定 `hay{1,2,3,4,5,6,7,8}`、`pat{4,5,6}`，应输出位置 3。
+**真实场景**：入侵检测/日志审计里要在一段字节流（母序列）中定位一个特定的特征码（模式序列）首次出现的位置——这正是子序列/模式匹配。`std::search` 就是标准库提供的子序列查找原语。请用 `std::search` 在母序列中查找模式序列首次出现的位置；未找到返回 `end()`。给定 `hay{1,2,3,4,5,6,7,8}`、`pat{4,5,6}`，应输出位置 3。长文本场景为什么可改用 `std::boyer_moore_searcher`？
 
 <details><summary>答案与解析</summary>
 
@@ -1039,6 +1043,8 @@ int main() {
 ```
 
 [标准] `std::search` 是子序列查找（模式匹配），与 `find`（单值查找）不同；返回首个完全匹配的位置。可配合 searcher 对象（如 `std::boyer_moore_searcher`）在长文本场景加速。
+
+[引用] cppreference `std::search`：`https://en.cppreference.com/w/cpp/algorithm/search`；`std::boyer_moore_searcher`：`https://en.cppreference.com/w/cpp/utility/functional/boyer_moore_searcher`。
 
 </details>
 

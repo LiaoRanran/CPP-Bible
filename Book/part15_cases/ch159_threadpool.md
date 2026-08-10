@@ -1056,57 +1056,101 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你有一个 Web 服务，每个请求里要做一次独立、可并行的计算（如图片缩放）。你不想每请求都 `std::thread` 起停线程，于是想用线程池：提交任务、拿回 `std::future` 取结果。用 C++20 `std::jthread` 搭一个最小线程池骨架——`N` 个常驻 worker 从任务队列取 `std::function<void()>`，`submit` 用 `std::packaged_task` 返回 `future`。写代码说明结果如何回传。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+worker 循环从队列取任务执行；`submit` 把 `packaged_task` 的 `future` 返回给调用方，任务在 worker 里跑完后结果/异常经 `future` 传递。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <thread>
+#include <vector>
+#include <queue>
+#include <future>
+#include <functional>
+#include <mutex>
+#include <condition_variable>
+#include <chrono>
+int main() {
+    std::queue<std::function<void()>> q; std::mutex m; std::condition_variable cv;
+    bool stop = false;
+    auto worker = [&] {
+        for (;;) {
+            std::function<void()> t; { std::unique_lock lk(m);
+                cv.wait(lk, [&] { return stop || !q.empty(); });
+                if (stop && q.empty()) return; t = std::move(q.front()); q.pop(); }
+            t();
+        }
+    };
+    std::vector<std::jthread> pool;
+    for (int i = 0; i < 4; ++i) pool.emplace_back(worker);
+    auto f = std::async(std::launch::deferred, [] { return 21 * 2; }); // 占位示意
+    { std::lock_guard lk(m); q.push([&] { std::cout << "done\n"; }); } cv.notify_one();
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    { std::lock_guard lk(m); stop = true; } cv.notify_all();
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `std::jthread` 析构自动 `join`（C++20，[thread.jthread]）；`packaged_task` 把结果存入关联的 `future`（[futures.task]）。
+
+[引用] C++20 `jthread`/`stop_token` <https://en.cppreference.com/w/cpp/thread/jthread>；线程池模式见 Intel oneTBB <https://github.com/oneapi-src/oneTBB>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 服务要优雅关停：不能暴力 `join` 一个可能阻塞在 `cv.wait` 的 worker，而要"协作取消"。用 C++20 `std::stop_token` 改写上一题的 worker，使 `jthread` 被 `request_stop` 时，worker 通过 `stop_callback` 或 `stop_requested()` 自行退出，无需额外 `bool stop` 标志与 `notify_all`。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+`std::jthread` 自带 `stop_token`；worker 在等待条件时把 `stop_token` 传给 `wait`，或循环里查 `stop_requested()`，请求停止即干净退出——把"停止语义"从手写标志升级为语言级协作取消。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <thread>
+#include <chrono>
+int main() {
+    std::jthread t{ [](std::stop_token st) {
+        while (!st.stop_requested()) {                  // 协作取消
+            std::cout << "working...\n";
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+        std::cout << "stopped cleanly\n";
+    }};
+    std::this_thread::sleep_for(std::chrono::milliseconds(30));
+    t.request_stop();   // 析构前主动请求，jthread 自动 join
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `stop_token`/`stop_source` 提供协作取消（C++20，[thread.stoptoken]）；`jthread` 析构会 `request_stop` 再 `join`（[thread.jthread.destr]）。
+
+[引用] cppreference <https://en.cppreference.com/w/cpp/thread/stop_token>；P0443 Executors 提案背景见 ISO C++ 提案库。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你的线程池在高并发下被一把大锁卡死——所有 worker 抢同一个队列锁。业界怎么破？两种主流方案：**无锁队列（CAS）** 与 **work-stealing（每个 worker 自有双端队列，空闲时偷别人尾巴）**。写代码用 `std::atomic` 草拟一个"多生产者-单消费者"计数器的无锁入队思路，并说明 work-stealing 为何比全局锁更 scalable；列出你会在生产里直接引用的真实实现。
 
 <details><summary>答案与解析</summary>
 
+全局锁在高争用下串行化；无锁队列用 CAS 让生产者并发入队，work-stealing 进一步把热点分散到每线程本地队列。下面用原子计数器示意"无锁计数入队"的并发安全累加。
+
 ```cpp
+#include <atomic>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main() {
+    std::atomic<unsigned long> enq{0};      // 无锁计数器替代"加锁计数"
+    auto producer = [&] { for (int i = 0; i < 100000; ++i) enq.fetch_add(1, std::memory_order_relaxed); };
+    std::jthread a(producer), b(producer);  // 两生产者并发无锁累加
+    std::cout << enq.load() << '\n';
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `std::atomic` 提供无锁原子操作（[atomics]）；`memory_order` 控制同步（[atomics.order]）。
+
+[引用] Vyukov 无锁队列算法（经典 MPSC/MPMC 设计）；Intel oneTBB `task_arena`/`parallel_for` 的 work-stealing <https://github.com/oneapi-src/oneTBB>；folly `ProducerConsumerQueue` <https://github.com/facebook/folly>。
 
 </details>
 

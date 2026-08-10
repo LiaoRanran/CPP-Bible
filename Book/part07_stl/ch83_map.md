@@ -1181,7 +1181,7 @@ int main(){std::map<int,int> m{{1,10}};std::unordered_map<int,int> um{{1,10}};st
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-用 lower_bound/upper_bound 在有序 map 上做闭开区间查询，演示红黑树的有序遍历。
+**真实场景：订单簿按价格区间查询——`[price_lo, price_hi]` 闭开区间遍历。** 撮合系统用有序 `map<price,orders>` 取某价位段的全部挂单，`lower_bound`/`upper_bound` 构成闭开区间，O(log n)。
 
 ```cpp
 #include <iostream>
@@ -1196,8 +1196,10 @@ int main() {
 
 [标准] 结论：`std::map` 按 key 有序（默认 `<`），`lower_bound(k)` 返回首个 `>=k` 的迭代器，`upper_bound(k)` 返回首个 `>k` 的，二者构成 `[3,5]` 闭开区间，复杂度 O(log n)。
 
+[引用] ISO/IEC 14882:2023 §[map.ops]（`lower_bound`/`upper_bound` 的 O(log n) 区间查询）；见 cppreference "container/map" 词条。
+
 ### 练习 2（难度 ★★★）
-对比 operator[]、at、insert_or_assign 的语义差异：[] 缺键会插入默认构造值，at 缺键抛异常，insert_or_assign 显式赋值。
+**真实场景：配置表读写——`operator[]` 误插入 vs `at` 显式缺键抛异常。** 读配置项时 `[]` 的"缺则插入"副作用会污染配置；请对比 `operator[]`/`at`/`insert_or_assign` 三项语义差异。
 
 ```cpp
 #include <iostream>
@@ -1213,8 +1215,10 @@ int main() {
 
 [标准] 结论：读多写少且 key 必存在时用 `at` 显式表达"必须存在"；`operator[]` 的"缺则插入"副作用可能导致意外插入，性能敏感路径应优先 `find`/`insert_or_assign`。
 
+[引用] ISO/IEC 14882:2023 §[map.access]（`operator[]`/`at` 语义）与 §[map.modifiers]（`insert_or_assign`，C++17）；见 cppreference "container/map"。
+
 ### 练习 3（难度 ★★★★）
-用 C++17 节点句柄 extract 把节点从一张 map 转移到另一张 map，验证不拷贝 key/value（仅移动节点所有权）。
+**真实场景：跨订单簿迁移大对象节点——不拷贝 key/value。** 把某价位整档从旧簿 `extract` 到新簿，避免大订单向量的拷贝；转移后引用仍有效。
 
 ```cpp
 #include <iostream>
@@ -1229,6 +1233,8 @@ int main() {
 ```
 
 [标准] 结论：`extract` 返回 `node_type` 句柄，节点从红黑树摘除但不析构；转移后引用/指针仍有效，且避免了对 key/value 的拷贝/移动，适合"重哈希"或跨容器迁移大对象。
+
+[引用] ISO/IEC 14882:2023 §[container.node]（节点句柄 `node_type` 与 `extract`/`insert(node_type)`，C++17）与 §[map.modifiers]；见 cppreference "container/map" 的 node extraction 专节。
 
 ## 附录：用法演绎（从选型到落地）
 

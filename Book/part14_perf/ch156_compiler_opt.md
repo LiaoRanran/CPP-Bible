@@ -804,54 +804,76 @@ Q: 本章核心? A: 见附录A-F中的深度分析(工业原理/性能/汇编/�
 
 ### 练习 1（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 你把一个热点函数从 `-O2` 升到 `-O3`，部分路径快了、但个别路径反而变慢（代码体积膨胀导致 icache 压力）。写代码构造一个"内联阈值敏感"的小函数（被多次调用的 trivial getter），说明为何 `-O3` 更激进内联/向量化、但也可能因体量增大拖累前端取指。你会用 ch157 的 Compiler Explorer 查什么来确认差异？
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+`-O3` 提高内联阈值并开启更多向量化/展开，热点常受益；但展开会让函数体变大，若超出指令缓存友好范围，取指/解码反而成为瓶颈。应以基准（ch151）量化，而非盲目升档。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+struct Point { int x, y;
+    int get_x() const { return x; }   // trivial getter，内联阈值敏感
+};
+int main() {
+    Point p{3, 4};
+    long s = 0; for (int i = 0; i < 100000000; ++i) s += p.get_x();
+    std::cout << s << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 优化级别属实现定义行为（[intro.abstract] 允许"可观察行为相同"下的任意变换），标准不规定具体 pass。
+
+[引用] GCC 优化选项 <https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html>；对照 ch157 <https://godbolt.org/> 对比 `-O2`/`-O3` 汇编。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你的模板库跨多个翻译单元，热点里的虚调用没被去虚化、小函数没被跨文件内联。为何单文件 `-O3` 救不了它？写代码给出一个"定义在头文件、被多 TU 调用"的模板函数示例，并说明需启用 **LTO（链接时优化）** 才能跨 TU 内联/去虚化。
 
 <details><summary>答案与解析</summary>
 
+普通编译每个 TU 独立优化，跨 TU 的调用点看不到被调函数体，无法内联/去虚化。LTO 把整个程序的中间表示在链接期统一优化，才能跨边界 inline、把 `final`/单实现的虚调用静态化。
+
 ```cpp
+// 头文件中定义（被多个 .cpp 包含）
+template <typename T>
+inline T square(T x) { return x * x; }   // 跨 TU 内联需 LTO
+// 调用方 TU 里：auto r = square(3.0);
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+int main() { std::cout << square(3.0) << '\n'; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `inline` 给链接器多定义许可，但"是否真正内联"由优化器决定；LTO 是链接期优化能力。
+
+[引用] GCC LTO <https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html>（搜索 `-flto`）；LLVM LTO <https://llvm.org/docs/LinkTimeOptimization.html>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-解释栈对象与堆对象生命周期差异：`{ int a; }` 与 `new int` 的销毁时机有何不同？
+**真实场景：** 你发现某分支在测试负载下几乎总是走同一条，但 `-O3` 仍按 generic 调度。为何 **PGO（基于剖面的优化）** 能比静态 `-O3` 更进一步？写代码构造一个"分布极不均"的分支（如 99% 走 `a` 路径），说明用训练运行采集剖面后，编译器可把热路径排布得更紧凑、冷路径移出。
 
 <details><summary>答案与解析</summary>
 
-栈对象在作用域结束自动析构；`new` 分配的对象直到 `delete` 才释放：
+PGO 先以代表性输入跑一遍采集分支/调用热点，再据此布局代码（热块相邻、冷块分离）、定向内联。静态 `-O3` 没有分布信息，只能做保守假设。
 
 ```cpp
 #include <iostream>
-int main(){ int a=1; int* p=new int(2); /* ... */ delete p; }
+int main() {
+    long hot = 0;
+    for (long i = 0; i < 1000000000; ++i) {
+        if (i % 100 == 0) hot += 1;        // 冷路径（~1%）
+        else             hot += 2;          // 热路径（~99%）
+    }
+    std::cout << hot << '\n';
+}
 ```
 
-[标准] 遗漏 `delete` 即内存泄漏；这是 RAII/智能指针存在的根本动机。
+[标准] PGO 是编译器特性，C++ 标准不涉及；以剖面引导的布局优化属实现质量。
+
+[引用] GCC PGO（`-fprofile-generate`/`-fprofile-use`）<https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html>；LLVM PGO <https://llvm.org/docs/InstrProfGuide.html>。
 
 </details>
 

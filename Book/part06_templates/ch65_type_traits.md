@@ -723,7 +723,7 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 
 ### 练习 1（难度 ★★）
 
-**手写**一个 `my_is_pointer<T>` trait（用偏特化识别 `T*`），不借助 `std::is_pointer`，并用 `static_assert` 验证。
+**真实场景：序列化/反射前"判断型别是否是指针"。** 你的存档库在递归遍历对象图时，需要编译期区分"裸指针（需解引用再写）"与"值类型（直接写字节）"，以决定走哪条写盘路径。请**手写**一个 `my_is_pointer<T>` trait（用偏特化识别 `T*`），不借助 `std::is_pointer`，并用 `static_assert` 验证。
 
 <details><summary>答案与解析</summary>
 
@@ -743,11 +743,13 @@ int main() {
 
 [标准] trait 本质是一个继承 `true_type`/`false_type` 的类模板；偏特化 `T*` 命中指针，主模板兜底为非指针。
 
+[引用] 这正是标准库 `std::is_pointer<T>` 的实现思路（cppreference "std::is_pointer"），libstdc++ 用偏特化 `<T*>` 命中指针。ISO/IEC 14882:2023 §[meta.unary.cat] 规定类型分类 trait 的语义。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用 `std::enable_if_t` + `std::is_integral` 写两个 `to_string` 重载：整数走数值格式化，非整数走字符串包装，实现编译期分流。
+**真实场景：泛型存档接口"整数 vs 其他"的编译期分流。** 你的 `to_string` 工具要把整数走"数值格式化 + 长度前缀"，把字符串/其他类型走"直接包装"，二者绝不可混。请用 `std::enable_if_t` + `std::is_integral` 写两个 `to_string` 重载：整数走数值格式化，非整数走字符串包装，实现编译期分流。
 
 <details><summary>答案与解析</summary>
 
@@ -769,11 +771,13 @@ int main() { std::cout << to_string(42) << ' ' << to_string("hi") << '\n'; }
 
 [标准] 两个重载的 SFINAE 条件互补（`integral` vs `!integral`），对每个 `T` 恰好一个启用，无歧义；`enable_if_t` 把"约束失败"变成"该重载从候选集静默移除"。注意 `int` 是基础类型，ADL 不会因此拉入 `std::to_string`，故与标准库 `to_string` 不冲突。
 
+[引用] `std::is_integral`/`std::enable_if` 是 `<type_traits>` 的核心（cppreference "std::is_integral"）。这套 SFINAE 分流被标准库 `std::to_string` 重载集、序列化库广泛采用。ISO/IEC 14882:2023 §[meta.unary.prop] 与 §[temp.deduct] 规定 trait 语义与 SFINAE 移除规则。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 **`void_t` 检测惯用法**写一个 `has_serialize<T>` trait，探测类型是否存在可调用成员 `serialize()`，并 `static_assert` 验证 `A`（有）与 `B`（无）。
+**真实场景：序列化框架"按需调用 `serialize()`"。** 你的框架要优雅处理"有 `serialize()` 成员的类型走自定义编码、没有的类型走默认字节拷贝"——这必须编译期探测成员是否存在。请用 **`void_t` 检测惯用法**写一个 `has_serialize<T>` trait，探测类型是否存在可调用成员 `serialize()`，并 `static_assert` 验证 `A`（有）与 `B`（无）。
 
 <details><summary>答案与解析</summary>
 
@@ -798,6 +802,8 @@ int main() {
 ```
 
 [标准] `void_t<...>` 永远 `void`；当 `decltype(...)` 内的表达式**合法**时特化生效（命中 `true_type`），否则回退主模板——这是编译期"探测成员/嵌套类型"的标准手段。
+
+[引用] `void_t` 探测惯用法（Walter Brown 在 2014 年提出）是编译期反射/特性探测的基石，标准库 `std::void_t`（C++17）即为此而设（cppreference "std::void_t"）。Boost.Serialization 与标准库 `std::ranges` 都用类似手法做能力探测。ISO/IEC 14882:2023 §[meta.trans.other] 规定 `void_t`。
 
 </details>
 

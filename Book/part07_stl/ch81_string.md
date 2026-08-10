@@ -775,7 +775,7 @@ volatile int g_obs = 0;
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-用 std::string_view::substr 做零拷贝切片，对比 std::string::substr 必须分配新缓冲。
+**真实场景：HTTP 请求行解析——零拷贝切出 method/path。** 解析 `"GET /index HTTP/1.1"` 时 `string_view::substr` 不分配，避免每请求堆分配（对比 `std::string::substr` 必分配新缓冲）。
 
 ```cpp
 #include <iostream>
@@ -789,8 +789,10 @@ int main() {
 
 [标准] 结论：`std::string_view` 只持有指针+长度，`.substr` 仅调整指针与长度，**不分配内存**；适合只读解析。注意它不保证以 `\0` 结尾，不能用 `%s` 或 C 字符串函数直接处理。
 
+[引用] ISO/IEC 14882:2023 §[string.view] 与 §[string.view.template]（`substr` 零分配）；见 cppreference "string/basic_string_view" 词条；其布局为 `{len, ptr}` 见本章附录实证。
+
 ### 练习 2（难度 ★★★）
-用 string_view 原地解析 CSV 字段（按逗号切分，不拷贝子串），演示流式只读处理。
+**真实场景：CSV 流式解析——按逗号切字段不拷贝。** 大文件逐行解析时全程 `string_view` 避免 N 次堆分配；字段视图生命周期必须短于拥有数据的 `std::string`。
 
 ```cpp
 #include <iostream>
@@ -813,8 +815,10 @@ int main() {
 
 [标准] 结论：解析文本时若只需"查看"子串，全程用 `string_view` 可避免 N 次堆分配；字段视图的生命周期必须短于拥有数据的 `std::string`，否则悬垂。
 
+[引用] ISO/IEC 14882:2023 §[string.view]；字符串解析的零分配惯用法见 C++ Core Guidelines F.42（用 `string_view` 作只读参数）；cppreference "string/basic_string_view"。
+
 ### 练习 3（难度 ★★★★）
-string_view 悬垂陷阱：view 指向的 string 生命周期短于 view 时产生未定义行为。错误做法仅示意，正确做法是让 owner 生命周期覆盖 view。
+**真实场景：返回局部 string 的 view 导致悬垂。** 一个 `trim()` 返回临时 `std::string` 的 view，调用方一用即 UB。请展示错误做法与正确做法（让 owner 生命周期覆盖 view）。
 
 错误示范（逻辑示意，不可运行）：
 ```text
@@ -837,6 +841,8 @@ int main() {
 ```
 
 [标准] 结论：`std::string_view` 不拥有数据，它只是"借看"；构造 view 前必须确认被借对象的生命周期覆盖 view 的所有使用点。`std::string` 的 `data()/substr` 返回的 view 同样受此约束。
+
+[引用] ISO/IEC 14882:2023 §[string.view]（`string_view` 不拥有存储）；生命周期陷阱见 C++ Core Guidelines F.43（不要返回指向局部变量的引用/视图）；cppreference "string/basic_string_view"。
 
 ## 附录：用法演绎（从选型到落地）
 

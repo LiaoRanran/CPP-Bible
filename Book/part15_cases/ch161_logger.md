@@ -1514,57 +1514,84 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你写日志宏 `LOG_INFO("...")`，希望自动带上调用处的**文件名与行号**，而不用手动传 `__FILE__`/`__LINE__`。C++20 `std::source_location` 让函数自动捕获调用点信息。写代码实现 `log(source_location loc = source_location::current())`，打印出 `文件:行号`，并说明 `current()` 必须在"调用方"处求值才正确（不能包一层转发函数而不传参）。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+`source_location::current()` 取它**所在调用点**的信息；把它作为带默认实参的函数参数，调用方不显式传参时，`current()` 就在调用点求值，从而拿到正确的文件行号。若再包一层转发函数却没把 `loc` 透传，就会变成转发函数的位置。
 
 ```cpp
+#include <source_location>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <string_view>
+void log(std::string_view msg,
+         std::source_location loc = std::source_location::current()) {
+    std::cout << loc.file_name() << ':' << loc.line() << " " << msg << '\n';
+}
+int main() { log("hello"); }   // 打印的是 main 里的行号，而非 log 内部
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] `std::source_location`（C++20，[support.srcloc]）的 `current()` 返回调用点的位置信息。
+
+[引用] cppreference <https://en.cppreference.com/w/cpp/utility/source_location>；spdlog 的 `SPDLOG_LOGGER_CALL` 同样借助源位置 <https://github.com/gabime/spdlog>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 你的库有 `TRACE/DEBUG/INFO/WARN/ERROR` 多级日志，但发布版里连 `TRACE` 的格式化字符串拼接都不该发生（零开销）。用 **`if constexpr`**（或模板阈值）实现：当编译期阈值高于某级别时，低级别日志的整个调用被消除、连参数求值都不发生。写代码说明 `if constexpr` 如何在编译期丢弃分支。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+`if constexpr` 在编译期只保留成立的分支，不成立分支里的代码根本不实例化——所以关闭的级别既不格式化、也不求值昂贵参数，达到零开销。
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <string>
+enum Level { TRACE, DEBUG, INFO, WARN, ERROR };
+constexpr Level THRESHOLD = INFO;
+template <Level L>
+void log(std::string msg) {
+    if constexpr (L < THRESHOLD) return;   // 编译期丢弃，零开销
+    std::cout << msg << '\n';
+}
+int main() { log<TRACE>("never printed, never built"); log<ERROR>("err"); }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `if constexpr`（C++17，[stmt.if]）丢弃未选中分支的实例化，其内的无效代码也不会被要求良构。
+
+[引用] cppreference <https://en.cppreference.com/w/cpp/language/if>;fmt/spdlog 的编译期级别门控 <https://github.com/fmtlib/fmt>。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** 你的服务用异步日志（生产者把记录入队、后台线程写盘），但流量尖峰时队列无限增长会 OOM。正确做法是**有界队列 + 背压**：队列满时丢弃低级别日志或阻塞生产者。写代码用 `std::queue` + `std::mutex` + `std::condition_variable` 草拟一个有界队列，说明"满则丢 DEBUG"如何既保住 ERROR 又防 OOM；列出你会参考的生产实现。
 
 <details><summary>答案与解析</summary>
 
+有界队列在 `push` 时若已达容量，按级别策略丢弃（如 DEBUG/TRACE）而非无限增长。下面给出有界入队骨架；背压也可改为"阻塞直到有空位"，但会耦合生产者延迟。
+
 ```cpp
+#include <queue>
+#include <mutex>
+#include <condition_variable>
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+template <typename T>
+struct BoundedQueue {
+    std::queue<T> q; std::mutex m; std::condition_variable cv;
+    std::size_t cap = 1024;
+    bool try_push(T v) { std::lock_guard lk(m);
+        if (q.size() >= cap) return false;   // 满 → 丢弃（背压/降级）
+        q.push(std::move(v)); return true;
+    }
+};
+int main() { BoundedQueue<int> bq; std::cout << bq.try_push(1) << '\n'; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `std::condition_variable`（[thread.condition]）与 `std::mutex`（[thread.mutex]）提供队列同步；容量策略是应用层设计。
+
+[引用] spdlog 异步 logger 的环形缓冲与满策略 <https://github.com/gabime/spdlog>；Chromium `base::circular_deque` 的有界实践 <https://github.com/chromium/chromium>。
 
 </details>
 

@@ -958,7 +958,7 @@ A: CAS 是用户态原子操作(~20ns)；mutex 涉及系统调用 + 上下文切
 
 ### 练习 1（难度 ★★）
 
-用 `std::atomic<long>` 实现一个线程安全计数器，让 8 个线程各自 `+100000`，最终总和必须恰好 `800000`。说明为何 `counter = counter + 1;` 形式是错的，而 `fetch_add` 是对的。
+**真实场景**：高并发服务里统计 QPS、命中数、错误数等指标是写多读少的典型场景——若每次加锁（`std::mutex`）开销过大，无锁原子计数器是默认首选。请用 `std::atomic<long>` 实现一个线程安全计数器，让 8 个线程各自 `+100000`，最终总和必须恰好 `800000`。说明为何 `counter = counter + 1;` 形式是错的，而 `fetch_add` 是对的——`atomic` 保证的是"单个操作"原子，不是"涉及该变量的任意表达式"原子。
 
 <details><summary>答案与解析</summary>
 
@@ -982,11 +982,13 @@ int main() {
 
 [标准] 纯计数无跨变量依赖，用 `memory_order_relaxed` 即可保证原子性与最终一致，且是最快选项（`[atomics.order]`）。
 
+[引用] cppreference `std::atomic::fetch_add`：`https://en.cppreference.com/w/cpp/atomic/atomic/fetch_add`。原子操作与内存序规范见 ISO §32.5（[atomics]）。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-标准库没有 `fetch_max`。用 `compare_exchange_weak` 自己实现一个无锁的「原子取最大值」`atomic_fetch_max`，使多线程写入不同值后，原子变量保存全局最大值。
+**真实场景**：并发监控里常要"无锁地维护一个全局最大延迟/最大水位线"——标准库没有 `fetch_max`，但任何读-改-写都可以用 CAS 循环表达。请用 `compare_exchange_weak` 自己实现一个无锁的「原子取最大值」`atomic_fetch_max`，使多线程写入不同值后，原子变量保存全局最大值。为什么用 `compare_exchange_weak` 而非 `strong`？CAS 失败时为什么 `cur` 会被自动刷新为最新值？
 
 <details><summary>答案与解析</summary>
 
@@ -1015,11 +1017,13 @@ int main() {
 
 [标准] CAS 失败时 `cur` 被写入内存现值，无需手动重载——这是 `compare_exchange` 的关键约定。
 
+[引用] cppreference `std::atomic::compare_exchange_weak`：`https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange`。CAS 循环范式见 ISO §32.5（[atomics]）及 M. Herlihy, *Wait-Free Synchronization*, 1991。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用 `std::atomic_flag` 实现一个最小自旋锁 `SpinLock`（`lock`/`unlock`），并说明为何 `test_and_set` 用 `acquire`、`clear` 用 `release`。用它保护一个普通 `int` 累加，验证无数据竞争。
+**真实场景**：极短临界区（如更新一个标志、改一个计数器）下，自旋锁比互斥量更轻——`std::atomic_flag` 是标准保证"必然无锁"的最小原子类型，正是实现自旋锁/无锁栈标记位的基石。请用 `std::atomic_flag` 实现一个最小自旋锁 `SpinLock`（`lock`/`unlock`），并说明为何 `test_and_set` 用 `acquire`、`clear` 用 `release`。用它保护一个普通 `int` 累加，验证无数据竞争。生产环境为什么还应在自旋体里加 `std::this_thread::yield()`？
 
 <details><summary>答案与解析</summary>
 
@@ -1048,6 +1052,8 @@ int main() {
 ```
 
 [经验] 生产环境的自旋锁还应在自旋体内加 `_mm_pause()`/`std::this_thread::yield()` 降低总线争用与功耗；纯 busy-loop 仅用于极短临界区。
+
+[引用] cppreference `std::atomic_flag`：`https://en.cppreference.com/w/cpp/atomic/atomic_flag`；`std::atomic_flag::test_and_set`：`https://en.cppreference.com/w/cpp/atomic/atomic_flag/test_and_set`。
 
 </details>
 

@@ -842,7 +842,7 @@ int main(){std::cout<<Traits<int>::name()<<std::endl;return 0;}
 
 ### 练习 1（难度 ★★）
 
-为自定义类型 `Point` 提供哈希能力，使其能放进 `std::unordered_set`（可特化 `std::hash` 或自定义哈希器）；并说明键为何还需 `operator==`。
+**真实场景：游戏实体 `EntityId` 放进无锁哈希表做快速查重。** 你的 ECS 用 `std::unordered_set<EntityId>` 存活跃实体，但 `EntityId`（一个 `uint64` 打包结构）默认没有哈希，编译器拒绝。请为自定义类型 `Point` 提供哈希能力，使其能放进 `std::unordered_set`（可特化 `std::hash` 或自定义哈希器）；并说明键为何还需 `operator==`。
 
 <details><summary>答案与解析</summary>
 
@@ -880,11 +880,13 @@ template <> struct std::hash<Point> {
 
 [标准] 自定义哈希器把哈希策略作为容器第二模板参数传入，无需动 `std`；特化 `std::hash` 仅允许对**自己定义**的类型，且必须位于 `std` 或全局命名空间。两者都要求键提供 `operator==` 用于冲突判等。
 
+[引用] 标准库 `std::hash` 的特化必须在 `std` 命名空间内、且仅允许对用户自定义类型（cppreference "std::hash"）。Abseil 的 `absl::flat_hash_set` 同样要求键可哈希且提供 `==`（abseil.io/docs）。ISO/IEC 14882:2023 §[unord.req] 规定无序容器对 `Hash` 与 `key_equal` 的要求。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-写一个 `serialize` 分发工具：用类模板 `ser<T>` 的**显式特化**对 `int` / `std::string` / 自定义 `Person` 分别输出不同格式，再用薄包装 `serialize` 转发。
+**真实场景：跨格式序列化框架的"按类型选编码"。** 你的存档库要把任意对象写盘，但 `int`、`std::string`、自定义 `Person` 的线格式各不相同（定长二进制 / 长度前缀 UTF-8 / 复合字段）。请写一个 `serialize` 分发工具：用类模板 `ser<T>` 的**显式特化**对 `int` / `std::string` / 自定义 `Person` 分别输出不同格式，再用薄包装 `serialize` 转发。
 
 <details><summary>答案与解析</summary>
 
@@ -909,11 +911,13 @@ int main() {
 
 [标准] 显式（全）特化必须匹配主模板签名；通过"主模板默认行为 + 特化覆盖"实现编译期多态，比运行时 `if constexpr` 或虚函数更早确定、零分发开销。
 
+[引用] 显式特化（全特化）让"主模板默认行为 + 特化覆盖"成为编译期分发骨架，Boost.Serialization 据此为每种类型注册存档逻辑（boost.org/doc/libs）。`std::formatter<T>` 同样用特化为不同类型定制格式化（cppreference "std::formatter"）。ISO/IEC 14882:2023 §[temp.expl.spec] 规定显式特化的匹配与定义规则。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用**偏特化**实现 `is_ptr_like<T>` trait：识别裸指针 `T*`、标准容器 `std::vector<T>`，其余为 `false`；用 `static_assert` 验证三类。
+**真实场景：反射/序列化前的"类型分类"。** 你的工具要在编译期判断一个型别是"裸指针"、"标准容器"还是"普通值"，以决定能否直接 `memcpy`、是否需要递归遍历。请用**偏特化**实现 `is_ptr_like<T>` trait：识别裸指针 `T*`、标准容器 `std::vector<T>`，其余为 `false`；用 `static_assert` 验证三类。
 
 <details><summary>答案与解析</summary>
 
@@ -935,6 +939,8 @@ int main() {
 ```
 
 [标准] 偏特化通过"更特化的模式"匹配；主模板 `false_type` 兜底，特化版本覆盖指针/容器两类——这是 traits 库的通用骨架。
+
+[引用] 这正是标准库 `std::is_pointer<T>`、`std::is_container_like` 思路的简化版（cppreference "std::is_pointer"）。标准库 `std::vector` 自身也是"主模板 + 特化"结构（cppreference "std::vector"）。ISO/IEC 14882:2023 §[temp.class.spec] 规定类模板偏特化的匹配与偏序规则。
 
 </details>
 

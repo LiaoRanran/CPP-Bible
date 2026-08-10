@@ -628,9 +628,7 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 
 ### 练习 1（难度 ★★）
 
-**策略类注入**
-
-写 `template <class T, class Alloc> struct Buffer`，用策略类 `Alloc` 提供 `allocate/deallocate`，并给出 `HeapPolicy`。
+**真实场景：policy-based 数值容器"可替换内存后端"。** 你的数值库 `Buffer` 要让用户选择"堆分配"或"栈分配"后端，而不用继承出一堆子类。请**策略类注入**：写 `template <class T, class Alloc> struct Buffer`，用策略类 `Alloc` 提供 `allocate/deallocate`，并给出 `HeapPolicy`。
 
 <details>
 <summary>参考答案</summary>
@@ -654,13 +652,14 @@ int main() {
 }
 ```
 [标准] 策略作为模板参数，编译期绑定，可完全内联，零运行期虚函数开销。
+
+[引用] 这正是 `std::vector<T, Allocator>` 的分配器策略设计（cppreference "std::vector"），`std::allocator` 作为默认策略类注入。Andrei Alexandrescu《Modern C++ Design》把 Policy-Based Design 系统化为"以编译期模板参数组合正交行为"。ISO/IEC 14882:2023 §[allocator.requirements] 规定分配器策略接口。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-**正交策略组合**
-
-用模板模板参数组合"存储策略"与"检查策略"：`template <class T, template<class> class Storage, template<class> class Checking> struct Vec`。
+**真实场景：ECS 组件容器"存储策略 × 越界检查策略"正交组合。** 你的组件 `Vec` 要支持"堆存/栈存"与"带边界检查/无检查"两套独立维度，若用继承会爆炸成 4 个类。请用**正交策略组合**：用模板模板参数组合"存储策略"与"检查策略"：`template <class T, template<class> class Storage, template<class> class Checking> struct Vec`。
 
 <details>
 <summary>参考答案</summary>
@@ -692,13 +691,14 @@ int main() {
 }
 ```
 [标准] 正交策略用模板模板参数组合，编译期生成特化，避免运行期策略对象。
+
+[引用] 正交策略组合把"组合爆炸"降为线性——这正是 Policy-Based Design 的核心卖点（Alexandrescu《Modern C++ Design》）。标准库 `std::unordered_map` 的 `_Hashtable_traits` 用布尔策略打包类型（libstdc++ `bits/hashtable_policy.h`）。ISO/IEC 14882:2023 §[temp.param] 规定模板模板参数。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-**编译期策略 vs 运行期策略**
-
-`std::sort` 的比较器是运行期传入的 lambda/函数对象，`Vec` 的排序策略能否改为编译期绑定以助内联？
+**真实场景：排序"编译期内联比较器，消除虚调用"。** `std::sort` 的比较器是运行期传入的 lambda/函数对象，每次调用多一层间接；你的热路径排序希望把排序策略**编译期绑定**以助内联。请思考**编译期策略 vs 运行期策略**：`Vec` 的排序策略能否改为编译期绑定以助内联？
 
 <details>
 <summary>参考答案</summary>
@@ -721,6 +721,9 @@ int main() {
 }
 ```
 [标准] 编译期策略可被内联，适合热路径；运行期策略（如 `std::sort` 比较器）更灵活但多一层间接。
+
+[引用] `std::sort` 的比较器参数（cppreference "std::sort"）是运行期策略——灵活但无法跨函数边界内联；把它提为编译期策略类（如本例）即可让编译器完全内联排序（见本书 ch47 D5 基准的"虚/间接调用"代价对比）。ISO/IEC 14882:2023 §[alg.sort] 规定排序接口；Policy-Based Design（见 ch52）是其理论来源。
+
 </details>
 
 

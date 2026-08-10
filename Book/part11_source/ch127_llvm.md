@@ -731,57 +731,76 @@ LLVM 用 `0x0040`（64 字节）对齐的 `SmallVector` 内联缓冲减少堆分
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：** 你在写一个类似 LLVM ADT 的工具，需要判断某类型是否出现在一组候选类型中——LLVM 用 `llvm::is_one_of` 做此类编译期类型判断（用于 trait 与 SFINAE）。请用变参模板实现 `is_one_of<T, Ts...>`。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+用递归偏特化 + `std::bool_constant`/`std::is_same_v` 在编译期判定类型成员关系：
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <type_traits>
+template <class T, class... Ts>
+struct is_one_of : std::false_type {};
+template <class T, class U, class... Ts>
+struct is_one_of<T, U, Ts...>
+    : std::bool_constant<std::is_same_v<T, U> || is_one_of<T, Ts...>::value> {};
+static_assert(is_one_of<int, char, int, double>::value);
+static_assert(!is_one_of<float, char, int, double>::value);
+int main() { return 0; }
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 变参模板与递归偏特化；`std::bool_constant`/`std::is_same_v` 做编译期类型判断。
+
+[引用] LLVM Programmer's Manual（ADT 章节）：<https://llvm.org/docs/ProgrammersManual.html>；cppreference 变参模板：<https://en.cppreference.com/w/cpp/language/parameter_pack>。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：** 你实现一个简化版 Pass 管理器，要求"分析步数"只能是整数类型（步数语义上不可能是浮点，浮点传入属逻辑错误）。请用 `std::integral` 概念约束模板，使浮点调用给出清晰编译错误。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
 
 ```cpp
-#include <iostream>
 #include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+template <std::integral T>
+T total_steps(T a, T b) { return a + b; }
+int main() { return total_steps(3, 4) == 7 ? 0 : 1; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] 概念约束为编译期硬错误（而非 SFINAE 静默失败），诊断信息更易读。
+
+[引用] cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>；LLVM "Writing an LLVM Pass" 文档：<https://llvm.org/docs/WritingAnLLVMPass.html>。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：** LLVM 的 `llvm::StringSwitch` 在编译期对字符串做分支分发，常用于把 opcode 名映射到枚举。请用 `constexpr` 函数实现编译期字符串比较与映射，并写 `static_assert` 在编译期验证分发结果。
 
 <details><summary>答案与解析</summary>
 
+`constexpr` 递归字符串比较可在常量表达式上下文求值；下列断言在编译期直接完成，等价于 `StringSwitch` 的编译期分发思想：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cstddef>
+constexpr bool ceq(const char* a, const char* b) {
+    return *a == *b && (*a == '\0' || ceq(a + 1, b + 1));
+}
+enum class Op { Add, Sub, Unknown };
+constexpr Op to_op(const char* s) {
+    return ceq(s, "add") ? Op::Add : ceq(s, "sub") ? Op::Sub : Op::Unknown;
+}
+static_assert(to_op("add") == Op::Add);
+static_assert(to_op("xyz") == Op::Unknown);
+int main() { return 0; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `constexpr` 递归函数可在常量表达式上下文（如 `static_assert` 实参）编译期求值。
+
+[引用] LLVM `llvm::StringSwitch` API 文档：<https://llvm.org/doxygen/classllvm_1_1StringSwitch.html>；cppreference `constexpr`：<https://en.cppreference.com/w/cpp/language/constexpr>。
 
 </details>
 

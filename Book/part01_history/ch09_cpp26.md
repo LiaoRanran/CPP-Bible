@@ -503,7 +503,7 @@ jg     7b                    ; 失败→跳 0x7b 调用 handle_contract_violatio
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+**真实场景：前向兼容的混合符号比较。** 你维护的代码既要面向 C++26（届时 `std::cmp_less` 已是常备工具）也要在 C++17 工具链上能编译。请先写一个对任意可比较类型通用、且对混合符号比较安全的 `max` 风格比较，并思考当它最终迁移到 C++26 时如何改用标准 `<compare>` 工具。
 
 <details><summary>答案与解析</summary>
 
@@ -519,11 +519,13 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 
 [标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
 
+[引用] ISO C++20 §[temp.deduct]；cppreference "std::cmp_less"（https://en.cppreference.com/w/cpp/utility/intcmp/cmp_less）。C++26 方向（execution/contracts/静态反射）见 WG21 草案论文（可能变动，落地前查 `cxx_status`）。
+
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+**真实场景：C++26 特性门控 API。** 你在规划一个将随 C++26（execution、contracts、静态反射）一起演进的库，现在就用已经成熟的概念给对外 `add` 接口加类型护栏，使浮点/非数值调用在编译期被清晰拒绝，为后续接 contracts 前置条件铺路。
 
 <details><summary>答案与解析</summary>
 
@@ -538,11 +540,13 @@ int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
 
 [标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
 
+[引用] ISO C++20 §[concepts]；cppreference "std::integral"（https://en.cppreference.com/w/cpp/concepts/integral）。C++26 中概念生态继续演进（如细化推导指引），概念是后续 contracts 前置条件的基础。
+
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：静态反射时代的编译期常量。** C++26 推进的静态反射（论文 P2996）会在编译期暴露类型元数据，很多计算会前移到编译期。请写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`，作为"该值确实在编译期定值"的可执行证据。
 
 <details><summary>答案与解析</summary>
 
@@ -554,6 +558,8 @@ int main() { std::cout << fact(5) << '\n'; }
 ```
 
 [标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+
+[引用] ISO C++ §[expr.const]；cppreference "constexpr"（https://en.cppreference.com/w/cpp/language/constexpr）。C++26 推进 constexpr 扩展与静态反射（论文 P2996），把更多运行期逻辑前移到编译期。
 
 </details>
 

@@ -645,9 +645,7 @@ add rdi, 0x0008           ; 步进 int32
 
 ### 练习 1（难度 ★★）
 
-**表达式模板消除临时对象**
-
-朴素 `Vec operator+` 每次返回新 `Vec`（分配+拷贝）。改写为返回**代理类型** `VecAdd`，把加法推迟到赋值点单次遍历求值。
+**真实场景：线性代数内核"避免 `a + b + c` 的临时向量爆炸"。** 你的数值库 `Vec` 若用朴素 `operator+`，每步都 new 一个 `Vec` 并全量拷贝，三向量相加产生 2 次分配 + 2 次 O(n) 拷贝。请**表达式模板消除临时对象**：改写为返回**代理类型** `VecAdd`，把加法推迟到赋值点单次遍历求值。
 
 <details>
 <summary>参考答案</summary>
@@ -677,13 +675,14 @@ int main() {
 }
 ```
 [标准] 代理类型把表达式结构滞留到赋值，合并多次遍历为一次。
+
+[引用] 这正是 Eigen 与 Blitz++ 的核心加速手段——表达式模板把 `a + b * c` 编译为延迟求值的表达式树，零临时对象、可向量化（eigen.tuxfamily.org）。标准库 `std::valarray` 也提供类似"避免临时"的运算语义（cppreference "std::valarray"）。ISO/IEC 14882:2023 §[temp] 支撑代理类型机制。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-**代理类型的复合赋值**
-
-为 `Vec` 增加 `operator+=(const VecAdd&)`，让 `x += (y + y)` 原地累加、零临时。
+**真实场景：物理积分"就地累加多个力向量"。** 你的物理系统每帧要 `x += (forceA + forceB)`，若朴素写会产生中间 `Vec` 临时；希望原地累加、零临时。请为 `Vec` 增加 **代理类型的复合赋值**：`operator+=(const VecAdd&)`，让 `x += (y + y)` 原地累加、零临时。
 
 <details>
 <summary>参考答案</summary>
@@ -713,13 +712,14 @@ int main() {
 }
 ```
 [标准] 复合赋值直接读代理元素累加，避免生成中间 `Vec`。
+
+[引用] 复合赋值 + 表达式模板是 Eigen `Eigen::Matrix` 算术运算符的标准实现手法——`operator+=` 直接消费表达式树、原地写入（eigen.tuxfamily.org）。标准库 `std::valarray` 的 `operator+=` 亦避免临时（cppreference "std::valarray"）。ISO/IEC 14882:2023 §[over.oper] 规定运算符重载语义。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-**求值时机陷阱**
-
-表达式模板的代理常持 `const Vec&` 引用。若把 `auto tmp = a + b;` 存下、又在 `a/b` 离开作用域后使用 `tmp`，会发生什么？给出安全写法。
+**真实场景：`auto tmp = a + b;` 存下后崩溃。** 你用表达式模板后，把 `auto tmp = a + b;` 存进容器或返回，程序偶发崩溃——代理内部持有 `const Vec&` 引用，原向量已销毁。请分析**求值时机陷阱**：表达式模板的代理常持 `const Vec&` 引用。若把 `auto tmp = a + b;` 存下、又在 `a/b` 离开作用域后使用 `tmp`，会发生什么？给出安全写法。
 
 <details>
 <summary>参考答案</summary>
@@ -749,6 +749,9 @@ int main() {
 }
 ```
 [标准] 表达式模板代理廉价但有寿命约束；跨作用域保存必须物化为具体类型。
+
+[引用] "悬垂代理"是表达式模板的经典陷阱；这正是 C++ 核心指南 F.53/SL.con.2 警示"不要返回/保存引用代理"的原因（isocpp.github.io）。Eigen 文档明确提示 `auto` 保存表达式会悬垂，应显式用 `VectorXd` 类型接收（eigen.tuxfamily.org）。ISO/IEC 14882:2023 §[basic.life] 规定悬垂引用为 UB。
+
 </details>
 
 

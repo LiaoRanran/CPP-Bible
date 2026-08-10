@@ -1106,7 +1106,7 @@ int main() {
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
 
 ### 练习 1（难度 ★★）
-插入重复元素验证 set 自动去重并按升序遍历，演示红黑树有序唯一性。
+**真实场景：去重已成交订单号并有序输出。** 结算系统把重复成交单号 `set` 去重并按升序导出（红黑树天然有序唯一）。
 
 ```cpp
 #include <iostream>
@@ -1120,8 +1120,10 @@ int main() {
 
 [标准] 结论：`std::set` 维护唯一 key 且始终有序（默认升序）；插入已存在元素会被忽略（返回 `pair<it,false>`），遍历即有序输出，无需额外排序。
 
+[引用] ISO/IEC 14882:2023 §[set]（唯一 key + 有序遍历）；见 cppreference "container/set" 词条；其红黑树节点布局见本章附录 ASM 实证。
+
 ### 练习 2（难度 ★★★）
-用 set + lower_bound 维护滑动窗口内的最长无重复子数组长度，演示有序结构做窗口去重。
+**真实场景：行情序列最长无重复窗口——有序结构做窗口去重。** 维护滑动窗口内的最长无重复子数组长度，`count`/`lower_bound` 为 O(log n)；若只需去重不计序可换 `unordered_set`。
 
 ```cpp
 #include <iostream>
@@ -1143,8 +1145,10 @@ int main() {
 
 [标准] 结论：`std::set` 的 `count/lower_bound` 为 O(log n)，适合需要"有序+去重+范围查询"的窗口场景；若只需去重不计序，`unordered_set` 均摊更优。
 
+[引用] ISO/IEC 14882:2023 §[set]（成员查询与范围操作）；有序 vs 无序的取舍见 cppreference "container/set" 与 "container/unordered_set"。
+
 ### 练习 3（难度 ★★★★）
-用 multiset 统计元素出现次数（允许重复），演示与 set 的关键区别。
+**真实场景：频次统计——统计各档位挂单笔数。** 用 `multiset` 统计某价格出现次数（带频次的集合），区别于 `set` 的唯一性。
 
 ```cpp
 #include <iostream>
@@ -1159,6 +1163,8 @@ int main() {
 ```
 
 [标准] 结论：`std::multiset` 允许重复 key，`count(k)` 返回该 key 的出现次数（O(log n + count)），`size()` 是总元素数；需要"带频次的集合"时选它，而非用 `map<K,int>` 手动计数。
+
+[引用] ISO/IEC 14882:2023 §[multiset]（允许重复 key 的有序容器）；需要"键→频次"且不介意有序时优于 `map<K,int>` 手动计数；见 cppreference "container/set"（`multiset` 专节）。
 
 ## 附录：用法演绎（从选型到落地）
 
