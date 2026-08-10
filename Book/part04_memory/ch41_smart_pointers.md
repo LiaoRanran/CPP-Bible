@@ -91,12 +91,24 @@ flowchart TD
 [经验] 现代 C++ 的默认选择是：**默认 `unique_ptr`，必须共享时才 `shared_ptr`，必须打破循环时才 `weak_ptr`**。Rule of Zero（ch39）告诉我们在大多数类里连析构函数都不该手写——把资源交给智能指针即可。
 
 > **历史动机：智能指针是怎么"熬"出来的（人文关怀）**
-> 今天"默认用 `unique_ptr`"像空气一样自然，但它背后是二十年的踩坑史。
-> - **前标准时代（1998 之前）**：C++ 没有智能指针，全靠手写 `new`/`delete`。一旦中间抛异常、提前 `return` 或分支遗漏，内存就泄漏——尤其异常路径，是泄漏重灾区。
-> - **`auto_ptr` 的失败（C++98）**：标准第一次给了一个"独占所有权"的尝试 `std::auto_ptr`，但它有个致命设计——**拷贝会悄悄转移所有权**（源对象变空）。这导致它根本不能放进容器（`vector<auto_ptr>` 排序一下就把元素弄空了），成为著名 bug 源头。它因而在 C++11 被废弃、C++17 被移除。
-> - **Boost 与 TR1（2000s–2005）**：民间 **Boost** 库率先做出了久经实战的 `boost::shared_ptr`/`scoped_ptr`/`weak_ptr`；2005 年 **TR1** 把它们以 `std::tr1` 形式纳入标准"试验场"。
-> - **现代三件套定型（C++11, 2011）**：`unique_ptr`（move-only、零开销，取代 auto_ptr）、`shared_ptr`/`weak_ptr`（源自 Boost/TR1）、`make_shared` 一同进入标准。**关键设计**：`unique_ptr` 被刻意设计成编译后就是一个裸指针、零空间零时间开销（靠 EBO，见元素06），于是"用裸 `new` 性能更好"再也不是借口。
-> - **后续补全**：`make_unique`（C++14，出人意料地晚）、`shared_ptr<T[]>` 与 `weak_from_this`（C++17）、`std::atomic<shared_ptr>` 与 `make_shared_for_overwrite`（C++20）。
+> 今天"默认用 `unique_ptr`"像空气一样自然，但它背后是二十年的踩坑史与一场关于"C++ 该不该有移动语义"的路线之争。
+>
+> **0.1 起源：异常安全时代的"泄漏瘟疫"（1998 之前）**
+> C++ 没有智能指针的年代，资源全靠手写 `new`/`delete`。最大的雷区是**异常路径**：一个函数在 `new` 之后、`delete` 之前只要 `throw` 或被提前 `return`，内存就永久泄漏。这是当时 C++ 头号 bug 类。Bjarne Stroustrup 早主张"资源获取即初始化（RAII）"来治本，但缺一个标准工具落地。
+>
+> **0.2 关键转折：auto_ptr 的失败与 Boost 的救场（1998–2011）**
+> - **`auto_ptr`（C++98）**：标准第一次给"独占所有权"的尝试，但它有个**反直觉的致命设计——拷贝会悄悄转移所有权**（源变空）。于是 `vector<auto_ptr>` 排序一下就把元素掏空了，成了著名 bug 源。它因而在 C++11 被废弃、C++17 被移除。
+> - **Boost（约 2001–2002）**：民间 **Boost** 库由 **Greg Colvin** 的引用计数构想、经 **Peter Dimov / Beman Dawes** 等人实现出久经实战的 `boost::shared_ptr`/`scoped_ptr`/`weak_ptr`。
+> - **移动语义：unique_ptr 的"前置科技"**：`unique_ptr` 能存在，全靠 **右值引用 / 移动语义**（Hinnant、Stroustrup 等人 2002–2006 的系列论文）。没有"移动"就没有"独占且可传递"——这正是 auto_ptr 当年做不到的根本原因。
+> - **现代三件套定型（C++11）**：`unique_ptr`（move-only、零开销，取代 auto_ptr）、`shared_ptr`/`weak_ptr`（源自 Boost/TR1）、`make_shared` 一同入标准。**关键约束**：Howard Hinnant 坚持 `unique_ptr` 编译后**必须就是一个裸指针、零空间零时间开销**（靠 EBO），于是"用裸 `new` 性能更好"再也不是借口。
+>
+> **0.3 设计哲学之争：零开销 vs 方便**
+> 委员会在智能指针上划了红线——**零开销抽象**优先。`unique_ptr` 因此不能有引用计数（那是 `shared_ptr` 的事）；而 `make_unique` 居然**迟至 C++14 才补齐**（C++11 时"忘了"，由 Stephan T. Lavavej 推动补上）。这背后是"安全默认值"与"零成本"两条铁律的拉锯。
+>
+> **0.4 史料补遗与持续编年（← 本槽位无限追加）**
+> - **C++17**：`shared_ptr<T[]>`、`weak_from_this`、移除 `auto_ptr` 收尾。
+> - **C++20**：`std::atomic<shared_ptr>`（无锁并发）、`make_shared_for_overwrite`。
+> - [续写锚点] 后续标准（C++23/26 的静态反射对智能指针的影响等）追加到本节。
 >
 > 这段历史告诉我们：智能指针不是"语法糖"，而是委员会用 **RAII + 零开销** 两条铁律，把"异常安全"从高手技巧变成所有人的默认值（见 Herb Sutter 关于 RAII 的经典论述）。
 
