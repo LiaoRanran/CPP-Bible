@@ -1664,6 +1664,6 @@ int main() {
 
 **交叉引用**：
 
-- Book/part04_memory/ch35_class_layout.md — 类内存布局与对齐
-- Book/part04_memory/ch36_stack_vs_heap.md — 栈 vs 堆深度对比
+- Book/part04_memory/ch35_memory_layout.md — 类内存布局与对齐
+- Book/part04_memory/ch36_stack_heap.md — 栈 vs 堆深度对比
 - Book/part03_language/ch28_lifetime_ub.md — 对象生命周期与 UB

@@ -1187,4 +1187,4 @@ int main() {
 **交叉引用**：
 
 - Book/part10_modern/ch120_coroutine_app.md — 协程与契约
-- Book/part05_oo/ch40_exception.md — 异常 vs 契约
+- Book/part04_memory/ch40_exception_safety.md — 异常 vs 契约
