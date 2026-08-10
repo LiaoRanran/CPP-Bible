@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""compile_all.py — Batch Compile All Chapters (enhanced v2)
+"""compile_all.py — Batch Compile All Chapters (enhanced v3)
 
 Extracts ```cpp blocks from all chapters and compiles them with
     g++ -std=c++23 -O0 -fsyntax-only
@@ -16,24 +16,53 @@ Design decision (2026-07-11):
   clean, actionable signal.  The full run (no flag) is still available for
   the complete inventory.
 
+v3 changes (2026-08-10, P0-2 CI 加固):
+  - `--parallel`: group chapters by their `Book/partNN_*` directory and
+    compile one part per worker process (ProcessPoolExecutor).  g++ is a
+    subprocess-bound bottleneck, so multiprocessing scales nearly linearly
+    with part count.  Default stays single-process so `--resume` incremental
+    checkpoint semantics are unchanged (parallel mode always runs fresh).
+  - GCC resolution hardened: prefer mingw1530 GCC 15.3.0 when `g++` is not
+    on PATH (consistent with chapter_compile_check.py).
+
 Options:
   --quick        only first 3 cpp blocks per chapter (smoke test)
   --main-only    only compile blocks containing 'int main'
-  --gcc PATH     path to g++ (default: shutil.which('g++'))
+  --gcc PATH     path to g++ (default: shutil.which('g++') else mingw1530)
   --json PATH    write full failure report (default tools/compile_report.json)
+  --parallel     compile parts concurrently (one process per part)
+  --workers N    max concurrent part-workers (default: part count, capped cpu)
 """
 
 import os, re, sys, subprocess, tempfile, shutil, json
+from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor
 
-GCC = shutil.which('g++') or 'g++'
+# --- GCC resolution (hardened) -------------------------------------------
+def resolve_gcc(explicit=None):
+    if explicit:
+        return os.path.normpath(explicit)
+    found = shutil.which('g++')
+    if found:
+        return os.path.normpath(found)
+    mingw1530 = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
+    if os.path.isfile(mingw1530):
+        return mingw1530
+    return 'g++'
+
+
+GCC = resolve_gcc(sys.argv[sys.argv.index('--gcc') + 1]
+                  if '--gcc' in sys.argv else None)
 FLAGS = '-std=c++23 -O0 -fsyntax-only'
 QUICK = '--quick' in sys.argv
 MAIN_ONLY = '--main-only' in sys.argv
-if '--gcc' in sys.argv:
-    GCC = sys.argv[sys.argv.index('--gcc') + 1]
-# Normalize so that a unix-style path passed via --gcc (/c/Qt/...) is
-# accepted by Windows subprocess (which needs C:\Qt\...).
-GCC = os.path.normpath(GCC)
+PARALLEL = '--parallel' in sys.argv
+WORKERS = None
+if '--workers' in sys.argv:
+    try:
+        WORKERS = int(sys.argv[sys.argv.index('--workers') + 1])
+    except Exception:
+        WORKERS = None
 OUT_JSON = 'tools/compile_report.json'
 if '--json' in sys.argv:
     OUT_JSON = sys.argv[sys.argv.index('--json') + 1]
@@ -62,7 +91,7 @@ def block_has_main(block):
     return 'int main' in block
 
 
-def compile_block(block):
+def compile_block(block, gcc=GCC):
     """Compile a single block as-written. Return error string or None."""
     if not block.strip():
         return None
@@ -72,7 +101,7 @@ def compile_block(block):
         fpath = f.name
     try:
         result = subprocess.run(
-            [GCC] + FLAGS.split() + [fpath],
+            [gcc] + FLAGS.split() + [fpath],
             capture_output=True, text=True, timeout=10
         )
         if result.returncode != 0:
@@ -89,26 +118,94 @@ def compile_block(block):
     except subprocess.TimeoutExpired:
         return 'TIMEOUT(>10s)'
     except FileNotFoundError:
-        print(f'ERROR: g++ not found at {GCC}')
+        print(f'ERROR: g++ not found at {gcc}')
         sys.exit(1)
     finally:
         os.unlink(fpath)
 
 
+def compile_chapter(path, quick=QUICK, main_only=MAIN_ONLY, gcc=GCC):
+    """Compile all (or filtered) cpp blocks in one chapter file.
+
+    Returns dict: {path, passed, failed, failures:[...], blocks_checked}.
+    """
+    try:
+        text = open(path, encoding='utf-8').read()
+    except Exception as e:
+        return {'path': path, 'error': str(e), 'passed': 0, 'failed': 0,
+                'failures': [], 'blocks_checked': 0}
+    blocks = extract_blocks(text, max_blocks=3 if quick else None)
+    if not blocks:
+        return {'path': path, 'passed': 1, 'failed': 0,
+                'failures': [], 'blocks_checked': 0}
+    chap_failures = []
+    blocks_checked = 0
+    for i, block in enumerate(blocks):
+        if main_only and not block_has_main(block):
+            continue
+        blocks_checked += 1
+        err = compile_block(block, gcc=gcc)
+        if err is not None:
+            chap_failures.append({'block': i + 1, 'error': err,
+                                  'has_main': block_has_main(block)})
+    return {
+        'path': path,
+        'passed': 1 if not chap_failures else 0,
+        'failed': 1 if chap_failures else 0,
+        'failures': chap_failures,
+        'blocks_checked': blocks_checked,
+    }
+
+
+def compile_part(arg):
+    """Worker: compile every chapter in one part directory.
+
+    arg = {'paths':[...], 'quick':bool, 'main_only':bool, 'gcc':str}
+    Returns list of per-chapter result dicts (see compile_chapter).
+    Top-level so it is picklable for ProcessPoolExecutor on Windows/spawn.
+    """
+    paths = arg['paths']
+    quick = arg['quick']
+    main_only = arg['main_only']
+    gcc = arg['gcc']
+    return [compile_chapter(p, quick=quick, main_only=main_only, gcc=gcc)
+            for p in paths]
+
+
+def group_by_part(paths):
+    """Group chapter paths by their Book/*part*/ parent directory."""
+    groups = {}
+    for p in paths:
+        parent = os.path.dirname(p)
+        groups.setdefault(parent, []).append(p)
+    return groups
+
+
+def collect_chapters(book_root):
+    paths = []
+    for r, d, f in os.walk(book_root):
+        if '_legacy' in r:
+            continue
+        for ff in sorted(f):
+            if ff.endswith('.md'):
+                paths.append(os.path.join(r, ff))
+    return paths
+
+
 def dump_report(total_chapters, passed_chapters, failed_chapters,
                 total_blocks, failed_blocks, all_failures,
-                processed_paths=None):
-    """Write the current (possibly partial) report to OUT_JSON.
+                processed_paths=None, partial=True):
+    """Write the (possibly partial) report to OUT_JSON.
 
-    Called after every chapter so that a long run interrupted at a
-    session boundary still leaves a recoverable, valid JSON covering
+    Called after every chapter in sequential mode so a long run interrupted
+    at a session boundary still leaves a recoverable, valid JSON covering
     all chapters processed up to that point.
     """
     report = {
         'gcc': GCC,
         'flags': FLAGS,
         'main_only': MAIN_ONLY,
-        'partial': True,
+        'partial': partial,
         'total_chapters': total_chapters,
         'passed_chapters': passed_chapters,
         'failed_chapters': failed_chapters,
@@ -121,68 +218,94 @@ def dump_report(total_chapters, passed_chapters, failed_chapters,
         json.dump(report, f, indent=2, ensure_ascii=False)
 
 
-def main():
-    RESUME = '--resume' in sys.argv
+def _merge_chapter_results(chap_results):
+    """Aggregate a list of per-chapter dicts into summary counters."""
     total_chapters = passed_chapters = failed_chapters = 0
     total_blocks = failed_blocks = 0
     all_failures = []
-    done_paths = set()
+    processed = []
+    for cr in chap_results:
+        processed.append(cr['path'])
+        total_chapters += 1
+        total_blocks += cr.get('blocks_checked', 0)
+        if cr.get('failed'):
+            failed_chapters += 1
+            failed_blocks += len(cr.get('failures', []))
+            all_failures.append({
+                'file': os.path.basename(cr['path']),
+                'path': cr['path'],
+                'failures': cr.get('failures', []),
+            })
+        else:
+            passed_chapters += 1
+    return (total_chapters, passed_chapters, failed_chapters,
+            total_blocks, failed_blocks, all_failures, processed)
 
-    if RESUME and os.path.exists(OUT_JSON):
-        try:
-            prev = json.load(open(OUT_JSON, encoding='utf-8'))
-            total_chapters = prev.get('total_chapters', 0)
-            passed_chapters = prev.get('passed_chapters', 0)
-            failed_chapters = prev.get('failed_chapters', 0)
-            total_blocks = prev.get('total_blocks_checked', 0)
-            failed_blocks = prev.get('failed_blocks', 0)
-            all_failures = prev.get('failures', [])
-            done_paths = set(prev.get('processed_paths', []))
-            if not done_paths:
-                done_paths = {e['path'] for e in all_failures}
-            print(f'RESUME: carried {total_chapters} chapters '
-                  f'({failed_chapters} failed) from previous run')
-        except Exception as e:
-            print('RESUME load failed, starting fresh:', e)
 
-    for r, d, f in os.walk('Book/'):
-        if '_legacy' in r:
-            continue
-        for ff in sorted(f):
-            if not ff.endswith('.md'):
-                continue
-            path = r + '/' + ff
+def main():
+    RESUME = '--resume' in sys.argv
+    book = 'Book/'
+    paths = collect_chapters(book)
+
+    if PARALLEL:
+        # --- parallel-by-part branch (no resume; always fresh) -----------
+        groups = group_by_part(paths)
+        part_args = [{'paths': pl, 'quick': QUICK, 'main_only': MAIN_ONLY,
+                      'gcc': GCC} for pl in groups.values()]
+        workers = WORKERS or min(len(part_args), (os.cpu_count() or 4))
+        workers = max(workers, 1)
+        print(f"[*] --parallel: {len(groups)} parts, {workers} workers")
+        chap_results = []
+        with ProcessPoolExecutor(max_workers=workers) as ex:
+            for part_res in ex.map(compile_part, part_args):
+                chap_results.extend(part_res)
+        (total_chapters, passed_chapters, failed_chapters,
+         total_blocks, failed_blocks, all_failures, processed) = \
+            _merge_chapter_results(chap_results)
+        dump_report(total_chapters, passed_chapters, failed_chapters,
+                    total_blocks, failed_blocks, all_failures,
+                    processed_paths=processed, partial=False)
+    else:
+        # --- sequential branch (preserves --resume checkpoint) -----------
+        total_chapters = passed_chapters = failed_chapters = 0
+        total_blocks = failed_blocks = 0
+        all_failures = []
+        done_paths = set()
+
+        if RESUME and os.path.exists(OUT_JSON):
+            try:
+                prev = json.load(open(OUT_JSON, encoding='utf-8'))
+                total_chapters = prev.get('total_chapters', 0)
+                passed_chapters = prev.get('passed_chapters', 0)
+                failed_chapters = prev.get('failed_chapters', 0)
+                total_blocks = prev.get('total_blocks_checked', 0)
+                failed_blocks = prev.get('failed_blocks', 0)
+                all_failures = prev.get('failures', [])
+                done_paths = set(prev.get('processed_paths', []))
+                if not done_paths:
+                    done_paths = {e['path'] for e in all_failures}
+                print(f'RESUME: carried {total_chapters} chapters '
+                      f'({failed_chapters} failed) from previous run')
+            except Exception as e:
+                print('RESUME load failed, starting fresh:', e)
+
+        for path in paths:
             if RESUME and path in done_paths:
                 continue
-            text = open(path, encoding='utf-8').read()
-            blocks = extract_blocks(text, max_blocks=3 if QUICK else None)
-            if not blocks:
-                continue
-
+            cr = compile_chapter(path)
             total_chapters += 1
-            chap_failures = []
-            for i, block in enumerate(blocks):
-                if MAIN_ONLY and not block_has_main(block):
-                    continue
-                total_blocks += 1
-                err = compile_block(block)
-                if err is not None:
-                    failed_blocks += 1
-                    chap_failures.append({
-                        'block': i + 1,
-                        'error': err,
-                        'has_main': block_has_main(block),
-                    })
-            if chap_failures:
+            total_blocks += cr['blocks_checked']
+            failed_blocks += len(cr['failures'])
+            if cr['failed']:
                 failed_chapters += 1
                 all_failures.append({
                     'file': os.path.basename(path),
                     'path': path,
-                    'failures': chap_failures,
+                    'failures': cr['failures'],
                 })
                 print(f'FAIL {os.path.basename(path)} '
-                      f'({len(chap_failures)} fails):')
-                for fr in chap_failures[:3]:
+                      f'({len(cr["failures"])} fails):')
+                for fr in cr['failures'][:3]:
                     print(f"  block #{fr['block']}: {fr['error']}")
             else:
                 passed_chapters += 1
@@ -191,24 +314,26 @@ def main():
             # Incremental checkpoint: survives session-boundary kills.
             dump_report(total_chapters, passed_chapters,
                         failed_chapters, total_blocks,
-                        failed_blocks, all_failures, done_paths)
+                        failed_blocks, all_failures, done_paths,
+                        partial=True)
 
-    # Final report: mark complete (partial=False).
-    report = {
-        'gcc': GCC,
-        'flags': FLAGS,
-        'main_only': MAIN_ONLY,
-        'partial': False,
-        'total_chapters': total_chapters,
-        'passed_chapters': passed_chapters,
-        'failed_chapters': failed_chapters,
-        'total_blocks_checked': total_blocks,
-        'failed_blocks': failed_blocks,
-        'failures': all_failures,
-        'processed_paths': sorted(done_paths),
-    }
-    with open(OUT_JSON, 'w', encoding='utf-8') as f:
-        json.dump(report, f, indent=2, ensure_ascii=False)
+    # Final report: mark complete (partial=False) for sequential path.
+    if not PARALLEL:
+        report = {
+            'gcc': GCC,
+            'flags': FLAGS,
+            'main_only': MAIN_ONLY,
+            'partial': False,
+            'total_chapters': total_chapters,
+            'passed_chapters': passed_chapters,
+            'failed_chapters': failed_chapters,
+            'total_blocks_checked': total_blocks,
+            'failed_blocks': failed_blocks,
+            'failures': all_failures,
+            'processed_paths': sorted(done_paths),
+        }
+        with open(OUT_JSON, 'w', encoding='utf-8') as f:
+            json.dump(report, f, indent=2, ensure_ascii=False)
 
     print('\n--- Compile Summary ---')
     print(f'Chapters : {total_chapters} '
