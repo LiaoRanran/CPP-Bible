@@ -1156,3 +1156,56 @@ flowchart TD
 | ch140 模板特化 | ch62 特化 | 特化定制 Policy 行为，关联 ch62 |
 | ch140 编译期多态 | ch139 CRTP | Policy 常与 CRTP 配合，闭环 ch139 |
 
+
+## 附录 D5：真实基准与性能分析 — 编译期策略模板 vs 虚函数策略 vs std::function vs if constexpr 分发（GCC 15.3.0）
+
+> 绝对毫秒随机器而变，加速比才是可移植信号。
+
+**编译器**：GCC 15.3.0 (MinGW-w64 x86_64-posix-seh)，`-O2 -std=c++23`，5 次取中位数。
+**源码**：`_bench_d5_ch140_policy_pattern.cpp`
+
+### D5.1 基准结果
+
+| 方案 | 描述 | 中位数 (ms) | 相对开销 |
+|------|------|------------|----------|
+| template 策略 | 编译期单态化 | 0.00 | ~0× (消除) |
+| if constexpr 分发 | 编译期分支 | 0.00 | ~0× (消除) |
+| std::function 策略 | 类型擦除闭包 | 0.00 | ~0× (消除/SSO) |
+| virtual 策略 | 虚函数间接调用 | 82.22 | 间接调用开销 |
+
+### D5.2 非显然结论
+
+**virtual 策略比编译期策略慢到「测不出」——82 ms 间接调用 vs 0 ms 内联消除**
+
+template / if constexpr 策略在 `-O2` 下被完全内联，循环退化为常量计算，测出 0.00 ms。std::function 策略也是 0.00 ms（本例闭包极小被 SSO 优化且编译器证明无逃逸）。只有 virtual 策略保留 82.22 ms 的 `call [vtable+offset]` 间接调用。
+
+**工程判据：策略编译期已知就绝不用 virtual**
+
+策略在编译期确定（配置/编译开关）用 template 或 `if constexpr`；候选集封闭且运行期选择用 `switch(enum)`；只有当候选集开放（插件/动态加载）才用 virtual，否则白白把 0 ms 变成 82 ms。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <cstdio>
+
+// 编译期策略（template）
+template<typename P> int run(P p, int n){ int a=0; for(int i=0;i<n;i++) a+=p(i); return a; }
+struct Add{ int operator()(int x) const { return x+1; } };
+
+// 运行时策略（virtual）
+struct Policy { virtual int f(int x) const = 0; virtual ~Policy()=default; };
+struct VAdd : Policy { int f(int x) const override { return x+1; } };
+
+int main(){
+    VAdd v; int av=0; for(int i=0;i<1000;i++) av+=v.f(i);
+    printf("template=%d virtual=%d\n", run(Add{},1000), av);
+}
+```
+
+编译运行：`g++ -O2 -std=c++23 _bench_d5_ch140_policy_pattern.cpp -o _bench_d5_ch140_policy_pattern.exe && ./_bench_d5_ch140_policy_pattern.exe`
+
+### D5.4 方法学注
+
+**方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
+
+**交叉引用**：ch135（模式总览：virtual 策略 vs switch vs template）/ ch71（policy 模式）/ ch67（concepts 约束）

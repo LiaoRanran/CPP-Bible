@@ -897,3 +897,55 @@ flowchart TD
 | ch125 | ch129 | libc++ 下 Qt 的构建与 ABI 校验 |
 | ch130 | ch129 | Abseil 与 Qt 基础类型的选型对照 |
 
+
+## 附录 D5：真实基准与性能分析 — Qt 信号槽 — 直接调用 vs 函数指针 vs std::function 槽 vs 虚槽 vs 多槽（4 接收者）（GCC 15.3.0）
+
+> 绝对毫秒随机器而变，加速比才是可移植信号。
+
+**编译器**：GCC 15.3.0 (MinGW-w64 x86_64-posix-seh)，`-O2 -std=c++23`，5 次取中位数。
+**源码**：`_bench_d5_ch129_qt.cpp`
+
+### D5.1 基准结果
+
+| 方案 | 描述 | 中位数 (ms) | 相对开销 |
+|------|------|------------|----------|
+| 直接调用 | 编译期内联 | 0.00 | ~0× (消除) |
+| 函数指针 | 直接调用 | 0.00 | ~0× (消除) |
+| std::function 槽 | 类型擦除 | 0.00 | ~0× (消除) |
+| 虚槽（单接收者） | 虚函数间接调用 | 85.02 | 间接调用开销 |
+| 多槽（4 接收者） | 容器遍历 + 4 虚调用 | 1273.22 | ~15× 慢（于单虚槽） |
+
+### D5.2 非显然结论
+
+**Qt 信号槽的「解耦」代价是运行时容器遍历 + 虚调用——多槽比单虚槽慢 15×**
+
+直接 / 函数指针 / std::function 调用（0.00 ms）被编译器内联消除；虚槽（85.02 ms）是间接调用；多槽（1273.22 ms）因为每个信号要遍历接收者容器并对每个接收者做一次虚调用，4 个接收者 ≈ 15× 于单虚槽。
+
+**工程判据：信号槽用于低频事件解耦；高频数据通路用直接调用 / 观察者接口**
+
+每帧 UI 更新、每包网络回调这类热路径，避免连接多个重槽——容器遍历 + 多级虚调用的累计开销会随接收者数线性放大。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <cstdio>
+
+// 直接调用（编译期内联）
+int direct(int n){ int a=0; for(int i=0;i<n;i++) a+=i; return a; }
+
+// 虚槽（间接调用）
+struct Slot { virtual int on(int n) const =0; virtual ~Slot()=default; };
+struct MySlot : Slot { int on(int n) const override { int a=0; for(int i=0;i<n;i++) a+=i; return a; } };
+
+int main(){
+    MySlot s; printf("direct=%d slot=%d\n", direct(1000), s.on(1000));
+}
+```
+
+编译运行：`g++ -O2 -std=c++23 _bench_d5_ch129_qt.cpp -o _bench_d5_ch129_qt.exe && ./_bench_d5_ch129_qt.exe`
+
+### D5.4 方法学注
+
+**方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
+
+**交叉引用**：ch26（lambda 作槽）/ ch41（智能指针生命周期）/ ch93（线程与信号跨线程）

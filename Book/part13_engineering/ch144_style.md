@@ -1037,3 +1037,54 @@ flowchart TD
 | ch21 const 家族 | [Book/part03_language/ch21_const_family.md](Book/part03_language/ch21_const_family.md) | const/constexpr 理论根基 |
 | ch115 移动语义 | [Book/part10_modern/ch115_move.md](Book/part10_modern/ch115_move.md) | §⑪ 移动语义规范 |
 | ch14 调试与诊断 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | -Wall -Wextra 警告取证 |
+
+## 附录 D5：真实基准与性能分析 — 大尺寸元素 range-for — auto（值拷贝）vs const auto& vs auto&& vs 索引访问（GCC 15.3.0）
+
+> 绝对毫秒随机器而变，加速比才是可移植信号。
+
+**编译器**：GCC 15.3.0 (MinGW-w64 x86_64-posix-seh)，`-O2 -std=c++23`，5 次取中位数。
+**源码**：`_bench_d5_ch144_style.cpp`
+
+### D5.1 基准结果
+
+| 方案 | 描述 | 中位数 (ms) | 相对开销 |
+|------|------|------------|----------|
+| const auto& | 引用绑定（不拷贝） | 553.302 | 1.00× (基线) |
+| index v[i] | 索引访问 | 665.204 | 1.20× |
+| auto&& | 转发引用 | 760.907 | 1.38× |
+| auto（值拷贝） | 每轮拷贝 64B 元素 | 842.496 | 1.52× 慢 |
+
+### D5.2 非显然结论
+
+**对 64 字节重元素，range-for 裸 `auto` 比 `const auto&` 慢 1.52×——差距是每轮的结构体拷贝**
+
+遍历 `Heavy`（64 字节）时，`auto x` 每轮把整个结构体复制到循环变量，累计 842 ms；`const auto&` 只绑定引用（553 ms）。index（665 ms）与 `auto&&`（761 ms）略慢于 `const auto&`（多一层间接）。
+
+**对 `int` 这类小元素四种写法在 -O2 下完全等价（已被 ch22/ch24 等章验证）；重元素才显现拷贝成本**
+
+工程判据：range-for 遍历非平凡类型用 `const auto&`；需修改用 `auto&`；绝不用裸 `auto` 遍历大对象——这是唯一会「肉眼可见变慢」的风格选择。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <cstdio>
+#include <vector>
+
+struct Heavy { long long a,b,c,d,e,f,g,h; };
+
+int main(){
+    std::vector<Heavy> v(512); for(int i=0;i<512;i++) v[i].a=i;
+    long long acc=0;
+    for (const auto& h : v) acc += h.a;   // 引用：不拷贝
+    for (auto h : v)        acc += h.a;   // 值拷贝：每轮拷 64B
+    printf("acc=%lld\n", acc);
+}
+```
+
+编译运行：`g++ -O2 -std=c++23 _bench_d5_ch144_style.cpp -o _bench_d5_ch144_style.exe && ./_bench_d5_ch144_style.exe`
+
+### D5.4 方法学注
+
+**方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
+
+**交叉引用**：ch20（引用与指针）/ ch22（auto 推导）/ ch156（编译器优化与拷贝消除）

@@ -1384,3 +1384,63 @@ flowchart TD
 | 第162章 json | Book/part15_cases/ch162_json.md | payload 用 JSON 序列化加 长度前缀帧 |
 | 第44章 memory_pool | Book/part04_memory/ch44_memory_pool.md | 缓冲管理借鉴内存池与环形缓冲思想 |
 | 第77章 vector | Book/part07_stl/ch77_vector.md | 环形缓冲底层用 vector 扩容 |
+
+## 附录 D5：真实基准与性能分析 — 消息序列化 — 手工字节打包 vs struct memcpy vs 长度前缀帧 vs 逐字段拷贝（GCC 15.3.0）
+
+> 绝对毫秒随机器而变，加速比才是可移植信号。
+
+**编译器**：GCC 15.3.0 (MinGW-w64 x86_64-posix-seh)，`-O2 -std=c++23`，5 次取中位数。
+**源码**：`_bench_d5_ch163_net.cpp`
+
+### D5.1 基准结果
+
+| 方案 | 描述 | 中位数 (ms) | 相对开销 |
+|------|------|------------|----------|
+| 逐字段拷贝 | 字段逐个赋值 | 2.150 | 0.98× |
+| struct memcpy | 整块内存拷贝 | 2.204 | 1.00× (基线) |
+| 手工字节打包 | 位移拼字节 | 2.310 | 1.05× |
+| 长度前缀帧 | 每帧动态分配 + 长度头 | 53.678 | ~24× 慢 |
+
+### D5.2 非显然结论
+
+**网络序列化瓶颈不在「怎么拷字节」而在「是否分配内存」——长度前缀帧慢 24×**
+
+三种零分配方案（逐字段 / struct memcpy / 手工字节打包）都在 ~2.2 ms，差异 <10%（噪声级）：连续内存拷贝与逐字段赋值在 `-O2` 下生成几乎相同的代码。但长度前缀帧（53.678 ms）**慢 24×**，因为它对每条消息 `new` 一个带长度头的缓冲区——分配 + 释放才是代价。
+
+**工程判据：固定结构消息用 struct memcpy / 逐字段（零分配）；变长消息才用长度前缀帧且必须配对象池**
+
+不要为了「更优雅的序列化」去逐字节拼装——那和 memcpy 一样快；真正要消灭的是每条消息的堆分配。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <cstdio>
+#include <cstring>
+
+#pragma pack(push,1)
+struct Msg { int id; double v; };
+#pragma pack(pop)
+
+// 零分配：整块拷贝
+void send_memcpy(const Msg* m){ Msg o; memcpy(&o,m,sizeof(Msg)); printf("id=%d\n",o.id); }
+
+// 长度前缀帧：每帧 new
+char* send_framed(const Msg* m){
+    char* buf = new char[sizeof(int)+sizeof(Msg)];
+    *(int*)buf = (int)sizeof(Msg);
+    memcpy(buf+sizeof(int), m, sizeof(Msg));
+    return buf;
+}
+int main(){
+    Msg m{7, 1.5}; send_memcpy(&m);
+    char* f = send_framed(&m); delete[] f; printf("ok\n");
+}
+```
+
+编译运行：`g++ -O2 -std=c++23 _bench_d5_ch163_net.cpp -o _bench_d5_ch163_net.exe && ./_bench_d5_ch163_net.exe`
+
+### D5.4 方法学注
+
+**方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
+
+**交叉引用**：ch91（filesystem 与 IO）/ ch156（编译器优化）/ ch160（内存池消除分配）

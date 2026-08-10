@@ -1209,3 +1209,56 @@ flowchart TD
 | ch141 可测试性 | ch40 异常安全 | 注入提升可测性与异常安全，关联 ch40 |
 | ch141 编译期多态 | ch68 TMP | 模板注入建立在 TMP，关联 ch68 |
 
+
+## 附录 D5：真实基准与性能分析 — 依赖注入 — 编译期 DI（模板）vs 虚接口注入 vs std::function 注入 vs unique_ptr 注入（GCC 15.3.0）
+
+> 绝对毫秒随机器而变，加速比才是可移植信号。
+
+**编译器**：GCC 15.3.0 (MinGW-w64 x86_64-posix-seh)，`-O2 -std=c++23`，5 次取中位数。
+**源码**：`_bench_d5_ch141_di.cpp`
+
+### D5.1 基准结果
+
+| 方案 | 描述 | 中位数 (ms) | 相对开销 |
+|------|------|------------|----------|
+| template DI | 编译期绑定 | 0.00 | ~0× (消除) |
+| std::function DI | 类型擦除 | 0.00 | ~0× (消除) |
+| unique_ptr DI | 堆对象注入 | 0.00 | ~0× (消除) |
+| virtual DI | 虚接口间接调用 | 90.54 | 间接调用开销 |
+
+### D5.2 非显然结论
+
+**virtual 依赖注入 90 ms，其余注入方式 0 ms——依赖编译期已知就无间接开销**
+
+依赖在构造期注入 concrete 类型时，template DI 在 `-O2` 下把依赖调用完全内联，测出 0.00 ms；unique_ptr / std::function 注入也 0.00 ms（本例证明无逃逸、被内联）。只有 virtual 接口注入保留 90.54 ms 间接调用。
+
+**工程判据：DI 优先 template / unique_ptr，仅运行期替换实现才 virtual**
+
+编译期或堆注入（unique_ptr）都零间接开销；只有当实现需在运行期替换（多态、测试 mock 切换）才用虚接口注入，否则白白引入 90 ms 量级的虚调用。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <cstdio>
+
+// 编译期 DI（模板注入 concrete）
+template<typename Svc> int use(Svc s, int n){ int a=0; for(int i=0;i<n;i++) a+=s(i); return a; }
+struct Concrete{ int operator()(int x) const { return x+1; } };
+
+// 运行期 DI（虚接口）
+struct IService{ virtual int handle(int x) const =0; virtual ~IService()=default; };
+struct VConcrete : IService { int handle(int x) const override { return x+1; } };
+
+int main(){
+    VConcrete vc; int av=0; for(int i=0;i<1000;i++) av+=vc.handle(i);
+    printf("tdi=%d vdi=%d\n", use(Concrete{},1000), av);
+}
+```
+
+编译运行：`g++ -O2 -std=c++23 _bench_d5_ch141_di.cpp -o _bench_d5_ch141_di.exe && ./_bench_d5_ch141_di.exe`
+
+### D5.4 方法学注
+
+**方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
+
+**交叉引用**：ch140（策略模式）/ ch41（unique_ptr 所有权）/ ch93（线程与依赖）

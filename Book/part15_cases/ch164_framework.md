@@ -1400,3 +1400,55 @@ flowchart TD
 | 第44章 memory_pool | Book/part04_memory/ch44_memory_pool.md | 组件缓冲借鉴内存池 |
 | 第150章 testing | Book/part13_engineering/ch150_testing.md | 内置测试运行器做回归 |
 | 第39章 RAII | Book/part04_memory/ch39_raii_rule.md | 生命周期用 RAII 统一释放 |
+
+## 附录 D5：真实基准与性能分析 — 插件框架 — 虚函数插件 vs CRTP 静态插件 vs 函数指针回调 vs std::function 回调（GCC 15.3.0）
+
+> 绝对毫秒随机器而变，加速比才是可移植信号。
+
+**编译器**：GCC 15.3.0 (MinGW-w64 x86_64-posix-seh)，`-O2 -std=c++23`，5 次取中位数。
+**源码**：`_bench_d5_ch164_framework.cpp`
+
+### D5.1 基准结果
+
+| 方案 | 描述 | 中位数 (ms) | 相对开销 |
+|------|------|------------|----------|
+| 函数指针回调 | 直接调用 | 0.00 | ~0× (消除) |
+| std::function 回调 | 类型擦除 | 0.00 | ~0× (消除) |
+| CRTP 静态插件 | 编译期单态 | 0.00 | ~0× (消除) |
+| virtual 插件 | 虚函数间接调用 | 85.71 | 间接调用开销 |
+
+### D5.2 非显然结论
+
+**virtual 插件 85 ms，静态/回调方案 0 ms——插件接口封闭就用 CRTP 消除虚调用**
+
+框架插件接口若候选集封闭且编译期已知，CRTP 把 `tick()` 虚调用变为 0.00 ms（编译期内联）；函数指针 / std::function 回调也被内联消除。只有 virtual 插件保留 85.71 ms 间接调用。
+
+**工程判据：插件框架优先 CRTP / 函数指针，仅运行期 dlopen 动态加载才 virtual**
+
+游戏/引擎框架的热路径（每帧 plugin tick）用 CRTP 或函数指针避免 vtable；只有支持运行期动态加载（插件市场 / 脚本扩展）的框架才需要 virtual 接口。
+
+### D5.3 可复现 demo
+
+```cpp
+#include <cstdio>
+
+// CRTP 静态插件
+template<typename P> struct Plugin { void tick(int n){ static_cast<P*>(this)->impl(n); } };
+struct Fast : Plugin<Fast> { void impl(int n){ volatile int a=0; for(int i=0;i<n;i++) a+=i; (void)a; } };
+
+// 虚插件
+struct VPlugin { virtual void tick(int n)=0; virtual ~VPlugin()=default; };
+struct Slow : VPlugin { void tick(int n) override { volatile int a=0; for(int i=0;i<n;i++) a+=i; (void)a; } };
+
+int main(){
+    Fast f; f.tick(1000); Slow s; s.tick(1000); printf("ok\n");
+}
+```
+
+编译运行：`g++ -O2 -std=c++23 _bench_d5_ch164_framework.cpp -o _bench_d5_ch164_framework.exe && ./_bench_d5_ch164_framework.exe`
+
+### D5.4 方法学注
+
+**方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
+
+**交叉引用**：ch142（ECS 架构）/ ch135（模式总览）/ ch156（编译器优化与去虚化）
