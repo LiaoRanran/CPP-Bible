@@ -49,6 +49,7 @@
 | 编译门禁 | `python tools/compile_gate.py` | 0 真实语法/类型回归（66 设计性豁免块） |
 | 密度审计 v3 | `python tools/density_audit.py --json` | 均分 24.2/30，浅章 0 |
 | 交叉引用 | `python tools/crossref_audit.py` | 0 断链 |
+| D5 性能附录 | `python tools/d5_appendix_audit.py` | 112/147 章（76%），ERROR=0 / WARN=0 |
 
 > **豁免说明**：`tools/compile_exempt.json` 中的 66 个失败块均为**设计性不可单编**内容
 > （多文件示例、C++20 Modules、POSIX / Windows 专用 API、外部库、故意展示的错误 / UB、

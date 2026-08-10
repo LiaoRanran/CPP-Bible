@@ -68,7 +68,9 @@ D5_EXEMPT_PARTS = {
 D5_EXEMPT_STEMS = {
     'ch151_benchmark',        # 基准测试方法论章（有 inline benchmark）
     'ch152_perf_model',       # 性能模型与测量学（方法论）
+    'ch154_cache_opt',        # 缓存优化理论章（方法论，非孤立微基准）
     'ch157_compiler_explorer', # CE 工具使用教程（非性能声明）
+    'ch165_roadmap',          # 路线图/元章节：无孤立微基准主题，刻意排除（D5 战役收口）
     'ch149_ci_cd',            # CI/CD 工程实践（非性能声明）
     'ch150_testing',          # 测试方法论
     'ch147_code_review',      # 代码审查实践
