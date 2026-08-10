@@ -1870,7 +1870,7 @@ int main(){std::variant<int,double> v;std::cout<<sizeof(v)<<std::endl;v=3.14;std
 
 ### 练习 1（难度 ★★）
 
-用 `std::variant<int, double, std::string>` 存一个值，分别用 `std::holds_alternative` 和 `std::get_if` 安全读取；指出直接 `std::get<int>(v)` 在类型不匹配时会抛什么异常。
+**真实场景：网络协议解析的中间表示。** 一个 JSON/二进制解析器需要把一个"可能是整数、浮点、字符串"的字段暂存起来再分派。请用 `std::variant<int, double, std::string>` 存该值，分别用 `std::holds_alternative` 和 `std::get_if` 安全读取；指出直接 `std::get<int>(v)` 在类型不匹配时会抛什么异常。
 
 <details><summary>答案与解析</summary>
 
@@ -1891,11 +1891,13 @@ int main() {
 
 [标准] `std::get<T>(v)` 在 `T` 不是当前活跃类型时抛 `std::bad_variant_access`；`get_if` 返回指针，类型不符得 `nullptr`，是免异常的访问方式。
 
+[引用] ISO/IEC 14882:2023 §[variant]/[variant.get]（`std::get` 类型不符抛 `std::bad_variant_access`；`get_if` 返回空指针）；cppreference "std::variant" 词条。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用 `std::visit` + `std::overload` 技巧（聚合多个 lambda 成一个 visitor）遍历一个 `variant<int, double, std::string>`，对每种类型输出不同文案。说明 `std::visit` 的派发是 O(1) 还是 O(n)。
+**真实场景：GUI 控件的类型化事件分发。** 一个 UI 框架把一个 `variant<int, double, std::string>` 的值交给渲染层，渲染层要按实际类型渲染不同文案（数字右对齐、字符串左对齐）。请用 `std::visit` + `std::overload`（聚合多个 lambda 成 visitor）遍历，对每种类型输出不同文案；说明 `std::visit` 派发是 O(1) 还是 O(n)。
 
 <details><summary>答案与解析</summary>
 
@@ -1916,11 +1918,13 @@ int main() {
 
 [标准] `std::visit` 按 `index()` 经内部函数指针表（`_Multi_array`/`__gen_vtable`）一次查表分派，复杂度为 **O(1)**，等价于手写 `switch`，远快于虚函数链。
 
+[引用] ISO/IEC 14882:2023 §[variant.visit]（`std::visit` 经 `index()` 一次查表分派，复杂度 O(1)）；Boost.Variant（`boost::variant`/`boost::apply_visitor`）是 std::variant 的前身参考实现。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-`valueless_by_exception`：当 variant 在执行一次会抛异常的赋值/emplace 中途失败时，可能进入"无值"状态。构造一个场景使 `v.valueless_by_exception()` 为 `true`，并说明为什么"平凡可复制且尺寸≤某阈值"的 alternative 永不进入该态。
+**真实场景：带外部资源的 variant 容错。** 一个资源监控组件用 `variant<LargeBuffer, RemoteHandle>` 表示本地缓冲或远端句柄；当一次会抛异常的赋值/构造中途失败，variant 可能进入"无值"态。请构造场景使 `v.valueless_by_exception()` 为 `true`，并说明为何"平凡可复制且尺寸≤某阈值"的 alternative 永不进入该态。
 
 <details><summary>答案与解析</summary>
 
@@ -1943,6 +1947,8 @@ int main() {
 ```
 
 [标准] variant 只对"所有 alternative 都是**平凡可复制**且尺寸不超过某实现阈值"的情况提供 **never-empty** 保证；若涉及非平凡类型且在赋值/转换构造的中途抛异常，variant 会落为 `valueless_by_exception()`（既不持有任何 alternative）。访问 valueless 的 variant 仍会抛 `bad_variant_access`。因此涉及外部资源、异常敏感路径时，优先用确定性状态（如 `std::monostate` 作为首个可默认构造的 alternative）。
+
+[引用] ISO/IEC 14882:2023 §[variant.general]（所有 alternative 平凡可复制且尺寸不超时提供 never-empty 保证）；cppreference "std::variant" 的 valueless_by_exception 说明。
 
 </details>
 

@@ -643,7 +643,7 @@ int main(){int x{};std::vector<int> v{1,2,3};std::cout<<x<<","<<v[0]<<std::endl;
 
 ### 练习 1（难度 ★★）
 
-`std::vector` 同时有 `(n)`（填充 n 个值）与 `{n}`（initializer_list 构造）两种语义，容易混淆。`auto` + 初始化列表会推导为 `std::initializer_list`。请演示 `vector<int> v(10)` 与 `vector<int> v{10}` 的区别，并说明 `auto il = {1,2,3}` 的类型。
+**真实场景：配置解析器的批量参数构造。** 你从配置读入一组数值要塞进容器，常因圆括号与花括号语义不同而拿到错误数量的元素。`std::vector` 同时有 `(n)`（填充 n 个值）与 `{n}`（initializer_list 构造）两种语义，容易混淆。`auto` + 初始化列表会推导为 `std::initializer_list`。请演示 `vector<int> v(10)` 与 `vector<int> v{10}` 的区别，并说明 `auto il = {1,2,3}` 的类型。
 
 <details><summary>答案与解析</summary>
 
@@ -665,11 +665,13 @@ int main() {
 
 [标准] 当类有 `std::initializer_list` 参数的构造函数时，花括号初始化会优先选择它；这是 `vector` 的 `(n)`/`{n}` 歧义根源，需用圆括号表达"构造 n 个元素"。
 
+[引用] ISO/IEC 14882:2023 §[dcl.init.list]（initializer_list 与列表初始化的优先规则）；cppreference "std::vector" 构造函数与 "std::initializer_list" 词条。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-C++11 起有值初始化、默认初始化、零初始化的细分；C++20 聚合类型支持指定初始化器（designated initializer）。请写出一个聚合体并用指定初始化器只初始化部分成员，对比未指定成员的零值结果。
+**真实场景：图形 API 的像素 / 顶点结构部分填充。** 你定义一个 `Pixel{R,G,B,A}` 聚合，常只想设置 RGB 而让 Alpha 默认不透明。C++11 起有值初始化、默认初始化、零初始化的细分；C++20 聚合类型支持指定初始化器（designated initializer）。请写出一个聚合体并用指定初始化器只初始化部分成员，对比未指定成员的零值结果。
 
 <details><summary>答案与解析</summary>
 
@@ -688,11 +690,13 @@ int main() {
 
 [C++20][⑩] 指定初始化器必须按声明顺序、且只能用于聚合；未显式指定的成员按值初始化规则补零，避免未初始化垃圾值。注意：`Point` 一旦声明用户构造、含 `private` 成员或继承，便不再是聚合，指定初始化器编译失败。
 
+[引用] ISO/IEC 14882:2023 §[dcl.init.aggr]（designated initializer 仅用于聚合、须按声明顺序）；cppreference "aggregate initialization" 词条。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-`std::initializer_list` 本身只是 `{const T* _M_array, size_t _M_len}` 的薄包装，**零堆分配**；`std::array` 是聚合、定长、可 `constexpr`。请对比 `std::array<int,3>` 与 `std::vector` 的初始化开销：前者在栈上定长、后者堆分配，并演示 `std::array` 的聚合初始化与下标访问。
+**真实场景：嵌入式固件的定长传感器缓冲。** 你在资源受限设备上需要一个编译期定长、零堆分配的缓冲。`std::initializer_list` 本身只是 `{const T* _M_array, size_t _M_len}` 的薄包装，**零堆分配**；`std::array` 是聚合、定长、可 `constexpr`。请对比 `std::array<int,3>` 与 `std::vector` 的初始化开销：前者在栈上定长、后者堆分配，并演示 `std::array` 的聚合初始化与下标访问。
 
 <details><summary>答案与解析</summary>
 
@@ -712,6 +716,8 @@ int main() {
 ```
 
 [标准] `std::array` 把 C 数组包进聚合结构体，保留定长零开销与栈分配，同时提供 `.size()`/迭代器/`at()` 等接口；`vector` 则负责运行期可变长度、以堆分配为代价。选型：长度编译期已知选 `array`，运行期变化选 `vector`。
+
+[引用] ISO/IEC 14882:2023 §[array]（std::array 的聚合、定长、零开销语义）；cppreference "std::array" 词条；亦见 C++ Core Guidelines（isocpp.github.io）关于"优先用栈上定长容器"的建议。
 
 </details>
 

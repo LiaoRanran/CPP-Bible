@@ -1914,6 +1914,8 @@ clone(std::shared_ptr<S> const&):
 
 ### 练习 1（难度 ★★）
 
+**真实场景：GUI 工具包的窗口对象树。** 在 Qt / Flutter 这类 UI 框架里，父控件"拥有"子控件——窗口销毁时子控件必须随之销毁，且不能有两个父控件争抢同一个子控件。这与 `unique_ptr` 的独占语义天然契合：控件工厂 `make_node()` 把新控件交给调用方，调用方用 `std::move` 挂到父节点，而不是复制出第二份"所有权"。
+
 `std::unique_ptr` 与 `std::shared_ptr` 的所有权语义有何本质区别？
 写一个工厂 `make_node()` 返回 `unique_ptr<Node>`，调用方应如何"转移"而非"共享"所有权？
 
@@ -1933,10 +1935,13 @@ int main() {
 ```
 
 [标准] `unique_ptr`  movable-only；`make_unique`(C++14) 异常安全且避免裸 `new`。
+[引用] ISO/IEC 14882:2023 §[smartptr.unique]（独占所有权、可移动不可拷贝）；cppreference "std::unique_ptr"；Qt 对象树采用"父 owns 子"模型，语义等价于 `unique_ptr` 所有权。
 
 </details>
 
 ### 练习 2（难度 ★★★）
+
+**真实场景：模型-视图绑定。** 文档编辑器里 `Document` 持有它打开的所有 `View` 列表（强引用，便于广播更新），而每个 `View` 又需要反向访问 `Document`。若两边都用 `shared_ptr`，窗口关闭后 `Document` 仍被 `View` 钉住、无法释放——这就是循环引用泄漏。把反向边改成 `weak_ptr` 即可。
 
 为何 `shared_ptr` 的**循环引用**会导致内存泄漏？画一个 `A ↔ B` 双向 `shared_ptr` 结构，
 并改成 `weak_ptr` 打破循环。
@@ -1957,10 +1962,13 @@ pa->b = pb; pb->a = pa;            // 互相 +1 -> 双方引用计数停在有�
 其 `weak_ptr` 自动失效，`A` 随后释放。
 
 [标准] `weak_ptr` 是 `shared_ptr` 的观察者，不拥有对象；`lock()` 原子尝试提升为 `shared_ptr`。
+[引用] ISO/IEC 14882:2023 §[smartptr.weak]；cppreference "std::weak_ptr"（专用于打破 `shared_ptr` 环）；Boost 文档 "weak_ptr" 同样指出其弱观察者定位；Qt 的 `QPointer` 即弱引用观察者。
 
 </details>
 
 ### 练习 3（难度 ★★★★）
+
+**真实场景：网络连接的句柄生命周期。** 服务器中每个连接对应一个对象，底层 `FILE*` / socket 句柄必须在引用归零时关闭；同时该对象在异步回调里常需 `shared_from_this()` 延长自身生命，直到回调跑完。若对象尚未被 `shared_ptr` 拥有就调用 `shared_from_this()`，会得到 `bad_weak_ptr` 或 UB。
 
 `std::make_shared<T>` 相比 `std::shared_ptr<T>(new T)` 为何更快且更安全？
 再写一个用**自定义 deleter** 管理 `std::FILE*` 的例子，并指出 `enable_shared_from_this` 的生命周期陷阱。
@@ -1982,6 +1990,7 @@ auto file = std::shared_ptr<FILE>(std::fopen("log.txt","w"),
 在构造函数内或栈上对象调用会得到 `bad_weak_ptr` 或 UB。
 
 [标准] `make_shared`(C++11) 单分配; `shared_ptr` deleter 保存在控制块中。
+[引用] ISO/IEC 14882:2023 §[smartptr.shared]、§[util.smartptr.shared.const]（自定义 deleter 存于控制块）；cppreference "std::enable_shared_from_this" 明确：必须在对象已被 `shared_ptr` 拥有后调用 `shared_from_this()`。
 
 </details>
 

@@ -1213,7 +1213,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-解释参数依赖查找（ADL）：为什么 `operator<<(std::cout, my_type)` 在 `my_type` 定义于命名空间 `ns` 时，即使不写 `using namespace ns;` 也能通过 `std::cout << obj` 找到 `ns::operator<<`？给出最小复现。
+**真实场景：自定义类型的流式打印。** 你在图形库命名空间 `geo` 里定义了 `Point`，希望用户能直接写 `std::cout << p`，而不必每次 `using`。请解释参数依赖查找（ADL）：为什么 `operator<<(std::cout, my_type)` 在 `my_type` 定义于命名空间 `ns` 时，即使不写 `using namespace ns;` 也能通过 `std::cout << obj` 找到 `ns::operator<<`？给出最小复现。
 
 <details><summary>答案与解析</summary>
 
@@ -1231,11 +1231,13 @@ int main() {
 
 [标准] ADL 在计算函数名候选时，把"实参类型的关联命名空间"也纳入查找域，故无需 `using` 即可找到同命名空间内的 `operator<<`。
 
+[引用] ISO/IEC 14882:2023 §[basic.lookup.argdep]（参数依赖查找）；这也是标准库 `std::ostream` 与用户类型通过 `<<` 协作的基础机制。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-`std::swap` 惯用法要求写 `using std::swap; swap(a, b);` 而非直接 `std::swap(a, b)`。说明原因，并为自定义类型提供一个高效（交换内部指针、不抛异常）的 `swap` 重载。
+**真实场景：异常安全的赋值（copy-and-swap）。** 你的 `Buffer` 类持有堆上 `std::string`，赋值运算符要既高效又不抛异常。请说明 `std::swap` 惯用法为何要求写 `using std::swap; swap(a, b);` 而非直接 `std::swap(a, b)`；并为自定义类型提供一个高效（仅交换内部指针、不抛异常）的 `swap` 重载。
 
 <details><summary>答案与解析</summary>
 
@@ -1257,11 +1259,13 @@ int main() {
 
 [标准] `using std::swap;` 后调用无限定 `swap(a,b)`，编译器先用 ADL 找 `Buffer` 命名空间里的 `swap` 重载（高效、不抛），找不到才退回 `std::swap`。这是异常安全赋值（`copy-and-swap`）的基础。
 
+[引用] ISO/IEC 14882:2023 §[basic.lookup.argdep]（ADL 让无限定 `swap` 选中自定义重载）；该两步惯用法是 C++ 标准库 `std::swap` 文档的推荐写法。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-`inline namespace` 用于 ABI 版本控制：库可以在不破坏旧代码的前提下发布新版本。写出一个 `v1`/`v2` 共存的命名空间结构，使默认 `lib::connect()` 调用最新版，而老代码仍可显式选 `lib::v1::connect()`。
+**真实场景：库的 ABI 版本演进。** 你发布的网络库 `lib` 要升级 `connect()` 的 ABI（例如切换底层实现），但不能让老用户重新编译就失效。请用 `inline namespace` 做 ABI 版本控制：写出 `v1`/`v2` 共存的命名空间结构，使默认 `lib::connect()` 调用最新版，而老代码仍可显式选 `lib::v1::connect()`。
 
 <details><summary>答案与解析</summary>
 
@@ -1282,6 +1286,8 @@ int main() {
 ```
 
 [标准] `inline namespace` 的成员可直接通过外层命名空间名访问（名字查找会进入 inline 命名空间），从而在不改调用方代码的情况下切换默认实现版本；旧版放在非 inline 命名空间保留兼容入口。libstdc++ 正是用 `__cxx11` 区分新旧 `std::string` ABI。
+
+[引用] ISO/IEC 14882:2023 §[namespace.def]/[namespace.udecl]（inline namespace 使成员透出到外层）；libstdc++ 用内联命名空间 `__cxx11` 区分 C++11 前后 `std::string` ABI（见 libstdc++ 源码）。
 
 </details>
 

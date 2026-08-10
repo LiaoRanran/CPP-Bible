@@ -1301,8 +1301,7 @@ GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangli
 
 ### 练习 1（难度 ★★）
 
-写一个函数 `void scale(std::vector<int>& v, int factor)`，把每个元素乘以 `factor`。
-为什么这里**必须**用引用而不能用值传递？如果接口要求用指针，调用处要怎么写？
+**真实场景：游戏引擎批量变换组件坐标。** 场景系统持有一个 `std::vector<Transform>`（成百上千个组件），每帧要把所有组件坐标乘以相机缩放因子 `factor`。请写 `void scale(std::vector<Transform>& v, int factor)` 就地修改每个元素。为什么这里**必须**用引用而非值传递（值传递会触发整份拷贝、还可能抛 `bad_alloc`）？若接口要求用指针，调用处要怎么写？
 
 <details><summary>答案与解析</summary>
 
@@ -1323,12 +1322,13 @@ int main() {
 
 [标准] 引用是已存在对象的别名，无独立存储；函数形参引用在调用处即绑定实参。
 
+[引用] ISO/IEC 14882:2023 §[dcl.ref]（引用是已存在对象的别名，无独立存储）；C++ Core Guidelines（isocpp.github.io）建议：除非需要表达"可为空"，否则优先按 `T&` 传递而非 `T*`。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-给定 `int x = 5; int& r = x; int* p = &x;`，依次执行 `r = 10; *p = 20;` 后 `x` 的值是多少？
-用本书「批 L」的实证说明：引用在汇编层为何与被引用对象共享同一地址（零运行时开销）。
+**真实场景：调试器/性能分析器观察别名。** 在剖析一段热循环时，你需要确认 `int& r` 与 `int* p` 是否真的零开销地指向同一内存，而非各自独立的副本。给定 `int x = 5; int& r = x; int* p = &x;`，依次执行 `r = 10; *p = 20;` 后 `x` 的值是多少？用本书「批 L」的实证说明：引用在汇编层为何与被引用对象共享同一地址（零运行时开销）。
 
 <details><summary>答案与解析</summary>
 
@@ -1343,12 +1343,13 @@ r = 10;      // mov DWORD PTR [rbp-4], 10
 
 [标准] 标准不规定引用的实现，但要求其与对象行为等价；主流 ABI 直接用指针底层实现，优化后常完全消除。
 
+[引用] ISO/IEC 14882:2023 §[dcl.ref]（标准不规定引用实现，但要求行为与对象等价）；Itanium C++ ABI 以指针底层实现引用，优化后常彻底消除间接层。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-C++ **没有** `std::optional<T&>`（引用不能重绑定）。请基于裸指针实现一个 `optional_ref<T>`：
-支持 `has_value()` / `value()` / `reset()`，构造时禁止空引用，并在一处故意误用触发未定义行为，指出问题。
+**真实场景：JSON 字段的只读视图。** 解析器要把某个 JSON 节点的引用安全地交给上层，但标准没有 `std::optional<T&>`（引用不能重绑定）。请基于裸指针实现一个 `optional_ref<T>`：支持 `has_value()` / `value()` / `reset()`，构造时禁止空引用，并在一处故意误用触发未定义行为，指出问题。
 
 <details><summary>答案与解析</summary>
 
@@ -1373,6 +1374,8 @@ int main() {
 工业写法应在 `value()` 内 `assert(p)` 或抛 `bad_optional_access`。
 
 [标准] 引用必须在定义时绑定且不可重绑定；故 `optional<T&>` 被标准明确排除（用指针或 `std::reference_wrapper` 替代）。
+
+[引用] ISO/IEC 14882:2023 §[dcl.ref]（引用必须在定义时绑定且不可重绑定）；`std::optional<T&>` 被标准明确排除，`std::reference_wrapper`（`<functional>`）是其标准替代，Boost.Optional 亦支持可选引用。
 
 </details>
 

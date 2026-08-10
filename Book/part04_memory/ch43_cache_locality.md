@@ -1669,6 +1669,8 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
+**真实场景：大矩阵的科学计算与图像处理。** 数值库对几千阶矩阵做累加/卷积、图像处理器扫描像素行时，遍历顺序直接决定 10× 级的性能差。像素在内存里按行优先排列，顺序扫行就能喂饱缓存预取器，跨行跳跃则 cache miss 爆炸。
+
 `int m[1000][1000];` 行优先（C 风格）遍历 `m[i][j]` 与列优先遍历 `m[j][i]`，哪个缓存更友好？
 写出两种遍历并说明 cache miss 次数差异。
 
@@ -1691,10 +1693,13 @@ C/C++ 多维数组按行优先（row-major）存储：`m[i][j]` 与 `m[i][j+1]` 
 cache miss 数量级差约 16×，实测可慢一个数量级。
 
 [标准] 数组行优先存储；访问模式应顺应内存布局以利用空间局部性。
+[引用] ISO/IEC 14882:2023 §[dcl.array]（多维数组按行优先布局）；cppreference "std::cache_aligned_allocator" 与硬件预取相关讨论；Ulrich Drepper "What Every Programmer Should Know About Memory" 详述空间局部性与 cache miss。
 
 </details>
 
 ### 练习 2（难度 ★★★）
+
+**真实场景：多线程服务器的每核统计计数器。** Web 服务器为减少锁竞争，常让每个 CPU 核维护独立的请求计数/延迟统计。若这些计数器恰好落在同一缓存行，核间写操作会使对方的缓存行反复失效——明明写的是不同变量，吞吐却被"伪共享"拖垮。
 
 两个线程各写一个 `struct { long a; long b; }` 的**不同**字段却互相拖慢——这是 false sharing。
 给出用 `alignas(64)` / padding 修复的写法，并解释缓存行为何失效。
@@ -1713,10 +1718,13 @@ struct Aligned { alignas(64) long a; alignas(64) long b; };
 `alignas(64)` 让 `a`/`b` 各自独占一行，消除伪共享。
 
 [标准] false sharing：不同变量共享缓存行导致核间无效化；`alignas(缓存行)` 隔离解决。
+[引用] ISO/IEC 14882:2023 §[dcl.align]（`alignas` 控制对齐）；cppreference "alignas"；Intel "Avoiding and Identifying False Sharing" 白皮书；C++ Core Guidelines CP.22（保持共享数据间隔一缓存行）。
 
 </details>
 
 ### 练习 3（难度 ★★★★）
+
+**真实场景：游戏引擎的粒子系统 / ECS。** 一个粒子系统有上万粒子，每帧只更新位置（`x += vx`）。若用 AOS 把 `x,y,vx,vy` 交错存储，SIMD 寄存器一半带宽浪费在无关字段上；改成 SOA 让 `x[]`/`vx[]` 连续排布，一条 AVX 指令就能并行推进 8 个粒子——这正是现代 ECS 架构选 SOA 的动因。
 
 对比 AOS（Array of Structs）与 SOA（Structure of Arrays）在仅使用部分字段时的缓存与 SIMD 友好度：
 `struct P { float x,y,vx,vy; } ps[N];` vs `struct { float x[N],y[N],vx[N],vy[N]; } soa;`，
@@ -1736,6 +1744,7 @@ SOA 把同类字段聚到一起，`x[]` 与 `vx[]` 连续，SIMD 一条指令可
 元素，且缓存只装需要的字段。代价：SOA 的"结构体语义"被拆散，代码可读性下降。
 
 [标准] SOA 提升数据局部性与 SIMD 利用率，以结构可读性换取吞吐；常用于粒子/数值热点。
+[引用] ISO/IEC 14882:2023 §[dcl.array]；cppreference "std::simd"(C++26 前为实验 TS) 与数据布局讨论；Mike Acton "Data-Oriented Design" 强调按访问模式而非对象语义排布内存；游戏引擎 ECS（如 Unity DOTS、EnTT）普遍采用 SOA。
 
 </details>
 

@@ -1561,7 +1561,7 @@ void clear_status() {
 
 ### 练习 1（难度 ★★）
 
-写一个程序，验证「函数内 `static` 局部变量」在多次调用间保持状态，但其初始化只发生一次；并用 `static_assert` 证明 `static` 对象具有静态存储期（地址在程序生命周期内恒定）。
+**真实场景：裸机固件的单调运行时间计数器。** 一个 SysTick 中断服务程序（ISR）每秒调用一次 `tick()`，主循环调用 `now_ms()` 读取累计毫秒数；ISR 与主循环跨调用共享同一计数器，它必须是 `static` 局部（或全局）且初始化只发生一次。请写一个程序验证「函数内 `static` 局部变量」在多次调用间保持状态、初始化只一次，并用 `static_assert` 证明该对象具有静态存储期（地址在程序生命周期内恒定）。
 
 <details><summary>答案与解析</summary>
 
@@ -1582,11 +1582,13 @@ int main() {
 
 [标准] 具有静态存储期的变量在 `main` 之前完成初始化（常量初始化或零初始化），其存储不在栈上，故跨调用保持。
 
+[引用] ISO/IEC 14882:2023 §[basic.stc.static]（静态存储期）；进一步可参考 cppreference "Storage duration" 词条。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-头文件 `cfg.h` 中需要定义一个被多个翻译单元共享、且只有一份定义的配置对象。给出两种正确写法（C++17 `inline` 变量 / 匿名命名空间），并指出哪一种能真正避免 ODR 多定义链接错误。
+**真实场景：跨 6 个 `.cpp` 的库配置对象。** 你维护一个网络库，需把全局超时阈值 `g_timeout_ms` 暴露给 6 个翻译单元、全程序只有一份、且可被运行期修改。给出两种写法（C++17 `inline` 变量 / 匿名命名空间），并指出哪一种能真正避免 ODR 多定义链接错误。
 
 <details><summary>答案与解析</summary>
 
@@ -1601,11 +1603,13 @@ namespace {
 
 [标准] `inline` 变量（C++17 P0607）允许多个翻译单元出现同一实体的定义，链接器合并为单一实例，根治 ODR 多定义；匿名命名空间提供的是**内部链接**（每 TU 独立副本），适合"不希望跨 TU 共享"的常量，但若目标是"全局唯一共享对象"应优先用 `inline`。
 
+[引用] ISO C++17 内联变量（提案 P0607R0，并入 §[basic.def]/inline）允许多 TU 合并为单一实体；标准库自身即范例——`<numbers>` 以 `inline constexpr` 暴露 π、e 等常量（libstdc++ `<numbers>`）。详见 cppreference "inline" 词条。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-静态初始化顺序灾难（SOIF）：两个不同翻译单元的静态对象 `A` 依赖 `B`，但 `B` 可能先于 `A` 初始化而读到未初始化值。用 Meyers 单例（`constinit` 之外的最常用修复）写出线程安全、无 SOIF 的访问函数。
+**真实场景：日志器依赖全局配置。** `Logger` 在某 `.cpp` 定义、`Config` 在另一 `.cpp` 定义，二者都可能先于对方构造；构造时互相访问即踩静态初始化顺序灾难（SOIF）。用 Meyers 单例（`constinit` 之外最常用的修复）写出线程安全、无 SOIF 的访问函数。
 
 <details><summary>答案与解析</summary>
 
@@ -1620,6 +1624,8 @@ int main() { std::cout << get_db().open() << "\n"; }
 ```
 
 [标准] 函数内的 `static` 局部变量初始化受编译器生成的 guard（GCC 为 `__cxa_guard_*`）保护，保证即使多线程首次并发调用也只构造一次，从而彻底规避跨 TU 的静态初始化顺序问题。
+
+[引用] ISO/IEC 14882:2023 §[basic.start.dynamic]（跨 TU 动态初始化顺序未指定）；Meyers 单例是 C++ Core Guidelines（isocpp.github.io）推荐的延迟初始化惯用法，也是 LLVM/Boost 中注册表初始化的常见写法。
 
 </details>
 

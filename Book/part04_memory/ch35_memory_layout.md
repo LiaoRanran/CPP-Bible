@@ -1463,7 +1463,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写一个小程序，分别打印全局变量、静态变量、局部变量、堆对象的地址，并据此说明 C++ 进程虚拟地址空间各段（.text / .data / .bss / heap / stack）的相对高低关系。
+**真实场景：嵌入式 RTOS 的内存预算审计。** 你在为一款 Cortex-M 设备做启动诊断，需要确认全局配置（`.data`）、零初始化缓冲（`.bss`）、栈局部量与运行期堆对象分别落在哪些地址带，以验证链接脚本把大缓冲放进 .bss 而非栈（栈溢出即 HardFault）。请写一个程序分别打印全局变量、静态变量、局部变量、堆对象的地址，并据此说明 C++ 进程虚拟地址空间各段（.text / .data / .bss / heap / stack）的相对高低关系。
 
 <details><summary>答案与解析</summary>
 
@@ -1488,11 +1488,13 @@ int main() {
 
 [标准] 不同存储期的对象落在不同地址区间；栈向低地址、堆向高地址增长，二者相向扩张。
 
+[引用] ISO/IEC 14882:2023 §[basic.stc]（存储期）与 §[intro.object]（对象与内存）；栈/堆增长方向属实现/OS 概念，标准的存储期语义见 §[basic.stc.auto]/[basic.stc.dynamic]；进一步参考 cppreference "Storage duration" 词条与 x86-64 System V AMD64 ABI 的进程地址空间布局。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用 `offsetof` 打印一个含 `char/int/double` 成员的结构体各成员偏移，解释为何 `sizeof` 大于各成员字节之和。
+**真实场景：网络协议头的二进制布局。** 你正在手写一个以太网驱动，需要把一个 C++ 结构体原样 `memcpy` 进网卡描述符；成员顺序若导致编译器插入 padding，线上帧的字段偏移就会与硬件规范不符。请用 `offsetof` 打印一个含 `char/int/double` 成员的结构体各成员偏移，解释为何 `sizeof` 大于各成员字节之和，并据此给出"重排成员减 padding"的落点。
 
 <details><summary>答案与解析</summary>
 
@@ -1512,11 +1514,13 @@ int main() {
 
 [标准] 成员大小之和 1+4+8=13，但 `int` 需 4 字节对齐、`double` 需 8 字节对齐，常见布局 `sizeof(A)=16` 或 `24`（含尾部填充）。
 
+[引用] ISO/IEC 14882:2023 §[class.mem]（成员布局）与 §[expr.align]/[dcl.align]（对齐）；`offsetof` 见 §[support.types] 与 cppreference "offsetof" 及 "Data members" 词条。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-写程序连续声明两个局部变量、连续 `new` 两个堆对象，分别打印其地址，验证"栈向低地址、堆向高地址"的增长方向。
+**真实场景：栈溢出防护的地址监控。** 某游戏主机的崩溃报告里，栈指针和堆指针"相向而行"——一旦二者在地址空间相遇就产生越界。你要在 QA 工具里打印连续局部变量与连续 `new` 对象的地址，验证"栈向低地址、堆向高地址"的增长方向，作为栈溢出告警的基线。请写程序连续声明两个局部变量、连续 `new` 两个堆对象，分别打印其地址，验证该增长方向。
 
 <details><summary>答案与解析</summary>
 
@@ -1535,6 +1539,8 @@ int main() {
 ```
 
 [标准] 栈与堆相向扩张；一旦二者相遇即栈溢出/堆耗尽，这就是为什么大对象不应放在栈上。
+
+[引用] 栈/堆相向增长是 ELF/PE 与操作系统加载器的实现事实；C++ 标准只规定自动/动态存储期的语义（§[basic.stc.auto]/[basic.stc.dynamic]）；cppreference "Storage duration"。x86-64 栈向下增长见 System V AMD64 ABI。
 
 </details>
 

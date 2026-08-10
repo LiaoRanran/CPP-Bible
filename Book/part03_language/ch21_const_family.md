@@ -835,10 +835,19 @@ struct Formatted { static constexpr int len = N; };
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化）
 
-**练习题**
-1. 写 `constexpr` 函数 `ipow(base, exp)` 计算整数幂，用 `static_assert` 验证 `ipow(2,10)==1024`；再用运行期 `rand()` 实参调用，确认它能退化运行期。
-2. 用 `constinit` 定义两个互依赖的全局变量 `a=1`、`b=a+1`，在两文件分别声明，验证无 SOIF 警告。
-3. 给 `struct S { void f(); void f() const; };` 写测试，验证 `S{}` 与 `const S{}` 调用不同重载。
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：通信库的协议魔数与编译期查表索引。** 你维护一个串口协议库，需在头文件里把帧魔数 `MAGIC = ipow(2,24) | 0xABCD` 算成编译期常量（供 `static_assert` 校验帧头），又要在运行期用随机种子动态验证报文长度。请写 `constexpr` 函数 `ipow(base, exp)` 计算整数幂，用 `static_assert` 验证 `ipow(2,10)==1024`；再用运行期 `rand()` 实参调用，确认它能退化运行期。
+   - [标准] `constexpr` 函数要求在合法常量表达式上下文中于翻译期求值，否则退化为普通运行期函数调用——这正是编译期查表与运行期校验两用的基础。
+   - [引用] ISO/IEC 14882:2023 §[expr.const]/[dcl.constexpr]（常量表达式与 constexpr 语义）；cppreference "constexpr" 词条详述两阶段求值。
+
+2. **真实场景：嵌入式固件启动期的互依赖配置寄存器。** 裸机固件有两个跨翻译单元的全局配置 `a=1`、`b=a+1`，必须在静态初始化阶段就被钉死为常数，否则会踩静态初始化顺序灾难（SOIF）。请用 `constinit` 定义这两个互依赖的全局变量，在两文件分别声明，验证无 SOIF 警告。
+   - [标准] `constinit`(C++20) 约束静态存储期对象的初始化为常量表达式，使其在静态初始化阶段完成，根治跨 TU 初始化顺序不确定。
+   - [引用] ISO/IEC 14882:2023 §[dcl.constinit]（constinit 约束常量初始化）；cppreference "constinit" 词条。
+
+3. **真实场景：序列化器的只读 / 可写分流。** 你写一个 `Serializer`，希望对 `const` 对象走"只读序列化"（跳过运行时校验字段），对非 `const` 对象走"带校验序列化"。请给 `struct S { void f(); void f() const; };` 写测试，验证 `S{}` 与 `const S{}` 调用不同重载。
+   - [标准] 成员函数是否为 `const` 参与重载决议；`const` 对象只能调用 `const` 成员函数，非 `const` 对象优先调用非 `const` 版本。
+   - [引用] ISO/IEC 14882:2023 §[over.match.funcs]（const 成员函数参与重载决议）；cppreference "const 成员函数" 说明。
 
 **思考题**
 - `constexpr` 与 `consteval` 的本质区别是什么？何时应选 consteval 而非 constexpr？
@@ -908,8 +917,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 ### 练习 1（难度 ★★）
 
-为 `class Buffer { std::vector<int> v; };` 提供 const 与非 const 两个 `at(size_t)` 重载，
-演示 `const Buffer` 只能调用 const 版本、`Buffer` 可调用两者；并指出 `mutable` 字段的合法用途。
+**真实场景：只读缓存容器。** 你实现了一个带内部哈希缓存的 `Buffer` 容器，对外暴露 `at(size_t)` 读取元素。读取不应修改元素，但缓存的惰性计算（`cached_hash`）又需要内部可变。请为 `class Buffer { std::vector<int> v; };` 提供 const 与非 const 两个 `at(size_t)` 重载，演示 `const Buffer` 只能调用 const 版本、`Buffer` 可调用两者，并指出 `mutable` 字段的合法用途。
 
 <details><summary>答案与解析</summary>
 
@@ -934,13 +942,13 @@ int main(){
 
 [标准] const 成员函数承诺不修改对象的可观察状态；`mutable` 允许豁免特定子对象。
 
+[引用] ISO/IEC 14882:2023 §[dcl.const]/[class.this]（const 成员函数承诺不修改可观察状态，`mutable` 允许豁免特定子对象）；经典应用见 `std::mutex` 在 const 成员中加锁（需 `mutable std::mutex`）。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-`constexpr` 与 `const` 有何本质区别？写 `constexpr int sq(int x){ return x*x; }`，
-分别展示它在**编译期**（`static_assert`）与**运行期**（`rand()` 作实参）两种上下文求值；
-再对比 `const int k = rand();`（只读但非编译期常量）。
+**真实场景：编译期查表 vs 运行期配置。** 一个数学库需要把平方函数既用于编译期常量表达式（如数组维度、`static_assert`），又用于运行期随机数输入。请说明 `constexpr` 与 `const` 的本质区别：写 `constexpr int sq(int x){ return x*x; }`，分别展示它在**编译期**（`static_assert`）与**运行期**（`rand()` 作实参）两种上下文求值；再对比 `const int k = rand();`（只读但非编译期常量）。
 
 <details><summary>答案与解析</summary>
 
@@ -960,13 +968,13 @@ int main(){
 
 [标准] `constexpr` 函数/变量要求在合法常量表达式上下文中于翻译期求值；`const` 仅去除了可修改性。
 
+[引用] ISO/IEC 14882:2023 §[expr.const]/[dcl.constexpr]（常量表达式与 constexpr 语义）；cppreference "constexpr" 词条详述两阶段求值。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-C++20 的 `constinit` 与 `consteval` 各自解决什么问题？
-写 `constinit static int g = 42;` 说明它如何消除"静态初始化顺序灾难"；
-写 `consteval int cube(int x){ return x*x*x; }` 说明它为何强制编译期求值（`cube(std::rand())` 会编译失败）。
+**真实场景：嵌入式启动期配置寄存器。** 裸机固件需把全局配置 `g` 在 `main` 之前、静态初始化阶段就钉死为常量（消除跨 TU 初始化顺序灾难），且希望某些元编程计算（如查表索引）强制在编译期完成。请说明 C++20 的 `constinit` 与 `consteval` 各自解决的问题：写 `constinit static int g = 42;` 说明它如何消除"静态初始化顺序灾难"；写 `consteval int cube(int x){ return x*x*x; }` 说明它为何强制编译期求值（`cube(std::rand())` 会编译失败）。
 
 <details><summary>答案与解析</summary>
 
@@ -986,6 +994,8 @@ int main(){
   适合元编程/代码生成（如编译期计算查表）。
 
 [标准] `constinit`(C++20) 约束初始化为常量表达式；`consteval`(C++20) 定义"立即函数"，仅编译期可调用。
+
+[引用] ISO/IEC 14882:2023 §[dcl.constinit]/[expr.const]（constinit 约束常量初始化、consteval 定义立即函数）；cppreference "constinit"/"consteval" 词条。
 
 </details>
 

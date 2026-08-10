@@ -1834,7 +1834,7 @@ _Z24implicit_int_from_doubled:
 
 ### 练习 1（难度 ★★）
 
-用 `static_cast` 完成 `double→int` 截断与 `int→double` 提升，指出哪一步会丢失信息、是否触发警告。
+**真实场景：传感器 ADC 读数缩放。** 嵌入式固件从 12 位 ADC 读到 `double` 电压值，要截断成整数码、或把整数配置提升为浮点参与滤波。请用 `static_cast` 完成 `double→int` 截断与 `int→double` 提升，指出哪一步会丢失信息、是否触发警告。
 
 <details><summary>答案与解析</summary>
 
@@ -1850,12 +1850,13 @@ double e = static_cast<double>(b); // 7.0, 保真
 
 [标准] `static_cast` 执行良定义的数值转换；窄化转换在列表初始化 `{ }` 中被禁止，但在 `static_cast` 中允许（仅警告）。
 
+[引用] ISO/IEC 14882:2023 §[expr.static.cast]（static_cast 执行良定义数值转换；窄化在列表初始化中禁止、在 static_cast 中允许仅警告）；建议开启 `-Wconversion -Wfloat-conversion`。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-何时**必须**用 `reinterpret_cast`？给出嵌入式内存映射 IO 读取一个 32 位状态寄存器的合理用例，
-并指出它在严格别名规则下的未定义行为边界。
+**真实场景：内存映射 IO 读状态寄存器。** 驱动需读取一个硬件固定在 `0x40021000` 的 32 位状态寄存器。请说明何时**必须**用 `reinterpret_cast` 把整数地址转为指针，给出嵌入式内存映射 IO 读取状态寄存器的用例，并指出它在严格别名规则下的未定义行为边界。
 
 <details><summary>答案与解析</summary>
 
@@ -1871,12 +1872,13 @@ UB 边界：`reinterpret_cast` 得到的指针只有在"该地址确实存在一
 
 [标准] `reinterpret_cast` 转换指针/整数；其结果的可解引用性受"对象模型 + 严格别名"约束，滥用即 UB。
 
+[引用] ISO/IEC 14882:2023 §[expr.reinterpret.cast]（指针/整数互转，结果可解引用性受对象模型与严格别名约束）；访问位模式应改用 C++20 `std::bit_cast`（§[meta.trans.ptr]）或 `memcpy` 以规避严格别名 UB。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-`dynamic_cast` 在虚继承下为何比普通单继承更慢（涉及 vtable thunk）？
-写一个多重继承下 `dynamic_cast<Derived*>(base_ptr)` 返回 `nullptr` 的 case，并解释原因。
+**真实场景：插件系统的类型安全向下转型。** 一个 UI 框架用多重继承组合 `Widget`/`Drawable` 等接口，运行时拿到基类指针要安全转回具体派生类。请说明 `dynamic_cast` 在虚继承下为何比单继承更慢（涉及 vtable thunk），写多重继承下 `dynamic_cast<Derived*>(base_ptr)` 返回 `nullptr` 的 case 并解释。
 
 <details><summary>答案与解析</summary>
 
@@ -1894,6 +1896,8 @@ D1* q = dynamic_cast<D1*>(p); // nullptr: p 并不指向 D1 分支
 ```
 
 [标准] `dynamic_cast` 对指针在失败时为 `nullptr`、对引用抛 `std::bad_cast`；跨虚继承布局需 RTTI 路径解析。
+
+[引用] ISO/IEC 14882:2023 §[expr.dynamic.cast]/[class.rtti]（dynamic_cast 指针失败返 nullptr、引用抛 std::bad_cast；依赖 RTTI 与 vtable 路径解析）；cppreference "dynamic_cast" 词条。
 
 </details>
 

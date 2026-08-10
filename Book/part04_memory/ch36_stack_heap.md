@@ -1420,7 +1420,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写程序对比栈对象与堆对象的生命周期：在函数中创建栈对象与堆对象，观察函数返回后二者是否仍可访问、是否需要手动释放。
+**真实场景：请求处理函数的临时上下文。** 你在写一个 HTTP 服务器，每个请求处理函数的局部 `Context` 对象应在函数返回时自动销毁，而跨请求缓存的 `Session` 对象需留在堆上由智能指针管理。请写程序对比栈对象与堆对象的生命周期：在函数中创建栈对象与堆对象，观察函数返回后二者是否仍可访问、是否需要手动释放。
 
 <details><summary>答案与解析</summary>
 
@@ -1440,11 +1440,13 @@ int main() {
 
 [标准] 栈对象生命周期由作用域绑定；堆对象生命周期由 `delete` 显式控制，二者本质不同。
 
+[引用] ISO/IEC 14882:2023 §[basic.stc.auto]/[basic.stc.dynamic]（自动/动态存储期）；RAII 见 §[class.dtor]；C++ Core Guidelines (isocpp.github.io) R.1–R.5 资源管理规则。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用 RAII 包装一段需要释放的资源（如堆对象），保证无论正常返回还是中途抛异常都不会泄漏。
+**真实场景：数据库连接的异常安全获取。** 业务代码在持有一个 `Connection` 时可能抛异常；若忘记在异常路径释放连接，连接池会被慢慢耗尽。请用 RAII 包装一段需要释放的资源（如堆对象），保证无论正常返回还是中途抛异常都不会泄漏。
 
 <details><summary>答案与解析</summary>
 
@@ -1463,11 +1465,13 @@ int main() { use(); }
 
 [标准] RAII 把"资源获取"绑定到对象生命周期，是 C++ 异常安全的基础 idiom。
 
+[引用] ISO/IEC 14882:2023 §[class.dtor]（析构与栈展开）；C++ Core Guidelines E.18/E.19 与 R.1（"Manage resources automatically using RAII"）。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-写程序粗略计时：一百万次"仅栈"的小操作 vs 一百万次"每次在堆上分配/释放一个小 vector"，说明堆分配的开销来源。
+**真实场景：高频消息解析的分配抖动。** 你在优化一个交易网关，每微秒要解包一批小消息；若每次都走通用堆分配 `std::vector`，延迟尖刺会错过行情时效。请写程序粗略计时：一百万次"仅栈"的小操作 vs 一百万次"每次在堆上分配/释放一个小 vector"，说明堆分配的开销来源。
 
 <details><summary>答案与解析</summary>
 
@@ -1492,6 +1496,8 @@ int main() {
 ```
 
 [标准] 高频小对象分配应优先考虑栈、对象池或 `std::pmr`，避免反复进入通用分配器。
+
+[引用] 分配开销属实现层；C++ 标准见 §[expr.new]/[basic.stc.dynamic]；工业对比见 tcmalloc/jemalloc 设计文档（github.com/google/tcmalloc、github.com/jemalloc/jemalloc）与 glibc `malloc` 注释；cppreference "operator new"。
 
 </details>
 

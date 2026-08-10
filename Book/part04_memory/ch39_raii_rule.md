@@ -1785,7 +1785,7 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 ### 练习 1（难度 ★★）
 
-用 RAII 包装一个必须配对调用的资源（`open()`/`close()`，如 `std::FILE*`）：
+**真实场景：日志器的异常安全关闭。** 交易系统在写审计日志时可能抛异常；若 `fopen` 后某步失败而没 `fclose`，文件句柄会泄漏直至耗尽。请用 RAII 包装一个必须配对调用的资源（`open()`/`close()`，如 `std::FILE*`）：
 写 `struct FileGuard` 在析构中 `fclose`，演示函数中途 `throw` 仍会关闭文件；对比裸 `open/close` 在异常路径泄漏。
 
 <details><summary>答案与解析</summary>
@@ -1808,11 +1808,13 @@ void use(){
 
 [标准] RAII：资源获取即初始化，释放绑定到对象析构；异常安全的核心是析构兜底。
 
+[引用] ISO/IEC 14882:2023 §[class.dtor]（析构与栈展开）；C++ Core Guidelines R.1（"Manage resources automatically using RAII"）。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-实现 C++ 风格 `ScopeGuard`：支持 `auto g = scope_guard([&]{ cleanup(); });`，
+**真实场景：加锁/解锁的通用清理。** 你有一段临界区，进入时 `lock(m)`、退出时 `unlock(m)`，中途可能有多条 `return` 与异常。请实现 C++ 风格 `ScopeGuard`：支持 `auto g = scope_guard([&]{ cleanup(); });`，
 作用域结束（正常或异常）自动执行。说明它与"析构兜底"是同一机制，并指出异常安全保证级别。
 
 <details><summary>答案与解析</summary>
@@ -1836,11 +1838,13 @@ template <class F> ScopeGuard<F> scope_guard(F f){ return ScopeGuard<F>(std::mov
 
 [标准] ScopeGuard 是 RAII 的通用化形态；用 lambda 表达任意清理动作；属 basic 保证。
 
+[引用] ScopeGuard 源自 Andrei Alexandrescu 与 Petru Marginean 的经典论文《Generic: Change the Way You Write Exception-Safe Code Forever》(Dr. Dobb's Journal, 2000)；标准依据见 §[class.dtor]；C++ Core Guidelines E.19。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-解释异常安全三保证（noexcept / basic / strong），并用 **copy-and-swap** 实现 `StrongArray::operator=` 的强保证：
+**真实场景：配置热更新的事务语义。** 在线服务要把全局配置整体替换，但新配置加载可能失败——必须保证失败时旧配置原状不变（用户无感知）。请解释异常安全三保证（noexcept / basic / strong），并用 **copy-and-swap** 实现 `StrongArray::operator=` 的强保证：
 先拷贝右边到临时量，再与当前对象无抛出地交换；若拷贝阶段抛异常，左边对象原状不变。
 
 <details><summary>答案与解析</summary>
@@ -1864,6 +1868,8 @@ struct StrongArray {
 copy-and-swap 把"可能失败的工作"放在临时对象上，最后一步 `swap` 不抛，从而获得强保证。
 
 [标准] 强异常安全 = 失败如未调用；copy-and-swap 经典实现；swap 必须 noexcept。
+
+[引用] ISO/IEC 14882:2023 §[res.on.exception.handling]（强异常安全保证）与 §[class.copy.assign]；C++ Core Guidelines E.6/E.8；标准库 `std::vector` 的强保证即此模式（§[vector.modifiers]）。
 
 </details>
 

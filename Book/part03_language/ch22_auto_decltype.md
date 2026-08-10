@@ -1399,7 +1399,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-写出 `auto`、`const auto&`、`auto&&` 在 `for` 遍历 `std::vector<std::string>` 时各自的推导结果，并说明为什么"想避免拷贝且允许修改元素"应首选 `auto&`。
+**真实场景：遍历网络消息缓冲。** 你有一串待处理的 `std::vector<std::string>` 报文，热路径上既不想拷贝字符串、又要原地改写某些字段。请写出 `auto`、`const auto&`、`auto&&` 在 `for` 遍历它时各自的推导结果，并说明为什么"想避免拷贝且允许修改元素"应首选 `auto&`。
 
 <details><summary>答案与解析</summary>
 
@@ -1417,11 +1417,13 @@ int main() {
 
 [标准] `auto` 非引用推导产生副本；`auto&` 是元素的左值引用（可修改）；`const auto&` 是常量左值引用（只读、零拷贝）。遍历容器修改元素用 `auto&`。
 
+[引用] ISO/IEC 14882:2023 §[dcl.spec.auto]（auto 从初始化器推导；范围 for 用 auto& 避免拷贝）；cppreference "range-based for loop" 词条。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-`decltype` 与 `decltype(auto)` 有何区别？写一个返回函数，使 `decltype(auto)` 精确保留表达式的值类别（返回全局变量的引用时仍是 `int&`，可被修改），并对比裸 `auto` 会按值剥掉引用。
+**真实场景：完美转发式访问器。** 你写一个容器 `get()` 访问器，希望它"跟随"底层存储的值类别——底层是全局变量引用时就返回 `int&` 且可被修改，底层是临时时就按值返回。请说明 `decltype` 与 `decltype(auto)` 的区别：写一个返回函数使 `decltype(auto)` 精确保留表达式的值类别（返回全局变量引用时仍是 `int&`、可被修改），对比裸 `auto` 会按值剥掉引用。
 
 <details><summary>答案与解析</summary>
 
@@ -1440,11 +1442,13 @@ int main() {
 
 [标准] 裸 `auto` 永远按值返回（丢弃引用性），`decltype(auto)` 用 `decltype` 的规则保留表达式的值类别——`decltype((x))` 对左值 `x` 给出 `T&`。注意三元运算符 `a ? b : c` 会把 `int&` 与 `int` 统一为右值 `int`，故"跟随引用"必须直接 `return (lvalue)` 而非经三元表达式。
 
+[引用] ISO/IEC 14882:2023 §[dcl.type.decltype]（decltype 与 decltype(auto) 保留值类别）；cppreference "decltype" 词条。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-`auto` 在 `vector<bool>` 上有一个著名陷阱：`for (auto x : vb)` 拿到的是 `vector<bool>::reference` 的**代理对象拷贝**而非 `bool`，`auto&` 才能正确绑定。构造一个最小复现，并给出正确的遍历写法。
+**真实场景：位压缩标志位批量处理。** 协议解析器用 `std::vector<bool>` 存 1024 个开关位（按位压缩以省内存），遍历置位时踩到代理引用陷阱。请说明 `auto` 在 `vector<bool>` 上的著名陷阱：`for (auto x : vb)` 拿到的是 `vector<bool>::reference` 的**代理对象拷贝**而非 `bool`，`auto&` 才能正确绑定。构造最小复现并给出正确遍历写法。
 
 <details><summary>答案与解析</summary>
 
@@ -1462,6 +1466,8 @@ int main() {
 ```
 
 [标准] `vector<bool>` 是特化，按位压缩存储，其 `operator[]` 返回的是代理引用 `vector<bool>::reference`，不是真正的 `bool&`。需要真实 `bool` 值时用 `bool b = vb[i];` 或遍历用 `auto&&` 避免误用代理的生命周期。
+
+[引用] ISO/IEC 14882:2023 §[class.vector.bool]（vector<bool> 按位特化，operator[] 返回代理引用）；亦见标准库 `std::vector<bool>::reference` 条目（cppreference）。
 
 </details>
 

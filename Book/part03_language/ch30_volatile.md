@@ -655,6 +655,8 @@ int main() {
 
 [平台·x86-64][③] 在嵌入式/驱动中，MMIO 寄存器必须用 `volatile` 修饰，否则编译器可能认为 `*status` 不变而把轮询优化成死循环或常量。
 
+[引用] ISO/IEC 14882:2023 §[dcl.type.cv]（volatile 语义：每次访问都真正发生）；cppreference "volatile" 词条；嵌入式 MMIO 写法亦见 C++ Core Guidelines（isocpp.github.io）关于硬件寄存器的建议。
+
 </details>
 
 ### 练习 2（难度 ★★★）
@@ -678,6 +680,8 @@ int main() {
 ```
 
 [标准][⑤] 在信号处理函数中访问非 `volatile sig_atomic_t` 的全局量是未定义行为；`volatile` 确保主循环每次都从内存重新读取 `g_stop`，而不会被寄存器缓存。
+
+[引用] ISO/IEC 14882:2023 §[support.signal]（`volatile std::sig_atomic_t` 是异步信号安全的可见性基元）；cppreference "std::signal" 与 "std::sig_atomic_t" 词条。
 
 </details>
 
@@ -721,6 +725,8 @@ int main() {
 ```
 
 [④][⑪] `volatile` 与 `atomic` 职责正交：前者对"编译器"说"别优化这处访问"，后者对"硬件与线程"说"这是原子且有序的"。多线程同步必须用 `atomic`，MMIO/信号用 `volatile`。
+
+[引用] ISO/IEC 14882:2023 §[atomics]/[intro.races]（`std::atomic` 提供原子性与次序保证，避免数据竞争 UB）；cppreference "std::atomic" 词条。
 
 </details>
 

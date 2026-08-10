@@ -628,7 +628,7 @@ call private_impl
 
 ### 练习 1（难度 ★★）
 
-为自定义类型重载 `operator<<` 以打印私有成员时，`operator<<` 的第一个参数是 `std::ostream&`、第二个才是对象，无法写成普通成员函数访问 `private`。请用 `friend` 让其访问私有成员。
+**真实场景：自定义类型的流式打印。** 你为 `Point` 重载 `operator<<` 打印私有成员 `x,y`，但其首参是 `std::ostream&`、次参才是对象，无法写成普通成员函数访问 `private`。请用 `friend` 让其访问私有成员。
 
 <details><summary>答案与解析</summary>
 
@@ -652,11 +652,13 @@ int main() {
 
 [标准] `operator<<` 的非成员重载第一个形参是 `ostream&`，为访问 `p` 的私有成员必须声明为 `friend`；这是 STL 与自定义类型打印的事实标准惯用法。
 
+[引用] ISO/IEC 14882:2023 §[class.friend]/[class.access]（非成员 operator<< 需 friend 才能访问私有成员）；此惯用法是 STL 与自定义类型 I/O 的事实标准。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-模板类的友元需要区分三种情况：① 对所有模板实参都友元（友元模板）；② 仅对"同实参"实例友元；③ 特定实参友元。请写出"仅对同类型 `Box<T>` 实例"互为友元的代码，使 `Box<int>` 不能访问 `Box<double>` 的私有成员。
+**真实场景：类型安全的序列化盒。** 一个 `Box<T>` 模板容器只允许同类型实例互访私有缓冲（防止 `Box<int>` 误读 `Box<double>`）。请说明模板类友元的三种情况（全友元模板 / 仅同实参 / 特定实参），写出"仅对同类型 `Box<T>` 实例"互为友元的代码，使 `Box<int>` 不能访问 `Box<double>` 的私有成员。
 
 <details><summary>答案与解析</summary>
 
@@ -691,11 +693,13 @@ int main() { Box<int> a(1); std::cout << "ok\n"; }
 
 [标准] 友元是"被授予访问权的实体"，与模板实参匹配规则结合可精确控制封装边界：`friend class Box<T>;` 使只有相同 `T` 的实例互为友元。
 
+[引用] ISO/IEC 14882:2023 §[temp.friend]（模板友元按友元声明匹配模板实参，可精确控制封装边界）；cppreference "friend" 与模板友元小节。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-`friend` 不可传递、不可继承。请设计一个"工厂模式 + 友元控制构造"：类把构造函数设为 `private`，只允许一个 `Factory` 类（声明为 `friend`）创建实例，从而杜绝任意调用方直接 `new`/`{}` 构造。
+**真实场景：受控实例化的对象池。** 一个 `Widget` 只能由 `WidgetFactory` 创建（外部禁止随意 `new`），以统一做 ID 分配与资源记账。请把构造函数设为 `private`，只允许 `WidgetFactory`（声明为 `friend`）创建实例，杜绝任意调用方直接构造。
 
 <details><summary>答案与解析</summary>
 
@@ -726,6 +730,8 @@ int main() {
 ```
 
 [⑫][⑲] 友元把"创建权"集中到工厂，调用方只能经由工厂获得实例；配合 `private` 构造实现受控实例化（单例、带校验构造、对象池等均基于此）。
+
+[引用] ISO/IEC 14882:2023 §[class.friend]（friend 不可传递、不可继承）；私有构造 + 友元工厂是受控实例化惯用法，亦见《Effective C++》Item 23 关于非成员/非友元函数的封装建议。
 
 </details>
 

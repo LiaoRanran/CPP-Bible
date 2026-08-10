@@ -1312,6 +1312,8 @@ A: 几乎从不。唯一安全: 从指向标准布局类型第一个成员的指
 
 ### 练习 1（难度 ★★）
 
+**真实场景：浮点位级哈希与序列化。** 哈希表或数据库索引常对 `float`/`double` 做位级比较或哈希（需拿到 IEEE-754 位模式），反序列化也常把字节流重解释成某个数值类型——这一步一旦用 `reinterpret_cast` 跨类型读写，就是 UB 而非"巧合能跑"。
+
 `float f = 1.0f; int bits = *reinterpret_cast<int*>(&f);` 为何是未定义行为？
 给出两种**合法**的位模式重解释方式，并指出严格别名规则的核心约束。
 
@@ -1334,10 +1336,13 @@ int main(){
 `memcpy` 与 `std::bit_cast`（以及 `char*`/`std::byte*` 字节遍历，见习题 2）。
 
 [标准] 严格别名（[basic.lval]）：仅限动态类型或"相似类型"访问；`memcpy`/`bit_cast` 是豁免通道。
+[引用] ISO/IEC 14882:2023 §[basic.lval]（严格别名：仅动态类型或相似类型可访问对象）；cppreference "Type aliasing" 列出 `memcpy` 与 `std::bit_cast`(C++20) 为合法重解释通道。
 
 </details>
 
 ### 练习 2（难度 ★★★）
+
+**真实场景：通用序列化 / 持久化框架。** 游戏存档、RPC 消息编解码、内存比较器都需把"任意类型对象"逐字节写出或比对。`std::byte*` 的豁免别名地位让这类泛型 `dump_bytes` 序列化器既合法又可移植，而把对象地址 `reinterpret_cast` 成其它具体类型去读则踩 UB。
 
 `char*` / `std::byte*` 是标准豁免的"万能别名"。写一泛型 `serialize(const T&)` 用 `std::byte*` 逐字节写出任意对象，
 解释为何它合法、而 `reinterpret_cast<T*>` 不合法。
@@ -1360,10 +1365,13 @@ void dump_bytes(const T& obj){
 这正是序列化、哈希、内存比较的标准做法。
 
 [标准] `char`/`std::byte` 系列是"通用别名"类型；其余类型间的 reinterpret 跨类型访问触发 UB。
+[引用] ISO/IEC 14882:2023 §[basic.fundamental]（"`std::byte` 用于访问对象存储"）、§[basic.lval]（字符类型可别名任意对象）；cppreference "std::byte" 与 "Type aliasing"。
 
 </details>
 
 ### 练习 3（难度 ★★★★）
+
+**真实场景：数值线性代数 / 图像内核。** BLAS 的 `daxpy`、图像卷积、物理仿真里的向量运算，内核要被循环数百万次调用。编译器只有在确认输出 `y` 与输入 `a`/`x` 不重叠时，才敢把 `a[i]`/`x[i]` 缓存进寄存器并自动向量化——这正是 `__restrict` 承诺换来的收益。
 
 `__restrict`（GCC/Clang）是给编译器的"不别名"契约。写 `void axpy(int n, double* __restrict y,
 const double* __restrict a, const double* __restrict x, double c)`，说明它如何让编译器向量化
@@ -1384,6 +1392,7 @@ void axpy(int n, double* __restrict y,
 见本章「附录 E」真实汇编对比。
 
 [标准] `__restrict` 向编译器声明指针不别名；违反承诺是 UB，但收益是解除向量化阻碍。
+[引用] GCC/Clang 文档 "`__restrict`" 关键字（非标准扩展，承诺指针不别名以解锁向量化）；ISO/IEC 14882:2023 未规定 `__restrict`，相关语义见各实现文档与 §[intro.abstract]（违反别名契约属 UB）。
 
 </details>
 ## 附录 E：编译实证——`-fstrict-aliasing` 开关如何改变生成码 [C: Compiler / E: Low-level]

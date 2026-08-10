@@ -1596,7 +1596,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-用 `std::pmr::monotonic_buffer_resource` 配合 `std::pmr::vector`，让一个 vector 的全部分配都落在栈上的固定缓冲区内，做到零堆分配。
+**真实场景：单请求内的临时容器。** 网络服务器每个请求要建若干临时 `vector` 做 JSON 解析；若都走堆，延迟尖刺明显。请用 `std::pmr::monotonic_buffer_resource` 配合 `std::pmr::vector`，让一个 vector 的全部分配都落在栈上的固定缓冲区内，做到零堆分配。
 
 <details><summary>答案与解析</summary>
 
@@ -1619,11 +1619,13 @@ int main() {
 
 [标准] `std::pmr` 把"分配策略"与"容器"解耦；`monotonic_buffer_resource` 适合请求内临时分配，请求结束一次性回收。
 
+[引用] ISO/IEC 14882:2017 §[mem.res.monotonic.buffer]（monotonic_buffer_resource）；cppreference "std::pmr::monotonic_buffer_resource"。Chromium/LLVM 用类似栈资源做请求级临时分配。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-自定义一个 `std::pmr::memory_resource`，在委托上游资源分配的同时累计分配字节数，从而观测某次操作的总分配量。
+**真实场景：分配热点的可观测性。** 你想给某个 API 调用加上"这次操作到底分配了多少字节"的观测埋点。请自定义一个 `std::pmr::memory_resource`，在委托上游资源分配的同时累计分配字节数，从而观测某次操作的总分配量。
 
 <details><summary>答案与解析</summary>
 
@@ -1658,11 +1660,13 @@ int main() {
 
 [标准] pmr 资源可任意组合（计数、池化、对齐、调试）；所有 pmr 容器都通过 `polymorphic_allocator` 间接使用资源。
 
+[引用] ISO/IEC 14882:2017 §[mem.res.class]（memory_resource 虚接口）；cppreference "std::pmr::memory_resource"。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-用自定义计数资源对比"不 reserve"与"预先 reserve"时 `std::pmr::vector` 的分配次数，说明扩容代价。
+**真实场景：批量导入的扩容代价。** 你往 `std::vector` 灌入十万条记录却没 `reserve`，扩容导致多次重新分配与搬运。请用自定义计数资源对比"不 reserve"与"预先 reserve"时 `std::pmr::vector` 的分配次数，说明扩容代价。
 
 <details><summary>答案与解析</summary>
 
@@ -1694,6 +1698,8 @@ int main() {
 ```
 
 [标准] `reserve` 把分配次数从 O(log n) 降到 1；在已知规模的热点路径上应预先 reserve。
+
+[引用] ISO/IEC 14882 §[vector.capacity]（reserve）；cppreference "std::vector::reserve"；扩容策略见 §[vector.modifiers]。
 
 </details>
 

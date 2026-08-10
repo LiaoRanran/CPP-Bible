@@ -1411,7 +1411,7 @@ int main(){int*p=new int(42);delete p;std::cout<<"use-after-free=UB; ASan detect
 
 ### 练习 1（难度 ★★）
 
-写出"返回局部变量的引用"和"返回局部变量的指针"两个函数，用 `static_assert`/注释说明两者都产生悬垂（dangling）；并给出正确的修正（返回值或返回静态/成员存储的对象）。
+**真实场景：返回容器查找结果的引用。** 一个 `Map::find()` 在 miss 时返回局部临时对象的引用、或返回栈上 `nullptr` 指针，调用方解引用即悬垂。请写出"返回局部变量的引用"和"返回局部变量的指针"两个函数，用注释说明两者都产生悬垂（dangling），并给出正确修正（返回值或返回静态/成员存储的对象）。
 
 <details><summary>答案与解析</summary>
 
@@ -1430,11 +1430,13 @@ int main() {
 
 [标准] 自动存储期对象在其声明所在的块结束时销毁；返回其引用/指针得到指向已释放存储的悬垂实体，任何使用都是未定义行为。返回值是拷贝，安全。
 
+[引用] ISO/IEC 14882:2023 §[basic.life]（自动存储期对象在块结束时销毁，返回其引用/指针得悬垂实体，使用即 UB）；C++ Core Guidelines Lifetime 安全画像（isocpp.github.io）专述此类悬垂。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-临时对象生命周期延长规则有一个著名例外：`std::string_view` 绑定到临时 `std::string` 时，**不会**延长临时生命，导致视图悬垂。构造最小复现并指出为什么 `const T&` 能延长而 `string_view` 不能。
+**真实场景：日志函数接收临时 string。** 一个 `log(std::string_view)` 接口被调用方传入 `log(std::string("msg"))` 临时串，视图立即悬垂。请说明临时对象生命周期延长规则的著名例外：`std::string_view` 绑定临时 `std::string` 时**不会**延长其生命，导致视图悬垂；构造最小复现并指出为什么 `const T&` 能延长而 `string_view` 不能。
 
 <details><summary>答案与解析</summary>
 
@@ -1454,11 +1456,13 @@ int main() {
 
 [标准] 生命周期延长只对"引用（`const T&`/`T&`/`auto&&`）直接绑定纯右值"生效；`std::string_view` 是**值类型**（内部只持有指针+长度），它拷贝的是指针，并不持有或延长原对象，故临时 `std::string` 立即析构，视图悬垂。让 `string_view` 绑定具名变量即可。
 
+[引用] ISO/IEC 14882:2023 §[class.temporary]（生命周期延长仅对引用直接绑定纯右值生效；`std::string_view` 是值类型只拷贝指针+长度，不延长原对象）；cppreference "std::string_view" 与 "lifetime" 词条。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-`std::launder` 用于"对象在原有存储被重新构造后取回指针"的场景（placement new 重建）。写一个在已分配存储上反复重建 `T` 并用 `std::launder` 取回新对象指针的最小程序，说明为什么没有 `launder` 优化器可能用到旧类型信息。
+**真实场景：内存池中的对象重建。** 一个对象池在同一块对齐存储上反复构造/析构 `T`（placement new），重建后旧指针的类型信息已陈旧。请用 `std::launder` 取回重建后新对象的指针，说明为何没有 `launder` 优化器可能用到旧类型信息。
 
 <details><summary>答案与解析</summary>
 
@@ -1479,6 +1483,8 @@ int main() {
 ```
 
 [标准] 在同一存储上销毁旧对象、构造新对象后，原指针的"动态类型"信息已陈旧；`std::launder` 告诉优化器"此地址上的对象类型可能变了"，强制按新对象重新取指。省略 `launder` 时，编译器可能基于旧类型假设做非法优化（UB）。
+
+[引用] ISO/IEC 14882:2023 §[ptr.launder]/[basic.life]（std::launder 在存储上重建对象后取回指针，避免优化器沿用陈旧动态类型）；cppreference "std::launder" 词条。
 
 </details>
 

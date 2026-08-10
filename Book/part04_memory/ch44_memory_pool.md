@@ -2029,6 +2029,8 @@ int main(){
 
 ### 练习 1（难度 ★★）
 
+**真实场景：网络服务器的高频小报文包。** 代理/网关每秒收发百万级固定大小的数据包 `Packet`，若每次请求都 `new`/`delete` 走通用分配器，会引入加锁与系统调用开销、放大尾延迟。固定块池把分配降级为"移动空闲链表指针"——确定性的 O(1)、零系统调用。
+
 写固定大小内存池 `FixedPool<Block, N>`：预分配 `N` 个 `Block`，分配时从空闲链表取一块、释放时归还。
 对比每次 `new Block` 走通用分配器的系统调用开销。
 
@@ -2050,10 +2052,13 @@ struct FixedPool {
 固定池的 `alloc`/`dealloc` 只是数组下标操作，**确定性的 O(1)、零系统调用**，适合高频小对象。
 
 [标准] 固定块池用空闲链表消除通用分配器开销；代价是块大小固定、总量预分配。
+[引用] ISO/IEC 14882:2023 §[basic.stc.dynamic]（动态存储分配语义）；cppreference "operator new"；游戏引擎对象池（如 Unity、Unreal `FMemStack`）与 Boost.Pool 均用空闲链表实现固定块池。
 
 </details>
 
 ### 练习 2（难度 ★★★）
+
+**真实场景：嵌入式 / 硬实时控制循环。** 工业控制器或自动驾驶栈要求在限定时间内完成分配，通用分配器的延迟抖动不可接受。`std::pmr` 把"分配器"抽象成运行期多态的 `memory_resource`，只要派生一个池资源挂上去，`std::pmr::vector` 扩容就不再触碰系统分配器——延迟可预测、可审计。
 
 把自定义池接入 STL 容器：用 `std::pmr::memory_resource` 派生一个池资源，
 让 `std::pmr::vector<int>` 从池分配（零系统调用、确定性延迟）。写出关键步骤。
@@ -2078,10 +2083,13 @@ std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
 这正是嵌入式/实时系统的诉求（见 ch122 pmr 实证）。
 
 [标准] `std::pmr`(C++17) 运行期多态分配器；`memory_resource` 派生即可替换容器内存来源。
+[引用] ISO/IEC 14882:2023 §[mem.res.class]、§[mem.res.pool]（含 `unsynchronized_pool_resource`）；cppreference "std::pmr::memory_resource" 与 "std::pmr::polymorphic_allocator"；LLVM/Chromium 均用 PMR 风格分配器隔离热点内存。
 
 </details>
 
 ### 练习 3（难度 ★★★★）
+
+**真实场景：长期运行的嵌入式服务。** 路由器固件、车载 ECU 常年不重启，通用 `new/delete` 长期混用不同大小对象会把空闲内存切碎成外部碎片——总空闲够、却无单块够大，某次分配直接 OOM（嵌入式致命）。池分配器以固定块消除外部碎片，代价是块大于对象时的内部碎片。
 
 对比池分配器与通用分配器的**碎片**问题：长期运行下通用 `new/delete` 产生外部碎片
 （嵌入式 OOM 风险），池分配器固定块无外部碎片但存在内部碎片（块比对象大即浪费）。
@@ -2101,6 +2109,7 @@ std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
 通用、大小多变、短生命周期 → 系统分配器（灵活）。可在同一程序按对象类别混用。
 
 [标准] 池消除外部碎片换内部碎片；实时系统优先确定性而非峰值利用率。
+[引用] ISO/IEC 14882:2023 §[basic.stc.dynamic.deallocation]（释放不保证归还 OS）；cppreference "operator delete"；tcmalloc/jemalloc 文档讨论通用分配的碎片与缓存局部性权衡；实时系统（如 AUTOSAR、RTEMS）规范强调确定性分配。
 
 </details>
 

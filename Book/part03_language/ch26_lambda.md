@@ -1544,7 +1544,7 @@ call   sink(int)
 
 ### 练习 1（难度 ★★）
 
-`init-capture`（C++14）可以在捕获列表中直接"声明并初始化"一个变量，常用于移动捕获 `std::unique_ptr` 或按值捕获 `this` 的拷贝。请写一个 lambda，用 init-capture 移动捕获一个 `unique_ptr<int>`，并在 lambda 内解引用它。
+**真实场景：把所有权移入异步任务。** 一个线程池把 `std::unique_ptr<Task>` 交给工作线程执行，但旧式捕获只能按值/按引用、无法移动 `unique_ptr`。请用 init-capture（C++14）写 lambda，移动捕获 `unique_ptr<int>` 并在 lambda 内解引用（说明为何需 init-capture 而非 `[up]`）。
 
 <details><summary>答案与解析</summary>
 
@@ -1563,11 +1563,13 @@ int main() {
 
 [标准] init-capture 本质是"在闭包内声明一个成员并用初始化器初始化"，因此可以移动、可以 `std::move`，突破了旧式捕获只能按值/按引用的限制。
 
+[引用] ISO/IEC 14882:2023 §[expr.prim.lambda.capture]（init-capture 在闭包内声明成员并用初始化器初始化，可移动）；cppreference "lambda" 词条。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-C++20 的模板 lambda 允许在 lambda 上写显式模板参数（`[]<typename T>(T x){}`），并可配合 concept 约束。请写一个模板 lambda，仅接受整数类型，对浮点调用产生清晰编译错误。
+**真实场景：泛型回调约束。** 一个事件总线只接受整数型载荷（时间戳、序列号），浮点载荷应给出清晰编译错误。请用 C++20 模板 lambda 写显式模板参数 `[]<typename T>(T x){}`，配合 `std::integral` concept 约束，使浮点调用产生清晰编译错误。
 
 <details><summary>答案与解析</summary>
 
@@ -1588,11 +1590,13 @@ int main() {
 
 [标准] 模板 lambda 的 `operator()` 本身是函数模板；显式模板参数让你能对单个 lambda 施加与具名函数模板同等的约束，无需抽出独立模板函数。
 
+[引用] ISO/IEC 14882:2023 §[expr.prim.lambda]/[temp]/[concepts]（模板 lambda 的 operator() 为函数模板，可施加 concept 约束）；cppreference "lambda" 的模板 lambda 小节。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-`std::function` 通过类型擦除存储任意可调用对象，但有 SBO（小对象优化）之外的堆分配成本。请对比两种方案：① 用模板/泛型参数传递 lambda（零开销）；② 用 `std::function`（类型擦除，可能有堆分配），并说明无捕获 lambda 可隐式转函数指针。
+**真实场景：GUI 的 std::function 回调链。** 一个桌面框架把按钮点击回调存成 `std::function<void()>` 链；既要能存任意 lambda（类型擦除），又要在热路径用模板参数避免堆分配。请对比：① 模板/泛型参数传递 lambda（零开销内联）；② `std::function`（类型擦除、可能堆分配）；并说明无捕获 lambda 可隐式转函数指针对接 C 风格回调。
 
 <details><summary>答案与解析</summary>
 
@@ -1614,6 +1618,8 @@ int main() {
 ```
 
 [⑫][⑭] 无捕获 lambda 的闭包不含状态，可转换为匹配的函数指针，便于对接 C 风格回调；需要存储/传递未知类型回调时才用 `std::function`，但要接受类型擦除成本。
+
+[引用] ISO/IEC 14882:2023 §[func.wrap.func]（std::function 类型擦除、可能分配）；无捕获 lambda 可转函数指针见 §[conv.func]；Qt 信号槽、std::function 回调链均依赖此机制。
 
 </details>
 

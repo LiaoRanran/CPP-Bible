@@ -461,8 +461,7 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 
 ### 练习 1（难度 ★★）
 
-为 `class Vec2 { double x, y; };` 重载 `operator+`（成员或自由函数）与 `operator<<`
-（自由函数，返回 `std::ostream&`）。指出 `+` 应返回**新对象**（值）而非引用。
+**真实场景：游戏引擎的二维向量数学库。** 你为物理系统写一个 `Vec2`，既要让用户写 `a + b` 得到新向量（值语义，不能返回局部引用），又要用 `std::cout << v` 直接打印坐标。请为 `class Vec2 { double x, y; };` 重载 `operator+`（成员或自由函数）与 `operator<<`（自由函数，返回 `std::ostream&`）。指出 `+` 应返回**新对象**（值）而非引用。
 
 <details><summary>答案与解析</summary>
 
@@ -486,12 +485,13 @@ int main(){
 
 [标准] 算术运算符通常返回新值（值语义）；流插入运算符返回流引用以支持链式调用。
 
+[引用] ISO/IEC 14882:2023 §[over.oper]（运算符重载的基本约束：至少一操作数为用户类型）；cppreference "Operators" 词条。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-用 C++20 三路比较 `operator<=>` 替代手写 `==`/`<`/`>` 全套：写 `struct Point{ int x,y; auto operator<=>(const Point&) const = default; };`，
-解释编译器如何自动生成全部 6 个比较运算符，并说明返回类型 `std::strong_ordering` 的含义。
+**真实场景：数据库记录的复合键排序与去重。** 你为一个记录结构定义排序规则，希望 `a == b`、`a < b` 等全套比较一次性由编译器生成，而不必手写六个运算符（易漏易错）。请用 C++20 三路比较 `operator<=>` 替代手写 `==`/`<`/`>` 全套：写 `struct Point{ int x,y; auto operator<=>(const Point&) const = default; };`，解释编译器如何自动生成全部 6 个比较运算符，并说明返回类型 `std::strong_ordering` 的含义。
 
 <details><summary>答案与解析</summary>
 
@@ -515,13 +515,13 @@ int main(){
 
 [标准] `operator<=>`(C++20) 生成全套比较；`default` 合成逐成员字典序比较。
 
+[引用] ISO/IEC 14882:2023 §[expr.spaceship]/[class.compare.default]（三路比较与默认合成）；cppreference "operator<=>" 词条。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-实现一个管理 `double* data` 的 `Matrix`，先写 **rule of 3**（拷贝构造/拷贝赋值/析构，深拷贝），
-再升级到 **rule of 5**（加 `noexcept` 移动构造/移动赋值），并说明为何移动操作应标 `noexcept`——
-否则 `std::vector` 扩容时会因"移动可能抛异常"而退化为拷贝。
+**真实场景：数值计算库的矩阵缓冲。** 你写一个管理 `double* data` 的 `Matrix`（图像/张量底层），必须正确管理所有权的深拷贝与移动：先写 **rule of 3**（拷贝构造/拷贝赋值/析构，深拷贝），再升级到 **rule of 5**（加 `noexcept` 移动构造/移动赋值），并说明为何移动操作应标 `noexcept`——否则 `std::vector<Matrix>` 扩容时会因"移动可能抛异常"而退化为昂贵的深拷贝。
 
 <details><summary>答案与解析</summary>
 
@@ -551,6 +551,8 @@ struct Matrix {                 // rule of 5
 标 `noexcept` 后扩容走移动（O(1) 指针交换，零元素拷贝）。
 
 [标准] rule of 0/3/5：有自定义析构/拷贝通常需补齐全套；移动操作标 `noexcept` 方能参与 vector 扩容优化。
+
+[引用] ISO/IEC 14882:2023 §[class.copy.ctor]/[class.copy.assign]（拷贝/移动构造与赋值的生成规则）；C++ Core Guidelines（isocpp.github.io）R.32–R.34 关于资源管理的规则。
 
 </details>
 

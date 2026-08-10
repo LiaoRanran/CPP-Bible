@@ -1882,7 +1882,7 @@ int main() {
 
 ### 练习 1（难度 ★★）
 
-为某个类重载类域 `operator new` / `operator delete`，统计该类被分配的次数与字节数。
+**真实场景：渲染引擎的对象级内存审计。** Unreal/Unity 这类引擎常重载类域 `operator new` 来统计某类（如 `UObject`、`Component`）的分配量，定位内存热点。请为某个类重载类域 `operator new` / `operator delete`，统计该类被分配的次数与字节数。
 
 <details><summary>答案与解析</summary>
 
@@ -1912,11 +1912,13 @@ int main() {
 
 [标准] 重载类域 `operator new/delete` 不影响 `sizeof`，仅改变该类的内存来源；`new`/`delete` 必须配对。
 
+[引用] ISO/IEC 14882:2023 §[class.free]（类专属 operator new/delete）；cppreference "operator new" 与 "operator delete"。真实引擎（Unreal `UObject` 分配器、Unity）即用类级重载做内存审计。
+
 </details>
 
 ### 练习 2（难度 ★★★）
 
-使用 placement new 在一段预分配的缓冲区上构造对象，并手动调用析构。
+**真实场景：游戏引擎的对象内存池。** EASTL/Unreal 的对象池先用一块大缓冲，再用 placement new 在其上"种"对象——`new` 只构造不分配。请使用 placement new 在一段预分配的缓冲区上构造对象，并手动调用析构。
 
 <details><summary>答案与解析</summary>
 
@@ -1937,11 +1939,13 @@ int main() {
 
 [标准] placement new 把"内存分配"与"对象构造"解耦，是内存池/定制分配器的核心机制。
 
+[引用] ISO/IEC 14882:2023 §[expr.new]/[new.delete.placement]（placement new）；cppreference "placement new"。EASTL 与 Boost.Pool 的对象池均以 placement new 在预分配缓冲上构造对象。
+
 </details>
 
 ### 练习 3（难度 ★★★★）
 
-为某个小对象实现简易空闲链表对象池：复用已释放的对象，避免反复进入系统分配器。
+**真实场景：粒子系统的零碎片分配。** 射击游戏每帧生成/销毁上万粒子；反复 `new/delete` 粒子会触发碎片与锁竞争。请为某个小对象实现简易空闲链表对象池：复用已释放的对象，避免反复进入系统分配器。
 
 <details><summary>答案与解析</summary>
 
@@ -1975,6 +1979,8 @@ int main() {
 ```
 
 [标准] 固定大小对象池把分配器开销摊还到首次，并消除碎片；代价是需手动保证对象析构（或池统一回收）。
+
+[引用] ISO/IEC 14882:2023 §[class.free]；真实库 Boost.Pool（`boost::object_pool`、github.com/boostorg/pool）与 EASTL `fixed_pool` 即用此空闲链表模式；cppreference "operator new"。
 
 </details>
 
