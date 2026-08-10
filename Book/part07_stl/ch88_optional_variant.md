@@ -18,8 +18,15 @@
 `optional` vs "用指针表示可空"：`optional` 明确不拥有堆对象、拷贝即值语义，比"裸指针可能悬垂"安全得多；但它也引发"该不该用 optional 作参数"的争论——有人嫌它模糊了接口意图。[评] `variant` vs "基类 + 虚函数"的 OO 多态：`variant` 用 `visit` 做静态分发，避免虚表与堆分配，却牺牲了运行时可扩展性。[评]
 
 ### 0.4 史料补遗与持续编年
-- 待续：`std::expected` 与 `optional`/异常模型的分工边界，可补入。
-- 待续：`variant` 与模式匹配（future pattern matching 提案）的未来，作为新条目。
+
+> 0.2 停在 C++23 引入 `std::expected` 把"值或错误"合一。与异常/optional 的分工、以及模式匹配是后续支线。
+
+- [史] **`expected` vs `optional` vs 异常是三层分工**：`optional` 表达"可能有值、无值就是常态"；`expected<T,E>` 表达"要么值、要么明确错误码"，适合不能用异常（如性能敏感、库边界）又要强类型错误的场景；异常留给真正"罕见且上层才处理的失败"。
+- [史] **`std::expected` 的 `and_then`/`or_else`/`transform` 等单子式组合子（C++23）**让错误传播能链式书写，类似 `optional` 的 `value_or`，但明确携带错误类型。
+- [评] **`variant` 与模式匹配的"未来"仍在路上**：C++ 多次提出语言级 pattern matching（`inspect` 表达式，如 P1371），让 `visit` 式的类型分发写得更直白；但该特性尚未入标，`variant` 目前仍靠 `std::visit` + 重载集。
+- [轶] **一个工程共识**：在公共 API 边界，越来越多团队用 `expected` 取代"返回 bool + 输出参数"，既保留错误码又不牺牲类型安全——这是 C++ 向"显式错误处理"文化靠拢的信号。
+
+> 史料来源：[cppreference std::expected](https://en.cppreference.com/w/cpp/utility/expected)、[C++23 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B23)
 
 ## ① 概述：为什么需要可空与可辨别联合 [标准]
 

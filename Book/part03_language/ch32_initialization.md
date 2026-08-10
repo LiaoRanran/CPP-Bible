@@ -18,7 +18,15 @@ C 的初始化靠 `=`、`()`（构造）、aggregate 大括号 `{ }`，各自规
 统一初始化想消灭"歧义 + 窄化"——`{}` 默认禁止窄化转换（如 `int x{3.5}` 报错）。[史][评] 但 `std::initializer_list` 重载的存在让 `{}` 有时"抢走"其他构造函数，反而制造新坑——委员会在"统一"与"精确"间反复权衡。[评]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++20 的 `{}` 在聚合与 designated initializer、C++23 对 `()` 默认化的调整可记于此。）
+
+0.2 停在 C++17 起对 `{}` 与 `()` 微妙差异的持续讨论。C++20/23 又补了两条初始化语法。[史]
+
+- **C++20 指定初始化器（designated initializers, P0329）**：聚合可用 `.member = value` 形式初始化，顺序须与声明一致，是对 C 特性的有节制吸收；但它与 0.2 的"统一初始化"并存，又添一层规则复杂度。[史]
+- **C++20 聚合类型的括号初始化（P0960）**：允许 `T obj(args...)` 直接初始化聚合（此前只能 `{ }`），缩小了 `()` 与 `{}` 的能力差，缓解"最恼人 parse"的部分坑。[史]
+- **C++23 `auto(x)` / `auto{x}` 显式转型语法（P2169）**：提供"做一个副本 / 纯右值"的统一写法，区别于 `T(x)` 函数风格转型，让"我想拷贝而非转换"的意图显式化。[史]
+- **行业落地与争议**：列表初始化因"禁止窄化 + 抢走 initializer_list 构造函数"的双重性格，在 Google/LLVM 等代码规范中受到差异化约束；委员会在"统一"与"精确"间的拉扯仍在继续（见 0.3）。[史][评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/list_initialization ｜ https://en.cppreference.com/w/cpp/language/aggregate_initialization ｜ https://en.cppreference.com/w/cpp/language/initialization
 
 ## ① 学习目标 [标准]
 

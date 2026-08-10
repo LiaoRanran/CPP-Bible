@@ -32,7 +32,16 @@ RAII（Resource Acquisition Is Initialization）由 Stroustrup 在 1980 年代�
 RAII 是"确定性析构"对"垃圾回收"的回答：C++ 选了可预测、零运行时追踪开销的清理，代价是程序员必须想清所有权。[史][评] 它与零开销原则绑定——析构是编译期确定的调用，不依赖 GC 线程。[评]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++23 的 `std::expected`、scope guard（`std::scope_exit` 提案）对 RAII 边界的拓展可记于此。）
+
+0.2 停在 Rule of Zero/Three/Five 把"何时手写"写成纪律。C++17/20 又给了几个 RAII 化的标准件。[史]
+
+- **C++17 `std::optional` / `std::variant` / `std::any` 减少裸 RAII 需求**：用"带状态的值"替代"用指针表示可能有 / 可能没有"的手工管理，是 Rule of Zero 的延伸（见 ch25）。[史]
+- **C++20 `std::jthread`（P0660）把线程 RAII 化**：构造即启动、析构自动 `join`，并内建 `std::stop_token` 协作取消，比裸 `std::thread` 更符合 RAII 契约（见 ch40）。[史]
+- **scope guard 提案（P0052）仍未进标准**：`std::scope_exit` / `scope_fail` 多次推进但截至 C++23 未采纳，社区以 `gsl::finally` 或自写 RAII 兜底，是 RAII 边界"还差临门一脚"的真实案例。[史][评]
+- **C++23 `std::expected`（P0323）补上"值或错误"的 RAII 型返回**：与异常安全（ch40）互补，让"不抛异常的错误码"也能走确定性析构清理。[史]
+- **轶事**：据记载 RAII 最初只是 Stroustrup 的"栈展开能用来管资源"的朴素观察，未料成了 C++ 区别于 GC 语言的根本标识。[轶]
+
+> 史料来源：https://en.cppreference.com/w/cpp/utility/optional ｜ https://en.cppreference.com/w/cpp/thread/jthread ｜ https://en.cppreference.com/w/cpp/utility/expected
 
 ## ① 概述：RAII 是什么，为何是 C++ 的脊梁
 

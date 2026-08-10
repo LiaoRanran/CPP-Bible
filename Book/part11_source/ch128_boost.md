@@ -22,7 +22,16 @@ Boost 于 1998–1999 年由一批 C++ 标准委员会成员（如 Beman Dawes�
 Boost 的取舍是"宽松许可（Boost Software License）、模板驱动、头文件文化、重评审"。它与"单一 coherent 的标准库"不同，更像是一个开放集市：任何好设计经评审都能入驻 [评]。代价是体量庞大、编译慢、部分库后来被标准取代而显得冗余——但它作为"标准风向标"的历史角色无可替代 [评]。
 
 ### 0.4 史料补遗与持续编年
-（待续：C++11 之后 Boost 的定位转变、Boost 对 C++20 协程/ranges 的承接、社区模块的兴衰均可在此追加。）〔轶〕一个内部梗：Boost 评审邮件列表以"挑剔"著称，据说有库因命名风格被反复打回。
+继 2011 年"Boost 大礼包"整体上岸 C++11，Boost 的角色从"候补标准库"转向"标准先行试验田 + 长尾补充库"。
+
+- [史] C++11 之后，Boost 仍持续向标准输送设计：`boost::optional`→`std::optional`、`boost::filesystem`→`std::filesystem`、`boost::asio` 的异步模型深刻影响了协程方向；C++20 协程与 `std::ranges` 也吸收了 Boost 的早期探索。
+- [史] Boost 自身近年大改造：彻底转向 CMake、推行模块化（除 header-only 外提供可安装 module）、陆续新增 `JSON`、`URL`、`LEAF`、`StaticString` 等现代组件，同时废弃 `Boost.Signals` 等被标准取代的老库。
+- [评] Boost 的尴尬在于"成功即被超越"——它最好的库往往活成标准，剩下的要么长尾维护、要么被嫌"编译慢、体量大"；它作为"标准风向标"的历史价值仍在。
+- [轶] Boost 的同行评审邮件列表以"挑剔"闻名，确有库因命名风格或异常安全细节被反复打回，这种严审正是其"高质量"口碑的来源。
+
+> 史料来源：
+> - https://www.boost.org/
+> - https://www.boost.org/doc/libs/
 
 ## ① 概述：Boost 库集合（事实标准库）
 

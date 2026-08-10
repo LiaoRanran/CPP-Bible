@@ -29,7 +29,16 @@
 早期"常量表达式"靠 `#define` 宏和枚举 hack，既无类型也不安全；`const` 又太弱（值可能到运行期才知）。[评] 委员会的取舍是：把"编译期性"拆成 `constexpr`（尽量编译期）、`consteval`（强制编译期）、`constinit`（只管初始化时机）三档，互不绑架——比"全有或全无"更精细。[史][评]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++23 的 `if consteval`、持续扩张的 `constexpr` 能力——如 `std::print` 进入 constexpr——不断改写"编译期能做什么"的边界。）
+
+0.2 停在 C++20 把"编译期性"拆成 constexpr / consteval / constinit 三档。C++23 起这场"把更多东西搬进编译期"的扩张仍在加速。[史]
+
+- **C++23 `if consteval`（P1938）**：提供"当前是否在编译期求值"的精确分支，配合 C++20 的 `std::is_constant_evaluated` 让函数按上下文走不同实现，比 `if constexpr` 更贴"求值阶段"语义。[史]
+- **constexpr 标准库持续扩张**：C++20 已让 `std::string` / `std::vector` 等进入编译期；C++23 进一步把 `std::optional` / `std::variant` 等补成 constexpr（P2231），编译期数据结构逐渐可用。[史]
+- **`consteval` 与 `std::source_location`（C++20）结合**：立即函数天然在编译期拿到调用点位置，催生编译期诊断与日志惯用法。[史]
+- **行业争议**：社区长期争论"是否该让所有函数默认 constexpr"，反对者担心编译时间爆炸与 ABI 暴露；委员会维持"显式标注"路线，把激进扩张留给 concepts / 反射等渐进提案。[史][评]
+- **C++26 预览**：静态反射与更多 constexpr 算法进入讨论，继续改写"编译期能做什么"的边界。[评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/constexpr ｜ https://en.cppreference.com/w/cpp/language/consteval ｜ https://en.cppreference.com/w/cpp/language/constinit
 
 ## ① const 的精确语义与 cv 限定符全规则
 

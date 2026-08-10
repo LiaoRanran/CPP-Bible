@@ -22,8 +22,16 @@
 真正的分歧不在缩进几格，而在"由谁、何时决定风格"。`[评]` 一边是"靠评审人工 enforce"的传统派，另一边是"用 clang-format / .editorconfig 把决定固化"的自动化派。C++ 社区最终选择了后者：与其每周争论大括号位置，不如把规则写进配置文件，让工具兜底，把人的注意力留给真正重要的逻辑。
 
 ### 0.4 史料补遗与持续编年
-- 待续：基于 clang-tidy 的语义级风格（不止排版）正逐步接管"命名 / 现代化"等更高层约定。
-- （待续：新工具、新方法可在此追加）
+
+> 紧接 0.2 编年最后一条（2011，clang-format 把格式交给了机器），下面记录近年仍在生长的真实动态。
+
+- [史] 2015 年 CppCon 上 Bjarne Stroustrup 与 Herb Sutter 发布 **C++ Core Guidelines**（GitHub `isocpp/CppCoreGuidelines`），把风格从"排版"推进到"何时用什么特性"的设计准则，至今社区持续维护、逐条增补。
+- [史] clang-tidy 在 2010 年代成熟，其 `modernize-*` / `cppcoreguidelines-*` 检查组把风格审查从"缩进排版"升到"语义级约定"（命名规范、现代写法、所有权），已成为 PR 门禁的常见一层。
+- [史] AddressSanitizer / UndefinedBehaviorSanitizer / ThreadSanitizer 在 Clang 与 GCC 上普及，接进 CI 后让"未定义行为""数据竞争"这类 C++ 最隐蔽的坏味道在合并前就被自动揪出，反过来减轻了人工 review 的风格负担。
+- [评] `.editorconfig` + `.clang-format` 双文件配合，使"跨编辑器、跨 IDE 都一致"几乎零成本；现代团队把格式争议彻底移出 human review，是工程文明的又一次进步。
+- [轶] 社区里流传一句半玩笑：clang-format 第一次统一一个老仓库时会"改写上千行"，于是有人专门在周五下午跑它，免得冲掉别人的 blame。
+
+> 史料来源：clang.llvm.org/docs/ClangFormat.html、github.com/isocpp/CppCoreGuidelines
 
 ## ① 概述：为什么代码风格重要 [经验]
 

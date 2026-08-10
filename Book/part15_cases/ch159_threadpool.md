@@ -36,8 +36,15 @@
 
 ### 0.4 史料补遗与持续编年
 
-- C++ Executors/发送器（sender-receiver，P2300）正试图统一异步与并发的调度抽象，线程池将是其最核心的落地场景之一。
-- （待续：新的调度策略、NUMA 感知的池、与协程的融合可在此追加。）
+> 紧接 0.2 编年最后一条（C++ 标准化委员会提出 Executors 提案 P0443，池/调度器入标之路仍在拉锯）。
+
+- [史] 2020 年后，SG1 推出现代化的 **sender/receiver 模型（P2300 `std::execution`）**，用 `sender` 表达"尚未发生的异步工作"，意图一统线程池、GPU、IO 的调度接口；它已指向 C++26 技术规范方向，但完全落地仍在进行。
+- [史] Facebook 的 **Folly**（`folly::CPUThreadPoolExecutor`）、`libunifex` 等把工作窃取与 sender 模型做成生产级实现，很多大型 C++ 服务的线程池直接基于它们，而非手搓中心队列。
+- [史] C++20 **协程**与线程池天然互补：`co_await` 把"等任务完成"写成同步语义，调度器把协程挂到 worker 上跑，Asio、libuv 等早已走在这条路上。
+- [评] 0.3 的"标准只给积木、框架给成品"哲学在 0.4 延续：Executors/sender 若最终入标，也只是给你 `schedule()` 这块积木，真正的池结构仍由你或框架决定。
+- [轶] 委员会趣闻：Executors 提案曾因"太复杂、和 Ranges 风格不统一"被反复打回，被社区戏称 C++ 标准化里"最难啃的骨头"之一。
+
+> 史料来源：open-std.org/jtc1/sc22/wg21/docs/papers（P2300）、github.com/facebook/folly
 
 ## ① 概述：线程池解决什么（频繁创建线程开销）[经验]
 

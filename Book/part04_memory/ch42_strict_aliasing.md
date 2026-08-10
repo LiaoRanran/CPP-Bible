@@ -23,7 +23,15 @@
 严格别名把"类型系统"变成"优化许可"——程序员省了标注，编译器赚了自由，代价是"类型双关（type punning）"必须用 `memcpy` 而非 `union` / 强转。[史][评] 它本质上是"信任程序员不会乱别名"换"全体程序更快"的赌注，委员会押注优化收益大于偶发 bug。[评]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++23 `std::bit_cast`、TBAA（类型基于别名分析）的改进、对 `[[noalias]]` 的讨论可记于此。）
+
+0.2 停在 C++20 在 `[basic.lval]` 精炼严格别名。此后"安全重解释"与"编译器优化"继续角力。[史]
+
+- **C++20 `std::bit_cast`（P0476）成为跨类型重解释的安全正道**：对 trivially-copyable 类型做比特级拷贝、可编译期求值，基本取代 `reinterpret_cast` + `union` 做 type punning，呼应 0.3 "用 memcpy 而非强转"的结论。[史]
+- **TBAA（Type-Based Alias Analysis）随优化器进化**：GCC/Clang 的别名分析越来越激进，严格别名驱动的 vectorization / 重排也更易"踩中"隐藏的 UB，使 `-fno-strict-aliasing` 在 Linux 内核等场景成为必要安全阀。[史][评]
+- **`[[noalias]]`（函数参数属性，C++17 起）与 `__restrict`**：给编译器"这两指针不别名"的契约以解锁优化，是 0.3 "信任程序员换全体更快"的可选显式化；但标准层 `[[noalias]]` 语义与编译器支持长期不完全对齐，仍处讨论中。[史][评]
+- **行业现实**：Linux 内核用 `READ_ONCE` / `WRITE_ONCE` 宏配合 `volatile` 规避别名与重排；游戏 / 数值库则用 `memcpy` 双关保 UBSan 干净——印证 0.1 "同一内存多类型访问"的持久张力。[史]
+
+> 史料来源：https://en.cppreference.com/w/cpp/numeric/bit_cast ｜ https://en.cppreference.com/w/cpp/language/reinterpret_cast ｜ https://en.cppreference.com/w/cpp/language/object
 
 ## 目录
 

@@ -20,7 +20,16 @@
 结构型模式的核心张力是"组合 vs 继承"：GoF 一句名言"优先使用对象组合而非类继承"，正是为了躲开继承层级僵化 [评]。在 C++ 里这条更锋利——多继承本就昂贵且易歧义，于是 Bridge/Decorator 用"持有一个指针"替代"继承一个类"，既灵活又零虚表膨胀风险 [评]。
 
 ### 0.4 史料补遗与持续编年
-（待续：现代 C++ 如何用 concept/模板把结构型模式编译期化、以及 Handle-Body 在 ABI 稳定中的角色均可在此补充。）〔轶〕据记载，Decorator 模式常被误写成 "Decorate" 模式，GoF 原书拼写为 Decorator，至今仍有初学者拼错。
+继 1994 年七种结构型模式确立，现代 C++ 把其中多数从"运行时对象拼装"推向"编译期类型组合"。
+
+- [史] C++20 的 `concept`/约束让 Adapter/Bridge 的"接口契约"能在编译期表达，替代过去靠文档与注释约束的弱约定；`std::function` 与 lambda 把 Proxy/Decorator 的"包装一层"做得更轻。
+- [史] Handle-Body（pImpl） idiom 在二进制稳定场景下愈发重要：把实现细节藏在 `.cpp` 的 `impl` 指针后，是跨动态库保持 ABI 兼容的工业标准手法，正是结构型思想在 ABI 层的落地。
+- [评] "优先组合而非继承"在 C++ 里被强化——多继承昂贵且易歧义，于是 Bridge/Decorator 用"持有指针"替代"继承类"，既灵活又避免虚表膨胀。
+- [轶] Decorator 模式常被误写成 "Decorate" 模式，GoF 原书拼写为 Decorator，至今仍有初学者拼错。
+
+> 史料来源：
+> - https://en.cppreference.com/w/cpp/language/constraints
+> - https://en.cppreference.com/w/cpp/language/pimpl
 
 ## ① 概述：结构型模式解决什么
 

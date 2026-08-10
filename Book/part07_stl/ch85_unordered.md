@@ -22,8 +22,15 @@
 `unordered_*` vs `map`/`set` 是 STL 关联容器最持久的路线分歧：哈希提供平均 O(1) 查找，但要写好哈希函数、且最坏 O(n)；红黑树提供稳定 O(log n) 与天然有序。[评] 委员会先放哈希进 TR1 再进标准，正是为了先验证"标准可承载哈希"这件事本身——这种"先在技术报告里试水"的谨慎，是 C++ 标准化的一大特色。[评]
 
 ### 0.4 史料补遗与持续编年
-- 待续：开链法 vs 开放寻址（如 Google `dense_hash_map`）的取舍，可作后续条目。
-- 待续：C++ 对"异构查找（heterogeneous lookup）"的逐步支持，可补入。
+
+> 0.2 停在 C++20 起 `unordered_*` 与 ranges 配合、桶接口逐步完善。开放寻址与异构查找是后续支线。
+
+- [史] **标准选开链法（separate chaining），但业界偏爱开放寻址**：标准 `unordered_map` 用链表挂桶；而 Google `dense_hash_map`、Abseil `flat_hash_map` 用开放寻址（线性探测），缓存更友好、平均更快，却对"空/删除"哨兵与负载因子更挑剔。
+- [史] **异构查找（heterogeneous lookup）逐步进标**：C++20 给 `unordered_*` 加了透明哈希/相等（`Hash`/`KeyEqual` 带 `is_transparent`），可用 `string_view` 查 `string` 键而不构造临时键，呼应有序容器的同款能力。
+- [评] **`flat_hash_map` 的流行倒逼标准反思**：开放寻址在实战中常碾压开链，社区多次提议标准允许实现自由选择策略或新增"flat"哈希容器，但为保 ABI 与现有语义稳定，标准 `unordered_*` 仍停留在开链。
+- [史] **C++20 还补了 `contains`、节点提取/合并（`extract`/`merge`）到 `unordered_*`**，与有序容器接口对齐，节点搬家同样免拷贝。
+
+> 史料来源：[cppreference std::unordered_map](https://en.cppreference.com/w/cpp/container/unordered_map)、[Abseil 官方文档](https://abseil.io/docs/cpp/)
 
 ## ① 学习目标
 

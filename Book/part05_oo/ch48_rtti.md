@@ -19,7 +19,15 @@
 RTTI 的反对者理由很硬：它让二进制变大、让「不该知道类型」的代码知道类型，破坏封装；很多大型项目（尤其嵌入式、游戏）直接 `-fno-rtti` 关掉它。[评] 支持者则认为，安全向下转型、调试器与序列化框架离开它寸步难行。有意思的是，C++ 的**异常处理**和 RTTI 共享了同一套运行期基础设施——这也是为什么关掉其中一个往往牵连另一个。[史]
 
 ### 0.4 史料补遗与持续编年
-（待续：模块化、`std::type_info` 在跨翻译单元下的行为、以及 `source_location` 一类「现代版类型自省」如何与 RTTI 互补，可在此续写。）
+0.2 编年止于 C++98 的 `dynamic_cast`/`typeid`。RTTI 在后续标准里仍有补笔：
+
+- [史] `std::type_info::name()` 的返回在不同实现上天差地别：GCC/Clang 返回 mangled 名（需 `abi::__cxa_demangle` 还原），MSVC 返回较可读名。跨翻译单元时，`typeid` 能否比较取决于 RTTI 信息的「单一定义」——模块化前靠链接器合并弱符号，模块（C++20）则试图让类型信息在模块边界更可控。
+
+- [史] C++20 的 `std::source_location` 提供「文件/行号/函数名」的编译期自省，常被用作轻量日志与断言的「现代版位置自省」，与 RTTI 互补：前者回答「我在哪被调用」，后者回答「我是什么类型」。
+
+- [评] 嵌入式与游戏圈长期把 RTTI 当「开销」关掉（`-fno-rtti`），用 `type_index` + 手写枚举代替；但当 `std::any`、`std::function` 等依赖 type_info 时，关掉 RTTI 会连带伤及格标准库功能。
+
+> 史料来源：https://en.cppreference.com/w/cpp/types/type_info ；https://en.cppreference.com/w/cpp/utility/source_location
 
 > 元数据：标准基 C++98（typeid/dynamic_cast 核心）/C++11（noexcept 标注）/C++17（不改动语义） · 预计阅读 100 min · 前置 ch47(vtable 槽1 存 typeinfo) · ch45(对象模型/布局) · ch28(未定义行为/对象生命周期) · 后续 ch49(虚继承影响 RTTI 目标类型) · ch50(CRTP 静态替代) · ch14(去虚化与性能) · 难度 中级
 

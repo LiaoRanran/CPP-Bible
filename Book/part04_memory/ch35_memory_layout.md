@@ -24,7 +24,15 @@ C 的设计假定"内存是扁平的"（PDP-11 时代），但 1980 年代后的
 C++ 标准刻意不规定段布局（那是 OS / ABI 的事），只谈"对象存储期"；于是"内存长什么样"靠实现与平台补全。[史][评] 这种"标准留白"换来了跨平台，却也把内存布局知识推给了程序员。[评]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++ 内存模型与 NUMA、大页、GPU 统一寻址的新现实可记于此。）
+
+0.2 停在 2000s ASLR 普及让地址不可预测。此后"内存长什么样"随 NUMA、大页、GPU 统一寻址继续演化。[史]
+
+- **C++17 `std::launder` 与对象模型衔接**：当在既有存储上重建对象（placement new）时，标准用 `std::launder` 告诉优化器"指针所指已换人"，把"段布局"与"对象生命期"在语言层对齐（见 ch28/37）。[史]
+- **C++17 `std::hardware_constructive/destructive_interference_size`**：标准首次暴露缓存行大小提示，让数据结构布局能主动规避伪共享，把 0.3 的"标准留白"补了一小块。[史]
+- **NUMA / 大页 / GPU 统一寻址**：现代服务器与异构计算让"虚拟地址 → 物理 / 设备"的映射更复杂，库（如 `std::pmr`、jemalloc）开始感知 NUMA 节点与巨页以降 TLB 压力。[史][评]
+- **检测工具**：AddressSanitizer / HWASan 把"段错误 / 越界 / 释放后使用"变成可定位报告，是程序员理解真实内存布局的实战利器。[史]
+
+> 史料来源：https://en.cppreference.com/w/cpp/utility/launder ｜ https://en.cppreference.com/w/cpp/language/object ｜ https://en.cppreference.com/w/cpp/types/hardware_interference_size
 
 ## ① 概览：进程虚拟地址空间
 

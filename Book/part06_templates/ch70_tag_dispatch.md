@@ -20,7 +20,17 @@ Stepanov 设计 STL（1994 年纳入标准）时面临一个难题：同一个�
 标签分发是「零开销多态」的范本：用空类型 + 重载决议，把运行期决策提前到编译期。[评] 但它依赖「标签层级与偏序规则」的约定，容易写错；concepts 用 `requires` 把同样的意图表达得更可读——标签分发没有作废，只是多了一个更现代的表兄弟。
 
 ### 0.4 史料补遗与持续编年
-（待续：标签分发在 allocator/ iterator 体系中的具体落地、以及与 concepts 混用的迁移策略，可在此续写。）
+0.2 编年止于 C++20 的 concepts 开始替代部分标签分发。标签分发在标准库里的具体落地：
+
+- [史] 标签分发在标准库里最经典的落地是迭代器体系：`std::advance`/`std::distance` 通过 `iterator_category` 标签在编译期选 O(1) 或 O(n) 实现；`std::copy` 对平凡类型还会经标签走 `memmove` 快路径。
+
+- [史] 分配器（allocator）体系同样靠标签与 traits 路由：虽 C++11 后 allocator 模型几经改动，但「用空标签/特性类型在编译期选实现」的思路一脉相承。
+
+- [史] concepts（ch67）与标签分发常「混用迁移」：`std::ranges` 用 `std::random_access_iterator` 这类 concept 取代了手写标签层级的部分工作，但底层算法仍保留标签重载以兼容老迭代器——迁移是渐进的，不是一刀切。
+
+- [评] 标签分发的「层级靠继承」约定（random_access 继承 bidirectional …）与现代 concepts 的「谓词约束」是两种心智模型，理解两者能读懂几乎整个标准库算法层。
+
+> 史料来源：https://en.cppreference.com/w/cpp/iterator/iterator_tags ；https://en.cppreference.com/w/cpp/algorithm
 
 > 立场标签：`[标准]`=标准条文，`[实现]`=编译器实现行为，`[平台]`=平台/ABI 相关，`[经验]`=工程经验。
 

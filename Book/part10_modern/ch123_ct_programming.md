@@ -20,8 +20,15 @@
 编译期编程的演进主线是**"把 TMP 从'类型递归黑魔法'变成'可读的函数式代码'"**。早期 TMP 用模板特化与递归模拟循环/分支，强大但劝退；`constexpr` 系列则用"看起来像普通代码"的方式做同样的事，显著降低门槛。[评] `Concepts` 又进一步取代 SFINAE——用声明式约束表达"这个模板接受什么类型"，比靠 `enable_if` 技巧暗中失败友好太多。横向看，Rust 的 const generics、Zig 的 comptime 都走了"编译期计算一等公民"的路，C++ 则是负重前行：要在四十年存量上渐进改良，而不是另起炉灶。[史]
 
 ### 0.4 史料补遗与持续编年
-- C++20/23 持续增强 `constexpr`（更多标准库函数可 constexpr）、`consteval` 落地。[史]
-- （待续：静态反射、元类（metaclass）、与编译期 I/O 的边界讨论可在此追加。）
+编译期编程在 `constexpr` 系列成熟后，焦点转向"哪些东西能搬进编译期"与"静态反射"。
+
+- C++20 引入 `consteval`（立即函数，强制编译期求值）与 `std::is_constant_evaluated()`，把"这段代码必须编译期跑"从技巧变成语言保证；`constinit` 则保证静态变量初始化在编译期完成。[史]
+- [史] 标准库持续"constexpr 化"：从 `std::array`、`<algorithm>` 到 C++23 的 `<vector>`、`std::string` 部分可 constexpr，越来越多运行期代码能直接在编译期执行。
+- [评] 与 Rust 的 const generics、Zig 的 `comptime` 相比，C++ 的编译期编程是"渐进改良"而非"重起炉灶"——四十年模板存量让任何范式替换都代价高昂，这也解释了为何 TMP 黑魔法至今仍有人用。
+- [轶] 一个常被津津乐道的里程碑：有人用 `constexpr` 在编译期实现了完整的 JSON/正则表达式解析器，把"编译期图灵完备"从论文玩笑变成了可落地的工程。
+- 静态反射（static reflection，P2996 系列）与"元类（metaclass）"仍是 C++26 及以后的头号期待，目标是让"根据类型自动生成代码"成为语言特性而非宏魔法。[史]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/constraints · https://en.cppreference.com/w/cpp/keyword/consteval
 
 ## ① 学习目标 [标准]
 

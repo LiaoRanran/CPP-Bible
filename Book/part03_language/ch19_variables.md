@@ -28,7 +28,16 @@ C 的存储类 `auto`/`register`/`static`/`extern` 源自 1970 年代的早期 C
 C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期），长期饱受诟病；C++ 沿用它，但用 `namespace` / 无名命名空间来解决"文件内私有"。[评] 关于"头文件常量要不要 `extern`"，委员会在 C++17 用 inline 变量一锤定音：宁可让链接器去重，也不让程序员猜谜。[史]
 
 ### 0.4 史料补遗与持续编年
-（待续：模块 Modules（C++20）从根上绕过头文件的 ODR 与宏泄漏；静态反射对 inline 变量的新约束可在此追加。）
+
+接 0.2 C++17 inline 变量之后，变量 / 链接 / ODR 这条线在 C++20 及以后仍有密集推进；以下条目作为持续编年锚点追加，永不回改 0.1–0.3 的核心事实。[史]
+
+- **C++20 Modules（P1103）从根上绕开头文件**：模块用编译模型取代文本包含，宏与无名实体不再泄漏到 `import` 方，ODR 的"多 TU 同名"问题被从源头消解；但与头文件混用的遗留 TU 仍走老检查，迁移期呈"双轨"现实。[史][评]
+- **C++20 `constinit` 把初始化时机钉死**：在 static 存储期上强制常量初始化阶段完成（见 ch21），把 0.2 的 inline 变量从"去重"进一步推到"定序"，SOIF 无从发生。[史]
+- **C++23 存储期 / 链接措辞清理（N4885）**：整合 `[basic.stc]` / `[basic.link]`，并固化 `thread_local` 动态初始化线程安全的可见性细节（P0941），跨编译器行为更一致。[史]
+- **编译器落地时间线**：GCC 10 / Clang 10 起支持 Modules，MSVC 在 `/std:c++20` 下全面对齐静态初始化语义；`constinit` 三家均在 C++20 周期内落地。[史]
+- **行业进展与争议**：Chromium、LLVM 等巨型代码库实验性引入模块以缩短构建，但 `import` 与 `#include` 互操作、构建系统适配是主要摩擦点；静态反射（C++26 候选 P2996）将让 inline 变量可被元数据遍历，进一步改写"头文件常量暴露"范式。[史][评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/modules ｜ https://en.cppreference.com/w/cpp/language/inline ｜ https://en.cppreference.com/w/cpp/language/storage_duration
 
 ## ① 本章要击穿的十个问题
 

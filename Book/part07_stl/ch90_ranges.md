@@ -19,8 +19,15 @@ STL 算法一律接收 `[first, last)` 两个迭代器，写起来啰嗦（`sort
 Ranges 最核心的立场是**"算法应操作区间而非迭代器对"**，并坚持惰性——`views::filter` 不立即生成新容器，而是按需计算。[评] 这与"急切（eager）算法每次返回新容器"的老习惯冲突，也引发"惰性管道调试更难、类型名更长"的吐槽。[评] 但它在表达力上的胜利无可争议，被视为 STL 自 1998 年以来最大的一次范式升级。
 
 ### 0.4 史料补遗与持续编年
-- 待续：range-v3 与标准 `ranges` 的功能差距（如动作 `actions` 未全入标）可补入。
-- 待续：C++26 对"惰性求值 + 并行 + 发送者（sender）"的融合探索，作为新条目。
+
+> 0.2 停在 C++23 扩充 `views::enumerate`/`views::zip` 等视图与适配器。range-v3 差距与"并行 + 发送者"是后续支线。
+
+- [史] **range-v3 仍领先标准一截**：动作（`actions`，如 `actions::sort`、`actions::push_back` 就地修改原范围）至今未进标准；标准只收了惰性 `views`（不修改源）。Niebler 的实验场持续为后续标准提供"试水"素材。
+- [史] **C++23 视图增量务实**：`views::enumerate`（带下标遍历）、`views::zip`（多范围并行遍历）、`views::adjacent`/`views::chunk` 等，把常用管道模式标准化，减少手写循环。
+- [评] **"惰性 + 并行 + 发送者（sender）"的融合在探索中**：P2300 的发送者/接收者模型（⟶ ch94）提出统一异步与算法的执行模型，未来 Ranges 可能与之结合，让 `views` 管道在并行/异步执行器上跑——但这是 C++26 及以后的目标。
+- [轶] **一个常见踩坑**：惰性 `views` 不持有数据，若管道建立在临时 `vector` 上、临时对象先析构，视图即悬垂；社区戏称"views 让悬垂变得更优雅也更隐蔽"。
+
+> 史料来源：[range-v3 仓库](https://github.com/ericniebler/range-v3)、[cppreference Ranges](https://en.cppreference.com/w/cpp/ranges)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
 ## ① 学习目标 [标准]
 

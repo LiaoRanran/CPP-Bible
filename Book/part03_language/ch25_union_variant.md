@@ -32,7 +32,15 @@ C 的 `union` 来自 1970 年代，让多个成员共用一块存储以省内存
 union 用"内存复用"换安全；variant 用"一点控制块开销"换"永远知道装的是谁"。[评] 委员会选择把安全变体做成库（`variant`）而非改语言语义，保留 union 给需要裸控制的人。[史][评]
 
 ### 0.4 史料补遗与持续编年
-（待续：variant 的 `visit` 性能、与模式匹配提案（C++ 模式匹配研究组）的协同可记于此。）
+
+0.2 停在 C++17 把 `std::variant` 与 optional / any 组成安全值族。此后 variant 在"性能"与"模式匹配"两方向继续演进。[史]
+
+- **`std::visit` 的实现优化持续进行**：主流库用"访问者查表 / 跳转表"实现 `visit`，Clang/libc++ 与 GCC/libstdc++ 都做过减少运行时分支的改进；但 variant 的 `visit` 仍比裸 union + switch 多一层间接，是性能敏感路径的常见权衡点。[史][评]
+- **`std::expected`（C++23, P0323）补全"值或错误"的变体**：它与 variant 思路同源（判别联合），但语义聚焦错误处理，成为 `std::optional` 之外表达"可能失败"的现代选择。[史]
+- **模式匹配提案（P1371 等研究组）**：社区长期推动把 `inspect` / 模式匹配引入 C++，可直接 `visit` variant 而不写 `std::overload` 样板，是 variant 的"语法终结形态"候选。[史][评]
+- **行业落地**：AST 节点、协议消息、状态机普遍从裸 union 迁移到 `std::variant`；游戏 / 嵌入式仍保留裸 union 以换零开销，印证 0.3 的"库 vs 语言"取舍。[史]
+
+> 史料来源：https://en.cppreference.com/w/cpp/utility/variant ｜ https://en.cppreference.com/w/cpp/utility/expected ｜ https://en.cppreference.com/w/cpp/utility/optional
 
 ## ① 概述：从 union 到 variant 的演进
 

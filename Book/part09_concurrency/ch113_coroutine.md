@@ -25,8 +25,15 @@
 最大分歧是**无栈（stackless）还是栈式（stackful）**：Boost.Coroutine / 纤程（fiber）那种"有自己的栈、可任意嵌套挂起"用起来直观，但每个协程都有栈内存、且难以与现有 ABI 兼容；C++20 选了无栈——挂起时只把局部状态存进堆上的协程帧，句柄只有指针大小、零额外栈开销，代价是"挂起点必须显式（co_await 处）"。[评] 另一个耐人寻味的决定是：标准**只给语言机制，不给 `std::generator`/`std::task`**（C++20 缺失、C++23 才补 `generator`），把返回类型留给库与用户手写，换取最大灵活。[史]
 
 ### 0.4 史料补遗与持续编年
-- C++23 `std::generator`；执行器（executor）/ 网络 TS 等仍在与协程磨合。[史]
-- （待续：C++ 官方的 `std::task`、与 Rust `async`/`await`、Go goroutine 的范式对照可在此追加。）
+协程语言机制落标后，真正的拉锯在"标准库返回类型"与"执行器"两个缺口上。
+
+- C++23 补上 `std::generator`（惰性序列生成器，提案 P2168），填补了 C++20 只给语言机制、不给常用返回类型的尴尬；`std::task` 则仍停留在提案阶段。[史]
+- [史] 编译器支持是另一条时间线：Clang 早在 2017 年前后就实验性实现协程（`-fcoroutines-ts`），GCC 直到 10/11 代才逐步跟上，MSVC 则在 Windows 生态率先完整支持——标准通过到"全工具链可用"往往隔了好几年。
+- [评] 执行器（executor）/ 网络 TS 长期与协程"谈恋爱却不结婚"：谁来调度恢复、恢复在哪个线程，标准始终留白，逼得 Asio、libunifex、各大游戏引擎各自造 `task` / `future` 轮子。
+- [轶] Herb Sutter 曾长期推动"统一的协程 + 执行器"模型（其 cppcoro 库影响深远），但最终 C++20 只采纳了最底层的无栈协程，把生态系统多样性留给社区——被一些人戏称为"给了发动机，没给方向盘"。
+- C++23/26 仍在讨论把 `std::execution`（发送者/接收者）与协程打通，使"异步管道"成为标准一等公民。[史]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/coroutines · https://en.cppreference.com/w/cpp/iterator/generator · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2168r4.html
 
 ## ① 概述：C++20 coroutine 是什么（无栈协程） [标准]
 

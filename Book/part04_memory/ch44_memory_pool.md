@@ -26,7 +26,15 @@
 池用"专用性"换"速度 + 无碎片"，代价是失去通用性、且需自己管生命周期（arena 一次性释放是双刃剑）。[评] 委员会把它放在 `std::pmr` 而非改 `new` 语义——又一次"标准给积木，程序员拼策略"。[史][评]
 
 ### 0.4 史料补遗与持续编年
-（待续：arena allocator 与协程、增量 GC 式池、C++ 对自定义池生态的统一可记于此。）
+
+0.2 停在 C++17 把内存池做成标准运行时多态组件（`std::pmr::pool_resource`）。此后池化在"区域分配 / 协程 / 生态"方向继续演进。[史]
+
+- **`std::pmr` 三件套落地**：`synchronized_pool_resource`（线程安全池）/ `unsynchronized_pool_resource`（单线程更快）/ `monotonic_buffer_resource`（只增不释放的 arena）覆盖了 0.1 所述"批发再零售"的主要形态，成为游戏 / 交易的标准积木（见 ch36/38）。[史]
+- **C++20 协程帧的 arena 化**：协程把局部状态挂到堆（或自定义分配器），催生"协程专用池"需求——一次性分配一整块协程帧区域、整体回收，与 0.3 "arena 一次性释放是双刃剑"的判断吻合。[史][评]
+- **第三方分配器生态**：Google `tcmalloc`、Facebook `jemalloc`、Microsoft `mimalloc`、EA `EASTL` 的定长池等，长期是标准 `std::pmr` 之前的工业事实标准，并反向影响 PMR 的接口设计（如 `pool_options`）。[史]
+- **行业争议**：通用分配器的"线程缓存 + 分桶"已足够快，很多场景不必自写池；但极热路径（每秒百万分配）仍靠专用定长池消除锁与碎片，印证 0.3 的"专用性换速度"取舍。[史][评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/memory/monotonic_buffer_resource ｜ https://en.cppreference.com/w/cpp/memory/pool_resource
 
 ## ① 为何需要内存池（动机全景）
 

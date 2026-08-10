@@ -16,8 +16,15 @@
 有序 vs 无序是 `map` 家族的内部路线之争：红黑树 `map` 提供有序性和稳定复杂度，但每个节点有额外指针与颜色位开销；哈希 `unordered_map` 平均 O(1)，却要设计好哈希函数、且最坏退化。[评] STL 同时提供两者，把选择交给场景——需要有序/范围查询选 `map`，需要极致查找速度且能接受无序选 `unordered_map`。[评]
 
 ### 0.4 史料补遗与持续编年
-- 待续：红黑树 vs B 树（如 Abseil 的 `flat_hash_map`/`btree`）在现代工程里的取舍，可作后续条目。
-- 待续：C++26 是否引入更多有序容器变体，可补入。
+
+> 0.2 停在 C++17 给 `map` 补 `try_emplace`/`insert_or_assign`/`extract`/`merge`。红黑树 vs B 树、以及 C++26 有序容器是后续支线。
+
+- [史] **`extract`/`merge`（C++17）让节点"搬家"免拷贝**：可从一棵树把整个节点提取出来再插入另一棵（同比较器），不构造不析构键值——这是红黑树节点结构稳定的直接红利。
+- [评] **工程界普遍转向"连续 + 哈希"挑战红黑树**：Google 的 Abseil 提供 `flat_hash_map`（开放寻址、连续存储，缓存友好、平均更快）与 `btree`（B 树有序、缓存优于红黑树）；它们不是标准，却 reshaped 了"默认该用谁"的共识。
+- [史] **异构查找（heterogeneous lookup）逐步进标准**：C++14 起 `map`/`set` 支持以可比较异类型（如 `string_view` 查 `string` 键）查找，避免构造临时键；C++20 又扩展到 `find`/`contains` 等接口。
+- [评] **C++26 是否引入更多有序容器变体仍悬而未决**：`flat_map`/`flat_set`（连续存储、跳表式有序）提案多次出现，目标是把"有序 + 缓存好"合一，但标准化路径尚在讨论。
+
+> 史料来源：[cppreference std::map](https://en.cppreference.com/w/cpp/container/map)、[Abseil 官方文档](https://abseil.io/docs/cpp/)
 
 ## ① 学习目标
 

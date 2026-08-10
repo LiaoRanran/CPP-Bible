@@ -20,7 +20,17 @@
 TMP 极致的「零运行期开销」是以「编译期极慢、报错极狠、可读性极差」为代价的——被戏称「图灵焦油坑」。[评] 它逼出了 `constexpr` 与 concepts，等于用自身之痛推动了语言进化。今天 TMP 仍活在标准库深处（如 `tuple`、`integral_constant`），只是新代码更倾向 `constexpr`。
 
 ### 0.4 史料补遗与持续编年
-（待续：从 MPL 到 Hana（Louis Dionne）的「运行时/编译期统一容器」探索，以及 TMP 与 `constexpr` 的分工现状，可在此续写。）
+0.2 编年止于 `constexpr` 让 TMP 部分退居幕后。TMP 与 constexpr 的分工现状：
+
+- [史] Boost.MPL（Aleksey Gurtovoy & David Abrahams，2000s）把 TMP 系统化成「编译期容器与算法」：`mpl::vector`、`mpl::transform` 等，让元编程第一次有了「库」的样子。但它慢、报错极长。
+
+- [史] 2015 年 Louis Dionne 的 Boost.Hana 试图用 `constexpr` + 异构容器统一「编译期与运行期」：同样一套 `transform`/`filter` 既能吃编译期 tuple 也能吃运行期容器，代表「TMP 向 constexpr 投降并融合」的转向。
+
+- [史] C++11 起 `constexpr` 一路放宽（ch69），到 C++20 已能在编译期做相当复杂的计算，纯模板递归元函数逐步被 `constexpr` 函数取代——可读、可调试、报错短。
+
+- [评] 分工现状：极致类型级计算（type_list、特化分发）仍靠 TMP；值级编译期计算交给 `constexpr`；concepts 负责接口约束。三者是「同一编译期世界」的三块拼图。
+
+> 史料来源：https://en.wikipedia.org/wiki/Template_metaprogramming ；https://www.boost.org/ ；https://en.cppreference.com/w/cpp/language/constexpr
 
 > 本章所有汇编证据由 **MinGW GCC 15.3.0**（`-std=c++23 -O2 -S -masm=intel`）真实提取，源码剖析行号取自该工具链安装的 libstdc++ 15.3.0 头文件。
 

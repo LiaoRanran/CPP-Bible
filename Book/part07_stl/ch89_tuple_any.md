@@ -19,8 +19,15 @@ C/C++ 函数历来只能"返回一个值"，要回多个就得靠输出参数或
 `tuple` 与 `any` 代表了两种异构策略：前者是**编译期已知类型**的零开销聚合，后者是**运行时任意类型**的灵活但带擦除成本。[评] 一个经典忠告是"能用 struct/tuple 就别用 any"——`any` 把类型安全检查推迟到运行时，易藏 bug；但当你真要写"通用容器框架"（如脚本接口、插件边界）时，`any` 又不可替代。[评]
 
 ### 0.4 史料补遗与持续编年
-- 待续：`std::tuple` 与 `std::pair` 的历史渊源（pair 是 tuple 的特例）可补入。
-- 待续：C++ 对 `apply`/`make_from_tuple` 等元组工具的扩展，作为新条目。
+
+> 0.2 停在 C++17 结构化绑定让 `tuple` 解包近乎无感。pair 渊源与元组工具扩展是后续支线。
+
+- [史] **`pair` 是 `tuple` 的"二元特例"**：`std::pair<A,B>` 早于 `tuple` 存在于 C++98，C++11 的 `std::tuple` 在语义上把它泛化为 N 元；标准甚至提供 `std::tuple_size<pair>`/`std::tuple_element<pair>` 特化，让 `pair` 也能走 tuple 接口。
+- [史] **`std::apply`/`std::make_from_tuple`（C++17）**把元组"拆"成函数参数或构造函数参数：`apply(f, t)` 等价于 `f(get<0>(t), get<1>(t), ...)`，让"异构打包 → 异构展开"闭环。
+- [评] **`any` 的运行时成本决定了它的边界**：`std::any` 用类型擦除装任意可拷贝类型，访问须 `any_cast` 且可能抛 `bad_any_cast`；社区忠告是"能用 struct/tuple 就别用 any"，仅在插件边界、脚本接口等真正需要异构容器时才上 `any`。
+- [史] **`std::function` 与 `std::bind` 同属"类型擦除/适配"家族**：`bind` 在 lambda 普及后使用率下降，但仍是把函数与参数部分绑定成可调用对象的官方手段，与 `tuple` 的参数打包思想呼应。
+
+> 史料来源：[cppreference std::tuple](https://en.cppreference.com/w/cpp/utility/tuple)、[C++17 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B17)
 
 ## ① 学习目标 [标准]
 

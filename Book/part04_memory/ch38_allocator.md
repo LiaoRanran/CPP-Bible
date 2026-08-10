@@ -33,7 +33,15 @@ STL（Stepanov，1994 入标准）的设计原则之一：算法 / 容器与"内
 "编译期分配器"（类型参数，零开销但模板膨胀）vs "运行时分配器"（PMR，灵活但一次间接调用）。[评] 委员会先给前者、再补后者，承认大多数场景默认 allocator 就够，真正需要定制的是少数性能热点。[史][评]
 
 ### 0.4 史料补遗与持续编年
-（待续：PMR 与 `std::generator`、协程内存、自定义内存资源生态可记于此。）
+
+0.2 停在 C++17 用 `std::pmr` 补上运行时多态分配器。此后 PMR 生态与协程内存继续生长。[史]
+
+- **C++20 `std::allocator` 成 constexpr**：分配器可在编译期使用，配合 constexpr new（见 ch37）让容器在编译期也能分配，是"分配器可作为编译期积木"的关键一步。[史]
+- **C++23 `std::generator`（P2168）与协程内存**：生成器协程的产出需要分配器参与（其 `promise_type` 可用 `std::allocator_traits`），把 0.1 那句"容器与内存解耦"延伸到惰性序列（见 ch36 协程帧）。[史]
+- **自定义 `memory_resource` 生态**：除标准 `new_delete` / `pool` / `monotonic` 外，社区出现感知 NUMA、对齐、调试记账的自定义资源，印证 0.3 "少数热点才需定制"的判断。[史][评]
+- **行业争议**：PMR 的"一次间接调用 + 类型擦除"被诟病在极热路径拖慢；零开销派仍偏好编译期 `std::allocator` 或手写池（ch44），两派分歧延续 0.3。[史][评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/memory/allocator ｜ https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/iterator/generator
 
 ## ① 概述：分配器是什么，为何存在
 

@@ -19,7 +19,16 @@
 fmt 对 `iostream`/`printf` 之争的答案是"类型安全 + 性能好 + 语法轻"——它证明格式化不必在"安全"和"快"之间二选一 [评]。spdlog 则对老牌日志库（log4cpp、glog）说"只需头文件、异步也能快"，把现代 C++ 的零配置哲学推到极致 [评]。
 
 ### 0.4 史料补遗与持续编年
-（待续：{fmt} 在编译期格式检查、Unicode 与浮点精度上的演进，`std::format` 的后续扩展均可在此补充。）〔轶〕趣闻：fmt 的 `{}` 语法灵感部分来自 Python 的 `str.format`，Zverovich 曾公开致意这种跨语言借鉴。
+继 2020 年 `std::format` 吸收 fmt 的设计，二者进入了"标准为主、fmt 领跑性能与扩展"的共生期。
+
+- [史] C++20 的 `std::format`（提案 P0645）与 C++23 的 `std::print` 直接源自 fmt 的 `{}` 占位符范式；fmt 自身继续领跑——编译期格式串检查、本地化格式化等能力长期领先标准实现。
+- [史] fmt 11（2024）放弃 C++11/14 支持、把基线抬到 C++17，并进一步优化浮点与 Unicode 处理；spdlog 同期推进到 1.14/1.15，保持"仅头文件、异步也能快"的定位。
+- [评] 一个反复出现的争论是"既然有了 `std::format` 还要不要 fmt"——答案是 fmt 在微基准里仍常更快、且带标准尚未覆盖的扩展（如着色、宽字符细节），但新项目若只需基础格式化，标准库已足够。
+- [轶] fmt 的 `{}` 语法灵感部分来自 Python 的 `str.format`，Zverovich 曾公开致意这种跨语言借鉴。
+
+> 史料来源：
+> - https://github.com/fmtlib/fmt
+> - https://en.cppreference.com/w/cpp/utility/format/format
 
 ## ① 概述：fmt / spdlog（现代格式化与日志） [标准]
 

@@ -36,7 +36,16 @@ C++ 在 STL 算法（Stepanov，1994 入标准）时代严重依赖"函数对象
 lambda 本质仍是"语法糖 + 闭包类"，委员会坚持零开销：不捕获的 lambda 可隐式转函数指针，保持与 C 回调兼容。[史][评] 关于"捕获是否默认按引用"争论后定为显式——安全优先。[史]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++23 的"显式对象形参（deducing this）"让 lambda 与成员函数统一；模式匹配对 lambda 的影响可记于此。）
+
+0.2 停在 C++17/20 的 constexpr lambda 与模板形参 lambda。C++20 的"模板 lambda + 概念"与 C++23 的显式对象形参把 lambda 推向新形态。[史]
+
+- **C++20 模板形参 lambda（`[]<typename T>(T x)`）与概念约束**：lambda 能显式写模板形参并配 `std::same_as` 等概念，`std::ranges` 算法大量借此写出简洁泛型回调。[史]
+- **C++23 显式对象形参（deducing this, P0847）统一 lambda 与成员函数**：成员 lambda / 成员函数可用 `this auto&& self` 接 `*this`，让"在成员上做完美转发"不再依赖辅助自由函数，呼应 0.1 的"闭包类合成"本质。[史]
+- **constexpr lambda 与编译期算法**：C++20 起 constexpr lambda 配合 `std::array` / 编译期循环，使"在编译期跑一段回调"成为可能，标准库（如 `<ranges>` 的部分）借此做编译期计算。[史]
+- **行业落地与争议**：lambda 已成 STL 算法、并发、GUI 回调的默认写法；但"过度捕获导致生命周期 bug"（悬垂引用）成为现代 C++ 高频错误，催生对 capture 安全的静态分析需求。[史][评]
+- **轶事**：据记载 Stepanov 设计 STL 时并无 lambda，functor 类是他不得不用的最简方案；二十年后 lambda 上线，被社区戏称为"Stroustrup 替 Stepanov 还的债"。[轶]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/lambda ｜ https://en.cppreference.com/w/cpp/language/function ｜ https://en.cppreference.com/w/cpp/language/constraints
 
 ## ① 本章地图（先给结论，再击穿）
 

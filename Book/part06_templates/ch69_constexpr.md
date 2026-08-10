@@ -21,7 +21,15 @@
 `constexpr` vs TMP：前者用直白语法换可读性，后者用模板换极致通用；二者如今是「新代码用 constexpr，老基础设施留 TMP」的分工。[评] 它也是零开销抽象的延伸——同样的代码，编译期能算就绝不拖到运行期。
 
 ### 0.4 史料补遗与持续编年
-（待续：编译期计算与 `std::vector` 等动态结构在 `constexpr` 下的逐步放开、以及 `constexpr` 对标准库常量化的推动，可在此续写。）
+0.2 编年止于 C++20 的 `consteval`/`constinit`。`constexpr` 的「攻城」仍在继续：
+
+- [史] `constexpr` 的放宽史是一条「逐步攻城」的线：C++11 函数体只能单 return；C++14 放开局部变量与循环；C++20 让 `constexpr` 虚函数、`std::vector`/`std::string` 的「编译期可销毁」部分开始松动（P1002 等提案允许编译期 `new`/`delete` 被实现内部消化）。
+
+- [史] C++23 进一步把更多标准库类型标成 `constexpr`（`std::optional`、`std::variant`、部分 `<algorithm>`），并引入 `std::is_constant_evaluated()` 让函数「感知自己是否在被编译期求值」，从而写一份代码两用。
+
+- [评] 「标准库常量化」是自觉运动：委员会逐年把容器与算法升级为可用在常量表达式里，目标之一是让 `std::array` 之外也能在编译期构造真正的动态结构——代价是与老 ABI/运行时实现长期并存。
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/constexpr ；https://en.wikipedia.org/wiki/C%2B%2B23
 
 > 立场标签：`[标准]`=标准条文，`[实现]`=编译器实现行为，`[平台]`=平台/ABI 相关，`[经验]`=工程经验。
 

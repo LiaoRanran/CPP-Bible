@@ -22,8 +22,15 @@
 回收策略的核心取舍是**读侧开销 vs 写侧复杂度**：引用计数（每节点一个原子计数）实现直观，但每次访问都要原子增减，拖累热路径；Hazard Pointer 让读者几乎零开销，代价是每个回收对象要扫描少量"风险指针"；RCU 则把开销彻底推给写者（宽限期等待），换得读者完全无锁。[评] C++ 选择把 Hazard Pointer 标准化为通用设施，而非把某种回收"焊死"在容器里，保留了算法层的灵活。[史]
 
 ### 0.4 史料补遗与持续编年
-- C++26 方向：`std::hazard_pointer` 与 epoch/RCU 类设施逐步进入标准视野。[史]
-- （待续：用户态 RCU 库、与垃圾回收语言（如 Java GC）的对照、新硬件下的回收语义可在此追加。）
+回收机制从"各厂手写"走向"部分标准化"，RCU 与 Hazard Pointer 走了两条不同的路。
+
+- C++26 方向：Hazard Pointer 以 `std::hazard_pointer`（提案 P1122 系列）进入标准，与 RCU 类设施同期推进，把"安全回收"从库技巧提升为语言工具。[史]
+- [史] RCU 自 Linux 内核大规模落地后，用户态 RCU（Userspace RCU，由 Mathieu Desnoyers 等人开源）让无锁读 + 宽限期回收走出内核，被数据面（DPDK）、并发库广泛采用。
+- [评] 与 Java/Go 的"自动 GC 回收"相比，C++ 的 Hazard Pointer / RCU 把回收时机交给程序员，零运行时扫描开销，但也要求你真正理解"宽限期"——这是对零开销哲学的坚持，而非偷懒。
+- [轶] 一个经典反例：在 RCU 读侧临界区里调用可能睡眠/调度的函数，会无限拉长宽限期，导致写者永远无法回收——内核社区为此定下"RCU 读侧不可阻塞"的铁律。
+- C++23/26 持续讨论把 epoch-based reclamation 也纳入标准视野，进一步降低手写无锁回收的门槛。[史]
+
+> 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/
 
 ## ① 概述：并发内存回收的难题 [标准]
 

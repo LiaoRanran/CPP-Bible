@@ -26,8 +26,12 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：Sanitizer 与 fuzzing 结合、HWASan 在移动端的落地可在此追加。）
-- 已知后续：ASan/TSan/UBSan 已成 Clang/GCC 标配检测手段。[史]
+- [史] Sanitizer 与 fuzzing 结合催生了 libFuzzer / AFL++ 工作流：以插桩覆盖引导随机输入，专挖内存与解析类漏洞，已成为 OpenSSL、Chrome 等安全敏感项目的上线前标配。
+- [史] HWASan（基于硬件标签的内存检测）在 Android ARM64 上落地，以更低开销捕捉堆溢出，使移动端 C++ 也能享受 ASan 级防护，代价是需内核/硬件地址标签支持。
+- [史] GDB 的 Python 脚本接口与 LLDB 的初始化脚本让调试器可编程化，配合可视化前端（如 VS Code 的 C++ 调试）把"看一眼里面"的门槛降到历史最低。
+- [评] Sanitizer 把"已发生的崩溃"提前到"运行即报告到行"，是 C++ 内存安全工程实践里性价比最高的一层防线。
+
+> 史料来源：GDB 官网 https://www.sourceware.org/gdb/ ；Google Sanitizers Wiki https://github.com/google/sanitizers
 
 ## ① 概述：调试的目标与分层 [标准]
 

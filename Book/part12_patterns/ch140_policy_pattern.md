@@ -39,7 +39,16 @@ Policy-Based Design 由 Andrei Alexandrescu 在 2001 年的《Modern C++ Design�
 Policy-Based Design 对"继承层级"之争是"组合优于继承"的极致化：不是 A 继承 B，而是 `Host<A,B,C>` 把 A、B、C 三个策略在编译期拼成新类型 [评]。它与 CRTP 常被混用——基类用 CRTP 反向调用派生，派生用 Policy 决定行为。代价是模板错误极长、编译变慢，且对初学者门槛高 [评]。
 
 ### 0.4 史料补遗与持续编年
-（待续：Policy 与 concepts 的协同、编译期组合在 constexpr 时代的新形态均可在此续写。）〔轶〕据记载，Loki 这个名字取自北欧神话的"诡计之神"，暗合 Alexandrescu 这套"编译期戏法"的气质。
+继 2001 年 Alexandrescu 在《Modern C++ Design》中系统提出 Policy-Based Design，它在 C++20 concepts 与 constexpr 时代获得了更可读的写法。
+
+- [史] C++20 `concept` 允许把"策略类须满足的接口"写成约束，Policy 参数不再靠"传进去能编译就行"的默契，而是编译期强制契约——这正是 Policy-Based Design 梦寐以求的"可插拔且可检验"。
+- [史] `constexpr`/`consteval` 让 Policy 的组装与分发可发生在编译期甚至翻译期，配合 `if constexpr` 做策略分支，把"编译期组合"推到 Alexandrescu 当年手写 typelist 才能做到的地步。
+- [评] Policy-Based Design 与 CRTP 常被组合：基类用 CRTP 反向调用派生、宿主用 Policy 决定行为；代价依旧是模板错误极长、编译变慢、对初学者门槛高。
+- [轶] Loki 这个名字取自北欧神话的"诡计之神"，暗合 Alexandrescu 这套"编译期戏法"的气质。
+
+> 史料来源：
+> - https://en.cppreference.com/w/cpp/language/constraints
+> - https://en.cppreference.com/w/cpp/language/if
 
 ## ① 概述：Policy-Based Design 是什么
 

@@ -27,7 +27,15 @@ C 风格强转 `(T)expr` 在 1970 年代是"万能胶"：既能去 const、又�
 委员会的核心取舍：把"语义"编码进语法，使搜索危险转换、禁止无意义转换成为可能。[史][评] `dynamic_cast` 为安全引入运行时开销与 RTTI 依赖，常被追求零开销者诟病——于是有了 `std::variant` / `visit` 等"编译期多态"替代思路。[评]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++23 的 `std::bit_cast` 提供安全重解释；模式匹配对 cast 的替代可记于此。）
+
+0.2 停在 C++11 收紧 `reinterpret_cast` 的 `void*` 往返规则。C++20 起标准给出了"重解释"的安全替代。[史]
+
+- **C++20 `std::bit_cast`（P0476）**：对 trivially-copyable 类型做比特级重解释，编译期可求值且不涉及悬垂 / 严格别名 UB，逐步取代 `reinterpret_cast` 做类型双关。[史]
+- **C++20 隐式生命周期类型与 `std::start_lifetime_as`（P0593）**：为"在既有存储上重塑对象"提供比 `reinterpret_cast` + `std::launder` 更干净的官方路径，缓解 0.3 提到的另一条危险转换。[史]
+- **模式匹配提案（P1371 等）对 cast 的替代**：社区推动 `inspect` 表达式直接按类型分派，未来可能减少 `dynamic_cast` + `if` 的样板，是 0.3 "编译期多态替代"思路的延续。[史][评]
+- **行业落地**：金融 / 游戏等底层库仍大量用 `reinterpret_cast` 做网络字节序与序列化，但新代码优先 `std::bit_cast` 以过 UBSan；`-Werror=unsafe-buffer-usage` 等安全补丁继续收紧裸 cast 边界。[史][评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/numeric/bit_cast ｜ https://en.cppreference.com/w/cpp/language/explicit_cast ｜ https://en.cppreference.com/w/cpp/types/start_lifetime_as
 
 ## ① 本章地图（先给结论，再击穿）
 

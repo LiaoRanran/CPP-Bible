@@ -25,8 +25,15 @@
 `filesystem` 入标最大的争论是**错误处理风格**：是用异常还是 `std::error_code`？最终标准两者都给（`path` 构造等可抛异常，也可传 `error_code` 不抛），把选择权交给调用方。[评] 另一点是"路径到底是字节还是 Unicode"——跨平台编码（UTF-8 vs 原生宽字符）的处理，至今仍是细节争议的源头。[评]
 
 ### 0.4 史料补遗与持续编年
-- 待续：`std::filesystem` 与 OS 原生 API 在性能/语义上的差异（如符号链接），可补入。
-- 待续：C++ 后续对"文件 IO 与现代异步"的整合探索，作为新条目。
+
+> 0.2 停在 C++20 修补 `path::u8string` 等编码语义。原生 API 差异与"文件 IO + 异步"是后续支线。
+
+- [史] **`std::filesystem` 是"元数据库"非"内容库"**：它操作路径、目录、权限、文件状态，底层仍靠操作系统原生 API（POSIX `stat`/`dirent`、Windows `GetFileAttributes`/`FindFirstFile`）；因此符号链接、权限、时间戳语义在不同 OS 上有差异，标准只做"最小公分母"抽象。
+- [史] **符号链接与权限是跨平台坑源**：`equivalent`、`is_symlink`、`permissions` 在 Windows 与 POSIX 行为不同；`copy_options::recursive` 等选项虽统一了接口，但底层限制（如 Windows 软链需特权）仍会冒出来。
+- [评] **"异步文件 IO"至今未进标准**：`filesystem` 全同步；现代高并发框架（如 libuv、Boost.Asio、io_uring）各自做异步文件操作，标准层面尚无统一方案，C++ 提案偶有触及但未落地。
+- [轶] **Beman Dawes 的坚持**：Boost.Filesystem v3 的设计被 C++17 几乎原样采纳，这位也主导了 `boost::shared_ptr` 的元老，是"把 Boost 实战搬进标准"的典型人物。
+
+> 史料来源：[cppreference std::filesystem](https://en.cppreference.com/w/cpp/filesystem)、[Boost.Filesystem](https://www.boost.org/doc/libs/release/libs/filesystem/)
 
 ## ① 学习目标
 

@@ -22,8 +22,16 @@
 STL 最具颠覆性的一点是**算法与容器解耦**：算法只认迭代器区间 `[first, last)`，不认 `vector` 还是 `list`。[评] 这与当时"算法应是容器成员函数"（传统 OO）截然相反。Stepanov 坚持不用虚函数、不做运行时多态，靠编译期模板实例化换取零开销——代价是报错信息冗长、编译变慢。另一场争论是"值语义优先"：STL 容器默认存值而非引用，简化了所有权，却也逼出了 `move` 语义的后来补丁。[评]
 
 ### 0.4 史料补遗与持续编年
-- 待续：范围（Ranges）如何继承并改写 STL 的"迭代器对"范式，见 ⟶ Book/part07_stl/ch90_ranges.md。
-- 待续：C++ 委员会对"概念（Concepts）是否应早期进入 STL"的长期拉锯，可作为后续争议条目追加。
+
+> 0.2 停在 C++20 用 Concepts 把迭代器五类范畴升级为可检查概念。此后 STL 的"下半场"由范围、值语义包装与现代实现库接力。
+
+- [史] **C++17 收编一批"值语义基石"**：`std::string_view`（非拥有字符视图，源自 GSL）、`std::optional`/`std::variant`（脱胎于 Boost）、`std::filesystem`（基于 Boost.Filesystem v3）一并入标，把原先靠第三方库补位的能力写进正典。
+- [史] **C++20 完成"范围化 + 协作取消"**：`std::ranges` 成为正式标准（⟶ ch90），算法可直接吃单个区间并用 `|` 管道组合；同期 `std::span`、`std::format`、`std::jthread`/`std::stop_token` 入标，容器与并发第一次有了统一的取消语义。
+- [史] **C++23 补强视图与错误模型**：`std::expected`、`std::mdspan`（把 `span` 推广到 N 维）、`views::enumerate`/`views::zip`、`vector`/`string` 的 `append_range` 等入标，把"非拥有视图"思想铺到多维度与集合拼接。
+- [史] **实现从 SGI 走向三足鼎立**：1993 年 HP 授权、SGI 维护的 SGI STL 是事实源头，STLport 做可移植移植；今天生产环境由 GCC 的 libstdc++、Clang 的 libc++、MSVC 的 MS STL 三方实现，ABI 与细节差异（如 `string` 的 SSO 阈值）至今是跨平台话题。
+- [评] STL 的续写主线清晰：把运行时开销与所有权责任持续往**类型系统**里塞——视图不拥有、可选值编码进类型、范围取代裸迭代器对，方向始终如一。
+
+> 史料来源：[cppreference 标准库索引](https://en.cppreference.com/w/cpp/)、[libc++ 官方文档](https://libcxx.llvm.org/)、[MS STL 仓库](https://github.com/microsoft/STL)
 
 ## ① 学习目标
 

@@ -26,7 +26,16 @@ ECS（Entity-Component-System）成形于 1990 年代末的游戏引擎。常被
 ECS 对经典 OOP 游戏对象模型之争，本质是"数据布局 vs 对象语义"：OOP 把"是什么"（含行为）绑在一个对象上，ECS 把"纯数据（Component）"与"批量算法（System）"分离，让 System 能连续遍历同类组件、吃满缓存带宽 [评]。代价是心智模型反转——你不再"让对象做某事"，而是"让系统筛选一批数据做某类变换"。
 
 ### 0.4 史料补遗与持续编年
-（待续：Unity DOTS 的演进波折、Unreal MassEntity 的落地、以及 ECS 与 DOD 的边界厘清均可在此续写。）〔轶〕趣闻：Scott Bilas 在 2002 年 GDC 讲 Dungeon Siege 架构时，台下不少人才第一次意识到"继承树可能是个错误"。
+继 2010s Unity DOTS、Unreal MassEntity、EnTT 把 ECS 推向工业化，ECS 与 DOD 的边界在实践里被反复厘清。
+
+- [史] Unity 的 **DOTS**（Data-Oriented Tech Stack）几经波折：早期 Job System + ECS 推得激进，后因 API 不稳定与学习曲线劝退，Unity 转而把"数据导向"做进更渐进的路线，但 ECS 仍是其实时大规模实体的官方方案。
+- [史] Unreal 的 **MassEntity** 把 ECS 思想带入 5.x，面向开放世界海量 AI/实体；轻量库 **EnTT**（Michele Caini）则以"无框架税、零分配"在游戏与仿真社区走红。
+- [评] ECS 与 DOD 常被混为一谈，但边界其实清晰：ECS 是"实体=ID、组件=数据、系统=批处理算法"的架构范式，DOD 是更底层的"为缓存而排布数据"的原则——ECS 是 DOD 的一种组织形态，而非全部。
+- [轶] Scott Bilas 在 2002 年 GDC 讲 Dungeon Siege 架构时，台下不少人才第一次意识到"继承树可能是个错误"。
+
+> 史料来源：
+> - https://unity.com/features/dots
+> - https://github.com/skypjack/entt
 
 ## ① 概述：ECS 是什么（游戏/仿真） [标准]
 

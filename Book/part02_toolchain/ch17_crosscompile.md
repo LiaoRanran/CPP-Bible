@@ -27,8 +27,12 @@
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：RISC-V 崛起带来的新交叉工具链、Zephyr/RTOS 生态可在此追加。）
-- 已知后续：ARM/GNU 与厂商工具链持续演进，CMake 的 toolchain 文件已成为交叉编译配置主流。[史]
+- [史] RISC-V 的崛起带来全新交叉工具链：riscv64-linux-gnu / riscv32-elf 等三元组快速成熟，GCC/Clang 均原生支持，使"为开放指令集交叉编译 C++"成为新主流选项。
+- [史] Zephyr、RT-Thread 等 RTOS 生态把交叉编译做成"选板子即选工具链"，配合 CMake toolchain 文件，开发者几乎不必再手写 `--target` 与 sysroot。
+- [史] C++20/23 的标准库（libstdc++/libc++）持续补齐对裸机/小内存目标的支持，但异常与 RTTI 在 MCU 上仍常被 `-fno-exceptions` 关闭，沿用"完整 C++ + 工程裁剪"的胜出路线。
+- [评] 交叉编译的真正难点不在编译，而在 ABI、浮点约定（soft/hard float）与运行时能否在板子上跑起来——这些"看不见的契约"比指令集本身更易翻车。
+
+> 史料来源：RISC-V 国际 https://riscv.org/ ；Zephyr 实时操作系统 https://www.zephyrproject.org/
 
 ## ① 概述：什么是交叉编译 [标准]
 

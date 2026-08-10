@@ -18,8 +18,15 @@
 Ranges 的设计取舍在于**惰性（lazy）vs 急切（eager）**、以及"view 不拥有元素"的轻量约定。多数 `std::views::*` 是 O(1) 构造、只存迭代器的适配器，遍历时才真正计算——这让长管道零中间容器。[评] 委员会没有照搬 LINQ 的"急切求值 + 隐式物化"，而是把惰性做成默认，契合 C++ 的零开销哲学：你不遍历，就不付计算成本。代价是初学者要理解"view 是临时的、悬垂风险"。[史]
 
 ### 0.4 史料补遗与持续编年
-- C++23/26 持续扩充 range adaptor（如 `views::zip`、`views::chunk`）。[史]
-- （待续：range 与并行执行策略、与协程 `generator` 的联动、新适配器可在此追加。）
+Ranges 入标后，演进是"补适配器"与"打通协程/并行"两路并进。
+
+- C++23 一口气扩充大量 range adaptor：`views::zip`、`views::chunk`、`views::chunk_by`、`views::slide`、`views::adjacent` 等，把"惰性管道"可用的积木补齐了一大截。[史]
+- [史] 设计蓝本始终源自 Eric Niebler 的 range-v3：标准 `<ranges>` 几乎全盘吸收了 view/action 与管道运算符 `|` 的范式，社区库直接"升格"为标准的案例罕见地干净。
+- [评] Ranges 与执行策略（parallel policy）的整合长期慢半拍——"惰性 view 遇上并行算法"在语义上要小心中间结果的物化与数据竞争，委员会宁可慢也不愿放出会 UB 的组合。
+- [轶] Ranges 与 C++20 协程的联动是开发者最想要的甜点：`views::` 管道末端接一个 `std::generator` 就能写出"惰性 + 可暂停"的数据流，但二者的桥接在标准里仍在打磨。
+- C++26 讨论把更多算法改为接受 `std::ranges`、并支持"接收者（sender）"式的异步范围，朝着"统一迭代抽象"继续走。[史]
+
+> 史料来源：https://en.cppreference.com/w/cpp/ranges · https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0896r4.html
 
 ## ① 概述：Ranges 解决了什么 [标准]
 

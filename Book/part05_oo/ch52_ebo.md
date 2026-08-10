@@ -22,7 +22,15 @@ C 语言有个老规矩：即便 `struct` 为空，也得占至少 1 字节，�
 EBO 体现 C++ 对「大小即性能」的执念：在密集容器、嵌入式场景，多出的几个字节就是缓存行浪费。[评] 但它也和「每个对象要有唯一地址」的直觉相冲突——标准巧妙地用「基类子对象可以无地址」化解，既保住规则又放过了空类。
 
 ### 0.4 史料补遗与持续编年
-（待续：C++20 的 `[[no_unique_address]]` 把 EBO 的思想从「基类」推广到「任意空成员」，可在此续写其来龙去脉。）
+0.2 编年止于 EBO 成为策略式设计的基石。C++20 给这个故事续了关键一笔：
+
+- [史] C++20 的 `[[no_unique_address]` 把 EBO 的思想从「基类」推广到「任意空数据成员」：一个空的 allocator、comparator 或 stateless 函数对象作为成员时，可被重叠到邻位而免占空间，不再非得借「继承空基类」这一招。
+
+- [史] 空基类优化本身自 C++98 起被实现广泛支持（EDG、GCC 等），但其「只适用于基类、不适用于成员」的局限长期逼着库作者把空类型硬写成基类；属性化标注等于官方承认「空成员也应享此待遇」。
+
+- [评] `std::unique_ptr` 的默认删除器 `default_delete` 与 `std::allocator` 都是空类型，EBO/`[[no_unique_address]` 让「带删除器的智能指针」与「裸指针」占用同样大小——这是零开销抽象的具体兑现。
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/attributes/no_unique_address ；https://en.cppreference.com/w/cpp/language/ebo
 
 ---
 

@@ -23,7 +23,15 @@ C 在 1970 年代为"贴近硬件、零抽象"刻意留下大量"实现定义 / 
 零开销原则与"安全默认"的根本冲突：给 UB 一个确定结果（如抛异常）会强加运行时检查、拖慢所有程序。[史][评] 委员会选择"信任程序员 + 把优化权留给编译器"，于是 UB 成为编译器激进优化的武器（死代码消除、循环不变外提）。[评]
 
 ### 0.4 史料补遗与持续编年
-（待续：lifetime 静态分析提案、`-Werror=unsafe-buffer-usage` 等安全补丁持续收紧 UB 边界，可记于此。）
+
+0.2 停在 UBSan / trap 语义让 UB 可检测。此后"把 UB 关进笼子"从工具走向语言与政策层面。[史]
+
+- **生命周期静态分析（Lifetime 提案 / Core Guidelines 实现）**：Herb Sutter 的 Lifetime profile 试图在编译期证明"无悬垂引用"，虽未进标准，但 Clang 的 `-Wdangling` / `-Wlifetime` 等已落地部分检查。[史]
+- **C++ 安全倡议（2023 起）**：受内存安全政策讨论推动，ISO C++ 成立 Safety 工作组，探索"Profiles"（bounds / type / init safety 子集）以在不破坏零开销前提下收窄 UB 面，呼应 0.3 的零开销 vs 安全之争。[史][评]
+- **`-Werror=unsafe-buffer-usage`（Clang）**：把裸指针越界访问列为错误，是 UB 边界在编译器侧的硬收缩。[史]
+- **行业真实代价**：UB 被编译器"武器化"的经典案例（空指针检查被优化删除、UB 循环变无限循环）多次登上编译器邮件列表与安全公告，促使社区更重视规范写法。[史][评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/object ｜ https://isocpp.github.io/CppCoreGuidelines/ ｜ https://en.cppreference.com/w/cpp/
 
 ## ① 本章地图（先给结论，再击穿）
 

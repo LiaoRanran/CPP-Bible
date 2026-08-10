@@ -29,7 +29,16 @@
 Stroustrup 曾指出：在 C++ 里，许多 GoF 行为模式会被语言特性"蒸发"——Template Method 变成 CRTP、Strategy 变成模板参数或 `std::function`、Command 变成函数对象 [评]。这带来一个深层争论：模式是"该显式写出来的设计"，还是"该被语言吸收掉的语言特性"？C++ 的答案是两者兼有——能吸收的吸收，吸收不了的（如 Observer 的生命周期）仍需显式模式 [评]。
 
 ### 0.4 史料补遗与持续编年
-（待续：响应式/异步时代对 Observer/Command 的重塑、以及协程如何改写行为编排均可在此续写。）〔轶〕趣闻：Stroustrup 多次表示，STL 的 Iterator 是他最满意的"模式被语言吸收"的例子。
+继 2011 年 `std::function`/lambda 把 Strategy/Command 退化成"传闭包"，行为型模式在 C++20/23 协程时代再次被改写。
+
+- [史] C++20 协程（`co_await`/`co_yield`）把"行为编排"从手写状态机/Command 对象，变成可被挂起恢复的顺序代码——async/await 风格直接重塑了 Observer/Command 在服务端与现代框架里的写法。
+- [史] 响应式（reactive）与函数式思潮让 Observer 从"手维护订阅列表"进化为事件流/`std::ranges` 管道；许多旧式行为模式被"数据流 + 算子"重新表达。
+- [评] Stroustrup 的判断依旧成立：能吸收进语言的（Iterator、Strategy、Command）就交给语言，吸收不了的（Observer 的生命周期、跨模块协作）仍需显式模式——两者的边界随标准演进缓慢移动。
+- [轶] Stroustrup 多次表示，STL 的 Iterator 是他最满意的"模式被语言吸收"的例子。
+
+> 史料来源：
+> - https://en.cppreference.com/w/cpp/language/coroutines
+> - https://en.cppreference.com/w/cpp/algorithm/ranges
 
 ## ① 概述：行为型模式解决什么
 

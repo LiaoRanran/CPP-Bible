@@ -23,7 +23,17 @@ LLVM 于 2000 年在伊利诺伊大学厄巴纳-香槟分校（UIUC）由 Chris 
 LLVM 对 GCC 的核心之争是"模块化/库化 vs 单体"。LLVM 以 MIT 类（UIUC/NCSA）宽松许可、以 C++ 写成的一整套可链接库（你能在自己程序里 `InitializeNativeTarget()` 调起整个后端）著称；GCC 则长期是 GPL 单体、内部耦合 [评]。Clang 还凭"报错像人话"的诊断质量一战成名 [评]。这条路线之争，最终让"编译器基础设施"成为可复用的工业底座。
 
 ### 0.4 史料补遗与持续编年
-（待续：MLIR（2019）多层 IR、Swift/Rust 对 LLVM 的依赖、以及 Clang 在静态分析/工具链上的延伸均可在此续写。）〔轶〕坊间笑谈：因为 LLVM IR 太好用，有人拿它当"通用汇编"来写 DSL 编译器，已远超原作者的"虚拟机"本意。
+继 2005 年 Apple 资助 Clang、以及 2019 年 MLIR 立项，LLVM 从"通用后端"进一步长成了"多层编译基础设施"。
+
+- [史] MLIR（2019，Multi-Level IR）由 Google 与 LLVM 社区推动，用一个可嵌套的多层 IR 统一"高层 DSL → 高层优化 → 底层机器码"的 lowering，已成为 TensorFlow/XLA、可重构硬件（CIRCT）的底座。
+- [史] LLVM 14→15（2022–2023）完成了 **Opaque Pointer** 迁移，删除 `PointerType::getElementType()`，大量内部 Pass 因此编译失败——印证了"LLVM 的 C++ API 不稳、只有 `IRBuilder`/`LLVMContext` 契约可依赖"的教训。
+- [史] Clang 16–20 持续补齐 C++20/23（modules、concepts、`std::format` 后端支持等），并把 clang-tidy、clangd（LSP）、sanitizer 等工具链打磨成工业标配。
+- [评] LLVM 的"模块化"哲学赢了 GCC 的单体结构，但代价是构建与链接极重——一份完整 LLVM 静态库链接动辄数分钟，催生了 LLD、thin LTO 等配套优化。
+- [轶] 因为 LLVM IR 太好用，社区确有不少人拿它当"通用汇编"写 DSL 编译器，已远超 Lattner 当年"虚拟机"的本意。
+
+> 史料来源：
+> - https://llvm.org/docs/
+> - https://mlir.llvm.org/
 
 ## ① 概述：LLVM 项目与 Clang [标准]
 

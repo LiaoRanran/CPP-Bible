@@ -17,7 +17,15 @@ C++ 的 `private` / `public` 访问控制继承自 Simula 67 的"数据隐藏"�
 访问控制是"编译期纪律"而非"运行时安全"——`friend` 证明它本就是"给程序员的约定"而非铁墙。[评] 隐藏友元（在类内 `friend` 定义运算符）被标准库风格推崇，因为它只经 ADL 可见、不污染普通查找，是访问控制与查找艺术的结合。[史][评]
 
 ### 0.4 史料补遗与持续编年
-（待续：反射 / 元类提案对"私有是否可被反射"的重新审视可记于此。）
+
+0.2 停在 C++11 起隐藏友元（hidden friend）成为现代 idiom。C++20 的三路比较把"隐藏友元"推成官方推荐写法。[史]
+
+- **C++20 `operator<=>`（三路比较）默认以隐藏友元生成 `==` / `<` 等**：标准库与 Core Guidelines 推荐把比较运算符写成类内 `friend` 的 hidden friend，使其只经 ADL 可见、避免污染普通查找，是 0.3 那套"访问控制 + 查找艺术"的官方化。[史]
+- **静态反射提案（C++26 候选）对"私有是否可被反射"的重新审视**：反射若允许遍历私有成员，将与 `private` 封装契约冲突，社区在"可测试性 / 序列化便利"与"封装"间拉扯，是 0.3 之争的延续。[史][评]
+- **行业落地**：`operator<<` / 比较运算符 / 工厂函数普遍采用 hidden friend；标准库（`std::chrono`、`std::strong_ordering` 等）大量以此避免 ADL 风暴（见 ch23）。[史]
+- **轶事**：据记载 `friend` 最初被 Stroustrup 视为"对封装的小小妥协"，未曾想成了运算符重载与泛型库（如 `std::swap` 的 ADL 定制）的支柱。[轶]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/friend ｜ https://en.cppreference.com/w/cpp/language/operators ｜ https://en.cppreference.com/w/cpp/language/lookup
 
 ## ① 学习目标 [标准]
 

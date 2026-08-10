@@ -35,7 +35,15 @@
 C++ 不替你做数据布局优化，但给你"控制布局"的全部权力（结构体成员顺序、SOA / AOS、`alignas`）。[史][评] 这与"零开销"一致：编译器不偷偷重排你的结构体，性能责任在作者——换来了可预测性。[评]
 
 ### 0.4 史料补遗与持续编年
-（待续：NUMA、硬件预取、C++ 对 `[[assume]]` / 缓存提示的新支持可记于此。）
+
+0.2 停在 C++17 标准化 `std::hardware_destructive_interference_size`。此后"缓存提示"从宏常量走向语言内建。[史]
+
+- **C++20 `std::assume_aligned`（P1007）**：把"此指针按 N 字节对齐"作为编译器可依赖的假设，解锁向量化与去边界检查；是 0.3 "把布局控制权交给你"的精细化工具。[史]
+- **`[[likely]]` / `[[unlikely]]`（C++20）影响分支与预取**：虽主司分支预测，但常与缓存友好的数据布局配合，减少冷热数据交错带来的缓存污染。[史]
+- **NUMA 与硬件预取成为新现实**：多路服务器的"内存远近"直接决定延迟量级，`std::pmr`（ch38）/ 自定义池（ch44）开始感知 NUMA 节点；硬件预取器（stride / stream）让"顺序访问"的局部性红利更稳，但不规则随机访问仍易踩内存墙（见 ch35）。[史][评]
+- **行业思潮**："面向数据设计（Data-Oriented Design）"在游戏 / 模拟领域盛行，以 SoA 替代 AoS、按访问重排字段，本质是把 0.1 "内存墙"变成可编程杠杆。[史][评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/memory/assume_aligned ｜ https://en.cppreference.com/w/cpp/language/attributes ｜ https://en.cppreference.com/w/cpp/types/hardware_interference_size
 
 ## ① 存储层次与延迟量级（内存墙）
 

@@ -29,7 +29,15 @@
 C 中 `auto` 是存储类；复活它引发"破坏旧代码"的担忧，但委员会判断"几乎没人用 `auto` 当存储类"，风险可忽略，于是重用了这个被遗忘的关键字而非造新词。[史][评] 另一争点是 `auto` 是否应默认带 `const` / 引用——结论是不，保持"按值推导"，`decltype(auto)` 才保留 cv / 引用。[史]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++23 的 `deducing this` 用 `auto&&` 接 `*this`；推导能力的边界随标准持续扩张，可记于此。）
+
+0.2 停在 C++20 把 `auto` 推进到概念约束与结构化绑定。同年还有两项"auto 作为推导发动机"的关键落子。[史]
+
+- **C++20 缩写函数模板（abbreviated function templates, P1141）**：`void f(auto x)` 等价于一个单参数模板，让"泛型函数"不再需要 `template<typename T>` 前缀，并与概念约束 `void f(C auto x)` 直接结合，是 `auto` 从"变量推导"跃迁到"函数签名"的标志。[史]
+- **C++20 模板形参 lambda（`[]<typename T>(T x){...}`）**：lambda 第一次能显式写出模板形参，配合泛型 lambda 补上"需要在闭包内做显式特化 / 重载"的能力。[史]
+- **C++23 显式对象形参（`this auto&& self`）复用转发引用**：成员函数用 `auto&&` 接 `*this`，本质是 0.1 那条"auto 复活为推导发动机"在成员函数上的回响。[史]
+- **行业落地与争议**：`auto` 在范围 for、泛型算法中几乎成为现代 C++ 默认写法，Boost / Ranges 全面采用；但"auto 掩盖真实类型、拖慢可读性"的批评长期存在，Core Guidelines 建议对 `int` 等普通类型显式写出。[史][评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/auto ｜ https://en.cppreference.com/w/cpp/language/lambda ｜ https://en.cppreference.com/w/cpp/language/function
 
 ## ① 学习目标
 

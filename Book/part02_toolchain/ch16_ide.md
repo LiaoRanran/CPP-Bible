@@ -27,8 +27,12 @@ IDE 之争是"重集成 vs 轻可订"。重量级 IDE（CLion/VS）内建索引�
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：AI 辅助补全（Copilot 类）如何重塑 IDE、远程开发容器化可在此追加。）
-- 已知后续：LSP 已成编辑器智能的事实协议，Clangd/ccls 是 C++ 主力语言服务器。[史]
+- [史] AI 辅助补全（Copilot 类）重塑了 IDE：从"基于符号的补全"升级为"基于上下文生成整段实现"，VSCode、CLion 均已内建或插件化接入，C++ 因模板/宏难解析而受益尤为明显。
+- [史] 远程开发容器化（Dev Container / 远程 SSH）让"同一份工具链在任何人机器上一致"成为现实，配合 LSP，轻编辑器也能获得接近重量级 IDE 的语义体验。
+- [史] Clangd 借助 Clang 前端给出近乎编译级的补全与诊断，确立了"复用编译器做 IDE 智能"的胜出路线；ccls 则在大代码库索引上表现突出。
+- [评] C++ 的 IDE 体验天堑，根源仍是模板与宏的解析难度——这恰是语言服务器质量成为体验分水岭的深层原因。
+
+> 史料来源：语言服务器协议 LSP https://microsoft.github.io/language-server-protocol/ ；Clangd https://clangd.llvm.org/
 
 ## ① 概述：IDE 在 C++ 工作流中的角色 [标准]
 

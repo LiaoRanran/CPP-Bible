@@ -27,8 +27,12 @@ C/C++ 编译器天生要解决"把文本变成机器码"。GCC 由 Richard Stall
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：GCC 与 Clang 在 C++23/26 支持度上的你追我赶、MSVC 向 Clang 靠拢的动向可在此追加。）
-- 已知后续：Clang 已成为 macOS/iOS 的默认工具链，LLVM 渗入显卡与 AI 编译器。[史]
+- [史] GCC 与 Clang 在 C++20/23 支持度上长期"你追我赶"：GCC 13 完成 `std::print`/Ranges 大部分、Clang 16 跟上，MSVC 17.8+ 宣布完整 C++23——谁先合入某个特性常成社区头条。
+- [史] MSVC 在 2010s 后逐步靠拢 Clang/LLVM 生态：其实验性 "ClangCL" 后端与对标准更积极的追赶，缓解了长期"自家 ABI、慢半拍"的批评。
+- [史] LLVM 的 IR 设计让同一前端支撑多后端，现已被 AMD ROCm、NVIDIA CUDA 编译器、Apple Metal 着色器管线广泛复用，远超"C++ 编译器"范畴。
+- [评] 三家路线差异仍在：GCC 守 GPL、Clang 守 BSD 模块化、MSVC 守 Windows 绑定——选工具链本质是选许可与生态立场。
+
+> 史料来源：Clang 官网 https://clang.llvm.org/ ；GCC C++ 状态 https://gcc.gnu.org/projects/cxx-status.html
 
 ## ① 概述：为什么需要编译器，三巨头格局
 

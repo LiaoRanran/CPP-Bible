@@ -30,7 +30,15 @@
 "是否该有异常"本身在 C++ 社区是持久战；C++ 选择"有异常但默认不抛"的不强制，并把"强 / 基本 / 无"保证作为软性契约而非语言强制。[史][评] `noexcept` 折中：它既是优化提示，也是接口承诺，把责任交还作者。[评]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++23 `std::expected` 提供"无异常的错误码"替代路径；契约（contracts）提案对异常安全的补充可记于此。）
+
+0.2 停在 `noexcept` 直接决定 `std::vector` 扩容走移动还是拷贝。C++20 后异常安全从"语言机制"向"错误码替代"与"契约"延展。[史]
+
+- **C++23 `std::expected`（P0323）提供"无异常的错误码"路径**：`std::expected<T, E>` 用值类型表达失败，完全不走 `throw` / `catch`，与异常安全四级保证并行，是 0.3 "有异常但不强制"之争的温和补充。[史]
+- **契约（Contracts）提案的波折**：本计划进 C++20 的契约（`[[assert:]]` / `[[ensures]]` 等，P0542）在 2019 年被投票移出标准，后以 P2900 等重启讨论，目标是把"前置 / 后置条件"变成可被异常 / 终止强制的检查，是异常安全在"预防性"方向的延伸。[史][评]
+- **`std::error_code` / `std::system_error` 体系持续作为异常的低开销替代**：在拒绝异常的代码库（如部分大型服务 / 嵌入式）中，`std::expected` 与其并用，形成"关键路径无异常"的工程纪律。[史]
+- **行业现实**：Chromium / Android 等大规模代码库长期禁用异常（`-fno-exceptions`），用错误码 + RAII（ch39）维持安全，印证 0.3 "默认不抛"的工程化选择。[史][评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/utility/expected ｜ https://en.cppreference.com/w/cpp/error/error_code ｜ https://isocpp.github.io/CppCoreGuidelines/
 
 ## ① 概述：异常安全是什么，四种保证一览
 

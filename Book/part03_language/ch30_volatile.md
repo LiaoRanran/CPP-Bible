@@ -19,7 +19,15 @@
 `volatile` 解决"编译器优化"，不解决"CPU / 缓存一致性"——这两件事被长期混淆。[史][评] 委员会明确：线程同步请用 `atomic` / 互斥；`volatile` 只管"硬件会偷看 / 改写"。这是把"单线程语义"与"并发语义"彻底分开的关键一刀。[史]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++20 的 `volatile` 与 `std::atomic_ref`、对 MMIO 的 `[[indeterminate]]` 等新讨论可记于此。）
+
+0.2 停在 C++11 用 `std::atomic` 把并发同步从 `volatile` 手里夺走。但 `volatile` 在 C++20 后仍有现实讨论。[史]
+
+- **C++20 `std::atomic_ref`（P0019）**：允许把"已存在的普通（甚至 `volatile`）对象"临时包成原子引用做并发访问，避免了为线程安全而改类型；它与 0.3 的"`volatile` 不解决原子性"形成互补——`atomic_ref` 才管原子性。[史]
+- **`volatile` 在并发语义上仍是"实现定义"的灰色地带**：MSVC 历史实现中 `volatile` 读 / 写带 acquire/release 语义（被 `/volatile:ms` 默认开启），而 GCC/Clang 严格遵循标准（无跨线程保证），同一段 `volatile` 代码在三家编译器行为不同——这是 0.3 之争的工程余波。[史][评]
+- **MMIO 与信号处理仍是 `volatile` 的正当领地**：嵌入式 / 内核代码中 `volatile` 映射硬件寄存器的用法未被任何新特性替代，`[[indeterminate]]` 等未初始化相关讨论主要服务于安全而非取代它。[史]
+- **行业争议**：社区反复出现"是否该给 `volatile` 加并发语义"的提案，最终都被否，维持"volatile = 硬件可见性，atomic = 线程原子性"的清晰分工。[史][评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic_ref ｜ https://en.cppreference.com/w/cpp/language/cv ｜ https://en.cppreference.com/w/cpp/atomic
 
 ## ① 学习目标 [标准]
 

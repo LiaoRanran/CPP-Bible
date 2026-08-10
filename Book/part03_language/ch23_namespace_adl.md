@@ -30,7 +30,16 @@ C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀（如 `std_`、`
 ADL（参数依赖查找）是命名空间的"伴生怪物"：为了让 `operator<<(cout, x)` 能找到定义在 `std` 里的 `operator<<`，编译器会顺着参数类型悄悄进它的命名空间。[史][评] 这方便了运算符重载，却被诟病"查找不透明"。C++20 的 `std::ranges` 刻意把 `begin` 等放进 `std::ranges` 以规避 ADL 风暴，正体现了对它的爱恨。[史][评]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++20 模块彻底绕开头文件宏污染；静态反射对命名空间元数据的暴露可在此追加。）
+
+0.2 停在 C++17/20 用嵌套 using 与模块缓解命名污染。ADL 这头"伴生怪物"在 C++20 后反而被标准库刻意规避。[史]
+
+- **C++20 模块（Modules, P1103）进一步绕开头文件宏污染**：`import std;` 等命名模块不再经文本包含，宏与匿名命名空间不再跨 TU 泄漏，命名空间的"隔离"角色部分被模块接替。[史]
+- **`std::ranges` 用定制点对象（CPO）规避 ADL 风暴（C++20）**：ranges 把 `begin` / `end` 等做成 CPO，只在必要时走 ADL，解决了 0.3 提到的"查找不透明"痛点。[史][评]
+- **inline namespace 成为 ABI 版本控制事实标准**：libstdc++ 用 `__cxx11` inline namespace 区分新旧 ABI（`std::string` 实现切换），Boost 等库沿用此惯用法做无断裂升级。[史]
+- **C++26 静态反射预览**：反射提案将让命名空间、类型元数据可被代码遍历，命名空间从"编译期作用域盒子"变为"可运行时枚举的元数据树"，呼应 0.3 的治理主题。[评]
+- **轶事**：据记载早期委员会曾认真讨论"是否默认开启 ADL"，最终因会破坏所有运算符重载而放弃；ADL 因此成为"无法撤销的历史包袱"。[轶]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/namespace ｜ https://en.cppreference.com/w/cpp/language/lookup ｜ https://en.cppreference.com/w/cpp/language/modules
 
 ## ① 本章地图（先给结论，再击穿）
 

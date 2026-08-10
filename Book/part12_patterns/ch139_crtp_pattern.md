@@ -28,7 +28,16 @@ CRTP（Curiously Recurring Template Pattern，奇异递归模板模式）这一�
 CRTP 对虚函数之争是"C++ 零开销抽象"的教科书案例：虚函数为"运行时未知类型"付费，CRTP 为"编译期已知类型"免费 [评]。但代价是代码膨胀（每实例化一种派生就生成一套基类代码）和错误信息地狱 [评]。它并非虚函数的替代品，而是"类型在编译期就确定"那一档的最优解。
 
 ### 0.4 史料补遗与持续编年
-（待续：CRTP 与 concepts 的结合、Barton-Nackman 技巧的演进、以及编译期多态在现代库中的新用法均可在此追加。）〔轶〕轶事：Coplien 当年命名 "Curiously Recurring" 时，大概也没料到这个"奇怪"的套路会成为现代 C++ 的基石之一。
+继 1990s 初 Coplien 命名、ATL 把它推上工业舞台，CRTP 在 C++20 concepts 时代获得了更克制的表达空间。
+
+- [史] C++20 `concept` 让 CRTP 基类能对被"反向传入"的派生类加编译期约束，替代过去靠 `static_cast`/SFINAE 的隐式假设，错误信息从"天书"回到可读。
+- [史] Barton-Nackman 技巧（用友元 + 基类注入运算符）作为 CRTP 的前身，其思想被吸收进标准库的 `std::enable_shared_from_this`、以及 `std::ranges` 的诸多 CRTP 基类。
+- [评] CRTP 的"零开销静态多态"在热路径（如 `Eigen`、`boost::intrusive`、序列化框架）里仍是首选；代价仍是代码膨胀与编译时长——概念化后诊断改善，但膨胀本质未变。
+- [轶] Coplien 当年命名 "Curiously Recurring" 时，大概也没料到这个"奇怪"的套路会成为现代 C++ 的基石之一。
+
+> 史料来源：
+> - https://en.cppreference.com/w/cpp/language/crtp
+> - https://en.cppreference.com/w/cpp/language/constraints
 
 ## ① 概述：CRTP 是什么
 

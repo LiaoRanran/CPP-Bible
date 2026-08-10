@@ -30,8 +30,15 @@ C++ 面对 JSON 有两道根本抉择。其一是**映射路线**：类型擦除
 
 ### 0.4 史料补遗与持续编年
 
-- 截至 C++23，标准库仍没有 `std::json`；静态反射（reflection）提案若落地，代码生成式映射有望大幅简化。
-- （待续：schema 校验、与 protobuf 的取舍、零拷贝解析可在此追加。）
+> 紧接 0.2 编年最后一条（2019，simdjson 用 SIMD 把解析推到 GB/s）。
+
+- [史] 截至 C++23，标准库仍没有 `std::json`；但 **静态反射（reflection，P2996 系列）** 提案推进，若落地，代码生成式映射（按 schema 直接映射成你的 `struct`）有望大幅简化，呼应 0.3 的"映射路线"之争。
+- [史] **`boost.json` / `boost.describe`** 把"用宏/反射描述 struct → 自动 (de)serialize"做成可复用设施；与 nlohmann/json 的"运行时 variant 树"形成鲜明对照，是 0.3 两道抉择的工程落地。
+- [史] **JSON Schema 校验**（如 `valijson`、各框架内置）与 **protobuf / FlatBuffers** 在"跨语言强类型载荷"场景上与 JSON 拉锯：前者人类可读、后者零解析、体积小——选型取决于"可读性"还是"性能/带宽"。
+- [评] C++ 面对 JSON 至今没有"官方答案"，反而印证 0.3"映射 vs 生成、DOM vs SAX"的张力：标准库的沉默，把选择权留给了生态。
+- [轶] 性能圈名场面：simdjson 首次发布时，解析速度比当时最快的实现快一个数量级，作者 Lemire 的基准成了所有 JSON 库必过的"对照线"。
+
+> 史料来源：github.com/tencentrapidjson/rapidjson、github.com/simdjson/simdjson
 
 ## ① 概述：JSON 与 C++ 映射 [标准]
 

@@ -30,7 +30,16 @@ Chromium 是 Google 2008 年开源的浏览器项目（Chrome 的内核），它
 Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而是在标准"慢半拍"处补位——`flat_hash_map` 比 `std::unordered_map` 更快、`string_view` 比裸指针安全且早于标准出现 [评]。Chromium `base` 则更进一步，是"只服务于浏览器"的专用底座，与追求通用的 Abseil 形成层次分工 [评]。
 
 ### 0.4 史料补遗与持续编年
-（待续：Abseil 与 std 的版本对齐策略、Chromium base 在多进程沙箱上的演进、新基础设施模块均可在此续写。）〔轶〕据记载，Abseil 的命名取自 'Ab' + 'seil'，官方并未赋予特别含义，纯为发音好记——这也符合它"低调务实的基础设施"定位。
+继 2019 年 Abseil 开源、并长期扮演"标准先行者"，它与 `std` 的关系在 C++20/23 落地后进入了"让位与对齐"的新阶段。
+
+- [史] Abseil 的 `absl::StatusOr` 与 `absl::string_view` 直接催生了 `std::expected`（C++23）与 `std::string_view`（C++17）；随着标准版本普及，Abseil 转而强调"与标准对齐、逐步让位"，并放弃 C++14、把基线抬到 C++17。
+- [史] Chromium 持续把浏览器级设施下沉进 `base`：多进程沙箱、Mojo IPC、ThreadPool 任务调度成为一切上层的基础；Chrome 自身也随 C++ 标准推进逐步启用 C++20 特性。
+- [评] Abseil 的"提前实现标准"策略被证明双赢——既给 Google 内部提前吃上现代设施，又给标准委员会提供真实工业反馈；代价是维护者要两头追（自己的 API 与进标准后的 `std` 版）。
+- [轶] Abseil 的命名取自 'Ab' + 'seil'，官方并未赋予特别含义，纯为发音好记——这也契合它"低调务实的基础设施"定位。
+
+> 史料来源：
+> - https://abseil.io/
+> - https://chromium.googlesource.com/chromium/src/+/main/base/
 
 ## ① 概述：Chromium / Abseil 基础设施 [标准]
 

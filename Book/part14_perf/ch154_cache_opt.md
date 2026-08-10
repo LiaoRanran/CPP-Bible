@@ -24,8 +24,16 @@
 缓存时代的核心争论，是"算法复杂度（Big-O）"与"实际访存行为"谁说了算。`[评]` 一个 O(n) 但随机跳内存的算法，常常跑不过一个 O(n log n) 但顺序友好的算法。更深的分歧是面向数据设计（Data-Oriented Design，Mike Acton 等人倡导）vs 传统面向对象：把数据按"怎么被访问"而非"怎么被分类"来排布，往往能换来数倍真实提速。
 
 ### 0.4 史料补遗与持续编年
-- 待续：非一致性缓存（NUCA）、GPU 的显存层级正把"局部性"问题推向新维度。
-- （待续：新工具、新方法可在此追加）
+
+> 紧接 0.2 编年最后一条（2000s 多核时代，缓存行与 false sharing 成并发关键词）。
+
+- [史] C++17 引入 **`std::hardware_destructive_interference_size`**（与 constructive 配对），把"缓存行多大、该 padding 多少"以标准常量暴露，跨平台写无 false sharing 的结构终于不用手硬编码 64。
+- [史] **面向数据设计（DOD）** 经 Mike Acton（Data-Oriented Design 演讲）、Unity DOTS 等推广，从游戏圈扩散到通用 C++：把数据按"怎么被访问"排布，而非按"怎么被分类"，实测常换来数倍提速，呼应 0.3 之争。
+- [史] 持久内存（PMEM / Intel Optane）与非一致性缓存（NUCA）让"局部性"问题维度更多——"内存在哪""它会不会掉到慢介质"成了缓存优化新课题。
+- [评] 0.3 里"Big-O 说了不算、访存行为说了算"的判断被现实反复验证：同一个算法，行优先 vs 列优先、AoS vs SoA 的差距远大于渐近复杂度的差别。
+- [轶] 行内名言（Acton）："你不是在为对象写代码，你是在为数据在内存里的样子写代码"——把 0.1 的 memory wall 痛点说到了极致。
+
+> 史料来源：en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size、dataorienteddesign.com
 
 ## ① 概述：为什么缓存决定性能，而非 CPU 峰值 [标准]
 

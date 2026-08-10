@@ -21,8 +21,15 @@
 `sort` vs `stable_sort` 的取舍在于"要不要保序"：稳定排序对"先按 A 排、再按 B 排"的多键排序至关重要，但通常更慢、更费内存。[评] 另一争论是"为何不用纯堆排"——纯堆排最坏 O(n log n) 但常数大、缓存差；introsort 用快排打主力、堆排只兜底，是工程上"平均快 + 最坏稳"的典范。[评]
 
 ### 0.4 史料补遗与持续编年
-- 待续：各大标准库（libstdc++/libc++/MS STL）在 `sort` 上的微调差异，可补入。
-- 待续：并行/抽样排序（如 pdqsort）对标准 sort 的影响，作为新条目。
+
+> 0.2 停在 C++17 执行策略让 `sort` 可并行、C++20 提供 `ranges::sort`。各实现微调与 pdqsort 影响是后续支线。
+
+- [史] **各库 `sort` 都是 introsort 变体，但阈值各异**：libstdc++、libc++、MS STL 都用"快排 + 堆排兜底 + 小数组插入"的 introsort，但"何时切堆排""小数组阈值多少"是各自调过的常数，导致相同输入在不同库下递归深度与速度略有差异。
+- [史] **pdqsort（pattern-defeating quicksort）影响了行业**：Orson Peters 2015 年提出的 pdqsort 在几乎有序/重复多等恶意输入上比经典 introsort 更稳更快，已被 Rust、Boost.Sort、部分标准库作为参考或采用。
+- [评] **`stable_sort` 的并行更棘手**：稳定归并需要额外缓冲，并行化要处理分块合并的正确性；各库对 `stable_sort(par, ...)` 的支持与性能差异远大于 `sort`，是实战中常被忽略的坑。
+- [轶] **一个经典面试题的源头**：Musser 当年证明"快排对精心构造的输入退化 O(n²)"，正是 STL 引入 introsort 的直接动机——introsort 名字即"内省（introspective）排序"，会在递归过深时"反省"并切到堆排。
+
+> 史料来源：[cppreference std::sort](https://en.cppreference.com/w/cpp/algorithm/sort)、[Boost.Sort](https://www.boost.org/doc/libs/release/libs/sort/)
 
 ## ① 概述：排序在 `<algorithm>` 中的位置 [标准]
 

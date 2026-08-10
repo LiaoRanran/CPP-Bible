@@ -27,7 +27,16 @@
 创建型模式内部就有路线之争：GoF 的工厂/单例是**运行时**灵活（可配置、可替换）；而 Modern C++ Design 的 Policy-Based 创建是**编译期**定型（零运行时开销、类型安全）[评]。Singleton 更是常年被吐槽"全局状态杀手、测试地狱"[评]——于是有了 Meyers Singleton（magic static，线程安全）这种折中。
 
 ### 0.4 史料补遗与持续编年
-（待续：依赖注入对单例的替代、编译期工厂的新写法、以及"单例是否该进博物馆"的争论均可在此追加。）〔轶〕趣闻：Meyers Singleton 依赖的 "magic static" 线程安全，曾是 C++11 之前各大编译器"各搞各的"的灰色地带。
+继 1994 年五种创建型模式确立，创建型讨论在 C++11 之后转向"生命周期交给 RAII、装配交给注入"。
+
+- [史] C++11 的智能指针与移动语义让"谁 delete"被 RAII 自动接管，工厂方法的返回值从裸指针进化为 `std::unique_ptr`/`std::shared_ptr`，调用方不再手动管理所有权。
+- [史] 依赖注入（DI）框架在 C++ 落地（如 Boost.DI），把"创建型模式"从手写工厂进一步推向"外部装配"——对象的构造依赖由容器在运行期或编译期注入，单测可换 fake。
+- [评] Singleton 长期被吐槽"全局状态杀手、测试地狱"，现代共识是"能用注入就别用单例"；Meyers Singleton（magic static）只作为"确实需要一个全局且要线程安全"时的折中保留。
+- [轶] Meyers Singleton 依赖的 "magic static" 线程安全，曾是 C++11 之前各大编译器"各搞各的"的灰色地带，直到 C++11 把它写进标准才统一。
+
+> 史料来源：
+> - https://en.cppreference.com/w/cpp/memory/unique_ptr
+> - https://boost-ext.github.io/di/
 
 ## ① 概述：创建型模式解决什么
 

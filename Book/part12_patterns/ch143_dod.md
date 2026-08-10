@@ -29,7 +29,16 @@ DOD（Data-Oriented Design，面向数据设计）由游戏与主机开发者推
 DOD 对 OOP 的核心之争是"先想数据还是先想对象"：OOP 先问"有哪些对象、各自有什么行为"，DOD 先问"我要对哪一批数据做哪类批量变换、它们该怎么躺在内存里"[评]。Acton 的判断是"你不是在给对象写方法，你是在为硬件搬运字节"[评]。代价是：对小规模、逻辑复杂的业务，DOD 反而显得过度工程。
 
 ### 0.4 史料补遗与持续编年
-（待续：DOD 与 SIMD/多线程预取的进一步结合、以及它在非游戏领域（数据库、科学计算）的渗透均可在此追加。）〔轶〕据记载，Acton 那句"cache miss 才是真敌人"在 CppCon 现场引发长时间掌声，成为 DOD 的"战歌"。
+继 2014 年 Mike Acton 的 CppCon 演讲让 DOD 成为现代 C++ 性能话语的核心词，它开始向 SIMD 与非游戏领域渗透。
+
+- [史] DOD 与编译器自动向量化（`-O3 -ffast-math` 暴露的 SIMD）、显式 prefetch、多线程分块深度结合——SoA（Structure-of-Arrays）布局让一条 AVX 指令能吃下 8 个 `float`，成为高性能数值代码的默认起点。
+- [史] DOD 思想溢出游戏：数据库执行引擎（列式存储）、科学计算、物理仿真、金融风控都采用"连续摆数据、批量变换"的思路，与 ClickHouse 的列存、RocksDB 的块布局同源。
+- [评] Acton 的"先想数据再想对象"在大规模、规则简单的数据处理上所向披靡；但对小规模、逻辑复杂的业务，DOD 反而显得过度工程——它从来不是 OOP 的替代品，而是互补的另一极。
+- [轶] Acton 那句"cache miss 才是真敌人"在 CppCon 现场引发长时间掌声，成为 DOD 的"战歌"。
+
+> 史料来源：
+> - https://www.youtube.com/watch?v=rX0ItVEVjHc （Mike Acton, CppCon 2014）
+> - https://en.cppreference.com/w/cpp/language/array
 
 ## ① 概述：DOD 是什么（Data-Oriented Design）
 

@@ -27,8 +27,16 @@
 集中式（SVN）"单一真相源在中央" vs 分布式（Git）"每人都是完整仓库"之争，最终被 Git 赢下。`[评]` 但分支策略上仍有拉锯：重型的 Git Flow（develop / release / hotfix 多长线）适合缓慢发布的产品，而"主干开发（trunk-based）"更适合高频 CI 的团队。C++ 项目因构建慢、耦合强，更忌长期分叉——分支越久，合并越痛。
 
 ### 0.4 史料补遗与持续编年
-- 待续：稀疏检出（sparse-checkout）、部分克隆正缓解超大单仓（monorepo）的克隆成本。
-- （待续：新工具、新方法可在此追加）
+
+> 紧接 0.2 编年最后一条（2010，Vincent Driessen 发表 Git Flow）。
+
+- [史] GitHub 随后推广更轻量的 **GitHub Flow**（只有 `main` + 短命分支 + PR），以及 Google 倡导的 **trunk-based development**，两者都主张"小批量、高频合入"，与 0.3 里"分支越久合并越痛"的判断一致。
+- [史] Git 在 2.x 引入 **partial clone / sparse-checkout / blobless clone**，直接缓解超大单仓（monorepo）的克隆成本——Chromium、LLVM 这种数十 GB 仓库也能秒级拿到可工作副本，C++ 大型工程的协作瓶颈被削掉一块。
+- [史] Conventional Commits 与 Semantic Versioning 成为事实约定，提交信息（type(scope): summary）与版本号（MAJOR 才允许破坏性）绑定，让"这次改动是否破坏 ABI"在合并前即可被工具推断。
+- [评] 对构建慢、耦合强的 C++ 项目，trunk-based 比重型 Git Flow 更稳：长期分叉在 C++ 里代价尤其高，因为一次大合并常伴随漫长重编与 ABI 对账。
+- [轶] 社区金句："Git Flow 适合按季度发布的产品，trunk-based 适合按分钟发布的团队"——微服务与 CI 成熟后，越来越多 C++ 团队滑向后者。
+
+> 史料来源：github.com/git/git（sparse-checkout/partial clone）、trunkbaseddevelopment.com
 
 ## ① 概述：版本控制价值 [经验]
 

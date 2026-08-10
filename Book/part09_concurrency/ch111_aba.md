@@ -23,8 +23,15 @@ ABA 不是某次工程的失误，而是**比较并交换（CAS）语义的固�
 解决 ABA 有两条主流思路：一是**给指针加版本/标记**（tagged pointer），让"A 回来"在值上不再等于"原来的 A"；二是**安全内存回收**（Hazard Pointer、RCU、epoch），确保"A 被释放期间没人还拿着它"。[评] C++ 没把 ABA 防御塞进原子操作里，而是把它交给库与算法层——因为"要不要版本号、要不要回收机制"是算法级抉择，强行内建会拖慢所有用例。这也是本章紧邻第112章（回收）的原因。[史]
 
 ### 0.4 史料补遗与持续编年
-- C++26 方向：Hazard Pointer（`std::hazard_pointer`）被纳入标准视野，为回收提供官方解法。[史]
-- （待续：硬件 DCAS 复兴、无锁队列在工业界的 ABA 实战、新回收算法可在此追加。）
+ABA 从"论文里的陷阱"走向"有官方回收解法"，靠的是 Hazard Pointer 的标准化进程。
+
+- [史] Maged Michael 在 2004 年的论文 *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects* 首次把"读者声明自己在保护哪个指针"做成可论证的通用回收方案，后被 malloc 实现与众多并发库广泛采用——它正是解决 ABA 引发悬垂引用的主流手段。
+- C++26 方向：Hazard Pointer 以 `std::hazard_pointer` 进入标准视野（提案 P1122 系列），与 RCU 类设施一同把"安全回收"从手写技巧变成一等公民。[史]
+- [评] 双字 CAS（DCAS / 带标签指针）能"一次比较值与版本"，理论上是 ABA 的最优雅解法，却因 x86/ARM 长期缺乏稳定硬件支持而始终未普及；版本号方案因此在工程界成了事实标准。
+- [轶] 工业界最经典的 ABA 实战来自无锁队列与无锁内存分配器：节点被 pop 后立刻 `delete`，又被新节点复用同一块地址，CAS 微笑着成功，随后整条链表指向已释放内存——这种 bug 往往只在特定调度时序下偶发，极难复现。
+- C++20 的 `std::atomic_ref` 让"给既有指针加原子/版本"更方便，但 ABA 防御本身仍属算法层责任，标准不替你加版本。[史]
+
+> 史料来源：https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange
 
 ## ① 概述：什么是 ABA 问题 [标准]
 

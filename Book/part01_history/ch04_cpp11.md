@@ -25,8 +25,12 @@ C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派�
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：C++11 因延期被戏称 "Duke Nukem Forever" 的轶事、移动语义对标准库性能的改造可在此追加。）
-- 已知后续：C++11 之后每三年一版（14/17/20/23），皆以它为基础。[史]
+- [轶] 据记载，C++11 因原计划 2010 年发布却拖到 2011，被社区戏称为 "Duke Nukem Forever"（一款跳票十余年的游戏），道尽八年等待的焦灼。
+- [史] 移动语义落地后，标准库容器（`vector`/`string`/`map`）全面获得移动构造与 `emplace*`，返回大对象从深拷贝变为指针窃取，是现代 C++ 性能跃升的基石。
+- [史] 2013 年 Chromium 转向 C++11、Clang 用 C++11 重写，标志工业界正式告别 C++03；Google 内部代码库则到 2020s 才基本完成 C++11→17 迁移。
+- [评] C++11 一次性"还债"过多，致 ABI/行为变更剧烈；后续版本刻意改为"小步快跑"，正是吸取了这次大爆炸的教训。
+
+> 史料来源：GCC 各标准支持进度 https://gcc.gnu.org/projects/cxx-status.html ；Clang C++ 状态 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html
 
 ## ① 学习目标
 

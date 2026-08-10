@@ -24,8 +24,12 @@ C++17 的最大取舍在"可选值"上：`std::optional` 入标准前，社区�
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：C++17 的 `std::filesystem` 因实现分歧延迟定稿的波折、并行算法执行策略的落地可在此追加。）
-- 已知后续：C++17 起，`[[attributes]]` 体系逐步统一各厂商私有扩展。[史]
+- [史] `std::filesystem` 因各厂商对符号链接、权限的语义分歧，曾一度被提议从 C++17 抽出、推迟到 C++20 TS，最终仍随 2017 标准定稿，是标准定稿前著名的"赶 deadline"波折。
+- [史] 并行算法执行策略（`std::execution::par`）随 C++17 进入标准库，让 `std::sort`/`std::transform` 等一键并行，但需底层线程库（常为 Intel TBB）支撑，落地依赖厂商实现。
+- [史] `[[nodiscard]]`/`[[maybe_unused]]` 等标准属性逐步统一了 GCC 的 `__attribute__` 与 MSVC 的 `__declspec`，跨编译器写法趋于收敛。
+- [评] C++17 被公认为"新项目最低可接受基线"，它把 Boost 里最常用的 `optional`/`variant`/`string_view` 收编为标准，几乎人人受益、几乎无人反对。
+
+> 史料来源：ISO C++17 标准 https://open-std.org/jtc1/sc22/wg21/ ；C++ 标准状态 https://isocpp.org/std/status
 
 ## ① 学习目标
 

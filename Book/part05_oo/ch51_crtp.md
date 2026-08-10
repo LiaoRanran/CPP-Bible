@@ -23,7 +23,15 @@
 CRTP 是「静态多态」的代言人：对比虚函数（ch47）的运行期查表，它把分派在编译期算死，速度快、可内联，但代价是**代码膨胀**（每种派生都生成一份基类代码）和「类型必须已知」。[评] 它不是虚函数的替代品，而是互补：要运行期异构集合用虚函数，要编译期极致性能用 CRTP。
 
 ### 0.4 史料补遗与持续编年
-（待续：C++23 的 deducing this 让 CRTP 的常见写法可以更直白；CRTP 与 concepts 的协作模式可在此追加。）
+0.2 编年写到 `iterator_facade` 等把 CRTP 用进标准库。这条静态多态线在 C++23 又接了一笔：
+
+- [史] C++23 的显式对象形参（deducing this）让 CRTP 的「想要按值/引用/const 区分重载」变得直接：过去要把接口写成模板成员再 `static_cast` 转发，现在可把对象形参显式写出，派生类自动继承这些重载而不必逐个包裹。
+
+- [评] concepts（ch67）与 CRTP 是「静态接口约束」的两条路：CRTP 在编译期把接口「混入」基类并内联，concepts 在调用点检查「类型是否够用」。二者常配合——CRTP 基类用 `requires` 声明它期望派生类提供的方法。
+
+- [轶] 据记载，CRTP 的「怪名」来自 James Coplien 1995 年著作中对这种「基类以派生类为模板参数」手法的归纳，虽非官方术语，却成了社区共识的叫法。
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/crtp ；https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
 
 ---
 

@@ -18,8 +18,15 @@ C 的 `char*` / `char[]` 把长度、内存归属、拷贝语义全部推给程�
 COW 与否是 `string` 史上最激烈的内部争论：COW 能让拷贝近乎免费，却在多线程与"意外共享"上埋雷；C++11 选择"连续存储 + 禁止 COW + SSO"，用更可预测的局部性换掉隐式共享的玄学。[评] 另一争论是"为何不直接用 `vector<char>`"——`string` 额外保证以 `\0` 结尾、提供 `c_str()` 与 C 互操作，这是它与容器的根本分工。[评]
 
 ### 0.4 史料补遗与持续编年
-- 待续：SSO 阈值的实现差异（libstdc++ / libc++ / MS STL 各不同）可补入。
-- 待续：`std::string` 与 `std::u8string` / 编码处理的持续演进，作为新争议条目。
+
+> 0.2 停在 C++17 补上 `string_view` 作非拥有字符视图，且 C++11 已禁止 COW、普及 SSO。SSO 阈值与编码是后续支线。
+
+- [史] **SSO 阈值各实现不同**：典型的短串（约 15–22 字符，含结尾 `\0`）留在对象内栈缓冲、免堆分配；libstdc++、libc++、MS STL 的内部阈值与布局各异，导致"短串是否触发堆分配"在跨库下表现不一。
+- [史] **`std::u8string` 在 C++20 修正语义**：C++20 明确 `std::u8string` 即 `basic_string<char8_t>`，与 UTF-8 字节序列对齐；此前 `char` 既当 ASCII 又当 UTF-8 的模糊一直是编码 bug 温床。
+- [评] **编码处理仍是开放战场**：标准至今未"内建 Unicode 语义"，`string` 仍是字节序列；关于是否引入 `text`/Unicode 感知字符串的提案反复出现却未落地，理由是 Unicode 复杂性远超库能简单封装。
+- [轶] **一个历史趣闻**：COW 被禁的直接推手之一是多线程——引用计数 `string` 在并行下要么付出原子开销、要么悄悄共享引发数据竞争，C++11 干脆用"连续存储 + SSO"换掉这套玄学。
+
+> 史料来源：[cppreference std::string](https://en.cppreference.com/w/cpp/string/basic_string)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
 ## ① 概述：std::string 的设计哲学 [标准]
 

@@ -24,7 +24,16 @@
 LSM-Tree 对 B+Tree 的核心取舍是"写优化"：用顺序写 + 后台 Compaction 换读放大与写放大之间的平衡 [评]。RocksDB 对 LevelDB 的取舍则是"给你旋钮"——列族、前缀布隆、合并算子、分层压缩，让同一引擎适配缓存、消息队列、数据库等多种负载 [评]；代价是配置复杂度陡增。
 
 ### 0.4 史料补遗与持续编年
-（待续：云原生存储引擎、RocksDB 在 NVMe/持久内存上的调优、新 LSM 变体均可在此追加。）〔轶〕据记载，LevelDB 名字里的 'Level' 正来自它把数据分成多层（Level 0/1/2…）的压缩结构，命名一目了然。
+继 2011/2012 年 LevelDB 与 RocksDB 先后开源，LSM 单机引擎从"参考实现"长成了云原生时代的存储基石。
+
+- [史] RocksDB 被工业界大规模采用：TiKV、CockroachDB、Kafka 的流式状态、MySQL 的 MyRocks 存储引擎、Flink 与各类缓存/消息中间件都以它为底座；LevelDB 则留在"轻量嵌入式 KV"的经典位置，被 Chrome 的 IndexedDB 等沿用。
+- [史] RocksDB 8.x（2023–2024）清理了长期废弃 API、把 C++ 基线抬到 C++17，并针对 NVMe SSD 与大内存机器优化 Compaction 与写放大；社区也出现了 Pebble（CockroachDB 的 Go 重写版）等"去 C++ 依赖"的变体。
+- [评] LSM 的"写优化换读/写放大"权衡至今无解——RocksDB 把所有旋钮（列族、前缀布隆、合并算子、分层压缩）交给用户，灵活但陡峭；这恰是它被云厂商偏爱、也让新手劝退的原因。
+- [轶] LevelDB 名字里的 'Level' 正来自它把数据分成多层（Level 0/1/2…）的压缩结构，命名一目了然。
+
+> 史料来源：
+> - https://github.com/facebook/rocksdb
+> - https://github.com/google/leveldb
 
 ## ① 概述：LSM-Tree 存储引擎 [标准]
 

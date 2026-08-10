@@ -25,8 +25,12 @@
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：每新标准发布即向此表追加一行；ABI 稳定性（如 Itanium ABI 约定）的争议可在此续写。）
-- 已知后续：`__cpp_*` 特性测试宏体系随标准持续扩充。[史]
+- [史] `__cpp_*` 特性测试宏随每个新标准持续扩充（如 `__cpp_concepts`、`__cpp_modules`、`__cpp_expected`），成为跨编译器"可机检"地判断某特性是否可用的唯一可靠锚点，取代依赖 `__cplusplus` 的粗略判断。
+- [史] ABI 稳定性争议长期未解：GCC 5.1 把 `std::string` 从 COW 改为 SSO 触发一次破坏性 ABI break（`_GLIBCXX_USE_CXX11_ABI`），提醒业界"源码兼容 ≠ 二进制兼容"。
+- [史] C++26 一旦冻结，本表的"草案"列将转为正式版本号与提案清单；届时只需追加一行并校验三编译器的 `cxx_status` 即可。
+- [评] 对迁移而言，真正的"地图"不是标准文本，而是各编译器官网的 `cxx_status.html` 与特性宏实测——博客与会议 PPT 常滞后甚至夸大。
+
+> 史料来源：GCC 特性支持表 https://gcc.gnu.org/projects/cxx-status.html ；Clang C++ 状态 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html
 
 ## ① 学习目标
 

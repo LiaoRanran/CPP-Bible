@@ -20,7 +20,15 @@
 策略类是对「继承即复用」的反叛：它主张用组合 + 模板在编译期拼装行为，避免脆弱基类与菱形问题。[评] 代价是模板参数多、报错长；但换来的是「零开销且可任意裁剪」的类型——这正是现代 C++ 库（如 `std::unique_ptr` 的删除器）背后的思路。
 
 ### 0.4 史料补遗与持续编年
-（待续：策略类与概念（ch67）的融合——用 concept 约束「策略必须提供某接口」，可在此续写。）
+0.2 编年止于 concepts 让策略组合条件更清晰。策略类与概念的融合：
+
+- [史] policy-based design 在 2001 年后影响了整个 C++ 库生态：`std::vector<T, Allocator>`、`std::basic_string<C,Traits,Allocator>`、`std::shared_ptr<T,D>`（删除器 D）都是「行为可插拔」的策略范例，`std::pmr`（C++17）又把内存资源做成可替换策略。
+
+- [史] C++20 concepts（ch67）让「策略类必须满足某接口」从「文档约定 + 偏特化兜底」变成 `requires` 硬约束：宿主模板可对策略形参写 `requires Policy::has_foo`，报错直接在调用点点名缺了哪个方法。
+
+- [评] 策略类的现代演变是「组合优于继承」的教科书：它用零开销的编译期拼装，替代了为每种行为组合派生子类的爆炸式类层次；concepts 只是让这套拼装的「接口契约」终于可被机器检查。
+
+> 史料来源：https://en.cppreference.com/w/cpp/memory/shared_ptr ；https://en.cppreference.com/w/cpp/language/constraints
 
 > 立场标签：`[标准]`=标准条文，`[实现]`=编译器实现行为，`[平台]`=平台/ABI 相关，`[经验]`=工程经验。
 

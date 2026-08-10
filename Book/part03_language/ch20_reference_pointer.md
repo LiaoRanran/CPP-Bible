@@ -36,7 +36,16 @@ Stroustrup 在 1980 年代早期设计 C with Classes 时遇到硬需求：要�
 引用 vs 指针：引用承诺"必绑定、不可重绑定、不可空"，换来语法透明；指针暴露身份、可空、可重指，换来灵活与 C 兼容。[评] 委员会坚持引用必须初始化且不能 `null`，正是为了把"悬垂 / 空指针"这类 bug 挡在语法之外——代价是引用无法表达"可选"。[史][评]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++23 的"推导 this（deducing this）"用转发引用统一 `*this` 的值类别；后续对"可为空引用"的提案反复被否，可记于此。）
+
+0.2 停在 C++11 右值引用把引用从"仅左值别名"扩展到 `&&`。此后引用的"值类别 + 生命周期"语义仍在进化。[史]
+
+- **C++20 概念（Concepts, P0734）让引用约束可写**：`void f(const C& x)` 这类写法配合缩写函数模板普及，引用的"可被绑定类型"第一次能进类型系统表达。[史]
+- **C++23 显式对象形参（deducing this, P0847）统一 `*this`**：成员函数可写成 `void f(this auto&& self)`，用转发引用统一 `*this` 的值类别（左值 / 右值），使"成员上的完美转发"不再靠笨拙的辅助自由函数。[史][评]
+- **"可为空引用"提案（P0298 等）反复被否**：社区多次提议让 `T&` 能表示空，最终都被拒绝——维持"引用必绑定、不可空"的契约，把可选性留给 `std::optional<T>` 与指针。[史][评]
+- **转发引用在泛型库的渗透**：C++14 泛型 lambda + C++20 模板 lambda 让 `auto&&` 转发成为 STL 算法与 `std::ranges` 的默认惯用法，引用与模板推导深度耦合。[史]
+- **轶事**：Stroustrup 在 *The Design and Evolution of C++* 中称引用"本是为运算符重载而生的小特性"，却成了移动语义与完美转发的基础设施——据记载他多次感叹这一"副作用"远超当初设想。[轶]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/reference ｜ https://en.cppreference.com/w/cpp/language/constraints ｜ https://en.cppreference.com/w/cpp/language/function
 
 ## ① 本章地图（先给结论，再击穿）
 

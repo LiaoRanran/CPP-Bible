@@ -28,8 +28,12 @@
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：eBPF 如何把性能观测推向内核级实时、AI 辅助热点定位可在此追加。）
-- 已知后续：火焰图与 perf 已成 Linux 性能工程标配，Compiler Explorer 支持数十种编译器。[史]
+- [史] eBPF 把性能观测推进到内核级实时：无需改程序、无需重启，即可在 Production 挂接 `perf`-类探针采集调度、I/O、锁竞争，是 2020s Linux 性能工程的范式升级。
+- [史] Compiler Explorer（godbolt.org）现已支持数十种编译器与多架构，甚至能展示 CUDA、Rust 汇编对照，Matt Godbolt 把它从个人工具做成社区基础设施。
+- [史] Intel 的 `perf` 与 VTune、以及 Brendan Gregg 的火焰图方法论，共同把"先测量后优化"固化为性能工程的铁律，反对凭感觉重写。
+- [评] AI 辅助热点定位才刚起步，能把火焰图/采样数据自动归因到源码热路径，但"基准必须本机真实跑、绝不可凭估算"的原则不因工具进化而改变。
+
+> 史料来源：Compiler Explorer https://godbolt.org/ ；火焰图方法论 https://www.brendangregg.com/flamegraphs.html
 
 ## ① 概述：为什么性能分析
 

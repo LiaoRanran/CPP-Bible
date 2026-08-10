@@ -17,8 +17,15 @@
 `span` 引发的核心争论是"视图该不该拥有内存"——`span` 选了**绝不拥有**，因此拷贝极廉价、生命周期责任清晰，代价是你必须保证底层对象活得比 `span` 久。[评] 它与 `string_view` 是"兄弟视图"（一个管字节、一个管字符），与 `vector` 则是"借 vs 拿"的对照。[评] 社区共识：接口参数优先用 `span`/`string_view`，所有权交给调用方，能显著减少悬垂与拷贝。
 
 ### 0.4 史料补遗与持续编年
-- 待续：`std::mdspan`（多维视图，C++23 起）如何扩展 `span` 思想，可补入。
-- 待续：`span` 与 `std::ranges`（⟶ Book/part07_stl/ch90_ranges.md）在视图语义上的融合争议。
+
+> 0.2 停在 C++23 继续打磨 `span`（构造规则、与范围交互）。多维视图与和 Ranges 的融合是后续主线。
+
+- [史] **`std::mdspan`（C++23）把 `span` 思想推到 N 维**：`std::mdspan<T, Extents>` 是非拥有的多维数组视图，支持映射策略（如 `layout_left`/`layout_right`/`layout_stride`），用于数值线性代数与 GPU/张量数据，无需拷贝底层缓冲区。
+- [史] **`as_bytes`/`as_writable_bytes`（C++20）放宽字节级视图**：`span` 可安全转成 `span<const std::byte>`，便于序列化与底层 IO；这是"视图借而不拿"在字节层的延伸。
+- [评] **`span` 与 `ranges::view` 是"近亲但不同源"**：`span` 只覆盖连续内存、可随机访问；`ranges` 视图可惰性、可非连续（如 `views::filter`）。两者都贯彻"不拥有"，但 `span` 偏底层字节/元素、`view` 偏算法管道（⟶ ch90）。
+- [史] **C++23 还补了 `span` 构造从 `array`/`initializer_list` 的便捷路径**，与 `std::dynamic_extent` 配合让接口更顺；仍未给 `span` 加"拥有"语义——所有权边界始终清清楚楚。
+
+> 史料来源：[cppreference std::span](https://en.cppreference.com/w/cpp/container/span)、[C++23 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B23)
 
 ## ① 学习目标
 

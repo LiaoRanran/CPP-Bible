@@ -99,7 +99,12 @@ C++ 没有垃圾回收。裸 `new`/`delete`（见 ch37）把"分配"与"释放"�
 ### 0.4 史料补遗与持续编年
 - **C++17**：`shared_ptr<T[]>`、`weak_from_this`、正式移除 `auto_ptr` 收尾。[史]
 - **C++20**：`std::atomic<shared_ptr>`（无锁并发）、`make_shared_for_overwrite`。[史]
-- （待续：静态反射对智能指针的影响、新标准版本可在此追加。）
+- **C++23 `std::out_ptr` / `std::inout_ptr`（P1132）补上 C 互操作缺口**：用 `std::out_ptr(p)` 把智能指针传给需要 `T**` 输出的 C API，函数返回时自动接管裸指针所有权，解决了长期靠 `reset()` 手写的易错桥接。[史]
+- **`make_shared` 的一次分配成为性能基线**：`std::make_shared` 把控制块与对象放进同一块内存、降低分配次数；但"对象与控制块同生命周期"也带来大对象延迟释放的已知权衡，社区据此探索 `make_shared_for_overwrite`（C++20）等变体。[史][评]
+- **行业落地与争议**：`unique_ptr` 已成"默认所有权"事实标准（Core Guidelines 建议）；`shared_ptr` 因引用计数开销与弱引用循环风险，仅在真正共享时使用。Rust 的 `Arc` / `Box` 与之高度对应，常被拿来对照。[史][评]
+- **轶事**：据记载 `make_unique` 漏进 C++11 被社区称为"著名的疏忽"，由 Stephan T. Lavavej 在 C++14 补回——智能指针的演进充满这种"差一点"的细节。[轶]
+
+> 史料来源：https://en.cppreference.com/w/cpp/memory/shared_ptr ｜ https://en.cppreference.com/w/cpp/memory/out_ptr ｜ https://en.cppreference.com/w/cpp/memory/unique_ptr
 
 ## ① 动机与全景：为何需要智能指针
 

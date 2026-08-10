@@ -22,8 +22,15 @@ STL 早已有了 `deque`、`vector`、`list`，但很多算法只想要"后进�
 适配器的哲学是 **"用组合限制能力，而非新增能力"**：它刻意把随机访问藏起来，逼你在正确的抽象上编程。[评] 一个经典争论是"为何不直接用 `deque`"——答案是接口即文档：`stack` 的签名就在告诉你"这里只需要 LIFO 语义"。[评] 这与 STL 整体"用类型表达意图"的取向完全一致。
 
 ### 0.4 史料补遗与持续编年
-- 待续：`priority_queue` 底层堆策略（大顶/小顶）的默认选择争议，可补入。
-- 待续：C++ 后续是否引入更多适配器（如 flat 适配）可作为新条目。
+
+> 0.2 停在 C++11 起 `priority_queue` 背后的堆算法与移动语义逐步打磨。堆策略默认值与"flat 适配器"是后续支线。
+
+- [史] **`priority_queue` 默认大顶堆是有意选择**：底层比较器默认 `std::less`，弹出的是最大元素；要小顶堆就传 `std::greater`——这个"默认最大"与 `std::max_element` 的直觉一致，沿用自 C++98。
+- [史] **C++11 移动语义让底层容器转运 O(1)**：把 `vector`/`deque` 整体移交 `priority_queue` 不再逐元素拷贝，构造大顶堆的代价更低。
+- [评] **"更多适配器"长期停留在提案**：社区偶提 `flat_priority_queue`（底层用连续存储 + 间接堆）或 `flat_stack`/`flat_queue`，以换缓存友好性；但标准 `stack`/`queue` 仍默认以 `deque` 为底层，"flat"适配器尚未入标。
+- [轶] **适配器常被低估的真相**：`stack`/`queue` 本质只是"受控接口包装"，零额外存储开销——它不复制数据，只是把底层容器的随机访问藏起来，性能与直接用 `deque` 几乎相同。
+
+> 史料来源：[cppreference std::priority_queue](https://en.cppreference.com/w/cpp/container/priority_queue)、[C++11 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B11)
 
 ## ① 学习目标
 

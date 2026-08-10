@@ -25,8 +25,15 @@ C 的 `time_t` 和 `struct tm` 只能精确到秒、且把"时间间隔"和"时�
 chrono 的核心哲学是 **"用类型消灭单位错误"**：不再靠约定，而是靠编译期类型检查杜绝秒/毫秒混淆。[评] 这与老 C 的"整数即时间"形成鲜明对比，也曾被吐槽"类型名太长、初学门槛高"。[评] 但 `duration_cast` 显式转换的设计，把"隐式丢精度"变成必须承认的取舍，是强类型时间观的胜利。
 
 ### 0.4 史料补遗与持续编年
-- 待续：`steady_clock` vs `system_clock`（后者可被 NTP 回拨）的选用原则，可补入。
-- 待续：C++20 日历/时区对 chrono 能力的扩展，作为新条目。
+
+> 0.2 停在 C++20 引入 `year_month_day`、`time_zone`/`zoned_time`/`tzdb`，让 chrono 从"计时"走向"日期"。clock 选用与格式化是后续支线。
+
+- [史] **`steady_clock` vs `system_clock` 的选用是铁律**：`steady_clock` 单调不减（适合测时长、基准），但不可转换为日历时间；`system_clock` 对应墙钟、可被 NTP 回拨或闰秒跳变，只用于"此刻是几点"。混用会埋下"计时被回拨打断"的 bug。
+- [史] **C++20 的 `std::format` 原生支持 chrono 类型**：`format("{:%Y-%m-%d %H:%M}", tp)` 能直接格式化 `time_point`，替代手写 `strftime`；`std::chrono::parse` 做反向解析。
+- [评] **时区数据库（tzdb）依赖系统或 bundled IANA 数据**：`current_zone()` 需要平台提供时区信息，某些嵌入式/封闭环境缺数据，`zoned_time` 会抛异常——这是 chrono 日历能力落地时最现实的约束。
+- [史] **`file_time_type` 与 filesystem 打通**：`std::filesystem::last_write_time` 返回的就是 `chrono::time_point`，两个库在 C++17/20 后深度耦合（⟶ ch91）。
+
+> 史料来源：[cppreference std::chrono](https://en.cppreference.com/w/cpp/chrono)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
 ## ① 学习目标
 

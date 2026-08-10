@@ -21,7 +21,16 @@
 两者代表了两种"喂数据给硬件"的哲学：ClickHouse 认为瓶颈在"数据布局是否对齐 SIMD 与 cache line"，于是把一整列连续摆放、一次算一批 [评]；Redis 认为瓶颈在"并发竞争"，于是干脆单线程、用 `epoll`/`kqueue` 多路复用，连锁都不要 [评]。一个押注并行硬件，一个押注无竞争串行。
 
 ### 0.4 史料补遗与持续编年
-（待续：Redis 7 的 Functions 与多线程 IO、2024 年 Redis 调整开源许可（转向 SSPL/RSALv2 双许可）引发的社区分叉讨论、ClickHouse 云化与物化视图演进均可在此补充。）〔轶〕趣闻：antirez 曾形容 Redis 是"为乐趣而写"，早期版本以单文件单线程的极简哲学对抗当时笨重的数据库。
+继 2009/2016 年 Redis 与 ClickHouse 先后登场，两者都走到了"版本升级、许可地震、云化"的现代阶段。
+
+- [史] Redis 7（2022）引入 **Functions**（在服务器端持久化 Lua 逻辑）并把多线程 IO（io threads）做稳；2024 年 Redis 把开源许可从纯 BSD 改为 SSPLv1 与 RSALv2 双许可，引发社区对"开源定义"的激烈反弹。
+- [史] 许可地震的直接后果是 **Valkey**——Linux 基金会牵头、AWS/Google 等支持的分叉，承接旧 BSD Redis 的衣钵，成为 Redis 之外的主流选择；ClickHouse 则坚定走开源 + 商业云（ClickHouse Cloud）双轨。
+- [评] Redis 的"单线程 Reactor"神话在多线程 IO 时代被部分打破——它把"网络读写"多线程化、仍保留"命令执行单线程"，是在"无锁简单性"与"多核吞吐"之间的精妙折中。
+- [轶] antirez 曾形容 Redis 是"为乐趣而写"，早期版本以单文件单线程的极简哲学对抗当时笨重的数据库。
+
+> 史料来源：
+> - https://redis.io/blog/
+> - https://clickhouse.com/blog
 
 ## ① 概述：ClickHouse（列存 OLAP）/Redis（内存 KV）
 

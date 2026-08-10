@@ -29,8 +29,16 @@ C++ 的版本演进本身，就是一份"学习路线困惑史"。1998 年 C++98
 
 ### 0.4 史料补遗与持续编年
 
-- 经典书单各有历史位置：《The C++ Programming Language》（TCPL）随语言版本迭代而重写；《Effective C++》（Scott Meyers）是 2000 年代"避坑"圣经；《The Design and Evolution of C++》（D&E）讲清语言为何如此设计。[史]
-- （待续：针对 C++26 的新路线、与 Rust/Go 的择业取舍可在此追加。）
+> 紧接 0.2 编年最后一条（2020/2023，C++20、C++23 持续加料，路线图层次更重要）。
+
+- [史] 经典书单各有历史位置：《The C++ Programming Language》（TCPL）随语言版本迭代重写；《Effective C++》（Scott Meyers）是 2000 年代"避坑"圣经；《The Design and Evolution of C++》（D&E，Stroustrup）讲清语言为何如此设计——三者仍是 0.3"项目驱动 vs 教材通读"之争的旁注。
+- [史] **C++ Core Guidelines**（isocpp/CppCoreGuidelines）持续在线维护，成为"现代该怎么写"的活文档；配合编译器警告等级升级（-Wall -Wextra -Werror 成标配），初学者照着指南写就不容易踩坑。
+- [史] 学习资源形态在变：从纸质书到 **Compiler Explorer（godbolt）、C++ Slack/Reddit、CppCon 视频、实证博客**——"看汇编验证、看会议学设计"取代了单靠一本书，呼应 0.1"学哪版"的困惑被社区实时消解。
+- [史] **模块（C++20 modules）、协程、concepts** 进入主流教学与招聘要求，路线图从"先学完 old C++ 再追新"转为"先打 RAII/ownership 底、再按需学特性"，与 0.3 项目驱动路线一致。
+- [评] 面对 Rust / Go 的择业争议，C++ 路线图的回答是"先确认目标领域"：嵌入式/游戏/高频/系统层仍几乎只有 C++，而 Web/业务后端则可按岗位选；路线不是非此即彼，是"为哪个战场备弹药"。
+- [轶] 过来人共识：最浪费时间的学法是"从第一页啃到最后一页再写代码"——4 个从零项目带来的成长，远胜一本读完却没编译过的书。
+
+> 史料来源：github.com/isocpp/CppCoreGuidelines、isocpp.org（C++ 标准与学习资源）
 
 ```cpp
 // 验证本章示例的编译器（本机已取证）

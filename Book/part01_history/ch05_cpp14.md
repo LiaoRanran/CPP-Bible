@@ -24,8 +24,12 @@ C++14 几乎没有什么"路线之争"，它验证的是另一条哲学：**标�
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：泛型 lambda 如何直接催生 C++17 的折叠表达式与后续模板增强可在此追加。）
-- 已知后续：C++14 的泛化 `constexpr` 为 C++20 的 `consteval`/`constinit` 埋下伏笔。[史]
+- [史] 泛型 lambda（`[](auto x)`）在 C++14 落地后，直接催生了 C++17 的折叠表达式与后续模板增强，也是 C++20 Ranges 中高阶组合写法的前置语法。
+- [史] C++14 放宽 `constexpr`（允许局部变量与循环），为 C++17 的 `if constexpr`、C++20 的 `consteval`/`constinit` 铺平了"编译期计算常态化"的道路。
+- [史] `std::make_unique` 补回 C++11 唯一遗漏的工厂函数，Abseil、Qt 5.5、Unreal 4.27 等纷纷以 C++14 为最低基线，使其成为事实上的 LTS 标准。
+- [评] C++14 被戏称"最无聊的版本"，却把 C++11 的棱角磨平，证明了"小版本修边角"节奏的工程价值。
+
+> 史料来源：C++ 标准状态 https://isocpp.org/std/status ；Clang C++ 状态 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html
 
 ## ① 学习目标
 

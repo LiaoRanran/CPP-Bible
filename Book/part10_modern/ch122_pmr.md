@@ -25,8 +25,15 @@ C++ 的 Allocator 模型从标准诞生起就把分配器作为**模板参数**�
 PMR 的核心取舍是**编译期分配器（类型参数）vs 运行期多态（值对象）**。委员会没有废弃沿用多年的 Allocator 模型，而是叠加一层 `pmr`：`polymorphic_allocator<T>` 把"指向 `memory_resource` 的指针"作为状态，容器类型因此统一（都是 `pmr::vector<T>`），策略却能在运行期替换。[评] 这等于承认"编译期零开销"与"运行期灵活"都重要，用一层薄薄的间接（虚函数 `do_allocate`）换来了 arena/池/默认分配的自由切换，同时仍保留传统 allocator 给追求极致静态调度的用户。[史]
 
 ### 0.4 史料补遗与持续编年
-- `monotonic_buffer_resource` / `pool_resource` 等标准资源成为"零分配热路径"的常用积木。[史]
-- （待续：PMR 与 `import std` 模块分发、与自定义 jemalloc/tcmalloc 风格池的对照可在此追加。）
+PMR 入标后，价值在工程界被反复验证，也暴露了"默认资源该是谁"的争议。
+
+- [史] `monotonic_buffer_resource`（一次性、不回收的线性 arena）与 `unsynchronized_pool_resource` / `synchronized_pool_resource`（线程本地/全局池）成为"零分配热路径"的常用积木，游戏与高频交易的帧级分配几乎必备。
+- [评] 一个长期争议是"默认 `new` 是否该换成默认 `pmr` 资源"——委员会最终决定不改动全局 `operator new`，只用 `std::pmr::get_default_resource()` 显式切换，避免悄悄改变既有性能画像。
+- C++20/23 里 PMR 与模块化（`import std`）、常量求值继续磨合，`polymorphic_allocator` 在容器类型统一上的优势被标准库自身采纳（如 `std::pmr::vector`）。[史]
+- [轶] 与 jemalloc/tcmalloc 这类"替换全局分配器"的方案相比，PMR 的卖点是"同一进程内并存多种分配策略"而非"全局更快"——你能在一条请求里用 arena、另一条用默认，互不干扰。
+- C++26 讨论把更多容器与算法接入 PMR 友好的构造，进一步降低"运行期换策略"的摩擦。[史]
+
+> 史料来源：https://en.cppreference.com/w/cpp/memory/memory_resource
 
 ## ① 学习目标
 

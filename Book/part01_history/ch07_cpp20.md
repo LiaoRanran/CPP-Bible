@@ -25,8 +25,12 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：Modules 在各大编译器落地进度不一的现实、Concepts 后续如何渗入标准库可在此追加。）
-- 已知后续：C++23 在三路比较、Ranges 上继续扩展 C++20 的骨架。[史]
+- [史] Modules 在三大编译器落地进度不一：GCC 10/11 初步支持、Clang 较早可用、MSVC 因已有模块体系推进较快，但跨编译器共享模块仍受 ABI 制约，工业普及慢于语言落地。
+- [史] Concepts 在 C++20 后迅速渗入标准库：C++23/26 的 `ranges`、`expected` 等均使用概念约束，Ranges 的 `views::filter | views::transform` 写法依赖 Concepts 才能优雅表达。
+- [史] `<=>` 三路比较让类型只需定义一个运算符即自动获得 `==`/`<`/`>` 全套次序，C++23 进一步为标准类型补全默认化，减少了大量样板。
+- [评] C++20 一次立起四根支柱（概念/Ranges/模块/协程），是继 C++11 后又一次"大爆炸"，其落地阵痛（尤其 Modules）预计要延续到 C++26 才被工业完全消化。
+
+> 史料来源：Clang C++20 支持进度 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html ；GCC C++ 状态 https://gcc.gnu.org/projects/cxx-status.html
 
 ## ① 学习目标
 

@@ -22,7 +22,16 @@ Microsoft 的 VC++ 自 1990 年代起就自带一套 C++ 标准库实现，早�
 MS STL 的取舍是"与 Windows 平台合一、以兼容与稳定为先"，例如直接复用 Windows 堆与 SEH，换来极低集成成本，却也意味着它难以脱离 MSVC 生态独立存在 [评]。开源之后，它与 libstdc++、libc++ 站到了同一条"公开可被审阅"的起跑线，三足鼎立的格局由此更清晰 [评]。
 
 ### 0.4 史料补遗与持续编年
-（待续：MS STL 对 `/std:c++latest` 的追赶节奏、模块化（modules）支持、与 Windows SDK 的协同演进均可在此补充。）〔轶〕据说 MS STL 开源前，外部贡献者想修一个 bug 要等整年 Visual Studio 发布周期，开源后才"呼吸顺畅"。
+继 2019 年以 `microsoft/STL` 开源，MS STL 把"闭源随 VS 发布"的节奏，换成了"追标准 + 上模块"的双线快跑。
+
+- [史] Visual Studio 17.8（2023）起，MS STL 基本完备支持 C++23：`std::print`、`std::expected`、`std::ranges` 增强、`std::mdspan` 等随 `/std:c++latest` 解锁。
+- [史] MS STL 跟进 C++20 模块：以 `.ifc` 中间格式输出标准库模块（`import std;`），与 MSVC 的 LTCG/PGO 工具链深度咬合，复用 Windows 生态而非另起炉灶。
+- [评] MS STL 的强项是"与 Windows 合一"——并行算法内置 Windows ThreadPool（免 TBB）、`std::filesystem`/`std::thread`/`std::chrono` 直接落 Windows API；代价是几乎只能活在 MSVC 生态。
+- [轶] 开源前修一个 STL bug 要等整年 VS 发布周期的说法并非夸张——正是这种"呼吸不畅"，让 2019 年的 MIT 开源成了社区贡献的分水岭。
+
+> 史料来源：
+> - https://github.com/microsoft/STL
+> - https://learn.microsoft.com/cpp/standard-library/
 
 ## ① 概述：MS STL 是 Microsoft 的 C++ 标准库 [标准]
 

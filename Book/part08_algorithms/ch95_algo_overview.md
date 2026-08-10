@@ -22,8 +22,15 @@ Stepanov 对 STL 算法最核心的要求有两条：**泛型**（一个 `find` 
 STL 算法最大的反直觉之处，是**把算法放在容器之外、做自由函数**，而非容器成员。[评] 同期 OO 思路认为"排序就该是 `container.sort()`"，但 Stepanov 坚持：算法若依赖容器特化就会爆炸式重复，而迭代器解耦后，一套算法覆盖一切。代价是调用略啰嗦、报错晦涩，但换来了无可比拟的可组合性。[评]
 
 ### 0.4 史料补遗与持续编年
-- 待续："执行策略并行算法"在实践中的性能与正确性陷阱，可补入。
-- 待续：Ranges 是否会逐步取代传统"迭代器对"算法接口，作为新争议条目。
+
+> 0.2 停在 C++17 引入执行策略、C++20 用 Ranges 把算法重写成"吃区间"版本。并行陷阱与 Ranges 取代是后续支线。
+
+- [史] **执行策略（`seq`/`par`/`par_unseq`）来自 Parallelism TS**：C++17 把它并入标准，让 `std::sort(v.begin(),v.end(),std::execution::par)` 一行就能并行；背后是 PSTL（Parallel STL）把算法映射到 Intel TBB 等后端。
+- [评] **并行算法的"正确性陷阱"比性能更危险**：`par` 要求元素访问无数据竞争、迭代器/谓词可重入；一旦并行 lambda 改了共享状态就是 UB。`par_unseq` 还允许向量化，连 `restrict` 式别名假设都更苛刻。
+- [史] **`ranges::` 算法是接口重写而非重实现**：C++20 给每个传统算法配了 `std::ranges::` 版本，接收单范围、支持投影与哨兵；本质是对同一套底层迭代器逻辑的"现代门面"，逐步成为推荐写法。
+- [评] **Ranges 会否"取代"迭代器对接口尚无定论**：传统 `sort(v.begin(),v.end())` 仍完全有效、且错误信息更短；委员会倾向"新旧并存"，让 Ranges 渐进成为默认而非强制替换。
+
+> 史料来源：[cppreference 执行策略](https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag)、[C++17 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B17)
 
 ## ① 概述：STL 算法设计哲学 [标准]
 

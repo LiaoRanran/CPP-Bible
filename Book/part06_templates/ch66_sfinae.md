@@ -23,7 +23,15 @@ SFINAE（Substitution Failure Is Not An Error）这条规则最早隐含在 1990
 SFINAE 强大却「以副作用闻名」：它把编译器的容错机制逆向工程成编程范式，报错信息极其劝退。[评] concepts 的出现正是为了取代它——用 `requires` 直说「我要什么」，而不是用替换失败来「试探」。[史] 但理解 SFINAE 依旧是读懂旧标准库与老代码的钥匙。
 
 ### 0.4 史料补遗与持续编年
-（待续：C++20 的 `requires` 表达式、以及「SFINAE 在概念时代还剩哪些不可替代之处」，可在此续写。）
+0.2 编年止于 concepts 登场替代大批 SFINAE 样板。SFINAE 在概念时代的「残留价值」：
+
+- [史] SFINAE（Substitution Failure Is Not An Error）自 C++98 起就是模板替换的沉默规则，但「故意触发失败来筛重载」是社区在 2000 年代「玩出来」的技法，`std::enable_if`（C++11）把它变成明文工具。
+
+- [史] C++20 的 `requires` 表达式与 concepts（ch67）接管了「大部分」SFINAE 场景：约束可读性、报错定位都更好。但 SFINAE 并未退场——细粒度到「某个表达式是否良构」的探测（如「类型 T 有没有 `.size()` 且返回整数」）用 `requires` 也行，但老库的 `enable_if` 写法仍铺天盖地。
+
+- [评] SFINAE 真正不可替代处，在于它发生在「替换阶段」、能配合偏特化与默认模板参数做「按能力退化」的兜底逻辑；concepts 的「硬约束」反而不好表达「有就用、没有就退化为另一实现」。
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/sfinae ；https://en.cppreference.com/w/cpp/language/constraints
 
 > 版本：v3.0（2026-07-08）
 

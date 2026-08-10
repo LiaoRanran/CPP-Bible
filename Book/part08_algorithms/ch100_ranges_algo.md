@@ -22,8 +22,15 @@
 Ranges 算法相对传统的根本改动，是 **"范围优先 + 投影内置"**：你不必再写 `sort(v.begin(), v.end(), [](auto&a){return a.x;})`，而是 `ranges::sort(v, {}, &T::x)`。[评] 但这也带来"类型名极长、错误信息更复杂"的吐槽；惰性 `views` 还让调试"看不见的中间结果"变难。[评] 取舍清晰：表达力与组合性压倒了一点简洁性。
 
 ### 0.4 史料补遗与持续编年
-- 待续：`views::cache_last`、惰性管道与"视图失效"陷阱，可补入。
-- 待续：C++26 对 Ranges 与并行/发送者模型融合的探索，作为新条目。
+
+> 0.2 停在 C++23 扩充 `views::enumerate`/`views::zip` 等视图与适配器。cache_last、视图失效与"并行+发送者"是后续支线。
+
+- [史] **`views::cache_last`（C++23）为相邻视图补"上一个"**：`views::adjacent`/`chunk` 等需要"记住上一个元素"的视图，靠 `cache_last` 在惰性管道里缓存，避免为取前驱而重复计算或破坏惰性。
+- [史] **投影（projection）是 Ranges 算法相对传统的核心增量**：`ranges::sort(v, {}, &T::x)` 比旧式 lambda 简洁，C++23 又把投影扩展到更多算法（如 `ranges::find`、`ranges::count`），统一了"按某字段"的写法。
+- [评] **视图失效（dangling）是 Ranges 头号陷阱**：惰性视图不持有数据，管道若建立在临时范围上、临时先析构，视图即悬垂；`views::all`/返回 `auto` 的泛型函数尤其易踩，社区建议用 `auto&&` 或确保源存活。
+- [史] **"惰性 + 并行 + sender"的融合在 C++26 探索中**：P2300 发送者模型可能让 `views` 管道跑在并行/异步执行器上（⟶ ch90、ch94），但仍是未来条目，尚未定稿。
+
+> 史料来源：[cppreference Ranges](https://en.cppreference.com/w/cpp/ranges)、[range-v3 仓库](https://github.com/ericniebler/range-v3)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
 ## ① 概述：C++20 Ranges [标准]
 

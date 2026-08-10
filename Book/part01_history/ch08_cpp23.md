@@ -24,8 +24,12 @@ C++23 最值得玩味的是 `std::expected` 入标准——它直面"错误也�
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：C++23 的 `std::generator`、模块化标准库推进、反射 P2996 的后续可在此追加。）
-- 已知后续：C++23 草案曾用名 "C++2b"；其库增强为 C++26 的反射铺路。[史][轶]
+- [史] C++23 引入 `std::generator`（基于协程的惰性序列）与 `std::print`/`std::println`，后者终于让 C++ 有了不依赖 `<cstdio>` 的类型安全打印，收敛了 `printf` 与 `cout` 双轨的尴尬。
+- [史] `std::expected`（带错误值的返回值）正式入标准，把"错误也是值"的函数式思想带进主流；标准库还新增 `std::mdspan`、`std::stacktrace`、`flat_map`，被视为一次"标准库丰收"。
+- [史] 模块化标准库（`import std;`）在 C++23 以实验形态推进，配合 C++20 Modules 让"不再写 `#include`"成为可能，但编译器仍需显式开启，普及尚需时日。
+- [评] C++23 刻意"减重"只补库不补大语言特性，是对 C++20 大爆炸的节奏回调；其库件大多源自 Boost 与 Abseil 的成熟实践。
+
+> 史料来源：ISO C++ 标准提案存档 https://open-std.org/jtc1/sc22/wg21/ ；C++ 标准状态 https://isocpp.org/std/status
 
 ## ① 学习目标
 

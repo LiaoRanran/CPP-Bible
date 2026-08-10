@@ -22,7 +22,17 @@
 类型萃取是「编译期反射」的雏形：它让泛型代码能「询问类型」，却不必等到运行期。[评] 但它依赖大量模板特化与冗长的 `typename` 写法；concepts（ch67）正是为了把这层「绕路自省」换成直白的约束语法而生——萃取没有消失，只是被概念收编为一等公民。
 
 ### 0.4 史料补遗与持续编年
-（待续：从 traits 到 `static_assert` 友好的概念约束、再到提案中的静态反射（reflection），这条自省主线可在此续写。）
+0.2 编年止于 C++11 把 `<type_traits>` 收编。自省主线在 concepts 之后继续向前：
+
+- [史] `type_traits` 源自 Boost.TypeTraits（2000s），C++11 正式纳入 `<type_traits>`；`std::is_same`、`std::is_integral`、`std::enable_if` 立刻成为 SFINAE（ch66）的主力工具。
+
+- [史] C++17 的 `std::void_t` 技巧让「检测某类型是否拥有某成员」变得一行可达，催生一大批「检测 idiom」；这股风潮最终汇入 concepts（ch67）——`requires` 表达式就是 `void_t` 检测的官方化。
+
+- [史] 静态反射（static reflection，提案 P2996 等）正走标准轨道：目标是让 `std::meta::info` 与编译期反射能直接查询类型的成员、属性，把 traits 的「手写特化枚举」升级为「编译期查询」。这被视为自 traits 以来的又一次自省主线跃迁。
+
+- [评] 主线清晰：手写 traits（C++11）→ `void_t` 检测（C++17）→ concepts（C++20）→ 静态反射（未来）。
+
+> 史料来源：https://en.cppreference.com/w/cpp/header/type_traits ；https://en.cppreference.com/w/cpp/language/constraints
 
 > 版本：v3.0（2026-07-08）
 

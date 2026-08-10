@@ -23,7 +23,17 @@
 libc++ 的核心取舍是"现代化优先、许可友好、模块化"。它不像 libstdc++ 那样要背着十年 ABI 包袱，而是借 C++11 的东风重新设计容器与字符串；同时用宽松许可绕开了 Apple 与 GPL 的摩擦 [评]。代价是：在非 Apple 平台上它的"系统默认"地位不如 libstdc++（长期靠 GCC 自带），跨平台工程常需在两者间做选择 [评]。
 
 ### 0.4 史料补遗与持续编年
-（待续：libc++ 对 C++20 模块、`<format>`、并发的跟进，以及 libc++abi 与 Itanium ABI 的演进均可在此续写。）〔轶〕一个常被提及的细节：libc++ 早期为了赶 C++11，曾大量"借" libstdc++ 的测试用例来对齐行为。
+继 2011 年随 Xcode 成为 macOS 默认，libc++ 把"最贴近标准前沿"做成了自己的标签，也把"默认开启断言"变成了工业事故的新来源。
+
+- [史] C++20/23 特性常由 libc++ 率先完整支持：`std::format`、`std::ranges`、`std::expected`、`std::mdspan`、扩展并发与 `<print>` 多在其主线早于另两家落地；C++23 标准库模块 `import std;` 在 Clang 上最成熟。
+- [史] libc++ 16（2023）起默认开启 `_LIBCPP_ENABLE_ASSERTIONS`，迭代器/容器越界直接 `abort`；大量"侥幸越界"的旧代码在升级后从"能跑"变"崩溃"，成为典型的版本行为破坏性变更。
+- [史] libc++ 19（2024）移除了若干历史 ABI 兼容层（如旧 `std::string` 布局开关），进一步收窄"为兼容而保留的包袱"。
+- [评] libc++ 的取舍是"现代化优先"：宁可让极少数老代码重编，也不长期背着 COW/旧布局的债——与 libstdc++ 的"绝不破 ABI"形成鲜明对照。
+- [轶] 移植到 libc++ 的开发者常踩的暗坑是：GNU 专属宏（如 `__GLIBCXX__`）在 libc++ 下根本不存在，靠它做版本分支的代码会静默走到错误路径。
+
+> 史料来源：
+> - https://libcxx.llvm.org/
+> - https://github.com/llvm/llvm-project/releases
 
 ## ① 概述：libc++ 是 LLVM 的 C++ 标准库 [标准]
 

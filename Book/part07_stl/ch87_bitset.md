@@ -22,8 +22,15 @@
 `bitset` vs `vector<bool>` 是 STL 里著名的"好榜样 vs 坏特化"对照：`bitset` 定长、零歧义、运算符齐全；`vector<bool>` 为了压缩却破坏了"容器里每个元素都是独立对象"的不变式，导致 `operator[]` 返回代理引用、不能取地址，踩坑无数。[评][史] 这场争论提醒后人：零开销抽象不能牺牲语义一致性。
 
 ### 0.4 史料补遗与持续编年
-- 待续：为何标准迟迟不收编 `dynamic_bitset`，可作后续条目。
-- 待续：C++ 对位操作（如 `<bit>` 头文件，C++20）的体系化补全，可补入。
+
+> 0.2 停在 `dynamic_bitset` 长期只存在于 Boost、标准至今未收编变长位容器。位操作体系化是后续支线。
+
+- [史] **`std::bitset` 大小写死在类型里**：`N` 是编译期常量，决定对象布局与 ABI；因此无法表示"运行时才知道长度"的位集，这正是 `dynamic_bitset`（Boost 提供、长度在构造时给定）存在的原因。
+- [史] **C++20 引入 `<bit>` 头做整数位操作体系化补全**：`std::popcount`、`std::countl_zero`、`std::bit_cast`、`std::has_single_bit` 等把"数有几个 1""找最高置位"等常用位技巧标准化，与 `bitset` 的位运算互补但不重叠。
+- [评] **`dynamic_bitset` 未入标，是"避免与 Boost 重复、又怕定不下语义"的折中**：它要涉及分配器、增长策略、与 `bitset` 的互操作，委员会迟迟未拍板；今天需要变长位集仍得用 Boost 或自己包 `vector<uint64_t>`。
+- [史] **`std::bitset` 的运算符在 C++ 标准化后几乎未改**：`& | ^ ~ << >>` 与 `test`/`set`/`reset`/`flip` 自 C++98 沿用，稳定即是它的价值。
+
+> 史料来源：[cppreference std::bitset](https://en.cppreference.com/w/cpp/utility/bitset)、[C++20 标准概览（维基）](https://en.wikipedia.org/wiki/C%2B%2B20)
 
 ## ① 学习目标
 

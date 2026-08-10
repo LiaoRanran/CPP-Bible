@@ -23,7 +23,16 @@ GCC 由 Richard Stallman 于 1987 年发起（最初只是 GNU C Compiler）[史
 libstdc++ 的哲学是"紧贴 GCC、紧跟标准、以自由许可（LGPL/GPL）守护"。它与 libc++（Apple/LLVM，从 C++11 起另起炉灶、许可更宽松）、MS STL（深度绑定 Windows）、以及历史上的 STLport 各有取舍 [评]。libstdc++ 最大的纠结是 **ABI 稳定性**：一旦某个符号语义定下，十几年都不能轻易改，于是你今天还能看到 `_GLIBCXX_USE_CXX11_ABI` 这种"新旧 string 共存"的旋钮 [史]。它选了"宁可背负历史，也要二进制兼容"这条路。
 
 ### 0.4 史料补遗与持续编年
-（待续：C++20/23 模块与概念落地、libstdc++ 与 libc++ 的并发/格式化对齐、新的 ABI 兼容争议均可在此追加。）〔轶〕据社区传闻，libstdc++ 的 `bits/` 目录布局曾让不少初学者误以为"标准库就是一堆头文件"，其实链接期符号才是另一半。
+继 2001 年 libstdc++-v3 定型，真正的长跑是"在十年 ABI 不变的前提下追上迅速膨胀的 C++ 标准"。
+
+- [史] GCC 10（2020）起大规模落地 C++20：concepts、`<chrono>` 的日历/时区、`<ranges>`（部分）逐步到位；GCC 13（2023）补全 `std::format` 运行时实现并把 `<ranges>` 推到基本完备。
+- [史] C++23 设施由 GCC 14/15 接力补齐：`std::print`、`std::expected`、`std::mdspan`、扩展的 `std::ranges` 与本地化 `std::format`；标准库模块（`import std;`）在 GCC 15 以实验形态（`-fmodules`）登场，终结"头文件万行反复解析"的旧时代。
+- [评] libstdc++ 的硬约束是"加符号、不破布局"——要让十几年前的 `.so` 仍能跑，于是 `_GLIBCXX_USE_CXX11_ABI` 之外又长出一串特性宏，老用户升级编译器常因某个宏默认值变化而整体重编。
+- [轶] 社区常吐槽：libstdc++ 的 `<chrono>` 时区数据库需另行下载一份 IANA 数据，最小容器若漏打包，`std::chrono::zoned_time` 会"看着在、用就抛"，成了发行版打包的经典坑。
+
+> 史料来源：
+> - https://gcc.gnu.org/projects/cxx-status.html
+> - https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html
 
 ## ① 概述：libstdc++ 是 GCC 的 C++ 标准库 [标准]
 

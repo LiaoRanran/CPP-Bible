@@ -27,8 +27,12 @@ Make 直白却难跨平台、依赖 shell 与文件系统时间戳；CMake 选�
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：CMake 在大型项目中的模块化实践、Bazel 等声音在此追加。）
-- 已知后续：CMake 已成 C++ 跨平台构建事实标准，2020s 持续迭代 `Presets` 等机制。[史]
+- [史] CMake 在 2020s 引入 `Presets`（`CMakePresets.json`），把"用哪套编译器/标志/构建目录"标准化为可共享配置，缓解了"每个人机器上都编不过"的经典噩梦。
+- [史] Bazel（Google 开源）以"强约束、可重现、远程缓存"切入超大型单体仓库，成为 CMake 之外最具影响力的声音，但学习曲线陡峭、与既有 C++ 生态磨合成本高。
+- [史] Ninja 因极简依赖图执行成为 CMake 在 CI 与大型项目中的首选后端，Google Chromium 的千万行级构建即依赖 Ninja 的增量速度。
+- [评] C++ 的"构建"与"包管理"长期分离（对比 Cargo），CMake + vcpkg/Conan 的组合正是对这一历史包袱的工业补偿。
+
+> 史料来源：CMake 官网 https://cmake.org/ ；Ninja 构建系统 https://ninja-build.org/
 
 ## ① 概述：构建系统解决什么 [标准]
 

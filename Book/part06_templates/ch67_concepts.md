@@ -23,7 +23,17 @@
 concepts 之争本质是「通用性 vs 可读性」的拉锯：一派要最强的表达力（导致设计膨胀），一派要最小可用的约束（最终胜出）。[评] 它彻底改变了模板风格——从 SFINAE（ch66）的「试探式」转向 `requires` 的「声明式」，报错从天书变人话。
 
 ### 0.4 史料补遗与持续编年
-（待续：C++23/26 对 concepts 的增强（如扩展的 `auto`、原子约束细化）、以及 concepts 与静态反射的结合前景，可在此续写。）
+0.2 编年止于 C++20 正式发布 concepts。concepts 自身的演化并未停步：
+
+- [史] concepts 的正式落地走得很长：从 2003 年 Bjarne 的「concepts lite」设想、2009 年 C++0x 试图纳入却因设计分歧在 2012 年被「一致投票移除」，直到 2017 年 P0734 重启、才随 C++20 定稿。这是标准史上少见的「被否决后重做」的特性。
+
+- [史] C++23 增强了 abbreviated function templates 与 `auto` 在更多位置的约束能力；后续（C++26 轨道）还有「扩展的 auto」「原子约束细化」「对 concept 做合取/析取的更细约束」等讨论，让约束能表达更复杂的逻辑。
+
+- [史] concepts 与静态反射（见 ch65）的结合正在酝酿：未来 `requires` 可能直接查询「类型被反射出的成员集合」，把「接口约束」与「编译期自省」在语法上统一。
+
+- [评] concepts 最大的隐性收益是错误信息：约束失败时只报「不满足某 concept」，而非展开几十层模板回溯。
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/constraints ；https://en.wikipedia.org/wiki/C%2B%2B20
 
 > 版本：v3.0（2026-07-08）
 

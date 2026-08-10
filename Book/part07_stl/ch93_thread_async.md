@@ -21,8 +21,15 @@
 `std::thread` 的"裸线程"用起来很危险——忘记 `join`/`detach` 就析构会 `std::terminate`。[评] 因此社区更推崇 `std::async` 与"任务而非线程"的高层思维：把工作交出去、用 `future` 取结果，而非手动管线程生命周期。[评] 这场"裸线程 vs 高层任务"的取向，是 C++ 并发设计的主线之一。
 
 ### 0.4 史料补遗与持续编年
-- 待续：C++ 内存模型（happens-before、atomic）的标准化历程，可补入。
-- 待续：发送者/接收者（sender/receiver，P2300）对 async 的未来改写，作为新条目。
+
+> 0.2 停在 C++20 引入 `jthread` 与协作式取消。内存模型标准化与发送者模型是后续支线。
+
+- [史] **C++11 第一次定义内存模型**：它不只是加了 `<thread>`，更正式规定了"数据竞争即未定义行为"与 happens-before 关系，并引入 `<atomic>`——这让"无锁并发"第一次有语言级契约，而非依赖各平台手册。
+- [史] **P2300（发送者/接收者，sender/receiver）试图统一异步**：由 Google、NVIDIA 等推动，把"可异步计算的工厂"抽象成 sender，配 `scheduler` 决定在哪执行、`receiver` 收结果/错误/取消，目标是让 `async`、Ranges、GPU 任务共用一套执行模型（⟶ ch94）。
+- [评] **`std::async` 的"是否真起线程"长期是坑**：标准允许实现把它当惰性求值、甚至不另起线程（取决于 launch 策略）；想确定的并发语义，很多人转向 `std::thread` 或 executors 生态，P2300 正是想补这块标准化空白。
+- [轶] **Anthony Williams 的 Boost.Thread 几乎是 C++11 线程的母本**：他从 2000 年代初维护 Boost.Thread，其 `future`/`promise`/`lock_guard` 设计被标准几乎照单全收。
+
+> 史料来源：[cppreference 线程支持库](https://en.cppreference.com/w/cpp/thread)、[WG21 论文库](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/)
 
 ## ① 学习目标 [标准]
 

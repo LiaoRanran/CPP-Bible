@@ -19,7 +19,15 @@
 特化是把双刃剑：它让库作者能「为关键类型榨干性能」，但也意味着通用模板与特化之间要维持语义一致，否则用户会被诡异的「特化优先」坑到。[评] 它是 traits 与标签分发的前置技术，也是 concepts 时代之前表达「约束」的主要手段。
 
 ### 0.4 史料补遗与持续编年
-（待续：`vector<bool>` 的「特化翻车」史、以及 concepts 如何减少「靠特化打补丁」的冲动，可在此续写。）
+0.2 编年止于 `iterator_traits` 等靠特化撑起泛型。特化的「黑历史」与退场趋势：
+
+- [史] `std::vector<bool>` 是标准库「特化翻车」的活标本：它本应是一个普通容器，却因「位压缩」被偏特化成返回代理引用的怪胎，导致 `auto& x = v[0]` 无法编译、迭代器不符常规容器概念。委员会多次讨论废除它，但为兼容只能保留。
+
+- [史] 特化（尤其偏特化）长期被用来「给某个类型打补丁」：为 `std::is_pointer<T*>` 写偏特化、为某类型定制 traits。concepts 与 `if constexpr` 让这类「按类型分支」能写在主模板内，减少了对「靠特化堆补丁」的冲动。
+
+- [轶] 据记载，Herb Sutter 曾在 Guru of the Week 系列里把 `vector<bool>` 列为「标准库最著名的误导设计」之一，成为 generations 程序员的反面教材。
+
+> 史料来源：https://en.cppreference.com/w/cpp/container/vector_bool ；https://en.wikipedia.org/wiki/Sequence_container_(C%2B%2B)
 
 > 模板模式速查：本章属「特化调度型」模板。类模板允许为**特定类型**提供完全不同实现（全特化），或为**一类类型**提供实现（偏特化）。这是 trait、allocator、智能指针的核心机制。
 

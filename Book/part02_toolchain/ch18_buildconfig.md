@@ -27,8 +27,12 @@
 
 ### 0.4 史料补遗与持续编年
 
-- （待续：ThinLTO、AutoFDO、BOLT 等后链接优化新技术可在此追加。）
-- 已知后续：LTO/PGO 已成大型 C++ 项目（浏览器、数据库）发布标配。[史]
+- [史] ThinLTO 把全程序 LTO 改为"轻量索引 + 按需跨模块内联"，大幅降低内存与构建时间，成为 Clang/GCC 在大型项目上的实际默认值；AutoFDO 则用生产采样自动驱动优化。
+- [史] BOLT（后链接优化）在链接后对已生成二进制做基本块重排与热路径布局，常被数据库/浏览器在最终发布产物上再榨一层性能，是"链接之后还能优化"的代表。
+- [史] PGO 已被 Clang/GCC 用 `-fprofile-generate`/`-fprofile-use` 一站化，Google、Firefox 等对其发布构建常态启用，典型可获得个位数到两位数的吞吐提升。
+- [评] 这些后链接优化的代价是"编译更慢、构建更复杂"——CI 通常只对最终发布产物跑 PGO/BOLT，日常开发仍停留在 Debug/Release 两档。
+
+> 史料来源：LLVM 后端优化（ThinLTO/BOLT） https://llvm.org/ ；GCC 优化选项 https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 
 ## ① 概述：构建配置维度
 

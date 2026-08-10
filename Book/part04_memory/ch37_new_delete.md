@@ -29,7 +29,15 @@ C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造
 委员会坚持"`new` 表达式不可被用户改，但底层 `operator new` 可以"——既保证语法统一，又开放内存策略。[史][评] 这与 C 的 `malloc` 哲学一脉相承却更分层；反对者认为这套分离过于隐晦，催生了 `std::pmr`（C++17）用分配器显式表达。[评]
 
 ### 0.4 史料补遗与持续编年
-（待续：C++17 PMR、C++20 的 `new` 与常量求值（constexpr new）、静态反射对分配的影响可记于此。）
+
+0.2 停在 C++17 细化 `operator new` 的 `nothrow` 与对齐重载。C++17/20 把"分配"推到运行时多态与编译期两极端。[史]
+
+- **C++17 `std::pmr`（多态分配器, P0220）**：用 `memory_resource` 运行时多态切换内存来源，将 0.1 那层"可替换的 operator new"升级为"可热插拔的内存策略对象"，告别编译期模板膨胀（见 ch38）。[史]
+- **C++20 `constexpr new` / `constexpr delete`（P0784）**：允许在常量求值中 `new` / `delete` 与构造动态对象，使 `std::vector` / `std::string` 能在编译期使用（见 ch21/28），把"分配原语"第一次带进编译期世界。[史]
+- **C++20 销毁式 delete（destroying delete, P0722）**：`operator delete(void*, size_t, void*)` 可在释放内存前已知对象已析构，省一次虚调用，是分配 / 释放原语的精细优化。[史]
+- **行业落地与争议**：多数应用继续用默认 `::operator new`；定制分配器只在游戏 / 交易 / 嵌入式等热点出现。静态反射（C++26 候选）若暴露"分配的布局元数据"，将让内存分析工具更精确。[史][评]
+
+> 史料来源：https://en.cppreference.com/w/cpp/memory/new ｜ https://en.cppreference.com/w/cpp/memory/pmr ｜ https://en.cppreference.com/w/cpp/memory/allocator
 
 ## ① 本章在全书中的位置
 

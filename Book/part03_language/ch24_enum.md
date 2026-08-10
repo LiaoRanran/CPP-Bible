@@ -27,7 +27,16 @@ C 的 `enum` 来自 1970 年代，本意是用具名常量替代魔法数字，�
 委员会长期在"兼容 C 的弱枚举"与"类型安全"间拉扯；`enum class` 是妥协产物——旧代码不动，新代码可选强类型。[史][评] 位掩码场景（flags）仍偏爱 unscoped enum 的隐式 OR，于是 `enum class` + `operator|` 重载成为现代写法。[评]
 
 ### 0.4 史料补遗与持续编年
-（待续：静态反射（C++26 候选）将让枚举名字与值可遍历；`std::format` 对枚举的定制可记于此。）
+
+0.2 停在 C++17 起对位掩码与枚举反射的讨论。C++20 给枚举补了一项实用语法。[史]
+
+- **C++20 `using enum`（P1099）**：`using enum E;` 把枚举器名字引入当前作用域，免写 `E::` 前缀又保留 `enum class` 的类型安全，是强类型枚举的"易用性补丁"。[史]
+- **`std::format` / `std::print`（C++20/23）对枚举需手写 formatter**：标准未给枚举自动格式化，但 `std::formatter` 定制点让"打印枚举名而非整数"成为可复用惯用法，呼应 0.1 对"魔法数字"的治理。[史]
+- **静态反射（C++26 候选 P2996）将枚举名字与值变成可遍历数据**：编译器能暴露每个 enumerator 的名称与底层值，第三方库 `magic_enum` 早已用宏 / 模板 trick 实现同类效果，标准反射将使其零成本且官方化。[史][评]
+- **行业落地**：Bitmask 类型（`std::ios_base::fmtflags` 等）继续用 unscoped + `operator|` 重载；`enum class` 在状态机、协议字段中成为默认选择，强类型减少了大量隐式转换 bug。[史]
+- **轶事**：据记载 Bjarne 曾表示 `enum class` 是"为了让 C 程序员不觉得被冒犯"的妥协——旧代码照旧能编译，新代码才享受安全。[轶]
+
+> 史料来源：https://en.cppreference.com/w/cpp/language/enum ｜ https://en.cppreference.com/w/cpp/language/using_enum ｜ https://en.cppreference.com/w/cpp/utility/format
 
 ## ① 章节摘要（Chapter Summary）
 
