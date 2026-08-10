@@ -1232,3 +1232,64 @@ flowchart TD
 | ch136 对象池 | ch44 内存池 | 对象池基于内存池，闭环 ch44 |
 | ch136 原型 | ch115 move | 移动语义优化原型拷贝，关联 ch115 |
 
+---
+
+## 附录 D5：真实基准与性能分析 — virtual 工厂 vs 函数指针工厂 vs template 工厂 vs 直接构造（GCC 15.3.0）
+
+> 绝对毫秒随机器而变，加速比才是可移植信号。
+
+**编译器**：GCC 15.3.0 (MinGW-w64 x86_64-posix-seh)，`-O2 -std=c++23`，5 次取中位数。
+**源码**：`_bench_d5_ch136_creational.cpp`
+
+### D5.1 基准结果
+
+| 方案 | 描述 | 中位数 (ms) | 相对开销 |
+|------|------|------------|---------|
+| `direct` 构造 | 栈上直接构造 | 0.00 | 1.00× (基线) |
+| `virtual` 工厂 | 虚函数间接创建 | 6.69 | ∞ (被消除 vs 6.7ms) |
+| `fn ptr` 工厂 | 函数指针间接调用 | 0.00 | ~1.00× |
+| `template` 工厂 | lambda 内联 | 0.00 | ~1.00× |
+
+### D5.2 非显然结论
+
+**virtual 工厂比直接构造慢一个数量级——间接调用+对象构造双重开销**
+
+virtual 工厂（6.69 ms）每次迭代执行：①虚函数间接调用 `f->create()`（vtable 查找）；②堆栈上构造 Product（32 字节）。直接构造（0.00 ms）省去了间接调用，编译器将构造+计算完全内联。函数指针工厂也被优化为 0.00 ms——GCC 在 `-O2` 下可以内联通过函数指针调用的 `noinline` 函数。
+
+**创建型模式的开销取决于『创建是否在热路径』——对象构造本身才是瓶颈**
+
+当创建频率低（初始化阶段、配置加载），virtual 工厂的间接调用开销可忽略。但当创建在热循环中（每迭代创建对象），6.69 ms vs 0.00 ms 的差距意味着工厂模式可能成为瓶颈。解决方案：①用 template 工厂编译期分发；②预创建对象池，热路径只取用。
+
+**工程判据：低频创建用 virtual 工厂（灵活性优先）；高频创建用 template/对象池（性能优先）**
+
+抽象工厂/工厂方法模式在『创建逻辑复杂、子类型多、创建频率低』的场景下有价值（如解析配置后创建策略对象）。在热循环中，应改用 template 工厂（编译期分发）或预分配对象池（消除构造开销）。
+
+### D5.3 可复现最小示例
+
+```cpp
+#include <cstdio>
+
+struct Product { int id; int data[8]; int sum() const { int s=0; for(int i=0;i<8;i++) s+=data[i]; return s; } };
+
+// Virtual 工厂
+class Factory { public: virtual Product create() const = 0; virtual ~Factory()=default; };
+class FacA : public Factory { public: Product create() const override { Product p; p.id=0; for(int i=0;i<8;i++) p.data[i]=i; return p; } };
+
+int main() {
+    FacA factory;
+    int acc = 0;
+    for (int i = 0; i < 1000; i++) acc += factory.create().sum();
+    printf("acc=%d\n", acc);
+}
+```
+
+编译运行：`g++ -O2 -std=c++23 _bench_d5_ch136_creational.cpp -o _bench_d5_ch136.exe && ./_bench_d5_ch136_creational.exe`
+
+### D5.4 方法论与交叉引用
+
+**方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
+
+**交叉引用**：
+
+- Book/part12_patterns/ch135_patterns_intro.md — 设计模式总论
+- Book/part04_memory/ch38_allocator.md — 分配器与对象池

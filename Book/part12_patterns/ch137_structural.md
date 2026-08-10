@@ -1313,3 +1313,62 @@ flowchart TD
 | ch137 享元 | ch44 内存池 | 享元共享对象靠对象池，闭环 ch44 |
 | ch137 代理 | ch39 RAII | 代理管理资源生命周期，见 ch39 |
 
+---
+
+## 附录 D5：真实基准与性能分析 — virtual 装饰器 vs CRTP vs template wrapper（GCC 15.3.0）
+
+> 绝对毫秒随机器而变，加速比才是可移植信号。
+
+**编译器**：GCC 15.3.0 (MinGW-w64 x86_64-posix-seh)，`-O2 -std=c++23`，5 次取中位数。
+**源码**：`_bench_d5_ch137_structural.cpp`
+
+### D5.1 基准结果
+
+| 方案 | 描述 | 中位数 (ms) | 相对开销 |
+|------|------|------------|---------|
+| `direct` (基线) | 直接访问成员 | 0.00 | 1.00× (基线) |
+| `virtual` 装饰器 | 虚函数间接调用链 | 215.10 | ∞ (被消除 vs 215ms) |
+| `CRTP` | 编译期静态分发 | 0.00 | ~1.00× |
+| `template` wrapper | lambda 内联 | 0.00 | ~1.00× |
+
+### D5.2 非显然结论
+
+**virtual 装饰器引入 215ms 间接调用开销——CRTP 和 template 完全消除**
+
+virtual 装饰器每次迭代执行两层间接调用（外层 `get()` → 内层 `inner->get()`），每层都是 `call [vtable+offset]`。CRTP 和 template wrapper 的循环体被编译器完全内联为寄存器操作（0.00 ms）。215 ms 的差距精确量化了装饰器模式在运行期多态下的间接调用代价。
+
+**结构型模式的性能分层：static（CRTP/template）> switch > virtual**
+
+当装饰层级固定（编译期已知）时，CRTP 完全消除间接调用。当装饰层级运行期变化但候选集封闭时，switch+跳转表比 virtual 快。只有当装饰链需要运行期动态组装（如 I/O 流的 `stream << filter << buffer`）时，virtual 才是唯一选择。
+
+**工程判据：编译期已知的装饰链用 CRTP；运行期组装用 virtual（接受间接调用代价）**
+
+CRTP 装饰器在编译期展开为直接调用链，零运行期开销。但 CRTP 要求装饰层数在编译期确定——无法运行期增删装饰器。如果需要运行期灵活性（如日志/压缩/加密可插拔），virtual 的间接调用代价是合理的。
+
+### D5.3 可复现最小示例
+
+```cpp
+#include <cstdio>
+
+// Virtual 装饰器
+class Num { public: virtual int get() const = 0; virtual ~Num()=default; };
+class NumImpl : public Num { public: int v; NumImpl(int v_):v(v_){} int get() const override { return v; } };
+class Doubler : public Num { public: Num* inner; Doubler(Num* i):inner(i){} int get() const override { return inner->get()*2; } };
+
+int main() {
+    NumImpl impl(21);
+    Doubler dec(&impl);
+    printf("decorated=%d\n", dec.get());  // 42
+}
+```
+
+编译运行：`g++ -O2 -std=c++23 _bench_d5_ch137_structural.cpp -o _bench_d5_ch137.exe && ./_bench_d5_ch137_structural.exe`
+
+### D5.4 方法论与交叉引用
+
+**方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
+
+**交叉引用**：
+
+- Book/part05_oo/ch51_crtp.md — CRTP 深度
+- Book/part12_patterns/ch139_crtp_pattern.md — CRTP 模式

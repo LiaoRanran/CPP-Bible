@@ -1572,3 +1572,70 @@ flowchart TD
 | ch22 | ch100 | auto 与 decltype：范围算法返回类型常借助 auto 推导 |
 | ch22 | ch115 | auto 与 decltype：auto&& 转发与 xvalue 共同支撑移动 |
 | ch22 | ch27 | auto 与 decltype：转型结果常以 decltype 固定类型 |
+
+---
+
+## 附录 D5：真实基准与性能分析 — auto (值拷贝) vs auto& (引用) — 大对象拷贝开销（GCC 15.3.0）
+
+> 绝对毫秒随机器而变，加速比才是可移植信号。
+
+**编译器**：GCC 15.3.0 (MinGW-w64 x86_64-posix-seh)，`-O2 -std=c++23`，5 次取中位数。
+**源码**：`_bench_d5_ch22_auto_decltype.cpp`
+
+### D5.1 基准结果
+
+| 方案 | 描述 | 中位数 (ms) | 相对开销 |
+|------|------|------------|---------|
+| `auto&` (引用) | 零拷贝，直接引用原对象 | 5.54 | 1.00× (基线) |
+| `auto` (拷贝 128 ints) | 每次迭代复制 512 字节 | 7.53 | ~1.36× 慢 |
+
+### D5.2 非显然结论
+
+**auto 默认拷贝——大对象上 auto 比 auto& 慢 36%**
+
+`auto r = w.get_val()` 每次迭代复制 128 个 int（512 字节），而 `auto& r = w.get_ref()` 只绑定引用（零拷贝）。36% 的差距不是 auto 关键字本身的开销，而是 C++ 的『值语义默认』——`auto` 推导为值类型，`auto&` 推导为引用类型。对大于寄存器宽度的对象，应默认用 `const auto&`。
+
+**vector<bool> 的 auto vs bool 无性能差异——编译器已优化代理类型**
+
+`auto x = vb[i]` 和 `bool x = vb[i]` 在 5 试验中差异 <1%（0.37 vs 0.36 ms），证明 `vector<bool>::reference` 代理类型在 `-O2` 下被完全内联消除。ch22 中警告的『auto 捕获代理类型』主要是类型安全问题，不是性能问题。
+
+**工程判据：小类型用 auto；大类型/不可拷贝类型用 const auto&**
+
+当被推导类型 ≤ 2 个 word（16 字节）时，拷贝开销可忽略；当类型包含数组/容器/字符串时，`const auto&` 避免不必要的拷贝。`decltype(auto)` 在泛型代码中保留引用性，比 auto 更精确。
+
+### D5.3 可复现最小示例
+
+```cpp
+#include <cstdio>
+
+struct Big { int data[128]; int sum() const { int s=0; for(int i=0;i<128;i++) s+=data[i]; return s; } };
+struct Wrapper { Big b; Big& ref() { return b; } Big val() { return b; } };
+
+int main() {
+    Wrapper w;
+    int acc1=0, acc2=0;
+    const int N = 100000;
+    for (int i = 0; i < N; i++) {
+        auto copy = w.val();   // 拷贝 128 ints
+        copy.data[0] = i;
+        acc1 += copy.sum();
+    }
+    for (int i = 0; i < N; i++) {
+        auto& ref = w.ref();   // 零拷贝
+        ref.data[0] = i;
+        acc2 += ref.sum();
+    }
+    printf("copy=%d ref=%d\n", acc1, acc2);
+}
+```
+
+编译运行：`g++ -O2 -std=c++23 _bench_d5_ch22_auto_decltype.cpp -o _bench_d5_ch22.exe && ./_bench_d5_ch22_auto_decltype.exe`
+
+### D5.4 方法论与交叉引用
+
+**方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
+
+**交叉引用**：
+
+- Book/part03_language/ch19_variables.md — 变量声明与初始化
+- Book/part06_templates/ch65_type_traits.md — 类型萃取

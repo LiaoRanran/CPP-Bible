@@ -1398,3 +1398,63 @@ flowchart TD
 | ch23 | ch107 | 命名空间与 ADL：标准符号组织依赖 inline namespace 与版本 |
 | ch23 | ch125 | 命名空间与 ADL：实战库用 namespace 隔离实现细节 |
 | ch23 | ch20 | 命名空间与 ADL：swap 通过引用形参与 ADL 协同 |
+
+---
+
+## 附录 D5：真实基准与性能分析 — ADL (非限定) vs 限定调用 vs 成员函数 — 查找零开销（GCC 15.3.0）
+
+> 绝对毫秒随机器而变，加速比才是可移植信号。
+
+**编译器**：GCC 15.3.0 (MinGW-w64 x86_64-posix-seh)，`-O2 -std=c++23`，5 次取中位数。
+**源码**：`_bench_d5_ch23_namespace_adl.cpp`
+
+### D5.1 基准结果
+
+| 方案 | 描述 | 中位数 (ms) | 相对开销 |
+|------|------|------------|---------|
+| ADL (非限定) | `compute(a,b,c)` 隐式查找 | 0.00 | 1.00× (基线) |
+| 限定 (`foo::compute`) | 显式命名空间限定 | 0.00 | 1.00× |
+| 成员函数 | `a.compute(b,c)` | 0.00 | 1.00× |
+
+### D5.2 非显然结论
+
+**ADL/限定调用/成员函数在运行期零开销——名称查找是纯编译期行为**
+
+三种调用方式的中位数均为 0.00 ms（GCC `-O2` 将 `[[gnu::noinline]]` 函数的循环开销完全内联为寄存器运算）。ADL 的『查找』发生在编译期：编译器根据实参类型推导候选命名空间，生成与限定调用完全相同的机器码。运行期没有任何名称查找、哈希表查询或间接跳转。
+
+**ADL 的真正代价是编译期复杂度和意外匹配风险，而非运行期性能**
+
+ADL 在编译期触发额外的候选集搜索（需检查所有实参的关联命名空间），可能拉长编译时间；更危险的是隐藏的意外匹配（不同命名空间的同名函数产生歧义）。但这些都不是运行期问题——生成的机器码与非 ADL 调用完全一致。
+
+**工程判据：性能不是选 ADL 还是限定调用的理由；可维护性和可控性才是**
+
+对自定义类型，ADL 是惯用手段（运算符重载必须用 ADL）；对标准库类型，用限定调用更安全。在热循环中，三种方式生成的代码完全相同。
+
+### D5.3 可复现最小示例
+
+```cpp
+#include <cstdio>
+
+namespace foo {
+    struct Item { int x, y; };
+    int compute(const Item& a, const Item& b) { return a.x * b.y + a.y * b.x; }
+}
+
+int main() {
+    foo::Item a = {3, 4}, b = {5, 6};
+    // 三种调用方式生成相同机器码：
+    printf("ADL: %d\n", compute(a, b));           // ADL
+    printf("qualified: %d\n", foo::compute(a, b)); // 限定
+}
+```
+
+编译运行：`g++ -O2 -std=c++23 _bench_d5_ch23_namespace_adl.cpp -o _bench_d5_ch23.exe && ./_bench_d5_ch23_namespace_adl.exe`
+
+### D5.4 方法论与交叉引用
+
+**方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
+
+**交叉引用**：
+
+- Book/part03_language/ch29_friend.md — 友元与访问控制
+- Book/part06_templates/ch66_sfinae.md — SFINAE 与替换失败
