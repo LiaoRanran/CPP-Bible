@@ -22,13 +22,14 @@ v3 changes (2026-08-10, P0-2 CI 加固):
     subprocess-bound bottleneck, so multiprocessing scales nearly linearly
     with part count.  Default stays single-process so `--resume` incremental
     checkpoint semantics are unchanged (parallel mode always runs fresh).
-  - GCC resolution hardened: prefer mingw1530 GCC 15.3.0 when `g++` is not
-    on PATH (consistent with chapter_compile_check.py).
+  - GCC resolution: default to project-standard mingw1530 GCC 15.3.0
+    (consistent with chapter_compile_check.py); fall back to PATH `g++`
+    only when mingw1530 is absent.
 
 Options:
   --quick        only first 3 cpp blocks per chapter (smoke test)
   --main-only    only compile blocks containing 'int main'
-  --gcc PATH     path to g++ (default: shutil.which('g++') else mingw1530)
+  --gcc PATH     path to g++ (default: mingw1530 15.3.0, else PATH g++)
   --json PATH    write full failure report (default tools/compile_report.json)
   --parallel     compile parts concurrently (one process per part)
   --workers N    max concurrent part-workers (default: part count, capped cpu)
@@ -42,12 +43,16 @@ from concurrent.futures import ProcessPoolExecutor
 def resolve_gcc(explicit=None):
     if explicit:
         return os.path.normpath(explicit)
-    found = shutil.which('g++')
-    if found:
-        return os.path.normpath(found)
+    # Project standard is GCC 15.3.0 (mingw1530). Prefer it when present so the
+    # syntax gate matches chapter_compile_check.py (also 15.3.0) and the saved
+    # compile_report.json baseline. Fall back to PATH `g++` only if mingw1530
+    # is absent (e.g. a CI runner without the Qt toolchain).
     mingw1530 = r"C:/Qt/Tools/mingw1530_64/bin/g++.exe"
     if os.path.isfile(mingw1530):
         return mingw1530
+    found = shutil.which('g++')
+    if found:
+        return os.path.normpath(found)
     return 'g++'
 
 
