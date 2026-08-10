@@ -10,6 +10,24 @@
 
 ---
 
+## ⓪ 历史动机：PMR 的来龙去脉
+> 同样的 `std::vector`，有人想要全局 `new`、有人想要线程本地 arena——可分配策略却"焊死"在类型里。
+
+### 0.1 起源（谁·何时·为何）
+C++ 的 Allocator 模型从标准诞生起就把分配器作为**模板参数**（`std::vector<T, Alloc>`），策略在编译期绑定、是类型的一部分。这带来两大痛点：类型因分配器不同而"不兼容"（不同 allocator 的 vector 不能互赋），且难以在**运行期**切换策略。[史] 游戏、高频交易、请求处理这类场景，极度渴望"在热路径上用一块预分配的 arena 零成本分配、请求结束一次性回收"——传统 allocator 模型对此力不从心。早期 C++11 的 `scoped_allocator_adaptor` 等尝试也未根本解决。
+
+### 0.2 关键转折（编年）
+- C++11：Allocator 模型定型，但运行期多态分配仍是短板。[史]
+- **C++17（2017）**：引入 **`std::pmr`（Polymorphic Memory Resources）**，用 `memory_resource` 抽象基类把"分配策略"解耦为运行期可换的对象。[史]
+- C++20/23：PMR 与模块化、常量求值等持续磨合。[史]
+
+### 0.3 设计哲学之争
+PMR 的核心取舍是**编译期分配器（类型参数）vs 运行期多态（值对象）**。委员会没有废弃沿用多年的 Allocator 模型，而是叠加一层 `pmr`：`polymorphic_allocator<T>` 把"指向 `memory_resource` 的指针"作为状态，容器类型因此统一（都是 `pmr::vector<T>`），策略却能在运行期替换。[评] 这等于承认"编译期零开销"与"运行期灵活"都重要，用一层薄薄的间接（虚函数 `do_allocate`）换来了 arena/池/默认分配的自由切换，同时仍保留传统 allocator 给追求极致静态调度的用户。[史]
+
+### 0.4 史料补遗与持续编年
+- `monotonic_buffer_resource` / `pool_resource` 等标准资源成为"零分配热路径"的常用积木。[史]
+- （待续：PMR 与 `import std` 模块分发、与自定义 jemalloc/tcmalloc 风格池的对照可在此追加。）
+
 ## ① 学习目标
 
 - 掌握 `std::pmr::memory_resource` 抽象基类的三段式虚接口（`do_allocate` / `do_deallocate` / `do_is_equal`）与 `[标准]` C++17 规定。

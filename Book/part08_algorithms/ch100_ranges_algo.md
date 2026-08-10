@@ -7,6 +7,24 @@
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；ranges 是标准库组件，证据取自 libstdc++ 在 `-O2` 下生成的真实汇编与 chrono 实测。
 > 立场约定：`[标准]`=ISO C++ 规定；`[实现]`=GCC/libstdc++ 行为；`[平台]`=编译器差异；`[经验]`=工程共识。
 
+## ⓪ 历史动机：C++20 Ranges 算法的来龙去脉
+> 当算法不再要一对迭代器，而是直接吃一个区间——这是 Ranges 给 `<algorithm>` 的"整容手术"。
+
+### 0.1 起源（谁·何时·为何）
+传统算法 `sort(v.begin(), v.end())` 的"迭代器对"写法，被 Eric Niebler 的 **range-v3** 证明可以更优雅：让算法直接接收"区间"、用投影（projection）指定比较字段、用惰性 `views` 组合管道。[史] C++20 把这套思想标准化为 `std::ranges` 下的算法（`ranges::sort`、`ranges::find` …），区间与哨兵成为一等公民，并引入 `std::ranges::range` 概念体系。
+
+### 0.2 关键转折（编年）
+- 2013 起：range-v3 实验场验证"惰性视图 + 管道组合"的价值。[史]
+- C++20：Ranges 算法标准化，支持单范围参数、投影、哨兵。
+- C++23：扩充视图（如 `views::enumerate`、`views::zip`）与适配器，让流水线更完整。
+
+### 0.3 设计哲学之争
+Ranges 算法相对传统的根本改动，是 **"范围优先 + 投影内置"**：你不必再写 `sort(v.begin(), v.end(), [](auto&a){return a.x;})`，而是 `ranges::sort(v, {}, &T::x)`。[评] 但这也带来"类型名极长、错误信息更复杂"的吐槽；惰性 `views` 还让调试"看不见的中间结果"变难。[评] 取舍清晰：表达力与组合性压倒了一点简洁性。
+
+### 0.4 史料补遗与持续编年
+- 待续：`views::cache_last`、惰性管道与"视图失效"陷阱，可补入。
+- 待续：C++26 对 Ranges 与并行/发送者模型融合的探索，作为新条目。
+
 ## ① 概述：C++20 Ranges [标准]
 
 ⟶ Book/part08_algorithms/ch101_algo_theory.md

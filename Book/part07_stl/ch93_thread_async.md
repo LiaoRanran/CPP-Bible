@@ -6,6 +6,24 @@
 
 ---
 
+## ⓪ 历史动机：thread / async 的来龙去脉
+> C++11 之前，写多线程意味着"要么 pthread，要么 Win32，要么第三方库"——标准对此保持了二十年的沉默。
+
+### 0.1 起源（谁·何时·为何）
+在 C++11 之前，C++ 标准里**根本没有线程**：POSIX 用 `pthread`，Windows 用 `CreateThread`，代码无法跨平台，异常也难以安全跨线程传播。[史] Boost.Thread（Anthony Williams 等人主导）长期充当事实标准，最终其设计被 C++11 吸收，标准化了 `std::thread`、`std::mutex`、`std::condition_variable`，以及高层封装 `std::async`/`std::future`。[史]
+
+### 0.2 关键转折（编年）
+- 多年实践：Boost.Thread 验证了"RAII 锁（`lock_guard`/`unique_lock`）"等惯用法。[史]
+- C++11：`<thread>`/`<mutex>`/`<future>` 标准化，C++ 第一次有了内存模型与"数据竞争即 UB"的正式定义。
+- 后续：C++20 引入 `jthread` 与协作式取消（⟶ Book/part07_stl/ch94_stop_token.md）。
+
+### 0.3 设计哲学之争
+`std::thread` 的"裸线程"用起来很危险——忘记 `join`/`detach` 就析构会 `std::terminate`。[评] 因此社区更推崇 `std::async` 与"任务而非线程"的高层思维：把工作交出去、用 `future` 取结果，而非手动管线程生命周期。[评] 这场"裸线程 vs 高层任务"的取向，是 C++ 并发设计的主线之一。
+
+### 0.4 史料补遗与持续编年
+- 待续：C++ 内存模型（happens-before、atomic）的标准化历程，可补入。
+- 待续：发送者/接收者（sender/receiver，P2300）对 async 的未来改写，作为新条目。
+
 ## ① 学习目标 [标准]
 
 本章把 C++11 引入、并经 C++20/23 打磨的**线程与异步原语**作为一个有机整体讲透：

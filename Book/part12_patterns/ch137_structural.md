@@ -5,6 +5,23 @@
 
 > 取证说明：本章所有可编译示例位于 `Examples/_ch137_*.cpp`，均通过 `g++ -std=c++23 -O2 -Wall -Wextra` 实测编译；汇编取证由 `g++ -std=c++23 -O2 -S -masm=intel` 对 `Examples/_ch137_bridge_layout.cpp` 生成（`Examples/_ch137_bridge_layout.asm` 与 `_O0.asm`）；性能数据由 `Examples/_ch137_decorator_bench.cpp` 在 mingw-w64 GCC 13.1.0 (x86-64, -O2) 上真实运行得到。未安装工具的环境请按「命令 + 典型输出」复现，绝不编造路径或指令。
 
+## ⓪ 历史动机：结构型模式的来龙去脉
+> 当"两个接口对不上、一个抽象有两个维度在正交变化"时，结构型模式负责把零件焊成机器。
+
+### 0.1 起源（谁·何时·为何）
+结构型模式同样出自 GoF 1994 年著作（Adapter、Bridge、Composite、Decorator、Facade、Flyweight、Proxy 七种）[史]。它的痛点不是"没有对象"，而是对象"组装"时的七种典型痛苦：接口不兼容要适配、抽象有两个维度要桥接、部分—整体要组合、动态加职责要装饰、子系统太杂乱要外观、细粒度爆炸要享元、访问要受控要代理。GoF 把这套"怎么把类/对象拼成更大结构"的经验固化成词。
+
+### 0.2 关键转折（编年）
+- 1994：GoF 收录七种结构型模式 [史]。
+- 此后：C++ 的模板、RAII、智能指针让这些模式与原生设施深度融合——例如 `std::shared_ptr` 本身就是 Proxy/Handle-Body 的现代化身 [评]。
+- 现代重写：Decorator 常被 CRTP mixin 取代，Bridge 常被 Policy-Based Design 取代 [评]。
+
+### 0.3 设计哲学之争
+结构型模式的核心张力是"组合 vs 继承"：GoF 一句名言"优先使用对象组合而非类继承"，正是为了躲开继承层级僵化 [评]。在 C++ 里这条更锋利——多继承本就昂贵且易歧义，于是 Bridge/Decorator 用"持有一个指针"替代"继承一个类"，既灵活又零虚表膨胀风险 [评]。
+
+### 0.4 史料补遗与持续编年
+（待续：现代 C++ 如何用 concept/模板把结构型模式编译期化、以及 Handle-Body 在 ABI 稳定中的角色均可在此补充。）〔轶〕据记载，Decorator 模式常被误写成 "Decorate" 模式，GoF 原书拼写为 Decorator，至今仍有初学者拼错。
+
 ## ① 概述：结构型模式解决什么
 
 ⟶ Book/part12_patterns/ch136_creational.md

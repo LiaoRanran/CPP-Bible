@@ -2,6 +2,23 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：90 分钟 / 前置：⟶ Book/part07_stl/ch76_stl_arch.md（STL 架构）、⟶ Book/part03_language/ch20_reference_pointer.md（引用与指针）、⟶ Book/part07_stl/ch80_array.md（array）/ 后续：⟶ Book/part07_stl/ch84_set.md（set/multiset）、⟶ Book/part07_stl/ch85_unordered.md（unordered_map）、⟶ Book/part07_stl/ch90_ranges.md（ranges）/ 难度：★★★★☆
 
+## ⓪ 历史动机：map / multimap 的来龙去脉
+> 一张"按键排序、O(log n) 取物"的字典——红黑树是它沉默而可靠的引擎。
+
+### 0.1 起源（谁·何时·为何）
+关联容器要解决的是"用键快速找值"，且常常希望结果**有序**（便于范围查询、按序遍历）。[史] STL 选择了**红黑树（red-black tree）**作为 `map`/`multimap` 的底层：一种自平衡二叉搜索树，保证最坏情况下插入、删除、查找都是 O(log n)，且旋转次数有界。[史] Stepanov 一派看重它的"稳定最坏情况"——哈希表最坏会退化成 O(n)，而红黑树不会。
+
+### 0.2 关键转折（编年）
+- C++98：`std::map`/`std::multimap` 随 STL 标准化，确立节点稳定（插入/删除不使其他迭代器失效）。[史]
+- 后续：C++11 引入 `unordered_map`（⟶ Book/part07_stl/ch85_unordered.md）作为"无序但平均更快"的对照方案；C++17 补 `try_emplace`/`insert_or_assign` 等更安全的接口。
+
+### 0.3 设计哲学之争
+有序 vs 无序是 `map` 家族的内部路线之争：红黑树 `map` 提供有序性和稳定复杂度，但每个节点有额外指针与颜色位开销；哈希 `unordered_map` 平均 O(1)，却要设计好哈希函数、且最坏退化。[评] STL 同时提供两者，把选择交给场景——需要有序/范围查询选 `map`，需要极致查找速度且能接受无序选 `unordered_map`。[评]
+
+### 0.4 史料补遗与持续编年
+- 待续：红黑树 vs B 树（如 Abseil 的 `flat_hash_map`/`btree`）在现代工程里的取舍，可作后续条目。
+- 待续：C++26 是否引入更多有序容器变体，可补入。
+
 ## ① 学习目标
 
 `std::map<Key, T>` 与 `std::multimap<Key, T>` 是基于**红黑树（red-black tree）**的有序关联容器。本章结束后，你应当能够：

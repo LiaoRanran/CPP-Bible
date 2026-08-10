@@ -6,6 +6,23 @@
 > 源码根：本机未安装 ClickHouse / Redis，本章源码剖析均引用**上游仓库**真实 URL + 行号，标注「上游参考」。
 > 自行编译证据见 `Examples/_ch133_vectorize.cpp` 与 `Examples/_ch133_eventloop.cpp`（本章自包含示例）。
 
+## ⓪ 历史动机：ClickHouse / Redis 的来龙去脉
+> 一个用 SIMD 把"列"喂给 CPU，一个用单线程把"锁"彻底消灭——两条相反的极致性能路。
+
+### 0.1 起源（谁·何时·为何）
+**Redis** 由 Salvatore Sanfilippo（antirez）于 2009 年发布 [史]，起因是他运营一个实时访客分析网站时，发现用传统关系库做高并发计数又慢又笨，于是用 C 写了个内存 KV + 单线程事件循环，把"无锁串行"做到极致。**ClickHouse** 则由 Yandex 内部孵化、2016 年开源 [史]，为的是给网页分析（Metrica）做"按列存、批量向量化"的 OLAP，解决行存数据仓库在聚合查询上的缓慢。
+
+### 0.2 关键转折（编年）
+- 2009：Redis 1.0 发布，单线程 Reactor 模型成为内存 KV 范本 [史]。
+- 2016：ClickHouse 开源，列存 + 向量化执行进入大众视野 [史]。
+- 此后：Redis 成为缓存/消息中间件事实标准，ClickHouse 成为实时分析新宠 [史]。
+
+### 0.3 设计哲学之争
+两者代表了两种"喂数据给硬件"的哲学：ClickHouse 认为瓶颈在"数据布局是否对齐 SIMD 与 cache line"，于是把一整列连续摆放、一次算一批 [评]；Redis 认为瓶颈在"并发竞争"，于是干脆单线程、用 `epoll`/`kqueue` 多路复用，连锁都不要 [评]。一个押注并行硬件，一个押注无竞争串行。
+
+### 0.4 史料补遗与持续编年
+（待续：Redis 7 的 Functions 与多线程 IO、2024 年 Redis 调整开源许可（转向 SSPL/RSALv2 双许可）引发的社区分叉讨论、ClickHouse 云化与物化视图演进均可在此补充。）〔轶〕趣闻：antirez 曾形容 Redis 是"为乐趣而写"，早期版本以单文件单线程的极简哲学对抗当时笨重的数据库。
+
 ## ① 概述：ClickHouse（列存 OLAP）/Redis（内存 KV）
 
 ⟶ Book/part11_source/ch132_leveldb_rocksdb.md

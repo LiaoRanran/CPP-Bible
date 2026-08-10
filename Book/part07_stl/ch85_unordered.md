@@ -7,6 +7,24 @@
 > 难度：★★★☆☆（理解开链哈希、负载因子与重哈希）。  
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。本章 `[实现]` 级源码取自 `bits/hashtable.h`、`bits/unordered_set.h`、`bits/unordered_map.h`、`bits/functional_hash.h`、`bits/hash_bytes.h`，逐行标注文件与行号。
 
+## ⓪ 历史动机：unordered 容器的来龙去脉
+> 哈希表在 STL 外游荡了十几年，才终于在正典里拿到自己的名字。
+
+### 0.1 起源（谁·何时·为何）
+哈希表（hash table）的思想早就成熟，SGI STL 甚至提供过非标准的 `hash_map`/`hash_set`。[史] 但标准 C++98 只收编了红黑树系容器，哈希容器被挡在门外——委员会对"标准该不该绑定一种哈希方案"犹豫不决。于是它们先在 **TR1（Technical Report 1，约 2005）** 里以 `unordered_*` 之名试水，吸取实现经验。[史]
+
+### 0.2 关键转折（编年）
+- TR1（约 2003–2005）：`std::tr1::unordered_map/set` 作为技术报告先行。[史]
+- C++11：`std::unordered_map`/`unordered_set`/`unordered_multimap/set` 正式标准化，底层为开链法哈希桶。[史]
+- 后续：C++20 起与 ranges 配合，桶接口也逐步完善。
+
+### 0.3 设计哲学之争
+`unordered_*` vs `map`/`set` 是 STL 关联容器最持久的路线分歧：哈希提供平均 O(1) 查找，但要写好哈希函数、且最坏 O(n)；红黑树提供稳定 O(log n) 与天然有序。[评] 委员会先放哈希进 TR1 再进标准，正是为了先验证"标准可承载哈希"这件事本身——这种"先在技术报告里试水"的谨慎，是 C++ 标准化的一大特色。[评]
+
+### 0.4 史料补遗与持续编年
+- 待续：开链法 vs 开放寻址（如 Google `dense_hash_map`）的取舍，可作后续条目。
+- 待续：C++ 对"异构查找（heterogeneous lookup）"的逐步支持，可补入。
+
 ## ① 学习目标
 
 `std::unordered_set` 与 `std::unordered_map` 是基于**哈希表**的无序关联容器：

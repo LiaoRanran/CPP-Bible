@@ -11,6 +11,23 @@
 > 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`
 > 本章立场：以 `[实现·GCC13]`/`[平台·x86-64]` 标注取证，`[标准]` 标注语言约束，`[经验]` 给出工程取舍。
 
+## ⓪ 历史动机：ECS 的来龙去脉
+> 当游戏对象的"继承树"长到卡死 CPU 缓存时，有人把"数据"和"行为"彻底拆开重排。
+
+### 0.1 起源（谁·何时·为何）
+ECS（Entity-Component-System）成形于 1990 年代末的游戏引擎。常被引用的早期实践包括 Looking Glass 的 *Thief*（1998）与 Gas Powered Games 的 *Dungeon Siege*——后者由 Scott Bilas 在 2002 年的 GDC 演讲中首次系统公开"用组件代替继承树"的架构 [史]。痛点极其现实：传统 `GameObject : public Renderable, public Physical` 的继承层级，让上百万对象各自散布在内存里，CPU 缓存命中率惨淡、虚函数满天飞。
+
+### 0.2 关键转折（编年）
+- 2002：Dungeon Siege 的 GDC 演讲让 ECS 思想出圈 [史]。
+- 2010s：Unity 的 **DOTS**、Unreal 的 **MassEntity**、轻量库 **EnTT**（Michele Caini）把它推向工业化 [史]。
+- 现代：ECS 成为"数据导向"游戏/仿真架构的代名词 [评]。
+
+### 0.3 设计哲学之争
+ECS 对经典 OOP 游戏对象模型之争，本质是"数据布局 vs 对象语义"：OOP 把"是什么"（含行为）绑在一个对象上，ECS 把"纯数据（Component）"与"批量算法（System）"分离，让 System 能连续遍历同类组件、吃满缓存带宽 [评]。代价是心智模型反转——你不再"让对象做某事"，而是"让系统筛选一批数据做某类变换"。
+
+### 0.4 史料补遗与持续编年
+（待续：Unity DOTS 的演进波折、Unreal MassEntity 的落地、以及 ECS 与 DOD 的边界厘清均可在此续写。）〔轶〕趣闻：Scott Bilas 在 2002 年 GDC 讲 Dungeon Siege 架构时，台下不少人才第一次意识到"继承树可能是个错误"。
+
 ## ① 概述：ECS 是什么（游戏/仿真） [标准]
 
 ⟶ Book/part12_patterns/ch141_di.md

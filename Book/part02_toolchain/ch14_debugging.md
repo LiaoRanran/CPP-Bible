@@ -5,6 +5,30 @@
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23`）。本章示例源码位于 `Examples/`，统一前缀 `_ch14_`。
 > 说明：本机 MinGW GCC 13.1.0（x86_64-posix-seh 构建）**未随附 `libasan`/`libubsan`/`libtsan` 运行时**，因此 ASan/UBSan/TSan 的 `-fsanitize=...` 链接会失败（已真实复现，见 ⑪）。本章对"真实取证"采用本工具链可执行的 `g++ -S -g`（调试符号与汇编）、`strip`、`-Wall -Wextra` 警告等真实产物，绝不编造 ASan 报告。
 
+## ⓪ 历史动机：调试与诊断（GDB / LLDB / Sanitizer / Valgrind）的来龙去脉
+
+> 程序第一次跑错，人类的第一反应是"看一眼里面"——调试器与消毒器，就是这双眼睛的进化史。
+
+### 0.1 起源（谁·何时·为何）
+
+C/C++ 把近乎全部的运行时控制交给程序员，于是"内存踩了、空指针解引、双重释放"成了家常便饭。[评] 1986 年，GNU 的 **GDB**（Richard Stallman 主导）发布，让程序员能在运行时暂停、单步、看变量——把"靠 printf 猜"升级为"在机器里行走"。[史] 2000 年后 Apple 推出 **LLDB**，作为 LLVM 的原生调试器，与 Clang 深度协同、启动更快。[史] 但断点只能抓"已发生"的错；真正的范式跃迁来自**编译期插桩的 Sanitizer** 与 **Valgrind** 的动态插桩。
+
+### 0.2 关键转折（编年）
+
+- **1986**：GDB 首个版本发布。[史]
+- **2000s**：Apple 的 LLDB 随 LLVM/Clang 生态成熟。[史]
+- **2000s 末–2010s**：Google 的 **AddressSanitizer (ASan)**、ThreadSanitizer (TSan)、UndefinedBehaviorSanitizer (UBSan) 相继诞生，以编译器插桩在运行时捕获内存/数据竞争/UB 错误。[史]
+- **Valgrind**（2002 起，Julian Seward 等）以动态二进制插桩做内存与竞态检测，无需重编。[史]
+
+### 0.3 设计哲学之争
+
+GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译进程序，以少量性能代价换来精准到行的报错，被公认为现代 C++ 的必备。[史][评] Valgrind 走"不改程序、运行时插桩"的相反路线，通用但慢十倍以上。它们的张力是"精度/性能/侵入性"的三角。ASan 的诞生据记载[轶] 深受 Google 大规模 C++ 代码库中内存 bug 之害驱动，体现了"用工具把人的失误挡在发布前"的工程哲学。
+
+### 0.4 史料补遗与持续编年
+
+- （待续：Sanitizer 与 fuzzing 结合、HWASan 在移动端的落地可在此追加。）
+- 已知后续：ASan/TSan/UBSan 已成 Clang/GCC 标配检测手段。[史]
+
 ## ① 概述：调试的目标与分层 [标准]
 
 ⟶ Book/part02_toolchain/ch13_packaging.md

@@ -3,6 +3,24 @@
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；本章 `[实现]` 级源码来自该目录真实文件，逐行标注路径与行号。
 
+## ⓪ 历史动机：optional / variant / expected 的来龙去脉
+> 在"可能没有值"和"可能是几种类型之一"这两件事上，C++ 程序员曾被哨兵值和 union 坑了几十年。
+
+### 0.1 起源（谁·何时·为何）
+函数"可能没有返回值"时，老 C++ 的惯用法是返回 `-1`、`nullptr` 或 `EOF` 当哨兵——但这些值和真实数据会撞车，且编译器无从检查你是否忘了判空。[史] `std::optional<T>`（C++17）把"可能有值"做成类型系统的一部分，强制你面对空的情况。`std::variant<Ts...>` 则解决"类型安全的联合体"：传统 C `union` 记不住自己装的是哪种类型，访问错类型就是 UB。[史] 两者都脱胎于 Boost（`boost::optional`、`boost::variant`），经社区长期验证后入标准；`std::expected<T,E>`（C++23）进一步把"值或错误"合为类型。[史]
+
+### 0.2 关键转折（编年）
+- Boost 时代：`boost::optional`/`boost::variant` 积累十余年实战经验。[史]
+- C++17：`std::optional`、`std::variant` 一并标准化。
+- C++23：`std::expected` 入标，把"optional + 错误码"合一；`variant` 的 `visit` 易用性也持续打磨。
+
+### 0.3 设计哲学之争
+`optional` vs "用指针表示可空"：`optional` 明确不拥有堆对象、拷贝即值语义，比"裸指针可能悬垂"安全得多；但它也引发"该不该用 optional 作参数"的争论——有人嫌它模糊了接口意图。[评] `variant` vs "基类 + 虚函数"的 OO 多态：`variant` 用 `visit` 做静态分发，避免虚表与堆分配，却牺牲了运行时可扩展性。[评]
+
+### 0.4 史料补遗与持续编年
+- 待续：`std::expected` 与 `optional`/异常模型的分工边界，可补入。
+- 待续：`variant` 与模式匹配（future pattern matching 提案）的未来，作为新条目。
+
 ## ① 概述：为什么需要可空与可辨别联合 [标准]
 
 ⟶ Book/part07_stl/ch87_bitset.md

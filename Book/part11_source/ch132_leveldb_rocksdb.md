@@ -9,6 +9,23 @@
 > 源码根（上游）：`https://github.com/google/leveldb` 与 `https://github.com/facebook/rocksdb`。
 > **样例依赖说明**：本章所有 `leveldb::` / `rocksdb::` 代码块均为**上游 API 摘录**，需安装对应库方可编译，**不在本书 `--main-only` 编译门禁内**；标注 `[标准]` / `[实现·纯C++]` 的**纯 C++ 示意块含 `int main`，可直接编译运行**。
 
+## ⓪ 历史动机：LevelDB / RocksDB 的来龙去脉
+> 当 Google 需要一个"不崩溃、能扛住十亿键"的单机 KV，Bigtable 又太重时，LSM 树被写成了库。
+
+### 0.1 起源（谁·何时·为何）
+**LevelDB** 由 Google 的 Sanjay Ghemawat 与 Jeff Dean 于 2011 年发布 [史]，定位是 Bigtable 单机存储思路的"轻量版"：一个嵌入式的、持久化的有序 KV 引擎，用 LSM-Tree 把随机写变成顺序写。痛点很明确——Bigtable 是分布式庞然大物，很多场景只想要一个"进程内、崩溃安全、点查/区间扫描快"的小东西。LevelDB 把这套思想浓缩成单库。
+
+### 0.2 关键转折（编年）
+- 2011：LevelDB 开源，成为 LSM 单机引擎的参考实现 [史]。
+- 2012：Facebook 的 Dhruba Borthakur 等人从 LevelDB 分叉出 **RocksDB**，面向 SSD 与多核服务器深度优化 [史]。
+- 此后：两者成为工业 KV 的基石，被 TiKV、Kafka、MySQL（MyRocks）、CockroachDB 等采用 [史]。
+
+### 0.3 设计哲学之争
+LSM-Tree 对 B+Tree 的核心取舍是"写优化"：用顺序写 + 后台 Compaction 换读放大与写放大之间的平衡 [评]。RocksDB 对 LevelDB 的取舍则是"给你旋钮"——列族、前缀布隆、合并算子、分层压缩，让同一引擎适配缓存、消息队列、数据库等多种负载 [评]；代价是配置复杂度陡增。
+
+### 0.4 史料补遗与持续编年
+（待续：云原生存储引擎、RocksDB 在 NVMe/持久内存上的调优、新 LSM 变体均可在此追加。）〔轶〕据记载，LevelDB 名字里的 'Level' 正来自它把数据分成多层（Level 0/1/2…）的压缩结构，命名一目了然。
+
 ## ① 概述：LSM-Tree 存储引擎 [标准]
 
 ⟶ Book/part11_source/ch131_fmt_spdlog.md

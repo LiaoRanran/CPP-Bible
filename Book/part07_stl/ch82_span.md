@@ -2,6 +2,24 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：80 分钟 / 前置：⟶ Book/part03_language/ch20_reference_pointer.md（引用与指针）、⟶ Book/part07_stl/ch80_array.md（array）、⟶ Book/part07_stl/ch77_vector.md（vector）/ 后续：⟶ Book/part07_stl/ch83_map.md（map）、⟶ Book/part07_stl/ch90_ranges.md（ranges）/ 难度：★★★☆☆
 
+## ⓪ 历史动机：std::span 的来龙去脉
+> 一个"只借不拿"的视图，专治函数签名里 `(T* p, size_t n)` 这对极易出错的孪生兄弟。
+
+### 0.1 起源（谁·何时·为何）
+在 `span` 之前，想让函数接收一个"数组或 vector 的一段"，标准写法是传 `(指针, 长度)` 两个参数。[史] 麻烦在于：指针和长度分家，长度常被忘传、传错、或与实际缓冲区脱节，引发越界。`std::span` 在 C++20 登场，把 `{指针, 长度}` 打包成一个非拥有（non-owning）的连续视图，进能当数组用、退能包 `array`/`vector`/`string`。[史] 它直接源自 Bjarne Stroustrup 与 Herb Sutter 推动的《C++ 核心指南》配套库 GSL（Guidelines Support Library）中的 `span`，目标是"边界安全"。[史]
+
+### 0.2 关键转折（编年）
+- GSL 阶段：`gsl::span` 作为指南库先行试水，积累了大量使用经验。[史]
+- C++20：`std::span` 标准化，并支持静态 extent（编译期已知长度，可优化）与动态 extent。
+- C++23：进一步打磨（如构造规则、与范围的交互）。
+
+### 0.3 设计哲学之争
+`span` 引发的核心争论是"视图该不该拥有内存"——`span` 选了**绝不拥有**，因此拷贝极廉价、生命周期责任清晰，代价是你必须保证底层对象活得比 `span` 久。[评] 它与 `string_view` 是"兄弟视图"（一个管字节、一个管字符），与 `vector` 则是"借 vs 拿"的对照。[评] 社区共识：接口参数优先用 `span`/`string_view`，所有权交给调用方，能显著减少悬垂与拷贝。
+
+### 0.4 史料补遗与持续编年
+- 待续：`std::mdspan`（多维视图，C++23 起）如何扩展 `span` 思想，可补入。
+- 待续：`span` 与 `std::ranges`（⟶ Book/part07_stl/ch90_ranges.md）在视图语义上的融合争议。
+
 ## ① 学习目标
 
 `std::span<T, Extent>` 是 C++20 引入（在 C++23 中继续打磨）的**非拥有（non-owning）连续对象视图**。本章结束后，你应当能够：

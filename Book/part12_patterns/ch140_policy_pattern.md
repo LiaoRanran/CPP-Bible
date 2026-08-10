@@ -24,6 +24,23 @@
           组装于编译期：Widget<A,B,C> 与 Widget<A,D,C> 是两个不同的"静态类型"
 ```
 
+## ⓪ 历史动机：Policy-Based Design 的来龙去脉
+> 当"一个类要同时可变多个正交维度"把继承层级逼疯时，有人把设计拆成了一盒可插接的策略。
+
+### 0.1 起源（谁·何时·为何）
+Policy-Based Design 由 Andrei Alexandrescu 在 2001 年的《Modern C++ Design》中系统提出，并配套 **Loki** 库落地 [史]。痛点直指传统继承的死穴：想让一个 Widget 在"内存管理、线程安全、同步策略"等多个维度各自可变，用继承会得到指数级爆炸的子类（MemorySafeThreadSafeWidget…）。Policy-Based Design 把每个维度做成独立的小模板参数（Policy），在编译期像搭积木一样组装。
+
+### 0.2 关键转折（编年）
+- 2001：Alexandrescu《Modern C++ Design》与 Loki 库，把 Policy-Based Design、编译期多态、Typelist 等推上台面 [史]。
+- 此后：其思想深刻影响了 C++11 —— type traits、tuple、可变参数模板都能看到"编译期组合"的影子 [史]。
+- 现代：`std::unique_ptr` 的默认删除器、分配器（Allocator）概念都可视为 Policy 思想的直系后裔 [评]。
+
+### 0.3 设计哲学之争
+Policy-Based Design 对"继承层级"之争是"组合优于继承"的极致化：不是 A 继承 B，而是 `Host<A,B,C>` 把 A、B、C 三个策略在编译期拼成新类型 [评]。它与 CRTP 常被混用——基类用 CRTP 反向调用派生，派生用 Policy 决定行为。代价是模板错误极长、编译变慢，且对初学者门槛高 [评]。
+
+### 0.4 史料补遗与持续编年
+（待续：Policy 与 concepts 的协同、编译期组合在 constexpr 时代的新形态均可在此续写。）〔轶〕据记载，Loki 这个名字取自北欧神话的"诡计之神"，暗合 Alexandrescu 这套"编译期戏法"的气质。
+
 ## ① 概述：Policy-Based Design 是什么
 
 ⟶ Book/part12_patterns/ch139_crtp_pattern.md

@@ -2,6 +2,24 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：70 分钟 / 前置：⟶ Book/part03_language/ch19_variables.md（变量与存储期）、⟶ Book/part03_language/ch20_reference_pointer.md（引用与指针）、⟶ Book/part07_stl/ch82_span.md（span 视图）/ 后续：⟶ Book/part07_stl/ch77_vector.md（vector）、⟶ Book/part07_stl/ch81_string.md（string）、⟶ Book/part07_stl/ch90_ranges.md（ranges）/ 难度：★★☆☆☆
 
+## ⓪ 历史动机：std::array 的来龙去脉
+> 一个"知道自己有多长"的 C 数组——它的诞生是为了堵住裸数组退化为指针的那道口子。
+
+### 0.1 起源（谁·何时·为何）
+C 数组有两个老毛病：一是作为参数时会悄悄**退化为指针**，函数里 `sizeof(arr)` 拿不到长度；二是没有配套的 `begin()/end()` 迭代器，进不了 STL 的算法世界。[史] `std::array<T, N>` 在 C++11 登场，本质就是"把固定长度 C 数组包进一个聚合类型里"，既保留 `N*sizeof(T)` 的零开销布局，又补上 `size()`、迭代器和值语义拷贝。[史] 它的设计直接脱胎于 Boost.Array（Nicolai Josuttis 等人推动），并经 TR1 进入标准轨道。[史]
+
+### 0.2 关键转折（编年）
+- TR1（约 2005）：`std::tr1::array` 先以技术报告形式试水。[史]
+- C++11：`std::array` 正式标准化，成为 STL 容器家族里唯一"大小写死在类型里"的成员。[史]
+- C++17 起：`std::array` 与结构化绑定、`get`/`tuple_size` 的联动让它用起来更顺手。
+
+### 0.3 设计哲学之争
+`array` 的尴尬在于：它和 `vector` 是"亲兄弟"却用途不同——`array` 大小编译期固定、无堆分配，适合栈上小数组；`vector` 动态增长、有堆开销。[评] 一个常见争论是"小数组到底用 `array` 还是 `vector`"：追求零分配、确定大小就选 `array`；需要增长或接口统一就用 `vector`。[评] 而它相对裸 C 数组的压倒性优势，则几乎无争议——再没人想回到"指针退化 + 手写长度"的年代。
+
+### 0.4 史料补遗与持续编年
+- 待续：`std::array` 与 `std::span`（⟶ Book/part07_stl/ch82_span.md）如何配合做"固定视图"，可补案例。
+- 待续：编译期反射对 `array` 尺寸推导的未来影响，可作为新条目。
+
 ## ① 学习目标
 
 `std::array<T, N>` 是 C++11 引入、把**固定长度 C 数组**包装成**值语义聚合类型**的安全容器。本章结束后，你应当能够：

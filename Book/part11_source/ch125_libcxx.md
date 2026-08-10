@@ -8,6 +8,23 @@
 > libc++ 上游源码引用统一采用 GitHub 主分支 URL（如 `https://github.com/llvm/llvm-project/blob/main/libcxx/...`）+ 行号，并标注「上游参考」——行号随上游提交变动，仅作定位（不会触发路径不可达告警）。
 > 取证产物：`Examples/_ch125_sso.cpp`、`Examples/_ch125_sso.exe`（真实运行输出）、`Examples/_ch125_sso.asm`（真实汇编）。术语口径见 CONVENTIONS.md。
 
+## ⓪ 历史动机：libc++ 的来龙去脉
+> 当 Apple 想要一个"不被 GPL 绑住、又能跑在 C++11 时代"的标准库时，它自己造了一个。
+
+### 0.1 起源（谁·何时·为何）
+2000 年代中后期，Apple 在其平台上长期依赖 GCC 与配套的 libstdc++，但后者停在 GCC 4.2（约 2007 年），既卡在旧 GPL 许可上，也对刚成形的 C++11 特性（移动语义、并发、更好的 locale）毫无准备 [史]。Apple 需要一个从零设计、许可宽松（UIUC/Apache 双许可）、且能与 Clang 深度协同的现代标准库。于是大约 2009–2010 年，由 Howard Hinnant 主导的 **libc++** 项目启动 [史]。
+
+### 0.2 关键转折（编年）
+- 2009–2010：Apple 启动 libc++，定位为"C++11 原生"标准库 [史]。
+- 2011 起：随 Xcode/Clang 分发，并在 macOS 上逐步取代 libstdc++，成为系统默认 [史]。
+- 此后：libc++ 成为 LLVM 生态的标准库代表，与 libc++abi 配合支撑异常/RTTI。
+
+### 0.3 设计哲学之争
+libc++ 的核心取舍是"现代化优先、许可友好、模块化"。它不像 libstdc++ 那样要背着十年 ABI 包袱，而是借 C++11 的东风重新设计容器与字符串；同时用宽松许可绕开了 Apple 与 GPL 的摩擦 [评]。代价是：在非 Apple 平台上它的"系统默认"地位不如 libstdc++（长期靠 GCC 自带），跨平台工程常需在两者间做选择 [评]。
+
+### 0.4 史料补遗与持续编年
+（待续：libc++ 对 C++20 模块、`<format>`、并发的跟进，以及 libc++abi 与 Itanium ABI 的演进均可在此续写。）〔轶〕一个常被提及的细节：libc++ 早期为了赶 C++11，曾大量"借" libstdc++ 的测试用例来对齐行为。
+
 ## ① 概述：libc++ 是 LLVM 的 C++ 标准库 [标准]
 
 ⟶ Book/part11_source/ch124_libstdcxx.md

@@ -13,6 +13,24 @@
 
 ---
 
+## ⓪ 历史动机：`operator new` / `operator delete` 的来龙去脉
+
+> C++ 把"分配内存"和"构造对象"焊成一步，又悄悄留了一道可以撬开的缝。
+
+### 0.1 起源（谁·何时·为何）
+C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造"。Stroustrup 引入 `new` 表达式，把二者合一，并允许重载 `operator new` 作为"分配原语"，使"内存来源"可定制（池、调试、对齐）。[史] 关键洞察是把 **new 表达式**（语言）与 **operator new**（可替换的分配函数）拆成两层——这一点反直觉却关键。[史]
+
+### 0.2 关键转折（编年）
+- **C++ 早期**：`::operator new` 与类级 `operator new` 重载成形，配 `nothrow` 版本。[史]
+- **C++11**：对齐感知的 `operator new(std::align_val_t)` 因 SIMD / over-aligned 类型加入。[史]
+- **C++17**：`operator new` 的 `std::nothrow` 与硬件过载细化。[史]
+
+### 0.3 设计哲学之争
+委员会坚持"`new` 表达式不可被用户改，但底层 `operator new` 可以"——既保证语法统一，又开放内存策略。[史][评] 这与 C 的 `malloc` 哲学一脉相承却更分层；反对者认为这套分离过于隐晦，催生了 `std::pmr`（C++17）用分配器显式表达。[评]
+
+### 0.4 史料补遗与持续编年
+（待续：C++17 PMR、C++20 的 `new` 与常量求值（constexpr new）、静态反射对分配的影响可记于此。）
+
 ## ① 本章在全书中的位置
 
 ⟶ Book/part04_memory/ch36_stack_heap.md

@@ -15,6 +15,23 @@ struct MentalModel { const char* abseil; const char* chromium_base; };
 // 典型组合：业务代码用 absl::flat_hash_map 存数据，用 base::ThreadPool 跑任务
 ```
 
+## ⓪ 历史动机：Chromium / Abseil 的来龙去脉
+> 当 Google 的工程规模大到"标准库不够用、平台差异大到要自己兜底"时，基础设施被写成了两件套。
+
+### 0.1 起源（谁·何时·为何）
+Chromium 是 Google 2008 年开源的浏览器项目（Chrome 的内核），它本身就需要一套"浏览器级"的底层设施：跨平台线程、任务调度、内存分配、字符串视图 [史]。而 **Abseil** 则是 Google 把内部沉淀多年的基础库（strings、container、time、synchronization 等）在 2019 年开源的产物 [史]。痛点一致：标准库太薄、跨平台 API 太碎、性能关键点（哈希表、字符串）标准给得不够快。Abseil 的策略很特别——它专门去"提前实现"那些正在进入标准的特性。
+
+### 0.2 关键转折（编年）
+- 2008：Chromium 开源，其 `base` 库成为工业级 C++ 基础设施范本 [史]。
+- 2019：Abseil 开源，带来 `absl::string_view`、`absl::flat_hash_map`、`absl::Time` 等 [史]。
+- 此后：Abseil 在标准化后逐步"让位"给 `std` 版本（如 `std::string_view`），扮演标准先行者角色 [评]。
+
+### 0.3 设计哲学之争
+Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而是在标准"慢半拍"处补位——`flat_hash_map` 比 `std::unordered_map` 更快、`string_view` 比裸指针安全且早于标准出现 [评]。Chromium `base` 则更进一步，是"只服务于浏览器"的专用底座，与追求通用的 Abseil 形成层次分工 [评]。
+
+### 0.4 史料补遗与持续编年
+（待续：Abseil 与 std 的版本对齐策略、Chromium base 在多进程沙箱上的演进、新基础设施模块均可在此续写。）〔轶〕据记载，Abseil 的命名取自 'Ab' + 'seil'，官方并未赋予特别含义，纯为发音好记——这也符合它"低调务实的基础设施"定位。
+
 ## ① 概述：Chromium / Abseil 基础设施 [标准]
 
 ⟶ Book/part11_source/ch129_qt.md

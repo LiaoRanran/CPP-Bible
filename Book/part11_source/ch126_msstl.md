@@ -7,6 +7,23 @@
 > MS STL 本机未安装，故源码行号剖析一律引用上游 GitHub `microsoft/STL`（`https://github.com/microsoft/STL/...`）并标注「上游参考」——行号随提交浮动，以 main 分支为准。
 > 取证产物：`Examples/_ch126_seh.cpp/.asm`、`Examples/_ch126_string.cpp/.asm`、`Examples/_ch126_vector.cpp/.asm`、`Examples/_ch126_parallel.cpp/.o`，均为真实 g++ 13.1.0 编译取证。MSVC 专属行为用真实命令 + 明确标注「典型输出」，未在本机运行。
 
+## ⓪ 历史动机：MS STL 的来龙去脉
+> 当 Windows 上的 C++ 需要一个"与 MSVC 同生共死"的标准库时，Microsoft 把它从授权代码变成了开源项目。
+
+### 0.1 起源（谁·何时·为何）
+Microsoft 的 VC++ 自 1990 年代起就自带一套 C++ 标准库实现，早期根基脱胎于 Stepanov 的 SGI STL 思路 [史]。真正的工程痛点是：标准库必须和编译器（`cl.exe`）、运行时（`vcruntime`/`ucrt`）、异常处理（SEH）、Windows 堆深度咬合——第三方标准库在 Windows 上总是"差点意思"。于是 MS STL 长期作为 MSVC 的封闭组成部分演进，由内部团队（现代负责人如 Stephan T. Lavavej）维护 [史]。
+
+### 0.2 关键转折（编年）
+- 1990s：VC++ 自带 STL，逐步靠拢各代 C++ 标准 [史]。
+- 2019：Microsoft 将 MS STL 在 GitHub 上以 `microsoft/STL` 开源（MIT 许可），结束了它"闭源随 Visual Studio 发布"的历史 [史]。
+- 近年：以激进的标准符合度追赶（C++20/23 特性快速落地）为标志。
+
+### 0.3 设计哲学之争
+MS STL 的取舍是"与 Windows 平台合一、以兼容与稳定为先"，例如直接复用 Windows 堆与 SEH，换来极低集成成本，却也意味着它难以脱离 MSVC 生态独立存在 [评]。开源之后，它与 libstdc++、libc++ 站到了同一条"公开可被审阅"的起跑线，三足鼎立的格局由此更清晰 [评]。
+
+### 0.4 史料补遗与持续编年
+（待续：MS STL 对 `/std:c++latest` 的追赶节奏、模块化（modules）支持、与 Windows SDK 的协同演进均可在此补充。）〔轶〕据说 MS STL 开源前，外部贡献者想修一个 bug 要等整年 Visual Studio 发布周期，开源后才"呼吸顺畅"。
+
 ## ① 概述：MS STL 是 Microsoft 的 C++ 标准库 [标准]
 
 ⟶ Book/part11_source/ch125_libcxx.md

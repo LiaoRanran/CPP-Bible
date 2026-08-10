@@ -10,6 +10,24 @@
 > 取证源码：`Examples/_ch113_co.cpp`。协程是语言特性（`co_await`/`co_yield`/`co_return` + `promise_type`），**标准库未提供 `std::generator`/`std::task`**（C++23 仅 TS 级 `std::generator` 提案），本章手写实现并以真实汇编为证。
 > 配套规范见 `CONVENTIONS.md`（立场标签、20 元素模板）。
 
+## ⓪ 历史动机：协程的来龙去脉
+> 异步代码一旦嵌套回调，就会长成没人愿意维护的"金字塔"——协程就是来把它拍平的。
+
+### 0.1 起源（谁·何时·为何）
+"协程（coroutine）"这个词本身很老：1958 年由 Melvin Conway 提出，指"可暂停、可恢复、彼此协作让出控制权的子程序"。[史] 但 C++ 长久以来只有线程和回调，写异步 I/O（网络、文件）时只能层层嵌套回调，可读性与错误处理都糟糕——所谓"回调地狱"。人们想要一种"表面像同步、底层是异步"的写法，于是协程被重新提起。[史]
+
+### 0.2 关键转折（编年）
+- 早期提案多次失败：C++ 的协程提案几经否决，核心难点是"要无栈还是栈式、return 类型怎么定"。[史]
+- **C++20（2020）**：以 Gor Nishanov 等人主导的"无栈协程"方案（源自 Microsoft 的 Resumable Functions / C# `async`）最终被采纳，引入 `co_await`/`co_yield`/`co_return` 与 `promise_type` 机制。[史]
+- C++23：标准库补上 `std::generator`（惰性序列生成器）。[史]
+
+### 0.3 设计哲学之争
+最大分歧是**无栈（stackless）还是栈式（stackful）**：Boost.Coroutine / 纤程（fiber）那种"有自己的栈、可任意嵌套挂起"用起来直观，但每个协程都有栈内存、且难以与现有 ABI 兼容；C++20 选了无栈——挂起时只把局部状态存进堆上的协程帧，句柄只有指针大小、零额外栈开销，代价是"挂起点必须显式（co_await 处）"。[评] 另一个耐人寻味的决定是：标准**只给语言机制，不给 `std::generator`/`std::task`**（C++20 缺失、C++23 才补 `generator`），把返回类型留给库与用户手写，换取最大灵活。[史]
+
+### 0.4 史料补遗与持续编年
+- C++23 `std::generator`；执行器（executor）/ 网络 TS 等仍在与协程磨合。[史]
+- （待续：C++ 官方的 `std::task`、与 Rust `async`/`await`、Go goroutine 的范式对照可在此追加。）
+
 ## ① 概述：C++20 coroutine 是什么（无栈协程） [标准]
 
 ⟶ Book/part09_concurrency/ch112_hazard_rcu.md

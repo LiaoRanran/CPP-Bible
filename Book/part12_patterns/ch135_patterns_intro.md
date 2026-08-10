@@ -12,6 +12,23 @@
 
 ---
 
+## ⓪ 历史动机：设计模式的来龙去脉
+> 当一群面向对象工程师发现"同样的问题被反复用同样的招式解决"时，他们决定把招式写成词典。
+
+### 0.1 起源（谁·何时·为何）
+1994 年，Erich Gamma、Richard Helm、Ralph Johnson、John Vlissides 四位作者出版了《Design Patterns: Elements of Reusable Object-Oriented Software》（"GoF"四人组）[史]，系统收录了 23 个反复出现的设计解法。他们的灵感来自建筑师 Christopher Alexander 的《A Pattern Language》（1977）[史]——建筑界早就在用"问题—语境—解法"的范式记录可复用经验。GoF 的痛点很实在：当时 OOP 刚普及，人人都在手写工厂、策略、观察者，却各叫各的名、各写各的坑。
+
+### 0.2 关键转折（编年）
+- 1977：Alexander《A Pattern Language》为"模式"思想奠基 [史]。
+- 1994：GoF 书出版，23 个模式成为行业通用词汇 [史]。
+- 此后：模式运动席卷软件工程，又引来"模式是语言缺陷的遮羞布"的反思 [评]。
+
+### 0.3 设计哲学之争
+模式的最大争议来自 Peter Norvig 等人的观察：在表达能力更强的语言里，许多 GoF 模式会"消失"——比如 C++ 用模板/STL 就能让 Iterator、Strategy、Command 变得几乎隐形 [评]。这引出一个尖锐问题：模式究竟是可复用智慧，还是"语言不够好"的补偿？C++ 的特殊之处在于，它既需要模式（解决现实耦合），又能用零开销抽象把模式表达得更漂亮 [评]。
+
+### 0.4 史料补遗与持续编年
+（待续：POSA 系列、反模式（anti-pattern）批判、以及"模式已死/模式永生"的往复争论均可在此续写。）〔轶〕轶事：GoF 书名里的 "Gang of Four" 本是对四位作者的戏称，后来竟成了正式代称。
+
 ## ① 概述：什么是设计模式 [标准]
 
 ⟶ Book/part12_patterns/ch136_creational.md

@@ -7,6 +7,23 @@
 > 难度：★★★☆☆（掌握有序容器与节点句柄，需理解红黑树平衡）。  
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。本章 `[实现]` 级源码取自 `bits/stl_set.h`、`bits/stl_multiset.h`、`bits/stl_tree.h`，逐行标注文件与行号。
 
+## ⓪ 历史动机：set / multiset 的来龙去脉
+> 把"数学上的集合"搬进内存：去重、有序、可求交集并集——这是 set 存在的全部理由。
+
+### 0.1 起源（谁·何时·为何）
+`set` 是 `map` 的"键值合一"兄弟：它只存键、且键唯一、自动排序。[史] 它回应的是一个朴素需求——**维护一个不重复、且随时有序的元素集合**，并支持高效的插入、删除、查找。STL 同样用红黑树实现，因此享有"节点稳定 + O(log n)"的同样保证，并天然适配 `set_union`、`set_intersection` 等集合算法（⟶ Book/part08_algorithms）。[史]
+
+### 0.2 关键转折（编年）
+- C++98：`std::set`/`std::multiset` 随 STL 标准化，确立"有序唯一/可重复"语义。[史]
+- 后续：C++11 的 `unordered_set`（⟶ Book/part07_stl/ch85_unordered.md）提供哈希版对照；C++20 起与 ranges 联动更顺。
+
+### 0.3 设计哲学之争
+`set` 与 `unordered_set` 的争论，本质同 `map` 家族：要不要"有序"这笔账。[评] `set` 的额外价值在于——它直接对应数学集合，配合 STL 集合算法能做并集/交集/差集，这是哈希容器难以优雅替代的。[评] 而红黑树带来的"有序遍历"在需要按序输出（如排行榜、字典序）时仍是首选。
+
+### 0.4 史料补遗与持续编年
+- 待续：`set` 与 `bitset`（⟶ Book/part07_stl/ch87_bitset.md）在"小整数集合"场景下的替代关系，可补入。
+- 待续：flat set（连续存储有序集合）在现代库中的兴起，作为新争议条目。
+
 ## ① 学习目标
 
 `std::set` 与 `std::multiset` 是基于**红黑树（Red-Black Tree，RB-tree）**的有序关联容器，二者只在"键是否允许重复"上不同：

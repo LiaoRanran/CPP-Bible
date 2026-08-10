@@ -14,6 +14,23 @@
 
 ---
 
+## ⓪ 历史动机：行为型模式的来龙去脉
+> 当"这条消息该交给谁、按什么规则、花什么代价"成为系统主线时，行为型模式接管了对象间的协作。
+
+### 0.1 起源（谁·何时·为何）
+行为型模式出自 GoF 1994 年书（Strategy、Observer、Command、Iterator、Template Method、Visitor、Memento、State、Mediator、Chain of Responsibility、Interpreter 等）[史]。它回答的问题是创建型（谁造）、结构型（怎么拼）之外的第三维：对象之间如何协作、职责怎么分、算法怎么在运行时被替换。最常见的痛点——一堆 `if/else` 切换行为、观察者列表手写、`for` 循环遍历写得到处都是——都被这些行为模式收编。
+
+### 0.2 关键转折（编年）
+- 1994：GoF 确立行为型模式家族 [史]。
+- 1998 起：C++ 标准库的 STL 把 **Iterator** 做成了语言级事实标准，成为史上最广泛使用的行为型模式 [史]。
+- 2011：C++11 的 `std::function` 与 lambda 让 Strategy/Command 从"写一堆类"退化成"传一个闭包" [史]。
+
+### 0.3 设计哲学之争
+Stroustrup 曾指出：在 C++ 里，许多 GoF 行为模式会被语言特性"蒸发"——Template Method 变成 CRTP、Strategy 变成模板参数或 `std::function`、Command 变成函数对象 [评]。这带来一个深层争论：模式是"该显式写出来的设计"，还是"该被语言吸收掉的语言特性"？C++ 的答案是两者兼有——能吸收的吸收，吸收不了的（如 Observer 的生命周期）仍需显式模式 [评]。
+
+### 0.4 史料补遗与持续编年
+（待续：响应式/异步时代对 Observer/Command 的重塑、以及协程如何改写行为编排均可在此续写。）〔轶〕趣闻：Stroustrup 多次表示，STL 的 Iterator 是他最满意的"模式被语言吸收"的例子。
+
 ## ① 概述：行为型模式解决什么
 
 ⟶ Book/part12_patterns/ch137_structural.md

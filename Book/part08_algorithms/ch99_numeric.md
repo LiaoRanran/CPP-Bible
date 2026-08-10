@@ -7,6 +7,24 @@
 > 头文件根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；数值算法位于 `<numeric>`（与 `<algorithm>` 的并行 PSTL 胶水层 `pstl/glue_numeric_defs.h`）。
 > 本章遵循 `CONVENTIONS.md` 的立场分层与「20 元素」骨架；所有取证来自本机真实编译/运行，**绝不编造**。
 
+## ⓪ 历史动机：数值算法的来龙去脉
+> 求和、内积、前缀和——这些"把一串数折成一个值"的操作，在 STL 里被统一成了泛型算法。
+
+### 0.1 起源（谁·何时·为何）
+`accumulate`、`inner_product`、`partial_sum`、`adjacent_difference` 等数值算法，本质是把函数式编程里的 **fold / reduce / scan** 思想搬进 C++，且泛型到能对任意类型与二元运算生效（不限于加法）。[史] Stepanov 把它们收进 `<numeric>`，与 `<algorithm>` 并列，强调"数值归约也是算法"，应当享受同样的迭代器解耦与复杂度保证。
+
+### 0.2 关键转折（编年）
+- C++98：`<numeric>` 算法随 STL 入标，奠定泛型归约基础。[史]
+- C++11 起：lambda 让自定义归约运算更自然；C++17 引入**执行策略**让 `reduce`（有序性更弱的 `accumulate`）可并行，并新增 `transform_reduce`/`inclusive_scan` 等。
+- C++20：Ranges 版数值算法跟进。
+
+### 0.3 设计哲学之争
+`accumulate` vs `reduce` 的差别很微妙：`accumulate` 严格按顺序折叠（结果可预测），`reduce` 允许重排以并行——这背后是"确定性 vs 性能"的取舍，浮点求和尤其敏感。[评] 另一个立场是"为何数值算法单独成头而非并入 `<algorithm>`"：语义上它们是"带初始值 + 二元运算"的归约，独立成头便于扩展（如后来的并行扫描）。[评]
+
+### 0.4 史料补遗与持续编年
+- 待续：`reduce` 的浮点结合律陷阱与 Kahan 补偿求和，可补入。
+- 待续：C++ 对"并行扫描/前缀和"的后续完善，作为新条目。
+
 ## ① 概述：数值算法 [标准]
 
 ⟶ Book/part08_algorithms/ch100_ranges_algo.md

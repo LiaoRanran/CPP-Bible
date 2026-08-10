@@ -10,6 +10,24 @@
 
 ---
 
+## ⓪ 历史动机：std::filesystem 的来龙去脉
+> 在 filesystem 之前，跨平台操作文件意味着两套代码、两堆 #ifdef。
+
+### 0.1 起源（谁·何时·为何）
+文件与目录操作长期是 C++ 的"无人区"：POSIX 有 `open/read/dirent.h`，Windows 有 `CreateFile/FindFirstFile`，两套 API 互不兼容，跨平台项目只能自己包一层或堆满 `#ifdef`。[史] Boost.Filesystem（由 Beman Dawes 主导）自 2003 年前后提供了一套可移植的路径、文件、目录抽象，并成为事实标准。[史]
+
+### 0.2 关键转折（编年）
+- Boost.Filesystem v1/v2/v3（2003 起）：逐步打磨路径标准化与错误处理语义。[史]
+- C++17：`std::filesystem` 正式标准化（基于 Boost.Filesystem v3 的设计），统一 `path`、`directory_iterator`、`copy`、`rename` 等。
+- 后续：C++20 起修补若干问题（如 `path::u8string` 的编码语义）。
+
+### 0.3 设计哲学之争
+`filesystem` 入标最大的争论是**错误处理风格**：是用异常还是 `std::error_code`？最终标准两者都给（`path` 构造等可抛异常，也可传 `error_code` 不抛），把选择权交给调用方。[评] 另一点是"路径到底是字节还是 Unicode"——跨平台编码（UTF-8 vs 原生宽字符）的处理，至今仍是细节争议的源头。[评]
+
+### 0.4 史料补遗与持续编年
+- 待续：`std::filesystem` 与 OS 原生 API 在性能/语义上的差异（如符号链接），可补入。
+- 待续：C++ 后续对"文件 IO 与现代异步"的整合探索，作为新条目。
+
 ## ① 学习目标
 
 学完本章你应能：

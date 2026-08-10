@@ -7,6 +7,24 @@
 > 汇编证据：MinGW GCC 15.3.0，`-std=c++23 -O2 -S -masm=intel` 真实输出（见 `Examples/_asm_crtp.cpp` → `_asm_crtp.asm`）
 > 前置/后续：⟶ ch47（虚函数/动态多态）· ch50（多重继承 this 调整）· ch62（特化）· ch67（Concepts）· ch69（constexpr）· ch73（CRTP 进阶）
 
+## ⓪ 历史动机：CRTP 的来龙去脉
+
+> 想要多态却不想付 vtable 的税？CRTP 把「分派」提前到编译期，用类型自己描述自己。
+
+### 0.1 起源（谁·何时·为何）
+1995 年，Jim Coplien 在《C++ Report》里把一种「基类模板以派生类为自己模板参数」的写法正式命名为 **CRTP（Curiously Recurring Template Pattern）**。[史] 它其实早就以「Barton–Nackman 技巧」的形式存在（1994 年，Barton 与 Nackman 用它做运算符重载的对称定义）。[史] 核心妙处在于：派生类把「我是谁」告诉基类模板，基类就能在编译期直接调用派生类的实现——无需虚表，零运行时间接。
+
+### 0.2 关键转折（编年）
+- 1994：Barton–Nackman 技巧现身，展示「静态多态」可行。
+- 1995：Coplien 命名 CRTP，确立为 C++ 惯用法。
+- 2000s 起：`std::enable_shared_from_this`、Boost 的 `iterator_facade` 等把它用进标准库与库生态。
+
+### 0.3 设计哲学之争
+CRTP 是「静态多态」的代言人：对比虚函数（ch47）的运行期查表，它把分派在编译期算死，速度快、可内联，但代价是**代码膨胀**（每种派生都生成一份基类代码）和「类型必须已知」。[评] 它不是虚函数的替代品，而是互补：要运行期异构集合用虚函数，要编译期极致性能用 CRTP。
+
+### 0.4 史料补遗与持续编年
+（待续：C++23 的 deducing this 让 CRTP 的常见写法可以更直白；CRTP 与 concepts 的协作模式可在此追加。）
+
 ---
 
 ## ① 学习目标

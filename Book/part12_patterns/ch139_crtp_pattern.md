@@ -13,6 +13,23 @@
 
 ---
 
+## ⓪ 历史动机：CRTP 的来龙去脉
+> 当人们想"既要多态的灵活、又不要虚函数的开销"时，一个把自己当模板参数传进去的怪招出现了。
+
+### 0.1 起源（谁·何时·为何）
+CRTP（Curiously Recurring Template Pattern，奇异递归模板模式）这一命名源自 James Coplien，他在 1990 年代早期的 C++ 著作中记录并命名了这种"基类以派生类自身为模板参数"的写法 [史]。痛点清晰：虚函数带来 vtable 查表与无法内联的成本，而对"编译期已知类型"的场景，这笔开销纯属浪费。CRTP 用静态反向调用（`static_cast<Derived*>(this)`）把多态移到编译期，零开销、可内联。
+
+### 0.2 关键转折（编年）
+- 1990s 初：Coplien 记录并命名 CRTP [史]。
+- 1998 起：Microsoft 的 **ATL**（Active Template Library）大量使用 CRTP 做编译期多态，让它走入工业视野 [史]。
+- 现代：Boost 的 `iterator_facade`、标准库的 `std::enable_shared_from_this` 都是 CRTP 的化身 [史]。
+
+### 0.3 设计哲学之争
+CRTP 对虚函数之争是"C++ 零开销抽象"的教科书案例：虚函数为"运行时未知类型"付费，CRTP 为"编译期已知类型"免费 [评]。但代价是代码膨胀（每实例化一种派生就生成一套基类代码）和错误信息地狱 [评]。它并非虚函数的替代品，而是"类型在编译期就确定"那一档的最优解。
+
+### 0.4 史料补遗与持续编年
+（待续：CRTP 与 concepts 的结合、Barton-Nackman 技巧的演进、以及编译期多态在现代库中的新用法均可在此追加。）〔轶〕轶事：Coplien 当年命名 "Curiously Recurring" 时，大概也没料到这个"奇怪"的套路会成为现代 C++ 的基石之一。
+
 ## ① 概述：CRTP 是什么
 
 ⟶ Book/part12_patterns/ch138_behavioral.md

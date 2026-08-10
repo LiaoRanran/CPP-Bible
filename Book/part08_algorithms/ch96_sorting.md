@@ -6,6 +6,24 @@
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；以真实编译产物（`__introsort_loop` 符号、内联比较器、chrono 实测）为证据。本章示例代码置于 `Examples/_ch96_*.cpp`（相对路径，非绝对路径）。
 
+## ⓪ 历史动机：排序算法的来龙去脉
+> 一个"永不退化成 O(n²)"的 sort——David Musser 用 introsort 把快排的软肋缝死了。
+
+### 0.1 起源（谁·何时·为何）
+`std::sort` 不能是朴素快排：快排在几乎有序或构造的恶意输入下会退化到 O(n²)，这在安全敏感场景是灾难。[史] David Musser 在 1997 年提出 **introsort（内省排序）**：默认快排，一旦递归过深就切换到堆排（heapsort）兜住 O(n log n) 最坏情况，小区间再换插入排序减少开销。[史] STL 的 `sort` 正是这套混合策略，既快又稳。
+
+### 0.2 关键转折（编年）
+- 1997：Musser 发表 introsort，解决快排最坏情况。[史]
+- C++98：`std::sort`（不保证稳定）随 STL 入标；`std::stable_sort` 用归并思路保证相等元素顺序不变。
+- 后续：C++17 引入执行策略让 `sort` 可并行；C++20 Ranges 提供 `ranges::sort`。
+
+### 0.3 设计哲学之争
+`sort` vs `stable_sort` 的取舍在于"要不要保序"：稳定排序对"先按 A 排、再按 B 排"的多键排序至关重要，但通常更慢、更费内存。[评] 另一争论是"为何不用纯堆排"——纯堆排最坏 O(n log n) 但常数大、缓存差；introsort 用快排打主力、堆排只兜底，是工程上"平均快 + 最坏稳"的典范。[评]
+
+### 0.4 史料补遗与持续编年
+- 待续：各大标准库（libstdc++/libc++/MS STL）在 `sort` 上的微调差异，可补入。
+- 待续：并行/抽样排序（如 pdqsort）对标准 sort 的影响，作为新条目。
+
 ## ① 概述：排序在 `<algorithm>` 中的位置 [标准]
 
 ⟶ Book/part08_algorithms/ch95_algo_overview.md

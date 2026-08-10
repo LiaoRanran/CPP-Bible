@@ -11,6 +11,23 @@
 
 ---
 
+## ⓪ 历史动机：依赖注入的来龙去脉
+> 当"对象在自己内部 new 依赖"导致测试写不了、实现换不动时，有人决定把依赖从外面递进去。
+
+### 0.1 起源（谁·何时·为何）
+依赖注入（DI）是**控制反转（IoC）**思想的一种落地，由 Martin Fowler 在 2004 年的文章《Inversion of Control Containers and the Dependency Injection pattern》中明确命名与系统化 [史]。其工程痛点非常具体：一个 `Service` 若在构造函数里直接 `new Database()`，它就永远绑定了某个具体实现，单测无法换 fake、生产无法换实现。DI 主张"依赖由外部创建并传入"，把"怎么用"和"怎么造"解耦。它的根系可追到 GoF 的 Factory/Service Locator，以及 Java Spring（Rod Johnson，约 2002–2004）[史]。
+
+### 0.2 关键转折（编年）
+- 2002–2004：Java Spring 框架把 DI/IoC 容器做成工业标配 [史]。
+- 2004：Fowler 正式定义 DI 模式 [史]。
+- 2007：Google Guice 等进一步把"编译期/注解式注入"推向前台 [史]。
+
+### 0.3 设计哲学之争
+DI 在 Java 世界靠"运行时反射 + 注解容器"实现，而 C++ 没有原生反射，于是走"构造注入 + 模板"或第三方框架的路 [评]。更深的分歧是 DI vs **Service Locator**：前者依赖显式、可测；后者把查找藏进全局，方便却隐蔽 [评]。C++ 社区近年还出现了编译期 DI（如 Boost.DI），把装配也移到编译期。
+
+### 0.4 史料补遗与持续编年
+（待续：Boost.DI（Kris Jusiak）、编译期 DI 框架、以及 DI 与模块系统的协作均可在此补充。）〔轶〕趣闻：Fowler 那篇 DI 文章本来是想澄清 IoC 容器到底是什么，结果意外"发明"了一个被用滥的名词。
+
 ## ① 概述：DI 是什么
 
 ⟶ Book/part12_patterns/ch140_policy_pattern.md
