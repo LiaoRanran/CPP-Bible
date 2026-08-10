@@ -1208,6 +1208,7 @@ flowchart TD
 ## 附录 D5：真实基准与性能分析 — x86-64 上各内存序的真实价格（GCC 15.3.0）
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；编译命令 `g++ -O2 -std=c++17 -pthread`；计时用 `steady_clock` 跑 5 轮取中位数；结果经 volatile sink 防 DCE。绝对毫秒数随机器而变，**只有比值才可移植**，下文所有「×」倍数才是你应该记住的结论。
+> **绝对毫秒随机器而变，加速比才是可移植信号。**
 
 ### D5.1 基准结果
 
@@ -1261,7 +1262,7 @@ store_seqcst 热循环（xchg，隐式 lock 全屏障）：
 
 fetch_add relaxed 与 seq_cst 的热循环核心指令完全相同：`f0 4c 0f c1 05 ... lock xadd QWORD PTR [rip+0x0],r8`（两函数逐字节同码，仅循环对齐 nop 不同）。
 
-### D5.3 非显然结论
+### 非显然结论
 
 1. **x86-TSO 下 relaxed/release store 生成同一条普通 mov** —— 4.00× 差距不是指令差异，而是编译器许可差异：relaxed 允许重排/合并，GCC 借此把循环二路展开且两次 store 只隔 1 个 `lea`；release 禁止 store-store 重排，GCC 保守不展开。教学点：**内存序的第一重成本是「优化器束手」，第二重才是 CPU 屏障**；本例 4× 全部来自第一重（微基准放大了这一效应，真实代码中 release store 通常接近免费）。
 2. **seq_cst store 15.5×**：`xchg` 隐式 lock = 全屏障 + store buffer 排空，是 x86 上唯一真正贵的序。这就是「读多写少用默认 seq_cst load 没事，热路径 store 要三思」的数字依据。
@@ -1270,7 +1271,7 @@ fetch_add relaxed 与 seq_cst 的热循环核心指令完全相同：`f0 4c 0f c
 5. **双线程争用 3.42×**：cache line 在两核间弹动（MESI），且争用下序别差异仍为 0（0.98×）——争用成本淹没一切序别成本。
 6. **lock xadd 单线程也比普通内存自增贵 4.8×**：lock 前缀的本地成本（流水线序列化）即使无争用也存在。
 
-### 下一节 可复现 demo
+### D5.3 可复现 demo
 
 ```cpp
 #include <atomic>

@@ -1430,7 +1430,7 @@ ADL 在编译期触发额外的候选集搜索（需检查所有实参的关联�
 
 对自定义类型，ADL 是惯用手段（运算符重载必须用 ADL）；对标准库类型，用限定调用更安全。在热循环中，三种方式生成的代码完全相同。
 
-### D5.3 可复现最小示例
+### D5.3 可复现 demo
 
 ```cpp
 #include <cstdio>
@@ -1450,7 +1450,7 @@ int main() {
 
 编译运行：`g++ -O2 -std=c++23 _bench_d5_ch23_namespace_adl.cpp -o _bench_d5_ch23.exe && ./_bench_d5_ch23_namespace_adl.exe`
 
-### D5.4 方法论与交叉引用
+### D5.4 方法学注
 
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 

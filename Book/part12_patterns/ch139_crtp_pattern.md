@@ -1152,7 +1152,7 @@ CRTP（0.00 ms）和 direct（0.00 ms）在 `-O2` 下完全等价。CRTP 的 `st
 
 CRTP 适用于策略类、混入（mixin）、表达式模板。virtual 适用于运行期多态（GUI 事件、插件）。std::function 适用于需要存储『任意可调用对象』的场景（回调队列、信号槽），但避免在热路径中构造/析构。
 
-### D5.3 可复现最小示例
+### D5.3 可复现 demo
 
 ```cpp
 #include <cstdio>
@@ -1174,7 +1174,7 @@ int main() {
 
 编译运行：`g++ -O2 -std=c++23 _bench_d5_ch139_crtp_pattern.cpp -o _bench_d5_ch139.exe && ./_bench_d5_ch139_crtp_pattern.exe`
 
-### D5.4 方法论与交叉引用
+### D5.4 方法学注
 
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 

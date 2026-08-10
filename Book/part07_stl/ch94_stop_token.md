@@ -1696,7 +1696,7 @@ flowchart TD
 
 ## 附录 D5：真实基准与性能分析 — stop_token / jthread 取消的真实开销（GCC 15.3.0）
 
-> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23 -pthread`，5 轮取中位。绝对毫秒随机器而变，加速比（如 115×）才是可移植信号。
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23 -pthread`，5 轮取中位。绝对毫秒随机器而变，加速比才是可移植信号。
 
 ### D5.1 基准结果
 
@@ -1750,4 +1750,3 @@ int main() {
 - 注意：本基准原包含一个 `std::condition_variable` + `cv.wait_for` 场景，但在 MinGW GCC 15.3.0 下，当 `condition_variable` 与 `jthread`/`stop_callback`/`atomic` 共存于同一翻译单元时，进程会在进入 `main` 前被加载器拒绝（exit 127，零输出）——这是该工具链的已知缺陷，故已移除该场景，仅保留 s1/s2/s3/s5。
 - 加速比（115.69× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch94_stop_token.cpp`。
-

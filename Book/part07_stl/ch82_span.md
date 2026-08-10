@@ -1426,6 +1426,7 @@ flowchart TD
 ## 附录 D5：真实基准与性能分析 — span 视图的真实开销（GCC 15.3.0）
 
 > 测试环境：AMD Ryzen 9 7940HX；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，每场景 5 轮取中位；结果累入 `volatile` sink 防死代码消除；数据用 `mt19937 + random_device` 运行期随机填充防闭式折叠；被测接口函数标 `__attribute__((noinline))` 模拟跨 TU 调用边界（同一 TU 内，见 D5.4 诚实标注）。**绝对毫秒随机器而变，"是否同速/相对倍数"才是可移植信号。**
+> **绝对毫秒随机器而变，加速比才是可移植信号。**
 
 ### D5.1 基准结果
 

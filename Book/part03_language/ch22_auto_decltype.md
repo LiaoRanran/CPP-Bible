@@ -1603,7 +1603,7 @@ flowchart TD
 
 当被推导类型 ≤ 2 个 word（16 字节）时，拷贝开销可忽略；当类型包含数组/容器/字符串时，`const auto&` 避免不必要的拷贝。`decltype(auto)` 在泛型代码中保留引用性，比 auto 更精确。
 
-### D5.3 可复现最小示例
+### D5.3 可复现 demo
 
 ```cpp
 #include <cstdio>
@@ -1631,7 +1631,7 @@ int main() {
 
 编译运行：`g++ -O2 -std=c++23 _bench_d5_ch22_auto_decltype.cpp -o _bench_d5_ch22.exe && ./_bench_d5_ch22_auto_decltype.exe`
 
-### D5.4 方法论与交叉引用
+### D5.4 方法学注
 
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 

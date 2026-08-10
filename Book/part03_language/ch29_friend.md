@@ -943,7 +943,7 @@ flowchart TD
 
 如果只需要读取内部状态，用 `const` 成员函数或 `getter`（零开销，且不破坏封装）。仅在需要：①运算符重载（`operator<<` 需访问私有成员）；②外部工具类（Builder/Serializer）紧密耦合时，才使用 friend。
 
-### D5.3 可复现最小示例
+### D5.3 可复现 demo
 
 ```cpp
 #include <cstdio>
@@ -969,7 +969,7 @@ int main() {
 
 编译运行：`g++ -O2 -std=c++23 _bench_d5_ch29_friend.cpp -o _bench_d5_ch29.exe && ./_bench_d5_ch29_friend.exe`
 
-### D5.4 方法论与交叉引用
+### D5.4 方法学注
 
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 

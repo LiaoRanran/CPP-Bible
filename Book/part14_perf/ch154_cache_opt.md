@@ -1132,6 +1132,75 @@ flowchart TD
   GUESS --> DONE
 ```
 
+## 附录 D5：真实基准与性能分析 — 缓存局部性与伪共享的真实价格（GCC 15.3.0）
+
+> 测试环境：AMD Ryzen 9 7940HX（16C/32T，L3 64 MB）；本机 MinGW-W64 GCC 15.3.0；编译命令 `g++ -O2 -std=c++23 -pthread`；计时用 `std::chrono::steady_clock` 跑 5 轮取最快（去首轮抖动）。**绝对毫秒随机器而变，加速比才是可移植信号。**
+
+### D5.1 基准结果
+
+| 场景 | 本机耗时（5 轮最快） | 相对 |
+|---|---|---|
+| A 顺序遍历 128 MB `long long` 数组 | 4.4 ms | 1.00× |
+| A 随机（洗牌下标）遍历同一数组 | 122 ms | **27.9×** |
+| B 双线程 `atomic` 自增（同缓存行，伪共享） | 2706 ms | 4.6× |
+| B 双线程 `atomic` 自增（`alignas(64)` 分缓存行） | 588 ms | 1.00× |
+
+绝对毫秒数随机器负载而变；下表锁定本机实测的**加速比**，才是你应该记住的结论：
+
+- **A 顺序/随机 ≈ 27×（多次运行 24–28×）**：128 MB 工作集 > 64 MB L3，随机跳访几乎每次都未命中缓存，硬件预取器对随机模式完全失效；顺序访问则被预取器提前搬入缓存行。
+- **B 伪共享/对齐 ≈ 4.4×（多次运行 4.4–4.6×）**：两个 `atomic<long>` 落在同一缓存行时，两核为独占该缓存行来回失效（MESI 弹动），即使 `relaxed` 无内存屏障也贵；`alignas(64)` 把它们拆到不同缓存行后该成本消失。
+
+### D5.2 非显然结论
+
+1. **缓存局部性是「等内存」还是「算数据」的分水岭**：同一 O(n) 求和，顺序 vs 随机差近 30×——这比绝大多数「换个更好算法」带来的收益大一个数量级。优化数据布局常是性价比最高的手段。
+2. **预取器只对可预测的模式生效**：顺序/固定步长被预取，随机/指针追逐（链表、树）几乎无法预取，因此「数组优于链表」在大数据上不是风格问题而是数量级问题。
+3. **伪共享的成本是「缓存行弹动」，与内存序无关**：B 场景两版都用 `memory_order_relaxed`，差异 100% 来自布局（同缓存行 vs 分缓存行），证明伪共享是纯微架构陷阱，不是同步开销——这也正是 `std::hardware_destructive_interference_size` 存在的理由。
+4. **L3 是隐藏的门槛**：本机 L3=64 MB，工作集 128 MB 刚好溢出，随机才显出 L3/DRAM 级代价；若工作集 < L3，随机/顺序差距会缩小到约 10× 量级——所以「该用多大数组测」本身影响结论，务必在 D5.4 注明的规模下复现。
+
+### D5.3 可复现 demo
+
+场景 A 的最小可复现版（单线程，无需 `-pthread`，编译 `g++ -O2 -std=c++23`）。完整版（含伪共享场景 B）见库根 `_bench_d5_154_cache.cpp`。
+
+```cpp
+// D5 demo: 顺序 vs 随机遍历的缓存局部性（GCC 15.3.0）
+#include <algorithm>
+#include <chrono>
+#include <iostream>
+#include <numeric>
+#include <random>
+#include <vector>
+
+int main() {
+    const std::size_t N = 16'000'000;          // long long(8B) -> 128 MB > L3(64 MB)
+    std::vector<long long> data(N);
+    std::vector<std::size_t> order(N);
+    for (std::size_t i = 0; i < N; ++i) { data[i] = (long long)i; order[i] = i; }
+    std::mt19937_64 rng(0x9e3779b97f4a7c15ULL);
+    std::shuffle(order.begin(), order.end(), rng);
+
+    auto t0 = std::chrono::steady_clock::now();
+    long long s = 0; for (std::size_t i = 0; i < N; ++i) s += data[i];
+    auto t1 = std::chrono::steady_clock::now();
+    long long r = 0; for (std::size_t i = 0; i < N; ++i) r += data[order[i]];
+    auto t2 = std::chrono::steady_clock::now();
+
+    double seq = (t1 - t0).count() / 1e6;
+    double rnd = (t2 - t1).count() / 1e6;
+    std::cout << "sequential: " << seq << " ms" << std::endl;
+    std::cout << "random    : " << rnd << " ms" << std::endl;
+    std::cout << "random/seq: " << (rnd / seq) << " x (sink=" << (s + r) << ")" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- **基准源码见库根 `_bench_d5_154_cache.cpp`**：场景 A（顺序/随机）+ 场景 B（伪共享/对齐）同文件，编译 `g++ -O2 -std=c++23 -pthread`。demo 仅抽取场景 A 的单线程核心，断言 `s+r` 非平凡（防 DCE），未对绝对毫秒做任何断言。
+- **计时**：`steady_clock` 5 轮取最快，但绝对毫秒随机器/负载而变；一切结论以**加速比**表达，本机 27× / 4.4× 仅供量级参考。
+- **规模敏感**：A 场景 128 MB 刻意超过本机 64 MB L3，否则随机/顺序差距会被 L3 吸收而缩小；若你的机器 L3 更大，请按比例放大 `N` 再复现（注意 MinGW-w64 为 LLP64，`long` 仅 4 字节，需用 `long long` 才能保证 8 字节元素宽度）。
+- **伪共享需真并发**：B 场景必须用两线程真争用才能暴露缓存行弹动；单线程或「假」共享不存在时无此效应。
+- **一致性门禁**：本附录随 `compile_all.py`/CI 复测，demo 块经 `chapter_compile_check.py`（GCC 15.3.0）编译通过。
+
 ## 附录 K：缓存优化知识图谱（D6 维度）
 
 缓存优化是一张以"缺失与带宽"为核心的网：三类缺失驱动循环分块，SoA/冷热分离连 ECS，伪共享连对齐与带宽，TLB 与缓存层级连 CPU 微架构，并汇入编译器优化与基准验证。

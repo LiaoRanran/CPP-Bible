@@ -1345,7 +1345,7 @@ virtual 装饰器每次迭代执行两层间接调用（外层 `get()` → 内�
 
 CRTP 装饰器在编译期展开为直接调用链，零运行期开销。但 CRTP 要求装饰层数在编译期确定——无法运行期增删装饰器。如果需要运行期灵活性（如日志/压缩/加密可插拔），virtual 的间接调用代价是合理的。
 
-### D5.3 可复现最小示例
+### D5.3 可复现 demo
 
 ```cpp
 #include <cstdio>
@@ -1364,7 +1364,7 @@ int main() {
 
 编译运行：`g++ -O2 -std=c++23 _bench_d5_ch137_structural.cpp -o _bench_d5_ch137.exe && ./_bench_d5_ch137_structural.exe`
 
-### D5.4 方法论与交叉引用
+### D5.4 方法学注
 
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 

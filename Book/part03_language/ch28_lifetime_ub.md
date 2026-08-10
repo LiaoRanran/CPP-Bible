@@ -1634,7 +1634,7 @@ flowchart TD
 
 栈分配 3× 快于堆，且不产生内存碎片。只有当对象生命周期需要跨函数返回、或大小在编译期未知时，才使用堆。即使需要堆，也用 RAII 容器管理——不付出额外性能代价，却消除悬垂/泄漏风险。
 
-### D5.3 可复现最小示例
+### D5.3 可复现 demo
 
 ```cpp
 #include <cstdio>
@@ -1658,7 +1658,7 @@ int main() {
 
 编译运行：`g++ -O2 -std=c++23 _bench_d5_ch28_lifetime_ub.cpp -o _bench_d5_ch28.exe && ./_bench_d5_ch28_lifetime_ub.exe`
 
-### D5.4 方法论与交叉引用
+### D5.4 方法学注
 
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 

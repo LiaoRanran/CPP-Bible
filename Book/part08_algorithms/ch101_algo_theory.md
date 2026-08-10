@@ -1283,7 +1283,7 @@ int main() {
 
 ## 附录 D5：真实基准与性能分析 — 算法复杂度在实际硬件上的表现（GCC 15.3.0）
 
-> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。`-Wl,--stack,33554432` 因 memoized 递归深 40000 需扩大栈；`-lwinmm`（源文件之后）用于 `timeBeginPeriod` 提高计时精度。绝对毫秒随机器而变，加速比（如 4994×）才是可移植信号。
+> 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。`-Wl,--stack,33554432` 因 memoized 递归深 40000 需扩大栈；`-lwinmm`（源文件之后）用于 `timeBeginPeriod` 提高计时精度。绝对毫秒随机器而变，加速比才是可移植信号。
 
 ### D5.1 基准结果
 
@@ -1339,4 +1339,3 @@ int main() {
 - 计时取 5 轮中位数；`volatile` sink 防 DCE。
 - 加速比（2.62×、4994× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch101_algo_theory.cpp`。
-

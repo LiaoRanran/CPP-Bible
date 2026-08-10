@@ -60,15 +60,12 @@ PERF_PAT = re.compile('|'.join(PERF_SIGNALS), re.IGNORECASE)
 D5_EXEMPT_PARTS = {
     'part01_history',    # C++ 历史演变，不涉及运行时性能
     'part02_toolchain', # 工具链概念（编译器安装等）
-    'part14_perf',      # 性能方法论章：ch151-benchmark/ch152-perf_model/ch154-cache_opt
-                       # 本身讲授基准测试，有 inline benchmark，不需要 D5 附录
 }
 
 # Specific chapter stems exempt from D5 (methodology/source-analysis chapters)
 D5_EXEMPT_STEMS = {
     'ch151_benchmark',        # 基准测试方法论章（有 inline benchmark）
     'ch152_perf_model',       # 性能模型与测量学（方法论）
-    'ch154_cache_opt',        # 缓存优化理论章（方法论，非孤立微基准）
     'ch157_compiler_explorer', # CE 工具使用教程（非性能声明）
     'ch165_roadmap',          # 路线图/元章节：无孤立微基准主题，刻意排除（D5 战役收口）
     'ch149_ci_cd',            # CI/CD 工程实践（非性能声明）

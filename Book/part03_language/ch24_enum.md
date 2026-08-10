@@ -1672,7 +1672,7 @@ enum class（46.88 ms）和 C-style enum（40.87 ms）的差距 ~15%，在测量
 
 enum class 提供作用域隔离和类型安全，零运行期代价。当需要运行期多态分发时，`switch(enum)` 编译为跳转表，比函数指针表快 4 倍。如果候选集封闭且编译期已知，`constexpr` 分发或模板策略模式可进一步消除所有运行期分支。
 
-### D5.3 可复现最小示例
+### D5.3 可复现 demo
 
 ```cpp
 #include <cstdio>
@@ -1696,7 +1696,7 @@ int main() {
 
 编译运行：`g++ -O2 -std=c++23 _bench_d5_ch24_enum.cpp -o _bench_d5_ch24.exe && ./_bench_d5_ch24_enum.exe`
 
-### D5.4 方法论与交叉引用
+### D5.4 方法学注
 
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 

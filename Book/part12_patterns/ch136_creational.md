@@ -1264,7 +1264,7 @@ virtual 工厂（6.69 ms）每次迭代执行：①虚函数间接调用 `f->cre
 
 抽象工厂/工厂方法模式在『创建逻辑复杂、子类型多、创建频率低』的场景下有价值（如解析配置后创建策略对象）。在热循环中，应改用 template 工厂（编译期分发）或预分配对象池（消除构造开销）。
 
-### D5.3 可复现最小示例
+### D5.3 可复现 demo
 
 ```cpp
 #include <cstdio>
@@ -1285,7 +1285,7 @@ int main() {
 
 编译运行：`g++ -O2 -std=c++23 _bench_d5_ch136_creational.cpp -o _bench_d5_ch136.exe && ./_bench_d5_ch136_creational.exe`
 
-### D5.4 方法论与交叉引用
+### D5.4 方法学注
 
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 

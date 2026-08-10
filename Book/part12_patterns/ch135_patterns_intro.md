@@ -1009,7 +1009,7 @@ template 策略在 N=500M 下测量为 0.00 ms，因为编译器在 `-O2` 下将
 
 如果策略选择在编译期确定（配置/编译开关），用 template 或 `if constexpr`。如果策略在运行期选择但候选集封闭，用 `switch(enum)` + 跳转表（比 virtual 快 2.8×）。只有当候选集开放（插件/动态加载）时才用 virtual。
 
-### D5.3 可复现最小示例
+### D5.3 可复现 demo
 
 ```cpp
 #include <cstdio>
@@ -1037,7 +1037,7 @@ int main() {
 
 编译运行：`g++ -O2 -std=c++23 _bench_d5_ch135_patterns_intro.cpp -o _bench_d5_ch135.exe && ./_bench_d5_ch135_patterns_intro.exe`
 
-### D5.4 方法论与交叉引用
+### D5.4 方法学注
 
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 

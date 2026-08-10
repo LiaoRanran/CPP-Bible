@@ -1108,5 +1108,5 @@ int main() {
 
 - 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
 - 加速比（1.41×、~1.04×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
-- 复现旗标：`g++ -O2 -std=c++23`。基准源文件：库根 `_bench_d5_88_variant.cpp`。demo 仅断言 `visit` 分发结果与 `optional` 空/非空语义（功能正确性），未对时间、倍数或 `sizeof` 做任何断言。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_88_variant.cpp`。demo 仅断言 `visit` 分发结果与 `optional` 空/非空语义（功能正确性），未对时间、倍数或 `sizeof` 做任何断言。
 

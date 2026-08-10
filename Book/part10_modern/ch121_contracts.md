@@ -1158,7 +1158,7 @@ flowchart TD
 
 GCC 15.3.0 原生支持 `-fcontracts`（P2900 草案），`[[assert: x >= 0]]` 语义与 `assert` 相同——在 `-O2` 下被编译器证明后消除。只有当条件依赖运行期输入（如 `assert(buffer != nullptr)` 且 buffer 来自外部）时，检查才不会被消除。
 
-### D5.3 可复现最小示例
+### D5.3 可复现 demo
 
 ```cpp
 #include <cstdio>
@@ -1180,7 +1180,7 @@ int main() {
 
 编译运行：`g++ -O2 -std=c++23 _bench_d5_ch121_contracts.cpp -o _bench_d5_ch121.exe && ./_bench_d5_ch121_contracts.exe`
 
-### D5.4 方法论与交叉引用
+### D5.4 方法学注
 
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 

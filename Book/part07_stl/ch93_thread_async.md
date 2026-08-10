@@ -1726,5 +1726,5 @@ int main() {
 - 实测 595× 是 `async_percall` 与 `thread_reuse` 的比值；两者任务体量完全一致（同一 `trivial` 累加），故比值直接反映"每调用创建+销毁线程"的摊销开销，而非算法差异。
 - `thread_reuse` 此处是 K=16 固定 worker 的近似线程池；生产线程池还需任务队列、工作窃取与亲和性调优，但"复用远优于每次新建"的定性结论不受影响。
 - `deferred` 虽快却不是并发：它把任务推迟到 `get()` 在本线程同步跑，只能省"线程创建"不能省"计算量"，切勿用它以图降延迟。
-- 复现旗标：`g++ -O2 -std=c++23 -pthread`。基准源文件：库根 `_bench_d5_93_async.cpp`。demo 用副作用标志 `ran` 验证 `deferred` 直到 `get()` 才执行，并断言 `async` 返回值正确（均为功能正确性），未对时间、倍数或 `sizeof` 做任何断言。
+- 复现旗标：`g++ -O2 -std=c++23 -pthread`。基准源码见库根 `_bench_d5_93_async.cpp`。demo 用副作用标志 `ran` 验证 `deferred` 直到 `get()` 才执行，并断言 `async` 返回值正确（均为功能正确性），未对时间、倍数或 `sizeof` 做任何断言。
 

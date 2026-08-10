@@ -1253,4 +1253,4 @@ int main() {
 - 计时取 5 轮中位数；2000 次迭代 × 100 万 int 放大差异；`volatile` sink 防 DCE。
 - 本附录亮点在**数字自洽**：`copy_return_copyonly` 实测值恰落在 `construct + pure_copy` 之和附近，构成可手算的闭合验证，独立于绝对毫秒。
 - 加速比（2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
-- 复现旗标：`g++ -O2 -std=c++23`。基准源文件：库根 `_bench_d5_117_rvo.cpp`。demo 区分了"纯 RVO（C++17 保证，可断言零拷贝）"与"NRVO（优化非保证，仅打印计数不 assert）"，并断言 `return std::move` 在 copy-only 类型上确实触发拷贝（功能语义），未对时间或精确 `sizeof` 做任何断言。
+- 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_117_rvo.cpp`。demo 区分了"纯 RVO（C++17 保证，可断言零拷贝）"与"NRVO（优化非保证，仅打印计数不 assert）"，并断言 `return std::move` 在 copy-only 类型上确实触发拷贝（功能语义），未对时间或精确 `sizeof` 做任何断言。
