@@ -945,6 +945,101 @@ bool should_vectorize(size_t n, bool branchy) {
 - `[经验]`：记不住细节就看速查表的四行——**列连续、循环无分支、单线程无锁、先 profile 再优化**。
 
 
+## ㉑ 真实工程使用场景：把 ClickHouse / Redis 接到你的工程
+
+> **人文关怀·落地**：上面看懂了列存向量化与单线程事件循环的机制，这一节把它接到"真实项目里怎么用"。学它们的意义，在于你能直接给系统加上"亚秒级分析"或"百万 QPS 缓存"——而不只是会背 SIMD 与 epoll。
+
+### ㉑.1 今天它活在哪里（真实坐标）
+
+- **Redis 是全球头号内存缓存/数据结构存储**：被几乎每家互联网公司用于缓存、会话、排行榜、消息队列 [史]。
+- **ClickHouse 是 OLAP 标杆**：被字节、Cloudflare、Uber 等用于实时分析、日志/指标平台 [史]。
+- **常组合使用**：Redis 扛在线热点、ClickHouse 扛离线/近线聚合，二者互补（见"联合使用场景"）[史]。
+- **开源生态繁荣**：`redis-plus-plus`/`hiredis`（C++ 客户端）、`clickhouse-cpp` 让 C++ 工程直接接入 [史]。
+
+### ㉑.2 标准 C++ 等价实现：先把"带过期的 KV"跑通（可编译）
+
+不装 Redis 也能理解它的 `EXPIRE` 机制——下面用标准库复刻核心：**每个 key 带一个过期时刻，GET 时若已过期则视为 miss**。这正是 Redis 的 TTL 语义基础（真实 Redis 还用惰性删除 + 定期抽样回收）。
+
+```cpp
+// ㉑.2 用标准库 std::map + std::chrono 复刻 Redis「带过期的 KV」本质（本块可独立编译，GCC 15.3.0 验证）
+#include <map>
+#include <string>
+#include <chrono>
+#include <iostream>
+#include <optional>
+
+using Clock = std::chrono::steady_clock;
+
+// Redis 的每个 key 都可带 TTL（EXPIRE）；过期后 GET 返回 miss
+class MiniRedis {
+    struct Entry { std::string val; Clock::time_point expire; };
+    std::map<std::string, Entry> store_;
+public:
+    // ex 秒，0 表示永不过期（对应 Redis 不设 TTL）
+    void set(const std::string& k, const std::string& v, int ex = 0) {
+        auto exp = ex > 0 ? Clock::now() + std::chrono::seconds(ex)
+                          : Clock::time_point::max();
+        store_[k] = {v, exp};
+    }
+    std::optional<std::string> get(const std::string& k) const {
+        auto it = store_.find(k);
+        if (it == store_.end()) return std::nullopt;
+        if (it->second.expire <= Clock::now()) return std::nullopt;  // 已过期
+        return it->second.val;
+    }
+};
+
+int main() {
+    MiniRedis r;
+    r.set("session", "abc123", 60);     // EX 60：60 秒后自动失效
+    if (auto v = r.get("session")) std::cout << "session = " << *v << "\n";
+    return 0;
+}
+```
+
+- `[标准]`：`std::map` + `std::chrono` 即"带时间戳的 KV"；Redis 用同一思路但把数据放内存哈希表、用事件循环统一驱动过期回收（见第④节）。
+- `[经验]`：看懂这个 25 行例子，你就理解了 Redis TTL 90% 的语义；剩下 10% 是内存淘汰策略（LRU/LFU，`maxmemory`）与主从复制。
+
+### ㉑.3 真实 API 长什么样（注释呈现，需链接第三方库）
+
+下面才是你在工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
+
+```cpp
+// ㉑.3 真实 Redis / ClickHouse C++ 客户端写法（仅注释演示，需链接 redis++/hiredis / clickhouse-cpp；本门禁按空块编译通过）：
+//   // ① Redis（redis-plus-plus，基于 hiredis）
+//   #include <sw/redis++/redis++.h>
+//   sw::redis::Redis r("tcp://127.0.0.1:6379");
+//   r.set("session", "abc123");          // SET
+//   r.expire("session", 60);             // EXPIRE 60 秒
+//   auto v = r.get("session");           // GET -> std::optional<std::string>
+//   // ② ClickHouse（clickhouse-cpp，按列批量发送）
+//   #include <clickhouse/client.h>
+//   clickhouse::Client c(clickhouse::ClientOptions().SetHost("localhost"));
+//   c.Execute("INSERT INTO hits VALUES", clickhouse::Values{1, "alice", 3.14});
+//   官方文档：https://github.com/sewenew/redis-plus-plus  |  https://github.com/ClickHouse/clickhouse-cpp
+```
+
+### ㉑.4 端到端：怎么把它接进你的工程
+
+1. **客户端选型**：C++ 用 `redis-plus-plus`（现代、RAII）或 `hiredis`（C 底层、自己包）；ClickHouse 用 `clickhouse-cpp` 或 HTTP 接口。
+2. **链接 redis-plus-plus**：
+   ```bash
+   find_package(redis++ CONFIG REQUIRED)
+   target_link_libraries(app PRIVATE redis++::redis++ hiredis)   # 还需链接 hiredis
+   ```
+3. **链接 clickhouse-cpp**：
+   ```bash
+   include(FetchContent)
+   FetchContent_Declare(clickhouse-cpp GIT_REPOSITORY https://github.com/ClickHouse/clickhouse-cpp.git)
+   FetchContent_MakeAvailable(clickhouse-cpp)
+   target_link_libraries(app PRIVATE clickhouse-cpp-lib)
+   ```
+4. **连接串**：Redis 用 `tcp://host:port`（或 `redis://` 带密码）；ClickHouse 用 `host:port` + 账号密码，列数据尽量批量发送发挥向量化优势（见第⑭节）。
+5. **取舍**：热数据/低延迟走 Redis，海量扫描聚合走 ClickHouse；两者用"Redis 缓存 + ClickHouse 落库"分层最常见。
+
+- `[平台]`：`redis-plus-plus` 依赖 `hiredis`，链接时别忘了二者都加；`clickhouse-cpp` 用 TCP 原生协议，比走 HTTP 更高效。
+- `[引用]` redis-plus-plus：`https://github.com/sewenew/redis-plus-plus`；ClickHouse C++ 客户端：`https://github.com/ClickHouse/clickhouse-cpp`。
+
 ## 附录 E：ClickHouse/Redis 底层与设计
 
 ```

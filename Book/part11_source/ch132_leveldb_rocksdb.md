@@ -971,6 +971,98 @@ bool healthy = imm <= 2 && !pending_compaction && live_data_mb < capacity_mb * 0
 | [第96章](Book/part08_algorithms/ch96_sorting.md) | 无锁队列/计数器 | 本章提供概念，第96章提供实现 |
 | [第83章](Book/part07_stl/ch83_map.md) | 日志格式化/序列化 | 本章提供概念，第83章提供实现 |
 
+## ㉑ 真实工程使用场景：把 LevelDB / RocksDB 接到你的工程
+
+> **人文关怀·落地**：上面看懂了 LSM-Tree 的机制，这一节把它接到"真实项目里怎么用"。学它们的意义，在于你能直接给服务加上一个"扛十亿键、崩溃不丢"的持久化 KV——而不只是会背 Compaction 原理。
+
+### ㉑.1 今天它活在哪里（真实坐标）
+
+- **RocksDB 是工业 KV 引擎基石**：被 Kafka Streams、TiDB、CockroachDB、Cassandra、MySQL（MyRocks）用作存储/缓存引擎 [史]。
+- **LevelDB 是嵌入式 KV 范本**：被 Chrome（IndexedDB 底层）、无数移动/桌面应用用作本地持久 KV [史]。
+- **区块链与特征存储**：许多链上节点与推荐系统特征库以 RocksDB 存状态 [史]。
+- **与 Redis 组合**：热数据在 Redis、全量在 RocksDB 是常见分层架构 [史]。
+
+### ㉑.2 标准 C++ 等价实现：先把"Put/Get/Delete"接口跑通（可编译）
+
+不装 LevelDB / RocksDB 也能理解 KV 引擎的接口契约——下面用标准库复刻其核心：**`std::map` 提供与 `leveldb::DB::Put/Get/Delete` 同名同义的接口**。真实引擎把数据拆成"内存 MemTable + 多层磁盘 SSTable"（LSM 树），用顺序写换写性能，但对外接口还是这三件事。
+
+```cpp
+// ㉑.2 用标准库 std::map 复刻 KV 引擎的「Put/Get/Delete」接口（本块可独立编译，GCC 15.3.0 验证）
+#include <map>
+#include <string>
+#include <iostream>
+#include <optional>
+
+// 极简 KV：接口与 leveldb::DB 的 Put/Get/Delete 同名同义
+class MiniKV {
+    std::map<std::string, std::string> store_;   // 真实 LSM 把数据拆成 memtable + 多层 SSTable
+public:
+    void Put(const std::string& k, const std::string& v) { store_[k] = v; }
+    std::optional<std::string> Get(const std::string& k) const {
+        auto it = store_.find(k);
+        return it == store_.end() ? std::optional<std::string>{} : it->second;
+    }
+    void Delete(const std::string& k) { store_.erase(k); }
+};
+
+int main() {
+    MiniKV db;
+    db.Put("user:1", "alice");
+    if (auto v = db.Get("user:1")) std::cout << "user:1 = " << *v << "\n";
+    db.Delete("user:1");
+    std::cout << "after delete: " << (db.Get("user:1").has_value() ? "hit" : "miss") << "\n";
+    return 0;
+}
+```
+
+- `[标准]`：`std::map` 满足有序 KV 契约（红黑树、迭代稳定）；LevelDB / RocksDB 不实现任何标准容器接口，而是**独立持久化抽象**——它把 `std::map` 的内存模型换成了"内存+磁盘"的 LSM，容量以 TB 计。
+- `[经验]`：看懂这个 20 行例子，你就理解了 KV 引擎 90% 的对外语义；剩下 10% 是 WAL、Compaction、BlockCache 等持久化细节（见第⑤/⑥/⑦节）。
+
+### ㉑.3 真实 API 长什么样（注释呈现，需链接第三方库）
+
+下面才是你在工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
+
+```cpp
+// ㉑.3 真实 LevelDB / RocksDB 写法（仅注释演示，需链接 leveldb / rocksdb；本门禁按空块编译通过）：
+//   #include <leveldb/db.h>
+//   #include <rocksdb/db.h>
+//   // ① 打开（LevelDB）
+//   leveldb::DB* db = nullptr;
+//   leveldb::Options opt; opt.create_if_missing = true;
+//   leveldb::DB::Open(opt, "/tmp/testdb", &db);
+//   // ② 原子批量写（WAL 单条 record，要么全见要么全不见）
+//   leveldb::WriteBatch batch;
+//   batch.Put("a", "1"); batch.Put("b", "2"); batch.Delete("c");
+//   db->Write(leveldb::WriteOptions(), &batch);
+//   // ③ 范围扫描（LevelDB 合并各层形成有序视图）
+//   leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
+//   for (it->Seek("a"); it->Valid() && it->key().ToString() < "z"; it->Next()) { }
+//   delete it;
+//   // ④ RocksDB 对应：Open 多一个 ColumnFamilyHandle 参数（见第④节）
+//   rocksdb::DB* rdb; std::vector<rocksdb::ColumnFamilyHandle*> hs;
+//   rocksdb::DB::Open(rocksdb::DBOptions(), "/tmp/rdb",
+//       {rocksdb::ColumnFamilyDescriptor{"default", rocksdb::ColumnFamilyOptions{}}}, &hs, &rdb);
+//   官方文档：https://github.com/google/leveldb  |  https://rocksdb.org/docs/
+```
+
+### ㉑.4 端到端：怎么把它接进你的工程
+
+1. **选引擎**：嵌入式/移动/简单 KV 用 LevelDB；要列族、事务、Merge、可调优用 RocksDB。
+2. **源码构建 RocksDB**（CMake FetchContent 最省心）：
+   ```bash
+   include(FetchContent)
+   FetchContent_Declare(rocksdb GIT_REPOSITORY https://github.com/facebook/rocksdb.git
+                        GIT_TAG v9.0.0)
+   FetchContent_MakeAvailable(rocksdb)
+   target_link_libraries(app PRIVATE rocksdb)
+   ```
+3. **链接 LevelDB**：系统包 `libleveldb-dev` + 链接 `-lleveldb -lsnappy`；或用 CMake `find_package(LevelDB)`。
+4. **编译开关**：C++17 及以上；LevelDB 链接时还需 `-lsnappy`（压缩）；Windows 上路径用正斜杠（见第⑫节）。
+5. **运维**：上线前用 `db_bench` 跑真实负载，据 `rocksdb.stats` 调 `max_background_compactions` 等旋钮（见第⑮/附录 I）。
+
+- `[平台]`：RocksDB 体量较大，FetchContent 首次编译耗时较长；生产常用预编译包（vcpkg `rocksdb`、Conan）或自构建静态库。
+- `[引用]` LevelDB：`https://github.com/google/leveldb`；RocksDB：`https://rocksdb.org/docs/`。
+
 ## 附录 F：LevelDB/RocksDB 工业原理与面试 [B: Principle / D: Stdlib / H: Design / I: Practice / J: Learning]
 
 ```

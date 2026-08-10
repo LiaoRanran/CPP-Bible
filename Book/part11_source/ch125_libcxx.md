@@ -737,6 +737,65 @@ int main() {
 - `[标准]`：上表所有「语义」项均源自 ISO C++；「数值/宏/布局」项为 libc++ 实现定义，迁移时以特征宏实测为准。
 - `[经验]`：把本速查表与 `Examples/_ch125_sso.cpp` 的真实输出（libstdc++: cap15/size32）对照，即可在任意机器上验证当前标准库身份。
 
+## ㉑ 真实工程使用场景：Apple 默认、Clang 首选的 libc++
+
+> **人文关怀·落地**：前面读懂了 libc++ 的实现特征，这一节把它接到"真实项目里你大概率已经躺在 libc++ 上"。
+> 学它的意义，在于你知道 Apple 全平台为何选它、以及何时该主动切过去——而不是被 `_LIBCPP` 宏吓到。
+
+### ㉑.1 今天 libc++ 活在哪里（真实坐标）
+
+- **Apple 全平台默认**：macOS/iOS/watchOS/tvOS 的系统 Clang 默认 `-stdlib=libc++`。[史] 自 Xcode 5（2013）起 libc++ 成为默认 C++ 标准库。
+- **Clang 在 Linux/BSD 上**：装了 libc++ 包后，可用 `-stdlib=libc++` 显式切换。
+- **LLVM 生态工具**：Clang、lld、lldb 自身及大量基于 LLVM 的工具链默认用 libc++ 构建。
+- **对 C++20/23 跟进更快**：ranges、`std::format`、实验性 modules 等常由 libc++ 率先完整支持。
+
+### ㉑.2 标准 C++ 等价实现：用 constexpr STL 体验 libc++ 的"编译期求值"风格（可编译）
+
+libc++ 长期以" aggressively constexpr 的 STL"著称——把更多算法/容器推进编译期。下面用纯标准库复刻这一思想：
+
+```cpp
+// ㉑.2 用标准库复刻 libc++「编译期可求值的 STL」思想（本块可独立编译，GCC 15.3.0 验证）
+#include <vector>
+#include <numeric>     // std::accumulate
+#include <algorithm>
+
+// libc++ 很早就让 vector/accumulate 可 constexpr；C++20 起这已是标准行为
+constexpr int sum_first(int n) {
+    std::vector<int> v;                  // C++20 起 vector 可 constexpr 构造与扩容
+    for (int i = 1; i <= n; ++i) v.push_back(i);
+    return std::accumulate(v.begin(), v.end(), 0);  // 编译期完成求和
+}
+static_assert(sum_first(5) == 15);      // 编译期验证：无需运行即确认正确
+int main() { return 0; }
+```
+
+- `[标准]`：`std::vector`/`std::accumulate` 的 constexpr 来自 C++20（P1004/P1645）；libc++ 的实现把这类能力做得很彻底。
+- `[评]`：代价是编译更慢、模板展开更深——激进 constexpr 是 libc++ 的"工程取舍"，也是它常被吐槽编译慢的原因之一。
+
+### ㉑.3 真实 libc++ 长什么样（注释呈现，需 libc++）
+
+下面才是你在 libc++ 工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头）。
+
+```cpp
+// ㉑.3 真实 libc++ 用法（仅注释演示，门禁按空块编译通过）：
+//   // 1) 检测当前是否 libc++
+//   #include <__config>            // libc++ 内部配置头
+//   #ifdef _LIBCPP_VERSION
+//   std::cout << "libc++ " << _LIBCPP_VERSION << "\n";   // 形如 190100
+//   #endif
+//   // 2) 切换：Apple 平台 Clang 默认即 libc++；Linux 需显式指定
+//   //   clang++ -stdlib=libc++ main.cpp -lc++ -lc++abi
+//   // 3) libc++ 用 inline namespace 做 ABI 版本隔离（_LIBCPP_ABI_NAMESPACE）
+//   官方文档：https://libcxx.llvm.org/
+```
+
+### ㉑.4 端到端：怎么切到 libc++ 与其部署注意
+
+1. **默认即它**：Apple 平台 Clang 已 `-stdlib=libc++`，无需额外动作。
+2. **Linux 上切换**：`clang++ -stdlib=libc++ x.cpp -lc++ -lc++abi`（需先装 `libc++` 与 `libc++abi` 包）。
+3. **部署注意**：`libc++.so.1` 必须随程序分发或在目标机存在；**混用 libstdc++ 与 libc++ 的 `.o` 会 ABI 不兼容**（`std::string` 布局不同），整个工程只能选一种。
+4. **迁移坑**：某些 GNU 扩展宏（如 `__GLIBCXX__`）在 libc++ 下不存在，移植时要改判 `_LIBCPP_VERSION`；libc++ 对 C++ 新特性跟进更快，可借它提前用上 ranges/format。
+
 ## 附录 E：libc++工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
 ```

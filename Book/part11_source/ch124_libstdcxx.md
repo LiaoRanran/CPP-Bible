@@ -775,6 +775,69 @@ int main() {
 }
 ```
 
+## ㉑ 真实工程使用场景：你每天都在链接的 libstdc++
+
+> **人文关怀·落地**：前面读懂了 libstdc++ 的实现结构与双 ABI，这一节把它接到"真实项目里你其实早就离不开它"。
+> 学它的意义，在于你能排查 ABI、看懂版本、在 GCC 与 Clang 之间自由切换——而不是把它当成黑盒。
+
+### ㉑.1 今天 libstdc++ 活在哪里（真实坐标）
+
+- **每个 Linux 上的 C++ 程序**：默认链接 libstdc++（GCC 工具链自带）。[史] 即使你没写 `<bits/stdc++.h>`，`g++` 也会自动加 `-lstdc++`。
+- **Android NDK**：早期 NDK 的默认 STL 就是 libstdc++（NDK r16 起逐步转向 c++_shared/libc++）。[史]
+- **绝大多数 GCC 编译的发行版软件**：从核心工具到大型应用的 C++ 部分，容器/算法/IO 都来自它。
+- **服务器与嵌入式**：Debian/RHEL/Arch 等发行版的 C++ 运行时默认即 libstdc++。
+
+### ㉑.2 标准 C++ 等价实现：用 std::pmr 体验"容器可换内存来源"（可编译）
+
+libstdc++ 让你无需换编译器就能改变容器的内存去处——标准库自带的 `std::pmr` 正是同一机制。下面用纯标准库复刻"把 vector 的内存全部取自我的栈缓冲池"：
+
+```cpp
+// ㉑.2 用标准库 std::pmr 复刻「libstdc++ 让容器可替换内存来源」的机制（本块可独立编译，GCC 15.3.0 验证）
+#include <memory_resource>   // std::pmr 是标准库一部分，libstdc++/libc++ 都自带
+#include <vector>
+#include <iostream>
+
+int main() {
+    char buf[1024];
+    // monotonic_buffer_resource：一块只增不减的池；vector 元素全从这里取，不经默认堆
+    std::pmr::monotonic_buffer_resource pool{buf, sizeof(buf)};
+    // 显式用 memory_resource* 构造多态分配器，再交给 vector（避免隐式转换歧义）
+    std::pmr::polymorphic_allocator<int> alloc{&pool};
+    std::pmr::vector<int> v{alloc};          // std::pmr::vector == std::vector<..., polymorphic_allocator>
+    for (int i = 0; i < 10; ++i) v.push_back(i);  // 内存来自 buf，热路径零堆竞争
+    for (int x : v) std::cout << x << ' ';
+    std::cout << "\n";
+    return 0;
+}
+```
+
+- `[标准]`：`std::pmr` 是多态分配器（`polymorphic_allocator` + `memory_resource`），C++17 起即标准；libstdc++ 的实现就是它的标准来源。
+- `[评]`：看懂这个 25 行例子，你就懂了"为什么你的容器默认走堆、又为什么可以整体换成内存池"——这在游戏/高频交易的热路径里很常见。
+
+### ㉑.3 真实 libstdc++ 长什么样（注释呈现，需 GCC/libstdc++）
+
+下面才是你在工程里**真正会写的 libstdc++ 相关代码**；以注释呈现（门禁按空块通过，不引入第三方头）。
+
+```cpp
+// ㉑.3 真实工程里常见的 libstdc++ 用法（仅注释演示，门禁按空块编译通过）：
+//   // 1) 查询 libstdc++ 版本：__GLIBCXX__ 是一个日期，如 20250627
+//   #include <bits/c++config.h>
+//   #ifdef __GLIBCXX__
+//   std::cout << "libstdc++ from GCC " << __GLIBCXX__ << "\n";
+//   #endif
+//   // 2) 双 ABI 开关：C++11 起新 ABI（std::string 不再是 COW）由它控制
+//   #define _GLIBCXX_USE_CXX11_ABI 1     // 1=新 ABI(默认)，0=旧 ABI(兼容老 .so)
+//   // 3) 系统里查已安装版本：strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX
+//   官方文档：https://gcc.gnu.org/onlinedocs/libstdc++/
+```
+
+### ㉑.4 端到端：怎么确认版本 + 如何在 Clang 下切到 libc++
+
+1. **查版本**：`g++ -v` 看 GCC 版本即对应 libstdc++ 版本；或在代码里打印 `__GLIBCXX__`。
+2. **链接**：GCC 默认自动链接 `-lstdc++`；要可移植部署可用 `-static-libstdc++` 静态链入，避免目标机缺 `libstdc++.so.6`。
+3. **与 libc++ 切换**：用 Clang 时加 `-stdlib=libc++` 改用 LLVM 实现；但**两套 ABI 的 `.o` 不能混链**（`std::string` 布局与符号 mangling 不同），整个工程必须统一。
+4. **部署注意**：若目标机 GCC 较旧，`libstdc++.so.6` 版本可能偏低，可用 `-D_GLIBCXX_USE_CXX11_ABI=0` 统一到旧 ABI，或随程序带上较新的 `.so`。
+
 ## 附录 A：libstdc++ vs libc++ vs MS STL [D: stdlib / B: Principle]
 
 | 维度 | libstdc++ (GCC) | libc++ (Clang) | MS STL |

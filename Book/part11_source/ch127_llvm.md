@@ -586,6 +586,80 @@ export int bridge(int a, int b) { return (a + b) * (a + b); }
 - `[经验]`：把 LLVM 当「可观察的编译器」来学：IR 是语言、Pass 是动词、后端是方言。掌握它，你同时懂了 C++/Rust/Swift 的底层。
 
 
+## ㉑ 真实工程使用场景：Clang / Swift / Rust 背后那台 LLVM
+
+> **人文关怀·落地**：前面读懂了 LLVM 的前端→优化→后端三段式，这一节把它接到"你写的几乎每一门现代语言都踩在 LLVM 上"。
+> 学它的意义，在于你能看懂编译器报错来自哪一层、并知道何时把 LLVM 当库拿来写工具——而不只是会敲 `clang++`。
+
+### ㉑.1 今天 LLVM 活在哪里（真实坐标）
+
+- **Clang / Swift / Rust 后端**：三者都把 IR  lowering 到 LLVM，再由同一套后端生成机器码。[史] Rust 早期用过 LLVM 自研后端（rustc 的 LLVM 后端），Swift 直接基于 LLVM。
+- **无数语言**：Kotlin/Native、Julia、Zig、Ruby（Truffle/LLVM 变体）、CUDA（NVVM 基于 LLVM）等都建立在 LLVM 之上。
+- **系统工具链**：`clang-format`、`clang-tidy`、`clangd`（LSP）、`lld` 链接器皆 LLVM 项目。
+- **你手机与电脑里的二进制**：大量 App 的本地代码最终经 LLVM 后端产出。
+
+### ㉑.2 标准 C++ 等价实现：用 std::variant + visitor 复刻"AST/IR 遍历"（可编译）
+
+LLVM 的核心模式之一，是用**标签联合（tagged union）+ 访问者**来遍历 AST/IR 节点。下面用纯标准库复刻这一模式（这正是 LLVM `Value`/`InstVisitor` 的简化本质）：
+
+```cpp
+// ㉑.2 用标准库 std::variant + visitor 复刻 LLVM「标签联合遍历 IR」的模式（本块可独立编译，GCC 15.3.0 验证）
+#include <variant>
+#include <vector>
+#include <iostream>
+#include <string>
+
+struct Constant { int value; };          // 类比 LLVM 的 ConstantInt
+struct AddExpr  { /* 真实 IR 里会递归持有左右子节点 */ };
+struct VarRef   { std::string name; };   // 类比 LLVM 的 Argument/GlobalVariable
+
+// 一个 IR 节点：用 variant 表示「这节点可能是常量/加法/变量」——LLVM 的 Value 也是标签联合
+using Node = std::variant<Constant, AddExpr, VarRef>;
+
+// 访问者：对每种节点类型分派不同行为（类比 LLVM 的 InstVisitor）
+struct Eval {
+    int operator()(const Constant& c) const { return c.value; }
+    int operator()(const AddExpr&)    const { return 0; }   // 简化：真实 IR 会递归左右子节点
+    int operator()(const VarRef&)     const { return 0; }
+};
+
+int main() {
+    std::vector<Node> ir{ Constant{42}, VarRef{"x"}, AddExpr{} };
+    for (const auto& n : ir)
+        std::cout << "eval=" << std::visit(Eval{}, n) << "\n";   // 遍历并分派到对应重载
+    return 0;
+}
+```
+
+- `[标准]`：`std::variant` + `std::visit` 是 C++17 的标签联合与访问者机制；LLVM 用自研的 `llvm::dyn_cast`/`InstVisitor` 做同类分派，但模式完全同构。
+- `[评]`：看懂这个 25 行例子，你就懂了"为什么 LLVM Pass 里满屏 `if (auto* I = dyn_cast<...>(V))`"——本质就是 variant 的 `std::holds_alternative` 检查。
+
+### ㉑.3 真实 LLVM API 长什么样（注释呈现，需 LLVM 头）
+
+下面才是你在 LLVM 工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头）。
+
+```cpp
+// ㉑.3 真实 LLVM 用法（仅注释演示，门禁按空块编译通过）：
+//   #include <llvm/IR/LLVMContext.h>
+//   #include <llvm/IR/Module.h>
+//   #include <llvm/IR/IRBuilder.h>
+//   #include <llvm/IR/PassManager.h>
+//   using namespace llvm;
+//   LLVMContext Ctx;
+//   Module M("demo", Ctx);                       // 一个翻译单元（.ll/.bc 的容器）
+//   IRBuilder<> B(Ctx);
+//   Function* F = Function::Create(...);         // 用 IRBuilder 生成基本块与指令
+//   // 跑一遍优化：ModulePassManager MPM; MPM.addPass(...); MPM.run(M, MAM);
+//   官方文档：https://llvm.org/docs/
+```
+
+### ㉑.4 端到端：怎么把 LLVM 接进你的工程
+
+1. **装 LLVM/Clang**：各平台包管理器（`apt install llvm clang` / `brew install llvm` / 官方 installer），或源码 `cmake --build`。
+2. **CMake 接入**：`find_package(LLVM REQUIRED CONFIG)` + `target_link_libraries(app LLVM)`；注意 LLVM 是大量静态库，链接较慢、需显式列组件。
+3. **当编译器用**：直接 `clang++`；或把 LLVM 当库做静态分析 / 代码生成（写 Pass 优化 IR、做 JIT）。
+4. **注意点**：LLVM 的 C++ API **不稳定**（不同主版本 `IRBuilder`/`Pass` 接口会变），务必锁版本；且 LLVM 默认禁用 RTTI/异常，你的插件需匹配编译选项（`-fno-rtti`）。
+
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |

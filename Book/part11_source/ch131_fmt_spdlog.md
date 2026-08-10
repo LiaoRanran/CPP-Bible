@@ -650,6 +650,79 @@ class SPDLOG_API registry {
 | [第130章](Book/part11_source/ch130_chromium_abseil.md) | 泛型库/编译期计算 | 本章提供概念，第130章提供实现 |
 | [第132章](Book/part11_source/ch132_leveldb_rocksdb.md) | 日志格式化/序列化 | 本章提供概念，第132章提供实现 |
 
+## ㉑ 真实工程使用场景：把 fmt / spdlog 接到你的工程
+
+> **人文关怀·落地**：上面看懂了 fmt / spdlog 的机制，这一节把它接到"真实项目里怎么用"。学它们的意义，在于你立刻能写出类型安全、又快又好看懂的日志与格式化代码——而不只是会背 `{}` 语法。
+
+### ㉑.1 今天它活在哪里（真实坐标）
+
+- **fmt 被 C++20 采纳为 `std::format`**：提案 P0645 由 fmt 作者主导，标准库直接吸收了 `{}` 占位符与编译期格式串检查 [史]。
+- **spdlog 是 GitHub 上最火的 C++ 日志库之一**：被无数服务端、游戏、嵌入式项目采用，仅头文件即可用 [史]。
+- **工业标准替代**：fmt / spdlog 已成为 `printf`/`<iostream>` 的现代替代品，写入 C++ 工程事实标准 [史]。
+- **跨生态影响**：fmt 的 `{}` 语法灵感部分来自 Python，又被多种语言/库的格式化设计借鉴 [轶]。
+
+### ㉑.2 标准 C++ 等价实现：用 std::format 跑通类型安全格式化（可编译）
+
+fmt 最值得学的机制——**类型安全 + 编译期格式串检查**——已经被 C++20 直接吸收为 `std::format`。下面用纯标准库复刻一节开头那个例子：
+
+```cpp
+// ㉑.2 用标准 C++20 std::format 复刻 fmt 的核心（本块可独立编译，GCC 15.3.0 验证）
+#include <format>
+#include <string>
+#include <iostream>
+
+int main() {
+    // 类型安全 + 占位符 {}：std::format 直接吸收自 fmt 的设计
+    std::string s = std::format("{} + {} = {}", 2, 2, 4);   // "2 + 2 = 4"
+    std::cout << s << "\n";
+    // 编译期格式串检查：占位符数量与参数不匹配会在编译期报错（与 fmt 同机制）
+    // std::format("{}", 1, 2);   // 编译失败：占位符 1 != 参数 2
+    // 自定义类型需 std::formatter<T> 特化，语法与 fmt::formatter 一致（见第⑨/⑮节）
+    return 0;
+}
+```
+
+- `[标准]`：`std::format`/`std::formatter`/`std::format_to` 是 fmt API 的标准化；P0645 由 fmt 作者 Victor Zverovich 主导。
+- `[经验]`：看懂这个例子，你就理解了 fmt 90% 的运行语义——类型安全来自编译期 `basic_format_string` 检查；剩下的是性能快速路径与自定义 formatter 特化。
+
+### ㉑.3 真实 API 长什么样（注释呈现，需链接第三方库）
+
+下面才是你在工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
+
+```cpp
+// ㉑.3 真实 fmt / spdlog 写法（仅注释演示，需链接 fmt / spdlog；本门禁按空块编译通过）：
+//   #include <fmt/core.h>
+//   #include <spdlog/spdlog.h>
+//   // ① fmt：类型安全占位符，参数按序填入
+//   fmt::print("Hello, {}! you are {}\n", "world", 21);
+//   std::string s = fmt::format("{0} + {0} = {1}", 2, 4);   // "2 + 2 = 4"
+//   // ② spdlog：级别化日志，底层用 fmt 做格式化（见第④/⑯节）
+//   spdlog::info("loaded {} entries in {} ms", 1024, 7);
+//   spdlog::warn("cache nearly full: {:.1f}%", 92.3);
+//   官方文档：https://fmt.dev/latest/  |  https://github.com/gabime/spdlog
+```
+
+### ㉑.4 端到端：怎么把它接进你的工程
+
+1. **选标准还是 fmt**：C++20 项目优先 `std::format`；需跨 C++17、要 `fmt::print` 直出 stdout、或要 spdlog 集成时仍用 fmt。
+2. **CMake 接入 fmt**：
+   ```bash
+   find_package(fmt CONFIG REQUIRED)
+   target_link_libraries(app PRIVATE fmt::fmt)
+   # fmt 是 header-only（core），C++17 及以上即可
+   ```
+3. **CMake 接入 spdlog**：
+   ```bash
+   find_package(spdlog CONFIG REQUIRED)
+   target_link_libraries(app PRIVATE spdlog::spdlog)
+   # spdlog 默认内嵌 fmt；若要用外部 fmt 加 -DSPDLOG_FMT_EXTERNAL=ON
+   ```
+4. **包管理器**：vcpkg `vcpkg install fmt spdlog` 或 Conan `fmt/10.2.1` 一键拿预编译包。
+5. **取舍**：高频热路径用 `fmt::format_to` + 复用 `memory_buffer` 避免重复分配；异步日志用 `spdlog::async_factory`（见第⑭/附录 F）。
+
+- `[平台]`：fmt / spdlog 均为 header-only，跨平台零依赖；链接只需把包含目录与（静态）库指对。
+- `[引用]` fmt 文档：`https://fmt.dev/latest/`；spdlog：`https://github.com/gabime/spdlog`。
+
 ## 附录 E：fmt/spdlog工业
 
 fmt(P0645R10): C++20 std::format前身; 编译期格式验证; 比cout快5-10x(无locale/mutex)
