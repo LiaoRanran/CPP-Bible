@@ -92,14 +92,18 @@ def main():
     ap.add_argument("--force", action="store_true",
                     help="忽略 LOST_SYMBOL 跳过（版本一致化优先；随后由 verify_asm_evidence 兜底）")
     ap.add_argument("--batch", type=int, default=0, help="分批大小(0=全部)")
+    ap.add_argument("--names", default="", help="仅处理逗号分隔的文件名(不含.asm)，如 _ch13_use,_ch113_co_O2")
     a = ap.parse_args()
     if not a.dry_run and not a.apply:
         a.dry_run = True
     GPP, EX = a.gpp, a.examples
+    NAME_SET = {n.strip() for n in a.names.split(",") if n.strip()} if a.names else None
 
     results = []
     for asm in sorted(glob.glob(os.path.join(EX, "*.asm"))):
         name = os.path.splitext(os.path.basename(asm))[0]
+        if NAME_SET and name not in NAME_SET:
+            continue
         stored = open(asm, encoding="utf-8", errors="replace").read()
         ver = detect_version(stored)
         if a.only != "all" and ver != a.only:

@@ -6,7 +6,7 @@
 ⟶ Book/part10_modern/ch120_coroutine_app.md
 ⟶ Book/part09_concurrency/ch107_atomic.md
 
-> 真实编译器：MinGW GCC 13.1.0（`-std=c++20 -O2 -S -masm=intel`）。
+> 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 取证源码：`Examples/_ch113_co.cpp`。协程是语言特性（`co_await`/`co_yield`/`co_return` + `promise_type`），**标准库未提供 `std::generator`/`std::task`**（C++23 仅 TS 级 `std::generator` 提案），本章手写实现并以真实汇编为证。
 > 配套规范见 `CONVENTIONS.md`（立场标签、20 元素模板）。
 
@@ -127,7 +127,7 @@ struct my_coro {
 ```
 
 - `[标准]`：帧的**确切布局与大小由实现定义**；`promise_type` 子对象位置、参数拷贝、恢复索引都在帧内，但偏移不保证一致。
-- `[实现·GCC13]`：`range(int)` 的帧实测 56 字节（含 16 字节对齐填充），`count_up()` 为 48 字节（见 ⑨ 真实汇编）。
+- `[实现·GCC15]`：`range(int)` 与 `count_up()` 的帧在 15.3.0 下均为 40 字节（`call _Znwy` 的 `ecx` 立即数，编译期确定，见 ⑨ 真实汇编）；13.1.0 下曾分别为 56 / 48 字节——编译器升级统一压低了协程帧开销。
 
 ## ④ co_await / co_yield / co_return 三个关键字 [标准]
 
@@ -316,9 +316,9 @@ struct pooled_task {
 - `[标准]`：若 `promise_type::operator new` 存在，编译器优先使用它分配帧；还可提供 `operator new(size, std::align_val_t)` 控制对齐。
 - `[实现]`：帧大小在编译期已知（见 ⑨ 的 `mov ecx,56`），分配是一次定长 `operator new`，**无运行时 resize**。
 
-## ⑨ [实现]真实汇编：协程帧分配 `call operator new` 与恢复符号 [实现·GCC13]
+## ⑨ [实现]真实汇编：协程帧分配 `call operator new` 与恢复符号 [实现·GCC15]
 
-下面是 `Examples/_ch113_co.cpp` 经 GCC 13.1.0 真实编译（`-std=c++20 -O2 -S -masm=intel`）的取证，逐行对照，非编造。
+下面是 `Examples/_ch113_co.cpp` 经 GCC 15.3.0 真实编译（`-std=c++23 -O2 -S -masm=intel`）的取证，逐行对照，非编造。
 
 ```cpp
 // 文件：Examples/_ch113_co.cpp
@@ -332,72 +332,84 @@ generator range(int n) {
 
 ```asm
 ; 文件：Examples/_ch113_co.cpp，行号：59（_Z5rangei = range(int)）
-; 编译：g++ -std=c++20 -O2 -S -masm=intel Examples/_ch113_co.cpp -o Examples/_ch113_co_O2.asm
+; 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch113_co.cpp -o Examples/_ch113_co_O2.asm
 _Z5rangei:                       ; range(int) 的函数体（协程入口）
-        push    rsi
         push    rbx
-        sub     rsp, 40
+        sub     rsp, 48
+        movaps  XMMWORD PTR 32[rsp], xmm6
         mov     rbx, rcx
-        mov     ecx, 56          ; ← 协程帧大小 = 56 字节（编译期确定）
-        mov     esi, edx         ; 保存参数 n
+        movd    xmm1, edx
+        mov     ecx, 40          ; ← 协程帧大小 = 40 字节（15.3.0 编译期确定；13.1.0 为 56）
+        pshufd  xmm6, xmm1, 0xe0
         call    _Znwy            ; ← call operator new(size_t, align_val_t)：堆上分配协程帧
-        lea     rdx, _Z5rangePZ5rangeiE15_Z5rangei.Frame.destroy[rip]
-        lea     rcx, _Z5rangePZ5rangeiE15_Z5rangei.Frame.actor[rip]
-        movq    xmm1, rdx
-        mov     DWORD PTR 32[rax], esi   ; 帧内写入参数 n
-        movq    xmm0, rcx
-        mov     DWORD PTR 16[rax], esi
+        lea     rdx, _Z5rangeP15_Z5rangei.Frame.destroy[rip]
+        movq    xmm0, QWORD PTR .LC4[rip]
+        movq    xmm2, rdx
+        mov     edx, 1
         mov     QWORD PTR [rbx], rax     ; 返回对象句柄指向帧
-        punpcklqdq     xmm0, xmm1
-        mov     QWORD PTR 24[rax], rax
+        punpcklqdq     xmm0, xmm2
+        mov     WORD PTR 28[rax], dx
+        mov     DWORD PTR 24[rax], 65538 ; 初始化恢复索引与标志
         movups  XMMWORD PTR [rax], xmm0  ; 写入 destroy/actor 入口指针
-        mov     DWORD PTR 36[rax], 65538 ; 初始化恢复索引与标志
+        movq    QWORD PTR 16[rax], xmm6
+        movaps  xmm6, XMMWORD PTR 32[rsp]
         mov     rax, rbx
-        add     rsp, 40
+        add     rsp, 48
         pop     rbx
-        pop     rsi
         ret
 ```
 
 ```asm
 ; 文件：Examples/_ch113_co.cpp，行号：59
-; 恢复（resume）符号：_Z5rangePZ5rangeiE15_Z5rangei.Frame.actor
+; 恢复（resume）符号：_Z5rangeP15_Z5rangei.Frame.actor
 ; 即协程"状态机"入口；每次 h.resume() 跳到这里，由恢复索引分派到挂起点之后
-_Z5rangePZ5rangeiE15_Z5rangei.Frame.actor:
-        movzx   eax, WORD PTR 36[rcx]   ; ← 读恢复索引（状态机当前状态）
+_Z5rangeP15_Z5rangei.Frame.actor:
+        movzx   eax, WORD PTR 24[rcx]   ; ← 读恢复索引（状态机当前状态）
         test    al, 1
         je      .L2
         cmp     ax, 7
-        ja      .L3
-        mov     edx, 170
-        bt      rdx, rax                ; 用位图判断该状态是否需销毁
-        jnc     .L3
+        ja      .L19
 .L4:
-        cmp     BYTE PTR 38[rcx], 0
-        jne     .L17
+.L12:
+.L13:
+.L14:
+        sub     WORD PTR 26[rcx], 1
+        jne     .L1
+        cmp     BYTE PTR 28[rcx], 0
+        jne     .L20
 .L9:
+.L1:
         ret
 ; ... 各状态分支（初始/L7 首次 yield/L5 循环/L11 产出/L18 结束）...
 .L7:
-        mov     r8d, 2
-        mov     QWORD PTR 24[rcx], rcx
-        mov     BYTE PTR 39[rcx], 0
-        mov     WORD PTR 36[rcx], r8w   ; 写入下一恢复索引 = 2
+        mov     edx, 4
+        mov     DWORD PTR 16[rcx], eax
+        mov     WORD PTR 24[rcx], dx   ; 写入下一恢复索引 = 4
         ret
 ```
 
 ```asm
 ; 文件：Examples/_ch113_co.cpp，行号：64（_Z8count_upv = count_up()）
-; 另一个协程帧大小不同（48 字节），证明帧大小按协程内容定制
+; 另一协程帧；15.3.0 下同样为 40 字节（编译器升级后两类协程帧布局统一压低）
 _Z8count_upv:
         push    rbx
         sub     rsp, 32
         mov     rbx, rcx
-        mov     ecx, 48          ; ← count_up() 的协程帧 = 48 字节
+        mov     ecx, 40          ; ← count_up() 的协程帧 = 40 字节（13.1.0 为 48）
         call    _Znwy            ; ← 同样 call operator new 分配
-        lea     rdx, _Z8count_upPZ8count_upvE18_Z8count_upv.Frame.destroy[rip]
-        lea     rcx, _Z8count_upPZ8count_upvE18_Z8count_upv.Frame.actor[rip]
-; ... 写入 destroy/actor 入口 ...
+        lea     rdx, _Z8count_upP18_Z8count_upv.Frame.destroy[rip]
+        movq    xmm0, QWORD PTR .LC5[rip]
+        movq    xmm1, rdx
+        mov     edx, 1
+        mov     QWORD PTR [rbx], rax
+        punpcklqdq     xmm0, xmm1
+        mov     WORD PTR 22[rax], dx
+        mov     DWORD PTR 18[rax], 65538
+        movups  XMMWORD PTR [rax], xmm0
+        mov     rax, rbx
+        add     rsp, 32
+        pop     rbx
+        ret
 ```
 
 - `[实现·GCC13]`：每个协程被拆成三个符号——`<func>`（入口，分配帧）、`<func>.Frame.actor`（恢复/状态机）、`<func>.Frame.destroy`（析构帧）。`call _Znwy` 即 `operator new(size, align_val_t)`，帧大小编译期常量（56 / 48）。

@@ -1,4 +1,5 @@
 	.file	"_ch120_coro_perf.cpp"
+	.intel_syntax noprefix
 	.text
 	.section	.text$_ZNSt6thread24_M_thread_deps_never_runEv,"x"
 	.linkonce discard
@@ -7,7 +8,7 @@
 	.def	_ZNSt6thread24_M_thread_deps_never_runEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt6thread24_M_thread_deps_never_runEv
 _ZNSt6thread24_M_thread_deps_never_runEv:
-.LFB5958:
+.LFB6447:
 	.seh_endprologue
 	ret
 	.seh_endproc
@@ -17,256 +18,234 @@ _ZNSt6thread24_M_thread_deps_never_runEv:
 	.def	_Z13resume_handleRNSt7__n486116coroutine_handleIvEE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z13resume_handleRNSt7__n486116coroutine_handleIvEE
 _Z13resume_handleRNSt7__n486116coroutine_handleIvEE:
-.LFB12897:
+.LFB14261:
 	.seh_endprologue
-	movq	(%rcx), %rcx
-	rex.W jmp	*(%rcx)
+	mov	rcx, QWORD PTR [rcx]
+	rex.W jmp	[QWORD PTR [rcx]]
 	.seh_endproc
 	.p2align 4
 	.globl	_Z10yield_stepR3GenIiE
 	.def	_Z10yield_stepR3GenIiE;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10yield_stepR3GenIiE
 _Z10yield_stepR3GenIiE:
-.LFB12898:
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$32, %rsp
+.LFB14262:
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 32
 	.seh_stackalloc	32
 	.seh_endprologue
-	movq	(%rcx), %rax
-	movq	%rcx, %rbx
-	movq	%rax, %rcx
-	call	*(%rax)
-	movq	(%rbx), %rax
-	movl	16(%rax), %eax
-	addq	$32, %rsp
-	popq	%rbx
+	mov	rax, QWORD PTR [rcx]
+	mov	rbx, rcx
+	mov	rcx, rax
+	call	[QWORD PTR [rax]]
+	mov	rax, QWORD PTR [rbx]
+	mov	eax, DWORD PTR 16[rax]
+	add	rsp, 32
+	pop	rbx
 	ret
 	.seh_endproc
+	.section	.text.unlikely,"x"
+.LCOLDB0:
+	.text
+.LHOTB0:
 	.p2align 4
-	.def	_Z10ready_taskPZ10ready_taskvE21_Z10ready_taskv.Frame.actor;	.scl	3;	.type	32;	.endef
-	.seh_proc	_Z10ready_taskPZ10ready_taskvE21_Z10ready_taskv.Frame.actor
-_Z10ready_taskPZ10ready_taskvE21_Z10ready_taskv.Frame.actor:
-.LFB12913:
+	.def	_Z16infinite_counterP27_Z16infinite_counterv.Frame.actor;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z16infinite_counterP27_Z16infinite_counterv.Frame.actor
+_Z16infinite_counterP27_Z16infinite_counterv.Frame.actor:
+.LFB14256:
 	.seh_endprologue
-	movzwl	32(%rcx), %eax
-	testb	$1, %al
+	movzx	eax, WORD PTR 20[rcx]
+	test	al, 1
 	je	.L6
-	cmpw	$9, %ax
+	cmp	ax, 5
 	ja	.L7
-	movl	$682, %edx
-	btq	%rax, %rdx
-	jnc	.L7
+	mov	edx, 42
+	bt	rdx, rax
+	jnc	.L17
 .L8:
-	cmpb	$0, 34(%rcx)
-	jne	.L15
-.L14:
+.L16:
+	sub	WORD PTR 22[rcx], 1
+	jne	.L5
+	cmp	BYTE PTR 24[rcx], 0
+	jne	.L18
+.L13:
 .L5:
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L6:
-	cmpw	$8, %ax
-	ja	.L7
-	leaq	.L9(%rip), %rdx
-	movslq	(%rdx,%rax,4), %rax
-	addq	%rdx, %rax
-	jmp	*%rax
-	.section .rdata,"dr"
-	.align 4
-.L9:
-	.long	.L13-.L9
-	.long	.L7-.L9
-	.long	.L12-.L9
-	.long	.L7-.L9
-	.long	.L11-.L9
-	.long	.L7-.L9
-	.long	.L10-.L9
-	.long	.L7-.L9
-	.long	.L8-.L9
-	.text
-	.p2align 4,,10
-	.p2align 3
-.L13:
-	movq	%rcx, 24(%rcx)
+	cmp	ax, 2
+	je	.L9
+	cmp	ax, 4
+	jne	.L19
+	mov	eax, DWORD PTR 28[rcx]
+	lea	edx, 1[rax]
 .L12:
-	movb	$1, 35(%rcx)
-.L11:
-	movl	$42, 40(%rcx)
-.L10:
-	cmpb	$0, 34(%rcx)
-	movl	$42, 44(%rcx)
-	movq	$0, (%rcx)
-	je	.L5
+.L14:
 .L15:
-	jmp	free
-.L7:
-	ud2
-	.seh_endproc
-	.p2align 4
-	.def	_Z10ready_taskPZ10ready_taskvE21_Z10ready_taskv.Frame.destroy;	.scl	3;	.type	32;	.endef
-	.seh_proc	_Z10ready_taskPZ10ready_taskvE21_Z10ready_taskv.Frame.destroy
-_Z10ready_taskPZ10ready_taskvE21_Z10ready_taskv.Frame.destroy:
-.LFB12914:
-	.seh_endprologue
-	orw	$1, 32(%rcx)
-	jmp	_Z10ready_taskPZ10ready_taskvE21_Z10ready_taskv.Frame.actor
-	.seh_endproc
-	.p2align 4
-	.def	_Z16infinite_counterPZ16infinite_countervE27_Z16infinite_counterv.Frame.actor;	.scl	3;	.type	32;	.endef
-	.seh_proc	_Z16infinite_counterPZ16infinite_countervE27_Z16infinite_counterv.Frame.actor
-_Z16infinite_counterPZ16infinite_countervE27_Z16infinite_counterv.Frame.actor:
-.LFB12892:
-	.seh_endprologue
-	movzwl	32(%rcx), %eax
-	testb	$1, %al
-	je	.L18
-	cmpw	$5, %ax
-	ja	.L19
-	movl	$42, %edx
-	btq	%rax, %rdx
-	jnc	.L19
-	cmpb	$0, 34(%rcx)
-	jne	.L27
-.L25:
+	mov	DWORD PTR 16[rcx], eax
+	mov	eax, 4
+	mov	DWORD PTR 28[rcx], edx
+	mov	WORD PTR 20[rcx], ax
 	ret
 	.p2align 4,,10
 	.p2align 3
+.L19:
+	test	ax, ax
+	jne	.L20
+	add	WORD PTR 22[rcx], 1
+	mov	edx, 2
+	mov	BYTE PTR 25[rcx], 0
+	mov	WORD PTR 20[rcx], dx
+	ret
+	.p2align 4,,10
+	.p2align 3
+.L9:
+	mov	BYTE PTR 25[rcx], 1
+	mov	edx, 1
+	xor	eax, eax
+	jmp	.L15
+	.p2align 4,,10
+	.p2align 3
 .L18:
-	cmpw	$2, %ax
-	je	.L21
-	cmpw	$4, %ax
-	jne	.L28
-	movl	40(%rcx), %eax
-	leal	1(%rax), %edx
-.L24:
+	jmp	free
+.L20:
+	jmp	.L7
+.L17:
+	jmp	.L7
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	_Z16infinite_counterP27_Z16infinite_counterv.Frame.actor.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z16infinite_counterP27_Z16infinite_counterv.Frame.actor.cold
+	.seh_endprologue
+_Z16infinite_counterP27_Z16infinite_counterv.Frame.actor.cold:
+.L7:
+	ud2
+	.text
+	.section	.text.unlikely,"x"
+	.seh_endproc
+.LCOLDE0:
+	.text
+.LHOTE0:
+	.p2align 4
+	.def	_Z16infinite_counterP27_Z16infinite_counterv.Frame.destroy;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z16infinite_counterP27_Z16infinite_counterv.Frame.destroy
+_Z16infinite_counterP27_Z16infinite_counterv.Frame.destroy:
+.LFB14257:
+	.seh_endprologue
+	or	WORD PTR 20[rcx], 1
+	jmp	_Z16infinite_counterP27_Z16infinite_counterv.Frame.actor
+	.seh_endproc
+	.section	.text.unlikely,"x"
+.LCOLDB1:
+	.text
+.LHOTB1:
+	.p2align 4
+	.def	_Z13small_counterP24_Z13small_counteri.Frame.actor;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z13small_counterP24_Z13small_counteri.Frame.actor
+_Z13small_counterP24_Z13small_counteri.Frame.actor:
+.LFB14259:
+	.seh_endprologue
+	movzx	eax, WORD PTR 24[rcx]
+	test	al, 1
+	je	.L23
+	cmp	ax, 7
+	ja	.L39
+.L25:
+.L33:
+.L34:
+.L35:
+	sub	WORD PTR 26[rcx], 1
+	jne	.L22
+	cmp	BYTE PTR 28[rcx], 0
+	jne	.L40
+.L30:
+.L22:
+	ret
+	.p2align 4,,10
+	.p2align 3
+.L23:
+	cmp	ax, 4
+	je	.L26
+	ja	.L27
+	test	ax, ax
+	je	.L28
+.L29:
+	xor	eax, eax
+	mov	BYTE PTR 29[rcx], 1
+	mov	DWORD PTR 32[rcx], eax
+	cmp	DWORD PTR 20[rcx], eax
+	jle	.L41
+.L32:
+	mov	edx, 4
+	mov	DWORD PTR 16[rcx], eax
+	mov	WORD PTR 24[rcx], dx
+	ret
+	.p2align 4,,10
+	.p2align 3
+.L40:
+	jmp	free
+	.p2align 4,,10
+	.p2align 3
 .L26:
-	movl	%eax, 16(%rcx)
-	movl	$4, %eax
-	movl	%edx, 40(%rcx)
-	movw	%ax, 32(%rcx)
+	mov	eax, DWORD PTR 32[rcx]
+	add	eax, 1
+	mov	DWORD PTR 32[rcx], eax
+	cmp	DWORD PTR 20[rcx], eax
+	jg	.L32
+.L41:
+	mov	eax, 6
+	mov	QWORD PTR [rcx], 0
+	mov	WORD PTR 24[rcx], ax
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L28:
-	testw	%ax, %ax
-	jne	.L19
-	movl	$2, %edx
-	movq	%rcx, 24(%rcx)
-	movb	$0, 35(%rcx)
-	movw	%dx, 32(%rcx)
+	add	WORD PTR 26[rcx], 1
+	mov	r8d, 2
+	mov	BYTE PTR 29[rcx], 0
+	mov	WORD PTR 24[rcx], r8w
 	ret
 	.p2align 4,,10
 	.p2align 3
 .L27:
-	jmp	free
-	.p2align 4,,10
-	.p2align 3
-.L21:
-	movb	$1, 35(%rcx)
-	movl	$1, %edx
-	xorl	%eax, %eax
-	jmp	.L26
-.L19:
+	cmp	ax, 6
+	je	.L35
+	jmp	.L24
+.L39:
+	jmp	.L24
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	_Z13small_counterP24_Z13small_counteri.Frame.actor.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z13small_counterP24_Z13small_counteri.Frame.actor.cold
+	.seh_endprologue
+_Z13small_counterP24_Z13small_counteri.Frame.actor.cold:
+.L24:
 	ud2
+	.text
+	.section	.text.unlikely,"x"
 	.seh_endproc
+.LCOLDE1:
+	.text
+.LHOTE1:
 	.p2align 4
-	.def	_Z16infinite_counterPZ16infinite_countervE27_Z16infinite_counterv.Frame.destroy;	.scl	3;	.type	32;	.endef
-	.seh_proc	_Z16infinite_counterPZ16infinite_countervE27_Z16infinite_counterv.Frame.destroy
-_Z16infinite_counterPZ16infinite_countervE27_Z16infinite_counterv.Frame.destroy:
-.LFB12893:
+	.def	_Z13small_counterP24_Z13small_counteri.Frame.destroy;	.scl	3;	.type	32;	.endef
+	.seh_proc	_Z13small_counterP24_Z13small_counteri.Frame.destroy
+_Z13small_counterP24_Z13small_counteri.Frame.destroy:
+.LFB14260:
 	.seh_endprologue
-	orw	$1, 32(%rcx)
-	jmp	_Z16infinite_counterPZ16infinite_countervE27_Z16infinite_counterv.Frame.actor
-	.seh_endproc
-	.p2align 4
-	.def	_Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.actor;	.scl	3;	.type	32;	.endef
-	.seh_proc	_Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.actor
-_Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.actor:
-.LFB12895:
-	.seh_endprologue
-	movzwl	36(%rcx), %eax
-	testb	$1, %al
-	je	.L31
-	cmpw	$7, %ax
-	ja	.L32
-	movl	$170, %edx
-	btq	%rax, %rdx
-	jnc	.L32
-.L33:
-	cmpb	$0, 38(%rcx)
-	jne	.L45
-.L38:
-	ret
-	.p2align 4,,10
-	.p2align 3
-.L31:
-	cmpw	$4, %ax
-	je	.L34
-	ja	.L35
-	testw	%ax, %ax
-	je	.L36
-	xorl	%eax, %eax
-	cmpl	%eax, 32(%rcx)
-	movb	$1, 39(%rcx)
-	movl	%eax, 44(%rcx)
-	jg	.L40
-.L46:
-	movl	$6, %eax
-	movq	$0, (%rcx)
-	movw	%ax, 36(%rcx)
-	ret
-	.p2align 4,,10
-	.p2align 3
-.L45:
-	jmp	free
-	.p2align 4,,10
-	.p2align 3
-.L36:
-	movl	$2, %r8d
-	movq	%rcx, 24(%rcx)
-	movb	$0, 39(%rcx)
-	movw	%r8w, 36(%rcx)
-	ret
-	.p2align 4,,10
-	.p2align 3
-.L34:
-	movl	44(%rcx), %eax
-	addl	$1, %eax
-	cmpl	%eax, 32(%rcx)
-	movl	%eax, 44(%rcx)
-	jle	.L46
-.L40:
-	movl	$4, %edx
-	movl	%eax, 16(%rcx)
-	movw	%dx, 36(%rcx)
-	ret
-	.p2align 4,,10
-	.p2align 3
-.L35:
-	cmpw	$6, %ax
-	je	.L33
-.L32:
-	ud2
-	.seh_endproc
-	.p2align 4
-	.def	_Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.destroy;	.scl	3;	.type	32;	.endef
-	.seh_proc	_Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.destroy
-_Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.destroy:
-.LFB12896:
-	.seh_endprologue
-	orw	$1, 36(%rcx)
-	jmp	_Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.actor
+	or	WORD PTR 24[rcx], 1
+	jmp	_Z13small_counterP24_Z13small_counteri.Frame.actor
 	.seh_endproc
 	.align 2
 	.p2align 4
 	.def	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEED2Ev;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEED2Ev
 _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEED2Ev:
-.LFB14487:
+.LFB15937:
 	.seh_endprologue
-	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEEE(%rip), %rax
-	movq	%rax, (%rcx)
+	lea	rax, _ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEEE[rip+16]
+	mov	QWORD PTR [rcx], rax
 	jmp	_ZNSt6thread6_StateD2Ev
 	.seh_endproc
 	.def	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEED1Ev;	.scl	3;	.type	32;	.endef
@@ -276,62 +255,38 @@ _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_E
 	.def	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEED0Ev;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEED0Ev
 _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEED0Ev:
-.LFB14489:
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$32, %rsp
-	.seh_stackalloc	32
-	.seh_endprologue
-	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEEE(%rip), %rax
-	movq	%rcx, %rbx
-	movq	%rax, (%rcx)
-	call	_ZNSt6thread6_StateD2Ev
-	movq	%rbx, %rcx
-	addq	$32, %rsp
-	popq	%rbx
-	jmp	free
-	.seh_endproc
-	.p2align 4
-	.def	_ZL6printfPKcz;	.scl	3;	.type	32;	.endef
-	.seh_proc	_ZL6printfPKcz
-_ZL6printfPKcz:
-.LFB443:
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$56, %rsp
+.LFB15939:
+	sub	rsp, 56
 	.seh_stackalloc	56
 	.seh_endprologue
-	leaq	88(%rsp), %rsi
-	movq	%rcx, %rbx
-	movq	%rdx, 88(%rsp)
-	movl	$1, %ecx
-	movq	%r8, 96(%rsp)
-	movq	%r9, 104(%rsp)
-	movq	%rsi, 40(%rsp)
-	call	*__imp___acrt_iob_func(%rip)
-	movq	%rsi, %r8
-	movq	%rbx, %rdx
-	movq	%rax, %rcx
-	call	__mingw_vfprintf
-	addq	$56, %rsp
-	popq	%rbx
-	popq	%rsi
-	ret
+	lea	rax, _ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEEE[rip+16]
+	mov	QWORD PTR [rcx], rax
+	mov	QWORD PTR 40[rsp], rcx
+	call	_ZNSt6thread6_StateD2Ev
+	mov	rcx, QWORD PTR 40[rsp]
+	add	rsp, 56
+	jmp	free
 	.seh_endproc
 	.p2align 4
 	.globl	_Z10ready_taskv
 	.def	_Z10ready_taskv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z10ready_taskv
 _Z10ready_taskv:
-.LFB12910:
+.LFB14274:
 	.seh_endprologue
-	cmpq	$55, _ZL11g_max_frame(%rip)
-	ja	.L51
-	movq	$56, _ZL11g_max_frame(%rip)
-.L52:
+	cmp	QWORD PTR _ZL11g_max_frame[rip], 39
+	ja	.L45
+	mov	QWORD PTR _ZL11g_max_frame[rip], 40
+.L46:
+.L47:
+.L48:
+.L49:
+.L50:
 .L51:
+.L52:
+.L53:
+.L54:
+.L45:
 	ret
 	.seh_endproc
 	.p2align 4
@@ -339,12 +294,12 @@ _Z10ready_taskv:
 	.def	_Znwy;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Znwy
 _Znwy:
-.LFB12870:
+.LFB14231:
 	.seh_endprologue
-	cmpq	%rcx, _ZL11g_max_frame(%rip)
-	jnb	.L54
-	movq	%rcx, _ZL11g_max_frame(%rip)
-.L54:
+	cmp	QWORD PTR _ZL11g_max_frame[rip], rcx
+	jnb	.L56
+	mov	QWORD PTR _ZL11g_max_frame[rip], rcx
+.L56:
 	jmp	malloc
 	.seh_endproc
 	.p2align 4
@@ -352,7 +307,7 @@ _Znwy:
 	.def	_ZdlPv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZdlPv
 _ZdlPv:
-.LFB12871:
+.LFB14232:
 	.seh_endprologue
 	jmp	free
 	.seh_endproc
@@ -361,7 +316,7 @@ _ZdlPv:
 	.def	_ZdlPvy;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZdlPvy
 _ZdlPvy:
-.LFB12872:
+.LFB14233:
 	.seh_endprologue
 	jmp	free
 	.seh_endproc
@@ -370,33 +325,37 @@ _ZdlPvy:
 	.def	_Z16infinite_counterv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z16infinite_counterv
 _Z16infinite_counterv:
-.LFB12891:
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$32, %rsp
+.LFB14255:
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 32
 	.seh_stackalloc	32
 	.seh_endprologue
-	cmpq	$47, _ZL11g_max_frame(%rip)
-	movq	%rcx, %rbx
-	ja	.L60
-	movq	$48, _ZL11g_max_frame(%rip)
-.L58:
-.L59:
+	cmp	QWORD PTR _ZL11g_max_frame[rip], 39
+	mov	rbx, rcx
+	ja	.L66
+	mov	QWORD PTR _ZL11g_max_frame[rip], 40
 .L60:
-	movl	$48, %ecx
+.L61:
+.L62:
+.L63:
+.L64:
+.L65:
+.L66:
+	mov	ecx, 40
 	call	malloc
-	leaq	_Z16infinite_counterPZ16infinite_countervE27_Z16infinite_counterv.Frame.destroy(%rip), %rdx
-	leaq	_Z16infinite_counterPZ16infinite_countervE27_Z16infinite_counterv.Frame.actor(%rip), %rcx
-	movq	%rdx, %xmm1
-	movq	%rax, (%rbx)
-	movq	%rcx, %xmm0
-	movq	%rax, 24(%rax)
-	movl	$65538, 32(%rax)
-	punpcklqdq	%xmm1, %xmm0
-	movups	%xmm0, (%rax)
-	movq	%rbx, %rax
-	addq	$32, %rsp
-	popq	%rbx
+	lea	rdx, _Z16infinite_counterP27_Z16infinite_counterv.Frame.destroy[rip]
+	movq	xmm0, QWORD PTR .LC4[rip]
+	movq	xmm1, rdx
+	mov	edx, 1
+	mov	QWORD PTR [rbx], rax
+	punpcklqdq	xmm0, xmm1
+	mov	WORD PTR 24[rax], dx
+	mov	DWORD PTR 20[rax], 65538
+	movups	XMMWORD PTR [rax], xmm0
+	mov	rax, rbx
+	add	rsp, 32
+	pop	rbx
 	ret
 	.seh_endproc
 	.p2align 4
@@ -404,36 +363,42 @@ _Z16infinite_counterv:
 	.def	_Z13small_counteri;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z13small_counteri
 _Z13small_counteri:
-.LFB12894:
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$40, %rsp
+.LFB14258:
+	push	rsi
+	.seh_pushreg	rsi
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 40
 	.seh_stackalloc	40
 	.seh_endprologue
-	cmpq	$55, _ZL11g_max_frame(%rip)
-	movq	%rcx, %rbx
-	movl	%edx, %esi
-	ja	.L62
-	movq	$56, _ZL11g_max_frame(%rip)
-.L62:
-	movl	$56, %ecx
+	cmp	QWORD PTR _ZL11g_max_frame[rip], 39
+	mov	rbx, rcx
+	mov	esi, edx
+	ja	.L74
+	mov	QWORD PTR _ZL11g_max_frame[rip], 40
+.L68:
+.L69:
+.L70:
+.L71:
+.L72:
+.L73:
+.L74:
+	mov	ecx, 40
 	call	malloc
-	leaq	_Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.destroy(%rip), %rdx
-	leaq	_Z13small_counterPZ13small_counteriE24_Z13small_counteri.Frame.actor(%rip), %rcx
-	movq	%rdx, %xmm1
-	movl	%esi, 32(%rax)
-	movq	%rcx, %xmm0
-	movq	%rax, (%rbx)
-	movq	%rax, 24(%rax)
-	punpcklqdq	%xmm1, %xmm0
-	movl	$65538, 36(%rax)
-	movups	%xmm0, (%rax)
-	movq	%rbx, %rax
-	addq	$40, %rsp
-	popq	%rbx
-	popq	%rsi
+	lea	rdx, _Z13small_counterP24_Z13small_counteri.Frame.destroy[rip]
+	movq	xmm0, QWORD PTR .LC5[rip]
+	movq	xmm1, rdx
+	mov	edx, 1
+	mov	DWORD PTR 20[rax], esi
+	punpcklqdq	xmm0, xmm1
+	mov	QWORD PTR [rbx], rax
+	mov	WORD PTR 28[rax], dx
+	mov	DWORD PTR 24[rax], 65538
+	movups	XMMWORD PTR [rax], xmm0
+	mov	rax, rbx
+	add	rsp, 40
+	pop	rbx
+	pop	rsi
 	ret
 	.seh_endproc
 	.section	.text$_ZNSt11unique_lockISt5mutexE6unlockEv,"x"
@@ -444,211 +409,246 @@ _Z13small_counteri:
 	.def	_ZNSt11unique_lockISt5mutexE6unlockEv;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt11unique_lockISt5mutexE6unlockEv
 _ZNSt11unique_lockISt5mutexE6unlockEv:
-.LFB13540:
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$32, %rsp
-	.seh_stackalloc	32
+.LFB14882:
+	sub	rsp, 40
+	.seh_stackalloc	40
 	.seh_endprologue
-	cmpb	$0, 8(%rcx)
-	movq	%rcx, %rbx
-	je	.L69
-	movq	(%rcx), %rcx
-	testq	%rcx, %rcx
-	je	.L63
+	mov	rdx, rcx
+	cmp	BYTE PTR 8[rcx], 0
+	je	.L81
+	mov	rcx, QWORD PTR [rcx]
+	test	rcx, rcx
+	je	.L75
+	mov	QWORD PTR 48[rsp], rdx
 	call	pthread_mutex_unlock
-	movb	$0, 8(%rbx)
-.L63:
-	addq	$32, %rsp
-	popq	%rbx
+	mov	rdx, QWORD PTR 48[rsp]
+	mov	BYTE PTR 8[rdx], 0
+.L75:
+	add	rsp, 40
 	ret
-.L69:
-	movl	$1, %ecx
+.L81:
+	mov	ecx, 1
 	call	_ZSt20__throw_system_errori
 	nop
 	.seh_endproc
+	.section	.text.unlikely,"x"
+	.align 2
+.LCOLDB6:
 	.text
+.LHOTB6:
 	.align 2
 	.p2align 4
 	.def	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEE6_M_runEv;	.scl	3;	.type	32;	.endef
 	.seh_proc	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEE6_M_runEv
 _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEE6_M_runEv:
-.LFB14663:
-	pushq	%r13
-	.seh_pushreg	%r13
-	pushq	%r12
-	.seh_pushreg	%r12
-	pushq	%rbp
-	.seh_pushreg	%rbp
-	pushq	%rdi
-	.seh_pushreg	%rdi
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$56, %rsp
+.LFB16132:
+	push	r13
+	.seh_pushreg	r13
+	push	r12
+	.seh_pushreg	r12
+	push	rbp
+	.seh_pushreg	rbp
+	push	rdi
+	.seh_pushreg	rdi
+	push	rsi
+	.seh_pushreg	rsi
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 56
 	.seh_stackalloc	56
 	.seh_endprologue
-	movq	%rcx, %rbx
-	movq	8(%rcx), %rcx
-	movb	$0, 40(%rsp)
-	testq	%rcx, %rcx
-	movq	%rcx, 32(%rsp)
-	je	.L79
-	leaq	32(%rsp), %rbp
-	xorl	%r12d, %r12d
-	jmp	.L71
+	mov	rbx, rcx
+	mov	rcx, QWORD PTR 8[rcx]
+	mov	BYTE PTR 40[rsp], 0
+	mov	QWORD PTR 32[rsp], rcx
+	test	rcx, rcx
+	je	.L91
+	xor	r12d, r12d
+	lea	rbp, 32[rsp]
+	jmp	.L83
 	.p2align 4,,10
 	.p2align 3
-.L73:
-	movq	32(%rbx), %rax
-	movzbl	(%rax), %eax
-	testb	%al, %al
-	jne	.L75
-	movq	24(%rbx), %rax
-	addq	$7, %r12
-	cmpb	$0, 40(%rsp)
-	movl	$0, (%rax)
-	je	.L98
-	movq	32(%rsp), %rcx
-	testq	%rcx, %rcx
-	je	.L77
+.L85:
+	mov	rax, QWORD PTR 32[rbx]
+	movzx	eax, BYTE PTR [rax]
+	test	al, al
+	jne	.L87
+	mov	rax, QWORD PTR 24[rbx]
+	cmp	BYTE PTR 40[rsp], 0
+	mov	DWORD PTR [rax], 0
+	je	.L115
+	mov	rcx, QWORD PTR 32[rsp]
+	test	rcx, rcx
+	je	.L89
 .LEHB0:
 	call	pthread_mutex_unlock
 .LEHE0:
-	movb	$0, 40(%rsp)
-.L77:
-	movq	16(%rbx), %rcx
+	mov	BYTE PTR 40[rsp], 0
+.L89:
+	mov	rcx, QWORD PTR 16[rbx]
+	add	r12, 7
 	call	_ZNSt18condition_variable10notify_oneEv
-	cmpb	$0, 40(%rsp)
-	jne	.L99
-.L78:
-	movq	8(%rbx), %rcx
-	movb	$0, 40(%rsp)
-	testq	%rcx, %rcx
-	movq	%rcx, 32(%rsp)
-	je	.L79
-.L71:
+	cmp	BYTE PTR 40[rsp], 0
+	jne	.L117
+.L90:
+	mov	rcx, QWORD PTR 8[rbx]
+	mov	BYTE PTR 40[rsp], 0
+	mov	QWORD PTR 32[rsp], rcx
+	test	rcx, rcx
+	je	.L118
+.L83:
 .LEHB1:
 	call	pthread_mutex_lock
 .LEHE1:
-	testl	%eax, %eax
-	jne	.L100
-	movq	16(%rbx), %rdi
-	movb	$1, 40(%rsp)
-	movq	24(%rbx), %rsi
-	movq	32(%rbx), %r13
-	.p2align 4,,10
+	test	eax, eax
+	jne	.L114
+	mov	rdi, QWORD PTR 16[rbx]
+	mov	rsi, QWORD PTR 24[rbx]
+	mov	BYTE PTR 40[rsp], 1
+	mov	r13, QWORD PTR 32[rbx]
+	.p2align 4
 	.p2align 3
-.L74:
-	cmpl	$1, (%rsi)
-	je	.L73
-	movzbl	0(%r13), %eax
-	testb	%al, %al
-	jne	.L73
-	movq	%rbp, %rdx
-	movq	%rdi, %rcx
+.L86:
+	cmp	DWORD PTR [rsi], 1
+	je	.L85
+	movzx	eax, BYTE PTR 0[r13]
+	test	al, al
+	jne	.L85
+	mov	rdx, rbp
+	mov	rcx, rdi
 .LEHB2:
 	call	_ZNSt18condition_variable4waitERSt11unique_lockISt5mutexE
 .LEHE2:
-	jmp	.L74
+	jmp	.L86
 	.p2align 4,,10
 	.p2align 3
-.L99:
-	movq	32(%rsp), %rcx
-	testq	%rcx, %rcx
-	je	.L78
+.L117:
+	mov	rcx, QWORD PTR 32[rsp]
+	test	rcx, rcx
+	je	.L90
 	call	pthread_mutex_unlock
-	jmp	.L78
+	jmp	.L90
 	.p2align 4,,10
 	.p2align 3
-.L75:
-	cmpb	$0, 40(%rsp)
-	jne	.L101
-.L80:
-	movq	40(%rbx), %rax
-	lock addq	%r12, (%rax)
-	addq	$56, %rsp
-	popq	%rbx
-	popq	%rsi
-	popq	%rdi
-	popq	%rbp
-	popq	%r12
-	popq	%r13
+.L87:
+	cmp	BYTE PTR 40[rsp], 0
+	jne	.L119
+.L92:
+	mov	rax, QWORD PTR 40[rbx]
+	lock add	QWORD PTR [rax], r12
+	add	rsp, 56
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
+	pop	r12
+	pop	r13
 	ret
-.L101:
-	movq	32(%rsp), %rcx
-	testq	%rcx, %rcx
-	je	.L80
+.L119:
+	mov	rcx, QWORD PTR 32[rsp]
+	test	rcx, rcx
+	je	.L92
 	call	pthread_mutex_unlock
-	jmp	.L80
-.L79:
-	movl	$1, %ecx
+	jmp	.L92
+.L118:
+	jmp	.L91
+.L112:
+	jmp	.L113
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDA16132:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSE16132-.LLSDACSB16132
+.LLSDACSB16132:
+	.uleb128 .LEHB0-.LFB16132
+	.uleb128 .LEHE0-.LEHB0
+	.uleb128 .L112-.LFB16132
+	.uleb128 0
+	.uleb128 .LEHB1-.LFB16132
+	.uleb128 .LEHE1-.LEHB1
+	.uleb128 0
+	.uleb128 0
+	.uleb128 .LEHB2-.LFB16132
+	.uleb128 .LEHE2-.LEHB2
+	.uleb128 .L112-.LFB16132
+	.uleb128 0
+.LLSDACSE16132:
+	.text
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEE6_M_runEv.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEE6_M_runEv.cold
+	.seh_stackalloc	104
+	.seh_savereg	rbx, 56
+	.seh_savereg	rsi, 64
+	.seh_savereg	rdi, 72
+	.seh_savereg	rbp, 80
+	.seh_savereg	r12, 88
+	.seh_savereg	r13, 96
+	.seh_endprologue
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEE6_M_runEv.cold:
+.L91:
+	mov	ecx, 1
 .LEHB3:
 	call	_ZSt20__throw_system_errori
 .LEHE3:
-.L98:
-	movl	$1, %ecx
+.L115:
+	mov	ecx, 1
 .LEHB4:
 	call	_ZSt20__throw_system_errori
 .LEHE4:
-.L100:
-	movl	%eax, %ecx
+.L114:
+	mov	ecx, eax
 .LEHB5:
 	call	_ZSt20__throw_system_errori
 .LEHE5:
-.L84:
-	cmpb	$0, 40(%rsp)
-	movq	%rax, %rbx
-	je	.L82
-	leaq	32(%rsp), %rcx
+.L96:
+.L113:
+	mov	rbx, rax
+	cmp	BYTE PTR 40[rsp], 0
+	je	.L94
+	lea	rcx, 32[rsp]
 	call	_ZNSt11unique_lockISt5mutexE6unlockEv
-.L82:
-	movq	%rbx, %rcx
+.L94:
+	mov	rcx, rbx
 .LEHB6:
 	call	_Unwind_Resume
 	nop
 .LEHE6:
-	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA14663:
+.LLSDAC16132:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE14663-.LLSDACSB14663
-.LLSDACSB14663:
-	.uleb128 .LEHB0-.LFB14663
-	.uleb128 .LEHE0-.LEHB0
-	.uleb128 .L84-.LFB14663
-	.uleb128 0
-	.uleb128 .LEHB1-.LFB14663
-	.uleb128 .LEHE1-.LEHB1
-	.uleb128 0
-	.uleb128 0
-	.uleb128 .LEHB2-.LFB14663
-	.uleb128 .LEHE2-.LEHB2
-	.uleb128 .L84-.LFB14663
-	.uleb128 0
-	.uleb128 .LEHB3-.LFB14663
+	.uleb128 .LLSDACSEC16132-.LLSDACSBC16132
+.LLSDACSBC16132:
+	.uleb128 .LEHB3-.LCOLDB6
 	.uleb128 .LEHE3-.LEHB3
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB4-.LFB14663
+	.uleb128 .LEHB4-.LCOLDB6
 	.uleb128 .LEHE4-.LEHB4
-	.uleb128 .L84-.LFB14663
+	.uleb128 .L96-.LCOLDB6
 	.uleb128 0
-	.uleb128 .LEHB5-.LFB14663
+	.uleb128 .LEHB5-.LCOLDB6
 	.uleb128 .LEHE5-.LEHB5
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB6-.LFB14663
+	.uleb128 .LEHB6-.LCOLDB6
 	.uleb128 .LEHE6-.LEHB6
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE14663:
+.LLSDACSEC16132:
+	.section	.text.unlikely,"x"
 	.text
+	.section	.text.unlikely,"x"
 	.seh_endproc
+.LCOLDE6:
+	.text
+.LHOTE6:
 	.section	.text$_ZNSt10unique_ptrINSt6thread6_StateESt14default_deleteIS1_EED1Ev,"x"
 	.linkonce discard
 	.align 2
@@ -657,504 +657,569 @@ _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_E
 	.def	_ZNSt10unique_ptrINSt6thread6_StateESt14default_deleteIS1_EED1Ev;	.scl	2;	.type	32;	.endef
 	.seh_proc	_ZNSt10unique_ptrINSt6thread6_StateESt14default_deleteIS1_EED1Ev
 _ZNSt10unique_ptrINSt6thread6_StateESt14default_deleteIS1_EED1Ev:
-.LFB13846:
+.LFB15245:
 	.seh_endprologue
-	movq	(%rcx), %rcx
-	testq	%rcx, %rcx
-	je	.L102
-	movq	(%rcx), %rax
-	rex.W jmp	*8(%rax)
+	mov	rcx, QWORD PTR [rcx]
+	test	rcx, rcx
+	je	.L120
+	mov	rax, QWORD PTR [rcx]
+	rex.W jmp	[QWORD PTR 8[rax]]
 	.p2align 4,,10
 	.p2align 3
-.L102:
+.L120:
 	ret
 	.seh_endproc
-	.def	__main;	.scl	2;	.type	32;	.endef
 	.section .rdata,"dr"
-.LC1:
+.LC8:
 	.ascii "TSC freq: %.3f GHz\12\0"
-.LC3:
+.LC9:
 	.ascii "impossible\12\0"
 	.align 8
-.LC7:
+.LC14:
 	.ascii "== \347\254\254"
 	.ascii "120\347\253\240 \345\215\217\347\250\213\347\234\237\345\256\236\345\237\272\345\207\206 (GCC 13.1 / MinGW-w64 / x86-64) ==\12\0"
 	.align 8
-.LC8:
+.LC15:
 	.ascii "frame_size(max coroutine frame) : %zu B\12\0"
 	.align 8
-.LC9:
+.LC16:
 	.ascii "resume+yield per step          : %.2f ns\12\0"
 	.align 8
-.LC10:
+.LC17:
 	.ascii "create+first-step+destroy      : %.2f ns\12\0"
 	.align 8
-.LC11:
+.LC18:
 	.ascii "thread switch (mutex+cv rt)     : %.2f ns (%.3f us, \345\220\253\345\220\214\346\255\245\345\274\200\351\224\200)\12\0"
+	.section	.text.unlikely,"x"
+.LCOLDB22:
 	.section	.text.startup,"x"
+.LHOTB22:
 	.p2align 4
 	.globl	main
 	.def	main;	.scl	2;	.type	32;	.endef
 	.seh_proc	main
 main:
-.LFB12925:
-	pushq	%r13
-	.seh_pushreg	%r13
-	pushq	%r12
-	.seh_pushreg	%r12
-	pushq	%rbp
-	.seh_pushreg	%rbp
-	pushq	%rdi
-	.seh_pushreg	%rdi
-	pushq	%rsi
-	.seh_pushreg	%rsi
-	pushq	%rbx
-	.seh_pushreg	%rbx
-	subq	$200, %rsp
+.LFB14289:
+	push	r15
+	.seh_pushreg	r15
+	push	r14
+	.seh_pushreg	r14
+	push	r13
+	.seh_pushreg	r13
+	push	r12
+	.seh_pushreg	r12
+	push	rbp
+	.seh_pushreg	rbp
+	push	rdi
+	.seh_pushreg	rdi
+	push	rsi
+	.seh_pushreg	rsi
+	push	rbx
+	.seh_pushreg	rbx
+	sub	rsp, 200
 	.seh_stackalloc	200
-	movaps	%xmm6, 96(%rsp)
-	.seh_savexmm	%xmm6, 96
-	movaps	%xmm7, 112(%rsp)
-	.seh_savexmm	%xmm7, 112
-	movaps	%xmm8, 128(%rsp)
-	.seh_savexmm	%xmm8, 128
-	movaps	%xmm9, 144(%rsp)
-	.seh_savexmm	%xmm9, 144
-	movaps	%xmm10, 160(%rsp)
-	.seh_savexmm	%xmm10, 160
-	movaps	%xmm11, 176(%rsp)
-	.seh_savexmm	%xmm11, 176
+	movaps	XMMWORD PTR 128[rsp], xmm6
+	.seh_savexmm	xmm6, 128
+	movaps	XMMWORD PTR 144[rsp], xmm7
+	.seh_savexmm	xmm7, 144
+	movaps	XMMWORD PTR 160[rsp], xmm8
+	.seh_savexmm	xmm8, 160
+	movaps	XMMWORD PTR 176[rsp], xmm9
+	.seh_savexmm	xmm9, 176
 	.seh_endprologue
 	call	__main
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
-	movq	%rax, %rdi
+	mov	rsi, rax
 	rdtsc
-	movq	__imp__errno(%rip), %rbx
-	movq	%rax, %rbp
-	salq	$32, %rdx
-	movq	$0, 80(%rsp)
-	movl	$120000000, 88(%rsp)
-	leaq	80(%rsp), %rsi
-	orq	%rdx, %rbp
-.L106:
-	movq	%rsi, %rdx
-	movq	%rsi, %rcx
+	mov	rbx, QWORD PTR __imp__errno[rip]
+	mov	QWORD PTR 112[rsp], 0
+	mov	rbp, rax
+	sal	rdx, 32
+	lea	rdi, 112[rsp]
+	mov	DWORD PTR 120[rsp], 120000000
+	or	rbp, rdx
+.L124:
+	mov	rdx, rdi
+	mov	rcx, rdi
 .LEHB7:
-	call	nanosleep
-	cmpl	$-1, %eax
-	je	.L152
-.L105:
+	call	nanosleep64
+	cmp	eax, -1
+	je	.L173
+.L123:
 	rdtsc
-	salq	$32, %rdx
-	movq	%rax, %rbx
-	orq	%rdx, %rbx
+	sal	rdx, 32
+	mov	rbx, rax
+	or	rbx, rdx
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
-	subq	%rbp, %rbx
-	js	.L107
-	pxor	%xmm1, %xmm1
-	cvtsi2sdq	%rbx, %xmm1
-.L108:
-	subq	%rdi, %rax
-	pxor	%xmm0, %xmm0
-	movsd	.LC0(%rip), %xmm2
-	cvtsi2sdq	%rax, %xmm0
-	leaq	.LC1(%rip), %rcx
-	divsd	%xmm2, %xmm0
-	divsd	%xmm0, %xmm1
-	divsd	%xmm2, %xmm1
-	movq	%xmm1, %rdx
-	movsd	%xmm1, _ZL9g_tsc_ghz(%rip)
-	call	_ZL6printfPKcz
+	sub	rbx, rbp
+	js	.L125
+	pxor	xmm1, xmm1
+	cvtsi2sd	xmm1, rbx
+.L126:
+	movsd	xmm2, QWORD PTR .LC7[rip]
+	sub	rax, rsi
+	pxor	xmm0, xmm0
+	lea	rcx, .LC8[rip]
+	cvtsi2sd	xmm0, rax
+	divsd	xmm0, xmm2
+	divsd	xmm1, xmm0
+	divsd	xmm1, xmm2
+	movq	rdx, xmm1
+	movsd	QWORD PTR _ZL9g_tsc_ghz[rip], xmm1
+	call	__mingw_printf
 .LEHE7:
-	movq	%rsi, %rcx
+	lea	rcx, 104[rsp]
 	call	_Z16infinite_counterv
+	mov	rbp, QWORD PTR 104[rsp]
 	rdtsc
-	movq	%rax, %rbp
-	salq	$32, %rdx
-	orq	%rdx, %rbp
+	mov	r12, rax
+	sal	rdx, 32
+	or	r12, rdx
 	rdtsc
-	movq	%rax, %r13
-	salq	$32, %rdx
-	orq	%rdx, %r13
+	mov	r13, rax
+	sal	rdx, 32
+	or	r13, rdx
 	rdtsc
-	movl	$2000000, %ebx
-	movabsq	$1999999000000, %rdi
-	movq	%rax, %r12
-	salq	$32, %rdx
-	orq	%rdx, %r12
-	.p2align 4,,10
+	mov	ebx, 2000000
+	movabs	rsi, 1999999000000
+	mov	r14, rax
+	sal	rdx, 32
+	or	r14, rdx
+	.p2align 4
 	.p2align 3
-.L109:
-	movq	%rsi, %rcx
+.L127:
+	lea	rcx, 104[rsp]
+	mov	QWORD PTR 104[rsp], rbp
 .LEHB8:
 	call	_Z10yield_stepR3GenIiE
 .LEHE8:
-	cltq
-	addq	%rax, %rdi
-	subl	$1, %ebx
-	jne	.L109
+	cdqe
+	add	rsi, rax
+	sub	ebx, 1
+	jne	.L127
 	rdtsc
-	salq	$32, %rdx
-	orq	%rdx, %rax
-	movq	%rbp, %rdx
-	subq	%r13, %rdx
-	subq	%r12, %rdx
-	addq	%rdx, %rax
-	js	.L110
-	pxor	%xmm0, %xmm0
-	cvtsi2sdq	%rax, %xmm0
-.L111:
-	testq	%rdi, %rdi
-	divsd	_ZL9g_tsc_ghz(%rip), %xmm0
-	divsd	.LC2(%rip), %xmm0
-	movapd	%xmm0, %xmm11
-	je	.L112
-.L115:
-	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEEE(%rip), %rax
-	leaq	48(%rsp), %r12
-	movq	%rax, %xmm8
-	leaq	44(%rsp), %rax
-	movq	%r12, %xmm4
-	punpcklqdq	%xmm4, %xmm8
-	leaq	56(%rsp), %rbp
-	movq	%rax, %xmm5
-	leaq	43(%rsp), %rax
-	movq	%rbp, %xmm9
-	movq	%rax, %xmm6
-	punpcklqdq	%xmm5, %xmm9
-	leaq	64(%rsp), %rax
-	movq	%rax, %xmm4
-	movq	80(%rsp), %rax
-	punpcklqdq	%xmm4, %xmm6
-	testq	%rax, %rax
-	je	.L114
-	movq	%rax, %rcx
-	call	*8(%rax)
-.L114:
+	movsd	xmm8, QWORD PTR _ZL9g_tsc_ghz[rip]
+	mov	r15, rax
+	sal	rdx, 32
+	or	r15, rdx
+	test	rsi, rsi
+	je	.L128
+.L131:
+	test	rbp, rbp
+	je	.L130
+	mov	rcx, rbp
+	call	[QWORD PTR 8[rbp]]
+.L130:
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
-	movl	$200000, %edi
-	movq	%rax, %r13
-	.p2align 4,,10
+	mov	esi, 200000
+	mov	QWORD PTR 40[rsp], rax
+	.p2align 4
 	.p2align 3
-.L116:
-	movq	%rsi, %rcx
-	movl	$4, %edx
+.L132:
+	mov	rcx, rdi
+	mov	edx, 4
 	call	_Z13small_counteri
-	movq	80(%rsp), %rbx
-	movq	%rbx, %rcx
+	mov	rbx, QWORD PTR 112[rsp]
+	mov	rcx, rbx
 .LEHB9:
-	call	*(%rbx)
+	call	[QWORD PTR [rbx]]
 .LEHE9:
-	movq	%rbx, %rcx
-	call	*8(%rbx)
-	subl	$1, %edi
-	jne	.L116
+	mov	rcx, rbx
+	call	[QWORD PTR 8[rbx]]
+	sub	esi, 1
+	jne	.L132
+	lea	rax, _ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE_EEEEEE[rip+16]
+	lea	rsi, 72[rsp]
+	movq	xmm7, rax
+	lea	rax, 68[rsp]
+	movq	xmm4, rsi
+	movq	xmm5, rax
+	lea	rax, 67[rsp]
+	lea	rbp, 80[rsp]
+	movq	xmm6, rax
+	lea	rax, 88[rsp]
+	punpcklqdq	xmm7, xmm4
+	movq	xmm9, rbp
+	movq	xmm4, rax
+	punpcklqdq	xmm9, xmm5
+	punpcklqdq	xmm6, xmm4
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
-	pxor	%xmm0, %xmm0
-	xorl	%edx, %edx
-	movq	%r12, %rcx
-	subq	%r13, %rax
-	movsd	.LC4(%rip), %xmm7
-	cvtsi2sdq	%rax, %xmm0
-	leaq	72(%rsp), %r13
-	divsd	%xmm7, %xmm0
-	mulsd	%xmm7, %xmm0
-	divsd	.LC5(%rip), %xmm0
-	movapd	%xmm0, %xmm10
+	xor	edx, edx
+	mov	rcx, rsi
+	mov	QWORD PTR 48[rsp], rax
 	call	pthread_mutex_init
-	movq	%rbp, %rcx
+	mov	rcx, rbp
 	call	_ZNSt18condition_variableC1Ev
-	movl	$48, %ecx
-	movb	$0, 43(%rsp)
-	movl	$0, 44(%rsp)
-	movq	$0, 64(%rsp)
-	movq	$0, 72(%rsp)
+	mov	ecx, 48
+	mov	BYTE PTR 67[rsp], 0
+	mov	DWORD PTR 68[rsp], 0
+	mov	QWORD PTR 88[rsp], 0
+	mov	QWORD PTR 96[rsp], 0
 	call	_Znwy
-	leaq	_ZNSt6thread24_M_thread_deps_never_runEv(%rip), %r8
-	movq	%rsi, %rdx
-	movq	%r13, %rcx
-	movups	%xmm8, (%rax)
-	movups	%xmm9, 16(%rax)
-	movups	%xmm6, 32(%rax)
-	movq	%rax, 80(%rsp)
+	lea	r8, _ZNSt6thread24_M_thread_deps_never_runEv[rip]
+	mov	rdx, rdi
+	mov	QWORD PTR 112[rsp], rax
+	movups	XMMWORD PTR [rax], xmm7
+	movups	XMMWORD PTR 16[rax], xmm9
+	movups	XMMWORD PTR 32[rax], xmm6
+	lea	rax, 96[rsp]
+	mov	rcx, rax
+	mov	QWORD PTR 32[rsp], rax
 .LEHB10:
 	call	_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE
 .LEHE10:
-	movq	%rsi, %rcx
-	movl	$50000, %ebx
+	mov	rcx, rdi
+	mov	ebx, 50000
 	call	_ZNSt10unique_ptrINSt6thread6_StateESt14default_deleteIS1_EED1Ev
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
-	movq	%rax, %rdi
-	.p2align 4,,10
+	mov	QWORD PTR 56[rsp], rax
+	.p2align 4
 	.p2align 3
-.L121:
-	movq	%r12, %rcx
-	movq	%r12, 80(%rsp)
-	movb	$0, 88(%rsp)
+.L137:
+	mov	rcx, rsi
+	mov	QWORD PTR 112[rsp], rsi
+	mov	BYTE PTR 120[rsp], 0
 .LEHB11:
 	call	pthread_mutex_lock
 .LEHE11:
-	testl	%eax, %eax
-	jne	.L153
-	movq	%rbp, %rcx
-	movb	$1, 88(%rsp)
-	movl	$1, 44(%rsp)
+	test	eax, eax
+	jne	.L169
+	mov	rcx, rbp
+	mov	BYTE PTR 120[rsp], 1
+	mov	DWORD PTR 68[rsp], 1
 	call	_ZNSt18condition_variable10notify_oneEv
-	jmp	.L125
+	jmp	.L141
 	.p2align 4,,10
 	.p2align 3
-.L126:
-	movq	%rsi, %rdx
-	movq	%rbp, %rcx
+.L142:
+	mov	rdx, rdi
+	mov	rcx, rbp
 .LEHB12:
 	call	_ZNSt18condition_variable4waitERSt11unique_lockISt5mutexE
 .LEHE12:
-.L125:
-	movl	44(%rsp), %eax
-	testl	%eax, %eax
-	jne	.L126
-	cmpb	$0, 88(%rsp)
-	jne	.L154
-.L127:
-	subl	$1, %ebx
-	jne	.L121
+.L141:
+	mov	eax, DWORD PTR 68[rsp]
+	test	eax, eax
+	jne	.L142
+	cmp	BYTE PTR 120[rsp], 0
+	jne	.L174
+.L143:
+	sub	ebx, 1
+	jne	.L137
+	add	r13, r14
+	mov	rax, r12
+	sub	rax, r13
+	add	rax, r15
+	js	.L144
+	pxor	xmm0, xmm0
+	cvtsi2sd	xmm0, rax
+.L145:
+	movsd	xmm7, QWORD PTR .LC11[rip]
+	mov	rax, QWORD PTR 48[rsp]
+	divsd	xmm0, xmm8
+	pxor	xmm8, xmm8
+	sub	rax, QWORD PTR 40[rsp]
+	cvtsi2sd	xmm8, rax
+	divsd	xmm8, xmm7
+	divsd	xmm0, QWORD PTR .LC10[rip]
+	movapd	xmm9, xmm0
+	mulsd	xmm8, xmm7
+	divsd	xmm8, QWORD PTR .LC12[rip]
 	call	_ZNSt6chrono3_V212steady_clock3nowEv
-	movq	%rax, %rbx
-	movl	$1, %eax
-	xchgb	43(%rsp), %al
-	movq	%r12, %rcx
+	mov	r12, rax
+	mov	eax, 1
+	xchg	al, BYTE PTR 67[rsp]
+	mov	rcx, rsi
 .LEHB13:
 	call	pthread_mutex_lock
 .LEHE13:
-	testl	%eax, %eax
-	movl	%eax, %ecx
-	jne	.L155
-	movq	%rbp, %rcx
+	test	eax, eax
+	jne	.L170
+	mov	rcx, rbp
 	call	_ZNSt18condition_variable10notify_oneEv
-	movq	%r12, %rcx
+	mov	rcx, rsi
 	call	pthread_mutex_unlock
-	movq	%r13, %rcx
+	mov	rcx, QWORD PTR 32[rsp]
 .LEHB14:
 	call	_ZNSt6thread4joinEv
 .LEHE14:
-	subq	%rdi, %rbx
-	pxor	%xmm6, %xmm6
-	cmpq	$0, 72(%rsp)
-	cvtsi2sdq	%rbx, %xmm6
-	divsd	%xmm7, %xmm6
-	mulsd	%xmm7, %xmm6
-	divsd	.LC6(%rip), %xmm6
-	jne	.L133
-	movq	%rbp, %rcx
+	sub	r12, QWORD PTR 56[rsp]
+	pxor	xmm6, xmm6
+	cvtsi2sd	xmm6, r12
+	divsd	xmm6, xmm7
+	mulsd	xmm6, xmm7
+	divsd	xmm6, QWORD PTR .LC13[rip]
+	cmp	QWORD PTR 96[rsp], 0
+	jne	.L151
+	mov	rcx, rbp
 	call	_ZNSt18condition_variableD1Ev
-	movq	%r12, %rcx
+	mov	rcx, rsi
 	call	pthread_mutex_destroy
-	movq	_ZL11g_max_frame(%rip), %rbx
-	leaq	_Z13resume_handleRNSt7__n486116coroutine_handleIvEE(%rip), %rax
-	movq	%rax, 64(%rsp)
-	leaq	_Z10yield_stepR3GenIiE(%rip), %rax
-	movq	%rax, 72(%rsp)
-	leaq	.LC7(%rip), %rcx
-	leaq	_Z10ready_taskv(%rip), %rax
-	movq	%rax, 80(%rsp)
-	movq	64(%rsp), %rax
-	movq	72(%rsp), %rax
-	movq	80(%rsp), %rax
+	lea	rax, _Z13resume_handleRNSt7__n486116coroutine_handleIvEE[rip]
+	mov	rsi, QWORD PTR _ZL11g_max_frame[rip]
+	lea	rcx, .LC14[rip]
+	mov	QWORD PTR 88[rsp], rax
+	lea	rax, _Z10yield_stepR3GenIiE[rip]
+	mov	QWORD PTR 96[rsp], rax
+	lea	rax, _Z10ready_taskv[rip]
+	mov	QWORD PTR 112[rsp], rax
+	mov	rax, QWORD PTR 88[rsp]
+	mov	rax, QWORD PTR 96[rsp]
+	mov	rax, QWORD PTR 112[rsp]
 .LEHB15:
-	call	_ZL6printfPKcz
-	leaq	.LC8(%rip), %rcx
-	movq	%rbx, %rdx
-	call	_ZL6printfPKcz
-	movapd	%xmm11, %xmm1
-	movq	%xmm11, %rdx
-	leaq	.LC9(%rip), %rcx
-	call	_ZL6printfPKcz
-	movapd	%xmm10, %xmm1
-	movq	%xmm10, %rdx
-	leaq	.LC10(%rip), %rcx
-	call	_ZL6printfPKcz
-	movapd	%xmm6, %xmm3
-	movapd	%xmm6, %xmm1
-	movq	%xmm6, %rdx
-	divsd	%xmm7, %xmm3
-	leaq	.LC11(%rip), %rcx
-	movq	%xmm3, %r8
-	movapd	%xmm3, %xmm2
-	call	_ZL6printfPKcz
+	call	__mingw_printf
+	mov	rdx, rsi
+	lea	rcx, .LC15[rip]
+	call	__mingw_printf
+	movapd	xmm1, xmm9
+	movq	rdx, xmm9
+	lea	rcx, .LC16[rip]
+	call	__mingw_printf
+	movapd	xmm1, xmm8
+	movq	rdx, xmm8
+	lea	rcx, .LC17[rip]
+	call	__mingw_printf
+	movapd	xmm3, xmm6
+	movapd	xmm1, xmm6
+	movq	rdx, xmm6
+	divsd	xmm3, xmm7
+	lea	rcx, .LC18[rip]
+	movq	r8, xmm3
+	movapd	xmm2, xmm3
+	call	__mingw_printf
 	nop
 .LEHE15:
-	movaps	96(%rsp), %xmm6
-	xorl	%eax, %eax
-	movaps	112(%rsp), %xmm7
-	movaps	128(%rsp), %xmm8
-	movaps	144(%rsp), %xmm9
-	movaps	160(%rsp), %xmm10
-	movaps	176(%rsp), %xmm11
-	addq	$200, %rsp
-	popq	%rbx
-	popq	%rsi
-	popq	%rdi
-	popq	%rbp
-	popq	%r12
-	popq	%r13
+	movaps	xmm6, XMMWORD PTR 128[rsp]
+	movaps	xmm7, XMMWORD PTR 144[rsp]
+	xor	eax, eax
+	movaps	xmm8, XMMWORD PTR 160[rsp]
+	movaps	xmm9, XMMWORD PTR 176[rsp]
+	add	rsp, 200
+	pop	rbx
+	pop	rsi
+	pop	rdi
+	pop	rbp
+	pop	r12
+	pop	r13
+	pop	r14
+	pop	r15
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L154:
-	movq	80(%rsp), %rcx
-	testq	%rcx, %rcx
-	je	.L127
+.L174:
+	mov	rcx, QWORD PTR 112[rsp]
+	test	rcx, rcx
+	je	.L143
 	call	pthread_mutex_unlock
-	jmp	.L127
-.L107:
-	movq	%rbx, %rdx
-	andl	$1, %ebx
-	pxor	%xmm1, %xmm1
-	shrq	%rdx
-	orq	%rbx, %rdx
-	cvtsi2sdq	%rdx, %xmm1
-	addsd	%xmm1, %xmm1
-	jmp	.L108
-.L152:
+	jmp	.L143
+.L125:
+	mov	rdx, rbx
+	and	ebx, 1
+	pxor	xmm1, xmm1
+	shr	rdx
+	or	rdx, rbx
+	cvtsi2sd	xmm1, rdx
+	addsd	xmm1, xmm1
+	jmp	.L126
+.L173:
 .LEHB16:
-	call	*%rbx
+	call	rbx
 .LEHE16:
-	cmpl	$4, (%rax)
-	jne	.L105
-	jmp	.L106
-.L110:
-	movq	%rax, %rdx
-	andl	$1, %eax
-	pxor	%xmm0, %xmm0
-	shrq	%rdx
-	orq	%rax, %rdx
-	cvtsi2sdq	%rdx, %xmm0
-	addsd	%xmm0, %xmm0
-	jmp	.L111
-.L112:
-	leaq	.LC3(%rip), %rcx
+	cmp	DWORD PTR [rax], 4
+	jne	.L123
+	jmp	.L124
+.L144:
+	mov	rdx, rax
+	and	eax, 1
+	pxor	xmm0, xmm0
+	shr	rdx
+	or	rdx, rax
+	cvtsi2sd	xmm0, rdx
+	addsd	xmm0, xmm0
+	jmp	.L145
+.L128:
+	lea	rcx, .LC9[rip]
 .LEHB17:
-	call	_ZL6printfPKcz
+	call	__mingw_printf
 .LEHE17:
-	jmp	.L115
-.L134:
-	movq	%rax, %rbx
-.L132:
-	cmpq	$0, 72(%rsp)
-	je	.L123
-.L133:
-	call	_ZSt9terminatev
-.L155:
-.LEHB18:
-	call	_ZSt20__throw_system_errori
+	jmp	.L131
 .L153:
-	movl	%eax, %ecx
-	call	_ZSt20__throw_system_errori
-.LEHE18:
-.L135:
-	cmpb	$0, 88(%rsp)
-	movq	%rax, %rbx
-	je	.L132
-	movq	%rsi, %rcx
-	call	_ZNSt11unique_lockISt5mutexE6unlockEv
-	jmp	.L132
-.L137:
-	movq	%rax, %rbx
-	movq	80(%rsp), %rax
-	testq	%rax, %rax
-	je	.L151
-	movq	%rax, %rcx
-	call	*8(%rax)
-.L151:
-	movq	%rbx, %rcx
-.LEHB19:
-	call	_Unwind_Resume
-.LEHE19:
-.L136:
-	movq	%rax, %rsi
-	movq	%rbx, %rcx
-	call	*8(%rbx)
-	movq	%rsi, %rcx
-.LEHB20:
-	call	_Unwind_Resume
-.LEHE20:
-.L138:
-	movq	%rsi, %rcx
-	movq	%rax, %rbx
-	call	_ZNSt10unique_ptrINSt6thread6_StateESt14default_deleteIS1_EED1Ev
-.L123:
-	movq	%rbp, %rcx
-	call	_ZNSt18condition_variableD1Ev
-	movq	%r12, %rcx
-	call	pthread_mutex_destroy
-	jmp	.L151
+	mov	rbx, rax
+	jmp	.L148
+.L155:
+	mov	rbx, rax
+	jmp	.L133
+.L167:
+	jmp	.L168
+.L156:
+	mov	rbx, rax
+	jmp	.L138
+.L154:
+	mov	rsi, rax
+	jmp	.L136
 	.seh_handler	__gxx_personality_seh0, @unwind, @except
 	.seh_handlerdata
-.LLSDA12925:
+.LLSDA14289:
 	.byte	0xff
 	.byte	0xff
 	.byte	0x1
-	.uleb128 .LLSDACSE12925-.LLSDACSB12925
-.LLSDACSB12925:
-	.uleb128 .LEHB7-.LFB12925
+	.uleb128 .LLSDACSE14289-.LLSDACSB14289
+.LLSDACSB14289:
+	.uleb128 .LEHB7-.LFB14289
 	.uleb128 .LEHE7-.LEHB7
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB8-.LFB12925
+	.uleb128 .LEHB8-.LFB14289
 	.uleb128 .LEHE8-.LEHB8
-	.uleb128 .L137-.LFB12925
+	.uleb128 .L155-.LFB14289
 	.uleb128 0
-	.uleb128 .LEHB9-.LFB12925
+	.uleb128 .LEHB9-.LFB14289
 	.uleb128 .LEHE9-.LEHB9
-	.uleb128 .L136-.LFB12925
+	.uleb128 .L154-.LFB14289
 	.uleb128 0
-	.uleb128 .LEHB10-.LFB12925
+	.uleb128 .LEHB10-.LFB14289
 	.uleb128 .LEHE10-.LEHB10
-	.uleb128 .L138-.LFB12925
+	.uleb128 .L156-.LFB14289
 	.uleb128 0
-	.uleb128 .LEHB11-.LFB12925
+	.uleb128 .LEHB11-.LFB14289
 	.uleb128 .LEHE11-.LEHB11
-	.uleb128 .L134-.LFB12925
+	.uleb128 .L167-.LFB14289
 	.uleb128 0
-	.uleb128 .LEHB12-.LFB12925
+	.uleb128 .LEHB12-.LFB14289
 	.uleb128 .LEHE12-.LEHB12
-	.uleb128 .L135-.LFB12925
+	.uleb128 .L153-.LFB14289
 	.uleb128 0
-	.uleb128 .LEHB13-.LFB12925
+	.uleb128 .LEHB13-.LFB14289
 	.uleb128 .LEHE13-.LEHB13
-	.uleb128 .L134-.LFB12925
+	.uleb128 .L167-.LFB14289
 	.uleb128 0
-	.uleb128 .LEHB14-.LFB12925
+	.uleb128 .LEHB14-.LFB14289
 	.uleb128 .LEHE14-.LEHB14
-	.uleb128 .L134-.LFB12925
+	.uleb128 .L167-.LFB14289
 	.uleb128 0
-	.uleb128 .LEHB15-.LFB12925
+	.uleb128 .LEHB15-.LFB14289
 	.uleb128 .LEHE15-.LEHB15
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB16-.LFB12925
+	.uleb128 .LEHB16-.LFB14289
 	.uleb128 .LEHE16-.LEHB16
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB17-.LFB12925
+	.uleb128 .LEHB17-.LFB14289
 	.uleb128 .LEHE17-.LEHB17
-	.uleb128 .L137-.LFB12925
+	.uleb128 .L155-.LFB14289
 	.uleb128 0
-	.uleb128 .LEHB18-.LFB12925
+.LLSDACSE14289:
+	.section	.text.startup,"x"
+	.seh_endproc
+	.section	.text.unlikely,"x"
+	.def	main.cold;	.scl	3;	.type	32;	.endef
+	.seh_proc	main.cold
+	.seh_stackalloc	264
+	.seh_savereg	rbx, 200
+	.seh_savereg	rsi, 208
+	.seh_savereg	rdi, 216
+	.seh_savereg	rbp, 224
+	.seh_savexmm	xmm6, 128
+	.seh_savexmm	xmm7, 144
+	.seh_savereg	r12, 232
+	.seh_savereg	r13, 240
+	.seh_savereg	r14, 248
+	.seh_savereg	r15, 256
+	.seh_savexmm	xmm8, 160
+	.seh_savexmm	xmm9, 176
+	.seh_endprologue
+main.cold:
+.L148:
+	cmp	BYTE PTR 120[rsp], 0
+	je	.L150
+	mov	rcx, rdi
+	call	_ZNSt11unique_lockISt5mutexE6unlockEv
+.L150:
+	cmp	QWORD PTR 96[rsp], 0
+	je	.L139
+.L151:
+	call	_ZSt9terminatev
+.L133:
+	test	rbp, rbp
+	je	.L134
+	mov	rcx, rbp
+	call	[QWORD PTR 8[rbp]]
+.L134:
+	mov	rcx, rbx
+.LEHB18:
+	call	_Unwind_Resume
+.LEHE18:
+.L138:
+	mov	rcx, rdi
+	call	_ZNSt10unique_ptrINSt6thread6_StateESt14default_deleteIS1_EED1Ev
+.L139:
+	mov	rcx, rbp
+	call	_ZNSt18condition_variableD1Ev
+	mov	rcx, rsi
+	call	pthread_mutex_destroy
+	mov	rcx, rbx
+.LEHB19:
+	call	_Unwind_Resume
+.LEHE19:
+.L169:
+	mov	ecx, eax
+.LEHB20:
+	call	_ZSt20__throw_system_errori
+.LEHE20:
+.L152:
+.L168:
+	mov	rbx, rax
+	jmp	.L150
+.L136:
+	mov	rcx, rbx
+	call	[QWORD PTR 8[rbx]]
+	mov	rcx, rsi
+.LEHB21:
+	call	_Unwind_Resume
+.LEHE21:
+.L170:
+	mov	ecx, eax
+.LEHB22:
+	call	_ZSt20__throw_system_errori
+	nop
+.LEHE22:
+	.seh_handler	__gxx_personality_seh0, @unwind, @except
+	.seh_handlerdata
+.LLSDAC14289:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSEC14289-.LLSDACSBC14289
+.LLSDACSBC14289:
+	.uleb128 .LEHB18-.LCOLDB22
 	.uleb128 .LEHE18-.LEHB18
-	.uleb128 .L134-.LFB12925
 	.uleb128 0
-	.uleb128 .LEHB19-.LFB12925
+	.uleb128 0
+	.uleb128 .LEHB19-.LCOLDB22
 	.uleb128 .LEHE19-.LEHB19
 	.uleb128 0
 	.uleb128 0
-	.uleb128 .LEHB20-.LFB12925
+	.uleb128 .LEHB20-.LCOLDB22
 	.uleb128 .LEHE20-.LEHB20
+	.uleb128 .L152-.LCOLDB22
+	.uleb128 0
+	.uleb128 .LEHB21-.LCOLDB22
+	.uleb128 .LEHE21-.LEHB21
 	.uleb128 0
 	.uleb128 0
-.LLSDACSE12925:
+	.uleb128 .LEHB22-.LCOLDB22
+	.uleb128 .LEHE22-.LEHB22
+	.uleb128 .L152-.LCOLDB22
+	.uleb128 0
+.LLSDACSEC14289:
+	.section	.text.unlikely,"x"
 	.section	.text.startup,"x"
+	.section	.text.unlikely,"x"
 	.seh_endproc
+.LCOLDE22:
+	.section	.text.startup,"x"
+.LHOTE22:
 	.globl	_ZTSNSt6thread6_StateE
 	.section	.rdata$_ZTSNSt6thread6_StateE,"dr"
 	.linkonce same_size
@@ -1187,29 +1252,36 @@ _ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE
 .lcomm _ZL9g_tsc_ghz,8,8
 .lcomm _ZL11g_max_frame,8,8
 	.align 8
-.LC0:
+.LC4:
+	.quad	_Z16infinite_counterP27_Z16infinite_counterv.Frame.actor
+	.align 8
+.LC5:
+	.quad	_Z13small_counterP24_Z13small_counteri.Frame.actor
+	.align 8
+.LC7:
 	.long	0
 	.long	1104006501
 	.align 8
-.LC2:
+.LC10:
 	.long	0
 	.long	1094616192
 	.align 8
-.LC4:
+.LC11:
 	.long	0
 	.long	1083129856
 	.align 8
-.LC5:
+.LC12:
 	.long	0
 	.long	1091070464
 	.align 8
-.LC6:
+.LC13:
 	.long	0
 	.long	1088973312
-	.ident	"GCC: (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0"
+	.def	__main;	.scl	2;	.type	32;	.endef
+	.def	__gxx_personality_seh0;	.scl	2;	.type	32;	.endef
+	.ident	"GCC: (MinGW-W64 x86_64-msvcrt-posix-seh, built by Brecht Sanders, r1) 15.3.0"
 	.def	free;	.scl	2;	.type	32;	.endef
 	.def	_ZNSt6thread6_StateD2Ev;	.scl	2;	.type	32;	.endef
-	.def	__mingw_vfprintf;	.scl	2;	.type	32;	.endef
 	.def	malloc;	.scl	2;	.type	32;	.endef
 	.def	pthread_mutex_unlock;	.scl	2;	.type	32;	.endef
 	.def	_ZSt20__throw_system_errori;	.scl	2;	.type	32;	.endef
@@ -1218,7 +1290,7 @@ _ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZL19bench_thread_switchvEUlvE
 	.def	_ZNSt18condition_variable4waitERSt11unique_lockISt5mutexE;	.scl	2;	.type	32;	.endef
 	.def	_Unwind_Resume;	.scl	2;	.type	32;	.endef
 	.def	_ZNSt6chrono3_V212steady_clock3nowEv;	.scl	2;	.type	32;	.endef
-	.def	nanosleep;	.scl	2;	.type	32;	.endef
+	.def	nanosleep64;	.scl	2;	.type	32;	.endef
 	.def	pthread_mutex_init;	.scl	2;	.type	32;	.endef
 	.def	_ZNSt18condition_variableC1Ev;	.scl	2;	.type	32;	.endef
 	.def	_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE;	.scl	2;	.type	32;	.endef

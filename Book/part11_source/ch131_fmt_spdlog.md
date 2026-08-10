@@ -1,6 +1,6 @@
 # 第131章　fmt / spdlog 格式化与日志（C++）
 
-> 真实编译器取证：MinGW GCC 13.1.0（`g++ -std=c++20 -O2 -S -masm=intel`）。
+> 真实编译器取证：MinGW GCC 15.3.0（`g++ -std=c++23 -O2 -S -masm=intel`）。
 > fmt / spdlog **本机未安装**；本章所有 fmt / spdlog 用法示例均为符合其公开 API 的合法 C++（未在本机编译），源码剖析引用上游 GitHub 固定 tag 并标注「上游参考」。第 ⑦ 节给出一处**真实 g++ 编译**的自包含等价机制示例与真实汇编。
 > 约定见 `CONVENTIONS.md`；本章不引用其他章节。
 
@@ -183,12 +183,12 @@ std::string dyn = fmt::format(fmt::runtime(user_pattern), arg);
 
 ## ⑦ [实现] 真实：编译自包含格式化等价示例取汇编 [实现]
 
-fmt 未安装，下面用 **GCC 13.1.0 真实编译**一个**自包含**示例，等价复现 fmt 的两大机制（编译期格式串解析 + 类型安全分派），并取真实汇编。
+fmt 未安装，下面用 **GCC 15.3.0 真实编译**一个**自包含**示例，等价复现 fmt 的两大机制（编译期格式串解析 + 类型安全分派），并取真实汇编。
 
 ```cpp
 // 文件：Examples/_ch131_format_check.cpp（自包含，无需 fmt）
-// 真实编译命令（MinGW GCC 13.1.0）：
-//   g++ -std=c++20 -O2 -S -masm=intel Examples/_ch131_format_check.cpp -o Examples/_ch131_format_check.asm
+// 真实编译命令（MinGW GCC 15.3.0）：
+//   g++ -std=c++23 -O2 -S -masm=intel Examples/_ch131_format_check.cpp -o Examples/_ch131_format_check.asm
 #include <cstdio>
 #include <cstddef>
 
@@ -223,7 +223,7 @@ int main() { return demo(); }
 ```
 
 ```asm
-; 真实汇编片段（g++ 13.1.0 -O2 -masm=intel 节选，源自 Examples/_ch131_format_check.asm）
+; 真实汇编片段（g++ 15.3.0 -O2 -masm=intel 节选，源自 Examples/_ch131_format_check.asm）
 ; 关键证据 1：格式串作为编译期 NTTP 被直接物化进只读段，运行期零解析
 _ZTAXtl12fixed_stringILy19EE...:
 	.ascii "pi={} name={} n={}\0"
@@ -234,23 +234,23 @@ _Z4demov:
 	lea	rbx, .LC0[rip]
 	lea	rdx, _ZTAXtl12fixed_stringILy19EE...[rip]
 	mov	rcx, rbx
-	call	_Z6printfPKcz                 ; 输出格式串本体
+	call	__mingw_printf                 ; 输出格式串本体
 	lea	rcx, .LC1[rip]
 	movabs	rdx, 4614253070214989087      ; 3.14 常量装入 xmm1（emit<double>）
 	movq	xmm1, rdx
-	call	_Z6printfPKcz
+	call	__mingw_printf
 	lea	rdx, .LC2[rip]
 	mov	rcx, rbx
-	call	_Z6printfPKcz                 ; emit<const char*>("fmt")
+	call	__mingw_printf                 ; emit<const char*>("fmt")
 	mov	edx, 42
 	lea	rcx, .LC3[rip]
-	call	_Z6printfPKcz                 ; emit<int>(42)
+	call	__mingw_printf                 ; emit<int>(42)
 	xor	eax, eax
 	ret
 ```
 
 ```text
-# 真实运行输出（本机 g++ 13.1.0 编译运行 Examples/_ch131_format_check.exe）
+# 真实运行输出（本机 g++ 15.3.0 编译运行 Examples/_ch131_format_check.exe）
 $ ./_ch131_format_check.exe
 pi={} name={} n={}3.14fmt42
 ```

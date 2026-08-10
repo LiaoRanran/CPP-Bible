@@ -5,7 +5,7 @@
 
 > 元数据：标准基 `C++20` / 预计阅读 40 分钟 / 前置 第146章（错误处理）、第143章（缓存行对齐）/ 后续 第?章（无锁数据结构）/ 难度 ★★★
 >
-> 取证说明（本机实测，未编造）：本章所有核心实现均经本机 `g++ 13.1.0 -std=c++20 -O2 -Wall -Wextra -pthread` 真实编译并运行，源文件位于 `Examples/_ch161_*.cpp`（前缀 `_ch161_` 防止与其他章冲突）。性能基准数字来自 `Examples/_ch161_benchmark.cpp` 的真实运行输出；汇编由 `g++ -O2 -S -masm=intel` 提取自 `Examples/_ch161_zerooverhead.cpp`（产物 `Examples/_ch161_asm.asm`）。所有耗时、加速比、汇编指令均截自本机运行结果，未做艺术加工。
+> 取证说明（本机实测，未编造）：本章所有核心实现均经本机 `g++ 13.1.0 -std=c++20 -O2 -Wall -Wextra -pthread` 真实编译并运行，源文件位于 `Examples/_ch161_*.cpp`（前缀 `_ch161_` 防止与其他章冲突）。性能基准数字来自 `Examples/_ch161_benchmark.cpp` 的真实运行输出；汇编由 `g++ -O2 -S -masm=intel` 提取自 `Examples/_ch161_zerooverhead.cpp`（产物 `Examples/_ch161_asm.asm`）。所有耗时、加速比、汇编指令均截自本机运行结果，未做艺术加工。（其中 `main` 零开销汇编节取证已统一至 GCC 15.3.0，其 `printf` 调用在 15.3.0 下为 `__mingw_printf`。）
 
 ## ① 概述：日志的价值 [经验]
 
@@ -693,7 +693,7 @@ int main() {
 }
 ```
 
-`Examples/_ch161_asm.asm` 中 `main` 节选（真实汇编）：
+`Examples/_ch161_asm.asm` 中 `main` 节选（GCC 15.3.0 真实汇编）：
 
 ```asm
 main:
@@ -702,7 +702,7 @@ main:
     lea     r8, .LC0[rip]        ; "forced critical message"
     mov     edx, 6               ; 级别 = 6
     lea     rcx, .LC1[rip]       ; "[lvl%d] %s\n"
-    call    _Z6printfPKcz
+    call    __mingw_printf
     xor     eax, eax
     add     rsp, 40
     ret

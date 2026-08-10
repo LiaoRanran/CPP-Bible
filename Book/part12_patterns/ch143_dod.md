@@ -693,7 +693,7 @@ int main() {
 }
 ```
 
-真实运行输出（GCC 13.1.0）：
+真实运行输出（GCC 15.3.0）：
 
 ```
 Normal  : sizeof=12 alignof=4
@@ -1087,7 +1087,7 @@ struct SoA final { std::vector<float> x, y; };   // 列存 + 连续 + 可向量�
 
 > **立场标签 [标准]**：DOD 与 OOP 互补而非互斥——把抽象留在边界，把数据布局压进内核。能用 `std::vector` 连续列表达、能用 `__restrict` 去掉别名、能用 `alignas` 对齐、能用分块并行消除 false sharing 的代码，才是现代 C++ 性能工程的真正基线。
 
-**本章取证产物清单**：`Examples/_ch143_*.cpp`（20 个可编译源）+ 配套 `.asm`（`aos_loop`/`soa_loop`/`novirtual`/`constexpr`/`consteval`/`simd`/`simd_O3fm`/`align`），以及 `AoS/SoA`、`false-sharing` 两组 `std::chrono` 真实计时、`align` 的 `sizeof/alignof` 真实输出，全部来自 GCC 13.1.0（`-std=c++23`），未编造。
+**本章取证产物清单**：`Examples/_ch143_*.cpp`（20 个可编译源）+ 配套 `.asm`（`aos_loop`/`soa_loop`/`novirtual`/`constexpr`/`consteval`/`simd`/`simd_O3fm`/`align`），以及 `AoS/SoA`、`false-sharing` 两组 `std::chrono` 真实计时、`align` 的 `sizeof/alignof` 真实输出，主要来自 GCC 13.1.0（`-std=c++23`）；其中 `align` 节取证已统一至 GCC 15.3.0（见 ⑫），`novirtual` 节因示例依赖 13.1.0 代码生成保留为 13.1.0 证据，未编造。
 
 
 ## 联合使用场景

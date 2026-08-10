@@ -1,14 +1,26 @@
 {
   "description": "ASM 漂移基线：asm_prepush_guard.py 已知的 DRIFT 文件集（非回归）。新增漂移即判红；基线内的已知漂移仅 WARN。",
   "generated_at": "2026-08-09",
-  "updated_at": "2026-08-09",
+  "updated_at": "2026-08-10",
   "toolchain": "MinGW GCC 15.3.0 (C:/Qt/Tools/mingw1530_64/bin/g++.exe)",
-  "note": "ch47_d4_vtable 原为 DRIFT（-O2 内联析构导致符号消失），已通过 flags_for 增加文件级 -O1 -fno-inline 覆盖修复（书 D4.3 显记），现判为 MATCH。仅 ch99 AVX 指令调度漂移保留。",
+  "note": "ch47_d4_vtable 原为 DRIFT（-O2 内联析构导致符号消失），已通过 flags_for 增加文件级 -O1 -fno-inline 覆盖修复（书 D4.3 显记），现判为 MATCH。ch99 AVX 指令调度漂移保留。另：_ch13_use / _ch143_novirtual 因源码演进 + 15.3.0 代码生成差异（pkg::println 在 -O2 被内联、虚拟 Circle::area 不再作为独立符号发出），其书稿内嵌示例依赖这些 13.1.0 符号，故保留为 13.1.0 证据并登记为已知漂移，不予强制升级（避免破坏教学示例）。",
   "known_drift": [
     {
       "file": "_ch99_transform_reduce_avx.asm",
       "reason": "AVX 指令重排差异：符号集 MATCH (5/5) 但代码体 ndiff=276（指令调度/寄存器分配变化）。stored 用 ymm0-5（更多并行度），fresh -march=native 仅 ymm0-3。SIMD 自动向量化是编译器版本与目标架构敏感的，非书稿错误。书内引用的是符号级声明（tr_square/tr_mul/tr_int），不受指令体漂移影响。",
       "lost_symbols": [],
+      "new_symbols": []
+    },
+    {
+      "file": "_ch13_use.asm",
+      "reason": "源码演进 + 15.3.0 代码生成差异：书稿内嵌示例展示 `call _ZN3pkg7println...`（头库 println 实例化符号），该符号为 -O2 下 15.3.0 完全内联消除（0 符号），stored 13.1.0 版本保留了调用。章节示例围绕 13.1.0 代码生成编写（取包内 println 实例化符号作为「头库被真实消费」的实证），强行升级会令内嵌示例失效。保留为 13.1.0 证据，书稿已诚实标注 GCC 13.1.0。",
+      "lost_symbols": ["_ZN3pkg7printlnIJRiyEEEvSt19basic_format_stringIcJDpNSt13type_identityIT_E4typeEEEDpOS4_"],
+      "new_symbols": []
+    },
+    {
+      "file": "_ch143_novirtual.asm",
+      "reason": "源码演进 + 15.3.0 代码生成差异：书稿内嵌示例展示 `lea rdx, _ZNK6Circle4areaEv[rip]`（取非虚 Circle::area 地址作为「非虚调用零开销」实证）。当前源码已将非虚类由 Circle 改名为 Circle2（_ZNK7Circle24areaEv），且 15.3.0 不再把虚拟 Circle::area（_ZNK6Circle4areaEv）作为独立符号发出；stored 13.1.0 版本保留了该符号。章节示例依赖 13.1.0 代码生成，强行升级会令内嵌示例失效。保留为 13.1.0 证据，书稿已诚实标注 GCC 13.1.0。",
+      "lost_symbols": ["_ZNK6Circle4areaEv"],
       "new_symbols": []
     }
   ],
