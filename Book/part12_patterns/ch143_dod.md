@@ -1526,3 +1526,65 @@ int main() {
 - 加速比（如 10.3×、3.61×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较。
 - 复现旗标：`g++ -O2 -std=c++23`。本 demo 用 AoS 与 SoA 各跑同一 partial update + reduce，仅断言两布局结果一致（浮点容差），未对时间或倍数、也未对 `sizeof` 做任何断言。
 - 基准源码见库根 `_bench_d5_143_dod.cpp`。
+
+## 自测练习（Exercises）
+
+> 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
+
+### 练习 1（难度 ★★）
+
+解释 AoS（Array of Structures）与 SoA（Structure of Arrays）在缓存局部性上的根本差异，并说明为什么对「只读取部分字段的批量遍历」SoA 更优。
+
+<details><summary>答案与解析</summary>
+
+AoS 把每个实体的所有字段连续存放（`struct Particle { float x,y,vx,vy; }; Particle ps[N];`），遍历时即便只用到 `x`，也会把 `y/vx/vy` 一起载入缓存行，浪费带宽、压低命中率。SoA 把同类字段集中存放（`float xs[N], ys[N], ...;`），只遍历 `xs` 时缓存行里全是有效 `x`，缓存利用率最高。当结构体较大、且热点只碰少数字段时，SoA 的缓存友好度显著优于 AoS——这正是 ch143 ⑤ 基准量化出的差距来源。
+
+```cpp
+#include <iostream>
+#include <vector>
+struct AoS { float x, y; };
+int main() {
+    const int N = 1 << 20;
+    std::vector<AoS> a(N);
+    std::vector<float> xs(N), ys(N);   // SoA
+    float s = 0;
+    for (int i = 0; i < N; ++i) s += a[i].x;   // AoS: 每行还带 y
+    for (int i = 0; i < N; ++i) s += xs[i];     // SoA: 纯 x，缓存友好
+    std::cout << s << '\n';
+}
+```
+
+[标准] 对象布局（layout）由非静态数据成员声明顺序决定；缓存行（典型 64B）是硬件预取与命中率的基本单位，数据布局直接决定两者。
+
+</details>
+
+### 练习 2（难度 ★★★）
+
+「冷热数据分离」要求把高频访问的热字段从大结构体中抽出来单独成组。给定一个含热字段 `hit` 与冷字段组 `Cold` 的结构体数组，给出一种重构，使热遍历只触碰热字段所在数组，并解释其对缓存利用率与 False Sharing 的意义。
+
+<details><summary>答案与解析</summary>
+
+把热字段 `hit` 抽成独立数组，冷字段 `Cold` 单独成组，使热路径遍历的数组元素更小、一个缓存行容纳更多热字段：
+
+```cpp
+#include <iostream>
+#include <vector>
+struct Cold { int meta; };            // 多个冷字段
+struct Entity { int hit; Cold cold; };// 重构前：热冷同体
+// 重构后：
+//   std::vector<int>  hits(N);       // 热数组，遍历只碰 hit
+//   std::vector<Cold> colds(N);      // 冷数组，按需访问
+int main() {
+    const int N = 1 << 20;
+    std::vector<Entity> e(N);
+    long s = 0;
+    for (int i = 0; i < N; ++i) s += e[i].hit; // 每行还载入整个 Cold
+    std::cout << s << '\n';
+}
+```
+
+热数组 `hits` 每个元素仅 4B，一个 64B 缓存行装 16 个热字段，命中率与带宽利用率远高于「热冷同体」；若多线程各自遍历不同 `hits` 区间且按缓存行对齐（`alignas(64)`），还能消除 False Sharing（见 ch154）。
+
+[标准] 成员布局影响对象大小与缓存行为；数据导向设计按「访问模式」而非「实体」组织内存。
+
+</details>

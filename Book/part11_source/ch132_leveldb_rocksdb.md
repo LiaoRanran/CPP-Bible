@@ -1375,3 +1375,58 @@ flowchart TD
 | ch124 | ch132 | 标准库实现总览衔接分配器/PMR |
 | ch125 | ch132 | libc++ PMR 与 Arena 分配器设计对照 |
 | ch131 | ch132 | fmt 用于引擎内部日志与可观测性 |
+
+## 自测练习（Exercises）
+
+> 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
+
+### 练习 1（难度 ★★）
+
+LSM-Tree 的「读放大（read amplification）」主要来自哪里？给出一次 `Get(key)` 在最坏情况下需要访问的组件数量级，并解释为什么 Leveled compaction 比 Tiered 读放大更高。
+
+<details><summary>答案与解析</summary>
+
+读放大来自「同一 key 的多版本分布在多层、每层多个 SSTable」：`Get` 必须从上到下逐层查找（MemTable → L0 → L1 → …），每层可能要打开多个 SSTable 的索引/布隆过滤器，最坏情况访问「层数 × 每层文件数」。Leveled compaction 每层容量固定、层间重叠需反复重写，导致层级更深、单 key 跨层更多，读放大高于 Tiered（Tiered 层数少、只在满层才合并）。
+
+```cpp
+#include <iostream>
+// 简化：模拟一次 Get 在 N 个有序 run 中的探测次数（每个 run 二分一次）
+int probe_cost(int levels, int files_per_level) {
+    return 1 + levels * files_per_level; // MemTable(1) + 各层文件
+}
+int main() { std::cout << "worst probes=" << probe_cost(6, 10) << '\n'; }
+```
+
+[标准] LSM-Tree 以「写放大 / 读放大 / 空间放大」三角权衡；compaction 策略直接决定三者比例。
+
+</details>
+
+### 练习 2（难度 ★★★）
+
+SSTable 归并（merge）是 compaction 的核心：给定两个已排序的 `std::vector<int>`（代表两个有序 run），写一个 2-way 归并，输出合并后的有序序列。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+std::vector<int> merge2(const std::vector<int>& a, const std::vector<int>& b) {
+    std::vector<int> out; out.reserve(a.size() + b.size());
+    size_t i = 0, j = 0;
+    while (i < a.size() && j < b.size())
+        out.push_back(a[i] < b[j] ? a[i++] : b[j++]);
+    while (i < a.size()) out.push_back(a[i++]);
+    while (j < b.size())  out.push_back(b[j++]);
+    return out;
+}
+int main() {
+    for (int x : merge2({1,3,5},{2,4,6})) std::cout << x << ' ';
+    std::cout << '\n';
+}
+```
+
+这正是 compaction 把多个有序 SSTable 合成一个更大有序 run 的算法核心；多路时可推广为最小堆的 k-way merge（见 ch96 排序）。
+
+[标准] 归并是稳定 O(n) 操作；外部排序与 LSM compaction 共用该原语。
+
+</details>

@@ -1444,3 +1444,48 @@ int main(){
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 
 **交叉引用**：ch91（filesystem 与 IO）/ ch156（编译器优化）/ ch160（内存池消除分配）
+
+## 自测练习（Exercises）
+
+> 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
+
+### 练习 1（难度 ★★）
+
+一个 BSD/POSIX TCP echo server 的核心系统调用顺序是什么？依次列出从建监听套接字到接受连接的关键步骤，并说明 `listen` 的 backlog 含义。
+
+<details><summary>答案与解析</summary>
+
+顺序：`socket()` 创建套接字 → `bind()` 绑定地址端口 → `listen()` 进入监听（backlog 为已完成+进行中连接队列上限）→ `accept()` 阻塞等待并产出已连接套接字 → `read/write` 收发 → `close()`。backlog 是内核为该监听套接字维护的"半连接+全连接"队列长度上限，过小会丢连接、过大浪费资源。
+
+```cpp
+// 概念骨架（Linux/macOS 需 <sys/socket.h>，本 MinGW 门禁跳过该块）
+// int s = socket(AF_INET, SOCK_STREAM, 0);
+// bind(s, (sockaddr*)&addr, sizeof addr);
+// listen(s, 16);
+// int c = accept(s, nullptr, nullptr);
+// read(c, buf, n); write(c, buf, n); close(c);
+```
+
+[标准] Berkeley Socket API 是 POSIX 网络编程事实标准；`SOCK_STREAM` 对应 TCP 的字节流语义。
+
+</details>
+
+### 练习 2（难度 ★★★）
+
+阻塞 I/O 与非阻塞 I/O 的根本区别是什么？在 POSIX 与 Windows（Winsock）上分别用什么调用把一个套接字设为非阻塞？
+
+<details><summary>答案与解析</summary>
+
+阻塞：`read/accept` 在无数据/无连接时挂起线程，简单但并发差（每连接一线程）。非阻塞：调用立即返回 `EWOULDBLOCK`/`WSAEWOULDBLOCK`，需配合 `select/poll/epoll`（或 IOCP）轮询，单线程可驱动大量连接。
+
+- POSIX：`fcntl(fd, F_SETFL, O_NONBLOCK)`；
+- Windows Winsock：`u_long mode=1; ioctlsocket(s, FIONBIO, &mode);`。
+
+```cpp
+// POSIX 设非阻塞（门禁跳过 <sys/socket.h>/<fcntl.h> 块）
+// fcntl(fd, F_SETFL, fcntl(fd,F_GETFL,0) | O_NONBLOCK);
+```
+
+[标准] 非阻塞 + I/O 多路复用是高并发网络服务的基石；跨平台需封装 POSIX/Winsock 差异（见 ch163 ③）。
+
+</details>

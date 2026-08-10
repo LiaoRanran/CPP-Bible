@@ -1425,3 +1425,59 @@ flowchart TD
   PERF --> DONE
 ```
 
+## 自测练习（Exercises）
+
+> 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。
+
+### 练习 1（难度 ★★）
+
+画出「测试金字塔」三层及其推荐比例，并解释为什么端到端测试应最少。用自包含代码模拟一个 GoogleTest 等价的最小测试（不引第三方框架，用 `assert` + 计数器）。
+
+<details><summary>答案与解析</summary>
+
+金字塔自底向上：单元测试（大量，~70%）→ 集成测试（中等，~20%）→ 端到端测试（少量，~10%）。端到端测试启动慢、脆弱、调试难、覆盖成本高，故应最少；单元测试快、隔离、定位准，故最多。
+
+```cpp
+#include <cassert>
+#include <iostream>
+static int passed = 0;
+#define CHECK(c) do { assert(c); ++passed; } while(0)
+int add(int a, int b) { return a + b; }
+int main() {
+    CHECK(add(2,3) == 5);
+    CHECK(add(-1,1) == 0);
+    std::cout << "passed=" << passed << '\n';
+}
+```
+
+[标准] 测试金字塔是经验性组织结构；单元测试的隔离性是快速反馈的基础。
+
+</details>
+
+### 练习 2（难度 ★★★）
+
+依赖注入（DI）如何让被测单元脱离真实依赖以便测试？定义一个 `Storage` 接口与一个内存假实现（fake），让业务函数注入该 fake 完成测试，无需真实数据库。
+
+<details><summary>答案与解析</summary>
+
+```cpp
+#include <cassert>
+#include <string>
+#include <unordered_map>
+struct Storage { virtual ~Storage()=default; virtual void put(const std::string&k,const std::string&v)=0; virtual std::string get(const std::string&k)const=0; };
+struct MemStorage : Storage { std::unordered_map<std::string,std::string> m;
+    void put(const std::string&k,const std::string&v) override { m[k]=v; }
+    std::string get(const std::string&k) const override { auto it=m.find(k); return it==m.end()?"":it->second; } };
+int main() {
+    MemStorage db;                 // 注入 fake，替换真实 DB
+    db.put("a","1");
+    assert(db.get("a")=="1");
+    assert(db.get("x")=="");
+}
+```
+
+通过基类指针注入 `MemStorage`，业务代码不依赖具体存储，测试零外部依赖、可重复、秒级——这正是 ch150 ④ 与 ch141 DI 的落地。
+
+[标准] 面向接口编程 + 虚函数多态，使替换实现（fake/mock）在编译期类型安全。
+
+</details>

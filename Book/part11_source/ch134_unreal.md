@@ -6,6 +6,22 @@
 > 真实编译器：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。
 > Unreal Engine 本体与 UHT（Unreal Header Tool）本机未安装；本章反射/宏语法引用 **上游源码 URL**（EpicGames/UnrealEngine，标注「上游参考」），并以**自包含标准 C++ 等价实现**做真实编译取证（第⑨节）。UE 宏（`UCLASS`/`UPROPERTY`/`UFUNCTION`/`GENERATED_BODY`）在片段中以空宏 shim 模拟，使每个 `cpp` 块均可独立编译，不改变其作为「Unreal 风格示例」的语义。
 
+## ⓪ 历史动机：Unreal Engine 的来龙去脉（为什么游戏引擎要自建一套 C++ 对象系统）
+
+> **人文关怀**：Unreal 不是"用 C++ 写的游戏"，而是"在标准 C++ 之上焊了一套对象框架"。
+> 读懂它为何非这么做不可，你才不会把 `UObject` 当成普通类去用。
+
+**起点（1991–1998）**：**Tim Sweeney** 在马里兰卧室里创立公司（最早叫 Potomac Computer Systems，后 Epic MegaGames，最终 Epic Games），靠《ZZT》起家。1998 年随游戏《Unreal》推出 **Unreal Engine 1**——它的渲染与光照在当时惊艳，配套一门自研脚本语言 **UnrealScript**（带垃圾回收），让"不写 C++ 也能做玩法"成为可能。UE 从第一天起就是**拿来授权的**产品，而非只服务自研游戏。
+
+**成型与统治（2006–2014）**：UE3（2006）借《战争机器》封神，被《质量效应》《生化奇兵》《蝙蝠侠》等广泛授权。但真正的分水岭是 **UE4（2014）**：Sweeney 做了一个改变行业的决定——把引擎**免费开放**（此前授权费高达百万美元级），只对超过 30 万美元收入的部分收 5% 版税。这一下把游戏开发从"大厂专利"变成"个人也能做"，并引入 **Blueprint 可视化脚本** + C++ 双轨玩法。无数独立团队、甚至影视与汽车行业由此入门。
+
+**现代（2020–今）**：UE5（2022 正式版）带来 **Nanite**（虚拟几何，免手调 LOD）、**Lumen**（动态全局光照）、Chaos 物理、MetaSounds——把原本只有顶级工作室才玩得起的实时画质下放。
+
+**最关键的设计抉择：为什么不用裸 C++，而要 UObject/UHT/GC/反射？**
+因为 ISO C++ **没有内建反射、没有 GC、没有序列化**。而一个游戏引擎必须做到四件事：(1) 把对象属性暴露给可视化编辑器（细节面板、Blueprint 桥接）；(2) 把整个关卡序列化到磁盘；(3) 把 Actor 状态网络复制到几十个客户端；(4) 每帧 GC 成千上万个对象。这些标准 C++ 一个都给不了。Epic 的选择是：**保留 C++ 的性能与控制力**（对比 Unity 用 C#/CLR，反射 GC "白送"但要忍受托管开销与 GC 停顿），然后在上面焊一套 `UObject`/`UClass` + `UHT` 生成的元数据层来补齐缺失项。所以"UE C++ = 标准 C++ + 强制对象框架"——这正是本章反复强调"别把 UObject 当普通栈对象"的历史根源。
+
+**今日坐标（学这个真有用）**：UE 活在《堡垒之夜》、大量 3A 与独立游戏里，也广泛用于**汽车 HMI 与座舱仿真、影视虚拟制片**（《曼达洛人》的 LED 虚拟摄影棚 StageCraft 即用 UE 实时渲染背景）、建筑可视化、训练模拟器与数字孪生。它早已不只是"游戏引擎"。
+
 ## ① 概述：Unreal Engine C++ 架构 [标准]
 
 ⟶ Book/part11_source/ch133_clickhouse_redis.md
@@ -639,6 +655,92 @@ int Decide(bool isUObject) { return isUObject ? 0 : 1; }
 
 - `[标准]`：速查表把「UE 概念 ↔ 标准 C++ 等价」对齐，便于从标准 C++ 切入引擎。
 - `[经验]`：记住一句口诀——**UObject 用 GC（UPROPERTY），非 UObject 用智能指针**。
+
+## ㉑ 真实工程使用场景：用 UObject 写一个可反射、可序列化的组件
+
+> **人文关怀·落地**：上面看懂了 UObject/反射/GC 的机制，这一节把它接到"真实 UE 工程怎么写"。
+> 学 UE C++ 的意义，在于你能直接上手做 3A 玩法、汽车 HMI、影视虚拟制片——而不只是会背宏。
+
+### ㉑.1 今天 UE 活在哪里（真实坐标）
+
+- **游戏**：《堡垒之夜》（Epic 自研，数亿用户）、大量 3A 与独立游戏。
+- **汽车与交通**：车企用 UE 做座舱 HMI、仪表与驾驶模拟器（要实时、要好看、要好迭代）。
+- **影视虚拟制片**：《曼达洛人》的 LED 虚拟摄影棚 **StageCraft** 用 UE 实时渲染背景，演员对着真实光照演戏。
+- **建筑 / 训练 / 数字孪生**：BIM 可视化、飞行与工业训练模拟器、工厂数字孪生。
+
+### ㉑.2 标准 C++ 等价实现：先把"反射属性表 + GC 托管"跑通（可编译）
+
+不装 UE 也能理解 `UPROPERTY` 与 `UClass` 的运行模型——下面用标准库复刻核心：**每个类有一张属性元数据表，每个对象注册进全局存活表（GC 根集）**。这正是 UE 让编辑器/序列化/网络复制"看见"字段的机制。
+
+```cpp
+// ㉑.2 用标准 C++ 复刻 UE「反射属性表 + GC 托管」的最小模型（本块可独立编译，GCC 13.1.0 验证）
+#include <string>
+#include <vector>
+#include <iostream>
+
+// UE 用 FUObjectArray 全局管理所有存活 UObject；GC 与迭代都基于它
+std::vector<void*> gLiveObjects;
+
+// UPROPERTY 在 UE 里把字段登记进这张表；没有它，字段对编辑器/序列化/网络复制不可见
+struct FPropInfo { std::string Name; std::size_t Offset; };
+
+struct FMinimalClass {
+    std::string Name;
+    std::vector<FPropInfo> Props;      // 反射属性表：编辑器面板、磁盘序列化、网络复制共用
+};
+
+// 一个"被引擎托管"的对象：持元数据指针 + 注册进全局表（模拟被 GC 根集引用）
+struct FMinimalUObject {
+    virtual ~FMinimalUObject() = default;
+    const FMinimalClass* Class = nullptr;   // 对应 UObject::GetClass() 返回的元数据单例
+    void Register() { gLiveObjects.push_back(this); }
+};
+
+int main() {
+    FMinimalClass Pickup{"AHealthPickup"};
+    Pickup.Props.push_back({"HealAmount", 0});   // 等价于写 UPROPERTY() int HealAmount;
+    // 反射的价值：下面这一步在 UE 里由序列化/网络复制/细节面板自动完成，无需手写
+    for (auto& p : Pickup.Props)
+        std::cout << "reflected prop: " << p.Name << "\n";
+    return 0;
+}
+```
+
+- `[标准]`：`std::vector<FPropInfo>` 即"类型擦除的属性表"；UE 用 `UClass` 元数据单例做同类事情，但额外支持按名 `FindProperty`、蓝图绑定与网络优先级。
+- `[经验]`：看懂这个 30 行例子，你就理解了 `UPROPERTY` 为什么不可或缺——它让一个 C++ 字段"对引擎可见"。
+
+### ㉑.3 真实 UE C++ 长什么样（注释呈现，需 UE + UHT）
+
+下面才是你在 UE 编辑器里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入引擎头依赖）。
+
+```cpp
+// ㉑.3 真实 UE C++ 写法（仅注释演示，需 UE + UHT；本门禁按空块编译通过）：
+//   #include "HealthPickup.h"
+//   #include "GameFramework/Actor.h"
+//   UCLASS()
+//   class AHealthPickup : public AActor {
+//       GENERATED_BODY()
+//   public:
+//       AHealthPickup() { PrimaryActorTick.bCanEverTick = false; }
+//       virtual void BeginPlay() override;          // 引擎在关卡开始时调用
+//   protected:
+//       // 编辑器可改、蓝图可读写、且被 GC 追踪——三个能力都来自 UPROPERTY
+//       UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pickup")
+//       int32 HealAmount = 25;
+//   };
+//   文档：https://dev.epicgames.com/documentation/en-us/unreal-engine/introduction-to-cplusplus-programming-in-unreal-engine
+```
+
+### ㉑.4 一个 UE C++ 工程到底怎么跑起来（端到端步骤）
+
+1. **在编辑器里新建 C++ 类**：UE 编辑器生成 `.h`/`.cpp` 骨架，并自动加 `UCLASS()/GENERATED_BODY()`。
+2. **UHT 介入**：编译时 **Unreal Header Tool** 扫描这些宏，生成 `类名.generated.h` 与 `.gen.cpp`（相当于 Qt 的 moc，但由 UnrealBuildTool 串起来）——你不用手动跑 UHT。
+3. **UnrealBuildTool（UBT）编译**：它统一处理模块依赖、宏展开、热重载，比裸 CMake 多一层引擎感知。
+4. **引擎驱动生命周期**：`BeginPlay()`（关卡开始）、`Tick()`（每帧）由引擎调用；`AActor` 由世界（`UWorld`）与 GC 托管，**不要 `new`/`delete` 它**。
+5. **跨平台**：同一份 C++，由 UBT 为 Windows/主机/移动端各自编译——这是"引擎即平台"的代价与红利。
+
+- `[平台·UE5]`：UE5 的 `FUObjectArray` + 增量 GC 每帧只扫一小部分对象，避免长停顿；这正是自建 GC 相对"白送的托管 GC"的可控优势。
+- `[引用]` UE C++ 官方入门：`https://dev.epicgames.com/documentation/en-us/unreal-engine/introduction-to-cplusplus-programming-in-unreal-engine`；UObject/GC：`https://dev.epicgames.com/documentation/en-us/unreal-engine/object-handling-and-garbage-collection-in-unreal-engine`。
 
 ## 附录 A：Unreal Engine C++ 工业实践 [F: Industry / B: Principle]
 

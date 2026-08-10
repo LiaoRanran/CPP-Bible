@@ -90,6 +90,16 @@ flowchart TD
 
 [经验] 现代 C++ 的默认选择是：**默认 `unique_ptr`，必须共享时才 `shared_ptr`，必须打破循环时才 `weak_ptr`**。Rule of Zero（ch39）告诉我们在大多数类里连析构函数都不该手写——把资源交给智能指针即可。
 
+> **历史动机：智能指针是怎么"熬"出来的（人文关怀）**
+> 今天"默认用 `unique_ptr`"像空气一样自然，但它背后是二十年的踩坑史。
+> - **前标准时代（1998 之前）**：C++ 没有智能指针，全靠手写 `new`/`delete`。一旦中间抛异常、提前 `return` 或分支遗漏，内存就泄漏——尤其异常路径，是泄漏重灾区。
+> - **`auto_ptr` 的失败（C++98）**：标准第一次给了一个"独占所有权"的尝试 `std::auto_ptr`，但它有个致命设计——**拷贝会悄悄转移所有权**（源对象变空）。这导致它根本不能放进容器（`vector<auto_ptr>` 排序一下就把元素弄空了），成为著名 bug 源头。它因而在 C++11 被废弃、C++17 被移除。
+> - **Boost 与 TR1（2000s–2005）**：民间 **Boost** 库率先做出了久经实战的 `boost::shared_ptr`/`scoped_ptr`/`weak_ptr`；2005 年 **TR1** 把它们以 `std::tr1` 形式纳入标准"试验场"。
+> - **现代三件套定型（C++11, 2011）**：`unique_ptr`（move-only、零开销，取代 auto_ptr）、`shared_ptr`/`weak_ptr`（源自 Boost/TR1）、`make_shared` 一同进入标准。**关键设计**：`unique_ptr` 被刻意设计成编译后就是一个裸指针、零空间零时间开销（靠 EBO，见元素06），于是"用裸 `new` 性能更好"再也不是借口。
+> - **后续补全**：`make_unique`（C++14，出人意料地晚）、`shared_ptr<T[]>` 与 `weak_from_this`（C++17）、`std::atomic<shared_ptr>` 与 `make_shared_for_overwrite`（C++20）。
+>
+> 这段历史告诉我们：智能指针不是"语法糖"，而是委员会用 **RAII + 零开销** 两条铁律，把"异常安全"从高手技巧变成所有人的默认值（见 Herb Sutter 关于 RAII 的经典论述）。
+
 全景对比：
 
 | 指针 | 所有权 | 开销 | 可否共享 | 典型用途 |
@@ -135,18 +145,21 @@ template <typename _Tp, typename _Dp>
 
 ```cpp
 #include <iostream>
-#include <memory>
+#include <memory>   // std::unique_ptr / std::make_unique 都在 <memory>
 
 struct Widget {
-    Widget()  { std::cout << "Widget()\n"; }
-    ~Widget() { std::cout << "~Widget()\n"; }
+    Widget()  { std::cout << "Widget()\n"; }   // 构造：资源获取（RAII 的起点）
+    ~Widget() { std::cout << "~Widget()\n"; }   // 析构：资源释放——由智能指针在合适时机自动调用
     void use() const { std::cout << "using widget\n"; }
 };
 
 int main() {
-    std::unique_ptr<Widget> p = std::make_unique<Widget>(); // C++14
-    p->use();
-    // 离开作用域自动 ~Widget()，无需手动 delete
+    // make_unique 一次性完成"分配 + 构造 + 装入 unique_ptr"，比 `new Widget` 更安全：
+    // 它避免了"先 new 再交给 unique_ptr"之间可能因异常而泄漏的窗口（见 ch39 异常安全）。
+    std::unique_ptr<Widget> p = std::make_unique<Widget>(); // C++14 起；C++11 用 unique_ptr<Widget>(new Widget)
+    p->use();                  // 用 -> 像裸指针一样访问，但所有权仍唯一归 p
+    // 关键：p 是栈上对象。main 返回时 p 离开作用域 => 其析构自动 delete 所指 Widget。
+    // 即使前面某行抛异常，栈展开也会调用 p 的析构 => 不会泄漏（这是裸 new/delete 做不到的）。
     return 0;
 }
 ```

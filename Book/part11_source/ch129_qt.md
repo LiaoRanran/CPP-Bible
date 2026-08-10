@@ -7,6 +7,22 @@
 > 本机已装 Qt（头文件 + moc），但**未安装 Qt 源码树**；故 Qt 本机源码剖析一律引用上游 GitHub URL + 行号并标注「上游参考」，本机可复现部分用真实 `moc` 产物与真实 g++ 汇编佐证的「典型输出」。
 > 示例源均位于 `Examples/_ch129_*`（Qt 未装场景下第 ⑨ 节示例为**自包含纯 C++**，可直接编译运行）。
 
+## ⓪ 历史动机：Qt 的来龙去脉（为什么 C++ 需要一套 GUI 框架）
+
+> **人文关怀**：技术不是从天而降的。读懂"Qt 因什么痛而生"，你写每一个 `Q_OBJECT` 时才明白它背负的工程史。
+
+**痛点起点（1990 年代初）**：那个年代的 C++ 程序员做图形界面，是在三个互不兼容的世界里反复重写代码——Unix 上是 Motif/Xt，Windows 上是 MFC，Mac 上是 Toolbox。同一套业务逻辑，每换一个平台就要把 UI 层推倒重来。Trolltech 的两位挪威工程师 **Haavard Nord** 与 **Eirik Chambe-Eng** 在 1991 年动手，想实现"写一次 C++，到处编译运行"。1994 年公司在奥斯陆成立，**Qt 1.0 于 1995 年发布**。
+
+**关键发明：信号槽与 moc**。传统 GUI 框架用 C 风格回调函数或虚函数覆盖来处理"按钮被点了"这类事件，耦合紧、类型不安全。Qt 另辟蹊径——用 `signals`/`slots` 做发布/订阅，靠一个**独立的预编译器 moc（元对象编译器）**在编译前扫描 `Q_OBJECT` 等宏、生成元数据代码。为什么不直接改 C++ 编译器？因为 ISO C++ 当时（至今）都没有内建反射，与其 fork 一门语言，不如在标准 C++ 之上"外挂"一层元对象系统——这正是 Qt 二十余年架构稳定的根基。
+
+**两个改变命运的转折点**：
+- **2008 年 Nokia 以约 1.53 亿美元收购 Trolltech**，想把 Qt 推上手机（Maemo/MeeGo）。
+- **2009 年 Qt 改用 LGPL v2.1 许可证**——这是史上最关键的一步：此前闭源商业软件链接 Qt 必须买商业授权；LGPL 后，只要动态链接就能合法免费用。Qt 由此大规模进入商业桌面软件。
+
+**后续演进**：2011 年 Nokia 把 Qt 卖给 Digia；2012 年 **Qt 5** 拆成模块、引入 QML/Qt Quick 与新式类型安全 `connect`；2014 年 The Qt Company 从 Digia 分拆；2020–2021 年 **Qt 6** 全面切到 CMake、要求 C++17 基线、用 QRhi 抽象图形栈、清理历史包袱。
+
+**今日坐标（学这个真有用）**：Qt 活在 KDE 桌面、VLC、Wireshark、VirtualBox 的界面、OBS Studio、Autodesk 部分产品，以及大量**汽车座舱 HMI、医疗与工业人机界面**里——这些领域要的是"原生性能 + 跨平台 + 长期稳定"，恰好是 Qt 的主场。理解了这段历史，你就能解释为什么工业界宁可用 moc 也不去等 C++ 反射：因为它是被真实产品逼出来的务实选择，不是学院设计。
+
 ## ① 概述：Qt 框架（跨平台 C++ GUI/应用框架）
 
 ⟶ Book/part11_source/ch128_boost.md
@@ -575,6 +591,89 @@ public: void go(){ emit ping(1); }
 - `[经验]`：记住三条铁律——**父子树或智能指针二选一**、**跨线程用 moveToThread + QueuedConnection + deleteLater**、**新项目一律新式 connect**。
 
 
+## ㉑ 真实工程使用场景：从信号槽到现代 Qt 6 工程
+
+> **人文关怀·落地**：上一节看懂了机制，这一节把它接到"真实项目里怎么用"。学 Qt 的意义，
+> 在于你能立刻写出一个跨平台、有界面的工业软件——而不只是会背 `connect` 语法。
+
+### ㉑.1 今天 Qt 活在哪里（真实坐标）
+
+- **桌面与开源**：KDE 整个桌面环境生于 Qt；VLC、Wireshark、VirtualBox 的界面、OBS Studio 均为 Qt。
+- **汽车座舱 HMI**：多家德系/国产车企的座舱与中控界面用 Qt（要求原生性能 + 长生命周期维护）。
+- **医疗与工业人机界面**：仪器面板、产线触摸屏——要稳定、要跨平台、要认证周期长，Qt 是主流选择。
+- **商业工具**：Autodesk 部分产品、各类跨平台专业软件。
+
+### ㉑.2 标准 C++ 等价实现：先把"信号槽解耦"跑通（可编译）
+
+不装 Qt 也能理解 `connect/emit` 的运行模型——下面用标准库复刻其核心：**一个信号持有若干订阅函数，emit 时依次调用**（这正是 `QMetaObject::activate` 干的活）。
+
+```cpp
+// ㉑.2 用标准 C++ 复刻 Qt 信号槽的「解耦」本质（本块可独立编译，GCC 15.3.0 验证）
+#include <functional>
+#include <vector>
+#include <iostream>
+
+// 一个只发 int 的"信号"：内部持有若干订阅函数（槽）
+struct ProgressSignal {
+    std::vector<std::function<void(int)>> slots;
+    // connect：把槽（可调用对象）登记进来 —— 对应 Qt 的 connect()
+    void connect(std::function<void(int)> f) { slots.push_back(std::move(f)); }
+    // operator()：emit 时逐一调用所有槽 —— 对应 Qt 的 emit signal(args) → activate
+    void operator()(int value) const {
+        for (auto& f : slots) f(value);   // Qt 的 QMetaObject::activate 就是遍历连接表
+    }
+};
+
+int main() {
+    ProgressSignal progress;
+    // 槽 1：UI 线程里更新进度条（此处用打印模拟）
+    progress.connect([](int pct){ std::cout << "[UI] progress=" << pct << "%\n"; });
+    // 槽 2：另一个关心进度的消费者（日志），与槽 1 完全解耦
+    progress.connect([](int pct){ std::cout << "[LOG] persisted " << pct << "%\n"; });
+
+    for (int i = 0; i <= 100; i += 25) progress(i);  // 模拟后台任务逐步 emit
+    return 0;
+}
+```
+
+- `[标准]`：`std::function` + 容器即"类型擦除的槽表"；Qt 用 `QMetaObject` 元数据表做同类事情，但额外支持了**跨线程排队**（`QueuedConnection`）与运行时 introspection。
+- `[经验]`：看懂这个 20 行例子，你就理解了 Qt 信号槽 90% 的运行语义；剩下 10% 是线程 marshaling 与 moc 生成的元数据。
+
+### ㉑.3 真实 Qt API 长什么样（注释呈现，需 Qt 链接）
+
+下面才是你在 `qmake`/`CMake` 工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
+
+```cpp
+// ㉑.3 真实 Qt 6 写法（仅注释演示，需 Qt 链接；本门禁按空块编译通过）：
+//   #include <QCoreApplication>
+//   #include <QObject>
+//   #include <QTimer>
+//   class Downloader : public QObject {
+//       Q_OBJECT
+//   signals:
+//       void progress(int pct);                 // 后台线程 emit progress(i)
+//   public slots:
+//       void onProgress(int pct) {             // UI 线程槽：更新 QProgressBar
+//           ui->bar->setValue(pct);
+//       }
+//   };
+//   // 跨线程安全连接：自动排队到接收者所在线程的事件循环（代替手写互斥+条件变量）
+//   connect(&dl, &Downloader::progress, &win, &Window::onProgress,
+//           Qt::QueuedConnection);
+//   官方文档：https://doc.qt.io/qt-6/signalsandslots.html
+```
+
+### ㉑.4 一个 Qt 6 工程到底怎么跑起来（端到端步骤）
+
+1. **写类**：在头文件里 `class X : public QObject { Q_OBJECT ... signals:/slots: }`。
+2. **moc 介入**：构建系统发现 `Q_OBJECT` 后，调用 `moc` 生成 `moc_x.cpp`（见第③节真实产物）——这一步由 CMake 的 `AUTOMOC` 或 qmake 自动完成，**你不用手动跑 moc**。
+3. **链接**：`find_package(Qt6 COMPONENTS Core Widgets)` + `target_link_libraries(app Qt6::Widgets)`。
+4. **事件循环**：`QApplication app(argc, argv); app.exec();` 所有信号槽、定时器、`deleteLater` 都靠这个循环驱动。
+5. **跨平台**：同一份 `.cpp`，在 Windows/macOS/Linux 各自原生编译出原生外观的二进制——这正是 1991 年 Trolltech 的初心。
+
+- `[平台·Qt]`：现代 Qt 工程几乎一律用 CMake + `AUTOMOC/AUTOUIC/AUTORCC`，不要再碰老式 `.pro`/`qmake` 新项目。
+- `[引用]` Qt 6 官方文档总入口：`https://doc.qt.io/qt-6/`；信号槽：`https://doc.qt.io/qt-6/signalsandslots.html`。
+
 ## 附录 A：MOC 为什么存在 —— 标准 C++ 尚无法替代 [B: Principle]
 
 ```
@@ -811,6 +910,105 @@ int main() { std::cout << fact(5) << '\n'; }
 ```
 
 [标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+
+</details>
+
+### 练习 4（难度 ★★★ · 应用导向）
+
+真实场景：你在写一个**下载器**，后台线程算出进度百分比，想让 UI 线程安全地更新进度条。
+为什么不能直接在后台线程改 UI？用标准 C++ 演示"后台算、前台看"的等价语义（无需 Qt），
+并说明 Qt 里对应的 `moveToThread` + `Qt::QueuedConnection` 解决了同一问题。
+
+<details><summary>答案与解析</summary>
+
+Qt 的 `QueuedConnection` 本质是把 `emit progress(i)` 打包成事件，投递到接收者所在线程的
+事件循环，从而避免了手写互斥与轮询。下面用标准库复刻这一"跨线程观察"语义：
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <atomic>
+#include <chrono>
+int main() {
+    std::atomic<int> pct{0};
+    std::thread worker([&]{               // 后台"下载线程"，对应 worker 对象 moveToThread 后
+        for (int i = 0; i <= 100; i += 10) {
+            pct.store(i);                 // 对应 emit progress(i)
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        }
+    });
+    // 主线程轮询；真实 Qt 里由事件循环在 onProgress 槽中更新 UI，无需手写轮询
+    while (pct.load() < 100) {
+        std::cout << "UI sees " << pct.load() << "%\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+    worker.join();
+    return 0;
+}
+```
+
+[标准] `std::atomic` 提供无锁跨线程可见性；Qt 用事件队列替代裸原子，换取"在主线程安全触达 UI 对象"。
+[引用] Qt 线程与事件循环：`https://doc.qt.io/qt-6/threads-qobject.html`（官方，讲清 moveToThread 与 QueuedConnection）。
+
+</details>
+
+### 练习 5（难度 ★★ · 应用导向）
+
+真实场景：某**汽车座舱 HMI** 用 Qt 搭界面，菜单结构是"菜单→子菜单→控件"的树。
+设计一个 `QObject` 所有权树，说明 `parent` 析构时如何自动释放全部子孙（避免手动 `delete` 漏网）。
+用标准 C++ 演示等价的"父析构级联释放"语义。
+
+<details><summary>答案与解析</summary>
+
+Qt 的父子所有权 = "父 `QObject` 析构时递归 `delete` 所有子对象"。标准 C++ 用 `unique_ptr` 树
+得到等价且零开销的自动释放：
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <memory>
+struct Node {                                  // 对应一个 QObject（菜单/子菜单/控件）
+    std::vector<std::unique_ptr<Node>> children; // 独占所有权 => 父析构自动释放全部子孙
+    ~Node() { std::cout << "dtor\n"; }           // 验证：无需手写 delete
+};
+int main() {
+    auto root = std::make_unique<Node>();
+    root->children.push_back(std::make_unique<Node>()); // 子菜单
+    root->children.push_back(std::make_unique<Node>()); // 子菜单
+    // root 离开作用域时，两个子节点随 vector 一起被析构——正是 Qt parent/child 的语义
+    return 0;
+}
+```
+
+[标准] `std::unique_ptr` 的析构沿成员递归，是唯一所有权下的零开销 RAII（见 ch41）；Qt 用运行期
+父子指针实现同类"级联释放"，但额外支持跨线程 `deleteLater`（事件循环空档才删）。
+[引用] Qt 对象树与所有权：`https://doc.qt.io/qt-6/objecttrees.html`（官方，汽车/工业 HMI 必读）。
+
+</details>
+
+### 练习 6（难度 ★★ · 设计权衡）
+
+Qt 5 引入的**新式 `connect(&a,&A::sig,&b,&B::slot)`** 相比旧式 `SIGNAL/SLOT("sig(int)")` 字符串，
+类型安全来自哪里？写一段最小代码说明"成员函数指针连接"为何能在编译期拦错。
+
+<details><summary>答案与解析</summary>
+
+旧式宏把信号/槽名拼成字符串，匹配推迟到运行期（`QMetaObject::activate` 里按名查找）——拼错
+只在运行期崩。新式 `connect` 用**成员函数指针**做连接目标，编译器在编译期就校验签名一致：
+
+```cpp
+#include <iostream>
+struct B { void slot(int){ std::cout << "ok\n"; } };
+int main() {
+    // 编译期即确认 B 确有 void(int) 成员；若写成 &B::slot(float) 直接编译失败
+    void (B::*fp)(int) = &B::slot;   // 类型安全的"连接目标"，正是新式 connect 的底层
+    (void)fp;
+    return 0;
+}
+```
+
+[标准] 成员函数指针携带确切签名，参与重载决议与类型检查；旧式字符串绕过了这一切。
+[引用] 新式 Signal/Slot 语法：`https://doc.qt.io/qt-6/signalsandslots-syntaxes.html`（含新旧对比）。
 
 </details>
 
