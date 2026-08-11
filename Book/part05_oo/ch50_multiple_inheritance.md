@@ -917,69 +917,6 @@ ret
 
 **深度补遗（this 调整的内存形态）**：GCC 在 MI 下生成的 `dynamic_cast<B2*>` 读取 vtable 偏移表后做指针算术，等价于手写 `mov rax, [rdi+0x8]`（取 `top_offset`）再 `add rdi, [rax]`；而 thunk 路径为 `sub rdi, 0x10` 后尾跳。二者均在 L1 cache 内完成，故 this 调整本身约 1–2 cycle，瓶颈在 `dynamic_cast` 的 RTTI 字符串比较（`strcmp` of mangled name），可用 `RDTSC` 量化。
 
-<details><summary>答案与解析</summary>
-
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
-
-```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
-```
-
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
-
-</details>
-
-### 练习 2（难度 ★★）
-
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
-
-<details><summary>答案与解析</summary>
-
-C++20 概念取代 SFINAE 做编译期约束：
-
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-</details>
-
-### 练习 3（难度 ★★）
-
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
-
-<details><summary>答案与解析</summary>
-
-```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
-```
-
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
-
-</details>
-
-
-
-
-
-
-
-
-
-
-
-
 ## 附录：用法演绎 — 菱形继承：要不要 virtual？
 
 > 场景：设计一个 `Widget` 同时具备 `Drawable` 与 `Clickable`，二者都继承自 `Object`（含 id/refcount）。

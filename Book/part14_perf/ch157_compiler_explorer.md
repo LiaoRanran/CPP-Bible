@@ -627,26 +627,24 @@ ret
 
 ### 练习 1（难度 ★★）
 
-**真实场景：** 你写了一个 `max` 函数模板，怀疑它在 `-O0` 和 `-O3` 下生成的代码差异巨大。请在 **Compiler Explorer（godbolt.org）** 上把同一份代码分别设为 `-O0` 与 `-O3`，截屏对比：哪个级别把比较+三元运算符优化成了 `cmp`/`cmov` 甚至内联展开？为何这种"看汇编验证"比只看基准数字更可靠？
+**真实场景：** 你把下面这段极简代码贴进 **Compiler Explorer（godbolt.org）**，x86-64 GCC 选 `-O2`，再切到 `-O0` 对照。问题：`square(5)` 在 `-O2` 下 `main` 里会不会出现 `call square` 或 `imul` 指令？为什么？在 CE 里确认：`-O2` 下 `square` 被**内联**且其参数被**常量折叠**，`main` 中只剩一条把常数 `25` 搬入寄存器的 `mov`（无 `imul`、无 `call`）；而 `-O0` 下你能看到真实的 `imul` 指令与一次 `call square`。这种"直接看编译器吐出的汇编"为何比跑基准数字更可靠？
 
 <details><summary>答案与解析</summary>
 
-`-O0` 几乎逐语句翻译（多次 `call`、栈上反复存取）；`-O3` 把 `max` 内联、用 `cmp`+条件移动或 `maxss` 之类指令直接算。看汇编能确认"到底生成了什么"，避免被基准噪声误导。
+`-O0` 逐语句翻译：`square` 本体生成 `imul`，`main` 里 `call square` 后再交给 `cout`；`-O2` 把 `square(5)` 视为编译期可求的常量，`5*5` 折叠成 `25`，函数被内联展开，于是 `main` 中既无 `imul` 也无 `call`，只有把 `25` 装入寄存器交给 `cout` 的指令。看汇编能确认"到底生成了什么"，不被基准噪声或链接细节误导。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+int square(int x) { return x * x; }
+int main() { std::cout << square(5) << '
+'; }
 ```
 
-[标准] 模板参数推导按实参进行（[temp.deduct]）；优化级别不影响可观察行为，只影响生成的指令。
+[标准] 内联与常量折叠均为优化器行为，标准不保证；`-O2` 通常对纯函数 + 常量实参同时做二者，可在 CE 切换 `-O0`/`-O2` 直观对照。
 
-[引用] Compiler Explorer <https://godbolt.org/>；对比方法见本手册 ch157 附录 J 决策流；`std::cmp_less` 见 <https://en.cppreference.com/w/cpp/utility/cmp/cmp_less>。
+[引用] Compiler Explorer <https://godbolt.org/>；GCC 优化选项 <https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html>；本手册 ch157 附录 J 决策流给出"何时该去 CE 看汇编"的判断框架。
 
 </details>
-
 ### 练习 2（难度 ★★）
 
 **真实场景：** 你写了一个连续数组求和循环，想确认编译器真的把它**向量化**了，而不是只做了标量展开。请在 CE 上把优化级别调到 `-O3`，在汇编输出里查找什么特征（如 `ymm`/`zmm` 寄存器、`vaddps`/`vaddss`）来判定已向量化？写一段"对向量化友好"的代码放进去验证。
