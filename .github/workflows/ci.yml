@@ -161,6 +161,24 @@ jobs:
         test -f /usr/bin/g++-${{ matrix.version }}
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ matrix.version }} 100
 
+    - name: Assert GCC toolchain version (钉 15.x，预警 !=15.3.0)
+      if: matrix.compiler == 'gcc'
+      # asm 证据基线(Examples/*.asm)由 GCC 15.3.0 生成；CI 编译门禁须用主版本 15 以保证
+      # 与证据一致的语言前端行为。若 PPA 给出非 15 主版本(14/16 漂移)→ 硬失败；
+      # 若仅为补丁版本偏离 15.3.0 → 仅 ::warning（编译门禁仍有效，但重生成 asm 须回本地
+      # mingw1530 15.3.0）。本地可用仓库 Dockerfile(gcc:15.3.0) 精确复现。
+      run: |
+        ver=$(g++ --version | head -1)
+        echo "GCC version: $ver"
+        major=$(echo "$ver" | grep -oE ' [0-9]+' | head -1 | tr -d ' ')
+        if [ "$major" != "15" ]; then
+          echo "::error::GCC 主版本为 $major，期望 15（asm 证据基线 GCC 15.3.0）。请修正工具链安装。"
+          exit 1
+        fi
+        if ! echo "$ver" | grep -q "15.3.0"; then
+          echo "::warning::GCC 为 $ver，非证据基线 15.3.0；编译门禁可用，但 Examples/*.asm 重生成须用本地 mingw1530 15.3.0。"
+        fi
+
     - name: Install Clang
       if: matrix.compiler == 'clang'
       continue-on-error: true   # 交叉验证性质；即便 LLVM 源临时不可用也别让整 job 因基础设施红
