@@ -725,7 +725,7 @@ int main(){auto p=std::make_shared<S>(10,20);std::cout<<p->a<<","<<p->b<<std::en
 |---|---|
 | sizeof...(Ts)? | 编译期常量(参数个数) |
 | 4种折叠? | unary left=(...+p), unary right=(p+...), binary left=(0+...+p), binary right=(p+...+0) |
-| 空包折叠? | &&=true, ||=false, +=error(需binary fold) |
+| 空包折叠? | &&=true, \|\|=false, +=error(需binary fold) |
 | 递归vs折叠? | 折叠编译时间不随N增长; GCC15.3实测 N=100→1.1×, N=1000→95× |
 | make_shared参数? | 可变参数+完美转发→构造函数 |
 

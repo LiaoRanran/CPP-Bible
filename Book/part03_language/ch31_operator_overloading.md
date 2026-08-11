@@ -253,7 +253,7 @@ int main(){std::cout<<"operator重载总结: 保留原始语义, 避免歧义, <
 | () (调用) | 成员函数 | 必须是成员 |
 | << >> (流) | 自由函数（friend） | 左操作数是 std::ostream |
 | -> * (解引用) | 成员函数 | 模拟指针行为 |
-| && || , (逻辑/逗号) | 不推荐重载 | 丢失短路求值语义 |
+| && \|\| , (逻辑/逗号) | 不推荐重载 | 丢失短路求值语义 |
 
 ```cpp
 #include <iostream>
@@ -388,7 +388,7 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 | Eigen | Matrix operator* | 表达式模板消除临时对象 |
 | fmtlib | operator""_format | 编译期格式字符串验证 |
 | std::chrono | operator""ms | 字面量时间单位(类型安全) |
-| Boost.Spirit | operator>> | parser组合(>>=then, |=or) |
+| Boost.Spirit | operator>> | parser组合(>>=then, \|=or) |
 
 ### 面试
 

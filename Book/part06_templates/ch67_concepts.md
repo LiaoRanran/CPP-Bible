@@ -998,7 +998,7 @@ flowchart TD
 | 5 | concept → 约束占位 | `template<C T>` 把 concept 写在参数位，最干净 |
 | 6 | concept → 偏序 | 更受约束的 concept 在重载决议中优先 |
 | 7 | type trait → bool 化 | concept 本质是 bool 化编译期谓词 |
-| 8 | bool 化 → 组合 | concept 用 &&/||/! 组合原子约束 |
+| 8 | bool 化 → 组合 | concept 用 &&/\|\|/! 组合原子约束 |
 | 9 | SFINAE → void_t | concept 可读替代 void_t 探测 |
 | 10 | 组合 → 可变参数 concept | `(Addable<Ts> && ...)` 约束包内每个类型 |
 | 11 | 偏序 → 重载决议 | 更受约束候选在决议中胜出 |

@@ -1048,9 +1048,9 @@ flowchart TD
 |---|---|---|
 | 视图不拥有数据 | view 惰性 | 惰性源于视图仅引用底层范围而非拥有 |
 | 底层范围生命周期 > 视图 | view 惰性 | 视图安全的前提是底层活得更久 |
-| 管道 operator| | views::filter | `|` 把 filter 接到前驱范围形成管道 |
-| 管道 operator| | views::transform | `|` 把 transform 接到前驱范围 |
-| 管道 operator| | views::split | `|` 把 split 接到前驱范围 |
+| 管道 operator\| | views::filter | `|` 把 filter 接到前驱范围形成管道 |
+| 管道 operator\| | views::transform | `|` 把 transform 接到前驱范围 |
+| 管道 operator\| | views::split | `|` 把 split 接到前驱范围 |
 | view 惰性 | views::filter | filter 是惰性视图的一种 |
 | view 惰性 | views::transform | transform 是惰性视图的一种 |
 | view 惰性 | views::split | split 是惰性视图的一种 |

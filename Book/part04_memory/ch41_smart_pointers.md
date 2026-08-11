@@ -2191,7 +2191,7 @@ flowchart TD
 | SP --> WP | 智能指针家族含弱引用 weak_ptr |
 | SH --> RN | shared_ptr 以引用计数实现共享 |
 | SH --> CP | 共享所有权易形成循环引用 |
-| WP -.->|"打断"| CP | weak_ptr 用于打断循环引用 |
+| WP -.->\|"打断"\| CP | weak_ptr 用于打断循环引用 |
 | UP --> MOVE | unique_ptr 依赖移动语义转移所有权 |
 | SH --> RAII | shared_ptr 是 RAII 的典型体现 |
 | SP --> DL | 智能指针支持自定义删除器 |

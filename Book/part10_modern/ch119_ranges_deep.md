@@ -612,7 +612,7 @@ int main() {
 |---|---|
 | ranges核心创新? | 惰性求值+管道组合+投影 |
 | view定义? | O(1)拷贝/移动, 不拥有数据 |
-| filter|transform=几个循环? | 1个(编译器融合) |
+| filter\|transform=几个循环? | 1个(编译器融合) |
 | ranges和C++23迭代器? | contiguous_iterator, sentinel概念 |
 | 何时不用ranges? | 单操作, 多分支代码, 预C++20 |
 

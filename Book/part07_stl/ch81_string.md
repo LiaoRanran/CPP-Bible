@@ -1068,6 +1068,8 @@ flowchart TD
 | ch124 libstdcxx | ch81 string | _Hashtable/字符串源码阅读入口 |
 | ch98 堆算法 | ch81 string | 连续容器与缓冲区思想相通 |
 
+| 操作 | 汇编 | 复杂度 | 备注 |
+|---|---|---|---|
 | `sv.size()` | `mov rax,[sv+0]`（取 len 字段） | O(1) | 无 |
 
 ## 附录 D5：真实基准与性能分析 — SSO 边界的性能断崖（GCC 15.3.0）

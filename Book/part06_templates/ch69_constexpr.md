@@ -1092,7 +1092,7 @@ flowchart TD
 | lookup `CT_TABLE` ×100M | 127.684 | 查表 ≈1.28ns/次（L1 命中） |
 | call `std::sin` ×100M | 6845.629 | 查表快 53.6× |
 | call 自写 `csin` ×100M | 2040.683 | 慢于查表 |
-| max|`CT_TABLE` − `std::sin`| | 1.035e-11 | 最大绝对误差 |
+| max\|`CT_TABLE` − `std::sin`\| | 1.035e-11 | 最大绝对误差 |
 
 ### D5.2 非显然结论
 

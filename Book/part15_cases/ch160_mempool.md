@@ -1255,4 +1255,6 @@ int main() {
 ### D5.4 方法学注
 
 基准源码见库根 `_bench_d5_ch160_mempool.cpp`，以 `g++ -O2 -std=c++23` 编译，`std::chrono::steady_clock` 计时，`volatile` sink 防死代码消除；AMD Ryzen 9 7940HX，5 轮取中位。绝对毫秒随编译器/微架构而变，**加速比（3.34×）才是可移植信号**。
+| 关联章 | 位置 | 说明 |
+|---|---|---|
 | 第151章 benchmark | Book/part13_engineering/ch151_benchmark.md | 3.58x 加速基准方法同源 |
