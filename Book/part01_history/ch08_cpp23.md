@@ -797,59 +797,113 @@ count_even(const std::vector<int>&) @ -O2 (98 B):
 
 ### 练习 1（难度 ★★）
 
-**真实场景：构建工具的整数配置聚合。** 你写一个 C++23 构建/版本工具，把若干个整数配置计数器（超时、重试、并发度）相加；误传浮点/字符串时应被编译期拒绝而非运行期崩溃。请用 `std::integral` 概念约束 `add`，使浮点调用给出清晰的错误。
+**真实场景：多路传感器并行采样对齐。** 你写一个 C++23 数据采集工具，要把来自三个通道（温度、湿度、压强）的采样序列**按位置一一配对**做聚合，并给每个采样点带上序号；手写下标循环既易越界又要自己管长度对齐。请用 C++23 的 `std::views::zip` 把多个范围"打包"成并行迭代视图，再用 `std::views::enumerate` 给结果标上索引（两个都是 C++23 新增的惰性范围适配）。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+C++23 把多个 range 按元素位置绑定成单个"元组视图"，并可直接给迭代标上下标，无需拷贝、无需手写索引：
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <ranges>
+#include <vector>
+int main() {
+    std::vector<int> temp{21, 22, 19};
+    std::vector<int> hum {55, 60, 52};
+    std::vector<int> pres{101, 102, 100};
+    // zip 把三路按位置绑定；结构化绑定解包每个元素
+    for (auto [t, h, p] : std::views::zip(temp, hum, pres)) {
+        std::cout << "T=" << t << " H=" << h << " P=" << p << '\n';
+    }
+    // enumerate 给单路迭代附上下标 (C++23，替代手写的 size_t i 计数)
+    for (auto [i, v] : std::views::enumerate(temp)) {
+        std::cout << "sample#" << i << "=" << v << '\n';
+    }
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] `std::views::zip` 返回惰性视图，迭代时产生由各 range 对应元素构成的结构化绑定元组；`std::views::enumerate`（P2164R9，C++23）返回 `(index, value)` 对，替代"手写下标 + 解引用"的老写法。
 
-[引用] ISO C++20 §[concepts]；cppreference "std::integral"（https://en.cppreference.com/w/cpp/concepts/integral）。C++23 延续并扩展了概念生态（如论文 P0847R3 的推导指引）。
+[实现·GCC15] 上述程序在 GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 下实测可编可链，先输出三行并行采样，再输出带序号的 `sample#0=21 …`。
+
+[经验] zip 是视图（不拥有数据），迭代以最短 range 为准；若三通道长度不一致，多余尾部会被静默截断，生产环境应先用 `std::ranges::equal` 或断言长度一致。enumerate 的下标类型为无符号的 `range_difference_t`，不要与有符号量混算。
+
+[算法] 时间 O(N) 单次遍历、空间 O(1)（仅视图包装，无中间容器）。
+
+[引用] WG21 P2321R2（zip_view 等 ranges 适配）、P2164R9（std::views::enumerate）；cppreference "std::views::zip"（https://en.cppreference.com/w/cpp/ranges/zip_view）、"std::views::enumerate"（https://en.cppreference.com/w/cpp/ranges/enumerate）。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-**真实场景：编译期常量表生成。** 你写一个 C++23 数值/组合工具，需要把"阶乘"等常量在编译期算好塞进 `constexpr` 表（呼应本章 `std::expected`/`std::generator` 等大量编译期增强）。请写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+**真实场景：跨字节序的网络协议编解码。** 你写一个 C++23 网络/文件解析器，从大端（big-endian）字节流里读出 32 位整型；自己写移位反转既啰嗦又易错（尤其要区分无符号类型）。请用 C++23 的 `std::byteswap` 在一条表达式里完成字节序翻转，并对比手动写法说明其优势。
 
 <details><summary>答案与解析</summary>
 
+`std::byteswap`（P1272R4，C++23，头 `<bit>`）把一个整数类型的字节序整体反转，且**只对无符号整数有意义**：
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <bit>
+#include <cstdint>
+int main() {
+    std::uint32_t big = 0x01020304u;          // 大端视角下的字节
+    std::uint32_t host = std::byteswap(big);  // 翻转成本机序
+    std::cout << std::hex << "host=0x" << host << '\n'; // 0x04030201
+    std::uint32_t net = 0x0a0b0c0du;          // 网络字节序(大端)
+    std::cout << "swapped=0x" << std::byteswap(net) << '\n'; // 0x0d0c0b0a
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `std::byteswap<T>` 要求 `T` 为无符号整数或枚举类型；翻转的是"对象表示"的字节顺序，与主机大小端无关（同一调用在任意平台都做纯字节反转）。
 
-[引用] ISO C++ §[expr.const]；cppreference "constexpr"（https://en.cppreference.com/w/cpp/language/constexpr）。C++23 进一步放宽 constexpr（如部分容器可在常量表达式中使用，见论文 P2448R2），与本章 `std::expected`/`std::generator` 的编译期能力呼应。
+[实现·GCC15] 上述程序在 GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 下实测可编可链；`<bit>` 自 GCC 12 起提供 `std::byteswap`，C++23 正式纳入。
+
+[经验] 不要对 `int` 等带符号类型用 byteswap——符号位参与反转会得到错误数值；网络解析应统一用 `std::uintN_t`。它与 C 的 `htonl/ntohl` 等价但类型安全、且为 `constexpr`（编译期可求值）。
+
+[算法] 复杂度 O(1)，通常编译为单条 `BSWAP` 指令（x86），无循环、无分配。
+
+[引用] WG21 P1272R4（std::byteswap）；cppreference "std::byteswap"（https://en.cppreference.com/w/cpp/numeric/byteswap）。
 
 </details>
 
 ### 练习 3（难度 ★★★）
 
-**真实场景：多指标聚合/哈希种子合并。** 你写一个 C++23 小工具，要把任意个整数指标（或哈希种子）汇总成一个总和，调用点传入个数不定。请用折叠表达式写一个 `sum` 可变参数函数，计算任意个数实参之和。
+**真实场景：惰性斐波那契/序列生成器。** 你写一个 C++23 数值工具，需要对外暴露"按需产出"的序列（斐波那契、素数、分页游标……），但不想一次性把所有元素塞进 `vector`（内存不可控、且多数消费方只看前 N 个）。请用 C++23 的 `std::generator` 写一个惰性序列，让调用方用 `for` 循环按需取值，并结合 `views::take` 限制用量避免无限循环。
 
 <details><summary>答案与解析</summary>
 
+`std::generator<T>`（P2168R5，C++23，头 `<generator>`）基于协程，迭代时才 `co_yield` 出下一个值，零预分配：
+
 ```cpp
 #include <iostream>
-template <typename... Ts> auto sum(Ts... ts) { return (0 + ... + ts); }
-int main() { std::cout << sum(1, 2, 3, 4) << '\n'; }
+#include <generator>
+#include <ranges>
+std::generator<unsigned long long> fib() {
+    unsigned long long a = 0, b = 1;
+    while (true) {
+        co_yield a;
+        auto next = a + b; a = b; b = next;
+    }
+}
+int main() {
+    // take(10) 只取前 10 个，生成器不会真的无限循环
+    for (auto v : fib() | std::views::take(10)) {
+        std::cout << v << ' ';
+    }
+    std::cout << '\n';
+}
 ```
 
-[标准] 一元左折叠 `(init + ... + ts)` 展开为 `((((0+1)+2)+3)+4)`。
+[标准] `std::generator` 满足 `input_range`；其 `begin()` 首次恢复协程、每次 `operator++` 恢复并取下一个 `co_yield` 值，到 `co_return`/结束即 `end()`。`views::take(N)` 把无限生成器裁成有限范围。
 
-[引用] ISO C++17 §[expr.prim.fold]；cppreference "折叠表达式"（https://en.cppreference.com/w/cpp/language/fold）。折叠表达式语法在 C++23 亦支持二元右折叠等扩展，仍是零开销的变参聚合手段。
+[实现·GCC15] 上述程序在 GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 下实测可编可链，输出 `0 1 1 2 3 5 8 13 21 34`。注意 `fib()` 须按值返回 `generator`（协程句柄由标准库管理所有权）。
+
+[经验] 生成器每次 `co_yield` 会在堆上分配/复用协程帧（见本章附录 G.2 汇编实证），故高频极小步长循环要权衡；与 `views::take`/`views::filter` 组合可表达"惰性 + 受限"管线，正是 Ranges 与协程协作的范式。
+
+[算法] 时间 O(N) 产出 N 项、空间 O(1)（除协程帧）；对比一次性 `vector` 预生成，省去整段存储。
+
+[引用] WG21 P2168R5（std::generator）；cppreference "std::generator"（https://en.cppreference.com/w/cpp/coroutine/generator）。
 
 </details>
 
