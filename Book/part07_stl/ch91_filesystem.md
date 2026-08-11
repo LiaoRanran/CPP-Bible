@@ -405,7 +405,7 @@ int main() {
 |---|---|---|
 | N1975 (Beman Dawes) | Filesystem Library Proposal | 统一 POSIX/Windows 文件操作，消除 `dirent`/`IO.h` 分裂 |
 | N4100 | File System TS | 先以 Technical Specification 形式落地 `std::experimental::filesystem` |
-| P0218 | Adoptestd::filesystem` into C++17 | 把 TS 正式纳入 C++17 标准库 |
+| P0218 | Adopt `std::filesystem` into C++17 | 把 TS 正式纳入 C++17 标准库 |
 | P0492 | Proposed Resolution for filesystem issues | 修复 `path` 编码、`equivalent` 语义等缺陷 |
 | P1031 | Low-level file I/O | 后续尝试提供更接近 OS 的文件 IO（未进标准） |
 

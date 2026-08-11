@@ -260,7 +260,7 @@ int main() {
 }
 ```
 
-#### ③.5 真实场景：捕获驱动的排序谓词 / 过滤 / 事件回调
+### ③.5 真实场景：捕获驱动的排序谓词 / 过滤 / 事件回调
 
 下面三个程序把"捕获"落到工业常见场景，证明 lambda 不是玩具，而是**策略即数据**的载体。
 
@@ -696,7 +696,7 @@ int main() {
 ```
 > **[经验]** `std::ref` 包成 `reference_wrapper` 后存入 `std::function` 会**存引用而非拷贝**；注意生命周期，别让被引用对象先销毁。
 
-#### ⑪.5 实战：异步任务（std::async / std::thread）中的 lambda
+### ⑪.5 实战：异步任务（std::async / std::thread）中的 lambda
 
 lambda 是并发任务的天然载体，但**捕获的生命周期**在异步场景下尤为致命（见 ⑱）。
 
@@ -968,7 +968,7 @@ int main() {
 ```
 > **[经验]** 写"接受回调并执行"的泛型设施时，内部用 `std::invoke` 而非直接 `f(args...)`，可同时兼容成员函数指针与 `reference_wrapper`，这是 ch27（可调用对象体系）的核心。
 
-#### ⑰.5 实战：lambda 配合 STL 数值/算法（ch80 深挖）
+### ⑰.5 实战：lambda 配合 STL 数值/算法（ch80 深挖）
 
 lambda 是 STL 算法的"谓词/操作"首选。下面四个程序覆盖 `transform` / `accumulate` / `remove_if` + `erase` / `partition`。
 

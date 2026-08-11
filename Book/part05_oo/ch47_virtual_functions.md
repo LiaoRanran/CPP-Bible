@@ -419,7 +419,7 @@ void demo_r() { B* b = new D; delete b; }  // 正确：先 ~D 再 ~B
 ⟶ Book/part05_oo/ch48_rtti.md（RTTI 与 type_info）—— 虚表负偏移区存放 type_info 与 top_offset
 ⟶ Book/part05_oo/ch45_oop_object_model.md（对象模型基础）—— vtable 在对象布局中的相对位置
 
-#### 源码剖析 1：虚析构与 vtable 生成 @ Itanium C++ ABI（规范层）
+### 源码剖析 1：虚析构与 vtable 生成 @ Itanium C++ ABI（规范层）
 
 > 文件：`https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable`（规范）
 > 行号：§2.6.2 vtable 布局（规范文本，非行号）

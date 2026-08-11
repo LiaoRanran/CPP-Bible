@@ -465,7 +465,7 @@ void process(T v) {
 
 ## ⑬ 源码分析
 
-#### 源码剖析 1：type_info 对象布局 @ libstdc++（实现层）
+### 源码剖析 1：type_info 对象布局 @ libstdc++（实现层）
 
 > 文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/typeinfo`
 > 行号：约 `class type_info { ... const char* __name; ... };`

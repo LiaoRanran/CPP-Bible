@@ -416,7 +416,7 @@ struct D : M { D() : V(7) {} };   // D 的 V(7) 生效，M 的 V(1) 被忽略
 ⟶ Book/part05_oo/ch48_rtti.md（RTTI 与 type_info）—— 虚继承的 type_info 层次由最派生类构建
 ⟶ Book/part05_oo/ch45_oop_object_model.md（对象模型基础）—— 偏移表的底层存储语义
 
-#### 源码剖析 1：vbase offset 表布局 @ Itanium C++ ABI（规范层）
+### 源码剖析 1：vbase offset 表布局 @ Itanium C++ ABI（规范层）
 
 > 文件：`https://itanium-cxx-abi.github.io/cxx-abi/abi.html#vtable`（规范）
 > 行号：§2.6.3 virtual table layout for virtual base classes
