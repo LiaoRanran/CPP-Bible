@@ -731,14 +731,16 @@ Aligned : sizeof=64 alignof=64
 ```asm
 ; Examples/_ch143_align.asm（main 关键段）
 	call	__main
+	lea	rax, .LC0[rip]
 	mov	r8d, 4          ; alignof(Normal) = 4
 	mov	edx, 12         ; sizeof(Normal)  = 12
-	lea	rcx, .LC0[rip]
-	call	_Z6printfPKcz
+	mov	rcx, rax
+	call	__mingw_printf
+	lea	rax, .LC1[rip]
 	mov	r8d, 64         ; alignof(Aligned) = 64
 	mov	edx, 64         ; sizeof(Aligned)  = 64
-	lea	rcx, .LC1[rip]
-	call	_Z6printfPKcz
+	mov	rcx, rax
+	call	__mingw_printf
 ```
 
 ```cpp
