@@ -189,6 +189,16 @@ def run_site(index: dict) -> None:
         dst.write_text(new, encoding="utf-8")
         total_files += 1
         total_rw += n
+    # 1.5) 章节内联资产（Book/assets/，如历史贴图 *.jpg）
+    #     书内以 `../assets/history/x.jpg` 相对链接引用，解析到 docs 树内的
+    #     `Book/assets/history/x.jpg`；须随章文件一同进入 docs 树，否则
+    #     mkdocs --strict 把断链当错误中止构建（CI #273+ site 红的根因）。
+    src_assets = ROOT / "Book" / "assets"
+    if src_assets.is_dir():
+        dst_assets = out_docs / "Book" / "assets"
+        if dst_assets.exists():
+            shutil.rmtree(dst_assets)
+        shutil.copytree(src_assets, dst_assets)
     # 2) 根级导航件 CROSSREF.md（若存在）
     for extra in ("CROSSREF.md",):
         p = ROOT / extra

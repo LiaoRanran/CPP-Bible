@@ -1147,10 +1147,11 @@ int main() {
 ```cpp
 #include <atomic>
 #include <iostream>
+#include <thread>   // std::jthread 定义于此（C++20）
 int main() {
     std::atomic<unsigned long> enq{0};      // 无锁计数器替代"加锁计数"
     auto producer = [&] { for (int i = 0; i < 100000; ++i) enq.fetch_add(1, std::memory_order_relaxed); };
-    std::jthread a(producer), b(producer);  // 两生产者并发无锁累加
+    std::jthread a(producer), b(producer);  // 两生产者并发无锁累加；jthread 析构自动 join
     std::cout << enq.load() << '\n';
 }
 ```
