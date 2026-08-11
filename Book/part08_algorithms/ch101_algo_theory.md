@@ -993,7 +993,7 @@ add rdi, 0x0008             ; 收缩左界
 
 ### 练习 1（难度 ★★）
 
-**真实场景**：跨模块/跨 API 边界经常要比较两个"类型可能不同、且一个有符号一个无符号"的量（例如把 `size_t` 下标和 `int` 阈值比大小），直接用 `a < b` 在符号混合时会触发危险的"通常算术转换"误判。`std::cmp_less` 等安全比较工具正是为堵这个坑而生。请写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。为什么裸 `a < b` 在有符号/无符号混用时可能得出错误结果？
+**真实场景**：手写哈希表在做高频键值缓存（如 ⑨ 中 N=300000 插入+查找仅 5.8ms、比 `std::unordered_map` 快约 3×）的核心就在于开放寻址 + 线性探测。但开放寻址的删除不能直接清槽——否则会切断后续同桶键的探测链。请手写一个开放寻址（线性探测）哈希表，实现 `insert` / `find` / `remove` 三件套，并用"墓碑（tombstone）"标记删除；解释线性探测的探测序列 `idx=(h+i)&(cap-1)`，以及"主簇（primary clustering）"为何会让冲突成片聚集、最坏退化到 O(cap)。
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1020,59 +1020,169 @@ add rdi, 0x0008             ; 收缩左界
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+开放寻址把所有元素内联在桶数组里，冲突时沿探测序列找下一个空槽；删除用墓碑而非清 `used`，避免切断链：
 
 ```cpp
+#include <cstddef>
+#include <cstdint>
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <optional>
+
+struct Slot { int key; int val; bool used = false; bool tomb = false; };
+
+struct OAHash {
+    Slot* s; size_t cap; size_t sz = 0;
+    OAHash(size_t c) : cap(c) { s = new Slot[cap]; }   // 槽默认 used=tomb=false
+    ~OAHash() { delete[] s; }
+
+    static size_t hash(size_t k, size_t cap) {          // 乘性哈希，cap 为 2 的幂
+        return (k * 2654435761ULL) & (cap - 1);
+    }
+    bool insert(int key, int val) {
+        for (size_t i = 0; i < cap; ++i) {
+            size_t idx = (hash(key, cap) + i) & (cap - 1);  // 线性探测：步长恒为 1
+            if (s[idx].used && !s[idx].tomb && s[idx].key == key) { s[idx].val = val; return true; } // 更新
+            if (!s[idx].used) { s[idx] = Slot{key, val, true, false}; ++sz; return true; }            // 空槽或墓碑位复用
+        }
+        return false;                                    // 表满（装载因子=1）
+    }
+    std::optional<int> find(int key) const {
+        for (size_t i = 0; i < cap; ++i) {
+            size_t idx = (hash(key, cap) + i) & (cap - 1);
+            if (!s[idx].used && !s[idx].tomb) return std::nullopt; // 真正空槽：探测链断
+            if (s[idx].used && !s[idx].tomb && s[idx].key == key) return s[idx].val; // 墓碑位须继续探测
+        }
+        return std::nullopt;
+    }
+    bool remove(int key) {
+        for (size_t i = 0; i < cap; ++i) {
+            size_t idx = (hash(key, cap) + i) & (cap - 1);
+            if (!s[idx].used && !s[idx].tomb) return false;     // 不在表中
+            if (s[idx].used && !s[idx].tomb && s[idx].key == key) {
+                s[idx].used = false; s[idx].tomb = true;        // 墓碑：保留以不断链
+                --sz; return true;
+            }
+        }
+        return false;
+    }
+};
+
+int main() {
+    OAHash m(16);
+    m.insert(7, 70); m.insert(23, 230);   // 23&15==7：与 key=7 同桶，触发线性探测
+    std::cout << m.find(7).value_or(-1) << ' ' << m.find(23).value_or(-1) << '\n';
+    m.remove(7);
+    std::cout << m.find(7).value_or(-1) << ' '   // 删 7 后查不到
+              << m.find(23).value_or(-1) << '\n'; // 墓碑后仍能沿链查到 23
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[算法] 探测序列 `idx=(h+i)&(cap-1)` 在 `cap` 为 2 的幂时等价于取模；`i` 逐槽 +1 即线性探测。
 
-[引用] cppreference `std::cmp_less`：`https://en.cppreference.com/w/cpp/utility/intcmp/cmp_less`。符号安全比较的背景见 WG21 提案 P0518R1（`<utility>` 中的整数比较函数）。
+[标准] 开放寻址删除必须留墓碑：直接清 `used` 会让 `find` 在遇空槽时提前返回，漏掉墓碑后的同桶键（见 ② 的 `deleted` 标记说明）。
+
+[实现·GCC15.3.0] 上述程序在 MinGW GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 下干净编译（无警告）；`Slot{key,val,true,false}` 依赖聚合初始化，单测输出 `70 230` 与 `-1 230`。
+
+[经验] 线性探测的"主簇"：连续被占的槽会越长越长，新键一旦落入簇头就要逐槽探测到底，导致聚集成片、平均探测长度随装载因子平方上升——这正是 ⑧ 汇编里 `add rax,1` 逐槽试探的代价来源；改用双重哈希可打散主簇。
+
+[引用] cppreference 散列：<https://en.cppreference.com/w/cpp/utility/hash>；开放寻址原理见 ②、⑧、⑨ 与附录 ⑱（Python `dict` 同为开放寻址）。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-**真实场景**：库接口最怕"用户传了个浮点进来、编译期却通过了、运行时才出怪问题"。C++20 概念（concepts）把这种"类型约束"从运行期前移到编译期，并给出人类可读的错误。请用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。相比传统的 SFINAE/`enable_if`，概念报错好在哪里？
+**真实场景**：地图导航、网络路由、依赖调度都要回答"从起点到各点的最短代价"——这正是 Dijkstra 的领地（附录 A 里 Google Maps 就用 Dijkstra 变体）。请在一个小型邻接表（`vector<vector<pair<int,int>>>`）上实现 Dijkstra 单源最短路，用 `std::priority_queue` 作最小堆；说明 `dist > d[u]` 那个 `continue` 为什么要保留（lazy deletion）。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+Dijkstra 每次取出当前最近未定节点并松弛邻居；`priority_queue` 配 `greater<>` 当小顶堆：
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <queue>
+#include <vector>
+#include <limits>
+#include <utility>
+
+std::vector<long long> dijkstra(
+        int s, const std::vector<std::vector<std::pair<int,int>>>& adj) {
+    const long long INF = std::numeric_limits<long long>::max();
+    std::vector<long long> d(adj.size(), INF);
+    std::priority_queue<std::pair<long long,int>,
+                        std::vector<std::pair<long long,int>>,
+                        std::greater<>> pq;            // 小顶堆
+    d[s] = 0; pq.emplace(0, s);
+    while (!pq.empty()) {
+        auto [dist, u] = pq.top(); pq.pop();
+        if (dist > d[u]) continue;                    // 过期堆项：跳过
+        for (auto& [v, w] : adj[u])
+            if (d[u] + w < d[v]) { d[v] = d[u] + w; pq.emplace(d[v], v); } // 松弛
+    }
+    return d;
+}
+
+int main() {
+    std::vector<std::vector<std::pair<int,int>>> g(4);
+    g[0].emplace_back(1, 1); g[0].emplace_back(2, 4);
+    g[1].emplace_back(2, 2); g[1].emplace_back(3, 5);
+    g[2].emplace_back(3, 1);
+    auto d = dijkstra(0, g);
+    for (size_t i = 0; i < d.size(); ++i)
+        std::cout << "0->" << i << ':' << d[i] << ' ';
+    std::cout << '\n';
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[算法] 核心不变量：每次 `pop` 出的最小距离节点已确定。松弛即"经 u 到 v 是否更近"。
 
-[引用] cppreference `std::integral`：`https://en.cppreference.com/w/cpp/concepts/integral`。概念机制见 ISO §13.5（[temp.concept]）。
+[标准] 同一节点可被多次入堆（不同距离），`dist > d[u]` 必须跳过——这是 lazy deletion，否则会重复处理（见 ④）。Dijkstra 要求非负权；负权须用 Bellman-Ford。
+
+[实现·GCC15.3.0] 上述程序在 MinGW GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 干净编译；结构化绑定 `auto [dist,u]` 为 C++17 起特性，输出 `0->0:0 0->1:1 0->2:3 0->3:4`。
+
+[经验] 用 `greater<>` 而非手写比较器即可得小顶堆；时间复杂度 O((V+E)logV)。性能敏感时可用 `decrease-key` 或斐波那契堆，但工程上 lazy deletion 最简单。
+
+[引用] cppreference `std::priority_queue`：<https://en.cppreference.com/w/cpp/container/priority_queue>；最短路思想见 ④ 与附录 A（Google Maps）。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-**真实场景**：排查内存泄漏或"函数返回后还能不能访问局部变量"这类 bug，本质就是搞清栈对象与堆对象的生命周期——`{ int a; }` 在作用域结束自动析构，而 `new int` 分配的对象直到 `delete` 才释放，漏掉 `delete` 即泄漏。这也是 RAII/智能指针存在的根本动机。请解释栈对象与堆对象生命周期差异：`{ int a; }` 与 `new int` 的销毁时机有何不同？
+**真实场景**：资源受限下求最大收益——背包、预算分配、广告位投放都归约为 0/1 背包。它不能贪心（见 ⑦：按价值密度贪心只对分数背包成立），必须用动态规划。给定一组物品的重量/价值与容量 `W`，请实现 0/1 背包 DP，并用一维滚动数组把空间压到 O(W)；说明为何内层 `w` 必须**逆序**遍历。
 
 <details><summary>答案与解析</summary>
 
-栈对象在作用域结束自动析构；`new` 分配的对象直到 `delete` 才释放：
+状态 `dp[w]` = 容量 `w` 下的最大价值；逆序更新保证每件物品至多选一次：
 
 ```cpp
 #include <iostream>
-int main(){ int a=1; int* p=new int(2); /* ... */ delete p; }
+#include <vector>
+#include <algorithm>
+
+int knapsack(const std::vector<int>& wt, const std::vector<int>& val, int W) {
+    int n = static_cast<int>(wt.size());
+    std::vector<int> dp(W + 1, 0);
+    for (int i = 0; i < n; ++i)
+        for (int w = W; w >= wt[i]; --w)              // 逆序：避免重复选同一件
+            dp[w] = std::max(dp[w], dp[w - wt[i]] + val[i]);
+    return dp[W];
+}
+
+int main() {
+    std::vector<int> wt  = {2, 3, 4, 5};
+    std::vector<int> val = {3, 4, 5, 6};
+    std::cout << knapsack(wt, val, 8) << '\n';        // 容量 8 的最大价值
+}
 ```
 
-[标准] 遗漏 `delete` 即内存泄漏；这是 RAII/智能指针存在的根本动机。
+[算法] 递推 `dp[w] = max(dp[w], dp[w-wt[i]] + val[i])` 即"选/不选第 i 件"取优；满足最优子结构 + 无后效性（见 ⑥）。
 
-[引用] cppreference 存储期与对象生命周期：`https://en.cppreference.com/w/cpp/language/lifetime`。RAII 惯用法见 C++ 核心指南（C++ Core Guidelines）"R.1–R.5"（资源管理规则）。
+[标准] 内层必须逆序：`dp[w-wt[i]]` 须取"上一轮（未含第 i 件）"的值；若正序，`dp[w-wt[i]]` 已被本轮更新，会同一件被反复选（变无限背包）。省略第一维是 DP 滚动数组的典型空间优化（见 ⑥ 经验）。
+
+[实现·GCC15.3.0] 上述程序在 MinGW GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra` 干净编译；输出 `10`（选重量 3+5、价值 4+6）。
+
+[经验] 0/1 背包**不能贪心**：按价值/重量比贪心只对可拆分的"分数背包"成立（见 ⑦ 反例）。当 `W` 很大、物品多时，DP 的 O(nW) 可能过大——此时退而用贪心近似或 meet-in-the-middle。
+
+[引用] cppreference `std::max`：<https://en.cppreference.com/w/cpp/algorithm/max>；DP 思想与正确性前提见 ⑥、⑭。
 
 </details>
 
