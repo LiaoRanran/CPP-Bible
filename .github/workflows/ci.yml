@@ -144,40 +144,39 @@ jobs:
             name: 'Clang-19'
     name: Compile (${{ matrix.name }})
 
-    steps:
-    - uses: actions/checkout@v4
+    # 钉 GCC 15.3.0 容器：asm 证据基线(Examples/*.asm)由 mingw1530 GCC 15.3.0
+    # 生成；compile_exempt.json 的豁免清单是在 gcc-15.3.0 主版本下审计的。
+    # 用官方面定镜像而非 PPA(ppa:ubuntu-toolchain-r/test)，避免浮动 15.x 漂移
+    # 致豁免漏覆盖、Compile Gate 误报回归（见 #280 全红：PPA 在两次运行间换了
+    # 微版本，无需改内容即让 gate 失败）。仅 GCC 矩阵用容器；Clang 矩阵保持
+    # runner 默认（clang 仅交叉验证，门禁为 continue-on-error）。
+    container: ${{ matrix.compiler == 'gcc' && 'gcc:15.3.0' || null }}
 
-    - name: Install GCC
+    steps:
+    - name: Provision git + python3 in GCC container
+      # 官方 gcc:15.3.0 镜像是 Debian-slim，不含 git/python3；而 actions/checkout
+      # 与全部 python3 tools/* 步骤都依赖它们。容器以 root 运行且带 apt，故先装。
+      # Clang 矩阵在 runner 上（container=null），runner 自带 git/python3，跳过。
       if: matrix.compiler == 'gcc'
       run: |
-        sudo apt-get update
-        # ubuntu-latest (24.04) 默认源没有 gcc-15；apt 的包名替代机制会把 g++-15
-        # 解析成 clang-15 等错误包，导致 /usr/bin/g++-15 不存在。直接通过 PPA 安装
-        # 确保拿到真正的 gcc-15/g++-15。
-        sudo apt-get install -y software-properties-common
-        sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-        sudo apt-get update
-        sudo apt-get install -y gcc-${{ matrix.version }} g++-${{ matrix.version }}
-        test -f /usr/bin/g++-${{ matrix.version }}
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ matrix.version }} 100
+        apt-get update
+        apt-get install -y --no-install-recommends git python3
 
-    - name: Assert GCC toolchain version (钉 15.x，预警 !=15.3.0)
+    - uses: actions/checkout@v4
+
+    - name: Assert GCC toolchain version (钉 15.3.0，漂移即硬失败)
       if: matrix.compiler == 'gcc'
-      # asm 证据基线(Examples/*.asm)由 GCC 15.3.0 生成；CI 编译门禁须用主版本 15 以保证
-      # 与证据一致的语言前端行为。若 PPA 给出非 15 主版本(14/16 漂移)→ 硬失败；
-      # 若仅为补丁版本偏离 15.3.0 → 仅 ::warning（编译门禁仍有效，但重生成 asm 须回本地
-      # mingw1530 15.3.0）。本地可用仓库 Dockerfile(gcc:15.3.0) 精确复现。
+      # 仅校验主版本 == 15 仍不足（#280 已证：PPA 两次运行给出不同 15.x 微版本，
+      # 豁免漏覆盖即 gate 误红）。既然已钉 gcc:15.3.0 容器，这里强制补丁版本也 == 15.3.0：
+      # 不符即硬失败（绝不让"能编过但和证据基线语言前端不一致"的影子通过）。
       run: |
         ver=$(g++ --version | head -1)
         echo "GCC version: $ver"
-        major=$(echo "$ver" | grep -oE ' [0-9]+' | head -1 | tr -d ' ')
-        if [ "$major" != "15" ]; then
-          echo "::error::GCC 主版本为 $major，期望 15（asm 证据基线 GCC 15.3.0）。请修正工具链安装。"
+        if ! echo "$ver" | grep -q "15.3.0"; then
+          echo "::error::GCC 为 $ver，期望精确 15.3.0（asm 证据基线 / compile_exempt.json 审计基准）。容器镜像应固定为 gcc:15.3.0。"
           exit 1
         fi
-        if ! echo "$ver" | grep -q "15.3.0"; then
-          echo "::warning::GCC 为 $ver，非证据基线 15.3.0；编译门禁可用，但 Examples/*.asm 重生成须用本地 mingw1530 15.3.0。"
-        fi
+        echo "GCC 版本达成 15.3.0，与证据基线一致。"
 
     - name: Install Clang
       if: matrix.compiler == 'clang'
