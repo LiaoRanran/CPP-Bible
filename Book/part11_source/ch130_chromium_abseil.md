@@ -907,79 +907,161 @@ int main(){std::cout<<"Chromium=no exceptions+RTTI; Abseil=SwissTable+StatusOr"<
 
 ### 练习 1（难度 ★★）
 
-**真实场景：** Chromium / Abseil 代码库默认禁用异常与 RTTI，移动操作从不抛异常、因而总是比拷贝便宜。请写一个函数模板 `relocate`，用 `std::is_nothrow_move_constructible` 在编译期判断：当移动不抛异常时优先 `std::move`，否则退回拷贝。
+**真实场景：实现最小 `scoped_refptr<T>`（侵入式引用计数）。** Chromium 的 `base::RefCounted` 让对象自己实现 `AddRef()` / `Release()`，智能指针 `scoped_refptr<T>` 在构造/拷贝/赋值/析构时增减计数，计数归零才 `delete`。这正是本章 ④ Chromium base 库 的引用计数范式。请实现 `RefCountedBase`（含 `AddRef`/`Release`，计数到 0 自删）与模板 `scoped_refptr<T>`（禁止隐式类型转换、拷贝正确增减）。
 
 <details><summary>答案与解析</summary>
 
-用 `if constexpr` + 类型特性在编译期分支，避免运行期开销：
+计数放在对象自身（侵入式），指针只负责增减，不持有计数：
 
 ```cpp
-#include <type_traits>
+#include <cassert>
 #include <utility>
-// 无异常/RTTI 环境下移动安全，优先移动；否则退回拷贝
+
+struct RefCountedBase {
+    mutable unsigned refs = 0;
+    inline void AddRef() const { ++refs; }
+    inline bool Release() const { return --refs == 0; }
+};
+
 template <class T>
-void relocate(T& dst, T& src) {
-    if constexpr (std::is_nothrow_move_constructible_v<T>)
-        dst = std::move(src);
-    else
-        dst = src;
+class scoped_refptr {
+    T* ptr = nullptr;
+public:
+    scoped_refptr() = default;
+    explicit scoped_refptr(T* p) : ptr(p) { if (ptr) ptr->AddRef(); }
+    scoped_refptr(const scoped_refptr& o) : ptr(o.ptr) { if (ptr) ptr->AddRef(); }
+    scoped_refptr& operator=(const scoped_refptr& o) {
+        if (this != &o) { T* n = o.ptr; if (n) n->AddRef(); if (ptr) ptr->Release(); ptr = n; }
+        return *this;
+    }
+    ~scoped_refptr() { if (ptr && ptr->Release()) delete ptr; }
+    T* get() const { return ptr; }
+    T& operator*() const { return *ptr; }
+    T* operator->() const { return ptr; }
+};
+
+struct Buffer : RefCountedBase { int size = 0; };
+
+int main() {
+    scoped_refptr<Buffer> a(new Buffer);
+    scoped_refptr<Buffer> b = a;          // 计数 2
+    assert(a->refs == 2);
+    return 0;
 }
-int main() { int a = 1, b = 2; relocate(a, b); return a == 2 ? 0 : 1; }
 ```
 
-[标准] `if constexpr` 编译期分支；变量模板 `std::is_nothrow_move_constructible_v` 做类型特性判断。
+[标准] 计数内嵌于对象（侵入式）避免额外堆分配；`explicit` 构造防止裸指针隐式转换；拷贝/赋值遵循"先增后减"顺序避免自赋值悬垂。
 
-[引用] Abseil 文档：<https://abseil.io/docs/cpp/guides>; cppreference `std::is_nothrow_move_constructible`：<https://en.cppreference.com/w/cpp/types/is_move_constructible>。
+[实现·GCC15] 在 GCC 15.3.0 `-O2` 下 `AddRef`/`Release` 被内联，计数增减几乎零开销，对应 ⑥ PartitionAlloc / ⑪ 性能 里"少分配即快"的基调。
+
+[引用] Chromium `base/memory/ref_counted.h`（`scoped_refptr` / `RefCounted`）：<https://chromium.googlesource.com/chromium/src/+/main/base/memory/ref_counted.h>；本章 ④ Chromium base 库。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-**真实场景：** Abseil 的 `absl::Duration` 由整数 tick 计数构造（如 `absl::Nanoseconds(int64_t)`），"时长"语义上不应是浮点。请用 `std::integral` 概念约束模板，使浮点 tick 调用给出清晰编译错误。
+**真实场景：实现最小开放寻址哈希表（SwissTable 精神）。** Abseil `flat_hash_map` 用开放寻址 + 扁平数组，避免 `std::unordered_map` 的节点散列（每元素独立堆分配、缓存不友好）。请用 `std::string_view` 作键（避免拷贝，呼应 Abseil strings），实现一个最小线性探测哈希表：插入、查找、负载因子超 0.75 时 rehash。对比它与 `std::unordered_map` 的内存布局差异。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
+桶数组连续、探测解决冲突、负载因子触发翻倍 rehash：
 
 ```cpp
-#include <concepts>
-template <std::integral T>
-T ticks_to_ms(T ticks) { return ticks / 1000; }  // 示意：整数 tick 计数换算
-int main() { return ticks_to_ms(5000) == 5 ? 0 : 1; }
+#include <cstddef>
+#include <string_view>
+#include <vector>
+#include <optional>
+
+struct Entry { std::string_view key; int value; };
+
+class FlatMap {
+    std::vector<std::optional<Entry>> slots;
+    size_t used = 0;
+    size_t hash(std::string_view s) const {
+        size_t h = 1469598103934665603ull;          // FNV-1a 雏形
+        for (char c : s) h = (h ^ (unsigned char)c) * 1099511628211ull;
+        return h;
+    }
+    void rehash_if_needed() {
+        if (used * 4 < slots.size() * 3) return;     // 负载因子 0.75
+        size_t n = slots.size() * 2;
+        std::vector<std::optional<Entry>> old = std::move(slots);
+        slots = std::vector<std::optional<Entry>>(n);
+        used = 0;
+        for (auto& e : old) if (e) insert(e->key, e->value);
+    }
+public:
+    FlatMap() : slots(8) {}
+    void insert(std::string_view k, int v) {
+        rehash_if_needed();
+        size_t i = hash(k) & (slots.size() - 1);
+        while (slots[i]) i = (i + 1) & (slots.size() - 1);
+        slots[i] = Entry{k, v}; ++used;
+    }
+    std::optional<int> find(std::string_view k) const {
+        size_t i = hash(k) & (slots.size() - 1);
+        while (slots[i]) {
+            if (slots[i]->key == k) return slots[i]->value;
+            i = (i + 1) & (slots.size() - 1);
+        }
+        return std::nullopt;
+    }
+};
+
+int main() {
+    FlatMap m;
+    m.insert("a", 1); m.insert("b", 2);
+    return *m.find("b") == 2 ? 0 : 1;
+}
 ```
 
-[标准] 概念约束为编译期硬错误（而非 SFINAE 静默失败），诊断信息更易读。
+[标准] `hash & (size-1)` 要求容量为 2 的幂；`std::string_view` 作键不拷贝，但要求键的生命周期长于表（Abseil 同样要求 `string_view` 不悬垂）。
 
-[引用] Abseil Time 指南：<https://abseil.io/docs/cpp/guides/time>；cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>。
+[引用] Abseil `flat_hash_map`（`swisstable` 开放寻址）：<https://abseil.io/docs/cpp/guides/container；本章 ② Abseil 核心 / ③ 源码剖析 flat_hash_map.h / ⑪ 性能（flat_hash_map vs std::unordered_map）。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-**真实场景：** Chromium 的 `base::OnceClosure` 是 move-only 类型，被投递到 `base::TaskRunner` 的任务队列中。队列扩容时需 `noexcept` 移动构造来 relocate 闭包而不拷贝（move-only 类型本就不能拷贝）。请实现这样一个 move-only 类型。
+**真实场景：实现最小 `StatusOr<T>`（Abseil 错误处理范式）。** Abseil `absl::StatusOr<T>` 让函数既能返回正常值也能返回错误状态，调用方必须检查再取值。请实现一个最小版：内部存 `bool ok` + `T value` + `std::string err`；提供 `operator bool()`、`operator*` / `value()`（失败时抛/断言）、以及 `value_or`。
 
 <details><summary>答案与解析</summary>
 
-`noexcept` 移动构造让 `std::vector` 在重新分配时移动元素；move-only 类型删除拷贝、仅保留移动：
+值/错二选一并显式检查，避免"忽略错误码"这一最大来源：
 
 ```cpp
-#include <vector>
+#include <string>
 #include <utility>
-// 类比 base::OnceClosure：move-only，任务队列可 noexcept 移动它
-struct Closure {
-  int* p = new int(0);
-  Closure() = default;
-  Closure(Closure&& o) noexcept : p(o.p) { o.p = nullptr; }
-  Closure(const Closure&) = delete;
-  Closure& operator=(const Closure&) = delete;
-  ~Closure() { delete p; }
+#include <stdexcept>
+
+template <class T>
+class StatusOr {
+    bool ok_ = false;
+    T value_{};
+    std::string err_;
+public:
+    StatusOr(T v) : ok_(true), value_(std::move(v)) {}
+    StatusOr(std::string e) : ok_(false), err_(std::move(e)) {}
+    explicit operator bool() const { return ok_; }
+    T& operator*() { return value_; }
+    T& value() { if (!ok_) throw std::runtime_error(err_); return value_; }
+    T value_or(T fallback) const { return ok_ ? value_ : fallback; }
 };
-int main() { std::vector<Closure> v; v.emplace_back(); v.emplace_back(); return 0; }
+
+StatusOr<int> parse_int(const char* s) {
+    if (s[0] == '\0') return std::string("empty");
+    return static_cast<int>(s[0]);
+}
+
+int main() {
+    auto r = parse_int("");
+    return r ? 1 : 0;   // 空串 -> 失败
+}
 ```
 
-[标准] `noexcept` 移动构造让 `vector` 重新分配时移动元素；删除拷贝构造使类型 move-only。
+[标准] 构造歧义靠 `bool` vs `string` 标签区分；`explicit operator bool` 强制在 `if` 中检查，对应 C++23 `std::expected` 的设计意图。
 
-[引用] Chromium `base::OnceClosure`（`base/callback.h`）：<https://chromium.googlesource.com/chromium/src/+/main/base/callback.h>；cppreference `std::vector`：<https://en.cppreference.com/w/cpp/container/vector>。
+[引用] Abseil `status`（`absl::StatusOr`）：<https://abseil.io/docs/cpp/guides/status>；ISO C++23 §[expected]（同源思想）；本章 ② Abseil 核心 / ⑦ 与标准关系。
 
 </details>
 

@@ -892,65 +892,133 @@ call [rcx+0x0018]         ; 反射访问属性
 
 ### 练习 1（难度 ★★）
 
-**真实场景：** Unreal Engine 在 `Math/UnrealMathUtility.h` 提供 `TMax`/`TMin` 模板工具，对任意可比较类型取最值（配合其 `TArray` 等容器）。请写一个函数模板 `t_max`，对任意同类型可比较值取最大值。
+**真实场景：实现最小"反射注册表"（UObject 反射雏形）。** UE 的 UObject 反射靠 UHT 在编译期生成 `UClass` 元数据（本章 ②/⑥ UCLASS/UPROPERTY/UFUNCTION）。请实现一个最小版：用 `DECLARE_CLASS(Name)` / `IMPLEMENT_CLASS(Name, Ctor)` 一对宏，把类名字符串映射到工厂函数，存进全局 `std::map<std::string, Factory>`；`CreateObject("Name")` 按名构造对象。
 
 <details><summary>答案与解析</summary>
 
-函数模板按实参推导类型；两实参同类型时 `T` 唯一确定，与 UE 的 `TMax` 等数学模板同源：
+宏在静态初始化期把"类名→工厂"登记进全局表，实现运行期按名构造：
 
 ```cpp
-template <class T>
-const T& t_max(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { int x = 3, y = 7; return t_max(x, y) == 7 ? 0 : 1; }
+#include <map>
+#include <string>
+#include <functional>
+
+struct UObject { virtual ~UObject() = default; };
+
+std::map<std::string, std::function<UObject*()>>& Registry() {
+    static std::map<std::string, std::function<UObject*()>> r;
+    return r;
+}
+
+#define DECLARE_CLASS(Name) \
+    class Name; \
+    struct Name##_RegHelper { Name##_RegHelper(); };
+#define IMPLEMENT_CLASS(Name) \
+    Name##_RegHelper::Name##_RegHelper() { \
+        Registry()[#Name] = []() { return new Name(); }; \
+    } \
+    static Name##_RegHelper Name##_reg;
+
+class MyActor : public UObject {};
+DECLARE_CLASS(MyActor)
+IMPLEMENT_CLASS(MyActor)
+
+int main() {
+    UObject* o = Registry()["MyActor"]();   // 按名构造（反射）
+    bool ok = o != nullptr;
+    delete o;
+    return ok ? 0 : 1;
+}
 ```
 
-[标准] 函数模板按实参推导；两实参同类型时 `T` 唯一确定。
+[标准] `#Name` 字符串化宏把标识符变成类名键；`static` 注册助手在程序启动期执行，对应 UHT 生成的 `StaticClass()` 注册逻辑。
 
-[引用] UE `UnrealMathUtility`（TMax/TMin）：<https://docs.unrealengine.com/5.3/en-US/API/Runtime/Core/Math/UnrealMathUtility/>；cppreference 函数模板：<https://en.cppreference.com/w/cpp/language/function_template>。
+[引用] UE `UClass` / `UObjectBase`（反射元数据，`UObjectGlobals`）：<https://docs.unrealengine.com/5.3/en-US/API/Runtime/CoreUObject/UObject/UClass/>；本章 ② 对象模型 / ⑥ 反射与元数据（UCLASS/UPROPERTY/UFUNCTION 宏）。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-**真实场景：** UE 游戏框架大量使用整数句柄（如网络复制的 `Actor` 实例 ID、枚举型 `EObjectTypeQuery`）。请用一个被 `std::integral` 概念约束的 `set_net_id`，使其只接受整数 ID，浮点传入给出清晰编译错误。
+**真实场景：实现最小标记-清除 GC（沿 UPROPERTY 强引用）。** UE 的 GC 从根集（RootSet）出发，沿 `UPROPERTY` 标记的强引用标记可达的 UObject，未标记的回收（本章 ④）。请实现：一组 `UObject`（带 `marked` 标志与 `TArray<UObject*> refs` 强引用列表），从根集做标记-清除；并演示一个"裸指针字段未被注册为 UPROPERTY"的对象会被错误回收——这正是 ⑬ 常见陷阱"裸指针跨 UObject 边界"的成因。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
+只有被"强引用列表"登记的对象参与可达性；未登记的裸指针目标不可达、被回收：
 
 ```cpp
-#include <concepts>
-template <std::integral T>
-T set_net_id(T id) { return id; }   // 约束为整型网络 ID
-int main() { return set_net_id(42) == 42 ? 0 : 1; }
+#include <vector>
+
+struct UObject {
+    bool marked = false;
+    std::vector<UObject*> refs;       // 仅"被 UPROPERTY 注册"的引用参与可达性
+};
+
+void mark(UObject* root) {
+    if (!root || root->marked) return;
+    root->marked = true;
+    for (auto* c : root->refs) mark(c);   // 沿强引用递归标记
+}
+void sweep(std::vector<UObject*>& all) {
+    for (auto* o : all) if (!o->marked) delete o;
+}
+
+int main() {
+    UObject* root = new UObject();
+    UObject* a = new UObject();
+    UObject* b = new UObject();
+    root->refs = { a };                 // a 可达（UPROPERTY 强引用）
+    std::vector<UObject*> all{ root, a, b };
+    mark(root);
+    bool b_reachable = b->marked;       // 在 sweep 删除前记录
+    sweep(all);                         // 未标记的 b 被回收
+    delete root; delete a;              // b 已被 sweep 回收；root/a 此时仍存活
+    return b_reachable ? 1 : 0;
+}
 ```
 
-[标准] 概念约束为编译期硬错误（而非 SFINAE 静默失败），诊断信息更易读。
+[标准] 标记-清除分两阶段：从根集深度优先标记可达对象，再回收未标记者；未被 `refs` 登记的指针不构成引用边。
 
-[引用] UE Actor 复制 / 网络标识：<https://docs.unrealengine.com/5.3/en-US/networking-and-multiplayer-in-unreal-engine/>；cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>。
+[引用] UE 垃圾回收（GC / 引用图 / `UPROPERTY` 强引用，标记-清除）：<https://docs.unrealengine.com/5.3/en-US/ProgrammingAndScripting/UnrealArchitecture/Objects/Optimizations/GarbageCollection/>；本章 ④ 垃圾回收 / ⑬ 常见陷阱（裸指针跨 UObject 边界）。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-**真实场景：** UE 的内存设施（`FMemory`、`FMemory::Malloc` 对齐分配）需要把请求大小向上对齐到特定边界。请用 `constexpr` 函数 `align_up` 在编译期计算对齐后的尺寸，并用 `static_assert` 验证（对齐分配思想的编译期雏形）。
+**真实场景：实现 Actor + Component 组合（游戏框架所有权）。** UE 的 `AActor` 持有 `UActorComponent` 列表，每帧 `Tick` 时递归驱动各组件（本章 ①/㉑）。请实现一个最小 `AActor`：持有 `std::vector<UActorComponent*>`，`Tick()` 遍历调用各组件 `Tick()`；并演示"组件在 Actor 析构前必须随 Actor 销毁"的所有权关系。
 
 <details><summary>答案与解析</summary>
 
-`constexpr` 函数在常量表达式上下文（如 `static_assert` 实参）中于编译期求值；向上对齐用 `(n + a - 1) / a * a`：
+Actor 拥有组件生命周期；Tick 向下传播，对应 UE 的组件驱动模型：
 
 ```cpp
-constexpr unsigned align_up(unsigned n, unsigned a) {
-    return (n + a - 1) / a * a;
+#include <vector>
+
+struct UActorComponent {
+    virtual ~UActorComponent() = default;
+    virtual void Tick() = 0;
+};
+
+class AActor {
+    std::vector<UActorComponent*> comps;   // 组件所有权归 Actor
+public:
+    void Add(UActorComponent* c) { comps.push_back(c); }
+    void Tick() { for (auto* c : comps) c->Tick(); }   // 递归驱动组件
+    ~AActor() { for (auto* c : comps) delete c; }       // Actor 析构连带销毁组件
+};
+
+struct Health : UActorComponent { void Tick() override {} };
+
+int main() {
+    AActor player;
+    player.Add(new Health);
+    player.Tick();       // 驱动所有组件
+    return 0;
 }
-static_assert(align_up(13, 8) == 16);
-static_assert(align_up(16, 8) == 16);
-int main() { return 0; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（`static_assert` 实参）中于编译期求值；对齐计算服务于内存分配。
+[标准] 组合优于继承：`AActor` 通过持有组件列表复用行为；析构顺序保证组件先于/随拥有者释放，避免悬垂。
 
-[引用] UE `FMemory` / 对齐分配：<https://docs.unrealengine.com/5.3/en-US/API/Runtime/Core/HAL/FMemory/>；cppreference `constexpr`：<https://en.cppreference.com/w/cpp/language/constexpr>。
+[引用] UE `AActor` / `UActorComponent`（游戏框架、Tick 传播）：<https://docs.unrealengine.com/5.3/en-US/API/Runtime/Engine/GameFramework/AActor/>；本章 ① 概述 / ㉑ 真实工程使用场景。
 
 </details>
 

@@ -542,63 +542,94 @@ Q: 版本迁移最大风险? A: ABI断裂(GCC5.1)和SFINAE→concepts重写
 
 ### 练习 1（难度 ★★）
 
-**真实场景：用特性测试宏选实现。** 你维护一份要跨 C++17/20/23 的头文件，需要"有 `<compare>` 就用 `std::cmp_less`、没有就手写分支"。请先写一个对任意可比较类型通用、且对混合符号比较安全的 `max` 风格比较，并思考它应被 `__cpp_lib_cmp` 之类的特性测试宏如何切换。
+**真实场景：用特性测试宏做真正的多档实现切换。** 你要写一份头文件，在 C++17 / C++20 / C++23 下都能编译，并尽可能用上"当时最新"的标准设施：C++23 有 `std::expected`、C++17 有 `std::optional`、更早只能用手写 `std::pair<bool,T>` 兜底。这正是本章 ④ 对照总表 / ⑤ 迁移指南的核心方法——"按编译器实际能力选实现"。请用特性测试宏 `__cpp_lib_expected` / `__cpp_lib_optional`（SD-6）写一个 `safe_div(a,b)`：返回"商"或"错误原因"，且三档实现各自自洽。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+用 SD-6 特性测试宏在预处理期分档，编译器只编译命中的那一档：
 
 ```cpp
-#include <iostream>
+#include <expected>
+#include <optional>
+#include <string>
 #include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+
+#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202211L
+using DivResult = std::expected<int, std::string>;
+DivResult safe_div(int a, int b) {
+    if (b == 0) return std::unexpected(std::string("divide by zero"));
+    return a / b;
+}
+#elif defined(__cpp_lib_optional) && __cpp_lib_optional >= 201606L
+struct DivResult { bool ok; int value; std::string err; };
+DivResult safe_div(int a, int b) {
+    if (b == 0) return {false, 0, "divide by zero"};
+    return {true, a / b, {}};
+}
+#else
+using DivResult = std::pair<bool, int>;
+DivResult safe_div(int a, int b) {
+    if (b == 0) return {false, 0};
+    return {true, a / b};
+}
+#endif
+
+int main() {
+    auto r = safe_div(10, 2);
+#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202211L
+    return r ? (*r == 5 ? 0 : 1) : 1;
+#else
+    return r.ok ? (r.value == 5 ? 0 : 1) : 1;
+#endif
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 特性测试宏是预处理期整数常量；`#if` 分支让"未提供的标准设施"根本不进入编译，避免对不存在符号的硬依赖。
 
-[引用] WG21 SD-6《特性测试宏推荐》（`__cpp_lib_cmp` 等）让代码按编译器实际能力选实现；cppreference "特性测试"（https://en.cppreference.com/w/cpp/feature_test）与 "std::cmp_less"（https://en.cppreference.com/w/cpp/utility/intcmp/cmp_less）。
+[实现·GCC15] 在 GCC 15.3.0 `-std=c++23` 下命中 `std::expected` 档；`-std=c++17` 下回落到 `std::optional` 档，证明同一份源码跨版本可用。
+
+[引用] WG21 SD-6《特性测试宏推荐》（`__cpp_lib_expected` / `__cpp_lib_optional`）；cppreference "特性测试"（https://en.cppreference.com/w/cpp/feature_test）、"std::expected"（https://en.cppreference.com/w/cpp/utility/expected/expected）。它直接对应 ④ 对照总表 / ⑤ 迁移指南的"按能力选实现"范式。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-**真实场景：跨版本编译的 API 护栏。** 你的库必须用同一份源码在 C++17（无概念、回退 `enable_if`）与 C++20+（概念）下都编译，靠 `__cpp_concepts` 分支。请写出 C++20+ 一侧用概念约束 `add` 的版本，使浮点调用给出清晰错误。
+**真实场景：ABI 与语言版本辨析（对照表推理，不写代码）。** 两个目标文件 `A.o`（用 `-std=c++17` 编译）与 `B.o`（用 `-std=c++23` 编译）都链接同一份 libstdc++（GCC 15.3.0）。有人说"语言版本不同一定不能链"，有人说"只要同链接器就行"。请结合本章 ⑥ 编译器支持矩阵 与 ⑨ 调用栈/ABI，回答：① 符号层面哪些地方可能不兼容（`std::__cxx11` 内联命名空间、TBAA 类型标签、异常规范、operator new/delete 尺寸）；② 哪些通常安全；③ 给出一条"可安全混用"的工程红线。这是对照表/迁移指南的推理练习。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+① **可能不兼容**：同一类型在不同标准下若落入不同的内联命名空间（如 `std::string` 在旧 ABI 为 `std::string`，新 ABI 为 `std::__cxx11::string`），跨 TU 传递该类型会在链接期报"undefined reference"或运行期静默错配；`noexcept` 规范差异、`std::variant` 等类型的布局变化也会影响跨 TU 的 ODR 一致性。② **通常安全**：纯 C 链接接口、POD 数据、显式 `extern "C"` 函数、以及不跨越标准库类型的控制流——只要两端不交换标准库对象的内存布局即可。③ **工程红线**：同一二进制内只允许"同一条标准库 + 同一 ABI 设置（`_GLIBCXX_USE_CXX11_ABI`）"混链；所谓"语言版本"指的应是 `-std=` 而非 ABI；升级 `-std=` 时若触碰了标准库类型布局变化，必须整库统一重编，而非逐文件半升级。这正是 ⑥ 矩阵里"语言版本 ≠ ABI 版本"那一行的落地含义。
 
-```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
-```
-
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
-
-[引用] ISO C++20 §[concepts]；特性测试宏 `__cpp_concepts`（SD-6）用于跨版本检测概念是否可用；cppreference "std::integral"（https://en.cppreference.com/w/cpp/concepts/integral）。
+[引用] GCC 文档 "Dual ABI"（https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html）；本章 ⑥ 编译器支持矩阵 / ⑨ 调用栈·ABI。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-**真实场景：迁移测试套件里的编译期契约。** 升级编译器后你担心某些常量不再在编译期定值。请写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`，把它作为"新工具链仍支持编译期求值"的可执行断言，纳入版本矩阵对照。
+**真实场景：把一段 C++14 代码迁到 C++20（迁移改造）。** 团队历史代码里用 `std::result_of<F(Args...)>::type` 推导调用结果，并用 `std::bind1st` / `std::mem_fun` 这类已被 C++17 弃用、C++20 移除的惯用法。请依本章 ⑤ 迁移指南（C++11/14 → 17、17 → 20）改写为现代等价物，并点明每一步对应哪条"版本演进特性"。
 
 <details><summary>答案与解析</summary>
 
+`std::result_of` → `std::invoke_result`（C++17 引入，语义更清晰、支持成员指针/可调用对象统一）；`std::bind1st` → lambda 或 `std::bind_front`（C++20）：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <utility>
+#include <functional>
+
+struct Adder { int base; int operator()(int x) const { return base + x; } };
+
+int main() {
+    Adder a{10};
+    auto f = [a](int x) { return a(x); };   // 替代 std::bind1st(a, 5)
+    (void)f;
+    (void)std::bind_front(a, 5);            // C++20 替代 std::bind1st
+    return 0;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] `std::invoke_result_t<F, Args...>` 在编译期推导 `INVOKE` 表达式的结果类型；`std::bind_front` 把前 N 个实参绑定到可调用对象前方。
 
-[引用] ISO C++ §[expr.const]；特性测试宏 `__cpp_constexpr`（SD-6）可探测当前 constexpr 能力；cppreference "static_assert"（https://en.cppreference.com/w/cpp/language/static_assert）。它是迁移测试套件里"编译期契约"的基石。
+[引用] ISO C++17 §[meta.trans.other]（`std::invoke_result` 取代 `std::result_of`）；ISO C++20 §[func.bind.front]；cppreference "std::bind_front"（https://en.cppreference.com/w/cpp/utility/functional/bind_front）。这对应 ⑤ 迁移指南里"11/14 → 17 → 20"的每一条具体替换规则。
 
 </details>
 

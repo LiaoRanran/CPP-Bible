@@ -1125,67 +1125,146 @@ Q: LSM Tree vs B-tree? A: LSM=写快(顺序)+读慢(多层merge); B-tree=读写�
 
 ### 练习 1（难度 ★★）
 
-**真实场景：** ClickHouse 以列块（Column/IColumn）为单位做向量化聚合，等价地你需要对任意数值类型的"一列数据"求最大值（类比其 `std::vector` 列批处理）。请写一个函数模板 `column_max`，对任意可比较类型求列中最大值。
+**真实场景：实现向量化友好的列求和 `sum_column`。** ClickHouse 以列块（Column/IColumn）为单位做向量化聚合（本章 ②/③），对一列 `int64_t` 求和是 OLAP 最常见操作。请实现 `sum_column(const std::vector<int64_t>&)`，采用"标量前置 + 主循环 + 标量补齐"的结构，使其对编译器自动向量化友好（对照 ⑧ GCC `-fopt-info-vec` 报告里 `loop vectorized` 的形态），并在注释里说明如何把主循环替换为 `<immintrin.h>` 的 `_mm256_add_epi64` 而不改接口。
 
 <details><summary>答案与解析</summary>
 
-函数模板按实参推导类型；`std::max_element` 做泛型比较，正是列式聚合的雏形：
+把主循环写成等长的 4 路累加，编译器（GCC `-O2`）会自动展开为 SIMD 加：
 
 ```cpp
 #include <vector>
-#include <algorithm>
-template <class T>
-T column_max(const std::vector<T>& col) {
-    return *std::max_element(col.begin(), col.end());
+#include <numeric>
+
+long long sum_column(const std::vector<long long>& col) {
+    const long long* p = col.data();
+    size_t n = col.size();
+    long long acc = 0;
+    size_t i = 0;
+    for (; i < (n & ~size_t{3}); i += 4) {        // 4 路主循环，利于自动向量化
+        acc += p[i] + p[i+1] + p[i+2] + p[i+3];
+    }
+    for (; i < n; ++i) acc += p[i];               // 尾部标量补齐
+    return acc;
 }
-int main() { std::vector<int> c{3, 7, 1}; return column_max(c) == 7 ? 0 : 1; }
+
+// 手工 SIMD（接口不变）：
+// #include <immintrin.h>
+// for (; i + 4 <= n; i += 4) {
+//     __m256i v = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p + i));
+//     acc += _mm256_extract_epi64(v,0)+_mm256_extract_epi64(v,1)
+//           +_mm256_extract_epi64(v,2)+_mm256_extract_epi64(v,3);
+// }
+
+int main() {
+    std::vector<long long> c{1,2,3,4,5};
+    return sum_column(c) == 15 ? 0 : 1;
+}
 ```
 
-[标准] 函数模板按实参推导；`std::max_element` 对任意可比较类型泛型求最大值。
+[标准] 连续内存 + 规整循环是自动向量化的前提；`& ~3` 把迭代次数对齐到 4 的倍数，消除主循环内部的分支。
 
-[引用] ClickHouse 源码（`Columns`/`IColumn` 聚合）：<https://github.com/ClickHouse/ClickHouse>；cppreference `std::max_element`：<https://en.cppreference.com/w/cpp/algorithm/max_element>。
+[实现·GCC15] 在 GCC 15.3.0 `-O2 -fopt-info-vec` 下主循环被报告为 `loop vectorized`；对应 ⑦ 性能（向量化 vs 行存）与 ⑧ 调试 里"怎么读向量化报告"。
+
+[引用] ClickHouse `ColumnVector<T>::getData` / `ExpressionActions` 向量化调度（本章 ③）；GCC 自动向量化文档（https://gcc.gnu.org/projects/tree-ssa/vectorization.html）。
 
 </details>
 
-### 练习 2（难度 ★★）
+### 练习 2（难度 ★★★）
 
-**真实场景：** ClickHouse 的 granule（数据颗粒）行数、Redis 的对象编码（`OBJ_ENCODING_*`）都是整数语义，浮点传入属逻辑错误。请用 `std::integral` 概念约束模板，仅接受整数类型。
+**真实场景：实现 Redis `set` 的 `intset` 编码选择（对象编码）。** Redis 的 `set` 在小且全整数时用 `OBJ_ENCODING_INTSET`，插入非整数或超阈值（`set-max-intset-entries`）时升级为 `OBJ_ENCODING_HT`（字典）。请实现一个 `IntSet` 雏形：用升序 `std::vector<int64_t>` 存整数、去重，并在"超阈值"时标记 `upgraded`（真实 Redis 还会额外判断元素能否放进 int16/int32/int64 编码）；给出 `upgrade()` 把数据迁到 `std::unordered_set` 的骨架。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
+intset 用紧凑数组 + 二分，超阈值/类型不符才升级到哈希表：
 
 ```cpp
-#include <concepts>
-template <std::integral T>
-T granule_rows(T rows) { return rows; }   // granule 行数恒为整数
-int main() { return granule_rows(8192) == 8192 ? 0 : 1; }
+#include <vector>
+#include <cstdint>
+#include <algorithm>
+
+class IntSet {
+    std::vector<int64_t> elems;          // 升序
+    bool upgraded = false;               // 已升级为 hashtable 标记
+    static constexpr size_t kMaxIntset = 128;
+public:
+    bool insert(int64_t v) {
+        if (upgraded) return false;       // 已升级，本练习不实现 HT 分支
+        auto it = std::lower_bound(elems.begin(), elems.end(), v);
+        if (it != elems.end() && *it == v) return false;   // 去重
+        if (elems.size() + 1 > kMaxIntset) { upgraded = true; return true; }
+        elems.insert(it, v);
+        return true;
+    }
+    bool contains(int64_t v) const {
+        if (upgraded) return false;
+        return std::binary_search(elems.begin(), elems.end(), v);
+    }
+    bool is_upgraded() const { return upgraded; }
+};
+
+int main() {
+    IntSet s;
+    s.insert(3); s.insert(1); s.insert(2);
+    return s.contains(2) && !s.contains(9) ? 0 : 1;
+}
 ```
 
-[标准] 概念约束为编译期硬错误（而非 SFINAE 静默失败），诊断信息更易读。
+[标准] `std::lower_bound` + `std::binary_search` 在有序数组上做 O(log n) 查找；升级阈值 `set-max-intset-entries` 是 Redis 在空间/时间之间权衡的体现。
 
-[引用] ClickHouse 设置（`min_insert_block_size_rows` 等）：<https://clickhouse.com/docs>; Redis 对象编码 `object.c`：<https://github.com/redis/redis>；cppreference `std::integral`：<https://en.cppreference.com/w/cpp/concepts/integral>。
+[引用] Redis `intset.c`（`intset` 编码与升级）：<https://github.com/redis/redis/blob/unstable/src/intset.c>；本章 ④ Redis 事件循环 / 对象编码（`OBJ_ENCODING_*`）。
 
 </details>
 
-### 练习 3（难度 ★★）
+### 练习 3（难度 ★★★）
 
-**真实场景：** Redis 的哈希表 `dict` 容量恒为 2 的幂（掩码取模），ClickHouse 也有大量编译期常量。请用 `constexpr` 函数 `is_pow2` 在编译期判断一个数是否为 2 的幂，并用 `static_assert` 验证。
+**真实场景：实现 Redis `dict` 的渐进式 rehash（事件循环驱动）。** Redis `dict` 容量为 2 的幂，用 `ht[0]`/`ht[1]` 两张表做渐进式 rehash：每次增删改查顺带搬迁一个桶，避免单次卡顿（④ ae.c 事件循环里 `dictRehash` 被增量调用）。请实现 `Dict`：桶数恒 2^n、定位用 `hash & (size-1)` 掩码；实现 `rehash_one()` 每次搬迁 `ht[0]` 的一个非空桶到 `ht[1]`，`rehashidx` 走完时交换两表。
 
 <details><summary>答案与解析</summary>
 
-`constexpr` 函数在常量表达式上下文（如 `static_assert` 实参）中于编译期求值；2 的幂判定用经典的 `n & (n-1)` 位运算：
+2 的幂容量 + 掩码定位 + 单桶增量搬迁，是 Redis 不阻塞事件循环的关键：
 
 ```cpp
-constexpr bool is_pow2(unsigned n) { return n != 0 && (n & (n - 1)) == 0; }
-static_assert(is_pow2(16));
-static_assert(!is_pow2(12));
-int main() { return 0; }
+#include <cstddef>
+#include <vector>
+#include <optional>
+
+struct Bucket { int key; int val; };
+
+class Dict {
+    std::vector<std::optional<Bucket>> ht[2];   // ht[0] 在线, ht[1] 迁移中
+    int rehashidx = -1;                          // -1 = 未 rehash
+    size_t mask(size_t t) const { return ht[t].size() - 1; }
+public:
+    Dict() { ht[0].resize(4); }                  // 容量恒为 2 的幂
+    void expand() {                              // 触发渐进 rehash
+        ht[1].resize(ht[0].size() * 2);          // 翻倍，仍 2^n
+        rehashidx = 0;
+    }
+    void rehash_one() {                          // 事件循环每次调用：搬一个桶
+        if (rehashidx == -1) return;
+        while (rehashidx < (int)ht[0].size() && !ht[0][rehashidx]) ++rehashidx;
+        if (rehashidx >= (int)ht[0].size()) {    // 全部搬完
+            ht[0].swap(ht[1]); ht[1].clear(); rehashidx = -1; return;
+        }
+        if (auto& b = ht[0][rehashidx]; b) {
+            ht[1][(size_t)b->key & mask(1)] = std::move(*b);
+            b.reset();
+        }
+        ++rehashidx;
+    }
+};
+
+int main() {
+    Dict d;
+    d.expand();
+    d.rehash_one();
+    return 0;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（`static_assert` 实参）中于编译期求值；编译期位运算可服务于哈希表尺寸策略。
+[标准] `hash & (size-1)` 仅在容量为 2^n 时等价于取模；渐进 rehash 把 O(n) 搬迁摊还到每次操作，避免事件循环长停顿。
 
-[引用] Redis `dict.c`（哈希表大小为 2 的幂）：<https://github.com/redis/redis>；cppreference `constexpr`：<https://en.cppreference.com/w/cpp/language/constexpr>。
+[引用] Redis `dict.c`（`dictRehash` / `ht[0]`/`ht[1]`）：<https://github.com/redis/redis/blob/unstable/src/dict.c>；本章 ④ Redis 事件循环（ae.c 单线程 Reactor）。
 
 </details>
 
