@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -40,10 +41,20 @@ DEST = ROOT / "build" / "_root_artifacts"
 EXTS = ("*.cpp", "*.exe", "*.o")
 
 
+def _is_tracked(p: Path) -> bool:
+    """已 git 跟踪的文件不算泄漏产物，绝不移动（保护 D5 附录依赖的 _bench_*.cpp 源）。"""
+    r = subprocess.run(["git", "ls-files", "--error-unmatch", str(p)],
+                       capture_output=True, text=True,
+                       encoding="utf-8", errors="replace")
+    return r.returncode == 0
+
+
 def collect() -> list[Path]:
     files: list[Path] = []
     for ext in EXTS:
         for f in ROOT.glob(ext):  # 非递归：仅根目录
+            if _is_tracked(f):
+                continue
             files.append(f)
     return sorted(files, key=lambda p: str(p))
 

@@ -159,9 +159,16 @@ def main():
             probe_count += 1
     # 根目录编译产物泄漏：违反 AGENT.md「只写 build/」红线。
     # 这些 *.cpp/*.exe/*.o 是编译工具写在 CWD（根）的副产物，应待在 build/。
+    # 但库根刻意跟踪的基准源（如 _bench_d5_*.cpp，D5 附录依赖其存在）不算泄漏——
+    # 用 git ls-files 排除已跟踪文件，避免把"被版本控制的源"误判为"泄漏产物"。
     root_art = []
     for ext in ("*.cpp", "*.exe", "*.o"):
-        root_art += list(ROOT.glob(ext))
+        for f in ROOT.glob(ext):
+            r = subprocess.run(["git", "ls-files", "--error-unmatch", str(f)],
+                               capture_output=True, text=True,
+                               encoding="utf-8", errors="replace")
+            if r.returncode != 0:   # 未跟踪 → 才是真正的泄漏产物
+                root_art.append(f)
     root_art_n = len(root_art)
     if bak_count == 0 and probe_count == 0 and root_art_n == 0:
         print(f"  ✅ .bak=0  临时探针=0  根目录产物=0  工作区干净")
