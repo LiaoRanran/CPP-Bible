@@ -44,14 +44,29 @@ echo "[1/2] 重写跨章引用为书内锚点 (rewrite_links --mode pdf) ..."
 # ---- 2. pandoc → EPUB3 ----
 mkdir -p "$OUTPUT_DIR"
 echo "[2/2] pandoc 生成 EPUB (epub3) ..."
-pandoc "$COMBINED" -o "$OUTPUT_DIR/现代C++终极圣经.epub" \
-  --toc --toc-depth=2 \
-  --epub-chapter-level=1 \
-  --metadata title="现代 C++ 终极圣经" \
-  --metadata author="LiaoRanran" \
-  --metadata lang=zh \
-  --metadata publisher="CPP-Bible Project" \
-  --metadata rights="CC BY-NC-SA 4.0" \
-  $MERMAID_FILTER
+# 关键：combined.md 以 `../assets/history/x.jpg` 引用历史贴图。pandoc 按 *工作目录*
+# 解析资源路径（实测：并非 input 文件所在目录），故 cd 进 combined_src，使 `../assets`
+# 命中 rewrite_links --mode pdf 已复制的 build/pdf/assets/。否则图片断链仅报 WARNING、
+# EPUB 虽生成但配图缺失。输出改用 $ROOT 绝对路径避免 cd 影响落点。
+# mermaid-filter 依赖 Chromium；若 CI 环境缺 Chromium/系统库导致渲染崩溃（exit≠0），
+# 则降级为纯代码块重试，保证 EPUB 始终产出（不整 job 红）。
+build_epub() {
+  local filter="$1"
+  ( cd "$(dirname "$COMBINED")" && \
+    pandoc "$(basename "$COMBINED")" -o "$ROOT/$OUTPUT_DIR/现代C++终极圣经.epub" \
+      --toc --toc-depth=2 --split-level=1 \
+      --metadata title="现代 C++ 终极圣经" \
+      --metadata author="LiaoRanran" --metadata lang=zh \
+      --metadata publisher="CPP-Bible Project" --metadata rights="CC BY-NC-SA 4.0" \
+      $filter )
+}
+if [ -n "$MERMAID_FILTER" ]; then
+  if ! build_epub "$MERMAID_FILTER"; then
+    echo "[warn] mermaid-filter 渲染失败（Chromium 缺失/崩溃），降级为纯代码块重试..." >&2
+    build_epub ""
+  fi
+else
+  build_epub ""
+fi
 echo "Done: $OUTPUT_DIR/现代C++终极圣经.epub"
 ls -lh "$OUTPUT_DIR"/*.epub

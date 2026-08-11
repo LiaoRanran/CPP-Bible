@@ -261,6 +261,18 @@ def run_pdf(index: dict) -> None:
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    # 章节内联资产（Book/assets/，如历史贴图 *.jpg）
+    # 书内以 `../assets/history/x.jpg` 相对链接引用，combined.md 位于
+    # build/pdf/combined_src/，解析到 build/pdf/assets/history/x.jpg；
+    # 须随 combined.md 一同进入 build/pdf/，否则 pandoc(EPUB) 与
+    # xelatex(PDF) 图片断链致整本生成失败（与 run_site 同类根因）。
+    src_assets = ROOT / "Book" / "assets"
+    if src_assets.is_dir():
+        dst_assets = ROOT / "build" / "pdf" / "assets"
+        if dst_assets.exists():
+            shutil.rmtree(dst_assets)
+        shutil.copytree(src_assets, dst_assets)
+
     ordered = sorted(index.values(), key=lambda m: m["num"])
     parts = []
     total_rw = 0

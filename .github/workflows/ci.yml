@@ -153,10 +153,17 @@ jobs:
 
     - name: Install Clang
       if: matrix.compiler == 'clang'
+      continue-on-error: true   # 交叉验证性质；即便 LLVM 源临时不可用也别让整 job 因基础设施红
       run: |
         # Clang-19 是当前 LLVM 稳定版，C++23 支持完备（<print>/<expected>/<format>）
+        # 改用 apt.llvm.org 官方源手动安装：llvm.sh 在 ubuntu-24.04 runner 上
+        # 因 GPG/apt-key 弃用与依赖问题常安装失败，导致本 job 整 job 红。
         sudo apt-get update
-        wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 19
+        sudo apt-get install -y wget gnupg lsb-release software-properties-common
+        sudo wget -qO /etc/apt/trusted.gpg.d/apt.llvm.org.asc https://apt.llvm.org/llvm-snapshot.gpg.key
+        echo "deb http://apt.llvm.org/$(lsb_release -sc)/ llvm-toolchain-$(lsb_release -sc)-19 main" | sudo tee /etc/apt/sources.list.d/apt.llvm.org.list
+        sudo apt-get update
+        sudo apt-get install -y clang-19
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-19 100
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100
         g++ --version | head -1
@@ -286,6 +293,13 @@ jobs:
     - name: Install mermaid-filter
       run: npm install -g mermaid-filter
 
+    - name: Install Chromium libs for mermaid-filter (best-effort)
+      # mermaid-filter 的 puppeteer Chromium 在 ubuntu runner 上常因缺系统库启动崩溃；
+      # 补装常见依赖以尽量保留 Mermaid 矢量图。失败不阻断——generate_pdf.sh 已对
+      # mermaid 渲染崩溃降级为纯代码块，保证 PDF 始终产出。
+      continue-on-error: true
+      run: sudo apt-get update && sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libdbus-1-3 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 libatspi2.0-0 libx11-6 libxcb1 || true
+
     - name: Build PDF (by-part 分卷，避免 xelatex 超时)
       run: bash tools/generate_pdf.sh --by-part
 
@@ -316,6 +330,12 @@ jobs:
 
     - name: Install mermaid-filter
       run: npm install -g mermaid-filter
+
+    - name: Install Chromium libs for mermaid-filter (best-effort)
+      # 同 pdf job：补装 Chromium 系统库以尽量保留 Mermaid 矢量图；失败不阻断——
+      # generate_epub.sh 已对 mermaid 渲染崩溃降级为纯代码块，保证 EPUB 始终产出。
+      continue-on-error: true
+      run: sudo apt-get update && sudo apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libdbus-1-3 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2 libatspi2.0-0 libx11-6 libxcb1 || true
 
     - name: Generate EPUB
       run: bash tools/generate_epub.sh

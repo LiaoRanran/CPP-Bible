@@ -98,11 +98,27 @@ for part, metas in sorted(by_part.items(), key=lambda kv: int(re.match(r"part(\d
 print(f"[by-part] 合计注入 H1 锚点 {total_anchored}/{len(idx)}")
 PY
   echo "[3/3] pandoc 逐卷生成 PDF ..."
-  for pf in build/pdf/parts/part*.md; do
-    base="$(basename "$pf" .md)"
-    echo "  → $base.pdf"
-    pandoc "$pf" -o "$OUTPUT_DIR/$base.pdf" "${PANDOC_COMMON[@]}" $MERMAID_FILTER
-  done
+  # 与 epub 同理：part*.md 位于 build/pdf/parts/，以 `../assets/...` 引用历史贴图；
+  # cd 进 parts 使 `../assets` 命中 build/pdf/assets/（由 rewrite_links --mode pdf 复制）。
+  # 输出用 $ROOT 绝对路径，避免 cd 影响落点。
+  # mermaid-filter 依赖 Chromium；若其渲染崩溃则整 job 红，故失败时降级为纯代码块重试。
+  build_part_pdf() {
+    local filter="$1"
+    ( cd "$OUTPUT_DIR/parts" && \
+      for pf in part*.md; do
+        base="$(basename "$pf" .md)"
+        echo "  → $base.pdf"
+        pandoc "$pf" -o "$ROOT/$OUTPUT_DIR/$base.pdf" "${PANDOC_COMMON[@]}" $filter
+      done )
+  }
+  if [ -n "$MERMAID_FILTER" ]; then
+    if ! build_part_pdf "$MERMAID_FILTER"; then
+      echo "[warn] mermaid-filter 渲染失败（Chromium 缺失/崩溃），降级为纯代码块重试..." >&2
+      build_part_pdf ""
+    fi
+  else
+    build_part_pdf ""
+  fi
   echo "Done: $OUTPUT_DIR/part*.pdf"
   ls -lh "$OUTPUT_DIR"/part*.pdf
 else
@@ -110,7 +126,20 @@ else
   TMP="$OUTPUT_DIR/combined_src/full.md"
   { cat INDEX.md; printf '\n\\newpage\n\n'; cat "$COMBINED"; } > "$TMP"
   echo "[3/3] pandoc 单卷生成 PDF (xelatex) ..."
-  pandoc "$TMP" -o "$OUTPUT" "${PANDOC_COMMON[@]}" $MERMAID_FILTER
+  # cd 进 combined_src：full.md 以 `../assets/...` 引用贴图，`../assets` 命中 build/pdf/assets/
+  # mermaid-filter 崩溃时降级为纯代码块重试。
+  build_single_pdf() {
+    local filter="$1"
+    ( cd "$(dirname "$TMP")" && pandoc "$(basename "$TMP")" -o "$ROOT/$OUTPUT" "${PANDOC_COMMON[@]}" $filter )
+  }
+  if [ -n "$MERMAID_FILTER" ]; then
+    if ! build_single_pdf "$MERMAID_FILTER"; then
+      echo "[warn] mermaid-filter 渲染失败（Chromium 缺失/崩溃），降级为纯代码块重试..." >&2
+      build_single_pdf ""
+    fi
+  else
+    build_single_pdf ""
+  fi
   echo "Done: $OUTPUT"
   ls -lh "$OUTPUT"
 fi
