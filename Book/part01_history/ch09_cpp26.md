@@ -34,6 +34,14 @@ C++26 的旗舰之争是"反射该有多强"。一派要完整编译期元对象
 
 > 史料来源：提案 P2900（契约） https://wg21.link/P2900 ；提案 P2996（反射） https://wg21.link/P2996
 
+### 0.5 历史影像（真实照片，自由许可）
+
+> 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
+
+![Bjarne Stroustrup，C++26 进行中（WG21 持续演进）](../assets/history/bjarne_stroustrup.jpg)
+> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+
+
 ## ① 学习目标
 
 ⟶ Book/part01_history/ch08_cpp23.md
@@ -157,6 +165,18 @@ void ex9(){ std::vector<int> v(2); std::sort(std::execution::par, v.begin(), v.e
 
 `std::execution` 用 sender/receiver 组合描述异步流水线，由调度器决定实际调用栈（ch167）。
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart LR
     S[Sender] -->|then| T[Transform]
     T -->|via Scheduler| R[Receiver 结果]
@@ -574,6 +594,18 @@ int main() { std::cout << fact(5) << '\n'; }
 本节把第⑤节（sender/receiver 执行器）、第⑨节（调用栈）与第⑭节（WG21 提案，可能变动）收敛为「方向性特性如何评估取舍」的决策流。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   N1["C++26 草案 (可能变动)"]
   N2["std::execution 执行器 (P2300)"]
@@ -616,6 +648,18 @@ flowchart TD
 以「C++26 方向」为核心，连接 execution/contracts/反射等方向性特性与它们依赖的现代章节，形成概念网。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   CORE["C++26 方向"]
   K1["std::execution (ch93 async)"]

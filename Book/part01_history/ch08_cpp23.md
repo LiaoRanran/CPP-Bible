@@ -31,6 +31,14 @@ C++23 最值得玩味的是 `std::expected` 入标准——它直面"错误也�
 
 > 史料来源：ISO C++ 标准提案存档 https://open-std.org/jtc1/sc22/wg21/ ；C++ 标准状态 https://isocpp.org/std/status
 
+### 0.5 历史影像（真实照片，自由许可）
+
+> 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
+
+![Bjarne Stroustrup，C++23 的演进](../assets/history/bjarne_stroustrup.jpg)
+> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+
+
 ## ① 学习目标
 
 ⟶ Book/part01_history/ch07_cpp20.md
@@ -127,6 +135,18 @@ int main() {}
 
 本章特性按目标分三类：语法糖（结构化绑定 / 折叠表达式）、编译期分支（`if constexpr` / CTAD）、库类型（`string_view` / `optional` / `variant` / `any` / 并行 STL）。
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
     A[调用函数] --> B{"成功?"}
     B -- 是 --> C[expected 含值 T]
@@ -840,6 +860,18 @@ int main() { std::cout << sum(1, 2, 3, 4) << '\n'; }
 本节把第⑤节（expected 错误处理流）与第⑭节（WG21 提案）收敛为「失败如何表达、库如何增强」的决策流。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   N1["C++23 发布 (2023)"]
   N2["std::expected (错误处理)"]
@@ -882,6 +914,18 @@ flowchart TD
 以「C++23 标准库大修」为核心，连接 expected/ranges/generator 等增强与其依赖的现代章节，形成概念网。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   CORE["C++23 标准库大修"]
   K1["std::expected (ch146)"]

@@ -606,6 +606,18 @@ int main() { std::cout << fact(5) << '\n'; }
 本节把第③节（6 阶段流程）、第⑤节（train model）与第⑬节（版本选择决策树）收敛为一条「提案如何成为标准」的决策流。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   N1["作者提交提案 (paper)"]
   N2["LEWG 评审 (库) / EWG (语言)"]
@@ -652,6 +664,18 @@ flowchart TD
 以「WG21 标准化流程」为核心，串起各演进小组、train model 与下游版本/编译器/工业采纳，形成标准化概念网。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   CORE["WG21 标准化流程"]
   K1["EWG 语言演进 (第②节)"]
@@ -712,3 +736,13 @@ flowchart TD
 | ch156 编译器优化 | CORE→K7 | 标准特性最终性能由 ch156 的优化管线决定。 |
 | ch03 C++98 | CORE→K8 | ch03 是第一个经此流程诞生的 ISO C++ 标准。 |
 | ch04 C++11 | CORE→K8 | ch04 是此流程成熟后首个「现代 C++」标准。 |
+
+### 0.5 历史影像（真实照片，自由许可）
+
+> 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
+
+![Bjarne Stroustrup，C++ 创造者，ISO C++ 标准委员会（WG21）召集人](../assets/history/bjarne_stroustrup.jpg)
+> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+
+![贝尔实验室新泽西霍尔姆德尔园区，C++ 标准化工作的长期据点](../assets/history/bell_labs_holmdel.jpg)
+> 图源：derivative work: MBisanz，许可 CC BY-SA 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bell_Labs_Holmdel.jpg>

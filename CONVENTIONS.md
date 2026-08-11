@@ -105,6 +105,48 @@
 - **汇编图**：用 ` ```asm ` 或 ` ```x86asm `，标注编译器/标志/语法。
 - **内存图**：用 ASCII 或 Mermaid `graph` 表达段/堆/栈。
 
+## 4.1 Mermaid 视觉规范（全局统一）
+
+全部 ` ```mermaid ` 代码块**必须**以统一 frontmatter 开头，确保不同渲染器（GitHub / VS Code / 自建站）外观一致，并把节点配色绑定到 §1 九层真相模型——让「图也在显式陈述立场层级」：
+
+```text
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
+```
+
+- 配色语义：蓝=`[标准]`、橙=`[实现]`、绿=`[平台]`、红=`[微架构]`、紫=`[算法]`、棕=`[工程]`、粉=`[实验]`、灰=`[假设]`、黄绿=`[经验]`。
+- 凡描绘「标准/实现/平台/微架构/算法/工程/实验/假设」分层的图（流程图、时序图、架构图），须用对应 `class` 给节点上色，与正文立场标签同源，不得用无语义的随机配色。
+- 方向默认：`flowchart` 用 `LR` 或 `TD`，禁止无方向；时序图 `sequenceDiagram`；类图 `classDiagram`；状态图 `stateDiagram-v2`；时间线 `timeline`。
+- 注入工具：`tools/mermaid_theme_inject.py`（仅在缺失 frontmatter 时插入，幂等，不破坏已有 `%%{init}`）。
+
+## 4.2 表格视觉规范（全局统一）
+
+- 表头行与 `|---|` 分隔行必须连续；**块引用 `>` 不得插在表头行与分隔行之间、也不得插在分隔行与首数据行之间**，否则破坏渲染（见 §12 二次审稿红线，历史上已因此产生 23 处 BREAK）。
+- 对齐语法：`| --- |` 默认左对齐；数字/量级列用 `| ---: |` **右对齐**；短枚举居中用 `| :---: |`。
+- 列数一致：表头、分隔、每行数据列数必须相等；不用 HTML `colspan`/`rowspan`。
+- 复杂数值对照（延迟/带宽/版本矩阵）仍须遵守 §10.3：绝对数字标「量级示意 `[UNVERIFIED]`」并附 caveat。
+- 审计工具：`tools/table_style_audit.py`（检测断表、列数不一致、缺对齐、分隔行上方误插 `>`）。
+
+## 4.3 图片引入与溯源规范（历史/架构图）
+
+为守住 §10 / §12 诚实红线，全书引入的**任何真实图片**必须满足：
+
+- **目录**：统一放 `Book/assets/<part>/`（历史章 `Book/assets/history/`）；章节位于 `Book/<partXX>/`，正文用相对路径（相对当前 .md）`![alt](../assets/<part>/xxx.jpg)`。
+- **许可白名单**：仅接受 `Public Domain` / `CC0` / `CC-BY` / `CC-BY-SA`；**禁止**引入版权图片（书籍封面、商标 logo、专有截图、未授权照片）。
+- **溯源标注（强制）**：每张图下方紧跟一行 `> 图源：作者 <Author>，许可 <License>，来源 <URL>`。许可与作者以 Wikimedia Commons `extmetadata` 为准，不得臆造。
+- **真实核验**：引入前必须用 Commons API（`action=query&prop=imageinfo&iiprop=extmetadata`）核验 `LicenseShortName` 与 `Artist`，记入 `Book/assets/<part>/MANIFEST.md`。
+- **不得臆造**：无可靠自由许可来源的主题（如某标准委员会合影、某书籍封面）**不引入图片**，改用 Mermaid 时间线/关系图表达。
+
 ## 5. 代码规范
 
 - 所有代码可编译（C++23，`-std=c++23 -O2 -Wall -Wextra`）。

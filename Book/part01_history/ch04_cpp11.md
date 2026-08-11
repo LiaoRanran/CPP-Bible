@@ -32,6 +32,14 @@ C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派�
 
 > 史料来源：GCC 各标准支持进度 https://gcc.gnu.org/projects/cxx-status.html ；Clang C++ 状态 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html
 
+### 0.5 历史影像（真实照片，自由许可）
+
+> 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
+
+![Bjarne Stroustrup，C++11 重大修订的总设计师](../assets/history/bjarne_stroustrup.jpg)
+> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+
+
 ## ① 学习目标
 
 ⟶ Book/part01_history/ch03_cpp98_03.md
@@ -152,6 +160,18 @@ int main() {
 ```
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart LR
     A["临时对象/将亡值"] -->|std::move 转右值| B[移动构造函数]
     B --> C[窃取内部指针]
@@ -885,6 +905,18 @@ int main() {
 本节把第③节（后续依赖）所列 ch115/ch26/ch22/ch41/ch60/ch107 与第⑤节（移动语义数据流）收敛为「何时启用哪个现代设施」的决策流。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   N1["C++11 发布 (2011)"]
   N2["移动语义 (ch115)"]
@@ -928,6 +960,18 @@ flowchart TD
 以「C++11 现代革命」为核心，连接其引入的关键设施与下游版本，形成概念依赖网。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   CORE["C++11 现代革命"]
   K1["移动语义 (ch115)"]

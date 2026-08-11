@@ -31,6 +31,14 @@ C++14 几乎没有什么"路线之争"，它验证的是另一条哲学：**标�
 
 > 史料来源：C++ 标准状态 https://isocpp.org/std/status ；Clang C++ 状态 https://github.com/llvm/llvm-project/blob/main/clang/www/cxx_status.html
 
+### 0.5 历史影像（真实照片，自由许可）
+
+> 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
+
+![Bjarne Stroustrup，C++14 完善性修订](../assets/history/bjarne_stroustrup.jpg)
+> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+
+
 ## ① 学习目标
 
 ⟶ Book/part01_history/ch04_cpp11.md
@@ -115,6 +123,18 @@ int main() {}
 ```
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
     A["C++11 lambda 需写参数类型"] --> B["C++14 泛型 lambda auto"]
     B --> C[配合算法写内联谓词]
@@ -659,6 +679,18 @@ int main(){
 本节把第⑤节（Mermaid）与第⑭节（WG21 提案）收敛为「哪些 C++11 特性需要小步修补」的决策流。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   N1["C++14 发布 (2014)"]
   N2["泛型 lambda (ch26)"]
@@ -698,6 +730,18 @@ flowchart TD
 以「C++14 完善」为核心，连接其扩展的 C++11 设施与上下游版本，形成概念网。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   CORE["C++14 完善"]
   K1["泛型 lambda (ch26)"]

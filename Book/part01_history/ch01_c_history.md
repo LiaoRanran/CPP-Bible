@@ -34,6 +34,22 @@
 
 > 史料来源：ISO C 标准委员会 https://www.open-std.org/jtc1/sc22/wg14/ ；C 与 C++ 互操作对照 https://en.cppreference.com/w/cpp/language/extern_c
 
+### 0.5 历史影像（真实照片，自由许可）
+
+> 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范；非公有领域者已按许可要求标注作者与许可。
+
+![贝尔实验室新泽西霍尔姆德尔园区，C 与 C++ 的诞生地](../assets/history/bell_labs_holmdel.jpg)
+> 图源：derivative work: MBisanz，许可 CC BY-SA 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bell_Labs_Holmdel.jpg>
+
+![Ken Thompson，C 语言共同创造者（贝尔实验室）](../assets/history/ken_thompson.jpg)
+> 图源：Unknown author，许可 Public domain，来源 <https://commons.wikimedia.org/wiki/File:Ken_Thompson_02.jpg>
+
+![Dennis Ritchie，C 语言创造者（贝尔实验室）](../assets/history/dennis_ritchie.jpg)
+> 图源：Denise Panyik-Dale，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Dennis_Ritchie_2011.jpg>
+
+![Bjarne Stroustrup，C++ 创造者，1979 年于贝尔实验室启动 C with Classes](../assets/history/bjarne_stroustrup.jpg)
+> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+
 ## ① 学习目标
 
 ⟶ Book/part01_history/ch02_standardization.md
@@ -125,6 +141,18 @@ const char* name = "cpp"; // strlen(name)==3
 ```
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 timeline
     title C → C with Classes → C++
     1972 : C 语言(K&R) 发布
@@ -148,6 +176,18 @@ void demo_malloc(){ int* p=(int*)std::malloc(sizeof(int)); std::free(p); }
 ```
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 classDiagram
     class Shape {
         +virtual double area()
@@ -697,6 +737,18 @@ int main() { std::cout << fact(5) << '\n'; }
 本节把第④节（知识图谱）与第⑥节（C with Classes 早期对象模型）收敛为一条「何时引入哪种抽象」的决策流，覆盖从 C 到 C++ 命名的关键节点。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   N1["C 语言诞生 (1972, Bell Labs)"]
   N2["struct 聚合数据"]
@@ -740,6 +792,18 @@ flowchart TD
 以「C 语言遗产」为核心，向上追溯其设计约束，向下连接到现代 C++ 承接这些遗产的真实章节，形成跨章概念网。
 
 ```mermaid
+---
+theme: neutral
+classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
+classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
+classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
+classDef uarch fill:#d62728,stroke:#a11414,color:#fff
+classDef algo  fill:#9467bd,stroke:#513470,color:#fff
+classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
+classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
+classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
+classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
+---
 flowchart TD
   C0["C 语言遗产"]
   C1["struct 聚合 (ch19)"]
