@@ -1035,63 +1035,201 @@ int main(){std::vector<int> v{1,2,3};std::map<int,int> m{{1,10}};std::cout<<v[0]
 
 ### 练习 1（难度 ★★）
 
-**真实场景：跨设备有符号/无符号序号比较。** 一个采集网关要把两路传感器样本对齐：一路用 `int16_t`（负值表示"未校准"），另一路用 `uint16_t` 帧计数。直接 `a < b` 混比会触发有符号—无符号整型提升陷阱（负数被当成巨大正数）。请写一个对任意同类型可比较、且对混比安全的 `max` 模板，并用 `std::cmp_less` 规避 UB。
+**真实场景：固定缓冲遍历要按"迭代器能力"自动选最快实现。** 工业日志聚合器要遍历一块编译期容量已知的固定内核缓冲，并希望对随机访问缓冲走 O(1) 跳步、对只能单遍的输入源（如网络流）走 O(n) 计数——同一句 `my_distance` 应自动分派到正确实现。请写一个覆盖固定缓冲的**自定义迭代器**（正确标注 `random_access_iterator_tag`），并手写 `my_distance` 用**标签分发**区分两种实现。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+自定义迭代器把范畴标为 `random_access_iterator_tag`（委托裸指针算术），`my_distance` 的公共壳据 `iterator_traits::iterator_category` 在编译期选 `random_access`（O(1) 相减）或 `input`（O(n) 计数）重载：
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <iterator>
+#include <sstream>
+
+// 固定缓冲 + 自定义随机访问迭代器（委托裸指针，确保范畴与方法一致）
+template <typename T, std::size_t N>
+struct FixedBuf {
+    T data[N];
+    struct Iterator {
+        using iterator_category  = std::random_access_iterator_tag;
+        using value_type         = T;
+        using difference_type    = std::ptrdiff_t;
+        using pointer            = T*;
+        using reference          = T&;
+        T* p;
+        reference operator*() const { return *p; }
+        pointer   operator->() const { return p; }
+        Iterator& operator++() { ++p; return *this; }
+        Iterator  operator++(int) { auto t = *this; ++p; return t; }
+        Iterator& operator--() { --p; return *this; }
+        Iterator  operator--(int) { auto t = *this; --p; return t; }
+        Iterator& operator+=(difference_type n) { p += n; return *this; }
+        Iterator  operator+(difference_type n) const { return Iterator{p + n}; }
+        Iterator& operator-=(difference_type n) { p -= n; return *this; }
+        Iterator  operator-(difference_type n) const { return Iterator{p - n}; }
+        difference_type operator-(const Iterator& o) const { return p - o.p; }
+        reference operator[](difference_type n) const { return p[n]; }
+        bool operator==(const Iterator& o) const { return p == o.p; }
+        bool operator!=(const Iterator& o) const { return p != o.p; }
+        bool operator< (const Iterator& o) const { return p <  o.p; }
+    };
+    Iterator begin() { return Iterator{data}; }
+    Iterator end()   { return Iterator{data + N}; }
+};
+
+// 标签分发：距离计算按迭代器范畴选 O(1) 或 O(n) 实现（编译期多态）
+template <typename It>
+std::ptrdiff_t my_distance(It first, It last, std::random_access_iterator_tag) {
+    return last - first;                                  // O(1) 指针相减
+}
+template <typename It>
+std::ptrdiff_t my_distance(It first, It last, std::input_iterator_tag) {
+    std::ptrdiff_t n = 0;                                 // O(n) 逐次 ++ 计数
+    for (; first != last; ++first) ++n;
+    return n;
+}
+template <typename It>
+std::ptrdiff_t my_distance(It first, It last) {
+    using cat = typename std::iterator_traits<It>::iterator_category;
+    return my_distance(first, last, cat{});               // 据标签分发
+}
+
+int main() {
+    FixedBuf<int, 5> buf{{1, 2, 3, 4, 5}};
+    std::cout << "random_access distance = "
+              << my_distance(buf.begin(), buf.end()) << "\n";   // 5 (O(1))
+
+    std::istringstream iss("9 8 7");
+    std::istream_iterator<int> in(iss), end;
+    std::cout << "input distance = "
+              << my_distance(in, end) << "\n";                  // 3 (O(n))
+    return 0;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[算法] 公共壳 `my_distance(first, last)` 通过 `iterator_traits<It>::iterator_category{}` 把标签传给重载，编译器在编译期解析到 `random_access`（`last - first`）或 `input`（循环计数）版本——零运行期分支，这正是 STL `std::advance`/`std::distance` 的标签分发机制（见 ⑨ / D4.4）。
 
-[引用] ISO/IEC 14882:2023 §[expr]（usual arithmetic conversions）规定混比时的整型提升；`std::cmp_less`/`std::cmp_greater`（C++20 `<utility>`）提供无符号安全比较，见 cppreference "utility/cmp" 词条。
+[实现·GCC15] 自定义迭代器正确标注 `random_access_iterator_tag` 并委托裸指针算术；`std::istream_iterator<int>` 的范畴是 `input_iterator_tag`，故同一句 `my_distance` 对缓冲走 O(1)、对输入流走 O(n)。
+
+[经验] 写泛型库时为自定义迭代器**正确标注 category tag** 是关键：算法据标签自动选最优路径，漏标或错标会退化为最慢实现甚至编译失败。
+
+[标准] `iterator_traits::iterator_category` 决定标签分发；C++20 亦可额外用 `contiguous_iterator` 概念（见 ⑬ / A12）。
+
+[引用] cppreference "iterator/iterator_traits"、"iterator/input_iterator_tag" 词条；ISO/IEC 14882:2023 §[iterators]。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-**真实场景：配置流水线的编译期类型闸门。** 你写一个通用累加配置项的函数，只应接受整数型（计数、端口号、采样率）；一旦误传 `double` 或 `std::string` 必须在编译期给出清晰错误，而不是 SFINAE 静默失败导致后续诡异实例化。
+**真实场景：C 风格字符串遍历，结束条件不是"另一个指针"而是 `'\0'`。** 解析网络报文里的以 NUL 结尾的字段时，你事先不知道长度，也不想先 `strlen` 一遍再传两个同类型指针。请写一个**以哨兵（sentinel）作为结束**的只读字符串视图，并写一个 `my_find` 算法**泛型地**既能吃 `(iterator, sentinel)` 也能吃 `(iterator, iterator)`，让同一个实现覆盖 NUL 结尾串与 `std::string` 两种区间。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+哨兵类型 `NullSentinel` 只与迭代器做 `==` 比较（遇 `'\0'` 即结束），`my_find` 用 `std::sentinel_for` 约束"结束"，不要求 `end` 与 `first` 同类型——于是 `(It, NullSentinel)` 与 `(It, It)` 都能复用同一算法：
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <string>
+#include <iterator>
+
+struct NullSentinel {
+    // 与 char* 比较：指向 '\0' 即视为抵达"结束哨兵"
+    bool operator==(const char* p) const { return *p == '\0'; }
+};
+
+struct CStrView {
+    const char* s;
+    const char* begin() const { return s; }
+    NullSentinel end()   const { return {}; }
+};
+
+// 泛型查找：接受任意 (iterator, sentinel) 组合，sentinel 不必与 iterator 同类型
+template <typename It, typename Sent>
+    requires std::sentinel_for<Sent, It>
+It my_find(It first, Sent last, char target) {
+    for (; first != last; ++first)
+        if (*first == target) return first;
+    return first;  // 抵达哨兵（对 NullSentinel 即遇 '\0'）仍未找到
+}
+
+int main() {
+    // 场景 A：NUL 结尾 C 字符串（sentinel 类型 != iterator 类型）
+    CStrView csv{"hello"};
+    auto p = my_find(csv.begin(), csv.end(), 'l');
+    std::cout << "found 'l' at offset "
+              << (p - csv.begin()) << "\n";           // 2
+
+    // 场景 B：普通 std::string（end 与 begin 同类型，仍可复用同一 my_find）
+    std::string str = "world";
+    auto q = my_find(str.begin(), str.end(), 'r');
+    std::cout << "found 'r' at offset "
+              << (q - str.begin()) << "\n";           // 2
+    return 0;
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[算法] `std::sentinel_for<Sent, It>` 表示 `Sent` 能与 `It` 比较相等，且 `It` 是输入迭代器——这正是 C++20 哨兵机制的约束（见 ⑭ / A11）。`my_find` 因只要求 `sentinel_for` 而非 `It == It`，自动适配 NUL 结尾这种"结束非同型"的区间；`std::istream_iterator` + `default_sentinel` 同理（见 ⑰ FAQ）。
 
-[引用] ISO/IEC 14882:2023 §[concepts]/core language concepts 定义 `std::integral`；违反概念为硬错误（§[temp.constr]），诊断优于 SFINAE，见 cppreference "concepts" 词条。
+[实现·GCC15] `NullSentinel::operator==(const char*)` 让 `char* != NullSentinel` 走指针解引用比较；`std::sentinel_for` 概念编译期校验，对 `std::string` 的 `(iterator, iterator)` 同样满足。
+
+[经验] 哨兵把"结束条件"从"另一个迭代器"解耦为"任意可比较类型"，是 ranges 设计的核心红利：无需预知长度即可遍历流、NUL 串、计数区间等。
+
+[标准] 哨兵来自 Ranges（P0896R4，C++20）；`sentinel_for`/`input_iterator` 为 `std::ranges` 算法的基础（见 ⑭ 提案表）。
+
+[引用] cppreference "iterator/sentinel_for"、"iterator/default_sentinel_t" 词条；ISO/IEC 14882:2023 §[iterators.sentinel]。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-**真实场景：编译期查表（DSP/动画缓动）。** 一个音频包络或 UI 缓动曲线需要把 `fact(n)` 等系数在编译期算好放进 `constexpr` 数组，运行期零成本查表。请用 `constexpr` 阶乘并 `static_assert(fact(5)==120)` 证明它在编译期求值。
+**真实场景：批量归一化要"最快且最通用"。** 一个 SIMD 友好的数值内核要对任意区间做 `transform`（如 `x -> x * k`），既要对 `vector`/`array` 连续内存走最快路径，又要对 `list`/`forward_list` 等也能正确工作。请写一个**用 C++20 概念约束**的泛型 `my_transform`：标清它要求的最弱迭代器概念（至少 `input_iterator` 可读、`output_iterator` 可写），并额外提供 `contiguous_iterator` 特化注释说明连续内存可享的优化。
 
 <details><summary>答案与解析</summary>
 
+用 `std::input_iterator`（只读来源）与 `std::output_iterator`（可写目标）约束，使算法对任意满足能力的迭代器都成立；再示范 `std::contiguous_iterator` 分支说明连续内存可批量/SIMD 优化（此处以 `if constexpr` 标注分支，运行时逻辑二者一致，证明概念可静态区分）：
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <vector>
+#include <list>
+#include <iterator>
+#include <concepts>
+
+// 最弱够用约束：in 为输入迭代器（可读），out 为输出迭代器（可写）
+template <std::input_iterator In, std::output_iterator<const int&> Out>
+void my_transform(In first, In last, Out dst, int k) {
+    // 连续内存分支：可作 SIMD/SIMD-friendly 批量优化（此处仅静态标注）
+    if constexpr (std::contiguous_iterator<In> && std::contiguous_iterator<Out>) {
+        // 真实内核可在此用 std::copy + 向量化或 std::transform 的连续特化
+    }
+    for (; first != last; ++first, ++dst)
+        *dst = (*first) * k;     // 通用、对任意范畴都正确的实现
+}
+
+int main() {
+    std::vector<int> src{1, 2, 3}, out_v; out_v.resize(src.size());
+    my_transform(src.begin(), src.end(), out_v.begin(), 10);   // contiguous 路径
+    for (int x : out_v) std::cout << x << ' ';                  // 10 20 30
+    std::cout << "\n";
+
+    std::list<int> l{4, 5, 6};
+    std::vector<int> out_l; out_l.resize(l.size());
+    my_transform(l.begin(), l.end(), out_l.begin(), 10);       // 非连续路径同样工作
+    for (int x : out_l) std::cout << x << ' ';                  // 40 50 60
+    std::cout << "\n";
+    return 0;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[算法] `my_transform` 仅要求 `input_iterator`（源可读）与 `output_iterator`（目标可写），是"最弱够用"约束——`vector`、`list` 都满足，最大化复用（见 ⑱ 最佳实践 1）。`if constexpr (std::contiguous_iterator<...>)` 在编译期静态识别连续内存，可在此分支启用 `std::copy` + 向量化等优化（见 ⑩ / A12 / D5.3 缓存行分析）。
 
-[引用] ISO/IEC 14882:2023 §[expr.const] 定义常量表达式与 constexpr 函数；可在 `static_assert`/模板实参中编译期求值，见 cppreference "constexpr" 词条。
+[实现·GCC15] `std::input_iterator`/`std::output_iterator`/`std::contiguous_iterator` 均为 C++20 概念；`if constexpr` 使连续/非连续分支在编译期确定，无运行期开销。`std::list` 不满足 `contiguous_iterator`，自动走通用循环。
+
+[经验] 新代码用概念替代 `enable_if` SFINAE（见 ⑱ 最佳实践 6）：约束即文档，违反时诊断更清晰；且"最小接口、最大优化"的设计（见 ⑰ FAQ）需要范畴分层才能既正确又高效。
+
+[标准] 迭代器范畴层次 `input < forward < bidirectional < random_access < contiguous`（C++20），算法据所需最弱范畴取舍（见 ① 学习目标 / ⑲ 性能表）。
+
+[引用] cppreference "iterator/input_iterator"、"iterator/output_iterator"、"iterator/contiguous_iterator" 词条；ISO/IEC 14882:2023 §[iterators] / §[concepts.iterator]。
 
 </details>
 
