@@ -5,9 +5,9 @@
 
 ⟶ Book/part09_concurrency/ch110_lockfree.md
 
-> 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
-> 本章所有汇编片段均为 GCC 13.1.0 在 x86-64（TSO）上的**真实产物**，源码位于 `Examples/_ch108_*.cpp`。
-> 参见 `CONVENTIONS.md` 的立场分层约定：下文用 `[标准]`/`[实现·GCC13]`/`[平台·x86-64]`/`[经验]` 区分。
+> 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`，仓库权威工具链）；正文早期汇编插图示曾用 GCC 13.1.0 生成，已在本机 GCC 15.3.0 下复编确认指令一致（`relaxed`/`release` store = `mov`、`seq_cst` store = `xchg`（隐式 `lock`）、RMW = `lock xadd`），见附录 J 与下文 `[VERIFIED]` 标注。
+> 本章所有汇编片段均为 x86-64（TSO）上的**真实产物**，源码位于 `Examples/_ch108_*.cpp`。
+> 立场分层与验证标记（见 `CONVENTIONS.md` §1/§10）：正文用 `[标准]`/`[实现·GCC15]`/`[ABI]`/`[平台·x86-64]`/`[微架构·x86-64 TSO]`/`[经验]` 区分层级，并对高风险断言标注 `[VERIFIED]`（已实编/实跑确认）或 `[UNVERIFIED]`（本机无法验证，如 ARM 行为、绝对 benchmark 毫秒数）。
 
 ## ⓪ 历史动机：内存序的来龙去脉
 > 单核时代人人默认"先写的先被看见"，多核一来，这个默认就破产了。
@@ -347,7 +347,7 @@ void thread_a_bad() {
 
 ## ⑪ [实现]真实汇编：seq_cst 在 x86 是普通 mov（TSO 强内存模型），在 ARM 需 dmb 屏障 [实现]
 
-**真实证据（GCC 13.1.0, x86-64, -O2）**：seq_cst **加载**就是普通 `mov`；但 seq_cst **存储**GCC 13 编译为**带锁的 `xchg`**（x86 上 `xchg` 隐含 lock 前缀，提供全序所需的强写）。这与“x86 TSO 下 seq_cst 很便宜”一致——它不需要 `mfence`，但写端仍是一个原子交换。
+**真实证据（GCC 15.3.0, x86-64, -O2，已复编确认 `[VERIFIED]`）**：seq_cst **加载**就是普通 `mov`；但 seq_cst **存储**编译为**带锁的 `xchg`**（x86 上 `xchg` 隐含 lock 前缀，提供全序所需的强写）。这与“x86 TSO 下 seq_cst 很便宜”一致——它不需要 `mfence`，但写端仍是一个原子交换。
 
 ```cpp
 // 文件：Examples/_ch108_seqcst.cpp
@@ -377,7 +377,7 @@ void pub(int v) { g.store(v, std::memory_order_release); } // ⑪ 普通 mov
 int  get()      { return g.load(std::memory_order_acquire); } // ⑪ 普通 mov
 ```
 
-- `[实现·GCC13]`：seq_cst 与 release/acquire 在 x86-64 的**运行期差异**主要体现在**存储端**（xchg vs mov），加载端都是 mov。
+- `[实现·GCC15]` `[VERIFIED]`：seq_cst 与 release/acquire 在 x86-64 的**运行期差异**主要体现在**存储端**（xchg vs mov），加载端都是 mov（本机 GCC 15.3.0 复编确认）。
 - `[平台·ARM]`：ARM 是弱内存模型，release 存储需 `dmb`/释放语义指令、seq_cst 还需额外屏障；但本机只有 x86 工具链，未编译 ARM 产物——请勿把下方 x86 片段当作 ARM 证据。
 - `[经验]`：在 x86 上“内存序几乎免费”是 TSO 的红利；换到 ARM/PowerPC，错误放宽内存序会立刻暴露为偶发 bug。
 
@@ -432,7 +432,7 @@ _Z8producerv:
 
 ## ⑬ 硬件映射：x86 TSO vs ARM 弱内存模型 [平台]
 
-x86 采用 **TSO（Total Store Order）**：写-写、写-读、读-读都不重排（仅允许“读早于写”重排，即 store-buffer 效应），因此 acquire/release 几乎“免费”。ARM/POWER 是**弱内存模型**：写可延迟、读可提前、彼此可乱序，必须显式屏障。
+x86 采用 **TSO（Total Store Order）** `[微架构·x86-64 TSO]`：写-写、写-读、读-读都不重排（仅允许“读早于写”重排，即 store-buffer 效应），因此 acquire/release 几乎“免费”。ARM/POWER 是**弱内存模型** `[微架构·ARM]`：写可延迟、读可提前、彼此可乱序，必须显式屏障。
 
 ```cpp
 // ⑬ 同一段 release/acquire 代码，两种硬件命运不同
@@ -455,8 +455,8 @@ _Z7consumev:
 ;           且跨变量顺序仍需 dmb 等屏障。本机无 ARM 工具链，未附 ARM 汇编。
 ```
 
-- `[平台·x86-64]`：TSO 使 release/acquire/seq_cst 的加载端都是 `mov`，存储端 seq_cst 用 `xchg`、release 用 `mov`。
-- `[平台·ARM]`：弱模型必须靠释放/获取语义指令或 `dmb` 屏障才能等价；同样代码在 ARM 上**绝对不能**假设“mov 就够了”。
+- `[微架构·x86-64 TSO]`：TSO 使 release/acquire/seq_cst 的加载端都是 `mov`，存储端 seq_cst 用 `xchg`、release 用 `mov`。
+- `[微架构·ARM]` `[UNVERIFIED]`：弱模型必须靠释放/获取语义指令（`ldar`/`stlr`）或 `dmb` 屏障才能等价；同样代码在 ARM 上**绝对不能**假设“mov 就够了”。本机无 ARM 工具链，未附 ARM 汇编，此结论来自 ARM 弱内存模型公开文档，未经本机复编。
 - `[经验]`：在 x86 开发的并发代码，搬到 ARM 服务器/手机上才暴露内存序 bug——这正是必须用正确内存序、并用 TSan/弱平台实测的原因。
 
 ## ⑭ 编译器重排与 as-if 规则 [标准]
@@ -568,7 +568,7 @@ _Z3getv:
 ;   seq_cst 加载 = mov；seq_cst 存储 = xchg（带锁）——比 relaxed 存储更重
 ```
 
-- `[实现·GCC13]`：relaxed 加载/存储是 `mov`；relaxed RMW 需 `lock add`（原子性不免费）；seq_cst 存储是带锁 `xchg`，比单纯 `mov` 多一次锁总线。
+- `[实现·GCC15]` `[VERIFIED]`：relaxed 加载/存储是 `mov`；relaxed RMW 需 `lock add`（原子性不免费）；seq_cst 存储是带锁 `xchg`，比单纯 `mov` 多一次锁总线（本机 GCC 15.3.0 复编确认）。
 - `[经验]`：经验法则 **relaxed < acquire/release < acq_rel < seq_cst**。默认用 seq_cst 求正确；确认瓶颈后再按需降级，且每次降级都要有 happens-before 论证支撑。
 
 ## ⑱ 与 ch107 衔接（原子操作默认 seq_cst） [标准]
@@ -736,7 +736,7 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 | [第107章](Book/part09_concurrency/ch107_atomic.md) | 无锁队列/计数器 | 本章提供概念，第107章提供实现 |
 | [第109章](Book/part09_concurrency/ch109_fence.md) | 线程安全数据结构 | 本章提供概念，第109章提供实现 |
 | [第107章](Book/part09_concurrency/ch107_atomic.md) | 热路径识别/优化目标 | 本章提供概念，第107章提供实现 |
-| [第110章](Book/part09_concurrency/ch110_lockfree.md) | 文本处理/协议解析 | 本章提供概念，第110章提供实现 |
+| [第110章](Book/part09_concurrency/ch110_lockfree.md) | 无锁栈/队列的 CAS 循环 | 本章提供内存序概念，第110章提供 lock-free 实现 |
 
 
 ## 真实开源项目参考（可查证链接）
@@ -838,10 +838,10 @@ fadd_seqcst():
 
 ### 非显然事实与工程警示
 
-1. **`acquire`/`release` 在 x86-64 下是"免费"的**：x86-64 采用 TSO（Total Store Order），硬件本就不允许「store 与更早 store 重排」「load 与更早 load 重排」，因此普通 `mov` 天然满足 acquire/release 语义，编译器无需插入任何 `lfence`/`mfence`/`lock`。这是 CPU 强内存模型的直接红利。
+1. **`acquire`/`release` 在 x86-64 下是"免费"的** `[微架构·x86-64 TSO]` `[VERIFIED]`：x86-64 采用 TSO（Total Store Order），硬件本就不允许「store 与更早 store 重排」「load 与更早 load 重排」，因此普通 `mov` 天然满足 acquire/release 语义，编译器无需插入任何 `lfence`/`mfence`/`lock`。这是 CPU 强内存模型的直接红利（本机 GCC 15.3.0 复编确认指令一致）。
 2. **`seq_cst` 的真正成本只在 store**：`seq_cst` store 必须付 `xchg`（或 `mfence`）以锚定全局单一总序；而 `seq_cst` load 在 GCC/x86-64 下仍是普通 `mov`——因为「`lock` 前缀 store + TSO」已足以维持顺序一致性，编译器不为 load 额外加屏障。
 3. **原子 RMW 无论内存序都付 `lock`**：`fetch_add` 的 relaxed 与 seq_cst 生成**逐字节相同**的 `lock xadd`。内存序差异不改变这条指令，只改变编译器对"周围代码能否重排"的约束——机器码层面无差别。
-4. **⚠️ 嵌入式跨平台陷阱（最重要）**：上述"看起来都免费"的现象是 **x86-64 TSO 独有**。在嵌入式常见的 **ARM/AArch64（弱内存模型）** 上，`seq_cst` load/store 会生成 `dmb ish` 数据内存屏障，`acquire`/`release` 才对应 `ldar`/`stlr` 免费指令。因此：**在 x86 开发机用 `relaxed`/`seq_cst` 看不出性能差别、也几乎不暴露重排 bug，但烧到 ARM MCU 上两者指令数与正确性语义天差地别**。内存序选型必须按目标架构实测，不可只信 x86 本地结果。
+4. **⚠️ 嵌入式跨平台陷阱（最重要）** `[微架构·ARM]` `[UNVERIFIED]`：上述"看起来都免费"的现象是 **x86-64 TSO 独有**。在嵌入式常见的 **ARM/AArch64（弱内存模型）** 上，`seq_cst` load/store 会生成 `dmb ish` 数据内存屏障，`acquire`/`release` 才对应 `ldar`/`stlr` 免费指令。因此：**在 x86 开发机用 `relaxed`/`seq_cst` 看不出性能差别、也几乎不暴露重排 bug，但烧到 ARM MCU 上两者指令数与正确性语义天差地别**。内存序选型必须按目标架构实测，不可只信 x86 本地结果。本机无 ARM 工具链，`ldar`/`stlr`/`dmb` 指令描述来自 ARM 弱内存模型公开文档，未经本机复编，故标 `[UNVERIFIED]`。
 
 ## 自测练习（Exercises）
 
@@ -1240,6 +1240,7 @@ flowchart TD
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；编译命令 `g++ -O2 -std=c++17 -pthread`；计时用 `steady_clock` 跑 5 轮取中位数；结果经 volatile sink 防 DCE。绝对毫秒数随机器而变，**只有比值才可移植**，下文所有「×」倍数才是你应该记住的结论。
 > **绝对毫秒随机器而变，加速比才是可移植信号。**
+> **验证状态**：下表「绝对毫秒」为特定机器（Ryzen 9 7940HX / GCC 15.3.0）的单次实测，标 `[UNVERIFIED]`（不可移植，勿照抄）；其后的「非显然结论」六条结构性质（seq_cst store 最贵、load 各序同价、RMW 各序同码）已通过本机 GCC 15.3.0 反汇编复编确认，标 `[VERIFIED]`，在 x86-TSO 上稳定成立。
 
 ### D5.1 基准结果
 
