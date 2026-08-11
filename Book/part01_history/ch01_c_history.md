@@ -670,63 +670,128 @@ int main(){int arr[5]={5,3,1,4,2};qsort(arr,5,4,cmp);std::cout<<arr[0]<<std::end
 
 ### 练习 1（难度 ★★）
 
-**真实场景：跨边界的整数比较陷阱。** 你在维护一个跨平台网络库，把 `size_t` 长度的请求体与 `int` 计数混用时，直接用 `a < b` 在有符号/无符号混合比较中会被提升为无符号，造成隐蔽的 UB。请写一个对任意可比较类型通用、且对混合符号比较安全的 `max` 风格比较工具。
+**真实场景：把一段 C 老代码升级成 C++ 编译单元。** 你接手了一个 1980 年代的 C 模块，里面大量使用 `void*` 做泛型容器、直接写 `struct Tag` 当类型名、并用字符字面量 `'a'` 当整数常量。原作者在 C 编译器下能编过，你换成 C++ 编译器后满屏报错。请写出能演示三处「C 能编、C++ 编不过」不兼容点的代码，并给出 C++ 下的正确写法。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+C++ 是 C 的**超集但有数十处例外**（本文件第⑯节）。下面用一段可编译的 C++23 代码演示三处典型不兼容点，并在注释里标出 C 的写法：
 
 ```cpp
-#include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <cstddef>
+#include <cstdio>
+
+// ① void* 隐式转 T*：C 允许，C++ 必须显式 static_cast
+void demo_voidptr() {
+    void* p = nullptr;
+    // int* q = p;                 // C++ 编译错误：void* 不能隐式转 int*
+    int* q = static_cast<int*>(p); // C++ 正确写法（C 写法: int* q = p;）
+    (void)q;
+}
+
+// ② struct 名称作用域：C 中类型名不进普通命名空间，须写 struct Tag
+//    C++ 中 struct/union/enum 名直接进入普通作用域，可直接当类型用
+struct Point { int x, y; };
+int area(Point p) { return p.x * p.y; }   // C++ 直接写 Point；C 须写 struct Point p
+
+// ③ 字符字面量类型：C 中 'a' 是 int（sizeof==4），C++ 中是 char（sizeof==1）
+int main() {
+    demo_voidptr();
+    Point p{3, 4};
+    std::printf("area=%d\n", area(p));
+    std::printf("sizeof('a') = %zu  (C 中为 %zu 大小的不同类型 int)\n",
+                sizeof('a'), sizeof(int));
+    return 0;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] C++ 禁止 `void*` 到 `T*` 的隐式转换；`sizeof` 字符字面量在 C++ 中为 1（char），与 C 的 `int` 不同；C++ 把 class/struct/union/enum 的名字放入普通名字查找作用域（C 则分属 tag 命名空间）。
 
-[引用] ISO C++20 §[temp.deduct]（模板参数推导）；cppreference "std::cmp_less"（https://en.cppreference.com/w/cpp/utility/intcmp/cmp_less）与 "函数模板"（https://en.cppreference.com/w/cpp/language/function_template）。混合符号比较陷阱可对照 C++ 核心指南 P.Sign 系列条目。
+[经验] 这三类是「C 代码直接当 C++ 编」最常见的三道坎。迁移老 C 代码时，先批量把 `void*` 赋值补上 `static_cast`，再用 `typedef struct Tag {…} Tag;` 或 `using` 抹平 tag 作用域差异。详见本文件第⑯节与第⑰节 FAQ「C++ 完全兼容 C？」。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-**真实场景：对外 API 的类型护栏。** 你写一个供多个团队调用的数值聚合工具 `add`，若有人误传 `std::string` 或自定义类型，旧的 SFINAE 报错是一堆难读的替换失败噪声。请用 `std::integral` 概念约束它，使浮点/非数值调用在编译期被清晰拒绝。
+**真实场景：向团队解释「为什么 C++ 不解释执行」。** 你们要在 MCU 固件上引入 C with Classes 风格的封装，有同事提议「反正都要跨平台，不如做成解释器/虚拟机」。请用一段 C with Classes 风格的代码证明：Stroustrup 选择「编译为原生机器码 + 单独编译」是为了零运行时开销、并能直接链接进已有的 C 工具链与系统库——这正是解释器给不了的东西。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+C with Classes（1980）的核心目标：把「类/构造函数」翻译成**等价的 C 代码**，再交给 C 编译器生成原生机器码。下面这段 C++ 经 CFront 转译后，其 `run_demo` 会带 C ABI 符号，可被任意 C 链接器直接消费，运行期没有任何 VM 解释开销：
 
 ```cpp
-#include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <cstdio>
+
+// C with Classes 风格：class 只是带成员函数与构造/析构的 struct。
+// 目标：生成的代码与手写 C 在汇编层面同构，可直接链接进 C 系统库。
+class Buffer {
+    int size_;
+    int* data_;
+public:
+    Buffer(int n) : size_(n), data_(new int[n]) {} // 构造函数（C with Classes 1980 已有）
+    ~Buffer() { delete[] data_; }                  // 析构函数（早期手动管理雏形）
+    int size() const { return size_; }
+};
+
+// extern "C" 导出的符号与 C 自由函数同构：C 链接器无需任何 VM 即可调用
+extern "C" void run_demo() {
+    Buffer buf(8);                       // CFront 时代展开为: Buffer buf; Buffer__init(&buf, 8);
+    std::printf("buffer size = %d\n", buf.size());
+}
+
+int main() {
+    run_demo();
+    return 0;
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[平台·x86-64] 在 `-O2` 下 `run_demo` 与等价 C 函数生成几乎相同的机器码（见本文件第⑩节汇编分析）；调用 `Buffer::size()` 是一次普通函数调用，零间接跳转。
 
-[引用] ISO C++20 §[concepts]（概念）；cppreference "std::integral"（https://en.cppreference.com/w/cpp/concepts/integral）与 "约束与概念"（https://en.cppreference.com/w/cpp/language/constraints）。概念取代 C++11/14 的 `enable_if`/SFINAE 写法，错误信息直接指向不满足的约束。
+[实现·GCC15] `extern "C"` 关闭名称改编（name mangling），使 C++ 函数暴露为纯 C 符号，老 C 工程无需改动即可链接——这是「编译为机器码 + 单独编译」模型相比「解释执行」的最大现实优势：既贴近硬件、又复用整个 C 生态（libc、POSIX、Win32 API）。
+
+[标准] 本段同时演示了构造函数初始化列表与 `extern "C"` 链接规范，两者语义在 C++ 标准中稳定至今。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-**真实场景：编译期常量表。** DSP/信号处理的标定代码需要一个「阶乘查找表」，但表项必须在编译期算好、不能留到运行期，否则每次启动都重算。请写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`，证明它真的在编译期定值。
+**真实场景：技术评审上的两条路线之争。** 评审会上有人主张「C 太糙了，不如直接设计一门干净的新语言」，另一派坚持「在 C 上加类」。请用代码 + 分析说明 CFront 的「C++ → C 转译」模型如何把这场争论变成可落地的工程选择，并指出这种转译模型的两大代价。
 
 <details><summary>答案与解析</summary>
 
+「在 C 上加特性」能通过 CFront 把新语法机械翻译回 C 来实现，从而**零成本复用 C 编译器、链接器、调试器**。下面演示 CFront 的核心手法——把 C++ class 展开为「C 的 struct + 全局 init 函数」，这正是 1980 年 C with Classes 落地的真实方式：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <cstdio>
+
+// 这段 C++ 在 CFront 时代会被机械展开为等价的 C 代码：
+//   struct Counter { int value; };
+//   void Counter__init(Counter* self){ self->value = 0; }
+//   void Counter__inc(Counter* self){ ++(self->value); }
+struct Counter {
+    int value;
+    Counter() : value(0) {}   // 构造函数 → CFront 生成的 Counter__init
+    void inc() { ++value; }   // 成员函数 → 普通函数 Counter__inc(this)
+};
+
+int main() {
+    Counter c;        // CFront: Counter c; Counter__init(&c);
+    c.inc();          // CFront: Counter__inc(&c);
+    std::printf("count = %d\n", c.value);
+    return 0;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+**转译模型的「利」**（对应「加特性到 C」路线）：
+- 复用整个 C 工具链，C++ 第一天就能在任意有 C 编译器的环境运行；
+- 老 C 代码几乎零改动即可重编为 C++，老程序员几乎零重学成本（本文件第 0.3 节「设计哲学之争」）。
 
-[引用] ISO C++ §[expr.const] 与 §[dcl.constexpr]；cppreference "constexpr"（https://en.cppreference.com/w/cpp/language/constexpr）与 "static_assert"（https://en.cppreference.com/w/cpp/language/static_assert）。编译期求值能力是后续 C++14/17/20 constexpr 扩展的基础。
+**转译模型的「弊」**（这是后来放弃 CFront、转向原生 C++ 前端的根源）：
+- 编译错误指向**生成的 C 代码行号**而非你的 C++ 源码，调试栈要「翻译回去」；
+- 后期特性（模板深度展开、异常栈展开、namespace）很难干净地映射回 C，导致各厂商最终转向原生前端（GCC/Clang）。
+
+[标准] C++ 标准只规定行为、不规定实现方式，因此 CFront 这样的转译前端在标准上是合法的；但工具链演进最终选择了原生 AST 前端。
+
+[经验] 对比「设计新语言」：干净却无法调用庞大的 C 库生态、adoption 极低（本文件第⑰节「为何不直接设计全新语言？」）。Stroustrup 选「加特性到 C」，是用「背负 C 的粗糙」换「立刻可用」，这正是 C++ 能在 1985 年走出贝尔实验室的关键工程取舍。
 
 </details>
 

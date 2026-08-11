@@ -534,63 +534,129 @@ int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/S
 
 ### 练习 1（难度 ★★）
 
-**真实场景：跨标准版本的可移植比较。** 你的头文件要同时喂给 C++17 与 C++20 工具链，C++17 还没有 `<compare>` 的 `std::cmp_less`。请先写一个对任意可比较类型通用、且对混合符号比较安全的最大化比较，并思考它在不同标准版本下如何被特性测试宏切换实现。
+**真实场景：跨标准版本的可移植库头。** 你维护一个要同时喂给 C++20 与 C++23 工具链的错误传递头文件。C++23 才把 `std::expected` 纳入标准库（提案 P0323R12），C++20 没有它。请用一个特性测试宏在两种标准下无侵入地切换实现，使同一份源码既能用标准 `std::expected`、也能回退到手写 `Result`，而调用方代码完全不变。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+核心是用特性测试宏 `__cpp_lib_expected` 探测本编译器的标准库是否提供了 `<expected>`，而不是用 `__cplusplus` 粗粒度判断——同一份 C++23 代码在没实现该特性的早期编译器上仍能回退。`<version>` 头集中提供所有 `__cpp_*` 宏。
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <string>
+#include <string_view>
+#include <version>   // 集中提供 __cpp_lib_expected 等特性测试宏
+
+#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202211L
+#  include <expected>
+#  define USE_STD_EXPECTED 1
+#endif
+
+#if USE_STD_EXPECTED
+// C++23 路径：直接使用标准库 std::expected
+using Result = std::expected<int, std::string>;
+Result parse(std::string_view s) {
+    if (s.empty()) return std::unexpected(std::string("empty"));
+    return static_cast<int>(s.size());
+}
+#else
+// C++20 回退：手写最小 Result
+template <typename T, typename E>
+struct Result { T v; E e; bool ok; };
+Result<int, std::string> parse(std::string_view s) {
+    if (s.empty()) return {0, "empty", false};
+    return {static_cast<int>(s.size()), {}, true};
+}
+#endif
+
+int main() {
+#if USE_STD_EXPECTED
+    auto r = parse("hello");
+    std::cout << (r ? "len=" + std::to_string(*r) : "err") << "\n";
+#else
+    auto r = parse("hello");
+    std::cout << (r.ok ? "len=" + std::to_string(r.v) : "err") << "\n";
+#endif
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[标准] 特性测试宏由 WG21 论文 P0941R2 定稿，约定：库特性宏形如 `__cpp_lib_<feature>`，值采用 `YYYYMM` 格式（如 `202211L` 表示 2022-11 纳入），可用 `#if 宏 >= 值` 做精确能力探测。
 
-[引用] ISO C++20 §[temp.deduct]；cppreference "std::cmp_less"（https://en.cppreference.com/w/cpp/utility/intcmp/cmp_less）。跨标准移植可用特性测试宏（`__cpp_*`）探测 `<compare>` 是否可用，再决定走 `std::cmp_less` 还是手写分支。
+[经验] 永远用 `<version>` + `__cpp_*` 守护特性，而非 `__cplusplus`——后者只告诉你是 C++20 还是 C++23，不告诉编译器到底实现了没有（见本章附录 I 工业实战复盘）。`std::expected` 由提案 P0323R12 进入 C++23（IS），但 GCC13 / Clang16 / MSVC17.8 才陆续落地，正是"标准发布 ≠ 编译器支持"的典型案例。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-**真实场景：库 API 的可读错误。** 你发布一个被多个团队依赖的数值工具 `add`，误用时最怕编译器吐出一片 SFINAE 替换失败噪声。请用 `std::integral` 概念约束它，让浮点/非数值调用在编译期被清晰拒绝——这正是 C++20 概念相比旧式 `enable_if` 的核心卖点之一。
+**真实场景：读一份提案并判断它"到哪了"。** 同事甩给你链接 `wg21.link/P2996R5`（反射），问"这个特性现在能用了吗？什么时候进标准？"请解释提案编号里每个部分的含义，辨析 P-number、TS（Technical Specification）与 IS（International Standard）三者的关系，并写一个程序演示：如何用特性测试宏判断一个"还在提案阶段"的特性在本编译器里到底有没有实现。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+提案编号规则：`P2996` 中 `P` = proposal（提案），`2996` 是四位流水号；`R5` 表示第 5 次修订（Revision）。一份提案从 `PxxxxR0` 提交后，依次经过 Study Group 初审 → EWG/LEWG 设计评审 → CWG/LWG 措辞定稿 → 全会（Plenary）投票 → ISO 国家体投票，最终被打包进某一版 "train"（每 3 年一版）才成为 **IS（International Standard，正式国际标准）**。
+
+其中 **TS（Technical Specification，技术规范）** 是 WG21 的"中间出版物"：某些特性（如 Concepts 早期、Modules、Coroutines 都曾以 TS 形式先发）会先以独立 TS 形式发布给实现者试水，收集经验后再并入正式的 IS。也就是说路径通常是 `P 提案 → (可选) TS → IS`，TS 不是必经阶段，但它是"准标准、可提前试用"的通道。
+
+判断"现在能不能用"不能看提案号，要看编译器是否已用特性测试宏暴露该特性。下面以 P2996 反射为例——它仍在 C++26 train 中、尚未成为 IS，因此绝大多数 C++23 编译器没有对应宏：
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <version>
+
+int main() {
+    // P2996R5 (reflection) 当前状态：在 C++26 train 中，尚未成为 IS。
+#ifdef __cpp_lib_reflection
+    std::cout << "reflection 已落地, 宏值=" << __cpp_lib_reflection << "\n";
+#else
+    std::cout << "reflection 尚未进入本构建 (P2996R5 仍处 pre-IS 阶段)\n";
+#endif
+    std::cout << "__cplusplus=" << __cplusplus << " (仅说明标准年份, 不说明特性是否已实现)\n";
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[标准] IS 即 ISO/IEC 14882 正式标准；TS 是 ISO/IEC TS 系列技术规范，二者都由 ISO 出版，但 TS 不具正式标准地位、可独立演进。
 
-[引用] ISO C++20 §[concepts]；cppreference "std::integral"（https://en.cppreference.com/w/cpp/concepts/integral）。概念由 WG21 论文 P0734R0 定稿，标准库概念集见头文件 `<concepts>`。
+[经验] 读提案要读 `R0`（动机）与 `Rfinal`（最终设计）两端（见最佳实践）；讨论特性时引用 `PxxxxRy` 而非"那个反射的东西"，后人可在 `wg21.link/PxxxxRy` 直接定位原文。提案号是永久引用锚点，不是"能不能用"的依据。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-**真实场景：迁移测试套件里的编译期契约。** 升级编译器后你担心某些常量不再在编译期定值。请写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`，把它作为"新工具链仍支持编译期求值"的可执行断言。
+**真实场景：向新人讲清"到底谁在决定 C++"。** 团队新人不理解为什么法国能拖慢 C++20 Modules 三个月。请用一段代码把 WG21 的**三层治理结构**建模出来——最上层是 ISO/IEC JTC1/SC22（国际标准化组织，国家体各有一票），中间是 WG21（工作组本身，下设 EWG/LEWG/CWG/LWG 与若干 Study Group），底层是做前期调研的 Study Group——并演示一个提案如何在这三层之间流动，以及"哪一环能一票否决"。
 
 <details><summary>答案与解析</summary>
 
+C++ 不是由某家厂商说了算，而是 ISO 框架下的公开委员会治理，自上而下三层：
+
+1. **ISO/IEC JTC1/SC22**：国际标准顶层机构，由各**国家体**（美国 ANSI、英国 BSI、法国 AFNOR、德国 DIN…）组成，每个国家体在 ISO Ballot 阶段只有一票。任何国家反对都会把发布延迟 6–12 个月——法国正是据此拖慢了 C++20 Modules。
+2. **WG21**：真正写标准的工作组，下设语言侧 **EWG**、库侧 **LEWG** 做设计评审，再交 **CWG**/**LWG** 定稿标准措辞，最后全会（Plenary）周日投票。
+3. **Study Groups（SG）**：SG7（反射）、SG21（契约）、SG14（低延迟）等负责前期调研，提案先在这里孵化，再输送到 EWG/LEWG。
+
+下面用枚举与简单结构把这三层与提案流向建模出来：
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <string_view>
+
+// 三层治理结构：ISO 顶层 / WG21 工作组 / Study Group 调研层
+enum class Layer { ISO_JTC1_SC22 = 0, WG21 = 1, StudyGroup = 2 };
+
+// 演示一份提案如何在这三层之间流动，以及哪一环拥有"一票否决"
+void route(std::string_view feature, std::string_view sg) {
+    std::cout << "[" << static_cast<int>(Layer::StudyGroup) << "] " << sg
+              << " 初审孵化: " << feature << "\n";
+    std::cout << "[" << static_cast<int>(Layer::WG21) << "] EWG/LEWG 设计评审"
+              << " -> CWG/LWG 措辞定稿 -> 全会投票\n";
+    std::cout << "[" << static_cast<int>(Layer::ISO_JTC1_SC22) << "] ISO 国家体投票"
+              << " (任一国家反对即延迟 6-12 月，即一票否决)\n";
+}
+
+int main() {
+    route("std::expected (P0323R12)", "SG14/LEWG 孵化");
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[标准] WG21 = ISO/IEC JTC1/SC22/WG21；ISO Ballot 阶段各国家体平等投票，反对票触发延迟。
 
-[引用] ISO C++ §[expr.const]；cppreference "static_assert"（https://en.cppreference.com/w/cpp/language/static_assert）。`static_assert` 自 C++11 起可用于命名空间作用域常量校验，是迁移测试套件里"编译期契约"的基石。
+[经验] "一票否决"只发生在最上层的 ISO 国家体投票，不在 WG21 内部——这正是委员会"保守慢热"的制度来源（见本章 §0.3 设计哲学之争）。理解这三层，就能解释为什么好特性常"晚到却更稳"，以及为什么二手博客常夸大进度（提案 ≠ 已进标准）。
 
 </details>
 
