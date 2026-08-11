@@ -374,10 +374,12 @@ ISO/IEC 14882标准文档约2000页, 分为:
 - Clang 3.3声称支持C++11但缺少thread_local完整实现
 - MSVC 2013声称支持C++11但缺少表达式SFINAE
 
+```text
 # 0 "<stdin>"
 # 0 "<built-in>"
 # 0 "<command-line>"
 # 1 "<stdin>"
+```
 
 ## ⑨ 标准库实现差异
 
