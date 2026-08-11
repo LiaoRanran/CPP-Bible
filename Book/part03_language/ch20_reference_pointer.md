@@ -1560,3 +1560,24 @@ int main() {
 | --- | --- | --- |
 | ch37 new/delete | Book/part04_memory/ch37_new_delete.md | 裸指针常作堆对象所有权句柄 |
 | ch41 智能指针 | Book/part04_memory/ch41_smart_pointers.md | 指针所有权问题催生 unique_ptr/shared_ptr |
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch20_passval.cpp` 真实生成（节选），可本地复现。关键结论：**`by_value` 与 `by_cref` 的函数体在 `-O2` 下逐条相同**——二者内部都只是对 `b.a[8]` 求和的 8 指令循环。6.3× 的差距**不在函数体内，而在调用点**：`by_value(Big)` 要求调用点在栈上构造 64 字节形参副本（每轮 `vmovdqu`/`mov` 复制 8 个 double），`by_cref(const Big&)` 只压一个 8 字节指针。
+
+```asm
+; by_value(Big b) 与 by_cref(const Big&) 在 -O2 下生成完全相同的循环体：
+;   _Z8by_value3Big  /  _Z7by_crefRK3Big  (各 8 条指令)
+        pxor    xmm0, xmm0
+        lea     rax, 64[rcx]          ; rcx = 指向 Big 的指针
+                                    ; （by_value 指向栈上 64B 副本，by_cref 指向原对象）
+        addsd   xmm0, QWORD PTR [rcx]
+        add     rcx, 16
+        addsd   xmm0, QWORD PTR -8[rcx]
+        cmp     rcx, rax
+        jne     .L
+        ret
+```
+
+> 调用点的差异才是 6.3× 的来源：`by_value` 路径在 `call` 之前需把整个 `Big`（64 B）从调用者栈帧 `vmovdqu`/`mov` 到被调栈帧；`by_cref` 路径仅 `lea`/`mov` 一个 8 字节指针。故「大对象按值传递慢 6.3×」是**栈拷贝成本**，与函数体内的求和循环无关（见 D5.2.1）。这也解释了为什么 ≤16 B 的小对象按值反而更快——它走寄存器、零栈拷贝。

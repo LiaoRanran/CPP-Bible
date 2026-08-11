@@ -1755,3 +1755,38 @@ int main() {
 | ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | CRTP 是模板静态多态的典型应用 |
 | ch27 cast | Book/part03_language/ch27_cast.md | static_cast 在 CRTP 中做编译期下转 |
 
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch45_final_devirt.cpp` 真实生成（节选 `run_virtual` / `run_crtp`）。`run_virtual` 经 `mov rax,[rsi]` 取 vtable、`call [QWORD PTR 16[rax]]` 做**两步间接调用**（39 条指令）；`run_crtp` 把 `work_impl` 完全内联，**零 `call`**，直接 `lea eax,1[rax+rax]` 计算 `x*2`（16 条指令）。8.9× 差距 = vtable 间接性 vs 编译期单态化（见 D5.2.1）。
+
+```asm
+; run_virtual：vtable 两步间接调用
+;   _Z11run_virtualP4BasePKix  (节选)
+        mov     rax, QWORD PTR [rsi]     ; 取对象 vtable 指针
+        mov     edx, DWORD PTR [r12+rbx*4]
+        mov     rcx, rsi
+        add     rbx, 1
+        call    [QWORD PTR 16[rax]]      ; ← 取 vtable 槽 + 间接跳（两步间接）
+        cdqe
+        add     rdi, rax
+        cmp     rbp, rbx
+        jne     .L
+        ...
+; run_crtp：work_impl 被内联，无 call
+;   _Z8run_crtpRK11CRTPDerivedPKix  (节选)
+        test    r8, r8
+        jle     .L
+        lea     r8, [rdx+r8*4]
+        xor     ecx, ecx
+        mov     eax, DWORD PTR [rdx]
+        add     rdx, 4
+        lea     eax, 1[rax+rax]          ; ← work_impl 内联为 x*2，无间接调用
+        cdqe
+        add     rcx, rax
+        cmp     r8, rdx
+        jne     .L
+```
+
+> 间接调用的代价不止 `call` 本身，还包括流水线停顿与无法跨调用边界内联。本基准用 `[[gnu::noinline]]` 工厂阻止编译器去虚化，使 `run_virtual` 保留真实 vtable 间接；生产代码中可去虚化的场景（对象类型在调用点可见）虚函数几乎免费，这正是实测方差大的根源（见 D5.2.2）。

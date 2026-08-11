@@ -1165,3 +1165,31 @@ int main() {
 | ch61 模板重载 | Book/part06_templates/ch61_template_overload.md | 重载决议决定哪个模板实例化 |
 | ch156 编译器优化 | Book/part14_perf/ch156_compiler_opt.md | 内联与单态化的编译器机制 |
 
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch60_template_callback.cpp` 真实生成（节选 `run_stdfunction`）。`std::function` 路径是一个 32 条指令的函数，循环内 `call [QWORD PTR 24[rsi]]` **经类型擦除内部函数指针间接调用**；而模板路径 `run_template<Lambda>` 被 `-O2` **完全内联进 `main`，在符号表中不留下任何独立函数**——这正是「编译期已知类型 → 零间接、零代码实体」的机器层证据（见 D5.2.1）。
+
+```asm
+; run_stdfunction：类型擦除 + 间接调用
+;   _Z15run_stdfunctionRKSt6vectorIiSaIiEESt8functionIFiiEE  (节选)
+        mov     rbx, QWORD PTR [rcx]
+        mov     rbp, QWORD PTR 8[rcx]
+        cmp     rbp, rbx
+        je      .L
+        mov     eax, DWORD PTR [rbx]
+        mov     DWORD PTR 44[rsp], eax
+        cmp     QWORD PTR 16[rsi], 0
+        je      .L
+        lea     rdx, 44[rsp]
+        mov     rcx, rsi
+        add     rbx, 4
+        call    [QWORD PTR 24[rsi]]       ; ← 经 std::function 内部函数指针间接调用
+        cdqe
+        add     rdi, rax
+        cmp     rbp, rbx
+        jne     .L
+```
+
+> 对照：`run_template<Lambda>`（模板回调路径）在 `-O2` 下整体内联进调用者，反汇编中**无独立符号**——它「消失」了，因为它不需要任何运行期实体（无 vtable、无函数指针、无类型擦除对象）。这是 7.8× 差距的本质：模板用「不灵活性」（编译期绑定类型）换来了零间接开销。

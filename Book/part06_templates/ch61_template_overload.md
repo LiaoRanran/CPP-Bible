@@ -1105,3 +1105,36 @@ int main() {
 | ch62 特化 | Book/part06_templates/ch62_specialization.md | 特化与 if constexpr 是编译期分派的两种形式 |
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | constexpr 与 if constexpr 的编译期计算能力 |
 
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch61_overload_dispatch.cpp` 真实生成（节选 `run_ptrtable`）。`run_ptrtable` 经 `call [QWORD PTR [rdi+rax*8]]` **通过函数指针表间接调用**目标（37 条指令）；而 `if constexpr` 路径 `run_constexpr<0>/<1>` 被单态化为直线代码并内联进 `main`，符号表中无独立实体。4.3× 差距 = 间接调用阻止内联 vs 编译期单态化（见 D5.2.1）。
+
+```asm
+; run_ptrtable：函数指针表间接分派
+;   _Z12run_ptrtableRKSt6vectorIiSaIiEES3_  (节选)
+        lea     rdi, _ZL5table[rip]       ; ← 函数指针表基址
+        mov     rax, QWORD PTR 8[rcx]
+        mov     r12, rdx
+        mov     rdx, QWORD PTR [rcx]
+        mov     rbp, rcx
+        sub     rax, rdx
+        sar     rax, 2
+        jmp     .L
+        mov     rax, QWORD PTR [r12]
+        mov     ecx, DWORD PTR [rdx+rbx*4]
+        movsxd  rax, DWORD PTR [rax+rbx*4]
+        add     rbx, 1
+        call    [QWORD PTR [rdi+rax*8]]   ; ← 经函数指针表间接调用（阻止内联）
+        mov     rdx, QWORD PTR 0[rbp]
+        cdqe
+        add     rsi, rax
+        mov     rax, QWORD PTR 8[rbp]
+        sub     rax, rdx
+        sar     rax, 2
+        cmp     rbx, rax
+        jb      .L
+```
+
+> 对照：`run_constexpr<0>/<1>`（if constexpr 路径）各自单态化为一份不含分支的代码并内联进 `main`，无独立符号。目标地址集合小且固定，BTB 能缓存，故其惩罚（4.3×）小于 ch62 的分支预测失败（10.4×）——前者是「间接调用 + 无内联」，后者叠加「分支预测失败惩罚」。

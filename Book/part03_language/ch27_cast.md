@@ -2100,3 +2100,40 @@ int main() {
 | ch47 虚函数 | Book/part05_oo/ch47_virtual_functions.md | dynamic_cast 依赖 typeid 与 RTTI，虚函数表 |
 | ch42 严格别名 | Book/part04_memory/ch42_strict_aliasing.md | reinterpret_cast 触及严格别名底线 |
 
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch27_cast_depth.cpp` 真实生成（节选热函数 `run_static` / `run_dynamic`）。两条路径都通过 `Base*` 调用虚函数 `id()`（故都有 `call rdx` 虚调用），但 **`run_dynamic` 每次迭代都先执行 `call __dynamic_cast` 并加载 `_ZTI2D4`/`_ZTI4Base` 两个 type_info 指针做 RTTI 继承链遍历**；`run_static` 完全没有这一步。10.3× 的差距正是 `__dynamic_cast` 的运行期代价。
+
+```asm
+; run_static：无 RTTI 检查，循环直接虚调用 id()
+;   _Z10run_staticx  (节选)
+        mov     rax, QWORD PTR 0[rbp]   ; 取 vtable 指针
+        mov     rdx, QWORD PTR 16[rax]  ; 取虚函数 id() 地址
+        mov     eax, 4
+        cmp     rdx, r12
+        je      .L
+        mov     rcx, rbp
+        add     rbx, 1
+        call    rdx                    ; ← 仅一次虚调用，无 RTTI 开销
+        ...
+; run_dynamic：每次迭代先做 dynamic_cast 的 RTTI 验证
+;   _Z11run_dynamicx  (节选)
+        xor     r9d, r9d
+        lea     r8, _ZTI2D4[rip]       ; ← type_info of D4
+        lea     rdx, _ZTI4Base[rip]    ; ← type_info of Base
+        mov     rcx, rbp
+        call    __dynamic_cast         ; ← RTTI 继承链遍历（10.3× 代价根源）
+        test    rax, rax
+        je      .L
+        mov     rdx, QWORD PTR [rax]
+        mov     r8, QWORD PTR 16[rdx]
+        mov     edx, 4
+        cmp     r8, r12
+        je      .L
+        mov     rcx, rax
+        call    r8                     ; ← 之后才是虚调用 id()
+```
+
+> 注意：`static_cast` 的「零开销」以「程序员保证类型安全」为前提——`run_static` 不做任何运行期检查，若实际类型不是 `D4` 即 UB。这与 D5.2.3 一致：`dynamic_cast` 的代价是「每次调用都付」，应移出热路径或用 `std::variant` + `std::visit` 替代。

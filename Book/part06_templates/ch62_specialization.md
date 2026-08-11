@@ -1281,3 +1281,39 @@ int main() {
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | if constexpr 是 C++17 编译期条件分派 |
 | ch153 CPU 微基准 | Book/part14_perf/ch153_cpu_micro.md | 分支预测惩罚的微架构量化 |
 
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch62_spec_branch.cpp` 真实生成（节选 `run_ifelse_chain`）。`run_ifelse_chain` 对随机洗排的 `tag` 做 `test r8d,r8d; je` / `cmp r8d,1; je` **条件分支**（33 条指令）；随机 tag 使分支预测器无法学习 → 高 misprediction。而 `if constexpr` 路径 `run_constexpr_route<Tag>` 在编译期消除所有分支、单态化为直线代码并内联进 `main`，无独立符号。10.4× 差距主要来自分支预测失败惩罚（见 D5.2.1/2.2）。
+
+```asm
+; run_ifelse_chain：运行期条件分支（随机 tag → 高 misprediction）
+;   _Z16run_ifelse_chainRKSt6vectorIiSaIiEES3_  (节选)
+        mov     r9, QWORD PTR [rcx]
+        mov     rax, QWORD PTR 8[rcx]
+        sub     rax, r9
+        je      .L
+        sar     rax, 2
+        mov     r10, QWORD PTR [rdx]
+        xor     ecx, ecx
+        mov     r11, rax
+        xor     eax, eax
+        jmp     .L
+        add     edx, 7
+        movsxd  rdx, edx
+        add     rax, rdx
+        add     rcx, 1
+        cmp     rcx, r11
+        jnb     .L
+        mov     r8d, DWORD PTR [r10+rcx*4]   ; 取 tag
+        mov     edx, DWORD PTR [r9+rcx*4]
+        test    r8d, r8d                     ; ← 条件分支 1
+        je      .L
+        cmp     r8d, 1                       ; ← 条件分支 2
+        je      .L
+        xor     edx, 85
+        ...
+```
+
+> 对照：`run_constexpr_route<OP_ADD>/<OP_MUL>`（if constexpr 路径）零分支、单态化、内联进 `main`，无独立符号。分支预测惩罚（~10.4×）>> 间接调用惩罚（ch61 ~4.3×），故工程上消除不可预测分支的收益通常大于消除间接调用（见 D5.2.2）。若运行期 tag 不可预测但操作集合封闭，jump table（函数指针表）比 if/else 链更优。
