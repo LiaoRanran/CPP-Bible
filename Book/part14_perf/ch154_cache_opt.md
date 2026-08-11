@@ -3,6 +3,7 @@
 ⟶ Book/part14_perf/ch153_cpu_micro.md
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2`）。
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 > 取证/自检命令：`python tools/chapter_compile_check.py Book/part14_perf/ch154_cache_opt.md`
 > 关键常量：`std::hardware_destructive_interference_size == 64`（GCC 13.1 / libstdc++，定义于 `<new>`，由 `<memory>` 等传递引入）。
 > 缓存行（cache line）= 64 字节（x86-64 主流；ARM 多为 64，部分 128）。
@@ -1197,6 +1198,7 @@ flowchart TD
 
 ### D5.1 基准结果
 
+> 【性能】下表为本机实测量级（非通用结论，绝对毫秒随机器而变），标 `[实验·本机实测][UNVERIFIED]`；只看纵向加速比。
 | 场景 | 本机耗时（5 轮最快） | 相对 |
 |---|---|---|
 | A 顺序遍历 128 MB `long long` 数组 | 4.4 ms | 1.00× |

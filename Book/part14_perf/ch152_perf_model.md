@@ -6,6 +6,7 @@
 > 元数据：标准基 C++23（GCC 13.1 / MinGW，`-std=c++23 -O2 -Wall -Wextra`）· 预计阅读 80 min · 前置 `ch151_benchmark` / `ch153_cpu_micro` / `ch154_cache_opt` / `ch155_simd` / `ch156_compiler_opt` · 后续 `ch157_ce` / `ch158_perf_antipattern` · 难度 ★★★★☆
 >
 > 真实编译器：MinGW GCC 13.1.0。`__rdtsc` 需 `#include <x86intrin.h>`（[实现·平台]），但因自检工具会剥离 `#include`，本章可编译块统一改用 GCC 内联汇编 `rdtsc` 实现（等价、零依赖），以保持自检 0 fail；`#include <x86intrin.h>` 的原生写法在正文与 ` ```text ` 围栏中单独给出。
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 ## ⓪ 历史动机：性能模型与测量学的来龙去脉
 
@@ -178,7 +179,7 @@ classDiagram
 ```
 CPU ─[L1 1~2ns, ~32KB]─[L2 ~10ns]─[L3 ~30ns]─[主存 ~100ns, 数十GB/s]─[SSD ~100us]
       ↑ 算力          ↑ 越往外越慢、越宽（带宽高但延迟大）
-      FLOPS         DRAM 带宽 ~50GB/s, 延迟 ~100ns
+      FLOPS         DRAM 带宽 ~50GB/s, 延迟 ~100ns `[微架构·x86-64][UNVERIFIED]`
                     Roofline 的"屋顶"=算力, "斜坡"=带宽
 ```
 
@@ -219,7 +220,7 @@ t2 ──► [统计: 排序 → 中位数 / MAD] ──► 报告
   └─► libc 包装 (clock_gettime CLOCK_MONOTONIC)
         └─► vDSO / 内核: 读取 TSC 经频率换算
               └─► 返回纳秒
-成本: ~20~40 ns/次调用 (x86-64, vDSO 免陷入内核)
+成本: [微架构·x86-64][UNVERIFIED] ~20~40 ns/次调用 (x86-64, vDSO 免陷入内核)
 陷阱: 被测量的函数若 < 几十 ns，时钟本身误差就不可忽略
 ```
 
@@ -539,7 +540,7 @@ int main() {
 
 ## ⑰ FAQ [经验]
 
-- **Q：`rdtsc` 和 `steady_clock` 哪个更准？** `rdtsc` 是 CPU 周期计数器（亚纳秒、但需自己换算频率、受变频/Turbo 影响）；`steady_clock` 是 OS 提供的纳秒单调时钟（免换算、但每次 ~25ns）。**工程首选 `steady_clock`**，需要 cycle 级才用 `rdtsc`。
+- **Q：`rdtsc` 和 `steady_clock` 哪个更准？** `rdtsc` 是 CPU 周期计数器（亚纳秒、但需自己换算频率、受变频/Turbo 影响）；`steady_clock` 是 OS 提供的纳秒单调时钟（免换算、但每次 ~25ns `[微架构·x86-64][UNVERIFIED]`）。**工程首选 `steady_clock`**，需要 cycle 级才用 `rdtsc`。
 - **Q：单次结果能报吗？** 不能。至少数十次取中位数，并报告方差/MAD。
 - **Q：为什么 `-O3` 有时比 `-O2` 慢？** 过度展开/向量化可能胀 I-cache 或触发 corner case，必须实测。
 
@@ -785,7 +786,7 @@ int main() {
 3. 对一个"每字节仅 0.5 FLOP"的循环，用 Roofline 判断它受算力还是带宽限制。
 
 **思考题**
-- 你的基准 p99 是 5ms，但线上偶发 200ms。为什么 microbenchmark 抓不到尾部延迟？该用什么工具？
+- 你的基准 p99 是 5ms，但线上偶发 200ms（量级示意，非通用性能结论）。为什么 microbenchmark 抓不到尾部延迟？该用什么工具？
 - `-O3` 比 `-O2` 慢的案例，根因通常在哪几类（I-cache / 寄存器压力 / 病态展开）？
 
 **源码阅读建议（libstdc++ GCC 13.1.0）**
@@ -880,15 +881,15 @@ add rdi, 0x0040              ; 步进一个缓存行
 
 ### 缓存与带宽（3.2GHz，桌面）
 
-- L1 ≈ 1.0ns / 0x0040 字节行；L2 ≈ 4.0ns；L3 ≈ 12ns；主存 ≈ 100ns
+- [微架构·x86-64][UNVERIFIED] L1 ≈ 1.0ns / 0x0040 字节行；L2 ≈ 4.0ns；L3 ≈ 12ns；主存 ≈ 100ns
 - 内存带宽 ≈ 0x1000 MB/s 量级；AVX2 算力 ≈ 0x0100 GFLOP/s
 - 计算密度 < 0x0008 FLOP/字节 时为带宽受限（Roofline 左侧）
 
 ### 量化方法
 
-- `std::chrono` 高精度时钟分辨率 ≈ 1.0ns；`RDTSC` ≈ 0.3ns
-- perf 采样开销 ≈ 0.2us/事件；cache-miss 计数经 `0x0040` 位 MSR
-- 单次测量抖动 ≈ 5.0ns，需取 0x1000 次中位数
+- [微架构·x86-64][UNVERIFIED] `std::chrono` 高精度时钟分辨率 ≈ 1.0ns；`RDTSC` ≈ 0.3ns
+- [微架构·x86-64][UNVERIFIED] perf 采样开销 ≈ 0.2us/事件；cache-miss 计数经 `0x0040` 位 MSR
+- [微架构·x86-64][UNVERIFIED] 单次测量抖动 ≈ 5.0ns，需取 0x1000 次中位数
 
 ### 编译器与标准
 

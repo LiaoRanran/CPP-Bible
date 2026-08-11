@@ -1,6 +1,7 @@
 # 第155章　SIMD / AVX 向量化（C++/硬件）
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23`）。
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 > 自动向量化取证命令（GCC 默认在 `-O3` 才开 tree-vectorize；`-O2` 不向量化，这点与 Clang 不同，下文明示）：
 > `g++ -std=c++23 -O3 -mavx2 -ftree-vectorize -S -masm=intel Examples/_ch155_simd.cpp -o Examples/_ch155_simd.asm`
 > 所有 ```asm 块均为上述真实编译产物，未加任何编造。
@@ -1111,6 +1112,7 @@ flowchart TD
 | 条件累加 — 分支写法 | 65.597 | 基准 1.00× |
 | 条件累加 — 无分支写法 | 50.305 | 1.30× 快（仅标量 cmov，未向量化） |
 
+> 【性能】以下 ms 为本机 GCC 15.3.0 实测量级（非通用结论），标 `[实验·本机实测][UNVERIFIED]`；毫秒随机器而变，只看纵向加速比，勿横向跨表比毫秒。
 ### D5.2 非显然结论
 
 1. **"GCC `-O2` 不向量化"的正文口径（基于 GCC 13）在 GCC 15 上需要修正为："`-O2` 已默认打开自动向量化，但用 very-cheap 代价模型，只接受不需要循环版本化/剥离的循环。"** 证据链（`-fopt-info-vec`）：裸 `-O2` 下本文件三个热循环全部落选（saxpy 报 "couldn't vectorize loop"——指针可能别名，需要版本化，very-cheap 不允许）；加 `-fvect-cost-model=cheap` 或换 `-O3` 后同样的 SSE2 目标全部向量化成功；而 ch82 基准中迭代次数编译期已知的定长 16 循环在裸 `-O2` 下就报 "loop vectorized using 16 byte vectors"。结论：GCC 15 的 `-O2` 向量化器是"开着的但很挑剔"，不是"关着的"。

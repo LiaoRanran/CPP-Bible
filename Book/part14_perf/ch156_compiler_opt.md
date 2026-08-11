@@ -1,6 +1,7 @@
 # 第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23`，取证用 `-O2 -S -masm=intel`、`-flto`、`-fprofile-generate`/`-fprofile-use`）。
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 > 立场分层遵循 `CONVENTIONS.md`：凡实现相关均标注具体编译器/版本。
 > 本章所有汇编均为本机 GCC 13.1.0 实编译 + `objdump -d -M intel` 取证，未编造。
 
@@ -788,7 +789,7 @@ Q: 本章核心? A: 见附录A-F中的深度分析(工业原理/性能/汇编/�
 
 [标准] `-O2` 开内联与大部分优化；`-O3` 追加循环向量化与过程间分析。`-mavx2` 生成 32 字节（`0x0020`）宽 AVX，吞吐翻倍但需 `alignas(0x0020)`；`-mavx512f` 生成 64 字节（`0x0040`）宽 AVX-512，需 `alignas(0x0040)`，否则 `vmovdqa` 触发 #GP。
 
-缓存层级：L1 ≈1 ns，L2 ≈4 ns，L3 ≈12 ns，主存 ≈100 ns；缓存行 `0x0040`（64 字节）是预取与 false-sharing 粒度。`GCC 13.1.0` 的 `-flto` 跨 TU 内联（见 ch47 去虚化）；`Clang 17` / `MSVC 19.3` 等价。`C++17` `[[likely]]`/`[[unlikely]]` 给分支预测器提示（BTB 命中约 1–3 ns，未命中追加 10–15 cycles）。
+缓存层级：[微架构·x86-64][UNVERIFIED] L1 ≈1 ns，L2 ≈4 ns，L3 ≈12 ns，主存 ≈100 ns；缓存行 `0x0040`（64 字节）是预取与 false-sharing 粒度。`GCC 13.1.0` 的 `-flto` 跨 TU 内联（见 ch47 去虚化）；`Clang 17` / `MSVC 19.3` 等价。`C++17` `[[likely]]`/`[[unlikely]]` 给分支预测器提示（BTB 命中约 1–3 ns，未命中追加 10–15 cycles）。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

@@ -1,6 +1,7 @@
 # 第157章 Compiler Explorer 实战
 
 > 标准基: godbolt.org / GCC 13.1 / 预计阅读: 60min / ⟶ Book/part14_perf/ch156_compiler_opt.md / 难度: ★★★☆☆
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 ## ⓪ 历史动机：Compiler Explorer 的来龙去脉
 
@@ -609,9 +610,9 @@ ret
 
 ### 关键观察量级
 
-- `-O0` 栈帧开销 ≈ 5.0ns/调用；`-O2` 内联后 ≈ 0.5ns
+- - [微架构·x86-64][UNVERIFIED] `-O0` 栈帧开销 ≈ 5.0ns/调用；`-O2` 内联后 ≈ 0.5ns
 - 自动向量化：`-O3 -mavx2` 将循环 8x 展开，吞吐 +4x
-- 一条 `imul` 延迟 ≈ 3 cycles（3.2GHz ≈ 0.9ns）；`0x0004` 字节结果
+- 一条 [微架构·x86-64][UNVERIFIED] `imul` 延迟 ≈ 3 cycles（3.2GHz ≈ 0.9ns）；`0x0004` 字节结果
 
 ### 编译器标志与版本
 
