@@ -60,6 +60,155 @@ CHREF_RE = re.compile(
 
 CHNUM_RE = re.compile(r"/ch(\d+)")
 H1_RE = re.compile(r"^#\s+(.+?)\s*$", re.MULTILINE)
+# 发布产物自检用：markdown 链接/图片 `](target)` / `![alt](target)`。
+# 同时覆盖图片与内联链接（图片语法 `[alt](path)` 也会被本式匹配，无妨）。
+LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+
+
+def _clean_link_target(raw: str) -> str:
+    """从 markdown 链接目标里剥离可选 title（`](path "title")`）与首尾空白。"""
+    raw = raw.strip()
+    if '"' in raw:
+        raw = raw[: raw.index('"')].strip()
+    else:
+        raw = raw.split(" ")[0].strip()
+    return raw
+
+
+def _skip_link(tgt: str) -> bool:
+    """跳过非文件系统链接：绝对 URL / 邮件 / 纯锚点。"""
+    if not tgt:
+        return True
+    if tgt.startswith(("http://", "https://", "mailto:", "ftp://")):
+        return True
+    if tgt.startswith("#"):
+        return True
+    return False
+
+
+# MkDocs 当成静态资源目录、不渲染为页面的目录名（nav 覆盖自检须排除）。
+STATIC_DIRS = {"assets", "img", "images", "static", "theme",
+               ".git", ".github", "__pycache__"}
+DOC_EXT = (".md", ".html", ".htm", ".jpg", ".jpeg", ".png", ".gif",
+           ".svg", ".pdf", ".css", ".js", ".txt")
+
+
+def _is_file_link(tgt: str) -> bool:
+    """目标是否像文件系统路径（含 '/' 或以文档/图片扩展名结尾）。
+
+    C++ 代码里的 `[](auto)`, `std::tuple<T,T,T>`, `T*` 等会被 LINK_RE 误匹配，
+    但它们既不是相对路径也不带扩展名，据此过滤掉，避免误报。"""
+    if "/" in tgt:
+        return True
+    low = tgt.lower()
+    return low.endswith(DOC_EXT)
+
+
+def _strip_code(text: str) -> str:
+    """剔除围栏代码块（``` / ~~~）与内联代码，避免 C++ 泛型 lambda `[](auto&&){}`
+    或代码里的 `](` 被误判为 markdown 链接。仅对渲染后的正文做链接自检。"""
+    out = []
+    infence = False
+    fence = ""
+    for line in text.split("\n"):
+        s = line.lstrip()
+        if not infence:
+            if s.startswith("```") or s.startswith("~~~"):
+                infence = True
+                fence = s[:3]
+                continue
+            out.append(line)
+        else:
+            if s.startswith(fence):
+                infence = False
+                fence = ""
+            # 围栏内行直接丢弃
+    joined = "\n".join(out)
+    joined = re.sub(r"`[^`]*`", "", joined)  # 去内联代码
+    return joined
+
+
+def validate_site(index: dict) -> list:
+    """自检 site 产物（build/site/docs）：
+
+    1) 资产/链接存在性：所有 markdown 图片与链接目标（剥离锚点/title 后）相对
+       当前 .md 解析为文件必须存在，否则 mkdocs --strict 报 broken link 中断。
+    2) 导航覆盖：docs 树内每个 .md 必须落在 nav（章节 / index / search /
+       CROSSREF / 外部根目录拷贝），否则 mkdocs --strict 报 not-in-nav 中断。
+    返回断裂清单（空=通过）。独立于 gen_mkdocs_nav，可单独运行。
+    """
+    out_docs = ROOT / "build" / "site" / "docs"
+    if not out_docs.exists():
+        return []  # 尚未生成，跳过
+    broken: list[str] = []
+    # 1) 资产/链接存在性（site 模式：图片与 .md 链接缺失均会被 mkdocs --strict 判失败）
+    for md in sorted(out_docs.rglob("*.md")):
+        base = md.parent
+        text = _strip_code(md.read_text(encoding="utf-8", errors="replace"))
+        for m in LINK_RE.finditer(text):
+            tgt = _clean_link_target(m.group(1))
+            if _skip_link(tgt):
+                continue
+            pathpart = tgt.split("#")[0]
+            if pathpart == "" or not _is_file_link(pathpart):
+                continue  # 非文件路径（代码误匹配）→ 跳过
+            p = (base / pathpart).resolve()
+            if not p.exists():
+                rel = md.relative_to(out_docs).as_posix()
+                broken.append(f"[site] 断链 {rel}: {tgt}")
+    # 2) 导航覆盖（排除 MkDocs 静态资源目录，如 Book/assets/）
+    expected = {"index.md", "search.md"}
+    if (out_docs / "CROSSREF.md").exists():
+        expected.add("CROSSREF.md")
+    for rel in index:  # 章节路径 'Book/partXX/chYY.md'
+        expected.add(rel)
+    roots = collect_external_roots(index)
+    for root in roots:
+        for emd in (out_docs / root).rglob("*.md"):
+            expected.add(emd.relative_to(out_docs).as_posix())
+    actual = set()
+    for md in out_docs.rglob("*.md"):
+        rp = md.relative_to(out_docs).as_posix()
+        if any(seg in STATIC_DIRS for seg in rp.split("/")):
+            continue  # 静态资源目录内的 .md 不算页面
+        actual.add(rp)
+    for u in sorted(actual - expected):
+        broken.append(f"[site] nav 未收录(将触发 mkdocs strict not-in-nav): {u}")
+    return broken
+
+
+def validate_pdf() -> list:
+    """自检 pdf/epub 产物（build/pdf/combined_src/combined.md）：所有 markdown
+    图片与链接目标相对 combined.md 解析必须存在（否则 pandoc 报 ResourceNotFound
+    致整本生成失败）。返回断裂清单（空=通过）。"""
+    combined = ROOT / "build" / "pdf" / "combined_src" / "combined.md"
+    if not combined.exists():
+        return []
+    base = combined.parent
+    text = _strip_code(combined.read_text(encoding="utf-8", errors="replace"))
+    broken: list[str] = []        # 致命：图片缺失（pandoc ResourceNotFound 致整本失败）
+    warns: list[str] = []         # 软：.md 超链接失效（pandoc 不报错，仅生成死链）
+    for m in LINK_RE.finditer(text):
+        tgt = _clean_link_target(m.group(1))
+        if _skip_link(tgt):
+            continue
+        pathpart = tgt.split("#")[0]
+        if pathpart == "" or not _is_file_link(pathpart):
+            continue
+        is_image = m.start() > 0 and text[m.start() - 1] == "!"
+        p = (base / pathpart).resolve()
+        if not p.exists():
+            if is_image:
+                broken.append(f"[pdf] 图片缺失 combined.md: {tgt}")
+            else:
+                warns.append(f"[pdf][warn] 链接失效(不阻断 pandoc): {tgt}")
+    if warns:
+        print(f"[pdf] 自检 {len(warns)} 处失效 .md 链接（单文件 PDF 内无法跳转，仅警告）：")
+        for w in warns[:10]:
+            print(f"        {w}")
+        if len(warns) > 10:
+            print(f"        ... 共 {len(warns)} 处")
+    return broken
 
 # 书内对仓库根级外部目录的链接：形如 `](../../docs/compiler-matrix.md)` 或
 # `](../../Appendix/ub/README.md#anchor)`。从 `Book/partNN/chYY.md` 起算，`../../`
@@ -231,8 +380,16 @@ def run_site(index: dict) -> None:
     (ROOT / "build" / "site" / "external_assets.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     total_files += len(manifest)
+    broken = validate_site(index)
     print(f"[site] 输出 {out_docs}")
     print(f"[site] 文件 {total_files} · 重写引用 {total_rw} · 外部根 {roots} · 外部md {len(manifest)}")
+    if broken:
+        print(f"[site] ⚠ 自检发现 {len(broken)} 处断裂（mkdocs --strict 将失败）：")
+        for b in broken:
+            print(f"        {b}")
+    else:
+        print("[site] 自检通过：无断链 / nav 全覆盖")
+    return broken
 
 
 def inject_chapter_anchor(content: str, slug: str) -> tuple[str, int]:
@@ -288,24 +445,40 @@ def run_pdf(index: dict) -> None:
         parts.append(new)
     combined = "\n\n\\newpage\n\n".join(parts)
     (out_dir / "combined.md").write_text(combined, encoding="utf-8")
+    broken = validate_pdf()
     print(f"[pdf] 输出 {out_dir / 'combined.md'}")
     print(f"[pdf] 章 {len(ordered)} · 重写引用 {total_rw} · 注入 H1 锚点 {anchored}")
+    if broken:
+        print(f"[pdf] ⚠ 自检发现 {len(broken)} 处断裂（pandoc 将 ResourceNotFound 失败）：")
+        for b in broken:
+            print(f"        {b}")
+    else:
+        print("[pdf] 自检通过：无断链")
+    return broken
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="发布管线跨章链接重写器")
     ap.add_argument("--mode", choices=["site", "pdf"], required=True)
+    ap.add_argument("--check", action="store_true",
+                    help="仅自检已生成的 build/ 产物（site/pdf），不重新生成；断裂则退出码 1")
     args = ap.parse_args()
     index = build_chapter_index()
     if not index:
         print("ERROR: 未发现章文件", file=sys.stderr)
         return 1
     print(f"[index] 章索引 {len(index)} 条")
-    if args.mode == "site":
-        run_site(index)
-    else:
-        run_pdf(index)
-    return 0
+    if args.check:
+        broken = validate_site(index) if args.mode == "site" else validate_pdf()
+        if broken:
+            print(f"[check] ⚠ 发现 {len(broken)} 处断裂：")
+            for b in broken:
+                print(f"        {b}")
+            return 1
+        print("[check] 自检通过：无断链 / nav 全覆盖")
+        return 0
+    broken = run_site(index) if args.mode == "site" else run_pdf(index)
+    return 1 if broken else 0
 
 
 if __name__ == "__main__":

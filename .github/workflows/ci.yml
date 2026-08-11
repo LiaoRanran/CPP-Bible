@@ -222,6 +222,27 @@ jobs:
       continue-on-error: false
       run: python3 tools/run_cpp_assertions.py --gcc g++
 
+  # ---- 发布门禁：链接/资产自检（左移，~15s 捕获「复报错」类断链）----
+  publish-check:
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Rewrite links + self-validate (site & pdf)
+      # 发布管线门禁：rewrite_links 重写跨章链接后会自检 site/pdf 产物的
+      # 图片/链接存在性与 nav 覆盖，断裂即退出码 1。放在 site/pdf/epub
+      # 重型构建之前，~15s 左移捕获「断链致 mkdocs --strict / pandoc 失败」，
+      # 根治「rewrite_links 复报错」——曾因只修 site 漏 pdf 致 pdf/epub 仍红。
+      run: |
+        python3 tools/rewrite_links.py --mode site
+        python3 tools/rewrite_links.py --mode pdf
+
   # ---- 发布：静态站点（MkDocs Material）----
   site:
     needs: quality
