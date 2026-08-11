@@ -120,11 +120,14 @@ def main():
     # 判定逻辑：区分基线内已知 DRIFT（WARN）与新增 DRIFT（FAIL）
     baseline_path = HERE / "asm_drift_baseline.json"
     known_drift = set()
+    known_cf = set()
     if baseline_path.exists():
         try:
             bl = json.load(open(baseline_path, encoding="utf-8"))
             known_drift = {d["file"].replace(".asm", "")
                            for d in bl.get("known_drift", [])}
+            known_cf = {d["file"].replace(".asm", "")
+                        for d in bl.get("known_compile_fail", [])}
         except Exception:
             pass
 
@@ -153,18 +156,32 @@ def main():
         print("  详见 tools/asm_drift_baseline.json。")
         print("[PASS] 无新增漂移（基线已知 DRIFT 容忍）。")
 
-    if n_cf > 0:
-        print(f"\n[WARN] {n_cf} 个源文件无法用当前 GCC 重编 (COMPILE_FAIL)")
+    cf_items = [r for r in rep.get("results", []) if r["status"] == "COMPILE_FAIL"]
+    new_cf = [c for c in cf_items if c["name"] not in known_cf]
+    known_cf_hit = [c for c in cf_items if c["name"] in known_cf]
+
+    if new_cf:
+        print(f"\n[WARN] {len(new_cf)} 个 *新增* 源文件无法用当前 GCC 重编 (COMPILE_FAIL)")
         print("  源码可能已演进（函数签名变化）或编译标志过时。")
         print("  这些文件的 .asm 无法验证真实性，建议手动核查或更新源码。")
-        cf_items = [r for r in rep.get("results", []) if r["status"] == "COMPILE_FAIL"]
-        for item in cf_items[:5]:
+        for item in new_cf[:5]:
             print(f"    {item['name']}.asm: {item.get('detail','')[:60]}")
         return 2
 
-    print(f"\n[PASS] 全部 {n_match} 个可重编证据 MATCH，无漂移。")
+    if known_cf_hit:
+        print(f"\n[WARN] {len(known_cf_hit)} 个基线已知 COMPILE_FAIL"
+              f"（C++20 模块等需特殊构建，非回归）:")
+        for item in known_cf_hit:
+            print(f"    {item['name']}.asm")
+        print("  详见 tools/asm_drift_baseline.json#known_compile_fail。")
+
     if n_ns:
-        print(f"  ({n_ns} 个 NO_SOURCE + {n_fs} 个 FORMAT_SKIP 为策展噪声，不计入失败)")
+        print(f"\n[INFO] {n_ns} 个 NO_SOURCE（手写多档对比/示意汇编，"
+              f"设计内策展噪声，不计入失败）。")
+
+    print(f"\n[PASS] 全部 {n_match} 个可重编证据 MATCH，无新增漂移/编译失败。")
+    if n_fs:
+        print(f"  ({n_fs} 个 FORMAT_SKIP 为策展噪声)")
     return 0
 
 

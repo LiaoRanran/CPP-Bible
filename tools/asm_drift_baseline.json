@@ -24,5 +24,27 @@
       "new_symbols": []
     }
   ],
-  "known_compile_fail": []
+  "known_compile_fail": [
+    {
+      "file": "_mod_main.asm",
+      "reason": "C++20 模块接口 (`export module math;`)。单文件 `g++ -S -std=c++23` 无法独立产出可对照的 .asm：模块需两步 BMI 构建 (`g++ -fmodules -c _mod_main.cpp` 生成 math.gcm，再 `g++ -fmodules -fmodule-file=math.gcm -S _mod_use.cpp`)。单文件 spotcheck 不支持模块图，保留为已知 COMPILE_FAIL，不计入回归。"
+    },
+    {
+      "file": "_mod_use.asm",
+      "reason": "C++20 模块消费者 (`import math;`)，依赖 _mod_main 的 BMI。单文件编译报 `error: 'import' ...`（模块未构建），COMPILE_FAIL 为预期。与 _mod_main 共同构成模块示例，需两步构建才能复现。"
+    }
+  ],
+  "known_no_source": [
+    "_ch03_perf.asm",
+    "_ch08_perf.asm",
+    "_ch83_map_perf.asm",
+    "_ch108_d5_store.asm",
+    "_ch156_fast_o2.asm",
+    "_ch156_fast_ofast.asm",
+    "_ch156_main_lto.asm",
+    "_ch156_main_nolto.asm",
+    "_ch156_pgo_base.asm",
+    "_ch156_pgo_use.asm"
+  ],
+  "known_no_source_note": "这 10 个 .asm 故意不带 `.file` 指令：它们是手写的『多档对比 / 示意』汇编（如 ch156 的 -O2/-Ofast/LTO/PGO 多配置对照、ch83 的 map vs unordered_map 示意），本就不可能来自单一源文件编译。asm_repro_spotcheck 判定为 NO_SOURCE 并由门禁排除出失败集（策展噪声），属设计内行为，非破损。请勿为它们补伪 `.file`。"
 }
