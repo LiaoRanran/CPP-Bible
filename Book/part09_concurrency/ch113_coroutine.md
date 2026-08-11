@@ -437,7 +437,7 @@ _Z8count_upv:
         ret
 ```
 
-- `[实现·GCC13]`：每个协程被拆成三个符号——`<func>`（入口，分配帧）、`<func>.Frame.actor`（恢复/状态机）、`<func>.Frame.destroy`（析构帧）。`call _Znwy` 即 `operator new(size, align_val_t)`，帧大小编译期常量（56 / 48）。
+- `[实现·GCC15]`：每个协程被拆成三个符号——`<func>`（入口，分配帧）、`<func>.Frame.actor`（恢复/状态机）、`<func>.Frame.destroy`（析构帧）。`call _Znwy` 即 `operator new(size, align_val_t)`，帧大小编译期常量（56 / 48）。
 - `[平台·x86-64 Itanium ABI]`：符号名 `_Z5rangei` 是 `range(int)` 的 Itanium C++ 编码；`.Frame.actor`/`.Frame.destroy` 是 GCC 协程变换的私有后缀，非标准 ABI。
 
 ## ⑩ 无栈协程的挂起/恢复原理 [标准]

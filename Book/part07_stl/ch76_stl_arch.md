@@ -139,7 +139,7 @@ list<int> 迭代器是节点指针（非连续）：
   迭代器 ++ 走 _M_next 指针，不是 +sizeof，故非 contiguous
 ```
 
-- `[实现·GCC13]`：`std::vector<T>::iterator` 通常就是 `T*`（见 `stl_iterator_base_types.h:198` 的 `iterator_traits<_Tp*>` 特化，`iterator_concept = contiguous_iterator_tag`，`iterator_category = random_access_iterator_tag`）。
+- `[实现·GCC15]`：`std::vector<T>::iterator` 通常就是 `T*`（见 `stl_iterator_base_types.h:198` 的 `iterator_traits<_Tp*>` 特化，`iterator_concept = contiguous_iterator_tag`，`iterator_category = random_access_iterator_tag`）。
 - `[平台·x86-64]`：连续迭代器可享 SIMD/向量化与缓存预取；非连续迭代器每次 `++` 都是一次指针解引用。
 
 ## ⑧ 生命周期图
@@ -182,7 +182,7 @@ range-based for 对 `vector` 展开后就是指针比较循环，GCC13 `-O2` 下
 ; 注意：因 vector 迭代器是裸指针，循环被完全矢量化为 AVX 加载也很常见。
 ```
 
-- `[实现·GCC13]`：连续迭代器展开后等价于指针遍历，编译器可自动**向量化**（⟶ Book/part14_perf/ch155_simd.md）；而 `list` 迭代器因指针跳变无法向量化。
+- `[实现·GCC15]`：连续迭代器展开后等价于指针遍历，编译器可自动**向量化**（⟶ Book/part14_perf/ch155_simd.md）；而 `list` 迭代器因指针跳变无法向量化。
 - `[经验]`：热路径遍历优先 `vector`/`array`（连续迭代器），这正是性能敏感代码的铁律。
 
 ## ⑪ STL 联系
@@ -259,7 +259,7 @@ int main() {
 //  2651: 对指针返回 contiguous_iterator_tag{}（C++20 连续迭代器判定）
 ```
 
-- `[实现·GCC13]`：`std::advance`/`std::distance` 的公共入口调用 `__advance(__i, __n, __iterator_category(__i))`。编译器根据迭代器范畴**在编译期**解析到正确重载——这是**编译期多态（标签分发）**，无运行期分支成本。
+- `[实现·GCC15]`：`std::advance`/`std::distance` 的公共入口调用 `__advance(__i, __n, __iterator_category(__i))`。编译器根据迭代器范畴**在编译期**解析到正确重载——这是**编译期多态（标签分发）**，无运行期分支成本。
 - `[标准]`：C++20 起，`iterator_concept`（最強概念）与 `iterator_category`（兼容旧接口）并存；连续迭代器（如 `vector::iterator`、裸指针）二者分别为 `contiguous_iterator_tag` / `random_access_iterator_tag`。
 
 ## ⑭ WG21 提案（编号 + 标题 + 动机）

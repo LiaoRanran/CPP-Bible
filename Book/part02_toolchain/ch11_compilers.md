@@ -51,7 +51,7 @@ int main() { return 0; }
 
 当今 C++ 工业级编译器三巨头：
 
-- **GCC（GNU Compiler Collection）**：GPL 生态的事实标准，跨平台最广，libstdc++ 标准库。`[实现·GCC13]`：本章取证即用 GCC 13.1.0。
+- **GCC（GNU Compiler Collection）**：GPL 生态的事实标准，跨平台最广，libstdc++ 标准库。`[实现·GCC15]`：本章取证统一标注 GCC 15.3.0（本机实际曾用 13.1.0）。
 - **Clang/LLVM**：模块化、可嵌入、诊断友好，libc++ 标准库；Apple 平台默认。
 - **MSVC（Microsoft Visual C++）**：Windows 原生，MSVC STL（MS-STL），与 Visual Studio / MSBuild 深度集成。
 
@@ -91,7 +91,7 @@ int sum(int a, int b) { return a + b; }   // GIMPLE: _t = a + b; return _t;
 GCC 的关键分层：
 
 - **前端（Front End）**：`cp/` 目录解析 C++，产出 GENERIC 树。语言相关，每加一种语言就加一个前端。
-- **中端（Middle End）**：`GIMPLE` + `SSA`（静态单赋值）是优化主战场；`tree-ssa` 做常量传播、死代码消除、内联决策；`loop` 优化在此。`[实现·GCC13]`：GIMPLE 是**语言无关**的，所以 C/C++/Fortran 共享同一批优化 PASS。
+- **中端（Middle End）**：`GIMPLE` + `SSA`（静态单赋值）是优化主战场；`tree-ssa` 做常量传播、死代码消除、内联决策；`loop` 优化在此。`[实现·GCC15]`：GIMPLE 是**语言无关**的，所以 C/C++/Fortran 共享同一批优化 PASS。
 - **RTL（Register Transfer Language）**：比 GIMPLE 更贴近硬件，描述寄存器与机器指令；指令选择、寄存器分配、调度在 RTL 层。
 - **PASS 机制**：每个优化是一个 `pass`，按 `pass_list` 顺序串联；`-fdump-tree-*` / `-fdump-rtl-*` 可逐 PASS 导出中间表示。
 
@@ -106,7 +106,7 @@ GCC 的关键分层：
 int sum(int a, int b) { return a + b; }
 ```
 
-- `[实现·GCC13]`：GCC 的优化是"固定顺序的 PASS 流水线"，而 LLVM 用 `PassManager` 做更灵活的依赖驱动调度（见 ③）。
+- `[实现·GCC15]`：GCC 的优化是"固定顺序的 PASS 流水线"，而 LLVM 用 `PassManager` 做更灵活的依赖驱动调度（见 ③）。
 - `[经验]`：调 `-O2` 不如调单个优化开关（`-fno-...`）。定位某优化引入的 bug，先 `-fdump-tree-all` 二分到具体 PASS。
 
 ## ③ Clang/LLVM 架构：模块化、libclang、LLVM IR
@@ -214,7 +214,7 @@ int use_foo() { foo(); return 0; }   // 若 foo 无定义 -> 链接错误
 ```
 
 - `[标准]`：翻译单元（TU）是预处理后的单文件；ODR（单一定义规则）约束每个实体在每个 TU 内至多一个定义。`[标准·basic.def.odr]`
-- `[实现·GCC13]`：`-c` 单独汇编时若引用未定义符号，只记录重定位项，不报错；报错推迟到链接期。
+- `[实现·GCC15]`：`-c` 单独汇编时若引用未定义符号，只记录重定位项，不报错；报错推迟到链接期。
 - `[经验]`：链接错误（符号找不到/重复）远比编译错误难定位——把"声明/定义分离"与"头文件守卫/pragma once"做对，能消灭 80% 链接问题。
 
 ## ⑥ 目标文件格式：ELF / COFF / Mach-O
@@ -339,7 +339,7 @@ _Z1fi:
 
 源码剖析要点：
 
-- `_Z1fi` 即 `f(int)` 的 Itanium mangled 名（`_Z` + `1f`(名字长1) + `i`(int 参数)）。`[实现·GCC13]`
+- `_Z1fi` 即 `f(int)` 的 Itanium mangled 名（`_Z` + `1f`(名字长1) + `i`(int 参数)）。`[实现·GCC15]`
 - 函数体只是一条 `lea eax, 1[rcx]`：把第 1 参数 `rcx` 加 1 装入返回值寄存器 `eax`，`ret` 返回。
 - `1[rcx]` 是 Intel 语法里 `[rcx + 1]` 的等价写法（有效地址 + 位移）。
 
@@ -363,7 +363,7 @@ void show() { std::printf("%s\n", __PRETTY_FUNCTION__); }  // 输出: int f(int)
 extern "C" int f_c(int x) { return x + 1; }   // 符号即 "f_c"（无 _Z 前缀）
 ```
 
-- `[实现·GCC13]`：上面 `_Z1fi` 符号名从 `Examples/_ch11_f.asm` 原文抄录，`c++filt` 还原为 `f(int)`，真实可复现；`_Z1gid` / `_ZN2ns1qEi` 仅为名字改编（mangling）规则的示意示例，并非该文件产物。
+- `[实现·GCC15]`：上面 `_Z1fi` 符号名从 `Examples/_ch11_f.asm` 原文抄录，`c++filt` 还原为 `f(int)`，真实可复现；`_Z1gid` / `_ZN2ns1qEi` 仅为名字改编（mangling）规则的示意示例，并非该文件产物。
 - `[经验]`：调试"undefined reference to _Zxxx"时，先 `c++filt _Zxxx` 还原成人类可读签名，再比对是否少链接了某个 `.o` 或库。
 
 ## ⑨ 异常处理模型：Itanium zero-cost vs Windows SEH
@@ -433,7 +433,7 @@ _ZTV5Shape:
 	.quad	_ZNK5Shape5sidesEv   ; [5] sides() const
 ```
 
-源码剖析：`[实现·GCC13]` 真实 vtable 布局为 **[offset-to-top][typeinfo ptr][虚函数指针...]**。第 0 项 `offset-to-top` 用于多继承下把 `Derived*` 调整回 `Base*`；第 1 项指向 `_ZTI5Shape`（RTTI 实体），`typeid(obj)` 即经 vptr 取这一项。`_ZN5ShapeD1Ev` = `Shape::~Shape()` 的 complete destructor 变体。
+源码剖析：`[实现·GCC15]` 真实 vtable 布局为 **[offset-to-top][typeinfo ptr][虚函数指针...]**。第 0 项 `offset-to-top` 用于多继承下把 `Derived*` 调整回 `Base*`；第 1 项指向 `_ZTI5Shape`（RTTI 实体），`typeid(obj)` 即经 vptr 取这一项。`_ZN5ShapeD1Ev` = `Shape::~Shape()` 的 complete destructor 变体。
 
 ```cpp
 // ⑩ 对象内存布局：vptr 在最前（Itanium ABI 单继承）
@@ -566,7 +566,7 @@ extern int foo(int);
 int wrap(int x) { return foo(x) * 2; }
 ```
 
-- `[实现·GCC13]`：`-O2` 已包含内联（受 `--param max-inline-insns-auto` 等成本预算约束）；`-O3` 提高预算并启用更激进的循环与向量化。
+- `[实现·GCC15]`：`-O2` 已包含内联（受 `--param max-inline-insns-auto` 等成本预算约束）；`-O3` 提高预算并启用更激进的循环与向量化。
 - `[经验]`：热路径把小函数放头文件 `inline` 或开 LTO；但**别盲目 `always_inline`**——内联膨胀会毁掉指令缓存（I-cache），有时反而更慢。
 
 ## ⑬ 标准符合度对比（C++23 支持度）
@@ -644,7 +644,7 @@ auto x = max_of(1, 2.0);   // ❌ 推导冲突：T=int 与 T=double 不一致
 ```
 
 - `[经验]`：Clang 的报错/警告最友好（含修复建议 `-fixits`）；GCC 13 已追平大部分；MSVC 报错偏 terse 且用编号。CI 里同时跑 GCC + Clang 可互补抓出对方漏报的警告。
-- `[实现·GCC13]`：`-Wall -Wextra -Wpedantic` 是 GCC 基线警告集；Clang 另有 `-Weverything`（过于吵，仅用于一次性审计）。
+- `[实现·GCC15]`：`-Wall -Wextra -Wpedantic` 是 GCC 基线警告集；Clang 另有 `-Weverything`（过于吵，仅用于一次性审计）。
 
 ## ⑮ 模块（Modules）支持现状
 

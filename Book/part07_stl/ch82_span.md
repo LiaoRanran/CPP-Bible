@@ -33,7 +33,7 @@
 
 - 精确区分 `span` 与 `array`/`vector`/`string_view` 的**所有权语义**与**适用边界** `[标准]`。
 - 掌握**动态 extent**（`dynamic_extent`）与**静态 extent**（编译期常量 `N`）在内存布局、接口约束与优化上的差异 `[实现]`。
-- 理解 `span` 的**零开销抽象**本质——它只是一个 `{指针, 大小}` 对，在 `-O2` 下被完全内联 `[实现·GCC13]`。
+- 理解 `span` 的**零开销抽象**本质——它只是一个 `{指针, 大小}` 对，在 `-O2` 下被完全内联 `[实现·GCC15]`。
 - 正确使用 `first/last/subspan` 进行安全切片，并清楚**越界访问是未定义行为（UB）**，而非抛异常 `[标准]`。
 - 在真实工程（网络包解析、行情数据、序列化）中用 `span` 替代裸指针 + 长度，消除"长度从哪来"的歧义 `[经验]`。
 - 掌握 `span` 与 C 数组、`std::vector`、`std::array`、C 风格接口（如 `void*` + `size_t`）的互操作 `[标准]`。
@@ -236,7 +236,7 @@ classDiagram
 └──────────────────────────────────────────────────────────┘
 ```
 
-- `[实现·GCC13]`：`span` 的 extent 由内部 `struct _ExtentStorage` 保存；当 `Extent == dynamic_extent` 时该结构含一个 `size_t _M_extent_value`（见 `文件：span`, `行号：81-99`）；当 extent 为编译期常量时，该结构为空且 `_M_extent_value` 不参与对象大小。
+- `[实现·GCC15]`：`span` 的 extent 由内部 `struct _ExtentStorage` 保存；当 `Extent == dynamic_extent` 时该结构含一个 `size_t _M_extent_value`（见 `文件：span`, `行号：81-99`）；当 extent 为编译期常量时，该结构为空且 `_M_extent_value` 不参与对象大小。
 - `[标准]`：`sizeof(span<T, dynamic_extent>)` 通常等于 `2 * sizeof(void*)`（指针 + 大小），`sizeof(span<T, N>)` 通常等于 `sizeof(void*)`，因为大小是类型的一部分，不需存储。
 
 ```cpp
@@ -434,7 +434,7 @@ _Z7sum_ptrPKiy:
         ... ; 同样的 add / add rsi,4 / sub rdx,1 / jne 循环
 ```
 
-- `[实现·GCC13]`：`span` 在 `-O2` 下被**完全展开为指针 + 计数器的普通循环**，`first/last/subspan` 生成的是 `lea` 地址计算，没有虚调用、没有堆分配、没有额外间接层。
+- `[实现·GCC15]`：`span` 在 `-O2` 下被**完全展开为指针 + 计数器的普通循环**，`first/last/subspan` 生成的是 `lea` 地址计算，没有虚调用、没有堆分配、没有额外间接层。
 - `[标准]`：这正是 `span` 作为"零开销抽象"的体现——它只是把"指针 + 长度"这对本就存在的运行期信息，用类型安全地封装起来。
 
 ```cpp
@@ -854,7 +854,7 @@ int main() {
 → 字符场景可以：`std::string_view` 可隐式/显式构造 `span<const char>`；反之需 `std::span` 的 `.data()` + `.size()` 手动构造 `string_view`。
 
 **Q5：GCC 13 支持 `std::mdspan` 吗？**
-→ `[实现·GCC13]` 不支持（`<mdspan>` 未实现）。多维视图请先用 `span<T>` + 步长计算，或升级编译器。
+→ `[实现·GCC15]` 不支持（`<mdspan>` 未实现）。多维视图请先用 `span<T>` + 步长计算，或升级编译器。
 
 **Q6：`span` 的迭代器失效规则和 `vector` 一样吗？**
 → 不一样。`span` 本身没有"失效"概念，失效的是**底层存储**。底层的 `vector` 扩容会让所有指向它的 `span` 同时失效（见 §⑧）。

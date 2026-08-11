@@ -167,7 +167,7 @@ Heap:
   header : _M_parent→node5, _M_left→min(node3), _M_right→max(node8)
 ```
 
-- `[实现·GCC13]`：`set` 对象本体只持有 `_Rb_tree` 成员（`_M_header` 哨兵、比较器、分配器状态），通常 **24~48 字节**（3 指针量级 + 对齐），真正的节点在堆上。
+- `[实现·GCC15]`：`set` 对象本体只持有 `_Rb_tree` 成员（`_M_header` 哨兵、比较器、分配器状态），通常 **24~48 字节**（3 指针量级 + 对齐），真正的节点在堆上。
 - 对比裸 `int`：1 个 `int` 4 字节；1 个 `set<int>` 节点 40 字节——**每元素约 36 字节固定开销**（3 指针 + 颜色 + 对齐 + 堆分配头）。这是有序性的代价。
 
 ## ⑧ 生命周期图
@@ -219,7 +219,7 @@ _Rb_tree_insert_and_rebalance(...)        // stl_tree.h:410
     jmp     .Lfind_loop
 ```
 
-- `[实现·GCC13]`：真实偏移取决于 `_Rb_tree_node_base` 字段布局（`stl_tree.h:101`：依次为 `_M_color`、`_M_parent`、`_M_left`、`_M_right`）。上段为**示意性**还原调用结构，真实偏移会因 ABI 对齐略有差异，但"指针追逐 + `cmp`/`jcc`"的核心模式不变。
+- `[实现·GCC15]`：真实偏移取决于 `_Rb_tree_node_base` 字段布局（`stl_tree.h:101`：依次为 `_M_color`、`_M_parent`、`_M_left`、`_M_right`）。上段为**示意性**还原调用结构，真实偏移会因 ABI 对齐略有差异，但"指针追逐 + `cmp`/`jcc`"的核心模式不变。
 - `[经验]`：树查找是**数据依赖串行**，无法自动向量化，且每跳一次可能一次缓存缺失（节点散布堆中）。这是有序容器在热点路径上不如 `unordered_set`（ch85）或排序 `vector` 二分（缓存友好）的根本原因。
 
 ## ⑪ STL 联系
@@ -318,8 +318,8 @@ int main() {
 // 1378:  _M_equal_range_tr(const _Kt& __k)  // 透明比较版本 equal_range
 ```
 
-- `[实现·GCC13]`：`set::insert` 直接转发 `_M_t._M_insert_unique`（`stl_tree.h:1133`），返回 `pair<iterator,bool>`；`multiset::insert` 转发 `_M_t._M_insert_equal`（`stl_multiset.h:504`），仅返回 `iterator`（因为总能插入）。
-- `[实现·GCC13]`：颜色编码为 `bool`，`_S_red=false`、`_S_black=true`，与常见"红=true"实现相反，读源码时勿混淆（`stl_tree.h:99`）。
+- `[实现·GCC15]`：`set::insert` 直接转发 `_M_t._M_insert_unique`（`stl_tree.h:1133`），返回 `pair<iterator,bool>`；`multiset::insert` 转发 `_M_t._M_insert_equal`（`stl_multiset.h:504`），仅返回 `iterator`（因为总能插入）。
+- `[实现·GCC15]`：颜色编码为 `bool`，`_S_red=false`、`_S_black=true`，与常见"红=true"实现相反，读源码时勿混淆（`stl_tree.h:99`）。
 
 ## ⑭ WG21 提案（编号 + 标题 + 动机）
 
@@ -459,7 +459,7 @@ int main() {
 | 有序遍历 | O(n)，缓存差（指针跳） | O(n)，**缓存友好**（连续） | 不保证有序 |
 | 内存/元素 | ~40B 节点（int） | 4B 值 + 少量 | 指针 + 哈希 + 桶数组 |
 
-- `[实现·GCC13]`：RB 树每次插入/删除都涉及一次 `new`/`delete`（节点分配器），这是热点上的主要成本。
+- `[实现·GCC15]`：RB 树每次插入/删除都涉及一次 `new`/`delete`（节点分配器），这是热点上的主要成本。
 - `[平台·x86-64]`：`set` 遍历是"跳着读内存"，缓存命中低；对 10⁷ 量级元素的范围扫描，`vector` 二分/连续遍历常快数倍（⟶ Book/part14_perf/ch154_cache_opt.md）。
 - `[平台]`：ABI 稳定——`std::set` 的 `_Rb_tree` 布局跨 GCC 版本基本兼容，但跨编译器（libstdc++/libc++/MS STL）**不保证**二进制兼容，跨模块传递需用 C 接口或序列化。
 

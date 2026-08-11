@@ -246,7 +246,7 @@ int main() {
   │<─────────────────────┤                    │           │              │
 ```
 
-> `[实现·GCC13]`：`vector.tcc` 中 `emplace_back` 通过 `_Alloc_traits::construct(__p, std::forward<_Args>(__args)...)` 把参数**逐字转发**给 `Widget` 的构造函数，全程不出现 `Widget` 的临时对象。
+> `[实现·GCC15]`：`vector.tcc` 中 `emplace_back` 通过 `_Alloc_traits::construct(__p, std::forward<_Args>(__args)...)` 把参数**逐字转发**给 `Widget` 的构造函数，全程不出现 `Widget` 的临时对象。
 
 ```cpp
 // ⑨-a emplace 转发：用构造计数器证明无临时对象
@@ -414,7 +414,7 @@ int main() {
 
 ## ⑬ 源码分析：libstdc++ 的 std::forward / std::move
 
-`[实现·GCC13]` 真实源码来自 `bits/move.h`（GCC 13.1.0）：
+`[实现·GCC15]` 真实源码来自 `bits/move.h`（GCC 13.1.0）：
 
 ```
 文件：bits/move.h
@@ -717,7 +717,7 @@ int main() { int a = 1; checked_forward(a); checked_forward(2); return 0; }
 
 ### C++23 `std::forward_like`（GCC 13.1 未实现）
 
-`[实现·GCC13]`：**`std::forward_like` 在 GCC 13.1 的 libstdc++ 中尚不存在**（它随 GCC 14 进入）。下面给出等价手写实现，用于在"通过对象 `obj` 访问其成员 `m` 并把 `m` 转发"时，让 `m` 的值类别跟随 `obj` 的值类别：
+`[实现·GCC15]`：**`std::forward_like` 在 GCC 13.1 的 libstdc++ 中尚不存在**（它随 GCC 14 进入）。下面给出等价手写实现，用于在"通过对象 `obj` 访问其成员 `m` 并把 `m` 转发"时，让 `m` 的值类别跟随 `obj` 的值类别：
 
 ```cpp
 // ⑲-c 手写 forward_like（语义等价于 C++23 std::forward_like，P2445）

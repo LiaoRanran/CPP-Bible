@@ -149,7 +149,7 @@ bit 位置与 word 的映射（libstdc++，_S_wordbits = 64）：
   位值 = (_M_w[word_index] >> bit_in_word) & 1
 ```
 
-- `[实现·GCC13]` 见 `bitset:88`：`_WordT _M_w[_Nw];` 是 `bitset` 的唯一数据成员（对 `N>0` 的偏特化）。`_Nw = (N + 63) / 64` 向上取整。
+- `[实现·GCC15]` 见 `bitset:88`：`_WordT _M_w[_Nw];` 是 `bitset` 的唯一数据成员（对 `N>0` 的偏特化）。`_Nw = (N + 63) / 64` 向上取整。
 - `[标准]` `sizeof(bitset<N>)` 不含运行期长度字段——这是它与 `vector<bool>`（含指针/长度）的根本内存差异。`bitset<128>` 永远 16 字节；`vector<bool>` 至少含三个机器字（指针、大小、容量）。
 
 ---
@@ -190,7 +190,7 @@ sequenceDiagram
     BS-->>U: 总 1 的个数
 ```
 
-- `[实现·GCC13]` 见 `bitset:230` 处 `_M_do_count`，循环对每个 word 调用 `__builtin_popcountl`（行 `bitset:234`：`__result += __builtin_popcountl(_M_w[__i]);`）。
+- `[实现·GCC15]` 见 `bitset:230` 处 `_M_do_count`，循环对每个 word 调用 `__builtin_popcountl`（行 `bitset:234`：`__result += __builtin_popcountl(_M_w[__i]);`）。
 
 ---
 
@@ -230,7 +230,7 @@ sequenceDiagram
         call    _ZSt22__throw_overflow_errorPKc
 ```
 
-- `[实现·GCC13]` 印证 `bitset:311` 处 `_M_do_to_ulong`：若任一高位 word 非 0 则 `__throw_overflow_error`，因为 `unsigned long` 装不下。
+- `[实现·GCC15]` 印证 `bitset:311` 处 `_M_do_to_ulong`：若任一高位 word 非 0 则 `__throw_overflow_error`，因为 `unsigned long` 装不下。
 
 ---
 

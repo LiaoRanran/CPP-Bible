@@ -146,7 +146,7 @@ int main() {
 }
 ```
 
-## ⑧ GCC13 宏模拟 [实现·GCC13]
+## ⑧ GCC13 宏模拟 [实现·GCC15]
 
 ```cpp
 // ⑧-a 完整的宏契约系统（pre/post/inv）
@@ -173,7 +173,7 @@ int main() {
 }
 ```
 
-## ⑨ 契约与优化 [实现·GCC13]
+## ⑨ 契约与优化 [实现·GCC15]
 
 ```cpp
 // ⑨-a 契约信息辅助编译器优化（假设推断）
@@ -316,7 +316,7 @@ int main() {
 }
 ```
 
-## ⑬ 源码分析：assert 和 static_assert 的编译器实现 [实现·GCC13]
+## ⑬ 源码分析：assert 和 static_assert 的编译器实现 [实现·GCC15]
 
 ```cpp
 // ⑬ GCC 中 assert 宏和 static_assert 的实现路径

@@ -133,7 +133,7 @@ sizeof(vector<int>) 在 x86-64 通常为 24 字节（3 个指针，无额外开�
   旧块释放。所有迭代器/引用失效（指向旧块）。
 ```
 
-- `[实现·GCC13]`：三指针定义于 `bits/stl_vector.h:94-96`（`pointer _M_start; pointer _M_finish; pointer _M_end_of_storage;`）。
+- `[实现·GCC15]`：三指针定义于 `bits/stl_vector.h:94-96`（`pointer _M_start; pointer _M_finish; pointer _M_end_of_storage;`）。
 - `[平台·x86-64]`：`capacity()` = `_M_end_of_storage - _M_start`；`size()` = `_M_finish - _M_start`。都是指针相减 O(1)。
 
 ## ⑧ 生命周期图
@@ -176,7 +176,7 @@ main
 ; 仅 4 条指令 + 一次构造。若触发扩容，则跳转到 allocate+循环迁移（昂贵）。
 ```
 
-- `[实现·GCC13]`：未扩容的 `push_back` 是**常量时间、几乎零开销**——这正是 `vector` 在热路径受欢迎的原因。
+- `[实现·GCC15]`：未扩容的 `push_back` 是**常量时间、几乎零开销**——这正是 `vector` 在热路径受欢迎的原因。
 - `[经验]`：扩容路径昂贵（分配+全量迁移+释放），故 `reserve` 是性能第一要务。
 
 ## ⑪ STL 联系
@@ -262,7 +262,7 @@ int main() {
 //   construct(ptr, args...) -> 调用 placement new；destroy(ptr) -> 调析构
 ```
 
-- `[实现·GCC13]`：`_M_realloc_insert`（`vector.tcc:446`）先 `_M_check_len` 计算新容量（GCC 为 **2 倍**，见 `_M_check_len` 内 `max(2*old, old+n)` 逻辑），再分配、迁移、构造、释放旧块。
+- `[实现·GCC15]`：`_M_realloc_insert`（`vector.tcc:446`）先 `_M_check_len` 计算新容量（GCC 为 **2 倍**，见 `_M_check_len` 内 `max(2*old, old+n)` 逻辑），再分配、迁移、构造、释放旧块。
 - `[实现]`：扩容迁移用 `std::move_if_noexcept`（异常安全）：若元素移动不抛异常则移动（快），否则拷贝（保证强异常安全）。`insert` 中段插入同理。
 
 ## ⑭ WG21 提案（编号 + 标题 + 动机）

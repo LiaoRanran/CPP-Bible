@@ -239,7 +239,7 @@ x86-64 下一个 _Rb_tree_node 的内存布局（节点基 + value 联合）：
 （_M_header 哨兵：_M_left 指向最小(1)，_M_right 指向最大(5)，_M_parent=根）
 ```
 
-- `[实现·GCC13]`：`_Rb_tree_node_base` 含 `_M_color`(106 行)、`_M_parent`(107)、`_M_left`(108)、`_M_right`(109)；节点本身 `_Rb_tree_node` 在 216 行定义（见 `文件：bits/stl_tree.h`, `行号：101-109, 216`）。
+- `[实现·GCC15]`：`_Rb_tree_node_base` 含 `_M_color`(106 行)、`_M_parent`(107)、`_M_left`(108)、`_M_right`(109)；节点本身 `_Rb_tree_node` 在 216 行定义（见 `文件：bits/stl_tree.h`, `行号：101-109, 216`）。
 - `[标准]`：红黑树保证从根到任意叶子的**黑高相同**，从而最坏路径不超过 2·log₂(N+1)，所有操作稳定 `O(log N)`。
 
 ```cpp
@@ -411,7 +411,7 @@ _Z6lookupRKSt3mapIiiSt4lessIiESaISt4pairIKiiEEEi:
         ...                                 ; 命中/未命中判定与返回 value
 ```
 
-- `[实现·GCC13]`：汇编证实节点内 **key 位于偏移 32**（基 32 字节之后），`_M_left` 在 16、`_M_right` 在 24——与 §⑦ 内存图一致；每次循环是一次缓存未命中风险（节点散落堆上）。
+- `[实现·GCC15]`：汇编证实节点内 **key 位于偏移 32**（基 32 字节之后），`_M_left` 在 16、`_M_right` 在 24——与 §⑦ 内存图一致；每次循环是一次缓存未命中风险（节点散落堆上）。
 - `[标准]`：`find` 复杂度 `O(log N)`，对应循环最多执行树高（≤ 2·log₂(N+1)）次指针追逐。
 
 ```cpp

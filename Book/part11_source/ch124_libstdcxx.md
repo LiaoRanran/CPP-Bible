@@ -153,7 +153,7 @@ int main() {
 //      _CharT           _M_local_buf[_S_local_capacity + 1];
 ```
 
-- `[实现·GCC13]`：`basic_string.h:213` 的 `_S_local_capacity = 15 / sizeof(_CharT)` 决定 SSO 阈值；`basic_string.h:217` 的 `_M_local_buf[_S_local_capacity+1]` 是内置缓冲。对象用一个 union 在「本地缓冲」与「堆指针」间二选一（证据见 ⑨ 真实汇编的 `cmp r12, 15`）。
+- `[实现·GCC15]`：`basic_string.h:213` 的 `_S_local_capacity = 15 / sizeof(_CharT)` 决定 SSO 阈值；`basic_string.h:217` 的 `_M_local_buf[_S_local_capacity+1]` 是内置缓冲。对象用一个 union 在「本地缓冲」与「堆指针」间二选一（证据见 ⑨ 真实汇编的 `cmp r12, 15`）。
 
 ## ⑤ 分配器与 __gnu_cxx / std::allocator [标准]
 
@@ -277,9 +277,9 @@ int main() {
 //  inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
 ```
 
-- `[实现·GCC13]`：`c++config.h:338` 据 `_GLIBCXX_USE_CXX11_ABI` 选择 ABI；`c++config.h:341` 的 `inline namespace __cxx11` + `abi_tag("cxx11")` 让新 ABI 符号自动带 `cxx11` 标签（见 ⑨ 汇编里的 `B5cxx11`）。
+- `[实现·GCC15]`：`c++config.h:338` 据 `_GLIBCXX_USE_CXX11_ABI` 选择 ABI；`c++config.h:341` 的 `inline namespace __cxx11` + `abi_tag("cxx11")` 让新 ABI 符号自动带 `cxx11` 标签（见 ⑨ 汇编里的 `B5cxx11`）。
 
-## ⑨ [实现]真实：编译用 <vector> 小程序看 libstdc++ 内联汇编 [实现·GCC13]
+## ⑨ [实现]真实：编译用 <vector> 小程序看 libstdc++ 内联汇编 [实现·GCC15]
 
 用真实 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch124_vector.cpp`，可见 libstdc++ 的关键事实：**vector 的遍历被完全内联**（无函数调用），而 `std::string` 的 `+=` 因 SSO 分支仍生成对 `_M_mutate` 的调用。
 
@@ -326,7 +326,7 @@ int main() {
 	call	_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_mutateEyyPKcy
 ```
 
-- `[实现·GCC13]`：`make_greeting` 的 mangled 名是 `_Z13make_greetingB5cxx11PKc`——`B5cxx11` 正是 ⑧ 所述 `abi_tag("cxx11")` 的编码，证明新 ABI 双重命名在目标文件真实存在。
+- `[实现·GCC15]`：`make_greeting` 的 mangled 名是 `_Z13make_greetingB5cxx11PKc`——`B5cxx11` 正是 ⑧ 所述 `abi_tag("cxx11")` 的编码，证明新 ABI 双重命名在目标文件真实存在。
 - `[平台·x86-64]`：上述偏移（`[rcx]`、`[rbx+16]`）对应 `basic_string` 在 x86-64 System V ABI 下的对象布局（指针/本地缓冲）。
 
 ## ⑩ 源码级调试（编译加 -g 配合 libstdc++ 源码） [平台]
@@ -383,7 +383,7 @@ T std::__cxx11::basic_string<...>::_M_dispose()
 T std::__cxx11::basic_string<...>::_M_mutate(unsigned long, unsigned long, char const*, unsigned long)
 ```
 
-- `[实现·GCC13]`：`nm` 显示 `vector<int>` 实例化出 `~_Vector_base()`，而 `basic_string` 的 `_M_dispose`/`_M_mutate` 未被内联（对比 ⑨ vector 遍历被内联）。每多一种 `(T, A)` 组合，目标文件就多一族符号——这就是模板膨胀的来源。
+- `[实现·GCC15]`：`nm` 显示 `vector<int>` 实例化出 `~_Vector_base()`，而 `basic_string` 的 `_M_dispose`/`_M_mutate` 未被内联（对比 ⑨ vector 遍历被内联）。每多一种 `(T, A)` 组合，目标文件就多一族符号——这就是模板膨胀的来源。
 
 ## ⑫ 与 C++ 标准条款对应 [标准]
 

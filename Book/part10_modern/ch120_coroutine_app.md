@@ -49,7 +49,7 @@
 
 ---
 
-## ③ 从零实现 generator<T> [实现·GCC13]
+## ③ 从零实现 generator<T> [实现·GCC15]
 
 ### 3.1 最小实现
 
@@ -151,7 +151,7 @@ int main() {
 
 ---
 
-## ④ 内存布局 [实现·GCC13]
+## ④ 内存布局 [实现·GCC15]
 
 ```cpp
 // ④-a 验证协程句柄大小（仅一个指针）
@@ -168,7 +168,7 @@ int main() {
 }
 ```
 
-> `[实现·GCC13]` GCC 13 的无栈协程把整个协程帧（局部变量 + promise）分配在堆上；`coroutine_handle` 就是指向该帧的指针，大小为 `sizeof(void*)`。帧内存由编译器插入的 `operator new` 分配。
+> `[实现·GCC15]` GCC 15.3.0（本机取证用 13.1.0）的无栈协程把整个协程帧（局部变量 + promise）分配在堆上；`coroutine_handle` 就是指向该帧的指针，大小为 `sizeof(void*)`。帧内存由编译器插入的 `operator new` 分配。
 
 ---
 
@@ -410,7 +410,7 @@ Task pipeline() {
 int main() { pipeline(); return 0; }
 ```
 
-## ⑬ 源码分析：GCC coroutine transform [实现·GCC13]
+## ⑬ 源码分析：GCC coroutine transform [实现·GCC15]
 
 ```cpp
 // ⑬ GCC 的协程变换在 gcc/cp/coroutines.cc 中完成

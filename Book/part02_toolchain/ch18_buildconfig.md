@@ -5,7 +5,7 @@
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23`，x86-64，AT&T 汇编经 `objdump -d` 反汇编，Intel 关键字见 `-masm=intel`）。
 > 取证源：`Examples/_ch18_opt.cpp`、`Examples/_ch18_stack.cpp`、`Examples/_ch18_lib.cpp`、`Examples/_ch18_main.cpp`、`Examples/_ch18_pgo.cpp`、`Examples/_ch18_mylib.cpp`（均在本机真实编译、真实反汇编，汇编片段逐字取自产物，绝不编造）。
-> 立场约定：`[标准]`=ISO C++；`[实现·GCC13]`=GCC 13 实现；`[平台·MinGW-x64/PE]`=Windows PE/MinGW；`[平台·Linux/ELF]`=Linux ELF；`[经验]`=工程共识。
+> 立场约定：`[标准]`=ISO C++；`[实现·GCC15]`=GCC 15.3.0 实现；`[平台·MinGW-x64/PE]`=Windows PE/MinGW；`[平台·Linux/ELF]`=Linux ELF；`[经验]`=工程共识。
 
 ## ⓪ 历史动机：构建配置（Debug / Release / LTO / PGO）的来龙去脉
 
@@ -135,7 +135,7 @@ int twice(int x)    { return x + x; }      // -O2：lea eax,[rcx+rcx]
 | `-Os` | 可接受 | + | 小 | 固件/容器 |
 | `-Og` | 最佳 | + | 大 | 调试+性能 |
 
-- `[实现·GCC13]`：`-O2` 与 `-O3` 的具体 pass 列表由 GCC 内部表决定；`-O3` 增加的自动向量化在"-O2 已经很平"的代码上可能因代码膨胀导致 icache 压力反而变慢，务必 benchmark 验证。
+- `[实现·GCC15]`：`-O2` 与 `-O3` 的具体 pass 列表由 GCC 内部表决定；`-O3` 增加的自动向量化在"-O2 已经很平"的代码上可能因代码膨胀导致 icache 压力反而变慢，务必 benchmark 验证。
 - `[经验]`：发布默认 `-O2`；只有数值密集且实测 `-O3`/`PGO` 更快才升级。不要无脑 `-O3`。
 
 ## ④ [实现]真实：-O0 vs -O2 同函数汇编对比
@@ -198,7 +198,7 @@ _Z4mul3i:
 	ret
 ```
 
-- `[实现·GCC13]`：以上 `caller` 在 `-O0` 含 **2 条 `call`**；`-O2` 下 `add`/`mul3` 被内联、常量传播后整个函数折叠为 `mov eax,15`，`call` 数归零。这是"优化级别"最直观的物证。
+- `[实现·GCC15]`：以上 `caller` 在 `-O0` 含 **2 条 `call`**；`-O2` 下 `add`/`mul3` 被内联、常量传播后整个函数折叠为 `mov eax,15`，`call` 数归零。这是"优化级别"最直观的物证。
 - `[标准]`：两种产物都必须对**无 UB 的输入**给出相同可观测结果；折叠只发生在编译器能证明等价时。
 
 ## ⑤ -Ofast 与浮点不严谨
@@ -226,7 +226,7 @@ double careful_div(double a, double b) {
 }
 ```
 
-- `[实现·GCC13]`：`-Ofast` 隐含 `-ffast-math`、`-fno-signed-zeros`、`-fno-trapping-math` 等；它会让 `x / x` 被优化为 `1.0`（即使 `x` 是 NaN），不符合 IEEE。
+- `[实现·GCC15]`：`-Ofast` 隐含 `-ffast-math`、`-fno-signed-zeros`、`-fno-trapping-math` 等；它会让 `x / x` 被优化为 `1.0`（即使 `x` 是 NaN），不符合 IEEE。
 - `[经验]`：游戏/媒体渲染可用 `-Ofast`；浮点结果要可复现、要处理 NaN、要对接硬件 FPU 异常的代码**严禁** `-ffast-math`。需要向量化但不放松语义时，改用 `-O3 -fno-fast-math`（或单独开 `-ftree-vectorize`）。
 
 ## ⑥ LTO 链接时优化
@@ -251,7 +251,7 @@ g++ -O2 -flto main.o lib.o -o app        # 链接期才做全程序优化
 ```
 
 - `[标准]`：LTO 是实现扩展（GCC/Clang/MSVC 均支持，但 BMI/格式不互操作）。它不改变语言语义，只是把内联的视野从"单 TU"扩到"全程序"。
-- `[实现·GCC13]`：`-flto` 生成"瘦目标文件"（含 GIMPLE + 汇总）；链接时 `lto1` 把所有 TU 读回做一遍全程序优化。**代价**：链接明显变慢、内存占用高，且要求所有参与 TU 都用 `-flto` 编译（混用普通 `.o` 仍可链，但那些 `.o` 无法被跨 TU 优化）。
+- `[实现·GCC15]`：`-flto` 生成"瘦目标文件"（含 GIMPLE + 汇总）；链接时 `lto1` 把所有 TU 读回做一遍全程序优化。**代价**：链接明显变慢、内存占用高，且要求所有参与 TU 都用 `-flto` 编译（混用普通 `.o` 仍可链，但那些 `.o` 无法被跨 TU 优化）。
 - `[经验]`：发布构建统一开 `-flto`；开发期关掉以加速增量链接。
 
 ## ⑦ PGO 流程
@@ -281,7 +281,7 @@ g++ -std=c++23 -O2 -fprofile-generate -o _ch18_pgo Examples/_ch18_pgo.cpp
 g++ -std=c++23 -O2 -fprofile-use -o app Examples/_ch18_pgo.cpp
 ```
 
-- `[实现·GCC13]`：`-fprofile-generate` 插桩版运行后写出 `.gcda`；`-fprofile-use` 读取它调整分支布局、函数分区（`-freorder-blocks`/`-fprofile-partition`）。本机实测 `-fprofile-use` 编译时**无 missing-profile 警告**，证明剖面真实被应用。
+- `[实现·GCC15]`：`-fprofile-generate` 插桩版运行后写出 `.gcda`；`-fprofile-use` 读取它调整分支布局、函数分区（`-freorder-blocks`/`-fprofile-partition`）。本机实测 `-fprofile-use` 编译时**无 missing-profile 警告**，证明剖面真实被应用。
 - `[经验]`：PGO 的输入负载必须"像生产"——用单元测试跑出来的剖面会误导优化器。服务器用线上采样回放，客户端用典型用户操作录制。
 
 ## ⑧ [实现]真实：-flto 跨 TU 内联证据
@@ -346,7 +346,7 @@ _Z6driveri:
 	ret
 ```
 
-- `[实现·GCC13]`：无 LTO 时 `driver→compute→helper` 至少保留 `driver` 对 `compute` 的 `call`（跨 TU 边界无法内联）；`-flto` 让链接器把三函数读回 GIMPLE 后整体内联，连符号都消除。这正是"链接时优化"的硬证据。
+- `[实现·GCC15]`：无 LTO 时 `driver→compute→helper` 至少保留 `driver` 对 `compute` 的 `call`（跨 TU 边界无法内联）；`-flto` 让链接器把三函数读回 GIMPLE 后整体内联，连符号都消除。这正是"链接时优化"的硬证据。
 - `[经验]`：LTO 对"小函数散落多 TU、频繁跨 TU 调用"的代码收益最大；把热点做成 `inline`/放在头文件也能部分达成，但 LTO 是零改码的兜底方案。
 
 ## ⑨ 断言与契约（assert / ensures 方向）
@@ -445,7 +445,7 @@ nm libch18.a | grep engine
 # .a 中两个函数均为已定义文本符号(T)；动态库需 dllexport 才进导出表
 ```
 
-- `[实现·GCC13]`：本机实测 `libch18.a` 体积约 1 KB、含 `engine_compute`/`engine_pipeline` 的 `T` 符号；`libch18.dll` 约 36 KB。`.a` 是目标文件的简单归档，链接时**整体或按需**拷入调用方；`.dll`/`.so` 是独立镜像，运行期加载。
+- `[实现·GCC15]`：本机实测 `libch18.a` 体积约 1 KB、含 `engine_compute`/`engine_pipeline` 的 `T` 符号；`libch18.dll` 约 36 KB。`.a` 是目标文件的简单归档，链接时**整体或按需**拷入调用方；`.dll`/`.so` 是独立镜像，运行期加载。
 - `[平台·MinGW-x64/PE]`：Windows DLL **默认不导出任何符号**，必须用 `__declspec(dllexport)` 或 `.def` 显式导出，否则 `nm -D` 看不到——这是与 ELF 默认导出全部全局符号的关键差异，常坑新手。
 - `[经验]`：静态链接=自包含、启动快、无"DLL 地狱"，但体积大、库升级需重链；动态链接=省内存（多进程共享）、热更新库，但要管依赖与 ABI。系统级通用库（CRT、系统 API）用动态，业务库视分发策略定。
 
@@ -480,7 +480,7 @@ g++ -std=c++23 -O2 -fstack-protector-strong -fPIE -pie \
     -Wl,-z,relro,-z,now -D_FORTIFY_SOURCE=2 -o app app.cpp
 ```
 
-- `[实现·GCC13]`：栈保护分三档：`-fstack-protector`（仅含数组的函数）、`-fstack-protector-strong`（含数组**或**取地址局部变量，覆盖更广，推荐）、`-fstack-protector-all`（全部函数）。下一节给出真实 canary 汇编。
+- `[实现·GCC15]`：栈保护分三档：`-fstack-protector`（仅含数组的函数）、`-fstack-protector-strong`（含数组**或**取地址局部变量，覆盖更广，推荐）、`-fstack-protector-all`（全部函数）。下一节给出真实 canary 汇编。
 - `[平台·Linux/ELF]`：`RELRO + PIE + NX` 是主流发行版默认；`-D_FORTIFY_SOURCE=2` 让 `memcpy`/`sprintf` 等带编译期长度检查。
 - `[经验]`：发布二进制默认开 `-fstack-protector-strong -fPIE -pie -Wl,-z,relro,-z,now`；性能损耗通常 < 2%，安全收益巨大。
 
@@ -535,7 +535,7 @@ _Z5parsePKcy:
 
 对照：**关闭**栈保护时（本机实测）同样的 `parse` 栈帧只有 72 字节、无任何 canary 读写，返回前直接 `ret`——一旦 `buf` 越界覆盖返回地址，攻击者可控制执行流。
 
-- `[实现·GCC13]`：canary 存于线程局部 `fs:0x28`（x86-64 Linux）或 `%gs` 段，攻击者难以预测；`__stack_chk_fail` 属于 glibc/mingw 运行时，溢出即 `abort`。
+- `[实现·GCC15]`：canary 存于线程局部 `fs:0x28`（x86-64 Linux）或 `%gs` 段，攻击者难以预测；`__stack_chk_fail` 属于 glibc/mingw 运行时，溢出即 `abort`。
 - `[平台·MinGW-x64/PE]`：MinGW 也提供 `__stack_chk_guard`/`__stack_chk_fail`（来自 MinGW 运行时），机制与 ELF 一致。
 - `[经验]`：栈保护拦得住"盲目覆盖返回地址"的溢出，但拦不住**不越 canary 槽位**的局部变量覆写或堆溢出——加固是纵深防御的一层，不是万能。
 
@@ -565,7 +565,7 @@ int handler(int /*unused*/) { return 0; }   // -Wunused-parameter（用注释名
 g++ -std=c++23 -Wall -Wextra -Wshadow -Wconversion -Werror -c app.cpp
 ```
 
-- `[实现·GCC13]`：`-Wall` 与 `-Wextra` **并非"全部/额外"的字面义**——仍有大量有用警告未包含（如 `-Wshadow`、`-Wconversion`、`-Wpedantic`）。它们只是"推荐集合"。
+- `[实现·GCC15]`：`-Wall` 与 `-Wextra` **并非"全部/额外"的字面义**——仍有大量有用警告未包含（如 `-Wshadow`、`-Wconversion`、`-Wpedantic`）。它们只是"推荐集合"。
 - `[经验]`：项目起步就 `-Wall -Wextra -Werror`；临时豁免用 `[[gnu::unused]]` 或 `#pragma GCC diagnostic`，不要整体关警告。把 `-Werror` 加在 CI 而非本地日常，避免工具链升级时个人被卡住（但 CI 必须红）。
 
 ## ⑮ sanitizer 集成（-fsanitize）
@@ -597,7 +597,7 @@ g++ -std=c++23 -O1 -g -fsanitize=address -fno-omit-frame-pointer \
 int overflow(int a, int b) { return a + b; }   // a,b 接近 INT_MAX 时 UB
 ```
 
-- `[实现·GCC13]`：`-fsanitize=address`（ASan）、`undefined`（UBSan）、`thread`（TSan）、`memory`（MSan，仅 Clang）均为插桩实现；ASan 约 2× 内存、2–5× 慢，TSan 更重。它们与 `-O2`/LTO 可共存，但**不应与 `-fsanitize=address` 和 `-flto` 在个别版本混用出怪问题**——测试单独一条管线最稳。
+- `[实现·GCC15]`：`-fsanitize=address`（ASan）、`undefined`（UBSan）、`thread`（TSan）、`memory`（MSan，仅 Clang）均为插桩实现；ASan 约 2× 内存、2–5× 慢，TSan 更重。它们与 `-O2`/LTO 可共存，但**不应与 `-fsanitize=address` 和 `-flto` 在个别版本混用出怪问题**——测试单独一条管线最稳。
 - `[经验]`：CI 矩阵里固定跑 ASan + UBSan 的 Debug 测试；发布的干净二进制**绝不**带 sanitizer（它会暴露内部布局并拖慢）。
 
 ## ⑯ 可重现构建（-ffile-prefix-map）
@@ -619,7 +619,7 @@ g++ -std=c++23 -O2 -Wl,--build-id=none -o app app.cpp
 # 两次编译的 app 用 sha256sum 比对应完全一致（关闭 LTO 的并行不确定性时更稳）
 ```
 
-- `[实现·GCC13]`：`-ffile-prefix-map=OLD=NEW` 同时作用于 `__FILE__` 宏与调试信息中的路径；`-fdebug-prefix-map` 仅作用于调试信息。这是"构建可重现"的关键开关——否则绝对路径会写进二进制，导致不同机器产物不同。
+- `[实现·GCC15]`：`-ffile-prefix-map=OLD=NEW` 同时作用于 `__FILE__` 宏与调试信息中的路径；`-fdebug-prefix-map` 仅作用于调试信息。这是"构建可重现"的关键开关——否则绝对路径会写进二进制，导致不同机器产物不同。
 - `[经验]`：配合 `-Wl,--build-id=none`、`SOURCE_DATE_EPOCH`、固定输入顺序（避免 `ar`/`ld` 的并行不确定），才能做到 bit-for-bit 可重现。分布式编译缓存（ccache/sccache）依赖此特性。
 
 ## ⑰ [经验]发布配置建议

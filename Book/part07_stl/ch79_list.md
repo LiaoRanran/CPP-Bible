@@ -2,7 +2,7 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：⟶ Book/part07_stl/ch76_stl_arch.md、⟶ Book/part07_stl/ch77_vector.md、⟶ Book/part07_stl/ch78_deque.md ／ 后续：⟶ Book/part07_stl/ch86_adapters.md、⟶ Book/part07_stl/ch90_ranges.md ／ 难度：★★★☆☆
 
-> 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC13]` 指 GCC 13.1 / libstdc++ 行为；`[平台·x86-64]` 指缓存与内存；`[经验]` 为工程共识。libstdc++ 引用均给 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
+> 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC15]` 指 GCC 15.3.0 / libstdc++ 实现行为；`[平台·x86-64]` 指缓存与内存；`[经验]` 为工程共识。libstdc++ 引用均给 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 
 ---
 
@@ -114,7 +114,7 @@ flowchart LR
 
 ---
 
-## ⑥ UML 类图（简化） [实现·GCC13]
+## ⑥ UML 类图（简化） [实现·GCC15]
 
 ```mermaid
 classDiagram
@@ -144,11 +144,11 @@ classDiagram
     forward_list "1" *-- _Fwd_list_node_base : _M_head
 ```
 
-`[实现·GCC13]`：`_List_node_base` 定义于 `文件：bits/stl_list.h` `行号：81`（含 `_M_next`/`_M_prev` 与 `_M_hook`/`_M_unhook`，行号：`97`/`100`）；`_List_node` 继承它并加 `value`（行号：`234`）。`forward_list` 的 `_Fwd_list_node_base` 在 `文件：bits/forward_list.h` `行号：54`。
+`[实现·GCC15]`：`_List_node_base` 定义于 `文件：bits/stl_list.h` `行号：81`（含 `_M_next`/`_M_prev` 与 `_M_hook`/`_M_unhook`，行号：`97`/`100`）；`_List_node` 继承它并加 `value`（行号：`234`）。`forward_list` 的 `_Fwd_list_node_base` 在 `文件：bits/forward_list.h` `行号：54`。
 
 ---
 
-## ⑦ ASCII 内存图：节点布局与环形哨兵 [实现·GCC13]
+## ⑦ ASCII 内存图：节点布局与环形哨兵 [实现·GCC15]
 
 ```
 std::list<int> 对象
@@ -169,7 +169,7 @@ std::list<int> 对象
 每个节点在堆上独立分配（节点间不连续 -> 缓存不友好）
 ```
 
-`[实现·GCC13]`：插入即 `node._M_hook(position)`（文件：`bits/stl_list.h`，行号：`97` `_M_hook`、行号：`1997`/`2006` 插入时调用），仅改几个指针，不搬移任何已有节点，因此**迭代器全部保持有效**。
+`[实现·GCC15]`：插入即 `node._M_hook(position)`（文件：`bits/stl_list.h`，行号：`97` `_M_hook`、行号：`1997`/`2006` 插入时调用），仅改几个指针，不搬移任何已有节点，因此**迭代器全部保持有效**。
 
 ---
 
@@ -219,7 +219,7 @@ int main() {
 
 ---
 
-## ⑩ 汇编分析：list 遍历的间接寻址成本 [实现·GCC13]
+## ⑩ 汇编分析：list 遍历的间接寻址成本 [实现·GCC15]
 
 list 遍历每次迭代都要**通过指针加载下一个节点地址**（一次或多段 cache miss），与 vector/deque 的连续预取形成对比。下面用 `-O2` 概念性展示 `it++`（即 `_M_next` 解引用）：
 
@@ -232,7 +232,7 @@ list 遍历每次迭代都要**通过指针加载下一个节点地址**（一�
 ; 对比 vector:  it++ 只是 add rbx, 4 (基址+4)，预取友好
 ```
 
-`[实现·GCC13]`：`_List_iterator::operator++` 最终读 `_M_node->_M_next`（行号：`81` 的 `_M_next` 字段）；该间接寻址无法被 CPU 连续预取，故大链表遍历显著慢于 `vector`/`deque`。
+`[实现·GCC15]`：`_List_iterator::operator++` 最终读 `_M_node->_M_next`（行号：`81` 的 `_M_next` 字段）；该间接寻址无法被 CPU 连续预取，故大链表遍历显著慢于 `vector`/`deque`。
 
 ---
 
@@ -282,7 +282,7 @@ int main() {
 
 ---
 
-## ⑬ 源码分析：libstdc++ 的链表与 splice/merge [实现·GCC13]
+## ⑬ 源码分析：libstdc++ 的链表与 splice/merge [实现·GCC15]
 
 **哨兵头节点与 hook/unhook**
 
@@ -318,7 +318,7 @@ struct _List_node_base {
 // 注意：forward_list 没有 size() 成员（行号处无 size 声明），length 需 O(n) 遍历
 ```
 
-`[实现·GCC13]`：`splice`（行号：`1612`）仅调用 `_M_hook`/`_M_unhook` 重接指针，**不拷贝、不移动任何 T 对象**——这是它在"链表间搬移大量数据"时远快于"拷贝进 vector 再拷回"的根本原因。
+`[实现·GCC15]`：`splice`（行号：`1612`）仅调用 `_M_hook`/`_M_unhook` 重接指针，**不拷贝、不移动任何 T 对象**——这是它在"链表间搬移大量数据"时远快于"拷贝进 vector 再拷回"的根本原因。
 
 ---
 

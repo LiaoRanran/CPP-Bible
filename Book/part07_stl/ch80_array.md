@@ -199,7 +199,7 @@ classDiagram
                           + 指向的堆内存，且有堆分配成本。
 ```
 
-- `[实现·GCC13]`：`array` 的唯一非静态数据成员是 `_Tp _M_elems[N]`（见 `文件：array`, `行号：109`），因此 `sizeof(array<T,N>) == N * sizeof(T)` 对齐到 `alignof(T)`，与裸 C 数组一致。
+- `[实现·GCC15]`：`array` 的唯一非静态数据成员是 `_Tp _M_elems[N]`（见 `文件：array`, `行号：109`），因此 `sizeof(array<T,N>) == N * sizeof(T)` 对齐到 `alignof(T)`，与裸 C 数组一致。
 - `[标准]`：因为布局一致，`std::array` 与 C 数组可在 ABI 层面等价传递（例如作为 `extern "C"` 结构字段）。
 
 ```cpp
@@ -360,7 +360,7 @@ _Z9sum_arrayRSt5arrayIiLm4EE:
 ; sum_carr 的循环体与此逐条相同（偏移一致）——证明零开销
 ```
 
-- `[实现·GCC13]`：`array` 访问在 `-O2` 直接编译为 `[rdi+N*4]` 的 `mov`/`add`，与 C 数组无任何差异；`at()` 在 NDEBUG 下断言消失，同样零成本。
+- `[实现·GCC15]`：`array` 访问在 `-O2` 直接编译为 `[rdi+N*4]` 的 `mov`/`add`，与 C 数组无任何差异；`at()` 在 NDEBUG 下断言消失，同样零成本。
 - `[标准]`：这正是 `array` 作为"零开销抽象"的体现——它只是给 C 数组披上值语义与接口的外衣。
 
 ```cpp

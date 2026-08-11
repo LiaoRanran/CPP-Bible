@@ -177,7 +177,7 @@ priority_queue<int> q;    // 对象 q = vector<int> c + 比较器 comp(空对象
 └───────────────────────────────────────────────┘
 ```
 
-- `[实现·GCC13]`：比较器 `less<int>` 是空类，经 **EBO（空基类优化）** ⟶ `Book/part05_oo/ch52_ebo.md` 占 0 字节；`priority_queue` 整体大小 ≈ `sizeof(vector<int>)`。
+- `[实现·GCC15]`：比较器 `less<int>` 是空类，经 **EBO（空基类优化）** ⟶ `Book/part05_oo/ch52_ebo.md` 占 0 字节；`priority_queue` 整体大小 ≈ `sizeof(vector<int>)`。
 - `[标准]` 适配器成员 `c` 在 `stack`/`queue` 中为 `protected`，在 `priority_queue` 中 `c` 与 `comp` 均为 `protected`（`bits/stl_stack.h:146`、`bits/stl_queue.h:538-539`），允许派生类以受限方式访问底层。
 
 ---
@@ -219,7 +219,7 @@ sequenceDiagram
     PQ-->>U: 返回
 ```
 
-- `[实现·GCC13]`：见 `bits/stl_queue.h:741` 处 `push`，先 `c.push_back(std::move(__x))` 再 `std::push_heap(c.begin(), c.end(), comp)`。
+- `[实现·GCC15]`：见 `bits/stl_queue.h:741` 处 `push`，先 `c.push_back(std::move(__x))` 再 `std::push_heap(c.begin(), c.end(), comp)`。
 
 ---
 
@@ -346,8 +346,8 @@ int main() { dispatch_loop(); return 0; }
 int main() { return 0; }
 ```
 
-- `[实现·GCC13]`：可见 `stack` 的所有操作都是**一层薄转发**——`push`→`c.push_back`，`pop`→`c.pop_back`，`top`→`c.back()`。
-- `[实现·GCC13]` `top()` 与 `pop()` 在调试模式（`_GLIBCXX_ASSERTIONS`）下插入 `__glibcxx_requires_nonempty()` 宏，空栈访问会触发断言；**发布模式不检查**（标准未要求抛异常，访问空栈是 UB）。
+- `[实现·GCC15]`：可见 `stack` 的所有操作都是**一层薄转发**——`push`→`c.push_back`，`pop`→`c.pop_back`，`top`→`c.back()`。
+- `[实现·GCC15]` `top()` 与 `pop()` 在调试模式（`_GLIBCXX_ASSERTIONS`）下插入 `__glibcxx_requires_nonempty()` 宏，空栈访问会触发断言；**发布模式不检查**（标准未要求抛异常，访问空栈是 UB）。
 
 **[libstdc++ queue]** 真实定义（`bits/stl_queue.h`）：
 
@@ -496,7 +496,7 @@ int main() { return 0; }
 `stack` 更贴语义（只能看顶、弹顶），对外接口更安全；内部仍是 `deque`/`vector`。若还需"查看下下个元素"则退化用 `vector` 自行管理。
 
 **Q：两个 `stack` 能直接比较相等吗？**  
-可以——适配器提供了 `operator==`/`!=`（C++20 起还有 `<=>`），比较的是底层 `c`。`[实现·GCC13]` 见 `bits/stl_stack.h:357` 处 `return __x.c == __y.c;`。
+可以——适配器提供了 `operator==`/`!=`（C++20 起还有 `<=>`），比较的是底层 `c`。`[实现·GCC15]` 见 `bits/stl_stack.h:357` 处 `return __x.c == __y.c;`。
 
 ---
 

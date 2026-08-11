@@ -313,7 +313,7 @@ int main() {
 struct BadIface { /* 无 virtual ~BadIface() */ virtual void f() = 0; };
 ```
 
-[实现·GCC13] 接口注入会在目标文件里生成 vtable（如 `_ZTV8IStorage`、RTTI `_ZTI8IStorage`）；这带来轻微代码体积与间接调用成本，详见 ⑭ 取证。
+[实现·GCC15] 接口注入会在目标文件里生成 vtable（如 `_ZTV8IStorage`、RTTI `_ZTI8IStorage`）；这带来轻微代码体积与间接调用成本，详见 ⑭ 取证。
 
 ---
 
@@ -796,7 +796,7 @@ int main() {
 // template <auto Config> struct Engine { static constexpr int max = Config.max_threads; };
 ```
 
-[实现·GCC13] 该例在 `-O2` 下 `r1`/`r2` 完全折叠为立即数，与 ⑭ 模板注入的“无虚调用 + 常量折叠”一脉相承。
+[实现·GCC15] 该例在 `-O2` 下 `r1`/`r2` 完全折叠为立即数，与 ⑭ 模板注入的“无虚调用 + 常量折叠”一脉相承。
 
 ---
 
@@ -955,7 +955,7 @@ int main() {
 
 【立场标签回顾】
 - `[标准]` DI 非语言特性，靠构造/模板/抽象基类/智能指针/`constexpr` 等既有设施实现。
-- `[实现·GCC13]` 接口注入必产 vtable 与 RTTI；模板注入 `FastStorage` 在汇编中**无 vtable**（已用 `grep` 实证）。
+- `[实现·GCC15]` 接口注入必产 vtable 与 RTTI；模板注入 `FastStorage` 在汇编中**无 vtable**（已用 `grep` 实证）。
 - `[平台·x86-64]` 虚调用经 vtable 间接跳转（取证 1），模板调用为直接调用（取证 2）。
 - `[经验]` 热路径用模板注入压延迟；重依赖/可替换端口用接口注入换可测性；中小项目手写 `make_app()` 胜过上框架。
 

@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
 - `[平台·ARM]`：Cortex-M 裸机没有 `main` 的“魔法”入口，复位后 PC 直接指向向量表第二项（`_start`/Reset_Handler）。
 - `[经验]`：裸机工程 90% 的“编过了却跑不起来”源于 **启动文件/链接脚本/FPU 选项三者不一致**，而不是 C++ 代码。
 
-## ⑤ [实现]真实：用本机 g++ 编译小程序展示 x86 调用约定/对齐 [实现·GCC13]
+## ⑤ [实现]真实：用本机 g++ 编译小程序展示 x86 调用约定/对齐 [实现·GCC15]
 
 本机是 x86-64 MinGW-W64，采用 **Microsoft x64 调用约定**（非 System V）：前 4 个整数参数依次进 `RCX, RDX, R8, R9`，第 5、6 个压栈；调用方还需预留 **32 字节 shadow space（影子空间）**。
 
@@ -152,7 +152,7 @@ _Z4sum6llllll:
 	ret
 ```
 
-- `[实现·GCC13]`：`sum6` 的前 4 参落在 `RCX/RDX/R8/R9`，第 5、6 参在 `[rsp+40]`、`[rsp+48]`——这正是 **Windows x64 ABI 的 32 字节影子空间 + 栈传参**特征。
+- `[实现·GCC15]`：`sum6` 的前 4 参落在 `RCX/RDX/R8/R9`，第 5、6 参在 `[rsp+40]`、`[rsp+48]`——这正是 **Windows x64 ABI 的 32 字节影子空间 + 栈传参**特征。
 - `[平台·x86-64]`：注意 MinGW 用的是 **Microsoft x64 ABI**，与 Linux 的 System V（`RDI/RSI/RDX/RCX/R8/R9`）**寄存器顺序不同**——同一份 C++ 在同一 CPU 上因 OS 而调用约定不同。
 
 ## ⑥ 嵌入式工具链（GNU Arm Embedded / 示例 ARM 汇编典型输出） [平台·ARM]
@@ -282,7 +282,7 @@ extern "C" void _start() {
 - `[平台·ARM]`：Flash 通常从 `0x08000000` 开始执行，链接脚本（见 `Examples/_ch17_stm32.ld`）必须把 `.isr_vector` 放最前。
 - `[经验]`：`.bin` 不含地址信息，烧录工具必须知道基址；`.hex`(Intel HEX) 自带地址更省心，量产前优先。
 
-## ⑪ [实现]对比：x86 与 ARM 同一函数的汇编差异（ARM 段明确标注“典型输出”） [实现·GCC13]
+## ⑪ [实现]对比：x86 与 ARM 同一函数的汇编差异（ARM 段明确标注“典型输出”） [实现·GCC15]
 
 取第⑤节的 `manhattan(Point)` 与 `make_point`，对比两套 ABI 对同一语义的不同寄存器分配：
 
@@ -313,7 +313,7 @@ _Z9manhattan5Point:
 ;         bx      lr
 ```
 
-- `[实现·GCC13]`：x86 把 16 字节结构塞进**单个 RCX**（高低 32 位各装一个 `long`）；ARM **AAPCS** 则把它拆成 `R0`(x) 与 `R1`(y) 两个寄存器——同一结构体，两套截然不同的参数布局。
+- `[实现·GCC15]`：x86 把 16 字节结构塞进**单个 RCX**（高低 32 位各装一个 `long`）；ARM **AAPCS** 则把它拆成 `R0`(x) 与 `R1`(y) 两个寄存器——同一结构体，两套截然不同的参数布局。
 - `[平台·x86-64]` vs `[平台·ARM]`：这就是交叉编译的核心难点——**C++ 语义一致，机器契约不同**，移植时寄存器映射/对齐/调用约定都要重估。
 
 ## ⑫ 大小端/对齐差异 [标准]
@@ -372,7 +372,7 @@ void toggle() { g_dbg ^= 1; }    // 在 GDB 里设断点、watch g_dbg
 - `[平台·ARM]`：J-Link 是商业高速调试探针；ST-Link 随 STM32 开发板免费；OpenOCD 开源、支持广。
 - `[经验]`：量产固件用 `-Os`、调试固件用 `-Og -g3`——**不要**拿 `-O2` 二进制去单步，变量会被优化掉，体验极差。
 
-## ⑭ 体积优化（-Os/-ffunction-sections/-fdata-sections --gc-sections，[实现]真实 g++ 命令） [实现·GCC13]
+## ⑭ 体积优化（-Os/-ffunction-sections/-fdata-sections --gc-sections，[实现]真实 g++ 命令） [实现·GCC15]
 
 嵌入式 FLASH 宝贵。核心手段：`-Os`（为尺寸优化）、`-ffunction-sections -fdata-sections`（每函数/变量独立段）、`--gc-sections`（链接期丢弃未引用段）。
 
@@ -401,7 +401,7 @@ int unused_var = 99;     // 未引用 -> 期望被 GC
 # C:/Qt/Tools/mingw1310_64/bin/objdump.exe -h /tmp/ch17_c.exe
 ```
 
-- `[实现·GCC13]`：`-ffunction-sections` 让每个函数进独立 `.text.<fn>` 段，`--gc-sections` 从入口可达性分析丢弃死段——**这正是嵌入式瘦身的主菜**。
+- `[实现·GCC15]`：`-ffunction-sections` 让每个函数进独立 `.text.<fn>` 段，`--gc-sections` 从入口可达性分析丢弃死段——**这正是嵌入式瘦身的主菜**。
 - `[经验]`：`-Os` 与 `-O2` 在本例 text 差异很小，真正的大头是 **GC 掉死代码/死数据**；模板膨胀时 `-ffunction-sections --gc-sections` 收益惊人。
 
 ## ⑮ [经验]嵌入式 C++ 子集（禁用 RTTI/异常/STL 的部分） [经验]

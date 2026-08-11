@@ -648,7 +648,7 @@ int main(int argc, char** argv) {
 }
 ```
 
-**[实现·GCC13]** 注意 `MINIFW_REGISTER` 借助静态对象构造在 `main` 之前完成自注册——这是静态初始化顺序问题（SIOF）的安全写法，因为 `registry()` 用函数内 `static` 局部变量保证只构造一次且线程安全（C++11 起）。
+**[实现·GCC15]** 注意 `MINIFW_REGISTER` 借助静态对象构造在 `main` 之前完成自注册——这是静态初始化顺序问题（SIOF）的安全写法，因为 `registry()` 用函数内 `static` 局部变量保证只构造一次且线程安全（C++11 起）。
 
 ```cpp
 // ⑨ 启动前即可枚举已注册组件（自注册的副作用可被观测，便于排错）
@@ -801,7 +801,7 @@ int main() {
 
 ## ⑬ 性能考量（关联 第151章 性能）
 
-框架的每个 tick 都要尽量便宜。**[实现·GCC13]** 下面是 `vector_push_back` 与空 lambda 的本机 `-O2` 微基准；同时用 `g++ -O2 -S -masm=intel` 看 `Ring::push` 里 `tail=(tail+1)%16` 的真实产物——编译器用 `cdq; shr edx,28; and eax,15` 把取模优化成"符号修正后的位与"，因为 16 是 2 的幂。
+框架的每个 tick 都要尽量便宜。**[实现·GCC15]** 下面是 `vector_push_back` 与空 lambda 的本机 `-O2` 微基准；同时用 `g++ -O2 -S -masm=intel` 看 `Ring::push` 里 `tail=(tail+1)%16` 的真实产物——编译器用 `cdq; shr edx,28; and eax,15` 把取模优化成"符号修正后的位与"，因为 16 是 2 的幂。
 
 ```cpp
 // ⑬ 微基准（本机实测通过：Examples/_ch164_perf.cpp）

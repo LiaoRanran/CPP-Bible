@@ -158,7 +158,7 @@ int guard(double x) {
 }
 ```
 
-- `[实现·GCC13]`：`-Ofast` 额外开启 `-fno-math-errno`（如 `sqrt` 不再设 `errno`）、`-funsafe-math-optimizations`、`-fassociative-math`。
+- `[实现·GCC15]`：`-Ofast` 额外开启 `-fno-math-errno`（如 `sqrt` 不再设 `errno`）、`-funsafe-math-optimizations`、`-fassociative-math`。
 - `[标准]`：`-ffast-math` 行为**不保证可移植**，且违反 `[basic.floating]` 的 IEEE 语义约定，属实现选项而非标准特性。
 
 ## ④ -Os/-Oz 体积优化 [实现]
@@ -220,7 +220,7 @@ g++ -std=c++23 -O2 -flto   Examples/_ch156_lib.o Examples/_ch156_main.o -o Examp
 //   main.cpp: int arr[config()];  → LTO 后 config() 被识别为常量 8，数组大小折叠
 ```
 
-- `[实现·GCC13]`：GCC 的 LTO 用 `gcc/lto1` 在链接期重放优化；`-flto=N` 并行分区加速大工程。
+- `[实现·GCC15]`：GCC 的 LTO 用 `gcc/lto1` 在链接期重放优化；`-flto=N` 并行分区加速大工程。
 - `[平台]`：LTO 要求**所有参与的目标文件都用同一 -flto 等级/同一编译器**生成，否则链接失败或静默失效。
 
 ## ⑥ [实现]真实汇编：LTO 下跨翻译单元函数被内联（对比无 LTO 的 call）
@@ -268,7 +268,7 @@ int main(int argc, char**) { return compute(argc); }
 ; 注意：目标文件中不再存在 <_Z7computei> 符号——它被彻底吸收进 main
 ```
 
-- `[实现·GCC13]`：无 LTO 下 `_Z7computei` 是独立定义、需 `jmp`；有 LTO 下整程序视角使其被内联，省一次调用 + 保留参数于寄存器。
+- `[实现·GCC15]`：无 LTO 下 `_Z7computei` 是独立定义、需 `jmp`；有 LTO 下整程序视角使其被内联，省一次调用 + 保留参数于寄存器。
 - `[标准]`：该内联完全在 `as-if` 规则内——可观察行为不变，仅机器码形态改变。
 
 ## ⑦ PGO（Profile-Guided Optimization）原理 [实现]
@@ -293,7 +293,7 @@ int classify(int x) {
 //   - 循环展开因子按真实 trip count 定
 ```
 
-- `[实现·GCC13]`：profile 数据存为 `.gcda`（运行期由插桩写出）与 `.gcno`（编译期结构）；`-fprofile-use` 读取。
+- `[实现·GCC15]`：profile 数据存为 `.gcda`（运行期由插桩写出）与 `.gcno`（编译期结构）；`-fprofile-use` 读取。
 - `[经验]`：PGO 对**分支高度偏斜、含大 switch、虚调用多**的服务端代码收益最明显（常见 5%–15%）。
 
 ## ⑧ PGO 流程：-fprofile-generate → 跑训练 → -fprofile-use [标准]
@@ -375,7 +375,7 @@ Disassembly of section .text.unlikely:     ; ← 冷路径被独立搬到此节
 ;       让 .text.hot 段更紧凑、i-cache 命中更高、分支预测器不被冷路径污染
 ```
 
-- `[实现·GCC13]`：`-fprofile-use` 自动启用 `-freorder-blocks-and-partition` 等，依据计数把基本块分到 `.text.hot` / `.text.unlikely` / `.text.startup`。
+- `[实现·GCC15]`：`-fprofile-use` 自动启用 `-freorder-blocks-and-partition` 等，依据计数把基本块分到 `.text.hot` / `.text.unlikely` / `.text.startup`。
 - `[经验]`：冷路径移出是 PGO 最稳的收益来源之一——它不靠「猜」，而靠实测频率。
 
 ## ⑩ 优化报告 -fopt-info / -fopt-info-vec [实现]
@@ -403,7 +403,7 @@ g++ -std=c++23 -O3 -fopt-info-vec=vec.log Examples/_ch156_fast.cpp -c -o /dev/nu
 //   missed: 不内联 big_fn（超出内联尺寸上限）
 ```
 
-- `[实现·GCC13]`：`-fopt-info` 是 `-fopt-info-optall` 的别名；细分为 `-vec`/`-inline`/`-loop`/`-ipa`（过程间）。
+- `[实现·GCC15]`：`-fopt-info` 是 `-fopt-info-optall` 的别名；细分为 `-vec`/`-inline`/`-loop`/`-ipa`（过程间）。
 - `[经验]`：性能调优先看 `-fopt-info-vec`「missed」行，70% 的未向量化是别名/数据依赖可解问题。
 
 ## ⑪ 与 ch155 衔接（向量化也受 O 级影响） [标准]
@@ -465,7 +465,7 @@ int debug_only(int x) { return x * x; }   // 即便 -O3 也保留独立调用
 int (*fp)(int) = &cheap;   // 此时 cheap 必须可被链接器引用 → 不能纯内联
 ```
 
-- `[实现·GCC13]`：内联预算由 `--param inline-unit-growth` / `max-inline-insns-*` 控制；`-O3` 比 `-O2` 放宽。
+- `[实现·GCC15]`：内联预算由 `--param inline-unit-growth` / `max-inline-insns-*` 控制；`-O3` 比 `-O2` 放宽。
 - `[经验]`：`always_inline` 不要滥用——爆 i-cache 后反而更慢；只用于「必然盈利」的极小热函数。
 
 ## ⑬ 未定义行为(U.B.)如何让优化"爆炸" [标准]
@@ -629,7 +629,7 @@ objdump -d -M intel Examples/_ch156_app_lto.exe > Examples/_ch156_main_lto.asm
 //   注意本章取证用的是本机 GCC 13.1.0，结论与 godbolt 上 GCC 13 一致
 ```
 
-- `[实现·GCC13]`：`-masm=intel` 出 Intel 语法（AT&T 默认）；想看优化中间可用 `-fdump-tree-optimized`。
+- `[实现·GCC15]`：`-masm=intel` 出 Intel 语法（AT&T 默认）；想看优化中间可用 `-fdump-tree-optimized`。
 - `[经验]`：性能排查顺序：`-fopt-info-vec` → `-S` 看汇编 → perf 火焰图定位热点 → 再决定改算法还是改 flags。
 
 ## ⑱ 最佳实践：发布用 -O2 -flto -fprofile-use [经验]

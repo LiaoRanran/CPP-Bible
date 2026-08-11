@@ -164,7 +164,7 @@ struct Widget { int id; int value; };
 struct Gadget { int id; };
 ```
 
-`[实现·GCC13]` 用 `g++ -E` 展开可直观看到守卫效果——同一头文件包含两次，宏守卫让第二次包含被整段跳过：
+`[实现·GCC15]` 用 `g++ -E` 展开可直观看到守卫效果——同一头文件包含两次，宏守卫让第二次包含被整段跳过：
 
 ```bash
 # 真实命令（本机验证）
@@ -242,7 +242,7 @@ public:
 };
 ```
 
-`constexpr` 把求值推进到编译期，`[实现·GCC13]` 看汇编证明它真的被折叠：
+`constexpr` 把求值推进到编译期，`[实现·GCC15]` 看汇编证明它真的被折叠：
 
 ```cpp
 constexpr int factorial(int n) { return n <= 1 ? 1 : n * factorial(n - 1); }
@@ -281,7 +281,7 @@ int square(int x) { return x * x; }   // 应 constexpr
 
 ## ⑦ auto 使用规范（用 g++ -O2 -S 看 auto 推断无开销）
 
-`auto` 不是"懒得写类型"，而是**消除冗余**、避免截断（如 `size()` 返回 `size_t` 赋给 `int` 的警告）。`[实现·GCC13]` 关键结论：**auto 在编译期完成类型推断，零运行时开销**，与手写类型生成相同机器码。
+`auto` 不是"懒得写类型"，而是**消除冗余**、避免截断（如 `size()` 返回 `size_t` 赋给 `int` 的警告）。`[实现·GCC15]` 关键结论：**auto 在编译期完成类型推断，零运行时开销**，与手写类型生成相同机器码。
 
 ```cpp
 #include <vector>
@@ -328,7 +328,7 @@ for (auto x : huge_vector) { sum += x; }   // 每个元素都被拷贝
 
 ## ⑧ 范围 for 优先
 
-范围 for（`for (auto& x : container)`）比手写下标/迭代器更安全、更短，且 `[实现·GCC13]` 证实它编译为**与下标、迭代器循环完全相同的机器码**。
+范围 for（`for (auto& x : container)`）比手写下标/迭代器更安全、更短，且 `[实现·GCC15]` 证实它编译为**与下标、迭代器循环完全相同的机器码**。
 
 ```cpp
 #include <vector>
@@ -437,7 +437,7 @@ struct NoexceptMove {        // 移动构造 noexcept → 重分配时移动
 //         _GLIBCXX_MAKE_MOVE_IF_NOEXCEPT_ITERATOR(...)); }
 ```
 
-`[实现·GCC13]` `Examples/_ch144_noexcept_O2.asm` 中 `fill_copy` 与 `fill_move` 对**平凡类型 `int`** 生成了几乎一致的代码——这恰好说明：对于 trivially-copyable 类型，移动与拷贝在机器层面无差别；`noexcept` 的收益在**非平凡类型（如 `std::string`）**上才体现为"指针交换而非深拷贝"。结论真实、可复现。
+`[实现·GCC15]` `Examples/_ch144_noexcept_O2.asm` 中 `fill_copy` 与 `fill_move` 对**平凡类型 `int`** 生成了几乎一致的代码——这恰好说明：对于 trivially-copyable 类型，移动与拷贝在机器层面无差别；`noexcept` 的收益在**非平凡类型（如 `std::string`）**上才体现为"指针交换而非深拷贝"。结论真实、可复现。
 
 ```cpp
 #include <vector>
@@ -672,7 +672,7 @@ auto r = v | std::views::filter([](auto x){return x>0;})
 int platform_tag() { return static_cast<int>(family()[0]); }
 ```
 
-`[实现·GCC13]` 该文件在 Windows 与 POSIX 两种宏定义下均通过 `-Wall -Wextra` 洁净编译（`Examples/_ch144_platform*.o`）；**不定义任何平台宏时 `#error` 直接失败**，证明守卫有效、不会静默编译出错误目标。
+`[实现·GCC15]` 该文件在 Windows 与 POSIX 两种宏定义下均通过 `-Wall -Wextra` 洁净编译（`Examples/_ch144_platform*.o`）；**不定义任何平台宏时 `#error` 直接失败**，证明守卫有效、不会静默编译出错误目标。
 
 ```cpp
 #include <memory>

@@ -156,7 +156,7 @@ duration<long long, std::nano> big{...};  // 8 字节
 └──────────────────────────────────────┘
 ```
 
-- `[实现·GCC13]`：`duration` 的唯一数据成员 `_r`（见 `文件：bits/chrono.h 行号：523` 的 `class duration`，内部 `Rep __r;`）。单位 `Period` 是空类 `ratio`，不占内存。
+- `[实现·GCC15]`：`duration` 的唯一数据成员 `_r`（见 `文件：bits/chrono.h 行号：523` 的 `class duration`，内部 `Rep __r;`）。单位 `Period` 是空类 `ratio`，不占内存。
 - `[标准]`：因为单位是类型的一部分，`duration<seconds>` 与 `duration<milliseconds>` 是**不同类型**——不能直接相加/赋值，必须显式 `duration_cast`，从语言层面杜绝"把毫秒当秒用"的 bug。
 
 ---
@@ -223,7 +223,7 @@ int main() {
 ;   （无任何 syscall、无函数调用）
 ```
 
-- `[实现·GCC13]`：`duration_cast` 在 `文件：bits/chrono.h 行号：273` 的 `duration_cast` 处定义，内部走 `__duration_cast_impl`，当源/目标精度可整除时直接 `count()` 乘除，否则按 `ratio` 通分（见 `文件：bits/chrono.h 行号：285` 的 `__dc`）。
+- `[实现·GCC15]`：`duration_cast` 在 `文件：bits/chrono.h 行号：273` 的 `duration_cast` 处定义，内部走 `__duration_cast_impl`，当源/目标精度可整除时直接 `count()` 乘除，否则按 `ratio` 通分（见 `文件：bits/chrono.h 行号：285` 的 `__dc`）。
 - `[标准]`：`duration_cast` 对整数 `Rep` 是**截断向零**（truncation toward zero），不是四舍五入——`1500ms → 1s`，丢失的 `500ms` 被丢弃。需要四舍五入用 `round<seconds>(ms)`（C++17）。
 
 ---
@@ -375,7 +375,7 @@ int main() {
     };
 ```
 
-- `[实现·GCC13]`：`system_clock::now()` 在 MinGW 下调用 `timespec_get`/`GetSystemTimeAsFileTime`；`steady_clock::now()` 用 `QueryPerformanceCounter`。`is_steady` 在 `system_clock` 为 `false`、在 `steady_clock` 为 `true`——这是选 clock 的编程依据。
+- `[实现·GCC15]`：`system_clock::now()` 在 MinGW 下调用 `timespec_get`/`GetSystemTimeAsFileTime`；`steady_clock::now()` 用 `QueryPerformanceCounter`。`is_steady` 在 `system_clock` 为 `false`、在 `steady_clock` 为 `true`——这是选 clock 的编程依据。
 - `[标准]`：`high_resolution_clock` 在 libstdc++ 中是 `steady_clock` 的别名（`using high_resolution_clock = steady_clock;` 风格），因此它在 GCC 上**也是单调的**；但标准只保证它"分辨率最高"，不保证单调——可移植代码若需单调请用 `steady_clock`。
 
 ---
@@ -497,7 +497,7 @@ int main() {
 
 **Q：`now()` 有多快？** A：`steady_clock` 在 Linux 上经 vDSO 约 20–30 ns，Windows QPC 约 10–20 ns；远快于 `gettimeofday` 的传统 syscall 路径。`[平台]`
 
-**Q：GCC13 的时区数据从哪来？** A：MinGW 自带 `share/zoneinfo`（IANA tzdata）；`locate_zone("Asia/Shanghai")` 会读取它。若运行时缺失，可设 `TZDIR` 指向 zoneinfo 目录。实测本工具链可链接并使用。`[实现·GCC13]`
+**Q：GCC13 的时区数据从哪来？** A：MinGW 自带 `share/zoneinfo`（IANA tzdata）；`locate_zone("Asia/Shanghai")` 会读取它。若运行时缺失，可设 `TZDIR` 指向 zoneinfo 目录。实测本工具链可链接并使用。`[实现·GCC15]`
 
 **Q：`file_time_type` 与 `system_clock::time_point` 能互转吗？** A：C++20 提供 `clock_cast`（如 `std::chrono::clock_cast<system_clock>(file_time)`），因为 `file_clock` 与 `system_clock` 有固定的纪元偏移。见 `⟶ Book/part07_stl/ch91_filesystem.md`。`[标准]`
 

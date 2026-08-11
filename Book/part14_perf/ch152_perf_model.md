@@ -283,7 +283,7 @@ int main() {
 }
 ```
 
-> `[实现·GCC13]` `asm volatile("" ::: "memory")` 是 GCC/Clang 的 `black_box` 惯用法：`"memory"` 破坏符告诉编译器"内存可能被改动"，阻止跨该点的重排与删除；`"r"(v)` 把 `v` 放进某寄存器"假装使用"。标准库尚未提供 `std::ranges::` 级 black_box（C++26 有提案方向）。
+> `[实现·GCC15]` `asm volatile("" ::: "memory")` 是 GCC/Clang 的 `black_box` 惯用法：`"memory"` 破坏符告诉编译器"内存可能被改动"，阻止跨该点的重排与删除；`"r"(v)` 把 `v` 放进某寄存器"假装使用"。标准库尚未提供 `std::ranges::` 级 black_box（C++26 有提案方向）。
 
 ## ⑪ STL 联系：accumulate vs 手写求和 [经验]
 
@@ -415,7 +415,7 @@ int main() {
             <bits/chrono.h> 的 steady_clock::now()，最终调用 OS 单调时钟）
 ```
 
-> `[实现·GCC13]` 在 MinGW/Win 上 `steady_clock::now()` 通常落到 `QueryPerformanceCounter`；在 Linux 落到 `clock_gettime(CLOCK_MONOTONIC)`。无论哪种，它都**保证单调递增**，这正是基准需要的（避免 NTP 跳变污染数据）。
+> `[实现·GCC15]` 在 MinGW/Win 上 `steady_clock::now()` 通常落到 `QueryPerformanceCounter`；在 Linux 落到 `clock_gettime(CLOCK_MONOTONIC)`。无论哪种，它都**保证单调递增**，这正是基准需要的（避免 NTP 跳变污染数据）。
 
 ```cpp
 // C13 steady_clock 精度查询：duration 的 ticks 每 period 多少

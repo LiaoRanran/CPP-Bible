@@ -197,7 +197,7 @@ Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg �
 // }
 ```
 
-- `[实现·GCC13]`：本机 g++ 13.1.0 的 `std::shared_ptr` 实现（libstdc++）采用同一思路（`_Sp_counted_base` 的 `_M_use_count` 用 `__atomic_fetch_add`），与上游 Boost 思路一致。
+- `[实现·GCC15]`：本机 g++ 13.1.0 的 `std::shared_ptr` 实现（libstdc++）采用同一思路（`_Sp_counted_base` 的 `_M_use_count` 用 `__atomic_fetch_add`），与上游 Boost 思路一致。
 - `[平台]`：控制块通常 16 字节对齐分配（`new Widget` 与计数一起或分离），影响缓存局部性。
 
 ```cpp
@@ -361,7 +361,7 @@ main:
 	ret
 ```
 
-- `[实现·GCC13]`：GCC 13 把 `a + b` 内联并常量传播为 `7`，证明 CRTP 是**零成本抽象**——对比虚函数需在运行期查 vtable。
+- `[实现·GCC15]`：GCC 13 把 `a + b` 内联并常量传播为 `7`，证明 CRTP 是**零成本抽象**——对比虚函数需在运行期查 vtable。
 - `[标准]`：CRTP 是纯语言特性（模板 + 静态多态），归 ISO C++ 范畴，Boost 仅是其最大实践者。
 
 ```cpp
@@ -440,7 +440,7 @@ _ZN13my_shared_ptrI6WidgetED1Ev:
 ; 	lock add	DWORD PTR [rax], 1     ; ← b = a 触发原子递增
 ```
 
-- `[实现·GCC13]`：真实汇编出现 `lock sub`/`lock add`——证明引用计数的线程安全来自 `std::atomic` 的 `lock` 前缀指令（x86 原子 RMW），与 Boost/std 的 `shared_ptr` 实现同构。本机运行 `_ch128_shared_ptr.exe` 退出码为 **44**，与源码 `2 + 42` 一致。
+- `[实现·GCC15]`：真实汇编出现 `lock sub`/`lock add`——证明引用计数的线程安全来自 `std::atomic` 的 `lock` 前缀指令（x86 原子 RMW），与 Boost/std 的 `shared_ptr` 实现同构。本机运行 `_ch128_shared_ptr.exe` 退出码为 **44**，与源码 `2 + 42` 一致。
 - `[标准]`：此自包含实现等价于 `std::shared_ptr` 的核心语义；Boost 的 `boost::shared_ptr` 在 C++11 前就提供了同样的原子计数（用 Boost.Atomic 或平台原子）。
 
 ```cpp
@@ -740,7 +740,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 ```
 
 - `[经验]`：读 Boost 源码从**单文件头**（如 `shared_ptr.hpp`）入手，配合本机自包含复刻（见 ⑨）对照理解，比直接啃巨库更高效。
-- `[实现·GCC13]`：本机 `std::shared_ptr` 源码在 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/shared_ptr.h`，可与上游 Boost 对照阅读。
+- `[实现·GCC15]`：本机 `std::shared_ptr` 源码在 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/shared_ptr.h`，可与上游 Boost 对照阅读。
 
 ## ⑳ 速查表
 

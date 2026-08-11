@@ -437,7 +437,7 @@ void set_name(std::string_view);
 
 Pimpl（Pointer to Implementation）把数据成员与实现收进一个前向声明的 impl 结构，只在 `.cpp` 定义。它同时带来**ABI 稳定**（第⑧节）与**编译防火墙**（改实现不触发调用方重编）。
 
-`[实现·GCC13]` 关键成本模型：Pimpl 调用需经指针进入 impl，等价于一次**间接分支**。本机 g++ 取证（`Examples/_ch145_pimpl.asm`）对比"经函数指针的间接调用"与"直接调用"：
+`[实现·GCC15]` 关键成本模型：Pimpl 调用需经指针进入 impl，等价于一次**间接分支**。本机 g++ 取证（`Examples/_ch145_pimpl.asm`）对比"经函数指针的间接调用"与"直接调用"：
 
 ```cpp
 // _ch145_pimpl.cpp 要点（自包含可编译）
@@ -577,7 +577,7 @@ void configure(int buf = 1024, bool compress = true, int level = 6);
 
 `[标准]` `noexcept` 向编译器与调用方承诺"此函数不会传播异常"。违反时不是抛异常，而是直接 `std::terminate`（[except.spec]）。它对**正确性**（容器强异常安全）与**优化**（编译器可省略异常展开框架）都有真实影响；关联 ch146 的异常安全章节深入。
 
-`[实现·GCC13]` 真实取证：当 `noexcept` 函数体内含 `throw`，g++ 直接给出 `-Wterminate` 警告，证明编译器在 noexcept 契约下改变了分析——它知道此处必终止：
+`[实现·GCC15]` 真实取证：当 `noexcept` 函数体内含 `throw`，g++ 直接给出 `-Wterminate` 警告，证明编译器在 noexcept 契约下改变了分析——它知道此处必终止：
 
 ```
 _ch145_noexcept2.cpp:3:24: warning: 'throw' will always call 'terminate' [-Wterminate]
@@ -621,7 +621,7 @@ struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实为 noex
 - **返回值（by value）**：转移所有权或拷贝，安全但与对象大小相关成本；
 - **返回 `std::optional<T>`**：表示"可能无值"的函数结果，强于返回哨兵值。
 
-`[实现·GCC13]` 真实取证（`Examples/_ch145_return.asm`）对比三种返回：
+`[实现·GCC15]` 真实取证（`Examples/_ch145_return.asm`）对比三种返回：
 
 ```cpp
 #include <optional>
@@ -779,7 +779,7 @@ void f(int) = delete;     // 只接受显式 bool，杜绝 int→bool 的意外�
 
 `[标准·C++14]` `[[deprecated("msg")]]` 标记即将移除的接口，g++ 在调用处发警告而不破坏编译——这是"渐进式 API 演进"的标准手段。
 
-`[实现·GCC13]` 真实取证（`Examples/_ch145_deprecated.cpp`，`-Wall -Wextra`）：
+`[实现·GCC15]` 真实取证（`Examples/_ch145_deprecated.cpp`，`-Wall -Wextra`）：
 
 ```cpp
 // _ch145_deprecated.cpp 要点

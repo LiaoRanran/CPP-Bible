@@ -51,7 +51,7 @@ int main() {
 }
 ```
 
-## ③ 优化级别的汇编差异 [实现·GCC13]
+## ③ 优化级别的汇编差异 [实现·GCC15]
 
 ```cpp
 #include <iostream>
@@ -112,7 +112,7 @@ int hotspot(int n) {
 int main() { std::cout << hotspot(100) << std::endl; return 0; }
 ```
 
-## ⑧ 链接器优化 LTO [实现·GCC13]
+## ⑧ 链接器优化 LTO [实现·GCC15]
 
 ```cpp
 #include <iostream>
@@ -186,7 +186,7 @@ int main() {
 }
 ```
 
-## ⑬ 源码分析：GCC -S 输出结构解析 [实现·GCC13]
+## ⑬ 源码分析：GCC -S 输出结构解析 [实现·GCC15]
 
 ```cpp
 // ⑬ 理解 GCC 汇编输出的每个部分

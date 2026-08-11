@@ -691,7 +691,7 @@ Value parse(const std::string_view s) {
 
 **[平台·x86-64 / Windows MinGW vs Linux]** 解析器本身跨平台（纯标准库），但部署时需注意：
 
-- **换行符**：Windows 文本模式（`\r\n`）若以文本方式读文件会干扰 `pos_` 计数；建议以**二进制**读入 `std::string` 再解析，保证偏移与字节一一对应。**[实现·GCC13/libstdc++]** `std::ifstream` 默认文本模式在 Windows 会把 `\r\n`→`\n`，导致报告的位置与原始文件字节不符。
+- **换行符**：Windows 文本模式（`\r\n`）若以文本方式读文件会干扰 `pos_` 计数；建议以**二进制**读入 `std::string` 再解析，保证偏移与字节一一对应。**[实现·GCC15/libstdc++]** `std::ifstream` 默认文本模式在 Windows 会把 `\r\n`→`\n`，导致报告的位置与原始文件字节不符。
 - **`wchar_t` 与宽字符 API**：Windows 许多 API 返回 `std::wstring`（UTF-16），需先转 UTF-8 再解析；不要直接把 `wchar_t*` 当 UTF-8 处理。
 - **字节序无关**：JSON 文本是字节流（UTF-8），本身不依赖 CPU 字节序，跨平台安全。
 - **`char` 符号性**：`char` 是否有符号由实现定义；处理字节时一律转 `unsigned char` 再比较（本章 `parse_number` 等处已用 `static_cast<unsigned char>`），否则在 `signed char` 平台遇到高位字节会出错。

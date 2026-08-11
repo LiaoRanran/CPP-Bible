@@ -2,7 +2,7 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：160 分钟 ／ 前置：⟶ Book/part07_stl/ch93_thread_async.md、⟶ Book/part09_concurrency/ch107_atomic.md、⟶ Book/part07_stl/ch93_thread_async.md ／ 后续：⟶ Book/part07_stl/ch93_thread_async.md、⟶ Book/part07_stl/ch93_thread_async.md ／ 难度：★★★★☆
 
-> 立场标签约定同第93章：`[标准]`/`[实现·GCC13]`/`[平台·x86-64]`/`[经验]`。libstdc++ 引用均给 `文件：`+`行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
+> 立场标签约定同第93章：`[标准]`/`[实现·GCC15]`/`[平台·x86-64]`/`[经验]`。libstdc++ 引用均给 `文件：`+`行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 
 ---
 
@@ -126,7 +126,7 @@ flowchart TD
 
 ---
 
-## ⑥ UML 类图（简化） [实现·GCC13]
+## ⑥ UML 类图（简化） [实现·GCC15]
 
 ```mermaid
 classDiagram
@@ -160,11 +160,11 @@ classDiagram
     jthread "1" *-- "1" stop_source
 ```
 
-`[实现·GCC13]`：`stop_token`/`stop_source` 共享内部 `_Stop_state`（文件：`stop_token`，行号：`54` class stop_token、`480` class stop_source）；`stop_token` 持有 `shared_ptr<_Stop_state>`，`stop_requested` 经 `行号：79`→`175` 的 `_M_stop_requested()` 读原子位。
+`[实现·GCC15]`：`stop_token`/`stop_source` 共享内部 `_Stop_state`（文件：`stop_token`，行号：`54` class stop_token、`480` class stop_source）；`stop_token` 持有 `shared_ptr<_Stop_state>`，`stop_requested` 经 `行号：79`→`175` 的 `_M_stop_requested()` 读原子位。
 
 ---
 
-## ⑦ ASCII 内存图：_Stop_state 与回调链表 [实现·GCC13]
+## ⑦ ASCII 内存图：_Stop_state 与回调链表 [实现·GCC15]
 
 ```
 主线程 / jthread                 _Stop_state (堆)
@@ -182,7 +182,7 @@ classDiagram
 request_stop(): 置 bit1 (release)，然后遍历链表同步调用各 _M_callback
 ```
 
-`[实现·GCC13]`：`_Stop_cb` 结构（文件：`stop_token`，行号：`134`），回调链表头 `_M_head`（行号：`237` 的 `while (_M_head)` 遍历）；位定义 `行号：155` `_S_stop_requested_bit = 1`。
+`[实现·GCC15]`：`_Stop_cb` 结构（文件：`stop_token`，行号：`134`），回调链表头 `_M_head`（行号：`237` 的 `while (_M_head)` 遍历）；位定义 `行号：155` `_S_stop_requested_bit = 1`。
 
 ---
 
@@ -246,7 +246,7 @@ int main() {
 
 ---
 
-## ⑩ 汇编分析：stop_requested 的 -O2 成本 [实现·GCC13]
+## ⑩ 汇编分析：stop_requested 的 -O2 成本 [实现·GCC15]
 
 下面是用 `g++ -std=c++23 -O2 -masm=intel` 对"轮询 `stop_requested`"真实产生的汇编（删节）：
 
@@ -264,7 +264,7 @@ _Z15poll_until_stopRKSt10stop_tokenRSt6atomicIiE:
         ret
 ```
 
-`[实现·GCC13]`：一次 `stop_requested()`（文件：`stop_token`，行号：`79`→`175`）编译为**一次指针解引用 + 一次原子位测试**（`test al,1`），无锁、无系统调用。`request_stop`（行号：`224`）则用原子的 CAS/锁置位（见 ⑬）。
+`[实现·GCC15]`：一次 `stop_requested()`（文件：`stop_token`，行号：`79`→`175`）编译为**一次指针解引用 + 一次原子位测试**（`test al,1`），无锁、无系统调用。`request_stop`（行号：`224`）则用原子的 CAS/锁置位（见 ⑬）。
 
 ---
 
@@ -352,7 +352,7 @@ int main() {
 
 ---
 
-## ⑬ 源码分析：libstdc++ 的 request_stop 与回调执行 [实现·GCC13]
+## ⑬ 源码分析：libstdc++ 的 request_stop 与回调执行 [实现·GCC15]
 
 **request_stop 的位测试与回调遍历**
 
@@ -393,7 +393,7 @@ bool _M_request_stop() noexcept {
 // 行号：241 _S_create: 若 callable 可接收 stop_token，则注入 get_token()
 ```
 
-`[实现·GCC13]`：jthread 构造时（行号：`241` `_S_create`）通过 `if constexpr (is_invocable_v<decay_t<_Callable>, stop_token, ...>)` 判断是否把 `stop_token` 作为首参注入（行号：`250`）。若用户函数签名不含 `stop_token`，则正常调用——向后兼容 `std::thread` 的用法。
+`[实现·GCC15]`：jthread 构造时（行号：`241` `_S_create`）通过 `if constexpr (is_invocable_v<decay_t<_Callable>, stop_token, ...>)` 判断是否把 `stop_token` 作为首参注入（行号：`250`）。若用户函数签名不含 `stop_token`，则正常调用——向后兼容 `std::thread` 的用法。
 
 ---
 

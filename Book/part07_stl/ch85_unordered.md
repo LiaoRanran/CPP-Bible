@@ -165,7 +165,7 @@ x86-64（指针 8B，哈希码 size_t 8B）：
   _M_element_count = 5, _M_bucket_count = 8, load_factor = 5/8 = 0.625
 ```
 
-- `[实现·GCC13]`：`unordered_set` 对象本体持有 `_Hashtable`，后者含 `_M_buckets`（桶数组指针）、`_M_before_begin`（链表哨兵）、`_M_bucket_count`、`_M_element_count`、`_M_rehash_policy`（`hashtable.h:387-391`）。
+- `[实现·GCC15]`：`unordered_set` 对象本体持有 `_Hashtable`，后者含 `_M_buckets`（桶数组指针）、`_M_before_begin`（链表哨兵）、`_M_bucket_count`、`_M_element_count`、`_M_rehash_policy`（`hashtable.h:387-391`）。
 - `[平台·x86-64]`：每元素约 24 字节节点 + 桶数组分摊。相比 `set` 的 40 字节节点更省，但桶数组与链表随机散布同样不利缓存。
 - `[实现]`：注意 `_M_before_begin` 是所有桶链表的统一前驱哨兵，空桶的桶指针直接指向 `_M_before_begin`，从而统一遍历逻辑（`hashtable.h:132-152`）。
 
@@ -225,7 +225,7 @@ _Hashtable::_M_find_node(bkt, key, code)  // hashtable.h:812
     jmp     .Lwalk
 ```
 
-- `[实现·GCC13]`：真实偏移取决于 `_Hash_node` 布局（`_M_next` 在首位，`_M_hash_code` 其次，值随后）。上段为**示意性**还原；真正的 `div` 在 `bucket_count` 为 2 的幂时会被编译器优化成 `and` 掩码（更快）。
+- `[实现·GCC15]`：真实偏移取决于 `_Hash_node` 布局（`_M_next` 在首位，`_M_hash_code` 其次，值随后）。上段为**示意性**还原；真正的 `div` 在 `bucket_count` 为 2 的幂时会被编译器优化成 `and` 掩码（更快）。
 - `[经验]`：查找成本 = 1 次哈希 + 1 次取模（或掩码）+ 桶内链表线性扫描。当单桶链表过长（碰撞/载荷过高），退化为 O(n)。这正是 `rehash`/`reserve` 的意义。
 
 ## ⑪ STL 联系
@@ -333,8 +333,8 @@ int main() {
 //   54:  _Fnv_hash_bytes(const void* __ptr, size_t __len, size_t __seed); // FNV-1a
 ```
 
-- `[实现·GCC13]`：`unordered_set::find(k)` → `_M_h._M_find_node(bkt, k, code)`（`hashtable.h:812`），其中 `bkt = _M_bucket_index(code) = code % _M_bucket_count`（`hashtable.h:684/796`）。
-- `[实现·GCC13]`：默认字符串哈希使用 **FNV-1a**（`_Fnv_hash_bytes`，`hash_bytes.h:54`），实现简单但不是抗碰撞哈希，面临哈希 flooding/DoS 风险（见 ⑯、⑲）。
+- `[实现·GCC15]`：`unordered_set::find(k)` → `_M_h._M_find_node(bkt, k, code)`（`hashtable.h:812`），其中 `bkt = _M_bucket_index(code) = code % _M_bucket_count`（`hashtable.h:684/796`）。
+- `[实现·GCC15]`：默认字符串哈希使用 **FNV-1a**（`_Fnv_hash_bytes`，`hash_bytes.h:54`），实现简单但不是抗碰撞哈希，面临哈希 flooding/DoS 风险（见 ⑯、⑲）。
 - `[实现]`：`rehash` 不拷贝节点值，只改 `_M_next` 指针把节点重新挂到新桶（`hashtable.h:2546`），因此重哈希成本为 O(n) 指针操作，而非 O(n) 拷贝。
 
 ## ⑭ WG21 提案（编号 + 标题 + 动机）
@@ -489,7 +489,7 @@ int main() {
 | 内存/元素 | ~24B 节点 + 桶分摊 | ~40B 节点 | 值本身 |
 
 - `[平台·x86-64]`：开链法的桶与节点都散布于堆，遍历/查找**缓存不友好**（每次 `_M_next` 都可能一次缓存缺失）。`absl::flat_hash_map` 用**开放寻址 + 探测**把数据放进连续数组，缓存命中率显著更高，是近年工业首选；标准 `unordered_*` 因 ABI 稳定未改结构。
-- `[实现·GCC13]`：默认 `max_load_factor = 1.0`；当 `size / bucket_count > 1.0` 触发 rehash，桶数按 `_M_rehash_policy` 增长（`hashtable.h:2159` `_M_need_rehash`）。`reserve(n)` 直接把桶数提到能容纳 n 而不超载荷。
+- `[实现·GCC15]`：默认 `max_load_factor = 1.0`；当 `size / bucket_count > 1.0` 触发 rehash，桶数按 `_M_rehash_policy` 增长（`hashtable.h:2159` `_M_need_rehash`）。`reserve(n)` 直接把桶数提到能容纳 n 而不超载荷。
 - `[经验]`：碰撞攻击面——libstdc++ 默认字符串哈希是 **FNV-1a**（`hash_bytes.h:54`），**非抗碰撞**。对外网输入做键时，应使用带密钥哈希（如 SipHash，自行实现或第三方库）或限制键空间。
 
 ```cpp

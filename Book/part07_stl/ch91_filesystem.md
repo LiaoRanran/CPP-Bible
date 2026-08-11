@@ -170,7 +170,7 @@ path 对象（64位，POSIX，char 为 value_type）
    _M_pathname.ptr ──► [ / v a r / l o g / . . . \0 ]   ← 单独堆块
 ```
 
-- `[实现·GCC13]`：`path` 在 libstdc++ 中以 `basic_string<value_type>` 存本机序列；`generic_string()` 另开一份转换后的 `std::string`。见 `文件：bits/fs_path.h 行号：476`（无参 `generic_string()` 转 `char`）。
+- `[实现·GCC15]`：`path` 在 libstdc++ 中以 `basic_string<value_type>` 存本机序列；`generic_string()` 另开一份转换后的 `std::string`。见 `文件：bits/fs_path.h 行号：476`（无参 `generic_string()` 转 `char`）。
 - `[平台]`：Windows 上 `value_type` 是 `wchar_t`，UTF-16；所有窄字符接口会做一次 UTF-8↔UTF-16 转换（见第⑬节）。
 
 ---
@@ -250,7 +250,7 @@ libstdc++ 中 `operator/=` 调用 `_M_append`：
 ;   （无 syscall、无 opendir、无 stat）
 ```
 
-- `[实现·GCC13]`：`_M_append` 在拼接时会把本机分隔符统一；POSIX 下 `/` 直接用，Windows 下把 `/` 视为可移植分隔符并在 `native()` 时转 `\`。
+- `[实现·GCC15]`：`_M_append` 在拼接时会把本机分隔符统一；POSIX 下 `/` 直接用，Windows 下把 `/` 视为可移植分隔符并在 `native()` 时转 `\`。
 - `[标准]`：词法操作**不解析** `..` 与符号链接，也不访问磁盘——`"/a/b/../c" / "d"` 只是字符串运算，结果为 `"/a/b/../c/d"`。
 
 ---
@@ -378,7 +378,7 @@ int main() {
   { return generic_string<char>(); }
 ```
 
-- `[实现·GCC13]`：POSIX 上 `value_type == char`，`native()` 即原串，`generic_string()` 也返回同串；Windows 上 `value_type == wchar_t`，`generic_string()` 把 `\` 换成 `/` 并转 UTF-8。
+- `[实现·GCC15]`：POSIX 上 `value_type == char`，`native()` 即原串，`generic_string()` 也返回同串；Windows 上 `value_type == wchar_t`，`generic_string()` 把 `\` 换成 `/` 并转 UTF-8。
 - `[平台·Windows]`：所有窄字符构造函数 `path(const char*)` 先把 UTF-8 转 UTF-16（`_S_convert`），再存 `wstring`。这就是为什么**源码里写中文路径用 UTF-8 源文件即可**，libstdc++ 会正确处理——前提是运行时 locale/编码正确。
 - `[平台·x86-64 Linux]`：窄字符路径直接当 UTF-8 字节序列透传给 `openat`/`stat`，内核按字节匹配（Linux 路径无"字符"概念，只有字节）。
 
@@ -394,7 +394,7 @@ int main() {
   { return exists(status(__p)); }
 ```
 
-- `[实现·GCC13]`：`status(p)` 在内部分派到 `__status`（POSIX 调 `fstatat64`，Windows 调 `GetFileAttributesExW`）；`exists` 只是对 `file_status` 做一次类型判断，绝不抛异常（`noexcept`）。
+- `[实现·GCC15]`：`status(p)` 在内部分派到 `__status`（POSIX 调 `fstatat64`，Windows 调 `GetFileAttributesExW`）；`exists` 只是对 `file_status` 做一次类型判断，绝不抛异常（`noexcept`）。
 
 ---
 

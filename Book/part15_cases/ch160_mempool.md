@@ -242,7 +242,7 @@ sizeof(CacheLinePadded) = 64
 std::align -> 00007ff6a9e9c040 (aligned64=yes)
 ```
 
-**[实现·GCC13]** `alignas(64)` 会让 `CacheLinePadded` 的对齐与大小都变成 64；`std::align` 在 `[ptr, ptr+space)` 内寻找满足对齐的地址并就地收缩 `space`。若你的池要支持任意对齐，必须保证 chunk 基址本身按最大所需对齐（例如用 `std::aligned_alloc` 或 `::operator new` 的对齐形式 `operator new(size, std::align_val_t(64))`）。
+**[实现·GCC15]** `alignas(64)` 会让 `CacheLinePadded` 的对齐与大小都变成 64；`std::align` 在 `[ptr, ptr+space)` 内寻找满足对齐的地址并就地收缩 `space`。若你的池要支持任意对齐，必须保证 chunk 基址本身按最大所需对齐（例如用 `std::aligned_alloc` 或 `::operator new` 的对齐形式 `operator new(size, std::align_val_t(64))`）。
 
 对齐提升（round up）是池的标配，保证块起点落在对齐边界：
 

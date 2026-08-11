@@ -2,7 +2,7 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：180 分钟 ／ 前置：⟶ Book/part03_language/ch19_variables.md、⟶ Book/part06_templates/ch63_variadic.md、⟶ Book/part09_concurrency/ch107_atomic.md ／ 后续：⟶ Book/part07_stl/ch94_stop_token.md、⟶ Book/part07_stl/ch93_thread_async.md、⟶ Book/part09_concurrency/ch107_atomic.md ／ 难度：★★★★☆
 
-> 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC13]` 指 GCC 13.1 / libstdc++ 行为；`[平台·x86-64]` 指 Windows x64 (MinGW, Itanium-ish Win64 ABI)；`[经验]` 为工程共识。所有 libstdc++ 引用均给出 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
+> 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC15]` 指 GCC 15.3.0 / libstdc++ 实现行为；`[平台·x86-64]` 指 Windows x64 (MinGW, Itanium-ish Win64 ABI)；`[经验]` 为工程共识。所有 libstdc++ 引用均给出 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 
 ---
 
@@ -147,7 +147,7 @@ flowchart TD
 
 ---
 
-## ⑥ UML 类图（简化） [实现·GCC13]
+## ⑥ UML 类图（简化） [实现·GCC15]
 
 ```mermaid
 classDiagram
@@ -186,11 +186,11 @@ classDiagram
     async ..> future : returns
 ```
 
-`[实现·GCC13]`：`future` 内部通过基类 `__basic_future<_Res>` 持有 `shared_ptr<_State_base>`（文件：`future`，行号：`605` 的 `_M_shared_state`），所以即使 `future` 被移动/析构，只要还有 `shared_future` 或运行时持有，共享状态不销毁。
+`[实现·GCC15]`：`future` 内部通过基类 `__basic_future<_Res>` 持有 `shared_ptr<_State_base>`（文件：`future`，行号：`605` 的 `_M_shared_state`），所以即使 `future` 被移动/析构，只要还有 `shared_future` 或运行时持有，共享状态不销毁。
 
 ---
 
-## ⑦ ASCII 内存图：thread 对象与底层 OS 线程 [实现·GCC13]
+## ⑦ ASCII 内存图：thread 对象与底层 OS 线程 [实现·GCC15]
 
 ```
 栈上的 std::thread 对象 (sizeof ≈ 两个指针)
@@ -210,7 +210,7 @@ classDiagram
                               内核线程 / pthread (Win32: CreateThread)
 ```
 
-`[实现·GCC13]`：`std::thread` 构造函数把可调用对象及其实参 `decay` 后**按值拷贝**进 `_State_impl`（文件：`bits/std_thread.h`，行号：`234` 的 `struct _State_impl`；拷贝发生在行号：`164` 的 `new _State_impl<_Wrapper>(...)`）。这就是为什么传引用**不会**被线程看到，必须用 `std::ref`。
+`[实现·GCC15]`：`std::thread` 构造函数把可调用对象及其实参 `decay` 后**按值拷贝**进 `_State_impl`（文件：`bits/std_thread.h`，行号：`234` 的 `struct _State_impl`；拷贝发生在行号：`164` 的 `new _State_impl<_Wrapper>(...)`）。这就是为什么传引用**不会**被线程看到，必须用 `std::ref`。
 
 ---
 
@@ -270,7 +270,7 @@ int main() {
 
 ---
 
-## ⑩ 汇编分析：std::thread 构造的 -O2 开销 [实现·GCC13]
+## ⑩ 汇编分析：std::thread 构造的 -O2 开销 [实现·GCC15]
 
 下面是用 `g++ -std=c++23 -O2 -masm=intel` 对 `std::thread t(worker)` + `t.join()` 真实产生的关键汇编（已删节）：
 
@@ -291,7 +291,7 @@ _Z16launch_and_countv:
         call    _ZNSt6thread4joinEv             ; t.join()
 ```
 
-`[实现·GCC13]`：即便 `-O2`，`std::thread` 构造也至少包含：`operator new` 分配状态对象（行号：`bits/std_thread.h:164`）、设置 vtable（指向 `_State_impl`，行号：`234`）、调用 `_M_start_thread`（行号：`248`/`263`）→ 内部 `std::__gthread_create`。**每次起线程都有堆分配 + 系统调用**，不可在热循环里滥用（性能见 ⑲）。
+`[实现·GCC15]`：即便 `-O2`，`std::thread` 构造也至少包含：`operator new` 分配状态对象（行号：`bits/std_thread.h:164`）、设置 vtable（指向 `_State_impl`，行号：`234`）、调用 `_M_start_thread`（行号：`248`/`263`）→ 内部 `std::__gthread_create`。**每次起线程都有堆分配 + 系统调用**，不可在热循环里滥用（性能见 ⑲）。
 
 ---
 
@@ -368,7 +368,7 @@ int main() {
 
 ---
 
-## ⑬ 源码分析：libstdc++ 的 thread / future 实现骨架 [实现·GCC13]
+## ⑬ 源码分析：libstdc++ 的 thread / future 实现骨架 [实现·GCC15]
 
 **std::thread 构造与启动**
 
@@ -402,7 +402,7 @@ class _State_baseV2 {
 };
 ```
 
-`[实现·GCC13]`：`future` 的 `get()` 实现（文件：`future`，行号：`824`：`get()` 调 `_M_get_result()._M_value()`；`行号：738`：`_M_get_result` 先 `_S_check` 再取结果）。`async` 返回的 `future` 的析构会调 `_M_complete_async`（行号：`598`，虚函数默认空，async 策略下会 join 运行线程）——这就是"async 的 future 析构阻塞"的根源。
+`[实现·GCC15]`：`future` 的 `get()` 实现（文件：`future`，行号：`824`：`get()` 调 `_M_get_result()._M_value()`；`行号：738`：`_M_get_result` 先 `_S_check` 再取结果）。`async` 返回的 `future` 的析构会调 `_M_complete_async`（行号：`598`，虚函数默认空，async 策略下会 join 运行线程）——这就是"async 的 future 析构阻塞"的根源。
 
 ---
 

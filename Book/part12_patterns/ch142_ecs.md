@@ -9,7 +9,7 @@
 > `C:/Qt/Tools/mingw1310_64/bin/g++.exe -std=c++23 -O2 -S -masm=intel Examples/_ch142_aos.cpp -o Examples/_ch142_aos.asm`
 > `C:/Qt/Tools/mingw1310_64/bin/g++.exe -std=c++23 -O2 Examples/_ch142_bench.cpp -o Examples/_ch142_bench.exe && Examples/_ch142_bench.exe`
 > 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`
-> 本章立场：以 `[实现·GCC13]`/`[平台·x86-64]` 标注取证，`[标准]` 标注语言约束，`[经验]` 给出工程取舍。
+> 本章立场：以 `[实现·GCC15]`/`[平台·x86-64]` 标注取证，`[标准]` 标注语言约束，`[经验]` 给出工程取舍。
 
 ## ⓪ 历史动机：ECS 的来龙去脉
 > 当游戏对象的"继承树"长到卡死 CPU 缓存时，有人把"数据"和"行为"彻底拆开重排。
@@ -96,7 +96,7 @@ std::uint32_t create() {                 // 返回一个 index（version 见 ⑧
 }
 ```
 
-- `[实现·GCC13]`：上述 `create()` 在 `-O2` 下被编译为几次 `mov`/`add`/`call operator new` 的薄封装；实体本身是**零抽象**的（见 ⑫ 的 constexpr 实体，连这层封装都能在编译期消去）。
+- `[实现·GCC15]`：上述 `create()` 在 `-O2` 下被编译为几次 `mov`/`add`/`call operator new` 的薄封装；实体本身是**零抽象**的（见 ⑫ 的 constexpr 实体，连这层封装都能在编译期消去）。
 - `[经验]`：永远用 `NULL_ENTITY`（或 `entt::null`）表示"无"，不要用 `-1` 或随机魔法值；否则系统遍历时会因"到底有没有这个实体"而分支出 bug。
 
 ```cpp
@@ -161,7 +161,7 @@ void movement_system(std::vector<Position>& pos,
 //   好味道：系统只读组件、写组件，输入输出显式化
 ```
 
-- `[实现·GCC13]`：`movement_system` 在 `-O2` 内循环被编译为简单的 `movss`/`mulss`/`addss` 标量序列（未向量化，因 `-O2` 默认不开 tree-vectorize；`-O3 -mavx2` 才会展开为 `vmulps`/`vaddps`，见 ⑬）。
+- `[实现·GCC15]`：`movement_system` 在 `-O2` 内循环被编译为简单的 `movss`/`mulss`/`addss` 标量序列（未向量化，因 `-O2` 默认不开 tree-vectorize；`-O3 -mavx2` 才会展开为 `vmulps`/`vaddps`，见 ⑬）。
 - `[经验]`：系统的顺序即"帧的逻辑顺序"（输入→物理→AI→动画→渲染）。把顺序做成**显式调度表**（见 ⑨），而非隐式依赖全局初始化顺序。
 
 ```cpp
@@ -207,7 +207,7 @@ void integrate_soa(ParticlesSoA& ps, float dt) {
 }
 ```
 
-- `[实现·GCC13]`：真实汇编（见 ⑬）显示 AoS 内循环用 `add rcx, 24`（每次前进一个 24 字节结构体），SoA 用 `rax*4` 索引缩放访问两个独立数组——**布局差异直接显现在寻址模式上**。
+- `[实现·GCC15]`：真实汇编（见 ⑬）显示 AoS 内循环用 `add rcx, 24`（每次前进一个 24 字节结构体），SoA 用 `rax*4` 索引缩放访问两个独立数组——**布局差异直接显现在寻址模式上**。
 - `[经验]`：没有"永远更好"的一方（见 ⑥ 的真实基准）。**经验法则**：组件集大、系统只用其中几列 → SoA；组件少、系统全用 → AoS（缓存行内局部性更优）。ECS 引擎多用 **Archetype/Chunk（⑭ ⑩）** 在两者间取折中。
 
 ## ⑥ SoA 缓存友好真实基准（std::chrono 微基准对比 AoS/SoA） [平台]
@@ -279,7 +279,7 @@ float* component_at(Archetype& a, std::size_t i, std::size_t off) {
 }
 ```
 
-- `[实现·GCC13]`：`component_at` 编译为一次 `lea` + `add`（基址 + 索引×行宽 + 偏移），**无分支、无虚调用**，这正是 DOD 追求的"可预测访存"。
+- `[实现·GCC15]`：`component_at` 编译为一次 `lea` + `add`（基址 + 索引×行宽 + 偏移），**无分支、无虚调用**，这正是 DOD 追求的"可预测访存"。
 - `[经验]`：原型的代价是**增删组件要"迁移实体"到新原型块**（如给实体加 Render 组件 → 从 `[P,V]` 块搬到 `[P,V,R]` 块）。现代引擎用"命令缓冲 + 延迟迁移"摊还这一成本（见 ⑭）。
 
 ## ⑧ 实体管理与句柄（handle） [实现]
@@ -314,7 +314,7 @@ bool resolve(const std::vector<std::uint32_t>& versions, std::uint32_t h) {
 }
 ```
 
-- `[实现·GCC13]`：打包/解包是移位与掩码，`-O2` 下是单条 `shl`/`and`/`shr`，**零开销抽象**。真实汇编见 `Examples/_ch142_handle.asm`（`make_handle` 被折叠为常量）。
+- `[实现·GCC15]`：打包/解包是移位与掩码，`-O2` 下是单条 `shl`/`and`/`shr`，**零开销抽象**。真实汇编见 `Examples/_ch142_handle.asm`（`make_handle` 被折叠为常量）。
 - `[经验]`：对外（脚本、网络、存档）一律传**句柄**而非裸 index；内部热路径可缓存"已解析的裸指针"以省去每帧校验，但指针失效时必须重解析。
 
 ## ⑨ 系统调度（并行） [实现]
@@ -450,7 +450,7 @@ static_assert(sizeof(SCENE) / sizeof(SCENE[0]) == 3);
 ```
 
 - `[标准]`：依赖 `[expr.const]` 常量表达式规则；`static_assert` 在编译期验证实体关系，把"配置错误"挡在编译期。
-- `[实现·GCC13]`：真实汇编（`Examples/_ch142_constexpr_entity.asm`）中 `main` 直接 `mov eax, 4194319`——`PLAYER+CAMERA` 已被**完全常量折叠**（4194319 = 0x400007 = (3<<20|7)+(1<<20|8)），运行时零成本。这正是 constexpr 的承诺。
+- `[实现·GCC15]`：真实汇编（`Examples/_ch142_constexpr_entity.asm`）中 `main` 直接 `mov eax, 4194319`——`PLAYER+CAMERA` 已被**完全常量折叠**（4194319 = 0x400007 = (3<<20|7)+(1<<20|8)），运行时零成本。这正是 constexpr 的承诺。
 
 ```cpp
 #include <cstdint>
@@ -515,7 +515,7 @@ void integrate_soa(float* x, const float* vx, int n, float dt) {
     jb      .L3
 ```
 
-- `[实现·GCC13]`：AoS 每次迭代 `add rcx, 24`（结构体 24 字节整块前进）；SoA 用 `rax*4` 索引缩放，两数组各自连续。当系统只读其中几列时，SoA 的物理访存量远小于 AoS（见 ⑥ 容量型 cache miss 实测）。
+- `[实现·GCC15]`：AoS 每次迭代 `add rcx, 24`（结构体 24 字节整块前进）；SoA 用 `rax*4` 索引缩放，两数组各自连续。当系统只读其中几列时，SoA 的物理访存量远小于 AoS（见 ⑥ 容量型 cache miss 实测）。
 - `[平台·x86-64]`：二者在 `-O2` 都未向量化（GCC `-O2` 默认不开 tree-vectorize）；加 `-O3 -mavx2` 后 SoA 会被自动向量化为 `vmulps`/`vaddps`（一条指令处理 8 个 float），AoS 因需跨 `vx/x` 两偏移的 gather 而更难向量化——**SoA 更容易吃到自动向量化的红利**。
 - `[经验]`：性能剖析要落到**缓存层级**（L1/L2/L3 容量、cache line 64B、prefetch），而非只看"循环次数"。`perf stat` 的 `cache-misses`/`cycles-per-instruction` 比"跑分毫秒数"更说明问题。
 
@@ -555,7 +555,7 @@ void migrate(std::uint32_t entity, ArchKey from, ArchKey to) {
 }
 ```
 
-- `[实现·GCC13]`：Archetype 内偏移在**编译期/初始化期**算好（组件偏移表），运行时取组件是 `base + i*row + off` 的纯算术，无虚调用、无哈希——可预测访存，CPU 分支预测器与硬件预取器都爱这种循环。
+- `[实现·GCC15]`：Archetype 内偏移在**编译期/初始化期**算好（组件偏移表），运行时取组件是 `base + i*row + off` 的纯算术，无虚调用、无哈希——可预测访存，CPU 分支预测器与硬件预取器都爱这种循环。
 - `[经验]`：迁移成本用"延迟迁移 + 命令队列"摊还：逻辑帧只记录"加组件"意图，渲染前统一重排。这正是 DOD "批处理"思想的体现（见 ⑱）。
 
 ## ⑮ ECS 与多线程（无锁读） [平台]
@@ -762,7 +762,7 @@ entity b: (5, 4)
 a alive after destroy? no
 ```
 
-- `[实现·GCC13]`：整个 `main` 的 `movement_system(0.5f)` 在 `-O2` 下被内联并循环展开，组件访问是连续 `movss`/`addss`，无堆分配热路径（除 `vector::resize` 一次性增长）。
+- `[实现·GCC15]`：整个 `main` 的 `movement_system(0.5f)` 在 `-O2` 下被内联并循环展开，组件访问是连续 `movss`/`addss`，无堆分配热路径（除 `vector::resize` 一次性增长）。
 - `[经验]`：这个迷你实现故意"简单"：用 `vector` 按索引对齐存组件，是最易懂的起步形态。生产可在此基础上加：原型块（⑭）、分块（⑩）、并行调度（⑨）、命令缓冲迁移（⑭）、无锁句柄（⑮）。
 
 ## ⑳ 小结 [经验]
@@ -774,7 +774,7 @@ a alive after destroy? no
 - **反模式**：组件塞逻辑/虚函数、GameObject 继承、`unordered_map` 主存储、系统藏全局状态——逐一对照 ⑯ 规避。
 - **落地**：自研迷你 ECS（⑲）适合学习；EnTT（sparse set）适合生产；Unity DOTS/Bevy 适合对应引擎。下一章（ch143）将把 DOD 思想泛化到通用数据结构与缓存优化。
 
-> 【立场汇总】本章 `[标准]` 标注语言/库约束，`[实现·GCC13]` 标注真实编译取证，`[平台·x86-64]` 标注硬件/ABI 行为，`[经验]` 给出工程取舍。所有 ```` ```asm ```` 与基准数字均经本机 GCC 13.1.0 复现，未做任何编造。
+> 【立场汇总】本章 `[标准]` 标注语言/库约束，`[实现·GCC15]` 标注真实编译取证，`[平台·x86-64]` 标注硬件/ABI 行为，`[经验]` 给出工程取舍。所有 ```` ```asm ```` 与基准数字均经本机 GCC 13.1.0 复现，未做任何编造。
 
 
 ## 联合使用场景

@@ -2,7 +2,7 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：⟶ Book/part07_stl/ch76_stl_arch.md、⟶ Book/part07_stl/ch77_vector.md、⟶ Book/part06_templates/ch63_variadic.md ／ 后续：⟶ Book/part07_stl/ch79_list.md、⟶ Book/part07_stl/ch86_adapters.md、⟶ Book/part07_stl/ch90_ranges.md ／ 难度：★★★☆☆
 
-> 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC13]` 指 GCC 13.1 / libstdc++ 行为；`[平台·x86-64]` 指 x86-64 内存与缓存；`[经验]` 为工程共识。libstdc++ 引用均给 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
+> 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC15]` 指 GCC 15.3.0 / libstdc++ 实现行为；`[平台·x86-64]` 指 x86-64 内存与缓存；`[经验]` 为工程共识。libstdc++ 引用均给 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 
 ---
 
@@ -119,7 +119,7 @@ flowchart TD
 
 ---
 
-## ⑥ UML 类图（简化） [实现·GCC13]
+## ⑥ UML 类图（简化） [实现·GCC15]
 
 ```mermaid
 classDiagram
@@ -148,11 +148,11 @@ classDiagram
     deque ..> _Deque_iterator : 产生
 ```
 
-`[实现·GCC13]`：`_Deque_iterator` 四指针定义于 `文件：bits/stl_deque.h` `行号：142`（`_M_cur`）、`143`（`_M_first`）、`144`（`_M_last`）、`145`（`_M_node`）。deque 本身用 `_M_start`/`_M_finish` 两个迭代器界定有效区间。
+`[实现·GCC15]`：`_Deque_iterator` 四指针定义于 `文件：bits/stl_deque.h` `行号：142`（`_M_cur`）、`143`（`_M_first`）、`144`（`_M_last`）、`145`（`_M_node`）。deque 本身用 `_M_start`/`_M_finish` 两个迭代器界定有效区间。
 
 ---
 
-## ⑦ ASCII 内存图：分段连续与四指针 [实现·GCC13]
+## ⑦ ASCII 内存图：分段连续与四指针 [实现·GCC15]
 
 ```
 deque 对象（栈/堆）
@@ -176,7 +176,7 @@ deque 对象（栈/堆）
   段内连续（cache 友好）；段间经 map 指针跳转
 ```
 
-`[实现·GCC13]`：迭代器自增（文件：`bits/stl_deque.h`，行号：`192`）：`++_M_cur; if (_M_cur == _M_last) { _M_set_node(_M_node+1); _M_cur = _M_first; }`——跨段时切换到下一 buffer 的 `first`。
+`[实现·GCC15]`：迭代器自增（文件：`bits/stl_deque.h`，行号：`192`）：`++_M_cur; if (_M_cur == _M_last) { _M_set_node(_M_node+1); _M_cur = _M_first; }`——跨段时切换到下一 buffer 的 `first`。
 
 ---
 
@@ -198,7 +198,7 @@ deque 对象（栈/堆）
 
 ---
 
-## ⑨ 调用栈/时序图：operator[] 的跨段定位 [实现·GCC13]
+## ⑨ 调用栈/时序图：operator[] 的跨段定位 [实现·GCC15]
 
 ```
   访问 d[k]
@@ -235,7 +235,7 @@ int main() {
 
 ---
 
-## ⑩ 汇编分析：operator[] 的除法/取模开销 [实现·GCC13]
+## ⑩ 汇编分析：operator[] 的除法/取模开销 [实现·GCC15]
 
 `[标准]`：相比 `vector::operator[]`（一次 `base + idx*sizeof(T)` 的 `lea`），`deque::operator[]` 在**跨段**时含一次**除法 + 取模**定位 buffer 与段内偏移（文件：`bits/stl_deque.h`，行号：`232` 的 `operator+=`）。在 `-O2` 下，编译器常把除以常量 buffer_size 优化为乘逆元，但仍有额外运算。
 
@@ -252,7 +252,7 @@ int main() {
         lea     rax, [rcx + rsi*4]                  ; base + in_buffer*4
 ```
 
-`[实现·GCC13]`：当访问落在**当前 buffer 内**（`__offset < buffer_size`），编译器会走 `行号：234` 的 `_M_cur += __n` 快速路径，几乎与 vector 同速；只有跨段才付出除法代价。
+`[实现·GCC15]`：当访问落在**当前 buffer 内**（`__offset < buffer_size`），编译器会走 `行号：234` 的 `_M_cur += __n` 快速路径，几乎与 vector 同速；只有跨段才付出除法代价。
 
 ---
 
@@ -312,7 +312,7 @@ int main() {
 
 ---
 
-## ⑬ 源码分析：libstdc++ 的分段缓冲与四指针 [实现·GCC13]
+## ⑬ 源码分析：libstdc++ 的分段缓冲与四指针 [实现·GCC15]
 
 **buffer 大小策略（512 字节阈值）**
 
@@ -352,7 +352,7 @@ _Map_pointer _M_node;    // 在 map 中指向"当前 buffer 的指针"
 行号：2184  _M_reallocate_map(__nodes, __add_at_front)  // 中控扩容(拷贝指针, 不搬元素)
 ```
 
-`[实现·GCC13]`：`_M_reallocate_map`（行号：`2184`）只重新分配并拷贝 **map 指针数组**（O(map 大小)，通常很小），**绝不搬迁任何 buffer 内的元素**——这正是"中控扩容不使元素失效"的底层原因。
+`[实现·GCC15]`：`_M_reallocate_map`（行号：`2184`）只重新分配并拷贝 **map 指针数组**（O(map 大小)，通常很小），**绝不搬迁任何 buffer 内的元素**——这正是"中控扩容不使元素失效"的底层原因。
 
 ---
 
