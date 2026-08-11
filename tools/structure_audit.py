@@ -13,7 +13,7 @@ structure_audit.py — 围栏感知的 Markdown 结构缺陷扫描器（只读�
   python3 tools/structure_audit.py [--root Book] [--dir Book/partXX] [--json out.json]
 默认扫描 Book/ 下所有 ch*.md。
 """
-import os, re, json, argparse
+import os, re, json, argparse, sys
 
 H_RE = re.compile(r'^(#{1,6})\s+(.*\S)\s*$')
 SEP_RE = re.compile(r'^\[([^\]]+)\]:\s*\S+')
@@ -125,6 +125,8 @@ def main():
     ap.add_argument("--root", default="Book")
     ap.add_argument("--dir", default=None, help="limit to a single directory")
     ap.add_argument("--json", default=None)
+    ap.add_argument("--check", action="store_true",
+                    help="gate mode: exit 1 if any structural defect (S1/S5) is found")
     args = ap.parse_args()
 
     if args.dir:
@@ -148,6 +150,9 @@ def main():
     if args.json:
         with open(args.json, "w", encoding="utf-8") as f:
             json.dump(all_hits, f, ensure_ascii=False, indent=2)
+
+    if args.check:
+        sys.exit(1 if all_hits else 0)
 
 if __name__ == "__main__":
     main()

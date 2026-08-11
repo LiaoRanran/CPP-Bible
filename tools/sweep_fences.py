@@ -179,6 +179,7 @@ def scan_file(path: str):
 def main():
     root = os.getcwd()
     args = sys.argv[1:]
+    gate = "--check" in args
     parts = ALL_PARTS
     if "--root" in args:
         ri = args.index("--root")
@@ -214,6 +215,9 @@ def main():
     print("---")
     print("扫描文件数: %d" % len(targets))
     print("缺陷总数: %d  按类: %s" % (total, by_type))
+
+    if gate:
+        sys.exit(1 if total else 0)
 
 
 if __name__ == "__main__":

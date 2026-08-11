@@ -13,7 +13,7 @@ whitespace_fix.py — 围栏感知的空白符卫生修复（确定性，单文�
   python3 tools/whitespace_fix.py [--root Book] [--dir <d>] [--apply] [--json out.json]
 默认只读（dry-run），打印将变更的文件与计数；--apply 才落盘。
 """
-import os, re, json, argparse
+import os, re, json, argparse, sys
 
 FENCE_RE = re.compile(r'^(`{3,}|~{3,})')
 H_RE = re.compile(r'^(#{1,6})\s')
@@ -82,6 +82,8 @@ def main():
     ap.add_argument('--dir', default=None)
     ap.add_argument('--apply', action='store_true')
     ap.add_argument('--json', default=None)
+    ap.add_argument('--check', action='store_true',
+                    help="gate mode: exit 1 if any whitespace defect (W1/W2/W3) would be fixed")
     args = ap.parse_args()
 
     if args.dir:
@@ -110,6 +112,9 @@ def main():
     if args.json:
         with open(args.json, 'w', encoding='utf-8') as f:
             json.dump(changed, f, ensure_ascii=False, indent=2)
+
+    if args.check:
+        sys.exit(1 if changed else 0)
 
 if __name__ == '__main__':
     main()

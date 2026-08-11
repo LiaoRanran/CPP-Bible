@@ -129,6 +129,40 @@ jobs:
       run: python3 tools/prereq_topo_check.py --json outputs/t1_3_topo.json
       continue-on-error: true   # 软门禁
 
+    - name: Structure Defect Gate (S1 标题层级 / S5 参差表格 门禁)
+      # E6 收口（bf7a914）的结构缺陷扫描器常驻化：标题层级越级 / 参差表格一旦被
+      # 未来编辑重新引入，CI 立即变红 BLOCK，防止 E6 缺陷回归。围栏感知、零依赖。
+      run: python3 tools/structure_audit.py --check
+      continue-on-error: false
+
+    - name: Fence Integrity Sweep (围栏/诊断输出/HTML 注释 门禁)
+      # sweep_fences.py 常驻化：不平衡围栏 / 未围栏诊断输出 / 空围栏 / 裸 GCC
+      # linemarker 被当 H1 等结构缺陷一旦回归即 BLOCK。
+      run: python3 tools/sweep_fences.py --check
+      continue-on-error: false
+
+    - name: Whitespace Hygiene Gate (W1/W2/W3 门禁)
+      # E7 收口（e6fe145）的空白符卫生扫描器常驻化：行尾空格 / 连续空行 /
+      # 末尾换行一旦回归即 BLOCK，守住 MD009/MD012。
+      run: python3 tools/whitespace_fix.py --check
+      continue-on-error: false
+
+    - name: Mermaid Frontmatter Audit (图立场配色 门禁)
+      # 全部 Mermaid 图块须带 §4.1 统一 frontmatter（立场分层配色）；缺失即报告。
+      run: python3 tools/mermaid_audit.py
+      continue-on-error: true   # 初上线软门禁，观察一轮后转硬
+
+    - name: Table Style Audit (断表/列数不一致/误插> 门禁)
+      # §4.2 表格视觉规范常驻化：断表、列数不一致、表头与分隔行间误插 `>` 即报告。
+      run: python3 tools/table_style_audit.py
+      continue-on-error: true   # 初上线软门禁，观察一轮后转硬
+
+    - name: Verification Coverage Report (§10 验证链覆盖，咨询)
+      # 统计各章立场标签 / 验证标记覆盖度，标出「高风险章零标记」backlog。
+      # 咨询模式：不阻断，仅报告供作者排期（§10 合规是长期目标）。
+      run: python3 tools/verification_audit.py
+      continue-on-error: true
+
   compile:
     needs: quality
     runs-on: ubuntu-latest
