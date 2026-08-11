@@ -392,7 +392,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 **C. function 的 SBO + 擦除（文件：`bits/std_function.h`，行号：`117`/`124`/`334`/`591`）**
 
-```
+```cpp
 文件：bits/std_function.h
 行号：117   static const size_t _M_max_size  = sizeof(_Nocopy_types);   // x86-64 = 16
 行号：124   static const bool __stored_locally = (__is_location_invariant<_Functor>::value

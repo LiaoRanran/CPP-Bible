@@ -2036,7 +2036,7 @@ graph LR
 ### D4.1 libstdc++ 真实源码摘录
 
 // 摘自 libstdc++ 15.3.0：variant:398（_Variadic_union 递归 union 共享存储）
-```
+```cpp
   template<bool __trivially_destructible, typename _First, typename... _Rest>
     union _Variadic_union<__trivially_destructible, _First, _Rest...>
     {

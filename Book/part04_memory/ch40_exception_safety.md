@@ -437,7 +437,7 @@ int main(){
 
 ### 7.1 `bits/move.h:108-126` —— move_if_noexcept 本体
 
-```
+```cpp
 108	  template<typename _Tp>
 109	    struct __move_if_noexcept_cond
 110	    : public __and_<__not_<is_nothrow_move_constructible<_Tp>>,
@@ -516,7 +516,7 @@ int main(){
 
 ### 7.4 `bits/exception_ptr.h:60-112` —— exception_ptr / current / rethrow
 
-```
+```cpp
 61	  namespace __exception_ptr { class exception_ptr; }
 66	  using __exception_ptr::exception_ptr;
 75	  exception_ptr current_exception() _GLIBCXX_USE_NOEXCEPT;

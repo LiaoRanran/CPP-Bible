@@ -1199,7 +1199,7 @@ sete   al
 ```
 
 // 摘自 libstdc++ 15.3.0：bitset:811（私有继承 _Base_bitset）
-```
+```cpp
   template<size_t _Nb>
     class bitset
     : private _Base_bitset<_GLIBCXX_BITSET_WORDS(_Nb)>

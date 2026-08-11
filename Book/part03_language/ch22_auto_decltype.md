@@ -837,7 +837,7 @@ int main() { print(42); /* print(3.0); 错误：非 integral */ }
 #include <iostream>
 auto add(std::integral auto a, std::integral auto b) { return a + b; }
 int main() { std::cout << add(2, 3); }
-```
+```cpp
 
 ---
 
@@ -891,7 +891,7 @@ int main() {
     for (auto e : x) sum += e;
     std::cout << sum;          // 6
 }
-```
+```cpp
 
 > 对照 ex06：`template<class T> void f(T); f({1,2,3});` 是**错误**——模板不会从 `{}` 推导 `initializer_list`，这正是「`auto` 与模板推导同规则，除 `{}` 特例」的权威证明。
 
@@ -1181,7 +1181,7 @@ int main() {
     static_assert(square(4) == 16);
     static_assert(std::is_same_v<decltype(square(4)), int>);
 }
-```
+```cpp
 
 ---
 
@@ -1219,7 +1219,7 @@ auto max(std::totally_ordered auto a, std::totally_ordered auto b) {
     return a < b ? b : a;
 }
 int main() { std::cout << max(3, 7) << max(1.0, 2.0); }
-```
+```cpp
 
 ---
 
@@ -1324,7 +1324,7 @@ int main() {
     x = true;                   // 仅修改 proxy 副本，bv[0] 仍 false
     std::cout << bv[0];         // 输出 0
 }
-```
+```cpp
 
 ---
 
@@ -1351,7 +1351,7 @@ int main() {
     f(a);                // T = int*（退化，同 auto）
     static_assert(std::is_same_v<decltype(x), int*>);
 }
-```
+```cpp
 
 ---
 

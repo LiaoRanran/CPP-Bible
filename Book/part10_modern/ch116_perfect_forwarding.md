@@ -416,7 +416,7 @@ int main() {
 
 `[实现·GCC15]` 真实源码来自 `bits/move.h`（GCC 13.1.0）：
 
-```
+```cpp
 文件：bits/move.h
 行号：74-78
   template<typename _Tp>
@@ -425,7 +425,7 @@ int main() {
     { return static_cast<_Tp&&>(__t); }
 ```
 
-```
+```cpp
 文件：bits/move.h
 行号：86-94
   template<typename _Tp>
@@ -438,7 +438,7 @@ int main() {
     }
 ```
 
-```
+```cpp
 文件：bits/move.h
 行号：101-105
   template<typename _Tp>

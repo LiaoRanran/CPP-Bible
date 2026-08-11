@@ -1803,7 +1803,7 @@ int main() {
 
 ## 附录 E：operator new/delete 工业 [B: Principle / H: Design / I: Practice / J: Learning]
 
-```
+```cpp
 operator new 的内部实现:
 
 GCC (libstdc++):

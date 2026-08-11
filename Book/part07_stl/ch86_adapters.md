@@ -1381,7 +1381,7 @@ int main(){
 ### D4.1 libstdc++ 真实源码摘录
 
 // 摘自 libstdc++ 15.3.0：bits/stl_stack.h:106（节选）
-```
+```cpp
   template<typename _Tp, typename _Sequence = deque<_Tp> >
     class stack
     {
@@ -1396,7 +1396,7 @@ int main(){
 ```
 
 // 摘自 libstdc++ 15.3.0：bits/stl_queue.h:103（节选）
-```
+```cpp
   template<typename _Tp, typename _Sequence = deque<_Tp> >
     class queue
     {
@@ -1410,7 +1410,7 @@ int main(){
 ```
 
 // 摘自 libstdc++ 15.3.0：bits/stl_queue.h:550（节选）
-```
+```cpp
   template<typename _Tp, typename _Sequence = vector<_Tp>,
 	   typename _Compare = less<typename _Sequence::value_type> >
     class priority_queue
