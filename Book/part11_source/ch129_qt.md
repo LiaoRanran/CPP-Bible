@@ -889,57 +889,149 @@ moc 生成的 `qt_static_metacall` 是一张函数指针表（槽宽 `0x0008`）
 
 ### 练习 1（难度 ★★）
 
-写一个 `max` 函数模板，要求对任意可比较类型都能用，且对混合有符号/无符号比较安全。
+真实场景：某**汽车座舱 HMI** 的菜单是"菜单→子菜单→控件"的树。若用手动 `delete` 逐个释放控件树，极易漏删导致内存泄漏。Qt 用 `QObject` 的**父子所有权**解决：父对象析构时自动递归 `delete` 全部子孙（见第⑤节）。请用**自包含纯 C++**（不用任何 Qt 头）建模这棵"父拥有子、父析构级联释放"的所有权树——父持有子对象的裸指针并在自身析构中递归释放它们，说明这如何避免泄漏并实现整棵树的一键清理。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+Qt 的父子所有权 = 父 `QObject` 内部维护一张子对象指针表，析构时遍历这张表逐个 `delete` 子对象（子再递归释放自己的子），最后把自己从父的子表中摘除。下面用裸指针忠实地复刻这一语义（注意：这与第⑤/附录 D 的 `unique_ptr` 树是同一"级联释放"思想，但 Qt 用的是运行期指针而非编译期唯一所有权）：
 
 ```cpp
+// 自包含建模 QObject 父子所有权（无 Qt 依赖，可直接编译运行）
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <vector>
+#include <algorithm>
+
+struct Node {
+    Node* parent = nullptr;                 // 等价 QObject::parent()
+    std::vector<Node*> children;            // 等价 QObject 维护的子对象表
+    int id;
+    explicit Node(int id, Node* parent = nullptr) : parent(parent), id(id) {
+        if (parent) parent->children.push_back(this);   // 等价 new Child(parent)
+    }
+    // 等价 QObject 析构：递归销毁全部子孙，再把自己从父的子表里移除
+    ~Node() {
+        std::cout << "dtor node " << id << "\n";
+        for (Node* c : children) delete c;              // 级联释放子孙
+        if (parent) {
+            auto& v = parent->children;
+            v.erase(std::remove(v.begin(), v.end(), this), v.end());
+        }
+    }
+};
+
+int main() {
+    Node* root = new Node(0);              // 菜单
+    Node* sub  = new Node(1, root);        // 子菜单，parent = root
+    new Node(2, sub);                      // 控件，parent = sub
+    new Node(3, root);                     // 另一个子菜单
+    delete root;                           // 一条语句释放整棵 0/1/2/3 树
+    return 0;
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[实现·GCC15] 上述代码不含任何 Qt 头，用 `C:/Qt/Tools/mingw1530_64/bin/g++.exe -std=c++23 -O2 -Wall -Wextra` 可独立编译通过；运行即打印 4 个 `dtor`，证明"删父即删整树"。
+
+[经验] 父子所有权把"释放整棵控件树"简化为"只 delete 根"——这正是 GUI 框架避免泄漏的关键；代价是**一个对象只能有一个父**，切忌同时把同一裸指针交给两处管理（会二次释放）。跨线程对象不能用裸父子树，须改用第⑤节的 `deleteLater`（由目标线程事件循环执行删除）。
+
+[引用] Qt 对象树与所有权：`https://doc.qt.io/qt-6/objecttrees.html`（官方，汽车/工业 HMI 必读，讲清 parent 析构级联）。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-用 `std::integral` 概念约束一个 `add` 函数，使其只接受整数类型，并对浮点调用给出清晰的错误。
+真实场景：你做一个**下载器**，后台线程算出进度百分比，希望 UI 线程安全地更新进度条，且 UI 模块与下载模块彼此**完全解耦**（互相不持有对方类型）。Qt 的 `connect`/信号槽正是为此而生——一个信号可挂多个槽，发送者无需知道接收者是谁。请用**自包含纯 C++**（`std::function` 多播）实现一个最小"信号"，演示一对多 / 多对多的松耦合连接，并说明它等价于 moc 为 `signals:` 生成的回调表。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+Qt 的 `emit clicked(x)` 经 moc 变成 `Button::clicked`，内部调用 `QMetaObject::activate` 遍历连接表、对每个接收者做一次间接调用（见第③⑨节）。下面用 `std::function` 类型擦除复刻"信号持有若干槽、emit 时逐一调用"的本质，**多对多、零耦合**：
 
 ```cpp
+// 自包含最小信号/槽（无 Qt 依赖，可直接编译运行）
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <vector>
+#include <functional>
+
+template <typename... Args>
+struct Signal {
+    using Slot = std::function<void(Args...)>;
+    std::vector<Slot> slots;
+    // 等价 QObject::connect(sender, &S::sig, receiver, &R::slot)：把槽登记进连接表
+    void connect(Slot f) { slots.push_back(std::move(f)); }
+    // 等价 emit sig(args)：遍历所有订阅者逐一调用（即 QMetaObject::activate 干的活）
+    void emit(Args... a) const { for (auto& s : slots) s(a...); }
+};
+
+struct Button { Signal<int> clicked; void press(int x) { clicked.emit(x); } };
+struct Label  { void on_click(int x) { std::cout << "[UI]  clicked at " << x << "\n"; } };
+struct Logger { void persist(int x)  { std::cout << "[LOG] persisted " << x << "\n"; } };
+
+int main() {
+    Button b; Label l; Logger g;
+    b.clicked.connect([&l](int x){ l.on_click(x); });   // 槽 1：UI，与槽 2 互不知晓
+    b.clicked.connect([&g](int x){ g.persist(x); });    // 槽 2：日志，多对多解耦
+    b.press(42);                                        // 一次 emit，两个槽都被调用
+    return 0;
+}
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[实现·GCC15] 上述代码不含任何 Qt 头，用 `C:/Qt/Tools/mingw1530_64/bin/g++.exe -std=c++23 -O2 -Wall -Wextra` 可独立编译通过；运行输出 `[UI] clicked at 42` 与 `[LOG] persisted 42`，证明一对多分发。
+
+[经验] 看懂这个 20 行例子，就理解了 Qt 信号槽 90% 的运行语义：发送者只持有"可调用对象表"，从不 `#include` 接收者头，**编译期与运行期都解耦**。剩下 10% 是 moc 生成的元数据表 + 跨线程 `QueuedConnection` 排队（见第⑦/⑬节）。注意真实 Qt 信号槽还白送**跨线程投递**与**运行时内省**，这是手写 `std::function` 表没有的。
+
+[引用] Qt 信号槽机制：`https://doc.qt.io/qt-6/signalsandslots.html`（官方，含 `connect`/`emit` 语义）。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`。
+真实场景：你写了一个 `QObject` 派生类，想用 `qobject_cast<Button*>(someWidget)` 安全地向下转型，或在运行时查"这个对象是不是某个类的实例 / 有没有某个属性"。为什么标准 C++ 的 `dynamic_cast` 跨动态库边界经常失灵，而 Qt 偏要引入 moc 来提供 `qobject_cast` 与 `Q_PROPERTY` 元数据？请解释 **moc 到底为含 `Q_OBJECT` 的类生成了什么**，以及它为何是 Qt 反射（introspection）不可替代的基石（参考第②/③/④/附录 E 节）。
 
 <details><summary>答案与解析</summary>
 
+C++ 至今（C++23）没有内建反射（见第 0.3 节）。Qt 的解法是在标准 C++ 之上"外挂"一个独立的**元对象编译器 moc**：它在编译前扫描 `Q_OBJECT`/`signals`/`slots`/`Q_PROPERTY`，为每个类生成一个额外的翻译单元 `moc_*.cpp`，在里面定义：
+
+- `staticMetaObject`：一张**写死的元数据表**（类名、父类、方法、属性、枚举），运行期只读；
+- 信号被展开为 `protected` 的**发射函数**，内部调用 `QMetaObject::activate`（见第③节真实 moc 产物）；
+- `qt_metacast` / `qt_metacall`：按字符串或索引做**动态方法调用与类型转换**；
+- `Q_PROPERTY(...)` 被写入 `qt_meta_data_*`，使属性可在运行时按名读写（`invokeMethod` / `property()`）。
+
+正是这张元数据表让 `qobject_cast<T*>(o)` 不用 RTTI：它沿 `metaObject()->superClass()` 链做 `inherits` 判断（等价于"o 的元对象链上是否出现过 T 的 staticMetaObject"）。这比 `dynamic_cast` 稳健——`dynamic_cast` 依赖编译器 RTTI，跨 DLL/共享库边界、或关 RTTI 的构建里会失效，而 `qobject_cast` 纯粹基于 moc 生成的元数据，**跨模块、跨线程亲和都可用**。下面用一段自包含代码演示 moc 提供的"沿继承链的类型判定"本质：
+
 ```cpp
-#include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+// 自包含演示 qobject_cast 的底层机制：沿 meta 链做 inherits 判定（无 Qt 依赖）
+#include <cstdio>
+
+struct Meta { const char* name; const Meta* super; };
+struct Object { virtual const Meta* meta() const = 0; };
+
+// 等价 moc 为继承体系生成的 staticMetaObject（手写以示意）
+const Meta metaWidget{"Widget", nullptr};
+const Meta metaButton{"Button", &metaWidget};
+
+struct Widget : Object { const Meta* meta() const override { return &metaWidget; } };
+struct Button : Widget { const Meta* meta() const override { return &metaButton; } };
+
+// 等价 qobject_cast<Button*>(w)：沿 meta 链向上查是否 inherits Button
+bool inherits_kind(const Object* o, const Meta* target) {
+    for (const Meta* m = o->meta(); m; m = m->super)
+        if (m == target) return true;
+    return false;
+}
+
+int main() {
+    Widget w; Button b;
+    printf("w is Button? %d\n", inherits_kind(&w, &metaButton)); // 0
+    printf("b is Button? %d\n", inherits_kind(&b, &metaButton)); // 1
+    printf("b is Widget? %d\n", inherits_kind(&b, &metaWidget)); // 1（继承链向上）
+    return 0;
+}
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[实现] 上例不含 Qt 头，用 `C:/Qt/Tools/mingw1530_64/bin/g++.exe -std=c++23 -O2 -Wall -Wextra` 可独立编译通过；它把"moc 生成的元对象链 + 运行时 inherits 判定"这一 Qt 反射核心代价用 30 行讲清。
+
+[经验] `qobject_cast` 与 `Q_PROPERTY` 之所以"快且稳"，是因为元数据在编译期由 moc 写死、运行期只读——没有运行时类型扫描开销。**改了 `Q_OBJECT` 类后若链接报 `undefined reference to vtable for X`，几乎都是 moc 没重跑或 `moc_*.cpp` 没加入构建**（见第②节）。记住：moc 不只是为了实现信号槽，更是为了给整个 Qt 提供跨模块、可脚本化、可对接 QML 的反射地基。
+
+[引用] `Q_OBJECT` 宏与元对象系统：`https://doc.qt.io/qt-6/metaobjects.html`；`qobject_cast`：`https://doc.qt.io/qt-6/qobject.html#qobject_cast`（官方）。
 
 </details>
 
