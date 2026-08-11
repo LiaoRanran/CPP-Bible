@@ -574,7 +574,6 @@ int main(){P p1{1,2};P p2{.x=10,.y=20};std::cout<<p1.x<<" "<<p2.y<<std::endl;ret
 int main(){std::cout<<"Use T x{} as default: value-init, zero-cost, impossible to forget."<<std::endl;return 0;}
 ```
 
-
 ## 附录 H：初始化面试陷阱
 
 Most Vexing Parse: X x(); 解析为函数声明(而非对象定义)
@@ -1004,7 +1003,6 @@ move_if_noexcept(_Tp& __x) noexcept {
 
 > **一句话收束**：写 `noexcept` 移动构造，是为整个现代 C++ 性能网（容器扩容、转发、`unique_ptr`、ranges、协程）打开零成本搬运的闸门；漏写，则整张网在该类型上退回 O(n) 复制。
 
-
 ---
 
 ## 附录 J：初始化语法选用决策流（D3 维度）
@@ -1195,7 +1193,6 @@ int main()
   return 0;
 }
 ```
-
 
 ## 附录 D5：真实基准与性能分析 — 初始化方式的性能差异（GCC 15.3.0）
 

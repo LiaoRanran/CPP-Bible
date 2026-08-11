@@ -35,7 +35,6 @@ Ranges 最核心的立场是**"算法应操作区间而非迭代器对"**，并�
 ⟶ Book/part07_stl/ch89_tuple_any.md
 ⟶ Book/part07_stl/ch91_filesystem.md
 
-
 读完本章你能独立回答：
 
 1. `range` 与 `view` 概念（`concept`）的精确定义，二者关系与区别。
@@ -917,7 +916,6 @@ int main() {
 
 > 偏离说明：本章依规将「推荐阅读」替换为「跨语言对比」（⑳）与「源码阅读路线」（附录），符合 CONVENTIONS §2 第 20 条最新要求。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -944,7 +942,6 @@ int main(){auto v=std::views::iota(1,6)|std::views::transform([](int x){return x
 | iota | 整数序列 | O(1)构造 |
 
 面试: ranges vs STL=ranges惰性+管道; views zero-overhead=纯模板融合为单循环
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1330,11 +1327,6 @@ flowchart TD
 | ch90 ranges | ch93 thread/async | 并行 range 分区 |
 | ch90 ranges | ch89 tuple/any | range 可能返回 tuple |
 | ch87 bitset | ch90 ranges | 集合/视图惰性遍历思想 |
-
-
-
-
-
 
 ## 附录 D5：真实基准与性能分析 — ranges 管道的延迟与真实开销 (GCC 15.3.0)
 

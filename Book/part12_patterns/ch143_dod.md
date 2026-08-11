@@ -44,7 +44,6 @@ DOD 对 OOP 的核心之争是"先想数据还是先想对象"：OOP 先问"有�
 
 ⟶ Book/part12_patterns/ch142_ecs.md
 
-
 面向数据设计（DOD）是一种以**数据的存储布局与访问模式**为先、以**算法对内存的遍历方式**为中心的软件设计范式。它的核心信条是：
 **缓存与预取器不关心你的“对象”长什么样，只关心你一次取了哪些字节、是否连续、是否可预测。**
 
@@ -1117,7 +1116,6 @@ struct SoA final { std::vector<float> x, y; };   // 列存 + 连续 + 可向量�
 
 **本章取证产物清单**：`Examples/_ch143_*.cpp`（20 个可编译源）+ 配套 `.asm`（`aos_loop`/`soa_loop`/`novirtual`/`constexpr`/`consteval`/`simd`/`simd_O3fm`/`align`），以及 `AoS/SoA`、`false-sharing` 两组 `std::chrono` 真实计时、`align` 的 `sizeof/alignof` 真实输出，主要来自 GCC 13.1.0（`-std=c++23`）；其中 `align` 节取证已统一至 GCC 15.3.0（见 ⑫），`novirtual` 节因示例依赖 13.1.0 代码生成保留为 13.1.0 证据，未编造。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1125,7 +1123,6 @@ struct SoA final { std::vector<float> x, y; };   // 列存 + 连续 + 可向量�
 | [第142章](Book/part12_patterns/ch142_ecs.md) | 键值查找/缓存 | 本章提供概念，第142章提供实现 |
 | [第142章](Book/part12_patterns/ch142_ecs.md) | 独占所有权/工厂模式 | 本章提供概念，第142章提供实现 |
 | [第154章](Book/part14_perf/ch154_cache_opt.md) | 无锁队列/计数器 | 本章提供概念，第154章提供实现 |
-
 
 ## 相关章节（交叉引用）
 

@@ -1080,7 +1080,6 @@ int main(){std::string s1="hello";std::string s2=std::move(s1);std::cout<<s2<<st
 int main(){std::cout<<"std::move is a cast to rvalue reference. It does NOT move — the move constructor/assignment does."<<std::endl;return 0;}
 ```
 
-
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。
@@ -1433,4 +1432,3 @@ int main() {
 - `volatile` sink + 逃逸防 DCE，逼出真实拷贝开销；否则小对象可能被整体消除。
 - 加速比（如 2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 计时环境旗标：`g++ -O2 -std=c++17`；demo 同旗标即可编译，仅断言功能正确性（绝不断言时间/倍数/精确 sizeof）。
-

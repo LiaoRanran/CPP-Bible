@@ -40,7 +40,6 @@
 ⟶ Book/part02_toolchain/ch14_debugging.md
 ⟶ Book/part02_toolchain/ch16_ide.md
 
-
 没有测量就没有优化。经验直觉常错：你觉得慢的那行，火焰图里可能只占 0.3%；真正的热点藏在缓存未命中与分支预测失败里。性能分析（Profiling）把"感觉慢"变成"数字在哪慢"。
 
 ```
@@ -837,7 +836,6 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
        火焰图: X轴=占用比例,Y轴=调用栈深度,宽浅=热路径,高尖=深递归
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -846,7 +844,6 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 | [第16章](Book/part02_toolchain/ch16_ide.md) | 配置解析/API响应 | 本章提供概念，第16章提供实现 |
 | [第151章](Book/part13_engineering/ch151_benchmark.md) | 泛型库/编译期计算 | 本章提供概念，第151章提供实现 |
 | [第157章](Book/part14_perf/ch157_compiler_explorer.md) | 日志格式化/序列化 | 本章提供概念，第157章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -869,7 +866,6 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 **最佳实践**：采样型 profiler（`perf`/`pprof`）开销低但分辨率受采样频率限制；插桩型（XRay/tracing）精确但引入固定开销。热路径先用 `perf` 粗定位，再 `XRay` 细追。
 
 > 交叉引用：基准方法见 [ch151](Book/part13_engineering/ch151_benchmark.md)；编译器优化见 [ch156](Book/part14_perf/ch156_compiler_opt.md)。
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -1097,4 +1093,3 @@ flowchart TD
 | ch151 基准 | [Book/part13_engineering/ch151_benchmark.md](Book/part13_engineering/ch151_benchmark.md) | Google Benchmark 接入基准体系（第⑧节外推） |
 | ch152 性能模型 | [Book/part14_perf/ch152_perf_model.md](Book/part14_perf/ch152_perf_model.md) | 微架构瓶颈对应性能模型（第⑩节与 ch152 衔接） |
 | ch153 CPU 微架构 | [Book/part14_perf/ch153_cpu_micro.md](Book/part14_perf/ch153_cpu_micro.md) | 硬件计数器解释 CPU 行为（第③节与 ch153 衔接） |
-

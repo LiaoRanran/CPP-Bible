@@ -43,7 +43,6 @@ C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期）�
 
 ⟶ Book/part03_language/ch20_reference_pointer.md
 
-
 工业级 C++ 对"变量"的理解，绝不仅是"声明一个 `int`"。本章把下面十个问题逐一打到源码层：
 
 1. **四种存储期物理落位**：automatic 落在栈帧哪一格、static 落在 `.data`/`.bss`/`.tbss` 哪个 ELF 段、thread 落在 TLS 段、dynamic 由 `malloc` 内部如何分配。
@@ -1529,7 +1528,6 @@ void clear_status() {
 
 *可选扩展（非必需）：若有篇幅，可补（a）Windows PE 段布局完整图与 `dumpbin /headers` 对照；（b）`-fsanitize=thread` 检测 TLS/static 数据竞争的实操；（c）`__cxa_atexit` 与 `__dso_handle` 在动态库卸载时的析构序细节。以上均非必需，本章 10 个核心点已全部展开，32 个示例已满足 ≥30 约束。*
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1539,7 +1537,6 @@ void clear_status() {
 | [第32章](Book/part03_language/ch32_initialization.md) | 无锁队列/计数器 | 本章提供概念，第32章提供实现 |
 | [第35章](Book/part04_memory/ch35_memory_layout.md) | 泛型库/编译期计算 | 本章提供概念，第35章提供实现 |
 | [第36章](Book/part04_memory/ch36_stack_heap.md) | 高性能容器/零拷贝传输 | 本章提供概念，第36章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1682,7 +1679,6 @@ int main() { (void)get_logger(); std::cout << "ok\n"; }
 ```
 
 **结论**：任何"跨 TU 静态对象互相依赖"的场景，把依赖改为"函数内 `static` 局部 + 访问函数"即可把初始化推迟到首次使用，顺序由调用关系决定，SOIF 彻底消失。
-
 
 ---
 

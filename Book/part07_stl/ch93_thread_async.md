@@ -1016,7 +1016,6 @@ int main() {
 
 > 本文件为独立章节，未改动 `INDEX.md` / `GLOSSARY.md` / `CROSSREF.md`；与 part09 的 ch102/ch103/ch104/ch105/ch107/ch108/ch110/ch114 及第94章建立正文交叉引用。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1026,7 +1025,6 @@ int main() {
 | [第93章](Book/part07_stl/ch93_thread_async.md) | 无锁队列/计数器 | 本章提供概念，第93章提供实现 |
 | [第93章](Book/part07_stl/ch93_thread_async.md) | STL算法回调/异步任务 | 本章提供概念，第93章提供实现 |
 | [第93章](Book/part07_stl/ch93_thread_async.md) | 泛型库/编译期计算 | 本章提供概念，第93章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1759,4 +1757,3 @@ int main() {
 - `thread_reuse` 此处是 K=16 固定 worker 的近似线程池；生产线程池还需任务队列、工作窃取与亲和性调优，但"复用远优于每次新建"的定性结论不受影响。
 - `deferred` 虽快却不是并发：它把任务推迟到 `get()` 在本线程同步跑，只能省"线程创建"不能省"计算量"，切勿用它以图降延迟。
 - 复现旗标：`g++ -O2 -std=c++23 -pthread`。基准源码见库根 `_bench_d5_93_async.cpp`。demo 用副作用标志 `ran` 验证 `deferred` 直到 `get()` 才执行，并断言 `async` 返回值正确（均为功能正确性），未对时间、倍数或 `sizeof` 做任何断言。
-

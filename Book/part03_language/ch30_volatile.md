@@ -598,13 +598,11 @@ int main(){CacheLine c{42};std::cout<<c.val<<std::endl;return 0;}
 int main(){std::cout<<"volatile总结: 用于MMIO/信号/isr。不是同步原语,多线程用atomic!"<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
 | [第107章](Book/part09_concurrency/ch107_atomic.md) | 键值查找/缓存 | 本章提供概念，第107章提供实现 |
-
 
 ## 相关章节（交叉引用）
 

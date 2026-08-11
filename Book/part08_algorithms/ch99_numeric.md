@@ -37,7 +37,6 @@
 ⟶ Book/part08_algorithms/ch100_ranges_algo.md
 ⟶ Book/part08_algorithms/ch98_heap.md
 
-
 `<numeric>` 提供一组**归约（reduction）**与**扫描（scan）**算法，以及一组独立的数学工具。它们与 `<algorithm>` 的 `for_each`/`transform` 不同：核心是**把一段输入折叠成一个标量**，或**把前缀状态逐位置展开**。
 
 ```cpp
@@ -1423,7 +1422,6 @@ int main() {
 面试: accumulate vs reduce? A: accumulate=有序(左折叠); reduce=无序(可并行,更快)
        execution::par原理? A: 调用Intel TBB/language thread pool, 自动分块+合并
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1432,7 +1430,6 @@ int main() {
 | [第98章](Book/part08_algorithms/ch98_heap.md) | 向量化计算/图像处理 | 本章提供概念，第98章提供实现 |
 | [第95章](Book/part08_algorithms/ch95_algo_overview.md) | 数据处理管道/排行榜 | 本章提供概念，第95章提供实现 |
 | [第151章](Book/part13_engineering/ch151_benchmark.md) | 数据局部性/缓存友好设计 | 本章提供概念，第151章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -1686,7 +1683,6 @@ flowchart TD
 | ch151（基准） | ch99 | 数据局部性/缓存友好设计加速 reduce |
 | ch115（移动语义） | ch99 | 自定义二元操作对重型类型走移动 |
 | ch154（缓存优化） | ch99 | 缓存友好（非伪共享）进一步加速归约 |
-
 
 ## 附录 D4：libstdc++ 15.3.0 源码解析 — 数值算法（三标准库对比）[E: Low-level / H: Design]
 

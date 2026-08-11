@@ -42,7 +42,6 @@
 
 ⟶ Book/part15_cases/ch163_net.md
 
-
 **框架（framework）**和**库（library）**的本质区别在控制权流向。库是你调用它；框架是它调用你——这就是著名的"好莱坞原则"（Don't call us, we'll call you）。**[经验]** 亲手写一个迷你框架，价值不在于"再造一个 Boost"，而在于看清 Asio / Qt / 第141章依赖注入容器 这些成熟抽象到底替你屏蔽了什么：对象生命周期、插件装载、事件调度、配置注入。
 
 ```cpp
@@ -1146,7 +1145,6 @@ struct MiniFWApp {
 std::size_t component_count() { return registry().all().size(); }
 ```
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -1188,7 +1186,6 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 f
 int main(){std::cout<<"Framework=ch47+ch93+ch141+ch88+ch161"<<std::endl;return 0;}
 ```
 
-
 ## 相关章节（交叉引用）
 
 - **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
@@ -1212,7 +1209,6 @@ int main(){std::cout<<"Framework=ch47+ch93+ch141+ch88+ch161"<<std::endl;return 0
 **最佳实践**：框架的扩展点优先用接口（纯虚/CRTP）而非宏；生命周期用对象树/智能指针统一，避免裸 `new` 散落；注册表用 `flat_hash_map` + 静态初始化顺序规避（参考 [ch38](Book/part04_memory/ch38_allocator.md)）。
 
 > 交叉引用：内存池见 [ch160](Book/part15_cases/ch160_mempool.md)；错误传播见 [ch146](Book/part13_engineering/ch146_error_handling.md)。
-
 
 ## 附录 G（框架派发开销）
 
@@ -1245,7 +1241,6 @@ call [rdx]
 - GCC 13.2 / Clang 18 / MSVC 19.3 生成 vtable
 - `__cplusplus` = 202302L；`-fwhole-program-vtables` 去虚化框架调用
 - `constexpr` 将框架配置前移到编译期（C++20）
-
 
 ### 面试要点（速记·迷你框架）
 
@@ -1357,9 +1352,6 @@ int main() {
 
 </details>
 
-
-
-
 ## 附录 J：框架启动与运行决策流（D3 维度）
 
 > 本图把第③节（插件自注册）、第④节（reactor 事件总线）、第⑤节（INI 配置）、第⑥节（DI 容器）、第⑨节（MiniFW 完整生命周期）、第⑩节（RAII 生命周期）、第⑪节（中间件扩展点）、第⑫节（内置测试）收敛成一条"加载配置→静态期自注册→start 实例化→事件循环→扩展点拦截→stop 逆序析构"的框架运行流水线，并标出无组件可启动的失败回退边。
@@ -1389,15 +1381,9 @@ flowchart TD
 
 > 决策流说明：自注册是「与」前置条件——只有 Registry 里有组件，start 才能实例化；每帧的扩展点拦截是「或」分支（中间件管道「或」直接业务），tick 循环持续到 ticks 用尽或显式 stop 才进入逆序析构。跨章外推：DI 外推第141章，事件循环外推第93章，配置/日志/网络外推第162/161/163章。
 
-
-
 ## 附录 K：迷你框架知识图谱（D6 维度）
 
-
-
 > 本图以本章主题为中心，上游列出其依赖的底层机制（分配/并发/格式化/解析原语），下游列出消费它的系统（框架/网络/日志/测试），并标出跨章外推边。
-
-
 
 ```mermaid
 flowchart TD
@@ -1429,8 +1415,6 @@ flowchart TD
   DI --> VIRTUAL
 ```
 
-
-
 ### K.1 概念依赖逐边解读
 
 | 边 | 依赖含义 |
@@ -1448,8 +1432,6 @@ flowchart TD
 | CORE → TEST | 内置测试运行器做回归 |
 | CORE → RAII | 生命周期用 RAII 统一释放 |
 | DI → VIRTUAL | DI 按接口解析，接口即虚基类 |
-
-
 
 ### K.2 跨章闭环表
 

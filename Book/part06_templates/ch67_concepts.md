@@ -42,7 +42,6 @@ concepts 之争本质是「通用性 vs 可读性」的拉锯：一派要最强�
 ⟶ Book/part06_templates/ch66_sfinae.md
 ⟶ Book/part06_templates/ch68_tmp.md
 
-
 - 说清 `concept` 是什么：一个「编译期布尔谓词」，可被命名、组合、复用 [标准]
 - 掌握 `requires` 表达式（简单/类型/复合/嵌套）四类约束的写法与语义 [标准]
 - 区分「`template <C T>`（约束占位）」与「`requires` 子句（尾置约束）」两种施加方式 [标准]
@@ -585,7 +584,6 @@ template<typename T>requires std::floating_point<T>auto area(T r){return 3.14159
 int main(){std::cout<<area(2.0)<<std::endl;return 0;}
 ```
 
-
 ## 附录 A：WG21 —— Concepts 的漫长标准之路 [B: Principle]
 
 Concepts 是 C++ 历史上等待最久的特性——从最初提案到进入标准历时 15 年：
@@ -672,7 +670,6 @@ A: SFINAE 可以操作任意类型属性；concepts 需要显式定义。concept
 - concept 使接口文档化 (template 参数直接可见约束)，但增加了头文件依赖
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -681,7 +678,6 @@ A: SFINAE 可以操作任意类型属性；concepts 需要显式定义。concept
 | [第66章](Book/part06_templates/ch66_sfinae.md) | 模板约束/类型安全API | 本章提供概念，第66章提供实现 |
 | [第68章](Book/part06_templates/ch68_tmp.md) | 配置解析/API响应 | 本章提供概念，第68章提供实现 |
 | [第119章](Book/part10_modern/ch119_ranges_deep.md) | 泛型库/编译期计算 | 本章提供概念，第119章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -830,7 +826,6 @@ int main() {
 
 **结论**：优先用 concept 表达约束——可读性、错误诊断、编译速度都优于等价 SFINAE；SFINAE 仅用于 concept 表达不了的复杂探测。
 
-
 ## 补例：自包含可编译验证（自定义 concept 约束）
 
 下例自定义 `Addable` concept，并用 `static_assert` 验证其对类型的满足情况：
@@ -936,7 +931,6 @@ int main() {
     return 0;
 }
 ```
-
 
 ## 附录 J：Concepts 决策流（D3 维度）
 

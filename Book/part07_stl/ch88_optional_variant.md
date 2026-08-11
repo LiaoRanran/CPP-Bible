@@ -34,7 +34,6 @@
 ⟶ Book/part07_stl/ch87_bitset.md
 ⟶ Book/part07_stl/ch89_tuple_any.md
 
-
 `std::optional<T>`、`std::expected<T,E>`、`std::variant<...>` 三者都把"可能缺失 / 可能失败 / 多类型其一"编码进**值语义类型**，替代裸指针、`union`、异常或输出参数。
 
 ```cpp
@@ -499,7 +498,6 @@ struct Connection {
 - `[标准]`：C++ 的 `optional/expected/variant` 对标 Rust 的 `Option/Result/enum`，是类型安全错误与多态值的工业标准表达。
 - `[经验]`：从 Rust/Swift 来的开发者会自然使用 `optional`/`expected`；从 C/Java 来的开发者需习惯"用类型而非 NULL/异常表达缺失与错误"。
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -527,7 +525,6 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 f
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 for ch88_optional_variant."<<std::endl;return 0;}
 ```
-
 
 ## 附录 A：WG21 —— optional/variant 的标准化之路 [B: Principle]
 
@@ -623,7 +620,6 @@ A: value() = wide contract (has_value 检查 → 抛异常); operator* = narrow 
 | [第87章](Book/part07_stl/ch87_bitset.md) | 键值查找/缓存 | 本章提供概念，第87章提供实现 |
 | [第89章](Book/part07_stl/ch89_tuple_any.md) | 独占所有权/工厂模式 | 本章提供概念，第89章提供实现 |
 
-
 ## 相关章节（交叉引用）
 
 - **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 可空/可辨别联合是该架构的值语义组件
@@ -659,7 +655,6 @@ A: value() = wide contract (has_value 检查 → 抛异常); operator* = narrow 
 - **Mozilla** — SpiderMonkey 用 `variant` 表示值
 - **Abseil** — Abseil `absl::variant` 对应标准 variant
 - **Blink** — Blink 用 `optional` 缓存样式结果
-
 
 ## 附录 F（optional / variant 存储布局）
 
@@ -1147,4 +1142,3 @@ int main() {
 - 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
 - 加速比（1.41×、~1.04×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_88_variant.cpp`。demo 仅断言 `visit` 分发结果与 `optional` 空/非空语义（功能正确性），未对时间、倍数或 `sizeof` 做任何断言。
-

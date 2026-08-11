@@ -40,7 +40,6 @@ LSM-Tree 对 B+Tree 的核心取舍是"写优化"：用顺序写 + 后台 Compac
 ⟶ Book/part11_source/ch131_fmt_spdlog.md
 ⟶ Book/part11_source/ch133_clickhouse_redis.md
 
-
 LSM-Tree（Log-Structured Merge-Tree）把**随机写**转化为**顺序写**：所有写入先进内存表（MemTable），写满后刷成有序的不可变文件（SSTable），后台合并（Compaction）回收空间并维持读性能。LevelDB / RocksDB 是工业级 LSM 引擎，被 TiKV、Kafka、Rockset、MongoDB（WiredTiger 同源思想）等广泛使用。
 
 ```cpp
@@ -970,7 +969,6 @@ for (auto* it = db->NewIterator(leveldb::ReadOptions()); it->Valid(); it->Next()
 bool healthy = imm <= 2 && !pending_compaction && live_data_mb < capacity_mb * 0.8;
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1110,7 +1108,6 @@ int main() {
 面试: LSM vs B-tree? LSM=写快(顺序)+读慢(多层); B-tree=读写均衡+就地修改
        RocksDB优化? Bloom filter + 多线程Compaction + Column Families
 
-
 ## 相关章节（交叉引用）
 
 - **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch124_libstdcxx.md（第124章　libstdc++ 架构与阅读入口（C++））
@@ -1153,7 +1150,6 @@ mov rax, [rdi+0x0010]     ; 下一级
 - 内部用 `std::atomic` 保护引用计数；`-O2` 生成上示代码
 - GCC 13.2 / Clang 18 编译；`__cplusplus` = 202302L
 - WG21 提案 P0784R7 扩展 constexpr 存储结构
-
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

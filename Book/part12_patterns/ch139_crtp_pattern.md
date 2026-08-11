@@ -44,7 +44,6 @@ CRTP 对虚函数之争是"C++ 零开销抽象"的教科书案例：虚函数为
 ⟶ Book/part12_patterns/ch138_behavioral.md
 ⟶ Book/part12_patterns/ch140_policy_pattern.md
 
-
 **CRTP（Curiously Recurring Template Pattern，奇异递归模板模式）** 指一个类 `Base` 以「派生类自身」作为模板参数来继承自己：
 
 ```cpp
@@ -928,7 +927,6 @@ Q: CRTP 可以用于 std::variant 或 std::any 吗？
 A: 不能。CRTP是编译期绑定，variant/any需要运行时类型擦除 → 用虚函数或std::visit
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -937,7 +935,6 @@ A: 不能。CRTP是编译期绑定，variant/any需要运行时类型擦除 → 
 | [第140章](Book/part12_patterns/ch140_policy_pattern.md) | 模板约束/类型安全API | 本章提供概念，第140章提供实现 |
 | [第68章](Book/part06_templates/ch68_tmp.md) | 独占所有权/工厂模式 | 本章提供概念，第68章提供实现 |
 | [第51章](Book/part05_oo/ch51_crtp.md) | 多态插件/框架扩展 | 本章提供概念，第51章提供实现 |
-
 
 ## 相关章节（交叉引用）
 

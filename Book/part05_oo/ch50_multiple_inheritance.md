@@ -40,7 +40,6 @@ Simula 67 只给单继承，但现实里「一个窗口同时是图形节点、�
 ⟶ Book/part05_oo/ch49_virtual_inheritance.md
 ⟶ Book/part05_oo/ch51_crtp.md
 
-
 - 说清单继承与**多重继承**在对象布局上的本质差异：每个非首基类各带一具独立 `vptr`。
 - 解释 **this 指针调整（this-adjustment thunk）** 的成因、汇编形态、以及对性能的影响。
 - 能从 vtable 二进制布局反推对象模型（top_offset、typeinfo 槽、thunk 槽）。
@@ -635,7 +634,6 @@ struct X{void f(){std::cout<<"X";}};struct Y{void f(){std::cout<<"Y";}};struct Z
 int main(){Z z;z.X::f();z.Y::f();std::cout<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -664,7 +662,6 @@ int main(){C c;c.call();std::cout<<c.a<<","<<c.b<<std::endl;return 0;}
 
 面试: 菱形继承怎么解? virtual base class(共享基类), 但增加vbase指针开销
        MI vs 组合? MI=多重is-a关系; 组合=has-a关系; C++核心指南提倡组合优先
-
 
 ## 附录 H：MI设计选择
 
@@ -706,7 +703,6 @@ int main(){Btn b;b.draw();return 0;}
 
 **底层深度**：MI 的 vtable 布局是 `this` 指针调整的核心。`class D : public B1, public B2 {};` 的 vtable 结构为 [B1_vptr | B1_members] [B2_vptr | B2_members] [D_members]。当 `B2* pb2 = &d;` 时，GCC 15.3.0 生成 `lea rax, [rdi + offsetof(D, B2_subobject)]`（this 调整，约 16-32 字节偏移），而非简单 `mov`。`dynamic_cast<D*>(pb2)` 通过 vtable 的 `__vmi_class_type_info` 遍历基类偏移表确认可达性——这是 MI 下 `dynamic_cast` 比 SI 慢 2-3× 的根因（非空非最终类需遍历 `__base_class_type_info` 偏移数组）。
 
-
 ## 附录 I（多重继承 vtable 布局）
 
 多重继承产生多个 vptr 与 thunk，下列为典型布局。
@@ -739,7 +735,6 @@ call [rsi]
 - GCC 13.2 / Clang 18 布局一致；MSVC 虚基类差异大
 - `__cplusplus` = 202302L；`dynamic_cast` 跨继承查 RTTI ≈ 0.5us
 - WG21 提案 P0784R7 扩展 constexpr 多态
-
 
 ## 底层视角：多 vptr 布局与 this 调整 thunk [E: Low-level]
 

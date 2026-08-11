@@ -39,7 +39,6 @@
 
 ⟶ Book/part09_concurrency/ch112_hazard_rcu.md
 
-
 C++20 引入**无栈协程（stackless coroutine）**：一种能在 `co_await`/`co_yield` 处**挂起（suspend）**并把控制流交还调用者、之后又能**恢复（resume）**继续执行的普通函数。它**不是线程**，没有独立调用栈——挂起时只把局部状态保存到堆上的**协程帧（coroutine frame）**，恢复时从帧里取回状态。
 
 ```cpp
@@ -63,7 +62,6 @@ mini_task hello() { co_return; }   // co_return 标记为协程
 
 - `[标准]`：函数体内出现 `co_await`/`co_yield`/`co_return` 任一关键字，该函数即被编译器认定为**协程（coroutine）**，其类型必须能被推导出 `promise_type`。
 - `[经验]`：协程函数**返回类型由 `promise_type::get_return_object()` 决定**，与函数签名声明的返回类型不是一回事——这是初学者最大的认知错位。
-
 
 ## 架构与流程图示（Mermaid）
 
@@ -761,7 +759,6 @@ int main(){std::vector<int> v{1,2,3};std::cout<<v.size()<<std::endl;return 0;}
 int main(){std::cout<<"Coroutine frame: heap-allocated state machine. Compiler generates allocator calls."<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -789,7 +786,6 @@ int main(){hello();return 0;}
 | HTTP | Beast+coro | ~1us/req |
 
 面试: 协程帧分配? 堆(new)或自定义; co_await=暂停; co_yield=产出; co_return=结束
-
 
 ## 真实开源项目参考（可查证链接）
 

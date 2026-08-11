@@ -52,7 +52,6 @@ Epic 的取舍很清楚：**保留 C++ 的性能和零抽象控制力**（对比
 
 ⟶ Book/part11_source/ch133_clickhouse_redis.md
 
-
 Unreal Engine（UE）的 C++ 并非「裸标准 C++」——它构建在 **UObject 对象系统** 之上：一套由 UHT 在编译期扫描、运行时由 GC 与反射驱动的对象框架。标准 C++ 提供语言；UE 在其上叠加**元数据、垃圾回收、序列化、蓝图桥接**四大支柱。
 
 ```cpp
@@ -803,7 +802,6 @@ Q: 为什么 UE 使用 GC 而非智能指针？
 A: 循环引用自动解决; 蓝图绑定(脚本语言无所有权概念); 编辑器运行时对象生命周期复杂
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -811,7 +809,6 @@ A: 循环引用自动解决; 蓝图绑定(脚本语言无所有权概念); 编�
 | [第133章](Book/part11_source/ch133_clickhouse_redis.md) | 键值查找/缓存 | 本章提供概念，第133章提供实现 |
 | [第142章](Book/part12_patterns/ch142_ecs.md) | TCP服务器/HTTP客户端 | 本章提供概念，第142章提供实现 |
 | [第45章](Book/part05_oo/ch45_oop_object_model.md) | 独占所有权/工厂模式 | 本章提供概念，第45章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -856,7 +853,6 @@ call [rcx+0x0018]         ; 反射访问属性
 - UE 用 MSVC 19.3 / Clang 18；`__cplusplus` = 202302L
 - UHT 生成 `.gen.cpp`；`UCLASS` 宏展开反射
 - WG21 提案 P0784R7 启发 constexpr 反射（C++26）
-
 
 ## 附录 D：工业实战复盘与设计取舍 [I: Practice / H: Design]
 
@@ -1118,7 +1114,6 @@ flowchart TD
 | ch134 委托 | ch26 lambda | 委托常以 lambda 作回调，关联 ch26 |
 | ch134 序列化 | ch32 初始化 | 反序列化即构造 + 赋值，闭环 ch32 |
 | ch134 TSharedPtr | ch41 智能指针 | 共享所有权思想同源，见 ch41 |
-
 
 ## 附录 D5：真实基准与性能分析 — Unreal 式属性访问 — 直接字段 vs 成员指针 vs 虚 getter vs 字符串键查找（GCC 15.3.0）
 

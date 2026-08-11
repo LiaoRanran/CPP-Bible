@@ -38,7 +38,6 @@ Boost 的取舍是"宽松许可（Boost Software License）、模板驱动、头
 ⟶ Book/part11_source/ch127_llvm.md
 ⟶ Book/part11_source/ch129_qt.md
 
-
 Boost 是一组经过同行评审、可移植、开源的 C++ 库集合，被称为 C++ 的"事实标准库"。它长期充当**标准库的试验田**：大量组件经提炼后进入 ISO C++ 标准。
 
 ```cpp
@@ -779,7 +778,6 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 
 > 偏离说明：本章为"源码解析类"特例，按任务要求采用 20 元素自定义轮廓（①概述…⑳速查表），未套用 CONVENTIONS.md 的通用 20 元素模板；交叉引用仅指向 CONVENTIONS.md 与本章示例，未引用其他章节。源码剖析因本机未装 Boost，统一以"上游参考"+ 上游 URL + 行号方式给出，并以本机 g++ 真实编译的自包含复刻示例（见 ⑧⑨）作为取证证据。
 
-
 ## ㉑ 真实工程使用场景：C++ 标准库的"试验田" Boost
 
 > **人文关怀·落地**：前面读懂了 Boost 的组件谱系，这一节把它接到"你每天都在用已被标准采纳的 Boost 思想"。
@@ -856,7 +854,6 @@ int main() {
 int main(){std::cout<<"Boost=167库, ~80%进入C++标准. shared_ptr→C++11, optional→C++17, Asio→TS"<<std::endl;return 0;}
 ```
 面试: Boost=标准库孵化器; Asio/Beast/JSON仍广泛使用
-
 
 ## 相关章节（交叉引用）
 
@@ -1016,7 +1013,6 @@ int main(){
 }
 ```
 
-
 ## 附录 J：Boost 库生态与典型组件 决策流（D3 维度）
 
 ```mermaid
@@ -1101,4 +1097,3 @@ flowchart TD
 | ch124 | ch128 | 标准库实现总览衔接 Boost 补位定位 |
 | ch125 | ch128 | libc++ 对 Boost 头-only 的兼容验证 |
 | ch131 | ch128 | fmt 与 Boost 格式化能力的对比取舍 |
-

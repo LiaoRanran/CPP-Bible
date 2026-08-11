@@ -36,7 +36,6 @@
 ⟶ Book/part08_algorithms/ch95_algo_overview.md
 ⟶ Book/part08_algorithms/ch97_search.md
 
-
 排序是算法库最常用的一组：无序转有序，使二分查找、去重、归并、集合运算成为可能。`<algorithm>` 提供 `std::sort`、`std::stable_sort`、`std::partial_sort`、`std::nth_element`、`std::stable_partition` 等，全部作用于**有序区间**（[first, last)），比较默认用 `operator<`（严格弱序）。
 
 ```cpp
@@ -186,7 +185,6 @@ int main() {
 ```
 
 > 该块标注 `[自包含可编译]`：可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 15.3.0，零失败）。libstdc++ 上游片段（text 围栏）不进入编译门禁。把 ②-2.1 的 `median3_partition` 与 ② 的 `introsort` 拼起来即是一个可运行的 introsort 完整实现。
-
 
 ## ③ 复杂度与枢纽（pivot）选择 [标准]
 
@@ -849,7 +847,6 @@ int main() {
 - `[标准]`：默认用 `std::sort`；需要稳定才上 `stable_sort`；只需 Top-K/中位数就用 `partial_sort`/`nth_element`（更省）。
 - `[经验]`：排序前问自己三件事——稳定吗？全序吗？数据多大？答案决定用哪个算法。
 
-
 ## 附录 A：工业排序实现与标准提案 [F: Industry / B: Principle]
 
 ```
@@ -873,7 +870,6 @@ int main() {
 }
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -883,14 +879,12 @@ int main() {
 | [第98章](Book/part08_algorithms/ch98_heap.md) | 泛型库/编译期计算 | 本章提供概念，第98章提供实现 |
 | [第77章](Book/part07_stl/ch77_vector.md) | 数据处理管道/排行榜 | 本章提供概念，第77章提供实现 |
 
-
 ## 相关章节（交叉引用）
 
 - **后续依赖**：⟶ Book/part08_algorithms/ch101_algo_theory.md（第101章　哈希、图、树、DP、贪心（算法思想））—— 本章为其前置，建议后续延伸阅读。
 - **后续依赖**：⟶ Book/part11_source/ch132_leveldb_rocksdb.md（第132章　LevelDB / RocksDB 存储引擎（C++））—— 本章为其前置，建议后续延伸阅读。
 - **相邻主题**：⟶ Book/part07_stl/ch94_stop_token.md（第94章　stop_token 与协作取消 [标准]）—— 编号相邻、主题接续。
 - **同模块**：⟶ Book/part08_algorithms/ch99_numeric.md（第99章　数值算法与并行执行策略（C++））—— 同模块下的其他主题。
-
 
 ## 附录 C（排序算法底层）
 
@@ -921,7 +915,6 @@ jge .ok
 - L1 ≈ 1.0ns，L3 ≈ 12ns，主存 ≈ 100ns
 - GCC 13.2 / Clang 18 内联比较器；`__cplusplus` = 202302L
 - WG21 提案 P0468R2 规范范围算法
-
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

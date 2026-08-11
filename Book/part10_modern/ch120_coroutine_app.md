@@ -859,7 +859,6 @@ int main(){std::cout<<"co_await(ready=true) -> no suspension. sizeof(coro_handle
 
 > 自检: 所有 cpp 块用 `g++ -std=c++23 -O2 -Wall -Wextra` 编译，`<coroutine>` 由 PRELUDE 提供。
 
-
 ## 深度增强：Coroutine工业应用与底层
 
 ### 原理分析
@@ -933,7 +932,6 @@ _Z10ready_taskv:
         ret                             ; 协程机制整体被消除 → 真·零开销
 ```
 
-
 ### 工业: cppcoro/Seastar/Boost.Asio/Qt6 QCoro
 
 - **cppcoro**（Lewis Baker）：最早的 C++20 协程库原型，提供 `task<T>`、`generator<T>`、`async_generator<T>`、`resume_on` 等；其设计直接影响了标准 `std::generator`（P2168 / C++23）。本机 GCC 13.1 尚未实现 `std::generator`（`P2502`），故第120章手搓 `generator<T>` 以对齐 cppcoro 语义。
@@ -943,13 +941,11 @@ _Z10ready_taskv:
 
 > 上述库均为外部依赖，不在本书构建体系内；引入时需注意它们对 C++20 协程 ABI 与分配器的要求（自定义 `operator new` 可显著压低帧分配延迟，见「原理分析」）。
 
-
 ### 面试
 
 Q: 协程=线程? A: 否。协程=用户态协作式; 线程=内核态抢占式
 Q: co_await vs co_yield? A: await=等值; yield=产出+暂停
 Q: 帧何时销毁? A: final_suspend后→operator delete
-
 
 ## 相关章节（交叉引用）
 
@@ -1322,7 +1318,6 @@ flowchart TD
 | ch90 ranges 与 views | ch120 协程应用模式 | 惰性序列可借 ranges 物化 |
 | ch107 std atomic | ch120 协程应用模式 | 协程并发需原子保护共享状态 |
 | ch122 PMR 分配器 | ch120 协程应用模式 | 协程帧分配可走 PMR arena |
-
 
 ## 附录 D5：真实基准与性能分析 — 协程 vs 回调 vs 线程的真实开销（GCC 15.3.0）
 

@@ -40,7 +40,6 @@ SFINAE 强大却「以副作用闻名」：它把编译器的容错机制逆向�
 ⟶ Book/part06_templates/ch65_type_traits.md
 ⟶ Book/part06_templates/ch67_concepts.md
 
-
 - 精确说出 SFINAE 的触发条件：模板实参替换失败发生在「哪一步」、为何「非错误」 [标准]
 - 掌握 `std::enable_if` 的两种惯用法（返回类型孔位 / 默认模板参数孔位）及其优劣 [标准]
 - 能从 mangled 符号反推 SFINAE 为每个类型只实例化「胜出」的那个重载 [平台]
@@ -536,7 +535,6 @@ template<typename T>struct has_value_type{template<typename U>static auto test(i
 int main(){std::cout<<has_value_type<std::vector<int>>::value<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -647,7 +645,6 @@ int main(){f(42);return 0;}
 ```
 
 面试: SFINAE本质=编译器在模板替换失败时不报错(而是移除该重载)
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -935,7 +932,6 @@ int main() {
     return 0;
 }
 ```
-
 
 ## 附录 U：SFINAE 决策流（D3 维度）
 

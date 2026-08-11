@@ -43,7 +43,6 @@ xUnit 的核心取舍是"隔离 + 断言 + 可重复"：每个测试独立、快
 ⟶ Book/part13_engineering/ch149_ci_cd.md
 ⟶ Book/part13_engineering/ch151_benchmark.md
 
-
 测试金字塔（Test Pyramid）是测试策略的全局权衡框架：底层是大量的**单元测试**（快、稳定、廉价），中层是较少的**集成测试**（验证模块协作），顶层是更少的**端到端测试**（慢、易碎、昂贵）。C++ 因编译/链接重、平台耦合强，更应避免把逻辑验证压在端到端层。
 
 ```cpp
@@ -1078,7 +1077,6 @@ P2895R0 (std::testing): 标准化测试框架提案 (2024, 早期讨论)
        TDD vs BDD? A: TDD=先写测试再写代码; BDD=行为驱动, GIVEN-WHEN-THEN
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1087,7 +1085,6 @@ P2895R0 (std::testing): 标准化测试框架提案 (2024, 早期讨论)
 | [第149章](Book/part13_engineering/ch149_ci_cd.md) | 泛型库/编译期计算 | 本章提供概念，第149章提供实现 |
 | [第151章](Book/part13_engineering/ch151_benchmark.md) | 性能基准/回归检测 | 本章提供概念，第151章提供实现 |
 | [第29章](Book/part03_language/ch29_friend.md) | 计时器/性能测量 | 本章提供概念，第29章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1320,7 +1317,6 @@ int main() {
 ```
 
 **结论**：TDD 把“测试”前置为规格，重构时有安全网；注意 truncate 用 `std::string::substr`（关联 ⑫ TDD / ③ 测试夹具）。
-
 
 ## 附录 J：测试金字塔与 TDD 循环图（D3 维度）
 

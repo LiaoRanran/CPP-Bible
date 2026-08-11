@@ -36,7 +36,6 @@
 ⟶ Book/part05_oo/ch48_rtti.md
 ⟶ Book/part05_oo/ch50_multiple_inheritance.md
 
-
 - 说清菱形继承为何导致虚基类子对象重复，以及虚继承如何消除重复
 - 画清虚继承下最派生类的对象布局（vbptr + vbase offset 表 + 共享虚基类落位）
 - 从真实 x86-64 汇编解释「访问虚基类成员」为何多一次 vtable 负偏移取指
@@ -855,7 +854,6 @@ struct V{int v;virtual~V(){}};
 int main(){std::cout<<"sizeof(V)="<<sizeof(V)<<" (int + vptr + padding)"<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -864,7 +862,6 @@ int main(){std::cout<<"sizeof(V)="<<sizeof(V)<<" (int + vptr + padding)"<<std::e
 | [第48章](Book/part05_oo/ch48_rtti.md) | 泛型库/编译期计算 | 本章提供概念，第48章提供实现 |
 | [第50章](Book/part05_oo/ch50_multiple_inheritance.md) | 多态插件/框架扩展 | 本章提供概念，第50章提供实现 |
 | [第47章](Book/part05_oo/ch47_virtual_functions.md) | 性能基准/回归检测 | 本章提供概念，第47章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1331,7 +1328,6 @@ int main() {
   return 0;
 }
 ```
-
 
 ## 附录 D5：真实基准与性能分析 — 虚继承的运行时成本（GCC 15.3.0）
 

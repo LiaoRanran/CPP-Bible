@@ -1,10 +1,10 @@
 # 第86章　容器适配器：stack / queue / priority_queue
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) 为主，标注历史版本处见正文。  
-> 预计阅读：约 95 分钟（含示例与源码精读）。  
-> 前置：⟶ Book/part07_stl/ch76_stl_arch.md（STL 架构与迭代器概念）、⟶ Book/part07_stl/ch78_deque.md（deque 分段连续）、⟶ Book/part07_stl/ch77_vector.md（vector 扩容）  
-> 后续：⟶ Book/part08_algorithms/ch98_heap.md（堆算法）、⟶ Book/part07_stl/ch88_optional_variant.md（值语义包装）、⟶ Book/part03_language/ch19_variables.md（存储期）  
+> 标准基：ISO/IEC 14882:2023 (C++23) 为主，标注历史版本处见正文。
+> 预计阅读：约 95 分钟（含示例与源码精读）。
+> 前置：⟶ Book/part07_stl/ch76_stl_arch.md（STL 架构与迭代器概念）、⟶ Book/part07_stl/ch78_deque.md（deque 分段连续）、⟶ Book/part07_stl/ch77_vector.md（vector 扩容）
+> 后续：⟶ Book/part08_algorithms/ch98_heap.md（堆算法）、⟶ Book/part07_stl/ch88_optional_variant.md（值语义包装）、⟶ Book/part03_language/ch19_variables.md（存储期）
 > 难度：★★☆（概念简单，但"适配器=受控接口包装"的设计意图与底层约束是高频面试陷阱）
 
 ---
@@ -422,19 +422,19 @@ int main() { return 0; }
 
 ## ⑮ 面试题
 
-1. **`stack` 默认底层容器是什么？为什么不用 `vector`？**  
+1. **`stack` 默认底层容器是什么？为什么不用 `vector`？**
    答：`deque<T>`。`deque` 头尾插入/删除均摊 O(1) 且**头插不搬移全部元素**；`vector` 虽尾插 O(1) 摊还，但 `stack` 只用尾端，`deque` 也能满足且避免偶发整体扩容拷贝。`queue` 需要 `pop_front`，`deque` 提供 O(1) 头删（`vector` 没有，list 缓存差）。
 
-2. **`priority_queue` 默认是大顶堆还是小顶堆？怎么改成小顶堆？**  
+2. **`priority_queue` 默认是大顶堆还是小顶堆？怎么改成小顶堆？**
    答：默认 `less<T>` → 大顶堆（顶部最大）。改成小顶堆：`priority_queue<int, vector<int>, greater<int>>` 或自定义 `comp` 返回 `a > b`。
 
-3. **`priority_queue` 的 `top()` 和 `pop()` 为什么不合并成一个返回值的函数？**  
+3. **`priority_queue` 的 `top()` 和 `pop()` 为什么不合并成一个返回值的函数？**
    答：分离是**异常安全**考量——`top()` 返回引用（不拷贝、不抛），`pop()` 负责移除。若合并，移除后再拷贝返回值，在拷贝构造抛异常时会丢失元素（强保证难做）。这是 C++ 标准库的通用约定。
 
-4. **为什么 `stack`/`queue` 没有迭代器？**  
+4. **为什么 `stack`/`queue` 没有迭代器？**
    答：语义约束。栈的契约是"只能看/取栈顶"，队列是"只能看队头队尾"。暴露迭代器等于允许任意遍历/插入，破坏抽象，也无法保证不变量。底层容器 `c` 是 `protected`，需要时可派生访问。
 
-5. **`priority_queue` 底层能用 `list` 吗？**  
+5. **`priority_queue` 底层能用 `list` 吗？**
    答：不能。`priority_queue` 的堆算法（`make_heap` 等）要求随机访问迭代器（`list` 只有双向迭代器）。编译期即用 `random_access_iterator` 概念约束，报错。
 
 ---

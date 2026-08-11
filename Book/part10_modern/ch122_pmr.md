@@ -1066,7 +1066,6 @@ int main(){std::pmr::synchronized_pool_resource pool;std::pmr::vector<std::pmr::
 int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in replacement for std::allocator."<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1076,7 +1075,6 @@ int main(){std::cout<<"std::pmr: C++17 polymorphic memory resources. Drop-in rep
 | [第126章](Book/part11_source/ch126_msstl.md) | 泛型库/编译期计算 | 本章提供概念，第126章提供实现 |
 | [第93章](Book/part07_stl/ch93_thread_async.md) | 多线程服务器 | 本章提供概念，第93章提供实现 |
 | [第152章](Book/part14_perf/ch152_perf_model.md) | 资源管理/事务回滚 | 本章提供概念，第152章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 

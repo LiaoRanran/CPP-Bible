@@ -38,7 +38,6 @@ ABA 从"论文里的陷阱"走向"有官方回收解法"，靠的是 Hazard Poin
 ⟶ Book/part09_concurrency/ch110_lockfree.md
 ⟶ Book/part09_concurrency/ch112_hazard_rcu.md
 
-
 **ABA 问题**发生在基于**比较并交换（CAS）**的无锁（lock-free）算法中：一个共享变量的值从 `A` 变成 `B`，又变回 `A`，于是 CAS 看到“值还是 A”便误以为“什么都没发生”，从而**错误地成功**。但中间状态（`A→B→A`）往往伴随**被回收/被复用的内存**，导致逻辑被破坏。
 
 ```cpp
@@ -685,7 +684,6 @@ int main() {
 
 > （面试题·附属检索层，非核心结论，详见 `Interview/`）：ABA 问题是什么？A 线程读到 A 值 → B 线程改为 B → B 线程改回 A → A 线程 CAS 成功但对象已变。最快解决方案？tagged pointer（x86-64 复用高位，零额外内存）。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -694,7 +692,6 @@ int main() {
 | [第112章](Book/part09_concurrency/ch112_hazard_rcu.md) | 无锁队列/计数器 | 本章提供概念，第112章提供实现 |
 | [第110章](Book/part09_concurrency/ch110_lockfree.md) | 泛型库/编译期计算 | 本章提供概念，第110章提供实现 |
 | [第112章](Book/part09_concurrency/ch112_hazard_rcu.md) | 高性能容器/零拷贝传输 | 本章提供概念，第112章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -1202,7 +1199,6 @@ int main() {
 ```
 
 预期输出第一行 `1 42`（CAS 成功地将 7 改为 42，印证 D4.1 的原语层），第二行 `false`（印证 D4.2/D4.3：`atomic<shared_ptr>` 因锁位打包而非 lock-free），第三行 `99`（在锁保护下安全 load 出共享指针）。`is_lock_free()` 返回 `false` 是 libstdc++ 的真实行为，不依赖具体平台字长。
-
 
 ## 附录 D5：真实基准与性能分析 — 无锁 ABA 防护与原子宽度的真实开销（GCC 15.3.0）
 

@@ -43,7 +43,6 @@
 ⟶ Book/part15_cases/ch160_mempool.md
 ⟶ Book/part15_cases/ch162_json.md
 
-
 日志是"程序运行时的黑匣子"。**[经验]** 在一个出过生产事故的人眼里，日志不是可选项，而是事故复盘的**唯一客观证据**——你无法用 gdb 去"回放"昨天凌晨三点的崩溃，但一条带时间戳和调用栈的 `error` 日志可以。
 
 日志在三个维度创造价值：
@@ -1426,7 +1425,6 @@ void set_threshold(Logger& log, Level l) { log.set_level(l); }
 
 > 取证产物清单（均在本机真实生成）：`Examples/_ch161_{levels,sink_console,sink_file,format_manual,stdformat,async,rotation,threadsafe,zerooverhead,macro,loc,full,platform,json,benchmark,antipattern,error_chain,case}.cpp`、汇编 `Examples/_ch161_asm.asm`、运行时产物 `Examples/_ch161_file.log` / `Examples/_ch161_full.log` / `Examples/_ch161_rotate.log.*`。所有输出数字来自上述文件在本机 `g++ 13.1.0 -O2` 的真实运行。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1491,7 +1489,6 @@ int main() {
 
 面试: spdlog为什么快? 异步(无锁队列) + fmt(编译期格式验证) + header-only(内联)
        日志级别应该用enum还是string? enum class(类型安全+switch穷举)
-
 
 ## 相关章节（交叉引用）
 
@@ -1602,9 +1599,6 @@ int main() { BoundedQueue<int> bq; std::cout << bq.try_push(1) << '\n'; }
 
 </details>
 
-
-
-
 ## 附录 J：日志处理决策流（D3 维度）
 
 > 本图把第②节（级别门控 enum class）、第⑩节（LOG 宏注入文件行号）、第⑤节（std format 格式化）、第⑥节（异步队列+后台线程）、第⑦节（按大小/时间轮转）、第⑧节（mutex/无锁线程安全）、第⑨节（if constexpr 零开销关闭级别）、第⑭节（错误报告与错误处理衔接）收敛成一条"业务调用→级别判定→格式化→同步/异步落地→轮转→线程安全"的日志流水线，并标出背压与零开销两条回退边。
@@ -1635,15 +1629,9 @@ flowchart TD
 
 > 决策流说明：级别判定是第一道闸门——只有"不低于阈值"才进入格式化与落地（否则在编译期或运行期直接丢弃，零开销）；同步与异步落地两条边在"输出"处「或」汇合，异步路径又把昂贵的 sink IO 从生产者移走。跨章外推：异步依赖第93章 thread，线程安全依赖第107章 atomic，结构化外推第131章 fmt/spdlog。
 
-
-
 ## 附录 K：日志库知识图谱（D6 维度）
 
-
-
 > 本图以本章主题为中心，上游列出其依赖的底层机制（分配/并发/格式化/解析原语），下游列出消费它的系统（框架/网络/日志/测试），并标出跨章外推边。
-
-
 
 ```mermaid
 flowchart TD
@@ -1675,8 +1663,6 @@ flowchart TD
   CORE --> BENCH
 ```
 
-
-
 ### K.1 概念依赖逐边解读
 
 | 边 | 依赖含义 |
@@ -1694,8 +1680,6 @@ flowchart TD
 | SOURCE → LEVEL | source_location 自动注入文件行号 |
 | CORE → FILESYS | file sink 轮转用 filesystem |
 | CORE → BENCH | steady_clock 基准量化同步vs异步 |
-
-
 
 ### K.2 跨章闭环表
 

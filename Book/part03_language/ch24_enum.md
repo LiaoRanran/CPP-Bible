@@ -43,7 +43,6 @@ C 的 `enum` 来自 1970 年代，本意是用具名常量替代魔法数字，�
 ⟶ Book/part03_language/ch23_namespace_adl.md
 ⟶ Book/part03_language/ch25_union_variant.md
 
-
 枚举（enumeration）是 C++ 用来表示**离散命名常量集合**的值类型。它既是贴近硬件的“整型的强命名包装”，又是现代 C++ 类型安全体系的重要一环。
 
 本章把枚举拆成两条主线：
@@ -783,7 +782,6 @@ int main() {
 
 ---
 
-
 ### D5 实测：枚举派发 vs 虚调用（GCC 15.3.0 微基准）
 
 上面「零开销」结论用真实计时验证（方法学同 ch85 D5）：`enum class` 以 `switch`/直链派发，与 `int` 派发生成相同机器码，单次派发约 **3.3 ns**；而等价的**虚函数派发**为 **≈24.0 ns**——慢约 **7.2×**，差距来自一次间接调用 + 无法内联 + 间接分支预测失败风险。
@@ -1275,7 +1273,6 @@ int main() { (void)g_min_level; }
 
 *本章完。下接第 25 章（待定）。错误码体系深入见第 14 章《异常与 error_code》；枚举 trait 模板技法见第 60 章。*
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1322,7 +1319,6 @@ int main() {
     return 0;
 }
 ```
-
 
 ## 附录 F：enum面试
 
@@ -1589,9 +1585,6 @@ ret
 | `enum class Color : uint8_t` | `movzx`/`mov`/`add`+越界 `cmovae` | 禁止（需 `static_cast`） | 零 |
 | 无作用域 `enum Plain` | `lea [rcx+1]` | 允许（免费） | 零，但无保护 |
 | `switch(c)` on enum class | `add` + 越界 `cmovae` | — | 零 |
-
-
-
 
 ## 附录 J：枚举 enum 决策流（D3 维度）
 

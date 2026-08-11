@@ -40,7 +40,6 @@ libc++ 的核心取舍是"现代化优先、许可友好、模块化"。它不�
 ⟶ Book/part11_source/ch124_libstdcxx.md
 ⟶ Book/part11_source/ch126_msstl.md
 
-
 libc++ 是 LLVM 项目自带的 C++ 标准库实现（与 Clang 配套，但也能被 GCC 通过 `-stdlib=libc++` 使用）。它的设计目标是：高 C++11/14/17/20/23 符合度、模块化、与 LLVM/Clang 工具链深度协同、在 Apple 平台作为系统默认标准库。它与 libstdc++（GCC）、MSVC STL 并列为三大主流实现。
 
 ```cpp
@@ -846,7 +845,6 @@ int main() {
 面试: libc++和libstdc++可以互换吗？ Linux x86-64 ABI兼容 → Clang可用libstdc++
        libc++的SSO为什么是22字节？ Apple主导的设计, 优化macOS/iOS短字符串的堆分配率
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -855,7 +853,6 @@ int main() {
 | [第126章](Book/part11_source/ch126_msstl.md) | 多态插件/框架扩展 | 本章提供概念，第126章提供实现 |
 | [第124章](Book/part11_source/ch124_libstdcxx.md) | 泛型库/编译期计算 | 本章提供概念，第124章提供实现 |
 | [第126章](Book/part11_source/ch126_msstl.md) | 错误恢复/不可恢复错误 | 本章提供概念，第126章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -1066,4 +1063,3 @@ flowchart TD
 | ch126 | ch125 | MS STL 与 libc++ 的 ABI 与模块策略对照 |
 | ch127 | ch125 | LLVM 基础设施支撑 libc++ 的构建与测试 |
 | ch132 | ch125 | 存储引擎对分配器的需求反哺 libc++ PMR 设计 |
-

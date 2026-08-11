@@ -39,7 +39,6 @@ TMP 极致的「零运行期开销」是以「编译期极慢、报错极狠、�
 ⟶ Book/part06_templates/ch67_concepts.md
 ⟶ Book/part06_templates/ch69_constexpr.md
 
-
 - 理解 TMP（Template Metaprogramming）的本质：用模板实例化机制在**编译期**完成值计算与类型计算。
 - 掌握三条基本控制流：**递归**（值/类型递归实例化 + 偏特化终止）、**分支**（`std::conditional` / `if constexpr` / bool 特化）、**循环**（包展开 / 折叠 / 递归展开）。
 - 能通过真实汇编证明：TMP 计算在 `-O2` 下**零运行时代码**，全部折叠为立即数。
@@ -559,7 +558,6 @@ static_assert(std::is_same_v<Front<int, double>::type, int>);
 - `bits/utility.h` → `integer_sequence`（164）→ `make_integer_sequence`（172）：看索引序列的偏特化构造。
 - 自行用 `g++ -std=c++23 -O0 -S -masm=intel` 编译 `Examples/_asm_tmp_recur.cpp`，观察 `Fib<0..10>` 符号链，建立"递归 TMP = 递归函数符号"的直觉。
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -591,7 +589,6 @@ P2448R2 (C++23): 放宽constexpr限制 → 允许非constexpr函数在constexpr�
 - fmtlib: constexpr格式字符串验证 → 替代了TMP的格式检查
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -600,7 +597,6 @@ P2448R2 (C++23): 放宽constexpr限制 → 允许非constexpr函数在constexpr�
 | [第67章](Book/part06_templates/ch67_concepts.md) | 泛型库/编译期计算 | 本章提供概念，第67章提供实现 |
 | [第69章](Book/part06_templates/ch69_constexpr.md) | 文本处理/协议解析 | 本章提供概念，第69章提供实现 |
 | [第65章](Book/part06_templates/ch65_type_traits.md) | 模板约束/类型安全API | 本章提供概念，第65章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -860,7 +856,6 @@ int main() {
     return 0;
 }
 ```
-
 
 ## 附录 J：模板元编程（TMP）决策流（D3 维度）
 

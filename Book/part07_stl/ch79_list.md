@@ -994,7 +994,6 @@ int main() {
 
 > 本文件为独立章节，未改动 `INDEX.md` / `GLOSSARY.md` / `CROSSREF.md`；与 ch76(STL 架构)、ch77(vector)、ch78(deque)、ch86(适配器)、ch90(ranges)、ch95(算法概述) 建立正文交叉引用。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1004,7 +1003,6 @@ int main() {
 | [第78章](Book/part07_stl/ch78_deque.md) | 数据局部性/缓存友好设计 | 本章提供概念，第78章提供实现 |
 | [第76章](Book/part07_stl/ch76_stl_arch.md) | 内存管理/PMR定制 | 本章提供概念，第76章提供实现 |
 | [第86章](Book/part07_stl/ch86_adapters.md) | 文本处理/协议解析 | 本章提供概念，第86章提供实现 |
-
 
 ## 附录 B：std::list 底层实现与性能深度 [E: Low-level / B: Principle]
 
@@ -1557,5 +1555,3 @@ int main() {
 - 求和/规模等结果经 `volatile` sink 累加，防止编译器把无副作用循环整段死代码消除（DCE）。
 - 报告一律给「相对倍数 ×」而非绝对毫秒作为可移植信号；绝对毫秒随机器、编译器版本、频率伸缩而变，不可横向比较。
 - 复现旗标：`g++ -O2 -std=c++17 -pthread`（-pthread 仅用于对齐多线程环境，不影响单线程基准）。完整 demo 见 D5.3，规模已缩小 10×，CI 可在秒级跑完。
-
-

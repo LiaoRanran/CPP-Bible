@@ -37,7 +37,6 @@ C 时代只有两种 primitive：返回码与全局 `errno`（1970s）。`[史]`
 ⟶ Book/part13_engineering/ch145_naming_api.md
 ⟶ Book/part13_engineering/ch147_code_review.md
 
-
 错误处理不是"发生错误后怎么办"，而是**设计 API 契约时就必须决定的第一等公民**。一个函数一旦可能失败，调用方就必须有一个可预期、可组合、可推理的失败通道；错误通道设计得差，整个系统的可靠性会系统性塌方。
 
 `[经验]` 工业界的共识是：**异常用于"真正异常、且调用方通常无法就地恢复"的失败；返回值/可选项用于"可预期的、调用方应当处理的常规失败"**。把"文件不存在"当异常抛出，是在用控制流模拟返回码；把"空指针解引用"用返回值掩盖，是在丢弃本可立即崩溃的定位信息。
@@ -726,7 +725,6 @@ while (auto x = pop()) consume(*x);   // 自然终止，无异常
 
 本章全部示例均通过本机 `g++ -std=c++23 -O2 -Wall -Wextra` 真实编译验证（产物见 `Examples/_ch146_*.asm` 与 `_ch146_*_warn.txt`），关键机器码结论取自 g++ 生成的 Intel 语法汇编，未做任何编造。
 
-
 ## 附录 A：工业错误处理范式对比 [F: Industry]
 
 四个世界级 C++ 项目的错误处理策略：
@@ -849,7 +847,6 @@ int main() {
 }
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -858,7 +855,6 @@ int main() {
 | [第147章](Book/part13_engineering/ch147_code_review.md) | 多态插件/框架扩展 | 本章提供概念，第147章提供实现 |
 | [第121章](Book/part10_modern/ch121_contracts.md) | 泛型库/编译期计算 | 本章提供概念，第121章提供实现 |
 | [第88章](Book/part07_stl/ch88_optional_variant.md) | 资源管理/事务回滚 | 本章提供概念，第88章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -895,7 +891,6 @@ int main() {
 - **Mozilla** — MFBT 用 `Result` 类型表示成败
 - **Abseil** — Abseil `absl::StatusOr` 携带值或错误
 - **Blink** — Blink 用 `std::expected` 改写旧错误码
-
 
 ## 附录 F（异常开销与栈展开）
 
@@ -1012,9 +1007,6 @@ int main() { safe(); }
 [引用] 错误处理反模式（吞异常 / 空 catch）见 C++ Core Guidelines「E 错误处理」（如 E.6 用 RAII 防泄漏、E.12 正确用 `noexcept`）；cppreference「RAII」「std::lock_guard」；ch146 ⑲ 列反模式。
 
 </details>
-
-
-
 
 ## 附录 J：错误处理策略选型流（D3 维度）
 
@@ -1153,4 +1145,3 @@ flowchart TD
   LOG --> PROP
   PROP --> DONE
 ```
-

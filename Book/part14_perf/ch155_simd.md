@@ -39,7 +39,6 @@ SIMD（单指令多数据）的动机来自"对一大堆数据做同一件事"�
 ⟶ Book/part14_perf/ch154_cache_opt.md
 ⟶ Book/part14_perf/ch156_compiler_opt.md
 
-
 **SIMD**（Single Instruction, Multiple Data，单指令多数据）指一条指令同时对一组（向量）数据做相同运算。对比 SISD（标量，一次一个数据），SIMD 用更少的指令完成批量同构计算，是多媒体、数值、AI 推理的核心加速手段。
 
 ```cpp
@@ -829,14 +828,12 @@ SIMD设计决策树:
        何时不用SIMD? A: 分支密集/数据不连续/量<16
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
 | [第154章](Book/part14_perf/ch154_cache_opt.md) | 向量化计算/图像处理 | 本章提供概念，第154章提供实现 |
 | [第156章](Book/part14_perf/ch156_compiler_opt.md) | 计时器/性能测量 | 本章提供概念，第156章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -1078,7 +1075,6 @@ flowchart TD
 | SIMD 向量化 | ch15 性能剖析 | 计数器确认向量化 |
 | SIMD 向量化 | ch149 CI/CD | 向量化基准进回归 |
 | SIMD 向量化 | ch47 虚函数 | 去虚调用利于向量化 |
-
 
 ## 附录 D5：真实基准与性能分析 — SIMD 向量化的真实收益（GCC 15.3.0）
 

@@ -36,7 +36,6 @@ C++11 的可变参数模板虽然解决了「任意参数」，但要对参数�
 ⟶ Book/part06_templates/ch63_variadic.md
 ⟶ Book/part06_templates/ch65_type_traits.md
 
-
 - 区分四种折叠：一元左/右、二元左/右 [标准]
 - 说清空包（empty pack）的处理规则 [标准]
 - 理解折叠的短路语义（逻辑与/或、逗号）[标准]
@@ -653,7 +652,6 @@ int main() {
 - libstdc++ `bits/conjunction.hpp`：conjunction 偏特化短路（语义等价于 && 折叠）
 - ⟶ Book/part06_templates/ch63_variadic.md（可变参数）　⟶ Book/part06_templates/ch65_type_traits.md（type traits）
 
-
 ## 附录 A：WG21 提案 [B: Principle]
 
 ```
@@ -736,7 +734,6 @@ A: && → true (逻辑与空集 = 真); || → false; , → void()
 3. 忘记括号 → 折叠表达式语法严格要求外层括号
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -745,7 +742,6 @@ A: && → true (逻辑与空集 = 真); || → false; , → void()
 | [第63章](Book/part06_templates/ch63_variadic.md) | 动态数组/缓冲区 | 本章提供概念，第63章提供实现 |
 | [第65章](Book/part06_templates/ch65_type_traits.md) | 文本处理/协议解析 | 本章提供概念，第65章提供实现 |
 | [第77章](Book/part07_stl/ch77_vector.md) | 泛型库/编译期计算 | 本章提供概念，第77章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1003,7 +999,6 @@ int main() {
     return 0;
 }
 ```
-
 
 ## 附录 J：折叠表达式决策流（D3 维度）
 

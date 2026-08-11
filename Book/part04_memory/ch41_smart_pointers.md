@@ -63,7 +63,6 @@
 
 ---
 
-
 ## 架构与流程图示（Mermaid）
 
 三类智能指针的所有权语义：unique_ptr 独占、shared_ptr 共享（经控制块计数）、weak_ptr 仅观察不增引用。
@@ -112,11 +111,9 @@ C++ 没有垃圾回收。裸 `new`/`delete`（见 ch37）把"分配"与"释放"�
 ⟶ Book/part04_memory/ch40_exception_safety.md
 ⟶ Book/part04_memory/ch42_strict_aliasing.md
 
-
 [标准] C++ 没有垃圾回收。裸 `new`/`delete`（ch37）把"分配"与"释放"分离到两处，一旦中间抛出异常、提前 `return`、或分支遗漏，就会泄漏。智能指针把"释放"绑定到对象析构（RAII，见 ch39），由作用域 / 所有权自动触发。
 
 [经验] 现代 C++ 的默认选择是：**默认 `unique_ptr`，必须共享时才 `shared_ptr`，必须打破循环时才 `weak_ptr`**。Rule of Zero（ch39）告诉我们在大多数类里连析构函数都不该手写——把资源交给智能指针即可。
-
 
 全景对比：
 
@@ -2290,4 +2287,3 @@ int main() {
 - `volatile` sink 防 DCE；**ch41 特别提示**：本附录还依赖"指针逃逸"来区分真实开销与被消除的假象 —— 只有逃逸到 `volatile` 的指针才会迫使优化器保留分配，从而测出 `unique_ptr` 与裸 `new` 的等价真值。
 - 加速比（如 1.98×、24×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++17`。demo 用重载 `operator new` 统计分配次数，断言 `make_shared` 分配次数少于 `shared_ptr(new)`（这是稳定语义，可断言），未对时间或倍数做任何断言。
-

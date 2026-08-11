@@ -54,7 +54,6 @@
 
 ⟶ Book/part01_history/ch02_standardization.md
 
-
 ```cpp
 // C 语言谱系：最早的 "C with Classes" 风格（早期用 C 的 printf）
 #include <cstdio>
@@ -506,7 +505,6 @@ int main() {
 面试: extern C的作用？ C符号规则(无mangling/异常/重载)
        C和C++最大区别？ C++=C超集+RAII+异常+模板+OOP+STL
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -628,7 +626,6 @@ int main(){int arr[5]={5,3,1,4,2};qsort(arr,5,4,cmp);std::cout<<arr[0]<<std::end
 面试: qsort为什么慢? 函数指针间接调用, 无法内联; C++ lambda内联展开
        C和C++共享什么? C ABI, struct布局, 零开销调用C库
 
-
 ## 相关章节（交叉引用）
 
 - **后续依赖**：⟶ Book/part16_reading/ch165_roadmap.md（第165章 C++ 进阶路线图（C++））—— 本章为其前置，建议后续延伸阅读。
@@ -648,7 +645,6 @@ int main(){int arr[5]={5,3,1,4,2};qsort(arr,5,4,cmp);std::cout<<arr[0]<<std::end
 **最佳实践**：读标准演化时以 [LLVM](https://llvm.org) 的 `cxx_status` 与 [Boost](https://www.boost.org) 的提案库为交叉验证源，避免仅凭二手博客判断某特性是否进入某标准版。
 
 > 交叉引用：版本特性全景见 [ch10](Book/part01_history/ch10_version_matrix.md)；编译器实现见 [ch11](Book/part02_toolchain/ch11_compilers.md)。
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -786,8 +782,6 @@ int main() {
 
 </details>
 
-
-
 ## 附录 U：从 C 到 C++ 的对象模型演进决策流（D3 维度）
 
 本节把第④节（知识图谱）与第⑥节（C with Classes 早期对象模型）收敛为一条「何时引入哪种抽象」的决策流，覆盖从 C 到 C++ 命名的关键节点。
@@ -841,7 +835,6 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ```
 
 > 决策流说明：第④节指出，只有当「数据+行为」必须绑定（N4=是）才进入 C with Classes；只有需要运行时多态（N10=是）才付出 vtable 成本，否则走静态分发——这一「与/或」闸门直接决定后续 ch47（虚函数）与 ch51（CRTP 静态多态）的分野。
-
 
 ## 附录 V：C 语言遗产 → 现代 C++ 概念依赖网（D6 维度）
 

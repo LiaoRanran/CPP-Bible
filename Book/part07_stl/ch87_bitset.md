@@ -1,10 +1,10 @@
 # 第87章　bitset：编译期定长位集
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) 为主；`<bit>` 整数位操作库见 §⑬。  
-> 预计阅读：约 90 分钟（含源码精读与跨语言对比）。  
-> 前置：⟶ Book/part07_stl/ch80_array.md（固定大小数组）、⟶ Book/part06_templates/ch65_type_traits.md（整型特性）、⟶ Book/part07_stl/ch77_vector.md（vector\<bool\> 特化对比）  
-> 后续：⟶ Book/part07_stl/ch88_optional_variant.md（值语义包装）、⟶ Book/part14_perf/ch155_simd.md（位级并行）、⟶ Book/part11_source/ch124_libstdcxx.md（阅读入口）  
+> 标准基：ISO/IEC 14882:2023 (C++23) 为主；`<bit>` 整数位操作库见 §⑬。
+> 预计阅读：约 90 分钟（含源码精读与跨语言对比）。
+> 前置：⟶ Book/part07_stl/ch80_array.md（固定大小数组）、⟶ Book/part06_templates/ch65_type_traits.md（整型特性）、⟶ Book/part07_stl/ch77_vector.md（vector\<bool\> 特化对比）
+> 后续：⟶ Book/part07_stl/ch88_optional_variant.md（值语义包装）、⟶ Book/part14_perf/ch155_simd.md（位级并行）、⟶ Book/part11_source/ch124_libstdcxx.md（阅读入口）
 > 难度：★★☆（API 简单，但"编译期定长"带来的约束与 `vector<bool>` 的取舍是面试高频点）
 
 ---
@@ -340,19 +340,19 @@ int main() {
 
 ## ⑮ 面试题
 
-1. **`bitset<64>` 和 `unsigned long long` 做 64 位掩码，谁快？**  
+1. **`bitset<64>` 和 `unsigned long long` 做 64 位掩码，谁快？**
    答：同宽时 `uint64_t` 位运算直接编译为单/几条指令；`bitset<64>` 多一层内联转发，但 `-O2` 下通常等价。bitset 的优势在**宽度可超过机器字长**且 API 安全（`test/set` 带边界检查类型）。
 
-2. **`bitset` 能作为 `map` 的 key 吗？能 `hash` 吗？**  
+2. **`bitset` 能作为 `map` 的 key 吗？能 `hash` 吗？**
    答：可以作 key（`bitset` 提供 `operator==` 与 `operator<`）；也可以 `std::hash<std::bitset<N>>`（C++11 起）。
 
-3. **`bitset` vs `vector<bool>` 怎么选？**  
+3. **`bitset` vs `vector<bool>` 怎么选？**
    答：大小编译期已知、需要位运算/计数/与整数互转 → `bitset`；大小运行期决定、需要迭代/动态增长 → `vector<bool>`（注意其迭代器是代理，算法易踩坑）。
 
-4. **`to_ulong()` 什么情况抛异常？**  
+4. **`to_ulong()` 什么情况抛异常？**
    答：当 bitset 中任一"超出 `unsigned long` 容量"的位被置 1 时抛 `std::overflow_error`。如 `bitset<128>` 设了 bit 90 再 `to_ulong()` 必抛。
 
-5. **`bitset<N>` 的 `N` 可以是运行期变量吗？**  
+5. **`bitset<N>` 的 `N` 可以是运行期变量吗？**
    答：不能。`N` 必须是编译期常量（模板非类型参数），否则编译失败。这是它"定长"的根本约束。
 
 ---
@@ -1449,6 +1449,3 @@ int main() {
 - 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
 - 加速比（10.6× / 2.5× / 2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_87_bitset.cpp`。
-
-
-

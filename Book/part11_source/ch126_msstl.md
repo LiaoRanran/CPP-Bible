@@ -38,7 +38,6 @@ MS STL 的取舍是"与 Windows 平台合一、以兼容与稳定为先"，例�
 ⟶ Book/part11_source/ch125_libcxx.md
 ⟶ Book/part11_source/ch127_llvm.md
 
-
 MS STL（曾称 *Microsoft Visual C++ Standard Library*）是 MSVC 自带的 C++ 标准库实现，提供 `<vector>`、`<string>`、`<iostream>`、`<algorithm>` 等全部标准容器/算法/迭代器/本地化/IO/并行。它与 MSVC 工具链（编译器 `cl.exe`、运行时 `vcruntime`、CRT `ucrt`）深度耦合，是 Windows 平台 C++ 事实标准库。
 
 ```cpp
@@ -893,7 +892,6 @@ int main() {
 面试: MS STL调试模式级别？ 0(Release), 1(Debug basic), 2(Debug full bound check)
        为什么MS STL的并行算法更快？ 内置Windows ThreadPool, 无需TBB额外依赖
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -913,7 +911,6 @@ Q: MS STL何时开源? A: 2017年Apache 2.0, GitHub microsoft/STL
 #include <iostream>
 int main(){std::cout<<"MS STL: 0=Release, 1=Debug, 2=Full. Parallel via Windows ThreadPool."<<std::endl;return 0;}
 ```
-
 
 ## 相关章节（交叉引用）
 
@@ -1136,4 +1133,3 @@ flowchart TD
 | ch125 | ch126 | libc++ 与 MS STL 的模块 / ABI 策略对照 |
 | ch127 | ch126 | LLVM/Clang-CL 与 MS STL 的协同构建 |
 | ch132 | ch126 | 存储引擎对 PMR 的需求反哺 MS STL 分配器 |
-

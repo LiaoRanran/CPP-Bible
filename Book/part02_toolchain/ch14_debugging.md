@@ -38,7 +38,6 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 ⟶ Book/part02_toolchain/ch13_packaging.md
 ⟶ Book/part02_toolchain/ch15_profiling.md
 
-
 调试不是"找 bug"的代名词，而是**把程序的可观察行为对齐到设计意图**的闭环。C++ 的典型故障分层：
 
 ```
@@ -946,7 +945,6 @@ Sanitizer与标准库:
        ASan如何工作？ A: 影子内存(shadow memory)映射每8字节→1字节状态
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1006,7 +1004,6 @@ int main(){int x=0;x=42;std::cout<<"GDB: b main, r, p x, watch x, c"<<std::endl;
 
 面试: watchpoint vs breakpoint? break=执行到位置; watch=变量值变化
        core dump分析? gdb ./app core → bt → frame N → print
-
 
 ## 附录 H：Valgrind vs Sanitizer
 
@@ -1090,7 +1087,6 @@ int main(){std::thread t1([]{x=1;});std::thread t2([]{x=2;});t1.join();t2.join()
 
 > 交叉引用：UB 检测见 [ch156](Book/part14_perf/ch156_compiler_opt.md)；测试见 [ch150](Book/part13_engineering/ch150_testing.md)。
 
-
 ## 附录 K（调试器底层与断点）
 
 GDB 断点靠 `int3`（`0xcc`）指令替换实现，下列为开销量级。
@@ -1121,7 +1117,6 @@ mov byte [rax+0x0000], 0xcc   ; 写入软件断点
 - `__cplusplus` = 202302L；`__builtin_debugtrap()` 插入陷阱
 - WG21 提案 P0784R7 扩展 constexpr 可调试性
 
-
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
 ### 工业案例（真实可查证）
@@ -1138,7 +1133,6 @@ mov byte [rax+0x0000], 0xcc   ; 写入软件断点
 ### 重构建议
 
 把「`printf` 调试 + 肉眼比对」重构为 CI 内置 `-fsanitize=address,undefined` 构建配置 + 每个 PR 自动跑；把 gdb 手工断点重构为 `.gdbinit` 脚本 + pretty-printer 配置；Linux 服务加 `core_pattern` + `systemd-coredump` 自动收集崩溃现场。
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -1357,4 +1351,3 @@ flowchart TD
 | ch28 生命周期/UB | [Book/part03_language/ch28_lifetime_ub.md](Book/part03_language/ch28_lifetime_ub.md) | UBSan 捕获未定义行为（第⑦节与 ch28 衔接） |
 | ch150 测试 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | 调试驱动测试失败定位（第⑰节外推） |
 | ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 优化下 sanitizer 行为差异（第⑥节与 ch156 衔接） |
-

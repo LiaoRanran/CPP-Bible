@@ -40,7 +40,6 @@
 ⟶ Book/part14_perf/ch152_perf_model.md
 ⟶ Book/part14_perf/ch154_cache_opt.md
 
-
 读完本章你能独立回答：
 
 1. **经典五级流水线**（取指 IF → 译码 ID → 执行 EX → 访存 MEM → 写回 WB）各阶段职责与吞吐瓶颈。
@@ -832,7 +831,6 @@ int main() {
 }
 ```
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -849,7 +847,6 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 | [第152章](Book/part14_perf/ch152_perf_model.md) | 向量化计算/图像处理 | 本章提供概念，第152章提供实现 |
 | [第152章](Book/part14_perf/ch152_perf_model.md) | 数据处理管道/排行榜 | 本章提供概念，第152章提供实现 |
 | [第154章](Book/part14_perf/ch154_cache_opt.md) | 计时器/性能测量 | 本章提供概念，第154章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 

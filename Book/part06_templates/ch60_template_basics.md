@@ -38,7 +38,6 @@
 
 ⟶ Book/part06_templates/ch61_template_overload.md
 
-
 - 说清「模板」「模板参数」「模板实参」「实例化」四者关系 [标准]
 - 区分隐式实例化 / 显式实例化 / 显式特化 / 显式实例化定义 [标准]
 - 理解两阶段查找（Phase 1 不依赖模板参数 / Phase 2 依赖模板参数）[实现]
@@ -736,7 +735,6 @@ flowchart TD
 - GCC `cp/pt.cc`：模板实例化（instantiation）主流程
 - 交叉引用占位：part05 虚函数章（vtable 取指对比运行期多态，本书 ch47）
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -765,7 +763,6 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 | Abseil | Span<T> | 类型安全数组视图 |
 
 面试: 模板编译慢因为每实例化=新TU编译; concepts加速2-5x
-
 
 ## 附录 F：模板面试
 
@@ -966,7 +963,6 @@ int main() {
 
 **结论**：非类型模板参数只能是编译期常量（整型、枚举、指针、引用、`auto` 受约束类型）；这保证维度是类型的一部分、可被 `static_assert`/数组大小直接使用。
 
-
 ## 附录 D4：模板形参绑定的三标准库源码解析（D4 维度）
 
 > 目的：以 `std::move` / `std::forward` 为例，揭示模板类型形参 `_Tp` 经推导后如何配合 `remove_reference` 完成值类别变换，并对比三大标准库实现差异。
@@ -1045,7 +1041,6 @@ int main() {
 }
 ```
 
-
 ## 附录 J：模板基础选型 决策流（D3 维度）
 
 ```mermaid
@@ -1109,7 +1104,6 @@ flowchart TD
 | ch60 模板基础 | ch69 constexpr | 模板与 constexpr 协同做编译期计算 |
 | ch61 模板重载 | ch60 模板基础 | 重载解析是模板核心机制 |
 
-
 ## 附录 D5：真实基准与性能分析 — 模板回调单态化内联 vs std::function 类型擦除间接调用（GCC 15.3.0）
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch60_template_callback.cpp`。
@@ -1164,8 +1158,6 @@ int main() {
 | ch26 lambda | Book/part03_language/ch26_lambda.md | lambda 是模板回调的典型 F 类型 |
 | ch61 模板重载 | Book/part06_templates/ch61_template_overload.md | 重载决议决定哪个模板实例化 |
 | ch156 编译器优化 | Book/part14_perf/ch156_compiler_opt.md | 内联与单态化的编译器机制 |
-
-
 
 ### D5.5 汇编实证 (GCC 15.3.0)
 

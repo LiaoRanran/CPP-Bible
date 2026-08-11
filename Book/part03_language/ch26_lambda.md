@@ -52,7 +52,6 @@ lambda 本质仍是"语法糖 + 闭包类"，委员会坚持零开销：不捕�
 ⟶ Book/part03_language/ch25_union_variant.md
 ⟶ Book/part03_language/ch27_cast.md
 
-
 lambda 不是"语法糖"，而是一台**编译器在编译期为你合成匿名类（闭包类型）**的机器。把 lambda 当作"语法糖化的函数对象"，本章所有现象立刻自洽：
 
 ```
@@ -1367,7 +1366,6 @@ std::function（类型擦除）      ~430 ms                   8.1×
 > - **跨语言**：Rust（Fn/FnMut/FnOnce 三 trait + 真实定义）、C#（委托/表达式树）、Java（invokedynamic）、Python（单表达式）、Go（逃逸分析）。
 > - **交叉引用**：ch19 / ch20 / ch21 / ch22 / ch59 / ch80 / ch115 / ch116 已建立链接。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1377,7 +1375,6 @@ std::function（类型擦除）      ~430 ms                   8.1×
 | [第77章](Book/part07_stl/ch77_vector.md) | 泛型库/编译期计算 | 本章提供概念，第77章提供实现 |
 | [第116章](Book/part10_modern/ch116_perfect_forwarding.md) | 高性能容器/零拷贝传输 | 本章提供概念，第116章提供实现 |
 | [第116章](Book/part10_modern/ch116_perfect_forwarding.md) | 性能基准/回归检测 | 本章提供概念，第116章提供实现 |
-
 
 ## 深度增强：lambda工业底层与面试
 
@@ -1463,7 +1460,6 @@ via_template_fp(int (*)(int), int):
 Q: lambda vs std::function? A: lambda=编译期类型(零开销); function=类型擦除(+10ns, 可能堆分配)
 Q: 值捕获vs引用捕获? A: 值=安全(无dangling); 引用=零拷贝但有dangling风险; 默认用值捕获[=]
 Q: mutable lambda? A: 允许修改值捕获的变量(默认const operator())
-
 
 ## 相关章节（交叉引用）
 
@@ -1710,8 +1706,6 @@ int main() {
 ```
 
 **结论**：捕获 `this`/智能指针的 lambda 必须做生命周期审计；跨对象回调优先 `weak_ptr` 提升，避免悬垂与循环引用两类典型缺陷。
-
-
 
 ## 附录 D4：libstdc++ 15.3.0 源码解析 — lambda 闭包与 std::function 类型擦除
 

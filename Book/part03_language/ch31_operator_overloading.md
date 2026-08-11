@@ -356,7 +356,6 @@ int main(){Json j{42,"hello"};std::cout<<(int)j<<" "<<(std::string)j<<std::endl;
   3. 避免歧义: operator bool() 的隐式转换 → 用explicit operator bool()
 ```
 
-
 ## 深度增强：运算符重载底层与工业
 
 ### 原理分析
@@ -395,7 +394,6 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 Q: 成员operator+ vs 自由函数? A: 自由函数支持隐式转换(左操作数也可以转换); 成员函数只能转换右操作数
 Q: operator bool()的陷阱? A: 隐式转换到bool可能导致意外行为→C++11起用explicit operator bool()
 Q: 为什么不要重载operator&&和operator||? A: 它们会失去短路求值(两个操作数总是被求值)
-
 
 ## 附录 H：运算符重载面试
 

@@ -48,7 +48,6 @@ C++ 没把继承当成唯一复用手段：它一边给继承，一边强调**�
 ⟶ Book/part05_oo/ch45_oop_object_model.md
 ⟶ Book/part05_oo/ch47_virtual_functions.md
 
-
 **[标准]**　`[class]` / `[class.access]` / `[class.derived]` 把封装与继承定义为「在编译期对名字访问与子类型关系施加约束」的机制。注意关键词是**编译期**——它们不产生任何运行期数据结构（不像虚函数会生成 vtable）。
 
 **[经验]**　本章主线与三大铁律：
@@ -1456,7 +1455,6 @@ int main(){
 - 需要统一前置/后置/度量 → NVI，别把虚函数直接 `public`。
 - 派生类要复用基类重载集时，记得 `using Base::name;`。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1483,7 +1481,6 @@ int main(){Base*b=new Derived;b->f();delete b;return 0;}
 
 面试: 三种继承区别? public=is-a+保持接口; private=实现继承+隐藏接口
        为什么用private继承? 空基类优化(EBO), 限制暴露基类接口
-
 
 ## 附录 H：访问控制面试
 
@@ -1563,7 +1560,6 @@ mov rdx, [rdi+0x0010]     ; 取 Derived 独有成员（偏移 0x0010）
 - GCC 13.2 / Clang 18 / MSVC 19.3 布局一致（MSVC 有虚基类差异）
 - `__cplusplus` = 202302L；`-fwhole-program-vtables` 去虚化
 - `constexpr` 构造省运行时初始化
-
 
 ## 自测练习（Exercises）
 

@@ -37,7 +37,6 @@ Ranges 算法相对传统的根本改动，是 **"范围优先 + 投影内置"**
 ⟶ Book/part08_algorithms/ch101_algo_theory.md
 ⟶ Book/part08_algorithms/ch99_numeric.md
 
-
 **Ranges** 是一套以"范围（range）"为一等公民的标准库抽象：一个 range 由迭代器对（`begin`/`end`）定义，算法直接吃"整个容器/视图"而不是两个迭代器。`[标准]`：Ranges 由 P0896R4（C++20）引入，核心位于 `<ranges>`，复用 `<iterator>` 的 `std::input_iterator` 等概念。
 
 ```cpp
@@ -723,7 +722,6 @@ void r15(std::vector<int>& v) {
 }
 ```
 
-
 ## 附录 A：Ranges 算法 vs 传统 STL 算法 [B: Principle / D: stdlib]
 
 Ranges 算法是 C++20 对 STL 算法库最重大的升级：
@@ -807,7 +805,6 @@ A: operator| 重载。view1 | view2 → view2(view1) → 返回组合后的 view
    每个 view 是模板，继承自 std::ranges::view_interface → 统一接口。
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -816,7 +813,6 @@ A: operator| 重载。view1 | view2 → view2(view1) → 返回组合后的 view
 | [第99章](Book/part08_algorithms/ch99_numeric.md) | 泛型库/编译期计算 | 本章提供概念，第99章提供实现 |
 | [第95章](Book/part08_algorithms/ch95_algo_overview.md) | 向量化计算/图像处理 | 本章提供概念，第95章提供实现 |
 | [第119章](Book/part10_modern/ch119_ranges_deep.md) | 数据处理管道/排行榜 | 本章提供概念，第119章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -1072,7 +1068,6 @@ flowchart TD
 | ch115（移动语义） | ch100 | 视图惰性避免中间容器拷贝，靠移动语义 |
 | ch95（算法总论） | ch100 | ranges 是各算法族的惰性升级表达 |
 | ch77（vector） | ch100 | 底层连续范围决定视图缓存友好 |
-
 
 ## 附录 D4：libstdc++ 15.3.0 源码解析 — ranges 算法（三标准库对比）[E: Low-level / H: Design]
 

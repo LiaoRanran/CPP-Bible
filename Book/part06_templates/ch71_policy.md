@@ -37,7 +37,6 @@
 ⟶ Book/part06_templates/ch70_tag_dispatch.md
 ⟶ Book/part06_templates/ch72_expression_templates.md
 
-
 - 掌握 **Policy-Based Design**：把"可变的算法/行为"抽象为**策略类（Policy）**，作为宿主模板的**模板参数**（普通类型参数或模板模板参数），在编译期组合出定制类型。
 - 理解**静态多态**与虚函数动态多态的本质区别：策略在编译期绑定、被完全内联，运行期**无 vtable 查表、无间接调用**（见 ⑩ 汇编证据）。
 - 会用**模板模板参数**（`template <typename> class Policy`）把"类模板策略"注入宿主（如 `NewCreator` 模板）。
@@ -578,7 +577,6 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 3. `<bits/char_traits.h>` 113/331 行：`char_traits` 作为字符语义策略（比较/长度/赋值）。
 4. `<bits/unique_ptr.h>`：删除器 `Deleter` 策略如何作为模板参数注入并默认 `default_delete`。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -587,7 +585,6 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 | [第72章](Book/part06_templates/ch72_expression_templates.md) | 独占所有权/工厂模式 | 本章提供概念，第72章提供实现 |
 | [第65章](Book/part06_templates/ch65_type_traits.md) | 多态插件/框架扩展 | 本章提供概念，第65章提供实现 |
 | [第140章](Book/part12_patterns/ch140_policy_pattern.md) | 配置解析/API响应 | 本章提供概念，第140章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -734,10 +731,7 @@ int main() {
 
 </details>
 
-
 ## 附录：用法演绎（从选型到落地）
-
-
 
 ### 演绎 1：编译期策略替代运行期虚函数
 
@@ -1105,7 +1099,6 @@ flowchart TD
 | ch69 constexpr | 编译期策略可用 constexpr 表达。 |
 | ch52 EBO | 无状态空策略受益于空基类优化。 |
 | ch76 STL 架构 | 分配器等可插拔组件即 policy 思想。 |
-
 
 ## 附录 D5：真实基准与性能分析 — 策略模式 vs 虚函数 vs 函数指针的真实开销（GCC 15.3.0）
 

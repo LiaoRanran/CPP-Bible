@@ -450,7 +450,6 @@ int main(){std::vector<int> v;v.reserve(1000);for(int i=0;i<1000;++i)v.push_back
 
 > 自检: 所有 cpp 块用 `g++ -std=c++23 -O2 -Wall -Wextra` 可独立编译。
 
-
 ## 相关章节（交叉引用）
 
 - **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch152_perf_model.md（第152章　性能模型与测量学）
@@ -706,7 +705,6 @@ flowchart TD
 | ch149 | 防回归 | CI 流程 | 反模式修复入 CI 防回归 |
 | ch150 | 补测试 | 测试 | 补测试防反模式回归 |
 | ch47 | 虚调用 | 虚函数 | 虚函数调用是常见反模式 |
-
 
 ## 附录 D5：真实基准与性能分析 — 性能反模式：行优先 vs 列优先 2D 遍历（GCC 15.3.0）
 

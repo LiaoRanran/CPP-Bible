@@ -41,7 +41,6 @@
 ⟶ Book/part06_templates/ch64_fold.md
 ⟶ Book/part06_templates/ch66_sfinae.md
 
-
 1. `type_traits` 的底层机制是什么？为什么 `is_pointer<int*>::value` 能在编译期返回 `true`？
 2. 标准库的 `true_type` / `false_type` 到底是什么？为什么所有 trait 都从它们派生？
 3. 偏特化（partial specialization）如何撑起整个 `type_traits` 体系？
@@ -62,7 +61,6 @@
 18. 手写 `rank` / `extent` 如何递归解数组维度？
 19. trait 能否用于运行期？`if constexpr` 如何让 trait 驱动运行期分支但零开销？
 20. 真实汇编里 `type_traits` 运算是否被完全消除？编译期常量如何落到 `mov eax, 48`？
-
 
 ## 架构与流程图示（Mermaid）
 
@@ -643,7 +641,6 @@ template<typename T>constexpr bool is_void=std::is_void_v<T>;
 int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -652,7 +649,6 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 | [第64章](Book/part06_templates/ch64_fold.md) | 性能基准/回归检测 | 本章提供概念，第64章提供实现 |
 | [第66章](Book/part06_templates/ch66_sfinae.md) | 计时器/性能测量 | 本章提供概念，第66章提供实现 |
 | [第68章](Book/part06_templates/ch68_tmp.md) | 文本处理/协议解析 | 本章提供概念，第68章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1071,8 +1067,6 @@ flowchart TD
 | ch65 | ch60 | trait 建立在模板基础之上 |
 | ch65 | ch68 | trait 是 TMP 的零件 |
 | ch65 | ch64 | traits 组合常借助折叠（conjunction） |
-
-
 
 ## 附录 D5：真实基准与性能分析 — 类型萃取与编译期分派的运行时代价（GCC 15.3.0）
 

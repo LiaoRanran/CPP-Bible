@@ -39,7 +39,6 @@ Stepanov 设计 STL（1994 年纳入标准）时面临一个难题：同一个�
 ⟶ Book/part06_templates/ch69_constexpr.md
 ⟶ Book/part06_templates/ch71_policy.md
 
-
 - 理解**标签分发（tag dispatch）**的本质：用一个**类型**（空 struct 或 `integral_constant<bool,B>::type`）作为"编译期路由键"，让重载决议在编译期选定实现分支。
 - 掌握 `std::true_type`/`std::false_type`（即 `integral_constant<bool,true/false>::type`）作为布尔标签的用法，以及 `std::is_integral<T>::type` 这类"类型性质 → 标签"的衔接。
 - 理解**迭代器标签层级**（`input → forward → bidirectional → random_access`）的继承链如何使 `advance`/`distance` 等算法按最强能力调度（随机迭代器走 O(1)，输入迭代器走 O(n)）。
@@ -567,7 +566,6 @@ int use_tag_fast() { int c=0; c+=1; c+=100; return c; }  // 与 dispatch(42)+dis
 3. `<type_traits>` 62/82/85 行：`integral_constant` 与 `true_type`/`false_type` 别名。
 4. libstdc++ `<bits/stl_algobase.h>`：`std::advance`/`std::copy` 的标签分发实现，看 STL 如何按类别调度。
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -663,7 +661,6 @@ int main(){std::vector<int> v{1,2,3};auto it=v.begin();std::advance(it,2);std::c
 
 面试: tag dispatch vs concepts? tag=C++98兼容; concepts=C++20(更清晰, 编译快)
       std::advance为什么用tag? 编译期选择O(1)或O(N)路径, 零运行时开销
-
 
 ## 附录 J：Tag vs Concepts vs SFINAE对比
 
@@ -819,10 +816,7 @@ int main() { process(42); process(3.14); }
 
 </details>
 
-
 ## 附录：用法演绎（从选型到落地）
-
-
 
 ### 演绎 1：标签分发消除运行期分支
 

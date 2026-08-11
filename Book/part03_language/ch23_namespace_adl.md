@@ -46,7 +46,6 @@ ADL（参数依赖查找）是命名空间的"伴生怪物"：为了让 `operato
 ⟶ Book/part03_language/ch22_auto_decltype.md
 ⟶ Book/part03_language/ch24_enum.md
 
-
 本章回答四个互相缠绕的问题：**如何把名字分隔开（namespace）**、**如何让名字进入作用域（using）**、**为什么有些名字不需要 using 也能被找到（ADL）**、**如何用 namespace 管控 ABI（inline namespace）**。四者关系如下：
 
 ```
@@ -1157,7 +1156,6 @@ int main() {
 
 > **[标准]/[实现]/[平台]/[经验] 立场总览**：本章所有"必须这样"的论断，凡属 `[标准]` 皆可移植；凡属 `[实现]` 以 GCC 15.3.0 / libstdc++ 真实源码为准，Clang/libc++、MSVC/STL 差异已在 §⑩/§⑱ 标注（未探测到真实头文件者明确标注 `[实现-推断]`，未编造任何路径或行号）。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1166,7 +1164,6 @@ int main() {
 | [第24章](Book/part03_language/ch24_enum.md) | 性能基准/回归检测 | 本章提供概念，第24章提供实现 |
 | [第29章](Book/part03_language/ch29_friend.md) | 文本处理/协议解析 | 本章提供概念，第29章提供实现 |
 | [第61章](Book/part06_templates/ch61_template_overload.md) | 高性能容器/零拷贝传输 | 本章提供概念，第61章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1353,9 +1350,6 @@ int main() { using std::swap; Handle a, b; swap(a, b); (void)a; (void)b; }
 ```
 
 **结论**：异常安全赋值 = 让形参 `o` 按值（=拷贝）传入，再 `noexcept swap`；`using std::swap; swap(a,b)` 让 ADL 优先选中你的 O(1) 重载。`noexcept` 是 `std::vector` 在重分配时选择 move 还是 copy 的关键信号。
-
-
-
 
 ## 附录 J：命名空间与 ADL 决策流（D3 维度）
 

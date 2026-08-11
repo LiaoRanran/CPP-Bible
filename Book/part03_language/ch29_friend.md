@@ -544,7 +544,6 @@ template<typename T>class Inspector{public:void peek(const Box<T>&b){std::cout<<
 int main(){Box<int> b(42);Inspector<int> i;i.peek(b);return 0;}
 ```
 
-
 ## 附录 F：friend的工业应用
 
 CRTP中使用friend: 基类方法访问派生类(private)
@@ -559,7 +558,6 @@ int main(){X x;std::cout<<x<<std::endl;return 0;}
 
 面试: friend打破封装吗? 是, 但有意为之(如operator<<)
        friend class vs friend function? 前者授予整个类访问权; 后者更精准
-
 
 ## 附录 G：friend的ABI影响
 
@@ -599,7 +597,6 @@ int main(){X x;std::cout<<Test::get(x)<<std::endl;return 0;}
 
 > 交叉引用：ADL 见 [ch23](Book/part03_language/ch23_namespace_adl.md)；封装见 [ch46](Book/part05_oo/ch46_encapsulation_inheritance.md)。
 
-
 ## 附录 D（友元与访问控制底层）
 
 友元在编译期由语义分析授权，不生成运行时开销。
@@ -628,7 +625,6 @@ call private_impl
 - GCC 15.3 / Clang 18 / MSVC 19.3 语义一致
 - `__cplusplus` = 202302L；`friend` 与 `constexpr` 可组合
 - WG21 提案 P0784R7 扩展 constexpr 友元
-
 
 ## 自测练习（Exercises）
 
@@ -860,7 +856,6 @@ int main(){
     return 0;
 }
 ```
-
 
 ## 附录 J：friend 与访问控制决策流（D3 维度）
 

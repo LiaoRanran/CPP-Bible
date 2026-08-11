@@ -38,7 +38,6 @@ C/C++ 编译器天生要解决"把文本变成机器码"。GCC 由 Richard Stall
 
 ⟶ Book/part02_toolchain/ch12_buildsystems.md
 
-
 C++ 源码不是机器能直接执行的——它需要被**翻译**为特定 ISA（x86-64 / ARM64 / RISC-V 等）的机器码。编译器承担三件事：① 把文本翻译为语义正确的指令；② 在翻译中做等价变换（优化）以提升速度/减小体积；③ 与操作系统/链接器/运行时协作，产出可加载的二进制。
 
 ```cpp
@@ -57,7 +56,6 @@ int main() { return 0; }
 
 - `[标准]`：ISO C++ 只规定**语言语义与库接口**，不规定编译器内部表示（AST/IR）或目标文件格式——这正是三家实现天差地别的根本原因。
 - `[经验]`：跨平台项目必须在三套工具链上各验一遍，因为 UB 在三家中表现不同（同一份代码 GCC 正常、Clang 崩溃是常态）。
-
 
 ## 架构与流程图示（Mermaid）
 
@@ -847,7 +845,6 @@ int trivia(int x) { return x; }
 - `[平台]`：mangling、vtable 布局、异常模型、目标格式均属 ABI 层；GCC 与 Clang 共享 Itanium ABI，因此 `.o` 可互通，但与 MSVC 不互通。
 - `[经验]`：记住一句话——**源码可移植靠 ISO 标准，二进制可链接靠 ABI 一致**。换编译器或换 STL 版本都可能破坏 ABI；对外发布的库用 `extern "C"` + 稳定 POD 接口最稳。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -895,7 +892,6 @@ int main() {
 面试: GCC vs Clang? GCC=兼容性最好; Clang=错误信息最好, 工具化(LLVM)
        -O2 vs -O3? -O2=标准优化; -O3=更激进(循环展开+向量化, 可能增二进制)
 
-
 ## 相关章节（交叉引用）
 
 - **后续依赖**：⟶ Book/part02_toolchain/ch16_ide.md（第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++））—— 本章为其前置，建议后续延伸阅读。
@@ -932,7 +928,6 @@ int main() {
 ### 重构建议
 
 把「依赖实现定义的位操作」重构为 `<cstdint>` 固定宽度类型 + `std::bit_cast`；把 `-fpermissive` 容忍的含糊构造改为显式 `static_cast`，让 `-Werror` 能上 CI。
-
 
 ## 最佳实践 [经验]
 
@@ -1116,7 +1111,6 @@ int main(){
 }
 ```
 
-
 ## 附录 J：C++ 编译器编译流水线决策流（D3 维度）
 
 本图把第⑤节"预处理→编译→汇编→链接"主线与第②⑫⑰节的前端/优化/后端/调试信息分支收敛为一条带闸门的流水线。
@@ -1217,4 +1211,3 @@ flowchart TD
 | ch157 Compiler Explorer | [Book/part14_perf/ch157_compiler_explorer.md](Book/part14_perf/ch157_compiler_explorer.md) | 在线对比不同编译器汇编码（第⑬节外推） |
 | ch118 模块 | [Book/part10_modern/ch118_modules.md](Book/part10_modern/ch118_modules.md) | C++20 Modules 编译模型（第⑮节） |
 | ch17 交叉编译 | [Book/part02_toolchain/ch17_crosscompile.md](Book/part02_toolchain/ch17_crosscompile.md) | 三元组决定目标架构（第⑯节与 ch17 ②衔接） |
-

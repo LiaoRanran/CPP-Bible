@@ -45,7 +45,6 @@ C++ 面对 JSON 有两道根本抉择。其一是**映射路线**：类型擦除
 ⟶ Book/part15_cases/ch161_logger.md
 ⟶ Book/part15_cases/ch163_net.md
 
-
 JSON（JavaScript Object Notation，RFC 8259）是一种与语言无关的轻量数据交换格式。**[标准]** 严格说 JSON 不是 C++ 标准的一部分——C++ 标准库（至 C++23）并未提供 `std::json`；它由 IETF RFC 8259 规定，各语言自行实现。把一个"文本协议"干净地映射进 C++ 的强类型世界，正是本章要解决的问题。
 
 核心矛盾：JSON 是**动态类型**（一个值可以是任意 6 种类型之一），C++ 是**静态类型**（编译期定类型）。解决方案有两条路线：
@@ -763,7 +762,6 @@ _Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE:
 
 所有代码均已在本机 `g++ 13.1.0` 真实编译运行验证，源文件见 `Examples/_ch162_*.cpp`（主库 `_ch162_json.cpp`、基准 `_ch162_benchmark.cpp`、案例 `_ch162_case.cpp`、汇编 `_ch162_asm.cpp` 等），未编造任何数字与汇编。下一步可阅读上游 nlohmann/json 以对比工业实现（⑨），或扩展到 `std::expected` 无异常错误模型（⑭）。
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -786,7 +784,6 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 f
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch162_json."<<std::endl;return 0;}
 ```
-
 
 ## 附录 A：工业 JSON 库对比与标准演化 [F: Industry / B: Principle]
 
@@ -861,7 +858,6 @@ int main() {
     return 0;
 }
 ```
-
 
 ## 相关章节（交叉引用）
 
@@ -993,9 +989,6 @@ int main() {
 
 </details>
 
-
-
-
 ## 附录 J：JSON 解析决策流（D3 维度）
 
 > 本图把第④节（递归下降分派）、第⑥节（数组/对象解析）、第⑦节（字符串转义与 uXXXX/UTF-8）、第⑧节（序列化 writer）、第⑭节（ParseError 携带位置）、第⑪节（DOM vs SAX）收敛成一条"入口→跳过空白→按首字符分派→复合类型递归→转义/UTF-8→构建 variant 树→尾部校验"的解析流水线，并标出各非法输入的失败回退边。
@@ -1030,15 +1023,9 @@ flowchart TD
 
 > 决策流说明：首字符分派是「或」关系——六种值类型各走一边；对象解析内部"键为字符串「且」有冒号"才是「与」闸门，否则失败回退（ERR1/ERR2/ERR3 是三条错误边）。跨章外推：值建模依赖第88章 variant，零拷贝解析外推第82章 span，性能外推第155章 SIMD。
 
-
-
 ## 附录 K：JSON 库知识图谱（D6 维度）
 
-
-
 > 本图以本章主题为中心，上游列出其依赖的底层机制（分配/并发/格式化/解析原语），下游列出消费它的系统（框架/网络/日志/测试），并标出跨章外推边。
-
-
 
 ```mermaid
 flowchart TD
@@ -1069,8 +1056,6 @@ flowchart TD
   VARIANT --> OPTIONAL
 ```
 
-
-
 ### K.1 概念依赖逐边解读
 
 | 边 | 依赖含义 |
@@ -1087,8 +1072,6 @@ flowchart TD
 | CORE → ERROR | 解析失败用 expected 或异常传播 |
 | SERIALIZE → STRING | 序列化回写 std string |
 | VARIANT → OPTIONAL | variant 与 optional 同属 tagged union 族 |
-
-
 
 ### K.2 跨章闭环表
 

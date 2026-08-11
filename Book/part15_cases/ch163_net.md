@@ -44,7 +44,6 @@ C++ 网络编程的底层几乎全是操作系统的遗产。1983 年 4.2BSD 把
 ⟶ Book/part15_cases/ch162_json.md
 ⟶ Book/part15_cases/ch164_framework.md
 
-
 网络编程的本质是**让两个进程通过文件描述符/套接字交换字节流**。C++ 标准库至 `C++23` 都没有把 socket 纳入标准（**[标准]** 这一点与 Java 的 `java.net`、Go 的 `net` 包不同），因此工业级 C++ 网络栈要么基于操作系统 API（Berkeley Socket / Winsock），要么基于库（Boost.Asio、libuv、libevent）。**[实现]** 本章选择"从零实现"路线：用手写 socket 把 TCP、缓冲、协议、并发、序列化全部打通，让你看清 Asio 这类库在底层到底替你做了什么。
 
 ```cpp
@@ -908,7 +907,6 @@ struct Endpoint {
 // 真正的工业库会在此之上叠加：⑩ 环形缓冲、⑪ 长度前缀、⑫ JSON、⑨ 线程池、⑮ TLS。
 ```
 
-
 ## 附录 A：工业网络框架对比 [F: Industry / H: Design]
 
 | 框架 | 模型 | 线程模型 | 协议 | 性能亮点 |
@@ -970,7 +968,6 @@ A: Reactor = 事件通知 + 用户自己读写; Proactor = 内核完成 IO + 通
 Q: TCP 的 TIME_WAIT 和 SO_REUSEADDR 的作用？
 A: TIME_WAIT = 2MSL 等待 (防止残留报文干扰); SO_REUSEADDR = 允许绑定处于 TIME_WAIT 的端口
 ```
-
 
 ## 附录 D：编译器与底层网络性能 [C: Compiler / E: Low-level / I: Practice]
 
@@ -1045,7 +1042,6 @@ localhost TCP connect : 355 us | RTT(1B echo): 35.3 us/op | bulk: 889 MB/s | ctx
 - SO_REUSEPORT: 多线程绑定同端口, 内核负载均衡 (Linux 3.9+, HAProxy使用)
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1069,7 +1065,6 @@ localhost TCP connect : 355 us | RTT(1B echo): 35.3 us/op | bulk: 889 MB/s | ctx
 #include <iostream>
 int main(){std::cout<<"Network=ch163+ch93+ch81+ch77+ch159"<<std::endl;return 0;}
 ```
-
 
 ## 相关章节（交叉引用）
 
@@ -1306,7 +1301,6 @@ int main() {
 [标准] 把“连接状态”从线程栈搬到“集中数据结构 + 事件循环”，是突破 C10K 的根本手法
 （关联 附录 I 工业案例 / ⑨ 多线程服务）。
 
-
 ## 附录 J：TCP 连接处理决策流（D3 维度）
 
 > 本图把第④⑤节（echo server/client）、第⑥节（阻塞 vs 非阻塞）、第⑦⑧节（select/poll/epoll/kqueue/io_uring 多路复用）、第⑩节（环形缓冲）、第⑪节（长度前缀/分隔符 framing）、第⑫节（JSON 序列化）、第⑨节（线程池服务）收敛成一条"建 socket→bind/listen→accept→多路复用就绪→收字节流→定界消息→解析→回显"的连接处理流水线，并标出阻塞/非阻塞与多种多路复用的回退边。
@@ -1341,15 +1335,9 @@ flowchart TD
 
 > 决策流说明：阻塞/非阻塞是第一道闸门，非阻塞下又按平台在 select/poll/epoll/kqueue/io_uring 之间「或」择一；定界方式（长度前缀「或」分隔符）决定如何把字节流切成消息，两条边在"JSON 解析"处汇合。跨章外推：线程池服务外推第159章，JSON 载荷外推第162章，无锁计数外推第107章。
 
-
-
 ## 附录 K：网络编程知识图谱（D6 维度）
 
-
-
 > 本图以本章主题为中心，上游列出其依赖的底层机制（分配/并发/格式化/解析原语），下游列出消费它的系统（框架/网络/日志/测试），并标出跨章外推边。
-
-
 
 ```mermaid
 flowchart TD
@@ -1382,8 +1370,6 @@ flowchart TD
   SOCKET --> BUFFER
 ```
 
-
-
 ### K.1 概念依赖逐边解读
 
 | 边 | 依赖含义 |
@@ -1402,8 +1388,6 @@ flowchart TD
 | CORE → MEMRED | 组件缓冲借鉴内存池 |
 | REACTOR → THREAD | 事件循环内回调由线程执行 |
 | SOCKET → BUFFER | recv 字节流入应用层环形缓冲 |
-
-
 
 ### K.2 跨章闭环表
 

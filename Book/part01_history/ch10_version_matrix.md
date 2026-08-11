@@ -36,7 +36,6 @@
 
 ⟶ Book/part01_history/ch09_cpp26.md
 
-
 ```cpp
 // [merged] ## ① 学习目标
 #include <iostream>
@@ -464,7 +463,6 @@ int main(){std::cout<<"C++11->14=minor, 14->17=productivity, 17->20=paradigm"<<s
 int main(){std::cout<<"Upgrade decisively: C++17 is the new minimum for new C++ projects."<<std::endl;return 0;}
 ```
 
-
 ## 深度增强：C++版本迁移成本与真实案例
 
 ### 原理分析
@@ -505,7 +503,6 @@ Q: 新项目C++版本? A: C++17(最低)→团队有C++20经验→选C++20
 Q: Google为什么不升C++20? A: 20亿行代码,需5年规划
 Q: 版本迁移最大风险? A: ABI断裂(GCC5.1)和SFINAE→concepts重写
 
-
 ## 相关章节（交叉引用）
 
 - **相邻主题**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 编号相邻、主题接续。
@@ -529,7 +526,6 @@ Q: 版本迁移最大风险? A: ABI断裂(GCC5.1)和SFINAE→concepts重写
 | **fmt**（github.com/fmtlib/fmt） | fmt 10 要求 C++17，使用 C++20 std::format 兼容层 | 库基线 | `fmt/base.h` |
 
 **底层深度**：Boost.Config 在 `boost/config/compiler/gcc.hpp` 中依据 `__GNUC__` / `__GNUC_MINOR__` 与 `_GLIBCXX__` 宏定义 `BOOST_CXX_VARIADIC_TEMPLATES` 等探测宏，使同一份代码在 GCC 4.8–13 间自适应；Abseil 的 `absl/base/config.h` 用 `__cplusplus` 配合 `_MSC_VER` / `__GNUC__` 决定 `ABSL_LTS_RELEASE` 与最低标准，并在 CI 矩阵中覆盖 C++14/17/20；Chromium 通过 `build/config/compiler/BUILD.gn` 的 `cxx_version` 与目标强制最低标准，未达标直接编译失败而非警告。这种"探测宏 + 强制基线 + CI 矩阵"三层机制，是工业界保证多编译器可移植性的标准做法。
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -633,12 +629,9 @@ int main() {
 
 </details>
 
-
-
 ---
 
 > **权威对照（单一事实来源）**：本章涉及 GCC / Clang / MSVC 的特性支持度、报错差异、ABI 与性能对比，均为写作时点快照。最新、逐项以 feature-test macro 实测的横向对照（含 GCC 15.3.0 精确宏值）见 [编译器版本对照表](../../docs/compiler-matrix.md)。**正文中的三编译器版本号以该表为准**——编译器升级后仅更新 `docs/compiler-matrix.md` 一处，无需改动本章。
-
 
 ## 附录 J：版本迁移决策流（D3 维度）
 
@@ -694,7 +687,6 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ```
 
 > 决策流说明：第⑤节迁移指南是「阶梯式与门」——只有确实需要 concepts 才付出 C++20 的 ABI/编译器成本（否则停在 ch06）；第⑬节决策树用「编译器支持是否够（或门之一）」作为最终闸门，呼应 ch11 的支持矩阵。
-
 
 ## 附录 K：版本特性全景概念依赖网（D6 维度）
 

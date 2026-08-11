@@ -38,7 +38,6 @@
 
 ⟶ Book/part02_toolchain/ch17_crosscompile.md
 
-
 构建配置决定**同一份源码**生成的可执行文件在体积、速度、可调试性、安全性上的差异。它不是语言特性，而是"编译器 + 链接器 + 库 + 标志"的组合。
 
 ```cpp
@@ -784,7 +783,6 @@ int main(){std::vector<int> v;v.push_back(1);std::cout<<v[0]<<std::endl;return 0
 int main(){std::cout<<"Ninja: faster than make. cmake -G Ninja -B build. CCache: compiler cache for rebuilds."<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -831,7 +829,6 @@ int main() {
        LTO是什么? Link-Time Optimization, 跨翻译单元内联和优化(代价: 链接时间)
        PGO如何工作? 1.编译加-profile-generate, 2.运行训练数据, 3.编译加-profile-use
 
-
 ## 相关章节（交叉引用）
 
 - **后续依赖**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））—— 本章为其前置，建议后续延伸阅读。
@@ -845,7 +842,6 @@ int main() {
 [标准] CMake 生成的构建经 `GCC 13.1.0`/`Clang 17`/`MSVC 19.3`；`-O2` 开内联，`-O3` 加向量化。`-mavx2`（`0x0020` 宽）/`-mavx512f`（`0x0040` 宽）需 `alignas(0x0020)`/`alignas(0x0040)`，否则 `vmovdqa` 触发 #GP。
 
 `C++17`/`C++20`/`C++23` 标准开关影响 ABI；缓存行 `0x0040`（64 字节）是 false-sharing 与 `std::hardware_destructive_interference_size` 的基准（L1 ≈1 ns，L3 ≈12 ns，主存 ≈100 ns）。静态库 `.a` 按 `0x0010` 符号表归档，动态库 `.so`/`.dll` 首加载有重定位（µs 级/符号）。`ccache` 以预处理哈希命中复用，省重编译。
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -1082,7 +1078,6 @@ flowchart TD
 | ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | LTO/PGO 优化实证对照（第⑥⑦节与 ch156 衔接） |
 | ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | -g/strip 影响调试体验（第⑩节与 ch14 ⑫衔接） |
 | ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](Book/part02_toolchain/ch13_packaging.md) | 链接方式影响包二进制分发（第⑪节与 ch13 衔接） |
-
 
 ## 附录 D5：真实基准与性能分析 — 构建配置 Debug/Release 的运行期代价（GCC 15.3.0）
 

@@ -40,7 +40,6 @@ CRTP 是「静态多态」的代言人：对比虚函数（ch47）的运行期�
 ⟶ Book/part05_oo/ch50_multiple_inheritance.md
 ⟶ Book/part05_oo/ch52_ebo.md
 
-
 - 用一句话说清 CRTP 的本质：**基类是模板，以派生类为模板实参，借 `static_cast<Derived*>` 把动态多态搬进编译期**。
 - 能从汇编证明 CRTP 调用**零运行时开销**（无 vtable、无 this 调整 thunk、可完全内联）。
 - 对比 CRTP 与虚函数（ch47）在对象大小、分派成本、heterogeneous 能力上的取舍。
@@ -624,7 +623,6 @@ struct Widget:Cloneable<Widget>{int v;Widget(int x):v(x){}};
 int main(){Widget w(7);auto c=w.clone();std::cout<<c->v<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -633,7 +631,6 @@ int main(){Widget w(7);auto c=w.clone();std::cout<<c->v<<std::endl;return 0;}
 | [第52章](Book/part05_oo/ch52_ebo.md) | 独占所有权/工厂模式 | 本章提供概念，第52章提供实现 |
 | [第47章](Book/part05_oo/ch47_virtual_functions.md) | 多态插件/框架扩展 | 本章提供概念，第47章提供实现 |
 | [第68章](Book/part06_templates/ch68_tmp.md) | 泛型库/编译期计算 | 本章提供概念，第68章提供实现 |
-
 
 ## 相关章节（交叉引用）
 

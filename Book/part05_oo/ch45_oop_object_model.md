@@ -48,7 +48,6 @@ C++ 在对象模型上做了两个反潮流的选择：其一是**值语义优�
 
 ⟶ Book/part05_oo/ch46_encapsulation_inheritance.md
 
-
 **[标准]**　C++ 是一门**多范式（multi-paradigm）**语言：过程式、面向对象、泛型、函数式、元编程并存。它**不强制**你使用继承或运行时多态——这与 Java/C# 的「一切皆对象、一切皆引用」有本质区别。`[intro.object]` 把「对象」定义为「存储区域中能保存值的一段」，并不要求它属于某个类。
 
 **[经验]**　C++ OOP 的三大哲学支柱，按重要性排序：
@@ -1347,7 +1346,6 @@ EBO 派生（核心知识点 #12）
 > - `.../include/c++/bits/stl_construct.h`（L96–122, L123–137）
 > - `.../include/c++/bits/uses_allocator.h`（L73–75, L176–200）
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1355,7 +1353,6 @@ EBO 派生（核心知识点 #12）
 | [第46章](Book/part05_oo/ch46_encapsulation_inheritance.md) | 多态插件/框架扩展 | 本章提供概念，第46章提供实现 |
 | [第47章](Book/part05_oo/ch47_virtual_functions.md) | 泛型库/编译期计算 | 本章提供概念，第47章提供实现 |
 | [第52章](Book/part05_oo/ch52_ebo.md) | 资源管理/事务回滚 | 本章提供概念，第52章提供实现 |
-
 
 ## 附录 F：vtable面试
 
@@ -1705,7 +1702,6 @@ flowchart TD
 | ch42 严格别名 | ch45 对象模型 | 布局决定别名通道 |
 | ch45 对象模型 | ch77 vector | 多态对象常以指针存入容器 |
 
-
 ## 附录 D5：真实基准与性能分析 — 虚函数 vtable 间接调用 vs CRTP 编译期静态分派（GCC 15.3.0）
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch45_final_devirt.cpp`。
@@ -1754,8 +1750,6 @@ int main() {
 | ch47 虚函数 | Book/part05_oo/ch47_virtual_functions.md | vtable 间接调用机制详述 |
 | ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | CRTP 是模板静态多态的典型应用 |
 | ch27 cast | Book/part03_language/ch27_cast.md | static_cast 在 CRTP 中做编译期下转 |
-
-
 
 ### D5.5 汇编实证 (GCC 15.3.0)
 

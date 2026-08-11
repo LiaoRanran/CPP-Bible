@@ -37,7 +37,6 @@
 ⟶ Book/part08_algorithms/ch97_search.md
 ⟶ Book/part08_algorithms/ch99_numeric.md
 
-
 堆（heap）是二叉**最大/最小堆**的数组实现——逻辑上是一棵完全二叉树，物理上是一段连续数组。C++ 标准库把"堆"建模成一段 `[first, last)` 区间上满足**堆性质**（heap property）的序列，并通过 `std::make_heap / push_heap / pop_heap / sort_heap` 四种算法维护它；`std::priority_queue` 则是建立在 `std::vector` 之上的容器适配器（container adapter），把堆封装成"只暴露队首"的优先队列。
 
 ```cpp
@@ -770,7 +769,6 @@ sorted-bsearch M=20000 : 3143.4 us (hits=20000)
 - `[经验]`：一句话记忆——**堆 = O(1) 取极值 + O(log n) 增删 + O(n) 建堆，但不支持查找**；需要查找就排序。
 - 立场标签与取证汇编均可在 CONVENTIONS.md §1 找到定义；本章真实汇编见 `Examples/_ch98_heap.asm`、`Examples/_ch98_pq.asm`，真实基准见 `Examples/_ch98_bench.cpp`（均已用 GCC 15.3.0 实跑，未编造）。
 
-
 ## 附录 A：工业堆应用 [F: Industry / B: Principle]
 
 ```
@@ -809,7 +807,6 @@ int main() {
 }
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -817,7 +814,6 @@ int main() {
 | [第97章](Book/part08_algorithms/ch97_search.md) | 数据处理管道/排行榜 | 本章提供概念，第97章提供实现 |
 | [第99章](Book/part08_algorithms/ch99_numeric.md) | 索引查找/路由表 | 本章提供概念，第99章提供实现 |
 | [第96章](Book/part08_algorithms/ch96_sorting.md) | 动态数组/缓冲区 | 本章提供概念，第96章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -1077,7 +1073,6 @@ flowchart TD
 | ch95（算法总论） | ch98 | 堆算法归入修改序列算法族，由总论定位 |
 | ch96（排序） | ch98 | partial_sort 内部 heap sort 复用堆不变量 |
 | ch152（基准） | ch98 | 优先队列与堆算法的性能基准方法 |
-
 
 ## 附录 D4：libstdc++ 15.3.0 源码解析 — 堆算法（三标准库对比）[E: Low-level / H: Design]
 

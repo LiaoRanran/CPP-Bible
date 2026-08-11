@@ -37,7 +37,6 @@
 
 ⟶ Book/part13_engineering/ch145_naming_api.md
 
-
 代码风格不是"美观问题"，而是**工程经济学**问题。风格统一的代码降低三类成本：
 
 - **阅读成本**：眼睛无需在多种缩进/命名之间反复切换；
@@ -866,7 +865,6 @@ A: 无性能差异。C++ 标准库用 snake_case; Qt/Unreal 用 CamelCase → �
 | [第145章](Book/part13_engineering/ch145_naming_api.md) | 独占所有权/工厂模式 | 本章提供概念，第145章提供实现 |
 | [第147章](Book/part13_engineering/ch147_code_review.md) | STL算法回调/异步任务 | 本章提供概念，第147章提供实现 |
 
-
 ## 相关章节（交叉引用）
 
 - **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
@@ -963,9 +961,6 @@ int main() { Box b; std::cout << b.capacity() << '\n'; }
 [引用] const 正确性见 C++ Core Guidelines 的「Con 常量与不可变性」章节（如 Con.1–Con.4）；`constexpr` 见 cppreference 与 C++ 标准 `[dcl.constexpr]`；ch144 ⑥、⑪ 详述 const/constexpr/mutable 规范。
 
 </details>
-
-
-
 
 ## 附录 J：代码风格合规提交决策流（D3 维度）
 

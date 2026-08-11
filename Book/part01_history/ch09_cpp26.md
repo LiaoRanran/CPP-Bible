@@ -41,12 +41,10 @@ C++26 的旗舰之争是"反射该有多强"。一派要完整编译期元对象
 ![Bjarne Stroustrup，C++26 进行中（WG21 持续演进）](../assets/history/bjarne_stroustrup.jpg)
 > 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
 
-
 ## ① 学习目标
 
 ⟶ Book/part01_history/ch08_cpp23.md
 ⟶ Book/part01_history/ch10_version_matrix.md
-
 
 ```cpp
 // [merged] ## ① 学习目标
@@ -400,7 +398,6 @@ int main() {
 面试: C++26最重要的3个特性？ Contracts(契约) + Reflection(反射) + std::execution(异步)
        P2996的~500页spec说明了什么？ 反射是从根本上改变C++编译模型的特性
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -409,7 +406,6 @@ int main() {
 | [第10章](Book/part01_history/ch10_version_matrix.md) | 无锁队列/计数器 | 本章提供概念，第10章提供实现 |
 | [第121章](Book/part10_modern/ch121_contracts.md) | 多态插件/框架扩展 | 本章提供概念，第121章提供实现 |
 | [第123章](Book/part10_modern/ch123_ct_programming.md) | 配置解析/API响应 | 本章提供概念，第123章提供实现 |
-
 
 ## 深度增强：C++26三大特性
 
@@ -456,7 +452,6 @@ P2300核心优势:
 - 取消支持: stop_token贯穿整个sender chain
 
 面试: P2300 vs std::async? async=future阻塞; P2300=sender/receiver链式, 无阻塞
-
 
 > **真机实测（GCC 15.3.0）**：`<execution>` 头可编译，但 P2300 算法骨架未实现——`std::execution::just` / `then` 不是成员：
 > ```text
@@ -514,7 +509,6 @@ jg     7b                    ; 失败→跳 0x7b 调用 handle_contract_violatio
 - **相邻主题**：⟶ Book/part01_history/ch07_cpp20.md（第07章　C++20：量级升级）—— 编号相邻、主题接续。
 - **相邻主题**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 编号相邻、主题接续。
 - **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -663,8 +657,6 @@ consteval auto field_names() {
 
 </details>
 
-
-
 ## 附录 J：C++26 方向性特性评估决策流（D3 维度）
 
 本节把第⑤节（sender/receiver 执行器）、第⑨节（调用栈）与第⑭节（WG21 提案，可能变动）收敛为「方向性特性如何评估取舍」的决策流。
@@ -717,7 +709,6 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ```
 
 > 决策流说明：第⑭节强调 C++26 提案「可能变动」——execution 与 contracts 是或门独立特性；contracts 取代手工断言（与 ch121 衔接），反射+constexpr 把更多运行期逻辑前移（ch69/ch123），hazard/RCU 收敛 ch112 的无锁回收难题。
-
 
 ## 附录 K：C++26 方向概念依赖网（D6 维度）
 

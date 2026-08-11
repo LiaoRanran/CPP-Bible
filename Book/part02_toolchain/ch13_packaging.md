@@ -39,7 +39,6 @@ C++ 包管理的根本难点是**二进制兼容性**：同一份源码在不同
 ⟶ Book/part02_toolchain/ch12_buildsystems.md
 ⟶ Book/part02_toolchain/ch14_debugging.md
 
-
 C++ 长期缺乏官方一级包管理器。传统做法（手动下载 zip、把 `.h`/`.lib` 拖进工程、`-I`/`-L` 手工配路径）在依赖一多即崩溃：版本错配、ABI 不一致、Debug/Release 混链、传递依赖爆炸。包管理器的价值是**把"找库、下库、配路径、解依赖、保证可重现"自动化**。
 
 ```cpp
@@ -684,7 +683,6 @@ main:
 - `[经验]`：速查表解决"记不住"，但 ⑯/⑰ 解决"为什么崩"——两者配合才是真掌握。
 - `[标准]`：立场分层与术语请以 CONVENTIONS.md 与本卷各章（如 ch11 编译器、ch12 构建系统）为准；本章不重复定义。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -781,7 +779,6 @@ int main(){std::cout<<"vcpkg=manifest(vcpkg.json)+CMake+triplet=cross-platform C
 
 面试: vcpkg triplet作用? 指定目标平台(x64-windows/x64-linux等), 选择正确预编译二进制
 
-
 ## 相关章节（交叉引用）
 
 - **相邻主题**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 编号相邻、主题接续。
@@ -798,7 +795,6 @@ int main(){std::cout<<"vcpkg=manifest(vcpkg.json)+CMake+triplet=cross-platform C
 - **vcpkg / Conan**：`vcpkg.json` 的 `dependencies` 触发传递闭包求解；Conan 用 `settings.compiler.version` 作包 ID 维度，相同源码不同编译器产出不同二进制缓存键（`constexpr inline` 头-only 库则免此忧）。
 
 ABI 陷阱：`std::vector` 在 libstdc++（GCC）与 libc++（Clang）下布局不同；`_GLIBCXX_USE_CXX11_ABI=0` 切旧/新 ABI 会让既有 `.so` 失效——发行版因此按 GCC 主版本整齐排布 C++ 运行时（GCC 13.2 / Clang 17 各自独立）。
-
 
 ## 附录 J（ABI 与符号布局）
 
@@ -830,7 +826,6 @@ call [rcx]                ; 首次解析后填回 GOT
 - `__cplusplus` = 202302L；`__attribute__((visibility("hidden")))` 减小 SO
 - C++20 模块 `import` 将头开销从 `0x0100` KB 降到 `0x0040` KB
 
-
 ## 底层视角：编译旗标、SIMD 与二进制布局 [E: Low-level]
 
 [标准] `-O2` 开启内联与大部分优化，`-O3` 追加循环向量化与过程间分析；`-mavx2` 生成 32 字节（`0x0020`）宽 AVX 指令，`-mavx512f` 生成 64 字节（`0x0040`）宽 AVX-512，吞吐翻倍但需数据 32/64 字节对齐，否则 `vmovdqa` 触发 #GP。
@@ -854,7 +849,6 @@ SSE 寄存器 `0x0010`（16 字节）宽、AVX `0x0020`、AVX-512 `0x0040`；数
 ### 重构建议
 
 把「手工 `vcpkg install` + README 文档」重构为 `vcpkg.json` manifest 模式（`"builtin-baseline"` 锁定）+ CMake 自动集成；把 Conan 裸 `conanfile.txt` 重构为 `conanfile.py` recipe 显式声明 `requires(version_range)`；CI 加 triplet 校验步，确保 Debug/Release/x86/x64 四种配置全覆盖。
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -1091,4 +1085,3 @@ flowchart TD
 | ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | Debug/Release 混链陷阱（第⑯节与 ch18 衔接） |
 | ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | 二进制缓存接入持续集成（第⑲节） |
 | ch124 libstdcxx / ch125 libcxx | [Book/part11_source/ch124_libstdcxx.md](Book/part11_source/ch124_libstdcxx.md) | 标准库实现影响 ABI 兼容（第⑭节外推） |
-

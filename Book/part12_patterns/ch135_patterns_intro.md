@@ -42,7 +42,6 @@
 
 ⟶ Book/part12_patterns/ch136_creational.md
 
-
 设计模式（Design Pattern）是对**在特定上下文中反复出现的设计问题**的、可复用的解决方案描述。它不偏向任何语言，但 C++ 因同时具备「零开销抽象」与「值/引用双语义」，成为模式表达力最强的语言之一。
 
 [经验] 模式不是代码模板，而是**意图与约束**的约定：读者看到 `Strategy` 就知道「运行时可替换算法」，看到 `RAII` 就知道「资源生命周期绑定作用域」。命名即文档。
@@ -75,7 +74,6 @@ int main() { show(255, Hex{}); }
 ```
 
 ---
-
 
 ## 架构与流程图示（Mermaid）
 
@@ -723,11 +721,7 @@ ch139  CRTP 与编译期多态深度专题
 
 [标准] 进入 ch136 前，请确保已掌握：虚函数与 vtable（⑮）、`unique_ptr` 所有权（⑬）、模板与 CRTP（⑤⑧）、RAII（⑥）。这些是现代 C++ 模式写的底层积木。
 
-
 ## TEST APPEND
-
-
-
 
 ## 附录追加：工业底层与面试
 
@@ -735,7 +729,6 @@ ch139  CRTP 与编译期多态深度专题
 #include <iostream>
 int main(){std::cout<<"ch135_patterns_intro.md enhanced"<<"\n";return 0;}
 ```
-
 
 ## 附录 E：STL中的设计模式
 
@@ -768,13 +761,9 @@ int main(){std::unique_ptr<int> p(new int(42));std::cout<<*p<<std::endl;std::cou
 | [第137章](Book/part12_patterns/ch137_structural.md) | 多态插件/框架扩展 | 本章提供概念，第137章提供实现 |
 | [第138章](Book/part12_patterns/ch138_behavioral.md) | 泛型库/编译期计算 | 本章提供概念，第138章提供实现 |
 
-
 ## 附录 G：面试
 
-
-
 Q: 本章核心? A: 见附录A-F中的深度分析(工业原理/性能/汇编/面试)
-
 
 ## 真实开源项目参考（可查证链接）
 

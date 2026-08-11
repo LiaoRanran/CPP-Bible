@@ -34,7 +34,6 @@ COW 与否是 `string` 史上最激烈的内部争论：COW 能让拷贝近乎�
 ⟶ Book/part07_stl/ch80_array.md
 ⟶ Book/part07_stl/ch82_span.md
 
-
 `std::string` 是 `std::basic_string<char>` 的特化，承载"值语义优先、零开销抽象、与 C 互操作"三原则。
 
 ```cpp
@@ -47,7 +46,6 @@ b[0] = 'H';                 // 修改 b 不影响 a
 
 - `[标准]`：`std::string` 满足 *Cpp17BasicString* 与 *Cpp17ContiguousContainer*（`data()` 返回连续 `char[]`）。
 - `[经验]`：永远优先 `std::string` 而非裸 `char*`，除非要跨越 C ABI 边界（此时用 `c_str()`）。
-
 
 ## 架构与流程图示（Mermaid）
 
@@ -651,7 +649,6 @@ int main() {
 面试: SSO阈值多少？ GCC=15字节, Clang=22字节, MSVC=15字节
        string substr vs string_view? substr=new allocation; string_view=zero-copy
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -710,7 +707,6 @@ int main() {
 #include <string>
 int main(){std::string s="hello";std::cout<<s<<" ("<<s.capacity()<<" capacity, "<<sizeof(s)<<" bytes)"<<std::endl;return 0;}
 ```
-
 
 ## 相关章节（交叉引用）
 

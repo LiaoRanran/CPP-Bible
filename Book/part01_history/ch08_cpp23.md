@@ -38,12 +38,10 @@ C++23 最值得玩味的是 `std::expected` 入标准——它直面"错误也�
 ![Bjarne Stroustrup，C++23 的演进](../assets/history/bjarne_stroustrup.jpg)
 > 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
 
-
 ## ① 学习目标
 
 ⟶ Book/part01_history/ch07_cpp20.md
 ⟶ Book/part01_history/ch09_cpp26.md
-
 
 ```cpp
 // [merged] ## ① 学习目标
@@ -466,7 +464,6 @@ int main() {
 面试: expected vs exception? A: expected成功零开销; exception错误路径昂贵
        flat_map vs map? A: flat_map读多写少(Cache友好); map读写均衡(O(logN)插入)
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -575,7 +572,6 @@ int main(){
 
 面试: 选map还是flat_map? 读多→flat_map; 写多→map; 内存紧→flat_map
       flat_map为何快? 连续内存=Cache友好+无指针chasing
-
 
 ## 附录 G：C++23 特性真机汇编实证（GCC 15.3.0 实测）
 
@@ -776,7 +772,6 @@ count_even(const std::vector<int>&) @ -O2 (98 B):
 
 `GCC 13.1.0` / `Clang 17` / `MSVC 19.3` 对 C++23 特性支持度不同（部分需 `-std=c++23` 与实验开关）；`constexpr` 在 C++23 进一步扩展。`fmt` 与 `range-v3` 是 `LLVM`/Chromium 构建链常见依赖。
 
-
 ## 相关章节（交叉引用）
 
 - **相邻主题**：⟶ Book/part01_history/ch07_cpp20.md（第07章　C++20：量级升级）—— 编号相邻、主题接续（C++20 → C++23 演进链）。
@@ -907,8 +902,6 @@ int main() {
 
 </details>
 
-
-
 ## 附录 J：C++23 错误处理与库增强决策流（D3 维度）
 
 本节把第⑤节（expected 错误处理流）与第⑭节（WG21 提案）收敛为「失败如何表达、库如何增强」的决策流。
@@ -961,7 +954,6 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ```
 
 > 决策流说明：第⑤节用 expected 表达「成功/失败」双通道；第⑭节显示 expected 与 ch146 异常不是非此即彼（或门）——热路径用 expected、罕见错误仍用异常，flat_map 与 mdspan 则是「连续内存」与「零拷贝视图」的与门优化。
-
 
 ## 附录 K：C++23 标准库大修概念依赖网（D6 维度）
 

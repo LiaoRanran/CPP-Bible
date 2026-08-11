@@ -55,7 +55,6 @@ Policy-Based Design 对"继承层级"之争是"组合优于继承"的极致化�
 ⟶ Book/part12_patterns/ch139_crtp_pattern.md
 ⟶ Book/part12_patterns/ch141_di.md
 
-
 Policy-Based Design（基于策略的设计，也称 policy-based class design）由 Andrei Alexandrescu 在《Modern C++ Design》(2001) 中系统提出。其核心思想是：**把类的行为拆解为一组正交的、可替换的、编译期绑定的"策略（policy）"，宿主类（host）通过模板参数把这些策略组合起来**。每个 policy 是一个只承载"某一维度行为"的迷你类，宿主类负责把各 policy 编排成完整类型。
 
 [标准] 在语言层面，policy 就是普通类模板参数；C++ 标准本身并未定义 "policy" 关键字，policy 是一种**设计惯用法（idiom）**，其全部能力来自模板、特化与（C++11 起）`constexpr`/`concepts`。
@@ -887,7 +886,6 @@ void apply_variant(PolicyVariant<Ps...>& v) {
 
 > [标准] 全章汇编/符号证据均由 `g++ -std=c++23 -O2 -S -masm=intel` 与 `nm`（MinGW-w64 GCC 13.1.0, x86-64）真机生成，源码见 `Examples/_ch140_*.cpp` 与对应 `.asm`，未作任何编造。
 
-
 ## 附录 A：工业案例 —— Eigen 与 Boost 的 Policy 架构 [F: Industry]
 
 Eigen 是 Policy-Based Design 在数值线性代数领域的旗舰实现：
@@ -954,7 +952,6 @@ Q: 为什么 std::unique_ptr 用 Policy 而非继承表达删除器？
 A: 零开销——删除器无 vtable，调用可内联。sizeof 与裸指针相同（无状态删除器 + EBO）
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -963,7 +960,6 @@ A: 零开销——删除器无 vtable，调用可内联。sizeof 与裸指针相
 | [第141章](Book/part12_patterns/ch141_di.md) | 独占所有权/工厂模式 | 本章提供概念，第141章提供实现 |
 | [第135章](Book/part12_patterns/ch135_patterns_intro.md) | 配置解析/API响应 | 本章提供概念，第135章提供实现 |
 | [第71章](Book/part06_templates/ch71_policy.md) | 泛型库/编译期计算 | 本章提供概念，第71章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1201,7 +1197,6 @@ flowchart TD
 | ch140 多重继承 | ch50 多重继承 | Policy 类常多重继承组合，见 ch50 |
 | ch140 模板特化 | ch62 特化 | 特化定制 Policy 行为，关联 ch62 |
 | ch140 编译期多态 | ch139 CRTP | Policy 常与 CRTP 配合，闭环 ch139 |
-
 
 ## 附录 D5：真实基准与性能分析 — 编译期策略模板 vs 虚函数策略 vs std::function vs if constexpr 分发（GCC 15.3.0）
 

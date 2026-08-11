@@ -1090,7 +1090,6 @@ int main() {
 
 > 推荐读物（已融于正文）：Nevin Liber, *P0122R8 span*；ISO/IEC 14882:2023 `[views]`、`[span.overview]`；Bjarne Stroustrup《C++ Programming Language》第 4 版容器章节；Herb Sutter《GotW》关于视图与所有权的条目。
 
-
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。
@@ -1453,7 +1452,6 @@ flowchart TD
 | ch90 ranges | ch82 span | span 满足 contiguous_range 喂给 ranges |
 | ch88 受限接口 | ch82 span | 非拥有视图与所有权边界思想 |
 | ch115 移动语义 | ch82 span | span 拷贝是浅复制，与移动语义呼应 |
-
 
 ## 附录 D5：真实基准与性能分析 — span 视图的真实开销（GCC 15.3.0）
 

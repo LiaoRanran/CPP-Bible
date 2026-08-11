@@ -37,7 +37,6 @@
 ⟶ Book/part13_engineering/ch144_style.md
 ⟶ Book/part13_engineering/ch146_error_handling.md
 
-
 命名不是"审美偏好"，而是**接口契约的第一行文档**。API 的使用者首先读到的不是实现，而是名字；一个好名字能让误用在编译期或 code review 阶段就被消灭，一个坏名字则把理解成本转嫁给每一个后续维护者。
 
 `[经验]` 一条被工业界反复验证的共识：**名字是写给"调用方"的注释，而不是写给"实现者"的备忘录**。API 的可学习性（learnability）几乎完全由命名质量决定。
@@ -943,7 +942,6 @@ std::string s = std::move(other);   // move 仅转型，真正搬迁由 string �
 
 `[经验]` 一句话总纲：**命名不是装饰，而是把"用法"写进类型系统；好 API 让错误用法根本编不过，差 API 把理解成本丢给下一个维护者十年。** 所有机器可验证主张（Pimpl 间接调用 `jmp rax` 不可内联、Pimpl 头文件 `sizeof=8` 与实现解耦、`noexcept` 触发 `-Wterminate`、返回值 `by_ref` 零拷贝而 `by_value` 经 sret 缓冲、`[[deprecated]]` 真实警告、各示例 `-Wall -Wextra` 零警告）均已用本机 GCC 13.1.0 真实产物（`Examples/_ch145_*.asm` / `*_warn.txt` / 运行时）佐证，可复现、未编造。异常安全深化的 noexcept 实务见 ch146。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -952,7 +950,6 @@ std::string s = std::move(other);   // move 仅转型，真正搬迁由 string �
 | [第144章](Book/part13_engineering/ch144_style.md) | 泛型库/编译期计算 | 本章提供概念，第144章提供实现 |
 | [第146章](Book/part13_engineering/ch146_error_handling.md) | 数据处理管道/排行榜 | 本章提供概念，第146章提供实现 |
 | [第135章](Book/part12_patterns/ch135_patterns_intro.md) | 共享所有权/图结构 | 本章提供概念，第135章提供实现 |
-
 
 ## 深度增强：API设计工业原则
 
@@ -987,7 +984,6 @@ int main(){Widget w;w.doWork();std::cout<<"PIMPL: 2ns/call, 30x compile speedup"
 
 面试: 值语义vs引用语义? 默认值语义(安全); 瓶颈处string_view/span
       noexcept加不加? 移动构造/赋值=必须(影响vector realloc 4x)
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1099,7 +1095,6 @@ int main() { assign(UserId{1}, OrderId{2}); }      // 写反类型则编译失�
 
 </details>
 
-
 ### 补例：命名约定的自验证
 
 下面一段自包含程序演示本章核心命名规则：布尔谓词用 `Is`/`Has` 前缀、获取器用 `GetX`、可失败调用用 `[[nodiscard]]`、修改器 `SetX` 标脏。用 `assert` 在运行期自检命名契约：
@@ -1132,9 +1127,6 @@ int main() {
 ```
 
 编译验证：`g++ -std=c++23 -O2 -Wall -Wextra` 零警告通过；`[[nodiscard]]` 让调用方忽略返回值（如漏写 `if (b.IsDirty())`）在 `-Wall` 下被诊断，正是命名约定要兜住的误用面。
-
-
-
 
 ## 附录 J：API 设计取舍决策流（D3 维度）
 

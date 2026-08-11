@@ -51,7 +51,6 @@ C++ 不替你做数据布局优化，但给你"控制布局"的全部权力（�
 ⟶ Book/part04_memory/ch42_strict_aliasing.md
 ⟶ Book/part04_memory/ch44_memory_pool.md
 
-
 **【标准】** 现代计算机的存储是一个金字塔：越靠近 CPU，容量越小、速度越快、单位成本越高。程序员能直接控制的"速度差"主要来自寄存器到主存这一段。
 
 **【平台】** 下表为 x86-64（Intel/AMD，约 3–4 GHz）的常见量级，取自各代处理器与内存子系统的经验区间，具体数值随型号、频率和内存世代（DDR4/DDR5）浮动：
@@ -1628,7 +1627,6 @@ int main() {
 - `__GCC_DESTRUCTIVE_SIZE` 为 GCC/Clang **编译器内建宏**（不在头文件），本机实测值 = 64
 - 缓存状态机/MESI/TLB/prefetch 硬件行为在 libstdc++/libc++/MS STL 中**无源码**，相关说明均标注 **【实现-推断】**
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1637,7 +1635,6 @@ int main() {
 | [第44章](Book/part04_memory/ch44_memory_pool.md) | 无锁队列/计数器 | 本章提供概念，第44章提供实现 |
 | [第36章](Book/part04_memory/ch36_stack_heap.md) | 多态插件/框架扩展 | 本章提供概念，第36章提供实现 |
 | [第154章](Book/part14_perf/ch154_cache_opt.md) | 泛型库/编译期计算 | 本章提供概念，第154章提供实现 |
-
 
 ## 相关章节（交叉引用）
 

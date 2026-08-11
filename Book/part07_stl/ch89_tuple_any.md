@@ -35,7 +35,6 @@ C/C++ 函数历来只能"返回一个值"，要回多个就得靠输出参数或
 ⟶ Book/part07_stl/ch88_optional_variant.md
 ⟶ Book/part07_stl/ch90_ranges.md
 
-
 读完本章你能独立回答：
 
 1. `std::tuple` 在 libstdc++ 中为何采用**递归继承**（`_Tuple_impl`）而非扁平存储，空基类优化（EBO）在其中如何省掉 `sizeof`？
@@ -1088,14 +1087,12 @@ int main() {
 
 > 偏离说明：本章依规将「推荐阅读」替换为「跨语言对比」（⑳）与「源码阅读路线」（附录），符合 CONVENTIONS §2 第 20 条最新要求。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
 | [第88章](Book/part07_stl/ch88_optional_variant.md) | 键值查找/缓存 | 本章提供概念，第88章提供实现 |
 | [第90章](Book/part07_stl/ch90_ranges.md) | STL算法回调/异步任务 | 本章提供概念，第90章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1111,7 +1108,6 @@ int main() {
 - `std::any_cast` 类型不符抛 `std::bad_any_cast`，用 `std::any_cast<T>(p)` 指针形式返回 nullptr 更安全。
 
 > 交叉引用：变参见 [ch63](Book/part06_templates/ch63_variadic.md)；variant 见 [ch25](Book/part03_language/ch25_union_variant.md)。
-
 
 ## 附录 G（tuple / any 存储布局）
 
@@ -1143,7 +1139,6 @@ jne .bad_any
 - GCC 13.2 / Clang 18 / MSVC 19.3 均实现
 - `__cplusplus` = 202302L；`constexpr` tuple 自 C++20
 - WG21 提案 P0202R3 引入 `std::any`
-
 
 ## 相关章节（交叉引用）
 
@@ -1530,9 +1525,6 @@ flowchart TD
 | ch89 tuple/any | ch90 ranges | range 可能返回 tuple |
 | ch89 tuple/any | ch88 optional/variant | any 与 variant 类型擦除对照 |
 | ch89 tuple/any | ch93 thread/async | 可调用对象传递给 async |
-
-
-
 
 ## 附录 D5：真实基准与性能分析 — int/variant/any 类型擦除成本阶梯（GCC 15.3.0）
 

@@ -43,7 +43,6 @@
 ⟶ Book/part04_memory/ch35_memory_layout.md
 ⟶ Book/part04_memory/ch37_new_delete.md
 
-
 [标准] C++ 标准本身不规定"栈"或"堆"的实现细节——它只定义**存储期**（storage duration，见 ch19）：自动存储期（automatic）、动态存储期（dynamic）、静态存储期（static）、线程存储期（thread）。但在**所有真实实现**中，自动存储期对象几乎总是落在**栈**上，动态存储期对象几乎总是落在**堆**（自由存储区 free store，由 `malloc`/`operator new` 管理的堆）上。
 
 [经验] 一句话区分：
@@ -1358,7 +1357,6 @@ int main() {
 
 **交叉引用**：存储期与自动/动态语义见 ch19；地址空间布局（栈/堆相向增长）见 ch35；`new`/`delete` 完整语义与重载见 ch37；自定义分配器与 `std::allocator` 见 ch38；异常栈展开细节见 ch33；内存池/固定 size class 缓解碎片见 ch44；并发下堆竞争与分配器选型见 ch61；底层 ABI 与平台细节脉络见 ch80。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1367,7 +1365,6 @@ int main() {
 | [第35章](Book/part04_memory/ch35_memory_layout.md) | 独占所有权/工厂模式 | 本章提供概念，第35章提供实现 |
 | [第37章](Book/part04_memory/ch37_new_delete.md) | 高性能容器/零拷贝传输 | 本章提供概念，第37章提供实现 |
 | [第39章](Book/part04_memory/ch39_raii_rule.md) | 资源管理/事务回滚 | 本章提供概念，第39章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 

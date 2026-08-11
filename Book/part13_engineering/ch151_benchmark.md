@@ -38,7 +38,6 @@
 
 ⟶ Book/part13_engineering/ch150_testing.md
 
-
 基准测试（benchmarking）的目标是用可重复的数字回答"这段代码的真实开销是多少"。但 C++ 基准测试的陷阱远超直觉：**优化器会删除你以为在测的代码**、**时钟分辨率会给你 0**、**缓存预热会在首批样本里污染结果**、**平台/编译器差异会让数字完全不可比**。一条不可信的基准，比没有基准更危险——它会把错误的优化方向"焊死"进代码库。
 
 ```cpp
@@ -1258,7 +1257,6 @@ int main() {
 > - 运行日志：`_run/_ch151_run.log`（所有真实耗时数字出处）。
 > - 真实关键数字：`dce_trap=0.000ms`（DCE 实证）、`dce_good=53.661ms`、`row=13.366ms vs col=68.800ms`、`vector=4.897ms vs list=123.088ms`、`-O2≈116ms vs -O3native≈107ms`、`inline=57.1ms/branch=88.8ms/virtual(devirt)=48.0ms/virtual(real)=228.8ms`、`scalar=211.7ms vs reduce=14.5ms`。
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -1274,7 +1272,6 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 | [第152章](Book/part14_perf/ch152_perf_model.md) | 无锁队列/计数器 | 本章提供概念，第152章提供实现 |
 | [第150章](Book/part13_engineering/ch150_testing.md) | 多态插件/框架扩展 | 本章提供概念，第150章提供实现 |
 | [第157章](Book/part14_perf/ch157_compiler_explorer.md) | 泛型库/编译期计算 | 本章提供概念，第157章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1408,9 +1405,6 @@ int main() {
 [引用] False Sharing 与对齐见 ch143 ⑬、ch151 ⑩（内存带宽与 cache miss）；性能剖析工具 `perf` / `valgrind --tool=cachegrind` 见 ch151 ⑧；`alignas` 见 ISO/IEC 14882:2023 与 cppreference。
 
 </details>
-
-
-
 
 ## 附录 J：可信基准六步法（D3 维度）
 
@@ -1559,4 +1553,3 @@ flowchart TD
   STAT --> REP
   REP --> DONE
 ```
-

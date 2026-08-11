@@ -38,12 +38,10 @@ C++17 的最大取舍在"可选值"上：`std::optional` 入标准前，社区�
 ![Bjarne Stroustrup，C++17 的推行](../assets/history/bjarne_stroustrup.jpg)
 > 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
 
-
 ## ① 学习目标
 
 ⟶ Book/part01_history/ch05_cpp14.md
 ⟶ Book/part01_history/ch07_cpp20.md
-
 
 ```cpp
 // [merged] ## ① 学习目标
@@ -448,7 +446,6 @@ int main() {
 面试: C++17最实用特性？ optional+string_view+if constexpr
        为什么string_view比const string&快？ string_view不触发临时string构造(堆分配)
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -457,7 +454,6 @@ int main() {
 | [第7章](Book/part01_history/ch07_cpp20.md) | STL算法回调/异步任务 | 本章提供概念，第7章提供实现 |
 | [第64章](Book/part06_templates/ch64_fold.md) | 配置解析/API响应 | 本章提供概念，第64章提供实现 |
 | [第88章](Book/part07_stl/ch88_optional_variant.md) | 泛型库/编译期计算 | 本章提供概念，第88章提供实现 |
-
 
 ## 深度增强：C++17性能原理
 
@@ -496,7 +492,6 @@ int main(){process("hello");return 0;}
 Q: guaranteed elision vs NRVO? A: elision=prvalue强制(C++17); NRVO=命名对象优化(C++26强制)
 Q: string_view陷阱? A: 不持有数据→原字符串销毁后dangling
 Q: if constexpr vs SFINAE? A: 简单分支→if constexpr; 多重重载→concepts(C++20)
-
 
 ## 附录 E：C++17面试速查
 
@@ -545,7 +540,6 @@ int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<",
 - **Blink** — Blink 用 C++17 折叠表达式展开布局属性
 - **Chromium** — clusterfuzz 构建默认开启 C++17 全套警告
 - **Boost** — Boost.Mp11 用 C++17 变量模板做元编程
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -757,7 +751,6 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ```
 
 > 决策流说明：第⑤节把「结构化绑定解构」作为统一入口；第⑨节指出 if constexpr 让编译期分支取代 ch66 的 SFINAE 技巧，是「可读性」与「老技巧」的或门选择；string_view 必须配合 ch82 的悬垂意识。
-
 
 ## 附录 K：C++17 生产力概念依赖网（D6 维度）
 

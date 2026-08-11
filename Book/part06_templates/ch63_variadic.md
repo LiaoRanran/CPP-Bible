@@ -36,7 +36,6 @@ C 风格的可变参数是类型安全的黑洞：`printf` 全靠格式串和约
 ⟶ Book/part06_templates/ch62_specialization.md
 ⟶ Book/part06_templates/ch64_fold.md
 
-
 - 说清参数包（parameter pack）、包展开（pack expansion）、`sizeof...` [标准]
 - 掌握递归终止 + 包展开两种展开方式 [标准]
 - 理解包可在哪些上下文展开（调用、初始化、基类列表、using 等）[标准]
@@ -656,7 +655,6 @@ N2242 (C++11): Variadic templates (Douglas Gregor, 2007)
 - std::tuple<Ts...>: 可变参数模板的经典应用
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -758,7 +756,6 @@ int main(){std::cout<<sum(1,2,3,4,5,6,7,8,9,10)<<std::endl;return 0;}
 | 递归模板 | ~125ms | O(N) add 指令 | N+1 份 |
 | 折叠表达式 | ~111ms | O(N) add 指令 | 1 份 |
 | 手写展开 | 无需模板 | O(N) add 指令 | — |
-
 
 ## 相关章节（交叉引用）
 

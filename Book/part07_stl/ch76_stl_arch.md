@@ -1,11 +1,11 @@
 # 第76章　STL 架构与迭代器概念
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++20 迭代器概念与哨兵。  
-> 预计阅读：约 90 分钟（深度版，含源码/汇编/概念映射）。  
-> 前置：⟶ Book/part03_language/ch19_variables.md（存储期与对象） · ⟶ Book/part06_templates/ch60_template_basics.md（模板与实例化） · ⟶ Book/part06_templates/ch67_concepts.md（C++20 概念）。  
-> 后续：⟶ Book/part07_stl/ch77_vector.md（vector 与三指针） · ⟶ Book/part07_stl/ch84_set.md（有序容器） · ⟶ Book/part07_stl/ch85_unordered.md（哈希容器）。  
-> 难度：★★★☆☆（理解泛型分层与"编译期多态"为何使 STL 既高效又可组合）。  
+> 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++20 迭代器概念与哨兵。
+> 预计阅读：约 90 分钟（深度版，含源码/汇编/概念映射）。
+> 前置：⟶ Book/part03_language/ch19_variables.md（存储期与对象） · ⟶ Book/part06_templates/ch60_template_basics.md（模板与实例化） · ⟶ Book/part06_templates/ch67_concepts.md（C++20 概念）。
+> 后续：⟶ Book/part07_stl/ch77_vector.md（vector 与三指针） · ⟶ Book/part07_stl/ch84_set.md（有序容器） · ⟶ Book/part07_stl/ch85_unordered.md（哈希容器）。
+> 难度：★★★☆☆（理解泛型分层与"编译期多态"为何使 STL 既高效又可组合）。
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。本章 `[实现]` 级源码取自 `bits/stl_iterator_base_types.h`、`bits/stl_iterator_base_funcs.h`、`bits/stl_iterator.h`，逐行标注文件与行号。
 
 ## ⓪ 历史动机：STL 架构与迭代器概念的来龙去脉
@@ -277,15 +277,15 @@ int main() {
 
 ## ⑮ 面试题
 
-1. 为什么 `std::distance` 对 `vector` 是 O(1)，对 `list` 是 O(n)？  
+1. 为什么 `std::distance` 对 `vector` 是 O(1)，对 `list` 是 O(n)？
    → 标签分发：`random_access_iterator` 走指针相减；`input/bidirectional` 只能逐次 `++` 计数。
-2. `input_iterator` 与 `forward_iterator` 的核心区别？  
+2. `input_iterator` 与 `forward_iterator` 的核心区别？
    → `forward` 可多遍（可保存、重复遍历同一区间），`input` 只能单遍（读取后状态不可回退）。
-3. 为什么 `sort` 要求随机访问迭代器，不能用于 `list`？  
+3. 为什么 `sort` 要求随机访问迭代器，不能用于 `list`？
    → `sort` 需要 `it + n` 跳跃与三数取中，`list` 只支持双向 `++/--`，故 `list` 有自己的成员 `sort()`。
-4. 裸指针是哪种迭代器？  
+4. 裸指针是哪种迭代器？
    → `contiguous_iterator`（C++20）且 `random_access_iterator`（`stl_iterator_base_types.h:198`）。
-5. 为什么算法接口用迭代器区间而非容器？  
+5. 为什么算法接口用迭代器区间而非容器？
    → 解耦：一套算法适配所有容器，且能作用于子区间、流、生成器（哨兵）。
 
 ## ⑯ 易错点
@@ -339,16 +339,16 @@ int main() {
 
 ## ⑰ FAQ
 
-**Q：`iterator_category` 与 C++20 `iterator_concept` 有何不同？**  
+**Q：`iterator_category` 与 C++20 `iterator_concept` 有何不同？**
 `iterator_category` 是 C++98 以来的向后兼容属性（最高 `random_access_iterator_tag`）；`iterator_concept` 是 C++20 新增，能表达 `contiguous_iterator_tag`。对 `vector::iterator` 两者分别是 `random_access` 与 `contiguous`。
 
-**Q：为什么需要这么多范畴，而不是一个万能迭代器？**  
+**Q：为什么需要这么多范畴，而不是一个万能迭代器？**
 因为不同容器能力不同（链表不能随机跳、输入流不能回退）。算法据此选择最优实现（如 `distance` 在随机访问下 O(1)），既保证正确又保证效率——这是"最小接口、最大优化"的设计。
 
-**Q：哨兵有什么用？**  
+**Q：哨兵有什么用？**
 让"结束条件"不必是同类型迭代器。例如 `istream_iterator` 读到 EOF 即结束，无需预先知道元素个数；C++20 还允许计数哨兵、子串哨兵等。
 
-**Q：`back_inserter` 是怎么把赋值变成插入的？**  
+**Q：`back_inserter` 是怎么把赋值变成插入的？**
 它是一个输出迭代器适配器，其 `operator=` 调用容器的 `push_back`，故 `*(it++) = x` 等价于 `c.push_back(x)`。
 
 ## ⑱ 最佳实践
@@ -427,9 +427,9 @@ int main() {
 3. 用 C++20 哨兵（`istream_iterator` + `default_sentinel`）读取直到 EOF。
 
 **思考题**
-- 为什么 `forward_iterator` 用继承 `input_iterator_tag`，而 `advance` 对 input 仍 O(n)？  
+- 为什么 `forward_iterator` 用继承 `input_iterator_tag`，而 `advance` 对 input 仍 O(n)？
   → 继承表达"is-a"能力子集，但算法按**最具体可用**标签选重载；input 没有 `+n` 能力，故仍逐次 `++`。
-- 连续迭代器概念为何单独引入（不并入 random_access）？  
+- 连续迭代器概念为何单独引入（不并入 random_access）？
   → 连续内存带来 SIMD/指针算术/取地址等额外保证（如 `&*it + 1 == &*(it+1)`），是 `vector` 优化与 `<span>`/ranges 优化的基础，需单独表达。
 
 **libstdc++ 源码阅读路线**
@@ -944,7 +944,6 @@ int main() {
 }
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -975,7 +974,6 @@ int main(){std::vector<int> v{5,3,1,4,2};std::sort(v.begin(),v.end());std::cout<
 
 面试: STL设计哲学? 正交组件(容器+算法+迭代器), 泛型编程, 零开销抽象
        为什么算法不直接操作容器? 分离关注点: 算法通过迭代器通用化, 不绑定特定容器
-
 
 ## 附录 H：STL容器决策树
 

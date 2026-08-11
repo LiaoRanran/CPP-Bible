@@ -1102,7 +1102,6 @@ int main() {
 
 > 本文件为独立章节，未改动 `INDEX.md` / `GLOSSARY.md` / `CROSSREF.md`；与第93章、part09 的 ch102/ch103/ch105/ch107/ch108/ch114 建立正文交叉引用。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1129,7 +1128,6 @@ int main(){std::jthread t([](std::stop_token st){while(!st.stop_requested()){std
 | condition_variable | C++11 | wait_for+flag |
 
 面试: jthread vs thread? jthread=自动join+stop_token; stop_source创建→token获取→worker检查
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1731,10 +1729,7 @@ flowchart TD
 | ch94 stop_token | ch90 ranges | 可取消 range 遍历 |
 | ch113 内存模型/原子 | ch94 stop_token | 停止态的原子性保证 |
 
-
 </details>
-
-
 
 ## 附录 D5：真实基准与性能分析 — stop_token / jthread 取消的真实开销（GCC 15.3.0）
 

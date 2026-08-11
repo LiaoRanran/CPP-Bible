@@ -43,7 +43,6 @@
 ⟶ Book/part12_patterns/ch135_patterns_intro.md
 ⟶ Book/part12_patterns/ch137_structural.md
 
-
 创建型模式（Creational Patterns）关注「对象如何被创建、由谁创建、何时创建」，目标是把**实例化逻辑**与**使用逻辑**解耦，使系统不依赖于具体类的构造细节。在 C++ 中，原始手段就是到处 `new`/`delete`，这会带来三类典型痛点：
 
 - **耦合**：调用方必须 `#include` 具体类头文件并知道其构造签名。
@@ -992,7 +991,6 @@ int main(){std::cout<<"Builder: separate construction from representation. Often
 int main(){std::cout<<"Factory Method: defer instantiation to subclass. Abstract Factory: families of related objects."<<std::endl;return 0;}
 ```
 
-
 ## 附录 A：工业中的创建型模式 [F: Industry / B: Principle]
 
 C++ 标准库本身就是创建型模式的最大用户：
@@ -1040,7 +1038,6 @@ A: 构造参数 > 4 个; 构造多步骤; 不同配置生成不同表示
 - Prototype: C++ 无内建 clone, 需要手动 = default 或 unique_ptr<T> clone()
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1049,7 +1046,6 @@ A: 构造参数 > 4 个; 构造多步骤; 不同配置生成不同表示
 | [第135章](Book/part12_patterns/ch135_patterns_intro.md) | 独占所有权/工厂模式 | 本章提供概念，第135章提供实现 |
 | [第137章](Book/part12_patterns/ch137_structural.md) | STL算法回调/异步任务 | 本章提供概念，第137章提供实现 |
 | [第116章](Book/part10_modern/ch116_perfect_forwarding.md) | 多态插件/框架扩展 | 本章提供概念，第116章提供实现 |
-
 
 ## 相关章节（交叉引用）
 

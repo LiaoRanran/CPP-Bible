@@ -561,7 +561,6 @@ int main(){
 }
 ```
 
-
 ## 相关章节（交叉引用）
 
 - **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch152_perf_model.md（第152章　性能模型与测量学）
@@ -591,7 +590,6 @@ int main(){
 - CE 编译器版本与本地可能不同，复制结论到本地前先验证（见「⑯」latency 对照）。
 
 > 交叉引用：优化管线见 [ch156](Book/part14_perf/ch156_compiler_opt.md)；编译器全景见 [ch11](Book/part02_toolchain/ch11_compilers.md)；性能分析见 [ch15](Book/part02_toolchain/ch15_profiling.md)；SIMD 见 [ch155](Book/part14_perf/ch155_simd.md)。
-
 
 ## 附录 F（Compiler Explorer 汇编对照）
 
@@ -810,4 +808,3 @@ flowchart TD
 | ch47 | 验证去虚化 | 虚函数 | 验证虚函数去虚化 |
 | ch15 | 定位热点 | 性能剖析 | 剖析定位待验证热点 |
 | ch154 | 汇编可见 | 缓存优化 | 缓存优化在汇编可见 |
-

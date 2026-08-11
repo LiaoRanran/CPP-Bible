@@ -43,7 +43,6 @@ CI 的核心理念是"让集成失败尽早、自动化、可重复"，反对"�
 ⟶ Book/part13_engineering/ch148_gitflow.md
 ⟶ Book/part13_engineering/ch150_testing.md
 
-
 CI（Continuous Integration，持续集成）指开发者频繁把代码合并进主干，并由自动化流水线在**每次推送**完成构建与测试；CD（Continuous Delivery/Deployment，持续交付/部署）在此基础上把通过门禁的产物自动发布到预发或生产。**CI 解决“合并地狱”，CD 解决“发布恐惧”**。
 
 对 C++ 这类“编译慢、链接重、平台耦合强”的工程，CI/CD 的价值更突出：一次本地能过的代码，到了干净环境可能因缺头文件、缺库、ABI 不一致而失败，唯有自动化流水线能复现。
@@ -1024,7 +1023,6 @@ CI中处理标准库差异:
 生产实践: Google的C++ CI每天运行~50K测试目标, 分布式执行<15min返回结果
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1041,7 +1039,6 @@ CI中处理标准库差异:
 int main(){std::cout<<"LLVM:Buildbot+GH Actions(15min pre,2h full);Chromium:LUCI(数千bot);Google:Blaze(50K tests<15min)"<<std::endl;return 0;}
 ```
 面试: pre-commit快(15min)vs post-commit完整(2h+sanitizer); tree closure保证主线永远可构建
-
 
 ## 相关章节（交叉引用）
 
@@ -1063,7 +1060,6 @@ CI 快不快，取决于"能复用的编译产物"有多少：
 - **CMake configure 缓存**：`CMakeCache.txt` 记 `CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++-17`，重跑 `cmake` 不重探工具链，省 `200 ms`/次；`ccache` 未命中时一次 `g++ -O2 -c foo.cpp` 约 `300 ms`（小文件）到 `8 s`（重模板头）。
 
 缓存失效根因：改动 `__cplusplus` 相关宏、`-D` 定义或 `compiler_version` 变化都会让 SHA 键变，触发整池重编——这是 CI 时间突增的常见元凶。用 `constexpr` 内联头减少 TU 间重复实例化也能降缓存压力。
-
 
 ## 附录 G（构建缓存与并行编译底层）
 
@@ -1206,9 +1202,6 @@ jobs:
 
 C++23 约束：`static_assert` 在 CI 中作为编译期门禁（如 `static_assert(std::is_trivial_v<T>)`），配合 `-Wall -Wextra -Werror` 让接口契约在合并前失效即红。这呼应 [ch18](Book/part02_toolchain/ch18_buildconfig.md) 的构建配置与 [ch151](Book/part13_engineering/ch151_benchmark.md) 的基准门禁。
 
-
-
-
 ## 附录 J：CI/CD 流水线阶段图（D3 维度）
 
 把第③–⑯节的流水线画成带 fail-fast 的阶段流：每次 push/PR 依次过构建、测试门禁（ch150）、静态分析门禁（ch147）、覆盖率，再制品化走 CD（ch149⑩）；任一阶段失败立即中断。
@@ -1349,4 +1342,3 @@ flowchart TD
   Q4 -->|是| MATRIX
   MATRIX --> DONE
 ```
-

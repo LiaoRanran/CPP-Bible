@@ -35,7 +35,6 @@ fmt 对 `iostream`/`printf` 之争的答案是"类型安全 + 性能好 + 语法
 ⟶ Book/part11_source/ch130_chromium_abseil.md
 ⟶ Book/part11_source/ch132_leveldb_rocksdb.md
 
-
 `fmt`（原 cppformat）是现代 C++ 的**类型安全、快速、小而全**的文本格式化库；`spdlog` 是建立在 fmt 之上的**高性能、仅头文件**日志库。二者共同解决了传统 `<iostream>`（慢、冗长）与 `printf`（无类型安全、格式串与参数易错位）的痛点。
 
 ```cpp
@@ -651,7 +650,6 @@ class SPDLOG_API registry {
 - `[标准]`：三者格式化语义一致；选型的唯一变量是「要不要日志框架」「能不能用 C++20」。
 - `[经验]`：C++20 项目优先 `std::format` + spdlog；C++17 或要 `fmt::print` 直出则用 fmt。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -749,7 +747,6 @@ int main(){std::cout<<"fmt=5-10x faster than cout; spdlog=300ns/msg async"<<std:
 | cout | ~1us | 标准库通用 |
 
 面试: fmt快在无locale+无mutex+编译期验证; spdlog快在异步+MPSC队列
-
 
 ## 相关章节（交叉引用）
 
@@ -954,7 +951,6 @@ flowchart TD
 | ch124 | ch131 | 标准库实现总览衔接 std::format |
 | ch125 | ch131 | libc++ 对 std::format 的支持验证 |
 | ch128 | ch131 | Boost 格式化组件与 fmt 的取舍对照 |
-
 
 ## 附录 D5：真实基准与性能分析 — 格式化吞吐 std::format vs snprintf vs ostringstream（GCC 15.3.0）
 

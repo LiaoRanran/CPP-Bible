@@ -1,9 +1,9 @@
 # 第116章　完美转发与万能引用
 
-> 标准基：ISO/IEC 14882:2023 (C++23)，引用条款以 N4950 为准  
-> 预计阅读：约 75 分钟  
-> 前置：⟶ Book/part10_modern/ch115_move.md（移动语义与右值引用）· ⟶ Book/part03_language/ch20_reference_pointer.md（引用本质）· ⟶ Book/part06_templates/ch63_variadic.md（可变参数模板）  
-> 后续：⟶ Book/part10_modern/ch117_copy_elision.md（RVO/NRVO）· ⟶ Book/part10_modern/ch122_pmr.md（PMR 与多态分配器）· ⟶ Book/part09_concurrency/ch107_atomic.md（并发模型）  
+> 标准基：ISO/IEC 14882:2023 (C++23)，引用条款以 N4950 为准
+> 预计阅读：约 75 分钟
+> 前置：⟶ Book/part10_modern/ch115_move.md（移动语义与右值引用）· ⟶ Book/part03_language/ch20_reference_pointer.md（引用本质）· ⟶ Book/part06_templates/ch63_variadic.md（可变参数模板）
+> 后续：⟶ Book/part10_modern/ch117_copy_elision.md（RVO/NRVO）· ⟶ Book/part10_modern/ch122_pmr.md（PMR 与多态分配器）· ⟶ Book/part09_concurrency/ch107_atomic.md（并发模型）
 > 难度：★★★☆☆（理解引用折叠是关键门槛）
 
 ---
@@ -978,7 +978,6 @@ template<typename T>void g(T&&x){f(std::forward<T>(x));}
 int main(){int a=1;g(a);g(2);return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -986,7 +985,6 @@ int main(){int a=1;g(a);g(2);return 0;}
 | [第107章](Book/part09_concurrency/ch107_atomic.md) | 模板约束/类型安全API | 本章提供概念，第107章提供实现 |
 | [第65章](Book/part06_templates/ch65_type_traits.md) | 独占所有权/工厂模式 | 本章提供概念，第65章提供实现 |
 | [第63章](Book/part06_templates/ch63_variadic.md) | 无锁队列/计数器 | 本章提供概念，第63章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1245,7 +1243,6 @@ flowchart TD
 | ch45 | ch116 | OOP 构造委托依赖转发 |
 | ch19 | ch116 | 变量与值类别是转发基础 |
 
-
 ## 附录 D4：libstdc++ 15.3.0 源码解析 — `std::forward` / `std::move`（三标准库对比）[E: Low-level / H: Design]
 
 > 本附录所有源码摘录均来自随书工具链 **GCC 15.3.0** 自带的 libstdc++
@@ -1341,7 +1338,6 @@ int main() {
 ```
 
 预期输出依次为 `左值 / 右值 / 右值`——`forward<T>` 依 `T` 的推导结果（左值实参→`T=int&`、右值实参→`T=int`）经引用折叠精确还原实参的值类别，与 D4.1 的双重载源码一一对应。
-
 
 ## 附录 D5：真实基准与性能分析 — push_back vs emplace_back 的诚实测量（反炒作）（GCC 15.3.0）
 

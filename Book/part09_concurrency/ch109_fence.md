@@ -344,7 +344,6 @@ int main(){std::atomic<int>x{0};x.store(42,std::memory_order_release);std::atomi
 int main(){std::cout<<"fence vs atomic: fence orders ALL subsequent ops, atomic orders just that variable."<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |

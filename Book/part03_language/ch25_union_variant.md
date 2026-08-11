@@ -47,7 +47,6 @@ union 用"内存复用"换安全；variant 用"一点控制块开销"换"永远�
 ⟶ Book/part03_language/ch24_enum.md
 ⟶ Book/part03_language/ch26_lambda.md
 
-
 `union` 是 C 语言遗留的"重叠存储"机制：所有成员共享同一块内存，同一时刻只有一个成员是"活跃的"（active）。它高效（零开销），但**完全不安全**——编译器不知道当前哪个成员有效，读错成员是未定义行为（UB）。
 
 `std::variant`（C++17）是"判别联合"（discriminated/tagged union）：在 union 之上加一个**运行期 index**（判别标签），由标准库保证同一时刻只有一个 alternative 有效，并提供 `std::visit` 做类型安全的多分派。它本质是"带标签的 union + 编译器生成的胶水代码"。
@@ -1689,7 +1688,6 @@ int main(){ Token a("x"), b(3.0); a=b; std::printf("ok\n"); }
 
 *本章完。所有库源码片段均来自本机 libstdc++ 15.3.0（路径见 §0、§15），已用 Read 工具探测，行号对应真实文件；示例 1-62 均为完整可编译 C++17 程序（标注 C++20 处需 `-std=c++20`）。*
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1752,7 +1750,6 @@ int main(){std::variant<int,double> v=3.14;std::visit([](auto x){std::cout<<x<<s
 ```
 
 面试: variant vs union? variant类型安全(编译期穷举检查); union无类型标记(靠自己记)
-
 
 ## 附录 H：variant vs virtual性能
 
@@ -2026,8 +2023,6 @@ graph LR
     ST --> A2["alternative 2"]
     T --> A1
 ```
-
-
 
 ## 附录 D4：std::variant 三标准库源码解析（D4 维度 · libstdc++ 15.3.0）
 

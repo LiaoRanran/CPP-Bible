@@ -39,7 +39,6 @@
 
 ⟶ Book/part14_perf/ch153_cpu_micro.md
 
-
 性能工程的第一原则：**先建模，再测量，最后优化。** 本章目标是建立从"感觉快"到"证明快"的方法论闭环：
 
 - 用 **Amdahl / Gustafson 定律** 估算并行化上限与"扩大问题规模"的收益。
@@ -796,7 +795,6 @@ int main() {
 
 > 自检提示：本章所有 ` ```cpp ` 块均可用 `g++ -std=c++23 -O2 -Wall -Wextra` 独立编译通过；`rdtsc` 一律用内联汇编实现以保证自检 0 fail；原生 `__rdtsc` 写法在 ` ```text ` 围栏中单独给出。
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -827,7 +825,6 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 f
 | [第151章](Book/part13_engineering/ch151_benchmark.md) | 泛型库/编译期计算 | 本章提供概念，第151章提供实现 |
 | [第153章](Book/part14_perf/ch153_cpu_micro.md) | 性能基准/回归检测 | 本章提供概念，第153章提供实现 |
 | [第157章](Book/part14_perf/ch157_compiler_explorer.md) | 向量化计算/图像处理 | 本章提供概念，第157章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -866,7 +863,6 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 f
 - **Mozilla** — SpiderMonkey 用 bench 建模 GC 成本
 - **Abseil** — Abseil `absl::Benchmark` 是标准基准框架
 - **Blink** — Blink 用性能模型指导合成
-
 
 ## 附录 H（Roofline 与缓存层级模型）
 
@@ -1100,4 +1096,3 @@ flowchart TD
 | 性能模型 | ch15 性能剖析 | 硬件计数器取证支撑模型 |
 | 性能模型 | ch149 CI/CD | 模型进回归门禁 |
 | 性能模型 | ch43 缓存局部性 | 带宽墙根因在局部性 |
-

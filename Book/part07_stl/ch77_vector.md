@@ -1,11 +1,11 @@
 # 第77章　vector：扩容、失效、allocator 协作
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23)。  
-> 预计阅读：约 100 分钟（深度版，含源码/汇编/基准）。  
-> 前置：⟶ Book/part07_stl/ch76_stl_arch.md（迭代器与六大组件） · ⟶ Book/part04_memory/ch37_new_delete.md（new/delete） · ⟶ Book/part04_memory/ch38_allocator.md（分配器）。  
-> 后续：⟶ Book/part07_stl/ch78_deque.md（分段连续） · ⟶ Book/part07_stl/ch84_set.md（有序容器对比） · ⟶ Book/part14_perf/ch154_cache_opt.md（缓存局部性）。  
-> 难度：★★★☆☆（理解三指针、扩容摊还与异常安全）。  
+> 标准基：ISO/IEC 14882:2023 (C++23)。
+> 预计阅读：约 100 分钟（深度版，含源码/汇编/基准）。
+> 前置：⟶ Book/part07_stl/ch76_stl_arch.md（迭代器与六大组件） · ⟶ Book/part04_memory/ch37_new_delete.md（new/delete） · ⟶ Book/part04_memory/ch38_allocator.md（分配器）。
+> 后续：⟶ Book/part07_stl/ch78_deque.md（分段连续） · ⟶ Book/part07_stl/ch84_set.md（有序容器对比） · ⟶ Book/part14_perf/ch154_cache_opt.md（缓存局部性）。
+> 难度：★★★☆☆（理解三指针、扩容摊还与异常安全）。
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。本章 `[实现]` 级源码取自 `bits/stl_vector.h`、`bits/vector.tcc`、`bits/allocator.h`、`bits/alloc_traits.h`，逐行标注文件与行号。
 
 ## ⓪ 历史动机：std::vector 的来龙去脉
@@ -280,15 +280,15 @@ int main() {
 
 ## ⑮ 面试题
 
-1. `vector` 扩容策略 GCC vs MSVC 有何不同，为何？  
+1. `vector` 扩容策略 GCC vs MSVC 有何不同，为何？
    → GCC 约 2×；MSVC 约 1.5×。1.5× 时旧块大小（等比数列）与某次新容量能"对齐"，使 `free` 后内存可被后续 `malloc` 复用（2× 则旧块总比任何未来新块都大，难复用）。
-2. `push_back` 为什么摊还 O(1)？  
+2. `push_back` 为什么摊还 O(1)？
    → 见 ⑲ 证明：n 次 push 总成本 O(n)，均摊每次 O(1)。
-3. `reserve(n)` 之后 `capacity()` 一定等于 n 吗？  
+3. `reserve(n)` 之后 `capacity()` 一定等于 n 吗？
    → 不一定 ≥ n（实现可能给更多）；但保证至少 n 且不触发扩容。
-4. `shrink_to_fit` 之后 `capacity()` 一定等于 `size()` 吗？  
+4. `shrink_to_fit` 之后 `capacity()` 一定等于 `size()` 吗？
    → 不一定，它是非强制请求，实现可能忽略。
-5. `vector<bool>` 的 `operator[]` 返回什么类型？  
+5. `vector<bool>` 的 `operator[]` 返回什么类型？
    → 不是 `bool&`，而是代理对象（位引用），因此不能取地址/绑定到 `bool&`（坑）。
 
 ## ⑯ 易错点
@@ -353,19 +353,19 @@ int main() {
 
 ## ⑰ FAQ
 
-**Q：为什么 `reserve` 后很多实现给的容量比请求多？**  
+**Q：为什么 `reserve` 后很多实现给的容量比请求多？**
 因分配器按对齐/桶大小返回，且 `_M_check_len` 用 `max(2*old, n)` 等策略，容量是"至少 n"。
 
-**Q：`clear()` 会释放内存吗？**  
+**Q：`clear()` 会释放内存吗？**
 不会。`clear()` 只析构元素并把 `_M_finish` 拉回 `_M_start`，`capacity()` 不变。要释放用 `shrink_to_fit()`（非强制）或与空 vector `swap`。
 
-**Q：为什么 `insert` 中段插入是 O(n)？**  
+**Q：为什么 `insert` 中段插入是 O(n)？**
 要在插入点后把元素整体右移一格腾出位置（对连续内存必然 O(n) 移动）。
 
-**Q：`vector` 与裸 `new T[n]` 比有何优势？**  
+**Q：`vector` 与裸 `new T[n]` 比有何优势？**
 RAII 自动释放、知道 `size`、可增长、配合算法与迭代器、异常安全。裸数组易泄漏且缺边界管理。
 
-**Q：移动构造/赋值为何通常 O(1) 且失效规则特殊？**  
+**Q：移动构造/赋值为何通常 O(1) 且失效规则特殊？**
 `vector` 移动只交换三指针（类似 `swap`），不复制元素，故 O(1)；移动后源 vector 为空（容量为 0）。
 
 ## ⑱ 最佳实践
@@ -474,9 +474,9 @@ int main() {
 3. 用 `reserve` + `emplace_back` 构建 10^6 个元素，对比有无 `reserve` 的耗时。
 
 **思考题**
-- 为什么 1.5× 比 2× 更能复用已释放内存？  
+- 为什么 1.5× 比 2× 更能复用已释放内存？
   → 2× 的已释放块集合 {1,2,4,8,…} 中没有任何一块等于未来某次申请量（未来量总是块间值），故 `malloc` 无法复用；1.5× 的几何序列（斐波那契性质）使旧块大小会与未来申请量重合，可被复用。
-- `vector` 移动后源为何"空且 capacity 0"？  
+- `vector` 移动后源为何"空且 capacity 0"？
   → 移动只交换三指针并把源置空（`stl_vector.h:106-108` 把源三指针清零），不复制元素，故 O(1) 且源不再持有内存。
 
 **libstdc++ 源码阅读路线**
@@ -941,7 +941,6 @@ int main() {
 }
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -951,8 +950,6 @@ int main() {
 | [第78章](Book/part07_stl/ch78_deque.md) | 索引查找/路由表 | 本章提供概念，第78章提供实现 |
 | [第76章](Book/part07_stl/ch76_stl_arch.md) | 泛型库/编译期计算 | 本章提供概念，第76章提供实现 |
 | [第80章](Book/part07_stl/ch80_array.md) | 资源管理/事务回滚 | 本章提供概念，第80章提供实现 |
-
-
 
 ## 附录 G（vector 扩容与缓存）
 

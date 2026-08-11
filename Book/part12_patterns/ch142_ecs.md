@@ -42,7 +42,6 @@ ECS 对经典 OOP 游戏对象模型之争，本质是"数据布局 vs 对象语
 ⟶ Book/part12_patterns/ch141_di.md
 ⟶ Book/part12_patterns/ch143_dod.md
 
-
 **实体组件系统（Entity-Component-System，ECS）** 是一种将数据（组件）与行为（系统）彻底分离的组合式架构范式。它起源于 1990 年代的游戏引擎（如 *Thief*、*Dungeon Siege*），在 2010 年后因 **Unity DOTS**、**Unreal MassEntity**、**EnTT** 等而工业化。
 
 > 【定义】ECS 由三个正交概念构成：**Entity（实体）** = 一个不携带数据的稳定 ID；**Component（组件）** = 纯数据（无逻辑）；**System（系统）** = 批量遍历"拥有特定组件集合"的实体并施加逻辑。
@@ -776,7 +775,6 @@ a alive after destroy? no
 
 > 【立场汇总】本章 `[标准]` 标注语言/库约束，`[实现·GCC15]` 标注真实编译取证，`[平台·x86-64]` 标注硬件/ABI 行为，`[经验]` 给出工程取舍。所有 ```` ```asm ```` 与基准数字均经本机 GCC 13.1.0 复现，未做任何编造。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -785,7 +783,6 @@ a alive after destroy? no
 | [第141章](Book/part12_patterns/ch141_di.md) | TCP服务器/HTTP客户端 | 本章提供概念，第141章提供实现 |
 | [第143章](Book/part12_patterns/ch143_dod.md) | 无锁队列/计数器 | 本章提供概念，第143章提供实现 |
 | [第45章](Book/part05_oo/ch45_oop_object_model.md) | 多态插件/框架扩展 | 本章提供概念，第45章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -1205,4 +1202,3 @@ int main() {
 - 加速比（5.80×、2.68× 等）是可移植信号；绝对毫秒随 CPU、分配器实现与编译器版本而变，请勿跨机器直接比较毫秒。
 - demo 只断言实体数量与数据写入正确性，未对时间、倍数做任何断言。
 - 基准源码见库根 `_bench_d5_ch142_ecs.cpp`。
-

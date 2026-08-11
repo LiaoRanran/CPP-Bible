@@ -37,7 +37,6 @@
 ⟶ Book/part09_concurrency/ch111_aba.md
 ⟶ Book/part09_concurrency/ch113_coroutine.md
 
-
 无锁数据结构（无锁栈/队列/哈希表）的核心矛盾是：**读者正拿着一个节点的指针，写者想把它 `delete`**——没有互斥锁保护"谁还在用"，直接 `delete` 会造成悬垂指针（use-after-free），另一个线程随后解引用即未定义行为。
 
 ```cpp
@@ -632,7 +631,6 @@ struct Guard { int slot; void* p;
 - `[算法]`：这一总序之所以必要，是因为 HP 的正确性正依赖于「scan 一定看得到读者最新登记」；若降级为 relaxed，不变量即被破坏——这是算法层结论，不来自标准条款本身。
 - `[经验]`：把本章任意范式抄进生产前，先过 TSan + 宽限期压力测试；正确性 > 微优化。
 
-
 ## 附录 A：工业 RCU/Hazard Pointer [F: Industry / D: stdlib]
 
 ```
@@ -673,7 +671,6 @@ A: (1) tagged pointer (ABA 防护 + 无 HP); (2) hazard pointers (C++26 方向);
    (5) quiescent state based reclamation (QSBR, 最高性能)
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -682,7 +679,6 @@ A: (1) tagged pointer (ABA 防护 + 无 HP); (2) hazard pointers (C++26 方向);
 | [第111章](Book/part09_concurrency/ch111_aba.md) | 泛型库/编译期计算 | 本章提供概念，第111章提供实现 |
 | [第113章](Book/part09_concurrency/ch113_coroutine.md) | 资源管理/事务回滚 | 本章提供概念，第113章提供实现 |
 | [第110章](Book/part09_concurrency/ch110_lockfree.md) | 线程安全数据结构 | 本章提供概念，第110章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1321,4 +1317,3 @@ int main() {
 - 编译与测量命令（基准与此 demo 同源）：`g++ -O2 -std=c++17`。
 - 本 demo 仅断言功能正确性（解引用值相同、拷贝使 `use_count` +1），不断言任何计时、加速比或 `sizeof` 数值。
 - 绝对毫秒取决于硬件与负载；跨机器只比较"相对倍数"才有意义。
-

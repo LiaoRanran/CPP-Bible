@@ -34,7 +34,6 @@
 ⟶ Book/part10_modern/ch116_perfect_forwarding.md
 ⟶ Book/part10_modern/ch118_modules.md
 
-
 **定义**：拷贝消除是编译器在语义允许时，省去「把对象从一个存储位置复制到另一个存储位置」这一步的优化——两个名字（源与目标）实际上指向**同一块内存**，根本不发生复制构造或移动构造。
 
 ```cpp
@@ -652,7 +651,6 @@ Z zmake(){ Z z; return z; }
 int zmain(){ Z z=zmake(); std::printf("copies=%d\n", Z::k); return z.k; }
 ```
 
-
 ## 附录 A：WG21 提案与标准演化 [B: Principle]
 
 拷贝消除是 C++ 标准化史上最激烈的争议之一——因为它**改变可观察行为**，打破了 C++"as-if"优化的基本契约。
@@ -899,14 +897,12 @@ A: P2025 提议将 NRVO 也强制化（目前仅 RVO 强制）。通过后，所
    零拷贝。但编译器实现复杂：多个 return 语句、条件返回、异常路径都需要保证 elision。
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
 | [第116章](Book/part10_modern/ch116_perfect_forwarding.md) | 独占所有权/工厂模式 | 本章提供概念，第116章提供实现 |
 | [第118章](Book/part10_modern/ch118_modules.md) | 泛型库/编译期计算 | 本章提供概念，第118章提供实现 |
-
 
 ## 相关章节（交叉引用）
 

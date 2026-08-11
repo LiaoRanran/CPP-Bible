@@ -39,7 +39,6 @@ Simula、Smalltalk 默认「一切方法皆虚」，调用必走查表；C++ 反
 ⟶ Book/part05_oo/ch46_encapsulation_inheritance.md
 ⟶ Book/part05_oo/ch48_rtti.md
 
-
 - 说清 vptr/vtable 的物理布局与构造期重写机制
 - 能从 x86-64 汇编层面解释一次虚调用的全部指令与代价
 - 论证「基类析构为何必须 virtual」并用汇编/对象生命周期证明
@@ -955,7 +954,6 @@ struct Base{int n;Base(int x):n(x){}virtual~Base(){}};struct Derived:Base{Derive
 int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -965,7 +963,6 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 | [第46章](Book/part05_oo/ch46_encapsulation_inheritance.md) | 多态插件/框架扩展 | 本章提供概念，第46章提供实现 |
 | [第48章](Book/part05_oo/ch48_rtti.md) | 泛型库/编译期计算 | 本章提供概念，第48章提供实现 |
 | [第49章](Book/part05_oo/ch49_virtual_inheritance.md) | 资源管理/事务回滚 | 本章提供概念，第49章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1026,7 +1023,6 @@ call [rcx]
 - GCC 13.2 / Clang 18 / MSVC 19.3 生成 vtable
 - `__cplusplus` = 202302L；`__attribute__((noinline))` 强制虚分发
 - C++20 `-fvtable-verify=std` 插桩校验
-
 
 ## 底层视角：vtable 寻址与虚调用硬件代价 [E: Low-level]
 

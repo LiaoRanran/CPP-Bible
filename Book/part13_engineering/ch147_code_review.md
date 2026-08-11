@@ -40,7 +40,6 @@
 ⟶ Book/part13_engineering/ch146_error_handling.md
 ⟶ Book/part13_engineering/ch148_gitflow.md
 
-
 代码审查（Code Review，CR）不是"找茬仪式"，而是**把缺陷消灭在合入之前的最后一道、也是最便宜的一道闸门**。大量工业数据（如 Google 工程实践、Microsoft 内部研究）表明：缺陷在需求/设计阶段被发现并修复的成本，远低于上线后由用户触发、再由 on-call 回溯修复的成本。C++ 尤其如此——它的未定义行为（UB）不会在编译期报错，却可能在 Release 构建里"安静地"生成错误结果。
 
 `[经验]` 一条被反复验证的共识：**C++ 审查的 ROI 高于大多数语言**，因为 C++ 把大量"本该由语言/运行时保证"的安全责任（生命周期、别名、内存）交给了程序员，而这些恰好是 review 最高频能拦下的类别。
@@ -588,14 +587,12 @@ bool ready_to_send() {
 
 `[经验]` 一句话总纲：**代码审查是 C++ 工程里性价比最高的一道质量闸——它把未定义行为、内存错误、接口破坏、性能回归在合入前拦下，而代价只是一次仔细阅读。** 本章所有机器可验证主张（`-Wsign-compare` 有符号比较警告、`-Wformat=` 格式不匹配、`-Wunused-result` 忽略 `[[nodiscard]]`、`-Woverflow` 常量溢出、`-Wreturn-type` 缺返回值、`-Wreturn-local-addr` 悬垂地址、`-Wfloat-conversion` 浮点截断、RAII 守卫 `call pthread_mutex_lock/unlock` 的汇编实证、`add edx,[rcx+rax*4]` 零拷贝循环实证、libstdc++ `bits/move.h:104` 与 `bits/basic_string.h:85` 真实路径与行号）均已用本机 GCC 13.1.0 真实产物（`Examples/_ch147_*_warn.txt` / `_ch147_*.asm`）佐证，可复现、未编造。ABI 兼容性深化见第145章，提交规范见第148章，CI 门禁见第149章，测试覆盖见第150章，性能回归见第151章。
 
-
 ## 附录追加：工业底层与面试
 
 ```cpp
 #include <iostream>
 int main(){std::cout<<"ch147_code_review.md enhanced"<<"\n";return 0;}
 ```
-
 
 ## 附录 E：工业CR标准
 
@@ -627,7 +624,6 @@ int main(){std::cout<<"CR checklist: RAII/noexcept/const/override/explicit"<<std
 | [第144章](Book/part13_engineering/ch144_style.md) | 多态插件/框架扩展 | 本章提供概念，第144章提供实现 |
 | [第150章](Book/part13_engineering/ch150_testing.md) | 泛型库/编译期计算 | 本章提供概念，第150章提供实现 |
 
-
 ## 相关章节（交叉引用）
 
 - **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
@@ -652,7 +648,6 @@ int main(){std::cout<<"CR checklist: RAII/noexcept/const/override/explicit"<<std
 **审查工具链实证（DEP 信号）**：栈溢出哨兵常以 `0xDEADBEEF` 标记；`-Wall -Wextra -Werror` 在 GCC 13.1.0 下把本机实测的 8 类警告（见 ⑱）转为编译失败；`C++23` 的 `static_assert` 让接口不变量在编译期即被门禁固化；`clang-tidy` 单 TU 扫描约 300ms 可嵌入 pre-commit。
 
 **最佳实践**：跨动态库传递 ABI 边界前，先过 `clang-tidy`（所有权/线程安全）+ TSan（CI，数据竞争）+ perf（性能回归）三道自动闸，再进入人工 review——人工只审「必须改」的正确性/安全项。命名与 API 契约见 [ch145](Book/part13_engineering/ch145_naming_api.md)，CI 门禁配置见 [ch149](Book/part13_engineering/ch149_ci_cd.md)，提交规范见 [ch148](Book/part13_engineering/ch148_gitflow.md)。
-
 
 ## 附录 G（评审量化与静态分析）
 
@@ -758,9 +753,6 @@ int main() { send("hi"); }   // 仍匹配旧单参数重载，仅触发弃用告
 [引用] `[[deprecated]]` 见 ISO/IEC 14882:2023 属性规范与 cppreference；API 兼容性审查见 ch147 ⑧ 与 ch145 ⑧（ABI/API 边界）；Semantic Versioning 见 semver.org；ch147 ⑩ 讲提交与版本纪律。
 
 </details>
-
-
-
 
 ## 附录 J：审查管线时序图（D3 维度）
 
@@ -898,4 +890,3 @@ flowchart TD
   CONC --> AUTO
   AUTO --> DONE
 ```
-

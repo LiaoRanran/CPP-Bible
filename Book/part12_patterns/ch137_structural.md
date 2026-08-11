@@ -36,7 +36,6 @@
 ⟶ Book/part12_patterns/ch136_creational.md
 ⟶ Book/part12_patterns/ch138_behavioral.md
 
-
 **【定义】** 结构型模式（Structural Patterns）关注「如何把类或对象组装成更大的结构」，在保持结构灵活、可复用的同时，处理接口不兼容、维度正交变化、对象组合关系三类问题。
 
 **【为什么设计】** 工业代码里最常见的痛苦不是「没有对象」，而是：
@@ -1098,7 +1097,6 @@ Q: C++ 中 Facade 模式最典型的例子？
 A: std::async = Facade for thread creation + future + promise; 和 std::for_each = Facade for raw loop
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1131,7 +1129,6 @@ int main(){std::stack<int,std::vector<int>> s;s.push(42);std::cout<<s.top()<<std
 #include <iostream>
 int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=control access; Facade=simplify"<<std::endl;return 0;}
 ```
-
 
 ## 真实开源项目参考（可查证链接）
 

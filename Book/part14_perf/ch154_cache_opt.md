@@ -844,7 +844,6 @@ int main() {
 }
 ```
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -898,7 +897,6 @@ int main(){std::cout<<sizeof(CacheFriendly)<<" (prevents false sharing)"<<std::e
 | prefetch | __builtin_prefetch | 1.5-2x |
 
 面试: false sharing=不同核写同一cache line触发coherence ping-pong; SoA=SIMD连续加载更快
-
 
 ## 相关章节（交叉引用）
 
@@ -1049,7 +1047,6 @@ int main() {
 [引用] 缓存层级与容量见 Agner Fog *microarchitecture.pdf*；分块（loop tiling）属经典优化，LLVM 循环优化文档 <https://llvm.org/docs/Passes.html>。
 
 </details>
-
 
 ## 附录 I：缓存优化 源码与真实基准（同规格 D4 + D5）[I: Source / D: Benchmark]
 

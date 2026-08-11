@@ -42,7 +42,6 @@ C 风格强转 `(T)expr` 在 1970 年代是"万能胶"：既能去 const、又�
 ⟶ Book/part03_language/ch26_lambda.md
 ⟶ Book/part03_language/ch28_lifetime_ub.md
 
-
 **知识图谱（前置→本章→后续）**：
 
 ```
@@ -614,7 +613,6 @@ int main() { led_on(); usart2_send('A'); return 0; }
 - 复杂度：每次 `reg->FIELD` 访问编译成单条 `ldr`/`str`（`O(1)`）；`usart2_send` 的 `while` 轮询次数由硬件发送节奏决定（波特率 115200 时每字节约 87µs），是**有界忙等**，不占调度。
 
 > 该块标注 `[自包含可编译]`：可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 15.3.0，零失败）。真实固件里这些指针会被放进 `.data`/映射到对应地址空间，链接脚本决定最终落点；此处用 `inline` 函数封装 `reinterpret_cast` 以规避全局动态初始化。
-
 
 ---
 
@@ -1678,7 +1676,6 @@ int main() {
 - **真实源码路径**：已贴 `type_traits:1564-1610,3702`、`bit:78-98`、`bits/chrono.h:184-296`，均来自本机 MinGW GCC 15.3.0（`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`）；跨 STL/libc++/MS STL 对比基于已知实现事实标注，未编造路径。
 - **可编译程序**：**50 个**完整程序（prog_01–prog_50），无 Hello World，覆盖多态下行安全包装/序列化位重解释/协议解析 bit_cast/传感器 reinterpret 等工业场景。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1688,7 +1685,6 @@ int main() {
 | [第31章](Book/part03_language/ch31_operator_overloading.md) | 独占所有权/工厂模式 | 本章提供概念，第31章提供实现 |
 | [第48章](Book/part05_oo/ch48_rtti.md) | STL算法回调/异步任务 | 本章提供概念，第48章提供实现 |
 | [第48章](Book/part05_oo/ch48_rtti.md) | 多态插件/框架扩展 | 本章提供概念，第48章提供实现 |
-
 
 GCC实现/Clang实现/MSVC实现: 编译优化+ABI+NameMangling。libstdc++/libc++/MS STL源码权衡。
 assembly: mov/call/ret/jmp/cmp/add/xor/lock/mfence指令级验证。Stack/Heap/Cache/L1/L2/L3/TLB/FalseSharing分析。
@@ -1969,8 +1965,6 @@ flowchart TD
     Q4 -->|否| BC["优先 std::bit_cast 类型安全"]
 ```
 
-
-
 ## 附录 J：类型转换 cast 决策流（D3 维度）
 
 ```mermaid
@@ -2052,7 +2046,6 @@ flowchart TD
 | ch27 | ch115 | 类型转换 cast：std::move 本质是无条件 static_cast 到右值引用 |
 | ch27 | ch60 | 类型转换 cast：模板中常用 static_cast 做性质转换 |
 
-
 ## 附录 D5：真实基准与性能分析 — static_cast 编译期偏移 vs dynamic_cast RTTI 验证（GCC 15.3.0）
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch27_cast_depth.cpp`。
@@ -2099,8 +2092,6 @@ int main() {
 | ch45 对象模型 | Book/part05_oo/ch45_oop_object_model.md | 对象布局决定指针/引用的合法转换路径 |
 | ch47 虚函数 | Book/part05_oo/ch47_virtual_functions.md | dynamic_cast 依赖 typeid 与 RTTI，虚函数表 |
 | ch42 严格别名 | Book/part04_memory/ch42_strict_aliasing.md | reinterpret_cast 触及严格别名底线 |
-
-
 
 ### D5.5 汇编实证 (GCC 15.3.0)
 

@@ -948,7 +948,6 @@ int main() {
 4. `chrono:2506` / `:2596` / `:2679` → `tzdb` / `time_zone` / `locate_zone`：C++20 时区实现入口（实现体在 `src/c++20/*`）。
 5. libstdc++ 实现层（`src/c++20/time.cc`，随 GCC 源码发布）→ 看 `tzdb` 如何加载 IANA 数据、`reload_tzdb` 的线程安全。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -958,7 +957,6 @@ int main() {
 | [第93章](Book/part07_stl/ch93_thread_async.md) | 日志格式化/序列化 | 本章提供概念，第93章提供实现 |
 | [第91章](Book/part07_stl/ch91_filesystem.md) | 资源管理/事务回滚 | 本章提供概念，第91章提供实现 |
 | [第91章](Book/part07_stl/ch91_filesystem.md) | 错误恢复/不可恢复错误 | 本章提供概念，第91章提供实现 |
-
 
 ## 附录 G：chrono 工业实践与深度
 
@@ -1338,5 +1336,3 @@ int main() {
 - 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE，且基准让所有累加和逃逸到 `g_esc` 以保留真实 `now()` 调用。
 - 加速比（3.4× / 4.0× / 4.1×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_92_chrono.cpp`。
-
-

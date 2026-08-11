@@ -45,7 +45,6 @@ Stroustrup 曾指出：在 C++ 里，许多 GoF 行为模式会被语言特性"�
 ⟶ Book/part12_patterns/ch137_structural.md
 ⟶ Book/part12_patterns/ch139_crtp_pattern.md
 
-
 行为型模式关注**对象之间如何协作、职责如何分配、算法如何在运行时被组合与切换**。
 与创建型（谁创建）、结构型（怎样组合）不同，行为型回答的是「这条消息该交给谁、按什么规则、以什么代价」。
 
@@ -800,7 +799,6 @@ main:
 
 [标准] 本章所有示例代码均通过 `g++ -std=c++23 -O2 -Wall -Wextra` 编译，配套 `.asm` 由同一工具链真实生成。
 
-
 ## 附录 A：行为型模式在 C++ 中的独特实现 [F: Industry / B: Principle]
 
 C++ 的行为型模式实现与其他语言有本质区别——模板和静态多态提供了独特的方案：
@@ -860,7 +858,6 @@ Q: std::visit + variant 为何优于 GoF Visitor？
 A: 编译器检查穷举性(忘记处理一个类型=编译错误), 无需 accept() 胶水代码
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -893,7 +890,6 @@ int main(){std::vector<std::function<void(int)>> obs;obs.push_back([](int x){std
 #include <iostream>
 int main(){std::cout<<"Strategy: compile-time=Policy(zero cost), runtime=virtual(~5ns/call)"<<std::endl;return 0;}
 ```
-
 
 ## 相关章节（交叉引用）
 
@@ -1048,7 +1044,6 @@ int main(){
 }
 ```
 
-
 ## 附录 J：行为型模式 决策流（D3 维度）
 
 > 以"组织对象间行为协作"为主线，给出策略 / 观察者 / 命令 / 状态 / 迭代器的选型判据。
@@ -1145,7 +1140,6 @@ flowchart TD
 | ch138 访问者 | ch45 OOP 对象模型 | 访问者作用于对象层次，见 ch45 |
 | ch138 状态 | ch46 封装继承 | 状态模式基于状态类继承，关联 ch46 |
 | ch138 命令 | ch41 智能指针 | 命令对象常由智能指针托管，见 ch41 |
-
 
 ## 附录 D5：真实基准与性能分析 — 命令/访问者模式 — 虚函数 vs std::variant visit vs 函数指针 vs std::function vs if constexpr（GCC 15.3.0）
 

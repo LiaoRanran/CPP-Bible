@@ -1,11 +1,11 @@
 # 第84章　set / multiset：红黑树有序集合
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++17/C++20 特性 ⟶ 标注 `[C++17]`/`[C++20]`。  
-> 预计阅读：约 95 分钟（深度版，含源码/汇编/基准）。  
-> 前置：⟶ Book/part07_stl/ch83_map.md（map/multimap 红黑树） · ⟶ Book/part03_language/ch19_variables.md（存储期） · ⟶ Book/part06_templates/ch65_type_traits.md（比较器 traits）。  
-> 后续：⟶ Book/part07_stl/ch85_unordered.md（哈希集合，对比本章） · ⟶ Book/part14_perf/ch154_cache_opt.md（缓存与局部性）。  
-> 难度：★★★☆☆（掌握有序容器与节点句柄，需理解红黑树平衡）。  
+> 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++17/C++20 特性 ⟶ 标注 `[C++17]`/`[C++20]`。
+> 预计阅读：约 95 分钟（深度版，含源码/汇编/基准）。
+> 前置：⟶ Book/part07_stl/ch83_map.md（map/multimap 红黑树） · ⟶ Book/part03_language/ch19_variables.md（存储期） · ⟶ Book/part06_templates/ch65_type_traits.md（比较器 traits）。
+> 后续：⟶ Book/part07_stl/ch85_unordered.md（哈希集合，对比本章） · ⟶ Book/part14_perf/ch154_cache_opt.md（缓存与局部性）。
+> 难度：★★★☆☆（掌握有序容器与节点句柄，需理解红黑树平衡）。
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。本章 `[实现]` 级源码取自 `bits/stl_set.h`、`bits/stl_multiset.h`、`bits/stl_tree.h`，逐行标注文件与行号。
 
 ## ⓪ 历史动机：set / multiset 的来龙去脉
@@ -336,15 +336,15 @@ int main() {
 
 ## ⑮ 面试题
 
-1. `set` 和 `vector` 去重后排序，查找性能与适用场景有何差异？  
+1. `set` 和 `vector` 去重后排序，查找性能与适用场景有何差异？
    → `set` 插入/删除 O(log n) 且保持有序；`vector`+`sort` 排序后二分 O(log n) 但插入 O(n)。读写均衡用 `set`，批量静态数据用排序 `vector`。
-2. `set<int> s; s.insert(5); s.insert(5);` 之后 `s.size()` 是？  
+2. `set<int> s; s.insert(5); s.insert(5);` 之后 `s.size()` 是？
    → 1（`set` 键唯一，第二次被忽略，返回 `bool==false`）。`multiset` 则为 2。
-3. `extract` 之后节点里的元素会被析构吗？  
+3. `extract` 之后节点里的元素会被析构吗？
    → 不会。`node_type` 接管节点所有权，仅在 `node_type` 自身析构时才析构值，因此可实现零拷贝迁移。
-4. 为什么 `set` 的 `compare` 必须满足严格弱序？不满足会怎样？  
+4. 为什么 `set` 的 `compare` 必须满足严格弱序？不满足会怎样？
    → 红黑树依赖全序定位插入点；若 `comp(a,a)==true` 或不可传递，查找/插入会走错分支，导致**未定义行为**（数据损坏/死循环）。
-5. `multiset` 的 `equal_range(k)` 返回区间长度一定等于 `count(k)` 吗？  
+5. `multiset` 的 `equal_range(k)` 返回区间长度一定等于 `count(k)` 吗？
    → 是，二者都覆盖所有等价于 `k` 的元素；`equal_range` 是 `[lower_bound, upper_bound)`。
 
 ## ⑯ 易错点
@@ -407,16 +407,16 @@ int main() {
 
 ## ⑰ FAQ
 
-**Q：`set` 能不能存自定义类型？**  
+**Q：`set` 能不能存自定义类型？**
 能，但必须可排序：要么特化 `std::less<MyType>`，要么在类型内定义 `operator<`（或传入自定义 `Compare`）。
 
-**Q：`set` 的迭代器在插入/删除其它元素后是否失效？**  
+**Q：`set` 的迭代器在插入/删除其它元素后是否失效？**
 `std::set`/`multiset` 是节点式容器：**插入不使任何迭代器/引用/指针失效**；删除仅使指向被删元素的迭代器失效，其余有效。这是它相对 `vector` 的一大优势。
 
-**Q：为什么 `set` 查找比 `unordered_set` 慢？**  
+**Q：为什么 `set` 查找比 `unordered_set` 慢？**
 平均路径长且缓存不友好：每次比较都要解引用一个堆节点指针（可能缓存缺失），而哈希平均 O(1)。但 `set` 提供有序遍历与范围查询，`unordered_set` 不保证顺序。
 
-**Q：`extract` + `insert(node_type)` 比 `erase` + `insert(value)` 好在哪？**  
+**Q：`extract` + `insert(node_type)` 比 `erase` + `insert(value)` 好在哪？**
 前者只改指针、不移动/拷贝值（对大对象或不可拷贝类型尤其重要），且**不重新分配节点**；后者要先拷贝值再析构原节点，可能涉及分配。
 
 ## ⑱ 最佳实践
@@ -526,9 +526,9 @@ int main() {
 3. 实现一个 `CaseInsensitiveSet`（自定义比较器 + 小写归一化），验证插入 `"AbC"` 与 `"abc"` 视为同一键。
 
 **思考题**
-- 为什么 `set` 的实现选择红黑树而非 AVL 树？  
+- 为什么 `set` 的实现选择红黑树而非 AVL 树？
   → RB 树插入/删除旋转次数更少（最多 2 次旋转），适合"修改频繁"的通用场景；AVL 更平衡、查找略快但维护成本高。
-- `extract` 返回的 `node_type` 能否跨不同比较器的 `set` 迁移？  
+- `extract` 返回的 `node_type` 能否跨不同比较器的 `set` 迁移？
   → 仅当比较器**等价**（同键序）时可安全 `insert(node_type)`；否则语义错误。
 
 **libstdc++ 源码阅读路线**
@@ -1066,7 +1066,6 @@ int main() {
 }
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1076,7 +1075,6 @@ int main() {
 | [第83章](Book/part07_stl/ch83_map.md) | 泛型库/编译期计算 | 本章提供概念，第83章提供实现 |
 | [第85章](Book/part07_stl/ch85_unordered.md) | 高性能容器/零拷贝传输 | 本章提供概念，第85章提供实现 |
 | [第86章](Book/part07_stl/ch86_adapters.md) | 资源管理/事务回滚 | 本章提供概念，第86章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1568,4 +1566,3 @@ int main() {
 - 加速比（15.6×、5.84×、327× 等）是可移植信号；绝对毫秒随 CPU、分配器实现与编译器版本而变，请勿跨机器直接比较毫秒。
 - demo 只断言功能等价性（元素数、遍历一致性、查询一致性、重复计数），未对时间、倍数或精确 `sizeof` 做任何断言。
 - 基准源码见库根 `_bench_d5_ch84_set_multiset.cpp`。
-

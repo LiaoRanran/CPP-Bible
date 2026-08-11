@@ -41,7 +41,6 @@
 
 ⟶ Book/part04_memory/ch43_cache_locality.md
 
-
 **[标准]** C++ 标准只保证 `::operator new`/`::operator delete`（见 ch37）分配一块" suitably aligned storage for any object type"（[new.delete.single]），并不保证性能、延迟确定性或碎片控制。其语义是"请求—返回"式的通用分配器，要为任意大小、任意生命周期的请求服务。
 
 **[实现]** `libstdc++` 的 `std::allocator` 直接转发到 `__new_allocator::allocate`，最终调用 `_GLIBCXX_OPERATOR_NEW`（即 `::operator new` 或 `__builtin_operator_new`）：
@@ -315,7 +314,7 @@ int main() {
 
 ### 44.5.1 为何未对齐访问是致命的
 
-**[平台]** 
+**[平台]**
 - **x86/x86-64**：未对齐访问不会崩溃，但会触发**多次内存读 + 拼接**，是**性能惩罚**（某些 SSE/AVX 指令如 `movaps` 要求 16 字节对齐，否则 `#GP` 异常）。
 - **ARM（含 AArch64，嵌入式主战场）**：未对齐的多数访问会直接抛 **SIGBUS（总线错误）**，进程崩溃。RISC 架构通常不允许跨对齐边界的原子访存。
 - 因此池块起始地址必须满足 `alignof(T)`。
@@ -1900,7 +1899,6 @@ int main(){
 
 **结语**：内存池是"把通用分配器换成为你的访问模式定制的分配器"。从固定块到线程局部，本质都是在"对齐 + 侵入式元数据 + 分级/局部化"上做文章。理解 `std::pool_allocator` 的真实实现（pool_allocator.h），你就掌握了所有现代通用分配器（tcmalloc/jemalloc/PMR）的共同基因。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1908,7 +1906,6 @@ int main(){
 | [第43章](Book/part04_memory/ch43_cache_locality.md) | 键值查找/缓存 | 本章提供概念，第43章提供实现 |
 | [第122章](Book/part10_modern/ch122_pmr.md) | 泛型库/编译期计算 | 本章提供概念，第122章提供实现 |
 | [第160章](Book/part15_cases/ch160_mempool.md) | 资源管理/事务回滚 | 本章提供概念，第160章提供实现 |
-
 
 ## 附录 F：内存池面试
 

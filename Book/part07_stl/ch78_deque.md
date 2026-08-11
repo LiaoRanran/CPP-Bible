@@ -1066,7 +1066,6 @@ int main() {
 
 > 本文件为独立章节，未改动 `INDEX.md` / `GLOSSARY.md` / `CROSSREF.md`；与 ch77(vector)、ch79(list)、ch86(适配器)、ch76(STL 架构)、ch90(ranges) 建立正文交叉引用。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1076,9 +1075,6 @@ int main() {
 | [第79章](Book/part07_stl/ch79_list.md) | 泛型库/编译期计算 | 本章提供概念，第79章提供实现 |
 | [第77章](Book/part07_stl/ch77_vector.md) | 性能基准/回归检测 | 本章提供概念，第77章提供实现 |
 | [第76章](Book/part07_stl/ch76_stl_arch.md) | 线程安全数据结构 | 本章提供概念，第76章提供实现 |
-
-
-
 
 ## 附录 G（deque 分块布局）
 
@@ -1109,7 +1105,6 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 - GCC 13.2 / Clang 18 实现一致
 - `__cplusplus` = 202302L；`constexpr` deque 自 C++20
 - WG21 提案 P0202R3 规范容器接口
-
 
 ## 相关章节（交叉引用）
 
@@ -1476,4 +1471,3 @@ int main() {
 - 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
 - 加速比（1.21× / 2.27× / 2.35× / 1477×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_78_deque.cpp`。
-

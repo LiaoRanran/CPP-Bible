@@ -1,11 +1,11 @@
 # 第85章　unordered_map / unordered_set：哈希开链集合
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++20 透明哈希。  
-> 预计阅读：约 100 分钟（深度版，含源码/汇编/基准）。  
-> 前置：⟶ Book/part07_stl/ch84_set.md（有序集合，对比本章） · ⟶ Book/part03_language/ch19_variables.md（存储期） · ⟶ Book/part06_templates/ch65_type_traits.md（特化）。  
-> 后续：⟶ Book/part14_perf/ch154_cache_opt.md（缓存与局部性） · ⟶ Book/part11_source/ch124_libstdcxx.md（libstdc++ 阅读入口）。  
-> 难度：★★★☆☆（理解开链哈希、负载因子与重哈希）。  
+> 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++20 透明哈希。
+> 预计阅读：约 100 分钟（深度版，含源码/汇编/基准）。
+> 前置：⟶ Book/part07_stl/ch84_set.md（有序集合，对比本章） · ⟶ Book/part03_language/ch19_variables.md（存储期） · ⟶ Book/part06_templates/ch65_type_traits.md（特化）。
+> 后续：⟶ Book/part14_perf/ch154_cache_opt.md（缓存与局部性） · ⟶ Book/part11_source/ch124_libstdcxx.md（libstdc++ 阅读入口）。
+> 难度：★★★☆☆（理解开链哈希、负载因子与重哈希）。
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。本章 `[实现]` 级源码取自 `bits/hashtable.h`、`bits/unordered_set.h`、`bits/unordered_map.h`、`bits/functional_hash.h`、`bits/hash_bytes.h`，逐行标注文件与行号。
 
 ## ⓪ 历史动机：unordered 容器的来龙去脉
@@ -352,15 +352,15 @@ int main() {
 
 ## ⑮ 面试题
 
-1. `unordered_map` 与 `map` 在查找/插入/遍历/内存上怎么选？  
+1. `unordered_map` 与 `map` 在查找/插入/遍历/内存上怎么选？
    → 单点查找为主且不要求顺序 → `unordered_map`（平均 O(1)）；需要有序遍历/范围查询 → `map`；`unordered_map` 节点更省内存但缓存差。
-2. 什么操作会让 `unordered_map` 的**所有迭代器**失效？  
+2. 什么操作会让 `unordered_map` 的**所有迭代器**失效？
    → 任何触发 `rehash` 的操作（`insert` 越过 `max_load_factor`、显式 `rehash`、`reserve` 导致扩容）。但**指向元素的引用/指针**在重哈希后仍有效（节点未移动，只改桶链表指针）。
-3. `erase(it)` 会使哪些迭代器失效？  
+3. `erase(it)` 会使哪些迭代器失效？
    → 仅 `it` 本身；其余迭代器与所有引用/指针都有效（节点式删除）。
-4. 为什么默认字符串哈希可能成为 DoS 攻击面？  
+4. 为什么默认字符串哈希可能成为 DoS 攻击面？
    → 若哈希非抗碰撞，攻击者构造大量同桶键使查找退化为 O(n)；应使用带密钥哈希或限制输入规模。
-5. `bucket(k)` 返回的值在 `rehash` 前后会变化吗？  
+5. `bucket(k)` 返回的值在 `rehash` 前后会变化吗？
    → 会。`bucket = hash(k) % bucket_count`，`bucket_count` 变化后桶索引随之改变。
 
 ## ⑯ 易错点
@@ -429,16 +429,16 @@ int main() {
 
 ## ⑰ FAQ
 
-**Q：`unordered_map` 的迭代器顺序有意义吗？**  
+**Q：`unordered_map` 的迭代器顺序有意义吗？**
 没有。元素是按桶分布，遍历顺序既非插入序也非哈希序，且 `rehash` 后顺序会变。`operator==` 比较时按元素集合相等，与顺序无关。
 
-**Q：`reserve` 和 `rehash` 有何区别？**  
+**Q：`reserve` 和 `rehash` 有何区别？**
 `reserve(n)` 保证至少能装 `n` 个元素而不 rehash（内部算桶数）；`rehash(n)` 直接把桶数设为 ≥n。多次 `insert` 越过 `max_load_factor` 会自动 `rehash`。
 
-**Q：自定义哈希为什么要"混合"多个成员？**  
+**Q：自定义哈希为什么要"混合"多个成员？**
 直接异或（`h1^h2`）会使 `{a,b}` 与 `{b,a}` 同哈希（对称性碰撞）。用移位+加常数（如上面的 `0x9e3779b9` 黄金比例）打散低位，降低碰撞。
 
-**Q：透明哈希有什么收益？**  
+**Q：透明哈希有什么收益？**
 `umap.find(string_view)` 不必先构造 `std::string` 临时键，省一次分配；对以 `string` 为键、常拿 `string_view`/C 字符串查询的场景收益明显。
 
 ## ⑱ 最佳实践
@@ -548,9 +548,9 @@ int main() {
 3. 为 `struct IPv4 { uint32_t addr; }` 提供 `hash` 与 `key_equal`，验证插入 2^16 个地址后 `load_factor` 与最大桶长。
 
 **思考题**
-- 为什么 `unordered_*` 用开链法而非开放寻址？  
+- 为什么 `unordered_*` 用开链法而非开放寻址？
   → 开链法实现简单、节点可 `extract`/`merge`（C++17 节点句柄）、删除稳定；开放寻址缓存更优但难以支持节点句柄且对负载敏感。`absl::flat_hash_map` 证明开放寻址工业更优，但标准为 ABI 兼容维持开链。
-- `rehash` 后为什么"迭代器失效但引用有效"？  
+- `rehash` 后为什么"迭代器失效但引用有效"？
   → rehash 只改 `_M_next` 把节点挂到新桶数组，节点对象本身（及其值）地址不变，故引用/指针仍指向同一对象；但旧迭代器内部缓存的桶/位置已失效。
 
 **libstdc++ 源码阅读路线**
@@ -1113,7 +1113,6 @@ int main() {
 }
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1123,7 +1122,6 @@ int main() {
 | [第83章](Book/part07_stl/ch83_map.md) | 泛型库/编译期计算 | 本章提供概念，第83章提供实现 |
 | [第65章](Book/part06_templates/ch65_type_traits.md) | 性能基准/回归检测 | 本章提供概念，第65章提供实现 |
 | [第115章](Book/part10_modern/ch115_move.md) | 向量化计算/图像处理 | 本章提供概念，第115章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -1338,7 +1336,6 @@ bucket_chain:
 ```
 
 **工程含义**：unordered_set find 是平均 O(1) 但实际受桶链长度影响。整数 key 的 hash 是恒等函数（无 hash 运算），瓶颈在 `div` 指令（30-40 cycle）和桶内链表追逐的 cache miss。负载因子 < 1 时桶链极短（0-1 次循环），优于 set 的 7 步树追逐；但 rehash 是 O(n) 的全局操作——**插入触发 rehash 时瞬间代价是 set 的数倍**（全量重新分配桶数组 + 迁移所有节点）。
-
 
 ## D5 真实性能基准：哈希容器 vs 红黑树（GCC 15.3.0 实测）
 
@@ -1618,6 +1615,3 @@ int main() {
 - 加速比（18.5×、2.1×、25%）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_85_unordered.cpp`（库根目录）。
 - demo 断言 `reserve` 后 `bucket_count` 不减、插入后可查到键值等功能语义（稳定语义，可断言），未对时间或倍数做任何断言；并兑现正文 L1413 关于"rehash 只重挂指针不拷值"的前向引用。
-
-
-

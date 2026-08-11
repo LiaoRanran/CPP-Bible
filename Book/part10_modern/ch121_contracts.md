@@ -854,7 +854,6 @@ int main(){std::cout<<"C++26 contracts(P2900): proof-carrying code for safety-cr
 ```
 面试: contracts vs static_assert? static_assert=编译期; contracts=运行时可配置检查
 
-
 ## 相关章节（交叉引用）
 
 - **后续依赖**：⟶ Book/part01_history/ch09_cpp26.md（第09章　C++26：已确定特性与方向）—— 本章为其前置，建议后续延伸阅读。

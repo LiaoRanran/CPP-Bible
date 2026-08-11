@@ -34,7 +34,6 @@
 
 ⟶ Book/part10_modern/ch122_pmr.md
 
-
 "编译期编程"（Compile-Time Programming，CTP）是指**把计算、类型推导与分支决策尽量前移到翻译阶段**的范式。它的发展是一条从"模板元编程（TMP）→ constexpr 函数 → Concepts 约束 → consteval 立即函数"的渐进演化线，目标始终如一：用零（或近乎零）运行期开销换取类型安全、可优化与可证明的正确性。
 
 本章学完后你应当能够：
@@ -933,13 +932,11 @@ consteval int compile_only(int x){return x*x;}
 int main(){std::cout<<compile_only(7)<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
 | [第122章](Book/part10_modern/ch122_pmr.md) | 模板约束/类型安全API | 本章提供概念，第122章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1220,7 +1217,6 @@ int main()
   return 0;
 }
 ```
-
 
 ## 附录 D5：真实基准与性能分析 — 编译期计算 vs 运行期计算的真实代价（GCC 15.3.0）
 

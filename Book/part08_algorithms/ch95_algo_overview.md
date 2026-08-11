@@ -36,7 +36,6 @@ STL 算法最大的反直觉之处，是**把算法放在容器之外、做自�
 
 ⟶ Book/part08_algorithms/ch96_sorting.md
 
-
 STL 算法是一组**与容器解耦**的、以迭代器对 `[first, last)` 为参数的函数模板。它们只依赖迭代器暴露的接口，不关心元素存在 `vector`、`list` 还是裸数组——这就是"泛型"的本质。设计哲学三条：
 
 - **单一职责**：每个算法只做一件事（`std::find` 只找，`std::sort` 只排），组合靠管道（ranges）。
@@ -889,7 +888,6 @@ int quickcheck() {
 
 - `[实现·GCC15.3.0]`：A 组证明 `std::for_each` 与手写 `range-for` **几乎同速**（差值在测量噪声内）→ 零开销抽象属实。B 组 `count_if` 略慢于手写，源于谓词封装/迭代器抽象的微小常数；C 组 `lower_bound`（O(log n)）相对线性扫描快 **约 7 个数量级**，印证"先利用有序性"的选型原则（第⑬/⑭节）。
 
-
 ## 附录 A：工业实现对比 [F: Industry / D: stdlib]
 
 STL 算法在不同标准库实现中的差异：
@@ -985,7 +983,6 @@ Q: 为什么 std::list 有自己的 sort?
 A: std::sort 需要随机访问迭代器。list::sort 利用链表特性做归并排序 (无额外内存, O(1) 空间)
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -994,7 +991,6 @@ A: std::sort 需要随机访问迭代器。list::sort 利用链表特性做归�
 | [第96章](Book/part08_algorithms/ch96_sorting.md) | STL算法回调/异步任务 | 本章提供概念，第96章提供实现 |
 | [第97章](Book/part08_algorithms/ch97_search.md) | 无锁队列/计数器 | 本章提供概念，第97章提供实现 |
 | [第77章](Book/part07_stl/ch77_vector.md) | 索引查找/路由表 | 本章提供概念，第77章提供实现 |
-
 
 ## 相关章节（交叉引用）
 

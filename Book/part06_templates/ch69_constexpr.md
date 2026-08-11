@@ -38,7 +38,6 @@
 ⟶ Book/part06_templates/ch68_tmp.md
 ⟶ Book/part06_templates/ch70_tag_dispatch.md
 
-
 - 区分 `constexpr`、`consteval`、`constinit` 三个语义不同的说明符，理解它们各自约束的是"求值时刻"还是"初始化时刻"。
 - 掌握 `constexpr` 函数在编译期被求值的充要条件：所有实参必须是常量表达式、函数体必须是常量表达式（无未定义行为、无运行期 `new` 等）。
 - 理解 `if constexpr` 的"编译期分支消除"——不成立的分支在实例化时根本不实例化、不进符号表。
@@ -527,7 +526,6 @@ int use_lut(int i) { return lut(i); }            // 运行期：普通乘；编�
 3. `<array>` `operator[]`（行 208）：constexpr 容器随机访问，支撑编译期建表。
 4. GCC 源码 `gcc/cp/constexpr.cc`：常量表达式求值器（"constant expression evaluator"）实现，理解步数上限与诊断来源。
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -545,7 +543,6 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 f
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch69_constexpr."<<std::endl;return 0;}
 ```
-
 
 ## 附录 A：WG21 演进全景 [B: Principle]
 
@@ -642,7 +639,6 @@ A: 编译时间显著增加 (模板实例化级), 但生成代码更优 (编译�
 | [第68章](Book/part06_templates/ch68_tmp.md) | 泛型库/编译期计算 | 本章提供概念，第68章提供实现 |
 | [第70章](Book/part06_templates/ch70_tag_dispatch.md) | 日志格式化/序列化 | 本章提供概念，第70章提供实现 |
 | [第123章](Book/part10_modern/ch123_ct_programming.md) | 计时器/性能测量 | 本章提供概念，第123章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -812,10 +808,7 @@ int main() {
 
 </details>
 
-
 ## 附录：用法演绎（从选型到落地）
-
-
 
 ### 演绎 1：constexpr 何时真在编译期求值
 
@@ -996,7 +989,6 @@ int main() {
 }
 ```
 
-
 ## 附录 J：constexpr/consteval/constinit 决策流（D3 维度）
 
 ```mermaid
@@ -1076,7 +1068,6 @@ flowchart TD
 | ch60 模板基础 | constexpr 函数模板依赖模板实例化。 |
 | ch123 编译期编程 | constexpr/consteval 是编译期编程核心。 |
 | ch19 变量与存储期 | constinit 解决 SIOF 关乎静态存储期。 |
-
 
 ## 附录 D5：真实基准与性能分析 — constexpr 编译期计算的运行时收益（GCC 15.3.0）
 

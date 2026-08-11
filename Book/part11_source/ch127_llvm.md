@@ -40,7 +40,6 @@ LLVM 对 GCC 的核心之争是"模块化/库化 vs 单体"。LLVM 以 MIT 类�
 ⟶ Book/part11_source/ch126_msstl.md
 ⟶ Book/part11_source/ch128_boost.md
 
-
 LLVM 是一套**模块化、可重用**的编译器后端基础设施；Clang 是构建在 LLVM 之上的 C/C++/Obj-C 前端。二者分离：Clang 把源码翻译成中立的 **LLVM IR**，LLVM 后端把 IR 优化并生成目标机器码。这种「前端/IR/后端」解耦让 Rust、Swift、Julia 等都能复用同一套优化器与代码生成器。
 
 ```cpp
@@ -595,7 +594,6 @@ export int bridge(int a, int b) { return (a + b) * (a + b); }
 - `[标准]`：LLVM/Clang 是**标准无关**的基础设施——它实现 C++ 标准，但不被标准定义内部结构。
 - `[经验]`：把 LLVM 当「可观察的编译器」来学：IR 是语言、Pass 是动词、后端是方言。掌握它，你同时懂了 C++/Rust/Swift 的底层。
 
-
 ## ㉑ 真实工程使用场景：Clang / Swift / Rust 背后那台 LLVM
 
 > **人文关怀·落地**：前面读懂了 LLVM 的前端→优化→后端三段式，这一节把它接到"你写的几乎每一门现代语言都踩在 LLVM 上"。
@@ -686,7 +684,6 @@ int main() {
 int main(){std::cout<<"LLVM=Frontend(Clang→AST→IR)→Optimizer(Passes)→Backend(MC→binary)"<<std::endl;return 0;}
 ```
 面试: LLVM IR SSA为什么? 每次变量赋值一次→简化Pass; Clang=library化(可嵌入IDE) vs GCC=monolithic
-
 
 ## 相关章节（交叉引用）
 
@@ -897,4 +894,3 @@ flowchart TD
 | ch125 | ch127 | libc++ 与 LLVM 同源构建与测试 |
 | ch126 | ch127 | Clang-CL 与 MS STL 的协同工具链 |
 | ch132 | ch127 | 存储引擎借助 sanitizer 验证并发安全 |
-

@@ -39,12 +39,10 @@ C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派�
 ![Bjarne Stroustrup，C++11 重大修订的总设计师](../assets/history/bjarne_stroustrup.jpg)
 > 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
 
-
 ## ① 学习目标
 
 ⟶ Book/part01_history/ch03_cpp98_03.md
 ⟶ Book/part01_history/ch05_cpp14.md
-
 
 ```cpp
 #include <iostream>
@@ -517,7 +515,6 @@ C++11引入的底层变化:
   → smart_ptr: 消除了裸new/delete的内存泄漏
 ```
 
-
 ## 附录追加：工业底层与面试
 
 ```cpp
@@ -543,7 +540,6 @@ int main(){
 
 > 若把 `Buf(Buf&&) noexcept` 改为非 noexcept 的 `Buf(Buf&&)`，vector 为强异常安全会在 realloc 时
 > **深拷贝** 10000 个元素（每个 new + 64 次赋值），耗时差可达数十倍（实测见附录 H）。
-
 
 ## 附录 F：move底层与工业
 
@@ -596,7 +592,6 @@ noexcept move 为何重要? vector realloc 时允许浅移动而非深拷贝(强
 | [第5章](Book/part01_history/ch05_cpp14.md) | 独占所有权/工厂模式 | 本章提供概念，第5章提供实现 |
 | [第63章](Book/part06_templates/ch63_variadic.md) | 无锁队列/计数器 | 本章提供概念，第63章提供实现 |
 | [第115章](Book/part10_modern/ch115_move.md) | STL算法回调/异步任务 | 本章提供概念，第115章提供实现 |
-
 
 ## 附录 G：C++11面试速查
 
@@ -730,7 +725,6 @@ _Z8null_ptrv:
 - **Mozilla** — MFBT 用 C++11 MoveRef 替代退化的 auto_ptr
 - **Abseil** — Abseil 要求 C++14 编译器，但 move 语义源自 C++11
 - **Blink** — Blink 渲染引擎的事件分发基于 C++11 lambda
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -953,7 +947,6 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ```
 
 > 决策流说明：第③节把 C++11 的「现代 C++ 革命」收敛为若干与门——只有存在右值引用（与门前提）才启用移动构造（N8），只有需要共享所有权才付出 shared_ptr 的原子成本（否走 unique_ptr），否则按 ch41 选择零开销方案。
-
 
 ## 附录 K：C++11 现代革命概念依赖网（D6 维度）
 

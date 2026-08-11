@@ -44,7 +44,6 @@ C 中 `auto` 是存储类；复活它引发"破坏旧代码"的担忧，但委�
 ⟶ Book/part03_language/ch21_const_family.md
 ⟶ Book/part03_language/ch23_namespace_adl.md
 
-
 学完本章你能：
 
 1. 精确复述 `auto` 变量推导与函数模板参数推导的**同构规则**，并解释数组/函数退化。
@@ -1366,7 +1365,6 @@ int main() {
 
 > 「推荐阅读」节按本书标准 v3 已**删除并内化**进正文（见源码分析、阅读路线、WG21、跨语言、最佳实践等节的引用与延伸）。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1375,7 +1373,6 @@ int main() {
 | [第23章](Book/part03_language/ch23_namespace_adl.md) | 独占所有权/工厂模式 | 本章提供概念，第23章提供实现 |
 | [第19章](Book/part03_language/ch19_variables.md) | STL算法回调/异步任务 | 本章提供概念，第19章提供实现 |
 | [第69章](Book/part06_templates/ch69_constexpr.md) | 泛型库/编译期计算 | 本章提供概念，第69章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1522,9 +1519,6 @@ int main() {
 ```
 
 **结论**：需要"返回类型精确等于某表达式的值类别"时，唯一正确工具是 `decltype(auto)`；裸 `auto` 永远按值，会无声地剥掉引用语义。
-
-
-
 
 ## 附录 J：auto 与 decltype 决策流（D3 维度）
 

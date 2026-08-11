@@ -39,7 +39,6 @@ Make 直白却难跨平台、依赖 shell 与文件系统时间戳；CMake 选�
 ⟶ Book/part02_toolchain/ch11_compilers.md
 ⟶ Book/part02_toolchain/ch13_packaging.md
 
-
 C++ 是**翻译单元（translation unit，TU）**模型：每个 `.cpp` 独立经预处理→编译→汇编生成 `.o`，最后由链接器拼成可执行文件或库。**构建系统（build system）** 的核心职责只有三件：
 
 1. **依赖分析**——谁依赖谁（头改了，哪些 `.o` 要重编）。
@@ -835,7 +834,6 @@ Meson: 现代语法(Python-like), GNOME/Systemd使用
 A: PRIVATE=仅当前target用; PUBLIC=当前+依赖方用; INTERFACE=仅依赖方用(头文件库)
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -877,7 +875,6 @@ int main(){std::cout<<"Modern CMake=target_* commands, explicit deps, no GLOB"<<
 | target_include_directories | 添加头文件路径 | PUBLIC/PRIVATE/INTERFACE |
 | target_link_libraries | 链接依赖 | PUBLIC(传递)/PRIVATE(不传递) |
 | target_compile_definitions | 编译宏 | PUBLIC: NDEBUG(Release) |
-
 
 ## 附录 I：CMake面试
 
@@ -939,7 +936,6 @@ int main(){std::cout<<"CMake=PUBLIC(传递)/PRIVATE(不传递)/INTERFACE(仅依�
 ### 重构建议
 
 把 `include_directories` + `link_libraries`（全局）重构为每目标的 `target_include_directories`/`target_link_libraries(... PUBLIC)`；把 `file(GLOB)` 改为显式列出源文件列表，消除增量漏编；引入 `CMakePresets.json` 固化 Debug/Release 与编译器选择。
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -1159,4 +1155,3 @@ flowchart TD
 | ch17 交叉编译 | [Book/part02_toolchain/ch17_crosscompile.md](Book/part02_toolchain/ch17_crosscompile.md) | CMake toolchain file 跨平台（第⑭节与 ch17 ⑦衔接） |
 | ch18 构建配置 | [Book/part02_toolchain/ch18_buildconfig.md](Book/part02_toolchain/ch18_buildconfig.md) | -O0/-O2 由构建系统注入（第⑰节与 ch18 衔接） |
 | ch149 CI/CD | [Book/part13_engineering/ch149_ci_cd.md](Book/part13_engineering/ch149_ci_cd.md) | 构建系统驱动持续集成（第⑲节外推） |
-

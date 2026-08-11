@@ -42,7 +42,6 @@ C++ 的分配器模型长期在"零开销但僵化"（C++98 要求分配器无�
 ⟶ Book/part15_cases/ch159_threadpool.md
 ⟶ Book/part15_cases/ch161_logger.md
 
-
 通用分配器 `std::malloc`/`::operator new` 必须应对**任意大小、任意时序、任意线程**的请求，因此它内部要维护复杂的元数据（空闲链表、分箱、边界标记）、做加锁或原子操作，并承受**外部碎片**（大量小对象反复分配释放后，空闲内存被切成无法利用的小块）与**内部碎片**（为对齐与元数据而多占的空间）。
 
 当你在 hot path 上以极高频率分配/释放同一种小尺寸对象（如网络包、游戏实体、节点对象）时，通用分配器的固定开销会被放大。**[经验]** 此时"自己管一块内存、只切固定大小的块"往往比反复打扰系统分配器快一个数量级。
@@ -924,7 +923,6 @@ public:
 
 > 取证产物清单（均位于 `Examples/`，本机 `g++ 13.1.0 -std=c++23 -O2 -Wall -Wextra` 编译运行）：`_ch160_fixedpool.cpp`、`_ch160_union.cpp`、`_ch160_align.cpp`、`_ch160_sizeclass.cpp`、`_ch160_threadsafe.cpp`、`_ch160_lockfree.cpp`、`_ch160_allocator.cpp`、`_ch160_global_new.cpp`、`_ch160_benchmark.cpp`（基准 3.58×）、`_ch160_frag.cpp`、`_ch160_debug.cpp`、`_ch160_cacheline.cpp`（6.69×）、`_ch160_stl.cpp`、`_ch160_asm.cpp`/`.asm`（Intel 汇编）、`_ch160_full.cpp`（200万配平）、`_ch160_interface.cpp`、`_ch160_antipattern.cpp`、`_ch160_overhead.cpp`。所有耗时与加速比均截自真实运行，未做任何编造。
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -966,7 +964,6 @@ int main() {
     return 0;
 }
 ```
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -1091,9 +1088,6 @@ int main() {
 
 </details>
 
-
-
-
 ## 附录 J：内存池分配决策流（D3 维度）
 
 > 本图把第③节（固定块池 free list）、第④节（union 省元数据）、第⑤节（对齐到 max_align_t / alignas 64）、第⑥节（size class 分级）、第⑦节（mutex 与无锁 CAS）、第⑬⑰节（析构释放与双重释放防护）收敛成一条"申请→判尺寸→切块/回退→使用→回收"的分配流水线，并标出多线程与缓存行两条回退边。
@@ -1121,15 +1115,9 @@ flowchart TD
 
 > 决策流说明：尺寸判定与 free_list 状态之间是「与/或」组合——只有"未超上限「且」free_list 空"才触发 grow 批量切块，否则直接摘头（O(1)）；析构释放与回退释放两条边在"进程退出"闸门「或」汇合。跨章外推：无锁路径依赖第107章 atomic 与第110章 lock-free，对齐外推第43章 cache_locality。
 
-
-
 ## 附录 K：内存池知识图谱（D6 维度）
 
-
-
 > 本图以本章主题为中心，上游列出其依赖的底层机制（分配/并发/格式化/解析原语），下游列出消费它的系统（框架/网络/日志/测试），并标出跨章外推边。
-
-
 
 ```mermaid
 flowchart TD
@@ -1161,8 +1149,6 @@ flowchart TD
   CORE --> GTEST
 ```
 
-
-
 ### K.1 概念依赖逐边解读
 
 | 边 | 依赖含义 |
@@ -1180,8 +1166,6 @@ flowchart TD
 | CORE → BENCH | chrono 基准 3.58x 量化 |
 | CORE → SIZECLASS | 混合尺寸走 size class 分级 |
 | CORE → GTEST | 泄漏检测用 unordered_set 守卫 |
-
-
 
 ### K.2 跨章闭环表
 

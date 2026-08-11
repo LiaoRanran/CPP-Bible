@@ -37,7 +37,6 @@
 ⟶ Book/part11_source/ch132_leveldb_rocksdb.md
 ⟶ Book/part11_source/ch134_unreal.md
 
-
 ClickHouse 是**列存 OLAP**数据库，核心卖点是「一整列数据连续存放 + 批量向量化执行」；Redis 是**单线程事件驱动**的内存 KV 存储，核心卖点是「单线程 Reactor 避免锁与竞争」。两者都用 C++ 写出极致性能，但走的是两条相反的路：
 
 - ClickHouse：**用 CPU 的 SIMD 并行**，一次算 16/32/64 个浮点，靠「列」对齐硬件 cache line 与向量寄存器。
@@ -285,7 +284,6 @@ int aeApiPoll(aeEventLoop* el, struct timeval* tvp) {
     return n;   // 返回就绪 fd 数，主循环逐个回调
 }
 ```
-
 
 ### ④-2 上游参考：aeProcessEvents 真实源码逐行（src/ae.c）
 
@@ -953,7 +951,6 @@ bool should_vectorize(size_t n, bool branchy) {
 
 - `[经验]`：记不住细节就看速查表的四行——**列连续、循环无分支、单线程无锁、先 profile 再优化**。
 
-
 ## ㉑ 真实工程使用场景：把 ClickHouse / Redis 接到你的工程
 
 > **人文关怀·落地**：上面看懂了列存向量化与单线程事件循环的机制，这一节把它接到"真实项目里怎么用"。学它们的意义，在于你能直接给系统加上"亚秒级分析"或"百万 QPS 缓存"——而不只是会背 SIMD 与 epoll。
@@ -1368,4 +1365,3 @@ flowchart TD
 | ch133 向量化执行 | ch43 缓存局部性 | SIMD 吞吐受 cache line 制约，二次闭环 ch43 |
 | ch133 分片 worker | ch93 thread/async | 分片由线程池驱动，呼应 ch93 |
 | ch133 ZSET 跳表 | ch35 内存布局 | 跳表节点指针布局决定缓存友好度，关联 ch35 |
-

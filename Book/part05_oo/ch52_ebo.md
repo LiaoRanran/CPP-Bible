@@ -38,7 +38,6 @@ EBO 体现 C++ 对「大小即性能」的执念：在密集容器、嵌入式�
 
 ⟶ Book/part05_oo/ch51_crtp.md
 
-
 - 说清**空类**为何 `sizeof ≥ 1`，而**空基类子对象**可占 0 字节（C++ 对「基类子对象」的特例）。
 - 能从 assembly/offsetof 证明 EBO：`Derived : Empty { int x; }` 中 `x` 在偏移 0，而 `AsMember { Empty e; int x; }` 中 `x` 在偏移 4。
 - 掌握 EBO 的工业价值：标准库 `std::vector` 的 `allocator` 基类、策略基类（ch71）、迭代器 tag 零成本混入。
@@ -586,14 +585,12 @@ struct Tag1{};struct Tag2{};struct Combined:Tag1,Tag2{int v;};
 int main(){Combined c{{},{},42};std::cout<<sizeof(c)<<" (int + EBO for both bases)"<<std::endl;return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
 | [第51章](Book/part05_oo/ch51_crtp.md) | 独占所有权/工厂模式 | 本章提供概念，第51章提供实现 |
 | [第45章](Book/part05_oo/ch45_oop_object_model.md) | 泛型库/编译期计算 | 本章提供概念，第45章提供实现 |
-
 
 ## 深度增强：EBO编译器实现与工业
 
@@ -626,7 +623,6 @@ int main(){std::cout<<sizeof(std::unique_ptr<int>)<<" bytes (EBO=默认deleter�
 | Eigen | storage traits | 编译期选择 |
 
 面试: EBO何时不触发? 同类型两空基类/虚继承空基类; [[no_unique_address]] vs EBO? EBO=空基类; [[no_unique_address]]=空成员(C++20)
-
 
 ## 相关章节（交叉引用）
 
@@ -1184,7 +1180,6 @@ int main() {
 ```
 
 预期输出：`tuple<Empty,int>` 为 4（空成员被压到 0），`pair<Empty,int>` 为 8（空成员占 1 字节并因 `int` 对齐补齐），`tuple<FinalEmpty,int>` 回到 8（final 禁用 EBO），`Holder<int,Empty>` 为 4（继承式 EBO 生效）。仅用 `>=` / `is_empty_v` 断言，未对布局做精确 `==`。
-
 
 ## 附录 D5：真实基准与性能分析 — 空基类优化与 [[no_unique_address]]（GCC 15.3.0）
 

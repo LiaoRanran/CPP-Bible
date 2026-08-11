@@ -49,7 +49,6 @@ RAII 是"确定性析构"对"垃圾回收"的回答：C++ 选了可预测、零�
 ⟶ Book/part04_memory/ch38_allocator.md
 ⟶ Book/part04_memory/ch40_exception_safety.md
 
-
 **[标准]**　RAII 是 **Resource Acquisition Is Initialization** 的缩写，意为「资源获取即初始化」。其核心约定（`[basic.raii]` 精神，源自 C++98 实践、C++11 起成为库设计基石）：**将资源的生命周期绑定到一个自动存储期（栈上）对象的生命周期——资源在构造函数中获取，在析构函数中释放。**
 
 **[经验]**　一句话记忆：**资源不是「被你释放」，而是「被对象析构时自动释放」。你只负责获取，释放交给析构函数与栈展开。** 这正是 C++ 没有 GC 却能写出「无泄漏、异常安全」代码的根本原因。
@@ -71,7 +70,6 @@ RAII 不是语法特性，而是一种**惯用法（idiom）**：任何满足「
 **核心知识点 #1**：RAII = 资源生命周期绑定到对象生命周期；获取在构造、释放在析构。
 
 ---
-
 
 ## 架构与流程图示（Mermaid）
 
@@ -1697,7 +1695,6 @@ with open("p.log", "w") as f:     # 块结束自动 f.__exit__ → close
 
 > 立场分层贯穿全章：**[标准]**（ISO C++ 条款）、**[实现]**（libstdc++ 真实源码）、**[平台]**（MinGW GCC 13.1.0 / Win32）、**[经验]**（工程实践与坑）。已删除「推荐阅读」节，相关内容内化进第 20 节源码阅读路线与正文。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1725,7 +1722,6 @@ int main(){auto p=std::make_unique<int>(42);std::ifstream f("test.txt");std::cou
 
 面试: RAII全称? Resource Acquisition Is Initialization(资源获取即初始化)
        为什么C++不用finally? RAII=编译期保证释放, finally=运行时手动释放, RAII更安全
-
 
 ## 附录 H：RAII面试
 
@@ -2231,7 +2227,6 @@ flowchart TD
 | ch21 const 与类型族 | ch39 | const 限定影响拷贝 / 移动重载决议 |
 | ch40 异常安全 | ch39 | 栈展开释放是异常安全基础 |
 | ch42 strict aliasing | ch39 | 共享资源别名需与 RAII 协同 |
-
 
 ## 附录 D5：真实基准与性能分析 — RAII 与移动语义的真实开销（GCC 15.3.0）
 

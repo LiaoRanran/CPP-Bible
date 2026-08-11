@@ -33,7 +33,6 @@ Modules 入标只是起点，真正的硬仗是"工具链落地"与"生态迁移
 ⟶ Book/part10_modern/ch117_copy_elision.md
 ⟶ Book/part10_modern/ch119_ranges_deep.md
 
-
 传统 C++ 用 `#include` 做**文本包含**——预处理器把整个头文件复制粘贴进每个翻译单元，导致重复解析、宏泄漏、编译慢。Modules 提供**语义导入单元**，只暴露声明、按需编译一次、无宏污染。
 
 ```cpp
@@ -54,7 +53,6 @@ int use_mod() { return square(7) + (int)geom::pi; }
 
 - `[标准]`：C++20 引入 Modules；`export module` 定义接口单元，`import` 导入。
 - `[经验]`：Modules 不替代头文件生态一夜之间——与 `#include` 可共存，逐步迁移。
-
 
 ## 架构与流程图示（Mermaid）
 
@@ -603,7 +601,6 @@ T factorial(T n) { T r = 1; for (T i = 2; i <= n; ++i) r *= i; return r; }
 2. **头单元（header unit）**：`import "foo.h"` 可将现有头文件作为模块导入，是渐进迁移的桥梁。
 3. **宏隔离**：模块不导出宏，`assert` / `offsetof` / `va_arg` 等在 `import std` 后不可用，需 `#include` 对应头或改用替代写法。
 
-
 ## 相关章节（交叉引用）
 
 - **相邻主题**：⟶ Book/part10_modern/ch116_perfect_forwarding.md（第116章　完美转发与万能引用）—— 编号相邻、主题接续。
@@ -654,7 +651,6 @@ T factorial(T n) { T r = 1; for (T i = 2; i <= n; ++i) r *= i; return r; }
 ### 重构建议
 
 把「几十个细粒度头文件模块」重构为「一库一接口模块 + 私有实现分区」；把跨模块依赖环抽取为 `module libx.common;`；CI 增加 `gcm.cache` 清理步，避免 BMI 失效遗漏。注意：`import std` 仅在 Clang 18+/MSVC 17.5+ 可用，GCC/MinGW 需回退 `#include <...>`。
-
 
 ## 面试高频 [J: Learning]
 

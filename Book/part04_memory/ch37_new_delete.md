@@ -45,7 +45,6 @@ C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造
 ⟶ Book/part04_memory/ch36_stack_heap.md
 ⟶ Book/part04_memory/ch38_allocator.md
 
-
 动态内存管理是 C++ 资源模型的核心支柱。本章聚焦**最底层原语**——`operator new` / `operator delete` 这一族可替换（replaceable）的全局函数，以及 `new` 表达式语法如何调用它们。它向上承接 ch19（存储期）、ch35（堆段布局）、ch36（`malloc`/`free` 后端）、ch38（`std::allocator` 与 `rebind`）、ch28（`launder` 与对象生命期）、ch33（`bad_alloc` 与异常）、ch44（内存池）、ch45（RAII 接管释放）。
 
 [标准] 本章所有语义以 C++17/20 为基准，并标注 C++14（sized deallocation）、C++17（aligned new、launder）、C++20（destroying delete）的增量。
@@ -1791,7 +1790,6 @@ int main() {
 >
 > **行数 / 覆盖回报**（见章末）：本章正文约 1500 行；章节元素 20 项齐全；核心知识点 23 项覆盖；完整可编译程序 36 个（含内存池 placement new、nothrow 防御、数组 cookie 观察、类专属统计、对齐过对齐类型、debug 填充）；真实源码路径：`include/c++/new`（声明）、`include/c++/bits/new_allocator.h`（allocator 调 operator new）、`include/c++/x86_64-w64-mingw32/bits/c++config.h`（宏）；运行时 `.cc` 实现以 `[实现-推断]` 标注；平台相关 cookie 布局以 `[平台-推断]` 标注。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1847,7 +1845,6 @@ int main() {
 
 面试: new vs malloc? new=类感知(调构造函数)+类型安全+可重载; malloc=纯内存+返回void*
        placement new用途? 在已有内存上构造对象(内存池/嵌入式/shared_ptr控制块)
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -2061,7 +2058,6 @@ int main() {
 ```
 
 **结论**：高频定长小对象是内存池/placement new 的典型受益者；复用把分配器开销与碎片降到最低。
-
 
 ## 附录 D4：operator new/delete 的三标准库源码解析（D4 维度）
 

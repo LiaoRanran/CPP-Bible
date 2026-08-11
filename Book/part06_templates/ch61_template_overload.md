@@ -36,7 +36,6 @@
 ⟶ Book/part06_templates/ch60_template_basics.md
 ⟶ Book/part06_templates/ch62_specialization.md
 
-
 - 复述重载决议的 3 阶段：候选集 → 可行集 → 最佳匹配 [标准]
 - 说清「非模板函数 > 更特化的模板 > 更泛化的模板」的优先权 [标准]
 - 理解模板偏序（partial ordering）如何比较「谁更特化」[标准]
@@ -611,7 +610,6 @@ P2593R0 (C++23): explicit object parameter (deducing this) → 简化CRTP重载
   if constexpr: 最简单但不能用于重载选择 (只能选择函数体内代码)
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -620,7 +618,6 @@ P2593R0 (C++23): explicit object parameter (deducing this) → 简化CRTP重载
 | [第62章](Book/part06_templates/ch62_specialization.md) | STL算法回调/异步任务 | 本章提供概念，第62章提供实现 |
 | [第66章](Book/part06_templates/ch66_sfinae.md) | 泛型库/编译期计算 | 本章提供概念，第66章提供实现 |
 | [第67章](Book/part06_templates/ch67_concepts.md) | 静态多态/编译期接口 | 本章提供概念，第67章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -655,7 +652,6 @@ P2593R0 (C++23): explicit object parameter (deducing this) → 简化CRTP重载
 - **Abseil** — Abseil `absl::visit` 基于重载
 - **Blink** — Blink 用重载实现样式计算分派
 - **Chromium** — base 用重载实现回调绑定
-
 
 ## 附录 H（模板实例化与符号修饰）
 
@@ -794,10 +790,7 @@ int main() {
 
 </details>
 
-
 ## 附录：用法演绎（从选型到落地）
-
-
 
 ### 演绎 1：重载决议——模板并非总是优先
 
@@ -1039,7 +1032,6 @@ int main() {
 }
 ```
 
-
 ## 附录 D5：真实基准与性能分析 — 编译期重载决议直接内联 vs 运行期函数指针表间接分派（GCC 15.3.0）
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch61_overload_dispatch.cpp`。
@@ -1104,8 +1096,6 @@ int main() {
 | ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 模板单态化是编译期分派的基础 |
 | ch62 特化 | Book/part06_templates/ch62_specialization.md | 特化与 if constexpr 是编译期分派的两种形式 |
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | constexpr 与 if constexpr 的编译期计算能力 |
-
-
 
 ### D5.5 汇编实证 (GCC 15.3.0)
 

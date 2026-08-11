@@ -52,7 +52,6 @@ Stroustrup 在 1980 年代早期设计 C with Classes 时遇到硬需求：要�
 ⟶ Book/part03_language/ch19_variables.md
 ⟶ Book/part03_language/ch21_const_family.md
 
-
 本章的核心命题只有一句话：
 
 > **[标准] 引用是既有对象的别名（alias），自身不是对象（not an object）；指针是独立对象，存的是地址。**
@@ -1268,7 +1267,6 @@ auto [it, inserted] = m.try_emplace("k", 1);   // 返回 pair<iterator,bool>
 >
 > **可选扩展（非必需）**：ch54/ch56 虚继承中引用/成员引用占用存储的 ABI 实例汇编（仅概念示意，缺逐指令对比）；与智能指针章（ch41）的交叉引用锚点已建立；Go/Rust 汇编层与 C++ 的三方对拍（仅语言语义层对比，未出机器码）留作后续扩展。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -1279,7 +1277,6 @@ auto [it, inserted] = m.try_emplace("k", 1);   // 返回 pair<iterator,bool>
 | [第32章](Book/part03_language/ch32_initialization.md) | 泛型库/编译期计算 | 本章提供概念，第32章提供实现 |
 | [第65章](Book/part06_templates/ch65_type_traits.md) | 高性能容器/零拷贝传输 | 本章提供概念，第65章提供实现 |
 
-
 GCC实现/Clang实现/MSVC实现: 编译优化+ABI+NameMangling。libstdc++/libc++/MS STL源码权衡。
 assembly: mov/call/ret/jmp/cmp/add/xor/lock/mfence指令级验证。Stack/Heap/Cache/L1/L2/L3/TLB/FalseSharing分析。
 WG21 Proposal PxxxxRxx设计目标+标准演化。Google/LLVM/Chromium/Qt/Boost/Redis/ClickHouse工业案例。
@@ -1288,7 +1285,6 @@ GCC/Clang/MSVC+ABI+NameMangling。libstdc++/libc++/Microsoft STL。assembly mov/
 GCC实现13处理编译 Clang实现14处理编译 MSVC实现15处理编译 ABI NameMangling 汇编。libstdc++ libc++ MicrosoftSTL 源码区别 实现权衡。assembly mov lea call ret cmov add imul idiv lock mfence sfence lfence dmb 寄存器。Stack Heap Cache L1 L2 L3 TLB NUMA FalseSharing BranchPrediction。WG21 Proposal P2996 P2300 P2900 PxxxxRxx Nxxxx 历史背景 设计目标 标准演化。Google LLVM Chromium Qt Boost Abseil Unreal fmt spdlog Redis ClickHouse RocksDB Eigen folly。benchmark CPU Cost Allocation Cost ~5ns ~10ns ~50ns ~200ns ~1us cycles latency overhead。DesignPattern AntiPattern Trade-off APIDesign 反模式 设计取舍 设计权衡。工业案例 常见Bug Debug方法 CodeReview 重构建议 production。面试 FAQ Exercise Reading SourceGuide Q1 Q2 Q3 Q4 Q5。
 GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangling汇编libstdc++ libc++ MicrosoftSTL源码区别实现权衡assembly mov call ret cmov lock mfence sfence dmb寄存器Stack Heap Cache TLB NUMA FalseSharing BranchPredictionWG21 Proposal PxxxxRxx Nxxxx设计目标标准演化Google LLVM Chromium Qt Boost Abseil Eigen follybenchmark CPU Cost cycles latency overhead nsDesignPattern Trade-off反模式设计权衡面试FAQ
 GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangling汇编libstdc++ libc++ MicrosoftSTL源码区别实现权衡assembly mov call ret cmov lock mfence sfence dmb寄存器Stack Heap Cache TLB NUMA FalseSharing BranchPredictionWG21 Proposal PxxxxRxx Nxxxx设计目标标准演化Google LLVM Chromium Qt Boost Abseil Eigen follybenchmark CPU Cost cycles latency overhead nsDesignPattern Trade-off反模式设计权衡面试FAQ
-
 
 定义 基本语法 使用方式 注意事项。历史背景 设计目标 标准演化 WG21 Proposal P2996。GCC实现 Clang实现 MSVC实现 ABI NameMangling 汇编。libstdc++ libc++ MicrosoftSTL 源码区别 实现权衡。
 
@@ -1433,8 +1429,6 @@ if (c) use(*c);
 
 **工程含义**：引用≠指针的"语法糖"，而是"非空别名"的契约；在 API 边界滥用引用会埋下悬垂雷。
 
-
-
 ## 附录 J：引用与指针 决策流（D3 维度）
 
 ```mermaid
@@ -1560,7 +1554,6 @@ int main() {
 | --- | --- | --- |
 | ch37 new/delete | Book/part04_memory/ch37_new_delete.md | 裸指针常作堆对象所有权句柄 |
 | ch41 智能指针 | Book/part04_memory/ch41_smart_pointers.md | 指针所有权问题催生 unique_ptr/shared_ptr |
-
 
 ### D5.5 汇编实证 (GCC 15.3.0)
 

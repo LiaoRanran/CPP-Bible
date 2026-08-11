@@ -936,7 +936,6 @@ int main() {
 
 > 推荐读物（已融于正文）：ISO/IEC 14882:2023 `[array]`、`[dcl.init.aggr]`；WG21 N2240（std::array）、P0414R2（to_array）；Bjarne Stroustrup《C++ Programming Language》第 4 版容器章节；Scott Meyers《Effective STL》关于"优先容器而非裸数组"的条目。
 
-
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。
@@ -1291,7 +1290,6 @@ flowchart TD
 | ch77 vector | ch80 array | 定长/变长对比，array 不扩容 |
 | ch90 ranges | ch80 array | array 满足 contiguous_range 喂给 ranges 算法 |
 | ch88 受限接口 | ch80 array | 值语义拥有与视图的所有权边界思想 |
-
 
 ## 附录 D5：真实基准与性能分析 — std::array 的真实开销（GCC 15.3.0）
 

@@ -39,7 +39,6 @@
 ⟶ Book/part02_toolchain/ch16_ide.md
 ⟶ Book/part02_toolchain/ch18_buildconfig.md
 
-
 **交叉编译（cross compilation）** = 在**宿主机（host，如 x86-64 Windows）**上编译出运行在**目标机（target，如 ARM Cortex-M）**上的可执行代码。与之相对的是**原生编译（native compilation）**：host == target。
 
 ```cpp
@@ -640,7 +639,6 @@ WG21与交叉编译: P1643R1 (std::embedded, 方向提案)
 A: 编译器需要目标平台的标准库头文件和二进制 → --sysroot=/path/to/target/rootfs
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -677,7 +675,6 @@ int main(){std::cout<<"STM32=arm-none-eabi, RPi=aarch64-linux-gnu, Android=NDK c
 | Raspberry Pi | aarch64-linux-gnu-gcc | RPi rootfs | Linux AArch64 |
 | Android | NDK clang | NDK sysroot | Android NDK ABI |
 | WebAssembly | emcc(emscripten) | 无 | wasm32 |
-
 
 ## 附录 H：CMake交叉编译配置
 
@@ -753,7 +750,6 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 | **Google Android NDK**（developer.android.com/ndk） | ARM32/ARM64/x86_64 Android | Clang + `android-ndk-r26c/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang++` | `-DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=21` |
 
 **底层深度**：交叉编译的关键是 sysroot——目标系统的头文件/库的镜像目录。GCC cross 构建时 `--with-sysroot=/path/to/aarch64-rootfs` 将 `#include` 解析根重定向到目标 sysroot，链接器从 `$sysroot/usr/lib` 搜索 `libc.so`。`CMAKE_TOOLCHAIN_FILE` 的本质是设置 `CMAKE_C_COMPILER_TARGET`（GCC triplet: `aarch64-linux-gnu`）与 `CMAKE_FIND_ROOT_PATH`。工具链文件的 `CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER` 禁止 CMake 从 sysroot 找 `g++` 等主机工具。
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -985,4 +981,3 @@ flowchart TD
 | ch156 编译优化 | [Book/part14_perf/ch156_compiler_opt.md](Book/part14_perf/ch156_compiler_opt.md) | 嵌入式子集约束优化空间（第⑮节与 ch156 衔接） |
 | ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | 交叉调试经 gdbserver/openocd（第⑬节与 ch14 衔接） |
 | ch13 包管理 | [Book/part02_toolchain/ch13_packaging.md](Book/part02_toolchain/ch13_packaging.md) | 目标 sysroot 内库由包管理提供（第③节与 ch13 衔接） |
-

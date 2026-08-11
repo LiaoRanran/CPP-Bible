@@ -129,7 +129,6 @@ A: Google, Microsoft, Apple, Intel, NVIDIA, Bloomberg, RedHat, 以及各国代�
 [标准] 所有提案和会议记录在 open-std.org 公开。
 [经验] train model让C++每3年稳定演进，避免了"下一个C++0x"的13年等待。
 
-
 ## 附录 H：WG21投票与工业采纳
 
 WG21共识驱动。ISO ballot反对票延迟6-12月。法国反对C++20 modules延迟3月。
@@ -245,7 +244,6 @@ int main(){std::cout<<"C++ philosophy: zero-overhead, backward compatible, trust
 #include <iostream>
 int main(){std::cout<<"WG21=ISO C++ committee, 3 meetings/year, train model every 3 years"<<std::endl;return 0;}
 ```
-
 
 ## 附录 K：C++版本选择
 
@@ -417,7 +415,6 @@ WG21维护测试套件: https://github.com/cplusplus/CWG. 每个编译器需通�
 [标准] C++标准化=ISO/WG21, ~400成员, 每3年发布, ~5年从提案到标准。
 [经验] 理解标准化流程有助于预测新特性何时可用, 以及如何参与C++演进。
 
-
 ## 附录 Q：标准化速查
 
 ## cpp-block-count-fix
@@ -429,7 +426,6 @@ This section exists to meet the minimum cpp block threshold.
 #include <iostream>
 int main(){std::cout<<"C++ standardization: ISO/WG21, 3-year cadence, 400+ members"<<std::endl;return 0;}
 
-
 ## 附录 R：C++标准化代码示例
 
 ```cpp
@@ -440,7 +436,6 @@ int main() {
     return 0;
 }
 ```
-
 
 ## 附录 R：ISO标准文档阅读
 
@@ -516,7 +511,6 @@ int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/S
 ### 重构建议
 
 把「硬编码 C++17」`-std=c++17` 升级为 CMake `target_compile_features(... PUBLIC cxx_std_20)` + CI 矩阵双标共存；用 `__cpp_xxx` 守护特性而非 `__cplusplus`；提交《编译器支持状态自评报告》作为升级前 checklist。
-
 
 ## 最佳实践 [经验]
 
@@ -662,12 +656,9 @@ int main() {
 
 </details>
 
-
-
 ---
 
 > **权威对照（单一事实来源）**：本章涉及 GCC / Clang / MSVC 的特性支持度、报错差异、ABI 与性能对比，均为写作时点快照。最新、逐项以 feature-test macro 实测的横向对照（含 GCC 15.3.0 精确宏值）见 [编译器版本对照表](../../docs/compiler-matrix.md)。**正文中的三编译器版本号以该表为准**——编译器升级后仅更新 `docs/compiler-matrix.md` 一处，无需改动本章。
-
 
 ## 附录 U：提案 → 标准 六阶段决策流（D3 维度）
 
@@ -725,7 +716,6 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ```
 
 > 决策流说明：第③节强调「语言特性走 EWG→CWG、库特性走 LEWG→LWG」的分流；只有 Sunday 全会投票（或门：语言或库任一侧先到）与国家体批准都通过（与门）才进版本 train，否则回到小组——这解释了 ch10 中「为什么特性会推迟到 ch09」。
-
 
 ## 附录 V：WG21 标准化流程知识图谱（D6 维度）
 

@@ -36,7 +36,6 @@
 ⟶ Book/part06_templates/ch61_template_overload.md
 ⟶ Book/part06_templates/ch63_variadic.md
 
-
 - 区分主模板 / 全特化 / 偏特化 [标准]
 - 掌握偏序（哪份特化更特化）决定实例化选中谁 [标准]
 - 理解全特化是「独立模板」，可改变成员集合 [标准]
@@ -720,7 +719,6 @@ flowchart TD
 - GCC `cp/pt.cc`：类模板偏特化偏序比较
 - 交叉引用占位：part06 ch65（type traits）、ch66（SFINAE）、ch67（Concepts）
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -794,7 +792,6 @@ template<typename T> struct is_pointer: std::false_type {};          // primary
 template<typename T> struct is_pointer<T*>: std::true_type {};       // partial spec
 int main() { std::cout << is_pointer<int*>::value << is_pointer<int>::value << std::endl; return 0; }
 ```
-
 
 ## 附录 H：特化面试
 
@@ -1210,7 +1207,6 @@ int main()
 }
 ```
 
-
 ## 附录 D5：真实基准与性能分析 — 模板特化编译期路由 vs 运行期 if/else 类型标签分支链（GCC 15.3.0）
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch62_spec_branch.cpp`。
@@ -1280,8 +1276,6 @@ int main() {
 | ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 模板特化是编译期路由的底层机制 |
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | if constexpr 是 C++17 编译期条件分派 |
 | ch153 CPU 微基准 | Book/part14_perf/ch153_cpu_micro.md | 分支预测惩罚的微架构量化 |
-
-
 
 ### D5.5 汇编实证 (GCC 15.3.0)
 

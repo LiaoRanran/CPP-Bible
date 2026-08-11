@@ -39,12 +39,10 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 ![Bjarne Stroustrup，C++20 引入概念/范围等重大特性](../assets/history/bjarne_stroustrup.jpg)
 > 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
 
-
 ## ① 学习目标
 
 ⟶ Book/part01_history/ch06_cpp17.md
 ⟶ Book/part01_history/ch08_cpp23.md
-
 
 ```cpp
 // 源码剖析：libstdc++ 中 C++20 概念（concepts）约束检查的展开
@@ -417,7 +415,6 @@ int main(){
 int main(){std::cout<<"ch07_cpp20.md enhanced"<<"\n";return 0;}
 ```
 
-
 ## 附录 D：C++20 Concepts/Ranges底层
 
 ```
@@ -482,7 +479,6 @@ int main(){std::cout<<add(10,20)<<std::endl;return 0;}
 Q: concepts = SFINAE的语法糖? A: 不是。concepts=编译期类型检查(更快+更好错误); SFINAE=替换失败利用规则
 Q: concepts支持哪些约束? A: 类型属性(is_integral), 表达式有效性(requires{x+y}), 组合(constructible+copyable)
 
-
 ## 附录 E：C++20面试速查
 
 ```cpp
@@ -523,7 +519,6 @@ C++20 的 concepts / ranges / coroutines / modules 在主流工具链与大型�
 | **folly**（github.com/facebook/folly） | folly 采用 C++20 协程实现异步 Future / Promise | 异步框架 | `folly/experimental/coro` |
 
 **底层深度**：Clang 在 `Sema::CheckConceptCheckArgs` 中对 concept 检查做约束规范化（normalizeConstraintExpr），失败时报错位置精确到原子约束而非整条 `requires`；GCC 在 `cp/constraint.cc` 内做类似处理，GCC 10 起 concepts 默认开启。Coroutine 由 Clang 的 `CoroutineStmtBuilder` 在 Sema 阶段把 `co_await/co_yield/co_return` 改写为对 promise 的调用并构建 ramps / resume 标签，最终 Lower 到 `llvm::coro.begin/end` 内联 IR；x86-64 下 coroutine frame 默认经 `::operator new` 分配，Clang 13 起 `-std=c++20` 自动启用 `-fcoroutines`。Modules 在 LLVM 侧经 `clang-scan-deps` + PCM（precompiled module）缓存，Chromium 实测可缩减 10–20% 的翻译单元重编译时间。
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -731,7 +726,6 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ```
 
 > 决策流说明：第⑭节指出四大特性相互独立（或门）——可单独采用 concepts 或 coroutines；但 concepts 与 ranges 是「与门」组合（ch90 的 view 需 concept 约束），modules 与 constexpr 结合可把更多代码移入编译期（ch69）。
-
 
 ## 附录 K：C++20 四大特性概念依赖网（D6 维度）
 

@@ -46,7 +46,6 @@ Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而�
 ⟶ Book/part11_source/ch129_qt.md
 ⟶ Book/part11_source/ch131_fmt_spdlog.md
 
-
 工业级 C++ 工程的共同痛点是：标准库太薄、平台差异太大、性能与可维护性难兼得。Abseil 与 Chromium `base` 分别是两套久经实战的基础设施：
 
 - **Abseil**：2019 年 Google 开源，把内部 `strings`/`container`/`time`/`synchronization` 等沉淀标准化，许多特性后来进入 C++17/20/23（见第⑱节）。
@@ -748,7 +747,6 @@ int quickstart() {
 - `[标准]`：速查表覆盖本章 20 节的核心 API 映射；更多细节见 CONVENTIONS.md 的命名约定与本文件各节源码剖析。
 - `[经验]`：记住一句话——**接口边界用 std，内部热点用 absl，任务/内存/线程用 Chromium base**；三者通过 `string_view`/`span` 零拷贝衔接。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -858,7 +856,6 @@ int main(){std::cout<<"Chromium=no exceptions+RTTI; Abseil=SwissTable+StatusOr"<
 | Abseil | SwissTable,StatusOr | Google标准库 |
 
 面试: Chromium禁异常因二进制+15-30%; SwissTable用开放地址+SIMD探测(Cache友好)
-
 
 ## 相关章节（交叉引用）
 
@@ -1152,7 +1149,6 @@ flowchart TD
 | ch124 | ch130 | 标准库实现总览衔接 Abseil 补位 |
 | ch126 | ch130 | MS STL 与 Abseil Windows 适配对照 |
 | ch131 | ch130 | Abseil 字符串与 fmt 的协作取舍 |
-
 
 ## 附录 D5：真实基准与性能分析 — 高频查找 — abseil flat_hash_map（开放寻址）vs std::unordered_map vs 排序 vector + 二分（GCC 15.3.0）
 

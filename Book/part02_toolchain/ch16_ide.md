@@ -39,7 +39,6 @@ IDE 之争是"重集成 vs 轻可订"。重量级 IDE（CLion/VS）内建索引�
 ⟶ Book/part02_toolchain/ch15_profiling.md
 ⟶ Book/part02_toolchain/ch17_crosscompile.md
 
-
 C++ 是**编译型 + 强类型 + 多翻译单元**语言，工作流天然比脚本语言重：编辑 → 索引/补全 → 静态检查 → 编译 → 调试 → 测试。IDE 的价值不是"写代码"，而是把这条链路的**反馈延迟压到最低**——把编译器的报错、clang-tidy 的异味、调试器的状态，直接叠在编辑器里。
 
 ```cpp
@@ -668,7 +667,6 @@ int main(){std::cout<<"Debugger: GDB 'break', 'run', 'bt', 'print'. LLDB: same c
 int main(){std::cout<<"Profiling: VS Diagnostic Tools, PerfView (Windows), Instruments (macOS), perf (Linux)."<<std::endl;return 0;}
 ```
 
-
 ## 附录 A：工业IDE选择与WG21背景 [B: Principle / F: Industry]
 
 ```
@@ -704,7 +702,6 @@ Q: 如何让 IDE 理解你的 CMake 项目？
 A: 生成 compile_commands.json, IDE 的 clangd 读取后即可精确解析 include + 宏 + 模板
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -727,7 +724,6 @@ A: 生成 compile_commands.json, IDE 的 clangd 读取后即可精确解析 incl
 int main(){std::cout<<"compile_commands.json=universal bridge between build system and IDE LSP"<<std::endl;return 0;}
 ```
 
-
 ## 附录 D：IDE编译器实现细节 [C: Compiler]
 
 GCC/clangd集成: compile_commands.json→clangd→LSP(汇编级别的token解析)
@@ -738,7 +734,6 @@ Clang实现: clangd→AST完整遍历→内存中索引(100MB for LLVM项目)
 #include <iostream>
 int main(){std::cout<<"clangd+GCC: compile_commands.json bridges build system to IDE LSP"<<std::endl;std::cout<<"MSVC: EDG frontend for intellisense, not clang-based"<<std::endl;return 0;}
 ```
-
 
 GCC实现: compile_commands.json→clangd→LSP; Clang实现: clangd→AST→索引; MSVC实现: EDG前端→Intellisense; ABI: 跨编译器调试需DWARF/PDB一致; 汇编: IDE显示的disassembly来自objdump/llvm-objdump
 
@@ -796,7 +791,6 @@ VS Code+clangd全项目重构(~500ms for rename)
 int main(){std::cout<<"clangd=LSP with Clang AST, ~100MB for LLVM index, ~30s cold start"<<std::endl;return 0;}
 ```
 
-
 ## 附录 H：IDE面试
 
 ```cpp
@@ -811,7 +805,6 @@ int main(){std::cout<<"compile_commands.json=bridge build->IDE(LSP clangd reads 
 
 - **相邻主题**：⟶ Book/part02_toolchain/ch18_buildconfig.md（第18章　构建配置：Debug / Release / LTO / PGO（C++））—— 编号相邻、主题接续。
 - **同模块**：⟶ Book/part02_toolchain/ch12_buildsystems.md（第12章　构建系统：Make / Ninja / CMake（C++））—— 同模块下的其他主题。
-
 
 ## 附录 I（语言服务底层）
 
@@ -843,8 +836,6 @@ call lookup_symbol       ; 递归查找定义
 - Clang 18 提供 `libclang` / `clangd`；`__cplusplus` = 202302L
 - GCC 13.2 头可用 `-stdlib=libc++` 切换
 - `constexpr` 将检查前移，减少 IDE 红色波浪
-
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -1053,4 +1044,3 @@ flowchart TD
 | ch145 命名/API | [Book/part13_engineering/ch145_naming_api.md](Book/part13_engineering/ch145_naming_api.md) | IDE 辅助 API 一致性（第⑩节外推） |
 | ch14 调试 | [Book/part02_toolchain/ch14_debugging.md](Book/part02_toolchain/ch14_debugging.md) | IDE 封装 GDB/LLDB 调试（第⑫节与 ch14 衔接） |
 | ch150 测试 | [Book/part13_engineering/ch150_testing.md](Book/part13_engineering/ch150_testing.md) | IDE 运行单元测试（第⑭节外推） |
-

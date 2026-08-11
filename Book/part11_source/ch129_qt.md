@@ -58,7 +58,6 @@
 ⟶ Book/part11_source/ch128_boost.md
 ⟶ Book/part11_source/ch130_chromium_abseil.md
 
-
 Qt 是 Trolltech（现 The Qt Company）推出的跨平台 C++ 应用框架，覆盖 GUI、网络、文件、并发、SQL、OpenGL 等。其最大特色是**在 ISO C++ 之上叠加一层由 moc（元对象编译器）生成的元对象系统**，从而支持信号槽、运行时类型 introspection、动态属性——这些是标准 C++ 没有的。
 
 ```cpp
@@ -620,7 +619,6 @@ public: void go(){ emit ping(1); }
 - `[标准]`：信号槽 = moc 生成的「元数据表 + `activate` 遍历连接 + `qt_static_metacall` 分派」；本章第③⑨节已用真实 moc 产物与真实汇编验证。
 - `[经验]`：记住三条铁律——**父子树或智能指针二选一**、**跨线程用 moveToThread + QueuedConnection + deleteLater**、**新项目一律新式 connect**。
 
-
 ## ㉑ 真实工程使用场景：从信号槽到现代 Qt 6 工程
 
 > **人文关怀·落地**：上一节看懂了机制，这一节把它接到"真实项目里怎么用"。学 Qt 的意义，
@@ -793,7 +791,6 @@ A: 移除 QTextCodec (改用 UTF-8), QVector=QList 统一, CMake 成为首选构
    QML 6 引入强类型 + 编译器, 废弃 Qt5 的 QML 引擎
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -802,7 +799,6 @@ A: 移除 QTextCodec (改用 UTF-8), QVector=QList 统一, CMake 成为首选构
 | [第130章](Book/part11_source/ch130_chromium_abseil.md) | 独占所有权/工厂模式 | 本章提供概念，第130章提供实现 |
 | [第135章](Book/part12_patterns/ch135_patterns_intro.md) | 多态插件/框架扩展 | 本章提供概念，第135章提供实现 |
 | [第45章](Book/part05_oo/ch45_oop_object_model.md) | 高性能容器/零拷贝传输 | 本章提供概念，第45章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -843,7 +839,6 @@ void Foo::valueChanged(int _t1) {
 跨线程 `QueuedConnection` 走事件队列：`postEvent` 把参数序列化进 `QMetaCallEvent`，目标线程 `eventLoop` 取出后 `invokeMethod`，延迟受队列深度影响，典型 `1–5 ms`（同进程跨线程）。
 
 内存：每个 `QObject` 持 `QObjectPrivate*`，子对象链表占 `0x10`（指针 ×2），父子析构自动级联。
-
 
 ## 附录 F（moc 生成代码与信号槽开销）
 
@@ -1216,7 +1211,6 @@ flowchart TD
 | ch124 | ch129 | 标准库实现总览衔接 Qt 对 std 的封装 |
 | ch125 | ch129 | libc++ 下 Qt 的构建与 ABI 校验 |
 | ch130 | ch129 | Abseil 与 Qt 基础类型的选型对照 |
-
 
 ## 附录 D5：真实基准与性能分析 — Qt 信号槽 — 直接调用 vs 函数指针 vs std::function 槽 vs 虚槽 vs 多槽（4 接收者）（GCC 15.3.0）
 

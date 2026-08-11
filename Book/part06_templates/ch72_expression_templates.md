@@ -36,7 +36,6 @@ C++ 的运算符重载很优雅，但对 `a*b + c*d` 这类向量/矩阵表达�
 
 ⟶ Book/part06_templates/ch71_policy.md
 
-
 - 理解 **表达式模板（Expression Templates, ET）** 的核心动机：消除 `u = a + b + c` 这类算子表达式中的**临时对象与多次遍历**，把"计算时机"从 `operator+` 推迟到 `operator=`。
 - 掌握 ET 三件套：**表达式基类 `Expr<E>`**（CRTP 风格静态接口）、**代理节点 `Sum<A,B>`**（存储操作数引用、`operator[]` 递归求值）、**`operator+` 返回代理而非结果**。
 - 通过真实汇编确认：朴素实现 `a+b+c` 产生 **2 个临时堆分配 + 3 次遍历**，而 ET 实现**零临时分配 + 单遍遍历**（`u[i]=a[i]+b[i]+c[i]`）。
@@ -579,7 +578,6 @@ Fast dbg = eval(a + b + c);   // 物化为具体 Fast，断点友好
 3. Eigen 源码 `Core/AssignEvaluator.h`：`operator=` 如何对表达式树单遍遍历（ET 工业实现参考）。
 4. 本章 `Examples/_asm_expr.cpp`：对比 `use_naive` 与 `use_expr` 的 `-O2` 汇编（⑩ 的 5 分配/3 遍历 vs 4 分配/1 遍历）。
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -604,7 +602,6 @@ int main(){std::cout<<"Eigen: Matrix a=b+c*d → expression template → single 
 
 面试: expression template优势? 消除临时对象(Matrix c=a+b产生1个临时; ET产生0个)
        为什么STL不用ET? 复杂度>收益; Eigen的数值计算场景明确受益
-
 
 ## 相关章节（交叉引用）
 
@@ -645,7 +642,6 @@ add rdi, 0x0008           ; 步进 int32
 - GCC 13.2 / Clang 18 对 Eigen 表达式完全向量化
 - `__cplusplus` = 202302L；`_Pragma("once")` 加速头解析
 - WG21 提案 P0784R7 扩展 constexpr 表达式
-
 
 ## 自测练习（Exercises）
 
@@ -762,10 +758,7 @@ int main() {
 
 </details>
 
-
 ## 附录：用法演绎（从选型到落地）
-
-
 
 ### 演绎 1：表达式模板为何快
 

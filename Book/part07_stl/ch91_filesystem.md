@@ -927,7 +927,6 @@ int main() {
 4. `bits/fs_fwd.h` → `file_type` / `perms` / `copy_options` 枚举定义（理解位掩码语义）。
 5. libstdc++ 实现层 `src/filesystem/ops.cc`（随 GCC 源码发布，不在 MinGW 头目录）→ 看 `do_copy_file` 的真实 `open/read/write/close` 流程与原子替换实现。
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -945,7 +944,6 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 | [第90章](Book/part07_stl/ch90_ranges.md) | 配置解析/API响应 | 本章提供概念，第90章提供实现 |
 | [第92章](Book/part07_stl/ch92_chrono.md) | 泛型库/编译期计算 | 本章提供概念，第92章提供实现 |
 | [第90章](Book/part07_stl/ch90_ranges.md) | 资源管理/事务回滚 | 本章提供概念，第90章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 
@@ -967,7 +965,6 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 - 递归遍历大目录用 `recursive_directory_iterator` 并 `disable_recursion_pending` 防符号链接环；Chromium 与 LLVM 都在此类场景做了平台特化。
 
 > 交叉引用：I/O 流见 [ch92](Book/part07_stl/ch92_chrono.md)；错误处理见 [ch40](Book/part04_memory/ch40_exception_safety.md)。
-
 
 ## 附录 G（文件系统调用底层）
 
@@ -999,7 +996,6 @@ jne .not_exist
 - GCC 13.2 / Clang 18 / MSVC 19.3 均实现 `<filesystem>`
 - `__cplusplus` = 202302L；C++17 引入该库
 - WG21 提案 P0202R3 规范 `std::filesystem`
-
 
 ## 底层视角：系统调用号、stat 结构与路径解析代价 [E: Low-level]
 
@@ -1191,8 +1187,6 @@ flowchart TD
 | ch91 filesystem | ch90 ranges | 目录迭代可视为 range |
 | ch91 filesystem | ch92 chrono | file_time_type 基于时钟 |
 | ch91 filesystem | ch94 stop_token | 可取消的文件监听 |
-
-
 
 ## 附录 D4：libstdc++ 15.3.0 源码解析 — filesystem 路径与迭代器 [E: Low-level / H: Design]
 

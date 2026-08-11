@@ -45,7 +45,6 @@
 ⟶ Book/part03_language/ch20_reference_pointer.md
 ⟶ Book/part03_language/ch22_auto_decltype.md
 
-
 ### 1.1 const 在类型系统里的位置
 
 `const` 是 **cv 限定符**（const-volatile qualifier）之一，与 `volatile` 并列。它的语义是"**该表达式所指示的对象，不能通过此表达式被修改**"。注意：这是**表达式层面的只读约束**，不是对象物理不可变。
@@ -870,7 +869,6 @@ struct Formatted { static constexpr int len = N; };
 - {fmt} 源码：`fmt/core.h` 的编译期格式串解析
 - 后续章：ch22（auto 忽略顶层 const）、ch69（constexpr 元编程取代 TMP）、ch32（初始化与 constinit）、ch116（完美转发保留 cv）、ch31（const_cast 去 const 边界）
 
-
 ## 补充分编可编译示例
 
 ```cpp
@@ -908,7 +906,6 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 | [第19章](Book/part03_language/ch19_variables.md) | 索引查找/路由表 | 本章提供概念，第19章提供实现 |
 | [第31章](Book/part03_language/ch31_operator_overloading.md) | 多态插件/框架扩展 | 本章提供概念，第31章提供实现 |
 | [第31章](Book/part03_language/ch31_operator_overloading.md) | 配置解析/API响应 | 本章提供概念，第31章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -1071,8 +1068,6 @@ graph TD
     KE --> KV["consteval 立即函数 仅编译期"]
     KI --> KV
 ```
-
-
 
 ## 附录 J：const 家族 决策流（D3 维度）
 

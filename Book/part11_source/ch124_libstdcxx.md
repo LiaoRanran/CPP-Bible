@@ -38,7 +38,6 @@ libstdc++ 的哲学是"紧贴 GCC、紧跟标准、以自由许可（LGPL/GPL）
 
 ⟶ Book/part11_source/ch125_libcxx.md
 
-
 libstdc++（全称 *The GNU C++ Library*）是 GCC 自带的 C++ 标准库实现，提供 `<vector>`、`<string>`、`<iostream>` 等标准容器/算法/迭代器/本地化/IO。它与 `libgcc`（底层运行时）协同：标准库负责 C++ 抽象，运行时负责异常、RTTI、`new` 等。每个 GCC 版本绑定一个 libstdc++ 版本（GCC 13.1.0 → libstdc++ 13）。
 
 ```cpp
@@ -899,7 +898,6 @@ Q: libstdc++ ABI 兼容策略？
 A: inline namespace (__cxx11) 版本隔离，新旧 ABI 通过 __cxx11::string vs std::string 共存
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -908,7 +906,6 @@ A: inline namespace (__cxx11) 版本隔离，新旧 ABI 通过 __cxx11::string v
 | [第125章](Book/part11_source/ch125_libcxx.md) | 资源管理/事务回滚 | 本章提供概念，第125章提供实现 |
 | [第77章](Book/part07_stl/ch77_vector.md) | 数据处理管道/排行榜 | 本章提供概念，第77章提供实现 |
 | [第39章](Book/part04_memory/ch39_raii_rule.md) | 共享所有权/图结构 | 本章提供概念，第39章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -939,7 +936,6 @@ A: inline namespace (__cxx11) 版本隔离，新旧 ABI 通过 __cxx11::string v
 **最佳实践**：跨动态库边界传递 `std::string`/`std::vector` 必须保证两侧同一 libstdc++ ABI 版本（用 `-D_GLIBCXX_USE_CXX11_ABI=1` 统一），否则 old/new ABI 混链导致 `std::string` 内存布局不兼容而崩；定位符号用 [ch157](Book/part14_perf/ch157_compiler_explorer.md) 的汇编取证。
 
 > 交叉引用：字符串实现见 [ch81](Book/part07_stl/ch81_string.md)；容器见 [ch77](Book/part07_stl/ch77_vector.md)。
-
 
 ## 附录 G（libstdc++ 向量内部布局）
 

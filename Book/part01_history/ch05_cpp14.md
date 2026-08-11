@@ -38,12 +38,10 @@ C++14 几乎没有什么"路线之争"，它验证的是另一条哲学：**标�
 ![Bjarne Stroustrup，C++14 完善性修订](../assets/history/bjarne_stroustrup.jpg)
 > 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
 
-
 ## ① 学习目标
 
 ⟶ Book/part01_history/ch04_cpp11.md
 ⟶ Book/part01_history/ch06_cpp17.md
-
 
 ```cpp
 // [merged] ## ① 学习目标
@@ -384,7 +382,6 @@ int main(){print(std::make_integer_sequence<int,5>{});return 0;}
 1. 用变量模板定义 `epsilon<T>` 并对 `float`/`double` 特化取值（ch65）。
 2. 比较 `make_unique` 与裸 `new` 在异常路径的安全性（ch48）。
 
-
 ## 附录 B：C++14 工业采纳与标准背景 [B: Principle / F: Industry]
 
 C++14 被称为"minor release"——但其中两个特性改变了工业 C++ 的日常写法:
@@ -467,7 +464,6 @@ C++14标准库变化:
   → 工业基线: Abseil/Qt5.12/UE4.27 仍以C++14为最低要求
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -476,7 +472,6 @@ C++14标准库变化:
 | [第6章](Book/part01_history/ch06_cpp17.md) | STL算法回调/异步任务 | 本章提供概念，第6章提供实现 |
 | [第69章](Book/part06_templates/ch69_constexpr.md) | 泛型库/编译期计算 | 本章提供概念，第69章提供实现 |
 | [第115章](Book/part10_modern/ch115_move.md) | 资源管理/事务回滚 | 本章提供概念，第115章提供实现 |
-
 
 ## 附录 E：C++14面试
 
@@ -499,7 +494,6 @@ int main(){auto p=std::make_unique<int>(42);auto l=[](auto x){return x*2;};std::
 - **相邻主题**：⟶ Book/part01_history/ch03_cpp98_03.md（第03章　C++98 / C++03：奠基时代）—— 编号相邻、主题接续。
 - **相邻主题**：⟶ Book/part01_history/ch07_cpp20.md（第07章　C++20：量级升级）—— 编号相邻、主题接续。
 - **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
-
 
 ## 叙事补遗 [J: Learning]
 
@@ -673,7 +667,6 @@ int main(){
 }
 ```
 
-
 ## 附录 J：C++14 完善决策流（D3 维度）
 
 本节把第⑤节（Mermaid）与第⑭节（WG21 提案）收敛为「哪些 C++11 特性需要小步修补」的决策流。
@@ -723,7 +716,6 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ```
 
 > 决策流说明：第⑭节显示 C++14 是「小步完善」——只有 C++11 特性确有修补点（或门判定）才进本版，否则转入 ch06；泛型 lambda 与 constexpr 放宽属于「低成本高收益」的与门特性。
-
 
 ## 附录 K：C++14 完善概念依赖网（D6 维度）
 

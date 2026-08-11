@@ -38,7 +38,6 @@
 
 ⟶ Book/part09_concurrency/ch107_atomic.md
 
-
 `std::atomic` 让单次读/写具备**原子性**（不会被观察到半写的值）。但多线程下还有第二个问题：**多个内存操作之间的可见顺序**。CPU 与编译器都会重排指令以提升性能，单线程语义不变，但跨线程观察时可能看到“乱序”的结果。
 
 `std::memory_order` 就是用来告诉编译器与硬件：**这次原子操作周围，允许/禁止哪些重排**。它不影响“原子性”，只影响“顺序与同步”。
@@ -655,7 +654,6 @@ int main() {
 - `[标准]`：六种序从弱到强为 `relaxed < consume(弃用) < acquire/release < acq_rel < seq_cst`。
 - `[经验]`：90% 的业务代码用默认 seq_cst 即可；只有在 profiling 明确指出原子是热点、且能严谨论证 happens-before 时，才降级到 acquire/release 或 relaxed。
 
-
 ## 附录 A：WG21 —— memory_order 的设计哲学 [B: Principle]
 
 ```
@@ -734,7 +732,6 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 - seq_cst 适合多向同步 (Dekker, 多线程状态机)
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -743,7 +740,6 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 | [第109章](Book/part09_concurrency/ch109_fence.md) | 线程安全数据结构 | 本章提供概念，第109章提供实现 |
 | [第107章](Book/part09_concurrency/ch107_atomic.md) | 热路径识别/优化目标 | 本章提供概念，第107章提供实现 |
 | [第110章](Book/part09_concurrency/ch110_lockfree.md) | 无锁栈/队列的 CAS 循环 | 本章提供内存序概念，第110章提供 lock-free 实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 

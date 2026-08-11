@@ -36,7 +36,6 @@ RTTI 的反对者理由很硬：它让二进制变大、让「不该知道类型
 ⟶ Book/part05_oo/ch47_virtual_functions.md
 ⟶ Book/part05_oo/ch49_virtual_inheritance.md
 
-
 - 说清 RTTI 由哪两个运算符提供、它们依赖 vtable 何处信息
 - 从真实 x86-64 汇编解释 `typeid(b).name()` 与 `dynamic_cast` 的全部指令与运行期成本
 - 区分 `dynamic_cast` 的四种形态（上行/下行/交叉/空指针）与各自的失败语义
@@ -911,7 +910,6 @@ struct Animal{virtual void speak()=0;virtual~Animal(){}};struct Dog:Animal{void 
 int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -920,7 +918,6 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 | [第47章](Book/part05_oo/ch47_virtual_functions.md) | 泛型库/编译期计算 | 本章提供概念，第47章提供实现 |
 | [第49章](Book/part05_oo/ch49_virtual_inheritance.md) | 错误恢复/不可恢复错误 | 本章提供概念，第49章提供实现 |
 | [第65章](Book/part06_templates/ch65_type_traits.md) | 性能基准/回归检测 | 本章提供概念，第65章提供实现 |
-
 
 ## 真实开源项目参考（可查证链接）
 

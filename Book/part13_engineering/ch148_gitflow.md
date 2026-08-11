@@ -43,7 +43,6 @@
 ⟶ Book/part13_engineering/ch147_code_review.md
 ⟶ Book/part13_engineering/ch149_ci_cd.md
 
-
 版本控制不是“存档工具”，而是**工程协作的事实真相源（single source of truth）**。对 C++ 这类编译型、强耦合、构建缓慢的工程，Git 的价值体现在四个维度：
 
 - **可追溯**：任意一行源码都能回答“谁、何时、为何改动”。
@@ -728,7 +727,6 @@ Git 工作流对 C++ 工程的核心结论：
 - `Examples/_ch148_hook_check.sh` · `Examples/_ch148_sparse_checkout.sh` · `Examples/_ch148_ci_trigger.sh` · `Examples/_ch148_release_tag.sh` · `Examples/_ch148_submodule_update.sh`
 - 沙箱实证仓库：`CPP-Bible/_run/ch148_forensics/`（merge 图、rebase 图、reflog、bisect 首坏提交 `35a4165…`、submodule `.gitmodules`、sparse 工作树均来自真实命令）
 
-
 ## 附录 A：C++ 大型项目的 Git 模式 [F: Industry]
 
 四个世界级 C++ 项目的 Git 工作流对比：
@@ -861,7 +859,6 @@ Q: cherry-pick vs revert？
 A: cherry-pick=复制提交到当前分支; revert=创建反向提交(不改历史)
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -870,7 +867,6 @@ A: cherry-pick=复制提交到当前分支; revert=创建反向提交(不改历�
 | [第147章](Book/part13_engineering/ch147_code_review.md) | 泛型库/编译期计算 | 本章提供概念，第147章提供实现 |
 | [第149章](Book/part13_engineering/ch149_ci_cd.md) | 日志格式化/序列化 | 本章提供概念，第149章提供实现 |
 | [第18章](Book/part02_toolchain/ch18_buildconfig.md) | 性能基准/回归检测 | 本章提供概念，第18章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
@@ -906,7 +902,6 @@ gitflow 的合并成本藏在对象存储与 CI 缓存里：
 
 最佳实践：用 `git rebase` 保持线性历史，`git bisect` 在 `log2(N)` 步内定位回归提交（N 为提交数）。
 
-
 ## 附录 G（packfile 与对象存储）
 
 Git 对象存入 packfile，delta 压缩后索引定位。
@@ -936,7 +931,6 @@ mov rdx, [rcx]            ; 取对象头（类型+大小）
 - GCC 13.2 / Clang 18 编译 Git；`__cplusplus` = 202302L
 - delta 链深度上限 `0x0100`；`__attribute__` 优化哈希
 - WG21 提案 P0784R7 类比内容寻址设计
-
 
 ## 自测练习（Exercises）
 
@@ -999,9 +993,6 @@ git sparse-checkout set libs/order services/api
 [引用] shallow clone 与 sparse-checkout 见 Git 官方文档（git-scm.com/docs）；大型仓库实践见 Microsoft（Windows 单体仓库）与 Google 的工程博客；ch148 ⑨、⑬ 详述子模块 / monorepo 与 sparse checkout。
 
 </details>
-
-
-
 
 ## 附录 J：从提交到发布的生命周期时序图（D3 维度）
 
@@ -1143,4 +1134,3 @@ flowchart TD
   HBR --> MERGE
   MERGE --> DONE
 ```
-

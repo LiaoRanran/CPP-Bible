@@ -46,7 +46,6 @@
 ⟶ Book/part04_memory/ch39_raii_rule.md
 ⟶ Book/part04_memory/ch41_smart_pointers.md
 
-
 **[标准]**　异常安全（exception safety）描述：**当异常在程序执行中途抛出时，程序应满足的不变式（invariant）与资源保证。** 它没有独立的章节标题，而是散落在 `[res.on.exception.handling]`（标准库对异常的处理）、`[basic.ctor]`、`[class.dtor]`、`[except]` 各处。C++ 社区（Sutter、Stroustrup）把异常安全归纳为**四级保证（guarantee）**：
 
 | 等级 | 名称 | 承诺 |
@@ -1403,14 +1402,12 @@ Q: noexcept 如何影响 vector 性能？
   差异: 对 10K 元素 vector, ~50us `[实验·本机实测][UNVERIFIED]` vs ~200us `[实验·本机实测][UNVERIFIED]` (4x)
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
 |---|---|---|
 | [第39章](Book/part04_memory/ch39_raii_rule.md) | 键值查找/缓存 | 本章提供概念，第39章提供实现 |
 | [第41章](Book/part04_memory/ch41_smart_pointers.md) | TCP服务器/HTTP客户端 | 本章提供概念，第41章提供实现 |
-
 
 ## 附录 H：异常安全面试
 
@@ -1745,7 +1742,6 @@ int main() {
 ```
 
 **结论**：`noexcept` 既是性能开关也是契约——它告诉标准库"此操作绝不抛"，从而启用移动、启用更快的算法路径。
-
 
 ## 附录 U：异常安全 决策流（D3 维度）
 

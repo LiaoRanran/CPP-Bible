@@ -33,7 +33,6 @@ Ranges 入标后，演进是"补适配器"与"打通协程/并行"两路并进�
 ⟶ Book/part10_modern/ch118_modules.md
 ⟶ Book/part10_modern/ch120_coroutine_app.md
 
-
 传统 STL 算法（`std::sort(v.begin(), v.end())`）要求显式迭代器对、难以组合。Ranges 把"范围"作为一等公民，支持**管道组合**（`|`）与**惰性求值**。
 
 ```cpp
@@ -562,7 +561,6 @@ int main(){std::vector<int> v{1,2,3,4,5};auto even=[](int x){return x%2==0;};if(
 int main(){std::cout<<"Ranges: lazy evaluation + composable pipelines. Zero overhead compared to raw loops."<<std::endl;return 0;}
 ```
 
-
 ## 附录 A：WG21 与工业 [B: Principle / F: Industry]
 
 Ranges 从 Boost.Range (2003) 到 C++20 (2020) 走过了 17 年。三个关键设计决策：
@@ -586,7 +584,6 @@ int main() {
     return 0;
 }
 ```
-
 
 ## 联合使用场景
 
@@ -691,8 +688,6 @@ sentinel使range不必提供同类型的end迭代器——这对复杂数据结�
 ;   jmp loop_start
 ; 结论: 与手写单循环相同的指令序列
 ```
-
-
 
 ## 最佳实践 [经验]
 
@@ -1393,7 +1388,6 @@ int main() {
 ```
 
 输出印证：惰性组合只在遍历时求值——`filter(%3==0)` 取 3/6/9，`take(2)` 截前 2 个得 `3 6`；`r.empty()` 来自 `view_interface` 的 CRTP 默认实现（D4.2），与 D4.4–D4.5 源码一致。
-
 
 ## 附录 D5：真实基准与性能分析 — ranges 管道 vs 手写循环的真实开销（GCC 15.3.0）
 

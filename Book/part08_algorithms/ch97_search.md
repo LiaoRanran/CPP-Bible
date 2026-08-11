@@ -38,7 +38,6 @@
 ⟶ Book/part08_algorithms/ch96_sorting.md
 ⟶ Book/part08_algorithms/ch98_heap.md
 
-
 查找（search）是算法库 `<algorithm>` 中最大的一类。按**底层机制**分为三族：
 
 - **线性查找**：`std::find` / `find_if` / `adjacent_find` / `search` 等，不要求有序，复杂度 O(N)。
@@ -894,7 +893,6 @@ A: 多个哈希函数→位数组; 假阳性(说不存在=true; 说存在=maybe)
    内存: ~1.2 bytes/key @ 1%假阳性; 速度: ~5ns/lookup (SIMD加速)
 ```
 
-
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |
@@ -903,7 +901,6 @@ A: 多个哈希函数→位数组; 假阳性(说不存在=true; 说存在=maybe)
 | [第96章](Book/part08_algorithms/ch96_sorting.md) | STL算法回调/异步任务 | 本章提供概念，第96章提供实现 |
 | [第98章](Book/part08_algorithms/ch98_heap.md) | 向量化计算/图像处理 | 本章提供概念，第98章提供实现 |
 | [第83章](Book/part07_stl/ch83_map.md) | 数据处理管道/排行榜 | 本章提供概念，第83章提供实现 |
-
 
 ## 相关章节（交叉引用）
 
