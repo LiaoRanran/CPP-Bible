@@ -1,4 +1,5 @@
 # 第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 > **标准**：C++11 起提供 `unique_ptr`/`shared_ptr`/`weak_ptr`；`make_shared`(C++11)、`shared_ptr<T[]>`与`weak_from_this`(C++17)、`std::atomic<shared_ptr>`(C++20)、`make_shared_for_overwrite`(C++20)。
 > **交叉引用**：存储期见 ch19；`new`/`delete` 与裸内存见 ch37；RAII 与 Rule of Zero 见 ch39；异常安全见 ch40；并发原子计数见 ch61；移动语义见 ch115。
@@ -1713,11 +1714,11 @@ Q: enable_shared_from_this 的实现原理？
 A: 对象内部存储 weak_ptr<self>, shared_ptr 构造时通过 __enable_shared_from_this_helper 初始化
 
 性能数据（本机实测, MinGW GCC 13.1.0 -O2 x86_64, TSC 2.395GHz, N=1M; 来源 `Examples/_ch41_ptr_perf.out` + `Examples/_ch41_ptr_perf.asm`）：
-- unique_ptr deref:   0.42ns（单次指针间接寻址, 编译器直接使用内部指针）
-- shared_ptr copy:   15.1ns（原子 `lock add` 递增引用计数 —— 旧估 ~2ns 严重偏低: 原子 RMW 远贵于普通 add）
-- make_shared alloc: 57.4ns（单次 `operator new(24)`: 对象+控制块连续分配）
-- shared_ptr(new T):109.7ns（两次 `operator new`: 对象 + 独立控制块）
-- raw new/delete:    48.8ns（单次分配, 对照基准）
+- unique_ptr deref:   0.42ns `[实验·本机实测][UNVERIFIED]`（单次指针间接寻址, 编译器直接使用内部指针）
+- shared_ptr copy:   15.1ns `[实验·本机实测][UNVERIFIED]`（原子 `lock add` 递增引用计数 —— 旧估 ~2ns 严重偏低: 原子 RMW 远贵于普通 add）
+- make_shared alloc: 57.4ns `[实验·本机实测][UNVERIFIED]`（单次 `operator new(24)`: 对象+控制块连续分配）
+- shared_ptr(new T):109.7ns `[实验·本机实测][UNVERIFIED]`（两次 `operator new`: 对象 + 独立控制块）
+- raw new/delete:    48.8ns `[实验·本机实测][UNVERIFIED]`（单次分配, 对照基准）
 [实测] 关键纠偏: shared_ptr 拷贝 ~15ns 而非旧说 ~2ns（`lock add` 原子自增在该 CPU 约 15ns, 普通 `add` 才 ~2ns）; make_shared / shared_ptr(new T) 与旧估量级一致（单次/双次堆分配）。
 ```
 
@@ -1908,7 +1909,7 @@ clone(std::shared_ptr<S> const&):
 
 ### 非显然事实与工程警示
 
-1. **`shared_ptr` 拷贝的硬成本 = 一次 `lock` 前缀原子 RMW**：`lock add` 会锁总线/缓存行，跨核时引发缓存行 bouncing（ping-pong），实测单次约 10–50 ns 级，高并发下显著劣化。相较之下 `unique_ptr` 不可拷贝，移动仅为 8 字节 `mov`（见附录 C）。
+1. **`shared_ptr` 拷贝的硬成本 = 一次 `lock` 前缀原子 RMW**：`lock add` 会锁总线/缓存行，跨核时引发缓存行 bouncing（ping-pong），实测单次约 10–50 ns `[微架构·x86-64][UNVERIFIED]` 级，高并发下显著劣化。相较之下 `unique_ptr` 不可拷贝，移动仅为 8 字节 `mov`（见附录 C）。
 2. **`shared_ptr` 移动是免费的**：移动构造/赋值只搬指针不碰引用计数（与 `unique_ptr` 移动等价）。热路径应优先 **`std::move`** 或 **`const shared_ptr<T>&` 传参**，避免按值传递触发 `lock add`。
 3. **计数碰撞是隐形瓶颈**：多线程各自持有同一 `shared_ptr` 副本并频繁拷贝/析构时，所有副本共享同一缓存行上的 `_M_use_count`，`lock` 操作相互失效对方缓存行 → 伪共享（false sharing）放大开销。对策：缩小共享范围、用 `weak_ptr` 打破环、或干脆用 `unique_ptr`/裸指针 + 明确所有权。
 4. **`make_shared` 省分配但延长生命周期**：因控制块与对象同块，只要有 `weak_ptr` 存活，`S` 对象内存也无法回收（见 ch42 严格别名与对象生命周期）。
@@ -2216,6 +2217,7 @@ flowchart TD
 
 对象为 32B 的 `Node{long long[4]}`。"相对"列以同类基准为 1.00×，更快者加粗。
 
+> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 场景 | 耗时 ms | 相对 |
 |---|---|---|
 | 分配 + 释放 1M 次 — raw `new`/`delete`（指针逃逸到 volatile） | 49.930 | 基准 1.00× |

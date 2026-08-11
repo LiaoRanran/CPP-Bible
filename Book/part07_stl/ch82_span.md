@@ -1,4 +1,5 @@
 # 第82章　span 与裸数组视图
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 > 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：80 分钟 / 前置：⟶ Book/part03_language/ch20_reference_pointer.md（引用与指针）、⟶ Book/part07_stl/ch80_array.md（array）、⟶ Book/part07_stl/ch77_vector.md（vector）/ 后续：⟶ Book/part07_stl/ch83_map.md（map）、⟶ Book/part07_stl/ch90_ranges.md（ranges）/ 难度：★★★☆☆
 

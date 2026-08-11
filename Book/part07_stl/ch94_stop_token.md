@@ -1,4 +1,5 @@
 # 第94章　stop_token 与协作取消 [标准]
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 > 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：160 分钟 ／ 前置：⟶ Book/part07_stl/ch93_thread_async.md、⟶ Book/part09_concurrency/ch107_atomic.md、⟶ Book/part07_stl/ch93_thread_async.md ／ 后续：⟶ Book/part07_stl/ch93_thread_async.md、⟶ Book/part07_stl/ch93_thread_async.md ／ 难度：★★★★☆
 
@@ -535,7 +536,7 @@ int main() {
 
 | 操作 | 成本（示意） | 说明 |
 |---|---|---|
-| `stop_requested()` | ~1 ns（原子 acquire 读 1 bit） | 见 ⑩ 汇编，无锁无系统调用 |
+| `stop_requested()` | ~1 ns`[微架构·x86-64][UNVERIFIED]`（原子 acquire 读 1 bit） | 见 ⑩ 汇编，无锁无系统调用 |
 | `request_stop()` | 加锁 + 遍历回调（µs 级） | 仅调用一次；回调多则线性增长 |
 | `stop_callback` 注册/注销 | 加锁链表操作（ns~µs） | 频繁注册需谨慎 |
 | `jthread` 析构 | 等同 `request_stop` + `join` | 比 `thread` 多一次原子置位 |
@@ -1156,11 +1157,11 @@ int main(){std::jthread t([](std::stop_token st){while(!st.stop_requested()){std
 
 ## 底层视角：stop 状态原子检查与回调链表 [E: Low-level]
 
-[标准] `std::stop_token` 的检查是 `std::atomic` 标志的 `load`（`memory_order_acquire`），无争用时约 1 ns（L1 命中）。`stop_source` 共享状态是堆上 `0x0010`+ 控制块，含 `0x0008` 回调函数指针链表。
+[标准] `std::stop_token` 的检查是 `std::atomic` 标志的 `load`（`memory_order_acquire`），无争用时约 1 ns`[微架构·x86-64][UNVERIFIED]`（L1 命中）。`stop_source` 共享状态是堆上 `0x0010`+ 控制块，含 `0x0008` 回调函数指针链表。
 
-`std::stop_callback` 注册即把节点挂入链表（一次无锁 CAS，约 10–20 ns）；`request_stop()` 遍历链表逐个 `call`，代价随回调数线性增长。`GCC 13.1.0` / `Clang 17` 对空回调路径可优化为单次原子读。
+`std::stop_callback` 注册即把节点挂入链表（一次无锁 CAS，约 10–20 ns`[微架构·x86-64][UNVERIFIED]`）；`request_stop()` 遍历链表逐个 `call`，代价随回调数线性增长。`GCC 13.1.0` / `Clang 17` 对空回调路径可优化为单次原子读。
 
-信号经 `std::condition_variable` 唤醒时走 futex（≈1–5 µs）。`C++20` 引入，`constexpr` 不可用于运行期 stop 状态，但 `stop_callback` 构造可标注 `noexcept`。缓存行 `0x0040`（64 字节）容纳多个回调节点字段，减少伪共享需 `alignas(0x0040)`。
+信号经 `std::condition_variable` 唤醒时走 futex（≈1–5 µs`[微架构·x86-64][UNVERIFIED]`）。`C++20` 引入，`constexpr` 不可用于运行期 stop 状态，但 `stop_callback` 构造可标注 `noexcept`。缓存行 `0x0040`（64 字节）容纳多个回调节点字段，减少伪共享需 `alignas(0x0040)`。
 
 ## 自测练习（Exercises）
 
@@ -1741,6 +1742,7 @@ flowchart TD
 
 ### D5.1 基准结果
 
+> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 场景 | 中位耗时 | 相对倍数 |
 | --- | --- | --- |
 | s1 jthread 协作取消 | 390.726 ms | 0.893×（比裸 thread 快 12%） |

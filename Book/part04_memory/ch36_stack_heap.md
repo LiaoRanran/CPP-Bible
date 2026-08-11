@@ -1,4 +1,5 @@
 # 第 36 章　栈（stack）与堆（heap）的深度对比
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 ⟶ Book/part04_memory/ch35_memory_layout.md
 ⟶ Book/part04_memory/ch39_raii_rule.md
@@ -1374,7 +1375,7 @@ int main() {
 
 - **Boost.Pool（github.com/boostorg/pool）**：固定大小对象内存池（`object_pool`/`pool_allocator`），避免高频 `new/delete` 的全局堆竞争；`boost::pool<>` 用分块子分配降低系统调用次数。
   → <https://github.com/boostorg/pool>
-- **Google TCMalloc 与 Chromium PartitionAlloc**：Google 的线程缓存 malloc（每线程 free list + 中央堆，小对象 ~10ns）与 Chromium 的桶化分区分配器同源思路——都用尺寸类（size class）减少碎片，Chromium 还用分区隔离安全关键对象防堆喷洒。
+- **Google TCMalloc 与 Chromium PartitionAlloc**：Google 的线程缓存 malloc（每线程 free list + 中央堆，小对象 ~10ns `[微架构·x86-64][UNVERIFIED]`）与 Chromium 的桶化分区分配器同源思路——都用尺寸类（size class）减少碎片，Chromium 还用分区隔离安全关键对象防堆喷洒。
   → <https://github.com/google/tcmalloc> · <https://github.com/chromium/chromium>
 - **Folly SysArena（github.com/facebook/folly）**：Facebook 服务的分层分配器，`folly::SysArena` 批量回收临时对象；`folly::goodMallocSize` 做尺寸类对齐。
   → <https://github.com/facebook/folly>
@@ -1735,9 +1736,10 @@ flowchart TD
 
 ### D5.1 基准结果
 
+> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 场景 | 耗时 ms | 备注 |
 |---|---|---|
-| heap `new`/`delete` int ×10M | 480.446 | 单 int 最坏情形 ≈48ns/次 |
+| heap `new`/`delete` int ×10M | 480.446 | 单 int 最坏情形 ≈48ns/次 `[实验·本机实测][UNVERIFIED]` |
 | stack local int ×10M | 0.000 | 被 -O2 完全折叠为寄存器运算 —— **非“栈分配零耗时”证据** |
 | heap `new int[1024]`+write ×200K | 32.354 | |
 | stack `int[1024]`+write ×200K | 25.576 | 栈堆比 1.26× |

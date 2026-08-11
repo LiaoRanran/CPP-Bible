@@ -1,4 +1,5 @@
 # 第79章　list / forward_list [标准]
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 > 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：⟶ Book/part07_stl/ch76_stl_arch.md、⟶ Book/part07_stl/ch77_vector.md、⟶ Book/part07_stl/ch78_deque.md ／ 后续：⟶ Book/part07_stl/ch86_adapters.md、⟶ Book/part07_stl/ch90_ranges.md ／ 难度：★★★☆☆
 
@@ -1025,11 +1026,11 @@ struct __list_node {
     jnz  loop
 ```
 
-链表随机跳转命中 L3/主存概率高，单跳延迟约 `100 ns`（主存随机访问）；而 `std::vector` 顺序遍历命中 L1，`vmovups ymm0, [rdi]` 每 `0.5 ns` 取 32 字节。
+链表随机跳转命中 L3/主存概率高，单跳延迟约 `100 ns` `[微架构·x86-64][UNVERIFIED]`（主存随机访问）；而 `std::vector` 顺序遍历命中 L1，`vmovups ymm0, [rdi]` 每 `0.5 ns` `[微架构·x86-64][UNVERIFIED]` 取 32 字节。
 
 实测对比（1M 元素顺序求和，Intel 3.0 GHz）：
-- `std::vector`：约 `0.8 ms`（有效带宽 ~1.2 GB/s）
-- `std::list`：约 `22 ms`（约 `45 MB/s`，受 cache miss 主导）
+- `std::vector`：约 `0.8 ms` `[实验·本机实测][UNVERIFIED]`（有效带宽 ~1.2 GB/s）
+- `std::list`：约 `22 ms` `[实验·本机实测][UNVERIFIED]`（约 `45 MB/s`，受 cache miss 主导）
 
 结论：仅当"频繁中间插入且持有迭代器"时 `std::list` 占优；现代代码多用 `std::vector` + `erase`，或用 `std::deque`（分段连续，头尾 O(1) 且缓存友好）。C++11 起 `std::list::size()` 为 O(1)（旧实现曾 O(n)）。
 
@@ -1062,7 +1063,7 @@ struct __list_node {
 
 [标准] 每个 `std::list` 节点含 `prev` / `next` 两个指针（各 `0x0008`，共 `0x0010`）加 payload；节点由堆分配器另行占用约 `0x0010`（16 字节）簿记，单节点实际占用远超 payload。
 
-遍历是**指针追逐**：下一节点地址存于当前节点内，CPU 无法预取，每条 `next` 解引用是一次依赖 load。若节点散布于堆，命中 L1（≈1 ns）概率低，常落到 L3（≈12 ns）甚至主存（≈100 ns）；这是 list 远慢于 `vector` 连续访问的硬件根因。
+遍历是**指针追逐**：下一节点地址存于当前节点内，CPU 无法预取，每条 `next` 解引用是一次依赖 load。若节点散布于堆，命中 L1（≈1 ns `[微架构·x86-64][UNVERIFIED]`）概率低，常落到 L3（≈12 ns `[微架构·x86-64][UNVERIFIED]`）甚至主存（≈100 ns `[微架构·x86-64][UNVERIFIED]`）；这是 list 远慢于 `vector` 连续访问的硬件根因。
 
 缓存行 `0x0040`（64 字节）通常只容纳 4 个节点指针（0x0040 / 0x0010 = 4）；节点 payload 跨 `0x0040` 边界会再触发一次取行。SSE（`0x0010` 宽）/ AVX（`0x0020` 宽）/ AVX-512（`0x0040` 宽）向量化对链表天然失效——无连续内存可加载。
 
@@ -1443,6 +1444,7 @@ flowchart TD
 
 ### D5.1 基准结果
 
+> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 场景 | std::vector | std::list | 相对 |
 |---|---|---|---|
 | 顺序遍历 1M int 求和 | 0.233 ms | 11.022 ms | list 慢 **47.4×** |

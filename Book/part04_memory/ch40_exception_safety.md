@@ -1,4 +1,5 @@
 # 第 40 章　异常安全（Exception Safety）
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 > 老兵标准：**异常安全不是「会不会抛异常」，而是「抛异常之后世界是否仍然自洽」。** 四种保证（noexcept / strong / basic / none）是 C++ 对异常的全部承诺；`noexcept` 决定 vector 扩容是移动还是拷贝——这一行代码关系到你整个程序的强度与性能。
 > 本章遵循《现代 C++ 终极圣经》标准 v3：真实源码逐行 + GCC/LLVM/MSVC 三实现对照 + libstdc++/libc++/MS STL 三 STL 对照 + microbenchmark + 跨语言对比 + 推荐阅读已内化进正文。
@@ -1071,7 +1072,7 @@ int main(){
 }
 ```
 
-**[经验]**　量级参考（本机 MinGW GCC 13.1.0，仅量级）：正常路径 `try/catch` 约 **0.x ns/op**（与无 try 几乎相同）；`throw+catch` 约 **0.2–3 µs/op**（随栈深与析构数上升）。**结论：异常用于罕见路径，错误码用于热路径**。
+**[经验]**　量级参考（本机 MinGW GCC 13.1.0，仅量级）：正常路径 `try/catch` 约 **0.x ns/op**（与无 try 几乎相同）；`throw+catch` 约 **0.2–3 µs/op**（随栈深与析构数上升）。**结论：异常用于罕见路径，错误码用于热路径** `[实验·本机实测][UNVERIFIED]`。
 
 ---
 
@@ -1399,7 +1400,7 @@ Q: 强异常保证 vs 基本保证 vs no-throw保证？
 Q: noexcept 如何影响 vector 性能？
   vector::push_back 扩容时: 如果 T 的移动构造 noexcept → 走 memcpy (O(N)时间, 但无回滚能力)
   如果 非noexcept → 走 move_if_noexcept 逐个移动 (O(2N)时间, 强异常保证)
-  差异: 对 10K 元素 vector, ~50us vs ~200us (4x)
+  差异: 对 10K 元素 vector, ~50us `[实验·本机实测][UNVERIFIED]` vs ~200us `[实验·本机实测][UNVERIFIED]` (4x)
 ```
 
 
@@ -1430,7 +1431,7 @@ int main(){std::vector<int> v;try{v.push_back(42);std::cout<<v[0]<<std::endl;}ca
 ## 附录 I：noexcept与性能
 
 vector push_back扩容: T的移动构造是noexcept → memcpy快速路径; 非noexcept → std::move_if_noexcept逐个移动
-性能差异: noexcept=~50ns/1K elements; 非noexcept=~200ns/1K elements → 4x faster
+性能差异: noexcept=~50ns/1K elements `[实验·本机实测][UNVERIFIED]`; 非noexcept=~200ns/1K elements `[实验·本机实测][UNVERIFIED]` → 4x faster
 
 ```cpp
 #include <iostream>

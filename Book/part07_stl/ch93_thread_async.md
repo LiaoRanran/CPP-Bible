@@ -1,4 +1,5 @@
 # 第93章　线程与异步：thread / future / async
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 > 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：180 分钟 ／ 前置：⟶ Book/part03_language/ch19_variables.md、⟶ Book/part06_templates/ch63_variadic.md、⟶ Book/part09_concurrency/ch107_atomic.md ／ 后续：⟶ Book/part07_stl/ch94_stop_token.md、⟶ Book/part07_stl/ch93_thread_async.md、⟶ Book/part09_concurrency/ch107_atomic.md ／ 难度：★★★★☆
 
@@ -538,6 +539,7 @@ int main() {
 
 **线程创建成本（示意，Win64 / i7 代际量级）**
 
+> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 操作 | 量级（示意） | 说明 |
 |---|---|---|
 | `std::thread` 构造 | ~15–50 µs | `operator new` + `CreateThread`/`pthread_create` + 内核调度 |
@@ -1116,6 +1118,7 @@ Win64 上 `__tls_get_addr` 属 `KERNEL32.dll`——动态查找当前线程的 T
 
 ### 四种机制代价分层
 
+> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 机制 | 指令数 | syscall | 延迟（粗略） | 适用 |
 |------|--------|---------|-------------|------|
 | `std::atomic` | 1 | 0 | ~10–20ns | 计数器、标志位、无锁栈 |

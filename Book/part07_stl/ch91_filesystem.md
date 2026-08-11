@@ -1,4 +1,5 @@
 # 第91章 文件系统 filesystem
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 > 标准基：ISO/IEC 14882:2017（C++17）引入 `<filesystem>`，C++20 起纳入 `std::filesystem` 命名空间（此前为 `std::experimental::filesystem`）；本章以 C++23 / GCC 13.1.0（MinGW-w64）为验证基。
 > 预计阅读：约 95 分钟（深度版，含源码逐行与汇编）。
@@ -627,7 +628,7 @@ int main() {
 
 **复杂度：**
 - 词法操作（`/`、`.filename()`、`.parent_path()`、`.extension()`）：O(路径长度)，纯字符串，无系统调用。
-- `status`/`exists`/`file_size`：每次 1 次 `stat` 系统调用，约 1–10 µs（取决于文件系统缓存命中）。
+- `status`/`exists`/`file_size`：每次 1 次 `stat` 系统调用，约 1–10 µs`[微架构·x86-64][UNVERIFIED]`（取决于文件系统缓存命中）。
 - `recursive_directory_iterator` 遍历一棵含 N 个文件的树：O(N) 次 `stat` + 目录读取；深层目录因 `open`/`readdir` 额外 O(深度) 次系统调用。
 
 **microbenchmark（示意，量级取自典型 NVMe + 热缓存）：**
@@ -983,10 +984,10 @@ jne .not_exist
 
 ### 量级
 
-- `stat` 系统调用 ≈ 1.2us（缓存命中）→ 22ms（冷盘）
-- `directory_iterator` 单次 `getdents` ≈ 0.5us，批量 `0x0100` 项
-- 路径解析每组件 ≈ 0.1us；绝对路径省 ≈ 0.2us
-- L1 ≈ 1.0ns，主存 ≈ 100ns
+- `stat` 系统调用 ≈ 1.2us`[微架构·x86-64][UNVERIFIED]`（缓存命中）→ 22ms（冷盘）
+- `directory_iterator` 单次 `getdents` ≈ 0.5us`[微架构·x86-64][UNVERIFIED]`，批量 `0x0100` 项
+- 路径解析每组件 ≈ 0.1us`[微架构·x86-64][UNVERIFIED]`；绝对路径省 ≈ 0.2us`[微架构·x86-64][UNVERIFIED]`
+- L1 ≈ 1.0ns`[微架构·x86-64][UNVERIFIED]`，主存 ≈ 100ns`[微架构·x86-64][UNVERIFIED]`
 
 ### 布局
 
@@ -1002,9 +1003,9 @@ jne .not_exist
 
 ## 底层视角：系统调用号、stat 结构与路径解析代价 [E: Low-level]
 
-[标准] x86-64 上 `openat` 系统调用号为 `0x0101`（257），`stat` 为 `0x0004`（4）；glibc 包装后进入 `syscall` 指令，一次陷入内核约 0.1–0.5 µs。`struct stat` 的 `off_t` 在 LP64 为 `0x0008` 字节，文件大小以字节计。
+[标准] x86-64 上 `openat` 系统调用号为 `0x0101`（257），`stat` 为 `0x0004`（4）；glibc 包装后进入 `syscall` 指令，一次陷入内核约 0.1–0.5 µs`[微架构·x86-64][UNVERIFIED]`。`struct stat` 的 `off_t` 在 LP64 为 `0x0008` 字节，文件大小以字节计。
 
-路径解析逐分量进行：每个分量一次目录项查找，命中 dentry 缓存（≈1 ns）则快，未命中落到 inode/磁盘（L3 ≈12 ns 或主存 ≈100 ns）。`std::filesystem::path` 在 `C++17` 引入，`C++20` 加 `path::lexically_normal`。
+路径解析逐分量进行：每个分量一次目录项查找，命中 dentry 缓存（≈1 ns `[微架构·x86-64][UNVERIFIED]`）则快，未命中落到 inode/磁盘（L3 ≈12 ns `[微架构·x86-64][UNVERIFIED]` 或主存 ≈100 ns `[微架构·x86-64][UNVERIFIED]`）。`std::filesystem::path` 在 `C++17` 引入，`C++20` 加 `path::lexically_normal`。
 
 `std::error_code` 封装 `errno`（如 `ENOENT=0x0002`），零开销抽象；`copy_file` 经缓冲区拷贝，吞吐受 `0x0040` 缓存行与 DMA 带宽限制。`GCC 13.1.0` / `Clang 17` 的 `std::filesystem` 由 libstdc++/libc++ 实现，`constexpr` 路径拼接可在编译期求值。
 
@@ -1489,7 +1490,7 @@ int main() {
 ### D5.2 非显然结论
 
 1. **`std::filesystem::path` 的词法分解比手写切分慢约 8.9×**：每次 `path` 构造、`parent_path()`、`filename()`、`extension()` 都返回**新分配的 `std::string`**（值语义拷贝），而手写方案用 `std::string_view` 定位切分点，仅构造 3 个必要的 `std::string` 结果（dir/name/ext），分配次数远少于 `path` 的多次值语义拷贝。
-2. **抽象不是免费的，但在「不热」的路径上完全可接受**：8.9× 的绝对值仍只是每次约 1.3 µs（5209 ms / 400 万）——只有在每秒处理数十万路径的批处理/遍历场景才需要换成手写版；常规文件操作瓶颈永远在磁盘 I/O，而非路径解析。
+2. **抽象不是免费的，但在「不热」的路径上完全可接受**：8.9× 的绝对值仍只是每次约 1.3 µs`[微架构·x86-64][UNVERIFIED]`（5209 ms / 400 万）——只有在每秒处理数十万路径的批处理/遍历场景才需要换成手写版；常规文件操作瓶颈永远在磁盘 I/O，而非路径解析。
 3. **`path` 的额外价值是正确性与可移植性**：它统一处理 `/` 与 `\`、处理 `.`/`..` 的词法归一、处理 UTF-8/宽字符，手写切分做不到这些；「为近 9× 微优化牺牲正确性」通常是亏本买卖——这与 ch158「不必要的堆分配/抽象」反模式要区分对待。
 
 ### D5.3 可复现 demo

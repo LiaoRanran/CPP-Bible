@@ -1,4 +1,5 @@
 # 第 35 章  C++ 程序的内存模型与操作系统视角
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 ⟶ Book/part04_memory/ch37_new_delete.md
 ⟶ Book/part04_memory/ch39_raii_rule.md
@@ -451,7 +452,7 @@ int main() {
 
 `[平台]` MMU 把最近用过的「虚拟页→物理框」缓存进 **TLB（Translation Lookaside Buffer）**：
 
-- **TLB 命中**：地址翻译 ~1–3 周期。
+- **TLB 命中**：地址翻译 ~1–3 周期 `[微架构·x86-64][UNVERIFIED]`。
 - **TLB 未命中**：需走 4 级页表（4 次内存访问）+ 可能缺页，可达 **数百周期**。
 - **缺页（page fault）**：目标页不在物理内存 → 陷入内核：
   1. 若地址非法（未映射/权限错）→ `SIGSEGV`。
@@ -1424,7 +1425,7 @@ int main() {
 }
 ```
 
-面试: stack vs heap? stack=自动回收/快速(寄存器偏移)/有限(8MB); heap=手动/慢(~50ns)/大
+面试: stack vs heap? stack=自动回收/快速(寄存器偏移)/有限(8MB); heap=手动/慢(~50ns `[微架构·x86-64][UNVERIFIED]`)/大
        .bss段为什么不在可执行文件中占空间? 全零段只需记录大小, 内核加载时映射零页
 
 

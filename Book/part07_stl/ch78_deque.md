@@ -1,4 +1,5 @@
 # 第78章　deque 与分段连续 [标准]
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 > 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：⟶ Book/part07_stl/ch76_stl_arch.md、⟶ Book/part07_stl/ch77_vector.md、⟶ Book/part06_templates/ch63_variadic.md ／ 后续：⟶ Book/part07_stl/ch79_list.md、⟶ Book/part07_stl/ch86_adapters.md、⟶ Book/part07_stl/ch90_ranges.md ／ 难度：★★★☆☆
 
@@ -514,6 +515,7 @@ int main() {
 
 上面的 ⑲ 是复杂度与缓存的**定性**分析。下面用真实编译器跑出的数字把它落到**定量**：平台 mingw1530 **GCC 15.3.0**，`-O2 -std=c++17`，x86-64（TSO），单轮（`volatile sink` 防优化消除）。N=4'000'000 个 `int`，除非另注。
 
+> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 操作 | `vector` | `deque` | 比值（deque/vector） | 读法 |
 |---|---|---|---|---|
 | 顺序迭代 + 求和 | 3.15 ms | 3.77 ms | **1.20x** | deque 仅慢 ~20% |
@@ -1098,9 +1100,9 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 
 ### 量级
 
-- 随机访问经两级指针 ≈ 2.0ns（L1）；vector 仅 1.0ns
-- 首尾 `push`/`pop` ≈ 0.3ns（无需扩容）
-- 缓存未中访问主存 ≈ 100ns
+- 随机访问经两级指针 ≈ 2.0ns（L1）`[微架构·x86-64][UNVERIFIED]`；vector 仅 1.0ns`[微架构·x86-64][UNVERIFIED]`
+- 首尾 `push`/`pop` ≈ 0.3ns（无需扩容）`[微架构·x86-64][UNVERIFIED]`
+- 缓存未中访问主存 ≈ 100ns`[微架构·x86-64][UNVERIFIED]`
 
 ### 编译器与标准
 

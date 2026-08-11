@@ -1,4 +1,5 @@
 # 第88章　optional / expected / variant：可空与可辨别联合
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；本章 `[实现]` 级源码来自该目录真实文件，逐行标注路径与行号。
@@ -680,7 +681,7 @@ movsd xmm0, [rdi+0x0008]  ; 取 double 成员（偏移 0x0008）
 
 ### 实测开销（3.2GHz）
 
-- `std::get<0>` 直接访存 ≈ 1.0ns；`std::visit` 经跳表 ≈ 3.2ns
+- `std::get<0>` 直接访存 ≈ 1.0ns`[微架构·x86-64][UNVERIFIED]`；`std::visit` 经跳表 ≈ 3.2ns`[微架构·x86-64][UNVERIFIED]`
 - `optional` 比裸指针多 `0x0001` 字节标志，命中率不变（L1 `0x0040` 行）
 - `variant` 大小 = max(成员) + `0x0008` 标签（含对齐填充）
 

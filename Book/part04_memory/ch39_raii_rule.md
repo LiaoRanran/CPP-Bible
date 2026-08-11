@@ -1,4 +1,5 @@
 # 第 39 章　RAII 与 Rule of Zero/Three/Five
+> 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 ⟶ Book/part07_stl/ch77_vector.md
 
@@ -1765,9 +1766,9 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 [标准] RAII 对象在作用域退出时析构，栈展开由异常机制驱动：每个栈帧的 `0x0008` 返回地址与异常表（`-fexception`，GCC 13.1.0 默认开）决定是否调用析构。`noexcept` 析构让展开路径省去异常检查（≈数 ns~数十 ns）。
 
-析构若释放堆资源（`delete`，一次 `0x0010` 堆释放，约 tens of ns）须经分配器（见 ch38 工业分配器）。多态 RAII 对象含 `0x0008` vptr，析构经 vtable 虚调用（见 ch47，约 1–3 ns + 跳转惩罚）；`final` 可去虚化。
+析构若释放堆资源（`delete`，一次 `0x0010` 堆释放，约 tens of ns `[微架构·x86-64][UNVERIFIED]`）须经分配器（见 ch38 工业分配器）。多态 RAII 对象含 `0x0008` vptr，析构经 vtable 虚调用（见 ch47，约 1–3 ns `[微架构·x86-64][UNVERIFIED]` + 跳转惩罚）；`final` 可去虚化。
 
-`C++11` 起析构默认 `noexcept`；`C++98` 起 RAII 标准。`Clang 17` / `MSVC 19.3` 对栈上 RAII 对象可在 `-O2` 下完全消去（对象无副作用时）。缓存行 `0x0040`（64 字节）容纳多个栈上 RAII 对象，展开时局部性好（L1 ≈1 ns，L3 ≈12 ns）。
+`C++11` 起析构默认 `noexcept`；`C++98` 起 RAII 标准。`Clang 17` / `MSVC 19.3` 对栈上 RAII 对象可在 `-O2` 下完全消去（对象无副作用时）。缓存行 `0x0040`（64 字节）容纳多个栈上 RAII 对象，展开时局部性好（L1 ≈1 ns `[微架构·x86-64][UNVERIFIED]`，L3 ≈12 ns `[微架构·x86-64][UNVERIFIED]`）。
 
 [标准·可查证] 工业实现：Boost.ScopeExit（Boost）提供作用域退出清理；folly（Facebook）的 `ScopeGuard` 类似；Chromium 的 `base::ScopedFoo` 系列封装资源。
 
@@ -2240,6 +2241,7 @@ flowchart TD
 
 BigData 为 1KB 缓冲（5 个 int 字段 + 1KB `std::vector<char>`），N=500'000。
 
+> 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 场景 | 中位耗时 | 相对倍数 |
 | --- | --- | --- |
 | S1 copy-ctor（BigData 1KB） | 327 ms | 1.000×（基线） |
