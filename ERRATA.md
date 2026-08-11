@@ -55,6 +55,20 @@
 
 ---
 
+## 2026-08-12
+
+### E6. 结构缺陷扫荡——标题层级（S1）+ 参差表格（S5）+ 反引号感知扫描器
+- **范围**：全库 147 章 / 16 part，4 组 agent 分桶并行（part01-05 / 06-10 / 11-15 / 12-16 兜底校验），只读分析 + 安全结构修复，不碰 git、不动语义、保原生换行。
+- **类别与修复量**：
+  - **S1A 游离 H1 ×1**：`Book/part03_language/ch22_auto_decltype.md:517` 第二个一级标题 `# 核心知识点（23 项模板…）` → `##`。
+  - **S1B 层级跳跃 ×6**：`Book/part03_language/ch26_lambda.md:263/699/971`（`#### ③.5…` → `###`，缺 H3 父级）；`Book/part05_oo/ch47_virtual_functions.md:422`、`ch48_rtti.md:468`、`ch49_virtual_inheritance.md:419`（`#### 源码剖析 1` → `###`，H2 后直跳 H4）。
+  - **S5 参差表格 ×1（真缺陷）**：`Book/part07_stl/ch91_filesystem.md:408` 提案表行 `| P0218 | Adoptestd::filesystem` into C++17 | … |` 反引号不平衡（缺开引号+空格），塌成 2 单元格 → 补开引号+空格恢复 3 列。
+- **扫描器**：新增 `tools/structure_audit.py`（围栏感知，跳过 ``` /~~~ 代码块；表格行按未转义顶层 `|` 切分，忽略行内代码 `` `…` `` 内的 `|` 与转义 `\|`，根治 25 处假阳性）。初版 `split_row` 漏写 `i += 1` 致全库扫描死循环（exit 1073807364），复跑中诊断修复。
+- **核验**：升级后全库复扫 `files_with_hits=0`（S1=0 / S5=0）；`git diff` 6 文件 0 CR 翻转，纯结构改动无语义变更；标题 slug 仅依赖文本，改 `#` 数量不断锚（全库断锚=0）。
+- **修正**：提交 `bf7a914`（7 files：6 修复 + 扫描器），SSH 推送 `cea8e90..bf7a914`，`master`↔`origin/master` 同步，工作树干净。
+
+---
+
 ## 已知限制（非错误，刻意保留）
 
 - **asm 证据工件** `Examples/*.asm` 仅在本地用 MinGW GCC 15.3.0 重生成；CI 不重编译 asm，
@@ -77,3 +91,4 @@
 | `3d0ed65` | 4 WEAK 章习题重写 | E4 |
 | `f182c99` | exercise_dup_guard 门禁 + ch50/ch157 串章清理 | E4 |
 | `e2fd55b` | 钉 GCC 15.3.0（Dockerfile/devcontainer + CI 版本断言） | E5 |
+| `bf7a914` | 结构缺陷扫荡 S1（标题层级）+ S5（参差表格）+ structure_audit.py | E6 |
