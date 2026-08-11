@@ -145,6 +145,8 @@ int main() {}
 ```mermaid
 ---
 theme: neutral
+---
+flowchart LR
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -154,8 +156,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart LR
     A[vector] --> B["views::filter"] --> C["views::transform"] --> D["views::take"] --> E["算法/收集"]
 ```
 
@@ -686,6 +686,8 @@ int main() {
 ```mermaid
 ---
 theme: neutral
+---
+flowchart TD
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -695,8 +697,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart TD
   N1["C++20 发布 (2020)"]
   N2["Concepts (ch67)"]
   N3["Ranges (ch90)"]
@@ -740,6 +740,8 @@ flowchart TD
 ```mermaid
 ---
 theme: neutral
+---
+flowchart TD
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -749,8 +751,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart TD
   CORE["C++20 四大特性"]
   K1["Concepts (ch67)"]
   K2["Ranges (ch90)"]

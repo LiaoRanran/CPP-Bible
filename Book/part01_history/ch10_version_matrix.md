@@ -209,6 +209,8 @@ int main() {
 ```mermaid
 ---
 theme: neutral
+---
+flowchart LR
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -218,8 +220,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart LR
     98 --> 03 --> 11 --> 14 --> 17 --> 20 --> 23 --> 26
 ```
 
@@ -647,6 +647,8 @@ int main() {
 ```mermaid
 ---
 theme: neutral
+---
+flowchart TD
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -656,8 +658,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart TD
   N1["选定项目基线版本"]
   N2{"需要现代抽象?"}
   N3["C++11 起步 (ch04)"]
@@ -703,6 +703,8 @@ flowchart TD
 ```mermaid
 ---
 theme: neutral
+---
+flowchart TD
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -712,8 +714,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart TD
   CORE["版本特性全景"]
   K1["C++98/03 (ch03)"]
   K2["C++11 (ch04)"]

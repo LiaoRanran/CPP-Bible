@@ -167,6 +167,8 @@ void ex9(){ std::vector<int> v(2); std::sort(std::execution::par, v.begin(), v.e
 ```mermaid
 ---
 theme: neutral
+---
+flowchart LR
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -176,8 +178,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart LR
     S[Sender] -->|then| T[Transform]
     T -->|via Scheduler| R[Receiver 结果]
     R --> C[continuation]
@@ -672,6 +672,8 @@ consteval auto field_names() {
 ```mermaid
 ---
 theme: neutral
+---
+flowchart TD
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -681,8 +683,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart TD
   N1["C++26 草案 (可能变动)"]
   N2["std::execution 执行器 (P2300)"]
   N3["Contracts (P2900, ch121)"]
@@ -726,6 +726,8 @@ flowchart TD
 ```mermaid
 ---
 theme: neutral
+---
+flowchart TD
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -735,8 +737,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart TD
   CORE["C++26 方向"]
   K1["std::execution (ch93 async)"]
   K2["Contracts (ch121)"]

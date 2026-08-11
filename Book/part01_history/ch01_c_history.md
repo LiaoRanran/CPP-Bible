@@ -143,15 +143,6 @@ const char* name = "cpp"; // strlen(name)==3
 ```mermaid
 ---
 theme: neutral
-classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
-classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
-classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
-classDef uarch fill:#d62728,stroke:#a11414,color:#fff
-classDef algo  fill:#9467bd,stroke:#513470,color:#fff
-classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
-classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
-classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
-classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 ---
 timeline
     title C → C with Classes → C++
@@ -178,6 +169,8 @@ void demo_malloc(){ int* p=(int*)std::malloc(sizeof(int)); std::free(p); }
 ```mermaid
 ---
 theme: neutral
+---
+classDiagram
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -187,8 +180,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-classDiagram
     class Shape {
         +virtual double area()
         +virtual void draw()
@@ -804,6 +795,8 @@ int main() {
 ```mermaid
 ---
 theme: neutral
+---
+flowchart TD
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -813,8 +806,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart TD
   N1["C 语言诞生 (1972, Bell Labs)"]
   N2["struct 聚合数据"]
   N3["函数 + 函数指针"]
@@ -859,6 +850,8 @@ flowchart TD
 ```mermaid
 ---
 theme: neutral
+---
+flowchart TD
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -868,8 +861,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart TD
   C0["C 语言遗产"]
   C1["struct 聚合 (ch19)"]
   C2["指针与数组 (ch20)"]

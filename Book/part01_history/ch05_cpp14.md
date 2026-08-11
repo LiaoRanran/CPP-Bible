@@ -125,6 +125,8 @@ int main() {}
 ```mermaid
 ---
 theme: neutral
+---
+flowchart TD
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -134,8 +136,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart TD
     A["C++11 lambda 需写参数类型"] --> B["C++14 泛型 lambda auto"]
     B --> C[配合算法写内联谓词]
     C --> D[ranges 高阶组合基础]
@@ -681,6 +681,8 @@ int main(){
 ```mermaid
 ---
 theme: neutral
+---
+flowchart TD
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -690,8 +692,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart TD
   N1["C++14 发布 (2014)"]
   N2["泛型 lambda (ch26)"]
   N3["返回类型推导 (auto)"]
@@ -732,6 +732,8 @@ flowchart TD
 ```mermaid
 ---
 theme: neutral
+---
+flowchart TD
 classDef std   fill:#1f77b4,stroke:#13507a,color:#fff
 classDef impl  fill:#ff7f0e,stroke:#a4520a,color:#fff
 classDef plat  fill:#2ca02c,stroke:#16401a,color:#fff
@@ -741,8 +743,6 @@ classDef eng   fill:#8c564b,stroke:#512c26,color:#fff
 classDef exp   fill:#e377c2,stroke:#a13e7f,color:#fff
 classDef hyp   fill:#7f7f7f,stroke:#444444,color:#fff
 classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
----
-flowchart TD
   CORE["C++14 完善"]
   K1["泛型 lambda (ch26)"]
   K2["变量模板 (ch68 tmp)"]

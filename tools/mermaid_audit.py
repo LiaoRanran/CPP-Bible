@@ -24,6 +24,13 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+# Windows 控制台默认 GBK，打印 ✅/❌ 等非 GBK 字符会抛 UnicodeEncodeError 致进程异常退出。
+# 统一把 stdout 设为 utf-8（Linux 上本就是 utf-8，属幂等）；encoding 失败则降级不致命。
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore
+except Exception:  # noqa
+    pass
+
 ROOT = Path(__file__).resolve().parent.parent
 BOOK = ROOT / "Book"
 MMDC = "C:/Users/ASUS/AppData/Roaming/npm/mmdc.cmd"
@@ -56,25 +63,43 @@ def extract_blocks():
     return blocks
 
 
+def _strip_directive(body: str) -> str:
+    """剥离 mermaid 指令块：首行 '---' 与闭合 '---' 之间为 theme:/classDef 等配置，
+    属合法 mermaid 语法，不应当作『非法图表类型首行』。"""
+    lines = body.splitlines()
+    if lines and lines[0].strip() == "---":
+        for i in range(1, len(lines)):
+            if lines[i].strip() == "---":
+                return "\n".join(lines[i + 1:])
+    return body
+
+
+def _strip_quotes(s: str) -> str:
+    """去掉双引号字符串内部内容，使节点标签里的字面括号/引号不参与配对统计。"""
+    return re.sub(r'"[^"]*"', '""', s)
+
+
 def static_check(b) -> list[str]:
     errs = []
     body = b["body"]
-    lines = [ln for ln in body.splitlines() if ln.strip()]
+    diag = _strip_directive(body)          # 忽略合法指令块（--- theme/classDef ---）
+    lines = [ln for ln in diag.splitlines() if ln.strip()]
     if not lines:
-        return ["空 mermaid 块"]
+        return ["空 mermaid 块（指令块后无图表体）"]
     header = lines[0].strip()
     if not any(header.startswith(h) for h in VALID_HEADERS):
         errs.append(f"非法图表类型首行: '{header[:40]}'")
-    # 括号/引号配对（对整块统计）
+    # 括号/引号配对：先剥离引号内字面文本，避免 A["[x]"] 等合法标签被误判
+    bare = _strip_quotes(diag)
     for op, cl, name in [("[", "]", "方括号"), ("(", ")", "圆括号"),
                           ("{", "}", "花括号")]:
-        if body.count(op) != body.count(cl):
-            errs.append(f"{name}不配对: {op}={body.count(op)} {cl}={body.count(cl)}")
-    if body.count('"') % 2 != 0:
-        errs.append(f'双引号不成对: 共 {body.count(chr(34))} 个')
+        if bare.count(op) != bare.count(cl):
+            errs.append(f"{name}不配对: {op}={bare.count(op)} {cl}={bare.count(cl)}")
+    if diag.count('"') % 2 != 0:
+        errs.append(f'双引号不成对: 共 {diag.count(chr(34))} 个')
     # flowchart/graph 至少一条边
     if header.startswith(("flowchart", "graph")):
-        if not re.search(r"--+>|--+|-\.->|==+>|-\.-", body):
+        if not re.search(r"--+>|--+|-\.->|==+>|-\.-", diag):
             errs.append("flowchart/graph 无任何连线（边）")
     return errs
 
@@ -89,6 +114,7 @@ def render_check(b) -> str | None:
             r = subprocess.run(
                 [MMDC, "-i", str(src), "-o", str(out), "-q"],
                 capture_output=True, text=True, timeout=120,
+                encoding="utf-8", errors="replace",
             )
         except subprocess.TimeoutExpired:
             return "渲染超时(>120s)"
@@ -108,7 +134,8 @@ def parse_check_node() -> tuple[int, str]:
     script = ROOT / "tools" / "mermaid_parse_check.mjs"
     try:
         r = subprocess.run([node, str(script)], capture_output=True,
-                           text=True, timeout=300, cwd=str(ROOT))
+                           text=True, timeout=300, cwd=str(ROOT),
+                           encoding="utf-8", errors="replace")
     except Exception as e:  # noqa
         return 2, f"调用失败: {e}"
     out = (r.stdout + r.stderr).strip()
@@ -160,8 +187,17 @@ def main() -> int:
         print(f"\n[mermaid.parse] {tail}")
         if parse_rc != 0:
             for ln in parse_out.splitlines():
-                if ln.strip().startswith("x "):
-                    fails.append(({"file": "", "line": 0, "idx": 0}, "PARSE", [ln.strip()]))
+                s = ln.strip()
+                if s.startswith("x "):
+                    # mjs 输出格式：x <相对路径>:<行号>  <错误信息>
+                    rest = s[2:].strip()
+                    if ":" in rest:
+                        loc, msg = rest.split(":", 1)
+                        fails.append(({"file": loc.strip(), "line": 0, "idx": 0},
+                                      "PARSE", [msg.strip()]))
+                    else:
+                        fails.append(({"file": "", "line": 0, "idx": 0},
+                                      "PARSE", [rest]))
 
     if not fails and parse_rc == 0:
         suffix = "静态校验"
