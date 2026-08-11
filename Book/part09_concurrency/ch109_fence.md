@@ -250,6 +250,8 @@ int main(){std::cout<<"fence final: start seq_cst, relax to acq_rel, never consu
 
 ## 附录 A: 六种 memory_order 速查
 
+> [微架构·x86-64/ARM] [UNVERIFIED]：下表为微架构经验量级（x86 TSO 下 acquire/release 免费；ARM 随微架构而变），平台相关、不可软件实测，仅示意成本排序。
+
 | order | x86 代价 | ARM 代价 | 典型场景 |
 |---|---|---|---|
 | relaxed | ~1ns (free) | ~1ns | 计数器、统计 |
@@ -390,7 +392,7 @@ int main(){std::cout<<"x86 mfence=10ns(seq_cst); ARM dmb=2-5ns(acquire/release)"
 | ARM | dmb ishld(~2ns) | dmb ish(~2ns) | dmb sy(~5ns) |
 | RISC-V | fence r,r(~2ns) | fence w,w(~2ns) | fence rw,rw(~5ns) |
 
-> **延迟量级来源**：上表与各处的 `~1ns / ~2ns / ~5ns / ~10ns / ~20ns / ~33ns` 均为微架构基准的经验量级，来自 Agner Fog 指令表、LLVM 官方内存模型文档（llvm.org/docs/Atomics.html）、Intel/ARM 厂商白皮书；数值随具体微架构（Skylake / Zen2 / Cortex-A76 …）变动，前缀 `~` 表示量级而非精确值，**平台相关、不可软件实测**，故保留量级并标注来源而非编造单一数字。
+> **延迟量级来源** `[微架构·x86-64/ARM] [UNVERIFIED]`：上表与各处的 `~1ns / ~2ns / ~5ns / ~10ns / ~20ns / ~33ns` 均为微架构基准的经验量级，来自 Agner Fog 指令表、LLVM 官方内存模型文档（llvm.org/docs/Atomics.html）、Intel/ARM 厂商白皮书；数值随具体微架构（Skylake / Zen2 / Cortex-A76 …）变动，前缀 `~` 表示量级而非精确值，**平台相关、不可软件实测**，故保留量级并标注来源而非编造单一数字；正文所有 `~ns` 均为量级示意，非通用性能结论。
 
 ## 附录 H：真实汇编证据（MinGW GCC 13.1.0 -O2）[E: Lowlevel]
 

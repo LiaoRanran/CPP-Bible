@@ -102,7 +102,8 @@ void* protect(atomic<void*>* src, int slot) {
 // ③ 解引用 p 安全：回收者看到 slot 里的 p 就不会 delete 它
 ```
 
-- `[实现·GCC15] [VERIFIED]`：HP 槽用 `std::atomic<void*>` 存储；登记用 `seq_cst` 以保证与回收者的扫描形成全序（详见 §⑪ 汇编）。
+- `[实现·GCC15] [VERIFIED]`：HP 槽用 `std::atomic<void*>` 存储；登记用 `seq_cst` 以保证与回收者的扫描形成全序（详见 §⑪ 汇编）。——此 `[VERIFIED]` 仅表示**本机 GCC 15.3.0 下该存储/指令序列被编译与反汇编复现**，**不等于** HP 算法本身正确。
+- `[算法]`：HP 的安全性不变量是「被任一 HP 槽保护的指针所指向对象，在其槽被清除前绝不会被 scan 回收」。该不变量由 `seq_cst` 登记 + `acquire` 扫描构成的 happens-before 链保证（见 §⑪ 汇编与内存模型推理），属于**算法正确性论证**，与「能否编译」相互独立——编译通过并不推出不变量成立。
 - `[经验]`：HP 槽数量 = 并发读者上限，通常很小（64 足够）。登记成本是一次原子写，远小于加锁。
 
 ## ④ HP 实现：全局 HP 数组 + 回收列表 [实现]
@@ -625,7 +626,10 @@ struct Guard { int slot; void* p;
 };
 ```
 
-- `[标准]`：HP/RCU 的内存序不是随意选的——登记 `seq_cst` 与扫描 `acquire` 构成全序，是正确性的硬约束（`[atomics.order]`）。
+> [Educational Skeleton]：上例（⑳ 最小正确 HP 使用范式）为**教学骨架**，省略了生产必需项——① 每线程私有 HP 域（避免全局 `g_hp` 争用）；② 每线程 retire 列表；③ 阈值触发的批量 scan；④ 多指针注册时的多槽管理。它只演示「登记→解引用→清除」核心不变式，读者不得直接用于生产。生产化需补上述四项并经 TSan + 宽限期压测。
+
+- `[标准]`：登记 `seq_cst` 与扫描 `acquire` 的总序由 `[atomics.order]` 规定，是标准层面的硬约束。
+- `[算法]`：这一总序之所以必要，是因为 HP 的正确性正依赖于「scan 一定看得到读者最新登记」；若降级为 relaxed，不变量即被破坏——这是算法层结论，不来自标准条款本身。
 - `[经验]`：把本章任意范式抄进生产前，先过 TSan + 宽限期压力测试；正确性 > 微优化。
 
 
@@ -649,6 +653,8 @@ C++ proposal P0566R3 (2020): hazard pointers 进入 C++26 方向
 ```
 
 ## 附录 B：面试与设计 [J: Learning / H: Design / I: Practice]
+
+> 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
 ```
 面试高频:
@@ -775,7 +781,7 @@ int main() {
 }
 ```
 
-[实现] 真实 HP 库有每线程多个 HP 槽 + 每线程 retire 列表 + 批量扫描回收（阈值触发），此处简化为单槽演示核心不变式。
+[Educational Skeleton] 真实 HP 库有每线程多个 HP 槽 + 每线程 retire 列表 + 批量扫描回收（阈值触发），此处简化为单槽演示核心不变式；生产化需补：每线程多槽、retire 列表、阈值批量扫描、多指针注册。本示例省略回收/并发安全，仅展示「登记保护→回收被拒」核心思路，不可直接部署。
 
 [引用] 经典论文：M. M. Michael, *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects*, ISMM 2004。C++26 标准化提案见 WG21 P1122：`https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p1122r4.html`。
 
@@ -863,7 +869,7 @@ int main() {
 }
 ```
 
-[实现] 批量扫描把「每次 retire 都全表扫描」的 O(N·H) 摊薄为阈值触发的 O(N+H)，是 HP 可用性的关键工程优化。
+[Educational Skeleton] 批量扫描把「每次 retire 都全表扫描」的 O(N·H) 摊薄为阈值触发的 O(N+H)，是 HP 可用性的关键工程优化。本示例为单线程教学骨架，省略了真实并发下的 retire 列表生命周期管理与多域隔离，生产化需补这些并过 TSan。
 
 [引用] 经典论文：M. M. Michael, *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects*, ISMM 2004（批量回收与每线程 retire 列表的设计出处）。
 

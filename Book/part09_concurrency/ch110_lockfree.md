@@ -443,7 +443,7 @@ _Z11inc_relaxedv:
 
 ## ⑪ [实现] 真实汇编：CAS 编译为 `lock cmpxchg` [实现]
 
-无锁算法的灵魂是 CAS。下面是被 ⑪ 取证的源码片段与其在 GCC 13.1.0 `-O2` 下生成的**真实**汇编：`compare_exchange_weak` 编译为 `lock cmpxchg`，且失败时 `jne .L2` 回到循环顶部重试。
+无锁算法的灵魂是 CAS。下面是被 ⑪ 取证的源码片段与其在 GCC 15.3.0 `-O2` 下生成的**真实**汇编：`compare_exchange_weak` 编译为 `lock cmpxchg`，且失败时 `jne .L2` 回到循环顶部重试。
 
 ```cpp
 // 文件：Examples/_ch110_cas.cpp
@@ -680,7 +680,7 @@ void swap_dw(std::uint64_t a, std::uint64_t b) {
 
 ```asm
 ; 文件：Examples/_ch110_dwcas.cpp
-; 行号：34（GCC 13.1.0 对 128 位 CAS 的真实生成；注意它调用 libatomic）
+; 行号：34（GCC 15.3.0 对 128 位 CAS 的真实生成；注意它调用 libatomic）
 _Z7swap_dwyy:
 	lea	rbx, g_pair[rip]
 	movq	xmm6, rcx
@@ -693,7 +693,7 @@ _Z7swap_dwyy:
 	ret
 ```
 
-- `[实现·GCC15] [VERIFIED]`：本 MinGW GCC 13.1.0 **不会内联** 128 位 CAS，而是生成对 libatomic 的 `call __atomic_compare_exchange_16`；该库例程在硬件不支持/未开 `-mcx16` 时甚至用**全局锁**实现，而非 `lock cmpxchg16b`。
+- `[实现·GCC15] [VERIFIED]`：本 MinGW GCC 15.3.0 **不会内联** 128 位 CAS，而是生成对 libatomic 的 `call __atomic_compare_exchange_16`；该库例程在硬件不支持/未开 `-mcx16` 时甚至用**全局锁**实现，而非 `lock cmpxchg16b`。
 - `[标准]`：用 `std::atomic<unsigned __int128>` 表达双字原子是合法 C++，但 `is_always_lock_free` 对其为 **false**——即平台可能暗中加锁。
 - `[经验]`：双字 CAS 的"无锁性"依赖运行时 `lock cmpxchg16b`；若链接到锁版 libatomic，则它**已不再是 lock-free**。需要确定性无锁时，确认目标平台的 `is_lock_free()` 并避免 128 位原子。
 
@@ -843,7 +843,7 @@ int main() {
     std::cout << "Practical differences:\n";
     std::cout << "Lock-free CAS loop:    1 thread succeeds, others retry → unbounded retries\n";
     std::cout << "Wait-free fetch_add:    all threads succeed in one operation → O(1) per thread\n\n";
-    std::cout << "Performance data (x86-64, 本机实测 MinGW GCC 13.1.0 @2.395GHz, uncontended 单线程):\n";
+    std::cout << "Performance data (x86-64, 本机实测 MinGW GCC 15.3.0 @2.395GHz, uncontended 单线程):\n";
     std::cout << "Mutex (std::mutex):    ~7ns uncontended (本机实测 6.9ns), ~5us under contention\n";
     std::cout << "Lock-free CAS:         ~3ns uncontended (本机实测 3.3ns), ~100ns under high contention\n";
     std::cout << "Wait-free fetch_add:   ~2.6ns (本机实测 2.6ns, constant regardless of contention)\n\n";
@@ -852,13 +852,15 @@ int main() {
 }
 ```
 
-**【实测-asm】** `[UNVERIFIED]`（绝对 ns 随机器/微架构而变，不可移植，勿照抄）：上一节附录 B 的「~7 / ~3 / ~2.6 ns」本机用 RDTSC 微基准实测 **uncontended 单线程**延迟（减去等结构空循环开销；RDTSC 取多轮最小），汇编证据 `Examples/_ch110_lockfree_perf.asm`，数据来源 `Examples/_ch110_lockfree_perf.out`（MinGW GCC 13.1.0 `-O2`，TSC = 2.395 GHz）：
+**【实测-asm】** `[UNVERIFIED]`（绝对 ns 随机器/微架构/编译器版本而变，不可移植，勿照抄）：上一节附录 B 的「~7 / ~3 / ~2.6 ns」本机用 RDTSC 微基准实测 **uncontended 单线程**延迟（减去等结构空循环开销；RDTSC 取多轮最小），汇编证据 `Examples/_ch110_lockfree_perf.asm`，数据来源 `Examples/_ch110_lockfree_perf.out`（MinGW GCC 15.3.0 `-O2`，TSC = 2.395 GHz）：
 
-| 原语 (本机实测) | 每 ops 延迟 | 周期 | 对照附录 B 旧量级 | 说明 |
+> [实验·本机实测] [UNVERIFIED]：下表为单台机器、单线程 uncontended 的 RDTSC 微基准量级，**绝对 ns 随机器/微架构/编译器版本而变，不可移植，勿照抄**；仅说明「uncontended 下 mutex/CAS/fetch_add 同量级、差距在数 ns」这一相对结论。
+
+| 原语 (本机实测·量级) | 每 ops 延迟（量级） | 周期 | 对照附录 B 旧量级 | 说明 |
 |----------------|------------|------|------------------|------|
-| `std::mutex` lock+unlock | **6.9 ns** | 16.5 | ~50 ns | futex 非争用路径无系统调用，远快于旧估 |
-| CAS (`compare_exchange_weak`) | **3.3 ns** | 7.9 | ~20 ns | 单次 `lock cmpxchg` |
-| `fetch_add` (relaxed) | **2.6 ns** | 6.3 | ~10 ns | 单次 `lock add`/`xadd` |
+| `std::mutex` lock+unlock | ≈6.9 ns | 16.5 | ~50 ns | futex 非争用路径无系统调用，远快于旧估 |
+| CAS (`compare_exchange_weak`) | ≈3.3 ns | 7.9 | ~20 ns | 单次 `lock cmpxchg` |
+| `fetch_add` (relaxed) | ≈2.6 ns | 6.3 | ~10 ns | 单次 `lock add`/`xadd` |
 
 > **关键纠正**：旧表把 uncontended mutex 估成 ~50 ns、CAS ~20 ns、fetch_add ~10 ns，均**偏高**。现代 futex 互斥锁在非争用路径只做两次原子 RMW（无系统调用），`lock cmpxchg` / `lock xadd` 在缓存热行上仅数周期。真实 uncontended 开销为 **mutex 6.9 ns / CAS 3.3 ns / fetch_add 2.6 ns**。高争用（多线）延迟仍属平台相关：`std::mutex` 争用会坠入内核 futex 等待（~µs 级），CAS 高争用重试 ~100 ns 级，fetch_add 因 wait-free 恒定 ~2.6 ns——此段保留量级 + 文献来源（如 folly / boost.lockfree 基准），本机未做多线 contention 实测。
 
@@ -889,6 +891,8 @@ _ZL11probe_mutexy:
 ```
 
 ## 附录 C：面试与设计权衡 [J: Learning / H: Design]
+
+> 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
 ```
 面试高频:
@@ -1029,7 +1033,7 @@ int main() {
 }
 ```
 
-> 该块标注 `[自包含可编译]`：可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 13.1，零失败）。moodycamel 上游片段（text 围栏）不进入编译门禁。从 SPSC（零原子争用）到 MPMC（token + 批量 + 全局移交）的跨度，正是 moodycamel 比教科书无锁队列强的地方。
+> 该块标注 `[自包含可编译]`：可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 15.3.0，零失败）。moodycamel 上游片段（text 围栏）不进入编译门禁。从 SPSC（零原子争用）到 MPMC（token + 批量 + 全局移交）的跨度，正是 moodycamel 比教科书无锁队列强的地方。
 
 
 ## 附录 H：工业实战复盘与设计取舍 [I: Practice / H: Design]

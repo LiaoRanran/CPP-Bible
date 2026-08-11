@@ -149,7 +149,7 @@ bool push_tagged(AtomicTagged& a, void* old_ptr, void* new_ptr) {
 TaggedPtr unpack(__int128 v) { TaggedPtr t; std::memcpy(&t, &v, sizeof(t)); return t; }
 ```
 
-- `[标准]`：标签解法的本质是**把一维 CAS 升级为二维 CAS（DCAS）**——同时比较“值”和“版本”。
+- `[算法]`：标签解法的本质是**把一维 CAS 升级为二维 CAS（DCAS）**——同时比较“值”和“版本”。这不是标准条款，而是该解法的**算法设计权衡**（用「版本号」这一额外维度消除地址复用带来的歧义）；其正确性由「版本号位宽足够、回绕周期远大于更新频率」的不变量论证，而非由标准保证。
 - `[经验]`：tag 必须覆盖足够位宽（64 位）以防回绕；实践中还要处理 `tag` 溢出（极慢但需考虑）。
 
 ## ⑤ 双字 CAS（DCAS，借 __int128） [实现]
@@ -674,15 +674,16 @@ int main() {
 }
 ```
 
-| 解决方案 | 内存开销 | CAS成本 | 使用场景 |
+> [实验·量级] [UNVERIFIED]：下表 CAS 成本 / 回收延迟为 x86-64 微架构经验量级，随具体 CPU / 编译器 / 负载而变，非本机精确基准，仅用于横向比较方案取舍。
+
+| 解决方案 | 内存开销 | CAS成本（量级） | 使用场景 |
 |---|---|---|---|
 | Tagged pointer | 0 (复用空闲高位) | ~20ns (128bit CAS) | x86-64, 对象数有限 |
 | Hazard pointer | ~10B/thread | ~50ns (HP register) | 通用, C++26方向 |
 | RCU grace period | ~100B/CPU | ~1us (wait) | 读多写少 |
 | Epoch reclamation | ~8B/thread | ~5ns (counter) | 最高性能, 批量回收 |
 
-面试: ABA问题是什么？ A线程读到A值→B线程改为B→B线程改回A→A线程CAS成功但对象已变
-       最快解决方案？ tagged pointer(x86-64复用高位, 零额外内存)
+> （面试题·附属检索层，非核心结论，详见 `Interview/`）：ABA 问题是什么？A 线程读到 A 值 → B 线程改为 B → B 线程改回 A → A 线程 CAS 成功但对象已变。最快解决方案？tagged pointer（x86-64 复用高位，零额外内存）。
 
 
 ## 联合使用场景
@@ -713,7 +714,7 @@ int main() {
 - **Boost.Atomic（C++11 `std::atomic` 前身）**：[boostorg/atomic · include/boost/atomic/atomic.hpp](https://github.com/boostorg/atomic/blob/develop/include/boost/atomic/atomic.hpp) —— `std::atomic` 标准化的蓝本；`boost::atomic<T>` 的 `compare_exchange_weak/strong` 与内存序语义直接演化成 `std::atomic`。
 - **Folly `folly::AtomicStruct` / 无锁栈**：[facebook/folly · folly/concurrency](https://github.com/facebook/folly/blob/main/folly/concurrency) —— Meta 生产环境的无锁队列/栈，用「指针 + 计数」打包进单字（`std::atomic<uint64_t>` 存 `ptr<<20 | tag`）从架构上消除 ABA，对应「④ hazard pointer」的工业替代。
 
-**最佳实践**：单用 `std::atomic<T>` 的 CAS 循环在 `T` 为指针时必遇 ABA——要么升到 `std::atomic<struct{ptr, tag}>`（双字 CAS，需 `CMPXCHG16B`/AVX），要么上 hazard pointer（「④」）或 RCU；`memory_order` 默认用 `seq_cst`，性能敏感处才降为 `acquire/release` 并实测 fence 代价。
+**最佳实践** `[经验]`：单用 `std::atomic<T>` 的 CAS 循环在 `T` 为指针时**可能**遇 ABA——前提是「被读的节点被回收、其地址又被新节点复用」，此时旧快照的 `ptr` 匹配但对象已变。缓解：升到 `std::atomic<struct{ptr, tag}>`（双字 CAS，需 `CMPXCHG16B`/AVX）给地址加版本；或上 hazard pointer（「④」）/ RCU 从根上消除地址复用。`memory_order` 默认用 `seq_cst`，性能敏感处才降为 `acquire/release` 并实测 fence 代价。
 
 > 交叉引用：内存模型见 [ch108](Book/part09_concurrency/ch108_memory_order.md)；无锁队列见 [ch110](Book/part09_concurrency/ch110_lockfree.md)。
 
@@ -893,7 +894,7 @@ int main() {
 
 **修复**：两条主流路线——(1) **tagged pointer / 版本号**（练习 2/3），让地址复用因版本不同被 CAS 拒绝；(2) **延迟回收**（HP/RCU，ch112），保证被读的节点在 pop 完成前不被 free，从根上消除地址复用。
 
-**结论**：无锁数据结构里「CAS 指针 + 手动回收」几乎必然遇 ABA。要么给指针加版本，要么用安全回收（HP/RCU）。二者常配合使用。
+**结论** `[经验]`：无锁数据结构里「CAS 指针 + 手动回收」在节点被回收并复用同一地址时**容易**遇 ABA（并非必然——取决于回收策略与地址复用概率；若回收推迟到确认无读者则风险大幅降低）。缓解：给指针加版本，或用安全回收（HP/RCU）。二者常配合使用。
 
 ### 演绎 2：版本号位宽不足导致的「回绕漏检」
 

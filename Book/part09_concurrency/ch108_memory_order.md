@@ -146,7 +146,7 @@ void take() {
 ```
 
 - `[标准]`：`[atomics.order]` 规定 release 与 acquire 通过同一原子对象的值传递建立 synchronizes-with。
-- `[实现·GCC13]`：在 x86-64 上，release 存储与 acquire 加载都编译为普通 `mov`（见 ⑬），屏障是“免费”的硬件特性。
+- `[实现·GCC15]`：在 x86-64 上，release 存储与 acquire 加载都编译为普通 `mov`（见 ⑬），屏障是“免费”的硬件特性。
 
 ## ⑤ release/consume（已弃用，说明原因） [标准]
 
@@ -295,7 +295,7 @@ bool pop(int& out) {
 ```
 
 ```cpp
-// ⑨ 完整可编译测试（已用 GCC13 -O2 验证通过）
+// ⑨ 完整可编译测试（已用 GCC 15.3.0 -O2 验证通过）
 #include <cstdio>
 #include <thread>
 int main() {
@@ -309,7 +309,7 @@ int main() {
 }
 ```
 
-- `[实现·GCC13]`：CAS 在 x86 上编译为 `lock cmpxchg`；acquire/release 的“屏障”在 TSO 下是免费的普通 `mov`。
+- `[实现·GCC15]`：CAS 在 x86 上编译为 `lock cmpxchg`；acquire/release 的“屏障”在 TSO 下是免费的普通 `mov`。
 - `[经验]`：无锁结构难度极高，生产环境优先复用 `std::stack`+mutex，或 `boost::lockfree::stack`；手写仅用于学习底层机制。
 
 ## ⑩ Dekker 例子说明 seq_cst 的必要性 [标准]
@@ -343,7 +343,7 @@ void thread_a_bad() {
 ```
 
 - `[标准]`：只有 seq_cst 保证“所有线程对 `flag0`/`flag1` 的 store/load 顺序看法一致”，从而保证互斥。
-- `[实现·GCC13]`：上述符号在 `-O0` 下被命名为 `_Z8thread_av`、`_Z8thread_bv`（见 `Examples/_ch108_dekker.cpp`）。
+- `[实现·GCC15]`：上述符号在 `-O0` 下被命名为 `_Z8thread_av`、`_Z8thread_bv`（见 `Examples/_ch108_dekker.cpp`）。
 
 ## ⑪ [实现]真实汇编：seq_cst 在 x86 是普通 mov（TSO 强内存模型），在 ARM 需 dmb 屏障 [实现]
 
@@ -414,7 +414,7 @@ void wait_go() {
 ```
 
 - `[标准]`：fence 的 release/acquire 通过“一方写普通内存、另一方读”建立 synchronizes-with，比附着在某个原子上的 release/acquire 更通用。
-- `[实现·GCC13]`：真实汇编见下——x86 TSO 下，-O2 把这对 fence 优化为**空操作（普通 mov）**；-O0 则把 seq_cst fence 编译为一个 dummy 锁定指令充当全屏障。
+- `[实现·GCC15]`：真实汇编见下——x86 TSO 下，-O2 把这对 fence 优化为**空操作（普通 mov）**；-O0 则把 seq_cst fence 编译为一个 dummy 锁定指令充当全屏障。
 
 ```asm
 ; 文件：Examples/_ch108_fence.cpp
@@ -539,7 +539,7 @@ void consumer_ok() {
 }
 ```
 
-- `[实现·GCC13]`：该错误示例 `Examples/_ch108_misuse.cpp` 已用 `-O2` 编译通过（语法合法），但它**语义错误**——TSan 才能抓到；这说明“能编译”不等于“正确”。
+- `[实现·GCC15]`：该错误示例 `Examples/_ch108_misuse.cpp` 已用 `-O2` 编译通过（语法合法），但它**语义错误**——TSan 才能抓到；这说明“能编译”不等于“正确”。
 - `[经验]`：只要一个原子标志“代表另一块数据已就绪”，就必须用 release/acquire（或 seq_cst），绝不是 relaxed。
 
 ## ⑰ 性能：relaxed 最快、seq_cst 最慢 [经验]
@@ -635,7 +635,7 @@ int main() {
 
 ## ⑳ 速查表（6 种序对照） [标准]
 
-| 内存序 | 原子性 | 同步(跨线程) | 跨变量顺序 | 典型用途 | x86-64 指令(GCC13) |
+| 内存序 | 原子性 | 同步(跨线程) | 跨变量顺序 | 典型用途 | x86-64 指令(GCC15) |
 |---|---|---|---|---|---|
 | `relaxed` | 有 | 无 | 无 | 计数器、标志位(不携带数据) | `mov` / `lock add` |
 | `consume` | 有 | 仅依赖链(已弃用) | 仅依赖链 | （不要用） | ≈ `mov`(多实现当 acquire) |
@@ -679,6 +679,8 @@ C++20 提案: P0371R1 建议弃用 memory_order_consume，使用 memory_order_ac
 
 ## 附录 B：跨平台成本量化 [E: Low-level / G: Performance]
 
+> [微架构·ARM] [UNVERIFIED]：附录 A 第 3 点「弱架构省 5-10ns」为微架构经验量级，随 CPU 而变，非本机实测，仅说明「弱内存模型下 relaxed 更便宜」的相对结论。
+
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -709,6 +711,10 @@ int main() {
 
 ## 附录 C：面试 [J: Learning / H: Design]
 
+> [微架构·ARM] [UNVERIFIED]：上节 `bench` 打印的 ns/op 为本机运行时实测量级；ARM 行（est）为经验估计，随具体 ARM 微架构而变，非通用性能结论。
+
+> 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
+
 ```
 面试高频:
 Q: 默认的 memory_order 是什么？
@@ -720,7 +726,7 @@ A: push 使用 release (确保数据写入后再更新指针); pop 使用 acquir
 
 Q: x86 上 seq_cst 和 acq_rel 的性能差异？
 A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
-   但在需要 StoreLoad 顺序时，seq_cst 需要 mfence (~10ns), acq_rel 不需要
+   但在需要 StoreLoad 顺序时，seq_cst 需要 mfence (~10ns), acq_rel 不需要 `[微架构·x86-64 TSO] [UNVERIFIED]`
 
 设计权衡:
 - relaxed 适合计数器/统计 (允许暂时不一致)

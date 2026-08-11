@@ -7,7 +7,7 @@ verification_audit.py — 验证状态标记覆盖度审计（对应 CONVENTIONS
   1. 各章 [VERIFIED]/[UNVERIFIED]/[NEEDS-VERIFY] 标记覆盖度（含中文别名）。
   2. 高风险章（并发/内存模型/lock-free/perf/asm/ABI/优化）中"零标记"的 backlog，
      这些章是优先需要补 [VERIFIED]/[UNVERIFIED] 的对象。
-  3. 五层真相标签 [标准]/[实现]/[ABI]/[平台]/[微架构] 的使用覆盖（对应 §1）。
+  3. 九层真相标签 [标准]/[实现]/[ABI]/[平台]/[微架构]/[算法]/[工程]/[实验]/[假设] 的使用覆盖（对应 §1）。
 
 用法：
   python tools/verification_audit.py [--root <repo>] [--json <path>] [--book <Book>]
@@ -28,14 +28,18 @@ MARKERS = {
     "NEEDS-VERIFY": re.compile(r"\[(?:NEEDS-VERIFY|待验证|需核验)\]"),
 }
 
-# 五层真相标签
-# 同时匹配 CONVENTIONS.md §27 规定的「裸标签」([标准]) 与「带后缀标签」([标准·xxx] / [实现·GCC15] / [平台·x86-64] / [微架构·Skylake])
+# 九层真相标签
+# 同时匹配 CONVENTIONS.md §1 规定的「裸标签」([标准]) 与「带后缀标签」([标准·xxx] / [实现·GCC15] / [平台·x86-64] / [微架构·Skylake] / [算法] / [工程] / [实验] / [假设])
 TRUTH_LAYERS = {
     "标准": re.compile(r"\[标准(?:·[^\]]+)?\]"),
     "实现": re.compile(r"\[实现(?:·[^\]]+)?\]"),
     "ABI": re.compile(r"\[ABI(?:·[^\]]+)?\]"),
     "平台": re.compile(r"\[平台(?:·[^\]]+)?\]"),
     "微架构": re.compile(r"\[微架构(?:·[^\]]+)?\]"),
+    "算法": re.compile(r"\[算法(?:·[^\]]+)?\]"),
+    "工程": re.compile(r"\[工程(?:·[^\]]+)?\]"),
+    "实验": re.compile(r"\[实验(?:·[^\]]+)?\]"),
+    "假设": re.compile(r"\[假设(?:·[^\]]+)?\]"),
 }
 
 # 高风险关键词（命中即视为该章含高风险断言，需验证标记）
