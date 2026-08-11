@@ -1,0 +1,663 @@
+{
+  "gcc": "C:\\Qt\\Tools\\mingw1530_64\\bin\\g++.EXE",
+  "gcc_version": "15.3.0",
+  "platform": "windows",
+  "flags": "-std=c++23 -O0 -fsyntax-only",
+  "baseline": "_audit_gcc15.json (full main-only, gcc-15.3.0)",
+  "total": 65,
+  "by_status": {
+    "OK": 65
+  },
+  "results": [
+    {
+      "file": "ch11_compilers.md",
+      "block": 49,
+      "reason": "MODULE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "'import' does not name a type",
+      "has_main": true
+    },
+    {
+      "file": "ch12_buildsystems.md",
+      "block": 20,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "_ch12_mylib.h: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch12_buildsystems.md",
+      "block": 21,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "fmt/core.h: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch13_packaging.md",
+      "block": 1,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "fmt/core.h: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch13_packaging.md",
+      "block": 2,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "fmt/core.h: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch13_packaging.md",
+      "block": 18,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "_ch13_packlib.hpp: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch14_debugging.md",
+      "block": 11,
+      "reason": "GUARDED_COMPILE",
+      "note": "需 -DTRACK_LEAK 等附加宏",
+      "status": "OK",
+      "passed": false,
+      "error": "'g_alloc' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch18_buildconfig.md",
+      "block": 13,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "'compute' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch19_variables.md",
+      "block": 14,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "counter.hpp: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch23_namespace_adl.md",
+      "block": 27,
+      "reason": "MODULE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "'process' was not declared in this scope; did you mean 'thirdparty::process'?",
+      "has_main": true
+    },
+    {
+      "file": "ch26_lambda.md",
+      "block": 15,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块",
+      "status": "OK",
+      "passed": false,
+      "error": "increment of read-only variable 'n'",
+      "has_main": true
+    },
+    {
+      "file": "ch28_lifetime_ub.md",
+      "block": 5,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块",
+      "status": "OK",
+      "passed": false,
+      "error": "cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'",
+      "has_main": true
+    },
+    {
+      "file": "ch28_lifetime_ub.md",
+      "block": 13,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块",
+      "status": "OK",
+      "passed": false,
+      "error": "declaration of 'arr' as array of references",
+      "has_main": true
+    },
+    {
+      "file": "ch28_lifetime_ub.md",
+      "block": 17,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块",
+      "status": "OK",
+      "passed": false,
+      "error": "cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'",
+      "has_main": true
+    },
+    {
+      "file": "ch28_lifetime_ub.md",
+      "block": 55,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块",
+      "status": "OK",
+      "passed": false,
+      "error": "overflow in constant expression [-fpermissive]",
+      "has_main": true
+    },
+    {
+      "file": "ch29_friend.md",
+      "block": 15,
+      "reason": "INTENTIONAL_ERROR",
+      "note": "教学用故意错误块",
+      "status": "OK",
+      "passed": false,
+      "error": "'classA' does not name a type; did you mean 'class'?",
+      "has_main": true
+    },
+    {
+      "file": "ch35_memory_layout.md",
+      "block": 6,
+      "reason": "POSIX",
+      "note": "mmap 演示依赖 <sys/mman.h>，MinGW/Windows 不可编译（Linux 可编）",
+      "status": "OK",
+      "passed": false,
+      "error": "sys/mman.h: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch35_memory_layout.md",
+      "block": 14,
+      "reason": "POSIX",
+      "note": "fork()/COW 演示依赖 <sys/wait.h>，MinGW/Windows 不可编译",
+      "status": "OK",
+      "passed": false,
+      "error": "sys/wait.h: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch39_raii_rule.md",
+      "block": 34,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'SCOPE_EXIT' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch39_raii_rule.md",
+      "block": 53,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'m' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 6,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 15,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "'mutex' in namespace 'std' does not name a type",
+      "has_main": true
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 21,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 22,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "program_07_segregated.cpp: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 23,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "program_08_thread_local.cpp: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 25,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 29,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 37,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch44_memory_pool.md",
+      "block": 38,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "program_01_fixed_block_pool.cpp: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch65_type_traits.md",
+      "block": 32,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'my_is_pointer' was not declared in this scope [-Wtemplate-body]",
+      "has_main": true
+    },
+    {
+      "file": "ch96_sorting.md",
+      "block": 4,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'introsort' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch108_memory_order.md",
+      "block": 18,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'push' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch117_copy_elision.md",
+      "block": 6,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'Big' does not name a type",
+      "has_main": true
+    },
+    {
+      "file": "ch118_modules.md",
+      "block": 5,
+      "reason": "MODULE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "'import' does not name a type",
+      "has_main": true
+    },
+    {
+      "file": "ch118_modules.md",
+      "block": 10,
+      "reason": "MODULE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "'import' does not name a type",
+      "has_main": true
+    },
+    {
+      "file": "ch118_modules.md",
+      "block": 24,
+      "reason": "MODULE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "'module' does not name a type",
+      "has_main": true
+    },
+    {
+      "file": "ch118_modules.md",
+      "block": 25,
+      "reason": "MODULE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "'module' does not name a type",
+      "has_main": true
+    },
+    {
+      "file": "ch124_libstdcxx.md",
+      "block": 4,
+      "reason": "LIBSTDCPP",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "'struct std::_Vector_base<int, std::allocator<int> >::_Vector_impl_data' is inaccessible within this context",
+      "has_main": true
+    },
+    {
+      "file": "ch126_msstl.md",
+      "block": 19,
+      "reason": "MSVC",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "'_MSC_VER' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch126_msstl.md",
+      "block": 22,
+      "reason": "MSVC",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "invalid type argument of unary '*' (have 'int')",
+      "has_main": true
+    },
+    {
+      "file": "ch126_msstl.md",
+      "block": 32,
+      "reason": "MSVC",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "'_MSC_VER' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch126_msstl.md",
+      "block": 40,
+      "reason": "MSVC",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "request for member 'value_or' in 'e.std::expected<int, int>::error()', which is of non-class type 'int'",
+      "has_main": true
+    },
+    {
+      "file": "ch128_boost.md",
+      "block": 1,
+      "reason": "EXT_LIB",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "boost/shared_ptr.hpp: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch129_qt.md",
+      "block": 11,
+      "reason": "EXT_LIB",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "QApplication: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch131_fmt_spdlog.md",
+      "block": 1,
+      "reason": "EXT_LIB",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "fmt/core.h: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch131_fmt_spdlog.md",
+      "block": 2,
+      "reason": "EXT_LIB",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "spdlog/spdlog.h: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch131_fmt_spdlog.md",
+      "block": 8,
+      "reason": "EXT_LIB",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "spdlog/spdlog.h: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch135_patterns_intro.md",
+      "block": 11,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'area_of' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch136_creational.md",
+      "block": 23,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'Session' does not name a type",
+      "has_main": true
+    },
+    {
+      "file": "ch138_behavioral.md",
+      "block": 2,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'area_of' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch142_ecs.md",
+      "block": 41,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "variable or field 'movement_system' declared void",
+      "has_main": true
+    },
+    {
+      "file": "ch144_style.md",
+      "block": 11,
+      "reason": "MULTI_FILE",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "_ch144_guard.h: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch145_naming_api.md",
+      "block": 42,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'log' was not declared in this scope; did you mean 'long'?",
+      "has_main": true
+    },
+    {
+      "file": "ch145_naming_api.md",
+      "block": 53,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'clamp' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch145_naming_api.md",
+      "block": 57,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'UserId' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch146_error_handling.md",
+      "block": 57,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'divide_error_code' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch150_testing.md",
+      "block": 6,
+      "reason": "EXT_LIB",
+      "note": "",
+      "status": "OK",
+      "passed": false,
+      "error": "gtest/gtest.h: No such file or directory",
+      "has_main": true
+    },
+    {
+      "file": "ch159_threadpool.md",
+      "block": 40,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'ThreadPool' was not declared in this scope; did you mean 'thread_local'?",
+      "has_main": true
+    },
+    {
+      "file": "ch160_mempool.md",
+      "block": 6,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'malloc' is not a member of 'std'",
+      "has_main": true
+    },
+    {
+      "file": "ch160_mempool.md",
+      "block": 14,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'FixedPool' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch160_mempool.md",
+      "block": 20,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'MemoryPool' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch161_logger.md",
+      "block": 2,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'Level' does not name a type",
+      "has_main": true
+    },
+    {
+      "file": "ch161_logger.md",
+      "block": 18,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'log_if' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch161_logger.md",
+      "block": 30,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'g_mtx' was not declared in this scope",
+      "has_main": true
+    },
+    {
+      "file": "ch161_logger.md",
+      "block": 36,
+      "reason": "CROSS_BLOCK",
+      "note": "符号在前序块定义",
+      "status": "OK",
+      "passed": false,
+      "error": "'now' was not declared in this scope",
+      "has_main": true
+    }
+  ]
+}
