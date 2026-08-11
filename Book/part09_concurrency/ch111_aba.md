@@ -3,9 +3,9 @@
 ⟶ Book/part09_concurrency/ch110_lockfree.md
 ⟶ Book/part09_concurrency/ch112_hazard_rcu.md
 
-> 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`，双字 CAS 加 `-mcx16`）。
-> 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；示例见 `Examples/_ch111_*.cpp`。
-> 立场标签遵循 `CONVENTIONS.md §1`：`[标准]`=ISO、`[实现·GCC13]`=编译器行为、`[平台·x86-64]`=硬件/ABI、`[经验]`=工程共识。
+> 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`，双字 CAS 加 `-mcx16`，仓库权威工具链）；正文早期汇编插图示曾用 GCC 13.1.0 生成，已在本机 GCC 15.3.0 下复编确认指令一致（单字 CAS→`lock cmpxchg`、128 位 CAS→`call __atomic_compare_exchange_16`），见下文 `[VERIFIED]` 标注。
+> 源码根：`C:/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/`；示例见 `Examples/_ch111_*.cpp`。
+> 立场标签遵循 `CONVENTIONS.md §1`：`[标准]`=ISO、`[实现·GCC15]`=编译器行为、`[ABI]`=ABI 布局、`[平台·x86-64]`=硬件/ABI、`[微架构·x86-64]`/`[微架构·ARM]`=CPU 行为、`[经验]`=工程共识；高风险断言标 `[VERIFIED]`（已实编确认）或 `[UNVERIFIED]`（ARM 行为、绝对数字本机无法复现/不可移植）。
 > 衔接：CAS 原语见第110章（无锁编程与 atomic）；内存回收的两条主线（风险指针 / RCU）见第112章。
 
 ## ⓪ 历史动机：ABA 问题的来龙去脉
@@ -27,7 +27,7 @@ ABA 从"论文里的陷阱"走向"有官方回收解法"，靠的是 Hazard Poin
 
 - [史] Maged Michael 在 2004 年的论文 *Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects* 首次把"读者声明自己在保护哪个指针"做成可论证的通用回收方案，后被 malloc 实现与众多并发库广泛采用——它正是解决 ABA 引发悬垂引用的主流手段。
 - C++26 方向：Hazard Pointer 以 `std::hazard_pointer` 进入标准视野（提案 P1122 系列），与 RCU 类设施一同把"安全回收"从手写技巧变成一等公民。[史]
-- [评] 双字 CAS（DCAS / 带标签指针）能"一次比较值与版本"，理论上是 ABA 的最优雅解法，却因 x86/ARM 长期缺乏稳定硬件支持而始终未普及；版本号方案因此在工程界成了事实标准。
+- [评] 双字 CAS（DCAS / 带标签指针）能"一次比较值与版本"，理论上是 ABA 的最优雅解法，却因 x86/ARM 长期缺乏稳定硬件支持（x86 双字 CAS 需 `cx16` 的 `cmpxchg16b`；ARM 依赖 LSE2）而始终未普及 `[微架构·x86-64]` `[微架构·ARM]` `[UNVERIFIED]`（ARM 本机未复编）；版本号方案因此在工程界成了事实标准。
 - [轶] 工业界最经典的 ABA 实战来自无锁队列与无锁内存分配器：节点被 pop 后立刻 `delete`，又被新节点复用同一块地址，CAS 微笑着成功，随后整条链表指向已释放内存——这种 bug 往往只在特定调度时序下偶发，极难复现。
 - C++20 的 `std::atomic_ref` 让"给既有指针加原子/版本"更方便，但 ABA 防御本身仍属算法层责任，标准不替你加版本。[史]
 
@@ -113,7 +113,7 @@ CAS 的契约是：“若当前值 == 预期值，则替换为新值，返回 tr
 ```
 
 - `[标准]`：`[atomics]` 规定 CAS 比较的是对象表示（object representation），与“该值经历过几次写”无关。
-- `[实现·GCC13]`：GCC 对 `std::atomic<Node*>` 的 `compare_exchange` 直接生成单字 `lock cmpxchg`（见第⑧节证据），硬件层面同样只比较 8 字节地址。
+- `[实现·GCC15]` `[VERIFIED]`：GCC 对 `std::atomic<Node*>` 的 `compare_exchange` 直接生成单字 `lock cmpxchg`（见第⑧节证据），硬件层面同样只比较 8 字节地址（本机 GCC 15.3.0 复编确认）。
 
 ## ④ 带标签指针（tagged pointer）解法 [标准]
 
@@ -185,12 +185,12 @@ bool cas_head(__int128& expected, const Head& desired) {
 ```
 
 ```cpp
-// ⑤ 注意：__int128 不是标准 C++ 类型，是 GCC/Clang 扩展（[实现·GCC13]）
+// ⑤ 注意：__int128 不是标准 C++ 类型，是 GCC/Clang 扩展（[实现·GCC15]）
 // 可移植层应使用 std::atomic<struct-of-two-words> 或 std::atomic_ref。
 ```
 
-- `[实现·GCC13]`：本工具链把 16 字节原子 CAS 路由到 libatomic 的 `__atomic_compare_exchange_16`（见第⑧节），该实现在本 MinGW 构建中是**加锁回退**而非内联 `lock cmpxchg16b`。
-- `[平台·x86-64]`：`cmpxchg16b` 需要 CPU 支持 `cx16`；并非所有 x86-64 微架构都保证，故工具链保守地走 libatomic。
+- `[实现·GCC15]` `[VERIFIED]`：本工具链把 16 字节原子 CAS 路由到 libatomic 的 `__atomic_compare_exchange_16`（见第⑧节），该实现在本 MinGW 构建中是**加锁回退**而非内联 `lock cmpxchg16b`（本机 GCC 15.3.0 复编确认 `call __atomic_compare_exchange_16`）。
+- `[微架构·x86-64]`：`cmpxchg16b` 需要 CPU 支持 `cx16`；并非所有 x86-64 微架构都保证，故工具链保守地走 libatomic。
 
 ## ⑥ 风险指针（Hazard Pointer）预告 [标准]
 
@@ -232,7 +232,7 @@ void critical_exit()  { in_critical = false; }   // ⑦ 离开后，旧纪元对
 - `[标准]`：EBR 同样基于标准原子，属于算法层方案。
 - `[经验]`：EBR 的临界区极轻（只是读/写一个本地 epoch），通常比风险指针**吞吐更高**，但“retire 列表”需在全局安静后才回收，延迟回收的窗口更大。
 
-## ⑧ [实现] 真实汇编：tagged CAS 编译为 lock cmpxchg [实现·GCC13]
+## ⑧ [实现·GCC15] [VERIFIED] 真实汇编：tagged CAS 编译为 lock cmpxchg
 
 以下汇编来自**真实编译**（非编造）：
 
@@ -305,9 +305,9 @@ _Z10pop_unsafev:
 	call	_ZNKSt6atomicIP4NodeE4loadESt12memory_order   ; atomic<Node*>::load(memory_order)
 ```
 
-- `[实现·GCC13]`：单字 CAS 即 `lock cmpxchg QWORD PTR top[rip], rdx`——这是 x86-64 上无锁算法的原子根基。
-- `[实现·GCC13]`：双字（标签）CAS 在本工具链**没有内联成 `lock cmpxchg16b`**，而是 `call __atomic_compare_exchange_16`。我进一步反汇编 `libatomic.a` 确认其实现是**全局锁回退**（`xadd`/锁 + 比较），并非 `cmpxchg16b`。这意味着：在“未开启 cx16 构建的 libatomic”上，DCAS 的“原子性”由 libatomic 的内部锁保证，**双字 CAS 未必比单字更快**。
-- `[平台·x86-64]`：若使用为 `cx16` 构建的 libatomic（如多数 Linux 发行版），`__atomic_compare_exchange_16` 才会真正生成 `lock cmpxchg16b`。编写可移植无锁代码时**不能假设双字 CAS 一定无锁**——应先查询 `is_always_lock_free`。
+- `[实现·GCC15]` `[VERIFIED]`：单字 CAS 即 `lock cmpxchg QWORD PTR top[rip], rdx`——这是 x86-64 上无锁算法的原子根基（本机 GCC 15.3.0 复编确认）。
+- `[实现·GCC15]` `[VERIFIED]`：双字（标签）CAS 在本工具链**没有内联成 `lock cmpxchg16b`**，而是 `call __atomic_compare_exchange_16`。我进一步反汇编 `libatomic.a` 确认其实现是**全局锁回退**（`xadd`/锁 + 比较），并非 `cmpxchg16b`。这意味着：在“未开启 cx16 构建的 libatomic”上，DCAS 的“原子性”由 libatomic 的内部锁保证，**双字 CAS 未必比单字更快**（本机 GCC 15.3.0 复编确认 `call __atomic_compare_exchange_16`）。
+- `[微架构·x86-64]`：若使用为 `cx16` 构建的 libatomic（如多数 Linux 发行版），`__atomic_compare_exchange_16` 才会真正生成 `lock cmpxchg16b`。编写可移植无锁代码时**不能假设双字 CAS 一定无锁**——应先查询 `is_always_lock_free`。
 
 ## ⑨ 用 Hazard Pointer 解决（指 ch112） [标准]
 
@@ -433,7 +433,7 @@ g++ -std=c++23 -O1 -g -fsanitize=thread Examples/_ch111_tsan.cpp -o Examples/_ch
 ./Examples/_ch111_tsan        # 触发则报 WARNING: ThreadSanitizer: data race
 ```
 
-- `[实现·GCC13]`：TSan 通过运行时插桩追踪 happens-before；它**不理解**“ABA 语义”，只能帮你找到“未同步的共享访问”。
+- `[实现·GCC15]`：TSan 通过运行时插桩追踪 happens-before；它**不理解**“ABA 语义”，只能帮你找到“未同步的共享访问”。
 - `[经验]`：不要指望 TSan 给你打“ABA 对/错”的勾——它只报 race。验证 ABA 修复要靠**形式化推理 + 压力测试（百万次随机交错）**。
 
 ## ⑭ 误用案例 [经验]
@@ -568,7 +568,7 @@ double bench(F f, int threads, int iters) {
 // 预期（低竞争）：tagged ≈ rcu > mutex；高竞争：rcu ≈ mutex > tagged(自旋烧CPU)
 ```
 
-- `[实现·GCC13]`：基准请用 `-O2 -std=c++23` 且**开 `-mcx16`**（若依赖双字 CAS 无锁），否则 DCAS 走 libatomic 锁会严重偏慢，得出错误结论。
+- `[实现·GCC15]`：基准请用 `-O2 -std=c++23` 且**开 `-mcx16`**（若依赖双字 CAS 无锁），否则 DCAS 走 libatomic 锁会严重偏慢，得出错误结论。
 - `[经验]`：任何“X 比 Y 快”的结论都必须注明线程数、迭代次数、CPU、编译器版本——否则无意义。
 
 ## ⑲ 最佳实践 [经验]
@@ -722,7 +722,7 @@ int main() {
 ### 工业案例（真实可查证）
 
 - **Treiber 栈的 ABA 经典崩溃**：无锁栈 `pop` 用单指针 CAS，线程 A 读 `top=Node1` 后被抢占，B `pop` 两次又 `push` 回同一地址 `Node1`，A 恢复 CAS 成功但栈结构已破坏（中间节点丢失）。这是无锁数据结构最经典的 ABA 陷阱。
-- **Linux 内核 `cmpxchg` 的标签法**：内核无锁结构用「指针 + 版本号」双字 CAS（`cmpxchg16b`）规避 ABA；用户态 `std::atomic<std::uint128_t>` 需目标支持 16 字节原子（x86-64 `CMPXCHG16B`），ARM 需 LSE2。
+- **Linux 内核 `cmpxchg` 的标签法**：内核无锁结构用「指针 + 版本号」双字 CAS（`cmpxchg16b`）规避 ABA；用户态 `std::atomic<std::uint128_t>` 需目标支持 16 字节原子（x86-64 `CMPXCHG16B`），ARM 需 LSE2 `[微架构·ARM]` `[UNVERIFIED]`（本机无 ARM 工具链，未复编）。
 
 ### 常见 Bug 与 Debug 方法
 
@@ -857,7 +857,7 @@ int main() {
 }
 ```
 
-[实现] 需以 `-mcx16` 编译才让 `atomic<16字节>` 无锁；`alignas(16)` 不可省——未对齐的 `cmpxchg16b` 触发 `#GP` 异常。ARM 上对应 `casp`（LSE）或 `ldxp/stxp` 对。
+[实现] 需以 `-mcx16` 编译才让 `atomic<16字节>` 无锁；`alignas(16)` 不可省——未对齐的 `cmpxchg16b` 触发 `#GP` 异常。ARM 上对应 `casp`（LSE）或 `ldxp/stxp` 对 `[微架构·ARM]` `[UNVERIFIED]`（本机无 ARM 工具链，未复编）。
 
 [引用] Intel SDM 中 `cmpxchg16b` 指令说明：`https://www.felixcloutier.com/x86/cmpxchg8b:cmpxchg16b`。宽 CAS 与 tagged pointer 见 ISO §32.5（[atomics]）及 M. M. Michael 的 hazard pointer / lock-free 链表工作。
 

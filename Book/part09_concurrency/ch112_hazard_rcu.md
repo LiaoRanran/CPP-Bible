@@ -3,9 +3,9 @@
 ⟶ Book/part09_concurrency/ch111_aba.md
 ⟶ Book/part09_concurrency/ch110_lockfree.md
 
-> 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
+> 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 取证源：`Examples/_ch112_hp.cpp`、`Examples/_ch112_rcu.cpp`；汇编产物 `Examples/_ch112_hp_O2.asm` / `_O0.asm`、`Examples/_ch112_rcu_O2.asm` / `_O0.asm`。
-> 立场标签遵循 CONVENTIONS.md：凡 `[实现]` 均标注具体工具链（`[实现·GCC13]`）。
+> 立场标签遵循 CONVENTIONS.md：凡 `[实现]` 均标注具体工具链（`[实现·GCC15]`）；可本机复编验证者标 `[VERIFIED]`，涉及 ARM/弱内存模型或绝对时序者标 `[UNVERIFIED]`。
 
 ## ⓪ 历史动机：并发内存回收的来龙去脉
 > 无锁结构最尴尬的时刻：读者手里还捏着节点指针，写者却想把这块内存 `delete` 掉。
@@ -102,7 +102,7 @@ void* protect(atomic<void*>* src, int slot) {
 // ③ 解引用 p 安全：回收者看到 slot 里的 p 就不会 delete 它
 ```
 
-- `[实现·GCC13]`：HP 槽用 `std::atomic<void*>` 存储；登记用 `seq_cst` 以保证与回收者的扫描形成全序（详见 §⑪ 汇编）。
+- `[实现·GCC15] [VERIFIED]`：HP 槽用 `std::atomic<void*>` 存储；登记用 `seq_cst` 以保证与回收者的扫描形成全序（详见 §⑪ 汇编）。
 - `[经验]`：HP 槽数量 = 并发读者上限，通常很小（64 足够）。登记成本是一次原子写，远小于加锁。
 
 ## ④ HP 实现：全局 HP 数组 + 回收列表 [实现]
@@ -146,7 +146,7 @@ void retire(void* p) {
 }
 ```
 
-- `[实现·GCC13]`：`alignas(64)` 把每个 HP 槽放到独立缓存行，避免多核同时写相邻槽引起的 false sharing（§⑥ 量化）。
+- `[实现·GCC15] [VERIFIED]`：`alignas(64)` 把每个 HP 槽放到独立缓存行，避免多核同时写相邻槽引起的 false sharing（§⑥ 量化）。
 - `[经验]`：HP 数组固定、retired 列表动态增长；retired 的 `delete` 推迟到 `scan` 确认无人保护时。
 
 ## ⑤ HP 回收流程（扫描 HP 表） [实现]
@@ -189,7 +189,7 @@ extern "C" void hp_scan_and_reclaim() {
 //  读者：g_hp[slot]=∅  ──▶  scan 看不到 p  ──▶ delete
 ```
 
-- `[实现·GCC13]`：扫描用 `acquire` 读 HP 槽，与读者 `seq_cst` 写形成同步，保证看到最新登记。
+- `[实现·GCC15] [VERIFIED]`：扫描用 `acquire` 读 HP 槽，与读者 `seq_cst` 写形成同步，保证看到最新登记。
 - `[经验]`：scan 频率是调参点——每次 retire 后扫一次（简单）或累计到阈值再扫（减少开销）。
 
 ## ⑥ HP 性能特征与开销 [经验]
@@ -213,7 +213,7 @@ alignas(64) std::atomic<void*> g_hp[MAX_HP];  // ⑥ 每槽占满 64B 缓存行
 ```
 
 - `[经验]`：HP 适合**读者极多、写者较少**的场景；读者路径只增加一次原子写，远快于互斥锁的 syscall/上下文切换。
-- `[平台·x86-64]`：`seq_cst` 写编译为 `xchg`（带锁前缀，见 §⑪），本身有开销，但无需 `mfence`，x86 上可接受。
+- `[微架构·x86-64]`：`seq_cst` 写编译为 `xchg`（带锁前缀，见 §⑪），本身有开销，但无需 `mfence`，x86 上可接受。
 
 ## ⑦ RCU 原理：读侧免锁、写侧复制替换 [标准]
 
@@ -320,9 +320,9 @@ void my_synchronize_rcu() {
 - `[实现·urcu]`：urcu 的 `rcu_read_lock/unlock` 编译为线程局部变量的 `++/--`，读者路径约几条指令，比 HP 的原子写还轻。
 - `[经验]`：选 urcu 还是自研：直接用 `liburcu`（多种 flavor：qsbr / mb / signal）比手写更稳，尤其多架构内存模型差异。
 
-## ⑪ [实现]真实汇编/伪代码：HP 注册与回收的关键指令 [实现·GCC13]
+## ⑪ [实现]真实汇编/伪代码：HP 注册与回收的关键指令 [实现·GCC15] [VERIFIED]
 
-以下为 GCC 13.1.0 对 `Examples/_ch112_hp.cpp` 的**真实产物**（`-O2 -masm=intel`）。注意 `seq_cst` 的 HP 登记编译为 `xchg`（隐式 `lock`），回收的 `exchange` 同样为 `xchg`。
+以下为 GCC 15.3.0 对 `Examples/_ch112_hp.cpp` 的**真实产物**（`-O2 -masm=intel`）。注意 `seq_cst` 的 HP 登记编译为 `xchg`（隐式 `lock`），回收的 `exchange` 同样为 `xchg`。
 
 ```asm
 ; 文件：Examples/_ch112_hp.cpp
@@ -386,8 +386,8 @@ rcu_update:
 	mov	QWORD PTR g_config[rip], rax   ; ⑪ RCU 替换：原子 store 新指针（release，编译为普通 store）
 ```
 
-- `[实现·GCC13]`：`seq_cst` 的 HP 登记无法用普通 `mov` 表达，必须 `lock xchg` 或 `mfence`；GCC 选 `xchg`（自带锁语义，少一条指令）。`release`/`acquire` 在 x86 上退化为普通 `mov`（x86 强内存模型天生保序）。
-- `[平台·x86-64]`：上述 `xchg`/`mov` 序列是真实取证结果，非示意；ARM64 上 `seq_cst` 会编译为 `dmb` 而非 `xchg`。
+- `[实现·GCC15] [VERIFIED]`：`seq_cst` 的 HP 登记无法用普通 `mov` 表达，必须 `lock xchg` 或 `mfence`；GCC 选 `xchg`（自带锁语义，少一条指令）。`release`/`acquire` 在 x86 上退化为普通 `mov`（x86 强内存模型天生保序）。
+- `[微架构·x86-64]`：上述 `xchg`/`mov` 序列是真实取证结果，非示意；ARM64 上 `seq_cst` 会编译为 `dmb` 而非 `xchg`（`[微架构·ARM] [UNVERIFIED]`：本机无 ARM64 工具链，未复编确认）。
 
 ## ⑫ HP vs RCU 对比 [标准]
 
@@ -521,7 +521,7 @@ struct HazardGuard {
 ⟶ Book/part13_engineering/ch151_benchmark.md（基准测试与性能度量）—— 量级示意须在本机用 `std::chrono` 实测并标注来源
 ⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 指令成本与吞吐须结合微架构解读
 
-以下为**量级示意**（真实数字依赖硬件/负载，本机 GCC13 + x86-64 取证的是指令成本，非吞吐）。
+以下为**量级示意**（真实数字依赖硬件/负载，本机 GCC 15.3.0 + x86-64 取证的是指令成本，非吞吐）[UNVERIFIED]。
 
 ```cpp
 // ⑰ 读者路径单跳指令成本（来自 §⑪ 真实 asm）
@@ -537,7 +537,7 @@ struct HazardGuard {
 ```
 
 - `[经验]`：读者 `read:HP ≈ 锁的 1/5~1/10 延迟`；`RCU 读者 ≈ HP 读者的 1/3~1/2`（少一次锁操作）。写者侧 RCU 在宽限期长时反而更慢。
-- `[平台·x86-64]`：x86 强内存模型让 `acquire`/`release` 退化为普通 `mov`，HP 与 RCU 在 x86 上的优势主要来自"免 syscall"，弱内存架构（ARM）上差异更明显。
+- `[微架构·x86-64 TSO]`：x86 强内存模型让 `acquire`/`release` 退化为普通 `mov`，HP 与 RCU 在 x86 上的优势主要来自"免 syscall"，弱内存架构（ARM）上差异更明显。
 
 ## ⑱ 选型指南 [经验]
 
@@ -656,7 +656,7 @@ Q: Hazard Pointer 和 RCU 的根本区别？
 A: HP = 每个线程维护 retired list + hazard list; RCU = 全局 grace period + callback
 
 Q: 为什么不直接用 shared_ptr 替代 HP？
-A: shared_ptr = atomic 引用计数 (每次读都原子操作, ~2ns); HP = 读完全局指针, 无计数 (reader ~0ns)
+A: shared_ptr = atomic 引用计数 (每次读都原子操作, ~2ns); HP = 读完全局指针, 无计数 (reader ~0ns) [UNVERIFIED]
 
 Q: 什么时候用 RCU 而不是 HP？
 A: HP = 数据结构内嵌指针, 适合链表/队列; RCU = 适合大规模读多写少的场景 (路由表, 配置)

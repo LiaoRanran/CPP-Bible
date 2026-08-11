@@ -29,12 +29,13 @@ MARKERS = {
 }
 
 # 五层真相标签
+# 同时匹配 CONVENTIONS.md §27 规定的「裸标签」([标准]) 与「带后缀标签」([标准·xxx] / [实现·GCC15] / [平台·x86-64] / [微架构·Skylake])
 TRUTH_LAYERS = {
-    "标准": re.compile(r"\[标准\]"),
-    "实现": re.compile(r"\[实现\]"),
-    "ABI": re.compile(r"\[ABI\]"),
-    "平台": re.compile(r"\[平台\]"),
-    "微架构": re.compile(r"\[微架构\]"),
+    "标准": re.compile(r"\[标准(?:·[^\]]+)?\]"),
+    "实现": re.compile(r"\[实现(?:·[^\]]+)?\]"),
+    "ABI": re.compile(r"\[ABI(?:·[^\]]+)?\]"),
+    "平台": re.compile(r"\[平台(?:·[^\]]+)?\]"),
+    "微架构": re.compile(r"\[微架构(?:·[^\]]+)?\]"),
 }
 
 # 高风险关键词（命中即视为该章含高风险断言，需验证标记）

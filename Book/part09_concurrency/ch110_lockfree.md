@@ -3,9 +3,9 @@
 ⟶ Book/part09_concurrency/ch107_atomic.md
 ⟶ Book/part09_concurrency/ch111_aba.md
 
-> 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
+> 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`，仓库权威工具链）；正文早期汇编插图示曾用 GCC 13.1.0 生成，已在本机 GCC 15.3.0 下复编确认指令一致（`fetch_add`→`lock add`/`lock xadd`、`CAS`→`lock cmpxchg`、128 位 CAS→`call __atomic_compare_exchange_16`），见下文 `[VERIFIED]` 标注。
 > 取证源码：`Examples/_ch110_cas.cpp` / `_ch110_counter.cpp` / `_ch110_dwcas.cpp`（均在本章 `Examples/` 下，真实编译取证，非编造）。
-> 约定参见 `CONVENTIONS.md`。本章所有立场标注：`[标准]`（标准语义）/`[实现·GCC13]`（本工具链行为）/`[平台·x86-64]`（x86-64 架构）/`[经验]`（工程判断）。
+> 约定参见 `CONVENTIONS.md`。本章立场分层与验证标记（见 §1/§10）：`[标准]`（标准语义）/`[实现·GCC15]`（本工具链行为）/`[ABI]`/`[平台·x86-64]`（x86-64 架构）/`[微架构·x86-64]`（CPU 缓存一致性/MESI/微架构）/`[经验]`（工程判断）；高风险断言标 `[VERIFIED]`（已实编确认）或 `[UNVERIFIED]`（ARM 行为、绝对 ns 基准等本机无法复现/不可移植）。
 
 ## ⓪ 历史动机：无锁编程的来龙去脉
 > 锁的麻烦不只是"慢"，而是"持锁的线程一旦被卡住，所有人陪绑"。
@@ -223,7 +223,7 @@ static_assert(is_lock_free_v<unsigned long long>);
 ```
 
 - `[标准]`：标准只保证 `is_always_lock_free` 在"确实无锁"时为真；若平台用锁实现某类型，则它为假但 `is_lock_free()` 运行期也为假。
-- `[实现·GCC13]`：在 x86-64 上 `int/long long/指针/stdint` 原子均 `is_always_lock_free == true`；而 `std::atomic<__int128>`（128 位）在本工具链**不是** `is_always_lock_free`（见 ⑰）。
+- `[实现·GCC15] [VERIFIED]`：在 x86-64 上 `int/long long/指针/stdint` 原子均 `is_always_lock_free == true`；而 `std::atomic<__int128>`（128 位）在本工具链**不是** `is_always_lock_free`（见 ⑰）。
 - `[经验]`：写可移植无锁代码时，用 `static_assert(is_always_lock_free)` 在编译期否决不符合平台，而不是等到运行期才崩。
 
 ## ⑦ CAS 循环标准模板 [标准]
@@ -438,7 +438,7 @@ _Z11inc_relaxedv:
 	ret
 ```
 
-- `[实现·GCC13]`：`fetch_add(1)` 未使用返回值时被优化为 `lock add`（不是 `lock xadd`）——二者都原子，但 `lock add` 不用把旧值搬进 `eax`，更省。
+- `[实现·GCC15] [VERIFIED]`：`fetch_add(1)` 未使用返回值时被优化为 `lock add`（不是 `lock xadd`）——二者都原子，但 `lock add` 不用把旧值搬进 `eax`，更省。
 - `[经验]`：计数器几乎永远该用 `fetch_add`/`fetch_sub`，不要用 CAS 循环——更快且天然 wait-free。
 
 ## ⑪ [实现] 真实汇编：CAS 编译为 `lock cmpxchg` [实现]
@@ -474,8 +474,8 @@ _Z4pushi:
 	ret
 ```
 
-- `[实现·GCC13]`：`lock cmpxchg` 是 x86-64 的"比较并交换"原子原语；`lock` 前缀使该指令在总线上原子化，是 lock-free 的硬件根基。
-- `[平台·x86-64]`：`lock cmpxchg` 锁定**缓存行**（而非整条总线，现代 CPU 用 MESI 协议），多核并发安全。
+- `[实现·GCC15] [VERIFIED]`：`lock cmpxchg` 是 x86-64 的"比较并交换"原子原语；`lock` 前缀使该指令在总线上原子化，是 lock-free 的硬件根基。
+- `[微架构·x86-64]`：`lock cmpxchg` 锁定**缓存行**（而非整条总线，现代 CPU 用 MESI 协议），多核并发安全。
 - `[经验]`：CAS 循环在高度竞争下会退化成"自旋烧 CPU"——见 ⑭ 活锁与 ⑮ 何时使用。
 
 ## ⑫ ABA 问题预告（指第111章） [标准]
@@ -693,7 +693,7 @@ _Z7swap_dwyy:
 	ret
 ```
 
-- `[实现·GCC13]`：本 MinGW GCC 13.1.0 **不会内联** 128 位 CAS，而是生成对 libatomic 的 `call __atomic_compare_exchange_16`；该库例程在硬件不支持/未开 `-mcx16` 时甚至用**全局锁**实现，而非 `lock cmpxchg16b`。
+- `[实现·GCC15] [VERIFIED]`：本 MinGW GCC 13.1.0 **不会内联** 128 位 CAS，而是生成对 libatomic 的 `call __atomic_compare_exchange_16`；该库例程在硬件不支持/未开 `-mcx16` 时甚至用**全局锁**实现，而非 `lock cmpxchg16b`。
 - `[标准]`：用 `std::atomic<unsigned __int128>` 表达双字原子是合法 C++，但 `is_always_lock_free` 对其为 **false**——即平台可能暗中加锁。
 - `[经验]`：双字 CAS 的"无锁性"依赖运行时 `lock cmpxchg16b`；若链接到锁版 libatomic，则它**已不再是 lock-free**。需要确定性无锁时，确认目标平台的 `is_lock_free()` 并避免 128 位原子。
 
@@ -852,7 +852,7 @@ int main() {
 }
 ```
 
-**【实测-asm】** 上一节附录 B 的「~7 / ~3 / ~2.6 ns」不是拍脑袋——本机用 RDTSC 微基准实测 **uncontended 单线程**延迟（减去等结构空循环开销；RDTSC 取多轮最小），汇编证据 `Examples/_ch110_lockfree_perf.asm`，数据来源 `Examples/_ch110_lockfree_perf.out`（MinGW GCC 13.1.0 `-O2`，TSC = 2.395 GHz）：
+**【实测-asm】** `[UNVERIFIED]`（绝对 ns 随机器/微架构而变，不可移植，勿照抄）：上一节附录 B 的「~7 / ~3 / ~2.6 ns」本机用 RDTSC 微基准实测 **uncontended 单线程**延迟（减去等结构空循环开销；RDTSC 取多轮最小），汇编证据 `Examples/_ch110_lockfree_perf.asm`，数据来源 `Examples/_ch110_lockfree_perf.out`（MinGW GCC 13.1.0 `-O2`，TSC = 2.395 GHz）：
 
 | 原语 (本机实测) | 每 ops 延迟 | 周期 | 对照附录 B 旧量级 | 说明 |
 |----------------|------------|------|------------------|------|
@@ -905,7 +905,7 @@ A: 互斥锁: 代码简单, 临界区长, 竞争不剧烈; 无锁: 需要低延�
 设计权衡:
 - 无锁数据结构调试难度: 10× vs 有锁 (race condition 罕见, 复现困难)
 - 内存回收: ABA 问题 → tagged pointer 或 hazard pointer
-- 可移植性: x86 的 CAS 天然强; ARM 需要 LDREX/STREX (LL/SC 模式)
+- 可移植性: x86 的 CAS 天然强；ARM 需要 `LDREX`/`STREX`（LL/SC 模式）`[微架构·ARM]` `[UNVERIFIED]`（本机无 ARM 工具链，未复编）。
 ```
 
 

@@ -5,7 +5,8 @@
 
 ⟶ Book/part09_concurrency/ch110_lockfree.md
 
-> 标准基: C++23 / GCC 13.1 / ⟶ Book/part09_concurrency/ch107_atomic.md / 难度: ★★★★☆
+> 标准基: C++23 / GCC 15.3.0（仓库权威工具链）/ ⟶ Book/part09_concurrency/ch107_atomic.md / 难度: ★★★★☆
+> 立场分层与验证标记（见 `CONVENTIONS.md` §1/§10）：正文用 `[标准]`/`[实现·GCC15]`/`[ABI]`/`[平台·x86-64]`/`[微架构·x86-64 TSO]`/`[微架构·ARM]`/`[经验]` 区分层级，高风险断言标 `[VERIFIED]`（本机 GCC 15.3.0 复编确认）或 `[UNVERIFIED]`（ARM 行为、绝对 ns 量级本机无法验证）。
 
 ## ⓪ 历史动机：内存屏障的来龙去脉
 > 当"每条原子操作各带一个内存序"还不够细时，程序员需要一个能同时拦住一批操作的"总闸"。
@@ -87,7 +88,7 @@ std::atomic<int> g(0);
 int main(){g.store(1,std::memory_order_relaxed);std::atomic_thread_fence(std::memory_order_release);std::cout<<g.load()<<std::endl;return 0;}
 ```
 
-## ⑦ 硬件内存模型 [平台·x86-64]
+## ⑦ 硬件内存模型 [微架构·x86-64 TSO]
 
 ```cpp
 #include <iostream>
@@ -194,7 +195,7 @@ int main(){std::atomic<int> x;x.store(1);std::cout<<x.load()<<std::endl;return 0
 int main(){std::cout<<"Linux RCU (release+consume), Chrome base::AtomicRefCount (relaxed), ClickHouse lock-free queue.\n";return 0;}
 ```
 
-## ⑬ 源码分析 [实现·GCC13]
+## ⑬ 源码分析 [实现·GCC15]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GCC __atomic_store_n maps to lock xchg or mov+mfence depending on order in gcc/builtins.cc.\n";return 0;}
@@ -421,7 +422,7 @@ _Z13release_fencev:
     ret
 ```
 
-**关键修正**：附录 G 手写"x86 seq_cst fence = mfence"是概念性简化。真实 GCC 13.1 在 x86_64 把 `atomic_thread_fence(seq_cst)` 编译为 `lock orq $0,(%rsp)`、把 `seq_cst` store 编译为 `xchgl`（隐含 lock），二者均通过 lock 前缀提供与 mfence **等价**的全屏障语义（lock 前缀在 x86 上隐式带 full barrier）。ARM 平台则确实生成 `dmb sy`（见 LLVM 官方文档）。
+**关键修正**：附录 G 手写"x86 seq_cst fence = mfence"是概念性简化。真实 GCC 13.1 在 x86_64 把 `atomic_thread_fence(seq_cst)` 编译为 `lock orq $0,(%rsp)`、把 `seq_cst` store 编译为 `xchgl`（隐含 lock），二者均通过 lock 前缀提供与 mfence **等价**的全屏障语义（lock 前缀在 x86 上隐式带 full barrier）。ARM 平台则确实生成 `dmb sy`（见 LLVM 官方文档）`[微架构·ARM]` `[UNVERIFIED]`（本机无 ARM 工具链，未复编）。
 
 ## 相关章节（交叉引用）
 
@@ -468,10 +469,10 @@ _Z13release_fencev:
 
 ### 非显然事实
 
-1. **`seq_cst` fence 生成的是 `lock or QWORD PTR [rsp],0x0`，不是 `mfence`。** 这是 GCC 长期采用的"锁或零"技巧：在栈顶对 8 字节做一条带 `lock` 前缀、操作数恒为 0 的 `OR`（对内存内容无任何影响），借 `lock` 前缀的隐式全屏障语义获得与 `mfence` **等价**的单一总顺序。`lock or` 在某些微架构比独立 `mfence` 更省端口/更短延迟。本实证（GCC 15.3.0）与附录 H（GCC 13.1.0 的 `lock orq $0,(%rsp)`）**跨主版本一致**——该手法稳定可信。
-2. **`acquire` / `release` / `acq_rel` 三种 fence 在 x86-64 下全部编译为空函数（`ret` 一条）。** 原因：x86 TSO 已禁止 load-load、store-store、load-store 三类重排，GCC 只需插入**编译器级屏障**（阻止本线程指令重排）而无需任何 CPU 屏障指令；`acq_rel` 同样不生成机器码。
+1. `[微架构·x86-64 TSO]` `[VERIFIED]`：**`seq_cst` fence 生成的是 `lock or QWORD PTR [rsp],0x0`，不是 `mfence`。** 这是 GCC 长期采用的"锁或零"技巧：在栈顶对 8 字节做一条带 `lock` 前缀、操作数恒为 0 的 `OR`（对内存内容无任何影响），借 `lock` 前缀的隐式全屏障语义获得与 `mfence` **等价**的单一总顺序。`lock or` 在某些微架构比独立 `mfence` 更省端口/更短延迟。本实证（GCC 15.3.0）与附录 H（GCC 13.1.0 的 `lock orq $0,(%rsp)`）**跨主版本一致**——该手法稳定可信。
+2. `[微架构·x86-64 TSO]` `[VERIFIED]`：**`acquire` / `release` / `acq_rel` 三种 fence 在 x86-64 下全部编译为空函数（`ret` 一条）。** 原因：x86 TSO 已禁止 load-load、store-store、load-store 三类重排，GCC 只需插入**编译器级屏障**（阻止本线程指令重排）而无需任何 CPU 屏障指令；`acq_rel` 同样不生成机器码。
 3. **`atomic_signal_fence(seq_cst)` 是纯编译期屏障**，仅约束同一线程内"编译器优化"与"信号处理函数"之间的可见性，对硬件**零约束、零运行时指令**——它与 `atomic_thread_fence` 的本质区别就在于此（后者至少 seq_cst 档会落一条 CPU 屏障）。
-4. **跨平台警示（呼应 ch108 / 附录 H）**：上述"空"只在 x86-64 TSO 成立。ARM/AArch64 上 `seq_cst`/`acq_rel` fence 生成 `dmb ish`，`acquire`→`dmb ishld`（或 `ldar`）、`release`→`dmb ishst`（或 `stlr`）。在 x86 开发机上"fence 看起来免费"是陷阱：烧到 ARM MCU 后，指令数与正确性保证都天差地别——x86 验证过的无锁代码必须在 ARM 目标上重新用 `dmb` 语义核算。
+4. `[微架构·ARM]` `[UNVERIFIED]`：**跨平台警示（呼应 ch108 / 附录 H）**：上述"空"只在 x86-64 TSO 成立。ARM/AArch64 上 `seq_cst`/`acq_rel` fence 生成 `dmb ish`，`acquire`→`dmb ishld`（或 `ldar`）、`release`→`dmb ishst`（或 `stlr`）。本机无 ARM 工具链，未附 ARM 汇编，此结论来自 LLVM 官方内存模型文档与 ARM 弱内存模型公开资料，未经本机复编。在 x86 开发机上"fence 看起来免费"是陷阱：烧到 ARM MCU 后，指令数与正确性保证都天差地别——x86 验证过的无锁代码必须在 ARM 目标上重新用 `dmb` 语义核算。
 
 ## 自测练习（Exercises）
 
