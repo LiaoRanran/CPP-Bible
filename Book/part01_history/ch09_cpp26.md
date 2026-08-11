@@ -527,63 +527,139 @@ jg     7b                    ; 失败→跳 0x7b 调用 handle_contract_violatio
 
 ### 练习 1（难度 ★★）
 
-**真实场景：前向兼容的混合符号比较。** 你维护的代码既要面向 C++26（届时 `std::cmp_less` 已是常备工具）也要在 C++17 工具链上能编译。请先写一个对任意可比较类型通用、且对混合符号比较安全的 `max` 风格比较，并思考当它最终迁移到 C++26 时如何改用标准 `<compare>` 工具。
+**真实场景：异步流水线的"回调地狱"。** 你在维护一条数据管道：读取 → 解析 → 落盘，三步都要异步。今天用 C++23 的裸回调拼接，代码层层嵌套、错误处理与取消全靠手写；C++26 的 `std::execution`（P2300）承诺用**惰性、可组合**的 sender/receiver 把这条链在编译期拼好。请先用 C++23 写出回调拼接的痛点，再对比给出 sender 版本的示意。
 
 <details><summary>答案与解析</summary>
 
-使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
+C++23 的痛点：每一步都要手动嵌套回调，错误与取消需自建通道，且 `std::future` 是"急切"启动、组合时被迫 `.get()` 串行等待。下面是一段可编译的回调拼接示例（`[实现·GCC15]`）：
 
 ```cpp
 #include <iostream>
-#include <utility>
-template <typename T>
-const T& max_safe(const T& a, const T& b) { return (b < a) ? a : b; }
-int main() { std::cout << max_safe(3, 7) << '\n'; }
+#include <functional>
+#include <string>
+
+// C++23：三步异步操作层层嵌套回调，错误/取消需手写
+void pipeline(int input,
+              std::function<void(int)> on_done,
+              std::function<void(const std::string&)> on_error) {
+    int raw = input;                 // ① 读取
+    int parsed = raw + 1;            // ② 解析（真实场景再嵌一层回调）
+    if (parsed < 0) { on_error("parse failed"); return; }
+    int saved = parsed * 2;          // ③ 落盘
+    on_done(saved);
+}
+
+int main() {
+    pipeline(10,
+             [](int v) { std::cout << "saved=" << v << '\n'; },
+             [](const std::string& e) { std::cout << "err=" << e << '\n'; });
+}
 ```
 
-[标准] 模板参数推导按实参进行；两实参同类型时 `T` 唯一确定。
+[实现·GCC15] 回调链条越深越难维护：没有统一取消、没有调度器选择、错误要逐层透传。
 
-[引用] ISO C++20 §[temp.deduct]；cppreference "std::cmp_less"（https://en.cppreference.com/w/cpp/utility/intcmp/cmp_less）。C++26 方向（execution/contracts/静态反射）见 WG21 草案论文（可能变动，落地前查 `cxx_status`）。
+C++26 的方向（P2300）用惰性 sender 把三步声明为一条可组合管线，**不会**像 `std::future` 那样急切执行，错误与停止令牌沿链自动传播（`[假设·C++26][UNVERIFIED]`，GCC15 未实现 `std::execution::just`/`then`）：
+
+```cpp
+// [假设·C++26][UNVERIFIED] P2300 std::execution（示意，GCC15 不可编译）
+auto pipeline = std::execution::just(10)
+             | std::execution::then([](int raw)   { return raw + 1; })    // 解析
+             | std::execution::then([](int parsed){ return parsed * 2; })  // 落盘
+             | std::execution::then([](int saved) { std::cout << saved; });
+std::execution::start_detached(pipeline);   // 惰性：仅在此处才真正调度
+```
+
+[假设] sender 是惰性值；receiver 消费结果；`then` 等组合器在编译期拼装，编译器可生成无回调直通代码。
+
+[引用] P2300R10 `std::execution`（https://wg21.link/P2300R10）；cppreference "Execution support library"（https://en.cppreference.com/w/cpp/execution）。
 
 </details>
 
 ### 练习 2（难度 ★★）
 
-**真实场景：C++26 特性门控 API。** 你在规划一个将随 C++26（execution、contracts、静态反射）一起演进的库，现在就用已经成熟的概念给对外 `add` 接口加类型护栏，使浮点/非数值调用在编译期被清晰拒绝，为后续接 contracts 前置条件铺路。
+**真实场景：为数值接口加"契约"。** 你写一个 `clamp(x, lo, hi)`，希望调用方保证 `lo <= hi`、并保证返回结果确实落在 `[lo, hi]`。C++23 只能手工 `if/throw` 模拟；C++26 的 Contracts（P2900）要把前置/后置条件提升为标准一等公民。请分别给出两种写法。
 
 <details><summary>答案与解析</summary>
 
-C++20 概念取代 SFINAE 做编译期约束：
+C++23 用手工 `if/throw` 模拟契约——能编译，但检查是"手写的、可遗漏的"（`[实现·GCC15]`）：
 
 ```cpp
 #include <iostream>
-#include <concepts>
-template <std::integral T> T add(T a, T b) { return a + b; }
-int main() { std::cout << add(2, 3) << '\n'; /* add(1.0, 2.0) 编译失败 */ }
+#include <stdexcept>
+
+int clamp_cpp23(int x, int lo, int hi) {
+    if (!(lo <= hi))                 // 前置条件（手写）
+        throw std::invalid_argument("pre: lo <= hi");
+    int r = x < lo ? lo : (x > hi ? hi : x);
+    if (!(r >= lo && r <= hi))       // 后置条件（手写）
+        throw std::logic_error("post: lo <= r <= hi");
+    return r;
+}
+
+int main() { std::cout << clamp_cpp23(5, 0, 10) << '\n'; }
 ```
 
-[标准] 违反概念约束是硬错误（而非 SFINAE 静默失败），诊断信息更可读。
+[实现·GCC15] 手工检查分散在多处，且无"级别"（default/audit/axiom）之分，release 构建要么全留、要么全删。
 
-[引用] ISO C++20 §[concepts]；cppreference "std::integral"（https://en.cppreference.com/w/cpp/concepts/integral）。C++26 中概念生态继续演进（如细化推导指引），概念是后续 contracts 前置条件的基础。
+C++26 的 Contracts（P2900）把前置/后置写成属性，编译器可据级别插入检查或降级为 `assume`（`[假设·C++26][UNVERIFIED]`，GCC15 仅为实验性 `-fcontracts`）：
+
+```cpp
+// [假设·C++26][UNVERIFIED] P2900 Contracts（示意，GCC15 实验性）
+int clamp(int x, int lo, int hi)
+    [[pre: lo <= hi]]                        // 前置条件
+    [[post r: r >= lo && r <= hi]]           // 后置条件，r 为返回值
+{
+    return x < lo ? lo : (x > hi ? hi : x);
+}
+```
+
+[假设] Contracts 分 `default`/`audit`/`axiom` 三级：`default` 在 debug 检查、release 零开销；取代散落的 `assert` 与非标准 `gsl::Expects`。
+
+[引用] P2900R7 Contracts（https://wg21.link/P2900R7）；cppreference "Contract assertions (C++26)"（https://en.cppreference.com/w/cpp/language/attributes/contracts）。
 
 </details>
 
 ### 练习 3（难度 ★★）
 
-**真实场景：静态反射时代的编译期常量。** C++26 推进的静态反射（论文 P2996）会在编译期暴露类型元数据，很多计算会前移到编译期。请写一个 `constexpr` 阶乘函数，并用 `static_assert` 在编译期验证 `fact(5)==120`，作为"该值确实在编译期定值"的可执行证据。
+**真实场景：给结构体做"自动序列化"。** 你想把任意结构体打印/转 JSON，C++23 只能手写每个字段的访问逻辑，类型一变就要改多处；C++26 的静态反射（P2996 `std::meta`）要在编译期遍历成员、自动生成这些样板。请先写 C++23 的样板痛点，再给反射版本示意。
 
 <details><summary>答案与解析</summary>
 
+C++23 的样板：字段名与访问硬编码，新增成员必须同步修改序列化函数（`[实现·GCC15]`）：
+
 ```cpp
 #include <iostream>
-constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
-static_assert(fact(5) == 120);
-int main() { std::cout << fact(5) << '\n'; }
+#include <string>
+
+struct Point { int x; int y; };
+
+// 手写每个成员——类型增删字段时此函数必须手动同步
+std::string fields_cpp23(const Point& p) {
+    return std::string("x=") + std::to_string(p.x)
+         + std::string(",y=") + std::to_string(p.y);
+}
+
+int main() { Point p{3, 4}; std::cout << fields_cpp23(p) << '\n'; }
 ```
 
-[标准] `constexpr` 函数在常量表达式上下文（如模板实参、`static_assert`）中于编译期求值。
+[实现·GCC15] 每加一个成员就要动 `fields_cpp23`；没有编译期"成员清单"可用，序列化/比较/打印都得重复这份样板。
 
-[引用] ISO C++ §[expr.const]；cppreference "constexpr"（https://en.cppreference.com/w/cpp/language/constexpr）。C++26 推进 constexpr 扩展与静态反射（论文 P2996），把更多运行期逻辑前移到编译期。
+C++26 的静态反射（P2996R5）在编译期暴露成员元数据，循环即可生成上述样板（`[假设·C++26][UNVERIFIED]`，`<meta>` 头在 GCC15 不存在）：
+
+```cpp
+// [假设·C++26][UNVERIFIED] P2996R5 静态反射（示意，GCC15 不可编译）
+#include <meta>                        // 尚不存在
+
+template <std::meta::info T>
+consteval auto field_names() {
+    for (auto mem : std::meta::members_of(^T))   // 编译期遍历每个成员
+        /* 由编译器生成 x=/y= 访问与拼接代码 */;
+}
+```
+
+[假设] `^T` 取得类型的编译期反射对象，`std::meta::members_of` 枚举成员；取代 Qt MOC / UE UHT 这类预处理器代码生成。
+
+[引用] P2996R5 Static reflection（https://wg21.link/P2996R5）；cppreference "Reflection (C++26)"（https://en.cppreference.com/w/cpp/language/reflection）。
 
 </details>
 
