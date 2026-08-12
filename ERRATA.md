@@ -122,6 +122,45 @@
 
 ---
 
+## E11（D5 编译门禁 + 方向 B/C 侦察结论）
+
+### E11-A. D5 基准源码「真能编译」门禁
+- **动机**：E9 的 `d5_source_integrity.py` 仅校验「基准源存在 + 被 git 跟踪」。复现性承诺
+  还可再推深一层：文件存在 ≠ 真能编过。本步把承诺升到最硬一档——
+  「读者抄走的 `_bench_d5_X.cpp` 至少能在 GCC 15.3.0 `-std=c++23 -O2 -Wall -Wextra`
+  下编译并链接」。
+- **工具**：新建 `tools/d5_compile_gate.py`（确定性、幂等、零仓库副作用）。
+  - 编译：`g++ -std=c++23 -O2 -Wall -Wextra -c <file> -o /dev/null`（translation-unit 正确性，主导检查）。
+  - 链接：`g++ -std=c++23 -O2 <file> -latomic [-lwinmm] -o <tmp>`（可执行性）。
+  - 平台感知：4 个直接用 `<windows.h>` 的基准（`_bench_d5_ch101/119/120/95*.cpp`，
+    WIN_ONLY）在非 Windows runner 自动跳过，不计入失败；`-lwinmm` 仅 Windows。
+  - CLI：`--check`（门禁，失败 exit 1）/ `--no-link` / `--json` / `--gpp`（覆盖编译器）。
+- **CI 接入**：`compile` job（gcc:15.3.0 容器，`if: matrix.compiler == 'gcc'`）在
+  `Exempt Audit` 之后新增 `D5 Benchmark Compile Gate`（`python3 tools/d5_compile_gate.py --check`，
+  `continue-on-error: false`）。仅 GCC 矩阵跑——与 asm 证据基线同语言前端，避免 Clang 诊断差异误红。
+- **实测基线（本机 MinGW GCC 15.3.0）**：115/115 编译通过、115/115 链接通过、0 失败。
+  其中 2 个曾因缺库在裸 `-O2` 链接下失败（`ch101` 需 `-lwinmm`、`ch111` 需 `-latomic`），
+  已确认为「缺链接库」而非源码腐烂，门禁常驻 `-latomic` / 按需 `-lwinmm` 后全绿。
+
+### E11-B. 方向 C（D5 全覆盖）侦察结论：已完成，无需补写
+- `d5_gap_scanner.py` 当前报告：已有 D5 **113 章 (77%)** + 缺失 **34 章全部属豁免 part**
+  （历史/工具链/性能方法论/源码导读/工程/模式/案例/阅读章，CONVENTIONS 第 22/31 行背书）
+  = **147 章全覆盖**；缺失章中「性能信号 ≥1」者为 **0**。故「D5 全覆盖」在历史 P0 人文升维
+  波次中已由 gap-scanner 豁免规则实质收口，本方向无待补章，标记为 **no-op** 关闭。
+
+### E11-C. 方向 B（§10 验证标记覆盖）侦察结论：73 章待标，属编辑判断，待定
+- `verification_audit.py` 报告：147 章中 **74 章 (50.3%)** 含验证标记；审计将全 147 章判为
+  「高风险」（asm=146 / perf=144 / optimization=147，近乎全库），其中 **73 章零 `[VERIFIED]/
+  [UNVERIFIED]/[NEEDS-VERIFY]` 标记**。
+- §10 + 宪章 §0 硬规则：**「无法实际验证的内容一律标 `[UNVERIFIED]`，绝不伪装成已验证」**；
+  `[VERIFIED]` 必须「已编译/运行/UB sanitizer/反汇编/跨编译器/跨标准版本实际复现」。
+- 判定：方向 B 是 **73 章逐章验证判断**的编辑重活，**不可批量自动化**——
+  批量打 `[VERIFIED]` 而无真实验证 = 违反 §0 诚实底线；批量打 `[UNVERIFIED]` 虽诚实但属「平均用力」
+  （§0 禁止）。可行路径：① 对「D5 基准已通过 E11 编译门禁」的章，可据既有复现链**有依据地**补
+  `[VERIFIED]`（半自动、诚实）；② 其余 73 章留待人工逐章核验。本方向**暂缓，待作者拍板**。
+
+---
+
 ## 已知限制（非错误，刻意保留）
 
 - **asm 证据工件** `Examples/*.asm` 仅在本地用 MinGW GCC 15.3.0 重生成；CI 不重编译 asm，
@@ -150,3 +189,4 @@
 | `695d749` | §1 立场标签具体化硬化 + label_specificity_harden.py | E8-B |
 | `18db866` | §1 标签全库收口（147 章）+ D5 基准源引用完整性门禁 + d5_source_integrity.py | E9 |
 | `a446d80` | 术语/格式归一化大包（x86-64/ARM64）+ 确定性 CI 门禁 + terminology_normalize.py | E10 |
+| `fd429eb` | D5 编译门禁（基准源码真能编过/链过）+ d5_compile_gate.py + CI 接入；方向 B/C 侦察结论（C 已完结 no-op / B 73章待标待定） | E11 |
