@@ -51,5 +51,5 @@ int main() {
         bench_atomic_relaxed(nt);
         bench_mutex(nt);
     }
-    return (int)g_sink;
+    return 0;
 }

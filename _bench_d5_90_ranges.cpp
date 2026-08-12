@@ -54,5 +54,5 @@ int main() {
     std::cout << "manual loop         : " << t_manual << " ms  (baseline)\n";
     std::cout << "ranges for_each     : " << t_fe   << " ms  (" << t_fe / t_manual   << "x)\n";
     std::cout << "ranges filter|trans : " << t_pipe << " ms  (" << t_pipe / t_manual << "x)\n";
-    return (int)g_sink;
+    return 0;
 }

@@ -62,5 +62,5 @@ int main() {
     std::cout << "push_back no-reserve : " << t_nr << " ms\n";
     std::cout << "push_back reserve    : " << t_r  << " ms  (" << t_nr / t_r << "x faster)\n";
     std::cout << "erase-remove (N even): " << t_er << " ms\n";
-    return (int)g_sink;
+    return 0;
 }

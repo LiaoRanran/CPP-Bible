@@ -72,5 +72,5 @@ int main() {
     std::cout << "raw pointer     : " << t_raw << " ms  (baseline)\n";
     std::cout << "hazard slot     : " << t_hp  << " ms  (" << t_hp / t_raw  << "x)\n";
     std::cout << "shared_ptr copy : " << t_sp  << " ms  (" << t_sp / t_raw  << "x)\n";
-    return (int)g_sink;
+    return 0;
 }

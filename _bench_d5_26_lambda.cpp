@@ -44,5 +44,5 @@ int main() {
     double t_sf   = med([&] { return via_std_function(v, [k](int64_t& s, int x) { s += x * k + 1; }); });
     std::cout << "template + 捕获lambda : " << t_tmpl << " ms  (baseline, 内联)\n";
     std::cout << "std::function + 捕获  : " << t_sf   << " ms  (" << t_sf / t_tmpl << "x)\n";
-    return (int)g_sink;
+    return 0;
 }

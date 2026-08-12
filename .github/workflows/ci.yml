@@ -296,6 +296,22 @@ jobs:
       continue-on-error: false
       run: python3 tools/d5_compile_gate.py --check
 
+    - name: D5 Benchmark Runtime Gate (基准真能运行 门禁)
+      # E13 收口：深化 E11「能编译 + 链接」→「真能运行且不崩」。编过 + 链过 ≠
+      # 运行不崩：一个能链接却运行时 segfault / 死循环的基准是空头承诺。
+      # 每基准带超时(30s)执行，判定分级：
+      #   - 异常终止(signal / NTSTATUS 0x8xxxxxxx 如 0xC00000FD 栈溢出) → CRASH(判红)
+      #   - 退出码非 0 但有正常产出(典型：main 误 return 测量值)          → BENIGN_RET(WARN)
+      #   - 超时 / 退出 0 但无产出                                        → WARN
+      #   - 退出 0 且有产出                                               → PASS
+      # 运行时具非确定性（机器负载/基准设计长跑），故 continue-on-error 软门禁，
+      # 不阻断发布但把崩溃显性暴露供作者复核（与 T1-1 运行期门禁同策略）。
+      # 仅 GCC 矩阵跑（同 E11 平台对齐）；个别基准(如 ch101 递归4万需扩栈)经
+      # EXTRA_LINK_FLAGS 追加 -Wl,--stack,33554432，harness 缺陷不归咎源。
+      if: matrix.compiler == 'gcc'
+      continue-on-error: true
+      run: python3 tools/d5_runtime_gate.py --timeout 30
+
     - name: Compile + Link + Run + Sanitizer (T1-1 运行期门禁)
       # 对自包含 main 块做完整 编译+链接+运行， 并叠加 ASan/UBSan/TSan。
       # 现有 compile_all/compile_gate 仅作 *语法级* 静态检查（-fsyntax-only）；

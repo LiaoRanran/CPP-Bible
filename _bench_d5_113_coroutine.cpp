@@ -63,5 +63,5 @@ int main() {
     std::cout << "plain function : " << t_plain << " ms  (baseline)\n";
     std::cout << "coroutine      : " << t_coro  << " ms  (" << t_coro / t_plain << "x)\n";
     std::cout << "coroutine 单次调用 ≈ " << (t_coro / N * 1e6) << " ns/call\n";
-    return (int)g_sink;
+    return 0;
 }

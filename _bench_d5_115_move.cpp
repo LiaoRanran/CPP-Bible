@@ -70,5 +70,5 @@ int main() {
     std::cout << "vector move : " << mv << " ms  (" << cv / mv << "x)\n";
     std::cout << "string copy : " << cs << " ms\n";
     std::cout << "string move : " << ms << " ms  (" << cs / ms << "x)\n";
-    return (int)g_sink;
+    return 0;
 }

@@ -67,5 +67,5 @@ int main() {
         bench_atomic(nt);
         bench_mutex(nt);
     }
-    return (int)g_sink;
+    return 0;
 }
