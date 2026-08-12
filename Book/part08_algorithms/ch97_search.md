@@ -208,30 +208,28 @@ int lower_bound_idx(const int* first, int n, int value) {
 
 ```asm
 ; GCC 15.3.0 -O2 -masm=intel，符号 _Z15lower_bound_idxPKiii
+; 完整产物见 Examples/_ch97_search_lower_bound_idx.asm
 _Z15lower_bound_idxPKiii:
-	movsxd	rdx, edx
 	mov	rax, rcx
-.L3:
-	test	rdx, rdx
-	jle	.L7
+	jmp	.L3
 .L4:
-	mov	r9, rdx
-	sar	r9
-	cmp	DWORD PTR [rax+r9*4], r8d
-	jge	.L5
-	sub	rdx, r9
-	lea	rax, 4[rax+r9*4]
-	sub	rdx, 1
-	test	rdx, rdx
+	mov	r9d, edx
+	sar	r9d
+	movsxd	r10, r9d
+	cmp	DWORD PTR [rax+r10*4], r8d
+	jl	.L7
+	mov	edx, r9d
+.L3:
+	test	edx, edx
 	jg	.L4
-.L7:
 	sub	rax, rcx
 	sar	rax, 2
 	ret
-.L5:
-	mov	rdx, r9
+.L7:
+	add	r9d, 1
+	lea	rax, 4[rax+r10*4]
+	sub	edx, r9d
 	jmp	.L3
-
 ```
 
 - `[实现·GCC15.3.0]`：循环体核心是 `mid = n/2`、`cmp [first+mid]`,`value`、按比较结果收缩到左半或右半。`sar r9` 即除以 2；`lea rax,4[rax+r9*4]` 把起点右移到 `mid+1`。这是教科书二分，且 **不内联比较函数**（裸指针 + `int` 比较被直接译为目标码 `cmp`）。

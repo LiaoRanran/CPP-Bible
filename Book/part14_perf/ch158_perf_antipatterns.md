@@ -77,6 +77,33 @@ struct Hot{ int f(int x){return x*2;} }; // ✅ 非虚，直接调用
 int main(){ Hot h;std::cout<<h.f(21)<<std::endl;return 0; }
 ```
 
+### 实现·GCC 15.3.0：`s.area()` 在机器层的真实样子
+
+`Hot::f` 是非虚函数，**直接调用**（`call Hot::f`，可被内联）。而 `compute_area(const Shape&)` 接收基类引用、动态类型在编译期未知，按语言规则必须走 **vtable 间接调用**。下面是其 **GCC 15.3.0 `-O2 -masm=intel` 真实反汇编**——注意 GCC 会做「推测去虚拟化（speculative devirtualization）」：先比对 vtable 槽位是否正好是 `Circle::area`，命中则**直接内联**面积计算；否则退回真正的间接跳转 `jmp rax`：
+
+```asm
+; GCC 15.3.0 -O2 -masm=intel，符号 _Z12compute_areaRK5Shape
+; 完整产物见 Examples/_ch158_vcall.asm
+_Z12compute_areaRK5Shape:
+	lea	rdx, _ZNK6Circle4areaEv[rip]   ; 推测目标 = Circle::area
+	mov	rax, QWORD PTR [rcx]           ; rax = 对象 vtable 指针
+	mov	rax, QWORD PTR 16[rax]         ; 取 vtable 第 2 槽（area，含析构对）
+	cmp	rax, rdx
+	jne	.L10                           ; 若不是 Circle::area → 走间接调用
+	movsd	xmm1, QWORD PTR 8[rcx]        ; 命中：直接内联面积计算 πr²
+	movsd	xmm0, QWORD PTR .LC0[rip]
+	mulsd	xmm0, xmm1
+	mulsd	xmm0, xmm1
+	ret
+.L10:
+	rex.W jmp	rax                      ; ← 真正的虚调用：间接跳转，无法内联
+```
+
+要点（对照 §⑤ 论点）：
+
+- 当编译器**无法证明**动态类型时，热路径上会多出一次 **vtable 加载 + 间接跳转**（`jmp rax`）。间接分支无法内联、破坏分支预测、且阻碍后续优化——这就是「虚函数间接调用」的机器级代价。
+- GCC 的推测去虚拟化能消去*已知*派生类型的虚调用，但只对**单实现/可被分析**的场景有效；只要多态集合在编译期不可见（动态库、跨 TU、运行时注册），间接调用就**必须**保留。所以「用 CRTP / 模板策略 / `final` 标注」去虚拟化仍是性能敏感代码的有效手段（见 ch45 对象模型、ch72 表达式模板）。
+
 ## ⑥ 异常在热路径 [经验]
 
 ```cpp

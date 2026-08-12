@@ -1069,6 +1069,30 @@ int main() {
 
 `[经验]` `packed` 结构体访问成员可能产生未对齐加载（x86 上有性能代价，某些架构直接 fault）。仅用于序列化/硬件寄存器映射。
 
+### 实现·GCC 15.3.0：padding 在机器码层面的铁证
+
+上面的 `Packet { char tag; int id; double value; }` 在 System V AMD64 ABI 下布局为 `tag@0 / [pad 1..3] / id@4 / value@8`（`sizeof = 16`，`align = 8`）。下面三个访问器函数的**真实反汇编**（GCC 15.3.0 `-O2 -masm=intel`）直接把这条规则钉死在机器码里：
+
+```asm
+; GCC 15.3.0 -O2 -masm=intel，符号 _Z7read_idPK6Packet / _Z10read_valuePK6Packet / _Z7set_tagP6Packetc
+; 完整产物见 Examples/_ch35_struct_padding.asm
+_Z7read_idPK6Packet:
+	mov	eax, DWORD PTR 4[rcx]      ; id 在 offset 4：tag(1B) 之后填了 3 字节 padding
+	ret
+_Z10read_valuePK6Packet:
+	movsd	xmm0, QWORD PTR 8[rcx]   ; value 在 offset 8：按 double 的 8 字节对齐落位
+	ret
+_Z7set_tagP6Packetc:
+	mov	BYTE PTR [rcx], dl         ; tag 在 offset 0：紧挨结构体首地址
+	ret
+```
+
+要点：
+
+- `read_id` 用 `4[rcx]` 取 `id`，证明 `char tag` 之后确有 3 字节空洞——这正是「成员顺序影响内存占用」的根本原因（对比 P24 中 `A` 与 `B` 的 `sizeof` 差异）。
+- `read_value` 用 `8[rcx]` 取 `double`，证明聚合类型对齐取「最严格成员对齐」（`double` 的 8 字节），`id` 之后不必再 pad。
+- 整个函数体被优化成单条 `mov; ret`——编译器在编译期就把偏移算死，运行时零计算。这条「偏移是编译期常量」的性质，正是 `(memcpy / 反射 / 序列化) 必须配合 `offsetof` / 显式布局」的底层依据（见 ch44 内存池、ch126 MS STL 布局技巧）。
+
 ---
 
 ## std::alignment_of（<type_traits>）真实源码

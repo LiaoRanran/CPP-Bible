@@ -180,6 +180,18 @@ int main() {
 }
 ```
 
+> `[实现·GCC15.3.0]` 上面 `bad()`（返回局部引用）在 GCC 15 已升级为**硬错误**；下面用语义等价的**指针版** `bad_ptr()` / `good_ptr()` 给出真实反汇编——二者都"返回即将随栈帧回退而消失的地址"。注意 `bad_ptr` 在 **-O2 被直接优化成 `xor eax, eax; ret`（返回 0 / nullptr）**：这正是 §⑩ / §⑪ 的核心论点——**UB 不是运行时报错，而是"编译器可任意处理"**。对照 -O0 版本（完整见 `Examples/_ch28_dangling_ref_O0.asm`）：前端同样把 `bad_ptr` 缓解为 `mov eax, 0`，而 `good_ptr` 始终返回稳定的静态地址 `_ZZ8good_ptrvE1x`。
+
+```asm
+; GCC 15.3.0 -O2 -masm=intel，符号 _Z7bad_ptrv / _Z8good_ptrv
+; 完整产物见 Examples/_ch28_dangling_ref.asm
+_Z7bad_ptrv:
+	xor	eax, eax
+	ret
+_Z8good_ptrv:
+	lea	rax, _ZZ8good_ptrvE1x[rip]
+	ret
+```
 ### 3.2 线程存储期（thread_local）
 
 `[标准]` [basic.stc.thread]：声明为 `thread_local` 的对象，其存储在**每个线程**首次使用前创建、线程结束时销毁——生存期绑定到线程而非块或程序。

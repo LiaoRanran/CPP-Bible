@@ -188,8 +188,8 @@ sequenceDiagram
 **示例：view 管道 vs 手写循环**——在 `-O2` 下，简单 `transform`/`take` 管道常被完全优化成与手写循环相同的汇编。
 
 ```cpp
-// 文件：Examples/ch90_view_asm.cpp
-// 编译：g++ -std=c++23 -O2 -S -masm=intel ch90_view_asm.cpp -o ch90_view_asm.asm
+// 文件：Examples/_ch90_view_asm.cpp
+// 编译：g++ -std=c++23 -O2 -S -masm=intel _ch90_view_asm.cpp -o _ch90_view_asm.asm
 #include <vector>
 #include <ranges>
 #include <iostream>
@@ -202,18 +202,46 @@ long sum_even(const std::vector<int>& v) {
 int main() { std::vector<int> v{1,2,3,4,5}; return (int)sum_even(v); }
 ```
 
-```x86asm
-; -O2 下 filter 的「跳过奇数」被编译为循环内的 test+jne，无函数调用边界：
-;   .L6:
-;       mov     eax, DWORD PTR [rdx]
-;       test    al, 1
-;       jne     .L7          ; 奇数 -> 跳过
-;       add     rbx, rax     ; 偶数累加
-;   .L7:
-;       add     rdx, 4
-;       cmp     rdx, rcx
-;       jne     .L6
-; 这与手写 for + if (n%2==0) 生成几乎相同的汇编 —— 证明 view 零开销
+```asm
+; GCC 15.3.0 -O2 -masm=intel，符号 _Z8sum_evenRKSt6vectorIiSaIiEE
+; 完整产物见 Examples/_ch90_view_asm.asm
+_Z8sum_evenRKSt6vectorIiSaIiEE:
+	mov	r8, QWORD PTR 8[rcx]      ; end   = v.end()（vector 的第二个字）
+	mov	rcx, QWORD PTR [rcx]      ; begin = v.begin()
+	cmp	r8, rcx
+	jne	.L4
+	jmp	.L8
+.L4:
+	mov	edx, DWORD PTR [rcx]
+	test	dl, 1
+	jne	.L14                      ; 奇数 -> 跳过（谓词 lambda 已内联进循环体）
+	xor	r9d, r9d
+	cmp	r8, rcx
+	je	.L1
+.L7:
+	lea	rax, 4[rcx]
+	add	r9d, edx                  ; 偶数累加进 s
+	cmp	r8, rax
+	jne	.L6
+	jmp	.L1
+.L15:
+	add	rax, 4
+	cmp	r8, rax
+	je	.L1
+.L6:
+	mov	edx, DWORD PTR [rax]
+	mov	rcx, rax
+	test	dl, 1
+	jne	.L15                      ; 下一个奇数 -> 继续跳过
+	cmp	rax, r8
+	jne	.L7
+.L1:
+	mov	eax, r9d                  ; 返回累加和 s
+	ret
+.L8:
+	xor	r9d, r9d
+	mov	eax, r9d
+	ret
 ```
 
 - `[实现]`：没有为 `filter_view` 单独生成一层函数调用；谓词 lambda 被内联进循环体，`-O2` 下与手写等价。

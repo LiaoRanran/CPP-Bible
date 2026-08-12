@@ -714,6 +714,31 @@ monotonic_buffer_resource(void* __buffer, size_t __buffer_size,
 
 **核心知识点 #14/15**：栈缓冲 + bump pointer，不释放直至销毁/ `release()`；典型用途是临时构建。
 
+### 实现·GCC 15.3.0：bump pointer 在机器码层面就是「一次加法 + 一次存回」
+
+上面 `_M_current_buf = (char*)_M_current_buf + __bytes` 这一行，在真实编译后**没有任何分支、没有链表遍历、没有系统调用**——它就是「读指针、加偏移、存回、返回」。下面用极简 bump allocator 给出 **GCC 15.3.0 `-O2 -masm=intel` 真实反汇编**：
+
+```asm
+; GCC 15.3.0 -O2 -masm=intel，符号 _Z13bump_allocateRPcS_y
+; 完整产物见 Examples/_ch38_bump_allocate.asm
+_Z13bump_allocateRPcS_y:
+	mov	rax, QWORD PTR [rcx]      ; p = *cur  （rcx = &cur，引用即指针的指针）
+	add	r8, rax                   ; r8 = p + n
+	cmp	rdx, r8                   ; 比较 end 与 p+n
+	jb	.L3                       ; end < p+n → 缓冲耗尽，跳去返回 nullptr
+	mov	QWORD PTR [rcx], r8       ; *cur = p + n   ← 这就是「指针碰撞 / bump」
+	ret
+.L3:
+	xor	eax, eax                  ; return nullptr（rax = 0）
+	ret
+```
+
+要点（对照 §⑩ 源码）：
+
+- `mov QWORD PTR [rcx], r8` 即 `_M_current_buf += __bytes`——**单条 store 完成分配**，这正是 `monotonic_buffer_resource` 比通用 `malloc` 快一个数量级的根因（D5 基准已量化）。
+- `jb .L3` 失败路径直接 `xor eax, eax; ret` 返回空——真实实现里这里会调 `_M_new_buffer` 向上游要新缓冲，但「无空闲即返回空」的契约在机器层一目了然。
+- 注意 `deallocate` 是空操作（§⑩ 源码 `do_deallocate` 为空）：bump 资源的内存**直到 `release()`/析构才归还**，所以连续分配之间零簿记——代价是「不能单独释放中间块」。这条权衡在 D5.2 非显然结论里有量化佐证。
+
 **核心知识点 #19（do_is_equal 重要性，在此提前点题）**：`monotonic` 用 `this == &other` 判断等价（见上 `do_is_equal`），因为**只有同一个 monotonic 实例才认得彼此的旧指针**——若把 A 分配的内存交给 B 去 `deallocate`（即便类型相同），B 不会释放（它的 `do_deallocate` 是空），造成逻辑错误。这解释了为何 PMR 用「指针相等」而非「类型相等」判断资源等价。
 
 程序 13：`monotonic` 基础用法（独立）：
