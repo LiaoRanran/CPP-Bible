@@ -846,6 +846,61 @@ int main() {
 3. **与 libc++ 切换**：用 Clang 时加 `-stdlib=libc++` 改用 LLVM 实现；但**两套 ABI 的 `.o` 不能混链**（`std::string` 布局与符号 mangling 不同），整个工程必须统一。
 4. **部署注意**：若目标机 GCC 较旧，`libstdc++.so.6` 版本可能偏低，可用 `-D_GLIBCXX_USE_CXX11_ABI=0` 统一到旧 ABI，或随程序带上较新的 `.so`。
 
+## ㉒ 历史深挖：从 SGI 到 GPL，再到「绝不破 ABI」的二十年
+
+`libstdc++` 的血脉可以一直追到 Stepanov 的 **STL（Standard Template Library）**：1994 年惠普将 Stepanov 与 Meng Lee 的 STL 以宽松许可捐给 GCC 社区，早期的 `libg++` 与 `libstdc++`（v1/v2）基本是这套预标准模板的直接移植。真正分水岭是 **2001 年 GCC 3.0 的 `libstdc++-v3` 重写**——这一版由 Benjamin Kosnik、Phil Edwards 等人主导，把头文件按今日仍在用的 `bits/` 分层组织，并把「模板实现」与「链接期符号」彻底解耦。它之所以叫 v3，是因为此前已有两代不成功的内部实现（v1 跟随 GCC 2.x，v2 短暂存在于 GCC 2.95），「推倒重写」在 libstdc++ 历史上是常态而非例外。
+
+许可是 libstdc++ 与 libc++ 的根本分歧点。libstdc++ 随 GCC 采用 **GPLv3 + 运行时库例外（GCC Runtime Library Exception）**：这条规定允许「仅仅链接」libstdc++ 的程序不受 GPL 感染，但修改 libstdc++ 本身仍受 copyleft 约束。这正是 2010 年前后 Apple 宁可另造 libc++ 也不继续依赖它的深层原因——GPL 的传染性在 Apple 的闭源生态里是不可接受的合规成本。libstdc++ 团队为此长期背着一个矛盾：既要「自由许可守护」，又要「十年 ABI 不变」。
+
+`_GLIBCXX_USE_CXX11_ABI` 这个旋钮背后是 **GCC 5（2015 年）由 Jason Merrill 主导的 ABI 断裂决策**。旧 ABI 的 `std::string` 是写时拷贝（COW）指针，源于 SGI STL 时代「拷贝廉价」的假设；C++11 标准明确要求 `operator[]`/迭代器不得使引用失效，COW 因此被标准间接判死刑。但 libstdc++ 不能像 libc++ 那样「直接废弃旧布局」——它选择用 `inline namespace __cxx11` 把新类型隔离，旧 `.so` 仍可加载旧符号，靠 **符号版本（symbol versioning）** 在同一 `libstdc++.so.6` 里同时导出 `GLIBCXX_3.4`（旧）与 `CXXABI_1.3.x`（新）。这种「宁可背负历史，也要二进制兼容」的策略，使 libstdc++ 成为今天 Linux 上最「老程序仍能跑」的标准库，代价是 `--with-default-libstdcxx-abi` 这类配置旋钮和一堆历史宏。
+
+> 史料锚点（真实年份）：
+> - GCC 3.0 / libstdc++-v3：2001-04-16 发布，确立 `bits/` 分层（见 §0.2）。
+> - GCC 5.1：`_GLIBCXX_USE_CXX11_ABI` 默认翻转为 1，新 SSO `std::string` 上线（见 §0.3/⑧）。
+> - GCC 11 起逐步移除 `_GLIBCXX_USE_CXX11_ABI=0` 的过渡路径，旧 COW 字符串进入「仅历史兼容」状态。
+
+## ㉓ 与 C++ 标准的互动：libstdc++ 如何追标准、又如何反哺
+
+libstdc++ 与 WG21 的关系分两层：**吸收标准** 与 **暴露特性测试宏**。`bits/version.h` 的 `__glibcxx_want_*` / `__cpp_lib_*` 机制（见 附录 D4）是「标准 → 实现」的桥梁：每个 C++20/23 设施都在 `version.def` 里有一行 FTM 定义，库的其它头靠 `#define __glibcxx_want_xxx` 来启用对应特性。一个常被低估的事实是——libstdc++ 对标准的「追赶」有真实时间差：`<regex>` 在 C++11 名义上可用，但 libstdc++ 的 `std::regex` 长期存在回溯灾难与功能缺陷，直到 P0442R3（2018）一类修订与后续多年修复才基本可用；`<filesystem>` 在 GCC 8（`std::filesystem`）与 GCC 9（`std::experimental::filesystem` 转正）分两阶段落地，且早期 `std::filesystem::path` 的宽字符处理有发行版级 bug。
+
+它也在反向影响标准。**Ranges（P0896R4）** 的很多实现经验先于标准定稿被 libstdc++/libc++ 试做；`std::span`（P0122R8 / P1024）的 `extent` 设计在 libstdc++ 落地后才被 WG21 收紧；`std::pmr`（P0220R1）的多态分配器抽象先在 libstdc++ 里跑通，才成为 C++17 正式条款。下表给出 libstdc++ 各代 GCC 对代表性标准的落地节奏（以 GCC 主线为准，非逐字摘录）：
+
+| 标准特性 | WG21 提案 | libstdc++ 基本就绪 | 备注 |
+|---|---|---|---|
+| `std::string_view` | P0220R1 / P0254 | GCC 7（2017） | 头 `string_view` |
+| `std::optional` / `variant` | P0220R1 | GCC 7 |  |
+| `std::filesystem` | P0218R1 / P0392 | GCC 8（实验）/ GCC 9（正式） | 早期 path bug 多 |
+| `std::pmr` | P0220R1 | GCC 9 |  |
+| `std::format` | P0645R10 | GCC 13（2023，部分运行期） | 本地化至 GCC 14/15 |
+| `<ranges>` | P0896R4 | GCC 10 起逐步、GCC 13 基本完备 | `views::*` 持续补 |
+| `std::expected` | P0323R10 | GCC 12 |  |
+| `std::mdspan` | P0009R18 | GCC 15 |  |
+| `import std;` 模块 | P2465R3 | GCC 15（`-fmodules`，实验） |  |
+
+> 注意「基本就绪」≠「零偏差」：WG21 的 **Defect Report（DR）** 会回溯修改已发布标准，libstdc++ 的 `std::ranges` 行为在不同 GCC 小版本间可能因 DR 应用而漂移——这正是「实现追标准」的常态。
+
+## ㉔ 生产踩坑实录：双 ABI、符号版本与隐形崩溃
+
+**坑 1：GLIBCXX 符号版本错配**。同一台机器上若两块 `.o` 来自不同 GCC 主版本，链接时可能「成功」但加载期报 `undefined reference to '...GLIBCXX_3.4.21'`（高版本才有的符号）。排查用 `strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX` 看该 `.so` 支持的最高符号版本，再用 `nm -C a.out | grep 'GLIBCXX_3.4'` 看目标文件需要的版本。根治：整链路用同一 GCC，或静态链 `-static-libstdc++`。
+
+**坑 2：双 ABI 静默内存错乱**。若库 A 用 `_GLIBCXX_USE_CXX11_ABI=0`（旧 COW `std::string`，8 字节）编译，主程序用默认 1（新 SSO，32 字节），跨边界传递 `std::string` 时链接可能「成功」、运行期堆错乱或崩溃——因为两边 `sizeof(std::string)` 与析构语义不同。GDB 下 `p sizeof(std::string)` 一眼分辨（旧 8 / 新 32）。统一宏值是唯一正解（见 ⑰/⑱）。
+
+**坑 3：`<chrono>` 时区数据库缺失**。`std::chrono::current_zone()` / `zoned_time` 需要一份 IANA tzdata；libstdc++ 默认**不打包**这份数据，而是运行时去 `/usr/share/zoneinfo` 查找。最小容器（如 alpine/distroless）漏打包时，`std::chrono::current_zone()` 会抛 `std::runtime_error` 类错误，现象是「看着在、用就抛」——这正是 Linux 容器里典型的发行版打包坑（见 §0.4 轶事）。
+
+**坑 4：`_GLIBCXX_USE_CXX11_ABI=0` 的性能与体积反噬**。回退旧 ABI 不只损失 SSO，还让 `std::list` 等容器布局回到旧式、并保留 COW 引用计数路径；在字符串密集的热路径上可能反而更慢、且体积更大。除非要兼容十几年前的旧 `.so`，否则不要主动回退。
+
+> 这些坑的共同根因都是「ABI 是二进制契约，而标准只是语义契约」：同一份 `std::string` 源码，在不同 ABI 设置下生成的内存布局与 mangled 名完全不同。设计 API 边界时用 `std::string_view` / `std::span` / `const char*`（见 ⑱）能从根上绕开。
+
+## ㉕ 权威引用与史料
+
+- libstdc++ 官方手册（目录、Dual ABI、调试模式）：<https://gcc.gnu.org/onlinedocs/libstdc++/>
+- GCC C++ 标准支持状态（逐特性落地表）：<https://gcc.gnu.org/projects/cxx-status.html>
+- libstdc++ Dual ABI 文档（新/旧 `std::string`）：<https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html>
+- libstdc++ 源码镜像（标签/提交级真实行号）：<https://github.com/gcc-mirror/gcc/tree/master/libstdc%2B%2B>
+- WG21 提案索引（Ranges/format/expected/pmr 等）：<https://wg21.link/>
+- 特性测试宏标准：<https://en.cppreference.com/w/cpp/feature_test>
+- GCC Runtime Library Exception（许可边界）：<https://gcc.gnu.org/onlinedocs/libstdc++/manual/license.html>
+
 ## 附录 A：libstdc++ vs libc++ vs MS STL [D: stdlib / B: Principle]
 
 | 维度 | libstdc++ (GCC) | libc++ (Clang) | MS STL |

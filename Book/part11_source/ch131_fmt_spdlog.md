@@ -730,6 +730,51 @@ int main() {
 - `[平台·Windows]`：fmt / spdlog 均为 header-only，跨平台零依赖；链接只需把包含目录与（静态）库指对。
 - `[引用]` fmt 文档：`https://fmt.dev/latest/`；spdlog：`https://github.com/gabime/spdlog`。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动（P0-11 扩写）
+
+> 本节为 P0-11 质量战役「应用/工程章」扩写大波次之一：在 ㉑ 工程落地的基础上，进一步压实历史出处、真实产业坐标、生产级踩坑与「fmt→std::format」的提案链路。引用链接列于文末。
+
+### ㉒.1 历史渊源补强：从 cppformat 到 std::format
+
+在 0.1–0.4 基础上补强：**fmt**（原名 cppformat）由 **Victor Zverovich** 于约 2012 年发起，动机直白——`printf` 格式串与参数类型靠人脑对齐、易错位且无类型安全；`<iostream>` 虽类型安全却冗长、排版难、运行时开销大。fmt 用 `{}` 占位符 + 编译期格式串检查，把两者优点合流，其 `{}` 语法灵感部分来自 Python 的 `str.format`（Zverovich 曾公开致意）。在其之上，**spdlog** 由 **Gabi Melman** 约 2014 年构建，把 fmt 的格式化能力包装成高性能、仅头文件的日志库。2020 年 fmt 的设计被吸收进 **C++20 的 `std::format`**（提案 **P0645R10**，由 Zverovich 主导），**C++23 的 `std::print`**（提案 P2093R14）随后跟进；fmt 11（2024）把基线抬到 C++17，并继续领跑编译期格式检查与本地化等标准尚未覆盖的能力。
+
+### ㉒.2 真实工程坐标：fmt / spdlog 活在哪些系统里
+
+- **fmt → 直接成为 C++20 标准**：`std::format` 在语义与 API 上几乎逐字吸收 fmt（`basic_format_string`、`formatter` 特化、`format_to`），这是「第三方库反哺标准」最成功的案例之一；任何用 C++20 的编译器都内置了 fmt 思想。
+- **spdlog**：GitHub 上星标最高的现代 C++ 日志库之一，被大量**后端服务、游戏辅助工具、嵌入式固件、量化交易系统**采用；其「仅头文件、异步也能快」的定位使它成为 `log4cpp`/`glog` 的现代替代品。典型落地形态：高吞吐服务端用 `spdlog::async_factory`（有界 MPSC 队列 + 后台写入线程）解耦 I/O 与业务线程；嵌入式用同步 `basic_file_sink_mt` 落盘。
+- **跨生态影响**：fmt 的 `{}` 语法被多种语言/库借鉴；spdlog 通过「一次 `fmt::formatter<T>` 特化，fmt 与 spdlog 同时受益」的共用格式化层，成为领域类型日志的事实标准。
+
+### ㉒.3 生产踩坑：格式串注入、悬垂、异步、性能
+
+- **格式串注入（Format String Injection）**：把**外部/用户输入**当格式串传入 `fmt::format(user_input, args...)` 是严重漏洞——既绕过编译期检查，又允许攻击者通过 `{:x}` 等说明符泄漏内存或触发崩溃。修复铁律：**格式串必须是编译期常量**（字面量，或 fmt 8+ 的 `consteval` 检查自动生效；旧版用 `FMT_STRING(...)`）。凡格式串来自配置/网络，必须显式 `fmt::runtime(...)` 并仅用于可信模板。
+- **悬垂 `string_view`/引用进异步日志**：spdlog 异步模式下，消息被推入队列、**后台线程稍后格式化**。若传入指向**栈上临时**的 `string_view` 或 `const char*`，等后台线程处理时已悬垂 → 读到垃圾/崩溃。修复：异步日志只传**值**（`std::string`、算术类型），不传引用/视图。
+- **格式化异常吞没**：fmt 遇类型不匹配（如 `{:d}` 配 `std::string`）抛 `fmt::format_error`；若在日志路径未捕获，一条坏日志能拖垮请求。建议库代码在边界 catch `format_error`，服务端保持 spdlog 默认「不抛」。
+- **性能：避免每条都分配**：`fmt::format` 返回 `std::string`（必有堆分配）；热路径要用 `fmt::format_to` + 复用 `fmt::memory_buffer`（零重复分配）。spdlog 热路径用 `*_mt` sink 并优先异步；`SPDLOG_DEBUG` 宏在编译期按 `SPDLOG_ACTIVE_LEVEL` 剔除，比运行时 `should_log` 更彻底。
+- **异步 overflow_policy 的权衡**：有界 MPSC 队列满时，`block`（默认）会**阻塞业务线程**保证不丢日志；`overrun_oldest` 丢弃最旧消息、不阻塞。没有银弹——按「日志重要性 vs 延迟敏感度」显式选择并注释。
+
+### ㉒.4 与标准的互动：`std::format` 的提案链路
+
+fmt 是 `std::format` 的事实先行者，提案链路如下：
+
+| 设施 | 标准 | 关键提案 | 主导 |
+|---|---|---|---|
+| `{}` 占位符 + 编译期格式串检查 | `std::format`（C++20） | **P0645R10** | Victor Zverovich |
+| `formatter<T>` 特化 / `format_to` | `std::formatter` / `std::format_to`（C++20） | P0645R10 同族 | — |
+| 直接写 stdout | `std::print`（C++23） | P2093R14 | 同生态 |
+| 更多编译期/constexpr 格式化 | `std::format` 增强（C++23） | P2216R3（`std::format` improvements） | — |
+| 本地化格式 | `std::format` locale 支持 | P1892R0 等 | — |
+
+> 非显然结论：`std::format` 在**不损失（甚至超越）** `snprintf` 性能的同时提供编译期类型安全，正面反驳「类型安全必然更慢」。在 GCC 15.3.0 本机基准中（见附录 D5），`std::format` 比 `std::ostringstream` 快约 1.42×、比 `std::snprintf` 快约 1.48×，且类型最安全。
+
+### ㉒.5 权威引用
+
+- fmt 官网与文档：<https://fmt.dev/latest/>
+- fmt 源码：<https://github.com/fmtlib/fmt>
+- spdlog 源码：<https://github.com/gabime/spdlog>
+- `std::format` cppreference：<https://en.cppreference.com/w/cpp/utility/format>
+- `std::format` 提案 P0645R10：<https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0645r10.html>
+- `std::print` 提案 P2093R14：<https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2093r14.html>
+
 ## 附录 E：fmt/spdlog工业 [UNVERIFIED]
 
 fmt(P0645R10): C++20 std::format前身; 编译期格式验证; 比cout快5-10x(无locale/mutex)

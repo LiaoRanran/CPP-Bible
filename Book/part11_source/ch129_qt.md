@@ -793,6 +793,43 @@ A: 移除 QTextCodec (改用 UTF-8), QVector=QList 统一, CMake 成为首选构
    QML 6 引入强类型 + 编译器, 废弃 Qt5 的 QML 引擎
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动（P0-11 扩写）
+
+> 本节为 P0-11 质量战役「应用/工程章」扩写大波次之一：在 ㉑ 工程落地的基础上，进一步压实历史出处、真实产业坐标、生产级踩坑与「Qt 与 C++ 标准反射」的互动。引用链接列于文末。
+
+### ㉒.1 历史渊源补强：从超声仪到桌面帝国
+
+在 0.1–0.4 的基础上补几条常被忽略的事实：**Haavard Nord** 与 **Eirik Chambe-Eng** 于 1991 年在挪威特隆赫姆（Trondheim）相识，1994 年创立 **Trolltech**（「Qt」的 Q 来自公司曾用名 Quasar Technologies，t 是 toolkit），1995 年发布 **Qt 1.0**。`signals`/`slots` 的雏形来自 Eirik 给医疗超声设备写跨平台 GUI 时「事件像广播一样被订阅」的直觉。真正让 Qt 活下来的盟友是 **KDE**——1996 年 **Matthias Ettrich** 选 Qt 做统一 Linux 桌面底座；这把 Qt 推上自由软件中心舞台，也引爆了 **QPL 与 GPL 不兼容** 的许可战争：1997 年 **Miguel de Icaza** 愤而另造全 GPL 的 GTK+/GNOME；2000 年社区发起净室逆向 Qt 的 **Harmony 计划**。转机是 2008 年 **Nokia 以约 1.04 亿欧元（~1.5 亿美元）收购 Trolltech**，以及 2009 年 Qt 改用 **LGPL v2.1**——闭源商业软件只要动态链接即可合法免费用，这一步把 Qt 从「桌面玩具」变成「工业级 GUI 标准件」。2011 年 Nokia 将 Qt 卖给 **Digia**，2014 年分拆出 **The Qt Company**；Qt 6.0（2020）全面切到 CMake、要求 C++17 基线、用 QRhi 抽象图形栈。
+
+### ㉒.2 真实工程坐标：Qt 活在哪些产品里
+
+- **桌面与开源旗舰**：整个 **KDE** 桌面生于 Qt；**VLC**、**Wireshark**、**VirtualBox**、**OBS Studio** 的界面均基于 Qt；**Telegram Desktop** 用 Qt Widgets 从单一代码库产出跨平台客户端；**Qt Creator** 本身是纯 Qt C++ 写的大型 IDE。
+- **商业与办公软件**：**WPS Office**（金山）的跨平台版本使用 Qt；**Autodesk** 部分产品（如部分建模/查看器组件）采用 Qt；**Wolfram Mathematica** 的 Notebook 前端基于 Qt。
+- **汽车座舱与嵌入式 HMI**：多家德系与国产车企的座舱/中控（如早期 **Tesla Model S/X 的 MCU 界面** 即基于 Qt；**Mercedes-Benz MBUX** 部分 UI 生态与 Qt 密切关联）、医疗设备面板、工业触摸屏——这些领域要的是「原生性能 + 跨平台 + 长生命周期维护」，正是 Qt 因那台超声机而生的初衷。
+- **影视与创意工具**：**DaVinci Resolve**（Blackmagic Design）、**DJI** 部分地面站软件等亦以 Qt 为 UI 底座。
+
+### ㉒.3 生产踩坑：moc、信号槽、授权、ABI
+
+- **moc 缺失/未重跑**：改了含 `Q_OBJECT` 的类却报 `undefined reference to vtable for X`，几乎都是 moc 没重跑或 `moc_*.cpp` 没进构建。现代工程靠 CMake 的 `AUTOMOC`/`AUTOUIC`/`AUTORCC` 自动介入，不应再手动跑 moc；但 CI 里若缓存了旧的 moc 产物，同样会静默出错。
+- **旧式 `SIGNAL`/`SLOT("clicked(int)")` 字符串连接**：匹配推迟到运行期，拼错只会在运行期崩；必须改用新式成员函数指针 `connect(&b,&Button::clicked,&l,&Label::on_clicked)`，获得编译期类型检查。
+- **授权陷阱（LGPL/GPL/商业）**：LGPL v2.1/3.0 允许闭源软件**动态链接** Qt 而不开源自己的代码，但若**静态链接**则需提供可重链接的对象文件/手段，且**修改了 Qt 自身源码**则有义务公开修改；GPL 版本则要求整个衍生作品开源。因此闭源商业产品要么动态链接并遵守 LGPL 的「可替换性」义务，要么购买 **The Qt Company 的商业许可**（含 Qt for Small Business 档）。2023 年 Qt 调整商业授权再次引发社区争议，说明授权之争从 2000 年的 QPL/GPL 一路延续至今。
+- **ABI 稳定性**：Qt 承诺**同一主版本内**的向后二进制兼容（如 Qt 5.x → 5.y 可替换 `.so`/`.dll` 而不重编），但**跨主版本（Qt5↔Qt6）二进制不兼容**——`QString` 内部编码（Qt5 UTF-16 / Qt6 UTF-8）、`QList` 布局都变了，必须重编；`QObject` 禁止拷贝（无拷贝构造/赋值），误按值传递会编译失败或切片。
+- **跨线程父子所有权**：把父对象设在不同线程的子对象上会触发 `QObject: Cannot create children for a parent that is in a different thread`；跨线程对象必须用 `deleteLater` 由目标线程事件循环释放。
+
+### ㉒.4 与标准的互动：moc 为何至今不可替代，以及 C++ 反射提案
+
+ISO C++ **至今（C++23）没有内建反射**。Qt 用独立的 **moc** 元对象编译器在标准 C++ 之上补了「运行时类型自省、动态方法调用（`invokeMethod`）、属性系统（`Q_PROPERTY`）、类型安全信号槽」四件套，比委员会路线图早了约 25 年。C++ 反射的标准化努力以 **P2996（静态反射，C++26 候选）** 为代表——即便落地，也主要覆盖**编译期**反射；Qt 的 `invokeMethod` 这种**运行时**动态调用仍需要类似 moc 的方案。Qt 也在主动向标准靠拢：Qt6 的 `QMetaType` 已支持 C++20 类型注册，`QString`/`QList` 与 `std::u8string`/`std::vector` 的互操作逐步增强。结论：**moc 短期看不到终点**，它是「标准慢、产品急」这一现实下被真实产品逼出来的务实选择。
+
+### ㉒.5 权威引用
+
+- Qt 官方文档总入口：<https://doc.qt.io/qt-6/>
+- 信号槽机制：<https://doc.qt.io/qt-6/signalsandslots.html>
+- 元对象系统（`Q_OBJECT`）：<https://doc.qt.io/qt-6/metaobjects.html>
+- 对象树与所有权：<https://doc.qt.io/qt-6/objecttrees.html>
+- Qt 源码（qtbase，含 `QMetaObject::activate`）：<https://github.com/qt/qtbase>
+- C++ 静态反射提案 P2996：<https://wg21.link/p2996>
+- Qt 公司博客/许可说明：<https://www.qt.io/blog>、<https://www.qt.io/licensing>
+
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |

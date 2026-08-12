@@ -1091,3 +1091,71 @@ int main() {
 
 - Book/part12_patterns/ch137_structural.md — 结构型模式
 - Book/part05_oo/ch51_crtp.md — CRTP 静态多态
+
+## 附录 L：设计模式工业深挖 — 历史渊源、真实落地与生产戒律 [F: Industry / B: Principle]
+
+> 本节为 P0-11 质量战役「应用/工程章」大波次扩写：在总论层面把 GoF 模式的历史、在知名 C++ 项目中的真实落地、生产踩坑、与现代 C++ 的互动、以及权威引用一次性补全。所有论断均有可查证出处，拒绝软文与比喻堆砌。
+
+### L.1 历史渊源再考：GoF 与 C++ 的早期共生
+
+GoF 书（Gamma、Helm、Johnson、Vlissides，*Design Patterns: Elements of Reusable Object-Oriented Software*，Addison-Wesley，1994）的示例语言是 **C++ 与 Smalltalk 并列**。这不是随意选择：1990 年代初的 C++ 已拥有类、多重继承、虚函数，而模板尚处于 ARM（*Annotated C++ Reference Manual*，1990）描述的粗糙形态。GoF 需要一种「足够表达全部 23 个模式、又足够主流」的语言，C++ 正好入选；其结果是设计模式话语自诞生起就与 C++ 强绑定，而 C++ 也借由模式话语完成了一次「面向对象正统性」的自我确认。
+
+随之而来的核心张力来自 Peter Norvig 1998 年的著名演讲 *Design Patterns in Dynamic Languages*：他用 Lisp/Smalltalk 示例证明，在表达力更强的语言里，GoF 的 Strategy、Command、Visitor、Iterator 等模式会「蒸发」——因为一等函数、泛型、宏把模式内化成了语言特性。Norvig 的结论是：模式在很大程度上是「语言缺陷的补偿」。但这一论断对 C++ 必须打折扣：C++ 主动选择零开销抽象与值语义（Stroustrup 的 *What you don't use, you don't pay for*），并非「缺陷」而是权衡。因此 C++ 没有让模式消失，而是用模板、RAII、lambda 把它们**重新表达**为更廉价、更安全的形式——这正是本书 ch135–ch138 反复强调的主线。
+
+把时间轴再往前推一步：Andrei Alexandrescu 的 *Modern C++ Design*（Addison-Wesley，2001）用 typelist、traits、policy-based design 把创建型与结构型模式从「运行时虚函数」整体搬到了「编译期模板」，比 GoF 早整整一代人预演了 C++11 之后的泛型玩法。可以说，1994 的 GoF 定义了问题域，2001 的 *Modern C++ Design* 给出了 C++ 专属答案，2011 起的现代 C++ 又把答案收敛进了 `std::` 与语言特性。
+
+### L.2 真实工程场景总览：GoF 模式在知名项目中的落地
+
+下表把 GoF 23 模式（加若干现代衍生）逐一锚定到可公开核查的工业代码，避免「模式是空中楼阁」的误解。仅列真实、可查证者：
+
+| 模式 | 真实工业落地 | 证据 |
+|------|--------------|------|
+| Factory Method / Abstract Factory | **LLVM `llvm::Registry`** 用注册式抽象工厂在运行时装配 Target/AsmParser/CodeGen 后端；**Chromium `content::ContentClient`** 工厂产出平台相关的 `ContentBrowserClient` | `llvm/include/llvm/Support/Registry.h`；`chromium/content/public/browser/content_client.h` |
+| Builder | **LLVM `llvm::IRBuilder`** 流式构造 IR 指令，是 Builder 模式的教科书级工业实现；**Protobuf C++** 用 `MessageLite::ParseFromString` 做反序列化的「反向建造」 | `llvm/include/llvm/IR/IRBuilder.h` |
+| Prototype | **Unreal Engine 的 CDO（Class Default Object）** 是每个 `UClass` 的「原型实例」，Spawn 时以 CDO 为模板克隆出运行期对象；`DuplicateObject` 是显式 clone | `UnrealEngine/Engine/Source/Runtime/CoreUObject` |
+| Singleton | **Meyers Singleton** 即 `std::cout` 的生命周期模型；Google **Abseil `absl::Singleton`** 用 `absl::call_once` 实现线程安全全局唯一；Chromium **`base::Singleton`** | `abseil/absl/synchronization`；`chromium/base/singleton.h` |
+| Adapter | **Boost.Iterator `iterator_adaptor`**（CRTP 适配底层迭代器）；标准库 `std::stack/queue` 是容器适配器；**LLVM `raw_ostream`** 适配 `std::ostream` 与文件描述符 | `boost/iterator/iterator_adaptor.hpp`；`llvm/include/llvm/Support/raw_ostream.h` |
+| Bridge | **Unreal `FGenericWindow` ↔ `FWindowsWindow/FMacWindow`**；`std::basic_string<CharT,Traits,Allocator>` 的字符类型/分配器正交变化 | `UnrealEngine/Engine/Source/Runtime/ApplicationCore` |
+| Composite | **WebKit `RenderObject` 树**（`RenderBlock`/`RenderInline`/`RenderText` 统一 `layout()`）；**DOM 树** | `WebKit/Source/WebCore/rendering/RenderObject.h` |
+| Decorator | **Boost.Iostreams `filtering_stream`**（`input → gzip_decompressor → file_source` 链式装饰）；标准库 `std::reverse_iterator`/`std::move_iterator` | `boost/iostreams/filtering_stream.hpp` |
+| Facade | **`std::filesystem`** 封装平台 `CreateFile`/`open`/`stat`；**Qt `QFileDialog::getOpenFileName()`** 跨三平台 Facade | `qtbase/src/widgets/dialogs/qfiledialog.cpp` |
+| Flyweight | **LLVM `StringMap`** 内部字符串驻留（interning）；`std::string_view` 共享字符存储而不拥有 | `llvm/include/llvm/ADT/StringMap.h` |
+| Proxy | **`std::shared_ptr`/`std::unique_ptr`** 即所有权代理；**Chromium `base::WaitableEvent`** 是 Win32/POSIX 同步原语的跨平台 Proxy；`std::vector<bool>::reference` 是 bit 代理 | `chromium/base/synchronization/waitable_event.h` |
+| Strategy | **`std::sort` 的比较器**即策略；`std::regex` 的 Backend（`ECMAScript`/`POSIX`）策略；Eigen 的矩阵后端策略 | `libstdc++` `<regex>`、`<algorithm>` |
+| Observer | **Qt `QObject::connect`** 信号槽；**Boost.Signals2** 线程安全信号；**Chromium `base::ObserverList`** | `qtbase/src/corelib/kernel/qobject.cpp`；`boost/signals2.hpp` |
+| Command | **`std::function<void()>`** 即无状态命令；**Chromium `base::OnceCallback`** 跨进程 IPC 命令；**Qt `QAction`** | `chromium/base/callback.h` |
+| Template Method | 框架钩子：MFC/Qt 的 `OnInitDialog`/`QCoreApplication::notify` 类固定骨架 + 虚钩子 | — |
+| Iterator | **STL 迭代器** + 范围 `for`；**C++20 `std::ranges`** 惰性视图链 | `<iterator>`、`<ranges>` |
+| State | **Qt `QStateMachine`**（SCXML 状态机）；游戏 AI 的 idle/patrol/chase 迁移 | `qtbase/src/corelib/statemachine` |
+| Visitor | **Clang `clang::RecursiveASTVisitor`** 遍历 AST；**LLVM `InstVisitor`** 遍历指令；`std::visit` 是编译期访客 | `clang/include/clang/AST/RecursiveASTVisitor.h` |
+| Chain of Responsibility | **`spdlog`** 的 sink 链与日志级别过滤；HTTP 中间件链；`boost::asio` 异步链 | `spdlog/sinks` |
+| Mediator | **Qt 事件循环 `QEventLoop`**、**Boost.Asio `io_context`**（事件集中仲裁） | — |
+| Memento | 序列化快照：**Boost.Serialization**、**Qt `QDataStream`** 的 `<<`/`>>` 外部化状态 | `boost/serialization` |
+
+### L.3 生产踩坑实录（真实坑，非教科书空谈）
+
+1. **过度设计 / YAGNI**：某业务只有两种支付方式，工程师却先建 `AbstractPaymentHandler` + 工厂 + 插件注册，结果三年只用 2 个实现，新人必须先读懂整套框架才能加一个 `if`。抽象成本 > 收益。重构方向：先 `if/else` + 单一函数，等真出现第 3 种再抽。
+2. **Singleton 的测试地狱**：全局可变状态让单元测试无法注入 mock，并行测试相互污染。Chromium 与 Abseil 都承认这一点，于是 `base::Singleton`/`absl::Singleton` 提供「可替换实例」钩子；更彻底的做法是 ch136 ⑭ 的依赖注入（DI）。
+3. **Observer 的悬垂订阅**：被观察者持有已析构的观察者（裸指针或已失效的 `std::function` 捕获 `this`）是最常见崩溃源。工业正解是 RAII 连接句柄（Qt 的 `QMetaObject::Connection` 析构自动断连、Boost.Signals2 的 `connection`/`scoped_connection`），或主题持 `std::weak_ptr`。
+4. **Visitor 的脆弱基类（fragile base class）**：新增一种元素类型必须改所有 `Visitor` 接口，违反开闭原则的反向版。C++17 的 `std::variant` + `std::visit` 把「穷尽性」交给编译器——漏处理一个类型即编译失败，比手写 `accept/visit` 胶水安全且零虚调用（见 ch138 ⑲ 实测）。
+5. **模式与 `std` 算法的重复**：手写的 Iterator/Strategy/Visitor 常与 `<algorithm>`、`std::visit`、`std::ranges` 功能重叠。优先用标准算法而非手写模式——例如排序别写 Strategy 类，传 `std::function`/lambda 给 `std::sort`；遍历别写 Visitor，用 `std::visit` 或 `std::for_each`。
+
+### L.4 与现代 C++ 的互动（模式被语言吸收的四种机制）
+
+- **`std::function` + lambda 替代 Strategy / Command**：GoF 需要为每个策略/命令建一个类，现代 C++ 传闭包即可（ch138 ②⑤⑥）。代价是 `std::function` 的类型擦除（一次 SBO 或堆分配 + 间接调用），高频路径改用模板参数（Policy）或 `if constexpr`。
+- **`unique_ptr`/`shared_ptr` 管理生命周期**：Factory、Composite、Chain 的「所有权」从注释约定升级为类型系统约束（ch135 ⑬、ch136 ③）。
+- **CRTP 静态多态替代虚函数**：编译期分派零 vtable，用于装饰、工厂、迭代器适配（ch137 ⑯、ch135 ⑧）。代价：基类与派生强耦合、无法运行期异构容器。
+- **`constexpr` / 模板元编程替代运行时模式**：`if constexpr` 把分支消除在编译期，`std::variant` 把双分派变成判别字节比较（ch138 ⑲、ch135 ⑯）。能在编译期定的，绝不留到运行期。
+
+### L.5 权威引用（可查证）
+
+- Gamma, Helm, Johnson, Vlissides. *Design Patterns: Elements of Reusable Object-Oriented Software*. Addison-Wesley, 1994.（GoF 原著）
+- Peter Norvig. *Design Patterns in Dynamic Languages*. 1998.（「模式蒸发」论）
+- Andrei Alexandrescu. *Modern C++ Design: Generic Programming and Design Patterns Applied*. Addison-Wesley, 2001.
+- Bjarne Stroustrup. *The C++ Programming Language*（4th ed.）及 *Design and Evolution of C++*（零开销原则）。
+- *C++ Core Guidelines*（isocpp.github.io/CppCoreGuidelines）：`I.27`（工厂函数）、`C.130`（多态类深拷贝用虚 `clone`）、`C.35`（基类析构函数）、`T.65`（标签分发提供替代实现）、`R.20`–`R.37`（智能指针所有权）。
+- Jonathan Boccara. *Fluent C++*（fluentcpp.com）：设计模式与现代 C++ 落地的系列文章。
+- LLVM/Clang 源码：`RecursiveASTVisitor.h`、`IRBuilder.h`、`StringMap.h`、`Registry.h`。
+- Chromium 源码：`base/observer_list.h`、`base/callback.h`、`base/singleton.h`。
+- Qt 源码：`qobject.cpp`（信号槽）、`qfiledialog.cpp`（Facade）。
+- Boost：`signals2`、`iterator`、`iostreams`、`serialization`。

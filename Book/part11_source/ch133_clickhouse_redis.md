@@ -1048,6 +1048,54 @@ int main() {
 - `[平台·Linux]`：`redis-plus-plus` 依赖 `hiredis`，链接时别忘了二者都加；`clickhouse-cpp` 用 TCP 原生协议，比走 HTTP 更高效。
 - `[引用]` redis-plus-plus：`https://github.com/sewenew/redis-plus-plus`；ClickHouse C++ 客户端：`https://github.com/ClickHouse/clickhouse-cpp`。
 
+## ㉒ 史料深挖与工业实证：从 LLOOGG 到 Yandex.Metrica，再到许可地震
+
+> 这一节把第⓪节的"来龙去脉"补成可查证的硬史料：给出来源、精确人物与时间线，铺开真实基础设施坐标，并复盘踩过的坑。全部为 prose，不引入新代码块。
+
+### ㉒.1 根脉：两个项目各自的"第一推动"
+
+- **Redis（Salvatore Sanfilippo / antirez，2009）**：antirez 当时为其实时访客分析产品 **LLOOGG** 写后端，发现用传统关系库做高并发计数又慢又笨。他用 C 手写了一个内存 KV + 单线程事件循环，把"无锁串行"做到极致——这就是 `ae.c` 的 Reactor 模型的起源。早期版本以单文件单线程的极简哲学对抗当时笨重的数据库；他自述 Redis 是"为乐趣而写"。2010 年 VMware 赞助、2013 年 Pivotal 接手，奠定其开源社区治理基调。
+- **ClickHouse（Alexey Milovidov，Yandex，2009 起 → 2016 开源）**：为 Yandex.Metrica（类 Google Analytics 的网页流量分析）而生。Yandex 内部先有 "Metrage" 再演化为 ClickHouse，目标是在**海量只读数据上做亚秒级 OLAP 聚合**。2016 年 6 月开源后，由 ClickHouse Inc（从 Yandex 分拆）主导商业云（ClickHouse Cloud）。Milovidov 至今是首席架构师，其工程博客与会议演讲（Percona Live、ClickHouse Meetup）是权威一手资料。
+
+### ㉒.2 许可地震：Redis 2024 与 Valkey 分叉
+
+这是近年最该记入史料的事件之一。**2024 年 3 月，Redis Ltd. 把开源许可从 BSD-3 改为 SSPLv1 + RSALv2 双许可**，实质上放弃 OSI 认证的"开源"身份——核心争议是云厂商（AWS、GCP）拿 Redis 做托管却不回馈。直接后果是 **Valkey**：由 Linux 基金会牵头、AWS / Google Cloud / Oracle / Ericsson 支持的分叉，承接旧 BSD Redis 的衣钵，成为 Redis 之外的主流选择（Redis 7.2.4 之后 Valkey 8.x 独立演进）。ClickHouse 则坚定走"Apache-2.0 开源 + 商业云"双轨，未卷入许可争议。生产选型时，这条许可线直接决定"用 Redis 还是 Valkey"——客户端（`redis-plus-plus` / `hiredis`）二者兼容。
+
+### ㉒.3 真实工程坐标（它们在哪台机器上跑）
+
+- **ClickHouse**：字节跳动（今日头条 / 抖音）在超大规模上用 ClickHouse 做用户行为分析，并向社区贡献了 ByteHouse 分支；**Cloudflare** 把 HTTP Analytics 与 1.1.1.1 DNS 分析从 Elasticsearch 迁到 ClickHouse 并公开了迁移博客；**Uber** 用其做行程 / 收益分析；Spotify、Wikimedia（页面访问统计）、GitLab（可观测性）、eBay、ContentSquare 等均为公开用户。
+- **Redis**：Twitter（早期时间线缓存）、GitHub（限流与缓存）、Stack Overflow、Pinterest（信息流）、Snapchat、Flickr 均为经典用户；除缓存外，Redis 还承担会话存储、排行榜（`ZSET`）、消息中间件（Streams / pub-sub）、分布式锁（`SET NX`）等角色。
+
+### ㉒.4 生产踩坑（真实坑，非教科书）
+
+**Redis：**
+- **内存成本**：一切在 RAM，1GB 数据集至少吃 1GB 内存，加上 jemalloc 碎片常再涨 20–40%。大 key（百万元素的 hash / list / zset）导致 `HGETALL` 卡顿、集群 `slot` 迁移超时。
+- **持久化取舍（RDB vs AOF）**：RDB 是时间点快照（fork + 写时复制，重启快但丢最后一次快照后的数据）；AOF 是追加日志（fsync 策略 `always` / `everysec` / `no`，默认 `everysec`、最多丢 1s）。**AOF rewrite 触发 `fork()`，大实例下内存翻倍（COW）风险真实存在**；生产多用 RDB + AOF 混合。
+- **集群槽（16384 slots）**：多键事务 / Lua 必须落在同一 slot（用 hash-tag `{}` 约束），跨 slot 的多键命令直接报错；resharding 需谨慎避免丢数据。
+- **单线程代价**：一个慢命令（`KEYS *`、重 Lua 循环、大 key 上的 `O(N)`）阻塞整个实例；热 key 被所有客户端同时轰击也无法并行（单线程无法并行单个 key）。
+- **fork 延迟**：大内存实例的 `bgsave` / AOF rewrite 的 `fork()` 因页表复制可造成 10–100ms 的 Stop-The-World 暂停。
+
+**ClickHouse：**
+- **物化视图写放大**：`MATERIALIZED VIEW` 后每笔写入要同步更新多个聚合视图，高写入下 CPU / IO 放大数倍。工业上只对高频聚合建物化视图（见附录 I）。
+- **分区与 part 爆炸**：`PARTITION BY`（如 `toYYYYMM(ts)`）粒度错了 → 要么 part 过多（"Too many parts"、merge 跟不上、查询变慢），要么 part 过大。`MergeTree` 的后台 merge 是命脉，需控制小批量插入频率。
+- **JOIN 性能**：ClickHouse 的 JOIN 弱于点查 / 扫描；跨分片 JOIN 依赖 `Distributed` 引擎，开销大。工程上优先**反范式化、字典表（Dictionary）、或在分片键上做本地 JOIN**，而非照搬星型 schema。
+- **内存限制**：`max_memory_usage` / `max_memory_usage_for_user` 超限时查询被 SIGKILL；需加 `LIMIT` 与 `SETTINGS max_threads` 约束单查询，避免拖垮集群。
+
+### ㉒.5 与现代 C++ 的互动
+
+- **ClickHouse 自研容器与 SIMD**：`PODArray`（小对象内联 + 连续 `T[]`，后台接 UE 同款的线程本地 Arena + mmap 分配器）替代 `std::vector` 做列，因为 STL 的异常 / 构造 / 迭代器抽象在 hot path 上不划算（第①③节）。向量化 kernel 用宏分发 `SSE2 → AVX2 → AVX-512`（第⑨/⑪节），`std::span`（C++20）用于零拷贝列视图。内部哈希表用自研开放寻址 `HashMap`（CityHash / 基础哈希），非 `std::unordered_map`。
+- **Redis 的 C 实现与 C++ 客户端**：Redis 本体是 C，但数据结构极讲"零拷贝与紧凑编码"——`sds`（长度前缀、二进制安全、小串内联）、`ziplist` → **listpack**（Redis 7 起取代 ziplist，消除级联更新）、`intset`（紧凑整数集，超阈值升级 hashtable，见练习 2）、`dict`（2^n 桶 + 渐进 rehash，见练习 3）。单线程确定性使数据结构**无需锁**，但对象引用计数（`refcount`）用原子自增——因为同一对象可能被多个数据结构共享（如被同时放进 set 与 list）。
+- **客户端层**：`redis-plus-plus` / `hiredis` 用 `std::unique_ptr`（自定义删除器）管理 `redisContext`，把 C 句柄 RAII 化（第⑤节）。
+
+### ㉒.6 权威引用清单
+
+- Redis 官方文档与 antirez 博客：`https://redis.io/docs/` / `http://antirez.com`
+- Valkey（Linux 基金会分叉）：`https://github.com/valkey-io/valkey`
+- ClickHouse 工程博客与文档：`https://clickhouse.com/blog` / `https://clickhouse.com/docs`
+- ClickHouse 关于 MergeTree / 物化视图 / 分区的最佳实践文档（上游仓库 `docs/`）
+- Cloudflare "ClickHouse vs Elasticsearch" 迁移博客（公认真实案例）
+- Redis `dict.c` / `intset.c` / `t_zset.c` 上游源码（行号见本章练习 2/3 引用）
+
 ## 附录 E：ClickHouse/Redis 底层与设计
 
 ```

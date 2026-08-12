@@ -1204,3 +1204,39 @@ int main() {
 - 加速比（5.80×、2.68× 等）是可移植信号；绝对毫秒随 CPU、分配器实现与编译器版本而变，请勿跨机器直接比较毫秒。
 - demo 只断言实体数量与数据写入正确性，未对时间、倍数做任何断言。
 - 基准源码见库根 `_bench_d5_ch142_ecs.cpp`。
+
+## 附录 M：ECS 工业落地与历史深挖
+
+### M.1 历史深挖：从 Doom/Quake 的「实体=结构体数组」到现代 ECS
+
+ECS 不是 2010 年后才有的概念，其思想可追溯到 1993 年 id Software 的 **Doom** 与 1996 年的 **Quake**。Quake 的引擎把「世界对象」组织为若干**全局数组**（entities 数组、每个 entity 是一组字段），逻辑以「遍历数组、按标志位（`ent->model`/`ent->solid`）筛选」的形式运行——这正是「数据为组织中心、逻辑遍历数据」的雏形，也是第 142 章 §⑤/§⑬「AoS vs SoA 缓存友好」的源头。John Carmack 在 Quake/Doom 时代确立的工程信条「**cache coherency is king**」与 Mike Acton 后来的 DOD 主张（见第 143 章）一脉相承。现代 ECS 把这套朴素思想形式化为「Entity(ID) + Component(纯数据) + System(逻辑)」三元分离，并在 2010 年后随 Unity、Unreal 等职要求「万级实体、并行、可热重载」而爆发。
+
+### M.2 真实落地：Unity 的 ECS / DOTS 与 Unreal 的变种
+
+- **Unity DOTS（Data-Oriented Tech Stack）**：Unity 2018+ 推行的 ECS 是工业级标杆，`Entity` 是 32 位索引（含「版本号」高位防重用歧义），`IComponentData` 必须是 `unmanaged`（blittable，可 memcpy），组件按 **Archetype**（组件组合类型）分组存储为连续 chunk（16 KB 一块），`System` 用 `SystemBase`/`ISystem` 声明「我读/写哪些组件类型」，由 `EntityManager` 自动把「拥有这些组件的实体」批量喂给系统。其设计目标直白：**让数据连续、让系统批量、让 Job System 并行**（第 142 章 §⑨/§⑭/§⑮ 的并行与 Archetype 思想与之对应）。官方文档：`https://docs.unity3d.com/Packages/com.unity.entities@latest`。
+- **Unreal Engine**：Unreal 传统上是「Actor + 继承 + 组件（UActorComponent）」的 **OOP 变种**，并非严格 ECS；但其 `FMassEntity` 的 **Mass Entity** 框架（UE5）引入了「Archetype + 列存组件 + 并行系统」的 ECS 子集，专为「大规模群体 AI（数千 NPC）」优化。可见游戏工业对 ECS 的采纳是「务实的、与既有 OOP 共存」而非一刀切。
+
+### M.3 真实落地：EnTT —— 现代 C++ ECS 的事实标准
+
+**EnTT**（`https://github.com/skypjack/entt`）是 C++ 社区最流行的开源 ECS，被众多独立游戏与引擎采用。其精妙处在于用 **sparse set（稀疏集）** 实现组件存储：每个组件类型维护一个 `entity → index` 的稀疏数组 + 一个密集的 `component[]` 数组，二者同序排列——遍历某组件时直接顺序扫密集数组（缓存友好），而 `entity → component` 的查找是 O(1)。这正是第 142 章 附录 D5 结论 4「让 dense 数组与 entity 数组同序排列以恢复预取器」的工程实现。EnTT 还提供 `entt::registry`、`entt::view`（只读多组件查询）、`entt::group`（把查询结果的遍历顺序按组件布局重排以最大化局部性）——把第 142 章 §⑰ 提到的「工业形态」做到极致。注意 EnTT 的 `entity` 是含版本位的 `entt::entity`（32/64 位），「实体删除后槽位复用」通过版本号区分，避免悬空句柄（对应第 142 章 §⑧ 的 handle 思想）。
+
+### M.4 真实落地：Bevy（Rust）对 ECS 的再定义
+
+**Bevy**（`https://github.com/bevyengine/bevy`）是 Rust 生态的 ECS 引擎，把 ECS 推到「**编译期强制系统并行性**」的新高度：它用 Rust 的借用检查器在编译期证明「两个系统若读写同一组件则不能同时运行」，从而自动并行调度无数据竞争的 system。其 `Query<&Position, &Velocity>` 类型即「组件查询」，存储后端用 `Table`（类似 Archetype 的按组件组合分组）与 `Column`（SoA 列）。Bevy 不是 C++，但它的设计印证了 ECS 的核心真理——**「组件查询开销 + 数据局部性 + 自动并行」三者的工程权衡是语言无关的**，C++ 的 EnTT、Unity DOTS 都在解决同一组问题。
+
+### M.5 被低估的坑（一）：组件查询开销与「系统声明成本」
+
+ECS 并非免费午餐。每个 `System` 都要「声明自己读/写哪些组件」并「从 registry 拉出实体子集」，这带来：
+
+- **查询/调度开销**：`view<Position, Velocity>()` 首次构建要扫描所有 entity 的组件掩码，复杂查询（多组件交集 + 排除）成本随实体数线性增长（第 142 章 附录 D5 结论 3 显示「单组件查询仅比全遍历快 1.53×」——因为数据落入 L3、差距被掩盖，但实体数跨过 L3 边界后差异急剧放大）。
+- **结构重排成本**：实体增删组件会触发 Archetype 迁移（拷贝组件数据到新分组），第 142 章 附录 D5 结论 5 显示迁移虽绝对值小（0.156 ms/50K），但「映射更新 + 延迟重排」的真实成本在引擎里远高于纯拷贝——工业做法是用「命令缓冲 + 帧末批量重排」摊还。
+
+### M.6 被低估的坑（二）：与 OOP 的取舍、序列化、热重载
+
+- **vs OOP**：ECS 把「行为从对象剥离到系统」，破坏了「封装」（一个系统遍历所有同类型组件，无视对象的私有边界），对「强状态耦合、多态行为多」的领域（如 UI、编辑器）反而不如 OOP 自然。实务是「**ECS 管世界模拟、OOP 管工具/UI**」的混合。
+- **序列化**：组件是纯数据，理论上易序列化；但「实体 ID 稳定性」「组件版本迁移」「Archetype 布局变化」使 ECS 存档比「对象图序列化」更复杂——Unity 的 `EntityScene` / `Serialization` 专门处理此问题。
+- **热重载**：ECS 的「数据/逻辑分离」让「重新编译 system 不碰数据」成为可能（相对 OOP 的「类定义即内存布局」），这是 ECS 在大型项目里被青睐的隐性理由。
+
+### M.7 生产价值小结与权威出处
+
+ECS 的生产价值不在「模式优雅」，而在**「把数据局部性卖给缓存、把遍历并行性卖给多核」**——第 142 章 附录 D5 用 GCC 15.3.0 实测量化：Archetype SoA 比 Naive AoS 快 5.80×、稀疏指针追逐慢 2.68×，根因全在缓存行污染与预取器失效。权威出处：Unity DOTS 文档（`https://docs.unity3d.com/Packages/com.unity.entities@latest`）、EnTT（`https://github.com/skypjack/entt`）、Bevy（`https://github.com/bevyengine/bevy`）、Mike Acton 的 *Data-Oriented Design* 演讲（见第 143 章 附录 M）、以及 id Software 在 Doom/Quake 时代确立的「缓存为王」工程传统。

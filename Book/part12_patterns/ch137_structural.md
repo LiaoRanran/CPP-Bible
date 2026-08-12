@@ -1412,3 +1412,42 @@ int main() {
 
 - Book/part05_oo/ch51_crtp.md — CRTP 深度
 - Book/part12_patterns/ch139_crtp_pattern.md — CRTP 模式
+
+## 附录 L：结构型模式工业深挖 — 历史、真实落地与生产戒律 [F: Industry / B: Principle]
+
+> 本节为 P0-11「应用/工程章」大波次扩写：在结构型层面补全历史渊源、在知名 C++ 项目中的真实落地、生产踩坑、与现代 C++ 的互动、以及权威引用。所有论断均可查证，拒绝软文。
+
+### L.1 历史渊源：结构型模式与「组合优于继承」
+
+结构型七模式（Adapter、Bridge、Composite、Decorator、Facade、Flyweight、Proxy）在 GoF 1994 书中单列，回答的是「类/对象如何拼成更大结构」。其底层哲学是 GoF 那句名言 *"Favor object composition over class inheritance"*——在 C++ 里这更锋利：C++ 的多重继承本就昂贵且易歧义（虚继承、thunk、布局偏移），于是 Bridge/Decorator 用「持有一个指针」替代「继承一个类」，既灵活又避免虚表膨胀。C++20 的 `concept`/约束让 Adapter/Bridge 的「接口契约」能在编译期表达；Handle-Body（pImpl）idiom 把实现藏在 `.cpp` 的 `impl` 指针后，是跨动态库保持 ABI 兼容的工业标准手法——正是结构型思想在 ABI 层的落地。
+
+### L.2 真实工程场景：每个结构型模式的工业锚点
+
+- **Adapter**：Boost.Iterator `iterator_adaptor`（CRTP 为底层迭代器加适配层，零运行时开销）；标准库 `std::back_inserter`/`std::front_inserter` 是输出迭代器适配器；LLVM `raw_ostream` 适配 `std::ostream` 与 fd；C 风格数组借 `begin()/end()` 适配器接入范围 `for`。
+- **Bridge**：Unreal `FGenericWindow`（抽象）↔ `FWindowsWindow`/`FMacWindow`（实现）正交解耦；`std::basic_string<CharT,Traits,Allocator>` 字符类型与分配器两维独立变化；`folly::small_vector` 组合栈缓冲 + 堆溢出（编译期策略切换）。
+- **Composite**：WebKit `RenderObject` 树（`RenderBlock`/`RenderInline`/`RenderText` 统一 `layout()`）；DOM 树；文件系统目录树（ch137 ⑥ 工业版）。
+- **Decorator**：Boost.Iostreams `filtering_stream`（`input → gzip_decompressor → file_source` 链式装饰）；标准库 `std::reverse_iterator`/`std::move_iterator`；`std::stack/queue/priority_queue` 是容器适配器（裁剪接口）。
+- **Facade**：`std::filesystem` 封装平台 `CreateFile`/`open`/`stat`；Qt `QFileDialog::getOpenFileName()` 三平台统一入口；`std::async` 封装 thread+promise+future。
+- **Flyweight**：LLVM `StringMap` 内部字符串驻留；`std::string_view` 共享字符存储而不拥有；字体/字形缓存（ch137 ⑪）。
+- **Proxy**：`std::shared_ptr`/`std::unique_ptr` 是所有权代理；`std::scoped_lock`/`std::lock_guard` 是锁代理；Chromium `base::WaitableEvent` 跨平台同步代理；`std::vector<bool>::reference` 是 bit 代理；`std::function` 是可调用对象代理。
+
+### L.3 生产踩坑实录
+
+1. **Adapter 对象切片**：按值持有 Adaptee 会切片且丢失动态类型（ch137 ② 错误示例）。正解：引用/指针/`unique_ptr` 持有，仅做转发。
+2. **装饰链过长的间接开销**：每层多一次虚调用 + 一次 `unique_ptr` 解引用，ch137 ⑱ 实测 5 层约 12.5 ns/调用；热路径改用 CRTP 装饰（ch137 ⑯）压到 0。
+3. **Bridge 双指针间接**：运行期桥接至少「控制块取指 + vtable 取指 + 虚调用」三次内存访问 + 一次间接分支（ch137 ⑰）。能确定类型用编译期桥接。
+4. **Flyweight 控制块反噬**：对象数量不大时，哈希表 + 控制块开销反而得不偿失；仅当对象海量且内在状态可外提才上 Flyweight（ch137 ⑪）。
+5. **YAGNI 提前套 Bridge/Decorator**：为「可能以后扩展」提前套结构型模式，等第二个变化维度真正出现再加——否则违反 ch137 ⑳ 反模式提醒。
+
+### L.4 与现代 C++ 的互动
+
+- **CRTP 编译期装饰/适配**（ch137 ⑯）：装饰/适配逻辑作基类模板，分发编译期完成，零虚函数、可完全内联。
+- **模板实参做编译期 Bridge**（ch137 ⑤）：把实现作模板实参，无 vptr/堆分配。
+- **`concept` 表达接口契约**：C++20 约束让 Adapter/Bridge 的「目标接口」在编译期强制，替代弱文档约定。
+- **pImpl 保 ABI**：把实现细节藏 `impl` 指针后，跨动态库保持二进制兼容。
+
+### L.5 权威引用
+
+- GoF（1994）*Design Patterns*：结构型七模式。
+- *C++ Core Guidelines*：`C.35`（基类析构）、相关 pImpl 用法条目。
+- Boost `iterator`/`iostreams`；LLVM `raw_ostream`/`StringMap`；WebKit `RenderObject`；Qt `qfiledialog.cpp`；Chromium `waitable_event.h`；Unreal `ApplicationCore`。

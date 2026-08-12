@@ -767,6 +767,54 @@ int main() {
 - `[平台·UE5]`：UE5 的 `FUObjectArray` + 增量 GC 每帧只扫一小部分对象，避免长停顿；这正是自建 GC 相对"白送的托管 GC"的可控优势。
 - `[引用]` UE C++ 官方入门：`https://dev.epicgames.com/documentation/en-us/unreal-engine/introduction-to-cplusplus-programming-in-unreal-engine`；UObject/GC：`https://dev.epicgames.com/documentation/en-us/unreal-engine/object-handling-and-garbage-collection-in-unreal-engine`。
 
+## ㉒ 史料深挖与工业实证：从 ZZT 到 UE5 的实时王国
+
+> 这一节把第⓪节的"来龙去脉"补成可查证的硬史料：精确人物与时间线，铺开真实工业坐标，并复盘踩过的坑。全部为 prose，不引入新代码块。
+
+### ㉒.1 人物与编年（精确归因）
+
+- **Tim Sweeney（1970 年生，马里兰）**：1991 年 21 岁的他在大学宿舍写出 **ZZT**——字符画冒险游戏编辑器，靠邮寄软盘卖钱，成为 **Epic**（最早 Potomac Computer Systems，后 Epic MegaGames）第一桶金。随后《Jill of the Jungle》《Epic Pinball》铺路。1998 年随 FPS《Unreal》发布的 **Unreal Engine 1** 自带自研脚本语言 **UnrealScript**（带 GC、类 Java），让"不写 C++ 也能做玩法"成为现实；UE 从第一天起就是**拿来授权的商品**。
+- **UE3（2006）与《战争机器》**：UE3 靠《Gears of War》封神，被《质量效应》《生化奇兵》《蝙蝠侠：阿卡姆》广泛授权；此时 Epic 已弃用 "MegaGames" 之名。授权费是单款 5 万–75 万美元量级，是"大厂专利"。
+- **UE4（2014 GDC）免费化**：Sweeney 把 UE4 免费开放，仅对超 30 万美元收入部分收 5% 版税——正面开火当时 Unity Pro 每座席 1500 美元模式。同期 **Blueprint** 可视化脚本让非程序员也能"连线做游戏"。UnrealScript 在 UE4 被亲手废除，玩法回到 C++（见 0.3 节）。
+- **UE5（2020 公布 / 2022 正式）**：引入 **Nanite**（虚拟几何，源自 Brian Karis 等 SIGGRAPH 2021《A Life of a Nanite Pixel》的实时渲染研究）、**Lumen**（动态全局光照）、Chaos 物理、MetaSounds、Niagara。同期 Epic v. Apple（2020 起）为反对 30% 抽成让《堡垒之夜》被下架，官司打到最高法院——与"免费送引擎"是同一种掀桌精神。
+
+### ㉒.2 真实工程坐标（UE 不止于游戏）
+
+- **游戏**：《堡垒之夜》（Epic 自研，数亿用户、反向哺育 UE5 研发弹药）、大量 3A 与独立游戏（《Hellblade II》《Kingdom Hearts III》《Star Wars Jedi》《The Matrix Awakens》技术 Demo、《Senua's Saga》等）。
+- **汽车 HMI 与座舱**：多家车企把 UE 用于数字仪表与座舱 HMI（如 BMW、Mercedes-Benz 的数字座舱项目用 UE 做实时渲染与交互原型）——要实时、要好看、要好迭代，正是 UE 的强项。
+- **影视虚拟制片**：《曼达洛人》的 LED 虚拟摄影棚 **StageCraft**（ILM / Industrial Light & Magic）用 UE 实时渲染背景，演员对着真实光照演戏；同技术见于《The Batman》等。
+- **建筑 / 训练 / 数字孪生**：Epic 自家的 **Twinmotion** 做实时建筑可视化；军事训练模拟器、工业数字孪生（与 Siemens、Bentley 等生态合作）、工厂仿真也广泛落地。
+- **数字人 / 设计评审**：MetaHuman 框架做高保真数字人；车企用 UE 做设计评审与虚拟展厅。
+
+### ㉒.3 生产踩坑（真实坑，非教科书）
+
+- **反射属性访问开销**：附录 D5 的基准已量化——字符串键反射（`FName` 注册表 `find`）比虚 getter 慢约 4.3×、比直接字段慢几个数量级。结论：**反射 / 蓝图属性只用于编辑期与低频路径，运行时热路径必须用生成的强类型 getter**（UHT 生成的 `GetX()` 编译后等价于直接字段访问）。
+- **GC 停顿**：UE 是标记-清除增量 GC，UE5 每帧只扫一小部分对象避免长停顿；但大世界下 `FUObjectArray` 体量巨大，全量 GC 暂停可达约 22ms（附录 C）。需用 Unreal Insights（`-tracehost`）的 `stat unit` / `stat game` 与 LLM（Low Level Memory Tracker）定位对象膨胀。
+- **蓝图 / C++ 互操作**：`UFUNCTION(BlueprintCallable)` 走蓝图 VM 间接分派，热逻辑放蓝图会慢；最佳实践是把重逻辑推回 C++。UE5 已移除"蓝图 Nativization"（旧的性能 workaround），更强调 C++ 子系统（如 `GameplayAbilitySystem`）。
+- **编译时长**：UE 以编译慢著称。缓解靠 **Unity Build**（多 cpp 合并为单 TU）、**PCH**（预编译头）、确定性编译与 **Live Coding**（Hot Reload 后继）。UBT 统一管理模块依赖与宏展开。
+- **UHT 耦合与 CDO 膨胀**：头文件宏配对错会报 `Inappropriate #include`；每个 `UCLASS` 启动时构造一个常驻 **CDO（Class Default Object）**，含大 `TArray` 默认值的类会拖慢启动、吃常驻内存（附录 D）。裸 `UObject*` 跨 UObject 边界不标 `UPROPERTY` → GC 误回收悬垂（⑬ 节与练习 2 的根因）。
+
+### ㉒.4 为何自造容器（TArray/TMap/FString）而非 STL：与 C++ 的互动
+
+这是 UE 与标准 C++ 最常被误解的分叉点，理由具体且硬：
+
+1. **内存分配器**：UE 用 `FMemory`（底层接 jemalloc / pmalloc）自带池化与统计；STL 分配器不接入 UE 的内存追踪（LLM），导致引擎无法看见 `std::vector` 占了多少内存。
+2. **序列化 / 网络复制**：`TArray` / `FString` 内建 `Serialize` / `NetSerialize`，供存档与 `Replicated` 属性直接用；`std::vector` 没有这套契约。
+3. **调试可视化**：UE 的 natvis 可视化器理解 `TArray` / `TMap`；反射驱动的属性遍历依赖 UE 类型系统。
+4. **异常 / RTTI 模型**：UBT 默认 `-fno-rtti -fno-exceptions`；STL 类型（如 `std::vector::at` 抛 `std::out_of_range`）在 Shipping 下行为不符，UE 容器默认不抛、用 `MAX` / `check` 兜底（第⑧节对照表）。
+5. **GC 集成**：`TArray<UObject*>` 可标 `UPROPERTY` 被 GC 追踪，`std::vector<UObject*>` 对 GC 不可见 → 悬垂。
+
+补充：`TSharedPtr` 是**侵入式引用计数**（对象自带 `SharedReferenceCount`），比 `std::shared_ptr` 少一次堆分配（第⑤节）；但只用于非 UObject。`TWeakObjectPtr` 是 UObject 专用弱引用，GC 回收后自动置 `nullptr`。UE5 引入 `TObjectPtr<>` 兼容反射且支持延迟加载。现代 C++ 上，UE5 接纳 C++17/20 特性（concepts、`std::string_view` 边界转换）、重写 UHT 提速、用模块系统（`Build.cs` / `IModuleInterface`）替代裸 CMake。
+
+### ㉒.5 权威引用清单
+
+- Tim Sweeney GDC 演讲与访谈（UE4 免费化、UE5 技术宣讲）
+- UE 官方文档：`https://dev.epicgames.com/documentation/`（C++ 编程入门、UObject / GC、反射）
+- Brian Karis et al. *A Life of a Nanite Pixel*. SIGGRAPH 2021（Nanite 渲染研究）
+- UE 源码（需 EULA）：`https://github.com/EpicGames/UnrealEngine`（UObjectBase / UObjectGlobals / ObjectMacros 见第③/⑰节上游参考）
+- ILM StageCraft / 虚拟制片公开技术分享（影视实时渲染案例）
+- 汽车 HMI 与数字孪生：Epic 官方 "Unreal Engine for Automotive" / "Digital Twin" 行业页面
+
 ## 附录 A：Unreal Engine C++ 工业实践 [F: Industry / B: Principle]
 
 ```

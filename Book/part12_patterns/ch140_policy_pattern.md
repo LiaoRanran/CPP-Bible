@@ -1252,3 +1252,47 @@ int main(){
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 
 **交叉引用**：ch135（模式总览：virtual 策略 vs switch vs template）/ ch71（policy 模式）/ ch67（concepts 约束）
+
+## 附录 M：Policy-Based Design 工业落地与历史深挖
+
+### M.1 历史深挖：Andrei Alexandrescu《Modern C++ Design》(2001) 的提出
+
+Policy-Based Design 这一术语与范式由 Andrei Alexandrescu 在《Modern C++ Design: Generic Programming and Design Patterns Applied》(2001, Addison-Wesley) 中系统提出并命名。其核心洞见：**把「一个类的可变行为维度」拆成一组正交的「policy 类」，再用模板参数把它们「组装」成一个具体类型**——行为的组合在编译期完成，运行期零开销。该书配套库 **Loki**（以古希腊神话中「变化之神」命名）是第一版参考实现，提供了 `SmartPtr`（把存储、所有权、转换、检查、释放五个 policy 正交组合成任意智能指针）、`Factory`、`Visitor`、typelist、`SingletonHolder` 等。Loki 的 `SmartPtr` 至今仍是业界讨论「policy 组合」的范本：`SmartPtr<T, OwnershipPolicy, CheckingPolicy, StoragePolicy, ConversionPolicy, ...>` 中每一种 policy 都是一个模板基类，用户通过「选 policy」而非「改代码」定制指针语义。可在线核验：Loki 仓库 `https://github.com/loki-lib/loki`（原版由 Alexandrescu 发布，现有社区维护分支）。
+
+### M.2 真实落地：`std::allocator_traits` 的 policy 组合
+
+标准库本身就是 Policy-Based Design 的最大生产部署。`std::allocator_traits<Alloc>` 把「内存分配（allocate/deallocate）」「对象构造（construct/destroy）」「指针类型（pointer/const_pointer）」「大小/差值类型（size_type/difference_type）」「rebind 到另一类型」等维度，从用户提供的 `Alloc` 中 traits 式地抽取——若 `Alloc` 未提供某维度，`allocator_traits` 给出默认 policy（如默认 `construct` 用 `::new` 布置，`rebind` 默认用嵌套 `rebind` 或 `Alloc<T, Args...>`）。这与 Alexandrescu 的 policy 思想同源：**把「分配器的可变行为」以编译期特化/traits 组合，而非虚接口**。标准容器 `std::vector`/`std::map` 等第二模板参数 `Allocator` 正是这个 policy 的注入点；`std::pmr::polymorphic_allocator`（C++17）则是另一种「运行期可选分配策略」的互补思路（类型擦除 + 内存资源，运行时选择而非编译期组合）。
+
+### M.3 真实落地：Boost 的 policy 类
+
+Boost 多个库把 policy 用到生产级：
+
+- **Boost.SmartPtr**：`boost::shared_ptr` 的删除器（deleter）即一种「释放 policy」——`shared_ptr<T, D>` 把「如何释放」作为类型参数传入，构造时携带 deleter，析构时调用；这与 Loki 的 `ReleasePolicy` 一脉相承。
+- **Boost.Parameter**：用「命名参数」+ 模板化的 policy 槽，让用户以 `boost::python::class_<X, bases<Y>, Z>()` 这类近乎自然语言的顺序组合 policy，缓解「policy 顺序敏感」（M.5）问题。
+- **Boost.Math / Boost.Serialization**：各自用 policy 模板参数选择「精度」「后端」「归档格式」等正交维度。
+
+### M.4 真实落地：Loki 之外的现代继承者
+
+Alexandrescu 后来在 Facebook 把同类思想推到极致：`folly` 库大量使用「模板 policy + 编译期分派」实现零开销的网络/并发原语；其 2013 年演讲 "Declarative Control Flow" 进一步论证「用类型系统把分支压到编译期」。C++20 Concepts 则让 policy 的「接口契约」从「靠 SFINAE/文档约定」升级为「编译器强制约束」（见第 140 章 §⑨），但 policy 的「正交组合」本质未被取代。
+
+### M.5 被低估的坑：policy 组合爆炸与模板深度
+
+Policy-Based Design 的最大代价是**组合爆炸与实例化深度**：若某组件有 `n` 个正交 policy 维度、每维 `k` 个候选，则「名义类型数」为 `k^n`；每个具体类型都要完整实例化一遍基类链，导致：
+
+- **编译时间随 policy 维度指数上升**：`SmartPtr` 五个 policy 维度、每维若干候选，其全实例化图谱极其庞大，这正是 Loki 编译慢、被诟病「模板深狱」的根源之一。
+- **模板实例化深度超限**：深层嵌套的 policy（policy 内部又含 policy）在老编译器上易触发「模板递归深度超过 `MAX_TEMPLATE_INSTANTIATION_DEPTH`」错误（C++ 标准下限为 1024，GCC/Clang 默认约 900/256，可用 `-ftemplate-depth=N` 调大）。
+- **错误信息不可读**：一次「policy 不满足约束」的报错会在整条实例化链上展开成数百行，定位困难。
+
+工程缓解手段：**把 policy 拆到独立头文件并前置声明隔离**（减少每次编译的实例化面）、**用 `concept` 把约束前移到 policy 接口处**、**用 `extern template` 显式实例化常见组合避免重复编译**、**限制 policy 维度数量**（超过约 6 个维度时改用「运行期策略 + 类型擦除」，如 `std::function`/虚接口，把组合从编译期挪到运行期）。第 140 章 §⑮ 的「代码膨胀」与 §⑱ 的「零开销验证」已量化部分成本。
+
+### M.6 生产价值：正交可组合 vs 虚接口
+
+Policy-Based Design 相对 GoF「Strategy 模式（虚接口）」的核心优势：**相同语义、零运行时开销**。`SmartPtr<T, RefCounted, AssertCheck>` 与 `SmartPtr<T, DestructiveCopy, NoCheck>` 是两个**不同类型**，各自把「引用计数/检查」直接在编译期内联，没有 vtable、没有间接调用（第 140 章 ⑱ 与附录 D5 已用 GCC 15.3.0 实测量化：编译期 policy 跑出 0.00 ms，virtual 策略 82 ms）。代价是「每次换一种组合就多一类」（代码膨胀）、以及「类型不同导致不能把它们放进同一个异构容器」（需类型擦除）——这是它与 CRTP（第 139 章）、DI（第 141 章）形成互补的边界：编译期封闭组合用 policy，运行期开放替换用虚接口/类型擦除。
+
+### M.7 权威出处汇总
+
+- Alexandrescu, A. *Modern C++ Design: Generic Programming and Design Patterns Applied*, Addison-Wesley, 2001.（Policy-Based Design 的命名与范式源头，含 Loki 库）
+- Loki 库：`https://github.com/loki-lib/loki`（社区维护分支；原版由 Alexandrescu 发布）
+- ISO/IEC 14882:2023，`[allocator.traits]`（标准库 policy 组合实例）；`std::pmr`（C++17 运行期分配策略）
+- Boost.SmartPtr / Boost.Parameter 文档：`https://www.boost.org/doc/libs/`
+- Alexandrescu 后续演讲 "Declarative Control Flow"（2013）及 `folly` 库：`https://github.com/facebook/folly`

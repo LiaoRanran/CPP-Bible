@@ -805,6 +805,52 @@ int main() { return 0; }
 3. **部署注意**：`libc++.so.1` 必须随程序分发或在目标机存在；**混用 libstdc++ 与 libc++ 的 `.o` 会 ABI 不兼容**（`std::string` 布局不同），整个工程只能选一种。
 4. **迁移坑**：某些 GNU 扩展宏（如 `__GLIBCXX__`）在 libc++ 下不存在，移植时要改判 `_LIBCPP_VERSION`；libc++ 对 C++ 新特性跟进更快，可借它提前用上 ranges/format。
 
+## ㉒ 历史深挖：Apple 为何另起炉灶、Hinnant 与许可之战
+
+libc++ 的诞生是 **Apple 与 GPL 的决裂** 的直接产物。2005 年 Apple 招入 Chris Lattner 启动 Clang 后，紧接着需要一套与 Clang 协同、且许可友好的标准库。当时 Apple 平台默认仍是 GCC 4.2 附带的 libstdc++（停在 2007 年水平），既不跟 C++11，又被 GPL 锁死。于是由 **Howard Hinnant** 主导、约 2009–2010 年启动的 **libc++**（早期内部名 `libcpp`）成为答案。Hinnant 本人正是 C++11 移动语义（`std::move`/`std::forward`）、`std::tuple`、`std::chrono`、`std::thread` 等核心提案的作者——libc++ 从一开始就是「C++11 原生」标准库，而非给旧实现打补丁。
+
+许可是另一条主线。libc++ 最初以 **UIUC 许可** 分发（与 LLVM 同源），后在 2019 年 LLVM 整体 relicense 时并入 **Apache 2.0 + LLVM 例外** 的新许可体系。这与 libstdc++ 的 GPLv3+运行时例外、以及 MS STL 的 Apache 2.0（见 第126章）形成三足鼎立的「许可光谱」：libc++ 的宽松许可让它能被 Apple 闭源嵌入、也能被 Chrome/VSCode 等自由再分发，而无需像 GPL 那样触发合规审查。
+
+libc++ 不是孤立的——它与 **libc++abi**（异常展开/RTTI/`__cxa_*` 运行时）和 **libunwind**（栈展开）组成「LLVM C++ 运行时三件套」（见 ③/⑥）。这种「标准库 / ABI 运行时 / 展开器」三段式，恰好对应 libstdc++ 的 `libstdc++` / `libsupc++` / `libgcc_s` 分工。维护者从 Hinnant 一代过渡到 **Louis Dionne**（Apple 现任首席维护者）、**Miro Knejp** 等社区骨干，贡献流程走 LLVM 的 Phabricator / GitHub PR。
+
+## ㉓ 与 C++ 标准的互动：libc++ 是「标准先锋」
+
+libc++ 的长期标签是 **「最先完整实现新标准」**。它往往早于 libstdc++ 与 MS STL 落地 C++20/23 设施，部分原因正是它没有 libstdc++ 那种「旧 ABI 债」，可以放手实现：
+
+| 标准特性 | WG21 提案 | libc++ 基本就绪 | 备注 |
+|---|---|---|---|
+| `std::format` | P0645R10 | Clang 14（2022） | 早于另两家 |
+| `<ranges>` | P0896R4 | Clang 16（2023）较完备 |  |
+| `std::expected` | P0323R10 | Clang 16 |  |
+| `std::mdspan` | P0009R18 | Clang 17 |  |
+| `std::print` | P2093R14 | Clang 17 |  |
+| `import std;` 模块 | P2465R3 | Clang 最成熟 | 见 ②/⑮ |
+| aggressively `constexpr` 容器 | P1004R2 等 | libc++ 走在最前 | 见 ㉑.2 |
+
+> libc++ 落地新特性靠 `__config` 里的 `_LIBCPP_VERSION` 与特性宏门控（见 ⑤/⑮）。一个工业现实是：很多 WG21 提案的「参考实现」就出自 libc++ 维护者之手，提案文本与 libc++ 源码高度同源——这是「实现反哺标准」的最直接证据。
+
+## ㉔ 生产踩坑实录：断言默认开启、ABI 收窄与混链
+
+**坑 1：`_LIBCPP_ENABLE_ASSERTIONS` 默认开启导致生产 abort**。自 libc++ 16（2023），迭代器/容器越界默认触发硬断言并 `__libcpp_verbose_abort`。大量「侥幸越界」的旧代码在升级后从「能跑」变「进程直接 abort」。生产环境必须显式 `-D_LIBCPP_ENABLE_ASSERTIONS=0`（或新版的 `_LIBCPP_HARDENING_MODE=none`）关闭，否则 CI 本地通过、生产容器崩溃（与 第127章 LLVM 案例同源）。
+
+**坑 2：`_LIBCPP_ABI_ALTERNATE_STRING_LAYOUT` 与历史 ABI 移除**。libc++ 的 `std::string` 默认 24 字节（22 SSO，见 ④/⑧），但某些平台/历史配置用了不同布局；libc++ 19（2024）干脆移除了旧 `std::string` 布局开关，进一步收窄兼容包袱。跨 libc++ 版本混链若一端用新、一端用旧布局，符号虽同 namespace 但内存布局已变，跨边界传递即崩。
+
+**坑 3：与 libstdc++ 混链必崩**。两者 `std::string` 的 inline namespace 分别是 `__1`（libc++）与 `__cxx11`（libstdc++），mangled 名天然不同（见 ⑤）；即使勉强链接，布局（24 vs 32 字节）与分配器也不同，运行时析构即崩。Python 扩展、JNI、或「主程序 GCC + 某 `.so` Clang」的拼装工程最易踩（见 ⑬）。
+
+**坑 4：GNU 专属宏在 libc++ 下不存在**。`__GLIBCXX__`、`_GLIBCXX_*` 在 libc++ 下根本未定义；靠它做版本分支的代码会静默走到错误路径（见 0.4 轶事）。正确做法是判 `_LIBCPP_VERSION` / `__cpp_lib_*`，或用标准特性测试宏（见 ⑮/⑱）。
+
+> libc++ 的取舍是「现代化优先、宁可让极少数老代码重编」——这与 libstdc++ 的「绝不破 ABI」形成最鲜明对照（见 第124章 ㉒）。移植项目时，把「实现相关」部分（宏、SSO 容量、断言模式）隔离到构建系统层，是唯一的稳健做法。
+
+## ㉕ 权威引用与史料
+
+- libc++ 官方文档与设计文档：<https://libcxx.llvm.org/>
+- libc++ 设计内部（ABI 策略、inline namespace）：<https://libcxx.llvm.org/DesignDocs.html>
+- libc++abi 规范：<https://libcxxabi.llvm.org/>
+- LLVM 发布说明（含 libc++ 每版变更）：<https://github.com/llvm/llvm-project/releases>
+- libc++ 源码（标签/提交级行号）：<https://github.com/llvm/llvm-project/tree/main/libcxx>
+- WG21 提案索引：<https://wg21.link/>
+- Howard Hinnant 的 C++11 提案（move/chrono/tuple）：<https://www.open-std.org/jtc1/sc22/wg21/docs/papers/>
+
 ## 附录 E：libc++工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
 ```

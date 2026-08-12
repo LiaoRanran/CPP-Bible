@@ -1311,3 +1311,45 @@ int main(){
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 
 **交叉引用**：ch140（策略模式）/ ch41（unique_ptr 所有权）/ ch93（线程与依赖）
+
+## 附录 M：依赖注入（DI）工业落地与历史深挖
+
+### M.1 历史深挖：Martin Fowler 的 "Inversion of Control Containers and the Dependency Injection pattern" (2004)
+
+现代 DI 术语与实践由 Martin Fowler 在 2004 年的经典文章 *Inversion of Control Containers and the Dependency Injection pattern*（`https://martinfowler.com/articles/injection.html`）中系统命名与分类。该文把「依赖如何被提供给对象」拆为三种形式——**构造函数注入（Constructor Injection）**、**setter 注入（Setter Injection）**、**接口注入（Interface Injection）**——正是第 141 章 §②/§③ 的分类来源。Fowler 的核心论点：把「对象自己 new 依赖」反转为「外部容器把依赖注入」，从而解耦构造与使用、利于测试替换 mock、支持运行期配置。注意 Fowler 的 DI 语境是 **Java/企业级**（Spring 等容器），C++ 没有语言级 DI 注解（无 `@Inject`、无反射），因此 C++ 的 DI 必须靠**模板 / 工厂 / 手写容器**在编译期或运行期手动搭建——这是 C++ DI 与 Java DI 最本质的差异，也是第 141 章 §④（模板参数注入）、§⑨（Boost.DI）的根。
+
+### M.2 真实落地：Boost.DI（非侵入式编译期 DI 容器）
+
+Boost.DI（`boost::di`，仓库 `https://github.com/boost-ext/di`）是 C++ 社区最接近「Java Spring」的 DI 框架，但**全部在编译期完成依赖图解析**：你用 `di::make_injector(di::bind<Interface>.to<Impl>()...)` 声明绑定，再用 `injector.create<App>()` 让框架沿构造函数签名**自动递归地**把 `Impl` 注入到 `App` 的依赖树。关键特性：
+
+- **零运行时反射**：依赖图靠模板元编程在编译期构建，生成的 `create<App>()` 等价于「手写逐层 new」，**没有运行期容器查表开销**。
+- **编译期循环依赖检测**：若 `A` 依赖 `B` 而 `B` 又依赖 `A`，Boost.DI 会在编译期直接报错（而不是运行期栈溢出）——这是它相对「手写工厂」的最大安全增益。
+- **非侵入**：目标类只需有普通构造函数，无需继承任何 `Injectable` 基类（这是相对 Guice/Spring 反射式注入的 C++ 适配）。
+
+代价：**编译时间显著上升**（依赖图越深、模板实例化越多），以及错误信息晦涩（与所有 TMP 库同理）。可在线核验：`https://boost-ext.github.io/di/`。
+
+### M.3 真实落地：Google Fruit
+
+Google 开源的 **Fruit**（`https://github.com/google/fruit`）是另一个生产级 C++ DI 框架，定位与 Boost.DI 类似但设计不同：Fruit 在**编译期**构建依赖图，并显式区分「普通组件」与「单例组件」，通过 `fruit::Component` / `fruit::Injector` 表达绑定。其卖点是「**编译期保证依赖图无环、且所有依赖都有绑定**」——任何缺失绑定或循环依赖都是编译错误，而非运行期崩溃。Fruit 广泛用于 Google 内部服务的构造注入（constructor injection），尤其是「大型服务由数百个组件按依赖图组装」的场景。它同样**没有语言级 DI**，依赖图由模板在编译期静态求解（也因此 Fruit 的编译耗时与模板深度是主要成本）。
+
+### M.4 真实落地：大型服务的构造注入
+
+在 C++ 后端（交易系统、搜索引擎、数据库）里，DI 最常见形态就是**构造注入 + 工厂**：顶层 `main()` 或 `ServiceLocator` 用工厂按配置构造组件树，把 `Logger`、`Config`、`DBConnection`、`MetricsSink` 等逐层传给下游构造函数。相比 Java 的容器自动装配，C++ 更倾向「**显式构造图**」——可读性高、调试直接、零运行期魔法，代价是「装配代码」需手写且随组件数线性增长。第 141 章 §⑥ 的手写简易容器、`§⑧` 的 mock 注入测试、`§⑱` 的自包含示例即此范式。
+
+### M.5 被低估的坑（一）：过度抽象与「为了 DI 而 DI」
+
+DI 的最大反模式是**滥用**：对只有单一实现、生命周期简单的类强行引入接口 + 容器 + 绑定，结果是「一行业务逻辑配五行装配样板」。Fowler 本人也强调 DI 适用于「依赖会变化 / 需测试替换」的场景；对稳定依赖，「直接构造」更简单。C++ 里尤甚——每次引入一层虚接口就多一次间接调用（第 141 章 附录 D5 实测 virtual DI 90 ms vs 编译期 DI 0 ms），且多出 vptr 与类型擦除堆分配。经验法则：**只在「真正的接缝（seam）」——配置可选、测试需 mock、运行期可换实现——才注入接口；其余直接持有 concrete 值或 `std::unique_ptr<Concrete>`**。
+
+### M.6 被低估的坑（二）：编译期图构建与循环依赖
+
+Boost.DI / Fruit 的「编译期依赖图」既是优势也是负担：
+
+- **循环依赖**：`A → B → A` 在运行期容器里往往是「悄悄的栈溢出 / 死循环」，而在编译期 DI 里是「编译错误」——这本是优点，但前提是**你用了编译期 DI**；手写工厂若不小心写成互相持有 `shared_ptr`，会在运行期形成强引用环导致内存泄漏（需用 `weak_ptr` 打断）。
+- **编译期图爆炸**：依赖图深度 `d`、宽度 `w`，编译期实例化节点数近似 `O(w^d)`，深的组件树会显著拖慢编译（与第 140 章 policy 膨胀同源）。实务上用「按子系统拆分 injector」「显式实例化常见子树」缓解。
+
+### M.7 权威出处汇总
+
+- Fowler, M. *Inversion of Control Containers and the Dependency Injection pattern*, 2004：`https://martinfowler.com/articles/injection.html`（DI 命名与三种注入形式的源头）
+- Boost.DI：`https://github.com/boost-ext/di`，文档 `https://boost-ext.github.io/di/`
+- Google Fruit：`https://github.com/google/fruit`（编译期依赖图、循环检测）
+- 第 141 章 §④/§⑨/§⑭/附录 D5 的 GCC 15.3.0 实测（编译期 DI 0 ms vs virtual DI 90 ms）

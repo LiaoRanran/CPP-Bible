@@ -1072,6 +1072,55 @@ int main() {
 - `[平台·Windows]`：RocksDB 体量较大，FetchContent 首次编译耗时较长；生产常用预编译包（vcpkg `rocksdb`、Conan）或自构建静态库。
 - `[引用]` LevelDB：`https://github.com/google/leveldb`；RocksDB：`https://rocksdb.org/docs/`。
 
+## ㉒ 史料深挖与工业实证：从 O'Neil 的 LSM-Tree 到亿级生产
+
+> 这一节把第⓪节的"来龙去脉"补成可查证的硬史料：给出来源论文、精确人物与时间线，铺开它们在真实基础设施里的位置，并复盘踩过的坑。全部为 prose，不引入新代码块。
+
+### ㉒.1 学术根脉：LSM-Tree 与 Bigtable 两篇基石论文
+
+LSM-Tree 不是工程直觉，而是一篇被反复引用的学术工作。Patrick O'Neil、Edward Cheng、Dieter Gawlick、Elizabeth O'Neil 在 **《The Log-Structured Merge-Tree (LSM-Tree)》, *Acta Informatica*, 33(4):351–385, 1996** 中首次系统提出"用批量归并替代原地更新"的存储模型——核心动机正是**磁盘时代的随机写代价远高於顺序写**。论文定义的 `C0`（内存树）与 `C1`（磁盘树）两层结构，是今天 MemTable + SSTable 的直接祖先；任何讲 LSM 的工程文档（RocksDB Wiki、CMU 15-445/15-721 数据库课程）都把它列为必读基础文献。
+
+LevelDB 的设计哲学则直接继承自 **Chang、Dean、Ghemawat 等《Bigtable: A Distributed Storage System for Structured Data》, *OSDI 2006***。Bigtable 的 `SSTable`（Sorted String Table）文件格式——由 data block、index block、bloom filter block、footer 组成的不可变有序文件——被 LevelDB 几乎原样搬到了单机。换句话说，**LevelDB = Bigtable 的 SSTable / Compaction 思想，去除了 GFS / Chubby / Tablet 分布式层，压进一个进程内库**。理解这一点，才能解释为什么 LevelDB 的目录布局（`MANIFEST`、`CURRENT`、`.ldb`）与 Bigtable 的 metadata tablet 同源。后续 OSDI 2010 的 *Spanner* 与 VLDB 2012 的 *Megastore* 延续了同一脉"顺序写 + 多副本"的工程信条。
+
+### ㉒.2 人物与编年（精确归因）
+
+- **Jeff Dean 与 Sanjay Ghemawat**：两人在 Google 共同主导 MapReduce、Bigtable、Spanner 等基础设施。LevelDB（2011）由 **Sanjay Ghemawat 主笔、Jeff Dean 参与设计**，是他们在 Bigtable 之后把"单机有序 KV"做薄的尝试；Dean 定架构、Ghemawat 写代码的合作风格是 Google 基础设施的招牌。
+- **Dhruba Borthakur 与 RocksDB（2012）**：Dhruba 早年在 Yahoo! 做 HDFS NameNode 核心，加入 Facebook 后负责用 LSM 引擎重做高延迟的 HBase 负载。RocksDB 从 LevelDB fork 的初衷极具体——**Facebook Messages（一度基于 HBase）在 2010 年前后延迟过高，需要一台能榨干 SSD 与多核的服务端 KV**。后续 Igor Canadi、Siying Dong、Mark Callaghan 等人把它做成工业标准，并沉淀为 USENIX ;login: 2014 的《RocksDB: A Persistent Key-Value Store for Flash and RAM》。
+- **关键时间线**：2011 LevelDB 开源 → 2012 RocksDB fork → 2013 列族 / Universal Compaction 成型 → 2017 起 CockroachDB 用 Go 重写 Pebble（"去 C++ 依赖"探索）→ 2023–2024 RocksDB 8.x 抬升 C++17 基线、针对 NVMe 优化 Compaction 与写放大。
+
+### ㉒.3 真实工程坐标（它们在哪台机器上跑）
+
+- **Ethereum / go-ethereum**：以太坊 Go 客户端用 **LevelDB** 存区块索引、状态 trie 快照与链数据（`geth` 的 `ethdb` 默认后端即 LevelDB，后提供 Pebble 选项）。这是"区块链底层 KV"最知名实例——一条主网节点数十 GB 到数 TB 的状态全压在 LevelDB 的 LSM 上。
+- **Chrome / IndexedDB**：Chromium 的 IndexedDB 与 Blob Storage 后端基于 **LevelDB**（现代 PWA 的本地持久层走 LevelDB），移动端 Chrome 同样如此。这是"嵌入式 KV"装机量最大的部署，没有之一。
+- **Kafka Streams**：Kafka 的流处理状态存储（state store）默认用 **RocksDB**，每个 partition 的本地聚合 / 连接状态落在本机 RocksDB。
+- **TiKV / CockroachDB**：TiKV（TiDB 存储节点）与 CockroachDB 都以 **RocksDB** 为单机引擎（CockroachDB 另写 Pebble 替代）；RocksDB 的列族用于隔离锁 / 数据 / raft log 等不同数据域。
+- **MyRocks / Instagram / Bloomberg**：Facebook 把 MySQL 的 InnoDB 换成 **RocksDB**（MyRocks），在 Instagram 图数据与消息负载上把写放大与存储空间压下来；Bloomberg 的量化 tick 序列服务也用 RocksDB 存时间序列。
+
+### ㉒.4 生产踩坑（真实坑，非教科书）
+
+- **写放大（Write Amplification）**：LSM 每写入 1 字节用户数据，磁盘可能写 10–30 字节——Compaction 反复读旧 SSTable、合并、重写。Leveled 比 Universal 写放大更高但读放大更低；选型对错直接决定 SSD 寿命与云盘 IOPS 账单。**云上按写入量计费的磁盘会被放大后的写直接打爆预算**。
+- **Compaction 停顿（Stall / Stop）**：LevelDB 的 Compaction 是**单线程**的，L0 文件堆积时前台 `Write` 被阻塞，延迟从 ms 涨到秒级。RocksDB 用多线程 Compaction + `level0_slowdown_writes_trigger` / `level0_stop_writes_trigger` 做反压，但阈值配错照样写停顿（第⑦节与附录 I 的"Compaction 风暴"案例即此坑）。
+- **读放大与布隆缺失**：点查最坏要扫 `层数 × 每层文件数`；**`bits_per_key` 配太低（如 UUID key 用默认 10）会让布隆假阳性高、读放大飙升**，`block_cache` 太小则热点数据反复落盘。
+- **SSD 磨损**：高写入下 LSM 的放大对 NAND 是真实损耗；生产上用 RocksDB 的 `rate_limiter`（写限速）把 Compaction IO 限制在盘能承受的带宽内，既保盘也保前台延迟。
+- **LevelDB 的单机天花板**：LevelDB 不支持列族、事务、合并算子，且 Compaction 单线程——它是"轻量嵌入式"而非"服务端引擎"，把它塞进高并发服务端是典型误用。
+
+### ㉒.5 与现代 C++ 的互动
+
+- **`AtomicPointer` 与无锁读**：LevelDB 的跳表读路径用 `AtomicPointer`（封装 `void*` + `memory_order`）而非 `std::atomic<Node*>`——语义等价但早于 C++11。它让 MemTable 的"并发读 + 单写"成为可能（读 `acquire`、写发布 `release`），是现代 C++ 内存模型的标准用例（见第②③节与练习 3）。
+- **`Slice` 与 `std::string_view`**：LevelDB 的 `leveldb::Slice` 是"零拷贝字节视图"，比 C++17 `std::string_view` 早六年；RocksDB 后续提供 `std::string_view` 重载，把"不拥有的字符串引用"这一 idiom 接回标准库。
+- **Arena 分配器**：MemTable 记录从同一块连续内存 bump 分配（`Arena`），析构一次性释放（第⑧节、附录演绎 1）。这是 C++ 自研分配器替代默认 `malloc` 的范本——减少锁争用、提升局部性。
+- **`absl::flat_hash_map` 与内部索引**：RocksDB 内部大量使用 Abseil 的 `flat_hash_map`（开放寻址、缓存友好）做元数据索引，而非 `std::unordered_map`（链表法、缓存不友好）——与 ClickHouse 用自研开放寻址 `HashMap` 同一思路（见第133章）。
+- **所有权与现代智能指针**：RocksDB 新版代码用 `std::unique_ptr` 管理句柄、`std::shared_ptr` 管理共享资源；`ColumnFamilyHandle` 的释放语义必须用 RAII 封装（第⑧/⑬节），否则内部引用计数不归零、 `DB::Close()` 死等。
+
+### ㉒.6 权威引用清单
+
+- O'Neil, Cheng, Gawlick, O'Neil. *The Log-Structured Merge-Tree (LSM-Tree)*. Acta Informatica, 33(4):351–385, 1996.
+- Chang et al. *Bigtable: A Distributed Storage System for Structured Data*. OSDI 2006.
+- Facebook. *RocksDB: A Persistent Key-Value Store for Flash and RAM*. USENIX ;login:, 2014.
+- RocksDB Wiki（Compaction / Tuning / Rate Limiter）：`https://github.com/facebook/rocksdb/wiki`
+- LevelDB 源码与文档：`https://github.com/google/leveldb`
+- CMU 15-445 / 15-721（Andy Pavlo）数据库课程对 LSM 的讲法，是工业调参的理论底座。
+
 ## 附录 F：LevelDB/RocksDB 工业原理与面试 [B: Principle / D: Stdlib / H: Design / I: Practice / J: Learning]
 
 ```

@@ -822,6 +822,52 @@ int main() {
 3. **部署**：`/MD` 需目标机安装对应 **Visual C++ Redistributable（vcredist）**；`/MT` 把 CRT 打进 exe，免依赖但体积大、且若进程内还有别的 `/MD` 模块会存在多份 CRT。
 4. **版本锁**：`_MSC_VER` 决定可用特性；CI 里固定工具集版本（如 VS2022 = 193x）以保证 ABI 一致，避免"我机器能编你机器崩"。
 
+## ㉒ 历史深挖：Dinkumware 血脉、STL 与 2019 开源
+
+MS STL 的源头不在微软自研，而在 **P.J. Plauger 的 Dinkumware STL**。1990 年代微软向 Dinkumware 授权其 STL 实现，作为 MSVC 的标准库底座，这解释了为何 MS STL 的代码风格（密集的 `_Ty`/`_Alloc`/`_STD` 宏、与标准文本高度对应的注释）与 libstdc++、libc++ 迥异——它直接脱胎于一份商业授权的实现，而非 GCC 社区或 Apple 重写。长期维护者 **Stephan T. Lavavej**（社区昵称 "STL"）从 2007 年前后接管，用博客、Channel 9 视频与无数 issue 把 MS STL 的内部决策公开化，是「闭源标准库走向透明」的关键人物。
+
+一个必须澄清的许可口径差异：本仓库 §0.2 把 2019 年开源记为 **MIT**，而 附录 E 记为 **Apache 2.0**——真实情况是 `microsoft/STL` 仓库的 **主许可为 Apache 2.0**（README 明确），这与 LLVM 的 Apache 2.0 + LLVM 例外同属宽松一派；正文早期「MIT」属历史笔误。无论何种宽松许可，结论一致：MS STL 在 2019 年 `github.com/microsoft/STL` 开源后，结束了「闭源随 Visual Studio 发布、修 bug 等整年发布周期」的历史（见 §0.4 轶事），社区自此能直接提 PR。
+
+`_MSC_VER` 是 MS STL 的「版本脊椎」：它绑死 MSVC 工具集（如 193x = VS2022 17.x），并决定 `msvcp140.dll`/`vcruntime140.dll` 的变体（见 ⑫）。与 libstdc++ 的 `GLIBCXX_*` 符号版本、libc++ 的 `_LIBCPP_VERSION` 一样，`_MSC_VER` 是「同一份 `std::string` 在不同版本下布局可能不同」的实证开关。
+
+## ㉓ 与 C++ 标准的互动：MS STL 的「追标准快跑」
+
+开源后的 MS STL 以「激进标准符合度」为旗号。其节奏由 `stl/inc/yvals.h` 的 `_HAS_CXX17/_HAS_CXX20/_HAS_CXX23` 宏驱动（见 ④/⑨/⑭），而这些宏又由 `/std:c++14|17|20|latest` 隐式置位。代表性落地：
+
+| 标准特性 | WG21 提案 | MS STL 基本就绪 | 备注 |
+|---|---|---|---|
+| `<format>` | P0645R10 | VS 2019 16.10（由 Case Carter 实现） |  |
+| `<ranges>` | P0896R4 | VS 2022 17.0 起、17.8 较完备 |  |
+| `std::expected` | P0323R10 | VS 2022 17.4 |  |
+| `std::print` | P2093R14 | VS 2022 17.8（`/std:c++latest`） |  |
+| `std::mdspan` | P0009R18 | VS 2022 17.8 |  |
+| 标准库模块 `import std;` | P2465R3 | VS 2022 17.10+（`.ifc` 输出） | 见 ⑭ |
+| `std::chrono`/`std::thread` | — | 直接落 Windows API | 见 ⑤/附录 E |
+
+> MS STL 的强项是「与 Windows 合一」：`<filesystem>` 走 `CreateFileW`、`std::thread` 走 `CreateThread`、`std::chrono` 用 `QueryPerformanceCounter`（~10ns 分辨率）、并行算法内置 **Windows ThreadPool**（免 TBB，见 ⑦/附录 E）。代价是它几乎只能活在 MSVC 生态（见 ⑯）——这正是「标准语义一致、平台后端分裂」的活样本。
+
+## ㉔ 生产踩坑实录：/MD//MT、IDL 与 Redistributable
+
+**坑 1：`_ITERATOR_DEBUG_LEVEL` 不一致 → LNK2038**。Debug（`=2` 或 `=1`）与 Release（`=0`）下 `std::vector` 的迭代器调试设施内存布局不同；混合链接两种配置的 `.obj`/`.lib` 直接报 `LNK2038: metadata mismatch`。CI 必须统一 `/MD` + 同一 `_ITERATOR_DEBUG_LEVEL`，否则本地 Debug 通过、Release 链接崩（见 附录 B）。
+
+**坑 2：`/MD` 与 `/MT` 混用必崩**。两者决定 CRT 是「动态共享（`msvcp140`/`vcruntime140`）」还是「静态自含」。跨 DLL 边界传 `std::string`/`std::vector` 时，若一侧 `/MD`（在共享堆分配）一侧 `/MT`（在自己堆释放），会在释放侧触发 `_CrtIsValidHeapPointer` 失败（见 ⑬）。铁律：整工程统一一种（见 ㉑.4）。
+
+**坑 3：Redistributable 版本错配**。`/MD` 发布需目标机装对应 **VC++ Redistributable（vcredist）**；若目标机只有更旧的 `msvcp140.dll`，新特性符号（如 C++20 才有的 `std::format` 符号）会加载失败。部署时要么锁版本、要么静态 `/MT` 打进 exe（体积大、且进程内有别的 `/MD` 模块时会存在多份 CRT）。
+
+**坑 4：`/std:` 等级漂移**。`cl` 默认 `/std:c++14`，而 GCC/Clang 默认已到 C++17/20（见 ⑨）。同一份用到 `<ranges>`/`<format>` 的代码在 MSVC 默认下编译失败，必须显式 `/std:c++20` 或 `/std:c++latest`——CI 里固定等级是硬要求（见 ⑭/⑮）。
+
+> 这些坑的本质都是「MS STL 与 Windows 运行时焊死」的双刃剑：换来极低集成成本，也意味着任何 CRT/版本/开关的错配都会在链接或运行期爆炸。库边界用 `std::string_view`/`span`/C ABI、统一 `/MD` 与 `_MSC_VER`，是唯二的解药（见 ⑬/⑮）。
+
+## ㉕ 权威引用与史料
+
+- microsoft/STL 仓库（源码、README、许可）：<https://github.com/microsoft/STL>
+- MS STL 标准库文档：<https://learn.microsoft.com/cpp/standard-library/>
+- MSVC `/std` 与 `/EH` 开关：<https://learn.microsoft.com/cpp/build/reference/std-specify-language-standard-version>
+- `_ITERATOR_DEBUG_LEVEL` 文档：<https://learn.microsoft.com/cpp/standard-library/iterator-debug-level>
+- Visual C++ 运行时（Redistributable）说明：<https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist>
+- Stephan T. Lavavej 的标准库讲座 / 博客（历史决策一手资料）：<https://devblogs.microsoft.com/cppblog/>
+- WG21 提案索引：<https://wg21.link/>
+
 ## 附录 A：MS STL 工业背景 [F: Industry / B: Principle]
 
 ```

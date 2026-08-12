@@ -1339,3 +1339,41 @@ int main() {
 
 - Book/part12_patterns/ch135_patterns_intro.md — 设计模式总论
 - Book/part04_memory/ch38_allocator.md — 分配器与对象池
+
+## 附录 L：创建型模式工业深挖 — 历史、真实落地与生产戒律 [F: Industry / B: Principle]
+
+> 本节为 P0-11「应用/工程章」大波次扩写：在创建型层面补全 GoF 模式的历史演进、在知名 C++ 项目中的真实落地、生产踩坑、与现代 C++ 的互动、以及权威引用。所有论断均可查证，拒绝软文。
+
+### L.1 历史渊源：创建型模式与 C++ 的共生演进
+
+创建型五模式（Factory Method、Abstract Factory、Builder、Prototype、Singleton）在 GoF 1994 书中被单列，根源是 1980–90 年代 C++ 手写 `new` 的普遍灾难：调用方被迫 `#include` 具体类头文件、亲手管理 `delete`、新增产品就改一片代码。GoF 的药方是「把实例化逻辑从使用逻辑中剥离」。但 C++ 的路径在 2001 年（Alexandrescu《Modern C++ Design》）出现分叉：他用 typelist + policy 把「创建」推到编译期，产生了可配置的编译期 Singleton、编译期 Abstract Factory——比 GoF 的运行时版本早了十年预示 C++11 后的泛型写法。C++11 的智能指针与移动语义最终把「所有权」从手工约定变成类型系统事实，工厂方法的返回值从裸指针进化为 `unique_ptr`/`shared_ptr`（见 ch136 ③）。
+
+### L.2 真实工程场景：每个创建型模式的工业锚点
+
+- **Factory Method**：LLVM 的 `Module::getOrInsertFunction` 是「按名字懒创建」函数声明的工厂；Chromium 的 `content::ContentClient` 工厂按平台产出 `ContentBrowserClient`/`ContentRendererClient`；`std::make_unique`/`std::make_shared` 是标准库级工厂函数。**注意**：C++ Core Guidelines `I.27` 明确建议「当调用方不知道返回对象的具体类型时，用工厂函数而非构造函数」。
+- **Abstract Factory**：`llvm::Registry` 用注册式抽象工厂在运行期装配编译器后端（Target/AsmParser/CodeGen），是生产级抽象工厂；Qt 的 `QPluginLoader` 在运行期加载插件对象，等价于跨 DLL 的抽象工厂。
+- **Builder**：LLVM `IRBuilder` 流式构造 IR 指令（`CreateAdd`/`CreateLoad`…），是 Builder 模式的工业标杆；`nlohmann::json` 的流式构造、标准库 `std::stringstream` 都是「逐步构建」思想的体现。
+- **Prototype**：Unreal 的 **CDO（Class Default Object）** 是每 `UClass` 的原型实例，SpawnActor 时以 CDO 为模板克隆运行期对象；`UObject::Clone`/`DuplicateObject` 是显式 clone。C++ 没有内建 `clone`，惯用法是虚 `clone()` 返回 `unique_ptr<Base>`（Core Guidelines `C.130` 推荐多态类深拷贝用虚 `clone` 而非拷贝构造）。
+- **Singleton**：`std::cout` 即 Meyers Singleton 的隐式实例；Google Abseil `absl::Singleton` 用 `absl::call_once` 提供线程安全全局唯一且可测试替换；Chromium `base::Singleton` 早期基于 `base::LazyInstance`（已弃用），现统一为 `call_once` 语义。
+
+### L.3 生产踩坑实录
+
+1. **工厂返回裸指针的所有权歧义**：`create()` 返回 `T*` 却没说清谁 `delete`。Debug 用 ASan 抓泄漏/ double-free；规范是工厂一律返回 `unique_ptr`（转移所有权）或 `shared_ptr`（共享）。
+2. **`make_unique` 误用导致异常不安全**：`foo(widget(), std::unique_ptr<X>(new X))` 在 `new X` 与 `widget()` 求值顺序未定时，若 `widget()` 抛异常，`new X` 已分配却未进 `unique_ptr` → 泄漏。正确写 `foo(widget(), std::make_unique<X>())`——单语句内完成分配与接管。
+3. **Singleton 破坏可测试性**：全局可变状态让单测无法注入 fake、跨用例污染。现代共识（ch136 ⑫）是「能用 DI 就别用单例」；Meyers Singleton 仅作「确实全进程唯一且生命周期=进程」时的折中。
+4. **Builder 链式构造遗漏必填字段**：手搓 Builder 不强制必填，运行期才发现对象不完整。工业做法：阶段性 Builder，`build()` 校验必填否则断言/抛；或返回完整对象而非半构造状态。
+5. **对象池无界增长**：池不设上限会内存膨胀；真实工程配 `std::pmr::memory_resource` 或 `boost::pool` 并设硬上限（ch136 ⑮⑲）。
+
+### L.4 与现代 C++ 的互动
+
+- **`unique_ptr` 返回所有权**（ch136 ③）：把「何时释放」固化进类型系统，编译期禁止所有权歧义。
+- **`std::function` 工厂表**（ch136 ⑯）：`unordered_map<string, function<unique_ptr<Base>()>>` 把工厂做成运行时数据，适配插件注册。
+- **编译期工厂 `if constexpr` / typelist**（ch136 ⑰）：产品集编译期已知时零开销分发，避开虚表与类型擦除。
+- **CRTP 工厂**（ch136 ⑱，见 ch139）：返回具体类型而非抽象基类，编译期多态免 vtable。
+
+### L.5 权威引用
+
+- GoF（1994）*Design Patterns*：Factory Method / Abstract Factory / Builder / Prototype / Singleton。
+- Alexandrescu（2001）*Modern C++ Design*：编译期创建型（policy-based Singleton/Factory）。
+- *C++ Core Guidelines*：`I.27`（工厂函数）、`C.130`（虚 `clone`）、`R.20`–`R.37`（智能指针）。
+- LLVM `IRBuilder.h` / `Registry.h`；Unreal `CoreUObject`（CDO）；Abseil `absl::Singleton`；Chromium `base::Singleton`。

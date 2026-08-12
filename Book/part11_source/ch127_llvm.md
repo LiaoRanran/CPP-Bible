@@ -670,6 +670,49 @@ int main() {
 3. **当编译器用**：直接 `clang++`；或把 LLVM 当库做静态分析 / 代码生成（写 Pass 优化 IR、做 JIT）。
 4. **注意点**：LLVM 的 C++ API **不稳定**（不同主版本 `IRBuilder`/`Pass` 接口会变），务必锁版本；且 LLVM 默认禁用 RTTI/异常，你的插件需匹配编译选项（`-fno-rtti`）。
 
+## ㉒ 历史深挖：UIUC、Lattner 与「Low Level Virtual Machine」
+
+LLVM 的起点是 **2000 年 UIUC（伊利诺伊大学厄巴纳-香槟分校）** 的一个研究项目，由 **Chris Lattner** 与 **Vikram Adve** 发起，全称 **Low Level Virtual Machine**——注意它最初指「虚拟机」而非今天的编译器后端。其核心痛点是当时的 GCC 是**单体（monolithic）**程序：前端、优化器、后端焊死在一起，想支持新语言或新硬件几乎要 fork 整个编译器。LLVM 的设想是用一种**中立的中间表示（LLVM IR）**解耦「前端翻译」与「后端生成」，让优化器与代码生成器可被任意语言复用（见 ②/③）。
+
+**2003–2005 年 Apple 的投资** 是转折点：Apple 先招入 Lattner，又资助 LLVM 并启动 **Clang**（2005–2007）作为 GCC 的替代 C/C++/Obj-C 前端，目标是更好的诊断信息与模块化（见 0.2/0.3）。Clang 凭「报错像人话」（模板实例化栈 `note`、color 诊断、`--fixit`）一战成名，而 LLVM IR 作为**外部可见、可序列化的文本**，使 `opt`/`llc`/`bugpoint` 等单职责工具成为可能——这正是 GCC 的 GIMPLE/RTL 做不到的开放度（见 ⑭）。
+
+许可与治理是另一条主线。LLVM 早期用 **UIUC/NCSA** 许可；**2019 年 LLVM 基金会主导 relicense 为 Apache 2.0 + LLVM 例外**，统一了 LLVM、Clang、libc++、compiler-rt 等子项目的许可，使「LLVM 全家桶」在法律上彻底宽松化（与 libc++ 的 relicense 同源，见 第125章 ㉒）。**MLIR（2019，Multi-Level IR）** 由 Google 与 LLVM 社区推动，用可嵌套多层 IR 统一「高层 DSL → 高层优化 → 底层机器码」的 lowering，成为 TensorFlow/XLA、可重构硬件（CIRCT）的底座（见 0.4）。
+
+## ㉓ 与 C++ 标准的互动：Clang 是标准的「先锋实现」
+
+Clang 对 C++ 标准的遵循度由 `clang/test/CXX/...` 下的 conformance 测试守护（见 ⑦），并以 **「最快跟进新特性」** 著称——因 AST/Sema 模块化好，概念检查、模块、`std::format` 后端支持往往先在 Clang 主线可用（见 ⑮）。它与 libstdc++/libc++ 的配合构成「实现三角」：Clang 既能在 Linux 上默认用 libstdc++，也能在 Apple/FreeBSD 上默认用 libc++（见 第125章 ⑭）。
+
+值得引用的权威文献（都是可核实的一手论文，而非软文）：
+- **Lattner & Adve, "LLVM: A Compilation Framework for Lifelong Program Analysis & Transformation", CGO 2004** — LLVM 的设计原论文，定义了 IR + Pass 管道 + 全生命周期优化。官方 PDF：<https://llvm.org/pubs/2004-01-30-CGO-LLVM.pdf>
+- **Lattner et al., "LLVM: A Compilation Framework for Lifelong Program Analysis & Transformation"（期刊版，IJPP 2008）** 与 **"The LLVM Instruction Set and Compilation Strategy"（CGO 2003 早期）**。
+- **"The Architecture of Open Source Applications, Vol. 1: LLVM" (2012)** — Lattner 亲述 LLVM 架构演化：<https://www.aosabook.org/en/llvm.html>
+- **Clang 的设计文档与 `clang/docs/`**：<https://clang.llvm.org/docs/>
+
+> 关键认知：LLVM/Clang **实现** C++ 标准，但标准**不定义**其内部结构。标准里的 UB 边界（见 ⑬）正是 Clang/GCC 优化的共同假设——「依赖 UB 然后怪优化器」是跨编译器通用的反模式。
+
+## ㉔ 生产踩坑实录：API 不稳、RTTI 关闭与 Opaque Pointer
+
+**坑 1：LLVM 的 C++ API 不稳定**。与 IR 文本契约不同，`llvm::*` 命名空间的 C++ 接口在不同主版本间会变。`Opaque Pointer` 迁移（LLVM 14→15，2022–2023）删除了 `PointerType::getElementType()`，大量内部 Pass 因此编译失败（见 0.4）。经验法则：只依赖 `LLVMContext`/`IRBuilder`/`PassBuilder` 的公开契约，别直接读 `llvm::Value` 的子类布局（见 附录 G）。
+
+**坑 2：默认禁用 RTTI 与异常**。LLVM 以 `-fno-rtti -fno-exceptions` 构建，你写的 Pass/插件**必须匹配**同样的编译选项，否则链接期 `undefined reference to typeinfo` 或运行时 `std::bad_cast`（见 ㉑.4）。这是把 LLVM 当库嵌入时最常见的「能编不能链」。
+
+**坑 3：静态链接极重**。`libLLVM*.a` 是几十个静态库的总和，完整链接动辄数分钟，催生了 **LLD**（自家链接器）、**ThinLTO**（增量 LTO）等配套优化（见 0.3/⑪）。生产里若把 LLVM 编进你的工具，链接时间会成为 CI 瓶颈。
+
+**坑 4：LTO 比特码跨版本不兼容**。`-flto` 产生的 `.o` 里是 LLVM 比特码，跨 LLVM 主版本无法混链/重放——这与「IR 文本可移植」是两回事（见 ⑬ 陷阱3）。跨编译器项目务必在 Clang 与 GCC 各编一遍（见 ⑭）。
+
+> 用 LLVM 写工具时，把对外接口收敛到稳定的 C API（`libclang`）或 `IRBuilder`/`LLVMContext`；内部 Pass 用 `AnalysisManager` 显式声明依赖，避免隐式全局状态（见 附录 G 设计取舍）。
+
+## ㉕ 权威引用与史料
+
+- LLVM 官方文档（架构、Passes、IR 语言参考）：<https://llvm.org/docs/>
+- LLVM 发布说明与 Dev 会议录像：<https://llvm.org/devmtg/>
+- Lattner & Adve, LLVM CGO 2004 原论文：<https://llvm.org/pubs/2004-01-30-CGO-LLVM.pdf>
+- The Architecture of Open Source Applications: LLVM：<https://www.aosabook.org/en/llvm.html>
+- MLIR 项目主页：<https://mlir.llvm.org/>
+- Clang 文档：<https://clang.llvm.org/docs/>
+- LLVM 编程手册（ADT/`StringSwitch`/`SmallVector`）：<https://llvm.org/docs/ProgrammersManual.html>
+- WG21 提案索引（Clang 实现的 C++ 特性来源）：<https://wg21.link/>
+
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |

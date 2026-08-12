@@ -840,6 +840,68 @@ int main() {
 3. **头-only 与编译库**：Boost 大部分是 header-only（直接 `include` 即可，如 Spirit/Range）；少数需编译/链接（如 Boost.System、Boost.Filesystem、Boost.Regex）。
 4. **选型建议**：优先用标准库等价物（思想已进 std）；仅在需要 Asio 网络、Graph、Spirit 解析器等时引对应组件，**不要全量依赖 Boost**，避免编译膨胀与版本冲突。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动（P0-11 扩写）
+
+> 本节为 P0-11 质量战役「应用/工程章」扩写大波次之一：在 ㉑ 工程落地的基础上，进一步压实历史出处、真实产业坐标、生产级踩坑与「Boost→std」的提案链路。所有陈述力求有出处、可查证；引用链接列于文末。
+
+### ㉒.1 历史渊源：谁、在何种痛点上建立了 Boost
+
+Boost 的发起人是 **Beman Dawes**（C++ 标准委员会长期成员、Boost 创始人，亦主导了 `std::optional`/`std::filesystem` 的标准化提案）与 **Dave Abrahams**（后为 Apple 工程师，亦是 `boost::python` 作者）等人，正式成形于 **1998 年**。`boost.org` 站点与同行评审（peer review）机制在 1999–2000 年确立。当时的客观背景是：C++98 刚发布，标准库仅有容器、算法、IO、`std::string` 等最基础组件；字符串处理、`shared_ptr`、正则、多线程、`type_traits`、数学工具一概缺失。Boost 的初衷是两重的——(1) 提供一套经同行评审、可移植、以 **Boost Software License（极宽松、对商业友好）** 授权的库；(2) 充当「标准库的试验田」，先在社区验证设计，成熟后再提案进 ISO C++。这一「候补标准库」定位使 Boost 在 2000–2010 年间成为整个 C++ 世界的创新中枢。
+
+### ㉒.2 真实工程坐标：Boost 活在哪些生产系统里
+
+Boost 不是教科书玩具，而是工业软件的隐形底座：
+
+- **Bitcoin Core**：核心客户端大量依赖 Boost——`boost::thread`、`boost::filesystem`、`boost::program_options`（命令行解析）、`boost::system`、`boost::chrono`、`boost::test`（自测）。其构建系统对 Boost 版本有硬性下限，是「Boost 作为强依赖」的典型样本（升级 Boost 会牵动大量接口）。
+- **QuantLib**：开源量化金融库，几乎完全构建在 Boost 之上（`boost::shared_ptr`、`boost::numeric`、`boost::math`、`boost::date_time`），是金融工程领域对 Boost 依赖最深的代表之一。
+- **VTK / ParaView**：科学可视化工具链，使用 Boost 的 MPL、SmartPtr、Iterator 等。
+- **MySQL / MariaDB**：历史上链接 Boost 用于 `Boost.Regex`、`Boost.DateTime` 等（后期逐步自实现或替换）。
+- **LLVM / 标准库实现本身**：虽然 Chromium 内部已转向 Abseil（见第130章），但 LLVM 工具链与多家标准库 vendored 实现吸收了大量 Boost 设计。
+
+与「标准已吸收」形成对照——今天的工程共识是「能用 `std::` 就用 `std::`，把 Boost 留给 Asio/Beast/Geometry/Spirit/MPL 这些标准尚未覆盖的高地」。
+
+### ㉒.3 生产踩坑：版本分裂、编译慢、头文件膨胀、迁移成本
+
+- **版本分裂与 ABI 不兼容**：Boost **不保证**跨版本 ABI 稳定（连小版本之间也未必兼容）。Windows 上编译产物文件名编码了编译器/版本/线程模型（如 `libboost_filesystem-mgw13-mt-x64-1_83.dll`），混链两个 Boost 版本（例如 `1.74` 与 `1.82`）会产生 **ODR 违例**：同名符号两份、布局不同，`dlopen`/`LoadLibrary` 时静默选错，运行时崩溃或数据错乱。防御手段是统一 `find_package(Boost 1.83 EXACT REQUIRED)`，并用 `BOOST_VERSION` 静态断言守卫。
+- **编译慢与头文件膨胀**：基于模板的 header-only 库（`Boost.Spirit`、`Boost.MPL`、`Boost.Phoenix`、`Boost.Hana`）会把翻译单元（TU）撑到数十 MB，单文件编译耗时数秒到数十秒；大型项目全量包含会令增量构建灾难化。对策是「只取所需子模块 + 包管理器（vcpkg/Conan）固定版本 + 关闭 Auto-link（`-DBOOST_ALL_NO_LIB`）」。
+- **迁移成本（Boost→std）**：遗留代码库里 `boost::shared_ptr`/`boost::filesystem::path`/`boost::optional` 无处不在，迁移到 `std::` 看似机械，实则暗藏语义差异——例如 `boost::filesystem` v2 与 v3 的路径编码/默认构造语义不同，`boost::optional` 与 `std::optional` 在「未初始化 vs 空」的某些重载上不一致。渐进式「双轨写法」（用宏按 `__cplusplus` 切换命名空间）是业界常用过渡手段（见第⑱节）。
+
+### ㉒.4 与标准的互动：Boost→std 的提案链路（标注编号）
+
+下表把「Boost 组件 → 标准设施 → 关键提案」逐条对齐，体现 Boost 作为「标准孵化器」的实证：
+
+| Boost 组件 | 进入标准 | 关键提案 | 提案主导/来源 |
+|---|---|---|---|
+| `boost::shared_ptr` | `std::shared_ptr`（C++11） | N1421 / TR1（N1690） | Greg Colvin & Beman Dawes（Boost.SmartPtr） |
+| `boost::thread`/`mutex` | `std::thread`/`mutex`（C++11） | N2497（Threads）/ N2320 | Anthony Williams（Boost.Thread） |
+| `boost::regex` | `std::regex`（C++11） | TR1 → N1429 | John Maddock |
+| `boost::unordered` | `std::unordered_*`（C++11） | N2045 | Daniel James |
+| `boost::tuple` | `std::tuple`（C++11） | N1601 | Jaakko Järvi（Boost.Tuple） |
+| `boost::bind`/`function` | `std::bind`/`function`（C++11） | N1455 | Douglas Gregor & Peter Dimov |
+| `boost::chrono` | `std::chrono`（C++11） | N2661 | Howard Hinnant |
+| `boost::array` | `std::array`（C++11） | N2647 | Nicolai Josuttis |
+| `boost::random` | `std::random`（C++11） | N2076 | Jens Maurer |
+| `boost::type_traits` | `<type_traits>`（C++11） | N1296 等 | John Maddock & Dave Abrahams |
+| `boost::optional` | `std::optional`（C++17） | **N3793** | Beman Dawes |
+| `boost::filesystem` | `std::filesystem`（C++17） | **P0218R0** | Beman Dawes |
+| `boost::any` | `std::any`（C++17） | N3804 / N3924 | Kevlin Henney |
+| `boost::variant` | `std::variant`（C++17） | N4218 / P0088R3 | Axel Naumann |
+| `boost::string_view`（源自 `string_ref`） | `std::string_view`（C++17） | N3921 | Jeffrey Yasskin |
+| `boost::format` 思想 | `std::format`（C++20） | **P0645R10** | Victor Zverovich |
+| `boost::range` / Range-v3 | `std::ranges`（C++20） | N4128 等 | Eric Niebler |
+| `boost::stacktrace` 思想 | `std::stacktrace`（C++23） | P0881R7 | 多家 |
+
+> 史料补遗：Boost 的「成功即被超越」使其最好的库往往活成标准；剩余库要么长尾维护，要么因「编译慢、体量大」被边缘化。但其作为「标准风向标」的历史价值无可替代——C++11 一次性吸收了约 12 个 Boost 组件，C++17 再吸收一批，C++20/23 仍在持续收编。
+
+### ㉒.5 权威引用
+
+- Boost 官网与文档：<https://www.boost.org/>、<https://www.boost.org/doc/libs/>
+- Boost 源码（每库独立仓库）：<https://github.com/boostorg>
+- Boost 同行评审流程：<https://www.boost.org/community/reviews.html>
+- Beman Dawes 的 `std::optional` 提案 N3793：<https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3793.html>
+- Beman Dawes 的 `std::filesystem` 提案 P0218R0：<https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0218r0.html>
+- `std::format` 提案 P0645R10：<https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0645r10.html>
+
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |

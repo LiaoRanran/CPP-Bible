@@ -1228,3 +1228,63 @@ int main() {
 
 - Book/part05_oo/ch51_crtp.md — CRTP 原理
 - Book/part12_patterns/ch137_structural.md — 结构型模式
+
+## 附录 M：CRTP 工业落地与历史深挖（真实场景 × 权威出处）
+
+> 本附录聚焦第 139 章 §⑧、附录 A/I 之外的「硬核落地」与「被低估的历史细节」，所有论断均可在线核验。
+
+### M.1 真实落地：Boost.Iterator 的 `iterator_facade` / `iterator_adaptor`
+
+Eigen 与 `enable_shared_from_this` 之外，Boost.Iterator 是 CRTP 在「接口批量生成」上最成熟的生产级范例。`boost::iterator_facade<Derived, Value, Category, Reference, Difference>` 以派生类 `Derived` 为 CRTP 参数，把迭代器的全套运算符（`operator++`、`operator*`、`operator==`、`operator->`、`operator--` 等）从「派生类只需提供 5 个原语」自动合成：
+
+- `equal(other)` —— 相等比较的原语；
+- `dereference()` —— 解引用原语；
+- `increment()` / `decrement()` / `advance(n)` —— 游标移动原语；
+- `distance_to(other)` —— 距离计算原语。
+
+这正是 CRTP 的旗舰价值：**派生类只写「语义原语」，基类通过 `static_cast<Derived&>(*this)` 调用这些原语，把 `operator++`、`operator==` 等样板在编译期一次性注入**。其源码（`boost/iterator/iterator_facade.hpp`）中 `iterator_facade` 大量使用 `enable_if` + `iterator_category` 在编译期选择「该提供哪些运算符」（输入迭代器不提供 `operator--`，随机访问迭代器才提供 `operator[]` 与 `operator+=`），整套机制零虚函数、零运行时分派。可在线核验：`https://www.boost.org/doc/libs/release/libs/iterator/doc/iterator_facade.html`。
+
+`iterator_adaptor` 则是 `iterator_facade` 上的一层 CRTP 叠加：它把「被适配迭代器」也作为 CRTP 基类的一部分，让用户用一个 `Base` 迭代器派生出「反向迭代」「过滤迭代」「转换迭代」（transform iterator）等，全部在编译期展开。这是 CRTP「基类静态知晓派生类型」才能在编译期注入运算符的典型证据——纯虚接口做不到这点，因为虚接口无法在基类里凭空合成 `operator->` 等语法级运算符。
+
+### M.2 真实落地：ATL/WTL 的 Windows 消息分派
+
+微软 ATL（Active Template Library）与 WTL 把 CRTP 用到极致：`CWindowImpl<Derived>` 让每个窗口类「把自身喂回基类」，基类的 `WindowProc` 收到 Windows 消息后，经 CRTP 把消息分派到派生类用 `BEGIN_MSG_MAP` / `MSG_WM_PAINT(OnPaint)` 等宏静态注册的对应处理函数。与 MFC 的「虚函数表 + 消息映射哈希」相比，ATL/WTL 的消息分派在编译期绑定到具体处理函数，零 vtable 间接、零运行期查表——这是 1990 年代末 CRTP 在工业界「去虚函数、保多态」的最早大规模落地之一，也是 §0.2 提到的 ATL 推动 CRTP 走入工业视野的直接证据。
+
+### M.3 历史深挖：1990 年代模板元编程（TMP）的兴起与 CRTP 的定位
+
+CRTP 不是孤立技巧，而是「模板可用于编译期计算与类型级编程」这一 1990 年代认知革命的副产品。时间线：
+
+- **1994**：Barton 与 Nackman 在《Scientific and Engineering C++》中提出「基类模板以派生类为实参」解决运算符注入（即 Barton–Nackman trick），这是 CRTP 的技术雏形，当时尚无统一名称。
+- **1995**：Coplien 在《C++ Report》发表 "Curiously Recurring Template Patterns" 正式命名 `class D : Base<D>`。
+- **1995–2001**：Erwin Unruh 在 1994 年 ACCU 会议展示「模板可在编译期计算素数」的神迹，引爆 TMP 研究；随后 Andrei Alexandrescu《Modern C++ Design》(2001) 把 CRTP 作为 Policy-Based Design 的基石之一（见第 140 章），Todd Veldhuizen 的表达式模板（expression templates，1995）则把 CRTP 推向数值计算性能革命的中心（见 M.4）。
+- **2003+**：`boost::iterator_facade`、`boost::operators`、`std::enable_shared_from_this`（C++11 起进入标准）把 CRTP 沉淀为「基础设施库的标配 idiom」。
+
+理解这段历史的关键：**CRTP 的诞生早于「模板元编程」一词的流行**，它最初只是为了「让基类能调用派生类实现」而出现的巧合式写法，直到 TMP 浪潮才被系统性地工程化。
+
+### M.4 历史深挖：表达式模板（Expression Templates）与 Eigen 的性能革命
+
+Eigen 的 `DenseBase<Derived>` / `EigenBase<Derived>` 是 CRTP 在「延迟求值 + 零临时对象」上的巅峰应用，其底层是 Veldhuizen 1995 年提出的表达式模板技术。以 `c = a + b + d;` 为例：`operator+` 不立即计算，而是返回一个 `CwiseBinaryOp<..., Derived>` 表达式对象（本身也是 CRTP 派生类），把整条运算「记录」成一个类型；直到赋值给 `c` 时，`DenseBase::operator=` 才用一个单循环把 `a+b+d` 直接写进 `c` 的内存——**一次遍历、零中间矩阵、且整个循环可被向量化**。Eigen 官方文档（Topic: Expression Templates，`https://eigen.tuxfamily.org/dox/TopicExpressionTemplates.html`）明确说明：表达式模板「避免临时对象与冗余遍历」，代价是「编译期类型极其复杂、编译更慢、错误信息更长」，这正是 CRTP「零开销但有膨胀与诊断代价」的教科书写照。
+
+### M.5 生产价值：编译期接口检查（比运行时崩溃友好一个数量级）
+
+CRTP + C++20 `concept` / `static_assert` 能在**编译期**强制「派生类必须提供某接口」，把错误从「运行期调用虚函数崩」前移到「编译失败且给出可读信息」。这与 GoF 虚接口形成对比：虚接口只能运行期才发现「忘了实现某方法」，而 CRTP 基类可在 `interface()` 入口处 `static_assert(requires{ derived().foo(); })`，漏写即硬错误。第 139 章 §⑤ 已给出可编译示例；此处强调其生产价值——在 Eigen、`boost::iterator_facade`、`boost::operators` 这类「被数百万项目依赖」的库里，「接口契约前移」是阻断下游误用的最廉价防线。
+
+### M.6 被低估的坑：基类对派生类定义顺序 / 不完整类型的依赖
+
+CRTP 有一个教科书极少强调、但真实踩坑极多的陷阱：**在 `Base<Derived>` 的定义体内，`Derived` 是不完整类型（incomplete type）**。后果有两条：
+
+1. **不能在基类里按值持有 `Derived` 成员**：`struct Base<Derived> { Derived d; };` 非法，因为实例化 `Base<Derived>` 时 `Derived` 尚未定义完。CRTP 基类只能持有 `Derived*` / `Derived&`（这正是 `static_cast<Derived*>(this)` 的形态）。
+2. **避免在基类构造函数里调用依赖 `Derived` 完整定义的方法**：基类构造函数在 `Derived` 构造序列的「最基底」阶段执行，此时 `Derived` 子对象尚未构造完毕；若在 `Base` 的构造函数体内直接调用 `static_cast<Derived*>(this)->foo()`，而 `foo()` 访问了 `Derived` 的数据成员，将读到未初始化/未构造的内存（未定义行为）。标准库 `enable_shared_from_this` 的坑正源于此——若在构造函数体内调用 `shared_from_this()`，会因为 `_M_weak_this` 尚未被 `shared_ptr` 接管而抛 `bad_weak_ptr`。
+
+此外，**CRTP 方法体是惰性实例化的**：基类里引用 `Derived` 成员的代码，只在方法被调用时才实例化，而那一刻 `Derived` 通常已完整——这也是为什么「基类调用派生类方法」大多能正常工作；但「基类在自身定义处（非方法体）就引用 `Derived` 的完整定义」（如 `sizeof(Derived)`、声明依赖其成员的别名）会立即报错。这个「定义顺序 / 完整性」边界，是 CRTP 排错时第一个要检查的点。
+
+### M.7 权威出处汇总（可在线核验，不臆造行号）
+
+- Coplien, J. O. *Curiously Recurring Template Patterns*, C++ Report, 1995-02.（CRTP 命名之源）
+- Barton, J., Nackman, L. *Scientific and Engineering C++,* 1994.（Barton–Nackman trick）
+- Veldhuizen, T. *Expression Templates*, C++ Report, 1995.（Eigen 性能模型的源头）
+- Vandevoorde, D., Josuttis, N., Gregor, D. *C++ Templates: The Complete Guide* (2nd ed.), 章节「The Curiously Recurring Template Pattern」。（CRTP 权威教科书论述）
+- Eigen 官方文档 Topic: Expression Templates，`https://eigen.tuxfamily.org/dox/TopicExpressionTemplates.html`。
+- Boost.Iterator 文档，`https://www.boost.org/doc/libs/release/libs/iterator/doc/iterator_facade.html`。
+- libstdc++ `bits/shared_ptr.h` 中 `enable_shared_from_this<_Tp>` 真实 CRTP 实现（本机路径见 §⑪）。
+- C++ Core Guidelines（Stroustrup & Sutter）在「接口与多态」相关条目中坚持「不要为编译期已知类型付出运行时多态代价」的立场，社区据此把 CRTP 视为零开销静态多态的标准 idiom；更系统的 CRTP 论述见上方《C++ Templates》专章。

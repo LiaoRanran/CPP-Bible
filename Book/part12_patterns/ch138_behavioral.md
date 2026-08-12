@@ -1200,3 +1200,48 @@ int main(){
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 
 **交叉引用**：ch135（模式总览）/ ch137（结构型模式：CRTP vs virtual）/ ch64（variant 与 visit）
+
+## 附录 L：行为型模式工业深挖 — 历史、真实落地与生产戒律 [F: Industry / B: Principle]
+
+> 本节为 P0-11「应用/工程章」大波次扩写：在行为型层面补全历史渊源、在知名 C++ 项目中的真实落地、生产踩坑、与现代 C++ 的互动、以及权威引用。所有论断均可查证，拒绝软文。
+
+### L.1 历史渊源：行为型模式与「会变的行为剥离」
+
+行为型家族（Strategy、Observer、Command、Iterator、Template Method、Visitor、Memento、State、Mediator、Chain of Responsibility、Interpreter）在 GoF 1994 书中单列，回答创建型（谁造）、结构型（怎么拼）之外的第三维：对象如何协作、职责怎么分、算法如何在运行期被替换。Stroustrup 多次指出：在 C++ 里许多行为模式会被语言特性「蒸发」——Template Method 变成 CRTP、Strategy 变成模板参数或 `std::function`、Command 变成函数对象。C++ 答案是「两者兼有」：能吸收的吸收，吸收不了的（Observer 的生命周期、跨模块协作）仍需显式模式。1998 年 STL 把 Iterator 做成语言级事实标准，成为史上最广泛使用的模式；2011 年 `std::function`/lambda 让 Strategy/Command 退化成「传闭包」；C++20 协程又把手写状态机/Command 重塑为可挂起恢复的顺序代码。
+
+### L.2 真实工程场景：每个行为型模式的工业锚点
+
+- **Strategy**：`std::sort` 的比较器即策略；`std::regex` 的 `ECMAScript`/`POSIX` 后端策略；Eigen 矩阵后端策略；`std::unique_ptr<T,D>` 的删除器是编译期策略（ch135 ⑨）。
+- **Observer**：Qt `QObject::connect` 信号槽（Qt Creator 整个 UI 交互层是大型 Observer）；Boost.Signals2 线程安全信号；Chromium `base::ObserverList` 通知生命周期（标签页通信）。
+- **Command**：`std::function<void()>` 无状态命令；Chromium `base::OnceCallback`/`RepeatingCallback` 跨进程 IPC 命令序列化执行；Qt `QAction`；RocksDB `WriteBatch` 即命令批处理；folly `Future` 链。
+- **Iterator**：STL 迭代器 + 范围 `for`；C++20 `std::ranges` 惰性视图链（`filter`/`transform`）。
+- **Template Method**：框架钩子——Qt `QCoreApplication::notify`、MFC `OnInitDialog` 类固定骨架 + 虚钩子。
+- **Visitor**：Clang `clang::RecursiveASTVisitor` 遍历 AST；LLVM `InstVisitor` 遍历指令；`std::visit` + `overloaded` lambda 是编译期访客（ch138 ⑭）。
+- **State**：Qt `QStateMachine`（SCXML）；游戏 AI 的 idle/patrol/chase 迁移（ch138 ⑪ 表驱动）。
+- **Mediator**：Qt 事件循环 `QEventLoop`、Boost.Asio `io_context` 集中仲裁；聊天室/控件协调。
+- **Memento**：Boost.Serialization、Qt `QDataStream`（`<<`/`>>` 外部化状态）。
+- **Chain of Responsibility**：`spdlog` 的 sink 链与日志级别过滤；HTTP 中间件链；`boost::asio` 异步链。
+- **Interpreter**：Clang 的 C++ 表达式解析、SQL/正则引擎的 AST 求值（ch138 ⑰）。
+
+### L.3 生产踩坑实录
+
+1. **Observer 悬垂订阅**：裸指针或失效 `std::function` 捕获 `this` 导致崩溃（ch138 ⑤）。正解：RAII 连接句柄（`QMetaObject::Connection`/`boost::signals2::scoped_connection`）或主题持 `std::weak_ptr`。
+2. **Visitor 脆弱基类**：新增元素类型必须改所有 `Visitor`，违反开闭原则反向版。改用 `std::variant`+`std::visit`，漏处理即编译失败，零虚调用（ch138 ⑲ 实测）。
+3. **State 用 enum+switch 还是对象**：状态少且固定用 `enum`+表驱动（ch138 ⑪）；状态多、迁移复杂才上状态对象，否则过度设计。
+4. **Command 生命周期悬挂**：命令对象生命周期长于执行上下文时持有悬挂引用；命令以 RAII 持有资源，撤销即弹栈 `undo()`。
+5. **模式与 `std` 算法的重复**：手写的 Strategy/Visitor 常与 `std::sort`/`std::visit`/`std::ranges` 重叠，优先标准算法（ch138 ⑳）。
+
+### L.4 与现代 C++ 的互动
+
+- **`std::function`/lambda 替代 Strategy/Command**（ch138 ②⑤⑥）：传闭包即可，免建类；代价是类型擦除（约 2.3–2.6× 虚调用，见 ch138 D5）。
+- **`std::variant`+`std::visit` 替代 Visitor**（ch138 ⑭⑲）：编译期穷尽检查、无虚调用、无 `accept` 胶水。
+- **表驱动/状态枚举替代 State 对象**（ch138 ⑪）：O(1) 查表、可序列化。
+- **`if constexpr`/constexpr 替代运行期策略**（ch138 ③⑱）：分发编译期消除，零运行时成本。
+- **CRTP 替代 Template Method**（ch135 ⑧）：编译期静态多态免 vtable。
+
+### L.5 权威引用
+
+- GoF（1994）*Design Patterns*：行为型 11 模式。
+- Stroustrup：模式被语言吸收的论述（*The C++ Programming Language* 4th ed.）。
+- *C++ Core Guidelines*：相关 lambda/`std::function`/回调条目。
+- LLVM/Clang `RecursiveASTVisitor.h`/`InstVisitor`；Chromium `observer_list.h`/`callback.h`；Qt `qobject.cpp`；Boost `signals2`/`serialization`；`spdlog` sinks。

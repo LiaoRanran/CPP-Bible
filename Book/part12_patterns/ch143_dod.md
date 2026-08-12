@@ -1619,3 +1619,59 @@ int main() {
 [引用] 冷热分离与缓存利用率见 Tony Albrecht「Pitfalls of Object-Oriented Programming」（Sony 技术报告）；False Sharing 的 `alignas(64)` 隔离见 ch143 ⑬ 与 ch143 ⑯ 反模式；ISO 对齐规则见 `[expr.align]` 与 cppreference `alignas`。
 
 </details>
+
+## 附录 M：DOD 工业落地与历史深挖
+
+### M.1 历史深挖：Mike Acton 与 "Data-Oriented Design and C++" (2014 CppCon)
+
+DOD 作为一门被正式命名的工程学科，由 Mike Acton（时任 Insomniac Games 引擎程序员，后入职 Unity 领导 DOTS）在 **2014 年 CppCon 演讲 "Data-Oriented Design and C++"** 中推向 C++ 主流视野。其核心挑衅性论断——**「付钱的是数据，不是代码」**、**「如果你不理解你的数据结构如何被硬件消费，你就不理解你的算法」**——直接反对「先写面向对象类、再优化」的传统。Acton 的核心论点是：现代 CPU 的瓶颈早已不是「每秒指令数」，而是「内存层级（L1/L2/L3/DRAM）与预取器能否喂饱 ALU」；OOP 的「对象图 + 虚函数 + 指针追踪」恰恰最大化 cache miss 与分支误预测，而 DOD 的「按访问模式组织连续数组、批量处理同构数据」则最大化缓存命中与 SIMD 吞吐。演讲视频：`https://www.youtube.com/watch?v=rX0ItVEVjHc`（CppCon 2014 官方频道）。
+
+### M.2 历史深挖：更早的源头——Tony Albrecht 与 Noel Llopis
+
+Acton 并非孤例，DOD 思想在两篇工业技术报告里早已成形：
+
+- **Tony Albrecht, *Pitfalls of Object-Oriented Programming*（Sony Computer Entertainment, 2009）**：用真实 PS3 数据展示「OOP 对象数组」相对「按字段分桶的 SoA」在 cache miss 上的数量级差距，是 DOD 在游戏界最常被引用的量化文献。
+- **Noel Llopis, *Data-Oriented Design*（2009, Games from Within）**：最早系统地把「为数据布局而非对象边界设计」命名为 Data-Oriented Design，并给出「热/冷数据分离」「组件化」「批处理」等具体手法——这正是第 143 章 ⑥（冷热分离）、⑧（ECS 即 DOD 实践）的源头。
+
+### M.3 真实落地：Chandler Carruth「Efficiency with Algorithms, Performance with Data Structures」
+
+Google 的 Chandler Carruth 在 **CppCon 2014/2016 的 "Efficiency with Algorithms, Performance with Data Structures"** 系列里，把 DOD 与「现代硬件内存层级」结合，给出可操作的工程判据：优先选对**数据结构与布局**（连续、可预测访问），其次才谈算法复杂度——一个 `O(n)` 但缓存友好的遍历常胜过 `O(log n)` 但指针跳跃的树。这与第 143 章 ⑨（std::vector 连续存储）、⑬（false sharing）、⑭（perf 剖析）直接对应。Carruth 还强调「**测量，不要猜**」与「用 `perf`/`cachegrind` 看 cache miss 而非只看 wall-clock」——第 143 章 ⑭ 的 perf 方法学即此传统的落地。
+
+### M.4 真实落地：游戏引擎与物理仿真
+
+DOD 在游戏/物理引擎里是「默认而非选项」：
+
+- **Unity DOTS / Unreal Mass Entity**：见第 142 章 M.2/M.3，本质是「把 DOD 做成引擎的存储后端」。
+- **物理仿真（刚体、粒子、布料）**：PhysX、Havok、bullet 的核心求解器（broadphase/narrowphase/约束求解）全部用 SoA + 批处理——数以万计的刚体位置/速度/惯性张量各自成数组，求解循环一次遍历连续数组，既缓存友好又可被 SIMD 向量化（第 143 章 ⑦ 已量化：full update 下 GCC 自动向量化使 SoA 快 3.61×）。
+- **动画 / 骨骼蒙皮**：骨骼矩阵、顶点权重按 SoA 存储，GPU skinning 前先 CPU 端批量计算——同样的「批量同质数据」DOD 范式。
+
+### M.5 真实落地：高频交易（HFT）与 SIMD 批处理
+
+HFT 是 DOD 的极端场景：微秒乃至纳秒级延迟预算下，「cache miss 一次 = 几十纳秒 = 可能丢掉一单」。HFT 系统的订单簿、匹配引擎、风控检查普遍采用：
+
+- **结构体数组（SoA）+ SIMD 批处理**：把数百档买卖盘的 price/qty 各自连续存储，用 `_mm256`/`AVX2`/`AVX-512` 一次性比较数十档，匹配循环被向量化（对应第 143 章 ⑦「SIMD 友好」）。
+- **热冷分离 + 缓存行对齐**：把「每笔订单频繁访问的价位/数量」与「几乎不动的账户元数据」拆开，并对齐 `alignas(64)` 消除 false sharing（第 143 章 ⑬）。
+- **避免指针追踪**：订单簿用「索引数组 + 连续节点池」代替「链表/红黑树指针」，把随机内存访问压成顺序扫描。
+
+这些手法的根因与游戏引擎完全一致——**硬件只认连续、可预测的内存访问**，与「领域是金融还是游戏」无关。
+
+### M.6 DOD 与 STL 容器：`std::vector` 的连续内存是盟友
+
+DOD 并非「反 STL」，恰恰相反——**`std::vector` 的连续存储是 DOD 在 C++ 里最顺手的工具**。第 143 章 ⑨ 已论证：`std::vector<T>` 保证元素在内存中连续，遍历即为顺序访问、预取器友好、可被向量化；而 `std::list`/`std::map`/`std::unordered_map` 的节点散布（每步一次指针解引用、一次潜在 cache miss）是 DOD 的反面教材。实务原则：**默认用 `vector` 装同质数据；用「平行数组（`xs[i]`/`ys[i]`）」实现 SoA；只有当「插入/删除频繁且需稳定迭代器」才考虑节点容器，并清醒接受其 cache 代价**。注意 `std::vector<bool>` 的位压缩会破坏「连续同类型」并阻碍向量化，是 DOD 场景的常见陷阱（改用 `std::vector<char>` 或 `std::bitset` 视情况）。
+
+### M.7 被低估的坑：误用 OOP 致 cache miss、false sharing、AoS vs SoA 错配
+
+第 143 章已列出的反模式（⑯ 指针追踪/链表、⑬ false sharing）之外，三个「认知级」坑：
+
+1. **为「建模自然」牺牲「访问高效」**：OOP 倾向「一个 Player 类把所有字段塞一起」，但游戏循环每帧只碰 `position`/`velocity`，`name`/`inventory`/`questLog` 等冷字段白白占据缓存行（第 143 章 ⑤ 量化：AoS 在 partial update 下慢 10.3×，根因就是「只动 1/8 字段却拉整行」）。DOD 要求「先画访问模式图，再定布局」。
+2. **False Sharing 的隐蔽性**：多线程各写自己元素时，若两元素落在同一 64B 缓存行，CPU 核心间会反复 invalidate 对方缓存行，性能从「线性加速」跌到「比单线程还慢」。必须用 `alignas(64)` 让每线程热数据独占缓存行，或用「每线程本地副本 + 帧末归并」消除跨核写竞争（第 143 章 ⑬/⑮）。
+3. **SoA 不是银弹**：当访问模式「总是整对象读写」（如序列化、拷贝），AoS 的「对象局部性」反而更好（第 143 章 ⑤ 结论 4 已点明：full update 下 SoA 仅快 3.61×，低于 partial 的 10.3×）。布局对错由**访问模式**决定，而非数组形态本身——这是 DOD 最常被教条化误用的地方。
+
+### M.8 权威出处汇总
+
+- Acton, M. *Data-Oriented Design and C++*, CppCon 2014：`https://www.youtube.com/watch?v=rX0ItVEVjHc`
+- Albrecht, T. *Pitfalls of Object-Oriented Programming*, Sony Computer Entertainment, 2009.
+- Llopis, N. *Data-Oriented Design*, Games from Within, 2009.
+- Carruth, C. *Efficiency with Algorithms, Performance with Data Structures*, CppCon 2014/2016.
+- Unity DOTS 文档：`https://docs.unity3d.com/Packages/com.unity.entities@latest`
+- 第 143 章 ⑤/⑦/⑬/⑭ 与附录 D5 的 GCC 15.3.0 实测（AoS vs SoA：partial 10.3×、full 3.61×、reduce 2.38×）
