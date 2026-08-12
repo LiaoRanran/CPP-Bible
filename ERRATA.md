@@ -215,6 +215,24 @@
 
 ---
 
+## E14（P0-11：应用/工程章真实场景与历史深挖大波次，提交 a37f751, 已推送）
+- **复查定位**：E1–E13 复现性主线收口后复查确认：①⓪历史段 147/147 已铺(P0-10)、
+  ②习题升级 147/147 已含引用+答案(P0-10)，唯一真实缺口是 ③应用章深挖——
+  红线授权的「应用章可无限细致扩写历史与真实使用场景」主场。
+- **范围**：20 章 = part11_source(11: libstdc++/libc++/MS-STL/LLVM/Boost/Qt/Chromium-abseil/
+  fmt-spdlog/leveldb-RocksDB/ClickHouse-Redis/Unreal) + part12_patterns(9: 总论/创建型/结构型/
+  行为型/CRTP/Policy/DI/ECS/DOD)。
+- **做法**：5 并行 agent 按分组 prose-only 深挖；每章新增 ㉒/附录M/L 专题节(史料渊源/真实
+  工业坐标/生产踩坑/与标准互动含 WG21 提案链路表/权威引用)。
+- **红线守门**：prose-only(零新增 cpp/asm 块)、LF(newline="\n")、不增章数、不破坏现有围栏。
+  5 agent 自报「整体归一化 CRLF→LF」经 `git diff --stat` 逐一核实均为误报——HEAD 原即 LF，
+  纯追加、无整文件重写、无伪 diff(每名 agent 的 diff 仅 +35~67 行)。
+- **门禁守护**：consistency(ERROR=0)/density(avg 24.8↑)/structure(0 hits)/sweep_fences(0
+  defects) 全绿；20 章 cpp/asm 围栏数与 HEAD 完全一致、纯 LF、围栏配对 OK。
+- **总量**：约 +1022 行 prose(实际 961 net 插入)；工作树仅 20 文件改动，范围纯净。
+
+---
+
 ## 已知限制（非错误，刻意保留）
 
 - **asm 证据工件** `Examples/*.asm` 仅在本地用 MinGW GCC 15.3.0 重生成；CI 不重编译 asm，
@@ -246,3 +264,4 @@
 | `fd429eb` | D5 编译门禁（基准源码真能编过/链过）+ d5_compile_gate.py + CI 接入；方向 B/C 侦察结论（C 已完结 no-op / B 73章待标待定） | E11 |
 | `ef3661b` | §10 验证标记半自动分诊 + 73 章补标([VERIFIED]65/[UNVERIFIED]8) + s10_verify_mark.py + §10 Marker Gate 门禁 | E12 |
 | `0b2f9bd` | D5 运行门禁(真能跑不崩)+ is_abnormal_exit + 8 基准 main 返回修正 + ch101 扩栈 EXTRA_LINK_FLAGS | E13 |
+| `a37f751` | P0-11 应用/工程章真实场景与历史深挖(20 章 prose-only, +961 行) | E14 |
