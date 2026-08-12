@@ -182,6 +182,39 @@
 
 ---
 
+## E13：D5 基准「真能运行且不崩」门禁（深化 E11，提交 0b2f9bd, 已 SSH 推送）
+- **动机（深化 E11）**：E11 的 `d5_compile_gate.py` 把复现承诺从「基准源存在+跟踪」推到
+  「能编译+链接」。但编过+链过 ≠ 运行不崩——一个能链接却运行时 segfault / 死循环 / 无产出的
+  基准，对读者仍是空头承诺。E13 再推深一档：**真能运行且产出结果**。
+- **门禁工具**(`tools/d5_runtime_gate.py`)：每个 `_bench_d5_*.cpp`（跳过 WIN_ONLY 于非 Windows）
+  链接为可执行 → 带超时运行 → 分级判定：
+  - 异常终止（POSIX 被信号杀 rc<0 / Windows NTSTATUS `0x8xxxxxxx`，如 `0xC00000FD` 栈溢出）→ **CRASH（判红）**
+  - 退出码非 0 但有正常 stdout 产出（典型 `main` 误 `return 测量值`）→ **BENIGN_RET（WARN，不判崩溃）**
+  - 超时 / 退出 0 但无产出 → **WARN**
+  - 退出 0 且有产出 → **PASS**
+  - 关键修正：初版「exit≠0 即 CRASH」误伤良性非零退出，故引入 `is_abnormal_exit()` 区分
+    真崩溃与良性 return。
+- **实跑发现 + 修复（9 个曾 CRASH 全数归零）**：
+  - **8 个良性误报**：`main` 末句 `return (int)g_sink;`（`g_sink` 为 volatile 防优化累加器，
+    值恒非 0）→ 改 `return 0;`。`volatile` 写入仍保留，防 DCE 语义不变。涉及
+    `_bench_d5_{107_atomic,110_lockfree,112_hazard_rcu,113_coroutine,115_move,77_vector,26_lambda,90_ranges}.cpp`。
+  - **1 个真崩溃（harness 缺陷非源 bug）**：`_bench_d5_ch101_algo_theory.cpp` 的
+    `fib_memoized(40000)` 递归深度 4 万，超 Windows 默认 1MB 线程栈，触发
+    `STATUS_STACK_OVERFLOW (0xC00000FD)`。源文件头注释已写明须 `-Wl,--stack,33554432` 扩栈，
+    但门禁链接时漏传 → 门禁加 `EXTRA_LINK_FLAGS` 机制补该参数（**不改动正确的源**）。
+- **平台语义注**：Windows 上 Python `subprocess` 返回 `GetExitCodeProcess` 的 32 位完整值
+  （`return 12000000` 即 12000000）；Linux 上 exit code 被 mask 到 8 位（`return 12000000`→0）。
+  故该良性误报仅 Windows 显红，修复后跨平台统一 `exit 0`。
+- **CI 接入**：`quality` job 在 D5 Compile Gate 之后新增 `D5 Benchmark Runtime Gate`
+  （`if: matrix.compiler=='gcc'`，`continue-on-error: true` 软门禁——运行时非确定性，
+  不阻断发布但显性暴露崩溃，与 T1-1 运行期门禁同策略）。
+- **最终核验（本地全量，GCC 15.3.0，timeout=30）**：**115 基准 = 112 PASS / 0 CRASH /
+  3 TIMEOUT(WARN) / 0 BENIGN_RET / 0 NO_OUTPUT**，门禁 `ok=true`。
+  3 个 TIMEOUT 为长跑基准（ch69_constexpr / ch120_coroutine / ch84_set_multiset），属 WARN 不红。
+- **遗留**：3 个长跑基准超时属设计性行为（WARN），不计入崩溃；后续若需纳入可上调 `--timeout` 或拆分。
+
+---
+
 ## 已知限制（非错误，刻意保留）
 
 - **asm 证据工件** `Examples/*.asm` 仅在本地用 MinGW GCC 15.3.0 重生成；CI 不重编译 asm，
@@ -212,3 +245,4 @@
 | `a446d80` | 术语/格式归一化大包（x86-64/ARM64）+ 确定性 CI 门禁 + terminology_normalize.py | E10 |
 | `fd429eb` | D5 编译门禁（基准源码真能编过/链过）+ d5_compile_gate.py + CI 接入；方向 B/C 侦察结论（C 已完结 no-op / B 73章待标待定） | E11 |
 | `ef3661b` | §10 验证标记半自动分诊 + 73 章补标([VERIFIED]65/[UNVERIFIED]8) + s10_verify_mark.py + §10 Marker Gate 门禁 | E12 |
+| `0b2f9bd` | D5 运行门禁(真能跑不崩)+ is_abnormal_exit + 8 基准 main 返回修正 + ch101 扩栈 EXTRA_LINK_FLAGS | E13 |
