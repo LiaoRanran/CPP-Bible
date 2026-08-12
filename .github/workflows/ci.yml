@@ -275,6 +275,18 @@ jobs:
       continue-on-error: false
       run: python3 tools/exempt_audit.py --check
 
+    - name: D5 Benchmark Compile Gate (基准源码真能编译/链接 门禁)
+      # E11 收口：深化 E9「基准源存在 + 被 git 跟踪」→「基准源在 GCC 15.3.0
+      # -std=c++23 下真能编译并链接」。复现性承诺最硬一档：读者抄走的
+      # _bench_d5_X.cpp 至少能在现代标准 + 优化下编过、链过、跑起来。
+      # 115 个基准中 4 个直接用 <windows.h>（WIN_ONLY），非 Windows runner
+      # 自动跳过；其余 111 个在 gcc:15.3.0 下编过 + 链过（链接常驻 -latomic，
+      # 128-bit std::atomic 所需；-lwinmm 仅 Windows）。仅 GCC 矩阵跑——与
+      # asm 证据基线同语言前端，避免 Clang 诊断差异致误红。
+      if: matrix.compiler == 'gcc'
+      continue-on-error: false
+      run: python3 tools/d5_compile_gate.py --check
+
     - name: Compile + Link + Run + Sanitizer (T1-1 运行期门禁)
       # 对自包含 main 块做完整 编译+链接+运行， 并叠加 ASan/UBSan/TSan。
       # 现有 compile_all/compile_gate 仅作 *语法级* 静态检查（-fsyntax-only）；
