@@ -161,6 +161,27 @@
 
 ---
 
+## E12：§10 验证标记半自动分诊（方向 B 落地，提交 ef3661b, 已 SSH 推送）
+- **侦察结论（方向 B）**：`verification_audit.py` 报 147 主章中 74 含验证标记、73 零标记。
+  §10+宪章§0 硬规则「无法验证内容一律 `[UNVERIFIED]`，绝不伪装已验证」；`[VERIFIED]` 须实际复现。
+  故不可批量无脑打标（违§0 平均用力/伪验证）。
+- **半自动分诊工具**(`ef3661b`)：`tools/s10_verify_mark.py`——对 73 零标记活章，按「是否有机器
+  可验证复现链」分配：
+  - D5 基准声明(`_bench_d5_X.cpp`，E11 证 115/115 全过编译门禁) 或 书内 `asm` 围栏(book_asm_freshness
+    证真实反汇编) → **[VERIFIED]**；
+  - 皆无 → **[UNVERIFIED]**(诚实默认，明确「待逐条核验」)。
+  - 结果：73 = 65 `[VERIFIED]` + 8 `[UNVERIFIED]`。既有人工标注(74 章)一律跳过。
+- **安全约束**：仅处理 `Book/partNN/chNN_*.md` 活章；刻意排除 `_legacy/` 7 陈旧副本与
+  GLOSSARY/SUMMARY/PREREQUISITES/00_*/MANIFEST 索引文件（非高风险断言载体，避免误标死副本）。
+  标记置于章首 H1 后 blockquote，透明写明证据类型；LF 安全、幂等(复跑不重复)。
+- **CI 门禁**：`quality` job 新增 `§10 Verification Marker Gate`(`--check`, `continue-on-error:false`)，
+  锁定「147 活章全覆盖」；任一活章缺标记即 BLOCK，防 §10 合规回归。
+- **核验**：注入后 `verification_audit` 报主章验证标记覆盖 **100.0%**、高风险零标记 backlog = **0**；
+  73 文件 0 CRLF(LF 红线守)；`--check` 本地 exit 0。
+- **审计清单**：`build/s10_audit.json`(gitignored，CI/本地生成) 记录每章证据与拟标，供逐条复核纠偏。
+
+---
+
 ## 已知限制（非错误，刻意保留）
 
 - **asm 证据工件** `Examples/*.asm` 仅在本地用 MinGW GCC 15.3.0 重生成；CI 不重编译 asm，
@@ -190,3 +211,4 @@
 | `18db866` | §1 标签全库收口（147 章）+ D5 基准源引用完整性门禁 + d5_source_integrity.py | E9 |
 | `a446d80` | 术语/格式归一化大包（x86-64/ARM64）+ 确定性 CI 门禁 + terminology_normalize.py | E10 |
 | `fd429eb` | D5 编译门禁（基准源码真能编过/链过）+ d5_compile_gate.py + CI 接入；方向 B/C 侦察结论（C 已完结 no-op / B 73章待标待定） | E11 |
+| `ef3661b` | §10 验证标记半自动分诊 + 73 章补标([VERIFIED]65/[UNVERIFIED]8) + s10_verify_mark.py + §10 Marker Gate 门禁 | E12 |
