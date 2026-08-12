@@ -233,6 +233,28 @@
 
 ---
 
+## E15（asm 信号级真缺口补全：6 章补真实 GCC 15.3.0 反汇编证据，提交 ff9d14d, 已推送）
+- **复查定位**：E1–E14 收口后按用户「再来」选定方向——给底层机制章补真实 MinGW GCC
+  15.3.0 反汇编证据。先以三重校验（`verify_asm_evidence` + `asm_repro_spotcheck` +
+  脚本侦察）推翻「10 章全无 asm」的误判，锁定真实缺口仅 ch28/35/38/90/158（ch97 已有
+  手写块待锚定、ch38 仅跨章引用），共 6 章。
+- **做法**：每章写 `Examples/_chXX_*.cpp` 源 → `g++ -std=c++23 -O2 -S -masm=intel` 生
+  `.asm` → python 归一化 CRLF→LF → 书内插真实反汇编块 + `Examples/_chXX_*.asm` 引用。
+  - ch28 悬垂返回在 -O2 被武器化为 `xor eax,eax; ret`（"UB 不是报错而是编译器可任意处理"铁证）
+  - ch35 `Packet{char;int;double}` 成员偏移 `int@4`/`double@8` 证明 3 字节 padding 真实存在
+  - ch38 monotonic bump allocator `mov [rcx],r8` 单条 store 完成指针碰撞（零开销根因）
+  - ch90 ranges `filter` 谓词 `test dl,1; jne` 内联进循环体，**替换原手写示意 `x86asm` 块**为真实产物
+  - ch97 `lower_bound_idx` 真实二分反汇编锚定（`_Z15lower_bound_idxPKiii`）
+  - ch158 虚调用 `compute_area` 展示 GCC 推测去虚拟化 + `jmp rax` 间接回落（虚函数机器级代价）
+- **双门禁全绿（严守"本地 MinGW 反汇编 + 门禁全绿才推送"红线，不踩"复报错"）**：
+  - `verify_asm_evidence`：ACCURATE 57→63（+6），**DRIFT=0**，MISSING_FILE=0
+  - `asm_repro_spotcheck` 全量 267 文件：MATCH=252 / DRIFT=3（均为已知基线
+    `_ch13_use`/`_ch143_novirtual`/`_ch99`）/ COMPILE_FAIL=2（`_mod_main`/`_mod_use` C++20 模块）/ NO_SOURCE=10，0 新增。
+- **新增工件**：14 个 `Examples/_chXX_*.{cpp,asm}`（LF 归一化）；删除临时侦察脚本 `_recon_asm_state.py`。
+- **总量**：20 文件改动（+609 行，其中 144 行书内 prose/asm，其余为新增工件）；范围纯净。
+
+---
+
 ## 已知限制（非错误，刻意保留）
 
 - **asm 证据工件** `Examples/*.asm` 仅在本地用 MinGW GCC 15.3.0 重生成；CI 不重编译 asm，
@@ -265,3 +287,4 @@
 | `ef3661b` | §10 验证标记半自动分诊 + 73 章补标([VERIFIED]65/[UNVERIFIED]8) + s10_verify_mark.py + §10 Marker Gate 门禁 | E12 |
 | `0b2f9bd` | D5 运行门禁(真能跑不崩)+ is_abnormal_exit + 8 基准 main 返回修正 + ch101 扩栈 EXTRA_LINK_FLAGS | E13 |
 | `a37f751` | P0-11 应用/工程章真实场景与历史深挖(20 章 prose-only, +961 行) | E14 |
+| `ff9d14d` | 6 章补真实 GCC 15.3.0 反汇编证据(asm 信号级真缺口)，双门禁全绿 | E15 |
