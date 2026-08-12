@@ -10,7 +10,7 @@
 立场分层约定：
 - **[标准]**　语言/库标准规定（ISO C++、LWG 决议）。
 - **[实现]**　libstdc++ / libc++ / MS STL 的具体代码行为。
-- **[平台]**　MinGW GCC 13.1.0、Windows、ABI 相关事实。
+- **[平台·x86-64]**　MinGW GCC 13.1.0、Windows、ABI 相关事实。
 - **[经验]**　工程实践、坑与取舍。
 
 环境事实（本机探测）：MinGW **GCC 13.1.0**；libstdc++ 头文件根目录
@@ -65,7 +65,7 @@ STL（Stepanov，1994 入标准）的设计原则之一：算法 / 容器与"内
 
 **[标准]**　`std::allocator<T>` 是「默认分配器」（`[allocator.requirements]`）。任何容器都接收一个 `Allocator` 模板参数，缺省为 `std::allocator<value_type>`。
 
-**[实现]**　libstdc++ 里 `std::allocator<T>` 的基类是 `__new_allocator<T>`，见
+**[实现·GCC15]**　libstdc++ 里 `std::allocator<T>` 的基类是 `__new_allocator<T>`，见
 `x86_64-w64-mingw32/bits/c++allocator.h:47`：
 
 ```cpp
@@ -147,7 +147,7 @@ constexpr _Tp* allocate(size_t __n)
 }
 ```
 
-**[实现]**　任何 `std::allocator<X>` 与 `std::allocator<Y>` 总是相等（`bits/allocator.h:214-217`、`operator==` 返回 `true`），因此 `is_always_equal` 在 traits 特化里为 `true_type`（见第 4 节 `bits/alloc_traits.h:464`）。
+**[实现·GCC15]**　任何 `std::allocator<X>` 与 `std::allocator<Y>` 总是相等（`bits/allocator.h:214-217`、`operator==` 返回 `true`），因此 `is_always_equal` 在 traits 特化里为 `true_type`（见第 4 节 `bits/alloc_traits.h:464`）。
 
 **核心知识点 #1**：默认 `std::allocator` ≡ `::operator new`，无优化空间。
 **核心知识点 #2**：容器通过 `allocator_traits` 间接调用分配器，见 `ch80`。
@@ -842,7 +842,7 @@ struct pool_options {
 };
 ```
 
-**[平台]**　本机 MinGW GCC 13.1.0 的 libstdc++ 中 `synchronized_pool_resource` **存在**（定义了 `_GLIBCXX_HAS_GTHREADS`）。若某嵌入式 libstdc++ 无线程（`#else` 分支，`memory_resource:52-55`），`__cpp_lib_memory_resource` 仅为 `1` 且 `synchronized_pool_resource` 被剔除。
+**[平台·x86-64]**　本机 MinGW GCC 13.1.0 的 libstdc++ 中 `synchronized_pool_resource` **存在**（定义了 `_GLIBCXX_HAS_GTHREADS`）。若某嵌入式 libstdc++ 无线程（`#else` 分支，`memory_resource:52-55`），`__cpp_lib_memory_resource` 仅为 `1` 且 `synchronized_pool_resource` 被剔除。
 
 **核心知识点 #16（unsync 池）**：单线程、size class 池。
 **核心知识点 #17（sync 池）**：多线程、加锁。
@@ -1108,7 +1108,7 @@ construct(_Tp* __p, _Args&&... __args)
 }
 ```
 
-**[平台]**　本机 libstdc++ `scoped_allocator` 存在，行号见上。libc++/MS STL 同名同义。
+**[平台·x86-64]**　本机 libstdc++ `scoped_allocator` 存在，行号见上。libc++/MS STL 同名同义。
 
 **核心知识点 #22**：嵌套容器传递内部分配器。
 
@@ -1264,7 +1264,7 @@ int main() {
 
 **[实现-推断]**　各 STL 的「默认 chunk 大小」「池档位数」未在标准中规定，属实现细节；libc++ 与 MS STL 的精确数值以各自源码为准，上表为量级估计。
 
-**[平台]**　本机 MinGW GCC 13.1.0：`memory_resource` 可用、`synchronized_pool_resource` 存在（已验证能编译程序 18）。若在「不带动线程的 libstdc++ 构建」下，`memory_resource:52-55` 会把 `__cpp_lib_memory_resource` 设为 `1` 并**省略 `synchronized_pool_resource`**——这是唯一的硬性差异点。
+**[平台·x86-64]**　本机 MinGW GCC 13.1.0：`memory_resource` 可用、`synchronized_pool_resource` 存在（已验证能编译程序 18）。若在「不带动线程的 libstdc++ 构建」下，`memory_resource:52-55` 会把 `__cpp_lib_memory_resource` 设为 `1` 并**省略 `synchronized_pool_resource`**——这是唯一的硬性差异点。
 
 程序 33（差异探测，独立可编译，打印本 STL 的关键宏）：
 
@@ -1300,7 +1300,7 @@ int main() {
 
 **[经验]**　以下基准为**量级参考**（本机 MinGW GCC 13.1.0，`-O2`）。PMR `monotonic` 因「零释放、纯 bump」通常比 `new_delete` 快 **数倍**；自定义对象池把 N 次 `operator new` 降到「N/块数 + 1」次，分配数显著减少。
 
-**[平台]**　运行于本机 Windows 11 + MinGW GCC 13.1.0。数值为示意量级，非精确测量（真实测量请用 `std::chrono::high_resolution_clock` 多次取 median）。
+**[平台·x86-64]**　运行于本机 Windows 11 + MinGW GCC 13.1.0。数值为示意量级，非精确测量（真实测量请用 `std::chrono::high_resolution_clock` 多次取 median）。
 
 程序 34：PMR monotonic vs new_delete 量级对比：
 
@@ -1487,7 +1487,7 @@ std::pmr::vector<int> v(&mr);          // 整个 v 的生命周期在 mr 内 bum
   - `bits/memory_resource.h`（memory_resource `:56-104`、polymorphic_allocator `:107-355`、allocate `:143-152`、traits 特化 `:375-501`、propagate false `:409-419`）
   - `memory_resource`（new_delete/null/set/get `:66-83`、pool_options `:94-109`、synchronized `:155-217`、unsynchronized `:221-276`、monotonic bump `:354-373`、growth `:397-398`）
   - `scoped_allocator`（class `:177`、construct `:372`、_M_construct `:202-227`）
-- **立场分层**：[标准]/[实现]/[平台]/[经验] 均已标注；缺失细节处显式标 [实现-推断]。
+- **立场分层**：[标准]/[实现]/[平台·x86-64]/[经验] 均已标注；缺失细节处显式标 [实现-推断]。
 - **环境校验**：MinGW GCC 13.1.0 上程序 1/9/12/18/33 等已实测可编译运行；`synchronized_pool_resource` 本机可用。
 
 ## 联合使用场景

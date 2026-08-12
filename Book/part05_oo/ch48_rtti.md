@@ -210,7 +210,7 @@ _Z13down_cast_refRK4Base:
 3. 引用形态：`call __dynamic_cast` 后 `test rax,rax; je .L13; ...; call __cxa_bad_cast`。比对失败经 `__cxa_bad_cast` 抛出 `std::bad_cast`，**不返回**。这就是引用与指针失败语义差异的硬件级原因。
 4. `42` = `'*'`：libstdc++ `type_info::name()` 在返回的 mangled name 前可能带一个 `'*'` 前缀（legacy ABI 标记），真实代码会跳过它。这证明 `.name()` 返回的是 Itanium mangled name（如 `_ZTI3Der` 对应的 `.N3DerE`），需 `__cxa_demangle` 才能读人话。
 
-【立场分层】：[标准] 规定 typeid/dynamic_cast 语义 / [实现] 上 GCC 生成 __dynamic_cast 调用 / [平台] 上 MSVC 用 `RTTI Type Descriptor` 等价结构 / [经验] 热路径禁用 RTTI 或换 static 方案。
+【立场分层】：[标准] 规定 typeid/dynamic_cast 语义 / [实现] 上 GCC 生成 __dynamic_cast 调用 / [平台·x86-64] 上 MSVC 用 `RTTI Type Descriptor` 等价结构 / [经验] 热路径禁用 RTTI 或换 static 方案。
 
 ## ⑪ STL 联系
 
@@ -1536,7 +1536,7 @@ int main() {
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 `dynamic_cast` / `typeid` 相对虚函数派发的真实开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 继承层级为一层单继承（`Derived`/`Other` : `Base`），各 5M 次调用/比较，指针经随机化分布。"相对"列以虚函数派发为 1.00×，更快者加粗。
 

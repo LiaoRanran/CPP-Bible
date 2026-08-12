@@ -66,7 +66,7 @@ int workload(int x) {
 └───────────────┴───────────────────────────┴──────────────────────────┘
 ```
 
-- `[标准]`：C++ 标准**不规定**任何构建标志；`-O* / -g / -flto` 全是实现提供的扩展（见 `[实现]`）。
+- `[标准]`：C++ 标准**不规定**任何构建标志；`-O* / -g / -flto` 全是实现提供的扩展（见 `[实现·GCC15]`）。
 - `[经验]`：把"构建配置"当成产品的一部分来管理——用 `CMakePresets.json` 或统一的 `Makefile`/脚本固定标志，避免"在我机器能编译"。
 
 ## ② Debug vs Release（NDEBUG/断言被禁用）
@@ -137,7 +137,7 @@ int twice(int x)    { return x + x; }      // -O2：lea eax,[rcx+rcx]
 - `[实现·GCC15]`：`-O2` 与 `-O3` 的具体 pass 列表由 GCC 内部表决定；`-O3` 增加的自动向量化在"-O2 已经很平"的代码上可能因代码膨胀导致 icache 压力反而变慢，务必 benchmark 验证。
 - `[经验]`：发布默认 `-O2`；只有数值密集且实测 `-O3`/`PGO` 更快才升级。不要无脑 `-O3`。
 
-## ④ [实现]真实：-O0 vs -O2 同函数汇编对比
+## ④ [实现·GCC15]真实：-O0 vs -O2 同函数汇编对比
 
 取证源（本机真实编译，逐字反汇编）：
 
@@ -283,7 +283,7 @@ g++ -std=c++23 -O2 -fprofile-use -o app Examples/_ch18_pgo.cpp
 - `[实现·GCC15]`：`-fprofile-generate` 插桩版运行后写出 `.gcda`；`-fprofile-use` 读取它调整分支布局、函数分区（`-freorder-blocks`/`-fprofile-partition`）。本机实测 `-fprofile-use` 编译时**无 missing-profile 警告**，证明剖面真实被应用。
 - `[经验]`：PGO 的输入负载必须"像生产"——用单元测试跑出来的剖面会误导优化器。服务器用线上采样回放，客户端用典型用户操作录制。
 
-## ⑧ [实现]真实：-flto 跨 TU 内联证据
+## ⑧ [实现·GCC15]真实：-flto 跨 TU 内联证据
 
 取证源（本机真实编译 + `objdump -d`，逐字）：
 
@@ -415,7 +415,7 @@ __attribute__((visibility("hidden")))  int internal_impl(int x);
 - `[平台·MinGW-x64/PE]`：PE 用 `.pdata`/导出表；`strip` 仍可去调试段，但 DLL 导出名由 `dllexport`/`.def` 控制（见 ⑪）。
 - `[经验]`：发布构建保留**带符号的副本**用于事后 coredump 分析（`objcopy --only-keep-debug` 拆出 `.debug` 单独存档），分发的二进制再 `strip`。
 
-## ⑪ 静态 / 动态链接取舍（[实现]g++ 生成 .a/.so）
+## ⑪ 静态 / 动态链接取舍（[实现·GCC15]g++ 生成 .a/.so）
 
 同一实现可打包成静态库 `.a`（归档）或动态库（Linux `.so` / Windows `.dll`）。
 
@@ -483,7 +483,7 @@ g++ -std=c++23 -O2 -fstack-protector-strong -fPIE -pie \
 - `[平台·Linux/ELF]`：`RELRO + PIE + NX` 是主流发行版默认；`-D_FORTIFY_SOURCE=2` 让 `memcpy`/`sprintf` 等带编译期长度检查。
 - `[经验]`：发布二进制默认开 `-fstack-protector-strong -fPIE -pie -Wl,-z,relro,-z,now`；性能损耗通常 < 2%，安全收益巨大。
 
-## ⑬ [实现]真实：-fstack-protector-strong 在函数入口插入 canary 检查
+## ⑬ [实现·GCC15]真实：-fstack-protector-strong 在函数入口插入 canary 检查
 
 取证源（本机真实编译，逐字反汇编）：
 

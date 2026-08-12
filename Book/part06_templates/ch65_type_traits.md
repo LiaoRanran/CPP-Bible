@@ -158,7 +158,7 @@ static_assert(sizeof(std::is_pointer<int*>) == 1, "trait 是空类，size==1（�
 static_assert(std::is_pointer<int*>::value == true,  "编译期常量，无运行期开销");
 ```
 
-## ⑧ 汇编/ABI 层证据（MinGW GCC 15.3.0） [平台]
+## ⑧ 汇编/ABI 层证据（MinGW GCC 15.3.0） [平台] [VERIFIED]
 
 下列汇编由 `Examples/_asm_tpl_traits.cpp` 在 `-std=c++23 -O2 -masm=intel` 下生成。**关键结论**：所有 trait 运算在编译期完成，运行期只剩常量。
 
@@ -446,7 +446,7 @@ struct Pod { int a; double b; };
 static_assert(std::is_trivially_copyable_v<Pod>);
 ```
 
-## ⑬ 源码分析 [实现]
+## ⑬ 源码分析 [实现·libstdc++]
 
 标准库 `<type_traits>` 中 `is_pointer` 的真实骨架（libstdc++ 摘录，行号指 `_bits/type_traits.h` 区块）：
 
@@ -477,7 +477,7 @@ template<typename _Tp>
 
 ## ⑮ 跨 GCC / Clang / MSVC 一致性 [平台]
 
-`type_traits` 属标准强约束区，三编译器结论一致率 >99%。分歧仅在极少数内建 trait（如 `is_trivially_constructible` 对含 `volatile` 成员的类）。工程建议：跨编译器库用标准 trait 而非编译器内建宏。
+`type_traits` 属标准强约束区，三编译器结论一致率 >99% [UNVERIFIED]。分歧仅在极少数内建 trait（如 `is_trivially_constructible` 对含 `volatile` 成员的类）。工程建议：跨编译器库用标准 trait 而非编译器内建宏。
 
 ```cpp
 // 跨平台写法：优先标准 trait
@@ -702,7 +702,7 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 
 ### 工业案例（真实可查证）
 
-- **`std::is_trivially_copyable` 的序列化决策**：网络/文件序列化函数中 `if constexpr (std::is_trivially_copyable_v<T>)` 允许直接用 `memcpy` 而非逐字段序列化，性能差可达 10–50×。但该 trait 在跨平台下需验证编译器实现——`std::array<int,3>` 是 trivially copyable，但 MSVC 与 GCC 对齐差可能导致 `sizeof` 不一致。
+- **`std::is_trivially_copyable` 的序列化决策**：网络/文件序列化函数中 `if constexpr (std::is_trivially_copyable_v<T>)` 允许直接用 `memcpy` 而非逐字段序列化，性能差可达 10–50× [UNVERIFIED]。但该 trait 在跨平台下需验证编译器实现——`std::array<int,3>` 是 trivially copyable，但 MSVC 与 GCC 对齐差可能导致 `sizeof` 不一致 [UNVERIFIED]。
 - **`std::conditional` 过深嵌套的编译期爆炸**：`std::conditional<A, T1, std::conditional<B, T2, T3>>` 嵌套三层以上，编译错误信息展开为上百行 `_Ty`/`_T` 内部类型名，调试极其昂贵。C++17 `if constexpr` 替代、或 C++20 `requires` 约束可读性飞升。
 
 ### 常见 Bug 与 Debug 方法
@@ -712,7 +712,7 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 
 ### 重构建议
 
-把 `std::conditional` 多重嵌套重构为 `if constexpr`（C++17）或 `template<C T>` concept（C++20），诊断可读性提升 20×+；序列化用 `if constexpr (is_trivially_copyable_v<T>)` 分支 `memcpy` 快速路径 + `static_assert` 校验对齐。
+把 `std::conditional` 多重嵌套重构为 `if constexpr`（C++17）或 `template<C T>` concept（C++20），诊断可读性提升 20×+ [UNVERIFIED]；序列化用 `if constexpr (is_trivially_copyable_v<T>)` 分支 `memcpy` 快速路径 + `static_assert` 校验对齐。
 
 ### 面试要点（速记 · Type Traits）
 
@@ -1072,7 +1072,7 @@ flowchart TD
 
 > 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比才是可移植信号。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 N=1'000'000（拷贝元素），VN=200'000（vector push_back）。`sizeof TrivialPod=24 NonTrivial=24 CompactPod=8 PaddedPod=64`。
 

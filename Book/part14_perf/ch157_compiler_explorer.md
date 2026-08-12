@@ -122,7 +122,7 @@ int call_helper(int n) { return helper(n) + helper(n+1); }
 int main() { std::cout << call_helper(10) << std::endl; return 0; }
 ```
 
-## ⑨ inline 与不 inline 的汇编差异 [实现]
+## ⑨ inline 与不 inline 的汇编差异 [实现·GCC15]
 
 ```cpp
 #include <iostream>

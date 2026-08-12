@@ -3,7 +3,7 @@
 ⟶ Book/part14_perf/ch157_compiler_explorer.md
 ⟶ Book/part14_perf/ch152_perf_model.md
 
-> **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0 真实产物佐证。编译器：`g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0`，路径 `C:/Qt/Tools/mingw1310_64/bin/g++.exe`。示例源码位于 `Examples/_ch151_*.cpp`，对应汇编产物位于 `Examples/_ch151_*.asm`（命令统一为 `g++ -std=c++23 -O2 -S -masm=intel <src> -o <dst>.asm`）。全部示例以 `-std=c++23 -O2 -Wall -Wextra` 编译，**警告零洁净（warnings clean）** 且真实运行；正文中所有耗时数字（毫秒/纳秒）均逐字摘自本机运行输出，**绝不编造**。所有汇编片段（`.L4` 循环、`call [QWORD PTR 16[rax]]`、`mulpd`/`addpd`、`vmovupd zmm` 等）均逐字摘自真实生成的 `.asm` 文件。源码剖析（第④节）引用的 libstdc++ 路径为本机真实存在的 `.../include/c++/bits/chrono.h`，行号取自实际文件。立场分层标签：`[标准]`=ISO C++，`[实现]`=编译器/标准库实现，`[平台]`=OS/ABI/CPU，`[经验]`=工程共识。外部框架（Google Benchmark / perf / valgrind cachegrind）本机未安装，一律按"上游参考 + 本机可复现等价示例"记录：等价示例经 `g++` 真实编译运行，框架语法以「典型输出」形式给出且明确标注为框架示意、非本机 `g++` 产物。
+> **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0 真实产物佐证。编译器：`g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0`，路径 `C:/Qt/Tools/mingw1310_64/bin/g++.exe`。示例源码位于 `Examples/_ch151_*.cpp`，对应汇编产物位于 `Examples/_ch151_*.asm`（命令统一为 `g++ -std=c++23 -O2 -S -masm=intel <src> -o <dst>.asm`）。全部示例以 `-std=c++23 -O2 -Wall -Wextra` 编译，**警告零洁净（warnings clean）** 且真实运行；正文中所有耗时数字（毫秒/纳秒）均逐字摘自本机运行输出，**绝不编造**。所有汇编片段（`.L4` 循环、`call [QWORD PTR 16[rax]]`、`mulpd`/`addpd`、`vmovupd zmm` 等）均逐字摘自真实生成的 `.asm` 文件。源码剖析（第④节）引用的 libstdc++ 路径为本机真实存在的 `.../include/c++/bits/chrono.h`，行号取自实际文件。立场分层标签：`[标准]`=ISO C++，`[实现·GCC15]`=编译器/标准库实现，`[平台·Linux]`=OS/ABI/CPU，`[经验]`=工程共识。外部框架（Google Benchmark / perf / valgrind cachegrind）本机未安装，一律按"上游参考 + 本机可复现等价示例"记录：等价示例经 `g++` 真实编译运行，框架语法以「典型输出」形式给出且明确标注为框架示意、非本机 `g++` 产物。
 
 ---
 
@@ -202,7 +202,7 @@ asm_volatile: s=499500 (loop survived optimization)
         jne     .L4
 ```
 
-> **立场**：`[实现]` `volatile` 只阻止**编译器**优化，不阻止 **CPU 乱序执行**；要约束运行时内存序请用 `std::atomic` 或 `std::atomic_signal_fence`，二者语义不同，混用会埋雷。
+> **立场**：`[实现·GCC15]` `volatile` 只阻止**编译器**优化，不阻止 **CPU 乱序执行**；要约束运行时内存序请用 `std::atomic` 或 `std::atomic_signal_fence`，二者语义不同，混用会埋雷。
 
 ---
 
@@ -270,7 +270,7 @@ clock_choice: high_resolution_clock::is_steady=0
 //   };
 ```
 
-> **立场**：`[平台]` 在 MinGW-w64 上为 `high_resolution_clock` 选了 `system_clock` 别名（故 `is_steady==0`）；在 Linux libstdc++ 上它通常别名 `steady_clock`。**跨平台基准一律显式写 `steady_clock`**，不要依赖 `high_resolution_clock` 的别名身份。
+> **立场**：`[平台·Linux]` 在 MinGW-w64 上为 `high_resolution_clock` 选了 `system_clock` 别名（故 `is_steady==0`）；在 Linux libstdc++ 上它通常别名 `steady_clock`。**跨平台基准一律显式写 `steady_clock`**，不要依赖 `high_resolution_clock` 的别名身份。
 
 ---
 
@@ -537,7 +537,7 @@ vmovupd zmm3, ZMMWORD PTR [rbx+rax]
 vmovupd ZMMWORD PTR [rdi+rax], zmm0
 ```
 
-> **立场**：`[平台]` 本机 `-O3 -march=native` 虽生成了 AVX-512（`zmm`），但实测仅比 `-O2` 快约 8%（107ms vs 116ms），远未到 4 倍理论带宽增益——AVX-512 会触发 CPU 降频（AVX-512 turbo throttle），窄数据结构下收益有限。**不要默认 `-O3 -march=native` 一定更快**，必须用真实基准验证。
+> **立场**：`[平台·x86-64]` 本机 `-O3 -march=native` 虽生成了 AVX-512（`zmm`），但实测仅比 `-O2` 快约 8%（107ms vs 116ms），远未到 4 倍理论带宽增益——AVX-512 会触发 CPU 降频（AVX-512 turbo throttle），窄数据结构下收益有限。**不要默认 `-O3 -march=native` 一定更快**，必须用真实基准验证。
 
 ---
 
@@ -737,7 +737,7 @@ virtual(-O2 devirt): ms=48.040   r=1774919424
 virtual(-fno-devirt): ms=228.764 r=1774919424
 ```
 
-> **立场**：`[实现]` 现代 `-O2` 对**可见动态类型**普遍去虚化，所以"虚函数一定慢"在 micro 场景常被优化掉；只有当类型在编译期不可见（工厂返回、跨 TU）时才保留 `call [vtable]`，此时虚分派代价约 4~5 倍（228ms vs 48ms）。**用 `-fno-devirtualize` 反汇编才能确认你的虚调用是否真的留下了**。
+> **立场**：`[实现·GCC15]` 现代 `-O2` 对**可见动态类型**普遍去虚化，所以"虚函数一定慢"在 micro 场景常被优化掉；只有当类型在编译期不可见（工厂返回、跨 TU）时才保留 `call [vtable]`，此时虚分派代价约 4~5 倍（228ms vs 48ms）。**用 `-fno-devirtualize` 反汇编才能确认你的虚调用是否真的留下了**。
 
 ---
 
@@ -926,7 +926,7 @@ clock_res: zero_ns_samples=2/5 (分辨率地板，需用大循环平均)
 
 ---
 
-## ⑮ 平台差异 [平台]
+## ⑮ 平台差异 [平台·Linux]
 
 同一份代码在不同平台/字长/对齐下，数字与内存布局都不同。先取本机真实事实：
 
@@ -990,7 +990,7 @@ false_sharing(padded):  ms=0.411
 
 本机两线程各自只写自己字段、无真实数据共享，故差异很小（缓存一致性协议已高效）；但在**真有跨核写竞争**的生产结构里，伪共享会显著拖慢——用 `alignas(64)` 把热变量隔离到独立缓存行是标准修复。
 
-> **立场**：`[平台]` 基准数字**只在"同 CPU 微架构 + 同 OS + 同编译器版本 + 同字长"下可比**。把一台机器上的 `-O3 -march=native` 数字直接搬到另一台，等于拿苹果比橘子。
+> **立场**：`[平台·x86-64]` 基准数字**只在"同 CPU 微架构 + 同 OS + 同编译器版本 + 同字长"下可比**。把一台机器上的 `-O3 -march=native` 数字直接搬到另一台，等于拿苹果比橘子。
 
 ---
 
@@ -1247,7 +1247,7 @@ int main() {
 }
 ```
 
-> **立场**：`[经验]` 一条基准值不值得信，先看三件事——**汇编里被测代码在不在**、**时钟是不是 steady**、**数字有没有分布**。`[实现]` 编译器在 `-O2` 下就可能去虚化、内联、向量化，所以"我写了虚函数所以它慢"这种结论，必须反汇编后才能说。
+> **立场**：`[经验]` 一条基准值不值得信，先看三件事——**汇编里被测代码在不在**、**时钟是不是 steady**、**数字有没有分布**。`[实现·GCC15]` 编译器在 `-O2` 下就可能去虚化、内联、向量化，所以"我写了虚函数所以它慢"这种结论，必须反汇编后才能说。
 
 ---
 

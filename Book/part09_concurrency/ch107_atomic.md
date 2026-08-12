@@ -399,7 +399,7 @@ void relaxed_only_count() { c.fetch_add(1, std::memory_order_relaxed); }
 - `[标准]`：仅当**所有**对对象的操作都通过原子类型（或 `memcpy`/位cast 的有限例外）进行时，才免于 data race。
 - `[经验]`：不要 `reinterpret_cast` 掉原子性；不要对"本应是原子"的变量用普通 `int` 读写来"碰运气"。
 
-## ⑪ [实现]真实汇编：atomic<int>::fetch_add 编译为 lock xadd [实现·GCC15] [VERIFIED]
+## ⑪ [实现·GCC15]真实汇编：atomic<int>::fetch_add 编译为 lock xadd [实现·GCC15] [VERIFIED]
 
 这是本章核心证据。`fetch_add(1)` 在 x86 上对应**带 LOCK 前缀的原子 RMW**。`-O0` 生成经典 `lock xadd`；`-O2` 对"加 1"特例优化为更短的 `lock add`，二者都是不可分割的原子指令。
 
@@ -637,9 +637,9 @@ bool bug_cas() {
 ```
 
 - `[经验]`：原子适合"小、标量、高频"的同步点（计数器、标志、指针）；大对象用 `std::mutex`。
-- `[实现]`：当 `sizeof(T)` 超过平台 lock-free 阈值（常见 8/16 字节），`atomic<T>` 退化为内部加锁（可查 `is_lock_free()`）。
+- `[实现·GCC15]`：当 `sizeof(T)` 超过平台 lock-free 阈值（常见 8/16 字节），`atomic<T>` 退化为内部加锁（可查 `is_lock_free()`）。
 
-## ⑰ 性能注意：伪共享（false sharing）与 cache line padding [平台]
+## ⑰ 性能注意：伪共享（false sharing）与 cache line padding [平台·x86-64]
 
 两个不同原子变量落在**同一缓存行**时，不同核反复使对方缓存行失效，性能骤降——这叫**伪共享**。用 `alignas(std::hardware_destructive_interference_size)` 把它们隔开。
 
@@ -701,7 +701,7 @@ void probe_wide() {
 - `[标准]`：`std::atomic<__int128>` 是扩展类型，依赖编译器/平台；是否 lock-free 用 `is_lock_free()` 实测。
 - `[经验]`：需要"双字原子 CAS"时优先查 `is_always_lock_free`；若不支持，退化为带互斥的 128 位组合或改用 hazard pointer。
 
-## ⑲ 调试/验证手段（ThreadSanitizer） [平台]
+## ⑲ 调试/验证手段（ThreadSanitizer） [平台·x86-64]
 
 数据竞争难以靠肉眼发现。GCC/Clang 的 **ThreadSanitizer（tsan）** 在运行期插桩检测 data race，是无锁/并发代码的必备验证工具。
 

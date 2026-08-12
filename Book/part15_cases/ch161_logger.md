@@ -1028,9 +1028,9 @@ spdlog 用法（上游 API 参考，**本机未安装 spdlog 头文件，故不�
 
 **[经验]** 新项目直接用 spdlog/glog 即可，不必重造轮子；但理解本章"从零实现"，你才能在 spdlog 出怪问题时看懂它内部在干什么，而不是盲调。
 
-## ⑭ 平台差异（Windows/Linux 路径）[平台]
+## ⑭ 平台差异（Windows/Linux 路径）[平台·Windows]
 
-**[平台]** 日志路径分隔符、默认行尾、控制台句柄在 Windows 与类 Unix 上不同。可移植代码用宏隔离：
+**[平台·Windows]** 日志路径分隔符、默认行尾、控制台句柄在 Windows 与类 Unix 上不同。可移植代码用宏隔离：
 
 ```cpp
 #include <string>
@@ -1066,7 +1066,7 @@ const char* platform_name() {
 platform=windows sep=\ eol_is_crlf=1
 ```
 
-**[平台]** 另一个大坑：Windows 的 `std::localtime` 不是线程安全的（返回静态缓冲），多线程日志要用 `localtime_s` 或 `std::localtime` 的线程安全封装；Linux 上 `localtime_r` 是等价物。
+**[平台·Windows]** 另一个大坑：Windows 的 `std::localtime` 不是线程安全的（返回静态缓冲），多线程日志要用 `localtime_s` 或 `std::localtime` 的线程安全封装；Linux 上 `localtime_r` 是等价物。
 
 ## ⑮ 结构化日志（JSON）
 

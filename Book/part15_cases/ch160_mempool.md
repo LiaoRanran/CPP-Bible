@@ -311,7 +311,7 @@ public:
 
 ## ⑦ 线程安全池（mutex/无锁）
 
-单链表 free list 在多线程下需要同步。**方案 A：互斥锁**（`std::mutex`）——简单、正确，但高并发下有锁竞争。**[实现]** 锁保护下 `allocate`/`deallocate` 都是几条指针操作，临界区极短。
+单链表 free list 在多线程下需要同步。**方案 A：互斥锁**（`std::mutex`）——简单、正确，但高并发下有锁竞争。**[实现·GCC15]** 锁保护下 `allocate`/`deallocate` 都是几条指针操作，临界区极短。
 
 ```cpp
 #include <cstddef>
@@ -736,7 +736,7 @@ struct PoolPtr {
 };
 ```
 
-## ⑮ 平台差异（虚拟内存）[平台]
+## ⑮ 平台差异（虚拟内存）[平台·Windows]
 
 **[平台·x86-64]** 现代 OS 用**虚拟内存**：`::operator new`/`malloc` 底层通常调用 `VirtualAlloc`（Windows）或 `mmap`（Linux）向内核要"页"（通常 4 KiB），再由用户态分配器切成小对象。这一层很昂贵，我们的池正是为了**减少触达这一层的次数**——一次 `grow()` 拿一整页乃至数页，之后全在用户态切分。
 
@@ -763,7 +763,7 @@ int main() {
 // ... munmap(mem, sz);
 ```
 
-**[平台]** 要点：① 页大小各平台不同（Windows/Linux 多为 4 KiB，部分 ARM/大页为 2 MiB）；② 大块必须按页对齐释放；③ `VirtualAlloc`/`mmap` 的代价远高于用户态链表操作，这正是"批量申请"策略（③/⑬ 的 `grow`）成立的硬件基础。
+**[平台·Windows]** 要点：① 页大小各平台不同（Windows/Linux 多为 4 KiB，部分 ARM/大页为 2 MiB）；② 大块必须按页对齐释放；③ `VirtualAlloc`/`mmap` 的代价远高于用户态链表操作，这正是"批量申请"策略（③/⑬ 的 `grow`）成立的硬件基础。
 
 ## ⑯ 反模式（越界/双重释放）
 
@@ -953,7 +953,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 f
 | 多线程安全 | ch107(atomic), ch104(mutex) | 原子操作 + 锁分段 | 简单用mutex, 高性能用lock-free |
 | RAII封装 | ch39(RAII), ch41(unique_ptr) | 自动回收, 无泄漏 | RAII保证池的生命周期安全 |
 | PMR集成 | ch38(allocator), ch122(pmr) | std::pmr接口 | C++17的pmr让自定义分配器插拔式替换 |
-| 性能测试 | ch151(benchmark), ch157(compiler_explorer) | malloc vs pool 延迟对比 | malloc~50ns, pool alloc~5ns (10× faster) |
+| 性能测试 | ch151(benchmark), ch157(compiler_explorer) | malloc vs pool 延迟对比 | malloc≈50ns、pool≈5ns 仅为量级示意 [UNVERIFIED]（方向约 10× 更快） |
 
 ```cpp
 #include <iostream>

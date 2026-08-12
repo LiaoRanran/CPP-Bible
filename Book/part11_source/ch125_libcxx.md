@@ -77,7 +77,7 @@ int main() {
 - `[标准]`：ISO C++ 规定容器/算法的语义；libc++、libstdc++、MSVC STL 都是对同一条款的「实现」，符合度有差异（见 ⑮）。
 - `[经验]`：libc++ 不是「另一个头文件集合」——它的字符串布局、异常 ABI、调试模式都与 libstdc++ 不二进制兼容（见 ⑤ ⑨ ⑬）。
 
-## ② 架构与模块化（<experimental>/模块） [实现]
+## ② 架构与模块化（<experimental>/模块） [实现·libc++]
 
 libc++ 头文件按「公开头 + 内部细节」分层：`<string>`、`<vector>` 等公开头只做转发，真正实现落在 `<__string>`、`<__memory/>` 等以双下划线开头的「实现头」中（libc++ 自 C++17 起大规模采用 `__`-prefixed 实现头，避免污染全局命名空间）。`<experimental/>` 放 TS 实验特性。C++23 起 libc++ 提供 `import std;` 标准库模块。
 
@@ -113,8 +113,8 @@ int use_std() {
 └──────────────────────────────────────────────────────────────┘
 ```
 
-- `[实现]`：`__`-前缀实现头是 libc++ 的显式约定——用户代码不应 `#include <__string>`，因为它不属标准接口。
-- `[平台]`：libc++ 模块（`import std`）在 Clang 上最成熟；GCC 对 libc++ 模块支持较弱（见 ⑭）。
+- `[实现·libc++]`：`__`-前缀实现头是 libc++ 的显式约定——用户代码不应 `#include <__string>`，因为它不属标准接口。
+- `[平台·Linux]`：libc++ 模块（`import std`）在 Clang 上最成熟；GCC 对 libc++ 模块支持较弱（见 ⑭）。
 
 ## ③ 与 libc++abi 关系 [标准]
 
@@ -156,7 +156,7 @@ template <typename T> void show() {
 - `[标准]`：标准只规定 `throw`/`catch` 语义，不规定展开实现；libc++abi 是 LLVM 对这部分的具体实现。
 - `[经验]`：链接 libc++ 程序时通常需同时链 `-lc++ -lc++abi -lunwind`（见 ⑭）。
 
-## ④ [实现]源码剖析：basic_string 的 __rep 联合（上游参考）
+## ④ [实现·libc++]源码剖析：basic_string 的 __rep 联合（上游参考）
 
 libc++ 的 `std::string` 用一个「标记联合（tagged union）」`__rep` 存放数据：短字符串走 `__short`（内联缓冲区 + 长度编码在高字节），长字符串走 `__long`（指针 + 大小 + 容量），还有一个 `__raw` 视图用于低层拷贝。判别靠一个标志位。**下面为上游源码定位（本机未装 libc++，标注上游参考）**。
 
@@ -190,8 +190,8 @@ int main() {
 }
 ```
 
-- `[实现]`：`__rep` 联合让 `std::string` 在 64 位下仅占 **24 字节**，短字符串内联 22 字节（见 ⑧ ⑨ 容量对比）。
-- `[平台]`：该布局受 `_LIBCPP_ABI_ALTERNATE_STRING_LAYOUT` 控制，不同平台/ABI 配置可能不同（见 ⑫）。
+- `[实现·libc++]`：`__rep` 联合让 `std::string` 在 64 位下仅占 **24 字节**，短字符串内联 22 字节（见 ⑧ ⑨ 容量对比） [UNVERIFIED]。
+- `[平台·Linux]`：该布局受 `_LIBCPP_ABI_ALTERNATE_STRING_LAYOUT` 控制，不同平台/ABI 配置可能不同（见 ⑫）。
 
 ## ⑤ 与 libstdc++ 差异 [标准]
 
@@ -302,7 +302,7 @@ struct my_resource : std::pmr::memory_resource {
 - `[标准]`：`<memory_resource>` 是 C++17 标准；libc++ 与 libstdc++ 均实现，语义一致。
 - `[经验]`：用 `monotonic_buffer_resource` 做「函数内临时大量分配」可绕开 malloc 锁竞争，是 libc++ 常见性能技巧（见 ⑪）。
 
-## ⑧ 字符串实现策略 [实现]
+## ⑧ 字符串实现策略 [实现·libc++]
 
 libc++ 的 `std::string` 采用**短字符串优化（SSO）**：短串内联进对象本身，长串才在堆上分配。与 libstdc++ 的关键区别在**内联容量**——libc++ 64 位下 SSO 容量为 **22 字节**（对象总 24 字节），libstdc++ 为 **15 字节**（对象总 32 字节）。两者都不用 COW（C++11 起禁止）。
 
@@ -327,10 +327,10 @@ int main() {
 // 这正是与 libstdc++ 的 _M_local_data / _M_ptr 判别位不同的地方
 ```
 
-- `[实现]`：判别位方向、内联容量、对象大小均是实现细节——**不要靠 `reinterpret_cast` 窥探 `std::string` 内部**（见 ⑬）。
-- `[平台]`：22 vs 15 的容量差是 libc++ 与 libstdc++ 字符串「行为可见差异」之一（见 ⑨ 实测）。
+- `[实现·libc++]`：判别位方向、内联容量、对象大小均是实现细节——**不要靠 `reinterpret_cast` 窥探 `std::string` 内部**（见 ⑬）。
+- `[平台·Linux]`：22 vs 15 的容量差是 libc++ 与 libstdc++ 字符串「行为可见差异」之一（见 ⑨ 实测）。
 
-## ⑨ [实现]真实：本机 libstdc++ 实测 vs libc++ 行为对比
+## ⑨ [实现·libc++]真实：本机 libstdc++ 实测 vs libc++ 行为对比
 
 下面**本机真实编译 libstdc++ 示例**取证 SSO 容量，并对比 libc++ 的已知不同行为。取证命令与产物均来自 MinGW GCC 13.1.0。
 
@@ -377,7 +377,7 @@ g++ -std=c++23 -O2 -S -masm=intel Examples/_ch125_sso.cpp -o Examples/_ch125_sso
 // 即：同一段源码，libc++ 的短串内联容量更大、对象更小
 ```
 
-- `[实现]`：本机真实测得 libstdc++ `std::string` **SSO 容量=15、对象=32 字节**；libc++（典型输出）为 **22 / 24**——差异来自二者 `__rep`/`__rep` 布局不同（见 ④ ⑧）。
+- `[实现·libc++]`：本机真实测得 libstdc++ `std::string` **SSO 容量=15、对象=32 字节**；libc++（典型输出）为 **22 / 24**——差异来自二者 `__rep`/`__rep` 布局不同（见 ④ ⑧）。
 - `[经验]`：跨标准库迁移字符串密集代码时，SSO 容量差会影响「小对象是否触发堆分配」的热路径，进而影响性能画像（见 ⑪）。
 
 ## ⑩ 调试 [经验]
@@ -412,7 +412,7 @@ int main() {
 ```
 
 - `[经验]`：调试模式务必**全工程统一**（不能只给一个 TU 开），否则链接期/运行期出现诡异崩溃（见 ⑬）。
-- `[平台]`：`LIBCXX_DEBUG` 是 libc++ 专属宏；libstdc++ 对应是 `_GLIBCXX_DEBUG`，名字不同但目的相同。
+- `[平台·Linux]`：`LIBCXX_DEBUG` 是 libc++ 专属宏；libstdc++ 对应是 `_GLIBCXX_DEBUG`，名字不同但目的相同。
 
 ## ⑪ 性能 [经验]
 
@@ -446,7 +446,7 @@ long hot() {
 - `[经验]`：字符串密集场景，libc++ 的 22 字节 SSO 常比 libstdc++ 少一次堆分配（见 ⑨ 实测）。
 - `[标准]`：`reserve`/`pmr` 语义两库一致；差异只在分配器底层实现与默认策略。
 
-## ⑫ 跨平台 [平台]
+## ⑫ 跨平台 [平台·Linux]
 
 libc++ 是 Apple 平台（macOS/iOS）的**系统默认**标准库；FreeBSD 也默认 libc++；Linux 上通常与 GCC/libstdc++ 并存，需 `-stdlib=libc++` 显式选择。Windows 上可经 LLVM/Clang-Clang（clang-cl）或 MinGW-Clang 使用 libc++，但需自带 libc++abi/libunwind。平台差异通过 `__config` 与 `__config_site` 裁剪。
 
@@ -479,8 +479,8 @@ int main() {
 }
 ```
 
-- `[平台]`：在 Apple/FreeBSD 上 libc++ 是默认；在 Linux/Windows 上必须与构建系统显式约定，且**不可与 libstdc++ 混链**（见 ⑤ ⑬）。
-- `[实现]`：`_LIBCPP_ABI_*` 宏决定对象布局，切换 ABI 配置会破坏二进制兼容。
+- `[平台·Linux]`：在 Apple/FreeBSD 上 libc++ 是默认；在 Linux/Windows 上必须与构建系统显式约定，且**不可与 libstdc++ 混链**（见 ⑤ ⑬）。
+- `[实现·libc++]`：`_LIBCPP_ABI_*` 宏决定对象布局，切换 ABI 配置会破坏二进制兼容。
 
 ## ⑬ 常见陷阱 [经验]
 
@@ -507,7 +507,7 @@ int main() { bad(); return 0; }
 - `[经验]`：最致命的是**混链**——症状可能是链接期未定义符号，也可能是运行期诡异崩溃，排查极难。统一工具链与标准库。
 - `[经验]`：不要 `reinterpret_cast` 窥探 `std::string`/`std::vector` 内部布局（见 ⑧），那是实现细节，跨版本会变。
 
-## ⑭ 与 LLVM/Clang 集成 [平台]
+## ⑭ 与 LLVM/Clang 集成 [平台·Linux]
 
 libc++ 与 Clang 是「原生搭档」：Clang 默认在 Apple/FreeBSD 上选 libc++，Linux 上用 `--stdlib=libc++` 指定。链接需 `-lc++ -lc++abi`（及 `-lunwind`）。GCC 也能用 `-stdlib=libc++`，但模块/特性支持落后 Clang 一截。
 
@@ -533,7 +533,7 @@ int main() {
 }
 ```
 
-- `[平台]`：Clang 对 libc++ 的模块、`std::ranges`、sanitizer 集成最完整；GCC 用 libc++ 时部分特性不可用。
+- `[平台·Linux]`：Clang 对 libc++ 的模块、`std::ranges`、sanitizer 集成最完整；GCC 用 libc++ 时部分特性不可用。
 - `[经验]`：跨平台项目若选 libc++，构建系统（CMake `CMAKE_CXX_STANDARD_LIBRARY=libc++`）要全工程统一。
 
 ## ⑮ 演进（C++23 支持度） [标准]
@@ -640,7 +640,7 @@ static_assert(ok());
 ```
 
 - `[经验]`：libc++ 对测试覆盖率要求高——任何行为改动都必须带回归测试，否则 CI 不通过。
-- `[平台]`：贡献前读 `libcxx/docs/DesignDocs/`，遵循其 ABI 稳定性策略（API 可改、ABI 谨慎）。
+- `[平台·Linux]`：贡献前读 `libcxx/docs/DesignDocs/`，遵循其 ABI 稳定性策略（API 可改、ABI 谨慎）。
 
 ## ⑱ 跨库对比（三套 STL） [标准]
 
@@ -709,7 +709,7 @@ int probe() { return (int)sizeof(std::string); }  // 24(libc++) / 32(libstdc++)
 ```
 
 - `[经验]`：libc++ 源码注释极全，配合 `libcxx/docs/DesignDocs/` 是最快理解路径；非模板逻辑优先看 `libcxx/src/`。
-- `[平台]`：本机无 libc++，可用 libstdc++ 的同名文件对照阅读（结构高度相似，布局不同）。
+- `[平台·Linux]`：本机无 libc++，可用 libstdc++ 的同名文件对照阅读（结构高度相似，布局不同）。
 
 ## ⑳ 速查表 [标准]
 

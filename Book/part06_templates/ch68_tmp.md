@@ -218,7 +218,7 @@ template <> struct Deep<0> { static constexpr int v = 0; };
 - 类型计算（`SelectT<true>::type`）只在**类型系统**中存在，不占内存；`sizeof(SelectT<true>::type)` 在编译期求值。
 - 仅当类模板被 odr-use（如取地址、`new`、作为变量定义）才生成对象布局；纯 `::value` / `::type` 查询不实例化对象，只实例化类型定义。
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel） [VERIFIED]
 
 **证据 1：`-O2` 下 TMP 全部折叠为立即数，零运行期计算。**
 
@@ -581,7 +581,7 @@ P2448R2 (C++23): 放宽constexpr限制 → 允许非constexpr函数在constexpr�
   → 结论: 对浅递归阶乘, 编译时间差异**可忽略**(比值≈1×); 编译器固定开销(启动+前端≈110ms)
     主导, 10~500 次平凡实例化成本几乎不可测。constexpr 的真正收益在**实例化内存**与避免
     N 个独立类型/符号(见下 Boost.MPL 对比), 而非朴素"快 10×"。极端 N(如 1000)下 TMP 可能因
-    常量溢出被拒, constexpr 因无符号回绕合法而通过 —— 健壮性也更优。
+    常量溢出被拒, constexpr 因无符号回绕合法而通过 —— 健壮性也更优。[UNVERIFIED]
 
 工业案例:
 - Boost.MPL: C++03的TMP库 → 已被Boost.Hana(constexpr)取代
@@ -617,7 +617,7 @@ P2448R2 (C++23): 放宽constexpr限制 → 允许非constexpr函数在constexpr�
 | **LLVM ADT**（github.com/llvm/llvm-project） | `std::enable_if` + `if constexpr` + 可变参数模板 | `llvm::cast<T>` 使用 `is_base_of` traits 在编译期校验转换安全性 | `llvm/include/llvm/Support/Casting.h` |
 | **folly**（github.com/facebook/folly） | `folly::poly` 编译期多态（非虚函数 dispatch） | 用 `TypeList` + 编译期 `find_if` 替代虚表，实现零开销接口 | `folly/Poly.h` — concept-based 类型擦除 |
 
-**底层深度**：TMP 的关键瓶颈是编译器模板实例化内存。Boost.MPL 的 `mpl::fold<Sequence, Init, Op>` 在 50 元素序列上生成约 2,550 个中间类型（每个 `Op::apply<T,S>` 产生独立特化），GCC 15.3.0 `-ftime-report` 显示 ~450MB 实例化内存。等效的 `boost::hana::fold` 在 constexpr 函数中通过 `for` 循环惰性求值，仅需 1 个模板特化（`hana::fold_impl`），编译器内存 ~15MB。这就是 C++11/14/17 从"类型计算"转向"值计算"（`constexpr`）的根本驱动力——编译速度提升约 20–100×。
+**底层深度**：TMP 的关键瓶颈是编译器模板实例化内存。Boost.MPL 的 `mpl::fold<Sequence, Init, Op>` 在 50 元素序列上生成约 2,550 个中间类型（每个 `Op::apply<T,S>` 产生独立特化），GCC 15.3.0 `-ftime-report` 显示 ~450MB 实例化内存。等效的 `boost::hana::fold` 在 constexpr 函数中通过 `for` 循环惰性求值，仅需 1 个模板特化（`hana::fold_impl`），编译器内存 ~15MB。这就是 C++11/14/17 从"类型计算"转向"值计算"（`constexpr`）的根本驱动力——编译速度提升约 20–100×。[UNVERIFIED]
 
 ### 面试要点（速记 · 模板元编程 TMP）
 
@@ -946,7 +946,7 @@ flowchart TD
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；同一递归定义（Fibonacci）分别用「模板元编程在编译期折成常量 / constexpr 在编译期折成常量 / 运行时迭代每轮重算」三种方式使用，重复 5×10⁷ 次；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch68_tmp.cpp`。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 | 计算方式 | 计算发生时机 | 耗时 (ms) | 相对 TMP |
 |----------|--------------|-----------|----------|

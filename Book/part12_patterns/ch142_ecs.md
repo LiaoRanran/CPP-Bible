@@ -69,7 +69,7 @@ void movement_system();                                 // 系统即逻辑（见
 
 > 【为什么设计】当实体数量从"百"级膨胀到"百万"级（开放世界、粒子、战斗单位），OOP 的"每个对象一个虚表指针 + 散乱堆分配"会让内存带宽与分支预测双双崩溃。ECS 把所有同类组件压进**连续数组**，让一个系统只碰它需要的那几列数据——这就是 ⑤ 起所有性能讨论的根。
 
-## ② Entity（实体 = ID） [实现]
+## ② Entity（实体 = ID） [实现·GCC15]
 
 Entity 在本质上只是一个**稳定、可复用的整型句柄**。它不指向任何对象，只是"在存储里的一把钥匙"。
 
@@ -133,7 +133,7 @@ void render_system(std::span<const Position> pos, std::span<const Tag> visible) 
 }
 ```
 
-## ④ System（逻辑） [实现]
+## ④ System（逻辑） [实现·GCC15]
 
 System 是**纯算法**：它声明"我需要哪些组件"，引擎把满足条件的实体批次喂给它，它就地变换组件。System 之间不直接通信，只通过共享的组件存储间接耦合。
 
@@ -171,7 +171,7 @@ void movement_system(std::vector<Position>& pos,
 // 同一份 Position 被多个系统共享读取 = 只读共享，天然无锁（见 ⑮）
 ```
 
-## ⑤ 数据布局：AoS vs SoA [实现]
+## ⑤ 数据布局：AoS vs SoA [实现·GCC15]
 
 这是 ECS 性能讨论的**核心分叉**。两种把 N 个实体存进内存的方式：
 
@@ -209,7 +209,7 @@ void integrate_soa(ParticlesSoA& ps, float dt) {
 - `[实现·GCC15]`：真实汇编（见 ⑬）显示 AoS 内循环用 `add rcx, 24`（每次前进一个 24 字节结构体），SoA 用 `rax*4` 索引缩放访问两个独立数组——**布局差异直接显现在寻址模式上**。
 - `[经验]`：没有"永远更好"的一方（见 ⑥ 的真实基准）。**经验法则**：组件集大、系统只用其中几列 → SoA；组件少、系统全用 → AoS（缓存行内局部性更优）。ECS 引擎多用 **Archetype/Chunk（⑭ ⑩）** 在两者间取折中。
 
-## ⑥ SoA 缓存友好真实基准（std::chrono 微基准对比 AoS/SoA） [平台]
+## ⑥ SoA 缓存友好真实基准（std::chrono 微基准对比 AoS/SoA） [平台·x86-64]
 
 下面是用 `std::chrono::steady_clock` 写的真实微基准（`Examples/_ch142_bench.cpp`，本机 GCC 13.1.0 `-O2`，`N=2^18=262144` 实体，每实体 32 个 float=128B，数据集 32MB 超出缓存）。**真实运行结果**：
 
@@ -246,7 +246,7 @@ double bench_soa_partial(std::size_t n, std::size_t iters) {
 - `[平台·x86-64]`：本机 L3 约 8–32MB，AoS 的 32MB 数据集触发**容量型 cache miss**（capacity miss），SoA 因"每系统只加载所需列"把工作集压到数 MB，落入缓存。换到组件极少（如 2 个 float、整体在缓存行内且全遍历）的机器/规模，AoS 反而因缓存行内局部性更优——这正是下一节要强调的：**基准结论依赖工作集与缓存层级，切勿盲信"SoA 永远快"**。
 - `[经验]`：微基准必须**防 DCE**（本例用 `volatile g_sink`）、**多轮预热**、**报告硬件**。不同 CPU 上比值会变动，但"SoA 缩小工作集"的定性结论稳定。
 
-## ⑦ 原型/归档式存储（Archetype 思想雏形） [实现]
+## ⑦ 原型/归档式存储（Archetype 思想雏形） [实现·GCC15]
 
 **原型（Archetype / 归档）** 的思路：把所有"拥有完全相同组件集合"的实体放进**同一块连续内存**，每个实体占一行（行主序）。这样"查询某组件组合"变成"找到对应原型块"，遍历时组件完全连续。
 
@@ -281,7 +281,7 @@ float* component_at(Archetype& a, std::size_t i, std::size_t off) {
 - `[实现·GCC15]`：`component_at` 编译为一次 `lea` + `add`（基址 + 索引×行宽 + 偏移），**无分支、无虚调用**，这正是 DOD 追求的"可预测访存"。
 - `[经验]`：原型的代价是**增删组件要"迁移实体"到新原型块**（如给实体加 Render 组件 → 从 `[P,V]` 块搬到 `[P,V,R]` 块）。现代引擎用"命令缓冲 + 延迟迁移"摊还这一成本（见 ⑭）。
 
-## ⑧ 实体管理与句柄（handle） [实现]
+## ⑧ 实体管理与句柄（handle） [实现·GCC15]
 
 裸 `index` 有个致命问题：**槽位复用**会让"已销毁实体的旧引用"悄悄指向一个新实体。解决：**句柄 = index + version（代际戳）**。销毁时 `version++`，旧句柄的 version 对不上 → 立即识别为悬空。
 
@@ -316,7 +316,7 @@ bool resolve(const std::vector<std::uint32_t>& versions, std::uint32_t h) {
 - `[实现·GCC15]`：打包/解包是移位与掩码，`-O2` 下是单条 `shl`/`and`/`shr`，**零开销抽象**。真实汇编见 `Examples/_ch142_handle.asm`（`make_handle` 被折叠为常量）。
 - `[经验]`：对外（脚本、网络、存档）一律传**句柄**而非裸 index；内部热路径可缓存"已解析的裸指针"以省去每帧校验，但指针失效时必须重解析。
 
-## ⑨ 系统调度（并行） [实现]
+## ⑨ 系统调度（并行） [实现·GCC15]
 
 系统的并行性来自一个事实：**多数系统只读共享组件、只写自己独占的组件**。把系统排成有向图，无数据依赖的系统可并行跑；有依赖的按拓扑序串行。
 
@@ -351,7 +351,7 @@ struct SystemInfo { const char* name; bool reads_pos; bool writes_pos; };
 - `[标准]`：并行调度本身用标准库 `std::jthread`/`std::async` 即可（C++20 起 `jthread` 自动 join，见 `[thread.jthread]`）。
 - `[经验]`：并行单位应是**系统**而非**实体**（实体级并行有原子竞争与伪共享开销）。只有"写集合互不相交"的系统才可同层并行；读写同一组件的必须排序或加阶段屏障。
 
-## ⑩ ECS 与多叉/分块（chunk） [平台]
+## ⑩ ECS 与多叉/分块（chunk） [平台·x86-64]
 
 当世界有**上百万实体**，单块连续内存既放不下也不利于并发。方案：**分块（chunk）**——每块固定容量（如 16k 实体），块内组件连续，块间用数组/链表组织。这把"大数组"切成"缓存友好的小方块"，也便于多线程各拿一块。
 
@@ -457,7 +457,7 @@ static_assert(sizeof(SCENE) / sizeof(SCENE[0]) == 3);
 std::uint32_t runtime_player = create();   // 运行期分配 index
 ```
 
-## ⑬ ECS 性能剖析（cache miss，用 g++ 证明 SoA 连续访问优势） [实现]
+## ⑬ ECS 性能剖析（cache miss，用 g++ 证明 SoA 连续访问优势） [实现·GCC15]
 
 下面用**真实汇编**证明 AoS 与 SoA 的访存模式差异。两者皆 GCC 13.1.0 `-O2 -masm=intel`。
 
@@ -518,7 +518,7 @@ void integrate_soa(float* x, const float* vx, int n, float dt) {
 - `[平台·x86-64]`：二者在 `-O2` 都未向量化（GCC `-O2` 默认不开 tree-vectorize）；加 `-O3 -mavx2` 后 SoA 会被自动向量化为 `vmulps`/`vaddps`（一条指令处理 8 个 float），AoS 因需跨 `vx/x` 两偏移的 gather 而更难向量化——**SoA 更容易吃到自动向量化的红利**。
 - `[经验]`：性能剖析要落到**缓存层级**（L1/L2/L3 容量、cache line 64B、prefetch），而非只看"循环次数"。`perf stat` 的 `cache-misses`/`cycles-per-instruction` 比"跑分毫秒数"更说明问题。
 
-## ⑭ ECS 内存布局 Archetype（工业形态） [实现]
+## ⑭ ECS 内存布局 Archetype（工业形态） [实现·GCC15]
 
 Archetype 是 Unity DOTS / flecs / Bevy 的主流布局：**相同组件组合的实体共享一块连续内存**。好处是"查询即定位块"，遍历零判断；代价是"加/删组件要迁移实体"。
 
@@ -557,7 +557,7 @@ void migrate(std::uint32_t entity, ArchKey from, ArchKey to) {
 - `[实现·GCC15]`：Archetype 内偏移在**编译期/初始化期**算好（组件偏移表），运行时取组件是 `base + i*row + off` 的纯算术，无虚调用、无哈希——可预测访存，CPU 分支预测器与硬件预取器都爱这种循环。
 - `[经验]`：迁移成本用"延迟迁移 + 命令队列"摊还：逻辑帧只记录"加组件"意图，渲染前统一重排。这正是 DOD "批处理"思想的体现（见 ⑱）。
 
-## ⑮ ECS 与多线程（无锁读） [平台]
+## ⑮ ECS 与多线程（无锁读） [平台·x86-64]
 
 ECS 的天然并行点：**只读共享组件的系统**可以无锁并发读。只要没有写者在同一帧改同一组件，读者之间就完全无竞争。写者则常用 `std::atomic` 做"版本戳"式无锁发布。
 
@@ -631,7 +631,7 @@ void monster_system(std::vector<MonsterData>& m) {
 - `[经验]`：反模式清单——① 组件有虚函数/资源所有权；② 用继承表达"实体种类"；③ 主存储用 `unordered_map`；④ 系统读写未声明的共享状态；⑤ 每实体一次堆分配（应批量 arena/块分配）；⑥ 系统间用全局单例隐式耦合。
 - `[标准]`：组件若含非平凡成员（如 `std::string`），其存储需遵守对象的**生命周期规则**（`[class.dtor]`），否则批量 `memcpy`/重排会触发 UB——这也是"组件要平凡可拷贝"被反复强调的原因。
 
-## ⑰ ECS 真实库（EnTT 上游参考） [实现]
+## ⑰ ECS 真实库（EnTT 上游参考） [实现·GCC15]
 
 工业级 ECS 不必自造，主流开源实现已高度优化：
 
@@ -658,7 +658,7 @@ struct SparseSet {
 };
 ```
 
-- `[实现]`：sparse set 让"遍历某组件所有实体" = 顺序扫 `dense` 数组（完全连续），而"查某实体有无该组件" = O(1) 数组索引。相比 `unordered_map` 的节点散列，它把**缓存友好**刻进了数据结构本身。
+- `[实现·GCC15]`：sparse set 让"遍历某组件所有实体" = 顺序扫 `dense` 数组（完全连续），而"查某实体有无该组件" = O(1) 数组索引。相比 `unordered_map` 的节点散列，它把**缓存友好**刻进了数据结构本身。
 - `[经验]`：选型时权衡——自研迷你 ECS（见 ⑲）适合学习/嵌入式；EnTT 适合要稳定 API 的项目；Unity DOTS/Bevy 适合已绑定对应引擎的团队。切勿"为用 ECS 而用 ECS"——小项目 OOP 足够。
 
 ## ⑱ ECS 与 DOD 衔接（预告 ⑲ 与下一章） [标准]
@@ -674,7 +674,7 @@ ECS 是 **Data-Oriented Design（面向数据设计，DOD）** 在"实体-组件
 - `[标准]`：DOD 不是 C++ 标准概念，而是**架构方法论**；它的落地依赖标准库容器、平凡类型（`[basic.types]`）、`std::span`、以及对缓存/TLB/预取（`[intro.abstract]` 之外的平台特性）的理解。
 - `[经验]`：学完本章应建立"布局即性能"的直觉。下一章（ch143 数据结构与缓存）将把 Archetype/SoA/分块的思想泛化到**一切**高频数据结构设计——ECS 只是其中一枚最耀眼的果实。
 
-## ⑲ 实现迷你 ECS（自包含 g++ 可编译示例） [实现]
+## ⑲ 实现迷你 ECS（自包含 g++ 可编译示例） [实现·GCC15]
 
 下面是一份**自包含、可编译、可运行**的迷你 ECS（`Examples/_ch142_mini_ecs.cpp`），含 entity（句柄）/ component（纯数据）/ system（逻辑）三件套，约 120 行，已用 GCC 13.1.0 验证。
 

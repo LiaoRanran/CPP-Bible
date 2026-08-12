@@ -75,9 +75,9 @@ constexpr int floats_per_avx512= 64 / 4;  // 16
 ```
 
 - `[标准]`：AVX 引入 **VEX 编码**，把 xmm 扩展为 ymm 的低 128 位，并支持三操作数（`vaddps dst, src1, src2`，不破坏 src1）。
-- `[平台]`：AVX-512 在消费级 CPU 上**并非全量支持**（Intel 部分 SKU 砍掉，AMD Zen4+ 才较完整）；用前需运行时检测（见 ⑬、⑰）。
+- `[平台·x86-64]`：AVX-512 在消费级 CPU 上**并非全量支持**（Intel 部分 SKU 砍掉，AMD Zen4+ 才较完整）；用前需运行时检测（见 ⑬、⑰）。
 
-## ③ 编译器自动向量化（auto-vectorization） [实现]
+## ③ 编译器自动向量化（auto-vectorization） [实现·GCC15]
 
 编译器能在满足约束时，把普通标量循环**自动改写**为向量指令，无需手写 intrinsics。
 
@@ -90,7 +90,7 @@ void saxpy(float* __restrict y, const float* __restrict x,
 }
 ```
 
-- `[实现]`：GCC 的自动向量化在 **`-O3`**（或显式 `-ftree-vectorize`，或 `-O2 -ftree-vectorize`）开启；`-O2` 默认**不**向量化（这是与 Clang `-O2` 行为不同的关键差异）。
+- `[实现·GCC15]`：GCC 的自动向量化在 **`-O3`**（或显式 `-ftree-vectorize`，或 `-O2 -ftree-vectorize`）开启；`-O2` 默认**不**向量化（这是与 Clang `-O2` 行为不同的关键差异）。
 - `[经验]`：先用自动向量化（零成本、可移植），只有热点且编译器"不肯向量化"时才下沉到 intrinsics。
 
 ## ④ 循环向量化的必要条件（无依赖、连续访问） [标准]
@@ -122,7 +122,7 @@ void no_alias(float* __restrict out, const float* __restrict in, int n) {
 - `[标准]`：向量化要求**可静态证明**"每次迭代独立且地址可计算"；任何潜在别名/依赖都会逼退向量化。
 - `[经验]`：最常被忽略的是别名——两个 `float*` 参数编译器默认**假定可能重叠**，加 `__restrict` 常是向量化的临门一脚。
 
-## ⑤ #pragma GCC optimize / #pragma omp simd [实现]
+## ⑤ #pragma GCC optimize / #pragma omp simd [实现·GCC15]
 
 函数级或循环级强制提示编译器向量化。
 
@@ -151,7 +151,7 @@ void gcc_pragma(float* a, float* b, float* c, int n) {
 }
 ```
 
-- `[实现]`：`#pragma omp simd` 是**跨编译器标准**写法（GCC/Clang/ICC 都认）；`#pragma GCC ivdep` 仅 GCC/ICX 认。二者都是"建议"，最终是否向量化看后端。
+- `[实现·GCC15]`：`#pragma omp simd` 是**跨编译器标准**写法（GCC/Clang/ICC 都认）；`#pragma GCC ivdep` 仅 GCC/ICX 认。二者都是"建议"，最终是否向量化看后端。
 - `[经验]`：优先 `#pragma omp simd`（可移植）；`#pragma GCC optimize` 慎用——它改的是**单函数**优化级别，易与全局不一致引发调试困惑。
 
 ## ⑥ std::experimental::simd (DAT, 标准方向) [标准]
@@ -190,7 +190,7 @@ void simd_math(float* x, float* y, int n) {
 - `[标准]`：DAT 把"向量宽度"抽象为类型参数，**代码与具体 AVX/SSE 解耦**，是官方推荐方向。但截至 C++23 仍是 `experimental`，**未进入正式标准**（WG21 仍在推进）。
 - `[经验]`：生产代码若需稳定 ABI，暂以自动向量化 + intrinsics 为主；`std::experimental::simd` 适合研究/算法库，且需 `-fno-math-errno` 等配合才高效。
 
-## ⑦ intrinsics（_mm_add_ps / _mm256_loadu_ps 等） [实现]
+## ⑦ intrinsics（_mm_add_ps / _mm256_loadu_ps 等） [实现·GCC15]
 
 intrinsics 是编译器内建函数，名字直接对应一条汇编指令，完全可控但要手写寄存器编排。
 
@@ -236,10 +236,10 @@ void fma_demo(const float* a, const float* b, const float* c, float* d) {
 }
 ```
 
-- `[实现]`：intrinsics 函数名编码了**宽度与数据类型**：`_mm`=128、`_mm256`=256、`_mm512`=512；后缀 `ps`=packed single(float)、`pd`=packed double、`epi32`=32 位整数打包。
+- `[实现·GCC15]`：intrinsics 函数名编码了**宽度与数据类型**：`_mm`=128、`_mm256`=256、`_mm512`=512；后缀 `ps`=packed single(float)、`pd`=packed double、`epi32`=32 位整数打包。
 - `[经验]`：优先用 `*_loadu_*`/`*_storeu_*`（未对齐，安全通用）；只有**已证明对齐**才用对齐版换极小带宽收益（见 ⑨）。
 
-## ⑧ [实现] 真实汇编：标量循环 vs 向量化（vmovaps/vaddps）
+## ⑧ [实现·GCC15] 真实汇编：标量循环 vs 向量化（vmovaps/vaddps）
 
 先给出自动向量化的**真实汇编**（GCC 13.1.0，`-O3 -mavx2`）。源码剖析：
 
@@ -280,10 +280,10 @@ _Z12load_alignedPKfS0_Pf:
 	ret
 ```
 
-- `[实现]`：两条证据一致证明——**向量化后一条 `vaddps` 顶标量 8（SSE）/16（AVX512）次 `vaddss`**。注意 GCC 自动版用 `vmovups`（保守未对齐），intrinsics 对齐版用 `vmovaps`。
-- `[实现]`：GCC 在 `-O2` 不自动向量化（见 ③）；要看到 `vaddps ymm` 必须 `-O3` 或 `-O2 -ftree-vectorize`。上例 `.L4` 的 `vaddps ymm` 即本标准点要求的真实取证。
+- `[实现·GCC15]`：两条证据一致证明——**向量化后一条 `vaddps` 顶标量 8（SSE）/16（AVX512）次 `vaddss`**。注意 GCC 自动版用 `vmovups`（保守未对齐），intrinsics 对齐版用 `vmovaps`。
+- `[实现·GCC15]`：GCC 在 `-O2` 不自动向量化（见 ③）；要看到 `vaddps ymm` 必须 `-O3` 或 `-O2 -ftree-vectorize`。上例 `.L4` 的 `vaddps ymm` 即本标准点要求的真实取证。
 
-## ⑨ 内存对齐与 _mm_loadu（未对齐加载） [实现]
+## ⑨ 内存对齐与 _mm_loadu（未对齐加载） [实现·GCC15]
 
 SIMD 加载/存储有对齐要求：对齐版本（`_mm_load_ps`）要求地址 16 字节对齐，未对齐版本（`_mm_loadu_ps`）任意对齐均可，但可能有极小的跨 cache-line  penalties。
 
@@ -329,10 +329,10 @@ _Z14load_unalignedPKfS0_Pf:
 	ret
 ```
 
-- `[实现]`：`vmovaps` 与 `vmovups` 在**现代 CPU 上对大部分数据路径性能一致**（对齐检查近乎免费）；但用对齐版时若地址未对齐会**直接崩溃**，所以默认用 `u` 版更稳。
+- `[实现·GCC15]`：`vmovaps` 与 `vmovups` 在**现代 CPU 上对大部分数据路径性能一致**（对齐检查近乎免费）；但用对齐版时若地址未对齐会**直接崩溃**，所以默认用 `u` 版更稳。
 - `[经验]`：热数据用 `alignas(64)`（cache line）配合对齐版可避免跨行；但绝大多数场景 `loadu/storeu` 足够，不要把"对齐"当银弹。
 
-## ⑩ mask 与比较指令 [实现]
+## ⑩ mask 与比较指令 [实现·GCC15]
 
 向量比较产生**掩码（mask）**，每条 lane 置全 1（真）或全 0（假），用于条件选择/过滤。
 
@@ -361,7 +361,7 @@ void avx512_select(const float* a, const float* b, float* out, int n) {
 }
 ```
 
-- `[实现]`：SSE/AVX 的 mask 是"位模式藏在向量寄存器里"，AVX-512 引入**独立 k 寄存器**（`k1`–`k7`），`vcmpps ... k1` 直接写掩码，配合 `vmovaps zmm {k1}` 做掩码写，避免"全 0/全 F"的位运算。
+- `[实现·GCC15]`：SSE/AVX 的 mask 是"位模式藏在向量寄存器里"，AVX-512 引入**独立 k 寄存器**（`k1`–`k7`），`vcmpps ... k1` 直接写掩码，配合 `vmovaps zmm {k1}` 做掩码写，避免"全 0/全 F"的位运算。
 - `[经验]`：用 `max/min` 替代 `if` 做条件赋值，能让编译器保留向量化（无分支）；AVX-512 的 k-mask 把"带条件向量化"写得更直白。
 
 ## ⑪ 与 ch156 编译器优化衔接 [标准]
@@ -379,7 +379,7 @@ void transform(float* a, float* b, int n) {
 - `[标准]`：向量化是**依赖优化链的末端**——若上层未消除别名/未内联/未做循环归一化，向量化器拿不到干净内核（详见 ch156 编译器优化关于优化流水线的论述）。
 - `[经验]`：调试"为什么没向量化"时，先看 IR 是否干净（内联、别名），再看向量化器报因（见 ⑯ `-fopt-info-vec`）。
 
-## ⑫ 数据布局：AoS vs SoA 对向量化的影响 [实现]
+## ⑫ 数据布局：AoS vs SoA 对向量化的影响 [实现·GCC15]
 
 - **AoS**（Array of Structs）：结构体数组，同类字段分散。
 - **SoA**（Struct of Arrays）：字段各自成数组，同类数据连续。
@@ -431,10 +431,10 @@ _Z9aos_scaleP4Vec3if:
 	jne	.L4
 ```
 
-- `[实现]`：SoA 每轮**满负荷 8 lane**；AoS 每轮读 96 字节覆盖 8 个 Vec3 的 24 个 float，但只有 24 个有义、无 padding 浪费，GCC 仍能向量化但**指令更复杂、带宽利用率略低**。
+- `[实现·GCC15]`：SoA 每轮**满负荷 8 lane**；AoS 每轮读 96 字节覆盖 8 个 Vec3 的 24 个 float，但只有 24 个有义、无 padding 浪费，GCC 仍能向量化但**指令更复杂、带宽利用率略低**。
 - `[经验]`：数值/粒子/渲染热点**首选 SoA 或 AoSoA**（Array of Struct of Arrays，分块）；AoS 仅在对齐友好且编译器能整块处理时才可接受。
 
-## ⑬ AVX-512 与降频（throttling）代价 [平台]
+## ⑬ AVX-512 与降频（throttling）代价 [平台·x86-64]
 
 AVX-512 寄存器宽、FMA 密，功耗与发热陡增，很多 CPU 在执行 512 位指令时会**降频（throttling）**，单核频率回落。
 
@@ -466,10 +466,10 @@ _Z13add_arrays512PfS_S_i:
 	vzeroupper
 ```
 
-- `[平台]`：zmm 一次 16 float 吞吐翻倍，但**降频**可能让 AVX-512 在长密集循环里反而不如 AVX2（频率损失 > 宽度收益）。Intel 服务器 SKU 影响小，消费级差异大。
+- `[平台·x86-64]`：zmm 一次 16 float 吞吐翻倍，但**降频**可能让 AVX-512 在长密集循环里反而不如 AVX2（频率损失 > 宽度收益）。Intel 服务器 SKU 影响小，消费级差异大。
 - `[经验]`：用 `-mavx512f` 前实测；或折中用 `-mavx2 -mfma`。ARM/部分 Intel 上 AVX2 性价比往往最高。
 
-## ⑭ 误用：非连续 / 带分支的循环无法向量化 [实现]
+## ⑭ 误用：非连续 / 带分支的循环无法向量化 [实现·GCC15]
 
 ```cpp
 // ⑭ 反例1：步长 != 1（跨步访问）-> 不可向量化
@@ -508,7 +508,7 @@ _Z13add_dependentPfi:
 	jne	.L3
 ```
 
-- `[实现]`：证据显示即便开 `-O3`，依赖循环也只生成 `vaddss`（标量单精度），**完全没有 `vaddps`**——编译器诚实退化为串行。
+- `[实现·GCC15]`：证据显示即便开 `-O3`，依赖循环也只生成 `vaddss`（标量单精度），**完全没有 `vaddps`**——编译器诚实退化为串行。
 - `[经验]`：向量化的天敌=别名、依赖、分支、跨步、函数调用。改这些比改指令重要得多。
 
 ## ⑮ 性能基准（标量 vs 向量） [经验]
@@ -547,7 +547,7 @@ void avx2(float* a, float* b, float* c, int n) {
 - `[经验]`：真实基准中 AVX2 对连续浮点循环常达 **4–8× 加速**（受内存带宽上限约束，并非严格 8×）；瓶颈常在**带宽**而非 ALU（见 ⑱）。
 - `[经验]`：永远**实测**，不要"相信向量化更快"——非热点/小数据/依赖循环，向量化毫无收益甚至因 prologue/epilogue 变慢。
 
-## ⑯ 调试：查看 asm 是否真的向量化 [实现]
+## ⑯ 调试：查看 asm 是否真的向量化 [实现·GCC15]
 
 ```bash
 # ⑯ 让 GCC 报告向量化成败原因（-O3 才有意义）
@@ -565,10 +565,10 @@ constexpr int lanes_avx2 = sizeof(__m256) / sizeof(float);  // = 8
 static_assert(lanes_avx2 == 8, "AVX2 width");
 ```
 
-- `[实现]`：`-fopt-info-vec` 打印**成功**向量化的循环；`-fopt-info-vec-missed` 打印**失败原因**（"可能存在别名""存在控制流"等），是定位 ⑭ 类问题的第一工具。
+- `[实现·GCC15]`：`-fopt-info-vec` 打印**成功**向量化的循环；`-fopt-info-vec-missed` 打印**失败原因**（"可能存在别名""存在控制流"等），是定位 ⑭ 类问题的第一工具。
 - `[经验]`：看 asm 是否出现 `ymm/zmm` 与 `vaddps/vmulps` 是最硬的证据（如 ⑧/⑫/⑬/⑭ 各节所示），比"优化选项开了"更可靠。
 
-## ⑰ 跨平台（x86 vs ARM NEON） [平台]
+## ⑰ 跨平台（x86 vs ARM NEON） [平台·x86-64]
 
 x86 用 SSE/AVX，ARM 用 **NEON**（高级 SIMD，AArch64 默认 128 位 `float32x4_t`）。
 
@@ -590,7 +590,7 @@ void neon_add(const float* a, const float* b, float* c) {
 #endif
 ```
 
-- `[平台]`：NEON 函数名风格与 x86 intrinsics **不互通**（`vaddq_f32` vs `_mm_add_ps`），但语义一一对应。跨平台库常用宏/抽象层（如 `std::experimental::simd`、Eigen、xsimd）屏蔽差异。
+- `[平台·x86-64]`：NEON 函数名风格与 x86 intrinsics **不互通**（`vaddq_f32` vs `_mm_add_ps`），但语义一一对应。跨平台库常用宏/抽象层（如 `std::experimental::simd`、Eigen、xsimd）屏蔽差异。
 - `[经验]`：不要在可移植代码里直接写平台 intrinsics；用自动向量化或跨平台抽象，仅在底层 backend 按架构分发。
 
 ## ⑱ 最佳实践 [经验]
@@ -613,7 +613,7 @@ void best_clamp(float* a, float* b, int n, float lo) {
 - `[经验]`：向量化的**第一杠杆是数据布局与别名**，不是 intrinsics。顺序：SoA/AoSoA → `__restrict` → 去分支/去依赖 → 自动向量化 → 必要时 intrinsics → 实测。
 - `[经验]`：注意**内存带宽墙**——当算访比低（如纯 `a+b`），加速受限于 DRAM 带宽，AVX-512 也救不了；提升算访比（融合更多运算/FMA）才能吃满 ALU。
 
-## ⑲ 工具（Compiler Explorer / -fopt-info-vec） [实现]
+## ⑲ 工具（Compiler Explorer / -fopt-info-vec） [实现·GCC15]
 
 ```bash
 # ⑲ 本地快速取证：一条命令看向量化 asm
@@ -624,7 +624,7 @@ g++ -std=c++23 -O3 -mavx2 -fopt-info-vec-all=vec.log Examples/_ch155_simd.cpp
 # ⑲ 在线：https://godbolt.org 选 x86-64 gcc 13.1，-O3 -mavx2，直接对照 asm
 ```
 
-- `[实现]`：Compiler Explorer（godbolt.org）可在浏览器里切换编译器/标志看实时 asm，是验证"是否真向量化"的最快途径；本地用 `-fopt-info-vec` + `-S -masm=intel` 等价。
+- `[实现·GCC15]`：Compiler Explorer（godbolt.org）可在浏览器里切换编译器/标志看实时 asm，是验证"是否真向量化"的最快途径；本地用 `-fopt-info-vec` + `-S -masm=intel` 等价。
 - `[经验]`：把热点函数单独抽成小 TU 丢进 Compiler Explorer，对照 `vaddps`/`vmulps` 是否出现，比肉眼读源码判断可靠。
 
 ## ⑳ 速查表 [标准]

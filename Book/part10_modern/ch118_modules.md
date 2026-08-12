@@ -115,7 +115,7 @@ int main() { return std::cout ? 0 : 1; }
 - `[标准]`：导入模块只引入其导出名字，**不引入宏**（宏是预处理期，模块在语义期之后）。
 - `[经验]`：Modules 彻底解决"头文件宏泄漏"（如 Windows.h 的 `min/max` 宏冲突）。
 
-## ⑤ 真实汇编：模块符号与零包含开销 [实现]
+## ⑤ 真实汇编：模块符号与零包含开销 [实现·GCC15.3.0]
 
 ```cpp
 // 文件：Examples/_mod_use.cpp，行号：8（_Z7use_modv）/ 12（jmp _ZW4math6squarei）
@@ -223,8 +223,8 @@ import <vector>;       // 把传统头当作头单元导入（C++20 头单元）
 // 区别仅在名字编码前缀（W4math 标明所属模块），调用约定、参数、返回均不变
 ```
 
-- `[实现]`：模块只改变**名字的编码前缀**（加入模块名），不改变调用约定或内存布局——模块是编译期组织机制，不是 ABI 机制。
-- `[平台]`：这意味着模块代码可与非模块代码链接（只要符号解析一致）。
+- `[实现·GCC15.3.0]`：模块只改变**名字的编码前缀**（加入模块名），不改变调用约定或内存布局——模块是编译期组织机制，不是 ABI 机制。
+- `[平台·Windows]`：这意味着模块代码可与非模块代码链接（只要符号解析一致）。
 
 ## ⑫ 模块与构建系统 [经验]
 
@@ -265,7 +265,7 @@ export int visible();  // 导出
 - `[标准]`：Modules 用 BMI 缓存语义，避免重复解析，是编译速度的根本改进。
 - `[经验]`：大型项目（数百头文件）迁移 Modules 后编译时间常降 **30%–70%**。
 
-## ⑮ 真实编译验证：模块可独立编译 [实现]
+## ⑮ 真实编译验证：模块可独立编译 [实现·GCC15.3.0]
 
 ```bash
 # 文件：Examples/_mod_main.cpp / _mod_use.cpp，行号：8（_Z7use_modv）/ 12（jmp _ZW4math6squarei）
@@ -278,7 +278,7 @@ g++ Examples/_mod_main.o Examples/_mod_use.o -o Examples/_mod_app
 ```
 
 - `[实现·GCC15.3.0]`：GCC 15.3.0 的 `-fmodules-ts` 支持上述流程；`use_mod` 经 `mov ecx,7; jmp _ZW4math6squarei` 调用模块函数，证明模块导入在链接期解析为真实符号。
-- `[平台]`：Clang 用 `-std=c++20 -fmodules`（更成熟）；MSVC 用 `/std:c++20 /interface` + `.ixx`。三者语法一致，构建命令不同。
+- `[平台·Windows]`：Clang 用 `-std=c++20 -fmodules`（更成熟）；MSVC 用 `/std:c++20 /interface` + `.ixx`。三者语法一致，构建命令不同。
 
 ## ⑯ 模块与模板 [标准]
 
@@ -307,7 +307,7 @@ export inline int twice(int x) { return x * 2; }
 - `[标准]`：`constexpr`/`inline` 在模块导出中语义不变，仍满足 ODR（多 TU 导入同一实体）。
 - `[经验]`：模块让 `inline` 变量的分发更明确——不再依赖头文件包含。
 
-## ⑱ 三编译器对比：Modules 支持度 [平台]
+## ⑱ 三编译器对比：Modules 支持度 [平台·Windows]
 
 | 编译器 | 模块标志 | 标准库模块 | 成熟度 |
 |---|---|---|---|
@@ -315,7 +315,7 @@ export inline int twice(int x) { return x * 2; }
 | Clang 16+ | `-fmodules` / `-std=c++20` | `std` | 最成熟 |
 | MSVC 19.34 | `/std:c++20` + `.ixx` | `std` | 成熟，IDE 支持好 |
 
-- `[平台]`：语法三套一致；构建/ BMI 细节不同。**跨编译器共享模块 BMI 不可行**（BMI 非标准格式）。
+- `[平台·Windows]`：语法三套一致；构建/ BMI 细节不同。**跨编译器共享模块 BMI 不可行**（BMI 非标准格式）。
 - `[经验]`：团队统一编译器与版本再做模块迁移，避免 BMI 不兼容。
 
 ## ⑲ microbenchmark：模块对编译时间的收益 [经验]

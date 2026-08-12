@@ -64,7 +64,7 @@ int main() {
 //   spdlog::info(...) 内部即 fmt::format(...) + sink 写出
 ```
 
-## ② fmt 格式化原理（编译期格式串解析） [实现]
+## ② fmt 格式化原理（编译期格式串解析） [实现·fmt]
 
 fmt 的核心不在「运行期拼字符串」，而在**编译期**对格式串做校验与规划：
 
@@ -88,9 +88,9 @@ static_assert(count_braces("a={} b={}") == 2);  // 编译期常量
 //    其构造在编译期完成占位符校验（见第 ③ 节源码剖析）。
 ```
 
-- `[实现]`：编译期校验使得**格式串/参数错位**从运行期 bug 变成编译错误——这是 fmt 相对 printf 的本质优势。
+- `[实现·fmt]`：编译期校验使得**格式串/参数错位**从运行期 bug 变成编译错误——这是 fmt 相对 printf 的本质优势。
 
-## ③ [实现] 源码剖析：upstream basic_format_string / 编译期检查 [实现]
+## ③ [实现·fmt] 源码剖析：upstream basic_format_string / 编译期检查 [实现·fmt]
 
 > 本机未装 fmt，以下引用上游固定 tag 源码做剖析，标注「上游参考」。
 
@@ -122,7 +122,7 @@ using is_compile_string = std::is_base_of<compile_string, S>;
 }
 ```
 
-- `[实现]`：`FMT_CONSTEVAL` 构造函数保证校验**只能发生在编译期**（C++20 `consteval`），运行期零开销；`format_string_checker` 携带 `Args...` 的类型列表，边扫描边核对。
+- `[实现·fmt]`：`FMT_CONSTEVAL` 构造函数保证校验**只能发生在编译期**（C++20 `consteval`），运行期零开销；`format_string_checker` 携带 `Args...` 的类型列表，边扫描边核对。
 - `[平台]`：该机制依赖 C++20 `consteval`/类类型 NTTP；C++17 下 fmt 退化为用 `FMT_STRING` 宏 + `constexpr` 触发近似检查。
 
 ## ④ spdlog 架构（logger / registry / sink） [标准]
@@ -164,7 +164,7 @@ spdlog::set_default_logger(existing);     // 设为默认
 - `[标准]`：`logger` 负责格式化与分发；`registry` 维护名字→logger 映射并管理全局级别/刷新；`sink` 决定消息去向。
 - `[经验]`：多 sink（stdout + 文件）用 `spdlog::sinks::stdout_color_sink_mt` + `basic_file_sink_mt` 经 `std::vector<sink_ptr>` 组合。
 
-## ⑤ 性能：比 iostream / printf 快的原因 [实现]
+## ⑤ 性能：比 iostream / printf 快的原因 [实现·fmt]
 
 fmt 快在三点：
 
@@ -183,7 +183,7 @@ auto buf = fmt::memory_buffer();
 fmt::format_to(std::back_inserter(buf), "{}", 123456789);  // 整数快速路径
 ```
 
-- `[实现]`：① 单一格式化入口、无 `std::ostream` 的虚函数与 tie 开销；② `format_to` + `memory_buffer` 复用缓冲、零小对象分配；③ 整数/浮点有 dragonbox 等专用快速实现。
+- `[实现·fmt]`：① 单一格式化入口、无 `std::ostream` 的虚函数与 tie 开销；② `format_to` + `memory_buffer` 复用缓冲、零小对象分配；③ 整数/浮点有 dragonbox 等专用快速实现。
 - `[经验]`：高频日志优先 `spdlog::debug("{}", x)` 配 `*_mt` sink；极致吞吐用异步 sink（第 ⑭ 节）。
 
 ## ⑥ 类型安全：编译期检查格式串 [标准]
@@ -206,7 +206,7 @@ std::string dyn = fmt::format(fmt::runtime(user_pattern), arg);
 - `[标准]`：编译期校验是 fmt 的类型安全内核（见第 ③ 节 `format_string_checker`）。
 - `[经验]`：凡格式串来自配置文件/网络，一律 `fmt::runtime(...)`，否则会被强制编译期常量而无法编译。
 
-## ⑦ [实现] 真实：编译自包含格式化等价示例取汇编 [实现]
+## ⑦ [实现·fmt] 真实：编译自包含格式化等价示例取汇编 [实现·fmt]
 
 fmt 未安装，下面用 **GCC 15.3.0 真实编译**一个**自包含**示例，等价复现 fmt 的两大机制（编译期格式串解析 + 类型安全分派），并取真实汇编。
 
@@ -288,7 +288,7 @@ pi={} name={} n={}3.14fmt42
 fmt::print("pi={} name={} n={}\n", 3.14, "fmt", 42);
 ```
 
-- `[实现]`：汇编证明——格式串在编译期就固化进 `.rdata`（`fixed_string` NTTP），运行期 `demo` 直接内联为 `printf` 序列；`emit<double/const char*/int>` 三类分派在编译期完成（类型安全）。
+- `[实现·fmt]`：汇编证明——格式串在编译期就固化进 `.rdata`（`fixed_string` NTTP），运行期 `demo` 直接内联为 `printf` 序列；`emit<double/const char*/int>` 三类分派在编译期完成（类型安全）。
 - `[标准]`：这与 fmt 的 `basic_format_string` + `formatter<T>` 编译期分派同构——本章示例是 fmt 机制的「最小自包含等价还原」。
 
 ## ⑧ 异常策略 [标准]
@@ -377,7 +377,7 @@ spdlog::flush_every(std::chrono::seconds(3));     // 周期 flush
 ```
 
 - `[经验]`：调试时把级别降到 `debug`/`trace`，配合彩色 pattern；长流程用 `flush_every` 防崩溃丢尾。
-- `[平台]`：Windows 控制台建议 `spdlog::sinks::stdout_color_sink_mt`（自动 ANSI 适配）。
+- `[平台·Windows]`：Windows 控制台建议 `spdlog::sinks::stdout_color_sink_mt`（自动 ANSI 适配）。
 
 ## ⑪ 跨平台 [平台]
 
@@ -429,7 +429,7 @@ spdlog::info("v={}", compute());     // 立即求值并格式化，安全
 ```
 
 - `[经验]`：任何自定义类型要进 `{}` 必须先 `fmt::formatter<T>` 特化（第 ⑨ 节）。
-- `[实现]`：fmt 对参数采用「立即取值、按需拷贝」策略，字符串视图类类型才需警惕悬空（见 `fmt::string_view`）。
+- `[实现·fmt]`：fmt 对参数采用「立即取值、按需拷贝」策略，字符串视图类类型才需警惕悬空（见 `fmt::string_view`）。
 
 ## ⑬ 演进 [标准]
 
@@ -549,7 +549,7 @@ class my_sink : public spdlog::sinks::base_sink<Mutex> {
 ```
 
 - `[经验]`：贡献前先读 `CONTRIBUTING.md`、补单测、遵守现有 formatter/parse 约定；sink 必须实现 `sink_it_` 与 `flush_`。
-- `[实现]`：`base_sink<Mutex>` 已处理多线程锁（模板参数 `null_mutex`=单线程、`std::mutex`=多线程）。
+- `[实现·fmt]`：`base_sink<Mutex>` 已处理多线程锁（模板参数 `null_mutex`=单线程、`std::mutex`=多线程）。
 
 ## ⑱ 性能对比（bench 思路 / 数字量级） [经验]
 
@@ -577,7 +577,7 @@ void bench_ios() {
 - `[经验]`：量级（基于 fmt 官方 bench，非本机实测，仅示意）：在百万级「整数+短串」格式化中，fmt 通常比 `<iostream>`（含 `ostringstream`）快 **5×–20×**，比 `snprintf` 快 **1×–3×**；差异主要来自避免 locale 查询、单次缓冲、整数快速路径。
 - `[平台]`：具体数字随编译器/CPU/libc 大幅波动；`std::format`（libstdc++/MSVC）与 fmt 同量级，部分实现已反超。
 
-## ⑲ 调试 / 源码阅读 [实现]
+## ⑲ 调试 / 源码阅读 [实现·fmt]
 
 > 本机未装 fmt/spdlog，以下按上游固定 tag 给出阅读路线与关键位置（上游参考）。
 
@@ -610,7 +610,7 @@ class SPDLOG_API registry {
 //   5) spdlog/sinks/base_sink.h：sink_it_/flush_ 契约
 ```
 
-- `[实现]`：fmt 的「编译期检查」与「运行期格式化」是解耦的两套代码；spdlog 的 `logger` 薄、真正的复杂度在 sink 与 registry。
+- `[实现·fmt]`：fmt 的「编译期检查」与「运行期格式化」是解耦的两套代码；spdlog 的 `logger` 薄、真正的复杂度在 sink 与 registry。
 - `[经验]`：调试日志丢消息，先查 `flush_on`/`shutdown`；查格式异常，先查 `formatter` 特化的 `parse` 返回值。
 
 ## ⑳ 速查表 [标准]
@@ -730,7 +730,7 @@ int main() {
 - `[平台]`：fmt / spdlog 均为 header-only，跨平台零依赖；链接只需把包含目录与（静态）库指对。
 - `[引用]` fmt 文档：`https://fmt.dev/latest/`；spdlog：`https://github.com/gabime/spdlog`。
 
-## 附录 E：fmt/spdlog工业
+## 附录 E：fmt/spdlog工业 [UNVERIFIED]
 
 fmt(P0645R10): C++20 std::format前身; 编译期格式验证; 比cout快5-10x(无locale/mutex)
 spdlog: async logger, 后台线程+MPSC队列, ~300ns/msg vs cout~1us

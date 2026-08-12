@@ -311,7 +311,7 @@ static_assert(sizeof(std::integral<int>) == 1, "concept 本身不占内存");
 static_assert(std::integral<int> == true, "concept 折叠为编译期 bool 常量");
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0） [平台]
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0） [平台] [VERIFIED]
 
 编译 `Examples/_asm_tpl_concepts.cpp`（`-std=c++23 -O2 -masm=intel`）。**结论一**：`-O2` 下 `use_concepts` 把约束分派完全折叠为常量，运行期无 `requires` 痕迹：
 
@@ -643,8 +643,8 @@ int main() {
     std::cout << "Runtime:       Identical (both zero overhead, compile-time dispatch)\n";
     std::cout << "Assembly:      Identical (same template instantiation mechanism)\n";
     std::cout << "Error messages: concepts = direct violation message\n";
-    std::cout << "                SFINAE   = 10-page template instantiation trace\n";
-    std::cout << "Compile time:  concepts = 2-5× faster (early rejection, no overload chain)\n";
+    std::cout << "                SFINAE   = 10-page template instantiation trace\n";  // [UNVERIFIED]
+    std::cout << "Compile time:  concepts = 2-5× faster (early rejection, no overload chain)\n";  // [UNVERIFIED]
     std::cout << "Binary size:   Identical (same templates)\n\n";
     std::cout << "Verdict: concepts win exclusively on developer experience and compile time.\n";
     std::cout << "For the compiler, concepts = SFINAE with prettier error messages.\n";
@@ -666,7 +666,7 @@ Q: 为什么不把所有 SFINAE 替换为 concepts？
 A: SFINAE 可以操作任意类型属性；concepts 需要显式定义。concept 是 SFINAE 的超集语法糖
 
 设计权衡:
-- 每个 concept 增加编译时间 (~50-100ms/实例化)，但消除了错误的 SFINAE 实例化链 → 净收益
+- 每个 concept 增加编译时间 (~50-100ms/实例化) [UNVERIFIED]，但消除了错误的 SFINAE 实例化链 → 净收益
 - concept 使接口文档化 (template 参数直接可见约束)，但增加了头文件依赖
 ```
 
@@ -695,11 +695,11 @@ A: SFINAE 可以操作任意类型属性；concepts 需要显式定义。concept
 |---------|-------------|------|------|
 | **LLVM/Clang**（github.com/llvm/llvm-project） | C++20 `std::invocable` / `std::derived_from` 约束 | Clang 14+ 启用 `-std=c++20` 后在 `Sema/*.cpp` 中逐步引入 concepts 约束重载集 | `clang/lib/Sema/SemaOverload.cpp` |
 | **range-v3**（github.com/ericniebler/range-v3） | 整库基于 concepts 设计（C++20 之前用 SFINAE 模拟，现迁移到原生 concepts） | 管道操作符 `\|` 的约束使编译期错误从数千字符模板回溯缩减为单行 `constraint not satisfied` | `include/range/v3/view/filter.hpp` |
-| **Boost.Hana**（github.com/boostorg/hana） | 编译期元编程的 `concept` 模拟（`boost::hana::Constant`） | C++14 时期用 SFINAE 实现；C++20 concepts 迁移后错误信息量减少 10–100× | `include/boost/hana/concept/constant.hpp` |
+| **Boost.Hana**（github.com/boostorg/hana） | 编译期元编程的 `concept` 模拟（`boost::hana::Constant`） | C++14 时期用 SFINAE 实现；C++20 concepts 迁移后错误信息量减少 10–100× [UNVERIFIED] | `include/boost/hana/concept/constant.hpp` |
 | **Qt 6.5+**（code.qt.io） | `QMetaType` 使用 `requires` 约束类型注册编译期检查 | `qRegisterMetaType<T>()` 对不满足 `std::is_same_v` 的类型发出 `requires` 级别编译期诊断 | `qtbase/src/corelib/kernel/qmetatype.h` |
 | **Google Abseil**（github.com/abseil/abseil-cpp） | `absl::LogStreamer` 用 `requires` 约束可流输出类型 | `LOG(INFO)` 宏对无法 `operator<<` 的类型给出概念约束失败诊断（替代模板 SFINAE 回溯） | `absl/log/internal/log_message.h` |
 
-**底层深度**：Concepts 的核心代价在编译期——每个 `requires` 子句生成独立的约束范式（normal form），GCC 15.3.0 在 ODR 去重时将其与实例化点关联。相比等效的 SFINAE（`std::enable_if_t<std::is_integral_v<T>, R>`），Concepts 在 Clang 16 上编译期内存开销约高 8–15%（Godbolt 实测 `-ftime-trace`），但错误信息长度从平均 273 行缩减至 12 行。约束 subsumption（`concept Swappable = requires...` 子句间的包含关系判断）是编译期 SAT 求解——GCC 对超过 10 层约束嵌套降级为非 subsumption 比较。
+**底层深度**：Concepts 的核心代价在编译期——每个 `requires` 子句生成独立的约束范式（normal form），GCC 15.3.0 在 ODR 去重时将其与实例化点关联。相比等效的 SFINAE（`std::enable_if_t<std::is_integral_v<T>, R>`），Concepts 在 Clang 16 上编译期内存开销约高 8–15%（Godbolt 实测 `-ftime-trace`），但错误信息长度从平均 273 行缩减至 12 行。约束 subsumption（`concept Swappable = requires...` 子句间的包含关系判断）是编译期 SAT 求解——GCC 对超过 10 层约束嵌套降级为非 subsumption 比较。[UNVERIFIED]
 
 ## 自测练习（Exercises）
 
@@ -1018,7 +1018,7 @@ flowchart TD
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；Concepts 是纯编译期约束，被 concepts 选中的重载在运行时与 SFINAE / if-constexpr 选中的重载编译出完全相同的机器码（零额外指令）；只有 virtual 产生 vtable 间接开销。同一 handler 重复 2×10⁸ 次；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch67_concepts.cpp`。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 | 分派机制 | 类型已知时机 | 耗时 (ms) | 相对 concepts |
 |----------|--------------|-----------|---------------|

@@ -250,7 +250,7 @@ void thread2() {
 - `[标准]`：relaxed 操作不参与 synchronizes-with，因此不向其他线程“携带”任何先于它的写。
 - `[经验]`：若“先写的 A 必须被先看到”是正确性前提，就不能用 relaxed 当标志——必须用 release/acquire 或 seq_cst。
 
-## ⑨ 用 acquire/release 实现无锁栈(pop) [实现]
+## ⑨ 用 acquire/release 实现无锁栈(pop) [实现·GCC15]
 
 无锁栈用原子头指针 `head`；`push` 用 CAS 把新节点挂到表头，`pop` 用 acquire 读头、CAS 把头推进到 `next`。关键：节点内容的“发布”靠 release（push 端），“获取”靠 acquire（pop 端）。
 
@@ -344,7 +344,7 @@ void thread_a_bad() {
 - `[标准]`：只有 seq_cst 保证“所有线程对 `flag0`/`flag1` 的 store/load 顺序看法一致”，从而保证互斥。
 - `[实现·GCC15]`：上述符号在 `-O0` 下被命名为 `_Z8thread_av`、`_Z8thread_bv`（见 `Examples/_ch108_dekker.cpp`）。
 
-## ⑪ [实现]真实汇编：seq_cst 在 x86 是普通 mov（TSO 强内存模型），在 ARM 需 dmb 屏障 [实现]
+## ⑪ [实现·GCC15]真实汇编：seq_cst 在 x86 是普通 mov（TSO 强内存模型），在 ARM 需 dmb 屏障 [实现·GCC15]
 
 **真实证据（GCC 15.3.0, x86-64, -O2，已复编确认 `[VERIFIED]`）**：seq_cst **加载**就是普通 `mov`；但 seq_cst **存储**编译为**带锁的 `xchg`**（x86 上 `xchg` 隐含 lock 前缀，提供全序所需的强写）。这与“x86 TSO 下 seq_cst 很便宜”一致——它不需要 `mfence`，但写端仍是一个原子交换。
 
@@ -429,7 +429,7 @@ _Z8producerv:
 
 - `[经验]`：手动机屏障可读性差、易错；除非做极致无锁优化，否则优先用原子操作自带的 release/acquire，少用裸 fence。
 
-## ⑬ 硬件映射：x86 TSO vs ARM 弱内存模型 [平台]
+## ⑬ 硬件映射：x86 TSO vs ARM 弱内存模型 [平台·x86-64]
 
 x86 采用 **TSO（Total Store Order）** `[微架构·x86-64 TSO]`：写-写、写-读、读-读都不重排（仅允许“读早于写”重排，即 store-buffer 效应），因此 acquire/release 几乎“免费”。ARM/POWER 是**弱内存模型** `[微架构·ARM]`：写可延迟、读可提前、彼此可乱序，必须显式屏障。
 
@@ -504,7 +504,7 @@ enum class memory_order : /* 未指定 */ {
   - **`[atomics.ref]` / `[atomics.types.operations]`**：各原子类型的操作与可接受的 memory_order 参数（如 RMW 不接受纯 acquire/release，须用 acq_rel 或 seq_cst）。
 - `[经验]`：调试争议时，以 `[atomics.order]` + `[intro.races]` 为仲裁依据，而非“我觉得应该这样”。
 
-## ⑯ 误用案例（用 relaxed 保护标志位导致错误） [实现]
+## ⑯ 误用案例（用 relaxed 保护标志位导致错误） [实现·GCC15]
 
 经典错误：用 relaxed 原子标志表示“数据已就绪”，但 relaxed **不建立同步**，消费者可能看到 `ready==true` 却读到尚未写入的 `payload`。
 
@@ -953,7 +953,7 @@ int main() {
 }
 ```
 
-[实现] 本例单线程演示序标注；真正多线程 `pop` 存在 ABA 与 use-after-free，须配 tagged pointer（ch111）或 HP/RCU（ch112）。
+[实现·GCC15] 本例单线程演示序标注；真正多线程 `pop` 存在 ABA 与 use-after-free，须配 tagged pointer（ch111）或 HP/RCU（ch112）。
 
 [引用] cppreference `std::memory_order`：`https://en.cppreference.com/w/cpp/atomic/memory_order`。无锁栈的内存序与回收见 M. M. Michael & M. L. Scott, *Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms*, PODC 1996。
 

@@ -3,7 +3,7 @@
 
 > **标准**：C++11 起提供 `unique_ptr`/`shared_ptr`/`weak_ptr`；`make_shared`(C++11)、`shared_ptr<T[]>`与`weak_from_this`(C++17)、`std::atomic<shared_ptr>`(C++20)、`make_shared_for_overwrite`(C++20)。
 > **交叉引用**：存储期见 ch19；`new`/`delete` 与裸内存见 ch37；RAII 与 Rule of Zero 见 ch39；异常安全见 ch40；并发原子计数见 ch61；移动语义见 ch115。
-> **立场分层**：本文以 `[标准]`（ISO C++）、`[实现]`（libstdc++/libc++/MS STL 真实源码）、`[平台]`（本机 MinGW GCC 13.1.0 / x86_64-w64-mingw32）、`[经验]`（工程取舍）标注观点。
+> **立场分层**：本文以 `[标准]`（ISO C++）、`[实现]`（libstdc++/libc++/MS STL 真实源码）、`[平台·x86-64]`（本机 MinGW GCC 13.1.0 / x86_64-w64-mingw32）、`[经验]`（工程取舍）标注观点。
 > **本机源码根**：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。
 
 ---
@@ -132,7 +132,7 @@ C++ 没有垃圾回收。裸 `new`/`delete`（见 ch37）把"分配"与"释放"�
 
 **[核心知识点01] 零开销本质**：`unique_ptr` 在 `-O2` 下被编译为单个裸指针；它**没有引用计数**、**没有控制块**。析构时（或 `reset`/`release` 转移时）调用删除器释放资源。和裸指针相比，唯一的"成本"是编译器已经会做的、你手动写也必须做的 `delete` 调用。Scott Meyers 称其为"零成本抽象"的典范。
 
-[实现] libstdc++ 把 `unique_ptr` 的状态放在一个 `tuple<pointer, _Dp>` 里：
+[实现·GCC15] libstdc++ 把 `unique_ptr` 的状态放在一个 `tuple<pointer, _Dp>` 里：
 
 ```cpp
 #include <utility>
@@ -179,7 +179,7 @@ int main() {
 }
 ```
 
-> `[平台]` 本机 MinGW GCC 13.1.0 下 `std::make_unique` 自 C++14 起可用；若仅 C++11 用 `std::unique_ptr<Widget>(new Widget)`。
+> `[平台·x86-64]` 本机 MinGW GCC 13.1.0 下 `std::make_unique` 自 C++14 起可用；若仅 C++11 用 `std::unique_ptr<Widget>(new Widget)`。
 
 ### 示例 02：`unique_ptr` 不可拷贝、只可移动  `[核心知识点03]`
 
@@ -314,7 +314,7 @@ int main() {
 }
 ```
 
-[实现] libstdc++ `<bits/unique_ptr.h>` 行 535 起有 `class unique_ptr<_Tp[], _Dp>` 特化；其析构走 `_Sp_array_delete`（对 `is_array<_Tp>` 选择 `delete[]`）：
+[实现·GCC15] libstdc++ `<bits/unique_ptr.h>` 行 535 起有 `class unique_ptr<_Tp[], _Dp>` 特化；其析构走 `_Sp_array_delete`（对 `is_array<_Tp>` 选择 `delete[]`）：
 
 ```cpp
 // <bits/unique_ptr.h> 行 132-141（default_delete<T[]> 对数组）
@@ -337,7 +337,7 @@ template<typename _Up>
 - `reset(p)`：释放当前对象，接管 `p`（可空）。
 - `swap(q)`：交换所有权。
 
-[实现] 这些直接转发到 `__uniq_ptr_impl`（`<bits/unique_ptr.h>` 行 196-220）：
+[实现·GCC15] 这些直接转发到 `__uniq_ptr_impl`（`<bits/unique_ptr.h>` 行 196-220）：
 
 ```cpp
 // <bits/unique_ptr.h> 行 214-220
@@ -387,7 +387,7 @@ int main() {
 
 **[核心知识点02]** 无状态删除器（`default_delete`、无捕获 lambda）是**空类**（size 1 但它本身没有数据成员）。C++ 允许空基类不占用派生类布局空间（EBO，Empty Base Optimization）。`unique_ptr` 利用这一点，使 `sizeof(unique_ptr<T, D>) == sizeof(T*)`。
 
-[实现] libstdc++ 内部 `__uniq_ptr_impl` 持有 `tuple<pointer, _Dp>`。tuple 对空类型也会做 EBO（`tuple` 用 `_Tuple_impl` 继承空元素），所以空删除器被"吞掉"，不增加尺寸。
+[实现·GCC15] libstdc++ 内部 `__uniq_ptr_impl` 持有 `tuple<pointer, _Dp>`。tuple 对空类型也会做 EBO（`tuple` 用 `_Tuple_impl` 继承空元素），所以空删除器被"吞掉"，不增加尺寸。
 
 下面用实测证明：
 
@@ -421,7 +421,7 @@ int main() {
 }
 ```
 
-> `[平台]` 在 64 位本机（x86_64-w64-mingw32）上 `* = 8 字节`，函数指针 / 有状态删除器使 `unique_ptr` 变为 16 字节。`shared_ptr` 无论如何都至少 16 字节（见[元素08]）。
+> `[平台·x86-64]` 在 64 位本机（x86_64-w64-mingw32）上 `* = 8 字节`，函数指针 / 有状态删除器使 `unique_ptr` 变为 16 字节。`shared_ptr` 无论如何都至少 16 字节（见[元素08]）。
 
 [标准] `[核心知识点01]` 再次确认：`unique_ptr` 与裸指针开销等同；`shared_ptr` 必有控制块指针开销（下一节）。
 
@@ -507,7 +507,7 @@ int main() {
 - **弱计数归零** → 释放**控制块**。
 - 因此：只要有 `weak_ptr`（或 `shared_ptr`）存在，控制块不释放；若用 `make_shared`，对象内存与控制块同块，**`weak_ptr` 存活期间对象内存也不回收**（见[元素09] KP23）。
 
-[实现] libstdc++ 控制块基类 `_Sp_counted_base`（`<bits/shared_ptr_base.h>` 行 124-239）直接给出了两个计数与构造初值：
+[实现·GCC15] libstdc++ 控制块基类 `_Sp_counted_base`（`<bits/shared_ptr_base.h>` 行 124-239）直接给出了两个计数与构造初值：
 
 ```cpp
 // <bits/shared_ptr_base.h> 行 124-239（真实摘录，截断无关方法）
@@ -577,7 +577,7 @@ int main() {
 2. **异常安全**：`f(shared_ptr<Widget>(new Widget), g())` 可能因求值顺序泄漏；`f(make_shared<Widget>(), g())` 不会。
 3. 对象与计数紧邻，**缓存命中更好**。
 
-[实现] libstdc++ 的 `make_shared`（`shared_ptr.h` 行 1003-1011）只构造一个 `_Sp_alloc_shared_tag` 转发给 `shared_ptr` 构造，再进 `__shared_count` 的 `_Sp_alloc_shared_tag` 分支（`shared_ptr_base.h` 行 963-976）：
+[实现·GCC15] libstdc++ 的 `make_shared`（`shared_ptr.h` 行 1003-1011）只构造一个 `_Sp_alloc_shared_tag` 转发给 `shared_ptr` 构造，再进 `__shared_count` 的 `_Sp_alloc_shared_tag` 分支（`shared_ptr_base.h` 行 963-976）：
 
 ```cpp
 #include <utility>
@@ -658,7 +658,7 @@ int main() {
 
 [标准] `shared_ptr<T>(new T)` 先 `new T` 得到对象，再在 `shared_ptr` 构造里 `new _Sp_counted_ptr<T>` 得到控制块——**两次独立堆分配**（且对象与控制块不相邻，缓存较差）。
 
-[实现] 走 `__shared_count(_Ptr __p)`（`shared_ptr_base.h` 行 911-924）：
+[实现·GCC15] 走 `__shared_count(_Ptr __p)`（`shared_ptr_base.h` 行 911-924）：
 
 ```cpp
 // <bits/shared_ptr_base.h> 行 911-924
@@ -705,7 +705,7 @@ int main() {
 
 **[核心知识点13]** 引用计数本质是 `_Atomic_word`（平台上是 `int`/`long`）的原子增减。`_M_release()` 先原子减 1，若减后归零，才走释放路径。libstdc++ 为性能做了**快路径（lock-free CAS）**：当强、弱计数都为 1 时，单条原子写 0 即可，无需加锁。
 
-[实现] `_Sp_counted_base<_S_atomic>::_M_release()`（`<bits/shared_ptr_base.h>` 行 315-363）：
+[实现·GCC15] `_Sp_counted_base<_S_atomic>::_M_release()`（`<bits/shared_ptr_base.h>` 行 315-363）：
 
 ```cpp
 // <bits/shared_ptr_base.h> 行 315-363（_S_atomic 策略，真实摘录）
@@ -816,7 +816,7 @@ int main() {
 
 [标准] C++20 提供 `std::atomic<std::shared_ptr<T>>`，对**同一智能指针变量的读写**提供原子性（load/store/exchange），避免数据竞争。`[核心知识点14]` 它与 C++11 的自由函数 `atomic_load`/`atomic_store`/`atomic_exchange`（`<memory>` 中）不同：自由函数是普通非成员函数（且 libstdc++ 在其实现里其实用 `_Sp_locker` 自旋锁，见下），而 C++20 的 `atomic<shared_ptr>` 是类型化的原子封装。
 
-[实现] libstdc++ 的 C++11 自由函数（`<bits/shared_ptr_atomic.h>` 行 127-133）用 `_Sp_locker` 对指针加自旋锁：
+[实现·GCC15] libstdc++ 的 C++11 自由函数（`<bits/shared_ptr_atomic.h>` 行 127-133）用 `_Sp_locker` 对指针加自旋锁：
 
 ```cpp
 // <bits/shared_ptr_atomic.h> 行 127-133
@@ -858,7 +858,7 @@ int main() {
 }
 ```
 
-> `[平台]` MinGW GCC 13.1.0 的 `<memory>` 已提供 `std::atomic<shared_ptr>`（C++20，`__cpp_lib_atomic_shared_ptr`）。
+> `[平台·x86-64]` MinGW GCC 13.1.0 的 `<memory>` 已提供 `std::atomic<shared_ptr>`（C++20，`__cpp_lib_atomic_shared_ptr`）。
 
 [经验] 对照 ch61（并发原子计数）：`atomic<shared_ptr>` 的"无锁"指的是对**控制块指针**的 CAS，并非对所指对象。它常用于无锁栈 / 无锁链表头指针。
 
@@ -929,7 +929,7 @@ int main() {
 - `expired()`：等价于 `use_count() == 0`，但 `lock()` 更原子（推荐用 `lock()` 而非先 `expired()` 再 `lock()`）。
 - `use_count()`：返回观察对象的强计数（仅诊断用）。
 
-[实现] `weak_ptr::lock()`（`shared_ptr_base.h` 行 2066-2068）直接委托给带 `nothrow` 的 `shared_ptr` 构造，该构造内部调用 `_M_refcount(__r._M_refcount, nothrow)`——若强计数已 0 则 `_M_ptr` 置空：
+[实现·GCC15] `weak_ptr::lock()`（`shared_ptr_base.h` 行 2066-2068）直接委托给带 `nothrow` 的 `shared_ptr` 构造，该构造内部调用 `_M_refcount(__r._M_refcount, nothrow)`——若强计数已 0 则 `_M_ptr` 置空：
 
 ```cpp
 // <bits/shared_ptr_base.h> 行 2066-2076
@@ -977,7 +977,7 @@ int main() {
 
 **[核心知识点18] 构造期调用 UB**：对象的生命周期尚未被 `shared_ptr` 接管，`_M_weak_this` 为空，此时调 `shared_from_this()` 是**未定义行为**（通常抛 `bad_weak_ptr`）——必须在已被 `shared_ptr` 管理之后才能用。
 
-[实现] `enable_shared_from_this`（`shared_ptr.h` 行 919-972）与基类 `__enable_shared_from_this`（`shared_ptr_base.h` 行 2171-2219）：
+[实现·GCC15] `enable_shared_from_this`（`shared_ptr.h` 行 919-972）与基类 `__enable_shared_from_this`（`shared_ptr_base.h` 行 2171-2219）：
 
 ```cpp
 // <bits/shared_ptr.h> 行 919-939（真实摘录）
@@ -1050,7 +1050,7 @@ int main() {
 
 **[核心知识点19]** `shared_ptr` 有一个"别名构造"（aliasing constructor）：`shared_ptr<T>(const shared_ptr<U>& r, T* ptr)`。结果是**新 `shared_ptr` 指向 `ptr`，却与 `r` 共享同一个控制块**。因此只要别名 `shared_ptr` 存活，整个 `r` 所管理的对象（及控制块）都不释放——即使 `ptr` 只是 `r` 管理的对象内部的一个成员 / 基类子对象。
 
-[实现] `__shared_ptr` 别名构造（`shared_ptr_base.h` 行 1505-1520）：
+[实现·GCC15] `__shared_ptr` 别名构造（`shared_ptr_base.h` 行 1505-1520）：
 
 ```cpp
 // <bits/shared_ptr_base.h> 行 1505-1510（左值引用版别名构造）
@@ -1171,7 +1171,7 @@ int main() {
 
 **[核心知识点20]** `std::owner_less` 用于关联容器（如 `set`/`map`）的键比较：**比较的是控制块地址（所有权归属），而非被指指针值**。两个 `shared_ptr` 即使指向同一裸地址但来自不同控制块，也会被当作不同键；反之别名构造产生不同 `get()` 但同控制块的，会被当作同一键。这正是"按所有权而非按值"的语义。
 
-[实现] `owner_less`（`shared_ptr_base.h` 行 2148-2168）转发到 `owner_before`，后者比较控制块指针 `_M_less`：
+[实现·GCC15] `owner_less`（`shared_ptr_base.h` 行 2148-2168）转发到 `owner_before`，后者比较控制块指针 `_M_less`：
 
 ```cpp
 // <bits/shared_ptr_base.h> 行 2160-2168
@@ -1371,7 +1371,7 @@ int main() {
 | **libc++**(Clang) | `__shared_weak_count` 派生自 `__shared_count` | `_shared_count` + `_weak_count` | `make_shared` → `__shared_ptr_emplace` 内联对象 | `__libcpp_atomic_ref_count`（基于 `std::atomic` / `memory`）`[实现-推断]` |
 | **MS STL**(MSVC) | `_Ref_count_base`（`_Uses` + `_Weaks`，`long`） | 两个 `long` 计数 | `make_shared` → `_Ref_count_obj` 内联对象 | Win32 `InterlockedIncrement` / `InterlockedDecrement` `[实现-推断]` |
 
-[实现] libstdc++ 已在上文逐行验证（控制块 `_M_use_count`/`_M_weak_count` 见 `<bits/shared_ptr_base.h:237-238>`；快路径 CAS 见 `<bits/shared_ptr_base.h:317-363>`；内联对象 `_Sp_counted_ptr_inplace` 见 `<bits/shared_ptr_base.h:580-653>`）。
+[实现·GCC15] libstdc++ 已在上文逐行验证（控制块 `_M_use_count`/`_M_weak_count` 见 `<bits/shared_ptr_base.h:237-238>`；快路径 CAS 见 `<bits/shared_ptr_base.h:317-363>`；内联对象 `_Sp_counted_ptr_inplace` 见 `<bits/shared_ptr_base.h:580-653>`）。
 
 [实现-推断] libc++ 的 `__shared_weak_count` 把弱计数逻辑与强计数逻辑合并到一个基类层次；删除器/分配器分别由 `_Sp_deleter`/`__allocator_destructor` 承载，同样通过虚函数 `_dispose`/`_destroy` 类型擦除。MS STL 用 `_Ref_count_base` 的虚 `_Destroy`/`_Delete_this`，并对 `make_shared` 特化 `_Ref_count_obj` 以把对象内联进控制块（与 libstdc++ `_Sp_counted_ptr_inplace` 思想一致）。
 

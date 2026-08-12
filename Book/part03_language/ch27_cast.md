@@ -6,7 +6,7 @@
 ⟶ Book/part05_oo/ch48_rtti.md
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：6 h｜前置：ch19（存储期/链接/ODR）、ch20（引用与指针）、ch21（const/volatile）、ch60（模板与 traits）｜后续：ch31（异常与 bad_cast）、ch42（严格别名与优化）、ch65（OOP 与 RTTI）｜难度：★★★★★
-> 立场分层约定：`[标准]`＝ISO 条文语义；`[实现]`＝编译器/标准库源码行为；`[平台]`＝OS/ABI/硬件（x86-64 / ARM / ELF / PE）；`[经验]`＝工程落地的铁律。四层不得混淆。
+> 立场分层约定：`[标准]`＝ISO 条文语义；`[实现]`＝编译器/标准库源码行为；`[平台·x86-64]`＝OS/ABI/硬件（x86-64 / ARM / ELF / PE）；`[经验]`＝工程落地的铁律。四层不得混淆。
 
 本章把"转型（cast）"在**类型系统、对象模型、RTTI、严格别名、ABI、标准库实现、编译器代码生成、性能、并发**九个维度讲透。所有"推荐阅读"的书籍内容已内化进正文（见 §18 源码阅读路线）。
 
@@ -195,7 +195,7 @@ int main() {
 
 ### 3.2 去 const 写"真 const 对象" = UB（硬件层解释）
 
-`[标准]` [dcl.type.cv]：试图通过去 const 后的访问路径修改一个**被声明为 const 的对象**，是**未定义行为**。`[平台]` 在典型 ELF/PE 可执行文件中，被 `const` 初始化的全局/静态对象放进 `.rodata`（只读数据段），由 **MMU 映射到只读页**。一旦去 const 写它，CPU 触发页保护故障 → POSIX 下 `SIGSEGV`、Windows 下 `0xC0000005` 访问冲突。
+`[标准]` [dcl.type.cv]：试图通过去 const 后的访问路径修改一个**被声明为 const 的对象**，是**未定义行为**。`[平台·x86-64]` 在典型 ELF/PE 可执行文件中，被 `const` 初始化的全局/静态对象放进 `.rodata`（只读数据段），由 **MMU 映射到只读页**。一旦去 const 写它，CPU 触发页保护故障 → POSIX 下 `SIGSEGV`、Windows 下 `0xC0000005` 访问冲突。
 
 ```cpp
 // prog_04_const_ub_rodata.cpp —— 去 const 写真 const 对象（UB，运行时崩溃示意）
@@ -213,7 +213,7 @@ int main() {
 }
 ```
 
-`[平台]` 验证手段：`objdump -h a.out | grep rodata` 看只读段；`/guard` 段在 PE 中类似。嵌入式（Flash/ROM）上写 const 更是**硬件总线错误**，无法恢复。
+`[平台·x86-64]` 验证手段：`objdump -h a.out | grep rodata` 看只读段；`/guard` 段在 PE 中类似。嵌入式（Flash/ROM）上写 const 更是**硬件总线错误**，无法恢复。
 
 ### 3.3 去 const 写"通过 const 引用看到的非常量对象" = 合法
 
@@ -321,7 +321,7 @@ int main() {
 }
 ```
 
-`[实现]` 偏移量在编译期由类布局（Itanium C++ ABI §2.5/§3.4）静态算出，运行期零成本——与 `dynamic_cast` 的遍历不同，这是 `static_cast` 上行的性能优势来源。
+`[实现·GCC15]` 偏移量在编译期由类布局（Itanium C++ ABI §2.5/§3.4）静态算出，运行期零成本——与 `dynamic_cast` 的遍历不同，这是 `static_cast` 上行的性能优势来源。
 
 ---
 
@@ -344,7 +344,7 @@ int main() {
 3. 沿 most-derived 的基类列表**遍历继承树**，匹配目标类型；
 4. 找到则在对应子对象的偏移上返回指针（虚继承需经 vtable 偏移计算的 `dst` 调整），否则返回 `nullptr`。
 
-`[平台]` 该过程核心是几次指针解引用 + 字符串/`type_info` 指针比较（`__class_type_info::can_cast_to` 用指针比较，不 strcmp；跨模块比较依赖 `typeid` 的合并，`-fvisibility` 影响），因此**远慢于 `static_cast` 的零成本**，但仍属"几次内存访问"量级（详见 §10）。
+`[平台·x86-64]` 该过程核心是几次指针解引用 + 字符串/`type_info` 指针比较（`__class_type_info::can_cast_to` 用指针比较，不 strcmp；跨模块比较依赖 `typeid` 的合并，`-fvisibility` 影响），因此**远慢于 `static_cast` 的零成本**，但仍属"几次内存访问"量级（详见 §10）。
 
 ### 5.3 指针失败返 nullptr / 引用失败抛 bad_cast
 
@@ -746,7 +746,7 @@ int main() {
 }
 ```
 
-`[实现]` 修正：上例 `extra_unused` 不存在，应删去；`polymorphic_downcast` 价值在于把"静默的 `static_cast` 下行"变成"debug 可捕获的错误"。在 `-fno-rtti` 环境可改为基于类型标签 enum 的断言。
+`[实现·GCC15]` 修正：上例 `extra_unused` 不存在，应删去；`polymorphic_downcast` 价值在于把"静默的 `static_cast` 下行"变成"debug 可捕获的错误"。在 `-fno-rtti` 环境可改为基于类型标签 enum 的断言。
 
 ### 7.5 `std::is_convertible` / `std::convertible_to`
 
@@ -919,7 +919,7 @@ int main() {
 
 ### 9.2 `reinterpret_cast` 在 x86-64 与 ARM 的代码生成
 
-`[平台][实现]` `reinterpret_cast` 本身**不产生任何指令**——它只是类型系统的编译期改写。但**后续对重解释结果的访问**会受 ABI 影响：
+`[平台·x86-64][实现]` `reinterpret_cast` 本身**不产生任何指令**——它只是类型系统的编译期改写。但**后续对重解释结果的访问**会受 ABI 影响：
 - **x86-64**（System V / Windows）：未对齐访问大多被硬件容忍（仅性能下降），所以 `reinterpret_cast<int*>(&some_char[1])` 读可能"看似工作"——这掩盖了 UB。
 - **ARM（AArch32/AArch64）**：硬件**强制对齐**，未对齐访问直接触发 `SIGBUS`（崩溃）。因此同一段违反 strict aliasing 的代码在 x86 静默错误、在 ARM 立刻崩溃。
 
@@ -1076,7 +1076,7 @@ movq  (%rax), %rdi      ; 取 typeinfo 指针
 call   __dynamic_cast   ; 进 libsupc++，遍历继承树
 testq  %rax, %rax       ; 判空
 ```
-`[实现]` 区别一目了然：`static_cast` 是 1 条 `addq`；`dynamic_cast` 是 `vptr 解引用 + call + 测试`，这正是 §10.1 慢 5–15× 的汇编证据。`reinterpret_cast` 在汇编里**完全消失**（不产生指令），仅改变后续访存的类型注解。
+`[实现·GCC15]` 区别一目了然：`static_cast` 是 1 条 `addq`；`dynamic_cast` 是 `vptr 解引用 + call + 测试`，这正是 §10.1 慢 5–15× 的汇编证据。`reinterpret_cast` 在汇编里**完全消失**（不产生指令），仅改变后续访存的类型注解。
 
 ---
 
@@ -1193,7 +1193,7 @@ int main() {
 
 ### 案例 E：跨模块 RTTI 崩溃的工业修复（`-fvisibility`）
 
-`[平台]` 在 Linux 动态库（`.so`）里做 `dynamic_cast`，若主程序与库用**不同 `-fvisibility`** 或 `typeid` 未合并，typeinfo 指针比较失败→转换意外返回 `nullptr`/抛异常。
+`[平台·Linux]` 在 Linux 动态库（`.so`）里做 `dynamic_cast`，若主程序与库用**不同 `-fvisibility`** 或 `typeid` 未合并，typeinfo 指针比较失败→转换意外返回 `nullptr`/抛异常。
 
 ```cpp
 // prog_30_rtti_visibility.cpp —— 跨模块 RTTI 安全：用类型标签替代 dynamic_cast
@@ -1624,7 +1624,7 @@ int main() {
 
 ## ⑱ 源码阅读路线（本章延伸，替代原"推荐阅读"）
 
-`[实现]` 想从实现层彻底吃透转型，按以下路线阅读：
+`[实现·GCC15]` 想从实现层彻底吃透转型，按以下路线阅读：
 
 1. **libstdc++ `<type_traits>`**（本机 `.../include/c++/type_traits`：1564–1610、3702）：`is_convertible`/`is_nothrow_convertible` 的内建与 SFINAE 双实现。
 2. **libstdc++ `<bit>`**（`:78–89`）：`bit_cast` 的 `requires` 约束与 `__builtin_bit_cast`。

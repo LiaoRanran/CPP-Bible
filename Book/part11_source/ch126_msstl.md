@@ -54,7 +54,7 @@ int main() {
 - `[标准]`：ISO C++ 条款规定行为；MS STL 是**实现**，可能与标准有细微偏差（见 ⑭）。
 - `[经验]`：MS STL 大量逻辑在 `stl/inc/*.h` 头文件模板里，链接时再补少量 `msvcp140*.dll` 符号（见 ⑫）。
 
-## ② 架构（与 MSVC 后端/C1/C2） [实现]
+## ② 架构（与 MSVC 后端/C1/C2） [实现·MS STL]
 
 MSVC 编译管线分前端 `C1`（C++ 前端，产出 CIL）、后端 `C2`（代码生成，产出 OBJ），标准库在**前端之后的语义期**被包含解析——与 GCC 的 `cc1plus` / `cc1` 分工类似。MS STL 头经 `C1` 预处理+语义分析，模板实例化发生在 `C2` 之前的 IL 阶段。
 
@@ -80,7 +80,7 @@ int f() { std::vector<int> v(3); return (int)v.size(); }
 - `[实现·MSVC]`：`C1/C2` 分离让 MS STL 头可在前端充分做模板检查；`/permissive-` 等开关影响头的可编译性（见 ⑨）。
 - `[平台·Windows]`：MS STL 与 `vcruntime`/`ucrt` 协同，离开这组 DLL 无法独立运行。
 
-## ③ 开源 STL repo（GitHub microsoft/STL） [平台]
+## ③ 开源 STL repo（GitHub microsoft/STL） [平台·Windows]
 
 自 2020 年起，MS STL 源码公开于 `microsoft/STL`（MIT 许可）。仓库结构是阅读入口：`stl/inc/` 为公开头，`stl/src/` 为 `.cpp` 实现（如 locale、iostream 的 `cin/cout`），`stl/tests/` 为 conformance 测试。
 
@@ -102,10 +102,10 @@ int use_stl() {
 // stl/src/xlocale.cpp -> <locale> 的少量非模板实现
 ```
 
-- `[平台]`：`git clone https://github.com/microsoft/STL` 即可本地阅读；CI 跑全套 conformance 测试，是贡献入口（见 ⑰）。
+- `[平台·Windows]`：`git clone https://github.com/microsoft/STL` 即可本地阅读；CI 跑全套 conformance 测试，是贡献入口（见 ⑰）。
 - `[经验]`：阅读以 `stl/inc/` 为根，按标准头名（`vector`/`string`）找入口，再追 `stl/src/` 的非模板实现。
 
-## ④ [实现]源码剖析（upstream stl/inc 文件+行号，标注上游参考） [实现]
+## ④ [实现·MS STL]源码剖析（upstream stl/inc 文件+行号，标注上游参考） [实现·MS STL]
 
 下面三处为**上游参考**——行号取自 `microsoft/STL` main 分支，随提交浮动，仅指示位置。
 
@@ -134,9 +134,9 @@ int use_stl() {
 ```
 
 - `[实现·MSVC]`：`vector` 类是模板，定义在头内；`basic_string` 用 union `_Bx` 在「本地缓冲」与「堆指针」间二选一，即 SSO（见 ⑧）。
-- `[实现]`：`yvals.h` 的 `_HAS_CXX23` 等宏集中控制特性开关，是跨版本行为差异的根源（见 ⑨⑭）。
+- `[实现·MS STL]`：`yvals.h` 的 `_HAS_CXX23` 等宏集中控制特性开关，是跨版本行为差异的根源（见 ⑨⑭）。
 
-## ⑤ 与 Windows 生态/Win32/CRT [平台]
+## ⑤ 与 Windows 生态/Win32/CRT [平台·Windows]
 
 MS STL 与 Win32/CRT 天然融合：`<cstdio>` 的 `FILE*` 底层是 `ucrt`；`std::wstring` 直接兼容 `LPCWSTR`；异常展开依赖 `vcruntime` 的 SEH 支持（见 ⑥）；`<windows.h>` 与标准库可共存，但需注意宏冲突（`min/max`/`ERROR`）。
 
@@ -162,7 +162,7 @@ int m(int a, int b) { return std::max(a, b); }  // 用 std::max 而非宏
 - `[平台·Windows]`：`std::wstring::c_str()` 返回 `const wchar_t*`，与 `LPCWSTR` 二进制兼容，是 Windows 上字符串边界的惯用法。
 - `[经验]`：引入 `<windows.h>` 前定义 `NOMINMAX`、`WIN32_LEAN_AND_MEAN`，可避免大量宏冲突（见 ⑬）。
 
-## ⑥ 异常与 SEH [实现]
+## ⑥ 异常与 SEH [实现·MS STL]
 
 MSVC 的 C++ 异常在 Windows 上由 **SEH（Structured Exception Handling）** 承载：栈展开经 `vcruntime` 的 `__CxxFrameHandler*`，由编译器为每个 `try` 生成 `FuncInfo` 描述。MinGW-w64（seh 变体）用同一套 Windows SEH 机制，故可在本机用 g++ 真实演示 C++ 异常→SEH 的映射。
 
@@ -193,7 +193,7 @@ int main() { return safe_call(10) + safe_call(-3); }
 - `[实现·MSVC]`：MSVC 用 `/EHsc` 启用 C++ 异常；`__try/__except` 是原生 SEH，`throw` 最终也经 SEH 展开。本机 g++ 的 `__gxx_personality_seh0` 证明 MinGW 同样走 Windows SEH。
 - `[平台·Windows]`：跨 DLL 抛 C++ 异常需两端用**相同** `_EH` 模型与运行时，否则展开失败（见 ⑬）。
 
-## ⑦ 并行算法（与 Intel TBB/Concurrency Runtime） [实现]
+## ⑦ 并行算法（与 Intel TBB/Concurrency Runtime） [实现·MS STL]
 
 C++17 并行算法（`std::execution::par/unseq`）在 MS STL 的默认后端是 **Intel oneTBB**（旧称 PSTL + ConcRT）。MSVC 链接 `tbb.dll` 获得真并行；不提供时退化为顺序执行。本机用 g++/libstdc++ 仅验证 API 可编译（libstdc++ 无 TBB 时退化为顺序，符号仍实例化）。
 
@@ -223,7 +223,7 @@ int p() {
 - `[实现·MSVC]`：并行算法默认拉起 TBB worker 线程池；`/openmp` 与 TBB 并存时需注意线程池争用。
 - `[经验]`：并行算法对**大**数据才有收益；小数组顺序回退反而慢（见 ⑪）。
 
-## ⑧ 字符串实现策略 [实现]
+## ⑧ 字符串实现策略 [实现·MS STL]
 
 MS STL 的 `std::string` 采用 **SSO（Small String Optimization）**：短串存对象内建缓冲，避免堆分配。`basic_string` 用 union `_Bx` 在「内置缓冲 `_Buf`」与「堆指针 `_Ptr`」间二选一（见 ④ `xstring:1860`）。本机用 g++ 编译 `std::string` 可演示同构的 SSO 阈值判定（`15`）。
 
@@ -259,10 +259,10 @@ int main() {
 }
 ```
 
-- `[实现]`：SSO 阈值在 x86-64 下多为 15 字节（`char`）；`std::string` 移动构造 `noexcept`，使 `vector<string>` 扩容走移动（见 ⑪）。
+- `[实现·MS STL]`：SSO 阈值在 x86-64 下多为 15 字节（`char`）；`std::string` 移动构造 `noexcept`，使 `vector<string>` 扩容走移动（见 ⑪）。
 - `[平台·x86-64]`：MS STL 与 libstdc++ 的 `basic_string` 布局相近（union + SSO），但**二进制不兼容**（见 ⑫⑬）。
 
-## ⑨ [实现]真实：MSVC 默认标准库行为（命令+典型输出） [实现]
+## ⑨ [实现·MS STL]真实：MSVC 默认标准库行为（命令+典型输出） [实现·MS STL]
 
 MSVC 默认开启 C++14 行为，需显式 `/std:c++20` 或 `/std:c++latest` 才启用现代标准库；`_HAS_CXX23` 由标准开关驱动（见 ④）。以下为真实命令，**输出为「典型输出」**（本机未装 MSVC，未运行）。
 
@@ -288,7 +288,7 @@ MSVC 默认开启 C++14 行为，需显式 `/std:c++20` 或 `/std:c++latest` 才
 - `[实现·MSVC]`：默认 `/std:c++14`；显式 `/std:c++20` 才打开 `<ranges>`/`<format>` 等。这与 GCC 默认 `-std=gnu++17/20` 不同（见 ⑯）。
 - `[经验]`：提交到 CI 时固定 `/std:` 等级，避免开发者本地默认标准不一致导致行为漂移。
 
-## ⑩ 调试（Visual Studio） [平台]
+## ⑩ 调试（Visual Studio） [平台·Windows]
 
 Visual Studio 安装 "C++ 桌面" 工作负载时附带 MS STL 源码（`VC\Tools\MSVC\<ver>\crt\src` 与 include），可在异常/断点处单步进入 `vector`/`string` 模板实现。无需额外符号服务器即可看标准库内部。
 
@@ -341,9 +341,9 @@ int main() {
 ```
 
 - `[经验]`：性能问题用 VS Profiler / ETW 或 `std::chrono` 定位，而非盲猜；MS STL 容器本身高效，瓶颈多在分配与拷贝。
-- `[实现]`：真实 g++ 汇编（⑥⑧）证明遍历被内联为指针算术——MS STL 同样会内联这些热路径。
+- `[实现·MS STL]`：真实 g++ 汇编（⑥⑧）证明遍历被内联为指针算术——MS STL 同样会内联这些热路径。
 
-## ⑫ ABI/二进制兼容（vcruntime/msvcp） [实现]
+## ⑫ ABI/二进制兼容（vcruntime/msvcp） [实现·MS STL]
 
 MS STL 的二进制接口由两部分承载：`vcruntime140.dll`（栈展开/SEH/入口，见 ⑥）与 `msvcp140.dll`（标准库少量非模板运行符号，如 `std::locale`、`std::ios_base`）。**同一 `_MSC_VER` 主版本**内 ABI 稳定；跨大版本（如 19.3x → 19.4x）可能不兼容。
 
@@ -364,7 +364,7 @@ int main() {
 ```
 
 - `[实现·MSVC]`：`msvcp140.dll` 与 `msvcp140_1.dll`/`msvcp140_2.dll` 分载不同特性；`vcruntime140.dll` 与 `_ATL`/MFC 无关，是纯 C++ 运行底座。
-- `[平台]`：混合不同 VS 版本编译的 `.obj`/`.lib` 链接 `msvcp140` 时，可能因内联模板布局差异产生 ODR/ABI 错配。
+- `[平台·Windows]`：混合不同 VS 版本编译的 `.obj`/`.lib` 链接 `msvcp140` 时，可能因内联模板布局差异产生 ODR/ABI 错配。
 
 ## ⑬ 常见陷阱（DLL 边界传递 STL 对象） [经验]
 
@@ -445,7 +445,7 @@ int main() { std::vector<int> v{1,2,3}; return (int)v.size(); }
 
 - `[经验]`：① 统一 `_MSC_VER`；② 统一 `/MD`；③ 边界不导 `std`；④ 用 `/W4 /permissive-` 抓早期问题（见 ⑨）。
 
-## ⑯ 跨编译器 [平台]
+## ⑯ 跨编译器 [平台·Windows]
 
 同一份标准库**逻辑**跨 MSVC/clang-cl/GCC 可移植，但**二进制**不兼容：MS STL（Windows）、libstdc++（GCC）、libc++（Clang）三者 `std::string`/`std::vector` 布局、名字修饰、分配器均不同。头文件源码级可移植；`.obj`/`.lib` 不可跨编译器链混链。
 
@@ -468,10 +468,10 @@ int cross(const std::vector<int>& v) {
 // 三者头文件语义一致，但导出的 std 符号名不同（_Z vs ? / mangled 差异）
 ```
 
-- `[平台]`：`clang-cl` 在 Windows 上可复用 MS STL（用 `/clang:` 透传），是 MSVC 生态内最接近二进制兼容的替代前端。
+- `[平台·Windows]`：`clang-cl` 在 Windows 上可复用 MS STL（用 `/clang:` 透传），是 MSVC 生态内最接近二进制兼容的替代前端。
 - `[经验]`：头文件级跨编译器没问题；**二进制级**必须用同一编译器+同一 STL 版本（见 ⑬⑱）。
 
-## ⑰ 贡献 [平台]
+## ⑰ 贡献 [平台·Windows]
 
 向 microsoft/STL 贡献需遵循仓库流程：fork → 分支 → 改 `stl/inc` 或 `stl/src` → 跑 `stl/tests` 全套 conformance → 提 PR。本地可用 VS 构建 `stl` 工程；本机用 g++ 仅能验证「同样代码可编译」。
 
@@ -496,10 +496,10 @@ void my_erase_last(std::vector<_Ty>& v) {
 }
 ```
 
-- `[平台]`：PR 需通过 CI（含 `/W4 /permissive-` 严格编译与全套测试）；版权归微软，需签署 CLA。
+- `[平台·Windows]`：PR 需通过 CI（含 `/W4 /permissive-` 严格编译与全套测试）；版权归微软，需签署 CLA。
 - `[经验]`：先查 existing issue，最小改动 + 测试，PR 通过率更高。
 
-## ⑱ 跨库对比（三套 STL） [平台]
+## ⑱ 跨库对比（三套 STL） [平台·Windows]
 
 libstdc++（GCC）、libc++（Clang）、MS STL（MSVC）实现同一标准，但策略不同：SSO 阈值、ABI 稳定机制、并行后端、调试源可用性各异。
 
@@ -524,10 +524,10 @@ int demo() {
 | 特性宏 | `_GLIBCXX_*` | `_LIBCPP_*` | `_HAS_CXX*`（yvals.h） |
 | 异常机制 | Itanium unwind / SEH(MinGW) | Itanium unwind | **SEH（`__CxxFrameHandler*`)** |
 
-- `[平台]`：MS STL 的独特优势是**并行算法内置 TBB**、**VS 调试源码开箱即用**、与 Windows/Win32 深度融合；代价是仅 Windows + 仅 MSVC 生态。
+- `[平台·Windows]`：MS STL 的独特优势是**并行算法内置 TBB**、**VS 调试源码开箱即用**、与 Windows/Win32 深度融合；代价是仅 Windows + 仅 MSVC 生态。
 - `[实现]`：三者都做 SSO，但 union 布局不同 → 二进制不可互换（见 ⑫⑬）。
 
-## ⑲ 调试/源码阅读 [平台]
+## ⑲ 调试/源码阅读 [平台·Windows]
 
 在 Windows 上读 MS STL 源码最顺手：VS 安装时自带 `VC\Tools\MSVC\<ver>\include`，直接 `Ctrl+点击` 跳进 `vector`。也可在 GitHub 网页读 `microsoft/STL` 的 `stl/inc`。非 Windows 上可用 VS Code + 远程仓库只读浏览。
 

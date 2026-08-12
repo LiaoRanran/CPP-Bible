@@ -215,7 +215,7 @@ mini_task use_awaiter() {
 ```
 
 - `[标准]`：三步顺序为 `await_ready` →（若 false）`await_suspend(handle)` →（恢复后）`await_resume()`。`await_suspend` 可返回 `bool`（`false` 表示立即 resume）或另一个 awaiter（嵌套 await）。
-- `[实现]`：`await_suspend` 返回 `void` 时编译器在挂起后**不再自动 resume**——必须有人持有 `handle` 并调用 `resume()`，否则协程泄漏（见 ⑮）。
+- `[实现·GCC15]`：`await_suspend` 返回 `void` 时编译器在挂起后**不再自动 resume**——必须有人持有 `handle` 并调用 `resume()`，否则协程泄漏（见 ⑮）。
 
 ## ⑥ 手写 generator（yield 序列） [标准]
 
@@ -337,9 +337,9 @@ struct pooled_task {
 ```
 
 - `[标准]`：若 `promise_type::operator new` 存在，编译器优先使用它分配帧；还可提供 `operator new(size, std::align_val_t)` 控制对齐。
-- `[实现]`：帧大小在编译期已知（见 ⑨ 的 `mov ecx,56`），分配是一次定长 `operator new`，**无运行时 resize**。
+- `[实现·GCC15]`：帧大小在编译期已知（见 ⑨ 的 `mov ecx,56`），分配是一次定长 `operator new`，**无运行时 resize**。
 
-## ⑨ [实现]真实汇编：协程帧分配 `call operator new` 与恢复符号 [实现·GCC15]
+## ⑨ [实现·GCC15]真实汇编：协程帧分配 `call operator new` 与恢复符号 [实现·GCC15] [VERIFIED]
 
 下面是 `Examples/_ch113_co.cpp` 经 GCC 15.3.0 真实编译（`-std=c++23 -O2 -S -masm=intel`）的取证，逐行对照，非编造。
 
@@ -573,7 +573,7 @@ auto dt = std::chrono::steady_clock::now() - t0;
 ```
 
 - `[经验]`：协程**单次操作比线程快 1–2 个数量级**（无内核切换），与回调同量级但代码可读；代价是**首帧 `operator new` 分配**（见 ⑧/⑨），高频短命协程需帧池。
-- `[实现]`：GCC 把 `resume()` 编译为对 `.Frame.actor` 的跳转 + 恢复索引查表（⑨），无栈切换，无寄存器全量保存。
+- `[实现·GCC15]`：GCC 把 `resume()` 编译为对 `.Frame.actor` 的跳转 + 恢复索引查表（⑨），无栈切换，无寄存器全量保存。
 
 ## ⑮ 常见坑：悬垂引用与协程帧生命周期 [标准]
 
@@ -641,7 +641,7 @@ struct logging_awaiter {
 ```
 
 - `[经验]`：GDB 中可直接 `p <handle>.promise()` 查看帧内 promise 状态；`_Z...Frame.actor` 符号（⑨）是断点好位置。
-- `[平台]`：MSVC 对协程有专门调试可视化（`std::coroutine_handle` 可视化器）；GCC/Clang 主要靠符号与插桩。
+- `[平台·Windows]`：MSVC 对协程有专门调试可视化（`std::coroutine_handle` 可视化器）；GCC/Clang 主要靠符号与插桩。
 
 ## ⑰ 标准库缺位（无自带 generator/task，需自写或第三方） [标准]
 
@@ -657,7 +657,7 @@ struct logging_awaiter {
 - `[标准]`：`std::coroutine_handle<P>`、`std::suspend_always`、`std::suspend_never`、`std::noop_coroutine` 是 C++20 仅有的标准协程设施。
 - `[经验]`：团队选型——内部简单序列用本章 `generator`/`task`；复杂异步用 `cppcoro` 或 ASIO 的 `awaitable`，避免重复造轮子但需引入依赖。
 
-## ⑱ 编译器支持（clang / gcc / msvc） [平台]
+## ⑱ 编译器支持（clang / gcc / msvc） [平台·x86-64]
 
 | 编译器 | 协程标志 | 状态 | 注意 |
 |---|---|---|---|
@@ -674,7 +674,7 @@ struct logging_awaiter {
 #endif
 ```
 
-- `[平台]`：三者均实现 C++20 协程语义，但**帧符号名、优化细节、调试信息不同**（见 ⑨ 的 GCC 私有后缀）。
+- `[平台·x86-64]`：三者均实现 C++20 协程语义，但**帧符号名、优化细节、调试信息不同**（见 ⑨ 的 GCC 私有后缀）。
 - `[经验]`：跨编译器共享协程类型定义没问题；但**不要依赖具体帧符号名**做反射/序列化。
 
 ## ⑲ 最佳实践 [经验]
@@ -1406,7 +1406,7 @@ int main() {
 
 预期输出 `1 2 3`：`from_promise` 在 `get_return_object` 时由 promise 地址算出帧指针，`resume()` 驱动协程到下一个 `co_yield`，`done()` 在 final_suspend 后返回 true 终止——与 D4.1–D4.3 源码中 `coroutine_handle` 对 `__builtin_coro_*` 的薄封装一致。注意本例需 `-fcoroutines`（`<coroutine>` 头在缺该开关时直接 `#error`）。
 
-## 附录 D5：真实基准与性能分析 — 协程的帧分配与调用开销 (GCC 15.3.0)
+## 附录 D5：真实基准与性能分析 — 协程的帧分配与调用开销 (GCC 15.3.0) [VERIFIED]
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++17`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化协程 `Task` 相对普通函数的调用开销，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
 

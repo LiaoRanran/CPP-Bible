@@ -354,7 +354,7 @@ int main() {
 }
 ```
 
-> `[平台]` 在 x86-64（本机 GCC 15.3.0）上，`Bad=16`、`Good=12`。当此类作为 `std::vector<Bad>` 存一百万个对象时，仅 padding 就多耗约 4 MB 内存（见第 19 节 microbenchmark）。
+> `[平台·x86-64]` 在 x86-64（本机 GCC 15.3.0）上，`Bad=16`、`Good=12`。当此类作为 `std::vector<Bad>` 存一百万个对象时，仅 padding 就多耗约 4 MB 内存（见第 19 节 microbenchmark）。
 
 **核心知识点 #10**：成员**重排**（大对齐在前、同尺寸聚集）可减少 padding，降低 `sizeof`、节省内存与缓存占用。
 
@@ -379,7 +379,7 @@ int main() {
 }
 ```
 
-多重继承内存布局 ASCII（本机 GCC x86-64，`[平台]`）：
+多重继承内存布局 ASCII（本机 GCC x86-64，`[平台·x86-64]`）：
 
 ```
 D : B1, B2 { int z; }
@@ -463,7 +463,7 @@ int main() {
 }
 ```
 
-**[平台]**　在本机 MinGW GCC 15.3.0（Windows 目标）上，使用的是 **Microsoft x64 调用约定**——`this` 通过寄存器 **`rcx`** 传递（而非压栈）。`[实现-推断]` 在 Linux 的 GCC/Clang（System V AMD64 ABI）下 `this` 走 **`rdi`**；MSVC（x64）同样是 `rcx`（见 `ch36` 调用约定）。下面用本机生成的反汇编实证。
+**[平台·Windows]**　在本机 MinGW GCC 15.3.0（Windows 目标）上，使用的是 **Microsoft x64 调用约定**——`this` 通过寄存器 **`rcx`** 传递（而非压栈）。`[实现-推断]` 在 Linux 的 GCC/Clang（System V AMD64 ABI）下 `this` 走 **`rdi`**；MSVC（x64）同样是 `rcx`（见 `ch36` 调用约定）。下面用本机生成的反汇编实证。
 
 ```cpp
 // [示例 12] this 通过 rcx 寄存器传递（本机 MinGW Windows：MS x64 ABI）
@@ -515,7 +515,7 @@ int main() { C{}.f(); C{}.g(); printf("ok\n"); }
 
 ### 7.1 真实汇编实证：this 在 rcx（本机 MinGW Windows）
 
-**[平台]**　下列为本机 `g++ -O2 -S -masm=intel` 对 `struct T { int v; void f(); };` 中 `T::f`（读取 `this->v` 写入全局 `sink`）生成的真实汇编片段：
+**[平台·Windows]**　下列为本机 `g++ -O2 -S -masm=intel` 对 `struct T { int v; void f(); };` 中 `T::f`（读取 `this->v` 写入全局 `sink`）生成的真实汇编片段：
 
 ```asm
 ;; 本机 MinGW GCC 15.3.0, x86-64 Windows (MS x64 ABI), -O2
@@ -853,7 +853,7 @@ int main() {
 
 ## ⑮ 真实 libstdc++ 源码逐行：`<type_traits>` 的 is_class/is_empty/is_polymorphic/is_abstract
 
-**[实现]**　本机 libstdc++（GCC 15.3.0）`type_traits` 中，类型类别/属性 trait 大多直接委托给编译器内建（compiler builtins）`__is_*`——这是零开销、编译期完成的类型查询。源码路径：
+**[实现·libstdc++]**　本机 libstdc++（GCC 15.3.0）`type_traits` 中，类型类别/属性 trait 大多直接委托给编译器内建（compiler builtins）`__is_*`——这是零开销、编译期完成的类型查询。源码路径：
 `C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits`
 
 ### 15.1 is_class（L655–657）
@@ -940,7 +940,7 @@ int main() {
 
 ## ⑯ 真实 libstdc++ 源码逐行：`<bits/stl_construct.h>` 的 _Construct / construct_at
 
-**[实现]**　位置：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/stl_construct.h`
+**[实现·libstdc++]**　位置：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/stl_construct.h`
 
 标准库在「已分配但未构造」的内存上构造对象，用的是 **placement new**——这正是 `ch37` 的原地构造机制。核心函数 `_Construct`（L123–137）与 `construct_at`（L96–122）：
 
@@ -1011,7 +1011,7 @@ int main() {
 
 ## ⑰ 真实 libstdc++ 源码逐行：`<bits/uses_allocator.h>` 的构造探测
 
-**[实现]**　位置：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/uses_allocator.h`
+**[实现·libstdc++]**　位置：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/uses_allocator.h`
 
 `uses_allocator<T, Alloc>` 回答「类型 `T` 能否用分配器 `Alloc` 构造」——这是 `std::scoped_allocator_adaptor` / 容器构造的编译期探针。关键定义（L73–75 主模板，L133 `uses_allocator_v`，L176–200 构造分发）：
 
@@ -1089,7 +1089,7 @@ int main() {
 | 填充大小 | 受对齐约束，允许不同 | 同 | 同（MSVC x64 默认 8 字节对齐） |
 | `class` 默认 private 继承 vs `struct` 默认 public | 一致 | 一致 | 一致 |
 | 虚继承 vptr 布局 | 见 `ch49` | 见 `ch49` | `/vd` 控制 vptr 位置（`/vd2` 默认，`/vd1` 可前移） |
-| `this` 寄存器传递 | `rcx`(Windows/MS x64) `[平台]`，`rdi`(Linux/System V) `[实现-推断]` | `rdi`(System V) | `rcx`(MS x64) |
+| `this` 寄存器传递 | `rcx`(Windows/MS x64) `[平台·Windows]`，`rdi`(Linux/System V) `[实现-推断]` | `rdi`(System V) | `rcx`(MS x64) |
 
 ```cpp
 // [示例 32] 空类 sizeof 三编译器一致 = 1（条件编译展示平台差异说明）
@@ -1115,7 +1115,7 @@ int main() {
 
 ## ⑲ microbenchmark：padding、值语义拷贝 vs 引用共享
 
-下列基准使用 `<chrono>` 手工计时（`[平台]` 本机 MinGW GCC 15.3.0，`-O2`，x86-64）。代码可编译运行，结果量级来自本机实测估算（N=1'000'000）。
+下列基准使用 `<chrono>` 手工计时（`[平台·x86-64]` 本机 MinGW GCC 15.3.0，`-O2`，x86-64）。代码可编译运行，结果量级来自本机实测估算（N=1'000'000）。
 
 ### 19.1 padding 导致的内存浪费
 
@@ -1166,7 +1166,7 @@ int main() {
 }
 ```
 
-> `[平台]` 本机 MinGW GCC 15.3.0、`-O2`、x86-64 实测（N=200'000，对象 512 字节）：
+> `[平台·x86-64]` 本机 MinGW GCC 15.3.0、`-O2`、x86-64 实测（N=200'000，对象 512 字节）：
 > - **深拷贝耗时 ≈ 17'090 µs**（约 17 ms）——发生 200'000 × 512 B = 100 MB 内存复制。
 > - **共享指针耗时 ≈ 404 µs**——仅复制 200'000 × 8 B = 1.6 MB 指针。
 > - 二者相差约 **42 倍**：深拷贝随对象大小**线性增长**，共享指针开销**近乎恒定**。
@@ -1266,7 +1266,7 @@ int main() {
 
 ### 21.1 典型对象内存布局 ASCII 图
 
-以下为单继承、含虚函数时的常见布局（本机 GCC x86-64，`[平台]`；AS 表示对齐填充）：
+以下为单继承、含虚函数时的常见布局（本机 GCC x86-64，`[平台·x86-64]`；AS 表示对齐填充）：
 
 ```
 派生对象 Derived : Base, 含 int a; 虚函数 f()
@@ -1413,7 +1413,7 @@ _ZL11probe_fnptri:
 ; 多继承: D有2个vptr(每个基类一个), D::f覆盖B1::f在第一个vtable
 ; 虚继承: 额外vbptr指向虚基类(增加8B开销+1次间接)
 
-; sizeof(D)分析:
+; sizeof(D)分析: [UNVERIFIED]
 ; struct B{virtual void f();int x;}; // sizeof=16(vptr8+int4+pad4)
 ; struct D:B{virtual void f();int y;}; // sizeof=16(vptr8+int x+int y=刚好16)
 ; struct D2:B{int y;virtual void g();}; // sizeof=16(同上, g在已有vtable)
@@ -1706,7 +1706,7 @@ flowchart TD
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch45_final_devirt.cpp`。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 | 策略 | 分派方式 | 耗时 (ms) | 相对 |
 |------|----------|-----------|------|

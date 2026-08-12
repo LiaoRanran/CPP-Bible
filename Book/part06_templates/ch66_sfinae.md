@@ -319,7 +319,7 @@ struct empty_trait {};
 static_assert(sizeof(empty_trait) == 1);             // 空类：不携带运行期数据，至少占 1 字节
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0） [平台]
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0） [平台] [VERIFIED]
 
 编译 `Examples/_asm_tpl_sfinae.cpp`（`-std=c++23 -O2 -masm=intel`）。**结论一**：`-O2` 下 `use_sfinae` 把两个重载的「选择」在编译期完成，运行期只剩常量，分发彻底消失：
 
@@ -546,8 +546,8 @@ int main(){std::cout<<has_value_type<std::vector<int>>::value<<std::endl;return 
 
 ## 附录 E：SFINAE工业
 
-std::enable_if(C++11-17), std::void_t(C++17), libstdc++内建__is_detected(快10x)
-C++20 concepts淘汰SFINAE: 快2-5x, 错误从1000行->1行
+std::enable_if(C++11-17), std::void_t(C++17), libstdc++内建__is_detected(快10x) [UNVERIFIED]
+C++20 concepts淘汰SFINAE: 快2-5x, 错误从1000行->1行 [UNVERIFIED]
 
 ```cpp
 #include <iostream>
@@ -570,9 +570,9 @@ int main(){f(42);std::cout<<"SFINAE->C++20 concepts: faster compile, better erro
 
 | 技术 | C++版本 | 错误信息 | 编译速度 |
 |---|---|---|---|
-| SFINAE+enable_if | C++11 | 1000行模板实例化 | 慢 |
+| SFINAE+enable_if | C++11 | 1000行模板实例化 [UNVERIFIED] | 慢 |
 | void_t detection | C++17 | 稍好 | 中 |
-| concepts+requires | C++20 | 1行清晰错误 | 快2-5x |
+| concepts+requires | C++20 | 1行清晰错误 | 快2-5x [UNVERIFIED] |
 | if constexpr | C++17 | 清晰(单函数内) | 快(无重载) |
 
 面试: SFINAE何时用? 几乎不用了——concepts(C++20)全面替代
@@ -587,7 +587,7 @@ int main(){f(42);std::cout<<"SFINAE->C++20 concepts: faster compile, better erro
 | enable_if_t<is_integral_v<T>, int> = 0 | template<integral T> | 更短+更清晰 |
 | void_t<decltype(T::value)> | requires { T::value; } | 直接表达 |
 | decltype(declval<T>().f(), void()) | requires(T t) { t.f(); } | 更直观 |
-| 1000行错误+多重重载链 | 1行违反concept错误 | 100x改善 |
+| 1000行错误+多重重载链 | 1行违反concept错误 | 100x改善 [UNVERIFIED] |
 
 ### 迁移策略
 
@@ -615,7 +615,7 @@ int main(){f(42);return 0;}
 | SFINAE全称? | Substitution Failure Is Not An Error |
 | 替代方案? | concepts(C++20), if constexpr(C++17), tag dispatch(C++98) |
 | enable_if位置? | 模板参数(int=0), 返回类型, 函数参数 |
-| concepts优势? | 编译2-5x faster, 错误100x shorter |
+| concepts优势? | 编译2-5x faster, 错误100x shorter [UNVERIFIED] |
 | SFINAE何时还用? | C++14/17兼容代码; 检测非标准特性 |
 
 ```cpp
@@ -634,7 +634,7 @@ int main(){f(42);std::cout<<"SFINAE→concepts(C++20): faster compile, better er
 
 ; concepts: requires integral<T>
 ; → 编译器: 直接检查requires clause → false → 跳过重载
-; 汇编: 同上(zero runtime)，但检查快2-5x(无SFINAE链)
+; 汇编: 同上(zero runtime)，但检查快2-5x(无SFINAE链) [UNVERIFIED]
 ```
 
 ```cpp
@@ -1033,7 +1033,7 @@ flowchart TD
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；当类型在编译期已知时，SFINAE / if-constexpr / tag 分派三者都解析为同一段直接调用机器码；当类型在运行时才确定（通过 `std::variant` 或基类指针）才产生真实分派开销。同一处理器 handler 重复 2×10⁸ 次；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch66_sfinae.cpp`。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 | 分派机制 | 类型已知时机 | 耗时 (ms) | 相对 if-constexpr |
 |----------|--------------|-----------|-------------------|

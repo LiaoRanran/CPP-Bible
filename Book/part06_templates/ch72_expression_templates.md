@@ -281,7 +281,7 @@ Vec r = a + b;   // a+b 返回临时 Vec，r 从临时拷贝/移动；临时在�
 static_assert(sizeof(Sum<Fast,Fast>) == 2 * sizeof(Fast*));   // 16 字节（x64）
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel） [VERIFIED]
 
 测试文件 `Examples/_asm_expr.cpp`，编译：`g++ -std=c++23 -O2 -S -masm=intel _asm_expr.cpp -o _asm_expr.asm`。
 
@@ -627,15 +627,15 @@ add rdi, 0x0008           ; 步进 int32
 
 ### 实例化代价
 
-- 每套表达式类型生成一份代码：0x0008 种组合膨胀 ≈ 0x0100 KB
-- 符号修饰长度 ≈ 0x0040 字符；`c++filt` 还原 ≈ 0.1us
-- 默认实例化深度上限 `0x0100`（256）
+- 每套表达式类型生成一份代码：0x0008 种组合膨胀 ≈ 0x0100 KB [UNVERIFIED]
+- 符号修饰长度 ≈ 0x0040 字符；`c++filt` 还原 ≈ 0.1us [UNVERIFIED]
+- 默认实例化深度上限 `0x0100`（256） [UNVERIFIED]
 
 ### 量级
 
-- 展开后循环无临时对象，省 ≈ 0x0020 次拷贝 ≈ 20ns
+- 展开后循环无临时对象，省 ≈ 0x0020 次拷贝 ≈ 20ns [UNVERIFIED]
 - `constexpr` 表达式在 C++20 可编译期求值，省全部运行时代价
-- AVX2 向量化后 8x 展开，吞吐 +4x
+- AVX2 向量化后 8x 展开，吞吐 +4x [UNVERIFIED]
 
 ### 编译器与标准
 
@@ -1107,7 +1107,7 @@ flowchart TD
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化表达式模板消除临时对象的收益，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 对象为 `double` 向量（长度 4M）。`a+b+c+d` 链式相加；"临时/遍历"为表达式树产生的临时 vector 数量与完整内存遍历趟数。checksum 三者一致 1.427187。
 

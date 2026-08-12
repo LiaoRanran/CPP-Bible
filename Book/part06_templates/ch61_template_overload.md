@@ -668,19 +668,19 @@ jbe .depth_error
 
 ### 实例化代价
 
-- 每套实参生成一份代码：模板在 0x0008 种实参下二进制膨胀 ≈ 0x0100 KB
-- 符号修饰（mangling）长度 ≈ 0x0040 字符；`c++filt` 还原 ≈ 0.1us
-- 默认实例化深度上限 `0x0100`（256），超出报 `template instantiation depth`
+- 每套实参生成一份代码：模板在 0x0008 种实参下二进制膨胀 ≈ 0x0100 KB [UNVERIFIED]
+- 符号修饰（mangling）长度 ≈ 0x0040 字符；`c++filt` 还原 ≈ 0.1us [UNVERIFIED]
+- 默认实例化深度上限 `0x0100`（256），超出报 `template instantiation depth` [UNVERIFIED]
 
 ### 决议时序
 
-- 重载集排序（partial ordering）≈ 0.3us/候选（小集合）
+- 重载集排序（partial ordering）≈ 0.3us/候选（小集合） [UNVERIFIED]
 -  SFINAE 失败分支被静默丢弃，不计入生成代码
-- `constexpr if` 在 C++17 去虚化选择分支，省 ≈ 3.2ns/调用
+- `constexpr if` 在 C++17 去虚化选择分支，省 ≈ 3.2ns/调用 [UNVERIFIED]
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 对 `absl::Overload` 完全支持
+- GCC 13.2 / Clang 18 对 `absl::Overload` 完全支持 [UNVERIFIED]
 - `__cplusplus` = 202302L；`_Pragma("once")` 加速头解析
 - WG21 提案 P0784R7 扩展 constexpr 模板能力
 
@@ -1036,7 +1036,7 @@ int main() {
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch61_overload_dispatch.cpp`。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 | 策略 | 分派方式 | 耗时 (ms) | 相对 |
 |------|----------|-----------|------|
@@ -1097,7 +1097,7 @@ int main() {
 | ch62 特化 | Book/part06_templates/ch62_specialization.md | 特化与 if constexpr 是编译期分派的两种形式 |
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | constexpr 与 if constexpr 的编译期计算能力 |
 
-### D5.5 汇编实证 (GCC 15.3.0)
+### D5.5 汇编实证 (GCC 15.3.0) [VERIFIED]
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch61_overload_dispatch.cpp` 真实生成（节选 `run_ptrtable`）。`run_ptrtable` 经 `call [QWORD PTR [rdi+rax*8]]` **通过函数指针表间接调用**目标（37 条指令）；而 `if constexpr` 路径 `run_constexpr<0>/<1>` 被单态化为直线代码并内联进 `main`，符号表中无独立实体。4.3× 差距 = 间接调用阻止内联 vs 编译期单态化（见 D5.2.1）。
 

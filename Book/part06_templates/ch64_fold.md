@@ -162,7 +162,7 @@ void demo_types(Ts... values) {
 int main() { demo_types(1, 2, 3); }   // x is int=1 y is double=1
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel） [VERIFIED]
 
 编译 `Examples/_asm_tpl_fold.cpp`：`use_fold` 调用三个折叠（加/乘/与），全部编译期求值，整函数塌缩为常数：
 
@@ -699,8 +699,8 @@ int main() {
 ```cpp
 // 折叠表达式 vs 递归模板 —— 编译期 vs 运行时对比
 // 编译性能:
-// - 递归模板: O(n) 实例化链 → 1000 parameters = ~2s compile time
-// - 折叠表达式: O(1) → 1000 parameters = ~0.1s compile time
+// - 递归模板: O(n) 实例化链 → 1000 parameters = ~2s compile time [UNVERIFIED]
+// - 折叠表达式: O(1) → 1000 parameters = ~0.1s compile time [UNVERIFIED]
 //
 // 运行时汇编: 完全相同!
 // template<typename... Ts> auto sum(Ts... ts) { return (ts + ...); }
@@ -711,7 +711,7 @@ int main() {
 #include <iostream>
 int main() {
     std::cout << "Fold expression: zero runtime overhead vs recursive templates.\n";
-    std::cout << "Compile time: 10-20x faster for large parameter packs (>50 args).\n";
+    std::cout << "Compile time: 10-20x faster for large parameter packs (>50 args).\n";  // [UNVERIFIED]
     std::cout << "Binary size: identical (same template expansion).\n";
     return 0;
 }
@@ -775,7 +775,7 @@ A: && → true (逻辑与空集 = 真); || → false; , → void()
 | **Boost.Hana**（github.com/boostorg/hana） | `hana::fold` — 编译期 fold（`boost::hana::unpack`） | 对 `hana::tuple<T...>` 做编译期运算，替代 MPL 的递归模板实例化 | `include/boost/hana/fold.hpp` — O(1) 编译期复杂度 vs MPL 的 O(N) |
 | **LLVM ADT**（github.com/llvm/llvm-project） | `(result = combine(result, args), ...)` 的二进制 fold | `llvm::join` 用 fold 将 `StringRef` 数组拼接为单个字符串 | `llvm/include/llvm/ADT/StringExtras.h` |
 
-**底层深度**：Fold expression 在 GCC 15.3.0 的编译期展开策略取决于运算符类别。Unary left fold `(... + args)` 展开为 `((a1 + a2) + a3) + a4`（严格左结合），Clang/GCC 在 `-O2` 下将其识别为可重结合链，自动向量化为 SIMD 归约。Binary fold `(init + ... + args)` 的 `init` 参与首次运算：`((init + a1) + a2) + a3`，编译器将 `init` 作为归约的初始累加器注入向量化循环头（`vaddpd` 的 `ymm0` 初始化为 `init` 的广播值）。空包 fold 的 GCC 实现差异：unary `(&& ...)` 空包 → `true`（符合标准）、`(|| ...)` 空包 → `false`、`(, ...)` 空包 → `void()`；binary fold 空包 → `init`（运算符不执行）。编译期 fold（`constexpr` + `hana::fold`）在 Clang 的 constexpr 求值器中走 `EvaluateAsRValue` 路径，不受 SFINAE 模板回溯限制。
+**底层深度**：Fold expression 在 GCC 15.3.0 的编译期展开策略取决于运算符类别。Unary left fold `(... + args)` 展开为 `((a1 + a2) + a3) + a4`（严格左结合），Clang/GCC 在 `-O2` 下将其识别为可重结合链，自动向量化为 SIMD 归约。Binary fold `(init + ... + args)` 的 `init` 参与首次运算：`((init + a1) + a2) + a3`，编译器将 `init` 作为归约的初始累加器注入向量化循环头（`vaddpd` 的 `ymm0` 初始化为 `init` 的广播值）。空包 fold 的 GCC 实现差异：unary `(&& ...)` 空包 → `true`（符合标准）、`(|| ...)` 空包 → `false`、`(, ...)` 空包 → `void()`；binary fold 空包 → `init`（运算符不执行）。编译期 fold（`constexpr` + `hana::fold`）在 Clang 的 constexpr 求值器中走 `EvaluateAsRValue` 路径，不受 SFINAE 模板回溯限制。[UNVERIFIED]
 
 ## 自测练习（Exercises）
 
@@ -1082,7 +1082,7 @@ flowchart TD
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；同一组 8 个 `double` 字面量（1.1…8.8）分别用「折叠表达式 / 手写循环(遍历 const 局部数组) / 递归变参 / 手写立即数展开」四种写法各重复 2×10⁸ 次；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch64_fold.cpp`。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 | 写法 | 操作数来源 | 耗时 (ms) | 相对 fold |
 |------|------------|-----------|-----------|

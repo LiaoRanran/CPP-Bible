@@ -800,7 +800,7 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 | **Qt**（code.qt.io） | `QList<T>` / `QMap<K,V>` + moc 反射模板 | GUI 信号槽 `QObject::connect` 模板重载在编译期校验签名匹配 | `qtbase/src/corelib/kernel/qobjectdefs.h` — 10+ `connect` 模板重载 |
 | **Google Protobuf**（github.com/protocolbuffers/protobuf） | 代码生成模板（`RepeatedPtrField<T>`、`Map<K,V>`） | 序列化 API 的 `SerializeToString` 等模板函数在编译期根据字段类型分派 | `src/google/protobuf/repeated_ptr_field.h` |
 
-**底层深度**：模板实例化是 C++ 编译期内存第一大开销。GCC 15.3.0 的 `-ftime-report` 显示，`boost::mpl::fold` 在 100 元素序列上消耗约 200MB 模板实例化内存（每个中间类型生成独立 `mpl::push_back` 特化），而等效的 C++17 fold expression（`(args + ...)`）仅需 O(1) 内存。LLVM 的 `SmallVector<T,N>` 对 N=0 使用 `__attribute__((empty_bases))` + EBCO（空基类优化）确保 `sizeof(SmallVector<int,0>) == sizeof(void*)`（8 字节），而非 naive 的 16 字节——利用模板偏特化 + `conditional_t` 在编译期消除空数组存储。
+**底层深度**：模板实例化是 C++ 编译期内存第一大开销。GCC 15.3.0 的 `-ftime-report` 显示，`boost::mpl::fold` 在 100 元素序列上消耗约 200MB 模板实例化内存（每个中间类型生成独立 `mpl::push_back` 特化），而等效的 C++17 fold expression（`(args + ...)`）仅需 O(1) 内存 [UNVERIFIED]。LLVM 的 `SmallVector<T,N>` 对 N=0 使用 `__attribute__((empty_bases))` + EBCO（空基类优化）确保 `sizeof(SmallVector<int,0>) == sizeof(void*)`（8 字节）[UNVERIFIED]，而非 naive 的 16 字节——利用模板偏特化 + `conditional_t` 在编译期消除空数组存储。
 
 ## 自测练习（Exercises）
 
@@ -1108,7 +1108,7 @@ flowchart TD
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch60_template_callback.cpp`。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 | 策略 | 分派方式 | 耗时 (ms) | 相对 |
 |------|----------|-----------|------|
@@ -1159,7 +1159,7 @@ int main() {
 | ch61 模板重载 | Book/part06_templates/ch61_template_overload.md | 重载决议决定哪个模板实例化 |
 | ch156 编译器优化 | Book/part14_perf/ch156_compiler_opt.md | 内联与单态化的编译器机制 |
 
-### D5.5 汇编实证 (GCC 15.3.0)
+### D5.5 汇编实证 (GCC 15.3.0) [VERIFIED]
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch60_template_callback.cpp` 真实生成（节选 `run_stdfunction`）。`std::function` 路径是一个 32 条指令的函数，循环内 `call [QWORD PTR 24[rsi]]` **经类型擦除内部函数指针间接调用**；而模板路径 `run_template<Lambda>` 被 `-O2` **完全内联进 `main`，在符号表中不留下任何独立函数**——这正是「编译期已知类型 → 零间接、零代码实体」的机器层证据（见 D5.2.1）。
 

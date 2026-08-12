@@ -1185,7 +1185,7 @@ int main() {
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化空基类优化与 `[[no_unique_address]]` 对对象布局与遍历带宽的影响，并给出根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 `Plain`/`Squeezed`/`Inherit` 各含一个 `long long` 与一个空成员；"遍历求和"指对数组累积该 `long long`。
 

@@ -159,7 +159,7 @@ std::uintmax_t size_of(const std::string& p){ return fs::file_size(p); }
 // 现状：[经验] 网络/异步仍首选 Boost.Asio，标准网络库尚不成熟
 ```
 
-## ④ [实现] 源码剖析（upstream smart_ptr.hpp / shared_ptr.hpp 文件 + 行号，标注上游参考）
+## ④ [实现·Boost] 源码剖析（upstream smart_ptr.hpp / shared_ptr.hpp 文件 + 行号，标注上游参考）
 
 Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg 仓库）。
 
@@ -278,7 +278,7 @@ int need_link() {
 ```
 
 - `[经验]`：头-only 库零部署成本，适合分发；需编译库体积大、有 ABI 约束，适合集中安装到工具链。
-- `[平台]`：Windows 下需编译库的文件名带编译器/版本后缀（如 `libboost_filesystem-mgw13-mt-x64-1_83.dll`），混用会 ABI 错配。
+- `[平台·Windows]`：Windows 下需编译库的文件名带编译器/版本后缀（如 `libboost_filesystem-mgw13-mt-x64-1_83.dll`），混用会 ABI 错配。
 
 ```cpp
 // ⑥ 用 BOOST_* 宏控制头-only 行为（部分库可在头-only 与编译型之间切换）
@@ -325,7 +325,7 @@ void nothrow_demo() {
 }
 ```
 
-## ⑧ [实现] 模板元编程大量使用（[实现] 真实：编译一个 CRTP/模板示例展示 Boost 风格）
+## ⑧ [实现·Boost] 模板元编程大量使用（[实现·Boost] 真实：编译一个 CRTP/模板示例展示 Boost 风格）
 
 Boost 是模板元编程（TMP）的巅峰。以 **CRTP** 为例——编译期多态，零虚函数开销，正是 `Boost.Operators`、`Boost.Iterator` 的基石。
 
@@ -372,7 +372,7 @@ struct Point : boost::addable<Point> {
 };  // 自动获得 operator+
 ```
 
-## ⑨ [实现] 真实：编译对应机制的纯标准库替代示例取汇编
+## ⑨ [实现·Boost] 真实：编译对应机制的纯标准库替代示例取汇编
 
 为取证 Boost 解决的机制，下面用**纯标准库**复刻其核心行为，并取真实汇编（不依赖 Boost）。
 
@@ -476,7 +476,7 @@ void check(bool ok) {
 ```
 
 - `[经验]`：Boost 符号经多层模板展开极长（如 `boost::shared_ptr<...>` 的 mangled 名），GDB 用 `set print pretty` 与 `whatis` 化简。
-- `[平台]`：Windows 下用 `.pdb` + 源码级调试；Boost 发行版常带调试符号变体（如 `libboost_*-gd-*`）。
+- `[平台·Windows]`：Windows 下用 `.pdb` + 源码级调试；Boost 发行版常带调试符号变体（如 `libboost_*-gd-*`）。
 
 ```cpp
 // ⑩ 用 boost::core::demangle 在运行时打印类型名（调试反射）
@@ -506,7 +506,7 @@ Boost 的设计哲学是**零成本抽象**，但部分组件有可测量的开�
 ```
 
 - `[经验]`：优先 `unique_ptr`（零原子）；必须共享时才 `shared_ptr`；热路径避免频繁拷贝 `shared_ptr`。
-- `[平台]`：x86-64 上 `lock` 前缀原子在争用高时显著拖慢；NUMA 下控制块跨节点更痛。
+- `[平台·x86-64]`：x86-64 上 `lock` 前缀原子在争用高时显著拖慢；NUMA 下控制块跨节点更痛。
 
 ```cpp
 // ⑪ 用 boost::container::small_vector 减少堆分配（小数据栈上内联）
@@ -567,7 +567,7 @@ boost::endian::big_int32_t net_value = 0x01020304;  // 大端存储，跨机一�
 //    或用 BOOST_SYMBOL_EXPORT / 统一编译选项（同 /MD、同 Boost 版本）
 ```
 
-- `[平台]`：MSVC 的 `/MD` vs `/MT`、`_ITERATOR_DEBUG_LEVEL`、Boost 的 `BOOST_DEBUG` 必须与调用方一致，否则 ODR 违规。
+- `[平台·Windows]`：MSVC 的 `/MD` vs `/MT`、`_ITERATOR_DEBUG_LEVEL`、Boost 的 `BOOST_DEBUG` 必须与调用方一致，否则 ODR 违规。
 - `[经验]`：用 vcpkg/Conan 固定 Boost 版本，避免"能编过但运行崩溃"的隐性 ABI 坑。
 
 ## ⑭ 演进（模块化 Boost）

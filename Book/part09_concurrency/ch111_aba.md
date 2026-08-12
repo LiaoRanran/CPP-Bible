@@ -151,7 +151,7 @@ TaggedPtr unpack(__int128 v) { TaggedPtr t; std::memcpy(&t, &v, sizeof(t)); retu
 - `[算法]`：标签解法的本质是**把一维 CAS 升级为二维 CAS（DCAS）**——同时比较“值”和“版本”。这不是标准条款，而是该解法的**算法设计权衡**（用「版本号」这一额外维度消除地址复用带来的歧义）；其正确性由「版本号位宽足够、回绕周期远大于更新频率」的不变量论证，而非由标准保证。
 - `[经验]`：tag 必须覆盖足够位宽（64 位）以防回绕；实践中还要处理 `tag` 溢出（极慢但需考虑）。
 
-## ⑤ 双字 CAS（DCAS，借 __int128） [实现]
+## ⑤ 双字 CAS（DCAS，借 __int128） [实现·GCC15]
 
 C++ 标准不直接提供“双字 CAS”原语，但 x86-64 提供 16 字节的 `cmpxchg16b`。用 `std::atomic<__int128>`（或 `unsigned __int128`）即可让编译器生成双字 CAS。
 
@@ -402,7 +402,7 @@ constexpr bool dcas_lockfree = std::atomic<__int128>::is_always_lock_free;
 - `[标准]`：WG21 多次讨论过把 hazard pointer / RCU 纳入标准库（提案如 `P1122` 风险指针、`P0561` 等），但**尚未进入标准**。
 - `[经验]`：选型时优先复用成熟库（如 Folly `hazptr`、TBB、或 Boost 的无锁组件），不要从零手搓回收器。
 
-## ⑬ 检测工具：ThreadSanitizer [实现]
+## ⑬ 检测工具：ThreadSanitizer [实现·GCC15]
 
 ⟶ Book/part09_concurrency/ch108_memory_order.md（memory_order 六种内存序）—— ABA 本质是内存序/可见性语义问题
 ⟶ Book/part14_perf/ch152_perf_model.md（性能模型与测量方法论）—— 任何"X 比 Y 快"须注明负载与硬件
@@ -463,7 +463,7 @@ struct BadTagged { void* p; std::uint32_t tag; };   // ⑭ tag 太小，长时�
 
 - `[经验]`：最常见两类误用：① 内存序过弱导致读者看不到写者写入的 `next`；② 低估 `tag` 回绕与回收时序，导致“修了 CAS 却没修回收”。
 
-## ⑮ 性能代价对比 [实现]
+## ⑮ 性能代价对比 [实现·GCC15]
 
 ⟶ Book/part14_perf/ch152_perf_model.md（性能模型与测量方法论）—— 延迟量级须对应具体硬件与竞争度
 ⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— CAS 延迟受缓存/原子单元拓扑影响
@@ -531,7 +531,7 @@ bool need_aba_guard = uses_pointer_cas && reclaims_memory;
 - `[经验]`：纯整数 CAS（如引用计数 `fetch_add`）**没有 ABA**——因为整数没有“被释放后地址复用”这回事。ABA 几乎是**指针 + 回收**的专属问题。
 - `[经验]`：如果数据结构只增长、不删除（如日志环形缓冲的写指针），ABA 通常不存在。
 
-## ⑱ 基准对比 [实现]
+## ⑱ 基准对比 [实现·GCC15]
 
 ⟶ Book/part13_engineering/ch151_benchmark.md（基准测试方法论）—— 微基准须可复现、标注软硬件
 ⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 吞吐数字须结合微架构解读
@@ -855,7 +855,7 @@ int main() {
 }
 ```
 
-[实现] 需以 `-mcx16` 编译才让 `atomic<16字节>` 无锁；`alignas(16)` 不可省——未对齐的 `cmpxchg16b` 触发 `#GP` 异常。ARM 上对应 `casp`（LSE）或 `ldxp/stxp` 对 `[微架构·ARM]` `[UNVERIFIED]`（本机无 ARM 工具链，未复编）。
+[实现·GCC15] 需以 `-mcx16` 编译才让 `atomic<16字节>` 无锁；`alignas(16)` 不可省——未对齐的 `cmpxchg16b` 触发 `#GP` 异常。ARM 上对应 `casp`（LSE）或 `ldxp/stxp` 对 `[微架构·ARM]` `[UNVERIFIED]`（本机无 ARM 工具链，未复编）。
 
 [引用] Intel SDM 中 `cmpxchg16b` 指令说明：`https://www.felixcloutier.com/x86/cmpxchg8b:cmpxchg16b`。宽 CAS 与 tagged pointer 见 ISO §32.5（[atomics]）及 M. M. Michael 的 hazard pointer / lock-free 链表工作。
 

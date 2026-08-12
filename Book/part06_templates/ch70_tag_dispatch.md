@@ -256,7 +256,7 @@ static_assert(sizeof(Holder) >= sizeof(int));        // 必然成立：Holder �
 // 经验值（非标准保证）：现代 GCC/Clang/MSVC 通常使 sizeof(Holder) == sizeof(int)
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel） [VERIFIED]
 
 测试文件 `Examples/_asm_tag.cpp`，编译：`g++ -std=c++23 -O2 -S -masm=intel _asm_tag.cpp -o _asm_tag.asm`。
 
@@ -678,8 +678,8 @@ int main(){std::vector<int> v{1,2,3};auto it=v.begin();std::advance(it,2);std::c
 | 技术 | 版本 | 编译速度 | 错误信息 |
 |---|---|---|---|
 | Tag dispatch | C++98 | 极快 | 清晰 |
-| Concepts | C++20 | 快2-5x | 1行 |
-| SFINAE | C++11 | 慢 | 1000行 |
+| Concepts | C++20 | 快2-5x | 1行 | [UNVERIFIED]
+| SFINAE | C++11 | 慢 | 1000行 | [UNVERIFIED]
 | if constexpr | C++17 | 快 | 清晰 |
 
 面试: tag dispatch何时用? C++14兼容代码; concepts何时用? 新C++20项目
@@ -1177,7 +1177,7 @@ flowchart TD
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-w64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：量化同一 `advance` 工作负载下四种分发方式的真实成本——标签分发、`if constexpr`、运行期 `if`、函数指针表——并验证"标签分发零开销"是否属实。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 工作负载：在 100 万元素 `vector` 上做 4000 万次随机步长（1~16，运行期随机序列）的 `advance` + 解引用累加；第 2 组换成 20 万节点 `list`（bidirectional 迭代器，走逐步 `++` 路径）做 40 万次。"相对"列以同组更快者为 1.00×，更快者加粗。
 

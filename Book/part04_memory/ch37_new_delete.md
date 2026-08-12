@@ -7,7 +7,7 @@
 > 层级标记约定（全书统一）
 > - **[标准]** C++ 标准（ISO/IEC 14882）规定的行为，跨平台、跨编译器一致。
 > - **[实现]** 具体标准库实现（libstdc++ / libc++ / MS STL）或编译器（GCC/Clang/MSVC）的源码与行为。
-> - **[平台]** 受操作系统 / ABI / 目标三元组影响的细节（如数组 cookie 布局、对齐分配后端）。
+> - **[平台·x86-64]** 受操作系统 / ABI / 目标三元组影响的细节（如数组 cookie 布局、对齐分配后端）。
 > - **[经验]** 工程实践、性能权衡与陷阱。
 >
 > 真实源码均先探测后引用，标注 `路径:行号`；本机缺失的运行时实现文件（如 `new_op.cc`）标注 `[实现-推断]`；操作系统相关细节标注 `[平台-推断]`。
@@ -239,7 +239,7 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 - **`new:135` sized delete**：第二个 `size_t` 参数让释放时**无需重新查询块大小**（见 37.9），前提开启 sized deallocation（本机 `__cpp_sized_deallocation 201309L` 已启用）。
 - **`new:174` placement**：注意它是 `inline` 且**无** `externally_visible`，因为永远内联展开。
 
-> **[实现]** 本机预定义（g++ -dM）：`__STDCPP_DEFAULT_NEW_ALIGNMENT__ = 16`、`__cpp_aligned_new 201606L`、`__cpp_sized_deallocation 201309L`。即普通 `operator new` 保证 16 字节对齐（≥ `max_align_t`）。
+> **[实现·GCC15]** 本机预定义（g++ -dM）：`__STDCPP_DEFAULT_NEW_ALIGNMENT__ = 16`、`__cpp_aligned_new 201606L`、`__cpp_sized_deallocation 201309L`。即普通 `operator new` 保证 16 字节对齐（≥ `max_align_t`）。
 
 ---
 
@@ -269,7 +269,7 @@ void* operator new(std::size_t sz) {
 }
 ```
 
-关键三点（[标准] + [实现]）：
+关键三点（[标准] + [实现·GCC15]）：
 
 1. **`sz == 0` 也返回非空指针**：`new char[0]` 合法，返回可用（可 `delete`）的 1 字节块。`[标准]` 强制。
 2. **循环 + new_handler**：这正是 37.5 要展开的"循环重试"模型。handler 可以"释放一些内存后返回"，于是 `while` 再次 `malloc`——这就是"释放内存后重试"的来源。
@@ -832,7 +832,7 @@ int main() {
 
 [标准] 标准**未规定** cookie 的存在或布局（这是实现细节），但几乎所有主流实现（Itanium C++ ABI、MSVC）对**有非平凡析构函数**的数组都会写 cookie。若元素析构是 trivial，编译器可优化掉 cookie。
 
-> **[平台]** Itanium C++ ABI（GCC/Clang 默认）下，`new T[n]` 在返回指针前 8 字节存元素个数（对 `sizeof(size_t)==8` 的平台）；MSVC 类似但偏移/编码略不同。下面用探测代码演示（依赖实现布局，仅供理解，标注 `[平台-推断]`）。
+> **[平台·x86-64]** Itanium C++ ABI（GCC/Clang 默认）下，`new T[n]` 在返回指针前 8 字节存元素个数（对 `sizeof(size_t)==8` 的平台）；MSVC 类似但偏移/编码略不同。下面用探测代码演示（依赖实现布局，仅供理解，标注 `[平台-推断]`）。
 
 ```cpp
 // 程序 17：观察数组 cookie（读取返回指针前的若干字节）[平台-推断]
@@ -860,11 +860,11 @@ int main() {
 }
 ```
 
-> **[平台]** 在 x86-64 MinGW 上，上面程序通常会在 `offset -8` 处打印 `5`。**切勿在生产代码读取 cookie**——它属于实现私有内存，且优化（如 trivial 析构）会改变布局。
+> **[平台·x86-64]** 在 x86-64 MinGW 上，上面程序通常会在 `offset -8` 处打印 `5`。**切勿在生产代码读取 cookie**——它属于实现私有内存，且优化（如 trivial 析构）会改变布局。
 
 ### 37.8.2 汇编层面看 cookie 读取
 
-[实现] 下面用真实汇编展示 `delete[]` 如何读取 cookie 决定析构次数（`[平台-推断]`：Itanium ABI）。考虑：
+[实现·GCC15] 下面用真实汇编展示 `delete[]` 如何读取 cookie 决定析构次数（`[平台-推断]`：Itanium ABI）。考虑：
 
 ```cpp
 // 程序 18（源）：编译器为 delete[] 生成的"读 cookie → 循环析构"逻辑示意
@@ -921,8 +921,8 @@ int main() {
 
 [标准] 普通 `operator new` 只保证 `alignof(std::max_align_t)` 对齐（本机 16）。`malloc` 同样如此。若你要 `alignas(64)` 的 `std::vector<float>` 做 AVX-512，普通 `new` 返回的地址可能只对齐到 16，访问会**崩溃或严重降速**。对齐 new 让分配器用平台对齐原语：
 
-- [平台] POSIX：`std::aligned_alloc` / `posix_memalign`；Windows/MSVC：`_aligned_malloc` / `_aligned_free`。
-- [实现] libstdc++ 对齐 new（`[实现-推断] new_opa.cc`）最终调 `__aligned_alloc` / `aligned_alloc`。
+- [平台·x86-64] POSIX：`std::aligned_alloc` / `posix_memalign`；Windows/MSVC：`_aligned_malloc` / `_aligned_free`。
+- [实现·GCC15] libstdc++ 对齐 new（`[实现-推断] new_opa.cc`）最终调 `__aligned_alloc` / `aligned_alloc`。
 
 ### 37.9.2 过对齐类型自动触发
 
@@ -1406,7 +1406,7 @@ int main() {
 
 ## ⑯ 三编译器对比：GCC / Clang / MSVC
 
-下表覆盖任务要求的关键开关与差异（**[实现]** 层级，基于各编译器官方文档与本机 GCC 13.1.0 实测）：
+下表覆盖任务要求的关键开关与差异（**[实现·GCC15]** 层级，基于各编译器官方文档与本机 GCC 13.1.0 实测）：
 
 | 特性 | GCC | Clang | MSVC |
 |------|-----|-------|------|
@@ -1440,11 +1440,11 @@ int main() {
 }
 ```
 
-> **[实现]** 若关闭 `-fsized-deallocation`（GCC）/ `/Zc:sizedDealloc-`（MSVC），编译器会调用无大小参数的 `operator delete(void*)`，上面的 `sz` 版本不会被选中。两者必须**编译期开关与运行期定义匹配**，否则链接/行为不一致。
+> **[实现·GCC15]** 若关闭 `-fsized-deallocation`（GCC）/ `/Zc:sizedDealloc-`（MSVC），编译器会调用无大小参数的 `operator delete(void*)`，上面的 `sz` 版本不会被选中。两者必须**编译期开关与运行期定义匹配**，否则链接/行为不一致。
 
 ### 37.15.2 `/Zc:throwingNew`（MSVC）与 `-fassume-throwing-new`（GCC 14+）
 
-[实现] 编译器默认假设 `operator new` **可能抛异常**。但很多程序用 `nothrow` 或替换了永不抛的 new。开关告诉编译器"new 一定抛异常（或一定不抛）"，从而：
+[实现·GCC15] 编译器默认假设 `operator new` **可能抛异常**。但很多程序用 `nothrow` 或替换了永不抛的 new。开关告诉编译器"new 一定抛异常（或一定不抛）"，从而：
 
 - `/Zc:throwingNew`（默认）：假设 `new` 抛异常 → 在 `new` 后不必插入"检查空指针"的代码（因为失败会走异常，不会返回空）。
 - 反之若关闭，编译器会在每次 `new` 后插入 null 检查，可能破坏"new 返回非空"假设的优化。
@@ -1467,7 +1467,7 @@ int main() {
 
 ### 37.15.3 `__declspec(noalias restrict)` on new（MSVC）
 
-[实现] MS STL 在 `<vcruntime_new.h>` 中声明 `operator new` 时标注 `__declspec(allocator) __declspec(restrict) __declspec(noalias)`：`restrict`/`noalias` 承诺返回值不别名任何已有指针（辅助别名分析），`allocator` 供 `/analyze` 检测泄漏。
+[实现·MSVC] MS STL 在 `<vcruntime_new.h>` 中声明 `operator new` 时标注 `__declspec(allocator) __declspec(restrict) __declspec(noalias)`：`restrict`/`noalias` 承诺返回值不别名任何已有指针（辅助别名分析），`allocator` 供 `/analyze` 检测泄漏。
 
 > **[platform/实现]** 这些 MSVC 属性等价于 GCC/Clang 的 `__attribute__((malloc, alloc_size(1)))`（即 37.2.5 的 `__malloc__`/`__alloc_size__`），语义相同、写法不同。
 
@@ -1490,7 +1490,7 @@ int main() {
 
 ### 37.16.2 libc++
 
-[实现] libc++ 的 `std::allocator::allocate` 同样直接调用 `::operator new`（C++17 后通过 `__libcpp_allocate` 包装，最终 `::operator new`）。与 libstdc++ 行为一致——替换全局 new 即影响容器。
+[实现·Clang] libc++ 的 `std::allocator::allocate` 同样直接调用 `::operator new`（C++17 后通过 `__libcpp_allocate` 包装，最终 `::operator new`）。与 libstdc++ 行为一致——替换全局 new 即影响容器。
 
 ```cpp
 // [实现-推断] libc++ <memory> 简化：
@@ -1503,7 +1503,7 @@ int main() {
 
 ### 37.16.3 MS STL
 
-[实现] MS STL 的 `std::allocator` 历史上（`operator new[]` 包装）通过数组 new 分配，现代（VS2019+）已改为直接 `::operator new` 以获得与 GCC/Clang 一致的可替换语义（受 LWG 提案影响）。替换全局 `::operator new` 同样影响容器。
+[实现·MSVC] MS STL 的 `std::allocator` 历史上（`operator new[]` 包装）通过数组 new 分配，现代（VS2019+）已改为直接 `::operator new` 以获得与 GCC/Clang 一致的可替换语义（受 LWG 提案影响）。替换全局 `::operator new` 同样影响容器。
 
 > **[经验]** 三者共同结论：**任何用 `std::allocator` 的容器都受全局 `::operator new` 替换影响**。若想自定义分配器而**不**影响全局，必须显式传 `Allocator` 模板参数（见 ch38、ch44）。
 

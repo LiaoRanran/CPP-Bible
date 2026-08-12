@@ -4,7 +4,7 @@
 ⟶ Book/part15_cases/ch160_mempool.md
 ⟶ Book/part10_modern/ch122_pmr.md
 
-> 立场分层说明：本章所有论断按四层标注——**[标准]** 表示 C++ 标准保证；**[实现]** 表示 GCC/libstdc++、LLVM/libc++、MSVC/MS STL 的具体实现行为；**[平台]** 表示 Windows/MinGW/Linux/ARM/x86 等平台相关；**[经验]** 表示工程实践与性能经验。
+> 立场分层说明：本章所有论断按四层标注——**[标准]** 表示 C++ 标准保证；**[实现]** 表示 GCC/libstdc++、LLVM/libc++、MSVC/MS STL 的具体实现行为；**[平台·x86-64]** 表示 Windows/MinGW/Linux/ARM/x86 等平台相关；**[经验]** 表示工程实践与性能经验。
 >
 > 本机验证环境：MinGW **GCC 13.1.0**，`libstdc++` 头位于 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。
 > 交叉引用：存储期见 ch19，对象对齐见 ch35，堆与分配器见 ch36，operator new/delete 见 ch37，PMR 与标准池见 ch38，RAII 资源生命期见 ch39，缓存友好性见 ch43，并发无锁池见 ch61。
@@ -43,7 +43,7 @@
 
 **[标准]** C++ 标准只保证 `::operator new`/`::operator delete`（见 ch37）分配一块" suitably aligned storage for any object type"（[new.delete.single]），并不保证性能、延迟确定性或碎片控制。其语义是"请求—返回"式的通用分配器，要为任意大小、任意生命周期的请求服务。
 
-**[实现]** `libstdc++` 的 `std::allocator` 直接转发到 `__new_allocator::allocate`，最终调用 `_GLIBCXX_OPERATOR_NEW`（即 `::operator new` 或 `__builtin_operator_new`）：
+**[实现·GCC15]** `libstdc++` 的 `std::allocator` 直接转发到 `__new_allocator::allocate`，最终调用 `_GLIBCXX_OPERATOR_NEW`（即 `::operator new` 或 `__builtin_operator_new`）：
 
 ```cpp
 // C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/new_allocator.h:121-148
@@ -69,7 +69,7 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 3. **缓存不友好（Cache Unfriendliness）**：通用分配器归还的地址散布在堆各处，对象间无局部性；见 ch43。
 4. **不确定性延迟（Non-deterministic Latency）**：通用分配器复杂度与堆状态相关，`new` 可能触发 `sbrk`/`mmap` 系统调用或锁等待，延迟不可界。实时/嵌入式系统（见用户嵌入式背景）要求**最坏情况执行时间（WCET）可界**，禁止运行时 `new`。
 
-**[平台]** 不同平台默认分配器差异巨大：Windows `HeapAlloc` 受 `RtlHeap` 保护；Linux glibc `malloc` 用 `ptmalloc2`（per-thread arena）；本机 MinGW 走 msvcrt/mingw 运行时。无论哪种，通用分配器都为"通用"付出代价，专用池可为"特定访问模式"大幅提速。
+**[平台·x86-64]** 不同平台默认分配器差异巨大：Windows `HeapAlloc` 受 `RtlHeap` 保护；Linux glibc `malloc` 用 `ptmalloc2`（per-thread arena）；本机 MinGW 走 msvcrt/mingw 运行时。无论哪种，通用分配器都为"通用"付出代价，专用池可为"特定访问模式"大幅提速。
 
 ---
 
@@ -92,7 +92,7 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 
 ## ③ 真实 libstdc++ 源码：`__gnu_cxx::__pool_alloc` 逐行
 
-**[实现]** GCC 扩展提供了一个真实的 free-list 池分配器 `std::pool_allocator`（在 `ext` 命名空间）。完整源码位于：
+**[实现·GCC15]** GCC 扩展提供了一个真实的 free-list 池分配器 `std::pool_allocator`（在 `ext` 命名空间）。完整源码位于：
 
 ```
 C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/pool_allocator.h
@@ -130,7 +130,7 @@ protected:
 
 **逐行要点**：
 
-- `_S_align = 8`：块大小向上舍入到 8，保证 `double`/指针对齐（**[平台]** x86-64 下 `alignof(std::max_align_t)` 通常为 16，但这里人为选 8 以省内存；libstdc++ 作者权衡后取 8）。
+- `_S_align = 8`：块大小向上舍入到 8，保证 `double`/指针对齐（**[平台·x86-64]** x86-64 下 `alignof(std::max_align_t)` 通常为 16，但这里人为选 8 以省内存；libstdc++ 作者权衡后取 8）。
 - `union _Obj`：**侵入式 free list 的典范**——free 块用自身内存存 `next`，占用块用同一内存存用户数据，零额外元数据（见 44.4）。
 - `_S_free_list_size = 16`：128/8 = 16 个 size class 桶，索引 = `(__bytes + 7) / 8 - 1`。
 
@@ -310,11 +310,11 @@ int main() {
 
 ## ⑤ 对齐与指针算术（连接 ch35）
 
-**[标准]** [expr.new] 与 [new.delete] 保证 `::operator new` 返回的存储满足 `alignof(std::max_align_t)`（**[平台]** x86-64 通常 16）。但当 `alignof(T) > alignof(std::max_align_t)`（如 32/64 字节 SIMD 类型、或自定义 over-aligned 类型），需 `::operator new(size, std::align_val_t)`（见 ch37，`__STDCPP_DEFAULT_NEW_ALIGNMENT__` 阈值）。
+**[标准]** [expr.new] 与 [new.delete] 保证 `::operator new` 返回的存储满足 `alignof(std::max_align_t)`（**[平台·x86-64]** x86-64 通常 16）。但当 `alignof(T) > alignof(std::max_align_t)`（如 32/64 字节 SIMD 类型、或自定义 over-aligned 类型），需 `::operator new(size, std::align_val_t)`（见 ch37，`__STDCPP_DEFAULT_NEW_ALIGNMENT__` 阈值）。
 
 ### 44.5.1 为何未对齐访问是致命的
 
-**[平台]**
+**[平台·x86-64]**
 - **x86/x86-64**：未对齐访问不会崩溃，但会触发**多次内存读 + 拼接**，是**性能惩罚**（某些 SSE/AVX 指令如 `movaps` 要求 16 字节对齐，否则 `#GP` 异常）。
 - **ARM（含 AArch64，嵌入式主战场）**：未对齐的多数访问会直接抛 **SIGBUS（总线错误）**，进程崩溃。RISC 架构通常不允许跨对齐边界的原子访存。
 - 因此池块起始地址必须满足 `alignof(T)`。
@@ -723,7 +723,7 @@ int main() {
 
 **[标准/经验]** 实时/嵌入式系统（如 RTOS、汽车 ECU、用户嵌入式背景）禁止在关键路径上调用 `new`：不确定性延迟 + 碎片风险 + 可能触发缺页/系统调用。方案：用**编译期固定大小的静态缓冲**做池，运行期零分配。
 
-**[平台]** 嵌入式常用 `std::array`/`static` 全局缓冲或链接器保留的 `.bss` 段，配合 `std::pmr::monotonic_buffer_resource` 包一层静态数组（ch38）。
+**[平台·x86-64]** 嵌入式常用 `std::array`/`static` 全局缓冲或链接器保留的 `.bss` 段，配合 `std::pmr::monotonic_buffer_resource` 包一层静态数组（ch38）。
 
 ### 44.11.1 完整可编译实现（程序 10/≥30）
 
@@ -1044,7 +1044,7 @@ int main() {
 ### 44.14.2 MSVC `_aligned_malloc`（程序 16/≥30）
 
 ```cpp
-// program_16_aligned_malloc.cpp  —— [平台] MSVC / Windows
+// program_16_aligned_malloc.cpp  —— [平台·Windows] MSVC / Windows
 // 编译(MSVC): cl /EHsc /O2 program_16_aligned_malloc.cpp
 // 编译(MinGW): g++ -std=c++17 -O2 program_16_aligned_malloc.cpp -o p16
 #include <cstddef>

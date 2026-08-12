@@ -44,7 +44,7 @@ C++ 网络编程的底层几乎全是操作系统的遗产。1983 年 4.2BSD 把
 ⟶ Book/part15_cases/ch162_json.md
 ⟶ Book/part15_cases/ch164_framework.md
 
-网络编程的本质是**让两个进程通过文件描述符/套接字交换字节流**。C++ 标准库至 `C++23` 都没有把 socket 纳入标准（**[标准]** 这一点与 Java 的 `java.net`、Go 的 `net` 包不同），因此工业级 C++ 网络栈要么基于操作系统 API（Berkeley Socket / Winsock），要么基于库（Boost.Asio、libuv、libevent）。**[实现]** 本章选择"从零实现"路线：用手写 socket 把 TCP、缓冲、协议、并发、序列化全部打通，让你看清 Asio 这类库在底层到底替你做了什么。
+网络编程的本质是**让两个进程通过文件描述符/套接字交换字节流**。C++ 标准库至 `C++23` 都没有把 socket 纳入标准（**[标准]** 这一点与 Java 的 `java.net`、Go 的 `net` 包不同），因此工业级 C++ 网络栈要么基于操作系统 API（Berkeley Socket / Winsock），要么基于库（Boost.Asio、libuv、libevent）。**[实现·GCC15]** 本章选择"从零实现"路线：用手写 socket 把 TCP、缓冲、协议、并发、序列化全部打通，让你看清 Asio 这类库在底层到底替你做了什么。
 
 ```cpp
 // ① 网络分层到 C++ 概念的映射（自上而下）
@@ -116,9 +116,9 @@ void set_reuseaddr(SOCKET fd) {
 const char* last_err() { return ::strerror(errno); }
 ```
 
-## ③ POSIX vs Winsock 差异 [平台]
+## ③ POSIX vs Winsock 差异 [平台·Linux]
 
-**[平台]** Windows 的 Winsock2 是 BSD socket 的"近亲但不同宗"：类型名、错误处理、头文件都有差异。下表是必须记住的映射，否则跨平台编译会满屏报错。
+**[平台·Linux]** Windows 的 Winsock2 是 BSD socket 的"近亲但不同宗"：类型名、错误处理、头文件都有差异。下表是必须记住的映射，否则跨平台编译会满屏报错。
 
 ```cpp
 // ③ 跨平台 close/closesocket 包装：用宏抹平差异（本机走 #else 分支）
@@ -219,7 +219,7 @@ int main() {
 
 ## ⑤ TCP client（本机可编译）
 
-客户端比服务器简单：无需 bind/listen，调用 `connect` 即可。**[实现]** 注意 `connect` 在阻塞模式下会一直等到三次握手完成（或超时失败）。
+客户端比服务器简单：无需 bind/listen，调用 `connect` 即可。**[实现·GCC15]** 注意 `connect` 在阻塞模式下会一直等到三次握手完成（或超时失败）。
 
 ```cpp
 // ⑤ 完整可编译 echo client（本机实测通过）
@@ -304,9 +304,9 @@ void set_nonblocking(SOCKET fd) {
 这正是非阻塞 I/O 必须配合多路复用的铁证。
 ```
 
-## ⑦ I/O 多路复用（select/poll/epoll/kqueue）[平台]
+## ⑦ I/O 多路复用（select/poll/epoll/kqueue）[平台·Linux]
 
-**[平台]** 单线程服务大量连接靠的是 I/O 多路复用：内核替你盯住一堆 fd，谁就绪就通知你。四种主流实现：
+**[平台·Linux]** 单线程服务大量连接靠的是 I/O 多路复用：内核替你盯住一堆 fd，谁就绪就通知你。四种主流实现：
 
 | 机制 | 平台 | 时间复杂度 | 备注 |
 |------|------|-----------|------|
@@ -354,7 +354,7 @@ struct kevent out; int n = kevent(kq, NULL, 0, &out, 1, NULL);
 
 ## ⑧ epoll 实战（Linux，text 展示+标注）
 
-**[平台]** 下面是一段**真实的 Linux epoll 回显服务器**代码。按门禁要求，本机（Windows+MinGW）**不强制编译**——它以 ```` ```text ```` 展示并标注 **Linux only**，对应的可运行证据由 ④/⑤/⑬ 的 Winsock 版本提供。
+**[平台·Linux]** 下面是一段**真实的 Linux epoll 回显服务器**代码。按门禁要求，本机（Windows+MinGW）**不强制编译**——它以 ```` ```text ```` 展示并标注 **Linux only**，对应的可运行证据由 ④/⑤/⑬ 的 Winsock 版本提供。
 
 ```text
 ⑧ epoll 回显服务器（Linux only —— 本机 Windows+MinGW 不编译，仅展示真实代码）
@@ -398,7 +398,7 @@ int main() {
 
 ## ⑨ 多线程/线程池服务（关联 第159章 线程池）
 
-**[实现]** 阻塞模型下，把"每连接一线程"升级为**线程池**即可复用线程、避免频繁创建开销。这里的思想与 第159章（线程池与并发）完全一致——任务队列 + 固定 worker。
+**[实现·GCC15]** 阻塞模型下，把"每连接一线程"升级为**线程池**即可复用线程、避免频繁创建开销。这里的思想与 第159章（线程池与并发）完全一致——任务队列 + 固定 worker。
 
 ```cpp
 // ⑨ 内联最小线程池 + 把"一个连接"封装成任务提交（关联 第159章 任务抽象）
@@ -531,7 +531,7 @@ bool try_extract(std::string& buf, std::string& msg) {
 
 ## ⑫ 序列化（关联 第162章 JSON）
 
-消息切包后，payload 内部的"结构化数据"需要序列化。**[实现]** 这里复用 第162章（JSON 库）的思想：把对象序列成 JSON 字符串，再用 ⑪ 的长度前缀包一层，得到"自描述且二进制安全"的线路格式。
+消息切包后，payload 内部的"结构化数据"需要序列化。**[实现·GCC15]** 这里复用 第162章（JSON 库）的思想：把对象序列成 JSON 字符串，再用 ⑪ 的长度前缀包一层，得到"自描述且二进制安全"的线路格式。
 
 ```cpp
 #include <cstdint>
@@ -569,7 +569,7 @@ int parse_seq(const std::string& json) {
 
 ## ⑬ 真实跨平台实现（Winsock 版 g++ 跑通）
 
-**[平台]** 跨平台网络程序的入口是 `getaddrinfo`：它同时支持 IPv4/IPv6，且 Windows/Linux 接口一致。本节两个示例本机均 `g++` 跑通。
+**[平台·Linux]** 跨平台网络程序的入口是 `getaddrinfo`：它同时支持 IPv4/IPv6，且 Windows/Linux 接口一致。本节两个示例本机均 `g++` 跑通。
 
 ```cpp
 // ⑬ 用 getaddrinfo 解析 "localhost"（已编译通过 _ch163_getaddrinfo.cpp）
@@ -666,7 +666,7 @@ struct Stats {
 
 ## ⑮ 安全（TLS 简述，上游参考）
 
-**[实现]** 裸 TCP 是明文，生产环境必须叠 TLS。C++ 标准库无 TLS，工业做法是用 **OpenSSL / BoringSSL / mbedTLS**（上游参考，非本章自实现）。下面给出 OpenSSL 上下文初始化示意——它需要 OpenSSL 头文件与 `-lssl -lcrypto`，**本机未编译，仅作接口示范**。
+**[实现·GCC15]** 裸 TCP 是明文，生产环境必须叠 TLS。C++ 标准库无 TLS，工业做法是用 **OpenSSL / BoringSSL / mbedTLS**（上游参考，非本章自实现）。下面给出 OpenSSL 上下文初始化示意——它需要 OpenSSL 头文件与 `-lssl -lcrypto`，**本机未编译，仅作接口示范**。
 
 ```cpp
 // ⑮ OpenSSL 上下文初始化（示意，需 -lssl -lcrypto，上游参考）

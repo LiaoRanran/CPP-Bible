@@ -71,7 +71,7 @@ ch25 联合 ────┘        │            ┌─────────
 
 `[标准]` [basic.life]/1：对象 `o` 的生存期始于**获得合适对齐与大小的存储**、且**构造函数（含聚合/默认初始化）完成**之时；止于**析构开始**之时。对于无析构的类类型与所有标量类型，「析构开始」即生存期结束点。
 
-`[实现]` 关键陷阱：生存期结束 ≠ 存储释放。存储可能仍被占用（栈帧未回退、堆块未 free、placement new 复用），但对象已经"死了"。在「存储被复用或释放」之前访问一个已结束生存期的对象，若访问经由指向旧对象的指针/引用，且新对象与旧对象类型**不相似（not similar）**，则行为是 UB。
+`[实现·GCC15]` 关键陷阱：生存期结束 ≠ 存储释放。存储可能仍被占用（栈帧未回退、堆块未 free、placement new 复用），但对象已经"死了"。在「存储被复用或释放」之前访问一个已结束生存期的对象，若访问经由指向旧对象的指针/引用，且新对象与旧对象类型**不相似（not similar）**，则行为是 UB。
 
 ### 2.1 生存期起于构造完成、止于析构开始
 
@@ -156,7 +156,7 @@ int main() {
     // 若写成 C* p = c2; 在无 launder 时优化器可能仍按"tag==10"优化 -> UB
 }
 ```
-`[实现]` 见 §⑭ 真实 libstdc++ 源码：`launder` 体即 `{ return __builtin_launder(__p); }`，自身是空操作，但它向优化器下达"不要基于旧对象信息推导"的屏障指令。
+`[实现·GCC15]` 见 §⑭ 真实 libstdc++ 源码：`launder` 体即 `{ return __builtin_launder(__p); }`，自身是空操作，但它向优化器下达"不要基于旧对象信息推导"的屏障指令。
 
 ---
 
@@ -217,7 +217,7 @@ int main() {
 
 `[标准]` [expr.prop]/2 值类别：`glvalue`（泛左值，有身份）、`prvalue`（纯右值，无身份、将物化）、`xvalue`（将亡值，有身份且将被移动）。**临时对象（temporary）** 由 prvalue 在"需要对象"时**物化（materialization）** 产生（[class.temporary]）。
 
-`[实现]` 关键：`prvalue` 本身**不是对象**，只是一个"待计算的值"；只有当它被绑定到引用、作为函数实参、被 `decltype`/`static_cast` 等需要时，才**物化**为临时对象（RVO/NRVO 与物化可消除临时——这是优化的来源，见 ch27/ch42 交叉）。
+`[实现·GCC15]` 关键：`prvalue` 本身**不是对象**，只是一个"待计算的值"；只有当它被绑定到引用、作为函数实参、被 `decltype`/`static_cast` 等需要时，才**物化**为临时对象（RVO/NRVO 与物化可消除临时——这是优化的来源，见 ch27/ch42 交叉）。
 
 ```cpp
 // prog_08_value_categories.cpp
@@ -632,7 +632,7 @@ int main() {
     std::cout << c;
 }
 ```
-`[平台]` 真正声明为 `const` 的对象可能位于只读页（`.rodata`），写会触发保护错误。
+`[平台·x86-64]` 真正声明为 `const` 的对象可能位于只读页（`.rodata`），写会触发保护错误。
 
 ### 8.13 迭代器失效后使用（UB）
 
@@ -746,7 +746,7 @@ int main() { std::cout << sizeof(int) << "\n"; }  // 由实现规定(通常 4)
 
 ## ⑪ 优化武器化实例：时间旅行与代码删除
 
-`[实现]` 编译器在 `-O2` 下基于"UB 永不发生"的假设做推理。以下是**本机 GCC 15.3.0 实测**的汇编（节选）。
+`[实现·GCC15]` 编译器在 `-O2` 下基于"UB 永不发生"的假设做推理。以下是**本机 GCC 15.3.0 实测**的汇编（节选）。
 
 ### 11.1 有符号溢出把"死循环"优化成真·无限循环
 
@@ -777,7 +777,7 @@ main:
     jmp     .L2          ; <-- 整个循环被编译成 "jmp .L2" 无限自旋!
 ```
 
-`[实现]` 编译器看到 `i += 1` 后 `i > 0`——它**证明**有符号 `i` 永远非负（因为溢出是 UB，被假定不发生），于是 `while(i>0)` 恒真，循环退化为 `jmp .L2` 死循环。这是"时间旅行"式优化：编译器用"未来不可能发生的事"反推"现在的条件恒真"。
+`[实现·GCC15]` 编译器看到 `i += 1` 后 `i > 0`——它**证明**有符号 `i` 永远非负（因为溢出是 UB，被假定不发生），于是 `while(i>0)` 恒真，循环退化为 `jmp .L2` 死循环。这是"时间旅行"式优化：编译器用"未来不可能发生的事"反推"现在的条件恒真"。
 
 ### 11.2 空指针检查被删除（因解引用空指针是 UB）
 
@@ -811,13 +811,13 @@ main:
     ud2                      ; <-- 未定义指令, 立即终止
 ```
 
-`[实现]` 编译器见到 `*p = 42`（对 `p` 解引用），即**断定 `p` 非空**（否则已 UB）。于是前面的 `if (p != nullptr)` 检查被判定为"恒真"可优化，但空指针路径仍被发射成 `movl %eax,0; ud2`——直接往 NULL 写并触发 `ud2`。这证明：优化器**主动删除了安全假设**，把"不可能"的路径变成了"确定崩溃"。
+`[实现·GCC15]` 编译器见到 `*p = 42`（对 `p` 解引用），即**断定 `p` 非空**（否则已 UB）。于是前面的 `if (p != nullptr)` 检查被判定为"恒真"可优化，但空指针路径仍被发射成 `movl %eax,0; ud2`——直接往 NULL 写并触发 `ud2`。这证明：优化器**主动删除了安全假设**，把"不可能"的路径变成了"确定崩溃"。
 
 `[经验]` 这类 bug 在 `-O0` 下"看起来能跑"，`-O2` 下"神秘崩溃"或"死循环"。唯一解药是**不要写 UB**，而非依赖某次编译结果。
 
 ### 11.3 数组越界让编译器删掉"别的"边界检查（阵列去相关）
 
-`[实现]` 严格别名/未定义行为的"传染性"不止于本语句：一旦编译器在某个循环里"证明"索引不会越界（因为它假定你不会写 UB），它就可以**删掉同一函数里另一处对同一个/同形数组的边界检查**。这叫"去相关（disambiguation）"。
+`[实现·GCC15]` 严格别名/未定义行为的"传染性"不止于本语句：一旦编译器在某个循环里"证明"索引不会越界（因为它假定你不会写 UB），它就可以**删掉同一函数里另一处对同一个/同形数组的边界检查**。这叫"去相关（disambiguation）"。
 
 ```cpp
 // prog_39b_bounds_elim.cpp  —— 优化武器化: 越界假设消除边界检查
@@ -861,7 +861,7 @@ int main() {
 
 ### 12.1 padding 与位域：跨平台不可移植陷阱
 
-`[平台]` 下面的结构体在 x86-64 上 `sizeof` 通常是 8（`bool` 占 1 字节 + 3 字节 padding + `int` 4 字节），那 3 字节 padding **内容未指定**。若你 `memcpy` 整个结构体去比较/传输，padding 字节可能含栈上残留——跨进程/跨机比较会"相等但字节不同"。
+`[平台·x86-64]` 下面的结构体在 x86-64 上 `sizeof` 通常是 8（`bool` 占 1 字节 + 3 字节 padding + `int` 4 字节），那 3 字节 padding **内容未指定**。若你 `memcpy` 整个结构体去比较/传输，padding 字节可能含栈上残留——跨进程/跨机比较会"相等但字节不同"。
 
 ```cpp
 // prog_41b_padding_compare.cpp  —— 错误示例 (依赖 padding 内容)
@@ -911,7 +911,7 @@ int main() {
 
 ### 13.1 当别名豁免不够用：`__attribute__((may_alias))` 与 `[[noalias]]`
 
-`[实现]` 有时你必须让一个类型"故意违反"严格别名——典型场景是手写网络/序列化缓冲区、或 SIMD 向量视图。两个厂商扩展/标准手段：
+`[实现·GCC15]` 有时你必须让一个类型"故意违反"严格别名——典型场景是手写网络/序列化缓冲区、或 SIMD 向量视图。两个厂商扩展/标准手段：
 
 1. **`__attribute__((may_alias))`（GCC/Clang）**：给类型加此属性后，**该类型的指针可被当作"可别名任意对象"** 处理，编译器不再对它做激进的别名假设。常用于 `typedef float m128f __attribute__((may_alias));` 让向量指针能安全别名普通 `float[]`。
 
@@ -948,7 +948,7 @@ int main() { int a=0,b=0; (void)f(&a,&b); }
 
 ## ⑭ 真实 libstdc++ 源码逐行：`launder` / `operator new` / `addressof`
 
-`[实现]` 以下全部取自本机 **MinGW GCC 15.3.0** 的 libstdc++，路径前缀：
+`[实现·GCC15]` 以下全部取自本机 **MinGW GCC 15.3.0** 的 libstdc++，路径前缀：
 `/c/Qt/Tools/mingw1530_64/include/c++/15.3.0/`
 （下引行号基于该文件）。
 
@@ -984,7 +984,7 @@ namespace std
 #endif // _GLIBCXX_HAVE_BUILTIN_LAUNDER
 ```
 
-`[实现]` 逐行要点：
+`[实现·GCC15]` 逐行要点：
 - **第 243 行** `launder` 的函数**体本身什么都没做**（直接 `return __p` 经内建）。它的作用**完全在于编译器内建 `__builtin_launder`**：这是一个"优化屏障"语义原语。即便汇编层面 `p` 没变，优化器也必须假定"返回的指针可能指向一个不同类型/已重建的对象"，从而**丢弃**基于旧对象推导出的事实（如"const 成员值不变"）。
 - **第 235–240 行** 用 `= delete` 禁止对**函数指针**和 **`void*`** 调用 `launder`，避免把"无类型指针"当对象指针用（那是另一类 UB）。
 - `[[nodiscard]]` 提醒调用者必须用返回值——直接写 `std::launder(p);` 而不接返回值毫无意义（不会改 `p`）。
@@ -1015,7 +1015,7 @@ inline void operator delete  (void*, void*) _GLIBCXX_USE_NOEXCEPT { }   // 第21
 inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 ```
 
-`[实现]` 逐行要点：
+`[实现·GCC15]` 逐行要点：
 - **第 137–145 行** 是替换全局 `new`/`delete` 的声明（非 `inline`，在运行时库 `libstdc++.a` 中实现，内部调 `malloc`/`free` 并抛 `bad_alloc`）。
 - **`__attribute__((__externally_visible__))`**：保证即使看似无副作用，该函数不被优化掉（它是程序对外的"可见"入口，里德-温伯格定理的反向：分配不能消失）。
 - **第 206 行** placement new 就是 `return __p;`——不分配内存，只返回传入的存储地址供构造用。这就是 §2 所有 placement new 示例的底层机制。
@@ -1041,7 +1041,7 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
     const _Tp* addressof(const _Tp&&) = delete;   // 第182行: 禁止对临时调用
 ```
 
-`[实现]` 逐行要点：
+`[实现·GCC15]` 逐行要点：
 - **第 53 行** `__builtin_addressof(__r)`：这是关键——它**绕过用户重载的 `operator&`**。普通的 `&x` 若 `T` 重载了 `operator&`，返回的是运算符结果（可能根本不是地址）；而 `__builtin_addressof` 直接取对象真实内存地址。
 - **第 177 行** 公开接口 `std::addressof` 委托给内部 `__addressof`，二者都 `constexpr`（C++17 起，`_GLIBCXX17_CONSTEXPR`），可在编译期使用。
 - **第 182 行** 删除 `addressof(const T&&)` 重载，阻止 `std::addressof(SomeTemporary())`——临时无稳定地址，误用会悬垂。
@@ -1063,7 +1063,7 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 | `/permissive-`（MSVC 严格模式） | — | — | ✅ 关掉非标准许可，减少隐式 UB 容忍 |
 | `std::launder` 实现 | `__builtin_launder` | `__builtin_launder` | 内建 `__builtin_launder` |
 
-`[实现]` **关键差异**：
+`[实现·GCC15]` **关键差异**：
 1. **严格别名**：GCC/Clang 默认 `-fstrict-aliasing`（prog_27 在 `-O2` 下会被优化出"正确但错误"的结果）；MSVC 的别名模型更宽松（历史上很少按严格别名优化），所以同一段别名违规代码在 MSVC 下"看似正常"、在 GCC/Clang 下崩溃——**绝不因此以为代码安全**。
 2. **`/permissive-`**：MSVC 默认 `/permissive`（兼容模式）会容忍一些非标准/潜在 UB 的写法；加上 `/permissive-` 可暴露更多问题，是 Windows 下逼近标准的手段。
 3. **Sanitizer 运行时**：本机 GCC 15.3.0 **未随附** `libubsan/libasan/libtsan`（见 §⑯ 实测 `-lubsan: No such file or directory`），故本机只能跑**编译期** UB 诊断（`-Waggressive-loop-optimizations` 等）与 §⑪ 的汇编级证据；完整运行时检测需 Linux/Clang 或 MSVC 的 ASan。
@@ -1072,7 +1072,7 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 
 ### 15.1 `/permissive-` 与 `-Werror`：把隐式 UB 挡在编译期
 
-`[平台]` Windows 下 MSVC 的 `/permissive-` 能关掉大量"历史兼容"许可（如非标准的范围 for 临时、隐式 `int`、两阶段查找放松）。它虽不直接检测 UB，但能**消除"因编译器宽容而看起来正常"的危险写法**：
+`[平台·Windows]` Windows 下 MSVC 的 `/permissive-` 能关掉大量"历史兼容"许可（如非标准的范围 for 临时、隐式 `int`、两阶段查找放松）。它虽不直接检测 UB，但能**消除"因编译器宽容而看起来正常"的危险写法**：
 
 ```cpp
 // prog_47_permissive_example.cpp  —— MSVC 下 /permissive- 暴露问题
@@ -1098,7 +1098,7 @@ int f() {
 | ASan | 释放后使用、越界、double-free | `-fsanitize=address` | 中–高 |
 | TSan | 数据竞争 | `-fsanitize=thread` | 高 |
 
-`[平台]` **本机实测**：在 GCC 15.3.0 上链接 sanitizer 失败：
+`[平台·x86-64]` **本机实测**：在 GCC 15.3.0 上链接 sanitizer 失败：
 ```
 C:/Qt/.../ld.exe: cannot find -lubsan: No such file or directory
 collect2.exe: error: ld returned 1 exit status
@@ -1297,7 +1297,7 @@ int main() {
 
 ### 20.2 源码阅读路线（真实路径，本机可查）
 
-`[实现]` 想真正理解"生命周期原语如何驯服优化器"，按此顺序读：
+`[实现·GCC15]` 想真正理解"生命周期原语如何驯服优化器"，按此顺序读：
 
 1. **libstdc++ `<new>`（本机路径 `.../include/c++/new`）**：
    - 第 228–246 行：`std::launder` 的 `__builtin_launder` 屏障（§⑭.1）。

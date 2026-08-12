@@ -54,7 +54,7 @@ int main() {
 - `[标准]`：标准库行为是 ISO C++ 条款规定；libstdc++ 是实现，可能与标准有细微偏差（见 ⑫）。
 - `[经验]`：libstdc++ 不是「头文件而已」——大部分实现在 `bits/*.tcc` 与 `*.h` 模板里，链接时再补少量 `.o` 符号（见 ⑪）。
 
-## ② 目录结构（include/c++/、bits/、ext/） [实现]
+## ② 目录结构（include/c++/、bits/、ext/） [实现·libstdc++]
 
 libstdc++ 头文件按职责分层：顶层是用户可见的 `<vector>` 等；`bits/` 放内部实现（不公开承诺稳定）；`ext/` 放 GNU 扩展（如调试容器、rope）；`x86_64-w64-mingw32/bits/` 放平台相关配置（`c++config.h` 等）。
 
@@ -83,9 +83,9 @@ int main() {
 }
 ```
 
-- `[实现]`：`bits/` 与 `ext/` 不属标准接口——跨 GCC 大版本可能改名，业务代码不应直接 `#include <bits/...>`（见 ⑱）。
+- `[实现·libstdc++]`：`bits/` 与 `ext/` 不属标准接口——跨 GCC 大版本可能改名，业务代码不应直接 `#include <bits/...>`（见 ⑱）。
 
-## ③ 阅读入口（<vector> 包含链，[实现]读真实 vector 头） [实现]
+## ③ 阅读入口（<vector> 包含链，[实现]读真实 vector 头） [实现·libstdc++]
 
 想读懂 `std::vector`，入口是顶层 `<vector>`：它几乎不实现逻辑，只串起一堆 `bits/` 头，真正定义落在 `bits/stl_vector.h`（类模板）与 `bits/vector.tcc`（成员函数实现）。
 
@@ -120,9 +120,9 @@ int main() {
 // 原文：#include <bits/stl_vector.h>
 ```
 
-- `[实现]`：`vector:66` 的 `#include <bits/stl_vector.h>` 把类定义接入；`stl_vector.h:423` 才是 `class vector : protected _Vector_base<_Tp,_Alloc>`。先读 `_Vector_base` 才能懂三段指针（`_M_start/_M_finish/_M_end_of_storage`）。
+- `[实现·libstdc++]`：`vector:66` 的 `#include <bits/stl_vector.h>` 把类定义接入；`stl_vector.h:423` 才是 `class vector : protected _Vector_base<_Tp,_Alloc>`。先读 `_Vector_base` 才能懂三段指针（`_M_start/_M_finish/_M_end_of_storage`）。
 
-## ④ [实现]真实：读 local bits/basic_string.h 看 SSO 字段（_S_local_capacity） [实现]
+## ④ [实现]真实：读 local bits/basic_string.h 看 SSO 字段（_S_local_capacity） [实现·libstdc++]
 
 GCC 的 `std::string` 采用 **SSO（Small String Optimization）**：短字符串（≤15 字节）存于对象内部的 `_M_local_buf`，免堆分配。`_S_local_capacity` 是容量常量，定义如下。
 
@@ -193,7 +193,7 @@ int main() {
 ```
 
 - `[标准]`：`std::allocator` 满足 *Allocator* 要求；容器通过 `allocator_traits` 间接使用它，故可替换为自定义分配器。
-- `[实现]`：`allocator.h:130` 显示 `allocator` 继承 `__allocator_base`（即 `__glibcxx` 的 `new_allocator`）。`ext/alloc_traits.h:36/45` 的 `__gnu_cxx::__alloc_traits` 是 GNU 内部增强，非标准接口。
+- `[实现·libstdc++]`：`allocator.h:130` 显示 `allocator` 继承 `__allocator_base`（即 `__glibcxx` 的 `new_allocator`）。`ext/alloc_traits.h:36/45` 的 `__gnu_cxx::__alloc_traits` 是 GNU 内部增强，非标准接口。
 
 ## ⑥ 异常安全与 noexcept [标准]
 
@@ -222,7 +222,7 @@ int main() {
 
 - `[标准]`：C++11 起标准鼓励「移动为 noexcept」；libstdc++ 据此把 `basic_string` 移动设为 `noexcept`（`basic_string.h:678`），使容器扩容免拷贝、免异常回滚。
 
-## ⑦ RTTI/typeinfo 实现 [实现]
+## ⑦ RTTI/typeinfo 实现 [实现·libstdc++]
 
 RTTI（`typeid`/`dynamic_cast`）依赖 `<typeinfo>` 中的 `std::type_info`。在 libstdc++ 中，`type_info` 的派生类（`__class_type_info` 等）定义在 `libstdc++` 的 `typeinfo` 头，真正比较两个对象类型由 `libsupc++`/核心运行时完成。
 
@@ -246,9 +246,9 @@ int main() {
 //  class type_info
 ```
 
-- `[实现]`：`type_info` 在 `typeinfo:92` 定义；其 vtable 与 `type_name` 指向由 `cxxabi` 运行时提供。`name()` 返回 mangled 名，需 `__cxa_demangle` 解码。
+- `[实现·libstdc++]`：`type_info` 在 `typeinfo:92` 定义；其 vtable 与 `type_name` 指向由 `cxxabi` 运行时提供。`name()` 返回 mangled 名，需 `__cxa_demangle` 解码。
 
-## ⑧ ABI 稳定性（GLIBCXX 符号版本与双重 ABI __cxx11） [实现]
+## ⑧ ABI 稳定性（GLIBCXX 符号版本与双重 ABI __cxx11） [实现·libstdc++]
 
 libstdc++ 用 **符号版本（symbol versioning）** 维持向后兼容：同一 `libstdc++.so` 可同时导出旧版与新版符号（如 `GLIBCXX_3.4` 与 `CXXABI_1.3`）。GCC 5 引入新 ABI（`__cxx11`），`std::string`/`std::list` 等布局改变，旧 ABI 用 `std::string`（COW）区分。
 
@@ -328,7 +328,7 @@ int main() {
 - `[实现·GCC15]`：`make_greeting` 的 mangled 名是 `_Z13make_greetingB5cxx11PKc`——`B5cxx11` 正是 ⑧ 所述 `abi_tag("cxx11")` 的编码，证明新 ABI 双重命名在目标文件真实存在。
 - `[平台·x86-64]`：上述偏移（`[rcx]`、`[rbx+16]`）对应 `basic_string` 在 x86-64 System V ABI 下的对象布局（指针/本地缓冲）。
 
-## ⑩ 源码级调试（编译加 -g 配合 libstdc++ 源码） [平台]
+## ⑩ 源码级调试（编译加 -g 配合 libstdc++ 源码） [平台·x86-64]
 
 调试标准库 bug 时，给自己的代码加 `-g`，并把 libstdc++ 源码路径指给调试器，即可单步进入 `bits/vector.tcc` 内部。
 
@@ -351,9 +351,9 @@ gdb dbg.exe
 # 步入后会停在 bits/stl_vector.h / vector.tcc 对应行
 ```
 
-- `[平台]`：MinGW 的 libstdc++ 源码随工具链分发（即本章 `include/c++/` 目录），GDB 可直接打开；Linux 发行版通常需装 `libstdc++-X-dev` 才有源码。
+- `[平台·x86-64]`：MinGW 的 libstdc++ 源码随工具链分发（即本章 `include/c++/` 目录），GDB 可直接打开；Linux 发行版通常需装 `libstdc++-X-dev` 才有源码。
 
-## ⑪ 模板实例化体积（[实现]真实：nm 看符号） [实现]
+## ⑪ 模板实例化体积（[实现]真实：nm 看符号） [实现·libstdc++]
 
 每个 `std::vector<T, A>` / `std::string` 实例化都会在目标文件生成一族符号。`nm -C` 可直观看到这些实例化产物——这是「模板代码膨胀」的量化入口。
 
@@ -404,7 +404,7 @@ int main() {
 
 - `[标准]`：当 libstdc++ 行为与标准条款冲突，通常先在 `libstdc++` Bugzilla 查是否已知偏差；切勿假设「源码即标准」。
 
-## ⑬ __cxx11 新 ABI 与兼容 [实现]
+## ⑬ __cxx11 新 ABI 与兼容 [实现·libstdc++]
 
 新 ABI（`__cxx11`）自 GCC 5 起默认。它通过 `inline namespace __cxx11` 把新布局类型放进独立命名空间，使新旧 `std::string` 在同一进程可并存而不冲突；旧代码可 `-D_GLIBCXX_USE_CXX11_ABI=0` 回退。
 
@@ -438,7 +438,7 @@ int main() {
 //  inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
 ```
 
-- `[实现]`：`c++config.h:348` 的 `_GLIBCXX_BEGIN_NAMESPACE_CXX11` 把 `std::string` 实际定义进 `__cxx11`；`c++config.h:417` 再次确认。结合 ⑨ 的 `B5cxx11`，可证 ABI 标签贯穿编译全程。
+- `[实现·libstdc++]`：`c++config.h:348` 的 `_GLIBCXX_BEGIN_NAMESPACE_CXX11` 把 `std::string` 实际定义进 `__cxx11`；`c++config.h:417` 再次确认。结合 ⑨ 的 `B5cxx11`，可证 ABI 标签贯穿编译全程。
 
 ## ⑭ 性能特征 [经验]
 
@@ -457,7 +457,7 @@ int main() {
 
 - `[经验]`：libstdc++ 容器本身高效；性能陷阱多在「未 reserve」「按值传大对象」「在热循环里隐式分配」。用 ⑩ 的 `-g` + profiler 定位，而非盲猜。
 
-## ⑮ 扩展（__gnu_cxx 调试容器） [实现]
+## ⑮ 扩展（__gnu_cxx 调试容器） [实现·libstdc++]
 
 `debug/`（即 `__gnu_debug`）提供带越界/迭代器失效检查的「调试版」容器；`profile/` 统计操作开销；`parallel/` 用 OpenMP 并行化算法。它们通过宏（如 `_GLIBCXX_DEBUG`）切换，不影响发布构建。
 
@@ -479,9 +479,9 @@ int main() {
 // namespace __gnu_debug
 ```
 
-- `[实现]`：`debug/string:77` 的 `namespace __gnu_debug` 即调试容器的归属；它包裹真实 `std::__cxx11::basic_string` 并加安全包装。调试期开 `_GLIBCXX_DEBUG` 可抓出大量隐蔽 bug。
+- `[实现·libstdc++]`：`debug/string:77` 的 `namespace __gnu_debug` 即调试容器的归属；它包裹真实 `std::__cxx11::basic_string` 并加安全包装。调试期开 `_GLIBCXX_DEBUG` 可抓出大量隐蔽 bug。
 
-## ⑯ 跨平台（MinGW/Cygwin/Linux） [平台]
+## ⑯ 跨平台（MinGW/Cygwin/Linux） [平台·x86-64]
 
 同一份 libstdc++ 源码跨平台，但**二进制 ABI 仅在同 GCC 版本+同目标三元组间兼容**。MinGW-w64（win64）、Cygwin、Linux(x86-64) 各自编译，目标文件/动态库**不可混链**。
 
@@ -532,7 +532,7 @@ int wrap() {
 
 - `[经验]`：① 整工程统一 GCC 版本与 `_GLIBCXX_USE_CXX11_ABI`；② 第三方库用源码同工具链重编；③ 库边界用 C 接口或 `-fvisibility=hidden` + 自包含类型，避免导出 `std` 符号。
 
-## ⑲ 调试/贡献 [平台]
+## ⑲ 调试/贡献 [平台·x86-64]
 
 想深入或修 libstdc++：源码在 GCC 仓库 `libstdc++-v3/`；本地可用本机 `include/c++/` 直接读。报告 bug 用 libstdc++ Bugzilla，最小复现用 `-std=c++23` + 预处理后的 `.ii`（`g++ -E`）。
 
@@ -552,7 +552,7 @@ g++ -std=c++23 -E Examples/_ch124_vector.cpp -o repro.ii
 # 把 repro.ii 与 g++ --version 一并附到 Bugzilla
 ```
 
-- `[平台]`：MinGW 用户可直接编辑本机 `include/c++/` 做实验（改后重编即可），但仅供学习；向上游贡献需走 GCC 仓库与 FSF 版权流程。
+- `[平台·x86-64]`：MinGW 用户可直接编辑本机 `include/c++/` 做实验（改后重编即可），但仅供学习；向上游贡献需走 GCC 仓库与 FSF 版权流程。
 
 ## ⑳ 速查表 [标准]
 
@@ -956,7 +956,7 @@ sub rdx, rax              ; capacity = end - start
 - 扩容触发拷贝：`memcpy` 新缓冲 `0x0100` 字节量级，均摊 O(1)
 - SSO 短字符串阈值在 libstdc++ 为 `0x0010` 字节（15 char + null）
 
-### 实测分配开销
+### 实测分配开销 [UNVERIFIED]
 
 - 单次要分配 ≈ 0.2us（tcmalloc）；系统 `malloc` ≈ 0.8us
 - `reserve(0x1000)` 一次预留，避免 10 次扩容共省 ≈ 6.0us

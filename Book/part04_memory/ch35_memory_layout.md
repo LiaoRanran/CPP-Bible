@@ -6,7 +6,7 @@
 
 > 本章从「进程虚拟地址空间」这一操作系统抽象出发，把前几章讲过的**存储期**（ch19）、**const 与只读段**（ch21）、**引用**（ch20）落到一个可执行文件真实存在的段（section）里；并为后续 **栈与堆**（ch36）、**new/delete**（ch37）、**allocator**（ch38）、**内存池**（ch44）、**模板对齐 trait**（ch60）奠定地址空间与对齐基础。
 >
-> 立场分层约定：**`[标准]`** ＝ ISO C++ 标准语义；**`[实现]`** ＝ 编译器/libstdc++/libc++/MS STL 具体实现；**`[平台]`** ＝ x86-64 Linux/Windows/ABI；**`[经验]`** ＝ 工程实践建议。无法在本机核实之处标注 **`[实现-推断]`** / **`[平台-推断]`**。
+> 立场分层约定：**`[标准]`** ＝ ISO C++ 标准语义；**`[实现]`** ＝ 编译器/libstdc++/libc++/MS STL 具体实现；**`[平台·x86-64]`** ＝ x86-64 Linux/Windows/ABI；**`[经验]`** ＝ 工程实践建议。无法在本机核实之处标注 **`[实现-推断]`** / **`[平台-推断]`**。
 
 ---
 
@@ -61,7 +61,7 @@ C++ 标准刻意不规定段布局（那是 OS / ABI 的事），只谈"对象�
         低地址 0x0000'0000'0000'0000
 ```
 
-`[平台]` x86-64 上，**虚拟地址是 64 位，但硬件只实现其中 48 位**（见元素 2）。一个进程看到的所有指针值都落在这 48 位地址空间内；标准库 `new`/`malloc` 返回的地址、`&global`、`&local` 全部是虚拟地址。
+`[平台·x86-64]` x86-64 上，**虚拟地址是 64 位，但硬件只实现其中 48 位**（见元素 2）。一个进程看到的所有指针值都落在这 48 位地址空间内；标准库 `new`/`malloc` 返回的地址、`&global`、`&local` 全部是虚拟地址。
 
 `[经验]` 调试器里看到的地址、核心转储里的地址、ASAN 报告的地址，一律是虚拟地址；物理地址对应用层不可见。
 
@@ -86,14 +86,14 @@ flowchart TD
 
 ## ② x86-64 的 48 位虚拟地址与用户/内核划分
 
-`[平台][标准]` x86-64（AMD64）的页表遍历硬件只使用**48 位**虚拟地址（CR3 + 4 级页表）。地址被强制为**规范地址（canonical address）**：高 16 位必须是第 47 位的符号扩展。
+`[平台·x86-64][标准]` x86-64（AMD64）的页表遍历硬件只使用**48 位**虚拟地址（CR3 + 4 级页表）。地址被强制为**规范地址（canonical address）**：高 16 位必须是第 47 位的符号扩展。
 
 - 用户空间：`0x0000'0000'0000'0000` ~ `0x0000'7FFF'FFFF'FFFF`（共 128 TiB）
 - 内核空间：`0xFFFF'8000'0000'0000` ~ `0xFFFF'FFFF'FFFF'FFFF`
 
 `[平台-推断]` 在 Linux x86-64 上，用户/内核分界通常为 `0x0000'7FFF'FFFF'FFFF`（页表第 4 级 PML4 最高一项留给内核）。Windows x86-64 的用户模式地址上限约为 `0x0000'7FFF'FFFF'FFFF` 附近（实际可用约 128 TB 用户空间），内核占据高位。
 
-`[实现]` 是否启用 5 级页表（57 位 LA57）由内核引导参数决定；用户态程序无需关心——`uintptr_t` 在 x86-64 上恒为 64 位，`sizeof(void*)==8`。
+`[实现·GCC15]` 是否启用 5 级页表（57 位 LA57）由内核引导参数决定；用户态程序无需关心——`uintptr_t` 在 x86-64 上恒为 64 位，`sizeof(void*)==8`。
 
 ```cpp
 // P1: 验证指针宽度为 64 位，并观察地址落在用户空间低半区
@@ -124,9 +124,9 @@ int main() {
 
 ## ③ ASLR：地址空间布局随机化
 
-`[平台]` **ASLR（Address Space Layout Randomization）** 在每次进程启动时随机化栈基址、堆基址、`mmap` 基址、共享库加载基址与可执行映像基址（PIE）。目的：让攻击者在 ROP/溢出利用中无法预测关键对象（返回地址、`system()`）的地址。
+`[平台·x86-64]` **ASLR（Address Space Layout Randomization）** 在每次进程启动时随机化栈基址、堆基址、`mmap` 基址、共享库加载基址与可执行映像基址（PIE）。目的：让攻击者在 ROP/溢出利用中无法预测关键对象（返回地址、`system()`）的地址。
 
-`[平台]` 观察 ASLR：连续运行两次，栈/堆地址会改变。
+`[平台·x86-64]` 观察 ASLR：连续运行两次，栈/堆地址会改变。
 
 ```cpp
 // P2: 观察 ASLR —— 同一程序两次运行的栈/堆地址不同
@@ -150,7 +150,7 @@ int main() {
 
 ### PIE 与「可打印指针」
 
-`[平台]` **PIE（Position-Independent Executable）** 让可执行文件本身也能被加载到随机基址。现代发行版默认 `-fpie -pie`。
+`[平台·x86-64]` **PIE（Position-Independent Executable）** 让可执行文件本身也能被加载到随机基址。现代发行版默认 `-fpie -pie`。
 
 ```cpp
 // P3: PIE vs -no-pie 对函数/全局地址可重定位性的影响
@@ -168,7 +168,7 @@ int main() {
 
 ### ASLR 如何缓解 ROP（面向返回编程）
 
-`[平台][经验]` ROP 利用的核心是：攻击者把栈/堆上布置一串「 gadget 地址」（形如 `pop rdi; ret`、`system()` 地址），借溢出劫持返回地址去串起任意逻辑。ASLR 让 `system`、栈、库基址在每次运行都不同，攻击者**无法在漏洞利用载荷里硬编码地址**——必须配合信息泄漏（leak）先读出一个真实地址再计算偏移，显著提高利用门槛。PIE 进一步让可执行映像自身也随机，连「代码里的 gadget」地址都不可预测。`[平台-推断]` 在 32 位地址空间 ASLR 熵仅 ~16 位，可被暴力/熵耗尽绕过；64 位熵达 ~28–32 位，实际不可行。
+`[平台·x86-64][经验]` ROP 利用的核心是：攻击者把栈/堆上布置一串「 gadget 地址」（形如 `pop rdi; ret`、`system()` 地址），借溢出劫持返回地址去串起任意逻辑。ASLR 让 `system`、栈、库基址在每次运行都不同，攻击者**无法在漏洞利用载荷里硬编码地址**——必须配合信息泄漏（leak）先读出一个真实地址再计算偏移，显著提高利用门槛。PIE 进一步让可执行映像自身也随机，连「代码里的 gadget」地址都不可预测。`[平台-推断]` 在 32 位地址空间 ASLR 熵仅 ~16 位，可被暴力/熵耗尽绕过；64 位熵达 ~28–32 位，实际不可行。
 
 `[经验]` 安全不是单点：ASLR/PIE 须与 **NX（栈不可执行，元素 7）**、**stack canary（栈保护，ch36）**、**RELRO（只读重定位，链接期 -Wl,-z,relro,-z,now）**、**FORTIFY** 协同，才构成现代二进制防护基线。本圣经安全章节（ch7x）逐条展开。
 
@@ -176,7 +176,7 @@ int main() {
 
 ## ④ 可执行文件格式：ELF 与 PE
 
-`[实现]` 目标文件格式由编译器/平台决定：
+`[实现·GCC15]` 目标文件格式由编译器/平台决定：
 
 | 平台 / 编译器 | 目标文件格式 | `const` 只读段名 | 线程本地段 |
 |---|---|---|---|
@@ -192,7 +192,7 @@ int main() {
 
 ## ⑤ ELF 段（节）详解
 
-`[标准][平台]` ELF 把程序的不同数据按属性分入不同「节（section）」。与 C++ 实体相关的关键节：
+`[标准][平台·x86-64]` ELF 把程序的不同数据按属性分入不同「节（section）」。与 C++ 实体相关的关键节：
 
 | ELF 节 | 内容 | 权限 | 文件占用 |
 |---|---|---|---|
@@ -203,7 +203,7 @@ int main() {
 | `.tdata` | **已初始化** `thread_local` 变量 | `RW-` | 是（每线程一份的模板） |
 | `.tbss` | **零初始化** `thread_local` 变量 | `RW-` | 否 |
 
-`[平台]` 这些节最终被链接器聚合成**段（segment，program header）**用于加载：`.text`+`.rodata` → `PT_LOAD` 可读可执行；`.data`+`.bss` → `PT_LOAD` 可读写。加载器按段把内容映射到虚拟地址，并设置页表权限（R/W/X）。
+`[平台·x86-64]` 这些节最终被链接器聚合成**段（segment，program header）**用于加载：`.text`+`.rodata` → `PT_LOAD` 可读可执行；`.data`+`.bss` → `PT_LOAD` 可读写。加载器按段把内容映射到虚拟地址，并设置页表权限（R/W/X）。
 
 `[标准]` `.bss` 不占文件空间是标准链接语义的「优化」：零初始化对象无需在磁盘上存一堆 0，加载时由内核清零即可（见元素 15 demand paging 协同）。
 
@@ -211,7 +211,7 @@ int main() {
 
 ## ⑥ PE 段与权限（本机实测）
 
-`[实现]` 在**本机 MinGW GCC 13.1.0**（x86_64-w64-mingw32）上，ELF 不存在——产物是 **PE32+ (pei-x86-64)**。用真实 `objdump -h` 观察（元素 8 的程序 `seg_demo.cpp` 编译结果）：
+`[实现·GCC15]` 在**本机 MinGW GCC 13.1.0**（x86_64-w64-mingw32）上，ELF 不存在——产物是 **PE32+ (pei-x86-64)**。用真实 `objdump -h` 观察（元素 8 的程序 `seg_demo.cpp` 编译结果）：
 
 ```text
 C:\...\seg_demo.exe:     file format pei-x86-64
@@ -240,7 +240,7 @@ Idx Name          Size      VMA               LMA               File off  Algn
  10 ..16 .debug_*  ...                                            DEBUGGING
 ```
 
-`[平台]` 关键对照（**这是三编译器差异的硬证据**）：
+`[平台·x86-64]` 关键对照（**这是三编译器差异的硬证据**）：
 
 - 代码在 `.text`，标记 `READONLY, CODE` —— 对应 ELF 的 `.text`。
 - **已初始化全局/静态**在 `.data`（`CONTENTS, DATA`，有文件偏移）—— 对应 ELF `.data`。
@@ -254,7 +254,7 @@ Idx Name          Size      VMA               LMA               File off  Algn
 
 ## ⑦ 段权限 R/W/X 与 MMU
 
-`[标准][平台]` 段的权限由**页表项（PTE）**中的 R/W 与 NX（No-eXecute）位落实，MMU 在每次访存时硬件检查：
+`[标准][平台·x86-64]` 段的权限由**页表项（PTE）**中的 R/W 与 NX（No-eXecute）位落实，MMU 在每次访存时硬件检查：
 
 - `.text` / `.rodata` / `.rdata` → 页表 `R-X`（可读、可执行、不可写）。向 `.rodata` 写会触发 **段错误（SIGSEGV）**。
 - `.data` / `.bss` → `RW-`（可读写、不可执行）。
@@ -281,7 +281,7 @@ int main() {
 
 ## ⑧ 真实实验：C++ 实体 → 段的映射
 
-`[实现]` 下面这个程序包含每种存储类别的实体，编译后用 `objdump -h` / `readelf`（ELF）确认落点。本机 MinGW 产物为 PE，故用 `objdump -h`（见元素 6 输出）。Linux 下用 `readelf -S` 会得到 `.text/.data/.bss/.rodata/.tdata/.tbss`。
+`[实现·GCC15]` 下面这个程序包含每种存储类别的实体，编译后用 `objdump -h` / `readelf`（ELF）确认落点。本机 MinGW 产物为 PE，故用 `objdump -h`（见元素 6 输出）。Linux 下用 `readelf -S` 会得到 `.text/.data/.bss/.rodata/.tdata/.tbss`。
 
 ```cpp
 // P5 (seg_demo.cpp): 各类存储期实体的段落位示例
@@ -301,7 +301,7 @@ int main() {
 // Linux 等价: g++ -std=c++17 -O0 seg_demo.cpp -o seg_demo && readelf -S seg_demo
 ```
 
-`[平台]` 在 Linux 上的 `readelf -S` 会显示（节选，标准 ELF 命名，`[平台-推断]` 为 Linux GCC 典型布局）：
+`[平台·Linux]` 在 Linux 上的 `readelf -S` 会显示（节选，标准 ELF 命名，`[平台-推断]` 为 Linux GCC 典型布局）：
 
 ```text
 [N] .text    PROGBITS  AX     ...   (代码 + 字符串字面量引用)
@@ -322,7 +322,7 @@ int main() {
 
 ## ⑨ mmap：内存映射、共享库、文件映射
 
-`[平台]` `mmap` 是 Unix 把「文件/匿名内存/设备」映射到进程虚拟地址空间的系统调用。三类用法：
+`[平台·Linux]` `mmap` 是 Unix 把「文件/匿名内存/设备」映射到进程虚拟地址空间的系统调用。三类用法：
 
 1. **匿名映射** —— 实现 `malloc` 大块、线程栈、`fork` 的 COW（见元素 16）。
 2. **文件映射** —— 把文件映射到地址空间，省去 `read` 拷贝。
@@ -404,7 +404,7 @@ int main() {
 
 ## ⑩ 分页与页表：虚拟 → 物理
 
-`[平台][标准]` 虚拟地址空间被切成固定大小的**页（page）**，物理内存被切成**页框（page frame）**。x86-64 常用 **4 KiB 页**（也有 2 MiB / 1 GiB 大页）。页表记录「虚拟页号 → 物理页框号」映射。
+`[平台·x86-64][标准]` 虚拟地址空间被切成固定大小的**页（page）**，物理内存被切成**页框（page frame）**。x86-64 常用 **4 KiB 页**（也有 2 MiB / 1 GiB 大页）。页表记录「虚拟页号 → 物理页框号」映射。
 
 ```cpp
 // P8: 4 KiB 页下，把虚拟地址拆成 VPN(高52位) 与 offset(低12位)
@@ -422,7 +422,7 @@ int main() {
 // 编译: g++ -std=c++17 p8.cpp -o p8 && ./p8
 ```
 
-`[平台]` **x86-64 4 级页表**：CR3 → PML4 → PDPT → PD → PT，每级 9 位索引、末级 12 位页内偏移，共 9+9+9+9+12 = 48 位。
+`[平台·x86-64]` **x86-64 4 级页表**：CR3 → PML4 → PDPT → PD → PT，每级 9 位索引、末级 12 位页内偏移，共 9+9+9+9+12 = 48 位。
 
 ```cpp
 // P9: 演示 4 级页表索引划分 (9/9/9/9/12)
@@ -448,7 +448,7 @@ int main() {
 
 ## ⑪ TLB 与缺页中断
 
-`[平台]` MMU 把最近用过的「虚拟页→物理框」缓存进 **TLB（Translation Lookaside Buffer）**：
+`[平台·x86-64]` MMU 把最近用过的「虚拟页→物理框」缓存进 **TLB（Translation Lookaside Buffer）**：
 
 - **TLB 命中**：地址翻译 ~1–3 周期 `[微架构·x86-64][UNVERIFIED]`。
 - **TLB 未命中**：需走 4 级页表（4 次内存访问）+ 可能缺页，可达 **数百周期**。
@@ -486,7 +486,7 @@ int main() {
 
 ### 用 Google Benchmark 正式测量 TLB/缓存效应
 
-`[实现]` 上面的手搓计时只是直觉验证。生产级 microbenchmark 应使用 Google Benchmark（需 `-lbenchmark -lpthread`）：
+`[实现·GCC15]` 上面的手搓计时只是直觉验证。生产级 microbenchmark 应使用 Google Benchmark（需 `-lbenchmark -lpthread`）：
 
 ```cpp
 // P36: Google Benchmark 版 TLB/cache 步长扫描（需 Google Benchmark 库）
@@ -513,13 +513,13 @@ BENCHMARK_MAIN();
 
 ### 大页（huge pages）缓解 TLB 压力
 
-`[平台]` 4 KiB 页下，TLB 条目有限（典型 L1 DTLB ~64 项），映射大内存时极易 miss。x86-64 支持 **2 MiB** 与 **1 GiB** 大页：一页覆盖更多内存，同等 TLB 条目覆盖更大工作集。Linux 可用 `MAP_HUGETLB` 或透明大页（THP）启用。`[平台-推断]` 数据库、大堆 JVM、HFT 系统常显式用大页降低 TLB miss。代价：大页分配/碎片管理与换页语义更复杂。
+`[平台·Linux]` 4 KiB 页下，TLB 条目有限（典型 L1 DTLB ~64 项），映射大内存时极易 miss。x86-64 支持 **2 MiB** 与 **1 GiB** 大页：一页覆盖更多内存，同等 TLB 条目覆盖更大工作集。Linux 可用 `MAP_HUGETLB` 或透明大页（THP）启用。`[平台-推断]` 数据库、大堆 JVM、HFT 系统常显式用大页降低 TLB miss。代价：大页分配/碎片管理与换页语义更复杂。
 
 ---
 
 ## ⑫ demand paging（按需调页）
 
-`[标准][平台]` 进程启动时，操作系统**不会**真的把 `.bss`、堆、`mmap` 区域一次性全填好物理页。只有当代码/数据**第一次访问**某页时才分配物理页（清零或换入）。这叫 demand paging。
+`[标准][平台·x86-64]` 进程启动时，操作系统**不会**真的把 `.bss`、堆、`mmap` 区域一次性全填好物理页。只有当代码/数据**第一次访问**某页时才分配物理页（清零或换入）。这叫 demand paging。
 
 ```cpp
 // P11: demand paging 直觉 —— 分配 1 GiB 但不访问，RSS 不会真占 1 GiB [平台-推断: Linux]
@@ -548,7 +548,7 @@ int main() {
 
 ## ⑬ copy-on-write（写时复制）
 
-`[平台][标准]` COW 让多个虚拟页**共享同一物理页**，直到有人写入才复制：
+`[平台·x86-64][标准]` COW 让多个虚拟页**共享同一物理页**，直到有人写入才复制：
 
 - `fork()` 后父子共享全部页，写时各自复制。
 - 共享库代码节被所有映射它的进程共享同一物理页。
@@ -577,7 +577,7 @@ int main() {
 
 ## ⑭ 经典地址空间布局（栈/堆/mmap 位置）
 
-`[平台]` 经典 x86-64 Linux 进程布局（从高到低）：
+`[平台·Linux]` 经典 x86-64 Linux 进程布局（从高到低）：
 
 ```
 0xFFFF...  内核
@@ -662,7 +662,7 @@ int main() {
 
 ## ⑯ 硬件对齐要求与 cache line
 
-`[平台]` x86-64 对**自然对齐**的标量访问是原子的（硬件容忍未对齐访问但有性能代价）；某些架构（ARM 部分、旧 RISC）对未对齐访问直接抛出总线错误。更关键的是 **cache line**：x86-64 典型 **64 字节**缓存行。两个独立变量若落在同一 cache line，多核并发修改会引发 **false sharing（伪共享）**——虽无逻辑竞争，却因缓存一致性协议（MESI）反复使对方行失效而严重降速。
+`[平台·x86-64]` x86-64 对**自然对齐**的标量访问是原子的（硬件容忍未对齐访问但有性能代价）；某些架构（ARM 部分、旧 RISC）对未对齐访问直接抛出总线错误。更关键的是 **cache line**：x86-64 典型 **64 字节**缓存行。两个独立变量若落在同一 cache line，多核并发修改会引发 **false sharing（伪共享）**——虽无逻辑竞争，却因缓存一致性协议（MESI）反复使对方行失效而严重降速。
 
 ```cpp
 // P16: 观测 cache line 大小（x86-64 通常 64）
@@ -690,7 +690,7 @@ int main() { std::printf("assumed cache line = %d bytes\n", CACHE_LINE); return 
 
 ### 真实 libstdc++ 源码（逐行）
 
-`[实现]` 源文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`，**行号：210–214**：
+`[实现·GCC15]` 源文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`，**行号：210–214**：
 
 ```cpp
 #include <cstddef>
@@ -709,7 +709,7 @@ int main() { std::printf("assumed cache line = %d bytes\n", CACHE_LINE); return 
 - **L213** 同理，`hardware_constructive_interference_size` 来自 `__GCC_CONSTRUCTIVE_SIZE`（本机 = 64）。
 - **L214** 结束条件编译。
 
-`[实现]` 特性宏在 `<version>`（同目录 `version` 文件）第 125–127 行也有记录：
+`[实现·GCC15]` 特性宏在 `<version>`（同目录 `version` 文件）第 125–127 行也有记录：
 
 ```cpp
 125  #ifdef __GCC_DESTRUCTIVE_SIZE
@@ -717,7 +717,7 @@ int main() { std::printf("assumed cache line = %d bytes\n", CACHE_LINE); return 
 127  #endif
 ```
 
-`[实现]` **本机实测**（MinGW GCC 13.1.0）：
+`[实现·GCC15]` **本机实测**（MinGW GCC 13.1.0）：
 
 ```cpp
 #include <new>
@@ -756,7 +756,7 @@ int main() {
 
 ### microbenchmark：false sharing 的真实量级
 
-`[实现]` 下面用单头文件风格（Google Benchmark 风格主循环）对比「同行（伪共享）」与「不同行（对齐隔离）」两种布局：
+`[实现·GCC15]` 下面用单头文件风格（Google Benchmark 风格主循环）对比「同行（伪共享）」与「不同行（对齐隔离）」两种布局：
 
 ```cpp
 // P18: false sharing microbenchmark（对比 同行 vs 不同行）
@@ -797,7 +797,7 @@ int main() {
 
 ### 为什么伪共享这么慢：MESI 缓存一致性
 
-`[平台]` 现代多核通过 **MESI**（Modified/Exclusive/Shared/Invalid）协议维护各核私有 L1/L2 缓存的一致性。一个 cache line 在任一时刻在「某核独占(E)/多核共享(S)/已修改(M)/无效(I)」状态间迁移。当核 A 写 `a`（与核 B 的 `b` 同处一行）时：
+`[平台·x86-64]` 现代多核通过 **MESI**（Modified/Exclusive/Shared/Invalid）协议维护各核私有 L1/L2 缓存的一致性。一个 cache line 在任一时刻在「某核独占(E)/多核共享(S)/已修改(M)/无效(I)」状态间迁移。当核 A 写 `a`（与核 B 的 `b` 同处一行）时：
 
 1. 该行在核 B 处由 S→I（被作废），核 B 下次读 `b` 必须从源头重取（跨核/跨插槽内存，数百周期）。
 2. 核 A 与核 B 反复「写→作废→重取」互相踩踏，总线流量暴涨，吞吐被一致性协议锁死。
@@ -806,7 +806,7 @@ int main() {
 
 ### Google Benchmark 版 false-sharing 对比
 
-`[实现]` 用 Google Benchmark 同时测两种布局，输出更可信：
+`[实现·GCC15]` 用 Google Benchmark 同时测两种布局，输出更可信：
 
 ```cpp
 // P37: Google Benchmark 对比 伪共享 vs 隔离（需 -lbenchmark -lpthread）
@@ -857,7 +857,7 @@ int main() {
 
 ### 真实 libstdc++ <new> 源码（对齐 new/delete 声明，逐行）
 
-`[实现]` 文件 `.../include/c++/new`，**行号：148–171**（由 `#if __cpp_aligned_new` 守护）：
+`[实现·GCC15]` 文件 `.../include/c++/new`，**行号：148–171**（由 `#if __cpp_aligned_new` 守护）：
 
 ```cpp
 #include <cstddef>
@@ -1029,9 +1029,9 @@ int main() {
 
 ## ABI 与结构体 padding（System V AMD64 ABI）
 
-`[标准][平台]` 聚合类型（struct/class）的对齐 = 其**最严格成员的对齐**；每个成员放在「满足自身对齐且不小于其偏移」的位置；整体 `sizeof` 再向上取整到该对齐的倍数（便于数组元素对齐）。
+`[标准][平台·x86-64]` 聚合类型（struct/class）的对齐 = 其**最严格成员的对齐**；每个成员放在「满足自身对齐且不小于其偏移」的位置；整体 `sizeof` 再向上取整到该对齐的倍数（便于数组元素对齐）。
 
-`[平台]` x86-64 System V ABI 关键规则：
+`[平台·x86-64]` x86-64 System V ABI 关键规则：
 
 - `char` 对齐 1；`short` 2；`int`/`float` 4；`long`/`double`/`void*`/`long long` 8；`__m128` 16。
 - 成员按声明顺序，遇对齐不足则插入 **padding（填充）**。
@@ -1073,7 +1073,7 @@ int main() {
 
 ## std::alignment_of（<type_traits>）真实源码
 
-`[实现]` 文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`，**行号：1345–1352**：
+`[实现·GCC15]` 文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`，**行号：1345–1352**：
 
 ```cpp
 #include <cstddef>
@@ -1190,7 +1190,7 @@ public class P29 {
 
 ## 源码阅读路线（替代独立阅读清单，内容已内化进正文）
 
-`[实现][平台]` 想真正吃透本章，按此顺序读真实源码与规范：
+`[实现][平台·x86-64]` 想真正吃透本章，按此顺序读真实源码与规范：
 
 1. **libstdc++ `<new>`**（`.../include/c++/new`）：`operator new/delete` 全部重载声明（L126–171）、`align_val_t`（L88–90）、`hardware_interference_size`（L210–214）。
 2. **libstdc++ `<type_traits>`**（L1345–1352 `alignment_of`、L3331 `alignment_of_v`）。
@@ -1304,26 +1304,26 @@ int main() {
 | # | 核心知识点 | 立场 | 元素 |
 |---|---|---|---|
 | 1 | 进程虚拟地址空间抽象 | `[标准]` | 1 |
-| 2 | x86-64 用 48 位规范虚拟地址 | `[平台]` | 2 |
-| 3 | 用户空间/内核空间划分 | `[标准][平台]` | 2 |
-| 4 | ASLR 随机化栈/堆/mmap 基址 | `[平台]` | 3 |
-| 5 | PIE 与地址可重定位性 | `[平台]` | 3 |
-| 6 | 可执行文件格式 ELF vs PE | `[实现]` | 4 |
-| 7 | ELF 节 .text/.data/.bss/.rodata/.tdata/.tbss | `[标准][平台]` | 5 |
-| 8 | PE 节 .text/.data/.rdata/.bss/.tls（MinGW 用 .rdata） | `[实现]` | 6 |
-| 9 | 段权限 R/W/X 由 MMU 页表落实 | `[平台]` | 7 |
-| 10 | C++ 实体→段映射（全局/静态/.data，零初始化/.bss，const/.rodata，code/.text，TLS/.tls） | `[实现]` | 8 |
+| 2 | x86-64 用 48 位规范虚拟地址 | `[平台·x86-64]` | 2 |
+| 3 | 用户空间/内核空间划分 | `[标准][平台·x86-64]` | 2 |
+| 4 | ASLR 随机化栈/堆/mmap 基址 | `[平台·x86-64]` | 3 |
+| 5 | PIE 与地址可重定位性 | `[平台·x86-64]` | 3 |
+| 6 | 可执行文件格式 ELF vs PE | `[实现·GCC15]` | 4 |
+| 7 | ELF 节 .text/.data/.bss/.rodata/.tdata/.tbss | `[标准][平台·x86-64]` | 5 |
+| 8 | PE 节 .text/.data/.rdata/.bss/.tls（MinGW 用 .rdata） | `[实现·GCC15]` | 6 |
+| 9 | 段权限 R/W/X 由 MMU 页表落实 | `[平台·x86-64]` | 7 |
+| 10 | C++ 实体→段映射（全局/静态/.data，零初始化/.bss，const/.rodata，code/.text，TLS/.tls） | `[实现·GCC15]` | 8 |
 | 11 | `.bss` 不占文件、加载清零 | `[标准]` | 5,8 |
-| 12 | mmap：映射/共享库/文件映射 | `[平台]` | 9 |
-| 13 | 分页：虚拟→物理，4 KiB 页 | `[标准][平台]` | 10 |
-| 14 | x86-64 4 级页表（9/9/9/9/12） | `[平台]` | 10 |
-| 15 | TLB 命中/未命中代价 | `[平台]` | 11 |
-| 16 | 缺页中断处理路径 | `[平台]` | 11 |
-| 17 | demand paging 按需调页 | `[标准][平台]` | 12 |
-| 18 | copy-on-write（fork/共享库/私有映射） | `[平台]` | 13 |
-| 19 | 经典地址空间布局（栈下/堆上/mmap） | `[平台]` | 14 |
+| 12 | mmap：映射/共享库/文件映射 | `[平台·Linux]` | 9 |
+| 13 | 分页：虚拟→物理，4 KiB 页 | `[标准][平台·x86-64]` | 10 |
+| 14 | x86-64 4 级页表（9/9/9/9/12） | `[平台·x86-64]` | 10 |
+| 15 | TLB 命中/未命中代价 | `[平台·x86-64]` | 11 |
+| 16 | 缺页中断处理路径 | `[平台·x86-64]` | 11 |
+| 17 | demand paging 按需调页 | `[标准][平台·x86-64]` | 12 |
+| 18 | copy-on-write（fork/共享库/私有映射） | `[平台·Linux]` | 13 |
+| 19 | 经典地址空间布局（栈下/堆上/mmap） | `[平台·Linux]` | 14 |
 | 20 | alignof / alignas 与硬件对齐要求 | `[标准]` | 15,16 |
-| 21 | cache line 与 false sharing | `[平台]` | 16 |
+| 21 | cache line 与 false sharing | `[平台·x86-64]` | 16 |
 | 22 | 过对齐类型与对齐分配（aligned_alloc/对齐 new） | `[标准]` | 18 |
 | 23 | `std::hardware_destructive_interference_size`（C++17）与 ABI padding | `[标准][实现]` | 17,21 |
 

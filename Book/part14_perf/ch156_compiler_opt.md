@@ -125,7 +125,7 @@ int diff(int a) {
 }
 ```
 
-## ③ -Ofast 与不严谨（放松 IEEE） [实现]
+## ③ -Ofast 与不严谨（放松 IEEE） [实现·GCC15]
 
 `-Ofast = -O3 -ffast-math -fallow-store-data-races`。核心是 **`-ffast-math`**：它让编译器假定浮点运算满足「实数代数律」——可重结合、可忽略 NaN/Inf、可忽略舍入误差、可假设无零除。这与 IEEE-754 严格语义冲突。
 
@@ -161,7 +161,7 @@ int guard(double x) {
 - `[实现·GCC15]`：`-Ofast` 额外开启 `-fno-math-errno`（如 `sqrt` 不再设 `errno`）、`-funsafe-math-optimizations`、`-fassociative-math`。
 - `[标准]`：`-ffast-math` 行为**不保证可移植**，且违反 `[basic.floating]` 的 IEEE 语义约定，属实现选项而非标准特性。
 
-## ④ -Os/-Oz 体积优化 [实现]
+## ④ -Os/-Oz 体积优化 [实现·GCC15]
 
 `-Os` 在 -O2 基础上**禁用会显著增大代码的优化**（如激进展开、部分向量化），目标最小代码尺寸；`-Oz`（Clang 专有，GCC 无此档）更极端的尺寸优先。
 
@@ -184,10 +184,10 @@ int os_sum(const int* p, int n) {
 //   Clang 可用 -Oz 进一步压缩（甚至牺牲更多性能换尺寸）
 ```
 
-- `[平台]`：`-Os` 在 x86 上对 **i-cache 压力**敏感的热点反而可能变快（更小更易装入缓存）；但纯计算内核会变慢。
+- `[平台·x86-64]`：`-Os` 在 x86 上对 **i-cache 压力**敏感的热点反而可能变快（更小更易装入缓存）；但纯计算内核会变慢。
 - `[经验]`：固件/WASM/移动端优先尺寸时 `-Os`；服务器计算密集用 `-O2/-O3`。
 
-## ⑤ LTO（链接时优化，跨 TU 内联） [实现]
+## ⑤ LTO（链接时优化，跨 TU 内联） [实现·GCC15]
 
 **LTO（Link-Time Optimization）** 把「整个程序」作为单一优化单元：编译期各 TU 只emit 带 IR 的目标文件（`.o` 内含 GIMPLE），链接期再跑一遍优化，于是**跨翻译单元的内联、去虚化、常量传播**成为可能——单个 TU 的 `-O2` 做不到，因为它看不到别的 `.cpp`。
 
@@ -221,9 +221,9 @@ g++ -std=c++23 -O2 -flto   Examples/_ch156_lib.o Examples/_ch156_main.o -o Examp
 ```
 
 - `[实现·GCC15]`：GCC 的 LTO 用 `gcc/lto1` 在链接期重放优化；`-flto=N` 并行分区加速大工程。
-- `[平台]`：LTO 要求**所有参与的目标文件都用同一 -flto 等级/同一编译器**生成，否则链接失败或静默失效。
+- `[平台·x86-64]`：LTO 要求**所有参与的目标文件都用同一 -flto 等级/同一编译器**生成，否则链接失败或静默失效。
 
-## ⑥ [实现]真实汇编：LTO 下跨翻译单元函数被内联（对比无 LTO 的 call）
+## ⑥ [实现·GCC15]真实汇编：LTO 下跨翻译单元函数被内联（对比无 LTO 的 call）
 
 下面是 `Examples/_ch156_main.cpp` + `Examples/_ch156_lib.cpp` 在 **GCC 13.1.0** 下两种构建的真实反汇编（节选）。
 
@@ -271,7 +271,7 @@ int main(int argc, char**) { return compute(argc); }
 - `[实现·GCC15]`：无 LTO 下 `_Z7computei` 是独立定义、需 `jmp`；有 LTO 下整程序视角使其被内联，省一次调用 + 保留参数于寄存器。
 - `[标准]`：该内联完全在 `as-if` 规则内——可观察行为不变，仅机器码形态改变。
 
-## ⑦ PGO（Profile-Guided Optimization）原理 [实现]
+## ⑦ PGO（Profile-Guided Optimization）原理 [实现·GCC15]
 
 **PGO** 分两阶段：先用**插桩版（instrumented）**跑真实负载，收集「每条分支走哪边、每个函数被调多少次、循环跑几趟」的直方图；再用这份 **profile** 重编译，让优化器按**真实热路径**决策：分支布局、块分区（hot/cold）、内联谁、展开多少。
 
@@ -340,7 +340,7 @@ g++ -std=c++23 -O2 -fprofile-use -c Examples/_ch156_pgo.cpp -o Examples/_ch156_p
 - `[经验]`：PGO 的坑是「训练集漂移」——上线后流量分布变了，旧 profile 反而劣化。建议随版本刷新 profile。
 - `[标准]`：PGO 同样守 `as-if`，插桩与正式版可观察行为一致，仅额外写 `.gcda`。
 
-## ⑨ [实现]真实汇编：PGO 下热点分支被预测/内联、冷路径移出
+## ⑨ [实现·GCC15]真实汇编：PGO 下热点分支被预测/内联、冷路径移出
 
 `Examples/_ch156_pgo.cpp` 在 **GCC 13.1.0** 下，普通 `-O2` 与 `-fprofile-use` 的段布局差异（节选）。
 
@@ -378,7 +378,7 @@ Disassembly of section .text.unlikely:     ; ← 冷路径被独立搬到此节
 - `[实现·GCC15]`：`-fprofile-use` 自动启用 `-freorder-blocks-and-partition` 等，依据计数把基本块分到 `.text.hot` / `.text.unlikely` / `.text.startup`。
 - `[经验]`：冷路径移出是 PGO 最稳的收益来源之一——它不靠「猜」，而靠实测频率。
 
-## ⑩ 优化报告 -fopt-info / -fopt-info-vec [实现]
+## ⑩ 优化报告 -fopt-info / -fopt-info-vec [实现·GCC15]
 
 GCC 能把「我做了哪些优化、为什么没做」打印出来，是验证假设的第一工具。
 
@@ -434,7 +434,7 @@ void scale(double* a, double k, int n) {
 - `[标准]`：自动向量化属实现质量，标准不规定；是否开启由 `-O` 与 `-ftree-vectorize` 决定。
 - `[经验]`：发布用 `-O2 -flto`，若要向量化内核再单独 `-O3` 或局部 `#pragma GCC optimize`。
 
-## ⑫ 内联启发式与 __attribute__((always_inline)) [实现]
+## ⑫ 内联启发式与 __attribute__((always_inline)) [实现·GCC15]
 
 ⟶ Book/part05_oo/ch51_crtp.md
 ⟶ Book/part05_oo/ch47_virtual_functions.md
@@ -511,7 +511,7 @@ float to_float(uint32_t u) { return std::bit_cast<float>(u); }  // C++20 安全�
 - `[标准]`：UB 定义于 `[intro.defs]`；一旦触发，整个程序行为**无约束**（not「结果未指定」）。
 - `[经验]`：开启 `-Wall -Wextra -fsanitize=undefined` 在开发期抓 UB；发布也建议保留 UBSan 冒烟测试。
 
-## ⑭ 编译时间代价 [实现]
+## ⑭ 编译时间代价 [实现·GCC15]
 
 ⟶ Book/part06_templates/ch63_variadic.md
 
@@ -533,7 +533,7 @@ float to_float(uint32_t u) { return std::bit_cast<float>(u); }  // C++20 安全�
 int dev_build(int x) { return x * x + x; }   // -Og 下仍可在调试器看 x 的值
 ```
 
-- `[平台]`：LTO/PGO 在内存受限的 CI runner 上需调小并行度（`-flto=2`）。
+- `[平台·x86-64]`：LTO/PGO 在内存受限的 CI runner 上需调小并行度（`-flto=2`）。
 - `[经验]`：增量开发 `-Og`，预发布 `-O2`，正式发布产物 `-O2 -flto [-fprofile-use]`。
 
 ## ⑮ 误用：过度 -Ofast 导致数值错误 [经验]
@@ -606,7 +606,7 @@ int micro_bad(int x) { return x * 2 + 1; }
 - `[经验]`：永远用 `benchmark::DoNotOptimize` / `volatile` 锚定输入与输出，否则基准测的是「空气」。
 - `[标准]`：吞吐/延迟测量非标准范畴，但 `[intro.abstract]` 的 `as-if` 正是「优化会消去无副作用代码」的依据。
 
-## ⑰ 调试：看编译器到底做了什么（-S / Compiler Explorer） [实现]
+## ⑰ 调试：看编译器到底做了什么（-S / Compiler Explorer） [实现·GCC15]
 
 要验证假设，就把编译器「摊开看」：本地 `-S` 出汇编，或用 Compiler Explorer 在线对比多编译器。
 
@@ -661,7 +661,7 @@ g++ -std=c++23 -O2 -flto -fprofile-use       obj/*.o -o app_pgo
 - `[经验]`：开发 `-Og`、CI 预发布 `-O2`、正式发布 `-O2 -flto [-fprofile-use]`。
 - `[经验]`：`-O3` 适合「计算内核库的发布」，应用层二进制用 `-O2` 更稳。
 
-## ⑲ 跨编译器（clang/MSVC 等价） [平台]
+## ⑲ 跨编译器（clang/MSVC 等价） [平台·x86-64]
 
 ⟶ Book/part02_toolchain/ch11_compilers.md
 
@@ -689,7 +689,7 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
 //   跨编译器不共享 LTO/IR 缓存：GCC 的 .o(IR) 不能喂给 Clang 链接
 ```
 
-- `[平台]`：LTO/PGO 的**中间格式是编译器私有的**，跨编译器不能混用目标文件。
+- `[平台·x86-64]`：LTO/PGO 的**中间格式是编译器私有的**，跨编译器不能混用目标文件。
 - `[经验]`：团队锁定单一编译器 + 版本做 LTO/PGO，避免 CI 与生产工具链不一致。
 
 ## ⑳ 速查表 [标准]

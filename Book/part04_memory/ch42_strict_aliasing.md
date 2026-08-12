@@ -99,7 +99,7 @@
 
 **[标准]** 严格别名规则回答一个根本问题：**当用某种类型的左值（glvalue）去读取一个对象时，这个左值的类型允许是什么？** 如果类型不匹配，标准规定这是**未定义行为（undefined behavior）**，而非"按位重新解释"。
 
-**[实现]** 编译器之所以要这套规则，是为了给优化器一个**全局假设**："两个指向*不同基础类型*的指针，永远不会指向同一块内存。" 有了这个假设，编译器可以：
+**[实现·GCC15]** 编译器之所以要这套规则，是为了给优化器一个**全局假设**："两个指向*不同基础类型*的指针，永远不会指向同一块内存。" 有了这个假设，编译器可以：
 
 - 把值**缓存在寄存器**里，不必每次都从内存重读（见 ch14 性能 SIMD、ch19 存储期）；
 - 把循环**重排**、**展开**、**向量化**；
@@ -172,7 +172,7 @@ int main() {
 }
 ```
 
-> **[平台]** 本机 x86‑64 小端：`1.0f` 的 IEEE‑754 位模式 `0x3f800000` 字节序列为 `00 00 80 3f`。该观察完全合法，是序列化、散列、网络协议的基石。
+> **[平台·x86-64]** 本机 x86‑64 小端：`1.0f` 的 IEEE‑754 位模式 `0x3f800000` 字节序列为 `00 00 80 3f`。该观察完全合法，是序列化、散列、网络协议的基石。
 
 ---
 
@@ -223,7 +223,7 @@ int main() {
 }
 ```
 
-> **[实现]** `memcpy` 的声明来自 `<cstring>`：本机 libstdc++ 在 `cstring:79` 通过 `using ::memcpy;` 引入 C 库原型 `void* memcpy(void* dest, const void* src, size_t count);`。优化器会把小型 `memcpy` 完全内联为寄存器操作（见第 21 节 `<bits/char_traits.h>:276` 用 `__builtin_memcpy`）。
+> **[实现·GCC15]** `memcpy` 的声明来自 `<cstring>`：本机 libstdc++ 在 `cstring:79` 通过 `using ::memcpy;` 引入 C 库原型 `void* memcpy(void* dest, const void* src, size_t count);`。优化器会把小型 `memcpy` 完全内联为寄存器操作（见第 21 节 `<bits/char_traits.h>:276` 用 `__builtin_memcpy`）。
 
 ---
 
@@ -249,7 +249,7 @@ int main() {
 }
 ```
 
-> **[实现]** 本机 libstdc++ `<bit>:78-88` 的 `bit_cast` 实现（真实源码，见第 21 节逐行）。注意：**libstdc++ 13.1.0 直接用 `__builtin_bit_cast`**，而不是 `memcpy`+`is_constant_evaluated` 的老式写法——`__builtin_bit_cast` 由前端保证在编译期与运行期都正确且可常量求值。
+> **[实现·GCC15]** 本机 libstdc++ `<bit>:78-88` 的 `bit_cast` 实现（真实源码，见第 21 节逐行）。注意：**libstdc++ 13.1.0 直接用 `__builtin_bit_cast`**，而不是 `memcpy`+`is_constant_evaluated` 的老式写法——`__builtin_bit_cast` 由前端保证在编译期与运行期都正确且可常量求值。
 
 ---
 
@@ -297,13 +297,13 @@ int main() {
 }
 ```
 
-> **[平台]** **C 语言更宽松**：C99/C11 允许"通过 union 做类型双关"（写入一个成员读另一个），这是 C 的明确保证。C++ 故意收紧此规则（因为它破坏了基于严格别名的优化），所以**跨语言移植 C 代码到 C++ 时 union 双关会突然变成 UB**。这正是 `std::bit_cast` 被引入的原因。
+> **[平台·x86-64]** **C 语言更宽松**：C99/C11 允许"通过 union 做类型双关"（写入一个成员读另一个），这是 C 的明确保证。C++ 故意收紧此规则（因为它破坏了基于严格别名的优化），所以**跨语言移植 C 代码到 C++ 时 union 双关会突然变成 UB**。这正是 `std::bit_cast` 被引入的原因。
 
 ---
 
 ## ⑧ 合法双关之四：`std::launder`
 
-**[实现]** `std::launder`（`[ptr.launder]`，C++17）是"指针洗涤器"：告诉编译器"这块内存里的对象表示可能已经改变，请重新推导其动态类型相关信息"。常见于 placement new 在同一地址构造新对象后（见 ch28 UB 专题）。
+**[实现·GCC15]** `std::launder`（`[ptr.launder]`，C++17）是"指针洗涤器"：告诉编译器"这块内存里的对象表示可能已经改变，请重新推导其动态类型相关信息"。常见于 placement new 在同一地址构造新对象后（见 ch28 UB 专题）。
 
 ```cpp
 // 【程序 7】std::launder：placement new 后获取正确指针
@@ -324,13 +324,13 @@ int main() {
 }
 ```
 
-> **[实现]** 本机 libstdc++ `<new>:193-194`：`constexpr _Tp* launder(_Tp* __p) noexcept { return __builtin_launder(__p); }`。它是编译期常量求值安全的。
+> **[实现·GCC15]** 本机 libstdc++ `<new>:193-194`：`constexpr _Tp* launder(_Tp* __p) noexcept { return __builtin_launder(__p); }`。它是编译期常量求值安全的。
 
 ---
 
 ## ⑨ 编译器优化如何"武器化"严格别名：`-fstrict-aliasing`
 
-**[实现]** 三个开关：
+**[实现·GCC15]** 三个开关：
 
 - **GCC**：`-fstrict-aliasing` 在 **`-O2` 及以上默认开启**（GCC 13.1.0 实测）。可用 `-fno-strict-aliasing` 关闭。
 - **Clang/LLVM**：同样在 `-O2` 及以上默认开启。
@@ -354,7 +354,7 @@ void f(int* p, float* q, int n) {
 }
 ```
 
-**[平台]** 本机 GCC 13.1.0 实测汇编（`-S -masm=intel`），关键差异如下。
+**[平台·x86-64]** 本机 GCC 13.1.0 实测汇编（`-S -masm=intel`），关键差异如下。
 
 **`-O2 -fstrict-aliasing`（默认）**——把 `*p`、`*q` **各加载一次并缓存在寄存器**，循环体内仅做浮点加法，*不再从内存重读*：
 
@@ -394,7 +394,7 @@ _Z1fPiPfi:
         jne     .L3
 ```
 
-> **[实现]** 关键证据：`-fno-strict-aliasing` 版本在循环体里有 `movss xmm0, [rdx]`（重读），而 `-fstrict-aliasing` 版本没有。这说明编译器真的把"p 与 q 指向不同对象"当成了硬假设。
+> **[实现·GCC15]** 关键证据：`-fno-strict-aliasing` 版本在循环体里有 `movss xmm0, [rdx]`（重读），而 `-fstrict-aliasing` 版本没有。这说明编译器真的把"p 与 q 指向不同对象"当成了硬假设。
 >
 > **[经验]** 若实际调用 `f(&x, reinterpret_cast<float*>(&x), 4)`（`p`、`q` 指向同一地址，违反规则），`-fstrict-aliasing` 下的结果**是未定义的**——可能 `*q` 一直用寄存器里的旧值，给出错误答案（且不崩溃）。这正是"比崩溃更危险"。
 
@@ -402,7 +402,7 @@ _Z1fPiPfi:
 
 ## ⑪ `__restrict` / `__restrict__` / `restrict`：给编译器的契约
 
-**[实现]** `restrict`（C99 关键字）及其 C++ 扩展（`__restrict` / `__restrict__`）告诉编译器：**该指针是访问其指向对象的唯一方式，没有任何其他指针 alias 它**。这是**程序员对编译器的契约**——若你撒谎（实际有别名），后果是 **UB**（编译器会基于契约做激进优化）。
+**[实现·GCC15]** `restrict`（C99 关键字）及其 C++ 扩展（`__restrict` / `__restrict__`）告诉编译器：**该指针是访问其指向对象的唯一方式，没有任何其他指针 alias 它**。这是**程序员对编译器的契约**——若你撒谎（实际有别名），后果是 **UB**（编译器会基于契约做激进优化）。
 
 | 写法 | 编译器 |
 |------|--------|
@@ -432,7 +432,7 @@ void bad(double* __restrict p, int n) {
 
 ## ⑫ `__restrict` 解锁向量化：**真实汇编**对比
 
-**[实现]** 自动向量化（`-O3`）需要证明指针不重叠。`__restrict` 提供了这个证明。
+**[实现·GCC15]** 自动向量化（`-O3`）需要证明指针不重叠。`__restrict` 提供了这个证明。
 
 ```cpp
 // 【程序 11】数组求和：无 restrict
@@ -446,7 +446,7 @@ void sum_restrict(double* __restrict dest, const double* __restrict src, int n) 
 }
 ```
 
-**[平台]** GCC 13.1.0 `-O3 -S -masm=intel` 实测：
+**[平台·x86-64]** GCC 13.1.0 `-O3 -S -masm=intel` 实测：
 
 **`sum_norestrict`（无 restrict）**——编译器**插入运行时重叠检测** `cmp rcx, rax; jne .L11`，并回退到**标量** `movsd`/`addsd` 循环（因为它担心 `dest == src+1` 这类重叠）：
 
@@ -490,7 +490,7 @@ _Z12sum_restrictPdPKdi:
         movhpd  QWORD PTR 8[rcx+rax], xmm0
 ```
 
-> **[实现]** 差异铁证：无 `restrict` 有 `cmp rcx, rax; jne .L11` 的运行时重叠分支与标量 `movsd`/`addsd`；有 `restrict` 直接用 `addpd` 向量化。这正是 ch14（性能 SIMD）依赖别名信息的原因。
+> **[实现·GCC15]** 差异铁证：无 `restrict` 有 `cmp rcx, rax; jne .L11` 的运行时重叠分支与标量 `movsd`/`addsd`；有 `restrict` 直接用 `addpd` 向量化。这正是 ch14（性能 SIMD）依赖别名信息的原因。
 
 ---
 
@@ -514,7 +514,7 @@ void transform([[noalias]] int* out,
 
 ## ⑭ `__attribute__((may_alias))`：在类型级关闭别名假设
 
-**[实现]** `__attribute__((__may_alias__))`（GCC/Clang）贴在一个**类型**上，告诉编译器："这个类型的对象可能被其他类型的左值访问，不要对它做严格别名假设。" 与 `[[noalias]]`（函数参数级）不同，`may_alias` 是**类型级**的。
+**[实现·GCC15]** `__attribute__((__may_alias__))`（GCC/Clang）贴在一个**类型**上，告诉编译器："这个类型的对象可能被其他类型的左值访问，不要对它做严格别名假设。" 与 `[[noalias]]`（函数参数级）不同，`may_alias` 是**类型级**的。
 
 ```cpp
 // 【程序 14】__attribute__((may_alias))：类型级关闭严格别名
@@ -530,7 +530,7 @@ float g(float* q, int_alias* p, int n) {
 }
 ```
 
-> **[实现]** 本机 libstdc++ 真实使用案例：
+> **[实现·GCC15]** 本机 libstdc++ 真实使用案例：
 > - `<bits/std_function.h>:83`：`union [[gnu::may_alias]] _Any_data`——`std::function` 的内部存储联合，需要确保通过不同成员访问时不触发别名 UB（见第 21 节）。
 > - `<experimental/bits/simd.h>:807-814`：定义 `template<typename _Tp> using __may_alias [[__gnu__::__may_alias__]] = _Tp;`，并在 `:1653` 用 `reinterpret_cast<const __may_alias<_To>&>(__v)` 做类型双关（SIMD 内部需要按字节视角访问）。
 
@@ -591,7 +591,7 @@ int main() {
 }
 ```
 
-> **[实现]** `asm volatile("" ::: "memory")` 的语义：
+> **[实现·GCC15]** `asm volatile("" ::: "memory")` 的语义：
 > - `volatile`：告诉编译器**不要删除**这条内联汇编（即使它"什么都不做"）；
 > - 空的输入/输出操作数 `""`：无具体操作；
 > - clobber 列表 `"memory"`：告诉编译器"内存可能被修改"，因此**所有内存位置在此点后视为失效**，必须重新加载——相当于一个全内存语义的编译器屏障。
@@ -706,7 +706,7 @@ int main() {
 
 ## ⑰ `-fno-strict-aliasing` 的代价
 
-**[实现]** 关闭严格别名（`-fno-strict-aliasing`）能让违规代码"恰好能工作"，但代价是**全局丢失基于别名的优化**：编译器对所有指针访问都保守处理，无法假设不别名，导致：
+**[实现·GCC15]** 关闭严格别名（`-fno-strict-aliasing`）能让违规代码"恰好能工作"，但代价是**全局丢失基于别名的优化**：编译器对所有指针访问都保守处理，无法假设不别名，导致：
 
 - 循环无法向量化（如第 12 节无 restrict 的情形进一步恶化）；
 - 值无法安全缓存在寄存器；
@@ -741,7 +741,7 @@ int main() { std::printf("x\n"); return 0; }
 | `__attribute__((may_alias))` | ✅ | ✅ | ❌ |
 | 别名分析实现 | `tree-ssa-alias.c` | `LLVM AliasAnalysis` | 内部（保守，默认关） |
 
-> **[平台]** 本机为 GCC 13.1.0，`-O2` 下 `bit_cast`/`restrict`/严格别名行为以 GCC 为准；Clang 行为高度一致（共用 LLVM 思路）；MSVC 因默认关严格别名，常成为"UB 看起来没事"的假象来源。
+> **[平台·x86-64]** 本机为 GCC 13.1.0，`-O2` 下 `bit_cast`/`restrict`/严格别名行为以 GCC 为准；Clang 行为高度一致（共用 LLVM 思路）；MSVC 因默认关严格别名，常成为"UB 看起来没事"的假象来源。
 
 ### 18.1 三编译器开关实验
 
@@ -763,7 +763,7 @@ int main() { std::printf("see build commands in comments\n"); return 0; }
 
 ## ⑲ 真实 microbenchmark：restrict 的向量化加速量级
 
-**[平台]** 本机 GCC 13.1.0，CPU 见 `[平台-推断]`，实测数组求和（2000 万元素 × 30 轮，`-O3 -march=native`）：
+**[平台·x86-64]** 本机 GCC 13.1.0，CPU 见 `[平台-推断]`，实测数组求和（2000 万元素 × 30 轮，`-O3 -march=native`）：
 
 ```
 norestrict : 721.0 ms  (sum sample=40.000000)
@@ -858,7 +858,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 // 88    }
 ```
 
-> **[实现]** 注意：**libstdc++ 13.1.0 直接用 `__builtin_bit_cast`**，而非"memcpy + `is_constant_evaluated`"老式写法。`__builtin_bit_cast` 由前端保证编译期/运行期都正确；`requires` 子句（`#ifdef __cpp_concepts`）在编译期强制"大小相等 + 平凡可拷贝"。
+> **[实现·GCC15]** 注意：**libstdc++ 13.1.0 直接用 `__builtin_bit_cast`**，而非"memcpy + `is_constant_evaluated`"老式写法。`__builtin_bit_cast` 由前端保证编译期/运行期都正确；`requires` 子句（`#ifdef __cpp_concepts`）在编译期强制"大小相等 + 平凡可拷贝"。
 
 ### 21.2 `<cstring>` 的 `memcpy` 声明（`<cstring>:79-80`）
 
@@ -868,7 +868,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 // 80    using ::memmove;
 ```
 
-> **[实现]** 真正的 C 原型 `void* memcpy(void* dest, const void* src, size_t count);` 来自宿主 C 库（`<string.h>`），libstdc++ 通过 `using ::memcpy;` 把它拉入 `std` 命名空间。优化器会把小尺寸 `memcpy` 内联为寄存器操作。
+> **[实现·GCC15]** 真正的 C 原型 `void* memcpy(void* dest, const void* src, size_t count);` 来自宿主 C 库（`<string.h>`），libstdc++ 通过 `using ::memcpy;` 把它拉入 `std` 命名空间。优化器会把小尺寸 `memcpy` 内联为寄存器操作。
 
 ### 21.3 `<bits/char_traits.h>` 的字节访问（`<bits/char_traits.h>:276, :445`）
 
@@ -879,7 +879,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 // 257    __builtin_memmove(__s1, __s2, __n * sizeof(char_type));  // char_traits<...>::move
 ```
 
-> **[实现]** `std::char_traits<char>::copy/assign/move` 全部用 `__builtin_memcpy`/`__builtin_memmove` 实现字节级拷贝——这正是 `char`/`unsigned char` 别名例外的标准库内部应用。通过字节视角操作任意 `char_type` 完全合法（见第 2、3 节）。
+> **[实现·GCC15]** `std::char_traits<char>::copy/assign/move` 全部用 `__builtin_memcpy`/`__builtin_memmove` 实现字节级拷贝——这正是 `char`/`unsigned char` 别名例外的标准库内部应用。通过字节视角操作任意 `char_type` 完全合法（见第 2、3 节）。
 
 ### 21.4 `<bits/std_function.h>` 的 `[[gnu::may_alias]]`（`<bits/std_function.h>:83`）
 
@@ -893,7 +893,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 // 100   };
 ```
 
-> **[实现]** `std::function` 的内部存储联合 `_Any_data` 标了 `[[gnu::may_alias]]`，确保通过不同成员（函数指针 / 对象指针 / POD 字节）访问该联合时不触发严格别名 UB。这是库作者用 `may_alias` 类型属性保护内部双关的真实范例。
+> **[实现·GCC15]** `std::function` 的内部存储联合 `_Any_data` 标了 `[[gnu::may_alias]]`，确保通过不同成员（函数指针 / 对象指针 / POD 字节）访问该联合时不触发严格别名 UB。这是库作者用 `may_alias` 类型属性保护内部双关的真实范例。
 
 ### 21.5 `<experimental/bits/simd.h>` 的 `__may_alias` 辅助（`:807-814` 与 `:1653`）
 
@@ -906,7 +906,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 // 1653   return reinterpret_cast<const __may_alias<_To>&>(__v);
 ```
 
-> **[实现]** SIMD 库需要把一个向量按另一种元素类型"逐通道"读取。它定义 `__may_alias<_Tp>` 别名模板，再 `reinterpret_cast` 到该类型——因为带 `may_alias`，编译器不对此做严格别名优化，保证逐元素访问正确。
+> **[实现·GCC15]** SIMD 库需要把一个向量按另一种元素类型"逐通道"读取。它定义 `__may_alias<_Tp>` 别名模板，再 `reinterpret_cast` 到该类型——因为带 `may_alias`，编译器不对此做严格别名优化，保证逐元素访问正确。
 
 ### 21.6 `<type_traits>` 的 `has_unique_object_representations`（`<type_traits>:3377-3395`）
 
@@ -939,7 +939,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 // 194    { return __builtin_launder(__p); }
 ```
 
-> **[实现]** `std::launder` 直接转发到 `__builtin_launder`，是一个编译期常量求值安全的"指针洗涤"原语（见第 8 节程序 7）。
+> **[实现·GCC15]** `std::launder` 直接转发到 `__builtin_launder`，是一个编译期常量求值安全的"指针洗涤"原语（见第 8 节程序 7）。
 
 ---
 
@@ -1230,7 +1230,7 @@ int main() {
 | 34 | 严格别名假设自检 | 诊断小程序 | ✅ |
 | 35 | 验证自身 strict-aliasing | 行为对照 | ✅ |
 
-> **[经验]** 本书立场分层贯穿全章：**[标准]** 给出 `[basic.lval]` 规则与 UB 定义；**[实现]** 给出 GCC/Clang/MSVC 与 libstdc++ 的真实源码与汇编；**[平台]** 标注本机 GCC 13.1.0 实测；**[经验]** 给出"优先 `memcpy`/`bit_cast`、慎用 `-fno-strict-aliasing`、三编译器验证"的工程准则。
+> **[经验]** 本书立场分层贯穿全章：**[标准]** 给出 `[basic.lval]` 规则与 UB 定义；**[实现]** 给出 GCC/Clang/MSVC 与 libstdc++ 的真实源码与汇编；**[平台·x86-64]** 标注本机 GCC 13.1.0 实测；**[经验]** 给出"优先 `memcpy`/`bit_cast`、慎用 `-fno-strict-aliasing`、三编译器验证"的工程准则。
 
 ---
 

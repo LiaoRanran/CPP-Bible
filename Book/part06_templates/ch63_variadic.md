@@ -643,7 +643,7 @@ N2242 (C++11): Variadic templates (Douglas Gregor, 2007)
   template<typename... Ts> void f(Ts... ts) { g(ts...); }
   → GCC: 递归实例化 f(int, double, char) → f(int) + f(double, char) → ...
   → C++17折叠表达式: (ts + ...) → 编译器直接展开, 不递归实例化
-  → 编译时间实测 (GCC 15.3.0 -O2, 取7次最快):
+  → 编译时间实测 (GCC 15.3.0 -O2, 取7次最快) [UNVERIFIED]:
       N=100  → fold≈111ms, rec≈125ms (1.1×)
       N=500  → fold≈118ms, rec≈484ms (4.1×)
       N=1000 → fold≈123ms, rec≈11.6s (94.5×)
@@ -688,7 +688,7 @@ int main(){auto p=std::make_shared<S>(10,20);std::cout<<p->a<<","<<p->b<<std::en
 ### 编译器展开机制
 
 GCC实现: 递归模板实例化, 编译时间随 N 近似线性增长
-C++17折叠表达式: 编译器直接展开, 编译时间基本不随 N 变 (GCC 15.3.0 实测):
+C++17折叠表达式: 编译器直接展开, 编译时间基本不随 N 变 (GCC 15.3.0 实测) [UNVERIFIED]:
   N=100  → fold≈111ms / rec≈125ms (1.1×)
   N=500  → fold≈118ms / rec≈484ms (4.1×)
   N=1000 → fold≈123ms / rec≈11.6s (94.5×)
@@ -724,7 +724,7 @@ int main(){auto p=std::make_shared<S>(10,20);std::cout<<p->a<<","<<p->b<<std::en
 | sizeof...(Ts)? | 编译期常量(参数个数) |
 | 4种折叠? | unary left=(...+p), unary right=(p+...), binary left=(0+...+p), binary right=(p+...+0) |
 | 空包折叠? | &&=true, \|\|=false, +=error(需binary fold) |
-| 递归vs折叠? | 折叠编译时间不随N增长; GCC15.3实测 N=100→1.1×, N=1000→95× |
+| 递归vs折叠? | 折叠编译时间不随N增长; GCC15.3实测 N=100→1.1×, N=1000→95× [UNVERIFIED] |
 | make_shared参数? | 可变参数+完美转发→构造函数 |
 
 ```cpp
@@ -738,7 +738,7 @@ int main(){std::cout<<sum(1,2,3,4,5)<<std::endl;return 0;}
 ```asm
 ; C++17 fold: (ts + ...) → t0 + (t1 + (t2 + ...))
 ; GCC -O2: 每条 add 指令链, 完全内联 (运行期 O(N) add, 与递归相同)
-; 编译时间实测 (GCC 15.3.0 -O2, 取最快):
+; 编译时间实测 (GCC 15.3.0 -O2, 取最快) [UNVERIFIED]:
 ;   N=100  fold≈111ms  rec≈125ms  (1.1×)
 ;   N=500  fold≈118ms  rec≈484ms  (4.1×)
 ;   N=1000 fold≈123ms  rec≈11.6s  (94.5×)
@@ -751,7 +751,7 @@ template<typename...Ts> auto sum(Ts...ts){return (ts+...);}  // fold(C++17)
 int main(){std::cout<<sum(1,2,3,4,5,6,7,8,9,10)<<std::endl;return 0;}
 ```
 
-| 方案 | 编译时间(N=100, GCC15.3) | 运行时间 | 实例化份数 |
+| 方案 | 编译时间(N=100, GCC15.3) [UNVERIFIED] | 运行时间 | 实例化份数 |
 |---|---|---|---|
 | 递归模板 | ~125ms | O(N) add 指令 | N+1 份 |
 | 折叠表达式 | ~111ms | O(N) add 指令 | 1 份 |
@@ -1082,7 +1082,7 @@ flowchart TD
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23`；同一「4×double 求和」热循环（1×10⁸ 次）分别对等价 `struct` 与 `std::tuple<double,double,double,double>` 计时；绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch63_tuple_struct.cpp`。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 | 聚合类型 | 字段访问方式 | 耗时 (ms) | 相对 struct |
 |----------|--------------|-----------|-------------|

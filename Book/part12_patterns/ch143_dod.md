@@ -183,7 +183,7 @@ struct Vec3 { float x, y, z; };   // 12B；两个对象共占 24B < 64B 缓存�
 
 ---
 
-## ④ SoA vs AoS [实现]
+## ④ SoA vs AoS [实现·GCC15]
 
 - **AoS（Array of Structures）**：`Enemy[N]`，每个元素是完整结构，字段交错。
 - **SoA（Structure of Arrays）**：`hp[N]`、`x[N]`、`y[N]` 各自独立连续。
@@ -247,7 +247,7 @@ void move_only(SoA_Move& m, int n, float dt) {
 }
 ```
 
-> **立场标签 [实现]**：选择 AoS 还是 SoA 取决于**遍历时到底读几个字段**。只读 1 个字段 → SoA 碾压；每帧要写全部字段 → 二者差异变小，AoS 写回更聚合，此时倾向 AoS 或混合（按访问频率分列）。
+> **立场标签 [实现·GCC15]**：选择 AoS 还是 SoA 取决于**遍历时到底读几个字段**。只读 1 个字段 → SoA 碾压；每帧要写全部字段 → 二者差异变小，AoS 写回更聚合，此时倾向 AoS 或混合（按访问频率分列）。
 
 下面用 `-O2 -S -masm=intel` 对比两者热循环。AoS 被编译器向量化成 `mulps`（一次处理 4 个 float）：
 
@@ -556,7 +556,7 @@ int main() {
       }
 ```
 
-> **立场标签 [实现]**：DOD 不必拒绝 `std::vector`——恰恰相反，**`vector` 的连续性与 `reserve()` 的零重分配**是 SoA 列的首选容器；只有当需要“稳定句柄”时才考虑 `vector<unique_ptr<T>>` 或索引句柄，但热循环仍应遍历底层连续列。
+> **立场标签 [实现·GCC15]**：DOD 不必拒绝 `std::vector`——恰恰相反，**`vector` 的连续性与 `reserve()` 的零重分配**是 SoA 列的首选容器；只有当需要“稳定句柄”时才考虑 `vector<unique_ptr<T>>` 或索引句柄，但热循环仍应遍历底层连续列。
 
 ---
 
@@ -747,7 +747,7 @@ Aligned : sizeof=64 alignof=64
 alignas(64) float simd_buf[1024];   // 一条缓存行内 16 个 float 对齐打包
 ```
 
-> **立场标签 [平台]**：x86 上 `vmovaps`/`vmovapd` 对齐加载比非对齐 `vmovups` 略快且不会触发 #GP；ARM 的 NEON 同样偏好对齐。把热数据 `alignas(64)` 是跨平台稳赚的对齐习惯。
+> **立场标签 [平台·x86-64]**：x86 上 `vmovaps`/`vmovapd` 对齐加载比非对齐 `vmovups` 略快且不会触发 #GP；ARM 的 NEON 同样偏好对齐。把热数据 `alignas(64)` 是跨平台稳赚的对齐习惯。
 
 ---
 
@@ -892,7 +892,7 @@ struct Worker { alignas(64) long counter; };
 std::vector<Worker> workers(threads);   // 每线程独立缓存行
 ```
 
-> **立场标签 [实现]**：分块大小应 ≥ 一个缓存行且最好是 SIMD 宽度的整数倍；线程数用 `std::thread::hardware_concurrency()` 取物理核数，避免超线程带来的 false sharing 假并行。
+> **立场标签 [实现·GCC15]**：分块大小应 ≥ 一个缓存行且最好是 SIMD 宽度的整数倍；线程数用 `std::thread::hardware_concurrency()` 取物理核数，避免超线程带来的 false sharing 假并行。
 
 ---
 
@@ -1031,7 +1031,7 @@ int main() {
 alignas(64) float big[1<<20];   // 由绑定到 node0 的线程首次写入 -> 落 node0
 ```
 
-> **立场标签 [平台]**：NUMA 是“分块 + 亲和性”的放大器：DOD 的连续分块天然契合 `numactl --cpunodebind / --membind` 的绑定策略；跨 node 的随机链表访问在 NUMA 上会被放大成数倍延迟。
+> **立场标签 [平台·x86-64]**：NUMA 是“分块 + 亲和性”的放大器：DOD 的连续分块天然契合 `numactl --cpunodebind / --membind` 的绑定策略；跨 node 的随机链表访问在 NUMA 上会被放大成数倍延迟。
 
 ---
 

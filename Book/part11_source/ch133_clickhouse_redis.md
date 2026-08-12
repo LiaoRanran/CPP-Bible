@@ -90,9 +90,9 @@ struct ColumnVector : IColumn {
 };
 ```
 
-- `[实现]`：列存的收益不来自「少读数据」（仍需读整列），而来自**内存布局对 SIMD 与 prefetch 友好**——连续 `double[]` 命中硬件预取，且循环体可被自动向量化。
+- `[实现·ClickHouse]`：列存的收益不来自「少读数据」（仍需读整列），而来自**内存布局对 SIMD 与 prefetch 友好**——连续 `double[]` 命中硬件预取，且循环体可被自动向量化。
 
-## ③ [实现]源码剖析：向量化相关文件（上游参考，逐行解读）
+## ③ [实现·ClickHouse]源码剖析：向量化相关文件（上游参考，逐行解读）
 
 > 本节片段取自 ClickHouse 上游仓库**真实源码**（长期稳定主干，行号为上游参考，非本机编译）。本机未安装 ClickHouse，片段以「上游参考」标注，仅作逐行解读，不声称在本机编译。复杂度标注：`O(1)` 接口/指针、`O(n)` 整列批量、`O(log n)` 索引查找。
 
@@ -244,7 +244,7 @@ int main() {
 
 > 该块标注 `[自包含可编译]`：遵循全书红线，所有 `cpp` 围栏块均可被 `tools/chapter_compile_check.py` 独立 `-c` 编译（GCC 13.1，零失败）。上游参考片段（③-1~③-4）以 `text` 围栏呈现，不进入编译门禁。
 
-- `[实现]`：向量化执行 = **数据按列连续** + **kernel 对整列循环** + **编译器自动 emit `vaddps`/`vmulps`** + **内存池去掉 malloc 锁**。第⑥节用本机 g++ 取真实汇编证明这一点。
+- `[实现·ClickHouse]`：向量化执行 = **数据按列连续** + **kernel 对整列循环** + **编译器自动 emit `vaddps`/`vmulps`** + **内存池去掉 malloc 锁**。第⑥节用本机 g++ 取真实汇编证明这一点。
 
 ## ④ Redis 事件循环（ae.c 单线程 Reactor）
 
@@ -349,7 +349,7 @@ typedef struct zskiplistNode {
 - `backward` 仅最底层有，支持 `ZRANGE` 从尾向头遍历；其余层只向前，省一半指针。
 - 与 `dict` 共享 `ele` 指针：同一 member 在跳表和字典中各有一份引用、同一 `sds`，避免双份字符串拷贝——这是 Redis「用指针共享省内存」的一贯手法。
 
-- `[实现]`：Redis 把「并发」交给内核 `epoll`，把「执行」锁死在单线程——这样所有数据结构访问都**天然无锁**，这是它简单又快的 root cause。
+- `[实现·Redis]`：Redis 把「并发」交给内核 `epoll`，把「执行」锁死在单线程——这样所有数据结构访问都**天然无锁**，这是它简单又快的 root cause。
 
 ## ⑤ 与 C++ 特性：模板 / 智能指针 / 内存池
 
@@ -392,7 +392,7 @@ struct RedisConn {
 - `[标准]`：模板提供编译期多态（无 vtable 开销），智能指针提供 RAII 安全；二者都被两个系统间接/直接使用。
 - `[经验]`：高频路径（ClickHouse 列、Redis 事件）几乎不用 `shared_ptr`——引用计数本身就要原子操作，破坏单线程/向量化假设。
 
-## ⑥ [实现]真实：编译自包含向量化批处理 / 事件循环等价示例取汇编
+## ⑥ [实现·GCC15]真实：编译自包含向量化批处理 / 事件循环等价示例取汇编
 
 下面两例自包含、可独立编译（`Examples/_ch133_vectorize.cpp`、`Examples/_ch133_eventloop.cpp`）。用本机 GCC 13.1.0 取**真实汇编**。
 
@@ -461,7 +461,7 @@ g++ -std=c++20 -O2 -S -masm=intel Examples/_ch133_eventloop.cpp -o Examples/_ch1
 call    rax                 ; 单线程串行分发回调，无锁、无上下文切换
 ```
 
-- `[实现]`：示例 A 的 `vaddps zmm` 一条指令完成 16 个浮点加法，正是 ClickHouse 列存向量化的**硬件本质**；示例 B 的 `call rax` 是 Redis 事件循环唯一的「多路分发」点，全程单线程。
+- `[实现·GCC15]`：示例 A 的 `vaddps zmm` 一条指令完成 16 个浮点加法，正是 ClickHouse 列存向量化的**硬件本质**；示例 B 的 `call rax` 是 Redis 事件循环唯一的「多路分发」点，全程单线程。
 
 ## ⑦ 性能：向量化 vs 行存
 
@@ -522,7 +522,7 @@ void aeProcessEvents(aeEventLoop* el, int flags) {
 }
 ```
 
-- `[平台]`：`-fopt-info-vec` 在 MinGW GCC 13 同样有效；Windows 下用 WinDbg/VS 看寄存器 `zmm0` 即可确认是否真在跑 AVX-512。
+- `[平台·Linux]`：`-fopt-info-vec` 在 MinGW GCC 13 同样有效；Windows 下用 WinDbg/VS 看寄存器 `zmm0` 即可确认是否真在跑 AVX-512。
 
 ## ⑨ 跨平台
 
@@ -565,7 +565,7 @@ bool has_avx2() {
 #endif
 ```
 
-- `[平台]`：写跨平台 SIMD 的代码，**永远优先用编译器自动向量化 + `alignas`**，而非手撸 intrinsics——除非 profiling 证明某热点需要。
+- `[平台·Linux]`：写跨平台 SIMD 的代码，**永远优先用编译器自动向量化 + `alignas`**，而非手撸 intrinsics——除非 profiling 证明某热点需要。
 
 ## ⑩ 常见陷阱
 
@@ -883,7 +883,7 @@ double par_sum(const std::vector<double>& v) {
 // Windows 等价：VTune / 看寄存器 zmm0 是否被写
 ```
 
-- `[平台]`：源码阅读顺序决定理解速度——**先数据结构（IColumn / aeFileEvent），后控制流（executeOnColumn / aeMain）**。
+- `[平台·Linux]`：源码阅读顺序决定理解速度——**先数据结构（IColumn / aeFileEvent），后控制流（executeOnColumn / aeMain）**。
 
 ## ⑲ [经验]选型
 
@@ -1043,7 +1043,7 @@ int main() {
 4. **连接串**：Redis 用 `tcp://host:port`（或 `redis://` 带密码）；ClickHouse 用 `host:port` + 账号密码，列数据尽量批量发送发挥向量化优势（见第⑭节）。
 5. **取舍**：热数据/低延迟走 Redis，海量扫描聚合走 ClickHouse；两者用"Redis 缓存 + ClickHouse 落库"分层最常见。
 
-- `[平台]`：`redis-plus-plus` 依赖 `hiredis`，链接时别忘了二者都加；`clickhouse-cpp` 用 TCP 原生协议，比走 HTTP 更高效。
+- `[平台·Linux]`：`redis-plus-plus` 依赖 `hiredis`，链接时别忘了二者都加；`clickhouse-cpp` 用 TCP 原生协议，比走 HTTP 更高效。
 - `[引用]` redis-plus-plus：`https://github.com/sewenew/redis-plus-plus`；ClickHouse C++ 客户端：`https://github.com/ClickHouse/clickhouse-cpp`。
 
 ## 附录 E：ClickHouse/Redis 底层与设计

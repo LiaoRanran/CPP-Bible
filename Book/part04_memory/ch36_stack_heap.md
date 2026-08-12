@@ -360,7 +360,7 @@ int main() {
 
 ### 8.4 防护机制三：ASan（AddressSanitizer）
 
-[实现] `-fsanitize=address` 插桩，运行时检测越界读写/use-after-return。开销约 2×，但能精确定位溢出点。
+[实现·GCC15] `-fsanitize=address` 插桩，运行时检测越界读写/use-after-return。开销约 2×，但能精确定位溢出点。
 
 ```bash
 # 本机命令（MinGW 支持 ASan，需随编译器发布的 libasan）
@@ -417,7 +417,7 @@ int main() {
 
 ### 9.1 `alloca`：栈上动态大小分配
 
-[实现] `alloca(size)` 在**当前栈帧**内直接移动 `RSP` 分配内存，函数返回时随栈帧一起自动回收——**不能用 `free`，也不能跨函数返回使用**。它本质是内联的 `sub rsp, size`。
+[实现·GCC15] `alloca(size)` 在**当前栈帧**内直接移动 `RSP` 分配内存，函数返回时随栈帧一起自动回收——**不能用 `free`，也不能跨函数返回使用**。它本质是内联的 `sub rsp, size`。
 
 ```cpp
 // P8：alloca 在栈上按需分配（Microsoft x64 下由编译器内联 sub rsp）
@@ -461,7 +461,7 @@ int main() { f(10); }
 
 [标准] C 库 `malloc(size)` 向堆请求至少 `size` 字节的、适合任何基本类型对齐（通常 16 B）的未初始化内存，成功返回指针，失败返回 `NULL` 并将 `errno` 置为 `ENOMEM`。`free(ptr)` 释放。配对规则：`malloc`/`calloc`/`realloc` 得到的指针必须交给 `free`，且只能 `free` 一次（double free 是 UB）。
 
-[实现] 在 libstdc++ 的 `<cstdlib>` 中，`malloc`/`free` 是 **C 库函数**，通过 `using ::malloc;` 引入 `std` 命名空间。本机真实声明（`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cstdlib`）：
+[实现·GCC15] 在 libstdc++ 的 `<cstdlib>` 中，`malloc`/`free` 是 **C 库函数**，通过 `using ::malloc;` 引入 `std` 命名空间。本机真实声明（`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cstdlib`）：
 
 ```cpp
 // 真实源码：.../x86_64-w64-mingw32/13.1.0/include/c++/cstdlib
@@ -667,7 +667,7 @@ int main() {
 
 [标准] `new`/`delete` 是 C++ 运算符，语义强于 `malloc`：`new` 做**两件事**——（1）调用 `operator new` 获取原始内存；（2）在得到的内存上**调用构造函数**。同理 `delete` 先**析构**再调 `operator delete` 释放。
 
-[实现] 默认的 `::operator new` **底层就是调用 `malloc`**（libstdc++ 实现见 `libstdc++-v3/libsupc++/new_op.cc`；本机仅含头文件，故标注 `[实现-推断]`）。本机 `<new>` 的真实**声明**（`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`）：
+[实现·GCC15] 默认的 `::operator new` **底层就是调用 `malloc`**（libstdc++ 实现见 `libstdc++-v3/libsupc++/new_op.cc`；本机仅含头文件，故标注 `[实现-推断]`）。本机 `<new>` 的真实**声明**（`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`）：
 
 ```cpp
 #include <cstddef>
@@ -1328,20 +1328,20 @@ int main() {
 | KP7 | callee-saved：RBX/RBP/R12–R15（被调用者须保存恢复） | [标准] | §6 |
 | KP8 | 红区 128 B：叶子函数免调整使用；内核 `-mno-red-zone` 禁用 | [标准] | §7 |
 | KP9 | 栈向下增长 | [标准] | §8,§19(P26) |
-| KP10 | 栈溢出 / guard page / SIGSEGV | [实现] | §8.1,§8.2 |
-| KP11 | `-fstack-protector`（canary）防护 | [实现] | §8.3 |
-| KP12 | ASan 检测越界 | [实现] | §8.4 |
-| KP13 | `alloca`：栈内动态分配，返回即回收，禁 free | [实现] | §9.1 |
-| KP14 | VLA：C99 有，C++ 标准无；GCC/Clang 扩展，MSVC 不支持 | [标准]/[实现] | §9.2 |
+| KP10 | 栈溢出 / guard page / SIGSEGV | [实现·GCC15] | §8.1,§8.2 |
+| KP11 | `-fstack-protector`（canary）防护 | [实现·GCC15] | §8.3 |
+| KP12 | ASan 检测越界 | [实现·GCC15] | §8.4 |
+| KP13 | `alloca`：栈内动态分配，返回即回收，禁 free | [实现·GCC15] | §9.1 |
+| KP14 | VLA：C99 有，C++ 标准无；GCC/Clang 扩展，MSVC 不支持 | [标准]/[实现·GCC15] | §9.2 |
 | KP15 | `malloc`/`free` 语义（对齐、NULL、errno、配对） | [标准] | §10 |
 | KP16 | ptmalloc2 arena（主/非主，降锁竞争） | [实现-推断] | §11.1 |
 | KP17 | bin 分类：fastbin/smallbin/unsortedbin/largebin | [实现-推断] | §11.2 |
 | KP18 | chunk 头 size + 标志位（P/M/A：prev_inuse/mmapped/non_main_arena） | [实现-推断] | §11.3 |
 | KP19 | coalescing（合并）与 tcache（每线程免锁缓存） | [实现-推断] | §11.4 |
 | KP20 | jemalloc（arena+run+bin+size class）/ tcmalloc（thread cache + central free list） | [实现-推断] | §12 |
-| KP21 | 内部碎片 / 外部碎片 成因 | [标准]/[实现] | §13 |
-| KP22 | `new`/`delete` = 分配+构造 / 析构+释放；默认 `operator new` 调 `malloc` | [标准]/[实现] | §14 |
-| KP23 | 栈分配 = `sub rsp`（O(1) 无锁）；堆分配 = 锁+查找（数百 ns）；栈展开保证 RAII | [标准]/[实现] | §15,§18 |
+| KP21 | 内部碎片 / 外部碎片 成因 | [标准]/[实现·GCC15] | §13 |
+| KP22 | `new`/`delete` = 分配+构造 / 析构+释放；默认 `operator new` 调 `malloc` | [标准]/[实现·GCC15] | §14 |
+| KP23 | 栈分配 = `sub rsp`（O(1) 无锁）；堆分配 = 锁+查找（数百 ns）；栈展开保证 RAII | [标准]/[实现·GCC15] | §15,§18 |
 
 ---
 
@@ -1564,7 +1564,7 @@ int main() {
 ```
 
 **结论**：栈只适合大小已知且较小、生命周期随作用域的对象；其余交给堆与容器/智能指针。
-## 可视化速查图（Mermaid 补充）[实现][平台]
+## 可视化速查图（Mermaid 补充）[实现·GCC15][平台·x86-64]
 
 > 以一张地址空间图补全 ⑲ 与附录 I 的栈堆文字描述。
 

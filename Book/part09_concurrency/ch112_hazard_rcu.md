@@ -5,7 +5,7 @@
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 取证源：`Examples/_ch112_hp.cpp`、`Examples/_ch112_rcu.cpp`；汇编产物 `Examples/_ch112_hp_O2.asm` / `_O0.asm`、`Examples/_ch112_rcu_O2.asm` / `_O0.asm`。
-> 立场标签遵循 CONVENTIONS.md：凡 `[实现]` 均标注具体工具链（`[实现·GCC15]`）；可本机复编验证者标 `[VERIFIED]`，涉及 ARM/弱内存模型或绝对时序者标 `[UNVERIFIED]`。
+> 立场标签遵循 CONVENTIONS.md：凡 `[实现·GCC15]` 均标注具体工具链（`[实现·GCC15]`）；可本机复编验证者标 `[VERIFIED]`，涉及 ARM/弱内存模型或绝对时序者标 `[UNVERIFIED]`。
 
 ## ⓪ 历史动机：并发内存回收的来龙去脉
 > 无锁结构最尴尬的时刻：读者手里还捏着节点指针，写者却想把这块内存 `delete` 掉。
@@ -78,7 +78,7 @@ delete old;                // ② 与上面 p->val 并发 -> data race
 - `[标准]`：`std::atomic` 只保证对**原子对象本身**的操作有序；它不延长被指向对象的生命周期（`[atomics.order]`）。
 - `[经验]`：RCU/HP 的本质都是把"对象生命周期"与"指针可见性"解耦——先让指针不可见，再等所有人都退出，最后才 `delete`。
 
-## ③ Hazard Pointer 原理（读者登记正在用的指针） [实现]
+## ③ Hazard Pointer 原理（读者登记正在用的指针） [实现·GCC15]
 
 Hazard Pointer（HP，Maged Michael, 2004；C++26 已采纳为 `std::hazard_pointer`，见 §⑲）的核心是：**每个读者在解引用共享指针前，先把自己的意图写进一张全局"声明表"**，声明"我正在用这个地址，谁都别动它"。
 
@@ -105,7 +105,7 @@ void* protect(atomic<void*>* src, int slot) {
 - `[算法]`：HP 的安全性不变量是「被任一 HP 槽保护的指针所指向对象，在其槽被清除前绝不会被 scan 回收」。该不变量由 `seq_cst` 登记 + `acquire` 扫描构成的 happens-before 链保证（见 §⑪ 汇编与内存模型推理），属于**算法正确性论证**，与「能否编译」相互独立——编译通过并不推出不变量成立。
 - `[经验]`：HP 槽数量 = 并发读者上限，通常很小（64 足够）。登记成本是一次原子写，远小于加锁。
 
-## ④ HP 实现：全局 HP 数组 + 回收列表 [实现]
+## ④ HP 实现：全局 HP 数组 + 回收列表 [实现·GCC15]
 
 一个工业级 HP 框架三件套：**HP 数组（读者登记）**、**retired 列表（待回收对象）**、**scan 例程（决定哪些能删）**。
 
@@ -149,7 +149,7 @@ void retire(void* p) {
 - `[实现·GCC15] [VERIFIED]`：`alignas(64)` 把每个 HP 槽放到独立缓存行，避免多核同时写相邻槽引起的 false sharing（§⑥ 量化）。
 - `[经验]`：HP 数组固定、retired 列表动态增长；retired 的 `delete` 推迟到 `scan` 确认无人保护时。
 
-## ⑤ HP 回收流程（扫描 HP 表） [实现]
+## ⑤ HP 回收流程（扫描 HP 表） [实现·GCC15]
 
 回收的关键不变量：**若某个 HP 槽里存着 `ptr`，则 `ptr` 此刻正被某读者使用，绝不能删**。
 
@@ -265,7 +265,7 @@ void synchronize_rcu(std::atomic<int>* readers, int n) {
 - `[标准]`：宽限期定义不依赖任何锁，只依赖"读者已不在临界区"这一观察（`[intro.races]` 的 happens-before 经由原子操作建立）。
 - `[经验]`：宽限期是 RCU 唯一的代价来源——写者必须等它结束才能回收；高频写 + 长读者会导致写者堆积。
 
-## ⑨ RCU 在 Linux 内核的应用 [平台]
+## ⑨ RCU 在 Linux 内核的应用 [平台·Linux]
 
 Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系统 inode、防火墙规则等都用 RCU 让**海量读者零开销并发读，写者偶尔更新**。
 
@@ -287,7 +287,7 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 - `[平台·Linux]`：内核 RCU 利用"上下文切换即静止态"免去显式计数，读者临界区只是关抢占，极端轻量。
 - `[经验]`：内核与用户态 RCU 共享同一思想，但静止态检测机制完全不同（内核靠调度器，用户态靠线程局部计数）。
 
-## ⑩ 用户态 RCU(urcu) 简介 [实现]
+## ⑩ 用户态 RCU(urcu) 简介 [实现·GCC15]
 
 用户态没有调度器帮忙，urcu（Userspace RCU 库）用**每线程静态计数器**实现静止态检测：读者进入临界区时本线程计数 +1，离开时 -1；`synchronize_rcu()` 等待每个线程计数归零。
 
@@ -320,7 +320,7 @@ void my_synchronize_rcu() {
 - `[实现·urcu]`：urcu 的 `rcu_read_lock/unlock` 编译为线程局部变量的 `++/--`，读者路径约几条指令，比 HP 的原子写还轻。
 - `[经验]`：选 urcu 还是自研：直接用 `liburcu`（多种 flavor：qsbr / mb / signal）比手写更稳，尤其多架构内存模型差异。
 
-## ⑪ [实现]真实汇编/伪代码：HP 注册与回收的关键指令 [实现·GCC15] [VERIFIED]
+## ⑪ [实现·GCC15]真实汇编/伪代码：HP 注册与回收的关键指令 [实现·GCC15] [VERIFIED]
 
 以下为 GCC 15.3.0 对 `Examples/_ch112_hp.cpp` 的**真实产物**（`-O2 -masm=intel`）。注意 `seq_cst` 的 HP 登记编译为 `xchg`（隐式 `lock`），回收的 `exchange` 同样为 `xchg`。
 
@@ -410,7 +410,7 @@ rcu_update:
 - `[标准]`：二者都不属 C++11 标准库（HP 直到 C++26 才进入 `std`），但可在任何 C++11+ 用原子操作自行实现。
 - `[经验]`：HP 的回收更"及时"，RCU 的读者更"便宜"——这是二者根本权衡。
 
-## ⑬ quiescent state 检测 [实现]
+## ⑬ quiescent state 检测 [实现·GCC15]
 
 quiescent state（静止态）是"本线程此刻不持有任何被保护指针"的声明。检测机制决定 RCU 实现形态。
 
@@ -486,7 +486,7 @@ constexpr int MAX_HP = 8;   // ❌ 若并发读者达 16，槽不够 -> 误回�
 
 - `[经验]`：四类误用都源于"生命周期管理不对称"——要么登记/解除不配对，要么回收早于宽限期。HP 必须 `protect`/`clear` 严格配对（用 RAII 封装最稳）。
 
-## ⑯ 调试(ThreadSanitizer) [实现]
+## ⑯ 调试(ThreadSanitizer) [实现·GCC15]
 
 HP/RCU 无法消除数据竞争检测，**错误实现照样会被 TSan 抓到**；正确实现则 TSan 应静默。
 

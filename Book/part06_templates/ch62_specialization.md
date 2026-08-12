@@ -1211,7 +1211,7 @@ int main()
 
 > 环境：AMD Ryzen 9 7940HX，g++ 15.3.0 `-std=c++23 -O2`；同一运算内核（2×10⁷ 次迭代）分别对两条路径计时；5 轮取中位（抗冷启动）。绝对毫秒随机器而变，加速比才是可移植信号。基准源码见库根 `_bench_d5_ch62_spec_branch.cpp`。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 | 策略 | 分派方式 | 耗时 (ms) | 相对 |
 |------|----------|-----------|------|
@@ -1277,7 +1277,7 @@ int main() {
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | if constexpr 是 C++17 编译期条件分派 |
 | ch153 CPU 微基准 | Book/part14_perf/ch153_cpu_micro.md | 分支预测惩罚的微架构量化 |
 
-### D5.5 汇编实证 (GCC 15.3.0)
+### D5.5 汇编实证 (GCC 15.3.0) [VERIFIED]
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch62_spec_branch.cpp` 真实生成（节选 `run_ifelse_chain`）。`run_ifelse_chain` 对随机洗排的 `tag` 做 `test r8d,r8d; je` / `cmp r8d,1; je` **条件分支**（33 条指令）；随机 tag 使分支预测器无法学习 → 高 misprediction。而 `if constexpr` 路径 `run_constexpr_route<Tag>` 在编译期消除所有分支、单态化为直线代码并内联进 `main`，无独立符号。10.4× 差距主要来自分支预测失败惩罚（见 D5.2.1/2.2）。
 

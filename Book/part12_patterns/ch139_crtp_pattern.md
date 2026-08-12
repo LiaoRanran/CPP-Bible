@@ -9,7 +9,7 @@
 > - 取证命令（可复现）：`g++ -std=c++23 -O2 -S -masm=intel -o xxx.asm xxx.cpp`；`-O0` + `nm` 看 mangled；`-O2` + `std::chrono` 微基准；`time g++ -std=c++23 -O2 -c -o /dev/null file.cpp` 测编译耗时。
 > - 配套源码：`Examples/_ch139_*.cpp`；配套汇编：`Examples/_ch139_*.asm`。
 > - 编译器内建库取证：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/shared_ptr.h`。
-> 本章立场标签：`[标准]`（标准语义）、`[实现]`（编译器/ABI 实现）、`[平台]`（MinGW/x86-64 取证）、`[经验]`（工程取舍）。
+> 本章立场标签：`[标准]`（标准语义）、`[实现]`（编译器/ABI 实现）、`[平台·x86-64]`（MinGW/x86-64 取证）、`[经验]`（工程取舍）。
 
 ---
 
@@ -239,7 +239,7 @@ _Z9process_vRK6ShapeV:
         ret
 ```
 
-`[平台]` 取证结论（x86-64，MinGW g++ 13.1.0）：CRTP 在 `-O2` 下被**整体内联为 4 条浮点指令、零函数调用**；虚函数即使在 `-O2` 也至少多出「读 vptr → 读 vtable →（投机）比较跳转」的额外开销，去虚拟化被禁用时退化为一次 `call [QWORD PTR [rax]]` 间接调用。
+`[平台·x86-64]` 取证结论（x86-64，MinGW g++ 13.1.0）：CRTP 在 `-O2` 下被**整体内联为 4 条浮点指令、零函数调用**；虚函数即使在 `-O2` 也至少多出「读 vptr → 读 vtable →（投机）比较跳转」的额外开销，去虚拟化被禁用时退化为一次 `call [QWORD PTR [rax]]` 间接调用。
 
 ---
 
@@ -563,7 +563,7 @@ template<typename _Tp>
   };
 ```
 
-`[实现]` 注意第 919 行的 `template<typename _Tp> class enable_shared_from_this`——`_Tp` 就是「将要派生它的类」，`shared_from_this()` 通过 `_M_weak_this` 拿到自身的 `shared_ptr`，整个过程没有虚表参与。这正是 §③ 提到的「标准库真实 CRTP」。
+`[实现·libstdc++]` 注意第 919 行的 `template<typename _Tp> class enable_shared_from_this`——`_Tp` 就是「将要派生它的类」，`shared_from_this()` 通过 `_M_weak_this` 拿到自身的 `shared_ptr`，整个过程没有虚表参与。这正是 §③ 提到的「标准库真实 CRTP」。
 
 ```cpp
 #include <utility>
@@ -613,7 +613,7 @@ int main() {
 
 真实运行输出：`sizeof(NoEBO)=8 sizeof(WithEBO)=4`。
 
-`[平台]` 取证解读（x86-64，LP64）：`NoEBO` 中 `EmptyPolicy` 作成员占 1 字节、为满足 `int` 的对齐补 3 字节，加 `int` 4 字节 = 8；`WithEBO` 把空 `MyPolicy` 当基类，EBO 把它压成 0 字节，只剩 `int` 4 字节 = 4。CRTP 的「基类 + 方法」结构天然契合 EBO，比「成员 + 组合」更省内存。
+`[平台·x86-64]` 取证解读（x86-64，LP64）：`NoEBO` 中 `EmptyPolicy` 作成员占 1 字节、为满足 `int` 的对齐补 3 字节，加 `int` 4 字节 = 8；`WithEBO` 把空 `MyPolicy` 当基类，EBO 把它压成 0 字节，只剩 `int` 4 字节 = 4。CRTP 的「基类 + 方法」结构天然契合 EBO，比「成员 + 组合」更省内存。
 
 ```cpp
 // EBO 在策略类叠叠乐中的实际价值：N 个空策略只增 0 字节
@@ -769,7 +769,7 @@ virtual  : 537546900 ns
 crtp     : 510822200 ns
 ```
 
-`[平台]` 取证解读：当 `cv`/`cc` 是**函数内可见的具体对象**时，g++ `-O2` 对虚调用也做了投机内联，所以两者差距不大（约 5%）。**真正的差距出现在「动态类型对编译器不可见」时**（跨编译单元、经容器取出、或 `-fno-devirtualize`），此时虚版本退化为 `call [vtable]`，而 CRTP 始终零间接调用。基准结论：**CRTP 的性能优势是「上限优势」——在最坏情况下它稳赢，最好情况下它与去虚拟化后的虚调用持平。**
+`[平台·x86-64]` 取证解读：当 `cv`/`cc` 是**函数内可见的具体对象**时，g++ `-O2` 对虚调用也做了投机内联，所以两者差距不大（约 5%）。**真正的差距出现在「动态类型对编译器不可见」时**（跨编译单元、经容器取出、或 `-fno-devirtualize`），此时虚版本退化为 `call [vtable]`，而 CRTP 始终零间接调用。基准结论：**CRTP 的性能优势是「上限优势」——在最坏情况下它稳赢，最好情况下它与去虚拟化后的虚调用持平。**
 
 ```cpp
 // 让差距放大的写法（隐藏动态类型，迫使虚调用无法被去虚拟化）
@@ -884,7 +884,7 @@ struct S2 : SomePolicy { int x; };     // EBO 压掉空基类
 
 - **CRTP 是什么**：`struct Derived : Base<Derived>`——基类用模板参数持有派生类类型，编译期完成静态多态。
 - **核心机制**：`static_cast<Derived*>(this)` 把 `this` 下转为派生类，零运行时开销（§③、§④ 汇编佐证）。
-- **性能真相**（`[平台]` 取证）：`-O2` 下 CRTP 调用被整体内联为几条指令；虚函数最坏退化为 `call [vtable]`，最好经投机去虚拟化与 CRTP 持平（§④、§⑯）。
+- **性能真相**（`[平台·x86-64]` 取证）[VERIFIED]：`-O2` 下 CRTP 调用被整体内联为几条指令；虚函数最坏退化为 `call [vtable]`，最好经投机去虚拟化与 CRTP 持平（§④、§⑯）。
 - **能力全家桶**：接口检查（§⑤）、Barton-Nackman 运算符（§⑥）、实例计数（§⑦）、单例（§⑨）、mixin 组合（⑩）、EBO 省内存（§⑫）、constexpr 编译期求值（§⑮）。
 - **标准库与工业界在用**：libstdc++ 的 `enable_shared_from_this`（§⑪）、Eigen 的 `DenseBase<Derived>`、Boost.Operators、fmt/Abseil 的静态分发（§⑧、§⑰）。
 - **边界与代价**：不能运行时选择实现（§⑬）、错误信息与符号难读（§⑭）、编译成本主要来自头文件而非递归深度（§⑱）。

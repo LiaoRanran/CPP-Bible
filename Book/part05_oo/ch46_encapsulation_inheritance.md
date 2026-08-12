@@ -595,7 +595,7 @@ int main() { Rect r{3,4}; Sqr s{5}; printf("%d %d\n", r.area(), s.area()); }
 
 **[标准]**　`[class.copy.ctor]` / `[dcl.init]`：当把派生类对象**按值**赋给/初始化基类对象时，只拷 `Base` 子对象部分，**派生类独有的成员被丢弃**，这就是**切片（slicing）**。若基类有虚函数，基类子对象里的 vptr 被**基类自己的 vptr** 覆盖，动态多态行为随之丧失。
 
-**[平台]**　对象布局（Itanium ABI，GCC/Clang 一致）：`Derived` 的地址 == 其首基类的地址（单继承、非虚继承时），派生部分紧随基类子对象之后。
+**[平台·Itanium C++ ABI]**　对象布局（Itanium ABI，GCC/Clang 一致）：`Derived` 的地址 == 其首基类的地址（单继承、非虚继承时），派生部分紧随基类子对象之后。
 
 ```
 对象布局（单继承，无虚继承）：
@@ -1090,7 +1090,7 @@ int main() { Car c; c.drive(); }
     { };
 ```
 
-**[实现]**　libstdc++（GCC 15.3.0）直接委托给**编译器内建 `__is_base_of`**（由 GCC 前端在 `[class.derived]` 语义上实现）。`__is_base_of(B, D)` 在 `B` 是 `D` 的基类（含自身、含多继承、含虚基类）时为真。标准变量模板在 `type_traits:3695`：
+**[实现·libstdc++]**　libstdc++（GCC 15.3.0）直接委托给**编译器内建 `__is_base_of`**（由 GCC 前端在 `[class.derived]` 语义上实现）。`__is_base_of(B, D)` 在 `B` 是 `D` 的基类（含自身、含多继承、含虚基类）时为真。标准变量模板在 `type_traits:3695`：
 
 ```cpp
   template<typename _Base, typename _Derived>
@@ -1174,7 +1174,7 @@ int main() {
 #endif
 ```
 
-**[实现]**　解读：当编译器**没有** `__is_convertible` 内建时，libstdc++ 用 SFINAE 试探「`declval<_From>()` 能否传给接收 `_To` 的 `__test_aux`」。`#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"` 很重要：若 `_From`/`_To` 的拷贝构造是 `private`，本应报警，但类型特性探测不该因访问检查失败而误报，故临时关闭该警告。`noexcept` 标记确保探测自身不影响 `is_nothrow_convertible` 推导。
+**[实现·libstdc++]**　解读：当编译器**没有** `__is_convertible` 内建时，libstdc++ 用 SFINAE 试探「`declval<_From>()` 能否传给接收 `_To` 的 `__test_aux`」。`#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"` 很重要：若 `_From`/`_To` 的拷贝构造是 `private`，本应报警，但类型特性探测不该因访问检查失败而误报，故临时关闭该警告。`noexcept` 标记确保探测自身不影响 `is_nothrow_convertible` 推导。
 
 ```cpp
 // [示例 42] is_convertible：派生 → 基类可隐式转（is-a 的编译期证据）
@@ -1212,7 +1212,7 @@ int main() {
     { };
 ```
 
-**[实现]**　`uses_allocator<T, Alloc>` 为真的条件：`T` 有嵌套类型 `allocator_type`，且 `Alloc` 可转换为它。它利用 **SFINAE + `__void_t`**（检测 `T::allocator_type` 是否存在）与 **偏特化** 实现「如果 `T` 含 `allocator_type` 就进一步校验可转换性，否则直接 `false_type`」。这正是「用类型萃取探测继承/嵌套类型」的工业级范例——与本章 `is_base_of` 探测基类关系一脉相承。
+**[实现·libstdc++]**　`uses_allocator<T, Alloc>` 为真的条件：`T` 有嵌套类型 `allocator_type`，且 `Alloc` 可转换为它。它利用 **SFINAE + `__void_t`**（检测 `T::allocator_type` 是否存在）与 **偏特化** 实现「如果 `T` 含 `allocator_type` 就进一步校验可转换性，否则直接 `false_type`」。这正是「用类型萃取探测继承/嵌套类型」的工业级范例——与本章 `is_base_of` 探测基类关系一脉相承。
 
 ### 18.5 `stl_construct.h` —— `_Construct` 与构造的底层真相
 
@@ -1237,7 +1237,7 @@ int main() {
     }
 ```
 
-**[实现]**　`_Construct` 是 libstdc++ 容器（vector/deque…）在「已分配但未初始化内存」上**就地构造**对象的原语——就是 `placement new`：`::new(ptr) T(args)`。这与本章构造顺序（第 12 节）直接相关：当容器扩容、在缓冲区尾部 `_Construct` 一个元素时，该元素的构造遵循「基类→成员→体」的标准顺序。C++20 起若处于常量求值（`__is_constant_evaluated`）则改用 `std::construct_at` 以支持 `constexpr` 容器。
+**[实现·libstdc++]**　`_Construct` 是 libstdc++ 容器（vector/deque…）在「已分配但未初始化内存」上**就地构造**对象的原语——就是 `placement new`：`::new(ptr) T(args)`。这与本章构造顺序（第 12 节）直接相关：当容器扩容、在缓冲区尾部 `_Construct` 一个元素时，该元素的构造遵循「基类→成员→体」的标准顺序。C++20 起若处于常量求值（`__is_constant_evaluated`）则改用 `std::construct_at` 以支持 `constexpr` 容器。
 
 **[实现-推断]**　它与切片的关联：当你 `push_back(Derived{})` 进 `vector<Base>`（示例 22），容器在 `Base` 大小的槽位上 `_Construct<Base>(slot, Derived临时量)`——实参是 `Base` 的拷贝构造（因为形参类型是 `Base&&`/`const Base&`），**构造的就是一个纯 `Base` 子对象**，派生部分从一开始就没进容器。这正是切片发生在「构造点」的铁证，而非「赋值点」。
 
@@ -1808,7 +1808,7 @@ flowchart TD
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-w64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用真实实测毫秒回答本章最常被质疑的三个问题——getter/setter 有没有开销、虚函数比非虚函数贵多少、深继承链访问成员要不要付钱。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 数据规模：400 万个对象，热循环重复 20 遍，元素为运行期随机 `uint32_t`（防编译期折叠）。"相对"列以同组更快者为 1.00×，更快者加粗。
 

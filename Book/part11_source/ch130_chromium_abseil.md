@@ -108,7 +108,7 @@ consume(arr);   // 零拷贝视图
 - `[标准]`：`absl::string_view`/`absl::optional`/`absl::any` 的接口与后来标准版高度一致，迁移成本极低。
 - `[经验]`：Abseil 的 `flat_hash_map` 与 `std::unordered_map` 不是"同接口换实现"——迭代器/引用失效规则不同（见第⑬节）。
 
-## ③ [实现]源码剖析：上游 flat_hash_map.h [实现]
+## ③ [实现·Abseil]源码剖析：上游 flat_hash_map.h [实现·Abseil]
 
 `absl::flat_hash_map` 自身只是薄封装，真正逻辑在 `internal/raw_hash_map.h`。下面逐行对照上游源码（本机未装，引用上游）。
 
@@ -139,7 +139,7 @@ consume(arr);   // 零拷贝视图
 //   查找时先用 H1 定位组(group)，再用 SIMD 比较 ctrl 与 H2，命中后再比 key。
 ```
 
-- `[实现]`：Abseil 的核心技巧是**控制字节(ctrl)与数据(slot)分离存储**——用一条 `pcmpeqb`/`movmask` 即可一次比较一组 16 个槽的 H2，避免逐槽解引用，这是 `flat_hash_map` 比链表式 `unordered_map` 快的根本原因。
+- `[实现·Abseil]`：Abseil 的核心技巧是**控制字节(ctrl)与数据(slot)分离存储**——用一条 `pcmpeqb`/`movmask` 即可一次比较一组 16 个槽的 H2，避免逐槽解引用，这是 `flat_hash_map` 比链表式 `unordered_map` 快的根本原因。
 - `[平台]`：该 SIMD 路径在 x86-64 用 SSE2、ARM 用 NEON；老架构回退到标量循环，但数据布局不变。
 - `[经验]`：读 Abseil 源码先读 `internal/raw_hash_map.h` 和 `raw_hash_set.h`，`flat_hash_map.h` 几乎只是转调。
 
@@ -221,9 +221,9 @@ std::move(cb).Run();
 ```
 
 - `[标准]`：`PostTask` 是" fire-and-forget "；需要结果要用 `base::PostTaskAndReply` 或 `base::OnceCallback` 回传。
-- `[实现]`：`PostTask` 本质是把 `OnceClosure` 推入目标 `TaskRunner` 的队列；单线程 `TaskRunner` 靠 `MessageLoop::Run` 循环 `Pop -> Run` 驱动（见第⑨节本机等价实现）。
+- `[实现·Chromium]`：`PostTask` 本质是把 `OnceClosure` 推入目标 `TaskRunner` 的队列；单线程 `TaskRunner` 靠 `MessageLoop::Run` 循环 `Pop -> Run` 驱动（见第⑨节本机等价实现）。
 
-## ⑥ 内存：PartitionAlloc（[实现]真实编译自定义分配器取汇编） [实现]
+## ⑥ 内存：PartitionAlloc（[实现·Chromium]真实编译自定义分配器取汇编） [实现·Chromium]
 
 Chromium 默认分配器 `PartitionAlloc` 的核心思想：**按大小分桶(bucket)，每个分区独立、bump-pointer 快速分配、附带防越界隔离**。下面用【自包含】等价实现在本机编译取证。
 
@@ -272,7 +272,7 @@ _Z10make_threeR5Arena:
 	ret
 ```
 
-- `[实现]`：三次 `alloc(16/16/32)` 在 `-O2` 下被合并成**一次 `cur += 64` 加一次边界检查**——分配路径是纯指针算术、零系统调用、零锁，这正是 `PartitionAlloc` 快速路径的精髓。
+- `[实现·Chromium]`：三次 `alloc(16/16/32)` 在 `-O2` 下被合并成**一次 `cur += 64` 加一次边界检查**——分配路径是纯指针算术、零系统调用、零锁，这正是 `PartitionAlloc` 快速路径的精髓。
 - `[平台]`：真实 `PartitionAlloc` 还在此基础上加"分区锁 + 页粒度的 GigaCage 隔离 + 双向哨兵"防堆溢出；本例是机制等价，非安全等价。
 - `[经验]`：对比 `new`/`malloc`：热路径上自定义 arena 能把"每对象分配"从数十指令降到 2~3 条。
 
@@ -341,7 +341,7 @@ ninja -C out/Default base
 - `[平台]`：GN/Ninja 是 Chrome 官方工具链；Windows 上需 `vs_toolchain` 配 MSVC/Clang-cl，Linux 用 Clang/GCC。
 - `[经验]`：GN 的 `source_set` 与 `component` 区分"静态合入"与"独立 DLL"，直接影响 ABI 边界；滥用 `component` 会拖慢链接。
 
-## ⑨ [实现]真实：编译自包含 flat_hash_map 等价示例取汇编 [实现]
+## ⑨ [实现·Abseil]真实：编译自包含 flat_hash_map 等价示例取汇编 [实现·Abseil]
 
 下面用【自包含】开放寻址哈希表等价 `flat_hash_map`，在本机 g++ 13.1.0 真实编译，抓取 `find` 的热探测循环汇编。
 
@@ -413,7 +413,7 @@ C:/Qt/Tools/mingw1310_64/bin/g++.exe -std=c++17 -O2 -masm=intel -S \
 	jne	.L6
 ```
 
-- `[实现]`：汇编证明 `find` 是**单数组上的线性探测**——`and eax,1023` 做掩码、`add rax,1 / and` 做探测步进，全程无指针解引用、无链表跳转。这正是 `flat_hash_map` 缓存友好的来源；真实 Abseil 还多了 `ctrl` 控制字节的 SIMD 批量比对，思路一致。
+- `[实现·Abseil]`：汇编证明 `find` 是**单数组上的线性探测**——`and eax,1023` 做掩码、`add rax,1 / and` 做探测步进，全程无指针解引用、无链表跳转。这正是 `flat_hash_map` 缓存友好的来源；真实 Abseil 还多了 `ctrl` 控制字节的 SIMD 批量比对，思路一致。
 - `[平台]`：本例用 `alignas(64)` 把 `keys_/vals_` 强制按缓存行对齐，消除跨行伪共享；真实 Abseil 用更精细的 group(16 槽) 布局。
 - `[经验]`：开放寻址的代价是**扩容成本高**（需整体重哈希）；`flat_hash_map` 通过"负载因子 < 0.875 + 2 的幂容量 + 增量增长"缓解这个问题。
 
@@ -528,7 +528,7 @@ struct BadKey { int id; mutable int cached; };  // ⚠ cached 参与比较会出
 ```
 
 - `[经验]`：与 `std::unordered_map`（节点式，引用稳定）相反，`flat_hash_map` 是**值连续存储**，任何可能 rehash 的操作都会让所有引用/迭代器失效。需要稳定句柄时改用 `unordered_map` 或用 `absl::flat_hash_set` 存 `std::unique_ptr<T>`。
-- `[实现]`：这也解释了第⑨节汇编里 `used_[]` 与 `keys_/vals_` 分离——重哈希时只搬数据、控制字节可整体重建。
+- `[实现·Abseil]`：这也解释了第⑨节汇编里 `used_[]` 与 `keys_/vals_` 分离——重哈希时只搬数据、控制字节可整体重建。
 
 ## ⑭ 演进：从内部库到开源标准 [经验]
 
@@ -703,7 +703,7 @@ std::span<const int> t = s;      // 布局一致，可互转
 //   把上游复杂的 SIMD/锁逻辑替换成最小可运行版本，先懂机制再读优化
 ```
 
-- `[实现]`：上游 `raw_hash_set.h` 的 `Find`/`Insert` 与第⑨节本机 `FlatMap::find/insert` 是同构的——先在本机跑通精简版，再回到上游读 `group`/`ctrl`/SIMD 优化，事半功倍。
+- `[实现·Abseil]`：上游 `raw_hash_set.h` 的 `Find`/`Insert` 与第⑨节本机 `FlatMap::find/insert` 是同构的——先在本机跑通精简版，再回到上游读 `group`/`ctrl`/SIMD 优化，事半功倍。
 - `[平台]`：Chromium 源码巨大，推荐用 `code search`（`cs.chromium.org`）而非本地 grep；Abseil 体积小，可整库 clone 本地阅读。
 - `[经验]`：源码阅读顺序 = 接口 → 等价精简实现 → 上游优化；不要一上来硬啃 SIMD/锁细节。
 

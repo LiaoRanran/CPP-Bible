@@ -67,7 +67,7 @@ enum class Amplification { Read, Write, Space };
 // 顺序写吞吐高 => Write 放大低；点查要扫多层 => Read 放大高
 ```
 
-## ② LevelDB 架构（MemTable/SSTable/WAL） [实现]
+## ② LevelDB 架构（MemTable/SSTable/WAL） [实现·LevelDB]
 
 LevelDB 的单库由下列部件组成，全部是 C++ 类，体现 RAII 与明确所有权：
 
@@ -98,7 +98,7 @@ struct SkipNode {
 ```
 
 - `[实现·LevelDB]`：`MemTable` 用跳表（O(log n) 查找/插入），`Immutable MemTable` 在刷盘期间继续服务读，避免写停顿。
-- `[平台]`：WAL 直接 `write()` 系统调用顺序落盘；崩溃恢复重放 WAL 重建 MemTable。
+- `[平台·Windows]`：WAL 直接 `write()` 系统调用顺序落盘；崩溃恢复重放 WAL 重建 MemTable。
 
 - `[实现·纯C++]`：下面跳表为**可独立编译运行**的纯 C++ 示意，对应 LevelDB `MemTable` 的跳表结构；不依赖 LevelDB，仅演示 O(log n) 查找 / 插入的核心机制（上游 `leveldb::SkipList` 用柔性数组 + `AtomicPointer` 保证无锁并发读，此处用 `std::vector` 简化）。
 
@@ -170,7 +170,7 @@ int main() {
 //     000124.ldb      SSTable（旧格式 sst）
 ```
 
-## ③ [实现]源码剖析：DBImpl::Write（上游参考） [实现]
+## ③ [实现·LevelDB]源码剖析：DBImpl::Write（上游参考） [实现·LevelDB]
 
 以下剖析 LevelDB 的写入口，引用上游源码 URL + 行号（上游参考，非本机文件）。
 
@@ -204,7 +204,7 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* my_batch) {
 ```
 
 - `[实现·LevelDB]`：写合并（group commit）由 `writers_` 队列 + condition variable 实现——队首 writer 代表整批落盘，其余等待，极大提升并发吞吐。
-- `[实现]`：行号 `1017` 为 leveldb 1.23 发布标签近似位置，阅读请以你 checkout 的实际行号为准（上游参考）。
+- `[实现·LevelDB]`：行号 `1017` 为 leveldb 1.23 发布标签近似位置，阅读请以你 checkout 的实际行号为准（上游参考）。
 
 ```cpp
 // ③ MaybeScheduleCompaction 触发后台线程（后台 Compaction 总览）
@@ -214,7 +214,7 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* my_batch) {
 //   else { DoCompactionWork(...); }               // 层间合并
 ```
 
-## ④ RocksDB 扩展（列族/合并/压缩） [实现]
+## ④ RocksDB 扩展（列族/合并/压缩） [实现·RocksDB]
 
 RocksDB 是 Facebook 对 LevelDB 的工业级分支，增加**列族（Column Family）**、**Merge 算子**、**通用压缩（Universal/_FIFO）**、**事务**、**前缀布隆**等。
 
@@ -262,7 +262,7 @@ prefix_opt.prefix_extractor.reset(rocksdb::NewFixedPrefixTransform(7));
 prefix_opt.table_factory.reset(rocksdb::NewBlockBasedTableFactory(bto));
 ```
 
-## ⑤ 写路径（WAL+MemTable） [实现]
+## ⑤ 写路径（WAL+MemTable） [实现·LevelDB]
 
 写 = `WriteBatch` 序列化 → `log::Writer` 顺序追加（WAL）→ `MemTable::Add`。可单条 `Put` 或批量 `WriteBatch`。
 
@@ -288,7 +288,7 @@ db->Put(sync_opt, "durable_key", "v");   // 返回前已 fsync WAL
 ```
 
 - `[实现·LevelDB]`：`WriteBatch` 的内部表示含 `SequenceNumber`，保证批量原子与快照隔离。
-- `[平台]`：`sync=true` 触发 `fdatasync`/`fsync`，延迟受磁盘决定；异步写靠后台 `bg_thr` 周期刷。
+- `[平台·Windows]`：`sync=true` 触发 `fdatasync`/`fsync`，延迟受磁盘决定；异步写靠后台 `bg_thr` 周期刷。
 
 ```bash
 # ⑤ LevelDB 专属编译命令 + 典型输出（本机需先安装 leveldb，否则链接失败）
@@ -303,7 +303,7 @@ g++ -std=c++17 -O2 -I/opt/leveldb/include ch132_leveldb_demo.cpp \
 #   Batch committed, keys a,b deleted c
 ```
 
-## ⑥ 读路径与缓存 [实现]
+## ⑥ 读路径与缓存 [实现·LevelDB]
 
 读先看 MemTable，再 Immutable，再 SSTable（自 L0 向下）；BlockCache 缓存热点数据块，布隆过滤器跳过必然缺失的文件。
 
@@ -344,7 +344,7 @@ rocksdb::BlockBasedTableOptions bto;
 bto.block_cache = rocksdb::NewLRUCache(512 << 20);   // 512MB 缓存
 ```
 
-## ⑦ Compaction 策略 [实现]
+## ⑦ Compaction 策略 [实现·LevelDB]
 
 Compaction 合并有序段、丢弃过期版本与墓碑（delete 标记）、维持层数。LevelDB 用分层（Leveled），RocksDB 额外支持 Universal / FIFO。
 
@@ -435,7 +435,7 @@ co.arena_block_size = 8192;
 co.memtable_prefix_bloom_size_ratio = 0.1;   // 前缀布隆占 MemTable 比例
 ```
 
-## ⑨ [实现]真实：编译自包含跳表/SSTable 等价示例取汇编 [实现]
+## ⑨ [实现·纯C++]真实：编译自包含跳表/SSTable 等价示例取汇编 [实现·纯C++]
 
 本仓库 `Examples/_ch132_lsm_toy.cpp` 用纯标准库实现跳表（MemTable 等价）+ 有序段（SSTable 等价）+ 多路归并（Compaction 等价）。以下是 **GCC 13.1.0 真实 `-O2 -masm=intel` 汇编**（非示意）。
 
@@ -538,7 +538,7 @@ _Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_:
 
 - `[实现·GCC15]`：跳表查找被编译为两层 `jmp` 循环（层下降 + 同层前进），命中返回 `DWORD PTR 4[rax]`（value 偏移），未命中走 `.L9` 返回 `-1`。
 - `[实现·GCC15]`：`merge_runs` 用魔法乘法 `-6148914691236517205` 做 `ptrdiff/8`；`jl .L68` 实现「取最小 key」的归并选择——这正是 Compaction 多路归并的核心分支。
-- `[平台]`：上述符号名 `_Z17skiplist_containsPK4Nodeii` 为 Itanium C++ ABI 名字改编（leveldb 的 `SkipList::FindGreaterOrEqual` 在目标文件中呈类似改编名）。
+- `[平台·Windows]`：上述符号名 `_Z17skiplist_containsPK4Nodeii` 为 Itanium C++ ABI 名字改编（leveldb 的 `SkipList::FindGreaterOrEqual` 在目标文件中呈类似改编名）。
 
 ```cpp
 // ⑨ 速取汇编的命令（可重跑验证）
@@ -613,7 +613,7 @@ for (int i = 0; i < 100'000; ++i) {
 ```
 
 - `[经验]`：顺序 key（如时间戳前缀）让写入天然聚集，避免 L0 爆炸；随机 key 建议加 `Hash`/分桶前缀。
-- `[平台]`：SSD 上 Compaction 的写放大比 HDD 更可接受；但 NAND 有擦除寿命，高写入仍需注意。
+- `[平台·Windows]`：SSD 上 Compaction 的写放大比 HDD 更可接受；但 NAND 有擦除寿命，高写入仍需注意。
 
 ```cpp
 // ⑪ RocksDB 直接读（跳过 MemTable 的读路径统计）用于隔离测量
@@ -621,7 +621,7 @@ rocksdb::ReadOptions ro;
 ro.read_tier = rocksdb::kBlockCacheTier;   // 仅读缓存层，缺失即返回（压测缓存命中率）
 ```
 
-## ⑫ 跨平台 [平台]
+## ⑫ 跨平台 [平台·Windows]
 
 LevelDB / RocksDB 本身是跨平台 C++，但**文件系统语义、原子 rename、fsync 行为**在 Windows / POSIX 上不同。
 
@@ -826,7 +826,7 @@ const char* pick(bool need_sql, bool need_high_write) {
 ```
 
 - `[经验]`：改核心路径（Compaction / MemTable）务必补 `db_test` 与 `compaction_test`，并跑 `make check`。
-- `[平台]`：Windows 用 Visual Studio 的 CMake 预设；Linux/macOS 用 Ninja 更快。
+- `[平台·Windows]`：Windows 用 Visual Studio 的 CMake 预设；Linux/macOS 用 Ninja 更快。
 
 ```cpp
 // ⑰ 用 sanitizer 编译定位内存问题（开发期）
@@ -903,7 +903,7 @@ db->GetProperty("rocksdb.cfstats", &h);     // 每列族详细统计
 ```
 
 - `[经验]`：先读 `doc/` 与 `README` 再读 `db_impl.cc`；跳表与 SSTable 是两块独立易读代码，优先攻克。
-- `[平台]`：源码用 `port/` 目录隔离平台差异（atomic、mutex、env），阅读时对应自己平台实现。
+- `[平台·Windows]`：源码用 `port/` 目录隔离平台差异（atomic、mutex、env），阅读时对应自己平台实现。
 
 ```cpp
 // ⑲ 用 LOG 文件定位「为何某 key 读慢」：对比 memtable/blockcache/sst 占比
@@ -962,7 +962,7 @@ for (auto* it = db->NewIterator(leveldb::ReadOptions()); it->Valid(); it->Next()
 ```
 
 - `[经验]`：三个最该盯的属性：`num-immutable-mem-table`（写积压）、`compaction-pending`（合并滞后）、`estimate-live-data-size`（空间放大）。
-- `[平台]`：所有属性名在 `include/rocksdb/db.h` 的 `GetProperty` 文档注释列出（上游参考）。
+- `[平台·Windows]`：所有属性名在 `include/rocksdb/db.h` 的 `GetProperty` 文档注释列出（上游参考）。
 
 ```cpp
 // ⑳ 一行健康判断（示意）
@@ -1067,7 +1067,7 @@ int main() {
 4. **编译开关**：C++17 及以上；LevelDB 链接时还需 `-lsnappy`（压缩）；Windows 上路径用正斜杠（见第⑫节）。
 5. **运维**：上线前用 `db_bench` 跑真实负载，据 `rocksdb.stats` 调 `max_background_compactions` 等旋钮（见第⑮/附录 I）。
 
-- `[平台]`：RocksDB 体量较大，FetchContent 首次编译耗时较长；生产常用预编译包（vcpkg `rocksdb`、Conan）或自构建静态库。
+- `[平台·Windows]`：RocksDB 体量较大，FetchContent 首次编译耗时较长；生产常用预编译包（vcpkg `rocksdb`、Conan）或自构建静态库。
 - `[引用]` LevelDB：`https://github.com/google/leveldb`；RocksDB：`https://rocksdb.org/docs/`。
 
 ## 附录 F：LevelDB/RocksDB 工业原理与面试 [B: Principle / D: Stdlib / H: Design / I: Practice / J: Learning]

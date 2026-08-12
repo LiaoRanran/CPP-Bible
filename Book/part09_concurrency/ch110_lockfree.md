@@ -440,7 +440,7 @@ _Z11inc_relaxedv:
 - `[实现·GCC15] [VERIFIED]`：`fetch_add(1)` 未使用返回值时被优化为 `lock add`（不是 `lock xadd`）——二者都原子，但 `lock add` 不用把旧值搬进 `eax`，更省。
 - `[经验]`：计数器几乎永远该用 `fetch_add`/`fetch_sub`，不要用 CAS 循环——更快且天然 wait-free。
 
-## ⑪ [实现] 真实汇编：CAS 编译为 `lock cmpxchg` [实现]
+## ⑪ [实现·GCC15] 真实汇编：CAS 编译为 `lock cmpxchg` [实现·GCC15]
 
 无锁算法的灵魂是 CAS。下面是被 ⑪ 取证的源码片段与其在 GCC 15.3.0 `-O2` 下生成的**真实**汇编：`compare_exchange_weak` 编译为 `lock cmpxchg`，且失败时 `jne .L2` 回到循环顶部重试。
 
@@ -507,7 +507,7 @@ std::atomic<Tagged> tp{};
 - `[标准]`：ABA 是 lock-free 算法**正确性**的头号杀手，与性能无关。
 - `[经验]`：正式的无锁回收方案（hazard pointer、epoch reclamation、带标签指针）留到第111章系统展开——本章先建立"看到 CAS 就要警惕 ABA"的直觉。
 
-## ⑬ 伪共享与 cache-line padding（std::hardware_destructive_interference_size） [平台]
+## ⑬ 伪共享与 cache-line padding（std::hardware_destructive_interference_size） [平台·x86-64]
 
 多核各持缓存行；当一个核写某变量、另一核频繁读"同一缓存行"的另一个变量时，缓存一致性协议会反复无效化该行——**伪共享（false sharing）**让无锁反而更慢。C++17 提供 `std::hardware_destructive_interference_size`（典型 64）用于按缓存行对齐隔离。
 
@@ -609,7 +609,7 @@ double bench(F f, intthreads, int iters) {
 - `[经验]`：低/中竞争 + 短临界区，mutex 常常**更快**（无重试、无缓存行颠簸）；只有高竞争、长尾延迟敏感场景无锁才值回票价。
 - `[经验]`：无锁代码正确性极难验证（见 ⑲），维护成本远高于 mutex——收益不明显时优先加锁。
 
-## ⑯ 与 mutex 性能对比 [平台]
+## ⑯ 与 mutex 性能对比 [平台·x86-64]
 
 定性结论（量级，非固定数字；实测请跑 ⑮ 脚手架）：低竞争时 mutex 胜（无 CAS 重试、缓存友好）；高竞争时 mutex 因阻塞上下文切换而劣，无锁靠自旋胜出；但伪共享会反杀无锁。
 

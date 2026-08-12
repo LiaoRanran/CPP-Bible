@@ -268,7 +268,7 @@ static_assert(sizeof(W1) == 1);             // 空宿主（策略皆空/静态�
 static_assert(sizeof(Handle<int>) > sizeof(int*));   // 含 RefCount 成员
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel） [VERIFIED]
 
 测试文件 `Examples/_asm_policy.cpp`，编译：`g++ -std=c++23 -O2 -S -masm=intel _asm_policy.cpp -o _asm_policy.asm`。
 
@@ -614,7 +614,7 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 
 ## 底层视角：策略模板参数与静态派发 [E: Low-level]
 
-[标准] 策略作为模板实参在编译期绑定，`GCC 15.3.0` `-O2` 把策略方法直接内联（≈0.3 ns），消除 `0x0008` vptr 与 vtable 间接。`C++17` `if constexpr` 按策略分支静态派发，省一次 `0x0008` 虚查表；`C++20` `consteval` 把策略选择压到编译期。
+[标准] 策略作为模板实参在编译期绑定，`GCC 15.3.0` `-O2` 把策略方法直接内联（≈0.3 ns），消除 `0x0008` vptr 与 vtable 间接。`C++17` `if constexpr` 按策略分支静态派发，省一次 `0x0008` 虚查表；`C++20` `consteval` 把策略选择压到编译期。[UNVERIFIED]
 
 含 SIMD 策略时，`-mavx2`（`0x0020` 宽）/`-mavx512f`（`0x0040` 宽）指令要求 `alignas`，否则 `vmovdqa` 触发 #GP。缓存行 `0x0040`（64 字节）容纳多个策略状态字段，减少伪共享须 `alignas(0x0040)`。`Clang 17` / `MSVC 19.3` 对策略模板同样完全内联。
 
@@ -1104,7 +1104,7 @@ flowchart TD
 
 > 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比才是可移植信号。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 | 场景 | 中位耗时 | 相对倍数 |
 | --- | --- | --- |

@@ -194,7 +194,7 @@ _Z10cross_castP2M1:
 3. 跨菱形 `dynamic_cast<B*>(M1*)` 在此**未调用 `__dynamic_cast`**：因为 M1→虚基类 B 的关系是静态已知的，编译器直接 `add rcx, vbase_offset` 做 this 调整并返 B 子对象地址——零运行期类型比对，但仍有一次 vtable 负偏移取指。
 4. 对比 ch47：非虚多继承的 this 调整用 **thunk**（独立跳板函数）；虚继承的 this 调整用 **vbptr + vbase offset 表**（数据驱动，无跳板）。这是两者机制上的根本差异。
 
-【立场分层】：[标准] 规定虚继承语义与构造责任 / [实现] 上 GCC 用 vbptr+vbase offset / [平台] 上 MSVC 用 `vtordisp` 与类似虚基表 / [经验] 能用组合就不用虚继承，代价高且易错。
+【立场分层】：[标准] 规定虚继承语义与构造责任 / [实现] 上 GCC 用 vbptr+vbase offset / [平台·x86-64] 上 MSVC 用 `vtordisp` 与类似虚基表 / [经验] 能用组合就不用虚继承，代价高且易错。
 
 ## ⑪ STL 联系
 
@@ -1333,7 +1333,7 @@ int main() {
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化菱形虚继承下访问/上溯虚基类的运行时代价，并给出微架构根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 对象布局 sizeof（B）；"遍历"指在堆上构造并 `std::shuffle` 指针数组强制指针追逐，再遍历做 `VD1*→VB*` / `ND1*→NB*` upcast 或 exact type 直接成员访问。
 

@@ -104,7 +104,7 @@ Node* child = new Node(root);      // child 的 parent = root
 - `[实现·moc]`：`moc` 是**独立预处理器**，在编译前运行，扫描 `Q_OBJECT`/`signals`/`slots`/`Q_PROPERTY`，产出额外翻译单元。
 - `[经验]`：改了 `Q_OBJECT` 类后若链接报 `undefined reference to vtable for X`，几乎都是 moc 没重跑或 `moc_*.cpp` 没加入构建。
 
-## ③ 信号槽机制（[实现]源码剖析 moc 生成代码，upstream+行号）
+## ③ 信号槽机制（[实现·Qt]源码剖析 moc 生成代码，upstream+行号）
 
 信号槽是 Qt 的发布/订阅：一个对象 `emit signal(args)`，所有 `connect` 到该信号的槽被依次调用。机制实现完全由 moc 生成代码 + `QMetaObject::activate` 完成。
 
@@ -190,7 +190,7 @@ void dump(QObject* o) {
 }
 ```
 
-- `[实现]`：`Q_PROPERTY` 被 moc 写入 `qt_meta_data_*` 表；`invokeMethod` 走 `qt_metacall` → `qt_static_metacall` 的 `switch`，即第③节那条分派链。
+- `[实现·Qt]`：`Q_PROPERTY` 被 moc 写入 `qt_meta_data_*` 表；`invokeMethod` 走 `qt_metacall` → `qt_static_metacall` 的 `switch`，即第③节那条分派链。
 - `[上游参考]` 属性元数据表布局见 `QMetaObjectPrivate`：`// 文件：https://github.com/qt/qtbase/blob/6.8/src/corelib/kernel/qmetaobject.cpp` `// 行号：312`。
 
 ## ⑤ 内存管理（父子所有权 / deleteLater）
@@ -245,7 +245,7 @@ void wait_seconds(int s) {
 }
 ```
 
-- `[实现]`：`QEventLoop::exec()` 内部是 `do { ... processEvents(); } while(!m_exit)`；跨线程信号槽就是通过 `QMetaCallEvent` 投递进接收者线程的事件队列实现的。
+- `[实现·Qt]`：`QEventLoop::exec()` 内部是 `do { ... processEvents(); } while(!m_exit)`；跨线程信号槽就是通过 `QMetaCallEvent` 投递进接收者线程的事件队列实现的。
 - `[经验]`：在事件循环外调用依赖事件的操作（如 `QNetworkAccessManager` 异步回调）会「永远不触发」——务必 `exec()`。
 
 ## ⑦ 线程（QThread / moveToThread）
@@ -302,7 +302,7 @@ void build_ui(QWidget* w) {
 - `[标准]`：Widgets 与 QML 共享 `QObject`/信号槽；C++ 侧用 `Q_INVOKABLE`/信号把对象暴露给 QML 的 JS 上下文。
 - `[平台·Qt]`：桌面重控件选 Widgets；动态、触摸、动画密集型选 QML。
 
-## ⑨ [实现]真实：编译一个手写信号槽等价示例取汇编
+## ⑨ [实现·Qt]真实：编译一个手写信号槽等价示例取汇编
 
 Qt 未链接时，用**自包含纯 C++**（观察者模式 + `std::function` 类型擦除）复现「信号持有槽表、emit 即遍历回调」的等价机制，并用真实 g++ 编译取汇编，证明信号槽在机器码层面就是「遍历函数对象数组 + 间接调用」。
 
@@ -359,7 +359,7 @@ main:
 	jne	.L63                           ; 未到表尾则继续
 ```
 
-- `[实现]`：真实汇编证明——**信号槽的运行时成本 = 一次对函数对象数组的线性遍历 + 每个槽一次间接调用**（`call [mem]`），与 Qt `QMetaObject::activate` 遍历 `Connection` 链表后 `qt_static_metacall` 间接调用完全同构。
+- `[实现·Qt]`：真实汇编证明——**信号槽的运行时成本 = 一次对函数对象数组的线性遍历 + 每个槽一次间接调用**（`call [mem]`），与 Qt `QMetaObject::activate` 遍历 `Connection` 链表后 `qt_static_metacall` 间接调用完全同构。
 - `[经验]`：信号槽不是「魔法」，零参数拷贝、同线程直连时开销就是一次函数指针调用；真正贵的是**跨线程队列投递**（要构造 `QMetaCallEvent`、加锁入队、事件循环唤醒）。
 
 ## ⑩ 调试（Qt Creator / 日志）
@@ -409,7 +409,7 @@ Q_DECLARE_METATYPE(Frame)    // 让 Frame 可在信号槽中按值传递
 ```
 
 - `[经验]`：跨线程传 `QImage` 等大宗数据用 **指针/智能指针共享** 或 `std::shared_ptr<T>` 注册元类型，而非按值拷贝整帧。
-- `[实现]`：隐式共享靠 `QSharedDataPointer` + 原子引用计数；detach 在非常量操作触发（见第④节属性 write 里常见）。
+- `[实现·Qt]`：隐式共享靠 `QSharedDataPointer` + 原子引用计数；detach 在非常量操作触发（见第④节属性 write 里常见）。
 
 ## ⑫ 跨平台
 
@@ -1022,7 +1022,7 @@ int main() {
 }
 ```
 
-[实现] 上例不含 Qt 头，用 `C:/Qt/Tools/mingw1530_64/bin/g++.exe -std=c++23 -O2 -Wall -Wextra` 可独立编译通过；它把"moc 生成的元对象链 + 运行时 inherits 判定"这一 Qt 反射核心代价用 30 行讲清。
+[实现·Qt] 上例不含 Qt 头，用 `C:/Qt/Tools/mingw1530_64/bin/g++.exe -std=c++23 -O2 -Wall -Wextra` 可独立编译通过；它把"moc 生成的元对象链 + 运行时 inherits 判定"这一 Qt 反射核心代价用 30 行讲清。
 
 [经验] `qobject_cast` 与 `Q_PROPERTY` 之所以"快且稳"，是因为元数据在编译期由 moc 写死、运行期只读——没有运行时类型扫描开销。**改了 `Q_OBJECT` 类后若链接报 `undefined reference to vtable for X`，几乎都是 moc 没重跑或 `moc_*.cpp` 没加入构建**（见第②节）。记住：moc 不只是为了实现信号槽，更是为了给整个 Qt 提供跨模块、可脚本化、可对接 QML 的反射地基。
 

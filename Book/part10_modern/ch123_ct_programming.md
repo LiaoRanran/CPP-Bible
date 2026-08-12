@@ -231,7 +231,7 @@ consteval 函数 ──► 必须常量语境 ────┘         （若传�
 结论：编译期分派把"跳转"变成"在编译期做的选择"，运行期零成本。
 ```
 
-## ⑩ 汇编分析：consteval 折叠为立即数（-O2）[实现]
+## ⑩ 汇编分析：consteval 折叠为立即数（-O2）[实现·GCC15.3.0] [VERIFIED]
 
 ```cpp
 // C4 consteval 强制编译期：factorial(5) 在 -O2 下成为立即数 120
@@ -463,7 +463,7 @@ int main() {
 
 > `[经验]` 即便如此，`has_size` 这种 SFINAE 探测在 C++20 应优先用 Concepts/`requires` 重写（见 ⑱），可读性更好、错误信息更短。
 
-## ⑬ 源码分析：libstdc++ 的 traits 与 concepts 骨架 [实现]
+## ⑬ 源码分析：libstdc++ 的 traits 与 concepts 骨架 [实现·libstdc++]
 
 下列 `文件：` + `行号：` 取自 GCC 15.3.0 真实 `type_traits` 与 `concepts`（行号随 libstdc++ 版本更新）。
 
@@ -1222,7 +1222,7 @@ int main()
 
 > 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比才是可移植信号。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 | 场景 | 中位耗时 | 相对倍数 |
 | --- | --- | --- |

@@ -554,7 +554,7 @@ bool dequeue(T& v) {
         mov     eax, DWORD PTR g[rip]               ; 无 lock，靠 x86 强内存模型
 ```
 
-> [实现] 源码剖析（路径无空格，本机可达）：
+> [实现·libstdc++] 源码剖析（路径无空格，本机可达）：
 ```cpp
 // 文件：Examples/_ch159_threadpool.cpp
 // 行号：1

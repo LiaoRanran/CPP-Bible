@@ -5,7 +5,7 @@
 
 > 真实取证工具链：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`，`-std=c++23 -O2 -S -masm=intel`）、`c++filt.exe`。
 > 源码与汇编产物位于 `Examples/_ch11_*.cpp` / `Examples/_ch11_*.asm`。
-> 立场标签遵循 `CONVENTIONS.md §1`：`[标准]`=ISO、`[实现]`=编译器/库、`[平台]`=OS/ABI/硬件、`[经验]`=工程共识。
+> 立场标签遵循 `CONVENTIONS.md §1`：`[标准]`=ISO、`[实现]`=编译器/库、`[平台·Windows]`=OS/ABI/硬件、`[经验]`=工程共识。
 
 ## ⓪ 历史动机：编译器全景（GCC / Clang / MSVC）的来龙去脉
 
@@ -311,7 +311,7 @@ template int id<int>(int);     // 显式实例化 -> _Z2idIiET_S0_
 - `[平台·Itanium ABI]`：Itanium C++ ABI 是 GCC/Clang 在 Linux/macOS/Windows(MinGW) 上的通用 ABI 规范，规定了 mangling、vtable、RTTI、异常对象布局。MSVC 用自己的 **MSVC name decoration**（如 `?g@@YAHNH@Z`），与 Itanium 不兼容。
 - `[经验]`：跨编译器链接失败常因 mangling/ABI 不一致（如用 GCC 编的库给 MSVC 链接）——C 接口（`extern "C"`）是跨工具链的唯一稳妥桥梁（见 ⑪）。
 
-## ⑧ [实现]真实汇编：编译 `int f(int)` 看 `_Z1fi` 并用 c++filt 还原
+## ⑧ [实现·GCC15.3.0]真实汇编：编译 `int f(int)` 看 `_Z1fi` 并用 c++filt 还原
 
 下面所有汇编均来自本机 **GCC 13.1.0** 真实编译，未做任何改写。
 
@@ -467,7 +467,7 @@ struct Derived : Base1, Base2 { void a() override; void b() override; };
 ⟶ Book/part05_oo/ch47_virtual_functions.md（虚函数与 vtable）—— thiscall 把 `this` 藏于 `ecx`，vtable 调用依赖调用约定
 ⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— 调用约定决定寄存器分配，影响优化形态
 
-**调用约定（calling convention）** 规定：参数怎么传（寄存器/栈）、谁清理栈、返回值放哪。这纯属 `[平台]` 层约定。
+**调用约定（calling convention）** 规定：参数怎么传（寄存器/栈）、谁清理栈、返回值放哪。这纯属 `[平台·Windows]` 层约定。
 
 ```cpp
 // ⑪ 32 位 x86 常见调用约定（x86-64 下大多被统一，见下）
@@ -677,7 +677,7 @@ import math;
 int main() { return square(7); }
 ```
 
-- `[平台]`：GCC 的 BMI 扩展名 `.gcm`、Clang 用 `.pcm`、MSVC 用 `.ifc`——格式均非标准，跨编译器共享不可行。
+- `[平台·Windows]`：GCC 的 BMI 扩展名 `.gcm`、Clang 用 `.pcm`、MSVC 用 `.ifc`——格式均非标准，跨编译器共享不可行。
 - `[经验]`：Modules 的最大收益是 `import std;` 省去海量头重解析（大型项目编译常降 30%~70%）；但构建系统（CMake 3.28+/Ninja）需先编接口再编使用方，迁移痛点多在构建侧。
 
 ## ⑯ 跨平台与三元组（target triple）
@@ -711,7 +711,7 @@ static constexpr bool kIsX64 = false;
 int cross() { return 0; }
 ```
 
-- `[平台]`：三元组决定**默认调用约定、字长、ABI、目标文件格式**——`x86_64-w64-mingw32` 用 Win64 调用约定 + COFF/PE，`x86_64-linux-gnu` 用 System V 约定 + ELF。
+- `[平台·Windows]`：三元组决定**默认调用约定、字长、ABI、目标文件格式**——`x86_64-w64-mingw32` 用 Win64 调用约定 + COFF/PE，`x86_64-linux-gnu` 用 System V 约定 + ELF。
 - `[经验]`：跨平台库在 CI 里用交叉工具链（如 `aarch64-linux-gnu-g++`）做编译验证，比等真机便宜得多；但**运行验证**仍需真机或 QEMU。
 
 ## ⑰ 调试信息：DWARF vs PDB
@@ -842,7 +842,7 @@ int main() { return 0; }
 int trivia(int x) { return x; }
 ```
 
-- `[平台]`：mangling、vtable 布局、异常模型、目标格式均属 ABI 层；GCC 与 Clang 共享 Itanium ABI，因此 `.o` 可互通，但与 MSVC 不互通。
+- `[平台·Windows]`：mangling、vtable 布局、异常模型、目标格式均属 ABI 层；GCC 与 Clang 共享 Itanium ABI，因此 `.o` 可互通，但与 MSVC 不互通。
 - `[经验]`：记住一句话——**源码可移植靠 ISO 标准，二进制可链接靠 ABI 一致**。换编译器或换 STL 版本都可能破坏 ABI；对外发布的库用 `extern "C"` + 稳定 POD 接口最稳。
 
 ## 联合使用场景

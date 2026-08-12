@@ -397,7 +397,7 @@ public:
 };
 ```
 
-> `[实现]` `std::make_shared`/`shared_ptr` 构造时检测到基类 `enable_shared_from_this<_Tp>` 并 `_M_weak_this` 赋值，使 `shared_from_this()` 安全返回。核心是「基类模板参数 = 派生类」的 CRTP 结构。
+> `[实现·libstdc++]` `std::make_shared`/`shared_ptr` 构造时检测到基类 `enable_shared_from_this<_Tp>` 并 `_M_weak_this` 赋值，使 `shared_from_this()` 安全返回。核心是「基类模板参数 = 派生类」的 CRTP 结构。
 
 ## ⑭ WG21 提案
 
@@ -1142,7 +1142,7 @@ int main() {
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取最快；`volatile` sink 防死代码消除。本附录目的：量化 CRTP 静态分发与 vtable 虚派发的相对开销，并解释非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 场景为 1,000 万次 `compute` 调用的归约求和（混合动态类型阻止去虚拟化）。"相对"列以虚派发为基准 1.00×。
 

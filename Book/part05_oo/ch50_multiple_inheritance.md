@@ -3,7 +3,7 @@
 ⟶ Book/part05_oo/ch49_virtual_inheritance.md
 ⟶ Book/part05_oo/ch45_oop_object_model.md
 
-> 标准基：ISO/IEC 14882:2023（C++23）｜立场分层：`[标准]` 语言规定 · `[实现]` 编译器/库实现 · `[平台]` ABI/OS · `[经验]` 工程共识
+> 标准基：ISO/IEC 14882:2023（C++23）｜立场分层：`[标准]` 语言规定 · `[实现]` 编译器/库实现 · `[平台·Windows]` ABI/OS · `[经验]` 工程共识
 > 汇编证据：MinGW GCC 15.3.0，`-std=c++23 -O2 -S -masm=intel` 真实输出（见 `Examples/_asm_mi.cpp` → `_asm_mi.asm`）
 > 前置/后续：⟶ ch19（存储期/ODR）· ch45（对象模型总览）· ch46（封装/继承）· ch47（虚函数/vtable）· ch48（RTTI）· ch49（虚继承）· ch51（CRTP 静态替代）· ch14（去虚化/性能）
 
@@ -841,7 +841,7 @@ int main(){
 [引用] `std::iostream` 经 `std::ios` 虚继承共享单一 `std::ios_base` 流状态，是标准库里 virtual 继承的招牌实例（cppreference "std::basic_ios"）。Itanium C++ ABI 的 `vbase_offset` 条目定义了虚基类运行时偏移的编码（itanium-cxx-abi.github.io）。ISO/IEC 14882:2023 §[class.mi] 与 §[class.virtual] 规定 virtual 继承语义与代价。
 
 </details>
-## [实现]真实：MI vtable 汇编与 this 调整 thunk（含 0x 地址）
+## [实现·GCC15]真实：MI vtable 汇编与 this 调整 thunk（含 0x 地址）
 
 > 以下为 `struct D : B1, B2 { int x=1; }`（x64 / Itanium ABI / GCC 15.3.0）`D` 对象 vtable 的符号与一段 `dynamic_cast<B2*>(d)` 生成的 this 调整 thunk 反汇编，用于把 `D*` 偏移到 `B2` 子对象：
 
@@ -861,7 +861,7 @@ _ZThn16_N1D1fEv:                       ; this-adjustment thunk（非虚调用入
 
 `dynamic_cast<B2*>(d)` 在 -O2 下被编译为读取 `_ZTV1D+8` 处的 `top_offset` 并做指针算术，而非每次调用都生成 thunk；thunk 仅在**虚调用经 B2 接口**时才介入，故 MI 的虚调用比 SI 多一次 `sub`/`add` 开销（约 1 cycle/调用，可用 `RDTSC` 取证）。这印证「常见陷阱」中"避免对 vtable 偏移做硬假设"——`top_offset` 在 GCC/Clang 下均为 `.quad` 立即数，MSVC 则编码在 `-8(rdi)` 形式的负偏移里。
 
-## [实现]真实：虚继承的 this 调整 thunk（虚基类 vbtable 运行时寻址）[E: Low-level]
+## [实现·GCC15]真实：虚继承的 this 调整 thunk（虚基类 vbtable 运行时寻址）[E: Low-level]
 
 > 编译：`g++ -std=c++26 -O2 ch50_vi_test.cpp -o ch50_vi_test.exe`；反汇编 `objdump -d -M intel -C`（GCC 15.3.0 / Win64 / Itanium ABI）。证据：`_asm_demo/ch50_vi_test.cpp/.s`。对比"非虚 MI"的固定偏移 thunk（见上节 `sub rdi,0x10; jmp f`）。
 
@@ -1247,7 +1247,7 @@ int main() {
 
 > 环境：AMD Ryzen 9 7940HX，GCC 15.3.0（MinGW-w64），`-O2 -std=c++23`，5 轮取中位。绝对毫秒随机器而变，加速比才是可移植信号。
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 每个场景 20,000 个对象 × 4,000 遍，共 8,000 万次虚调用。对象指针数组事先随机洗牌且派生类型两两混杂，杜绝去虚拟化与内联；工作集刻意压进 L2，否则 cache miss 会淹没被测的那几条指令。
 

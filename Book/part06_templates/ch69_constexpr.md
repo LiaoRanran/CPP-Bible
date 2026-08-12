@@ -241,7 +241,7 @@ extern constinit int a_init;
 int b_use = a_init + 1;     // 安全：a_init 已在静态阶段初始化
 ```
 
-## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel）
+## ⑩ 汇编 / 符号证据（真实 MinGW GCC 15.3.0，-O2 -masm=intel） [VERIFIED]
 
 测试文件 `Examples/_asm_constexpr.cpp`，编译：`g++ -std=c++23 -O2 -S -masm=intel _asm_constexpr.cpp -o _asm_constexpr.asm`。
 
@@ -626,7 +626,7 @@ Q: constexpr 有性能代价吗？
 A: 编译时间显著增加 (模板实例化级), 但生成代码更优 (编译期计算替代运行时)
 
 设计权衡:
-- constexpr all the things → 编译时间爆炸 (~2-5×)
+- constexpr all the things → 编译时间爆炸 (~2-5×) [UNVERIFIED]
 - 仅热路径 constexpr → 平衡编译时间与运行时性能
 - constexpr 成员函数 → 可在编译期和运行时复用同一实现
 ```
@@ -1073,7 +1073,7 @@ flowchart TD
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，5 轮取中位；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 `constexpr` 编译期表与运行时 `std::sin`/自写 `csin` 的差距，并给出反直觉根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
 
-### D5.1 基准结果
+### D5.1 基准结果 [VERIFIED]
 
 `CT_TABLE` 为 `constexpr` 生成的编译期表，落 `.rodata`；对照运行时 `std::sin` 调用与自写 `csin` 泰勒展开。
 

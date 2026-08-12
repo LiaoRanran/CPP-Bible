@@ -90,7 +90,7 @@ int layer_count() { return 4; }   // 四层
 - `[标准]`：UE C++ = 标准 C++ + UObject 元数据层；脱离 UObject 的部分就是普通 C++。
 - `[经验]`：不要把引擎对象（`UObject`/`AActor`）当普通栈对象用——它们由 GC 托管生命周期。
 
-## ② 对象模型（UObject/UClass/反射） [实现]
+## ② 对象模型（UObject/UClass/反射） [实现·Unreal]
 
 UE 的每個对象都是 `UObject` 派生实例；每个类型对应一个 **`UClass` 单例**（类元数据），持有属性表、函数表、父类链。`UObject::GetClass()` 是运行期 RTTI 的等价入口。
 
@@ -116,10 +116,10 @@ struct FMinimalClass {
 };
 ```
 
-- `[实现]`：`UClass` 在运行期是一个**单例对象**，不是 C++ 类型——这正是反射能遍历属性/函数的原因（`UObjectGlobals` 中的 `StaticClass()` 返回该单例）。
+- `[实现·Unreal]`：`UClass` 在运行期是一个**单例对象**，不是 C++ 类型——这正是反射能遍历属性/函数的原因（`UObjectGlobals` 中的 `StaticClass()` 返回该单例）。
 - `[平台·UE5]`：UE5 用 `FUObjectArray` 全局数组管理所有存活 `UObject`，GC 与迭代都基于它。
 
-## ③ 源码剖析：UObjectBase / UObjectGlobals（上游参考） [实现]
+## ③ 源码剖析：UObjectBase / UObjectGlobals（上游参考） [实现·Unreal]
 
 下面两处为 **上游 Unreal Engine 源码** 的真实位置（本机未装 UE，仅作权威定位，标注「上游参考」）。
 
@@ -150,7 +150,7 @@ struct FMinimalClass {
 ```
 
 - `[实现·UHT]`：UHT 扫描头文件中 `UCLASS()`/`UPROPERTY()`，生成 `ClassName.generated.h` 与 `.gen.cpp`，把字段偏移、类型名注入对应 `UClass`。
-- `[实现]`：第②节的 `FMinimalClass` 是 `UClass` 的**概念最小集**；真实 `UClass` 还含函数表、`FProperty` 子类、`ClassFlags` 等数百字段。
+- `[实现·Unreal]`：第②节的 `FMinimalClass` 是 `UClass` 的**概念最小集**；真实 `UClass` 还含函数表、`FProperty` 子类、`ClassFlags` 等数百字段。
 
 ## ④ 垃圾回收（GC/引用图/UPROPERTY 强引用） [平台·UE5]
 
@@ -250,7 +250,7 @@ struct PlayerMeta {
 ```
 
 - `[实现·UHT]`：`GENERATED_BODY()` 展开为构造函数钩子与 `StaticClass()` 声明；UHT 生成的 `StaticClass()` 返回指向 `UClass` 单例的引用。
-- `[平台]`：`UFUNCTION(BlueprintCallable)` 等说明符被编码进 `UFunction` 元数据，供蓝图 VM 调度。
+- `[平台·Linux]`：`UFUNCTION(BlueprintCallable)` 等说明符被编码进 `UFunction` 元数据，供蓝图 VM 调度。
 
 ## ⑦ 容器（TArray/FString/TMap） [标准]
 
@@ -336,7 +336,7 @@ struct UThing { UPROPERTY() std::string Tag; };  // 仅当类是 UObject 时 Tag
 - `[标准]`：核心差异是**编码与异常模型**，而非接口形态；混用需在边界处转换。
 - `[经验]`：日志/配置文件走 UTF-8（`std::string`），UI/本地化走 `FString`。
 
-## ⑨ 真实取证：编译自包含对象系统取汇编 [实现]
+## ⑨ 真实取证：编译自包含对象系统取汇编 [实现·Unreal]
 
 下面用 **GCC 13.1.0** 真实编译 `Examples/_ch134_objsys.cpp`（自包含对象系统 / RTTI 等价），证明 UObject 式反射骨架在标准 C++ 下可编译、并观察其汇编。UE 专属命令 `UHT` 未安装，故取真实汇编为证，标注「典型输出」。
 
@@ -392,7 +392,7 @@ _Z9NewObjectPK6FClass:
 	ret
 ```
 
-- `[实现]`：真实汇编显示 `NewObject` 通过**类名长度 + 类型名哈希**做类型分发（等价 UE 按 `UClass` 单例查类型），`MarkReachable` 把对象尾插进 `std::vector`（等价 GC 标记可达集合）。二者均为真实 GCC 产物，证明 UObject 式机制无需 UHT 即可在标准 C++ 落地。
+- `[实现·Unreal]`：真实汇编显示 `NewObject` 通过**类名长度 + 类型名哈希**做类型分发（等价 UE 按 `UClass` 单例查类型），`MarkReachable` 把对象尾插进 `std::vector`（等价 GC 标记可达集合）。二者均为真实 GCC 产物，证明 UObject 式机制无需 UHT 即可在标准 C++ 落地。
 - `[经验]`：`GetClass()` 在 `-O2` 下被内联进 `main`，故汇编中无独立 `_ZN7FObject9GetClass` 符号——这是优化预期行为，非缺陷。
 
 ## ⑩ 调试 [经验]
@@ -418,7 +418,7 @@ void Dump(const DbgObj& o) {
 ```
 
 - `[经验]`：`check` 用于不可恢复的不变量；`ensure` 用于应恢复的错误（吞掉但上报）。
-- `[平台]`：在编辑器（Editor）下崩溃会自动弹出**崩溃报告器**与调用栈，比纯控制台友好。
+- `[平台·Linux]`：在编辑器（Editor）下崩溃会自动弹出**崩溃报告器**与调用栈，比纯控制台友好。
 
 ## ⑪ 性能 [经验]
 
@@ -445,7 +445,7 @@ void BadHotLoop(int n) {
 - `[经验]`：GC 扫描成本与**存活 UObject 数量**成正比；超大世界里要控制对象总数与 `UPROPERTY` 引用密度。
 - `[平台·UE5]`：UE5 的 `Rendering/Physics` 拆分到专用线程，C++ 游戏逻辑仍跑在 GameThread，注意不要在 Tick 里做重活。
 
-## ⑫ 跨平台 [平台]
+## ⑫ 跨平台 [平台·Linux]
 
 ```cpp
 // ⑫ 平台抽象：用 UE 提供的 typedef 而非原生类型，保证 64 位一致
@@ -466,7 +466,7 @@ uint32 HostToNetwork(uint32 v) {
 }
 ```
 
-- `[平台]`：UE 支持 Win/Mac/Linux/主机/移动；代码应假定 `int32` 等固定宽度，避免 `int` 在平台间宽度漂移。
+- `[平台·Linux]`：UE 支持 Win/Mac/Linux/主机/移动；代码应假定 `int32` 等固定宽度，避免 `int` 在平台间宽度漂移。
 - `[经验]`：避免在头文件中写 `#ifdef _WIN32` 散落各处——集中到 `FPlatform*` 抽象。
 
 ## ⑬ 常见陷阱（裸指针跨 UObject 边界） [经验]
@@ -498,7 +498,7 @@ class USafe {
 ```
 
 - `[经验]`：黄金法则——**UObject 互引用用 `UPROPERTY` + 裸指针/软引用；非 UObject 资源用 `TSharedPtr/TUniquePtr`**。两者绝不混用。
-- `[平台]`：`TWeakObjectPtr` 是 UObject 专用的「弱引用」：GC 回收后自动置 `nullptr`，比裸指针安全。
+- `[平台·Linux]`：`TWeakObjectPtr` 是 UObject 专用的「弱引用」：GC 回收后自动置 `nullptr`，比裸指针安全。
 
 ## ⑭ 演进（UE5） [平台·UE5]
 
@@ -569,7 +569,7 @@ std::vector<std::string> CollectTags(const std::vector<int>& ids) {
 ```
 
 - `[经验]`：第三方库最好包一层 `F`-前缀适配类，避免其头文件宏污染 UE 编译环境。
-- `[平台]`：UBT 默认禁用 RTTI 与异常（`-fno-rtti -fno-exceptions`），第三方库需匹配编译选项。
+- `[平台·Linux]`：UBT 默认禁用 RTTI 与异常（`-fno-rtti -fno-exceptions`），第三方库需匹配编译选项。
 
 ## ⑰ 贡献 [经验]
 
@@ -590,7 +590,7 @@ void Validate(const FContrib& c) { check(c.Id >= 0); }
 ```
 
 - `[经验]`：引擎改动需通过 `Automation` 测试与 `UHT` 自检；先在样例模块验证宏展开正确。
-- `[平台]`：Epic 的贡献流程要求 CLA 签署，且改动须跨 Win/Linux 编译通过。
+- `[平台·Linux]`：Epic 的贡献流程要求 CLA 签署，且改动须跨 Win/Linux 编译通过。
 
 ## ⑱ 与游戏引擎对比 [标准]
 
@@ -633,7 +633,7 @@ void InspectGC(const TArray<void*>& reachables) { (void)reachables; }
 ```
 
 - `[经验]`：UE 源码体量大，优先沿 `UClass`/`UObject`/`FProperty` 三条主线读，别逐文件平推。
-- `[平台]`：用 IDE 的「转到定义」跳进 `generated.h` 时，实际实现在 `.gen.cpp`，二者由 UHT 配对。
+- `[平台·Linux]`：用 IDE 的「转到定义」跳进 `generated.h` 时，实际实现在 `.gen.cpp`，二者由 UHT 配对。
 
 ## ⑳ 速查表 [标准]
 
@@ -842,7 +842,7 @@ call [rcx+0x0018]         ; 反射访问属性
 - 垃圾回收标记位图偏移 `0x0020`；可达性扫描 ≈ 0x1000 对象/批
 - 组件数组 SSO `0x0010` 字节
 
-### 量级
+### 量级 [UNVERIFIED]
 
 - 反射属性访问经虚调用 ≈ 3.2ns；直接成员 ≈ 0.5ns
 - GC 增量标记 ≈ 0.2us/对象；全量暂停 ≈ 22ms

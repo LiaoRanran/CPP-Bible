@@ -5,8 +5,8 @@
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
-> 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；本章 `[平台]`/`[实现]` 级内容标注 GCC 内置与外部源码位置（CPU 微架构涉及 GCC 中端，非 libstdc++）。
-> 标准基：ISO/IEC 14882:2023（C++23）。立场分层：`[标准]` 语言/库规定 · `[实现]` 编译器行为 · `[平台]` x86-64 微架构/ABI · `[经验]` 工程共识。
+> 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`；本章 `[平台·x86-64]`/`[实现·GCC15]` 级内容标注 GCC 内置与外部源码位置（CPU 微架构涉及 GCC 中端，非 libstdc++）。
+> 标准基：ISO/IEC 14882:2023（C++23）。立场分层：`[标准]` 语言/库规定 · `[实现·GCC15]` 编译器行为 · `[平台·x86-64]` x86-64 微架构/ABI · `[经验]` 工程共识。
 
 ## ⓪ 历史动机：CPU 微架构认知的来龙去脉
 
@@ -63,7 +63,7 @@
 - SIMD / AVX 向量化 ⟶ `Book/part14_perf/ch155_simd.md`（数据级并行，与 ILP 互补）。
 - 性能反模式与陷阱 ⟶ `Book/part14_perf/ch158_perf_antipatterns.md`。
 
-## ④ 知识图谱（ASCII）[平台]
+## ④ 知识图谱（ASCII）[平台·x86-64]
 
 ```
                  x86-64 核心(单线程视角)
@@ -84,7 +84,7 @@
    分支:    预测命中(0代价) / 误预测(≈15~20周期惩罚)
 ```
 
-## ⑤ 流程图：一条指令的微架构旅程（Mermaid）[平台]
+## ⑤ 流程图：一条指令的微架构旅程（Mermaid）[平台·x86-64]
 
 ```mermaid
 flowchart LR
@@ -99,7 +99,7 @@ flowchart LR
     FLUSH -. 约15-20周期惩罚 .-> IF
 ```
 
-## ⑥ UML 类图：执行单元与缓冲（Mermaid）[平台]
+## ⑥ UML 类图：执行单元与缓冲（Mermaid）[平台·x86-64]
 
 ```mermaid
 classDiagram
@@ -123,7 +123,7 @@ classDiagram
     ExecUnit --> ROB
 ```
 
-## ⑦ ASCII 内存图：依赖链 vs 无关链（微架构视角）[平台]
+## ⑦ ASCII 内存图：依赖链 vs 无关链（微架构视角）[平台·x86-64]
 
 ```
 依赖链 (关键路径=各延迟之和):
@@ -137,7 +137,7 @@ classDiagram
   t2: s2 = s2 + z0  ┘  => 3 加法 ~1 周期完成 (受端口/寄存器压力限制)
 ```
 
-## ⑧ 生命周期图：乱序执行与按序退休（Mermaid）[平台]
+## ⑧ 生命周期图：乱序执行与按序退休（Mermaid）[平台·x86-64]
 
 ```mermaid
 sequenceDiagram
@@ -150,7 +150,7 @@ sequenceDiagram
     Note over ROB: 异常/分支误预测时，ROB 中后续(程序序在后)指令被丢弃
 ```
 
-## ⑨ 调用栈 / 时序图：OoO 重排示意（程序序 vs 执行序）[平台]
+## ⑨ 调用栈 / 时序图：OoO 重排示意（程序序 vs 执行序）[平台·x86-64]
 
 ```mermaid
 sequenceDiagram
@@ -161,7 +161,7 @@ sequenceDiagram
     Hw-->>Sw: 退休仍按 A,B,C,D 顺序 (语义正确)
 ```
 
-## ⑩ 汇编分析（-O2，Intel 语法）：分支 → cmov 与依赖链 [实现]
+## ⑩ 汇编分析（-O2，Intel 语法）：分支 → cmov 与依赖链 [实现·GCC15]
 
 **分支被编译为 `cmov`（无分支）**：当编译器判断「用条件传送比预测更好」时，消除分支。
 
@@ -193,8 +193,8 @@ int main() { std::cout << pick(1, 10, 20) << "\n"; return 0; }
 ; 即使核心每周期能发射多条, 这里每轮都等 rax 就绪 -> 吞吐被钉在 1 加/周期
 ```
 
-- `[实现]`：`[[likely]]`/`__builtin_expect` 不改变「是否分支」，而是生成**偏向热路径的基本块布局**（热路径紧挨、冷路径跳走），减少取指/译码浪费与 I-cache 压力。
-- `[平台]`：现代 x86-64 分支误预测惩罚约 **15~20 周期**（AMD/Intel 略有差异，深流水线更长）；ARM 通常更短（约 10~15）。
+- `[实现·GCC15]`：`[[likely]]`/`__builtin_expect` 不改变「是否分支」，而是生成**偏向热路径的基本块布局**（热路径紧挨、冷路径跳走），减少取指/译码浪费与 I-cache 压力。
+- `[平台·x86-64]`：现代 x86-64 分支误预测惩罚约 **15~20 周期**（[微架构·x86-64][UNVERIFIED]，AMD/Intel 略有差异，深流水线更长）；ARM 通常更短（约 10~15）。
 
 ## ⑪ STL 联系 [标准]
 
@@ -241,14 +241,14 @@ int main() {
 }
 ```
 
-## ⑬ 源码分析（GCC 中端 / 标准属性）[实现]
+## ⑬ 源码分析（GCC 中端 / 标准属性）[实现·GCC15]
 
 - `[标准]`：`[[likely]]` / `[[unlikely]]` 由 C++20 引入（标准条款 `[dcl.attr.likelihood]`），语义是「给分支选择提供提示」，不保证一定生效。
-- `[实现]`：GCC 把分支提示落到中端的**分支概率/预测**阶段。相关实现位于 GCC 源码树（非 libstdc++）：
+- `[实现·GCC15]`：GCC 把分支提示落到中端的**分支概率/预测**阶段。相关实现位于 GCC 源码树（非 libstdc++）：
   - `gcc/predict.c`：分支预测与 `__builtin_expect` 概率传播。
   - `gcc/builtins.cc`：`__builtin_expect` / `__builtin_expect_with_probability` 的处理。
   - 循环展开、if-conversion（把分支转 `cmov`/无分支）在 `gcc/tree-ssa-ifcombine.cc` 与「模调度/peeling」pass 中。
-- `[平台]`：`__builtin_expect(expr, likely)` 是 GCC 扩展，等价于 `[[likely]]` 的底层表达；`[[likely]]` 是标准、可移植写法（推荐）。
+- `[平台·x86-64]`：`__builtin_expect(expr, likely)` 是 GCC 扩展，等价于 `[[likely]]` 的底层表达；`[[likely]]` 是标准、可移植写法（推荐）。
 
 ## ⑭ WG21 提案（编号 + 标题 + 动机）[标准]
 

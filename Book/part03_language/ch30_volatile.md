@@ -61,7 +61,7 @@ std::atomic<int> safe{0};
 int main(){safe.store(1);std::cout<<safe.load()<<std::endl;return 0;}
 ```
 
-## ⑤ 信号处理中的 volatile [平台]
+## ⑤ 信号处理中的 volatile [平台·x86-64]
 
 ```cpp
 #include <iostream>
@@ -70,7 +70,7 @@ volatile sig_atomic_t flag=0;
 int main(){flag=1;std::cout<<(int)flag<<std::endl;return 0;}
 ```
 
-## ⑥ setjmp/longjmp 中的 volatile [平台]
+## ⑥ setjmp/longjmp 中的 volatile [平台·x86-64]
 
 ```cpp
 #include <iostream>
@@ -84,7 +84,7 @@ int main(){std::cout<<"volatile prevents register caching across setjmp/longjmp\
 int main(){int x=0;asm volatile("":::"memory");x=1;std::cout<<x<<std::endl;return 0;}
 ```
 
-## ⑧ volatile 指针 [平台]
+## ⑧ volatile 指针 [平台·x86-64]
 
 ```cpp
 #include <iostream>
@@ -390,7 +390,7 @@ mov DWORD PTR [rip+0x5d6e], 0x4   # g_plain = 4  (单次最终值)
 
 - **关键差异**：`volatile` 写入**不可被优化器省略或合并**（每轮真穿内存）；非 `volatile` 写入被**寄存器提升 + 循环消除**为单次最终 store；`int x = g_vol` 的读取强制重新加载，证明编译器未复用缓存值。这正是 ⑲ 计时差异的底层根源——而非「附带的 cycles 估算」。
 
-- `[平台·x86-64]`：volatile 的单次访问成本与普通内存访问相同（～4 cycles L1, ～200 cycles DRAM）。代价不在单次访问，而在**禁止编译器进行循环优化、寄存器提升、公共子表达式消除**——这是真正的性能差距来源。
+- `[平台·x86-64]`：volatile 的单次访问成本与普通内存访问相同（～4 cycles L1, ～200 cycles DRAM，典型量级 [UNVERIFIED]）。代价不在单次访问，而在**禁止编译器进行循环优化、寄存器提升、公共子表达式消除**——这是真正的性能差距来源。
 
 ## ⑳ 跨语言对比：volatile 语义全景 [经验]
 
@@ -853,7 +853,7 @@ sequenceDiagram
 
 ### 图 3 · 三原语选型决策流（flowchart TD）
 
-> 图 1 是「能力边界」，本图是「选型逻辑」——**什么目标该选谁、volatile 误用于多线程为何必定失败**。呼应 ch60 / ch62 的选型流风格，形成模板系→并发系的图谱闭环。
+> 图 1 是「能力边界」，本图是「选型逻辑」——**什么目标该选谁、volatile 误用于多线程为何会失败（构成数据竞争 UB）**。呼应 ch60 / ch62 的选型流风格，形成模板系→并发系的图谱闭环。
 
 ```mermaid
 flowchart TD
@@ -907,7 +907,7 @@ flowchart TD
 | atomic → mutex | 多变量不变式超出单 `atomic` 能力时，升级到 `mutex` 临界区（见 ch41 / ch107）。 |
 | atomic → 内存模型 | `atomic` 的可见性/有序性建立在语言内存模型 `happens-before` 之上（见 ch108）。 |
 | 内存模型 → MESI | `happens-before` 的硬件落地依赖缓存一致性协议（MESI），伪共享是其物理失效模式（见 ⑰ / ch154 附录 K）。 |
-| volatile ⇢ UB | 把 `volatile` 用于多线程共享是**经典误用**：它不保证原子/可见/有序，必然引发数据竞争（见 ⑭ / ⑯ / 图 3 的 ✗ 分支）。 |
+| volatile ⇢ UB | 把 `volatile` 用于多线程共享是**经典误用**：它不保证原子/可见/有序，在并发访问下会构成数据竞争（UB）（见 ⑭ / ⑯ / 图 3 的 ✗ 分支）。 |
 
 ### E.2 跨章闭环表
 
@@ -1020,7 +1020,7 @@ flowchart TD
 | ch48 | 动态内存 | volatile 不影响对象生命周期，MMIO 映射区常由 mmap/new 返回 |
 | ch43 | 缓存局部性 | volatile 访问绕过寄存器但缓存一致性仍由硬件 MESI 维护 |
 
-## 附录 D5：真实基准与性能分析 — volatile vs atomic 的真实成本（GCC 15.3.0）
+## 附录 D5：真实基准与性能分析 — volatile vs atomic 的真实成本（GCC 15.3.0） [VERIFIED]
 
 > 测试环境：AMD Ryzen 9 7940HX（16C/32T）；本机 Windows / MinGW-W64 GCC 15.3.0；`g++ -O2 -std=c++23`；`std::chrono::steady_clock` 计时，多轮取稳定值（串行实测，无并发干扰）；`volatile` sink 防死代码消除。本附录目的：用主控实测锁死的真实毫秒，量化 plain 局部 / volatile / atomic relaxed / atomic seq_cst 四种自增的相对成本，并给出非显然根因。**绝对毫秒随机器而变，加速比才是可移植信号。**
 

@@ -83,7 +83,7 @@ perf record -F 9999 -g ./your_program
 perf report
 ```
 
-- `[平台]`：`perf` 是 **Linux 专有**（依赖 `perf_event_open`  syscall）。Windows/MinGW 下不存在；对应能力由 ETW / Visual Studio Profiler 提供（见 ⑰）。
+- `[平台·Linux]`：`perf` 是 **Linux 专有**（依赖 `perf_event_open`  syscall）。Windows/MinGW 下不存在；对应能力由 ETW / Visual Studio Profiler 提供（见 ⑰）。
 - `[经验]`：采样频率 `-F 9999` ≈ 每秒 1 万次；太高会扰动程序，太低丢细节，9999 是常用甜点。
 
 ```cpp
@@ -118,7 +118,7 @@ perf stat -e cycles,instructions,cache-misses,branch-misses,L1-dcache-load-misse
 perf stat -e instructions,cycles ./app
 ```
 
-- `[实现]`：计数器由硬件提供；`perf` 只是读取接口。不同微架构事件名可能不同（Intel `/sys/bus/event_source/devices/cpu/events/`）。
+- `[实现·GCC15]`：计数器由硬件提供；`perf` 只是读取接口。不同微架构事件名可能不同（Intel `/sys/bus/event_source/devices/cpu/events/`）。
 - `[经验]`：**先算 IPC**。IPC≈3–4 说明算得快、等内存；IPC<1 说明指令供给或串行依赖是瓶颈。
 
 ```cpp
@@ -168,10 +168,10 @@ int main() {
 }
 ```
 
-- `[平台]`：`stackcollapse-perf.pl` / `flamegraph.pl` 来自 [Brendan Gregg 的 flamegraph 仓库]（公开脚本，非本工程）；`perf script` 输出经管道折叠。
+- `[平台·Linux]`：`stackcollapse-perf.pl` / `flamegraph.pl` 来自 [Brendan Gregg 的 flamegraph 仓库]（公开脚本，非本工程）；`perf script` 输出经管道折叠。
 - `[经验]`：火焰图横轴是**采样占比**（不是时间顺序）。最宽的"塔"就是最该优化的路径。
 
-## ⑤ [实现] 真实微基准：vector push_back reserve 与否耗时对比（真实数字）
+## ⑤ [实现·GCC15] 真实微基准：vector push_back reserve 与否耗时对比（真实数字）
 
 **实测**。程序 `Examples/_ch15_vector_reserve.cpp` 用 `std::chrono` 测量 N=20,000,000 次 `push_back`，对比"不 reserve"与"先 reserve(N)"：
 
@@ -213,7 +213,7 @@ with_reserve :    32.90 ms   size=20000000
 # 另一轮：no_reserve 73.81ms / with_reserve 35.06ms
 ```
 
-- `[实现]`：**reserve 带来约 2.0× 加速**（~67ms → ~33ms）。差距来自 `push_back` 在容量不足时 `realloc` + 拷贝旧元素；`reserve` 一次性到位，后续 `push_back` 仅尾端写入。
+- `[实现·GCC15]`：**reserve 带来约 2.0× 加速**（~67ms → ~33ms）。差距来自 `push_back` 在容量不足时 `realloc` + 拷贝旧元素；`reserve` 一次性到位，后续 `push_back` 仅尾端写入。
 - `[经验]`：已知上限的集合，先 `reserve` 是性价比最高的零风险优化之一。
 
 ## ⑥ VTune 简介
@@ -237,7 +237,7 @@ int main() {
 }
 ```
 
-- `[平台]`：VTune 是 **Intel 商业工具**（有免费版）；非 GCC 自带。它读取与 `perf` 相同的 PMC，但做了更高层归因。
+- `[平台·x86-64]`：VTune 是 **Intel 商业工具**（有免费版）；非 GCC 自带。它读取与 `perf` 相同的 PMC，但做了更高层归因。
 - `[经验]`：新手先跑 VTune 的 "Microarchitecture Exploration"，它能把"慢"翻译成"前/后端/内存/分支"四宫格，省去自己读计数器。
 
 ## ⑦ Compiler Explorer (Godbolt) 用法
@@ -293,7 +293,7 @@ g++ -std=c++23 -O2 bench.cpp -lbenchmark -lpthread -o bench
 ```
 
 - `[经验]`：Google Benchmark 的 `State` 循环自动处理"热身"与"多次取中位数"，比手写 `chrono` 稳得多。
-- `[实现]`：框架本身不测量——它只是把"跑 N 次取统计"做对；底层仍是 `std::chrono` + `clock_gettime`。
+- `[实现·GCC15]`：框架本身不测量——它只是把"跑 N 次取统计"做对；底层仍是 `std::chrono` + `clock_gettime`。
 
 ## ⑨ 热点识别方法
 
@@ -319,7 +319,7 @@ int main() {
 ```
 
 - `[经验]`：先优化"最宽塔"，哪怕它只快 10%，因为基数大；别去抠 0.1% 的角落。
-- `[实现]`：`__attribute__((noinline))` 阻止内联，让 `perf` 能把它作为独立栈帧采样到，否则热点被摊进调用方。
+- `[实现·GCC15]`：`__attribute__((noinline))` 阻止内联，让 `perf` 能把它作为独立栈帧采样到，否则热点被摊进调用方。
 
 ## ⑩ 微架构瓶颈（前端 / 后端 / 内存 bound）
 
@@ -352,7 +352,7 @@ double stream_add(const std::vector<double>& a, const std::vector<double>& b) {
 }
 ```
 
-## ⑪ [实现] 真实：-O2 汇编对比（标量 vs 多累加器向量化雏形）
+## ⑪ [实现·GCC15] 真实：-O2 汇编对比（标量 vs 多累加器向量化雏形）
 
 **实测**。程序 `Examples/_ch15_scalar_vs_accum.cpp` 对比两个求和算法，并取真实 `-O2` 汇编。
 
@@ -428,7 +428,7 @@ _Z12four_acc_sumPKll:
 	...                                   ; 把 xmm0 的 4 路归约
 ```
 
-- `[实现]`：多累加器写法让 GCC 识别出"4 路独立加法"并自动 SSE 向量化；标量单累加器则因 loop-carried 依赖 + 64 位/32 位处理选择而保持标量。结果 `four_acc_sum` 略快且更有扩展空间（若改 `-O3 -march=native` 会进一步 AVX 化）。
+- `[实现·GCC15]`：多累加器写法让 GCC 识别出"4 路独立加法"并自动 SSE 向量化；标量单累加器则因 loop-carried 依赖 + 64 位/32 位处理选择而保持标量。结果 `four_acc_sum` 略快且更有扩展空间（若改 `-O3 -march=native` 会进一步 AVX 化）。
 - `[经验]`：写"对编译器友好"的代码（独立累加、规则步长）比手写 intrinsics 更可移植，且随编译器升级自动变快。
 
 ## ⑫ 缓存命中分析
@@ -478,7 +478,7 @@ void api_a() { COUNT(); /* ... */ }
 void api_b() { COUNT(); api_a(); }
 ```
 
-- `[实现]`：采样是 `perf`/`VTune` 默认；插桩对应 GCC `-finstrument-functions` 或 sanitizer 类工具。
+- `[实现·GCC15]`：采样是 `perf`/`VTune` 默认；插桩对应 GCC `-finstrument-functions` 或 sanitizer 类工具。
 - `[经验]`：先用**采样**快速定位；对"已确认热点"再上**插桩**拿精确调用次数与路径。
 
 ## ⑭ 与 CI 集成
@@ -503,7 +503,7 @@ python3 compare.py bench_baseline.json bench_new.json --threshold 5%
 ```
 
 - `[经验]`：CI 里用**相对回归阈值**（如 5%）而非绝对值，避免机器噪声误报。固定跑在专用、无扰动的 runner 上。
-- `[平台]`：GitHub Actions / GitLab CI 的 Linux runner 可直接用 `perf`；Windows runner 用 ETW（见 ⑰）。
+- `[平台·Linux]`：GitHub Actions / GitLab CI 的 Linux runner 可直接用 `perf`；Windows runner 用 ETW（见 ⑰）。
 
 ## ⑮ [经验] 分析流程
 
@@ -558,7 +558,7 @@ void thread_b() { for (int i=0;i<100'000'000;++i) c.b++; }
 ```
 
 - `[经验]`：**温度计效应**（thermometer effect）——反复插桩/打印导致缓存状态失真，测得的是"被你干扰后的性能"。解决：测量前停止其他进程、关闭打印、跑多次取稳定区间。
-- `[实现]`：`-O2` 会删除"结果无副作用"的循环；微基准必须用 `volatile` 或打印/返回结果"锚定"computed 值（如 ⑤⑥ 都 `printf` 了结果）。
+- `[实现·GCC15]`：`-O2` 会删除"结果无副作用"的循环；微基准必须用 `volatile` 或打印/返回结果"锚定"computed 值（如 ⑤⑥ 都 `printf` 了结果）。
 
 ## ⑰ 跨平台工具（Windows ETW / Visual Studio Profiler）
 
@@ -589,7 +589,7 @@ wpr -stop out.etl                # 停止并写出 ETL
 # 用 WPA (Windows Performance Analyzer) 打开 out.etl 看火焰图
 ```
 
-- `[平台]`：ETW 是 Windows 内核机制；`perf` 是 Linux 内核机制；二者概念同构（采样 + 栈），命令与文件格式不同。
+- `[平台·Linux]`：ETW 是 Windows 内核机制；`perf` 是 Linux 内核机制；二者概念同构（采样 + 栈），命令与文件格式不同。
 - `[经验]`：团队跨平台时，抽象出"一段可复现基准 + 平台专属采集脚本"，让结论可比。
 
 ## ⑱ 可视化
@@ -614,7 +614,7 @@ void worker(long n, long& out) {
 ```
 
 - `[经验]`：锁竞争看"时间线"比看火焰图更直观——火焰图显示"在锁里"，时间线显示"等了多久"。
-- `[实现]`：Diff 火焰图 = 蓝（变慢）/ 红（变快）配色，是向同事证明优化有效的利器。
+- `[实现·GCC15]`：Diff 火焰图 = 蓝（变慢）/ 红（变快）配色，是向同事证明优化有效的利器。
 
 ## ⑲ 最佳实践
 
