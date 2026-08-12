@@ -107,6 +107,19 @@
 - **核验**：四门禁（structure/fence/whitespace/d5_integrity）全绿；0 语义漂移；0 换行翻转；插入声明均落 D5.4 散文（非围栏内）。
 - **修正**：提交 `18db866`。
 
+### E10. 术语/格式归一化大包（x86-64 / ARM64 / 大写 C++）+ CI 门禁
+
+#### E10-A. 术语归一化（散文感知、约定背书、确定性）
+- **动机**：CONVENTIONS 第 22/31 行规定架构命名 `[平台·x86-64]`、`x86-64 / ARM64`，且 C++ 语言名全大写；成文过程混用 `x86_64` / `AArch64` / `aarch64` / `arm64` 等异体拼写。
+- **工具**：新增 `tools/terminology_normalize.py`——遍历 `Book/**/*.md`，散文感知（排除 ``` / ~~~ 围栏、行内码、Markdown 链接 URL、`<...>` autolink），词边界约束避免误伤工具链三元组（`x86_64-w64-mingw32` / `aarch64-linux-gnu`），读写 `newline=''` 守 LF 红线，幂等（`--check` 复跑 exit 0）。
+- **映射（最终采用）**：`x86_64→x86-64`(20) / `AArch64→ARM64`(13) / `aarch64→ARM64`(1) / `arm64→ARM64`(0，`arm64-v8a` 等连字符语境已排除)。共 **34 处 / 22 文件**。
+- **关键裁定（`c++` 故意不归一）**：全书仅剩的小写 `c++` 全部是 GCC 标志 `-std=c++23`、真实路径 `include/c++/`、真实库名 `c++_shared` / `libc++`（CONVENTIONS 第 152 行 `-std=c++23` 小写、第 179 行散文 `C++20` 大写，二者本就区分）。强改会破坏可编译命令与真实路径/库名，故排除，遵循「不确定即跳过」。AMD64 同为 x86-64 别名且在「Microsoft AMD64 calling convention」专有名词语境可能失真，亦排除。
+- **核验**：逐条上下文复核（56 候选 → 剔除 22 个 `c++` 假阳性 → 34 真命中）；工具链三元组 / URL / 宏在 diff 中原样保留；`--check` 复跑 exit 0（幂等）；0 语义漂移、0 换行翻转。
+- **修正**：提交 `a446d80`。
+
+#### E10-B. CI 门禁常驻化
+- **改动**：`.github/workflows/ci.yml` 的 `quality` job 在 D5 基准源引用完整性门禁之后新增 `Terminology Normalization Gate`（`python3 tools/terminology_normalize.py --check`，`continue-on-error: false`）。任何未来编辑重新引入 `x86_64` / `AArch64` / `aarch64` 等异体拼写即 BLOCK，防回归。
+
 ---
 
 ## 已知限制（非错误，刻意保留）
@@ -136,3 +149,4 @@
 | `9279beb` | CI 常驻化：structure/fence/whitespace 硬门禁 + 三审计报告 | E8-A |
 | `695d749` | §1 立场标签具体化硬化 + label_specificity_harden.py | E8-B |
 | `18db866` | §1 标签全库收口（147 章）+ D5 基准源引用完整性门禁 + d5_source_integrity.py | E9 |
+| `a446d80` | 术语/格式归一化大包（x86-64/ARM64）+ 确定性 CI 门禁 + terminology_normalize.py | E10 |
