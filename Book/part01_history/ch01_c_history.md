@@ -419,6 +419,38 @@ extern "C" int cfunc(int);
 2. 思考题：若 C++ 当年选择垃圾回收而非 RAII，今日生态会怎样？（结合 ch47 讨论）
 3. 源码阅读：找一个用 `extern "C"` 包裹 C 接口的 C++ 项目（如 spdlog/abseil），理解 C ABI 边界（ch131）。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：C++ 如何从 "C with Classes" 长出来
+
+[史] 1979 年，Bjarne Stroustrup 在 Bell 实验室（Murray Hill）攻读博士期间接触 Simula 67 的面向对象仿真，却嫌其太慢；同期他在 UNIX/C 环境做分布式系统工作。1980 年他着手在 C 预处理器之上加类机制，最初叫 "C with Classes"（1980–1983），目标是"在 C 的性能与底层控制上，叠一层 Simula 式的抽象，而不牺牲效率"。[史] 1983 年语言正式更名为 C++（Rick Mascitti 提议的名字），并引入虚函数、`new`/`delete`、引用、const、重载等；1985 年《The C++ Programming Language》第一版出版，CFront（C++→C 的前端）随 AT&T 发布。[轶] CFront 本身是用 C++ 写的自举编译器，但输出 C 代码再交给 C 编译器——这一"转译"策略让 C++ 在几乎所有有 C 编译器的平台上立刻可用，也埋下了"名字改编（name mangling）"与 ABI 分歧的种子。[评] 今天回头看，C++ 最大的历史赌注就是"零开销抽象"与"与 C 兼容"——它让 C++ 吃下了系统编程与高性能计算的存量市场，但也让 ABI 与遗留包袱成了四十年解不开的结。
+
+### ㉒.2 真实工程坐标：C 遗产与 C++ 起点活在哪些地方
+
+- **操作系统与基础设施**：整个 Linux 内核（纯 C，C89/C11 混合）、Windows NT 内核（C 为主）、SQLite（单文件 C 库，全球部署量最大的嵌入式数据库之一）、PostgreSQL 后端均重度依赖 C 的 ABI 稳定性。
+- **C++ 的工业母体**：LLVM/Clang 自身最早脱胎于 C++ 对 C 的兼容层；无数嵌入式固件、高频交易、游戏引擎（Unreal 用 C++）的起点都是"先用 C 写、再用 C++ 类封装"。
+- **跨语言边界**：C 的 `extern "C"` ABI 是几乎所有语言（Python CPython、Java JNI、Rust FFI、Go cgo）与本地代码交互的事实标准——今天你调用的 libpng/zlib/openssl 几乎都是 C ABI。
+
+### ㉒.3 生产踩坑：C 遗产与早期 C++ 的坑
+
+- **名字改编（name mangling）不跨编译器**：GCC 的 `_Z1fi` 与 MSVC 的 `?f@@YAXH@Z` 不同（见 ch01 附录），因此 C++ 库必须用 `extern "C"` 或统一工具链，否则链接期符号对不上。
+- **C 与 C++ 混编的未定义行为**：在 C++ 里 `void*` 不能隐式转 `T*`（C 可以），大量老 C 头在 C++ 里编译报错的"经典坑"；`malloc` 返回 `void*` 在 C++ 必须强转或改用 `new`/`std::make_unique`。
+- **头文件宏污染**：C 风格宏（`#define` 常量、min/max）在 C++ 模板里频繁冲突，需用 `<algorithm>` 的 `std::min/max` 或 `#define NOMINMAX` 规避 Windows 的宏。
+
+### ㉒.4 与标准的互动：从 AT&T 方言到 ISO 标准
+
+[史] C++ 在 1980 年代是 AT&T 的"事实方言"，直到 **1990 年 ANSI X3J16 与 ISO SC22/WG21** 成立，1998 年才由 ISO 发布第一个国际标准 **ISO/IEC 14882:1998（C++98）**。C 语言则更早由 **WG14** 在 1989（C89/ANSI C）、1999（C99）、2011（C11）等版本演进；C++ 至今仍维持与 C 头（`<stdio.h>`→`<cstdio>`）的双向兼容承诺。[评] 值得注意：C++ 与 C 各自演进后已显著分叉（C++ 不采纳 C99 的变长数组 VLA、C23 的 `_BitInt` 等），"写一次两头编"的幻想在 2020 年代基本破灭，现代项目应明确选边。
+
+### ㉒.5 权威引用
+
+- [Bjarne Stroustrup 主页](https://www.stroustrup.com/) — C++ 设计者本人，含历史与出版物。
+- [The Design and Evolution of C++](https://www.stroustrup.com/dne.html) — Stroustrup 自述 C++ 设计动机与 1994 年前的演进。
+- [WG21（C++ 标准委员会）](https://www.open-std.org/jtc1/sc22/wg21/) — 标准文档、提案、会议入口。
+- [WG14（C 语言委员会）](https://www.open-std.org/jtc1/sc22/wg14/) — C 标准现状（含 C23 已采纳）。
+- [C++11 特性总览（cppreference）](https://en.cppreference.com/w/cpp/11) — 含 C++11 之前的演进脉络。
+
 ## 附录: C with Classes → C++ 代码演化
 
 ```cpp

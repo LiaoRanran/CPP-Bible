@@ -481,6 +481,40 @@ int main(){
 
 ---
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：空基类优化的来龙去脉
+
+[史] 空基类优化（EBO，Empty Base Optimization）源于 C++ 标准对「**空类（无数据成员、无虚函数、无虚基类的类）可以为零尺寸子对象**」的规定，这一规则由 **C++98（1998）** 在 `[intro.object]` 中明确，并被 **Itanium C++ ABI** 落地为「空基类子对象可与相邻成员/基类共享地址、不占空间」（第 ⑦ 节对象布局）。[史] EBO 最初是为给 `std::vector`/`std::shared_ptr`（ch41）这类「带分配器/删除器成员」的类型省掉空分配器的尺寸——标准库大量用「空基类承载 trait/策略」正是依赖 EBO。但 EBO **只对基类生效，对数据成员无效**，这导致「想把空策略作为成员而非基类为零开销」长期做不到，直到 **WG21 的 P0840（Richard Smith，2018）** 在 **C++20 引入 `[[no_unique_address]]`**，把 EBO 能力扩展到数据成员（第 ⑬ 节源码分析）。[轶] 一个少有人知的史实：C++ 早期曾允许「空类 sizeof 为 0」，但这会破坏数组语义（数组元素必须地址不同），于是标准改为「最派生对象至少为 1 字节、空基类子对象可为 0」的折中——这是 EBO 能成立的前提。
+
+### ㉒.2 真实工程坐标：EBO 活在哪里
+
+- **标准库容器/智能指针**：`std::vector`（分配器作为空基类）、`std::shared_ptr`（删除器/分配器经 EBO 不增加控制块尺寸，ch41 第 ⑥/⑰ 节）、`std::pair`/`std::tuple`（空元素经 EBO 压缩，第 ⑬/⑭ 节 D4 源码实证）——这是 EBO 影响面最大的地方，几乎每个 C++ 程序都受益。
+- **Boost / 策略类（Policy-Based Design）**：`boost::compressed_pair`（专为 EBO 设计）与 Andrei Alexandrescu 的 Policy-Based Design（ch71）用空基类承载单位策略（如 `Unit<Meter>`），让「类型携带编译期信息」零运行时成本。
+- **游戏/嵌入式**：在尺寸敏感的结构（如每帧百万计的组件、协议包）里，用 EBO/`[[no_unique_address]]` 把空 tag/stateless 策略压成零尺寸，直接关系到缓存命中与内存带宽。
+- **数值/编译期库（Eigen、units）**：量纲单位（dimension tag）多为空类型，经 EBO 嵌入 `Quantity<Double, Meter>` 而不增尺寸，实现「类型安全 + 零开销」。
+
+### ㉒.3 生产踩坑：EBO 的误用
+
+- **误以为空成员也为 0 尺寸**：第 ⑫ 节，EBO 仅对基类生效；把空策略作为**数据成员**会照常占至少 1 字节（甚至 padding 到对齐），若想要零开销必须用基类或 C++20 的 `[[no_unique_address]]`——这是遗留代码最常见的「省尺寸失败」原因。
+- **依赖「空基类地址相同」做相等判断**：标准仅允许空基类子对象与同类型其他子对象共享地址，跨类型或不满足布局规则的共享未定义；用 `&base1 == &base2` 推断身份不可靠。
+- **`[[no_unique_address]]` 与非标准布局/ ABI 边界**：第 ⑬ 节，开启该属性会改变成员偏移，跨 ABI/跨编译器或混编时若一方用、一方不用，结构布局不一致会破坏二进制兼容。
+- **过度嵌套 EBO 导致可读性与调试困难**：深 EBO 基类链让 `sizeof` 与成员变量偏移变得不直观，排障时需对照 ABI 规则，团队若无约定易出错。
+
+### ㉒.4 与标准的互动：EBO 与 WG21 演进
+
+[史] EBO 随 C++98 被确立为「空基类子对象可零尺寸」；**C++20 的 P0840（`[[no_unique_address]]`）** 把它扩展到数据成员，是 EBO 二十多年来最实质的语言级补完（第 ⑬ 节）。[史] 与此同时，**`std::is_empty`（第 ⑪/⑮ 节）** 等类型特征让库能在编译期检测空类型、决定是否启用压缩；C++20 后 `[[no_unique_address]]` 配合 concepts（ch67）可写出「对空成员零开销、非空成员照常」的泛型组件。[评] WG21 方向是把「零开销承载编译期信息」做成一等语言设施：EBO（基类）→ `[[no_unique_address]]`（成员）→ 静态反射（P2996，C++26 候选）逐步让「类型的编译期属性不付运行时代价」成为可移植、可查询的契约。标准库自身（tuple/pair/shared_ptr）会继续是 EBO 的最大受益者与示范。
+
+### ㉒.5 权威引用
+
+- [cppreference: Empty Base Optimization (EBO)](https://en.cppreference.com/w/cpp/language/ebo) — 空基类零尺寸的语义与条件（第 ⑦ 节）
+- [cppreference: [[no_unique_address]]](https://en.cppreference.com/w/cpp/language/attributes/no_unique_address) — 把 EBO 扩展到数据成员（C++20，第 ⑬ 节）
+- [WG21 P0840R2 — Language support for empty objects](https://wg21.link/P0840) — `[[no_unique_address]]` 提案
+- [cppreference: std::is_empty](https://en.cppreference.com/w/cpp/types/is_empty) — 编译期检测空类型（第 ⑮ 节）
+- [Itanium C++ ABI（基类布局规则）](https://itanium-cxx-abi.github.io/cxx-abi/abi.html) — EBO 在 GCC/Clang 的具体布局（第 ⑦ 节）
+
 ## 附录：知识点深挖（模板 B，23 项）
 
 ### B1 EBO 规则与 ABI 〔≥10 例〕

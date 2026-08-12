@@ -630,6 +630,39 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 - `[标准]`：本章所有机制均建立在 `std::atomic` 之上，ISO C++ 完全支持；DCAS 的 `__int128` 属编译器扩展。
 - `[经验]`：把速查表当成“评审清单”——每写一个 CAS，过一遍“值会被回收吗？有版本吗？有保护吗？”。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：ABA 问题的由来
+
+[史] ABA 问题由 **IBM 的 R. K. Treiber 在 1986 年的无锁栈（Treiber stack）论文** 中首次揭示：一个线程读到一个指针 `A`，被抢占期间 `A` 被弹出、节点释放、又被重新分配（地址复用到 `A`），回来做 CAS 时「值仍是 A」便成功，但中间的语义上下文已彻底改变，导致结构损坏。名字 ABA 来自「值从 A→B→A」的过程。[史] 后续 **Maged Michael（2004，论文《Hazard Pointers》）** 系统化了 ABA 的防护方案；CAS 原语本身（x86 `lock cmpxchg`）只比较「值是否相等」，天然无法区分「没变过」与「变回原值」，所以 ABA 是无锁 CAS 的固有难题。[轶] 1990 年代 Java 的 `AtomicMarkableReference`、.NET 的 `AtomicReference`+版本位都是对 ABA 的工程回应。[评] 解决 ABA 有三类路线：**tagged pointer（版本/标记位）**、**hazard pointer（读者登记，阻止回收）**、**RCU（宽限期后整体回收）**——trade-off 各不相同，本章正是要把它们讲透。
+
+### ㉒.2 真实工程坐标：ABA 活在哪些产品里
+
+- **无锁栈/队列（Treiber stack、Michael-Scott queue）**：这是 ABA 最经典的「诞生地」，任何手写无锁链表/栈都必须面对——数据库、网络框架的无锁队列尤其如此。
+- **JVM `java.util.concurrent`**：`ConcurrentLinkedQueue` 用「节点不物理删除、仅逻辑出队（自链接）」规避 ABA；`AtomicMarkableReference` 直接提供「值+标记」对抗 ABA。
+- **Linux 内核 RCU 用法**：RCU 通过「宽限期内不回收」天然消灭 ABA——读者不持锁、写者等所有读者退出宽限期才释放旧值，是无锁读侧最彻底的 ABA 解法之一。
+- **数据库 MVCC / 内存池**：版本号/时间戳标记是 tagged pointer 思想的变体，避免「对象地址复用被误判为未变」。
+
+### ㉒.3 生产踩坑：ABA 的常见误用与陷阱
+
+- **裸 CAS 无版本位**：在「指针即值」的无锁结构里只比较指针，节点释放后地址被内存池/分配器复用，CAS 误判成功——典型症状是偶发、难复现的数据损坏，TSan 也未必能抓到（因为单看内存访问是「合法」的）。
+- **GC 语言里误以为无 ABA**：即便有 GC，Java/.NET 中「对象地址不变但内部状态变了」仍是逻辑 ABA；GC 只防 UAF，不防「值回到原值」的语义错乱，仍需标记位或 hazard pointer。
+- **tagged pointer 位数不够**：在 64 位系统上若把版本号塞进指针空闲位，高并发下版本号回绕（wrap-around）会重新撞上旧值——必须用足够宽的版本或用 hazard pointer/RCU 替代。
+- **hazard pointer 登记/清零顺序错**：读者若先读指针再登记 hazard，存在「读到指针→被抢占→写者回收」的竞态窗口；正确顺序是「先登记 hazard 再解引用」，否则防护失效。
+
+### ㉒.4 与标准的互动：ABA 防护与 C++ 标准的演进
+
+[史] C++11 提供了 CAS（解决问题的**工具**），但**没有**内置 ABA 防护，开发者须自己实现 tagged pointer 或用 hazard pointer；**C++26 正在推进 hazard pointer 标准化（P1122/P2530）**，把 Michael 2004 的论文方案下沉为标准库设施 `std::hazard_pointer`，直接回应「无锁内存安全回收 + ABA 防护」。RCU 的标准化探讨也在 WG21（P1122 同族）推进。与 WG21 方向一致：把「无锁正确性」从「专家手写汇编级技巧」变成「标准可组合抽象」，降低 ABA 类 bug 的发生率。
+
+### ㉒.5 权威引用
+
+- [Maged Michael — Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects (2004)](https://dl.acm.org/doi/10.1145/989393.989403) — ABA 防护与内存安全回收的经典论文（可查证 DOI）。
+- [R. K. Treiber — Systems Programming: Coping with Parallelism（1986，无锁栈/ABA 首次揭示）](https://www.cs.rochester.edu/u/scott/papers/1996_PODC_queues.pdf) — Treiber stack 与 ABA 问题的原始出处。
+- [WG21 P2530 — Hazard Pointers for C++（C++26 推进中）](https://wg21.link/p2530) — 把 hazard pointer 纳入标准库的提案。
+- [cppreference: std::atomic::compare_exchange (CAS 与 spurious failure)](https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange) — 理解 ABA 必须先理解 CAS 的语义。
+
 ## 附录 E：ABA问题工业案例 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
 ```

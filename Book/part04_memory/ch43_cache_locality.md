@@ -1636,6 +1636,37 @@ int main() {
 | [第36章](Book/part04_memory/ch36_stack_heap.md) | 多态插件/框架扩展 | 本章提供概念，第36章提供实现 |
 | [第154章](Book/part14_perf/ch154_cache_opt.md) | 泛型库/编译期计算 | 本章提供概念，第154章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：缓存与局部性从哪来
+[史] 「cache」一词由 **Maurice Wilkes** 在 1940 年代设计 EDSAC 二代存储时提出（他称其为 "slave memory"，用于隐藏磁鼓延迟）；**IBM System/360 Model 85（1970）** 是第一台商用化引入 CPU 缓存的主机。多级缓存（L1/L2）随 **Intel Pentium Pro（1993）** 进入 x86 主流；**L3** 在 Pentium 4 / 多核时代成为片内共享层。[史] 「false sharing（伪共享）」这一术语随 SMP 多处理器扩展被提出——多核争用同一缓存行里的不同变量，使缓存一致性流量爆炸，是 2000 年代后大规模并行服务的头号性能杀手。[轶] 早期手册把 cache 当成「透明加速」，直到 multi-core + NUMA 时代工程师才被迫理解缓存行边界，否则「改一个计数器让程序慢 10 倍」成为经典面试题。[评] 缓存不是「更快的内存」，而是一套**空间/时间局部性的博弈系统**；C++ 程序员必须主动布局数据，而非依赖硬件。
+
+### ㉒.2 真实工程坐标：缓存局部性活在哪些产品里
+- **高频交易（HFT）/ 低延迟系统**：把热路径数据 pin 在 L1/L2、用 `alignas(64)` 隔离每线程状态、避免跨核缓存行迁移，是纳秒级延迟的生命线。
+- **游戏引擎（Unreal / Unity）**：ECS 的 SoA 布局、按缓存行对齐组件池，直接决定每帧能遍历多少实体；Unity DOTS 把缓存友好当核心卖点。
+- **数据库/存储（LevelDB / RocksDB / PostgreSQL）**：block / buffer pool 的预取与顺序读、MemTable 跳表布局，全部围绕减少 cache miss 设计。
+- **数值/HPC（Eigen / BLAS）**：矩阵分块（blocking/tiling）让内层循环吃满 L1/L2，是「同样算法快 5–10×」的根因；`std::transform` + SIMD 配套缓存对齐。
+- **Linux 内核**：`perf stat` 的 `cache-misses`/`cache-references`、`perf c2c` 专查伪共享、`numactl` 做 NUMA first-touch 亲和。
+
+### ㉒.3 生产踩坑：缓存局部性的常见误用
+- **伪共享（false sharing）**：多核各写一个 `struct` 里相邻的 `counter`，变量落在同一 64B 缓存行，核间反复 invalidate——用 `alignas(std::hardware_destructive_interference_size)`（C++17）或显式 padding 隔离；`perf c2c` 可定位。
+- **指针追逐（pointer chasing）**：链表 / 树 / `std::map` 节点散落堆上，遍历即随机访存、缓存命中率极低；热点路径改 `std::vector` + 下标或 SoA。
+- **重分配/重哈希后冷缓存**：`std::vector` `reserve` 不够导致扩容搬移，新地址全 cold；预估容量 `reserve()` 是零成本优化。
+- **NUMA 远程访问**：线程在 CPU0 分配、被调度到 CPU1 访问，跨 socket 走 QPI/UPI，延迟翻倍；`numactl --cpunodebind` + first-touch 绑定。
+- **误用 `[[likely]]`/`[[unlikely]]`**：在已预测准的分支上加反而扰乱 BHB/分支预测，需 microbenchmark 验证（见 ⑫）。
+
+### ㉒.4 与标准的互动：缓存局部性与 C++ 标准的演进
+[史] C++11 引入**内存模型与原子**，把「数据竞争 / 可见性 / 一致性」写进标准，缓存一致性从「实现细节」变成**可推理的语义契约**；`std::atomic` 的 `memory_order` 直接对应缓存一致性流量。[史] **C++17** 通过 **P0154（Hardware Interference Size）** 给出 `std::hardware_destructive_interference_size` 与 `std::hardware_constructive_interference_size`（头文件 `<new>`），让「按缓存行对齐以规避伪共享」首次成为**可移植的标准设施**而非平台魔数。[史] **C++20** 通过 **P0476** 把 `[[likely]]` / `[[unlikely]]` 属性纳入标准，给分支预测器可移植提示（见 ⑫）。[评] 标准始终在「暴露硬件真实代价」与「保持可移植」之间权衡：缓存行大小仍是实现定义（不是常量），所以 `hardware_*_interference_size` 是「查询」而非「假定」。
+
+### ㉒.5 权威引用
+- [cppreference: std::hardware_destructive_interference_size](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size) — C++17 按缓存行对齐规避伪共享的可移植设施。
+- [WG21 P0154 — Hardware Interference Size](https://wg21.link/P0154) — 引入 `hardware_*_interference_size` 的提案。
+- [WG21 P0476 — `[[likely]]` and `[[unlikely]]`](https://wg21.link/P0476) — C++20 分支提示属性提案。
+- [Ulrich Drepper — What Every Programmer Should Know About Memory](https://www.akkadia.org/drepper/cpumemory.pdf) — 缓存/TLB/NUMA 的经典权威长文。
+- [Agner Fog — Software optimization resources](https://www.agner.org/optimize/) — 微架构、指令吞吐与缓存优化的权威手册集。
+
 ## 相关章节（交叉引用）
 
 - **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 控制块的缓存局部性决定解引用开销。

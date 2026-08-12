@@ -1121,6 +1121,9 @@ LevelDB 的设计哲学则直接继承自 **Chang、Dean、Ghemawat 等《Bigtab
 - LevelDB 源码与文档：`https://github.com/google/leveldb`
 - CMU 15-445 / 15-721（Andy Pavlo）数据库课程对 LSM 的讲法，是工业调参的理论底座。
 
+
+- [RocksDB 官网](https://rocksdb.org/)：官方站点、调优指南与基准。
+- [LSM-Tree（维基百科）](https://en.wikipedia.org/wiki/Log-structured_merge-tree)：LevelDB/RocksDB 的根基算法与读放大/写放大权衡。
 ## 附录 F：LevelDB/RocksDB 工业原理与面试 [B: Principle / D: Stdlib / H: Design / I: Practice / J: Learning]
 
 ```

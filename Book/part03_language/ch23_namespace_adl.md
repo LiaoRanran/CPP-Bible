@@ -1167,6 +1167,33 @@ int main() {
 | [第29章](Book/part03_language/ch29_friend.md) | 文本处理/协议解析 | 本章提供概念，第29章提供实现 |
 | [第61章](Book/part06_templates/ch61_template_overload.md) | 高性能容器/零拷贝传输 | 本章提供概念，第61章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：命名空间与 ADL 的出身
+C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀手工避免冲突；随着 1990 年代库爆炸（标准库、Boost、各家 SDK 同台），名字冲突成了头等痛点，命名空间在 C++98 正式引入（见 ch23 0.1）。[史] ADL（参数依赖查找，Koenig lookup，以 Andrew Koenig 命名）是命名空间的"伴生怪物"：为让 `operator<<(cout, x)` 找到 `std` 里的运算符，编译器会顺着参数类型悄悄进其命名空间。[史][评] C++11 的 `inline namespace` 提供版本化无痛升级，C++20 模块（P1103）从根上减少头文件宏污染。[史]
+
+### ㉒.2 真实工程坐标：namespace/ADL 活在哪些产品里
+- **标准库与 Boost**：`std` 自身靠命名空间隔离；Boost 用嵌套命名空间（`boost::asio::ip`）组织巨型库树；`inline namespace` 是 ABI 版本控制事实标准。
+- **libstdc++**：用 `__cxx11` inline namespace 区分新旧 ABI（`std::string` 实现切换），旧代码链接旧符号、新代码用新符号，做到无断裂升级。[史]
+- **Chromium / LLVM**：用匿名命名空间替代文件级 `static`；LLVM 的 `llvm::` / `clang::` 分层命名空间是大型 C++ 项目的组织范本。
+
+### ㉒.3 生产踩坑：namespace/ADL 的常见误用
+- **ADL 不透明查找引发意外重载**：传入 `std` 类型的参数会悄悄把 `std` 里的 `swap`/`begin` 拉进候选集，自定义同名函数被意外选中或冲突，是模板代码的天坑。[评]
+- **`using namespace std;` 在头文件里**：把整个 `std` 倾泻进全局，造成名字污染与 ODR 冲突，是被无数代码规范明令禁止的反模式。[史][评]
+- **inline namespace 误用破坏 ABI**：把 ABI 敏感类型放进 inline namespace 后改动实现，会静默改变 mangled name 导致老 `.so` 链接不上。[评]
+
+### ㉒.4 与标准的互动：namespace/ADL 与标准演进
+命名空间、`using`、namespace alias 在 C++98 落地，`inline namespace` 入 C++11（N2920 路线）；C++20 模块（P1103）用 `import std;` 取代文本包含，宏与匿名命名空间不再跨 TU 泄漏，部分接替命名空间的隔离角色。[史] `std::ranges` 用定制点对象（CPO）规避 ADL 风暴，只在必要时走 ADL，正是对 ADL"查找不透明"痛点的官方回应；C++26 静态反射（P2996）将把命名空间变成可运行时枚举的元数据树。[史][评][轶] 早期委员会曾认真讨论"是否默认开启 ADL"，最终因会破坏所有运算符重载而放弃，ADL 成为无法撤销的历史包袱。
+
+### ㉒.5 权威引用
+- [cppreference: namespace](https://en.cppreference.com/w/cpp/language/namespace) — 命名空间、inline namespace 与 using
+- [cppreference: lookup](https://en.cppreference.com/w/cpp/language/lookup) — 包括 ADL（参数依赖查找）的规则
+- [cppreference: modules](https://en.cppreference.com/w/cpp/language/modules) — C++20 模块对命名污染的缓解
+- [WG21 P1103 — Modules](https://wg21.link/P1103) — C++20 模块提案
+- [WG21 P2996 — Static Reflection](https://wg21.link/P2996) — C++26 候选，命名空间/类型元数据可遍历
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。

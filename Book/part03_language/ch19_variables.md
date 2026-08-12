@@ -1530,6 +1530,13 @@ void clear_status() {
 
 *可选扩展（非必需）：若有篇幅，可补（a）Windows PE 段布局完整图与 `dumpbin /headers` 对照；（b）`-fsanitize=thread` 检测 TLS/static 数据竞争的实操；（c）`__cxa_atexit` 与 `__dso_handle` 在动态库卸载时的析构序细节。以上均非必需，本章 10 个核心点已全部展开，32 个示例已满足 ≥30 约束。*
 
+
+### ㉒.5 权威引用
+- [cppreference — 存储期 (storage duration)](https://en.cppreference.com/w/cpp/language/storage_duration)：static / thread / local 三种存储期与内部/外部链接的权威定义。
+- [cppreference — 初始化](https://en.cppreference.com/w/cpp/language/initialization)：零初始化 / 常量初始化 / 动态初始化与静态初始化顺序。
+- [cppreference — 内联变量 (inline variables)](https://en.cppreference.com/w/cpp/language/inline)：C++17 内联变量如何根治头文件 ODR 重复定义（呼应本索引 ODR 栏）。
+- [cppreference — constinit](https://en.cppreference.com/w/cpp/language/constinit)：C++20 constinit 强制常量初始化、根治 SOIF（呼应本索引 修复2 栏）。
+- [cppreference — 单一定义规则 (ODR)](https://en.cppreference.com/w/cpp/language/definition)：ODR 全文，本索引 ODR 栏的出处。
 ## 联合使用场景
 
 | 关联章节 | 场景 | 组合方式 |

@@ -892,6 +892,41 @@ struct S2 : SomePolicy { int x; };     // EBO 压掉空基类
 
 > 全部机器证据（`Examples/_ch139_*.cpp` / `*.asm`、nm 符号、`sizeof` 输出、`std::chrono` 基准、编译计时）均来自本机 g++ 13.1.0 真实运行，可逐条复现；本章未引用任何 `Book/...` 跨章文件，取证链接均指向可在线核验的上游仓库（文件/类名级别，未臆造行号）。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节是 P0-15「全库工业/标准深度升维」大波次的一部分：把抽象的语言机制放回它真正的来处——谁、在哪一年、为了解决什么产业痛点而提出；并在真实代码库与标准演进之间建立可验证的坐标。
+
+### ㉒.1 历史纵深：一个「看起来奇怪」的惯用法
+
+- `[史]` CRTP（Curiously Recurring Template Pattern，奇特的递归模板模式）由 **James Coplien** 在 1995 年《C++ Report》文章中正式命名，写法为 `class Derived : public Base<Derived>`。
+- `[史]` 它把「派生类自身作为基类模板参数」回传，使基类能在编译期获得派生类的静态类型，从而实现「静态多态」「接口强制」「成员函数复用（如 `operator++` 返回正确类型）」。
+- `[轶]` 名字里的「奇特（curiously recurring）」正是因为它违反直觉：基类居然依赖尚未定义的派生类——这是模板「滞后实例化」带来的合法魔法。
+
+### ㉒.2 真实产业坐标：标准库与工业库都在用
+
+- **`std::enable_shared_from_this`**：标准库就用 CRTP 让派生类获得 `shared_from_this()`。
+- **Boost.Iterator** 的 `iterator_facade` / `iterator_adaptor`、**Boost.Operators**（自动生成 `==`/`<=` 等运算符）都是 CRTP 经典；**Eigen** 用 CRTP 做表达式模板（expression templates）实现零开销代数。
+- 微软 **ATL / WTL** 大量用 CRTP 实现 COM 与窗口基类；游戏/数值库用它避免虚表开销。
+
+### ㉒.3 生产踩坑：静态多态的代价
+
+- **无运行期多态**：CRTP 类型在编译期绑定，不能把不同派生类放进同一容器——需要「类型擦除」包装（如 `std::any`/`std::function` 思路）才能异构存储。
+- **错误信息难读**：模板递归展开失败时报错冗长；`static_assert` 友好提示要靠 `requires`/concept 改善。
+- **代码膨胀**：每个 `Derived` 都实例化一份 `Base<Derived>`，派生类多则二进制体积上升。
+- **与虚函数混用的坑**：CRTP 基类里调用虚函数无法「回调」派生覆盖，静态分派与动态分派必须想清选哪个。
+
+### ㉒.4 与 C++ 标准的互动
+
+- `[评]` C++20 Concepts 让 CRTP 基类能「约束派生类接口」：`template<typename D> requires requires(D d){ d.foo(); } class Base`——既静态又安全。
+- 表达式模板（Eigen、Blaze）依赖 CRTP 把 `a + b + c` 在编译期拼成单一循环，是「零开销抽象」的旗舰案例。
+- `[评]` 标准演进把 CRTP 从「黑魔法」变成「可被 concept 约束的静态接口」，可读性大幅提升。
+
+### ㉒.5 权威参考（建议延伸阅读）
+
+- CRTP 概念与示例：<https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern>
+- 标准库 `std::enable_shared_from_this`：<https://en.cppreference.com/w/cpp/memory/enable_shared_from_this>
+- 《Modern C++ Design》（Alexandrescu，CRTP/policy 源头之一）：<https://en.wikipedia.org/wiki/Modern_C%2B%2B_Design>
+
 ## 附录 A：CRTP 工业应用 [F: Industry / B: Principle]
 
 ```

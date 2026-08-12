@@ -802,6 +802,35 @@ double now() {
 }
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从 MMX 到 AVX-512 与标准 SIMD
+[史] x86 向量化由 Intel **MMX（1997）** 起步，经 **SSE（1999）/ SSE2 / SSE4** 到 **AVX（2011，256 位）/ AVX-512（2013 提案、2017 落地，512 位）**；ARM 侧则有 **NEON**（128 位）。[史] 标准层面，WG21 的 **P0214（Data-Parallel Vector Types & Operations）** 提出 `std::experimental::simd`（Parallelism TS 路线），试图把"类型安全的向量类型"纳入标准库——至今仍主要在 TS/实验阶段，未完全并入 ISO C++，因此工业界仍主要靠编译器自动向量化（见 ③）与 intrinsic（见 ⑦）。[评] SIMD 是"标准慢、硬件快"的又一例证：硅片领先标准十余年，程序员用 intrinsic 提前享受。
+
+### ㉒.2 真实工程坐标：SIMD 活在哪些项目里
+- **编解码 / 多媒体**：x264/x265、libvpx、FFmpeg 大量手写 AVX2/AVX-512 intrinsic 做像素/变换。
+- **数值线性代数**：Eigen、BLAS 实现在合适规模上自动/手写向量化做矩阵乘。
+- **游戏物理 / 粒子**：对位置数组做 SoA + SIMD 批量积分。
+- **加密 / 压缩**：AES-NI、CRC32 等专用向量指令是性能命脉。
+
+### ㉒.3 生产踩坑：SIMD 的误用
+- **AVX-512 降频（throttling）**：部分 Intel CPU 跑 AVX-512 会整体降频（power/thermal 墙），短向量收益被频率损失吃光；需实测权衡，必要时退回 AVX2。
+- **未对齐加载 `_mm_loadu_*` 更慢**：对齐数据应用对齐加载（`_mm_load_*`），避免跨 cache line split。
+- **非连续/带分支的循环无法向量化**：编译器自动向量化要求无依赖、连续访问（见 ④）；不达标就退化成标量，白期待。
+- **CPU 调度（dispatch）坑**：写了 AVX-512 路径却在只支持 SSE 的机器上跑会 `SIGILL`；必须运行时检测 `CPUID` 再分派。
+
+### ㉒.4 与标准的互动：P0214 与自动向量化
+WG21 **P0214** 是标准 SIMD 类型的主线提案，配合编译器 `-O2/-O3` 的自动向量化（受 `#pragma GCC optimize`/`#pragma omp simd` 引导，见 ⑤）。C++ 标准目前不直接暴露向量寄存器，但 `std::experimental::simd` 一旦落地，将提供可移植、类型安全的向量抽象。[评] 在它进标准前，可移植 SIMD 仍靠"编译器自动向量化 + intrinsic + 运行时 dispatch"。
+
+### ㉒.5 权威引用
+- [WG21 P0214（Data-Parallel Vector Types / SIMD）](https://wg21.link/P0214) — 标准 SIMD 类型提案主线
+- [Intel Intrinsics Guide](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/) — 每条 intrinsic 的延迟/吞吐/语义
+- [Agner Fog — Microarchitecture & Instruction Tables](https://www.agner.org/optimize/) — SIMD 指令端口/吞吐实测
+- [What Every Programmer Should Know About Memory（Drepper）](https://www.akkadia.org/drepper/cpumemory.pdf) — 向量化与访存的关系
+- [ARM NEON 编程（官方）](https://developer.arm.com/architectures/instruction-sets/simd-isas/neon) — x86 之外的 SIMD 坐标
+
 ## 附录 E：SIMD设计权衡与实战 [H: Design / I: Practice / J: Learning]
 
 ```

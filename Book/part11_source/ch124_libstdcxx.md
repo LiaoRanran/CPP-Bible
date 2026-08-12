@@ -859,6 +859,13 @@ int main() {
 > - GCC 5.1：`_GLIBCXX_USE_CXX11_ABI` 默认翻转为 1，新 SSO `std::string` 上线（见 §0.3/⑧）。
 > - GCC 11 起逐步移除 `_GLIBCXX_USE_CXX11_ABI=0` 的过渡路径，旧 COW 字符串进入「仅历史兼容」状态。
 
+
+### ㉒.5 权威引用
+- [GCC libstdc++ 官网](https://gcc.gnu.org/libstdc++/)：libstdc++ 项目主页与发布说明。
+- [libstdc++ 在线文档](https://gcc.gnu.org/onlinedocs/libstdc++/)：API 手册与扩展设施。
+- [libstdc++ 双 ABI 说明](https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html)：C++11 ABI 与 `-D_GLIBCXX_USE_CXX11_ABI` 的官方权威解释（本文"绝不破 ABI"核心出处）。
+- [GCC libstdc++ FAQ · ABI](https://gcc.gnu.org/onlinedocs/libstdc++/faq.html#faq.abi)：ABI 兼容政策。
+- [LWG 议题追踪](https://cplusplus.github.io/LWG/)：标准库草案缺陷报告，libstdc++ 实现的依据。
 ## ㉓ 与 C++ 标准的互动：libstdc++ 如何追标准、又如何反哺
 
 libstdc++ 与 WG21 的关系分两层：**吸收标准** 与 **暴露特性测试宏**。`bits/version.h` 的 `__glibcxx_want_*` / `__cpp_lib_*` 机制（见 附录 D4）是「标准 → 实现」的桥梁：每个 C++20/23 设施都在 `version.def` 里有一行 FTM 定义，库的其它头靠 `#define __glibcxx_want_xxx` 来启用对应特性。一个常被低估的事实是——libstdc++ 对标准的「追赶」有真实时间差：`<regex>` 在 C++11 名义上可用，但 libstdc++ 的 `std::regex` 长期存在回溯灾难与功能缺陷，直到 P0442R3（2018）一类修订与后续多年修复才基本可用；`<filesystem>` 在 GCC 8（`std::filesystem`）与 GCC 9（`std::experimental::filesystem` 转正）分两阶段落地，且早期 `std::filesystem::path` 的宽字符处理有发行版级 bug。

@@ -583,6 +583,32 @@ int main() {
 
 ---
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：stop_token / jthread 与「协作取消」
+
+[史] `std::stop_token` / `std::jthread` 随 C++20 进入标准，核心提案是 P0660（"A Specification for stop_token and a Reference Implementation"），由 Nicolai Josuttis 等人推动。[史] 它的动机是解决 C++11 `std::thread` 的硬伤：析构时若仍 joinable 会 `terminate`，且「取消一个正在运行的线程」在 C++ 里长期没有标准手段（只能自己塞 `atomic<bool>` 标志）。[轶] 一个设计亮点：`stop_callback` 在 `request_stop()` 时已注册的情况下会「立即同步执行」，这借鉴了 Java `interrupt` 与 Go `context` 的思想，但用 RAII 与类型系统实现了更安全的协作取消。[评] `jthread` 用析构自动 `request_stop` + `join`，把「线程生命周期管理」从易错的人工约定变成了语言保证。
+
+### ㉒.2 真实工程坐标：stop_token 活在哪些产品里
+
+服务器优雅关闭（graceful shutdown）、可中断的长任务、线程池的任务取消是 `std::stop_token` 的主场：网络服务器在收到 SIGINT 时用 `stop_source` 通知所有 worker 线程退出；游戏/编辑器用 `jthread` 跑后台加载，关闭时自动收尾；测试框架用 `stop_token` 给「超时即取消」的用例做协作中断。它与 `condition_variable_any::wait(stoken,...)` 配合，实现「可中断等待」。
+
+### ㉒.3 生产踩坑：stop_token 的常见误用与陷阱
+
+[评] 最大坑是「把协作取消当成强制取消」——`stop_token` 只是「建议停止」，若工作线程从不调用 `stop_requested()` 检查，请求会被完全忽略，任务照跑。另一坑是「`stop_callback` 的构造时机」——若 `request_stop()` 已发生才注册回调，回调会立即同步执行（可能发生在注册者的栈上，存在重入风险）。还有「跨 `std::condition_variable_any` 的可中断等待需用 `wait(stoken,...)` 重载」，用错普通 `wait` 就失去可中断性。
+
+### ㉒.4 与标准的互动：stop_token 与标准的演进
+
+[史] `std::stop_token` / `jthread` 经 P0660R10 在 C++20 落地，是「用 RAII 修正 `std::thread` 缺陷」的关键一步，与 C++20 的 `std::latch` / `std::barrier` 共同补齐了并发原语。[评] WG21 后续在讨论「`std::execution` 发送者/接收者（sender/receiver）模型」与取消传播的统一，方向是「把协作取消从线程扩展到异步任务图，形成与 `stop_token` 一致的取消语义」。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::stop_token](https://en.cppreference.com/w/cpp/thread/stop_token) — 协作取消与 stop_source/stop_callback 的权威定义
+- [WG21 P0660R10 — stop_token 与 jthread](https://wg21.link/p0660) — 协作取消机制进入 C++20 的核心提案
+- [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 stop_token/jthread 工业实现参考
+
 ## 附录A：30+ 完整可编译示例（独立程序，可直接 `g++ -std=c++23 -O2 -Wall -Wextra`） [标准]
 
 下面 J1–J26 每个都是**完整可编译程序**（自带 `#include` 与 `int main`）；`jthread` 由析构自动收尾，普通 `thread` 均已 `join`。

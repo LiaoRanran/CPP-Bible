@@ -909,6 +909,36 @@ struct Endpoint {
 // 真正的工业库会在此之上叠加：⑩ 环形缓冲、⑪ 长度前缀、⑫ JSON、⑨ 线程池、⑮ TLS。
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从 BSD socket 到 epoll 与 Networking TS
+[史] 网络编程的基石是 **BSD socket（4.2BSD，1983）**，TCP 本身由 **RFC 793（1981）** 定义；POSIX 把它标准化，Windows 则提供 **Winsock**（见 ③）。[史] Linux 在 2.5.44（2002）引入 **epoll**，把"每连接一线程"的阻塞模型升级为"单线程多路复用"，是高并发服务的分水岭（见 ⑦⑧）。现代 C++ 侧，**Boost.Asio / Asio（Christopher Kohlhoff，约 2005）** 把异步 IO 抽象成 `io_context` + 回调/协程，并成为 **C++ 网络 TS（Networking Technical Specification）** 的基础提案——但该 TS 尚未并入 ISO C++（见 ⑱）。[评] 网络是"C++ 标准长期缺席、靠 POSIX/平台 API 与第三方库补位"的典型领域。
+
+### ㉒.2 真实工程坐标：网络活在哪些产品里
+- **Nginx / Redis / libuv**：以事件循环 + epoll/kqueue 支撑百万级并发，是 Web/缓存的事实底座。
+- **Boost.Asio / Asio**：被无数 C++ 服务/客户端采用，抽象跨平台异步 IO（见 ⑯）。
+- **游戏服务器 / 数据库**：自研基于 epoll + 线程池（见 ⑨）的协议栈，追求低延迟。
+- **gRPC / RPC 框架**：在 TCP/TLS 之上建强类型传输，底层仍是这套 socket 模型。
+
+### ㉒.3 生产踩坑：网络编程的误用
+- **阻塞 IO 不缩放**：每连接一线程，连接数上千就线程爆炸；应改非阻塞 + IO 多路复用（见 ⑥⑦）。
+- **连接/文件描述符泄漏**：accept 后忘 close、异常路径漏释放，耗尽 fd 致服务不可用（见 ⑰）。
+- **忽略 `SIGPIPE`**：向已关闭的对端 `write` 触发 `SIGPIPE` 默认杀进程；应忽略该信号或 `MSG_NOSIGNAL`。
+- **epoll 边沿(ET) vs 水平(LT) 用错**：ET 模式必须一次读尽，否则事件不再触发，数据积压；LT 更安全但开销略高（见 ⑧）。
+- **缓冲区管理不当**：应用层未做长度前缀/分隔符帧，半包/粘包导致解析错乱（见 ⑩⑪）。
+
+### ㉒.4 与标准的互动：Networking TS 仍在路上
+基于 Asio 的 **Networking TS** 多次推进（executors/awaitable/sockets），目标是把 `std::net` 式异步 IO 纳入标准，但截至 C++23 仍停留在 TS，未合入——因此工业界今天仍依赖 **Boost.Asio**、平台 socket API 与 `std::thread`/`std::async`（C++11）拼装（见第159章）。[评] 网络是"标准慢、生态快"的代表：程序员先用第三方把事做成，标准再择机吸收。
+
+### ㉒.5 权威引用
+- [Asio 仓库（Boost.Asio 的源头）](https://github.com/chriskohlhoff/asio) — 跨平台异步 IO 工业实现
+- [Boost.Asio 官方文档](https://www.boost.org/doc/libs/release/doc/html/boost_asio.html) — 异步网络编程事实标准
+- [RFC 793（TCP 协议规范）](https://datatracker.ietf.org/doc/html/rfc793) — TCP 的权威定义
+- [epoll(7) — Linux 多路复用手册](https://man7.org/linux/man-pages/man7/epoll.7.html) — 高并发 IO 的底层机制
+- [BSD Sockets / POSIX 参考](https://pubs.opengroup.org/onlinepubs/9699919799/functions/connect.html) — 跨平台 socket API 标准
+
 ## 附录 A：工业网络框架对比 [F: Industry / H: Design]
 
 | 框架 | 模型 | 线程模型 | 协议 | 性能亮点 |

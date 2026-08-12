@@ -524,6 +524,34 @@ int main(){volatile const int ROM_DATA=0xBEEF;std::cout<<ROM_DATA<<std::endl;ret
 int main(){volatile int* ptr=new volatile int[4]{1,2,3,4};std::cout<<ptr[0]<<std::endl;delete[]ptr;return 0;}
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：volatile 的正用与误用
+`volatile` 在 C（约 1980 年代）引入，语义是"告诉编译器：此对象可能被程序之外的力量（硬件寄存器、中断、内存映射 I/O）随时改动，禁止缓存到寄存器、禁止优化掉读写"，服务于嵌入式/MMIO（见 ch30 0.1）。[史] 它长期被错误当作"线程间同步原语"，但标准从未保证跨线程可见性。[史][评] C++11 引入 `std::atomic` 与内存模型，正式把并发同步从 `volatile` 手里夺走，`volatile` 退回纯 MMIO/信号处理用途。[史]
+
+### ㉒.2 真实工程坐标：volatile 活在哪些产品里
+- **嵌入式固件与内核**：Linux 内核、裸机固件用 `volatile` 映射硬件寄存器与内存映射 I/O；中断服务例程读取的共享标志位常标 `volatile` 以防被优化掉。
+- **信号处理**：`sig_atomic_t` 配合 `volatile` 在信号处理函数与主流程间传递标志，是 POSIX 标准认可的正当用法。
+- **编译器差异的现实**：MSVC 历史实现中 `volatile` 读/写带 acquire/release 语义（`/volatile:ms` 默认开启），而 GCC/Clang 严格遵循标准（无跨线程保证），同一段 `volatile` 代码三家行为不同。[史][评]
+
+### ㉒.3 生产踩坑：volatile 的常见误用
+- **把 volatile 当锁/同步**：`volatile` 只解决"编译器优化"，不解决"CPU/缓存一致性"——用 `volatile bool ready` 做线程间标志是经典错误，仍会读到陈旧值或重排，必须用 `std::atomic`。[史][评]
+- **volatile 与原子性的误区**：`volatile int x; x++;` 不是原子的，`volatile` 不提供读-改-写原子性，多核下仍竞争。[评]
+- **跨编译器语义不一致**：依赖 MSVC 的 volatile 获取/释放语义写出"看似线程安全"的代码，移植到 GCC/Clang 后静默失效。[史][评]
+- **被弃用的复合赋值**：C++20 起部分 `volatile` 复合赋值/++/-- 被弃用（P1152），老代码升级编译器会触发弃用警告。[史]
+
+### ㉒.4 与标准的互动：volatile 在标准中的定位
+`volatile` 作为 cv 限定符自 C 即存在；C++11 用 `std::atomic` 把并发语义明确剥离，`volatile` 退回"硬件可见性"。[史] C++20 的 `std::atomic_ref`（P0019）允许把已存在的对象临时包成原子引用做并发访问，与"volatile 不解决原子性"形成互补；同年 P1152 弃用大多数 `volatile` 操作（仅保留内存可见性相关用法），收敛其语义。[史] 委员会反复否决"给 volatile 加并发语义"的提案，维持"volatile = 硬件可见性、atomic = 线程原子性"的清晰分工——MMIO 与信号处理仍是 `volatile` 未被任何新特性取代的正当领地。[史][评]
+
+### ㉒.5 权威引用
+- [cppreference: cv (const/volatile)](https://en.cppreference.com/w/cpp/language/cv) — volatile 的语义边界
+- [cppreference: std::atomic](https://en.cppreference.com/w/cpp/atomic/atomic) — 多线程原子性（volatile 的替代）
+- [cppreference: std::atomic_ref](https://en.cppreference.com/w/cpp/atomic/atomic_ref) — C++20 把既有对象包成原子
+- [WG21 P1152 — Deprecating volatile](https://wg21.link/P1152) — C++20 弃用大多数 volatile 操作
+- [WG21 P0019 — atomic_ref](https://wg21.link/P0019) — std::atomic_ref 提案
+
 ## 附录 A: volatile 与 atomic 对比速查
 
 | 维度 | volatile | atomic |

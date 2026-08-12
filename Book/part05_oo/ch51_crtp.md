@@ -519,6 +519,40 @@ BENCHMARK(BM_crtp); BENCHMARK(BM_virtual);
 
 ---
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：CRTP 的来龙去脉
+
+[史] CRTP（Curiously Recurring Template Pattern，奇异递归模板模式）由 **Jim Coplien 在 1995 年** 正式命名并分析，但其雏形可追溯到 **1990 年代初模板刚成熟时**（如 `Counted` 基类：`template<class T> class Counted { ... }; class Widget : public Counted<Widget>`）。它的核心思想是「**基类以派生类为模板参数，从而在编译期获得派生类类型**」，从而把本需虚函数运行时的多态，提前到编译期静态分派（第 ⑩ 节汇编证实零额外开销）。[史] CRTP 在 **Boost 时代（2000 前后）** 被大规模使用：`boost::iterator_facade`、`boost::enable_shared_from_this`（ch41）、`boost::operators` 都是经典实例；标准库随后直接吸收（如 C++11 的 `std::enable_shared_from_this`、C++20 的 `std::ranges` 大量内部 CRTP）。[轶] CRTP 与「静态多态」的思想，可视为对「虚函数零开销替代」的最早、最成功的探索，比 concepts（ch67）早了二十多年。
+
+### ㉒.2 真实工程坐标：CRTP 活在哪里
+
+- **标准库与 Boost**：`std::enable_shared_from_this`（ch41 第 ⑮ 节）、`std::iterator_traits` 配套设施、Boost 的 `iterator_facade`/`operators`/`intrusive` 都用 CRTP 给派生类「批量注入运算符/接口」而零虚函数开销。
+- **Eigen（高性能线性代数）**：表达式模板（expression templates）大量用 CRTP 把 `a + b + c` 在编译期折叠成单一循环，避免临时对象与虚调用，是 CRTP 性能价值的标杆。
+- **游戏/引擎（Unreal、EASTL）**：用 CRTP 实现「编译期多态组件」「无虚函数接口」，避免虚表访存对每帧热路径的冲击（ch47 第 ⑲ 节对比）。
+- **LLVM / Clang**：`LLVM_ENABLE_BITSET_ENUM`、各种 `CRTPBase` 风格工具类，用于给大量平行类注入统一能力而不付运行时代价。
+
+### ㉒.3 生产踩坑：CRTP 的误用
+
+- **基类在派生类不完整时访问其成员**：第 ⑫ 节，CRTP 基类模板体内若引用 `Derived::xxx`，而 `Derived` 在该点尚未完整定义，会编译失败——CRTP 要求基类只依赖「派生类作为完整类型被使用时」才可见的成员，易触发「循环依赖」错误。
+- **`static_cast<Derived*>(this)` 的隐含前提**：第 ⑬ 节，CRTP 靠 `static_cast` 把 `this` 向上转为派生类，前提是「当前对象真的是 `Derived`」；一旦有人在中间插入另一层非 CRTP 继承或误把基类用于多重继承，转换会越界——比虚函数更「相信程序员」。
+- **模板错误信息的爆炸**：CRTP 的静态分派出错时，报错链极长且难读（「模板墙」），新团队维护成本高，是它被 concepts（ch67）部分替代的动因。
+- **误以为 CRTP 万能替代虚函数**：CRTP 是「开放给有限已知派生类」的静态多态，无法表达「运行时才知道具体类型」的真多态（如插件按接口加载），后者仍需虚函数/visitor（ch47/ch48）。
+
+### ㉒.4 与标准的互动：CRTP 与 WG21 演进
+
+[史] CRTP 是社区/库驱动的模式，非语言特性；但它深刻影响了标准：**C++11 的 `std::enable_shared_from_this`**（ch41）、**C++20 的 `std::ranges` 与 `view_interface`** 内部都用 CRTP 提供「零开销接口注入」。**C++20 的 concepts（ch67）** 则补足了 CRTP 最大的短板——用 `requires` 约束 `Derived` 必须满足的接口，让编译期错误从「模板墙」变为清晰约束失败信息（第 ⑭ 节 WG21 提案背景）。[评] WG21 的方向是「**concepts + CRTP 协同**」：CRTP 负责静态分派与代码复用，concepts 负责约束与可读报错。而 **P0840 的 `[[no_unique_address]]`（C++20，ch52）** 让 CRTP 基类（通常为空）以成员形式零开销混入，进一步巩固这一「编译期多态」范式。CRTP 不会被取代，但会被 concepts 包裹得更安全。
+
+### ㉒.5 权威引用
+
+- [cppreference: CRTP（奇异递归模板模式）](https://en.cppreference.com/w/cpp/language/crtp) — CRTP 语义与典型用法（第 ⑬ 节）
+- [cppreference: std::enable_shared_from_this](https://en.cppreference.com/w/cpp/memory/enable_shared_from_this) — CRTP 进入标准库的实例（ch41）
+- [Jim Coplien — CRTP 命名与模式（1995）](https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern) — 模式来源与历史
+- [WG21 P0840R2 — Language support for empty objects](https://wg21.link/P0840) — `[[no_unique_address]]`，CRTP 空基类零开销（ch52）
+- [cppreference: Concepts（C++20）](https://en.cppreference.com/w/cpp/language/constraints) — 约束 CRTP 的 `Derived`（ch67，第 ⑭ 节背景）
+
 ## 附录：知识点深挖（模板 B，23 项）
 
 ### B1 原理：static_cast 为何安全 〔≥10 例〕

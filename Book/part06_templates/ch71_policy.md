@@ -586,6 +586,33 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 | [第65章](Book/part06_templates/ch65_type_traits.md) | 多态插件/框架扩展 | 本章提供概念，第65章提供实现 |
 | [第140章](Book/part12_patterns/ch140_policy_pattern.md) | 配置解析/API响应 | 本章提供概念，第140章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：policy-based design 如何反叛「继承即复用」
+[史] 2001 年 Andrei Alexandrescu 在《Modern C++ Design》里系统提出**基于策略的设计（policy-based design）**：把一个类（如智能指针、工厂）的行为拆成若干正交的「策略」模板参数——所有权策略、检查策略、存储策略——用户像搭积木一样组合出自己要的变体。它建立在 EBO（空基类优化）、traits（ch65）之上，用「编译期组合」取代臃肿的继承层次（ch50）。配套的 Loki 库把这套思想落地，影响了之后整整一代 C++ 库的设计语言。
+[评] 它是对「继承即复用」的反叛：用组合 + 模板在编译期拼装行为，避免脆弱基类与菱形问题，换来「零开销且可任意裁剪」的类型。
+
+### ㉒.2 真实工程坐标：policy-based design 活在哪些产品/项目里
+- 标准库本身就是策略设计的教科书：`std::vector<T, Allocator>`、`std::basic_string<C,Traits,Allocator>`、`std::shared_ptr<T,D>`（删除器 `D`）、`std::unique_ptr<T,D>` 都是「行为可插拔」的策略范例；C++17 的 `std::pmr` 又把内存资源做成可替换策略。
+- Boost 与 Abseil：`boost::unordered_map` 的哈希/相等/分配策略、`absl::Hash` 的策略化扩展，都是同一思想。
+- 游戏引擎与序列化框架：用策略参数组合「编码格式/压缩/校验」等正交行为，避免为每种组合派生子类的爆炸式类层次。
+
+### ㉒.3 生产踩坑：policy-based design 的常见误用与陷阱
+- **模板参数过多导致报错地狱**：策略类常带 4–6 个模板形参，一旦某个策略不满足宿主类期望（缺方法/类型），报错会沿实例化链铺开几百行，根因藏在最深处。
+- **策略间隐式耦合**：看似正交的策略可能因共享假设（如某策略假定存储策略提供 `pointer` 类型）而暗中耦合，破坏「正交组合」的承诺，产生难以预期的组合失败。
+- **EBO 依赖**：策略设计常依赖空基类优化把空策略压成零大小，但若策略非平凡或基类布局被 ABI 影响，大小优化失效，内存布局与预期不符。
+- **概念缺位时的契约漂移**：在 C++20 之前，策略「必须满足的接口」只能靠文档约定 + 偏特化兜底，调用方能轻易传错策略而不被机器检查。
+
+### ㉒.4 与标准的互动：策略类与 concepts 的融合
+policy-based design 自 2001 年起影响了整个 C++ 库生态（见 ch71 正文）。C++20 的 concepts（ch67）让「策略类必须满足某接口」从「文档约定 + 偏特化兜底」变成 `requires` 硬约束：宿主模板可对策略形参写 `requires Policy::has_foo`，报错直接在调用点点名缺了哪个方法。标准库本身也持续把「可插拔行为」做成策略（`std::pmr` 的内存资源、`std::unique_ptr` 的删除器），并逐步用 concepts 收紧其契约。策略类没有过时，只是拿到了机器可检查的接口契约。
+
+### ㉒.5 权威引用
+- [Wikipedia: Policy-based design (Modern C++ Design)](https://en.wikipedia.org/wiki/Policy-based_design) — Alexandrescu 2001 年提出 policy-based design 的历史与机制
+- [cppreference: std::unique_ptr](https://en.cppreference.com/w/cpp/memory/unique_ptr) — 删除器 `D` 作为策略参数可插拔的范例
+- [cppreference: std::allocator](https://en.cppreference.com/w/cpp/memory/allocator) — 分配器作为策略的工业落地（见 `std::pmr`）
+
 ## 真实开源项目参考（可查证链接）
 
 > policy-based design 的工业实现——下列链接指向真实源码（L2 文件级）。

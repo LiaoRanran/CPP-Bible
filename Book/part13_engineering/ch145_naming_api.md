@@ -987,6 +987,36 @@ int main(){Widget w;w.doWork();std::cout<<"PIMPL: 2ns/call, 30x compile speedup"
 面试: 值语义vs引用语义? 默认值语义(安全); 瓶颈处string_view/span
       noexcept加不加? 移动构造/赋值=必须(影响vector realloc 4x)
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：命名法与 API 设计的来龙去脉
+[史] 匈牙利命名法（Hungarian Notation）由微软的 **Charles Simonyi** 在 1970–80 年代提出，用前缀标记变量"种类"（如 `szName` 表示以零结尾的字符串、`dwCount` 表示 double word），在缺乏类型系统与 IDE 的时代帮助程序员记忆语义。进入强类型 C++ 与带 IDE 自动补全的时代后，匈牙利前缀被视为噪音，逐渐退场，但 `m_`（成员）、`s_`（静态）等轻量前缀仍在不少代码库沿用。[史] C++ Core Guidelines（Stroustrup & Sutter，2015）的 NL 规则系统化了现代命名：类型用 `CamelCase`、函数/变量用 `lower_case`、常量用 `kCamelCase`。[评] 命名规范的本质是"让名字承载类型/所有权/单位信息"，而非堆砌前缀。
+
+### ㉒.2 真实工程坐标：命名与 API 活在哪些项目里
+- **Abseil（Google）**：`absl::` 命名空间、强类型 `absl::string_view`/`absl::StatusOr`，API 以"显式、不可误用"著称。
+- **LLVM / Clang**：类型名 `CamelCase`、函数/变量 `camelCase`、成员无强制前缀但常与局部变量区分；其命名与 API 设计被无数编译器/工具项目仿效。
+- **Qt**：成员用 `m_` 前缀、getter 不写 `get` 前缀、信号用过去时——一整套自洽的 API 公约，使 Qt 接口高度可预测。
+- **标准库**：`std::` 全小写、容器/算法用名词、算法用动词/名词组合（如 `std::find_if`），是 C++ 命名的事实基准。
+
+### ㉒.3 生产踩坑：API 命名与设计的误用
+- **改名即 ABI 破坏**：C++ 的 name mangling 把函数名、参数类型编进符号；改函数名/参数（即使语义等价）会改符号，破坏动态库 ABI。稳定的 API 表面要靠 Pimpl / 不透明指针隔离实现（见 ⑩）。
+- **`[[deprecated]]` 用错**：C++14 的 `[[deprecated("reason")]]` 是弃用沟通工具，但只加属性不提供替代路径，等于没迁移计划；应同时给出继任 API。
+- **缩略语大小写不一致**：`XmlParser` vs `XMLParser`、`HttpServer` vs `HTTPServer` 在团队里漂移，导致搜索/自动补全长不出统一结果。[评] 约定一个缩略语表（如 ID/Url/Http 固定写法）比争论更重要。
+
+### ㉒.4 与标准的互动：从 concepts 到 deprecated
+- **`[[deprecated]]`** 随 C++14 进入标准，让"标记弃用"成为语言级能力，替代各家用宏模拟。
+- **Concepts（C++20，P0734R0）** 把"接口约束"前置到函数签名，使 API 的先决条件在编译期即可读、可查，相当于把命名文档变成类型系统的一部分。
+- **`std::string_view` / `std::span`** 等词汇类型改变了"传参该传什么"的 API 设计共识：优先传视图而非拷贝。
+
+### ㉒.5 权威引用
+- [C++ Core Guidelines — NL（命名）/ F（函数）/ C（类）规则](https://isocpp.github.io/CppCoreGuidelines/) — 现代 C++ 命名与 API 设计事实标准
+- [Google C++ Style Guide（命名与 API 约定）](https://google.github.io/styleguide/cppguide.html) — 含命名、include、API 稳定性规则
+- [WG21 P0734R0（Concepts，C++20）](https://wg21.link/P0734) — 把接口约束变成编译期可查
+- [cppreference: 属性 `[[deprecated]]`](https://en.cppreference.com/w/cpp/language/attributes/deprecated) — 标准弃用语义
+- [Abseil — C++ API 设计指南（Google）](https://abseil.io/docs/cpp/guides/) — 工业级 API 设计范例
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。

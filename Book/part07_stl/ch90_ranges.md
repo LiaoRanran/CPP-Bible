@@ -922,6 +922,32 @@ int main() {
 
 ---
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：C++20 Ranges 与「惰性管道」
+
+[史] `std::ranges`（C++20）的核心提案是 P0896（"The One Ranges Proposal"），由 Eric Niebler 主导，把「范围 + 视图 + 适配器」引入标准库。[史] 它的动机是解决旧 STL 算法的两宗罪：必须显式传 `begin/end` 迭代器对、且管道式组合几乎不可能；ranges 让 `views::filter(...)` 与 `views::transform(...)` 用 `|` 串成惰性管道，且自动约束概念。[轶] 一个有趣背景：Ranges 曾在 C++17 前夕被「紧急叫停」，因委员会对 `view` 的生命周期与 `borrowed_range` 悬垂问题尚未达成一致，最终在 C++20 才完全落地。[评] Ranges 是 STL 自 C++98 以来最大的一次范式升级——把「鸭子类型迭代器」正式升级为「编译期概念约束 + 惰性组合」。
+
+### ㉒.2 真实工程坐标：ranges 活在哪些产品里
+
+日志过滤、词频统计 ETL、数据清洗是 `std::ranges` 的主场；编译器/静态分析里的「对 AST 节点做惰性变换」、游戏服务器里的「对实体列表做过滤—投影」也受益于管道式组合。LLVM 的 `llvm::iterator_range` 是 ranges 思想的先行者；许多现代 C++ 项目已用 `views::filter` + `views::transform` 取代手写 for 循环，既可读又零开销（视图不持有元素、不分配）。
+
+### ㉒.3 生产踩坑：ranges 的常见误用与陷阱
+
+[评] 最大坑是「悬垂视图（dangling）」：临时 `vector` 经 `views::filter` 得到的 `view` 不拥有数据，临时对象一销毁视图即悬空——标准用 `std::ranges::dangling` 与 `borrowed_range` 概念在编译期拦截一部分，但存储视图到变量时仍需确保底层存活。另一坑是「投影/适配器的编译期错误晦涩」——`views::xxx` 组合一旦类型不匹配，报错可达数百行模板噪声。还有「`views::reverse` 对不支持双向的视图失效」等范畴限制。
+
+### ㉒.4 与标准的互动：ranges 与标准的演进
+
+[史] Ranges 经 P0896R4 在 C++20 落地后，已成为标准库最活跃的方向之一：C++23 新增 `views::zip` / `views::chunk` / `views::slide` 等大量适配器，并引入 `std::generator`（协程驱动的惰性序列）。[评] WG21 仍在持续扩展 ranges（如 `views::enumerate`、range 上的算法默认接收范围而非迭代器对），方向明确是「让 STL 算法从『迭代器对』全面迁移到『范围』，并继续用 concepts 把错误前移到编译期」。
+
+### ㉒.5 权威引用
+
+- [cppreference: Ranges library](https://en.cppreference.com/w/cpp/ranges) — 视图、适配器与惰性管道的权威定义
+- [WG21 P0896R4 — The One Ranges Proposal](https://wg21.link/p0896) — ranges 进入 C++20 的核心提案（Eric Niebler）
+- [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 ranges 工业实现参考
+
 ## 附录：练习题 / 思考题 / 源码阅读建议
 
 **练习题**

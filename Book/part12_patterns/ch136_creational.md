@@ -957,6 +957,40 @@ auto make(K k) -> std::unique_ptr<Shape> {
 int main() { auto s = make(K::Circle); s->draw(); }
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节是 P0-15「全库工业/标准深度升维」大波次的一部分：把抽象的语言机制放回它真正的来处——谁、在哪一年、为了解决什么产业痛点而提出；并在真实代码库与标准演进之间建立可验证的坐标。
+
+### ㉒.1 历史纵深：把「如何造对象」从调用处解耦
+
+- `[史]` 创建型模式（Factory Method、Abstract Factory、Builder、Prototype、Singleton）出自 GoF 1994 一书，初衷是把「对象实例化的具体类」从使用处隐藏，以应对「运行时才知道造哪种」的困境。
+- `[史]` 早期 C++ 只能靠 `new` + 裸指针手工管理，创建型模式顺带成为「集中管理构造与所有权」的栖身之所；后来 RAII 与智能指针把所有权问题接走，模式的重心回到「选择构造策略」。
+
+### ㉒.2 真实产业坐标：跨平台与资源构造
+
+- 跨平台 UI / 渲染后端用 Abstract Factory 统一产出「当前平台的具体实现」；编译器（Clang 的 `CompilerInvocation`）用 Builder 逐步拼出复杂配置对象。
+- 游戏资源（贴图、网格）用 Prototype 做「克隆模板实例」；日志/配置用 Meyers 单例做进程级唯一入口。
+- 现代 C++ 更常用 `std::make_unique` / `emplace` / `std::optional` 取代手写工厂样板。
+
+### ㉒.3 生产踩坑：单例是头号反模式温床
+
+- **单例的全局状态**：破坏可测试性、隐藏依赖、引发「初始化顺序灾难（static initialization order fiasco）」；多线程下还需 Meyers 单例（`static` 局部变量，C++11 起线程安全）才稳。
+- **工厂爆炸**：每加一种产品就加一对工厂类，类型数量翻倍；能用「策略/标签 + `std::map` 工厂」或模板工厂收口。
+- **Builder 过度冗长**：链式 Builder 在简单对象上是负担；只有真正「多可选参数 + 不变式校验」才值。
+- **Prototype 的深拷贝陷阱**：克隆忘写深拷贝（尤其含裸指针/资源）会共享状态，现代 C++ 用值语义 + 移动语义可规避。
+
+### ㉒.4 与 C++ 标准的互动
+
+- `[评]` C++11 起 `std::make_unique` / `std::make_shared` 把「安全构造」标准化；`emplace` 系列让容器原地构造，`std::expected` 用返回值替代「异常式构造失败」。
+- 分配器（allocator）与删除器（deleter）作为「构造期策略参数」，是现代 C++ 对创建型思想的标准库级落地。
+- `[评]` 标准演进让许多创建型样板退场：能 `make_*` 就别手写工厂；需要运行时多态构造时再用工厂/原型。
+
+### ㉒.5 权威参考（建议延伸阅读）
+
+- 创建型模式总览：<https://en.wikipedia.org/wiki/Creational_pattern>
+- GoF 23 模式背景：<https://en.wikipedia.org/wiki/Design_Patterns>
+- 现代 C++ 构造工具（make_unique 等）：<https://en.cppreference.com/w/cpp/memory/make_unique>
+
 ## 附录: 创建型模式 C++ 实现
 
 ```cpp

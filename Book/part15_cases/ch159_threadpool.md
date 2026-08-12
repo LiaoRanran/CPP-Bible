@@ -871,6 +871,35 @@ std::cout << f.get() << '\n';            // 441，worker 在后台执行
 // 离开作用域自动 stop + join，绝不泄漏线程
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：线程池从 OS 概念到 std::jthread
+[史] "线程池"是操作系统级的经典并发模式（1960 年代批处理即有用线程复用的思想），但 C++ 直到 **C++11** 才在标准中给出 `std::thread` / `std::async` / `std::future`，让线程管理脱离 pthread/Win32 平台 API。[史] **C++20** 的 `std::jthread`（由 P0660 引入）补上"带 `stop_token`、析构自动 join"的 RAII 线程，消除了"忘 join 导致 `std::terminate`"这一高频坑（见 ⑧⑨）。[评] 标准线程设施演进的主线，正是把"易错的人工纪律"变成"编译期/析构期强制正确"。
+
+### ㉒.2 真实工程坐标：线程池活在哪些项目里
+- **Intel oneTBB（原 Threading Building Blocks）**：工业级并行任务调度，被 HPC/图像/数值库广泛依赖。
+- **Boost.Asio / 自研 io_context**：以"一个线程跑事件循环 + 任务队列"支撑网络服务（见第163章）。
+- **游戏引擎 / 渲染**：用线程池跑骨骼动画、资源加载、物理；常配合任务依赖图。
+- **Nginx / libuv**：虽非传统"线程池"，但用 worker 进程/线程 + 事件循环达成高并发，是同一问题的另一种解。
+
+### ㉒.3 生产踩坑：线程池的误用
+- **线程数过多（oversubscription）**：池大小远超 `hardware_concurrency()`，上下文切换压垮吞吐；CPU 密集应≈核数，IO 密集可更多（见 ⑩）。
+- **任务里抛异常被吞**：`std::async` 的异常只在未来 `get()` 时抛出，忘了 `get()` 就静默丢失；好的池把异常转发回提交方（见 ⑫）。
+- **忘 join / detach 泄漏**：`std::thread` 析构若仍 joinable 直接 `terminate`；`jthread` 用 RAII 消除（见 ⑧）。
+- **任务队列上的 false sharing**：多 worker 抢同一 `std::queue` + `mutex`，队列头尾计数器同一 cache line，互相 invalidate（关联第143章/第154章 ⑩）。
+
+### ㉒.4 与标准的互动：从 std::async 到 jthread
+C++11 的 `std::async` 提供"异步任务 + future 取结果"的最小池；C++20 的 **P0660（std::jthread）** 把停止令牌与自动 join 纳入标准，使"可协作取消的线程"成为一等公民。`std::hardware_concurrency()`（C++11）则给池大小一个可移植的默认依据。[评] 标准逐步把线程池的"正确性与可取消性"内建化，自研池的重心转向调度策略而非线程生命周期。
+
+### ㉒.5 权威引用
+- [cppreference: std::jthread (C++20)](https://en.cppreference.com/w/cpp/thread/jthread) — 带 stop_token、析构自动 join
+- [WG21 P0660（std::jthread）](https://wg21.link/P0660) — C++20 协作取消线程的来龙去脉
+- [Intel oneTBB 仓库](https://github.com/oneapi-src/oneTBB) — 工业级任务并行/线程池
+- [Boost.Asio（网络 + 任务调度底座）](https://github.com/chriskohlhoff/asio) — 事件循环 + 线程池的工业实现
+- [cppreference: std::async / std::future](https://en.cppreference.com/w/cpp/thread/async) — 标准异步任务原语
+
 ## 附录 A：工业线程池对比 [F: Industry]
 
 四个世界级 C++ 项目的线程池实现：

@@ -908,6 +908,32 @@ int main() {
 
 ---
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：std::filesystem 与「跨平台路径」
+
+[史] `std::filesystem`（C++17）源自 Boost.Filesystem，先成为技术规范 ISO/IEC TS 18822:2015，再经 Beman Dawes 的 P0218R1 并入 C++17。[史] 它的动机是终结「每个平台各写一套路径/目录遍历」的混乱——POSIX 的 `opendir` / `stat` 与 Windows 的 `FindFirstFile` / `GetFileAttributes` 被统一为 `std::filesystem::path` 与 `directory_iterator`。[轶] 一个著名插曲：GCC 在 9.1 之前要求显式链接 `-lstdc++fs`，因为 filesystem 是独立的静态库，曾让无数新手在链接期困惑。[评] `filesystem` 是标准库第一次把「OS 文件系统语义」抽象成类型安全的 C++ 接口，且默认不抛异常（`error_code` 重载）让它在系统编程里更可控。
+
+### ㉒.2 真实工程坐标：filesystem 活在哪些产品里
+
+日志归档服务的目录滚动与清理、配置热更新与原子回滚、构建系统的依赖扫描是 `std::filesystem` 的主场；游戏/编辑器的资源目录遍历、跨平台安装器的文件搬运、数据库工具的备份脚本都依赖它。它也是各类 CLI 工具（如包管理器、diff 工具）做路径拼接与存在性检查的标准手段——`path` 的词法拼接 `p / "x"` 在 `-O2` 下几乎零开销。
+
+### ㉒.3 生产踩坑：filesystem 的常见误用与陷阱
+
+[评] 最大坑是「TOCTOU 竞态」——`exists(p)` 检查后、真正 `open` 前，文件可能被另一线程/进程删除或替换，因此系统代码应优先用 `error_code` 版「尝试即处理」而非「先检查再操作」。另一坑是「原生路径分隔符与可移植性」——硬编码 `/` 或 `\` 会在跨平台时出问题，应始终用 `path` 的 `/` 运算符拼接。还有「符号链接与权限」——`copy` / `remove_all` 对符号链接与权限位的行为需显式指定 `copy_options`，否则可能误删或越权。
+
+### ㉒.4 与标准的互动：filesystem 与标准的演进
+
+[史] `std::filesystem` 经 P0218R1 并入 C++17，是「先 TS、再标准」路径的又一成功案例；其设计大量复用 Boost.Filesystem 的十年实战经验。[评] 近年 WG21 在扩展文件系统相关能力（如 `std::filesystem::path` 的更多格式支持、与 `std::io` 提案的衔接），但核心 API 保持稳固。标准的长期立场是「路径是值对象、可拷贝、类型化」——这与早期「路径即字符串」的朴素做法彻底划清界限。
+
+### ㉒.5 权威引用
+
+- [cppreference: Filesystem library](https://en.cppreference.com/w/cpp/filesystem) — path/directory_iterator/error_code 重载的权威定义
+- [WG21 P0218R1 — Adopt the File System TS for C++17](https://wg21.link/p0218) — filesystem 经此并入 C++17（Beman Dawes）
+- [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 查证 filesystem TS 与后续修订的一手来源
+
 ## 附录：练习题 / 思考题 / 源码阅读建议
 
 **练习题**

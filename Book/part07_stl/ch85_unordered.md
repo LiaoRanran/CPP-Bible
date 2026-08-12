@@ -540,6 +540,32 @@ int main() {
 - `[标准]`：`unordered_map` 对标 Java `HashMap`、Rust `HashMap`、Go `map`，均为"哈希、无序、平均 O(1)"语义。
 - `[经验]`：从 Rust/Go 迁移时，注意 C++ 默认哈希**非抗碰撞**且遍历**无序但稳定（rehash 前）**；Java/Python 的哈希表已在标准层做了抗碰撞与遍历随机化，C++ 需开发者自行负责。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：unordered 容器与哈希表的入标准
+
+[史] `std::unordered_map` / `unordered_set` 随 C++11 进入标准，底层是开链哈希（separate chaining），元素组织到桶（bucket）中。[史] 它们的设计源自 C++ TR1（2005）的 `std::tr1::unordered_map`，而 TR1 又脱胎于 Boost 与 Matt Austern 的哈希容器提案，是标准库首次把哈希表作为一等公民。[轶] 一个安全相关的细节：C++ 标准未规定默认哈希的抗碰撞性，很多实现不随机化种子，因此面对恶意构造的哈希碰撞（Hash DoS）时，`unordered_*` 可能退化到 O(N)——这与 Java/Python 默认随机化哈希不同。[评] `unordered_*` 的「平均 O(1) 但无顺序」是它相对红黑树 `map` / `set` 的核心取舍。
+
+### ㉒.2 真实工程坐标：unordered 活在哪些产品里
+
+分布式会话缓存、对象/资源索引、去重字典、编译器/运行时的符号哈希表是 `std::unordered_map` 的主场；游戏的对象实例表、服务的请求去重、内存分配器的空闲块快速定位都大量使用哈希容器。Chromium 的 `base::flat_map` 与 `std::unordered_map` 并存，按规模与缓存特征选择；高性能场景也常用 `google::dense_hash_map` 等第三方实现。
+
+### ㉒.3 生产踩坑：unordered 的常见误用与陷阱
+
+[评] 最大坑是「rehash 导致迭代器失效」——插入触发扩容重哈希时，所有迭代器失效（指针/引用仍有效但位置变化）。另一坑是「哈希质量差 + 负载因子失控」导致严重碰撞，实测性能从 O(1) 跌到 O(N)；应自定义高质量哈希或控制 `max_load_factor`。还有「默认 `std::hash` 对自定义类型需特化」，否则编译失败；以及 Hash DoS 风险——外部可控 key 时需加盐或换抗碰撞结构。
+
+### ㉒.4 与标准的互动：unordered 与标准的演进
+
+[史] `unordered_*` 经 TR1 再到 C++11 正式入标准，填补了「哈希关联容器」的空白；C++11 起就支持自定义 Hash/KeyEqual 与 `reserve`。[评] 近年 WG21 的方向是「更优的连续存储哈希」：`std::unordered_map` 的开链导致缓存不友好，社区与标准都在探索如 `std::flat_unordered_map`（C++26 提案方向）等开放寻址变体。标准反复权衡「接口稳定」与「性能迭代」，这也是为何旧 `unordered_*` 的 ABI 被刻意冻结。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::unordered_map](https://en.cppreference.com/w/cpp/container/unordered_map) — 开链哈希与平均 O(1) 语义的权威定义
+- [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 查证 unordered 容器标准化与后续修订的一手来源
+- [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 unordered 容器工业实现参考
+
 ## 附录：练习题 / 思考题 / 源码阅读建议
 
 **练习题**

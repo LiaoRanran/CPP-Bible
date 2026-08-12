@@ -814,6 +814,36 @@ namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 // Counter::inc 为 inline（类内定义），无需 .cpp 额外实现
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：构建系统的来龙去脉
+[史] Make 由 Stuart Feldman 于 1977 年在贝尔实验室创造，解决"只重新编译改动过的文件"这一工程痛点，是构建自动化的起点。[史] CMake 由 Kitware 于 2000 年发布，用"生成器"把一份 `CMakeLists.txt` 翻译成 Makefile、Ninja、Visual Studio 等多种后端，解决跨平台工程描述问题。[史] Ninja 由 Evan Martin 于 2010 年在 Google 创建，定位为"被 CMake 等生成器调用的底层快构建器"，强调低开销与正确增量。[史] Bazel 源自 Google 内部 Blaze（约 2003–2006），2015 年开源，强调可重现构建与对庞大单体仓库（monorepo）规模的支撑。[评] 演进主线是：手写 Makefile（易错）→ 高层描述 + 生成器（CMake）→ 极速底层执行（Ninja）→ 大规模可重现（Bazel）。
+
+### ㉒.2 真实工程坐标：构建系统活在哪些产品/项目里
+- CMake：LLVM/Clang、KDE、VLC、OpenCV、Qt 等几乎所有大型跨平台 C++ 项目的事实标准。
+- Bazel：Google 内部全栈、TensorFlow、Kubernetes 等，服务超大型代码库。
+- Ninja：CMake 在 Linux/macOS 上的默认后台生成目标，Chrome、Android 构建链依赖。
+- Meson：GNOME、Systemd 等采用，强调可读语法与快速度。
+[评] 现代 C++ 工程极少手写裸 Makefile 投产，几乎都走"高层描述 + 生成器 + Ninja"三层结构。
+
+### ㉒.3 生产踩坑：构建系统的常见误用与陷阱
+- 全局变量/目录式 `include` 污染：在 CMake 里滥用 `include_directories(. )` 把头文件泄露给所有 target，导致意外依赖与同名冲突。
+- 忘记让构建系统感知头文件依赖：老式手写 Makefile 漏写 `.h` 依赖，改头文件却不重编，埋下"只少编了一个"的诡异 bug（cppreference 提到 `-MMD` 自动生成 `.d`）。
+- Debug/Release 混链：用 Debug 版库链 Release 版可执行，或反之，触发 ABI/迭代器断言崩溃。
+- 递归 Make 的可靠性差：多次 fork、重复解析，大项目既慢又易出错，这也是 Ninja 被发明的直接原因。
+
+### ㉒.4 与标准的互动：构建系统与 C++ 标准的演进
+[评] 构建系统本身不是 C++ 标准的一部分（标准不规定如何编译工程），但它必须紧跟标准：C++20 Modules 让传统"头文件依赖图"失效，CMake 3.20+ 与 Clang/GCC/MSVC 的模块支持需要构建系统配合（P1103R3 Modules 落地）。[史] `find_package` 的 Config/Module 模式、包导出（PkgConfig）也是围绕"如何让标准库与第三方库可发现"的工程约定，无单一"构建系统提案"，属于工程实践层。
+
+### ㉒.5 权威引用
+- https://www.gnu.org/software/make/ ：GNU Make 官方页，证明 Feldman 1977 的 Make 谱系。
+- https://cmake.org/ ：CMake 官方站点，证明 Kitware 2000 与 target-based 哲学。
+- https://bazel.build/ ：Bazel 官方站，证明 Google Blaze→2015 开源脉络。
+- https://ninja-build.org/ ：Ninja 官方站，证明 Evan Martin 2010 与"快构建"定位。
+- https://mesonbuild.com/ ：Meson 官方站，证明现代可读语法构建系统坐标。
+
 ## 附录 A：工业构建系统与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 
 ```

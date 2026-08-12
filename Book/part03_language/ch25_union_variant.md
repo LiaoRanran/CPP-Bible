@@ -1700,6 +1700,34 @@ int main(){ Token a("x"), b(3.0); a=b; std::printf("ok\n"); }
 | [第32章](Book/part03_language/ch32_initialization.md) | 多态插件/框架扩展 | 本章提供概念，第32章提供实现 |
 | [第88章](Book/part07_stl/ch88_optional_variant.md) | 配置解析/API响应 | 本章提供概念，第88章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从 union 到 variant 的还债
+C 的 `union` 来自 1970 年代，让多个成员共用一块存储以省内存，代价是"读非活跃成员"是未定义行为，全靠程序员记账（见 ch25 0.1）。[史] Stroustrup 把它带进 C++，但 C++ 的对象模型（构造/析构/类型）让 union 更危险：非平凡类型放进去，析构谁？[史][评] C++11 放宽匿名 union 与带非平凡成员的限制但仍不管理"活跃成员"；C++17 的 `std::variant`（P0088）带"活跃成员"记账、`std::visit` 访问者、`valueless_by_exception` 状态，与 `std::optional`/`any` 组成安全值族。[史]
+
+### ㉒.2 真实工程坐标：union/variant 活在哪些产品里
+- **编译器与 AST**：LLVM 的 `llvm::Value`/指令节点、Clang 的 AST 用判别联合（有时裸 union + tag，有时 `std::variant`）表达"同一槽位只装一种节点"；protobuf 生成的消息体常含 union 式字段。
+- **协议与状态机**：网络协议消息、序列化格式（Cap'n Proto、FlatBuffers 的 union 类型）、游戏状态机普遍从裸 union 迁移到 `std::variant` 以获得类型安全分派。
+- **标准库**：`std::variant` 与 `std::visit` 已成为表达"值或错误"的基石，`std::expected`（C++23，P0323）与其思路同源（判别联合）但聚焦错误处理。
+
+### ㉒.3 生产踩坑：union/variant 的常见误用
+- **裸 union 读非活跃成员**：这是教科书级 UB，优化器可能基于"你不会读错成员"做假设，导致难复现的崩溃。[史][评]
+- **variant 的 valueless_by_exception**：当某 alternative 的构造/赋值抛异常，variant 可能进入 `valueless_by_exception` 状态，`std::get` 会抛 `bad_variant_access`——未检查 `index()` 就 `get` 是真实生产坑。[评]
+- **visit 性能代价**：`std::visit` 通过访问者查表/跳转表实现，比裸 union+switch 多一层间接；性能敏感路径（每帧、每包）要权衡是否值得为安全付这层开销。[史][评]
+- **递归 variant 漏 forward declaration**：递归 variant 必须 `std::variant<..., std::unique_ptr<Node>>` 打破递归，直接装自身类型会无限大小而编译失败。[评]
+
+### ㉒.4 与标准的互动：variant 与标准演进
+C++98 对含非平凡构造类型的 union 限制极严；C++11 放宽但仍是"用户管理活跃成员"；C++17 把 `std::variant`（P0088，源自 Library Fundamentals TS v2）纳入标准，定义于 `[variant]`，并配套 `std::visit`、`std::holds_alternative`、`std::get_if`。[史] C++23 的 `std::expected`（P0323）补齐"值或错误"变体；模式匹配提案（P1371 等）试图引入 `inspect` 直接分派 variant，免去 `std::overload` 样板——是 variant 的"语法终结形态"候选。[史][评]
+
+### ㉒.5 权威引用
+- [cppreference: std::variant](https://en.cppreference.com/w/cpp/utility/variant) — 类型安全联合、visit 与 valueless
+- [cppreference: std::expected](https://en.cppreference.com/w/cpp/utility/expected) — C++23 值_or_错误变体
+- [cppreference: std::optional](https://en.cppreference.com/w/cpp/utility/optional) — 安全值族成员
+- [WG21 P0088 — Variant: a type-safe union for C++17](https://wg21.link/P0088) — std::variant 提案
+- [WG21 P0323 — std::expected](https://wg21.link/P0323) — C++23 expected 提案
+
 ## 附录 F：union/variant工业与面试
 
 ```cpp

@@ -727,6 +727,39 @@ while (auto x = pop()) consume(*x);   // 自然终止，无异常
 
 本章全部示例均通过本机 `g++ -std=c++23 -O2 -Wall -Wextra` 真实编译验证（产物见 `Examples/_ch146_*.asm` 与 `_ch146_*_warn.txt`），关键机器码结论取自 g++ 生成的 Intel 语法汇编，未做任何编造。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：C++ 错误处理的三次范式转移
+[史] C++ 异常机制随 1990 年《The Annotated C++ Reference Manual》（ARM，Stroustrup & Ellis）成形，并在 C++98 正式标准化；异常把"错误传播"从返回值提升到栈展开。C++11 用 `noexcept` 取代旧式 `throw()` 异常规范，并引入 `std::error_code` / `std::error_category`（源自 Boost.System，Peter Dimov & David Abrahams）。[史] `std::expected<T, E>` 由 P0323 一路演进到 C++23，补上"携带错误信息的返回值"这一长期缺失的词汇类型。[轶] Herb Sutter 的 P0709（Zero-overhead Deterministic Exceptions）试图在"异常"与"零开销/确定性"之间找折中，至今仍在委员会激烈讨论——说明错误处理的标准化远未尘埃落定。[评] C++ 的错误处理是"异常 vs 错误码"双轨并行的代表：标准不替你选，只把两种工具都给你。
+
+### ㉒.2 真实工程坐标：错误处理活在哪些项目里
+- **Chromium / Abseil**：用 `absl::Status` / `absl::StatusOr<T>` 做全链路错误传播，几乎不用异常（性能与可预测性考量）。
+- **LLVM / Clang**：用 `llvm::Error` / `llvm::Expected<T>`（仿 `expected` 思路的自建类型），编译器等长生命周期工具忌讳异常穿越。
+- **Windows / COM / HRESULT**：系统级 API 普遍返回 `HRESULT`，错误码文化深入 Win32。
+- **嵌入式 / 游戏 / HFT**：严苛实时场景几乎禁用异常（`-fno-exceptions`），靠错误码/optional/expected。
+
+### ㉒.3 生产踩坑：错误处理的常见误用
+- **跨 ABI 抛异常**：不同编译器/不同异常模型（Itanium vs SEH）混链时，异常跨动态库边界可能直接 `std::terminate`；动态库边界应只用错误码/值类型。
+- **析构函数抛异常**：析构里 `throw` 若在栈展开期间发生，程序立即 `std::terminate`；析构必须 `noexcept`。
+- **默认构造的 `error_code` 是"成功"**：误把默认 `std::error_code{}` 当"有错误"判断；务必显式比较 `ec == errc::...`。
+- **吞异常空 `catch(...)`**：吃掉一切异常导致问题静默，排障无迹可寻（见 ⑲ 反模式）。
+
+### ㉒.4 与标准的互动：从 noexcept 到 expected
+- **`noexcept`**（C++11）取代 `throw()`，既指导编译器优化又参与移动操作（移动构造若 `noexcept` 才被容器在扩容时选用）。
+- **`std::error_code` / `error_category`**（C++11）标准化系统错误映射；`<system_error>` 是网络/文件系统错误的底座。
+- **`std::expected`**（C++23，P0323R12）补齐"值或错误"词汇类型，与 `std::optional`（仅表"有无"）分工明确。
+- **P0709**（确定性异常）仍在演进，反映委员会对"异常开销可预测化"的长期追求。
+
+### ㉒.5 权威引用
+- [cppreference: std::error_code / std::error_category](https://en.cppreference.com/w/cpp/error/error_code) — 系统错误映射的标准设施
+- [cppreference: std::expected (C++23)](https://en.cppreference.com/w/cpp/utility/expected) — 值或错误的词汇类型
+- [cppreference: std::optional](https://en.cppreference.com/w/cpp/utility/optional) — "有无值"表征，与 expected 分工
+- [WG21 P0323R12（std::expected）](https://wg21.link/P0323) — C++23 错误处理词汇类型的来龙去脉
+- [WG21 P0709R4（Zero-overhead Deterministic Exceptions）](https://wg21.link/P0709) — 异常零开销/确定性方向的委员会争论
+- [isocpp 异常与错误处理 FAQ](https://isocpp.org/wiki/faq/exceptions) — 异常使用的事实标准问答
+
 ## 附录 A：工业错误处理范式对比 [F: Industry]
 
 四个世界级 C++ 项目的错误处理策略：

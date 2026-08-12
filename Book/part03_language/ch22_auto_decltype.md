@@ -1376,6 +1376,33 @@ int main() {
 | [第19章](Book/part03_language/ch19_variables.md) | STL算法回调/异步任务 | 本章提供概念，第19章提供实现 |
 | [第69章](Book/part06_templates/ch69_constexpr.md) | 泛型库/编译期计算 | 本章提供概念，第69章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：auto 与 decltype 的复活
+`auto` 在原始 C（K&R，1978）里本就存在，意为"自动存储期"，几乎无人使用形同废字；C++11 把它"劫持"为类型推导发动机，直接动机是 lambda 闭包类型、模板返回类型无法手写（见 ch22 0.1）。[史][评] `decltype` 同期引入，回答"这个表达式的类型是什么"，服务于泛型库（如 `decltype(x+y)` 作返回类型）。[史] C++14 的 `decltype(auto)` 保留引用性，C++20 缩写函数模板（P1141）让 `void f(auto x)` 等价于单参数模板，把 auto 从"变量推导"跃迁到"函数签名"。[史]
+
+### ㉒.2 真实工程坐标：auto/decltype 活在哪些产品里
+- **标准库与 ranges**：`std::ranges` 算法几乎全部用 `auto` 参数与 Concept 约束写泛型回调；`std::invoke_result_t`、`std::declval` 等 trait 是模板元编程的日常工具。
+- **LLVM/Clang**：TableGen 与大量模板代码用 `auto` 接收复杂闭包/迭代器类型；`decltype` 广泛用于 traits 与 SFINAE 分支。
+- **Chromium / Abseil**：范围 for、`base::Callback`、容器遍历默认 `auto`；Google 风格指南对 `int` 等普通类型仍要求显式写出以保持可读。
+
+### ㉒.3 生产踩坑：auto/decltype 的常见误用
+- **auto 掩盖真实类型**：`auto x = {1,2,3}` 推导出 `std::initializer_list` 而非 `std::vector`，与模板 `T` 行为不一致，是经典坑；`auto` 接代理引用（如 `vector<bool>::reference`）会悬垂。[评]
+- **decltype 的两条规则记错**：`decltype((x))` 因是多表达式而推导出引用，是高频面试题也是真实 bug 源；`decltype(auto)` 返回时需警惕悬垂引用。[史][评]
+- **auto 拖慢可读性与重构**：对 `int`、裸指针等普通类型滥用 `auto` 会降低可读性，Core Guidelines 建议显式写出；批量 `auto` 也让 IDE 的"跳转到类型"失效。[评]
+
+### ㉒.4 与标准的互动：auto/decltype 随标准扩张
+`auto` 变量 + 尾置返回类型 + `decltype` 在 C++11 落地（N1984 / N2343 路线）；C++14 泛型 lambda 与 `decltype(auto)`；C++20 缩写函数模板（P1141）与模板形参 lambda 让 auto 进入函数签名与闭包模板；C++23 显式对象形参（P0847）复用 `auto&&` 接 `*this`。[史] 委员会当初判断"几乎没人用 auto 当存储类"，风险可忽略才重用了这个被遗忘的关键字，而非造新词——这是标准务实取舍的范例。[史][评]
+
+### ㉒.5 权威引用
+- [cppreference: auto](https://en.cppreference.com/w/cpp/language/auto) — auto 类型推导规则
+- [cppreference: decltype](https://en.cppreference.com/w/cpp/language/decltype) — decltype 的两条规则
+- [cppreference: lambda](https://en.cppreference.com/w/cpp/language/lambda) — 泛型/模板 lambda 与 auto 参数
+- [WG21 P1141 — Abbreviated Function Templates](https://wg21.link/P1141) — C++20 `void f(auto x)` 语法
+- [WG21 P0847 — Explicit Object Parameters](https://wg21.link/P0847) — C++23 deducing this 与 auto&& 接 *this
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。

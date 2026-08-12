@@ -1066,6 +1066,32 @@ int main() {
 
 ---
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：std::span 与「零成本视图」的标准化
+
+[史] `std::span` 随 C++20 进入标准，核心提案是 Neil MacIntosh 等人的 P0122（span: bounds-safe views for sequences of contiguous objects）。[史] 它的动机是解决长期痛点：函数想接收「数组或 vector 的连续片段」却没有统一、零开销的类型，只能用 `(T*, size_t)` 这对裸指针——既丢长度信息又易越界。[轶] `span` 的动态/静态 Extent 双形态（运行时 `span<T>` 与编译期 `span<T,N>`）是一个精巧折中，静态版本能保留边界信息甚至优化掉 size 存储。[评] `span` 是「借用而非拥有」哲学进入标准库的标志性一步，与 Rust 的切片 `&[T]` 异曲同工。
+
+### ㉒.2 真实工程坐标：span 活在哪些产品里
+
+网络封包解析、行情快照、图像/音频缓冲的零拷贝切片是 `std::span` 的主场：Chromium 的 `base::span` 被广泛用于字节流处理；游戏引擎把 `span<uint8_t>` 作为资源加载的统一接口；金融系统的行情快照用 `span<const double>` 做无拷贝批量计算；LLVM/Clang 的 `ArrayRef` 是 `span` 的先行者，早已在编译器各层传递连续区间。
+
+### ㉒.3 生产踩坑：span 的常见误用与陷阱
+
+[评] 最大的坑是「悬空视图」：span 不拥有数据，若底层容器（如临时 `vector` 或栈数组）先销毁，span 立刻悬空——典型的「返回 `span` 指向局部变量」错误。另一坑是「把 `span` 当容器用」——它没有 `push_back`、不管理生命周期，误用会编译失败或语义错乱。还有 `span` 与 `vector` 混用时的越界边界：动态 `span` 不保留容量信息，下标越界仍是 UB，需配合 `first` / `subspan` 的安全切片。
+
+### ㉒.4 与标准的互动：span 与标准的演进
+
+[史] `std::span` 经 P0122R7 在 C++20 落地，填补了标准库长期缺失的「连续视图」原语。[评] 它是 C++20 一系列「视图化」改革（ranges、string_view）的一环，WG21 后续又提出 `std::mdspan`（多维视图，C++23）与 `std::spanstream` 等扩展，方向明确是「用零开销视图取代裸指针 + 长度的传统 C 接口」。同时标准也强调：span 的 ABI 在 C++20 后冻结，避免重蹈字符串 dual-ABI 的覆辙。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::span](https://en.cppreference.com/w/cpp/container/span) — 连续视图与动态/静态 Extent 的权威定义
+- [WG21 P0122R7 — span: bounds-safe views](https://wg21.link/p0122) — span 进入 C++20 的核心提案
+- [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 span 工业实现参考
+
 ## 附录：练习题 / 思考题 / 源码阅读路线
 
 ### 练习题

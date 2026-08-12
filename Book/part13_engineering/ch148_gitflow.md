@@ -729,6 +729,35 @@ Git 工作流对 C++ 工程的核心结论：
 - `Examples/_ch148_hook_check.sh` · `Examples/_ch148_sparse_checkout.sh` · `Examples/_ch148_ci_trigger.sh` · `Examples/_ch148_release_tag.sh` · `Examples/_ch148_submodule_update.sh`
 - 沙箱实证仓库：`CPP-Bible/_run/ch148_forensics/`（merge 图、rebase 图、reflog、bisect 首坏提交 `35a4165…`、submodule `.gitmodules`、sparse 工作树均来自真实命令）
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从 BitKeeper 之争到 Git
+[史] 2005 年，因 Linux 内核原先使用的商业版本控制 **BitKeeper** 授权生变，**Linus Torvalds** 用十天写出 Git，目标是"快、分布式、支持巨型历史（内核百万级提交）"。[史] 2008 年 **GitHub** 上线，把 Git 从"命令行工具"变成"基于 Pull Request 的社会化协作平台"，直接催生了现代开源协作模式。[轶] Git 的对象模型（blob/tree/commit 用 SHA-1 寻址）并非 Linus 首创，但"内容寻址 + 不可变历史"被他推向了工程极限，使得 `git bisect` 能在大历史里二分定位首个坏提交（见 ⑰）。
+
+### ㉒.2 真实工程坐标：Git 工作流活在哪些项目里
+- **Linux 内核**：邮件列表 + `git send-email` + maintainer 树合并，世界最大的分布式评审现场。
+- **Chromium / LLVM**：用 **Gerrit** 做 pre-commit review，每次提交都过严格 CI。
+- **绝大多数 GitHub 开源项目**：GitHub Flow（main + 短命分支 + PR）/ Trunk-Based Development。
+- **大型单体仓（Google/Windows 级）**：多采用 trunk-based + 巨型 monorepo + 专有/增强工具（如 Google 内部 Piper），而非裸 Git。
+
+### ㉒.3 生产踩坑：Git 工作流的误用
+- **对共享分支 `git push --force`**：改写公共历史，导致协作者本地历史错位、互相覆盖；保护分支应禁 force，确需改写用 `--force-with-lease`。
+- **巨型 monorepo 不稀疏检出**：整仓 clone 拖垮 CI 与本地；应用 `sparse-checkout` / `partial-clone`（见 ⑬）。
+- **长期分支合并地狱**：特性分支存活数月，合并冲突爆炸；应小步合入、频繁 rebase/merge main。
+- **跨平台行尾（CRLF/LF）**：未配 `.gitattributes` 的 `* text=auto`，Windows 提交会把全文件转 CRLF，制造假 diff 并破坏需精确字节的构建产物。[评] 统一 LF + `.gitattributes` 是 C++ 跨平台项目的底线。
+
+### ㉒.4 与标准的互动：版本与"标准"工程约定
+Git 本身不在 ISO C++ 标准里，但 C++ 生态的事实工程约定与之深度耦合：**语义化版本（SemVer 2.0.0）** 决定 ABI/API 兼容承诺（见第145章）；**Conventional Commits** 让提交信息可被工具解析、自动生成 changelog 与版本号；`git tag` 与发布分支管理直接对应库的 release 节奏。[评] 版本号不是装饰，而是"我保证不改 ABI"的契约。
+
+### ㉒.5 权威引用
+- [Git 官方文档](https://git-scm.com/docs) — 所有 porcelain/plumbing 命令的权威出处
+- [Pro Git（免费在线书，含分支/变基/稀疏检出）](https://git-scm.com/book/en/v2) — 工作流与内部原理
+- [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) — 机器可解析的提交信息规范
+- [Trunk-Based Development](https://trunkbaseddevelopment.com/) — 高频合入的主流分支模型
+- [SemVer 2.0.0](https://semver.org/) — 语义化版本，ABI/API 兼容契约依据
+
 ## 附录 A：C++ 大型项目的 Git 模式 [F: Industry]
 
 四个世界级 C++ 项目的 Git 工作流对比：

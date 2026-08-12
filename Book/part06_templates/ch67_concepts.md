@@ -545,6 +545,33 @@ flowchart TD
 - **思考题**：比较 `ch66_sfinae.md` 与本章的 `-O0` mangled——为何 `_Z9concept_fIi` 与 `_Z8sfinae_fIi` 的**函数体完全相同**？说明二者 ABI 等价。
 - **源码阅读路线**：`<concepts>` 行号：109（`integral`）、64（`same_as`）；`ch66_sfinae.md`（SFINAE 对照）、`ch62_specialization.md`（偏特化是约束载体）、`ch65_type_traits.md`（trait 是 concept 的底层）、`ch68_tmp.md`（编译期计算）、`ch75_template_diag.md`（约束失败报错对比）。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：concepts 为何花了近二十年才落地
+[史] 模板的痛点从第一天就在：一旦实参不满足模板内部隐含假设，编译器会吐出几百行「实例化深处」的错误。Stroustrup 早早就想给模板加「接口约束」，这个想法后来被命名为 **concepts**。但委员会在 2000 年代多次提案、反复重写，甚至 2009 年一度把已规划进 C++0x 的 concepts **整体拿下**，因为设计过重、规则未稳——这是标准史上少见的「被否决后重做」的特性。直到「concepts lite」路线被采纳（P0734 等重启），C++20 才终于把约束语法（`requires`、concept 定义）落地。
+[评] 它彻底改变了模板风格——从 SFINAE（ch66）的「试探式」转向 `requires` 的「声明式」，报错从天书变人话，但长达二十年的拉锯也说明「通用性 vs 可读性」的张力有多难调和。
+
+### ㉒.2 真实工程坐标：concepts 活在哪些产品/项目里
+- 标准库 `std::ranges`（C++20）是 concepts 的最大工业落地：`std::sort`、`std::find` 等算法改用 `std::random_access_iterator` 等概念约束，报错直接在调用点点名「你的类型缺了哪个操作」。
+- Abseil、Ranges-v3、Eigen 等库用 concepts 重写接口约束，取代旧的 `enable_if` 迷宫，编译错误大幅收敛。
+- 大型服务代码（如金融、游戏引擎）用自定义 concept（`Writable`、`Lockable`、`Allocator`）把「模板参数必须满足的契约」从文档约定升级为机器可检查。
+
+### ㉒.3 生产踩坑：concepts 的常见误用与陷阱
+- **约束不够强导致仍选错重载**：写得过于宽松的 concept 会让多个重载同时满足，最终回到「偏序/约束排序」的微妙判定，踩与 SFINAE 时代相同的坑。
+- **`requires` 表达式里的硬错误**：`requires` 内若写了「对某些类型必然失败的代码」（而非单纯约束不满足），会直接硬错误而非约束不满足，需改用 `requires requires` 或谨慎写法。
+- **concept 与 `auto` 的隐含约束冲突**：abbreviated function template（`auto` 参数）配合 concept 时，约束的合取/析取优先级容易写错，导致「以为约束了其实没约束」。
+- **迁移期新旧并存**：老代码用 SFINAE、新代码用 concepts，同一库里两套约束体系并存，维护者需同时理解两者（见 ch66）。
+
+### ㉒.4 与标准的互动：concepts 的「重生」与持续演进
+concepts 的正式落地走得很长：从 2003 年 Bjarne 的「concepts lite」设想、2009 年 C++0x 试图纳入却因设计分歧在 2012 年被一致投票移除，直到 2017 年 P0734 重启、才随 C++20 定稿（标准库概念的收编见 P0898）。C++23 增强了 abbreviated function templates 与 `auto` 在更多位置的约束能力；后续（C++26 轨道）还有「扩展的 auto」「原子约束细化」「对 concept 做合取/析取的更细约束」等讨论。它是标准「敢于否决、敢于重做」的范例。
+
+### ㉒.5 权威引用
+- [cppreference: Constraints and concepts](https://en.cppreference.com/w/cpp/language/constraints) — C++20 约束/概念语法、子句偏序与规范化的权威说明
+- [WG21 P0734 — Wording for Concepts Lite](https://wg21.link/p0734) — concepts lite 提案，重启 concepts 并最终随 C++20 落地的关键
+- [WG21 P0898 — Standard Library Concepts](https://wg21.link/p0898) — 把一批标准库概念收编进 C++20 的提案
+
 ## 附录: Concepts 深度
 
 ```cpp

@@ -964,6 +964,40 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 | [第48章](Book/part05_oo/ch48_rtti.md) | 泛型库/编译期计算 | 本章提供概念，第48章提供实现 |
 | [第49章](Book/part05_oo/ch49_virtual_inheritance.md) | 资源管理/事务回滚 | 本章提供概念，第49章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：虚函数的来龙去脉
+
+[史] 虚函数机制源自 **Simula 67 的「动态方法分派」**，C++ 在 1980 年代用 **vtable（虚函数表）+ 对象首部隐藏指针** 把它落地为「运行时零额外存储、调用仅多一次间接跳转」的实现——这一布局后来被 **Itanium C++ ABI（1990 年代末）** 标准化（第 ⑩ 节汇编实证）。[轶] Bjarne Stroustrup 在 *Design and Evolution* 中坦言，虚函数曾考虑过「按类收税（每类一份开销）」vs「按对象收税（每对象一个 vptr）」，最终选了后者，因为它对「大多数类无虚函数」的 C++ 程序更省——这是「值语义优先」哲学的延伸。[史] **C++11 引入 `final`/`override`** 让虚重写可被编译器校验，并让 `final` 成为去虚化（devirtualization，第 ⑲ 节）优化的线索；而 **CRTP（ch51）** 作为「编译期静态多态」早在 1990 年代模板成熟后即被广泛使用，用以规避虚调用开销。
+
+### ㉒.2 真实工程坐标：虚函数活在哪里
+
+- **GUI / 框架（Qt、Unreal、Chromium）**：事件处理、插件接口、命令模式几乎全靠虚函数提供可扩展点——`QObject` 的事件分发、Unreal 的 `UObject` 虚函数、Chrome 的 `ContentClient` 接口都是典型。
+- **游戏引擎**：虚函数用于组件/AI/渲染通道的可替换行为，但热路径（每帧每实体）会改用 CRTP（ch51）或直接函数指针以避免虚调用 + 缓存未命中。
+- **数据库 / 编译器（LLVM）**：LLVM 的 `Pass` 体系、指令/类型层级大量用虚函数表达「可扩展的 IR 节点行为」；同时 LLVM 自身依赖去虚化（第 ⑲ 节）把已知类型的内联掉。
+- **设备驱动与插件系统**：操作系统与大型应用的「按接口编程」普遍用纯虚接口（`Shape`/`Logger` 抽象基类）做二进制稳定的 ABI 边界——虚表布局稳定是插件生态能跨版本兼容的前提。
+
+### ㉒.3 生产踩坑：虚函数的常见误用
+
+- **基类析构非虚 → 未定义行为**：删除指向派生类的基类指针时，若基类析构非 `virtual`，只调基类析构、派生部分泄漏/未清理（第 ⑫ 节相关）；任何「 intended to be polymorphic」的基类析构必须 `virtual`。
+- **构造函数/析构函数里调用虚函数不按预期**：在构造期对象尚未成为完整派生类型，虚调用落到当前构造中的类版本（非最终覆盖），常导致「初始化未就绪就被用」的 bug（第 ⑯ 节易错点）。
+- **虚调用 + 缓存未命中拖垮热路径**：第 ⑲ 节基准表明，虚调用除间接跳转外还伴随 vtable 访存，在紧密循环里打乱指令/数据缓存；高频路径应改用 CRTP（ch51）或 `final` 去虚化。
+- **`override` 缺失导致静默重载**：第 ⑯ 节，派生类想覆盖却写错签名，编译器当作新重载而非错误，接口升级后行为悄悄改变——必须标 `override`。
+
+### ㉒.4 与标准的互动：虚函数与 WG21 演进
+
+[史] C++98 固化虚函数与 vtable 语义；**C++11 的 `override`/`final`**（第 ⑮ 节，ch46）让重写可校验，且 `final` 给编译器去虚化依据（第 ⑲ 节）。[史] **WG21 的「去虚化」是优化方向而非语言特性**——Link-Time Optimization（LTO）与 PGO 可把 `final`/单实现类型的虚调用内联掉；同时 **C++20 concepts（ch67）** 与 CRTP（ch51）提供「编译期多态」以在性能关键处替代虚函数。[评] WG21 并未计划改变虚函数这一核心机制（它仍是 C++ 运行时多态的基石），而是围绕它提供「能省则省」的工具：`final` 去虚化、CRTP 静态分派、`std::variant`+`std::visit` 的「封闭多态」替代方案（ch14）。标准的态度是「虚函数该用就用，热路径才需要逃逸到静态分发」。
+
+### ㉒.5 权威引用
+
+- [Itanium C++ ABI（vtable 布局规范）](https://itanium-cxx-abi.github.io/cxx-abi/abi.html) — vtable 与 thunk 的权威布局（第 ⑩ 节）
+- [cppreference: virtual functions](https://en.cppreference.com/w/cpp/language/virtual) — 虚函数语义、覆盖与 `final`
+- [cppreference: override / final specifiers](https://en.cppreference.com/w/cpp/language/override) — 虚函数重写安全（C++11）
+- [cppreference: devirtualization（编译器优化）](https://en.cppreference.com/w/cpp/language/virtual.html) — 去虚化的语义前提（第 ⑲ 节）
+- [WG21 方向参考：静态多态与 concepts（C++20）](https://en.cppreference.com/w/cpp/language/constraints) — 编译期多态替代虚调用（ch51/ch67）
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。

@@ -909,6 +909,34 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 | [第31章](Book/part03_language/ch31_operator_overloading.md) | 多态插件/框架扩展 | 本章提供概念，第31章提供实现 |
 | [第31章](Book/part03_language/ch31_operator_overloading.md) | 配置解析/API响应 | 本章提供概念，第31章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：const 家族如何一步步逼进类型系统
+`const` 来自 1980 年代初 Stroustrup 对 C 的扩展，初衷是给"不应被修改"的对象一道编译期保险，并支持 `const` 成员函数表达"只读不写"契约（见 ch21 0.1）。[史] 但它只是运行期只读，不代表编译期常量；`constexpr` 是 C++11 才引入，把"可在编译期求值"写进声明。[史] `consteval`（立即函数，必须编译期求值）与 `constinit`（强制静态初始化、杜绝"静态初始化顺序灾难"）在 C++20 入标准，是 const 族的最后两块拼图（P1073 / P1143）。[史][评] C++23 的 `if consteval`（P1938）提供"当前是否在编译期求值"的精确分支，把"求值阶段"语义进一步坐实。[史]
+
+### ㉒.2 真实工程坐标：const 家族活在哪些产品里
+- **标准库与编译器**：`std::string_view`、`std::span` 等零成本视图全靠 `const T&` / `constexpr` 契约；libstdc++/libc++ 把大量算法与 trait 标 `constexpr`，使其可在编译期参与 `std::array` 计算。
+- **嵌入式与固件**：`const` 全局表（查表、状态机、协议字段）被放进 ROM/flash，`constinit` 保证跨 TU 的常量初始化不被降级为动态初始化，规避 SIOF（Static Initialization Order Fiasco）。
+- **游戏与图形**：Unreal 的 `UFUNCTION`/`UPROPERTY` 反射元数据、Unity 的 C++ 插件接口普遍用 `const&` 传只读数据；`constexpr` 在编译期算哈希、枚举字符串化中大量使用。
+
+### ㉒.3 生产踩坑：const 家族的常见误用
+- **`const` 不是物理不可变**：`const` 只是"通过此表达式不能改"，`const_cast` 去掉的是"编译器视图"，实则修改仍是未定义行为——把 `const` 当成运行时锁是经典误解。[评]
+- **`constexpr` 被逼成运行期**：参数不是编译期常量时 `constexpr` 函数退化成普通函数，误以为"标了就一定零开销"会落空；真正要在编译期强制，需用 `consteval`。[史][评]
+- **`constinit` 误用**：对带动态初始化器的变量误标 `constinit` 会直接 ill-formed（P1143）；而漏标则可能在跨 TU 时悄悄退化为动态初始化，埋下 SIOF 炸弹。[评]
+- **`const` 成员导致拷贝/移动困难**：`const` 成员让类型失去可赋值性，容器与并发场景下常与 `mutable`/内部 `std::mutex` 纠缠出错。
+
+### ㉒.4 与标准的互动：const 家族随标准扩张
+`const`/`volatile` 作为 cv 限定符自 C 即存在；`constexpr` 经 C++11（N2235 引入，仅单 return）→ C++14（放宽函数体）→ C++17/20 一路扩张，C++20 引入 `consteval`（P1073）/ `constinit`（P1143）把"编译期性"拆成三档。[史] C++23 又把 `std::optional`/`std::variant` 等补成 `constexpr`（P2231），编译期数据结构逐渐可用；`if consteval`（P1938）补上求值阶段分支。[史] 社区长期争论"是否所有函数默认 constexpr"，委员会维持显式标注路线，把激进扩张留给 concepts/反射（P2996）。[史][评]
+
+### ㉒.5 权威引用
+- [cppreference: constexpr](https://en.cppreference.com/w/cpp/language/constexpr) — constexpr 函数/变量的语义与版本演进
+- [cppreference: consteval](https://en.cppreference.com/w/cpp/language/consteval) — C++20 立即函数
+- [cppreference: constinit](https://en.cppreference.com/w/cpp/language/constinit) — C++20 强制常量初始化
+- [WG21 P1073 — Immediate functions (consteval)](https://wg21.link/P1073) — consteval 的正式提案（Richard Smith 等）
+- [WG21 P1143 — Adding the constinit keyword](https://wg21.link/P1143) — constinit 的正式提案（Eric Fiselier）
+
 ## 相关章节（交叉引用）
 
 - **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— constinit 把变量钉死在常量初始化阶段，根治 static 初始化顺序灾难

@@ -513,6 +513,33 @@ int main() { return bench(); }
 
 ---
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：std::bitset 与「固定位宽」的极致紧凑
+
+[史] `std::bitset` 随 C++98 进入标准，定位是「编译期已知大小的位集合」，每个 bit 占一比特、用整数数组打包存储，典型应用是权限掩码、标志位、布隆过滤器雏形。[史] 它的设计直接对标 C 的位域（bit-field）与手写的「位运算掩码」，但提供了类型安全与 `.count()` / `.any()` / `.set()` 等便捷接口。[轶] 一个经典对照是 `std::bitset` 与 `std::vector<bool>`：前者大小固定、零堆分配、是真·每比特存储；后者是动态、特化诡异（返回代理引用）。[评] `bitset` 的价值在于「把位运算从裸整数提升到 First-class 容器」，且 ABI 完全确定（N 个比特就是 N 位）。
+
+### ㉒.2 真实工程坐标：bitset 活在哪些产品里
+
+权限/能力位掩码系统、协议标志、固定集合的成员判定是 `std::bitset` 的主场：操作系统的权限位（如 `rwx`）、网络协议的标志字段、编译器的「特性开关集合」、游戏/嵌入式的状态机位都用 `bitset`。它也被用于固定规模集合的成员测试（如「某 64 个事件是否已发生」），比 `set<int>` 紧凑几个数量级。
+
+### ㉒.3 生产踩坑：bitset 的常见误用与陷阱
+
+[评] 最大误区是「把 `bitset` 当动态位集合用」——大小是编译期模板参数 `N`，不能在运行期改变，运行期尺寸请用 `std::vector<bool>`（代价是代理引用语义）。另一坑是「`bitset` 与整数互转的位序」——`to_ulong()` / `to_ullong()` 的低位对应 `bitset[0]`，跨平台/跨语言交换时要小心字节与位序。还有「`bitset<N>` 的 `N` 很大时会爆栈」——它是栈对象且大小固定，超大尺寸应改用堆分配的 `vector<bool>`。
+
+### ㉒.4 与标准的互动：bitset 与 <bit> 的演进
+
+[史] `std::bitset` 自 C++98 稳定，C++11 起支持 `constexpr` 位操作；更显著的演进是 C++20 新增 `<bit>` 头（P0553R4），提供 `popcount` / `countl_zero` / `rotl` 等跨所有无符号整数的自由函数，把 `bitset` 的位计数能力下沉到语言层面。[评] 近年 WG21 还在讨论「`std::bitset` 与 `std::vector<bool>` 的统一」以及 `popcount` 的硬件指令映射（如 x86 `POPCNT`），方向是「让位运算既类型安全又零成本」。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::bitset](https://en.cppreference.com/w/cpp/utility/bitset) — 固定位宽位集合的权威定义
+- [cppreference: <bit> 头文件](https://en.cppreference.com/w/cpp/header/bit) — C++20 位运算自由函数（popcount 等）的入口
+- [WG21 P0553R4 — Bit operations](https://wg21.link/p0553) — C++20 <bit> 的提案，把位计数下沉到标准库
+- [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 bitset 工业实现参考
+
 ## 附录：练习题 / 思考题 / 更多完整可编译示例
 
 **练习题**

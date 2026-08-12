@@ -1463,6 +1463,34 @@ Q: lambda vs std::function? A: lambda=编译期类型(零开销); function=类�
 Q: 值捕获vs引用捕获? A: 值=安全(无dangling); 引用=零拷贝但有dangling风险; 默认用值捕获[=]
 Q: mutable lambda? A: 允许修改值捕获的变量(默认const operator())
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：lambda 的出身与定型
+C++ 在 STL 时代靠"函数对象（functor）"传逻辑——要传一段回调得先写带 `operator()` 的类，冗长且隔断思维（见 ch26 0.1）。[史] 同时代 Lisp/Python/C# 2007 已有匿名函数，C++ 程序员只能羡慕；C++11 引入 lambda，本质是"编译器替你合成那个仿函数类（闭包类型）"。[史][评] C++14 泛型 lambda（`auto` 参数）、初始化捕获；C++17/20 constexpr lambda、模板形参 lambda（`[]<typename T>`）、`[=, *this]` 精确捕获逐步补齐。[史]
+
+### ㉒.2 真实工程坐标：lambda 活在哪些产品里
+- **STL 算法与 ranges**：`std::sort`、`std::for_each`、`std::ranges::filter` 等的谓词/投影几乎全是 lambda；`std::ranges` 大量借助模板形参 lambda + Concept 写简洁泛型回调。
+- **并发与 GUI**：线程池（`std::async`/自定义 executor）、Qt 的信号槽桥接、Chromium 的 task 回调普遍用 lambda 捕获上下文，取代手写 functor 类。
+- **LLVM/Clang**：AST matcher（`clang-query`）、Pass 里的局部回调、TableGen 都用 lambda 表达一次性逻辑。
+
+### ㉒.3 生产踩坑：lambda 的常见误用
+- **悬垂捕获**：lambda 按引用 `[&]` 捕获局部变量后异步执行/返回，被捕获对象已析构，访问即 UB——现代 C++ 最高频错误之一（见 ch26 0.4 / ch33）。[史][评]
+- **`std::function` 类型擦除开销**：把 lambda 装进 `std::function` 有 SBO 与间接调用成本（本章实测约 8×），热路径应传模板参数或泛型 lambda 而非 `std::function`。[评]
+- **泛型 lambda 的 `auto` 参数被推导为值**：忘了 `auto&&`/`const auto&` 导致多余拷贝或切片，尤其在范围算法里。[评]
+- **`mutable` 与按值捕获的可变性误用**：按值捕获的变量默认 const，需要修改必须 `mutable`，否则编译失败或逻辑错误。[评]
+
+### ㉒.4 与标准的互动：lambda 随标准扩张
+lambda 在 C++11（N2927 路线）落地，闭包类型由编译器合成；C++14 泛型 lambda（N3649，Faisal Vali/Herb Sutter/Dave Abrahams）允许 `auto` 参数；C++17 捕获 `*this` 副本；C++20 constexpr lambda 与模板形参 lambda（P0428）让闭包能写显式模板形参并配 Concept；C++23 显式对象形参（P0847）统一 lambda 与成员函数的 `*this` 转发。[史] 委员会坚持零开销：不捕获的 lambda 可隐式转函数指针，保持与 C 回调兼容——这是 lambda 被工业界迅速接纳的关键。[史][评]
+
+### ㉒.5 权威引用
+- [cppreference: lambda](https://en.cppreference.com/w/cpp/language/lambda) — 闭包类型、捕获与泛型/模板 lambda
+- [cppreference: std::function](https://en.cppreference.com/w/cpp/utility/functional/function) — 类型擦除与 SBO 开销
+- [WG21 N3649 — Generic (Polymorphic) Lambda Expressions](https://wg21.link/N3649) — C++14 泛型 lambda
+- [WG21 P0428 — Familiar template syntax for generic lambdas](https://wg21.link/P0428) — C++20 模板形参 lambda
+- [WG21 P0847 — Explicit Object Parameters](https://wg21.link/P0847) — C++23 deducing this
+
 ## 相关章节（交叉引用）
 
 - **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— lambda 捕获按存储期持有变量，捕获的引用/值即存储期选择

@@ -591,6 +591,36 @@ constexpr Firmware kMatrix[] = {
 
 > 偏离说明：本章依用户指定大纲（20 元素：①概述…⑳速查表）撰写，未使用 CONVENTIONS.md 默认模板顺序；交叉工具链（arm-none-eabi-gcc 等）本机未安装，故以本机 MinGW GCC 13.1.0 真实编译 `Examples/_ch17_*.{cpp,cmake,ld}` 取证 x86-64 汇编/段大小，ARM 侧一律明确标注「典型输出（本机未执行）」，绝不编造交叉链实测数据。所有 `// 文件：`/`// 行号：` 均指向真实存在的 `Examples/_ch17_*` 源文件。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：交叉编译的来龙去脉
+[史] 交叉编译源自 GNU Autotools 的 `--host/--build/--target` 三元组约定，解决"在 x86 主机上为 ARM 目标生成代码"的需求，是 Unix 工具链的传统能力。[史] Buildroot 由 Erik Andersen（uClibc 作者）于 2001 年前后发起，用 Makefile 森林一键生成嵌入式 Linux 镜像。[史] Yocto / OpenEmbedded 由 Linux Foundation 于 2010 年整合发布，提供配方（recipe）级别的可定制发行版构建。[史] crosstool-NG 是 crosstool 的社区继任者，用于构建交叉工具链本身。[评] 主线：手工 configure 三元组 → 工具链生成器（crosstool-NG）→ 系统构建框架（Buildroot 轻量 / Yocto 重量），sysroot 是贯穿始终的"目标根文件系统"抽象。
+
+### ㉒.2 真实工程坐标：交叉编译活在哪些产品/项目里
+- Buildroot：路由器、IoT 网关、机顶盒等"小镜像"设备的常见选择。
+- Yocto/OpenEmbedded：汽车座舱（GENIVI/AGL）、工业设备、需要长期维护可重现镜像的厂商。
+- crosstool-NG：嵌入式团队自制 GCC/glibc 交叉工具链的常用手段。
+- Autotools 三元组：无数遗留与 POSIX 软件仍靠 `--host` 交叉配置，是 Linux 移植的底层语法。
+[评] 手机、车机、电视、路由器——你身边的嵌入式系统几乎都经交叉编译诞生。
+
+### ㉒.3 生产踩坑：交叉编译的常见误用与陷阱
+- sysroot 指错：编译时用的头文件/库与实际目标板上不一致，链接"成功"却在设备上运行时崩溃（最经典坑）。
+- 主机工具误用为目标程序：构建里混入了 host 的 gcc 而非 `<triplet>-gcc`，结果在目标上跑的是 x86 二进制。
+- 字节序/对齐假设：代码默认小端、未处理结构体对齐，在 ARM/旧架构上静默算错（见本章大小端/对齐节）。
+- 库版本漂移：目标 sysroot 的 glibc 比主机工具链旧，用到新符号导致"编译过、启动即 SIGSEGV"。
+
+### ㉒.4 与标准的互动：交叉编译与 C++ 标准的演进
+[评] 交叉编译完全是工具链工程问题，不在 ISO C++ 标准正文；但 C++ 标准保证"源级可移植"，使同一份 C++ 能经不同目标后端编译——模块化（C++20）与 freestanding 子集中对嵌入式 subset 的讨论（WG21 SG14 游戏/嵌入式方向）正与交叉/裸机场景相关。[评] 属工程实践层，无单独"交叉编译提案"，但标准对 freestanding 的界定影响裸机工具链设计。
+
+### ㉒.5 权威引用
+- https://buildroot.org/ ：Buildroot 官方站，证明 Erik Andersen 2001 嵌入式镜像构建框架。
+- https://www.yoctoproject.org/ ：Yocto 官方站，证明 Linux Foundation 2010 的 OpenEmbedded 体系。
+- https://crosstool-ng.org/ ：crosstool-NG 官方站，证明交叉工具链生成器坐标。
+- https://www.gnu.org/software/autoconf/ ：Autoconf 官方文档，证明 `--host/--build/--target` 三元组约定。
+- https://en.cppreference.com/w/cpp/ ：cppreference 总入口，证明标准对源级可移植与 freestanding 的界定背景。
+
 ## 附录: 交叉编译实战
 
 ```cpp

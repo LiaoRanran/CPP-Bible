@@ -814,6 +814,36 @@ int main() {
 }
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：性能分析的来龙去脉
+[史] gprof 源于 1982 年 BSD（基于 Graham 等人的论文），是"插桩式"剖析的早期代表。[史] perf（perf_events）由 Ingo Molnar 等人在 Red Hat 主导，随 Linux 2.6.31（约 2009 年）进入内核，提供基于硬件性能计数器的采样剖析。[史] Valgrind 由 Julian Seward 于 2000 年发布，其 Callgrind 工具（Josef Weidendorfer）约 2005 年提供调用图与缓存模拟。[史] 火焰图（Flame Graph）由 Brendan Gregg 于 2011 年提出，把采样栈折叠成可视化热点图。[评] 主线是插桩（gprof/Valgrind，慢但细）→ 采样（perf，低开销、适合生产）→ 可视化（火焰图）。
+
+### ㉒.2 真实工程坐标：性能分析活在哪些产品/项目里
+- perf：Linux 服务器、数据库（PostgreSQL/MySQL）、内核与云原生基础设施的标配采样器。
+- VTune：Intel 平台的高频调优，HPC、游戏引擎、数值计算常用。
+- Valgrind/Callgrind：无源码热路径分析、缓存缺失定位，广泛用于桌面/服务端排障。
+- Flame Graphs：Netflix（Brendan Gregg 所在）将火焰图用于大规模服务性能诊断，成为业界通用语言。
+[评] 从操作系统到流媒体后端，性能剖析是"上线前必做"的工业环节。
+
+### ㉒.3 生产踩坑：性能分析的常见误用与陷阱
+- 微基准温度计效应：被测循环被优化掉或缓存预热不足，测出的数字与真实负载差一个数量级（见本章"常见误区"）。
+- 只信采样不看硬件计数器：perf 只给 CPU 占比，不结合 cache-miss/IPC 会误判瓶颈在 CPU 而非内存带宽。
+- 把 Debug 构建的剖析当结论：未优化代码的热点分布与 `-O2` 完全不同，结论直接作废。
+- 混淆采样与插桩：采样（perf）看不到单次短函数细节、插桩（Valgrind）严重拖慢——误用导致要么看不全要么跑不动。
+
+### ㉒.4 与标准的互动：性能分析与 C++ 标准的演进
+[评] 性能分析工具不属于 ISO C++ 标准，但标准语义影响可观测性：例如 `[[likely]]`/`[[unlikely]]`（P0479R5，C++20）给编译器分支提示，间接改变热点分布；标准的"as-if 规则"允许编译器重排，使剖析必须与具体优化级别绑定。[评] 属工程实践层，无单独 WG21 提案，工具只消费标准生成的目标代码。
+
+### ㉒.5 权威引用
+- https://perf.wiki.kernel.org/ ：perf 官方 wiki，证明 Ingo Molnar/Red Hat 的 Linux 采样剖析器。
+- https://valgrind.org/ ：Valgrind 官方站，证明 Julian Seward 2000 与 Callgrind 调用图。
+- https://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html ：Brendan Gregg 火焰图页，证明 2011 可视化方法。
+- https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html ：Intel VTune 页，证明厂商级调优器坐标。
+- https://sourceware.org/binutils/docs/gprof/ ：gprof 文档，证明 1982 BSD 插桩剖析起源。
+
 ## 附录 A：工业性能分析与WG21背景
 
 ```

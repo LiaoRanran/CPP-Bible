@@ -801,6 +801,40 @@ main:
 
 [标准] 本章所有示例代码均通过 `g++ -std=c++23 -O2 -Wall -Wextra` 编译，配套 `.asm` 由同一工具链真实生成。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节是 P0-15「全库工业/标准深度升维」大波次的一部分：把抽象的语言机制放回它真正的来处——谁、在哪一年、为了解决什么产业痛点而提出；并在真实代码库与标准演进之间建立可验证的坐标。
+
+### ㉒.1 历史纵深：对象之间如何「行为协作」
+
+- `[史]` 行为型模式（Strategy、Observer、Command、Iterator、Template Method、Visitor、Mediator、Memento、State、Chain of Responsibility、Interpreter）出自 GoF 1994，关注对象间的职责划分、通信与算法封装。
+- `[史]` 其中 **Iterator** 被 C++ 直接「收编」为标准库：STL 的迭代器概念 + `begin()/end()` + 范围 for 就是工业级迭代器模式；其余模式则在框架与库中以各种方言存在。
+
+### ㉒.2 真实产业坐标：信号、撤销、状态机
+
+- **Observer**：Qt 信号槽、Boost.Signals2、UI 事件总线；**Command**：编辑器/IDE 的撤销重做（Qt Undo Framework）、宏录制。
+- **Strategy**：排序比较器、压缩/序列化算法可插拔；**Visitor**：编译器 AST 遍历（Clang）、序列化分派；**State**：游戏 AI 状态机、连接状态机。
+- **Template Method**：框架的「钩子」方法（如测试框架的 `SetUp`/`TearDown`）。
+
+### ㉒.3 生产踩坑：生命周期与双重分派
+
+- **Observer 悬挂**：观察者析构前没 `disconnect`，发布者回调悬空指针——现代做法用 `std::weak_ptr` 或 `signals2::connection` 自动断开。
+- **Visitor 脆弱**：新增被访问类要改所有 Visitor 接口（破坏开闭原则），是双重分派的固有痛点；可用 `std::variant` + `std::visit` 替代。
+- **Command 内存膨胀**：每个操作都建对象，长事务下内存压力大；可批处理/合并。
+- **Strategy 虚调用冗余**：当策略在编译期已知，用模板/`if constexpr` 比虚函数更优。
+
+### ㉒.4 与 C++ 标准的互动
+
+- `[评]` 现代 C++ 用lambda + `std::function` 取代了大量 Strategy/Command 手写类；用 `std::variant` + `std::visit` 提供类型安全的 Visitor；用 ranges/views 取代手写 Iterator。
+- `if constexpr` 把 Template Method 的「固定骨架 + 可变步骤」在编译期特化，省去虚调用。
+- `[评]` 标准演进把「高频行为型模式」变成库原语，但 Observer/State/Mediator 这类「对象协作编排」仍需人工设计。
+
+### ㉒.5 权威参考（建议延伸阅读）
+
+- 行为型模式总览：<https://en.wikipedia.org/wiki/Behavioral_pattern>
+- GoF 23 模式背景：<https://en.wikipedia.org/wiki/Design_Patterns>
+- 类型安全 Visitor（`std::variant`/`std::visit`）：<https://en.cppreference.com/w/cpp/utility/variant/visit>
+
 ## 附录 A：行为型模式在 C++ 中的独特实现 [F: Industry / B: Principle]
 
 C++ 的行为型模式实现与其他语言有本质区别——模板和静态多态提供了独特的方案：

@@ -849,6 +849,39 @@ int main() {
 - `[标准]`：默认用 `std::sort`；需要稳定才上 `stable_sort`；只需 Top-K/中位数就用 `partial_sort`/`nth_element`（更省）。
 - `[经验]`：排序前问自己三件事——稳定吗？全序吗？数据多大？答案决定用哪个算法。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从 quicksort 到 introsort
+
+[史] `std::sort` 的现代形态来自 **David Musser 的 introsort（内省排序，1997 论文《Introspective Sorting and Selection Algorithms》）**：它先用 quicksort，递归深度超过 `2·log2(n)` 时切到 heapsort，从而**保证最坏 O(n log n)**，同时保留 quicksort 的平均性能与缓存友好。这一设计被 C++98 标准直接采纳为 `std::sort` 的「建议实现」。[史] 而稳定排序 `std::stable_sort` 采用 mergesort 思路（或缓冲版的 in-place merge），`std::partial_sort`/`std::nth_element` 则来自 **Hoare 的 quickselect（1961）**，用于只需 Top-K/中位数的场景。[轶] 2000 年代初 **Orson Peters 提出 pdqsort（Pattern-Defeating Quicksort，2015）**，针对几乎有序/重复元素做了专门优化，被 Rust（`slice::sort_unstable`）、Boost.Sort 借鉴，比经典 introsort 快约 2×。[评] 排序不是「调个 `sort` 就完事」——稳定性、全序假设、数据分布共同决定该用 `sort`/`stable_sort`/`partial_sort`/`nth_element` 哪一个。
+
+### ㉒.2 真实工程坐标：排序活在哪些产品里
+
+- **数据库/存储（SQLite、MySQL、RocksDB）**：索引构建、查询排序、SSTable 归并都依赖稳定/外部排序；RocksDB 的 compaction 本质是多路归并排序。
+- **游戏引擎（Unreal/Unity）**：透明物体按深度排序（画家算法）、UI z-order、骨骼/粒子批处理前的去重排序。
+- **编译器（LLVM/Clang）**：指令调度、基本块排序、寄存器分配与依赖拓扑排序大量用 `std::sort`/`std::stable_sort`。
+- **渲染管线（Vulkan/DirectX 驱动、游戏）**：绘制调用批处理按材质/状态排序以减少状态切换；GPU 驱动的 binning/分块也含排序阶段。
+
+### ㉒.3 生产踩坑：排序的常见误用
+
+- **比较器不是严格弱序 = 未定义行为**：传给 `std::sort` 的比较器若用 `<=`、`>=`，或在浮点含 NaN 时返回非一致结果，属 **UB**，可能崩溃或静默排错——LLVM 的 `llvm::sort` 专门强制要求严格弱序以兜底。
+- **稳定性误判**：需要「相等元素保持原相对顺序」（如先按时间再按优先级稳定排序）却用了 `std::sort`（不保证稳定），结果错乱；应改 `std::stable_sort` 或在一次排序里把全部 key 合一。
+- **对几乎有序数据用朴素实现**：经典 quicksort 在已排序/反向数据上退化到 O(n²)；`std::sort` 因 introsort 不会崩，但手写快排会——别裸写快排处理外部输入。
+- **排大数组却忽略缓存与并行**：超过 L3 的数据排序受内存带宽限制；C++17 `std::execution::par` 可并行（需 TBB），但小数据量并行开销反而更大。
+
+### ㉒.4 与标准的互动：排序与 C++ 标准的演进
+
+[史] 排序算法随 **C++98（STL）** 进入标准（`std::sort`/`std::stable_sort`/`std::partial_sort`/`std::nth_element`），其复杂度要求（如 `sort` 平均 O(n log n)、最坏由实现保证）写进 `[alg.sorting]`；**C++11** 引入移动语义使排序可移动而非拷贝元素（降常数）；**C++17** 增加执行策略并行排序（P0024R2）；**C++20** 又提供 `std::ranges::sort` 支持投影与约束。排序一直是标准库「复杂度契约 + 零开销」最被审视的角落，WG21 反复修订措辞（如 `std::sort` 的「复杂度而非最坏」历史争议）。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::sort](https://en.cppreference.com/w/cpp/algorithm/sort) — `std::sort`/`stable_sort`/`partial_sort`/`nth_element` 的契约、复杂度与版本。
+- [WG21 P0024R2 — 并行算法执行策略（合入 C++17）](https://wg21.link/p0024) — `std::execution::par` 并行排序的核心提案。
+- [David Musser — Introspective Sorting and Selection Algorithms（introsort 原始论文）](https://doi.org/10.1002/(SICI)1097-024X(199704)27:3%3C219::AID-SPE97%3E3.0.CO;2-V) — `std::sort` 现代形态的理论出处（可查证 DOI）。
+- [Orson Peters — pdqsort（Pattern-Defeating Quicksort）](https://github.com/orlp/pdqsort) — 现代快排优化，被 Rust/Boost.Sort 采用的真实工程坐标。
+
 ## 附录 A：工业排序实现与标准提案 [F: Industry / B: Principle]
 
 ```

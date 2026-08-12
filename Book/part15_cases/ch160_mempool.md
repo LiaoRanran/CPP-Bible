@@ -965,6 +965,35 @@ int main() {
 }
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从 malloc 到 jemalloc/tcmalloc 与 pmr
+[史] 通用 `malloc`/`free` 为"任意大小、任意时机"设计，存在锁竞争与碎片代价；**jemalloc**（Jason Evans，2005，源于 FreeBSD）与 **tcmalloc（Google，约 2008）** 用"线程本地缓存 + size class"把多核分配做到近无锁，成为服务端标配。[史] 标准层面，C++ 一直有 `std::allocator`；**C++17** 引入 **`std::pmr`（Polymorphic Memory Resources）**，让"分配器作为运行时可替换策略"成为标准能力，内存池可无缝接入容器（见 ⑧）。[评] 内存池的本质是"用领域知识（固定大小/生命周期）换通用分配器的开销"。
+
+### ㉒.2 真实工程坐标：内存池活在哪些产品里
+- **Firefox**：默认用 **jemalloc**，在多 tab/多线程下控制碎片与延迟。
+- **Chrome**：自研 **PartitionAlloc**，按"分区"隔离不同类型分配，兼顾安全（隔离）与性能。
+- **Redis / 游戏服务器**：为热对象建固定大小池，避免频繁向系统要内存造成的尾延迟。
+- **数据库 / 消息中间件**：用内存池托住高频小对象，吞吐与 p99 显著改善。
+
+### ㉒.3 生产踩坑：内存池的误用
+- **替换全局 `new`/`delete` 的风险**：全局重载影响整个进程的分配语义，与第三方库/STL 内部假设冲突可能崩溃；优先用 `std::pmr` 或显式传递分配器，而非全局替换（见 ⑨）。
+- **碎片不降反升**：size class 划得太碎，反而制造内部碎片；需按真实分配剖面调档。
+- **线程安全代价**：无锁池实现错误会丢内存或 double free；`tcmalloc`/`jemalloc` 的线程本地缓存是经大量锤炼的方案。
+- **对齐与越界**：池块未按 `alignas` 对齐，SIMD/原子访问踩 UB；越界写破坏 free list（union 技巧的隐患，见 ④）。
+
+### ㉒.4 与标准的互动：std::pmr 把池标准化
+C++17 的 `std::pmr::memory_resource` / `std::pmr::polymorphic_allocator` 让"内存池"成为可组合的标准抽象：把自研池继承 `memory_resource`，即可直接喂给 `std::vector<T, std::pmr::polymorphic_allocator<T>>`。`std::assume_aligned`(C++20) 等进一步支持池内对齐优化。[评] 标准把"池"从"黑魔法全局替换"变成"可注入的策略"。
+
+### ㉒.5 权威引用
+- [jemalloc 仓库](https://github.com/jemalloc/jemalloc) — 多核无锁/低碎片分配器工业事实标准
+- [tcmalloc 仓库（Google）](https://github.com/google/tcmalloc) — 线程缓存 + size class 分配器
+- [cppreference: std::pmr::memory_resource (C++17)](https://en.cppreference.com/w/cpp/memory/memory_resource) — 可替换内存池的标准抽象
+- [cppreference: operator new / delete](https://en.cppreference.com/w/cpp/memory/new) — 全局替换的风险边界
+- [Chromium PartitionAlloc 设计](https://chromium.googlesource.com/chromium/src/+/main/base/allocator/partition_allocator/README.md) — 工业级分区池范例
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。

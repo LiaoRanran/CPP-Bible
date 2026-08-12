@@ -242,6 +242,34 @@ int main(){std::cout<<"C++ operator overloading vs Rust std::ops traits vs Pytho
 int main(){std::cout<<"operator重载总结: 保留原始语义, 避免歧义, <=>优先defaulted, 自由函数优于成员。"<<std::endl;return 0;}
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：运算符重载的出身与红线
+运算符重载源自 Simula 与 ALGOL 68 的"函数即运算符"思想；Stroustrup 在 C++ 引入它，核心动机是让用户定义类型（复数、矩阵、字符串）能用 `+`、`==`、下标语法，避免 `a.add(b)` 的割裂感（见 ch31 0.1）。[史] 引用（ch20）是其前置科技：运算符参数需是别名左值。[史] 委员会设了红线：不能发明新运算符、不能改优先级、不能重载 `.`/`::`/`sizeof` 等少数几个；`<<` 被挪用做输出流（而非位移）是标准库风格最受爱戴的"滥用"。[史][评][轶]
+
+### ㉒.2 真实工程坐标：运算符重载活在哪些产品里
+- **数值与线性代数**：`std::complex`、Eigen 的 `Matrix`/`Vector` 全套算术与比较运算符；Boost.Math、GLM（图形数学）同理。
+- **标准库与 IO**：`std::string` 的 `+`/`+=`、流库 `operator<<`/`>>`、智能指针的 `->`/`*`、容器 `operator[]` 是日常基础设施。
+- **领域特定**：`std::chrono` 的 `operator""` 单位字面量、`std::filesystem::path` 的 `/` 拼接、游戏引擎的向量/四元数运算。
+
+### ㉒.3 生产踩坑：运算符重载的常见误用
+- **违反语义直觉**：`operator+` 却改自身、`operator*` 返回引用而非值、破坏交换律/结合律，会让调用方写出隐蔽逻辑错误。[评]
+- **返回局部引用**：`operator+` 返回 `T&` 指向局部临时对象，访问即悬垂 UB；应返回值或 `T&&`（C++11 起可链式返回值）。[史][评]
+- **隐式转换运算符陷阱**：`operator bool()`/`operator T()` 触发意外隐式转换（如 `if (stream)` 之外的场合），应用 `explicit` 限定。[评]
+- **成员 vs 非成员错配**：`operator<<` 必须为非成员（或 friend）才能 `cout << obj` 左操作数为 `ostream`；对称运算符（如 `==`）写成成员会破坏交换律与混合类型。[史][评]
+
+### ㉒.4 与标准的互动：运算符随标准演进
+C++ 早期 `operator+`/`[]`/`()` 等成形并约定"成员 vs 非成员"规则；C++98–11 打磨重载决议与模板交互。[史] C++20 的 `operator<=>`（三路比较，P0515/P1185）只需写一个比较运算符，编译器按"重写规则"自动合成 `==`/`<`/`>` 全套，终结为值类型手写六七个运算符的时代；概念（Concepts）让运算符可加 `requires` 约束，避免对不适用类型意外参与重载；C++23 显式对象形参（P0847）统一成员/非成员运算符定义。[史] 委员会仍坚持"不发明新运算符"的红线。[史][评]
+
+### ㉒.5 权威引用
+- [cppreference: operators](https://en.cppreference.com/w/cpp/language/operators) — 可重载/不可重载与重载规则
+- [cppreference: operator comparison](https://en.cppreference.com/w/cpp/language/operator_comparison) — `operator<=>` 与重写规则
+- [cppreference: operator overloading](https://en.cppreference.com/w/cpp/language/operators) — 成员 vs 非成员指南
+- [WG21 P0515 — Consistent comparison (operator<=>)](https://wg21.link/P0515) — C++20 三路比较提案
+- [WG21 P1185 — <=> and rewrites](https://wg21.link/P1185) — 比较运算符重写规则
+
 ## 附录 A: 运算符重载速查表
 
 | 运算符 | 推荐形式 | 原因 |

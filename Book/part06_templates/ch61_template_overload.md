@@ -591,6 +591,33 @@ constexpr void swap(_Tp& __a, _Tp& __b) noexcept {
 - libstdc++ `bits/move.h`：std::swap 与特化
 - 交叉引用占位：part06 ch67（Concepts）、ch66（SFINAE）
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：偏序规则是怎么被「形式化」出来的
+[史] 模板一多，冲突就来了：非模板函数、普通函数模板、它的特化三者同时候选时到底选谁，绝不能靠拍脑袋，否则同一个 `max(1, 2.0)` 在不同编译器下会行为不一。WG21 与 David Vandevoorde 等人的工作，把「更特化的模板优先」「非模板比模板优先」等规则逐步形式化，成为函数模板重载决议的骨架。偏序（partial ordering）规则的核心是「能否用对方替换自己」来判断谁更特化——这条规则在 C++98/03 写入标准，并通过 CWG（核心语言工作组）议题与缺陷报告（DR）长期修补边角。
+[评] 偏序规则强大却出了名的反直觉，标准里的推导规则极其晦涩，连编译器实现都曾长期不一致。它的存在为标签分发（ch70）、策略（ch71）等「零开销编译期选路」机制提供了底层依据。
+
+### ㉒.2 真实工程坐标：重载决议活在哪些产品/项目里
+- 标准库与所有泛型库都依赖它：`std::make_shared`、`std::begin`、`std::swap` 等「多候选」接口全靠重载决议 + 偏序在编译期选对实现；`std::distance`、`std::advance` 对迭代器标签的重载（ch70）本质是偏序选路。
+- 大型代码库（Chromium、LLVM、Abseil）大量使用「主模板 + 特化/重载」组合来为不同参数类型提供最优实现，例如针对平凡类型走 `memcpy` 快路径、针对非平凡类型走通用循环。
+- 日志与序列化框架（如 fmt、spdlog）用重载决议为不同类型选格式化器，避免了运行期 `typeid` 分支。
+
+### ㉒.3 生产踩坑：重载决议的常见误用与陷阱
+- **隐式转换抢戏**：当没有精确匹配时，重载决议会出动一系列标准转换序列，常导致「你以为调 A，实际调了 B」的微妙 bug；尤其在存在 `bool`/`int`、`const char*`/`std::string` 等多条转换链时。
+- **偏序判定的「看起来更特化其实不是」**：程序员凭直觉认定的「更特化」常与标准推导结果相反，结果是选了不想要的那个重载，且报错晦涩。
+- **const 重载与引用折叠陷阱**：`T&` 与 `T&&` 转发引用重载在配合 `const` 时极易产生歧义或意外选中，常见于「getter 的 const/非 const 双版本」与完美转发工厂。
+- **concepts 接管后的新旧并存**：C++20 引入约束排序（constraint ordering），旧偏序仍主宰非约束重载、新约束排序只作用于 concepts 函数，两套规则并存，混用时容易踩坑。
+
+### ㉒.4 与标准的互动：偏序与约束排序的接棒
+C++98/03 把重载决议与偏序写入标准；C++11 后 `constexpr`、concepts 让一部分「靠偏序猜意图」的场景被显式约束取代；C++20 引入的「约束排序」规定：当多个重载都满足时，编译器按 `requires` 约束的「更强/更弱」显式选最受限者，把「隐式偏序猜测」升级为「显式约束排序」。这是标准「不破坏旧代码」的代价——两套排序规则将长期并存。
+
+### ㉒.5 权威引用
+- [cppreference: Overload resolution](https://en.cppreference.com/w/cpp/language/overload_resolution) — 重载决议与偏序规则的权威说明
+- [cppreference: Function template](https://en.cppreference.com/w/cpp/language/function_template) — 函数模板与其偏序细则
+- [cppreference: Constraints and concepts](https://en.cppreference.com/w/cpp/language/constraints) — C++20 约束排序如何与旧偏序并存
+
 ## 附录 A：原理与工业 [B: Principle / F: Industry]
 
 ```

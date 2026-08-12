@@ -980,6 +980,34 @@ chapter 149: CI/CD pipeline verified by g++
 
 > **立场**：`[经验]` 把 CI/CD 当“一次配好就完事”是误会。它像代码一样要持续重构：门禁阈值随度量收紧、矩阵随支持平台扩展、缓存键随依赖演进——**流水线是活的，死去的流水线比没有流水线更危险**。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从" Nightly Build "到流水线即代码
+[史] "持续集成（CI）"一词由 **Grady Booch** 在 1991 年提出，但真正落地靠 **极限编程（XP，Kent Beck，1999）** 的"每天多次合入主干并自动化构建测试"。[史] 2011 年 **Travis CI** 把 CI 带入开源（GitHub 一键接入），2019 年 **GitHub Actions** 让"流水线即 YAML"成为默认；自此 CI/CD 从稀缺基建变成每个仓库的标配。[评] CI 的本质不是"跑构建"，而是"把合并风险压缩到小时级"——频率越高，单次合并的爆炸半径越小。
+
+### ㉒.2 真实工程坐标：CI/CD 活在哪些项目里
+- **LLVM / Clang**：每次提交都在多编译器（GCC/Clang/MSVC）、多架构矩阵上跑全套测试与 `clang-tidy`，门禁极严。
+- **Chromium**：自有超大规模 CI 农场，编译缓存 + 分布式编译，单 commit 触发成千上万任务。
+- **多数现代 C++ 项目**：用 **GitHub Actions** 或 **GitLab CI** 做 build/test/static-analysis/package 流水线（见 ⑫）。
+
+### ㉒.3 生产踩坑：CI/CD 的常见误用
+- **构建不可复现**：本地能编、CI 编不过，根因常是缺失依赖钉版本、环境漂移；应锁工具链与依赖，用容器（见 ⑪）固化环境。
+- **ccache 缓存键错误**：缓存键没包含编译器版本/ flag，命中了"看似相同实则不同"的产物，导致静默错编；键必须含 `__cplusplus`、编译器指纹、关键 flag。
+- **flaky 测试卡合并**：非确定性测试让绿/红随机，团队学会"重试绕过"，门禁形同虚设；应隔离并修复 flaky（见第150章）。
+- **密钥泄露**：把 token 明文写进 YAML 或日志；必须用平台 secret 管理（见 ⑬）。
+
+### ㉒.4 与标准的互动：构建系统与 C++ 生态
+CI 本身非 ISO C++ 标准，但它与标准工具链深度绑定：**CMake + CTest** 是 C++ 事实构建/测试标准，CI 直接消费其产物；`ccache` / 分布式编译（`distcc` / **Incredibuild**）缩短矩阵构建；`-Wall -Wextra -Werror` 与 clang-tidy 作为编译期门禁，把第147章的审查前移。[评] 好的 C++ CI = 多编译器矩阵 × 缓存 × 静态分析门禁 × 测试门禁，缺一不可。
+
+### ㉒.5 权威引用
+- [GitHub Actions 文档](https://docs.github.com/en/actions) — 主流 C++ CI 平台的流水线即代码
+- [GitLab CI/CD 文档](https://docs.gitlab.com/ee/ci/) — 另一种主流 CI 实现
+- [ccache（编译缓存，加速矩阵构建）](https://ccache.dev/) — 缓存键与命中原理
+- [Google Engineering Practices（持续集成相关）](https://google.github.io/eng-practices/review/) — 高频合入的工程文化
+- [CMake 官方文档（CTest/CDash）](https://cmake.org/documentation/) — C++ 事实构建/测试系统
+
 ## 附录 A：工业 CI/CD 管道 [F: Industry / B: Principle]
 
 ```

@@ -1153,6 +1153,41 @@ struct SoA final { std::vector<float> x, y; };   // 列存 + 连续 + 可向量�
 - **与 OOP 的矛盾**：OOP「对象=数据+方法」在大数据集下因虚调用与缓存失效而慢；DOD 牺牲封装换吞吐，常见于游戏/高频计算。
 - **实操三步**：profile 确认 cache miss 是瓶颈 → 选 SoA/冷热分离/对齐 → 再测验证收益。强调「测量驱动」，拒绝玄学优化。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节是 P0-15「全库工业/标准深度升维」大波次的一部分：把抽象的语言机制放回它真正的来处——谁、在哪一年、为了解决什么产业痛点而提出；并在真实代码库与标准演进之间建立可验证的坐标。
+
+### ㉒.1 历史纵深：当 OOP 撞上 CPU 缓存墙
+
+- `[史]` **Data-Oriented Design（DOD，面向数据设计）** 由游戏工业在 2000 年代中后期明确化：**Noel Llopis** 2009 年文章《Data-Oriented Design (Or Why You Might Be Shooting Yourself in The Foot With OOP)》系统批判 OOP 在游戏中的缓存失效问题。
+- `[史]` **Mike Acton（Insomniac Games）** 通过 2014 年 CppCon 演讲《Data-Oriented Design and C++》把 DOD 推向整个 C++ 社区：核心理念是「先想数据怎么被访问，再决定内存布局」，而非「先想对象有哪些方法」。
+- `[轶]` DOD 常被戏称为「反 OOP」——但它不是反对封装，而是反对「为封装牺牲缓存局部性」。一句名言：「Know your data, know your hardware.」
+
+### ㉒.2 真实产业坐标：吞吐敏感领域的标配
+
+- 游戏引擎（Unity DOTS、Unreal 的批量系统）、物理引擎（Havok、Bullet）、高频交易/量化系统、科学仿真、粒子系统——凡是「海量同类数据 + 批量处理」的场景都靠 DOD 榨缓存。
+- ECS（第142章）是 DOD 在游戏领域的典型落地；现代 C++ 数值库用 SoA（Structure of Arrays）做 SIMD 友好计算。
+
+### ㉒.3 生产踩坑：先量再改，别玄学优化
+
+- **过早 DOD**：没 profile 就盲目把 AoS 改 SoA，可能反而更难维护、收益为零——DOD 强调「测量驱动（measure-first）」。
+- **缓存行伪共享（false sharing）**：两个线程各写一个「逻辑独立但同缓存行」的字段，会互相 invalidate，性能暴跌；需用缓存行对齐隔离（如 `std::hardware_destructive_interference_size`）。
+- **SoA 让单对象访问变丑**：取「第 i 个对象的多个字段」要分散到多个数组，单实体逻辑变繁琐——DOD 适合批处理，不适合频繁单点访问。
+- **对齐/填充错误**：结构体字段顺序导致空洞（padding）或对齐不符 SIMD 要求，需 `alignas` 与重排字段。
+- **封装退化的代价**：DOD 常把数据摊平，面向对象那套「私有状态 + 方法」被削弱，需靠纪律补偿可维护性。
+
+### ㉒.4 与 C++ 标准的互动
+
+- `[评]` C++ 不内置 DOD，但提供全部底层积木：`std::vector` 做连续存储、`std::span` 做零开销视图、`alignas`/`alignof` 做对齐、`[[no_unique_address]]` 省空洞、`std::hardware_destructive_interference_size` 量化伪共享、C++26 的 `std::simd` 做向量化。
+- `constexpr`/内联让「数据布局选择」可前移到编译期；`if constexpr` 按访问模式特化循环。
+- `[评]` 标准演进正把「数据布局与硬件感知」能力逐步标准化（SIMD、缓存行常量），让 DOD 从「手工 hack」走向「可移植的原语」。
+
+### ㉒.5 权威参考（建议延伸阅读）
+
+- DOD 概念总览：<https://en.wikipedia.org/wiki/Data-oriented_design>
+- Noel Llopis 经典文章《Data-Oriented Design》：<https://gamesfromwithin.com/data-oriented-design>
+- Mike Acton CppCon 2014 演讲《Data-Oriented Design and C++》：<https://www.youtube.com/watch?v=rX0ItVEVjHc>
+
 ## 附录 G（工业级 Data-Oriented Design 实战）
 
 > 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。

@@ -1571,6 +1571,40 @@ int main() {
 面试: allocator vs PMR? allocator=编译期+模板参数; PMR=运行时+虚函数(类型擦除)
        monotonic为什么快? 指针递增分配(bump allocator), 单轮仅 `addq $16` 指针加法≈0 额外开销(GCC 下与空循环同速), 而 malloc 含真实库调用路径 ~45.5ns——差的是"是否进入分配器内核", 不是常数倍
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：C++ 分配器模型的来龙去脉
+
+[史] C++ 的分配器（allocator）概念源自 **Stepanov 设计 STL（1994 年被纳入 C++98）** 时，希望容器与内存后端解耦——这是 STL 区别于当时其他 C++ 容器库（如 NIHCL）的关键设计决策。[轶] 但初版 `std::allocator` 接口（C++98）被普遍认为是失败的：**几乎没人写对自定义分配器**，因为它的接口（含 `rebind`、一堆 `pointer`/`reference` 嵌套类型）过于繁冗，标准库默认实现也只是转发到 `new`/`delete`，所谓「解耦」形同虚设——这正对应第 ② 节「默认无意义」的评价。[史] 真正的转折是 **C++11（2011）引入 `std::allocator_traits`**（第 ④ 节），把「最小接口 + 默认实现」确立为范式，自定义分配器只需提供 `allocate`/`deallocate` 即可；随后 **Library Fundamentals TS 与 P0220（C++17）** 带来 **PMR（`std::pmr`，第 ⑦–⑬ 节）**，用运行时多态的 `memory_resource` 替代编译期模板参数，解决了「不同分配器实例的容器无法互拷」这一老大难。[评] 这一演进路径清晰展示了 C++ 标准「先用模板硬解、再用 trait 收敛、最后用多态对象补灵活性」的典型修正式风格。
+
+### ㉒.2 真实工程坐标：分配器活在哪些项目里
+
+- **LLVM / Clang**：大量使用 **BumpPtrAllocator（即 monotonic allocator，第 ⑩ 节）** 在编译期按阶段批量分配 AST / IR 节点，阶段结束一次性释放，避免海量小对象拖垮堆——这是 `monotonic_buffer_resource` 的真实原型。
+- **游戏与引擎**：Unreal 的 `FMemStack`、Unity 的帧分配器都是栈式/单调分配器的产品化；EASTL（EA 的 STL 替换）提供 `allocator` 与固定池，用于主机游戏确定性内存。
+- **高频交易与数据库**：自研 thread-local 池（第 ⑨ 节 `unsynchronized_pool_resource` 的思想）把每笔订单的临时对象限制在本地核，规避跨核锁；RocksDB 用自定义 arena 控制 SSTable 写入的内存来源。
+- **Web 与基础设施**：Chromium 的 PartitionAlloc、Facebook/Folly 的 `SysArena`、jemalloc 的 `tcache` 都是「分级空闲列表 / 线程本地缓存」思想（第 ⑪ 节）的大规模工业实现。
+
+### ㉒.3 生产踩坑：分配器的常见误用
+
+- **`rebind` 与 `propagate_on_container_copy_assignment` 错配**：第 ⑮/⑯ 节指出，自定义分配器若没正确实现 `rebind` 或传播 trait，容器的拷贝/移动/交换会悄悄用错分配器，导致「在 A 分配、在 B 释放」的跨池崩溃，这类 bug 极难复现。
+- **PMR 的 `do_is_equal` 疏忽**：第 ⑭ 节强调，两个 `memory_resource` 若不重载 `do_is_equal` 表达「等价」，混用不同但语义相同的资源会触发未定义行为或冗余释放——这是 PMR 初学者最常踩的坑。
+- **Scoped Allocator 的「双层分配」遗漏**：第 ⑮ 节 `scoped_allocator_adaptor` 用于在嵌套容器里传播同一分配器，若忘了它，内层 `vector` 会用默认 `new` 而非外层池，破坏「整块内存可控」的初衷。
+- **把 `monotonic_buffer_resource` 当通用分配器**：第 ⑩ 节明确它「只分配、不释放、到时整块回收」——若在它上面长期持有对象并期望单独 `deallocate`，会发生泄漏或误用，因为它就没有真正的释放路径。
+
+### ㉒.4 与标准的互动：分配器与 PMR 的演进
+
+[史] C++98 的 `std::allocator` 接口繁冗被诟病；**C++11 的 `allocator_traits`（N2982 一脉）** 把必需接口降到最小；**P0220R1（C++17）** 把 Library Fundamentals TS 的 **PMR**（`memory_resource`/`polymorphic_allocator`/各种内置资源）整体采纳，是分配器模型 20 年来最重大的一次升级（见 ㉒.5）。[史] **C++20 的 P0674** 让 `std::make_shared` 支持数组，缓解了「`shared_ptr<T[]>` 无法用 make 构造」的尴尬（见 ch41）。[评] WG21 当前方向是把 `std::allocator` 进一步简化为「薄薄一层」、让 PMR 成为默认推荐路径，并在 constexpr 容器上探索编译期分配——目标始终是「默认零成本、需要时零摩擦切换后端」。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::pmr::memory_resource](https://en.cppreference.com/w/cpp/memory/memory_resource) — PMR 抽象基类与 `do_allocate`/`do_is_equal`
+- [cppreference: std::pmr::polymorphic_allocator](https://en.cppreference.com/w/cpp/memory/polymorphic_allocator) — 运行时多态分配器
+- [WG21 P0220R1 — Adopt Library Fundamentals V1 TS for C++17](https://wg21.link/P0220) — PMR 落地 C++17 的采纳提案
+- [WG21 P0674R1 — Extending make_shared to Support Arrays](https://wg21.link/P0674) — `make_shared<T[]>`（C++20）
+- [LLVM BumpPtrAllocator 源码](https://github.com/llvm/llvm-project/blob/main/llvm/include/llvm/Support/Allocator.h) — monotonic allocator 的工业原型
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。

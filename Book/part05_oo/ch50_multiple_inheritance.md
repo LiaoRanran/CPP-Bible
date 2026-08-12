@@ -643,6 +643,40 @@ int main(){Z z;z.X::f();z.Y::f();std::cout<<std::endl;return 0;}
 | [第51章](Book/part05_oo/ch51_crtp.md) | 内存管理/PMR定制 | 本章提供概念，第51章提供实现 |
 | [第45章](Book/part05_oo/ch45_oop_object_model.md) | 静态多态/编译期接口 | 本章提供概念，第45章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：多重继承的来龙去脉
+
+[史] C++ 自诞生即支持**多重继承（MI）**，源于 Simula/C with Classes 的「一个类可有多个基类」诉求；但 C++ 是少数主流语言坚持 MI 的——Java/C# 选择「单继承 + 接口」正是为了回避 MI 的菱形与布局复杂性（ch49）。[史] MI 在 C++ 里的真实形态由 **Itanium C++ ABI（1990 年代末）** 规定：每个基类可能带来独立 vptr，跨基类转型需要 **this 调整 thunk**（第 ⑩/⑲ 节），这决定了 MI 对象的布局与虚调用成本。多继承 + 虚继承叠加即菱形（ch49）。[轶] 一个史实：早期 C++ 的 MI 曾被批评「过度复杂」，Stroustrup 的回应是「MI 允许 `Interface` + `Implementation` 正交组合，远比单继承 + 接口模拟更诚实」——这一思想体现在 COM/`IUnknown` 等「多接口聚合」工业模式里。
+
+### ㉒.2 真实工程坐标：多重继承活在哪里
+
+- **标准库（少量但关键）**：`std::iostream` 继承 `istream`/`ostream`（二者又虚拟继承 `ios`，ch49），是标准库内部 MI + 虚继承的唯一大型实例。
+- **COM / IUnknown（Windows）**：COM 对象「实现一个或多个接口」本质是 MI 思想——一个类 `QueryInterface` 出多个接口指针，每个接口是一个基类；这正是 C++ MI 表达「is-a 多个契约」的工业主场。
+- **Qt / 框架的事件 + 对象模型**：`QObject` 派生类常同时继承框架基类与业务接口，靠 MI 同时接入对象树与领域契约；Qt 还大量用多继承表达「既是 Widget 又是某接口」。
+- **Boost / 标准 trait 风格**：`boost::enable_shared_from_this` 等以基类形式混入能力，多继承用于「正交能力组合」而非 is-a 树。
+
+### ㉒.3 生产踩坑：多重继承的误用
+
+- **菱形歧义（diamond ambiguity）**：第 ⑬ 节，同一基类经两条路径继承，直接访问其成员会编译歧义；需用虚继承（ch49）消解，但虚继承又引入布局/构造复杂度——典型「解一个坑挖另一个坑」。
+- **this 调整 thunk 误用 / 函数指针跨基类取址**：第 ⑩/⑲ 节，跨基类取成员函数指针或转型需要 this 调整，若把基类指针强转后未走正确 thunk，会调用到错误偏移——插件/回调里尤易踩。
+- **切片跨基类**：MI 下把对象按某一基类按值传递，不仅切掉派生部分，还会丢失另一基类的身份与虚分派能力（ch46 切片问题在 MI 下更隐蔽）。
+- **ABI 脆弱**：MI 对象布局（多个 vptr、thunk 表）是 ABI 实现细节，跨编译器或不同优化级别混链会布局错乱，破坏二进制兼容（第 ⑭ 节 `附录 G` 讨论的 MI ABI 深度）。
+
+### ㉒.4 与标准的互动：多重继承与 WG21 演进
+
+[史] MI 自 C++98 即为语言核心；**Itanium C++ ABI** 规定了其在 GCC/Clang 的具体布局（第 ⑩ 节）。**C++11 的 `override`/`final`** 让 MI 体系里的虚函数重写更安全、可去虚化；但 WG21 **从未简化 MI 本身**——它的复杂度与 ABI 成本被视为「应谨慎使用」的特性。[评] 标准库自身的实践（极少用 MI，仅 `iostream` 一处）与社区共识一致：**优先组合（ch46）与 CRTP（ch51）+ 接口继承**，把 MI 限制在「确实需要 is-a 多个契约」的场景（如 COM 风格接口聚合）。`[[no_unique_address]]`（P0840，C++20，ch52）则为「以成员方式混入空接口」提供零开销替代，进一步降低对 MI 的依赖。整体方向是：**保留 MI 兼容性，但新设计应逃逸到组合/CRTP/概念约束**。
+
+### ㉒.5 权威引用
+
+- [cppreference: derived classes / 多重继承](https://en.cppreference.com/w/cpp/language/derived_class) — MI 语义、歧义与虚继承（第 ⑬ 节）
+- [Itanium C++ ABI（多 vptr / this 调整 thunk）](https://itanium-cxx-abi.github.io/cxx-abi/abi.html) — MI 对象布局与 thunk 的权威规范（第 ⑩ 节）
+- [cppreference: std::iostream 继承体系](https://en.cppreference.com/w/cpp/io/basic_ios) — 标准库 MI + 虚继承菱形实例（ch49）
+- [WG21 P0840R2 — Language support for empty objects](https://wg21.link/P0840) — `[[no_unique_address]]`，以成员混入替代 MI（ch52）
+- [Microsoft COM / IUnknown 文档](https://learn.microsoft.com/en-us/windows/win32/com/iunknown) — 多接口聚合（MI 思想）的工业主场
+
 ## 附录 F：多重继承工业与面试
 
 ```cpp

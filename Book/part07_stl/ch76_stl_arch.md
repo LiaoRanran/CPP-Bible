@@ -419,6 +419,33 @@ int main() {
 - `[标准]`：C++ 迭代器最显著特征是**编译期范畴分层 + 标签分发**，使同一算法对不同容器自动选最优路径，且不引入运行期虚函数开销；Rust 的 `Iterator` 偏运行时组合子，Java/Python 偏运行时接口。
 - `[经验]`：从 Rust/Java 来的开发者会熟悉"迭代器组合"，但需注意 C++ 的"失效规则"是独有且极易踩坑的（见 ⑲ 表）。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：STL 的诞生与泛型范式
+
+[史] 1979 年 Alexander Stepanov 在通用电气（GE）开始思考「如何让算法独立于具体容器与数据类型」；1985—1993 年他在惠普（HP）实验室系统提出并实现最初的 STL：容器、迭代器、算法、仿函数四件套，并以模板泛型作为统一抽象层。[史] 1994 年 Stepanov 转往 Silicon Graphics（SGI），将 STL 定型并以自由许可发布「SGI STL」，这成为后来标准库的直接蓝本。[轶] 一个广为流传的轶事是：Stepanov 曾要求一门语言必须能证明「数组下标寻址」与「链表遍历」可被同一套算法统一处理，否则就不够好——这直接催生了迭代器这一中间层。[评] STL 最大的历史贡献不是某个具体容器，而是「算法—迭代器—容器」三层解耦：让 `std::sort` 能作用于任何满足 RandomAccessIterator 的序列，这一设计比多数工业框架早了近十年。
+
+### ㉒.2 真实工程坐标：STL 活在哪些产品里
+
+整个 C++ 标准库实现本身就是 STL 的工业落地：GCC 的 libstdc++、Clang/LLVM 的 libc++、MSVC 的 MS STL 均以 STL 容器与算法为骨架。向下看，Chromium 的 base 层、LLVM/Clang 自身的 AST 与 ASTMatcher、Unreal 等游戏引擎的 C++ 部分、金融高频交易系统的订单簿（常用 `std::map` / `std::vector` 配合自定义分配器）都重度依赖 STL。Linux 内核虽是 C 语言不使用 STL，但其用户态工具链与 perf、BPF 工具大量链接 libstdc++。
+
+### ㉒.3 生产踩坑：STL 的常见误用与陷阱
+
+[评] 最典型的一类踩坑是迭代器失效：在 `vector` 上 `erase` 后继续使用旧迭代器会导致未定义行为；把 `deque` 当成随机插入廉价结构、`list` 上误用 `operator[]`（O(n)）等认知错误也很常见。另一类是 ABI 与分配器：跨动态库（.so/.dll）传递 STL 容器，在开启不同 `_GLIBCXX_USE_CXX11_ABI` 或混用不同编译器版本时会触发符号不匹配（参见 ch81 的 dual-ABI 实证）。性能陷阱则是「隐形拷贝」——`auto` 误推断、用 `std::function` 擦除、范围 for 的副本，以及 `std::endl` 每次刷新缓冲区。
+
+### ㉒.4 与标准的互动：STL 与 C++ 标准的共同演进
+
+[史] STL 于 1998 年随 C++98 正式进入标准，是委员会罕见地「整库采纳」外部设计（Stepanov/SGI）。此后标准持续吸收 STL 风格：`std::span`（C++20）、`std::ranges`（C++20）、`std::pmr` 多态分配器（C++17）都延续「值语义 + 泛型 + 零开销抽象」的信条。C++11 引入的移动语义极大改善了 STL 容器在返回与重排时的性能；近年 WG21 的方向（concepts、ranges、views）本质上是在把 STL 当年的「鸭子类型迭代器」升级为编译期可检查的概念。
+
+### ㉒.5 权威引用
+
+- [cppreference: Iterators](https://en.cppreference.com/w/cpp/iterator) — STL 迭代器概念的核心定义，理解四件套解耦的入口
+- [cppreference: Standard library algorithms](https://en.cppreference.com/w/cpp/algorithm) — STL 算法库总览，体现「算法—迭代器」解耦
+- [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 历次标准提案原文，查证 STL 演进的一手来源
+- [Bjarne Stroustrup 主页](https://www.stroustrup.com/) — C++ 之父对 STL 与设计哲学的一手说明
+
 ## 附录：练习题 / 思考题 / 源码阅读建议
 
 **练习题**

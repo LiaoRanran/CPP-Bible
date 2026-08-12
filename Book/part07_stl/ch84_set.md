@@ -518,6 +518,32 @@ int main() {
 - `[标准]`：`std::set` 对标 Java `TreeSet`、Rust `BTreeSet`，均为"有序、唯一"语义；`multiset` 对标 Guava `TreeMultiset`。
 - `[经验]`：从 Rust/Java 迁移时，`set`↔`BTreeSet`/`TreeSet` 心智模型直接对应；从 Go/Python 来需注意"标准库有序容器"的缺失与节点开销。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：std::set 与「去重有序集合」
+
+[史] `std::set` / `std::multiset` 随 C++98 进入标准，与 `map` 同源，底层同为红黑树，区别是 `set` 以「元素本身即 key」存储，强制唯一（multiset 允许重复）。[史] 这一设计同样继承自 HP/SGI STL 的 `_Rb_tree`，保证有序遍历与 O(log N) 增删查。[轶] 一个常被忽略的点：`set` 的元素是 `const` 的——不能就地修改，因为修改会破坏树的排序，必须先 `erase` 再 `insert`（或 C++11 起用 `extract` 取出节点改值后再插回，避免重分配）。[评] `set` 的本质是「用 O(log N) 换取自动去重与有序」，当去重/有序是硬需求时它比手写排序数组更省心。
+
+### ㉒.2 真实工程坐标：set 活在哪些产品里
+
+服务器访问控制允许列表、唯一标识符集合、已处理任务集合、编译器/构建系统的「已访问文件集」是 `std::set` 的主场；游戏中的标签集合、配置白名单、去重的事件类型也常用 `set`。在需要「既去重又按序遍历」（如生成有序的唯一 ID 列表）时，`set` 比 `unordered_set` + 排序更直接。
+
+### ㉒.3 生产踩坑：set 的常见误用与陷阱
+
+[评] 最大误区是「用 `set` 做高频去重的大集合」——红黑树每节点堆分配、缓存不友好，规模大且只需查重时 `unordered_set` 更快。另一坑是「试图修改 `set` 中元素」——元素是 const，直接改会破坏序，必须用 `extract` 或先删后插。还有「误用 `set` 当位图/布尔数组」——小范围整数去重用 `vector<bool>` 或 `bitset` 远比 `set<int>` 高效。
+
+### ㉒.4 与标准的互动：set 与标准的演进
+
+[史] `std::set` 自 C++98 稳定，C++11 引入 `emplace` / `extract`；C++14 透明比较器 `is_transparent` 同样适用于 `set`，允许异构查找；C++17 增加 `try_emplace` 风格接口与 `insert_or_assign`（multiset 部分适用）。[评] 与 `map` 类似，C++23 的 `std::flat_set` 提供「连续数组 + 排序」的替代，缓存更友好；标准方向是在「有序唯一集合」上也给出连续存储选项，同时保留红黑树 `set` 的稳定节点优势。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::set](https://en.cppreference.com/w/cpp/container/set) — 红黑树有序去重集合与 const 元素的权威定义
+- [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 查证 set 透明比较器、flat_set 等修订的一手来源
+- [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 set/__tree 工业实现参考
+
 ## 附录：练习题 / 思考题 / 源码阅读建议
 
 **练习题**

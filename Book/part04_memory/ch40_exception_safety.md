@@ -1363,6 +1363,40 @@ int main(){
 
 > 老兵收尾：**异常安全不是加几个 `try/catch`，而是把「抛了怎么办」刻进每一层类型的契约里。** `noexcept` 一行，决定了 vector 是飞还是爬；`uncaught_exceptions` 一句，决定了事务是提交还是回滚；析构不抛，决定了程序是优雅退出还是 terminate。把这三件事做对，你的 C++ 才配叫工业级。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：C++ 异常机制的来龙去脉
+
+[史] C++ 异常源自 **1980 年代末 Bell 实验室** 对「构造函数失败如何安全处理」的探索——Stroustrup 在 *The Design and Evolution of C++* 中记录，早期 C++ 用 error code + 手动回滚，极易漏处理；异常被引入以与 RAII（ch39）配合解决此问题。异常规范（exception specification）初版随 **C++98（1998）** 落地，允许 `throw(type-list)` 声明函数可能抛出的类型。[轶] 但 `throw()` 动态规范很快被证明是「昂贵的失败」：编译器要么在每次调用插入运行时检查、要么根本无法内联，且 `unexpected()` 行为反直觉。因此 **C++11（2011）将动态异常规范整体弃用，并引入 `noexcept`（第 ⑤ 节）** 作为零成本的「不抛」契约；**P0003R5（C++17）** 正式把 `throw(type)` 从语言中删除，仅保留 `throw()` 作为弃用的 `noexcept(true)` 别名（第 ⑤ 节）。[史] 「异常安全（exception safety）」这一术语与强/基本/不抛三级保证，由 **David Abrahams 在 1990 年代末的论文与 Boost 实践中** 系统化，后被 C++ 标准库条款 `[res.on.exception.handling]`（第 ⑩ 节）采纳。
+
+### ㉒.2 真实工程坐标：异常安全活在哪里
+
+- **标准库与容器**：`std::vector::push_back`（第 ⑥ 节）的强保证、标准库算法对 `[res.on.exception.handling]` 的遵守，是异常安全保证分级的范本——几乎所有现代 C++ 库的异常契约都参照它。
+- **数据库与事务系统**：把「提交或回滚」用 RAII 守卫实现（第 ⑨ 节 `std::uncaught_exceptions`），在异常路径自动回滚事务、释放锁，是金融/存储引擎的标配。
+- **Chromium / Blink**：出于二进制体积与确定性考虑，大量代码用 `-fno-exceptions` 编译（第 ⑭ 节），改用 `base::expected`/`absl::Status` 式错误码——这是「何时用异常 vs 错误码」的工业级实证：浏览器内核选了错误码。
+- **游戏引擎（Unreal/Unity）与嵌入式**：通常整体禁用异常（第 ⑭ 节），因为异常展开在实时/主机环境下带来不可预测延迟与代码膨胀；这类系统用错误码或断言替代。
+
+### ㉒.3 生产踩坑：异常安全的常见误用
+
+- **析构抛异常 → `std::terminate`**：第 ⑥ 节强调，若栈展开（已有异常传播）时某析构再抛，程序直接终止；生产代码析构里绝不能传播异常。
+- **移动构造非 `noexcept` 拖垮 `vector` 扩容**：第 ⑥ 节指出，`vector` 在扩容搬迁时若元素的移动构造不是 `noexcept`，会退化为「先拷贝再析构旧」的强保证路径（慢且可能抛），正确做法是给移动构造标 `noexcept`。
+- **异常规格的历史坑**：在 C++17 之前写 `throw(std::bad_alloc)` 这类动态规范，既拖性能又可能在意外抛其他类型时调用 `unexpected()`→`terminate`；遗留代码升级到 C++17 后这些写法直接编译失败，需改为 `noexcept(false)`/省略。
+- **`std::uncaught_exception()`（单数，旧）误用**：第 ⑨ 节说明，单参旧接口无法区分「是否嵌套在更外层异常中」，用它做「提交或回滚」在嵌套场景会错；必须用 **C++17 的 `std::uncaught_exceptions()`（返回计数）**。
+
+### ㉒.4 与标准的互动：异常安全与 WG21 演进
+
+[史] C++98 引入动态异常规范但很快被视为失误；**C++11 用 `noexcept` 替代**（第 ⑤ 节），并把 `std::exception_ptr`/`current_exception`/`rethrow_exception`（第 ⑫ 节）标准化以支持跨线程传递异常；**P0003R5（C++17）** 删除动态规范。**C++17 的 P0188 一脉** 引入 `std::uncaught_exceptions()`（第 ⑨ 节）修复了「提交或回滚」守卫的嵌套缺陷。[评] WG21 当前方向是在 **C++26 引入契约（contracts，P2900 一脉）**，用 `pre`/`post`/`assert` 契约部分替代「用异常表达前置条件」的重负；同时 `-fno-exceptions` 作为实现级开关长期保留，承认「异常并非所有领域的最优解」——标准并不强推异常，而是把它作为可选项并压实其安全契约。
+
+### ㉒.5 权威引用
+
+- [cppreference: noexcept specifier](https://en.cppreference.com/w/cpp/language/noexcept_spec) — `noexcept` 与 `noexcept(false)` 语义（C++11）
+- [cppreference: std::uncaught_exceptions](https://en.cppreference.com/w/cpp/error/uncaught_exception) — 提交或回滚惯用法（C++17）
+- [WG21 P0003R5 — Removing Deprecated Exception Specifications from C++17](https://wg21.link/P0003) — 删除动态异常规范
+- [cppreference: 标准库异常安全条款 res.on.exception.handling](https://en.cppreference.com/w/cpp/standard_library#Exception_safety) — 标准库对异常保证的要求
+- [David Abrahams — Exception-Safety in Generic Components](https://www.boost.org/community/exception_safety.html) — 强/基本/不抛三级保证的系统化来源
+
 ## 附录 A：工业异常安全实践 [F: Industry / B: Principle]
 
 ```

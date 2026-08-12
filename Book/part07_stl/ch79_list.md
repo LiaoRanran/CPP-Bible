@@ -498,6 +498,33 @@ int main() {
 
 ---
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：list / forward_list 与节点式容器
+
+[史] `std::list` 随 C++98 进入标准，是经典的双向链表（侵入式环形哨兵节点），C++11 新增单向链表 `std::forward_list` 以削减每个节点的前驱指针开销。[史] 两者都来自 HP/SGI STL，定位是「任意位置 O(1) 增删且迭代器稳定」，代价是失去连续存储与 O(1) 随机访问。[轶] 一个常被忽视的事实：`list::size()` 在 C++98/03 的旧实现里是 O(n)（因为维护 size 会拖慢 `splice`），C++11 起标准强制要求 O(1)。[评] `list` 的价值不在性能，而在「节点级移动（splice）零拷贝」与「迭代器/引用永不失效」这一稳定性保证。
+
+### ㉒.2 真实工程坐标：list 活在哪些产品里
+
+节点存活周期长、增删频繁且需要稳定引用的场景是 `list` 的主场：游戏/编辑器的「有序实体链表」、LRU 缓存（哈希 + 双向链表）、侵入式 list 被广泛用于内核与高性能网络栈（如 Linux 的 `list_head` 思想）。`forward_list` 则用于内存敏感的单链表遍历，如某些解析器与图邻接表。
+
+### ㉒.3 生产踩坑：list 的常见误用与陷阱
+
+[评] 最大误区是「在性能热点里用 `list` 替代 `vector`」——由于每个节点独立堆分配、指针追逐导致缓存命中率极低，`list` 的遍历与随机访问通常比 `vector` 慢一个数量级（实践中常见 5–10×）。另一坑是误以为 `splice` 是廉价拷贝，其实它是 O(1) 节点重链，但若跨容器 splice 涉及自定义分配器会出问题。还有 `list::sort` 与 `std::sort` 的区别：前者是成员函数（无法用随机访问迭代器）。
+
+### ㉒.4 与标准的互动：list 与标准的取舍
+
+[史] `list` 自 C++98 稳定，C++11 增补 `forward_list` 与移动语义；C++20 起 `list` / `forward_list` 部分操作进入 `constexpr`。[评] 近年标准方向明显转向「连续优先」：`std::vector` 配合 `erase` / `remove`、以及 C++23 的 `flat_map` 都在挤压 `list` 的生存空间。WG21 多次讨论是否弃用 `std::list` 的部分用法，目前仍保留，但共识是「非必要不用 list，除非你真的需要 splice 零拷贝或迭代器稳定性」。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::list](https://en.cppreference.com/w/cpp/container/list) — 双向链表与 splice/稳定迭代器的权威定义
+- [cppreference: std::forward_list](https://en.cppreference.com/w/cpp/container/forward_list) — 单向链表的权威定义
+- [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 查证 list/forward_list 标准化历史的一手来源
+- [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 list 工业实现参考
+
 ## 附录A：30+ 完整可编译示例（独立程序，可直接 `g++ -std=c++23 -O2 -Wall -Wextra`） [标准]
 
 下面 L1–L35 每个都是**完整可编译程序**（自带 `#include` 与 `int main`）。

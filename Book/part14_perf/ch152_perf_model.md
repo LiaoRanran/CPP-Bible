@@ -777,6 +777,35 @@ int main() {
 
 > ⟶ 本章交叉引用：`Book/part14_perf/ch153_cpu_micro.md`、`Book/part14_perf/ch154_cache_opt.md`、`Book/part14_perf/ch155_simd.md`、`Book/part14_perf/ch156_compiler_opt.md`、`Book/part14_perf/ch157_compiler_explorer.md`、`Book/part14_perf/ch158_perf_antipatterns.md`；基准方法论见 `Book/part13_engineering/ch151_benchmark.md`。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：性能建模的三块基石
+[史] **Amdahl 定律**（Gene Amdahl，1967）给出"并行加速比上限由串行比例决定"的铁律，至今是评估并发收益的第一把尺。[史] **Roofline 模型**（Williams、Waterman、Patterson，UC Berkeley，2009）把"计算峰值 vs 内存带宽"画成一张屋顶图，直观区分计算密集与访存密集瓶颈；它与 **Little 定律**（量化吞吐/延迟/在途数）一起，构成服务端性能建模的常用工具箱。[评] 模型的价值在于"先定性再定量"——动手优化前先判断是 compute-bound 还是 memory-bound，否则多半在错的地方使劲。
+
+### ㉒.2 真实工程坐标：性能建模活在哪些项目里
+- **HPC / 超算**：Roofline 是英特尔、NERSC 等给应用定级的标准动作，配合 VTune 定位屋顶位置。
+- **游戏引擎 / 渲染**：用 Amdahl 估算多线程渲染收益，避免"加线程反而更慢"。
+- **数据库 / 搜索引擎**：以 Little 定律设连接池与队列深度，控制尾延迟（p99/p999）。
+- **Google Benchmark 生态**：几乎所有需要"可信数字"的 C++ 库都用它产出建模所需的原始数据（见第151章）。
+
+### ㉒.3 生产踩坑：建模与测量的误用
+- **用错模型**：把访存密集的代码当计算密集优化（狂加 SIMD 却卡在 cache miss），白忙一场；正确做法是先画 Roofline 定位屋顶。
+- **只看平均值不看分位**：均值好看、p99 爆炸，对用户体感是"偶发卡顿"；服务端必须报分位数（见 ⑫）。
+- **把单次测量当结论**：未去冷启动、未多次取中位数，被噪声主导（见第151章 ⑥⑬）。
+- **混淆加速比与绝对值**：绝对值随机器而变，只有"相对加速比"可移植（见第151章 D5）。
+
+### ㉒.4 与标准的互动：std::chrono 与可移植测量
+C++11 的 `<chrono>` 与 `steady_clock` 给性能建模提供了可移植的单调时钟底座，使"在任意平台复现同一测量流程"成为可能；模型所用的"时间"数据，其可信度最终来自第151章的防 DCE/预热/多次统计纪律。[评] 标准给的是"尺子"，模型给的是"读数方法"，二者缺一不可。
+
+### ㉒.5 权威引用
+- [Google Benchmark 仓库](https://github.com/google/benchmark) — 产出建模所需的统计化原始数据
+- [cppreference: std::chrono](https://en.cppreference.com/w/cpp/chrono) — C++11 起的可移植计时设施
+- [Brendan Gregg 性能方法论](https://www.brendangregg.com/) — 从计数器到延迟/吞吐模型
+- [What Every Programmer Should Know About Memory（Ulrich Drepper）](https://www.akkadia.org/drepper/cpumemory.pdf) — 访存/带宽建模经典文献
+- [perf Wiki（硬件计数器）](https://perf.wiki.kernel.org/) — 把模型落到真实 CPU 计数器
+
 ## 附录：练习题 / 思考题 / 源码阅读建议
 
 **练习题**

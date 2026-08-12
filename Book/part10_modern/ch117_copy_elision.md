@@ -513,6 +513,34 @@ struct Buff { Buff(Buff&&) noexcept; };              // ✅ 省略失败时仍�
 - `[标准]`：只有「prvalue 初始化同类型对象」是**强制**省略；其余皆为实现相关。
 - `[经验]`：性能敏感的热路径，用 `return T{};` 或单一名字返回；绝不用 `std::move` 返回局部；用 ⑱ 的 Tracer 实测验证。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：拷贝消除的来龙去脉
+
+拷贝消除并非一开始就是语言保证：C++98 时代编译器（CFront、GCC）就已悄悄做 RVO，利用"as-if 规则"把"返回大对象"的拷贝优化掉，但它是可选、不可依赖的隐形红利。[史] C++17 借 P0135（Richard Smith《Wording for guaranteed copy elision through simplified value categories》）把 prvalue 初始化同类型对象时的拷贝/移动从"允许省略"升格为"必须省略"，这是"编译器优化"被写进"语言语义"的代表性转折。
+
+注意 NRVO（具名局部对象）至今仍非强制，只是被允许——标准刻意只保证 prvalue 路径，把具名对象的消除留给实现质量。[史] C++20 起又把 `constexpr` 上下文下拷贝消除的副作用一致性写清，避免同一段代码在编译期与运行期表现不同。[评]
+
+### ㉒.2 真实工程坐标：拷贝消除活在哪些产品里
+
+任何"按值返回大对象"的库都在吃拷贝消除的红利：`std::vector`、`std::string`、Eigen 的矩阵表达式、`std::optional`/`std::variant` 的构造、LLVM 的 `Value` 体系、游戏引擎资源管理器（Unreal 的 `TUniquePtr`/`FString`）。[史] 它让"返回不可拷贝也不可移动的类型"（如某些 RAII 句柄）在 C++17 成为可能——这是写零开销 API 的底层依赖。
+
+### ㉒.3 生产踩坑：拷贝消除的常见误用与陷阱
+
+最隐蔽的坑是 `return std::move(local)`：本想加速，却把具名对象从 NRVO 候选"降级"为必须移动，反而阻碍消除；编译器比你想的更会优化，别帮倒忙。[史] 另一个坑是"依赖被消除的副作用"：拷贝构造函数里的 `printf`、计数、加锁会随消除确定性消失——拷贝消除是少数会改变可观察行为的优化，测试若断言"拷贝被调用 N 次"会在 -O2 下崩溃。多分支返回不同具名对象会让 NRVO 失效（控制流要求不同返回槽），此时必须退回 prvalue 写法。
+
+### ㉒.4 与标准的互动：拷贝消除与 C++ 标准的演进
+
+拷贝消除的入标路径是"可选优化 → 强制语义"：C++17 的 P0135 重写了值类别与"临时对象材料化（temporary materialization）"模型，让 prvalue 直接具现到目标位置，从根上消灭那次拷贝。[史] 它彻底理清了"临时对象究竟何时真正存在"这一长期模糊点，也倒逼标准库重写 `std::move_if_noexcept` 等与移动/拷贝的交互。ABI 是隐形天花板：Itanium C++ ABI 的"返回槽"约定让 RVO 在二进制层面可行，但跨编译器、跨版本的 ABI 稳定性也意味着某些消除优化无法自由演进。[轶]
+
+### ㉒.5 权威引用
+
+- [cppreference: copy elision](https://en.cppreference.com/w/cpp/language/copy_elision) — RVO/NRVO 与 guaranteed copy elision 的权威说明
+- [WG21 P0135 — Wording for guaranteed copy elision through simplified value categories](https://wg21.link/p0135) — C++17 强制拷贝消除的奠基提案（Richard Smith）
+- [cppreference: value category](https://en.cppreference.com/w/cpp/language/value_category) — prvalue 与临时材料化模型，消除的语义基础
+
 ## 附录：完整可编译示例（ch117）
 
 ```cpp

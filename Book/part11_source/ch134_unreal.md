@@ -815,6 +815,9 @@ int main() {
 - ILM StageCraft / 虚拟制片公开技术分享（影视实时渲染案例）
 - 汽车 HMI 与数字孪生：Epic 官方 "Unreal Engine for Automotive" / "Digital Twin" 行业页面
 
+
+- [Unreal Engine 官网](https://www.unrealengine.com/en-US/)：产品与行业方案（汽车 HMI / 数字孪生 / 影视虚拟制片）。
+- [Epic 开发者门户](https://dev.epicgames.com/)：SDK、源码与社区资源。
 ## 附录 A：Unreal Engine C++ 工业实践 [F: Industry / B: Principle]
 
 ```

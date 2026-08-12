@@ -925,6 +925,36 @@ int main() {
 int main() { errno = 0; std::perror("debug point"); return 0; }
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：调试工具的来龙去脉
+[史] GDB 由 Richard Stallman 等人于 1986 年在 GNU 工程下首发，是自由软件调试器的奠基者，至今仍是 Linux 调试事实标准。[史] LLDB 由 Apple 主导、作为 LLVM 项目一部分开发（约 2007 起），目标是对接 Clang 与现代架构，提供更好的脚本/Python 集成。[史] Sanitizer 系列（ASan/UBSan/TSan）由 Google 在 LLVM 内实现，AddressSanitizer 约 2011 年随编译器插桩问世，把"内存错误检测"从运行时工具下沉到编译期插桩。[评] 调试从"事后 core dump 分析"演进到"编译期插桩实时抓错"，DWARF（开源）与 PDB（微软）是两套并行的调试信息格式标准。
+
+### ㉒.2 真实工程坐标：调试工具活在哪些产品/项目里
+- GDB：Linux 内核、glibc、绝大多数 GNU/Linux 原生软件的调试底座，也是 Android/嵌入式远程调试的核心。
+- LLDB：Apple 生态（macOS/iOS）默认调试器，Xcode 与 clangd 工具链深度集成。
+- ASan/UBSan/TSan：Chrome、Android、LLVM 自身 CI 默认开启，用于抓获内存越界/未定义行为/数据竞争。
+- WinDbg：Windows 内核与驱动调试的官方选择，微软系产品必需。
+[评] 现代 CI 普遍"编译 + sanitizer"双保险，把大量崩溃前移到提交阶段。
+
+### ㉒.3 生产踩坑：调试的常见误用与陷阱
+- 只在 Debug 开 sanitizer、Release 关掉：很多内存错误只在优化后布局下暴露，关掉等于失明（某些项目 Release 也带 ASan 做金丝雀）。
+- 把 sanitizer 报告当"误报"忽略：ASan 的 heap-buffer-overflow 几乎总是真 bug，忽视导致线上随机崩溃。
+- 混淆 TSan 与 ASan 适用域：TSan 只抓数据竞争、不抓越界，误以为开了 TSan 就覆盖内存安全。
+- 调试信息缺失：发布版 `-g` 被 strip 且无符号服务器，崩溃栈变成无意义的地址，事后无法定位（应保留带符号的副本）。
+
+### ㉒.4 与标准的互动：调试工具与 C++ 标准的演进
+[评] 调试工具不在 ISO C++ 标准正文，但标准语义决定了"什么是未定义行为"——UBSan 正是按标准 UB 条款插桩（如符号溢出、空指针解引用）。[史] `assert`/`NDEBUG` 是标准（<cassert>）规定的宏，调试宏行为是标准契约的一部分；sanitizer 属编译器实现扩展（Clang/GCC 的 `-fsanitize`），无单独 WG21 提案，但直接影响标准 UB 的可观测性。
+
+### ㉒.5 权威引用
+- https://sourceware.org/gdb/ ：GDB 官方站，证明 1986 GNU 调试器谱系。
+- https://lldb.llvm.org/ ：LLDB 官方文档，证明 Apple/LLVM 调试器定位。
+- https://github.com/google/sanitizers ：Sanitizer 源码仓库，证明 Google 的 ASan/UBSan/TSan 实现。
+- https://dwarfstd.org/ ：DWARF 调试格式标准站，证明开源调试信息格式。
+- https://en.cppreference.com/w/cpp/error/assert ：cppreference 的 assert 页，证明 NDEBUG 对断言的标准约定。
+
 ## 附录 A：工业调试与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 
 ```

@@ -631,6 +631,39 @@ struct Guard { int slot; void* p;
 - `[算法]`：这一总序之所以必要，是因为 HP 的正确性正依赖于「scan 一定看得到读者最新登记」；若降级为 relaxed，不变量即被破坏——这是算法层结论，不来自标准条款本身。
 - `[经验]`：把本章任意范式抄进生产前，先过 TSan + 宽限期压力测试；正确性 > 微优化。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从 hazard pointer 到 RCU
+
+[史] **Hazard Pointer** 由 **Maged Michael（2004，IBM，论文《Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects》）** 提出：每个读者把自己的「正在读哪个指针」登记到一张全局 hazard 表，写者回收前先扫表，若有人登记则推迟回收——从而在无锁结构里安全释放内存、规避 ABA 与 UAF。**RCU（Read-Copy-Update）** 的源头更早：由 **Paul E. McKenney（IBM）** 在 1990 年代为 Linux 内核设计，核心思想是「读者无锁、写者拷贝新副本并更新指针、等宽限期（grace period）所有旧读者退出后再回收旧副本」。[史] C++ 标准长期**没有**这两者的标准实现（C++11/14/17 都得手写或用库）；直到 **C++26 推进 hazard pointer 标准化（P1122 / P2530，Maged Michael 本人参与）**，RCU 的标准化探讨也并行推进。[轶] RCU 在 Linux 内核已服役近 20 年，是内核并发读侧无可替代的基石——它把「读侧零开销」做到了极致，代价是写者要等宽限期。[评] hazard pointer 适合「对象粒度回收、读者数有限」，RCU 适合「读极多写极少、读侧要极致便宜」；两者都是「无锁内存安全回收」的主流答案。
+
+### ㉒.2 真实工程坐标：hazard pointer / RCU 活在哪些产品里
+
+- **Linux 内核（RCU 的故乡）**：RCU 用于路由表、进程列表、文件系统元数据等「读极多写极少」的全局结构；`rcu_read_lock()` 几乎零开销，是内核扩展性的支柱。
+- **用户态 RCU（urcu，Mathieu Desnoyers）**：把内核 RCU 思想搬到用户态，被 **Chromium、MySQL、QEMU** 等用于高并发读共享数据。
+- **无锁库（folly、并发运行时）**：hazard pointer 被广泛用于无锁队列/哈希的内存回收，避免读者读到被释放节点。
+- **数据库 / 存储引擎**：MVCC、B-tree 的「旧版本延迟回收」本质上是 RCU 思想的变体——读不阻塞写、旧版本等无人读再清。
+
+### ㉒.3 生产踩坑：hazard pointer / RCU 的常见误用
+
+- **hazard 登记顺序错→UAF**：读者必须「先把自己的 hazard 指针写成目标，再做解引用」；若先解引用、被抢占、写者恰在扫表时没看到登记，就会回收正在读的节点。顺序错了防护形同虚设。
+- **hazard 表只设不忘清**：读者用完必须清零登记，否则写者永远不敢回收，造成内存泄漏与回收停滞——典型是异常路径忘了清。
+- **RCU 宽限期被长读阻塞**：若有读者长期不退出宽限期（如死循环/睡眠在读侧临界区），写者回收被无限推迟，旧副本堆积吃内存；RCU 读侧临界区里**绝不可阻塞/睡眠**。
+- **误把 RCU 当通用「免锁」方案**：RCU 只适合「读多写少、写者能承受拷贝+延迟回收」；写频繁或对象巨大时拷贝代价高，应改 hazard pointer 或锁。
+
+### ㉒.4 与标准的互动：hazard pointer / RCU 与 C++ 标准的演进
+
+[史] C++11 提供了 `std::atomic`（无锁原语）但**无**内存安全回收设施，hazard pointer/RCU 长期只能手写或靠第三方库；**C++26 正推进把 hazard pointer 纳入标准库（P1122/P2530，由 Michael 本人提案）**，提供 `std::hazard_pointer` 与 retire/回收 API，并附带 `std::rcu_domain` 方向的讨论。这是 WG21 对「无锁 + 安全回收」痛点（见第 ⑩/⑪ 章）的正式回应——把过去 20 年内核/工业界的成熟方案沉淀为标准抽象。
+
+### ㉒.5 权威引用
+
+- [Maged Michael — Hazard Pointers: Safe Memory Reclamation for Lock-Free Objects (2004)](https://dl.acm.org/doi/10.1145/989393.989403) — hazard pointer 原始论文（可查证 DOI）。
+- [Paul E. McKenney — 《Is Parallel Programming Hard, And, If So, What Can You Do About It?》(RCU 权威专著)](https://mirrors.edge.kernel.org/pub/linux/kernel/people/paulmck/perfbook/perfbook.html) — RCU 设计与内核用法的权威来源（可查证）。
+- [WG21 P2530 — Hazard Pointers for C++（C++26 推进中）](https://wg21.link/p2530) — 标准库 hazard pointer 提案。
+- [User-Level RCU (urcu) 实现（Mathieu Desnoyers）](https://github.com/urcu/userspace-rcu) — 用户态 RCU 的真实工程坐标，被 Chromium/MySQL 等采用。
+
 ## 附录 A：工业 RCU/Hazard Pointer [F: Industry / D: stdlib]
 
 ```

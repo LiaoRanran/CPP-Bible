@@ -787,6 +787,35 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 f
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch162_json."<<std::endl;return 0;}
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：JSON 的标准化与 C++ 库之争
+[史] JSON 由 **Douglas Crockford** 在 2001 年规范化，最初在 RFC 4627（2006）成文，最终定稿为 **RFC 8259（2017，ECMA-404 同源）**——它是 IETF/ ECMA 标准，而非 C++ 标准。[史] C++ 侧，**RapidJSON（腾讯，约 2011）** 以"零拷贝、SAX/DOM、极致性能"出圈；**nlohmann/json（2013 起）** 则以"直觉的 STL 式 API（`operator[]`、自动类型）"成为最流行的头文件库。两者代表了"性能优先"与"易用优先"两条路线（见 ⑨⑩）。[评] JSON 在 C++ 里没有标准库实现，生态由社区库填补——这与标准库"不绑定具体数据交换格式"的取向一致。
+
+### ㉒.2 真实工程坐标：JSON 活在哪些产品里
+- **nlohmann/json**：Web 后端、配置文件、工具链里几乎无处不在，因单头易集成、API 友好。
+- **RapidJSON**：MySQL、腾讯系服务、游戏服务器等高吞吐场景，SAX 流式解析省内存。
+- **游戏 / 引擎**：资源描述、关卡配置大量用 JSON（或类 JSON 的自定义格式）。
+- **云原生 / DevOps**：K8s、CI 配置、可观测数据普遍 JSON 序列化。
+
+### ㉒.3 生产踩坑：JSON 解析的误用
+- **不安全解析导致的 DoS**：畸形/超深嵌套输入若递归下降无深度上限，可栈溢出；工业库提供 `max_depth`/SAX 流式来防御（见 ⑰）。
+- **数字精度丢失**：JSON 数字按 IEEE double 解析，`int64` 大整数会被截断；需整数专用解析或字符串保真。
+- **UTF-8 错误处理不当**：非法序列未拒绝/未替换，产生乱码或注入；应校验 UTF-8（见 ⑫）。
+- **拷贝开销**：DOM 式 API 频繁 `operator[]` 返回临时 `Value`，热路径应用 `const` 引用/Sax 避免（见 ⑩⑯）。
+
+### ㉒.4 与标准的互动：C++ 没有标准 JSON，但有标准积木
+ISO C++ 至今无 `<json>`；JSON 解析器普遍用 **`std::variant`**（C++17，值类型：null/bool/number/string/array/object，见 ③）、`std::string_view`、`std::optional` 等标准件搭建。C++20 `std::format` 也让"对象 → JSON 字符串"的序列化更易复用标准格式化。[评] 标准提供"词汇类型积木"，具体交换格式交给生态——这也是 C++ 标准"克制不膨胀"的一贯取舍。
+
+### ㉒.5 权威引用
+- [nlohmann/json 仓库](https://github.com/nlohmann/json) — 最流行的现代 C++ JSON 头文件库
+- [RapidJSON 仓库（腾讯）](https://github.com/Tencent/rapidjson) — 高性能 SAX/DOM JSON 解析
+- [RFC 8259（JSON 标准文本）](https://datatracker.ietf.org/doc/html/rfc8259) — JSON 的 IETF 规范出处
+- [cppreference: std::variant (C++17)](https://en.cppreference.com/w/cpp/utility/variant) — JSON 值类型的标准建模积木
+- [ECMA-404（JSON 数据交换格式）](https://ecma-international.org/publications-and-standards/standards/ecma-404/) — 与 RFC 8259 同源的标准
+
 ## 附录 A：工业 JSON 库对比与标准演化 [F: Industry / B: Principle]
 
 | 库 | 性能 | 特点 | 典型用户 |

@@ -521,6 +521,33 @@ int use_sv() {
 - `[标准]`：C++ 的 `std::string` 是**唯一兼具 SSO 值语义与连续内存**的主流字符串，兼顾性能与 C 兼容。
 - `[经验]`：从 GC 语言转来的开发者常误以为 `std::string` 拷贝廉价——务必牢记长串深拷贝 O(n) 堆分配。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：std::string 与 COW/SSO 的世纪之争
+
+[史] `std::basic_string` 随 C++98 进入标准，早期多数实现（如 GCC 4.x 的 libstdc++ COW 实现）采用「写时复制（Copy-On-Write）」以避免深拷贝开销。[史] 但 C++11 标准明确禁止 COW（要求 `data()` 返回可写连续缓冲、且 `c_str()` 与 `data()` 一致），迫使实现转向「短字符串优化（SSO）」：短串直接内联在对象内、不堆分配。[轶] 一个著名事故是 GCC 5.1 的 dual-ABI 切换——旧 COW `std::string` 与新 SSO `std::__cxx11::string` 符号不兼容，导致大量旧库链接失败。[评] SSO 的胜利说明：在现代 CPU 上，「避免堆分配」比「避免拷贝」更划算，这也是 `std::string` 至今仍是性能标杆的原因。
+
+### ㉒.2 真实工程坐标：string 活在哪些产品里
+
+`std::string` 是几乎所有 C++ 程序的字符串基础：Chromium 的 `std::u16string` / `std::string` 承载 URL 与文本；LLVM 用 `StringRef`（零拷贝字符串视图）与 `std::string` 配合；游戏引擎的资源路径、配置解析、日志全部依赖 `string`。它也通过 `c_str()` 与所有 C API（POSIX、Win32、数据库驱动）桥接，是 C/C++ 互操作的枢纽。
+
+### ㉒.3 生产踩坑：string 的常见误用与陷阱
+
+[评] 最经典的是「`c_str()` 返回指针的生命周期」：调用 `c_str()` 后若 `string` 被修改/移动/销毁，指针即悬空。其次是「隐式 `std::string` 深拷贝」——在热点里把 `string` 按值传来传去会触发 O(n) 堆分配，应改用 `string_view`（C++17）或 `const string&`、`string&&`。还有「自增拼接 `s += a + b + c`」反复分配，应合并或用 `reserve`。以及双 ABI 混链导致的 `std::__cxx11::basic_string` 符号不匹配。
+
+### ㉒.4 与标准的互动：string 与标准的演进
+
+[史] `std::string` 自 C++98 起即为核心，C++11 禁止 COW 并要求连续存储（催生 SSO 普及）；C++17 引入 `std::string_view` 把「只读零拷贝视图」标准化，彻底改变了「用 `const string&` 当接口」的旧习惯；C++20 增加 `starts_with` / `ends_with` 等便捷方法。[评] 标准对 `string` 的演进主线是「减少不必要的堆分配与拷贝」——`string_view` 是这条主线最显著的产物，而 dual-ABI 的教训也让委员会更谨慎地对待字符串的 ABI 稳定性。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::basic_string](https://en.cppreference.com/w/cpp/string/basic_string) — string 连续存储与 SSO 语义的权威定义
+- [cppreference: std::string_view](https://en.cppreference.com/w/cpp/string/string_view) — C++17 零拷贝视图，替代 `const string&` 接口
+- [GCC libstdc++ Dual ABI 文档](https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html) — 实证 COW→SSO 的 ABI 断裂与 `_GLIBCXX_USE_CXX11_ABI`
+- [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 查证 string/string_view 标准化历史
+
 ## 附录 A: SSO 深度剖析
 
 ```cpp

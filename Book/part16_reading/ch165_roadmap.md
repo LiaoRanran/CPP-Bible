@@ -598,6 +598,33 @@ struct Day { bool read, code, test, note; };
 
 [经验] 先写完 4 个从零项目（线程池/内存池/日志/JSON）再谈其他；简历没项目，其余皆空。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：C++ 版本演进本身就是"路线图困惑史"
+C++ 的版本演进本身，就是一份"学习路线困惑史"：1998 年 C++98 首次标准化，此后 C++11（2011）脱胎换骨、C++14/17 小步快跑、C++20 扔进协程/概念/模块、C++23 继续补完（见 ch165 0.1）。[史] 对自学者而言，碎片化带来真实痛点：老教程还在讲 `auto_ptr` 和 `NULL`，现代代码早已用 `unique_ptr` 和 `nullptr`；照过时顺序啃，越学越像"假 C++"。[评] 2015 起 Stroustrup 与 Herb Sutter 发起 **C++ Core Guidelines**，试图用一份在线指南统一"现代该怎么写"，缓解"学哪版、怎么用"的混乱。[史]
+
+### ㉒.2 真实工程坐标：路线图指向哪些真实战场
+- **嵌入式/系统层**：汽车座舱（Qt/HMI）、固件、驱动几乎只有 C++，路线图强调 RAII/ownership 打底再追新特性（见本书 part09 并发、part04 内存）。
+- **C++ 后端/ infra**：LLVM/Clang、Chromium、Abseil、数据库（ClickHouse/RocksDB）等海量 C++ 工程，招聘要求 concrete 的"项目 + 底层理解"而非卷面分——正是 ch165 主张的"4 个从零项目"路线。
+- **游戏/高频**：Unreal、自研引擎、金融高频系统对性能极致敏感，路线图优先"零开销抽象 + 内存模型"而非特性罗列。[评]
+
+### ㉒.3 生产踩坑：学 C++ 的常见误用
+- **教材通读到放弃**：从变量一路啃到模板，容易在语法沼泽里放弃；"从第一页啃到最后一页再写代码"被过来人公认为最浪费时间的学法。[史][评]
+- **学的是"假 C++"**：照老教程学 `auto_ptr`/`NULL`/裸 `new`，与现代 `unique_ptr`/`nullptr`/RAII 脱节，简历项目一编译就露馅。[评]
+- **路线不分目标领域**：盲目追 C++20/23 新特性而 RAII/ownership 底子空，遇到嵌入式/后端/考研不同战场都使不上劲——路线不是非此即彼，是"为哪个战场备弹药"（见 ch165 0.3）。[评]
+
+### ㉒.4 与标准的互动：路线图跟随标准迭代
+C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概念诞生、旧路线大面积失效，重排学顺序呼声最高（见 ch165 0.2）。[史] C++20 模块、协程、concepts 进入主流教学与招聘，路线图从"先学完 old C++ 再追新"转为"先打 RAII/ownership 底、再按需学特性"；C++23 持续加料，层次感更重要。[史] 面对 Rust/Go 的择业争议，C++ 路线图的回答是"先确认目标领域"——嵌入式/游戏/高频/系统层仍几乎只有 C++。[史][评] 学习资源也从纸质书转向 Compiler Explorer、CppCon 视频、实证博客，"看汇编验证、看会议学设计"取代单靠一本书。[史]
+
+### ㉒.5 权威引用
+- [isocpp.org](https://isocpp.org) — C++ 标准、新闻与权威学习资源入口
+- [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/) — Stroustrup/Sutter 维护的"现代该怎么写"活文档
+- [cppreference](https://en.cppreference.com/w/cpp/) — 各标准版本特性的权威参考（教材之外必查）
+- [WG21 (ISO C++ Committee)](https://www.open-std.org/jtc1/sc22/wg21/) — 提案与版本演进（C++20/23/26）源头
+- [github: isocpp/CppCoreGuidelines](https://github.com/isocpp/CppCoreGuidelines) — Core Guidelines 源码与讨论
+
 ## 附录 A：进阶阅读路线 [B: Principle / F: Industry / J: Learning]
 
 ### 等级 1：语言掌握（1-3 个月）

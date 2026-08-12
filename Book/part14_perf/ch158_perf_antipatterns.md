@@ -450,6 +450,37 @@ int main(){std::cout<<abs_branchless(-99)<<std::endl;return 0;}
 int main(){int v=42;int&r=v;r=100;std::cout<<v<<std::endl;return 0;}
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：性能反模式被"点名"的由来
+[史] C++ 性能反模式长期散落在 Scott Meyers《Effective STL》《More Effective C++》与各路大会演讲里；现代最系统的汇编是 **C++ Core Guidelines 的 "Per"（Performance）章节**，把"隐式拷贝、虚调用、类型擦除、false sharing"等逐一列为规则并配 clang-tidy 检查。[史] Chandler Carruth（LLVM/Google）在 CppCon 的系列演讲把"为什么 `std::endl` 慢、`std::function` 有代价"讲成可量化常识（见 ④⑩）。[评] 反模式清单是"前人踩坑的复利"——它把个人经验变成团队可执行的纪律。
+
+### ㉒.2 真实工程坐标：反模式藏在哪些地方
+- **几乎每个大型 C++ 代码库**：热路径上普遍中招于隐式拷贝、`reserve` 缺失、虚函数间接调用。
+- **游戏 / 引擎**：对每帧预算敏感，反模式直接体现在帧时间上；ECS/SoA 正是为规避 AoS 缓存反模式而生。
+- **高频交易**：任何类型擦除/堆分配都是禁区，反模式清单即生存底线。
+- **标准库实现本身**：libstdc++/libc++ 为维护性能，主动规避这些反模式（如 `std::string` SSO）。
+
+### ㉒.3 生产踩坑：高频反模式清单
+- **`std::endl` 而非 `'\n'`**：`endl` 每次强制 `flush`，在循环里拖垮 IO（见 ④）。
+- **隐式拷贝 / 临时对象**：传值返回大对象、范围 for 取 `auto` 而非 `const auto&`，触发多余拷贝（见 ③）。
+- **`reserve` 缺失**：`vector::push_back` 反复扩容搬迁，O(n) 额外开销（见 ⑪）。
+- **热循环虚函数**：间接调用阻断内联与去虚化（见 ⑤）；`std::function` 类型擦除同样有开销（见 ⑩）。
+- **`std::regex` 每次构造**：正则对象构造昂贵，应缓存复用而非每调用新建（见 ⑨）。
+- **false sharing**：跨线程相邻字段互相 invalidate（见 ⑦，关联第143章）。
+
+### ㉒.4 与标准的互动：标准特性如何"防"反模式
+C++11 起的标准持续提供反模式的"正解"：`std::move`（避免拷贝）、`emplace_back`（避免临时）、`std::string_view`/`std::span`（零拷贝视图）、`reserve`/`shrink_to_fit`、以及 `constexpr`/内联让编译器能消除间接调用。[评] 反模式多发生在"用了旧习惯、没用新设施"——标准给了解药，缺的是纪律。
+
+### ㉒.5 权威引用
+- [C++ Core Guidelines — Per（性能规则）](https://isocpp.github.io/CppCoreGuidelines/#S-performance) — 反模式的系统汇编与检查项
+- [cppreference（各设施语义与复杂度）](https://en.cppreference.com/w/) — 确认 `push_back`/`regex`/`endl` 的代价
+- [Agner Fog — Microarchitecture](https://www.agner.org/optimize/) — 为什么间接调用/分支有成本
+- [What Every Programmer Should Know About Memory（Drepper）](https://www.akkadia.org/drepper/cpumemory.pdf) — false sharing 与缓存反模式
+- [Chandler Carruth — CppCon 性能演讲（社区共识来源）](https://github.com/CppCon/CppCon2014) — `endl`/`std::function` 等反模式的量化讲解
+
 ## 附录: 反模式代价速查与修复
 
 > 【性能】下表为本机实测量级（非通用结论，绝对毫秒随机器而变），标 `[实验·本机实测][UNVERIFIED]`；只看纵向加速比。

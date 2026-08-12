@@ -756,6 +756,36 @@ ccache g++ -std=c++23 -O2 -flto -c app.cpp -o app.o
 - `[标准]`：上述除 `-O*`/`-g`/`-flto` 等均为实现扩展；C++ 标准只固定 `NDEBUG` 对 `assert` 的影响。
 - `[经验]`：记住一句话——**Debug 求可观测，Release 求快且硬，测试求抓虫，发布求可重现可审计**。四套配置分开管，绝不混用逻辑。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：构建配置的来龙去脉
+[史] `__cplusplus` 宏由 C++ 标准规定，随每次标准修订递增（199711L→201103L→201703L→202002L→202302L），是"代码感知标准版本"的官方锚点。[史] SD-6（WG21 的 SG10"Feature Test Recommendations"）以 N3694 起步、后由 P0096 维护，统一了"某个特性是否存在"的宏约定；`__has_include` 由 N4432 提出并进入 C++17。[史] 编译器预定义宏（`_MSC_VER`、`__GNUC__`、`__clang__`）则来自各厂商，用于区分工具链。[评] 主线：标准只定义 `__cplusplus` 与特性测试宏，具体 `-O*`/`-g`/LTO/PGO 等优化开关全部是编译器实现扩展，标准不约束。
+
+### ㉒.2 真实工程坐标：构建配置活在哪些产品/项目里
+- feature-test 宏：Boost（Boost.Config）、Abseil、fmt 等库用 `__cplusplus` 与特性宏做"按标准版本分支"。
+- SD-6 / P0096 列表：CMake `CheckCXXCompilerFlag`、各库 `config.hpp` 直接对标其宏清单。
+- `__has_include`：现代库用它"探测可选依赖"（如是否有 `<span>`、是否有某个系统头），做到优雅降级。
+- predef（Boost.Predef / Predef 项目）：跨平台统一预定义宏，被大量库用于识别 OS/编译器/架构。
+[评] 构建配置不是孤立刻在 IDE 里，而是靠"标准宏 + 厂商宏"让代码自身可自描述。
+
+### ㉒.3 生产踩坑：构建配置的常见误用与陷阱
+- 只判 `__cplusplus` 不判编译器：GCC/Clang/MSVC 对同版本标准的实现度不同，光看宏会误用"标准说有但编译器没实现"的特性。
+- `-O3` 反优化：某些热点因向量化展开撑爆指令缓存，实测比 `-O2` 慢，却迷信级别越高越好。
+- 忘记 `-DNDEBUG`：Release 漏关断言，生产环境仍在跑 assert 判断，既慢又暴露内部信息。
+- 可重现构建漏 `-ffile-prefix-map`：绝对路径写进二进制，CI 与本地字节不一致，无法验证同源。
+
+### ㉒.4 与标准的互动：构建配置与 C++ 标准的演进
+[史] `__cplusplus` 与 `<version>` 头（C++20，P0754R2）是标准正文规定的版本/特性披露机制；SD-6 特性测试建议（N3694/P0096）由 SG10 维护，是"标准与实现之间"的桥梁文档；`__has_include`（N4432→C++17）让代码可探测头存在性。[评] 与标准的互动最紧密：构建配置的核心"能不能用某特性"几乎全部由这些标准宏回答，而非编译器私有开关。
+
+### ㉒.5 权威引用
+- https://en.cppreference.com/w/cpp/feature_test ：cppreference 特性测试宏页，证明 `__cplusplus` 与 `<version>` 标准机制。
+- https://wg21.link/p0096 ：SD-6 特性测试建议（P0096R2），证明 SG10 维护的宏清单。
+- https://wg21.link/n4432 ：N4432 提案，证明 `__has_include` 进入 C++17 的来龙去脉。
+- https://predef.sourceforge.net/ ：Predef 项目，证明跨编译器/OS/架构的预定义宏坐标。
+- https://en.cppreference.com/w/cpp/preprocessor/include ：cppreference 的 `__has_include` 页，证明文件存在性探测标准宏。
+
 ## 附录: CMake 构建配置实战
 
 ```cpp

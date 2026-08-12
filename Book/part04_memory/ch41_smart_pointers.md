@@ -1582,6 +1582,41 @@ int main() {
 8. **`owner_less`** 按所有权（控制块）比较，不按指针值（KP20）。
 
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：智能指针的来龙去脉
+
+[史] 裸指针管理资源的问题从 C++ 诞生第一天就存在；最早的「智能指针」是 1990 年代 **Boost 的 `boost::shared_ptr`（由 Greg Colvin 设计思想、后由 Peter Dimov 等人重写）**，它在 2001 年前后成熟，并被 **C++11（2011）直接采纳为标准 `std::shared_ptr`**——这是 Boost 影响标准最成功的案例之一。`std::unique_ptr` 则源自 Boost.Move 与 `scoped_ptr` 的演进，C++11 用移动语义把它升级为可移动、零开销的唯一所有权指针（第 ② 节）。[轶] `std::weak_ptr`（第 ⑭ 节）是 `shared_ptr` 的伴生设计，专门解决循环引用，这个「用弱引用打破环」的模式在 1990 年代的垃圾回收与窗口系统里已有先例。[史] **C++20 的 P0674** 让 `make_shared` 支持数组（`make_shared<T[]>`），补上 `shared_ptr<T[]>` 长期「有类型却没法 make」的尴尬（第 ⑨ 节）。
+
+### ㉒.2 真实工程坐标：智能指针活在哪些项目里
+
+- **几乎一切现代 C++ 项目**：Chromium 的 `base::WrapUnique`/`scoped_refptr`、LLVM 的 `llvm::IntrusiveRefCntPtr`、Abseil 的 `absl::WrapUnique` 都以 `std::unique_ptr`/`shared_ptr` 为基类；大型代码库里裸 `new` 几乎被禁用，靠智能指针统一生命周期。
+- **LLVM / Clang**：核心 IR 对象用侵入式引用计数（`IntrusiveRefCntPtr`）而非 `shared_ptr`，因为 AST 节点数量以千万计，`shared_ptr` 控制块的额外分配不可接受——这正是第 ⑨ 节「`make_shared` 一次分配优势」的反面教材（某些场景连一次分配都要省）。
+- **游戏引擎（Unreal）**：用 `TSharedPtr`/`TWeakObjectPtr` 等自研 UObject 引用系统（配合垃圾回收），而非标准 `shared_ptr`，因为要跟编辑器/反射/序列化深度集成——标准智能指针无法承载这些。
+- **数据库/网络服务**：RocksDB、Envoy 等大量用 `unique_ptr` 管理连接、缓冲区、任务对象，用 `shared_ptr` 在多线程间共享配置与连接池，`weak_ptr` 做缓存项的「可失效句柄」。
+
+### ㉒.3 生产踩坑：智能指针的常见误用
+
+- **循环引用导致内存泄漏**：第 ⑬/⑭ 节经典案例，两个对象互相 `shared_ptr` 持有，引用计数永不为 0；必须用 `weak_ptr` 打破环，否则内存只涨不跌。
+- **`enable_shared_from_this` 误用**：第 ⑮ 节指出，必须在对象已存在 `shared_ptr` 拥有时才调用 `shared_from_this()`；在栈对象或构造期（尚无 `shared_ptr` 接管）调用会抛 `bad_weak_ptr` 或 UB。
+- **`new + shared_ptr` 两次分配**：第 ⑩ 节强调 `std::shared_ptr<T>(new T)` 会分别分配对象与控制块，而 `make_shared` 一次分配更省更快且异常安全；遗留代码常见这个低效写法。
+- **多线程下误以为 `shared_ptr` 自身完全线程安全**：第 ⑪ 节澄清，引用计数原子（线程安全析构）≠ 所指对象线程安全；多个线程各自持有 `shared_ptr` 拷贝去改同一对象，仍需额外同步，否则数据竞争。
+- **`unique_ptr` 用 `release()` 后又忘删**：第 ⑤ 节，`.release()` 主动放弃所有权返回裸指针，若收指针的一方忘了释放即泄漏——`release()` 应只在「转移所有权给别的 RAII 类型」时用。
+
+### ㉒.4 与标准的互动：智能指针与 WG21 演进
+
+[史] C++11 把 `unique_ptr`/`shared_ptr`/`weak_ptr`/`make_shared` 纳入标准；**C++17 的 `std::shared_ptr` 数组支持（P0414 一脉）与 `std::weak_from_this`** 逐步补齐；**C++20 的 P0674** 让 `make_shared` 支持数组（第 ⑨ 节）。[史] **C++20 的 `std::atomic<shared_ptr>`（第 ⑫ 节）** 来自 WG21 把原子智能指针标准化的努力，使「无锁替换共享指针」成为一等公民，此前需自己加锁。而第 ⑥ 节的 **EBO（空基类优化）** 让 `unique_ptr` 的删除器为零开销——这是标准库与对象模型（ch45/ch52）协同的范例。[评] WG21 方向是把 `shared_ptr` 进一步 constexpr 化（C++26 探索），并让 `make_shared_for_overwrite` 等更安全的构造成为默认推荐；同时明确「`unique_ptr` 应覆盖绝大多数所有权场景，`shared_ptr` 仅在确需共享时才用」的社区共识。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::unique_ptr](https://en.cppreference.com/w/cpp/memory/unique_ptr) — 零开销唯一所有权
+- [cppreference: std::shared_ptr / std::make_shared](https://en.cppreference.com/w/cpp/memory/shared_ptr/make_shared) — 共享所有权与数组支持（C++20）
+- [cppreference: std::weak_ptr](https://en.cppreference.com/w/cpp/memory/weak_ptr) — 打破循环引用
+- [WG21 P0674R1 — Extending make_shared to Support Arrays](https://wg21.link/P0674) — `make_shared<T[]>`（C++20）
+- [cppreference: std::atomic<shared_ptr>](https://en.cppreference.com/w/cpp/memory/shared_ptr/atomic) — 原子共享指针（C++20）
+
 ## 附录 A：工业智能指针使用 [F: Industry / B: Principle]
 
 ```text

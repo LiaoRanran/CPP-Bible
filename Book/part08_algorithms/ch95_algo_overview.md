@@ -890,6 +890,39 @@ int quickcheck() {
 
 - `[实现·GCC15.3.0]`：A 组证明 `std::for_each` 与手写 `range-for` **几乎同速**（差值在测量噪声内）→ 零开销抽象属实。B 组 `count_if` 略慢于手写，源于谓词封装/迭代器抽象的微小常数；C 组 `lower_bound`（O(log n)）相对线性扫描快 **约 7 个数量级**，印证"先利用有序性"的选型原则（第⑬/⑭节）。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：算法库的统一抽象
+
+[史] 标准算法库的「迭代器中枢」设计来自 **Stepanov 的 STL（1994 纳入 C++98）**：容器、算法、迭代器三件套使「同一算法作用于不同容器」成为现实。其中**迭代器分类（input/forward/bidirectional/random_access/contiguous）**是算法能「按能力选择最优实现」的关键——`std::advance` 对 random_access 是 O(1)、对 forward 退化为 O(n)。[史] **Musser 的 introsort（1997）** 定义了 `std::sort` 的现代形态。[轶] 早期 C++ 没有算法库时，程序员手写循环隐患极多；STL 用「把循环抽象成 `for_each`/`transform`」第一次让遍历可复用、可优化。[评] 算法总览（本章）的价值在于：它告诉你「有哪些可复用的标准件、各自复杂度」，避免每次都重写且重写错。
+
+### ㉒.2 真实工程坐标：算法库活在哪些产品里
+
+- **Chromium / V8**：用 `std::sort`/`std::unique`/`std::copy` 处理 DOM 列表、属性表、字节流；其 `base::` 工具大量围绕标准算法封装。
+- **LLVM**：用 `std::sort`/`std::stable_sort` 给指令、基本块排序，用 `std::lower_bound` 二分查表；`llvm::sort` 还强制传入严格弱序比较器以规避 UB。
+- **游戏引擎**：Unreal 的 `TArray::Sort` 底层即 introsort 思路，粒子/动画系统批量遍历靠 `std::for_each`/并行策略。
+- **数据库与存储（LevelDB/RocksDB）**：`std::lower_bound`/`std::upper_bound` 在 SSTable 的 `std::vector` 块内二分，是 LSM 读路径的基石。
+
+### ㉒.3 生产踩坑：算法总览里的常见误用
+
+- **该用有序查找却用线性**：数据本来就排序（`std::set`/`std::map`/已排序 `vector`）时仍 `std::find`，O(n) 拖垮热路径；应改 `std::lower_bound`/`std::map::find`。
+- **比较器破坏严格弱序**：传给 `std::sort`/`std::stable_sort` 的比较器若不对称或自反（如用 `<=`、或在浮点含 NaN 时返回不一致），属**未定义行为**，可能崩溃或排错。
+- **误用 `std::remove` 的「删除不擦除」语义**：`std::remove`/`remove_if` 只把元素前移并返回新逻辑尾，必须配合 `erase` 才是真删除（erase-remove 惯用法）；漏掉 `erase` 是高频新手坑。
+- **并行算法未链接 TBB**：C++17 `std::execution::par` 在多数实现上需链接 Intel TBB（如 libstdc++），否则回落串行甚至编译/链接失败——别以为写了 `par` 就自动并行。
+
+### ㉒.4 与标准的互动：算法库与 C++ 标准的演进
+
+[史] 算法随 **C++98（STL）** 落地；**C++11** 引入 `std::move` 相关的移动感知算法、`std::is_sorted` 等；**C++17** 引入**执行策略并行算法**（P0024R2，`std::execution::par/unseq`）与 `std::clamp`/`std::sample`；**C++20** 用 **Ranges（P0896）** 把大部分算法重做成约束版 `std::ranges::*`；**C++23** 继续补 `std::shift`、`std::ranges::fold_*` 等。算法库演进的主线就是「更清晰的约束 + 更优的并行/向量化 + 更安全的接口」。
+
+### ㉒.5 权威引用
+
+- [cppreference: 标准库算法总览](https://en.cppreference.com/w/cpp/algorithm) — 算法分类、复杂度与引入版本（含并行、Ranges 版）。
+- [WG21 P0024R2 — 并行算法执行策略（合入 C++17）](https://wg21.link/p0024) — `std::execution::par` 的核心提案。
+- [WG21 P0896R4 — Merging the Ranges TS into C++（C++20）](https://wg21.link/p0896) — 算法重构为约束版 Ranges 的提案。
+- [Stepanov 关于 STL 与泛型算法设计的原始论文集](https://www.stepanovpapers.com/) — 迭代器/算法解耦思想的权威出处。
+
 ## 附录 A：工业实现对比 [F: Industry / D: stdlib]
 
 STL 算法在不同标准库实现中的差异：

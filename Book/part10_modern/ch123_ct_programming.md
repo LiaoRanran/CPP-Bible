@@ -880,6 +880,43 @@ int main() {
 
 > ⟶ 本章交叉引用：`Book/part10_modern/ch115_move.md`、`Book/part10_modern/ch116_perfect_forwarding.md`、`Book/part10_modern/ch118_modules.md`、`Book/part10_modern/ch119_ranges_deep.md`、`Book/part10_modern/ch122_pmr.md`；模板基础见 `Book/part06_templates/ch60_template_basics.md`；类型特性见 `Book/part06_templates/ch65_type_traits.md`；Concepts 见 `Book/part06_templates/ch67_concepts.md`；CRTP 静态多态见 `Book/part05_oo/ch51_crtp.md`。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节是 P0-15「全库工业/标准深度升维」大波次的一部分：把抽象的语言机制放回它真正的来处——谁、在哪一年、为了解决什么产业痛点而提出；并在真实代码库与标准演进之间建立可验证的坐标。
+
+### ㉒.1 历史纵深：从模板泛型到编译期求值
+
+- `[史]` 模板（template）受 Ada/ML 泛型与 Stepanov 泛型编程思想影响，随 C++98 引入，奠定了「在编译期生成代码」的传统；`constexpr` 由 **N2235（Gabriel Dos Reis 与 Bjarne Stroustrup 等）** 引入 **C++11**，最初只能包一个 `return` 表达式。
+- `[史]` `constexpr` 在 C++14 放宽（允许局部变量与循环）、C++17 进一步放开；`consteval`（立即函数）与 `constinit` 在 **C++23** 补齐「强制编译期求值」语义。**Concepts** 源自 Stroustrup 早年的「约束」构想，经 Concepts TS 演化到 **P0734**，最终成为 **C++20** 的一等公民。
+- `[轶]` 模板元编程（TMP）早期是「用类型系统当图灵机」的黑客艺术（见 Boost.Mpl），`constexpr` 的出现让大量 TMP 能用「正常函数」重写——社区戏称这是「元编程从黑魔法回归凡人」。
+
+### ㉒.2 真实产业坐标：编译期能算的，绝不拖到运行期
+
+- 编译期字符串哈希与「字符串 switch」、单位/量纲库（如 `std::chrono` 风格扩展）、定点数、编译期校验的协议/ schema、序列化代码生成。
+- 游戏引擎的实体配置、量化金融的交易日历、路由表的编译期展开，都用 `constexpr` / `consteval` 把校验与计算前移，换取零运行时成本。
+- Boost.Hana、Boost.Mp11 是「现代编译期编程」的两大工业级范式代表（值语义 vs 类型语义）。
+
+### ㉒.3 生产踩坑：编译期与运行期的边界陷阱
+
+- **`if constexpr` 只能在模板里用**（C++23 前）；想在普通函数里「强制编译期分支」要用 `if consteval` / `consteval` 函数。
+- **`consteval` 函数不能接受运行期参数**：一旦传入运行期值就编译失败——它本质是「立即函数」，不是「可能 constexpr」。
+- **`static_assert` 必须依赖待决（dependent）表达式**才能推迟到实例化时报错，否则在无关模板上也会触发。
+- **`constexpr` 容器演进**：`std::vector` 直到 C++20 才能用于常量求值、C++23 才支持析构，老标准里编译期数据结构只能用 `std::array` / 聚合，易踩可用性坑。
+- **编译时间爆炸**：重模板 + 深度 `constexpr` 递归会显著拉长编译，需靠 Concepts 缩短错误信息和 `constexpr` 展开控制规模。
+
+### ㉒.4 与 C++ 标准的互动
+
+- `[评]` 编译期编程的演进主线是「从模板黑魔法 → constexpr 白魔法 → Concepts 约束」，目标是把能力还给普通函数与清晰的错误信息。
+- C++11 `constexpr` → C++14/17 放宽 → C++20 **Concepts（P0734）** + 大量 `constexpr` 算法 + `std::span` → C++23 `consteval` / `constinit` / `if consteval` / `std::expected` 的 constexpr 化；C++26 继续把 `variant`、`optional` 等纳入常量求值。
+- `[评]` 标准张力在于「又要编译期强大，又要编译别太慢、报错要可读」——Concepts 正是为解「报错可读性」而生。
+
+### ㉒.5 权威参考（建议延伸阅读）
+
+- `constexpr` 规范：<https://en.cppreference.com/w/cpp/language/constexpr>
+- 立即函数 `consteval`：<https://en.cppreference.com/w/cpp/language/consteval>
+- Concepts 约束（P0734 落地）：<https://en.cppreference.com/w/cpp/language/constraints>
+- C++20 Concepts 提案（P0734）：<https://wg21.link/p0734>
+
 ## 附录：练习题 / 思考题 / 源码阅读建议
 
 **练习题**

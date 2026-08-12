@@ -830,6 +830,12 @@ MS STL 的源头不在微软自研，而在 **P.J. Plauger 的 Dinkumware STL**�
 
 `_MSC_VER` 是 MS STL 的「版本脊椎」：它绑死 MSVC 工具集（如 193x = VS2022 17.x），并决定 `msvcp140.dll`/`vcruntime140.dll` 的变体（见 ⑫）。与 libstdc++ 的 `GLIBCXX_*` 符号版本、libc++ 的 `_LIBCPP_VERSION` 一样，`_MSC_VER` 是「同一份 `std::string` 在不同版本下布局可能不同」的实证开关。
 
+
+### ㉒.5 权威引用
+- [Microsoft STL GitHub](https://github.com/microsoft/STL)：MSVC 标准库开源仓库（2019 起）。
+- [MSVC C++ 团队博客](https://devblogs.microsoft.com/cppblog/)：ABI / 特性实现笔记。
+- [Microsoft Learn · C++ 标准库参考](https://learn.microsoft.com/en-us/cpp/standard-library/cpp-standard-library-reference)：官方文档。
+- [WG21 提案库](https://wg21.link/)：MSSTL 跟踪的提案短链。
 ## ㉓ 与 C++ 标准的互动：MS STL 的「追标准快跑」
 
 开源后的 MS STL 以「激进标准符合度」为旗号。其节奏由 `stl/inc/yvals.h` 的 `_HAS_CXX17/_HAS_CXX20/_HAS_CXX23` 宏驱动（见 ④/⑨/⑭），而这些宏又由 `/std:c++14|17|20|latest` 隐式置位。代表性落地：

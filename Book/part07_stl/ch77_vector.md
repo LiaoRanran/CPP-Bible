@@ -466,6 +466,33 @@ int main() {
 - `[标准]`：`std::vector` 对标 Rust `Vec<T>`、Java `ArrayList`、Go `slice`、C# `List<T>`，均为"连续、可增长、随机访问 O(1)"语义。
 - `[经验]`：扩容倍数各语言不同（1.5×/2×），本质是"峰值内存 vs 扩容次数"的权衡；工业批量写入一律先 `reserve`。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：vector 与「连续存储」的胜利
+
+[史] `std::vector` 随 C++98 进入标准，其设计直接继承自 Stepanov 在 HP/SGI 的 STL，内核思想与 C 数组一脉相承：元素连续存储、可用指针算术随机访问。[史] 2000 年前后，标准委员会曾就「是否需要 `std::vector` 之外的动态数组」争论，最终保留它与 `std::deque` / `std::list` 的分工。[轶] 一个经典工程轶事是扩容因子之争：微软 STL 早期采用 2 倍扩容，而 GCC/libstdc++ 采用约 1.5 倍（接近黄金比例），原因是 1.5 倍能让旧内存块更快被整体复用、减少碎片。[评] 连续存储带来的缓存局部性是 `vector` 在绝大多数场景下击败 `list` / `deque` 的根本原因，也是它成为「默认容器」的历史正当性。
+
+### ㉒.2 真实工程坐标：vector 活在哪些产品里
+
+`std::vector` 几乎存在于所有 C++ 二进制中：Chromium 用 `std::vector<uint8_t>` 做网络包缓冲；LLVM 用 `SmallVector`（栈缓冲变体）承载绝大多数中小集合；游戏引擎的渲染命令队列、粒子系统用 `vector` 管理批量数据；高频交易系统的行情快照常以 `vector<double>` 做零拷贝批量计算。它也是 `std::string`（`basic_string`）与多数标准算法的默认后端。
+
+### ㉒.3 生产踩坑：vector 的常见误用与陷阱
+
+[评] 最典型的是「扩容导致的迭代器/指针/引用失效」：在循环里反复 `push_back` 却保存了指向元素的指针，扩容后全部悬空。其次是「未预分配」放大摊还成本——已知规模时不用 `reserve`，会在百万级插入中出现数十次整体搬迁。还有「`erase` + `remove` 惯用法」用错导致残留元素；以及 `vector<bool>` 特化并非真正的容器（返回代理引用），在需要真实 `bool&` 或跨 ABI 传递时踩坑。
+
+### ㉒.4 与标准的互动：vector 与 C++ 标准的演进
+
+[史] `vector` 自 C++98 起即稳定存在，C++11 引入移动构造与 `emplace_back`，使返回 `vector` 变为廉价（在 NRVO 之外再添移动语义）。C++17 增加 `pmr::vector`（多态分配器）与 `append_range` 等接口；C++20 起 `vector<bool>` 等逐步纳入 `constexpr`。标准委员会的长期立场是「不破坏连续布局」，因此 `vector` 的 ABI 相对稳固，仅 `vector<bool>` 特化因历史包袱被多次讨论是否弃用（目前维持）。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::vector](https://en.cppreference.com/w/cpp/container/vector) — 连续存储与扩容语义的权威定义
+- [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 查证 vector 后续修订（移动语义、pmr 等）的一手来源
+- [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 与 SmallVector 的工业实现参考
+- [ISO C++ 官网](https://isocpp.org/) — 标准新闻与演化说明
+
 ## 附录：练习题 / 思考题 / 源码阅读建议
 
 **练习题**

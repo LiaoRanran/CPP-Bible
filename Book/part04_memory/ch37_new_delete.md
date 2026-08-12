@@ -1846,6 +1846,40 @@ int main() {
 面试: new vs malloc? new=类感知(调构造函数)+类型安全+可重载; malloc=纯内存+返回void*
        placement new用途? 在已有内存上构造对象(内存池/嵌入式/shared_ptr控制块)
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：`new`/`delete` 与 `operator new` 的分离
+
+[史] C++ 在 1985 年诞生时即把 **`new` 表达式**设计为「分配 + 构造」两步，但 Bjarne Stroustrup 刻意把「分配」解耦成可被用户替换的 **`operator new`** 函数——这一设计来自 Simula 67（1967）的对象创建哲学，但 Simula 不允许替换内存后端，C++ 允许。这正是第 ② 节「`new` 表达式 ≠ `operator new`」反直觉分离的源头。[史] 1998 年 C++98 标准化时，把 `operator new`/`delete` 放进 `<new>`，并明确「可替换（replaceable）」全局函数族；**2003 年 C++03 的缺陷报告**澄清了数组 `new[]`/`delete[]` 的 cookie 机制（第 ⑨ 节），而 **C++11（2011）** 引入 `std::align_val_t` 之前的前置讨论，到 **P0035（C++17）** 才正式解决「过对齐类型的 `new` 找不到正确后端」的几十年老问题。[轶] 一个少有人知的史实：早期 C++ 的 `new` 失败默认返回 `nullptr` 还是抛异常，曾在 AT&T 内部有过长争论，最终 C++ 选了抛 `std::bad_alloc`，而 C 的 `malloc` 永远返回空——这是 C/C++ 错误处理哲学分歧的缩影（见 ⑭ 节 `nothrow` 版本作为妥协）。
+
+### ㉒.2 真实工程坐标：`new`/`delete` 活在哪些项目里
+
+- **标准库与容器**：`std::vector`/`std::string` 扩容、`std::shared_ptr` 控制块（ch41）、`std::pmr`（ch38）最终都调到 `::operator new`；libstdc++/libc++/MS STL 各自实现了「new 默认落到 `malloc`」（第 ④ 节）的具体桥接。
+- **Chromium / Blink**：拥有自研的 **PartitionAlloc**，通过替换全局 `operator new`（特定构建）为不同安全域隔离内存，是浏览器对抗 UAF/堆喷射的核心手段之一。
+- **游戏引擎（Unreal/Unity）**：在生产构建里普遍替换 `operator new` 为引擎内存池（见 ch44），以便做追踪、内存统计与确定性的帧回收——因为默认 `new` 在每秒数万次分配下太慢、太不可控。
+- **嵌入式/HFT**：关闭异常 + 替换 `operator new` 为静态池或返回 `nullptr` 的 `nothrow` 后端，换取确定性延迟（第 ⑦ 节 `std::nothrow` 在此处是刚需而非风格偏好）。
+
+### ㉒.3 生产踩坑：`new`/`delete` 的常见误用
+
+- **`new`/`delete` 与 `new[]`/`delete[]` 混用**：第 ⑨ 节解释数组 `new` 头带长度 cookie，用 `delete`（而非 `delete[]`）释放数组会读错 cookie，行为未定义，常见于把 `T*` 在库边界传来传去后误释放——症状多为随机崩溃或堆损坏（heap corruption）。
+- **疏忽异常安全导致内存泄漏**：`f(new T1, new T2)` 在 `new T2` 抛异常时，`T1` 已分配却无 `delete`，泄漏（见 ch39 的 RAII 解法）；这也是 `std::make_unique`/`make_shared` 被强力推荐的根因。
+- **在错误的 CRT 侧释放**：第 ⑭ 节之外的经典坑——Windows 上 `new` 与 `delete` 必须配对同一份运行时；跨 DLL 边界传递裸 `T*` 并用另一侧的 `delete` 释放，因各自 `operator new` 实现不同直接崩（debug/ release 不一致尤其隐蔽）。
+- **`operator new` 重载却忘了重载对应 `delete`**：第 ⑪/⑭ 节指出，只重载 `new` 不重载匹配的 `operator delete`（含带 `align_val_t` 的版本），在构造抛异常时标准无法回退释放，导致内存泄漏且难排查。
+
+### ㉒.4 与标准的互动：`new`/`delete` 的演进
+
+[史] C++98 确立了可替换的 `operator new`/`delete` 签名族；**C++11 加入 `std::align_val_t` 的提案草案**最终由 **P0035（C++17）** 落地，让过对齐类型（如 `alignas(64)` 的 SIMD 结构）能被正确动态分配，否则对齐被悄悄丢弃。[史] **C++20 的 P0722（destroying delete）** 引入 `std::destroying_delete_t`，允许类在 `operator delete` 里同时做析构与释放（如变长类 `std::vector` 式自管理），避免「先析构再释放」对带尺寸的自定义布局的多余开销（第 ⑭ 节）。[评] WG21 的方向是保留默认 `new` 的简单语义，同时用 `std::pmr` + 作用域分配器（ch38）把「换后端」从「替换全局函数、污染整个程序」变成可组合的局部选择——这对大型多团队代码库是质的改善。
+
+### ㉒.5 权威引用
+
+- [cppreference: operator new, operator new[]](https://en.cppreference.com/w/cpp/memory/new/operator_new) — 完整签名族、可替换语义与 class-specific 重载
+- [WG21 P0035R4 — Dynamic memory allocation for over-aligned data](https://wg21.link/P0035) — 过对齐动态分配（C++17）
+- [WG21 P0722R3 — Efficient sized delete for variable sized classes](https://wg21.link/P0722) — `std::destroying_delete_t`（C++20）
+- [cppreference: std::launder](https://en.cppreference.com/w/cpp/utility/launder) — placement new 后取指针（C++17，与第 ⑬ 节配合）
+- [WG21 P0137R1 — Replacement of class objects / implicit object creation](https://wg21.link/P0137) — 隐式对象创建与 `std::launder` 的底层规则
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。

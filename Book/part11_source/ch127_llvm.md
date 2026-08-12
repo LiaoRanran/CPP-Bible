@@ -678,6 +678,12 @@ LLVM 的起点是 **2000 年 UIUC（伊利诺伊大学厄巴纳-香槟分校）*
 
 许可与治理是另一条主线。LLVM 早期用 **UIUC/NCSA** 许可；**2019 年 LLVM 基金会主导 relicense 为 Apache 2.0 + LLVM 例外**，统一了 LLVM、Clang、libc++、compiler-rt 等子项目的许可，使「LLVM 全家桶」在法律上彻底宽松化（与 libc++ 的 relicense 同源，见 第125章 ㉒）。**MLIR（2019，Multi-Level IR）** 由 Google 与 LLVM 社区推动，用可嵌套多层 IR 统一「高层 DSL → 高层优化 → 底层机器码」的 lowering，成为 TensorFlow/XLA、可重构硬件（CIRCT）的底座（见 0.4）。
 
+
+### ㉒.5 权威引用
+- [LLVM 官网](https://llvm.org/)：项目主页与文档入口。
+- [Clang 官网](https://clang.llvm.org/)：前端与驱动。
+- [LLVM GitHub 仓库](https://github.com/llvm/llvm-project)：单体仓库源码。
+- [LLVM 文档](https://llvm.org/docs/)：设计文档与内部表示（LLVM IR / 后端）。
 ## ㉓ 与 C++ 标准的互动：Clang 是标准的「先锋实现」
 
 Clang 对 C++ 标准的遵循度由 `clang/test/CXX/...` 下的 conformance 测试守护（见 ⑦），并以 **「最快跟进新特性」** 著称——因 AST/Sema 模块化好，概念检查、模块、`std::format` 后端支持往往先在 Clang 主线可用（见 ⑮）。它与 libstdc++/libc++ 的配合构成「实现三角」：Clang 既能在 Linux 上默认用 libstdc++，也能在 Apple/FreeBSD 上默认用 libc++（见 第125章 ⑭）。

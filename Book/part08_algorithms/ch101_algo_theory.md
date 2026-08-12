@@ -890,6 +890,39 @@ int main() { return 0; }
 - `[标准]`：本表为思想↔实现的映射速查；具体大 O 见 ⑭。
 - `[经验]`：选型先看"是否有序 / 是否需最短路 / 是否最优化 / key 是否简单"，再决定 STL 还是自写（见 ⑬、⑨）。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从 STL 算法到算法思想工程化
+
+[史] C++ 标准算法库的骨架来自 **Stepanov 与 Lee 的 STL（Standard Template Library，1994 年纳入 C++98 标准）**：把「数据结构（容器）」与「算法」用「迭代器（iterator）」解耦，是泛型编程的奠基之作。其算法设计又源自更早的 **Aho/Hopcroft/Ullman 与 Knuth 的算法经典**（排序、查找、图算法），以及 **David Musser 的 introsort（内省排序，1997）**——它把 quicksort、heapsort、insertion sort 三者在 `std::sort` 里巧妙组合，保证最坏 O(n log n)。[轶] Stepanov 曾讲：STL 的核心洞见是「算法不应关心容器，只关心迭代器概念」——这比面向对象「把方法绑在对象上」更利于组合。[评] 本章讲的「算法思想」（分治、贪心、双指针、滑动窗口、二分）不是学院玩具：它们被 Stepanov 直接编码进 `std::sort`/`std::lower_bound` 等，是标准库性能的根。
+
+### ㉒.2 真实工程坐标：算法思想活在哪些产品里
+
+- **Linux 内核 / SQLite**：二分查找（`std::lower_bound` 的思想）贯穿内核 `bsearch`、SQLite 的 B-tree 页定位；双指针/滑动窗口用于网络协议解析与缓冲区扫描。
+- **LLVM / Clang**：编译器前端的常量折叠、死代码消除、寄存器分配大量依赖图算法与贪心策略；指令选择里的动态规划（类似 LCS/编辑距离）是教科书算法思想的工业落地。
+- **游戏引擎（Unreal / Unity）**：空间分区（四叉树/八叉树，分治思想）、碰撞检测（扫描线/宽相窄相分层）、寻路（A*，Dijkstra 的加权扩展）处处是经典算法。
+- **金融/高频交易**：撮合引擎用有序容器 + 二分维护订单簿；风控用滑动窗口统计；延迟敏感路径对算法复杂度极其苛刻。
+
+### ㉒.3 生产踩坑：算法思想的常见误用
+
+- **在已排序区间误用线性查找**：明明数据有序，却用 `std::find`（O(n)）而非 `std::lower_bound`（O(log n)）——增长数据量后性能断崖，常见于配置检索、范围匹配。
+- **二分边界写错**：手写 `while (l <= r)` 的 `mid`、左右边界更新极易 off-by-one，导致死循环或漏解；优先用 `std::lower_bound`/`std::upper_bound` 等标准设施而非裸写。
+- **未定义行为式比较器**：传给 `std::sort` 的比较器若不是**严格弱序**（如 `>=` 而非 `<`，或比較包含 NaN 时返回非布尔/不一致结果），结果是**未定义行为**，可能崩或悄无声息排错。
+- **忽视缓存局部性**：理论上 O(n log n) 的算法若频繁随机访问大链表/跳表，常数因子可能比连续数组的 O(n²) 还慢——算法选型必须结合数据布局。
+
+### ㉒.4 与标准的互动：算法库与 C++ 标准的演进
+
+[史] STL 算法随 **C++98** 进入标准；**C++11** 引入 `std::move`、`std::is_sorted`、`std::all_of` 等并强化迭代器；**C++17** 增加**并行算法**（`std::execution::par` 执行策略，P0024R2）和 `std::clamp`、`std::sample`；**C++20** 用 **Ranges（P0896）** 重构算法为约束版；**C++23** 又补 `std::ranges::fold_*`、`std::shift`。算法库一直是标准「把经典算法思想工程化、零开销化」的主战场，与 WG21 的「性能可移植、约束清晰」方向完全一致。
+
+### ㉒.5 权威引用
+
+- [cppreference: 标准库算法总览](https://en.cppreference.com/w/cpp/algorithm) — 全部标准算法的分类、复杂度与版本，含并行与 Ranges 版。
+- [WG21 P0024R2 — 并行算法（Parallelism TS 合入 C++17）](https://wg21.link/p0024) — 引入 `std::execution` 执行策略的核心提案。
+- [WG21 P0896R4 — Merging the Ranges TS into C++](https://wg21.link/p0896) — C++20 把算法重构为约束版 Ranges 的提案。
+- [STL 设计者 Alex Stepanov 关于泛型编程与算法的经典论述（Steps Toward the Reinvention of Programming）](https://www.stepanovpapers.com/) — 算法与迭代器解耦思想的原始出处。
+
 ## 附录 A：算法在工业中的应用 [F: Industry / B: Principle]
 
 ```

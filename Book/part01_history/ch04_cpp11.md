@@ -461,6 +461,38 @@ std::unique_ptr<int[]> a(new int[3]);
 2. 用 C++11 lambda + `std::thread` 写并行 `std::accumulate`（ch93、ch99）。
 3. 阅读 libstdc++ `shared_ptr.h`，理解控制块与 `make_shared` 单次分配（ch48、ch124）。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：C++11 如何"还清 13 年技术债"
+
+[史] C++11（原 C++0x）2011 年 8 月 12 日由 ISO 批准，是 C++ 史上最大的一次修订，几乎重写语言与标准库。其种子是 **2002–2006 年间的关键提案**：右值引用/移动语义（Howard Hinnant 等，**N2118**，2006）、`auto`/`decltype`（N1984/N2343）、lambda（N2550）、`shared_ptr`/`weak_ptr`（源自 Boost，`std::tr1`）。[史] 移动语义（`T&&` + 规则五）是核心：它让"返回值优化不可达"的场景（如容器 `push_back` 大对象、`std::thread` 转移）从深拷贝变为廉价转移，直接催生 `std::move`、`std::unique_ptr`、`std::make_shared`。[轶] `auto` 与 `for(:)` 范围 for 最初被老派担忧"削弱类型可读性"，结果成了现代 C++ 最高频语法；而 `std::regex`、`std::thread` 等库在 C++11 初版质量参差，被戏称"标准库里最该被重写的几块"。[评] C++11 的真正遗产不是单个特性，而是确立了"默认移动、显式控制生存期、用类型系统表达所有权"的现代范式。
+
+### ㉒.2 真实工程坐标：C++11 活在哪
+
+- **基础设施底座**：LLVM/Clang 自 3.x 起以 C++11 为自身实现基线；Boost、Abseil、fmt 等现代库的最低要求多为 C++11/14。
+- **并发与系统软件**：`std::thread`/`std::atomic`/`std::future` 让跨平台多线程第一次有标准答案，被 Chromium、游戏引擎、交易系统广泛采用。
+- **嵌入式与受限环境**：移动语义使 `std::vector`/`std::string` 在传递大模型时零拷贝转移，适合内存受限场景。
+
+### ㉒.3 生产踩坑：C++11 常见误用
+
+- **移动后对象处于"有效但未指定状态"**：对同一对象重复 `std::move` 后再使用，或对 `const` 对象误用 move（退化成拷贝），是高频 bug；标准只保证 moved-from 对象可析构/赋值。
+- **`std::thread` 析构若仍 joinable 直接 `std::terminate`**：必须显式 `join()` 或 `detach()`（C++20 的 `jthread` 才自动 join），否则程序崩溃。
+- **lambda 默认按值/引用捕获的生命周期**：返回引用捕获的局部变量的 lambda，悬挂引用是经典 UB；应优先值捕获或 `std::shared_ptr` 延长生命周期。
+
+### ㉒.4 与标准的互动：从 N2118 到今天
+
+[史] 右值引用提案 **N2118（2006）** 是 C++11 的基石；最终以 N3337 草案提交 ISO。后续 C++14 补 `make_unique`、C++17 补 `std::string_view`、C++20 补 `std::jthread`，都是对 C++11 初版的"打补丁"——说明标准以增量方式消化一次大改革。[评] 今天回望，C++11 把"RAII + 值语义 + 移动"定为现代 C++ 的不可动摇基线；新项目用 C++17+ 即默认继承这套范式。
+
+### ㉒.5 权威引用
+
+- [C++11 标准草案 N3337](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf) — 权威文本。
+- [C++11 特性总览（cppreference）](https://en.cppreference.com/w/cpp/11) — 语言/库特性与编译器支持。
+- [右值引用提案 N2118](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2118.html) — 移动语义的原始提案。
+- [WG21 委员会主页](https://www.open-std.org/jtc1/sc22/wg21/) — 历次提案与会议。
+- [ISO C++ 当前状态](https://isocpp.org/std/status) — 标准版本节奏与进度。
+
 ## 附录: C++11 核心特性速查
 
 ```cpp

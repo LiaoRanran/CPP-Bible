@@ -888,6 +888,41 @@ void apply_variant(PolicyVariant<Ps...>& v) {
 
 > [标准] 全章汇编/符号证据均由 `g++ -std=c++23 -O2 -S -masm=intel` 与 `nm`（MinGW-w64 GCC 13.1.0, x86-64）真机生成，源码见 `Examples/_ch140_*.cpp` 与对应 `.asm`，未作任何编造。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节是 P0-15「全库工业/标准深度升维」大波次的一部分：把抽象的语言机制放回它真正的来处——谁、在哪一年、为了解决什么产业痛点而提出；并在真实代码库与标准演进之间建立可验证的坐标。
+
+### ㉒.1 历史纵深：把「设计维度」做成编译期参数
+
+- `[史]` **Policy-Based Design（基于策略的设计）** 由 **Andrei Alexandrescu** 在《Modern C++ Design》（2001，Addison-Wesley）系统提出：把类的一个「正交设计维度」封装成 policy 类，宿主类以模板参数接受多个 policy，编译期组合出指数级行为变化。
+- `[史]` 配套库 **Loki**（源自该书）用 typelist、policy、smart_ptr、visitor 等把这套思想落地；它本质上是「策略模式（Strategy）的编译期版本」。
+- `[轶]` 一个 host 类通过「多继承多个 policy」来组装能力，颠倒了通常的基类/派生关系——这被视为泛型编程对 OOP 的一次漂亮反击。
+
+### ㉒.2 真实产业坐标：标准库就在用 policy
+
+- **`std::vector` 的分配器（Allocator）**、**`std::unique_ptr` 的删除器（Deleter）** 都是 policy 思想的工程落地：把「内存来源 / 释放方式」作为可替换维度。
+- **Eigen** 用 policy 组合矩阵的表达式语义、存储布局、标量类型；**Boost** 多个库（SmartPtr、多 index 容器）采用 policy 做可定制行为。
+- Abseil、数值库、序列化框架常用 policy 让同一套代码适配多种后端。
+
+### ㉒.3 生产踩坑：组合爆炸与接口暗约
+
+- **组合爆炸**：N 个二选一 policy 产生 2^N 种类型，编译时间/二进制体积随之膨胀；非必要不要给每个维度都做 policy。
+- **policy 接口靠「鸭子类型」隐式约定**：没有显式接口声明，配错 policy 时模板报错冗长——C++20 Concepts 正是为此而生。
+- **死参数**：host 没用到的 policy 形同虚设，反而误导使用者；policy 默认值顺序要设计好，否则用户「填错位置」。
+- **多继承的歧义**：多个 policy 同名成员/类型会冲突，需要 `using`/显式限定化解。
+
+### ㉒.4 与 C++ 标准的互动
+
+- `[评]` C++20 Concepts 让 policy 从「隐性鸭子类型」变成「可约束契约」：`template<Policy P> class Host` 直接声明所需接口，错误提前到约束失败。
+- `if constexpr` 可在 policy 基础上做「编译期分支分发」，替代部分运行期策略选择；现代小场景甚至不必上完整 policy 机制。
+- `[评]` 标准演进把 policy 的「灵活」与「可读/可错」通过 concepts 拉回平衡——这是泛型库设计的分水岭。
+
+### ㉒.5 权威参考（建议延伸阅读）
+
+- Policy-Based Design /《Modern C++ Design》：<https://en.wikipedia.org/wiki/Policy-based_design>
+- Loki 库（Alexandrescu 配套实现，社区维护版）：<https://github.com/rpavlik/loki-lib>
+- `std::unique_ptr` 的删除器（policy 范例）：<https://en.cppreference.com/w/cpp/memory/unique_ptr>
+
 ## 附录 A：工业案例 —— Eigen 与 Boost 的 Policy 架构 [F: Industry]
 
 Eigen 是 Policy-Based Design 在数值线性代数领域的旗舰实现：

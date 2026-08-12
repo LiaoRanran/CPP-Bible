@@ -1025,6 +1025,42 @@ int main() {
 └───────────────────┴───────────────────────────────┘
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节是 P0-15「全库工业/标准深度升维」大波次的一部分：把抽象的语言机制放回它真正的来处——谁、在哪一年、为了解决什么产业痛点而提出；并在真实代码库与标准演进之间建立可验证的坐标。
+
+### ㉒.1 历史纵深：用组合搭出更大结构
+
+- `[史]` 结构型模式（Adapter、Bridge、Composite、Decorator、Facade、Flyweight、Proxy）出自 GoF 1994，主题是「如何让类与对象组合成更大、更灵活的结构」，而不改各部件自身。
+- `[史]` C++ 的「值语义 + 引用/指针 + 继承」天然适合这类模式：Adapter 封装不兼容接口，Bridge 分离抽象与实现，Composite 统一叶子与容器，Decorator 叠加职责，Proxy 控制访问。
+
+### ㉒.2 真实产业坐标：它们就在标准库里
+
+- **Adapter**：STL 迭代器适配器（`reverse_iterator`、`back_inserter`）即适配器；`std::bind` 适配可调用对象。
+- **Decorator**：C++ IO 流（`std::streambuf` 层层包裹）、Boost 的过滤流是装饰器；`std::stack`/`std::queue` 是容器适配器。
+- **Proxy**：`std::unique_ptr` / `std::shared_ptr` 本质是「拥有资源的代理」；`std::weak_ptr` 是弱引用代理。
+- **Composite**：UI 控件树、DOM、场景图（scene graph）都用组合模式统一叶子与容器节点。
+- **Flyweight**：字形/字体缓存、游戏瓦片共享，用共享对象省内存；**Facade**：大型库对外只暴露一个简洁入口类。
+
+### ㉒.3 生产踩坑：间接层是把双刃剑
+
+- **Bridge 的过度抽象**：把「可能永远不变的实现」也拆成两层，徒增间接与虚调用。
+- **Decorator 叠加后的类型/性能**：多层装饰引入多层虚调用与对象，热路径要警惕；C++ 可用 CRTP/模板在编译期叠加以避免运行时开销。
+- **Composite 违反接口隔离**：为统一处理而强迫叶子也实现容器接口，暴露不该有的 `add()`/`remove()`。
+- **Proxy 的生命周期**：代理对象必须比被代理对象活得久，否则悬空；资源型 Proxy（智能指针）需明确所有权语义。
+
+### ㉒.4 与 C++ 标准的互动
+
+- `[评]` 智能指针把 Proxy 标准化；类型擦除（`std::function`、`std::any`）把「运行期接口」做成库组件，是结构型模式在现代 C++ 的「收编」代表。
+- 移动语义让 Decorator/Proxy 传递资源零拷贝；`std::span` 是「零开销视图（轻量适配器）」的典范。
+- `[评]` 标准演进方向是用语言/库特性取代手写结构型样板，但 Bridge/Composite 这类「架构级」结构仍需人工设计。
+
+### ㉒.5 权威参考（建议延伸阅读）
+
+- 结构型模式总览：<https://en.wikipedia.org/wiki/Structural_pattern>
+- GoF 23 模式背景：<https://en.wikipedia.org/wiki/Design_Patterns>
+- 类型擦除代表 `std::function`：<https://en.cppreference.com/w/cpp/utility/functional/function>
+
 ## 附录: 结构型模式 C++ 实现
 
 ```cpp

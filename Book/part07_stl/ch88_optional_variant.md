@@ -526,6 +526,33 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 f
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 for ch88_optional_variant."<<std::endl;return 0;}
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：optional / variant 与「可空与可辨别联合」
+
+[史] `std::optional`（C++17）与 `std::variant`（C++17）分别源自 Boost.Optional 与 Boost.Variant，经 Library Fundamentals TS 后并入标准；variant 的核心提案是 Axel Naumann 的 P0088（"Variant: a type-safe union for C++17"）。[史] 它们的动机是消除两类历史糟粕：用 `nullptr` / 哨兵值表达「可能无值」（易漏判），以及用 C 风格 `union` + 手工 tag 表达「多类型但类型安全缺失」。[轶] 一个有趣事实：`optional` 的 `bool` 转换来自「显式 `operator bool`」设计，正是为了避免 `if (o)` 与整数误用；而 `variant` 的 `valueless_by_exception` 状态是为应对异常安全而保留的「第三种状态」。[评] 这两个类型是 C++17「nullable/sum type 现代化」的基石，让返回类型显式表达「有/无」与「多选一」。
+
+### ㉒.2 真实工程坐标：optional/variant 活在哪些产品里
+
+解析器与配置读取（字段可能缺失用 `optional`）、错误通道（`std::expected` 的近亲）、状态机（用 `variant` 表达「当前处于哪种状态」）是主场：Clang 的 AST 大量用 `Optional`；游戏/编辑器用 `variant` 表达「消息体可能是多种类型」；网络协议解码用 `optional` 表达「可选字段」。它们也服务于「visitor 模式」——`std::visit` 把「对多类型分发」从易错的 `if/else` 变成编译期穷尽检查。
+
+### ㉒.3 生产踩坑：optional/variant 的常见误用与陷阱
+
+[评] `optional` 最大坑是「用 `*` / `->` 前未检查 `has_value()`」——空 optional 解引用是 UB（对 `value()` 则抛 `bad_optional_access`）。另一坑是「把 `optional<T&>` 当引用容器」——标准没有 `optional<T&>`，需要时用 `T*` 或 `optional<reference_wrapper>`。`variant` 的坑则是「`get` 错类型抛 `bad_variant_access`」与「`valueless_by_exception`」——异常发生在构造某 alternative 时会使 variant 进入该状态；以及 `std::visit` 的编译期组合爆炸（类型多时模板实例激增）。
+
+### ㉒.4 与标准的互动：optional/variant 与标准的演进
+
+[史] `optional` 与 `variant` 经 Library Fundamentals V1 TS（P0220R1）并入 C++17，是「先出 TS、再进标准」流程的典型。[评] 此后标准持续扩展这一族：C++23 为 `optional` / `variant` 增加 monadic 操作（`and_then` / `transform` / `or_else`），让链式处理更函数式；C++23 还引入 `std::expected`（携带错误通道的值），与 `optional` 形成互补。WG21 的方向明确是「用 sum type 与可空类型取代裸哨兵值，把更多错误从运行期推到编译期」。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::optional](https://en.cppreference.com/w/cpp/utility/optional) — 可空值的类型安全表达的权威定义
+- [cppreference: std::variant](https://en.cppreference.com/w/cpp/utility/variant) — 类型安全联合与 visit 的权威定义
+- [WG21 P0088R3 — Variant: a type-safe union for C++17](https://wg21.link/p0088) — variant 进入 C++17 的核心提案（Axel Naumann）
+- [WG21 P0220R1 — Adopt Library Fundamentals V1 TS Components for C++17](https://wg21.link/p0220) — optional/variant 经此并入 C++17
+
 ## 附录 A：WG21 —— optional/variant 的标准化之路 [B: Principle]
 
 optional 和 variant 是 C++17 从 Boost 引入的两个最重要的类型安全容器:

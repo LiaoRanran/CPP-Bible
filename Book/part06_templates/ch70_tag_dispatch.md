@@ -603,6 +603,33 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 | [第65章](Book/part06_templates/ch65_type_traits.md) | 向量化计算/图像处理 | 本章提供概念，第65章提供实现 |
 | [第95章](Book/part08_algorithms/ch95_algo_overview.md) | 文本处理/协议解析 | 本章提供概念，第95章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：标签分发是 Stepanov 给 STL 的「零开销选路」答案
+[史] Stepanov 设计 STL（1994 年纳入标准）时面临难题：同一个算法（如 `std::advance`、`std::distance`）对「单向迭代器」和「随机访问迭代器」该走完全不同的实现，但又不想要运行期 `if` 或虚函数开销。他的解法是**标签分发（tag dispatch）**：定义一组空的标签类型（`input_iterator_tag`、`random_access_iterator_tag` …），让迭代器「自带身份」，再用「接受不同标签的重载」在编译期选对版本。零开销、零运行期分支，纯靠类型系统。
+[轶] 这套「用空结构体 + 重载决议做编译期多态」的思想，比 `std::variant`/`std::visit` 早了二十多年，是 C++「零开销抽象」最早的范本之一，也是后续 concepts（ch67）与 CRTP（ch51）的思想源头。
+
+### ㉒.2 真实工程坐标：标签分发活在哪些产品/项目里
+- 标准库本体：`std::advance`/`std::distance` 通过 `iterator_category` 标签在编译期选 O(1) 或 O(n) 实现；`std::copy` 对平凡类型经标签走 `memmove` 快路径；`std::rotate`、`std::sort` 等大量算法都按迭代器标签分派。
+- 分配器与数值库：`std::allocator_traits` 用标签/特性类型路由内存操作；数值库用标签区分「标量/向量/SIMD」执行策略。
+- 游戏引擎与 ECS：`entt` 等库用标签类型标记组件类别，在编译期为不同组件组合选最优存储与访问策略。
+
+### ㉒.3 生产踩坑：标签分发的常见误用与陷阱
+- **标签层级写错导致选错重载**：迭代器标签是继承层级（`random_access_iterator_tag : bidirectional_iterator_tag : ...`），若自定义迭代器漏写 `iterator_category` 或写错基类，会静默退回到低效实现而非编译失败。
+- **标签必须与偏序配合**：标签分发依赖函数重载的偏序（ch61）选最派生标签，标签定义顺序或重载声明顺序错乱会让「本应更特化」的版本不被选中。
+- **概念迁移期的混用陷阱**：在 concepts 时代，新手常把 `requires` 约束重载与标签重载混写，两套选路规则并存时胜出者可能与直觉相反。
+- **空标签被误当运行期对象**：标签是编译期类型，误在运行期依赖其「值」或做 `dynamic_cast` 会完全失效。
+
+### ㉒.4 与标准的互动：标签分发与 concepts 的渐进迁移
+标签分发随 STL（C++98）成为泛型算法标准范式，与 traits（ch65）、偏序（ch61）配合撑起整个标准库。C++20 的 concepts（ch67）与 `std::ranges` 用 `std::random_access_iterator` 这类 concept 取代了手写标签层级的部分工作，但底层算法仍保留标签重载以兼容老迭代器——迁移是渐进的，不是一刀切。标准明确把「标签分发」与 `std::enable_if` 并列为 concepts 的替代方案之一，说明它仍是合法的工业手法。
+
+### ㉒.5 权威引用
+- [cppreference: Iterator tags](https://en.cppreference.com/w/cpp/iterator/iterator_tags) — 迭代器标签类型与「基于标签选算法」的官方示例
+- [cppreference: std::advance](https://en.cppreference.com/w/cpp/iterator/advance) — 标签分发的经典落地：按迭代器类别选 O(1)/O(n) 实现
+- [cppreference: Constraints and concepts](https://en.cppreference.com/w/cpp/language/constraints) — concepts 如何渐进替代手写标签层级
+
 ## 附录 F：Tag Dispatch工业
 
 ```cpp

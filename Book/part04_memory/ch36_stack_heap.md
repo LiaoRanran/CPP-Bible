@@ -1366,6 +1366,40 @@ int main() {
 | [第37章](Book/part04_memory/ch37_new_delete.md) | 高性能容器/零拷贝传输 | 本章提供概念，第37章提供实现 |
 | [第39章](Book/part04_memory/ch39_raii_rule.md) | 资源管理/事务回滚 | 本章提供概念，第39章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：栈与堆的双内存格局从何而来
+
+[史] 「栈式分配」并非 C++ 首创，而是源自 1958–1960 年的 **Algol 60**——它首次把「过程调用 → 进入时压栈分配、退出时整块回收」确立为语言级机制，连 call stack 这个词都来自此；现代 x86 的 `push/pop`、`rsp` 与 red zone 都仍是这一模型的硬件实现。[史] 「堆」作为与栈分离的自由存储，则随 1970 年代 **Unix 的 `malloc`/`free`（源自 `brk`/`sbrk` 系统调用）** 与 C 语言绑定，C++ 的 `new`/`delete` 在 1985 年 C++ 诞生时即被设计为「在堆上分配 + 构造」的双层语法（见 ch37）。[轶] 一个普遍误解是「栈快、堆慢」是语言决定的；其实是 **调用约定（calling convention）** 决定的——`malloc`/`new` 要走通用分配器、维护空闲链表、可能陷入内核，而栈分配只是 `sub rsp, N` 一条指令。System V AMD64 ABI（1999）固化了 `rsp` 向下增长、红区（`-128` 字节）、寄存器传参等规则，C++ 编译器只是忠实地遵守它。
+
+### ㉒.2 真实工程坐标：栈/堆分配活在哪里
+
+- **系统软件与运行时**：glibc 的 `ptmalloc2`（1996 年从 Doug Lea 的 `dlmalloc` 派生）与 Google 的 **tcmalloc（2008 前后随 Chromium/Google 基础设施开源）**、Facebook 的 **jemalloc（2005 年 Jason Evans，后由 Facebook 大规模使用）**——这三个通用堆分配器是几乎一切 C/C++ 程序背后沉默的地基，其碎片与锁竞争直接影响服务端尾延迟。
+- **游戏与实时引擎**：Unreal / Unity 用 **帧分配器（frame allocator）/ 栈式临时内存** 把每帧的对象在帧末一次性回收，避免每帧海量 `new`/`delete` 击穿堆；这正是第 ⑫ 节对象池与第 ⑦ 节 `alloca` 思想的产品化。
+- **Web 浏览器**：Chromium 的渲染与 V8 引擎用分区堆（PartitionAlloc）把不同安全等级对象放进独立堆区，既降碎片又缩小可利用的 UAF 攻击面——这是「堆布局」在安全上的工业级应用。
+- **嵌入式固件**：MCU 上常关闭堆（`malloc` 被裁剪），全部用栈 + 静态区 + 内存池（ch44），因为堆碎片在无 MMU 的确定性系统里可能致命。
+
+### ㉒.3 生产踩坑：栈/堆的常见误用与陷阱
+
+- **栈溢出（stack overflow）**：在栈上开大数组（`char buf[8*1024*1024]`）或无限递归，经第 ⑧ 节所述 guard page 防护后表现为段错误；Linux 默认栈仅 8 MiB，嵌入式更小。症状常被误报成「随机崩溃」。
+- **`alloca` / VLA 的隐藏炸弹**：第 ⑨ 节指出 `alloca` 在循环里调用会持续向上吃栈且永不回收，而 GNU 的 VLA（C99 变长数组扩展）在栈上分配无法失败检查，一旦过大直接段错误——二者都违反 RAII（ch39），生产代码应改用 `std::vector`。
+- **堆碎片导致 OOM**：长期运行的服务（如数据库、消息队列）频繁分配/释放不同尺寸，外部碎片累积后即便总空闲足够也分配不出大块，表现为 RSS 居高不下、偶发 `bad_alloc`；tcmalloc/jemalloc 的分级空闲列表（第 ⑬ 节）正是为此而生。
+- **跨 DSO 的堆不匹配**：在一个动态库里 `new`、在另一个库（甚至不同 CRT，如 MSVC 的 `/MD` vs `/MT`）里 `delete`，因各自带一份分配器而双击崩溃——这是 Windows 上「release 版偶发崩、debug 版正常」的经典根因。
+
+### ㉒.4 与标准的互动：分配语义与 WG21 演进
+
+[史] C++ 标准从未规定分配器必须用堆——它只定义 *storage duration*（自动/动态/静态）与 `new`/`delete` 表达式的语义（分配 + 构造 / 析构 + 释放），把「用什么后端」完全交给实现。[评] 标准刻意把堆实现细节（ptmalloc/jemalloc/tcmalloc 之争）挡在语言之外，只通过 **`<new>` 的可替换 `operator new`/`delete`**（见 ch37）给用户留后门。[史] 与栈/堆最相关的标准演进是 **C++11 引入 `std::aligned_storage` / `alignas`** 让程序员显式控制对齐，**C++17 的 P0035** 补齐过对齐动态分配，**C++20 的 `std::pmr`（见 ch38 / ㉒.5 P0220）** 把「换个分配后端」从 hack 变成一等公民——本质都是让「堆的选型」从全局替换升级为可组合、可作用域化的资源对象。[评] WG21 仍在推进 `std::allocator` 的简化与 PMR 生态，方向是既保住「默认零心智负担（堆）」、又给性能敏感代码提供零成本的栈式/池式替代。
+
+### ㉒.5 权威引用
+
+- [cppreference: operator new, operator new[]](https://en.cppreference.com/w/cpp/memory/new/operator_new) — `new` 表达式底层分配函数族与可替换语义
+- [WG21 P0220R1 — Adopt Library Fundamentals V1 TS for C++17](https://wg21.link/P0220) — PMR（`std::pmr`）随 C++17 落地的采纳提案
+- [WG21 P0035R4 — Dynamic memory allocation for over-aligned data](https://wg21.link/P0035) — 过对齐动态分配（C++17）
+- [glibc malloc 源码（ptmalloc2）](https://sourceware.org/git/?p=glibc.git;a=blob;f=malloc/malloc.c) — 主流 Linux 堆分配器实现
+- [jemalloc GitHub](https://github.com/jemalloc/jemalloc) — Facebook 大规模使用的低碎片/低延迟分配器
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。

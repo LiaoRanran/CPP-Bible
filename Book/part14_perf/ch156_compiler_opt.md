@@ -739,6 +739,35 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
 | [第155章](Book/part14_perf/ch155_simd.md) | 向量化计算/图像处理 | 本章提供概念，第155章提供实现 |
 | [第157章](Book/part14_perf/ch157_compiler_explorer.md) | 数据局部性/缓存友好设计 | 本章提供概念，第157章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：优化等级、LTO 与 PGO 的演进
+[史] GCC 自 1987 年起就以 `-O0/-O1/-O2/-O3` 提供分级优化；**LTO（Link-Time Optimization，链接时优化）** 让跨翻译单元的内联/去虚化在链接期发生，是 2000 年代中后期成熟的能力；**PGO（Profile-Guided Optimization）** 用"先插桩训练、再按真实热点布局"进一步压榨（见 ⑦⑧）。[史] `-Ofast` 则走得更远：它隐含 `-ffast-math`，**放宽 IEEE-754 严格性**（允许重结合、假设无 NaN/Inf、无符号零），换取更高并行度（见 ③⑮）。[评] 编译器优化的历史就是"在'标准允许的范围'内越来越激进"——而激进的边界由"未定义行为"划定。
+
+### ㉒.2 真实工程坐标：编译器优化活在哪些产品里
+- **Chrome / Firefox**：发布构建普遍用 **PGO**，把真实使用剖面喂给优化器，冷路径移出、热路径内联。
+- **Linux 发行版 / 大型库**：常用 **LTO（`-flto`）** 跨 TU 内联，显著缩小体积、提升速度。
+- **科学计算 / HPC**：在确认数值可接受时启用 `-Ofast`/`-ffast-math` 换取吞吐。
+- **嵌入式**：常锁 `-O2` 而非 `-O3`，避免代码膨胀吃掉指令缓存。
+
+### ㉒.3 生产踩坑：优化选项的误用
+- **`-Ofast` 破坏数值正确性**：放松 IEEE 后，浮点结合律被改写，原本"稳定"的算法出现 NaN/Inf 或精度漂移；数值敏感代码应只用 `-O2`/`-O3`。
+- **`-ffast-math` 误开**：同上的子集，且与 `std::isfinite`/`std::isnan` 的语义冲突。
+- **UB 让优化"爆炸"**：C++ 标准的"未定义行为"允许编译器假设它永不发生——例如有符号溢出、空指针解引用，一旦真发生，编译器可能删掉整个分支（见 ⑬）；开启 sanitizer 是发现它的唯一可靠手段。
+- **Release 用 `-O0`**：以为"没开优化更稳"，实则失去内联与死代码消除，性能与代码形态都偏离真实发布。
+
+### ㉒.4 与标准的互动：未定义行为是优化的杠杆
+ISO C++ 用"未定义行为（UB）"换取优化空间——标准不定义的行为，编译器可任意处理。LTO/PGO 不过是把这种杠杆用到跨 TU/按剖面的尺度。C++20 的 `[[likely]]`/`[[unlikely]]`、C++26 的"严明 UB"讨论，都是标准在"优化自由"与"程序员可预期性"之间找平衡。[评] 理解优化选项，本质是理解"标准把哪些自由交给了编译器"。
+
+### ㉒.5 权威引用
+- [GCC Optimize Options（`-O*`/LTO/`-ffast-math`）](https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html) — 各级优化与放松语义的权威说明
+- [Clang Users Manual（优化与 PGO）](https://clang.llvm.org/docs/UsersManual.html) — Clang 等价优化开关
+- [cppreference: 未定义行为（UB）](https://en.cppreference.com/w/cpp/language/ub) — UB 如何成为优化杠杆
+- [GCC LTO 文档](https://gcc.gnu.org/onlinedocs/gccint/LTO-Overview.html) — 链接时优化的实现
+- [LLVM 项目（优化基础设施）](https://llvm.org/docs/) — 现代优化器的事实底座
+
 ## 附录 F：编译器优化
 
 ```cpp

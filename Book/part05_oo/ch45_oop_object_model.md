@@ -1354,6 +1354,40 @@ EBO 派生（核心知识点 #12）
 | [第47章](Book/part05_oo/ch47_virtual_functions.md) | 泛型库/编译期计算 | 本章提供概念，第47章提供实现 |
 | [第52章](Book/part05_oo/ch52_ebo.md) | 资源管理/事务回滚 | 本章提供概念，第52章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：C++ 对象模型的来龙去脉
+
+[史] C++ 对象模型由 **Bjarne Stroustrup 在 1980 年代设计**，核心取舍是「**值语义优先 + 零开销抽象 + 与 C 内存布局兼容**」——与 Smalltalk/Self 的「一切皆引用、全 GC」路线刻意不同。关键的 **vtable（虚函数表）** 机制并非 C++ 发明，而是源自 1960–70 年代 Simula 67 的「方法分派表」与 C++ 早期的 `cfront`（1985）把虚函数编译成「对象首指针指向一张函数指针表」的约定，后被 **System V C++ ABI（Itanium C++ ABI，1990 年代末，由惠普/Intel 等制定）** 标准化，至今 GCC/Clang 都遵守它（第 ⑧ 节）。[史] **空基类优化（EBO，第 ⑥ 节）** 由 C++ 标准明确允许（源于 ABI 对空基类子对象可零尺寸的规定），是对象模型「不付出不使用」哲学的典型产物；**C++20 的 `[[no_unique_address]]`（P0840，见 ch52）** 把 EBO 从「仅限基类」扩展到「数据成员」，是对同一思想的补完。
+
+### ㉒.2 真实工程坐标：对象模型活在哪里
+
+- **几乎所有 C++ 二进制**：vtable 布局、this 指针调整、成员函数调用约定（第 ⑦ ⑧ 节）决定了每个虚调用的成本，Chromium、LLVM、游戏引擎、数据库底层都建立在这套布局之上。
+- **Qt 等框架（见 ch129）**：`Q_OBJECT` 的元对象系统依赖「对象首部有隐藏指针」这一 C++ 对象模型事实，qobject_cast 沿 meta 链判定类型，本质是标准 RTTI（ch48）之外的一套自研对象模型。
+- **游戏/引擎（Unreal）**：UObject 系统与反射、序列化、GC 深度绑定，是「在标准 C++ 对象模型之上叠加元数据」的极端工业案例；其内存布局（含 vtable 与 UProperty 元数据）直接决定编辑器与运行时行为。
+- **高性能数值库（Eigen）**：大量利用值语义 + 表达式模板（CRTP，ch51）在编译期展开，避免虚调用开销——这是「在标准对象模型内用模板逼近零开销多态」的典范。
+
+### ㉒.3 生产踩坑：对象模型的常见误用
+
+- **误判对象大小 / 忽视 padding**：第 ⑩ 节位域、第 ⑥ 节 EBO 表明，结构体成员顺序与对齐会显著改变 `sizeof`；跨 ABI/跨语言（C#、Python ctypes）按字节读结构体若忽略 padding，会读出错位字段。
+- **切片（slicing）**：第 ⑫ 节值语义下把派生类按值赋给基类对象会切掉派生部分，是初学者高频坑；必须用引用/指针/`unique_ptr<Base>` 保留多态。
+- **依赖未定义的对象布局假设**：把对象首字节强转为「期望的 vtable 偏移」去做黑魔法（常见于旧式插件/序列化 hack），一旦换编译器或开 LTO 布局变化即崩——对象内部布局是实现细节，不应被业务代码假设。
+- **`offsetof` 用于非标准布局类**：第 ⑭ 节，标准仅保证标准布局（standard-layout）类可用 `offsetof` 获取成员偏移，对非标准布局（含虚函数、非公开成员等）使用是 UB。
+
+### ㉒.4 与标准的互动：对象模型与 WG21 演进
+
+[史] C++98 固化了「成员函数 = 带 this 的非成员函数、vtable 由实现决定」的对象模型；**C++11 引入 `final`/`override`**（ch46）让虚重写更安全，并标准化 `is_polymorphic`/`is_empty` 等类型特征（第 ⑮ 节）。**C++20 的 P0840（`[[no_unique_address]]`）** 把 EBO 能力扩展到数据成员（ch52）；**静态反射 P2996（C++26 候选）** 则试图把「对象布局 / 成员遍历」从黑魔法变成编译期可查询的标准设施。[评] WG21 的方向是在 **保持对象模型零开销、与 C 兼容** 的前提下，用 trait、属性与（未来的）反射逐步暴露「布局信息」，让 `offsetof`/EBO/字段遍历这类需求有标准、可移植的答案，而非依赖编译器特定扩展。
+
+### ㉒.5 权威引用
+
+- [Itanium C++ ABI（vtable / 对象布局规范）](https://itanium-cxx-abi.github.io/cxx-abi/abi.html) — GCC/Clang 虚表与对象布局的权威规范（第 ⑧ 节）
+- [cppreference: object model 与 lifetime](https://en.cppreference.com/w/cpp/language/object) — 标准对象模型与存储期定义
+- [WG21 P0840R2 — Language support for empty objects](https://wg21.link/P0840) — `[[no_unique_address]]`（C++20，ch52）
+- [WG21 P2996 — 静态反射（C++26 候选）](https://wg21.link/P2996) — 把对象布局/成员遍历标准化的方向
+- [cppreference: std::is_empty / std::is_polymorphic](https://en.cppreference.com/w/cpp/types/is_polymorphic) — 对象模型相关类型特征（第 ⑮ 节）
+
 ## 附录 F：vtable面试
 
 ```asm

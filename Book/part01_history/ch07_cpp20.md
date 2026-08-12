@@ -347,6 +347,38 @@ void legacy() noexcept;
 // C++20 小结：concepts/ranges/<=</format/jthread
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：C++20 的四驾马车
+
+[史] C++20（ISO/IEC 14882:2020，2020-12 发布）是继 C++11 后又一次"大版本"，主推四大特性，各有明确提案来源：**Concepts**（P0734，给模板加编译期约束，终结 SFINAE 地狱）、**Modules**（P1103，替代文本 `#include` 的头文件模型）、**Coroutines**（P0912，原生 `co_await`/`co_yield`/`co_return`）、**Ranges**（P0896，惰性、可组合的区间算法）。[史] 配套还有**三路比较 `<=>`**（P0515，spaceship operator，自动生成比较运算符）、**`std::format`**（P0645，类型安全的格式化）、**`std::span`**、**`std::jthread`** 等。[轶] Modules 的标准化过程最波折：法国在投票阶段对导入/导出语法有异议导致短期延迟，且至今各编译器对 Modules 的工程支持（`.ixx`/`module;` 分区）仍不统一。[评] C++20 把"模板约束、模块化、异步、区间"一次性交到工程师手里，但四大特性都"刚落地、生态未熟"——2023 年后才逐步可生产使用。
+
+### ㉒.2 真实工程坐标：C++20 活在哪
+
+- **库作者先行**：Ranges（`std::ranges::views`）、Concepts（ABSL/SF 的 `concepts` 头）、`std::format`（取代 fmt 部分场景）已被 fmt/Boost.Ranges 等吸收或对齐。
+- **高性能/异步**：Coroutines 被 C++ 后端（如 cppcoro、Facebook Folly、Windows 异步栈）用于无栈异步；P2300 `std::execution` 正建立在 Coroutines 之上（见 ch09）。
+- **大型代码库模块化**：Chromium、LLVM 等探索用 Modules 缩短编译时间，但尚处试验期。
+
+### ㉒.3 生产踩坑：C++20 的早期陷阱
+
+- **Modules ABI/工具链不成熟**：不同编译器对 module 分区、BMI（二进制模块接口）格式互不兼容，CI 里混用 GCC/Clang/MSVC 的 `.pcm`/`.ifc` 必出问题；`#include` 与 `import` 混用也易踩宏可见性坑。
+- **Concepts 的"约束爆炸"**：过度细化 concept 导致重载决议变慢、错误信息反而更长；误用 `requires` 表达式写出"能编过但语义错"的约束。
+- **`<=>` 的隐式生成**：给类加 `= default` 三路比较会隐式生成六个比较运算符，容易与已手写的不兼容，且对浮点/NaN 的语义需小心。
+
+### ㉒.4 与标准的互动：从提案到 IS
+
+[史] 四个大特性各自由独立提案（P0734/P1103/P0912/P0896）经多轮修订并入工作草案；`<=>`: P0515、format: P0645 同期并入。C++20 之后 WG21 继续用 3 年节奏推进 C++23/C++26，并把 Modules/Coroutines 的"生产成熟度"问题交给各编译器厂商在 TS 之外自行打磨。[评] 对工程师而言，C++20 是可"选择性采用"的版本：先用 Concepts+Ranges+format（低风险），Modules/Coroutines 待工具链成熟再上。
+
+### ㉒.5 权威引用
+
+- [Concepts 提案 P0734](https://wg21.link/P0734) — C++20 概念机制来源。
+- [Modules 提案 P1103R3](https://wg21.link/P1103) — C++20 模块机制来源。
+- [Coroutines 提案 P0912R5](https://wg21.link/P0912) — 协程并入 C++20 的提案。
+- [Ranges 提案 P0896R4](https://wg21.link/P0896) — 区间库来源。
+- [C++20 特性总览（cppreference）](https://en.cppreference.com/w/cpp/20) — 全特性与编译器支持对照。
+
 ## 附录: C++20 四大特性速查
 
 ```cpp

@@ -589,6 +589,35 @@ bool ready_to_send() {
 
 `[经验]` 一句话总纲：**代码审查是 C++ 工程里性价比最高的一道质量闸——它把未定义行为、内存错误、接口破坏、性能回归在合入前拦下，而代价只是一次仔细阅读。** 本章所有机器可验证主张（`-Wsign-compare` 有符号比较警告、`-Wformat=` 格式不匹配、`-Wunused-result` 忽略 `[[nodiscard]]`、`-Woverflow` 常量溢出、`-Wreturn-type` 缺返回值、`-Wreturn-local-addr` 悬垂地址、`-Wfloat-conversion` 浮点截断、RAII 守卫 `call pthread_mutex_lock/unlock` 的汇编实证、`add edx,[rcx+rax*4]` 零拷贝循环实证、libstdc++ `bits/move.h:104` 与 `bits/basic_string.h:85` 真实路径与行号）均已用本机 GCC 13.1.0 真实产物（`Examples/_ch147_*_warn.txt` / `_ch147_*.asm`）佐证，可复现、未编造。ABI 兼容性深化见第145章，提交规范见第148章，CI 门禁见第149章，测试覆盖见第150章，性能回归见第151章。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：代码审查从"形式化检视"到 Pull Request
+[史] 现代代码审查的制度源头是 **Michael Fagan** 在 IBM 于 1976 年提出的"形式化检视（Fagan Inspection）"，用分阶段会议把缺陷在编码早期拦下。2000 年后，随分布式版本控制与 GitHub（2008）普及，"异步 Pull Request / Gerrit 评审"取代线下会议，成为工业主流。[史] Google 把"每一行代码至少被另一名工程师 review 并 LGTM"写进工程实践（eng-practices，2010 年代公开），并以可读性（readability）认证保证风格与 API 一致。[评] 审查的核心价值不在"找风格问题"，而在"第二双眼睛发现单作者盲点"：并发缺陷、UB、ABI 破坏、安全漏洞——这些恰恰是静态分析与单测难以全覆盖的。
+
+### ㉒.2 真实工程坐标：审查活在哪些项目里
+- **Google / Chromium / Kubernetes**：强制双人 review + 可读性认证，Gerrit/PR 门禁挂满 CI。
+- **Linux 内核**：不走 PR，而是"邮件列表发 patch + maintainer 审 + Reviewed-by/Acked-by 链"，最古老的异步审查文化之一。
+- **LLVM / Clang**：用 **Phabricator**（现迁 GitHub PR）做 pre-commit review，clang-tidy 检查结果进 review UI。
+- **大型金融机构 / 汽车软件（ASPICE/ISO 26262）**：审查是合规强制项，要有可追溯记录与签名。
+
+### ㉒.3 生产踩坑：审查流于形式的陷阱
+- **橡皮图章 LGTM**：只扫一眼就批准，等于没审；[评] 对并发/内存/接口改动必须逐行看，而非看 CI 全绿就放。
+- **只审格式不审逻辑**：把 clang-format / clang-tidy 能自动发现的事留给人脑，浪费注意力；应让工具做机械检查，人聚焦语义。
+- **巨型 PR**：单 PR 改动数千行，没人能认真审；拆小、按关注点分 PR 是工业常识。
+- **漏掉安全/UB**：`signed overflow`、`数组越界`、`data race` 这类未定义行为，肉眼极易漏，必须依赖编译器警告（`-Wall -Wextra -Werror`）与 UBSan/ASan 进门禁（见 ②）。
+
+### ㉒.4 与标准的互动：静态分析成为审查前置
+C++ 标准不直接管审查，但 **C++ Core Guidelines** 的每条规则都可被 `clang-tidy` 的 `cppcoreguidelines-*` 检查项机械执行，使"人工审查"前移为"机器预筛"。现代 CI（见第149章）把 clang-tidy / PVS-Studio / Coverity 结果直接挂到 PR 上，审查者只看工具标红处即可。[评] 工具越强，人工越该聚焦"设计意图与边界条件"，而不是重复机器能做的事。
+
+### ㉒.5 权威引用
+- [Google Engineering Practices（代码审查指南）](https://google.github.io/eng-practices/review/) — 工业级审查流程与 reviewer/author 职责
+- [Clang-Tidy 官方文档](https://clang.llvm.org/extra/clang-tidy/) — 把 Core Guidelines 变成可机械执行的检查
+- [PVS-Studio（C++ 静态分析商业工具）](https://pvs-studio.com/) — 真实工业静态分析，含大量 C++ 缺陷案例库
+- [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/) — 审查清单的可执行依据
+- [isocpp（C++ 社区/审查相关资料）](https://isocpp.org/) — 标准与最佳实践入口
+
 ## 附录追加：工业底层与面试
 
 ```cpp

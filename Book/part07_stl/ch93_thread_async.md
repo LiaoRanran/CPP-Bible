@@ -591,6 +591,33 @@ int main() {
 
 ---
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：thread / async 与「C++ 的并发元年」
+
+[史] `std::thread` / `std::async` / `std::future` 随 C++11 进入标准，是 C++ 第一次把「多线程」纳入语言标准（此前只能依赖 POSIX pthread 或 Win32 API）。[史] 它们的设计由 Anthony Williams、Howard Hinnant 等推动，把「可 join 的 OS 线程」与「异步结果（`future`）」作为 First-class 类型，结束了各平台各写一套的历史。[轶] 一个著名坑是 `std::thread` 析构时会 `std::terminate` 如果仍 joinable（既没 `join` 也没 `detach`）——这一「严格但易炸」的设计让无数新手在异常路径上翻车。[评] C++11 的线程模型是「显式、值语义、RAII 优先」，与 Java 的托管线程、Go 的 goroutine 形成鲜明对比，也奠定了后续 `jthread` 的改进基础。
+
+### ㉒.2 真实工程坐标：thread/async 活在哪些产品里
+
+高并发 Web 服务器的「并行请求扇出/归并」、渲染线程与逻辑线程分离、并行批处理是 `std::thread` / `std::async` 的主场；游戏引擎的物理/渲染/逻辑多线程、金融系统的并行定价、科学计算的 `async` 任务图都依赖它们。它们是几乎所有 C++ 并发库（如 Intel TBB、libdispatch 的 C++ 封装）的底层基石。
+
+### ㉒.3 生产踩坑：thread/async 的常见误用与陷阱
+
+[评] 最大坑是「数据竞争与未同步共享状态」——多个线程写同一变量而无 `mutex` / `atomic` 是 UB 的根源，且难以复现。另一坑是「`std::async(launch::async)` 每次都建线程」——在循环里疯狂 `async` 会瞬间耗尽线程/内存，应改用线程池；而默认 `launch::async | launch::deferred` 策略下，若从不取 `future` 则可能永不执行（deferred）。还有「`thread` 忘记 join/detach 导致 terminate」。
+
+### ㉒.4 与标准的互动：thread/async 与标准的演进
+
+[史] `std::thread` 等自 C++11 成为并发基石，C++20 引入 `std::jthread`（自动 join + 协作取消，见 ch94）解决了 `thread` 析构 terminate 的老问题。[评] 近年 WG21 在并行算法（`std::execution::par`）、`std::latch` / `std::barrier`（C++20）、原子与内存序细化上持续扩展，方向是「在保持零开销与显式控制的同时，提供更安全的 RAII 并发原语，减少 terminate/数据竞争类事故」。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::thread](https://en.cppreference.com/w/cpp/thread/thread) — 可 join 的 OS 线程与 RAII 语义的权威定义
+- [cppreference: std::async](https://en.cppreference.com/w/cpp/thread/async) — 异步任务与 future 的权威定义
+- [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 查证线程库标准化历史的一手来源
+- [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 thread/future 工业实现参考
+
 ## 附录A：30+ 完整可编译示例（独立程序，可直接 `g++ -std=c++23 -O2 -Wall -Wextra`） [标准]
 
 下面 E1–E26 每个都是**完整可编译程序**（自带 `#include` 与 `int main`），覆盖本章所有原语，且每个 thread 都已 `join`/`detach` 以确保正常退出。

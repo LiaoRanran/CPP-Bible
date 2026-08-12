@@ -1737,6 +1737,40 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 反模式: 构造失败(异常安全), 析构抛异常(std::terminate), 手动管理(raw pointer)。
 面试: RAII=构造获取+析构释放; 析构不能抛异常; 为什么比finally好? 编译器保证
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：RAII 的来龙去脉
+
+[史] RAII（Resource Acquisition Is Initialization）由 **Bjarne Stroustrup 在 1980 年代设计 C++ 时** 提出，灵感来自 Simula 的作用域与构造/析构，但关键创新是「把资源生命周期绑定到栈对象生命周期」——这一思想在 1990 年代的 *The C++ Programming Language*（第 2/3 版）中被正式命名为 idiom 并推广。[轶] 有趣的是，RAII 这个缩写并非 Stroustrup 最初命名，而是社区后来归纳；他本人更常用「ctor acquires, dtor releases」。C++ 之所以能靠 RAII 甩掉 `finally`，靠的是 **栈展开（stack unwinding，第 ④ 节）** 与「析构在作用域退出时必然执行」这一由语言保证的契约，而 Java/C# 的 `try-finally` 是「建议而非保证」——这是 C++ 异常安全哲学的根基。[史] **C++11（2011）** 用 `std::unique_ptr`/`shared_ptr` 把 RAII 提升到标准库层，并引入 **Rule of Five（第 ⑧ 节）** 取代 Rule of Three；**C++11 的 `noexcept`（第 ⑥ 节）** 把「析构必须不抛」从惯例变成可被编译器利用的契约。
+
+### ㉒.2 真实工程坐标：RAII 活在哪里
+
+- **标准库几乎所有资源管理类型**：`std::lock_guard`/`std::unique_lock`（第 ⑬ 节）、`std::fstream`、`std::unique_ptr`/`shared_ptr`、`std::vector`（析构释放缓冲区）都是 RAII——可以说标准库本身就是 RAII 的最大用户。
+- **Chromium / Blink**：大量 `base::ScopedFD`/`base::ScopedTempDir`/`base::AutoLock` 等 scoped 类型，确保句柄、锁、临时文件在任意返回路径（含早退与异常）下都被清理；`base::scope_exit`（第 ⑭ 节 ScopeGuard 思想）广泛用于资源回滚。
+- **游戏引擎**：Unreal 的 `TUniquePtr`/`FScopeLock`、Unity 的 `AutoPPtr` 等，把 RAII 用于 GPU 资源、渲染状态与锁，避免帧中途异常导致设备上下文泄漏。
+- **金融/数据库系统**：交易事务的「提交或回滚」惯用法（第 ⑭ 节 `std::uncaught_exceptions`，ch40）普遍用 RAII 守卫实现，确保异常路径下事务一致回滚而非悬挂锁。
+
+### ㉒.3 生产踩坑：RAII 与三五法则的误用
+
+- **忘记 Rule of Five 导致 double free**：第 ⑦ 节指出，含裸指针成员的类若只写默认析构、没写拷贝/移动，浅拷贝会让两个对象析构同一块内存——这是 C++ 历史最经典的崩溃来源之一。
+- **析构函数抛异常 → `std::terminate`**：第 ⑥ 节强调，若栈展开途中（另一个异常正在传播）析构又抛异常，程序直接 `terminate`；生产代码析构里绝不能让可能抛的操作（如关闭网络、写盘）传播异常，应吞掉或 `noexcept`。
+- **在析构里做重 IO/阻塞**：把「关闭连接、刷盘」放进析构看似 RAII 正确，但会让栈展开异常缓慢甚至死锁；工业实践往往显式 `close()` 再让析构兜底，而非全压在析构。
+- **`std::uncaught_exception()` 旧接口的误用**：第 ⑭ 节说明，C++17 前用单参 `uncaught_exception()` 判断「是否正在栈展开」是不可靠的，必须用 **C++17 的 `std::uncaught_exceptions()`**（返回计数）才能正确实现「提交或回滚」守卫，否则回滚逻辑在嵌套异常下会错。
+
+### ㉒.4 与标准的互动：RAII 与三五法则的演进
+
+[史] C++98 确立 RAII 与 Rule of Three（拷贝构造/拷贝赋值/析构三者一致）；**C++11（2011）** 引入移动语义与 `=default`/`=delete`，催生 **Rule of Five（第 ⑧ 节）** 并让 `unique_ptr` 把「唯一所有权」标准化；同年 `noexcept` 让析构不抛成为可优化的契约（第 ⑥ 节）。[史] **C++17 的 P0188** 一脉推动「Rule of Zero」成为首选（第 ⑨ 节）——尽量不手写特殊成员，把资源管理交给标准智能指针/容器，从根上消灭三五法则的出错面。[评] WG21 的方向是继续强化「零手写管理」：用 `std::unique_ptr` + 自定义删除器（ch41）覆盖绝大多数 RAII 场景，并探索 `[[nodiscard]]`、契约（contracts）让资源误用更早被编译器捕获。RAII 作为 C++ 区别于 GC 语言的核心价值，标准几乎每一版都在加固它。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::unique_ptr](https://en.cppreference.com/w/cpp/memory/unique_ptr) — RAII 唯一所有权的标准实现
+- [cppreference: std::lock_guard](https://en.cppreference.com/w/cpp/thread/lock_guard) — RAII 锁守卫（第 ⑬ 节）
+- [cppreference: std::uncaught_exceptions](https://en.cppreference.com/w/cpp/error/uncaught_exception) — 提交或回滚惯用法（C++17，第 ⑭ 节）
+- [WG21 相关：Rule of Five / move semantics 背景（C++11）](https://en.cppreference.com/w/cpp/language/rule_of_three) — 三五法则与移动语义总览
+- [Chromium base/scoped 工具集（ScopedFD/AutoLock/ScopeExit）](https://github.com/chromium/chromium/tree/main/base) — RAII 守卫的大规模工业用法
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。

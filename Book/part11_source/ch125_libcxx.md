@@ -813,6 +813,13 @@ libc++ 的诞生是 **Apple 与 GPL 的决裂** 的直接产物。2005 年 Apple
 
 libc++ 不是孤立的——它与 **libc++abi**（异常展开/RTTI/`__cxa_*` 运行时）和 **libunwind**（栈展开）组成「LLVM C++ 运行时三件套」（见 ③/⑥）。这种「标准库 / ABI 运行时 / 展开器」三段式，恰好对应 libstdc++ 的 `libstdc++` / `libsupc++` / `libgcc_s` 分工。维护者从 Hinnant 一代过渡到 **Louis Dionne**（Apple 现任首席维护者）、**Miro Knejp** 等社区骨干，贡献流程走 LLVM 的 Phabricator / GitHub PR。
 
+
+### ㉒.5 权威引用
+- [libc++ 官网](https://libcxx.llvm.org/)：LLVM 项目 C++ 标准库主页。
+- [libc++ 设计文档](https://github.com/llvm/llvm-project/tree/main/libcxx/docs)：内部设计与历史决策（许可、模块、 locales）。
+- [LLVM GitHub 仓库 (libcxx)](https://github.com/llvm/llvm-project/tree/main/libcxx)：源码与提交历史。
+- [LLVM 官网](https://llvm.org/)：LLVM 项目总入口。
+- [C++ 标准委员会 (WG21)](https://isocpp.org/std)：libc++ 跟踪的标准进展。
 ## ㉓ 与 C++ 标准的互动：libc++ 是「标准先锋」
 
 libc++ 的长期标签是 **「最先完整实现新标准」**。它往往早于 libstdc++ 与 MS STL 落地 C++20/23 设施，部分原因正是它没有 libstdc++ 那种「旧 ABI 债」，可以放手实现：
@@ -844,7 +851,7 @@ libc++ 的长期标签是 **「最先完整实现新标准」**。它往往早�
 ## ㉕ 权威引用与史料
 
 - libc++ 官方文档与设计文档：<https://libcxx.llvm.org/>
-- libc++ 设计内部（ABI 策略、inline namespace）：<https://libcxx.llvm.org/DesignDocs.html>
+- libc++ 设计内部（ABI 策略、inline namespace）：<https://github.com/llvm/llvm-project/tree/main/libcxx/docs>
 - libc++abi 规范：<https://libcxxabi.llvm.org/>
 - LLVM 发布说明（含 libc++ 每版变更）：<https://github.com/llvm/llvm-project/releases>
 - libc++ 源码（标签/提交级行号）：<https://github.com/llvm/llvm-project/tree/main/libcxx>

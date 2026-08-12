@@ -1381,6 +1381,39 @@ void demo_c10(const std::vector<long long>& v) {
 - `[标准]`：`reduce`/`transform_reduce`/`*_scan` 接受 `execution::seq|par|par_unseq|unseq`；`accumulate`/`inner_product`/`partial_sum`/`iota` **不接受**执行策略。
 - `[经验]`：本机（GCC 15.3.0 / MinGW，无 TBB）`par` 串行回退——提速要靠链接 TBB；向量化要靠 `-O3 -mavx2 -ffast-math`（第②/⑥/⑬节实证）。浮点 `reduce` 结果不确定，比较须容差（第⑭节）。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从数值算法到并行归约
+
+[史] `<numeric>` 自 **C++98（STL）** 即存在，初代只有 `accumulate`、`inner_product`、`partial_sum`、`adjacent_difference` 等纯串行归约；其设计源自 Fortran/数值计算传统与 STL 的「迭代器 + 二元操作」范式。**C++11** 引入 `std::iota`（生成递增序列，名字致敬 APL 的 `⍳`）与 `std::gcd`/`std::lcm`（C++17）。[史] **C++17 的 P0024R2（并行算法）** 首次为归约引入 `std::reduce`/`std::transform_reduce`/`std::inclusive_scan`/`std::exclusive_scan`——`reduce` 不要求结合律顺序固定，从而能安全地并行/向量化；而 `accumulate` 因顺序固定（左折叠）**不能**并行。这是数值算法从「串行正确」走向「可并行、可向量化」的转折点。[评] `accumulate` 与 `reduce` 的语义差异（顺序敏感 vs 结合可重排）是本章最易混淆、也最影响性能的点。
+
+### ㉒.2 真实工程坐标：数值算法活在哪些产品里
+
+- **HPC / 科学计算（Kokkos、Trilinos、Eigen）**：大规模向量归约、点积（`inner_product`/BLAS 的 dot）、前缀和（scan）是线性代数与 PDE 求解的基础；Kokkos 的归约内核正是 `reduce` 思想的并行化。
+- **机器学习框架（PyTorch/TensorFlow 的 C++ 后端）**：张量归约（sum/mean/prod）、梯度累加大量依赖 `transform_reduce`/并行 scan 思想，且对浮点结合律有严格要求。
+- **金融 / 高频计算**：实时风险聚合、滑点累积用 `accumulate`/`reduce`；`std::gcd` 用于费率/周期约分。
+- **编译器（LLVM）**：指令级常量折叠、依赖分析中的前缀和/区间累加，内部大量用归约式遍历。
+
+### ㉒.3 生产踩坑：数值算法的常见误用
+
+- **浮点用 `reduce` 却期望确定性结果**：`std::reduce` 的并行/向量化会按实现相关顺序求和，浮点加法不结合，结果**与 `accumulate` 不同且每次可能不同**——需要可复现结果（如测试断言、对账）时必须用 `accumulate` 或在并行分支接受容差比较。
+- **`accumulate` 初值类型决定结果类型**：`std::accumulate(v.begin(), v.end(), 0)` 中初值 `0` 是 `int`，即使 `v` 是 `double` 也会以 `int` 累加再转 double，溢出/截断静默发生；应写 `0.0` 或 `0.0L`/显式类型。
+- **并行 `reduce` 未链接 TBB**：C++17 `std::execution::par` 在 libstdc++ 上需链接 Intel TBB，否则串行回落（`par_unseq` 还可能需 `-ffast-math` 之类才真向量化）——别以为写了策略就自动快。
+- **`partial_sum`/`scan` 的内存带宽瓶颈**：大数组前缀和本质带宽受限，C++17 的并行 scan 能摊薄但仍有天花板；超大数据应分段或走专用库（如 cub）。
+
+### ㉒.4 与标准的互动：数值算法与 C++ 标准的演进
+
+[史] 数值算法随 **C++98（STL）** 落地（纯串行）；**C++11** 加 `std::iota`；**C++17** 经 **P0024R2** 引入 `std::reduce`/`transform_reduce`/`*_scan` 并接入执行策略（这是数值算法最大的现代化）；**C++20** 用 Ranges 提供 `ranges::fold_left`/`fold_right`（受 range-v3 启发，P2322R6）统一归约语义；**C++23** 又把 `fold` 家族补全。主线是「串行归约 → 可并行/向量化归约 → 约束化 fold」，WG21 持续在「性能可移植」与「确定性」之间权衡。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::reduce](https://en.cppreference.com/w/cpp/algorithm/reduce) — `reduce`/`transform_reduce` 的可并行归约语义与执行策略。
+- [cppreference: std::accumulate](https://en.cppreference.com/w/cpp/algorithm/accumulate) — 顺序敏感的左折叠，对照 `reduce` 的关键差异。
+- [cppreference: std::ranges::fold_left (C++23)](https://en.cppreference.com/w/cpp/algorithm/ranges/fold_left) — C++23 Ranges 归约，代表数值算法的约束化演进。
+- [WG21 P0024R2 — 并行算法执行策略（合入 C++17）](https://wg21.link/p0024) — `reduce`/`scan` 并行化的核心提案。
+
 ## 附录 E：数值算法底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
 ```

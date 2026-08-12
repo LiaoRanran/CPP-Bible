@@ -800,6 +800,39 @@ void cheat_sheet() {
 - `[平台·x86-64]`：本工具链（`lock cmpxchg` / `lock xadd` / `lock add`）让 64 位及以下原子天然 lock-free；128 位依赖 libatomic，确定性无锁需实测 `is_lock_free()`。
 - `[经验]`：选型口诀——**能 wait-free 原语（fetch_*）就别 CAS；能 SPSC 就别 MPMC；能加锁验证过的就别无锁**。无锁只在该处确实卡住吞吐或尾延迟时才引入。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从 CAS 到无锁算法理论
+
+[史] 无锁（lock-free）的概念由 **Maurice Herlihy（1991，论文《Wait-Free Synchronization》）** 奠基——他定义了 wait-free（无等待）、lock-free（无锁）、obstruction-free（无阻碍）的层级，并证明「不同宽度 CAS 能实现的无锁度不同」，即著名的 **Herlihy 共识数（consensus number）** 理论。工程上，x86 的 `lock cmpxchg`（CAS）、`lock xadd`（fetch_add）是构建无锁结构的最小原语；C++11 把它们暴露为 `std::atomic<T>::compare_exchange_*`。[史] **C++17 的 P0024R2（并行算法）** 虽不直接是无锁，但把「可并行归约」纳入标准，与无锁思想同源；**C++20 的 P0020R6（浮点原子）** 让无锁浮点累加成为可能。[轶] 早期无锁代码几乎全用内建或汇编，C++11 之后才第一次可移植；但「可移植」不等于「正确」——无锁仍是并发里最易写错的部分。[评] 无锁的目标是**避免死锁/优先级反转/长临界区阻塞**，但它**不保证低延迟**，且引入 ABA、内存回收（hazard pointer/RCU）等新难题——见第 ⑪/⑫ 章。
+
+### ㉒.2 真实工程坐标：无锁活在哪些产品里
+
+- **高性能网络 / 框架（Seastar、folly、DPDK）**：无锁 MPMC 队列、无锁 ring buffer、原子计数器是高频、低尾延迟场景的标配（如网络包处理、事件分发）。
+- **JVM / 运行时**：`java.util.concurrent` 的 `ConcurrentLinkedQueue`（Michael&Scott 无锁队列）、原子类底层即用 CAS 循环；.NET 的 `ConcurrentQueue` 同理。
+- **游戏引擎 / 实时系统**：帧间无锁任务窃取（work-stealing）队列、音视频实时管线用无锁结构避免主线程被锁阻塞。
+- **数据库 / 存储（RocksDB、Redis 部分结构）**：无锁跳表/无锁哈希的变种用于高并发读写，减少锁竞争带来的吞吐塌方。
+
+### ㉒.3 生产踩坑：无锁的常见误用
+
+- **CAS 循环中的 ABA 问题**：节点被取出→释放→重新分配（地址复用）后，另一线程的 CAS 仍「成功」却基于过期逻辑，导致损坏。这是无锁的头号陷阱，须用 tagged pointer（版本号）/ hazard pointer / RCU（见第 ⑪/⑫ 章）防护。
+- **忘记处理 CAS 的 spurious failure**：`compare_exchange` 在弱版（`weak`）会因虚假失败返回 false，循环里若不做重试而是「当作失败退出」，逻辑就错了；正确写法是 `while(!cas(expected, desired))` 重试。
+- **无锁 ≠ 更快的盲目替换**：无锁在**高竞争**下才显优势；低竞争时 CAS 循环的自旋/重试开销与缓存行乒乓（false sharing）反而比一把 `std::mutex` 更慢——先 profile 再决定。
+- **内存回收竞态**：无锁读线程可能正读一个被写线程删掉的节点；不做 hazard pointer/RCU/epoch 保护就会 UAF（use-after-free）。
+
+### ㉒.4 与标准的互动：无锁与 C++ 标准的演进
+
+[史] 无锁的**底层原语**（`std::atomic`、CAS、`is_lock_free`）随 **C++11** 进入标准，第一次让无锁可移植；**C++17 的 P0558R1** 修正内存模型措辞，是无锁正确性的基础；**C++20** 引入浮点原子（P0020R6）与 `atomic_ref`（P0019）；**C++26 正推进 hazard pointer（P1122/P2530）与 RCU 标准化**，直接回应「无锁内存回收」这一长期痛点。WG21 的方向是：把「无锁 + 安全回收」逐步从「专家手写汇编级技巧」下沉为标准可组合抽象。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::atomic::compare_exchange (CAS)](https://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange) — CAS 强弱版本、spurious failure 语义。
+- [Maurice Herlihy — Wait-Free Synchronization (1991, 共识数/无锁层级理论)](https://dl.acm.org/doi/10.1145/120355.120364) — lock-free/wait-free 定义与共识数的权威出处（可查证 DOI）。
+- [Maged Michael & Scott — Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queues (1996)](https://dl.acm.org/doi/10.1145/248052.248106) — 工业无锁队列（Michael-Scott）的经典论文。
+- [WG21 P2530 — Hazard Pointers for C++（C++26 推进中）](https://wg21.link/p2530) — 无锁内存安全回收的标准化提案。
+
 ## 附录 A：工业无锁数据结构 [F: Industry / B: Principle]
 
 ```

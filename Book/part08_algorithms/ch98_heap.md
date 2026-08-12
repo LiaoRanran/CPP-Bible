@@ -771,6 +771,39 @@ sorted-bsearch M=20000 : 3143.4 us (hits=20000)
 - `[经验]`：一句话记忆——**堆 = O(1) 取极值 + O(log n) 增删 + O(n) 建堆，但不支持查找**；需要查找就排序。
 - 立场标签与取证汇编均可在 CONVENTIONS.md §1 找到定义；本章真实汇编见 `Examples/_ch98_heap.asm`、`Examples/_ch98_pq.asm`，真实基准见 `Examples/_ch98_bench.cpp`（均已用 GCC 15.3.0 实跑，未编造）。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从二叉堆到 STL 堆算法
+
+[史] 二叉堆由 **J. W. J. Williams（1964）** 在发明堆排序（heapsort）时提出；其「数组即完全二叉树、父 i 子 2i+1/2i+2」的紧凑布局让 `std::make_heap`/`push_heap`/`pop_heap` 能纯用数组 O(1) 空间维护。**Robert Floyd（1964）** 给出 O(n) 建堆算法（自底向上 sift-down），正是 `std::make_heap` 的复杂度保证来源。C++98 STL 把这套「隐式堆（implicit heap）」算法收进 `<algorithm>` 的 `[alg.heap.operations]`，配套 `std::priority_queue`（适配器）封装。[轶] STL 设计者的一个小心机：堆算法直接操作随机访问区间而非专门容器，因此 `std::priority_queue` 默认底层是 `std::vector`——可缓存友好地连续存储。[评] 堆的价值是「O(1) 取极值 + O(log n) 增删」，但**不支持高效查找**，需要按 key 查就别用堆，改有序容器或哈希。
+
+### ㉒.2 真实工程坐标：堆活在哪些产品里
+
+- **实时系统 / 调度器**：操作系统与游戏引擎的**定时器堆（timer heap）**用最小堆维护「最近到期事件」，每帧只弹堆顶；很多网络库的 deadline 调度同理。
+- **优先级队列（任务/消息）**：线程池的任务优先级、网络包 QoS、打印/渲染任务排序都用 `std::priority_queue`。
+- **Top-K 与流式中位数**：海量数据中取最大/最小的 K 个、或维护滑动窗口中位数，用大小为 K 的堆是标准套路（比全排序省。
+- **Dijkstra / A\* 最短路径**：优先队列（堆）是这两个图算法的核心数据结构，编译器/游戏寻路/路由协议都离不开它。
+
+### ㉒.3 生产踩坑：堆的常见误用
+
+- **绕过堆算法直接改底层容器**：手动 `vec.push_back(x)` 后再不 `std::push_heap`，或 `std::pop_heap` 后忘了 `vec.pop_back()`，都会破坏堆不变量，后续 `pop_heap` 取到错误极值——必须用「`push_heap`/`pop_heap` 配套 `push_back`/`pop_back`」的惯用法。
+- **`priority_queue` 无法直接遍历/删除中间元素**：它是受限适配器，要遍历或改堆中任意元素得改用裸 `std::vector` + 堆算法，新手常误以为它能像 `std::set` 一样按 key 删。
+- **浮点/NaN 比较器破坏堆序**：自定义比较器在浮点含 NaN 时返回不一致，会使 sift 过程错乱、堆结构破坏，结果未定义；比较器必须是严格弱序。
+- **并发下非线程安全**：`std::priority_queue`/`make_heap` 都不是线程安全的，多线程同时 push/pop 需外部加锁或用无锁结构（见第 ⑩/⑪ 节并发章）。
+
+### ㉒.4 与标准的互动：堆与 C++ 标准的演进
+
+[史] 堆算法随 **C++98（STL）** 进入标准（`make_heap`/`push_heap`/`pop_heap`/`sort_heap` + `priority_queue`），复杂度写在 `[alg.heap.operations]`；**C++11** 引入移动语义，使堆元素可移动而非拷贝（降常数）；**C++20** 提供 `std::ranges::make_heap` 等约束版并支持投影；**C++23** 进一步统一 ranges 算法族。堆算法演进相对平稳，主线是「移动 + Ranges 化 + 更清晰约束」，WG21 未对其做重大语义修改。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::make_heap / push_heap / pop_heap](https://en.cppreference.com/w/cpp/algorithm/make_heap) — 堆算法族的契约、复杂度与版本。
+- [cppreference: std::priority_queue](https://en.cppreference.com/w/cpp/container/priority_queue) — 堆适配器的接口与默认底层容器。
+- [Knuth — The Art of Computer Programming Vol.3 §6.2.3（堆与堆排序经典论述）](https://www-cs-faculty.stanford.edu/~knuth/taocp.html) — 二叉堆与 Floyd O(n) 建堆的理论出处。
+- [Robert Floyd — Algorithm 232（Treesort）(1964)](https://dl.acm.org/doi/10.1145/512274.512284) — O(n) 建堆/sift-down 的原始论文（可查证 DOI）。
+
 ## 附录 A：工业堆应用 [F: Industry / B: Principle]
 
 ```

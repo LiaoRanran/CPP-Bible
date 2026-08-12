@@ -1275,6 +1275,34 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 | [第150章](Book/part13_engineering/ch150_testing.md) | 多态插件/框架扩展 | 本章提供概念，第150章提供实现 |
 | [第157章](Book/part14_perf/ch157_compiler_explorer.md) | 泛型库/编译期计算 | 本章提供概念，第157章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从手算到 Google Benchmark
+[史] 在 `<chrono>`（C++11）之前，C++ 计时靠 `clock()` / `gettimeofday()` / `QueryPerformanceCounter` 等平台 API，写法各异、易错。Google 于 2014 年前后开源 **Google Benchmark**，用 `BENCHMARK` 宏 + 自动多次迭代/统计，把微基准变成可复现的"框架化"活动。[轶] 更早的工业基准文化来自 HPC 与处理器厂商（SPEC CPU、LINPACK），它们早就强调"多次运行取中位数、报告方差"——本章 ⑥ 的统计口径正源于此。[评] 基准从"个人脚本"走向"框架 + 统计"，关键在于消除人因（少跑一次、只看最好值）带来的误导。
+
+### ㉒.2 真实工程坐标：基准活在哪些项目里
+- **LLVM / Clang**：用 Google Benchmark 给 IR/代码生成热点做回归基准，CI 里比对历史。
+- **Chromium / V8**：JS 与渲染引擎有大规模 perf bot 持续跑基准防回归。
+- **高频交易 / 游戏引擎**：自研纳秒级基准（RDTSC/`std::chrono::steady_clock`），对单条指令延迟都敏感。
+
+### ㉒.3 生产踩坑：基准的常见误用
+- **死代码消除（DCE）**：被测结果没被"消费"，编译器整体删掉被测代码，测得 0ns；必须用 `volatile`/编译器屏障/`asm volatile` 或返回结果（见 ③）。
+- **CPU 频率与 thermal throttling**：跑基准时 CPU 降频（睿频退坡、温度墙），结果抖动；应固定频率（`taskset`/`cpupower`）、预热（见 ⑤）。
+- **没绑核 / 没 pin 线程**：任务在核间迁移，cache 冷启动污染数据；`taskset -c` 绑核是工业常识。
+- **只测 Debug 或只跑一次**：Debug 构建掩盖优化差异，单次运行被冷启动支配；必须 Release + 多次取中位数。
+
+### ㉒.4 与标准的互动：std::chrono 与可移植计时
+C++11 引入 `<chrono>` 与 `std::chrono::steady_clock`，给基准提供"不受系统时间回拨影响"的单调时钟，是 Google Benchmark 等框架的计时底座。C++20 进一步细化 `clock` 概念（如 `utc_clock`/`tai_clock`）。[评] 标准给基准的礼物是"可移植的单调时钟"，但能否测得准仍靠 ③⑥⑭ 的工程纪律（防 DCE、预热、多次）。
+
+### ㉒.5 权威引用
+- [Google Benchmark 仓库](https://github.com/google/benchmark) — C++ 微基准框架，自动迭代/统计
+- [cppreference: std::chrono::steady_clock](https://en.cppreference.com/w/cpp/chrono/steady_clock) — 单调时钟，基准计时底座
+- [perf  Wiki（Linux 性能计数器）](https://perf.wiki.kernel.org/) — 硬件计数器取证（cache miss/分支）
+- [Brendan Gregg 性能方法论](https://www.brendangregg.com/) — 从底层计数到方法论的权威来源
+- [cppreference: std::chrono（时间库总览）](https://en.cppreference.com/w/cpp/chrono) — C++11 起的计时设施
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。

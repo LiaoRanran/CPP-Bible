@@ -919,6 +919,40 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 | [第49章](Book/part05_oo/ch49_virtual_inheritance.md) | 错误恢复/不可恢复错误 | 本章提供概念，第49章提供实现 |
 | [第65章](Book/part06_templates/ch65_type_traits.md) | 性能基准/回归检测 | 本章提供概念，第65章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：RTTI 的来龙去脉
+
+[史] RTTI（运行时类型信息）随 **C++ 的虚函数机制** 自然衍生：因为 vtable 已经存在，把它第 0 槽指向 `std::type_info`（第 ⑦ 节），`dynamic_cast`/`typeid` 就能在运行时沿继承链查询类型——这一设计在 **C++ 标准化（C++98, 1998）** 时被正式纳入，目标是为「多态对象的向下转型与类型判别」提供标准、可移植的手段，取代各厂商私有的 `__classid`/`dynamic_cast` 扩展。[轶] 但 RTTI 从出生就伴随争议：它要求二进制携带类型信息、且 `dynamic_cast` 跨继承链查找有运行时成本（第 ⑲ 节），因此 **很多大型项目（Google 的 `-fno-rtti`、LLVM 默认关闭 RTTI）选择禁用它**，改用 `static_cast` + 约定或 CRTP（ch51）的编译期类型判别。[史] `std::type_index`（C++11）把 `type_info` 包装成可放入容器的 `std::hash` 友好类型，是 RTTI 在容器/哈希场景的务实补强。
+
+### ㉒.2 真实工程坐标：RTTI 活在哪里
+
+- **框架与插件系统**：Qt 的 `qobject_cast`（ch129）在 moc 元数据上做等价 RTTI；Unreal 的 `Cast<>`/`IsA` 在 UObject 体系内提供类型查询——两者都在标准 RTTI 之外自建了一套（因标准 RTTI 在禁用或跨模块时不可靠）。
+- **序列化 / 反射库**：Boost.Serialization、Qt 的 `QMetaType` 用 `typeid` 做类型键，决定如何读写/分发对象。
+- **测试与 Mock 框架**：GoogleTest 的 `testing::internal`、typed test 与 `dynamic_cast` 配合做运行时类型断言与向下转换。
+- **脚本绑定（Lua/Python ↔ C++）**：如 SWIG、pybind11 用 `typeid` 建立 C++ 类型到脚本类型的映射表，实现自动分派。
+
+### ㉒.3 生产踩坑：RTTI 的常见误用
+
+- **跨动态库边界 `dynamic_cast` 失灵**：第 ⑫ 节指出，若基类与派生类分属不同 `.so`/DLL 且 RTTI 信息未统一（或 `-fno-rtti` 混用），`dynamic_cast` 可能返回 `nullptr` 或抛 `std::bad_cast`，而非预期转换——大项目里这是「debug 能过、release/插件崩」的经典根因。
+- **用 `dynamic_cast` 做高频类型判别**：第 ⑲ 节基准显示 `dynamic_cast` 跨深继承链查找有可观成本，若每帧对每实体做类型判断，应改用虚函数/`variant`/类型标签（visitor）。
+- **误信 `typeid` 跨类型等价**：`typeid` 对多态对象返回动态类型、对非多态返回静态类型（第 ⑪ 节），混用时可能判错；且 `type_info::name()` 是 mangled 且实现定义，不应依赖其可读字符串做逻辑。
+- **禁用 RTTI 后残留 `dynamic_cast`**：开 `-fno-rtti` 的代码若仍含 `dynamic_cast`/`typeid`，链接/编译直接失败，遗留代码迁移时常踩。
+
+### ㉒.4 与标准的互动：RTTI 与 WG21 演进
+
+[史] RTTI 随 C++98 落地（基于 Itanium C++ ABI 的 vtable type_info 槽）；**C++11 引入 `std::type_index`** 让 `type_info` 可哈希、可存容器。**C++17 的 P0091 一脉** 与库演进让 `std::any`/`std::variant`（ch14）这类「类型擦除容器」有了标准实现，部分替代了「运行时靠 RTTI 判别」的需求。[评] WG21 当前方向是**不强推 RTTI，反而鼓励「编译期类型判别」**：CRTP（ch51）、concepts（ch67）、`std::variant`+`std::visit` 都能在零运行时成本下完成「多态分发」，这正是 LLVM/Chromium 默认关 RTTI 的原因。标准对 RTTI 的态度是「保留作为兜底、但性能敏感代码应逃逸到静态分发」——这与虚函数（ch47）的演进逻辑一致。
+
+### ㉒.5 权威引用
+
+- [cppreference: dynamic_cast](https://en.cppreference.com/w/cpp/language/dynamic_cast) — 运行时向下/横向转型与失败语义
+- [cppreference: typeid / std::type_info](https://en.cppreference.com/w/cpp/language/typeid) — 运行时类型查询
+- [cppreference: std::type_index](https://en.cppreference.com/w/cpp/types/type_index) — 可哈希的类型信息包装（C++11）
+- [Itanium C++ ABI（vtable type_info 槽）](https://itanium-cxx-abi.github.io/cxx-abi/abi.html) — RTTI 在 vtable 中的布局（第 ⑦ 节）
+- [LLVM 文档：为何默认关闭 RTTI](https://llvm.org/docs/CodingStandards.html) — 工业界对 RTTI 成本的取舍（第 ⑲ 节背景）
+
 ## 真实开源项目参考（可查证链接）
 
 > 本节补可查证的真实项目引用（非虚构）。

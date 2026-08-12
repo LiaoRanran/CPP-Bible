@@ -949,6 +949,42 @@ Q: 协程=线程? A: 否。协程=用户态协作式; 线程=内核态抢占式
 Q: co_await vs co_yield? A: await=等值; yield=产出+暂停
 Q: 帧何时销毁? A: final_suspend后→operator delete
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节是 P0-15「全库工业/标准深度升维」大波次的一部分：把抽象的语言机制放回它真正的来处——谁、在哪一年、为了解决什么产业痛点而提出；并在真实代码库与标准演进之间建立可验证的坐标。
+
+### ㉒.1 历史纵深：从 Simula 到 `co_await`
+
+- `[史]` 协程（coroutine）概念由 Kristen Nygaard 与 Ole-Johan Dahl 在 **Simula 67** 中首创，后由 Lua、Modula-2、Python 生成器、Go goroutine、C# async/await 发扬光大。
+- `[史]` C++ 的协程框架（`co_await` / `co_yield` / `co_return`）由 **Gor Nishanov（Microsoft）** 提案，经 N4663 演化到 **P0912**，最终作为「无栈协程（stackless coroutine）」进入 C++20；它与 Boost.Coroutine / Boost.Asio 的「有栈协程」是两套不同机制。
+- `[轶]` 标准协程只定义「关键字 + 帧语义」，真正的 `task`/`generator` 类型要靠库作者用 `promise_type` 自己拼——所以同一个 `co_await` 在不同库里含义天差地别，这一「最小语言原语」哲学引发了大量讨论。
+
+### ㉒.2 真实产业坐标：异步与可暂停计算的主战场
+
+- 网络与高并发服务器：Boost.Asio、libuv、Seastar 框架用协程把「回调地狱」改写成顺序风格；微软自家大量异步栈依赖协程。
+- 游戏引擎脚本与 tick 逻辑、生成器式惰性序列（逐帧产出数据）、IO 密集型批处理。
+- Lewis Baker 的 **cppcoro** 库是第一代工业级协程原语集合（task / generator / async_mutex 等），为后续标准库 `std::generator` 探路。
+
+### ㉒.3 生产踩坑：协程帧是藏在堆里的状态机
+
+- **帧的堆分配**：协程被暂停时会把局部状态存进「协程帧」（默认堆分配）；若帧可被编译器证明无需堆分配（如 `noexcept`、无易碎析构）才能优化掉——否则高并发下分配器压力陡增。
+- **跨挂起点悬挂引用**：`co_await` 暂停后，若引用了即将析构的栈上对象，恢复时就是 UB——这是协程最常见的隐蔽 bug。
+- **忘了 `co_await` 任务就泄漏**：返回的 `task` 若不 `co_await`/等待，协程帧永不销毁，资源泄漏。同理 `final_suspend` 的处理决定帧何时释放。
+- **异常处理与对称转移**：协程帧内的异常走 `promise.unhandled_exception`；用「对称转移（symmetric transfer）」做调度切换一旦写错，会栈溢出或死锁。
+
+### ㉒.4 与 C++ 标准的互动
+
+- `[评]` C++20 协程刻意「只给原语不给标准库类型」，把生态留白给社区——这降低了标准风险，却抬高了上手门槛。
+- C++20 确定 `co_await`/`co_yield`/`co_return` 与 `std::coroutine_handle`；C++23 补上 `std::generator`、`std::noop_coroutine`、`std::coroutine_traits` 细化，并让 `std::execution`（发送者/接收者，P2300）基于协程思想构建；C++26 继续打磨执行模型。
+- `[评]` 标准演进焦点正从「语法」转向「标准库异步类型 + 执行调度」，目标是让协程真正开箱即用。
+
+### ㉒.5 权威参考（建议延伸阅读）
+
+- C++ 协程语言机制：<https://en.cppreference.com/w/cpp/language/coroutines>
+- C++20 协程统一提案（P0912）：<https://wg21.link/p0912>
+- 标准库 `std::generator`（C++23）：<https://en.cppreference.com/w/cpp/coroutine/generator>
+- cppcoro：工业级协程原语参考实现：<https://github.com/lewissbaker/cppcoro>
+
 ## 相关章节（交叉引用）
 
 - **后续依赖**：⟶ Book/part01_history/ch08_cpp23.md（第08章　C++23：标准库大修）—— 本章为其前置，建议后续延伸阅读。

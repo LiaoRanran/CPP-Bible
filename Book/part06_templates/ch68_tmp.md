@@ -565,6 +565,33 @@ static_assert(std::is_same_v<Front<int, double>::type, int>);
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch68_tmp."<<std::endl;return 0;}
 ```
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：模板元编程是被「意外发现」的图灵完备
+[史] 模板本是为泛型容器设计的，但 1994 年 Erwin Unruh 在 C++ 委员会会议上展示了一段「离谱」代码：它在**编译期**就计算出了素数，结果被编译器以报错信息的形式打印出来，无意间证明 C++ 模板是**图灵完备**的，能在编译期执行任意计算。随后 Boost.MPL（Abrahams、Gurtovoy 等）把这种「编译期编程」体系化为库，模板元编程（TMP）正式成为一门手艺。2000 年代它成了「零开销编译期计算」的唯一手段。
+[评] TMP 极致的零运行期开销，是以「编译期极慢、报错极狠、可读性极差」为代价的，被戏称「图灵焦油坑」。它逼出了 `constexpr` 与 concepts，等于用自身之痛推动了语言进化。
+
+### ㉒.2 真实工程坐标：TMP 活在哪些产品/项目里
+- 标准库深处：`std::tuple`、`std::integer_sequence`、`std::ratio`、`std::integral_constant` 全是 TMP 产物；`std::chrono::duration` 的编译期单位换算也靠它。
+- Boost.MPL / Boost.Hana：前者用 `mpl::vector`、`mpl::transform` 把元编程第一次做成「库」，后者用 `constexpr` + 异构容器统一编译期与运行期（`transform`/`filter` 两用），代表 TMP 向 constexpr 融合的转向。
+- 数值与 DSP 库（如 Blitz++、Eigen 的部分编译期维度推导）用 TMP 做编译期维度检查与循环展开。
+
+### ㉒.3 生产踩坑：TMP 的常见误用与陷阱
+- **编译时间爆炸**：深层递归实例化 + 大量元函数调用让编译时间线性甚至超线性增长，大项目里 TMP 头文件常成为编译瓶颈。
+- **报错不可读**：一个类型不符会沿实例化链展开成千上万行模板回溯，根因极难肉眼定位。
+- **实例化深度限制**：递归元函数会撞上编译器最大模板实例化深度（GCC 默认 900），跨编译器不一致。
+- **代码膨胀**：每个不同的元计算结果常生成独立类型与代码，二进制体积与指令缓存压力上升。
+
+### ㉒.4 与标准的互动：TMP 与 constexpr 的分工演变
+Boost.MPL（2000s）把 TMP 系统化成「编译期容器与算法」；2015 年 Boost.Hana 用 `constexpr` 融合编译期/运行期；C++11 起 `constexpr` 一路放宽，到 C++20 已能在编译期做相当复杂的计算，纯模板递归元函数逐步被 `constexpr` 函数取代——可读、可调试、报错短。如今 TMP 仍活在标准库深处（`tuple`、`integral_constant`），但新代码更倾向 `constexpr`（ch69）。标准是「渐进替代」而非「废除」。
+
+### ㉒.5 权威引用
+- [cppreference: Templates](https://en.cppreference.com/w/cpp/language/templates) — 模板机制总入口，TMP 的栖身之所
+- [Wikipedia: Template metaprogramming](https://en.wikipedia.org/wiki/Template_metaprogramming) — TMP 历史、图灵完备性与 Unruh 素数演示的背景
+- [Boost.MPL (GitHub)](https://github.com/boostorg/mpl) — 把 TMP 体系化为库的工业源头（Abrahams & Gurtovoy）
+
 ## 附录 A：原理与工业 [B: Principle / F: Industry / E: Lowlevel]
 
 ```

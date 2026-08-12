@@ -1464,6 +1464,40 @@ int main(){
 | [第47章](Book/part05_oo/ch47_virtual_functions.md) | 多态插件/框架扩展 | 本章提供概念，第47章提供实现 |
 | [第29章](Book/part03_language/ch29_friend.md) | 泛型库/编译期计算 | 本章提供概念，第29章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：封装与继承的来龙去脉
+
+[史] 封装与继承是 **1967 年 Simula 67** 确立的面向对象三大支柱中的两项（与多态并列），C++ 在 1980 年代把它们吸收但做了关键改造：C++ 的 `private`/`protected` 是**编译期访问控制**（第 ③ ⑤ 节），不是运行时强制，这与 Smalltalk 的「运行时消息拦截式封装」哲学不同——Stroustrup 刻意保留「能用 `friend`/指针破封装」的逃生舱，换取零开销（第 ⑪ 节）。[史] C++ 的继承语义（尤其是 **Liskov 替换原则 LSP**，第 ⑧ 节）深受 **Barbara Liskov 1987 年提出、1994 年由 Jeannette Wing 形式化** 的替换原则影响；而 **C++11 引入 `override`/`final`（第 ⑮ 节）** 是对「虚函数重写易写错（签名不符却静默成重载）」这一数十年痛点的标准级修复。[轶] `class` 与 `struct` 唯一区别仅是默认访问权限（第 ⑥ 节），这是 C++ 为兼容 C 的 `struct` 又引入 OOP 的折中——也是为什么 C++ 程序员常争论「该用哪个」。
+
+### ㉒.2 真实工程坐标：封装与继承活在哪里
+
+- **标准库容器/算法**：`std::vector` 把内部缓冲区严格封装（只有 `data()`/`size()` 等接口），是「接口与实现分离」（第 ② 节）的范本；标准库大量用 `private` + 非虚析构表达「非基类」意图。
+- **Qt / GUI 框架（见 ch129）**：`QObject` 用 `Q_OBJECT` 宏 + 继承体系表达「对象树」，public 继承 `QObject` 即进入框架的所有权与信号槽世界——是继承作为「is-a + 框架契约」的工业案例。
+- **游戏引擎（Unreal）**：`UObject` 体系靠继承承载反射、序列化、GC，但 Unreal 官方明确「**优先组合而非继承**」（第 ⑰ 节），因为深继承树在大型团队里脆且难改。
+- **大型业务系统**：`public` 继承表达领域模型的 is-a（如 `SavingAccount : Account`），但现代实践普遍接受第 ⑰ 节「组合优于继承」——用成员 + 接口替代深层继承，降低耦合。
+
+### ㉒.3 生产踩坑：封装与继承的误用
+
+- **把 `private` 当安全边界**：第 ③ 节强调，`private` 只是编译期拒绝越权，用指针偏移/`memcpy`/友元仍可读写——把它当「加密」是危险误解；真正的边界在模块/进程。
+- **违反 LSP 的「正方形继承矩形」**：第 ⑨ 节经典反例，若 `Square` 公开继承 `Rectangle` 却改 `setWidth` 语义，调用方按 `Rectangle` 接口使用会出错——is-a 必须同时满足行为契约，而非仅类型相容。
+- **切片（slicing）**：第 ⑩/⑪ 节，把派生类对象按值赋给基类变量会切掉派生部分、丢失虚分派能力；所有「多态传递」必须用引用/指针/`unique_ptr<Base>`。
+- **名字隐藏（name hiding）误用**：第 ⑭ 节，派生类定义同名函数会隐藏基类所有重载，导致「想重载却覆盖」的静默错误，需用 `using Base::name;` 显式拉回（见第 ⑭ 节）。
+
+### ㉒.4 与标准的互动：封装/继承与 WG21 演进
+
+[史] C++98 确立访问控制与继承语义；**C++11 的 `override`/`final`（第 ⑮ 节）** 把「虚函数重写的意图」变成编译器可检查的项，并让 `final` 支持去虚化优化（ch47/第 ⑯ 节 NVI 惯用法由此更稳）。[史] **C++17/20 的 concepts（ch67）** 让「对基类施加约束」更优雅，间接改善了「继承 + 泛型」组合的可用性。**P0840 的 `[[no_unique_address]]`（C++20，ch52）** 让空基类在成员位置也能零开销，使「用基类承载策略/tag」的组合模式（Policy-Based Design，ch71）更自由。[评] WG21 方向是**弱化「深继承」鼓励「组合 + 概念约束」**，标准库自身（如 `std::pmr` 用组合而非继承切换后端）就在示范这条路径；`private`/`protected` 的编译期本质预计长期不变，因为运行时强制封装会破坏零开销承诺。
+
+### ㉒.5 权威引用
+
+- [cppreference: access specifiers](https://en.cppreference.com/w/cpp/language/access) — `public`/`private`/`protected` 语义（第 ③/⑤ 节）
+- [cppreference: derived classes / virtual](https://en.cppreference.com/w/cpp/language/derived_class) — 继承与虚函数重写规则
+- [WG21 P0840R2 — Language support for empty objects](https://wg21.link/P0840) — `[[no_unique_address]]`（C++20，组合/PB 设计）
+- [Barbara Liskov — Behavioral Subtyping（LSP 来源）](https://en.wikipedia.org/wiki/Liskov_substitution_principle) — 替换原则（第 ⑧ 节）
+- [cppreference: override / final specifiers](https://en.cppreference.com/w/cpp/language/override) — 虚函数重写安全（C++11，第 ⑮ 节）
+
 ## 附录 F：封装继承工业与面试
 
 ```cpp

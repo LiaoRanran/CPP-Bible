@@ -1054,6 +1054,35 @@ sanity: ch150 self-contained examples compile & run OK
 
 > **立场**：`[标准]` “可重复的测试”优先于“花哨的测试”。任何无法在本机一条命令复现的测试结果，都不应进入 C++ 主干——这是 ISO/IEC 29119 测试过程精神与工业实践的共识交集。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：从 SUnit 到 GoogleTest / Catch2
+[史] 单元测试框架源自 **Kent Beck** 1994 年的 **SUnit**（Smalltalk），随后 **JUnit**（2002）把 xUnit 范式带给 Java，C++ 最早有 **CppUnit**。Google 于 2008 年开源 **GoogleTest**（含 GoogleMock），用宏 + 类型丰富的断言成为 C++ 事实标准；**Catch2** 则以"自然语言表达测试用例 + 单头文件"的极简风格崛起。[评] C++ 测试框架的演进主线是"减少样板、增强失败诊断（哪边值不对）、与 CI 无缝对接"。
+
+### ㉒.2 真实工程坐标：测试活在哪些项目里
+- **GCC / LLVM**：各自有超大规模自研测试套件（GCC testsuite、`llvm-lit`），每次提交跑成千上万用例捍卫编译器正确性。
+- **Chromium**：以 GoogleTest 为单元测试底座，配合大规模端到端与模糊测试。
+- **无数库与产品**：Catch2 因其单头易集成，在中小库里极流行；游戏/嵌入式则用轻量自建框架。
+
+### ㉒.3 生产踩坑：测试的常见误用
+- **测实现而非行为**：断言私有细节，一重构测试就碎，维护成本反噬；应测可观察的行为契约。
+- **flaky 测试**：依赖时间/顺序/并发的测试随机失败，团队学会"重跑"，门禁失效（见第149章）。
+- **慢测试进关键路径**：重型集成测试塞进单元测试，CI 时长爆炸；应按测试金字塔（见 ①）分算力预算。
+- **不测 UB / 不跑 sanitizer**：逻辑测试全绿但 `data race`/`越界`仍在；应在 CI 开 ASan/UBSan/MSan 专项任务。
+- **忽视模糊测试**：手写用例覆盖不到畸形输入；**libFuzzer** 能以 coverage-guided 自动生成崩溃输入（见 ⑩）。
+
+### ㉒.4 与标准的互动：标准库与测试工具
+ISO C++ 标准不规定测试框架，但 `<random>`、`<chrono>`、`constexpr` 测试能力、以及"可观察行为"语义都服务于可测性。LLVM 的 **libFuzzer** 把"覆盖率引导的模糊测试"做成编译器基础设施（`-fsanitize=fuzzer`），已成为查找 C++ 解析器/协议栈漏洞的工业标配。[评] 现代 C++ 测试 = 单元(GoogleTest/Catch2) + sanitizer 门禁 + 模糊测试，三者叠加才接近"可信"。
+
+### ㉒.5 权威引用
+- [GoogleTest 仓库与文档](https://github.com/google/googletest) — C++ 单元/ mock 测试事实标准
+- [GoogleTest 官方文档（Primer/Advanced）](https://google.github.io/googletest/) — 断言、fixture、参数化用法
+- [Catch2 仓库](https://github.com/catchorg/Catch2) — 单头、自然语言风格的现代测试框架
+- [LLVM libFuzzer 文档](https://llvm.org/docs/LibFuzzer.html) — coverage-guided 模糊测试，查解析/协议漏洞
+- [ISO/IEC 29119（软件测试过程，标准精神）](https://www.iso.org/standard/60785.html) — 可重复测试过程共识
+
 ## 附录 E：测试中的编译器/原理/实战 [B: Principle / C: Compiler / I: Practice / J: Learning]
 
 ```

@@ -585,6 +585,33 @@ int main() { return bench(); }
 
 ---
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：容器适配器与「接口收窄」
+
+[史] `std::stack` / `std::queue` / `std::priority_queue` 随 C++98 进入标准，它们都是「容器适配器」——不是独立数据结构，而是在底层顺序容器（默认 `deque`）之上收窄接口：`stack` 只暴露 LIFO，`queue` 只暴露 FIFO，`priority_queue` 只暴露「按优先级取最大」。[史] 这一设计继承自 HP/SGI STL，体现了 STL「组合优于新建」的哲学：复用现有容器，用一层薄封装保证调用方不会误用底层能力。[轶] 一个有趣细节：`priority_queue` 默认用 `std::less` + `std::vector` 做底层 max-heap，而堆算法 `make_heap` / `push_heap` / `pop_heap` 本就是 STL 算法库的一部分。[评] 适配器的价值在于「用类型系统把非法操作变成编译错误」，比裸用 `vector` + 手动约定更可靠。
+
+### ㉒.2 真实工程坐标：适配器活在哪些产品里
+
+服务器请求优先级调度、任务队列、撤销栈是适配器的主场：`priority_queue` 常用于网络/游戏服务器的「高优先级包先处理」；`queue` 是生产者—消费者缓冲的标准写法；`stack` 用于表达式求值、DFS、括号匹配与递归模拟。几乎每个 C++ 服务的中间件层都能看到 `std::queue` / `std::priority_queue`——它们背后默认就是 `deque` / `vector` 的堆。
+
+### ㉒.3 生产踩坑：适配器的常见误用与陷阱
+
+[评] 最大误区是「默认底层容器带来的隐性成本」：`queue` / `stack` 默认底层是 `deque`（分段分配），在极致性能场景可用 `std::vector` 作底层以换取缓存友好（stack/queue 只用尾端，不影响）。另一坑是「`priority_queue` 没有「更新堆中元素优先级」的操作」——要改优先级必须 `pop` 再 `push`，或在外部用 `std::make_heap` 自行管理。还有「适配器没有迭代器」——不能遍历，误用会编译失败。
+
+### ㉒.4 与标准的互动：适配器与标准的稳定
+
+[史] `stack` / `queue` / `priority_queue` 自 C++98 几乎未变，C++11 仅为它们补上移动语义与 `emplace`；C++17 增加 `pmr` 多态分配器版本。[评] 它们是标准库中最「惰性」的一族——因为接口极其稳定、需求明确，WG21 几乎不讨论改动。近年唯一相关的演进是 `pmr` 分配器与 `constexpr` 化，方向仍是「在保证零开销的前提下，让适配器也能用上现代分配器与编译期计算」。
+
+### ㉒.5 权威引用
+
+- [cppreference: std::stack](https://en.cppreference.com/w/cpp/container/stack) — LIFO 适配器与默认底层 deque 的权威定义
+- [cppreference: std::priority_queue](https://en.cppreference.com/w/cpp/container/priority_queue) — 堆式优先级队列的权威定义
+- [open-std: WG21 提案索引](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/) — 查证适配器标准化历史的一手来源
+- [LLVM 项目仓库](https://github.com/llvm/llvm-project) — libc++ 的 queue/stack 工业实现参考
+
 ## 附录：练习题 / 思考题 / 更多完整可编译示例
 
 **练习题**

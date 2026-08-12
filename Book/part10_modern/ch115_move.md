@@ -979,6 +979,35 @@ int main() {
 
 ---
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：移动语义的来龙去脉
+
+移动语义的直接源头是 WG21 论文 N1377《A Proposal to Add Move Semantics Support to the C++ Language》（Howard Hinnant、Peter Dimov、Dave Abrahams，2002），它首次系统提出 `T&&`、移动构造/赋值，并明确与转发问题兼容。[史] 同年 Dave Abrahams 的 N1385《The Forwarding Problem: Arguments》把"如何把参数原样转发"单列为独立难题，二者共同催生了 C++11 的移动与转发设施。[史] 更早的 `std::auto_ptr`（C++98）曾用"拷贝即转移所有权"模拟移动，却因拷贝构造悄悄把源置空留下大量悬垂别名 bug，最终在 C++17 被正式弃用——它正是"我们缺一种只针对将亡对象语义"的证据。
+
+C++ 没有走 Rust 那条"移动后旧绑定编译期不可用"的路，而是把"别再用已移动对象"的责任交还程序员，换来与四十年存量代码的兼容；这是务实，也是长期负担。[评] `std::move` 是最被误解的名字之一：它只是 `static_cast<T&&>`，什么都不移动，真正的活儿是随后的移动构造/赋值干完的。[轶]
+
+### ㉒.2 真实工程坐标：移动语义活在哪些产品里
+
+标准库自身是最广泛的"用户"：`std::vector` 扩容、`std::string`(SSO)、`std::unique_ptr`、`std::future`、`std::async` 全靠移动消除深拷贝。[史] Chromium 的 `scoped_ptr`→`std::unique_ptr` 迁移、LLVM/Clang 的 `Value` 体系、游戏引擎（Unreal、Unity）的资源句柄都依赖移动传递所有权。高频交易与低延迟系统把"返回大对象零拷贝"当作硬指标；移动让 `std::vector` 在容器间转移所有权时几乎零成本，也是序列化框架（Protobuf、FlatBuffers 的 builder）的核心 idiom。
+
+### ㉒.3 生产踩坑：移动的常见误用与陷阱
+
+"移动后状态"是 valid but unspecified：误用已移动对象（再读它的值、再 move 它）是静默 bug 温床；标准只保证可析构/可赋值，不保证值不变。[史] noexcept 陷阱最常见：`std::vector` 扩容若发现移动构造未标 `noexcept`，会经 `std::move_if_noexcept` 退回拷贝以保证强异常安全，移动优化"凭空消失"——这是"为什么没快起来"的头号原因。`return std::move(local)` 是反模式：它把具名对象从 NRVO 候选降级为必须移动，反而阻碍拷贝消除（见 ch117）。[轶] 对 `const` 对象 `std::move` 退化为拷贝；跨 ABI/DLL 边界传递含移动类型的对象时，若两侧标准库实现不一致，移动可能悄悄变成拷贝或链接失败。
+
+### ㉒.4 与标准的互动：移动语义与 C++ 标准的演进
+
+移动语义随 C++11 入标（N1377 系列），与右值引用、完美转发一起构成"零开销所有权转移"三件套；C++17 引入 guaranteed copy elision（P0135）与移动互补，进一步消灭冗余构造。[史] C++20/23 用 `[[nodiscard]]`、更严格的值类别规则让"误用已移动对象"更易被静态检查捕捉；`std::move` 的语义从未改变——它永远是转型而非动作。与 WG21 方向一致：标准持续把"冗余构造"从可选优化升格为语言保证，但"移动后状态责任归程序员"这一取舍至今未变。[评]
+
+### ㉒.5 权威引用
+
+- [cppreference: move semantics](https://en.cppreference.com/w/cpp/language/move_semantics) — 右值引用与移动语义的语言层权威说明
+- [cppreference: std::move](https://en.cppreference.com/w/cpp/utility/move) — std::move 只是 static_cast 的权威定义
+- [WG21 N1377 — A Proposal to Add Move Semantics Support to the C++ Language](https://wg21.link/n1377) — 移动语义的奠基提案（Hinnant 等，2002）
+- [cppreference: value category](https://en.cppreference.com/w/cpp/language/value_category) — lvalue/prvalue/xvalue 体系，移动语义的基石
+
 ## 附录：练习题 / 思考题 / 源码阅读路线
 
 ### 练习题

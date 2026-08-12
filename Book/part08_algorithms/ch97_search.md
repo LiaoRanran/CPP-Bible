@@ -861,6 +861,39 @@ int s8() {
 }
 ```
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：查找算法的经典谱系
+
+[史] 二分查找的思想由 **John Mauchly（1946）** 提出、**Derrick Lehmer（1948）** 形式化，最终写进 Knuth《计算机程序设计艺术》第 6.2.1 节，是「以比较次数换对数时间」的鼻祖。C++ 标准库把它编码为 `std::lower_bound`/`std::upper_bound`/`std::equal_range`/`std::binary_search`（C++98 STL）。[史] 哈希查找则源于 **Hans Peter Luhn（1953，IBM）** 的哈希链思想，经 **Dijkstra、Knuth** 等人完善，C++98 用 `std::hash` + `std::unordered_*` 落地（2003 TR1 引入，C++11 转正）。[轶] 早期 STL 没有 unordered 容器，boost::unordered 与 SGI hash_map 是过渡；C++11 才把哈希表纳入标准。[评] 查找选型的核心矛盾是「有序数组 O(log n) + 缓存友好 + 内存紧凑」vs「哈希表 O(1) 均摊 + 但缓存不友好 + 需好哈希」——本章正是要把这层权衡讲清。
+
+### ㉒.2 真实工程坐标：查找活在哪些产品里
+
+- **Redis**：用字典（dict，哈希表）+ 跳表（skiplist，有序查找）双结构——哈希做 O(1) 定位，跳表支撑范围/ZSET 有序遍历，是「哈希+有序」并用的经典。
+- **Linux 内核**：`bsearch` 用于已排序的配置/符号表查找；哈希（如 dentry 缓存）用于路径名快速定位；`hlist`/`rhashtable` 是内核级哈希表实现。
+- **数据库/存储（LevelDB/RocksDB/SQLite）**：MemTable 用跳表（有序），SSTable 块内用 `std::lower_bound` 二分，布隆过滤器（哈希）先挡无效查找——三种查找策略层级组合。
+- **编译器（LLVM）**：用哈希表（StringMap/DenseMap）做符号/标识符 O(1) 查，用二分在已排序的指令/属性表内定位。
+
+### ㉒.3 生产踩坑：查找的常见误用
+
+- **在有序区间用线性查找**：数据本来有序（已排序 vector、`std::map`）却用 `std::find`（O(n)）；应改 `std::lower_bound`/`std::map::find`，数据量增长后性能断崖。
+- **二分前未保证有序**：`std::lower_bound`/`binary_search` 要求区间**严格有序**，否则结果未定义；常见 bug 是排序后被并发/就地修改破坏，或用了错误比较器。
+- **哈希碰撞/劣质哈希导致退化**：`std::unordered_*` 遇劣质哈希或大量相等 key 会退化到链表 O(n)；自定义类型务必提供均匀分布的 `std::hash` 且不依赖指针地址作为稳定 key。
+- **浮点/NaN 比较破坏二分不变量**：比较器在浮点含 NaN 时返回不一致，会破坏有序性，使二分走入死循环或漏解——查找前先处理 NaN 语义。
+
+### ㉒.4 与标准的互动：查找与 C++ 标准的演进
+
+[史] 有序查找（`std::lower_bound` 族）随 **C++98（STL）** 进入标准；**哈希容器 `std::unordered_*` 经 TR1（2003）后于 C++11 转正**，把 O(1) 均摊查找纳入标准库；**C++17** 引入 `std::string_view` 使「不拷贝地查子串/前缀」更便宜，并引入 `std::search` 的并行/ Boyer–Moore 增强（P0253）；**C++20** 提供 `std::ranges` 版查找与投影。**C++26** 还在推进 `std::hive` 等新型容器。查找库演进主线是「更省拷贝 + 更强约束 + 与 Ranges 一致」。
+
+### ㉒.5 权威引用
+
+- [cppreference: 标准库算法总览（含查找）](https://en.cppreference.com/w/cpp/algorithm) — `lower_bound`/`binary_search`/`find`/`search` 等全部查找算法的契约。
+- [cppreference: 无序关联容器 std::unordered_map](https://en.cppreference.com/w/cpp/container/unordered_map) — C++11 哈希表语义、复杂度与哈希要求。
+- [WG21 P0024R2 — 并行算法执行策略（含并行 search）](https://wg21.link/p0024) — C++17 把查找纳入并行执行策略。
+- [Knuth — The Art of Computer Programming Vol.3 §6.2.1（二分查找经典论述）](https://www-cs-faculty.stanford.edu/~knuth/taocp.html) — 二分/查找算法的权威理论出处。
+
 ## 附录 A：工业查找算法 [F: Industry / B: Principle / G: Performance]
 
 ```

@@ -879,6 +879,35 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 | [第153章](Book/part14_perf/ch153_cpu_micro.md) | 无锁队列/计数器 | 本章提供概念，第153章提供实现 |
 | [第156章](Book/part14_perf/ch156_compiler_opt.md) | 多线程服务器 | 本章提供概念，第156章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：缓存与"硬件干扰大小"进标准
+[史] 多级缓存（L1/L2/L3）自 1990 年代成为 CPU 标配，64 字节 cache line 也长期固定；但 C++ 程序员长期只能靠 `alignas(64)` 这类"魔法数"规避伪共享。C++17 引入 **`std::hardware_destructive_interference_size`**（写者间应避免共享的最小字节数）与 **`std::hardware_constructive_interference_size`**（读者间宜共享），把"缓存行大小"变成可移植的标准常量，背后是 Lawrence Crowl 等人的提案工作。[史] 同时，Ulrich Drepper 2007 年的内存论文把"为什么遍历顺序决定性能"讲成工程常识（见第153章 ㉒.1）。[评] 缓存优化本质是把"硅片的事实"翻译成"数据布局"——标准终于给了可移植的表达。
+
+### ㉒.2 真实工程坐标：缓存优化活在哪些项目里
+- **游戏引擎 / 粒子系统**：普遍用 **SoA（Structure of Arrays）** 让同类字段连续，便于 SIMD 与缓存预取（见 ⑪）。
+- **高频交易 / 行情系统**：把热路径数据按 cache line 对齐、避免伪共享，单点延迟可差数倍。
+- **数据库 / 列式存储**：用 cache blocking（分块）让工作集留在 L1/L2，B+ 树与列存都受益（见 ⑰）。
+- **Chromium**：源码里大量 `LinkedList`→`flat_map`、用 `StringPiece` 零拷贝减 cache footprint（见其工业附录）。
+
+### ㉒.3 生产踩坑：缓存优化的误用
+- **伪共享（false sharing）**：两个线程各写相邻字段，却落在同一 cache line，反复 invalidate 彼此；用 `alignas(64)` 或 `hardware_destructive_interference_size` 隔开（见 ⑧⑩）。
+- **AoS 缓存不友好**：`struct{int x;int y;int z;} arr[N]` 只要 x 时仍搬来 y/z，浪费带宽；热循环改 SoA。
+- **盲目 padding**：为对齐每个字段都加 padding，内存膨胀、反而降低缓存容量利用率；只在真有跨线程争用的字段间对齐。
+- **忽略遍历顺序**：行优先/列优先写反，矩阵遍历 miss 飙升（见 ⑬⑭）。
+
+### ㉒.4 与标准的互动：从 alignas 到 interference_size
+C++11 的 `alignas` 让"按 cache line 对齐"合法化；C++17 的 `hardware_destructive/constructive_interference_size` 进一步把"该对齐多少"交给实现定义（典型 64）。`std::assume_aligned`（C++20）则让编译器相信某指针已对齐，从而放开向量化（见 ⑱）。[评] 这些设施把"缓存意识"从魔法数提升为标准可移植代码。
+
+### ㉒.5 权威引用
+- [cppreference: std::hardware_destructive_interference_size](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size) — 防伪共享的标准常量（C++17）
+- [Agner Fog — Microarchitecture](https://www.agner.org/optimize/) — cache/TLB/端口的底层事实
+- [What Every Programmer Should Know About Memory（Drepper）](https://www.akkadia.org/drepper/cpumemory.pdf) — 缓存层级与局部性经典
+- [cppreference: alignas / alignof](https://en.cppreference.com/w/cpp/language/alignas) — 标准对齐设施
+- [perf Wiki（cache 计数器）](https://perf.wiki.kernel.org/) — 用硬件计数器量化 cache miss
+
 ## 附录 E：Cache优化工业
 
 Chromium: LinkedList->flat_map(连续内存); StringPiece(零拷贝减少Cache footprint)

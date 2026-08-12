@@ -986,6 +986,40 @@ int main() {
 | [第135章](Book/part12_patterns/ch135_patterns_intro.md) | 多态插件/框架扩展 | 本章提供概念，第135章提供实现 |
 | [第45章](Book/part05_oo/ch45_oop_object_model.md) | 泛型库/编译期计算 | 本章提供概念，第45章提供实现 |
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节是 P0-15「全库工业/标准深度升维」大波次的一部分：把抽象的语言机制放回它真正的来处——谁、在哪一年、为了解决什么产业痛点而提出；并在真实代码库与标准演进之间建立可验证的坐标。
+
+### ㉒.1 历史纵深：从 IoC 到「依赖注入」一词
+
+- `[史]` 控制反转（Inversion of Control, IoC）由 Johnson 与 Foote 在 1988 年提出；**2004 年 Martin Fowler** 发表名文《Inversion of Control Containers and the Dependency Injection pattern》，把「组件自行查找依赖」反转为「由外部把依赖注入进来」，并正式定名 **Dependency Injection（依赖注入）**。
+- `[史]` DI 随 Java Spring / PicoContainer 走红，核心理念随后被 C++ 社区吸收：把「对象需要什么」与「对象怎么造」解耦，提升可测试性与可配置性。
+
+### ㉒.2 真实产业坐标：把接线从代码里搬出来
+
+- **Google Fruit**：Google 出品的编译期 C++ 依赖注入框架，靠模板在编译期解析依赖图、注入构造参数。
+- **Boost.DI（boost-ext/di）**：现代 C++ DI 库，支持构造注入、注解、多绑定与运行时/编译期混合解析。
+- 大型 C++ 服务（游戏引擎子系统、后端微服务、嵌入式应用框架）用 DI 把数据库/网络/配置等「可替换部件」在启动期装配好。
+
+### ㉒.3 生产踩坑：注入不是银弹
+
+- **服务定位器反模式**：用全局容器「随时取依赖」等于换皮全局变量，破坏显式依赖；DI 一定要「构造函数显式声明所需依赖」。
+- **生命周期（lifetime）错误**：单例 / 瞬时 / 作用域（singleton / transient / scoped）配错，会出现重复构造、提前析构、跨线程共享可变状态等 bug。
+- **循环依赖**：A 依赖 B、B 又依赖 A，容器解析时会死循环或报环；需引入懒加载 / 接口拆分。
+- **模板化 DI 库编译慢**：Fruit / Boost.DI 大量模板实例化，大型项目编译时间明显上升，需缓存/预编译头缓解。
+
+### ㉒.4 与 C++ 标准的互动
+
+- `[评]` C++ 不强制 DI 框架：用「构造函数接收 `std::unique_ptr`/`std::shared_ptr` 明确所有权」即可实现轻量 DI，容器是「可选增强」而非必需。
+- 工厂函数 + `if constexpr` + `std::variant` 也能在编译期做条件装配，标准库本身不提供 DI 容器，把这个空间留给社区库。
+- `[评]` 标准演进方向是「用智能指针语义让所有权显式化」，这与 DI 的「显式依赖」哲学天然一致。
+
+### ㉒.5 权威参考（建议延伸阅读）
+
+- Martin Fowler 依赖注入经典文章：<https://martinfowler.com/articles/injection.html>
+- Boost.DI（现代 C++ 依赖注入库）：<https://github.com/boost-ext/di>
+- Google Fruit（编译期 C++ DI 框架）：<https://github.com/google/fruit>
+
 ## 附录 F：DI工业
 
 ```cpp

@@ -724,6 +724,39 @@ struct safe_task {
 - `[标准]`：上表每格对应 `[dcl.fct.def.coroutine]` 条款；协程是**纯语言变换**，不隐含并发。
 - `[经验]`：把这张表贴在工作台，写协程前先确认"帧生命周期由谁管、异常往哪走"两条。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：C++ 协程从 TS 到 C++20
+
+[史] C++ 协程（coroutines）由 **Gor Nishanov（Microsoft）** 主导提案，原型最早在 **2014 年即随 MSVC 发布预览**；它先以 **Coroutines TS（N4663，2017）** 形式独立演进，最终由 **P0912R5（Merge Coroutines TS into C++20，2019）** 合入 **C++20**。提案正文披露：该协程实现已在超 **4 亿台设备**上部署（Windows Azure 云服务等），多个主流编译器（MSVC 2015 SP2、Clang 5）已有 TS 实现。[史] 协程的语言机制（`co_await`/`co_yield`/`co_return`、promise 类型、`std::coroutine_handle`）本质是**编译器变换**：把函数拆成「可挂起/恢复的状态机 + 堆分配的协程帧」。[轶] C++20 协程刻意**只标准化了底层原语**（`<coroutine>`），刻意**没**给出现成的 `task`/`generator`——标准库层的高级封装（如 `std::generator` 在 C++23）是后来补的；因此生态里 `cppcoro`（Lewis Baker）、`folly::coro`、Boost.Asio 协程早早填补空白。[评] 协程是「栈无关（stackless）」的，挂起不占线程栈——这使它适合海量并发 I/O，但也带来「帧堆分配、必须在同线程恢复」的工程约束。
+
+### ㉒.2 真实工程坐标：协程活在哪些产品里
+
+- **cppcoro（Lewis Baker）**：最著名的 C++ 协程库，提供 `task<T>`/`generator<T>`/`async_generator<T>`/`async_mutex` 等，是理解 `co_await` 生态的最佳参考实现（被本章与社区广泛引用）。
+- **Facebook Folly（folly::coro）**：工业级异步框架，用协程重写异步 I/O 与 future，显著降低回调地狱；Meta 大规模线上服务依赖它。
+- **Boost.Asio / 网络框架**：Asio 的 `awaitable<>`/`co_spawn` 把异步回调改写成顺序写法，是 C++ 服务端协程的主流入口。
+- **游戏 / 客户端（Unreal、Azure 云服务）**：P0912 提案正文披露协程已部署于 Windows Azure 等基础服务；游戏脚本与异步加载用协程化简状态机。
+
+### ㉒.3 生产踩坑：协程的常见误用
+
+- **跨线程恢复协程句柄（UB）**：`coroutine_handle::resume()` 在「非当初挂起所在执行代理」上调用是**实现定义/未定义**行为；跨线程恢复必须用 `std::thread` 或分布到各自线程，否则可能持锁跨挂起点导致数据竞争（提案明确警告）。
+- **帧堆分配开销与泄漏**：每次 `co_await` 挂起都涉及协程帧（堆）分配；热路径高频创建协程会被分配器拖垮；且若协程永远不走到 final-suspend 被 resume，框架泄漏。库作者用 `noop_coroutine`、帧池化缓解。
+- **在协程里用阻塞调用（睡死线程）**：协程的价值是「挂起让出线程」，若在 `co_await` 前/后做 `sleep`/同步 I/O，等于白用协程——必须全程异步，否则线程被占、并发度塌方。
+- **`co_await` 异常路径与帧析构**:协程在 final-suspend 前若 `unhandled_exception()` 退出，帧清理语义易错;自定义 promise 必须正确处理异常,否则资源泄漏或 double-free。
+
+### ㉒.4 与标准的互动：协程与 C++ 标准的演进
+
+[史] 协程由 **P0912R5** 合入 **C++20**（底层原语 + `<coroutine>`）；**C++23** 首次在标准库给出高层封装 **`std::generator`（P2168）** 与 `std::ranges` 配合；**C++26** 推进 **`std::execution`（P2300，sender/receiver 异步模型）** 与协程深度整合、并探索「无栈/有栈」「可恢复函数」的进一步简化。与 WG21 方向一致：先标准化「可移植的底层变换」，再逐步补齐「开箱即用的高层异步抽象」，同时持续解决帧分配、取消（cancellation）、错误传播等边角难题。
+
+### ㉒.5 权威引用
+
+- [cppreference: Coroutines (C++20)](https://en.cppreference.com/w/cpp/language/coroutines) — `co_await`/`co_yield`/`co_return`、promise 与协程帧的权威语义。
+- [WG21 P0912R5 — Merge Coroutines TS into C++20](https://wg21.link/p0912) — 协程合入 C++20 的核心提案（Gor Nishanov，披露 4 亿+ 设备部署）。
+- [cppcoro（Lewis Baker 的 C++ 协程库）](https://github.com/lewissbaker/cppcoro) — 工业级 `task`/`generator` 参考实现，协程生态的事实标准。
+- [WG21 P2168 — std::generator（C++23）](https://wg21.link/p2168) — C++23 把 `std::generator` 纳入标准库的提案。
+
 ## 附录: Coroutine 原语深度
 
 ```cpp

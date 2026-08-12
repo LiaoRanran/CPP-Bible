@@ -494,6 +494,33 @@ static_assert(std::is_integral_v<int>);   // true，编译期已知
 - **思考题**：SFINAE 与 Concepts 在 ABI 层是否等价？参见 ch67 的 mangled 对比——二者都只为「胜出候选」发射一份实例化。
 - **源码阅读路线**：`type_traits` 行号：106（`enable_if`）、2610（`enable_if_t`）、2632（`void_t`）；`ch62_specialization.md`（偏特化是 SFINAE 的载体）、`ch65_type_traits.md`（trait 是条件源）、`ch67_concepts.md`（C++20 替代）、`ch75_template_diag.md`（SFINAE 报错可读性）。
 
+## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
+
+> 本节为 P0-15 全库深度升维大波次之一：压实历史出处、真实产业坐标、生产级踩坑与「本特性与 C++ 标准」的互动。引用链接列于 ㉒.5。
+
+### ㉒.1 历史渊源补强：SFINAE 如何被「逆向工程」成编程范式
+[史] SFINAE（Substitution Failure Is Not An Error）这条规则最早隐含在 1990 年 ARM 的模板替换语义里，名字由 David Vandevoorde 与 Nicolai Josuttis 在经典著作中正式概括。它的本意是「宽容」：模板实参替换若失败，别急着报错，先把它从候选集悄悄踢走，让别的重载上位。库作者随后发现——这居然是做「按能力选择重载」的完美开关，于是 `enable_if` 式写法流行开来；Boost.EnableIf 在 2000 年代把它包装成易用工具，C++11 收编 `std::enable_if`。
+[轶] 这条「把编译器的容错机制逆向工程成编程范式」的奇事，是 C++ 社区「在约束匮乏时代自己造工具」的典型缩影，也成就了无数老标准库与老框架的编译期分发逻辑。
+
+### ㉒.2 真实工程坐标：SFINAE 活在哪些产品/项目里
+- Boost 全家桶：`Boost.EnableIf`、`Boost.TypeTraits`、`Boost.Serialization` 大量用 SFINAE 做「按类型能力选重载」，是这套技法的工业发源地。
+- 标准库自身：`std::enable_if` 驱动的 `std::vector` 的 `is_same` 特化路由、`std::shared_ptr` 的数组特化、`std::iterator_traits` 对指针的偏特化分支，底层都是 SFINAE。
+- 序列化/反射库（Cereal、Magic Enum）用 `void_t` 检测 idiom 判断「类型 T 是否有 serialize 方法」，编译期分流。
+
+### ㉒.3 生产踩坑：SFINAE 的常见误用与陷阱
+- **报错信息天书**：一旦 SFINAE 没按预期筛掉重载，最终错误往往是一长串「无匹配重载」，根因（哪个替换失败）藏在几百行实例化回溯深处，极难定位。
+- **`enable_if` 摆错位置**：把它放在函数体内不会触发替换失败，只能放在返回类型、默认模板实参或尾随返回位置，否则约束失效。
+- **硬错误 vs 替换失败混淆**：被探测的表达式若是「硬错误」（而非单纯的替换失败），会直接编译失败，而不是被 SFINAE 丢弃——这是 `void_t` 检测 idiom 最常见的翻车点。
+- **与 concepts 的语义缝隙**：C++20 之后，能用 `requires` 表达的应尽量改用 concepts，遗留 SFINAE 与新约束混用时，两套「重载筛选」规则可能给出不同胜出者。
+
+### ㉒.4 与标准的互动：从潜规则到被 concepts 收编
+SFINAE 自 C++98 起就是模板替换的沉默规则，「故意触发失败来筛重载」是社区在 2000 年代「玩出来」的技法，`std::enable_if`（C++11）把它变成明文工具。C++20 的 `requires` 表达式与 concepts（ch67）接管了「大部分」SFINAE 场景：约束可读性、报错定位都更好。但 SFINAE 并未退场——细粒度到「某个表达式是否良构」的探测（如「类型 T 有没有 `.size()` 且返回整数」）仍广泛存在于老库代码中，新旧写法将长期并存。
+
+### ㉒.5 权威引用
+- [cppreference: SFINAE](https://en.cppreference.com/w/cpp/language/sfinae) — 替换失败非错误的权威说明与 Library support（`enable_if`/`void_t`）
+- [cppreference: std::enable_if](https://en.cppreference.com/w/cpp/types/enable_if) — `std::enable_if` 的用法与惯用法
+- [cppreference: Templates](https://en.cppreference.com/w/cpp/language/templates) — 模板替换语义的总背景（SFINAE 的栖身之处）
+
 ## 附录: SFINAE 深度
 
 ```cpp
