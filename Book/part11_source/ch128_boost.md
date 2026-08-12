@@ -197,7 +197,7 @@ Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg �
 ```
 
 - `[实现·GCC15]`：本机 g++ 13.1.0 的 `std::shared_ptr` 实现（libstdc++）采用同一思路（`_Sp_counted_base` 的 `_M_use_count` 用 `__atomic_fetch_add`），与上游 Boost 思路一致。
-- `[平台]`：控制块通常 16 字节对齐分配（`new Widget` 与计数一起或分离），影响缓存局部性。
+- `[平台·Windows]`：控制块通常 16 字节对齐分配（`new Widget` 与计数一起或分离），影响缓存局部性。
 
 ```cpp
 // ④ 文件：https://github.com/boostorg/filesystem/blob/develop/include/boost/filesystem/path.hpp
@@ -541,7 +541,7 @@ void worker(){ boost::thread t([]{ /* ... */ }); t.join(); }
 boost::endian::big_int32_t net_value = 0x01020304;  // 大端存储，跨机一致
 ```
 
-- `[平台]`：Boost 在 Windows（MSVC/MinGW）、Linux（glibc）、macOS 上均通过回归测试；但**同一 Boost 版本在不同编译器 ABI 下二进制不兼容**。
+- `[平台·Windows]`：Boost 在 Windows（MSVC/MinGW）、Linux（glibc）、macOS 上均通过回归测试；但**同一 Boost 版本在不同编译器 ABI 下二进制不兼容**。
 - `[经验]`：跨平台项目把平台分支收敛进 Boost 组件，业务代码保持纯净。
 
 ## ⑬ 常见陷阱（版本 / ABI）
@@ -662,7 +662,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 ```
 
 - `[经验]`：Boost 评审极严（常需多轮）；工业界更常见的是**内部 fork + 补丁回流**，而非从零提案新库。
-- `[平台]`：CI 矩阵覆盖 GCC/Clang/MSVC 多版本，确保跨平台可移植——这是 Boost 质量的来源。
+- `[平台·Windows]`：CI 矩阵覆盖 GCC/Clang/MSVC 多版本，确保跨平台可移植——这是 Boost 质量的来源。
 
 ## ⑱ 与标准对应表（哪些进 C++11 / 14 / 17 / 20 / 23）
 
@@ -774,7 +774,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 ```
 
 - `[经验]`：2026 年的工程共识是"**标准优先，Boost 补缺**"——能用 `std::` 就用，把 Boost 留给标准尚未覆盖的高地（异步网络、HTTP/WS、几何、解析器、重型 TMP）。
-- `[平台]`：跨平台部署务必用包管理器（vcpkg/Conan）固定 Boost 版本，规避 ABI 错配这一最大陷阱。
+- `[平台·Windows]`：跨平台部署务必用包管理器（vcpkg/Conan）固定 Boost 版本，规避 ABI 错配这一最大陷阱。
 
 > 偏离说明：本章为"源码解析类"特例，按任务要求采用 20 元素自定义轮廓（①概述…⑳速查表），未套用 CONVENTIONS.md 的通用 20 元素模板；交叉引用仅指向 CONVENTIONS.md 与本章示例，未引用其他章节。源码剖析因本机未装 Boost，统一以"上游参考"+ 上游 URL + 行号方式给出，并以本机 g++ 真实编译的自包含复刻示例（见 ⑧⑨）作为取证证据。
 

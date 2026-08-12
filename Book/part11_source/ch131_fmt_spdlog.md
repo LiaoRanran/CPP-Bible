@@ -123,7 +123,7 @@ using is_compile_string = std::is_base_of<compile_string, S>;
 ```
 
 - `[实现·fmt]`：`FMT_CONSTEVAL` 构造函数保证校验**只能发生在编译期**（C++20 `consteval`），运行期零开销；`format_string_checker` 携带 `Args...` 的类型列表，边扫描边核对。
-- `[平台]`：该机制依赖 C++20 `consteval`/类类型 NTTP；C++17 下 fmt 退化为用 `FMT_STRING` 宏 + `constexpr` 触发近似检查。
+- `[平台·Windows]`：该机制依赖 C++20 `consteval`/类类型 NTTP；C++17 下 fmt 退化为用 `FMT_STRING` 宏 + `constexpr` 触发近似检查。
 
 ## ④ spdlog 架构（logger / registry / sink） [标准]
 
@@ -379,7 +379,7 @@ spdlog::flush_every(std::chrono::seconds(3));     // 周期 flush
 - `[经验]`：调试时把级别降到 `debug`/`trace`，配合彩色 pattern；长流程用 `flush_every` 防崩溃丢尾。
 - `[平台·Windows]`：Windows 控制台建议 `spdlog::sinks::stdout_color_sink_mt`（自动 ANSI 适配）。
 
-## ⑪ 跨平台 [平台]
+## ⑪ 跨平台 [平台·Windows]
 
 ```cpp
 // ⑪ 按平台选 sink：Windows 用 msvc 颜色，POSIX 用 ansi 颜色
@@ -404,7 +404,7 @@ auto f = std::filesystem::path("logs/app.log").string();
 auto s = std::make_shared<spdlog::sinks::basic_file_sink_mt>(f);
 ```
 
-- `[平台]`：fmt 是纯头文件、无平台依赖；spdlog 的 msvc/ansicolor sink 自动处理各平台颜色转义。
+- `[平台·Windows]`：fmt 是纯头文件、无平台依赖；spdlog 的 msvc/ansicolor sink 自动处理各平台颜色转义。
 - `[经验]`：跨平台项目统一用 `std::filesystem::path` 构造日志路径，避免 `\`/`/` 差异。
 
 ## ⑫ 常见陷阱：格式化用户类型需特化 [经验]
@@ -477,7 +477,7 @@ auto async = spdlog::basic_logger_mt<spdlog::async_factory>("a", "log.txt");
 ```
 
 - `[经验]`：① 命名参数用于复杂格式；② 循环内用 `memory_buffer`+`format_to` 复用；③ 延迟敏感路径用 spdlog 异步工厂。
-- `[平台]`：异步模式需 `spdlog::init_thread_pool` 且进程退出前 `spdlog::shutdown()` flush 队列。
+- `[平台·Windows]`：异步模式需 `spdlog::init_thread_pool` 且进程退出前 `spdlog::shutdown()` flush 队列。
 
 ## ⑮ 与 std::format 对应（C++20，std::format 借鉴 fmt） [标准]
 
@@ -522,7 +522,7 @@ spdlog::info("point={}", Point{3, 4});     // 走同一 formatter 特化
 ```
 
 - `[经验]`：为领域类型实现一次 `fmt::formatter<T>`，fmt 与 spdlog 同时受益——这是二者「共用格式化层」的最大便利。
-- `[平台]`：若禁用 fmt 依赖，spdlog 可切换到 `SPDLOG_FMT_EXTERNAL` / 自带 `wchar` 模式，但默认即内嵌 fmt。
+- `[平台·Windows]`：若禁用 fmt 依赖，spdlog 可切换到 `SPDLOG_FMT_EXTERNAL` / 自带 `wchar` 模式，但默认即内嵌 fmt。
 
 ## ⑰ 贡献 [经验]
 
@@ -575,7 +575,7 @@ void bench_ios() {
 ```
 
 - `[经验]`：量级（基于 fmt 官方 bench，非本机实测，仅示意）：在百万级「整数+短串」格式化中，fmt 通常比 `<iostream>`（含 `ostringstream`）快 **5×–20×**，比 `snprintf` 快 **1×–3×**；差异主要来自避免 locale 查询、单次缓冲、整数快速路径。
-- `[平台]`：具体数字随编译器/CPU/libc 大幅波动；`std::format`（libstdc++/MSVC）与 fmt 同量级，部分实现已反超。
+- `[平台·Windows]`：具体数字随编译器/CPU/libc 大幅波动；`std::format`（libstdc++/MSVC）与 fmt 同量级，部分实现已反超。
 
 ## ⑲ 调试 / 源码阅读 [实现·fmt]
 
@@ -727,7 +727,7 @@ int main() {
 4. **包管理器**：vcpkg `vcpkg install fmt spdlog` 或 Conan `fmt/10.2.1` 一键拿预编译包。
 5. **取舍**：高频热路径用 `fmt::format_to` + 复用 `memory_buffer` 避免重复分配；异步日志用 `spdlog::async_factory`（见第⑭/附录 F）。
 
-- `[平台]`：fmt / spdlog 均为 header-only，跨平台零依赖；链接只需把包含目录与（静态）库指对。
+- `[平台·Windows]`：fmt / spdlog 均为 header-only，跨平台零依赖；链接只需把包含目录与（静态）库指对。
 - `[引用]` fmt 文档：`https://fmt.dev/latest/`；spdlog：`https://github.com/gabime/spdlog`。
 
 ## 附录 E：fmt/spdlog工业 [UNVERIFIED]

@@ -235,7 +235,7 @@ int main() {
 
 ---
 
-## ⑤ 矩阵构建（多编译器/多平台）[平台]
+## ⑤ 矩阵构建（多编译器/多平台）[平台·Windows]
 
 矩阵（matrix）让同一份代码在“编译器 × 标准 × OS × 架构”的组合上并行验证，尽早暴露平台相关缺陷。
 
@@ -300,7 +300,7 @@ strategy:
     std:    [17, 20]
 ```
 
-> **立场**：`[平台]` `[标准]` Windows 上 MSVC 与 MinGW 的 ABI、异常处理、`_WIN32` 宏行为差异巨大；**C++ 跨平台库必须把 Windows 纳入矩阵**，否则“在我机器上能编译”的事故会反复上演。
+> **立场**：`[平台·Windows]` `[标准]` Windows 上 MSVC 与 MinGW 的 ABI、异常处理、`_WIN32` 宏行为差异巨大；**C++ 跨平台库必须把 Windows 纳入矩阵**，否则“在我机器上能编译”的事故会反复上演。
 
 ---
 
@@ -600,7 +600,7 @@ COPY --from=builder /src/build/app /usr/local/bin/app
 ENTRYPOINT ["/usr/local/bin/app"]
 ```
 
-> **立场**：`[平台]` Windows 容器与 Linux 容器在 C++ 构建上差异显著：Windows 还需考虑 MSVC 运行时 redistributable、`.dll` 随包；**跨平台 C++ 制品建议每个目标 OS 一个镜像**，不要试图“一个镜像通吃”。
+> **立场**：`[平台·Windows]` Windows 容器与 Linux 容器在 C++ 构建上差异显著：Windows 还需考虑 MSVC 运行时 redistributable、`.dll` 随包；**跨平台 C++ 制品建议每个目标 OS 一个镜像**，不要试图“一个镜像通吃”。
 
 ---
 
@@ -872,7 +872,7 @@ $ g++ -std=c++17 -O2 -Wall -Wextra -o bld Examples/_ch149_case_build.cpp && ./bl
 built with -std=c++17 -O2 -Wall -Wextra
 ```
 
-> **立场**：`[平台]` 工作流在 `ubuntu-latest` 写就，却要在 `windows-latest` 通过，须全程使用**正斜杠路径与 CMake**（而非 MSBuild 专属 `.sln` 假设），否则 Windows runner 会“配置即失败”。
+> **立场**：`[平台·Windows]` 工作流在 `ubuntu-latest` 写就，却要在 `windows-latest` 通过，须全程使用**正斜杠路径与 CMake**（而非 MSBuild 专属 `.sln` 假设），否则 Windows runner 会“配置即失败”。
 
 ---
 

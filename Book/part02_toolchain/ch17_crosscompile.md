@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
 - `[平台·ARM]`：Cortex-M 裸机没有 `main` 的“魔法”入口，复位后 PC 直接指向向量表第二项（`_start`/Reset_Handler）。
 - `[经验]`：裸机工程 90% 的“编过了却跑不起来”源于 **启动文件/链接脚本/FPU 选项三者不一致**，而不是 C++ 代码。
 
-## ⑤ [实现]真实：用本机 g++ 编译小程序展示 x86 调用约定/对齐 [实现·GCC15]
+## ⑤ [实现·GCC15]真实：用本机 g++ 编译小程序展示 x86 调用约定/对齐 [实现·GCC15]
 
 本机是 x86-64 MinGW-W64，采用 **Microsoft x64 调用约定**（非 System V）：前 4 个整数参数依次进 `RCX, RDX, R8, R9`，第 5、6 个压栈；调用方还需预留 **32 字节 shadow space（影子空间）**。
 
@@ -281,7 +281,7 @@ extern "C" void _start() {
 - `[平台·ARM]`：Flash 通常从 `0x08000000` 开始执行，链接脚本（见 `Examples/_ch17_stm32.ld`）必须把 `.isr_vector` 放最前。
 - `[经验]`：`.bin` 不含地址信息，烧录工具必须知道基址；`.hex`(Intel HEX) 自带地址更省心，量产前优先。
 
-## ⑪ [实现]对比：x86 与 ARM 同一函数的汇编差异（ARM 段明确标注“典型输出”） [实现·GCC15]
+## ⑪ [实现·GCC15]对比：x86 与 ARM 同一函数的汇编差异（ARM 段明确标注“典型输出”） [实现·GCC15]
 
 取第⑤节的 `manhattan(Point)` 与 `make_point`，对比两套 ABI 对同一语义的不同寄存器分配：
 
@@ -371,7 +371,7 @@ void toggle() { g_dbg ^= 1; }    // 在 GDB 里设断点、watch g_dbg
 - `[平台·ARM]`：J-Link 是商业高速调试探针；ST-Link 随 STM32 开发板免费；OpenOCD 开源、支持广。
 - `[经验]`：量产固件用 `-Os`、调试固件用 `-Og -g3`——**不要**拿 `-O2` 二进制去单步，变量会被优化掉，体验极差。
 
-## ⑭ 体积优化（-Os/-ffunction-sections/-fdata-sections --gc-sections，[实现]真实 g++ 命令） [实现·GCC15]
+## ⑭ 体积优化（-Os/-ffunction-sections/-fdata-sections --gc-sections，[实现·GCC15]真实 g++ 命令） [实现·GCC15]
 
 嵌入式 FLASH 宝贵。核心手段：`-Os`（为尺寸优化）、`-ffunction-sections -fdata-sections`（每函数/变量独立段）、`--gc-sections`（链接期丢弃未引用段）。
 

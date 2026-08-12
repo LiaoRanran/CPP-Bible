@@ -31,7 +31,7 @@
 
 `std::map<Key, T>` 与 `std::multimap<Key, T>` 是基于**红黑树（red-black tree）**的有序关联容器。本章结束后，你应当能够：
 
-- 解释 `map` 的底层 **`_Rb_tree`** 结构，画出节点布局与哨兵头结点（`_M_header`） `[实现]`。
+- 解释 `map` 的底层 **`_Rb_tree`** 结构，画出节点布局与哨兵头结点（`_M_header`） `[实现·GCC15]`。
 - 理解**节点稳定性**：插入/删除不使其他元素的引用、指针、迭代器失效（被删节点除外） `[标准]`。
 - 精确掌握 `map` 的**迭代器失效规则**，并与 `vector` 对比（⟶ `Book/part07_stl/ch77_vector.md`） `[标准]`。
 - 熟练使用 `lower_bound` / `upper_bound` / `equal_range` 做范围查询，理解其 `O(log N)` 来源 `[标准]`。
@@ -349,7 +349,7 @@ int main() {
 ```
 
 - `[标准]`：`operator[]` 在缺失键时会**值初始化** `T()`（对 `int` 是 0，对类调用默认构造），这可能产生非预期插入——查找但不想插入请用 `find` / `at`。
-- `[实现]`：`operator[]` 内部调用 `lower_bound`（见 `文件：bits/stl_map.h`, `行号：502-507`）。
+- `[实现·GCC15]`：`operator[]` 内部调用 `lower_bound`（见 `文件：bits/stl_map.h`, `行号：502-507`）。
 
 ```cpp
 // ⑨-1 operator[] 会"顺手插入"缺失的键（独立可编译）
@@ -445,7 +445,7 @@ int main() {
 | `std::vector`（排序后） | 数组 | — | 有序 | `O(log N)`（二分，但插入 `O(N)`） |
 
 - `[标准]`：`map` 的 `value_type` 是 `std::pair<const Key, T>`；`multimap` 允许重复 key，因此**没有 `operator[]`**（无法唯一确定返回哪个 value），需用 `equal_range` / `find`。
-- `[实现]`：四者（map/multimap/set/multiset）共用同一份 `bits/stl_tree.h` 的 `_Rb_tree` 实现，仅通过 `_Select1st` / 特化区分"存 pair 还是存 key"。
+- `[实现·GCC15]`：四者（map/multimap/set/multiset）共用同一份 `bits/stl_tree.h` 的 `_Rb_tree` 实现，仅通过 `_Select1st` / 特化区分"存 pair 还是存 key"。
 
 ```cpp
 // ⑪-1 map 与 multimap 的差异：multimap 无 operator[]（独立可编译）
@@ -634,8 +634,8 @@ int main() { return 0; }
 int main() { return 0; }
 ```
 
-- `[实现]`：`_Rb_tree` 的 `extract` 只做指针重连（不分配、不拷贝 value），`merge` 把整批节点平移到目标树并仅做红黑再平衡——这就是"节点级移动"零拷贝的关键（见 §⑭、§⑱）。
-- `[实现]`：`map` 中 `extract`/`merge` 直接转发到 `_M_t`（见 `文件：bits/stl_map.h`, `行号：646-655, 672-694`）。
+- `[实现·GCC15]`：`_Rb_tree` 的 `extract` 只做指针重连（不分配、不拷贝 value），`merge` 把整批节点平移到目标树并仅做红黑再平衡——这就是"节点级移动"零拷贝的关键（见 §⑭、§⑱）。
+- `[实现·GCC15]`：`map` 中 `extract`/`merge` 直接转发到 `_M_t`（见 `文件：bits/stl_map.h`, `行号：646-655, 672-694`）。
 
 ---
 
@@ -740,7 +740,7 @@ int main() {
    → `is_transparent` 允许以异构类型（如 `string_view`）查找，避免为查找临时构造 `Key`（§⑮）。
 
 7. **`extract` + `merge` 为什么比"先 erase 再 insert"快？**
-   → `[实现]` 节点级移动：只重连指针+红黑再平衡，不拷贝 value、不释放+重分配节点（§⑬.4）。
+   → `[实现·GCC15]` 节点级移动：只重连指针+红黑再平衡，不拷贝 value、不释放+重分配节点（§⑬.4）。
 
 8. **红黑树保证 `O(log N)` 的关键是什么？**
    → 颜色约束使任意分支黑高相等，树高 ≤ 2·log₂(N+1)（§⑦）。
@@ -1570,6 +1570,7 @@ int main() {
 
 ### D5.4 方法学注
 
+基准源码见库根 `_bench_d5_83_map.cpp`。
 - 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
 - `volatile` sink（`volatile int sink`）吸收计算结果，防止编译器以"结果未使用"为由将整段循环死代码消除（DCE）。
 - 加速比（如 22.5×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。

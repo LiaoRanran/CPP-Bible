@@ -513,7 +513,7 @@ bool is_sparse_visible(std::string_view path, std::string_view pattern) {
 }
 ```
 
-> **立场**：`[平台]` Windows 上大仓库的 `stat` 成本极高，启用 `core.fsmonitor`（如 Watchman）可显著加速 `git status`；Linux/macOS 同样受益。
+> **立场**：`[平台·Windows]` Windows 上大仓库的 `stat` 成本极高，启用 `core.fsmonitor`（如 Watchman）可显著加速 `git status`；Linux/macOS 同样受益。
 
 ---
 
@@ -539,7 +539,7 @@ const char* current_branch() {
 }
 ```
 
-> **立场**：`[平台]` 上游参考应指向具体平台文档（如 `https://docs.github.com/en/pull-requests` 与 `https://docs.gitlab.com/ee/ci/`），本章不跨章引用，读者按平台自行查阅。
+> **立场**：`[平台·Windows]` 上游参考应指向具体平台文档（如 `https://docs.github.com/en/pull-requests` 与 `https://docs.gitlab.com/ee/ci/`），本章不跨章引用，读者按平台自行查阅。
 
 ---
 

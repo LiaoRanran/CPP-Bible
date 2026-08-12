@@ -455,7 +455,7 @@ BENCHMARK(BM_DecltypeAutoForward);
 
 ## ⑲ 三编译器对比（GCC / Clang / MSVC）
 
-> 编译器前端源码未在本书探测（属编译器内部实现），下列特性支持与开关标注为 **[平台]/[实现-推断]**，未编造源码行号。
+> 编译器前端源码未在本书探测（属编译器内部实现），下列特性支持与开关标注为 **[平台·x86-64]/[实现-推断]**，未编造源码行号。
 
 | 特性 | GCC | Clang | MSVC |
 |---|---|---|---|
@@ -468,7 +468,7 @@ BENCHMARK(BM_DecltypeAutoForward);
 | concepts + `auto` 参数 (C++20) | 10.0+（`-fconcepts`）/11 稳定 | 10.0+ | VS2019 16.8+ |
 | `auto` 在 `new` (C++20) | 10.0+ | 12.0+ | VS2022+ |
 
-**[平台]** MSVC 自 VS2015 起默认启用大多数 C++14 特性；C++20 缩写函数模板与 concepts 需较新工具集（v142/v143）与 `/std:c++20`。Clang 对 concepts 的 `auto` 参数支持最早且最完整。GCC 9 起支持缩写函数模板，GCC 10 起 `concepts` 不再是实验选项。
+**[平台·x86-64]** MSVC 自 VS2015 起默认启用大多数 C++14 特性；C++20 缩写函数模板与 concepts 需较新工具集（v142/v143）与 `/std:c++20`。Clang 对 concepts 的 `auto` 参数支持最早且最完整。GCC 9 起支持缩写函数模板，GCC 10 起 `concepts` 不再是实验选项。
 
 ---
 

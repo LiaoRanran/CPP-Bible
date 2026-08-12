@@ -172,7 +172,7 @@ path 对象（64位，POSIX，char 为 value_type）
 ```
 
 - `[实现·GCC15]`：`path` 在 libstdc++ 中以 `basic_string<value_type>` 存本机序列；`generic_string()` 另开一份转换后的 `std::string`。见 `文件：bits/fs_path.h 行号：476`（无参 `generic_string()` 转 `char`）。
-- `[平台]`：Windows 上 `value_type` 是 `wchar_t`，UTF-16；所有窄字符接口会做一次 UTF-8↔UTF-16 转换（见第⑬节）。
+- `[平台·Windows]`：Windows 上 `value_type` 是 `wchar_t`，UTF-16；所有窄字符接口会做一次 UTF-8↔UTF-16 转换（见第⑬节）。
 
 ---
 
@@ -689,7 +689,7 @@ int main() {
 }
 ```
 
-- `[平台]`：Windows 下 `FindFirstFile`/`FindNextFile` 一次返回多项元数据（`size`、`attr`、`mtime`），天然"缓存"；POSIX 下 `readdir` 仅给名字，libstdc++ 额外 `stat` 才会拿到 `file_size`，故 `e.file_size()` 在 POSIX 可能再发一次 `stat`——这与平台实现细节相关。
+- `[平台·Windows]`：Windows 下 `FindFirstFile`/`FindNextFile` 一次返回多项元数据（`size`、`attr`、`mtime`），天然"缓存"；POSIX 下 `readdir` 仅给名字，libstdc++ 额外 `stat` 才会拿到 `file_size`，故 `e.file_size()` 在 POSIX 可能再发一次 `stat`——这与平台实现细节相关。
 - `[缓存友好性]`：`path` 短路径走 SSO（见 `⟶ Book/part07_stl/ch81_string.md`），遍历海量文件时避免堆分配，对缓存与分配器压力友好。
 
 ---

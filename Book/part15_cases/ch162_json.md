@@ -686,7 +686,7 @@ Value parse(const std::string_view s) {
 
 **JSON 注入**：把用户输入直接拼进 JSON 字符串而不转义，会破坏结构甚至篡改语义（如把 `"` 提前闭合键）。永远走 `escape_string`，绝不用字符串拼接构造 JSON。本机 `Examples/_ch162_antipattern.cpp` 良性输入可跑出 `12 34 56`，但一旦输入越界就是 UB——这正是它被列为"反模式"的原因。
 
-## ⑱ 平台差异 [平台]
+## ⑱ 平台差异 [平台·x86-64]
 
 **[平台·x86-64 / Windows MinGW vs Linux]** 解析器本身跨平台（纯标准库），但部署时需注意：
 

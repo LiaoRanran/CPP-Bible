@@ -1296,6 +1296,7 @@ store_seqcst 热循环（xchg，隐式 lock 全屏障）：
 
 fetch_add relaxed 与 seq_cst 的热循环核心指令完全相同：`f0 4c 0f c1 05 ... lock xadd QWORD PTR [rip+0x0],r8`（两函数逐字节同码，仅循环对齐 nop 不同）。
 
+基准源码见库根 `_bench_d5_108_order.cpp`。
 ### 非显然结论
 
 1. **x86-TSO 下 relaxed/release store 生成同一条普通 mov** —— 4.00× 差距不是指令差异，而是编译器许可差异：relaxed 允许重排/合并，GCC 借此把循环二路展开且两次 store 只隔 1 个 `lea`；release 禁止 store-store 重排，GCC 保守不展开。教学点：**内存序的第一重成本是「优化器束手」，第二重才是 CPU 屏障**；本例 4× 全部来自第一重（微基准放大了这一效应，真实代码中 release store 通常接近免费）。

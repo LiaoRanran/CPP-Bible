@@ -5,7 +5,7 @@
 
 > 真实编译器取证：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。
 > 示例源码根：`Examples/_ch16_*.cpp`；本章以真实 g++ 诊断与真实 `g++ -S` 汇编为证据（绝不编造）。
-> 立场分层见各节标签：`[标准]`（语言/工具标准）、`[实现]`（编译器/工具链真实行为）、`[平台]`（跨工具差异）、`[经验]`（工程选型）。
+> 立场分层见各节标签：`[标准]`（语言/工具标准）、`[实现·Clang19]`（编译器/工具链真实行为）、`[平台·Windows]`（跨工具差异）、`[经验]`（工程选型）。
 
 ## ⓪ 历史动机：IDE 与编辑器（VSCode / CLion / QtCreator / VIM）的来龙去脉
 
@@ -88,9 +88,9 @@ auto evens = std::views::iota(0, 10) | std::views::filter([](int i){ return i%2=
 ```
 
 - `[标准]`：`compilerPath` 让 cpptools 复用该编译器的**内置 include 与宏定义**，补全最准。
-- `[平台]`：Windows 上 `intelliSenseMode` 必须匹配工具链（`windows-gcc-x64` / `windows-msvc-x64`），配错则内建宏解析偏差。
+- `[平台·Windows]`：Windows 上 `intelliSenseMode` 必须匹配工具链（`windows-gcc-x64` / `windows-msvc-x64`），配错则内建宏解析偏差。
 
-## ③ VSCode 调试配置（launch.json / tasks.json） [实现]
+## ③ VSCode 调试配置（launch.json / tasks.json） [实现·Clang19]
 
 调试靠 **tasks.json（构建任务）+ launch.json（启动调试会话）** 联动。`preLaunchTask` 保证调试前先编译。
 
@@ -134,10 +134,10 @@ int main() {
 }
 ```
 
-- `[实现]`：VSCode 的 `cppdbg` 走 **MI 接口**驱动 gdb；`preLaunchTask` 缺失会导致"调试的是旧 exe"。
+- `[实现·Clang19]`：VSCode 的 `cppdbg` 走 **MI 接口**驱动 gdb；`preLaunchTask` 缺失会导致"调试的是旧 exe"。
 - `[经验]`：调试期务必 `-O0 -g`，`-O2` 会把变量优化掉，监视窗口显示 `<optimized out>`。
 
-## ④ CLion（索引/重构/集成） [平台]
+## ④ CLion（索引/重构/集成） [平台·Windows]
 
 CLion 用 **Clangd 衍生引擎**做索引，重构（重命名、提取函数、改变量）基于**语义**而非文本正则，跨文件安全。它对 CMake 项目开箱即用。
 
@@ -160,10 +160,10 @@ set(CMAKE_CXX_STANDARD 23)
 add_executable(demo main.cpp)
 ```
 
-- `[平台]`：CLion 内置工具链识别（MinGW / WSL / Remote），但对**非 CMake**（如 Bazel、手写 Make）需要额外插件或 `compile_commands.json`。
+- `[平台·Windows]`：CLion 内置工具链识别（MinGW / WSL / Remote），但对**非 CMake**（如 Bazel、手写 Make）需要额外插件或 `compile_commands.json`。
 - `[经验]`：CLion 的重构是"语义级"，重命名一个被 Lambda 捕获的变量也会同步更新捕获列表——VSCode+clangd 同样可达，但配置更繁琐。
 
-## ⑤ QtCreator（信号槽/UI 设计器） [平台]
+## ⑤ QtCreator（信号槽/UI 设计器） [平台·Windows]
 
 QtCreator 是 Qt 官方 IDE，强项是 **UI 设计器（.ui）+ 信号槽（SIGNAL/SLOT 或 新语法 connect）**。信号槽是 Qt 的元对象系统（moc 预编译）特性。
 
@@ -182,10 +182,10 @@ void wire(QPushButton* btn) {
 // connect(btn, SIGNAL(clicked()), this, SLOT(onClicked()));  // 拼错 SLOT 名编译不报错
 ```
 
-- `[平台]`：QtCreator 的 `.ui` 设计器生成 `ui_*.h`，由 **uic** 在构建前生成，IDE 内实时预览。
+- `[平台·Windows]`：QtCreator 的 `.ui` 设计器生成 `ui_*.h`，由 **uic** 在构建前生成，IDE 内实时预览。
 - `[经验]`：新语法 `connect(… &Class::signal, &Class::slot …)` 让 clangd/IntelliSense 能补全、能在编译期发现签名不匹配；旧 `SIGNAL/SLOT` 宏是 QString 黑盒，是"运行期惊喜"之源。
 
-## ⑥ VIM / Neovim（LSP / clangd） [实现]
+## ⑥ VIM / Neovim（LSP / clangd） [实现·Clang19]
 
 终端党用 **clangd**（LLVM 的语言服务器）即可获得与 VSCode 同级的补全/跳转/诊断。clangd 依赖 `compile_commands.json` 获知每个文件的编译参数。
 
@@ -204,10 +204,10 @@ T gcd(T a, T b) { while (b) { T t = a % b; a = b; b = t; } return a; }
 // 编辑器内 hover gcd<int> 会显示 concept 约束 std::integral
 ```
 
-- `[实现]`：clangd 的"后台索引"（`--background-index`）会把整个项目的 AST 缓存，跳转大库（Boost/Qt）几乎瞬时。
+- `[实现·Clang19]`：clangd 的"后台索引"（`--background-index`）会把整个项目的 AST 缓存，跳转大库（Boost/Qt）几乎瞬时。
 - `[经验]`：纯 VIM/Neovim 的最大痛点不是功能，而是**无 GUI 调试**——常配合 `vimspector` 或 `gdb` TUI 使用。
 
-## ⑦ clangd 与 compile_commands.json [实现]
+## ⑦ clangd 与 compile_commands.json [实现·Clang19]
 
 `compile_commands.json` 是**编译数据库**：每个源文件一条记录（目录、命令、参数）。clangd 据此精确解析每个 TU，避免"编辑器报错但 g++ 能编"的错位。
 
@@ -234,8 +234,8 @@ g++ -std=c++23 -Iinclude -c src/app.cpp -o build/app.o
 # CMake 用户：cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build  → build/compile_commands.json
 ```
 
-- `[实现]`：clangd 只认 `compile_commands.json`（或 `compile_flags.txt`）；**没有它，clangd 只能靠 `fallbackFlags` 盲猜**，对条件编译 `#ifdef` 极易误判。
-- `[平台]`：Windows 上路径分隔符在 JSON 里用 `/` 或转义 `\\` 均可，但 clangd 对 `C:/...` 与 `C:\\...` 解析一致，建议统一用 `/`。
+- `[实现·Clang19]`：clangd 只认 `compile_commands.json`（或 `compile_flags.txt`）；**没有它，clangd 只能靠 `fallbackFlags` 盲猜**，对条件编译 `#ifdef` 极易误判。
+- `[平台·Windows]`：Windows 上路径分隔符在 JSON 里用 `/` 或转义 `\\` 均可，但 clangd 对 `C:/...` 与 `C:\\...` 解析一致，建议统一用 `/`。
 
 ## ⑧ 代码格式化 clang-format [标准]
 
@@ -271,7 +271,7 @@ int foo(int x, int y) {
 - `[标准]`：`clang-format` 规则是**确定性**的——同一 config 在任何机器产出同一结果，是 CI 门禁的基石。
 - `[经验]`：把"保存时格式化"（VSCode `editor.formatOnSave` + cpptools；CLion `Reformat Code` 绑定）设成强制，比 code review 里吵风格高效 100 倍。
 
-## ⑨ 静态检查 clang-tidy [实现]
+## ⑨ 静态检查 clang-tidy [实现·Clang19]
 
 ⟶ Book/part13_engineering/ch144_style.md（代码风格）—— clang-tidy 覆盖风格工具管不到的语义约束
 ⟶ Book/part13_engineering/ch147_code_review.md（代码审查）—— 静态分析前置到提交，review 聚焦设计
@@ -299,7 +299,7 @@ clang-tidy -p build src/app.cpp --checks='-*,performance-*,modernize-*'
 #                     ^~~~~~~~~~~
 ```
 
-- `[实现]`：clang-tidy 走 **Clang AST**，比基于 token 的 grep 类 lint 准——它能理解"这个形参在函数体里只读"，所以才敢建议 `const&`。
+- `[实现·Clang19]`：clang-tidy 走 **Clang AST**，比基于 token 的 grep 类 lint 准——它能理解"这个形参在函数体里只读"，所以才敢建议 `const&`。
 - `[经验]`：把 clang-tidy 接进 `pre-commit` 或 CI，比在 PR 里人工挑异味稳。CI 上无 clang-tidy 时，至少保留 g++ `-Wall -Wextra -Wconversion` 兜底。
 
 ## ⑩ 重构能力对比 [经验]
@@ -335,9 +335,9 @@ double mean(const std::vector<int>& v) {
 | VIM + clangd | Clang AST | 可靠 | 可靠 |
 
 - `[经验]`：重构**前先确保 compile_commands.json 正确**——引擎解析错，重构就会"改一半"，比不改更危险。
-- `[平台]`：CLion 的"提取函数"对模板/Concept 支持最稳；clangd 近期版本已追平大部分场景。
+- `[平台·Windows]`：CLion 的"提取函数"对模板/Concept 支持最稳；clangd 近期版本已追平大部分场景。
 
-## ⑪ [实现]真实：一个函数"重构前/后"的 C++ 片段差异
+## ⑪ [实现·Clang19]真实：一个函数"重构前/后"的 C++ 片段差异
 
 下面是**真实文件**的前后对比（均经 g++ -std=c++23 编译通过）。重构前的问题：巨型单函数、魔法数 `10`、if/else 两个分支干了同一件事（重复 `s += ...`）。
 
@@ -384,7 +384,7 @@ std::string after(const std::vector<int>& xs) {
 +        if (passes(x)) (s += std::to_string(x)) += ";";
 ```
 
-- `[实现]`：以上 `before`/`after` 两个文件均用 `g++ -std=c++23 -Wall -c` 实测可编译（仅 `before` 触发 `-Wsign-compare` 警告，因 `int i < xs.size()` 有符号/无符号比较——这恰好是重构前另一处异味）。
+- `[实现·Clang19]`：以上 `before`/`after` 两个文件均用 `g++ -std=c++23 -Wall -c` 实测可编译（仅 `before` 触发 `-Wsign-compare` 警告，因 `int i < xs.size()` 有符号/无符号比较——这恰好是重构前另一处异味）。
 - `[经验]`：重构的"正确性"不只看编译过，还要**行为等价**；用单元测试（见⑭）锁住输入 `{1,20,3}` 的输出，确保重构没改语义。
 
 ## ⑫ 调试器集成 [标准]
@@ -414,7 +414,7 @@ int obscure(int a, int b) {
 - `[标准]`：DWARF 调试信息（`-g`）把**源码行 ↔ 机器指令**映射写进目标文件，断点本质是"在该地址插 `int3`"。
 - `[经验]`：发布构建用 `-O2 -g` 可保留调试信息（带开销），便于事后 core dump 分析；纯 `-O2` 无 `-g` 则堆栈不可读。
 
-## ⑬ 远程开发（Remote-SSH / Container / WSL） [平台]
+## ⑬ 远程开发（Remote-SSH / Container / WSL） [平台·Windows]
 
 远程开发让**编辑器在本地、工具链在远端**：代码在 Linux 容器里编译，你在 Windows 上敲键。VSCode 的 Remote-SSH / Dev Container / WSL 是同一套架构。
 
@@ -439,7 +439,7 @@ constexpr bool has_print = false;
 int main() { return has_print ? 0 : 1; }
 ```
 
-- `[平台]`：Remote-Container 用 **Docker volume** 挂源码，编译速度接近原生；WSL2 用 9P 文件系统挂载，大项目 I/O 略慢。
+- `[平台·Windows]`：Remote-Container 用 **Docker volume** 挂源码，编译速度接近原生；WSL2 用 9P 文件系统挂载，大项目 I/O 略慢。
 - `[经验]`：CI 与 Dev Container 用**同一基础镜像**，可消灭"在我机器能编"——IDE、本地、CI 三处环境合一。
 
 ## ⑭ 单元测试集成 [标准]
@@ -498,7 +498,7 @@ int main() {
 ```
 
 - `[经验]`：团队统一一份 snippet 库（提交进仓库），新人敲 `ctor`/`guard`/`pimpl` 即得规范样板，比口头约定稳。
-- `[平台]`：snippet 是**纯文本宏**，不依赖编译；跨编辑器靠各自格式维护，建议源生定义放仓库、各编辑器引用。
+- `[平台·Windows]`：snippet 是**纯文本宏**，不依赖编译；跨编辑器靠各自格式维护，建议源生定义放仓库、各编辑器引用。
 
 ## ⑯ 多光标 / 宏 / 批量 [经验]
 
@@ -529,7 +529,7 @@ struct Config {
 ```
 
 - `[经验]`：规则重复的改动（加属性、改前缀）用多光标；**不规则**的（每处文本不同）用 VIM 宏 `qq`…`q` + `@@` 重放。
-- `[实现]`：这类改动与编译无关，但配合 clangd 的"重命名"做**语义级**批量，比纯文本多光标更安全。
+- `[实现·Clang19]`：这类改动与编译无关，但配合 clangd 的"重命名"做**语义级**批量，比纯文本多光标更安全。
 
 ## ⑰ [经验]选型建议
 
@@ -558,7 +558,7 @@ const char* advise(User u) {
 | 终端党 / 远程 | Neovim + clangd | 资源低、可 SSH |
 
 - `[经验]`：核心能力（补全/跳转/诊断）来自 **clangd**，与外壳无关；把时间花在"配好 compile_commands.json + clang-tidy"，比换编辑器收益大。
-- `[平台]`：Windows 上 MinGW 与 MSVC 的 IntelliSense 行为不同，切换工具链要同步改 `compilerPath`/`intelliSenseMode`。
+- `[平台·Windows]`：Windows 上 MinGW 与 MSVC 的 IntelliSense 行为不同，切换工具链要同步改 `compilerPath`/`intelliSenseMode`。
 
 ## ⑱ 常见配置坑 [经验]
 
@@ -581,7 +581,7 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 ```
 
 - `[经验]`：编辑器报"找不到头"先看三件事：**includePath / compilerPath / compile_commands.json**，九成问题在此。
-- `[平台]`：Windows 下 `compile_commands.json` 的 `directory` 若用反斜杠且未转义，clangd 解析失败——统一用 `/`。
+- `[平台·Windows]`：Windows 下 `compile_commands.json` 的 `directory` 若用反斜杠且未转义，clangd 解析失败——统一用 `/`。
 
 ## ⑲ 最佳实践 [标准]
 

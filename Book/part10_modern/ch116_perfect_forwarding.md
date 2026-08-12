@@ -482,7 +482,7 @@ int main() {
 }
 ```
 
-> `[平台]`：`libc++` 与 MS STL 实现等价（同标准 `std::forward` 双重载），但 `static_assert` 文案与 `_GLIBCXX_NODISCARD` 属性细节略有差异，可移植代码不受影响。
+> `[平台·x86-64]`：`libc++` 与 MS STL 实现等价（同标准 `std::forward` 双重载），但 `static_assert` 文案与 `_GLIBCXX_NODISCARD` 属性细节略有差异，可移植代码不受影响。
 
 ---
 

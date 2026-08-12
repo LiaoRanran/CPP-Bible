@@ -322,7 +322,7 @@ std::expected<int,std::string> with_exp(int a, int b);    // expected（显式�
 ```
 
 - `[实现]`：`optional` 析构对 engaged 的值调用 `~T`，未设值跳过——保证无 UB。
-- `[平台]`：这与 `union` 手动管理不同，`optional` 编译期生成正确的析构路径。
+- `[平台·x86-64]`：这与 `union` 手动管理不同，`optional` 编译期生成正确的析构路径。
 
 ## ⑰ 真实源码：expected 的 unexpected 路径 [实现]
 
@@ -334,7 +334,7 @@ std::expected<int,std::string> with_exp(int a, int b);    // expected（显式�
 
 - `[实现-推断]`：`expected` 成功路径仅存 `T`，错误路径仅存 `E`，二者不共存；`has_value()` 经标志位判定，零分支成本（内联后）。
 
-## ⑱ 三编译器对比：optional / variant 实现 [平台]
+## ⑱ 三编译器对比：optional / variant 实现 [平台·x86-64]
 
 | 类型 | libstdc++ (GCC) | libc++ (Clang) | MS STL |
 |---|---|---|---|
@@ -342,8 +342,8 @@ std::expected<int,std::string> with_exp(int a, int b);    // expected（显式�
 | `variant<...>` | 索引+联合 | 索引+联合 | 索引+联合（实现细节略异） |
 | `expected` | C++23 支持 | C++23 支持 | C++23 支持 |
 
-- `[平台]`：三者语义一致（同标准）；差异仅在 `noexcept` 边界与内部对齐策略，可移植代码不受影响。
-- `[平台]`：GCC 13 / Clang 16 / MSVC 19.34 均完整支持 `expected`（C++23）。
+- `[平台·x86-64]`：三者语义一致（同标准）；差异仅在 `noexcept` 边界与内部对齐策略，可移植代码不受影响。
+- `[平台·x86-64]`：GCC 13 / Clang 16 / MSVC 19.34 均完整支持 `expected`（C++23）。
 
 ## ⑲ microbenchmark：optional 的零开销验证 [经验]
 

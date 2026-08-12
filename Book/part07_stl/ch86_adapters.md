@@ -402,7 +402,7 @@ int main() { return 0; }
 ```
 
 - `[标准]` 默认 `_Compare = less<value_type>`，而 `priority_queue` 的"顶"是满足"对任意非顶元素 `!comp(top, x)`"的元素——即用 `less` 时顶部为**最大值（大顶堆）**。
-- `[平台]` 三套 STL 语义一致（同 ISO 标准）；差异仅在调试断言宏与 `noexcept` 边界。Clang libc++ 在 `queue`/`stack` 中也默认 `deque`、在 `priority_queue` 中默认 `vector`+`less`。
+- `[平台·x86-64]` 三套 STL 语义一致（同 ISO 标准）；差异仅在调试断言宏与 `noexcept` 边界。Clang libc++ 在 `queue`/`stack` 中也默认 `deque`、在 `priority_queue` 中默认 `vector`+`less`。
 
 ---
 

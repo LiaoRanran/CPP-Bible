@@ -73,6 +73,14 @@ jobs:
       # WARN 级 (模板偏离) 不阻断，仅报告。
       run: python3 tools/d5_appendix_audit.py
 
+    - name: D5 Benchmark-Source Integrity Gate (基准源引用完整性 门禁)
+      # 首个语义层门禁：校验 D5 性能附录「基准源码见库根 `_bench_d5_X.cpp`」复现承诺。
+      # 每条声明须对应仓库根目录一个真实存在且 git 跟踪的 `_bench_d5_X.cpp`；
+      # 章含 D5 附录却漏标其基准源（孤儿缺口）即 BLOCK。防止「可复现性」承诺回归。
+      # 确定性、零依赖、围栏感知；纯 Python 秒级。
+      run: python3 tools/d5_source_integrity.py --check
+      continue-on-error: false
+
     - name: D5 Coverage Scanner (D5 覆盖差距报告)
       # 扫描缺少 D5 附录但含有性能信号的章节，按信号强度排序。
       # 咨询模式：不阻断 CI，仅输出 build/d5_gap_report.json 供作者排期。

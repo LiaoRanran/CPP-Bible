@@ -1444,6 +1444,7 @@ int main() {
 
 ### D5.4 方法学注
 
+基准源码见库根 `_bench_d5_110_lockfree.cpp`。
 - 计时用 `std::chrono::steady_clock`，每个配置跑 5 轮取中位数，排除冷启动与调度抖动。
 - 用 `volatile` 全局 sink 吸收累加结果，防止编译器把整个循环优化成常量。
 - 编译与测量命令（基准与此 demo 同源）：`g++ -O2 -std=c++17`。

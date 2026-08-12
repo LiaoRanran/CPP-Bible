@@ -164,7 +164,7 @@ const int G = 100;
 int* p = const_cast<int*>(&G);
 *p = 200;   // UB：G 在只读页，写触发 #PF → SIGSEGV
 ```
-> `[平台]` 在 x86 上，写只读页由 MMU 产生 page fault，内核发 SIGSEGV。在有些嵌入式 Flash 映射下甚至触发总线错误。这不是"可能出错"，是确定的硬件异常（只要对象真在只读存储）。
+> `[平台·x86-64]` 在 x86 上，写只读页由 MMU 产生 page fault，内核发 SIGSEGV。在有些嵌入式 Flash 映射下甚至触发总线错误。这不是"可能出错"，是确定的硬件异常（只要对象真在只读存储）。
 >
 > `[标准]` [dcl.type.cv]：通过去 const 的指针写**原本声明为 const 的对象**是 UB；写原本非 const、只是通过 const 引用/指针访问的对象则合法。
 
@@ -197,7 +197,7 @@ _Z1fPKi    void f(const int*)     // P Ki = pointer to const int
 _ZN1A1gEv  A::g()
 _ZNK1A1gEv A::g() const           // K = const member function
 ```
-> `[平台]` Itanium C++ ABI（GCC/Clang）。这解释了为什么 const 重载不会产生链接冲突——它们 mangling 不同。
+> `[平台·x86-64]` Itanium C++ ABI（GCC/Clang）。这解释了为什么 const 重载不会产生链接冲突——它们 mangling 不同。
 
 ---
 
@@ -666,7 +666,7 @@ static_assert(div(10, 2) == 5);                     // 合法：编译期可求�
 
 ---
 
-## ⑮ 内存与对象生命周期视角（const 在存储中的真实归宿）[实现][平台]
+## ⑮ 内存与对象生命周期视角（const 在存储中的真实归宿）[实现][平台·x86-64]
 
 `const` 不只是"编译期约束"，它直接决定数据放在哪个段。
 
@@ -740,7 +740,7 @@ probe(vi);   // T = volatile int（volatile 不被忽略）
 
 ---
 
-## ⑰ 汇编视角（const 族的机器层真相）[实现][平台]
+## ⑰ 汇编视角（const 族的机器层真相）[实现][平台·x86-64]
 
 ⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— const 主要作为优化提示，现代优化器常自行推断
 ⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 只读 .rodata 的缓存/共享特性

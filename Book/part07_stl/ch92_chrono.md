@@ -496,7 +496,7 @@ int main() {
 
 **Q：`duration<int, milli>` 存 3 分钟会溢出吗？** A：`int` 上限约 2.1e9 毫秒 ≈ 24.8 天，存 3 分钟（180000ms）毫无压力；但 `duration<int, nano>` 只能存约 2.1 秒——所以标准单位用 `int64_t`（`文件：bits/chrono.h 行号：899` 起）。`[标准]`
 
-**Q：`now()` 有多快？** A：`steady_clock` 在 Linux 上经 vDSO 约 20–30 ns，Windows QPC 约 10–20 ns；远快于 `gettimeofday` 的传统 syscall 路径。`[平台]`
+**Q：`now()` 有多快？** A：`steady_clock` 在 Linux 上经 vDSO 约 20–30 ns，Windows QPC 约 10–20 ns；远快于 `gettimeofday` 的传统 syscall 路径。`[平台·Windows]`
 
 **Q：GCC13 的时区数据从哪来？** A：MinGW 自带 `share/zoneinfo`（IANA tzdata）；`locate_zone("Asia/Shanghai")` 会读取它。若运行时缺失，可设 `TZDIR` 指向 zoneinfo 目录。实测本工具链可链接并使用。`[实现·GCC15]`
 

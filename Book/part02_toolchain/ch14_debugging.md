@@ -145,7 +145,7 @@ int main() {
 - `[标准]`：GDB 的 `print` 在断点处对**当前栈帧**求值任意合法表达式，是"运行时 REPL"。
 - `[经验]`：条件断点比在代码里插 `if(i==N) debugger;` 更干净——不改源码、不污染版本控制。
 
-## ④ LLDB 对比 [平台]
+## ④ LLDB 对比 [平台·Linux]
 
 LLDB 是 LLVM 调试器，命令语义与 GDB 高度对应，但在 macOS/Clang 生态是默认。
 
@@ -176,7 +176,7 @@ int main() {
 | 观察点 | `watch var` | `watchpoint set variable var` |
 | 打印 | `print expr` | `expression expr` |
 
-- `[平台]`：LLDB 的表达式求值基于 Clang，对 C++11 后语法（lambda、auto）支持更顺滑；GDB 在旧发行版上对新型别解析偶有偏差。
+- `[平台·Linux]`：LLDB 的表达式求值基于 Clang，对 C++11 后语法（lambda、auto）支持更顺滑；GDB 在旧发行版上对新型别解析偶有偏差。
 - `[经验]`：两者核心概念互通，掌握一个即可快速迁移；CI 环境常用 GDB（Linux），本地 macOS 多用 LLDB。
 
 ## ⑤ 核心转储 core dump 分析
@@ -304,7 +304,7 @@ int main() {
 ```
 
 - `[标准]`：数据竞争是 UB（C++ 内存模型：不同线程无 happens-before 地访问同一对象且至少一方为写）。
-- `[平台]`：TSan 依赖 `libtsan`，在 Linux/Clang 上成熟；本机 MinGW GCC 13.1.0 未随附该运行时，**无法链接**——生产多线程项目建议在 Linux CI 上跑 `g++ -fsanitize=thread`。
+- `[平台·Linux]`：TSan 依赖 `libtsan`，在 Linux/Clang 上成熟；本机 MinGW GCC 13.1.0 未随附该运行时，**无法链接**——生产多线程项目建议在 Linux CI 上跑 `g++ -fsanitize=thread`。
 - `[经验]`：用 `std::atomic<int>` 或 `std::mutex` 消除竞争，比事后检测更根本。
 
 ## ⑨ Valgrind memcheck
@@ -334,7 +334,7 @@ int main() {
 # ==12345== ERROR SUMMARY: 1 errors from 1 contexts
 ```
 
-- `[平台]`：Valgrind 主要在 Linux；Windows 侧无原生等价物，改用 ASan 或 Dr. Memory。
+- `[平台·Linux]`：Valgrind 主要在 Linux；Windows 侧无原生等价物，改用 ASan 或 Dr. Memory。
 - `[经验]`：ASan 比 Valgrind 快约 2×、定位更精确（带源码行）；新项目优先 ASan，老二进制/无法重编时用 Valgrind。
 
 ## ⑩ 内存泄漏检测（自动 vs 手动）
@@ -496,7 +496,7 @@ gdb ./firmware
 (gdb) continue
 ```
 
-- `[平台]`：JTAG/SWD 调试用 OpenOCD 把硬件调试接口桥接为 GDB server；MCU（ARM Cortex-M）常用此链路。
+- `[平台·Linux]`：JTAG/SWD 调试用 OpenOCD 把硬件调试接口桥接为 GDB server；MCU（ARM Cortex-M）常用此链路。
 - `[经验]`：交叉编译须保证**主机 GDB 与目标 ABI 一致**（如 `arm-none-eabi-gdb` 配 Cortex-M），源码路径在两台机器上一致或用 `set substitute-path` 重映射。
 
 ## ⑭ 断言 assert 与调试宏
@@ -633,7 +633,7 @@ int main() {
 
 - `[标准]`：`double free` 对同一个 `new` 出的指针 `delete` 两次，是 UB（典型表现为堆校验崩溃）。
 - `[经验]`：ABBA 死锁用 `std::lock(m1, m2)` 一次性锁多把锁即可消除（见 ⑲）；裸 `lock_guard` 顺序不一致必留隐患。
-- `[平台]`：SEGV 在 Linux 表现为 `SIGSEGV`，在 Windows 为 `STATUS_ACCESS_VIOLATION`，可用 GDB/WinDBG 各自分析。
+- `[平台·Linux]`：SEGV 在 Linux 表现为 `SIGSEGV`，在 Windows 为 `STATUS_ACCESS_VIOLATION`，可用 GDB/WinDBG 各自分析。
 
 ## ⑰ 与 IDE 集成
 
@@ -671,7 +671,7 @@ int main() {
 }
 ```
 
-- `[平台]`：CLion 默认 LLDB（macOS）/GDB（Linux）；VS Code 通过 `cppdbg` 适配两者；配置本质是把命令行 GDB 操作图形化。
+- `[平台·Linux]`：CLion 默认 LLDB（macOS）/GDB（Linux）；VS Code 通过 `cppdbg` 适配两者；配置本质是把命令行 GDB 操作图形化。
 - `[经验]`：图形化方便，但务必理解底层 `break/watch/backtrace`——无 GUI 的服务器环境你仍要会裸用 GDB。
 
 ## ⑱ 性能陷阱定位

@@ -6,7 +6,7 @@
 ⟶ Book/part03_language/ch20_reference_pointer.md
 
 > 标准版本：C++98 / C++11 / C++23 / C++26（预览）
-> 立场分层约定：**[标准]** = 语言标准规定；**[实现]** = 特定标准库/编译器实现；**[平台]** = 操作系统/ABI/硬件；**[经验]** = 工程实践建议。
+> 立场分层约定：**[标准]** = 语言标准规定；**[实现]** = 特定标准库/编译器实现；**[平台·x86-64]** = 操作系统/ABI/硬件；**[经验]** = 工程实践建议。
 > 交叉引用：第 19 章《存储期、链接与对象生命周期》、第 21 章《const、 constexpr 与枚举常量》、第 60 章《模板与枚举 trait》、第 14 章《异常与 error_code 预告》。
 
 ---
@@ -535,8 +535,8 @@ int main() {
 
 **[逐行讲解]**
 - 第 42 行 `enum class errc`：**scoped + strongly-typed**，底层类型默认 `int`。这正是我们前面讨论的设计动机落地——`std::errc` 的取值**不能**被悄悄当成 `int` 用，杜绝 `if(ec == 2)` 这种魔法数。
-- 初始化值取自 POSIX `errno` 宏（`EAFNOSUPPORT` 等），所以 `std::errc` 的值是**平台相关**的（`[平台]`）——在 MinGW 上它们映射为 Windows 的 `E*` 常量。
-- 大量 `#ifdef EBADMSG` 守卫：某些 `errno` 宏在特定平台不存在（如 Windows 缺 `EBADMSG`），用条件编译保证可移植。这是 `[实现]` 层面对 `[平台]` 差异的处理。
+- 初始化值取自 POSIX `errno` 宏（`EAFNOSUPPORT` 等），所以 `std::errc` 的值是**平台相关**的（`[平台·x86-64]`）——在 MinGW 上它们映射为 Windows 的 `E*` 常量。
+- 大量 `#ifdef EBADMSG` 守卫：某些 `errno` 宏在特定平台不存在（如 Windows 缺 `EBADMSG`），用条件编译保证可移植。这是 `[实现]` 层面对 `[平台·x86-64]` 差异的处理。
 - 没有显式 `: Type` ⇒ 底层类型固定为 `int`，`sizeof(std::errc)==4`（`[ABI]`）。
 
 配套还有 `is_error_condition_enum<errc>` 的特化（在 `system_error:69`），让 `errc` 能直接构造 `std::error_condition`（见第 14 章 error_code 预告）。
@@ -681,7 +681,7 @@ int main() {
 
 **[对比要点]**
 - libstdc++ 旧式写法**未显式写 `: int`**（底层类型隐式为 int）；libc++ / MS STL 习惯**显式写 `: int`**。行为完全一致，但显式写法更自文档化。
-- 三者值都取自宿主 `errno` 宏。**[平台]** 在 Linux（libstdc++/libc++）与 Windows（MS STL / MinGW-libstdc++）上具体数值可能不同（POSIX errno 值跨平台不完全一致）。
+- 三者值都取自宿主 `errno` 宏。**[平台·x86-64]** 在 Linux（libstdc++/libc++）与 Windows（MS STL / MinGW-libstdc++）上具体数值可能不同（POSIX errno 值跨平台不完全一致）。
 - 三者都为 `errc` 特化了 `is_error_condition_enum`（让它能构造 `error_condition`）。
 
 ### `std::io_errc`

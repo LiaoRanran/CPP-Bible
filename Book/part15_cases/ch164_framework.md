@@ -186,7 +186,7 @@ int main() {
 }
 ```
 
-**[平台]** Windows 真正的动态加载用 `LoadLibrary`/`GetProcAddress`，Linux 用 `dlopen`/`dlsym`。下例为 Windows 版示意（需 `<windows.h>`，本机仅展示，未单独编译为独立 .exe，因为核心自注册路径已在本章全程验证）：
+**[平台·Windows]** Windows 真正的动态加载用 `LoadLibrary`/`GetProcAddress`，Linux 用 `dlopen`/`dlsym`。下例为 Windows 版示意（需 `<windows.h>`，本机仅展示，未单独编译为独立 .exe，因为核心自注册路径已在本章全程验证）：
 
 ```text
 ③ Windows 动态加载示意（仅示意，非本机单独编译目标）
@@ -870,9 +870,9 @@ _ZN4Ring4pushEc:
 说明：vector 因可能涉及扩容与分支预测，单 iter 略慢于空 lambda；本机数字非权威基准。
 ```
 
-## ⑭ 平台抽象层（PAL）[平台]
+## ⑭ 平台抽象层（PAL）[平台·Windows]
 
-**[平台]** 框架要跨平台，必须把"平台差异"收口到一个 PAL（Platform Abstraction Layer）。用编译期宏把 `os_name`、`path_sep`、`sleep` 等差异隔离，业务代码永远看不到 `#ifdef`。
+**[平台·Windows]** 框架要跨平台，必须把"平台差异"收口到一个 PAL（Platform Abstraction Layer）。用编译期宏把 `os_name`、`path_sep`、`sleep` 等差异隔离，业务代码永远看不到 `#ifdef`。
 
 ```cpp
 // ⑭ PAL（本机实测通过：Examples/_ch164_pal.cpp，本机走 _WIN32 分支）
@@ -1124,7 +1124,7 @@ int ci_gate() {
 
 ## ⑳ 小结
 
-从"好莱坞原则"到自注册插件，从 reactor 事件循环到 RAII 生命周期，本章把**一个工业级迷你框架的骨架从零搭了一遍**，并用本机 `g++ 13.1.0 -std=c++23 -O2` 的真实编译运行做了端到端取证。核心结论：**[经验]** 写框架的目的不是取代 Boost/Qt，而是让你彻底理解它们——自注册解决了"组件怎么来"，事件总线解决了"组件怎么被通知"，DI 解决了"组件怎么拿依赖"，RAII 解决了"资源怎么不死"，PAL 解决了"平台差异怎么藏"。**[标准]** 这些机制背后全是 C++ 标准保证的基石：虚函数分派（[class.virtual]）、lambda（[expr.prim.lambda]）、`std::shared_ptr` 类型擦除（[util.smartptr]）、静态局部变量线程安全初始化（[stmt.dcl]）。**[平台]** 而 `LoadLibrary`/`dlopen`、`Sleep`/`usleep` 这类差异，必须收口到 PAL，绝不该泄漏进业务。最后记住一条铁律：**[经验]** 框架的价值在于"恰到好处的抽象"——过度抽象（⑯）比不抽象更危险。
+从"好莱坞原则"到自注册插件，从 reactor 事件循环到 RAII 生命周期，本章把**一个工业级迷你框架的骨架从零搭了一遍**，并用本机 `g++ 13.1.0 -std=c++23 -O2` 的真实编译运行做了端到端取证。核心结论：**[经验]** 写框架的目的不是取代 Boost/Qt，而是让你彻底理解它们——自注册解决了"组件怎么来"，事件总线解决了"组件怎么被通知"，DI 解决了"组件怎么拿依赖"，RAII 解决了"资源怎么不死"，PAL 解决了"平台差异怎么藏"。**[标准]** 这些机制背后全是 C++ 标准保证的基石：虚函数分派（[class.virtual]）、lambda（[expr.prim.lambda]）、`std::shared_ptr` 类型擦除（[util.smartptr]）、静态局部变量线程安全初始化（[stmt.dcl]）。**[平台·Windows]** 而 `LoadLibrary`/`dlopen`、`Sleep`/`usleep` 这类差异，必须收口到 PAL，绝不该泄漏进业务。最后记住一条铁律：**[经验]** 框架的价值在于"恰到好处的抽象"——过度抽象（⑯）比不抽象更危险。
 
 ```cpp
 #include <string>

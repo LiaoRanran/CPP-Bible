@@ -3,7 +3,7 @@
 ⟶ Book/part07_stl/ch88_optional_variant.md
 ⟶ Book/part10_modern/ch121_contracts.md
 
-> **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0 真实产物佐证；示例源码位于 `Examples/_ch146_*.cpp`，对应汇编/警告产物位于 `Examples/_ch146_*.asm` 与 `Examples/_ch146_*_warn.txt`。编译命令统一为 `g++ -std=c++23 -O2 -S -masm=intel <src> -o <dst>.asm`，全部示例均通过 `-Wall -Wextra` 警告零洁净（warnings clean）验证；关键机器码结论直接引用 g++ 生成的 Intel 语法汇编，绝不编造。运行时事实由本机真实编译执行得出。源码剖析（第⑥节）引用的 libstdc++ 路径为本机真实存在的 `.../include/c++/system_error`，行号取自实际文件（版本 GCC 13.1.0）。立场分层标签：`[标准]`=ISO C++，`[实现]`=编译器/标准库实现，`[平台]`=OS/ABI，`[经验]`=工程共识。
+> **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0 真实产物佐证；示例源码位于 `Examples/_ch146_*.cpp`，对应汇编/警告产物位于 `Examples/_ch146_*.asm` 与 `Examples/_ch146_*_warn.txt`。编译命令统一为 `g++ -std=c++23 -O2 -S -masm=intel <src> -o <dst>.asm`，全部示例均通过 `-Wall -Wextra` 警告零洁净（warnings clean）验证；关键机器码结论直接引用 g++ 生成的 Intel 语法汇编，绝不编造。运行时事实由本机真实编译执行得出。源码剖析（第⑥节）引用的 libstdc++ 路径为本机真实存在的 `.../include/c++/system_error`，行号取自实际文件（版本 GCC 13.1.0）。立场分层标签：`[标准]`=ISO C++，`[实现]`=编译器/标准库实现，`[平台·Windows]`=OS/ABI，`[经验]`=工程共识。
 
 ## ⓪ 历史动机：错误处理的来龙去脉
 
@@ -572,9 +572,9 @@ void outer() {
 }
 ```
 
-## ⑯ 跨 ABI 错误处理 [平台]
+## ⑯ 跨 ABI 错误处理 [平台·Windows]
 
-`[平台]` 异常是**实现细节耦合**的：Itanium ABI 与 MSVC 的异常处理模型不同，不同编译器/不同异常模型（SJLJ vs SEH vs DWARF）混链会 `terminate`。因此**跨 ABI / 跨语言 / 插件边界严禁抛异常穿越**。
+`[平台·Windows]` 异常是**实现细节耦合**的：Itanium ABI 与 MSVC 的异常处理模型不同，不同编译器/不同异常模型（SJLJ vs SEH vs DWARF）混链会 `terminate`。因此**跨 ABI / 跨语言 / 插件边界严禁抛异常穿越**。
 
 ```cpp
 // ❌ 危险：异常从 DLL(MSVC) 抛到 EXE(MinGW) 边界 => 未定义行为
@@ -588,7 +588,7 @@ extern "C" int plugin_entry_safe(int* out) noexcept {
 }
 ```
 
-`[平台]` 在 Windows SEH 与 C++ 异常混合场景，用结构化异常处理捕获系统级故障（访问违例）时需隔离——C++ `catch(...)` 不一定捕获 SEH 异常，除非启用 `/EHa`（MSVC）或编译器特定选项。跨 ABI 边界统一用 `noexcept` + 返回码最稳妥。
+`[平台·Windows]` 在 Windows SEH 与 C++ 异常混合场景，用结构化异常处理捕获系统级故障（访问违例）时需隔离——C++ `catch(...)` 不一定捕获 SEH 异常，除非启用 `/EHa`（MSVC）或编译器特定选项。跨 ABI 边界统一用 `noexcept` + 返回码最稳妥。
 
 ```cpp
 // 跨边界契约：所有导出 C 函数 noexcept，错误用 int 码

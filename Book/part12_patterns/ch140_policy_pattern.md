@@ -10,7 +10,7 @@
 > 代码膨胀取证：`g++ -std=c++23 -O2 -c -o xxx.o xxx.cpp` 后 `nm xxx.o`。
 > 源码参考：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`（libstdc++ 13.1.0）。
 > 全部示例源码见 `Examples/_ch140_*.cpp`，对应 `.asm` 由上述命令真机生成。
-> 立场分层标签：[标准]=语言/库标准语义，[实现]=libstdc++/编译器实现，[平台]=MinGW-w64/x86-64，[经验]=工程取舍。
+> 立场分层标签：[标准]=语言/库标准语义，[实现·GCC15]=libstdc++/编译器实现，[平台·x86-64]=MinGW-w64/x86-64，[经验]=工程取舍。
 
 ```ascii
         ┌───────────────────────── Host（宿主类 / 主机） ─────────────────────────┐
@@ -126,7 +126,7 @@ struct Mutator {
 };
 ```
 
-[实现] 形态四在 libstdc++ 中极其常见：`std::vector<_Tp, _Alloc>` 的 `_Vector_base<_Tp, _Alloc>` 把分配器 policy 以成员方式持有（`_Vector_impl_data` 内嵌 allocator），而分配器又通过 `rebind` 反向关联到 `_Tp`。这是 policy 双向依赖的工业级范例。
+[实现·GCC15] 形态四在 libstdc++ 中极其常见：`std::vector<_Tp, _Alloc>` 的 `_Vector_base<_Tp, _Alloc>` 把分配器 policy 以成员方式持有（`_Vector_impl_data` 内嵌 allocator），而分配器又通过 `rebind` 反向关联到 `_Tp`。这是 policy 双向依赖的工业级范例。
 
 ## ③ 多政策组合（模板参数）
 
@@ -243,7 +243,7 @@ void run_both() {
 }
 ```
 
-[实现] `if constexpr` 保证被丢弃的分支**不会被实例化**，因此分支内即使存在对当前类型非法的表达式也不会报错。这是 `if constexpr` 相对运行期 `if` 的本质区别（[stmt.if] §2）。
+[实现·GCC15] `if constexpr` 保证被丢弃的分支**不会被实例化**，因此分支内即使存在对当前类型非法的表达式也不会报错。这是 `if constexpr` 相对运行期 `if` 的本质区别（[stmt.if] §2）。
 
 ```cpp
 // ⑤ 与类型 policy 配合：先按类型分，再按值细调
@@ -327,7 +327,7 @@ bool ordered(T a, T b, const Wrapper<T, Ordering>& w) {
 }
 ```
 
-[实现] 第139章所述的 CRTP 主要用于"静态多态/编译期接口注入"；当该接口本身又是一个可替换维度时，它顺理成章地成为 policy。libstdc++ 的 `__gnu_cxx::__operation` 系列与标准库 `std::less` 等可调用策略对象，正是"policy 作为可注入比较器"的实例。
+[实现·GCC15] 第139章所述的 CRTP 主要用于"静态多态/编译期接口注入"；当该接口本身又是一个可替换维度时，它顺理成章地成为 policy。libstdc++ 的 `__gnu_cxx::__operation` 系列与标准库 `std::less` 等可调用策略对象，正是"policy 作为可注入比较器"的实例。
 
 ## ⑧ 政策设计实例：智能指针 / 分配器
 
@@ -510,7 +510,7 @@ _Z13strategy_demoiPK8Strategy:          ; strategy_demo(int, Strategy const*)
 ; RangeStrategy/NoneStrategy 各带 .text/.pdata/.xdata 与隐含 vtable
 ```
 
-[平台] 在 x86-64 MinGW-w64/GCC13 上：policy 版本把 `check` **整体内联**进调用方，`NoCheck` 甚至被优化成 `mov eax, ecx; ret`（函数体为空）；策略模式版本无论 `Range` 还是 `None` 都必然经过 `call [vtable+offs]` 的**两次内存间接跳转**（取 vptr → 取函数指针 → 调用），并引入 vtable 与 RTTI 数据。
+[平台·x86-64] 在 x86-64 MinGW-w64/GCC13 上：policy 版本把 `check` **整体内联**进调用方，`NoCheck` 甚至被优化成 `mov eax, ecx; ret`（函数体为空）；策略模式版本无论 `Range` 还是 `None` 都必然经过 `call [vtable+offs]` 的**两次内存间接跳转**（取 vptr → 取函数指针 → 调用），并引入 vtable 与 RTTI 数据。
 
 [经验] 当行为在**对象生命周期内不会切换**时，policy（编译期）几乎总是优于策略模式（运行期）；只有需要"同一容器/对象在运行期更换算法"时，才承担虚函数代价。
 
@@ -547,7 +547,7 @@ template <typename H, typename... T, std::size_t I>
 struct At<TypeList<H, T...>, I> { using type = typename At<TypeList<T...>, I-1>::type; };
 ```
 
-[实现] Loki 库提供完整的 `Typelist` 与 `GenScatterHierarchy`/`GenLinearHierarchy`，能在编译期把 typelist 展开成"多继承的 policy 宿主"。现代写法可用 `std::tuple`/`std::variant` 与 `index_sequence` 替代大部分手工 typelist 元函数。
+[实现·GCC15] Loki 库提供完整的 `Typelist` 与 `GenScatterHierarchy`/`GenLinearHierarchy`，能在编译期把 typelist 展开成"多继承的 policy 宿主"。现代写法可用 `std::tuple`/`std::variant` 与 `index_sequence` 替代大部分手工 typelist 元函数。
 
 ## ⑫ 政策与 SFINAE
 
@@ -627,7 +627,7 @@ int use_deleter() {
 }
 ```
 
-[实现] 在 libstdc++ 中，`unique_ptr` 通过 `__uniq_ptr_impl<_Tp, _Dp, _Up>` 持有删除器与指针，`_Dp` 默认 `default_delete<_Tp>`；而 `vector` 的 `_Vector_base` 持有 `_Alloc` 成员。二者都是"把行为维度模板化"的 policy 思想，只是标准库只暴露单一 policy 参数（保持 API 简洁）。
+[实现·GCC15] 在 libstdc++ 中，`unique_ptr` 通过 `__uniq_ptr_impl<_Tp, _Dp, _Up>` 持有删除器与指针，`_Dp` 默认 `default_delete<_Tp>`；而 `vector` 的 `_Vector_base` 持有 `_Alloc` 成员。二者都是"把行为维度模板化"的 policy 思想，只是标准库只暴露单一 policy 参数（保持 API 简洁）。
 
 ## ⑭ 政策与 constexpr
 
@@ -837,7 +837,7 @@ _Z11policy_demoi:
         ...
 ```
 
-[平台] 二者在 x86-64 MinGW-w64/GCC13 `-O2` 下**机器码结构完全一致**（同样的 `cmp ecx,100` / `ja` / `call puts`），证明 policy 抽象在编译后被彻底"摊平"，不构成额外开销——这正是零开销抽象的实证。`NoCheck` 策略进一步被优化为 `mov eax,ecx; ret`。
+[平台·x86-64] 二者在 x86-64 MinGW-w64/GCC13 `-O2` 下**机器码结构完全一致**（同样的 `cmp ecx,100` / `ja` / `call puts`），证明 policy 抽象在编译后被彻底"摊平"，不构成额外开销——这正是零开销抽象的实证。`NoCheck` 策略进一步被优化为 `mov eax,ecx; ret`。
 
 ## ⑲ 现代 C++ 对政策设计的替代（concepts + constexpr if）
 

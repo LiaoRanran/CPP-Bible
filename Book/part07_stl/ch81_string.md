@@ -152,7 +152,7 @@ SSO 模式的切换靠长度与阈值的比较。
 ```
 
 - `[实现]`：`bits/basic_string.h:277` 有 `if (_M_string_length > _S_local_capacity)` 分支，用于在扩容/取数据时决定走堆还是内联。
-- `[平台]`：这是 SSO 的"开关"——所有读 `data()` 的操作都要先判断当前是本地还是堆。
+- `[平台·x86-64]`：这是 SSO 的"开关"——所有读 `data()` 的操作都要先判断当前是本地还是堆。
 
 ## ⑦ 拷贝 / 移动语义与 COW 陷阱 [标准]
 
@@ -228,7 +228,7 @@ std::string fast(const std::string& a, const std::string& b, const std::string& 
 ```
 
 - `[经验]`：拼接多个串时，**先 `reserve` 再用 `+=`/`append`** 可消除重分配；避免 `a + b + c + d` 长链。
-- `[平台]`：`std::string` 的 `+` 无法像表达式模板那样合并（字符串不是数值类型），故链式为 O(n²) 级临时。
+- `[平台·x86-64]`：`std::string` 的 `+` 无法像表达式模板那样合并（字符串不是数值类型），故链式为 O(n²) 级临时。
 
 ## ⑪ 与 char* 互操作及生命周期陷阱 [标准]
 
@@ -291,7 +291,7 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 // 切换宏：_GLIBCXX_USE_CXX11_ABI=0（旧）/ 1（新，默认）
 ```
 
-- `[平台]`：GCC 5 引入新 ABI 后，`std::string` 符号从 `std::string` 变为 `std::__cxx11::basic_string<char>`。链接第三方库时要注意 ABI 一致（`_GLIBCXX_USE_CXX11_ABI`）。
+- `[平台·x86-64]`：GCC 5 引入新 ABI 后，`std::string` 符号从 `std::string` 变为 `std::__cxx11::basic_string<char>`。链接第三方库时要注意 ABI 一致（`_GLIBCXX_USE_CXX11_ABI`）。
 
 ## ⑮ 真实 libstdc++ 源码逐行：`basic_string.h` 的 SSO 缓冲 [实现]
 
@@ -335,7 +335,7 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 
 - `[实现-推断]`：GCC 5.1（`_GLIBCXX_USE_CXX11_ABI=1`）用 SSO 实现替换 COW，符号命名空间改为 `std::__cxx11`，旧 ABI 通过宏保留以兼容旧库。
 
-## ⑱ 三编译器对比：GCC / Clang / MSVC 的 SSO 容量 [平台]
+## ⑱ 三编译器对比：GCC / Clang / MSVC 的 SSO 容量 [平台·x86-64]
 
 | 实现 | SSO 容量（char） | 字符串类型 | 备注 |
 |---|---|---|---|
@@ -343,8 +343,8 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 | libc++ (Clang) | 22 | `std::__1::string` | 不同布局 |
 | MS STL (MSVC) | 15 | `std::string` | 含容量字段 |
 
-- `[平台]`：SSO 容量因实现不同，**不要依赖具体数值**。可移植代码应只假设"短串不分配堆"这一行为。
-- `[平台]`：三者都保证 `std::string` 满足连续容器与独立深拷贝，差异仅在内部布局与 SSO 阈值。
+- `[平台·x86-64]`：SSO 容量因实现不同，**不要依赖具体数值**。可移植代码应只假设"短串不分配堆"这一行为。
+- `[平台·x86-64]`：三者都保证 `std::string` 满足连续容器与独立深拷贝，差异仅在内部布局与 SSO 阈值。
 
 ## ⑲ microbenchmark：SSO 命中 vs 堆分配 [经验]
 
@@ -1189,6 +1189,7 @@ int main() {
 
 ### D5.4 方法学注
 
+基准源码见库根 `_bench_d5_81_sso.cpp`。
 - 计时用 `std::chrono::steady_clock`，每场景跑 5 轮取中位数，规避调度抖动与冷启动。
 - 求和/规模等结果经 `volatile` sink 累加，防止编译器把无副作用循环整段死代码消除（DCE）。
 - 报告一律给「相对倍数 ×」而非绝对毫秒作为可移植信号；绝对毫秒随机器、编译器版本、频率伸缩而变，不可横向比较。

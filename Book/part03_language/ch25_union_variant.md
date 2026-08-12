@@ -148,7 +148,7 @@ void f() {
 ```
 > `[标准]` 该例合法，因为 `A::tag` 与 `B::tag` 属于 common initial sequence。但一旦访问 `u.b.name` 或 `u.a.x` 这种**超出公共序列**的成员，就回到 UB。
 
-> `[平台]` 历史上 C 语言有 *strict aliasing* 规则，但通过"共享 union"访问不同成员是被 C 标准允许的（C11 §6.5.2.3）；C++ 把它收紧为"common initial sequence"特例。**这是 union 类型双关唯一被标准明示允许的通道**，但它只覆盖"公共前缀"，不是任意类型双关。
+> `[平台·x86-64]` 历史上 C 语言有 *strict aliasing* 规则，但通过"共享 union"访问不同成员是被 C 标准允许的（C11 §6.5.2.3）；C++ 把它收紧为"common initial sequence"特例。**这是 union 类型双关唯一被标准明示允许的通道**，但它只覆盖"公共前缀"，不是任意类型双关。
 
 ### 3.3 类型双关的合法替代
 
@@ -284,7 +284,7 @@ int main() {
     std::printf("raw=%08x lo=%04x hi=%04x\n", r.raw, r.parts.lo, r.parts.hi);
 }
 ```
-> `[平台]` 在小端机上 `lo == 0x5678`，`hi == 0x1234`。访问 `r.lo` 等价于访问匿名 union 的成员，共享 `r.raw` 的存储。
+> `[平台·x86-64]` 在小端机上 `lo == 0x5678`，`hi == 0x1234`。访问 `r.lo` 等价于访问匿名 union 的成员，共享 `r.raw` 的存储。
 
 匿名 union 也可用于在函数/块作用域里"节省空间"地复用一段存储（同一时刻只用一个变量）：
 
@@ -823,7 +823,7 @@ template<bool _Copy, bool _CopyAssignment,
 | valueless 处理 | 额外 cookie 槽（`__variant_cookie`） | 类似保留空位 | 类似 |
 | constexpr 支持 | C++20 起 P2231 使 variant 全 constexpr | C++20 起 constexpr | C++20 起 constexpr |
 
-> `[平台]` 三者都满足标准语义，差异在**异常安全细节、constexpr 完整度、ABI、表大小常数**（如 libstdc++ 单 variant ≤11 个 alternative 时走 `switch` 而非表，见 §18 行 1832-1909，这是为小 variant 省掉生成 vtable 的开销——一个实现层面的性能优化）。
+> `[平台·x86-64]` 三者都满足标准语义，差异在**异常安全细节、constexpr 完整度、ABI、表大小常数**（如 libstdc++ 单 variant ≤11 个 alternative 时走 `switch` 而非表，见 §18 行 1832-1909，这是为小 variant 省掉生成 vtable 的开销——一个实现层面的性能优化）。
 
 > `[实现]` libc++ 的 `__libcpp` 命名空间与 MS STL 的 `_Variant` 内部类在命名上不同，但算法同构：**构造/赋值先破坏旧值（或保存）、placement new 新值、再更新 index**，valueless 时 index 置为特殊值（libstdc++ 用 `variant_npos`）。
 
@@ -887,7 +887,7 @@ static void BM_TaggedAccess(benchmark::State& s) {
 BENCHMARK(BM_VariantVisit);
 BENCHMARK(BM_TaggedAccess);
 ```
-> `[平台]` 实测结论：**tagged union 直接访问更快**（无 index 检查、无函数调用开销），但前提是"你已知道类型"——这恰恰把安全性交给了人。variant 的 `get<int>` 有 `index()` 比较，开销略高（通常 1-3 ns），但**零 UB 风险**。variant 比 tagged union **多几个字节**（index + 填充），可接受。
+> `[平台·x86-64]` 实测结论：**tagged union 直接访问更快**（无 index 检查、无函数调用开销），但前提是"你已知道类型"——这恰恰把安全性交给了人。variant 的 `get<int>` 有 `index()` 比较，开销略高（通常 1-3 ns），但**零 UB 风险**。variant 比 tagged union **多几个字节**（index + 填充），可接受。
 
 ### 18.2 std::visit 分派 vs 虚函数调用
 
@@ -914,7 +914,7 @@ static void BM_Virtual(benchmark::State& s) {
 BENCHMARK(BM_Visit);
 BENCHMARK(BM_Virtual);
 ```
-> `[平台]` 实测结论：**visit 与 virtual 调用时延同量级**（几 ns），但 visit **无 vptr 间接、缓存局部性更好**——variant 对象本身连续存储，而虚调用需额外读 vtable 指针。在"多类型、热路径、类型集合固定"场景下，variant + visit 往往略优于虚函数层次，且**编译期可内联 visitor**（virtual 不行）。
+> `[平台·x86-64]` 实测结论：**visit 与 virtual 调用时延同量级**（几 ns），但 visit **无 vptr 间接、缓存局部性更好**——variant 对象本身连续存储，而虚调用需额外读 vtable 指针。在"多类型、热路径、类型集合固定"场景下，variant + visit 往往略优于虚函数层次，且**编译期可内联 visitor**（virtual 不行）。
 
 ### 18.3 variant vs std::any（类型擦除开销）
 
@@ -935,7 +935,7 @@ static void BM_AnyGet(benchmark::State& s) {
 BENCHMARK(BM_VariantGet);
 BENCHMARK(BM_AnyGet);
 ```
-> `[平台]` **std::any 显著更慢**：`any_cast` 需运行期 `type_info` 比较（RTTI 访问、可能抛 `bad_any_cast`），且 `any` 内部有小对象优化缓冲 + 类型指针的额外间接；variant 的 `get` 仅是 `index()` 整数比较 + 直接取地址。两者语义也不同：variant 的类型集合**编译期已知且封闭**，any 是**开放类型擦除**——能存任意类型，代价是运行期类型检查开销与安全边界丢失。**优先 variant（类型已知），仅当类型必须在运行期开放时才用 any。**
+> `[平台·x86-64]` **std::any 显著更慢**：`any_cast` 需运行期 `type_info` 比较（RTTI 访问、可能抛 `bad_any_cast`），且 `any` 内部有小对象优化缓冲 + 类型指针的额外间接；variant 的 `get` 仅是 `index()` 整数比较 + 直接取地址。两者语义也不同：variant 的类型集合**编译期已知且封闭**，any 是**开放类型擦除**——能存任意类型，代价是运行期类型检查开销与安全边界丢失。**优先 variant（类型已知），仅当类型必须在运行期开放时才用 any。**
 
 ### 18.4 综合对比表
 
@@ -995,7 +995,7 @@ function area(s: Shape): number {
   }
 }
 ```
-> `[平台]` TS 的 union **运行期不携带编译器生成的 tag**，靠开发者约定的"判别式字段"（如 `kind`）；这是手写的"tagged union"，与 C++ 手写 §5 同构，但 TS 运行期仍是动态对象。
+> `[平台·x86-64]` TS 的 union **运行期不携带编译器生成的 tag**，靠开发者约定的"判别式字段"（如 `kind`）；这是手写的"tagged union"，与 C++ 手写 §5 同构，但 TS 运行期仍是动态对象。
 
 ### 19.3 Java sealed interface
 
@@ -1014,7 +1014,7 @@ double eval(Expr e) {
     };
 }
 ```
-> `[平台]` Java 用 `sealed` 限制子类型集合（接近"编译期封闭类型集合"），但底层的分派仍是**虚调用**；C++ variant 是值语义、无堆分配、无 vptr，性能模型不同。
+> `[平台·x86-64]` Java 用 `sealed` 限制子类型集合（接近"编译期封闭类型集合"），但底层的分派仍是**虚调用**；C++ variant 是值语义、无堆分配、无 vptr，性能模型不同。
 
 ---
 
@@ -1179,7 +1179,7 @@ int main() {
                 r.raw, r.bits.ready, r.bits.mode);
 }
 ```
-> `[平台]` 位域布局是实现定义的（`bits.mode` 在第几位、位序因 ABI/端序而异）。**跨平台固件不要假设位域布局**，应使用显式移位/掩码（mask）以保证可移植性。
+> `[平台·x86-64]` 位域布局是实现定义的（`bits.mode` 在第几位、位序因 ABI/端序而异）。**跨平台固件不要假设位域布局**，应使用显式移位/掩码（mask）以保证可移植性。
 
 ### 20.5 更多可编译片段（补充计数用）
 
@@ -2008,7 +2008,7 @@ int main() {
 ```
 
 **结论**：当 variant 需要一个"语义上的空/默认"状态且现有 alternative 都不适合默认构造时，把 `std::monostate` 作为**首个** alternative——它默认可构造且不占额外空间，使整个 variant 自然满足默认可构造约束。
-## 可视化速查图（Mermaid 补充）[实现][平台]
+## 可视化速查图（Mermaid 补充）[实现][平台·x86-64]
 
 > 补全附录 G/H/I 的 variant 底层实现文字。
 

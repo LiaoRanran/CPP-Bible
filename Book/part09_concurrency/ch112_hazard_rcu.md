@@ -1312,6 +1312,7 @@ int main() {
 
 ### D5.4 方法学注
 
+基准源码见库根 `_bench_d5_112_hazard_rcu.cpp`。
 - 计时用 `std::chrono::steady_clock`，每个配置跑 5 轮取中位数；用随机数据 + `volatile` 逃逸防死代码消除。
 - hazard 读用 `std::atomic<int*>` 槽模拟"发布/清除"协议；shared_ptr 用 `std::make_shared` 后按值拷贝模拟"安全读"。
 - 编译与测量命令（基准与此 demo 同源）：`g++ -O2 -std=c++17`。

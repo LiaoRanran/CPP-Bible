@@ -5,7 +5,7 @@
 
 > 真实编译器取证：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -I Examples`）。
 > 包管理器取证：本机未安装 vcpkg / Conan（实测 `where vcpkg`/`where conan` 均 `no vcpkg`/`no conan`），故给出**真实命令**并明确标注「典型输出」；真实 C++ 证据由 g++ 编译 `_ch13_packlib.hpp` + `_ch13_use.cpp` 取得（见 ⑨，绝不编造汇编）。
-> 立场分层见 CONVENTIONS.md：凡 `[实现]`/`[平台]` 均标注具体实现。
+> 立场分层见 CONVENTIONS.md：凡 `[实现]`/`[平台·Windows]` 均标注具体实现。
 
 ## ⓪ 历史动机：包管理（vcpkg / Conan）的来龙去脉
 
@@ -259,7 +259,7 @@ template <class T> class span_view { /* 全在头里 */ };
 ```
 
 - `[标准]`：ISO 不规定分发形态；但模板/inline 必须在调用端可见（ODR），所以模板重的库几乎只能头-only 或伴随源码。
-- `[平台]`：二进制分发的 ABI 约束由 Itanium C++ ABI（Linux/macOS）与 MSVC ABI（Windows）分别规定，两者**不互操作**。
+- `[平台·Windows]`：二进制分发的 ABI 约束由 Itanium C++ ABI（Linux/macOS）与 MSVC ABI（Windows）分别规定，两者**不互操作**。
 
 ## ⑧ 版本解析与冲突解决 [标准]
 
@@ -356,7 +356,7 @@ main:
 - `[实现·GCC15]`：真实产物证明——头-only 包经 `-I` 暴露 include 路径后，使用程序与"手动装库"编译出的代码**完全一致**；包管理器的价值在于**自动提供这条 `-I` 与（若需）`-L/-l`**，而非改变语言语义。
 - `[经验]`：把上面的 `-I Examples` 换成 vcpkg/Conan 注入的 `CMAKE_PREFIX_PATH`，用户源码一行不改——这就是包管理的核心承诺。
 
-## ⑩ 系统包管理器 apt/brew/vcpkg 对比 [平台]
+## ⑩ 系统包管理器 apt/brew/vcpkg 对比 [平台·Windows]
 
 系统级包管理（apt/dnf/brew）与 C++ 专用（vcpkg/Conan）定位不同：前者管**系统运行时**，后者管**开发期可重现依赖**。
 
@@ -384,7 +384,7 @@ main:
 | 二进制缓存 | 系统级 | 构建后缓存 | 按 package_id 缓存 |
 | 跨平台一致 | 否 | 是 | 是 |
 
-- `[平台]`：系统包管理器把库放进系统路径，与发行版编译器/CRT 强绑定；C++ 项目跨机迁移时这份耦合常常成为"在我机器上能编"的元凶。
+- `[平台·Windows]`：系统包管理器把库放进系统路径，与发行版编译器/CRT 强绑定；C++ 项目跨机迁移时这份耦合常常成为"在我机器上能编"的元凶。
 - `[经验]`：CI 与产物分发用 vcpkg/Conan；本地快速试玩可用 apt/brew，但别把后者当可重现来源。
 
 ## ⑪ 头-only 库分发约定 [标准]
@@ -444,7 +444,7 @@ main:
 ```
 
 - `[经验]`：私有库务必打版本、写 recipe、过 CI 自动发布——否则它退化成"又一份要人肉拷的 zip"。
-- `[平台]`：制品库通常走 HTTPS + token 鉴权；在离线/内网环境需配置镜像与证书。
+- `[平台·Windows]`：制品库通常走 HTTPS + token 鉴权；在离线/内网环境需配置镜像与证书。
 
 ## ⑬ 可重现构建：锁文件 [标准]
 
@@ -473,7 +473,7 @@ main:
 - `[标准]`：锁文件不是语言特性，而是**供应链可重现**的工程要求（见 CONVENTIONS.md 立场）。
 - `[经验]`：锁文件必须进版本控制，且与 `vcpkg-configuration.json` / Conan `profile` 一起构成"可重现铁三角"。
 
-## ⑭ 许可证与 ABI 兼容 [平台]
+## ⑭ 许可证与 ABI 兼容 [平台·Windows]
 
 ⟶ Book/part11_source/ch124_libstdcxx.md
 ⟶ Book/part11_source/ch126_msstl.md
@@ -500,7 +500,7 @@ main:
 // 把 C++ 类型封在 DLL 内部，只暴露 C 接口
 ```
 
-- `[平台]`：ABI 兼容受 Itanium C++ ABI / MSVC ABI 与 libstdc++/libc++/MS STL 各自版本共同约束；同一编译器同版本才稳。
+- `[平台·Windows]`：ABI 兼容受 Itanium C++ ABI / MSVC ABI 与 libstdc++/libc++/MS STL 各自版本共同约束；同一编译器同版本才稳。
 - `[经验]`：跨模块传递 C++ STL 对象是大忌；要么静态链接统一一份 STL，要么只过 C ABI。
 
 ## ⑮ [经验]选型建议
@@ -557,7 +557,7 @@ main:
 ```
 
 - `[经验]`：所有传递依赖的 **compiler + version + build_type + CRT + static/dynamic** 必须全链路一致——这正是包管理器用 `triplet`/`settings`/`package_id` 强制保证的事。
-- `[平台]`：Windows 上 `/MD` vs `/MT`、Debug/Release CRT 的混链是最经典雷区（MSVC ABI 约束）。
+- `[平台·Windows]`：Windows 上 `/MD` vs `/MT`、Debug/Release CRT 的混链是最经典雷区（MSVC ABI 约束）。
 
 ## ⑰ 与构建系统协作 [经验]
 
@@ -586,7 +586,7 @@ main:
 - `[经验]`：把"包管理"和"构建系统"当成两段独立流水线：先解依赖（生成集成文件），再构建。两者顺序错了就玄学报错。
 - `[标准]`：`find_package(CONFIG)` 走 `<pkg>Config.cmake`（CMake 官方包配置协议），vcpkg/Conan 都据此对接——这是跨工具能协作的基石。
 
-## ⑱ 跨平台 [平台]
+## ⑱ 跨平台 [平台·Windows]
 
 ⟶ Book/part02_toolchain/ch17_crosscompile.md
 
@@ -611,7 +611,7 @@ main:
 //   交叉编译时 settings.arch 必须显式，否则取到宿主架构
 ```
 
-- `[平台]`：三大桌面平台的 C++ ABI 与 CRT 各成体系（MSVC ABI / Linux Itanium / macOS），包管理器的 triplet/settings 正是为把这些差异**显式参数化**。
+- `[平台·Windows]`：三大桌面平台的 C++ ABI 与 CRT 各成体系（MSVC ABI / Linux Itanium / macOS），包管理器的 triplet/settings 正是为把这些差异**显式参数化**。
 - `[经验]`：CI 矩阵应覆盖你承诺的每个 (os, arch, build_type) 组合，否则"跨平台"只是口头承诺。
 
 ## ⑲ 最佳实践 [经验]

@@ -4,7 +4,7 @@
 
 ⟶ Book/part13_engineering/ch147_code_review.md
 
-> **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0 真实产物佐证，示例源码位于 `Examples/_ch144_*.cpp`，对应汇编/预处理产物位于 `Examples/_ch144_*_O2.asm` 与 `Examples/_ch144_guard.i`。编译命令统一为 `g++ -std=c++23 -O2 -S -masm=intel <src> -o <dst>.asm`，全部示例均通过 `-Wall -Wextra` 警告零洁净（warnings clean）验证；关键机器码结论直接引用 g++ 生成的 Intel 语法汇编，绝不编造。源码剖析（第⑩节）引用的 libstdc++ 路径为本机真实存在的 `.../include/c++/bits/vector.tcc`，行号取自实际文件。立场分层标签：`[标准]`=ISO C++，`[实现]`=编译器/标准库实现，`[平台]`=OS/ABI，`[经验]`=工程共识。
+> **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0 真实产物佐证，示例源码位于 `Examples/_ch144_*.cpp`，对应汇编/预处理产物位于 `Examples/_ch144_*_O2.asm` 与 `Examples/_ch144_guard.i`。编译命令统一为 `g++ -std=c++23 -O2 -S -masm=intel <src> -o <dst>.asm`，全部示例均通过 `-Wall -Wextra` 警告零洁净（warnings clean）验证；关键机器码结论直接引用 g++ 生成的 Intel 语法汇编，绝不编造。源码剖析（第⑩节）引用的 libstdc++ 路径为本机真实存在的 `.../include/c++/bits/vector.tcc`，行号取自实际文件。立场分层标签：`[标准]`=ISO C++，`[实现·Clang19]`=编译器/标准库实现，`[平台·Windows]`=OS/ABI，`[经验]`=工程共识。
 
 ## ⓪ 历史动机：代码风格的来龙去脉
 
@@ -652,7 +652,7 @@ auto r = v | std::views::filter([](auto x){return x>0;})
 
 `[经验]` 取舍原则：**先保证团队全员理解，再引入特性**；`string_view`、`span`、结构化绑定、concept 属于"高收益低风险"优先采用；modules、高级 template 元编程按项目需要谨慎引入；永远不要为了"现代感"牺牲可读性。
 
-## ⑯ 平台相关代码隔离 [平台]
+## ⑯ 平台相关代码隔离 [平台·Windows]
 
 跨平台代码必须把 OS/ABI 差异收敛到少量文件，避免 `#ifdef` 在业务逻辑里四处蔓延。`[平台·x86-64/Windows+POSIX]`
 

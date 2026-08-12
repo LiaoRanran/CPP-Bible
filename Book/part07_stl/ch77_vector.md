@@ -408,7 +408,7 @@ int main() {
 
 **缓存与局部性**
 - `[平台·x86-64]`：连续内存使遍历可向量化（AVX 加载）、缓存预取友好（⟶ Book/part14_perf/ch154_cache_opt.md）。`deque`/`list`/关联容器因分段或跳指针远不如。
-- `[平台]`：ABI 稳定——`std::vector` 布局跨 GCC 版本兼容，但跨编译器（libstdc++/libc++/MS STL）不保证二进制兼容。
+- `[平台·x86-64]`：ABI 稳定——`std::vector` 布局跨 GCC 版本兼容，但跨编译器（libstdc++/libc++/MS STL）不保证二进制兼容。
 
 ```cpp
 // 性能 P1：观察 GCC 2× 扩容的 capacity 增长
@@ -1548,6 +1548,7 @@ int main() {
 
 ### D5.4 方法学注
 
+基准源码见库根 `_bench_d5_77_vector.cpp`。
 - 计时取 5 轮中位数，规避调度抖动与冷热启动偏差。
 - `volatile` sink 防 DCE：累加结果写入 `volatile g_sink`，迫使优化器保留真实计算，否则整段可被消除。
 - 加速比（如 2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。

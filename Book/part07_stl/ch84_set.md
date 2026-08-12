@@ -462,7 +462,7 @@ int main() {
 
 - `[实现·GCC15]`：RB 树每次插入/删除都涉及一次 `new`/`delete`（节点分配器），这是热点上的主要成本。
 - `[平台·x86-64]`：`set` 遍历是"跳着读内存"，缓存命中低；对 10⁷ 量级元素的范围扫描，`vector` 二分/连续遍历常快数倍（⟶ Book/part14_perf/ch154_cache_opt.md）。
-- `[平台]`：ABI 稳定——`std::set` 的 `_Rb_tree` 布局跨 GCC 版本基本兼容，但跨编译器（libstdc++/libc++/MS STL）**不保证**二进制兼容，跨模块传递需用 C 接口或序列化。
+- `[平台·x86-64]`：ABI 稳定——`std::set` 的 `_Rb_tree` 布局跨 GCC 版本基本兼容，但跨编译器（libstdc++/libc++/MS STL）**不保证**二进制兼容，跨模块传递需用 C 接口或序列化。
 
 ```cpp
 // 性能 P1：sorted vector 模拟 flat_set（GCC13 无 <flat_set>，用 vector+sort+二分）
