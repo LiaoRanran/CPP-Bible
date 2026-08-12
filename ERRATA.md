@@ -77,6 +77,21 @@
 - **核验**：全库 147 文件**内容指纹等式校验全过**（去空白后非空行序列与 HEAD 原版逐文件一致）→ 零内容变更、零换行翻转；`structure_audit`/`sweep_fences` 全库复扫 0 命中。
 - **修正**：提交 `e6fe145`（147 文件 + 工具，+62728/-63431，净减约 818 行来自空行折叠），SSH 推送 `d4f87ed..e6fe145`，`master`↔`origin/master` 同步，工作树干净。
 
+### E8. CI 常驻化 + §1 立场标签具体化硬化
+
+#### E8-A. CI 质量门禁常驻化（防回归）
+- **动机**：E6/E7 扫荡将结构/空白缺陷清零，但缺常驻门禁会随后续编辑回潮。
+- **改动**：三扫描器加 `--check` 硬门禁——`tools/structure_audit.py`（S1/S5）、`tools/sweep_fences.py`（围栏/诊断输出/HTML 注释）、`tools/whitespace_fix.py`（W1/W2/W3）；接入 `.github/workflows/ci.yml` 的 `quality` job（Prerequisite Topology Check 之后、compile 之前）。`mermaid_audit.py` / `table_style_audit.py` / `verification_audit.py` 以 `continue-on-error: true` 接入作报告（观察一轮后转硬）。下游 site/pdf/epub 经 `needs: quality` 全覆盖。
+- **核验**：干净树 exit 0；注入缺陷 exit 1；回退 exit 0；quality 共 22 steps。
+- **修正**：提交 `9279beb`（ci.yml + 三扫描器 `--check`），本地领先 `origin/master` 待推送。
+
+#### E8-B. §1 立场标签具体化硬化（71 高风险章收口）
+- **范围**：并发/ABI/模板/性能/内存/源码库/工程/工具链 71 章（裸 `[实现]`/`[平台]` 待具体化；高风险集 76 章中 5 章经复查已合规无需改动）。
+- **工具**：新增 `tools/label_specificity_harden.py`——确定性、围栏感知（跳过 ``` /~~~ 代码块）、保原生换行（`\r\n`/`\n` 探测）；仅自动补 `[实现·GCC15/libstdc++/...]` 与 `[平台·x86-64/Windows/...]` 确定限定符，`[微架构]`/`[ABI]` 不自动补（同文件常混用多种，须逐条人工判断），不确定即跳过，遵守 §0「禁止平均用力」。
+- **内容**：71 章落具体实现/平台限定符；Agent 残留编辑补 `[VERIFIED]`（真实 D5 基准章）/ `[UNVERIFIED]`（绝对性能数字，§10.3）标记及 §12 绝对化改写（必然→条件式）。
+- **审计**：`eol_flips=0`；三 CI 硬门禁（structure/fence/whitespace `--check`）全绿；全量不变式校验 0 语义漂移；全量 diff 标签正确性扫描修正 2 处 Agent 残留错误——`ch11` `[实现·GCC13]`→`[实现·GCC15.3.0]`（误用本机 PATH 的 13.1.0，非书证据基线 15.3.0）、`ch153` 分支误预测行破损括号修复并规范 `[微架构·x86-64][UNVERIFIED]`（x86-64 为 ISA 非微架构，初版误植 `[微架构·x86-64]` 且括号不配平）。
+- **修正**：提交 `695d749`（71 文件 + 工具，+923/-666），本地领先 `origin/master` 待推送。
+
 ---
 
 ## 已知限制（非错误，刻意保留）
@@ -103,3 +118,5 @@
 | `e2fd55b` | 钉 GCC 15.3.0（Dockerfile/devcontainer + CI 版本断言） | E5 |
 | `bf7a914` | 结构缺陷扫荡 S1（标题层级）+ S5（参差表格）+ structure_audit.py | E6 |
 | `e6fe145` | 空白符卫生扫荡 W1+W2+W3 + whitespace_fix.py | E7 |
+| `9279beb` | CI 常驻化：structure/fence/whitespace 硬门禁 + 三审计报告 | E8-A |
+| `695d749` | §1 立场标签具体化硬化 + label_specificity_harden.py | E8-B |
