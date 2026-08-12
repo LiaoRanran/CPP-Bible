@@ -1,4 +1,6 @@
 # 第146章 错误处理（C++）
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part07_stl/ch88_optional_variant.md
 ⟶ Book/part10_modern/ch121_contracts.md

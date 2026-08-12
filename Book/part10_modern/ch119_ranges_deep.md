@@ -1,4 +1,6 @@
 # 第119章　Ranges 深入（C++20）
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；本章 `[实现]` 级源码来自该目录真实文件，逐行标注路径与行号。

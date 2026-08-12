@@ -1,4 +1,6 @@
 # 第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part10_modern/ch116_perfect_forwarding.md
 ⟶ Book/part07_stl/ch77_vector.md

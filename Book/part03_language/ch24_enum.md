@@ -1,4 +1,6 @@
 # 第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part06_templates/ch65_type_traits.md
 

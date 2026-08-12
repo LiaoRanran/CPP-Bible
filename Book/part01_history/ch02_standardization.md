@@ -1,4 +1,6 @@
 # 第02章　标准化组织、WG21 与提案流程
+> 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
+
 
 ⟶ Book/part01_history/ch03_cpp98_03.md
 ⟶ Book/part01_history/ch10_version_matrix.md

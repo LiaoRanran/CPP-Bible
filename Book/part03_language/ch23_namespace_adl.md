@@ -1,4 +1,6 @@
 # 第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
+
 
 ⟶ Book/part03_language/ch29_friend.md
 ⟶ Book/part06_templates/ch61_template_overload.md

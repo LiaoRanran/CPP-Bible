@@ -1,4 +1,6 @@
 # 第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 > 真实编译器：MinGW GCC 15.3.0（x86-64，Windows x64 ABI：首参在 `rcx`；本章 GCC 汇编均以此真机 `-std=c++23 -O2/-O0 -S -masm=intel` 输出为准）
 

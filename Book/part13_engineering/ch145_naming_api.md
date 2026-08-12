@@ -1,4 +1,6 @@
 # 第145章 命名与 API 设计（C++）
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part13_engineering/ch144_style.md
 ⟶ Book/part12_patterns/ch135_patterns_intro.md

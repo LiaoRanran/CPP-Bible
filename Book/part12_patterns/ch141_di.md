@@ -1,4 +1,6 @@
 # 第141章 依赖注入（C++）
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
+
 
 ⟶ Book/part12_patterns/ch135_patterns_intro.md
 ⟶ Book/part05_oo/ch45_oop_object_model.md

@@ -1,4 +1,6 @@
 # 第143章 面向数据设计 DOD（C++）
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part12_patterns/ch142_ecs.md
 ⟶ Book/part14_perf/ch154_cache_opt.md

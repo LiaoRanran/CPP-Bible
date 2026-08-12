@@ -1,4 +1,6 @@
 # 第163章 从零实现网络编程（C++）
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part09_concurrency/ch113_coroutine.md
 ⟶ Book/part15_cases/ch159_threadpool.md

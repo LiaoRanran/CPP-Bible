@@ -1,4 +1,6 @@
 # 第142章 实体组件系统 ECS（C++）
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part12_patterns/ch143_dod.md
 ⟶ Book/part05_oo/ch45_oop_object_model.md

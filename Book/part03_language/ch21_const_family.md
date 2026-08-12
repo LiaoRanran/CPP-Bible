@@ -1,4 +1,6 @@
 # 第21章　const / constexpr / consteval / constinit 深度详解
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 > 真实编译器：MinGW GCC 15.3.0（x86-64；本章 const 族汇编说明均以此真机 `-std=c++23 -O2` 语义为准；const 折叠为立即数是跨版本稳定的优化行为）
 

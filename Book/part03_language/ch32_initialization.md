@@ -1,4 +1,6 @@
 # 第32章 初始化与列表初始化
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 > 标准基: C++23 / GCC 15.3 / 预计阅读: 50min / ⟶ Book/part03_language/ch19_variables.md / 难度: ★★★☆☆
 

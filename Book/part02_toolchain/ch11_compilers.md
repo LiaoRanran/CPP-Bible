@@ -1,4 +1,6 @@
 # 第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part06_templates/ch69_constexpr.md
 ⟶ Book/part14_perf/ch157_compiler_explorer.md

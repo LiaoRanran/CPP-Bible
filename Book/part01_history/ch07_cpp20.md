@@ -1,4 +1,6 @@
 # 第07章　C++20：量级升级
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part06_templates/ch67_concepts.md
 ⟶ Book/part10_modern/ch119_ranges_deep.md

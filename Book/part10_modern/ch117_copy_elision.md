@@ -1,4 +1,6 @@
 # 第117章　RVO / NRVO 与拷贝消除（C++17）
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 元数据：标准基 = C++11（NRVO 早期）/ C++17（guaranteed copy elision）；前置 = 移动语义（ch115）、对象生命周期；后续 = 返回值优化与 ABI、 constexpr 求值；难度 = ★★★☆☆。

@@ -181,6 +181,15 @@ jobs:
       run: python3 tools/verification_audit.py
       continue-on-error: true
 
+    - name: §10 Verification Marker Gate (验证标记覆盖 门禁)
+      # E12 收口：半自动分诊把 147 活章全部补上 §10 验证标记（65 章据 D5/ASM 复现链
+      # 标 [VERIFIED]，8 章无复现链标 [UNVERIFIED]；审计清单 build/s10_audit.json）。
+      # 本门禁锁定该覆盖：任一「活章」(Book/partNN/chNN_*.md) 若缺 [VERIFIED]/[UNVERIFIED]/
+      # [NEEDS-VERIFY] 即 BLOCK，防未来编辑重新引入零标记章（§10 合规回归）。
+      # 刻意排除 _legacy/ 陈旧副本与 GLOSSARY/SUMMARY 等索引文件（非高风险断言载体）。
+      run: python3 tools/s10_verify_mark.py --check
+      continue-on-error: false
+
   compile:
     needs: quality
     runs-on: ubuntu-latest

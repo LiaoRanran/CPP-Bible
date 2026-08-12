@@ -1,4 +1,6 @@
 # 第19章　变量、存储期、链接与 ODR（工业级深度版）
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 > 真实编译器：MinGW GCC 15.3.0（x86-64；本章所有 GCC 汇编均以此真机 `-std=c++23 -O2 -S -masm=intel` 输出为准；`thread_local` 在本工具链默认走 emulated TLS）
 

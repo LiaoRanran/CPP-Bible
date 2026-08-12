@@ -1,4 +1,6 @@
 # 第29章 友元 friend 与访问控制
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
+
 
 > 标准基: C++23 / GCC 15.3 / 预计阅读: 40min / 前置: ⟶ Book/part05_oo/ch46_encapsulation_inheritance.md / 难度: ★★☆☆☆
 

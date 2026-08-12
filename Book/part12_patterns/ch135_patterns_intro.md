@@ -1,4 +1,6 @@
 # 第135章 设计模式总论（C++）
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part12_patterns/ch136_creational.md
 ⟶ Book/part12_patterns/ch137_structural.md

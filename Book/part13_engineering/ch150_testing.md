@@ -1,4 +1,6 @@
 # 第150章 测试策略（C++）
+> 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
+
 
 ⟶ Book/part03_language/ch29_friend.md
 ⟶ Book/part13_engineering/ch149_ci_cd.md

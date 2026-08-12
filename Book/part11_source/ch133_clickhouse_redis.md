@@ -1,4 +1,6 @@
 # 第133章　ClickHouse / Redis 实现精读（C++）
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part07_stl/ch77_vector.md
 

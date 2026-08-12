@@ -1,4 +1,6 @@
 # 第25章　union 与 std::variant 深度详解
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part07_stl/ch88_optional_variant.md
 ⟶ Book/part03_language/ch32_initialization.md

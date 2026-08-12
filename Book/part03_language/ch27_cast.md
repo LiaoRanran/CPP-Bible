@@ -1,4 +1,6 @@
 # 第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part03_language/ch31_operator_overloading.md
 ⟶ Book/part05_oo/ch48_rtti.md

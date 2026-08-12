@@ -1,4 +1,6 @@
 # 第12章　构建系统：Make / Ninja / CMake（C++）
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part02_toolchain/ch18_buildconfig.md
 ⟶ Book/part02_toolchain/ch11_compilers.md

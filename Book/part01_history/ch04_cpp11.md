@@ -1,4 +1,6 @@
 # 第04章　C++11：现代 C++ 革命
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part10_modern/ch115_move.md
 ⟶ Book/part06_templates/ch63_variadic.md

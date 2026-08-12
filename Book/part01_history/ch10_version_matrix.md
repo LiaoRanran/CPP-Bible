@@ -1,4 +1,6 @@
 # 第10章　版本特性全景对照表与迁移指南
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part01_history/ch04_cpp11.md
 ⟶ Book/part01_history/ch07_cpp20.md

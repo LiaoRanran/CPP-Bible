@@ -1,4 +1,6 @@
 # 第165章 C++ 进阶路线图（C++）
+> 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
+
 
 ⟶ Book/part01_history/ch01_c_history.md
 ⟶ Book/part03_language/ch19_variables.md

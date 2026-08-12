@@ -1,4 +1,6 @@
 # 第118章　Modules 模块（C++20）
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -fmodules-ts -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；Modules 是编译器特性，无 libstdc++ 源码可逐行，本章以真实编译产物（模块符号）为证据。

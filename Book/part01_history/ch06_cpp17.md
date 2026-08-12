@@ -1,4 +1,6 @@
 # 第06章　C++17：生产力跃升
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part07_stl/ch88_optional_variant.md
 ⟶ Book/part06_templates/ch64_fold.md

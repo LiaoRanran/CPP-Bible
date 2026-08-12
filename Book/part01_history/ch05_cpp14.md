@@ -1,4 +1,6 @@
 # 第05章　C++14：小幅完善
+> 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
+
 
 ⟶ Book/part06_templates/ch69_constexpr.md
 ⟶ Book/part10_modern/ch115_move.md

@@ -1,4 +1,6 @@
 # 第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part13_engineering/ch151_benchmark.md
 ⟶ Book/part14_perf/ch157_compiler_explorer.md

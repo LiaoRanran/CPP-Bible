@@ -1,4 +1,6 @@
 # 第96章　排序：sort / stable_sort / partial_sort（C++）
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part08_algorithms/ch98_heap.md
 ⟶ Book/part07_stl/ch77_vector.md

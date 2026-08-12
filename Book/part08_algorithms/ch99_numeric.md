@@ -1,4 +1,6 @@
 # 第99章　数值算法与并行执行策略（C++）
+> 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part08_algorithms/ch95_algo_overview.md
 ⟶ Book/part13_engineering/ch151_benchmark.md

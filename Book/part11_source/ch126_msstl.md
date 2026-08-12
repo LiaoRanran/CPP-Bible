@@ -1,4 +1,6 @@
 # 第126章　MS STL 架构（C++）
+> 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
+
 
 ⟶ Book/part11_source/ch124_libstdcxx.md
 ⟶ Book/part11_source/ch125_libcxx.md
