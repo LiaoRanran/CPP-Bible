@@ -1780,7 +1780,7 @@ int main(){std::variant<int,double> v=3.14;std::visit([](auto x){std::cout<<x<<s
 | variant+visit | ~7.5ns(本机最坏情况; 预测命中 ~2ns) | 封闭(编译期) | 穷举检查 |
 | 虚函数 | ~12.9ns(本机最坏情况; 预测命中 ~5ns) | 开放(链接期) | 运行时 |
 
-> `[实测]`：上表为 `Examples/_ch25_variant_perf.cpp` 本机 RDTSC 实测（MinGW GCC 15.3.0 -O2 x86_64, TSC 2.395GHz, N=20M, 随机化类型故意击败 BTB 预测）。**最坏情况** variant visit **~8.1ns** vs 虚函数 **~13.9ns** → variant 快 **~1.7x**；旧估 ~2ns/~5ns 为分支预测命中（同类型连续）的**最佳情况**，两者量级与排序一致。variant 更快的根因：visit 只需读 variant 内部 index 字节并跳转，**无 vtable 指针链**（见上方汇编）。
+> `[实测]`：上表为 `Examples/_ch25_variant_perf.cpp` 本机 RDTSC 实测（MinGW GCC 15.3.0 -O2 x86-64, TSC 2.395GHz, N=20M, 随机化类型故意击败 BTB 预测）。**最坏情况** variant visit **~8.1ns** vs 虚函数 **~13.9ns** → variant 快 **~1.7x**；旧估 ~2ns/~5ns 为分支预测命中（同类型连续）的**最佳情况**，两者量级与排序一致。variant 更快的根因：visit 只需读 variant 内部 index 字节并跳转，**无 vtable 指针链**（见上方汇编）。
 
 面试: variant何时优于虚函数? 封闭类型集+编译期穷举+值语义
 

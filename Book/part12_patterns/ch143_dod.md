@@ -4,11 +4,11 @@
 ⟶ Book/part14_perf/ch154_cache_opt.md
 
 > **取证说明（本章所有汇编与计时均来自真实工具链，未编造）**
-> - 编译器：`C:/Qt/Tools/mingw1310_64/bin/g++.exe`（MinGW-Builds x86_64, GCC 13.1.0）
+> - 编译器：`C:/Qt/Tools/mingw1310_64/bin/g++.exe`（MinGW-Builds x86-64, GCC 13.1.0）
 > - 取证命令：`g++ -std=c++23 -O2 -S -masm=intel -o xxx.asm xxx.cpp`；`-O0` + `nm`；
 >   `-O3 -ffast-math -S` 用于暴露 SIMD 向量化。
 > - 源码目录：`Examples/_ch143_*.cpp`，配套 `.asm` 同源生成。
-> - 计时基准用 `std::chrono::steady_clock`，结果在 Intel/AMD x86_64 本机实测；
+> - 计时基准用 `std::chrono::steady_clock`，结果在 Intel/AMD x86-64 本机实测；
 >   **不同机器数值会有差异，但相对趋势（SoA 胜、false sharing 慢）稳定成立**。
 > - libstdc++ 取证路径：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`
 

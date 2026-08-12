@@ -1867,7 +1867,7 @@ unique_ptr_factory(int,int,int):
 
 ## 附录 D：GCC 15.3.0 真机汇编实证——`shared_ptr` 引用计数原子递增（ASM-41-shared_ptr）[E: Low-level]
 
-> 编译器: GCC 15.3.0 (mingw64, x86_64) | 选项: `-std=c++26 -O2` | 反汇编: `objdump -d -M intel -C`
+> 编译器: GCC 15.3.0 (mingw64, x86-64) | 选项: `-std=c++26 -O2` | 反汇编: `objdump -d -M intel -C`
 > 证据: `_asm_demo/ch41_shared_ptr_test.cpp` → `ch41_shared_ptr_test.s`
 > 核心结论: **`shared_ptr` 的拷贝构造 = 16 字节 memcpy + `lock add` 原子引用计数递增**；这条 `lock` 前缀原子 RMW 正是它相对 `unique_ptr`（纯指针移动）的硬开销来源。
 

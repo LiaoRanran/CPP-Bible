@@ -921,7 +921,7 @@ int main() {
 
 `[平台·x86-64][实现]` `reinterpret_cast` 本身**不产生任何指令**——它只是类型系统的编译期改写。但**后续对重解释结果的访问**会受 ABI 影响：
 - **x86-64**（System V / Windows）：未对齐访问大多被硬件容忍（仅性能下降），所以 `reinterpret_cast<int*>(&some_char[1])` 读可能"看似工作"——这掩盖了 UB。
-- **ARM（AArch32/AArch64）**：硬件**强制对齐**，未对齐访问直接触发 `SIGBUS`（崩溃）。因此同一段违反 strict aliasing 的代码在 x86 静默错误、在 ARM 立刻崩溃。
+- **ARM（AArch32/ARM64）**：硬件**强制对齐**，未对齐访问直接触发 `SIGBUS`（崩溃）。因此同一段违反 strict aliasing 的代码在 x86 静默错误、在 ARM 立刻崩溃。
 
 ```cpp
 // prog_23_reinterpret_unaligned_arm_x86.cpp —— 同一 UB 在两架构表现不同（[平台-推断]）

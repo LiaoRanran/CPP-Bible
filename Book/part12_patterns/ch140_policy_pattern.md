@@ -1068,7 +1068,7 @@ int main() { save<Json>(); save_rt(Bin::write); }
 
 ## D5 真实性能基准：Policy-Based Design 的零开销验证（GCC 15.3.0 实测）
 
-**测量方法**：同 D5 方法学（GCC 15.3.0 `-O2`，预热 + 5 次中位数）。`Engine<AddPolicy>` 编译期组合、`AddPolicy::compute` 完全内联；对照为运行期 `virtual` 分发。各 2000 万次调用取中位数。单线程 x86_64 本机实测，仅作量级参考。
+**测量方法**：同 D5 方法学（GCC 15.3.0 `-O2`，预热 + 5 次中位数）。`Engine<AddPolicy>` 编译期组合、`AddPolicy::compute` 完全内联；对照为运行期 `virtual` 分发。各 2000 万次调用取中位数。单线程 x86-64 本机实测，仅作量级参考。
 
 | 实现 | 单 call（ns） | 说明 |
 |---|---|---|

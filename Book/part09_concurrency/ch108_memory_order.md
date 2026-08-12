@@ -785,7 +785,7 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 
 ### 常见 Bug 与 Debug 方法
 
-- **弱内存重排**：x86 因 TSO 强序几乎不暴露 relaxed 误用，ARM/AArch64 上必现。Debug 用 `-fsanitize=thread` 抓 happens-before 违规；在 ARM 设备/模拟器（QEMU）上复现，而非仅本地 x86 测。
+- **弱内存重排**：x86 因 TSO 强序几乎不暴露 relaxed 误用，ARM/ARM64 上必现。Debug 用 `-fsanitize=thread` 抓 happens-before 违规；在 ARM 设备/模拟器（QEMU）上复现，而非仅本地 x86 测。
 - **fence 位置错**：把 `atomic_thread_fence(seq_cst)` 放在错误的地方，等于没加。用 `std::atomic` 自带 order 参数比裸 fence 更易证正确。
 - **Code Review 关注点**：`relaxed` 是否真的无跨线程数据依赖；标志位与数据是否成对 acquire/release；是否有「先测后锁」的 DCL 未用原子。
 
@@ -795,7 +795,7 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 
 ## 附录 J：GCC 15.3.0 真机汇编实证——内存序指令屏障（ASM-108-memory_order）[E: Low-level]
 
-> 编译器: GCC 15.3.0 (mingw64, x86_64) | 选项: `-std=c++26 -O2` | 反汇编: `objdump -d -M intel -C`
+> 编译器: GCC 15.3.0 (mingw64, x86-64) | 选项: `-std=c++26 -O2` | 反汇编: `objdump -d -M intel -C`
 > 证据: `_asm_demo/ch108_memory_order_test.cpp` → `ch108_memory_order_test.s`
 > 核心结论: **x86-64 的 TSO 内存模型让 `acquire`/`release` 零屏障**；真正的屏障只出现在 `seq_cst` 的 store（`xchg` 隐式 `lock`）与所有原子 RMW（`lock` 前缀）。
 
@@ -843,7 +843,7 @@ fadd_seqcst():
 1. **`acquire`/`release` 在 x86-64 下是"免费"的** `[微架构·x86-64 TSO]` `[VERIFIED]`：x86-64 采用 TSO（Total Store Order），硬件本就不允许「store 与更早 store 重排」「load 与更早 load 重排」，因此普通 `mov` 天然满足 acquire/release 语义，编译器无需插入任何 `lfence`/`mfence`/`lock`。这是 CPU 强内存模型的直接红利（本机 GCC 15.3.0 复编确认指令一致）。
 2. **`seq_cst` 的真正成本只在 store**：`seq_cst` store 必须付 `xchg`（或 `mfence`）以锚定全局单一总序；而 `seq_cst` load 在 GCC/x86-64 下仍是普通 `mov`——因为「`lock` 前缀 store + TSO」已足以维持顺序一致性，编译器不为 load 额外加屏障。
 3. **原子 RMW 无论内存序都付 `lock`**：`fetch_add` 的 relaxed 与 seq_cst 生成**逐字节相同**的 `lock xadd`。内存序差异不改变这条指令，只改变编译器对"周围代码能否重排"的约束——机器码层面无差别。
-4. **⚠️ 嵌入式跨平台陷阱（最重要）** `[微架构·ARM]` `[UNVERIFIED]`：上述"看起来都免费"的现象是 **x86-64 TSO 独有**。在嵌入式常见的 **ARM/AArch64（弱内存模型）** 上，`seq_cst` load/store 会生成 `dmb ish` 数据内存屏障，`acquire`/`release` 才对应 `ldar`/`stlr` 免费指令。因此：**在 x86 开发机用 `relaxed`/`seq_cst` 看不出性能差别、也几乎不暴露重排 bug，但烧到 ARM MCU 上两者指令数与正确性语义天差地别**。内存序选型必须按目标架构实测，不可只信 x86 本地结果。本机无 ARM 工具链，`ldar`/`stlr`/`dmb` 指令描述来自 ARM 弱内存模型公开文档，未经本机复编，故标 `[UNVERIFIED]`。
+4. **⚠️ 嵌入式跨平台陷阱（最重要）** `[微架构·ARM]` `[UNVERIFIED]`：上述"看起来都免费"的现象是 **x86-64 TSO 独有**。在嵌入式常见的 **ARM/ARM64（弱内存模型）** 上，`seq_cst` load/store 会生成 `dmb ish` 数据内存屏障，`acquire`/`release` 才对应 `ldar`/`stlr` 免费指令。因此：**在 x86 开发机用 `relaxed`/`seq_cst` 看不出性能差别、也几乎不暴露重排 bug，但烧到 ARM MCU 上两者指令数与正确性语义天差地别**。内存序选型必须按目标架构实测，不可只信 x86 本地结果。本机无 ARM 工具链，`ldar`/`stlr`/`dmb` 指令描述来自 ARM 弱内存模型公开文档，未经本机复编，故标 `[UNVERIFIED]`。
 
 ## 自测练习（Exercises）
 
@@ -992,7 +992,7 @@ int main() {
 }
 ```
 
-在 x86-64（TSO 强内存）上此错误常被掩盖；一移植到 ARM/AArch64（弱内存）就暴露读到未初始化 `payload`。
+在 x86-64（TSO 强内存）上此错误常被掩盖；一移植到 ARM/ARM64（弱内存）就暴露读到未初始化 `payload`。
 
 **修复**：发布用 `release`、消费用 `acquire`（改 `②` 为 `release`、`load` 为 `acquire`）。这建立 `① happens-before 解引用`，跨平台正确。
 

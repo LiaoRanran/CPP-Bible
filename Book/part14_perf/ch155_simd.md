@@ -574,7 +574,7 @@ x86 用 SSE/AVX，ARM 用 **NEON**（高级 SIMD，AArch64 默认 128 位 `float
 
 ```cpp
 // ⑰ x86 AVX2 已在 ⑦/⑳ 的 v_avx2 中实现，下面给出 ARM 等价
-// ⑰ ARM NEON 等价（AArch64，GCC/Clang 均支持）
+// ⑰ ARM NEON 等价（ARM64，GCC/Clang 均支持）
 //    说明：以下为 ARM-only 代码；本教科书编译门禁为 MinGW x86-64，
 //    不存在 <arm_neon.h>，故用 #ifdef 跳过，避免 x86 上编译失败。
 //    跨平台库的生产做法是在此按架构分发（或改用 ⑥ 的

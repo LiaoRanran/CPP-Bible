@@ -50,7 +50,7 @@ int main() { return 42; }
 ```
 
 - `[标准]`：C++ 标准本身不规定编译器内部结构；但 Clang 以「忠实实现标准 + 可诊断扩展」为工程目标（见 ⑦）。
-- `[平台·x86-64]`：Clang/LLVM 覆盖 x86-64、ARM/AArch64、RISC-V、PowerPC 等（见 ⑫）。
+- `[平台·x86-64]`：Clang/LLVM 覆盖 x86-64、ARM/ARM64、RISC-V、PowerPC 等（见 ⑫）。
 
 ## ② 架构：前端 / 优化器 / 后端 / IR [实现·LLVM]
 

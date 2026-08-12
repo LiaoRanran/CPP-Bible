@@ -80,7 +80,7 @@ int main() {
 ```
 
 - `[平台·x86-64]`：本机三元组为 `x86_64-w64-mingw32`；`__x86_64__` 由预处理器定义，可用于条件编译隔离平台代码。
-- `[平台·ARM]`：ARM 裸机定义 `__ARM_ARCH`、`__thumb__`；AArch64 定义 `__aarch64__`。
+- `[平台·ARM]`：ARM 裸机定义 `__ARM_ARCH`、`__thumb__`；ARM64 定义 `__aarch64__`。
 
 ## ③ sysroot 与库 [标准]
 
@@ -532,7 +532,7 @@ static_assert(alignof(double) <= 8, "double 对齐超预期");
 |---|---|---|---|---|
 | 宿主 x86-64 | `x86_64-w64-mingw32` | libstdc++（MinGW） | `-O2` | ✅ 已用 g++13 取证 |
 | ARM Cortex-M4 | `arm-none-eabi` | newlib/picolibc | `-Os -gc-sections` | ❌ 典型输出 |
-| AArch64 Linux | `aarch64-linux-gnu` | libstdc++/glibc | `-O2` | ❌ 未装 |
+| ARM64 Linux | `aarch64-linux-gnu` | libstdc++/glibc | `-O2` | ❌ 未装 |
 | RISC-V 32 裸机 | `riscv32-unknown-elf` | newlib | `-Os -gc-sections` | ❌ 未装 |
 
 ```cpp
@@ -672,7 +672,7 @@ int main(){std::cout<<"STM32=arm-none-eabi, RPi=aarch64-linux-gnu, Android=NDK c
 | 目标 | 工具链 | sysroot | ABI |
 |---|---|---|---|
 | STM32 | arm-none-eabi-gcc | 无(裸机) | ARM EABI |
-| Raspberry Pi | aarch64-linux-gnu-gcc | RPi rootfs | Linux AArch64 |
+| Raspberry Pi | aarch64-linux-gnu-gcc | RPi rootfs | Linux ARM64 |
 | Android | NDK clang | NDK sysroot | Android NDK ABI |
 | WebAssembly | emcc(emscripten) | 无 | wasm32 |
 
@@ -744,10 +744,10 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 
 | 项目 | 目标 | 工具链 | 关键配置 |
 |------|------|--------|---------|
-| **LLVM/Clang**（github.com/llvm/llvm-project） | ARM/AArch64/RISC-V/WebAssembly | Clang + lld + `--target=aarch64-linux-gnu` | `llvm/cmake/` — `CMAKE_CROSSCOMPILING=ON` + `LLVM_DEFAULT_TARGET_TRIPLE` |
-| **Chromium**（github.com/chromium/chromium） | Android (ARM64) / ChromeOS (x86_64/ARM) / Fuchsia | GN + Clang cross-toolchain | `build/config/arm.gni` — `target_cpu="arm64"` + `arm_use_neon=true` |
+| **LLVM/Clang**（github.com/llvm/llvm-project） | ARM/ARM64/RISC-V/WebAssembly | Clang + lld + `--target=aarch64-linux-gnu` | `llvm/cmake/` — `CMAKE_CROSSCOMPILING=ON` + `LLVM_DEFAULT_TARGET_TRIPLE` |
+| **Chromium**（github.com/chromium/chromium） | Android (ARM64) / ChromeOS (x86-64/ARM) / Fuchsia | GN + Clang cross-toolchain | `build/config/arm.gni` — `target_cpu="arm64"` + `arm_use_neon=true` |
 | **Qt**（code.qt.io） | 嵌入式 Linux (Yocto/Boot2Qt) / QNX / INTEGRITY | `qmake -spec devices/linux-rasp-pi4-g++` / CMake `-DCMAKE_TOOLCHAIN_FILE` | `qtbase/mkspecs/devices/` — 40+ 设备配置 |
-| **Google Android NDK**（developer.android.com/ndk） | ARM32/ARM64/x86_64 Android | Clang + `android-ndk-r26c/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang++` | `-DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=21` |
+| **Google Android NDK**（developer.android.com/ndk） | ARM32/ARM64/x86-64 Android | Clang + `android-ndk-r26c/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android21-clang++` | `-DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=21` |
 
 **底层深度**：交叉编译的关键是 sysroot——目标系统的头文件/库的镜像目录。GCC cross 构建时 `--with-sysroot=/path/to/aarch64-rootfs` 将 `#include` 解析根重定向到目标 sysroot，链接器从 `$sysroot/usr/lib` 搜索 `libc.so`。`CMAKE_TOOLCHAIN_FILE` 的本质是设置 `CMAKE_C_COMPILER_TARGET`（GCC triplet: `aarch64-linux-gnu`）与 `CMAKE_FIND_ROOT_PATH`。工具链文件的 `CMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER` 禁止 CMake 从 sysroot 找 `g++` 等主机工具。
 
@@ -761,7 +761,7 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 
 ### 练习 1（难度 ★★）
 
-**真实场景：CI 矩阵里的目标鉴别。** 你在 CI 里同时给 x86-64 和 aarch64 构建，需要代码能自报架构以选择正确的内联汇编 / intrinsics。请用预定义宏探测本机架构，并说明交叉编译目标三元组 `arch-vendor-os-abi` 各部分对应什么。
+**真实场景：CI 矩阵里的目标鉴别。** 你在 CI 里同时给 x86-64 和 ARM64 构建，需要代码能自报架构以选择正确的内联汇编 / intrinsics。请用预定义宏探测本机架构，并说明交叉编译目标三元组 `arch-vendor-os-abi` 各部分对应什么。
 
 ```cpp
 #include <iostream>

@@ -81,6 +81,16 @@ jobs:
       run: python3 tools/d5_source_integrity.py --check
       continue-on-error: false
 
+    - name: Terminology Normalization Gate (术语/格式归一化 门禁)
+      # E10 收口：确定性门禁，强制全书术语拼写统一（架构名 x86-64 / ARM64、大写 C++）。
+      # 映射表见 tools/terminology_normalize.py（CONVENTIONS 第22/31行背书、散文感知、幂等）。
+      # 任何未来编辑若重新引入 x86_64 / AArch64 / aarch64 等异体拼写，CI 立即变红 BLOCK。
+      # 围栏代码 / 行内码 / 链接 URL / autolink 一律跳过，绝不改动代码、路径或 URL。
+      # 注：小写 c++NN 是 GCC 标志/路径/库名的正确字面量（CONVENTIONS 第152行 -std=c++23），
+      # 散文语言名已用大写 C++；故 c++ 不归一，避免破坏可编译命令与真实路径/库名。
+      run: python3 tools/terminology_normalize.py --check
+      continue-on-error: false
+
     - name: D5 Coverage Scanner (D5 覆盖差距报告)
       # 扫描缺少 D5 附录但含有性能信号的章节，按信号强度排序。
       # 咨询模式：不阻断 CI，仅输出 build/d5_gap_report.json 供作者排期。

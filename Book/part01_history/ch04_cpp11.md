@@ -543,7 +543,7 @@ int main(){
 
 ## 附录 F：move底层与工业
 
-> 以下数值为「附录 H」本机实测（MinGW GCC 13.1.0 -O2 x86_64, ~2.4GHz）。move 是 O(1) 指针交换；copy 是 O(N) 堆分配 + memcpy/memmove。
+> 以下数值为「附录 H」本机实测（MinGW GCC 13.1.0 -O2 x86-64, ~2.4GHz）。move 是 O(1) 指针交换；copy 是 O(N) 堆分配 + memcpy/memmove。
 
 真实基准结论（vector<int> / string 各 ≥1KB，超过 SSO）:
 - vector<int> move = 3 指针交换(O(1), 亚纳秒~数纳秒); copy = 堆分配 + memmove, 1M 元素实测 ~706µs
@@ -616,7 +616,7 @@ int main(){auto p=std::make_unique<int>(42);auto f=[](int x){return x*2;};std::c
 > 源码 `Examples/_ch04_move_perf.cpp`，汇编 `Examples/_ch04_move_perf.asm`
 > （MinGW GCC 13.1.0，`g++ -S -O2 -m64` 生成）。书内 mangled 符号 ⊆ 该 `.asm`。
 
-### H.1 真实基准输出（MinGW GCC 13.1.0 -O2 x86_64, ~2.4GHz）
+### H.1 真实基准输出（MinGW GCC 13.1.0 -O2 x86-64, ~2.4GHz）
 
 ```
 [TSC] 2.395 GHz

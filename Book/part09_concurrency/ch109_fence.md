@@ -423,7 +423,7 @@ _Z13release_fencev:
     ret
 ```
 
-**关键修正**：附录 G 手写"x86 seq_cst fence = mfence"是概念性简化。真实 GCC 13.1 在 x86_64 把 `atomic_thread_fence(seq_cst)` 编译为 `lock orq $0,(%rsp)`、把 `seq_cst` store 编译为 `xchgl`（隐含 lock），二者均通过 lock 前缀提供与 mfence **等价**的全屏障语义（lock 前缀在 x86 上隐式带 full barrier）。ARM 平台则确实生成 `dmb sy`（见 LLVM 官方文档）`[微架构·ARM]` `[UNVERIFIED]`（本机无 ARM 工具链，未复编）。
+**关键修正**：附录 G 手写"x86 seq_cst fence = mfence"是概念性简化。真实 GCC 13.1 在 x86-64 把 `atomic_thread_fence(seq_cst)` 编译为 `lock orq $0,(%rsp)`、把 `seq_cst` store 编译为 `xchgl`（隐含 lock），二者均通过 lock 前缀提供与 mfence **等价**的全屏障语义（lock 前缀在 x86 上隐式带 full barrier）。ARM 平台则确实生成 `dmb sy`（见 LLVM 官方文档）`[微架构·ARM]` `[UNVERIFIED]`（本机无 ARM 工具链，未复编）。
 
 ## 相关章节（交叉引用）
 
@@ -473,7 +473,7 @@ _Z13release_fencev:
 1. `[微架构·x86-64 TSO]` `[VERIFIED]`：**`seq_cst` fence 生成的是 `lock or QWORD PTR [rsp],0x0`，不是 `mfence`。** 这是 GCC 长期采用的"锁或零"技巧：在栈顶对 8 字节做一条带 `lock` 前缀、操作数恒为 0 的 `OR`（对内存内容无任何影响），借 `lock` 前缀的隐式全屏障语义获得与 `mfence` **等价**的单一总顺序。`lock or` 在某些微架构比独立 `mfence` 更省端口/更短延迟。本实证（GCC 15.3.0）与附录 H（GCC 13.1.0 的 `lock orq $0,(%rsp)`）**跨主版本一致**——该手法稳定可信。
 2. `[微架构·x86-64 TSO]` `[VERIFIED]`：**`acquire` / `release` / `acq_rel` 三种 fence 在 x86-64 下全部编译为空函数（`ret` 一条）。** 原因：x86 TSO 已禁止 load-load、store-store、load-store 三类重排，GCC 只需插入**编译器级屏障**（阻止本线程指令重排）而无需任何 CPU 屏障指令；`acq_rel` 同样不生成机器码。
 3. **`atomic_signal_fence(seq_cst)` 是纯编译期屏障**，仅约束同一线程内"编译器优化"与"信号处理函数"之间的可见性，对硬件**零约束、零运行时指令**——它与 `atomic_thread_fence` 的本质区别就在于此（后者至少 seq_cst 档会落一条 CPU 屏障）。
-4. `[微架构·ARM]` `[UNVERIFIED]`：**跨平台警示（呼应 ch108 / 附录 H）**：上述"空"只在 x86-64 TSO 成立。ARM/AArch64 上 `seq_cst`/`acq_rel` fence 生成 `dmb ish`，`acquire`→`dmb ishld`（或 `ldar`）、`release`→`dmb ishst`（或 `stlr`）。本机无 ARM 工具链，未附 ARM 汇编，此结论来自 LLVM 官方内存模型文档与 ARM 弱内存模型公开资料，未经本机复编。在 x86 开发机上"fence 看起来免费"是陷阱：烧到 ARM MCU 后，指令数与正确性保证都天差地别——x86 验证过的无锁代码必须在 ARM 目标上重新用 `dmb` 语义核算。
+4. `[微架构·ARM]` `[UNVERIFIED]`：**跨平台警示（呼应 ch108 / 附录 H）**：上述"空"只在 x86-64 TSO 成立。ARM/ARM64 上 `seq_cst`/`acq_rel` fence 生成 `dmb ish`，`acquire`→`dmb ishld`（或 `ldar`）、`release`→`dmb ishst`（或 `stlr`）。本机无 ARM 工具链，未附 ARM 汇编，此结论来自 LLVM 官方内存模型文档与 ARM 弱内存模型公开资料，未经本机复编。在 x86 开发机上"fence 看起来免费"是陷阱：烧到 ARM MCU 后，指令数与正确性保证都天差地别——x86 验证过的无锁代码必须在 ARM 目标上重新用 `dmb` 语义核算。
 
 ## 自测练习（Exercises）
 

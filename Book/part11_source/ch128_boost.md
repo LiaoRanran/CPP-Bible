@@ -972,7 +972,7 @@ int main() { return fact(5); }
 
 ## D5 真实性能基准：Boost 惯用抽象的 std 等价物成本（GCC 15.3.0 实测）
 
-**测量方法**：GCC 15.3.0（mingw-w64 x86_64）`-std=c++23 -O2`，预热后计时、5 次运行取中位数；`volatile` 汇聚防死代码消除，被测函数 `noinline`。以 `std::optional`/`std::variant` 代表 Boost.Optional/Boost.Variant 谱系的成本模型（二者实现同构：内联存储 + 判别标记）。单线程本机实测，仅作量级参考。
+**测量方法**：GCC 15.3.0（mingw-w64 x86-64）`-std=c++23 -O2`，预热后计时、5 次运行取中位数；`volatile` 汇聚防死代码消除，被测函数 `noinline`。以 `std::optional`/`std::variant` 代表 Boost.Optional/Boost.Variant 谱系的成本模型（二者实现同构：内联存储 + 判别标记）。单线程本机实测，仅作量级参考。
 
 | 场景 | 每操作（ns） | 说明 |
 |---|---|---|

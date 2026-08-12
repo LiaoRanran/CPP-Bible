@@ -952,7 +952,7 @@ A: CAS 是用户态原子操作(~20ns)；mutex 涉及系统调用 + 上下文切
 
 ### 跨平台警示（呼应 ch108）
 
-以上 `lock` 前缀行为仅在 x86-64 TSO 成立。ARM/AArch64 上 `fetch_add`/`exchange` 通常编译为 `ldadd`/`swp`（Armv8.1 LSE 原子指令）或 `ldrex`/`strex` 独占监视对，CAS 用 `ldxr`/`stxr` 循环。**`lock` 前缀是 x86 专属**，把 x86 上"一条带锁指令"的心智模型照搬到 ARM MCU 会误判原子性与性能——ARM 弱内存还需配 `dmb` 屏障才获得等价顺序保证。
+以上 `lock` 前缀行为仅在 x86-64 TSO 成立。ARM/ARM64 上 `fetch_add`/`exchange` 通常编译为 `ldadd`/`swp`（Armv8.1 LSE 原子指令）或 `ldrex`/`strex` 独占监视对，CAS 用 `ldxr`/`stxr` 循环。**`lock` 前缀是 x86 专属**，把 x86 上"一条带锁指令"的心智模型照搬到 ARM MCU 会误判原子性与性能——ARM 弱内存还需配 `dmb` 屏障才获得等价顺序保证。
 
 ## 自测练习（Exercises）
 
