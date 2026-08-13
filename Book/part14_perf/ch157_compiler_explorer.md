@@ -690,8 +690,7 @@ ret
 ```cpp
 #include <iostream>
 int square(int x) { return x * x; }
-int main() { std::cout << square(5) << '
-'; }
+int main() { std::cout << square(5) << '\n'; }
 ```
 
 [标准] 内联与常量折叠均为优化器行为，标准不保证；`-O2` 通常对纯函数 + 常量实参同时做二者，可在 CE 切换 `-O0`/`-O2` 直观对照。
