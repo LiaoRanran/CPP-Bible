@@ -606,6 +606,21 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：无锁栈 `pop` 的 ABA 问题。** 你用 `compare_exchange` 仍读到“看似未变”的指针。请说明根因与语言层支撑。
+   - [标准] 语言层以 `compare_exchange` 等原子原语支撑无锁结构；ABA 防护（标签指针/双字 CAS）是建立在此之上的并发惯用法。
+   - [引用] ISO/IEC 14882:2023 §[atomics]（compare_exchange 提供 CAS 原语）；cppreference "ABA problem" 词条。
+
+2. **真实场景：`compare_exchange` 的成功/失败内存顺序两参数。** 你写 `compare_exchange_weak` 循环。请说明。
+   - [标准] compare_exchange 分别接受成功与失败内存顺序；失败顺序不得强于成功顺序。
+   - [引用] ISO/IEC 14882:2023 §[atomics]（compare_exchange 内存顺序参数）；cppreference "std::atomic::compare_exchange" 词条。
+
+3. **真实场景：用带标签指针（tagged pointer）打破 ABA。** 你把版本号与指针打包进一个字。请说明（需双字 CAS）。
+   - [标准] 双字 CAS 使“指针+版本号”作为整体原子比较交换；语言层提供 CAS 原语，具体打包属惯用法/库支持。
+   - [引用] ISO/IEC 14882:2023 §[atomics]（CAS 原语支撑）；cppreference "ABA problem / DCAS" 词条。
+
+
 | 主题 | 要点 | 出处 |
 |---|---|---|
 | ABA 定义 | 值 A→B→A 使 CAS 误判成功 | ① |

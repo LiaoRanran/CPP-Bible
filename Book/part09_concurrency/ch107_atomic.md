@@ -741,6 +741,21 @@ g++ -std=c++23 -O1 -g -fsanitize=thread _ch107_tsan_demo.cpp -o tsan_demo
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::atomic<int>` 计数避免数据竞争。** 你多线程 `++` 不再丢更新。请说明保证。
+   - [标准] 对原子对象的并发访问不产生数据竞争；RMW 操作整体原子完成。
+   - [引用] ISO/IEC 14882:2023 §[atomics]（原子操作免数据竞争）；cppreference "std::atomic" 词条。
+
+2. **真实场景：默认内存顺序是 `seq_cst`，可能比 필요 更慢。** 你确认单变量无需跨变量顺序。请说明默认。
+   - [标准] 未指定 memory_order 时，原子操作按 `memory_order_seq_cst` 执行（全序、最安全但最贵）。
+   - [引用] ISO/IEC 14882:2023 §[atomics.order]（seq_cst 默认）；cppreference "std::memory_order" 词条。
+
+3. **真实场景：`fetch_add` 是原子读-改-写。** 你用它做无锁计数器。请说明。
+   - [标准] fetch_add/exchange 等是原子 RMW；在多线程竞争下结果正确且单一。
+   - [引用] ISO/IEC 14882:2023 §[atomics]（RMW 操作）；cppreference "std::atomic::fetch_add" 词条。
+
+
 ```cpp
 // ⑳ 最小可编译回顾：把本章要点串成一段代码
 #include <atomic>

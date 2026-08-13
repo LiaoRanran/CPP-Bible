@@ -591,6 +591,21 @@ C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实�
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：无锁读侧安全回收内存（hazard pointer / RCU 思路）。** 你理解语言只给原语、策略在上层。请说明。
+   - [标准] C++ 标准提供原子与内存顺序原语；具体内存回收策略（hazard pointer、RCU）是库/惯用法（hazard pointer 处于 C++26 提案阶段）。
+   - [引用] ISO/IEC 14882:2023 §[atomics]（底层原子原语）；cppreference "RCU / Hazard pointer" 词条。
+
+2. **真实场景：`shared_ptr` 控制块的引用计数是原子的。** 你理解其线程安全边界。请说明。
+   - [标准] `shared_ptr` 控制块的引用计数增减是原子的；但多个 shared_ptr 对象本身的并发写仍需外部同步。
+   - [引用] ISO/IEC 14882:2023 §[util.smartptr.shared]（控制块原子计数）；cppreference "std::shared_ptr" 词条。
+
+3. **真实场景：释放侧 store(release) 与读侧 load(acquire) 须配对。** 你保证发布的数据对读者可见。请说明。
+   - [标准] 跨线程传递指针/数据时，发布方用 release、消费方用 acquire 才能建立可见性。
+   - [引用] ISO/IEC 14882:2023 §[atomics.order]（release-acquire 配对）；cppreference "Memory ordering" 词条。
+
+
 | 主题 | 一句话 | 关键原语 |
 |---|---|---|
 | 并发回收难题 | 读者持指针时写者不能 delete | `atomic` 不延长生命周期 |

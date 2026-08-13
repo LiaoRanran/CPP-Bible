@@ -634,6 +634,21 @@ int main() {
 
 ## ⑳ 速查表（6 种序对照） [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 release/acquire 配对实现无锁同步。** 你一线程 publish 指针(release)，另一线程读(acquire)看到完整数据。请说明机制。
+   - [标准] release 存储与 acquire 加载配对，在它们之间建立 happens-before，使之前的写对读方可见。
+   - [引用] ISO/IEC 14882:2023 §[atomics.order]（release-acquire 同步）；cppreference "std::memory_order" 词条。
+
+2. **真实场景：用 `relaxed` 只保原子性不保顺序。** 你做纯计数器不需要跨变量可见性。请说明边界。
+   - [标准] `memory_order_relaxed` 保证操作原子、不撕裂，但不对其他原子变量建立顺序约束。
+   - [引用] ISO/IEC 14882:2023 §[atomics.order]（relaxed 语义）；cppreference "std::memory_order" 词条。
+
+3. **真实场景：`seq_cst` 在所有原子间维持单一全序。** 你需要强一致但接受成本。请说明代价。
+   - [标准] seq_cst 在所有原子操作上维持一个全序，保证最强但通常需要更重的屏障。
+   - [引用] ISO/IEC 14882:2023 §[atomics.order]（seq_cst 全序）；cppreference "std::memory_order" 词条。
+
+
 | 内存序 | 原子性 | 同步(跨线程) | 跨变量顺序 | 典型用途 | x86-64 指令(GCC15) |
 |---|---|---|---|---|---|
 | `relaxed` | 有 | 无 | 无 | 计数器、标志位(不携带数据) | `mov` / `lock add` |

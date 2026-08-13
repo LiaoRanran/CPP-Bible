@@ -706,6 +706,21 @@ struct safe_task {
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：含 `co_await`/`co_yield`/`co_return` 的函数被编译成协程。** 你理解编译器变换。请说明标记。
+   - [标准] 函数体含这些关键字时，被定义为协程，由编译器变换为状态机（含 promise 与帧）。
+   - [引用] ISO/IEC 14882:2023 §[dcl.fct.def.coroutine]（协程定义）；cppreference "Coroutines" 词条。
+
+2. **真实场景：awaitable 须提供 awaiter 三接口。** 你自定义可等待类型卡在挂起/恢复。请说明。
+   - [标准] awaitable 须提供 `await_ready`/`await_suspend`/`await_resume`；co_await 据此决定挂起与恢复。
+   - [引用] ISO/IEC 14882:2023 §[expr.await]（await 表达式与 awaiter）；cppreference "Awaitable" 词条。
+
+3. **真实场景：协程的 `promise_type` 决定返回值与挂起点。** 你控制初始/最终挂起与返回对象。请说明。
+   - [标准] 协程通过 `std::coroutine_traits` 找到 `promise_type`，其成员决定初始挂起、最终挂起与返回对象类型。
+   - [引用] ISO/IEC 14882:2023 §[dcl.fct.def.coroutine]（promise_type 与 coroutine traits）；cppreference "std::coroutine_traits" 词条。
+
+
 | 问题 | 答案 |
 |---|---|
 | 函数体出现 `co_await/co_yield/co_return` → 它是？ | **协程**，必须能推导 `promise_type` |

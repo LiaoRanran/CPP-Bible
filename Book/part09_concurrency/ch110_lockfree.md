@@ -776,6 +776,21 @@ g++.exe -std=c++23 -fsanitize=thread -O1 -g _ch110_tsan_demo.cpp -o _ch110_tsan_
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：`is_lock_free()` 告诉你 atomic 是否真无锁。** 你以为 atomic 一定无锁，其实可能内部用锁。请说明。
+   - [标准] `std::atomic<T>` 可能基于内部锁实现；`is_lock_free()` 报告其是否真正无锁。
+   - [引用] ISO/IEC 14882:2023 §[atomics]（is_lock_free）；cppreference "std::atomic::is_lock_free" 词条。
+
+2. **真实场景：C++20 的 `wait`/`notify` 实现无锁等待。** 你替代忙等轮询。请说明。
+   - [标准] `atomic::wait` 阻塞直到值改变，`notify_one`/`notify_all` 唤醒等待者（C++20 引入）。
+   - [引用] ISO/IEC 14882:2023 §[atomics.wait]（wait/notify）；cppreference "std::atomic::wait" 词条。
+
+3. **真实场景：lock-free 不等于 wait-free（可能饥饿）。** 你理解无锁只保证某线程前进。请说明。
+   - [标准] lock-free 仅保证系统整体有线程前进，不保证单个线程不饥饿；wait-free 才保证每个线程有界完成。
+   - [引用] ISO/IEC 14882:2023 §[atomics]（lock-free 定义）；cppreference "Lock-free programming" 词条。
+
+
 | 术语 | 进度保证 | 单线程最坏 | 硬件原语（x86-64） | 典型陷阱 |
 |---|---|---|---|---|
 | blocking | 无 | 可无限阻塞 | `lock` + futex 睡眠 | 死锁/优先级反转 |

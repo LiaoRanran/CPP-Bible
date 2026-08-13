@@ -238,6 +238,21 @@ int main(){std::cout<<"Perf: x86 relaxed=acquire=~1ns (free), seq_cst=~10ns (mfe
 ```
 
 ## ⑳ 跨语言对比 [经验]
+
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `atomic_thread_fence` 在没有原子变量时也强制顺序。** 你同步普通变量与原子。请说明。
+   - [标准] 围栏与原子操作交互，可对周围的内存访问施加跨线程顺序约束（ fences 与原子配对）。
+   - [引用] ISO/IEC 14882:2023 §[atomics.fences]（原子围栏）；cppreference "std::atomic_thread_fence" 词条。
+
+2. **真实场景：围栏影响其后所有原子访问。** 你不确定围栏范围。请说明。
+   - [标准] 围栏对其前后的原子操作施加顺序约束；与带内存顺序的原子操作组合才建立同步。
+   - [引用] ISO/IEC 14882:2023 §[atomics.fences]（围栏的作用范围）；cppreference "std::atomic_thread_fence" 词条。
+
+3. **真实场景：围栏比逐操作 memory_order 更粗粒度。** 你在一处统一排序。请说明取舍。
+   - [标准] 用单独围栏可减少对每个原子操作标注内存顺序的麻烦，但可能施加更广的屏障。
+   - [引用] ISO/IEC 14882:2023 §[atomics.fences] / [atomics.order]（围栏 vs 操作级顺序）；cppreference "Memory ordering" 词条。
+
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++ memory_order vs Rust Ordering (Acquire/Release/Relaxed/SeqCst): identical semantics.\n";return 0;}
