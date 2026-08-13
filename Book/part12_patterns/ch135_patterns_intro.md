@@ -703,6 +703,21 @@ extern "C" {
 
 ## ⑳ 本章小结与索引 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 RAII Scope Guard 替代 try/finally 做清理。** 你嫌异常路径重复写释放。请说明语言支撑。
+   - [标准] 析构在作用域结束或栈展开时调用，是 RAII/作用域守卫的基础。
+   - [引用] ISO/IEC 14882:2023 §[class.dtor] / [except.terminate]（析构与栈展开）；cppreference "RAII" 词条。
+
+2. **真实场景：策略模式用 `std::function` 还是模板？** 你权衡运行时灵活 vs 编译期内联。请说明。
+   - [标准] 运行时策略用 `std::function`（类型擦除，有开销）；编译期策略用模板（零开销但失去运行时替换）。
+   - [引用] ISO/IEC 14882:2023 §[func]（std::function）/ [temp]（模板）/ [class.virtual]（对比虚调用）；cppreference "std::function" 词条。
+
+3. **真实场景：静态多态（CRTP）替代虚函数省开销。** 你关心热路径性能。请说明取舍。
+   - [标准] CRTP 编译期决议可内联、无 vtable；虚函数提供运行时多态但有间接开销。
+   - [引用] ISO/IEC 14882:2023 §[temp]（CRTP）/ [class.virtual]（运行时多态）；cppreference "CRTP" 词条。
+
+
 本章建立了设计模式的 C++ 视角：
 
 - 模式是**意图约定**而非代码模板（①），源自 GoF 与 C++ 的历史共生（②）；

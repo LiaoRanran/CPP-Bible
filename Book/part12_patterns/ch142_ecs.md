@@ -768,6 +768,21 @@ a alive after destroy? no
 
 ## ⑳ 小结 [经验]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：ECS 用 SoA 布局提高缓存命中。** 你做游戏实体更新。请说明语言层保证。
+   - [标准] 数组元素连续存储（[dcl.array]），按类型聚合可减少填充、提升缓存利用率。
+   - [引用] ISO/IEC 14882:2023 §[dcl.array]（连续存储）/ [class.mem]（布局与填充）；cppreference "Data-oriented design" 词条。
+
+2. **真实场景：组件按类型聚合存储（Archetype）。** 你避免随机访问组件。请说明。
+   - [标准] 同类型组件连续存储利于顺序遍历与缓存；对齐由 `alignas` 增强（[basic.align]）。
+   - [引用] ISO/IEC 14882:2023 §[basic.align]（对齐）/ [dcl.array]（连续）；cppreference "Data-oriented design" 词条。
+
+3. **真实场景：系统遍历组件应避免随机访问抖动。** 你优化热循环。请说明。
+   - [标准] 顺序访问连续内存缓存友好；语言层只保证连续性，具体命中由硬件决定。
+   - [引用] ISO/IEC 14882:2023 §[dcl.array]（连续存储）；cppreference "Cache locality" 词条。
+
+
 - **三元组**：Entity=稳定 ID；Component=纯数据（平凡可拷贝最佳）；System=批量逻辑。三者正交，是 ECS 的全部。
 - **布局定生死**：AoS vs SoA 没有绝对赢家——**SoA 用"缩小工作集"赢在缓存容量**（⑥ 实测 6~7x），AoS 在"小结构全遍历"时靠缓存行局部性反超。Archetype/Chunk 是工业折中。
 - **真实取证**：本章所有汇编均来自 GCC 13.1.0 真实编译（`add rcx,24` vs `rax*4`、constexpr 折叠为 `mov eax,4194319`、无锁读退化为普通 `mov`）；基准数字来自真实运行，并已防 DCE。

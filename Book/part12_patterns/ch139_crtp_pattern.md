@@ -882,6 +882,21 @@ struct S2 : SomePolicy { int x; };     // EBO 压掉空基类
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：基类模板以派生类为实参，提供 `operator<` 自比较。** 你写 CRTP 接口。请说明机制。
+   - [标准] 基类模板以派生类为实参，编译期即可解析对派生成员的调用。
+   - [引用] ISO/IEC 14882:2023 §[temp.mem]（成员模板与派生成员访问）/ [temp]；cppreference "CRTP" 词条。
+
+2. **真实场景：CRTP 静态多态 vs 虚函数运行时多态。** 你权衡开销。请说明。
+   - [标准] CRTP 编译期决议、可内联、无 vtable 间接；虚函数运行时分派但有间接开销。
+   - [引用] ISO/IEC 14882:2023 §[class.virtual]（运行时多态）/ [temp]（静态多态）；cppreference "CRTP" 词条。
+
+3. **真实场景：CRTP 基类若用于多态删除须有虚析构。** 你通过基类模板指针 delete 派生对象崩溃。请说明。
+   - [标准] 通过基类指针 `delete` 派生对象，基类析构须为虚，否则未定义行为（CRTP 非运行时多态）。
+   - [引用] ISO/IEC 14882:2023 §[class.dtor]（虚析构必要性）；cppreference "Virtual destructor" 词条。
+
+
 - **CRTP 是什么**：`struct Derived : Base<Derived>`——基类用模板参数持有派生类类型，编译期完成静态多态。
 - **核心机制**：`static_cast<Derived*>(this)` 把 `this` 下转为派生类，零运行时开销（§③、§④ 汇编佐证）。
 - **性能真相**（`[平台·x86-64]` 取证）[VERIFIED]：`-O2` 下 CRTP 调用被整体内联为几条指令；虚函数最坏退化为 `call [vtable]`，最好经投机去虚拟化与 CRTP 持平（§④、§⑯）。

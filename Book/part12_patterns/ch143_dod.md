@@ -1092,6 +1092,21 @@ template <class F> double time_it(F f, int reps) {
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：AoS → SoA 提升 SIMD/缓存效率。** 你重构粒子系统。请说明布局保证。
+   - [标准] 成员布局含填充（[class.mem]）；把同字段聚成数组（[dcl.array] 连续）提高打包密度。
+   - [引用] ISO/IEC 14882:2023 §[class.mem]（填充）/ [dcl.array]（连续）；cppreference "Data-oriented design" 词条。
+
+2. **真实场景：用 `alignas` 消除 false sharing。** 你给每线程数据独立缓存行。请说明。
+   - [标准] `alignas` 可要求强于自然对齐的字节对齐（如 64 字节），隔离 false sharing。
+   - [引用] ISO/IEC 14882:2023 §[dcl.align]（alignas）/ [basic.align]；cppreference "alignas" 词条。
+
+3. **真实场景：冷/热数据分离减少缓存占用。** 你重排结构体成员。请说明。
+   - [标准] 语言层只保证成员连续与实现定义填充；冷热分离是工程优化，减少活跃工作集。
+   - [引用] ISO/IEC 14882:2023 §[class.mem]（成员布局）；cppreference "Data-oriented design" 词条。
+
+
 DOD 不是银弹，而是**在“每帧遍历海量同质数据”的热路径上换取缓存与指令效率**的纪律。一页速记：
 
 ```

@@ -879,6 +879,21 @@ void apply_variant(PolicyVariant<Ps...>& v) {
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用模板策略组合（如 `SmartPtr<Host, Ownership, Checking>`）。** 你编译期拼装行为。请说明。
+   - [标准] 模板实参即策略，编译期组合不同行为；各策略是独立的类模板实参。
+   - [引用] ISO/IEC 14882:2023 §[temp]（类模板与策略组合）；A. Alexandrescu《Modern C++ Design》（基于策略的设计）。
+
+2. **真实场景：标准算法的执行策略（parallel/seq）。** 你给算法选并行策略。请说明。
+   - [标准] 执行策略（[execpol]）是标准提供的“策略”抽象，控制算法并行度。
+   - [引用] ISO/IEC 14882:2023 §[execpol]（执行策略）/ [algorithms.parallel]；cppreference "std::execution" 词条。
+
+3. **真实场景：策略类用空基类（EBO）实现零开销。** 你担心策略对象占空间。请说明。
+   - [标准] 空基类子对象通常不占空间（EBO），使策略组合几乎零开销。
+   - [引用] ISO/IEC 14882:2023 §[class.derived]（空基类优化）；cppreference "Empty base optimization" 词条。
+
+
 - **本质**：Policy-Based Design 把类行为拆解为可替换、正交、编译期绑定的 policy，宿主以模板参数组装，生成全新的静态类型。
 - **与策略模式**：policy 是编译期静态组合（零虚函数开销），策略模式是运行期动态组合（虚表间接调用）——⑩/⑱ 的汇编已实证二者开销差异。
 - **与 CRTP/traits/concepts**：CRTP 让 policy 回调宿主（⑦）；traits 多为"只读 policy"（⑥）；concepts 约束 policy 接口（⑨/⑲）。

@@ -947,6 +947,21 @@ int main() {
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：构造注入 vs 设值注入的选择。** 你设计可测试组件。请说明（属设计原则，无直接标准对应）。
+   - [标准] 无直接 C++ 标准对应；DI 是设计原则，语言层用构造函数/setter + 接口实现。
+   - [引用] M. Fowler《Inversion of Control Containers and the Dependency Injection pattern》/ C++ Core Guidelines（接口隔离）；cppreference 通用。
+
+2. **真实场景：用抽象基类（接口）解耦实现。** 你依赖接口而非具体类。请说明。
+   - [标准] 含纯虚函数的类为抽象类，不能实例化，可用于定义接口契约。
+   - [引用] ISO/IEC 14882:2023 §[class.abstract]（抽象类与纯虚函数）；cppreference "abstract class" 词条。
+
+3. **真实场景：用工厂 + 智能指针管理依赖生命周期。** 你避免裸指针到处传。请说明。
+   - [标准] RAII + `std::shared_ptr`/`unique_ptr` 管理依赖对象的生命周期。
+   - [引用] ISO/IEC 14882:2023 §[util.smartptr]（智能指针）/ [class.dtor]（RAII）；cppreference "std::shared_ptr" 词条。
+
+
 【本章要点】依赖注入把“对象怎么用依赖”与“依赖怎么创建/选哪个实现”解耦，核心收益是**可测试、可替换、可维护**。C++ 落地 DI 的四种主力技法：
 
 1. **构造注入**（②/⑫）：必需依赖、构造即完整、`const` 成员。
