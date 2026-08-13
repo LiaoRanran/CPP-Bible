@@ -373,12 +373,19 @@ void log([[maybe_unused]] int verbose){}
 
 ### ㉒.2 真实工程坐标：C++17 活在哪
 
-- **主流库默认基线**：LLVM 16+、Abseil、fmt 9+、spdlog、Protobuf 等均以 C++17 为最低要求；CMake 的 `target_compile_features` 里 `cxx_std_17` 成为事实默认。
-- **服务端/云原生**：大量微服务与数据库（如 ClickHouse 子集、TiKV 周边）用 `std::string_view` 零拷贝处理网络报文、`std::optional` 表达可空。
-- **游戏与图形**：Unreal/Unity 周边工具、游戏引擎脚本桥接大量使用 `if constexpr` 做编译期分派。
+C++17 是今天工业界的事实默认基线。下面按领域展开：
 
-- **Chromium 基线**：Chromium 自 2021 年起要求 C++17（`cxx` 文档明确禁止未支持 17 的编译器），`std::optional`/`string_view` 广泛用于浏览器引擎与网络栈——见 [Chromium C++ 状态文档](https://chromium.googlesource.com/chromium/src/+/main/docs/cxx.md)。
-- **自动驾驶栈**：百度 Apollo 等自动驾驶框架以 C++17 为基线，用 `std::optional` 表达感知数据「可能缺失」、用 `if constexpr` 做编译期传感器分派——[据记载]这是 C++17 进入安全关键车载软件的代表。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 主流库默认 | LLVM 16+ / Abseil / fmt 9+ / spdlog / Protobuf（以 C++17 最低） | CMake `cxx_std_17` 事实默认 | 库生态共识 | [STANDARD] `string_view`/`optional`/`if constexpr` |
+| 服务端 / 云原生 | 微服务 / 数据库（ClickHouse 子集 / TiKV）用 `string_view` 零拷贝 / `optional` 可空 | 网络报文与可空表达 | 云原生服务 | `string_view` 零拷贝处理报文 |
+| 游戏与图形 | Unreal / Unity 工具 / 引擎脚本桥接用 `if constexpr` 编译期分派 | 编译期传感器 / 分支分派 | 实时引擎 | `if constexpr` 去运行期分支 |
+| Chromium 基线 | Chromium 自 2021 要求 C++17，`optional`/`string_view` 广泛用 | 浏览器引擎与网络栈 | 工业级浏览器 | 禁止未支持 17 的编译器 |
+| 自动驾驶栈 | 百度 Apollo 以 C++17，`optional` 表达感知缺失 / `if constexpr` 传感器分派 | 安全关键车载软件 | 自动驾驶代表 | [据记载] C++17 进车载 |
+
+> **表注（㉒.2）**：上表前 3 行是「C++17 在库/服务端/游戏里的默认地位」，后 2 行是「Chromium 与 Apollo 如何把它钉为硬基线」；`string_view`/`optional`/`if constexpr` 是 C++17 用得最狠的三件套——零拷贝、可空、编译期分派，几乎是现代 C++ 的呼吸方式。
+
+**一条判读**：新项目默认 C++17 是当下最稳妥的选择——生态共识、编译器全覆盖、特性足够现代；除非要 ranges/coroutines/modules 才上 20，否则 17 是「现代且不过度」的甜点。
 
 ### ㉒.3 生产踩坑：C++17 常见误用
 

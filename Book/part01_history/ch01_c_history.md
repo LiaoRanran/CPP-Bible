@@ -442,12 +442,19 @@ extern "C" int cfunc(int);
 
 ### ㉒.2 真实工程坐标：C 遗产与 C++ 起点活在哪些地方
 
-- **操作系统与基础设施**：整个 Linux 内核（纯 C，C89/C11 混合）、Windows NT 内核（C 为主）、SQLite（单文件 C 库，全球部署量最大的嵌入式数据库之一）、PostgreSQL 后端均重度依赖 C 的 ABI 稳定性。
-- **C++ 的工业母体**：LLVM/Clang 自身最早脱胎于 C++ 对 C 的兼容层；无数嵌入式固件、高频交易、游戏引擎（Unreal 用 C++）的起点都是"先用 C 写、再用 C++ 类封装"。
-- **跨语言边界**：C 的 `extern "C"` ABI 是几乎所有语言（Python CPython、Java JNI、Rust FFI、Go cgo）与本地代码交互的事实标准——今天你调用的 libpng/zlib/openssl 几乎都是 C ABI。
+C 与 C++ 的起点不是教科书，而是今天你调用的每一层基础设施。下面按领域展开：
 
-- **GPU 与跨语言互操作的 C ABI 基石**：NVIDIA CUDA Runtime API 本身以纯 C 接口（`extern "C"` 导出）发布，PyTorch/TensorFlow 的 C++ 张量内核通过这层 C ABI 调用 GPU——C 的「最低公约数」ABI 让 C++ 生态得以活在 GPU 之上。见 [CUDA Runtime API 文档](https://docs.nvidia.com/cuda/cuda-runtime-api/)。
-- **C++ 活在 Python 解释器里**：CPython 用 C 写成（`PyObject` 等 C ABI），NumPy、PyTorch 的 C++ 扩展经 `extern "C"` 暴露 `PyMethodDef` 接入解释器——C ABI 是 C++ 高性能扩展接入脚本生态的通用桥。见 [CPython 源码](https://github.com/python/cpython)。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 操作系统与基础设施 | Linux 内核（C）/ Windows NT（C）/ SQLite / PostgreSQL 后端 | 重度依赖 C 的 ABI 稳定性 | C 是全球部署最广的系统语言 | [ABI] C ABI 稳定是系统基石 |
+| C++ 工业母体 | LLVM/Clang 脱胎于 C 兼容层 / Unreal（先用 C 写再 C++ 封装） | C++ 对 C 的兼容起点 | 编译 / 游戏 / 高频工业 | C++ 起源于「C with classes」 |
+| 跨语言边界 | Python CPython / Java JNI / Rust FFI / Go cgo 经 `extern "C"` | 与本地代码交互事实标准 | 几乎所有语言的 FFI 桥 | [ABI] `extern "C"` 是跨语言最低公约数 |
+| GPU 互操作 | NVIDIA CUDA Runtime API（纯 C 接口）/ PyTorch·TensorFlow C++ 张量内核 | C ABI 调 GPU | GPU 生态活在 C ABI 之上 | 见 CUDA Runtime API 文档 |
+| 脚本生态桥 | CPython（C 写成）/ NumPy·PyTorch C++ 扩展经 `extern "C"` 暴露 `PyMethodDef` | C++ 高性能扩展接入解释器 | Python 科学生态底座 | 见 CPython 源码 |
+
+> **表注（㉒.2）**：上表前 3 行是「C/C++ 作为系统层与跨语言底座」，后 2 行是「同一套 C ABI 如何延伸到 GPU 与脚本生态」；C 的「最低公约数」ABI 不是技术标准，而是 [ABI] 层几十年沉淀的事实约定，C++ 因此能活在几乎一切本地互操作之上。
+
+**一条判读**：理解 C ABI 是理解「为什么 C++ 至今无可替代」的钥匙——它不是特性多强，而是 `extern "C"` 的稳定 ABI 让所有语言都能调用它；写 C++ 库时想清楚「对外暴露的是 C ABI 还是 C++ 名字改编后的符号」，直接决定它能不能被 Python/Rust/Go 复用。
 
 ### ㉒.3 生产踩坑：C 遗产与早期 C++ 的坑
 

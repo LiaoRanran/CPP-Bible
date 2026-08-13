@@ -350,12 +350,19 @@ static_assert(__GNUC__ >= 13, "gcc13+");
 
 ### ㉒.2 真实工程坐标：C++26 特性提前活在哪些实现里
 
-- **反射预览**：Clang/GCC 的实验分支与 `std::meta` 原型已在库作者社区（如 Boost.Describe 的近亲、序列化/ORM 框架）提前试验。
-- **`std::execution`**：P2300 已被 libunifex、stdexec 等独立实现验证，用于异步管线（GPU/网络栈）。
-- **契约**：Clang 的 `-fcontracts` 实验选项与 P2900 思路对齐，用于安全关键（航空/汽车）代码的运行时检查。
+C++26 的特性已在编译器实验分支提前「活」起来。下面按领域展开：
 
-- **NVIDIA stdexec**：NVIDIA 开源的 `stdexec` 是实现 P2300 sender/receiver 模型的参考库，用于 CUDA 异步管线与 GPU 任务图——它是 `std::execution` 提案「先在真实硬件上验证」的坐标。见 [stdexec](https://github.com/NVIDIA/stdexec)。
-- **编译器实验分支**：GCC 14/15 与 Clang 的实验模式已提供 C++26 的 `std::contracts`、`std::hazard_pointer` 以及 `std::meta` 反射原型，供库作者提前试水——见 [GCC C++ 状态页](https://gcc.gnu.org/projects/cxx-status.html)。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 反射预览 | Clang/GCC 实验分支 + `std::meta` 原型（Boost.Describe 近亲 / 序列化 ORM） | 库作者提前试验 | 社区试验田 | [STANDARD] `std::meta` 反射（在审） |
+| `std::execution` | P2300 被 libunifex / stdexec 独立实现验证 | GPU / 网络栈异步管线 | 执行器模型 | P2300 sender/receiver |
+| 契约 | Clang `-fcontracts` 实验 + P2900（航空 / 汽车运行时检查） | 安全关键运行时检查 | 安全攸关试验 | P2900 在审（P0542 曾 withdrawn） |
+| NVIDIA stdexec | 实现 P2300 sender/receiver 参考库（CUDA 异步 / GPU 任务图） | `std::execution` 先在真实硬件验证 | 参考实现坐标 | 见 NVIDIA stdexec |
+| 编译器实验分支 | GCC 14/15 / Clang 实验模式 提供 C++26 `contracts`/`hazard_pointer`/`meta` | 库作者提前试水 | 编译器预览 | 见 GCC C++ 状态页 |
+
+> **表注（㉒.2）**：上表前 3 行是「C++26 三大方向（反射/执行器/契约）的试验形态」，后 2 行是「NVIDIA 与编译器如何把它们先在真实硬件/分支上验证」；契约从 P0542（C++20  withdrawn）到 P2900（在审）的波折说明：提案进标准前的反复是常态，写进产品必须等正式落地。
+
+**一条判读**：C++26 特性目前只该「试验」不该「依赖」——反射/`std::execution`/契约都还在实验分支或 TS 阶段，库作者可提前试水，产品代码应继续用 Boost.Describe/自建执行器/断言，等标准正式发布与主流编译器实现再迁移。
 
 ### ㉒.3 生产踩坑：超前采用的陷阱
 

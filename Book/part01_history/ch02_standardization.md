@@ -140,12 +140,19 @@ A: Google, Microsoft, Apple, Intel, NVIDIA, Bloomberg, RedHat, 以及各国代�
 
 ### ㉒.2 真实工程坐标：标准流程对产业的影响
 
-- **编译器厂商同步**：GCC、Clang、MSVC 都按 WG21 的"特性测试宏"（`__cpp_*`）与"缺陷报告（DR）"清单实现，CI 里常见 `#if __cpp_concepts` 做版本守卫。
-- **提案即路线图**：公司（Google、Meta、NVIDIA、Microsoft）与学者通过提案直接影响标准；例如 `std::format`（P0645，Victor Zverovich）、`std::expected`（P0323，Red Hat/Nokia）都来自产业痛点。
-- **LWG/EWG 分工**：核心语言（EWG）与库（LWG）分组评审，加上 SG1（并发）、SG16（Unicode）等研究组——这是为什么 C++ 能在零运行时依赖下持续加库。
+标准流程不是「委员会自嗨」，而是产业特性的真实来源。下面按领域展开：
 
-- **Boost 作为标准化「试验田」**：`boost::optional`→`std::optional`、`boost::filesystem`→`std::filesystem`、孕育中的 Networking TS（源自 `boost::asio`）都是先在 Boost 经产业打磨再进标准；Boost 的缺陷报告常被 LWG 直接吸收。见 [Boost 官网](https://www.boost.org/)。
-- **构建系统守门标准特性**：CMake 的 `target_compile_features`（如 `cxx_std_17`）与 `CheckCXXCompilerFlag` 直接消费 WG21 特性名与 SD-6 宏清单，CI 据此决定能否启用某特性。见 [CMake 文档](https://cmake.org/)。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 编译器厂商 | GCC / Clang / MSVC（按 `__cpp_*` 特性宏与 DR 清单实现） | CI 用 `#if __cpp_concepts` 做版本守卫 | 三大主流编译器 | [STANDARD] SD-6 特性测试宏 |
+| 提案即路线图 | Google / Meta / NVIDIA / Microsoft 提案（如 `std::format` P0645 / Victor Zverovich） | 产业痛点直接进标准 | 标准驱动产业 | P0645 / `std::expected` P0323 源自产业 |
+| 委员会分工 | EWG（核心语言）/ LWG（库）/ SG1（并发）/ SG16（Unicode） | 分层评审保零运行时依赖加库 | WG21 组织机制 | 分组评审是持续演进前提 |
+| Boost 试验田 | `boost::optional`→`std::optional` / `boost::filesystem`→`std::filesystem` / Networking TS 源自 `boost::asio` | 先产业打磨再进标准 | 标准化前哨 | Boost 缺陷报告常被 LWG 吸收 |
+| 构建系统守门 | CMake `target_compile_features`（`cxx_std_17`）/ `CheckCXXCompilerFlag` | 消费 WG21 特性名与 SD-6 宏 | CI 特性门控 | 见 CMake 文档 |
+
+> **表注（㉒.2）**：上表前 3 行是「标准如何被编译器与产业实现」，后 2 行是「Boost 与 CMake 在标准落地链里的角色」；标准从提案到可用要经「WG21 通过 → 编译器实现 → 构建系统暴露特性宏 → CI 门控」四步，不是投票当天就能写。
+
+**一条判读**：跟进标准要追「实现可用性」而非「提案通过」——P 号提案进标准后，还得等 GCC/Clang/MSVC 实现与 CMake/`__cpp_*` 暴露，才能安全写进产品；用特性宏做守卫（而非假设版本），才是工业级写法。
 
 ### ㉒.3 生产踩坑：跟标准"节奏"相关的坑
 

@@ -350,12 +350,19 @@ template<class T> constexpr bool is_ptr_v = std::is_pointer_v<T>;
 
 ### ㉒.2 真实工程坐标：C++14 活在哪些基线里
 
-- **早期现代 C++ 项目**：2014–2018 年间大量库（早期 Abseil、folly 子集、Range-v3 早期）以 C++14 为最低要求，因它兼顾"现代语法"与"老旧 CI 也能编"。
-- **嵌入式/车载**：车规级编译器（AUTOSAR、部分 QNX 工具链）长期只保证 C++14，因此车载中间件常用 C++14 而非 17/20。
-- **教学与竞赛**：ACM/ICPC 与多数教材在 2017 年前以 C++14 为示例基线。
+C++14 是「现代语法 + 老旧 CI 也能编」的甜点基线。下面按领域展开：
 
-- **ROS 中间件**：ROS 1（2010s）节点与中间件以 C++14 编译，泛型 lambda 用于回调与消息处理；ROS 2 才上探到 C++17。见 [ROS 官网](https://www.ros.org/)。
-- **C++ 核心指南与 GSL**：Microsoft 的 Guidelines Support Library（`gsl::span` 雏形、`gsl::not_null`）在 C++14 即可用，把 C++ Core Guidelines 落到代码层——是「现代写法下沉到 14 基线」的坐标。见 [Microsoft GSL](https://github.com/microsoft/GSL)。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 早期现代库 | 早期 Abseil / folly 子集 / Range-v3 早期（以 C++14 最低要求） | 兼顾现代与老旧 CI | 2014–2018 库基线 | 泛型 lambda / 返回类型推导 |
+| 嵌入式 / 车载 | 车规编译器（AUTOSAR / 部分 QNX）长期只保证 C++14 | 车载中间件常用 C++14 | 车规约束 | 认证慢故锁版本 |
+| 教学与竞赛 | ACM/ICPC 与多数教材（2017 前以 C++14 示例基线） | 教学事实基线 | 竞赛 / 教材 | 2017 前默认 |
+| ROS 中间件 | ROS 1（2010s）节点 C++14，泛型 lambda 回调消息；ROS 2 才 C++17 | 机器人中间件基线 | 机器人生态 | 见 ROS 官网 |
+| 核心指南下沉 | Microsoft GSL（`gsl::span` 雏形 / `gsl::not_null`）C++14 可用 | 把 Core Guidelines 落代码层 | 现代写法下沉 14 | 见 Microsoft GSL |
+
+> **表注（㉒.2）**：上表前 3 行是「C++14 在库/车载/教学里的基线地位」，后 2 行是「ROS 与 GSL 如何把它当最低公共分母」；C++14 相比 11 增量不大（泛型 lambda、返回类型推导、泛型可变模板），但它「老旧 CI 也能编」的特性让它成为保守环境的甜点。
+
+**一条判读**：C++14 是「不能上 17 时的安全选择」——车规/老 CI/竞赛环境仍以它为底线；但它没有 `string_view`/`optional`/`if constexpr`，写库若想最大化兼容可锁 14，否则直接上 17 更省事。
 
 ### ㉒.3 生产踩坑：C++14 时代的误用
 

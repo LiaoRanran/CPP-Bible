@@ -373,12 +373,19 @@ std::expected<double,int> div(double a,double b){ if(b==0) return std::unexpecte
 
 ### ㉒.2 真实工程坐标：C++23 活在哪
 
-- **错误处理范式升级**：`std::expected<T, E>` 正被 Abseil（`absl::StatusOr` 的近亲）、Rust 风格错误传播库采纳，用于可恢复错误的显式返回。
-- **日志/格式化**：`std::print` 直接对标 fmt，被新项目用作 `std::cout` 的替代品；`std::format` 在 C++23 进一步补 `{:?}` 调试格式。
-- **科学计算/HPC**：`std::mdspan` 被 Kokkos、数值库用于零拷贝多维视图，避免手算偏移。
+C++23 是「修齐现代写法」的小代际。下面按领域展开：
 
-- **MSVC STL 落地**：微软的 STL 实现（`microsoft/STL`）在 VS 2022 17.8+ 起完整支持 `<expected>`（P0323）、`<print>`（P2093）、`<mdspan>`（P0009），内部服务据此用类型安全错误返回替代异常式处理。见 [Microsoft STL](https://github.com/microsoft/STL)。
-- **构建系统守门 C++23**：CMake 3.30+ 提供 `cxx_std_23` 与对应特性测试宏，CI 据此判定能否启用 `std::expected`/`std::print` 等——[据记载]这是 C++23 进入工业构建的最后一公里。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 错误处理升级 | `std::expected<T,E>`（Abseil `absl::StatusOr` 近亲 / Rust 风格错误传播库） | 可恢复错误显式返回 | 错误传播范式 | [STANDARD] C++23 `<expected>` P0323 |
+| 日志 / 格式化 | `std::print` 对标 fmt / `std::format` 补 `{:?}` 调试格式 | `cout` 替代与调试格式 | 格式化生态 | [STANDARD] C++23 `<print>` P2093 |
+| 科学计算 / HPC | `std::mdspan`（Kokkos / 数值库）零拷贝多维视图 | 避免手算偏移 | 数值生态 | [STANDARD] C++23 `<mdspan>` P0009 |
+| MSVC STL 落地 | `microsoft/STL` VS2022 17.8+ 完整支持 `<expected>`/`<print>`/`<mdspan>` | 类型安全错误返回替代异常 | 标准库事实实现 | 见 Microsoft STL |
+| 构建守门 C++23 | CMake 3.30+ `cxx_std_23` 与特性宏 | CI 判定能否启用新特性 | 工业构建最后一公里 | [据记载] 进入工业构建 |
+
+> **表注（㉒.2）**：上表前 3 行是「C++23 在错误/格式化/数值里的修齐」，后 2 行是「MSVC STL 与 CMake 如何把它变成可用」；`std::expected`（P0323）从 2016 年提案到 C++23 落地近七年，是标准「慢但稳」节奏的典型——也说明新设施可用前要等实现与构建系统跟齐。
+
+**一条判读**：C++23 适合「已经在 20 上、想要更顺手工具」的项目——`expected`/`print`/`mdspan` 都是体验提升而非范式革命；要不要追取决于 MSVC/CMake 是否到 17.8+/3.30+，没到就继续用 `absl::StatusOr`/fmt 等价物，不必硬等。
 
 ### ㉒.3 生产踩坑：C++23 的早期陷阱
 

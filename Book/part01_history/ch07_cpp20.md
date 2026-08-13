@@ -370,12 +370,19 @@ void legacy() noexcept;
 
 ### ㉒.2 真实工程坐标：C++20 活在哪
 
-- **库作者先行**：Ranges（`std::ranges::views`）、Concepts（ABSL/SF 的 `concepts` 头）、`std::format`（取代 fmt 部分场景）已被 fmt/Boost.Ranges 等吸收或对齐。
-- **高性能/异步**：Coroutines 被 C++ 后端（如 cppcoro、Facebook Folly、Windows 异步栈）用于无栈异步；P2300 `std::execution` 正建立在 Coroutines 之上（见 ch09）。
-- **大型代码库模块化**：Chromium、LLVM 等探索用 Modules 缩短编译时间，但尚处试验期。
+C++20 是「概念 / 范围 / 协程 / 模块」的代际跃迁。下面按领域展开：
 
-- **标准库先实现一遍**：GCC 10（`libstdc++`）与 Clang 14（`libc++`）起实现 `<coroutine>`/`<ranges>`/`<format>`，这是「标准自己先被主流编译器实现」的真实坐标，也定义了特性可用性的硬门槛。见 [GCC C++20 支持](https://gcc.gnu.org/projects/cxx-status.html)。
-- **量化/异步后台**：多家高频交易与量化团队用 C++20 Coroutines 重写异步行情/订单管线，把回调地狱换成无栈 `co_await`——[据记载]这也是 Coroutines 提案（P0912）「已在 4 亿+ 设备部署」论断的产业背景。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 库作者先行 | Ranges / Concepts / `std::format` 被 fmt / Boost.Ranges 吸收或对齐 | 新范式下沉到库 | 库生态对齐 | [STANDARD] C++20 concepts/ranges/format |
+| 高性能 / 异步 | Coroutines（cppcoro / Folly / Windows 异步栈）/ P2300 `std::execution` | 无栈异步与执行器 | 后端 / 异步工业 | [STANDARD] C++20 coroutines；P2300 在审 |
+| 大型代码库模块化 | Chromium / LLVM 探索 Modules 缩短编译 | 编译期去冗余试验 | 超大型 C++ | [STANDARD] C++20 modules（试验期） |
+| 编译器先实现 | GCC 10（libstdc++）/ Clang 14（libc++）实现 `<coroutine>`/`<ranges>`/`<format>` | 定义特性可用硬门槛 | 标准可用性坐标 | 见 GCC C++20 支持 |
+| 量化 / 异步后台 | HFT / 量化团队 C++20 Coroutines 重写异步行情 / 订单管线 | 回调地狱换无栈 `co_await` | 低延迟工业 | [据记载] P0912「4 亿+设备部署」背景 |
+
+> **表注（㉒.2）**：上表前 3 行是「C++20 在库/异步/编译里的落地」，后 2 行是「编译器实现与量化后台如何定义可用性」；Modules 在 C++20 虽进标准，但工具链成熟度与 BMI 互通仍远落后于语言特性，故超大库多处于「试验」而非「全量」。
+
+**一条判读**：C++20 特性要「按成熟度取用」——concepts/ranges/format 已工业可用，coroutines 需接受堆分配代价，modules 在超大型库仍试验；盲目全量上 modules 极易引发构建系统重构事故，应渐进迁移。
 
 ### ㉒.3 生产踩坑：C++20 的早期陷阱
 
