@@ -551,6 +551,21 @@ BENCHMARK(BM_Virtual); BENCHMARK(BM_Crtp); BENCHMARK(BM_NoVirtual);
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：基类析构非虚，通过基类指针 delete 派生对象导致 UB。** 你的析构没被调用、内存泄漏。请说明规则。
+   - [标准] 通过指向基类的指针 `delete` 派生对象时，基类析构函数必须为虚，否则行为未定义。
+   - [引用] ISO/IEC 14882:2023 §[class.dtor]（虚析构的必要性）/ [class.virtual]（动态绑定析构）；cppreference "Virtual destructor" 词条。
+
+2. **真实场景：签名写错导致本想 override 却新建了重载。** 你用 `override` 让编译器替你抓错。请说明说明符作用。
+   - [标准] `override` 说明符要求该函数确实覆盖一个基类虚函数，否则编译期报错。
+   - [引用] ISO/IEC 14882:2023 §[class.virtual]（override 说明符）；cppreference "override" 词条。
+
+3. **真实场景：用 `final` 锁死某个虚函数不被进一步覆盖。** 你交付的基类不希望别人改行为。请说明约束。
+   - [标准] `final` 可标在虚函数（或类）上，禁止进一步的派生覆盖。
+   - [引用] ISO/IEC 14882:2023 §[class.virtual]（final 说明符）；cppreference "final" 词条。
+
+
 【练习题】
 1. 写一个含 3 层单继承的程序，打印各层构造/析构期 `typeid(*this).name()`，验证 vptr 逐级重写。
 2. 给定 `struct A{virtual void f();}; struct B{virtual void g();}; struct D:A,B{};`，画出 D 对象的 vptr 布局并标出 this 调整量。

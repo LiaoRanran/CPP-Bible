@@ -1298,6 +1298,21 @@ int main() {
 
 ## ⑳ microbenchmark：切片、构造顺序、NVI、override 缺失
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `using` 声明把基类 protected 成员改为 public。** 你开放某个受保护接口给外部。请说明作用域引入规则。
+   - [标准] 类内的 using 声明可将基类成员引入派生类作用域，并借此改变其访问级别。
+   - [引用] ISO/IEC 14882:2023 §[class.member.lookup]（成员名查找与 using 引入）/ [namespace.udecl]（using 声明）；cppreference "using declaration" 词条。
+
+2. **真实场景：友元既不传递也不被继承。** 你误以为派生类自动获得基类的友元权限。请说明约束。
+   - [标准] 友元关系既不被继承也不传递；只有声明为友元的函数/类拥有访问权。
+   - [引用] ISO/IEC 14882:2023 §[class.friend]（友元：非继承、非传递）；cppreference "Friend" 词条。
+
+3. **真实场景：用私有继承表达“由…实现”。** 你不想让外界把派生当作基类（非 IS-A）。请说明继承方式语义。
+   - [标准] 在 private 继承中，基类公有/保护成员在派生类变为 private，表达实现复用而非子类型多态。
+   - [引用] ISO/IEC 14882:2023 §[class.derived]（继承方式：private/protected/public 语义）；cppreference "Inheritance" 词条。
+
+
 下面用可编译小程序实证四个工程关注点。为简洁，计时用 `std::chrono` 的粗粒度演示（生产基准见 Google Benchmark）。
 
 ```cpp

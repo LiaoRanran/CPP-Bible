@@ -608,6 +608,21 @@ BENCHMARK(BM_typeid_name); BENCHMARK(BM_dyncast_down); BENCHMARK(BM_static_upcas
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：dynamic_cast 向下转型失败返回 null 还是抛异常？** 你区分指针与引用的不同失败语义。请说明。
+   - [标准] 对指针，`dynamic_cast` 失败返回空指针；对引用，失败抛出 `std::bad_cast`。
+   - [引用] ISO/IEC 14882:2023 §[expr.dynamic.cast]（dynamic_cast 的失败语义）；cppreference "dynamic_cast" 词条。
+
+2. **真实场景：对非多态类型用 dynamic_cast 编译期就被拒。** 你拿到的是普通基类指针，运行时检查不可用。请说明前置条件。
+   - [标准] `dynamic_cast` 的运行时检查要求源表达式指向多态类型（含虚函数）；否则须用 `static_cast`。
+   - [引用] ISO/IEC 14882:2023 §[expr.dynamic.cast]（源须为多态类型）；cppreference "dynamic_cast" 词条。
+
+3. **真实场景：typeid 对多态对象返回动态类型、对静态类型返回静态类型。** 你理解其分支。请说明。
+   - [标准] `typeid` 作用于多态 glvalue 时求动态类型，否则求静态类型。
+   - [引用] ISO/IEC 14882:2023 §[expr.typeid]（typeid 的静态/动态分支）；cppreference "typeid" 词条。
+
+
 【练习题】
 1. 写程序：基类 `Shape` 含虚析构，派生 `Circle`/`Rect`，用 `typeid` + `unordered_map<type_index,handler>` 实现 `draw` 分发器（仿 ⑫-A）。
 2. 比较 `dynamic_cast<Der*>(p)` 与手写「vtable 槽比对」两种下行转换，打印指针结果验证一致性。

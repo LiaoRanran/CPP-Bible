@@ -465,6 +465,21 @@ int main(){
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：`sizeof(Derived)` 等于仅有的成员大小，空基类被优化掉。** 你用空基类混入 policy/allocator。请说明条款依据。
+   - [标准] 标准允许空基类子对象不贡献大小（实现通常如此），这是空基类优化的基础。
+   - [引用] ISO/IEC 14882:2023 §[class.derived]（空基类优化）/ [class]（布局）；cppreference "Empty base optimization" 词条。
+
+2. **真实场景：两个同类型的空基类不能都零大小（需一个占位）。** 你试图双重混入同一空类被拒。请说明限制。
+   - [标准] 同一类型的不同子对象（含基类）必须具有不同地址，故不能都为零大小。
+   - [引用] ISO/IEC 14882:2023 §[intro.object]（对象地址唯一性）/ [class.derived]（EBO 限制）；cppreference "Empty base optimization" 词条。
+
+3. **真实场景：空基类不能与完整对象首个非静态成员同地址。** 你理解 EBO 的“首位成员”例外。请说明。
+   - [标准] 基类子对象与作为完整对象首个成员的对象不得拥有相同地址，防止别名；这限制了 EBO 的适用位置。
+   - [引用] ISO/IEC 14882:2023 §[intro.object]（对象同一性与地址唯一，含 EBO 例外）/ [class.mem]（成员布局）；cppreference "Empty base optimization" 词条。
+
+
 【练习题】
 1. 写 `struct D : E1, E2 { char c; };`（E1/E2 空），用 `offsetof`/`sizeof` 在 GCC 与 MSVC 各测一次，记录差异。
 2. 用 `[[no_unique_address]]` 重写 `AsMember`，验证 `sizeof` 回到 4（C++20）。
