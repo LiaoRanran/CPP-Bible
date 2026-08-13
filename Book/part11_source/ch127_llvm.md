@@ -679,6 +679,23 @@ LLVM 的起点是 **2000 年 UIUC（伊利诺伊大学厄巴纳-香槟分校）*
 许可与治理是另一条主线。LLVM 早期用 **UIUC/NCSA** 许可；**2019 年 LLVM 基金会主导 relicense 为 Apache 2.0 + LLVM 例外**，统一了 LLVM、Clang、libc++、compiler-rt 等子项目的许可，使「LLVM 全家桶」在法律上彻底宽松化（与 libc++ 的 relicense 同源，见 第125章 ㉒）。**MLIR（2019，Multi-Level IR）** 由 Google 与 LLVM 社区推动，用可嵌套多层 IR 统一「高层 DSL → 高层优化 → 底层机器码」的 lowering，成为 TensorFlow/XLA、可重构硬件（CIRCT）的底座（见 0.4）。
 
 
+### ㉒.2 真实工程坐标：LLVM / Clang 活在哪些真实产品里
+
+LLVM 早已不是「一个编译器」，而是 **大半现代编程语言的公共后端**，其装机量以「设备数 × 语言数」计：
+
+- **Apple 全平台工具链**：Xcode 的编译器、静态分析器（clang-analyzer）、clang-tidy、clang-format 全部基于 LLVM/Clang，是苹果生态开发的事实基础设施。
+- **Android 与移动端**：Android NDK 自 r13 起把 Clang 设为默认编译器、r16 起唯一编译器，今天所有安卓原生代码的编译都走 LLVM 后端。
+- **非 C++ 语言的支柱**：Rust（`rustc`）、Swift、Kotlin/Native、Julia、Zig、Carbon 等语言都把 LLVM 当作代码生成后端；甚至 CUDA 的 `nvcc`、AMD ROCm、Intel oneAPI 的编译器也建立在 LLVM/Clang 之上——「写一种 IR，落所有硬件」的设想已在工业界坐实。
+- **浏览器与 GPU 基础设施**：Chrome 在多个平台用 Clang 构建；AMD ROCm、NVIDIA CUDA（clang 路径）等 GPU 工具链同样依赖 LLVM。
+
+### ㉒.4 与标准的互动：Clang 是标准的「先锋实现」与「合规闸门」
+
+Clang 对 C++ 标准的遵循度由 `clang/test/CXX/...` 下的 conformance 测试守护（见 ⑦），并以「最快跟进新特性」著称——因 AST/Sema 模块化好，概念检查、模块、`std::format` 后端支持往往先在 Clang 主线可用（见 ⑮）：
+
+- **新特性的参考实现**：`<format>`（**P0645R10** 的格式化后端）、C++20 模块（**P1103R3**）、Concepts（**P0734R0**）等，Clang 常是最早给出可用实现、最早产出 conformance 测试的一家，其测试套件本身成为委员会判断「提案是否可落地」的实证材料。
+- **LLVM 自身对现代 C++ 的采纳**：LLVM 代码库的构建基线已抬到 **C++17**（近年部分组件要求更新的标准），它既是「标准的实现者」也是「标准的使用者」——用 `std::string_view`、`std::optional`、`std::variant` 等现代设施重写旧代码，是它给「标准是否好用」投出的工业票。
+- **与 ISO 条款的对齐**：所有前端/库实现对齐 ISO/IEC 14882；Clang 与 libstdc++/libc++ 的配合构成「实现三角」——Clang 既能在 Linux 上默认用 libstdc++，也能在 Apple/FreeBSD 上默认用 libc++（见第125章 ⑭），成为跨平台标准符合度的关键校验点。
+
 ### ㉒.5 权威引用
 - [LLVM 官网](https://llvm.org/)：项目主页与文档入口。
 - [Clang 官网](https://clang.llvm.org/)：前端与驱动。

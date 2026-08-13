@@ -934,6 +934,9 @@ int main() {
 
 日志过滤、词频统计 ETL、数据清洗是 `std::ranges` 的主场；编译器/静态分析里的「对 AST 节点做惰性变换」、游戏服务器里的「对实体列表做过滤—投影」也受益于管道式组合。LLVM 的 `llvm::iterator_range` 是 ranges 思想的先行者；许多现代 C++ 项目已用 `views::filter` + `views::transform` 取代手写 for 循环，既可读又零开销（视图不持有元素、不分配）。
 
+- **跨行业实例（数据处理/ETL）**：Apache Arrow 的 C++ 库与 Polars（Rust+Python，但其 C++ 绑定与算法思想同源）用「惰性视图 + 管道」做列式过滤/投影，避免中间物化；range 视图的「零分配、可组合」正是这类数据管线在 C++ 中的自然映射。
+- **跨行业实例（游戏服务器/仿真）**：游戏后端对「实体列表做过滤—投影—聚合」（如「找出视野内敌人并算平均血量」）用 `ranges` 管道取代手写循环，可读且易并行化；仿真系统（如交通/流体粒子筛选）也用 `views::filter`/`views::chunk` 分批处理，契合 ranges 的惰性语义。
+
 ### ㉒.3 生产踩坑：ranges 的常见误用与陷阱
 
 [评] 最大坑是「悬垂视图（dangling）」：临时 `vector` 经 `views::filter` 得到的 `view` 不拥有数据，临时对象一销毁视图即悬空——标准用 `std::ranges::dangling` 与 `borrowed_range` 概念在编译期拦截一部分，但存储视图到变量时仍需确保底层存活。另一坑是「投影/适配器的编译期错误晦涩」——`views::xxx` 组合一旦类型不匹配，报错可达数百行模板噪声。还有「`views::reverse` 对不支持双向的视图失效」等范畴限制。
@@ -941,6 +944,9 @@ int main() {
 ### ㉒.4 与标准的互动：ranges 与标准的演进
 
 [史] Ranges 经 P0896R4 在 C++20 落地后，已成为标准库最活跃的方向之一：C++23 新增 `views::zip` / `views::chunk` / `views::slide` 等大量适配器，并引入 `std::generator`（协程驱动的惰性序列）。[评] WG21 仍在持续扩展 ranges（如 `views::enumerate`、range 上的算法默认接收范围而非迭代器对），方向明确是「让 STL 算法从『迭代器对』全面迁移到『范围』，并继续用 concepts 把错误前移到编译期」。
+
+- **WG21 修订链**：Ranges 经 P0896R0→…→P0896R4（Eric Niebler 等「The One Ranges Proposal」，wg21.link/P0896R4）在 C++20 落地，R0→R4 整合了 Concepts（P0898R3）、Range Adaptors（P1035R7）等数十篇子提案；C++23 新增 `views::zip`/`chunk`/`slide`（P2321R2 等）与 `std::generator`（P2165R2，协程驱动惰性序列）；后续 `views::enumerate`（P2164R2）等仍在推进。
+- **ISO 条款**：`<ranges>` 规定于 ISO/IEC 14882 第 26 章（`[ranges]`）。其设计理由是「用 `range` 概念取代『迭代器对』作为算法的一等参数，并用 `view`（轻量、非拥有、可组合）取代手写循环」；标准通过 `borrowed_range` 与 `std::ranges::dangling` 在编译期拦截「视图悬垂」，把 STL 当年「鸭子类型迭代器」的可错用法升级为概念约束。
 
 ### ㉒.5 权威引用
 

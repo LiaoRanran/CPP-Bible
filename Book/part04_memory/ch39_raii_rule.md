@@ -1751,6 +1751,8 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 - **Chromium / Blink**：大量 `base::ScopedFD`/`base::ScopedTempDir`/`base::AutoLock` 等 scoped 类型，确保句柄、锁、临时文件在任意返回路径（含早退与异常）下都被清理；`base::scope_exit`（第 ⑭ 节 ScopeGuard 思想）广泛用于资源回滚。
 - **游戏引擎**：Unreal 的 `TUniquePtr`/`FScopeLock`、Unity 的 `AutoPPtr` 等，把 RAII 用于 GPU 资源、渲染状态与锁，避免帧中途异常导致设备上下文泄漏。
 - **金融/数据库系统**：交易事务的「提交或回滚」惯用法（第 ⑭ 节 `std::uncaught_exceptions`，ch40）普遍用 RAII 守卫实现，确保异常路径下事务一致回滚而非悬挂锁。
+- **机器人中间件（ROS 2 / `rclcpp`）**：ROS 2 的 C++ 客户端库用 RAII 管理 DDS 订阅/发布者/节点的生命周期，节点退出或异常时自动回收底层 DDS 资源；实时（RT）节点则倾向显式生命周期以免析构抖动。
+- **医学影像 / DICOM（ITK 等影像处理）**：医学影像处理（如 ITK）用 RAII 管理 DICOM 文件流、GPU 纹理与大规模体数据缓冲，异常路径下确保患者数据句柄与设备上下文不泄漏——医疗软件的 RAII 实证。
 
 ### ㉒.3 生产踩坑：RAII 与三五法则的误用
 
@@ -1762,6 +1764,7 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 ### ㉒.4 与标准的互动：RAII 与三五法则的演进
 
 [史] C++98 确立 RAII 与 Rule of Three（拷贝构造/拷贝赋值/析构三者一致）；**C++11（2011）** 引入移动语义与 `=default`/`=delete`，催生 **Rule of Five（第 ⑧ 节）** 并让 `unique_ptr` 把「唯一所有权」标准化；同年 `noexcept` 让析构不抛成为可优化的契约（第 ⑥ 节）。[史] **C++17 的 P0188** 一脉推动「Rule of Zero」成为首选（第 ⑨ 节）——尽量不手写特殊成员，把资源管理交给标准智能指针/容器，从根上消灭三五法则的出错面。[评] WG21 的方向是继续强化「零手写管理」：用 `std::unique_ptr` + 自定义删除器（ch41）覆盖绝大多数 RAII 场景，并探索 `[[nodiscard]]`、契约（contracts）让资源误用更早被编译器捕获。RAII 作为 C++ 区别于 GC 语言的核心价值，标准几乎每一版都在加固它。
+- [史] 「提交或回滚」RAII 守卫依赖的 `std::uncaught_exceptions()`（返回计数）由 **N4259（C++17 采纳）** 标准化，取代了不可靠的单参 `std::uncaught_exception()`（C++17 起弃用）。ISO 条款 `[class.dtor]` 与 `[except.terminate]` 共同保证「析构在作用域退出必然执行、且栈展开途中抛异常即 `terminate`」——这正是 RAII 能甩掉 `finally` 的契约根基，委员会用语言规则而非库技巧夯实它。
 
 ### ㉒.5 权威引用
 

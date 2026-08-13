@@ -433,6 +433,9 @@ extern "C" int cfunc(int);
 - **C++ 的工业母体**：LLVM/Clang 自身最早脱胎于 C++ 对 C 的兼容层；无数嵌入式固件、高频交易、游戏引擎（Unreal 用 C++）的起点都是"先用 C 写、再用 C++ 类封装"。
 - **跨语言边界**：C 的 `extern "C"` ABI 是几乎所有语言（Python CPython、Java JNI、Rust FFI、Go cgo）与本地代码交互的事实标准——今天你调用的 libpng/zlib/openssl 几乎都是 C ABI。
 
+- **GPU 与跨语言互操作的 C ABI 基石**：NVIDIA CUDA Runtime API 本身以纯 C 接口（`extern "C"` 导出）发布，PyTorch/TensorFlow 的 C++ 张量内核通过这层 C ABI 调用 GPU——C 的「最低公约数」ABI 让 C++ 生态得以活在 GPU 之上。见 [CUDA Runtime API 文档](https://docs.nvidia.com/cuda/cuda-runtime-api/)。
+- **C++ 活在 Python 解释器里**：CPython 用 C 写成（`PyObject` 等 C ABI），NumPy、PyTorch 的 C++ 扩展经 `extern "C"` 暴露 `PyMethodDef` 接入解释器——C ABI 是 C++ 高性能扩展接入脚本生态的通用桥。见 [CPython 源码](https://github.com/python/cpython)。
+
 ### ㉒.3 生产踩坑：C 遗产与早期 C++ 的坑
 
 - **名字改编（name mangling）不跨编译器**：GCC 的 `_Z1fi` 与 MSVC 的 `?f@@YAXH@Z` 不同（见 ch01 附录），因此 C++ 库必须用 `extern "C"` 或统一工具链，否则链接期符号对不上。
@@ -442,6 +445,8 @@ extern "C" int cfunc(int);
 ### ㉒.4 与标准的互动：从 AT&T 方言到 ISO 标准
 
 [史] C++ 在 1980 年代是 AT&T 的"事实方言"，直到 **1990 年 ANSI X3J16 与 ISO SC22/WG21** 成立，1998 年才由 ISO 发布第一个国际标准 **ISO/IEC 14882:1998（C++98）**。C 语言则更早由 **WG14** 在 1989（C89/ANSI C）、1999（C99）、2011（C11）等版本演进；C++ 至今仍维持与 C 头（`<stdio.h>`→`<cstdio>`）的双向兼容承诺。[评] 值得注意：C++ 与 C 各自演进后已显著分叉（C++ 不采纳 C99 的变长数组 VLA、C23 的 `_BitInt` 等），"写一次两头编"的幻想在 2020 年代基本破灭，现代项目应明确选边。
+
+- [史] C++ 对 C 的兼容在 ISO/IEC 14882 中以具体条款固化：链接说明符（`extern "C"`，标准 §[dcl.link]）规定 C 语言链接，使 C++ 函数能以 C 的命名方式导出；C 标准库头文件映射（`<stdio.h>`→`<cstdio>` 等，§[headers]）保留 C 的头集合。委员会的设计理由是**刻意维持 C ABI 稳定**——操作系统内核、libc、无数语言运行时都依赖它，C++ 宁愿承担 ABI 分裂代价也要保证与 C 的二进制互操作。
 
 ### ㉒.5 权威引用
 

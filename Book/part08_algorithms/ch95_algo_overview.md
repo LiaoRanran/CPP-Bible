@@ -904,6 +904,8 @@ int quickcheck() {
 - **LLVM**：用 `std::sort`/`std::stable_sort` 给指令、基本块排序，用 `std::lower_bound` 二分查表；`llvm::sort` 还强制传入严格弱序比较器以规避 UB。
 - **游戏引擎**：Unreal 的 `TArray::Sort` 底层即 introsort 思路，粒子/动画系统批量遍历靠 `std::for_each`/并行策略。
 - **数据库与存储（LevelDB/RocksDB）**：`std::lower_bound`/`std::upper_bound` 在 SSTable 的 `std::vector` 块内二分，是 LSM 读路径的基石。
+- **金融终端（Bloomberg Terminal / BDE）**：Bloomberg 的 C++ 基础库（BDE，`bloomberg/bde`）大量使用 `std::sort`/`std::lower_bound`/`std::unique` 处理行情与订单数据，是金融终端后台的工业现实。
+- **浏览器 JS 引擎（V8 / SpiderMonkey）**：垃圾回收的 card table、解析器的 token 流与属性表排序都依赖 `std::sort`/`std::lower_bound`，把经典算法藏在每天数十亿次执行的引擎底层。
 
 ### ㉒.3 生产踩坑：算法总览里的常见误用
 
@@ -915,6 +917,8 @@ int quickcheck() {
 ### ㉒.4 与标准的互动：算法库与 C++ 标准的演进
 
 [史] 算法随 **C++98（STL）** 落地；**C++11** 引入 `std::move` 相关的移动感知算法、`std::is_sorted` 等；**C++17** 引入**执行策略并行算法**（P0024R2，`std::execution::par/unseq`）与 `std::clamp`/`std::sample`；**C++20** 用 **Ranges（P0896）** 把大部分算法重做成约束版 `std::ranges::*`；**C++23** 继续补 `std::shift`、`std::ranges::fold_*` 等。算法库演进的主线就是「更清晰的约束 + 更优的并行/向量化 + 更安全的接口」。
+- **修订/采纳**：**P0202（ constexpr 算法，C++20）** 把 `std::sort`、`std::lower_bound`、`std::binary_search`、`std::for_each` 等大批算法标成 `constexpr`，使其可用于编译期查表/编译期校验（[P0202](https://wg21.link/P0202)）；它与 P0024R2 的并行、P0896R4 的 Ranges 化并列，是算法库近几年的三大主线。
+- **ISO 条款**：算法库在 **[algorithms]（Clause 25）**，各算法携带明文的复杂度条款（如 `std::sort` 平均 O(n log n)），这是标准对「可预测性能」的承诺。
 
 ### ㉒.5 权威引用
 

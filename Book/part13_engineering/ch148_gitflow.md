@@ -742,6 +742,9 @@ Git 工作流对 C++ 工程的核心结论：
 - **绝大多数 GitHub 开源项目**：GitHub Flow（main + 短命分支 + PR）/ Trunk-Based Development。
 - **大型单体仓（Google/Windows 级）**：多采用 trunk-based + 巨型 monorepo + 专有/增强工具（如 Google 内部 Piper），而非裸 Git。
 
+- **区块链/基础设施**：Bitcoin Core、Linux 内核均用邮件列表 + 维护者树模型，拒绝 GitHub 式集中 PR，体现“分布式评审”的极端形态。
+- **云原生 CI 事实标准**：CNCF 项目（Kubernetes、Prometheus）普遍 GitHub Flow + Prow bot 自动化 /lgtm、自动 rebase，把“评审+合并”工程约定固化进 bot。
+
 ### ㉒.3 生产踩坑：Git 工作流的误用
 - **对共享分支 `git push --force`**：改写公共历史，导致协作者本地历史错位、互相覆盖；保护分支应禁 force，确需改写用 `--force-with-lease`。
 - **巨型 monorepo 不稀疏检出**：整仓 clone 拖垮 CI 与本地；应用 `sparse-checkout` / `partial-clone`（见 ⑬）。
@@ -751,7 +754,11 @@ Git 工作流对 C++ 工程的核心结论：
 ### ㉒.4 与标准的互动：版本与"标准"工程约定
 Git 本身不在 ISO C++ 标准里，但 C++ 生态的事实工程约定与之深度耦合：**语义化版本（SemVer 2.0.0）** 决定 ABI/API 兼容承诺（见第145章）；**Conventional Commits** 让提交信息可被工具解析、自动生成 changelog 与版本号；`git tag` 与发布分支管理直接对应库的 release 节奏。[评] 版本号不是装饰，而是"我保证不改 ABI"的契约。
 
+**修订链补强（工程约定与“标准”）**：Git 本身不入 ISO C++，但 C++ 生态的发布契约高度依赖事实标准：[SemVer 2.0.0](https://semver.org/) 规定 MAJOR.MINOR.PATCH 的 ABI/API 兼容语义；[Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) 让提交信息机器可解析、驱动 changelog 与自动版本号；CMake 的 `find_package`/语义化版本约束、vcpkg/Conan 的版本决议都建立在这套约定之上。C++ 的包管理仍无官方标准，SemVer 因此成为跨编译器/跨平台的底线契约。
+
 ### ㉒.5 权威引用
+- [SemVer 2.0.0](https://semver.org/) — 语义化版本，ABI/API 兼容契约依据
+- [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) — 机器可解析的提交信息规范
 - [Git 官方文档](https://git-scm.com/docs) — 所有 porcelain/plumbing 命令的权威出处
 - [Pro Git（免费在线书，含分支/变基/稀疏检出）](https://git-scm.com/book/en/v2) — 工作流与内部原理
 - [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) — 机器可解析的提交信息规范

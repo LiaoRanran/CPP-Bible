@@ -533,6 +533,8 @@ BENCHMARK(BM_crtp); BENCHMARK(BM_virtual);
 - **Eigen（高性能线性代数）**：表达式模板（expression templates）大量用 CRTP 把 `a + b + c` 在编译期折叠成单一循环，避免临时对象与虚调用，是 CRTP 性能价值的标杆。
 - **游戏/引擎（Unreal、EASTL）**：用 CRTP 实现「编译期多态组件」「无虚函数接口」，避免虚表访存对每帧热路径的冲击（ch47 第 ⑲ 节对比）。
 - **LLVM / Clang**：`LLVM_ENABLE_BITSET_ENUM`、各种 `CRTPBase` 风格工具类，用于给大量平行类注入统一能力而不付运行时代价。
+- **量纲库（Boost.Units）**：Boost.Units 用 CRTP/operators 给量纲类型批量注入 `+`/`-`/`*` 运算符而零虚函数开销，实现 `meter * second` 这类类型安全单位运算——CRTP 在数值库里的标杆。
+- **ECS 框架（EnTT / `entt::emitter`）**：EnTT 用 CRTP（`entt::emitter<Derived>`）给事件发射器注入类型安全的 `on`/`publish` 接口，避免虚函数表对每实体热路径的冲击——CRTP 在现代游戏/仿真 ECS 的落地。
 
 ### ㉒.3 生产踩坑：CRTP 的误用
 
@@ -544,6 +546,7 @@ BENCHMARK(BM_crtp); BENCHMARK(BM_virtual);
 ### ㉒.4 与标准的互动：CRTP 与 WG21 演进
 
 [史] CRTP 是社区/库驱动的模式，非语言特性；但它深刻影响了标准：**C++11 的 `std::enable_shared_from_this`**（ch41）、**C++20 的 `std::ranges` 与 `view_interface`** 内部都用 CRTP 提供「零开销接口注入」。**C++20 的 concepts（ch67）** 则补足了 CRTP 最大的短板——用 `requires` 约束 `Derived` 必须满足的接口，让编译期错误从「模板墙」变为清晰约束失败信息（第 ⑭ 节 WG21 提案背景）。[评] WG21 的方向是「**concepts + CRTP 协同**」：CRTP 负责静态分派与代码复用，concepts 负责约束与可读报错。而 **P0840 的 `[[no_unique_address]]`（C++20，ch52）** 让 CRTP 基类（通常为空）以成员形式零开销混入，进一步巩固这一「编译期多态」范式。CRTP 不会被取代，但会被 concepts 包裹得更安全。
+- [史] CRTP 虽非语言特性，但深刻影响标准：**C++20 concepts（P0734 一脉）** 补足其最大短板——用 `requires` 约束 `Derived` 必须满足的接口，把编译期错误从「模板墙」变成清晰约束失败；**P0840R0→R1→R2（C++20，`[[no_unique_address]]`）** 让 CRTP 空基类以成员形式零开销混入。ISO 条款 `[temp]` 把模板与 CRTP 的「静态分派」语义固化——委员会方向是「concepts + CRTP 协同」：CRTP 负责复用与零开销分派，concepts 负责约束与可读报错。
 
 ### ㉒.5 权威引用
 

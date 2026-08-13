@@ -808,6 +808,10 @@ A: 移除 QTextCodec (改用 UTF-8), QVector=QList 统一, CMake 成为首选构
 - **汽车座舱与嵌入式 HMI**：多家德系与国产车企的座舱/中控（如早期 **Tesla Model S/X 的 MCU 界面** 即基于 Qt；**Mercedes-Benz MBUX** 部分 UI 生态与 Qt 密切关联）、医疗设备面板、工业触摸屏——这些领域要的是「原生性能 + 跨平台 + 长生命周期维护」，正是 Qt 因那台超声机而生的初衷。
 - **影视与创意工具**：**DaVinci Resolve**（Blackmagic Design）、**DJI** 部分地面站软件等亦以 Qt 为 UI 底座。
 
+- **功能安全与航空电子**：The Qt Company 提供 **Qt Safe Renderer**，通过 IEC 61508 / ISO 26262 功能安全认证，用于汽车仪表、工业报警等**安全关键显示**——这是 Qt 从「桌面 UI」跨进「安全关键系统」的硬证据（据 Qt 官方安全产品线文档）。
+- **游戏分发平台**：**Epic Games Launcher**（Epic 自家的游戏与引擎分发客户端）以 Qt 构建跨平台界面，是 Qt 在「游戏工业链」另一端的落地。
+- **医疗器械控制台**：延续 Qt 诞生于「医疗超声设备 UI」的初心，多家医学影像设备厂商（MRI / CT 控制台、超声工作站）仍以 Qt 做操作界面 [据 Qt 客户案例]。
+
 ### ㉒.3 生产踩坑：moc、信号槽、授权、ABI
 
 - **moc 缺失/未重跑**：改了含 `Q_OBJECT` 的类却报 `undefined reference to vtable for X`，几乎都是 moc 没重跑或 `moc_*.cpp` 没进构建。现代工程靠 CMake 的 `AUTOMOC`/`AUTOUIC`/`AUTORCC` 自动介入，不应再手动跑 moc；但 CI 里若缓存了旧的 moc 产物，同样会静默出错。
@@ -819,6 +823,11 @@ A: 移除 QTextCodec (改用 UTF-8), QVector=QList 统一, CMake 成为首选构
 ### ㉒.4 与标准的互动：moc 为何至今不可替代，以及 C++ 反射提案
 
 ISO C++ **至今（C++23）没有内建反射**。Qt 用独立的 **moc** 元对象编译器在标准 C++ 之上补了「运行时类型自省、动态方法调用（`invokeMethod`）、属性系统（`Q_PROPERTY`）、类型安全信号槽」四件套，比委员会路线图早了约 25 年。C++ 反射的标准化努力以 **P2996（静态反射，C++26 候选）** 为代表——即便落地，也主要覆盖**编译期**反射；Qt 的 `invokeMethod` 这种**运行时**动态调用仍需要类似 moc 的方案。Qt 也在主动向标准靠拢：Qt6 的 `QMetaType` 已支持 C++20 类型注册，`QString`/`QList` 与 `std::u8string`/`std::vector` 的互操作逐步增强。结论：**moc 短期看不到终点**，它是「标准慢、产品急」这一现实下被真实产品逼出来的务实选择。
+
+> 反射提案修订链补遗（wg21.link 核实）：C++ 内建反射的标准化并非一蹴而就，Qt 的 moc 比它早了约 25 年，且覆盖运行时维度：
+> - **P0194R0**（Andrew Sutton 等，"Static reflection"）是最早的系统化提案；其后演进为 value-based 的 **P1240R2**（"Reflection"），再收敛为今天的 **P2996R5**（"Reflection for C++26"，2024-08，作者 Wyatt Childers、Peter Dimov、Barry Revzin、Andrew Sutton、Daveed Vandevoorde 等）。
+> - **SG7 在 Kona（2023-11）选定 value-based 反射方案**（用 `^^e` 取反射、`[:i:]` 拼接），放弃早期 type-based 的「Reflection TS」路线；Wrocław（2024-11）又把反射运算符从 `^e` 调整为 `^^e`（避免与 Clang Blocks 歧义）。该提案计划进入 **C++26**（ISO/IEC 14882 下一版），但至今**尚无任何反射条款**（C++23 仍为空白）。
+> - 关键判读：即便 P2996 落地，也主要覆盖**编译期**反射；Qt 的 `QMetaObject::invokeMethod` 这类**运行时**动态调用仍需要类似 moc 的代码生成层。Qt 的 UHT 式反射是「标准缺失下的工业级补偿」，而非过时设计。
 
 ### ㉒.5 权威引用
 

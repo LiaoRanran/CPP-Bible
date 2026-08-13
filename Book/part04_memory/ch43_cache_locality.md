@@ -1649,6 +1649,8 @@ int main() {
 - **数据库/存储（LevelDB / RocksDB / PostgreSQL）**：block / buffer pool 的预取与顺序读、MemTable 跳表布局，全部围绕减少 cache miss 设计。
 - **数值/HPC（Eigen / BLAS）**：矩阵分块（blocking/tiling）让内层循环吃满 L1/L2，是「同样算法快 5–10×」的根因；`std::transform` + SIMD 配套缓存对齐。
 - **Linux 内核**：`perf stat` 的 `cache-misses`/`cache-references`、`perf c2c` 专查伪共享、`numactl` 做 NUMA first-touch 亲和。
+- **机器学习推理（TensorFlow / ONNX Runtime / TVM）**：推理引擎对 tensor 布局（NHWC vs NCHW）与权重打包做 cache 对齐优化，TVM/XLA 的 layout 变换直接决定推理延迟；`std::hardware_constructive_interference_size` 的「真共享」思想正用于把协同访问的张量放同一缓存行。
+- **大规模检索（Google 索引 / 列存引擎）**：Google 的基础设施靠 cache-friendly 的 protocol buffer 布局与列存结构支撑海量检索；ClickHouse 的列式存储与 `mark` 索引同样是围绕减少 cache miss 设计的工业实证。
 
 ### ㉒.3 生产踩坑：缓存局部性的常见误用
 - **伪共享（false sharing）**：多核各写一个 `struct` 里相邻的 `counter`，变量落在同一 64B 缓存行，核间反复 invalidate——用 `alignas(std::hardware_destructive_interference_size)`（C++17）或显式 padding 隔离；`perf c2c` 可定位。
@@ -1659,6 +1661,7 @@ int main() {
 
 ### ㉒.4 与标准的互动：缓存局部性与 C++ 标准的演进
 [史] C++11 引入**内存模型与原子**，把「数据竞争 / 可见性 / 一致性」写进标准，缓存一致性从「实现细节」变成**可推理的语义契约**；`std::atomic` 的 `memory_order` 直接对应缓存一致性流量。[史] **C++17** 通过 **P0154（Hardware Interference Size）** 给出 `std::hardware_destructive_interference_size` 与 `std::hardware_constructive_interference_size`（头文件 `<new>`），让「按缓存行对齐以规避伪共享」首次成为**可移植的标准设施**而非平台魔数。[史] **C++20** 通过 **P0476** 把 `[[likely]]` / `[[unlikely]]` 属性纳入标准，给分支预测器可移植提示（见 ⑫）。[评] 标准始终在「暴露硬件真实代价」与「保持可移植」之间权衡：缓存行大小仍是实现定义（不是常量），所以 `hardware_*_interference_size` 是「查询」而非「假定」。
+- [史] 分支预测提示属性由 **P0479R0→…→R5（C++20，`[[likely]]`/`[[unlikely]]`）** 标准化（与 P0476 的 `bit_cast` 是不同提案），给分支预测器可移植提示。ISO 条款 `[atomics]`（C++11 内存模型）把「数据竞争 / 可见性 / 一致性」首次写进标准，使缓存一致性从实现细节变成可推理的语义契约；而 `hardware_*_interference_size`（P0154R0→R1，位于 `<new>` 的 `[basic.stc.dynamic]`）仍是「实现查询」而非「常量假定」——委员会在暴露硬件真实代价与保持可移植之间持续权衡。
 
 ### ㉒.5 权威引用
 - [cppreference: std::hardware_destructive_interference_size](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size) — C++17 按缓存行对齐规避伪共享的可移植设施。

@@ -552,6 +552,9 @@ int main() {
 
 分布式会话缓存、对象/资源索引、去重字典、编译器/运行时的符号哈希表是 `std::unordered_map` 的主场；游戏的对象实例表、服务的请求去重、内存分配器的空闲块快速定位都大量使用哈希容器。Chromium 的 `base::flat_map` 与 `std::unordered_map` 并存，按规模与缓存特征选择；高性能场景也常用 `google::dense_hash_map` 等第三方实现。
 
+- **跨行业实例（游戏/服务端实体索引）**：Unreal Engine 的 `TMap`（开放寻址哈希）与 Unity 的对象实例表，用哈希容器做「按 `FName`/`InstanceId` 的 O(1) 查找」；这是 `unordered_map` 语义在游戏引擎实体管理中的真实落地，强调平均常数时间而非有序。
+- **跨行业实例（编译器符号表/HPC）**：Clang 的 `llvm::StringMap` 与标识符哈希表、Chromium 的 `base::flat_map`（开放寻址、缓存友好）都是哈希思想在工业编译/浏览器中的延伸；Rust 的 `HashMap` 也采用类似开放寻址——说明「哈希关联容器」已是跨语言基础设施的共识组件。
+
 ### ㉒.3 生产踩坑：unordered 的常见误用与陷阱
 
 [评] 最大坑是「rehash 导致迭代器失效」——插入触发扩容重哈希时，所有迭代器失效（指针/引用仍有效但位置变化）。另一坑是「哈希质量差 + 负载因子失控」导致严重碰撞，实测性能从 O(1) 跌到 O(N)；应自定义高质量哈希或控制 `max_load_factor`。还有「默认 `std::hash` 对自定义类型需特化」，否则编译失败；以及 Hash DoS 风险——外部可控 key 时需加盐或换抗碰撞结构。
@@ -559,6 +562,9 @@ int main() {
 ### ㉒.4 与标准的互动：unordered 与标准的演进
 
 [史] `unordered_*` 经 TR1 再到 C++11 正式入标准，填补了「哈希关联容器」的空白；C++11 起就支持自定义 Hash/KeyEqual 与 `reserve`。[评] 近年 WG21 的方向是「更优的连续存储哈希」：`std::unordered_map` 的开链导致缓存不友好，社区与标准都在探索如 `std::flat_unordered_map`（C++26 提案方向）等开放寻址变体。标准反复权衡「接口稳定」与「性能迭代」，这也是为何旧 `unordered_*` 的 ABI 被刻意冻结。
+
+- **WG21 修订链**：`unordered_*` 经 TR1（N1836 等）的 `tr1::unordered_map` 试水，再由 N2661（2008，Matthew Austern 的「Unordered Containers」）正式进入 C++11；C++11 起支持自定义 `Hash`/`KeyEqual` 与 `reserve`/`max_load_factor`。近年 WG21 探索连续/开放寻址变体：`std::flat_unordered_map`（P0429 衍生讨论、C++26 方向）与 `std::hive`（P0447， colony 容器）试图解决开链缓存不友好问题。
+- **ISO 条款**：`std::unordered_map` 规定于 ISO/IEC 14882 §24.5.4（`[unord.map]`）。标准选择「开链（separate chaining）」而非开放寻址，设计理由是「保证最坏情况下 `erase` 不使其他元素迭代器失效、且支持安全的 `erase(iterator)` 续迭代」——委员会把「迭代器/引用稳定性」置于「极致缓存友好」之前，这也是其 ABI 被冻结、不便轻易改为开放寻址的根因。
 
 ### ㉒.5 权威引用
 

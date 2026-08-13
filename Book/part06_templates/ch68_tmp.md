@@ -577,6 +577,8 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 - 标准库深处：`std::tuple`、`std::integer_sequence`、`std::ratio`、`std::integral_constant` 全是 TMP 产物；`std::chrono::duration` 的编译期单位换算也靠它。
 - Boost.MPL / Boost.Hana：前者用 `mpl::vector`、`mpl::transform` 把元编程第一次做成「库」，后者用 `constexpr` + 异构容器统一编译期与运行期（`transform`/`filter` 两用），代表 TMP 向 constexpr 融合的转向。
 - 数值与 DSP 库（如 Blitz++、Eigen 的部分编译期维度推导）用 TMP 做编译期维度检查与循环展开。
+- **生物信息（SeqAn，FU Berlin）**：用密集 TMP 元函数表示 DNA/蛋白质字母表与序列类型，在编译期做类型级的状态机与维度检查，支撑基因组比对工具。
+- **计算几何（CGAL）**：用 TMP 在编译期区分几何核（精确 vs 近似）、维度标签与拓扑，把大量几何不变量检查前移到编译期。
 
 ### ㉒.3 生产踩坑：TMP 的常见误用与陷阱
 - **编译时间爆炸**：深层递归实例化 + 大量元函数调用让编译时间线性甚至超线性增长，大项目里 TMP 头文件常成为编译瓶颈。
@@ -586,6 +588,8 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 
 ### ㉒.4 与标准的互动：TMP 与 constexpr 的分工演变
 Boost.MPL（2000s）把 TMP 系统化成「编译期容器与算法」；2015 年 Boost.Hana 用 `constexpr` 融合编译期/运行期；C++11 起 `constexpr` 一路放宽，到 C++20 已能在编译期做相当复杂的计算，纯模板递归元函数逐步被 `constexpr` 函数取代——可读、可调试、报错短。如今 TMP 仍活在标准库深处（`tuple`、`integral_constant`），但新代码更倾向 `constexpr`（ch69）。标准是「渐进替代」而非「废除」。
+- **ISO 条款**：TMP 栖身于 **[temp]** 各处（尤其 `std::integral_constant`、`std::tuple`、`std::ratio` 的措辞），编译期计算能力则由 **[expr.const]** 的 `constexpr` 规则逐步接管。
+- **修订/采纳**：**P1907R1（Class-types in non-type template parameters，C++20）** 允许把用户自定义字面类型作为非类型模板实参，使 TMP 能携带「带语义的值」（如维度标签、编译期字符串），扩展了元编程的表达力（[P1907R1](https://wg21.link/P1907R1)）；它与 constexpr 放宽（ch69）共同把「递归元函数」推向更可读、可调试的 `constexpr` 函数。
 
 ### ㉒.5 权威引用
 - [cppreference: Templates](https://en.cppreference.com/w/cpp/language/templates) — 模板机制总入口，TMP 的栖身之所

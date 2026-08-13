@@ -253,6 +253,8 @@ int main(){std::cout<<"operator重载总结: 保留原始语义, 避免歧义, <
 - **数值与线性代数**：`std::complex`、Eigen 的 `Matrix`/`Vector` 全套算术与比较运算符；Boost.Math、GLM（图形数学）同理。
 - **标准库与 IO**：`std::string` 的 `+`/`+=`、流库 `operator<<`/`>>`、智能指针的 `->`/`*`、容器 `operator[]` 是日常基础设施。
 - **领域特定**：`std::chrono` 的 `operator""` 单位字面量、`std::filesystem::path` 的 `/` 拼接、游戏引擎的向量/四元数运算。
+- **量化金融**：QuantLib 的 `Date`、`InterestRate`、`Money` 全套运算符（`+` / `-` / `*` / 比较），让金融公式读起来像数学表达式；Bloomberg API 的 `blpapi::Datetime` 也重载比较与算术，使时间序列可直接按日期运算。
+- **物理 / 单位库**：`Boost.Units` 与 `mp-units` 用运算符重载表达维度安全——`meter + second` 在编译期即非法、`newton == kilogram * meter / second²` 成立，把"单位错误"从运行期提前到编译期；`std::chrono` 的 `duration` 运算（ch24 已提字面量）是同一思路的简化版。
 
 ### ㉒.3 生产踩坑：运算符重载的常见误用
 - **违反语义直觉**：`operator+` 却改自身、`operator*` 返回引用而非值、破坏交换律/结合律，会让调用方写出隐蔽逻辑错误。[评]
@@ -262,6 +264,7 @@ int main(){std::cout<<"operator重载总结: 保留原始语义, 避免歧义, <
 
 ### ㉒.4 与标准的互动：运算符随标准演进
 C++ 早期 `operator+`/`[]`/`()` 等成形并约定"成员 vs 非成员"规则；C++98–11 打磨重载决议与模板交互。[史] C++20 的 `operator<=>`（三路比较，P0515/P1185）只需写一个比较运算符，编译器按"重写规则"自动合成 `==`/`<`/`>` 全套，终结为值类型手写六七个运算符的时代；概念（Concepts）让运算符可加 `requires` 约束，避免对不适用类型意外参与重载；C++23 显式对象形参（P0847）统一成员/非成员运算符定义。[史] 委员会仍坚持"不发明新运算符"的红线。[史][评]
+- **修订链补强（重写候选）**：三路比较（P0515R0→R3，C++20，[wg21.link/P0515](https://wg21.link/P0515)）对运算符重载影响深远——标准在 [over.match.oper] 引入"rewrite candidates"（重写候选），当 `a < b` 找不到时，编译器可改写为 `b > a` 或 `(a <=> b) < 0`，令运算符具备对称性；以往对称运算符漏写会破坏交换律的坑（见 ch31 0.x）因此被语言层消解。委员会坚持"不发明新运算符"的红线，但通过"重写规则"让既有运算符获得自动对称，是"最小语法扩张、最大语义收益"的范例。
 
 ### ㉒.5 权威引用
 - [cppreference: operators](https://en.cppreference.com/w/cpp/language/operators) — 可重载/不可重载与重载规则

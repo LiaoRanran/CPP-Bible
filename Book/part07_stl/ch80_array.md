@@ -925,6 +925,9 @@ int main() {
 
 协议头、固定尺寸缓冲、查表与 SIMD 友好结构是 `std::array` 的主场：网络协议的定长头部（如以太网帧、IPv4 头）常以 `array<uint8_t, N>` 表达；游戏/嵌入式里用 `array<float,16>` 承载变换矩阵；编译期查表（如 CRC 表、`std::array` + `constexpr`）广泛用于无堆环境。Chromium 与 LLVM 中大量定长缓冲也用 `array` 而非裸数组。
 
+- **跨行业实例（汽车电子/AUTOSAR）**：汽车 ECU 的 CAN 报文接收缓冲、AUTOSAR 的 `uint8` 定长 PDU 常以 `std::array<uint8_t, N>` 表达固定 DLC（数据长度码）；在 ASIL 等级要求下，「编译期固定尺寸 + 无堆分配」比裸数组多了边界类型安全，是安全关键系统的首选。
+- **跨行业实例（图形 API）**：Vulkan/OpenGL 的 C++ 封装（如 Vulkan-Hpp）用 `std::array<float,16>` / `glm::mat4`（底层即定长数组）承载 4×4 变换矩阵，`constexpr` 查表用于颜色空间转换 LUT——这避开堆、满足实时渲染对可预测延迟的要求。
+
 ### ㉒.3 生产踩坑：array 的常见误用与陷阱
 
 [评] 最大误区是「把 `std::array` 当 `vector` 用」——它大小固定，既不能 `push_back` 也不能动态增长，误用会编译失败或改用 `vector` 损失性能。另一坑是「隐式维度衰减」：`array` 作函数参数若按值传递会整体拷贝（与裸数组退化成指针不同），既可能昂贵也可能并非本意。还有 `at()` 的边界检查只在运行期抛 `out_of_range`，在 hot path 里应优先用 `operator[]` 或编译期索引。
@@ -932,6 +935,9 @@ int main() {
 ### ㉒.4 与标准的互动：array 与标准的演进
 
 [史] `std::array` 自 C++11 引入即稳定，C++17 增加 `std::apply` 与结构化绑定使其更易拆包；C++20 起进入 `constexpr` 并可与 `ranges` 配合。[评] 它与 `std::span`（C++20）形成互补：固定大小的拥有式缓冲用 `array`，跨边界的「借来视图」用 `span`。WG21 也在讨论 `std::flat_map`（C++23）等更丰富的定长/连续容器，方向仍是「在不牺牲零开销的前提下给裸数组穿上类型安全的外衣」。
+
+- **WG21 修订链**：`std::array` 由 N2384（Alisdair Meredith 等）在 C++11 引入；C++14 的「透明比较器」、`std::tuple` 拆包为其铺垫；C++17 正式引入 `std::apply`（P0220R1 系列）与结构化绑定（P0217R3），让 `array` 的拆包与异构处理更自然；C++20 起 `array` 进入 `constexpr` 并可与 `ranges::to` 衔接。
+- **ISO 条款**：`std::array` 规定于 ISO/IEC 14882 §24.3.8（`[array]`）。其设计理由（Design Intent）是「作为聚合类型（aggregate），`std::array<T,N>` 与 `T[N]` 拥有相同布局（standard-layout、可平凡拷贝），因此能和 C 数组 ABI 兼容，同时补上 `size()`/`at()`/`begin()` 等容器接口」——它刻意不做任何动态行为，只是给裸数组套上容器外衣。
 
 ### ㉒.5 权威引用
 

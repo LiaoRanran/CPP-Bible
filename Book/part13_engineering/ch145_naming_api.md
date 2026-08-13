@@ -1000,6 +1000,9 @@ int main(){Widget w;w.doWork();std::cout<<"PIMPL: 2ns/call, 30x compile speedup"
 - **Qt**：成员用 `m_` 前缀、getter 不写 `get` 前缀、信号用过去时——一整套自洽的 API 公约，使 Qt 接口高度可预测。
 - **标准库**：`std::` 全小写、容器/算法用名词、算法用动词/名词组合（如 `std::find_if`），是 C++ 命名的事实基准。
 
+- 科学计算：**pybind11** 的 API 命名刻意贴近 Python 习惯（`py::class_`、`def()`），让 C++ 库对 Python 用户零认知负担——反向证明「命名服务于调用方」（见 <https://pybind11.readthedocs.io>）。
+- 系统编程：**POSIX / libc** 的 `snprintf`、`strnlen` 等「带长度的安全变体」命名约定，被 C++ 生态（如 `{fmt}`、`std::span`）继承为「显式边界」的命名范式（见 <https://pubs.opengroup.org/onlinepubs/9699919799>）。
+
 ### ㉒.3 生产踩坑：API 命名与设计的误用
 - **改名即 ABI 破坏**：C++ 的 name mangling 把函数名、参数类型编进符号；改函数名/参数（即使语义等价）会改符号，破坏动态库 ABI。稳定的 API 表面要靠 Pimpl / 不透明指针隔离实现（见 ⑩）。
 - **`[[deprecated]]` 用错**：C++14 的 `[[deprecated("reason")]]` 是弃用沟通工具，但只加属性不提供替代路径，等于没迁移计划；应同时给出继任 API。
@@ -1009,6 +1012,9 @@ int main(){Widget w;w.doWork();std::cout<<"PIMPL: 2ns/call, 30x compile speedup"
 - **`[[deprecated]]`** 随 C++14 进入标准，让"标记弃用"成为语言级能力，替代各家用宏模拟。
 - **Concepts（C++20，P0734R0）** 把"接口约束"前置到函数签名，使 API 的先决条件在编译期即可读、可查，相当于把命名文档变成类型系统的一部分。
 - **`std::string_view` / `std::span`** 等词汇类型改变了"传参该传什么"的 API 设计共识：优先传视图而非拷贝。
+
+- `[评]` WG21 **P0482R0→…→P0482R6**（char8_t，<https://wg21.link/P0482>，C++20）：引入 `char8_t` 与 `std::u8string` 表示 UTF-8，强制「字节串」与「文本串」在类型上分离——直接改善了「API 该接收什么编码的字符串」这一长期命名/设计歧义。
+- `[评]` ISO/IEC 14882:2020 在 `[lex.charset]`/`[string.classes]` 把 UTF-8 提升为一等类型；委员会理由：历史上 `char` 既装字节又装 UTF-8 导致大量编码 bug，类型化能从 API 边界阻断误用。
 
 ### ㉒.5 权威引用
 - [C++ Core Guidelines — NL（命名）/ F（函数）/ C（类）规则](https://isocpp.github.io/CppCoreGuidelines/) — 现代 C++ 命名与 API 设计事实标准

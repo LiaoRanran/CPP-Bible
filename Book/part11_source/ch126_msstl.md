@@ -831,11 +831,27 @@ MS STL 的源头不在微软自研，而在 **P.J. Plauger 的 Dinkumware STL**�
 `_MSC_VER` 是 MS STL 的「版本脊椎」：它绑死 MSVC 工具集（如 193x = VS2022 17.x），并决定 `msvcp140.dll`/`vcruntime140.dll` 的变体（见 ⑫）。与 libstdc++ 的 `GLIBCXX_*` 符号版本、libc++ 的 `_LIBCPP_VERSION` 一样，`_MSC_VER` 是「同一份 `std::string` 在不同版本下布局可能不同」的实证开关。
 
 
+### ㉒.2 真实工程坐标：MS STL 活在哪些真实产品里
+
+MS STL 的覆盖由「Windows 生态」定义，凡用 MSVC 编译的本地代码几乎都链接它（`msvcp140.dll` / `vcruntime140.dll`）：
+
+- **Windows 桌面与后台服务**：从 Office、Teams 到 Azure 控制面组件、企业 ERP/工控软件，几乎所有 Windows 原生应用与服务都跑在 MS STL 之上；Windows 操作系统自身大量组件也是 C++ 构建。
+- **Windows 游戏生态**：Steam 库里绝大多数 Windows 游戏（以及虚幻引擎、Unity 在 Windows 上的构建）用 MSVC + MS STL；`_MSC_VER` 绑死的「版本脊椎」正是游戏厂商 CI 锁工具集、保证 ABI 一致的依据（见 ⑫）。
+- **跨平台引擎的 Windows 端**：Chromium / Edge、Qt、Unreal Engine 在 Windows 上都被 MS STL 编译与链接，使 MS STL 间接支撑了浏览器、设计软件、3A 游戏等庞杂产品线。
+
+### ㉒.4 与标准的互动：MS STL 的「追标准快跑」与宏闸门
+
+2019 年 `microsoft/STL` 开源后，MS STL 以「激进标准符合度」为旗号，其节奏由 `stl/inc/yvals.h` 的 `_HAS_CXX17/_HAS_CXX20/_HAS_CXX23` 宏驱动（这些宏又由 `/std:c++14|17|20|latest` 隐式置位）：
+
+- **特性逐项落地**：`<format>`（**P0645R10**）、`<chrono>` 的时区/日历扩展（**P0355R7**）、`<ranges>`、`std::expected`（**P0323R12**）等由 MS STL 团队在博客（<https://devblogs.microsoft.com/cppblog/>）逐篇宣布；其 GitHub 仓库的 `stl/README.md` 与 `docs` 列出每版实现的 WG21 提案。
+- **与 ISO 条款的对齐**：实现严格对照 ISO/IEC 14882 第 20–33 条库条款；MS STL 通过「特性测试宏 + 编译选项」而非 ABI 分支来切换标准版本，避免了 libstdc++ 那种「双 ABI 历史包袱」（见第124章），代价是 `_MSC_VER` 一旦变化就可能改变 `std::string` 等类型的布局。
+- **委员会互动的实证**：Stephan T. Lavavej（社区昵称 STL）长期以博客与会议演讲公开内部决策，把「闭源标准库走向透明」推到极致；`_HAS_CXX23` 等宏的命名与置位方式也成为其他实现理解新版标准落地顺序的参考。
+
 ### ㉒.5 权威引用
 - [Microsoft STL GitHub](https://github.com/microsoft/STL)：MSVC 标准库开源仓库（2019 起）。
 - [MSVC C++ 团队博客](https://devblogs.microsoft.com/cppblog/)：ABI / 特性实现笔记。
 - [Microsoft Learn · C++ 标准库参考](https://learn.microsoft.com/en-us/cpp/standard-library/cpp-standard-library-reference)：官方文档。
-- [WG21 提案库](https://wg21.link/)：MSSTL 跟踪的提案短链。
+- [WG21 P0645（std::format，MSSTL 为早期实现者之一）](https://wg21.link/P0645)：MSSTL 跟踪并实现的核心提案示例。
 ## ㉓ 与 C++ 标准的互动：MS STL 的「追标准快跑」
 
 开源后的 MS STL 以「激进标准符合度」为旗号。其节奏由 `stl/inc/yvals.h` 的 `_HAS_CXX17/_HAS_CXX20/_HAS_CXX23` 宏驱动（见 ④/⑨/⑭），而这些宏又由 `/std:c++14|17|20|latest` 隐式置位。代表性落地：
@@ -872,7 +888,7 @@ MS STL 的源头不在微软自研，而在 **P.J. Plauger 的 Dinkumware STL**�
 - `_ITERATOR_DEBUG_LEVEL` 文档：<https://learn.microsoft.com/cpp/standard-library/iterator-debug-level>
 - Visual C++ 运行时（Redistributable）说明：<https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist>
 - Stephan T. Lavavej 的标准库讲座 / 博客（历史决策一手资料）：<https://devblogs.microsoft.com/cppblog/>
-- WG21 提案索引：<https://wg21.link/>
+- WG21 P0355（扩展 chrono：日历与时区，MSSTL 已实现）：<https://wg21.link/P0355>
 
 ## 附录 A：MS STL 工业背景 [F: Industry / B: Principle]
 

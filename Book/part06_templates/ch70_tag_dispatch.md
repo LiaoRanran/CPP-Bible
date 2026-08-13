@@ -615,6 +615,8 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 - 标准库本体：`std::advance`/`std::distance` 通过 `iterator_category` 标签在编译期选 O(1) 或 O(n) 实现；`std::copy` 对平凡类型经标签走 `memmove` 快路径；`std::rotate`、`std::sort` 等大量算法都按迭代器标签分派。
 - 分配器与数值库：`std::allocator_traits` 用标签/特性类型路由内存操作；数值库用标签区分「标量/向量/SIMD」执行策略。
 - 游戏引擎与 ECS：`entt` 等库用标签类型标记组件类别，在编译期为不同组件组合选最优存储与访问策略。
+- **医学影像（ITK）**：`itk::Image<TPixel, VDimension>` 用维度标签在编译期分派到 2D/3D 图像的内存布局与迭代器，消除运行期维度分支。
+- **计算几何（CGAL）**：用 `Cartesian`/`Homogeneous` 核标签在编译期选「浮点近似」还是「精确代数」几何内核，同一套算法因此两用。
 
 ### ㉒.3 生产踩坑：标签分发的常见误用与陷阱
 - **标签层级写错导致选错重载**：迭代器标签是继承层级（`random_access_iterator_tag : bidirectional_iterator_tag : ...`），若自定义迭代器漏写 `iterator_category` 或写错基类，会静默退回到低效实现而非编译失败。
@@ -624,6 +626,8 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 ### ㉒.4 与标准的互动：标签分发与 concepts 的渐进迁移
 标签分发随 STL（C++98）成为泛型算法标准范式，与 traits（ch65）、偏序（ch61）配合撑起整个标准库。C++20 的 concepts（ch67）与 `std::ranges` 用 `std::random_access_iterator` 这类 concept 取代了手写标签层级的部分工作，但底层算法仍保留标签重载以兼容老迭代器——迁移是渐进的，不是一刀切。标准明确把「标签分发」与 `std::enable_if` 并列为 concepts 的替代方案之一，说明它仍是合法的工业手法。
+- **ISO 条款**：迭代器标签定义在 **[iterator.tags]**，基于标签的算法分派在 **[iterator.requirements]** 与众多 `<algorithm>` 条目（如 `std::advance`/`std::distance` 的复杂度分支）；标签的继承层级是委员会为「编译期零开销选路」刻意设计的类型层级。
+- **与标准的互动**：C++20 的 Ranges（**P0896R4**）用 `std::random_access_iterator` 等 concept 取代手写标签的部分工作，但标准库底层算法仍保留标签重载以兼容 C++98 以来的老迭代器——标签分发因此被标准显式列为 concepts 的合法替代方案之一，而非被废除。
 
 ### ㉒.5 权威引用
 - [cppreference: Iterator tags](https://en.cppreference.com/w/cpp/iterator/iterator_tags) — 迭代器标签类型与「基于标签选算法」的官方示例

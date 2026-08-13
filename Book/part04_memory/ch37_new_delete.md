@@ -1860,6 +1860,8 @@ int main() {
 - **Chromium / Blink**：拥有自研的 **PartitionAlloc**，通过替换全局 `operator new`（特定构建）为不同安全域隔离内存，是浏览器对抗 UAF/堆喷射的核心手段之一。
 - **游戏引擎（Unreal/Unity）**：在生产构建里普遍替换 `operator new` 为引擎内存池（见 ch44），以便做追踪、内存统计与确定性的帧回收——因为默认 `new` 在每秒数万次分配下太慢、太不可控。
 - **嵌入式/HFT**：关闭异常 + 替换 `operator new` 为静态池或返回 `nullptr` 的 `nothrow` 后端，换取确定性延迟（第 ⑦ 节 `std::nothrow` 在此处是刚需而非风格偏好）。
+- **游戏主机平台（PlayStation / Xbox 主机 OS）**：主机平台的 `operator new` 常被替换为带类别的分配器（如 PS4 的 `sys::memory` 把内存分到不同带宽池），因为统一堆无法满足不同内存区域（CPU/音频/显存）的带宽差异——`operator new` 可替换性在主机的刚需体现。
+- **数据库（PostgreSQL `MemoryContext`）**：PostgreSQL 自研 `palloc`/`MemoryContext` 绕开默认 `operator new`，所有后端内存走上下文，事务/语句结束整块释放，避免长连接内存泄漏累积——这是大型服务里「默认 new 被系统性绕开」的工业案例。
 
 ### ㉒.3 生产踩坑：`new`/`delete` 的常见误用
 
@@ -1871,6 +1873,7 @@ int main() {
 ### ㉒.4 与标准的互动：`new`/`delete` 的演进
 
 [史] C++98 确立了可替换的 `operator new`/`delete` 签名族；**C++11 加入 `std::align_val_t` 的提案草案**最终由 **P0035（C++17）** 落地，让过对齐类型（如 `alignas(64)` 的 SIMD 结构）能被正确动态分配，否则对齐被悄悄丢弃。[史] **C++20 的 P0722（destroying delete）** 引入 `std::destroying_delete_t`，允许类在 `operator delete` 里同时做析构与释放（如变长类 `std::vector` 式自管理），避免「先析构再释放」对带尺寸的自定义布局的多余开销（第 ⑭ 节）。[评] WG21 的方向是保留默认 `new` 的简单语义，同时用 `std::pmr` + 作用域分配器（ch38）把「换后端」从「替换全局函数、污染整个程序」变成可组合的局部选择——这对大型多团队代码库是质的改善。
+- [史] `operator new` 相关的修订链还有 **P0722R0→…→P0722R3（C++20，destroying delete）**，让变长类可在 `operator delete` 里同时析构与释放，省去「先析构再释放」的冗余尺寸参数传递；以及 **P0674R0→…→P0674R1（C++20，`make_shared<T[]>`）** 补齐数组的 make 构造。ISO 条款 `[basic.stc.dynamic.deallocation]` 规定释放函数的查找与「sized delete」语义——委员会刻意让「分配/释放后端」保持可替换、可作用域化，而非全局唯一。
 
 ### ㉒.5 权威引用
 

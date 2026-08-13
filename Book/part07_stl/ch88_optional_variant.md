@@ -538,6 +538,9 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 解析器与配置读取（字段可能缺失用 `optional`）、错误通道（`std::expected` 的近亲）、状态机（用 `variant` 表达「当前处于哪种状态」）是主场：Clang 的 AST 大量用 `Optional`；游戏/编辑器用 `variant` 表达「消息体可能是多种类型」；网络协议解码用 `optional` 表达「可选字段」。它们也服务于「visitor 模式」——`std::visit` 把「对多类型分发」从易错的 `if/else` 变成编译期穷尽检查。
 
+- **跨行业实例（系统/驱动配置）**：LLVM 的 `llvm::Optional` 与 Clang 的「可选诊断信息/可选命令行参数」大量用于「字段可能缺失」；Chromium 的 `absl::optional`（Abseil，与 `std::optional` 语义一致）在网络配置解析中表示「该选项可能未设置」——这是 `optional` 在大型 C++ 系统「消灭魔法哨兵值（如 `-1`/`nullptr`）」的真实落地。
+- **跨行业实例（编译器 AST/协议）**：Clang 的 `clang::Expr` 相关「表达式可能是多种子类型」、网络协议解码（如 protobuf 的 `oneof` 在 C++ 生成代码里的自然映射）用 `variant` 表达「当前处于哪种状态/载荷」；`std::visit` 的编译期穷尽检查在协议解析里能拦截「漏处理某分支」的 bug。
+
 ### ㉒.3 生产踩坑：optional/variant 的常见误用与陷阱
 
 [评] `optional` 最大坑是「用 `*` / `->` 前未检查 `has_value()`」——空 optional 解引用是 UB（对 `value()` 则抛 `bad_optional_access`）。另一坑是「把 `optional<T&>` 当引用容器」——标准没有 `optional<T&>`，需要时用 `T*` 或 `optional<reference_wrapper>`。`variant` 的坑则是「`get` 错类型抛 `bad_variant_access`」与「`valueless_by_exception`」——异常发生在构造某 alternative 时会使 variant 进入该状态；以及 `std::visit` 的编译期组合爆炸（类型多时模板实例激增）。
@@ -545,6 +548,9 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 ### ㉒.4 与标准的互动：optional/variant 与标准的演进
 
 [史] `optional` 与 `variant` 经 Library Fundamentals V1 TS（P0220R1）并入 C++17，是「先出 TS、再进标准」流程的典型。[评] 此后标准持续扩展这一族：C++23 为 `optional` / `variant` 增加 monadic 操作（`and_then` / `transform` / `or_else`），让链式处理更函数式；C++23 还引入 `std::expected`（携带错误通道的值），与 `optional` 形成互补。WG21 的方向明确是「用 sum type 与可空类型取代裸哨兵值，把更多错误从运行期推到编译期」。
+
+- **WG21 修订链**：`std::optional` 源自 N3406（Bjarne Stroustrup、Lawrence Crowl 的「A Proposal to Add Optional Objects to C++」）；`std::variant` 由 N4542（Axel Naumann 的「Variant」）提出；二者经 Library Fundamentals V1 TS（P0220R1，wg21.link/P0220R1）并入 C++17。C++23 再为 `optional`/`variant` 增加 monadic 操作 `and_then`/`transform`/`or_else`（P0798R8）并引入 `std::expected`（P0323R10）。
+- **ISO 条款**：`std::optional` 规定于 ISO/IEC 14882 §22.5.2（`[optional]`），`std::variant` 于 §22.6.3（`[variant]`）。其设计理由是「用类型系统表达『值可能存在/值属于某几种类型之一』，取代 `NULL`/哨兵/裸 `union`」——标准刻意让 `optional` 不分配堆、`variant` 不依赖 RTTI，从而保持零开销，并把「取值前的存在性检查」「多类型的穷尽访问」前移到编译期。
 
 ### ㉒.5 权威引用
 

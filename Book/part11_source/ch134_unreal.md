@@ -786,6 +786,10 @@ int main() {
 - **建筑 / 训练 / 数字孪生**：Epic 自家的 **Twinmotion** 做实时建筑可视化；军事训练模拟器、工业数字孪生（与 Siemens、Bentley 等生态合作）、工厂仿真也广泛落地。
 - **数字人 / 设计评审**：MetaHuman 框架做高保真数字人；车企用 UE 做设计评审与虚拟展厅。
 
+- **自动驾驶仿真（CARLA）**：开源自动驾驶仿真器 **CARLA** 直接构建在 Unreal Engine 之上，用来生成传感器数据、训练与评测自动驾驶算法——这是 UE 跨进「自动驾驶 / 机器人研发」这一硬科技行业的旗舰样本，把渲染引擎变成「机器感知的研发沙盘」。
+- **广电与实时演播**：UE 广泛用于直播虚拟演播与实时特效——**The Weather Channel** 用 UE 制作沉浸式天气演示，多家电视台 / 演唱会采用 UE 驱动的实时背景与虚拟舞台（与《曼达洛人》的 LED 虚拟制片同源技术，只是搬到广电现场）。
+- **医疗与手术训练仿真**：UE 被用于外科手术训练模拟与医学可视化 [据记载]，延续其在「高保真实时 3D」上的强项，跨进医疗器械与培训的合规敏感领域。
+
 ### ㉒.3 生产踩坑（真实坑，非教科书）
 
 - **反射属性访问开销**：附录 D5 的基准已量化——字符串键反射（`FName` 注册表 `find`）比虚 getter 慢约 4.3×、比直接字段慢几个数量级。结论：**反射 / 蓝图属性只用于编辑期与低频路径，运行时热路径必须用生成的强类型 getter**（UHT 生成的 `GetX()` 编译后等价于直接字段访问）。
@@ -805,6 +809,11 @@ int main() {
 5. **GC 集成**：`TArray<UObject*>` 可标 `UPROPERTY` 被 GC 追踪，`std::vector<UObject*>` 对 GC 不可见 → 悬垂。
 
 补充：`TSharedPtr` 是**侵入式引用计数**（对象自带 `SharedReferenceCount`），比 `std::shared_ptr` 少一次堆分配（第⑤节）；但只用于非 UObject。`TWeakObjectPtr` 是 UObject 专用弱引用，GC 回收后自动置 `nullptr`。UE5 引入 `TObjectPtr<>` 兼容反射且支持延迟加载。现代 C++ 上，UE5 接纳 C++17/20 特性（concepts、`std::string_view` 边界转换）、重写 UHT 提速、用模块系统（`Build.cs` / `IModuleInterface`）替代裸 CMake。
+
+> 与标准反射的互动（wg21.link 核实）：UE 的 UHT 反射系统是「工业级静态反射 + 代码生成」活样本，与 ISO C++ 反射标准化努力形成对照：
+> - C++ 至今（C++23）**没有任何反射条款**；标准化主线是 **P2996R5**（"Reflection for C++26"，2024-08，作者 Wyatt Childers、Peter Dimov、Barry Revzin、Andrew Sutton、Daveed Vandevoorde 等），计划在 **C++26** 引入 `std::meta::info`、编译期类型自省与成员拼接。SG7 在 Kona（2023-11）选定 value-based 方案（用 `^^e` 取反射、`[:i:]` 拼接），与 UE 的「编译期生成 + 运行期注册」思路同属一派，但委员会版本主要覆盖**编译期**。
+> - UE 的存在本身就是「标准慢、产品急」的证据：它在没有语言级反射的年代，用 UHT 代码生成把 `UCLASS` / `UPROPERTY` / `UFUNCTION` 的自省、序列化、网络复制、GC 追踪全套跑通，并成为虚幻生态不可替代的底座——这与 Qt 用 moc 补反射（见第129章）是同一类务实选择。
+> - 立场判读：UE5 接纳 C++17/20 特性（concepts、`std::string_view` 边界转换）并重写 UHT 提速，却依旧保留 `TArray` / `TMap` / `FString`（见本节理由 1–5）。结论不是「UE 反对标准」，而是「在内存追踪、序列化、GC、异常模型这些标准不覆盖的维度，引擎必须自造容器」——标准提供词汇类型就用，标准缺位处就自己写。
 
 ### ㉒.5 权威引用清单
 

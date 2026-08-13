@@ -908,6 +908,9 @@ struct S2 : SomePolicy { int x; };     // EBO 压掉空基类
 - **Boost.Iterator** 的 `iterator_facade` / `iterator_adaptor`、**Boost.Operators**（自动生成 `==`/`<=` 等运算符）都是 CRTP 经典；**Eigen** 用 CRTP 做表达式模板（expression templates）实现零开销代数。
 - 微软 **ATL / WTL** 大量用 CRTP 实现 COM 与窗口基类；游戏/数值库用它避免虚表开销。
 
+- 图形/实时：**Magnum** 与 **Ogre** 等渲染引擎用 CRTP 做「可静态派生的数学/资源管理基类」，把向量/矩阵运算在编译期展开，避免虚调用进入热路径（见 <https://magnum.graphics>、<https://www.ogre3d.org>）。
+- 嵌入式：[轶] 不少嵌入式外设抽象（如 STM32 的 LL/HAL 风格库）以 CRTP 让驱动在编译期绑定具体外设，使寄存器访问零间接、无虚表开销。
+
 ### ㉒.3 生产踩坑：静态多态的代价
 
 - **无运行期多态**：CRTP 类型在编译期绑定，不能把不同派生类放进同一容器——需要「类型擦除」包装（如 `std::any`/`std::function` 思路）才能异构存储。
@@ -920,6 +923,9 @@ struct S2 : SomePolicy { int x; };     // EBO 压掉空基类
 - `[评]` C++20 Concepts 让 CRTP 基类能「约束派生类接口」：`template<typename D> requires requires(D d){ d.foo(); } class Base`——既静态又安全。
 - 表达式模板（Eigen、Blaze）依赖 CRTP 把 `a + b + c` 在编译期拼成单一循环，是「零开销抽象」的旗舰案例。
 - `[评]` 标准演进把 CRTP 从「黑魔法」变成「可被 concept 约束的静态接口」，可读性大幅提升。
+
+- `[评]` WG21 **P0847R0→…→P0847R7**（Deducing this / 显式对象参数，<https://wg21.link/P0847>，C++23）：让成员函数能 `void f(this auto&& self)`，把 CRTP 的「静态接口」写法变得直观且无需奇怪的基类 typedef，是 CRTP 静态多态被语言正面拥抱的标志。
+- `[评]` ISO/IEC 14882:2023 在 `[expr.call]`/`[dcl.fct]` 引入显式对象参数；委员会理由：减少 CRTP 的样板与名字查找陷阱，同时支持「按值类别/cv 重载」，是静态接口设计的重大简化。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 

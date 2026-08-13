@@ -364,6 +364,9 @@ int main() {
 - **编译器后端（LLVM/GCC）**：指令选择/调度（scheduling）直接依赖这些微架构事实。
 - **Intel VTune / perf 用户**：定位"热点到底卡在取指、解码、执行还是退休"。
 
+- **微架构参考**：Agner Fog 的 [指令表与微架构手册](https://www.agner.org/optimize/)、[uops.info](https://uops.info/)（实测每指令 uops/延迟/吞吐）、Intel/AMD 官方优化手册；LLVM/IA 后端用这些建模调度。
+- **可观测性**：Linux `perf`、Intel VTune、AMD uProf、`likwid` 把 PMU 计数器暴露给用户态，是定位前端/后端瓶颈的事实工具。
+
 ### ㉒.3 生产踩坑：微架构视角的误用
 - **分支预测失败**：热路径上的不可预测分支付出 10–20 周期代价；应用 `cmov`/查表/概率排序消除（见 ⑩）。
 - **false dependency / 部分寄存器**：写 `al` 与读 `rax` 的假依赖拖慢流水线；编译器有时也中招，必要时用 `-fno-defer-pop`/手工隔离。
@@ -373,7 +376,11 @@ int main() {
 ### ㉒.4 与标准的互动：抽象机 vs 真实硅片
 ISO C++ 只在"抽象机"层面定义语义，对"多少周期"只字不提；C++ 标准里的 `[[likely]]`/`[[unlikely]]`（C++20）与 `#pragma`/`__builtin_expect` 是标准给程序员的少数"可向编译器暗示分支概率"的钩子，间接影响分支布局。[评] 微架构优化是"在标准允许的范围内，迎合具体 CPU"的艺术，换平台常需重调。
 
+**修订链补强（抽象机器 vs 真实流水线）**：C++ 标准定义的是“抽象机器”（[intro.abstract]），对“几条指令、多少 cycle”只字不提——这是 [STANDARD] 故意留白，把 [MICROARCHITECTURE] 决策交给实现。代价是同一段代码在不同 CPU 上 IPC 可能差数倍。WG21 近年通过 `[[likely]]`/`[[unlikely]]`（[P0479](https://wg21.link/P0479)，C++20）与 `std::hardware_interference_size`（[P0154](https://wg21.link/P0154)）给出有限的“向硬件透传意图”的官方通道，但主体优化仍靠编译器优化 pass（`-O2`/`-O3`/PGO/BOLT）与厂商微架构知识。
+
 ### ㉒.5 权威引用
+- [WG21 P0479 — [[likely]]/[[unlikely]]](https://wg21.link/P0479) — C++20 分支提示属性
+- [Agner Fog 优化手册](https://www.agner.org/optimize/) — 指令表与微架构实测
 - [Agner Fog — Microarchitecture & Instruction Tables](https://www.agner.org/optimize/) — 各代 x86 流水线/延迟/端口的权威手册
 - [What Every Programmer Should Know About Memory（Drepper）](https://www.akkadia.org/drepper/cpumemory.pdf) — cache/TLB/预取成本模型经典
 - [Intel Intrinsic / 优化参考](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/) — 指令延迟/吞吐与内在函数

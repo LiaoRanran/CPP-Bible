@@ -603,6 +603,9 @@ int main() {
 
 高并发 Web 服务器的「并行请求扇出/归并」、渲染线程与逻辑线程分离、并行批处理是 `std::thread` / `std::async` 的主场；游戏引擎的物理/渲染/逻辑多线程、金融系统的并行定价、科学计算的 `async` 任务图都依赖它们。它们是几乎所有 C++ 并发库（如 Intel TBB、libdispatch 的 C++ 封装）的底层基石。
 
+- **跨行业实例（Web 服务器/反向代理）**：Nginx 的 C 模块生态虽以 C 为主，但其 C++ 扩展与众多 C++ 后端（如用 `std::thread` 跑 worker、用 `std::async` 做请求扇出/归并）依赖标准线程原语；Envoy（Lyft 开源的 C++ 代理）用标准线程 + 任务队列承载连接处理，是 `std::thread` 在云原生代理中的真实落地。
+- **跨行业实例（科学计算/渲染）**：OpenCV 的并行框架（`cv::parallel_for_` 底层用 TBB/标准线程）、Blender 的渲染分块与物理模拟用 `std::thread`/`std::async` 把任务图并行化；其「按 CPU 核数扇出、归并结果」模式正是 `async`/`future` 的典型用法。
+
 ### ㉒.3 生产踩坑：thread/async 的常见误用与陷阱
 
 [评] 最大坑是「数据竞争与未同步共享状态」——多个线程写同一变量而无 `mutex` / `atomic` 是 UB 的根源，且难以复现。另一坑是「`std::async(launch::async)` 每次都建线程」——在循环里疯狂 `async` 会瞬间耗尽线程/内存，应改用线程池；而默认 `launch::async | launch::deferred` 策略下，若从不取 `future` 则可能永不执行（deferred）。还有「`thread` 忘记 join/detach 导致 terminate」。
@@ -610,6 +613,9 @@ int main() {
 ### ㉒.4 与标准的互动：thread/async 与标准的演进
 
 [史] `std::thread` 等自 C++11 成为并发基石，C++20 引入 `std::jthread`（自动 join + 协作取消，见 ch94）解决了 `thread` 析构 terminate 的老问题。[评] 近年 WG21 在并行算法（`std::execution::par`）、`std::latch` / `std::barrier`（C++20）、原子与内存序细化上持续扩展，方向是「在保持零开销与显式控制的同时，提供更安全的 RAII 并发原语，减少 terminate/数据竞争类事故」。
+
+- **WG21 修订链**：`std::thread`/`async`/`future` 由 N2320（2007，Anthony Williams「Multi-threading Library for Standard C++」）在 C++11 引入；C++17 增加 `std::shared_mutex`（P0156R2，读写锁）；C++20 引入 `std::jthread`（自动 join + 协作取消，见 ch94，对应 P0660）与 `std::latch`/`std::barrier`（P1135R6，同步屏障），并细化 `std::atomic`/`memory_order`。
+- **ISO 条款**：线程与 Futures 规定于 ISO/IEC 14882 第 32 章（`[thread]`）。其设计理由（Design Intent）是「提供**最贴近 OS 的裸线程 + RAII 包装**，把『 Join/Detach 时机』『共享状态所有权（future/promise）』显式交给程序员」——委员会刻意不做自动 join（以免隐式阻塞析构），也因此留下 `std::thread` 析构 `terminate` 的坑，最终由 C++20 的 `std::jthread` 用 RAII 自动 join 修正。
 
 ### ㉒.5 权威引用
 

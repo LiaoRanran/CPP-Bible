@@ -1201,6 +1201,9 @@ int main(){std::cout<<"Framework=ch47+ch93+ch141+ch88+ch161"<<std::endl;return 0
 - **OpenCV**：用"注册式插件"动态挂解码器/后端，是"可扩展框架"的轻量范例。
 - **浏览器引擎 / 数据库**：插件/扩展点（V8 嵌入、PostgreSQL 扩展）是框架思维的延伸。
 
+- **C++ 应用框架坐标**：Qt（信号槽 + 元对象编译器 moc，跨桌面/嵌入式）、Unreal Engine（反射 + 垃圾回收 + 任务系统）、Chromium（Mojo IPC + Blink + 自研线程模型）、ROS 2（rclcpp + DDS 中间件）、POCO/ACE（老牌网络/服务框架）。
+- **游戏/图形**：Unreal/Unity(C++)、Godot(4 C++ 核心)、bgfx/skia 等渲染后端，框架层普遍自带内存池/任务系统/日志（见 ch159–161）。
+
 ### ㉒.3 生产踩坑：框架/插件的误用
 - **跨插件 ABI 破坏**：用不同编译器/标准库构建主程序与插件，虚表/异常/STL 布局不一致直接崩溃；应固定工具链或只暴露 C ABI + 抽象接口。
 - **过度抽象**：为"未来可能"堆接口层，编译期耦合与运行时间接调用双增、可读性降；YAGNI 同样适用框架（见 ⑯）。
@@ -1210,7 +1213,11 @@ int main(){std::cout<<"Framework=ch47+ch93+ch141+ch88+ch161"<<std::endl;return 0
 ### ㉒.4 与标准的互动：模块与接口边界
 C++ Core Guidelines 的 **I（Interfaces）** 章节系统化了"窄而稳的接口"原则；C++20 的 **模块（Modules）** 改善编译模型与接口封装，减少头文件宏泄漏对插件边界的污染。`std::unique_ptr`/`std::shared_ptr`（C++11）则让框架内的生命周期管理可组合。[评] 标准给框架的礼物是"更干净的接口封装 + 更稳的所有权原语"，但"控制反转怎么设计"仍靠工程判断。
 
+**修订链补强（框架与标准抽象）**：大型 C++ 框架几乎都自己实现“标准没给”的横向能力：Qt 的 moc 解决“C++ 缺原生反射”（标准至今无运行时反射，静态反射提案 [P0194](https://wg21.link/P0194) 一族仍在推进）；Unreal/Chromium 的内存与任务系统对应 `std::pmr`（[P0220](https://wg21.link/P0220)）与 `std::jthread`（[P0660](https://wg21.link/P0660)）出现前的自研方案；信号槽对应“观察者模式”但标准无对应设施。委员会近年通过 modules（[P1103](https://wg21.link/P1103)，C++20）、静态反射、executors 逐步填补这些空白，但框架的“胶水层”（IPC、UI、脚本桥）仍是标准外的事实标准。
+
 ### ㉒.5 权威引用
+- [WG21 P1103 — Modules](https://wg21.link/P1103) — C++20 模块
+- [WG21 P0194 — Static reflection](https://wg21.link/P0194) — 静态反射提案一族
 - [C++ Core Guidelines — I（Interfaces）](https://isocpp.github.io/CppCoreGuidelines/#S-interfaces) — 窄而稳接口的设计原则
 - [Qt 插件文档](https://doc.qt.io/qt-6/plugins.html) — 工业级插件/扩展点架构范例
 - [POCO C++ Libraries](https://pocoproject.org/) — 类框架 + 插件注册的可参考实现

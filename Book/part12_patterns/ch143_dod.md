@@ -1168,6 +1168,9 @@ struct SoA final { std::vector<float> x, y; };   // 列存 + 连续 + 可向量�
 - 游戏引擎（Unity DOTS、Unreal 的批量系统）、物理引擎（Havok、Bullet）、高频交易/量化系统、科学仿真、粒子系统——凡是「海量同类数据 + 批量处理」的场景都靠 DOD 榨缓存。
 - ECS（第142章）是 DOD 在游戏领域的典型落地；现代 C++ 数值库用 SoA（Structure of Arrays）做 SIMD 友好计算。
 
+- 高频金融：[轶] LMAX Disruptor 的「缓存行填充 + 单写者环形缓冲」思路被多个 C++ 低延迟框架沿用，用 DOD 思想把交易路径延迟压到微秒级。
+- 数据库：**RocksDB** 的 `BlockBasedTable` 与 `Arena` 分配用连续块 + 对齐布局减少缓存未命中，是存储引擎里的 DOD 实践（见 <https://rocksdb.org>）。
+
 ### ㉒.3 生产踩坑：先量再改，别玄学优化
 
 - **过早 DOD**：没 profile 就盲目把 AoS 改 SoA，可能反而更难维护、收益为零——DOD 强调「测量驱动（measure-first）」。
@@ -1181,6 +1184,9 @@ struct SoA final { std::vector<float> x, y; };   // 列存 + 连续 + 可向量�
 - `[评]` C++ 不内置 DOD，但提供全部底层积木：`std::vector` 做连续存储、`std::span` 做零开销视图、`alignas`/`alignof` 做对齐、`[[no_unique_address]]` 省空洞、`std::hardware_destructive_interference_size` 量化伪共享、C++26 的 `std::simd` 做向量化。
 - `constexpr`/内联让「数据布局选择」可前移到编译期；`if constexpr` 按访问模式特化循环。
 - `[评]` 标准演进正把「数据布局与硬件感知」能力逐步标准化（SIMD、缓存行常量），让 DOD 从「手工 hack」走向「可移植的原语」。
+
+- `[评]` WG21 **P0154R0→…→P0154R1**（hardware_destructive/constructive_interference_size，<https://wg21.link/P0154>，C++17）：把「缓存行大小」从各家的 `CACHELINE_ALIGNED` 宏魔法收编为标准 `constexpr` 量，正是 DOD 防伪共享的「官方答案」。
+- `[评]` ISO/IEC 14882:2017 在 `[hardware.interference]` 给出「至少为 `alignof(max_align_t)` 的实现定义量」；委员会理由（见 P0154 原文）：现有 `alignas` 几乎无标准可移植用途，借此把微架构事实变成可移植提示。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 

@@ -525,6 +525,9 @@ int main() { return bench(); }
 
 权限/能力位掩码系统、协议标志、固定集合的成员判定是 `std::bitset` 的主场：操作系统的权限位（如 `rwx`）、网络协议的标志字段、编译器的「特性开关集合」、游戏/嵌入式的状态机位都用 `bitset`。它也被用于固定规模集合的成员测试（如「某 64 个事件是否已发生」），比 `set<int>` 紧凑几个数量级。
 
+- **跨行业实例（网络协议/位标志）**：DNS 报文头（TC/AA/RD/RA 等标志位）、TCP 头部标志（SYN/ACK/FIN/PSH）常以定长 `bitset`/位域表达；HTTP/2 的 `SETTINGS` 帧与 gRPC 的flag 也用定长位掩码。协议定长 + 位级操作是 `bitset` 在通信协议栈的标准用法。
+- **跨行业实例（编译/静态分析）**：LLVM 的 `llvm::BitVector` 与 `clang` 的「诊断/属性开关集合」用位集合跟踪「哪些特性开启、哪些 AST 节点已访问」；Clang 的 `clang::Qualifiers` 也用位标志编码 cv 限定符——这是「固定集合成员判定」在编译器中的真实落地。
+
 ### ㉒.3 生产踩坑：bitset 的常见误用与陷阱
 
 [评] 最大误区是「把 `bitset` 当动态位集合用」——大小是编译期模板参数 `N`，不能在运行期改变，运行期尺寸请用 `std::vector<bool>`（代价是代理引用语义）。另一坑是「`bitset` 与整数互转的位序」——`to_ulong()` / `to_ullong()` 的低位对应 `bitset[0]`，跨平台/跨语言交换时要小心字节与位序。还有「`bitset<N>` 的 `N` 很大时会爆栈」——它是栈对象且大小固定，超大尺寸应改用堆分配的 `vector<bool>`。
@@ -532,6 +535,9 @@ int main() { return bench(); }
 ### ㉒.4 与标准的互动：bitset 与 <bit> 的演进
 
 [史] `std::bitset` 自 C++98 稳定，C++11 起支持 `constexpr` 位操作；更显著的演进是 C++20 新增 `<bit>` 头（P0553R4），提供 `popcount` / `countl_zero` / `rotl` 等跨所有无符号整数的自由函数，把 `bitset` 的位计数能力下沉到语言层面。[评] 近年 WG21 还在讨论「`std::bitset` 与 `std::vector<bool>` 的统一」以及 `popcount` 的硬件指令映射（如 x86 `POPCNT`），方向是「让位运算既类型安全又零成本」。
+
+- **WG21 修订链**：`std::bitset` 自 C++98 稳定；C++11 起支持 `constexpr` 位操作（如 `count()`/`test()` 在编译期可用）。更显著的演进是 C++20 新增 `<bit>` 头（P0553R4，wg21.link/P0553R4），把 `popcount`/`countl_zero`/`rotl` 等下放到「跨所有无符号整数」的自由函数；随后 P0556R3（整数幂2运算）、P1272R4 等持续补全 `<bit>`。
+- **ISO 条款**：`std::bitset<N>` 规定于 ISO/IEC 14882 §22.9（`[template.bitset]`）。其设计理由是「以固定 `N` 个二进制位提供**编译期尺寸确定**的紧凑集合」——与 `std::vector<bool>`（运行期尺寸、代理引用语义）形成对照。标准把 `bitset` 设为聚合/标准布局，使其可直接 `memcpy` 与 C 位域 ABI 对接，满足协议/系统编程对「可预测位布局」的硬需求。
 
 ### ㉒.5 权威引用
 

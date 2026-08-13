@@ -595,6 +595,9 @@ int main() {
 
 服务器优雅关闭（graceful shutdown）、可中断的长任务、线程池的任务取消是 `std::stop_token` 的主场：网络服务器在收到 SIGINT 时用 `stop_source` 通知所有 worker 线程退出；游戏/编辑器用 `jthread` 跑后台加载，关闭时自动收尾；测试框架用 `stop_token` 给「超时即取消」的用例做协作中断。它与 `condition_variable_any::wait(stoken,...)` 配合，实现「可中断等待」。
 
+- **跨行业实例（网络服务器优雅关闭）**：Envoy、Seastar 等 C++ 网络框架在收到 SIGINT/SIGTERM 时用「停止源 + worker 线程」模式做优雅关闭——主线程 `request_stop()`，所有 worker 在事件循环里轮询 `stop_requested()` 后退出；`stop_token` 把这一长期靠「全局原子 flag + 条件变量」手写的协作取消标准化。
+- **跨行业实例（测试/后台任务）**：GoogleTest 的「超时即取消」用例、CI 的长时间任务监控用 `stop_token` 给后台加载/计算做协作中断；其 `stop_callback` 注册「取消时清理资源」回调，避免任务被粗暴 `terminate`。
+
 ### ㉒.3 生产踩坑：stop_token 的常见误用与陷阱
 
 [评] 最大坑是「把协作取消当成强制取消」——`stop_token` 只是「建议停止」，若工作线程从不调用 `stop_requested()` 检查，请求会被完全忽略，任务照跑。另一坑是「`stop_callback` 的构造时机」——若 `request_stop()` 已发生才注册回调，回调会立即同步执行（可能发生在注册者的栈上，存在重入风险）。还有「跨 `std::condition_variable_any` 的可中断等待需用 `wait(stoken,...)` 重载」，用错普通 `wait` 就失去可中断性。
@@ -602,6 +605,9 @@ int main() {
 ### ㉒.4 与标准的互动：stop_token 与标准的演进
 
 [史] `std::stop_token` / `jthread` 经 P0660R10 在 C++20 落地，是「用 RAII 修正 `std::thread` 缺陷」的关键一步，与 C++20 的 `std::latch` / `std::barrier` 共同补齐了并发原语。[评] WG21 后续在讨论「`std::execution` 发送者/接收者（sender/receiver）模型」与取消传播的统一，方向是「把协作取消从线程扩展到异步任务图，形成与 `stop_token` 一致的取消语义」。
+
+- **WG21 修订链**：`std::stop_token`/`jthread` 经 P0660R0→…→P0660R10（Nicolai Josuttis、Lewis Baker 等，wg21.link/P0660R10，2019 采纳）在 C++20 落地。R0→R10 的关键变更：R5 删除 `interrupted` 异常与 TLS 扩展；R7 合并 P1287（停止回调）；R8 把 `interrupt_token` 改名为 `stop_token` 并引入 `nostopstate_t`；R10 让 `request_stop()` 返回是否改变了停止状态、并把 `jthread` 正式纳入 `<thread>`。另有 P1869（wg21.link/P1869）做 C++20 收尾微调。
+- **ISO 条款**：`std::stop_token`/`stop_source`/`stop_callback` 与 `std::jthread` 规定于 ISO/IEC 14882 §32.3.4（`[thread.stoptoken]`）与 §32.4（`[thread.jthread]`）。其设计理由（Design Intent）是「用 **RAII + 协作取消** 修正 `std::thread` 析构 `terminate` 的老问题：`jthread` 析构时自动 `request_stop()` 再 `join()`，且停止请求通过 `stop_source` 共享状态传递，绝不强制中断」——委员会强调协作（polling `stop_requested()`）而非抢占，以保住 C++ 的零开销与确定性。
 
 ### ㉒.5 权威引用
 

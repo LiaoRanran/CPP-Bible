@@ -800,6 +800,8 @@ void quick() {
 - **LLVM / 运行时**：`std::atomic` 用于引用计数（`llvm::RefCountBase` 思路）、线程安全的懒初始化标志、统计计数器。
 - **游戏引擎（Unreal/Unity 原生侧）**：无锁任务队列、帧间共享的标志/状态机，用 `atomic<bool/flag>` 避免互斥锁开销。
 - **高性能网络（Seastar、folly）**：无锁 ring buffer、原子化的连接计数器、内存回收的 hazard pointer 底层皆依赖 `std::atomic`。
+- **汽车/安全攸关多核 ECU（AUTOSAR Adaptive）**：车载多核域控制器（符合 ISO 26262 ASIL-D）用原子操作做核间免锁状态同步与看门狗握手，规避锁带来的不可预测阻塞；原子是其功能安全并发原语的地基（参考 AUTOSAR 规范与 ISO 26262）。
+- **数据库/存储引擎（RocksDB、ClickHouse）**：RocksDB 用 `std::atomic` 维护 `SequenceNumber` 的原子递增与 `memtable` 引用计数，支撑 LSM-Tree 并发读；ClickHouse 用原子计数器做查询级统计与 MergeTree 部件引用管理。
 
 ### ㉒.3 生产踩坑：原子的常见误用
 
@@ -811,6 +813,9 @@ void quick() {
 ### ㉒.4 与标准的互动：原子与 C++ 标准的演进
 
 [史] 原子随 **C++11** 引入，奠定内存模型；**C++17 的 P0558R1** 修复了内存模型措辞缺陷（影响所有原子操作的正确性基础）；**C++20** 是原子的大年——**P0020R6 引入浮点原子**（`fetch_add` 等，服务 HPC），**P0019 引入 `std::atomic_ref`**（对已存在对象做原子访问）；**C++26** 继续推进 hazard pointer/RCU 标准化（P1122/P2530），其底层亦建立在原子之上。与 WG21 方向一致：把「硬件原子 + 形式化内存模型」持续下沉为标准可移植抽象。
+
+- [史] **浮点原子修订链**：**P0020** 历经 **R0（2015-10）→ R3 → R4 → R5 → R6（2017-11-10）**，由 H. Carter Edwards 等提案，最终随 C++20 采纳 `atomic<float/double>`（`fetch_add` 等），服务 HPC 并行浮点累加；可于 <https://wg21.link/p0020> 逐版追溯。
+- [史] **`atomic_ref` 修订链**：**P0019** 从 **R0 → R3 → R7 → R8（2018）** 演进，最终进 C++20，提供对已存在对象做原子访问的能力（特性宏 `__cpp_lib_atomic_ref`=201806L）；<https://wg21.link/p0019>。
 
 ### ㉒.5 权威引用
 

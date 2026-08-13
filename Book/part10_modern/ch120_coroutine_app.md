@@ -964,6 +964,8 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 - 网络与高并发服务器：Boost.Asio、libuv、Seastar 框架用协程把「回调地狱」改写成顺序风格；微软自家大量异步栈依赖协程。
 - 游戏引擎脚本与 tick 逻辑、生成器式惰性序列（逐帧产出数据）、IO 密集型批处理。
 - Lewis Baker 的 **cppcoro** 库是第一代工业级协程原语集合（task / generator / async_mutex 等），为后续标准库 `std::generator` 探路。
+- **分布式存储/共识（TiKV、CockroachDB 客户端）**：协程把「跨分片异步读 → 提交」的并发控制流写成顺序代码，使复杂的故障/重试路径可读、可测。
+- **云原生网关/Service Mesh（Envoy 数据面、链接边代理）**：单线程上以协程/异步挂起数万连接，把「等上游」写成顺序风格，压低尾延迟的同时避免回调嵌套。
 
 ### ㉒.3 生产踩坑：协程帧是藏在堆里的状态机
 
@@ -977,6 +979,8 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 - `[评]` C++20 协程刻意「只给原语不给标准库类型」，把生态留白给社区——这降低了标准风险，却抬高了上手门槛。
 - C++20 确定 `co_await`/`co_yield`/`co_return` 与 `std::coroutine_handle`；C++23 补上 `std::generator`、`std::noop_coroutine`、`std::coroutine_traits` 细化，并让 `std::execution`（发送者/接收者，P2300）基于协程思想构建；C++26 继续打磨执行模型。
 - `[评]` 标准演进焦点正从「语法」转向「标准库异步类型 + 执行调度」，目标是让协程真正开箱即用。
+
+- [史] **协程应用修订链**：**P0912** 从 **R0 → R5（Gor Nishanov，C++20）** 合入；**P2168（`std::generator`，C++23）** 由 Lewis Baker / Corentin Jabot 提案补上高层封装；**P2300（`std::execution`）** 推进至 **R10（目标 C++26）**，把 sender/receiver 异步执行模型与协程打通；<https://wg21.link/p0912>、<https://wg21.link/p2168>、<https://wg21.link/p2300>。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 

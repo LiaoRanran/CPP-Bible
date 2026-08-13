@@ -738,6 +738,8 @@ void r15(std::vector<int>& v) {
 - **Chromium / Abseil 生态**：Google 在 Abseil 与 Chromium 的许多内部遍历、处理管线里采用「视图式惰性处理」思路（Abseil 的 `absl::Span` 与算法组合与 Ranges 哲学同源），C++20 Ranges 成熟后逐步迁移。
 - **编译器与标准库实现**：libstdc++（GCC 10+）、libc++（Clang 13+）、MS STL（MSVC 19.30+）均已实现 `std::ranges`，大量底层 `views` 与算法被标准库和真实业务代码直接消费。
 - **数据处理与 ETL**：在数据清洗、日志管道、编译器前端（AST 流式遍历）等「读一遍、做一串变换」的场景，Ranges 管道替代手写循环，可读性显著提升。
+- **格式化库（{fmt}/fmt）**：`fmt::format` 对 `std::vector`/`std::map` 等 range 提供 `fmt::join` 与内置 range 格式化支持，把「打印容器」从手写循环变成一行，被 Chromium、Protobuf 等大量消费。
+- **编译器基础设施（MLIR，LLVM）**：用 `llvm::zip`/`llvm::enumerate`/`llvm::map_range` 这类 range-v3 风格的适配器在 IR 变换 pass 里惰性遍历与改写操作数，是现代编译器前端的真实管线手法。
 
 ### ㉒.3 生产踩坑：Ranges 的常见误用与陷阱
 
@@ -749,6 +751,8 @@ void r15(std::vector<int>& v) {
 ### ㉒.4 与标准的互动：Ranges 与 C++ 标准的演进
 
 [史] Ranges 由 **P0896R4** 合入 C++20，把 Ranges TS 的 `views`、`actions`（后被砍）、`range` 概念、投影等带进标准库；C++20 之后它仍在快速生长：**C++23** 新增 `ranges::fold_left`/`fold_right`（受 range-v3 的 `accumulate` 启发，见 P2322R6）、`ranges::starts_with`/`ends_with`、`views::zip`、`views::enumerate` 等；**C++26** 继续补 `views::chunk_by`、`ranges::to` 容器化等。它与 **Concepts（C++20）** 互为依赖：没有 concept 就没有 `sortable` 这类编译期约束。与 WG21 方向一致——把「算法 + 约束 + 惰性组合」做成零开销抽象。
+- **ISO 条款**：Ranges 定义在标准 **[ranges]（C++20 为 Clause 26）**，核心概念（`range`、`view`、`borrowed_range`）与算法在 **[range]**、**[range.adaptors]**；`borrowed_range` 与 `dangling` 哨兵是委员会为根治「悬垂迭代器」刻意引入的新概念。
+- **设计理由**：Ranges 另起 `std::ranges` 命名空间（而非覆盖 `std::` 算法）、并显式建模「视图不拥有数据 + 借用范围」的语义，正是为了避免 STL 时代「迭代器对悬垂」的整类 bug；C++23 的 `ranges::fold_*` 由 **P2322R6** 补入，延续「惰性 + 约束」主线。
 
 ### ㉒.5 权威引用
 

@@ -644,6 +644,8 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 - **JVM `java.util.concurrent`**：`ConcurrentLinkedQueue` 用「节点不物理删除、仅逻辑出队（自链接）」规避 ABA；`AtomicMarkableReference` 直接提供「值+标记」对抗 ABA。
 - **Linux 内核 RCU 用法**：RCU 通过「宽限期内不回收」天然消灭 ABA——读者不持锁、写者等所有读者退出宽限期才释放旧值，是无锁读侧最彻底的 ABA 解法之一。
 - **数据库 MVCC / 内存池**：版本号/时间戳标记是 tagged pointer 思想的变体，避免「对象地址复用被误判为未变」。
+- **无锁内存分配器（jemalloc/tcmalloc 的 arena）**：高性能分配器的 `arena` 用无锁链表管理空闲块，地址复用（ABA）是其必须防护的底层风险；它们多用「标签/版本位」或线程本地缓存规避。
+- **实时行情分发（金融信息总线）**：低延迟行情总线用无锁环形缓冲在发布/订阅间传递报价，hazard pointer 与 ABA 防护保证「旧报价节点被回收时读者不读悬空」，是交易系统正确性的底线。
 
 ### ㉒.3 生产踩坑：ABA 的常见误用与陷阱
 
@@ -655,6 +657,8 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 ### ㉒.4 与标准的互动：ABA 防护与 C++ 标准的演进
 
 [史] C++11 提供了 CAS（解决问题的**工具**），但**没有**内置 ABA 防护，开发者须自己实现 tagged pointer 或用 hazard pointer；**C++26 正在推进 hazard pointer 标准化（P1122/P2530）**，把 Michael 2004 的论文方案下沉为标准库设施 `std::hazard_pointer`，直接回应「无锁内存安全回收 + ABA 防护」。RCU 的标准化探讨也在 WG21（P1122 同族）推进。与 WG21 方向一致：把「无锁正确性」从「专家手写汇编级技巧」变成「标准可组合抽象」，降低 ABA 类 bug 的发生率。
+
+- [史] **Hazard Pointer / RCU 修订链**：**P2530（Hazard Pointers）** 由 Maged Michael 等提案，最终修订 **R3**；同族 **P1122（RCU）** 由 Paul E. McKenney 等提案，最终修订 **R4（2021-05-14）**——二者是 C++26 把「无锁安全回收 + ABA 防护」纳入标准库的核心提案；<https://wg21.link/p2530>、<https://wg21.link/p1122>。
 
 ### ㉒.5 权威引用
 

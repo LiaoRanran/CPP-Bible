@@ -875,6 +875,8 @@ int s8() {
 - **Linux 内核**：`bsearch` 用于已排序的配置/符号表查找；哈希（如 dentry 缓存）用于路径名快速定位；`hlist`/`rhashtable` 是内核级哈希表实现。
 - **数据库/存储（LevelDB/RocksDB/SQLite）**：MemTable 用跳表（有序），SSTable 块内用 `std::lower_bound` 二分，布隆过滤器（哈希）先挡无效查找——三种查找策略层级组合。
 - **编译器（LLVM）**：用哈希表（StringMap/DenseMap）做符号/标识符 O(1) 查，用二分在已排序的指令/属性表内定位。
+- **版本控制（Git）**：pack 文件的索引用排序后的 SHA-1 偏移表，对象查找靠 `bsearch` 二分定位，是「有序 + 二分」在版本控制里的经典工业用法。
+- **搜索引擎（Apache Lucene / Elasticsearch）**：倒排索引的跳表（skip list）与段内词典用二分 + 跳表混合查找，支撑亿级文档的近实时检索。
 
 ### ㉒.3 生产踩坑：查找的常见误用
 
@@ -886,6 +888,8 @@ int s8() {
 ### ㉒.4 与标准的互动：查找与 C++ 标准的演进
 
 [史] 有序查找（`std::lower_bound` 族）随 **C++98（STL）** 进入标准；**哈希容器 `std::unordered_*` 经 TR1（2003）后于 C++11 转正**，把 O(1) 均摊查找纳入标准库；**C++17** 引入 `std::string_view` 使「不拷贝地查子串/前缀」更便宜，并引入 `std::search` 的并行/ Boyer–Moore 增强（P0253）；**C++20** 提供 `std::ranges` 版查找与投影。**C++26** 还在推进 `std::hive` 等新型容器。查找库演进主线是「更省拷贝 + 更强约束 + 与 Ranges 一致」。
+- **修订/采纳**：C++17 经 **P0253R1（Searcher 与 Boyer–Moore / Boyer–Moore–Horspool 搜索器）** 引入 `std::boyer_moore_searcher` 等，把经典字符串匹配算法做成标准可插拔策略；**P0202（C++20）** 又让 `std::binary_search`/`std::lower_bound` 等可 `constexpr`（[P0202](https://wg21.link/P0202)）。
+- **ISO 条款与理由**：有序查找在 **[alg.sorting]**（lower_bound 族），哈希容器在 **[unord]**，子串搜索在 **[alg.searching]**；委员会把「哈希 + 有序 + 搜索器」三套机制并置，正是为了按数据特征（是否有序、是否需子串）分别给最优复杂度，而非一刀切。
 
 ### ㉒.5 权威引用
 

@@ -361,6 +361,9 @@ void legacy() noexcept;
 - **高性能/异步**：Coroutines 被 C++ 后端（如 cppcoro、Facebook Folly、Windows 异步栈）用于无栈异步；P2300 `std::execution` 正建立在 Coroutines 之上（见 ch09）。
 - **大型代码库模块化**：Chromium、LLVM 等探索用 Modules 缩短编译时间，但尚处试验期。
 
+- **标准库先实现一遍**：GCC 10（`libstdc++`）与 Clang 14（`libc++`）起实现 `<coroutine>`/`<ranges>`/`<format>`，这是「标准自己先被主流编译器实现」的真实坐标，也定义了特性可用性的硬门槛。见 [GCC C++20 支持](https://gcc.gnu.org/projects/cxx-status.html)。
+- **量化/异步后台**：多家高频交易与量化团队用 C++20 Coroutines 重写异步行情/订单管线，把回调地狱换成无栈 `co_await`——[据记载]这也是 Coroutines 提案（P0912）「已在 4 亿+ 设备部署」论断的产业背景。
+
 ### ㉒.3 生产踩坑：C++20 的早期陷阱
 
 - **Modules ABI/工具链不成熟**：不同编译器对 module 分区、BMI（二进制模块接口）格式互不兼容，CI 里混用 GCC/Clang/MSVC 的 `.pcm`/`.ifc` 必出问题；`#include` 与 `import` 混用也易踩宏可见性坑。
@@ -370,6 +373,9 @@ void legacy() noexcept;
 ### ㉒.4 与标准的互动：从提案到 IS
 
 [史] 四个大特性各自由独立提案（P0734/P1103/P0912/P0896）经多轮修订并入工作草案；`<=>`: P0515、format: P0645 同期并入。C++20 之后 WG21 继续用 3 年节奏推进 C++23/C++26，并把 Modules/Coroutines 的"生产成熟度"问题交给各编译器厂商在 TS 之外自行打磨。[评] 对工程师而言，C++20 是可"选择性采用"的版本：先用 Concepts+Ranges+format（低风险），Modules/Coroutines 待工具链成熟再上。
+
+- [史] **Coroutines（P0912）** 经历 **R0（初始）→R5（2019-02-22 定稿）** 共六轮修订：R1 修正渲染与措辞，R2/R3/R4 更新工作草案编号与编辑指令，R5 合并了 Coroutines Issues #25/#27（P1356）与 #31/#35（P0664R7）的决议，最终把 Coroutines TS 并入 C++20 工作草案——提案明确写道协程「已在 4 亿+ 设备部署、支撑 Azure 云服务」。见 [P0912](https://wg21.link/P0912)。
+- [史] **Concepts（P0734，"Concepts Lite"）** 落在 ISO/IEC 14882 的 **§[temp.concept]**，设计理由是用编译期约束取代 SFINAE 地狱、让模板错误可读；**Modules（P1103）** 落在 **§[module]**，设计理由是替代文本 `#include`、消除宏泄漏并大幅缩短编译时间；**Ranges（P0896）** 落在 **§[ranges]**，设计理由是用惰性、可组合的区间管道替代手写循环与中间容器。三者均经独立提案多轮修订后并入 C++20。见 [P0734](https://wg21.link/P0734)、[P1103](https://wg21.link/P1103)、[P0896](https://wg21.link/P0896)。
 
 ### ㉒.5 权威引用
 

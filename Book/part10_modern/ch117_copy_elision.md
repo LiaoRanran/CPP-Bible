@@ -527,6 +527,9 @@ struct Buff { Buff(Buff&&) noexcept; };              // ✅ 省略失败时仍�
 
 任何"按值返回大对象"的库都在吃拷贝消除的红利：`std::vector`、`std::string`、Eigen 的矩阵表达式、`std::optional`/`std::variant` 的构造、LLVM 的 `Value` 体系、游戏引擎资源管理器（Unreal 的 `TUniquePtr`/`FString`）。[史] 它让"返回不可拷贝也不可移动的类型"（如某些 RAII 句柄）在 C++17 成为可能——这是写零开销 API 的底层依赖。
 
+- **游戏/图形资源（纹理、网格）**：大型资源对象按值返回给资源缓存时依赖 guaranteed copy elision，避免大块像素缓冲/显存句柄的拷贝；Unreal 的 `FString`/`TArray` 以「移动 + 消除」组合构成其零开销引擎的基础。
+- **编译器自举（Clang/LLVM 自身）**：编译器前端对 AST/Token 流「按值返回大结构」高度依赖拷贝消除，否则自举编译的二次编译会显著变慢——是「编译器吃自己狗粮」的底层红利。
+
 ### ㉒.3 生产踩坑：拷贝消除的常见误用与陷阱
 
 最隐蔽的坑是 `return std::move(local)`：本想加速，却把具名对象从 NRVO 候选"降级"为必须移动，反而阻碍消除；编译器比你想的更会优化，别帮倒忙。[史] 另一个坑是"依赖被消除的副作用"：拷贝构造函数里的 `printf`、计数、加锁会随消除确定性消失——拷贝消除是少数会改变可观察行为的优化，测试若断言"拷贝被调用 N 次"会在 -O2 下崩溃。多分支返回不同具名对象会让 NRVO 失效（控制流要求不同返回槽），此时必须退回 prvalue 写法。
@@ -534,6 +537,8 @@ struct Buff { Buff(Buff&&) noexcept; };              // ✅ 省略失败时仍�
 ### ㉒.4 与标准的互动：拷贝消除与 C++ 标准的演进
 
 拷贝消除的入标路径是"可选优化 → 强制语义"：C++17 的 P0135 重写了值类别与"临时对象材料化（temporary materialization）"模型，让 prvalue 直接具现到目标位置，从根上消灭那次拷贝。[史] 它彻底理清了"临时对象究竟何时真正存在"这一长期模糊点，也倒逼标准库重写 `std::move_if_noexcept` 等与移动/拷贝的交互。ABI 是隐形天花板：Itanium C++ ABI 的"返回槽"约定让 RVO 在二进制层面可行，但跨编译器、跨版本的 ABI 稳定性也意味着某些消除优化无法自由演进。[轶]
+
+- [史] **强制消除修订链**：**P0135（Wording for guaranteed copy elision through simplified value categories）** 由 Richard Smith 提案，重写了「值类别 + 临时对象材料化（temporary materialization）」模型，把 prvalue 直接具现到目标位置，使 C++17 起「按值返回不可移动/不可拷贝类型」成为语言保证；<https://wg21.link/p0135>。
 
 ### ㉒.5 权威引用
 

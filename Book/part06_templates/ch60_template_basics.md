@@ -757,6 +757,8 @@ flowchart TD
 - 整个 C++ 标准库（libstdc++ / libc++ / MS-STL）本身就是模板的最大工业用户：`std::vector`、`std::map`、`std::function`、`std::shared_ptr` 全是模板；Chromium 的 `base::span`、Abseil 的 `absl::flat_hash_map`、LLVM 的 `llvm::SmallVector`/`llvm::StringRef` 也都由模板驱动。
 - 游戏与高频场景：Unreal Engine 的 `TArray`/`TMap`、众多金融高频交易系统的「零开销泛型」热路径，离开模板无法既保类型安全又保性能。
 - 嵌入式固件：许多 MCU 固件用模板做编译期查表、编译期状态机（如 `boost::sml`），把运行时分支压成编译期常量，省掉 RAM 与分支预测开销。
+- **计算几何（CGAL，INRIA）**：Computational Geometry Algorithms Library 把点/线/面、布尔运算、网格生成全部做成模板参数化的「核（Kernel）」，让同一套几何算法在精确算术与近似浮点上切换，广泛用于 CAD/CAM、机器人运动规划与地理信息系统（GIS）。
+- **生物信息（SeqAn，FU Berlin）**：序列分析库 `seqan/seqan` 用密集模板元编程表示 DNA/蛋白质字母表与序列类型，在编译期消去运行期分支，是基因组比对工具的底层基石。
 
 ### ㉒.3 生产踩坑：模板的常见误用与陷阱
 - **代码膨胀（code bloat）**：每个不同模板实参组合都会生成一份独立机器码；`std::vector<int>` 与 `std::vector<double>` 互不共享代码，过多实例化会让二进制体积与指令缓存压力飙升。实践中常用「非空模板底座 + 模板薄壳」或显式实例化（`extern template`）缓解。
@@ -766,6 +768,8 @@ flowchart TD
 
 ### ㉒.4 与标准的互动：模板与 C++ 标准的演进
 模板是 C++ 标准里演进最密集的特性族之一。C++98 确立核心；C++11 引入可变参数模板、右值引用、`constexpr` 雏形与 `<type_traits>`，能力大幅扩张；C++14/17 放松 `constexpr` 并加入折叠表达式（ch64）；C++20 落地 concepts（ch67）把隐式约束显式化，并引入类模板参数推导（CTAD）；C++23 继续增强 `auto` 约束与推导。WG21 对模板的打磨至今未停——「模板参数化一切」的方向与静态反射（P2996 等）的讨论相互咬合。虽然没有一个单独的「模板提案」，但历年特性都围绕它展开。
+- **ISO 条款**：模板的语法、实例化与特化规则集中在标准 **[temp]（C++20 为 Clause 13）**；偏特化偏序在 **[temp.class.spec]**、实例化在 **[temp.inst]**。委员会刻意把「模板参数推导」与「替换失败非错误（SFINAE）」拆成可独立演进的子条款，使零开销泛型与可读约束能分别生长。
+- **类类型非类型模板参数（P0732R2 → P1907R1）**：C++20 之前非类型模板参数只能是整型/指针/引用；**P0732R2** 提出、**P1907R1** 定稿的「类类型 NTTP」允许把用户自定义字面类型（如 `std::array`、自定义维度标签）直接作为模板实参，极大扩展了 TMP 的表达力（[P0732R2](https://wg21.link/P0732R2)、[P1907R1](https://wg21.link/P1907R1)）。类模板参数推导（CTAD）则经 **P0091** 系列推导指引（C++17）与 C++20 增强，让 `vector{1,2,3}` 这类写法无需显式实参。
 
 ### ㉒.5 权威引用
 - [cppreference: Templates](https://en.cppreference.com/w/cpp/language/templates) — 模板语法、实例化、特化规则的总入口

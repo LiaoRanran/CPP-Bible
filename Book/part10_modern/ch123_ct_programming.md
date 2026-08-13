@@ -895,6 +895,8 @@ int main() {
 - 编译期字符串哈希与「字符串 switch」、单位/量纲库（如 `std::chrono` 风格扩展）、定点数、编译期校验的协议/ schema、序列化代码生成。
 - 游戏引擎的实体配置、量化金融的交易日历、路由表的编译期展开，都用 `constexpr` / `consteval` 把校验与计算前移，换取零运行时成本。
 - Boost.Hana、Boost.Mp11 是「现代编译期编程」的两大工业级范式代表（值语义 vs 类型语义）。
+- **编解码/协议解析（protobuf/flatbuffers 的 schema 校验）**：用 `consteval`/模板在编译期校验「字段编号/线格式」合法性，把协议错误从「运行期崩溃」前移到「编译失败」。
+- **图形/着色器常量（glm、编译期矩阵）**：`glm` 等数学库用 `constexpr` 在编译期算好变换矩阵常量，游戏/渲染循环零运行时成本取用；C++23 `consteval` 进一步保证「绝不落到运行期」。
 
 ### ㉒.3 生产踩坑：编译期与运行期的边界陷阱
 
@@ -909,6 +911,8 @@ int main() {
 - `[评]` 编译期编程的演进主线是「从模板黑魔法 → constexpr 白魔法 → Concepts 约束」，目标是把能力还给普通函数与清晰的错误信息。
 - C++11 `constexpr` → C++14/17 放宽 → C++20 **Concepts（P0734）** + 大量 `constexpr` 算法 + `std::span` → C++23 `consteval` / `constinit` / `if consteval` / `std::expected` 的 constexpr 化；C++26 继续把 `variant`、`optional` 等纳入常量求值。
 - `[评]` 标准张力在于「又要编译期强大，又要编译别太慢、报错要可读」——Concepts 正是为解「报错可读性」而生。
+
+- [史] **编译期编程修订链**：`constexpr` 源自 **N2235（Dos Reis & Stroustrup，C++11）**；**Concepts** 经 Concepts TS 演化到 **P0734（最终 R0，C++20 采纳）**；`consteval`/`constinit` 入 C++23；C++26 继续把 `std::variant`/`std::optional` 纳入常量求值；<https://wg21.link/p0734>。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 

@@ -940,6 +940,9 @@ int main() {
 
 作用域计时器、超时控制、令牌桶限流与指数退避是 `std::chrono` 的主场；网络服务器用 `steady_clock` 做请求超时与连接保活；游戏循环用 `duration` 做帧时间预算；高频交易用 `chrono` 打时间戳并配合 `rdtsc` 校准。Howard Hinnant 的 `date` 库（C++20 `<chrono>` 日历/时区扩展的事实来源）被广泛用于日志的时间戳格式化与时区转换。
 
+- **跨行业实例（高频交易/量化）**：交易所行情时间戳（如纳秒级 `time_point`）用 `std::chrono::steady_clock`/`duration` 做延迟测量与「行情到下单」耗时统计；部分系统还用 `chrono` 配合 `rdtsc` 校准，满足微秒/纳秒级可观测性要求——这是 `chrono` 在金融低延迟系统的真实落地。
+- **跨行业实例（嵌入式/物联网）**：RTOS 与嵌入式 C++（如汽车 ECU 的周期任务调度）用 `std::chrono::duration` 表达「帧时间预算、超时门限」，把裸毫秒数换成类型安全的 `milliseconds`；其「单位即类型」特性避免了 `us`/`ms` 混用导致的 1000 倍误差。
+
 ### ㉒.3 生产踩坑：chrono 的常见误用与陷阱
 
 [评] 最大坑是「用 `system_clock` 做耗时测量」——它会被 NTP/手动校时回拨，导致计时间隔为负或巨大跳变，耗时测量必须用 `steady_clock`。另一坑是「`duration` 的隐式截断」——`milliseconds` 赋给 `seconds` 会编译失败（这是好事），但 `auto` 推断出的具体类型在跨函数传递时易错，应显式写明单位或 `auto` 一致。还有「`time_point` 跨时钟不能相减」——不同 `Clock` 的 `time_point` 相减无定义。
@@ -947,6 +950,9 @@ int main() {
 ### ㉒.4 与标准的互动：chrono 与标准的演进
 
 [史] `std::chrono` 自 C++11 起为核心，C++14 增加字面值 `operator""h/min/s/ms/us/ns`；C++20 大幅扩展——引入日历（`year_month_day` 等）、时区（`zoned_time` / `tai_clock` / `gps_clock`）与 Howard Hinnant 的 `date` 库思路。[评] 近年 WG21 仍在细化时钟与格式化（如 `std::format` 对 chrono 的支持），方向是「让 C++ 的时间/日期处理在编译期类型安全的前提下，达到 Python `datetime` 的易用性与 C 的性能」。
+
+- **WG21 修订链**：`std::chrono` 由 N2661（Howard Hinnant 等「A Foundation to Sleep On」，C++11 时间工具）引入；C++14 增加字面值 `operator""h/min/s/ms/us/ns`（P0221R1）；C++20 大幅扩展——日历（`year_month_day` 等）、时区（`zoned_time`/`tai_clock`/`gps_clock`）直接源自 Howard Hinnant 的 `date` 库（P0355R7，wg21.link/P0355R7），并由 `std::format` 对 `chrono` 的支持（P1361 系列）补全输出。
+- **ISO 条款**：`<chrono>` 规定于 ISO/IEC 14882 第 30 章（`[time]`）。其设计理由（Design Intent）核心是「**单位即类型**（强类型 `duration<Rep, Period>`），用编译期分数 `Period` 表达秒/毫秒/纳秒，杜绝裸整数单位混用」；并区分 `system_clock`（可校准、用于墙上时间）与 `steady_clock`（单调、用于耗时测量），委员会明确反对用 `system_clock` 测耗时，因 NTP 校时会造成间隔回拨。
 
 ### ㉒.5 权威引用
 

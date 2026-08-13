@@ -1387,6 +1387,8 @@ int main() {
 - **标准库与 ranges**：`std::ranges` 算法几乎全部用 `auto` 参数与 Concept 约束写泛型回调；`std::invoke_result_t`、`std::declval` 等 trait 是模板元编程的日常工具。
 - **LLVM/Clang**：TableGen 与大量模板代码用 `auto` 接收复杂闭包/迭代器类型；`decltype` 广泛用于 traits 与 SFINAE 分支。
 - **Chromium / Abseil**：范围 for、`base::Callback`、容器遍历默认 `auto`；Google 风格指南对 `int` 等普通类型仍要求显式写出以保持可读。
+- **ML 框架后端**：PyTorch 的 C++ 后端（LibTorch）与 XLA/HLO builder 链式调用大量用 `auto` 承接 Eigen 表达式模板与张量类型，省去写出 `torch::Tensor` / `at::Tensor` 等长类型名；TensorFlow C++ 的 `StatusOr<T>` 返回也常以 `auto` 接收。
+- **RPC / 消息中间件**：gRPC C++ 的异步完成队列（`grpc::CompletionQueue`、`ServerContext`）与 protobuf 生成的访问器常以 `auto` 承接迭代与返回值；Apache Thrift 的客户端桩代码同理，把冗长的 `std::unique_ptr<...>` 类型交给 `auto` 推导。
 
 ### ㉒.3 生产踩坑：auto/decltype 的常见误用
 - **auto 掩盖真实类型**：`auto x = {1,2,3}` 推导出 `std::initializer_list` 而非 `std::vector`，与模板 `T` 行为不一致，是经典坑；`auto` 接代理引用（如 `vector<bool>::reference`）会悬垂。[评]
@@ -1395,6 +1397,7 @@ int main() {
 
 ### ㉒.4 与标准的互动：auto/decltype 随标准扩张
 `auto` 变量 + 尾置返回类型 + `decltype` 在 C++11 落地（N1984 / N2343 路线）；C++14 泛型 lambda 与 `decltype(auto)`；C++20 缩写函数模板（P1141）与模板形参 lambda 让 auto 进入函数签名与闭包模板；C++23 显式对象形参（P0847）复用 `auto&&` 接 `*this`。[史] 委员会当初判断"几乎没人用 auto 当存储类"，风险可忽略才重用了这个被遗忘的关键字，而非造新词——这是标准务实取舍的范例。[史][评]
+- **修订链补强（缩写函数模板）**：`auto` 进入函数签名也几经打磨——缩写函数模板提案 [P1141](https://wg21.link/P1141) 从 R0（在 Concepts 合并后提出"用 `auto` 充当 constrained/普通形参"）到 R2（2018，补上第 1/3/4 部分的形式化 wording、明确与 Concepts 的交互）随 C++20 进入标准。标准在 [dcl.spec.auto] 把 `auto` 形参定义为等价于一个带匿名 `template-parameter` 的模板，委员会特意让"auto 仍是那个被遗忘的关键字、只是复用"，从而把泛型函数声明的语法负担降到最低，呼应 ch22 0.x 的务实取舍。
 
 ### ㉒.5 权威引用
 - [cppreference: auto](https://en.cppreference.com/w/cpp/language/auto) — auto 类型推导规则

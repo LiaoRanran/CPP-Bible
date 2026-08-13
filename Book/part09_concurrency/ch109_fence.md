@@ -262,6 +262,8 @@ int main(){std::cout<<"fence final: start seq_cst, relax to acq_rel, never consu
 - **无锁数据结构（folly/DPDK/Seastar）**：在 CAS 循环或发布路径上用 `atomic_thread_fence(acquire/release)` 建立同步，避免逐变量加序的琐碎。
 - **自旋锁 / seqlock 实现**：`std::atomic_thread_fence(seq_cst)` 常用于「锁的获取/释放」与 seqlock 的读写端屏障，保证临界区不被重排进出。
 - **JVM / 运行时实现**：Java 的 `Unsafe.loadFence/storeFence`、.NET 的 `Thread.MemoryBarrier` 与 C++ 的 fence 同源，是语言运行时并发原语的地基。
+- **GPU / 异构计算（CUDA、SYCL）**：GPU 编程的 `__threadfence()` 与 SYCL 设备端 `std::atomic_ref`（C++20 起）的屏障语义与 C++ fence 同源；在 CPU/GPU 统一内存（UMA）的并发同步里，fence 是保证「设备写先于主机可见」的关键。
+- **共识系统（etcd、Raft 实现）单进程内 WAL**：共识节点的日志提交顺序依赖 `atomic_thread_fence`/`std::atomic` 的屏障语义保证「日志落盘先于状态机应用」，与内核 `smp_mb` 思路一致，是分布式一致性的本地正确性底座。
 
 ### ㉒.3 生产踩坑：内存栅栏的常见误用
 
@@ -273,6 +275,8 @@ int main(){std::cout<<"fence final: start seq_cst, relax to acq_rel, never consu
 ### ㉒.4 与标准的互动：内存栅栏与 C++ 标准的演进
 
 [史] 栅栏随 **C++11** 与 `<atomic>` 一起引入（`atomic_thread_fence`/`atomic_signal_fence`），其语义与六大 `memory_order` 对应；**C++17 的 P0558R1** 修正了栅栏与原子操作交互的措辞，使「fence(seq_cst) 与原子 seq_cst 的总序一致」得以明确。与 WG21 方向一致：在「可移植的全局屏障」与「贴近硬件的细粒度屏障」间提供分层工具。值得注意的是，Rust 的 `std::sync::atomic::fence`、C11 的 `atomic_thread_fence` 与 C++ 的语义高度同源——这是跨语言对弱内存模型的共识方案。
+
+- [史] **内存模型措辞修订链**：**P0558（Fixing the C++ Memory Model）** 由 H. Boehm 等提案，从 **R0 → R1（2017）**，修正了含 fence 在内的内存模型措辞缺陷，使「`fence(seq_cst)` 与原子 `seq_cst` 共享同一全局总序」得以明确——这是 C++17 起所有 fence/原子同步正确性的基础；<https://wg21.link/p0558>。
 
 ### ㉒.5 权威引用
 

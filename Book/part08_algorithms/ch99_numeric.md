@@ -1395,6 +1395,8 @@ void demo_c10(const std::vector<long long>& v) {
 - **机器学习框架（PyTorch/TensorFlow 的 C++ 后端）**：张量归约（sum/mean/prod）、梯度累加大量依赖 `transform_reduce`/并行 scan 思想，且对浮点结合律有严格要求。
 - **金融 / 高频计算**：实时风险聚合、滑点累积用 `accumulate`/`reduce`；`std::gcd` 用于费率/周期约分。
 - **编译器（LLVM）**：指令级常量折叠、依赖分析中的前缀和/区间累加，内部大量用归约式遍历。
+- **计算机视觉（OpenCV）**：`cv::reduce`/`cv::sum`/`cv::mean` 是图像处理归约的基础，从像素统计到直方图都在用标准数值算法思想。
+- **ML 推理（ONNX Runtime / TensorFlow Lite C++）**：张量的 elementwise `transform_reduce` 与并行 `reduce` 是推理引擎算子（softmax、layernorm、batch norm）的核心，浮点结合律约束与 ch99 正文一致。
 
 ### ㉒.3 生产踩坑：数值算法的常见误用
 
@@ -1406,6 +1408,8 @@ void demo_c10(const std::vector<long long>& v) {
 ### ㉒.4 与标准的互动：数值算法与 C++ 标准的演进
 
 [史] 数值算法随 **C++98（STL）** 落地（纯串行）；**C++11** 加 `std::iota`；**C++17** 经 **P0024R2** 引入 `std::reduce`/`transform_reduce`/`*_scan` 并接入执行策略（这是数值算法最大的现代化）；**C++20** 用 Ranges 提供 `ranges::fold_left`/`fold_right`（受 range-v3 启发，P2322R6）统一归约语义；**C++23** 又把 `fold` 家族补全。主线是「串行归约 → 可并行/向量化归约 → 约束化 fold」，WG21 持续在「性能可移植」与「确定性」之间权衡。
+- **修订/采纳**：**P0202（ constexpr 数值算法，C++20）** 让 `std::accumulate`/`std::reduce` 等可在编译期归约；**P0024R2（C++17）** 引入 `std::reduce`/`transform_reduce`/`*_scan` 并接入执行策略，使归约可并行/向量化；**P2322R6（C++23）** 用 `ranges::fold_*` 统一归约语义（[P0202](https://wg21.link/P0202)）。
+- **ISO 条款与理由**：数值算法在 **[numeric]**；委员会在 `std::reduce` 上刻意不保证运算顺序（与 `std::accumulate` 相反），正是为了换取并行/向量化的自由——代价是浮点结果不确定，标准因此要求用户自行接受容差（见 ch99 正文踩坑）。
 
 ### ㉒.5 权威引用
 

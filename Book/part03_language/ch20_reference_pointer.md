@@ -1301,6 +1301,8 @@ GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangli
 - **系统与内核**：LLVM/Clang 的整个 AST 与公共 API 几乎全用 `const T&` 传参，指针仅用于可选/所有权语义；Chromium 代码规范要求非可选参数优先用引用、可选参数用指针或 `base::span`。
 - **标准库与框架**：`std::vector::operator[]`、`std::string` 访问接口、`std::ostream& operator<<` 等全部以引用为契约；Eigen 的矩阵表达式模板靠 `const&` / `&&` 引用类别做零拷贝惰性求值。
 - **游戏与高频**：Unreal Engine 的 `UObject` 体系大量用指针表达所有权与 GC 弱引用，而数学类型（`FVector`）按值/引用传递由性能 profile 决定；金融高频系统几乎一律按 `const&` 传行情结构以压低拷贝。
+- **存储引擎**：RocksDB / LevelDB 的 `Comparator`、`Iterator` 与 `Slice` 接口几乎全以 `const Slice&` 传参，避免大块键值拷贝；`Get` 的回调同样以引用契约传递只读视图，是"非可选参数优先引用"原则在 PB 级 KV 引擎里的落地。
+- **JS 引擎**：V8 的句柄体系（`v8::Local<T>` / `v8::HandleScope`）本质是对"栈上对象引用"的封装，隔离 GC 移动；SpiderMonkey 的 `Rooted<T>` 同理用引用语义管理根集——浏览器引擎把"引用即别名"用到垃圾回收的命脉上。
 
 ### ㉒.3 生产踩坑：引用与指针的常见误用
 - **悬垂引用/指针**：返回局部变量的引用或指向已释放堆对象的指针，调用方拿到的是"看起来合法、访问即 UB"的别名，是 ch33 悬垂主题的根源。[评]
@@ -1310,6 +1312,7 @@ GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangli
 
 ### ㉒.4 与标准的互动：引用与指针跟随 C++ 标准演进
 引用自 C++98 即为语言核心；C++11 的右值引用（N2118，WG21）是引用语义最大的一次扩张，直接催生移动语义、转发引用、`std::move`/`std::forward`（ch115/ch116）。[史] C++20 的 Concepts（P0734）让 `void f(const C&)` 的"可绑定类型"进入类型系统；C++23 显式对象形参（deducing this，P0847）用 `this auto&& self` 统一 `*this` 的值类别，使成员上的完美转发不再依赖辅助自由函数。[史] "可为空引用（P0298）"等提案反复被否，委员会维持"引用必绑定、不可空"契约，把可选性留给 `std::optional`——这是标准对"安全默认 vs 灵活"的长期取舍。[史][评]
+- **修订链补强（deducing this）**：显式对象形参并非一蹴而就——deducing this 提案从 P0847R0（2018，初稿用 `Self&& this self` 语法）一路修订到 P0847R7（2021，R3 加形式化 wording、R5 把"显式对象成员函数"重述为非静态成员、R6/R7 仅 CWG 措辞微调）才随 C++23 落地（[wg21.link/P0847](https://wg21.link/P0847)）。委员会在 [dcl.ref] 写明"a reference is not an object"（引用没有独立对象身份），这条规定正是把"别名"与"对象"区分开、从而把悬垂风险推给程序员而非运行时的设计根基，也解释了为何"可为空引用"始终无法越过这道硬契约。
 
 ### ㉒.5 权威引用
 - [cppreference: reference](https://en.cppreference.com/w/cpp/language/reference) — 引用的别名语义与生命周期延长规则

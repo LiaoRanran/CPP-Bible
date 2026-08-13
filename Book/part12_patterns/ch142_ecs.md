@@ -816,6 +816,9 @@ a alive after destroy? no
 - **Unity DOTS**、**Apple GameplayKit**、自研引擎的实体系统都采用 ECS 思路管理成千上万实体。
 - 仿真 / 物理 / EDA 等领域也借 ECS 的「数据表 + 系统遍历」结构做批处理。
 
+- 仿真/国防：**HLA/DIS 联邦仿真**用「实体—属性—更新」表结构管理海量仿真对象，思路与 ECS 一致；军事/航天训练仿真普遍据此做帧间增量广播 [据记载]。
+- 影视/视觉：**SideFX Houdini** 的「节点图 + 几何属性流」用数据驱动方式批处理百万级点，是 ECS/DOD 思想在 DCC 工具里的近亲（见 <https://www.sidefx.com>）。
+
 ### ㉒.3 生产踩坑：系统顺序与缓存
 
 - **系统执行顺序依赖**：System 之间有隐式先后（先用输入、再算物理、再渲染），顺序错就出诡异 bug；需要显式声明 system 依赖/阶段。
@@ -829,6 +832,9 @@ a alive after destroy? no
 - `[评]` ECS 在 C++ 里就是「`std::vector`/结构体数组（SoA）+ 整数实体 id + 函数式 System」的工程化；标准库提供容器与算法底座，模式本身靠库（如 EnTT）实现。
 - `constexpr`/内联、缓存行对齐（`std::hardware_destructive_interference_size`）、`[[no_unique_address]]` 都是 ECS 库榨性能的标准库级工具。
 - `[评]` 标准演进（constexpr 容器、std::simd 等）持续给 ECS / DOD 提供更强的底层积木。
+
+- `[评]` WG21 **P0214R0→…→P0214R9**（std::simd / 数据并行类型，<https://wg21.link/P0214>，进入 C++26）：把「对实体数组逐元素批量运算」标准化为可移植、类型安全的向量抽象，是 ECS 批量 `System` 的天然底座。
+- `[评]` ISO/IEC 14882 在 `[simd]`（C++26）给出 `simd<T>`/`native_simd`；委员会理由：让「数据并行」不再依赖 intrinsic/编译器魔法，ECS 的「系统遍历」可直接受益于标准向量化。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 

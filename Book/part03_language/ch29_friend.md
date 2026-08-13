@@ -516,6 +516,8 @@ C++ 的 `private`/`public` 访问控制继承自 Simula 67 的"数据隐藏"思�
 - **标准库**：`std::chrono`、`std::strong_ordering`、`std::pair`/`std::tuple` 的 `operator<<`、比较运算符、工厂函数普遍采用 hidden friend；`std::swap` 的 ADL 定制也依赖友元。
 - **IO 与序列化**：几乎所有重载 `operator<<`/`operator>>` 的自定义类型都用 `friend` 访问私有字段；Boost.Serialization 用友元突破封装做归档。
 - **测试与反射**：单元测试框架（GoogleTest 的 `FRIEND_TEST`）用 `friend` 让测试类访问被测私有成员；某些序列化/绑定库同理。
+- **线性代数库**：Eigen 大量使用 hidden friend 的 `operator*` / `operator+` 与 `NumTraits` 友元，使表达式模板能零开销合成 `Matrix * Matrix` 等运算而不污染全局查找；xtensor 等现代张量库沿用同一 idiom。
+- **ORM / 持久化**：ODB（Code Synthesis 的 C++ ORM）用友元让生成的数据库映射代码访问实体类的私有成员，把"对象 ↔ 表行"的读写绑定到编译期生成的友元函数上——这是友元在"封装 vs 代码生成便利"之间妥协的生产实例。
 
 ### ㉒.3 生产踩坑：friend 的常见误用
 - **friend 破坏封装边界**：`friend class` 把封装"整片"交出，耦合骤增且难以追踪谁动了私有状态——应优先"最小权限"的 `friend` 函数而非整类。[评]
@@ -525,6 +527,7 @@ C++ 的 `private`/`public` 访问控制继承自 Simula 67 的"数据隐藏"思�
 
 ### ㉒.4 与标准的互动：friend 随标准演进
 `friend` 函数在 C++ 早期（2.0 前后）成形；C++11 起友元的 inline 可见性、与模板实例化的交互、hidden friend 成为现代 idiom。[史] C++20 的 `operator<=>`（三路比较，P0515/P1185）默认以 hidden friend 生成 `==`/`<` 等，标准库与 Core Guidelines 推荐把比较运算符写成类内 `friend`，使其只经 ADL 可见、避免污染普通查找——把 ch29 0.3 那套"访问控制 + 查找艺术"官方化。[史] 静态反射（C++26 候选）若允许遍历私有成员，将与 `private` 封装契约冲突，社区在"可测试性/序列化便利"与"封装"间拉扯，是这场争论的延续。[史][评][轶] Stroustrup 曾视 `friend` 为"对封装的小小妥协"，未想它成了运算符重载与泛型库的支柱。
+- **修订链补强（三路比较）**：`operator<=>` 的修订——提案 [P0515](https://wg21.link/P0515) 从 R0（2016，"Consistent comparison" 首次提出用 `<=>` 重写六类比较）到 R3（2017）随 C++20 落地，中间 R1/R2 主要是与 Concepts、重写规则的措辞协调。标准把友元规则写在 [class.friend]：友元声明可授予函数对私有成员的访问且不参与普通查找；委员会借 `<=>` 把"比较运算符写成类内 hidden friend"树立为官方 idiom——既经 ADL 可见、又避免污染全局命名空间，正是 ch29 0.x"访问控制 + 查找艺术"的标准化收口。
 
 ### ㉒.5 权威引用
 - [cppreference: friend](https://en.cppreference.com/w/cpp/language/friend) — 友元函数/类/成员与可见性规则

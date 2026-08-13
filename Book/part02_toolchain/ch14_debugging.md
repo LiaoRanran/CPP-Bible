@@ -939,6 +939,9 @@ int main() { errno = 0; std::perror("debug point"); return 0; }
 - WinDbg：Windows 内核与驱动调试的官方选择，微软系产品必需。
 [评] 现代 CI 普遍"编译 + sanitizer"双保险，把大量崩溃前移到提交阶段。
 
+- **数据库与存储**：MySQL/PostgreSQL/Redis 的 CI 普遍开启 ASan/UBSan 抓内存错误，TSan 抓并发竞争——调试工具活在开源基础设施的「提交即体检」流程里。
+- **移动与嵌入式**：Android NDK 默认集成 ASan/HWASan（硬件辅助），抓取 native 崩溃，是手机 App 的 C++ 底层调试坐标。
+
 ### ㉒.3 生产踩坑：调试的常见误用与陷阱
 - 只在 Debug 开 sanitizer、Release 关掉：很多内存错误只在优化后布局下暴露，关掉等于失明（某些项目 Release 也带 ASan 做金丝雀）。
 - 把 sanitizer 报告当"误报"忽略：ASan 的 heap-buffer-overflow 几乎总是真 bug，忽视导致线上随机崩溃。
@@ -947,6 +950,8 @@ int main() { errno = 0; std::perror("debug point"); return 0; }
 
 ### ㉒.4 与标准的互动：调试工具与 C++ 标准的演进
 [评] 调试工具不在 ISO C++ 标准正文，但标准语义决定了"什么是未定义行为"——UBSan 正是按标准 UB 条款插桩（如符号溢出、空指针解引用）。[史] `assert`/`NDEBUG` 是标准（<cassert>）规定的宏，调试宏行为是标准契约的一部分；sanitizer 属编译器实现扩展（Clang/GCC 的 `-fsanitize`），无单独 WG21 提案，但直接影响标准 UB 的可观测性。
+
+- [史] 调试工具消费的标准语义集中在两处：`<cassert>` 的 `assert`/`NDEBUG`（ISO/IEC 14882 §[support.runtime]）是标准规定的断言契约；「未定义行为」的定义（§[intro.defs]/[defns.undefined]）则是 UBSan 插桩的依据（符号溢出、空指针解引用等）。C++20 还引入 **`std::source_location`（<source_location>）**，让日志/断言自带文件名与行号，提升调试可观测性——属标准给语义、工具做实现。
 
 ### ㉒.5 权威引用
 - https://sourceware.org/gdb/ ：GDB 官方站，证明 1986 GNU 调试器谱系。

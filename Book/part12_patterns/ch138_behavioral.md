@@ -816,6 +816,9 @@ main:
 - **Strategy**：排序比较器、压缩/序列化算法可插拔；**Visitor**：编译器 AST 遍历（Clang）、序列化分派；**State**：游戏 AI 状态机、连接状态机。
 - **Template Method**：框架的「钩子」方法（如测试框架的 `SetUp`/`TearDown`）。
 
+- 分布式系统：**Apache Kafka** 的消费者重平衡（rebalance）用「协调者—观察者 + 状态机」管理分区分配；**ZooKeeper** 的 watcher 机制即观察者模式的分布式版本（见 <https://kafka.apache.org>、<https://zookeeper.apache.org>）。
+- 游戏：**Unity** 的 `UnityEvent` 与 **Unreal** 的委托（delegate/multicast delegate）用 Command/Observer 把编辑器交互与运行时逻辑解耦，是行为型模式在引擎里的工业实现。
+
 ### ㉒.3 生产踩坑：生命周期与双重分派
 
 - **Observer 悬挂**：观察者析构前没 `disconnect`，发布者回调悬空指针——现代做法用 `std::weak_ptr` 或 `signals2::connection` 自动断开。
@@ -828,6 +831,9 @@ main:
 - `[评]` 现代 C++ 用lambda + `std::function` 取代了大量 Strategy/Command 手写类；用 `std::variant` + `std::visit` 提供类型安全的 Visitor；用 ranges/views 取代手写 Iterator。
 - `if constexpr` 把 Template Method 的「固定骨架 + 可变步骤」在编译期特化，省去虚调用。
 - `[评]` 标准演进把「高频行为型模式」变成库原语，但 Observer/State/Mediator 这类「对象协作编排」仍需人工设计。
+
+- `[评]` WG21 **P1371R0→…→P1371R3**（Pattern Matching（inspect），<https://wg21.link/P1371>）：让 `inspect(x)` 直接对 `std::variant`/枚举做类型安全分派，试图用语言级模式匹配「收编」Visitor 模式；虽未赶上 C++23，但被 SG 持续讨论，是行为型模式被语言吸收的方向标。
+- `[评]` ISO/IEC 14882 在 `[variant.visit]` 已给出 `std::visit` 的编译期分派语义；委员会长期目标是让「对和类型（sum type）的穷尽匹配」像 `switch` 一样自然，从而替代手写 Visitor 的双重分派样板。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 

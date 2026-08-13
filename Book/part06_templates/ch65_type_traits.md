@@ -617,6 +617,8 @@ int main() {
 - 标准库与几乎每个泛型库都依赖它：`std::vector` 的 `std::is_nothrow_move_constructible` 分支、`std::shared_ptr` 的 `std::is_array` 特化路由、`std::optional` 的平凡析构优化，全靠 traits 在编译期选路。
 - 序列化/反射框架（Cereal、Magic Enum、Boost.Serialization）用 traits 探测类型是否可序列化、是否枚举、是否有特定成员，避免运行期 `typeid` 分支。
 - 游戏引擎与 ECS 用 `std::is_trivially_copyable` 等决定是否走 `memcpy` 快路径，大幅提升组件批量拷贝吞吐。
+- **密码学（Botan）**：用 `std::is_integral`/`std::is_trivially_copyable` 等 traits 在编译期为不同字宽与可平凡拷贝的缓冲区选择加解密实现路径，避免运行期 typeid 分支。
+- **定量金融（QuantLib）**：用 traits 区分 `Real`/`Complex` 与自定义数值类型，在编译期为定价引擎选解析或数值路径，是金融机构 C++ 代码库的常驻手法。
 
 ### ㉒.3 生产踩坑：type traits 的常见误用与陷阱
 - **`std::remove_reference` 不「去括号」变量**：它只作用于类型别名，写 `std::remove_reference<T>::type` 时漏掉 `typename` 或忘了 `::type` 是高频错误；C++14 起应改用 `_t` 别名（`std::remove_reference_t<T>`）。
@@ -626,6 +628,8 @@ int main() {
 
 ### ㉒.4 与标准的互动：从 Boost 惯用法到标准设施
 `type_traits` 源自 Boost.TypeTraits（2000s），C++11 正式纳入 `<type_traits>`；C++17 的 `std::void_t` 让「检测某类型是否拥有某成员」一行可达，催生大批「检测 idiom」，最终汇入 concepts（ch67）——`requires` 表达式就是 `void_t` 检测的官方化。C++20 又加了 `std::is_bounded_array`、`std::remove_cvref` 等；C++23 继续补齐概念与 traits 的衔接。traits 与 concepts 是「同一意图的两条演进路线」。
+- **ISO 条款**：类型特性集中在标准库 **[meta]（C++11 `<type_traits>`，C++20 为 Clause 21）**；变换 trait 的 `_t` 别名约定在 **[meta.trans]**，标准刻意用「统一后缀 `_t` / `_v`」降低误用。
+- **修订链**：`_v` 变量模板由 **P0006R0（Type Traits Variable Templates，C++17 落地）** 收编自 Library Fundamentals TS，让 `std::is_same_v<T,U>` 取代 `std::is_same<T,U>::value`（[P0006R0](https://wg21.link/P0006R0)）；配套的 `std::void_t`（检测 idiom 的官方化）也在 C++17 落地，成为 concepts `requires` 表达式的前身。
 
 ### ㉒.5 权威引用
 - [cppreference: <type_traits>](https://en.cppreference.com/w/cpp/header/type_traits) — 标准库所有类型特性与变换 trait 的总入口

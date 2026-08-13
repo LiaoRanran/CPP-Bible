@@ -643,6 +643,8 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 - `std::tuple`、`std::function`、`std::make_shared`、`std::thread`、可变参 `emplace` 全部建立在可变参数模板之上；`std::format`（C++20）的格式化参数包也依赖它。
 - 日志与序列化库（fmt、spdlog、Cereal）用它实现「任意参数」的格式化与归档，编译期即对每个实参类型选对处理路径。
 - 游戏引擎与 ECS 框架用它编写「任意组件组合的实体构造器」，把运行期类型列表压成编译期参数包。
+- **自动驾驶/SLAM（Ceres Solver，Google）**：`ceres::Problem::AddResidualBlock` 的成本函数用可变参数模板描述残差对多个参数块的依赖，自动微分在编译期展开参数包，支撑 Waymo 等自动驾驶标定。
+- **GPU 并行（NVIDIA Thrust）**：`thrust::tuple`、`thrust::transform` 的多输入重载建立在参数包之上，让 CUDA 核函数能在编译期为每个通道选对处理路径。
 
 ### ㉒.3 生产踩坑：可变参数模板的常见误用与陷阱
 - **实例化深度撞墙**：参数包的展开深度与递归实例化深度挂钩，超深展开会撞上编译器「最大模板实例化深度」限制（各编译器默认值不同，可用 `-ftemplate-depth` 调节），跨编译器行为不一致。
@@ -652,6 +654,8 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 
 ### ㉒.4 与标准的互动：从 C++11 到 C++20 的边界扩张
 可变参数模板随 C++11 落地，立刻成为 `std::tuple`、`std::forward`、可变参 `emplace` 的基石；C++17 的折叠表达式（ch64）让「对参数包做 + / && / 逗号 等操作」不再需要递归基线；C++20 进一步把参数包扩展到更多上下文——`using` 声明包展开、结构化绑定、以及 lambda 捕获中的包展开，可变参数能力的边界持续扩张。后续（C++26 轨道）还在讨论把包展开延伸到更多语句与声明位置。
+- **ISO 条款**：参数包与包展开定义在 **[temp.variadic]（C++11 引入）**；包展开只能出现在允许「逗号分隔列表」的上下文（函数实参、初始化器、基类列表等），这是委员会为约束实例化深度刻意设的边界。
+- **修订链**：可变参数模板由 **N2080（Variadic Templates，C++11 落地）** 引入（见 ch60 ㉒.5），之后 **C++17 折叠表达式（N4295）**、**C++20 的包展开扩展（`using` 包、结构化绑定包、lambda 捕获包）** 逐步放宽边界；C++26 轨道仍在讨论把包展开延伸到更多声明位置（如语句块）。
 
 ### ㉒.5 权威引用
 - [cppreference: Pack (parameter pack)](https://en.cppreference.com/w/cpp/language/pack) — 参数包与包展开的权威语法/语义说明

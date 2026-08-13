@@ -740,6 +740,8 @@ flowchart TD
 - 标准库处处是特化：`std::hash<T>` 为每种键类型提供全特化；`std::numeric_limits<T>` 给每个算术类型特化出极值；`std::iterator_traits` 用偏特化把指针也纳入「迭代器」范畴。
 - 序列化/反射框架（如 Protobuf、Cereal、FlatBuffers）用特化为不同类型定制编解码路径：平凡类型走 `memcpy`、带版本的复合类型走递归序列化。
 - 游戏引擎与 ECS（实体组件系统）用特化给不同组件类型选择内存布局与访问策略，在编译期消除运行期分支。
+- **医学影像（ITK，NIH）**：`itk::NumericTraits<TPixel>`、各像素类型对 `itk::Image` 的特化，把「不同像素类型的极值/零值/运算」在编译期定制，支撑 CT/MRI 流水线。
+- **编译器基础设施（LLVM）**：`llvm::DenseMapInfo<T>` 要求用户为自己的 key 类型全特化 `getEmptyKey`/`getTombstoneKey`/`getHashValue`，是「为具体类型提供完全不同实现」的典型全特化主场。
 
 ### ㉒.3 生产踩坑：特化的常见误用与陷阱
 - **`std::vector<bool>` 翻车标本**：它本是普通容器，却因「位压缩」被偏特化成返回代理引用的怪胎，导致 `auto& x = v[0]` 无法编译、迭代器不符常规容器概念。委员会多次讨论废除它，但为兼容只能保留——是用特化「补丁」反噬通用契约的经典反面教材（Herb Sutter 在 Guru of the Week 中列为标准库最著名误导设计之一）。
@@ -749,6 +751,8 @@ flowchart TD
 
 ### ㉒.4 与标准的互动：特化与 concepts 的此消彼长
 特化（尤其偏特化）长期被用来「给某个类型打补丁」——为 `std::is_pointer<T*>` 写偏特化、为某类型定制 traits。C++20 的 concepts 与 `if constexpr`（ch69）让这类「按类型分支」能写在主模板内，减少了对「靠特化堆补丁」的冲动；但特化并未退场——`std::hash`、`std::numeric_limits` 这类「为具体类型提供完全不同实现」的场景，仍是全特化的主场。标准是渐进演进，而非一刀切替换。
+- **ISO 条款**：全/偏特化规则在 **[temp.spec]** 与 **[temp.class.spec]**，偏序判定（谁更特化）在 **[temp.class.spec.match]**；函数模板特化在 **[temp.func.spec]**。委员会保留特化作为「为具体类型提供完全不同实现」的唯一标准手段。
+- **设计理由**：即便 concepts（ch67）能在主模板内用 `if constexpr` 做按类型分支，特化仍不可替代——`std::hash<T>`、`std::numeric_limits<T>` 这类「每类型一份独立实现 + 独立语义」的场景，全特化的「类型即分派键」模型最贴合，标准因而选择渐进共存而非废除。
 
 ### ㉒.5 权威引用
 - [cppreference: Partial specialization](https://en.cppreference.com/w/cpp/language/partial_specialization) — 类模板偏特化的规则与偏序判定

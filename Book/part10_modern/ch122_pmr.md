@@ -978,6 +978,8 @@ int main() {
 - 游戏引擎的「每帧内存（frame allocator）」、ECS 的批量组件存储、低延迟/HFT 系统对分配器延迟极度敏感的场景，都用 PMR 在运行时切换为单调/池化资源。
 - 需要可观测分配（统计字节数、捕获泄漏、做火焰图）时，自定义 `memory_resource` 比全局替换 `operator new` 干净得多。
 - 与 tcmalloc / jemalloc / mimalloc 等高性能分配器的「线程缓存」思路同源，但 PMR 把选择权交回每个容器。
+- **音视频/实时渲染（Unity DOTS、Unreal 的 FMemory 池）**：实时渲染每帧分配大量临时对象，用 PMR 把「每帧分配」切到 `monotonic_buffer_resource`，帧末整体 `release()`，消除逐对象释放抖动。
+- **嵌入式/固件（资源受限 MCU）**：在 RAM 紧张的 MCU 上用自定义 `memory_resource` 把分配钉在指定 SRAM bank，实现「内存分区隔离」，是资源受限系统的刚需。
 
 ### ㉒.3 生产踩坑：`pmr::string` 不是 `std::string`
 
@@ -992,6 +994,8 @@ int main() {
 - `[评]` PMR 是「用运行时多态换编译期简洁」的权衡：牺牲一点点间接调用，换来摆脱 allocator 模板参数灾难——对工程可读性收益巨大。
 - C++17 确立 `std::pmr`（P0220）；后续标准（C++20/23）持续打磨内存资源类型与 `std::allocator_traits` 的衔接，并让更多类型支持 PMR 风格的定制分配。
 - `[评]` 标准演进方向是把「内存来源」彻底从类型系统里抽离，让分配策略成为一等运行时对象，而非散布在模板参数里的碎片。
+
+- [史] **PMR 修订链**：**P0220（Polymorphic Memory Resources）** 由 Pablo Halpern 提案，最终修订 **R1（C++17 采纳）**，引入 `std::pmr::memory_resource`/`polymorphic_allocator` 与 `std::pmr::string` 等别名；后续 C++20/23 打磨其与 `std::allocator_traits` 的衔接；<https://wg21.link/p0220>。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 

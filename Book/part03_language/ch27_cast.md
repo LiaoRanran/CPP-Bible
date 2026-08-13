@@ -1704,6 +1704,8 @@ C 风格强转 `(T)expr` 在 1970 年代是"万能胶"：能去 const、能做�
 - **系统/嵌入式/网络**：金融、游戏等底层库仍大量用 `reinterpret_cast` 做网络字节序与序列化类型双关；MMIO 与信号处理依赖它 reinterpret 寄存器视图。
 - **框架与 RTTI**：MFC/Qt/LLVM 的运行时类型查询与插件系统用 `dynamic_cast` 做安全的下行转换；`boost::any`/`std::any` 的 `any_cast` 沿用同思路。
 - **标准库与 traits**：`const_cast` 在适配"非 const 接口"的旧代码、以及 `std::move` 内部去 const 等场景仍有正当用途；`static_cast` 几乎贯穿所有显式收窄/上行转换。
+- **GPU / 驱动绑定**：Vulkan-Hpp（Vulkan 的 C++ 绑定）与 CUDA / ROCm 内核启动参数用 `reinterpret_cast` 在句柄（`VkHandle`）、整型与设备指针间做类型双关；驱动层把"用户态指针 ↔ GPU 虚拟地址"的转换也落在这类强转上。
+- **二进制 / 逆向引擎**：Capstone 反汇编器、Keystone 汇编器对指令字节与编码结构之间做 `reinterpret_cast` 类型双关；radare2 等二进制分析工具在解析 ELF/PE 节区时同样用强转把字节视图当结构体读，是"类型双关即协议解析"的典型坐标。
 
 ### ㉒.3 生产踩坑：转型的常见误用
 - **`reinterpret_cast` 触发严格别名 UB**：在两个不相关类型指针间 reinterpret 并解引用违反严格别名规则，优化器可能"证明"新旧指针不别名而崩溃——应优先 `std::bit_cast` 或 `std::start_lifetime_as`。[史][评]
@@ -1713,6 +1715,7 @@ C 风格强转 `(T)expr` 在 1970 年代是"万能胶"：能去 const、能做�
 
 ### ㉒.4 与标准的互动：cast 与标准演进
 四种命名 cast 在 C++98 定型（`dynamic_cast` 配 RTTI）；C++11 收紧 `reinterpret_cast` 的 `void*` 往返、引入 `auto` 减少强转需求。[史] C++20 给出两条安全替代：`std::bit_cast`（P0476）对 trivially-copyable 类型做比特级重解释、编译期可求值且无严格别名 UB，逐步取代 `reinterpret_cast` 做类型双关；`std::start_lifetime_as`（P0593）为"在既有存储上重塑对象"提供比 `reinterpret_cast`+`std::launder` 更干净的官方路径。[史] 模式匹配提案（P1371 等）试图用 `inspect` 直接按类型分派，未来可能减少 `dynamic_cast`+`if` 样板。[史][评]
+- **修订链补强（bit_cast / start_lifetime_as）**：`std::bit_cast` 的修订——提案 [P0476](https://wg21.link/P0476) 从 R0（2016，最初要求 standard-layout，后放宽到 trivially-copyable）到 R2（2017，"Bit-casting object representations"，因 LEWG/LWG 反馈改名为 `bit_cast`、纳入 `<bit>` 头、并让 `constexpr` 条件化）随 C++20 落地；配套的 `std::start_lifetime_as` 经 [P0593R6](https://wg21.link/P0593)（"Implicit creation of objects"，C++20）把"在既有存储上重塑对象"合法化。标准把四种 named cast 分别定义在 [expr.const.cast] / [expr.static.cast] / [expr.reinterpret.cast] / [expr.dynamic.cast]，委员会的设计立场是：命名 cast 让"危险转换"可被 grep 与重构定位（对比 C 风格 `(T)`），并把"类型双关"从 UB 边缘逐步迁移到 `bit_cast` 这条"有 constexpr、无严格别名 UB"的官方安全路径。
 
 ### ㉒.5 权威引用
 - [cppreference: explicit_cast](https://en.cppreference.com/w/cpp/language/explicit_cast) — 四种命名 cast 的总入口

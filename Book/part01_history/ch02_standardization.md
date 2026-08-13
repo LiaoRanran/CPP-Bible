@@ -145,6 +145,9 @@ A: Google, Microsoft, Apple, Intel, NVIDIA, Bloomberg, RedHat, 以及各国代�
 - **提案即路线图**：公司（Google、Meta、NVIDIA、Microsoft）与学者通过提案直接影响标准；例如 `std::format`（P0645，Victor Zverovich）、`std::expected`（P0323，Red Hat/Nokia）都来自产业痛点。
 - **LWG/EWG 分工**：核心语言（EWG）与库（LWG）分组评审，加上 SG1（并发）、SG16（Unicode）等研究组——这是为什么 C++ 能在零运行时依赖下持续加库。
 
+- **Boost 作为标准化「试验田」**：`boost::optional`→`std::optional`、`boost::filesystem`→`std::filesystem`、孕育中的 Networking TS（源自 `boost::asio`）都是先在 Boost 经产业打磨再进标准；Boost 的缺陷报告常被 LWG 直接吸收。见 [Boost 官网](https://www.boost.org/)。
+- **构建系统守门标准特性**：CMake 的 `target_compile_features`（如 `cxx_std_17`）与 `CheckCXXCompilerFlag` 直接消费 WG21 特性名与 SD-6 宏清单，CI 据此决定能否启用某特性。见 [CMake 文档](https://cmake.org/)。
+
 ### ㉒.3 生产踩坑：跟标准"节奏"相关的坑
 
 - **特性可用性碎片化**：同一编译器版本对 C++20 各特性的支持参差不齐（cppreference 的 compiler_support 表即为此存在）；CI 必须用特性测试宏而非"猜版本号"。
@@ -154,6 +157,8 @@ A: Google, Microsoft, Apple, Intel, NVIDIA, Bloomberg, RedHat, 以及各国代�
 ### ㉒.4 与标准的互动：提案如何变成标准
 
 [史] 一个特性从想法到标准要过六阶段：Initial → Design → Evolution → Candidate → Draft → Final（见 ch02 附录 U 决策流）。提案用 **P 编号**（如 P1103 modules、P0912 coroutines）在 WG21 邮件（mailing）里公开评审；最终并入工作草案（Working Draft），由 ISO 成员国投票。[轶] 法国曾在 C++20 阶段反对 Modules 的导入/导出语法导致短期延迟——这显示"共识驱动"既是质量护栏也是速度代价。[评] 对工程师而言，最实用的互动是读 `isocpp.org/std/status` 与 `github.com/cplusplus/draft` 跟踪进度，而非等标准"落地"再学。
+
+- [史] WG21 用 **P 编号**（提案，如 P0734 Concepts、P0912 Coroutines）与 **N 编号**（偏信息性/管理性文档）区分文件，所有邮件（mailing）公开于 open-std.org。[史] 提案进入工作草案（Working Draft）后，最终由 ISO 成员国投 **DIS（Draft International Standard）选票** 批准——法国在 C++20 阶段对 Modules 的反对票即走此流程，延迟约数月。[评] 工程师最实用的互动是订阅 `github.com/cplusplus/draft` 跟踪工作草案，而非等 ISO 正式发布再学。
 
 ### ㉒.5 权威引用
 

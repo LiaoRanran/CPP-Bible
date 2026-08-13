@@ -972,6 +972,9 @@ int main() { auto s = make(K::Circle); s->draw(); }
 - 游戏资源（贴图、网格）用 Prototype 做「克隆模板实例」；日志/配置用 Meyers 单例做进程级唯一入口。
 - 现代 C++ 更常用 `std::make_unique` / `emplace` / `std::optional` 取代手写工厂样板。
 
+- 汽车/机器人：**ROS 2** 的 `Node` 与通信中间件用工厂 + 依赖注入式构造「节点/执行器」，让同一套算法代码能绑定不同 DDS 实现（Fast DDS、Cyclone DDS）。
+- 数据库：**SQLite** 的 `sqlite3_open_v2` 系列与 VFS 接口用工厂把「存储后端」做成可替换维度，单文件库借此跨平台零依赖（见 <https://www.sqlite.org>）。
+
 ### ㉒.3 生产踩坑：单例是头号反模式温床
 
 - **单例的全局状态**：破坏可测试性、隐藏依赖、引发「初始化顺序灾难（static initialization order fiasco）」；多线程下还需 Meyers 单例（`static` 局部变量，C++11 起线程安全）才稳。
@@ -984,6 +987,9 @@ int main() { auto s = make(K::Circle); s->draw(); }
 - `[评]` C++11 起 `std::make_unique` / `std::make_shared` 把「安全构造」标准化；`emplace` 系列让容器原地构造，`std::expected` 用返回值替代「异常式构造失败」。
 - 分配器（allocator）与删除器（deleter）作为「构造期策略参数」，是现代 C++ 对创建型思想的标准库级落地。
 - `[评]` 标准演进让许多创建型样板退场：能 `make_*` 就别手写工厂；需要运行时多态构造时再用工厂/原型。
+
+- `[评]` WG21 **P0220R0→…→P0220R1**（《Adopt Library Fundamentals V1 TS Components for C++17》，<https://wg21.link/P0220>）：一次性把 `optional`/`any`/`string_view`/多态内存资源从 TS 收编进 C++17——其中 `optional`/`any` 正是「可能为空的对象 / 类型擦除容器」的标准答案，替代大量手写「空指针哨兵 / `void*`」创建型 hack。
+- `[评]` ISO/IEC 14882:2017 在 `[optional.ctor]`/`[any.ctor]` 明确「以 `in_place` / `std::in_place_type` 原地构造」；委员会设计理由是把「构造失败」表达为值而非异常，与创建型模式「安全构造」目标一致。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 

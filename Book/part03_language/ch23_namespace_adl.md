@@ -1178,6 +1178,8 @@ C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀手工避免冲�
 - **标准库与 Boost**：`std` 自身靠命名空间隔离；Boost 用嵌套命名空间（`boost::asio::ip`）组织巨型库树；`inline namespace` 是 ABI 版本控制事实标准。
 - **libstdc++**：用 `__cxx11` inline namespace 区分新旧 ABI（`std::string` 实现切换），旧代码链接旧符号、新代码用新符号，做到无断裂升级。[史]
 - **Chromium / LLVM**：用匿名命名空间替代文件级 `static`；LLVM 的 `llvm::` / `clang::` 分层命名空间是大型 C++ 项目的组织范本。
+- **浏览器引擎**：WebKit 的 `WTF::`（Web Template Framework）与 `JSC::`（JavaScriptCore）用分层命名空间隔离 GC/解释器基础设施；大型 JS 引擎的命名空间边界直接映射到子系统的 ABI 与可见性边界。
+- **量化金融**：QuantLib 把整个库收在 `QuantLib::` 命名空间下，按 `termstructures` / `pricingengines` / `instruments` 等子命名空间组织数千个类型，是金融 C++ 领域用命名空间做领域分区的范本。
 
 ### ㉒.3 生产踩坑：namespace/ADL 的常见误用
 - **ADL 不透明查找引发意外重载**：传入 `std` 类型的参数会悄悄把 `std` 里的 `swap`/`begin` 拉进候选集，自定义同名函数被意外选中或冲突，是模板代码的天坑。[评]
@@ -1186,6 +1188,7 @@ C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀手工避免冲�
 
 ### ㉒.4 与标准的互动：namespace/ADL 与标准演进
 命名空间、`using`、namespace alias 在 C++98 落地，`inline namespace` 入 C++11（N2920 路线）；C++20 模块（P1103）用 `import std;` 取代文本包含，宏与匿名命名空间不再跨 TU 泄漏，部分接替命名空间的隔离角色。[史] `std::ranges` 用定制点对象（CPO）规避 ADL 风暴，只在必要时走 ADL，正是对 ADL"查找不透明"痛点的官方回应；C++26 静态反射（P2996）将把命名空间变成可运行时枚举的元数据树。[史][评][轶] 早期委员会曾认真讨论"是否默认开启 ADL"，最终因会破坏所有运算符重载而放弃，ADL 成为无法撤销的历史包袱。
+- **修订链补强（模块）**：命名空间的部分隔离角色由模块接替——Modules 提案 [P1103](https://wg21.link/P1103) 从 R0 起步，经 R1/R2 的措辞打磨，到 R3（2019）随 C++20 落地。标准在 [module] 把 `import` / `export` 作为一级语言设施，设计目标是"消除文本包含导致的宏泄漏与 ODR 重编译"；但委员会刻意保留命名空间作为 API 组织手段，模块只接管"翻译单元边界"，二者互补而非取代——正回应 ch23 0.x 中"命名空间仍是大型项目组织范本"的判断。
 
 ### ㉒.5 权威引用
 - [cppreference: namespace](https://en.cppreference.com/w/cpp/language/namespace) — 命名空间、inline namespace 与 using

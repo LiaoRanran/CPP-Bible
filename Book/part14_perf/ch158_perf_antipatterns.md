@@ -463,6 +463,9 @@ int main(){int v=42;int&r=v;r=100;std::cout<<v<<std::endl;return 0;}
 - **高频交易**：任何类型擦除/堆分配都是禁区，反模式清单即生存底线。
 - **标准库实现本身**：libstdc++/libc++ 为维护性能，主动规避这些反模式（如 `std::string` SSO）。
 
+- **真实反模式现场**：`std::endl` 每次刷缓冲（应 `\n'`）、在热路径做 `std::string` 拼接产生临时与分配、用 `std::map` 当扁平查找表、异常当控制流、虚假共享写相邻原子。
+- **基准陷阱**：没预热、被编译器优化掉（dead code elimination 把空循环删了）、没固定 CPU 频率、测了调试构建。
+
 ### ㉒.3 生产踩坑：高频反模式清单
 - **`std::endl` 而非 `'\n'`**：`endl` 每次强制 `flush`，在循环里拖垮 IO（见 ④）。
 - **隐式拷贝 / 临时对象**：传值返回大对象、范围 for 取 `auto` 而非 `const auto&`，触发多余拷贝（见 ③）。
@@ -473,6 +476,8 @@ int main(){int v=42;int&r=v;r=100;std::cout<<v<<std::endl;return 0;}
 
 ### ㉒.4 与标准的互动：标准特性如何"防"反模式
 C++11 起的标准持续提供反模式的"正解"：`std::move`（避免拷贝）、`emplace_back`（避免临时）、`std::string_view`/`std::span`（零拷贝视图）、`reserve`/`shrink_to_fit`、以及 `constexpr`/内联让编译器能消除间接调用。[评] 反模式多发生在"用了旧习惯、没用新设施"——标准给了解药，缺的是纪律。
+
+**修订链补强（反模式与标准保证边界）**：许多“反模式”之所以是反模式，是因为它们踩了 [STANDARD]/[IMPLEMENTATION] 的保证边界：例如 `std::endl` 的“刷新”语义由标准规定（[ostream]/[filebuf]），因此比 `\n'` 多一次 `flush()` 系统调用；`std::map` 的 O(log n) 与节点分配由 [associative.reqmts] 决定，替代为 `std::vector`+二分或 `std::unordered_map` 是 [MICROARCHITECTURE] 层的 cache 友好性选择，标准不保证但经验成立。识别反模式本质是“知道标准保证什么、实现会怎么利用 as-if 规则”。
 
 ### ㉒.5 权威引用
 - [C++ Core Guidelines — Per（性能规则）](https://isocpp.github.io/CppCoreGuidelines/#S-performance) — 反模式的系统汇编与检查项

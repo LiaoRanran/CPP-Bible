@@ -645,6 +645,8 @@ struct Guard { int slot; void* p;
 - **用户态 RCU（urcu，Mathieu Desnoyers）**：把内核 RCU 思想搬到用户态，被 **Chromium、MySQL、QEMU** 等用于高并发读共享数据。
 - **无锁库（folly、并发运行时）**：hazard pointer 被广泛用于无锁队列/哈希的内存回收，避免读者读到被释放节点。
 - **数据库 / 存储引擎**：MVCC、B-tree 的「旧版本延迟回收」本质上是 RCU 思想的变体——读不阻塞写、旧版本等无人读再清。
+- **网络功能虚拟化（NFV）/ 5G UPF**：用户面转发用 RCU 风格的无锁读侧更新路由/会话表，保证转发线程在「规则热更新」时零停顿（读侧近乎零开销），契合 NFV 对 99.999% 可用的要求。
+- **Java/JVM 与 .NET 运行时**：JVM 的 `juc` 内部、.NET 的 `Concurrent` 集合与 GC 的 safepoint/屏障机制都借鉴 hazard pointer / RCU 思想管理并发回收——是跨语言的标准并发原语。
 
 ### ㉒.3 生产踩坑：hazard pointer / RCU 的常见误用
 
@@ -656,6 +658,8 @@ struct Guard { int slot; void* p;
 ### ㉒.4 与标准的互动：hazard pointer / RCU 与 C++ 标准的演进
 
 [史] C++11 提供了 `std::atomic`（无锁原语）但**无**内存安全回收设施，hazard pointer/RCU 长期只能手写或靠第三方库；**C++26 正推进把 hazard pointer 纳入标准库（P1122/P2530，由 Michael 本人提案）**，提供 `std::hazard_pointer` 与 retire/回收 API，并附带 `std::rcu_domain` 方向的讨论。这是 WG21 对「无锁 + 安全回收」痛点（见第 ⑩/⑪ 章）的正式回应——把过去 20 年内核/工业界的成熟方案沉淀为标准抽象。
+
+- [史] **标准化修订链**：**P2530（Hazard Pointers）** 最终修订 **R3**、**P1122（RCU）** 最终修订 **R4（2021-05-14）**，均由原作者（Maged Michael / Paul E. McKenney）牵头，目标 C++26；设计理由是把「内核/工业界已服役 20 年的成熟回收方案」沉淀为可移植标准抽象，消除各库重复手写的风险；<https://wg21.link/p2530>、<https://wg21.link/p1122>。
 
 ### ㉒.5 权威引用
 

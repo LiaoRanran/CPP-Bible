@@ -904,6 +904,9 @@ void apply_variant(PolicyVariant<Ps...>& v) {
 - **Eigen** 用 policy 组合矩阵的表达式语义、存储布局、标量类型；**Boost** 多个库（SmartPtr、多 index 容器）采用 policy 做可定制行为。
 - Abseil、数值库、序列化框架常用 policy 让同一套代码适配多种后端。
 
+- 网络：**Boost.Beast** 用 policy/模板参数把 HTTP/WebSocket 的「流式 vs 缓冲、同步 vs 异步」做成可组合维度；**libcurl** 的 easy/multi 句柄也是「传输策略」的运行时组合（见 <https://www.boost.org/doc/libs/release/libs/beast>、<https://curl.se>）。
+- 量化：**QuantLib** 用 policy 思想组合定价引擎的「日计数惯例、日历、随机数生成器」，同一套数学换不同市场规则即可复用（见 <https://www.quantlib.org>）。
+
 ### ㉒.3 生产踩坑：组合爆炸与接口暗约
 
 - **组合爆炸**：N 个二选一 policy 产生 2^N 种类型，编译时间/二进制体积随之膨胀；非必要不要给每个维度都做 policy。
@@ -916,6 +919,9 @@ void apply_variant(PolicyVariant<Ps...>& v) {
 - `[评]` C++20 Concepts 让 policy 从「隐性鸭子类型」变成「可约束契约」：`template<Policy P> class Host` 直接声明所需接口，错误提前到约束失败。
 - `if constexpr` 可在 policy 基础上做「编译期分支分发」，替代部分运行期策略选择；现代小场景甚至不必上完整 policy 机制。
 - `[评]` 标准演进把 policy 的「灵活」与「可读/可错」通过 concepts 拉回平衡——这是泛型库设计的分水岭。
+
+- `[评]` 除 concepts 外，WG21 **P0734R0**（Wording for concepts，<https://wg21.link/P0734>，C++20）把「对 policy 所需接口的要求」从 SFINAE 黑魔法改为一行 `requires`；`std::invocable`/`std::predicate` 等概念直接成为 policy 参数的标准契约。
+- `[评]` ISO/IEC 14882:2020 在 `[temp.concept]` 把概念定义为「布尔类型的 constexpr 变量模板」；委员会理由：让 policy 的「隐式契约」变成「编译期可诊断、可文档化」的显式约束，降低泛型库误用成本。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 

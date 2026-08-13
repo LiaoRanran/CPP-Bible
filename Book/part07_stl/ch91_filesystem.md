@@ -920,6 +920,9 @@ int main() {
 
 日志归档服务的目录滚动与清理、配置热更新与原子回滚、构建系统的依赖扫描是 `std::filesystem` 的主场；游戏/编辑器的资源目录遍历、跨平台安装器的文件搬运、数据库工具的备份脚本都依赖它。它也是各类 CLI 工具（如包管理器、diff 工具）做路径拼接与存在性检查的标准手段——`path` 的词法拼接 `p / "x"` 在 `-O2` 下几乎零开销。
 
+- **跨行业实例（数据库/备份工具）**：SQLite 的 WAL/备份工具、PostgreSQL 的 `pg_basebackup` 配套 C++ 工具用 `std::filesystem` 做目录滚动、存在性检查与原子重命名；其 `std::ofstream` + `rename` 的「写临时文件再原子换名」模式是配置热更新/回滚的标准做法。
+- **跨行业实例（游戏/安装器）**：Unity/Unreal 的资源打包器与跨平台安装器用 `std::filesystem` 遍历资产目录、计算文件大小、做增量拷贝；其「`path` 作为值对象、可拷贝、类型化」特性让构建系统（如 CMake 的 `file()` 命令底层 C++ 实现）能安全处理跨平台分隔符。
+
 ### ㉒.3 生产踩坑：filesystem 的常见误用与陷阱
 
 [评] 最大坑是「TOCTOU 竞态」——`exists(p)` 检查后、真正 `open` 前，文件可能被另一线程/进程删除或替换，因此系统代码应优先用 `error_code` 版「尝试即处理」而非「先检查再操作」。另一坑是「原生路径分隔符与可移植性」——硬编码 `/` 或 `\` 会在跨平台时出问题，应始终用 `path` 的 `/` 运算符拼接。还有「符号链接与权限」——`copy` / `remove_all` 对符号链接与权限位的行为需显式指定 `copy_options`，否则可能误删或越权。
@@ -927,6 +930,9 @@ int main() {
 ### ㉒.4 与标准的互动：filesystem 与标准的演进
 
 [史] `std::filesystem` 经 P0218R1 并入 C++17，是「先 TS、再标准」路径的又一成功案例；其设计大量复用 Boost.Filesystem 的十年实战经验。[评] 近年 WG21 在扩展文件系统相关能力（如 `std::filesystem::path` 的更多格式支持、与 `std::io` 提案的衔接），但核心 API 保持稳固。标准的长期立场是「路径是值对象、可拷贝、类型化」——这与早期「路径即字符串」的朴素做法彻底划清界限。
+
+- **WG21 修订链**：`std::filesystem` 经 ISO/IEC TS 18822:2015（文件系统技术规范，基于 Boost.Filesystem 十年实战）试水，再由 P0218R1（Beman Dawes「Adopt the File System TS for C++17」，wg21.link/P0218R1，2016 Jacksonville）在 C++17 正式并入；其前身可追溯至 N3505（2013）等早期草案。C++20 起部分操作进入 `constexpr`，并与 `std::format`（`path` 格式化）衔接。
+- **ISO 条款**：`<filesystem>` 规定于 ISO/IEC 14882 第 31 章（`[filesystem]`）。标准的设计理由（Design Intent）明确为「路径是**值对象**（value-semantic `path`，可拷贝、可比较、独立于任何 I/O 状态），把『路径表示』与『文件系统操作』分离」——委员会吸取 Boost.Filesystem 经验，刻意避免「路径即字符串」带来的编码/可移植性陷阱，并要求 `file_size()` 等为 O(1)、异常安全契约完备才准入标准。
 
 ### ㉒.5 权威引用
 

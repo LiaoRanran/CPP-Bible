@@ -602,6 +602,9 @@ bool ready_to_send() {
 - **LLVM / Clang**：用 **Phabricator**（现迁 GitHub PR）做 pre-commit review，clang-tidy 检查结果进 review UI。
 - **大型金融机构 / 汽车软件（ASPICE/ISO 26262）**：审查是合规强制项，要有可追溯记录与签名。
 
+- 安全关键：**IEC 62304**（医疗器械软件生命周期）把代码审查作为强制活动，要求双人评审与可追溯记录，与汽车 ASPICE 同理（见 <https://www.iec.ch>）。
+- 开源基金会：**Apache 软件基金会**的项目（如 Arrow、Thrift）要求至少一名 PMC 成员 +1 才能合入，Review-then-Commit 是治理的一部分（见 <https://www.apache.org>）。
+
 ### ㉒.3 生产踩坑：审查流于形式的陷阱
 - **橡皮图章 LGTM**：只扫一眼就批准，等于没审；[评] 对并发/内存/接口改动必须逐行看，而非看 CI 全绿就放。
 - **只审格式不审逻辑**：把 clang-format / clang-tidy 能自动发现的事留给人脑，浪费注意力；应让工具做机械检查，人聚焦语义。
@@ -610,6 +613,9 @@ bool ready_to_send() {
 
 ### ㉒.4 与标准的互动：静态分析成为审查前置
 C++ 标准不直接管审查，但 **C++ Core Guidelines** 的每条规则都可被 `clang-tidy` 的 `cppcoreguidelines-*` 检查项机械执行，使"人工审查"前移为"机器预筛"。现代 CI（见第149章）把 clang-tidy / PVS-Studio / Coverity 结果直接挂到 PR 上，审查者只看工具标红处即可。[评] 工具越强，人工越该聚焦"设计意图与边界条件"，而不是重复机器能做的事。
+
+- `[评]` WG21 **P2028R0**（Stability of the C++ ABI，<https://wg21.link/P2028>，SG15）：讨论「如何在演进标准时保持 C++ ABI 稳定」，本质是给「版本/分支策略」定调；它把「ABI 兼容承诺」上升到生态治理层面，直接影响各项目的 release/backport 工作流。
+- `[评]` ISO/IEC 14882 本身不规定构建/审查，但 C++ Core Guidelines 的每一条都对应 `clang-tidy` 的 `cppcoreguidelines-*` 检查项，使「人工审查」可被机器预筛——审查者只需聚焦设计意图与边界条件。
 
 ### ㉒.5 权威引用
 - [Google Engineering Practices（代码审查指南）](https://google.github.io/eng-practices/review/) — 工业级审查流程与 reviewer/author 职责

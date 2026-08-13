@@ -431,6 +431,9 @@ int main() {
 
 整个 C++ 标准库实现本身就是 STL 的工业落地：GCC 的 libstdc++、Clang/LLVM 的 libc++、MSVC 的 MS STL 均以 STL 容器与算法为骨架。向下看，Chromium 的 base 层、LLVM/Clang 自身的 AST 与 ASTMatcher、Unreal 等游戏引擎的 C++ 部分、金融高频交易系统的订单簿（常用 `std::map` / `std::vector` 配合自定义分配器）都重度依赖 STL。Linux 内核虽是 C 语言不使用 STL，但其用户态工具链与 perf、BPF 工具大量链接 libstdc++。
 
+- **跨行业实例（医疗影像）**：西门子、GE 的医学影像处理管线（如 CT/MRI 重建与体数据分割）大量以 C++ 编写，内部 AI/算法模块普遍用 `std::vector` / `std::map` 承载体素与查找表；这是「STL 进入医疗器械固件」的真实落地，受 IEC 62304 软件生命周期约束，但底层数据结构仍是标准 STL 容器。
+- **跨行业实例（航天/嵌入式）**：NASA 的 F Prime（F´，开源飞行软件框架，GitHub: nasa/fprime）与 ESA 的部分星载 C++ 组件，用 `std::vector` / `std::map` 做指令路由与遥测缓存，证明其历经航天级静态分析仍可作为系统骨架。
+
 ### ㉒.3 生产踩坑：STL 的常见误用与陷阱
 
 [评] 最典型的一类踩坑是迭代器失效：在 `vector` 上 `erase` 后继续使用旧迭代器会导致未定义行为；把 `deque` 当成随机插入廉价结构、`list` 上误用 `operator[]`（O(n)）等认知错误也很常见。另一类是 ABI 与分配器：跨动态库（.so/.dll）传递 STL 容器，在开启不同 `_GLIBCXX_USE_CXX11_ABI` 或混用不同编译器版本时会触发符号不匹配（参见 ch81 的 dual-ABI 实证）。性能陷阱则是「隐形拷贝」——`auto` 误推断、用 `std::function` 擦除、范围 for 的副本，以及 `std::endl` 每次刷新缓冲区。
@@ -438,6 +441,9 @@ int main() {
 ### ㉒.4 与标准的互动：STL 与 C++ 标准的共同演进
 
 [史] STL 于 1998 年随 C++98 正式进入标准，是委员会罕见地「整库采纳」外部设计（Stepanov/SGI）。此后标准持续吸收 STL 风格：`std::span`（C++20）、`std::ranges`（C++20）、`std::pmr` 多态分配器（C++17）都延续「值语义 + 泛型 + 零开销抽象」的信条。C++11 引入的移动语义极大改善了 STL 容器在返回与重排时的性能；近年 WG21 的方向（concepts、ranges、views）本质上是在把 STL 当年的「鸭子类型迭代器」升级为编译期可检查的概念。
+
+- **WG21 修订链**：STL 风格容器/算法的标准化并非一次性，而是持续演进。以「连续视图」原语为例，`std::span` 经 P0122R0→…→P0122R7（Neil MacIntosh、Stephan T. Lavavej，2018 Jacksonville 采纳，wg21.link/P0122R7）在 C++20 落地；R0 原名 `array_view`，经 LEWG 反馈改名为 `span` 并去掉多维部分，最终 R7 又移除了独立比较运算符（`operator==` 等，理由见 P1085，wg21.link/P1085）。`std::mdspan`（多维视图）则走 P0009R0→…→P0009R15 的长链（受 Sandia Kokkos 项目启发，wg21.link/P0009R15），2015 年首版到 2022 年 R15，最终进入 C++23。
+- **ISO 条款**：STL 容器/迭代器/算法分别落在 ISO/IEC 14882 的「Containers（第 24 章）」「Iterators（第 25 章）」「Algorithms（第 27 章）」与「Ranges（C++20 第 26 章）」。委员会的设计理由（Design Intent）一贯是「零开销抽象 + 值语义 + 泛型」：容器不强制虚函数、算法以迭代器对而非容器为参数，从而让同一套 `sort`/`find` 适用于任何满足概念的序列。
 
 ### ㉒.5 权威引用
 

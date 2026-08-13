@@ -978,6 +978,9 @@ int main() {
 - **Redis / 游戏服务器**：为热对象建固定大小池，避免频繁向系统要内存造成的尾延迟。
 - **数据库 / 消息中间件**：用内存池托住高频小对象，吞吐与 p99 显著改善。
 
+- **分配器坐标**：[tcmalloc](https://github.com/google/tcmalloc)/[jemalloc](https://github.com/jemalloc/jemalloc)/[mimalloc](https://github.com/microsoft/mimalloc) 用 per-thread/size-class 缓存把 malloc 锁争用降到极低；UE4 的 `FMallocBinned2`、游戏/嵌入式自研 slab/池是“确定延迟”刚需。
+- **标准对接**：`std::pmr::memory_resource`/`std::pmr::polymorphic_allocator`（C++17，[P0220](https://wg21.link/P0220)）把“自定义池”提升为一等公民，标准库容器可换池而不改接口。
+
 ### ㉒.3 生产踩坑：内存池的误用
 - **替换全局 `new`/`delete` 的风险**：全局重载影响整个进程的分配语义，与第三方库/STL 内部假设冲突可能崩溃；优先用 `std::pmr` 或显式传递分配器，而非全局替换（见 ⑨）。
 - **碎片不降反升**：size class 划得太碎，反而制造内部碎片；需按真实分配剖面调档。
@@ -987,7 +990,10 @@ int main() {
 ### ㉒.4 与标准的互动：std::pmr 把池标准化
 C++17 的 `std::pmr::memory_resource` / `std::pmr::polymorphic_allocator` 让"内存池"成为可组合的标准抽象：把自研池继承 `memory_resource`，即可直接喂给 `std::vector<T, std::pmr::polymorphic_allocator<T>>`。`std::assume_aligned`(C++20) 等进一步支持池内对齐优化。[评] 标准把"池"从"黑魔法全局替换"变成"可注入的策略"。
 
+**修订链补强（PMR 与分配抽象）**：C++17 通过 [P0220](https://wg21.link/P0220) 引入 `std::pmr`（Polymorphic Memory Resources），把“内存池/分配策略”抽象成 `memory_resource` 基类与 `polymorphic_allocator`，让 `std::vector` 等容器在不改类型的情况下切换到自定义池。这是对“分配器模型长期难用”的修正——旧 `std::allocator` 因“rebind 繁琐、无法携带状态”被诟病。委员会立场是“标准提供抽象与默认 `new_delete_resource`/`monotonic_resource`，高效池交给 tcmalloc/jemalloc/mimalloc 等实现”，标准不规定池算法。
+
 ### ㉒.5 权威引用
+- [WG21 P0220 — Polymorphic Memory Resources](https://wg21.link/P0220) — C++17 std::pmr
 - [jemalloc 仓库](https://github.com/jemalloc/jemalloc) — 多核无锁/低碎片分配器工业事实标准
 - [tcmalloc 仓库（Google）](https://github.com/google/tcmalloc) — 线程缓存 + size class 分配器
 - [cppreference: std::pmr::memory_resource (C++17)](https://en.cppreference.com/w/cpp/memory/memory_resource) — 可替换内存池的标准抽象

@@ -884,6 +884,9 @@ std::cout << f.get() << '\n';            // 441，worker 在后台执行
 - **游戏引擎 / 渲染**：用线程池跑骨骼动画、资源加载、物理；常配合任务依赖图。
 - **Nginx / libuv**：虽非传统"线程池"，但用 worker 进程/线程 + 事件循环达成高并发，是同一问题的另一种解。
 
+- **线程池坐标**：Intel TBB 的 `task_arena`/`parallel_for`、folly::ThreadPoolExecutor（Meta）、`std::async`（C++11 起，但池策略由实现定义）、Boost.Asio 的 `io_context` 隐式线程池、libuv 的事件循环线程；nginx worker、游戏引擎任务系统均自研。
+- **无锁任务队列**：moodycamel::ConcurrentQueue 是跨项目高频采用的生产者-消费者无锁队列。
+
 ### ㉒.3 生产踩坑：线程池的误用
 - **线程数过多（oversubscription）**：池大小远超 `hardware_concurrency()`，上下文切换压垮吞吐；CPU 密集应≈核数，IO 密集可更多（见 ⑩）。
 - **任务里抛异常被吞**：`std::async` 的异常只在未来 `get()` 时抛出，忘了 `get()` 就静默丢失；好的池把异常转发回提交方（见 ⑫）。
@@ -893,7 +896,11 @@ std::cout << f.get() << '\n';            // 441，worker 在后台执行
 ### ㉒.4 与标准的互动：从 std::async 到 jthread
 C++11 的 `std::async` 提供"异步任务 + future 取结果"的最小池；C++20 的 **P0660（std::jthread）** 把停止令牌与自动 join 纳入标准，使"可协作取消的线程"成为一等公民。`std::hardware_concurrency()`（C++11）则给池大小一个可移植的默认依据。[评] 标准逐步把线程池的"正确性与可取消性"内建化，自研池的重心转向调度策略而非线程生命周期。
 
+**修订链补强（从 std::async 到 jthread/latch）**：C++11 的 `std::async` 给出“异步任务”抽象，但返回的 future 析构是否阻塞由 `std::launch` 决定（实现定义），池策略不透明。C++20 补齐协作式取消与同步原语：[P0660](https://wg21.link/P0660) 引入 `std::jthread`（析构自动 join + `stop_token` 协作取消）与 `std::stop_token`；[P1135R4](https://wg21.link/P1135) 引入 `std::latch`/`std::barrier`/`std::counting_semaphore` 与 `atomic::wait/notify`，把“线程到达/等待”标准化（合并了 P0514R4 原子等待、P0666R2 锁存/屏障）。标准把线程池的“取消 + 阶段同步”原子能力补齐，但“池调度策略”仍留给库（TBB/folly/Asio）。
+
 ### ㉒.5 权威引用
+- [WG21 P0660 — stop_token and jthread](https://wg21.link/P0660) — C++20 协作取消
+- [WG21 P1135R4 — C++20 Synchronization Library](https://wg21.link/P1135) — latch/barrier/semaphore
 - [cppreference: std::jthread (C++20)](https://en.cppreference.com/w/cpp/thread/jthread) — 带 stop_token、析构自动 join
 - [WG21 P0660（std::jthread）](https://wg21.link/P0660) — C++20 协作取消线程的来龙去脉
 - [Intel oneTBB 仓库](https://github.com/oneapi-src/oneTBB) — 工业级任务并行/线程池

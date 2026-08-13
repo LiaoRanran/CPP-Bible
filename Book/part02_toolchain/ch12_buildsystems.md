@@ -828,6 +828,9 @@ namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 - Meson：GNOME、Systemd 等采用，强调可读语法与快速度。
 [评] 现代 C++ 工程极少手写裸 Makefile 投产，几乎都走"高层描述 + 生成器 + Ninja"三层结构。
 
+- **游戏与引擎**：Unreal Engine 自带基于 CMake/自研的构建管线，Unity 的「Unity Build」用合并编译单元加速——构建系统活在大体量游戏工程的每日出包里。
+- **嵌入式镜像**：Yocto/Buildroot 之上的 C++ 项目（机顶盒、车机）普遍用 BitBake/CMake 交叉生成，构建系统直接决定能否产出可启动镜像。
+
 ### ㉒.3 生产踩坑：构建系统的常见误用与陷阱
 - 全局变量/目录式 `include` 污染：在 CMake 里滥用 `include_directories(. )` 把头文件泄露给所有 target，导致意外依赖与同名冲突。
 - 忘记让构建系统感知头文件依赖：老式手写 Makefile 漏写 `.h` 依赖，改头文件却不重编，埋下"只少编了一个"的诡异 bug（cppreference 提到 `-MMD` 自动生成 `.d`）。
@@ -836,6 +839,8 @@ namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 
 ### ㉒.4 与标准的互动：构建系统与 C++ 标准的演进
 [评] 构建系统本身不是 C++ 标准的一部分（标准不规定如何编译工程），但它必须紧跟标准：C++20 Modules 让传统"头文件依赖图"失效，CMake 3.20+ 与 Clang/GCC/MSVC 的模块支持需要构建系统配合（P1103R3 Modules 落地）。[史] `find_package` 的 Config/Module 模式、包导出（PkgConfig）也是围绕"如何让标准库与第三方库可发现"的工程约定，无单一"构建系统提案"，属于工程实践层。
+
+- [史] C++20 **Modules（P1103R3）** 打破了构建系统传统的「头文件依赖图」模型：模块接口单元（BMI）必须先在依赖它的翻译单元之前构建，CMake 3.20+ 因此引入 `CXX_MODULES` 实验支持、`target_sources(... FILE_SET CXX_MODULES)`。这是标准演进倒逼构建系统的真实案例——WG21 给语义，构建系统负责调度。见 [P1103](https://wg21.link/P1103)。
 
 ### ㉒.5 权威引用
 - https://www.gnu.org/software/make/ ：GNU Make 官方页，证明 Feldman 1977 的 Make 谱系。

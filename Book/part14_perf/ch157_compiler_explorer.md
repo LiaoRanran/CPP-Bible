@@ -522,6 +522,9 @@ int main() { int x=100; std::cout << null_check(&x) << std::endl; return 0; }
 - **库作者**：在文档里嵌入 CE 链接，让读者一键看到某段代码的实际机器码。
 - **CI 汇编回归**：通过 CE 的 **API** 把"关键函数汇编指纹"纳入门禁，防止无意间的代码膨胀。
 
+- **godbolt.org 的工业用法**：编译器工程师用它复现 bug、库作者用它展示 API 生成代码、面试用它考察“你写的代码真的变成什么”。
+- **本地/CI 集成**：`x86-64 gcc/clang/msvc` 多编译器并排、RV32/ARM 交叉编译、自定义 libc、Compiler Explorer 的 LLVM IR 视图用于教学与调试优化。
+
 ### ㉒.3 生产踩坑：CE 的误用
 - **本地与 CE flag 不一致**：在 CE 用 `-O2` 看爽了，本地却用 `-O0` 编译，结论对不上；必须对齐编译器版本与 flag。
 - **版本漂移**：CE 的编译器版本随时更新，几个月前"验证过"的汇编可能已变；需要可复现应固定版本或用本地 `g++ -S`。
@@ -530,6 +533,8 @@ int main() { int x=100; std::cout << null_check(&x) << std::endl; return 0; }
 
 ### ㉒.4 与标准的互动：看汇编是标准的"旁证"
 ISO C++ 只定义抽象机语义，不规定汇编形态；但 `noexcept`、内联、`constexpr` 折叠、RVO 等标准特性，其"到底省了什么"只能靠 CE/`-S` 旁证（见 ⑬）。C++20 的 `[[likely]]`/`[[unlikely]]` 也直接反映到分支布局。[评] CE 是"把标准特性落到硅片"的显微镜。
+
+**修订链补强（编译器即标准解释器）**：Compiler Explorer 把“同一份抽象机器程序在不同 [IMPLEMENTATION] 上的具体形态”并排呈现，直接暴露 as-if 规则下的实现差异（见 ch156）。它不制造标准，但让 [STANDARD] 的“实现定义/未指定”行为（如 `std::string` 布局、虚表符号名、异常模型）变得肉眼可查。WG21 的提案常附 Compiler Explorer 链接作为“代码实际生成”证据，可见工具与标准演进的互证关系。
 
 ### ㉒.5 权威引用
 - [Compiler Explorer（godbolt.org）](https://godbolt.org/) — 在线多编译器汇编对照

@@ -364,6 +364,9 @@ std::expected<double,int> div(double a,double b){ if(b==0) return std::unexpecte
 - **日志/格式化**：`std::print` 直接对标 fmt，被新项目用作 `std::cout` 的替代品；`std::format` 在 C++23 进一步补 `{:?}` 调试格式。
 - **科学计算/HPC**：`std::mdspan` 被 Kokkos、数值库用于零拷贝多维视图，避免手算偏移。
 
+- **MSVC STL 落地**：微软的 STL 实现（`microsoft/STL`）在 VS 2022 17.8+ 起完整支持 `<expected>`（P0323）、`<print>`（P2093）、`<mdspan>`（P0009），内部服务据此用类型安全错误返回替代异常式处理。见 [Microsoft STL](https://github.com/microsoft/STL)。
+- **构建系统守门 C++23**：CMake 3.30+ 提供 `cxx_std_23` 与对应特性测试宏，CI 据此判定能否启用 `std::expected`/`std::print` 等——[据记载]这是 C++23 进入工业构建的最后一公里。
+
 ### ㉒.3 生产踩坑：C++23 的早期陷阱
 
 - **`std::expected` 的"忘记检查"**：与 `optional` 类似，不检查 `has_value()` 而直接 `.value()` 会在错误态抛 `bad_expected_access`；且 `T` 与 `E` 的存储布局（小对象优化）因实现而异，跨 ABI 传递需谨慎。
@@ -373,6 +376,9 @@ std::expected<double,int> div(double a,double b){ if(b==0) return std::unexpecte
 ### ㉒.4 与标准的互动：20 的补完与 26 的铺垫
 
 [史] 多数 C++23 特性源自 20 周期遗留（expected/print/mdspan 都曾以 TS 或独立提案酝酿），并借 3 年节奏快速转正；同时 C++23 移除垃圾回收 API（P2186）等历史包袱，为 C++26 的反射/契约让路。[评] 建议新项目以 **C++23 为首选基线**（编译器支持到 2024 已较齐），把 20 的四大件 + 23 的补全一起用上。
+
+- [史] **`std::expected`（P0323）** 修订跨度极大：早期雏形为 **N4015/N4109（2014）**，经 P0323 多轮（R3 为最后一个带完整 rationale 的版本），**R9（2019）→R12（2022-01-07 定稿）** 期间按 LEWG/LWG 意见把 `experimental` 命名空间重定向到 `std`、恢复 rationale、为 `expected<cv void, E>` 定义偏特化；2021-04 LEWG 决议将其目标由 TS 改为 IS（即 C++23）。见 [P0323](https://wg21.link/P0323)。
+- [史] **`std::print`（P2093）** 从 **R0（澄清 wchar_t 重载）→R14（2022-03-25 定稿）** 历经 14 轮，主要围绕 SG16（Unicode）的转码语义反复打磨（如 `vprint_unicode` 的编码处理、U+FFFD 替换），目标车辆定为 C++23；**`std::mdspan`（P0009）** 走完 **R0（2015）→R18（2022-07）** 共 19 个版本（R4 从 `array_ref` 改名 `mdspan`、R11 起 `size` 改 `size_t` 并瞄准 C++23）；**deducing this（P0847）** 由 **R0（2018）→R7（2021-07-12）** 定稿进 C++23。见 [P2093](https://wg21.link/P2093)、[P0009](https://wg21.link/P0009)、[P0847](https://wg21.link/P0847)。
 
 ### ㉒.5 权威引用
 

@@ -1066,6 +1066,9 @@ int main() {
 - **ClickHouse**：字节跳动（今日头条 / 抖音）在超大规模上用 ClickHouse 做用户行为分析，并向社区贡献了 ByteHouse 分支；**Cloudflare** 把 HTTP Analytics 与 1.1.1.1 DNS 分析从 Elasticsearch 迁到 ClickHouse 并公开了迁移博客；**Uber** 用其做行程 / 收益分析；Spotify、Wikimedia（页面访问统计）、GitLab（可观测性）、eBay、ContentSquare 等均为公开用户。
 - **Redis**：Twitter（早期时间线缓存）、GitHub（限流与缓存）、Stack Overflow、Pinterest（信息流）、Snapchat、Flickr 均为经典用户；除缓存外，Redis 还承担会话存储、排行榜（`ZSET`）、消息中间件（Streams / pub-sub）、分布式锁（`SET NX`）等角色。
 
+- **ClickHouse 新增坐标（跨行业补强）**：**CERN** 用 ClickHouse 分析大型强子对撞机（LHC）产生的海量实验数据，是「科学 / 高能物理」这一硬核行业的旗舰案例；**Bloomberg** 用其做金融行情与分析；**Tencent / Alibaba** 在广告与监控场景大规模部署；**Lyft**、**Sentry**（错误追踪）、**Rill** 等也是公开用户。从「网页分析」到「粒子物理」再到「金融终端」，ClickHouse 的行业跨度已远超其最初定位。
+- **Redis 新增坐标（跨行业补强）**：**Discord** 以 Redis 支撑实时消息与缓存（其工程博客多次披露单机数十 GB 的 Redis 部署）；**Airbnb**、**Uber**、**Shopify** 用 Redis 做会话 / 限流 / 排行榜；国内的 **Baidu / Alibaba** 同样将其作为核心缓存与中间件。Redis 几乎成为「Web 规模公司的基础设施默认值」，跨电商、社交、出行、游戏全行业。
+
 ### ㉒.4 生产踩坑（真实坑，非教科书）
 
 **Redis：**
@@ -1086,6 +1089,10 @@ int main() {
 - **ClickHouse 自研容器与 SIMD**：`PODArray`（小对象内联 + 连续 `T[]`，后台接 UE 同款的线程本地 Arena + mmap 分配器）替代 `std::vector` 做列，因为 STL 的异常 / 构造 / 迭代器抽象在 hot path 上不划算（第①③节）。向量化 kernel 用宏分发 `SSE2 → AVX2 → AVX-512`（第⑨/⑪节），`std::span`（C++20）用于零拷贝列视图。内部哈希表用自研开放寻址 `HashMap`（CityHash / 基础哈希），非 `std::unordered_map`。
 - **Redis 的 C 实现与 C++ 客户端**：Redis 本体是 C，但数据结构极讲"零拷贝与紧凑编码"——`sds`（长度前缀、二进制安全、小串内联）、`ziplist` → **listpack**（Redis 7 起取代 ziplist，消除级联更新）、`intset`（紧凑整数集，超阈值升级 hashtable，见练习 2）、`dict`（2^n 桶 + 渐进 rehash，见练习 3）。单线程确定性使数据结构**无需锁**，但对象引用计数（`refcount`）用原子自增——因为同一对象可能被多个数据结构共享（如被同时放进 set 与 list）。
 - **客户端层**：`redis-plus-plus` / `hiredis` 用 `std::unique_ptr`（自定义删除器）管理 `redisContext`，把 C 句柄 RAII 化（第⑤节）。
+
+- **ClickHouse 主动拥抱现代 C++ 与 C++20 基线**：近年 ClickHouse 把构建基线抬到 **C++20**（v23.x 起），新代码大量使用 `std::string_view`（C++17）、`std::variant`、`std::span`（C++20，用于零拷贝列视图）等标准词汇类型，同时保留 `PODArray` 等自研容器做 hot-path（见上节）。这是「与现代 C++ 的互动」最实在的姿态：标准提供好用的词汇类型就拿来用，标准容器在极致性能上不够用就自己写。
+- **Redis 刻意留在 C：一种「与标准的互动」反向立场**：Redis 本体至今是 **C 实现**（非 C++），因为它要的是单线程确定性、零异常、零 RTTI/ABI 复杂度——这些恰好是 C++ 标准库默认不保证、却常被现代 C++ 工程主动关闭的特性（见第⑧/⑬节）。`sds` / `listpack` / `intset` / `dict` 的紧凑编码哲学，与 C++ 标准容器「通用但偏胖」形成对照，说明「是否采用现代 C++」本身是工程权衡而非必然。
+- **共同启示（ISO 视角）**：两者都消费 C++17 `std::string_view`、C++20 `std::span` 这类「零成本词汇类型」，却都拒绝把核心数据结构交给 `std::vector` / `std::unordered_map`——这印证了本书反复出现的主题：标准在「词汇类型」上追得快，在「极端性能 idiom」上长期缺位（直到 C++23 才有无序 `std::flat_*` 家族，见第130/132章）。
 
 ### ㉒.6 权威引用清单
 

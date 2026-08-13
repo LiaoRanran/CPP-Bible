@@ -1585,6 +1585,8 @@ int main() {
 - **游戏与引擎**：Unreal 的 `FMemStack`、Unity 的帧分配器都是栈式/单调分配器的产品化；EASTL（EA 的 STL 替换）提供 `allocator` 与固定池，用于主机游戏确定性内存。
 - **高频交易与数据库**：自研 thread-local 池（第 ⑨ 节 `unsynchronized_pool_resource` 的思想）把每笔订单的临时对象限制在本地核，规避跨核锁；RocksDB 用自定义 arena 控制 SSTable 写入的内存来源。
 - **Web 与基础设施**：Chromium 的 PartitionAlloc、Facebook/Folly 的 `SysArena`、jemalloc 的 `tcache` 都是「分级空闲列表 / 线程本地缓存」思想（第 ⑪ 节）的大规模工业实现。
+- **影视渲染（Pixar RenderMan / OSL）**：离线渲染器用分帧/分 tile 的 arena allocator 管理巨量微多边形与着色上下文，单帧末整块回收——monotonic allocator 在影视离线渲染的标杆应用。
+- **网络代理 / 边车（Envoy / HAProxy）**：Envoy 用 `Buffer::BufferFragment` 与自建缓冲区管理做零拷贝转发；HAProxy 自研内存池（per-connection pools）管理连接对象，避免每连接 `new`/`delete` 的缓存抖动。
 
 ### ㉒.3 生产踩坑：分配器的常见误用
 
@@ -1596,6 +1598,7 @@ int main() {
 ### ㉒.4 与标准的互动：分配器与 PMR 的演进
 
 [史] C++98 的 `std::allocator` 接口繁冗被诟病；**C++11 的 `allocator_traits`（N2982 一脉）** 把必需接口降到最小；**P0220R1（C++17）** 把 Library Fundamentals TS 的 **PMR**（`memory_resource`/`polymorphic_allocator`/各种内置资源）整体采纳，是分配器模型 20 年来最重大的一次升级（见 ㉒.5）。[史] **C++20 的 P0674** 让 `std::make_shared` 支持数组，缓解了「`shared_ptr<T[]>` 无法用 make 构造」的尴尬（见 ch41）。[评] WG21 当前方向是把 `std::allocator` 进一步简化为「薄薄一层」、让 PMR 成为默认推荐路径，并在 constexpr 容器上探索编译期分配——目标始终是「默认零成本、需要时零摩擦切换后端」。
+- [史] 分配器模型的修订链可串为：**N2982 一脉的 `allocator_traits`（C++11）把必需接口压到最小 → P0220R0→P0220R1（C++17，PMR 把运行时多态分配器标准化）**。ISO 条款 `[allocator.requirements]` 与 `[mem.res]`（`memory_resource`/`polymorphic_allocator`）把「分配后端」从编译期模板参数升级为运行时可替换对象——委员会的设计理由是：既保留默认 `new` 的零心智负担，又让大型多团队代码库能按模块/作用域切换后端而不污染全局。
 
 ### ㉒.5 权威引用
 

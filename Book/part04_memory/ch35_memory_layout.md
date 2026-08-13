@@ -1337,6 +1337,8 @@ int main() {
 - **游戏引擎**：Unreal Engine 与 Unity 的底层大量手工控制对象在内存中的排列（结构体字段重排以减少 padding、cache line 对齐避免 false sharing、SOA 布局替代 AOS），直接决定帧预算能否守住；这些优化全部建立在「你知道字段偏移与对齐」之上（见第 ⑮–⑱ 节）。
 - **数据库与存储引擎**：LevelDB / RocksDB 的 SSTable block、ClickHouse 的列式存储，刻意按 cache line 与 SIMD 宽度对齐数据，连对齐都来自 `alignas` 与内存映射布局的协同。
 - **HFT / 低延迟系统**：高频交易订单匹配引擎用 `mlock` 锁页 + 大页（huge page）规避 TLB miss 与缺页中断（第 ⑪/⑬ 节），并把关键结构体对齐到独立 cache line 以隔离生产者/消费者线程，这正是 `hardware_destructive_interference_size` 的用武之地。
+- **汽车电子（AUTOSAR / 车载 ECU）**：AUTOSAR 规范的 Memory Mapping 机制（`MEMORY_*` 链接器段 + MPU/内存保护分区）强制把代码、数据、栈、堆分别映射到不同存储区与保护域，整个车载控制器的内存布局由链接脚本与内存映射规范决定——这是「地址空间布局是功能安全合规要求（ISO 26262）」而非仅性能优化的真实案例。
+- **多媒体 / 视频编解码（FFmpeg / x264）**：FFmpeg 的 `av_malloc` 按 32/64 字节对齐分配音视频帧缓冲（配合 SIMD 读写），且 `AVFrame` 的 plane 排列与 `linesize` stride 对齐直接决定能否零拷贝送给 GPU（VAAPI/VDPAU）——「字段偏移与对齐」在编解码流水线里是硬约束。
 
 ### ㉒.3 生产踩坑：内存布局与地址空间的常见误用
 
@@ -1348,6 +1350,7 @@ int main() {
 ### ㉒.4 与标准的互动：布局与对齐如何进入 C++ 标准
 
 [评] C++ 标准刻意保持「高层」：它只规定 *storage duration*、`alignof`/`alignas`（C++11 引入对齐关键字）、对象表示（object representation）与值表示（value representation）的区分，而把「段、页、ASLR、虚拟地址」全部交给实现——这是有意为之的可移植性契约。[史] 对齐控制的关键扩展是 **C++17 引入 `std::hardware_destructive_interference_size` / `hardware_constructive_interference_size`**（见 ㉒.5 的 P0154），把长期靠宏硬编码的 `CACHELINE_SIZE` 第一次变成标准可移植量；而 **C++17 的 P0035（超对齐数据的 `operator new(size, align_val_t)`）** 让 `alignas(64)` 的过对齐类型能被动态分配正确满足，至此语言层与硬件 cache line 才真正对接。[评] WG21 的方向是把「实现定义的内存布局细节」逐步以可移植常量与类型（如 `std::launder`、P0593 隐式对象创建）收编进标准，而非暴露具体段地址——这延续了 C++「不付出不使用的抽象」哲学。
+- [史] 把「硬件对齐」收编进标准的修订链为：**N2341（Alignment support，随 C++11 引入 `alignof`/`alignas`，[据记载]）→ P0035R0→…→P0035R4（C++17 过对齐动态分配）→ P0154R0→P0154R1（C++17 可移植 cache-line 常量）**，三者层层把「实现定义的布局细节」变成可查询的标准量。ISO 条款 `[basic.align]` 只要求对象满足 `alignof(max_align_t)` 的最低对齐，把更高对齐留给实现与 P0035 的路径——这是委员会「可移植优先、不预设具体地址」的一贯契约。
 
 ### ㉒.5 权威引用
 

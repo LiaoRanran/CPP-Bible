@@ -543,6 +543,8 @@ int first_even(const std::vector<int>& v) {
 - 数据清洗 / ETL / 日志分析 / 量化信号流水线：需要对百万级元素做 `filter→transform→take`，又不想为每个中间步骤分配容器；Ranges 的视图零拷贝、惰性求值正中下怀。
 - 编译器与静态分析器中常见「遍历 AST 并做多遍变换」的代码，Ranges 让这些管道既类型安全又不损失性能。
 - 在游戏与图形领域，Ranges 被用于批量处理实体集合、空间分区查询的惰性过滤。
+- **量化/信号处理（pandas-like C++ 管道）**：量化研究用 Ranges 把「行情切片 → 指标计算 → 信号过滤」写成惰性管道，避免为每步分配中间容器，契合「百万级 tick 低延迟」需求。
+- **编译器/格式化（Clang 诊断、fmt 库）**：`fmt`/`std::format` 与 Clang 诊断信息生成在「遍历 AST/参数包」时用 Ranges 风格组合变换，提升可读性与类型安全。
 
 ### ㉒.3 生产踩坑：视图是「借用」，不是「拥有」
 
@@ -556,6 +558,8 @@ int first_even(const std::vector<int>& v) {
 - `[评]` Ranges 把「Concept 约束 + 视图组合 + 算法重载」三者拧成一个体系，是 C++20 最能体现「零开销抽象」哲学的特性之一。
 - C++20 落地基础 Ranges（P0896）；C++23 大幅扩军：`views::zip`、`views::chunk`、`views::adjacent`、`ranges::to`、切片与滑动窗口等；C++26 继续补 `views::enumerate` 风格与更多适配器。
 - `[评]` 标准演进的张力在于：既要保持「视图零开销」，又要让算法能直接吃「范围」而非迭代器对——新旧两套接口长期并存。
+
+- [史] **Ranges 修订链**：**P0896（The One Ranges Proposal）** 由 Eric Niebler 等提案，最终修订 **R4（C++20 采纳）**，把 range-v3 的设计沉为标准；C++23 的 `views::zip`/`chunk`/`adjacent`/`ranges::to` 与 C++26 的 `views::enumerate` 在其上持续扩军；<https://wg21.link/p0896>。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 

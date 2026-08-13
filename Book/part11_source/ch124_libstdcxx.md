@@ -860,6 +860,23 @@ int main() {
 > - GCC 11 起逐步移除 `_GLIBCXX_USE_CXX11_ABI=0` 的过渡路径，旧 COW 字符串进入「仅历史兼容」状态。
 
 
+### ㉒.2 真实工程坐标：libstdc++ 活在哪些真实产品里
+
+libstdc++ 不是「某个应用的库」，而是 **整个 GNU/Linux 世界的 C++ 底座**，体量远超任何单点产品：
+
+- **所有主流 Linux 发行版的用户态**：Debian / Ubuntu / RHEL / Fedora / Arch，乃至嵌入式 Yocto / Buildroot 镜像，只要用 GCC 工具链编译，最终链接的几乎都是 `libstdc++.so.6`。全球数据中心的绝大部分 Linux 服务器与容器镜像（glibc + GCC）都跑在 libstdc++ 之上——这是地球上部署最广的 C++ 标准库实现，没有之一。
+- **超级计算与科学工程**：TOP500 超算绝大多数以 GCC 为默认编译器，libstdc++ 支撑 MPI / OpenMP 负载，出现在 LLNL、ORNL、CERN 等机构的数值模拟与实验数据分析管线里。
+- **Android NDK 的历史底座**：早期 Android NDK（r16 之前）默认 C++ 标准库就是 libstdc++，数十亿台安卓设备的原生代码（游戏引擎、音视频、系统组件）都曾链接它；直到 NDK r16（2017）起默认切到 libc++、r18（2018）彻底移除 libstdc++，这段历史才算翻篇（见第125章）。
+- **嵌入式与跨平台固件**：众多路由器、机顶盒、工业控制器的固件用 GCC + libstdc++ 构建；GCC 的「`-static-libstdc++` 可移植部署」特性正是为这类「目标机缺 `.so`」的场景设计的。
+
+### ㉒.4 与标准的互动：libstdc++ 如何追标准、又如何用 ABI 政策反哺社区
+
+libstdc++ 的实现严格以 ISO/IEC 14882（C++ 标准正文第 20–33 条「库条款」）为蓝本，并通过 **LWG（Library Working Group）议题追踪**（<https://cplusplus.github.io/LWG/>）逐条落实缺陷报告与设计变更：
+
+- **特性落地节奏**：libstdc++ 的状态页逐项列出 C++11/14/17/20/23 各设施的实现进度（如 `<filesystem>` 采纳自 Filesystem TS 18822:2015，对应提案 **P0218R0→P0218R1**；`<format>` 对应 **P0645R10**）。它通常「跟」在标准之后而非「领」，因为背着一个铁律——**绝不破 ABI**。
+- **双 ABI 是「与标准互动」的极端样本**：C++11 要求 `std::string` 的 `operator[]` 不得使引用失效，间接判了旧 COW 字符串死刑；libstdc++ 没有像 libc++ 那样直接换布局，而是用 inline namespace `__cxx11` + 符号版本（`GLIBCXX_3.4` 旧 / `CXXABI_1.3.x` 新）在同一 `.so` 里并存两套 `std::string`（见 §0.3/⑧）。这套机制记录在官方双 ABI 文档（<https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html>），是「标准演进 vs 二进制兼容」矛盾的最权威工程注脚。
+- **委员会设计理由的实证**：标准规定 `std::string` 小对象必须连续、迭代器稳定，正是为了「旧 ABI 的 COW 指针无法满足」，这一条直接催生了 GCC 5 的 SSO 新布局——libstdc++ 的取舍反过来成了标准条款的现实约束示例。
+
 ### ㉒.5 权威引用
 - [GCC libstdc++ 官网](https://gcc.gnu.org/libstdc++/)：libstdc++ 项目主页与发布说明。
 - [libstdc++ 在线文档](https://gcc.gnu.org/onlinedocs/libstdc++/)：API 手册与扩展设施。

@@ -1470,6 +1470,9 @@ int main() {
 - **Google glog**：老牌工业日志（INFO/WARNING/ERROR/FATAL + 符号化栈），在大量后端服务中。
 - **结构化日志（JSON）**：云原生场景用 JSON 日志对接 ELK/Loki（见 ⑮）。
 
+- **日志库坐标**：[spdlog](https://github.com/gabime/spdlog)（header-only、fmt 后端、异步模式）、[glog](https://github.com/google/glog)（Google，带栈追踪/严重级别）、Boost.Log、[fmt](https://github.com/fmtlib/fmt)（格式化后端，C++20 `std::format` 的蓝本）。
+- **嵌入式/内核**：资源受限处用环形缓冲 + 关中断写、或 RTT/Segger SystemView 流式追迹，避免动态分配与阻塞。
+
 ### ㉒.3 生产踩坑：日志的误用
 - **热路径同步阻塞写盘**：每条 `LOG_INFO` 都同步 `fwrite`，IO 拖垮吞吐；应用异步队列 + 后台线程（见 ⑥）。
 - **过度日志**：DEBUG 级别在生产也全开，既泄露信息又占 IO；应靠"关闭级别零开销"（见 ⑨）与运行时档位。
@@ -1480,7 +1483,10 @@ int main() {
 ### ㉒.4 与标准的互动：std::format 来自 {fmt}
 C++20 的 **P0645（Text Formatting）** 把 {fmt} 的 `{}-占位`、类型安全、可扩展 `formatter` 特化吸进 `<format>`，使日志/序列化共用同一格式化语言。C++23 进一步补 `std::print`/`std::format` 的 `std::out` 等易用设施。[评] 标准吸收社区最佳实践，是日志/格式化"告别 printf 时代"的标志。
 
+**修订链补强（格式化与标准）**：现代日志库几乎都建在 `{fmt}` 风格格式化之上，而 `std::format`（[P0645](https://wg21.link/P0645)，C++20）正是把 fmt 的核心设计吸收进标准，提供类型安全、编译期格式串检查、与 iostreams 解耦的文本格式化。委员会同时引入 `std::format_to`/`std::vformat` 与 `std::basic_format_context`，让日志库能直接复用标准格式化而非自带实现。日志的“级别/异步/轮转”仍由库负责（标准不管 I/O 策略）。
+
 ### ㉒.5 权威引用
+- [WG21 P0645 — std::format](https://wg21.link/P0645) — C++20 文本格式化
 - [spdlog 仓库](https://github.com/gabime/spdlog) — 高性能异步 C++ 日志库工业事实标准
 - [fmt 仓库（std::format 的前身）](https://github.com/fmtlib/fmt) — 类型安全格式化，C++20 标准来源
 - [cppreference: std::format (C++20)](https://en.cppreference.com/w/cpp/utility/format/format) — 标准格式化接口

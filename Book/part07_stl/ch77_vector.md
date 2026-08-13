@@ -478,6 +478,9 @@ int main() {
 
 `std::vector` 几乎存在于所有 C++ 二进制中：Chromium 用 `std::vector<uint8_t>` 做网络包缓冲；LLVM 用 `SmallVector`（栈缓冲变体）承载绝大多数中小集合；游戏引擎的渲染命令队列、粒子系统用 `vector` 管理批量数据；高频交易系统的行情快照常以 `vector<double>` 做零拷贝批量计算。它也是 `std::string`（`basic_string`）与多数标准算法的默认后端。
 
+- **跨行业实例（数据库内核）**：SQLite 的 B 树与记录层虽用自定义内存管理，但众多现代嵌入式/服务端数据库（如 RocksDB 的 `vector` 批量写缓冲、ClickHouse 的列式 `vector` 批处理）以 `std::vector` 承载行批与索引块；其「连续内存 + 预分配」特性直接契合列式扫描的 SIMD 友好访问。
+- **跨行业实例（游戏物理/渲染）**：Unreal Engine 与 Unity 的 C++ 后端在粒子系统、骨骼变换、批渲染命令中大量使用 `TArray`（Unreal 对 `std::vector` 风格的封装）与裸 `std::vector`，证明其在实时 60fps 渲染路径上的稳定性。
+
 ### ㉒.3 生产踩坑：vector 的常见误用与陷阱
 
 [评] 最典型的是「扩容导致的迭代器/指针/引用失效」：在循环里反复 `push_back` 却保存了指向元素的指针，扩容后全部悬空。其次是「未预分配」放大摊还成本——已知规模时不用 `reserve`，会在百万级插入中出现数十次整体搬迁。还有「`erase` + `remove` 惯用法」用错导致残留元素；以及 `vector<bool>` 特化并非真正的容器（返回代理引用），在需要真实 `bool&` 或跨 ABI 传递时踩坑。
@@ -485,6 +488,9 @@ int main() {
 ### ㉒.4 与标准的互动：vector 与 C++ 标准的演进
 
 [史] `vector` 自 C++98 起即稳定存在，C++11 引入移动构造与 `emplace_back`，使返回 `vector` 变为廉价（在 NRVO 之外再添移动语义）。C++17 增加 `pmr::vector`（多态分配器）与 `append_range` 等接口；C++20 起 `vector<bool>` 等逐步纳入 `constexpr`。标准委员会的长期立场是「不破坏连续布局」，因此 `vector` 的 ABI 相对稳固，仅 `vector<bool>` 特化因历史包袱被多次讨论是否弃用（目前维持）。
+
+- **WG21 修订链**：C++23 的 `std::flat_map` / `flat_set`（连续数组 + 排序，缓存友好）源自 P0429R0（Zach Laine，2017）→ 后续修订，最终由 P0429 系列与 P1222（flat_set）在 C++23 落地，并由 P2767R1/R2（Arthur O'Dwyer，wg21.link/P2767R1）纠正在 libc++ 实现中暴露的缺陷；这条链说明标准在反思「红黑树 vs 连续数组」的取舍时，仍以「不破坏 `vector` 连续布局」为底线。
+- **ISO 条款**：`std::vector` 规定于 ISO/IEC 14882 §24.3.11（`[vector]`），并保证元素连续存储（`data()` 与 `&v[0]` 等价于底层数组）——这一连续性保证是 C ABI 互操作与 SIMD 优化的法理基础，也是它与 `deque`/`list` 的根本区别。
 
 ### ㉒.5 权威引用
 

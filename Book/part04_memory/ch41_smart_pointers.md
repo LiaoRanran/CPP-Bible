@@ -1596,6 +1596,8 @@ int main() {
 - **LLVM / Clang**：核心 IR 对象用侵入式引用计数（`IntrusiveRefCntPtr`）而非 `shared_ptr`，因为 AST 节点数量以千万计，`shared_ptr` 控制块的额外分配不可接受——这正是第 ⑨ 节「`make_shared` 一次分配优势」的反面教材（某些场景连一次分配都要省）。
 - **游戏引擎（Unreal）**：用 `TSharedPtr`/`TWeakObjectPtr` 等自研 UObject 引用系统（配合垃圾回收），而非标准 `shared_ptr`，因为要跟编辑器/反射/序列化深度集成——标准智能指针无法承载这些。
 - **数据库/网络服务**：RocksDB、Envoy 等大量用 `unique_ptr` 管理连接、缓冲区、任务对象，用 `shared_ptr` 在多线程间共享配置与连接池，`weak_ptr` 做缓存项的「可失效句柄」。
+- **自动驾驶开源栈（Apollo / Autoware）**：Apollo 等 L4 自动驾驶栈大量用 `std::unique_ptr` 管理感知/规划/控制模块的算法对象生命周期，跨进程用共享内存（非 `shared_ptr`）传递传感数据——智能指针在自动驾驶里的主干用法。
+- **WebAssembly / Emscripten JS↔C++ 绑定**：Emscripten 的 `emscripten::val` 与 embind 绑定层用 `std::shared_ptr`/`unique_ptr` 管理桥接对象的生命周期，保证 JS 侧持有的 C++ 对象不被提前回收。
 
 ### ㉒.3 生产踩坑：智能指针的常见误用
 
@@ -1608,6 +1610,7 @@ int main() {
 ### ㉒.4 与标准的互动：智能指针与 WG21 演进
 
 [史] C++11 把 `unique_ptr`/`shared_ptr`/`weak_ptr`/`make_shared` 纳入标准；**C++17 的 `std::shared_ptr` 数组支持（P0414 一脉）与 `std::weak_from_this`** 逐步补齐；**C++20 的 P0674** 让 `make_shared` 支持数组（第 ⑨ 节）。[史] **C++20 的 `std::atomic<shared_ptr>`（第 ⑫ 节）** 来自 WG21 把原子智能指针标准化的努力，使「无锁替换共享指针」成为一等公民，此前需自己加锁。而第 ⑥ 节的 **EBO（空基类优化）** 让 `unique_ptr` 的删除器为零开销——这是标准库与对象模型（ch45/ch52）协同的范例。[评] WG21 方向是把 `shared_ptr` 进一步 constexpr 化（C++26 探索），并让 `make_shared_for_overwrite` 等更安全的构造成为默认推荐；同时明确「`unique_ptr` 应覆盖绝大多数所有权场景，`shared_ptr` 仅在确需共享时才用」的社区共识。
+- [史] 智能指针的修订链补充：**P0414R0→R1→R2（C++17，把 Library Fundamentals TS 的 `shared_ptr`/`weak_ptr` 增强——含数组 `operator[]` 与 aliasing 构造器——合并进标准）** 与 **P0674R0→…→P0674R1（C++20，`make_shared<T[]>`/`allocate_shared<T[]>`）**。ISO 条款 `[util.smartptr]` 把「引用计数 + 控制块」的语义固化，而 **C++20 的 `std::atomic<shared_ptr>`** 进一步把「无锁替换共享指针」标准化——委员会在「默认方便（`shared_ptr`）」与「零开销（`unique_ptr` + EBO 删除器）」之间持续校准。
 
 ### ㉒.5 权威引用
 

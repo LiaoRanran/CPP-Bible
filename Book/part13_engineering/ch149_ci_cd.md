@@ -992,6 +992,9 @@ chapter 149: CI/CD pipeline verified by g++
 - **Chromium**：自有超大规模 CI 农场，编译缓存 + 分布式编译，单 commit 触发成千上万任务。
 - **多数现代 C++ 项目**：用 **GitHub Actions** 或 **GitLab CI** 做 build/test/static-analysis/package 流水线（见 ⑫）。
 
+- **大型 C++ 项目 CI**：Chromium 用 Gerrit + 数千台构建从机跑 tryjob；LLVM 用 Buildbot 矩阵覆盖 GCC/Clang/MSVC 多配置；微软 STL 用 Azure Pipelines 对每个提案跑 conformance 测试。
+- **量化交易/嵌入式**：CI 含交叉编译 + 静态分析（clang-tidy/PVS-Studio）+ 二进制体积回归，CD 多为内部灰度而非公网发布。
+
 ### ㉒.3 生产踩坑：CI/CD 的常见误用
 - **构建不可复现**：本地能编、CI 编不过，根因常是缺失依赖钉版本、环境漂移；应锁工具链与依赖，用容器（见 ⑪）固化环境。
 - **ccache 缓存键错误**：缓存键没包含编译器版本/ flag，命中了"看似相同实则不同"的产物，导致静默错编；键必须含 `__cplusplus`、编译器指纹、关键 flag。
@@ -1001,7 +1004,10 @@ chapter 149: CI/CD pipeline verified by g++
 ### ㉒.4 与标准的互动：构建系统与 C++ 生态
 CI 本身非 ISO C++ 标准，但它与标准工具链深度绑定：**CMake + CTest** 是 C++ 事实构建/测试标准，CI 直接消费其产物；`ccache` / 分布式编译（`distcc` / **Incredibuild**）缩短矩阵构建；`-Wall -Wextra -Werror` 与 clang-tidy 作为编译期门禁，把第147章的审查前移。[评] 好的 C++ CI = 多编译器矩阵 × 缓存 × 静态分析门禁 × 测试门禁，缺一不可。
 
+**修订链补强（CI 与标准/工具链）**：CI 矩阵之所以必须覆盖三大编译器，根本原因是 [IMPLEMENTATION] 层差异：同一 C++17 程序在 libstdc++/libc++/MSVC STL 上行为可能不同（如 `std::string` SSO、异常模型、特性宏支持度）。WG21 的特性测试宏（`__cpp_*`）规范（见 [cppreference: feature test](https://en.cppreference.com/w/cpp/feature_test)）正是为让 CI 与代码用统一宏判断能力，而非嗅探 `__cplusplus`。CMake 的 `CMAKE_CXX_COMPILER_ID`/`target_compile_features` 把“编译器能力”抽象成可声明约束，使 CD 能按工具链锁版。
+
 ### ㉒.5 权威引用
+- [cppreference: Feature testing](https://en.cppreference.com/w/cpp/feature_test) — `__cpp_*` 特性宏总入口
 - [GitHub Actions 文档](https://docs.github.com/en/actions) — 主流 C++ CI 平台的流水线即代码
 - [GitLab CI/CD 文档](https://docs.gitlab.com/ee/ci/) — 另一种主流 CI 实现
 - [ccache（编译缓存，加速矩阵构建）](https://ccache.dev/) — 缓存键与命中原理

@@ -657,6 +657,8 @@ int main(){Z z;z.X::f();z.Y::f();std::cout<<std::endl;return 0;}
 - **COM / IUnknown（Windows）**：COM 对象「实现一个或多个接口」本质是 MI 思想——一个类 `QueryInterface` 出多个接口指针，每个接口是一个基类；这正是 C++ MI 表达「is-a 多个契约」的工业主场。
 - **Qt / 框架的事件 + 对象模型**：`QObject` 派生类常同时继承框架基类与业务接口，靠 MI 同时接入对象树与领域契约；Qt 还大量用多继承表达「既是 Widget 又是某接口」。
 - **Boost / 标准 trait 风格**：`boost::enable_shared_from_this` 等以基类形式混入能力，多继承用于「正交能力组合」而非 is-a 树。
+- **音频插件（VST3 / Steinberg）**：VST3 插件类通过多继承同时实现 `IAudioProcessor` 与 `IEditController` 等多个接口，一个组件「is-a 多个契约」——COM 风格 MI 在音频工业的真实主场。
+- **GUI 工具包（wxWidgets）**：wxWidgets 控件常多继承多个接口基类（如 `wxWindow` + `wxEvtHandler`），用 MI 同时接入窗口体系与事件体系——「正交能力组合」的工业用法。
 
 ### ㉒.3 生产踩坑：多重继承的误用
 
@@ -668,6 +670,7 @@ int main(){Z z;z.X::f();z.Y::f();std::cout<<std::endl;return 0;}
 ### ㉒.4 与标准的互动：多重继承与 WG21 演进
 
 [史] MI 自 C++98 即为语言核心；**Itanium C++ ABI** 规定了其在 GCC/Clang 的具体布局（第 ⑩ 节）。**C++11 的 `override`/`final`** 让 MI 体系里的虚函数重写更安全、可去虚化；但 WG21 **从未简化 MI 本身**——它的复杂度与 ABI 成本被视为「应谨慎使用」的特性。[评] 标准库自身的实践（极少用 MI，仅 `iostream` 一处）与社区共识一致：**优先组合（ch46）与 CRTP（ch51）+ 接口继承**，把 MI 限制在「确实需要 is-a 多个契约」的场景（如 COM 风格接口聚合）。`[[no_unique_address]]`（P0840，C++20，ch52）则为「以成员方式混入空接口」提供零开销替代，进一步降低对 MI 的依赖。整体方向是：**保留 MI 兼容性，但新设计应逃逸到组合/CRTP/概念约束**。
+- [史] 多重继承的修订链：**P0840R0→R1→R2（C++20，`[[no_unique_address]]`）** 为「以成员方式混入空接口」提供零开销替代，进一步降低对 MI 的依赖。ISO 条款 `[class.mi]` 规定 MI 的语义与菱形歧义处理，其对象布局（多个 vptr、thunk 表）由 **Itanium C++ ABI** 规定——委员会保留 MI 兼容性，但标准库自身（仅 `iostream` 一处用 MI+虚继承）与社区共识一致：优先组合（ch46）+ CRTP（ch51）+ 概念约束。
 
 ### ㉒.5 权威引用
 

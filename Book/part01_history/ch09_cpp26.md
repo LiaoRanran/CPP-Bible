@@ -340,6 +340,9 @@ static_assert(__GNUC__ >= 13, "gcc13+");
 - **`std::execution`**：P2300 已被 libunifex、stdexec 等独立实现验证，用于异步管线（GPU/网络栈）。
 - **契约**：Clang 的 `-fcontracts` 实验选项与 P2900 思路对齐，用于安全关键（航空/汽车）代码的运行时检查。
 
+- **NVIDIA stdexec**：NVIDIA 开源的 `stdexec` 是实现 P2300 sender/receiver 模型的参考库，用于 CUDA 异步管线与 GPU 任务图——它是 `std::execution` 提案「先在真实硬件上验证」的坐标。见 [stdexec](https://github.com/NVIDIA/stdexec)。
+- **编译器实验分支**：GCC 14/15 与 Clang 的实验模式已提供 C++26 的 `std::contracts`、`std::hazard_pointer` 以及 `std::meta` 反射原型，供库作者提前试水——见 [GCC C++ 状态页](https://gcc.gnu.org/projects/cxx-status.html)。
+
 ### ㉒.3 生产踩坑：超前采用的陷阱
 
 - **未定型 ABI/API**：C++26 提案仍在修订（如 P2996 已到 R13），最终语法/语义可能与预览实现不同，抢用会导致大规模重写。
@@ -349,6 +352,10 @@ static_assert(__GNUC__ >= 13, "gcc13+");
 ### ㉒.4 与标准的互动：提案在飞行中
 
 [史] C++26 的特性通过 P 编号提案（P2996/P2900/P2300 等）在 WG21 邮件里持续演进，进度可于 `isocpp.org/std/status` 与 `github.com/cplusplus/draft` 跟踪；最终并入工作草案后由 ISO 投票。[评] 对工程师的务实建议：把 C++26 当"前瞻储备"——现在学概念，但生产仍以 C++20/23 为锚。
+
+- [史] **静态反射（P2996）** 从 **R0（初始，含 `define_class`/`value_of`）→R13（2025-06-20）** 迭代，关键转折包括 R8 把反射运算符由 `^` 改为 `^^`、R10 合并 consteval blocks（P3289）、R13 处理静态匿名联合体成员并规范 `reflect_constant`/`reflect_object`；目标为 C++26。见 [P2996](https://wg21.link/P2996)。
+- [史] **契约（Contracts）** 的曲折：C++20 原纳入 **P0542** 却在最后阶段被投票移除；**P2900** 是吸取教训后的重新提案，经 **R0→R14（2025）** 重构语义模型（audit/ignore/enforce 三模式、中断 handler），目标重回 C++26。见 [P2900](https://wg21.link/P2900)、[P0542](https://wg21.link/P0542)。
+- [史] **`std::execution`（P2300）** 由 **R0（初始）→R10（2024-06-28）** 共 11 版，R4 起将 `typed_sender` 改名为 `sender`、`set_done` 改 `set_stopped`、引入 `completion_signatures`，R9/R10 用成员函数替代 `tag_invoke` 定制并新增 `__cpp_lib_senders` 特性宏——它是 C++26 异步框架的主干。见 [P2300](https://wg21.link/P2300)。
 
 ### ㉒.5 权威引用
 

@@ -860,6 +860,9 @@ Boost 不是教科书玩具，而是工业软件的隐形底座：
 
 与「标准已吸收」形成对照——今天的工程共识是「能用 `std::` 就用 `std::`，把 Boost 留给 Asio/Beast/Geometry/Spirit/MPL 这些标准尚未覆盖的高地」。
 
+- **ROS（Robot Operating System）**：机器人操作系统中间件把 Boost 当作基础依赖——`boost::shared_ptr`、`boost::filesystem`、`boost::thread`、`boost::system`、`boost::date_time` 贯穿节点通信与构建系统。这是 Boost 跨进「机器人 / 自动驾驶」这一硬实时行业的典型案例（ROS 2 虽改用更多 `std::` 与现代设施，但历史代码与大量包仍深度依赖 Boost）。
+- **MongoDB**：开源分布式文档数据库在相当长一段时间内重度依赖 Boost（`Boost.Filesystem`、`Boost.Program_options`、`Boost.Thread`、`Boost.System`、`Boost.Chrono`），其构建系统对 Boost 版本有硬性下限。虽然后续版本逐步削减 Boost 依赖，但「数据库内核把 Boost 当强依赖」是工业软件的经典样本。
+
 ### ㉒.3 生产踩坑：版本分裂、编译慢、头文件膨胀、迁移成本
 
 - **版本分裂与 ABI 不兼容**：Boost **不保证**跨版本 ABI 稳定（连小版本之间也未必兼容）。Windows 上编译产物文件名编码了编译器/版本/线程模型（如 `libboost_filesystem-mgw13-mt-x64-1_83.dll`），混链两个 Boost 版本（例如 `1.74` 与 `1.82`）会产生 **ODR 违例**：同名符号两份、布局不同，`dlopen`/`LoadLibrary` 时静默选错，运行时崩溃或数据错乱。防御手段是统一 `find_package(Boost 1.83 EXACT REQUIRED)`，并用 `BOOST_VERSION` 静态断言守卫。
@@ -892,6 +895,12 @@ Boost 不是教科书玩具，而是工业软件的隐形底座：
 | `boost::stacktrace` 思想 | `std::stacktrace`（C++23） | P0881R7 | 多家 |
 
 > 史料补遗：Boost 的「成功即被超越」使其最好的库往往活成标准；剩余库要么长尾维护，要么因「编译慢、体量大」被边缘化。但其作为「标准风向标」的历史价值无可替代——C++11 一次性吸收了约 12 个 Boost 组件，C++17 再吸收一批，C++20/23 仍在持续收编。
+
+> 修订链补遗（wg21.link 核实的真实修订）：上表给出「Boost 组件 → 标准」的对应关系，这里把几条关键提案的完整修订链补全，佐证「Boost 是标准孵化器」不是口号：
+> - `std::span`：由 **P0122R0 → … → P0122R7**（Neil MacIntosh、Stephan T. Lavavej，2018）进入 **C++20**，落于标准条款 [span]；其「不拥有的连续视图」思想正源自 GSL 与 Boost 生态。
+> - `std::expected`：由 **P0323R0 → … → P0323R12**（Vicente Botet Escribá、JF Bastien）进入 **C++23**，落于新增条款 [expected]；其设计直接继承自 Andrei Alexandrescu 的 `Expected<T>` 与 Boost.Outcome 的讨论。
+> - `std::print` / `std::println`：由 **P2093R0 → … → P2093R14**（Victor Zverovich）进入 **C++23**，建立在 `std::format`（P0645R10）之上——而 `std::format` 本身又源自 Boost.Format 与 {fmt}（见第131章）。
+> - 委员会设计理由：这些「词汇类型（vocabulary types）」之所以被标准收编，正是因为 Boost 在十年生产中证明了「零拷贝视图（string_view/span）」「显式错误（expected）」「类型安全格式化（format）」是好设计；ISO/IEC 14882 第 20–33 条库条款的扩张，很大一部分是「把社区验证过的 Boost 组件标准化」。
 
 ### ㉒.5 权威引用
 

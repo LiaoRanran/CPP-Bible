@@ -1078,6 +1078,9 @@ int main() {
 
 网络封包解析、行情快照、图像/音频缓冲的零拷贝切片是 `std::span` 的主场：Chromium 的 `base::span` 被广泛用于字节流处理；游戏引擎把 `span<uint8_t>` 作为资源加载的统一接口；金融系统的行情快照用 `span<const double>` 做无拷贝批量计算；LLVM/Clang 的 `ArrayRef` 是 `span` 的先行者，早已在编译器各层传递连续区间。
 
+- **跨行业实例（科学计算/数值库）**：Eigen、Blaze 等线性代数库的「只读矩阵视图」与 `Eigen::Map`、NumCpp 的缓冲接口，用 `span`/视图语义包装外部内存（如从 HDF5/NumPy 数组借来的连续缓冲），做到「零拷贝把外部数据喂给数值核」；这是 HPC 与数据科学交叉处的真实用法。
+- **跨行业实例（图形/游戏资源）**：Unity 的 C++ 后端与 Unreal 的资源序列化用 `span<uint8_t>` 表示「从文件/网络读来的字节块切片」，在解析网格/纹理时避免逐层拷贝；把视图而非所有权传递到解析栈，是大型资源管线降低堆压力的常用手段。
+
 ### ㉒.3 生产踩坑：span 的常见误用与陷阱
 
 [评] 最大的坑是「悬空视图」：span 不拥有数据，若底层容器（如临时 `vector` 或栈数组）先销毁，span 立刻悬空——典型的「返回 `span` 指向局部变量」错误。另一坑是「把 `span` 当容器用」——它没有 `push_back`、不管理生命周期，误用会编译失败或语义错乱。还有 `span` 与 `vector` 混用时的越界边界：动态 `span` 不保留容量信息，下标越界仍是 UB，需配合 `first` / `subspan` 的安全切片。
@@ -1085,6 +1088,9 @@ int main() {
 ### ㉒.4 与标准的互动：span 与标准的演进
 
 [史] `std::span` 经 P0122R7 在 C++20 落地，填补了标准库长期缺失的「连续视图」原语。[评] 它是 C++20 一系列「视图化」改革（ranges、string_view）的一环，WG21 后续又提出 `std::mdspan`（多维视图，C++23）与 `std::spanstream` 等扩展，方向明确是「用零开销视图取代裸指针 + 长度的传统 C 接口」。同时标准也强调：span 的 ABI 在 C++20 后冻结，避免重蹈字符串 dual-ABI 的覆辙。
+
+- **WG21 修订链**：`std::span` 经 P0122R0（原名 `array_view`）→…→P0122R7（Neil MacIntosh、Stephan T. Lavavej，wg21.link/P0122R7，2018 Jacksonville 采纳）在 C++20 落地。R0→R7 的关键变更包括：R0 改名 `array_view`→`span` 并移除非连续多维部分；R5 移除 `unique_ptr`/`shared_ptr` 构造与 `length()`；R6/R7 把比较运算符（如 `operator==`）整组删除——删除理由见 P1085（「浅拷贝/浅 const 的视图不应有深比较语义」，wg21.link/P1085）。后续 `std::mdspan`（P0009R15，wg21.link/P0009R15）与 `std::spanstream`（P0448 系列）延续同一视图哲学。
+- **ISO 条款**：`std::span` 规定于 ISO/IEC 14882 §24.7.2（`[views]`/`[span]`）。其设计理由是「作为连续序列的**非拥有**视图，提供 `(pointer, size)` 的零开销、类型安全替代」——标准明确 span 不管理生命周期，且其 ABI 在 C++20 冻结，正是为了避免 `std::string` dual-ABI 那样的历史教训。
 
 ### ㉒.5 权威引用
 

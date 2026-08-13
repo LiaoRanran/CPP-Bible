@@ -740,6 +740,9 @@ while (auto x = pop()) consume(*x);   // 自然终止，无异常
 - **Windows / COM / HRESULT**：系统级 API 普遍返回 `HRESULT`，错误码文化深入 Win32。
 - **嵌入式 / 游戏 / HFT**：严苛实时场景几乎禁用异常（`-fno-exceptions`），靠错误码/optional/expected。
 
+- 航天/安全：**NASA JPL 任务代码**在禁异常前提下，用「返回状态码 + 断言 + 看门狗」做错误处理；**AUTOSAR** 的 `E_OK`/`E_NOT_OK` 错误码体系是车载 C++ 的错误码文化（见 <https://www.autosar.org>）。
+- 数据库/存储：**LevelDB / RocksDB** 以 `Status` 对象（类似 `absl::Status`）贯穿读写路径，把「IO 错误、校验失败、压缩错误」统一成可传播的值（见 <https://github.com/google/leveldb>、<https://rocksdb.org>）。
+
 ### ㉒.3 生产踩坑：错误处理的常见误用
 - **跨 ABI 抛异常**：不同编译器/不同异常模型（Itanium vs SEH）混链时，异常跨动态库边界可能直接 `std::terminate`；动态库边界应只用错误码/值类型。
 - **析构函数抛异常**：析构里 `throw` 若在栈展开期间发生，程序立即 `std::terminate`；析构必须 `noexcept`。
@@ -751,6 +754,9 @@ while (auto x = pop()) consume(*x);   // 自然终止，无异常
 - **`std::error_code` / `error_category`**（C++11）标准化系统错误映射；`<system_error>` 是网络/文件系统错误的底座。
 - **`std::expected`**（C++23，P0323R12）补齐"值或错误"词汇类型，与 `std::optional`（仅表"有无"）分工明确。
 - **P0709**（确定性异常）仍在演进，反映委员会对"异常开销可预测化"的长期追求。
+
+- `[评]` WG21 **P0709R0→…→P0709R4**（Zero-overhead Deterministic Exceptions，<https://wg21.link/P0709>）：试图给「零开销保证的抛出」语义，让异常在 HFT/嵌入式等禁异常场景也能被精确成本建模；它至今未合入，正说明委员会在「可预测性 vs 现有异常模型兼容」上极为谨慎。
+- `[评]` ISO/IEC 14882 在 `[except.spec]` 用 `noexcept` 参与重载/移动选择；委员会设计理由（见 P0709 原文）：异常的最大痛点不是「有/无」，而是「成本不可见」，故长期探索确定性异常。
 
 ### ㉒.5 权威引用
 - [cppreference: std::error_code / std::error_category](https://en.cppreference.com/w/cpp/error/error_code) — 系统错误映射的标准设施

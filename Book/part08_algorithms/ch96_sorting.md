@@ -863,6 +863,8 @@ int main() {
 - **游戏引擎（Unreal/Unity）**：透明物体按深度排序（画家算法）、UI z-order、骨骼/粒子批处理前的去重排序。
 - **编译器（LLVM/Clang）**：指令调度、基本块排序、寄存器分配与依赖拓扑排序大量用 `std::sort`/`std::stable_sort`。
 - **渲染管线（Vulkan/DirectX 驱动、游戏）**：绘制调用批处理按材质/状态排序以减少状态切换；GPU 驱动的 binning/分块也含排序阶段。
+- **视频编码（x264 / x265）**：模式决策中对候选运动向量/PU 分区按代价 `std::partial_sort`/`std::nth_element` 取 Top-K，直接影响编码效率与画质，是多媒体编码的真实热路径。
+- **分布式存储（Google Spanner / Bigtable）**：tablet 的 compaction 本质是大规模多路归并排序，SSTable 块内再靠 `std::sort` 维持有序以支持二分查找。
 
 ### ㉒.3 生产踩坑：排序的常见误用
 
@@ -874,6 +876,8 @@ int main() {
 ### ㉒.4 与标准的互动：排序与 C++ 标准的演进
 
 [史] 排序算法随 **C++98（STL）** 进入标准（`std::sort`/`std::stable_sort`/`std::partial_sort`/`std::nth_element`），其复杂度要求（如 `sort` 平均 O(n log n)、最坏由实现保证）写进 `[alg.sorting]`；**C++11** 引入移动语义使排序可移动而非拷贝元素（降常数）；**C++17** 增加执行策略并行排序（P0024R2）；**C++20** 又提供 `std::ranges::sort` 支持投影与约束。排序一直是标准库「复杂度契约 + 零开销」最被审视的角落，WG21 反复修订措辞（如 `std::sort` 的「复杂度而非最坏」历史争议）。
+- **修订/采纳**：**P0202（ constexpr 排序，C++20）** 让 `std::sort`/`std::stable_sort`/`std::binary_search` 等可在编译期运行，使「编译期有序表 + 编译期二分」成为可能（[P0202](https://wg21.link/P0202)）；并行排序仍走 P0024R2 的 `std::execution::par`。
+- **ISO 条款与理由**：排序的复杂度契约写在 **[alg.sorting]**；委员会对 `std::sort` 只承诺「平均 O(n log n)、由实现保证不退化到最坏」（而非像 `std::stable_sort` 那样强制 O(n log n) 上界），正是为给实现留 introsort 这类工程优化的空间。
 
 ### ㉒.5 权威引用
 

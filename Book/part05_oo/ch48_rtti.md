@@ -933,6 +933,8 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 - **序列化 / 反射库**：Boost.Serialization、Qt 的 `QMetaType` 用 `typeid` 做类型键，决定如何读写/分发对象。
 - **测试与 Mock 框架**：GoogleTest 的 `testing::internal`、typed test 与 `dynamic_cast` 配合做运行时类型断言与向下转换。
 - **脚本绑定（Lua/Python ↔ C++）**：如 SWIG、pybind11 用 `typeid` 建立 C++ 类型到脚本类型的映射表，实现自动分派。
+- **工业通信 / OPC UA（open62541 等 C++ 栈）**：OPC UA 的 C++ 实现用 RTTI/类型信息做节点与数据类型的运行时识别与编解码（二进制/XML），是工业物联网里 RTTI 的真实用途。
+- **中间件 RPC（ZeroC Ice）**：ZeroC Ice 用类型信息做跨语言（C++/Java/Python）RPC 的参数封送与分发，`typeid`/反射支撑自动类型路由。
 
 ### ㉒.3 生产踩坑：RTTI 的常见误用
 
@@ -944,6 +946,7 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 ### ㉒.4 与标准的互动：RTTI 与 WG21 演进
 
 [史] RTTI 随 C++98 落地（基于 Itanium C++ ABI 的 vtable type_info 槽）；**C++11 引入 `std::type_index`** 让 `type_info` 可哈希、可存容器。**C++17 的 P0091 一脉** 与库演进让 `std::any`/`std::variant`（ch14）这类「类型擦除容器」有了标准实现，部分替代了「运行时靠 RTTI 判别」的需求。[评] WG21 当前方向是**不强推 RTTI，反而鼓励「编译期类型判别」**：CRTP（ch51）、concepts（ch67）、`std::variant`+`std::visit` 都能在零运行时成本下完成「多态分发」，这正是 LLVM/Chromium 默认关 RTTI 的原因。标准对 RTTI 的态度是「保留作为兜底、但性能敏感代码应逃逸到静态分发」——这与虚函数（ch47）的演进逻辑一致。
+- [史] `std::any`/`std::variant`/`std::optional` 这类「类型擦除容器」经 **P0220R0→P0220R1（C++17，Library Fundamentals TS 采纳）** 标准化，部分替代了「运行时靠 RTTI 判别类型」的需求。ISO 条款 `[expr.dynamic.cast]` 与 `[support.rtti]`（`typeid`/`type_info`）把 RTTI 的语义与失败行为（返回 `nullptr`/`bad_cast`）固化——委员会保留 RTTI 作为兜底，但明确鼓励 concepts（ch67）、CRTP（ch51）、`std::variant`+`std::visit` 在零成本下完成多态分发。
 
 ### ㉒.5 权威引用
 

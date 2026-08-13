@@ -533,6 +533,9 @@ int use_sv() {
 
 `std::string` 是几乎所有 C++ 程序的字符串基础：Chromium 的 `std::u16string` / `std::string` 承载 URL 与文本；LLVM 用 `StringRef`（零拷贝字符串视图）与 `std::string` 配合；游戏引擎的资源路径、配置解析、日志全部依赖 `string`。它也通过 `c_str()` 与所有 C API（POSIX、Win32、数据库驱动）桥接，是 C/C++ 互操作的枢纽。
 
+- **跨行业实例（浏览器/网络栈）**：Chromium 的 URL 解析、网络层 `GURL` 与 `std::string` 广泛用于请求头/响应体；V8 引擎的字符串内部虽有「ConsString/ThinString」等复杂表示，但对外 API 仍大量桥接 `std::string`/`std::u16string`。这是「`string` 作为浏览器安全边界（如来源校验）核心类型」的真实落地。
+- **跨行业实例（数据库驱动）**：PostgreSQL 的 libpq、MySQL 的 libmysqlclient 的 C++ 封装层用 `std::string` 承载 SQL 语句与结果字段，并通过 `c_str()` 与 C 驱动对接——其与 C API 的桥接能力是 `string` 在数据库生态不可替代的原因。
+
 ### ㉒.3 生产踩坑：string 的常见误用与陷阱
 
 [评] 最经典的是「`c_str()` 返回指针的生命周期」：调用 `c_str()` 后若 `string` 被修改/移动/销毁，指针即悬空。其次是「隐式 `std::string` 深拷贝」——在热点里把 `string` 按值传来传去会触发 O(n) 堆分配，应改用 `string_view`（C++17）或 `const string&`、`string&&`。还有「自增拼接 `s += a + b + c`」反复分配，应合并或用 `reserve`。以及双 ABI 混链导致的 `std::__cxx11::basic_string` 符号不匹配。
@@ -540,6 +543,9 @@ int use_sv() {
 ### ㉒.4 与标准的互动：string 与标准的演进
 
 [史] `std::string` 自 C++98 起即为核心，C++11 禁止 COW 并要求连续存储（催生 SSO 普及）；C++17 引入 `std::string_view` 把「只读零拷贝视图」标准化，彻底改变了「用 `const string&` 当接口」的旧习惯；C++20 增加 `starts_with` / `ends_with` 等便捷方法。[评] 标准对 `string` 的演进主线是「减少不必要的堆分配与拷贝」——`string_view` 是这条主线最显著的产物，而 dual-ABI 的教训也让委员会更谨慎地对待字符串的 ABI 稳定性。
+
+- **WG21 修订链**：`std::string` 自 C++98 即为核心；C++11 的「禁止 COW + 要求连续存储」由 N2668（Howard Hinnant 等）落实，催生 SSO（短字符串优化）普及；C++17 的 `std::string_view`（P0220R1 → N3921，wg21.link 对应 `string_view`）把只读零拷贝视图标准化；C++20 再补 `starts_with`/`ends_with`/`contains`（P0457R2、P1679R1）。可见修订链围绕「少拷贝、多视图」展开。
+- **ISO 条款**：`std::basic_string` 规定于 ISO/IEC 14882 §24.3.2（`[basic.string]`）。C++11 起标准**强约束连续存储**（`&str[0]` 等价于底层数组，可用于 C API），并禁止引用计数的写时复制（COW）——委员会的明确理由是「COW 与多线程安全、与 `&s[0]` 的连续保证相互冲突」，因此宁可放弃 COW 的共享收益也要保证确定性与线程安全。
 
 ### ㉒.5 权威引用
 

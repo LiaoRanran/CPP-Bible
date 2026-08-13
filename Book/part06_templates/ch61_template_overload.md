@@ -603,6 +603,8 @@ constexpr void swap(_Tp& __a, _Tp& __b) noexcept {
 - 标准库与所有泛型库都依赖它：`std::make_shared`、`std::begin`、`std::swap` 等「多候选」接口全靠重载决议 + 偏序在编译期选对实现；`std::distance`、`std::advance` 对迭代器标签的重载（ch70）本质是偏序选路。
 - 大型代码库（Chromium、LLVM、Abseil）大量使用「主模板 + 特化/重载」组合来为不同参数类型提供最优实现，例如针对平凡类型走 `memcpy` 快路径、针对非平凡类型走通用循环。
 - 日志与序列化框架（如 fmt、spdlog）用重载决议为不同类型选格式化器，避免了运行期 `typeid` 分支。
+- **计算机视觉（OpenCV）**：`cv::Mat` 的运算符重载与 `cv::imread`/`cv::warpAffine` 等模板/重载函数，靠重载决议在 `Mat`、`Mat_`、`UMat`、`GpuMat` 间选择最优实现，是视觉流水线的零开销分派基础。
+- **跨平台 GUI（Qt 6）**：`QDebug::operator<<` 与信号/槽的 `connect` 重载集，依赖重载决议在数十种参数组合里选出正确绑定，是桌面/嵌入式 UI 框架的工业现实。
 
 ### ㉒.3 生产踩坑：重载决议的常见误用与陷阱
 - **隐式转换抢戏**：当没有精确匹配时，重载决议会出动一系列标准转换序列，常导致「你以为调 A，实际调了 B」的微妙 bug；尤其在存在 `bool`/`int`、`const char*`/`std::string` 等多条转换链时。
@@ -612,6 +614,8 @@ constexpr void swap(_Tp& __a, _Tp& __b) noexcept {
 
 ### ㉒.4 与标准的互动：偏序与约束排序的接棒
 C++98/03 把重载决议与偏序写入标准；C++11 后 `constexpr`、concepts 让一部分「靠偏序猜意图」的场景被显式约束取代；C++20 引入的「约束排序」规定：当多个重载都满足时，编译器按 `requires` 约束的「更强/更弱」显式选最受限者，把「隐式偏序猜测」升级为「显式约束排序」。这是标准「不破坏旧代码」的代价——两套排序规则将长期并存。
+- **ISO 条款**：重载决议规则集中在标准 **[over]（C++20 为 Clause 12）**，分「候选集构建 → 可行函数 → 最佳可行函数」三阶段（[over.match]），隐式转换序列的优先级写在 **[over.ics]**。委员会刻意把这套规则与模板偏序（[temp.deduct.partial]）、C++20 约束排序（[temp.constr.order]）分层，使旧代码依赖的「隐式转换选路」不被 concepts 破坏。
+- **设计理由**：重载决议被保留为「最通用」的编译期分派机制，正是因为它的三阶段模型能在不引入新语法的前提下吸收新约束；WG21 明确把约束排序叠加在偏序之上而非替换它，正是为了避免破坏 C++98/11 既有的海量重载代码。
 
 ### ㉒.5 权威引用
 - [cppreference: Overload resolution](https://en.cppreference.com/w/cpp/language/overload_resolution) — 重载决议与偏序规则的权威说明

@@ -1921,6 +1921,8 @@ int main(){
 - **游戏引擎**：Unreal 的 `FMemory::Malloc` + 渲染线程池、Unity 的 `MemoryManager`、以及第 ⑩ 节对象池（预构造复用）广泛用于粒子/组件，避免运行时 `new` 引发卡顿与碎片。
 - **高频交易 / 低延迟**：订单簿每笔撮合都分配临时结构，用 thread-local 池（第 ⑨ 节）把分配限制在本地核、零锁竞争，是守住微秒级尾延迟的关键。
 - **嵌入式与实时系统**：第 ⑪ 节静态池（编译期预留固定块、无运行时 `new`）是汽车 ECU、航天固件的标配，因为必须保证「最坏情况下也分配得出」，动态堆的不可预测性在此不可接受。
+- **数据面网络（DPDK `mempool`）**：DPDK 的 ring-based 对象池（`rte_mempool`）为高速网卡收发包提供预分配、零锁、批量回收的缓冲区，是 NFV/运营商数据面处理的工业标配——内存池在 100G+ 网卡收发的刚需。
+- **物理引擎（Havok / Bullet）**：实时物理引擎用固定块池管理刚体、约束与接触点，避免每帧海量小对象分配触发 GC/堆抖动，保证仿真步长的稳定——游戏/仿真里内存池的实时性价值。
 
 ### ㉒.3 生产踩坑：内存池的常见误用
 
@@ -1932,6 +1934,7 @@ int main(){
 ### ㉒.4 与标准的互动：内存池与 PMR 的演进
 
 [史] 历史上是各库手写池（dlmalloc、tcmalloc、jemalloc、内核 slab）；**C++17 的 P0220 把 PMR**（`monotonic_buffer_resource`/`pool_resource`/`synchronized_pool_resource`，第 ⑦–⑪ 节）标准化，等于把「内存池」正式纳入标准库分发。**C++20 的 P0674** 让 `make_shared` 支持数组，与池化分配可组合。[评] WG21 的方向是把「换分配后端」从「替换全局 `operator new`（污染全程序、易 ABI 冲突）」升级为「作用域化的 `std::pmr::memory_resource`」——这对大型多团队代码库意味着：A 模块用池、B 模块用默认堆，互不影响、各自可测。内存池这一「最古老的性能优化」终于在标准里有了干净的家。
+- [史] PMR 的修订链为 **P0220R0→P0220R1（C++17）**，把 `monotonic_buffer_resource`/`pool_resource`/`synchronized_pool_resource` 整体标准化。ISO 条款 `[mem.res]` 把「内存资源对象」确立为一等公民，与 `[allocator.requirements]` 并存——委员会的设计意图是让「换分配后端」从「替换全局 `operator new`（污染全程序、易 ABI 冲突）」升级为「作用域化的 `std::pmr::memory_resource`」，使内存池这一最古老的优化在标准里有了干净、可组合的家。
 
 ### ㉒.5 权威引用
 

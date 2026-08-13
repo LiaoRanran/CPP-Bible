@@ -1096,6 +1096,11 @@ LevelDB 的设计哲学则直接继承自 **Chang、Dean、Ghemawat 等《Bigtab
 - **TiKV / CockroachDB**：TiKV（TiDB 存储节点）与 CockroachDB 都以 **RocksDB** 为单机引擎（CockroachDB 另写 Pebble 替代）；RocksDB 的列族用于隔离锁 / 数据 / raft log 等不同数据域。
 - **MyRocks / Instagram / Bloomberg**：Facebook 把 MySQL 的 InnoDB 换成 **RocksDB**（MyRocks），在 Instagram 图数据与消息负载上把写放大与存储空间压下来；Bloomberg 的量化 tick 序列服务也用 RocksDB 存时间序列。
 
+- **Bitcoin Core**：比特币核心客户端的链状态（UTXO 集合与区块索引）用 **LevelDB** 存储（`chainstate` 目录即 LevelDB 实例）。这是「区块链底层 KV」最知名、装机量以「全节点数 × 链大小」计的实例——一条主网全节点的状态全压在 LevelDB 的 LSM 上，与以太坊用 LevelDB 同源（见上条）。
+- **Netflix EVCache**：Netflix 的全球缓存系统 EVCache 在 SSD 缓存层选用 **RocksDB**，承接每秒海量键值读写；这是「互联网巨头的缓存底座」样本。
+- **Apache Flink / Apache Samza**：两者都把 **RocksDB** 作为流处理状态后端（state backend）——窗口聚合、连接状态落在本机 RocksDB，Flink 的 `RocksDBStateBackend` 是默认高吞吐选项之一。
+- **Uber Cherami / Apache Kvrocks**：Uber 的自研分布式消息系统 Cherami 以 **RocksDB** 为存储引擎；**Apache Kvrocks** 则在 RocksDB 之上实现 Redis 协议兼容的分布式 KV，把「RocksDB + 网络层」拼成新数据库。
+
 ### ㉒.4 生产踩坑（真实坑，非教科书）
 
 - **写放大（Write Amplification）**：LSM 每写入 1 字节用户数据，磁盘可能写 10–30 字节——Compaction 反复读旧 SSTable、合并、重写。Leveled 比 Universal 写放大更高但读放大更低；选型对错直接决定 SSD 寿命与云盘 IOPS 账单。**云上按写入量计费的磁盘会被放大后的写直接打爆预算**。
@@ -1111,6 +1116,10 @@ LevelDB 的设计哲学则直接继承自 **Chang、Dean、Ghemawat 等《Bigtab
 - **Arena 分配器**：MemTable 记录从同一块连续内存 bump 分配（`Arena`），析构一次性释放（第⑧节、附录演绎 1）。这是 C++ 自研分配器替代默认 `malloc` 的范本——减少锁争用、提升局部性。
 - **`absl::flat_hash_map` 与内部索引**：RocksDB 内部大量使用 Abseil 的 `flat_hash_map`（开放寻址、缓存友好）做元数据索引，而非 `std::unordered_map`（链表法、缓存不友好）——与 ClickHouse 用自研开放寻址 `HashMap` 同一思路（见第133章）。
 - **所有权与现代智能指针**：RocksDB 新版代码用 `std::unique_ptr` 管理句柄、`std::shared_ptr` 管理共享资源；`ColumnFamilyHandle` 的释放语义必须用 RAII 封装（第⑧/⑬节），否则内部引用计数不归零、 `DB::Close()` 死等。
+
+- **RocksDB 8.x 抬升 C++17 基线并接回标准词汇类型**：近年 RocksDB 把最低编译器要求抬到 **C++17**，并新增 `std::string_view` 重载、`std::thread` / `std::condition_variable` / `std::atomic` 的标准化并发原语——这是「与现代 C++ 的互动」最具体的落地：曾经的 `Slice` / `AtomicPointer` 手写 idiom，如今主动复用标准设施而非另起炉灶。
+- **「预标准 idiom → 标准」的民间证据**：LevelDB 的 `Slice`（零拷贝字节视图，早于 C++17 `std::string_view` 约六年）与 `AtomicPointer`（早于 `std::atomic<Node*>` 的内存序封装），恰恰是先有工业实践、后有标准条款的典型。`std::string_view`（**N3921 → C++17**）、`std::atomic`（C++11）把这些 idiom 写法收编，反过来证明「好的设计先在生产里跑十年，再进 ISO/IEC 14882」。
+- **与标准的张力**：RocksDB/LevelDB 仍坚持自研 Arena 分配器、`flat_hash_map` 式索引（见上节）而非 `std::unordered_map`，因为标准容器在「无堆节点、缓存友好」这一 hot-path 诉求上长期缺位——直到 C++23 才出现有序的 `std::flat_map`/`flat_set`（受 Abseil 启发，见第130章）。这说明「标准追得上词汇类型，却追不上极端性能 idiom」。
 
 ### ㉒.6 权威引用清单
 

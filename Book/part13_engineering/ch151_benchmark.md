@@ -1287,6 +1287,9 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 - **Chromium / V8**：JS 与渲染引擎有大规模 perf bot 持续跑基准防回归。
 - **高频交易 / 游戏引擎**：自研纳秒级基准（RDTSC/`std::chrono::steady_clock`），对单条指令延迟都敏感。
 
+- **基准库**：Google Benchmark（header + 运行时框架，Chromium/LLVM 采用）、nanobench（单头、统计稳健）、nonius（老牌）；`std::chrono` 提供时钟但非基准框架。
+- **微架构感知基准**：像 `likwid`、`perf`、Intel VTune 用于把“墙上时间”拆解到 cache miss / IPC / 分支预测失败，避免被 turbo、调度噪声误导。
+
 ### ㉒.3 生产踩坑：基准的常见误用
 - **死代码消除（DCE）**：被测结果没被"消费"，编译器整体删掉被测代码，测得 0ns；必须用 `volatile`/编译器屏障/`asm volatile` 或返回结果（见 ③）。
 - **CPU 频率与 thermal throttling**：跑基准时 CPU 降频（睿频退坡、温度墙），结果抖动；应固定频率（`taskset`/`cpupower`）、预热（见 ⑤）。
@@ -1296,7 +1299,10 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 ### ㉒.4 与标准的互动：std::chrono 与可移植计时
 C++11 引入 `<chrono>` 与 `std::chrono::steady_clock`，给基准提供"不受系统时间回拨影响"的单调时钟，是 Google Benchmark 等框架的计时底座。C++20 进一步细化 `clock` 概念（如 `utc_clock`/`tai_clock`）。[评] 标准给基准的礼物是"可移植的单调时钟"，但能否测得准仍靠 ③⑥⑭ 的工程纪律（防 DCE、预热、多次）。
 
+**修订链补强（可移植测量与标准）**：跨平台可移植的高分辨率计时由 `std::chrono`（C++11，[time] 条款）提供，但“稳态时钟”语义由实现定义——`steady_clock` 保证单调，而 `high_resolution_clock` 在部分平台只是 `system_clock` 的别名，这是 [IMPLEMENTATION] 层差异。C++20 引入 `std::chrono::clock_cast`（与 [P0355](https://wg21.link/P0355) 扩展 chrono 相关）与 `utc_clock`/`tai_clock` 等物理量时钟，把“时钟换算”纳入标准。基准方法学上，WG21 不规定 benchmark 框架，但 `constexpr`/`std::chrono` 的演进让编译期与运行期计时统一可用。
+
 ### ㉒.5 权威引用
+- [WG21 P0355 — Extending <chrono>](https://wg21.link/P0355) — C++20 物理量时钟扩展
 - [Google Benchmark 仓库](https://github.com/google/benchmark) — C++ 微基准框架，自动迭代/统计
 - [cppreference: std::chrono::steady_clock](https://en.cppreference.com/w/cpp/chrono/steady_clock) — 单调时钟，基准计时底座
 - [perf  Wiki（Linux 性能计数器）](https://perf.wiki.kernel.org/) — 硬件计数器取证（cache miss/分支）

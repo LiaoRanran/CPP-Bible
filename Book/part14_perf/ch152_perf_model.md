@@ -790,6 +790,9 @@ int main() {
 - **数据库 / 搜索引擎**：以 Little 定律设连接池与队列深度，控制尾延迟（p99/p999）。
 - **Google Benchmark 生态**：几乎所有需要"可信数字"的 C++ 库都用它产出建模所需的原始数据（见第151章）。
 
+- **性能建模工具**：Intel 的 [Intel® Advisor](https://www.intel.com/content/www/us/en/developer/tools/oneapi/advisor.html)（屋顶线/内存带宽建模）、[llvm-mca](https://llvm.org/docs/CommandGuide/llvm-mca.html)（基于调度模型的指令吞吐模拟）、[OSACA](https://github.com/RRZE-HPC/OSACA)（开源汇编代价建模）；这些把“微架构参数”变成可计算的预测。
+- **经验模型**：Amdahl/Gustafson 定律、Roofline 模型（Arithmetic Intensity vs 带宽）是沟通“优化上限”的通用语言。
+
 ### ㉒.3 生产踩坑：建模与测量的误用
 - **用错模型**：把访存密集的代码当计算密集优化（狂加 SIMD 却卡在 cache miss），白忙一场；正确做法是先画 Roofline 定位屋顶。
 - **只看平均值不看分位**：均值好看、p99 爆炸，对用户体感是"偶发卡顿"；服务端必须报分位数（见 ⑫）。
@@ -799,7 +802,10 @@ int main() {
 ### ㉒.4 与标准的互动：std::chrono 与可移植测量
 C++11 的 `<chrono>` 与 `steady_clock` 给性能建模提供了可移植的单调时钟底座，使"在任意平台复现同一测量流程"成为可能；模型所用的"时间"数据，其可信度最终来自第151章的防 DCE/预热/多次统计纪律。[评] 标准给的是"尺子"，模型给的是"读数方法"，二者缺一不可。
 
+**修订链补强（模型与标准/硬件契约）**：性能建模依赖的是 [MICROARCHITECTURE]/[PLATFORM] 层的可测参数（流水线深度、端口、cache 层级、内存通道数），而非 C++ 标准。标准只保证“抽象机器”语义，不保证 cycles；但 C++ 提供 `std::hardware_destructive_interference_size` / `std::hardware_constructive_interference_size`（[P0154](https://wg21.link/P0154)，C++17）把“false sharing 的缓存行大小”从魔法数提升为可移植常量，是标准向微架构事实的一次有限靠拢。LLVM 的 `llvm-mca` 与 CPU 厂商的指令表（Agner Fog、uops.info）是建模的工业依据。
+
 ### ㉒.5 权威引用
+- [WG21 P0154 — Hardware interference size](https://wg21.link/P0154) — C++17 缓存行干扰大小
 - [Google Benchmark 仓库](https://github.com/google/benchmark) — 产出建模所需的统计化原始数据
 - [cppreference: std::chrono](https://en.cppreference.com/w/cpp/chrono) — C++11 起的可移植计时设施
 - [Brendan Gregg 性能方法论](https://www.brendangregg.com/) — 从计数器到延迟/吞吐模型

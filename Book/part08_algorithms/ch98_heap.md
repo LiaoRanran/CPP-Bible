@@ -785,6 +785,8 @@ sorted-bsearch M=20000 : 3143.4 us (hits=20000)
 - **优先级队列（任务/消息）**：线程池的任务优先级、网络包 QoS、打印/渲染任务排序都用 `std::priority_queue`。
 - **Top-K 与流式中位数**：海量数据中取最大/最小的 K 个、或维护滑动窗口中位数，用大小为 K 的堆是标准套路（比全排序省。
 - **Dijkstra / A\* 最短路径**：优先队列（堆）是这两个图算法的核心数据结构，编译器/游戏寻路/路由协议都离不开它。
+- **并行运行时（Intel TBB）**：`tbb::concurrent_priority_queue` 以堆为底层结构做并行任务窃取（work-stealing）调度，是多线程任务优先级调度的工业实现。
+- **流处理（Apache Kafka / Flink）**：实时 Top-K、水位线（watermark）与窗口聚合常维护固定大小的小顶/大顶堆，在持续数据流上以常数内存近似计算分位数与极值。
 
 ### ㉒.3 生产踩坑：堆的常见误用
 
@@ -796,6 +798,8 @@ sorted-bsearch M=20000 : 3143.4 us (hits=20000)
 ### ㉒.4 与标准的互动：堆与 C++ 标准的演进
 
 [史] 堆算法随 **C++98（STL）** 进入标准（`make_heap`/`push_heap`/`pop_heap`/`sort_heap` + `priority_queue`），复杂度写在 `[alg.heap.operations]`；**C++11** 引入移动语义，使堆元素可移动而非拷贝（降常数）；**C++20** 提供 `std::ranges::make_heap` 等约束版并支持投影；**C++23** 进一步统一 ranges 算法族。堆算法演进相对平稳，主线是「移动 + Ranges 化 + 更清晰约束」，WG21 未对其做重大语义修改。
+- **修订/采纳**：**P0202（ constexpr 堆算法，C++20）** 把 `std::make_heap`/`push_heap`/`pop_heap` 等标成 `constexpr`，可在编译期维护优先级结构（[P0202](https://wg21.link/P0202)）；C++20 另有 `std::ranges` 版堆算法支持投影。
+- **ISO 条款与理由**：堆算法复杂度写在 **[alg.heap.operations]**（`make_heap`/`push_heap`/`pop_heap` 均为 O(log n) 或 O(n)）；委员会刻意只提供「半开口」的堆算法 + `priority_queue` 适配器，而不是一个能随机删除中间元素的完整堆容器，以守住最小接口与零开销。
 
 ### ㉒.5 权威引用
 

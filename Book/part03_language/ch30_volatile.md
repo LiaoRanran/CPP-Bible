@@ -535,6 +535,8 @@ int main(){volatile int* ptr=new volatile int[4]{1,2,3,4};std::cout<<ptr[0]<<std
 - **嵌入式固件与内核**：Linux 内核、裸机固件用 `volatile` 映射硬件寄存器与内存映射 I/O；中断服务例程读取的共享标志位常标 `volatile` 以防被优化掉。
 - **信号处理**：`sig_atomic_t` 配合 `volatile` 在信号处理函数与主流程间传递标志，是 POSIX 标准认可的正当用法。
 - **编译器差异的现实**：MSVC 历史实现中 `volatile` 读/写带 acquire/release 语义（`/volatile:ms` 默认开启），而 GCC/Clang 严格遵循标准（无跨线程保证），同一段 `volatile` 代码三家行为不同。[史][评]
+- **实时操作系统**：FreeRTOS / μC/OS 的任务间标志、设备驱动寄存器映射大量用 `volatile`（常配合 `volatile uint32_t*` 映射 MMIO），确保对硬件寄存器的每次访问都不被优化掉；AUTOSAR MCAL 层同样把外设寄存器标 `volatile` 防止被编译器消除。
+- **Windows 内核驱动**：WDM / WDK 驱动开发中，设备寄存器与共享内存映射依赖 `volatile` 表达"对实现透明的访问"；`ntddk.h` 体系里 `volatile` 与内存屏障宏配合，用于无锁读取硬件状态——这是 `volatile` 在桌面内核里未被任何新特性取代的正当领地。
 
 ### ㉒.3 生产踩坑：volatile 的常见误用
 - **把 volatile 当锁/同步**：`volatile` 只解决"编译器优化"，不解决"CPU/缓存一致性"——用 `volatile bool ready` 做线程间标志是经典错误，仍会读到陈旧值或重排，必须用 `std::atomic`。[史][评]
@@ -544,6 +546,7 @@ int main(){volatile int* ptr=new volatile int[4]{1,2,3,4};std::cout<<ptr[0]<<std
 
 ### ㉒.4 与标准的互动：volatile 在标准中的定位
 `volatile` 作为 cv 限定符自 C 即存在；C++11 用 `std::atomic` 把并发语义明确剥离，`volatile` 退回"硬件可见性"。[史] C++20 的 `std::atomic_ref`（P0019）允许把已存在的对象临时包成原子引用做并发访问，与"volatile 不解决原子性"形成互补；同年 P1152 弃用大多数 `volatile` 操作（仅保留内存可见性相关用法），收敛其语义。[史] 委员会反复否决"给 volatile 加并发语义"的提案，维持"volatile = 硬件可见性、atomic = 线程原子性"的清晰分工——MMIO 与信号处理仍是 `volatile` 未被任何新特性取代的正当领地。[史][评]
+- **修订链补强（atomic_ref / 弃用 volatile）**：`std::atomic_ref` 的修订尤其漫长——提案 [P0019](https://wg21.link/P0019) 从早期版本一路修订到 R8（2018，"Atomic Ref"）随 C++20 落地，允许把既有的非原子对象临时包成原子引用做并发访问，而不必一开始就声明为 `atomic<T>`；与此同时，[P1152](https://wg21.link/P1152) 从 R0 到 R4（"Deprecating volatile"，C++20）弃用了大多数 `volatile` 的复合赋值 / `++` / `--`，仅保留内存可见性相关用法。标准在 [dcl.type.cv] 明确 `volatile` 仅影响"对实现透明的访问"（即阻止编译器优化掉对硬件 / 信号的访问），委员会借此把"线程原子性"彻底划给 `std::atomic`，让 `volatile` 退回其 C 时代的本分——这一分工在 R8 / R4 两轮修订中被固化。
 
 ### ㉒.5 权威引用
 - [cppreference: cv (const/volatile)](https://en.cppreference.com/w/cpp/language/cv) — volatile 的语义边界

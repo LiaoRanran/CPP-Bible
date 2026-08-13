@@ -744,6 +744,14 @@ int main() {
 - **spdlog**：GitHub 上星标最高的现代 C++ 日志库之一，被大量**后端服务、游戏辅助工具、嵌入式固件、量化交易系统**采用；其「仅头文件、异步也能快」的定位使它成为 `log4cpp`/`glog` 的现代替代品。典型落地形态：高吞吐服务端用 `spdlog::async_factory`（有界 MPSC 队列 + 后台写入线程）解耦 I/O 与业务线程；嵌入式用同步 `basic_file_sink_mt` 落盘。
 - **跨生态影响**：fmt 的 `{}` 语法被多种语言/库借鉴；spdlog 通过「一次 `fmt::formatter<T>` 特化，fmt 与 spdlog 同时受益」的共用格式化层，成为领域类型日志的事实标准。
 
+- **命名级真实用户（均列于 fmt 官方 README「Projects using this library」）**，横跨多个行业，证明 fmt/spdlog 不是玩具而是基础设施：
+  - **Microsoft Windows Terminal**：新版 Windows 终端的格式化依赖 {fmt}（开发者工具链跨行业）。
+  - **Apple FoundationDB**：分布式事务型键值存储用 {fmt} 做内部日志与诊断（数据库 / 分布式系统）。
+  - **Meta PyTorch**：主流机器学习框架用 {fmt} 做张量/算子日志（AI 基础设施）。
+  - **ClickHouse**：分析型数据库用 {fmt} 做查询结果与错误信息的格式化（OLAP）。
+  - **Lyft Envoy**：高性能 L7 代理用 {fmt} 做配置与访问日志（网络基础设施）。
+  - **ScyllaDB / Stellar / Ceph**：分别是 Cassandra 兼容 NoSQL、金融平台、分布式存储，均将 {fmt} 纳入生产代码（存储 / 金融跨行业）。
+
 ### ㉒.3 生产踩坑：格式串注入、悬垂、异步、性能
 
 - **格式串注入（Format String Injection）**：把**外部/用户输入**当格式串传入 `fmt::format(user_input, args...)` 是严重漏洞——既绕过编译期检查，又允许攻击者通过 `{:x}` 等说明符泄漏内存或触发崩溃。修复铁律：**格式串必须是编译期常量**（字面量，或 fmt 8+ 的 `consteval` 检查自动生效；旧版用 `FMT_STRING(...)`）。凡格式串来自配置/网络，必须显式 `fmt::runtime(...)` 并仅用于可信模板。
@@ -765,6 +773,12 @@ fmt 是 `std::format` 的事实先行者，提案链路如下：
 | 本地化格式 | `std::format` locale 支持 | P1892R0 等 | — |
 
 > 非显然结论：`std::format` 在**不损失（甚至超越）** `snprintf` 性能的同时提供编译期类型安全，正面反驳「类型安全必然更慢」。在 GCC 15.3.0 本机基准中（见附录 D5），`std::format` 比 `std::ostringstream` 快约 1.42×、比 `std::snprintf` 快约 1.48×，且类型最安全。
+
+> 修订链与条款补遗（wg21.link 核实）：把上表的关键提案展开成真实修订链，并落到 ISO 条款：
+> - `std::format`：**P0645R0 → … → P0645R10**（Victor Zverovich）进入 **C++20**，落于标准条款 **[format]**（C++23 中为 22.14）；特性测试宏 `__cpp_lib_format == 201907L`。
+> - `std::print` / `std::println`：**P2093R0 → … → P2093R14**（Victor Zverovich）进入 **C++23**，落于 **[print]**；特性测试宏 `__cpp_lib_print == 202207L`。它直接复用 `std::format` 的格式化引擎，并补齐「写 stdout / 防乱码（mojibake）」的能力。
+> - `std::format` 的 constexpr 增强：**P2216R3**（"format improvements"）与 **P2418R2**（支持既不可 const 迭代、也不可拷贝的类型）进入 **C++23**，使 `std::format` 能在编译期完成更多工作。
+> - 委员会设计理由：标准选择「编译期格式串检查 + `formatter<T>` 特化」而非 iostreams 的流式接口，正是 {fmt} 在十年生产中证明「类型安全不必慢」之后，委员会才敢把这套 API 收编；`std::format` 因此成为「第三方库反哺标准」最干净的样本之一（与 Boost→std 同理，见第128章）。
 
 ### ㉒.5 权威引用
 

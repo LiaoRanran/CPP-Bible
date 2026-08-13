@@ -364,6 +364,9 @@ void log([[maybe_unused]] int verbose){}
 - **服务端/云原生**：大量微服务与数据库（如 ClickHouse 子集、TiKV 周边）用 `std::string_view` 零拷贝处理网络报文、`std::optional` 表达可空。
 - **游戏与图形**：Unreal/Unity 周边工具、游戏引擎脚本桥接大量使用 `if constexpr` 做编译期分派。
 
+- **Chromium 基线**：Chromium 自 2021 年起要求 C++17（`cxx` 文档明确禁止未支持 17 的编译器），`std::optional`/`string_view` 广泛用于浏览器引擎与网络栈——见 [Chromium C++ 状态文档](https://chromium.googlesource.com/chromium/src/+/main/docs/cxx.md)。
+- **自动驾驶栈**：百度 Apollo 等自动驾驶框架以 C++17 为基线，用 `std::optional` 表达感知数据「可能缺失」、用 `if constexpr` 做编译期传感器分派——[据记载]这是 C++17 进入安全关键车载软件的代表。
+
 ### ㉒.3 生产踩坑：C++17 常见误用
 
 - **`std::string_view` 悬垂**：`string_view` 不拥有内存，返回局部 `string` 的 `string_view`、或指向临时物的视图是高频 UB（编译器通常不报错）。
@@ -373,6 +376,9 @@ void log([[maybe_unused]] int verbose){}
 ### ㉒.4 与标准的互动：TS 转正与弃用
 
 [史] C++17 大量特性来自 TS（`string_view`/`optional`/`any` 来自 Library Fundamentals TS，`filesystem` 来自 Filesystem TS），是"解耦模型"首次大规模兑现；同时它**弃用** `std::auto_ptr`、`<codecvt>`、`std::result_of` 等，为 C++20 清理铺路。[评] C++17 与 C++20 的关系，恰如 C++14 与 C++17：小完善 vs 大跨越。理解 17 是理解 20 的前提。
+
+- [史] **结构化绑定**的设计来自 **P0144R2**（Herb Sutter、Stroustrup、Dos Reis），措辞由 **P0217** 经 R0→R3 打磨（Jacksonville 会议定下 `[]` 语法、绑定变量为引用、支持位域、`tuple_size`/`tuple_element` 定制点），R3 于 2016-06-24 定稿并入 C++17。见 [P0144](https://wg21.link/P0144)、[P0217](https://wg21.link/P0217)。
+- [史] **`std::string_view`** 并非独立 P 提案，而是源自 Library Fundamentals TS（TS 19568），由 **P0220R1（2016-03-03，"Adopt Library Fundamentals V1 TS Components for C++17"）** 整体采纳进 C++17，同批进入的还有 `<optional>`/`<any>`/`<memory_resource>`；其非拥有视图的设计动机最早可追到 2013 年前后的 `string_view` 雏形。见 [P0220](https://wg21.link/P0220)。
 
 ### ㉒.5 权威引用
 

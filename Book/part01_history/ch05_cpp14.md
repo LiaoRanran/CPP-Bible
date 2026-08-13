@@ -341,6 +341,9 @@ template<class T> constexpr bool is_ptr_v = std::is_pointer_v<T>;
 - **嵌入式/车载**：车规级编译器（AUTOSAR、部分 QNX 工具链）长期只保证 C++14，因此车载中间件常用 C++14 而非 17/20。
 - **教学与竞赛**：ACM/ICPC 与多数教材在 2017 年前以 C++14 为示例基线。
 
+- **ROS 中间件**：ROS 1（2010s）节点与中间件以 C++14 编译，泛型 lambda 用于回调与消息处理；ROS 2 才上探到 C++17。见 [ROS 官网](https://www.ros.org/)。
+- **C++ 核心指南与 GSL**：Microsoft 的 Guidelines Support Library（`gsl::span` 雏形、`gsl::not_null`）在 C++14 即可用，把 C++ Core Guidelines 落到代码层——是「现代写法下沉到 14 基线」的坐标。见 [Microsoft GSL](https://github.com/microsoft/GSL)。
+
 ### ㉒.3 生产踩坑：C++14 时代的误用
 
 - **泛型 lambda 的 `auto` 形参仍是"单态"**：`[](auto x)` 每次以不同实参调用会实例化多个闭包，模板膨胀与编译时间膨胀常被低估。
@@ -350,6 +353,8 @@ template<class T> constexpr bool is_ptr_v = std::is_pointer_v<T>;
 ### ㉒.4 与标准的互动：承上启下
 
 [史] C++14 之后紧接 C++17——后者才引入 `std::optional`/`string_view`/`if constexpr` 等"真正改变写法"的特性。[评] 今天 C++14 已基本退出"推荐基线"：新代码应直接上 C++17/20；但理解 14 能看懂大量存量代码为何用泛型 lambda 而非 C++20 的 template lambda。
+
+- [史] C++14 的 `std::make_unique` 由微软 STL 团队成员 Stephan T. Lavavej 提案（**N3657**）引入，补回 C++11 遗漏的 `unique_ptr` 工厂；泛型 lambda 与 `auto` 返回类型推导分别落在 §[expr.prim.lambda] 与相关返回类型推导条款。设计理由：把「统一用工厂避免裸 new」的 RAII 纪律写进标准库，消除手写 `new` 的泄漏风险。
 
 ### ㉒.5 权威引用
 

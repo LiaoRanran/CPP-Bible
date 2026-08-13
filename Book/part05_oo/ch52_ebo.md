@@ -495,6 +495,8 @@ int main(){
 - **Boost / 策略类（Policy-Based Design）**：`boost::compressed_pair`（专为 EBO 设计）与 Andrei Alexandrescu 的 Policy-Based Design（ch71）用空基类承载单位策略（如 `Unit<Meter>`），让「类型携带编译期信息」零运行时成本。
 - **游戏/嵌入式**：在尺寸敏感的结构（如每帧百万计的组件、协议包）里，用 EBO/`[[no_unique_address]]` 把空 tag/stateless 策略压成零尺寸，直接关系到缓存命中与内存带宽。
 - **数值/编译期库（Eigen、units）**：量纲单位（dimension tag）多为空类型，经 EBO 嵌入 `Quantity<Double, Meter>` 而不增尺寸，实现「类型安全 + 零开销」。
+- **序列化框架（FlatBuffers / Google）**：FlatBuffers 的 `Table`/`Struct` 描述与 offset 标签大量用空/轻量类型携带编译期 schema 信息，经 EBO/`[[no_unique_address]]` 零开销嵌入缓冲访问器，避免反射式访问的运行时成本——序列化库里的 EBO 真实用法。
+- **异步 I/O（Boost.Asio / handler traits）**：Asio 用空类型（execution 属性标签 / handler traits）携带编译期信息，经 EBO 零开销嵌入 completion handler，实现「类型即配置」而不增尺寸——EBO 在异步 I/O 库里的真实用法。
 
 ### ㉒.3 生产踩坑：EBO 的误用
 
@@ -506,6 +508,7 @@ int main(){
 ### ㉒.4 与标准的互动：EBO 与 WG21 演进
 
 [史] EBO 随 C++98 被确立为「空基类子对象可零尺寸」；**C++20 的 P0840（`[[no_unique_address]]`）** 把它扩展到数据成员，是 EBO 二十多年来最实质的语言级补完（第 ⑬ 节）。[史] 与此同时，**`std::is_empty`（第 ⑪/⑮ 节）** 等类型特征让库能在编译期检测空类型、决定是否启用压缩；C++20 后 `[[no_unique_address]]` 配合 concepts（ch67）可写出「对空成员零开销、非空成员照常」的泛型组件。[评] WG21 方向是把「零开销承载编译期信息」做成一等语言设施：EBO（基类）→ `[[no_unique_address]]`（成员）→ 静态反射（P2996，C++26 候选）逐步让「类型的编译期属性不付运行时代价」成为可移植、可查询的契约。标准库自身（tuple/pair/shared_ptr）会继续是 EBO 的最大受益者与示范。
+- [史] EBO 的修订链：**P0840R0→R1→R2（C++20，`[[no_unique_address]]`）** 把空基类零尺寸扩展到数据成员，是 EBO 二十多年最实质的语言级补完；**P2996R0→…→P2996R13（C++26 候选，静态反射）** 则把「对象布局 / 成员遍历」从黑魔法变成编译期可查询设施。ISO 条款 `[intro.object]` 的 *potentially-overlapping subobject*（潜在重叠子对象）概念正是 `no_unique_address` 的法理基础——委员会把「零开销承载编译期信息」逐步做成可移植、可查询的一等契约。
 
 ### ㉒.5 权威引用
 

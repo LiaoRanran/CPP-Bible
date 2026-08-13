@@ -1066,6 +1066,9 @@ sanity: ch150 self-contained examples compile & run OK
 - **Chromium**：以 GoogleTest 为单元测试底座，配合大规模端到端与模糊测试。
 - **无数库与产品**：Catch2 因其单头易集成，在中小库里极流行；游戏/嵌入式则用轻量自建框架。
 
+- **单元测试框架**：GoogleTest/GoogleMock（Chromium、ROS）、Catch2（单头、 constexpr 友好）、doctest（极轻量）、Boost.Test；大型项目常自研 harness。
+- **模糊测试**：LLVM 的 libFuzzer + sanitizers（ASan/UBSan/MSan/TSan）是 C++ 查 UB/内存错误的工业标准组合；Chromium 的 ClusterFuzz 持续 fuzz 整个代码库。
+
 ### ㉒.3 生产踩坑：测试的常见误用
 - **测实现而非行为**：断言私有细节，一重构测试就碎，维护成本反噬；应测可观察的行为契约。
 - **flaky 测试**：依赖时间/顺序/并发的测试随机失败，团队学会"重跑"，门禁失效（见第149章）。
@@ -1076,7 +1079,10 @@ sanity: ch150 self-contained examples compile & run OK
 ### ㉒.4 与标准的互动：标准库与测试工具
 ISO C++ 标准不规定测试框架，但 `<random>`、`<chrono>`、`constexpr` 测试能力、以及"可观察行为"语义都服务于可测性。LLVM 的 **libFuzzer** 把"覆盖率引导的模糊测试"做成编译器基础设施（`-fsanitize=fuzzer`），已成为查找 C++ 解析器/协议栈漏洞的工业标配。[评] 现代 C++ 测试 = 单元(GoogleTest/Catch2) + sanitizer 门禁 + 模糊测试，三者叠加才接近"可信"。
 
+**修订链补强（测试与标准演进）**：C++ 标准本身不规定单元测试框架，但给了测试赖以成立的底层保证：`static_assert` 与 `constexpr` 让“编译期断言”成为可移植的契约检查（C++11 起，C++20 放宽 constexpr 边界）；`std::source_location`（[P1208](https://wg21.link/P1208)，C++20）让测试宏能拿到 `__FILE__`/`__LINE__` 之外的函数名与列号。WG21 的 contracts 提案（目标 C++26，曾在 C++20 被撤回后重启）试图把前置/后置/断言条件纳入语言，进一步把“运行时检查”从框架层上移到语言层。
+
 ### ㉒.5 权威引用
+- [WG21 P1208 — std::source_location](https://wg21.link/P1208) — C++20 源码位置
 - [GoogleTest 仓库与文档](https://github.com/google/googletest) — C++ 单元/ mock 测试事实标准
 - [GoogleTest 官方文档（Primer/Advanced）](https://google.github.io/googletest/) — 断言、fixture、参数化用法
 - [Catch2 仓库](https://github.com/catchorg/Catch2) — 单头、自然语言风格的现代测试框架

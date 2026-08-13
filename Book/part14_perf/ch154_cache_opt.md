@@ -892,6 +892,9 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 - **数据库 / 列式存储**：用 cache blocking（分块）让工作集留在 L1/L2，B+ 树与列存都受益（见 ⑰）。
 - **Chromium**：源码里大量 `LinkedList`→`flat_map`、用 `StringPiece` 零拷贝减 cache footprint（见其工业附录）。
 
+- **缓存意识库**：Eigen 的 aligned allocator 与 `EIGEN_MAX_ALIGN_BYTES`、Google 的 [TCMalloc](https://github.com/google/tcmalloc) 做 per-thread cache 降低锁争用、Intel TBB 的 `cache_aligned_allocator`。
+- **False sharing 实战**：`std::hardware_destructive_interference_size`（C++17）被用来给无锁结构体的热点成员加 padding，避免跨核 ping-pong。
+
 ### ㉒.3 生产踩坑：缓存优化的误用
 - **伪共享（false sharing）**：两个线程各写相邻字段，却落在同一 cache line，反复 invalidate 彼此；用 `alignas(64)` 或 `hardware_destructive_interference_size` 隔开（见 ⑧⑩）。
 - **AoS 缓存不友好**：`struct{int x;int y;int z;} arr[N]` 只要 x 时仍搬来 y/z，浪费带宽；热循环改 SoA。
@@ -900,6 +903,8 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 ### ㉒.4 与标准的互动：从 alignas 到 interference_size
 C++11 的 `alignas` 让"按 cache line 对齐"合法化；C++17 的 `hardware_destructive/constructive_interference_size` 进一步把"该对齐多少"交给实现定义（典型 64）。`std::assume_aligned`（C++20）则让编译器相信某指针已对齐，从而放开向量化（见 ⑱）。[评] 这些设施把"缓存意识"从魔法数提升为标准可移植代码。
+
+**修订链补强（缓存与标准）**：C++ 抽象机器不建模 cache，但 [P0154](https://wg21.link/P0154)（C++17）首次把“缓存行干扰大小”作为可移植常量暴露（`hardware_destructive_interference_size` 用于避免 false sharing、`hardware_constructive_interference_size` 用于促进 true sharing），实现可在不支持时返回 0 并回退。这是对 [MICROARCHITECTURE] 事实（64B 缓存行是 x86/ARM 主流）的有限标准化。更激进的“缓存感知分配”仍由库（TCMalloc/jemalloc/mimalloc）与 `alignas` 承担，标准未统一。
 
 ### ㉒.5 权威引用
 - [cppreference: std::hardware_destructive_interference_size](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size) — 防伪共享的标准常量（C++17）

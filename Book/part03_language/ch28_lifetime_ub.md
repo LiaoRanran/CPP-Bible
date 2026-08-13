@@ -1363,6 +1363,8 @@ C 在 1970 年代为"贴近硬件、零抽象"刻意留下大量"实现定义 / 
 - **编译器武器化**：GCC/Clang/MSVC 都基于 UB 做死代码消除、循环不变外提、未初始化变量传播；LLVM 的 `-fsanitize=address,undefined` 是 Chrome/LLVM 自身 CI 的标配。
 - **安全敏感系统**：Chromium 用 UBSan/ASan 把关内存安全；Linux 内核引入 `-fstrict-flex-arrays` 等收紧 UB 边界；CVE 中相当比例源于生命周期类 UB（悬垂、越界）。
 - **并发与数据竞争**：数据竞争是 UB 的另一重灾区（ch61），TSAN 成为服务端发布前的必跑检查。
+- **数据库 / 存储引擎**：SQLite 的页缓存与 `Btree` 指针管理极度依赖生命周期正确性，历史上多起 use-after-free 类 CVE 源于页对象被提前释放后仍有指针引用；RocksDB 的 `ColumnFamilyHandle` 生命周期错配（句柄先于 DB 析构）是真实的生产崩溃源——生命周期类 UB 在 PB 级存储引擎里直接等于数据损坏。
+- **JS 引擎 GC**：V8 的 handle 体系（见 ch20）与 SpiderMonkey 的 `Rooted<T>` / `Handle<T>` 专门对抗悬垂，把"对象可能被 GC 移动 / 回收"的威胁用根集显式化；Chrome 安全团队长期把 UAF（use-after-free）列为头号漏洞类别，正是因为生命周期 UB 是浏览器攻击面的主战场。
 
 ### ㉒.3 生产踩坑：生命周期/UB 的常见误用
 - **悬垂引用/指针**：返回局部变量引用、迭代器/指针失效（容器扩容、erase）、`std::string` 的 `c_str()` 跨修改使用——访问即 UB，是最常被 UB 优化"武器化"的坑（见 ch33）。[史][评]
@@ -1372,6 +1374,7 @@ C 在 1970 年代为"贴近硬件、零抽象"刻意留下大量"实现定义 / 
 
 ### ㉒.4 与标准的互动：把 UB 关进笼子
 零开销原则与"安全默认"根本冲突：给 UB 一个确定结果会强加运行期检查、拖慢所有程序，委员会选择"信任程序员 + 把优化权留给编译器"（见 ch28 0.3）。[史][评] 此后"关笼子"从工具走向语言与政策：Herb Sutter 的 Lifetime profile 试图编译期证明"无悬垂引用"（部分落地于 Clang `-Wdangling`/`-Wlifetime`）；2023 起 ISO C++ 成立 Safety 工作组，探索 bounds/type/init safety 的 Profiles 子集，在不破坏零开销前提下收窄 UB 面；Clang `-Werror=unsafe-buffer-usage` 把裸指针越界列为错误。[史][评]
+- **标准条款补强（UB 与生存期的法律文本）**：UB 的定义本身写在 [intro.abstract]/1——"undefined behavior ... this document imposes no requirements"，即一旦触发 UB，编译器可对整段程序做任何事，这正是优化器"武器化"UB 的法律依据；对象生存期则由 [basic.life] 规定（存储重用、构造 / 析构顺序、隐式对象创建）。委员会在"零开销"与"安全默认"间长期摇摆：2023 年前后 ISO C++ 启动 Safety 相关工作（SG23 与 Profiles 提案），探索在不破坏"you don't pay for what you don't use"前提下，定义 bounds / type / init safety 的 Profiles 子集（如把裸指针越界列为违例），而非给所有代码强加运行期检查——这是对 ch28 0.x"信任程序员"立场的一次有限修正。[评]
 
 ### ㉒.5 权威引用
 - [cppreference: Undefined behavior](https://en.cppreference.com/w/cpp/language/ub) — UB 的分类与示例

@@ -1042,6 +1042,9 @@ int main() {
 - **Composite**：UI 控件树、DOM、场景图（scene graph）都用组合模式统一叶子与容器节点。
 - **Flyweight**：字形/字体缓存、游戏瓦片共享，用共享对象省内存；**Facade**：大型库对外只暴露一个简洁入口类。
 
+- 音视频：**WebRTC** 的 `MediaStream`/`Track` 与 `RtpSender`/`RtpReceiver` 是典型 Bridge/Adapter：把采集、编码、传输分层解耦，便于在不同浏览器/设备上替换实现（见 <https://webrtc.github.io>）。
+- 科学计算：**HDF5** 的「虚拟数据集」与「过滤器管道（filter pipeline）」用可叠加的变换链处理数据，是 Decorator/管道思想在文件格式里的落点。
+
 ### ㉒.3 生产踩坑：间接层是把双刃剑
 
 - **Bridge 的过度抽象**：把「可能永远不变的实现」也拆成两层，徒增间接与虚调用。
@@ -1054,6 +1057,9 @@ int main() {
 - `[评]` 智能指针把 Proxy 标准化；类型擦除（`std::function`、`std::any`）把「运行期接口」做成库组件，是结构型模式在现代 C++ 的「收编」代表。
 - 移动语义让 Decorator/Proxy 传递资源零拷贝；`std::span` 是「零开销视图（轻量适配器）」的典范。
 - `[评]` 标准演进方向是用语言/库特性取代手写结构型样板，但 Bridge/Composite 这类「架构级」结构仍需人工设计。
+
+- `[评]` WG21 **P0288R0→…→P0288R9**（move_only_function，<https://wg21.link/P0288>，C++23）：给「只能移动的可调用包装」一个标准答案，是 Proxy/类型擦除思想在标准库的新进展——弥补 `std::function` 要求可拷贝、无法承载仅可移动闭包的缺口。
+- `[评]` ISO/IEC 14882:2023 在 `[func.wrap.move]` 把 move-only 可调用物纳入类型擦除体系；委员会理由：异步/协程场景下大量闭包仅可移动，旧 `std::function` 力不从心。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 

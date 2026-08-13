@@ -752,6 +752,9 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
 - **科学计算 / HPC**：在确认数值可接受时启用 `-Ofast`/`-ffast-math` 换取吞吐。
 - **嵌入式**：常锁 `-O2` 而非 `-O3`，避免代码膨胀吃掉指令缓存。
 
+- **优化通道**：`-O2`/`-O3`、LTO（Link Time Optimization）、PGO（Profile-Guided Optimization）、AutoFDO、BOLT（post-link 重排）、CSSP（call-site splitting）；Clang/LLVM 与 GCC 各自实现但概念相通。
+- **可视化**：[Compiler Explorer (godbolt.org)](https://godbolt.org/) 把“源码→汇编”实时暴露，是验证优化是否生效的事实工具（见 ch157）。
+
 ### ㉒.3 生产踩坑：优化选项的误用
 - **`-Ofast` 破坏数值正确性**：放松 IEEE 后，浮点结合律被改写，原本"稳定"的算法出现 NaN/Inf 或精度漂移；数值敏感代码应只用 `-O2`/`-O3`。
 - **`-ffast-math` 误开**：同上的子集，且与 `std::isfinite`/`std::isnan` 的语义冲突。
@@ -761,7 +764,10 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
 ### ㉒.4 与标准的互动：未定义行为是优化的杠杆
 ISO C++ 用"未定义行为（UB）"换取优化空间——标准不定义的行为，编译器可任意处理。LTO/PGO 不过是把这种杠杆用到跨 TU/按剖面的尺度。C++20 的 `[[likely]]`/`[[unlikely]]`、C++26 的"严明 UB"讨论，都是标准在"优化自由"与"程序员可预期性"之间找平衡。[评] 理解优化选项，本质是理解"标准把哪些自由交给了编译器"。
 
+**修订链补强（优化与标准边界）**：所有优化都建立在“as-if 规则”（[intro.abstract]）之上：只要可观察行为不变，编译器可任意重写——这是 [STANDARD] 给实现者的自由，也是 UB 被“武器化”的根源（见 ch28）。C++ 标准不规定优化等级，但提供有限的“意图透传”属性：`[[likely]]`/`[[unlikely]]`（[P0479](https://wg21.link/P0479)）、C++23 引入的 `[[assume]]` 属性让程序员把分支/不变式提示给优化器。PGO/BOLT 等则完全在 [IMPLEMENTATION] 层，标准无涉。
+
 ### ㉒.5 权威引用
+- [Compiler Explorer](https://godbolt.org/) — 源码→汇编实时对照的事实工具
 - [GCC Optimize Options（`-O*`/LTO/`-ffast-math`）](https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html) — 各级优化与放松语义的权威说明
 - [Clang Users Manual（优化与 PGO）](https://clang.llvm.org/docs/UsersManual.html) — Clang 等价优化开关
 - [cppreference: 未定义行为（UB）](https://en.cppreference.com/w/cpp/language/ub) — UB 如何成为优化杠杆

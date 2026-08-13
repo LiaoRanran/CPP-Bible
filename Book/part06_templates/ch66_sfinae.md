@@ -506,6 +506,8 @@ static_assert(std::is_integral_v<int>);   // true，编译期已知
 - Boost 全家桶：`Boost.EnableIf`、`Boost.TypeTraits`、`Boost.Serialization` 大量用 SFINAE 做「按类型能力选重载」，是这套技法的工业发源地。
 - 标准库自身：`std::enable_if` 驱动的 `std::vector` 的 `is_same` 特化路由、`std::shared_ptr` 的数组特化、`std::iterator_traits` 对指针的偏特化分支，底层都是 SFINAE。
 - 序列化/反射库（Cereal、Magic Enum）用 `void_t` 检测 idiom 判断「类型 T 是否有 serialize 方法」，编译期分流。
+- **Web/后端（nlohmann/json）**：用 `void_t`/SFINAE 探测用户是否提供了 ADL 可见的 `to_json`/`from_json`，编译期把自定义类型无缝接入 JSON 序列化，是序列化框架的经典探测 idiom。
+- **科学可视化（VTK，Kitware）**：用 SFINAE 为不同数据类型（`vtkDataArray` 子类）挑选 reader/writer 与处理管线，避免运行期大规模 `dynamic_cast`。
 
 ### ㉒.3 生产踩坑：SFINAE 的常见误用与陷阱
 - **报错信息天书**：一旦 SFINAE 没按预期筛掉重载，最终错误往往是一长串「无匹配重载」，根因（哪个替换失败）藏在几百行实例化回溯深处，极难定位。
@@ -515,6 +517,8 @@ static_assert(std::is_integral_v<int>);   // true，编译期已知
 
 ### ㉒.4 与标准的互动：从潜规则到被 concepts 收编
 SFINAE 自 C++98 起就是模板替换的沉默规则，「故意触发失败来筛重载」是社区在 2000 年代「玩出来」的技法，`std::enable_if`（C++11）把它变成明文工具。C++20 的 `requires` 表达式与 concepts（ch67）接管了「大部分」SFINAE 场景：约束可读性、报错定位都更好。但 SFINAE 并未退场——细粒度到「某个表达式是否良构」的探测（如「类型 T 有没有 `.size()` 且返回整数」）仍广泛存在于老库代码中，新旧写法将长期并存。
+- **ISO 条款**：SFINAE 本身不是某个提案，而是标准对「模板实参替换失败（且仅在立即上下文）不算错误」的明文规则，散落在 **[temp.deduct]** 与 **[temp.over]**；它正是 traits/enable_if 能工作的底层机制。
+- **修订/采纳**：`std::void_t`（把任意类型序列映射为 `void`、使检测 idiom 一行可达）由 Walter Brown 提出并于 C++17 标准化（措辞提案 **P0033R0** [据记载]），`std::enable_if` 则随 `<type_traits>`（C++11）落地——二者把「故意触发替换失败来筛重载」从社区黑魔法变成标准工具；C++20 的 `requires` 表达式（ch67）是其官方化继任者。
 
 ### ㉒.5 权威引用
 - [cppreference: SFINAE](https://en.cppreference.com/w/cpp/language/sfinae) — 替换失败非错误的权威说明与 Library support（`enable_if`/`void_t`）

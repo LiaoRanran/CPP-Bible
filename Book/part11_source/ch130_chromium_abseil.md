@@ -862,6 +862,10 @@ int main() {
   - **GoogleTest / GoogleMock（1.11+）**：已迁移到以 Abseil 为支撑的测试框架。
 - 标准化先行者：`string_view`/`optional`/`any`/`span`/`StatusOr` 先在 Abseil 成熟，后被 C++17/20/23 吸收为标准。
 
+- **TensorFlow 与 Fuchsia**：Google 的机器学习框架 **TensorFlow** 与下一代操作系统 **Fuchsia** 均以 Abseil 为底座（`absl::string_view`、`absl::Status`、`absl::flat_hash_map` 无处不在），把 Abseil 从「服务后端」一路推进到「ML 框架」与「操作系统运行时」。
+- **所有 Chromium 系浏览器**：除了 Chrome/ChromeOS，**Microsoft Edge**、**Opera**、**Brave**、**Vivaldi** 也都基于 Chromium——它们运行时都加载同一套 Chromium `base` 库；Android 上的 **Chrome / Android System WebView** 同样如此，使 `base` 的装机量以「设备数」计达数十亿。
+- **re2 / protobuf 周边**：Google 的正则库 **re2**（以及 Abseil 自身）现已把 `absl::` 组件作为硬依赖，形成「Google 开源 C++ 几乎都绕不开 Abseil」的事实标准。
+
 ### ㉒.3 生产踩坑：版本化（LTS）、与标准的重叠、Chromium 铁律
 
 - **Abseil 版本化与「live-at-head」**：Abseil **不保证 ABI 稳定**，官方推荐「从源码随你的工具链一起构建」，并提供 **LTS（Long Term Support）分支**（如 `LTS 20220623`、`LTS 20230125.0`）以降低升级震动。混用「非 LTS 头文件 + LTS 库」或反之，会产生 ODR 违例；同时在一个二进制里链两个 Abseil 版本同样危险。Google 内部走「始终同步 HEAD」策略，外部用户则靠固定 LTS + Bazel/`find_package(absl CONFIG)` 锁定。
@@ -886,6 +890,13 @@ int main() {
 | `absl::StrCat` 思路 | `std::format`（C++20） | P0645R10 |
 
 > 注：`std::flat_map` 是**有序**的连续存储容器，与 Abseil 的**无序** Swiss Table 定位不同，但「flat（无节点堆分配）」这一性能哲学直接受 Abseil 启发。Abseil 明确表态「特性一旦进标准，就鼓励用户迁移到 std」，库本身体位为「标准前的试验田」。
+
+> 修订链补遗（wg21.link 核实的真实修订）：上表只给了单点提案号，这里补全几条关键修订链，说明 Abseil「提前实现、待标准落地后让位」的脉络：
+> - `std::span`：**P0122R0 → … → P0122R7**（Neil MacIntosh、Stephan T. Lavavej，2018）进入 **C++20**；`absl::Span` 正是其前身之一。
+> - `std::expected`：**P0323R0 → … → P0323R12**（Vicente Botet Escribá、JF Bastien）进入 **C++23**；`absl::StatusOr` 是其直接思想来源。
+> - `std::format`：**P0645R0 → … → P0645R10**（Victor Zverovich）进入 **C++20**；`absl::StrCat` / `{fmt}`（见第131章）共同塑造了它。
+> - `std::scope_exit`（scope guard）：**P0052R0 → … → P0052R10**（2019-02）被采纳进 **Library Fundamentals TS v3（ISO/IEC TS 19568:2019）**，`absl::Cleanup` 与之同源；它尚未进入 IS 正文，是「Abseil 先行、标准仍在路上」的活样本。
+> - 委员会设计理由：Abseil 的公开立场是「特性一旦进标准，就鼓励用户迁移到 `std`」，库本身定位为「标准前的试验田」；其 `live-at-head` 模式（配合 LTS 分支）与标准「按三年周期发布、强调 ABI 稳定」形成对照，恰好说明工业界与委员会在「迭代速度 vs 兼容性」上的张力。
 
 ### ㉒.5 权威引用
 

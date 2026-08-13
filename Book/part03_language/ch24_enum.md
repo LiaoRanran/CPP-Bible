@@ -1296,6 +1296,8 @@ C 的 `enum` 来自 1970 年代，本意是用具名常量替代魔法数字，�
 - **操作系统与协议**：Windows API 的 `DWORD` 标志、`WM_*` 消息、网络协议字段（TLS/HTTP 状态）普遍用枚举或位掩码表达离散值。
 - **标准库与错误码**：`std::errc`、`std::io_errc`、`std::chars_format` 等用枚举定义可移植的错误与格式类别；`std::future_status` 表达异步状态。
 - **游戏与状态机**：状态机、动画帧、资源类型几乎一律 `enum class`；Bitmask 类型（`std::ios_base::fmtflags`）继续用 unscoped + `operator|` 重载表达可组合的 flags。
+- **RPC / 网络协议**：gRPC 的 `grpc::StatusCode`（如 `OK` / `NOT_FOUND` / `UNAVAILABLE`）以枚举表达跨语言错误类别，HTTP/2 的帧类型（`DATA` / `HEADERS` / `SETTINGS`）在 C 实现里也以枚举表达离散协议字段，是"枚举即协议"的跨语言事实标准。
+- **图形 API**：Vulkan 的 `VkResult`、`VkStructureType`、OpenGL 的 `GLenum` 用枚举表达 API 返回状态与结构体标签，跨 C/C++/Rust/Python 绑定保持同一套枚举值——枚举在此承担着"二进制接口契约"而非单纯的可读性。
 
 ### ㉒.3 生产踩坑：枚举的常见误用
 - **unscoped enum 隐式转换 bug**：`if (state == 3)` 或把 `Color` 当 `int` 传入，绕过类型系统导致隐蔽错误——`enum class` 强制 `static_cast` 正是为堵这个洞。[史][评]
@@ -1304,6 +1306,7 @@ C 的 `enum` 来自 1970 年代，本意是用具名常量替代魔法数字，�
 
 ### ㉒.4 与标准的互动：枚举随标准演进
 基本 unscoped enum 自 C++98 沿用 C；`enum class`（N2347）在 C++11 入标准，把强类型与底层类型指定补上；C++17 起讨论位掩码与枚举反射；C++20 `using enum`（P1099）提升易用性；`std::format`/`std::print`（C++20/23）需手写 `std::formatter` 才能打印枚举名而非整数。[史] 静态反射（P2996，C++26 候选）将让编译器暴露每个 enumerator 的名称与底层值，`magic_enum` 的宏/trick 将被零成本的官方方案取代。[史][评][轶] Bjarne 曾表示 `enum class` 是"为了让 C 程序员不觉得被冒犯"的妥协——旧代码照旧，新代码才享受安全。
+- **修订链补强（using enum）**：`using enum` 的修订尤为波折——提案 [P1099](https://wg21.link/P1099) 从 R0 提出"把枚举器名引入作用域"，历经 R1–R4 的措辞与 CWG 审查，到 R5（"Approved by CWG"）随 C++20 落地。标准将规则写入 [dcl.enum] 与 [enum.udecl]：using-enum-declaration 把枚举器的名字作为别名声明引入，设计动机是消除 `enum class` 的样板（原需逐个 `using Color::Red;` 或反复 `Color::`），委员会在"强类型安全"与"可用性"之间做了二次平衡——既保留 `enum class` 的强类型，又用 `using enum` 把便利还给程序员。
 
 ### ㉒.5 权威引用
 - [cppreference: enum](https://en.cppreference.com/w/cpp/language/enum) — unscoped/enum class 与底层类型

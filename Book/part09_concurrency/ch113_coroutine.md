@@ -738,6 +738,8 @@ struct safe_task {
 - **Facebook Folly（folly::coro）**：工业级异步框架，用协程重写异步 I/O 与 future，显著降低回调地狱；Meta 大规模线上服务依赖它。
 - **Boost.Asio / 网络框架**：Asio 的 `awaitable<>`/`co_spawn` 把异步回调改写成顺序写法，是 C++ 服务端协程的主流入口。
 - **游戏 / 客户端（Unreal、Azure 云服务）**：P0912 提案正文披露协程已部署于 Windows Azure 等基础服务；游戏脚本与异步加载用协程化简状态机。
+- **网络代理/网关（Envoy、Cloudflare 边缘）**：高并发反向代理用协程（或等价异步模型）在单线程上挂起数万连接，把「等下游响应」写成顺序逻辑，避免回调地狱同时压低尾延迟。
+- **数据库/存储引擎（CockroachDB、TiKV 异步客户端）**：分布式事务的「多分片读 → 提交」流程用协程组合异步 RPC，使复杂并发控制流可读、可测。
 
 ### ㉒.3 生产踩坑：协程的常见误用
 
@@ -749,6 +751,8 @@ struct safe_task {
 ### ㉒.4 与标准的互动：协程与 C++ 标准的演进
 
 [史] 协程由 **P0912R5** 合入 **C++20**（底层原语 + `<coroutine>`）；**C++23** 首次在标准库给出高层封装 **`std::generator`（P2168）** 与 `std::ranges` 配合；**C++26** 推进 **`std::execution`（P2300，sender/receiver 异步模型）** 与协程深度整合、并探索「无栈/有栈」「可恢复函数」的进一步简化。与 WG21 方向一致：先标准化「可移植的底层变换」，再逐步补齐「开箱即用的高层异步抽象」，同时持续解决帧分配、取消（cancellation）、错误传播等边角难题。
+
+- [史] **协程修订链**：**P0912** 从 **R0 → R4 → R5（2019-02-22，Gor Nishanov）** 把 Coroutines TS 合入 C++20；**P2168（`std::generator`）** 进 C++23（Lewis Baker / Corentin Jabot）；**P2300（`std::execution`）** 推进至 **R10**，目标 C++26，把 sender/receiver 异步模型与协程打通；<https://wg21.link/p0912>、<https://wg21.link/p2168>、<https://wg21.link/p2300>。
 
 ### ㉒.5 权威引用
 

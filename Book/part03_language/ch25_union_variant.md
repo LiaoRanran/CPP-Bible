@@ -1711,6 +1711,8 @@ C 的 `union` 来自 1970 年代，让多个成员共用一块存储以省内存
 - **编译器与 AST**：LLVM 的 `llvm::Value`/指令节点、Clang 的 AST 用判别联合（有时裸 union + tag，有时 `std::variant`）表达"同一槽位只装一种节点"；protobuf 生成的消息体常含 union 式字段。
 - **协议与状态机**：网络协议消息、序列化格式（Cap'n Proto、FlatBuffers 的 union 类型）、游戏状态机普遍从裸 union 迁移到 `std::variant` 以获得类型安全分派。
 - **标准库**：`std::variant` 与 `std::visit` 已成为表达"值或错误"的基石，`std::expected`（C++23，P0323）与其思路同源（判别联合）但聚焦错误处理。
+- **JVM / 运行时**：HotSpot JVM 的对象头与 oop（ordinary object pointer）体系用"tagged / union 式"布局把对象元数据与多类型 payload 装在同一槽位；V8 的 `TaggedPtr` 与 `.NET` CoreCLR 的值类型装箱内部也用判别联合在"对象指针 / 小整数 / 异常"间切换，是判别联合在 GC 内存布局上的工业级应用。
+- **数据库驱动**：ODBC / SQLite 的 `sqlite3_value` 与 `SQL_C_*` 列绑定用 union 表达"同一列可承载整型/浮点/文本/二进制"的多类型值，驱动层在读列时按类型标签分派——这正是裸 union 从 C 时代延续到数据库引擎的真实坐标。
 
 ### ㉒.3 生产踩坑：union/variant 的常见误用
 - **裸 union 读非活跃成员**：这是教科书级 UB，优化器可能基于"你不会读错成员"做假设，导致难复现的崩溃。[史][评]
@@ -1720,6 +1722,7 @@ C 的 `union` 来自 1970 年代，让多个成员共用一块存储以省内存
 
 ### ㉒.4 与标准的互动：variant 与标准演进
 C++98 对含非平凡构造类型的 union 限制极严；C++11 放宽但仍是"用户管理活跃成员"；C++17 把 `std::variant`（P0088，源自 Library Fundamentals TS v2）纳入标准，定义于 `[variant]`，并配套 `std::visit`、`std::holds_alternative`、`std::get_if`。[史] C++23 的 `std::expected`（P0323）补齐"值或错误"变体；模式匹配提案（P1371 等）试图引入 `inspect` 直接分派 variant，免去 `std::overload` 样板——是 variant 的"语法终结形态"候选。[史][评]
+- **修订链补强（variant → expected）**：`std::variant` 源自 Library Fundamentals TS v2，提案 [P0088](https://wg21.link/P0088) 从 R0 一路修订到 R3（"Variant: a type-safe union for C++17"）随 C++17 落地；其近亲 `std::expected` 则历经更夸张的 [P0323R12](https://wg21.link/P0323)（十余轮修订，2022 才随 C++23 定稿），足见"值或错误"判别联合的措辞难度。标准把 variant 定义在 [variant]，并规定若构造某 alternative 抛异常则进入 `valueless_by_exception`，委员会刻意不让 variant 自动"恢复"，把"异常后状态"显式暴露给程序员而非隐藏——这是与 Rust `Result` 不同的安全哲学。
 
 ### ㉒.5 权威引用
 - [cppreference: std::variant](https://en.cppreference.com/w/cpp/utility/variant) — 类型安全联合、visit 与 valueless

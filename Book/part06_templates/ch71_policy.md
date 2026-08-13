@@ -598,6 +598,8 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 - 标准库本身就是策略设计的教科书：`std::vector<T, Allocator>`、`std::basic_string<C,Traits,Allocator>`、`std::shared_ptr<T,D>`（删除器 `D`）、`std::unique_ptr<T,D>` 都是「行为可插拔」的策略范例；C++17 的 `std::pmr` 又把内存资源做成可替换策略。
 - Boost 与 Abseil：`boost::unordered_map` 的哈希/相等/分配策略、`absl::Hash` 的策略化扩展，都是同一思想。
 - 游戏引擎与序列化框架：用策略参数组合「编码格式/压缩/校验」等正交行为，避免为每种组合派生子类的爆炸式类层次。
+- **计算几何（CGAL）**：`CGAL::Kernel` 作为策略参数，让用户在「精确谓词/精确构造」与「近似高效」之间插拔，是策略化几何内核的工业标杆。
+- **几何库（Boost.Geometry）**：用策略/策略类参数化坐标系统（`cs::cartesian`/`cs::spherical`）、计算策略与访问策略，使同一套算法覆盖平面、球面与三维几何。
 
 ### ㉒.3 生产踩坑：policy-based design 的常见误用与陷阱
 - **模板参数过多导致报错地狱**：策略类常带 4–6 个模板形参，一旦某个策略不满足宿主类期望（缺方法/类型），报错会沿实例化链铺开几百行，根因藏在最深处。
@@ -607,6 +609,8 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 
 ### ㉒.4 与标准的互动：策略类与 concepts 的融合
 policy-based design 自 2001 年起影响了整个 C++ 库生态（见 ch71 正文）。C++20 的 concepts（ch67）让「策略类必须满足某接口」从「文档约定 + 偏特化兜底」变成 `requires` 硬约束：宿主模板可对策略形参写 `requires Policy::has_foo`，报错直接在调用点点名缺了哪个方法。标准库本身也持续把「可插拔行为」做成策略（`std::pmr` 的内存资源、`std::unique_ptr` 的删除器），并逐步用 concepts 收紧其契约。策略类没有过时，只是拿到了机器可检查的接口契约。
+- **ISO 条款**：策略类依赖的空基类优化（EBO）写在 **[class.layout]**（空基类不占地址空间）；模板参数机制在 **[temp]**。委员会长期保证 EBO 的语义，使「空策略 = 零大小」成为可依赖的工业前提。
+- **修订/采纳**：**P0840R2（[[no_unique_address]]，C++20）** 把「空成员可被重叠布局」从「仅靠 EBO 的基类技巧」提升为一等属性，策略类可直接把空策略声明为 `[[no_unique_address]]` 成员而无需继承（[P0840R2](https://wg21.link/P0840R2)），让 policy-based design 在保持零开销的同时更直观。
 
 ### ㉒.5 权威引用
 - [Wikipedia: Policy-based design (Modern C++ Design)](https://en.wikipedia.org/wiki/Policy-based_design) — Alexandrescu 2001 年提出 policy-based design 的历史与机制

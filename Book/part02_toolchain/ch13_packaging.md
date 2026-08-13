@@ -708,6 +708,9 @@ main:
 - 系统包管理：Debian/Ubuntu（apt）、macOS（Homebrew）仍是许多开发者的依赖来源。
 [评] 选型常取决于平台：Windows 偏 vcpkg，跨平台/二进制缓存偏 Conan，嵌入式偏手动或 Buildroot/Yocto。
 
+- **ML/数值库分发**：libtorch（PyTorch C++ 前端）、ONNX Runtime 等通过 Conan/vcpkg 提供预编译二进制，避免用户从源码编 CUDA/CPU 后端——包管理活在 ML 基建落地环节。
+- **数据库与中间件**：SQLite 的 amalgamation、libpq/MySQL Connector 等常以 vcpkg/Conan 端口形式被 C++ 后端工程拉取，减少手工配置。
+
 ### ㉒.3 生产踩坑：包管理的常见误用与陷阱
 - ABI 不匹配：用 GCC 9 编译的库被 GCC 11 程序链接，libstdc++ 版本漂移导致运行时崩溃；C++ 没有稳定 ABI 保证（Itanium ABI 仅在同编译器同版本近似稳定）。
 - Debug/Release 混链：包管理器默认可能拉到 Release 二进制，而你的工程是 Debug，迭代器调试宏不一致直接 assert 崩。
@@ -716,6 +719,8 @@ main:
 
 ### ㉒.4 与标准的互动：包管理与 C++ 标准的演进
 [评] 包管理不属于 ISO C++ 标准范畴，但标准演进会放大其难度：C++20 Modules 要求包管理器能分发模块接口单元（BMI），传统"头文件即接口"模型被打破；标准库本身（如 `std::format` 进标准）也减少了部分第三方依赖需求（fmt 被吸收）。[评] 属工程实践层，无单独 WG21 提案，但 SG15（Tooling）研究包/模块生态，相关讨论见 open-std.org。
+
+- [史] 标准演进直接削弱部分第三方依赖：C++20 **`<format>`（P0645）** 进标准后，许多项目从 `{fmt}` 迁到 `std::format`，包管理器里 fmt 依赖随之减少；C++23 的 `<expected>`/`<print>` 同理挤压 `abseil`/`fmt` 的独占场景。包管理本身无 WG21 提案，但 WG21 **SG15（Tooling）** 研究模块/包生态互操作，相关讨论见 [open-std.org](https://www.open-std.org/)。
 
 ### ㉒.5 权威引用
 - https://conan.io/ ：Conan 官方站，证明 JFrog 2016 与二进制缓存模型。

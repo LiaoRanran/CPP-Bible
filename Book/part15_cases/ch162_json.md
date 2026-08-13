@@ -800,6 +800,9 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 f
 - **游戏 / 引擎**：资源描述、关卡配置大量用 JSON（或类 JSON 的自定义格式）。
 - **云原生 / DevOps**：K8s、CI 配置、可观测数据普遍 JSON 序列化。
 
+- **JSON 库坐标**：[nlohmann/json](https://github.com/nlohmann/json)（最流行、头-only、`operator[]` 友好但拷贝偏多）、[RapidJSON](https://github.com/Tencent/rapidjson)（腾讯，零拷贝 SAX/DOM、极致性能）、[simdjson](https://github.com/simdjson/simdjson)（SIMD 解析、GB/s 级）、[Boost.JSON](https://github.com/boostorg/json)。
+- **生态**：游戏配置、微服务通信、CI 产物、IDE 插件配置几乎都用 JSON；protobuf/flatbuffers 在对性能/体积敏感处替代。
+
 ### ㉒.3 生产踩坑：JSON 解析的误用
 - **不安全解析导致的 DoS**：畸形/超深嵌套输入若递归下降无深度上限，可栈溢出；工业库提供 `max_depth`/SAX 流式来防御（见 ⑰）。
 - **数字精度丢失**：JSON 数字按 IEEE double 解析，`int64` 大整数会被截断；需整数专用解析或字符串保真。
@@ -809,7 +812,10 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 f
 ### ㉒.4 与标准的互动：C++ 没有标准 JSON，但有标准积木
 ISO C++ 至今无 `<json>`；JSON 解析器普遍用 **`std::variant`**（C++17，值类型：null/bool/number/string/array/object，见 ③）、`std::string_view`、`std::optional` 等标准件搭建。C++20 `std::format` 也让"对象 → JSON 字符串"的序列化更易复用标准格式化。[评] 标准提供"词汇类型积木"，具体交换格式交给生态——这也是 C++ 标准"克制不膨胀"的一贯取舍。
 
+**修订链补强（JSON 与标准现状）**：截至 C++23，ISO C++ **没有**官方 JSON 类型——JSON 解析完全由第三方库承担（nlohmann/json、RapidJSON、simdjson、Boost.JSON）。WG21 多次讨论“标准 JSON/文本格式”，但委员会立场是“优先把 `std::format`（[P0645](https://wg21.link/P0645)）与 `std::print`（[P2093](https://wg21.link/P2093)，C++23）做扎实，序列化格式留给生态”，避免重蹈早期 `std::iostreams` 设计争议。因此选择 JSON 库时应关注：DOM 还是 SAX、是否零拷贝、异常模型、对 UTF-8 的处理——这些标准都不保证。
+
 ### ㉒.5 权威引用
+- [WG21 P2093 — std::print](https://wg21.link/P2093) — C++23 打印
 - [nlohmann/json 仓库](https://github.com/nlohmann/json) — 最流行的现代 C++ JSON 头文件库
 - [RapidJSON 仓库（腾讯）](https://github.com/Tencent/rapidjson) — 高性能 SAX/DOM JSON 解析
 - [RFC 8259（JSON 标准文本）](https://datatracker.ietf.org/doc/html/rfc8259) — JSON 的 IETF 规范出处

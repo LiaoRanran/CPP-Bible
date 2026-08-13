@@ -1474,6 +1474,8 @@ C++ 在 STL 时代靠"函数对象（functor）"传逻辑——要传一段回�
 - **STL 算法与 ranges**：`std::sort`、`std::for_each`、`std::ranges::filter` 等的谓词/投影几乎全是 lambda；`std::ranges` 大量借助模板形参 lambda + Concept 写简洁泛型回调。
 - **并发与 GUI**：线程池（`std::async`/自定义 executor）、Qt 的信号槽桥接、Chromium 的 task 回调普遍用 lambda 捕获上下文，取代手写 functor 类。
 - **LLVM/Clang**：AST matcher（`clang-query`）、Pass 里的局部回调、TableGen 都用 lambda 表达一次性逻辑。
+- **测试与基准**：Google Benchmark 的 `BENCHMARK` 宏、Catch2 / GoogleTest 的 `TEST` 体内部大量 lambda 生成参数化用例与自定义断言；基准与测试用例靠 lambda 把"被测逻辑"延迟到 runner 里执行，取代早年的手写 functor 类。
+- **游戏引擎事件**：Unreal 的 delegate / `TWeakObjectPtr` 绑定、Unity 的 `UnityAction` 与 Godot 的 `Callable` 底层都靠闭包承接事件回调；行为树（Behavior Tree）节点的条件 / 动作常以 lambda 表达一次性分支逻辑，避免为每个节点单独建类。
 
 ### ㉒.3 生产踩坑：lambda 的常见误用
 - **悬垂捕获**：lambda 按引用 `[&]` 捕获局部变量后异步执行/返回，被捕获对象已析构，访问即 UB——现代 C++ 最高频错误之一（见 ch26 0.4 / ch33）。[史][评]
@@ -1483,6 +1485,7 @@ C++ 在 STL 时代靠"函数对象（functor）"传逻辑——要传一段回�
 
 ### ㉒.4 与标准的互动：lambda 随标准扩张
 lambda 在 C++11（N2927 路线）落地，闭包类型由编译器合成；C++14 泛型 lambda（N3649，Faisal Vali/Herb Sutter/Dave Abrahams）允许 `auto` 参数；C++17 捕获 `*this` 副本；C++20 constexpr lambda 与模板形参 lambda（P0428）让闭包能写显式模板形参并配 Concept；C++23 显式对象形参（P0847）统一 lambda 与成员函数的 `*this` 转发。[史] 委员会坚持零开销：不捕获的 lambda 可隐式转函数指针，保持与 C 回调兼容——这是 lambda 被工业界迅速接纳的关键。[史][评]
+- **修订链补强（模板形参 lambda）**：模板形参 lambda 的修订——提案 [P0428](https://wg21.link/P0428) 从 R0 提出"允许 lambda 拥有显式模板形参列表"（如 `[]<typename T>(T x){}`），到 R2（2017）随 C++20 落地，使闭包可以像函数模板一样写 `template<typename T>` 而不必依赖泛型 lambda 的 `auto` 推导。标准在 [expr.prim.lambda] 明确闭包类型可含模板形参列表，委员会的设计理由是：泛型 lambda 的 `auto` 参数无法表达"包展开位置"与"显式约束"，显式模板形参列表补齐了这一表达力缺口，同时保持"lambda 仍是零开销合成的闭包类型"的契约（见 ch26 0.x）。
 
 ### ㉒.5 权威引用
 - [cppreference: lambda](https://en.cppreference.com/w/cpp/language/lambda) — 闭包类型、捕获与泛型/模板 lambda

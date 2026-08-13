@@ -922,6 +922,9 @@ struct Endpoint {
 - **游戏服务器 / 数据库**：自研基于 epoll + 线程池（见 ⑨）的协议栈，追求低延迟。
 - **gRPC / RPC 框架**：在 TCP/TLS 之上建强类型传输，底层仍是这套 socket 模型。
 
+- **网络库坐标**：[Boost.Asio](https://github.com/boostorg/asio)（Proactor 模型、跨平台、C++20 协程友好）、[libevent](https://github.com/libevent/libevent)/[libuv](https://github.com/libuv/libuv)（Reactor/事件循环）、muduo（Linux 多线程 Reactor）、Seastar（高吞吐、futures）；Redis/Memcached 用自研事件循环。
+- **协议栈**：gRPC（HTTP/2 + Protobuf）、零拷贝 `io_uring`（Linux 5.x+）正在重塑高并发网络 I/O。
+
 ### ㉒.3 生产踩坑：网络编程的误用
 - **阻塞 IO 不缩放**：每连接一线程，连接数上千就线程爆炸；应改非阻塞 + IO 多路复用（见 ⑥⑦）。
 - **连接/文件描述符泄漏**：accept 后忘 close、异常路径漏释放，耗尽 fd 致服务不可用（见 ⑰）。
@@ -932,7 +935,12 @@ struct Endpoint {
 ### ㉒.4 与标准的互动：Networking TS 仍在路上
 基于 Asio 的 **Networking TS** 多次推进（executors/awaitable/sockets），目标是把 `std::net` 式异步 IO 纳入标准，但截至 C++23 仍停留在 TS，未合入——因此工业界今天仍依赖 **Boost.Asio**、平台 socket API 与 `std::thread`/`std::async`（C++11）拼装（见第159章）。[评] 网络是"标准慢、生态快"的代表：程序员先用第三方把事做成，标准再择机吸收。
 
+**修订链补强（网络与标准：提案未落地）**：C++ 标准**至今不含**网络/异步 I/O 设施——`socket`、`async`、`executor` 全部在第三方（Asio/Boost.Asio）或提案阶段。Networking TS（[N4771](https://wg21.link/n4771)）与统一的 Executors 提案 [P0443R14](https://wg21.link/P0443)（Jared Hoberock 等，“A Unified Executors Proposal for C++”）经 SG1/LEWG 多轮评审（P2233 的 2020 秋投票 Poll 5 甚至问“是否该进 C++23”），但**未进入** C++23，其继承者 `std::execution`（[P2300](https://wg21.link/P2300) 的 Senders/Receivers）转向更通用的执行模型，网络仍悬而未决。委员会立场是“先定 executors 抽象，再谈 networking”，导致 Asio 成为事实标准而标准本身缺席——这是 C++ 在系统编程领域最常被诟病的“标准空白”之一。
+
 ### ㉒.5 权威引用
+- [WG21 N4771 — Networking TS](https://wg21.link/n4771) — 网络技术规范草案
+- [WG21 P0443R14 — Unified Executors](https://wg21.link/P0443) — 执行器提案
+- [WG21 P2300 — std::execution (Senders/Receivers)](https://wg21.link/P2300) — 后继执行模型
 - [Asio 仓库（Boost.Asio 的源头）](https://github.com/chriskohlhoff/asio) — 跨平台异步 IO 工业实现
 - [Boost.Asio 官方文档](https://www.boost.org/doc/libs/release/doc/html/boost_asio.html) — 异步网络编程事实标准
 - [RFC 793（TCP 协议规范）](https://datatracker.ietf.org/doc/html/rfc793) — TCP 的权威定义

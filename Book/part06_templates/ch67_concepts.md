@@ -557,6 +557,8 @@ flowchart TD
 - 标准库 `std::ranges`（C++20）是 concepts 的最大工业落地：`std::sort`、`std::find` 等算法改用 `std::random_access_iterator` 等概念约束，报错直接在调用点点名「你的类型缺了哪个操作」。
 - Abseil、Ranges-v3、Eigen 等库用 concepts 重写接口约束，取代旧的 `enable_if` 迷宫，编译错误大幅收敛。
 - 大型服务代码（如金融、游戏引擎）用自定义 concept（`Writable`、`Lockable`、`Allocator`）把「模板参数必须满足的契约」从文档约定升级为机器可检查。
+- **跨平台 GUI（Qt 6）**：开始用 concepts 约束信号/槽与容器 API 的模板参数，把「文档约定的契约」升级为机器可检查的约束，编译错误从几百行实例化回溯收敛到调用点。
+- **自动驾驶（Autoware/Apollo）**：用自定义 concept 描述传感器消息、点云与路径点的接口契约，让感知/规划模块间的模板接口在编译期即被校验，减少运行期类型错配。
 
 ### ㉒.3 生产踩坑：concepts 的常见误用与陷阱
 - **约束不够强导致仍选错重载**：写得过于宽松的 concept 会让多个重载同时满足，最终回到「偏序/约束排序」的微妙判定，踩与 SFINAE 时代相同的坑。
@@ -566,6 +568,8 @@ flowchart TD
 
 ### ㉒.4 与标准的互动：concepts 的「重生」与持续演进
 concepts 的正式落地走得很长：从 2003 年 Bjarne 的「concepts lite」设想、2009 年 C++0x 试图纳入却因设计分歧在 2012 年被一致投票移除，直到 2017 年 P0734 重启、才随 C++20 定稿（标准库概念的收编见 P0898）。C++23 增强了 abbreviated function templates 与 `auto` 在更多位置的约束能力；后续（C++26 轨道）还有「扩展的 auto」「原子约束细化」「对 concept 做合取/析取的更细约束」等讨论。它是标准「敢于否决、敢于重做」的范例。
+- **修订链（真实）**：concepts 的语言措辞由 **P0734R0（2017 重启的 Wording for Concepts）** 提出，标准库概念由 **P0898R3（Standard Library Concepts）** 收编，约束声明/缩写函数模板由 **P1141R2（Yet another approach for constrained declarations）** 定稿，最终概念语义整合进 **P1452R2**——四者共同随 **C++20** 落地（见 C++20 DIS 变更清单 P2131r0）。地址：[P0734R0](https://wg21.link/P0734R0)、[P0898R3](https://wg21.link/P0898R3)、[P1141R2](https://wg21.link/P1141R2)、[P1452R2](https://wg21.link/P1452R2)。
+- **设计理由**：concepts 在 2009 年 C++0x 被投票移除后，委员会坚持「约束必须可被规范化（normalization）以参与重载与偏序」这一设计原则，才换来 C++20 既可读又可与偏序共存的约束系统；这正是对「先否决、再重做」的印证。
 
 ### ㉒.5 权威引用
 - [cppreference: Constraints and concepts](https://en.cppreference.com/w/cpp/language/constraints) — C++20 约束/概念语法、子句偏序与规范化的权威说明

@@ -815,6 +815,9 @@ double now() {
 - **游戏物理 / 粒子**：对位置数组做 SoA + SIMD 批量积分。
 - **加密 / 压缩**：AES-NI、CRC32 等专用向量指令是性能命脉。
 
+- **SIMD 库坐标**：Eigen/OpenBLAS/oneDNN 用内在函数手写 AVX/SSE/NEON 路径；Google 的 [XNNPACK](https://github.com/google/XNNPACK) 与 [gemmlowp](https://github.com/google/gemmlowp) 把量化矩阵乘铺满 SIMD；游戏/编解码大量用 `_mm_*`/`v*` 内联。
+- **数据并行类型**：`std::experimental::simd`（Parallelism TS 2，libstdc++ 自 GCC 11 起提供）是向标准靠拢的尝试。
+
 ### ㉒.3 生产踩坑：SIMD 的误用
 - **AVX-512 降频（throttling）**：部分 Intel CPU 跑 AVX-512 会整体降频（power/thermal 墙），短向量收益被频率损失吃光；需实测权衡，必要时退回 AVX2。
 - **未对齐加载 `_mm_loadu_*` 更慢**：对齐数据应用对齐加载（`_mm_load_*`），避免跨 cache line split。
@@ -824,7 +827,11 @@ double now() {
 ### ㉒.4 与标准的互动：P0214 与自动向量化
 WG21 **P0214** 是标准 SIMD 类型的主线提案，配合编译器 `-O2/-O3` 的自动向量化（受 `#pragma GCC optimize`/`#pragma omp simd` 引导，见 ⑤）。C++ 标准目前不直接暴露向量寄存器，但 `std::experimental::simd` 一旦落地，将提供可移植、类型安全的向量抽象。[评] 在它进标准前，可移植 SIMD 仍靠"编译器自动向量化 + intrinsic + 运行时 dispatch"。
 
+**修订链补强（std::simd 的漫长演进）**：数据并行类型由 [P0214R9](https://wg21.link/P0214)（Matthias Kretz，“Data-Parallel Vector Types & Operations”）引入 Parallelism TS 2，长期停留在 `<experimental/simd>`（libstdc++ 自 GCC 11 提供完整实现）。合并进国际标准的努力经 [P1928](https://wg21.link/P1928)（“merge data-parallel types from the Parallelism TS 2”）推进，目标 **C++26**。委员会的设计张力在于：ABI 固定的 `simd_abi::fixed_size` 与“native 宽度随 CPU 变”的冲突、以及 `operator[]` 的取值/赋值语义——P1928 在 LEWG 多轮投票（SF/F/N/A/SA）后才定稿送往 LWG。这是“零开销抽象 vs 跨平台确定 ABI”博弈的典型案例。
+
 ### ㉒.5 权威引用
+- [WG21 P0214R9 — Data-Parallel Vector Types](https://wg21.link/P0214) — std::simd 源头
+- [WG21 P1928 — merge data-parallel types](https://wg21.link/P1928) — 目标 C++26 合并
 - [WG21 P0214（Data-Parallel Vector Types / SIMD）](https://wg21.link/P0214) — 标准 SIMD 类型提案主线
 - [Intel Intrinsics Guide](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/) — 每条 intrinsic 的延迟/吞吐/语义
 - [Agner Fog — Microarchitecture & Instruction Tables](https://www.agner.org/optimize/) — SIMD 指令端口/吞吐实测

@@ -536,6 +536,8 @@ C 的初始化靠 `=`/`()`（构造）/aggregate 大括号 `{ }`，各自规则�
 - **标准库容器**：`std::vector<int> v{1,2,3}`、`std::map` 的嵌套大括号初始化是 everyday 写法；`std::initializer_list` 是统一初始化背后的胶水类型。
 - **聚合与配置**：游戏/嵌入式常用聚合初始化构造配置结构；指定初始化器（C++20）在驱动/协议结构里按字段名赋值，顺序无关、可读性高。
 - **Google/LLVM 代码规范**：因 `{}` "禁止窄化 + 可能抢走 initializer_list 构造"的双重性格，对列表初始化有差异化约束（何时用 `=`、何时用 `()`），是规模化 C++ 的实战经验。[史][评]
+- **JSON / 配置库**：`nlohmann/json` 用嵌套 `json{{"key", value}, ...}` 的 initializer_list 构造把"对象字面量"搬进 C++，是统一初始化在日常数据构造里最出圈的用例；几乎所有现代 C++ 序列化库都依赖 `std::initializer_list` 提供"类字面量"写法。
+- **编译器 / IR 构建**：LLVM 的 `IRBuilder` 用统一初始化构造常量与指令，`clang::` 的 AST 节点常以 `{}` 聚合构造；Emscripten 生成的胶水代码与 WASM 绑定同样用 `{}` 表达结构化初始化——初始化在编译器工具链内部也是每天高频使用的语法。
 
 ### ㉒.3 生产踩坑：初始化的常见误用
 - **最恼人解析（Most Vexing Parse）**：`Widget w();` 被解析为函数声明而非对象；`auto x = Foo();` 与 `Foo x();` 语义完全不同，是新手与老手都踩的坑。[史][评]
@@ -545,6 +547,7 @@ C 的初始化靠 `=`/`()`（构造）/aggregate 大括号 `{ }`，各自规则�
 
 ### ㉒.4 与标准的互动：初始化随标准演进
 C++98 传统初始化语法林立；C++11 统一初始化（`{}`）与 `std::initializer_list` 入标准，意图消灭歧义与窄化；C++17 起持续讨论 `{}` 与 `()` 在 `auto`、构造重载上的微妙差异。[史] C++20 指定初始化器（P0329，有节制吸收 C 特性）、聚合的括号初始化（P0960，缓解最恼人 parse）；C++23 `auto(x)`/`auto{x}`（P2169）提供"做副本/纯右值"的统一写法，区分于 `T(x)` 函数风格转型。[史] 委员会在"统一"与"精确"间反复权衡，这一拉扯至今未止。[史][评]
+- **修订链补强（指定初始化器 / 聚合括号初始化 / auto(x)）**：指定初始化器提案 [P0329](https://wg21.link/P0329) 从 R0（"Designated initializers"，有节制吸收 C99 特性）到 R4（2017）随 C++20 落地，标准在 [dcl.init] 限制其"只能按声明顺序、且不能混用设计符与无设计符"以兼容 C 又防滥用；聚合的括号初始化经 [P0960](https://wg21.link/P0960)（R0→R3，"Allow initializing aggregates from a parenthesized list"，C++20）补上 `Aggr(v1,v2)` 形式（允许窄化、不延长临时生命，与 `{}` 形成对照）；C++23 的 `auto(x)` / `auto{x}` 经 [P2169](https://wg21.link/P2169)（R0→R4）给出"显式做副本"的统一写法。[dcl.init] / [dcl.init.list] 的设计意图始终是：既消灭 C 风格歧义（最恼人 parse），又保留 `{}` 的"禁止窄化"安全网——委员会在"统一"与"精确"间的拉扯，正是这三份提案反复修订的根源。
 
 ### ㉒.5 权威引用
 - [cppreference: initialization](https://en.cppreference.com/w/cpp/language/initialization) — 6 种初始化与值/零初始化

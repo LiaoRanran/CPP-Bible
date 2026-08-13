@@ -814,6 +814,23 @@ libc++ 的诞生是 **Apple 与 GPL 的决裂** 的直接产物。2005 年 Apple
 libc++ 不是孤立的——它与 **libc++abi**（异常展开/RTTI/`__cxa_*` 运行时）和 **libunwind**（栈展开）组成「LLVM C++ 运行时三件套」（见 ③/⑥）。这种「标准库 / ABI 运行时 / 展开器」三段式，恰好对应 libstdc++ 的 `libstdc++` / `libsupc++` / `libgcc_s` 分工。维护者从 Hinnant 一代过渡到 **Louis Dionne**（Apple 现任首席维护者）、**Miro Knejp** 等社区骨干，贡献流程走 LLVM 的 Phabricator / GitHub PR。
 
 
+### ㉒.2 真实工程坐标：libc++ 活在哪些真实产品里
+
+libc++ 的装机量由「Apple 平台 + 现代跨平台工具链」共同撑起，虽不像 libstdc++ 那样覆盖整个 Linux 世界，却在「消费电子顶端」占据垄断：
+
+- **全部 Apple 平台**：macOS / iOS / iPadOS / watchOS / tvOS 的官方 SDK 唯一支持、默认使用的 C++ 标准库就是 Clang + libc++。全球数十亿台苹果设备上的每一个 C++ 原生组件（浏览器内核、音视频、机器学习推理、游戏引擎）都链接 `libc++.dylib`——这是 libc++ 最庞大、最不可替换的部署。
+- **FreeBSD 基础系统**：自 FreeBSD 10（2014）起，base system 的 C++ 代码默认用 libc++（取代 libstdc++），使 libc++ 成为 BSD 世界的事实标准之一。
+- **现代 Android 原生代码**：NDK r16（2017）起默认切到 libc++、r18（2018）彻底移除 libstdc++ 后，今天安卓生态的新原生库（游戏、音视频 SDK）绝大多数链接 libc++——与老安卓时代的 libstdc++ 形成代际更替（见第124章）。
+- **跨平台工程链的默认选项**：LLVM / Clang 自身、Chromium 在 Apple 平台的构建、以及大量「优先现代 C++ 特性」的开源项目，在 Apple / FreeBSD 上天然落到 libc++。
+
+### ㉒.4 与标准的互动：libc++ 是「标准先锋」的工程化样本
+
+libc++ 以「现代化优先、宁可让极少数老代码重编」著称（与 libstdc++ 的「绝不破 ABI」形成最鲜明对照，见第124章），这使它成为新标准特性的**首发实现地**之一：
+
+- **最早落地现代设施**：`<format>`（`std::format`，对应 **P0645R10**）、`std::ranges`、C++20 模块支持等，往往先在 libc++ 主线可用，再由其他实现跟进；其官方 Status 页面（<https://libcxx.llvm.org/Status.html>）逐篇列出已实现的 WG21 提案。
+- **安全加固模式（Hardening）**：libc++ 引入 `_LIBCPP_HARDENING_MODE`，把「越界访问、迭代器失效」等 UB 在运行期捕获，是对标准「未定义行为」条款的工程化补强——委员会只说「不可为」，libc++ 选择「替你抓住」。
+- **与 ISO 条款的对齐**：所有实现以 ISO/IEC 14882 第 20–33 条库条款为准，并通过 LLVM 的 Phabricator / GitHub PR 流程把实现经验反哺 LWG；libc++ 的「宽松许可（Apache 2.0 + LLVM 例外）」也让它能零合规阻力地被 Chrome、VSCode 等再分发（见 ㉒ 正文）。
+
 ### ㉒.5 权威引用
 - [libc++ 官网](https://libcxx.llvm.org/)：LLVM 项目 C++ 标准库主页。
 - [libc++ 设计文档](https://github.com/llvm/llvm-project/tree/main/libcxx/docs)：内部设计与历史决策（许可、模块、 locales）。

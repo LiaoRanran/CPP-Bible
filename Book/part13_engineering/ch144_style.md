@@ -828,6 +828,9 @@ private:
 - **Linux 内核**：坚持自己的内核风格，靠 `scripts/checkpatch.pl` 做机器检查，拒绝 clang-format 式的自动重写（担心历史 blame 破坏）。
 - **Qt / 大型桌面项目**：各自维护风格文档，CI 中跑 formatter 防止 drift。
 
+- 汽车/安全关键：**MISRA C++** 与 **AUTOSAR C++14** 编码规范把「禁用危险构造、强制特定风格」写成可机器检查的 Rule，CI 里用专属检查器（如 Parasoft C/C++test）门禁——是风格规范在功能安全领域的硬约束版。
+- 航空航天：NASA JPL 的 **Institution Coding Standard for C** 以「零警告、禁异常、限模板」著称，被 JPL 任务广泛采用，是「风格 = 可靠性」的极端体现。
+
 ### ㉒.3 生产踩坑：风格自动化里的陷阱
 - **整体 reformat 毁掉 `git blame`**：一次性对全仓库跑 clang-format 会把每一行的"最后修改者"变成格式化的人，历史追溯失效；正确做法是分阶段、按目录渐进迁移，或用 `.git-blame-ignore-revs`。
 - **跨平台行尾（CRLF/LF）**：Windows 与 POSIX 混合作业时，未配 `.gitattributes` 会让 clang-format 改动整文件行尾，触发无意义的巨型 diff，甚至破坏某些需要精确字节的工具链。[评] 全库统一 LF 是铁律（见本项目 CONVENTIONS）。
@@ -835,6 +838,9 @@ private:
 
 ### ㉒.4 与标准的互动：风格与 C++ Core Guidelines
 ISO C++ 标准本身不规定代码风格，但 **C++ Core Guidelines**（由 Bjarne Stroustrup 与 Herb Sutter 主导，2015 起）的 NL（Naming and Layout）、F（Functions）、P（Concurrency）等规则已成事实上的现代 C++ 风格共识，并被 `clang-tidy` 的 `cppcoreguidelines-*` 检查项直接落地。C++11 起的现代特性（`auto`、`range-for`、`nullptr`、`enum class`）也逐步改变了风格规范（例如 Google 早期禁 C++11 特性，后随标准演进放开）。[评] 风格规范的生命力来自"跟随标准演进 + 可被工具强制执行"，纯文档式规范在大型项目里必然 drift。
+
+- `[评]` WG21 **P0645R0→…→P0645R10**（Text Formatting，<https://wg21.link/P0645>，C++20）把 {fmt} 的 `{}-占位` 变成标准 `<format>`，间接统一了「字符串插值该用什么风格」——跨团队一致风格有了语言级抓手，减少各项目自创 printf/sprintf/iostream 混用。
+- `[评]` ISO/IEC 14882:2020 在 `[format]` 规定「格式串为编译期常量时做检查」；委员会理由：把「格式错误」从运行期崩溃提前到编译期，是「风格即契约」在格式化上的落地。
 
 ### ㉒.5 权威引用
 - [C++ Core Guidelines（NL/P/F 规则，现代 C++ 风格事实标准）](https://isocpp.github.io/CppCoreGuidelines/) — 命名/布局/函数设计的可执行规范，含 clang-tidy 映射

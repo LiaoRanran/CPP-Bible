@@ -920,6 +920,8 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 - **标准库与编译器**：`std::string_view`、`std::span` 等零成本视图全靠 `const T&` / `constexpr` 契约；libstdc++/libc++ 把大量算法与 trait 标 `constexpr`，使其可在编译期参与 `std::array` 计算。
 - **嵌入式与固件**：`const` 全局表（查表、状态机、协议字段）被放进 ROM/flash，`constinit` 保证跨 TU 的常量初始化不被降级为动态初始化，规避 SIOF（Static Initialization Order Fiasco）。
 - **游戏与图形**：Unreal 的 `UFUNCTION`/`UPROPERTY` 反射元数据、Unity 的 C++ 插件接口普遍用 `const&` 传只读数据；`constexpr` 在编译期算哈希、枚举字符串化中大量使用。
+- **密码学/安全库**：OpenSSL 与 BoringSSL 把几乎所有只读入参（如 `EVP_*` 系列）标 `const`，`const-correctness` 是接口契约的一部分；constant-time 代码（避免分支泄露密钥位）也靠 `const` 表达"只读不可变"以防编译器把敏感比较重排。
+- **航天软件**：NASA JPL 的 C++ 编码规范（JPL Coding Standard）明确把"尽量 `const`"列为强制性规则，要求入参默认 `const&`、可不变的数据默认 `const`，把不可变性前置到飞行器控制软件的接口设计里。
 
 ### ㉒.3 生产踩坑：const 家族的常见误用
 - **`const` 不是物理不可变**：`const` 只是"通过此表达式不能改"，`const_cast` 去掉的是"编译器视图"，实则修改仍是未定义行为——把 `const` 当成运行时锁是经典误解。[评]
@@ -929,6 +931,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 ### ㉒.4 与标准的互动：const 家族随标准扩张
 `const`/`volatile` 作为 cv 限定符自 C 即存在；`constexpr` 经 C++11（N2235 引入，仅单 return）→ C++14（放宽函数体）→ C++17/20 一路扩张，C++20 引入 `consteval`（P1073）/ `constinit`（P1143）把"编译期性"拆成三档。[史] C++23 又把 `std::optional`/`std::variant` 等补成 `constexpr`（P2231），编译期数据结构逐渐可用；`if consteval`（P1938）补上求值阶段分支。[史] 社区长期争论"是否所有函数默认 constexpr"，委员会维持显式标注路线，把激进扩张留给 concepts/反射（P2996）。[史][评]
+- **修订链补强（constexpr → consteval/constinit）**：编译期性关键字自身走过漫长修订——C++11 的 N2235（仅允许单 `return` 的 constexpr 函数）起步，C++14 经 N3652 放宽函数体（允许局部变量与循环），C++17 引入 constexpr lambda（[P0170R1](https://wg21.link/P0170)），再到 C++20 的 `consteval`（[P1073R3](https://wg21.link/P1073)，"立即函数"）与 `constinit`（[P1143R2](https://wg21.link/P1143)，防 SIOF）。标准在 [dcl.constexpr] 写明：`constexpr` 只是"可能被常量求值"，而 `consteval` 才是"必须编译期产生常量"——委员会用三档关键字把"编译期性"的承诺强度显式分级，而非一刀切默认，正是 ch21 0.x 那场"显式标注 vs 默认 constexpr"争论的官方收口。
 
 ### ㉒.5 权威引用
 - [cppreference: constexpr](https://en.cppreference.com/w/cpp/language/constexpr) — constexpr 函数/变量的语义与版本演进

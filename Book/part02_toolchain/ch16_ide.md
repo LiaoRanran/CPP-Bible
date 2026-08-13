@@ -655,6 +655,9 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 - clangd/LSP：QtCreator、Neovim、Emacs 等通过 LSP 复用同一份 clang 智能，避免每编辑器重写前端。
 [评] "语言服务"已成为独立基础设施，被多家编辑器共享，而非每家自造。
 
+- **游戏工业**：Unreal/Unity 的 C++ 插件开发以 Visual Studio（Windows）与 VS Code + clangd（跨平台）为主，IDE 活在引擎生态的工具链里。
+- **嵌入式/单片机**：STM32/ESP32 开发普遍用 VS Code + 厂商插件（基于 LSP）或 vendor IDE（如 STM32CubeIDE，基于 Eclipse），语言服务活在裸机开发里。
+
 ### ㉒.3 生产踩坑：IDE 的常见误用与陷阱
 - compile_commands.json 过期：clangd 读不到最新编译参数，补全/诊断全错，却误以为是"IDE 傻"——根因是没重新生成数据库。
 - 多工具链配置打架：同一工程同时配了 MSVC、GCC、Clang 三套 IntelliSense 引擎，索引互相污染，跳转到错误定义。
@@ -663,6 +666,8 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 
 ### ㉒.4 与标准的互动：IDE 与 C++ 标准的演进
 [评] IDE/语言服务不在 ISO C++ 标准正文，但直接受标准驱动：C++20 Modules 要求 clangd/cpptools 理解模块依赖图才能正确补全；Concepts（C++20）让 IDE 能给出更精确的约束报错。LSP 本身是 Microsoft 主导的开放协议（非 ISO），但已成为多语言共享事实标准；无单独 WG21 提案，属工具生态层。
+
+- [史] C++20 **Modules（P1103）** 与 **Concepts（P0734）** 直接改变 IDE 智能：Modules 要求 clangd/cpptools 先构建模块依赖图才能正确补全（传统「扫头文件」失效），Concepts 让 IDE 能给出约束不匹配的精确报错。LSP 本身是 Microsoft 2016 提出的开放协议（非 ISO），但已成为多编辑器共享事实标准——属「标准定语义、工具定体验」。
 
 ### ㉒.5 权威引用
 - https://code.visualstudio.com/ ：VS Code 官方站，证明 Microsoft 2015 与 C++ 扩展生态。

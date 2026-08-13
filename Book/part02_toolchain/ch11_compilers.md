@@ -869,6 +869,9 @@ int trivia(int x) { return x; }
 - EDG：NVIDIA nvcc、Intel 历史编译器、嵌入式商业工具链，作为高符合度前端被广泛授权。
 [评] 编译器不是"教学玩具"，而是支撑操作系统、浏览器、游戏、移动生态的工业底座。
 
+- **嵌入式与车载**：汽车 ECU、无人机飞控的交叉工具链（如 Mentor/Green Hills/TASKING）多基于 EDG 或厂商定制 Clang，是 C++ 编译活在安全关键领域的坐标。
+- **云与 AI 基建**：NVIDIA `nvcc`/CUDA 工具链与 Intel oneAPI（`icpx`）基于 Clang/EDG 前端，支撑 PyTorch/TensorFlow 的 GPU 内核编译——[据记载]现代 ML 基建其实是编译器前端的重度消费者。
+
 ### ㉒.3 生产踩坑：编译器的常见误用与陷阱
 - 误把 GCC/Clang 的扩展当标准用（如 `__attribute__`、语句表达式），移植到 MSVC 时整片失败。
 - 同一标准特性在三家实现进度不一：曾因 GCC 先支持、MSVC 滞后，导致跨平台代码用 `#ifdef _MSC_VER` 大量分支（必须查"标准符合度矩阵"）。
@@ -877,6 +880,8 @@ int trivia(int x) { return x; }
 
 ### ㉒.4 与标准的互动：编译器与 C++ 标准的演进
 [史] 编译器符合度由 WG21 发布的"Compiler Support"矩阵跟踪（cppreference 维护各特性对应 GCC/Clang/MSVC 版本）。[史] 标准本身不规定编译器内部结构，但 Modules（C++20）、Concepts（C++20）、Coroutines（C++20）等特性都依赖前端/中端重大改造，三家各自有对应实现跟踪（如 P1103R3 Modules 落地）。[评] 历次标准修订（C++11→C++23）都迫使编译器重构：GCC/Clang 通过阶段式 flag（`-std=c++17` 等）暴露支持度；属"核心语言/库既定条款 + 实现扩展"双重性质，无单一"编译器提案"，但符合度本身是标准落地的硬指标。
+
+- [史] 编译器对 C++20 **Modules（P1103）** 的实现落在 ISO/IEC 14882 的 **§[module]**：它要求前端不再做纯文本 `#include` 展开，而是解析模块接口单元并生成 BMI——这正是三家编译器各自重构构建流水线的原因。设计理由：消除头文件宏污染、缩短巨型工程的编译时间；但 BMI 格式（GCC `.gcm`/Clang `.pcm`/MSVC `.ifc`）互不兼容，是「标准给语义、实现各不相同」的典型。见 [P1103](https://wg21.link/P1103)。
 
 ### ㉒.5 权威引用
 - https://gcc.gnu.org/ ：GCC 官方站点，证明 GNU 编译器工程与版本发布脉络。
