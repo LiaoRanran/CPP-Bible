@@ -715,14 +715,21 @@ main:
 [史] C++ 长期"没有官方包管理器"，依赖系统包管理器（apt/brew）或手写 FetchContent；这与 Go/Rust/Node 出生自带包管理形成鲜明对比。[史] Conan 由 JFrog 于 2016 年发布，主创 Diego Rodríguez-Losada，定位"去中心化、二进制缓存、跨平台"的 C/C++ 包管理器。[史] vcpkg 由 Microsoft 于 2016 年开源，采用"端口（port）+ 三元组（triplet）+ manifest"模型，深度集成 MSVC/CMake。[评] 两者同年出现，反映业界对"二进制分发 + 可重现"的迫切需求；而 C++ 没有统一 ABI 让包管理远比其它语言痛苦（Itanium C++ ABI 仅覆盖 Linux/部分平台）。
 
 ### ㉒.2 真实工程坐标：包管理活在哪些产品/项目里
-- Conan：被嵌入式、游戏、金融等需要精确二进制版本的企业采用，支持自建制品库（Artifactory）。
-- vcpkg：Windows 生态首选，大量微软系与跨平台开源项目（如 fmt、spdlog 提供官方 vcpkg 端口）。
-- Hunter：基于 CMake 的包管理（ruslo 项目），在 CMake 社区有一定使用。
-- 系统包管理：Debian/Ubuntu（apt）、macOS（Homebrew）仍是许多开发者的依赖来源。
-[评] 选型常取决于平台：Windows 偏 vcpkg，跨平台/二进制缓存偏 Conan，嵌入式偏手动或 Buildroot/Yocto。
 
-- **ML/数值库分发**：libtorch（PyTorch C++ 前端）、ONNX Runtime 等通过 Conan/vcpkg 提供预编译二进制，避免用户从源码编 CUDA/CPU 后端——包管理活在 ML 基建落地环节。
-- **数据库与中间件**：SQLite 的 amalgamation、libpq/MySQL Connector 等常以 vcpkg/Conan 端口形式被 C++ 后端工程拉取，减少手工配置。
+下表把 C++ 包管理器的真实工程坐标按「包管理器 × 代表项目 × 它承担的角色 × 规模地位 × 标准互动」并列摆开；它们的最大公约数就是「C++ 没有统一包管理，选型常取决于平台与二进制缓存需求」。
+
+| 包管理器 | 代表项目·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| Conan | 嵌入式 / 游戏 / 金融企业的精确二进制版本 | 二进制缓存 + 自建 Artifactory | 跨平台 / 二进制缓存首选 | 需自维护配方 |
+| vcpkg | Windows 生态、fmt / spdlog 官方端口 | 微软系 + 跨平台一键拉取 | Windows 首选 | 端口制，预编译可用 |
+| Hunter | CMake 社区（ruslo 项目） | 基于 CMake 的包管理 | 有一定使用 | 编译时拉取 |
+| 系统包管理 | apt（Debian/Ubuntu）、Homebrew（macOS） | 开发者日常依赖来源 | 仍广泛 | 版本常滞后 |
+| ML·数值库 | libtorch（PyTorch C++ 前端）、ONNX Runtime | 预编译二进制分发 | ML 基建落地 | Conan / vcpkg 提供，免源码编 CUDA |
+| 数据库·中间件 | SQLite amalgamation、libpq / MySQL Connector | 端口形式拉取 | 后端工程 | 减少手工配置 |
+
+> **表注（㉒.2）**：本表据各包管理器官方文档与项目事实整理，意在呈现 C++ 包管理的「产业坐标」而非穷举。选型规律：Windows 偏 vcpkg、跨平台 / 二进制缓存偏 Conan、嵌入式偏手动或 Buildroot / Yocto。C++ 无稳定 ABI 保证（Itanium ABI 仅在同编译器同版本近似稳定），这是包管理的最大敌人（见 ㉒.3）。
+
+**一条判读**：Conan / vcpkg 解决的是「依赖从哪来」，但解决不了「二进制能否混链」——同编译器同版本的 ABI 漂移会让「拉到了却崩了」成为日常。故二进制缓存必须锁定工具链三元组；嵌入式与 ML 场景更依赖预编译二进制，把「从源码编 CUDA」这种重活挡在用户门外。
 
 ### ㉒.3 生产踩坑：包管理的常见误用与陷阱
 - ABI 不匹配：用 GCC 9 编译的库被 GCC 11 程序链接，libstdc++ 版本漂移导致运行时崩溃；C++ 没有稳定 ABI 保证（Itanium ABI 仅在同编译器同版本近似稳定）。

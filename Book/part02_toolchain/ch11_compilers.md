@@ -876,14 +876,21 @@ int trivia(int x) { return x; }
 [史] GCC 由 Richard Stallman（RMS）于 1987 年发布 1.0，是 GNU 工程为摆脱专有编译器而生的自由软件编译器；1999 年 EGCS（Experimental GNU Compiler System）分支合并回主线，催生 GCC 3.x 这一现代 GCC 体系，由 FSF 维护。[史] LLVM 最初是 Chris Lattner 在伊利诺伊大学的博士项目（约 2000 年），Apple 自 2007 年起主导并推出 Clang 前端，以摆脱 GPL 许可束缚并改进诊断体验；Lattner 是核心设计者。[史] MSVC（cl.exe）随 Microsoft Visual C++ 1.0 于 1993 年推出，长期绑定 Windows 生态。[评] 三家驱动动机不同：GCC 求自由与可移植，Clang/LLVM 求模块化与诊断质量，MSVC 求 Windows 平台纵深；标准符合度是它们共同要追的靶子，而 EDG 前端作为商业编译器（如 Intel、NVCC 早期）的高符合度参考实现存在。
 
 ### ㉒.2 真实工程坐标：编译器活在哪些产品/项目里
-- GCC：Linux 内核、Debian/Ubuntu 等发行版的默认工具链，几乎全部 GNU/Linux 原生软件都经 GCC 编译。
-- Clang/LLVM：Apple 的 macOS/iOS 全栈构建、Android 默认 Clang 工具链、Chrome/Firefox 引擎，以及 LLVM 自身的 JIT（GPU 着色器、Swift/Rust 后端参考）。
-- MSVC：Windows 桌面与游戏（Unreal、Unity）、Office 等微软系及大量 Win32 商业产品。
-- EDG：NVIDIA nvcc、Intel 历史编译器、嵌入式商业工具链，作为高符合度前端被广泛授权。
-[评] 编译器不是"教学玩具"，而是支撑操作系统、浏览器、游戏、移动生态的工业底座。
 
-- **嵌入式与车载**：汽车 ECU、无人机飞控的交叉工具链（如 Mentor/Green Hills/TASKING）多基于 EDG 或厂商定制 Clang，是 C++ 编译活在安全关键领域的坐标。
-- **云与 AI 基建**：NVIDIA `nvcc`/CUDA 工具链与 Intel oneAPI（`icpx`）基于 Clang/EDG 前端，支撑 PyTorch/TensorFlow 的 GPU 内核编译——[据记载]现代 ML 基建其实是编译器前端的重度消费者。
+下表把 C++ 编译器的真实工程坐标按「编译器 × 代表生态 × 它承担的角色 × 规模地位 × 标准互动」并列摆开；它们的最大公约数就是「编译器是支撑操作系统、浏览器、游戏、移动与 AI 基建的工业底座，而非教学玩具」。
+
+| 编译器 | 代表产品·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| GCC | Linux 内核、Debian/Ubuntu 等发行版、绝大多数 GNU/Linux 原生软件 | GNU/Linux 默认工具链 | 几乎全部原生 Linux 软件经其编译 | 与 POSIX/Autotools 生态深度绑定 |
+| Clang/LLVM | Apple macOS/iOS 全栈、Android 默认链、Chrome/Firefox 引擎、LLVM 自身 JIT | 现代跨平台构建 + JIT 后端 | 消费电子与浏览器双顶端 | GPU 着色器 / Swift / Rust 后端参考 |
+| MSVC | Windows 桌面与游戏（Unreal、Unity）、Office 等微软系、大量 Win32 商业产品 | Windows 平台官方工具链 | 微软系产品主战场 | 与 Windows 运行时 / MSVC ABI 焊死 |
+| EDG | NVIDIA nvcc、Intel 历史编译器、嵌入式商业工具链 | 高符合度前端被授权 | 安全关键 / 商业编译器基石 | 合规度标杆，被 nvcc / oneAPI 借用 |
+| 嵌入式·车载（交叉） | 汽车 ECU、无人机飞控（Mentor / Green Hills / TASKING） | 安全关键领域 C++ 编译 | 功能安全标准坐标（IEC 61508 / ISO 26262） | 多基于 EDG 或厂商定制 Clang |
+| 云与 AI 基建 | NVIDIA nvcc / CUDA、Intel oneAPI（`icpx`）支撑 PyTorch / TensorFlow | GPU 内核编译前端 | 现代 ML 基建的重度消费者 | 基于 Clang / EDG 前端 [据记载] |
+
+> **表注（㉒.2）**：本表据各编译器官方文档与构建系统事实整理，意在呈现 C++ 编译器的「产业坐标」而非穷举。代表生态随版本与商业策略变动，以各项目官方披露为准；「规模」列仅列典型量级。编译器前端（Clang / EDG）被大量下游借用，说明「前端合规度」是稀缺资产；选型本质受平台绑定（MSVC ↔ Windows、Clang ↔ Apple/Android、GCC ↔ Linux）。
+
+**一条判读**：GCC / Clang / MSVC / EDG 四足鼎立，但真正的「赢家」是前端——Clang 与 EDG 的高符合度前端被 nvcc、oneAPI、无数商业工具链直接复用。对工程而言，选编译器不是选语法，而是选平台绑定与 ABI：跨平台库必须把「同一工具链同版本」当作硬约束，否则混链即崩（见 ㉒.3）。
 
 ### ㉒.3 生产踩坑：编译器的常见误用与陷阱
 - 误把 GCC/Clang 的扩展当标准用（如 `__attribute__`、语句表达式），移植到 MSVC 时整片失败。

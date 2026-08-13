@@ -946,14 +946,21 @@ int main() { errno = 0; std::perror("debug point"); return 0; }
 [史] GDB 由 Richard Stallman 等人于 1986 年在 GNU 工程下首发，是自由软件调试器的奠基者，至今仍是 Linux 调试事实标准。[史] LLDB 由 Apple 主导、作为 LLVM 项目一部分开发（约 2007 起），目标是对接 Clang 与现代架构，提供更好的脚本/Python 集成。[史] Sanitizer 系列（ASan/UBSan/TSan）由 Google 在 LLVM 内实现，AddressSanitizer 约 2011 年随编译器插桩问世，把"内存错误检测"从运行时工具下沉到编译期插桩。[评] 调试从"事后 core dump 分析"演进到"编译期插桩实时抓错"，DWARF（开源）与 PDB（微软）是两套并行的调试信息格式标准。
 
 ### ㉒.2 真实工程坐标：调试工具活在哪些产品/项目里
-- GDB：Linux 内核、glibc、绝大多数 GNU/Linux 原生软件的调试底座，也是 Android/嵌入式远程调试的核心。
-- LLDB：Apple 生态（macOS/iOS）默认调试器，Xcode 与 clangd 工具链深度集成。
-- ASan/UBSan/TSan：Chrome、Android、LLVM 自身 CI 默认开启，用于抓获内存越界/未定义行为/数据竞争。
-- WinDbg：Windows 内核与驱动调试的官方选择，微软系产品必需。
-[评] 现代 CI 普遍"编译 + sanitizer"双保险，把大量崩溃前移到提交阶段。
 
-- **数据库与存储**：MySQL/PostgreSQL/Redis 的 CI 普遍开启 ASan/UBSan 抓内存错误，TSan 抓并发竞争——调试工具活在开源基础设施的「提交即体检」流程里。
-- **移动与嵌入式**：Android NDK 默认集成 ASan/HWASan（硬件辅助），抓取 native 崩溃，是手机 App 的 C++ 底层调试坐标。
+下表把 C++ 调试工具的真实工程坐标按「调试工具 × 代表项目 × 它承担的角色 × 规模地位 × 标准互动」并列摆开；它们的最大公约数就是「现代 CI 普遍『编译 + sanitizer』双保险，把大量崩溃前移到提交阶段」。
+
+| 调试工具 | 代表项目·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| GDB | Linux 内核、glibc、GNU/Linux 原生软件 | 调试底座 + 远程调试 | Android / 嵌入式核心 | 与 gdbserver 配合 |
+| LLDB | Apple macOS/iOS、Xcode / clangd | Apple 生态默认调试器 | 深度集成工具链 | 复用 clang 类型信息 |
+| ASan / UBSan / TSan | Chrome、Android、LLVM 自身 CI | 内存越界 / UB / 数据竞争抓取 | 大厂 CI 默认开启 | 插桩，有运行时开销 |
+| WinDbg | Windows 内核 / 驱动 | 官方内核调试 | 微软系必需 | 与符号服务器配合 |
+| 数据库·存储 | MySQL / PostgreSQL / Redis 的 CI | 提交即体检 | 开源基础设施 | ASan/UBSan + TSan 组合 |
+| 移动·嵌入式 | Android NDK（ASan / HWASan） | native 崩溃抓取 | 手机 App 底层 | HWASan 硬件辅助降开销 |
+
+> **表注（㉒.2）**：本表据各调试器 / sanitizer 官方文档与项目事实整理，意在呈现调试工具的「产业坐标」而非穷举。sanitizer 通过插桩在运行时捕获错误，有性能开销，故部分项目在 Release 也保留 ASan 做金丝雀（见 ㉒.3）。「调试器分平台、sanitizer 守 CI」是当代事实分工。
+
+**一条判读**：调试已从「本地排错工具」升级为「CI 守门员」——ASan/UBSan/TSan 把崩溃左移到提交阶段，价值远超本地单步。但 sanitizer 有运行时成本且适用域不同（TSan 只抓竞争、不抓越界），Release 全关等于失明；调试器则按平台绑定（GDB ↔ Linux、LLDB ↔ Apple、WinDbg ↔ Windows）。
 
 ### ㉒.3 生产踩坑：调试的常见误用与陷阱
 - 只在 Debug 开 sanitizer、Release 关掉：很多内存错误只在优化后布局下暴露，关掉等于失明（某些项目 Release 也带 ASan 做金丝雀）。

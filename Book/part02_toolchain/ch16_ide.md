@@ -662,14 +662,21 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 [史] Visual Studio 由 Microsoft 于 1997 年以"Visual Studio 97"首次打包发布，整合编辑器、编译器（MSVC）、调试器，是 Windows C++ 开发的事实平台。[史] CLion 由 JetBrains 于 2014 年推出，基于自有 C++ 前端提供跨平台智能索引/重构。[史] Visual Studio Code 由 Microsoft 于 2015 年开源发布，靠 Language Server Protocol（LSP，Microsoft 2016 提出）把"编辑器"与"语言智能"解耦。[史] clangd 是 LLVM 提供的 LSP 实现，吃 `compile_commands.json` 提供补全/诊断。[评] 演进主线：单体 IDE（功能全但重）→ 编辑器 + LSP（轻量、语言智能可插拔）→ 语言服务标准化（clangd/cpptools 共用协议）。
 
 ### ㉒.2 真实工程坐标：IDE 活在哪些产品/项目里
-- Visual Studio：Windows 桌面、游戏（Unreal/Unity 插件）、大量 Win32 商业产品主战场。
-- VS Code + C++ 扩展：跨平台主流轻量编辑器，云开发/Remote-SSH/容器开发首选。
-- CLion：跨平台 C++ 团队的智能重构与大型代码库导航选择。
-- clangd/LSP：QtCreator、Neovim、Emacs 等通过 LSP 复用同一份 clang 智能，避免每编辑器重写前端。
-[评] "语言服务"已成为独立基础设施，被多家编辑器共享，而非每家自造。
 
-- **游戏工业**：Unreal/Unity 的 C++ 插件开发以 Visual Studio（Windows）与 VS Code + clangd（跨平台）为主，IDE 活在引擎生态的工具链里。
-- **嵌入式/单片机**：STM32/ESP32 开发普遍用 VS Code + 厂商插件（基于 LSP）或 vendor IDE（如 STM32CubeIDE，基于 Eclipse），语言服务活在裸机开发里。
+下表把 C++ IDE / 编辑器的真实工程坐标按「IDE·编辑器 × 代表项目 × 它承担的角色 × 规模地位 × 标准互动」并列摆开；它们的最大公约数就是「『语言服务』已成为独立基础设施，被多家编辑器共享，而非每家自造」。
+
+| IDE·编辑器 | 代表项目·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| Visual Studio | Windows 桌面 / 游戏（Unreal、Unity）/ Win32 商业 | Windows 主战场 | 微软系首选 | 与 MSVC 深度绑定 |
+| VS Code + C++ 扩展 | 跨平台 / 云开发 / Remote-SSH / 容器 | 轻量主流编辑器 | 跨平台首选 | 基于 LSP / clangd |
+| CLion | 跨平台 C++ 团队 | 智能重构 + 大型导航 | 商业 C++ 团队 | 基于 clangd |
+| clangd / LSP | QtCreator / Neovim / Emacs | 共享语言服务前端 | 多家复用 | 避免每编辑器重写前端 |
+| 游戏工业 | Unreal / Unity 的 C++ 插件 | 引擎生态工具链 | 游戏工业 | VS（Windows）+ VS Code+clangd（跨平台） |
+| 嵌入式·单片机 | STM32 / ESP32（VS Code + LSP / STM32CubeIDE） | 裸机开发语言服务 | 嵌入式 | vendor IDE 基于 Eclipse |
+
+> **表注（㉒.2）**：本表据各编辑器官方文档与项目事实整理，意在呈现 IDE 的「产业坐标」而非穷举。clangd 经 LSP 实现「一次前端、处处复用」，是当代 IDE 竞争的核心。`compile_commands.json` 过期导致补全全错是头号坑（见 ㉒.3）。
+
+**一条判读**：IDE 竞争已从「谁家补全更全」转向「谁家 LSP 后端更强」——clangd 把 clang 的智能商品化，编辑器只是壳。对工程而言，真正的依赖是 `compile_commands.json` 的准确性：它过期，再贵的 IDE 也哑火。
 
 ### ㉒.3 生产踩坑：IDE 的常见误用与陷阱
 - compile_commands.json 过期：clangd 读不到最新编译参数，补全/诊断全错，却误以为是"IDE 傻"——根因是没重新生成数据库。

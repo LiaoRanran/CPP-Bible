@@ -835,14 +835,21 @@ namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 [史] Make 由 Stuart Feldman 于 1977 年在贝尔实验室创造，解决"只重新编译改动过的文件"这一工程痛点，是构建自动化的起点。[史] CMake 由 Kitware 于 2000 年发布，用"生成器"把一份 `CMakeLists.txt` 翻译成 Makefile、Ninja、Visual Studio 等多种后端，解决跨平台工程描述问题。[史] Ninja 由 Evan Martin 于 2010 年在 Google 创建，定位为"被 CMake 等生成器调用的底层快构建器"，强调低开销与正确增量。[史] Bazel 源自 Google 内部 Blaze（约 2003–2006），2015 年开源，强调可重现构建与对庞大单体仓库（monorepo）规模的支撑。[评] 演进主线是：手写 Makefile（易错）→ 高层描述 + 生成器（CMake）→ 极速底层执行（Ninja）→ 大规模可重现（Bazel）。
 
 ### ㉒.2 真实工程坐标：构建系统活在哪些产品/项目里
-- CMake：LLVM/Clang、KDE、VLC、OpenCV、Qt 等几乎所有大型跨平台 C++ 项目的事实标准。
-- Bazel：Google 内部全栈、TensorFlow、Kubernetes 等，服务超大型代码库。
-- Ninja：CMake 在 Linux/macOS 上的默认后台生成目标，Chrome、Android 构建链依赖。
-- Meson：GNOME、Systemd 等采用，强调可读语法与快速度。
-[评] 现代 C++ 工程极少手写裸 Makefile 投产，几乎都走"高层描述 + 生成器 + Ninja"三层结构。
 
-- **游戏与引擎**：Unreal Engine 自带基于 CMake/自研的构建管线，Unity 的「Unity Build」用合并编译单元加速——构建系统活在大体量游戏工程的每日出包里。
-- **嵌入式镜像**：Yocto/Buildroot 之上的 C++ 项目（机顶盒、车机）普遍用 BitBake/CMake 交叉生成，构建系统直接决定能否产出可启动镜像。
+下表把 C++ 构建系统的真实工程坐标按「构建系统 × 代表项目 × 它承担的角色 × 规模地位 × 标准互动」并列摆开；它们的最大公约数就是「现代 C++ 工程极少手写裸 Makefile 投产，几乎都走『高层描述 + 生成器 + Ninja』三层结构」。
+
+| 构建系统 | 代表项目·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| CMake | LLVM/Clang、KDE、VLC、OpenCV、Qt | 跨平台 C++ 事实标准 | 几乎全部大型跨平台 C++ 项目 | 高层描述层，下接 Ninja |
+| Bazel | Google 内部全栈、TensorFlow、Kubernetes | 超大型 monorepo 构建 | 服务超大型代码库 | 依赖沙箱 + 远程缓存 |
+| Ninja | Chrome、Android 构建链（CMake 后台目标） | 底层执行引擎 | Linux/macOS 默认生成目标 | 快、无高层语法 |
+| Meson | GNOME、Systemd | 可读语法 + 速度优先 | 桌面 / 系统级项目 | 生成 Ninja |
+| 游戏·引擎 | Unreal（CMake / 自研）、Unity（Unity Build） | 大体量每日出包 | 游戏工业 | Unity Build 合并编译单元加速 |
+| 嵌入式镜像 | Yocto / Buildroot 上的 C++ 项目（BitBake / CMake） | 交叉生成可启动镜像 | 机顶盒 / 车机 | 构建系统决定能否出镜像 |
+
+> **表注（㉒.2）**：本表据各构建系统官方文档与开源项目事实整理，意在呈现构建系统的「产业坐标」而非穷举。现代 C++ 已几乎不用裸 Makefile 投产，而是分层：高层描述（CMake / Bazel / Meson）生成底层执行（Ninja）。「规模」列仅列典型量级。
+
+**一条判读**：构建系统的竞争不在「谁能编」，而在「谁能管住超大代码库 + 远程缓存 + 跨平台」——这是 CMake 赢在生态覆盖、Bazel 赢在 monorepo 规模、Ninja 成为共同底层的根因。选型的真实约束是团队规模与可重现构建，而非个人偏好；嵌入式还要叠加「能否产出可启动镜像」这一硬指标（见 ㉒.3）。
 
 ### ㉒.3 生产踩坑：构建系统的常见误用与陷阱
 - 全局变量/目录式 `include` 污染：在 CMake 里滥用 `include_directories(. )` 把头文件泄露给所有 target，导致意外依赖与同名冲突。
