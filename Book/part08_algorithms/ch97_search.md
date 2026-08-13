@@ -729,6 +729,21 @@ int cross_lib() {
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：`lower_bound`/`upper_bound` 用前必须先排序。** 你传入未排序区间得到错误结果。请说明前提。
+   - [标准] 二分查找族（binary_search/lower_bound/upper_bound/equal_range）要求区间已按同一比较器排序。
+   - [引用] ISO/IEC 14882:2023 §[alg.binary.search]（二分查找族的前提：已排序）；cppreference "std::lower_bound" 词条。
+
+2. **真实场景：用 `find_if` 配谓词找首个匹配。** 你查首个满足条件的元素。请说明返回语义。
+   - [标准] `find_if` 返回首个使一元谓词为真的迭代器；找不到则返回尾后迭代器。
+   - [引用] ISO/IEC 14882:2023 §[alg.nonmodifying]（find_if）；cppreference "std::find_if" 词条。
+
+3. **真实场景：用 `equal_range` 取匹配元素的半开区间。** 你统计某 key 在有序 multiset 中的全部出现。请说明。
+   - [标准] `equal_range` 返回 `[lower_bound, upper_bound)` 半开区间，覆盖所有等价元素。
+   - [引用] ISO/IEC 14882:2023 §[alg.binary.search]（equal_range）；cppreference "std::equal_range" 词条。
+
+
 | 需求 | 首选算法 | 复杂度 | 前置 |
 |---|---|---|---|
 | 无序区间找值 | `std::find` | O(N) | — |
