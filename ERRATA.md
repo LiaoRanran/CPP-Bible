@@ -312,3 +312,10 @@
 - **事实精度**：ch163 网络章如实写「Networking TS（N4771）/ Executors（P0443R14）未进 C++23，`std::execution`（P2300）转向通用执行模型」，标为「标准空白」而非编造落地；`std::simd`（P0214→P1928）标为「目标 C++26」；JSON（ch162）标「截至 C++23 无官方类型」。
 - **门禁**：`verify_prose_only` 全库 0 红线违规（45 畸形围栏 HEAD==WORK 对称）；146 文件 0 CRLF；㉒.5 新增引用均为 wg21.link / 真实 GitHub / 官方文档，无 404。
 - **成品**：146 文件改动（ch19 示例索引按规划排除），㉒ 二次深挖现全库闭环（146/147）。
+
+### E18. ㉑ 习题升级全库收口（147/147 章注入「真实场景 + 引用参考」框架）
+- **目标**：把原「练习题」段升级为「真实工程场景 + 标准保证一句话 + 真实 ISO/IEC 14882:2023 条款号与 cppreference 词条」框架，让习题从“做对题”转向“理解标准契约与工程边界”。每章 3 题，纯 prose 追加，落于各自 `## ⑳` 标题之后、原有子内容之前，零覆盖零删除。
+- **事实精度红线**：每题 `[引用]` 均用真实条款号（basic.def.odr / dcl.constinit / stmt.dcl / dcl.ref / dcl.spec.auto / dcl.type.decltype / basic.lookup.argdep / dcl.enum / class.union / expr.prim.lambda / expr.const.cast / basic.life / class.friend / intro.memory / over.oper / dcl.init.list / class.dtor / class.virtual / temp / module / atomics / intro.races 等）；对「无标准对应」的纯工程/工具章节（gitflow/CI/CD/Compiler Explorer/roadmap）如实标注「无直接 C++ 标准对应」，不编造条款；对标「尚未入标准」的领域（std::simd=P0214R9 目标 C++26、Networking 未进 C++23、JSON 截至 C++23 无官方类型）明确写清状态，绝不把提案写成已标准化。
+- **门禁修复**：ch97、ch154、ch155 三处块引用首行原用 ```` ```asm ```` 字面展示围栏语法，触发 `verify_prose_only` 正则误判为围栏开标记、级联错位后续配对（吞掉 `## ⑳` 标题，注入 prose 触发 REDLINE 伪阳性）。改为单反引号 `asm` 根除伪围栏；采用「先单独修伪围栏提交 → 再注入 prose」的两笔策略，规避「一次提交同时改围栏 vs 旧 HEAD 仍误报」的死结。
+- **门禁结果**：`verify_prose_only` 全库 0 红线违规（problems=0，畸形围栏告警由 45 降至 43）；147 文件 0 CRLF。
+- **成品**：147 文件 +2196 行（20 笔提交：4f81fef → 9d1edce）；覆盖率 100%（147/147 章均含「已升级为「真实场景」标记）。注入脚本留存于 WorkBuddy 工作区 `inject_ex_part*.py` 可复核。
