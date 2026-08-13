@@ -901,13 +901,21 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 [史] 多级缓存（L1/L2/L3）自 1990 年代成为 CPU 标配，64 字节 cache line 也长期固定；但 C++ 程序员长期只能靠 `alignas(64)` 这类"魔法数"规避伪共享。C++17 引入 **`std::hardware_destructive_interference_size`**（写者间应避免共享的最小字节数）与 **`std::hardware_constructive_interference_size`**（读者间宜共享），把"缓存行大小"变成可移植的标准常量，背后是 Lawrence Crowl 等人的提案工作。[史] 同时，Ulrich Drepper 2007 年的内存论文把"为什么遍历顺序决定性能"讲成工程常识（见第153章 ㉒.1）。[评] 缓存优化本质是把"硅片的事实"翻译成"数据布局"——标准终于给了可移植的表达。
 
 ### ㉒.2 真实工程坐标：缓存优化活在哪些项目里
-- **游戏引擎 / 粒子系统**：普遍用 **SoA（Structure of Arrays）** 让同类字段连续，便于 SIMD 与缓存预取（见 ⑪）。
-- **高频交易 / 行情系统**：把热路径数据按 cache line 对齐、避免伪共享，单点延迟可差数倍。
-- **数据库 / 列式存储**：用 cache blocking（分块）让工作集留在 L1/L2，B+ 树与列存都受益（见 ⑰）。
-- **Chromium**：源码里大量 `LinkedList`→`flat_map`、用 `StringPiece` 零拷贝减 cache footprint（见其工业附录）。
 
-- **缓存意识库**：Eigen 的 aligned allocator 与 `EIGEN_MAX_ALIGN_BYTES`、Google 的 [TCMalloc](https://github.com/google/tcmalloc) 做 per-thread cache 降低锁争用、Intel TBB 的 `cache_aligned_allocator`。
-- **False sharing 实战**：`std::hardware_destructive_interference_size`（C++17）被用来给无锁结构体的热点成员加 padding，避免跨核 ping-pong。
+缓存优化是「让数据待在离 CPU 最近的地方」。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 游戏 / 粒子 | SoA（见⑪） | 同类字段连续，便于 SIMD 与预取 | 实时渲染 | SoA 连续布局 |
+| 高频交易 / 行情 | cache line 对齐 + 避免伪共享 | 单点延迟可差数倍 | 低延迟命脉 | 伪共享即跨核 ping-pong |
+| 数据库 / 列式存储 | cache blocking（分块） | 工作集留 L1/L2，B+ 树 / 列存受益 | 存储引擎 | 分块降未命中 |
+| 浏览器 | Chromium（LinkedList→flat_map、StringPiece 零拷贝） | 减小 cache footprint | 工业级前端 | 工业附录有述 |
+| 缓存意识库 | Eigen aligned allocator / TCMalloc per-thread cache / TBB cache_aligned_allocator | 对齐分配 + 降锁争用 | 工业级库 | 对齐即少未命中 |
+| 伪共享实战 | `std::hardware_destructive_interference_size`（C++17） | 给无锁热点成员加 padding | 标准设施 | [STANDARD] C++17 提供；避免跨核 ping-pong |
+
+> **表注（㉒.2）**：上表前 4 行是「各领域怎么用缓存优化」，后 2 行是「库与标准设施怎么支持」；伪共享的本质是两个核频繁写同一 cache line 的不同字，[STANDARD] `std::hardware_destructive_interference_size` 给出该平台 cache line 大小，用来 padding 隔离。
+
+**一条判读**：缓存优化的前提是先测出「未命中在哪儿」——`perf stat` 的 cache-miss 率比直觉可靠；SoA/分块/对齐都只对「热且规律访问」的数据有效，随机访问的数据布局再怎么调也救不回。
 
 ### ㉒.3 生产踩坑：缓存优化的误用
 - **伪共享（false sharing）**：两个线程各写相邻字段，却落在同一 cache line，反复 invalidate 彼此；用 `alignas(64)` 或 `hardware_destructive_interference_size` 隔开（见 ⑧⑩）。

@@ -824,13 +824,21 @@ double now() {
 [史] x86 向量化由 Intel **MMX（1997）** 起步，经 **SSE（1999）/ SSE2 / SSE4** 到 **AVX（2011，256 位）/ AVX-512（2013 提案、2017 落地，512 位）**；ARM 侧则有 **NEON**（128 位）。[史] 标准层面，WG21 的 **P0214（Data-Parallel Vector Types & Operations）** 提出 `std::experimental::simd`（Parallelism TS 路线），试图把"类型安全的向量类型"纳入标准库——至今仍主要在 TS/实验阶段，未完全并入 ISO C++，因此工业界仍主要靠编译器自动向量化（见 ③）与 intrinsic（见 ⑦）。[评] SIMD 是"标准慢、硬件快"的又一例证：硅片领先标准十余年，程序员用 intrinsic 提前享受。
 
 ### ㉒.2 真实工程坐标：SIMD 活在哪些项目里
-- **编解码 / 多媒体**：x264/x265、libvpx、FFmpeg 大量手写 AVX2/AVX-512 intrinsic 做像素/变换。
-- **数值线性代数**：Eigen、BLAS 实现在合适规模上自动/手写向量化做矩阵乘。
-- **游戏物理 / 粒子**：对位置数组做 SoA + SIMD 批量积分。
-- **加密 / 压缩**：AES-NI、CRC32 等专用向量指令是性能命脉。
 
-- **SIMD 库坐标**：Eigen/OpenBLAS/oneDNN 用内在函数手写 AVX/SSE/NEON 路径；Google 的 [XNNPACK](https://github.com/google/XNNPACK) 与 [gemmlowp](https://github.com/google/gemmlowp) 把量化矩阵乘铺满 SIMD；游戏/编解码大量用 `_mm_*`/`v*` 内联。
-- **数据并行类型**：`std::experimental::simd`（Parallelism TS 2，libstdc++ 自 GCC 11 起提供）是向标准靠拢的尝试。
+SIMD 把「一条指令算多个数据」用在吞吐热点。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 编解码 / 多媒体 | x264 / x265 / libvpx / FFmpeg（AVX2 / AVX-512 intrinsic） | 像素 / 变换向量化 | 多媒体工业 | 手写 intrinsic 铺满通道 |
+| 数值线性代数 | Eigen / BLAS（自动 / 手写向量化矩阵乘） | 矩阵乘吞吐 | 科学计算支柱 | 规模合适才向量化 |
+| 游戏物理 / 粒子 | SoA + SIMD 批量积分 | 位置数组批量处理 | 实时物理 | SoA 是 SIMD 前提 |
+| 加密 / 压缩 | AES-NI / CRC32 专用向量指令 | 性能命脉 | 安全 / 压缩 | 专用指令非通用 SIMD |
+| SIMD 库坐标 | Eigen / OpenBLAS / oneDNN / XNNPACK / gemmlowp | 手写 AVX / SSE / NEON 路径 | 工业级数值 / ML | 量化矩阵乘铺满 SIMD |
+| 数据并行类型 | `std::experimental::simd`（Parallelism TS 2） | 向标准靠拢的类型化 SIMD | 尚未进标准 | [STANDARD] 属 Parallelism TS 2；libstdc++ 自 GCC 11+ 提供 experimental |
+
+> **表注（㉒.2）**：上表前 4 行是「SIMD 在哪些领域吃重」，后 2 行是「库与标准设施的当前状态」；`std::experimental::simd` 仍只是 Parallelism TS 2 的 experimental 实现，尚未合并进 C++ 标准，生产代码目前仍以 intrinsic（`<immintrin.h>` 等）或库（Eigen/oneDNN）为主。
+
+**一条判读**：SIMD 的收益只在「数据可并行、规模够大、热到值得」时兑现；它牺牲可读性与可移植性（AVX/NEON 指令不同），且可能触发频率下降（AVX-512 降频），应先测再上，别为「看起来快」而向量化冷路径。
 
 ### ㉒.3 生产踩坑：SIMD 的误用
 - **AVX-512 降频（throttling）**：部分 Intel CPU 跑 AVX-512 会整体降频（power/thermal 墙），短向量收益被频率损失吃光；需实测权衡，必要时退回 AVX2。

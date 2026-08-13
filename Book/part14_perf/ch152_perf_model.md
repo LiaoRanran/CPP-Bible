@@ -799,13 +799,21 @@ int main() {
 [史] **Amdahl 定律**（Gene Amdahl，1967）给出"并行加速比上限由串行比例决定"的铁律，至今是评估并发收益的第一把尺。[史] **Roofline 模型**（Williams、Waterman、Patterson，UC Berkeley，2009）把"计算峰值 vs 内存带宽"画成一张屋顶图，直观区分计算密集与访存密集瓶颈；它与 **Little 定律**（量化吞吐/延迟/在途数）一起，构成服务端性能建模的常用工具箱。[评] 模型的价值在于"先定性再定量"——动手优化前先判断是 compute-bound 还是 memory-bound，否则多半在错的地方使劲。
 
 ### ㉒.2 真实工程坐标：性能建模活在哪些项目里
-- **HPC / 超算**：Roofline 是英特尔、NERSC 等给应用定级的标准动作，配合 VTune 定位屋顶位置。
-- **游戏引擎 / 渲染**：用 Amdahl 估算多线程渲染收益，避免"加线程反而更慢"。
-- **数据库 / 搜索引擎**：以 Little 定律设连接池与队列深度，控制尾延迟（p99/p999）。
-- **Google Benchmark 生态**：几乎所有需要"可信数字"的 C++ 库都用它产出建模所需的原始数据（见第151章）。
 
-- **性能建模工具**：Intel 的 [Intel® Advisor](https://www.intel.com/content/www/us/en/developer/tools/oneapi/advisor.html)（屋顶线/内存带宽建模）、[llvm-mca](https://llvm.org/docs/CommandGuide/llvm-mca.html)（基于调度模型的指令吞吐模拟）、[OSACA](https://github.com/RRZE-HPC/OSACA)（开源汇编代价建模）；这些把“微架构参数”变成可计算的预测。
-- **经验模型**：Amdahl/Gustafson 定律、Roofline 模型（Arithmetic Intensity vs 带宽）是沟通“优化上限”的通用语言。
+性能建模把「拍脑袋优化」变成「先看上限在哪」。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| HPC / 超算 | Roofline（Intel / NERSC）+ VTune | 给应用定级、定位屋顶位置 | 超算标准动作 | Roofline 沟通优化上限 |
+| 游戏引擎 / 渲染 | Amdahl 估算多线程渲染收益 | 避免「加线程反而更慢」 | 实时帧预算 | Amdahl 暴露串行瓶颈 |
+| 数据库 / 搜索引擎 | Little 定律设连接池 / 队列深度 | 控制尾延迟 p99/p999 | 服务端标配 | 队列论定容量 |
+| 基准生态 | Google Benchmark（见第151章） | 产出建模所需可信原始数据 | C++ 库事实标准 | 数据是模型输入 |
+| 建模工具 | Intel Advisor / llvm-mca / OSACA | 把微架构参数变成可计算预测 | 工业级建模 | llvm-mca 基于调度模型模拟吞吐 |
+| 经验模型 | Amdahl / Gustafson / Roofline（AI vs 带宽） | 沟通「优化上限」的通用语言 | 跨领域共识 | 算术强度 vs 带宽 |
+
+> **表注（㉒.2）**：上表前 4 行是「各领域怎么用模型」，后 2 行是「建模工具与经验模型本身」；Roofline 的纵轴是峰值算力/带宽、横轴是算术强度，落在哪条屋顶线下就决定优化该攻算力还是攻带宽。
+
+**一条判读**：建模的价值是「先知道上限再动手」，避免在无谓的方向上浪费时间；小项目不必上完整 Roofline，但至少该用 Amdahl 想清「并行化能省多少」再决定要不要加线程。
 
 ### ㉒.3 生产踩坑：建模与测量的误用
 - **用错模型**：把访存密集的代码当计算密集优化（狂加 SIMD 却卡在 cache miss），白忙一场；正确做法是先画 Roofline 定位屋顶。
