@@ -343,6 +343,21 @@ void legacy() noexcept;
 - Coroutines 有堆分配 promise 的固定开销，适合「等待多」而非「极短循环」（ch113、ch152）。
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 concept 约束模板 `template<Incrementable T>` 替代 SFINAE。** 你希望约束失败给出清晰错误。请说明约束的优先级。
+   - [标准] C++20 引入概念与约束；受约束的模板在重载决议中优先于无约束版本，且约束不满足在硬错误前被诊断。
+   - [引用] ISO/IEC 14882:2023 §[temp.constr]（约束与重载决议）/ [concepts]（概念概览）；cppreference "Constraints and concepts" 词条。
+
+2. **真实场景：用 `consteval` 强制编译期求值。** 你希望某个函数在运行期根本不存在。请对比 constexpr。
+   - [标准] `consteval` 函数只能在编译期被调用、必须产生常量表达式；比 `constexpr` 更严格（不允许运行期调用）。
+   - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（consteval 说明符）；cppreference "consteval" 词条。
+
+3. **真实场景：用模块 `import std;` 替代 `#include <vector>`。** 你希望缩短编译时间。请说明模块与头文件的区别。
+   - [标准] C++20 引入模块；`import` 导入编译期已处理的接口单元，避免头文件的重复文本处理与宏泄漏。
+   - [引用] ISO/IEC 14882:2023 §[module.import]（模块导入）；cppreference "Modules" 词条。
+
+
 ```cpp
 // C++20 小结：concepts/ranges/<=</format/jthread
 ```

@@ -410,6 +410,21 @@ int g1=1; int g2=g1+1; // g2 依赖 g1 初始化序
 - 唯一开销来自运行时多态（虚调用，约 1 次间接跳转 + 可能破坏分支预测），详见 ch47、ch153。
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：老 C 代码用 C++ 编译器报 “‘X’ does not name a type”。** 你在 `struct Node {…};` 后写 `Node* n;` 被拒。请说明 C 与 C++ 在标签命名空间上的差异。
+   - [标准] C++ 中 `struct`/`union`/`enum` 的名字直接进入普通类型名空间，无需写 `struct X`；C 中标签位于独立命名空间。
+   - [引用] ISO/IEC 14882:2023 §[class.name]（类名即为类型说明符）；cppreference "Compatibility with C" 词条。
+
+2. **真实场景：C 的 `f() { return 0; }` 在 C++ 下编译失败。** 旧式隐式 `int` 返回类型不被接受。请说明 C++ 对声明的要求。
+   - [标准] C++ 要求每个声明都有显式类型说明符，不存在 C 的“隐式 int”。
+   - [引用] ISO/IEC 14882:2023 §[dcl.dcl] / [dcl.spec]（声明说明符，无隐式 int）；cppreference "Declaration" 词条。
+
+3. **真实场景：`void*` 隐式转 `T*` 在 C++ 必须显式 cast。** 你把 `malloc` 结果直接赋给 `int*` 报错。请说明 void 指针转换规则。
+   - [标准] C++ 中 `void*` 不能隐式转换为对象指针，必须显式 `static_cast`（与 C 不同）。
+   - [引用] ISO/IEC 14882:2023 §[conv.ptr]（空指针/void 转换，无隐式 void*→T*）；cppreference "Implicit conversions" 词条。
+
+
 ```cpp
 // 兼容 C 的 extern "C"
 extern "C" int cfunc(int);

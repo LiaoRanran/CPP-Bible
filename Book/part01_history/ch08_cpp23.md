@@ -346,6 +346,21 @@ std::expected<double,int> div(double a,double b){ if(b==0) return std::unexpecte
 - `print` 比 `cout <<` 快且避免 `endl` 的 flush（ch131、ch161）。
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::expected<T, E>` 表达可失败计算。** 你不想为“正常路径出错”滥用异常。请说明其定位。
+   - [标准] `std::expected` 持有一个值或错误，属 C++23 标准库设施（[expected]）；适合可预期的错误传播。
+   - [引用] ISO/IEC 14882:2023 §[expected]（expected 概览）；cppreference "std::expected" 词条。
+
+2. **真实场景：用 `std::stacktrace` 取调用栈做诊断。** 你希望崩溃时能打印调用栈而不依赖外部工具。请说明其来源。
+   - [标准] C++23 新增 `<stacktrace>` 库，提供在运行期获取当前调用栈的标准手段。
+   - [引用] ISO/IEC 14882:2023 §[stacktrace]（stacktrace 概览）；cppreference "std::stacktrace" 词条。
+
+3. **真实场景：用 `if consteval` 区分编译期/运行期分支。** 你在 constexpr 函数里需要一段只对编译期执行的代码。请说明机制。
+   - [标准] C++23 引入 `if consteval`，在常量求值语境为 true 的分支内，可调用只能在编译期存在的接口。
+   - [引用] ISO/IEC 14882:2023 §[stmt.if]（if consteval）/ [expr.const]（常量求值语境）；cppreference "if consteval" 词条。
+
+
 ```cpp
 // C++23 小结：expected/print/mdspan/flat_map/assume
 ```

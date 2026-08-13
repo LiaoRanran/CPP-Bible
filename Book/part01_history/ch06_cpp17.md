@@ -346,6 +346,21 @@ void log([[maybe_unused]] int verbose){}
 - 并行算法 `execution::par` 在多核上线性加速，但需数据无竞争（ch99、ch102）。
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `if (auto it = m.find(k); it != m.end())` 缩短作用域。** 你不想让 `it` 泄漏到外层。请说明带初始化器的 if。
+   - [标准] C++17 起 `if`/`switch` 可携带初始化语句，变量的作用域被限制在条件及其分支内。
+   - [引用] ISO/IEC 14882:2023 §[stmt.if]（if 带初始化器）；cppreference "if statement" 词条。
+
+2. **真实场景：用结构化绑定遍历 map `auto& [k,v] = *it;`。** 你摆脱冗长的 `it->first/second`。请说明绑定规则。
+   - [标准] 结构化绑定声明可绑定到数组、类类型成员或 tuple-like 类型，按元素引出名字。
+   - [引用] ISO/IEC 14882:2023 §[dcl.struct.bind]（结构化绑定）；cppreference "Structured binding" 词条。
+
+3. **真实场景：inline 变量让 `inline const int k = 42;` 可放头文件。** 你不再需要 `.cpp` 里定义一次。请说明 inline 变量的作用。
+   - [标准] C++17 引入 inline 变量，使其可在多个翻译单元拥有同一定义而合法（解决多 TU 单定义）。
+   - [引用] ISO/IEC 14882:2023 §[dcl.inline]（inline 变量）；cppreference "inline" 词条。
+
+
 ```cpp
 // C++17 小结：结构化绑定/optional/string_view/折叠/if constexpr
 ```

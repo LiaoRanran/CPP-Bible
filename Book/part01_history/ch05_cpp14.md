@@ -323,6 +323,21 @@ template<class T> constexpr bool is_ptr_v = std::is_pointer_v<T>;
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用变量模板做维度无关的 `epsilon<T>`。** 你不再为每个类型手写常量。请说明变量模板的引入。
+   - [标准] C++14 引入变量模板，可在命名空间作用域声明带模板形参的变量，供类型相关的常量复用。
+   - [引用] ISO/IEC 14882:2023 §[temp.variab]（变量模板）；cppreference "Variable template" 词条。
+
+2. **真实场景：用 `[[deprecated("use foo2")]]` 标记废弃 API。** 你想让调用方在编译期收到劝退。请说明属性字符串参数。
+   - [标准] C++14 起 `deprecated` 属性可带字符串实参说明废弃原因；使用该声明会触发实现诊断。
+   - [引用] ISO/IEC 14882:2023 §[dcl.attr.deprecated]（deprecated 属性）；cppreference "Attributes" 词条。
+
+3. **真实场景：constexpr 函数里写局部变量和循环（14 已放松）。** 你在 11 里被迫单表达式，现在可写语句。请说明放宽边界。
+   - [标准] C++14 放松 constexpr 函数体限制，允许声明、循环等，但仍必须能在常量表达式语境求值。
+   - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（constexpr 函数体要求，C++14 起放松）；cppreference "constexpr" 词条。
+
+
 ```cpp
 // C++14 小结：泛型 lambda + 变量模板 + make_unique 三件套
 ```

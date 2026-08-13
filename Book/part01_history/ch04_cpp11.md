@@ -451,6 +451,21 @@ int main() {
 - 右值引用 + 完美转发是后续「零拷贝泛型库」基石（ch116、ch90 ranges）。
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立"推荐阅读"节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::move` 转移大对象避免深拷贝。** 你以为 `move` 会“移动内存”，其实只是转类型。请说明 std::move 的真实语义。
+   - [标准] `std::move` 只是把表达式 `static_cast` 成右值引用，本身不移动任何数据；真正的资源转移由类型的移动构造/赋值完成。
+   - [引用] ISO/IEC 14882:2023 §[utility]（std::move）/ [class.copy.ctor]（移动构造函数）；cppreference "std::move / Move semantics" 词条。
+
+2. **真实场景：`auto` 推导引用需要 `auto&` 或 `decltype(auto)`。** 你写 `auto x = get_ref();` 拿到的是副本而非引用。请说明 auto 的推导规则。
+   - [标准] `auto` 按模板实参推导规则工作，默认丢弃顶层 cv 与引用；要保留引用须显式写 `auto&` / `auto&&`。
+   - [引用] ISO/IEC 14882:2023 §[dcl.spec.auto]（auto 类型推导）；cppreference "auto" 词条。
+
+3. **真实场景：用 `unique_ptr` 表达独占所有权替代裸指针。** 你担心拷贝导致双重释放。请说明其所有权编码。
+   - [标准] `std::unique_ptr` 在类型中编码独占所有权，不可拷贝、只能移动（转让）；析构时自动释放。
+   - [引用] ISO/IEC 14882:2023 §[util.smartptr.unique]（unique_ptr 所有权与不可拷贝）；cppreference "std::unique_ptr" 词条。
+
+
 ```cpp
 // 智能指针数组
 #include <memory>
