@@ -1076,11 +1076,20 @@ int main() {
 
 ### ㉒.3 真实工程坐标（它们在哪台机器上跑）
 
-- **ClickHouse**：字节跳动（今日头条 / 抖音）在超大规模上用 ClickHouse 做用户行为分析，并向社区贡献了 ByteHouse 分支；**Cloudflare** 把 HTTP Analytics 与 1.1.1.1 DNS 分析从 Elasticsearch 迁到 ClickHouse 并公开了迁移博客；**Uber** 用其做行程 / 收益分析；Spotify、Wikimedia（页面访问统计）、GitLab（可观测性）、eBay、ContentSquare 等均为公开用户。
-- **Redis**：Twitter（早期时间线缓存）、GitHub（限流与缓存）、Stack Overflow、Pinterest（信息流）、Snapchat、Flickr 均为经典用户；除缓存外，Redis 还承担会话存储、排行榜（`ZSET`）、消息中间件（Streams / pub-sub）、分布式锁（`SET NX`）等角色。
+下表把 ClickHouse / Redis 的真实工程坐标按「数据库 × 代表部署 × 选用引擎 × 角色用途 × 行业备注」并列摆开；它们的最大公约数就是「**都从单一场景跨进了全行业基础设施**」。
 
-- **ClickHouse 新增坐标（跨行业补强）**：**CERN** 用 ClickHouse 分析大型强子对撞机（LHC）产生的海量实验数据，是「科学 / 高能物理」这一硬核行业的旗舰案例；**Bloomberg** 用其做金融行情与分析；**Tencent / Alibaba** 在广告与监控场景大规模部署；**Lyft**、**Sentry**（错误追踪）、**Rill** 等也是公开用户。从「网页分析」到「粒子物理」再到「金融终端」，ClickHouse 的行业跨度已远超其最初定位。
-- **Redis 新增坐标（跨行业补强）**：**Discord** 以 Redis 支撑实时消息与缓存（其工程博客多次披露单机数十 GB 的 Redis 部署）；**Airbnb**、**Uber**、**Shopify** 用 Redis 做会话 / 限流 / 排行榜；国内的 **Baidu / Alibaba** 同样将其作为核心缓存与中间件。Redis 几乎成为「Web 规模公司的基础设施默认值」，跨电商、社交、出行、游戏全行业。
+| 数据库 | 代表部署 | 选用引擎 | 角色 · 用途 | 行业 · 备注 |
+|---|---|---|---|---|
+| 网页 · 行为分析 | 字节跳动 · Cloudflare · Uber · Spotify · Wikimedia | ClickHouse | 用户行为 / HTTP Analytics / DNS 分析、行程收益 | Cloudflare 从 Elasticsearch 迁 |
+| 科学 · 高能物理 | CERN（LHC） | ClickHouse | 海量实验数据分析 | 硬核行业旗舰案例 |
+| 金融 · 广告监控 | Bloomberg · Tencent · Alibaba · eBay | ClickHouse | 行情 / 广告 / 监控大规模部署 | — |
+| 缓存 · 会话 · 中间件 | Twitter · GitHub · Stack Overflow · Pinterest · Snapchat | Redis | 限流 / 缓存 / 排行榜（`ZSET`）/ Streams / pub-sub / 分布式锁（`SET NX`） | Web 规模默认值 |
+| 实时消息 | Discord · Airbnb · Uber · Shopify | Redis | 实时消息与缓存；单机数十 GB 部署 | 工程博客披露 |
+| 国内互联网 | Baidu · Alibaba | Redis | 核心缓存与中间件 | 跨电商 / 社交 / 出行 / 游戏 |
+
+> **表注（㉒.3）**：本表据各项目官方博客与公开案例整理，意在呈现 ClickHouse / Redis 的「产业坐标」而非穷举。代表部署随业务变动，以各项目官方披露为准；「角色」列仅列典型用途。二者均消费 C++17 `std::string_view`、C++20 `std::span` 这类零成本词汇类型，却都拒绝把核心数据结构交给 `std::vector` / `std::unordered_map`——印证「标准在词汇类型上追得快，在极端性能 idiom 上长期缺位」，详见 ㉒.5。
+
+**一条判读**：ClickHouse 从「网页分析」跨到「粒子物理」「金融终端」，Redis 跨电商 / 社交 / 出行 / 游戏全行业——二者都证明同一件事：标准提供好用的词汇类型就拿来用，标准容器在极致性能上不够用就自己写（ClickHouse 自研开放寻址 `HashMap`、Redis 用 `sds` / `listpack` / `dict`）。
 
 ### ㉒.4 生产踩坑（真实坑，非教科书）
 

@@ -847,9 +847,17 @@ MS STL 的源头不在微软自研，而在 **P.J. Plauger 的 Dinkumware STL**�
 
 MS STL 的覆盖由「Windows 生态」定义，凡用 MSVC 编译的本地代码几乎都链接它（`msvcp140.dll` / `vcruntime140.dll`）：
 
-- **Windows 桌面与后台服务**：从 Office、Teams 到 Azure 控制面组件、企业 ERP/工控软件，几乎所有 Windows 原生应用与服务都跑在 MS STL 之上；Windows 操作系统自身大量组件也是 C++ 构建。
-- **Windows 游戏生态**：Steam 库里绝大多数 Windows 游戏（以及虚幻引擎、Unity 在 Windows 上的构建）用 MSVC + MS STL；`_MSC_VER` 绑死的「版本脊椎」正是游戏厂商 CI 锁工具集、保证 ABI 一致的依据（见 ⑫）。
-- **跨平台引擎的 Windows 端**：Chromium / Edge、Qt、Unreal Engine 在 Windows 上都被 MS STL 编译与链接，使 MS STL 间接支撑了浏览器、设计软件、3A 游戏等庞杂产品线。
+下表把 MS STL 的真实部署按「领域 × 代表产品 × 它承担的角色 × 规模地位 × 生态互动」并列摆开；它们的最大公约数就是「**凡用 MSVC 编译的本地 Windows 代码，几乎都链它**」。
+
+| 领域 | 代表产品 · 系统 | MS STL 承担的角色 | 规模 · 行业地位 | 备注 / 生态互动 |
+|---|---|---|---|---|
+| Windows 桌面 · 后台 | Office · Teams · Azure 控制面 · 企业 ERP / 工控 | 几乎所有 Windows 原生应用与服务 | Windows 自身大量组件亦 C++ 构建 | `msvcp140.dll` / `vcruntime140.dll` |
+| Windows 游戏 | Steam 库游戏、虚幻 / Unity（Windows） | MSVC + MS STL 构建 | 几乎整个 Windows 游戏生态 | `_MSC_VER`「版本脊椎」锁 ABI，见 ⑫ |
+| 跨平台引擎（Windows 端） | Chromium · Edge · Qt · Unreal（Windows） | MS STL 编译与链接 | 浏览器 · 设计软件 · 3A 游戏庞杂产品线 | 间接支撑，见第134章 |
+
+> **表注（㉒.2）**：本表据 Microsoft STL 官方文档与产品事实整理，意在呈现 MS STL 的「产业坐标」而非穷举。代表部署随 MSVC / Windows 版本策略变动，以 Microsoft 官方披露为准；「规模」列仅列典型量级。MS STL 的兼容边界由「同一 `_MSC_VER` + 同一 `/MD` `/MT` + 同一 `_ITERATOR_DEBUG_LEVEL`」定义，详见 ㉔。
+
+**一条判读**：MS STL 的覆盖由「Windows 生态」定义——它几乎只活在 MSVC 编译的本地 Windows 代码里，却因此与 Windows 运行时焊得最死。换来极低集成成本（`<filesystem>` 走 `CreateFileW`、`std::thread` 走 `CreateThread`），代价是任何 CRT / 版本 / 开关错配都会在链接或运行期爆炸，详见 ㉔。
 
 ### ㉒.4 与标准的互动：MS STL 的「追标准快跑」与宏闸门
 

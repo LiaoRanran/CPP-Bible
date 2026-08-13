@@ -865,19 +865,21 @@ int main() {
 
 ### ㉒.2 真实工程坐标：谁在生产里跑 Abseil / Chromium base
 
-- **Chromium 浏览器 / ChromeOS**：全球占有率最高的浏览器内核之一，其 `base` 库是工业级 C++ 基础设施范本；每秒数十亿次回调、多进程沙箱、Mojo IPC、ThreadPool 调度都建立在 `base` 之上。
-- **Google 内部近乎所有 C++ 服务**：搜索、广告、YouTube、Google Cloud 的控制面，底层都跑 Abseil。
-- **开源生态（直接依赖 Abseil）**：
-  - **Protocol Buffers（v22/3.21+）**：自 2021 年起把 Abseil 列为硬依赖（`absl::string_view`、`absl::Status`、`absl::flat_hash_map` 等）。
-  - **gRPC**：传输层与工具链大量使用 Abseil 容器/字符串。
-  - **Envoy**：高性能边缘/sidecar 代理，核心数据结构与配置解析重度依赖 `absl::flat_hash_map`、`absl::Status`、`absl::string_view`。
-  - **Bazel**：Google 的构建系统本身以 Abseil 为底座。
-  - **GoogleTest / GoogleMock（1.11+）**：已迁移到以 Abseil 为支撑的测试框架。
-- 标准化先行者：`string_view`/`optional`/`any`/`span`/`StatusOr` 先在 Abseil 成熟，后被 C++17/20/23 吸收为标准。
+下表把 Abseil / Chromium `base` 的真实工程坐标按「领域 × 代表系统 × 它承担的角色 × 规模地位 × 生态互动」并列摆开；它们的最大公约数就是「**Google 开源 C++ 几乎都绕不开 Abseil**」。
 
-- **TensorFlow 与 Fuchsia**：Google 的机器学习框架 **TensorFlow** 与下一代操作系统 **Fuchsia** 均以 Abseil 为底座（`absl::string_view`、`absl::Status`、`absl::flat_hash_map` 无处不在），把 Abseil 从「服务后端」一路推进到「ML 框架」与「操作系统运行时」。
-- **所有 Chromium 系浏览器**：除了 Chrome/ChromeOS，**Microsoft Edge**、**Opera**、**Brave**、**Vivaldi** 也都基于 Chromium——它们运行时都加载同一套 Chromium `base` 库；Android 上的 **Chrome / Android System WebView** 同样如此，使 `base` 的装机量以「设备数」计达数十亿。
-- **re2 / protobuf 周边**：Google 的正则库 **re2**（以及 Abseil 自身）现已把 `absl::` 组件作为硬依赖，形成「Google 开源 C++ 几乎都绕不开 Abseil」的事实标准。
+| 领域 | 代表系统 | Abseil / Chromium base 承担的角色 | 规模 · 行业地位 | 备注 / 生态互动 |
+|---|---|---|---|---|
+| 浏览器内核 | Chromium · ChromeOS | `base` 库（Mojo IPC · ThreadPool · 多进程沙箱） | 每秒数十亿次回调 | 工业级 C++ 基础设施范本 |
+| Google 内部服务 | 搜索 · 广告 · YouTube · Google Cloud 控制面 | 底层都跑 Abseil | 近乎所有内部 C++ 服务 | — |
+| 数据 · RPC 生态 | Protocol Buffers（v22+）· gRPC | `absl::string_view` · `Status` · `flat_hash_map` | protobuf 自 2021 把 Abseil 列硬依赖 | re2 同样硬依赖 |
+| 边缘代理 · 构建 | Envoy · Bazel | `flat_hash_map` · `Status` · `string_view` | 高性能 L7 代理核心 | Bazel 以 Abseil 为底座 |
+| 测试框架 | GoogleTest · GoogleMock（1.11+） | 迁移到 Abseil 支撑 | — | — |
+| ML · OS 运行时 | TensorFlow · Fuchsia | `absl::` 组件无处不在 | 从服务后端到 ML 框架与 OS | — |
+| Chromium 系浏览器 | Edge · Opera · Brave · Vivaldi · Android Chrome / WebView | 同一套 `base` 库 | 装机量以设备数计达数十亿 | — |
+
+> **表注（㉒.2）**：本表据 Abseil / Chromium 官方文档与各项目事实整理，意在呈现 Abseil 的「产业坐标」而非穷举。代表系统随版本变动，以各项目官方披露为准；「规模」列仅列典型量级。Abseil **不保证 ABI 稳定**，官方推荐「从源码随工具链构建」并提供 LTS 分支；混用非 LTS 头文件 + LTS 库会产生 ODR 违例，详见 ㉒.3。
+
+**一条判读**：标准化先行者——`string_view` / `optional` / `any` / `span` / `StatusOr` 先在 Abseil 成熟，后被 C++17/20/23 吸收为标准。Abseil 的公开立场是「特性一旦进标准，就鼓励用户迁移到 `std`」，库本身定位为「标准前的试验田」，详见 ㉒.4。
 
 ### ㉒.3 生产踩坑：版本化（LTS）、与标准的重叠、Chromium 铁律
 

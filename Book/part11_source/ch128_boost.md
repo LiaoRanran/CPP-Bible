@@ -865,16 +865,21 @@ Boost 的发起人是 **Beman Dawes**（C++ 标准委员会长期成员、Boost 
 
 Boost 不是教科书玩具，而是工业软件的隐形底座：
 
-- **Bitcoin Core**：核心客户端大量依赖 Boost——`boost::thread`、`boost::filesystem`、`boost::program_options`（命令行解析）、`boost::system`、`boost::chrono`、`boost::test`（自测）。其构建系统对 Boost 版本有硬性下限，是「Boost 作为强依赖」的典型样本（升级 Boost 会牵动大量接口）。
-- **QuantLib**：开源量化金融库，几乎完全构建在 Boost 之上（`boost::shared_ptr`、`boost::numeric`、`boost::math`、`boost::date_time`），是金融工程领域对 Boost 依赖最深的代表之一。
-- **VTK / ParaView**：科学可视化工具链，使用 Boost 的 MPL、SmartPtr、Iterator 等。
-- **MySQL / MariaDB**：历史上链接 Boost 用于 `Boost.Regex`、`Boost.DateTime` 等（后期逐步自实现或替换）。
-- **LLVM / 标准库实现本身**：虽然 Chromium 内部已转向 Abseil（见第130章），但 LLVM 工具链与多家标准库 vendored 实现吸收了大量 Boost 设计。
+下表把 Boost 的真实工程坐标按「领域 × 代表系统 × 重度使用的 Boost 组件 × 角色地位 × 标准互动」并列摆开；它们的最大公约数就是「**在标准尚未覆盖的高地上，Boost 仍是工业软件的隐形底座**」。
 
-与「标准已吸收」形成对照——今天的工程共识是「能用 `std::` 就用 `std::`，把 Boost 留给 Asio/Beast/Geometry/Spirit/MPL 这些标准尚未覆盖的高地」。
+| 领域 | 代表系统 | 重度使用的 Boost 组件 | 角色 · 地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 区块链 | Bitcoin Core | `thread` · `filesystem` · `program_options` · `system` · `chrono` · `test` | 强依赖，构建系统有硬性版本下限 | 升级 Boost 牵动大量接口 |
+| 量化金融 | QuantLib | `shared_ptr` · `numeric` · `math` · `date_time` | 依赖最深的代表之一 | 几乎完全构建在 Boost 之上 |
+| 科学可视化 | VTK · ParaView | MPL · SmartPtr · Iterator | 工具链基础 | — |
+| 数据库（历史） | MySQL · MariaDB | `Regex` · `DateTime` | 历史链接 | 后期逐步自实现或替换 |
+| 编译器 · 标准库 | LLVM · 多家标准库实现 | 吸收 Boost 设计（vendored） | 「标准孵化器」反向证据 | Chromium 转向 Abseil，见第130章 |
+| 机器人 · 自动驾驶 | ROS | `shared_ptr` · `filesystem` · `thread` · `system` · `date_time` | 基础依赖贯穿节点通信 | ROS 2 改用更多 `std::` |
+| 分布式数据库 | MongoDB | `Filesystem` · `Program.options` · `Thread` · `System` · `Chrono` | 强依赖，硬性版本下限 | 后续版本削减依赖 |
 
-- **ROS（Robot Operating System）**：机器人操作系统中间件把 Boost 当作基础依赖——`boost::shared_ptr`、`boost::filesystem`、`boost::thread`、`boost::system`、`boost::date_time` 贯穿节点通信与构建系统。这是 Boost 跨进「机器人 / 自动驾驶」这一硬实时行业的典型案例（ROS 2 虽改用更多 `std::` 与现代设施，但历史代码与大量包仍深度依赖 Boost）。
-- **MongoDB**：开源分布式文档数据库在相当长一段时间内重度依赖 Boost（`Boost.Filesystem`、`Boost.Program_options`、`Boost.Thread`、`Boost.System`、`Boost.Chrono`），其构建系统对 Boost 版本有硬性下限。虽然后续版本逐步削减 Boost 依赖，但「数据库内核把 Boost 当强依赖」是工业软件的经典样本。
+> **表注（㉒.2）**：本表据各项目官方文档与构建系统事实整理，意在呈现 Boost 的「产业坐标」而非穷举。代表系统与依赖组件随版本变动，以各项目官方披露为准；「角色」列仅列典型定位。Boost **不保证**跨版本 ABI 稳定（连小版本间也未必兼容），混链两个版本会产生 ODR 违例——详见 ㉒.3。
+
+**一条判读**：与「标准已吸收」形成对照——今天的工程共识是「能用 `std::` 就用 `std::`，把 Boost 留给 Asio/Beast/Geometry/Spirit/MPL 这些标准尚未覆盖的高地」。Boost 最好的库往往活成标准，剩余库要么长尾维护，要么因「编译慢、体量大」被边缘化。
 
 ### ㉒.3 生产踩坑：版本分裂、编译慢、头文件膨胀、迁移成本
 

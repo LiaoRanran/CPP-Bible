@@ -1103,16 +1103,22 @@ LevelDB 的设计哲学则直接继承自 **Chang、Dean、Ghemawat 等《Bigtab
 
 ### ㉒.3 真实工程坐标（它们在哪台机器上跑）
 
-- **Ethereum / go-ethereum**：以太坊 Go 客户端用 **LevelDB** 存区块索引、状态 trie 快照与链数据（`geth` 的 `ethdb` 默认后端即 LevelDB，后提供 Pebble 选项）。这是"区块链底层 KV"最知名实例——一条主网节点数十 GB 到数 TB 的状态全压在 LevelDB 的 LSM 上。
-- **Chrome / IndexedDB**：Chromium 的 IndexedDB 与 Blob Storage 后端基于 **LevelDB**（现代 PWA 的本地持久层走 LevelDB），移动端 Chrome 同样如此。这是"嵌入式 KV"装机量最大的部署，没有之一。
-- **Kafka Streams**：Kafka 的流处理状态存储（state store）默认用 **RocksDB**，每个 partition 的本地聚合 / 连接状态落在本机 RocksDB。
-- **TiKV / CockroachDB**：TiKV（TiDB 存储节点）与 CockroachDB 都以 **RocksDB** 为单机引擎（CockroachDB 另写 Pebble 替代）；RocksDB 的列族用于隔离锁 / 数据 / raft log 等不同数据域。
-- **MyRocks / Instagram / Bloomberg**：Facebook 把 MySQL 的 InnoDB 换成 **RocksDB**（MyRocks），在 Instagram 图数据与消息负载上把写放大与存储空间压下来；Bloomberg 的量化 tick 序列服务也用 RocksDB 存时间序列。
+下表把 LevelDB / RocksDB 的真实工程坐标按「领域 × 代表系统 × 选用引擎 × 角色用途 × 规模地位」并列摆开；它们的最大公约数就是「**都跑在 LSM-Tree 的写优化哲学上**」。
 
-- **Bitcoin Core**：比特币核心客户端的链状态（UTXO 集合与区块索引）用 **LevelDB** 存储（`chainstate` 目录即 LevelDB 实例）。这是「区块链底层 KV」最知名、装机量以「全节点数 × 链大小」计的实例——一条主网全节点的状态全压在 LevelDB 的 LSM 上，与以太坊用 LevelDB 同源（见上条）。
-- **Netflix EVCache**：Netflix 的全球缓存系统 EVCache 在 SSD 缓存层选用 **RocksDB**，承接每秒海量键值读写；这是「互联网巨头的缓存底座」样本。
-- **Apache Flink / Apache Samza**：两者都把 **RocksDB** 作为流处理状态后端（state backend）——窗口聚合、连接状态落在本机 RocksDB，Flink 的 `RocksDBStateBackend` 是默认高吞吐选项之一。
-- **Uber Cherami / Apache Kvrocks**：Uber 的自研分布式消息系统 Cherami 以 **RocksDB** 为存储引擎；**Apache Kvrocks** 则在 RocksDB 之上实现 Redis 协议兼容的分布式 KV，把「RocksDB + 网络层」拼成新数据库。
+| 领域 | 代表系统 | 选用引擎 | 角色 · 用途 | 规模 · 地位 |
+|---|---|---|---|---|
+| 区块链（以太坊） | go-ethereum（geth） | LevelDB | `ethdb` 默认后端；状态 trie 快照与链数据 | 主网节点数十 GB ~ 数 TB |
+| 区块链（比特币） | Bitcoin Core | LevelDB | `chainstate`（UTXO 集合与区块索引） | 全节点数 × 链大小 |
+| 浏览器本地持久 | Chrome · IndexedDB · Blob Storage | LevelDB | PWA 本地持久层 | 嵌入式 KV 装机量最大，没有之一 |
+| 流处理状态 | Kafka Streams · Flink · Samza | RocksDB | 本地聚合 / 连接状态（state backend） | Flink `RocksDBStateBackend` 默认高吞吐 |
+| 分布式 SQL | TiKV · CockroachDB | RocksDB | 单机引擎；列族隔离锁 / 数据 / raft log | CockroachDB 另写 Pebble 替代 |
+| 数据库内核 | MyRocks（MySQL）· Instagram · Bloomberg | RocksDB | 替换 InnoDB 压写放大 / 空间 | tick 时间序列服务 |
+| 缓存底座 | Netflix EVCache | RocksDB | SSD 缓存层承接海量 KV | 互联网巨头样本 |
+| 消息 · 分布式 KV | Uber Cherami · Apache Kvrocks | RocksDB | 存储引擎；Redis 协议兼容分布式 KV | RocksDB + 网络层拼新库 |
+
+> **表注（㉒.3）**：本表据各项目官方文档与工程事实整理，意在呈现 LevelDB / RocksDB 的「产业坐标」而非穷举。代表系统随版本变动，以各项目官方披露为准；「规模」列仅列典型量级。LevelDB 与 RocksDB 均为 LSM-Tree 实现：LevelDB 轻量嵌入式、单线程 Compaction；RocksDB 服务端增强（多线程 Compaction、列族、BlobDB、Rate Limiter），详见 ㉒.4。
+
+**一条判读**：LSM 的「写优化」把随机写转顺序写，换来高吞吐写入；代价是 Compaction 写放大（每写 1 字节用户数据磁盘可能写 10–30 字节）与读放大——选型即权衡，详见 ㉒.4。
 
 ### ㉒.4 生产踩坑（真实坑，非教科书）
 

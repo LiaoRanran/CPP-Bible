@@ -695,10 +695,18 @@ LLVM 的起点是 **2000 年 UIUC（伊利诺伊大学厄巴纳-香槟分校）*
 
 LLVM 早已不是「一个编译器」，而是 **大半现代编程语言的公共后端**，其装机量以「设备数 × 语言数」计：
 
-- **Apple 全平台工具链**：Xcode 的编译器、静态分析器（clang-analyzer）、clang-tidy、clang-format 全部基于 LLVM/Clang，是苹果生态开发的事实基础设施。
-- **Android 与移动端**：Android NDK 自 r13 起把 Clang 设为默认编译器、r16 起唯一编译器，今天所有安卓原生代码的编译都走 LLVM 后端。
-- **非 C++ 语言的支柱**：Rust（`rustc`）、Swift、Kotlin/Native、Julia、Zig、Carbon 等语言都把 LLVM 当作代码生成后端；甚至 CUDA 的 `nvcc`、AMD ROCm、Intel oneAPI 的编译器也建立在 LLVM/Clang 之上——「写一种 IR，落所有硬件」的设想已在工业界坐实。
-- **浏览器与 GPU 基础设施**：Chrome 在多个平台用 Clang 构建；AMD ROCm、NVIDIA CUDA（clang 路径）等 GPU 工具链同样依赖 LLVM。
+下表把 LLVM/Clang 的真实部署按「领域 × 代表系统 × 它承担的角色 × 规模地位 × 生态互动」并列摆开；它们的最大公约数就是「**大半现代编程语言的公共后端**」——装机量以「设备数 × 语言数」计。
+
+| 领域 | 代表系统 | LLVM / Clang 承担的角色 | 规模 · 行业地位 | 备注 / 生态互动 |
+|---|---|---|---|---|
+| Apple 工具链 | Xcode · clang-analyzer · clang-tidy · clang-format | 全部基于 LLVM/Clang | 苹果生态开发事实基础设施 | — |
+| Android 编译 | NDK r13 起默认、r16 起唯一 | 所有安卓原生代码编译后端 | 今天安卓原生编译都走 LLVM | 见第124 / 125章 |
+| 非 C++ 语言后端 | Rust · Swift · Kotlin/Native · Julia · Zig · Carbon；CUDA `nvcc`；ROCm；oneAPI | 代码生成后端 | 「写一种 IR，落所有硬件」坐实 | nvcc / ROCm / oneAPI 均建于其上 |
+| 浏览器 · GPU 工具链 | Chrome（多平台）· ROCm · CUDA（clang 路径） | 构建与 GPU 工具链依赖 | — | — |
+
+> **表注（㉒.2）**：本表据 LLVM / Clang 官方文档与语言事实整理，意在呈现 LLVM/Clang 的「产业坐标」而非穷举。代表系统随各语言 / 平台版本策略变动，以各项目官方披露为准；「规模」列仅列典型量级。LLVM 实现 C++ 标准，但标准不定义其内部结构——UB 边界正是 Clang/GCC 优化的共同假设，见 ㉔。
+
+**一条判读**：LLVM 早已不是「一个编译器」，而是半个编程世界的公共后端。它的「无处不在」源于一个工程决策——把 IR 与 Pass 管道做成稳定契约，让 Rust/Swift/Julia 乃至 CUDA/ROCm 都来复用同一套代码生成。代价是 `llvm::*` C++ API 跨主版本不稳、默认禁 RTTI/异常、静态链极重，详见 ㉔。
 
 ### ㉒.4 与标准的互动：Clang 是标准的「先锋实现」与「合规闸门」
 

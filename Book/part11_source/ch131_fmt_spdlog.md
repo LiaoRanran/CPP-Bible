@@ -754,17 +754,19 @@ int main() {
 
 ### ㉒.2 真实工程坐标：fmt / spdlog 活在哪些系统里
 
-- **fmt → 直接成为 C++20 标准**：`std::format` 在语义与 API 上几乎逐字吸收 fmt（`basic_format_string`、`formatter` 特化、`format_to`），这是「第三方库反哺标准」最成功的案例之一；任何用 C++20 的编译器都内置了 fmt 思想。
-- **spdlog**：GitHub 上星标最高的现代 C++ 日志库之一，被大量**后端服务、游戏辅助工具、嵌入式固件、量化交易系统**采用；其「仅头文件、异步也能快」的定位使它成为 `log4cpp`/`glog` 的现代替代品。典型落地形态：高吞吐服务端用 `spdlog::async_factory`（有界 MPSC 队列 + 后台写入线程）解耦 I/O 与业务线程；嵌入式用同步 `basic_file_sink_mt` 落盘。
-- **跨生态影响**：fmt 的 `{}` 语法被多种语言/库借鉴；spdlog 通过「一次 `fmt::formatter<T>` 特化，fmt 与 spdlog 同时受益」的共用格式化层，成为领域类型日志的事实标准。
+下表把 fmt / spdlog 的真实工程坐标按「领域 × 代表系统 × 它承担的角色 × 规模地位 × 标准互动」并列摆开；它们的最大公约数就是「**fmt 思想已被收编进 C++20 标准本身**」。
 
-- **命名级真实用户（均列于 fmt 官方 README「Projects using this library」）**，横跨多个行业，证明 fmt/spdlog 不是玩具而是基础设施：
-  - **Microsoft Windows Terminal**：新版 Windows 终端的格式化依赖 {fmt}（开发者工具链跨行业）。
-  - **Apple FoundationDB**：分布式事务型键值存储用 {fmt} 做内部日志与诊断（数据库 / 分布式系统）。
-  - **Meta PyTorch**：主流机器学习框架用 {fmt} 做张量/算子日志（AI 基础设施）。
-  - **ClickHouse**：分析型数据库用 {fmt} 做查询结果与错误信息的格式化（OLAP）。
-  - **Lyft Envoy**：高性能 L7 代理用 {fmt} 做配置与访问日志（网络基础设施）。
-  - **ScyllaDB / Stellar / Ceph**：分别是 Cassandra 兼容 NoSQL、金融平台、分布式存储，均将 {fmt} 纳入生产代码（存储 / 金融跨行业）。
+| 领域 | 代表系统 | fmt / spdlog 承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 标准本身 | C++20 `std::format` | 语义与 API 几乎逐字吸收 fmt | 任何 C++20 编译器内置 fmt 思想 | `basic_format_string` · `formatter` · `format_to` |
+| 日志基础设施 | spdlog | 现代 C++ 日志库事实标准 | GitHub 星标最高之一 | 仅头文件；`async_factory` 解耦 I/O 与业务线程 |
+| 开发者工具 | Windows Terminal | 内部格式化依赖 {fmt} | — | fmt README 列名用户 |
+| 分布式 · AI 基础设施 | FoundationDB · PyTorch · ClickHouse | 日志与错误信息格式化 | 数据库 / ML 跨行业 | — |
+| 网络 · 存储 | Envoy · ScyllaDB · Stellar · Ceph | 配置 / 访问日志与诊断 | 网络 / 存储 / 金融跨行业 | 生产代码纳入 {fmt} |
+
+> **表注（㉒.2）**：本表据 fmt 官方 README「Projects using this library」与各项目事实整理，意在呈现 fmt/spdlog 的「产业坐标」而非穷举。命名级真实用户（Windows Terminal · FoundationDB · PyTorch · ClickHouse · Envoy · ScyllaDB 等）均列于 fmt 官方 README，横跨开发者工具、数据库、AI、网络、存储、金融行业，证明二者是基础设施而非玩具。spdlog 落地形态随场景分化：高吞吐服务端用 `spdlog::async_factory`（有界 MPSC 队列 + 后台写入线程），嵌入式用同步 `basic_file_sink_mt` 落盘。
+
+**一条判读**：跨生态影响——fmt 的 `{}` 语法被多种语言 / 库借鉴；spdlog 通过「一次 `fmt::formatter<T>` 特化，fmt 与 spdlog 同时受益」的共用格式化层，成为领域类型日志的事实标准。这是「第三方库反哺标准」最干净的样本之一（与 Boost→std 同理，见第128章）。
 
 ### ㉒.3 生产踩坑：格式串注入、悬垂、异步、性能
 

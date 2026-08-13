@@ -831,10 +831,18 @@ libc++ 不是孤立的——它与 **libc++abi**（异常展开/RTTI/`__cxa_*` �
 
 libc++ 的装机量由「Apple 平台 + 现代跨平台工具链」共同撑起，虽不像 libstdc++ 那样覆盖整个 Linux 世界，却在「消费电子顶端」占据垄断：
 
-- **全部 Apple 平台**：macOS / iOS / iPadOS / watchOS / tvOS 的官方 SDK 唯一支持、默认使用的 C++ 标准库就是 Clang + libc++。全球数十亿台苹果设备上的每一个 C++ 原生组件（浏览器内核、音视频、机器学习推理、游戏引擎）都链接 `libc++.dylib`——这是 libc++ 最庞大、最不可替换的部署。
-- **FreeBSD 基础系统**：自 FreeBSD 10（2014）起，base system 的 C++ 代码默认用 libc++（取代 libstdc++），使 libc++ 成为 BSD 世界的事实标准之一。
-- **现代 Android 原生代码**：NDK r16（2017）起默认切到 libc++、r18（2018）彻底移除 libstdc++ 后，今天安卓生态的新原生库（游戏、音视频 SDK）绝大多数链接 libc++——与老安卓时代的 libstdc++ 形成代际更替（见第124章）。
-- **跨平台工程链的默认选项**：LLVM / Clang 自身、Chromium 在 Apple 平台的构建、以及大量「优先现代 C++ 特性」的开源项目，在 Apple / FreeBSD 上天然落到 libc++。
+下表把 libc++ 的真实部署按「领域 × 代表平台 × 它承担的角色 × 规模地位 × 生态互动」并列摆开；它们的最大公约数就是「**Apple 平台唯一默认 + 现代跨平台工具链首选**」——这是消费电子顶端的垄断级部署。
+
+| 领域 | 代表平台 · 产品 | libc++ 承担的角色 | 规模 · 行业地位 | 备注 / 生态互动 |
+|---|---|---|---|---|
+| Apple 全平台 | macOS · iOS · iPadOS · watchOS · tvOS | 官方 SDK 唯一支持、默认 C++ 标准库（`libc++.dylib`） | 数十亿台苹果设备每一 C++ 原生组件 | 最庞大、最不可替换的部署 |
+| BSD 世界 | FreeBSD 10（2014）起 base system | 取代 libstdc++ 成为默认 | BSD 事实标准之一 | — |
+| 现代 Android 原生 | NDK r16（2017）起新原生库 | 默认 C++ 标准库 | 与老安卓 libstdc++ 代际更替 | r18（2018）彻底移除 libstdc++，见第124章 |
+| 跨平台工具链 | LLVM / Clang 自身、Chromium（Apple）、开源项目 | 「优先现代 C++ 特性」工程的默认选项 | Apple / FreeBSD 天然落到 libc++ | 与 libstdc++ 形成对照，见第124章 |
+
+> **表注（㉒.2）**：本表据 libc++ / LLVM 官方文档与平台事实整理，意在呈现 libc++ 的「产业坐标」而非穷举。代表部署随 NDK / Xcode 版本策略变动，以各平台与 LLVM 官方披露为准；「规模」列仅列典型量级。libc++ 的「现代化优先、宁可让极少数老代码重编」取向，使其 ABI 政策与 libstdc++ 截然相反，详见第124章 ㉒ / ㉔。
+
+**一条判读**：libc++ 的装机量由「Apple 平台 + 现代跨平台工具链」共同撑起。它不像 libstdc++ 那样铺满整个 Linux 世界，却在「消费电子顶端」占据垄断——正因为 Apple 把 Clang + libc++ 焊死为唯一官方 SDK，libc++ 才能放心走「标准先锋」路线，不用背 libstdc++ 那种「绝不破 ABI」的债。
 
 ### ㉒.4 与标准的互动：libc++ 是「标准先锋」的工程化样本
 
