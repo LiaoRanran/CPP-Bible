@@ -904,6 +904,21 @@ public:
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：为固定大小对象写专属内存池，避免通用 `new` 碎片。** 你优化实时分配。请说明。
+   - [标准] 可重载类专属 `operator new`/`delete`；分配语义由实现提供，但可定制。
+   - [引用] ISO/IEC 14882:2023 §[expr.new] / [new.delete.single]（类专属 new/delete 重载）；cppreference "operator new" 词条。
+
+2. **真实场景：用 `std::pmr::monotonic_buffer_resource` 做一次性 arena 分配。** 你做临时对象批处理。请说明。
+   - [标准] `std::pmr` 提供多态分配器与内存资源（如 monotonic/unsynchronized_pool），是 C++17 标准设施。
+   - [引用] ISO/IEC 14882:2023 §[mem.res] / [mem.res.monotonic.buffer]（polymorphic allocator resources）；cppreference "std::pmr::monotonic_buffer_resource" 词条。
+
+3. **真实场景：自定义 `Allocator` 接入标准容器（如 `std::vector<MyT, MyAlloc>`）。** 你控制容器内存来源。请说明契约。
+   - [标准] 分配器须满足 `Allocator` 要求（[allocator.requirements]）：含 `value_type`、分配/释放、rebind 等。
+   - [引用] ISO/IEC 14882:2023 §[allocator.requirements.general]（Allocator 要求）/ [container.requirements]；cppreference "Allocator" 词条。
+
+
 - **本质**：内存池 = 批量向系统申请 + 固定切分 + free list 复用，用空间局部性与减少系统调用换取时间。
 - **核心结构**：`FreeNode`（union 省元数据）、`free_list_`（单链表）、`chunks_`（整池释放）。
 - **对齐**：块对齐到 `max_align_t`，热点结构进一步 `alignas(64)` 防 false sharing（⑱，关联第143章）。

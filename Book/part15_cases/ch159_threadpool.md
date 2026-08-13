@@ -855,6 +855,21 @@ void good_worker() {
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::jthread` 管理 worker，析构自动 `request_stop` + join。** 你手写 join 易漏。请说明。
+   - [标准] `std::jthread` 在析构时自动请求停止并 join，降低资源泄漏风险。
+   - [引用] ISO/IEC 14882:2023 §[thread.jthread]（jthread 自动 join）/ [thread.stoptoken]（停止令牌）；cppreference "std::jthread" 词条。
+
+2. **真实场景：用任务队列 + 互斥 + 条件变量分发任务，避免每任务一线程。** 你限制线程数。请说明。
+   - [标准] 互斥与条件变量是标准同步原语；队列本身是用户数据结构。
+   - [引用] ISO/IEC 14882:2023 §[thread.mutex] / [thread.condition]（互斥与条件变量）/ [container.requirements]；cppreference "std::condition_variable" 词条。
+
+3. **真实场景：用 `std::async` 提交任务但结果没人 `get` 会阻塞析构。** 你误用 fire-and-forget。请说明。
+   - [标准] `std::async` 返回的 future 析构会等待（对 `std::launch::async` 策略），忘记 get 会同步阻塞。
+   - [引用] ISO/IEC 14882:2023 §[futures.async]（async 与 future 析构语义）/ [futures.unique_future]；cppreference "std::async" 词条。
+
+
 - 线程池 = **预建 worker + 线程安全任务队列 + RAII 析构 join**，把线程创建成本摊薄到全生命周期。
 - 生产级要素：模板化 `submit` 返回 `future`、`packaged_task` 自动转发异常、`atomic<bool>` 停止标志、`cv` 谓词防虚假唤醒。
 - C++20 `std::jthread` + `stop_token` 把「停止 + join」做成语言级 RAII，强烈推荐。

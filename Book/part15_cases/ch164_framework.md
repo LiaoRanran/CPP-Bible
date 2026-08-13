@@ -1126,6 +1126,21 @@ int ci_gate() {
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用模块（`import std`）替代 `#include` 加快编译、消除宏泄漏。** 你迁移大型工程。请说明。
+   - [标准] C++20 引入模块：编译期接口单元（`.ixx`），`import` 替代文本包含，隔离宏与内部声明。
+   - [引用] ISO/IEC 14882:2023 §[module] / [module.interface] / [module.import]（模块语义）；cppreference "Modules" 词条。
+
+2. **真实场景：框架用 CRTP 提供编译期可组合的组件基类。** 你扩展框架组件。请说明。
+   - [标准] CRTP 以派生类为基类模板实参，编译期静态多态、可内联、无 vtable。
+   - [引用] ISO/IEC 14882:2023 §[temp]（CRTP）/ [class.virtual]（对比运行时多态）；cppreference "CRTP" 词条。
+
+3. **真实场景：框架用 `std::function` 做回调注册点（运行时可替换策略）。** 你权衡灵活 vs 内联开销。请说明。
+   - [标准] `std::function` 提供类型擦除的可调用包装（有间接与分配可能开销）。
+   - [引用] ISO/IEC 14882:2023 §[func]（std::function）/ [class.virtual]（对比虚调用）；cppreference "std::function" 词条。
+
+
 从"好莱坞原则"到自注册插件，从 reactor 事件循环到 RAII 生命周期，本章把**一个工业级迷你框架的骨架从零搭了一遍**，并用本机 `g++ 13.1.0 -std=c++23 -O2` 的真实编译运行做了端到端取证。核心结论：**[经验]** 写框架的目的不是取代 Boost/Qt，而是让你彻底理解它们——自注册解决了"组件怎么来"，事件总线解决了"组件怎么被通知"，DI 解决了"组件怎么拿依赖"，RAII 解决了"资源怎么不死"，PAL 解决了"平台差异怎么藏"。**[标准]** 这些机制背后全是 C++ 标准保证的基石：虚函数分派（[class.virtual]）、lambda（[expr.prim.lambda]）、`std::shared_ptr` 类型擦除（[util.smartptr]）、静态局部变量线程安全初始化（[stmt.dcl]）。**[平台·Windows]** 而 `LoadLibrary`/`dlopen`、`Sleep`/`usleep` 这类差异，必须收口到 PAL，绝不该泄漏进业务。最后记住一条铁律：**[经验]** 框架的价值在于"恰到好处的抽象"——过度抽象（⑯）比不抽象更危险。
 
 ```cpp

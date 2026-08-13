@@ -753,6 +753,21 @@ _Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE:
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：解析 JSON 把值统一成 `std::variant`（null/bool/number/string/array/object）。** 你做动态类型值。请说明。
+   - [标准] `std::variant` 是类型安全的可选值（带访问者）；用它表达 JSON 的多态值。
+   - [引用] ISO/IEC 14882:2023 §[variant]（std::variant 与访问者）/ [class.variant]；cppreference "std::variant" 词条。
+
+2. **真实场景：用第三方 JSON 库（如 nlohmann/json）而非手写解析。** 你评估“标准是否有 JSON 类型”。请说明标准化状态。
+   - [标准] 截至 ISO/IEC 14882:2023，**C++ 标准库无官方 JSON 类型**；JSON 属第三方库领域。不可把提案/库写成标准设施。
+   - [引用] ISO/IEC 14882:2023（无 JSON 条款）/ nlohmann/json 文档；cppreference（无 std JSON 词条）。
+
+3. **真实场景：用 `std::string_view` 零拷贝访问 JSON 中的字符串片段。** 你避免大字符串拷贝。请说明。
+   - [标准] `std::string_view` 是非拥有的连续字符视图；适合解析期零拷贝切片。
+   - [引用] ISO/IEC 14882:2023 §[string.view]（std::string_view 语义）；cppreference "std::string_view" 词条。
+
+
 从零实现 JSON 库的本质，是把"动态类型的文本协议"干净地装进"静态类型的 `std::variant` 树"：
 
 - **值表示**用 `std::variant`（③），零堆分配、类型安全，优于继承多态。

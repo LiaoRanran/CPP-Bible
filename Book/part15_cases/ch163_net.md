@@ -883,6 +883,21 @@ int main() {
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::span`/`std::string_view` 处理网络缓冲，避免拷贝字节流。** 你做协议编解码。请说明。
+   - [标准] `std::span`/`std::string_view` 是非拥有的连续视图；适合零拷贝读写缓冲区。
+   - [引用] ISO/IEC 14882:2023 §[views.span] / [string.view]（视图语义）；cppreference "std::span" 词条。
+
+2. **真实场景：并发处理多连接，你评估“标准是否提供网络库”。** 你选 ASIO/第三方。请说明标准化状态。
+   - [标准] 截至 ISO/IEC 14882:2023，**ISO C++ 标准库不含 Networking（基于 TS 的提案未进入 C++23）**；网络属第三方/平台库。
+   - [引用] ISO/IEC 14882:2023（无 Networking 条款）/ Networking TS（N4734，未合并入标准）；cppreference（无 std net 词条）。
+
+3. **真实场景：用无锁队列把 IO 线程数据移交业务线程，避免锁争用。** 你做高并发服务。请说明。
+   - [标准] 多生产者/消费者队列基于原子（[atomics]）；标准不提供现成 MPMC 队列类型。
+   - [引用] ISO/IEC 14882:2023 §[atomics] / [intro.races]（同步与数据竞争）；cppreference "std::atomic" 词条。
+
+
 从 `socket()` 到 `epoll`，从字节流到"消息"，从阻塞到线程池——本章把 C++ 网络编程的骨架从零搭了一遍，并用本机 Winsock2 的真实编译运行做了端到端取证。核心结论：**[经验]** 手写 socket 的价值不在"重复造轮子"，而在让你理解 Asio / 第159章线程池 / 第162章序列化 这些上层抽象到底在替你屏蔽什么。**[标准]** 记住 C++ 标准至今没有网络 API，选 Winsock 还是 Berkeley、选 select 还是 epoll，都是工程权衡而非语言规定。
 
 ```cpp

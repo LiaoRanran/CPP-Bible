@@ -1410,6 +1410,21 @@ void set_threshold(Logger& log, Level l) { log.set_level(l); }
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：异步日志用无锁环形队列 + 后台刷盘，避免热路径阻塞。** 你做高吞吐日志。请说明（属并发工程）。
+   - [标准] 无锁队列基于原子操作；标准提供原子类型与内存顺序（[atomics]），不规定具体算法。
+   - [引用] ISO/IEC 14882:2023 §[atomics] / [atomics.order]（原子与内存顺序）；cppreference "std::atomic" 词条。
+
+2. **真实场景：日志格式化用 `std::format` 类型安全，替代 `printf` 格式符错配 UB。** 你抓到垃圾输出。请说明。
+   - [标准] `std::format` 在类型层面保证格式串与实参匹配；`printf` 格式符错配常为未定义行为。
+   - [引用] ISO/IEC 14882:2023 §[format]（类型安全格式化）/ [cstdio]（printf 风险）；cppreference "std::format" 词条。
+
+3. **真实场景：多 sink 共享同一条日志须保证可见性（跨线程发布）。** 你用原子发布指针。请说明。
+   - [标准] 跨线程共享对象的可见性由内存模型与原子操作保证；普通写读存在数据竞争。
+   - [引用] ISO/IEC 14882:2023 §[intro.races]（数据竞争）/ [atomics]（同步）；cppreference "Memory model" 词条。
+
+
 - **级别门控**用整数序关系，配合编译期 `if constexpr` 实现零开销关闭（⑨ 的汇编为证）。
 - **sink** 用抽象接口解耦"产生"与"落地"：console / file / network（③）。
 - **格式化**优先 `std::format`（C++20），类型安全且编译期校验（⑤）。
