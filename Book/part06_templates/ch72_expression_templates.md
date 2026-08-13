@@ -561,6 +561,21 @@ Fast dbg = eval(a + b + c);   // 物化为具体 Fast，断点友好
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：Eigen 式 `u + v + w` 不产生临时大数组。** 你理解表达式模板的惰性求值。请说明实现依赖。
+   - [标准] 表达式模板通过运算符重载返回代理对象，把整条表达式延迟到赋值才求值，依赖模板与重载。
+   - [引用] ISO/IEC 14882:2023 §[over.oper]（运算符重载返回代理）/ [temp]（模板）；cppreference "Expression templates" 词条。
+
+2. **真实场景：`auto` 捕获表达式模板代理导致悬垂。** 你写 `auto tmp = a + b;` 后 `tmp` 引用了已销毁的临时。请说明陷阱。
+   - [标准] 表达式模板返回的代理可能持有对临时对象的引用；用 `auto` 延长引用会制造悬垂（引用失效）。
+   - [引用] ISO/IEC 14882:2023 §[basic.life]（悬垂引用）/ [over.oper]；cppreference "Expression templates / dangling" 词条。
+
+3. **真实场景：表达式模板运算符须正确标注 const/noexcept。** 你让 DSL 可组合且可被优化。请说明约定。
+   - [标准] 运算符重载应按语义正确标注 `const`/`noexcept`，保证表达式可被正常组合与内联。
+   - [引用] ISO/IEC 14882:2023 §[over.oper]（运算符重载约定）；cppreference "Operator overloading" 词条。
+
+
 **练习题**
 1. 在 ③ 的骨架基础上加 `operator-`（差代理 `Diff<A,B>`），实现 `u = a - b + c` 单遍求值。
 2. 给 ET 加 `Const<double V>` 节点（⑫），实现 `u = a + Const<2.0>{}`，验证常量被编译期折叠进循环。

@@ -488,6 +488,21 @@ static_assert(std::is_integral_v<int>);   // true，编译期已知
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::void_t` + 探测成员类型实现“检测惯用法”。** 你想判断类型是否拥有 `serialize` 成员。请说明替换时机。
+   - [标准] `void_t` 惯用法利用替换失败移除候选；探测必须在函数模板的“即时上下文”内失败才属 SFINAE。
+   - [引用] ISO/IEC 14882:2023 §[meta.trans]（void_t）/ [temp.deduct]（即时上下文限制）；cppreference "std::void_t / Detection idiom" 词条。
+
+2. **真实场景：替换失败发生在非即时上下文变成硬错误。** 你以为会 SFINAE 却整段编译失败。请说明边界。
+   - [标准] 只有发生在函数类型/模板形参推导的即时上下文中的失败才是 SFINAE；否则是硬错误。
+   - [引用] ISO/IEC 14882:2023 §[temp.deduct]（即时上下文与硬错误之分）；cppreference "SFINAE" 词条。
+
+3. **真实场景：概念出现后 SFINAE 多用于向后兼容。** 你在新代码里优先用 concept。请说明二者关系。
+   - [标准] C++20 概念以更清晰的错误表达约束；SFINAE 仍保留并常用于需兼容旧标准的代码。
+   - [引用] ISO/IEC 14882:2023 §[temp.constr]（概念与约束）/ [temp.deduct]（SFINAE）；cppreference "Constraints and concepts" 词条。
+
+
 - **练习题 1**：手写 `is_invocable<R, F, Args...>` 的 SFINAE 版（提示：`decltype(declval<F>()(declval<Args>()...))`）。
 - **练习题 2**：用 `void_t` 探测「是否有 `size()` 成员」，写出 `has_size<T>`。
 - **练习题 3**：给 `std::vector` 风格容器加 `push_back`，仅对「可拷贝」类型启用（用 `enable_if`）。

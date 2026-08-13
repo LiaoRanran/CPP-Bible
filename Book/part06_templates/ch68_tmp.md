@@ -532,6 +532,21 @@ void only_int(T) { static_assert(std::is_integral_v<T>, "only integral allowed")
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `if constexpr` 在模板内编译期分支（替代偏特化爆炸）。** 你按类型特性选不同实现。请说明丢弃语义。
+   - [标准] `if constexpr` 在编译期求值，未取分支的语句从不实例化（被丢弃），不产生冗余特化。
+   - [引用] ISO/IEC 14882:2023 §[stmt.if]（if constexpr 丢弃分支）；cppreference "if constexpr" 词条。
+
+2. **真实场景：模板元编程用特化表达编译期计算。** 你想在类型系统里算一个常量。请说明本质。
+   - [标准] 模板特化（含偏特化与类型成员/值成员）可在编译期表达递推计算，是 TMP 的基础。
+   - [引用] ISO/IEC 14882:2023 §[temp]（模板作为编译期计算机制）；cppreference "Template metaprogramming" 词条。
+
+3. **真实场景：模板递归深度超限编译失败。** 你的大数列递归实例化爆了编译器上限。请说明约束。
+   - [标准] 递归模板实例化深度受实现定义的数量限制；超过即编译错误，应改用迭代式/constexpr 计算。
+   - [引用] ISO/IEC 14882:2023 §[implimits]（实现数量限制：递归实例化深度）；cppreference "Implementation limits" 词条。
+
+
 **练习题**
 
 ```cpp

@@ -560,6 +560,21 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::execution::par` 并行化 `std::sort`。** 你期望多核加速。请说明策略语义。
+   - [标准] 执行策略允许标准算法并行；`par` 允许多线程，但不允许多线程间进一步向量化/乱序。
+   - [引用] ISO/IEC 14882:2023 §[execpol]（执行策略）/ [algorithms.parallel]；cppreference "std::execution" 词条。
+
+2. **真实场景：`par_unseq` 比 `par` 更激进。** 你希望循环还能向量化。请说明差异。
+   - [标准] `par_unseq` 允许跨迭代的向量化与放松的内存顺序，适用无数据依赖的流处理。
+   - [引用] ISO/IEC 14882:2023 §[execpol]（par_unseq 语义）；cppreference "std::execution" 词条。
+
+3. **真实场景：并行算法中用户函数必须无数据竞争。** 你传入的 lambda 改共享计数器导致 UB。请说明责任归属。
+   - [标准] 并行算法不替你加锁；用户提供的操作在并行调用中不得引入数据竞争，否则为未定义行为。
+   - [引用] ISO/IEC 14882:2023 §[algorithms.parallel]（并行算法的数据竞争要求）；cppreference "Parallel algorithms" 词条。
+
+
 **练习题**
 1. 用 Policy-Based 实现一个 `SmartArray<T, IndexPolicy, CheckPolicy>`，`IndexPolicy` 决定下标计算（线性/环形），`CheckPolicy` 决定是否越界检查。
 2. 把"比较策略"做成模板模板参数，实现可配置排序的 `Sorter<T, ComparePolicy>`。

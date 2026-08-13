@@ -698,6 +698,21 @@ flowchart TD
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：为某类型给容器写特化（如 `vector<bool>` 位压缩）。** 你想理解全特化与偏特化之别。请说明可用范围。
+   - [标准] 类模板支持全特化与偏特化；函数模板只能全特化（偏特化需借助重载/类模板）。
+   - [引用] ISO/IEC 14882:2023 §[temp.expl.spec]（显式特化）/ [temp.class.spec]（类模板偏特化）；cppreference "Template specialization" 词条。
+
+2. **真实场景：特化必须放在主模板可见之后、同命名空间。** 你特化顺序写错链接报找不到主模板。请说明约束。
+   - [标准] 显式特化声明须匹配主模板的形参列表，且在其后于同一命名空间可见。
+   - [引用] ISO/IEC 14882:2023 §[temp.expl.spec]（特化声明位置与语法）；cppreference "Template specialization" 词条。
+
+3. **真实场景：`std::vector<bool>` 的位压缩是个特化“坑”。** 你取 `v[0]` 得到代理对象而非 `bool&`。请说明根因。
+   - [标准] `std::vector<bool>` 被标准库特化为位压缩存储以节省空间，元素访问返回代理引用而非真实引用。
+   - [引用] ISO/IEC 14882:2023 §[vector.bool]（vector<bool> 特化）；cppreference "std::vector<bool>" 词条。
+
+
 **练习题**
 
 1. 写 `is_reference` trait：主模板 false，偏特化 `T&` 与 `T&&` 为 true。

@@ -509,6 +509,21 @@ int use_lut(int i) { return lut(i); }            // 运行期：普通乘；编�
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：constexpr 函数在非常量语境也能运行期调用。** 你担心性能其实它在运行期也正常。请说明双重身份。
+   - [标准] constexpr 函数在需要常量表达式的语境必须编译期求值；否则可像普通函数运行期调用。
+   - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（constexpr 函数双重身份）；cppreference "constexpr" 词条。
+
+2. **真实场景：参与 constexpr 的类型必须是字面类型。** 你给类加 constexpr 构造却报错。请说明前提。
+   - [标准] 要在常量表达式语境构造/使用的类型须是字面类型（满足 constexpr 构造、析构等要求）。
+   - [引用] ISO/IEC 14882:2023 §[basic.types]（字面类型）/ [expr.const]（常量表达式要求）；cppreference "Literal type" 词条。
+
+3. **真实场景：`consteval` 强制编译期、杜绝运行期入口。** 你希望某函数根本不在运行期存在。请对比 constexpr。
+   - [标准] consteval 函数只能在编译期被调用、必须产生常量表达式；与 constexpr 不同，不允许运行期调用。
+   - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（consteval 说明符）；cppreference "consteval" 词条。
+
+
 **练习题**
 1. 用 `constexpr` 函数（非模板）实现编译期 `is_prime(n)`，并用 `static_assert` 验证前 10 个素数。
 2. 用 `consteval` 写一个编译期 CRC32 函数（参考 ⑭），对字符串字面量求哈希。

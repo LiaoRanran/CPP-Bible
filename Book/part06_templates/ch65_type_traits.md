@@ -587,6 +587,21 @@ int main() {
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节） [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::enable_if_t` 做 SFINAE 分支。** 你想让某重载仅在类型满足谓词时存在。请说明机制。
+   - [标准] `std::enable_if` 在条件为假时无 `::type`，替换失败从而把该候选移出重载集。
+   - [引用] ISO/IEC 14882:2023 §[meta.trans]（enable_if 变换）/ [temp.deduct]（SFINAE）；cppreference "std::enable_if" 词条。
+
+2. **真实场景：用 `std::decay_t` 模拟按值传参的类型变换。** 你拿到引用类型想退化成值类型。请说明 decay 行为。
+   - [标准] `std::decay` 去除引用与顶层 cv，并把数组/函数退化成指针，等价于按值传参的类型变换。
+   - [引用] ISO/IEC 14882:2023 §[meta.trans.cv] / [meta.trans.ptr]（decay 变换）；cppreference "std::decay" 词条。
+
+3. **真实场景：用 `std::is_convertible_v` 判可转换性做约束。** 你检查两个类型能否隐式转换。请说明谓词来源。
+   - [标准] 标准类型特性（[meta]）提供编译期谓词；`is_convertible` 表达“能否隐式转换为目标类型”。
+   - [引用] ISO/IEC 14882:2023 §[meta.rel]（is_convertible 等关系特性）；cppreference "std::is_convertible" 词条。
+
+
 **练习题**
 1. 手写 `is_lvalue_reference`（提示：偏特化 `T&`）。
 2. 手写 `extent<T,N=0>`（数组第 N 维大小，非数组为 0）。

@@ -549,6 +549,21 @@ int use_tag_fast() { int c=0; c+=1; c+=100; return c; }  // 与 dispatch(42)+dis
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::true_type`/`false_type` 标签选择重载。** 你让函数按“是否 trivial”走不同实现。请说明机制。
+   - [标准] 标签分发依赖可区分的标签类型重载；编译期 bool 特性被映射成不同标签类型以选定分支。
+   - [引用] ISO/IEC 14882:2023 §[temp.over]（重载解析经标签类型）/ [meta]（类型特性标签）；cppreference "Tag dispatch" 词条。
+
+2. **真实场景：标签分发与 `if constexpr` 如何取舍。** 你在新代码里更倾向 if constexpr，但保留标签分发给运行期分支。请说明边界。
+   - [标准] if constexpr 处理编译期分支；标签分发仍适用于运行期据标签选实现的场景（如迭代器类别）。
+   - [引用] ISO/IEC 14882:2023 §[stmt.if]（if constexpr 编译期分支）/ [iterator.requirements]（迭代器标签）；cppreference "Tag dispatch" 词条。
+
+3. **真实场景：标准算法用迭代器类别标签驱动最优实现。** 你理解 `std::advance` 为何对随机迭代器是 O(1)。请说明。
+   - [标准] 算法通过迭代器类别标签（input/forward/bidirectional/random_access/contiguous）分派到对应最优实现。
+   - [引用] ISO/IEC 14882:2023 §[iterator.requirements]（迭代器类别标签与分派）；cppreference "Iterator tags" 词条。
+
+
 **练习题**
 1. 用标签分发实现一个 `to_string_tag(T)`，对 `is_integral` 走整数格式化、`is_floating_point` 走浮点格式化、`otherwise` 走通用（三路标签）。
 2. 自定义迭代器标签层级 `tag_a : tag_b : tag_c`，写三个 `process` 重载验证重载决议选最具体版本。

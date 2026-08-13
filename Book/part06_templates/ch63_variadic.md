@@ -610,6 +610,21 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用转发引用 + 参数包完美转发任意实参。** 你写 `template<class... Ts> void f(Ts&&... ts)` 转发给内部构造。请说明 `std::forward` 的角色。
+   - [标准] 转发引用按实参原始值类别推导；`std::forward` 据此在调用处恢复左/右值性，实现完美转发。
+   - [引用] ISO/IEC 14882:2023 §[utility]（std::forward）/ [temp.deduct.call]（转发引用推导）；cppreference "Perfect forwarding" 词条。
+
+2. **真实场景：包展开可以出现在很多语法位置。** 你只在调用处展开，其实还能展开进初始化列表、基类列表等。请说明。
+   - [标准] 参数包可在调用实参、初始化器列表、基类说明符、捕获列表等多处按模式展开。
+   - [引用] ISO/IEC 14882:2023 §[temp.variadic]（包展开模式与位置）；cppreference "Parameter pack" 词条。
+
+3. **真实场景：用 `sizeof...(args)` 在编译期求参数个数。** 你做编译期断言参数非空。请说明语义。
+   - [标准] `sizeof...(包)` 在编译期给出参数包的元素个数（类型为 `std::size_t`）。
+   - [引用] ISO/IEC 14882:2023 §[temp.variadic]（sizeof...）；cppreference "sizeof..." 词条。
+
+
 **练习题**
 
 1. 用递归写 `print` 反转顺序（先递归后打印）。

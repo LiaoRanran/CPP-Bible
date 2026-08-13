@@ -539,6 +539,21 @@ flowchart TD
 
 ## ⑳ 练习题 + 思考题 + 源码阅读路线（内化，无独立推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::integral` 约束模板实参。** 你不想让浮点类型实例化你的整数算法。请说明约束作用。
+   - [标准] C++20 概念约束模板实参，不满足约束的调用在编译期被诊断，且给出清晰错误。
+   - [引用] ISO/IEC 14882:2023 §[concepts]（标准概念）/ [temp.constr]（约束）；cppreference "Constraints and concepts" 词条。
+
+2. **真实场景：用 `requires` 表达式定义自定义概念。** 你要求类型必须有 `size()` 与 `data()`。请说明语义。
+   - [标准] requires 表达式列出对类型合法操作的要求；不满足任一要求的类型被约束排除。
+   - [引用] ISO/IEC 14882:2023 §[expr.prim.req]（requires 表达式）；cppreference "Requires expression" 词条。
+
+3. **真实场景：受约束候选在重载决议中优先。** 你同时有泛型与特化约束版本。请说明优先级。
+   - [标准] 在重载决议中，更受约束（或更特化）的候选优先于不受约束/更泛化的版本。
+   - [引用] ISO/IEC 14882:2023 §[temp.constr]（约束与偏序）；cppreference "Constraints and concepts" 词条。
+
+
 - **练习题 1**：手写 `Derefable` concept，要求 `*t` 合法且结果可转换为 `T`。
 - **练习题 2**：用 concept 给 `std::vector` 风格容器写 `push_back`，约束「可拷贝」。
 - **练习题 3**：定义 `AllSame<Ts...>` concept，要求包内所有类型彼此 `same_as`。
