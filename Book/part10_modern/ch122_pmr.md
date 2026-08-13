@@ -988,11 +988,19 @@ int main() {
 
 ### ㉒.2 真实产业坐标：帧分配、池化与低延迟
 
-- 游戏引擎的「每帧内存（frame allocator）」、ECS 的批量组件存储、低延迟/HFT 系统对分配器延迟极度敏感的场景，都用 PMR 在运行时切换为单调/池化资源。
-- 需要可观测分配（统计字节数、捕获泄漏、做火焰图）时，自定义 `memory_resource` 比全局替换 `operator new` 干净得多。
-- 与 tcmalloc / jemalloc / mimalloc 等高性能分配器的「线程缓存」思路同源，但 PMR 把选择权交回每个容器。
-- **音视频/实时渲染（Unity DOTS、Unreal 的 FMemory 池）**：实时渲染每帧分配大量临时对象，用 PMR 把「每帧分配」切到 `monotonic_buffer_resource`，帧末整体 `release()`，消除逐对象释放抖动。
-- **嵌入式/固件（资源受限 MCU）**：在 RAM 紧张的 MCU 上用自定义 `memory_resource` 把分配钉在指定 SRAM bank，实现「内存分区隔离」，是资源受限系统的刚需。
+PMR 把「分配策略」从全局 `operator new` 提升为「每个容器可携带的 `memory_resource`」。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 游戏 / ECS | 每帧分配器 / ECS 批量组件存储 | 运行时切换单调 / 池化 resource | 实时帧内分配密集 | [STANDARD] C++17 PMR；容器接受 `std::pmr::polymorphic_allocator` |
+| 内存可观测 | 自定义 `memory_resource` 统计 / 泄漏捕获 | 比全局 `operator new` 替换干净 | 调试与火焰图友好 | 每容器独立 resource，无需全局劫持 |
+| 通用分配器 | tcmalloc / jemalloc / mimalloc | 线程缓存思路同源 | 工业级分配器 | PMR 把选择权交回每个容器 |
+| 音视频 / 实时渲染 | Unity DOTS / Unreal `FMemory` 池 | 每帧分配切到 `monotonic_buffer_resource`，帧末 `release()` | 实时渲染零抖动 | 消除逐对象释放抖动 |
+| 嵌入式 / 固件 | 资源受限 MCU 自定义 resource | 分配钉在指定 SRAM bank，内存分区隔离 | RAM 紧张系统刚需 | 资源受限系统的内存隔离手段 |
+
+> **表注（㉒.2）**：上表前 2 行是「为什么 PMR 比全局替换 `operator new` 干净」，中间 1 行是「与主流分配器的关系」，后 2 行是「在哪类实时 / 嵌入式系统收益最大」。PMR 不改变分配器的底层算法，只是把「用哪个 resource」变成运行期可组合的选择。
+
+**一条判读**：PMR 适合「分配热点集中、需在运行期切换策略、且要可观测」的场景（游戏每帧、HFT、嵌入式分区）；对分配模式单一、无观测需求的小程序，直接用默认 `operator new` 或 mimalloc 更简单，不必为 PMR 改造所有容器签名。
 
 ### ㉒.3 生产踩坑：`pmr::string` 不是 `std::string`
 
