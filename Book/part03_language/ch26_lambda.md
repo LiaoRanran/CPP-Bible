@@ -1181,6 +1181,21 @@ pub trait Fn<Args>: FnMut<Args> {        // 不可变借用（最常用）
 
 ## ⑳ 真实源码阅读路线（libstdc++ / Clang / Rust）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：STL 算法回调。** 用 `std::sort(v.begin(), v.end(), [](const auto& a, const auto& b){ return a > b; })` 降序。请说明闭包类型的生成。
+   - [标准] lambda 表达式产生唯一的闭包类型；无捕获 lambda 可隐式转换为函数指针。
+   - [引用] ISO/IEC 14882:2023 §[expr.prim.lambda]（lambda 表达式）；cppreference "lambda" 词条。
+
+2. **真实场景：初始化捕获移动大对象。** `[data = std::move(big)]() mutable { use(data); }` 在 C++14 捕获。请说明初始化捕获。
+   - [标准] 初始化捕获（广义捕获）以表达式初始化闭包成员，可移动资源且避免拷贝。
+   - [引用] ISO/IEC 14882:2023 §[expr.prim.lambda.capture]；cppreference "lambda#Init-capture" 词条。
+
+3. **真实场景：constexpr lambda 编译期计算。** 在编译期对数组做变换。请说明 constexpr lambda 的条件。
+   - [标准] 自 C++17 起 lambda 可为 constexpr；其闭包类型满足字面类型约束时可在常量表达式中使用。
+   - [引用] ISO/IEC 14882:2023 §[expr.prim.lambda.closure]；cppreference "lambda#Constexpr" 词条。
+
+
 > **[实现] 本节所有 libstdc++ 片段均来自本机真实文件，路径与行号已核对，绝不编造。**
 > 文件：`/c/Qt/Tools/mingw1530_64/include/c++/15.3.0/bits/std_function.h`，行号：336（class function）/ 290（_M_invoke）
 > 配套头：`.../include/c++/functional`（汇总头）

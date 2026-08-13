@@ -1445,6 +1445,21 @@ void clear_status() {
 
 ## ⑳ 源码阅读路线（核心点 10）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：多 TU 静态库的符号冲突。** 你维护一个跨翻译单元的日志模块，全局 `LogBuffer` 在头文件中定义，多个 `.cpp` 包含后链接报 "multiple definition"。请用 `inline` 变量（C++17）或 `extern` 声明 + 单 TU 定义来解决，并用 ODR 解释为何要求单一定义。
+   - [标准] 内联变量在整个程序中恰有一个定义（ODR-used 时）；普通命名空间作用域变量需恰有一处定义、其余翻译单元为 `extern` 声明。
+   - [引用] ISO/IEC 14882:2023 §[basic.def.odr]（单一定义规则）；cppreference "One Definition Rule" 词条。
+
+2. **真实场景：嵌入式静态存储期配置表。** 固件里一个 `const` 查找表需放在 flash，且必须在 `main` 之前初始化完成。请用 `constinit`（C++20）约束其常量初始化，对比普通 `const` 全局的初始化时机。
+   - [标准] `constinit` 强制变量进行常量初始化（静态初始化阶段完成），避免跨 TU 动态初始化顺序不确定（SIOF）。
+   - [引用] ISO/IEC 14882:2023 §[dcl.constinit]（constinit 约束常量初始化）；cppreference "constinit" 词条。
+
+3. **真实场景：局部静态的单例。** 你需要线程安全的懒汉单例，用函数内 `static` 局部变量。请说明其存储期（静态）与初始化（C++11 起线程安全）语义。
+   - [标准] 函数内静态局部变量的初始化自 C++11 起保证线程安全；其具有静态存储期，生命期贯穿整个程序。
+   - [引用] ISO/IEC 14882:2023 §[stmt.dcl]（块作用域静态变量的初始化）；cppreference "Static local variables" 词条。
+
+
 `[标准]`/`[实现]` 按以下顺序深入，从本章延伸到工具链源码：
 
 1. **libstdc++ `<bits/local_static_init>` / `libstdc++-v3/libsupc++/guard.{h,cc}`**

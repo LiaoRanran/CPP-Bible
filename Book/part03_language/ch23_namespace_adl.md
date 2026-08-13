@@ -1124,6 +1124,21 @@ int main() {
 
 ## ⑳ 23 项核心知识点覆盖核查（本章交付标准）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：swap 的 ADL 定制。** 你为自定义类型 `MyType` 在自身命名空间提供 `swap`，调用 `std::swap(a,b)` 时依赖 ADL 找到它。请用参数依赖查找解释。
+   - [标准] ADL 在通常非限定查找失败或补充时，将实参的关联命名空间与类纳入查找集合。
+   - [引用] ISO/IEC 14882:2023 §[basic.lookup.argdep]（参数依赖查找）；cppreference "Argument-dependent lookup" 词条。
+
+2. **真实场景：内联命名空间做 ABI 版本。** 库用 `inline namespace v2` 暴露新版本同时保留旧符号。请解释 inline namespace 的语义。
+   - [标准] 内联命名空间的名字在外层命名空间内如同直接成员可见，常用于库版本化。
+   - [引用] ISO/IEC 14882:2023 §[namespace.def]（命名空间定义，含 inline）；cppreference "Namespace" 词条。
+
+3. **真实场景：头文件禁用的 using 指令。** 头文件中 `using namespace std;` 引发名字冲突。请说明为何头文件内禁用 using namespace。
+   - [标准] using-directive 不提升名字优先级，仅将其纳入查找，易与全局或其他命名空间名字发生冲突。
+   - [引用] ISO/IEC 14882:2023 §[namespace.udir]（using 指令）；cppreference "Namespace#Using-directives" 词条。
+
+
 > 对照圣经 v3 标准，逐条自检。✓ = 已覆盖。
 
 | # | 项目 | 覆盖 | 位置 |

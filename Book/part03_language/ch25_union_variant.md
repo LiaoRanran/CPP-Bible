@@ -1022,6 +1022,21 @@ double eval(Expr e) {
 
 ## ⑳ 真实工程示例集（AST / 协议 / 状态机 / 寄存器）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：协议解析器用 std::variant。** 报文可能是整数/字符串/二进制，用 `std::variant<int, std::string, std::vector<uint8_t>>` 表达。请用 `std::visit` 分派处理。
+   - [标准] `std::variant` 是类型安全的联合体；`std::visit` 对其可选项做编译期完备访问。
+   - [引用] ISO/IEC 14882:2023 §[variant]（库条款）；cppreference "std::variant" 词条。
+
+2. **真实场景：裸 union 节省内存。** 已知同一时刻只用一个字段时，用 `union` 共享存储。请说明主动联合体需手动析构与类型双关（type punning）风险。
+   - [标准] 联合体所有非静态数据成员共享存储；写入一成员后读取另一成员（除标准例外）为未定义行为。
+   - [引用] ISO/IEC 14882:2023 §[class.union]（联合体）；cppreference "Union" 词条。
+
+3. **真实场景：std::monostate 表示空。** variant 需默认可构造时加 `std::monostate` 首选项。请说明其用途。
+   - [标准] `std::monostate` 提供无值可选项的合法类型，使 variant 默认可构造。
+   - [引用] ISO/IEC 14882:2023 §[variant.monostate]；cppreference "std::monostate" 词条。
+
+
 ### 20.1 解析器 AST 节点（递归 variant）
 
 ```cpp

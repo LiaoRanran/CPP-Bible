@@ -232,6 +232,21 @@ int main(){std::cout<<"operator+ temporaries can be avoided with expression temp
 ```
 
 ## ⑳ 跨语言对比 [经验]
+
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：数值类型 operator+。** 为 `Matrix` 重载 `operator+` 返回新对象（值语义）。请说明成员 vs 非成员。
+   - [标准] 对称运算符（如 +）常定义为非成员以支持左操作数隐式转换；应返回新值而非修改操作数。
+   - [引用] ISO/IEC 14882:2023 §[over.oper]（重载运算符）；cppreference "Operator_overloading" 词条。
+
+2. **真实场景：operator<< 流式输出。** 定义非成员 `operator<<`。请说明为何非成员。
+   - [标准] 左操作数为 `std::ostream` 时只能是非成员重载以允许 `os << obj`。
+   - [引用] ISO/IEC 14882:2023 §[over.oper]；cppreference "Operator_overloading#Stream_extraction/insertion" 词条。
+
+3. **真实场景：用户定义字面量。** 为 `Distance` 定义 `_km` 字面量 `operator""_km(long double)`。请用 [over.literal]。
+   - [标准] 字面量运算符以 `_` 前缀命名，使 `1.0_km` 形式可读且可参与编译期计算。
+   - [引用] ISO/IEC 14882:2023 §[over.literal]（字面量运算符）；cppreference "User-defined_literals" 词条。
+
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++ operator overloading vs Rust std::ops traits vs Python __add__/dunder methods.\n";return 0;}

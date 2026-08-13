@@ -360,6 +360,21 @@ int main() {
 
 ## ⑳ 跨语言对比：访问控制机制 [经验]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：operator<< 友元。** 为 `MyType` 重载 `std::ostream& operator<<(std::ostream&, const MyType&)` 需访问私有成员。请用友元实现。
+   - [标准] 友元声明授予特定函数/类访问私有与受保护成员，不改变访问层级。
+   - [引用] ISO/IEC 14882:2023 §[class.friend]（友元）；cppreference "friend" 词条。
+
+2. **真实场景：CRTP 基类访问派生私有。** 基类模板需访问派生类实现。请说明友元与 protected 的选择。
+   - [标准] 友元可精确授予某个已知类/模板实例访问权，比 protected 更收敛。
+   - [引用] ISO/IEC 14882:2023 §[class.friend] / [class.access]；cppreference "friend" 词条。
+
+3. **真实场景：友元破坏封装。** 过度使用友元导致测试/耦合问题。请讨论何时值得。
+   - [标准] 友元关系不可传递、不可继承，需显式声明每一授予。
+   - [引用] ISO/IEC 14882:2023 §[class.friend]；cppreference "friend#Inheritance" 词条。
+
+
 ```cpp
 // ⑳ C++ friend vs 其他语言的访问控制旁路机制
 #include <iostream>

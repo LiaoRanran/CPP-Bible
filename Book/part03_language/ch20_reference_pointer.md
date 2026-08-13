@@ -1253,6 +1253,21 @@ auto [it, inserted] = m.try_emplace("k", 1);   // 返回 pair<iterator,bool>
 
 ## ⑳ 章节速记 + 交叉引用总览（内化，无推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：重载函数接受引用避免空值。** 你写一个 `parse(const std::string&)` 解析函数，对比传指针 `parse(const std::string*)` 需判空。请说明引用语义（必绑非空、不可重绑）。
+   - [标准] 引用必须绑定到对象且不可重绑；语言层面不存在空引用，消除了指针的判空分支。
+   - [引用] ISO/IEC 14882:2023 §[dcl.ref]（引用声明）；cppreference "Reference" 词条。
+
+2. **真实场景：范围 for 与引用。** 遍历 `vector<string>` 大对象时，用 `for (auto& s : v)` 避免拷贝。请解释 `auto&` / `const auto&` / `auto` 的语义差异与性能。
+   - [标准] `auto&` 推导为左值引用；`const auto&` 为 const 引用可绑定临时；`auto` 为值拷贝。
+   - [引用] ISO/IEC 14882:2023 §[dcl.spec.auto]（占位类型）；cppreference "range-based for loop" 词条。
+
+3. **真实场景：返回引用悬空。** 函数返回局部变量的引用 `T& f() { T x; return x; }` 是未定义行为。请用对象生命周期规则说明对象销毁后引用为何悬空。
+   - [标准] 引用/指针指向的对象生命周期结束后，通过该引用/指针访问为未定义行为。
+   - [引用] ISO/IEC 14882:2023 §[basic.life]（对象生命周期）；cppreference "Reference#Dangling" 词条。
+
+
 **一页速记**
 - 引用 = 必须初始化、不可重绑的别名；底层 ABI 与指针相同（§③）。
 - const 引用延长临时对象生命至引用作用域结束（§③）；`T&` 不能绑临时，`const T&`/右值引用可以（ch115）。

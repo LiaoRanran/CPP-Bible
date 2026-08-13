@@ -394,6 +394,21 @@ mov DWORD PTR [rip+0x5d6e], 0x4   # g_plain = 4  (单次最终值)
 
 ## ⑳ 跨语言对比：volatile 语义全景 [经验]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：内存映射 IO。** 硬件寄存器声明 `volatile uint32_t* reg`。请说明 volatile 阻止编译器优化重读。
+   - [标准] volatile 访问不被编译器优化掉或重排（对抽象机语义而言每次访问都发生），但**不**提供线程间同步/原子性。
+   - [引用] ISO/IEC 14882:2023 §[intro.memory] / [dcl.type.cv]；cppreference "volatile" 词条。
+
+2. **真实场景：signal 与 volatile sig_atomic_t。** 信号处理函数中用 `volatile std::sig_atomic_t` 与主控流通信。请说明其局限。
+   - [标准] `volatile sig_atomic_t` 是对信号安全的有限类型；普通 volatile 不保证多核可见或原子。
+   - [引用] ISO/IEC 14882:2023 §[support.signal]；cppreference "std::sig_atomic_t" 词条。
+
+3. **真实场景：volatile 误用于并发。** 开发者用 `volatile bool stop` 做线程停止标志，在 x86 看似工作但在其他架构/优化下失效。请对比 std::atomic。
+   - [标准] 数据竞争中对非 atomic 的并发访问是未定义行为；volatile 不构成同步（无 happens-before）。
+   - [引用] ISO/IEC 14882:2023 §[intro.races]（数据竞争）；cppreference "std::atomic" 词条。
+
+
 ```cpp
 // ⑳ 各语言中 volatile/并发可见性机制的精确对比
 #include <iostream>

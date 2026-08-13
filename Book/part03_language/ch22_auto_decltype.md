@@ -476,6 +476,21 @@ BENCHMARK(BM_DecltypeAutoForward);
 
 ## ⑳ 三 STL 对比（libstdc++ / libc++ / MS STL）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：模板工厂返回类型推导。** `auto make() { return Widget{}; }` 用 `auto` 返回。请对比 `decltype(auto)` 如何保留引用/值类别。
+   - [标准] `auto` 按值推导会剥离引用与顶层 const；`decltype(auto)` 采用 decltype 规则保留引用类别。
+   - [引用] ISO/IEC 14882:2023 §[dcl.spec.auto]（占位类型）；cppreference "auto" 与 "decltype" 词条。
+
+2. **真实场景：完美转发中的 decltype。** 泛型代码中 `decltype((x))` 区分左值/右值引用。请解释 `decltype((x))` 与 `decltype(x)` 的区别。
+   - [标准] `decltype((e))` 对左值表达式得 `T&`、对右值表达式得 `T&&`；`decltype(e)` 对变量得其声明类型。
+   - [引用] ISO/IEC 14882:2023 §[dcl.type.decltype]（decltype 说明符）；cppreference "decltype" 词条。
+
+3. **真实场景：结构化绑定。** `auto [a,b] = std::make_pair(1, 2.0);` 用 `auto` 推导各成员。请说明结构化绑定对 `std::tuple` / `std::map` 迭代的便利。
+   - [标准] 结构化绑定声明将名字绑定到元组/数组/带 public 数据成员的对象的分量。
+   - [引用] ISO/IEC 14882:2023 §[dcl.struct.bind]（结构化绑定声明）；cppreference "Structured binding" 词条。
+
+
 > libstdc++ 描述基于**真实源码**（见「源码分析」）。libc++ 与 MS STL 为 **[实现-推断]**（本机未安装，按公开知识描述，未编造路径）。
 
 | 设施 | libstdc++ 15.3.0（真实） | libc++（[实现-推断]） | MS STL（[平台-推断]） |

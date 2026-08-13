@@ -1652,6 +1652,21 @@ int main() {
 
 ## ⑳ 综合实战：转型安全审计清单 + 速记（内化，无推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：const_cast 去 const 访问硬件寄存器。** 只读映射寄存器需通过 const 引用读，偶尔写。请说明 const_cast 边界与 UB 条件。
+   - [标准] 通过 const_cast 去掉 const 后修改原对象（若其本非 const）合法；若原对象为 const 则行为未定义。
+   - [引用] ISO/IEC 14882:2023 §[expr.const.cast]；cppreference "const_cast" 词条。
+
+2. **真实场景：dynamic_cast 多态下行。** 从 `Base&` 安全转 `Derived*`。请说明 RTTI 依赖与失败返回。
+   - [标准] 对多态类型 `dynamic_cast` 在运行期检查，指针转换失败返回 nullptr，引用转换失败抛 `std::bad_cast`。
+   - [引用] ISO/IEC 14882:2023 §[expr.dynamic.cast]；cppreference "dynamic_cast" 词条。
+
+3. **真实场景：reinterpret_cast 与序列化。** 将对象字节解释为整数/反向。请警示其实现定义与严格别名风险。
+   - [标准] reinterpret_cast 大多为实现定义；跨类型别名受严格别名规则约束。
+   - [引用] ISO/IEC 14882:2023 §[expr.reinterpret.cast] / [basic.lval]（严格别名）；cppreference "reinterpret_cast" 词条。
+
+
 **转型安全审计清单（Code Review 必查）[经验]**
 1. 任何 C 风格 `(T)expr` 一律标记 `-Wold-style-cast` 报警并消除（见 §⑰ 最佳实践第 12 条）。
 2. 下行转换：多态类型用 `dynamic_cast` 并判空/捕获；非多态或已知安全用 `static_cast`；绝不依赖运行期 RTTI 做高频路径分派（用虚函数或 `kind()` 标签，ch52）。

@@ -376,6 +376,21 @@ int main() {
 
 ## ⑳ 跨语言对比：初始化语法全景 [经验]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：列表初始化防窄化。** 用 `std::vector<int> v{1,2,3};` 与 `int x{3.5};` 触发窄化错误。请用列表初始化规则解释。
+   - [标准] 列表初始化禁止窄化转换（如 double→int、long→int 截断），编译期报错。
+   - [引用] ISO/IEC 14882:2023 §[dcl.init.list]（列表初始化/窄化）；cppreference "List_initialization" 词条。
+
+2. **真实场景：统一初始化歧义。** `std::vector<int> v(10, 1)` vs `std::vector<int> v{10, 1}`。请说明最令人头疼的解析与 `{}` 的优先。
+   - [标准] `{}` 优先匹配 `std::initializer_list` 构造函数（若存在），否则退而其他构造；`()` 不触发该优先。
+   - [引用] ISO/IEC 14882:2023 §[dcl.init.list] / [over.match.list]；cppreference "Initialization" 词条。
+
+3. **真实场景：常量初始化与 static 顺序。** 用 `constexpr`/常量初始化保证跨 TU 顺序。请结合 ch19/ch21 说明。
+   - [标准] 常量初始化（constant-initialization）属于静态初始化子阶段，先于动态初始化，避免 SIOF。
+   - [引用] ISO/IEC 14882:2023 §[basic.start.static]；cppreference "Initialization#Non-local_variables" 词条。
+
+
 ```cpp
 // ⑳ 各语言初始化语义对比
 #include <iostream>
