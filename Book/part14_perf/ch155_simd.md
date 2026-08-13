@@ -4,7 +4,7 @@
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 > 自动向量化取证命令（GCC 默认在 `-O3` 才开 tree-vectorize；`-O2` 不向量化，这点与 Clang 不同，下文明示）：
 > `g++ -std=c++23 -O3 -mavx2 -ftree-vectorize -S -masm=intel Examples/_ch155_simd.cpp -o Examples/_ch155_simd.asm`
-> 所有 ```asm 块均为上述真实编译产物，未加任何编造。
+> 所有 `asm` 块均为上述真实编译产物，未加任何编造。
 > 源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/`；本章以真实编译产物（汇编）为证据。
 
 ## ⓪ 历史动机：向量化（SIMD）的来龙去脉

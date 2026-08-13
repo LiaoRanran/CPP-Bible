@@ -7,7 +7,7 @@
 > 取证/自检命令：`python tools/chapter_compile_check.py Book/part14_perf/ch154_cache_opt.md`
 > 关键常量：`std::hardware_destructive_interference_size == 64`（GCC 13.1 / libstdc++，定义于 `<new>`，由 `<memory>` 等传递引入）。
 > 缓存行（cache line）= 64 字节（x86-64 主流；ARM 多为 64，部分 128）。
-> 所有 ```asm 块均为真实编译产物（见 ⑧⑩⑰），未编造。
+> 所有 `asm` 块均为真实编译产物（见 ⑧⑩⑰），未编造。
 
 ## ⓪ 历史动机：缓存与数据局部性的来龙去脉
 
