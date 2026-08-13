@@ -1306,12 +1306,20 @@ int main() { (void)g_min_level; }
 C 的 `enum` 来自 1970 年代，本意是用具名常量替代魔法数字，但它只是"整数的语法糖"——枚举值隐式转 `int`、不同枚举可混比、作用域泄漏到外层（unscoped）（见 ch24 0.1）。[史][评] C++11 引入 `enum class`（强类型、不隐式转 int、作用域限定）并允许指定底层类型 `enum class Color : uint8_t`，是类型安全的重大突破（N2347）。[史] C++20 的 `using enum`（P1099）把枚举器名字引入当前作用域，免写 `E::` 又保留类型安全，是强类型枚举的"易用性补丁"。[史]
 
 ### ㉒.2 真实工程坐标：枚举活在哪些产品里
-- **操作系统与协议**：Windows API 的 `DWORD` 标志、`WM_*` 消息、网络协议字段（TLS/HTTP 状态）普遍用枚举或位掩码表达离散值。
-- **标准库与错误码**：`std::errc`、`std::io_errc`、`std::chars_format` 等用枚举定义可移植的错误与格式类别；`std::future_status` 表达异步状态。
-- **游戏与状态机**：状态机、动画帧、资源类型几乎一律 `enum class`；Bitmask 类型（`std::ios_base::fmtflags`）继续用 unscoped + `operator|` 重载表达可组合的 flags。
-- **RPC / 网络协议**：gRPC 的 `grpc::StatusCode`（如 `OK` / `NOT_FOUND` / `UNAVAILABLE`）以枚举表达跨语言错误类别，HTTP/2 的帧类型（`DATA` / `HEADERS` / `SETTINGS`）在 C 实现里也以枚举表达离散协议字段，是"枚举即协议"的跨语言事实标准。
-- **图形 API**：Vulkan 的 `VkResult`、`VkStructureType`、OpenGL 的 `GLenum` 用枚举表达 API 返回状态与结构体标签，跨 C/C++/Rust/Python 绑定保持同一套枚举值——枚举在此承担着"二进制接口契约"而非单纯的可读性。
 
+下表把「枚举」拉成「从 Windows 消息到 Vulkan 二进制契约」的离散值表达。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 操作系统与协议 | Windows API（`DWORD`/`WM_*`）、TLS/HTTP 状态 | 枚举/位掩码表达离散值与消息类型 | 桌面/网络事实标准 | 枚举即协议字段的古老坐标 |
+| 标准库与错误码 | `std::errc`/`std::io_errc`/`std::chars_format`/`std::future_status` | 枚举定义可移植错误与格式类别、异步状态 | 一切 C++ 程序地基 | 枚举承载可移植语义类别 |
+| 游戏与状态机 | `enum class`、Bitmask（`std::ios_base::fmtflags`） | 状态机/帧/资源用强类型枚举；可组合 flags 用 `operator|` | 实时系统 | 强类型枚举防误用，flags 仍用 unscoped |
+| RPC/网络协议 | gRPC（`grpc::StatusCode`）、HTTP/2 帧类型 | 枚举表达跨语言错误类别与离散协议字段 | 分布式系统事实标准 | 「枚举即协议」跨语言共识 |
+| 图形 API | Vulkan（`VkResult`/`VkStructureType`）、OpenGL（`GLenum`） | 枚举表达 API 返回状态与结构体标签 | 跨语言绑定（C/C++/Rust/Py） | 枚举承担二进制接口契约 |
+
+> **表注（㉒.2）**：上表把「枚举」拉成「从 Windows 消息到 Vulkan 二进制契约」的离散值表达。标准库用枚举做可移植错误类别，游戏用 `enum class` 防误用，gRPC/HTTP/2 把枚举当成跨语言协议字段。注意图形 API 一行：Vulkan 的 `VkResult`/`VkStructureType` 在 C/C++/Rust/Python 绑定里保持同一套枚举值——枚举在此已不是可读性糖，而是跨语言二进制接口契约。
+
+**一条判读**：用枚举的判据是「有一组离散、互斥（或需组合）的命名值」。强类型、要防混用 → `enum class`（游戏状态机/资源类型）；可组合的 flag → 仍用 unscoped + `operator|`（如 `fmtflags`）；跨语言/二进制契约（协议、图形 API）→ 枚举值须固定且跨绑定一致。规则：离散命名值优先枚举而非裸 `#define`/`int`；跨 ABI 的枚举值一旦发布就冻结。
 ### ㉒.3 生产踩坑：枚举的常见误用
 - **unscoped enum 隐式转换 bug**：`if (state == 3)` 或把 `Color` 当 `int` 传入，绕过类型系统导致隐蔽错误——`enum class` 强制 `static_cast` 正是为堵这个洞。[史][评]
 - **底层类型与 ABI/大小**：不指定底层类型时由实现定义，跨平台/跨编译器大小可能不一致；为省内存标 `: uint8_t` 时要注意符号性与穷尽性。[评]

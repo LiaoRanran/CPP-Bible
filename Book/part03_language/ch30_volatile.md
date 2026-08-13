@@ -546,12 +546,20 @@ int main(){volatile int* ptr=new volatile int[4]{1,2,3,4};std::cout<<ptr[0]<<std
 `volatile` 在 C（约 1980 年代）引入，语义是"告诉编译器：此对象可能被程序之外的力量（硬件寄存器、中断、内存映射 I/O）随时改动，禁止缓存到寄存器、禁止优化掉读写"，服务于嵌入式/MMIO（见 ch30 0.1）。[史] 它长期被错误当作"线程间同步原语"，但标准从未保证跨线程可见性。[史][评] C++11 引入 `std::atomic` 与内存模型，正式把并发同步从 `volatile` 手里夺走，`volatile` 退回纯 MMIO/信号处理用途。[史]
 
 ### ㉒.2 真实工程坐标：volatile 活在哪些产品里
-- **嵌入式固件与内核**：Linux 内核、裸机固件用 `volatile` 映射硬件寄存器与内存映射 I/O；中断服务例程读取的共享标志位常标 `volatile` 以防被优化掉。
-- **信号处理**：`sig_atomic_t` 配合 `volatile` 在信号处理函数与主流程间传递标志，是 POSIX 标准认可的正当用法。
-- **编译器差异的现实**：MSVC 历史实现中 `volatile` 读/写带 acquire/release 语义（`/volatile:ms` 默认开启），而 GCC/Clang 严格遵循标准（无跨线程保证），同一段 `volatile` 代码三家行为不同。[史][评]
-- **实时操作系统**：FreeRTOS / μC/OS 的任务间标志、设备驱动寄存器映射大量用 `volatile`（常配合 `volatile uint32_t*` 映射 MMIO），确保对硬件寄存器的每次访问都不被优化掉；AUTOSAR MCAL 层同样把外设寄存器标 `volatile` 防止被编译器消除。
-- **Windows 内核驱动**：WDM / WDK 驱动开发中，设备寄存器与共享内存映射依赖 `volatile` 表达"对实现透明的访问"；`ntddk.h` 体系里 `volatile` 与内存屏障宏配合，用于无锁读取硬件状态——这是 `volatile` 在桌面内核里未被任何新特性取代的正当领地。
 
+下表把「volatile」拉成「硬件与异步控制流里的防优化开关」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 嵌入式固件与内核 | Linux 内核、裸机固件、ISR | `volatile` 映射硬件寄存器与 MMIO；ISR 共享标志防被优化 | 资源受限/OS 内核 | `volatile` 的硬件访问刚需 |
+| 信号处理 | `sig_atomic_t` + `volatile` | 信号处理函数与主流程间传递标志 | POSIX 标准认可 | 跨异步控制流的安全标志 [STANDARD] |
+| 编译器差异 | MSVC（`/volatile:ms`）vs GCC/Clang | MSVC 读写为 acquire/release；GCC/Clang 无跨线程保证 | 三家行为不同 | 同段代码语义分裂 [史][评] |
+| 实时操作系统 | FreeRTOS / μC/OS、AUTOSAR MCAL | `volatile uint32_t*` 映射 MMIO/任务标志，确保每次访问不消除 | 汽车/嵌入式实时 | MCAL 外设寄存器标 `volatile` |
+| Windows 内核驱动 | WDM / WDK、`ntddk.h` | `volatile` 表达对实现透明的寄存器/共享内存访问，配屏障宏 | 桌面内核驱动 | 未被任何新特性取代的正当领地 |
+
+> **表注（㉒.2）**：上表把「volatile」拉成「硬件与异步控制流里的防优化开关」。它在 Linux 内核/裸机固件里映射 MMIO，在 POSIX 信号处理里配合 `sig_atomic_t` 传标志，在 FreeRTOS/AUTOSAR MCAL 里标外设寄存器，在 WDM/WDK 驱动里表达对实现透明的硬件访问。注意 [史][评] 标的编译器差异一行：MSVC 的 `/volatile:ms` 让 volatile 读写带 acquire/release，而 GCC/Clang 严格遵循标准（无跨线程保证）——同一段 volatile 代码三家语义不同，说明它绝不是可移植的同步原语。
+
+**一条判读**：用 volatile 的判据是「访问可能被硬件或异步控制流在外部改变，且不能被优化掉」。硬件寄存器/MMIO、ISR 共享标志、信号处理标志、驱动共享内存 → `volatile`；但它**不是**线程同步原语（GCC/Clang 下无跨线程保证，MSVC 有也只是历史实现）。规则：内存映射 I/O 与异步信号/中断用 `volatile`；多线程共享用 `std::atomic`（带明确内存序），绝不用 `volatile` 做锁或标志同步——[STANDARD] 层面 volatile 不提供线程间同步语义。
 ### ㉒.3 生产踩坑：volatile 的常见误用
 - **把 volatile 当锁/同步**：`volatile` 只解决"编译器优化"，不解决"CPU/缓存一致性"——用 `volatile bool ready` 做线程间标志是经典错误，仍会读到陈旧值或重排，必须用 `std::atomic`。[史][评]
 - **volatile 与原子性的误区**：`volatile int x; x++;` 不是原子的，`volatile` 不提供读-改-写原子性，多核下仍竞争。[评]

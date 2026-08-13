@@ -1721,12 +1721,20 @@ int main(){ Token a("x"), b(3.0); a=b; std::printf("ok\n"); }
 C 的 `union` 来自 1970 年代，让多个成员共用一块存储以省内存，代价是"读非活跃成员"是未定义行为，全靠程序员记账（见 ch25 0.1）。[史] Stroustrup 把它带进 C++，但 C++ 的对象模型（构造/析构/类型）让 union 更危险：非平凡类型放进去，析构谁？[史][评] C++11 放宽匿名 union 与带非平凡成员的限制但仍不管理"活跃成员"；C++17 的 `std::variant`（P0088）带"活跃成员"记账、`std::visit` 访问者、`valueless_by_exception` 状态，与 `std::optional`/`any` 组成安全值族。[史]
 
 ### ㉒.2 真实工程坐标：union/variant 活在哪些产品里
-- **编译器与 AST**：LLVM 的 `llvm::Value`/指令节点、Clang 的 AST 用判别联合（有时裸 union + tag，有时 `std::variant`）表达"同一槽位只装一种节点"；protobuf 生成的消息体常含 union 式字段。
-- **协议与状态机**：网络协议消息、序列化格式（Cap'n Proto、FlatBuffers 的 union 类型）、游戏状态机普遍从裸 union 迁移到 `std::variant` 以获得类型安全分派。
-- **标准库**：`std::variant` 与 `std::visit` 已成为表达"值或错误"的基石，`std::expected`（C++23，P0323）与其思路同源（判别联合）但聚焦错误处理。
-- **JVM / 运行时**：HotSpot JVM 的对象头与 oop（ordinary object pointer）体系用"tagged / union 式"布局把对象元数据与多类型 payload 装在同一槽位；V8 的 `TaggedPtr` 与 `.NET` CoreCLR 的值类型装箱内部也用判别联合在"对象指针 / 小整数 / 异常"间切换，是判别联合在 GC 内存布局上的工业级应用。
-- **数据库驱动**：ODBC / SQLite 的 `sqlite3_value` 与 `SQL_C_*` 列绑定用 union 表达"同一列可承载整型/浮点/文本/二进制"的多类型值，驱动层在读列时按类型标签分派——这正是裸 union 从 C 时代延续到数据库引擎的真实坐标。
 
+下表把「union/variant」拉成「判别联合从裸 union 到 `std::variant`」的演进。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 编译器与 AST | LLVM `llvm::Value`、Clang AST、`protobuf` | 判别联合（裸 union+tag 或 `std::variant`）表达「同槽只装一种节点」 | 编译/序列化基础设施 | 节点多态的零开销表达 |
+| 协议与状态机 | Cap'n Proto / FlatBuffers、游戏状态机 | 从裸 union 迁移到 `std::variant` 获类型安全分派 | 序列化/实时系统 | variant 取代裸 union 的趋势 |
+| 标准库 | `std::variant`/`std::visit`、`std::expected`（C++23, P0323） | 判别联合表达「值或错误」；`expected` 同源但聚焦错误处理 | 一切 C++23 程序地基 | 判别联合成标准一等公民 [STANDARD] |
+| JVM/运行时 | HotSpot、V8 `TaggedPtr`、.NET CoreCLR | tagged/union 式布局装对象元数据与多类型 payload；GC 内部分派 | 语言运行时内核 | 判别联合在 GC 内存布局的工业应用 |
+| 数据库驱动 | ODBC / SQLite（`sqlite3_value`、`SQL_C_*`） | union 表达同列可承载整/浮/文本/二进制，按类型标签分派 | 数据库引擎 | 裸 union 从 C 延续到驱动层 |
+
+> **表注（㉒.2）**：上表把「union/variant」拉成「判别联合从裸 union 到 `std::variant`」的演进。编译器（LLVM/Clang）早就用判别联合表达 AST 节点多态，序列化格式（Cap'n Proto/FlatBuffers）把 union 当作一等类型，而 `std::variant`/`std::expected` 把它变成标准库基石。注意 JVM/运行时一行：HotSpot/V8/CoreCLR 在 GC 内存布局里用 tagged union 在「对象指针/小整数/异常」间切换——判别联合在运行时内核里是性能与内存的关键手段，而非语法糖。
+
+**一条判读**：用 union/variant 的判据是「一个槽位在生命周期内只装一种类型，但要覆盖多种」。需要类型安全分派且与标准算法配合 → `std::variant` + `std::visit`（序列化、状态机）；错误表达 → `std::expected`（C++23，P0323）；内存极度紧凑、GC 内部、跨语言二进制 → 裸 tagged union（JVM/V8/ODBC）。规则：新代码优先 `variant` 拿类型安全；裸 union 只留给不能承受 `variant` 开销或必须兼容 C ABI 的场景，且必须配显式 tag 与完备分派。
 ### ㉒.3 生产踩坑：union/variant 的常见误用
 - **裸 union 读非活跃成员**：这是教科书级 UB，优化器可能基于"你不会读错成员"做假设，导致难复现的崩溃。[史][评]
 - **variant 的 valueless_by_exception**：当某 alternative 的构造/赋值抛异常，variant 可能进入 `valueless_by_exception` 状态，`std::get` 会抛 `bad_variant_access`——未检查 `index()` 就 `get` 是真实生产坑。[评]

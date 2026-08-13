@@ -1373,12 +1373,20 @@ int main() {
 C 在 1970 年代为"贴近硬件、零抽象"刻意留下大量"实现定义 / 未定义"行为（有符号溢出、空指针解引用），让编译器自由映射到不同硬件而不必守卫每条边界（见 ch28 0.1）。[史] C++ 继承并放大这套哲学：标准只规定"良构程序"的语义，越界即失去保障；`[basic.life]` 在 C++98 首次系统定义对象生存期。[史] C++11 明确"复用存储时旧对象生命周期结束"的规则，配合移动语义；现代 `-fsanitize=undefined` 让 UB 从静默错误变可检测。[史]
 
 ### ㉒.2 真实工程坐标：生命周期与 UB 活在哪些产品里
-- **编译器武器化**：GCC/Clang/MSVC 都基于 UB 做死代码消除、循环不变外提、未初始化变量传播；LLVM 的 `-fsanitize=address,undefined` 是 Chrome/LLVM 自身 CI 的标配。
-- **安全敏感系统**：Chromium 用 UBSan/ASan 把关内存安全；Linux 内核引入 `-fstrict-flex-arrays` 等收紧 UB 边界；CVE 中相当比例源于生命周期类 UB（悬垂、越界）。
-- **并发与数据竞争**：数据竞争是 UB 的另一重灾区（ch61），TSAN 成为服务端发布前的必跑检查。
-- **数据库 / 存储引擎**：SQLite 的页缓存与 `Btree` 指针管理极度依赖生命周期正确性，历史上多起 use-after-free 类 CVE 源于页对象被提前释放后仍有指针引用；RocksDB 的 `ColumnFamilyHandle` 生命周期错配（句柄先于 DB 析构）是真实的生产崩溃源——生命周期类 UB 在 PB 级存储引擎里直接等于数据损坏。
-- **JS 引擎 GC**：V8 的 handle 体系（见 ch20）与 SpiderMonkey 的 `Rooted<T>` / `Handle<T>` 专门对抗悬垂，把"对象可能被 GC 移动 / 回收"的威胁用根集显式化；Chrome 安全团队长期把 UAF（use-after-free）列为头号漏洞类别，正是因为生命周期 UB 是浏览器攻击面的主战场。
 
+下表把「生命周期与 UB」拉成「从编译器优化许可到生产数据损坏」的风险链。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 编译器武器化 | GCC/Clang/MSVC、LLVM sanitizers | 基于 UB 做死代码消除/不变外提/未初始化传播；`-fsanitize=address,undefined` | 编译器级基础设施 | UB 是被优化利用的「许可」 |
+| 安全敏感系统 | Chromium、Linux 内核 | UBSan/ASan 把关内存安全；`-fstrict-flex-arrays` 收紧 UB 边界 | 浏览器/OS 内核 | 相当比例 CVE 源于生命周期 UB |
+| 并发与数据竞争 | TSAN、服务端发布检查 | 数据竞争（ch61）是 UB 重灾区，发布前必跑 | 服务端基础设施 | 竞争即 UB，需 sanitizer 兜底 |
+| 数据库/存储引擎 | SQLite、RocksDB | 页缓存/Btree 指针、`ColumnFamilyHandle` 生命周期错配 → UAF/数据损坏 | PB 级 KV 引擎 | 生命周期 UB 直接等于数据损坏 |
+| JS 引擎 GC | V8 handles、SpiderMonkey `Rooted<T>` | 根集显式化对抗悬垂，隔离 GC 移动/回收 | 浏览器引擎命脉 | UAF 是头号漏洞类别 [史] |
+
+> **表注（㉒.2）**：上表把「生命周期与 UB」拉成「从编译器优化许可到生产数据损坏」的风险链。编译器把 UB 当优化许可（死代码消除、未初始化传播），Chromium/Linux 用 sanitizer 与编译 flag 收紧边界，而 SQLite/RocksDB 的真实案例说明：生命周期类 UB 在 PB 级存储引擎里直接等于数据损坏，V8/SpiderMonkey 则把对抗悬垂做成 GC 根集机制。注意 [史] 标的 V8 一行：Chrome 安全团队长期把 UAF 列为头号漏洞类别——生命周期 UB 是浏览器攻击面的主战场。
+
+**一条判读**：看待生命周期/UB 的判据是「它既是编译器的优化许可，也是生产事故源」。写代码 → 严守对象生命周期（RAII、智能指针、不返回局部引用）；查问题 → ASan/UBSan/TSAN 进 CI（Chrome/LLVM 标配）；并发 → 数据竞争是 UB，发布前 TSAN 必跑。规则：绝不依赖 UB 行为；sanitizer 不是可选项而是发布门禁；生命周期错误在存储/浏览器里等于安全漏洞与数据损坏。
 ### ㉒.3 生产踩坑：生命周期/UB 的常见误用
 - **悬垂引用/指针**：返回局部变量引用、迭代器/指针失效（容器扩容、erase）、`std::string` 的 `c_str()` 跨修改使用——访问即 UB，是最常被 UB 优化"武器化"的坑（见 ch33）。[史][评]
 - **对象生存期与 placement new**：在同一存储上 `placement new` 重建对象必须显式调旧析构，重建后用 `std::launder`（C++17）取回指针，否则优化器"证明"指针仍指向旧对象而错乱。[评]

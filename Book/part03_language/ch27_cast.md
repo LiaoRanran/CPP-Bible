@@ -1714,12 +1714,20 @@ benchmark: ~5ns延迟+CPU Cost分析。Trade-off/设计权衡/反模式。面试
 C 风格强转 `(T)expr` 在 1970 年代是"万能胶"：能去 const、能做无关类型 reinterpret、能做继承下行转换，编译器几乎不拦，导致"一个括号藏一身雷"（见 ch27 0.1）。[史][评] C++ 在 1980–90 年代逐步引入 `static_cast`/`const_cast`/`reinterpret_cast`/`dynamic_cast`，分别对应一种语义，让"我在做什么"一目了然；`dynamic_cast` 配 RTTI 提供运行期下行检查。[史] C++11 收紧 `reinterpret_cast` 的 `void*` 往返规则，`auto` 减少了大量"为存类型而强转"。[史]
 
 ### ㉒.2 真实工程坐标：四种 cast 活在哪些产品里
-- **系统/嵌入式/网络**：金融、游戏等底层库仍大量用 `reinterpret_cast` 做网络字节序与序列化类型双关；MMIO 与信号处理依赖它 reinterpret 寄存器视图。
-- **框架与 RTTI**：MFC/Qt/LLVM 的运行时类型查询与插件系统用 `dynamic_cast` 做安全的下行转换；`boost::any`/`std::any` 的 `any_cast` 沿用同思路。
-- **标准库与 traits**：`const_cast` 在适配"非 const 接口"的旧代码、以及 `std::move` 内部去 const 等场景仍有正当用途；`static_cast` 几乎贯穿所有显式收窄/上行转换。
-- **GPU / 驱动绑定**：Vulkan-Hpp（Vulkan 的 C++ 绑定）与 CUDA / ROCm 内核启动参数用 `reinterpret_cast` 在句柄（`VkHandle`）、整型与设备指针间做类型双关；驱动层把"用户态指针 ↔ GPU 虚拟地址"的转换也落在这类强转上。
-- **二进制 / 逆向引擎**：Capstone 反汇编器、Keystone 汇编器对指令字节与编码结构之间做 `reinterpret_cast` 类型双关；radare2 等二进制分析工具在解析 ELF/PE 节区时同样用强转把字节视图当结构体读，是"类型双关即协议解析"的典型坐标。
 
+下表把「四种 cast」拉成「各自有正当领地」的显式转换谱系。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 系统/嵌入式/网络 | 金融/游戏底层库、MMIO、信号处理 | `reinterpret_cast` 做网络字节序/序列化类型双关、寄存器视图 | 底层基础设施 | 类型双关是协议/硬件访问刚需 |
+| 框架与 RTTI | MFC/Qt/LLVM、`boost::any`/`std::any` | `dynamic_cast` 安全下行；`any_cast` 沿用同思路 | 框架/运行时 | 运行时类型查询的支柱 |
+| 标准库与 traits | `const_cast`、`static_cast` | `const_cast` 适配非 const 接口/`std::move` 去 const；`static_cast` 显式收窄/上行 | 一切 C++ 程序地基 | 各 cast 有正当收敛边界 [STANDARD] |
+| GPU/驱动绑定 | Vulkan-Hpp、CUDA/ROCm | `reinterpret_cast` 在句柄/整型/设备指针间双关；用户态指针↔GPU 虚址 | 异构计算驱动 | 强转桥接 CPU/GPU 地址空间 |
+| 二进制/逆向引擎 | Capstone、Keystone、radare2 | `reinterpret_cast` 在指令字节与编码结构、ELF/PE 节区间双关 | 逆向/安全工具 | 类型双关即协议解析 |
+
+> **表注（㉒.2）**：上表把「四种 cast」拉成「各自有正当领地」的显式转换谱系。`reinterpret_cast` 镇守类型双关（网络字节序、MMIO、GPU 地址桥接、逆向解析），`dynamic_cast` 镇守运行时安全下行，`const_cast` 只在适配旧接口/去 const 等受限场景，`static_cast` 承担绝大多数显式收窄/上行。注意 GPU 与逆向两行：`reinterpret_cast` 在 Vulkan-Hpp/CUDA 和 Capstone/radare2 里都是「把字节当结构体读」——这是类型双关在驱动与二进制分析里的刚需，而非滥用。
+
+**一条判读**：选 cast 的判据是「转换的语义与安全边界」。运行期要安全下行、可能失败 → `dynamic_cast`（返回 null/抛 `bad_cast`）；编译期确定、上行/收窄/void* 回退 → `static_cast`；去 const 适配旧接口（谨慎）→ `const_cast`；类型双关（字节↔结构、地址空间桥接）→ `reinterpret_cast`（UB 雷区，须确知布局）。规则：能用 `static_cast` 就别 `reinterpret_cast`；类型双关优先 `std::bit_cast`（C++20）替代 `reinterpret_cast` 以消除别名 UB。
 ### ㉒.3 生产踩坑：转型的常见误用
 - **`reinterpret_cast` 触发严格别名 UB**：在两个不相关类型指针间 reinterpret 并解引用违反严格别名规则，优化器可能"证明"新旧指针不别名而崩溃——应优先 `std::bit_cast` 或 `std::start_lifetime_as`。[史][评]
 - **`dynamic_cast` 的空指针/异常**：对指针失败返回 `nullptr`、对引用失败抛 `std::bad_cast`，未检查即解引用是真实崩溃源；且它依赖 RTTI、有运行期开销与跨动态库边界失效风险。[评]

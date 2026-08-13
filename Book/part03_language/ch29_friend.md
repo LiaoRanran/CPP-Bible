@@ -526,12 +526,20 @@ int main(){std::cout<<"friend总结: 单向/不传递/不继承。用于operator
 C++ 的 `private`/`public` 访问控制继承自 Simula 67 的"数据隐藏"思想，是 OO 封装的基石（见 ch29 0.1）。[史] Stroustrup 很快发现：某些运算符（`operator<<` 输出、工厂、Pair 的两个分量）需要越过封装碰私有成员，却不该把成员变 `public`——`friend` 于是作为"精细授权的白名单"出现。[史] 它证明访问控制本就是"编译期纪律"而非运行时铁墙；隐藏友元（在类内 `friend` 定义运算符）被标准库风格推崇，因为它只经 ADL 可见、不污染普通查找。[史][评]
 
 ### ㉒.2 真实工程坐标：friend 活在哪些产品里
-- **标准库**：`std::chrono`、`std::strong_ordering`、`std::pair`/`std::tuple` 的 `operator<<`、比较运算符、工厂函数普遍采用 hidden friend；`std::swap` 的 ADL 定制也依赖友元。
-- **IO 与序列化**：几乎所有重载 `operator<<`/`operator>>` 的自定义类型都用 `friend` 访问私有字段；Boost.Serialization 用友元突破封装做归档。
-- **测试与反射**：单元测试框架（GoogleTest 的 `FRIEND_TEST`）用 `friend` 让测试类访问被测私有成员；某些序列化/绑定库同理。
-- **线性代数库**：Eigen 大量使用 hidden friend 的 `operator*` / `operator+` 与 `NumTraits` 友元，使表达式模板能零开销合成 `Matrix * Matrix` 等运算而不污染全局查找；xtensor 等现代张量库沿用同一 idiom。
-- **ORM / 持久化**：ODB（Code Synthesis 的 C++ ORM）用友元让生成的数据库映射代码访问实体类的私有成员，把"对象 ↔ 表行"的读写绑定到编译期生成的友元函数上——这是友元在"封装 vs 代码生成便利"之间妥协的生产实例。
 
+下表把「friend」拉成「封装与便利之间的受控破洞」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库 | `std::chrono`/`strong_ordering`/`pair`/`tuple`、`std::swap` | hidden friend 承担 `operator<<`/比较/工厂；`swap` 经 ADL 定制 | 一切 C++ 程序地基 | hidden friend 不污染全局查找 [STANDARD] |
+| IO 与序列化 | 自定义 `operator<<`/`>>`、Boost.Serialization | friend 访问私有字段做归档/流式读写 | 序列化基础设施 | 友元突破封装做 I/O |
+| 测试与反射 | GoogleTest（`FRIEND_TEST`） | friend 让测试类访问被测私有成员 | 质量基础设施 | 测试需要观私有状态 |
+| 线性代数库 | Eigen、`xtensor` | hidden friend `operator*`/`+` 与 `NumTraits` 友元支撑零开销表达式模板 | 数值计算基础设施 | 不污染全局查找的运算符合成 |
+| ORM/持久化 | ODB（C++ ORM） | 生成的映射代码经友元访问实体私有成员，绑定对象↔表行 | 持久化框架 | 封装 vs 代码生成便利的妥协 |
+
+> **表注（㉒.2）**：上表把「friend」拉成「封装与便利之间的受控破洞」。标准库用 hidden friend 承载运算符/工厂而不污染全局查找（ADL 只在该类型相关时可见），Eigen 借 hidden friend 让表达式模板零开销合成 `Matrix*Matrix`，而 ODB 则把友元当作「让生成的映射代码访问私有成员」的受控通道。注意 [STANDARD] 标的 hidden friend 一行：它把友元函数定义在类体内、参数含该类的做法，使 ADL 在恰当时才暴露——这是友元用对地方的范式。
+
+**一条判读**：用 friend 的判据是「需要受控地突破封装，且只对该类型相关代码可见」。运算符/工厂/自定义 I/O → hidden friend（不污染全局命名空间，仅 ADL 触发）；测试要观私有状态 → `FRIEND_TEST`；代码生成器（ORM/序列化）要读写私有成员 → 生成友元函数。规则：优先 hidden friend 而非全局友元；绝不用友元做「偷懒访问全部私有」——它是受控破洞，不是后门。
 ### ㉒.3 生产踩坑：friend 的常见误用
 - **friend 破坏封装边界**：`friend class` 把封装"整片"交出，耦合骤增且难以追踪谁动了私有状态——应优先"最小权限"的 `friend` 函数而非整类。[评]
 - **友元不可传递/继承**：误以为 A 是 B 的友元、B 是 C 的友元就自动获得传递访问，或以为派生类继承友元关系，都是错的，导致编译失败或安全误判。[史][评]

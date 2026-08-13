@@ -1188,12 +1188,20 @@ int main() {
 C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀手工避免冲突；随着 1990 年代库爆炸（标准库、Boost、各家 SDK 同台），名字冲突成了头等痛点，命名空间在 C++98 正式引入（见 ch23 0.1）。[史] ADL（参数依赖查找，Koenig lookup，以 Andrew Koenig 命名）是命名空间的"伴生怪物"：为让 `operator<<(cout, x)` 找到 `std` 里的运算符，编译器会顺着参数类型悄悄进其命名空间。[史][评] C++11 的 `inline namespace` 提供版本化无痛升级，C++20 模块（P1103）从根上减少头文件宏污染。[史]
 
 ### ㉒.2 真实工程坐标：namespace/ADL 活在哪些产品里
-- **标准库与 Boost**：`std` 自身靠命名空间隔离；Boost 用嵌套命名空间（`boost::asio::ip`）组织巨型库树；`inline namespace` 是 ABI 版本控制事实标准。
-- **libstdc++**：用 `__cxx11` inline namespace 区分新旧 ABI（`std::string` 实现切换），旧代码链接旧符号、新代码用新符号，做到无断裂升级。[史]
-- **Chromium / LLVM**：用匿名命名空间替代文件级 `static`；LLVM 的 `llvm::` / `clang::` 分层命名空间是大型 C++ 项目的组织范本。
-- **浏览器引擎**：WebKit 的 `WTF::`（Web Template Framework）与 `JSC::`（JavaScriptCore）用分层命名空间隔离 GC/解释器基础设施；大型 JS 引擎的命名空间边界直接映射到子系统的 ABI 与可见性边界。
-- **量化金融**：QuantLib 把整个库收在 `QuantLib::` 命名空间下，按 `termstructures` / `pricingengines` / `instruments` 等子命名空间组织数千个类型，是金融 C++ 领域用命名空间做领域分区的范本。
 
+下表把「namespace/ADL」拉成「从符号隔离到 ABI 版本控制」的组织工具。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库与 Boost | `std`、`boost::asio::ip` | `std` 隔离标准；Boost 嵌套命名空间组织巨型库树；`inline namespace` 做 ABI 版本控制 | 一切 C++ 程序地基 | `inline namespace` 是 ABI 版本控制事实标准 |
+| 标准库实现 | libstdc++（`__cxx11`） | `inline namespace` 区分新旧 ABI（`std::string` 实现切换），旧符号旧链接、新符号新链接 | 编译器级基础设施 | 无断裂升级的经典案例 [史] |
+| 编译器/浏览器 | LLVM（`llvm::`/`clang::`）、Chromium | 匿名命名空间替代文件级 `static`；分层命名空间组织子系统 | 工业级基础设施 | 大型 C++ 项目组织范本 |
+| 浏览器引擎 | WebKit（`WTF::`/`JSC::`） | 分层命名空间隔离 GC/解释器基础设施，边界映射 ABI 与可见性 | JS 引擎内核 | 命名空间边界 = 子系统 ABI 边界 |
+| 量化金融 | QuantLib（`QuantLib::`） | 按 `termstructures`/`pricingengines`/`instruments` 子命名空间组织数千类型 | 金融 C++ 领域 | 命名空间做领域分区范本 |
+
+> **表注（㉒.2）**：上表把「namespace/ADL」拉成「从符号隔离到 ABI 版本控制」的组织工具。Boost 用嵌套命名空间管巨型库树，libstdc++ 用 `__cxx11` inline namespace 做「新旧 string 实现无断裂切换」，WebKit 让命名空间边界直接等于 GC 子系统的 ABI 边界。注意 [史] 标的 libstdc++ 一行：C++11 的 `std::string` 改实现时，正是靠 inline namespace 让老二进制继续链老符号——这是 ABI 版本控制靠语言特性落地的教科书案例。
+
+**一条判读**：用命名空间的判据是「要隔离符号、控制 ABI 可见性、还是做领域分区」。内部链接细节 → 匿名命名空间（替代 `static`）；库要向后兼容演进 → `inline namespace` 做双轨符号；大型项目按子系统分层（`llvm::`/`WTF::`）；领域模型按子命名空间分区（QuantLib）。规则：永远把东西放进命名空间，别污染全局；跨版本 ABI 用 inline namespace 而非破坏符号。
 ### ㉒.3 生产踩坑：namespace/ADL 的常见误用
 - **ADL 不透明查找引发意外重载**：传入 `std` 类型的参数会悄悄把 `std` 里的 `swap`/`begin` 拉进候选集，自定义同名函数被意外选中或冲突，是模板代码的天坑。[评]
 - **`using namespace std;` 在头文件里**：把整个 `std` 倾泻进全局，造成名字污染与 ODR 冲突，是被无数代码规范明令禁止的反模式。[史][评]

@@ -1484,12 +1484,20 @@ Q: mutable lambda? A: 允许修改值捕获的变量(默认const operator())
 C++ 在 STL 时代靠"函数对象（functor）"传逻辑——要传一段回调得先写带 `operator()` 的类，冗长且隔断思维（见 ch26 0.1）。[史] 同时代 Lisp/Python/C# 2007 已有匿名函数，C++ 程序员只能羡慕；C++11 引入 lambda，本质是"编译器替你合成那个仿函数类（闭包类型）"。[史][评] C++14 泛型 lambda（`auto` 参数）、初始化捕获；C++17/20 constexpr lambda、模板形参 lambda（`[]<typename T>`）、`[=, *this]` 精确捕获逐步补齐。[史]
 
 ### ㉒.2 真实工程坐标：lambda 活在哪些产品里
-- **STL 算法与 ranges**：`std::sort`、`std::for_each`、`std::ranges::filter` 等的谓词/投影几乎全是 lambda；`std::ranges` 大量借助模板形参 lambda + Concept 写简洁泛型回调。
-- **并发与 GUI**：线程池（`std::async`/自定义 executor）、Qt 的信号槽桥接、Chromium 的 task 回调普遍用 lambda 捕获上下文，取代手写 functor 类。
-- **LLVM/Clang**：AST matcher（`clang-query`）、Pass 里的局部回调、TableGen 都用 lambda 表达一次性逻辑。
-- **测试与基准**：Google Benchmark 的 `BENCHMARK` 宏、Catch2 / GoogleTest 的 `TEST` 体内部大量 lambda 生成参数化用例与自定义断言；基准与测试用例靠 lambda 把"被测逻辑"延迟到 runner 里执行，取代早年的手写 functor 类。
-- **游戏引擎事件**：Unreal 的 delegate / `TWeakObjectPtr` 绑定、Unity 的 `UnityAction` 与 Godot 的 `Callable` 底层都靠闭包承接事件回调；行为树（Behavior Tree）节点的条件 / 动作常以 lambda 表达一次性分支逻辑，避免为每个节点单独建类。
 
+下表把「lambda」拉成「取代手写 functor 类」的就地闭包。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| STL 算法与 ranges | `std::sort`/`for_each`/`ranges::filter` | 谓词/投影几乎全是 lambda；模板形参 lambda + Concept 写泛型回调 | 一切 C++ 程序地基 | lambda 是算法回调主流载体 |
+| 并发与 GUI | 线程池、`Qt` 信号槽、Chromium task | lambda 捕获上下文取代手写 functor 类 | 实时/UI 系统 | 闭包消除样板 functor 类 |
+| LLVM/Clang | AST matcher、`clang-query`、TableGen | lambda 表达 Pass/匹配器里的一次性逻辑 | 编译基础设施 | 局部回调就地表达 |
+| 测试与基准 | Google Benchmark、Catch2、GoogleTest | `BENCHMARK`/`TEST` 体内 lambda 生成参数化用例与自定义断言 | 质量基础设施 | 被测逻辑延迟到 runner 执行 |
+| 游戏引擎事件 | Unreal delegate、`UnityAction`、Godot `Callable` | 闭包承接事件回调；行为树节点条件/动作以 lambda 表达 | 实时引擎 | 避免每节点单独建类 |
+
+> **表注（㉒.2）**：上表把「lambda」拉成「取代手写 functor 类」的就地闭包。STL 算法的谓词/投影、Chromium 的 task 回调、GoogleTest 的测试用例、Unreal 的事件 delegate 全都用 lambda 捕获上下文，把「一次性逻辑」就地写出。注意测试与基准一行：Google Benchmark/Catch2/GoogleTest 把「被测逻辑」包进 lambda 延迟到 runner 执行——这正是 lambda 取代早年宏+手写 functor 的范式转移。
+
+**一条判读**：用 lambda 的判据是「有一段一次性/局部逻辑要当参数传，且需要捕获上下文」。算法回调、task/事件、测试体、行为树分支全用 lambda 消除 functor 样板。规则：局部、一次性、要捕获 → lambda；要复用、要命名、要特化 → 仍写具名函数/可调用类。警惕过度捕获（悬垂引用、大对象拷贝）与 `auto` 参数 lambda 仅在 C++14+ 通用 lambda 可用。
 ### ㉒.3 生产踩坑：lambda 的常见误用
 - **悬垂捕获**：lambda 按引用 `[&]` 捕获局部变量后异步执行/返回，被捕获对象已析构，访问即 UB——现代 C++ 最高频错误之一（见 ch26 0.4 / ch33）。[史][评]
 - **`std::function` 类型擦除开销**：把 lambda 装进 `std::function` 有 SBO 与间接调用成本（本章实测约 8×），热路径应传模板参数或泛型 lambda 而非 `std::function`。[评]

@@ -1397,12 +1397,20 @@ int main() {
 `auto` 在原始 C（K&R，1978）里本就存在，意为"自动存储期"，几乎无人使用形同废字；C++11 把它"劫持"为类型推导发动机，直接动机是 lambda 闭包类型、模板返回类型无法手写（见 ch22 0.1）。[史][评] `decltype` 同期引入，回答"这个表达式的类型是什么"，服务于泛型库（如 `decltype(x+y)` 作返回类型）。[史] C++14 的 `decltype(auto)` 保留引用性，C++20 缩写函数模板（P1141）让 `void f(auto x)` 等价于单参数模板，把 auto 从"变量推导"跃迁到"函数签名"。[史]
 
 ### ㉒.2 真实工程坐标：auto/decltype 活在哪些产品里
-- **标准库与 ranges**：`std::ranges` 算法几乎全部用 `auto` 参数与 Concept 约束写泛型回调；`std::invoke_result_t`、`std::declval` 等 trait 是模板元编程的日常工具。
-- **LLVM/Clang**：TableGen 与大量模板代码用 `auto` 接收复杂闭包/迭代器类型；`decltype` 广泛用于 traits 与 SFINAE 分支。
-- **Chromium / Abseil**：范围 for、`base::Callback`、容器遍历默认 `auto`；Google 风格指南对 `int` 等普通类型仍要求显式写出以保持可读。
-- **ML 框架后端**：PyTorch 的 C++ 后端（LibTorch）与 XLA/HLO builder 链式调用大量用 `auto` 承接 Eigen 表达式模板与张量类型，省去写出 `torch::Tensor` / `at::Tensor` 等长类型名；TensorFlow C++ 的 `StatusOr<T>` 返回也常以 `auto` 接收。
-- **RPC / 消息中间件**：gRPC C++ 的异步完成队列（`grpc::CompletionQueue`、`ServerContext`）与 protobuf 生成的访问器常以 `auto` 承接迭代与返回值；Apache Thrift 的客户端桩代码同理，把冗长的 `std::unique_ptr<...>` 类型交给 `auto` 推导。
 
+下表把「auto/decltype」拉成「让人写得出复杂泛型代码」的推导工具。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库与 ranges | `std::ranges`、类型 traits | 算法用 `auto` 参数 + Concept 写泛型回调；`std::invoke_result_t`/`declval` 支撑元编程 | 一切 C++20+ 程序地基 | `auto` + Concept 是泛型回调主流写法 |
+| LLVM/Clang | TableGen、Clang AST | `auto` 接复杂闭包/迭代器；`decltype` 用于 traits 与 SFINAE 分支 | 编译基础设施 | `decltype` 是模板分支的日常工具 |
+| Chromium/Abseil | `base::Callback`、容器遍历 | 范围 for/回调默认 `auto`；`int` 等普通类型仍显式写出 | 工业级基础设施 | Google 风格指南：简单类型不省略 [史][评] |
+| ML 框架后端 | LibTorch / XLA-HLO / TensorFlow C++ | `auto` 承接 Eigen 表达式模板与 `torch::Tensor`/`StatusOr<T>` 长类型 | 训练/推理基础设施 | 省去超长类型名，保留类型安全 |
+| RPC/消息中间件 | gRPC C++、`protobuf`、Apache Thrift | `auto` 接 `CompletionQueue`/迭代器/桩返回值，`unique_ptr<...>` 交推导 | 分布式系统客户端 | 冗长生成类型交给 `auto` 推导 |
+
+> **表注（㉒.2）**：上表把「auto/decltype」拉成「让人写得出复杂泛型代码」的推导工具。标准库 ranges 用 `auto` + Concept 写回调，LLVM 用 `decltype` 做模板分支，ML 框架用 `auto` 吞掉 `torch::Tensor` 这类超长类型名。注意 Chromium/Google 一行：它并非无脑 `auto`，而是「简单类型（如 `int`）仍显式写」——说明 `auto` 的边界是可读性而非懒惰。
+
+**一条判读**：用 auto 的判据是「类型名太长或根本写不出，且推导结果显然」。泛型回调/ranges/表达式模板/生成桩代码 → `auto` 提升可读性且不丢类型安全；但 `int`/`double` 这类一眼可读的简单类型，Google 规范仍要求显式写，避免「auto 满天飞」损害可读性。规则：推导能提升可读性且不模糊类型时上 `auto`，否则显式。
 ### ㉒.3 生产踩坑：auto/decltype 的常见误用
 - **auto 掩盖真实类型**：`auto x = {1,2,3}` 推导出 `std::initializer_list` 而非 `std::vector`，与模板 `T` 行为不一致，是经典坑；`auto` 接代理引用（如 `vector<bool>::reference`）会悬垂。[评]
 - **decltype 的两条规则记错**：`decltype((x))` 因是多表达式而推导出引用，是高频面试题也是真实 bug 源；`decltype(auto)` 返回时需警惕悬垂引用。[史][评]

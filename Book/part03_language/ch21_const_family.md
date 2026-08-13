@@ -916,12 +916,20 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 `const` 来自 1980 年代初 Stroustrup 对 C 的扩展，初衷是给"不应被修改"的对象一道编译期保险，并支持 `const` 成员函数表达"只读不写"契约（见 ch21 0.1）。[史] 但它只是运行期只读，不代表编译期常量；`constexpr` 是 C++11 才引入，把"可在编译期求值"写进声明。[史] `consteval`（立即函数，必须编译期求值）与 `constinit`（强制静态初始化、杜绝"静态初始化顺序灾难"）在 C++20 入标准，是 const 族的最后两块拼图（P1073 / P1143）。[史][评] C++23 的 `if consteval`（P1938）提供"当前是否在编译期求值"的精确分支，把"求值阶段"语义进一步坐实。[史]
 
 ### ㉒.2 真实工程坐标：const 家族活在哪些产品里
-- **标准库与编译器**：`std::string_view`、`std::span` 等零成本视图全靠 `const T&` / `constexpr` 契约；libstdc++/libc++ 把大量算法与 trait 标 `constexpr`，使其可在编译期参与 `std::array` 计算。
-- **嵌入式与固件**：`const` 全局表（查表、状态机、协议字段）被放进 ROM/flash，`constinit` 保证跨 TU 的常量初始化不被降级为动态初始化，规避 SIOF（Static Initialization Order Fiasco）。
-- **游戏与图形**：Unreal 的 `UFUNCTION`/`UPROPERTY` 反射元数据、Unity 的 C++ 插件接口普遍用 `const&` 传只读数据；`constexpr` 在编译期算哈希、枚举字符串化中大量使用。
-- **密码学/安全库**：OpenSSL 与 BoringSSL 把几乎所有只读入参（如 `EVP_*` 系列）标 `const`，`const-correctness` 是接口契约的一部分；constant-time 代码（避免分支泄露密钥位）也靠 `const` 表达"只读不可变"以防编译器把敏感比较重排。
-- **航天软件**：NASA JPL 的 C++ 编码规范（JPL Coding Standard）明确把"尽量 `const`"列为强制性规则，要求入参默认 `const&`、可不变的数据默认 `const`，把不可变性前置到飞行器控制软件的接口设计里。
 
+下表把「const 家族」拉成「从编译期计算到飞行器接口」的不可变性纪律。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库与编译器 | `std::string_view`/`std::span`、libstdc++/libc++ | 零成本视图靠 `const T&`/`constexpr` 契约；trait 标 `constexpr` 参与编译期 `std::array` 计算 | 一切 C++ 程序地基 | `constexpr` 把运行期逻辑前移到编译期 |
+| 嵌入式与固件 | ROM/flash 常量表、MCU 固件 | `const` 全局表（查表/状态机/协议字段）驻留 ROM；`constinit` 规避 SIOF | 资源受限设备 | `constinit` 防跨 TU 常量被降级为动态初始化 |
+| 游戏与图形 | Unreal `UFUNCTION`/`UPROPERTY`、Unity C++ 插件 | 反射元数据与插件接口 `const&` 传只读数据；`constexpr` 编译期算哈希/枚举字符串化 | 实时渲染/引擎 | 不可变性用于反射与编译期元数据 |
+| 密码学/安全库 | OpenSSL / BoringSSL（`EVP_*`） | 只读入参一律 `const`；constant-time 代码靠 `const` 表达「只读不可变」防重排 | 安全基础设施 | `const-correctness` 是接口契约；参与防侧信道 |
+| 航天软件 | NASA JPL C++ 编码规范 | 「尽量 const」为强制规则：入参默认 `const&`、不变数据默认 `const` | 飞行器控制软件 | 不可变性前置到接口设计 [史] |
+
+> **表注（㉒.2）**：上表把「const 家族」拉成「从编译期计算到飞行器接口」的不可变性纪律。标准库用 `constexpr` 把逻辑前移到编译期，嵌入式用 `const`/`constinit` 把常量钉在 ROM 并规避 SIOF，安全库用 `const` 同时做接口契约与防侧信道重排。注意 NASA JPL 一行：它把「尽量 const」写成了飞行器控制软件的强制性规则——不可变性在这里不是风格偏好，而是接口正确性的前置约束。
+
+**一条判读**：用 const 的判据是「这个值/参数会不会变」。编译期可知的常量与 tram 计算 → `constexpr`；只读视图/入参 → `const T&`；跨 TU 的命名空间级常量 → `constinit` 防 SIOF；固定数据表 → `const` 驻 ROM。规则：默认 const，只在确实要修改时才去掉；安全/航天等高风险域把 const 当契约而非建议。
 ### ㉒.3 生产踩坑：const 家族的常见误用
 - **`const` 不是物理不可变**：`const` 只是"通过此表达式不能改"，`const_cast` 去掉的是"编译器视图"，实则修改仍是未定义行为——把 `const` 当成运行时锁是经典误解。[评]
 - **`constexpr` 被逼成运行期**：参数不是编译期常量时 `constexpr` 函数退化成普通函数，误以为"标了就一定零开销"会落空；真正要在编译期强制，需用 `consteval`。[史][评]
