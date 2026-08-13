@@ -338,6 +338,21 @@ int main() {
 
 ## ⑳ 跨语言对比 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：分支预测失败拖慢热路径，你用 `[[likely]]`/`[[unlikely]]` 给提示。** 你调关键循环。请说明。
+   - [标准] `[[likely]]`/`[[unlikely]]` 是给实现的分支概率提示，不强制硬件行为，属实现层优化。
+   - [引用] ISO/IEC 14882:2023 §[dcl.attr.likelihood]（likely/unlikely 属性）/ P0479；cppreference "attribute:likely" 词条。
+
+2. **真实场景：你理解“缓存未命中”比“指令数”更决定延迟”，但它不在语言保证内。** 你做数据布局优化。请说明层级边界。
+   - [标准] 缓存/流水线是硬件微架构层；C++ 只保证抽象机语义与对象内存布局（连续/对齐）。
+   - [引用] ISO/IEC 14882:2023 §[intro.abstract]（抽象机）/ [dcl.array]（连续存储）/ [basic.align]；cppreference。
+
+3. **真实场景：用 `std::hardware_destructive_interference_size` 对齐避免 false sharing。** 你做无锁并发。请说明。
+   - [标准] 该常量提供“ Destroy 干扰”的硬件缓存行尺寸提示（实现定义），用于 padding 隔离。
+   - [引用] ISO/IEC 14882:2023 §[support.limits]（hardware_*_interference_size）/ P0154；cppreference "std::hardware_destructive_interference_size" 词条。
+
+
 | 能力 | C++ | Rust | C (GCC/Clang) | Go | 汇编/SIMD |
 |---|---|---|---|---|---|
 | 分支提示 | `[[likely]]` / `__builtin_expect` | `#[cold]` / 隐式 | `__builtin_expect` | 无内建 | 手动布局 |

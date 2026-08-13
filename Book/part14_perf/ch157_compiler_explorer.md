@@ -352,6 +352,21 @@ int main() {
 
 ## ⑳ 跨语言对比：汇编探索工具全景 [经验]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：在 Compiler Explorer 上对比 GCC/Clang/MSVC 同一段代码的汇编差异。** 你选对优化档。请说明（属工具链）。
+   - [标准] 无直接标准对应；生成的汇编是实现/目标三元组相关，不同编译器输出可不同。
+   - [引用] Compiler Explorer (godbolt.org) 文档 / GCC/Clang `-S` 输出；cppreference 通用。
+
+2. **真实场景：用 CE 验证“-O2 是否内联了这个小函数”。** 你不再靠猜。请说明（属验证方法）。
+   - [标准] 是否内联由实现决定（[dcl.inline] 仅为建议）；可观测行为须一致，汇编细节不保证。
+   - [引用] ISO/IEC 14882:2023 §[dcl.inline]（inline 的语义是“可多处定义”而非“必内联”）/ [intro.abstract]；cppreference "Inline" 词条。
+
+3. **真实场景：用 CE 的 libstdc++/libc++ 版本切换验证 ABI 差异。** 你交叉检查可移植性。请说明（属标准库层）。
+   - [标准] 标准库内部布局（如 string/vector 表示）是实现细节，跨实现/版本可不同。
+   - [引用] ISO/IEC 14882:2023 §[strings]（实现细节）/ [container.requirements]；cppreference。
+
+
 ```cpp
 // ⑳ 各语言的编译器资源管理器等价工具
 #include <iostream>

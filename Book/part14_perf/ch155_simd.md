@@ -629,6 +629,21 @@ g++ -std=c++23 -O3 -mavx2 -fopt-info-vec-all=vec.log Examples/_ch155_simd.cpp
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用编译器自动向量化（`-O3 -march=native`）把标量循环变 SIMD。** 你验证加速。请说明层级边界。
+   - [标准] 自动向量化属实现/微架构层优化；语言只保证可观测行为，不保证生成 SIMD 指令。
+   - [引用] ISO/IEC 14882:2023 §[intro.abstract]（优化自由）/ [dcl.array]（连续存储）；cppreference "Auto vectorization"（编译器文档）。
+
+2. **真实场景：用 `std::experimental::simd`（或提案中的 `std::simd`）做显式向量类型。** 你做数值内核。请说明标准化状态。
+   - [标准] 截至 ISO/IEC 14882:2023，`std::simd` **尚未进入标准**（属 P0214R9 目标 C++26 的提案，仅以 `std::experimental` 提供）。不可把提案写成已标准化。
+   - [引用] ISO/IEC 14882:2023（无 `std::simd` 条款）/ P0214R9（SIMD 提案，目标 C++26）；cppreference "std::experimental::simd" 词条。
+
+3. **真实场景：对齐分配（`std::assume_aligned`/ aligned allocator）让 SIMD load 不崩溃。** 你向量化要求 32/64 字节对齐。请说明。
+   - [标准] `std::assume_aligned` 给实现对齐假设提示（C++20）；实际对齐由分配器/alignas 保证。
+   - [引用] ISO/IEC 14882:2023 §[ptr.align]（assume_aligned）/ [basic.align]（对齐要求）；cppreference "std::assume_aligned" 词条。
+
+
 | 主题 | 要点 | 标志/指令 |
 |---|---|---|
 | 自动向量化 | GCC 需 `-O3` 或 `-ftree-vectorize` | `-O3 -mavx2` |

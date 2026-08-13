@@ -687,6 +687,21 @@ int main() {
 
 ## ⑳ 源码阅读路线（缓存相关实现与标准） [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：AoS → SoA 让结构体内同字段连续，提升缓存与 SIMD 效率。** 你重构粒子系统。请说明布局保证。
+   - [标准] 数组成员连续存储；按字段聚合成数组可提升打包密度与缓存命中。
+   - [引用] ISO/IEC 14882:2023 §[dcl.array]（连续存储）/ [class.mem]（填充）；cppreference "Data-oriented design" 词条。
+
+2. **真实场景：用 `alignas(64)` 给每线程热数据独立缓存行，消除 false sharing。** 你多线程计数性能差。请说明。
+   - [标准] `alignas` 可要求强于自然对齐的对齐；与 `hardware_destructive_interference_size` 配合隔离。
+   - [引用] ISO/IEC 14882:2023 §[dcl.align] / [basic.align]（对齐）；cppreference "alignas" 词条。
+
+3. **真实场景：冷热数据分离缩小活跃工作集。** 你重排成员减少缓存占用。请说明边界。
+   - [标准] 语言只保证成员连续与实现定义填充；冷热分离是工程优化，非语言层保证。
+   - [引用] ISO/IEC 14882:2023 §[class.mem]（成员布局）；cppreference "Data-oriented design" 词条。
+
+
 - `[平台·x86-64]`：libstdc++ `<new>` 中 `hardware_destructive_interference_size` 的定义（GCC 12 由 16 修正为 64）。
 - `[实现·GCC15]`：GCC 预取与对齐优化 passes（`tree-vectorize`、`pass_peephole2`）源码 `gcc/tree-vect-*.cc`。
 - `[标准]`：ISO `[support.limits]`（interference size）、`[class.mem]`（布局/对齐）、`[basic.align]`。

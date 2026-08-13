@@ -322,6 +322,23 @@ int main() {
 
 ## ⑳ 源码阅读路线 [经验]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：在热循环里按值传大结构体（无谓拷贝），你改成 `const&`。** 你定位性能陷阱。请说明。
+   - [标准] 按值传递会触发拷贝构造（可能深拷贝资源）；大对象按 `const` 引用避免拷贝。
+   - [引用] ISO/IEC 14882:2023 §[class.copy.ctor]（拷贝构造）/ [dcl.fct]（传参语义）；cppreference "Argument passing" 词条。
+
+2. **真实场景：误用 `std::endl` 每次强制 flush，拖慢大量输出。** 你改成 `'
+'`。请说明。
+   - [标准] `std::endl` 写入换行并刷新输出流（`flush`）；`'
+'` 仅写入换行，批量更优。
+   - [引用] ISO/IEC 14882:2023 §[ostream]（operator<< 与 endl）/ [streambuf]；cppreference "std::endl" 词条。
+
+3. **真实场景：在循环里反复 `new`/`delete` 造成碎片与系统调用开销，你改为内存池/栈分配。** 你优化分配器。请说明。
+   - [标准] 动态分配（`new`/`delete`）由实现提供，频繁调用有成本；可用定制分配器或 arena 降低。
+   - [引用] ISO/IEC 14882:2023 §[basic.stc.dynamic] / [new.delete]（动态存储）/ [allocator.requirements]（定制分配器）；cppreference。
+
+
 ```cpp
 // ⑳ 学习性能优化的开源项目阅读路线
 #include <iostream>
