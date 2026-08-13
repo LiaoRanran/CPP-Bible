@@ -830,6 +830,21 @@ void debug_count_if(const std::vector<int>& v, int d) {
 
 ## ⑳ 速查表
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用标准算法替代手写循环以表达意图并支持并行。** 你给 `std::for_each` 传 `execution::par`。请说明算法与迭代器区间的关系。
+   - [标准] 标准算法以迭代器（或范围）区间工作，与容器存储无关；可配执行策略并行化。
+   - [引用] ISO/IEC 14882:2023 §[algorithms]（算法以区间操作）/ [algorithms.parallel]（并行）；cppreference "Standard algorithms" 词条。
+
+2. **真实场景：修改容器后旧迭代器失效，遍历崩溃。** 你在算法回调里插入元素。请说明来源。
+   - [标准] 各容器对插入/删除的迭代器有效性影响由容器要求规定，必须按容器查表。
+   - [引用] ISO/IEC 14882:2023 §[container.reqmts]（迭代器失效规则）；cppreference "Iterator invalidation" 词条。
+
+3. **真实场景：算法复杂度是契约，可据此选算法。** 你对比 `find`（O(N)）与有序区间二分查找（O(log N)）。请说明保证。
+   - [标准] 标准规定每算法复杂度上界，是实现与调用方都遵守的契约。
+   - [引用] ISO/IEC 14882:2023 §[algorithms]（算法复杂度要求）；cppreference "Algorithm complexity" 词条。
+
+
 ```
 ┌── STL 算法速查（复杂度均为最坏，n=|区间|）──────────────┐
 │ find/find_if          O(n)      非修改，线性扫描          │

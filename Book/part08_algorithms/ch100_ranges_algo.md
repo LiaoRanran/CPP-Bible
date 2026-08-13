@@ -555,6 +555,21 @@ for (int x : v | spy("in") | std::views::filter([](int n){return n>0;}) | spy("o
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `ranges::sort(v)` 直接吃容器。** 你不再写 `begin()/end()`。请说明接口。
+   - [标准] C++20 ranges 算法接受整个范围（容器自动适配），免去显式迭代器对。
+   - [引用] ISO/IEC 14882:2023 §[alg]（ranges 版算法接受范围）；cppreference "std::ranges algorithms" 词条。
+
+2. **真实场景：用投影按成员排序无需写比较器。** 你写 `ranges::sort(v, {}, &Obj::key)`。请说明投影。
+   - [标准] ranges 算法支持投影参数：按某成员/结果排序，无需自定义比较器。
+   - [引用] ISO/IEC 14882:2023 §[alg]（投影参数 Projection）；cppreference "Projection (ranges)" 词条。
+
+3. **真实场景：与视图管道组合保持惰性。** 你 `v | views::filter | ranges::sort` 只在消费时计算。请说明。
+   - [标准] 视图惰性求值；与 ranges 算法组合时元素按需产生。
+   - [引用] ISO/IEC 14882:2023 §[range.adaptors]（视图惰性）；cppreference "std::ranges::views" 词条。
+
+
 | 类别 | 名字 | 作用 | 是否 view（惰性） |
 |---|---|---|---|
 | 算法 | `ranges::sort(r, cmp, proj)` | 对整个 range 排序 | 否（就地） |

@@ -754,6 +754,21 @@ sorted-bsearch M=20000 : 3143.4 us (hits=20000)
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `make_heap` 把 vector 变成优先队列。** 你手写堆管理。请说明不变量。
+   - [标准] `make_heap` 把随机迭代器区间重排成满足堆序（最大元素在首）。
+   - [引用] ISO/IEC 14882:2023 §[alg.heap]（堆算法）；cppreference "std::make_heap" 词条。
+
+2. **真实场景：push/pop 堆的正确顺序。** 你插入忘了先 `push_back` 再 `push_heap`。请说明步骤。
+   - [标准] 插入：先 `push_back` 新元素再 `push_heap`；删除最大值：先 `pop_heap` 再 `pop_back`。
+   - [引用] ISO/IEC 14882:2023 §[alg.heap]（push_heap / pop_heap 语义）；cppreference "std::push_heap / pop_heap" 词条。
+
+3. **真实场景：`priority_queue` 内部就是堆。** 你理解容器适配器与堆算法的对应。请说明。
+   - [标准] `priority_queue` 默认以 vector 为底层、用 `make_heap` 系列算法维护堆序。
+   - [引用] ISO/IEC 14882:2023 §[queue]（priority_queue 基于堆算法）；cppreference "std::priority_queue" 词条。
+
+
 | 需求 | 推荐 | 复杂度 | 备注 |
 |---|---|---|---|
 | 建堆 | `make_heap` / `priority_queue` 构造 | O(n) | 别逐元素 `push_heap` |

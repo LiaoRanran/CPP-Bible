@@ -1363,6 +1363,21 @@ void demo_c10(const std::vector<long long>& v) {
 
 ## ⑳ 速查表
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：`reduce` 比 `accumulate` 能并行但结果可能不同。** 你求和浮点得不同顺序。请说明差异。
+   - [标准] `accumulate` 严格按序；`reduce` 允许重排元素（可并行），对浮点/非结合操作结果可能不同。
+   - [引用] ISO/IEC 14882:2023 §[numeric.ops]（accumulate / reduce）；cppreference "std::reduce" 词条。
+
+2. **真实场景：用 `transform_reduce` 一步融合“变换+归约”。** 你算向量点积想并行。请说明。
+   - [标准] `transform_reduce` 将逐元素变换与归约合并，可配执行策略并行，且减少临时。
+   - [引用] ISO/IEC 14882:2023 §[numeric.ops]（transform_reduce）；cppreference "std::transform_reduce" 词条。
+
+3. **真实场景：`reduce` 对二元操作要求可结合可交换。** 你用不可交换操作得到错误结果。请说明约束。
+   - [标准] `reduce` 重排元素顺序，故二元操作必须满足结合律与交换律，否则结果不确定。
+   - [引用] ISO/IEC 14882:2023 §[numeric.ops]（reduce 对操作的要求）；cppreference "std::reduce" 词条。
+
+
 | 算法 | 头文件 | C++ 版本 | 顺序 | 可并行 | 典型用途 |
 |---|---|---|---|---|---|
 | `accumulate` | `<numeric>` | C++98 | 严格左→右 | 否（无策略参数） | 顺序求和/加权 |

@@ -872,6 +872,21 @@ int main() { return 0; }
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：根据迭代器类别选最优算法。** 你对 `list` 用 `sort`（成员函数）而非 `std::sort`。请说明原因。
+   - [标准] `std::sort` 要求随机访问迭代器；`list` 仅双向，须用其成员 `sort` 或先拷到随机访问容器。
+   - [引用] ISO/IEC 14882:2023 §[iterator.requirements]（迭代器类别与算法可用性）/ [alg.sort]；cppreference "Iterator" 词条。
+
+2. **真实场景：稳定算法保持等价元素相对顺序。** 你排序后还想让原顺序可追溯。请说明。
+   - [标准] 标准标注“稳定”的算法（如 stable_sort/stable_partition）保持等价元素原相对顺序。
+   - [引用] ISO/IEC 14882:2023 §[algorithms]（稳定性约定）；cppreference "Algorithm complexity" 词条。
+
+3. **真实场景：算法复杂度类别是调用方契约。** 你据此预估最坏耗时。请说明。
+   - [标准] 每算法在标准中规定复杂度上界（如 O(N)、O(N log N)），实现不得超出。
+   - [引用] ISO/IEC 14882:2023 §[algorithms]（复杂度要求）；cppreference "Algorithm complexity" 词条。
+
+
 | 思想 | 典型结构 | 平均 | 最坏 | STL 对应 | 关键坑 |
 |---|---|---|---|---|---|
 | 哈希（链地址） | `unordered_map` | O(1) | O(n) | `unordered_map` | 自定义 key 需 `hash`+`==` |
