@@ -4,7 +4,7 @@
 ⟶ Book/part05_oo/ch45_oop_object_model.md
 ⟶ Book/part12_patterns/ch135_patterns_intro.md
 
-> 真实取证工具链：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）+ Qt 6.8.3 本地 `moc.exe`（`C:/Qt/6.8.3/mingw_64/bin/moc.exe`）。
+> 真实取证工具链：MinGW GCC 15.3.0（`C:/Qt/Tools/mingw1530_64/bin/g++.exe`）+ Qt 6.8.3 本地 `moc.exe`（`C:/Qt/6.8.3/mingw_64/bin/moc.exe`）。
 > 本机已装 Qt（头文件 + moc），但**未安装 Qt 源码树**；故 Qt 本机源码剖析一律引用上游 GitHub URL + 行号并标注「上游参考」，本机可复现部分用真实 `moc` 产物与真实 g++ 汇编佐证的「典型输出」。
 > 示例源均位于 `Examples/_ch129_*`（Qt 未装场景下第 ⑨ 节示例为**自包含纯 C++**，可直接编译运行）。
 
@@ -108,6 +108,9 @@ Node* child = new Node(root);      // child 的 parent = root
 ## ③ 信号槽机制（[实现·Qt]源码剖析 moc 生成代码，upstream+行号）
 
 信号槽是 Qt 的发布/订阅：一个对象 `emit signal(args)`，所有 `connect` 到该信号的槽被依次调用。机制实现完全由 moc 生成代码 + `QMetaObject::activate` 完成。
+
+![图 ③-1：Qt 信号槽的发布/订阅模型（自绘示意图，非官方素材）](../assets/qt/signalslot_flow.svg)
+> **图注（图 ③-1）**：`Sender` 通过 `emit` 触发 `QMetaObject::activate`，由 moc 生成的连接表（`connectionList`）按信号索引取出全部订阅者，逐一调用其槽函数；跨线程 `QueuedConnection` 时参数经 `QMetaCallEvent` 序列化入事件队列，由目标线程事件循环分发。虚线框表示 moc 在**编译期**生成的元数据，运行期不参与类型检查——新式 `connect` 已在编译期校验签名，旧式字符串连接才推迟到运行期。
 
 ```cpp
 // ③ 用户写的头文件（moc 输入）：信号只声明不定义
@@ -816,14 +819,21 @@ A: 移除 QTextCodec (改用 UTF-8), QVector=QList 统一, CMake 成为首选构
 
 ### ㉒.2 真实工程坐标：Qt 活在哪些产品里
 
-- **桌面与开源旗舰**：整个 **KDE** 桌面生于 Qt；**VLC**、**Wireshark**、**VirtualBox**、**OBS Studio** 的界面均基于 Qt；**Telegram Desktop** 用 Qt Widgets 从单一代码库产出跨平台客户端；**Qt Creator** 本身是纯 Qt C++ 写的大型 IDE。
-- **商业与办公软件**：**WPS Office**（金山）的跨平台版本使用 Qt；**Autodesk** 部分产品（如部分建模/查看器组件）采用 Qt；**Wolfram Mathematica** 的 Notebook 前端基于 Qt。
-- **汽车座舱与嵌入式 HMI**：多家德系与国产车企的座舱/中控（如早期 **Tesla Model S/X 的 MCU 界面** 即基于 Qt；**Mercedes-Benz MBUX** 部分 UI 生态与 Qt 密切关联）、医疗设备面板、工业触摸屏——这些领域要的是「原生性能 + 跨平台 + 长生命周期维护」，正是 Qt 因那台超声机而生的初衷。
-- **影视与创意工具**：**DaVinci Resolve**（Blackmagic Design）、**DJI** 部分地面站软件等亦以 Qt 为 UI 底座。
+Qt 能从一个挪威小公司的工具包活成工业级 GUI 标准件，靠的不是某个炫技 API，而是它赌对的那个朴素命题——**「写一次、编译到各处，且长期可维护」**。下表把 Qt 真正落地的领域、代表产品、它替你扛住的硬约束、以及你付出的代价并列摆开；它们的最大公约数就是「原生性能 + 跨平台 + 长生命周期」，恰好是 1991 年那台超声机逼出来的初衷。
 
-- **功能安全与航空电子**：The Qt Company 提供 **Qt Safe Renderer**，通过 IEC 61508 / ISO 26262 功能安全认证，用于汽车仪表、工业报警等**安全关键显示**——这是 Qt 从「桌面 UI」跨进「安全关键系统」的硬证据（据 Qt 官方安全产品线文档）。
-- **游戏分发平台**：**Epic Games Launcher**（Epic 自家的游戏与引擎分发客户端）以 Qt 构建跨平台界面，是 Qt 在「游戏工业链」另一端的落地。
-- **医疗器械控制台**：延续 Qt 诞生于「医疗超声设备 UI」的初心，多家医学影像设备厂商（MRI / CT 控制台、超声工作站）仍以 Qt 做操作界面 [据 Qt 客户案例]。
+| 领域 | 代表产品 / 案例 | Qt 替你扛住的硬约束（为何选它） | 你付出的代价 / 注意点 | 标准与生态背书 |
+|---|---|---|---|---|
+| 桌面与开源旗舰 | KDE 整体、VLC、Wireshark、VirtualBox、OBS Studio、Telegram Desktop、Qt Creator | 单一 C++ 代码库产出各平台**原生外观**二进制；坐拥最庞大的 C++ GUI 生态 | 二进制体积偏大；LGPL 下须**动态链接**以履行「可替换性」义务 | KDE 自 1996 即以 Qt 为底座，自由软件核心基础设施 |
+| 商业与办公软件 | WPS Office（跨平台版）、Autodesk 部分产品、Wolfram Mathematica 前端 | 跨平台一致 UI + 十年级维护周期，规避「每平台重写一套」 | 闭源**静态链接**需购买 The Qt Company 商业许可；授权档选择复杂 | 商业支持 + 长期 LTS 通道 |
+| 汽车座舱 / 嵌入式 HMI | 早期 Tesla Model S/X MCU、Mercedes-Benz MBUX 部分 UI、车企中控 | **原生性能 + 硬实时倾向 + 长生命周期**（车规要求 15 年+ 供货） | 认证周期长、Qt 主版本**锁定**难升；资源受限设备需裁剪 | 车载 HMI 主流方案之一，Qt for MCUs 覆盖更薄硬件 |
+| 医疗与工业 HMI | 医疗仪器面板、产线触摸屏、MRI / CT 控制台、超声工作站 | 稳定 + 跨平台 + 长认证周期下的可维护性 | 功能安全认证带来流程与文档成本 | 契合 IEC 62304 医疗设备软件生命周期规范 |
+| 影视与创意工具 | DaVinci Resolve（Blackmagic Design）、DJI 部分地面站 | 高性能图形 + 跨平台一致操作面 | 与 GPU / 厂商驱动耦合，需跟进 QRhi 图形后端 | OpenGL / Vulkan / Metal / D3D 经 QRhi 统一抽象 |
+| 功能安全与航空电子 | Qt Safe Renderer（汽车仪表、工业报警安全关键显示） | 提供 **IEC 61508 / ISO 26262** 功能安全认证路径 | 需专用安全版 + 独立认证流程，成本高 | Qt 从「桌面 UI」跨进「安全关键系统」的硬证据 |
+| 游戏分发平台 | Epic Games Launcher | 跨平台客户端一致体验，复用桌面 UI 技术栈 | 非游戏内 UI，不解决渲染 / 引擎问题 | 游戏工业链另一端的落地 |
+
+> **表注（㉒.2）**：本表据 The Qt Company 官方客户案例与产品文档整理，意在呈现 Qt 的「产业坐标」而非穷举。代表产品随版本与商业合作变动，以厂商官方披露为准；「代价 / 注意点」列仅列典型约束，具体项目须结合自身授权与认证需求评估。Qt 的跨平台承诺以「同一主版本内 ABI 向后兼容」为边界——跨主版本（Qt5↔Qt6）须重编，详见 ㉒.3。
+
+**一条判读**：这些领域看似天差地别，却都卡在同一个工程痛点上——**要在多种硬件 / OS / 认证约束下，长期维护一套高性能原生界面**。这正是「moc + 信号槽 + 对象树」这套在标准 C++ 之上外挂一层的设计，被真实产业反复验证的价值；它也解释了为什么 Qt 至今没被 Web / 跨平台脚本方案整体取代。
 
 ### ㉒.3 生产踩坑：moc、信号槽、授权、ABI
 
@@ -860,6 +870,8 @@ ISO C++ **至今（C++23）没有内建反射**。Qt 用独立的 **moc** 元对
 | [第130章](Book/part11_source/ch130_chromium_abseil.md) | 独占所有权/工厂模式 | 本章提供概念，第130章提供实现 |
 | [第135章](Book/part12_patterns/ch135_patterns_intro.md) | 多态插件/框架扩展 | 本章提供概念，第135章提供实现 |
 | [第45章](Book/part05_oo/ch45_oop_object_model.md) | 高性能容器/零拷贝传输 | 本章提供概念，第45章提供实现 |
+
+> **表注（联合使用场景）**：本表列出与本章概念耦合最紧的兄弟章；「本章提供概念，第 X 章提供实现」表示信号槽 / 对象模型的思想在此章铺垫，具体工程落地（网络、所有权、模式、容器）交由对应章展开，避免重复造轮子。
 
 ## 相关章节（交叉引用）
 

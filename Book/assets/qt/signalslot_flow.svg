@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440" font-family="-apple-system, 'Segoe UI', 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <rect x="0" y="0" width="680" height="440" fill="#ffffff"/>
+  <rect x="8" y="8" width="664" height="424" rx="14" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <text x="340" y="40" text-anchor="middle" font-size="19" font-weight="700" fill="#0f172a">Qt 信号槽的发布 / 订阅模型</text>
+  <text x="340" y="62" text-anchor="middle" font-size="12" fill="#64748b">emit → QMetaObject::activate → 遍历连接表 → 逐一调用槽</text>
+
+  <!-- Sender -->
+  <rect x="34" y="120" width="176" height="92" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="122" y="148" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">Sender : QObject</text>
+  <text x="122" y="172" text-anchor="middle" font-size="12.5" fill="#334155">signal: clicked(int)</text>
+  <text x="122" y="194" text-anchor="middle" font-size="11" fill="#64748b">press(): emit clicked(42)</text>
+
+  <!-- activate -->
+  <rect x="262" y="132" width="156" height="68" rx="10" fill="#f1f5f9" stroke="#475569" stroke-width="2"/>
+  <text x="340" y="158" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">QMetaObject::</text>
+  <text x="340" y="178" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">activate(this,...)</text>
+
+  <!-- Receiver A -->
+  <rect x="470" y="84" width="176" height="84" rx="10" fill="#ecfdf5" stroke="#16a34a" stroke-width="2"/>
+  <text x="558" y="112" text-anchor="middle" font-size="13.5" font-weight="700" fill="#15803d">Receiver A</text>
+  <text x="558" y="136" text-anchor="middle" font-size="12.5" fill="#334155">slot: onClicked(int)</text>
+  <text x="558" y="158" text-anchor="middle" font-size="11" fill="#64748b">更新 UI / 进度条</text>
+
+  <!-- Receiver B -->
+  <rect x="470" y="200" width="176" height="84" rx="10" fill="#ecfdf5" stroke="#16a34a" stroke-width="2"/>
+  <text x="558" y="228" text-anchor="middle" font-size="13.5" font-weight="700" fill="#15803d">Receiver B</text>
+  <text x="558" y="252" text-anchor="middle" font-size="12.5" fill="#334155">slot: onLog(int)</text>
+  <text x="558" y="274" text-anchor="middle" font-size="11" fill="#64748b">写日志 / 落盘</text>
+
+  <!-- arrows -->
+  <defs>
+    <marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#334155"/>
+    </marker>
+  </defs>
+  <line x1="210" y1="156" x2="258" y2="156" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+  <text x="234" y="148" text-anchor="middle" font-size="11" fill="#475569">emit</text>
+
+  <line x1="418" y1="150" x2="466" y2="120" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+  <line x1="418" y1="182" x2="466" y2="236" stroke="#334155" stroke-width="2.2" marker-end="url(#ah)"/>
+  <text x="446" y="150" text-anchor="middle" font-size="10.5" fill="#475569">直接调用</text>
+  <text x="446" y="234" text-anchor="middle" font-size="10.5" fill="#475569">直接调用</text>
+
+  <!-- moc dashed box -->
+  <rect x="34" y="288" width="612" height="96" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.6" stroke-dasharray="6 5"/>
+  <text x="54" y="312" font-size="13" font-weight="700" fill="#b45309">moc 编译期生成（虚线框，运行期不参与类型检查）</text>
+  <text x="54" y="336" font-size="12" fill="#334155">• connectionList：按信号索引存放订阅者（槽）指针表 —— activate 据此遍历</text>
+  <text x="54" y="358" font-size="12" fill="#334155">• staticMetaObject：类名 / 父类 / 信号 / 槽 / 属性元数据表</text>
+  <text x="54" y="380" font-size="12" fill="#334155">• 新式 connect(&amp;S::sig, &amp;R::slot) 在编译期即校验签名；旧式字符串连接推迟到运行期</text>
+
+  <!-- bottom note -->
+  <text x="340" y="412" text-anchor="middle" font-size="11.5" fill="#64748b">跨线程 QueuedConnection：参数经 QMetaCallEvent 序列化入事件队列，由目标线程事件循环分发（≈1–5 µs）</text>
+</svg>
