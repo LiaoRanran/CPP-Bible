@@ -703,6 +703,21 @@ while (auto x = pop()) consume(*x);   // 自然终止，无异常
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：构造函数失败无法返回错误码，应抛异常或用 `std::expected`。** 你 half-constructed 对象资源泄漏。请说明。
+   - [标准] 构造函数无返回，失败应抛异常；异常退出时已完成构造的子对象按逆序析构（栈展开）。
+   - [引用] ISO/IEC 14882:2023 §[except.ctor]（构造失败与栈展开）/ [class.dtor]；cppreference "Constructor exceptions" 词条。
+
+2. **真实场景：热路径避免异常开销，改用 `std::error_code`/`std::expected` 返回。** 你权衡异常 vs 错误码。请说明。
+   - [标准] 异常在抛出路径有成本但正常路径零开销；`std::error_code` 是轻量值类型，适合可恢复错误。
+   - [引用] ISO/IEC 14882:2023 §[syserr]（std::error_code）/ [except]（异常机制）；cppreference "std::error_code" 词条。
+
+3. **真实场景：`noexcept` 函数内抛异常会直接 `std::terminate`。** 你误以为 noexcept 会吞异常。请说明。
+   - [标准] 若 `noexcept` 函数（或 `noexcept(true)`）实际抛出异常，程序立即调用 `std::terminate`。
+   - [引用] ISO/IEC 14882:2023 §[except.spec]（noexcept 与 terminate）/ [except.terminate]；cppreference "std::terminate" 词条。
+
+
 `[经验]` 错误处理是 API 契约的一等公民，选型优先级建议：
 
 - **构造函数/运算符/拷贝**：无法返回错误码 → 用 `noexcept` 或抛异常；

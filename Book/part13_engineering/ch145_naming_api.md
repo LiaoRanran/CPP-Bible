@@ -923,6 +923,21 @@ std::string s = std::move(other);   // move 仅转型，真正搬迁由 string �
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `[[deprecated]]` 标注将被移除的旧 API，给调用方编译期提示。** 你改接口又不想立刻破坏下游。请说明。
+   - [标准] `[[deprecated]]` 属性在被使用时产生编译期诊断（警告），不影响语义。
+   - [引用] ISO/IEC 14882:2023 §[dcl.attr.deprecated]（deprecated 属性）/ C++ Core Guidelines "F.6"；cppreference "attribute:deprecated" 词条。
+
+2. **真实场景：API 边界函数用 `noexcept` 承诺不抛，便于调用方做移动优化与异常安全。** 你写 swap/析构标 noexcept。请说明。
+   - [标准] `noexcept` 说明函数不抛出；标准库对某些操作（如 `swap`、移动构造）要求 noexcept 以获得更强保证。
+   - [引用] ISO/IEC 14882:2023 §[except.spec]（noexcept 说明符）/ [utility.swap]；cppreference "noexcept specifier" 词条。
+
+3. **真实场景：用 `enum class` 而非裸 `enum` 避免命名空间污染与隐式转 int。** 你 old API 的枚举名冲突。请说明。
+   - [标准] 有作用域枚举 `enum class` 的枚举符不泄漏到外层作用域，且不会隐式转换为整数。
+   - [引用] ISO/IEC 14882:2023 §[dcl.enum]（有作用域枚举）；cppreference "enum class" 词条。
+
+
 命名与 API 设计是**接口经济学**：名字是契约、是文档、是防误用的第一道闸门。本章取证结论汇总：
 
 ```

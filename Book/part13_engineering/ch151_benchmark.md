@@ -1216,6 +1216,21 @@ run,ms
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：基准里未用 `std::atomic_thread_fence` 固定顺序，测得数值抖动不可复现。** 你误读加速比。请说明。
+   - [标准] 原子与栅栏约束内存顺序；但绝对毫秒随机器而变，加速比才是可移植信号。
+   - [引用] ISO/IEC 14882:2023 §[atomics.fences] / [atomics.order]（内存顺序与栅栏）；cppreference "std::atomic_thread_fence" 词条。
+
+2. **真实场景：把未 `volatile` 的循环变量当“会读外部状态”，被优化器删成空循环。** 你基准失真。请说明。
+   - [标准] 抽象机下只受优化影响的可观测行为可被重排/删除；未使用的计算可被消除。
+   - [引用] ISO/IEC 14882:2023 §[intro.abstract]（as-if 规则）/ [basic.lval]（可观测行为）；cppreference "as-if rule" 词条。
+
+3. **真实场景：用 `std::chrono::steady_clock` 测时区无关单调时长。** 你误用 `system_clock` 被 NTP 跳变污染。请说明。
+   - [标准] `steady_clock` 保证单调（不受系统时间调整影响）；`system_clock` 可跳变。
+   - [引用] ISO/IEC 14882:2023 §[time.clock] / [time.clock.steady]（steady_clock）/ [time.duration]；cppreference "std::chrono::steady_clock" 词条。
+
+
 基准测试是一门"先证明你在测真东西"的学科。本章用本机 GCC 13.1.0 真实编译运行，固化了以下可复现结论：
 
 - **DCE 是头号陷阱**：未"被观察"的循环会被整体删除（`dce_trap` 实测 `0.000 ms`，反汇编证实无循环）；`volatile`/编译器屏障/`asm volatile` 可阻止（见第①③④节）。

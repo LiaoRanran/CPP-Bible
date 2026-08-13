@@ -796,6 +796,21 @@ private:
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `[[nodiscard]]` 标记“丢弃返回值即错”的函数（如返回错误码）。** 你漏检查返回值导致静默故障。请说明。
+   - [标准] `[[nodiscard]]` 属性要求调用方不丢弃返回值；丢弃会在编译期告警。
+   - [引用] ISO/IEC 14882:2023 §[dcl.attr.nodiscard]（nodiscard 属性）/ C++ Core Guidelines "F.9"；cppreference "attribute:nodiscard" 词条。
+
+2. **真实场景：`const` 正确性：成员函数不修改对象状态就标 `const`。** 你无法对 const 对象调用本应只读的函数。请说明。
+   - [标准] `const` 成员函数承诺不修改对象的可观察状态（mutable 除外）；这是 cv 限定的一部分。
+   - [引用] ISO/IEC 14882:2023 §[dcl.type.cv]（const 限定）/ [class.this]（this 的 cv）；cppreference "const-correctness" 词条。
+
+3. **真实场景：RAII 让资源（锁/文件/连接）在作用域结束自动释放，避免忘记 cleanup。** 你写异常路径时资源泄漏。请说明。
+   - [标准] 析构函数在作用域正常结束或栈展开时必然调用，是 RAII 与异常安全的基石。
+   - [引用] ISO/IEC 14882:2023 §[class.dtor] / [except.terminate]（栈展开与析构）；cppreference "RAII" 词条。
+
+
 代码风格的本质是**一致性工程**。本章取证结论汇总：
 
 ```

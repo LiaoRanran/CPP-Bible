@@ -1027,6 +1027,21 @@ CI 中的测试门禁可用 ASCII 框线表示（Bible 允许）：
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `static_assert` 在编译期锁定不变量（如对齐、大小）。** 你避免运行期才发现布局错。请说明。
+   - [标准] `static_assert` 在编译期求值其常量表达式，失败时编译报错。
+   - [引用] ISO/IEC 14882:2023 §[dcl.pre]（static_assert 声明）/ [expr.const]（常量表达式）；cppreference "static_assert" 词条。
+
+2. **真实场景：用 `doctest`/`Catch2` 做单元测试 + sanitizers 抓 UB/泄漏。** 你做可观测性。请说明（属工具链）。
+   - [标准] 无直接标准对应；sanitizers 检测的是标准定义的 UB 与内存错误。
+   - [引用] Clang/ GCC "AddressSanitizer"/"UndefinedBehaviorSanitizer" 文档 / ISO/IEC 14882:2023 §[intro.abstract]（UB）；cppreference "UB" 词条。
+
+3. **真实场景：测试里构造不变量对象时用到约束（concept）检查类型。** 你误用不满足约束的类型。请说明。
+   - [标准] `static_assert` 可检查 concept 满足性；约束是编译期语义要求。
+   - [引用] ISO/IEC 14882:2023 §[temp.constr]（约束与 concept）/ [dcl.pre]（static_assert）；cppreference "Constraints and concepts" 词条。
+
+
 测试策略是 C++ 工程健壮性的基石：以**单元测试为主力**（≥70%），用**夹具/参数化**消除重复，用**依赖注入 + mock** 隔离外部世界，用 **TDD/异常测试** 固化契约，用 **fuzz/基准** 守住鲁棒与性能边界，并最终通过 **CI 门禁** 自动化执行。所有示例均经本机 `g++ 13.1.0` 真实编译运行（见下方聚合自检与 `_run/ch150_mine.log`），框架部分以“上游参考 + 自包含等价”如实呈现。
 
 ```cpp

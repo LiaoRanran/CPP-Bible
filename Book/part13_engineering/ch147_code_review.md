@@ -587,6 +587,21 @@ bool ready_to_send() {
 
 ## ⑳ 小结
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：审查发现类管理裸资源却未定义拷贝/移动（违反三五法则）。** 你复制后双重释放。请说明。
+   - [标准] 管理资源的类须正确定义析构/拷贝/移动（三五法则）；现代 C++ 推荐“零法则”（用智能指针/容器）。
+   - [引用] ISO/IEC 14882:2023 §[class.copy]（拷贝语义与规则）/ [class.dtor]；cppreference "Rule of three/five/zero" 词条。
+
+2. **真实场景：审查发现局部变量未初始化就被读取。** 你得到垃圾值。请说明。
+   - [标准] 读取未初始化的非类类型变量是未定义行为；类类型对象有默认初始化路径。
+   - [引用] ISO/IEC 14882:2023 §[dcl.init]（默认初始化与未初始化）/ [basic.indet]（不确定值）；cppreference "Default initialization" 词条。
+
+3. **真实场景：审查发现通过基类指针 `delete` 派生对象但基类无虚析构。** 你运行时未定义行为。请说明。
+   - [标准] 通过基类指针 `delete` 派生对象，若基类析构非虚，则为未定义行为。
+   - [引用] ISO/IEC 14882:2023 §[class.dtor]（虚析构必要性）；cppreference "Virtual destructor" 词条。
+
+
 `[经验]` 一句话总纲：**代码审查是 C++ 工程里性价比最高的一道质量闸——它把未定义行为、内存错误、接口破坏、性能回归在合入前拦下，而代价只是一次仔细阅读。** 本章所有机器可验证主张（`-Wsign-compare` 有符号比较警告、`-Wformat=` 格式不匹配、`-Wunused-result` 忽略 `[[nodiscard]]`、`-Woverflow` 常量溢出、`-Wreturn-type` 缺返回值、`-Wreturn-local-addr` 悬垂地址、`-Wfloat-conversion` 浮点截断、RAII 守卫 `call pthread_mutex_lock/unlock` 的汇编实证、`add edx,[rcx+rax*4]` 零拷贝循环实证、libstdc++ `bits/move.h:104` 与 `bits/basic_string.h:85` 真实路径与行号）均已用本机 GCC 13.1.0 真实产物（`Examples/_ch147_*_warn.txt` / `_ch147_*.asm`）佐证，可复现、未编造。ABI 兼容性深化见第145章，提交规范见第148章，CI 门禁见第149章，测试覆盖见第150章，性能回归见第151章。
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
