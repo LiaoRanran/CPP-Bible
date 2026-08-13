@@ -510,6 +510,21 @@ int use_sv() {
 
 ## ⑳ 跨语言对比：对象模型哲学 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：C++11 起 `std::string` 不再允许写时复制（COW）。** 你过去依赖 COW 的库在新标准下行为变了。请说明。
+   - [标准] C++11 起 `basic_string` 必须连续且可独立修改，禁止写时复制；否则破坏 `&s[0]` 的稳定性。
+   - [引用] ISO/IEC 14882:2023 §[strings]（basic_string，C++11 去除 COW）；cppreference "std::string" 词条。
+
+2. **真实场景：`data()` 与 `c_str()` 都含 null 结尾（C++11 起）。** 你给 C API 传 `data()` 也能当 C 串。请说明。
+   - [标准] C++11 起 string 连续存储且始终以 null 结尾；`data()` 与 `c_str()` 返回同一含 null 的缓冲区。
+   - [引用] ISO/IEC 14882:2023 §[string.access]（连续 + null 结尾）；cppreference "std::string::data / c_str" 词条。
+
+3. **真实场景：小字符串优化（SSO）避免堆分配。** 你理解短字符串存在对象内。请说明条款边界。
+   - [标准] 实现可将短字符串内联存储于对象自身（SSO），避免动态分配——属实现细节，标准不规定阈值。
+   - [引用] ISO/IEC 14882:2023 §[strings]（实现可内联短字符串）；cppreference "Small string optimization" 词条。
+
+
 | 语言 | 字符串类型 | 存储模型 | 拷贝语义 |
 |---|---|---|---|
 | C++ | `std::string` | SSO + 堆（值语义） | 深拷贝（C++11 起） |

@@ -528,6 +528,21 @@ int main() {
 
 ## ⑳ 跨语言对比
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：自定义类型做 unordered_map 的 key 需提供 Hash 与 KeyEqual。** 你直接 `unordered_map<MyType,int>` 编译失败。请说明要求。
+   - [标准] 无序容器要求 key 可哈希（`Hash`）且可相等比较（`KeyEqual`），二者须一致。
+   - [引用] ISO/IEC 14882:2023 §[unord.req]（无序容器对 Hash/KeyEqual 的要求）；cppreference "std::unordered_map" 词条。
+
+2. **真实场景：哈希冲突由桶内结构处理，且 `reserve` 减少重哈希。** 你性能抖动想预置桶数。请说明。
+   - [标准] 冲突由实现以桶内结构处理（实现定义）；`reserve`/`max_load_factor` 可预置桶数减少重哈希。
+   - [引用] ISO/IEC 14882:2023 §[unord.req]（桶、负载因子与 rehash）；cppreference "std::unordered_map" 词条。
+
+3. **真实场景：无序容器迭代顺序不稳定（不能依赖）。** 你按遍历顺序写测试失败。请说明。
+   - [标准] 无序容器的遍历顺序由哈希与桶布局决定，不保证与插入顺序一致，不可依赖。
+   - [引用] ISO/IEC 14882:2023 §[unord.req]（遍历顺序不保证）；cppreference "std::unordered_map" 词条。
+
+
 | 语言 | 哈希集合/映射 | 冲突策略 | 备注 |
 |---|---|---|---|
 | C++ | `unordered_set`/`unordered_map` | 开链法（链表） | FNV 哈希，非抗碰撞 |

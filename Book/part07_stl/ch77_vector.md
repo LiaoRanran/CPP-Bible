@@ -454,6 +454,21 @@ int main() {
 
 ## ⑳ 跨语言对比
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：push_back 触发重分配，所有迭代器失效。** 你缓存的迭代器在插入后解引用崩溃。请说明规则。
+   - [标准] vector 在容量不足时重分配，届时所有指向元素的引用、指针、迭代器均失效。
+   - [引用] ISO/IEC 14882:2023 §[vector.modifiers]（push_back 与重分配导致失效）；cppreference "std::vector" 词条。
+
+2. **真实场景：用 `reserve` 预分配避免反复重分配。** 你已知大致元素数。请说明收益。
+   - [标准] `reserve(n)` 保证容量至少 n，避免插入过程中的多次重分配与元素搬移。
+   - [引用] ISO/IEC 14882:2023 §[vector.capacity]（reserve）；cppreference "std::vector::reserve" 词条。
+
+3. **真实场景：vector 元素连续，`data()` 可当 C 数组传。** 你给 C API 传底层指针。请说明保证。
+   - [标准] vector 元素连续存储；`data()` 返回指向首元素的指针，可安全当作 C 数组使用。
+   - [引用] ISO/IEC 14882:2023 §[vector.data]（连续存储保证）；cppreference "std::vector::data" 词条。
+
+
 | 语言 | 动态数组/向量 | 扩容策略 | 备注 |
 |---|---|---|---|
 | C++ | `std::vector<T>` | GCC 2× / MSVC 1.5× | 连续、值语义、可增长 |

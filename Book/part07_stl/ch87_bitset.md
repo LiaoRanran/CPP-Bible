@@ -490,6 +490,21 @@ int main() { return bench(); }
 
 ## ⑳ 跨语言对比 / 源码阅读路线
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 bitset 做固定大小的标志位集合。** 你处理协议里的 32 个开关位。请说明约束。
+   - [标准] bitset 大小在编译期固定（模板非类型参数），提供位运算与位测试。
+   - [引用] ISO/IEC 14882:2023 §[template.bitset]（std::bitset）；cppreference "std::bitset" 词条。
+
+2. **真实场景：bitset 与 vector<bool> 不是一回事。** 你误把 bitset 当动态容器。请说明区别。
+   - [标准] bitset 大小固定、不是容器；`vector<bool>` 是位压缩的动态序列容器，支持 resize。
+   - [引用] ISO/IEC 14882:2023 §[template.bitset] / [vector.bool]（二者差异）；cppreference "std::bitset / std::vector<bool>" 词条。
+
+3. **真实场景：bitset 可转字符串/无符号整数。** 你做位级序列化。请说明接口。
+   - [标准] bitset 提供 `to_string`/`to_ullong` 等便于与其它表示互转。
+   - [引用] ISO/IEC 14882:2023 §[template.bitset]（to_string/to_ullong）；cppreference "std::bitset" 词条。
+
+
 **跨语言对比：定长位集**
 
 | 语言 | 定长位集 | 备注 |

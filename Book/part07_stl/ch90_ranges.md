@@ -908,6 +908,21 @@ int main() {
 
 ## ⑳ 跨语言对比 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用管道 `views::filter | views::transform` 组合算法。** 你写出声明式数据处理。请说明惰性。
+   - [标准] C++20 ranges 的视图是惰性的：元素只在被消费（如 `for` 或 `copy`）时才被逐步计算。
+   - [引用] ISO/IEC 14882:2023 §[range.adaptors]（视图惰性）/ [ranges]；cppreference "std::ranges::views" 词条。
+
+2. **真实场景：悬空视图引用已销毁区间是 UB。** 你返回 `vec | views::filter(...)` 而 `vec` 是局部。请说明责任。
+   - [标准] 视图不拥有数据；返回引用局部区间的视图会形成悬垂范围（dangling），使用即 UB。
+   - [引用] ISO/IEC 14882:2023 §[range]（视图引用语义）/ [basic.life]；cppreference "Dangling ranges" 词条。
+
+3. **真实场景：范围算法可直接吃容器不必写 begin/end。** 你写 `ranges::sort(v)`。请说明便捷性。
+   - [标准] ranges 算法接受整个范围（容器自动适配），并可返回可用于续接的结果，减少样板。
+   - [引用] ISO/IEC 14882:2023 §[alg]（ranges 版算法接受范围）；cppreference "std::ranges algorithms" 词条。
+
+
 | 能力 | C++ ranges/views | Rust `Iterator` | Python 生成器 | Java `Stream` | C# LINQ |
 |---|---|---|---|---|---|
 | 惰性管道 | `v \| views::filter \| transform` | `iter().filter().map()` | `f(x) for x in it if p` | `stream.filter().map()` | `Where().Select()` |

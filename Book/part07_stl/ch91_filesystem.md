@@ -892,6 +892,21 @@ int main() {
 
 ## ⑳ 跨语言对比：文件系统 API
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：递归遍历目录统计文件数。** 你用 `recursive_directory_iterator`。请说明可移植性。
+   - [标准] `<filesystem>` 提供路径与目录迭代抽象，跨平台处理分隔符与编码。
+   - [引用] ISO/IEC 14882:2023 §[fs]（filesystem 库）；cppreference "std::filesystem" 词条。
+
+2. **真实场景：path 自动处理平台分隔符。** 你拼 `"a/b/c"` 在 Windows 也能用。请说明。
+   - [标准] `path` 抽象平台相关分隔符，提供 `preferred_path`/`lexically_normal` 等可移植操作。
+   - [引用] ISO/IEC 14882:2023 §[fs.path]（path 的可移植语义）；cppreference "std::filesystem::path" 词条。
+
+3. **真实场景：每个操作有“异常版”和“error_code& 版”两种接口。** 你不想让文件不存在抛异常。请说明双接口。
+   - [标准] filesystem 函数通常提供抛异常与接收 `error_code&` 两版；后者用错误码表达失败而不抛出。
+   - [引用] ISO/IEC 14882:2023 §[fs]（错误报告的双接口约定）；cppreference "std::filesystem" 词条。
+
+
 | 能力 | C++ `std::filesystem`（C++17+） | Rust `std::fs` | Go `os`/`path/filepath` | Python `pathlib` / `os` | Java `java.nio.file` |
 |---|---|---|---|---|---|
 | 路径类型 | `std::filesystem::path`（值语义） | `Path`（`AsRef<Path>`） | `string` + `filepath` 函数 | `pathlib.Path`（对象） | `Path`（NIO） |

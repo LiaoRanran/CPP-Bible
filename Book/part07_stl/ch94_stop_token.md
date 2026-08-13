@@ -568,6 +568,21 @@ int main() {
 
 ## ⑳ 跨语言对比：线程取消模型 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：`std::jthread` 自动 join，比裸 `std::thread` 更安全。** 你忘了 join 裸线程导致 terminate。请说明差异。
+   - [标准] `jthread` 析构时自动 `join`（裸 `thread` 不 join 会 terminate）；它还自动传递 `stop_token`。
+   - [引用] ISO/IEC 14882:2023 §[thread.jthread]（jthread 自动 join）；cppreference "std::jthread" 词条。
+
+2. **真实场景：用 `stop_token` 让长任务可协作取消。** 你在循环里检查 `stop_requested()`。请说明机制。
+   - [标准] stop_token 提供协作式取消信号；任务主动查询 `stop_requested()` 以优雅退出（非强制中断）。
+   - [引用] ISO/IEC 14882:2023 §[thread.stoptoken]（stop_token / stop_source）；cppreference "std::stop_token" 词条。
+
+3. **真实场景：用 `stop_callback` 注册取消时的清理。** 你要在收到取消信号时做收尾。请说明。
+   - [标准] 通过 `stop_callback` 把回调注册到 stop_token；取消请求到达时回调被调用。
+   - [引用] ISO/IEC 14882:2023 §[thread.stoptoken]（stop_callback）；cppreference "std::stop_callback" 词条。
+
+
 | 语言/机制 | 取消方式 | 协作/强制 | 回调/清理 |
 |---|---|---|---|
 | C++ `stop_token`/`jthread` | 置标志，线程自检查 | **协作** | `stop_callback` 同步清理 |

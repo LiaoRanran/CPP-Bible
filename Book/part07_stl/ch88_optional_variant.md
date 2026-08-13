@@ -486,6 +486,21 @@ struct Connection {
 
 ## ⑳ 跨语言对比：可空与可辨别联合 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::optional` 表达“可能无值”替代裸指针/null。** 你避免用魔法值表示失败。请说明语义。
+   - [标准] optional 区分有值与无值，访问无值可被显式检测，比用 null/特殊值更安全。
+   - [引用] ISO/IEC 14882:2023 §[optional]（std::optional）；cppreference "std::optional" 词条。
+
+2. **真实场景：`std::variant` 是类型安全的联合体。** 你用 `std::visit` 分发而非手判。请说明访问方式。
+   - [标准] variant 在编译期已知候选类型集合，持有其中之一；须用 `get`/`visit` 按当前活跃类型访问。
+   - [引用] ISO/IEC 14882:2023 §[variant]（std::variant 与 visit）；cppreference "std::variant" 词条。
+
+3. **真实场景：`std::any` 做类型擦除（任何可拷贝类型）。** 你写通用容器装异构值。请说明前提。
+   - [标准] any 可持有任意可拷贝类型，取回时须知道确切类型（否则抛 `bad_any_cast`）。
+   - [引用] ISO/IEC 14882:2023 §[any]（std::any）；cppreference "std::any" 词条。
+
+
 | 语言 | 可空 | 可辨别联合 |
 |---|---|---|
 | C++ | `std::optional<T>` | `std::variant<...>` / `std::expected<T,E>` |

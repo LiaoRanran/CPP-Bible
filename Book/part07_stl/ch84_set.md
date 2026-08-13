@@ -506,6 +506,21 @@ int main() {
 
 ## ⑳ 跨语言对比
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：set 元素不可就地修改（const）。** 你想改集合里的成员得先删后插。请说明。
+   - [标准] 有序/无序集合中的元素视为 const；修改会破坏容器排序/哈希不变式，须 erase 再 insert。
+   - [引用] ISO/IEC 14882:2023 §[set]（元素 const 性）；cppreference "std::set" 词条。
+
+2. **真实场景：multiset 允许重复 key、count 可 >1。** 你要统计某 key 出现次数。请说明差异。
+   - [标准] set 保证 key 唯一；multiset 允许等价 key 重复存在，可用 `count`/`equal_range` 遍历。
+   - [引用] ISO/IEC 14882:2023 §[set]（set 与 multiset 的 key 唯一性差异）；cppreference "std::multiset" 词条。
+
+3. **真实场景：用 `emplace`/`try_emplace` 避免临时构造。** 你关心插入性能。请说明。
+   - [标准] 关联容器提供 `emplace`/`try_emplace` 在容器内就地构造，避免先构造临时再拷贝/移动。
+   - [引用] ISO/IEC 14882:2023 §[set]（emplace 接口）；cppreference "std::set::emplace" 词条。
+
+
 | 语言 | 有序唯一集合 | 有序可重复 | 备注 |
 |---|---|---|---|
 | C++ | `std::set<K>` | `std::multiset<K>` | RB 树，O(log n)，节点开销大 |

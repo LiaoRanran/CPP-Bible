@@ -951,6 +951,21 @@ int main() {
 
 ## ⑳ 跨语言对比：有序映射
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：`operator[]` 在 key 缺失时悄悄插入默认值。** 你本只想查却意外改了容器。请说明语义。
+   - [标准] `map::operator[]` 在 key 不存在时插入 value-initialized 元素并返回引用；`at()` 则不插入、缺失抛异常。
+   - [引用] ISO/IEC 14882:2023 §[map]（operator[] 插入语义 vs at()）；cppreference "std::map::operator[] / at" 词条。
+
+2. **真实场景：map 元素是 `pair<const Key, T>`，key 不可改。** 你想就地改 key 被拒。请说明。
+   - [标准] map 的 value_type 为 `pair<const Key, T>`；key 为 const，须删后插才能“修改”。
+   - [引用] ISO/IEC 14882:2023 §[map]（value_type 与 key 的 const 性）；cppreference "std::map" 词条。
+
+3. **真实场景：有序 map 按 key 比较排序，自定义类型需提供 `operator<` 或比较器。** 你插入自定义结构得提供严格弱序。请说明。
+   - [标准] 有序关联容器要求 key 满足严格弱序（默认 `less`）；不满足会导致未定义行为。
+   - [引用] ISO/IEC 14882:2023 §[map]（key 比较要求）；cppreference "std::map" 词条。
+
+
 | 语言 | 有序映射 | 底层 | 备注 |
 |---|---|---|---|
 | C++ | `std::map<K,V>` | 红黑树 | 节点稳定、有序、`O(log N)` |

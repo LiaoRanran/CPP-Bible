@@ -1020,6 +1020,21 @@ int main() {
 
 ## ⑳ 跨语言对比：连续视图的语义
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：函数参数用 `std::span<const int>` 同时接收数组与 vector。** 你不再为两种容器写重载。请说明视图语义。
+   - [标准] span 是连续序列的轻量非拥有视图（C++20），可从上/数组/vector 构造；不管理生命周期。
+   - [引用] ISO/IEC 14882:2023 §[views.span]（std::span）；cppreference "std::span" 词条。
+
+2. **真实场景：span 不拥有数据，原容器提前销毁会悬垂。** 你返回 `make_span(v)` 的 span 后 v 出了作用域。请说明责任。
+   - [标准] span 仅引用底层存储；底层被释放后使用该 span 是未定义行为，生命周期由调用方保证。
+   - [引用] ISO/IEC 14882:2023 §[views.span]（视图的引用语义）/ [basic.life]；cppreference "std::span" 词条。
+
+3. **真实场景：静态 extent 可编译期 `size()`。** 你用 `span<int, 4>` 让大小参与类型。请说明。
+   - [标准] extent 在编译期已知时成为类型一部分（静态 extent），`size()` 为编译期常量。
+   - [引用] ISO/IEC 14882:2023 §[views.span]（静态/动态 extent）；cppreference "std::span" 词条。
+
+
 | 语言 | 对应抽象 | 说明 |
 |---|---|---|
 | C++ | `std::span<T>` / `std::span<T,N>` | 非拥有连续视图；静态 extent 编入类型 |

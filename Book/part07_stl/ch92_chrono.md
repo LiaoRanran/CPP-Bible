@@ -911,6 +911,21 @@ int main() {
 
 ## ⑳ 跨语言对比：时间/日期 API
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `duration` 做单位安全的时长算术。** 你避免把毫秒当秒混算。请说明类型安全。
+   - [标准] duration 把“数值 + 单位（period）”编码进类型，跨单位的运算自动按比换算，不丢精度。
+   - [引用] ISO/IEC 14882:2023 §[time.duration]（duration 与单位换算）；cppreference "std::chrono::duration" 词条。
+
+2. **真实场景：`steady_clock` 单调，适合测量间隔。** 你用 `system_clock` 测耗时受 NTP 调校影响。请说明区别。
+   - [标准] `steady_clock` 保证单调不回拨，适合测量经过时间；`system_clock` 可随墙上时钟跳变。
+   - [引用] ISO/IEC 14882:2023 §[time.clock]（steady_clock 与 system_clock）；cppreference "std::chrono::steady_clock" 词条。
+
+3. **真实场景：用 `time_point` 表示某一时刻并可相减得 duration。** 你做超时判断。请说明。
+   - [标准] time_point 绑定到某 clock，两 time_point 相减得到 duration；与同 clock 比较才有意义。
+   - [引用] ISO/IEC 14882:2023 §[time.point]（time_point 语义）；cppreference "std::chrono::time_point" 词条。
+
+
 > 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 能力 | C++ `<chrono>` | Rust `std::time` | Go `time` | Python `datetime` | Java `java.time` |
 |---|---|---|---|---|---|

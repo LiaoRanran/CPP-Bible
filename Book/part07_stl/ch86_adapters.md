@@ -562,6 +562,21 @@ int main() { return bench(); }
 
 ## ⑳ 跨语言对比 / 源码阅读路线
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：priority_queue 用比较器决定“最大顶”还是“最小顶”。** 你做最小堆传入 `greater`。请说明语义。
+   - [标准] 适配器基于底层序列容器 + 比较器；priority_queue 默认 `less`（最大顶），可用 `greater` 改最小顶。
+   - [引用] ISO/IEC 14882:2023 §[queue]（priority_queue 与比较器）；cppreference "std::priority_queue" 词条。
+
+2. **真实场景：栈/队列的默认底层容器不同。** 你理解 stack 默认 deque、priority_queue 默认 vector。请说明。
+   - [标准] 容器适配器以序列容器为底层；stack 默认 deque，queue 默认 deque，priority_queue 默认 vector。
+   - [引用] ISO/IEC 14882:2023 §[queue]（各适配器默认底层容器）；cppreference "std::stack / queue" 词条。
+
+3. **真实场景：适配器只暴露受限接口。** 你不能在 stack 上随机访问中间元素。请说明设计。
+   - [标准] 适配器刻意只暴露符合语义的操作（栈仅 push/pop/top），底层容器的其他能力被隐藏。
+   - [引用] ISO/IEC 14882:2023 §[queue]（适配器接口受限）；cppreference "Container adapter" 词条。
+
+
 **跨语言对比：受限序列抽象**
 
 | 语言 | 栈 | 队列 | 优先级队列 |

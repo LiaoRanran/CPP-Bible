@@ -576,6 +576,21 @@ int main() {
 
 ## ⑳ 跨语言对比：线程与异步原语 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：`std::async` 默认启动策略不确定，可能根本没并行。** 你以为开了线程其实被延迟。请说明。
+   - [标准] 不指定策略时，`async` 的启动策略由实现决定，可能为 `deferred`（调用时才同步执行）。
+   - [引用] ISO/IEC 14882:2023 §[futures.async]（std::async 默认启动策略）；cppreference "std::async" 词条。
+
+2. **真实场景：用 `std::launch::async` 强制真并行。** 你明确要求新线程执行任务。请说明。
+   - [标准] 传入 `std::launch::async` 保证任务在新线程异步执行（与 `deferred` 相反）。
+   - [引用] ISO/IEC 14882:2023 §[futures.async]（launch::async 语义）；cppreference "std::async" 词条。
+
+3. **真实场景：由 `async` 返回的 future 析构会等待任务完成。** 你离开作用域卡住了一下。请说明责任。
+   - [标准] 与 `async`（launch::async）关联的 future 析构会阻塞直到共享状态就绪（即 join 任务）。
+   - [引用] ISO/IEC 14882:2023 §[futures.unique.future]（future 析构对 async 任务的等待）；cppreference "std::future::~future" 词条。
+
+
 | 维度 | C++ (`std::thread`/`future`/`async`) | Rust (`std::thread`/`tokio`/`join`) | Go (`goroutine`/`channel`) | Java (`Thread`/`Future`/`CompletableFuture`) |
 |---|---|---|---|---|
 | 线程模型 | OS 线程（1:1） | OS 线程（std，或 tokio 任务 M:N） | goroutine（M:N，用户态调度） | 平台线程（虚拟线程自 21 起 M:N） |

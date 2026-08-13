@@ -1052,6 +1052,21 @@ int main() {
 
 ## ⑳ 跨语言对比 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::tie` 解包 `pair`/`tuple` 到已有变量。** 你做多返回值接收。请说明机制。
+   - [标准] `std::tie` 生成 lvalue 引用 tuple，用于把 tuple/pair 元素绑定到现成变量（含结构化绑定替代）。
+   - [引用] ISO/IEC 14882:2023 §[tuple]（std::tie）；cppreference "std::tie" 词条。
+
+2. **真实场景：`make_tuple` 按实参推导元素类型。** 你想省去显式写 `tuple<int,string>`。请说明。
+   - [标准] `std::make_tuple` 按实参推导各元素类型（应用 decay，如引用衰减）。
+   - [引用] ISO/IEC 14882:2023 §[tuple]（make_tuple 推导）；cppreference "std::make_tuple" 词条。
+
+3. **真实场景：用 `get<Index>(t)` 按编译期索引访问。** 你取第 2 个元素。请说明索引性质。
+   - [标准] tuple 元素按编译期常量索引访问；越界索引在编译期即报错。
+   - [引用] ISO/IEC 14882:2023 §[tuple.elem]（get 与索引）；cppreference "std::get" 词条。
+
+
 | 能力 | C++ | Rust | Python | C# | Java |
 |---|---|---|---|---|---|
 | 异构定长序列 | `std::tuple<Ts...>` | `(T1,T2,...)` / struct | `tuple` / 多返回值时打包 | `ValueTuple` / `(a,b)` | 无内建（用 record/对象） |
