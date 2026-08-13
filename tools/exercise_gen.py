@@ -113,7 +113,7 @@ QUESTION_BANK = {
          "struct S {\n"
          "  int* p = new int[8];\n"
          "  S() = default;\n"
-         "  S(S&& o) noexcept : p(o.p) { o.p = nullptr; }\n"
+         "  S(S&& o) noexcept Exception: p(o.p) { o.p = nullptr; }\n"
          "  ~S() { delete[] p; }\n"
          "};\n"
          "int main() { std::vector<S> v; v.push_back(S{}); v.push_back(S{}); std::cout << \"ok\\n\"; }\n"

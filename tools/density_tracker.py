@@ -57,14 +57,14 @@ def snapshot():
 
 def main():
     if not os.path.exists(HISTORY_FILE):
-        with open(HISTORY_FILE, 'w') as f: json.dump([], f)
+        with open(HISTORY_FILE, 'w', encoding='utf-8') as f: json.dump([], f)
 
-    history = json.load(open(HISTORY_FILE))
+    history = json.load(open(HISTORY_FILE, encoding='utf-8'))
 
     if '--history' not in sys.argv:
         snap = snapshot()
         history.append(snap)
-        with open(HISTORY_FILE, 'w') as f: json.dump(history, f, indent=2)
+        with open(HISTORY_FILE, 'w', encoding='utf-8') as f: json.dump(history, f, indent=2)
         print(f'Snapshot saved: {snap["timestamp"]}')
 
     # Show trend

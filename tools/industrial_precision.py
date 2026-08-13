@@ -182,7 +182,7 @@ def main():
     for i, a in enumerate(sys.argv):
         if a == '--per-chapter' and i + 1 < len(sys.argv):
             try: per_ch_n = int(sys.argv[i + 1])
-            except: pass
+            except Exception: pass
 
     chapters = audit_all()
     stats = summary(chapters)

@@ -1,0 +1,4792 @@
+{
+  "total_blocks": 7291,
+  "intent_error_blocks": 589,
+  "by_part": {
+    "part01_history": {
+      "blocks": 338,
+      "intent_error": 23
+    },
+    "part02_toolchain": {
+      "blocks": 395,
+      "intent_error": 46
+    },
+    "part03_language": {
+      "blocks": 773,
+      "intent_error": 105
+    },
+    "part04_memory": {
+      "blocks": 556,
+      "intent_error": 33
+    },
+    "part05_oo": {
+      "blocks": 402,
+      "intent_error": 63
+    },
+    "part06_templates": {
+      "blocks": 748,
+      "intent_error": 73
+    },
+    "part07_stl": {
+      "blocks": 863,
+      "intent_error": 25
+    },
+    "part08_algorithms": {
+      "blocks": 391,
+      "intent_error": 24
+    },
+    "part09_concurrency": {
+      "blocks": 340,
+      "intent_error": 32
+    },
+    "part10_modern": {
+      "blocks": 412,
+      "intent_error": 18
+    },
+    "part11_source": {
+      "blocks": 623,
+      "intent_error": 40
+    },
+    "part12_patterns": {
+      "blocks": 409,
+      "intent_error": 30
+    },
+    "part13_engineering": {
+      "blocks": 401,
+      "intent_error": 44
+    },
+    "part14_perf": {
+      "blocks": 318,
+      "intent_error": 5
+    },
+    "part15_cases": {
+      "blocks": 262,
+      "intent_error": 22
+    },
+    "part16_reading": {
+      "blocks": 60,
+      "intent_error": 6
+    }
+  },
+  "categories": {
+    "unsafe_c": [
+      {
+        "file": "Book/part01_history/ch01_c_history.md",
+        "line": 547,
+        "note": "strcpy 不检查目标长度，易溢出；改用 strncpy/std::string"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 631,
+        "note": "strcpy 不检查目标长度，易溢出；改用 strncpy/std::string"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 648,
+        "note": "strcpy 不检查目标长度，易溢出；改用 strncpy/std::string"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 668,
+        "note": "strcpy 不检查目标长度，易溢出；改用 strncpy/std::string"
+      },
+      {
+        "file": "Book/part04_memory/ch36_stack_heap.md",
+        "line": 345,
+        "note": "strcpy 不检查目标长度，易溢出；改用 strncpy/std::string"
+      },
+      {
+        "file": "Book/part04_memory/ch39_raii_rule.md",
+        "line": 589,
+        "note": "strcpy 不检查目标长度，易溢出；改用 strncpy/std::string"
+      },
+      {
+        "file": "Book/part10_modern/ch115_move.md",
+        "line": 1037,
+        "note": "strcpy 不检查目标长度，易溢出；改用 strncpy/std::string"
+      },
+      {
+        "file": "Book/part12_patterns/ch136_creational.md",
+        "line": 443,
+        "note": "strcpy 不检查目标长度，易溢出；改用 strncpy/std::string"
+      },
+      {
+        "file": "Book/part13_engineering/ch148_gitflow.md",
+        "line": 584,
+        "note": "system() 执行 shell，存在命令注入与可移植性风险"
+      },
+      {
+        "file": "Book/part13_engineering/ch148_gitflow.md",
+        "line": 682,
+        "note": "system() 执行 shell，存在命令注入与可移植性风险"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 373,
+        "note": "strcpy 不检查目标长度，易溢出；改用 strncpy/std::string"
+      }
+    ],
+    "raw_new_no_delete": [
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 221,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 326,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part01_history/ch04_cpp11.md",
+        "line": 469,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part01_history/ch05_cpp14.md",
+        "line": 460,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part01_history/ch10_version_matrix.md",
+        "line": 516,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch19_variables.md",
+        "line": 1111,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch22_auto_decltype.md",
+        "line": 1181,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch23_namespace_adl.md",
+        "line": 1297,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch23_namespace_adl.md",
+        "line": 1325,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch25_union_variant.md",
+        "line": 213,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch25_union_variant.md",
+        "line": 1432,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch25_union_variant.md",
+        "line": 1475,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch26_lambda.md",
+        "line": 1238,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 276,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 1941,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 148,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 310,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 445,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 760,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 98,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 394,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch36_stack_heap.md",
+        "line": 1270,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 343,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 368,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 476,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 501,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 667,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 802,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 1280,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 1819,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 1987,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch39_raii_rule.md",
+        "line": 1745,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch41_smart_pointers.md",
+        "line": 634,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch41_smart_pointers.md",
+        "line": 1546,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch41_smart_pointers.md",
+        "line": 2007,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch41_smart_pointers.md",
+        "line": 2069,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 103,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 139,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 1790,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 2196,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 2531,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part05_oo/ch47_virtual_functions.md",
+        "line": 316,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part05_oo/ch47_virtual_functions.md",
+        "line": 1103,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part05_oo/ch48_rtti.md",
+        "line": 280,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part05_oo/ch48_rtti.md",
+        "line": 696,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part05_oo/ch48_rtti.md",
+        "line": 757,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part05_oo/ch48_rtti.md",
+        "line": 1051,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part05_oo/ch50_multiple_inheritance.md",
+        "line": 379,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part05_oo/ch51_crtp.md",
+        "line": 325,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part05_oo/ch52_ebo.md",
+        "line": 345,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part06_templates/ch63_variadic.md",
+        "line": 270,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part06_templates/ch71_policy.md",
+        "line": 57,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part06_templates/ch71_policy.md",
+        "line": 1041,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part07_stl/ch93_thread_async.md",
+        "line": 1111,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part08_algorithms/ch101_algo_theory.md",
+        "line": 197,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part09_concurrency/ch107_atomic.md",
+        "line": 514,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part09_concurrency/ch108_memory_order.md",
+        "line": 123,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part09_concurrency/ch108_memory_order.md",
+        "line": 154,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part09_concurrency/ch108_memory_order.md",
+        "line": 267,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part09_concurrency/ch110_lockfree.md",
+        "line": 267,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part09_concurrency/ch110_lockfree.md",
+        "line": 323,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part09_concurrency/ch110_lockfree.md",
+        "line": 340,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part09_concurrency/ch110_lockfree.md",
+        "line": 447,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part09_concurrency/ch112_hazard_rcu.md",
+        "line": 846,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 326,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 920,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 1005,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part10_modern/ch119_ranges_deep.md",
+        "line": 633,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part11_source/ch124_libstdcxx.md",
+        "line": 411,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part11_source/ch128_boost.md",
+        "line": 45,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part11_source/ch128_boost.md",
+        "line": 142,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part11_source/ch129_qt.md",
+        "line": 84,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part11_source/ch129_qt.md",
+        "line": 257,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part11_source/ch129_qt.md",
+        "line": 287,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part11_source/ch129_qt.md",
+        "line": 447,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part11_source/ch129_qt.md",
+        "line": 484,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part11_source/ch132_leveldb_rocksdb.md",
+        "line": 682,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part11_source/ch132_leveldb_rocksdb.md",
+        "line": 1355,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part12_patterns/ch135_patterns_intro.md",
+        "line": 413,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part12_patterns/ch135_patterns_intro.md",
+        "line": 799,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part12_patterns/ch136_creational.md",
+        "line": 88,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part12_patterns/ch136_creational.md",
+        "line": 503,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part12_patterns/ch136_creational.md",
+        "line": 1017,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part12_patterns/ch140_policy_pattern.md",
+        "line": 623,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part12_patterns/ch141_di.md",
+        "line": 59,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part12_patterns/ch141_di.md",
+        "line": 430,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part12_patterns/ch141_di.md",
+        "line": 723,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part15_cases/ch159_threadpool.md",
+        "line": 59,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part15_cases/ch160_mempool.md",
+        "line": 668,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      },
+      {
+        "file": "Book/part15_cases/ch160_mempool.md",
+        "line": 1122,
+        "note": "块内出现 new 但无对应 delete（片段可能省略释放，需确认是否为教学意图）"
+      }
+    ],
+    "reinterpret_cast": [
+      {
+        "file": "Book/part02_toolchain/ch17_crosscompile.md",
+        "line": 324,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part02_toolchain/ch17_crosscompile.md",
+        "line": 513,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch19_variables.md",
+        "line": 1371,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch24_enum.md",
+        "line": 1026,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch24_enum.md",
+        "line": 1041,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 276,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 306,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 454,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 479,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 502,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 553,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 1001,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 1121,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 1147,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 1173,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 1294,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 1390,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 1455,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 1520,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 1759,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 1917,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch28_lifetime_ub.md",
+        "line": 932,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 138,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 200,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 283,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 595,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 696,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 807,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch35_memory_layout.md",
+        "line": 98,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch35_memory_layout.md",
+        "line": 131,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch36_stack_heap.md",
+        "line": 1214,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 667,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 710,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 837,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 869,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 944,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 962,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 977,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 1112,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 1541,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 1718,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 2395,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch38_allocator.md",
+        "line": 368,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch38_allocator.md",
+        "line": 2159,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch39_raii_rule.md",
+        "line": 1337,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch41_smart_pointers.md",
+        "line": 710,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch42_strict_aliasing.md",
+        "line": 654,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch42_strict_aliasing.md",
+        "line": 915,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch42_strict_aliasing.md",
+        "line": 1002,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch42_strict_aliasing.md",
+        "line": 1014,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch42_strict_aliasing.md",
+        "line": 1139,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch42_strict_aliasing.md",
+        "line": 1162,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch42_strict_aliasing.md",
+        "line": 1380,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch42_strict_aliasing.md",
+        "line": 1410,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch43_cache_locality.md",
+        "line": 230,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch43_cache_locality.md",
+        "line": 496,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch43_cache_locality.md",
+        "line": 679,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch43_cache_locality.md",
+        "line": 1433,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 139,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 162,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 197,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 348,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 450,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 504,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 594,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 730,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 775,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 840,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 897,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 962,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 1202,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 1410,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 1561,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 1763,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part05_oo/ch46_encapsulation_inheritance.md",
+        "line": 139,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part05_oo/ch46_encapsulation_inheritance.md",
+        "line": 182,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part05_oo/ch50_multiple_inheritance.md",
+        "line": 1339,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 581,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 730,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part07_stl/ch82_span.md",
+        "line": 586,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part09_concurrency/ch107_atomic.md",
+        "line": 381,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part09_concurrency/ch111_aba.md",
+        "line": 170,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part09_concurrency/ch111_aba.md",
+        "line": 703,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part09_concurrency/ch112_hazard_rcu.md",
+        "line": 469,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part11_source/ch126_msstl.md",
+        "line": 252,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part11_source/ch129_qt.md",
+        "line": 125,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part11_source/ch130_chromium_abseil.md",
+        "line": 424,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part11_source/ch133_clickhouse_redis.md",
+        "line": 1203,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part12_patterns/ch142_ecs.md",
+        "line": 275,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part12_patterns/ch142_ecs.md",
+        "line": 379,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part12_patterns/ch143_dod.md",
+        "line": 1321,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part14_perf/ch154_cache_opt.md",
+        "line": 111,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part14_perf/ch154_cache_opt.md",
+        "line": 734,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part15_cases/ch160_mempool.md",
+        "line": 126,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part15_cases/ch160_mempool.md",
+        "line": 205,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part15_cases/ch160_mempool.md",
+        "line": 260,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      },
+      {
+        "file": "Book/part15_cases/ch160_mempool.md",
+        "line": 582,
+        "note": "reinterpret_cast 跨无关类型可能触发严格别名 UB"
+      }
+    ],
+    "missing_virtual_dtor": [
+      {
+        "file": "Book/part03_language/ch21_const_family.md",
+        "line": 417,
+        "note": "class C: 含虚函数但析构非 virtual（基类应 virtual ~C()）"
+      },
+      {
+        "file": "Book/part03_language/ch21_const_family.md",
+        "line": 417,
+        "note": "class Safe: 含虚函数但析构非 virtual（基类应 virtual ~Safe()）"
+      },
+      {
+        "file": "Book/part03_language/ch21_const_family.md",
+        "line": 417,
+        "note": "class Locked: 含虚函数但析构非 virtual（基类应 virtual ~Locked()）"
+      },
+      {
+        "file": "Book/part03_language/ch21_const_family.md",
+        "line": 417,
+        "note": "class Tbl: 含虚函数但析构非 virtual（基类应 virtual ~Tbl()）"
+      },
+      {
+        "file": "Book/part12_patterns/ch137_structural.md",
+        "line": 1087,
+        "note": "class Adaptee: 含虚函数但析构非 virtual（基类应 virtual ~Adaptee()）"
+      },
+      {
+        "file": "Book/part12_patterns/ch137_structural.md",
+        "line": 1087,
+        "note": "class Target: 含虚函数但析构非 virtual（基类应 virtual ~Target()）"
+      },
+      {
+        "file": "Book/part12_patterns/ch137_structural.md",
+        "line": 1087,
+        "note": "class Adapter: 含虚函数但析构非 virtual（基类应 virtual ~Adapter()）"
+      }
+    ],
+    "using_namespace_std": [
+      {
+        "file": "Book/part03_language/ch23_namespace_adl.md",
+        "line": 943,
+        "note": "全局 using namespace std; 污染命名空间，头文件中尤应避免"
+      },
+      {
+        "file": "Book/part13_engineering/ch144_style.md",
+        "line": 223,
+        "note": "全局 using namespace std; 污染命名空间，头文件中尤应避免"
+      }
+    ],
+    "endl_flush": [
+      {
+        "file": "Book/part01_history/ch01_c_history.md",
+        "line": 547,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch01_c_history.md",
+        "line": 587,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch01_c_history.md",
+        "line": 612,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch01_c_history.md",
+        "line": 645,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch01_c_history.md",
+        "line": 666,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 110,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 221,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 232,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 282,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 305,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 337,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 372,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 485,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 498,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 517,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch02_standardization.md",
+        "line": 531,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 76,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 92,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 131,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 205,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 244,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 263,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 276,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 302,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 319,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 326,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 356,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 379,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 399,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch03_cpp98_03.md",
+        "line": 441,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch04_cpp11.md",
+        "line": 518,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch04_cpp11.md",
+        "line": 526,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch04_cpp11.md",
+        "line": 533,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch04_cpp11.md",
+        "line": 652,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch05_cpp14.md",
+        "line": 383,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch05_cpp14.md",
+        "line": 389,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch05_cpp14.md",
+        "line": 394,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch05_cpp14.md",
+        "line": 407,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch05_cpp14.md",
+        "line": 421,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch05_cpp14.md",
+        "line": 427,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch05_cpp14.md",
+        "line": 531,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch06_cpp17.md",
+        "line": 408,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch06_cpp17.md",
+        "line": 416,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch06_cpp17.md",
+        "line": 423,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch06_cpp17.md",
+        "line": 429,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch06_cpp17.md",
+        "line": 439,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch06_cpp17.md",
+        "line": 446,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch06_cpp17.md",
+        "line": 453,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch06_cpp17.md",
+        "line": 461,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch06_cpp17.md",
+        "line": 480,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch06_cpp17.md",
+        "line": 538,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch06_cpp17.md",
+        "line": 553,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch07_cpp20.md",
+        "line": 405,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch07_cpp20.md",
+        "line": 412,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch07_cpp20.md",
+        "line": 419,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch07_cpp20.md",
+        "line": 426,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch07_cpp20.md",
+        "line": 436,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch07_cpp20.md",
+        "line": 442,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch07_cpp20.md",
+        "line": 448,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch07_cpp20.md",
+        "line": 455,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch07_cpp20.md",
+        "line": 482,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch07_cpp20.md",
+        "line": 525,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch07_cpp20.md",
+        "line": 539,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch08_cpp23.md",
+        "line": 408,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch08_cpp23.md",
+        "line": 424,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch08_cpp23.md",
+        "line": 430,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch08_cpp23.md",
+        "line": 446,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch08_cpp23.md",
+        "line": 454,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch08_cpp23.md",
+        "line": 460,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch08_cpp23.md",
+        "line": 491,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch08_cpp23.md",
+        "line": 563,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch08_cpp23.md",
+        "line": 605,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch09_cpp26.md",
+        "line": 395,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch09_cpp26.md",
+        "line": 402,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch09_cpp26.md",
+        "line": 407,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch09_cpp26.md",
+        "line": 412,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch09_cpp26.md",
+        "line": 435,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch09_cpp26.md",
+        "line": 480,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch09_cpp26.md",
+        "line": 498,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch09_cpp26.md",
+        "line": 521,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch10_version_matrix.md",
+        "line": 451,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch10_version_matrix.md",
+        "line": 456,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch10_version_matrix.md",
+        "line": 467,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch10_version_matrix.md",
+        "line": 472,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch10_version_matrix.md",
+        "line": 493,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch10_version_matrix.md",
+        "line": 516,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part01_history/ch10_version_matrix.md",
+        "line": 548,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch11_compilers.md",
+        "line": 927,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch12_buildsystems.md",
+        "line": 933,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch13_packaging.md",
+        "line": 768,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch13_packaging.md",
+        "line": 827,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch14_debugging.md",
+        "line": 1045,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch14_debugging.md",
+        "line": 1062,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch14_debugging.md",
+        "line": 1089,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch14_debugging.md",
+        "line": 1100,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch16_ide.md",
+        "line": 696,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch16_ide.md",
+        "line": 706,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch16_ide.md",
+        "line": 712,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch16_ide.md",
+        "line": 774,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch16_ide.md",
+        "line": 785,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch16_ide.md",
+        "line": 811,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch16_ide.md",
+        "line": 841,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch16_ide.md",
+        "line": 848,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch17_crosscompile.md",
+        "line": 646,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch17_crosscompile.md",
+        "line": 651,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch17_crosscompile.md",
+        "line": 656,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch17_crosscompile.md",
+        "line": 662,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch17_crosscompile.md",
+        "line": 719,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch17_crosscompile.md",
+        "line": 740,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch17_crosscompile.md",
+        "line": 757,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch17_crosscompile.md",
+        "line": 775,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch18_buildconfig.md",
+        "line": 811,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch18_buildconfig.md",
+        "line": 816,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch18_buildconfig.md",
+        "line": 822,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch18_buildconfig.md",
+        "line": 827,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch18_buildconfig.md",
+        "line": 833,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch18_buildconfig.md",
+        "line": 867,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part02_toolchain/ch18_buildconfig.md",
+        "line": 1155,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch19_variables.md",
+        "line": 1828,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch20_reference_pointer.md",
+        "line": 1580,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch21_const_family.md",
+        "line": 876,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch21_const_family.md",
+        "line": 881,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch21_const_family.md",
+        "line": 886,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch21_const_family.md",
+        "line": 891,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch21_const_family.md",
+        "line": 896,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch21_const_family.md",
+        "line": 1202,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch24_enum.md",
+        "line": 1357,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch24_enum.md",
+        "line": 1372,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch25_union_variant.md",
+        "line": 1751,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch25_union_variant.md",
+        "line": 1794,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch25_union_variant.md",
+        "line": 1820,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch25_union_variant.md",
+        "line": 1845,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch25_union_variant.md",
+        "line": 2141,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch25_union_variant.md",
+        "line": 2273,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch26_lambda.md",
+        "line": 1418,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch26_lambda.md",
+        "line": 1887,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch26_lambda.md",
+        "line": 2020,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch27_cast.md",
+        "line": 2117,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 41,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 59,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 69,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 79,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 89,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 98,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 107,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 115,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 123,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 148,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 275,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 310,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 337,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 399,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 412,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 424,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 431,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 445,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 452,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 458,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 464,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 470,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 476,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 482,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 488,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 494,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 500,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 506,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 512,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 518,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 565,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 588,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 601,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch29_friend.md",
+        "line": 615,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 41,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 57,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 66,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 82,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 89,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 96,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 104,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 138,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 438,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 444,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 450,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 456,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 461,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 472,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 477,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 483,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 489,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 499,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 504,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 510,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 516,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 521,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 526,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 532,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 537,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 617,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 625,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 630,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 636,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 642,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch30_volatile.md",
+        "line": 1096,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 42,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 50,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 59,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 67,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 75,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 85,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 93,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 102,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 118,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 124,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 136,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 142,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 154,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 160,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 173,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 179,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 255,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 306,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 321,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 330,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 351,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 359,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 365,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 373,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 379,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 425,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 448,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 475,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 951,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch31_operator_overloading.md",
+        "line": 1000,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 42,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 50,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 57,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 65,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 73,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 90,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 105,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 114,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 150,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 283,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 312,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 423,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 429,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 435,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 440,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 453,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 459,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 465,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 470,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 476,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 482,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 487,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 493,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 499,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 505,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 510,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 516,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 522,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 527,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 538,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 585,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 606,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 620,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 633,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 651,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 1231,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part03_language/ch32_initialization.md",
+        "line": 1279,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch35_memory_layout.md",
+        "line": 1486,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch35_memory_layout.md",
+        "line": 1859,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch36_stack_heap.md",
+        "line": 1810,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 1839,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 2180,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch37_new_delete.md",
+        "line": 2395,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch38_allocator.md",
+        "line": 1560,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch38_allocator.md",
+        "line": 1942,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch38_allocator.md",
+        "line": 2159,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch39_raii_rule.md",
+        "line": 1723,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch39_raii_rule.md",
+        "line": 1745,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch39_raii_rule.md",
+        "line": 2101,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch39_raii_rule.md",
+        "line": 2314,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch40_exception_safety.md",
+        "line": 1466,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch40_exception_safety.md",
+        "line": 1485,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch40_exception_safety.md",
+        "line": 2069,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch40_exception_safety.md",
+        "line": 2159,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch41_smart_pointers.md",
+        "line": 2182,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch41_smart_pointers.md",
+        "line": 2297,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch42_strict_aliasing.md",
+        "line": 1667,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch43_cache_locality.md",
+        "line": 2010,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 2531,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part04_memory/ch44_memory_pool.md",
+        "line": 2571,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch45_oop_object_model.md",
+        "line": 1418,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch45_oop_object_model.md",
+        "line": 1474,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch45_oop_object_model.md",
+        "line": 1777,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch46_encapsulation_inheritance.md",
+        "line": 1521,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch46_encapsulation_inheritance.md",
+        "line": 1539,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch46_encapsulation_inheritance.md",
+        "line": 1890,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch47_virtual_functions.md",
+        "line": 940,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch47_virtual_functions.md",
+        "line": 946,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch47_virtual_functions.md",
+        "line": 952,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch47_virtual_functions.md",
+        "line": 958,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch47_virtual_functions.md",
+        "line": 965,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch47_virtual_functions.md",
+        "line": 1629,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch47_virtual_functions.md",
+        "line": 1678,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch48_rtti.md",
+        "line": 894,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch48_rtti.md",
+        "line": 901,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch48_rtti.md",
+        "line": 907,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch48_rtti.md",
+        "line": 921,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch48_rtti.md",
+        "line": 1545,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch48_rtti.md",
+        "line": 1611,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch49_virtual_inheritance.md",
+        "line": 842,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch49_virtual_inheritance.md",
+        "line": 848,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch49_virtual_inheritance.md",
+        "line": 854,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch49_virtual_inheritance.md",
+        "line": 859,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch49_virtual_inheritance.md",
+        "line": 866,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch49_virtual_inheritance.md",
+        "line": 1345,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch49_virtual_inheritance.md",
+        "line": 1417,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch50_multiple_inheritance.md",
+        "line": 623,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch50_multiple_inheritance.md",
+        "line": 629,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch50_multiple_inheritance.md",
+        "line": 635,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch50_multiple_inheritance.md",
+        "line": 646,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch50_multiple_inheritance.md",
+        "line": 700,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch50_multiple_inheritance.md",
+        "line": 720,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch50_multiple_inheritance.md",
+        "line": 1260,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch50_multiple_inheritance.md",
+        "line": 1339,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch51_crtp.md",
+        "line": 643,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch51_crtp.md",
+        "line": 649,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch51_crtp.md",
+        "line": 657,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch51_crtp.md",
+        "line": 664,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch51_crtp.md",
+        "line": 669,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch51_crtp.md",
+        "line": 1175,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch51_crtp.md",
+        "line": 1216,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch52_ebo.md",
+        "line": 605,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch52_ebo.md",
+        "line": 611,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch52_ebo.md",
+        "line": 619,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch52_ebo.md",
+        "line": 626,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch52_ebo.md",
+        "line": 633,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch52_ebo.md",
+        "line": 656,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch52_ebo.md",
+        "line": 1194,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part05_oo/ch52_ebo.md",
+        "line": 1268,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch60_template_basics.md",
+        "line": 800,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch60_template_basics.md",
+        "line": 816,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch60_template_basics.md",
+        "line": 1068,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch60_template_basics.md",
+        "line": 1174,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch61_template_overload.md",
+        "line": 1055,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch61_template_overload.md",
+        "line": 1101,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch62_specialization.md",
+        "line": 782,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch62_specialization.md",
+        "line": 797,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch62_specialization.md",
+        "line": 834,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch62_specialization.md",
+        "line": 844,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch62_specialization.md",
+        "line": 1229,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch62_specialization.md",
+        "line": 1276,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch63_variadic.md",
+        "line": 715,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch63_variadic.md",
+        "line": 757,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch63_variadic.md",
+        "line": 776,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch63_variadic.md",
+        "line": 794,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch63_variadic.md",
+        "line": 1017,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch63_variadic.md",
+        "line": 1146,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch64_fold.md",
+        "line": 1023,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch64_fold.md",
+        "line": 1148,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch65_type_traits.md",
+        "line": 656,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch65_type_traits.md",
+        "line": 670,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch65_type_traits.md",
+        "line": 676,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch65_type_traits.md",
+        "line": 683,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch65_type_traits.md",
+        "line": 1012,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch65_type_traits.md",
+        "line": 1153,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch66_sfinae.md",
+        "line": 545,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch66_sfinae.md",
+        "line": 557,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch66_sfinae.md",
+        "line": 565,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch66_sfinae.md",
+        "line": 571,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch66_sfinae.md",
+        "line": 610,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch66_sfinae.md",
+        "line": 644,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch66_sfinae.md",
+        "line": 686,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch66_sfinae.md",
+        "line": 955,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch66_sfinae.md",
+        "line": 1100,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch67_concepts.md",
+        "line": 596,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch67_concepts.md",
+        "line": 603,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch67_concepts.md",
+        "line": 611,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch67_concepts.md",
+        "line": 618,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch67_concepts.md",
+        "line": 626,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch67_concepts.md",
+        "line": 959,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch67_concepts.md",
+        "line": 1084,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch68_tmp.md",
+        "line": 578,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch68_tmp.md",
+        "line": 880,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch68_tmp.md",
+        "line": 1011,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch69_constexpr.md",
+        "line": 546,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch69_constexpr.md",
+        "line": 551,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch69_constexpr.md",
+        "line": 556,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch69_constexpr.md",
+        "line": 1010,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch69_constexpr.md",
+        "line": 1144,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch70_tag_dispatch.md",
+        "line": 586,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch70_tag_dispatch.md",
+        "line": 591,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch70_tag_dispatch.md",
+        "line": 596,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch70_tag_dispatch.md",
+        "line": 601,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch70_tag_dispatch.md",
+        "line": 606,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch70_tag_dispatch.md",
+        "line": 654,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch70_tag_dispatch.md",
+        "line": 683,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch70_tag_dispatch.md",
+        "line": 693,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch70_tag_dispatch.md",
+        "line": 713,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch70_tag_dispatch.md",
+        "line": 1105,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch70_tag_dispatch.md",
+        "line": 1253,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch71_policy.md",
+        "line": 1041,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch71_policy.md",
+        "line": 1175,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch72_expression_templates.md",
+        "line": 637,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch72_expression_templates.md",
+        "line": 1047,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part06_templates/ch72_expression_templates.md",
+        "line": 1176,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch76_stl_arch.md",
+        "line": 1007,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch76_stl_arch.md",
+        "line": 1028,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch76_stl_arch.md",
+        "line": 1623,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch76_stl_arch.md",
+        "line": 1711,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch77_vector.md",
+        "line": 1553,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch78_deque.md",
+        "line": 1347,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch78_deque.md",
+        "line": 1476,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch79_list.md",
+        "line": 1385,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch79_list.md",
+        "line": 1510,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch80_array.md",
+        "line": 1247,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 574,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 581,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 599,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 609,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 624,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 631,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 653,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 676,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 730,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 753,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch81_string.md",
+        "line": 1161,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch82_span.md",
+        "line": 1403,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch82_span.md",
+        "line": 1538,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch83_map.md",
+        "line": 1071,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch83_map.md",
+        "line": 1076,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch83_map.md",
+        "line": 1121,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch83_map.md",
+        "line": 1170,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch83_map.md",
+        "line": 1564,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch84_set.md",
+        "line": 1360,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch84_set.md",
+        "line": 1516,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch85_unordered.md",
+        "line": 1626,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch86_adapters.md",
+        "line": 1510,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch86_adapters.md",
+        "line": 1652,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch87_bitset.md",
+        "line": 1307,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch87_bitset.md",
+        "line": 1456,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch88_optional_variant.md",
+        "line": 518,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch88_optional_variant.md",
+        "line": 523,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch88_optional_variant.md",
+        "line": 528,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch88_optional_variant.md",
+        "line": 533,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch88_optional_variant.md",
+        "line": 538,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch88_optional_variant.md",
+        "line": 1157,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch89_tuple_any.md",
+        "line": 1448,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch90_ranges.md",
+        "line": 1006,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch90_ranges.md",
+        "line": 1283,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch90_ranges.md",
+        "line": 1428,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch91_filesystem.md",
+        "line": 979,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch91_filesystem.md",
+        "line": 1483,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch91_filesystem.md",
+        "line": 1539,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch92_chrono.md",
+        "line": 1205,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch92_chrono.md",
+        "line": 1354,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch93_thread_async.md",
+        "line": 1623,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch93_thread_async.md",
+        "line": 1778,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch94_stop_token.md",
+        "line": 1658,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part07_stl/ch94_stop_token.md",
+        "line": 1808,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch100_ranges_algo.md",
+        "line": 792,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch100_ranges_algo.md",
+        "line": 1190,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch100_ranges_algo.md",
+        "line": 1248,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch101_algo_theory.md",
+        "line": 1446,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch101_algo_theory.md",
+        "line": 1499,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch95_algo_overview.md",
+        "line": 1730,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch95_algo_overview.md",
+        "line": 1830,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch96_sorting.md",
+        "line": 1374,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch96_sorting.md",
+        "line": 1426,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch97_search.md",
+        "line": 1419,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch97_search.md",
+        "line": 1473,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch98_heap.md",
+        "line": 1276,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch98_heap.md",
+        "line": 1338,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch99_numeric.md",
+        "line": 1455,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch99_numeric.md",
+        "line": 1907,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part08_algorithms/ch99_numeric.md",
+        "line": 1967,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch107_atomic.md",
+        "line": 1547,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch108_memory_order.md",
+        "line": 1363,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 54,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 63,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 75,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 84,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 100,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 123,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 132,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 139,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 146,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 168,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 180,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 186,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 261,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 324,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 376,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 383,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 388,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 394,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 409,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 435,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 824,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch109_fence.md",
+        "line": 960,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch110_lockfree.md",
+        "line": 1330,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch110_lockfree.md",
+        "line": 1452,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch111_aba.md",
+        "line": 703,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch111_aba.md",
+        "line": 1232,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch111_aba.md",
+        "line": 1284,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch112_hazard_rcu.md",
+        "line": 1283,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch112_hazard_rcu.md",
+        "line": 1333,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch113_coroutine.md",
+        "line": 781,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch113_coroutine.md",
+        "line": 789,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch113_coroutine.md",
+        "line": 797,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch113_coroutine.md",
+        "line": 803,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch113_coroutine.md",
+        "line": 809,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch113_coroutine.md",
+        "line": 826,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch113_coroutine.md",
+        "line": 1417,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part09_concurrency/ch113_coroutine.md",
+        "line": 1486,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch115_move.md",
+        "line": 1096,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch115_move.md",
+        "line": 1105,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch115_move.md",
+        "line": 1112,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch115_move.md",
+        "line": 1119,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch115_move.md",
+        "line": 1126,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch115_move.md",
+        "line": 1448,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 98,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 561,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 577,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 998,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 1005,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 1014,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 1022,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 1028,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 1372,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch116_perfect_forwarding.md",
+        "line": 1428,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch117_copy_elision.md",
+        "line": 762,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch117_copy_elision.md",
+        "line": 788,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch117_copy_elision.md",
+        "line": 822,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch117_copy_elision.md",
+        "line": 1294,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch119_ranges_deep.md",
+        "line": 588,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch119_ranges_deep.md",
+        "line": 594,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch119_ranges_deep.md",
+        "line": 601,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch119_ranges_deep.md",
+        "line": 607,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch119_ranges_deep.md",
+        "line": 615,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch119_ranges_deep.md",
+        "line": 673,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch119_ranges_deep.md",
+        "line": 682,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch119_ranges_deep.md",
+        "line": 1426,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch119_ranges_deep.md",
+        "line": 1473,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 58,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 102,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 212,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 332,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 377,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 395,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 574,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 609,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 701,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 713,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 747,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 759,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 770,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 781,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 791,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 801,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 811,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 821,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 831,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 842,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 853,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 864,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch120_coroutine_app.md",
+        "line": 1413,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 47,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 65,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 90,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 111,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 135,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 153,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 180,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 435,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 468,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 594,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 637,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 650,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 660,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 680,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 691,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 703,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 714,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 729,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 744,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 755,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 769,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 780,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 813,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 831,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch121_contracts.md",
+        "line": 868,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch122_pmr.md",
+        "line": 1040,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch122_pmr.md",
+        "line": 1048,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch122_pmr.md",
+        "line": 1055,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch122_pmr.md",
+        "line": 1078,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch122_pmr.md",
+        "line": 1094,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch122_pmr.md",
+        "line": 1102,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch122_pmr.md",
+        "line": 1109,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch122_pmr.md",
+        "line": 1115,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch122_pmr.md",
+        "line": 1122,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch122_pmr.md",
+        "line": 1717,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch122_pmr.md",
+        "line": 1774,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch123_ct_programming.md",
+        "line": 959,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch123_ct_programming.md",
+        "line": 965,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch123_ct_programming.md",
+        "line": 972,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch123_ct_programming.md",
+        "line": 979,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch123_ct_programming.md",
+        "line": 1252,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part10_modern/ch123_ct_programming.md",
+        "line": 1307,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part11_source/ch124_libstdcxx.md",
+        "line": 1362,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part11_source/ch125_libcxx.md",
+        "line": 909,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part11_source/ch126_msstl.md",
+        "line": 952,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part11_source/ch127_llvm.md",
+        "line": 765,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part11_source/ch128_boost.md",
+        "line": 940,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part11_source/ch130_chromium_abseil.md",
+        "line": 930,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part11_source/ch131_fmt_spdlog.md",
+        "line": 812,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part11_source/ch131_fmt_spdlog.md",
+        "line": 1051,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part11_source/ch132_leveldb_rocksdb.md",
+        "line": 1167,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch135_patterns_intro.md",
+        "line": 799,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch136_creational.md",
+        "line": 1017,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch136_creational.md",
+        "line": 1024,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch136_creational.md",
+        "line": 1032,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch136_creational.md",
+        "line": 1039,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch136_creational.md",
+        "line": 1046,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch137_structural.md",
+        "line": 1087,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch137_structural.md",
+        "line": 1095,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch137_structural.md",
+        "line": 1104,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch137_structural.md",
+        "line": 1112,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch137_structural.md",
+        "line": 1117,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch137_structural.md",
+        "line": 1170,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch137_structural.md",
+        "line": 1187,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch138_behavioral.md",
+        "line": 929,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch138_behavioral.md",
+        "line": 946,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch141_di.md",
+        "line": 1046,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch142_ecs.md",
+        "line": 1147,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part12_patterns/ch143_dod.md",
+        "line": 1555,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part13_engineering/ch145_naming_api.md",
+        "line": 995,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part13_engineering/ch149_ci_cd.md",
+        "line": 1088,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part13_engineering/ch151_benchmark.md",
+        "line": 1279,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch152_perf_model.md",
+        "line": 850,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch152_perf_model.md",
+        "line": 855,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch152_perf_model.md",
+        "line": 860,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch152_perf_model.md",
+        "line": 865,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch153_cpu_micro.md",
+        "line": 887,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch153_cpu_micro.md",
+        "line": 1167,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch154_cache_opt.md",
+        "line": 864,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch154_cache_opt.md",
+        "line": 869,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch154_cache_opt.md",
+        "line": 874,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch154_cache_opt.md",
+        "line": 879,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch154_cache_opt.md",
+        "line": 884,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch154_cache_opt.md",
+        "line": 936,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch154_cache_opt.md",
+        "line": 1271,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch155_simd.md",
+        "line": 1177,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch156_compiler_opt.md",
+        "line": 794,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 45,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 57,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 83,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 104,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 118,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 127,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 149,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 281,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 395,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 402,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 408,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 415,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 422,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 428,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 434,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 441,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 448,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 455,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 463,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 470,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 482,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 488,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 495,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 501,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 507,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 513,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 519,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 574,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch157_compiler_explorer.md",
+        "line": 583,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 39,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 53,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 74,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 109,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 117,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 137,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 158,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 171,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 187,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 258,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 299,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 367,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 373,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 379,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 384,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 390,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 396,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 402,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 407,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 420,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 426,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 434,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 442,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 452,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 459,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 465,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 525,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part14_perf/ch158_perf_antipatterns.md",
+        "line": 808,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch160_mempool.md",
+        "line": 943,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch160_mempool.md",
+        "line": 948,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch160_mempool.md",
+        "line": 973,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch160_mempool.md",
+        "line": 1253,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch161_logger.md",
+        "line": 187,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch161_logger.md",
+        "line": 433,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch161_logger.md",
+        "line": 1465,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch161_logger.md",
+        "line": 1526,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch162_json.md",
+        "line": 784,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch162_json.md",
+        "line": 789,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch162_json.md",
+        "line": 794,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch162_json.md",
+        "line": 799,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch163_net.md",
+        "line": 1119,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch164_framework.md",
+        "line": 1167,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch164_framework.md",
+        "line": 1172,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch164_framework.md",
+        "line": 1177,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part15_cases/ch164_framework.md",
+        "line": 1201,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part16_reading/ch165_roadmap.md",
+        "line": 687,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part16_reading/ch165_roadmap.md",
+        "line": 706,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      },
+      {
+        "file": "Book/part16_reading/ch165_roadmap.md",
+        "line": 749,
+        "note": "std::endl 强制 flush，循环内使用应改 '\\n'"
+      }
+    ]
+  },
+  "summary": {
+    "unsafe_c": 11,
+    "raw_new_no_delete": 90,
+    "reinterpret_cast": 97,
+    "missing_virtual_dtor": 7,
+    "using_namespace_std": 2,
+    "endl_flush": 733
+  }
+}

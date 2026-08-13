@@ -61,7 +61,7 @@ def compile_one(args):
         return (chapter, idx, 'error', str(e)[:200])
     finally:
         try: os.unlink(fpath)
-        except: pass
+        except Exception: pass
 
 def collect_chapters(limit=3):
     items = []

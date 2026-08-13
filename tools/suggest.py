@@ -45,7 +45,7 @@ def main():
     if '--batch' in sys.argv:
         try:
             n = int(sys.argv[sys.argv.index('--batch') + 1])
-        except:
+        except Exception:
             n = 5
         # Find N weakest chapters
         chaps = []

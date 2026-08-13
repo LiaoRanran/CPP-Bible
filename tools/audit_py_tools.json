@@ -1,0 +1,124 @@
+{
+  "scanned_files": 85,
+  "categories": {
+    "bare_except": [],
+    "broad_except_pass": [
+      {
+        "file": "tools/asm_prepush_guard.py",
+        "line": 131,
+        "note": "Exception 异常被 pass 吞掉（无日志/无重抛）"
+      },
+      {
+        "file": "tools/ci_gate.py",
+        "line": 62,
+        "note": "Exception 异常被 pass 吞掉（无日志/无重抛）"
+      },
+      {
+        "file": "tools/compile_run_sanitize_pipeline.py",
+        "line": 212,
+        "note": "OSError 异常被 pass 吞掉（无日志/无重抛）"
+      },
+      {
+        "file": "tools/compile_run_sanitize_pipeline.py",
+        "line": 281,
+        "note": "OSError 异常被 pass 吞掉（无日志/无重抛）"
+      },
+      {
+        "file": "tools/exempt_audit.py",
+        "line": 117,
+        "note": "OSError 异常被 pass 吞掉（无日志/无重抛）"
+      },
+      {
+        "file": "tools/hy3_check.py",
+        "line": 69,
+        "note": "Exception 异常被 pass 吞掉（无日志/无重抛）"
+      },
+      {
+        "file": "tools/mermaid_audit.py",
+        "line": 31,
+        "note": "Exception 异常被 pass 吞掉（无日志/无重抛）"
+      },
+      {
+        "file": "tools/verify_asm_evidence.py",
+        "line": 69,
+        "note": "Exception 异常被 pass 吞掉（无日志/无重抛）"
+      }
+    ],
+    "mutable_default": [],
+    "eval_exec": [],
+    "wildcard_import": [],
+    "assert_runtime": [],
+    "open_no_encoding": [],
+    "subprocess_shell_true": [],
+    "rm_rf_or_git_clean": [
+      {
+        "file": "tools/d5_compile_gate.py",
+        "line": 165,
+        "note": "检测到 rm -rf / shutil.rmtree / git clean（对仓库/个人目录高危）"
+      },
+      {
+        "file": "tools/d5_runtime_gate.py",
+        "line": 152,
+        "note": "检测到 rm -rf / shutil.rmtree / git clean（对仓库/个人目录高危）"
+      },
+      {
+        "file": "tools/module_compile_check.py",
+        "line": 125,
+        "note": "检测到 rm -rf / shutil.rmtree / git clean（对仓库/个人目录高危）"
+      },
+      {
+        "file": "tools/rewrite_links.py",
+        "line": 326,
+        "note": "检测到 rm -rf / shutil.rmtree / git clean（对仓库/个人目录高危）"
+      },
+      {
+        "file": "tools/rewrite_links.py",
+        "line": 349,
+        "note": "检测到 rm -rf / shutil.rmtree / git clean（对仓库/个人目录高危）"
+      },
+      {
+        "file": "tools/rewrite_links.py",
+        "line": 372,
+        "note": "检测到 rm -rf / shutil.rmtree / git clean（对仓库/个人目录高危）"
+      },
+      {
+        "file": "tools/rewrite_links.py",
+        "line": 418,
+        "note": "检测到 rm -rf / shutil.rmtree / git clean（对仓库/个人目录高危）"
+      },
+      {
+        "file": "tools/rewrite_links.py",
+        "line": 430,
+        "note": "检测到 rm -rf / shutil.rmtree / git clean（对仓库/个人目录高危）"
+      },
+      {
+        "file": "tools/wave_intake_check.py",
+        "line": 260,
+        "note": "检测到 rm -rf / shutil.rmtree / git clean（对仓库/个人目录高危）"
+      },
+      {
+        "file": "tools/wave_intake_check.py",
+        "line": 297,
+        "note": "检测到 rm -rf / shutil.rmtree / git clean（对仓库/个人目录高危）"
+      },
+      {
+        "file": "tools/wave_intake_check.py",
+        "line": 307,
+        "note": "检测到 rm -rf / shutil.rmtree / git clean（对仓库/个人目录高危）"
+      }
+    ],
+    "non_lf_repo_write": []
+  },
+  "summary": {
+    "bare_except": 0,
+    "broad_except_pass": 8,
+    "mutable_default": 0,
+    "eval_exec": 0,
+    "wildcard_import": 0,
+    "assert_runtime": 0,
+    "open_no_encoding": 0,
+    "subprocess_shell_true": 0,
+    "rm_rf_or_git_clean": 11,
+    "non_lf_repo_write": 0
+  }
+}
