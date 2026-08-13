@@ -494,6 +494,21 @@ struct Buff { Buff(Buff&&) noexcept; };              // ✅ 省略失败时仍�
 
 ## ⑳ 速查表
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：C++17 起按值返回 prvalue 保证不拷贝/移动。** 你返回不可移动类型也编译过。请说明。
+   - [标准] C++17 起，返回 prvalue（如 `return T{...};`）保证复制消除（guaranteed copy elision），即使类型不可拷贝/移动。
+   - [引用] ISO/IEC 14882:2023 §[class.copy.elision]（guaranteed copy elision）；cppreference "Copy elision" 词条。
+
+2. **真实场景：具名返回值优化（NRVO）允许但不强制。** 你依赖 NRVO 优化却偶发拷贝。请说明。
+   - [标准] NRVO（返回具名局部变量）是允许而非强制的优化；不能依赖它来避免不可拷贝类型的拷贝。
+   - [引用] ISO/IEC 14882:2023 §[class.copy.elision]（NRVO 允许但不强制）；cppreference "Copy elision" 词条。
+
+3. **真实场景：复制消除不是移动——根本不构造临时。** 你混淆了两者。请说明区别。
+   - [标准] 消除时源与目标直接合一，不产生临时对象，区别于“移动构造接管资源”。
+   - [引用] ISO/IEC 14882:2023 §[class.copy.elision]（消除语义）；cppreference "Copy elision" 词条。
+
+
 ```cpp
 #include <utility>
 // ⑳ 速查：四种返回写法的命运汇总（✅=无拷贝/移动, ⚠=可能复制）

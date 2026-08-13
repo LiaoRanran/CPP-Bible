@@ -931,6 +931,21 @@ int main() { Doc d = load(); std::cout << d.title << "\n"; return 0; }
 
 ## ⑳ 跨语言对比：移动语义
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：给移动构造标 `noexcept` 让 `vector` 重分配用移动。** 你发现没标就回退拷贝。请说明。
+   - [标准] 容器在重分配时仅当移动构造/赋值对 `is_nothrow_move_constructible` 为真才使用移动，否则回退拷贝。
+   - [引用] ISO/IEC 14882:2023 §[class.copy.ctor] / [meta.unary.prop]（noexcept 移动与 is_nothrow_move_constructible）；cppreference "Move semantics" 词条。
+
+2. **真实场景：被移动对象须处于“有效但未指定”状态。** 你移动后还用它但保证只析构/赋值。请说明约束。
+   - [标准] 被移动对象应处于有效（可安全析构、可赋值）但未指定状态；不得假设其原值仍在。
+   - [引用] ISO/IEC 14882:2023 §[utility]（被移动对象状态约定）/ 一般库约定；cppreference "Move semantics" 词条。
+
+3. **真实场景：返回局部对象可隐式移动（无需 std::move）。** 你多写了 `std::move` 反而阻止 RVO。请说明。
+   - [标准] 返回局部变量或 throw 时，标准允许隐式移动（甚至在某些情况下强制），多余的 `move` 会抑制复制消除。
+   - [引用] ISO/IEC 14882:2023 §[class.copy.elision]（隐式移动与复制消除）；cppreference "Copy elision" 词条。
+
+
 | 语言 | 移动语义 | 说明 |
 |---|---|---|
 | C++ | `T&&` + 移动构造/赋值 + `std::move` | 显式、值类别驱动；移动后状态有效但未指定；无自动借用检查 |

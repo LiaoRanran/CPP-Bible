@@ -532,6 +532,21 @@ int main() {
 
 ## ⑳ 跨语言对比 [经验]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `co_yield` 写生成器逐个产出元素。** 你避免一次性建大容器。请说明语义。
+   - [标准] `co_yield e` 等价于 `co_await promise.yield_value(e)`，产出值并挂起，下次恢复从挂起点继续。
+   - [引用] ISO/IEC 14882:2023 §[expr.await]（co_yield 语义）/ [dcl.fct.def.coroutine]；cppreference "Coroutines" 词条。
+
+2. **真实场景：C++23 提供 `std::generator` 标准生成器。** 你不必手写 promise。请说明来源。
+   - [标准] C++23 引入 `<generator>` 库，提供 `std::generator` 简化生成器协程的 promise 与迭代器。
+   - [引用] ISO/IEC 14882:2023 §[coroutine.generator]（std::generator）；cppreference "std::generator" 词条。
+
+3. **真实场景：协程挂起恢复由 awaiter 与执行器驱动。** 你接入异步框架。请说明。
+   - [标准] `co_await` 的挂起/恢复完全由 awaiter 的 `await_suspend`/`await_resume` 决定，可由事件循环驱动。
+   - [引用] ISO/IEC 14882:2023 §[expr.await]（await 表达式与 awaiter 控制）；cppreference "Awaitable" 词条。
+
+
 | 语言 | 协程模型 | 栈 | 关键差异 |
 |---|---|---|---|
 | C++20 | 无栈协程（编译器变换） | 堆分配帧 | `co_await`/`co_yield`/`co_return`，零开销 |

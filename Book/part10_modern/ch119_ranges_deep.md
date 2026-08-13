@@ -516,6 +516,21 @@ int first_even(const std::vector<int>& v) {
 
 ## ⑳ 跨语言对比：惰性序列 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：自定义 view 须满足 view 概念（浅拷贝、不拥有）。** 你写惰性适配器。请说明要求。
+   - [标准] view 须是半正则、可廉价拷贝、且不拥有数据；标准提供 `std::ranges::view` 概念约束。
+   - [引用] ISO/IEC 14882:2023 §[range]（view 概念）；cppreference "std::ranges::view" 词条。
+
+2. **真实场景：range 概念分层（input/fwd/bidi/random/contiguous）。** 你理解算法对 range 的能力要求。请说明。
+   - [标准] C++20 用 `input_range`/`forward_range` 等概念描述 range 的迭代能力，约束算法重载。
+   - [引用] ISO/IEC 14882:2023 §[range.req]（range 要求）/ [iterator.requirements]；cppreference "std::ranges" 词条。
+
+3. **真实场景：用 `borrowed_range` 避免悬垂视图。** 你返回引用局部区间的视图会 UB。请说明。
+   - [标准] `borrowed_range` 表示其迭代器可安全脱离 range 对象存在（如 `std::string_view` 之于 `std::string`），避免 dangling。
+   - [引用] ISO/IEC 14882:2023 §[range.req]（borrowed_range）；cppreference "std::ranges::borrowed_range" 词条。
+
+
 | 语言 | 惰性序列 | 管道组合 |
 |---|---|---|
 | C++20 | `std::views`（view） | `\|` 管道 |

@@ -929,6 +929,21 @@ int main() {
 
 ## ⑳ 跨语言对比：Arena / 多态分配器
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `std::pmr::vector` + `monotonic_buffer_resource` 减动态分配。** 你高频建临时容器。请说明。
+   - [标准] `polymorphic_allocator` 从 `memory_resource` 分配；可把多个容器的分配导向同一缓冲，减少系统调用。
+   - [引用] ISO/IEC 14882:2023 §[mem.res]（memory_resource）/ [allocator.requirements]（pmr 分配器）；cppreference "std::pmr" 词条。
+
+2. **真实场景：`monotonic_buffer_resource` 只增长、析构统一释放。** 你理解中途不回收。请说明。
+   - [标准] 单调缓冲资源在存活期内只分配不回收，所有内存在其销毁时一次性释放；适合短生命周期批量分配。
+   - [引用] ISO/IEC 14882:2023 §[mem.res.monotonic]（monotonic_buffer_resource）；cppreference "std::pmr::monotonic_buffer_resource" 词条。
+
+3. **真实场景：默认 pmr 资源是 `new_delete_resource`。** 你不指定资源时的行为。请说明。
+   - [标准] 未设置时，pmr 分配器默认使用 `new_delete_resource`（即走全局 `new`/`delete`）。
+   - [引用] ISO/IEC 14882:2023 §[mem.res]（new_delete_resource 默认）；cppreference "std::pmr::new_delete_resource" 词条。
+
+
 | 语言/生态 | 等价机制 | 备注 |
 |---|---|---|
 | C++ (`std::pmr`) | `monotonic_buffer_resource` / `pool_resource` | C++17 标准，运行期多态分配器 |

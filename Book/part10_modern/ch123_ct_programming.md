@@ -760,6 +760,21 @@ int main() {
 
 ## ⑳ 跨语言对比：Rust const generics / Zig comptime [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `constexpr` 函数替代模板元编程，可读性更好。** 你重写编译期算法。请说明。
+   - [标准] 常量表达式函数可在编译期求值，语法接近运行期代码，多数 TMP 计算可借此表达。
+   - [引用] ISO/IEC 14882:2023 §[expr.const]（常量表达式）/ [dcl.constexpr]；cppreference "constexpr" 词条。
+
+2. **真实场景：`consteval` 强制编译期求值。** 你要求某函数体绝不在运行期存在。请说明与 constexpr 的区别。
+   - [标准] `consteval` 函数只能在编译期被调用、必须产生常量表达式；`constexpr` 允许运行期调用。
+   - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（consteval 说明符）；cppreference "consteval" 词条。
+
+3. **真实场景：用 `if constexpr` 在编译期消除分支。** 你按类型特性选实现不再偏特化爆炸。请说明。
+   - [标准] `if constexpr` 在编译期求值，未取分支被丢弃、不实例化。
+   - [引用] ISO/IEC 14882:2023 §[stmt.if]（if constexpr 丢弃分支）；cppreference "if constexpr" 词条。
+
+
 | 维度 | C++（constexpr/consteval） | Rust（const generics / const fn） | Zig（comptime） |
 |---|---|---|---|
 | 编译期值计算 | `constexpr`/`consteval` 函数 | `const fn` + `comptime` 值 | `comptime` 一等公民 |

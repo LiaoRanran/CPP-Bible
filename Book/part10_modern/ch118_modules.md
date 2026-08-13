@@ -335,6 +335,21 @@ export inline int twice(int x) { return x * 2; }
 
 ## ⑳ 跨语言对比：模块系统 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `export` 导出模块接口。** 你写模块接口单元暴露 API。请说明。
+   - [标准] 模块接口单元中用 `export` 声明的名字可被 `import` 该模块的其他翻译单元使用。
+   - [引用] ISO/IEC 14882:2023 §[module.interface]（export 声明）；cppreference "Modules" 词条。
+
+2. **真实场景：宏不跨模块边界传递。** 你以为 `import` 会带进 `#define`。请说明隔离。
+   - [标准] 预处理宏不通过模块接口传递；导入方看不到被导入模块的宏定义（与 `#include` 不同）。
+   - [引用] ISO/IEC 14882:2023 §[module]（宏隔离）/ [cpp]（宏不跨模块）；cppreference "Modules" 词条。
+
+3. **真实场景：在接口单元用全局模块片段包含 C 头。** 你 `import` 不了老 C 库。请说明。
+   - [标准] 模块接口可用“全局模块片段”（`module;` 之前的 `#include`）包含非模块化的 C/C++ 头。
+   - [引用] ISO/IEC 14882:2023 §[module.global]（全局模块片段）；cppreference "Modules" 词条。
+
+
 | 语言 | 模块/包系统 | 宏隔离 | 编译模型 |
 |---|---|---|---|
 | C++20 | `export`/`import` | 完全隔离 | 编译期语义导入 |
