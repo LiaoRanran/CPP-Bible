@@ -872,12 +872,20 @@ int main() {
 
 ### ㉒.2 真实工程坐标：排序活在哪些产品里
 
-- **数据库/存储（SQLite、MySQL、RocksDB）**：索引构建、查询排序、SSTable 归并都依赖稳定/外部排序；RocksDB 的 compaction 本质是多路归并排序。
-- **游戏引擎（Unreal/Unity）**：透明物体按深度排序（画家算法）、UI z-order、骨骼/粒子批处理前的去重排序。
-- **编译器（LLVM/Clang）**：指令调度、基本块排序、寄存器分配与依赖拓扑排序大量用 `std::sort`/`std::stable_sort`。
-- **渲染管线（Vulkan/DirectX 驱动、游戏）**：绘制调用批处理按材质/状态排序以减少状态切换；GPU 驱动的 binning/分块也含排序阶段。
-- **视频编码（x264 / x265）**：模式决策中对候选运动向量/PU 分区按代价 `std::partial_sort`/`std::nth_element` 取 Top-K，直接影响编码效率与画质，是多媒体编码的真实热路径。
-- **分布式存储（Google Spanner / Bigtable）**：tablet 的 compaction 本质是大规模多路归并排序，SSTable 块内再靠 `std::sort` 维持有序以支持二分查找。
+下表把「排序」拉成「跨层的归并 / 部分排序工业主轴」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 数据库 / 存储 | SQLite / MySQL / RocksDB（compaction） | 索引构建 / 查询排序 / 多路归并 | LSM 读路径基石 | compaction 本质归并排序 |
+| 游戏引擎 | Unreal / Unity（透明体深度 / UI z-order） | 画家算法深度排序、批处理前去重 | 实时渲染 | 排序直接关系画质与批效率 |
+| 编译器 | LLVM / Clang（指令调度 / 基本块 / 寄存器分配） | `std::sort` / `stable_sort` + 拓扑排序 | 编译基础设施 | 拓扑排序依赖排序 |
+| 渲染管线 | Vulkan / DirectX 驱动（绘制调用批处理） | 按材质 / 状态排序减状态切换 | GPU 驱动 | binning / 分块含排序阶段 |
+| 视频编码 | x264 / x265（模式决策） | `partial_sort` / `nth_element` 取 Top-K 候选 | 编码热路径 | 直接影响编码效率与画质 |
+| 分布式存储 | Google Spanner / Bigtable（tablet compaction） | 大规模多路归并排序 + 块内 `std::sort` | 亿级节点工业落地 | SSTable 有序支撑二分 |
+
+> **表注（㉒.2）**：上表把「排序」拉成「跨层的归并 / 部分排序工业主轴」。数据库（compaction）、分布式存储（Spanner / Bigtable）、视频编码（Top-K）都用「归并 / 部分排序」而非全排序，因为数据规模或只需前 K 个。注意 RocksDB compaction 与 Spanner tablet compaction 本质都是多路归并排序——同一算法思想在单机 LSM 与分布式存储里被反复复用。x264 一行则点出 `nth_element` / `partial_sort` 这类「只取前 K」的部分排序在编码热路径的真实价值。
+
+**一条判读**：选排序的判据是「要全序还是只要前 K、数据能否进内存」。全量有序索引 / 批处理 → `std::sort` / `stable_sort`；只需 Top-K（编码候选 / 风控） → `partial_sort` / `nth_element` 省掉多余比较；数据超出内存（外部 / 分布式） → 多路归并（外部排序）。稳定性在「相等元素相对序必须保持」时（归并、批处理）才要 `stable_sort`。规则：先定「要多少有序」再选算法。
 
 ### ㉒.3 生产踩坑：排序的常见误用
 

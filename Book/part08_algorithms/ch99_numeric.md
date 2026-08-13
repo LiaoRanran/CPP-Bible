@@ -1404,12 +1404,20 @@ void demo_c10(const std::vector<long long>& v) {
 
 ### ㉒.2 真实工程坐标：数值算法活在哪些产品里
 
-- **HPC / 科学计算（Kokkos、Trilinos、Eigen）**：大规模向量归约、点积（`inner_product`/BLAS 的 dot）、前缀和（scan）是线性代数与 PDE 求解的基础；Kokkos 的归约内核正是 `reduce` 思想的并行化。
-- **机器学习框架（PyTorch/TensorFlow 的 C++ 后端）**：张量归约（sum/mean/prod）、梯度累加大量依赖 `transform_reduce`/并行 scan 思想，且对浮点结合律有严格要求。
-- **金融 / 高频计算**：实时风险聚合、滑点累积用 `accumulate`/`reduce`；`std::gcd` 用于费率/周期约分。
-- **编译器（LLVM）**：指令级常量折叠、依赖分析中的前缀和/区间累加，内部大量用归约式遍历。
-- **计算机视觉（OpenCV）**：`cv::reduce`/`cv::sum`/`cv::mean` 是图像处理归约的基础，从像素统计到直方图都在用标准数值算法思想。
-- **ML 推理（ONNX Runtime / TensorFlow Lite C++）**：张量的 elementwise `transform_reduce` 与并行 `reduce` 是推理引擎算子（softmax、layernorm、batch norm）的核心，浮点结合律约束与 ch99 正文一致。
+下表把「数值算法」拉成「归约 / 前缀和」在科学计算到 ML 推理的工业主轴。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| HPC / 科学计算 | Kokkos / Trilinos / Eigen（归约 / 点积 / 前缀和） | 向量归约 / BLAS dot / scan 是线性代数与 PDE 求解基础 | 大规模数值地基 | `reduce` 思想的并行化 |
+| ML 框架 | PyTorch / TensorFlow（C++ 后端） | 张量归约 / 梯度累加依赖 `transform_reduce` / 并行 scan | 训练基础设施 | 对浮点结合律严格要求 |
+| 金融 / 高频 | 实时风险聚合 / 滑点累积（`accumulate` / `reduce`） | `std::gcd` 用于费率 / 周期约分 | 延迟敏感路径 | 归约即实时聚合 |
+| 编译器 | LLVM（常量折叠 / 依赖分析前缀和） | 归约式遍历做指令级计算 | 编译基础设施 | 内部大量归约 |
+| 计算机视觉 | OpenCV（`cv::reduce` / `sum` / `mean`） | 像素统计到直方图的基础 | 图像处理标准件 | 标准数值算法思想 |
+| ML 推理 | ONNX Runtime / TFLite C++（softmax / layernorm / batch norm） | 张量 `transform_reduce` / 并行 `reduce` 是算子核心 | 推理引擎底层 | 浮点结合律约束一致 |
+
+> **表注（㉒.2）**：上表把「数值算法」拉成「归约 / 前缀和」在科学计算到 ML 推理的工业主轴。归约（reduce / accumulate）与前缀和（scan）是 HPC 线性代数、PyTorch 梯度累加、OpenCV 像素统计、ONNX 算子（softmax / layernorm）的共同底层。注意 ML 框架与 ML 推理两行都强调「浮点结合律约束」——并行 reduce 改变加法结合顺序会影响结果，这是数值算法在并行下的真实工程红线。
+
+**一条判读**：用数值归约算法的判据是「要对序列做聚合且最好并行」。向量点积 / 风险聚合 / 梯度累加 / 像素统计都是 reduce；而「每个前缀都要」（前缀和、inclusive_scan）才是 scan。关键工程约束是浮点结合律：并行 reduce 改变加法顺序，结果与串行可能差 ULP，金融 / ML 必须显式控制（用确定性 reduce 或 Kahan 补偿）。规则：聚合 → reduce；要前缀 → scan；并行浮点 → 管结合律。
 
 ### ㉒.3 生产踩坑：数值算法的常见误用
 

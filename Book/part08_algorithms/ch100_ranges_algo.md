@@ -747,12 +747,20 @@ void r15(std::vector<int>& v) {
 
 ### ㉒.2 真实工程坐标：Ranges 活在哪些产品里
 
-- **range-v3（Niebler）**：事实标准的前身库，被无数开源项目用作 C++17 下的 Ranges 替代；直到今天仍是理解标准 Ranges 行为的最佳参考实现。
-- **Chromium / Abseil 生态**：Google 在 Abseil 与 Chromium 的许多内部遍历、处理管线里采用「视图式惰性处理」思路（Abseil 的 `absl::Span` 与算法组合与 Ranges 哲学同源），C++20 Ranges 成熟后逐步迁移。
-- **编译器与标准库实现**：libstdc++（GCC 10+）、libc++（Clang 13+）、MS STL（MSVC 19.30+）均已实现 `std::ranges`，大量底层 `views` 与算法被标准库和真实业务代码直接消费。
-- **数据处理与 ETL**：在数据清洗、日志管道、编译器前端（AST 流式遍历）等「读一遍、做一串变换」的场景，Ranges 管道替代手写循环，可读性显著提升。
-- **格式化库（{fmt}/fmt）**：`fmt::format` 对 `std::vector`/`std::map` 等 range 提供 `fmt::join` 与内置 range 格式化支持，把「打印容器」从手写循环变成一行，被 Chromium、Protobuf 等大量消费。
-- **编译器基础设施（MLIR，LLVM）**：用 `llvm::zip`/`llvm::enumerate`/`llvm::map_range` 这类 range-v3 风格的适配器在 IR 变换 pass 里惰性遍历与改写操作数，是现代编译器前端的真实管线手法。
+下表把「Ranges」拉成「惰性视图管道」从实验库到标准再到工业管线的演进。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 事实标准前身库 | range-v3（Niebler） | C++17 下 Ranges 替代，理解标准 Ranges 的最佳参考实现 | 无数开源项目依赖 | 标准 Ranges 的设计蓝本 |
+| Google 生态 | Chromium / Abseil（`absl::Span`） | 「视图式惰性处理」思路贯穿内部遍历 / 管线 | 工业级基础设施 | 与 Ranges 哲学同源，C++20 后逐步迁移 |
+| 标准库实现 | libstdc++（GCC 10+）/ libc++（Clang 13+）/ MS STL（MSVC 19.30+） | 均已实现 `std::ranges`，底层 `views` 与算法被业务代码直接消费 | 一切 C++20+ 程序地基 | 标准落地即工业落地 |
+| 数据处理 / ETL | 数据清洗 / 日志管道 / 编译器前端 AST 流式遍历 | 「读一遍做一串变换」管道替代手写循环 | 可读性显著提升 | 惰性求值避免中间容器 |
+| 格式化库 | {fmt} / fmt（`fmt::join` / 内置 range 格式化） | 把「打印容器」从手写循环变一行 | Chromium / Protobuf 大量消费 | range 格式化即 Ranges 思想外溢 |
+| 编译器基础设施 | MLIR / LLVM（`llvm::zip` / `enumerate` / `map_range`） | IR 变换 pass 里惰性遍历与改写操作数 | 现代编译器前端管线 | range-v3 风格适配器工业落地 |
+
+> **表注（㉒.2）**：上表把「Ranges」拉成「惰性视图管道」从实验库到标准再到工业管线的演进。range-v3 是事实标准前身（无数开源依赖），三家标准库实现把 Ranges 变成「写一次到处可用」的地基，而 Chromium / Abseil / fmt / MLIR 又把它反向外溢到「视图式惰性处理」的通用哲学。注意 {fmt} 与 MLIR 两行：它们并非直接用 `std::ranges`，却把「range 适配器」思想用在了格式化与 IR 变换里——说明 Ranges 的价值已超出标准库本身。
+
+**一条判读**：用 Ranges 的判据是「有一串对序列的变换、且想避免中间容器与手写循环」。数据处理 / ETL / AST 遍历都符合 → 用管道（view + 算法）拿惰性求值与可读性；但热路径（每帧每实体）要警惕 view 链的组合开销（仍可能分配或内联不佳），此时手写循环或并行策略更直接。规则：可读性优先的管线 → Ranges；极致热路径 → 谨慎测量后再上。
 
 ### ㉒.3 生产踩坑：Ranges 的常见误用与陷阱
 

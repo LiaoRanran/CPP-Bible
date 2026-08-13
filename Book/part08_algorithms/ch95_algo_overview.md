@@ -913,12 +913,20 @@ int quickcheck() {
 
 ### ㉒.2 真实工程坐标：算法库活在哪些产品里
 
-- **Chromium / V8**：用 `std::sort`/`std::unique`/`std::copy` 处理 DOM 列表、属性表、字节流；其 `base::` 工具大量围绕标准算法封装。
-- **LLVM**：用 `std::sort`/`std::stable_sort` 给指令、基本块排序，用 `std::lower_bound` 二分查表；`llvm::sort` 还强制传入严格弱序比较器以规避 UB。
-- **游戏引擎**：Unreal 的 `TArray::Sort` 底层即 introsort 思路，粒子/动画系统批量遍历靠 `std::for_each`/并行策略。
-- **数据库与存储（LevelDB/RocksDB）**：`std::lower_bound`/`std::upper_bound` 在 SSTable 的 `std::vector` 块内二分，是 LSM 读路径的基石。
-- **金融终端（Bloomberg Terminal / BDE）**：Bloomberg 的 C++ 基础库（BDE，`bloomberg/bde`）大量使用 `std::sort`/`std::lower_bound`/`std::unique` 处理行情与订单数据，是金融终端后台的工业现实。
-- **浏览器 JS 引擎（V8 / SpiderMonkey）**：垃圾回收的 card table、解析器的 token 流与属性表排序都依赖 `std::sort`/`std::lower_bound`，把经典算法藏在每天数十亿次执行的引擎底层。
+下表把「标准算法库」拉成「一切 C++ 系统的隐藏基础设施」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 浏览器 | Chromium / V8（`std::sort` / `unique` / `copy`，`base::` 封装） | 处理 DOM 列表 / 属性表 / 字节流 | 每天数十亿次执行 | 标准算法封装成基础工具 |
+| 编译器 | LLVM（`llvm::sort` 强制严格弱序） | `std::sort` / `stable_sort` 排指令 / 基本块；`lower_bound` 二分查表 | 编译基础设施 | 强制比较器规避 UB |
+| 游戏引擎 | Unreal（`TArray::Sort` 即 introsort） | 粒子 / 动画批量遍历靠 `for_each` / 并行策略 | 实时系统 | introsort 思想的工业实现 |
+| 数据库 / 存储 | LevelDB / RocksDB（`std::lower_bound` / `upper_bound`） | SSTable 的 `vector` 块内二分 | LSM 读路径基石 | 二分是读路径命门 |
+| 金融终端 | Bloomberg BDE（`bloomberg/bde`） | `std::sort` / `lower_bound` / `unique` 处理行情与订单 | 金融后台工业现实 | 标准算法在终端底层 |
+| JS 引擎 | V8 / SpiderMonkey（GC card table / 解析器） | 排序依赖 `std::sort` / `lower_bound` | 每天数十亿次执行 | 经典算法藏引擎底层 |
+
+> **表注（㉒.2）**：上表把「标准算法库」拉成「一切 C++ 系统的隐藏基础设施」。注意 LLVM 一行：它不只用 `std::sort`，还强制传入严格弱序比较器（`llvm::sort`）以规避「比较器不满足严格弱序即 UB」的坑——这是把算法正确性当成工程红线。其余各行（Chromium / V8 / Unreal / Bloomberg）都把 `std::sort` / `lower_bound` 当成日常基础件，藏在每天数十亿次执行的底层。
+
+**一条判读**：用标准算法库的判据是「能用现成、正确、经过千锤百炼的实现就别手写」。排序 / 二分 / 拷贝 / 去重这些基础操作，Chromium / LLVM / Unreal / Bloomberg / V8 全用 `std::` 系列而非自研——因为标准实现经过极端测试且持续优化。唯一要警惕的是比较器契约（严格弱序）与并行策略的正确性。规则：优先标准算法，只在标准不覆盖或热路径实测不达标时才手写。
 
 ### ㉒.3 生产踩坑：算法总览里的常见误用
 
