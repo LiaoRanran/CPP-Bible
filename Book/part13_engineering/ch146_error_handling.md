@@ -748,13 +748,21 @@ while (auto x = pop()) consume(*x);   // 自然终止，无异常
 [史] C++ 异常机制随 1990 年《The Annotated C++ Reference Manual》（ARM，Stroustrup & Ellis）成形，并在 C++98 正式标准化；异常把"错误传播"从返回值提升到栈展开。C++11 用 `noexcept` 取代旧式 `throw()` 异常规范，并引入 `std::error_code` / `std::error_category`（源自 Boost.System，Peter Dimov & David Abrahams）。[史] `std::expected<T, E>` 由 P0323 一路演进到 C++23，补上"携带错误信息的返回值"这一长期缺失的词汇类型。[轶] Herb Sutter 的 P0709（Zero-overhead Deterministic Exceptions）试图在"异常"与"零开销/确定性"之间找折中，至今仍在委员会激烈讨论——说明错误处理的标准化远未尘埃落定。[评] C++ 的错误处理是"异常 vs 错误码"双轨并行的代表：标准不替你选，只把两种工具都给你。
 
 ### ㉒.2 真实工程坐标：错误处理活在哪些项目里
-- **Chromium / Abseil**：用 `absl::Status` / `absl::StatusOr<T>` 做全链路错误传播，几乎不用异常（性能与可预测性考量）。
-- **LLVM / Clang**：用 `llvm::Error` / `llvm::Expected<T>`（仿 `expected` 思路的自建类型），编译器等长生命周期工具忌讳异常穿越。
-- **Windows / COM / HRESULT**：系统级 API 普遍返回 `HRESULT`，错误码文化深入 Win32。
-- **嵌入式 / 游戏 / HFT**：严苛实时场景几乎禁用异常（`-fno-exceptions`），靠错误码/optional/expected。
 
-- 航天/安全：**NASA JPL 任务代码**在禁异常前提下，用「返回状态码 + 断言 + 看门狗」做错误处理；**AUTOSAR** 的 `E_OK`/`E_NOT_OK` 错误码体系是车载 C++ 的错误码文化（见 <https://www.autosar.org>）。
-- 数据库/存储：**LevelDB / RocksDB** 以 `Status` 对象（类似 `absl::Status`）贯穿读写路径，把「IO 错误、校验失败、压缩错误」统一成可传播的值（见 <https://github.com/google/leveldb>、<https://rocksdb.org>）。
+错误处理策略直接绑定「异常可用吗、错误要传播多远、能付得起栈展开吗」。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 浏览器 / 基础库 | Chromium / Abseil（`absl::Status`/`absl::StatusOr<T>`） | 全链路错误传播，几乎不用异常 | 工业级，性能与可预测性优先 | 值语义错误传播 |
+| 编译器生态 | LLVM / Clang（`llvm::Error`/`llvm::Expected<T>`） | 长生命周期工具忌讳异常穿越 | 编译器生态标杆 | 仿 `expected` 思路的自建类型 |
+| 系统级 API | Windows / COM / `HRESULT` | 错误码文化深入 Win32 | 系统 API 事实标准 | 错误码返回式 |
+| 嵌入式 / 游戏 / HFT | `-fno-exceptions` + 错误码/`optional`/`expected` | 严苛实时场景禁用异常 | 低延迟/硬实时 | 栈展开成本不可接受 |
+| 航天 / 车载 | NASA JPL（状态码 + 断言 + 看门狗）/ AUTOSAR `E_OK`/`E_NOT_OK` | 禁异常前提下的错误处理 | 安全关键硬约束 | 见 autosar.org；错误码文化 |
+| 数据库 / 存储 | LevelDB / RocksDB（`Status` 对象） | 把 IO/校验/压缩错误统一成可传播的值 | 工业级存储引擎 | 见 leveldb / rocksdb.org |
+
+> **表注（㉒.2）**：上表前 4 行是「禁用或慎用异常的工程现实」，后 2 行是「在安全关键与存储引擎里，错误码/`Status` 值如何贯穿整个系统」；C++ 标准层面对此保持中立——`std::optional`/`std::expected`（C++23）是值语义错误传播的工具，但是否用异常仍由项目策略决定。
+
+**一条判读**：错误处理没有唯一答案——`Status`/`expected` 适合禁用异常、需跨 ABI 传播的场景（存储/系统库）；异常适合能付得起栈展开、且错误需穿越多层调用的应用层；关键是在一个项目内保持一致，而非混用导致错误被吞。
 
 ### ㉒.3 生产踩坑：错误处理的常见误用
 - **跨 ABI 抛异常**：不同编译器/不同异常模型（Itanium vs SEH）混链时，异常跨动态库边界可能直接 `std::terminate`；动态库边界应只用错误码/值类型。

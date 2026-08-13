@@ -610,13 +610,21 @@ bool ready_to_send() {
 [史] 现代代码审查的制度源头是 **Michael Fagan** 在 IBM 于 1976 年提出的"形式化检视（Fagan Inspection）"，用分阶段会议把缺陷在编码早期拦下。2000 年后，随分布式版本控制与 GitHub（2008）普及，"异步 Pull Request / Gerrit 评审"取代线下会议，成为工业主流。[史] Google 把"每一行代码至少被另一名工程师 review 并 LGTM"写进工程实践（eng-practices，2010 年代公开），并以可读性（readability）认证保证风格与 API 一致。[评] 审查的核心价值不在"找风格问题"，而在"第二双眼睛发现单作者盲点"：并发缺陷、UB、ABI 破坏、安全漏洞——这些恰恰是静态分析与单测难以全覆盖的。
 
 ### ㉒.2 真实工程坐标：审查活在哪些项目里
-- **Google / Chromium / Kubernetes**：强制双人 review + 可读性认证，Gerrit/PR 门禁挂满 CI。
-- **Linux 内核**：不走 PR，而是"邮件列表发 patch + maintainer 审 + Reviewed-by/Acked-by 链"，最古老的异步审查文化之一。
-- **LLVM / Clang**：用 **Phabricator**（现迁 GitHub PR）做 pre-commit review，clang-tidy 检查结果进 review UI。
-- **大型金融机构 / 汽车软件（ASPICE/ISO 26262）**：审查是合规强制项，要有可追溯记录与签名。
 
-- 安全关键：**IEC 62304**（医疗器械软件生命周期）把代码审查作为强制活动，要求双人评审与可追溯记录，与汽车 ASPICE 同理（见 <https://www.iec.ch>）。
-- 开源基金会：**Apache 软件基金会**的项目（如 Arrow、Thrift）要求至少一名 PMC 成员 +1 才能合入，Review-then-Commit 是治理的一部分（见 <https://www.apache.org>）。
+代码审查是「质量与知识传播」的关口，其形态随组织规模与合规要求而变。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 互联网 / 大型工程 | Google / Chromium / Kubernetes（强制双人 review + 可读性认证） | Gerrit/PR 门禁挂满 CI | 工业级研发 | review = 质量关口 |
+| 操作系统内核 | Linux 内核（邮件列表 patch + maintainer 审 + Reviewed-by/Acked-by） | 最古老的异步审查文化之一 | 最大分布式评审现场 | 不走 PR，走邮件列表 |
+| 编译器生态 | LLVM / Clang（Phabricator→GitHub PR，clang-tidy 进 review UI） | pre-commit review | 编译器生态标杆 | 工具检查融入 review |
+| 金融 / 汽车软件 | ASPICE / ISO 26262 合规强制审查 | 可追溯记录与签名 | 合规强制项 | 审查即证据 |
+| 医疗器械 | IEC 62304（医疗器械软件生命周期） | 双人评审 + 可追溯记录 | 医疗合规强制 | 见 iec.ch；与 ASPICE 同理 |
+| 开源基金会 | Apache 软件基金会（Arrow/Thrift 等需一名 PMC +1） | Review-then-Commit 是治理一部分 | 基金会治理范式 | 见 apache.org |
+
+> **表注（㉒.2）**：上表前 4 行是「通用工业与内核/编译器的审查形态」，后 2 行是「在医疗合规与开源基金会治理里，审查被固化为强制或可追溯的制度」；无论形态如何，审查的核心价值都是「第二双眼睛 + 知识扩散」。
+
+**一条判读**：审查的强度应与「出错代价」成正比——安全关键/医疗器械必须双人+可追溯（合规要求），普通业务项目强制单人 review 通常已够；把 review 变成纯签字仪式则失去其知识传播价值。
 
 ### ㉒.3 生产踩坑：审查流于形式的陷阱
 - **橡皮图章 LGTM**：只扫一眼就批准，等于没审；[评] 对并发/内存/接口改动必须逐行看，而非看 CI 全绿就放。

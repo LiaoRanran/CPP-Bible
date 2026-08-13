@@ -750,13 +750,21 @@ Git 工作流对 C++ 工程的核心结论：
 [史] 2005 年，因 Linux 内核原先使用的商业版本控制 **BitKeeper** 授权生变，**Linus Torvalds** 用十天写出 Git，目标是"快、分布式、支持巨型历史（内核百万级提交）"。[史] 2008 年 **GitHub** 上线，把 Git 从"命令行工具"变成"基于 Pull Request 的社会化协作平台"，直接催生了现代开源协作模式。[轶] Git 的对象模型（blob/tree/commit 用 SHA-1 寻址）并非 Linus 首创，但"内容寻址 + 不可变历史"被他推向了工程极限，使得 `git bisect` 能在大历史里二分定位首个坏提交（见 ⑰）。
 
 ### ㉒.2 真实工程坐标：Git 工作流活在哪些项目里
-- **Linux 内核**：邮件列表 + `git send-email` + maintainer 树合并，世界最大的分布式评审现场。
-- **Chromium / LLVM**：用 **Gerrit** 做 pre-commit review，每次提交都过严格 CI。
-- **绝大多数 GitHub 开源项目**：GitHub Flow（main + 短命分支 + PR）/ Trunk-Based Development。
-- **大型单体仓（Google/Windows 级）**：多采用 trunk-based + 巨型 monorepo + 专有/增强工具（如 Google 内部 Piper），而非裸 Git。
 
-- **区块链/基础设施**：Bitcoin Core、Linux 内核均用邮件列表 + 维护者树模型，拒绝 GitHub 式集中 PR，体现“分布式评审”的极端形态。
-- **云原生 CI 事实标准**：CNCF 项目（Kubernetes、Prometheus）普遍 GitHub Flow + Prow bot 自动化 /lgtm、自动 rebase，把“评审+合并”工程约定固化进 bot。
+Git 工作流本质是「分支模型 + 评审合并约定」的组合，随项目规模与治理结构分化。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 操作系统内核 | Linux 内核（邮件列表 + `git send-email` + maintainer 树） | 世界最大的分布式评审现场 | 最大 C 项目之一 | 拒绝集中式 PR |
+| 浏览器 / 编译器 | Chromium / LLVM（Gerrit pre-commit review） | 每次提交过严格 CI | 工业级研发 | review 在合并前 |
+| 开源主流 | 多数 GitHub 项目（GitHub Flow / Trunk-Based） | main + 短命分支 + PR | 开源事实标准 | 短命分支降低冲突 |
+| 巨型单体仓 | Google / Windows 级（trunk-based + monorepo + Piper） | 专有/增强工具而非裸 Git | 超大规模仓库 | Piper 替代裸 Git |
+| 区块链 / 基础设施 | Bitcoin Core / Linux 内核（邮件列表 + 维护者树） | 「分布式评审」的极端形态 | 拒绝 GitHub 集中 PR | 与 Linux 同源 |
+| 云原生 | CNCF（Kubernetes / Prometheus，GitHub Flow + Prow bot） | `/lgtm`、自动 rebase 固化进 bot | 云原生 CI 事实标准 | Prow 把约定工程化 |
+
+> **表注（㉒.2）**：上表前 4 行是「从内核到巨型单体仓的分化光谱」，后 2 行是「区块链与云原生对『分布式/自动化评审』的极端或固化形态」；选择工作流的核心约束是「项目规模 + 治理集中度」，而非工具时髦度。
+
+**一条判读**：工作流没有银弹——小团队 GitHub Flow 足够，超大规模 monorepo 需要 trunk-based + 专有工具，强治理项目（内核/区块链）则用邮件列表+维护者树保住去中心化评审；关键是评审门禁与可追溯性，而非具体分支命名。
 
 ### ㉒.3 生产踩坑：Git 工作流的误用
 - **对共享分支 `git push --force`**：改写公共历史，导致协作者本地历史错位、互相覆盖；保护分支应禁 force，确需改写用 `--force-with-lease`。

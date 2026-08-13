@@ -1001,12 +1001,20 @@ chapter 149: CI/CD pipeline verified by g++
 [史] "持续集成（CI）"一词由 **Grady Booch** 在 1991 年提出，但真正落地靠 **极限编程（XP，Kent Beck，1999）** 的"每天多次合入主干并自动化构建测试"。[史] 2011 年 **Travis CI** 把 CI 带入开源（GitHub 一键接入），2019 年 **GitHub Actions** 让"流水线即 YAML"成为默认；自此 CI/CD 从稀缺基建变成每个仓库的标配。[评] CI 的本质不是"跑构建"，而是"把合并风险压缩到小时级"——频率越高，单次合并的爆炸半径越小。
 
 ### ㉒.2 真实工程坐标：CI/CD 活在哪些项目里
-- **LLVM / Clang**：每次提交都在多编译器（GCC/Clang/MSVC）、多架构矩阵上跑全套测试与 `clang-tidy`，门禁极严。
-- **Chromium**：自有超大规模 CI 农场，编译缓存 + 分布式编译，单 commit 触发成千上万任务。
-- **多数现代 C++ 项目**：用 **GitHub Actions** 或 **GitLab CI** 做 build/test/static-analysis/package 流水线（见 ⑫）。
 
-- **大型 C++ 项目 CI**：Chromium 用 Gerrit + 数千台构建从机跑 tryjob；LLVM 用 Buildbot 矩阵覆盖 GCC/Clang/MSVC 多配置；微软 STL 用 Azure Pipelines 对每个提案跑 conformance 测试。
-- **量化交易/嵌入式**：CI 含交叉编译 + 静态分析（clang-tidy/PVS-Studio）+ 二进制体积回归，CD 多为内部灰度而非公网发布。
+CI/CD 把「编译/测试/静态分析/发布」自动化，是规模化 C++ 的命脉。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 编译器生态 | LLVM / Clang（GCC/Clang/MSVC × 多架构矩阵 + clang-tidy） | 门禁极严，提交即全矩阵 | 编译器生态标杆 | 多编译器多架构覆盖 |
+| 浏览器 | Chromium（超大规模 CI 农场 + 编译缓存 + 分布式编译） | 单 commit 触发成千上万任务 | 工业级研发 | tryjob 预验证 |
+| 现代 C++ 主流 | GitHub Actions / GitLab CI（build/test/static-analysis/package） | 通用流水线底座 | 开源/商业事实标准 | 见第⑫章工具链 |
+| 大型 C++ 项目 CI | Chromium（Gerrit + 数千从机）/ LLVM（Buildbot 矩阵）/ 微软 STL（Azure Pipelines conformance） | 对每个提案跑全量门禁 | 工业级门禁 | 微软 STL 跑 conformance 测试 |
+| 量化 / 嵌入式 | 交叉编译 + clang-tidy/PVS-Studio + 二进制体积回归 | CD 多为内部灰度 | 低延迟/资源受限 | 体积回归是嵌入式硬指标 |
+
+> **表注（㉒.2）**：上表前 3 行是「通用到编译器级的 CI 形态」，后 2 行是「在大型 C++ 与量化/嵌入式里，CI 如何叠加矩阵、静态分析与体积回归」；编译缓存（ccache/siso）与分布式编译是高成本 CI  farm 的必备降本手段。
+
+**一条判读**：CI 的强度应与「回归代价」匹配——编译器/标准库必须多编译器×多架构矩阵 + 静态分析；普通业务库 GitHub Actions 跑 build+test+clang-tidy 已足够；量化/嵌入式额外要交叉编译与二进制体积回归，但不必照搬 Chromium 的农场规模。
 
 ### ㉒.3 生产踩坑：CI/CD 的常见误用
 - **构建不可复现**：本地能编、CI 编不过，根因常是缺失依赖钉版本、环境漂移；应锁工具链与依赖，用容器（见 ⑪）固化环境。

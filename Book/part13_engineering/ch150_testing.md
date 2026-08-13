@@ -1075,12 +1075,20 @@ sanity: ch150 self-contained examples compile & run OK
 [史] 单元测试框架源自 **Kent Beck** 1994 年的 **SUnit**（Smalltalk），随后 **JUnit**（2002）把 xUnit 范式带给 Java，C++ 最早有 **CppUnit**。Google 于 2008 年开源 **GoogleTest**（含 GoogleMock），用宏 + 类型丰富的断言成为 C++ 事实标准；**Catch2** 则以"自然语言表达测试用例 + 单头文件"的极简风格崛起。[评] C++ 测试框架的演进主线是"减少样板、增强失败诊断（哪边值不对）、与 CI 无缝对接"。
 
 ### ㉒.2 真实工程坐标：测试活在哪些项目里
-- **GCC / LLVM**：各自有超大规模自研测试套件（GCC testsuite、`llvm-lit`），每次提交跑成千上万用例捍卫编译器正确性。
-- **Chromium**：以 GoogleTest 为单元测试底座，配合大规模端到端与模糊测试。
-- **无数库与产品**：Catch2 因其单头易集成，在中小库里极流行；游戏/嵌入式则用轻量自建框架。
 
-- **单元测试框架**：GoogleTest/GoogleMock（Chromium、ROS）、Catch2（单头、 constexpr 友好）、doctest（极轻量）、Boost.Test；大型项目常自研 harness。
-- **模糊测试**：LLVM 的 libFuzzer + sanitizers（ASan/UBSan/MSan/TSan）是 C++ 查 UB/内存错误的工业标准组合；Chromium 的 ClusterFuzz 持续 fuzz 整个代码库。
+测试策略是「正确性信心」的来源，框架与手段随项目规模分化。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 编译器自测 | GCC testsuite / LLVM `llvm-lit` | 每次提交跑成千上万用例捍卫正确性 | 编译器生态标杆 | 自研超大规模套件 |
+| 浏览器 | Chromium（GoogleTest + 端到端 + 模糊测试） | 单元 + 端到端 + fuzz 组合 | 工业级研发 | GoogleTest 底座 |
+| 中小库 / 产品 | Catch2（单头、constexpr 友好）/ 轻量自建框架 | 易集成、低门槛 | 库生态流行 | Catch2 单头极受欢迎 |
+| 单元测试框架族 | GoogleTest/GoogleMock / Catch2 / doctest / Boost.Test | 各自覆盖不同体积与需求 | 框架事实标准 | 大型项目常自研 harness |
+| 模糊测试 | LLVM libFuzzer + sanitizers（ASan/UBSan/MSan/TSan） | 查 UB/内存错误的工业标准组合 | C++ 查错事实标准 | Chromium ClusterFuzz 持续 fuzz 全库 |
+
+> **表注（㉒.2）**：上表前 3 行是「从编译器到中小库的真实测试实践」，后 2 行是「单元测试框架族与模糊测试工具的组合拳」；编译器级项目靠自研套件捍卫正确性，普通库用 GoogleTest/Catch2 + 必要时的 libFuzzer 即可。
+
+**一条判读**：测试投入应与「错误代价 + 重构频率」成正比——编译器/存储引擎必须大规模自测 + fuzz，业务库聚焦核心路径单元 + 集成测试；不要为覆盖率数字写无断言的「假测试」，那只会膨胀维护成本。
 
 ### ㉒.3 生产踩坑：测试的常见误用
 - **测实现而非行为**：断言私有细节，一重构测试就碎，维护成本反噬；应测可观察的行为契约。

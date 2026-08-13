@@ -1296,12 +1296,20 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 [史] 在 `<chrono>`（C++11）之前，C++ 计时靠 `clock()` / `gettimeofday()` / `QueryPerformanceCounter` 等平台 API，写法各异、易错。Google 于 2014 年前后开源 **Google Benchmark**，用 `BENCHMARK` 宏 + 自动多次迭代/统计，把微基准变成可复现的"框架化"活动。[轶] 更早的工业基准文化来自 HPC 与处理器厂商（SPEC CPU、LINPACK），它们早就强调"多次运行取中位数、报告方差"——本章 ⑥ 的统计口径正源于此。[评] 基准从"个人脚本"走向"框架 + 统计"，关键在于消除人因（少跑一次、只看最好值）带来的误导。
 
 ### ㉒.2 真实工程坐标：基准活在哪些项目里
-- **LLVM / Clang**：用 Google Benchmark 给 IR/代码生成热点做回归基准，CI 里比对历史。
-- **Chromium / V8**：JS 与渲染引擎有大规模 perf bot 持续跑基准防回归。
-- **高频交易 / 游戏引擎**：自研纳秒级基准（RDTSC/`std::chrono::steady_clock`），对单条指令延迟都敏感。
 
-- **基准库**：Google Benchmark（header + 运行时框架，Chromium/LLVM 采用）、nanobench（单头、统计稳健）、nonius（老牌）；`std::chrono` 提供时钟但非基准框架。
-- **微架构感知基准**：像 `likwid`、`perf`、Intel VTune 用于把“墙上时间”拆解到 cache miss / IPC / 分支预测失败，避免被 turbo、调度噪声误导。
+基准测试回答「我改的这个，真的更快/没变慢吗」，必须对抗测量噪声。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 编译器生态 | LLVM / Clang（Google Benchmark 给 IR/codegen 热点做回归基准） | CI 比对历史防回归 | 编译器生态标杆 | 基准进 CI |
+| 浏览器 / JS 引擎 | Chromium / V8（大规模 perf bot 持续跑基准） | 渲染/JS 性能防回归 | 工业级引擎 | perf bot 常态运行 |
+| 低延迟系统 | 高频交易 / 游戏引擎（RDTSC/`std::chrono::steady_clock` 纳秒级） | 对单条指令延迟都敏感 | 低延迟/实时 | 自研纳秒级基准 |
+| 基准库 | Google Benchmark / nanobench（单头）/ nonius / `std::chrono` | 提供基准框架与时钟 | 框架事实标准 | [STANDARD] `std::chrono` 提供时钟但非基准框架 |
+| 微架构感知基准 | `likwid` / `perf` / Intel VTune | 把墙上时间拆解到 cache miss / IPC / 分支预测失败 | 性能剖析工业工具 | 避免被 turbo/调度噪声误导 |
+
+> **表注（㉒.2）**：上表前 3 行是「从编译器到低延迟系统的真实基准实践」，后 2 行是「基准库与微架构剖析工具的组合」；`std::chrono` 只提供时钟，统计稳健性与 CI 比对需靠 Google Benchmark/nanobench 这类框架，单靠手算时间差极易被噪声带偏。
+
+**一条判读**：基准的核心难题是「噪声」——必须多次采样、固定频率、隔离干扰，并用 `perf`/VTune 把墙上时间拆到微架构事件才能下结论；低延迟系统才需要 RDTSC 级纳秒基准，普通业务用 Google Benchmark 的统计量已足够，不必过度追求硬件计数器。
 
 ### ㉒.3 生产踩坑：基准的常见误用
 - **死代码消除（DCE）**：被测结果没被"消费"，编译器整体删掉被测代码，测得 0ns；必须用 `volatile`/编译器屏障/`asm volatile` 或返回结果（见 ③）。

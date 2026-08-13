@@ -836,13 +836,21 @@ private:
 [史] C 风格缩进（K&R 风格）源自 Dennis Ritchie 与 Brian Kernighan 1978 年的《The C Programming Language》；GNU 项目随后制定 GNU Coding Standards，改用全花括号换行（Allman 风格变体）并强制 2 空格缩进、函数名起头。C++ 阵营长期三足鼎立：Google（Google C++ Style Guide，2008 年起，禁 RTTI/异常、强调 const）、LLVM/Clang（LLVM Coding Standards，4 空格、CamelCase 类型名）、Microsoft（Hungarian 风味）。[轶] 2011–2012 年 LLVM 团队（主要作者 Daniel Jasper）推出 `clang-format`，把"风格"从"人工纪律"变成"可机械执行的格式化配置"，并配套 `clang-tidy` 做语义级 lint——这彻底改变了大型 C++ 项目的风格治理方式。[评] 风格之争本质是"可读性与自动化"的权衡：一旦有 clang-format，风格规范的文本描述退居其次，关键是 `.clang-format` 配置文件与 CI 门禁。
 
 ### ㉒.2 真实工程坐标：风格活在哪些产品里
-- **Chrome / Chromium**：严格遵循 Google C++ Style，数千工程师靠 `clang-format` + `clang-tidy` 在 Gerrit 上统一风格。
-- **LLVM / Clang / libc++**：自身即 clang-format 的"样板间"，用 LLVM 风格，且 clang-tidy 检查项很多直接源自其源码实践。
-- **Linux 内核**：坚持自己的内核风格，靠 `scripts/checkpatch.pl` 做机器检查，拒绝 clang-format 式的自动重写（担心历史 blame 破坏）。
-- **Qt / 大型桌面项目**：各自维护风格文档，CI 中跑 formatter 防止 drift。
 
-- 汽车/安全关键：**MISRA C++** 与 **AUTOSAR C++14** 编码规范把「禁用危险构造、强制特定风格」写成可机器检查的 Rule，CI 里用专属检查器（如 Parasoft C/C++test）门禁——是风格规范在功能安全领域的硬约束版。
-- 航空航天：NASA JPL 的 **Institution Coding Standard for C** 以「零警告、禁异常、限模板」著称，被 JPL 任务广泛采用，是「风格 = 可靠性」的极端体现。
+代码风格不是「个人审美」，而是大规模协作下降低认知成本、保证可机器检查的第一道闸门。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 浏览器 / 大型 C++ | Chrome / Chromium（Google C++ Style） | `clang-format` + `clang-tidy` 在 Gerrit 统一风格 | 数千工程师协作 | 风格 = 可维护性 |
+| 编译器生态 | LLVM / Clang / libc++（LLVM 风格） | 自身即 clang-format 样板间，clang-tidy 检查项源自源码实践 | 编译器生态事实标杆 | 工具与实践同源 |
+| 操作系统内核 | Linux 内核（内核风格 + `scripts/checkpatch.pl`） | 机器检查风格，拒绝 clang-format 自动重写 | 最大 C 项目之一 | 担心破坏历史 blame |
+| 桌面框架 | Qt / 大型桌面项目（各自风格文档） | CI 跑 formatter 防 drift | 跨平台桌面框架 | 自维护风格公约 |
+| 汽车 / 安全关键 | MISRA C++ / AUTOSAR C++14 | 把「禁用危险构造、强制风格」写成可机器检查的 Rule | 功能安全硬约束 | CI 专属检查器（Parasoft C/C++test）门禁 |
+| 航空航天 | NASA JPL Institution Coding Standard for C | 「零警告 / 禁异常 / 限模板」 | JPL 任务广泛采用 | 风格 = 可靠性的极端体现 |
+
+> **表注（㉒.2）**：上表前 4 行是「通用工业项目的风格实践」，后 2 行是「在功能安全/航天领域，风格被提升为可机器检查、甚至合规强制的硬约束」；Linux 内核拒绝 clang-format 自动重写是为保护 `git blame` 历史，并非反对统一风格。
+
+**一条判读**：风格规范的核心收益是「消灭无谓的风格争论 + 让机器代查」，而非某套规则更「正确」；安全攸关领域应直接采用 MISRA/AUTOSAR 等已认证的 Rule 集，而非自创风格。
 
 ### ㉒.3 生产踩坑：风格自动化里的陷阱
 - **整体 reformat 毁掉 `git blame`**：一次性对全仓库跑 clang-format 会把每一行的"最后修改者"变成格式化的人，历史追溯失效；正确做法是分阶段、按目录渐进迁移，或用 `.git-blame-ignore-revs`。

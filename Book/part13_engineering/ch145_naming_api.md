@@ -1008,13 +1008,21 @@ int main(){Widget w;w.doWork();std::cout<<"PIMPL: 2ns/call, 30x compile speedup"
 [史] 匈牙利命名法（Hungarian Notation）由微软的 **Charles Simonyi** 在 1970–80 年代提出，用前缀标记变量"种类"（如 `szName` 表示以零结尾的字符串、`dwCount` 表示 double word），在缺乏类型系统与 IDE 的时代帮助程序员记忆语义。进入强类型 C++ 与带 IDE 自动补全的时代后，匈牙利前缀被视为噪音，逐渐退场，但 `m_`（成员）、`s_`（静态）等轻量前缀仍在不少代码库沿用。[史] C++ Core Guidelines（Stroustrup & Sutter，2015）的 NL 规则系统化了现代命名：类型用 `CamelCase`、函数/变量用 `lower_case`、常量用 `kCamelCase`。[评] 命名规范的本质是"让名字承载类型/所有权/单位信息"，而非堆砌前缀。
 
 ### ㉒.2 真实工程坐标：命名与 API 活在哪些项目里
-- **Abseil（Google）**：`absl::` 命名空间、强类型 `absl::string_view`/`absl::StatusOr`，API 以"显式、不可误用"著称。
-- **LLVM / Clang**：类型名 `CamelCase`、函数/变量 `camelCase`、成员无强制前缀但常与局部变量区分；其命名与 API 设计被无数编译器/工具项目仿效。
-- **Qt**：成员用 `m_` 前缀、getter 不写 `get` 前缀、信号用过去时——一整套自洽的 API 公约，使 Qt 接口高度可预测。
-- **标准库**：`std::` 全小写、容器/算法用名词、算法用动词/名词组合（如 `std::find_if`），是 C++ 命名的事实基准。
 
-- 科学计算：**pybind11** 的 API 命名刻意贴近 Python 习惯（`py::class_`、`def()`），让 C++ 库对 Python 用户零认知负担——反向证明「命名服务于调用方」（见 <https://pybind11.readthedocs.io>）。
-- 系统编程：**POSIX / libc** 的 `snprintf`、`strnlen` 等「带长度的安全变体」命名约定，被 C++ 生态（如 `{fmt}`、`std::span`）继承为「显式边界」的命名范式（见 <https://pubs.opengroup.org/onlinepubs/9699919799>）。
+命名与 API 设计的目标只有一个——「让调用方不出错、读得懂」。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 通用库（Google） | Abseil（`absl::` 命名空间、`absl::string_view`/`absl::StatusOr`） | API 以「显式、不可误用」著称 | 工业级基础库 | 强类型 + 显式边界 |
+| 编译器生态 | LLVM / Clang（类型 `CamelCase`、函数/变量 `camelCase`） | 命名被无数编译器/工具项目仿效 | 编译器生态标杆 | 命名即文档 |
+| 桌面框架 | Qt（`m_` 前缀、getter 不写 `get`、信号用过去时） | 一整套自洽 API 公约 | 跨平台框架 | 接口高度可预测 |
+| 标准库 | `std::`（全小写、容器用名词、算法 `find_if`） | C++ 命名的事实基准 | 全语言基准 | [STANDARD] `<algorithm>` 等命名约定 |
+| 科学计算 | pybind11（`py::class_`/`def()` 贴近 Python 习惯） | 让 C++ 库对 Python 用户零认知负担 | 绑定库工业代表 | 见 pybind11.readthedocs.io；命名服务调用方 |
+| 系统编程 | POSIX / libc（`snprintf`/`strnlen` 安全变体） | 「显式边界」命名范式 | C/POSIX 事实标准 | 被 `{fmt}`/`std::span` 继承 |
+
+> **表注（㉒.2）**：上表前 4 行是「C++ 生态内几套典范命名/API 公约」，后 2 行是「命名服务于调用方」的跨语言/跨生态印证——pybind11 反向贴 Python 习惯，POSIX 的安全变体命名被现代 C++ 继承为「显式边界」范式。
+
+**一条判读**：好命名的判据是「调用方无需查文档就能用对」；类型/函数/成员的前缀约定只是手段，真正要服务的是 API 的不可误用性与可读性，而非追求某种「漂亮」风格。
 
 ### ㉒.3 生产踩坑：API 命名与设计的误用
 - **改名即 ABI 破坏**：C++ 的 name mangling 把函数名、参数类型编进符号；改函数名/参数（即使语义等价）会改符号，破坏动态库 ABI。稳定的 API 表面要靠 Pimpl / 不透明指针隔离实现（见 ⑩）。
