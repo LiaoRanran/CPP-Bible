@@ -644,6 +644,21 @@ main:
 
 ## ⑳ 速查表
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：libstdc++ 新旧 ABI 不兼容。** 你用 `-D_GLIBCXX_USE_CXX11_ABI=0` 编的库，被默认 ABI=1 的程序链接后 `std::string` 传递崩溃。请解释 ABI 边界与标准库的兼容性承诺边界。
+   - [标准] 标准库的实现细节（如 `std::string` 的小字符串缓冲布局）不在标准保证内；跨越 ABI 边界传递标准库类型须两边使用同一实现与同一宏配置。
+   - [引用] ISO/IEC 14882:2023 §[strings]（basic_string）；cppreference "std::string" 词条。
+
+2. **真实场景：header-only 库跨多 TU 实例化一致性。** 你发布的模板库在 A、B 两个翻译单元各自实例化同一模板，优化后内联展开不一致。请用 ODR 说明为何必须“同一定义”。
+   - [标准] 内联函数与模板实体在每个翻译单元中必须拥有相同的定义（token 序列与含义一致），否则违反 ODR。
+   - [引用] ISO/IEC 14882:2023 §[basic.def.odr]（内联/模板实体的同一定义要求）；cppreference "One Definition Rule" 词条。
+
+3. **真实场景：用 inline namespace 做 ABI 版本。** 你给 `v2` 名字空间加 `inline`，旧调用点无需改写即可解析到新实现。请说明 inline namespace 的查找规则。
+   - [标准] inline namespace 的成员如同定义在外层命名空间中，无名查找自动向外穿透；可用于 ABI/API 版本分层。
+   - [引用] ISO/IEC 14882:2023 §[namespace.def.inline]（inline namespace）；cppreference "namespace" 词条。
+
+
 把全章浓缩成一张可贴墙的表。
 
 ```cpp

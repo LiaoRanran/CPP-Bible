@@ -660,6 +660,21 @@ int main() { std::printf("chosen build system\n"); return 0; }
 
 ## ⑳ 速查表
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：改了头文件却没触发重编译。** 你修改 `config.h` 后只重编了直接包含它的两个 `.cpp`，第三个含它的目标文件用了旧定义，链接期才暴露不一致。请说明构建系统应如何依据实际包含图重编。
+   - [标准] 翻译单元在翻译阶段 4 把 `#include` 的文本递归并入；头文件是翻译单元的依赖，改动须使其所有使用者重编。
+   - [引用] ISO/IEC 14882:2023 §[lex]（翻译阶段，#include 在阶段 4 文本包含）；cppreference "Phases of translation" 词条。
+
+2. **真实场景：同一头里的非 inline 定义导致 multiple definition。** 你把 `Logger g_log;` 写进头文件被 5 个 `.cpp` 包含，链接报重复符号。请用 ODR 解释并用 `inline`/`extern` 修复。
+   - [标准] 命名空间作用域的变量/函数若非 `inline`，在整个程序中必须恰有一个定义；其余翻译单元应为声明。
+   - [引用] ISO/IEC 14882:2023 §[basic.def.odr]（单一定义规则）；cppreference "One Definition Rule" 词条。
+
+3. **真实场景：CMake 的 PUBLIC/PRIVATE 标错导致消费方找不到头。** 你把 `target_link_libraries(x PRIVATE yaml)` 写成 PRIVATE，消费 `x` 的目标编译时缺 `yaml-cpp` 头。请从语言依赖传播角度说明 PRIVATE/PUBLIC 的语义。
+   - [标准] 头依赖在语言层由 `#include` 与（C++20）模块导入表达；构建系统只负责把正确的包含路径与链接传给使用者。
+   - [引用] ISO/IEC 14882:2023 §[cpp.include]（源文件包含）；cppreference "Replacing text macros / #include" 词条。
+
+
 ```
 ┌────────────── 构建系统速查 ──────────────┐
 │ g++ 选项：                                 │

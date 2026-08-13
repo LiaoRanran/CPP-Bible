@@ -643,6 +643,21 @@ long fast_sum(const long* data, long n) {
 
 ## ⑳ 速查表
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：误以为是算法慢，实则 false sharing。** 你 profiling 发现某计数循环 CPU 飙高，实则是相邻线程计数器落在同一 cache line。请从并发 UB 角度定性。
+   - [标准] 不同线程无同步地写同一 cache line 中的不同对象，构成数据竞争（UB），并引发缓存一致性流量。
+   - [引用] ISO/IEC 14882:2023 §[intro.races]（数据竞争）；cppreference "Memory model" 词条。
+
+2. **真实场景：热点在 `at()` 的边界检查。** 你内层循环用 `v.at(i)` 访问 `std::vector`，采样显示大量越界检查开销。请对比 `operator[]` 的契约差异。
+   - [标准] `at()` 越界抛出 `std::out_of_range`；`operator[]` 不做边界检查，越界访问是未定义行为。
+   - [引用] ISO/IEC 14882:2023 §[vector.access]（vector 元素访问）；cppreference "std::vector::operator[] / at" 词条。
+
+3. **真实场景：跨 TU 无 LTO 时函数没内联。** 你在热点路径调用一个 `inline` 自由函数，profiler 仍看到调用开销。请解释 `inline` 关键字在标准中的约束力。
+   - [标准] `inline` 只是给实现的内联建议（同时放宽 ODR），并不强制内联；跨翻译单元无 LTO 时通常无法内联。
+   - [引用] ISO/IEC 14882:2023 §[dcl.fct.spec]（inline 说明符）；cppreference "inline" 词条。
+
+
 ```cpp
 // ⑳ 一键自查：你的微基准是否"诚实"？
 // 1) 结果是否被使用/打印？ 2) 是否多次取中位数？

@@ -555,6 +555,21 @@ constexpr Firmware kMatrix[] = {
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：同一 `long` 在 64 位 Linux 与 Windows 宽度不同。** 你把 `sizeof(long)` 的结果序列化进协议，跨平台解析错位。请说明基础类型大小的保证边界。
+   - [标准] 基础类型的大小是实现定义的；`int` 至少 16 位、`long` 至少 32 位，具体宽度由实现决定（LP64 vs LLP64）。
+   - [引用] ISO/IEC 14882:2023 §[basic.fundamental]（基础类型与宽度）；cppreference "Fundamental types" 词条。
+
+2. **真实场景：网络字节序解析在大端机“正常”、小端机错乱。** 你直接 `memcpy` 收来的 4 字节到 `uint32_t` 没转字节序。请说明对象表示的端序归属。
+   - [标准] 对象在内存中的字节序（端序）是实现定义的，标准不规定多字节标量的字节排列。
+   - [引用] ISO/IEC 14882:2023 §[basic.types]（对象表示与值表示）；cppreference "Object representation" 词条。
+
+3. **真实场景：目标平台要求 16 字节对齐的 DMA 缓冲。** 你用 `alignas` 声明缓冲，但 `malloc` 返回的普通指针不满足。请说明对齐的查询与指定手段。
+   - [标准] 可用 `alignof` 查询类型对齐、`alignas` 增强声明对齐；实际分配须由支持该对齐的分配器提供。
+   - [引用] ISO/IEC 14882:2023 §[basic.align] / [dcl.align]（对齐与 alignas）；cppreference "alignof / alignas" 词条。
+
+
 ```cpp
 // ⑳ 三元组 → 工具链前缀 速查（编译时 -target / 工具链文件里设置）
 // x86_64-w64-mingw32     -> x86_64-w64-mingw32-g++   （本机即用）
