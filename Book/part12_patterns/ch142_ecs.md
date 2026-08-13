@@ -825,12 +825,19 @@ a alive after destroy? no
 
 ### ㉒.2 真实产业坐标：被巨头项目验证
 
-- **EnTT**（github.com/skypjack/entt）：仅头文件的现代 C++ ECS 库，被 Minecraft Bedrock（Mojang/Microsoft）、Satisfactory（Coffee Stain）等大型项目采用，用稀疏集（sparse set）+ 分组（`group<>`）优化查询。
-- **Unity DOTS**、**Apple GameplayKit**、自研引擎的实体系统都采用 ECS 思路管理成千上万实体。
-- 仿真 / 物理 / EDA 等领域也借 ECS 的「数据表 + 系统遍历」结构做批处理。
+ECS（Entity-Component-System）用「数据表 + 系统遍历」取代深层对象继承，被多个巨头项目验证。下面按领域展开：
 
-- 仿真/国防：**HLA/DIS 联邦仿真**用「实体—属性—更新」表结构管理海量仿真对象，思路与 ECS 一致；军事/航天训练仿真普遍据此做帧间增量广播 [据记载]。
-- 影视/视觉：**SideFX Houdini** 的「节点图 + 几何属性流」用数据驱动方式批处理百万级点，是 ECS/DOD 思想在 DCC 工具里的近亲（见 <https://www.sidefx.com>）。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| ECS 库 | EnTT（仅头文件现代 ECS） | sparse set + `group<>` 优化查询 | 被 Minecraft Bedrock / Satisfactory 采用 | 见 github.com/skypjack/entt |
+| 游戏引擎 | Unity DOTS / Apple GameplayKit / 自研引擎 | 管理成千上万实体 | 工业级引擎实体系统 | ECS 是引擎主流实体范式 |
+| 仿真 / 物理 / EDA | 借 ECS「数据表+系统遍历」做批处理 | 帧内批量处理同类数据 | 多领域复用 | DOD 思想跨领域 |
+| 仿真 / 国防 | HLA/DIS 联邦仿真（实体-属性-更新 表结构） | 管理海量仿真对象、帧间增量广播 | 军事/航天训练仿真 | [据记载] 思路与 ECS 一致 |
+| 影视 / 视觉 | SideFX Houdini（节点图 + 几何属性流） | 数据驱动批处理百万级点 | DCC 工具工业代表 | 见 sidefx.com；ECS/DOD 近亲 |
+
+> **表注（㉒.2）**：上表前 3 行是「ECS 在游戏/仿真领域的直接落地」，后 2 行是「国防联邦仿真与影视 DCC 工具里与 ECS 同构的数据驱动结构」；HLA/DIS 与 Houdini 的例子属二手记载，标注 [据记载]。
+
+**一条判读**：ECS 适合「同类实体数量巨大、逻辑按系统批量遍历」的场景（游戏/仿真）；对象关系复杂、行为高度差异化的领域，经典 OOP 继承反而更直观，强行 ECS 会增加认知负担。
 
 ### ㉒.3 生产踩坑：系统顺序与缓存
 

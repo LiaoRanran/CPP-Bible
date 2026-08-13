@@ -913,12 +913,19 @@ void apply_variant(PolicyVariant<Ps...>& v) {
 
 ### ㉒.2 真实产业坐标：标准库就在用 policy
 
-- **`std::vector` 的分配器（Allocator）**、**`std::unique_ptr` 的删除器（Deleter）** 都是 policy 思想的工程落地：把「内存来源 / 释放方式」作为可替换维度。
-- **Eigen** 用 policy 组合矩阵的表达式语义、存储布局、标量类型；**Boost** 多个库（SmartPtr、多 index 容器）采用 policy 做可定制行为。
-- Abseil、数值库、序列化框架常用 policy 让同一套代码适配多种后端。
+Policy（策略）把「可替换的行为维度」做成模板/运行时参数，让同一套代码适配多种后端。下面按领域展开：
 
-- 网络：**Boost.Beast** 用 policy/模板参数把 HTTP/WebSocket 的「流式 vs 缓冲、同步 vs 异步」做成可组合维度；**libcurl** 的 easy/multi 句柄也是「传输策略」的运行时组合（见 <https://www.boost.org/doc/libs/release/libs/beast>、<https://curl.se>）。
-- 量化：**QuantLib** 用 policy 思想组合定价引擎的「日计数惯例、日历、随机数生成器」，同一套数学换不同市场规则即可复用（见 <https://www.quantlib.org>）。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 标准库 | `std::vector` 分配器 / `std::unique_ptr` 删除器 | 把「内存来源/释放方式」做成可替换维度 | 标准库级 policy | [STANDARD] Allocator / Deleter |
+| 数值 / 通用库 | Eigen（表达式语义/存储布局/标量类型）/ Boost SmartPtr·多 index 容器 | policy 组合可定制行为 | 工业级数值与容器 | policy 是 Eigen 可组合性的根基 |
+| 网络 | Boost.Beast（HTTP/WebSocket 流式vs缓冲/同步vs异步可组合）/ libcurl easy·multi | 传输策略运行期/编译期组合 | 工业级网络库 | 见 boost.org/beast / curl.se |
+| 量化金融 | QuantLib（日计数惯例/日历/随机数生成器 policy） | 同一数学换不同市场规则复用 | 金融工程事实库 | 见 quantlib.org |
+| 框架 / 序列化 | Abseil / 数值库 / 序列化框架 | policy 让同一代码适配多种后端 | 通用基础设施 | policy 思想贯穿现代 C++ 库 |
+
+> **表注（㉒.2）**：上表前 2 行是「标准库与数值库里 policy 的本职用法」，后 3 行是「在网络/量化/序列化框架里把『后端可替换』做成 policy 维度」；policy 与 CRTP 常配合——policy 决定行为，CRTP 消除其虚调用开销。
+
+**一条判读**：policy 适合「同一逻辑要在多种后端/规则间复用」的库设计；它把「可变性」从继承树搬进模板参数，代价是编译期实例数与报错复杂度上升，应用层业务代码通常不必自己造 policy 体系。
 
 ### ㉒.3 生产踩坑：组合爆炸与接口暗约
 

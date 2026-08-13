@@ -981,12 +981,19 @@ int main() { auto s = make(K::Circle); s->draw(); }
 
 ### ㉒.2 真实产业坐标：跨平台与资源构造
 
-- 跨平台 UI / 渲染后端用 Abstract Factory 统一产出「当前平台的具体实现」；编译器（Clang 的 `CompilerInvocation`）用 Builder 逐步拼出复杂配置对象。
-- 游戏资源（贴图、网格）用 Prototype 做「克隆模板实例」；日志/配置用 Meyers 单例做进程级唯一入口。
-- 现代 C++ 更常用 `std::make_unique` / `emplace` / `std::optional` 取代手写工厂样板。
+创建型模式解决的是「对象怎么来、由谁构造、如何跨平台/跨后端替换」。下面按领域展开：
 
-- 汽车/机器人：**ROS 2** 的 `Node` 与通信中间件用工厂 + 依赖注入式构造「节点/执行器」，让同一套算法代码能绑定不同 DDS 实现（Fast DDS、Cyclone DDS）。
-- 数据库：**SQLite** 的 `sqlite3_open_v2` 系列与 VFS 接口用工厂把「存储后端」做成可替换维度，单文件库借此跨平台零依赖（见 <https://www.sqlite.org>）。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 跨平台 UI / 渲染 | Abstract Factory 统一产出当前平台实现 / Clang `CompilerInvocation` 用 Builder 拼复杂配置 | 把「平台差异」收敛到工厂 / Builder | 工业级跨平台与编译器 | Builder 拼配置对象避免巨型构造参数 |
+| 游戏资源 | Prototype 克隆模板实例 / Meyers 单例做进程级唯一入口 | 克隆昂贵资源 / 全局唯一配置日志 | 实时游戏资源与日志 | 原型避免重复加载大资源 |
+| 现代 C++ 惯用法 | `std::make_unique` / `emplace` / `std::optional` | 取代手写工厂样板 | 标准库级惯用法 | [STANDARD] C++14/17 起取代裸 `new` 工厂 |
+| 汽车 / 机器人 | ROS 2 `Node` + 中间件用工厂 + DI 构造节点/执行器 | 同一算法绑定不同 DDS（Fast DDS / Cyclone DDS） | 机器人中间件事实标准 | 工厂 + DI 解耦算法与通信后端 |
+| 数据库 | SQLite `sqlite3_open_v2` + VFS 用工厂做可替换存储后端 | 单文件库跨平台零依赖 | 全球部署最广的嵌入式 DB | 见 sqlite.org；VFS 是存储策略维度 |
+
+> **表注（㉒.2）**：上表前 3 行是「经典创建型模式在 C++ 里的工程形态」，后 2 行是「在机器人/数据库这类系统性产品里的落地」；现代 C++ 已能用 `make_unique`/`emplace`/`optional` 消掉大部分手写工厂样板。
+
+**一条判读**：创建型模式的取舍在「构造复杂度 vs 可替换性」——需要跨平台/可插拔后端时用工厂/Builder/DI 值得；只是简单 `new` 一个对象，直接 `make_unique` 更清爽，不必为「模式」而模式。
 
 ### ㉒.3 生产踩坑：单例是头号反模式温床
 

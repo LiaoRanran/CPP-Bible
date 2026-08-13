@@ -1049,14 +1049,19 @@ int main() {
 
 ### ㉒.2 真实产业坐标：它们就在标准库里
 
-- **Adapter**：STL 迭代器适配器（`reverse_iterator`、`back_inserter`）即适配器；`std::bind` 适配可调用对象。
-- **Decorator**：C++ IO 流（`std::streambuf` 层层包裹）、Boost 的过滤流是装饰器；`std::stack`/`std::queue` 是容器适配器。
-- **Proxy**：`std::unique_ptr` / `std::shared_ptr` 本质是「拥有资源的代理」；`std::weak_ptr` 是弱引用代理。
-- **Composite**：UI 控件树、DOM、场景图（scene graph）都用组合模式统一叶子与容器节点。
-- **Flyweight**：字形/字体缓存、游戏瓦片共享，用共享对象省内存；**Facade**：大型库对外只暴露一个简洁入口类。
+结构型模式的不少实例就藏在标准库与 Boost 里——下面先列「库内内置」，再在表注补两条外部生态佐证：
 
-- 音视频：**WebRTC** 的 `MediaStream`/`Track` 与 `RtpSender`/`RtpReceiver` 是典型 Bridge/Adapter：把采集、编码、传输分层解耦，便于在不同浏览器/设备上替换实现（见 <https://webrtc.github.io>）。
-- 科学计算：**HDF5** 的「虚拟数据集」与「过滤器管道（filter pipeline）」用可叠加的变换链处理数据，是 Decorator/管道思想在文件格式里的落点。
+| 模式 | 代表系统 · 生态（库内） | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| Adapter | STL 迭代器适配器（`reverse_iterator`/`back_inserter`）/ `std::bind` | 适配可调用对象与迭代器 | 标准库内建 | [STANDARD] `<iterator>`/`<functional>` |
+| Decorator | C++ IO 流（`streambuf` 层层包裹）/ Boost 过滤流 / `std::stack`·`std::queue` 容器适配器 | 层层包裹增行为 | 标准库 + Boost | `streambuf` 是装饰器典范 |
+| Proxy | `std::unique_ptr`/`std::shared_ptr`（拥有资源代理）/ `std::weak_ptr`（弱引用代理） | 资源生命周期代理 | 标准库智能指针 | 代理本质是所有权/访问中介 |
+| Composite | UI 控件树 / DOM / scene graph | 统一叶子与容器节点 | 标准 UI/图形范式 | 递归结构统一处理 |
+| Flyweight / Facade | 字形/字体缓存/游戏瓦片共享（享元）/ 大型库简洁入口类（外观） | 共享省内存 / 简化入口 | 通用 | 两类结构型模式合一行 |
+
+> **表注（㉒.2）**：外部生态同样印证结构型模式——音视频 **WebRTC** 的 `MediaStream`/`Track` 与 `RtpSender`/`RtpReceiver` 是典型 Bridge/Adapter，把采集/编码/传输分层解耦（见 webrtc.github.io）；科学计算 **HDF5** 的「虚拟数据集 + 过滤器管道」用可叠加变换链处理数据，是 Decorator/管道思想在文件格式里的落点（见 hdfgroup.org）。
+
+**一条判读**：结构型模式大多「已经在用」而开发者不自知——智能指针就是 Proxy、容器适配器就是 Adapter；识别它们有助于在需要解耦/增行为时，直接复用标准库既有的结构而非重新造轮子。
 
 ### ㉒.3 生产踩坑：间接层是把双刃剑
 

@@ -825,12 +825,19 @@ main:
 
 ### ㉒.2 真实产业坐标：信号、撤销、状态机
 
-- **Observer**：Qt 信号槽、Boost.Signals2、UI 事件总线；**Command**：编辑器/IDE 的撤销重做（Qt Undo Framework）、宏录制。
-- **Strategy**：排序比较器、压缩/序列化算法可插拔；**Visitor**：编译器 AST 遍历（Clang）、序列化分派；**State**：游戏 AI 状态机、连接状态机。
-- **Template Method**：框架的「钩子」方法（如测试框架的 `SetUp`/`TearDown`）。
+行为型模式解决的是「对象之间怎么通信、状态怎么流转、动作怎么封装可重放」。下面按领域展开：
 
-- 分布式系统：**Apache Kafka** 的消费者重平衡（rebalance）用「协调者—观察者 + 状态机」管理分区分配；**ZooKeeper** 的 watcher 机制即观察者模式的分布式版本（见 <https://kafka.apache.org>、<https://zookeeper.apache.org>）。
-- 游戏：**Unity** 的 `UnityEvent` 与 **Unreal** 的委托（delegate/multicast delegate）用 Command/Observer 把编辑器交互与运行时逻辑解耦，是行为型模式在引擎里的工业实现。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| GUI / 事件 | Qt 信号槽 / Boost.Signals2 / UI 事件总线 | Observer 解耦事件发布与订阅 | 标准 + 框架基石 | 观察者是 GUI 事件基石 |
+| 编辑器 / IDE | Qt Undo Framework / 宏录制 | Command 封装可重放动作（撤销重做） | 工业级编辑器 | 命令即可序列化动作 |
+| 算法 / 遍历 / 状态 | 排序比较器 / Clang AST 遍历 / 游戏 AI 状态机 | Strategy / Visitor / State 可替换 | 编译器 + 游戏 | 三类行为模式合一行 |
+| 分布式协调 | Apache Kafka 重平衡 / ZooKeeper watcher | 协调者-观察者 + 状态机 管理分区/观察 | 工业级消息/协调 | 观察者模式的分布式版本 |
+| 游戏引擎 | Unity `UnityEvent` / Unreal 委托（multicast delegate） | Command/Observer 解耦编辑器交互与运行时 | 引擎工业实现 | 委托即观察者 |
+
+> **表注（㉒.2）**：上表前 3 行是「单进程内的行为型模式」，后 2 行是「在分布式（Kafka/ZooKeeper）与引擎（Unity/Unreal）里的规模化落地」；Template Method（测试框架 `SetUp`/`TearDown` 钩子）也属此类，因篇幅并入第 3 行体系。
+
+**一条判读**：行为型模式的取舍在「通信复杂度 vs 可扩展性」——观察者/命令在事件密集的 GUI 与编辑器中几乎不可替代；但若只有一处调用、无重放/订阅需求，直接函数调用比套 Observer 更直白。
 
 ### ㉒.3 生产踩坑：生命周期与双重分派
 

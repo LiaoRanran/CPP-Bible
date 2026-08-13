@@ -918,12 +918,18 @@ struct S2 : SomePolicy { int x; };     // EBO 压掉空基类
 
 ### ㉒.2 真实产业坐标：标准库与工业库都在用
 
-- **`std::enable_shared_from_this`**：标准库就用 CRTP 让派生类获得 `shared_from_this()`。
-- **Boost.Iterator** 的 `iterator_facade` / `iterator_adaptor`、**Boost.Operators**（自动生成 `==`/`<=` 等运算符）都是 CRTP 经典；**Eigen** 用 CRTP 做表达式模板（expression templates）实现零开销代数。
-- 微软 **ATL / WTL** 大量用 CRTP 实现 COM 与窗口基类；游戏/数值库用它避免虚表开销。
+CRTP（奇异递归模板模式）用「基类以派生类为模板参数」在编译期获得静态多态，避免虚表开销。下面按领域展开：
 
-- 图形/实时：**Magnum** 与 **Ogre** 等渲染引擎用 CRTP 做「可静态派生的数学/资源管理基类」，把向量/矩阵运算在编译期展开，避免虚调用进入热路径（见 <https://magnum.graphics>、<https://www.ogre3d.org>）。
-- 嵌入式：[轶] 不少嵌入式外设抽象（如 STM32 的 LL/HAL 风格库）以 CRTP 让驱动在编译期绑定具体外设，使寄存器访问零间接、无虚表开销。
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 标准库 / 工业库 | `std::enable_shared_from_this` / Boost.Iterator `iterator_facade`·`iterator_adaptor` / Boost.Operators / Eigen 表达式模板 | 编译期生成 `shared_from_this`/运算符/零开销代数 | 工业级数值与迭代器 | [STANDARD] `<memory>`；Eigen 用 CRTP 做表达式模板 |
+| Windows / 游戏 / 数值 | 微软 ATL/WTL（COM 与窗口基类）/ 游戏·数值库 | 避免虚表开销的静态基类 | 工业级框架 | CRTP 替代虚调用进热路径 |
+| 图形 / 实时 | Magnum / Ogre 渲染引擎 | 可静态派生的数学/资源管理基类，向量/矩阵编译期展开 | 实时渲染引擎 | 见 magnum.graphics / ogre3d.org |
+| 嵌入式 | STM32 LL/HAL 风格外设抽象库 | 驱动编译期绑定具体外设，寄存器访问零间接 | 资源受限 MCU | [轶] 编译期绑定外设，无虚表 |
+
+> **表注（㉒.2）**：上表前 2 行是「CRTP 在标准库与工业库里的本职用法」，后 2 行是「在图形实时与嵌入式热路径里为去掉虚表而用」；CRTP 的代价是编译期实例膨胀与错误信息变长，只应在热路径或需要静态接口处使用。
+
+**一条判读**：CRTP 适合「多态调用落在热路径、且类型在编译期已知」的场景（数值/图形/嵌入式）；若多态对象需要运行期动态类型、或派生类集合不固定，虚函数反而更合适，硬上 CRTP 会牺牲灵活性与可调试性。
 
 ### ㉒.3 生产踩坑：静态多态的代价
 
