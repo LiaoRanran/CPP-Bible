@@ -605,7 +605,6 @@ C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实�
    - [标准] 跨线程传递指针/数据时，发布方用 release、消费方用 acquire 才能建立可见性。
    - [引用] ISO/IEC 14882:2023 §[atomics.order]（release-acquire 配对）；cppreference "Memory ordering" 词条。
 
-
 | 主题 | 一句话 | 关键原语 |
 |---|---|---|
 | 并发回收难题 | 读者持指针时写者不能 delete | `atomic` 不延长生命周期 |

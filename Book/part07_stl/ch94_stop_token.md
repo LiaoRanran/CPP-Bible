@@ -582,7 +582,6 @@ int main() {
    - [标准] 通过 `stop_callback` 把回调注册到 stop_token；取消请求到达时回调被调用。
    - [引用] ISO/IEC 14882:2023 §[thread.stoptoken]（stop_callback）；cppreference "std::stop_callback" 词条。
 
-
 | 语言/机制 | 取消方式 | 协作/强制 | 回调/清理 |
 |---|---|---|---|
 | C++ `stop_token`/`jthread` | 置标志，线程自检查 | **协作** | `stop_callback` 同步清理 |

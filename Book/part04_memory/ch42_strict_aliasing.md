@@ -821,7 +821,6 @@ int main() {
    - [标准] 当同一存储被复用构造新对象时，指向旧对象的指针/引用须经 `std::launder` 才能合法指代新对象（解决“复用后取址”的别名问题）。
    - [引用] ISO/IEC 14882:2023 §[ptr.launder]（launder）/ [class.union]（union 活跃成员重解释）；cppreference "std::launder" 词条。
 
-
 | 语言 | 严格别名/类型双关语义 | 关键字/机制 |
 |------|----------------------|-------------|
 | **C** | 有严格别名规则（`-fstrict-aliasing`），但 **union 双关合法** | `restrict` 关键字；union 类型双关 |

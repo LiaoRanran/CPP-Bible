@@ -1,6 +1,6 @@
 {
   "summary": {
-    "MATCH": 245,
+    "MATCH": 252,
     "NO_SOURCE": 10,
     "DRIFT": 3,
     "COMPILE_FAIL": 2
@@ -1371,6 +1371,12 @@
       "status": "NO_SOURCE"
     },
     {
+      "name": "_ch158_vcall",
+      "ver": "15.3.0",
+      "status": "MATCH",
+      "syms": 6
+    },
+    {
       "name": "_ch159_atomic",
       "ver": "15.3.0",
       "status": "MATCH",
@@ -1437,10 +1443,34 @@
       "syms": 16
     },
     {
+      "name": "_ch28_dangling_ref",
+      "ver": "15.3.0",
+      "status": "MATCH",
+      "syms": 4
+    },
+    {
+      "name": "_ch28_dangling_ref_O0",
+      "ver": "15.3.0",
+      "status": "MATCH",
+      "syms": 4
+    },
+    {
+      "name": "_ch35_struct_padding",
+      "ver": "15.3.0",
+      "status": "MATCH",
+      "syms": 4
+    },
+    {
       "name": "_ch37_alloc_perf",
       "ver": "15.3.0",
       "status": "MATCH",
       "syms": 6
+    },
+    {
+      "name": "_ch38_bump_allocate",
+      "ver": "15.3.0",
+      "status": "MATCH",
+      "syms": 3
     },
     {
       "name": "_ch41_ptr_perf",
@@ -1484,6 +1514,12 @@
       "status": "NO_SOURCE"
     },
     {
+      "name": "_ch90_view_asm",
+      "ver": "15.3.0",
+      "status": "MATCH",
+      "syms": 4
+    },
+    {
       "name": "_ch95_for_each",
       "ver": "15.3.0",
       "status": "MATCH",
@@ -1521,6 +1557,12 @@
     },
     {
       "name": "_ch97_lower_bound",
+      "ver": "15.3.0",
+      "status": "MATCH",
+      "syms": 3
+    },
+    {
+      "name": "_ch97_search_lower_bound_idx",
       "ver": "15.3.0",
       "status": "MATCH",
       "syms": 3

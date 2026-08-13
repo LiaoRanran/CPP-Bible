@@ -60,7 +60,7 @@ def load_baseline():
         try:
             return json.loads(BASELINE.read_text(encoding="utf-8"))
         except Exception:
-            pass
+            pass  # 安全忽略: 基线文件损坏/缺失则回退 None, 由调用方走默认豁免策略
     return None
 
 

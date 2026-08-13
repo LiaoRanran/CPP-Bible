@@ -906,7 +906,6 @@ int main() {
    - [标准] filesystem 函数通常提供抛异常与接收 `error_code&` 两版；后者用错误码表达失败而不抛出。
    - [引用] ISO/IEC 14882:2023 §[fs]（错误报告的双接口约定）；cppreference "std::filesystem" 词条。
 
-
 | 能力 | C++ `std::filesystem`（C++17+） | Rust `std::fs` | Go `os`/`path/filepath` | Python `pathlib` / `os` | Java `java.nio.file` |
 |---|---|---|---|---|---|
 | 路径类型 | `std::filesystem::path`（值语义） | `Path`（`AsRef<Path>`） | `string` + `filepath` 函数 | `pathlib.Path`（对象） | `Path`（NIO） |

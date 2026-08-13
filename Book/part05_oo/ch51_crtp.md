@@ -516,7 +516,6 @@ BENCHMARK(BM_crtp); BENCHMARK(BM_virtual);
    - [标准] 模板实例化的方法在编译期决议，可被内联；相比虚函数无间接调用与 vtable 查找。
    - [引用] ISO/IEC 14882:2023 §[temp]（模板实例化与内联）/ [class.virtual]（对比运行时多态）；cppreference "CRTP" 词条。
 
-
 【练习题】
 1. 用 CRTP 写一个 `Comparable<T>`，仅由 `operator<` 自动生成 `>`,`<=`,`>=`,`==`,`!=`。
 2. 写 `use_crtp` 与等值虚函数版，用 `g++ -O2 -S` 对比二者汇编行数差异。

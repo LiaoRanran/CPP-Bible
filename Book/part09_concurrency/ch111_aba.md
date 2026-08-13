@@ -620,7 +620,6 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
    - [标准] 双字 CAS 使“指针+版本号”作为整体原子比较交换；语言层提供 CAS 原语，具体打包属惯用法/库支持。
    - [引用] ISO/IEC 14882:2023 §[atomics]（CAS 原语支撑）；cppreference "ABA problem / DCAS" 词条。
 
-
 | 主题 | 要点 | 出处 |
 |---|---|---|
 | ABA 定义 | 值 A→B→A 使 CAS 误判成功 | ① |

@@ -1,7 +1,6 @@
 # 第141章 依赖注入（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
 
-
 ⟶ Book/part12_patterns/ch135_patterns_intro.md
 ⟶ Book/part05_oo/ch45_oop_object_model.md
 
@@ -960,7 +959,6 @@ int main() {
 3. **真实场景：用工厂 + 智能指针管理依赖生命周期。** 你避免裸指针到处传。请说明。
    - [标准] RAII + `std::shared_ptr`/`unique_ptr` 管理依赖对象的生命周期。
    - [引用] ISO/IEC 14882:2023 §[util.smartptr]（智能指针）/ [class.dtor]（RAII）；cppreference "std::shared_ptr" 词条。
-
 
 【本章要点】依赖注入把“对象怎么用依赖”与“依赖怎么创建/选哪个实现”解耦，核心收益是**可测试、可替换、可维护**。C++ 落地 DI 的四种主力技法：
 

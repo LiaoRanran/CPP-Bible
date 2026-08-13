@@ -1,7 +1,6 @@
 # 第32章 初始化与列表初始化
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 > 标准基: C++23 / GCC 15.3 / 预计阅读: 50min / ⟶ Book/part03_language/ch19_variables.md / 难度: ★★★☆☆
 
 ## ⓪ 历史动机：初始化与列表初始化的来龙去脉
@@ -389,7 +388,6 @@ int main() {
 3. **真实场景：常量初始化与 static 顺序。** 用 `constexpr`/常量初始化保证跨 TU 顺序。请结合 ch19/ch21 说明。
    - [标准] 常量初始化（constant-initialization）属于静态初始化子阶段，先于动态初始化，避免 SIOF。
    - [引用] ISO/IEC 14882:2023 §[basic.start.static]；cppreference "Initialization#Non-local_variables" 词条。
-
 
 ```cpp
 // ⑳ 各语言初始化语义对比

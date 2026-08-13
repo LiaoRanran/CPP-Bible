@@ -925,7 +925,6 @@ int main() {
    - [标准] time_point 绑定到某 clock，两 time_point 相减得到 duration；与同 clock 比较才有意义。
    - [引用] ISO/IEC 14882:2023 §[time.point]（time_point 语义）；cppreference "std::chrono::time_point" 词条。
 
-
 > 【性能】下表数字为 x86-64 量级示意 / 本机实测量级（非通用性能结论），标 `[微架构·x86-64][UNVERIFIED]` 或 `[实验·本机实测][UNVERIFIED]`；绝对毫秒随机器而变，只看纵向加速比。
 | 能力 | C++ `<chrono>` | Rust `std::time` | Go `time` | Python `datetime` | Java `java.time` |
 |---|---|---|---|---|---|

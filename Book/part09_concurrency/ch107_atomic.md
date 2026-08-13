@@ -755,7 +755,6 @@ g++ -std=c++23 -O1 -g -fsanitize=thread _ch107_tsan_demo.cpp -o tsan_demo
    - [标准] fetch_add/exchange 等是原子 RMW；在多线程竞争下结果正确且单一。
    - [引用] ISO/IEC 14882:2023 §[atomics]（RMW 操作）；cppreference "std::atomic::fetch_add" 词条。
 
-
 ```cpp
 // ⑳ 最小可编译回顾：把本章要点串成一段代码
 #include <atomic>

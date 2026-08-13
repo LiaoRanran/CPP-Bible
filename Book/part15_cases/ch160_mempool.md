@@ -918,7 +918,6 @@ public:
    - [标准] 分配器须满足 `Allocator` 要求（[allocator.requirements]）：含 `value_type`、分配/释放、rebind 等。
    - [引用] ISO/IEC 14882:2023 §[allocator.requirements.general]（Allocator 要求）/ [container.requirements]；cppreference "Allocator" 词条。
 
-
 - **本质**：内存池 = 批量向系统申请 + 固定切分 + free list 复用，用空间局部性与减少系统调用换取时间。
 - **核心结构**：`FreeNode`（union 省元数据）、`free_list_`（单链表）、`chunks_`（整池释放）。
 - **对齐**：块对齐到 `max_align_t`，热点结构进一步 `alignas(64)` 防 false sharing（⑱，关联第143章）。

@@ -1,7 +1,6 @@
 # 第04章　C++11：现代 C++ 革命
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part10_modern/ch115_move.md
 ⟶ Book/part06_templates/ch63_variadic.md
 
@@ -38,8 +37,8 @@ C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派�
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
 
-![Bjarne Stroustrup，C++11 重大修订的总设计师](../assets/history/bjarne_stroustrup.jpg)
-> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+![DEC PDP-11/40 小型机（1973）：C 与 Unix 的诞生平台，C++ 系统级血统的直接源头（语境影像）](../assets/history/dec_pdp11_1973.jpg)
+> 图源：Jeff Keyzer，许可 CC BY-SA 2.0，来源 <https://commons.wikimedia.org/wiki/File:DEC_PDP-11-40_Minicomputer,_1973,_Technisches_Museum_Wien_(edited,_white_background).jpg>
 
 ## ① 学习目标
 
@@ -464,7 +463,6 @@ int main() {
 3. **真实场景：用 `unique_ptr` 表达独占所有权替代裸指针。** 你担心拷贝导致双重释放。请说明其所有权编码。
    - [标准] `std::unique_ptr` 在类型中编码独占所有权，不可拷贝、只能移动（转让）；析构时自动释放。
    - [引用] ISO/IEC 14882:2023 §[util.smartptr.unique]（unique_ptr 所有权与不可拷贝）；cppreference "std::unique_ptr" 词条。
-
 
 ```cpp
 // 智能指针数组

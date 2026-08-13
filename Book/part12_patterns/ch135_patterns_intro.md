@@ -1,7 +1,6 @@
 # 第135章 设计模式总论（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part12_patterns/ch136_creational.md
 ⟶ Book/part12_patterns/ch137_structural.md
 ⟶ Book/part12_patterns/ch138_behavioral.md
@@ -716,7 +715,6 @@ extern "C" {
 3. **真实场景：静态多态（CRTP）替代虚函数省开销。** 你关心热路径性能。请说明取舍。
    - [标准] CRTP 编译期决议可内联、无 vtable；虚函数提供运行时多态但有间接开销。
    - [引用] ISO/IEC 14882:2023 §[temp]（CRTP）/ [class.virtual]（运行时多态）；cppreference "CRTP" 词条。
-
 
 本章建立了设计模式的 C++ 视角：
 

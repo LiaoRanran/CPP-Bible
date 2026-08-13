@@ -727,7 +727,6 @@ int probe() { return (int)sizeof(std::string); }  // 24(libc++) / 32(libstdc++)
    - [标准] 正则表达式的匹配语义由标准规定，但性能与实现质量相关，不在标准保证内。
    - [引用] ISO/IEC 14882:2023 §[re]（regular expressions 语义）/ libc++ 文档；cppreference "std::regex" 词条。
 
-
 | 主题 | libc++ 要点 | 对应节 |
 |---|---|---|
 | 身份宏 | `_LIBCPP_VERSION`，inline ns `std::__1` | ⑤ |
@@ -827,7 +826,6 @@ libc++ 的诞生是 **Apple 与 GPL 的决裂** 的直接产物。2005 年 Apple
 许可是另一条主线。libc++ 最初以 **UIUC 许可** 分发（与 LLVM 同源），后在 2019 年 LLVM 整体 relicense 时并入 **Apache 2.0 + LLVM 例外** 的新许可体系。这与 libstdc++ 的 GPLv3+运行时例外、以及 MS STL 的 Apache 2.0（见 第126章）形成三足鼎立的「许可光谱」：libc++ 的宽松许可让它能被 Apple 闭源嵌入、也能被 Chrome/VSCode 等自由再分发，而无需像 GPL 那样触发合规审查。
 
 libc++ 不是孤立的——它与 **libc++abi**（异常展开/RTTI/`__cxa_*` 运行时）和 **libunwind**（栈展开）组成「LLVM C++ 运行时三件套」（见 ③/⑥）。这种「标准库 / ABI 运行时 / 展开器」三段式，恰好对应 libstdc++ 的 `libstdc++` / `libsupc++` / `libgcc_s` 分工。维护者从 Hinnant 一代过渡到 **Louis Dionne**（Apple 现任首席维护者）、**Miro Knejp** 等社区骨干，贡献流程走 LLVM 的 Phabricator / GitHub PR。
-
 
 ### ㉒.2 真实工程坐标：libc++ 活在哪些真实产品里
 

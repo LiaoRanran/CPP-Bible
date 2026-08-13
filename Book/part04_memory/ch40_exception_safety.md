@@ -1335,7 +1335,6 @@ int main(){
    - [标准] `std::vector` 在重分配（增长）时，仅当移动构造/移动赋值对 `is_nothrow_move_constructible` 为真才使用移动，否则回退拷贝以保证强异常安全。
    - [引用] ISO/IEC 14882:2023 §[meta.unary.prop]（is_nothrow_move_constructible）/ [vector.modifiers]（重分配用移动的前提）；cppreference "std::vector::reserve / reallocation" 词条。
 
-
 | 保证 | 承诺 | 典型函数 |
 |---|---|---|
 | noexcept | 不抛（抛则 terminate） | 析构、`swap`、`move` 构造 |

@@ -1,7 +1,6 @@
 # 第98章　堆算法 heap（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part08_algorithms/ch96_sorting.md
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
@@ -767,7 +766,6 @@ sorted-bsearch M=20000 : 3143.4 us (hits=20000)
 3. **真实场景：`priority_queue` 内部就是堆。** 你理解容器适配器与堆算法的对应。请说明。
    - [标准] `priority_queue` 默认以 vector 为底层、用 `make_heap` 系列算法维护堆序。
    - [引用] ISO/IEC 14882:2023 §[queue]（priority_queue 基于堆算法）；cppreference "std::priority_queue" 词条。
-
 
 | 需求 | 推荐 | 复杂度 | 备注 |
 |---|---|---|---|

@@ -1,7 +1,6 @@
 # 第07章　C++20：量级升级
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part06_templates/ch67_concepts.md
 ⟶ Book/part10_modern/ch119_ranges_deep.md
 
@@ -38,8 +37,8 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
 
-![Bjarne Stroustrup，C++20 引入概念/范围等重大特性](../assets/history/bjarne_stroustrup.jpg)
-> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+![Ken Thompson，Unix 与 C 共同创造者（C++ 工程文化的重要源头）](../assets/history/ken_thompson.jpg)
+> 图源：Public domain，作者 Unknown，来源 <https://commons.wikimedia.org/wiki/File:Ken_Thompson_02.jpg>
 
 ## ① 学习目标
 
@@ -356,7 +355,6 @@ void legacy() noexcept;
 3. **真实场景：用模块 `import std;` 替代 `#include <vector>`。** 你希望缩短编译时间。请说明模块与头文件的区别。
    - [标准] C++20 引入模块；`import` 导入编译期已处理的接口单元，避免头文件的重复文本处理与宏泄漏。
    - [引用] ISO/IEC 14882:2023 §[module.import]（模块导入）；cppreference "Modules" 词条。
-
 
 ```cpp
 // C++20 小结：concepts/ranges/<=</format/jthread

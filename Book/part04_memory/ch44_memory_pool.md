@@ -1402,7 +1402,6 @@ class Program {
    - [标准] placement new 要求目标存储满足类型对齐且大小足够；可用 `std::align`/`alignas` 或 `aligned_storage` 保证。
    - [引用] ISO/IEC 14882:2023 §[basic.align] / [expr.new]（布置构造的对齐前提）；cppreference "Placement new" 词条。
 
-
 **[经验]** 栈式池按 LIFO 释放（适合表达式树、作用域临时对象），区域池（Arena）一次性分配、整体释放——二者均避免逐对象释放开销。
 
 ### 44.21.1 栈式 LIFO 池（程序 26/≥30）

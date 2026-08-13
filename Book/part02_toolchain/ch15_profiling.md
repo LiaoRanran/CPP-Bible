@@ -1,7 +1,6 @@
 # 第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part13_engineering/ch151_benchmark.md
 ⟶ Book/part14_perf/ch157_compiler_explorer.md
 
@@ -656,7 +655,6 @@ long fast_sum(const long* data, long n) {
 3. **真实场景：跨 TU 无 LTO 时函数没内联。** 你在热点路径调用一个 `inline` 自由函数，profiler 仍看到调用开销。请解释 `inline` 关键字在标准中的约束力。
    - [标准] `inline` 只是给实现的内联建议（同时放宽 ODR），并不强制内联；跨翻译单元无 LTO 时通常无法内联。
    - [引用] ISO/IEC 14882:2023 §[dcl.fct.spec]（inline 说明符）；cppreference "inline" 词条。
-
 
 ```cpp
 // ⑳ 一键自查：你的微基准是否"诚实"？

@@ -590,7 +590,6 @@ int main() {
    - [标准] 与 `async`（launch::async）关联的 future 析构会阻塞直到共享状态就绪（即 join 任务）。
    - [引用] ISO/IEC 14882:2023 §[futures.unique.future]（future 析构对 async 任务的等待）；cppreference "std::future::~future" 词条。
 
-
 | 维度 | C++ (`std::thread`/`future`/`async`) | Rust (`std::thread`/`tokio`/`join`) | Go (`goroutine`/`channel`) | Java (`Thread`/`Future`/`CompletableFuture`) |
 |---|---|---|---|---|
 | 线程模型 | OS 线程（1:1） | OS 线程（std，或 tokio 任务 M:N） | goroutine（M:N，用户态调度） | 平台线程（虚拟线程自 21 起 M:N） |

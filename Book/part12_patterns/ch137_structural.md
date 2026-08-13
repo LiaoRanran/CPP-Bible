@@ -1,7 +1,6 @@
 # 第137章 结构型模式（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part12_patterns/ch135_patterns_intro.md
 ⟶ Book/part05_oo/ch45_oop_object_model.md
 
@@ -1010,7 +1009,6 @@ int main() {
 3. **真实场景：桥接分离抽象与实现（两维独立变化）。** 你避免多重继承组合爆炸。请说明。
    - [标准] 用指针/引用持有实现对象，抽象与实现各自独立演化，减少继承层级。
    - [引用] ISO/IEC 14882:2023 §[class.derived]（继承 vs 组合）/ [util.smartptr]（持有实现）；cppreference "Bridge pattern" 词条。
-
 
 **【七种模式一句话】**
 - **Adapter**：改接口，让不兼容的能协作（组合优于继承）。

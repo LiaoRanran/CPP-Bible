@@ -1,49 +1,8 @@
 {
-  "scanned_files": 85,
+  "scanned_files": 86,
   "categories": {
     "bare_except": [],
-    "broad_except_pass": [
-      {
-        "file": "tools/asm_prepush_guard.py",
-        "line": 131,
-        "note": "Exception 异常被 pass 吞掉（无日志/无重抛）"
-      },
-      {
-        "file": "tools/ci_gate.py",
-        "line": 62,
-        "note": "Exception 异常被 pass 吞掉（无日志/无重抛）"
-      },
-      {
-        "file": "tools/compile_run_sanitize_pipeline.py",
-        "line": 212,
-        "note": "OSError 异常被 pass 吞掉（无日志/无重抛）"
-      },
-      {
-        "file": "tools/compile_run_sanitize_pipeline.py",
-        "line": 281,
-        "note": "OSError 异常被 pass 吞掉（无日志/无重抛）"
-      },
-      {
-        "file": "tools/exempt_audit.py",
-        "line": 117,
-        "note": "OSError 异常被 pass 吞掉（无日志/无重抛）"
-      },
-      {
-        "file": "tools/hy3_check.py",
-        "line": 69,
-        "note": "Exception 异常被 pass 吞掉（无日志/无重抛）"
-      },
-      {
-        "file": "tools/mermaid_audit.py",
-        "line": 31,
-        "note": "Exception 异常被 pass 吞掉（无日志/无重抛）"
-      },
-      {
-        "file": "tools/verify_asm_evidence.py",
-        "line": 69,
-        "note": "Exception 异常被 pass 吞掉（无日志/无重抛）"
-      }
-    ],
+    "broad_except_pass": [],
     "mutable_default": [],
     "eval_exec": [],
     "wildcard_import": [],
@@ -111,7 +70,7 @@
   },
   "summary": {
     "bare_except": 0,
-    "broad_except_pass": 8,
+    "broad_except_pass": 0,
     "mutable_default": 0,
     "eval_exec": 0,
     "wildcard_import": 0,

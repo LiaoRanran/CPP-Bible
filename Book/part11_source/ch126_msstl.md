@@ -1,7 +1,6 @@
 # 第126章　MS STL 架构（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part11_source/ch124_libstdcxx.md
 ⟶ Book/part11_source/ch125_libcxx.md
 
@@ -569,7 +568,6 @@ int read_entry() {
    - [标准] `std::format` 的格式化语义由标准规定；实现质量差异属实现层。
    - [引用] ISO/IEC 14882:2023 §[format]（格式化库语义）/ MSVC STL 博客；cppreference "std::format" 词条。
 
-
 ```text
 ┌─────────────────────────┬──────────────────────────────────────────────┐
 │ 主题                    │ 入口 / 证据                                   │
@@ -844,7 +842,6 @@ MS STL 的源头不在微软自研，而在 **P.J. Plauger 的 Dinkumware STL**�
 一个必须澄清的许可口径差异：本仓库 §0.2 把 2019 年开源记为 **MIT**，而 附录 E 记为 **Apache 2.0**——真实情况是 `microsoft/STL` 仓库的 **主许可为 Apache 2.0**（README 明确），这与 LLVM 的 Apache 2.0 + LLVM 例外同属宽松一派；正文早期「MIT」属历史笔误。无论何种宽松许可，结论一致：MS STL 在 2019 年 `github.com/microsoft/STL` 开源后，结束了「闭源随 Visual Studio 发布、修 bug 等整年发布周期」的历史（见 §0.4 轶事），社区自此能直接提 PR。
 
 `_MSC_VER` 是 MS STL 的「版本脊椎」：它绑死 MSVC 工具集（如 193x = VS2022 17.x），并决定 `msvcp140.dll`/`vcruntime140.dll` 的变体（见 ⑫）。与 libstdc++ 的 `GLIBCXX_*` 符号版本、libc++ 的 `_LIBCPP_VERSION` 一样，`_MSC_VER` 是「同一份 `std::string` 在不同版本下布局可能不同」的实证开关。
-
 
 ### ㉒.2 真实工程坐标：MS STL 活在哪些真实产品里
 

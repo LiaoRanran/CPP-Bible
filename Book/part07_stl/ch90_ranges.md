@@ -922,7 +922,6 @@ int main() {
    - [标准] ranges 算法接受整个范围（容器自动适配），并可返回可用于续接的结果，减少样板。
    - [引用] ISO/IEC 14882:2023 §[alg]（ranges 版算法接受范围）；cppreference "std::ranges algorithms" 词条。
 
-
 | 能力 | C++ ranges/views | Rust `Iterator` | Python 生成器 | Java `Stream` | C# LINQ |
 |---|---|---|---|---|---|
 | 惰性管道 | `v \| views::filter \| transform` | `iter().filter().map()` | `f(x) for x in it if p` | `stream.filter().map()` | `Where().Select()` |

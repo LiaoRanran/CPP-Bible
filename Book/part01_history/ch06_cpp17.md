@@ -1,7 +1,6 @@
 # 第06章　C++17：生产力跃升
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part07_stl/ch88_optional_variant.md
 ⟶ Book/part06_templates/ch64_fold.md
 
@@ -37,8 +36,8 @@ C++17 的最大取舍在"可选值"上：`std::optional` 入标准前，社区�
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
 
-![Bjarne Stroustrup，C++17 的推行](../assets/history/bjarne_stroustrup.jpg)
-> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+![Dennis Ritchie，C 语言创造者（C++ 的直接血缘来源）](../assets/history/dennis_ritchie.jpg)
+> 图源：Denise Panyik-Dale，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Dennis_Ritchie_2011.jpg>
 
 ## ① 学习目标
 
@@ -359,7 +358,6 @@ void log([[maybe_unused]] int verbose){}
 3. **真实场景：inline 变量让 `inline const int k = 42;` 可放头文件。** 你不再需要 `.cpp` 里定义一次。请说明 inline 变量的作用。
    - [标准] C++17 引入 inline 变量，使其可在多个翻译单元拥有同一定义而合法（解决多 TU 单定义）。
    - [引用] ISO/IEC 14882:2023 §[dcl.inline]（inline 变量）；cppreference "inline" 词条。
-
 
 ```cpp
 // C++17 小结：结构化绑定/optional/string_view/折叠/if constexpr

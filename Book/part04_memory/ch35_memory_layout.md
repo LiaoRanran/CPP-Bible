@@ -1008,7 +1008,6 @@ int main() {
    - [标准] `offsetof` 仅对标准布局类型（standard-layout）的非静态数据成员良定义；否则结果未指定/UB。
    - [引用] ISO/IEC 14882:2023 §[support.types]（<cstddef> 的 offsetof）；cppreference "offsetof" 词条。
 
-
 `[实现]` `std::hardware_destructive_interference_size` 与 `hardware_constructive_interference_size` 的提供情况：
 
 | 实现 | 定义位置 | 值 | 启用条件 / 陷阱 |

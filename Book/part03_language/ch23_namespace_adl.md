@@ -1,7 +1,6 @@
 # 第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
 
-
 ⟶ Book/part03_language/ch29_friend.md
 ⟶ Book/part06_templates/ch61_template_overload.md
 
@@ -1137,7 +1136,6 @@ int main() {
 3. **真实场景：头文件禁用的 using 指令。** 头文件中 `using namespace std;` 引发名字冲突。请说明为何头文件内禁用 using namespace。
    - [标准] using-directive 不提升名字优先级，仅将其纳入查找，易与全局或其他命名空间名字发生冲突。
    - [引用] ISO/IEC 14882:2023 §[namespace.udir]（using 指令）；cppreference "Namespace#Using-directives" 词条。
-
 
 > 对照圣经 v3 标准，逐条自检。✓ = 已覆盖。
 

@@ -720,7 +720,6 @@ struct safe_task {
    - [标准] 协程通过 `std::coroutine_traits` 找到 `promise_type`，其成员决定初始挂起、最终挂起与返回对象类型。
    - [引用] ISO/IEC 14882:2023 §[dcl.fct.def.coroutine]（promise_type 与 coroutine traits）；cppreference "std::coroutine_traits" 词条。
 
-
 | 问题 | 答案 |
 |---|---|
 | 函数体出现 `co_await/co_yield/co_return` → 它是？ | **协程**，必须能推导 `promise_type` |

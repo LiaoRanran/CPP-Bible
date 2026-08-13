@@ -1,7 +1,6 @@
 # 第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-
 ⟶ Book/part02_toolchain/ch11_compilers.md
 ⟶ Book/part02_toolchain/ch14_debugging.md
 
@@ -625,7 +624,6 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 3. **真实场景：重命名重构漏改了宏参数。** 你把变量 `buf` 改名为 `buffer`，宏 `LOG(buf)` 的实参也被改，但宏体内用 `#buf` 字符串化得到旧名。请说明宏与作用域重构工具的盲区。
    - [标准] 宏是纯文本替换，其参数在替换列表中被逐字展开（含 `#`/`##` 运算符），不参与语言级作用域重命名。
    - [引用] ISO/IEC 14882:2023 §[cpp.replace]（宏替换与 #、## 运算符）；cppreference "Replacing text macros" 词条。
-
 
 ```cpp
 // ⑳ 一行速记：各工具的核心命令（复制即用）

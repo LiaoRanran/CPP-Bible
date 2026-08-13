@@ -1,7 +1,6 @@
 # 第138章 行为型模式（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part12_patterns/ch137_structural.md
 ⟶ Book/part12_patterns/ch141_di.md
 
@@ -805,7 +804,6 @@ main:
 3. **真实场景：状态模式用状态对象切换行为。** 你用多态避免巨型 switch。请说明。
    - [标准] 状态对象通过虚函数提供不同行为；切换即替换持有的状态对象（多态）。
    - [引用] ISO/IEC 14882:2023 §[class.virtual]（虚函数多态）/ [util.smartptr]；cppreference "State pattern" 词条。
-
 
 - 行为型模式的本质，是把「会变的行为」从「稳定的上下文」中剥离，C++ 提供**虚函数 / 类型擦除 / 编译期多态**三条等价路径。
 - 策略、观察者、命令、模板方法、迭代器、状态、责任链、访问者、中介者、备忘录、解释器构成经典 11 式；

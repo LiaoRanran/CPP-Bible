@@ -1,7 +1,6 @@
 # 第122章　PMR 与多态分配器
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 > 标准基：ISO/IEC 14882:2023 (C++23)。`std::pmr`（Polymorphic Memory Resources）家族于 **C++17** 引入（N4713 §23.12），本章以 C++23 视角重写并补 libstdc++ 源码。
 > 编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -Wall -Wextra`）。
 > 预计阅读：约 95 分钟。
@@ -942,7 +941,6 @@ int main() {
 3. **真实场景：默认 pmr 资源是 `new_delete_resource`。** 你不指定资源时的行为。请说明。
    - [标准] 未设置时，pmr 分配器默认使用 `new_delete_resource`（即走全局 `new`/`delete`）。
    - [引用] ISO/IEC 14882:2023 §[mem.res]（new_delete_resource 默认）；cppreference "std::pmr::new_delete_resource" 词条。
-
 
 | 语言/生态 | 等价机制 | 备注 |
 |---|---|---|

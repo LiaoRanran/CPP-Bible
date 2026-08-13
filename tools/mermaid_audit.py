@@ -29,7 +29,7 @@ from pathlib import Path
 try:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore
 except Exception:  # noqa
-    pass
+    pass  # 安全忽略: stdout 编码重配置不可用则忽略(仅影响显示)
 
 ROOT = Path(__file__).resolve().parent.parent
 BOOK = ROOT / "Book"

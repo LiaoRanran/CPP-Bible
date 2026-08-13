@@ -408,7 +408,6 @@ mov DWORD PTR [rip+0x5d6e], 0x4   # g_plain = 4  (单次最终值)
    - [标准] 数据竞争中对非 atomic 的并发访问是未定义行为；volatile 不构成同步（无 happens-before）。
    - [引用] ISO/IEC 14882:2023 §[intro.races]（数据竞争）；cppreference "std::atomic" 词条。
 
-
 ```cpp
 // ⑳ 各语言中 volatile/并发可见性机制的精确对比
 #include <iostream>

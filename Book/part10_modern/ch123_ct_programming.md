@@ -774,7 +774,6 @@ int main() {
    - [标准] `if constexpr` 在编译期求值，未取分支被丢弃、不实例化。
    - [引用] ISO/IEC 14882:2023 §[stmt.if]（if constexpr 丢弃分支）；cppreference "if constexpr" 词条。
 
-
 | 维度 | C++（constexpr/consteval） | Rust（const generics / const fn） | Zig（comptime） |
 |---|---|---|---|
 | 编译期值计算 | `constexpr`/`consteval` 函数 | `const fn` + `comptime` 值 | `comptime` 一等公民 |

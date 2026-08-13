@@ -651,7 +651,6 @@ void InspectGC(const TArray<void*>& reachables) { (void)reachables; }
    - [标准] 拷贝语义由用户定义；值类型默认可拷贝，身份型对象（UObject）应禁用拷贝。
    - [引用] ISO/IEC 14882:2023 §[class.copy]（拷贝语义与三五法则）/ Unreal 文档；cppreference "Rule of three/five" 词条。
 
-
 | 概念 | UE 写法 | 标准 C++ 等价 | 说明 |
 |---|---|---|---|
 | 基类 | `UObject` | 自写基类 + 元数据 | 反射/GC 来源 |
@@ -838,7 +837,6 @@ int main() {
 - UE 源码（需 EULA）：`https://github.com/EpicGames/UnrealEngine`（UObjectBase / UObjectGlobals / ObjectMacros 见第③/⑰节上游参考）
 - ILM StageCraft / 虚拟制片公开技术分享（影视实时渲染案例）
 - 汽车 HMI 与数字孪生：Epic 官方 "Unreal Engine for Automotive" / "Digital Twin" 行业页面
-
 
 - [Unreal Engine 官网](https://www.unrealengine.com/en-US/)：产品与行业方案（汽车 HMI / 数字孪生 / 影视虚拟制片）。
 - [Epic 开发者门户](https://dev.epicgames.com/)：SDK、源码与社区资源。

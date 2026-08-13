@@ -1,7 +1,6 @@
 # 第149章 CI/CD 流水线（C++）
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-
 ⟶ Book/part13_engineering/ch148_gitflow.md
 ⟶ Book/part13_engineering/ch150_testing.md
 
@@ -967,7 +966,6 @@ DORA: freq=10/day mttr=1.5h cfr=8%
 3. **真实场景：CI 用 `clang-tidy` 抓 `auto` 推导陷阱与悬垂。** 你静态分析补测试盲区。请说明（属工具链）。
    - [标准] 无直接标准对应；静态分析基于标准语义（生命周期/所有权）做检查。
    - [引用] Clang-Tidy 文档 / ISO/IEC 14882:2023 §[basic.life]（对象生命周期）；cppreference。
-
 
 CI/CD 对 C++ 不是可选项，而是工程成熟度的分水岭：可复现构建、矩阵验证、静态/测试/覆盖率/性能四道门禁、容器化与密钥隔离，共同把“在我机器能编”升级为“任何时间任何人都能放心发布”。
 

@@ -945,7 +945,6 @@ int main() { Doc d = load(); std::cout << d.title << "\n"; return 0; }
    - [标准] 返回局部变量或 throw 时，标准允许隐式移动（甚至在某些情况下强制），多余的 `move` 会抑制复制消除。
    - [引用] ISO/IEC 14882:2023 §[class.copy.elision]（隐式移动与复制消除）；cppreference "Copy elision" 词条。
 
-
 | 语言 | 移动语义 | 说明 |
 |---|---|---|
 | C++ | `T&&` + 移动构造/赋值 + `std::move` | 显式、值类别驱动；移动后状态有效但未指定；无自动借用检查 |

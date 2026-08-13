@@ -1,7 +1,6 @@
 # 第142章 实体组件系统 ECS（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part12_patterns/ch143_dod.md
 ⟶ Book/part05_oo/ch45_oop_object_model.md
 
@@ -781,7 +780,6 @@ a alive after destroy? no
 3. **真实场景：系统遍历组件应避免随机访问抖动。** 你优化热循环。请说明。
    - [标准] 顺序访问连续内存缓存友好；语言层只保证连续性，具体命中由硬件决定。
    - [引用] ISO/IEC 14882:2023 §[dcl.array]（连续存储）；cppreference "Cache locality" 词条。
-
 
 - **三元组**：Entity=稳定 ID；Component=纯数据（平凡可拷贝最佳）；System=批量逻辑。三者正交，是 ECS 的全部。
 - **布局定生死**：AoS vs SoA 没有绝对赢家——**SoA 用"缩小工作集"赢在缓存容量**（⑥ 实测 6~7x），AoS 在"小结构全遍历"时靠缓存行局部性反超。Archetype/Chunk 是工业折中。

@@ -1,7 +1,6 @@
 # 第29章 友元 friend 与访问控制
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
 
-
 > 标准基: C++23 / GCC 15.3 / 预计阅读: 40min / 前置: ⟶ Book/part05_oo/ch46_encapsulation_inheritance.md / 难度: ★★☆☆☆
 
 ## ⓪ 历史动机：友元与访问控制的来龙去脉
@@ -373,7 +372,6 @@ int main() {
 3. **真实场景：友元破坏封装。** 过度使用友元导致测试/耦合问题。请讨论何时值得。
    - [标准] 友元关系不可传递、不可继承，需显式声明每一授予。
    - [引用] ISO/IEC 14882:2023 §[class.friend]；cppreference "friend#Inheritance" 词条。
-
 
 ```cpp
 // ⑳ C++ friend vs 其他语言的访问控制旁路机制

@@ -1,7 +1,6 @@
 # 第25章　union 与 std::variant 深度详解
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part07_stl/ch88_optional_variant.md
 ⟶ Book/part03_language/ch32_initialization.md
 
@@ -1035,7 +1034,6 @@ double eval(Expr e) {
 3. **真实场景：std::monostate 表示空。** variant 需默认可构造时加 `std::monostate` 首选项。请说明其用途。
    - [标准] `std::monostate` 提供无值可选项的合法类型，使 variant 默认可构造。
    - [引用] ISO/IEC 14882:2023 §[variant.monostate]；cppreference "std::monostate" 词条。
-
 
 ### 20.1 解析器 AST 节点（递归 variant）
 

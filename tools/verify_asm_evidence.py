@@ -67,7 +67,7 @@ def main():
         if hasattr(sys.stdout, "reconfigure"):
             sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     except Exception:
-        pass
+        pass  # 安全忽略: stdout reconfigure 在部分环境不可用, 失败则维持原编码(仅影响显示)
 
     records = []
     summary = {"accurate": 0, "drift": 0, "empty": 0, "unanchored": 0,

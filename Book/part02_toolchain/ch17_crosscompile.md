@@ -1,7 +1,6 @@
 # 第17章　交叉编译与嵌入式工具链（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part02_toolchain/ch11_compilers.md
 ⟶ Book/part03_language/ch30_volatile.md
 
@@ -568,7 +567,6 @@ constexpr Firmware kMatrix[] = {
 3. **真实场景：目标平台要求 16 字节对齐的 DMA 缓冲。** 你用 `alignas` 声明缓冲，但 `malloc` 返回的普通指针不满足。请说明对齐的查询与指定手段。
    - [标准] 可用 `alignof` 查询类型对齐、`alignas` 增强声明对齐；实际分配须由支持该对齐的分配器提供。
    - [引用] ISO/IEC 14882:2023 §[basic.align] / [dcl.align]（对齐与 alignas）；cppreference "alignof / alignas" 词条。
-
 
 ```cpp
 // ⑳ 三元组 → 工具链前缀 速查（编译时 -target / 工具链文件里设置）

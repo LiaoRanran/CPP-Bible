@@ -750,7 +750,6 @@ int main() {
    - [标准] 无强制要求编译器做公共子表达式消除；语言只保证可观测行为，优化由实现决定。
    - [引用] ISO/IEC 14882:2023 §[intro.abstract]（优化自由）/ [expr]（表达式求值的抽象语义）；cppreference。
 
-
 | 语言 | 时钟/计时 | 微基准框架 | 剖析器 |
 |---|---|---|---|
 | C++ | `std::chrono::steady_clock` / `rdtsc` | Google Benchmark / nanobench | `perf` / VTune / Instruments |

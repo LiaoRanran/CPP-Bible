@@ -1,7 +1,6 @@
 # 第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part03_language/ch19_variables.md
 ⟶ Book/part06_templates/ch69_constexpr.md
 
@@ -489,7 +488,6 @@ BENCHMARK(BM_DecltypeAutoForward);
 3. **真实场景：结构化绑定。** `auto [a,b] = std::make_pair(1, 2.0);` 用 `auto` 推导各成员。请说明结构化绑定对 `std::tuple` / `std::map` 迭代的便利。
    - [标准] 结构化绑定声明将名字绑定到元组/数组/带 public 数据成员的对象的分量。
    - [引用] ISO/IEC 14882:2023 §[dcl.struct.bind]（结构化绑定声明）；cppreference "Structured binding" 词条。
-
 
 > libstdc++ 描述基于**真实源码**（见「源码分析」）。libc++ 与 MS STL 为 **[实现-推断]**（本机未安装，按公开知识描述，未编造路径）。
 

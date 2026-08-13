@@ -570,7 +570,7 @@ static_assert(lanes_avx2 == 8, "AVX2 width");
 
 ## ⑰ 跨平台（x86 vs ARM NEON） [平台·x86-64]
 
-x86 用 SSE/AVX，ARM 用 **NEON**（高级 SIMD，AArch64 默认 128 位 `float32x4_t`）。
+x86 用 SSE/AVX，ARM 用 **NEON**（高级 SIMD，ARM64 默认 128 位 `float32x4_t`）。
 
 ```cpp
 // ⑰ x86 AVX2 已在 ⑦/⑳ 的 v_avx2 中实现，下面给出 ARM 等价
@@ -642,7 +642,6 @@ g++ -std=c++23 -O3 -mavx2 -fopt-info-vec-all=vec.log Examples/_ch155_simd.cpp
 3. **真实场景：对齐分配（`std::assume_aligned`/ aligned allocator）让 SIMD load 不崩溃。** 你向量化要求 32/64 字节对齐。请说明。
    - [标准] `std::assume_aligned` 给实现对齐假设提示（C++20）；实际对齐由分配器/alignas 保证。
    - [引用] ISO/IEC 14882:2023 §[ptr.align]（assume_aligned）/ [basic.align]（对齐要求）；cppreference "std::assume_aligned" 词条。
-
 
 | 主题 | 要点 | 标志/指令 |
 |---|---|---|

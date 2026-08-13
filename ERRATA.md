@@ -301,6 +301,8 @@
 | `ff9d14d` | 6 章补真实 GCC 15.3.0 反汇编证据(asm 信号级真缺口)，双门禁全绿 | E15 |
 | `41d5775` | 全库 135 章补 ㉒ 工业/标准深度升维段(prose-only, 142 文件 +4152 行) | E16 |
 | `98db656` | ㉒ 二次深挖全库闭环(146章)+ A9 缺口补齐(prose-only, 147文件) | E17 |
+| `9d1edce` | ㉑ 习题升级全库收口(147/147 章注入「真实场景+引用参考」) | E18 |
+| `b59119f` | 究极质量审计收口 + CI 全红根因闭合(terminology/whitespace 门禁) + 历史章影像去重 + #202 工具链加固 | E19 |
 
 ---
 
@@ -319,3 +321,23 @@
 - **门禁修复**：ch97、ch154、ch155 三处块引用首行原用 ```` ```asm ```` 字面展示围栏语法，触发 `verify_prose_only` 正则误判为围栏开标记、级联错位后续配对（吞掉 `## ⑳` 标题，注入 prose 触发 REDLINE 伪阳性）。改为单反引号 `asm` 根除伪围栏；采用「先单独修伪围栏提交 → 再注入 prose」的两笔策略，规避「一次提交同时改围栏 vs 旧 HEAD 仍误报」的死结。
 - **门禁结果**：`verify_prose_only` 全库 0 红线违规（problems=0，畸形围栏告警由 45 降至 43）；147 文件 0 CRLF。
 - **成品**：147 文件 +2196 行（20 笔提交：4f81fef → 9d1edce）；覆盖率 100%（147/147 章均含「已升级为「真实场景」标记）。注入脚本留存于 WorkBuddy 工作区 `inject_ex_part*.py` 可复核。
+
+### E19. 究极质量审计收口 + CI #281–#302 全红根因闭合 + 历史章影像去重
+- **CI 全红根因**：`quality` job 两道 `continue-on-error:false` 硬门禁回归（因 `compile`/`publish-check`/`site`/`pdf`/`epub` 均 `needs: quality`，quality 红 → 整条流水线全红）：
+  - `terminology_normalize --check`：**2 处散文异体拼写**——`ch154_cache_opt.md:1102` `x86_64`→`x86-64`、`ch155_simd.md:573` `AArch64`→`ARM64`；代码块内 `x86_64-w64-mingw32` 三元组被正确跳过，未误改。
+  - `whitespace_fix --check`：**143 文件、`w2=221`**（连续空行），源于 ⓪/㉒ 散文注入在章节接缝处遗留的双空行回归。
+- **门禁闭合（围栏感知 / LF 安全 / 幂等 / 零语义改动）**：
+  - `terminology_normalize.py --fix`：改写 2 文件 2 处；复跑 `--check` **波及文件=0**。
+  - `whitespace_fix.py --apply`：清零 143 文件 `w2=221`（本会话初查 `--check` 已 0；ch02 影像去重编辑遗留 1 处 `w3` 末尾换行缺失，已二次 `--apply` 闭合，复跑 `--check` files_changed=0）。
+- **#202 Python 工具链加固（同轮收口）**：8 处有意吞异常（`broad_except_pass`）逐处补「安全忽略」理由注释并显式化；复跑 `audit_py_tools.py` → **`broad_except_pass=0`**（详见 AUDIT_REPORT §4.2/§4.3）。
+- **#204 五道门禁复跑**：本会话本地逐条复跑 CI `quality` 全 **16 道硬门禁**，全部 PASS（preflight / consistency / crossref_audit / xref_check / gen_indexes / density_audit / d5_appendix_audit / d5_source_integrity / terminology_normalize / exercise_dup_guard / verify_asm_evidence / book_asm_freshness / structure_audit / sweep_fences / whitespace_fix / s10_verify_mark）；`compile` job（compile_all --main-only → compile_gate，GCC 15.3.0）复跑通过——**本次改动零 cpp 代码块触碰**（仅散文 / 图片引用 / 空白符），编译门禁无新增回归。
+- **历史章影像去重（用户指摘「C++ 之父照片复用那么多次」）**：part01_history 9 章原均复用同一张 `bjarne_stroustrup.jpg`（单人像重复 9 次）。改为：Bjarne 仅保留 **3 个锚点章**（ch01 C-with-Classes 起源群像之一 / ch03 作为 ARM 与《The C++ Programming Language》作者 / ch09 当前 WG21 召集人），其余 6 章替换为 varied 谱系影像并校正 §4.3 图源署名：
+  - ch02 标准化 → Bell Labs Holmdel（WG21 长期据点）
+  - ch04 C++11 → DEC PDP-11/40（1973，C/Unix 诞生平台，系统级血统语境图）
+  - ch05 C++14 → Cray-1 超算（C++ 在 HPC 领域长期主场，语境图）
+  - ch06 C++17 → Dennis Ritchie（C 创造者，C++ 直接血缘）
+  - ch07 C++20 → Ken Thompson（Unix/C 共同创造者，工程文化源头）
+  - ch08 C++23 → Bell Labs Holmdel（C 与 C++ 诞生地，语境图）
+  - 全部 `图源` 署名依据 `Book/assets/history/MANIFEST.md` 校正（作者 / 许可 / Commons 文件），满足 §4.3 溯源规范；编辑全程 LF 安全，零 CRLF。
+- **门禁结果**：16/16 质量硬门禁绿；`compile` 复跑通过；全库 0 CRLF（仅 ch02 编辑引入 1 处 `w3` 已闭合）。
+- **成品**：本次提交 `b59119f`；覆盖 `Book/part01_history/*.md` 影像去重 + 术语/空白符门禁闭合 + `tools/*.py` 8 处 `broad_except_pass` 注释显式化 + AUDIT_REPORT/ERRATA 登记。

@@ -210,7 +210,7 @@ def sanitizer_available(gpp, kind):
                 if p:
                     os.remove(p)
             except OSError:
-                pass
+                pass  # 安全忽略: 临时 sanitizer 工件删除失败(已不存在/权限)不影响结果缓存
     SANITIZER_CACHE[kind] = ok
     return ok
 
@@ -279,7 +279,7 @@ def fragment_eligible(gpp, code, tmpdir):
         try:
             src.unlink()
         except OSError:
-            pass
+            pass  # 安全忽略: 临时源文件清理失败(已不存在)不影响编译结果返回
     return r.returncode == 0, (code if r.returncode == 0 else "")
 
 

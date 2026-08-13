@@ -1,7 +1,6 @@
 # 第146章 错误处理（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part07_stl/ch88_optional_variant.md
 ⟶ Book/part10_modern/ch121_contracts.md
 
@@ -716,7 +715,6 @@ while (auto x = pop()) consume(*x);   // 自然终止，无异常
 3. **真实场景：`noexcept` 函数内抛异常会直接 `std::terminate`。** 你误以为 noexcept 会吞异常。请说明。
    - [标准] 若 `noexcept` 函数（或 `noexcept(true)`）实际抛出异常，程序立即调用 `std::terminate`。
    - [引用] ISO/IEC 14882:2023 §[except.spec]（noexcept 与 terminate）/ [except.terminate]；cppreference "std::terminate" 词条。
-
 
 `[经验]` 错误处理是 API 契约的一等公民，选型优先级建议：
 

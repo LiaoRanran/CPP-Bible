@@ -1,7 +1,6 @@
 # 第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part02_toolchain/ch15_profiling.md
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23`）。本章示例源码位于 `Examples/`，统一前缀 `_ch14_`。
@@ -775,7 +774,6 @@ int main() {
 3. **真实场景：用 watchpoint 抓数据竞争却抓不到根因。** 你发现某变量被莫名改写，加观察点后定位到另一个线程的写入。请说明数据竞争本身在标准中的定性。
    - [标准] 两个线程无同步地访问同一内存位置、且至少一个是写，即为数据竞争，属于未定义行为。
    - [引用] ISO/IEC 14882:2023 §[intro.races]（数据竞争）；cppreference "Memory model" 词条。
-
 
 ```cpp
 // ⑳ 一页可粘贴的"调试开关"清单（C++23）

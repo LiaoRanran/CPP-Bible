@@ -1,7 +1,6 @@
 # 第145章 命名与 API 设计（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part13_engineering/ch144_style.md
 ⟶ Book/part12_patterns/ch135_patterns_intro.md
 
@@ -936,7 +935,6 @@ std::string s = std::move(other);   // move 仅转型，真正搬迁由 string �
 3. **真实场景：用 `enum class` 而非裸 `enum` 避免命名空间污染与隐式转 int。** 你 old API 的枚举名冲突。请说明。
    - [标准] 有作用域枚举 `enum class` 的枚举符不泄漏到外层作用域，且不会隐式转换为整数。
    - [引用] ISO/IEC 14882:2023 §[dcl.enum]（有作用域枚举）；cppreference "enum class" 词条。
-
 
 命名与 API 设计是**接口经济学**：名字是契约、是文档、是防误用的第一道闸门。本章取证结论汇总：
 

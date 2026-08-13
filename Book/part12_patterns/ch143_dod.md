@@ -1,7 +1,6 @@
 # 第143章 面向数据设计 DOD（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part12_patterns/ch142_ecs.md
 ⟶ Book/part14_perf/ch154_cache_opt.md
 
@@ -1105,7 +1104,6 @@ template <class F> double time_it(F f, int reps) {
 3. **真实场景：冷/热数据分离减少缓存占用。** 你重排结构体成员。请说明。
    - [标准] 语言层只保证成员连续与实现定义填充；冷热分离是工程优化，减少活跃工作集。
    - [引用] ISO/IEC 14882:2023 §[class.mem]（成员布局）；cppreference "Data-oriented design" 词条。
-
 
 DOD 不是银弹，而是**在“每帧遍历海量同质数据”的热路径上换取缓存与指令效率**的纪律。一页速记：
 

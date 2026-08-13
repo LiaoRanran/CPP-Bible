@@ -1,7 +1,6 @@
 # 第151章 基准测试与性能度量（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part14_perf/ch157_compiler_explorer.md
 ⟶ Book/part14_perf/ch152_perf_model.md
 
@@ -1229,7 +1228,6 @@ run,ms
 3. **真实场景：用 `std::chrono::steady_clock` 测时区无关单调时长。** 你误用 `system_clock` 被 NTP 跳变污染。请说明。
    - [标准] `steady_clock` 保证单调（不受系统时间调整影响）；`system_clock` 可跳变。
    - [引用] ISO/IEC 14882:2023 §[time.clock] / [time.clock.steady]（steady_clock）/ [time.duration]；cppreference "std::chrono::steady_clock" 词条。
-
 
 基准测试是一门"先证明你在测真东西"的学科。本章用本机 GCC 13.1.0 真实编译运行，固化了以下可复现结论：
 

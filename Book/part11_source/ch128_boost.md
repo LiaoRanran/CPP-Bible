@@ -1,7 +1,6 @@
 # 第128章　Boost 核心库（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part11_source/ch124_libstdcxx.md
 ⟶ Book/part06_templates/ch65_type_traits.md
 
@@ -758,7 +757,6 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 3. **真实场景：Boost 版本与 C++ 标准版本要求耦合。** 你升级 Boost 后需更高标准。请说明判定。
    - [标准] 以特性测试宏与实现支持矩阵判定，而非假设版本。
    - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏）/ Boost 文档；cppreference "Feature test macros" 词条。
-
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐

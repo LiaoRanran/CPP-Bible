@@ -1212,7 +1212,6 @@ int main() {
    - [标准] 空基类子对象通常不贡献大小（除非与完整对象首个成员同类或受同地址限制）。
    - [引用] ISO/IEC 14882:2023 §[class.derived]（空基类优化）/ [intro.object]（对象地址唯一性）；cppreference "Empty base optimization" 词条。
 
-
 | 语言 | 语义默认 | 继承模型 | 对象存储 | 多态机制 |
 |---|---|---|---|---|
 | **C++** | **值语义**（拷贝即独立） | 多继承、public/protected/private | 栈/堆皆可，对象即内存 | 静态（模板/重载/CRTP）+ 动态（虚函数） |

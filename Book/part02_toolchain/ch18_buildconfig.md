@@ -1,7 +1,6 @@
 # 第18章　构建配置：Debug / Release / LTO / PGO（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part02_toolchain/ch12_buildsystems.md
 ⟶ Book/part13_engineering/ch149_ci_cd.md
 
@@ -735,7 +734,6 @@ ccache g++ -std=c++23 -O2 -flto -c app.cpp -o app.o
 3. **真实场景：宏参数副作用被求值两次。** 你写 `#define MAX(a,b) ((a)>(b)?(a):(b))` 后 `MAX(x++, y)` 让 `x` 自增两次。请解释根因。
    - [标准] 宏是文本替换，参数在替换列表中按出现次数逐一展开，可能多次求值（含副作用）。
    - [引用] ISO/IEC 14882:2023 §[cpp.replace]（宏替换与参数求值）；cppreference "Replacing text macros" 词条。
-
 
 ```
 ┌──────────────────────────┬───────────────────────────────────────────────┐

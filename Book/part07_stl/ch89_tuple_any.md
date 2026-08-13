@@ -1066,7 +1066,6 @@ int main() {
    - [标准] tuple 元素按编译期常量索引访问；越界索引在编译期即报错。
    - [引用] ISO/IEC 14882:2023 §[tuple.elem]（get 与索引）；cppreference "std::get" 词条。
 
-
 | 能力 | C++ | Rust | Python | C# | Java |
 |---|---|---|---|---|---|
 | 异构定长序列 | `std::tuple<Ts...>` | `(T1,T2,...)` / struct | `tuple` / 多返回值时打包 | `ValueTuple` / `(a,b)` | 无内建（用 record/对象） |

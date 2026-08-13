@@ -563,7 +563,6 @@ int use_tag_fast() { int c=0; c+=1; c+=100; return c; }  // 与 dispatch(42)+dis
    - [标准] 算法通过迭代器类别标签（input/forward/bidirectional/random_access/contiguous）分派到对应最优实现。
    - [引用] ISO/IEC 14882:2023 §[iterator.requirements]（迭代器类别标签与分派）；cppreference "Iterator tags" 词条。
 
-
 **练习题**
 1. 用标签分发实现一个 `to_string_tag(T)`，对 `is_integral` 走整数格式化、`is_floating_point` 走浮点格式化、`otherwise` 走通用（三路标签）。
 2. 自定义迭代器标签层级 `tag_a : tag_b : tag_c`，写三个 `process` 重载验证重载决议选最具体版本。

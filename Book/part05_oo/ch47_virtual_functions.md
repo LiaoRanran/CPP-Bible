@@ -565,7 +565,6 @@ BENCHMARK(BM_Virtual); BENCHMARK(BM_Crtp); BENCHMARK(BM_NoVirtual);
    - [标准] `final` 可标在虚函数（或类）上，禁止进一步的派生覆盖。
    - [引用] ISO/IEC 14882:2023 §[class.virtual]（final 说明符）；cppreference "final" 词条。
 
-
 【练习题】
 1. 写一个含 3 层单继承的程序，打印各层构造/析构期 `typeid(*this).name()`，验证 vptr 逐级重写。
 2. 给定 `struct A{virtual void f();}; struct B{virtual void g();}; struct D:A,B{};`，画出 D 对象的 vptr 布局并标出 this 调整量。

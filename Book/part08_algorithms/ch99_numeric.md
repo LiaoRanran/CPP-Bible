@@ -1,7 +1,6 @@
 # 第99章　数值算法与并行执行策略（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part08_algorithms/ch95_algo_overview.md
 ⟶ Book/part13_engineering/ch151_benchmark.md
 
@@ -1376,7 +1375,6 @@ void demo_c10(const std::vector<long long>& v) {
 3. **真实场景：`reduce` 对二元操作要求可结合可交换。** 你用不可交换操作得到错误结果。请说明约束。
    - [标准] `reduce` 重排元素顺序，故二元操作必须满足结合律与交换律，否则结果不确定。
    - [引用] ISO/IEC 14882:2023 §[numeric.ops]（reduce 对操作的要求）；cppreference "std::reduce" 词条。
-
 
 | 算法 | 头文件 | C++ 版本 | 顺序 | 可并行 | 典型用途 |
 |---|---|---|---|---|---|

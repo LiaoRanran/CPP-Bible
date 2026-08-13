@@ -1,7 +1,6 @@
 # 第95章　STL 算法分类与复杂度（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part07_stl/ch77_vector.md
 ⟶ Book/part08_algorithms/ch96_sorting.md
 ⟶ Book/part08_algorithms/ch97_search.md
@@ -843,7 +842,6 @@ void debug_count_if(const std::vector<int>& v, int d) {
 3. **真实场景：算法复杂度是契约，可据此选算法。** 你对比 `find`（O(N)）与有序区间二分查找（O(log N)）。请说明保证。
    - [标准] 标准规定每算法复杂度上界，是实现与调用方都遵守的契约。
    - [引用] ISO/IEC 14882:2023 §[algorithms]（算法复杂度要求）；cppreference "Algorithm complexity" 词条。
-
 
 ```
 ┌── STL 算法速查（复杂度均为最坏，n=|区间|）──────────────┐

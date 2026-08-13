@@ -790,7 +790,6 @@ g++.exe -std=c++23 -fsanitize=thread -O1 -g _ch110_tsan_demo.cpp -o _ch110_tsan_
    - [标准] lock-free 仅保证系统整体有线程前进，不保证单个线程不饥饿；wait-free 才保证每个线程有界完成。
    - [引用] ISO/IEC 14882:2023 §[atomics]（lock-free 定义）；cppreference "Lock-free programming" 词条。
 
-
 | 术语 | 进度保证 | 单线程最坏 | 硬件原语（x86-64） | 典型陷阱 |
 |---|---|---|---|---|
 | blocking | 无 | 可无限阻塞 | `lock` + futex 睡眠 | 死锁/优先级反转 |

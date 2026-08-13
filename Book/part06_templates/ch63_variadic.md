@@ -624,7 +624,6 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
    - [标准] `sizeof...(包)` 在编译期给出参数包的元素个数（类型为 `std::size_t`）。
    - [引用] ISO/IEC 14882:2023 §[temp.variadic]（sizeof...）；cppreference "sizeof..." 词条。
 
-
 **练习题**
 
 1. 用递归写 `print` 反转顺序（先递归后打印）。

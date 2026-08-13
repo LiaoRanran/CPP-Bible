@@ -570,7 +570,6 @@ g++ -std=c++23 -E Examples/_ch124_vector.cpp -o repro.ii
    - [标准] 标准只规定 `allocator` 接口与语义（[allocator.requirements]）；具体分配策略由实现自由决定。
    - [引用] ISO/IEC 14882:2023 §[allocator.requirements]（分配器接口）/ GCC libstdc++ 手册；cppreference "std::allocator" 词条。
 
-
 ```text
 ┌───────────────────┬───────────────────────────────────────────┐
 │ 想做的事          │ 入口文件 / 真实行号                         │
@@ -873,7 +872,6 @@ int main() {
 > - GCC 3.0 / libstdc++-v3：2001-04-16 发布，确立 `bits/` 分层（见 §0.2）。
 > - GCC 5.1：`_GLIBCXX_USE_CXX11_ABI` 默认翻转为 1，新 SSO `std::string` 上线（见 §0.3/⑧）。
 > - GCC 11 起逐步移除 `_GLIBCXX_USE_CXX11_ABI=0` 的过渡路径，旧 COW 字符串进入「仅历史兼容」状态。
-
 
 ### ㉒.2 真实工程坐标：libstdc++ 活在哪些真实产品里
 

@@ -338,7 +338,6 @@ int main() {
    - [标准] 动态分配（`new`/`delete`）由实现提供，频繁调用有成本；可用定制分配器或 arena 降低。
    - [引用] ISO/IEC 14882:2023 §[basic.stc.dynamic] / [new.delete]（动态存储）/ [allocator.requirements]（定制分配器）；cppreference。
 
-
 ```cpp
 // ⑳ 学习性能优化的开源项目阅读路线
 #include <iostream>

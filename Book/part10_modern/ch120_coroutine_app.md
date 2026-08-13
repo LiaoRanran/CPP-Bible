@@ -1,7 +1,6 @@
 # 第120章 Coroutine 应用模式
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 > 标准基: C++20 / 编译器: GCC 15.3.0（汇编重生；延迟表保留 GCC 13.1 实测）/ 预计阅读: 75min / 前置: ⟶ Book/part09_concurrency/ch113_coroutine.md（协程基础）/ 后续: ⟶ Book/part10_modern/ch120_coroutine_app.md（纤程）/ 难度: ★★★★☆
 
 ---
@@ -545,7 +544,6 @@ int main() {
 3. **真实场景：协程挂起恢复由 awaiter 与执行器驱动。** 你接入异步框架。请说明。
    - [标准] `co_await` 的挂起/恢复完全由 awaiter 的 `await_suspend`/`await_resume` 决定，可由事件循环驱动。
    - [引用] ISO/IEC 14882:2023 §[expr.await]（await 表达式与 awaiter 控制）；cppreference "Awaitable" 词条。
-
 
 | 语言 | 协程模型 | 栈 | 关键差异 |
 |---|---|---|---|

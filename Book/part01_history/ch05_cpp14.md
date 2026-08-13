@@ -1,7 +1,6 @@
 # 第05章　C++14：小幅完善
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-
 ⟶ Book/part06_templates/ch69_constexpr.md
 ⟶ Book/part10_modern/ch115_move.md
 
@@ -37,8 +36,8 @@ C++14 几乎没有什么"路线之争"，它验证的是另一条哲学：**标�
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
 
-![Bjarne Stroustrup，C++14 完善性修订](../assets/history/bjarne_stroustrup.jpg)
-> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+![Cray-1 超级计算机：C++ 在高性能计算（HPC）领域长期占据核心（语境影像）](../assets/history/cray1.jpg)
+> 图源：Rama，许可 CC BY-SA 2.0 fr，来源 <https://commons.wikimedia.org/wiki/File:Cray_1_IMG_9126.jpg>
 
 ## ① 学习目标
 
@@ -336,7 +335,6 @@ template<class T> constexpr bool is_ptr_v = std::is_pointer_v<T>;
 3. **真实场景：constexpr 函数里写局部变量和循环（14 已放松）。** 你在 11 里被迫单表达式，现在可写语句。请说明放宽边界。
    - [标准] C++14 放松 constexpr 函数体限制，允许声明、循环等，但仍必须能在常量表达式语境求值。
    - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（constexpr 函数体要求，C++14 起放松）；cppreference "constexpr" 词条。
-
 
 ```cpp
 // C++14 小结：泛型 lambda + 变量模板 + make_unique 三件套

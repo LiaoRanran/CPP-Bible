@@ -502,7 +502,6 @@ static_assert(std::is_integral_v<int>);   // true，编译期已知
    - [标准] C++20 概念以更清晰的错误表达约束；SFINAE 仍保留并常用于需兼容旧标准的代码。
    - [引用] ISO/IEC 14882:2023 §[temp.constr]（概念与约束）/ [temp.deduct]（SFINAE）；cppreference "Constraints and concepts" 词条。
 
-
 - **练习题 1**：手写 `is_invocable<R, F, Args...>` 的 SFINAE 版（提示：`decltype(declval<F>()(declval<Args>()...))`）。
 - **练习题 2**：用 `void_t` 探测「是否有 `size()` 成员」，写出 `has_size<T>`。
 - **练习题 3**：给 `std::vector` 风格容器加 `push_back`，仅对「可拷贝」类型启用（用 `enable_if`）。

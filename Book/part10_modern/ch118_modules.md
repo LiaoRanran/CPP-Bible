@@ -1,7 +1,6 @@
 # 第118章　Modules 模块（C++20）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -fmodules-ts -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；Modules 是编译器特性，无 libstdc++ 源码可逐行，本章以真实编译产物（模块符号）为证据。
 
@@ -348,7 +347,6 @@ export inline int twice(int x) { return x * 2; }
 3. **真实场景：在接口单元用全局模块片段包含 C 头。** 你 `import` 不了老 C 库。请说明。
    - [标准] 模块接口可用“全局模块片段”（`module;` 之前的 `#include`）包含非模块化的 C/C++ 头。
    - [引用] ISO/IEC 14882:2023 §[module.global]（全局模块片段）；cppreference "Modules" 词条。
-
 
 | 语言 | 模块/包系统 | 宏隔离 | 编译模型 |
 |---|---|---|---|

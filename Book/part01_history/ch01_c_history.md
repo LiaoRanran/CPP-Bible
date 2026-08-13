@@ -1,7 +1,6 @@
 # 第01章　C 语言遗产与 C with Classes
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part03_language/ch19_variables.md
 ⟶ Book/part03_language/ch32_initialization.md
 
@@ -423,7 +422,6 @@ int g1=1; int g2=g1+1; // g2 依赖 g1 初始化序
 3. **真实场景：`void*` 隐式转 `T*` 在 C++ 必须显式 cast。** 你把 `malloc` 结果直接赋给 `int*` 报错。请说明 void 指针转换规则。
    - [标准] C++ 中 `void*` 不能隐式转换为对象指针，必须显式 `static_cast`（与 C 不同）。
    - [引用] ISO/IEC 14882:2023 §[conv.ptr]（空指针/void 转换，无隐式 void*→T*）；cppreference "Implicit conversions" 词条。
-
 
 ```cpp
 // 兼容 C 的 extern "C"

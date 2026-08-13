@@ -366,7 +366,6 @@ int main() {
    - [标准] 标准库内部布局（如 string/vector 表示）是实现细节，跨实现/版本可不同。
    - [引用] ISO/IEC 14882:2023 §[strings]（实现细节）/ [container.requirements]；cppreference。
 
-
 ```cpp
 // ⑳ 各语言的编译器资源管理器等价工具
 #include <iostream>

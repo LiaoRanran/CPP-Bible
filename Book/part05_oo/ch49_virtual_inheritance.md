@@ -564,7 +564,6 @@ BENCHMARK(BM_vbase_access); BENCHMARK(BM_normal_access);
    - [标准] 指向虚基类的指针/引用转换可能需运行时计算偏移，因虚基类位置随完整对象布局变化。
    - [引用] ISO/IEC 14882:2023 §[conv.ptr]（虚基类指针调整）/ [class.mi]（虚继承布局）；cppreference "Virtual inheritance" 词条。
 
-
 【练习题】
 1. 写菱形 `Animal ← Winged, FourLegged ← Bat`（虚继承 Animal），打印 `Bat` 对象各子对象地址，验证 Animal 唯一。
 2. 用 `sizeof` 对比「非虚菱形」与「虚菱形」的 `Bat` 大小，解释 vbptr 带来的差异。

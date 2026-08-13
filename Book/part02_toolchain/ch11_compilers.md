@@ -1,7 +1,6 @@
 # 第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part06_templates/ch69_constexpr.md
 ⟶ Book/part14_perf/ch157_compiler_explorer.md
 
@@ -824,7 +823,6 @@ int choose() { return 0; }
 3. **真实场景：有符号溢出让优化器“删除”你的检查。** 你写 `if (i + 1 > 0)` 防御下溢，开启 `-O2` 后判断被直接消除。请解释根因并给出安全的等价写法。
    - [标准] 有符号整数溢出是未定义行为；抽象机不约束其后果，优化器可基于“不会发生”的假设重写控制流。
    - [引用] ISO/IEC 14882:2023 §[intro.abstract]（抽象机与未定义行为）；cppreference "Undefined behavior" 词条。
-
 
 编译器命令与关键差异总览：
 

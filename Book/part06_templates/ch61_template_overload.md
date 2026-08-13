@@ -584,7 +584,6 @@ constexpr void swap(_Tp& __a, _Tp& __b) noexcept {
    - [标准] 模板实参替换失败（SFINAE）仅从候选集移除该模板，不导致编译错误。
    - [引用] ISO/IEC 14882:2023 §[temp.deduct]（推导失败与 SFINAE）；cppreference "SFINAE" 词条。
 
-
 **练习题**
 
 1. 预测 `f(1.0)`, `f("hi")`, `f(std::vector<int>{})` 在含 `f(int)/f(T)/f(T*)/f(const char*)` 的候选集中各落谁。

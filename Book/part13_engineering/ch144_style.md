@@ -1,7 +1,6 @@
 # 第144章 代码风格与规范（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part13_engineering/ch145_naming_api.md
 
 ⟶ Book/part13_engineering/ch147_code_review.md
@@ -809,7 +808,6 @@ private:
 3. **真实场景：RAII 让资源（锁/文件/连接）在作用域结束自动释放，避免忘记 cleanup。** 你写异常路径时资源泄漏。请说明。
    - [标准] 析构函数在作用域正常结束或栈展开时必然调用，是 RAII 与异常安全的基石。
    - [引用] ISO/IEC 14882:2023 §[class.dtor] / [except.terminate]（栈展开与析构）；cppreference "RAII" 词条。
-
 
 代码风格的本质是**一致性工程**。本章取证结论汇总：
 

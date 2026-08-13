@@ -546,7 +546,6 @@ void only_int(T) { static_assert(std::is_integral_v<T>, "only integral allowed")
    - [标准] 递归模板实例化深度受实现定义的数量限制；超过即编译错误，应改用迭代式/constexpr 计算。
    - [引用] ISO/IEC 14882:2023 §[implimits]（实现数量限制：递归实例化深度）；cppreference "Implementation limits" 词条。
 
-
 **练习题**
 
 ```cpp

@@ -1034,7 +1034,6 @@ int main() {
    - [标准] extent 在编译期已知时成为类型一部分（静态 extent），`size()` 为编译期常量。
    - [引用] ISO/IEC 14882:2023 §[views.span]（静态/动态 extent）；cppreference "std::span" 词条。
 
-
 | 语言 | 对应抽象 | 说明 |
 |---|---|---|
 | C++ | `std::span<T>` / `std::span<T,N>` | 非拥有连续视图；静态 extent 编入类型 |

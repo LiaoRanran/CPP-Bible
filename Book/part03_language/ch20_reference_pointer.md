@@ -1,7 +1,6 @@
 # 第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 > 真实编译器：MinGW GCC 15.3.0（x86-64，Windows x64 ABI：首参在 `rcx`；本章 GCC 汇编均以此真机 `-std=c++23 -O2/-O0 -S -masm=intel` 输出为准）
 
 ⟶ Book/part06_templates/ch65_type_traits.md
@@ -1266,7 +1265,6 @@ auto [it, inserted] = m.try_emplace("k", 1);   // 返回 pair<iterator,bool>
 3. **真实场景：返回引用悬空。** 函数返回局部变量的引用 `T& f() { T x; return x; }` 是未定义行为。请用对象生命周期规则说明对象销毁后引用为何悬空。
    - [标准] 引用/指针指向的对象生命周期结束后，通过该引用/指针访问为未定义行为。
    - [引用] ISO/IEC 14882:2023 §[basic.life]（对象生命周期）；cppreference "Reference#Dangling" 词条。
-
 
 **一页速记**
 - 引用 = 必须初始化、不可重绑的别名；底层 ABI 与指针相同（§③）。

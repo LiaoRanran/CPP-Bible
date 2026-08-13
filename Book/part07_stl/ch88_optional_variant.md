@@ -500,7 +500,6 @@ struct Connection {
    - [标准] any 可持有任意可拷贝类型，取回时须知道确切类型（否则抛 `bad_any_cast`）。
    - [引用] ISO/IEC 14882:2023 §[any]（std::any）；cppreference "std::any" 词条。
 
-
 | 语言 | 可空 | 可辨别联合 |
 |---|---|---|
 | C++ | `std::optional<T>` | `std::variant<...>` / `std::expected<T,E>` |

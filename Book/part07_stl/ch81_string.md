@@ -524,7 +524,6 @@ int use_sv() {
    - [标准] 实现可将短字符串内联存储于对象自身（SSO），避免动态分配——属实现细节，标准不规定阈值。
    - [引用] ISO/IEC 14882:2023 §[strings]（实现可内联短字符串）；cppreference "Small string optimization" 词条。
 
-
 | 语言 | 字符串类型 | 存储模型 | 拷贝语义 |
 |---|---|---|---|
 | C++ | `std::string` | SSO + 堆（值语义） | 深拷贝（C++11 起） |

@@ -1,7 +1,6 @@
 # 第163章 从零实现网络编程（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part09_concurrency/ch113_coroutine.md
 ⟶ Book/part15_cases/ch159_threadpool.md
 
@@ -896,7 +895,6 @@ int main() {
 3. **真实场景：用无锁队列把 IO 线程数据移交业务线程，避免锁争用。** 你做高并发服务。请说明。
    - [标准] 多生产者/消费者队列基于原子（[atomics]）；标准不提供现成 MPMC 队列类型。
    - [引用] ISO/IEC 14882:2023 §[atomics] / [intro.races]（同步与数据竞争）；cppreference "std::atomic" 词条。
-
 
 从 `socket()` 到 `epoll`，从字节流到"消息"，从阻塞到线程池——本章把 C++ 网络编程的骨架从零搭了一遍，并用本机 Winsock2 的真实编译运行做了端到端取证。核心结论：**[经验]** 手写 socket 的价值不在"重复造轮子"，而在让你理解 Asio / 第159章线程池 / 第162章序列化 这些上层抽象到底在替你屏蔽什么。**[标准]** 记住 C++ 标准至今没有网络 API，选 Winsock 还是 Berkeley、选 select 还是 epoll，都是工程权衡而非语言规定。
 

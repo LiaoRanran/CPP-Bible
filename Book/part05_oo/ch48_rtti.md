@@ -622,7 +622,6 @@ BENCHMARK(BM_typeid_name); BENCHMARK(BM_dyncast_down); BENCHMARK(BM_static_upcas
    - [标准] `typeid` 作用于多态 glvalue 时求动态类型，否则求静态类型。
    - [引用] ISO/IEC 14882:2023 §[expr.typeid]（typeid 的静态/动态分支）；cppreference "typeid" 词条。
 
-
 【练习题】
 1. 写程序：基类 `Shape` 含虚析构，派生 `Circle`/`Rect`，用 `typeid` + `unordered_map<type_index,handler>` 实现 `draw` 分发器（仿 ⑫-A）。
 2. 比较 `dynamic_cast<Der*>(p)` 与手写「vtable 槽比对」两种下行转换，打印指针结果验证一致性。

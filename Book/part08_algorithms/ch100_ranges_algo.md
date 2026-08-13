@@ -1,7 +1,6 @@
 # 第100章　Ranges 算法与投影（C++20）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part10_modern/ch119_ranges_deep.md
 ⟶ Book/part08_algorithms/ch95_algo_overview.md
 
@@ -568,7 +567,6 @@ for (int x : v | spy("in") | std::views::filter([](int n){return n>0;}) | spy("o
 3. **真实场景：与视图管道组合保持惰性。** 你 `v | views::filter | ranges::sort` 只在消费时计算。请说明。
    - [标准] 视图惰性求值；与 ranges 算法组合时元素按需产生。
    - [引用] ISO/IEC 14882:2023 §[range.adaptors]（视图惰性）；cppreference "std::ranges::views" 词条。
-
 
 | 类别 | 名字 | 作用 | 是否 view（惰性） |
 |---|---|---|---|

@@ -728,7 +728,6 @@ flowchart TD
    - [标准] C++ 模板采用包含模型：实例化点必须能看到完整定义（通常置于头文件），不存在分离式的模板定义链接。
    - [引用] ISO/IEC 14882:2023 §[temp]（模板定义须可见）/ [basic.def.odr]；cppreference "Template" 词条。
 
-
 **练习题**
 
 1. 写一个 `clamp(T v, T lo, T hi)` 函数模板，返回 `v` 在 `[lo,hi]` 内的受限值。

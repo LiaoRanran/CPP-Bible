@@ -1,7 +1,6 @@
 # 第13章　包管理：vcpkg / Conan（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part02_toolchain/ch12_buildsystems.md
 ⟶ Book/part11_source/ch128_boost.md
 
@@ -657,7 +656,6 @@ main:
 3. **真实场景：用 inline namespace 做 ABI 版本。** 你给 `v2` 名字空间加 `inline`，旧调用点无需改写即可解析到新实现。请说明 inline namespace 的查找规则。
    - [标准] inline namespace 的成员如同定义在外层命名空间中，无名查找自动向外穿透；可用于 ABI/API 版本分层。
    - [引用] ISO/IEC 14882:2023 §[namespace.def.inline]（inline namespace）；cppreference "namespace" 词条。
-
 
 把全章浓缩成一张可贴墙的表。
 

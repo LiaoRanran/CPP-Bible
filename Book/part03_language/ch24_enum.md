@@ -1,7 +1,6 @@
 # 第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part06_templates/ch65_type_traits.md
 
 ⟶ Book/part06_templates/ch65_type_traits.md
@@ -1017,7 +1016,6 @@ int main() {
 3. **真实场景：枚举前置声明。** 头文件前置声明 `enum class Color : int;` 以减少包含依赖。请说明枚举前置声明的条件。
    - [标准] 有作用域枚举在指定底层类型后可前置声明。
    - [引用] ISO/IEC 14882:2023 §[dcl.enum]；cppreference "enum#Forward_declaration" 词条。
-
 
 下面用四类工业场景把前面所有知识点串起来。示例编号延续上文（32–40 为新增），全篇累计 **40 个可编译程序**。
 

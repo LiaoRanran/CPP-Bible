@@ -468,7 +468,6 @@ int main() {
    - [标准] vector 元素连续存储；`data()` 返回指向首元素的指针，可安全当作 C 数组使用。
    - [引用] ISO/IEC 14882:2023 §[vector.data]（连续存储保证）；cppreference "std::vector::data" 词条。
 
-
 | 语言 | 动态数组/向量 | 扩容策略 | 备注 |
 |---|---|---|---|
 | C++ | `std::vector<T>` | GCC 2× / MSVC 1.5× | 连续、值语义、可增长 |

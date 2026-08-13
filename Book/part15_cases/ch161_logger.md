@@ -1,7 +1,6 @@
 # 第161章 从零实现日志库（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part11_source/ch131_fmt_spdlog.md
 ⟶ Book/part13_engineering/ch144_style.md
 
@@ -1423,7 +1422,6 @@ void set_threshold(Logger& log, Level l) { log.set_level(l); }
 3. **真实场景：多 sink 共享同一条日志须保证可见性（跨线程发布）。** 你用原子发布指针。请说明。
    - [标准] 跨线程共享对象的可见性由内存模型与原子操作保证；普通写读存在数据竞争。
    - [引用] ISO/IEC 14882:2023 §[intro.races]（数据竞争）/ [atomics]（同步）；cppreference "Memory model" 词条。
-
 
 - **级别门控**用整数序关系，配合编译期 `if constexpr` 实现零开销关闭（⑨ 的汇编为证）。
 - **sink** 用抽象接口解耦"产生"与"落地"：console / file / network（③）。

@@ -1377,7 +1377,6 @@ int main() {
    - [标准] `std::unique_ptr` 的删除器类型是其类型的一部分；默认删除器即 `delete`，自定义删除器须作为模板实参/构造实参提供。
    - [引用] ISO/IEC 14882:2023 §[util.smartptr.unique]（unique_ptr 与删除器）；cppreference "std::unique_ptr" 词条。
 
-
 ### 20.1 三 STL 控制块布局对比
 
 | 实现 | 控制块类型 | 计数 | 分配策略 | 原子实现 |

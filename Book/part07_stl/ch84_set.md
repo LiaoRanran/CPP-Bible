@@ -520,7 +520,6 @@ int main() {
    - [标准] 关联容器提供 `emplace`/`try_emplace` 在容器内就地构造，避免先构造临时再拷贝/移动。
    - [引用] ISO/IEC 14882:2023 §[set]（emplace 接口）；cppreference "std::set::emplace" 词条。
 
-
 | 语言 | 有序唯一集合 | 有序可重复 | 备注 |
 |---|---|---|---|
 | C++ | `std::set<K>` | `std::multiset<K>` | RB 树，O(log n)，节点开销大 |

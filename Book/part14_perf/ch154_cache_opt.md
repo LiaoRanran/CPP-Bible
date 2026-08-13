@@ -701,7 +701,6 @@ int main() {
    - [标准] 语言只保证成员连续与实现定义填充；冷热分离是工程优化，非语言层保证。
    - [引用] ISO/IEC 14882:2023 §[class.mem]（成员布局）；cppreference "Data-oriented design" 词条。
 
-
 - `[平台·x86-64]`：libstdc++ `<new>` 中 `hardware_destructive_interference_size` 的定义（GCC 12 由 16 修正为 64）。
 - `[实现·GCC15]`：GCC 预取与对齐优化 passes（`tree-vectorize`、`pass_peephole2`）源码 `gcc/tree-vect-*.cc`。
 - `[标准]`：ISO `[support.limits]`（interference size）、`[class.mem]`（布局/对齐）、`[basic.align]`。
@@ -1099,7 +1098,7 @@ int main() {
 
 ## 附录 I：缓存优化 源码与真实基准（同规格 D4 + D5）[I: Source / D: Benchmark]
 
-> 本附录以 GCC 15.3.0（libstdc++ 15.3.0，本机 MinGW-W64 x86_64）一手源码与真实计时，补全正文 ⑧–⑭ 的"定性 / 标 GCC13.1"缺口：给出 `std::hardware_destructive_interference_size` 的真实定义出处（D4），并用本机 `-O2` 复跑三件套得到可复现数字（D5），同时揭示"优化器与硬件预取会抹平部分教科书惩罚"这一非显然事实。
+> 本附录以 GCC 15.3.0（libstdc++ 15.3.0，本机 MinGW-W64 x86-64）一手源码与真实计时，补全正文 ⑧–⑭ 的"定性 / 标 GCC13.1"缺口：给出 `std::hardware_destructive_interference_size` 的真实定义出处（D4），并用本机 `-O2` 复跑三件套得到可复现数字（D5），同时揭示"优化器与硬件预取会抹平部分教科书惩罚"这一非显然事实。
 
 ### I.1 D4 一手源码：`hardware_*_interference_size` 究竟从哪来
 

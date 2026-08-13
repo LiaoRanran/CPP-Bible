@@ -1,7 +1,6 @@
 # 第130章　Chromium / Abseil 基础设施（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part07_stl/ch77_vector.md
 
 > 真实编译器：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`，`-std=c++17 -O2 -masm=intel -S`）。
@@ -724,7 +723,6 @@ std::span<const int> t = s;      // 布局一致，可互转
 3. **真实场景：`absl::Span` 对应 C++20 `std::span`。** 你统一用视图替代指针+长度。请说明。
    - [标准] C++20 起标准提供 `std::span`：连续序列的非拥有视图。
    - [引用] ISO/IEC 14882:2023 §[views.span]（std::span）/ Abseil 文档；cppreference "std::span" 词条。
-
 
 ```
 ┌──────────────────────────┬────────────────────────────┬──────────────────────┐

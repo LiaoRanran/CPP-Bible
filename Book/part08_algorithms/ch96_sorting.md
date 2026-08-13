@@ -1,7 +1,6 @@
 # 第96章　排序：sort / stable_sort / partial_sort（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part08_algorithms/ch98_heap.md
 ⟶ Book/part07_stl/ch77_vector.md
 
@@ -833,7 +832,6 @@ int main() {
 3. **真实场景：自定义比较器不满足严格弱序导致 UB。** 你写的 `cmp` 不满足反对称/传递性。请说明约束。
    - [标准] 排序算法的比较器必须满足严格弱序；违反是未定义行为。
    - [引用] ISO/IEC 14882:2023 §[alg.sort]（比较器的严格弱序要求）；cppreference "Strict weak ordering" 词条。
-
 
 ```text
 ┌──────────────────┬──────────┬────────────┬──────────────────────────────┐

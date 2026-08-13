@@ -1,7 +1,6 @@
 # 第148章 Git 工作流（C++）
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-
 ⟶ Book/part13_engineering/ch149_ci_cd.md
 ⟶ Book/part02_toolchain/ch18_buildconfig.md
 
@@ -715,7 +714,6 @@ git sparse-checkout set <dir># 大仓稀疏检出
 3. **真实场景：提交历史里混入了二进制大文件拖慢 clone。** 你做仓库瘦身决策。请说明（属仓库工程）。
    - [标准] 无直接 C++ 标准对应；属 VCS 使用规范，与语言无关。
    - [引用] Git 文档 "git-filter-repo" / Pro Git（仓库维护）；cppreference 通用。
-
 
 Git 工作流对 C++ 工程的核心结论：
 

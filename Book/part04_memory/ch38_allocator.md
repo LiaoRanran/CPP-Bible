@@ -1477,7 +1477,6 @@ int main() {
    - [标准] `allocator_traits::construct` 默认用 `::new((void*)p) T(args...)` 布置构造；多数分配器无需重载它。
    - [引用] ISO/IEC 14882:2023 §[allocator.traits.members]（construct/destroy 默认）；cppreference "std::allocator_traits::construct" 词条。
 
-
 **选型决策树 [经验]**
 1. 默认容器 → `std::allocator`（程序 1/2/32）。
 2. 解析/序列化/测试夹具等临时构建 → `monotonic_buffer_resource` + 栈缓冲（程序 9/18）。

@@ -1,7 +1,6 @@
 # 第116章　完美转发与万能引用
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 > 标准基：ISO/IEC 14882:2023 (C++23)，引用条款以 N4950 为准
 > 预计阅读：约 75 分钟
 > 前置：⟶ Book/part10_modern/ch115_move.md（移动语义与右值引用）· ⟶ Book/part03_language/ch20_reference_pointer.md（引用本质）· ⟶ Book/part06_templates/ch63_variadic.md（可变参数模板）
@@ -774,7 +773,6 @@ int main() {
 3. **真实场景：`std::forward<T>` 按推导结果恢复值类别。** 你写工厂 `make_unique` 风格转发。请说明。
    - [标准] `forward<T>` 当 T 推导为左值引用时返回左值、否则返回右值，从而精确转发。
    - [引用] ISO/IEC 14882:2023 §[utility]（std::forward）；cppreference "std::forward" 词条。
-
 
 | 语言 | 等价机制 | 说明 |
 |---|---|---|

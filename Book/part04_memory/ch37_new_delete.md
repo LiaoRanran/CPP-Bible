@@ -1712,7 +1712,6 @@ public class Main {
    - [标准] `void* operator new(size_t, std::align_val_t)` 等重载提供带对齐的分配；返回的内存须满足请求的对齐。
    - [引用] ISO/IEC 14882:2023 §[new.delete.single]（对齐形式的分配函数）；cppreference "operator new" 词条。
 
-
 下面这个程序综合展示：类专属统计 new + 内存池 + 对齐 + nothrow 防御 + placement + `launder`，作为本章的"收口"。
 
 ```cpp

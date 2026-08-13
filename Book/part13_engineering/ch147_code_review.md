@@ -1,7 +1,6 @@
 # 第147章 代码审查（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part13_engineering/ch144_style.md
 ⟶ Book/part13_engineering/ch150_testing.md
 
@@ -600,7 +599,6 @@ bool ready_to_send() {
 3. **真实场景：审查发现通过基类指针 `delete` 派生对象但基类无虚析构。** 你运行时未定义行为。请说明。
    - [标准] 通过基类指针 `delete` 派生对象，若基类析构非虚，则为未定义行为。
    - [引用] ISO/IEC 14882:2023 §[class.dtor]（虚析构必要性）；cppreference "Virtual destructor" 词条。
-
 
 `[经验]` 一句话总纲：**代码审查是 C++ 工程里性价比最高的一道质量闸——它把未定义行为、内存错误、接口破坏、性能回归在合入前拦下，而代价只是一次仔细阅读。** 本章所有机器可验证主张（`-Wsign-compare` 有符号比较警告、`-Wformat=` 格式不匹配、`-Wunused-result` 忽略 `[[nodiscard]]`、`-Woverflow` 常量溢出、`-Wreturn-type` 缺返回值、`-Wreturn-local-addr` 悬垂地址、`-Wfloat-conversion` 浮点截断、RAII 守卫 `call pthread_mutex_lock/unlock` 的汇编实证、`add edx,[rcx+rax*4]` 零拷贝循环实证、libstdc++ `bits/move.h:104` 与 `bits/basic_string.h:85` 真实路径与行号）均已用本机 GCC 13.1.0 真实产物（`Examples/_ch147_*_warn.txt` / `_ch147_*.asm`）佐证，可复现、未编造。ABI 兼容性深化见第145章，提交规范见第148章，CI 门禁见第149章，测试覆盖见第150章，性能回归见第151章。
 

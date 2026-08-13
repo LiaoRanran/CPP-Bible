@@ -115,7 +115,7 @@ def compile_block(gcc: str, block: str) -> tuple[bool, str]:
         try:
             os.unlink(fpath)
         except OSError:
-            pass
+            pass  # 安全忽略: 临时文件清理失败(已不存在)不影响审计结论
 
 
 def expected_fail(reason: str, platform: str) -> bool:

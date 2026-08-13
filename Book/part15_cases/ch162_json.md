@@ -1,7 +1,6 @@
 # 第162章 从零实现 JSON 库（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part07_stl/ch88_optional_variant.md
 ⟶ Book/part06_templates/ch63_variadic.md
 
@@ -766,7 +765,6 @@ _Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE:
 3. **真实场景：用 `std::string_view` 零拷贝访问 JSON 中的字符串片段。** 你避免大字符串拷贝。请说明。
    - [标准] `std::string_view` 是非拥有的连续字符视图；适合解析期零拷贝切片。
    - [引用] ISO/IEC 14882:2023 §[string.view]（std::string_view 语义）；cppreference "std::string_view" 词条。
-
 
 从零实现 JSON 库的本质，是把"动态类型的文本协议"干净地装进"静态类型的 `std::variant` 树"：
 

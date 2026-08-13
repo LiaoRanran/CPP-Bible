@@ -1,7 +1,6 @@
 # 第129章　Qt 对象模型与信号槽（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part05_oo/ch45_oop_object_model.md
 ⟶ Book/part12_patterns/ch135_patterns_intro.md
 
@@ -602,7 +601,6 @@ sig(42);                       // 等价 emit
 3. **真实场景：`QObject` 派生类不可拷贝（值语义受限）。** 你写拷贝构造被拒。请说明约束。
    - [标准] 对象身份/树语义要求类型不可拷贝；拷贝语义由用户定义（三五法则）。
    - [引用] ISO/IEC 14882:2023 §[class.copy]（拷贝语义）/ Qt 文档 "Object Trees"；cppreference "Rule of three/five" 词条。
-
 
 ```
 ┌───────────────────────┬────────────────────────────────────────────┐

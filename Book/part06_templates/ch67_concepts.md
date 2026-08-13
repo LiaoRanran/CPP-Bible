@@ -553,7 +553,6 @@ flowchart TD
    - [标准] 在重载决议中，更受约束（或更特化）的候选优先于不受约束/更泛化的版本。
    - [引用] ISO/IEC 14882:2023 §[temp.constr]（约束与偏序）；cppreference "Constraints and concepts" 词条。
 
-
 - **练习题 1**：手写 `Derefable` concept，要求 `*t` 合法且结果可转换为 `T`。
 - **练习题 2**：用 concept 给 `std::vector` 风格容器写 `push_back`，约束「可拷贝」。
 - **练习题 3**：定义 `AllSame<Ts...>` concept，要求包内所有类型彼此 `same_as`。

@@ -497,7 +497,6 @@ int main() {
    - [标准] list 提供双向迭代器，只能逐次前进；下标访问不可用，要取第 n 个须 `std::advance`。
    - [引用] ISO/IEC 14882:2023 §[list]（双向迭代器，无随机访问）；cppreference "std::list" 词条。
 
-
 | 语言/库 | 类型 | 结构 | 迭代器稳定 | 备注 |
 |---|---|---|---|---|
 | C++ | `std::list<T>` | 双向环形链表 | 是 | 成员 sort/merge/splice |

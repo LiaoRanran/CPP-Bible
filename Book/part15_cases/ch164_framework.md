@@ -1,7 +1,6 @@
 # 第164章 从零实现迷你框架（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part12_patterns/ch141_di.md
 ⟶ Book/part15_cases/ch159_threadpool.md
 
@@ -1139,7 +1138,6 @@ int ci_gate() {
 3. **真实场景：框架用 `std::function` 做回调注册点（运行时可替换策略）。** 你权衡灵活 vs 内联开销。请说明。
    - [标准] `std::function` 提供类型擦除的可调用包装（有间接与分配可能开销）。
    - [引用] ISO/IEC 14882:2023 §[func]（std::function）/ [class.virtual]（对比虚调用）；cppreference "std::function" 词条。
-
 
 从"好莱坞原则"到自注册插件，从 reactor 事件循环到 RAII 生命周期，本章把**一个工业级迷你框架的骨架从零搭了一遍**，并用本机 `g++ 13.1.0 -std=c++23 -O2` 的真实编译运行做了端到端取证。核心结论：**[经验]** 写框架的目的不是取代 Boost/Qt，而是让你彻底理解它们——自注册解决了"组件怎么来"，事件总线解决了"组件怎么被通知"，DI 解决了"组件怎么拿依赖"，RAII 解决了"资源怎么不死"，PAL 解决了"平台差异怎么藏"。**[标准]** 这些机制背后全是 C++ 标准保证的基石：虚函数分派（[class.virtual]）、lambda（[expr.prim.lambda]）、`std::shared_ptr` 类型擦除（[util.smartptr]）、静态局部变量线程安全初始化（[stmt.dcl]）。**[平台·Windows]** 而 `LoadLibrary`/`dlopen`、`Sleep`/`usleep` 这类差异，必须收口到 PAL，绝不该泄漏进业务。最后记住一条铁律：**[经验]** 框架的价值在于"恰到好处的抽象"——过度抽象（⑯）比不抽象更危险。
 

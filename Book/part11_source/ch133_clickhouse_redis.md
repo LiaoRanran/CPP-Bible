@@ -1,7 +1,6 @@
 # 第133章　ClickHouse / Redis 实现精读（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part07_stl/ch77_vector.md
 
 > 真实编译器：MinGW GCC 13.1.0（`g++ -std=c++20 -O3 -march=native -S -masm=intel`）。
@@ -928,7 +927,6 @@ bool should_vectorize(size_t n, bool branchy) {
 3. **真实场景：用 RESP 协议与 C++ 客户端通信。** 你序列化命令。请说明（属协议设计）。
    - [标准] 网络序列化格式无标准规定；由协议文档定义，C++ 侧用缓冲/视图处理。
    - [引用] Redis RESP 协议文档 / ISO/IEC 14882:2023 §[string.view]（零拷贝处理字节）；cppreference。
-
 
 ```cpp
 // ⑳ ClickHouse 向量化速查

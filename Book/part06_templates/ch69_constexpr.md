@@ -523,7 +523,6 @@ int use_lut(int i) { return lut(i); }            // 运行期：普通乘；编�
    - [标准] consteval 函数只能在编译期被调用、必须产生常量表达式；与 constexpr 不同，不允许运行期调用。
    - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（consteval 说明符）；cppreference "consteval" 词条。
 
-
 **练习题**
 1. 用 `constexpr` 函数（非模板）实现编译期 `is_prime(n)`，并用 `static_assert` 验证前 10 个素数。
 2. 用 `consteval` 写一个编译期 CRC32 函数（参考 ⑭），对字符串字面量求哈希。

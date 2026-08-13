@@ -479,7 +479,6 @@ int main(){
    - [标准] 基类子对象与作为完整对象首个成员的对象不得拥有相同地址，防止别名；这限制了 EBO 的适用位置。
    - [引用] ISO/IEC 14882:2023 §[intro.object]（对象同一性与地址唯一，含 EBO 例外）/ [class.mem]（成员布局）；cppreference "Empty base optimization" 词条。
 
-
 【练习题】
 1. 写 `struct D : E1, E2 { char c; };`（E1/E2 空），用 `offsetof`/`sizeof` 在 GCC 与 MSVC 各测一次，记录差异。
 2. 用 `[[no_unique_address]]` 重写 `AsMember`，验证 `sizeof` 回到 4（C++20）。

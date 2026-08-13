@@ -352,7 +352,6 @@ int main() {
    - [标准] 该常量提供“ Destroy 干扰”的硬件缓存行尺寸提示（实现定义），用于 padding 隔离。
    - [引用] ISO/IEC 14882:2023 §[support.limits]（hardware_*_interference_size）/ P0154；cppreference "std::hardware_destructive_interference_size" 词条。
 
-
 | 能力 | C++ | Rust | C (GCC/Clang) | Go | 汇编/SIMD |
 |---|---|---|---|---|---|
 | 分支提示 | `[[likely]]` / `__builtin_expect` | `#[cold]` / 隐式 | `__builtin_expect` | 无内建 | 手动布局 |

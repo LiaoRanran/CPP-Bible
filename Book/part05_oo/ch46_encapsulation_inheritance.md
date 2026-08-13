@@ -1312,7 +1312,6 @@ int main() {
    - [标准] 在 private 继承中，基类公有/保护成员在派生类变为 private，表达实现复用而非子类型多态。
    - [引用] ISO/IEC 14882:2023 §[class.derived]（继承方式：private/protected/public 语义）；cppreference "Inheritance" 词条。
 
-
 下面用可编译小程序实证四个工程关注点。为简洁，计时用 `std::chrono` 的粗粒度演示（生产基准见 Google Benchmark）。
 
 ```cpp

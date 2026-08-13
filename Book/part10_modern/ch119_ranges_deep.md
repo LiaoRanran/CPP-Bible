@@ -1,7 +1,6 @@
 # 第119章　Ranges 深入（C++20）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；本章 `[实现]` 级源码来自该目录真实文件，逐行标注路径与行号。
 
@@ -529,7 +528,6 @@ int first_even(const std::vector<int>& v) {
 3. **真实场景：用 `borrowed_range` 避免悬垂视图。** 你返回引用局部区间的视图会 UB。请说明。
    - [标准] `borrowed_range` 表示其迭代器可安全脱离 range 对象存在（如 `std::string_view` 之于 `std::string`），避免 dangling。
    - [引用] ISO/IEC 14882:2023 §[range.req]（borrowed_range）；cppreference "std::ranges::borrowed_range" 词条。
-
 
 | 语言 | 惰性序列 | 管道组合 |
 |---|---|---|

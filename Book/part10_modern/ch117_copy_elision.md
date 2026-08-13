@@ -1,7 +1,6 @@
 # 第117章　RVO / NRVO 与拷贝消除（C++17）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 元数据：标准基 = C++11（NRVO 早期）/ C++17（guaranteed copy elision）；前置 = 移动语义（ch115）、对象生命周期；后续 = 返回值优化与 ABI、 constexpr 求值；难度 = ★★★☆☆。
 > 立场约定：标注 `[标准]`/`[实现·GCC15.3.0]`/`[平台·x86-64 Win64 ABI]`/`[经验]`。
@@ -507,7 +506,6 @@ struct Buff { Buff(Buff&&) noexcept; };              // ✅ 省略失败时仍�
 3. **真实场景：复制消除不是移动——根本不构造临时。** 你混淆了两者。请说明区别。
    - [标准] 消除时源与目标直接合一，不产生临时对象，区别于“移动构造接管资源”。
    - [引用] ISO/IEC 14882:2023 §[class.copy.elision]（消除语义）；cppreference "Copy elision" 词条。
-
 
 ```cpp
 #include <utility>

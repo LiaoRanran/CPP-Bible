@@ -534,7 +534,6 @@ BENCHMARK(BM_SecondBaseVCall);
    - [标准] 指向不同基类子对象的指针拥有不同地址（需调整），但都指代同一完整对象。
    - [引用] ISO/IEC 14882:2023 §[conv.ptr]（基类指针调整）/ [class.derived]（子对象地址）；cppreference "Pointer adjustment" 词条。
 
-
 【练习题】
 1. 画出 `struct D : B1, B2 { int a; double b; };` 在 x64 的精确字节布局（标注每个 vptr/成员偏移与对齐空洞）。
 2. 推导 `dynamic_cast<B2*>(static_cast<A*>(pd))` 在运行期的 this 调整量。

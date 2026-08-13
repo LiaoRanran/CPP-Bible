@@ -712,7 +712,6 @@ flowchart TD
    - [标准] `std::vector<bool>` 被标准库特化为位压缩存储以节省空间，元素访问返回代理引用而非真实引用。
    - [引用] ISO/IEC 14882:2023 §[vector.bool]（vector<bool> 特化）；cppreference "std::vector<bool>" 词条。
 
-
 **练习题**
 
 1. 写 `is_reference` trait：主模板 false，偏特化 `T&` 与 `T&&` 为 true。

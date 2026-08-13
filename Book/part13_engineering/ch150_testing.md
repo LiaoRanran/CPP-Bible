@@ -1,7 +1,6 @@
 # 第150章 测试策略（C++）
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-
 ⟶ Book/part03_language/ch29_friend.md
 ⟶ Book/part13_engineering/ch149_ci_cd.md
 
@@ -1040,7 +1039,6 @@ CI 中的测试门禁可用 ASCII 框线表示（Bible 允许）：
 3. **真实场景：测试里构造不变量对象时用到约束（concept）检查类型。** 你误用不满足约束的类型。请说明。
    - [标准] `static_assert` 可检查 concept 满足性；约束是编译期语义要求。
    - [引用] ISO/IEC 14882:2023 §[temp.constr]（约束与 concept）/ [dcl.pre]（static_assert）；cppreference "Constraints and concepts" 词条。
-
 
 测试策略是 C++ 工程健壮性的基石：以**单元测试为主力**（≥70%），用**夹具/参数化**消除重复，用**依赖注入 + mock** 隔离外部世界，用 **TDD/异常测试** 固化契约，用 **fuzz/基准** 守住鲁棒与性能边界，并最终通过 **CI 门禁** 自动化执行。所有示例均经本机 `g++ 13.1.0` 真实编译运行（见下方聚合自检与 `_run/ch150_mine.log`），框架部分以“上游参考 + 自包含等价”如实呈现。
 

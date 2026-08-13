@@ -129,7 +129,7 @@ def main():
             known_cf = {d["file"].replace(".asm", "")
                         for d in bl.get("known_compile_fail", [])}
         except Exception:
-            pass
+            pass  # 安全忽略: 基线 known_compile_fail 解析失败则留空, 后续仅按实际 .asm 漂移判定
 
     drift_items = [r for r in rep.get("results", []) if r["status"] == "DRIFT"]
     new_drifts = [d for d in drift_items if d["name"] not in known_drift]

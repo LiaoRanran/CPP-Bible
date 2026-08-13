@@ -1,7 +1,6 @@
 # 第136章 创建型模式（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part12_patterns/ch135_patterns_intro.md
 ⟶ Book/part10_modern/ch116_perfect_forwarding.md
 
@@ -928,7 +927,6 @@ sink  : 50115500 3381600
 3. **真实场景：原型模式用拷贝构造克隆对象。** 你深拷贝含有资源的对象。请说明拷贝语义。
    - [标准] 克隆依赖拷贝构造函数/拷贝赋值；含资源的类型须正确实现深拷贝（三五法则）。
    - [引用] ISO/IEC 14882:2023 §[class.copy.ctor]（拷贝构造）/ [class.copy.assign]；cppreference "Copy constructor" 词条。
-
 
 ```
 ┌──────────────────── 创建型模式选型速查 ────────────────────┐

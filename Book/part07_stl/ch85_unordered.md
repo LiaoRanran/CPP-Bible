@@ -542,7 +542,6 @@ int main() {
    - [标准] 无序容器的遍历顺序由哈希与桶布局决定，不保证与插入顺序一致，不可依赖。
    - [引用] ISO/IEC 14882:2023 §[unord.req]（遍历顺序不保证）；cppreference "std::unordered_map" 词条。
 
-
 | 语言 | 哈希集合/映射 | 冲突策略 | 备注 |
 |---|---|---|---|
 | C++ | `unordered_set`/`unordered_map` | 开链法（链表） | FNV 哈希，非抗碰撞 |

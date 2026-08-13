@@ -896,7 +896,6 @@ struct S2 : SomePolicy { int x; };     // EBO 压掉空基类
    - [标准] 通过基类指针 `delete` 派生对象，基类析构须为虚，否则未定义行为（CRTP 非运行时多态）。
    - [引用] ISO/IEC 14882:2023 §[class.dtor]（虚析构必要性）；cppreference "Virtual destructor" 词条。
 
-
 - **CRTP 是什么**：`struct Derived : Base<Derived>`——基类用模板参数持有派生类类型，编译期完成静态多态。
 - **核心机制**：`static_cast<Derived*>(this)` 把 `this` 下转为派生类，零运行时开销（§③、§④ 汇编佐证）。
 - **性能真相**（`[平台·x86-64]` 取证）[VERIFIED]：`-O2` 下 CRTP 调用被整体内联为几条指令；虚函数最坏退化为 `call [vtable]`，最好经投机去虚拟化与 CRTP 持平（§④、§⑯）。

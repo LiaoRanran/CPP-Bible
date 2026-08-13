@@ -421,7 +421,6 @@ int main() {
    - [标准] 迭代器类别（输入/前向/双向/随机/连续）逐层提供更多操作能力；算法据此分派最优实现。
    - [引用] ISO/IEC 14882:2023 §[iterator.requirements]（迭代器类别与能力）；cppreference "Iterator" 词条。
 
-
 | 语言 | 迭代器/遍历抽象 | 范畴分层 | 备注 |
 |---|---|---|---|
 | C++ | `iterator` 五类 + C++20 概念 | 有（input→contiguous） | 编译期标签分发，零开销 |

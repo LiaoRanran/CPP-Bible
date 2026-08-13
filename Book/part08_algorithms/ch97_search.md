@@ -1,7 +1,6 @@
 # 第97章　查找与二分（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part08_algorithms/ch96_sorting.md
 ⟶ Book/part07_stl/ch83_map.md
 
@@ -742,7 +741,6 @@ int cross_lib() {
 3. **真实场景：用 `equal_range` 取匹配元素的半开区间。** 你统计某 key 在有序 multiset 中的全部出现。请说明。
    - [标准] `equal_range` 返回 `[lower_bound, upper_bound)` 半开区间，覆盖所有等价元素。
    - [引用] ISO/IEC 14882:2023 §[alg.binary.search]（equal_range）；cppreference "std::equal_range" 词条。
-
 
 | 需求 | 首选算法 | 复杂度 | 前置 |
 |---|---|---|---|

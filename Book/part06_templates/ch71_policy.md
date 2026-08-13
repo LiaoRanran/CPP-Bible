@@ -574,7 +574,6 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
    - [标准] 并行算法不替你加锁；用户提供的操作在并行调用中不得引入数据竞争，否则为未定义行为。
    - [引用] ISO/IEC 14882:2023 §[algorithms.parallel]（并行算法的数据竞争要求）；cppreference "Parallel algorithms" 词条。
 
-
 **练习题**
 1. 用 Policy-Based 实现一个 `SmartArray<T, IndexPolicy, CheckPolicy>`，`IndexPolicy` 决定下标计算（线性/环形），`CheckPolicy` 决定是否越界检查。
 2. 把"比较策略"做成模板模板参数，实现可配置排序的 `Sorter<T, ComparePolicy>`。

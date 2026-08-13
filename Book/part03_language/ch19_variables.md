@@ -1,7 +1,6 @@
 # 第19章　变量、存储期、链接与 ODR（工业级深度版）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 > 真实编译器：MinGW GCC 15.3.0（x86-64；本章所有 GCC 汇编均以此真机 `-std=c++23 -O2 -S -masm=intel` 输出为准；`thread_local` 在本工具链默认走 emulated TLS）
 
 ⟶ Book/part03_language/ch32_initialization.md
@@ -1459,7 +1458,6 @@ void clear_status() {
    - [标准] 函数内静态局部变量的初始化自 C++11 起保证线程安全；其具有静态存储期，生命期贯穿整个程序。
    - [引用] ISO/IEC 14882:2023 §[stmt.dcl]（块作用域静态变量的初始化）；cppreference "Static local variables" 词条。
 
-
 `[标准]`/`[实现]` 按以下顺序深入，从本章延伸到工具链源码：
 
 1. **libstdc++ `<bits/local_static_init>` / `libstdc++-v3/libsupc++/guard.{h,cc}`**
@@ -1544,7 +1542,6 @@ void clear_status() {
 ---
 
 *可选扩展（非必需）：若有篇幅，可补（a）Windows PE 段布局完整图与 `dumpbin /headers` 对照；（b）`-fsanitize=thread` 检测 TLS/static 数据竞争的实操；（c）`__cxa_atexit` 与 `__dso_handle` 在动态库卸载时的析构序细节。以上均非必需，本章 10 个核心点已全部展开，32 个示例已满足 ≥30 约束。*
-
 
 ### ㉒.5 权威引用
 - [cppreference — 存储期 (storage duration)](https://en.cppreference.com/w/cpp/language/storage_duration)：static / thread / local 三种存储期与内部/外部链接的权威定义。

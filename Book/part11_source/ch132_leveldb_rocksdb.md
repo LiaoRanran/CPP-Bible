@@ -1,7 +1,6 @@
 # 第132章　LevelDB / RocksDB 存储引擎（C++）
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-
 ⟶ Book/part07_stl/ch83_map.md
 ⟶ Book/part08_algorithms/ch96_sorting.md
 
@@ -928,7 +927,6 @@ db->GetProperty("rocksdb.cfstats", &h);     // 每列族详细统计
    - [标准] 与 C++17 `std::string_view` 一样是非拥有视图语义，但 Slice 是库类型。
    - [引用] ISO/IEC 14882:2023 §[string.view]（视图语义）/ LevelDB `Slice` 文档；cppreference "std::string_view" 词条。
 
-
 ```cpp
 #include <vector>
 #include <string>
@@ -1144,7 +1142,6 @@ LevelDB 的设计哲学则直接继承自 **Chang、Dean、Ghemawat 等《Bigtab
 - RocksDB Wiki（Compaction / Tuning / Rate Limiter）：`https://github.com/facebook/rocksdb/wiki`
 - LevelDB 源码与文档：`https://github.com/google/leveldb`
 - CMU 15-445 / 15-721（Andy Pavlo）数据库课程对 LSM 的讲法，是工业调参的理论底座。
-
 
 - [RocksDB 官网](https://rocksdb.org/)：官方站点、调优指南与基准。
 - [LSM-Tree（维基百科）](https://en.wikipedia.org/wiki/Log-structured_merge-tree)：LevelDB/RocksDB 的根基算法与读放大/写放大权衡。

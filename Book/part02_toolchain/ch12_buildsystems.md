@@ -1,7 +1,6 @@
 # 第12章　构建系统：Make / Ninja / CMake（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part02_toolchain/ch18_buildconfig.md
 ⟶ Book/part02_toolchain/ch11_compilers.md
 
@@ -673,7 +672,6 @@ int main() { std::printf("chosen build system\n"); return 0; }
 3. **真实场景：CMake 的 PUBLIC/PRIVATE 标错导致消费方找不到头。** 你把 `target_link_libraries(x PRIVATE yaml)` 写成 PRIVATE，消费 `x` 的目标编译时缺 `yaml-cpp` 头。请从语言依赖传播角度说明 PRIVATE/PUBLIC 的语义。
    - [标准] 头依赖在语言层由 `#include` 与（C++20）模块导入表达；构建系统只负责把正确的包含路径与链接传给使用者。
    - [引用] ISO/IEC 14882:2023 §[cpp.include]（源文件包含）；cppreference "Replacing text macros / #include" 词条。
-
 
 ```
 ┌────────────── 构建系统速查 ──────────────┐

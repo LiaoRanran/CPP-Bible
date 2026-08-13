@@ -1,7 +1,6 @@
 # 第127章　LLVM / Clang 架构（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part11_source/ch125_libcxx.md
 ⟶ Book/part02_toolchain/ch11_compilers.md
 
@@ -577,7 +576,6 @@ template <typename T> inline T add_generic(T a, T b) { return a + b; }
    - [标准] 标准定义未定义行为（UB）与数据竞争；UBSan/TSan 正是检测这些标准违规的工具。
    - [引用] ISO/IEC 14882:2023 §[intro.abstract]（UB）/ [intro.races]（数据竞争）/ Clang "UndefinedBehaviorSanitizer" 文档；cppreference "UB" 词条。
 
-
 | 主题 | 命令 / 概念 | 说明 |
 |---|---|---|
 | 源码→IR | `clang -emit-llvm -S -O2 x.cpp` | 生成人类可读 `.ll`（典型输出） |
@@ -692,7 +690,6 @@ LLVM 的起点是 **2000 年 UIUC（伊利诺伊大学厄巴纳-香槟分校）*
 **2003–2005 年 Apple 的投资** 是转折点：Apple 先招入 Lattner，又资助 LLVM 并启动 **Clang**（2005–2007）作为 GCC 的替代 C/C++/Obj-C 前端，目标是更好的诊断信息与模块化（见 0.2/0.3）。Clang 凭「报错像人话」（模板实例化栈 `note`、color 诊断、`--fixit`）一战成名，而 LLVM IR 作为**外部可见、可序列化的文本**，使 `opt`/`llc`/`bugpoint` 等单职责工具成为可能——这正是 GCC 的 GIMPLE/RTL 做不到的开放度（见 ⑭）。
 
 许可与治理是另一条主线。LLVM 早期用 **UIUC/NCSA** 许可；**2019 年 LLVM 基金会主导 relicense 为 Apache 2.0 + LLVM 例外**，统一了 LLVM、Clang、libc++、compiler-rt 等子项目的许可，使「LLVM 全家桶」在法律上彻底宽松化（与 libc++ 的 relicense 同源，见 第125章 ㉒）。**MLIR（2019，Multi-Level IR）** 由 Google 与 LLVM 社区推动，用可嵌套多层 IR 统一「高层 DSL → 高层优化 → 底层机器码」的 lowering，成为 TensorFlow/XLA、可重构硬件（CIRCT）的底座（见 0.4）。
-
 
 ### ㉒.2 真实工程坐标：LLVM / Clang 活在哪些真实产品里
 

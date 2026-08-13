@@ -601,7 +601,6 @@ int main() {
    - [标准] 标准类型特性（[meta]）提供编译期谓词；`is_convertible` 表达“能否隐式转换为目标类型”。
    - [引用] ISO/IEC 14882:2023 §[meta.rel]（is_convertible 等关系特性）；cppreference "std::is_convertible" 词条。
 
-
 **练习题**
 1. 手写 `is_lvalue_reference`（提示：偏特化 `T&`）。
 2. 手写 `extent<T,N=0>`（数组第 N 维大小，非数组为 0）。

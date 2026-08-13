@@ -1,7 +1,6 @@
 # 第121章 Contracts 契约（方向，C++26）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 > 标准基: P2900 / 编译器: GCC 13.1（未实现，用 assert/宏模拟）；**GCC 15.3.0 已原生支持 `-fcontracts`**（见 ⑩） / 预计阅读: 60min / 前置: ⟶ Book/part10_modern/ch120_coroutine_app.md / 后续: ⟶ Book/part10_modern/ch122_pmr.md / 难度: ★★★★☆
 
 ## ⓪ 历史动机：契约编程的来龙去脉
@@ -569,7 +568,6 @@ int main() {
 3. **真实场景：契约是语言级，与 `assert` 宏不同。** 你区分二者。请说明。
    - [标准] 契约是语言结构（前置/后置/断言），编译期可开关且作用于函数接口；`assert` 是预处理宏，属运行期调试设施。
    - [引用] ISO/IEC 14882:2023 §[cpp]（assert 宏，预处理层）/ [cpp.predefined]（门控未冻结特性）；cppreference "Contracts / assert" 词条。
-
 
 | 语言 | 契约机制 |
 |---|---|

@@ -1,7 +1,6 @@
 # 第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part03_language/ch31_operator_overloading.md
 ⟶ Book/part05_oo/ch48_rtti.md
 
@@ -1665,7 +1664,6 @@ int main() {
 3. **真实场景：reinterpret_cast 与序列化。** 将对象字节解释为整数/反向。请警示其实现定义与严格别名风险。
    - [标准] reinterpret_cast 大多为实现定义；跨类型别名受严格别名规则约束。
    - [引用] ISO/IEC 14882:2023 §[expr.reinterpret.cast] / [basic.lval]（严格别名）；cppreference "reinterpret_cast" 词条。
-
 
 **转型安全审计清单（Code Review 必查）[经验]**
 1. 任何 C 风格 `(T)expr` 一律标记 `-Wold-style-cast` 报警并消除（见 §⑰ 最佳实践第 12 条）。

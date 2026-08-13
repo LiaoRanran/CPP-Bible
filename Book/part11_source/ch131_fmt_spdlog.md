@@ -629,7 +629,6 @@ class SPDLOG_API registry {
    - [标准] 无直接标准对应；异步/多 sink 是库设计，可结合线程与无锁队列（[atomics]/[thread]）。
    - [引用] ISO/IEC 14882:2023 §[thread]/[atomics]（底层并发原语）/ fmt + spdlog 文档；cppreference。
 
-
 ```cpp
 // ⑳ fmt 常用格式说明符速查
 //   {}            默认格式

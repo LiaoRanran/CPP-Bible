@@ -1696,7 +1696,6 @@ with open("p.log", "w") as f:     # 块结束自动 f.__exit__ → close
    - [标准] 在栈展开（已存在待处理异常）过程中析构再抛异常，将调用 `std::terminate`；析构函数应吞掉错误而非传播。
    - [引用] ISO/IEC 14882:2023 §[except.terminate]（terminate 的触发条件）；cppreference "std::terminate" 词条。
 
-
 - **行数**：约 1580 行（markdown 含 44 个代码块）。
 - **章节元素（20 项）**：1 概述 / 2 RAII 本质 / 3 资源全景 / 4 栈展开耦合 / 5 构造失败 / 6 析构 noexcept / 7 Rule of Three / 8 Rule of Five / 9 Rule of Zero / 10 =default/=delete / 11 移动后状态 / 12 智能指针预告 / 13 RAII 锁 / 14 ScopeGuard / 15 标准 RAII 类型 / 16 libstdc++ 源码逐行 / 17 三编译器三 STL 对比 / 18 microbenchmark / 19 跨语言对比 / 20 源码阅读路线。
 - **核心知识点（23 项）**：#1 RAII 定义 / #2 三要素 / #3 资源全景 / #4 异常安全非不抛 / #5 非 RAII 漏释放 / #6 ctor 失败析构 / #7 裸 new 泄漏 / #8 析构默认 noexcept / #9 双重异常 terminate / #10 Rule of Three / #11 浅拷贝 double free / #12 Rule of Five / #13 移动窃取 / #14 移动退化拷贝 / #15 Rule of Zero / #16 unique/shared 语义 / #17 =default / #18 =delete / #19 valid but unspecified / #20 误用移后对象 / #21 自定义 deleter / #22 ScopeExit / #23 三 STL EBO 差异。

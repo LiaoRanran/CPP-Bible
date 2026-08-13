@@ -1613,7 +1613,6 @@ int main() {
    - [标准] `alignas` 可要求比类型自然对齐更强的对齐（不超过实现上限），常用于把一个对象推到独立 cache line 起点。
    - [引用] ISO/IEC 14882:2023 §[dcl.align]（alignas 说明符）；cppreference "alignas" 词条。
 
-
 **【经验】** 编码时逐条自查：
 
 | 检查项 | 做法 |

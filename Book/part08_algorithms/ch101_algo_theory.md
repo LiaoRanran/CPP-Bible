@@ -1,7 +1,6 @@
 # 第101章　哈希、图、树、DP、贪心（算法思想）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part08_algorithms/ch95_algo_overview.md
 ⟶ Book/part08_algorithms/ch96_sorting.md
 
@@ -885,7 +884,6 @@ int main() { return 0; }
 3. **真实场景：算法复杂度类别是调用方契约。** 你据此预估最坏耗时。请说明。
    - [标准] 每算法在标准中规定复杂度上界（如 O(N)、O(N log N)），实现不得超出。
    - [引用] ISO/IEC 14882:2023 §[algorithms]（复杂度要求）；cppreference "Algorithm complexity" 词条。
-
 
 | 思想 | 典型结构 | 平均 | 最坏 | STL 对应 | 关键坑 |
 |---|---|---|---|---|---|

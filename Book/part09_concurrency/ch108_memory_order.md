@@ -648,7 +648,6 @@ int main() {
    - [标准] seq_cst 在所有原子操作上维持一个全序，保证最强但通常需要更重的屏障。
    - [引用] ISO/IEC 14882:2023 §[atomics.order]（seq_cst 全序）；cppreference "std::memory_order" 词条。
 
-
 | 内存序 | 原子性 | 同步(跨线程) | 跨变量顺序 | 典型用途 | x86-64 指令(GCC15) |
 |---|---|---|---|---|---|
 | `relaxed` | 有 | 无 | 无 | 计数器、标志位(不携带数据) | `mov` / `lock add` |

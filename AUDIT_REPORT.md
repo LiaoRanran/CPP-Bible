@@ -85,7 +85,7 @@
 | `subprocess_shell_true` | 0 | 0 | — |
 | `non_lf_repo_write` | 0 | 0 | LF 红线保持 |
 | `rm_rf_or_git_clean` | 11 | 11 | **全部安全**：`d5_*`/`module_compile_check`/`wave_intake_check` 清 `tempfile.mkdtemp`；`rewrite_links` 清 `build/site`·`build/pdf` 生成物。**无 `git clean -fd` 命中仓库** |
-| `broad_except_pass` | 8 | 8 | 门禁工具中对特定 `OSError`/`Exception` 的有意吞掉（如 `ignore_errors=True` 后的冗余 `try`），低风险，留作后续评审 |
+| `broad_except_pass` | 8 | **0** | 8 处有意吞异常（baseline 解析回退 / 临时文件清理 / stdout reconfigure 容错）已逐处补「安全忽略」理由注释，吞异常点显式化，审计清零 |
 
 \* 13 含审计脚本自身字符串误报 1 处，实际真实为 3。
 
@@ -98,7 +98,7 @@
 
 ---
 
-## 5. `-Wall -Wextra -Wpedantic` 主块告警扫描（在跑，task PSnANi）
+## 5. `-Wall -Wextra -Wpedantic` 主块告警扫描（本轮回合重跑，task 9o861i；结果并入 #203）
 
 对全部含 `int main` 的自包含 cpp 块做 `-fsyntax-only -Wall -Wextra -Wpedantic`，
 按告警类型归类。已排除教学性错误示例。重点关注：
@@ -119,9 +119,9 @@
 
 ---
 
-## 7. 下一步
-- #201：待 `-Wall` 扫描结果，对 `-Wreorder`/`-Wnarrowing`/`-Wconversion` 真实项做最小修复。
-- #202：Python 工具链 8 处 `broad_except_pass` 评审（补充日志或显式忽略）。
-- #203：按上述清单逐条修复，保持 LF、过 prose 门禁、可编译，分批提交。
-- #204：复跑五道门禁确认 0 红线；ERRATA 登记 E19；分批提交并 SSH 推送。
-- #205：审计收口后继续内容波次（D5 汇编补完 / 跨章引用加厚 / ⓪ 历史动机加厚）。
+## 7. 下一步（本轮回合状态）
+- #201：`-Wall` 扫描已于本轮回合重跑（`audit_cpp_warnings.py`，GCC 15.3.0，task 9o861i）；待结果并入后对 `-Wreorder`/`-Wnarrowing`/`-Wconversion` 真实项做最小修复（#203）。
+- #202：Python 工具链 8 处 `broad_except_pass` **已完成**（逐处补「安全忽略」理由注释，审计清零，见 §4.2/§4.3）。
+- #203：依 #201 扫描清单逐条修复，保持 LF、过 prose 门禁、可编译，分批提交（后续回合）。
+- #204：**门禁复跑全绿**——质量 16 道硬门禁本会话本地全 PASS（terminology/whitespace 两道回归已闭合），`compile` job 复跑通过；ERRATA 登记 E19；本轮回合提交并 SSH 推送 `master`。
+- #205：审计收口后继续内容波次（D5 汇编补完 / 跨章引用加厚 / ⓪ 历史动机加厚），视后续指令推进。

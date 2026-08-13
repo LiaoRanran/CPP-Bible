@@ -645,7 +645,6 @@ int main() {
    - [标准] 折叠可施加于几乎所有二元运算符（含逗号、逻辑与或、位运算），由运算符决定语义。
    - [引用] ISO/IEC 14882:2023 §[expr.prim.fold]（可折叠的运算符）；cppreference "Fold expression" 词条。
 
-
 **练习题**
 
 1. 用折叠写 `product` 乘积、`all_lt100` 全小于 100。

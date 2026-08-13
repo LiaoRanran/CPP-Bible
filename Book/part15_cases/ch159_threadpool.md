@@ -1,7 +1,6 @@
 # 第159章 从零实现线程池（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part09_concurrency/ch107_atomic.md
 ⟶ Book/part10_modern/ch116_perfect_forwarding.md
 ⟶ Book/part15_cases/ch160_mempool.md
@@ -868,7 +867,6 @@ void good_worker() {
 3. **真实场景：用 `std::async` 提交任务但结果没人 `get` 会阻塞析构。** 你误用 fire-and-forget。请说明。
    - [标准] `std::async` 返回的 future 析构会等待（对 `std::launch::async` 策略），忘记 get 会同步阻塞。
    - [引用] ISO/IEC 14882:2023 §[futures.async]（async 与 future 析构语义）/ [futures.unique_future]；cppreference "std::async" 词条。
-
 
 - 线程池 = **预建 worker + 线程安全任务队列 + RAII 析构 join**，把线程创建成本摊薄到全生命周期。
 - 生产级要素：模板化 `submit` 返回 `future`、`packaged_task` 自动转发异常、`atomic<bool>` 停止标志、`cv` 谓词防虚假唤醒。

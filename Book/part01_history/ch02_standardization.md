@@ -1,7 +1,6 @@
 # 第02章　标准化组织、WG21 与提案流程
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-
 ⟶ Book/part01_history/ch03_cpp98_03.md
 ⟶ Book/part01_history/ch10_version_matrix.md
 
@@ -465,7 +464,6 @@ WG21维护测试套件: https://github.com/cplusplus/CWG. 每个编译器需通�
    - [标准] 实现可部分实现新特性；应以特性测试宏与版本宏门控，而非假设所有目标编译器进度一致。
    - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏作为守门）；cppreference "Feature test macros" 词条。
 
-
 [标准] C++标准化=ISO/WG21, ~400成员, 每3年发布, ~5年从提案到标准。
 [经验] 理解标准化流程有助于预测新特性何时可用, 以及如何参与C++演进。
 
@@ -853,8 +851,5 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
 
-![Bjarne Stroustrup，C++ 创造者，ISO C++ 标准委员会（WG21）召集人](../assets/history/bjarne_stroustrup.jpg)
-> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
-
-![贝尔实验室新泽西霍尔姆德尔园区，C++ 标准化工作的长期据点](../assets/history/bell_labs_holmdel.jpg)
+![贝尔实验室新泽西霍尔姆德尔园区，ISO C++ 标准委员会（WG21）长期据点，C++ 标准化工作在此及全球分会场推进](../assets/history/bell_labs_holmdel.jpg)
 > 图源：derivative work: MBisanz，许可 CC BY-SA 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bell_Labs_Holmdel.jpg>

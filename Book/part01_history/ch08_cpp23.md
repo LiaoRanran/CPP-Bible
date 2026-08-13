@@ -1,7 +1,6 @@
 # 第08章　C++23：标准库大修
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part07_stl/ch88_optional_variant.md
 ⟶ Book/part10_modern/ch120_coroutine_app.md
 
@@ -37,8 +36,8 @@ C++23 最值得玩味的是 `std::expected` 入标准——它直面"错误也�
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
 
-![Bjarne Stroustrup，C++23 的演进](../assets/history/bjarne_stroustrup.jpg)
-> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+![贝尔实验室新泽西霍尔姆德尔园区，C 与 C++ 的诞生地，标准化工作的长期据点（语境影像）](../assets/history/bell_labs_holmdel.jpg)
+> 图源：derivative work: MBisanz，许可 CC BY-SA 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bell_Labs_Holmdel.jpg>
 
 ## ① 学习目标
 
@@ -359,7 +358,6 @@ std::expected<double,int> div(double a,double b){ if(b==0) return std::unexpecte
 3. **真实场景：用 `if consteval` 区分编译期/运行期分支。** 你在 constexpr 函数里需要一段只对编译期执行的代码。请说明机制。
    - [标准] C++23 引入 `if consteval`，在常量求值语境为 true 的分支内，可调用只能在编译期存在的接口。
    - [引用] ISO/IEC 14882:2023 §[stmt.if]（if consteval）/ [expr.const]（常量求值语境）；cppreference "if consteval" 词条。
-
 
 ```cpp
 // C++23 小结：expected/print/mdspan/flat_map/assume

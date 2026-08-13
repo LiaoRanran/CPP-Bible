@@ -333,7 +333,6 @@ int main() {}
    - [标准] 采纳新特性应以特性测试宏与实现支持矩阵为准，而非主观假设“标准已出即全平台可用”。
    - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏作为支持判定）；cppreference "Feature test macros" 词条。
 
-
 ```cpp
 // 编译器版本探测
 #ifdef __GNUC__

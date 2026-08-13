@@ -575,7 +575,6 @@ Fast dbg = eval(a + b + c);   // 物化为具体 Fast，断点友好
    - [标准] 运算符重载应按语义正确标注 `const`/`noexcept`，保证表达式可被正常组合与内联。
    - [引用] ISO/IEC 14882:2023 §[over.oper]（运算符重载约定）；cppreference "Operator overloading" 词条。
 
-
 **练习题**
 1. 在 ③ 的骨架基础上加 `operator-`（差代理 `Diff<A,B>`），实现 `u = a - b + c` 单遍求值。
 2. 给 ET 加 `Const<double V>` 节点（⑫），实现 `u = a + Const<2.0>{}`，验证常量被编译期折叠进循环。

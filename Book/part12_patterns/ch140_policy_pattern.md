@@ -1,7 +1,6 @@
 # 第140章 Policy-Based Design（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-
 ⟶ Book/part06_templates/ch71_policy.md
 ⟶ Book/part12_patterns/ch135_patterns_intro.md
 
@@ -892,7 +891,6 @@ void apply_variant(PolicyVariant<Ps...>& v) {
 3. **真实场景：策略类用空基类（EBO）实现零开销。** 你担心策略对象占空间。请说明。
    - [标准] 空基类子对象通常不占空间（EBO），使策略组合几乎零开销。
    - [引用] ISO/IEC 14882:2023 §[class.derived]（空基类优化）；cppreference "Empty base optimization" 词条。
-
 
 - **本质**：Policy-Based Design 把类行为拆解为可替换、正交、编译期绑定的 policy，宿主以模板参数组装，生成全新的静态类型。
 - **与策略模式**：policy 是编译期静态组合（零虚函数开销），策略模式是运行期动态组合（虚表间接调用）——⑩/⑱ 的汇编已实证二者开销差异。

@@ -1,7 +1,6 @@
 # 第165章 C++ 进阶路线图（C++）
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-
 ⟶ Book/part01_history/ch01_c_history.md
 ⟶ Book/part03_language/ch19_variables.md
 ⟶ Book/part04_memory/ch39_raii_rule.md
@@ -609,7 +608,6 @@ struct Day { bool read, code, test, note; };
 3. **真实场景：追踪语言演化方向（方向文档 P1000 + 每届会议纪要）。** 你做技术选型前瞻。请说明（属工程判断）。
    - [标准] 无直接 C++ 标准对应；方向文档与会议记录是委员会的规划输入，非规范性条款。
    - [引用] ISO/IEC 14882:2023（规范性正文）/ P1000（方向文档，信息性）/ WG21 会议报告；cppreference 通用。
-
 
 [经验] 先写完 4 个从零项目（线程池/内存池/日志/JSON）再谈其他；简历没项目，其余皆空。
 
