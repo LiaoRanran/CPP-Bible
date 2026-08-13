@@ -505,12 +505,20 @@ int main(){
 
 ### ㉒.2 真实工程坐标：EBO 活在哪里
 
-- **标准库容器/智能指针**：`std::vector`（分配器作为空基类）、`std::shared_ptr`（删除器/分配器经 EBO 不增加控制块尺寸，ch41 第 ⑥/⑰ 节）、`std::pair`/`std::tuple`（空元素经 EBO 压缩，第 ⑬/⑭ 节 D4 源码实证）——这是 EBO 影响面最大的地方，几乎每个 C++ 程序都受益。
-- **Boost / 策略类（Policy-Based Design）**：`boost::compressed_pair`（专为 EBO 设计）与 Andrei Alexandrescu 的 Policy-Based Design（ch71）用空基类承载单位策略（如 `Unit<Meter>`），让「类型携带编译期信息」零运行时成本。
-- **游戏/嵌入式**：在尺寸敏感的结构（如每帧百万计的组件、协议包）里，用 EBO/`[[no_unique_address]]` 把空 tag/stateless 策略压成零尺寸，直接关系到缓存命中与内存带宽。
-- **数值/编译期库（Eigen、units）**：量纲单位（dimension tag）多为空类型，经 EBO 嵌入 `Quantity<Double, Meter>` 而不增尺寸，实现「类型安全 + 零开销」。
-- **序列化框架（FlatBuffers / Google）**：FlatBuffers 的 `Table`/`Struct` 描述与 offset 标签大量用空/轻量类型携带编译期 schema 信息，经 EBO/`[[no_unique_address]]` 零开销嵌入缓冲访问器，避免反射式访问的运行时成本——序列化库里的 EBO 真实用法。
-- **异步 I/O（Boost.Asio / handler traits）**：Asio 用空类型（execution 属性标签 / handler traits）携带编译期信息，经 EBO 零开销嵌入 completion handler，实现「类型即配置」而不增尺寸——EBO 在异步 I/O 库里的真实用法。
+下表把「EBO（空基类优化）」拉成「零尺寸类型嵌入」的工业全景。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库 | `std::vector`（分配器空基）/ `std::shared_ptr`（控制块 EBO，ch41 第 ⑥/⑰ 节）/ `std::pair`·`tuple`（空元素压缩，第 ⑬/⑭ 节 D4 实证） | EBO 省掉空基类 / 空元素尺寸 | 几乎每个 C++ 程序受益 | EBO 影响面最大处 |
+| 策略类 | Boost（`compressed_pair`）/ Policy-Based Design（ch71，`Unit<Meter>`） | 空基类承载编译期单位策略，零运行时成本 | 现代 C++ 设计范式 | Alexandrescu 经典技法 |
+| 游戏 / 嵌入式 | 每帧百万计组件 / 协议包 | `EBO` / `[[no_unique_address]]` 把空 tag / stateless 策略压零尺寸 | 尺寸敏感结构 | 直接关系缓存命中与内存带宽 |
+| 数值 / 编译期库 | Eigen / units（dimension tag） | 空量纲类型经 EBO 嵌入 `Quantity`，不增尺寸 | 类型安全 + 零开销 | 空类型零尺寸嵌入 |
+| 序列化框架 | FlatBuffers（Google，`Table` / `Struct` + offset 标签） | 空 / 轻量类型携编译期 schema 信息，零开销嵌入访问器 | 高性能序列化 | 避反射式访问运行时成本 |
+| 异步 I/O | Boost.Asio（handler traits / 执行属性标签） | 空类型携编译期信息，零开销嵌入 completion handler | 「类型即配置」 | EBO 在异步库的真实用法 |
+
+> **表注（㉒.2）**：上表把「EBO（空基类优化）」拉成「零尺寸类型嵌入」的工业全景。最大受益者是标准库（vector / shared_ptr / pair / tuple，首行）——几乎每个程序都因 EBO 省掉空基类 / 空元素的尺寸。其余各行（Boost 策略类、游戏 / 嵌入式尺寸敏感结构、Eigen 量纲、FlatBuffers、Asio）都是「用空类型携带编译期信息而不付运行时尺寸」的同构套路。注意 `[[no_unique_address]]`（C++20）是 EBO 的语言级 generalization，把「空基类」扩展到「空成员」。
+
+**一条判读**：用 EBO / `[[no_unique_address]]` 的判据是「要把空类型（标签 / traits / 策略 / 删除器）嵌进承载型而不增尺寸」。标准库已默认这么做（所以 shared_ptr 控制块不因删除器变大）；数值 / 序列化 / 异步库用它实现「类型即配置零开销」。代价：C++17 及之前只有基类位能 EBO，空成员仍需 `[[no_unique_address]]`（C++20）；误用会把非空类型当空基类导致尺寸 UB。规则：空类型要零尺寸嵌入 → EBO（C++17-）或 `[[no_unique_address]]`（C++20+）。
 
 ### ㉒.3 生产踩坑：EBO 的误用
 

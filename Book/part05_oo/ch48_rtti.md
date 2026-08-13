@@ -943,12 +943,20 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 
 ### ㉒.2 真实工程坐标：RTTI 活在哪里
 
-- **框架与插件系统**：Qt 的 `qobject_cast`（ch129）在 moc 元数据上做等价 RTTI；Unreal 的 `Cast<>`/`IsA` 在 UObject 体系内提供类型查询——两者都在标准 RTTI 之外自建了一套（因标准 RTTI 在禁用或跨模块时不可靠）。
-- **序列化 / 反射库**：Boost.Serialization、Qt 的 `QMetaType` 用 `typeid` 做类型键，决定如何读写/分发对象。
-- **测试与 Mock 框架**：GoogleTest 的 `testing::internal`、typed test 与 `dynamic_cast` 配合做运行时类型断言与向下转换。
-- **脚本绑定（Lua/Python ↔ C++）**：如 SWIG、pybind11 用 `typeid` 建立 C++ 类型到脚本类型的映射表，实现自动分派。
-- **工业通信 / OPC UA（open62541 等 C++ 栈）**：OPC UA 的 C++ 实现用 RTTI/类型信息做节点与数据类型的运行时识别与编解码（二进制/XML），是工业物联网里 RTTI 的真实用途。
-- **中间件 RPC（ZeroC Ice）**：ZeroC Ice 用类型信息做跨语言（C++/Java/Python）RPC 的参数封送与分发，`typeid`/反射支撑自动类型路由。
+下表把「RTTI」拉成两条路线：标准 RTTI（`typeid` / `dynamic_cast`）被序列化 / 测试 / 绑定 / 通信直接用，而 Qt / Unreal 在它之外自建一套。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 框架 / 插件 | Qt（`qobject_cast`，ch129）/ Unreal（`Cast<>` / `IsA`） | 在标准 RTTI 之外自建类型查询 | 跨平台 GUI / 游戏引擎 | 标准 RTTI 禁用或跨模块时不可靠 |
+| 序列化 / 反射 | Boost.Serialization / Qt（`QMetaType`） | `typeid` 做类型键决定读写 / 分发 | 主流序列化方案 | `typeid` 是类型键来源 |
+| 测试 / Mock | GoogleTest（`testing::internal` / typed test） | 运行时类型断言与向下转换 | C++ 测试事实标准 | `dynamic_cast` 配合类型断言 |
+| 脚本绑定 | SWIG / pybind11（Lua·Python↔C++） | `typeid` 建 C++↔脚本类型映射表 | 自动分派桥梁 | 类型信息支撑自动分派 |
+| 工业通信 | OPC UA（open62541） | RTTI / 类型信息做节点与数据类型识别及编解码（二进制 / XML） | 工业物联网 | RTTI 在工业协议的真实用途 |
+| 中间件 RPC | ZeroC Ice | 类型信息做跨语言（C++ / Java / Python）RPC 封送与分发 | 分布式系统 | `typeid` / 反射支撑自动类型路由 |
+
+> **表注（㉒.2）**：上表把「RTTI」拉成两条路线：标准 RTTI 被序列化 / 测试 / 绑定 / 通信直接用（中四行），而 Qt / Unreal 在它之外自建一套（首行）——根因是标准 RTTI 在关闭异常（-fno-rtti 常见于浏览器 / 引擎）或跨模块 DLL 边界时行为不可靠，框架必须自持有类型信息。注意 OPC UA 与 ZeroC Ice 两行把 RTTI 推到「跨语言 / 工业协议」层面，说明类型查询不只是 OOP 便利，更是分布式系统的运行基座。
+
+**一条判读**：用标准 RTTI 的判据是「类型信息在单模块内、且 RTTI 未被关闭」。多数库（序列化 / 测试 / 绑定）满足 → 直接用 `typeid` / `dynamic_cast`；但浏览器内核 / 游戏引擎常 `-fno-rtti`（见 ch40 禁异常同源），跨 DLL 边界 `dynamic_cast` 还可能失效 → 必须自建元数据查询（Qt moc / Unreal UObject）。选型一句话：能信标准 RTTI 就用，信不过就自建（并承担元数据维护成本）。
 
 ### ㉒.3 生产踩坑：RTTI 的常见误用
 

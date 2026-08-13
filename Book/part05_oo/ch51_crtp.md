@@ -543,12 +543,20 @@ BENCHMARK(BM_crtp); BENCHMARK(BM_virtual);
 
 ### ㉒.2 真实工程坐标：CRTP 活在哪里
 
-- **标准库与 Boost**：`std::enable_shared_from_this`（ch41 第 ⑮ 节）、`std::iterator_traits` 配套设施、Boost 的 `iterator_facade`/`operators`/`intrusive` 都用 CRTP 给派生类「批量注入运算符/接口」而零虚函数开销。
-- **Eigen（高性能线性代数）**：表达式模板（expression templates）大量用 CRTP 把 `a + b + c` 在编译期折叠成单一循环，避免临时对象与虚调用，是 CRTP 性能价值的标杆。
-- **游戏/引擎（Unreal、EASTL）**：用 CRTP 实现「编译期多态组件」「无虚函数接口」，避免虚表访存对每帧热路径的冲击（ch47 第 ⑲ 节对比）。
-- **LLVM / Clang**：`LLVM_ENABLE_BITSET_ENUM`、各种 `CRTPBase` 风格工具类，用于给大量平行类注入统一能力而不付运行时代价。
-- **量纲库（Boost.Units）**：Boost.Units 用 CRTP/operators 给量纲类型批量注入 `+`/`-`/`*` 运算符而零虚函数开销，实现 `meter * second` 这类类型安全单位运算——CRTP 在数值库里的标杆。
-- **ECS 框架（EnTT / `entt::emitter`）**：EnTT 用 CRTP（`entt::emitter<Derived>`）给事件发射器注入类型安全的 `on`/`publish` 接口，避免虚函数表对每实体热路径的冲击——CRTP 在现代游戏/仿真 ECS 的落地。
+下表把「CRTP」拉成「静态多态」的工业主战场。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库 / Boost | `std::enable_shared_from_this`（ch41 第 ⑮ 节）/ `iterator_facade` / `operators` | CRTP 批量注入运算符 / 接口，零虚函数开销 | 每个 C++ 程序受益 | 静态多态的范例设施 |
+| 高性能数值 | Eigen（表达式模板） | `a+b+c` 编译期折叠成单一循环，避临时对象与虚调用 | 零开销多态标杆 | CRTP 性能价值范本 |
+| 游戏 / 引擎 | Unreal / EASTL | 编译期多态组件 / 无虚函数接口 | 每帧热路径 | 避虚表访存冲击（ch47 第 ⑲ 节） |
+| 编译器 | LLVM / Clang（`LLVM_ENABLE_BITSET_ENUM` / `CRTPBase`） | 给大量平行类注入统一能力，不付运行时 | 编译基础设施 | 静态注入统一能力 |
+| 量纲库 | Boost.Units | CRTP / `operators` 批量注入 `+/-/*`，类型安全单位运算 | 数值库标杆 | `meter*second` 零虚函数开销 |
+| ECS 框架 | EnTT（`entt::emitter<Derived>`） | 类型安全 `on` / `publish`，避虚表对每实体热路径冲击 | 现代游戏 / 仿真 | CRTP 在 ECS 的落地 |
+
+> **表注（㉒.2）**：上表把「CRTP」拉成「静态多态」的工业主战场。共同收益是「编译期确定调用目标，省掉虚表访存与一次间接跳转」——Eigen 用它在数值库拿到零开销，游戏 / 引擎 / EnTT 用它在每帧每实体热路径避开虚调用，LLVM / Boost 用它在平行类批量注入能力而不付运行时。注意 ch47 的去虚化与 CRTP 是两条互补路线：前者编译期把虚调用内联掉，后者干脆不在设计里引入虚函数。
+
+**一条判读**：用 CRTP 的判据是「要在编译期多态、且调用在热路径或要批量注入能力」。数值 / 引擎 / ECS / 编译器都符合 → 用 CRTP 换零虚函数开销；但当接口需在运行时动态分派、或派生关系不稳定时，虚函数更直接（ch47）。代价：CRTP 让基类依赖派生类（奇异递归），错误信息晦涩、二进制耦合更紧。规则：热路径要零开销多态 → CRTP；要运行时灵活扩展 → 虚函数。
 
 ### ㉒.3 生产踩坑：CRTP 的误用
 

@@ -667,12 +667,20 @@ int main(){Z z;z.X::f();z.Y::f();std::cout<<std::endl;return 0;}
 
 ### ㉒.2 真实工程坐标：多重继承活在哪里
 
-- **标准库（少量但关键）**：`std::iostream` 继承 `istream`/`ostream`（二者又虚拟继承 `ios`，ch49），是标准库内部 MI + 虚继承的唯一大型实例。
-- **COM / IUnknown（Windows）**：COM 对象「实现一个或多个接口」本质是 MI 思想——一个类 `QueryInterface` 出多个接口指针，每个接口是一个基类；这正是 C++ MI 表达「is-a 多个契约」的工业主场。
-- **Qt / 框架的事件 + 对象模型**：`QObject` 派生类常同时继承框架基类与业务接口，靠 MI 同时接入对象树与领域契约；Qt 还大量用多继承表达「既是 Widget 又是某接口」。
-- **Boost / 标准 trait 风格**：`boost::enable_shared_from_this` 等以基类形式混入能力，多继承用于「正交能力组合」而非 is-a 树。
-- **音频插件（VST3 / Steinberg）**：VST3 插件类通过多继承同时实现 `IAudioProcessor` 与 `IEditController` 等多个接口，一个组件「is-a 多个契约」——COM 风格 MI 在音频工业的真实主场。
-- **GUI 工具包（wxWidgets）**：wxWidgets 控件常多继承多个接口基类（如 `wxWindow` + `wxEvtHandler`），用 MI 同时接入窗口体系与事件体系——「正交能力组合」的工业用法。
+下表把「多重继承」拉成两类正当用途：一类是「is-a 多个契约」，一类是「正交能力混入」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库 | `std::iostream`（`istream`/`ostream` + 虚继承 `ios`，ch49） | MI + 虚继承的唯一大型内部实例 | 每个 C++ 程序都用 | 标准库内部 MI 仅此一处 |
+| Windows COM | `IUnknown`（`QueryInterface`） | 一个类实现多个接口，每接口即一基类 | Windows 生态基石 | C++ MI 表达「is-a 多契约」主场 |
+| GUI 框架 | Qt（`QObject` 派生 + 业务接口） | MI 同时接入对象树与领域契约 | 跨平台 GUI | 「既是 Widget 又是某接口」 |
+| 混入能力 | Boost（`enable_shared_from_this`） | 基类形式混入正交能力，非 is-a 树 | 标准 trait 风格 | 多继承用于「正交能力组合」 |
+| 音频插件 | VST3 / Steinberg（`IAudioProcessor` + `IEditController`） | 多继承同时实现多个接口 | 音频工业主场 | COM 风格 MI 的真实落地 |
+| GUI 工具包 | wxWidgets（`wxWindow` + `wxEvtHandler`） | MI 同时接入窗口体系与事件体系 | 桌面 GUI 工业 | 「正交能力组合」用法 |
+
+> **表注（㉒.2）**：上表把「多重继承」拉成两类正当用途：一类是「is-a 多个契约」（COM 的 IUnknown、VST3 的多接口、Qt 的 Widget+接口），一类是「正交能力混入」（Boost 的 enable_shared_from_this、wxWidgets 的窗口+事件）。标准库 iostream 是唯一把 MI 与虚继承大规模耦合的内部实例。注意 COM 与 VST3 两行同源：C++ MI 是表达「一个组件实现多个稳定接口」最自然的机制，这正是接口聚合类系统的工业根基。
+
+**一条判读**：多重继承的适用判据是「要表达正交、稳定的接口 / 能力，而非堆 is-a 树」。表达「实现多个契约接口」（COM / VST3 / Qt）与「混入正交能力」（Boost / wxWidgets）都成立，因为接口 / 能力彼此独立、组合收益大；但用 MI 堆「是一个 A 且是一个 B」的深 is-a 树会迅速脆化（见 ch46 组合优先）。规则：MI 留给接口与混入，深 is-a 树留给组合。
 
 ### ㉒.3 生产踩坑：多重继承的误用
 
