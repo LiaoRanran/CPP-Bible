@@ -994,6 +994,21 @@ int main() {
 
 ## ⑳ 三 STL 对比：libstdc++ / libc++ / MS STL
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：`memcmp` 比较两个同值结构体却返回非 0。** 你逐字节比较两枚 `Point`，明明坐标相同却不相等。请说明填充字节的作用。
+   - [标准] 非静态数据成员之间可以存在实现定义的填充字节；其内容是未指定的，逐字节比较不可靠。
+   - [引用] ISO/IEC 14882:2023 §[class.mem]（成员布局与填充）；cppreference "Data members" 词条。
+
+2. **真实场景：强类型枚举的底层类型影响 ABI 与大小。** 你给 `enum class Flag : uint8_t` 序列化时按 1 字节写，但默认 `int` 底层会膨胀到 4 字节。请说明底层类型的语义。
+   - [标准] 枚举的底层类型决定其大小、对齐与对象表示；不指定时默认为 `int`。
+   - [引用] ISO/IEC 14882:2023 §[dcl.enum]（枚举声明与底层类型）；cppreference "enum" 词条。
+
+3. **真实场景：`offsetof` 在标准布局类型上才合法。** 你用 `offsetof` 取带虚函数的类成员偏移，触发未定义行为。请说明其合法前提。
+   - [标准] `offsetof` 仅对标准布局类型（standard-layout）的非静态数据成员良定义；否则结果未指定/UB。
+   - [引用] ISO/IEC 14882:2023 §[support.types]（<cstddef> 的 offsetof）；cppreference "offsetof" 词条。
+
+
 `[实现]` `std::hardware_destructive_interference_size` 与 `hardware_constructive_interference_size` 的提供情况：
 
 | 实现 | 定义位置 | 值 | 启用条件 / 陷阱 |

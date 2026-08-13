@@ -1363,6 +1363,21 @@ int main() {
 
 ## ⑳ 三编译器 / 三 STL 对比 + 跨语言 + 源码阅读路线
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：`shared_ptr` 循环引用导致内存泄漏。** 你让父子节点各持对方 `shared_ptr`，引用计数永不归零。请用 `weak_ptr` 打破环。
+   - [标准] `shared_ptr` 的强引用计数归零时销毁对象；`weak_ptr` 只观察、不增加强引用计数，用于打破循环。
+   - [引用] ISO/IEC 14882:2023 §[util.smartptr.shared] / [util.smartptr.weak]（shared/weak 引用计数）；cppreference "std::shared_ptr / weak_ptr" 词条。
+
+2. **真实场景：用 `make_shared` 减少一次分配并防异常泄漏。** 你直接 `shared_ptr<T>(new T)` 在异常路径可能泄漏控制块；`make_shared` 更优。请说明其内存布局优势。
+   - [标准] `std::make_shared` 将对象与控制块合并为单次分配，既减少碎片又避免“先 new 后交给 shared_ptr”之间的潜在泄漏。
+   - [引用] ISO/IEC 14882:2023 §[util.smartptr.shared.create]（make_shared）；cppreference "std::make_shared" 词条。
+
+3. **真实场景：自定义删除器改变了 `unique_ptr` 的类型。** 你给 `unique_ptr<FILE, decltype(&fclose)>` 传 `fclose`，类型里嵌入了删除器。请说明 deleter 的地位。
+   - [标准] `std::unique_ptr` 的删除器类型是其类型的一部分；默认删除器即 `delete`，自定义删除器须作为模板实参/构造实参提供。
+   - [引用] ISO/IEC 14882:2023 §[util.smartptr.unique]（unique_ptr 与删除器）；cppreference "std::unique_ptr" 词条。
+
+
 ### 20.1 三 STL 控制块布局对比
 
 | 实现 | 控制块类型 | 计数 | 分配策略 | 原子实现 |

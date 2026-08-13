@@ -1321,6 +1321,21 @@ int main(){
 
 ## ⑳ 本章速查表
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用不抛的 `swap` 实现强异常保证。** 你让 `operator=` 先拷贝再 `swap`，失败时原对象不受影响。请说明 `swap` 通常不抛的依据。
+   - [标准] 对可交换类型，`std::swap` 在成员/特化提供不抛交换时应标记为 `noexcept`，从而支持“拷贝-交换”回滚。
+   - [引用] ISO/IEC 14882:2023 §[utility.swap]（swap 与 noexcept）；cppreference "std::swap" 词条。
+
+2. **真实场景：构造中途抛异常须清理已构造成员。** 你在构造函数初始化列表里先成功构造 `A` 成员，随后 `B` 成员构造抛异常，要保证 `A` 被析构。请说明保证机制。
+   - [标准] 异常离开构造函数时，已完整构造的基类和成员子对象按声明逆序析构（函数 try 块可捕获该异常）。
+   - [引用] ISO/IEC 14882:2023 §[except.ctor]（构造中的栈展开）；cppreference "Exception safety" 词条。
+
+3. **真实场景：移动非 `noexcept` 让 `vector` 增长退回拷贝。** 你给类型写了移动构造却没标 `noexcept`，`push_back` 触发重分配时竟调用拷贝构造，性能骤降。请说明 `vector` 的选择。
+   - [标准] `std::vector` 在重分配（增长）时，仅当移动构造/移动赋值对 `is_nothrow_move_constructible` 为真才使用移动，否则回退拷贝以保证强异常安全。
+   - [引用] ISO/IEC 14882:2023 §[meta.unary.prop]（is_nothrow_move_constructible）/ [vector.modifiers]（重分配用移动的前提）；cppreference "std::vector::reserve / reallocation" 词条。
+
+
 | 保证 | 承诺 | 典型函数 |
 |---|---|---|
 | noexcept | 不抛（抛则 terminate） | 析构、`swap`、`move` 构造 |

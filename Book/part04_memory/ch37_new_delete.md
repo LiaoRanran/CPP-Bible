@@ -1698,6 +1698,21 @@ public class Main {
 
 ## ⑳ 综合示例：把本章所有机制串起来
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：`new` 失败到底是抛还是返回 null？** 你在内存紧张路径想用 `nothrow` 版本，却误用了默认 `new` 导致异常传播。请对比两种分配函数。
+   - [标准] 默认 `::operator new` 在分配失败时抛 `std::bad_alloc`；`nothrow` 重载在失败时返回空指针。
+   - [引用] ISO/IEC 14882:2023 §[new.delete.single]（分配函数）；cppreference "operator new" 词条。
+
+2. **真实场景：数组 `new[]` 配 `delete`（非 `delete[]`）是 UB。** 你写 `T* p = new T[10]; delete p;`，少数类型“看起来正常”，但标准是未定义行为。请说明数组形式的对称要求。
+   - [标准] 由数组 `new` 获得的指针必须用数组形式的 `delete[]` 释放；不匹配是未定义行为（可能漏调析构或错算大小）。
+   - [引用] ISO/IEC 14882:2023 §[expr.delete]（delete 表达式与数组形式）；cppreference "delete" 词条。
+
+3. **真实场景：自定义 `operator new` 的对齐不足。** 你为 SIMD 类型重载 `new` 却只保证 `alignof(std::max_align_t)`，分配出的缓冲无法满足 32 字节对齐。请说明对齐分配接口。
+   - [标准] `void* operator new(size_t, std::align_val_t)` 等重载提供带对齐的分配；返回的内存须满足请求的对齐。
+   - [引用] ISO/IEC 14882:2023 §[new.delete.single]（对齐形式的分配函数）；cppreference "operator new" 词条。
+
+
 下面这个程序综合展示：类专属统计 new + 内存池 + 对齐 + nothrow 防御 + placement + `launder`，作为本章的"收口"。
 
 ```cpp

@@ -1682,6 +1682,21 @@ with open("p.log", "w") as f:     # 块结束自动 f.__exit__ → close
 
 ## ⑳ 汇报（交付清单）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：获取资源后抛异常导致泄漏。** 你 `open()` 文件、中间构造抛异常、忘了 `close()`。请用 RAII 把资源绑定到对象生命周期。
+   - [标准] 构造获得资源、析构释放资源；栈展开会调用已构造对象的析构函数，从而自动释放。
+   - [引用] ISO/IEC 14882:2023 §[class.dtor] / [except.terminate]（析构与栈展开）；cppreference "RAII" 词条。
+
+2. **真实场景：裸指针成员导致浅拷贝与双重释放。** 你给类加了 `int* p` 成员却没定义拷贝，两个对象析构时两次 `delete p`。请说明拷贝语义规则。
+   - [标准] 用户未声明时编译器合成逐成员拷贝；对裸资源管理成员这会产生别名/双重释放，须自定义拷贝或禁用（“三/五法则”）。
+   - [引用] ISO/IEC 14882:2023 §[class.copy.ctor] / [class.copy.assign]（拷贝构造/赋值）；cppreference "Rule of three/five" 词条。
+
+3. **真实场景：析构函数里抛异常导致 `std::terminate`。** 你让析构函数上报错误时抛异常，恰好在栈展开期间又抛，程序直接终止。请说明约束。
+   - [标准] 在栈展开（已存在待处理异常）过程中析构再抛异常，将调用 `std::terminate`；析构函数应吞掉错误而非传播。
+   - [引用] ISO/IEC 14882:2023 §[except.terminate]（terminate 的触发条件）；cppreference "std::terminate" 词条。
+
+
 - **行数**：约 1580 行（markdown 含 44 个代码块）。
 - **章节元素（20 项）**：1 概述 / 2 RAII 本质 / 3 资源全景 / 4 栈展开耦合 / 5 构造失败 / 6 析构 noexcept / 7 Rule of Three / 8 Rule of Five / 9 Rule of Zero / 10 =default/=delete / 11 移动后状态 / 12 智能指针预告 / 13 RAII 锁 / 14 ScopeGuard / 15 标准 RAII 类型 / 16 libstdc++ 源码逐行 / 17 三编译器三 STL 对比 / 18 microbenchmark / 19 跨语言对比 / 20 源码阅读路线。
 - **核心知识点（23 项）**：#1 RAII 定义 / #2 三要素 / #3 资源全景 / #4 异常安全非不抛 / #5 非 RAII 漏释放 / #6 ctor 失败析构 / #7 裸 new 泄漏 / #8 析构默认 noexcept / #9 双重异常 terminate / #10 Rule of Three / #11 浅拷贝 double free / #12 Rule of Five / #13 移动窃取 / #14 移动退化拷贝 / #15 Rule of Zero / #16 unique/shared 语义 / #17 =default / #18 =delete / #19 valid but unspecified / #20 误用移后对象 / #21 自定义 deleter / #22 ScopeExit / #23 三 STL EBO 差异。

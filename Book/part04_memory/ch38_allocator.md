@@ -1463,6 +1463,21 @@ int main() {
 
 ## ⑳ 综合实战：分配器选型决策树 + 速记（内化，无推荐阅读节）
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：容器拷贝后分配器是否跟着走？** 你给 `std::vector` 配了带状态的池分配器，拷贝构造后发现两个容器共享/不共享池，行为不合预期。请说明传播语义的开关。
+   - [标准] 分配器通过 `propagate_on_container_copy_assignment`/`move_assignment`/`swap` 等类型决定拷贝/移动/交换时是否传播；默认 false。
+   - [引用] ISO/IEC 14882:2023 §[allocator.requirements.general]（分配器要求与传播 traits）；cppreference "Allocator" 词条。
+
+2. **真实场景：手写分配器漏实现 `rebind` 旧接口。** 你按老教程写了 `Alloc::rebind`，但标准容器实际通过 `allocator_traits` 推导。请说明优先接口。
+   - [标准] 现代容器统一经 `std::allocator_traits` 获取 `rebind_alloc` 等；`allocator_traits` 提供默认推导，不必手写 `rebind`。
+   - [引用] ISO/IEC 14882:2023 §[allocator.traits.types]（allocator_traits 与 rebind_alloc）；cppreference "std::allocator_traits" 词条。
+
+3. **真实场景：`construct`/`destroy` 是否还需自定义？** 你自定义分配器时照搬老式 `construct(ptr, args...)`，其实标准已要求用 `std::allocator_traits::construct`。请说明默认行为。
+   - [标准] `allocator_traits::construct` 默认用 `::new((void*)p) T(args...)` 布置构造；多数分配器无需重载它。
+   - [引用] ISO/IEC 14882:2023 §[allocator.traits.members]（construct/destroy 默认）；cppreference "std::allocator_traits::construct" 词条。
+
+
 **选型决策树 [经验]**
 1. 默认容器 → `std::allocator`（程序 1/2/32）。
 2. 解析/序列化/测试夹具等临时构建 → `monotonic_buffer_resource` + 栈缓冲（程序 9/18）。

@@ -807,6 +807,21 @@ int main() {
 
 ## ⑳ 跨语言对比：C / Rust / Java / C# / Go
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：通过 `int*` 读取 `float` 内存是 UB。** 你想“省一次拷贝”把 `float` 的位重新解释为 `int` 来取符号位，结果被优化器判定恒等。请说明严格别名规则。
+   - [标准] 通过类型不兼容的 glvalue 访问对象通常违反严格别名规则，属于未定义行为；只有少数类型（如 `unsigned char`、`std::byte`、/字符类型）可别名任意对象。
+   - [引用] ISO/IEC 14882:2023 §[basic.lval]（glvalue 访问与别名）/ [intro.object]（对象模型）；cppreference "Strict aliasing" 词条。
+
+2. **真实场景：用 `memcpy` 做类型双关才是合法的。** 你改用 `memcpy(&as_int, &f, 4)` 取 `float` 的位模式，编译器接受。请说明合法重解释的途径。
+   - [标准] 通过 `unsigned char`/`std::byte` 可观察对象表示，再用 `memcpy` 将字节重解释为另一类型，是良定义的类型双关方式。
+   - [引用] ISO/IEC 14882:2023 §[basic.types]（对象表示可被 unsigned char 访问）/ [cstring.syn]（memcpy）；cppreference "Type punning" 词条。
+
+3. **真实场景：复用缓冲后用 `std::launder` 取新对象。** 你在原 `T` 对象所在存储上 `new` 了个新 `T`，旧指针取不到新对象。请说明 `launder` 的作用。
+   - [标准] 当同一存储被复用构造新对象时，指向旧对象的指针/引用须经 `std::launder` 才能合法指代新对象（解决“复用后取址”的别名问题）。
+   - [引用] ISO/IEC 14882:2023 §[ptr.launder]（launder）/ [class.union]（union 活跃成员重解释）；cppreference "std::launder" 词条。
+
+
 | 语言 | 严格别名/类型双关语义 | 关键字/机制 |
 |------|----------------------|-------------|
 | **C** | 有严格别名规则（`-fstrict-aliasing`），但 **union 双关合法** | `restrict` 关键字；union 类型双关 |

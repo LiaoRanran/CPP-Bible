@@ -1388,6 +1388,21 @@ class Program {
 
 ## ⑳ 进阶：栈式（LIFO）池与区域（Arena）池
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：池分配器减少系统调用与碎片。** 你为高频小对象实现固定块池，覆盖全局 `operator new` 的一类请求。请说明自定义分配函数的接入点。
+   - [标准] 可定义全局 `::operator new`/`::operator delete`，或类特定的 `T::operator new`/`T::operator delete` 来服务分配。
+   - [引用] ISO/IEC 14882:2023 §[new.delete] / [class.free]（类特定释放函数）；cppreference "operator new" 词条。
+
+2. **真实场景：池内对象用 placement new 构造、须显式调析构。** 你在预分配缓冲上 `new(buf) T()`，却在回收时误用 `delete p`（会错误释放缓冲）。请说明正确释放。
+   - [标准] placement new 在给定地址构造对象；销毁须显式调用 `~T()`，且不能用 `delete` 释放该地址（缓冲由池管理）。
+   - [引用] ISO/IEC 14882:2023 §[expr.new]（placement new）/ [class.dtor]（显式析构调用）；cppreference "Placement new" 词条。
+
+3. **真实场景：池中对象存活期受缓冲对齐约束。** 你在 `char pool[]` 上布置对象，某些类型要求 16 字节对齐而数组只保证 1 字节。请说明对齐要求如何满足。
+   - [标准] placement new 要求目标存储满足类型对齐且大小足够；可用 `std::align`/`alignas` 或 `aligned_storage` 保证。
+   - [引用] ISO/IEC 14882:2023 §[basic.align] / [expr.new]（布置构造的对齐前提）；cppreference "Placement new" 词条。
+
+
 **[经验]** 栈式池按 LIFO 释放（适合表达式树、作用域临时对象），区域池（Arena）一次性分配、整体释放——二者均避免逐对象释放开销。
 
 ### 44.21.1 栈式 LIFO 池（程序 26/≥30）
