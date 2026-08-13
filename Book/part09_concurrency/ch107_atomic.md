@@ -810,12 +810,20 @@ void quick() {
 
 ### ㉒.2 真实工程坐标：原子活在哪些产品里
 
-- **Linux 内核（但用自己的一套）**：内核不能用 `std::atomic`（那是用户态 C++ 库），但其 `atomic_t`/`atomic64_t` 语义与 C++11 原子同源；用户态库（如 `liburing`、DPDK）直接用 `std::atomic` 做无锁计数与标志位。
-- **LLVM / 运行时**：`std::atomic` 用于引用计数（`llvm::RefCountBase` 思路）、线程安全的懒初始化标志、统计计数器。
-- **游戏引擎（Unreal/Unity 原生侧）**：无锁任务队列、帧间共享的标志/状态机，用 `atomic<bool/flag>` 避免互斥锁开销。
-- **高性能网络（Seastar、folly）**：无锁 ring buffer、原子化的连接计数器、内存回收的 hazard pointer 底层皆依赖 `std::atomic`。
-- **汽车/安全攸关多核 ECU（AUTOSAR Adaptive）**：车载多核域控制器（符合 ISO 26262 ASIL-D）用原子操作做核间免锁状态同步与看门狗握手，规避锁带来的不可预测阻塞；原子是其功能安全并发原语的地基（参考 AUTOSAR 规范与 ISO 26262）。
-- **数据库/存储引擎（RocksDB、ClickHouse）**：RocksDB 用 `std::atomic` 维护 `SequenceNumber` 的原子递增与 `memtable` 引用计数，支撑 LSM-Tree 并发读；ClickHouse 用原子计数器做查询级统计与 MergeTree 部件引用管理。
+下表把「原子」拉成「无锁并发的最小单元」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 操作系统 / 用户态库 | Linux 内核（`atomic_t`/`atomic64_t` 同源）/ `liburing` / DPDK | 无锁计数与标志位（内核用自有一套） | 一切并发软件地基 | 语义与 C++11 原子同源 |
+| 编译器 / 运行时 | LLVM（`RefCountBase` 思路） | 引用计数 / 线程安全懒初始化标志 / 统计计数器 | 编译基础设施 | 原子用于内部并发 |
+| 游戏引擎 | Unreal / Unity 原生侧 | 无锁任务队列 / 帧间标志·状态机（`atomic<bool/flag>`） | 实时系统 | 避互斥锁开销 |
+| 高性能网络 | Seastar / folly | 无锁 ring buffer / 连接计数器 / hazard pointer 底层 | 低尾延迟标配 | 无锁结构皆依赖原子 |
+| 汽车 / 安全攸关 | AUTOSAR Adaptive（ASIL-D 多核 ECU） | 核间免锁状态同步与看门狗握手 | ISO 26262 功能安全 | 原子是并发原语地基 |
+| 数据库 / 存储 | RocksDB（`SequenceNumber`）/ ClickHouse | 原子递增 / memtable 引用计数 / 查询统计 | LSM 并发读支撑 | 引用计数靠原子 |
+
+> **表注（㉒.2）**：上表把「原子」拉成「无锁并发的最小单元」。注意 Linux 内核一行：它不能用 `std::atomic`（那是用户态库），却用语义同源的 `atomic_t`/`atomic64_t`——说明原子是跨用户态 / 内核的通用并发原语，只是接口不同。AUTOSAR Adaptive 与 RocksDB / ClickHouse 两行则点出原子的两个极端用途：功能安全（规避锁的不可预测阻塞）与高并发（引用计数 / 序列号）。
+
+**一条判读**：用 `std::atomic` 的判据是「有一个被多核并发读写的小状态（计数 / 标志 / 句柄），且不想付锁开销」。引用计数（LLVM / RocksDB）、标志位（游戏 / 网络）、序列号（存储）都符合 → 用原子拿无锁与确定性；但当操作变大（要保护一段临界区）或需要互斥语义时，原子不够，要 mutex / RCU（见 ch109–112）。规则：单变量并发 → 原子；多变量不变式 → 锁或更高层原语。
 
 ### ㉒.3 生产踩坑：原子的常见误用
 

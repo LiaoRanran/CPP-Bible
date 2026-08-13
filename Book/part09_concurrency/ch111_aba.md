@@ -654,12 +654,20 @@ static_assert(std::atomic<std::uint64_t>::is_always_lock_free, "确认无锁");
 
 ### ㉒.2 真实工程坐标：ABA 活在哪些产品里
 
-- **无锁栈/队列（Treiber stack、Michael-Scott queue）**：这是 ABA 最经典的「诞生地」，任何手写无锁链表/栈都必须面对——数据库、网络框架的无锁队列尤其如此。
-- **JVM `java.util.concurrent`**：`ConcurrentLinkedQueue` 用「节点不物理删除、仅逻辑出队（自链接）」规避 ABA；`AtomicMarkableReference` 直接提供「值+标记」对抗 ABA。
-- **Linux 内核 RCU 用法**：RCU 通过「宽限期内不回收」天然消灭 ABA——读者不持锁、写者等所有读者退出宽限期才释放旧值，是无锁读侧最彻底的 ABA 解法之一。
-- **数据库 MVCC / 内存池**：版本号/时间戳标记是 tagged pointer 思想的变体，避免「对象地址复用被误判为未变」。
-- **无锁内存分配器（jemalloc/tcmalloc 的 arena）**：高性能分配器的 `arena` 用无锁链表管理空闲块，地址复用（ABA）是其必须防护的底层风险；它们多用「标签/版本位」或线程本地缓存规避。
-- **实时行情分发（金融信息总线）**：低延迟行情总线用无锁环形缓冲在发布/订阅间传递报价，hazard pointer 与 ABA 防护保证「旧报价节点被回收时读者不读悬空」，是交易系统正确性的底线。
+下表把「ABA 问题」拉成「无锁回收的头号陷阱与四类解法」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 无锁数据结构 | Treiber stack / Michael-Scott queue | ABA 最经典「诞生地」，手写无锁链表必面对 | 数据库 / 网络框架核心 | 无锁队列的头号陷阱 |
+| JVM 并发 | `ConcurrentLinkedQueue` / `AtomicMarkableReference` | 节点自链接逻辑出队 / 值+标记对抗 ABA | 托管并发工业标准 | 「值+标记」= tagged pointer |
+| Linux 内核 | RCU（宽限期内不回收） | 天然消灭 ABA，读侧最彻底解法 | 内核扩展性支柱 | 读者不持锁，写者等宽限期 |
+| 数据库 / 内存池 | MVCC / 内存池（版本号·时间戳标记） | tagged pointer 思想变体，防地址复用误判 | 版本管理底层 | 版本即防护 |
+| 无锁分配器 | jemalloc / tcmalloc（`arena`） | 无锁链表管理空闲块，地址复用是必须防护风险 | 高性能分配器 | 标签 / 版本位或 TLS 缓存规避 |
+| 实时行情 | 金融信息总线（无锁环形缓冲） | hazard pointer + ABA 防护保证旧节点不悬空 | 交易系统正确性底线 | 回收与读并发的安全 |
+
+> **表注（㉒.2）**：上表把「ABA 问题」拉成「无锁回收的头号陷阱与四类解法」。同一问题四种工业解法：JVM 用「值+标记」（`AtomicMarkableReference`）、RCU 用「宽限期内不回收」、MVCC / 分配器用「版本 / 标签位」、行情总线用「hazard pointer」。注意 RCU 一行最彻底——它从机制上让旧值「在有人可能读时绝不被回收」，从而 ABA 根本不可能发生，是无锁读侧的安全范本。
+
+**一条判读**：防 ABA 的判据是「无锁结构里有地址 / 指针复用风险」。解法按场景：指针能带标签 → tagged pointer（版本位 / `AtomicMarkableReference`）；读侧极多写极少 → RCU（宽限期不回收）；要安全回收被并发读的节点 → hazard pointer（见 ch112）。规则：手写无锁链表 / 栈必须显式处理 ABA，否则「地址复用」会让 CAS 误判成功，读出悬空 / 错数据——这是无锁最隐蔽的 bug 来源。
 
 ### ㉒.3 生产踩坑：ABA 的常见误用与陷阱
 

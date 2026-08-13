@@ -748,12 +748,20 @@ struct safe_task {
 
 ### ㉒.2 真实工程坐标：协程活在哪些产品里
 
-- **cppcoro（Lewis Baker）**：最著名的 C++ 协程库，提供 `task<T>`/`generator<T>`/`async_generator<T>`/`async_mutex` 等，是理解 `co_await` 生态的最佳参考实现（被本章与社区广泛引用）。
-- **Facebook Folly（folly::coro）**：工业级异步框架，用协程重写异步 I/O 与 future，显著降低回调地狱；Meta 大规模线上服务依赖它。
-- **Boost.Asio / 网络框架**：Asio 的 `awaitable<>`/`co_spawn` 把异步回调改写成顺序写法，是 C++ 服务端协程的主流入口。
-- **游戏 / 客户端（Unreal、Azure 云服务）**：P0912 提案正文披露协程已部署于 Windows Azure 等基础服务；游戏脚本与异步加载用协程化简状态机。
-- **网络代理/网关（Envoy、Cloudflare 边缘）**：高并发反向代理用协程（或等价异步模型）在单线程上挂起数万连接，把「等下游响应」写成顺序逻辑，避免回调地狱同时压低尾延迟。
-- **数据库/存储引擎（CockroachDB、TiKV 异步客户端）**：分布式事务的「多分片读 → 提交」流程用协程组合异步 RPC，使复杂并发控制流可读、可测。
+下表把「协程」拉成「异步代码顺序化的工业主流」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 参考实现 | cppcoro（Lewis Baker） | `task<T>` / `generator<T>` / `async_mutex` 等 | 理解 `co_await` 生态最佳蓝本 | 被本章与社区广泛引用 |
+| 工业级框架 | Facebook Folly（`folly::coro`） | 协程重写异步 I/O 与 future，降回调地狱 | Meta 大规模线上依赖 | 异步框架的工业标杆 |
+| 网络框架 | Boost.Asio（`awaitable<>` / `co_spawn`） | 异步回调改写成顺序写法 | C++ 服务端协程主流入口 | 服务端协程第一站 |
+| 游戏 / 云 | Unreal / Windows Azure（P0912 披露） | 游戏脚本 / 异步加载化简状态机 | 基础服务已部署 | 提案正文披露 Azure 落地 |
+| 网络代理 / 网关 | Envoy / Cloudflare 边缘 | 单线程挂起数万连接，等下游写成顺序逻辑 | 高并发反向代理 | 避回调地狱 + 压低尾延迟 |
+| 数据库 / 存储 | CockroachDB / TiKV 异步客户端 | 协程组合「多分片读→提交」异步 RPC | 分布式事务可读可测 | 复杂并发控制流可读化 |
+
+> **表注（㉒.2）**：上表把「协程」拉成「异步代码顺序化的工业主流」。注意 cppcoro 与 Folly 两行：前者是社区参考实现（定义 task / generator 范式），后者是工业落地（Meta 线上大规模用 `folly::coro` 重写异步 I/O）。Envoy / Cloudflare 与 CockroachDB / TiKV 两行则点出协程的两个真实收益：单线程挂数万连接（边缘）与复杂分布式事务流可读化（存储）——都是把「回调地狱」变回「顺序逻辑」。
+
+**一条判读**：用协程的判据是「有大量异步等待、且回调嵌套已损害可读性与可测性」。高并发网络（Envoy / Cloudflare）、异步 I/O（Folly / Asio）、分布式事务（CockroachDB / TiKV）、游戏异步加载都符合 → 用 `co_await` 把等待写成顺序代码。规则：协程解决「异步代码可读性」，不解决「并行计算」；CPU 密集任务用它不会变快，只是更好读。要并行仍靠线程 / executor。
 
 ### ㉒.3 生产踩坑：协程的常见误用
 

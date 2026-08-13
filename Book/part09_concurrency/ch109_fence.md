@@ -273,12 +273,20 @@ int main(){std::cout<<"fence final: start seq_cst, relax to acq_rel, never consu
 
 ### ㉒.2 真实工程坐标：内存栅栏活在哪些产品里
 
-- **Linux 内核 / 驱动**：`smp_mb()`/`smp_rmb()`/`smp_wmb()` 系列就是栅栏，用于 RCU 宽限期、无锁链表发布、设备寄存器访问顺序；用户态 C++ 的 `atomic_thread_fence` 是其在标准库的对应物。
-- **无锁数据结构（folly/DPDK/Seastar）**：在 CAS 循环或发布路径上用 `atomic_thread_fence(acquire/release)` 建立同步，避免逐变量加序的琐碎。
-- **自旋锁 / seqlock 实现**：`std::atomic_thread_fence(seq_cst)` 常用于「锁的获取/释放」与 seqlock 的读写端屏障，保证临界区不被重排进出。
-- **JVM / 运行时实现**：Java 的 `Unsafe.loadFence/storeFence`、.NET 的 `Thread.MemoryBarrier` 与 C++ 的 fence 同源，是语言运行时并发原语的地基。
-- **GPU / 异构计算（CUDA、SYCL）**：GPU 编程的 `__threadfence()` 与 SYCL 设备端 `std::atomic_ref`（C++20 起）的屏障语义与 C++ fence 同源；在 CPU/GPU 统一内存（UMA）的并发同步里，fence 是保证「设备写先于主机可见」的关键。
-- **共识系统（etcd、Raft 实现）单进程内 WAL**：共识节点的日志提交顺序依赖 `atomic_thread_fence`/`std::atomic` 的屏障语义保证「日志落盘先于状态机应用」，与内核 `smp_mb` 思路一致，是分布式一致性的本地正确性底座。
+下表把「内存栅栏」拉成「跨层级同步原语的同构表达」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 操作系统 / 驱动 | Linux（`smp_mb`/`smp_rmb`/`smp_wmb`） | RCU 宽限期 / 无锁链表发布 / 寄存器访问顺序 | 一切并发地基 | `atomic_thread_fence` 标准对应物 |
+| 无锁数据结构 | folly / DPDK / Seastar | CAS 循环 / 发布路径上 `fence(acquire/release)` 建同步 | 低尾延迟标配 | 避逐变量加序琐碎 |
+| 锁 / seqlock | 自旋锁 / seqlock 实现 | `fence(seq_cst)` 管锁获取 / 释放与读写端屏障 | 临界区不重排 | 保证临界区进出有序 |
+| 语言运行时 | Java `Unsafe` / .NET `Thread.MemoryBarrier` | 与 C++ fence 同源的并发原语 | 运行时地基 | 跨语言同构屏障 |
+| GPU / 异构 | CUDA `__threadfence` / SYCL `atomic_ref`（C++20） | UMA 下「设备写先于主机可见」 | CPU/GPU 统一内存 | fence 语义同源 |
+| 共识系统 | etcd / Raft 单进程 WAL | 屏障保证「日志落盘先于状态机应用」 | 分布式一致性本地底座 | 与内核 `smp_mb` 思路一致 |
+
+> **表注（㉒.2）**：上表把「内存栅栏」拉成「跨层级同步原语的同构表达」。内核 `smp_mb`、Java `Unsafe` fence、.NET `MemoryBarrier`、`C++ atomic_thread_fence`、CUDA `__threadfence`、SYCL `atomic_ref`——本质都是「在此插入屏障，禁止编译器 / CPU 越过它重排」。注意 etcd / Raft 一行：分布式共识的本地正确性（日志落盘顺序）也靠 fence 保证，说明栅栏是「本地正确性 → 分布式正确性」链条的最后一环。
+
+**一条判读**：用 fence 的判据是「要在不逐变量加序的情况下，对某处建立全局同步点」。CAS 循环发布、锁获取 / 释放、seqlock 读写端、UMA 设备-主机可见性都用 fence 一次性插入屏障；比给每个变量单独标 memory_order 更清晰。规则：fence 用于「成片代码边界」的同步；单变量同步仍用该变量的 memory_order。两者不能混用错配（见 ch108）。
 
 ### ㉒.3 生产踩坑：内存栅栏的常见误用
 

@@ -655,12 +655,20 @@ struct Guard { int slot; void* p;
 
 ### ㉒.2 真实工程坐标：hazard pointer / RCU 活在哪些产品里
 
-- **Linux 内核（RCU 的故乡）**：RCU 用于路由表、进程列表、文件系统元数据等「读极多写极少」的全局结构；`rcu_read_lock()` 几乎零开销，是内核扩展性的支柱。
-- **用户态 RCU（urcu，Mathieu Desnoyers）**：把内核 RCU 思想搬到用户态，被 **Chromium、MySQL、QEMU** 等用于高并发读共享数据。
-- **无锁库（folly、并发运行时）**：hazard pointer 被广泛用于无锁队列/哈希的内存回收，避免读者读到被释放节点。
-- **数据库 / 存储引擎**：MVCC、B-tree 的「旧版本延迟回收」本质上是 RCU 思想的变体——读不阻塞写、旧版本等无人读再清。
-- **网络功能虚拟化（NFV）/ 5G UPF**：用户面转发用 RCU 风格的无锁读侧更新路由/会话表，保证转发线程在「规则热更新」时零停顿（读侧近乎零开销），契合 NFV 对 99.999% 可用的要求。
-- **Java/JVM 与 .NET 运行时**：JVM 的 `juc` 内部、.NET 的 `Concurrent` 集合与 GC 的 safepoint/屏障机制都借鉴 hazard pointer / RCU 思想管理并发回收——是跨语言的标准并发原语。
+下表把「hazard pointer / RCU」拉成「无锁回收的两条主干」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 操作系统 | Linux 内核（RCU 故乡） | 路由表 / 进程列表 / 元数据等读极多写极少结构 | 内核扩展性支柱 | `rcu_read_lock()` 近乎零开销 |
+| 用户态 RCU | urcu（Desnoyers，被 Chromium / MySQL / QEMU 用） | 高并发读共享数据的用户态 RCU | 工业级库 | 内核 RCU 搬用户态 |
+| 无锁库 | folly / 并发运行时 | hazard pointer 回收无锁队列 / 哈希节点 | 并发回收工业标准 | 读者不读被释放节点 |
+| 数据库 / 存储 | MVCC / B-tree（旧版本延迟回收） | RCU 思想变体：读不阻塞写，旧版本等无人读再清 | 版本管理底层 | 旧版本延迟回收 = RCU |
+| NFV / 5G UPF | 用户面转发（RCU 风格读侧更新） | 规则热更新时转发线程零停顿 | 99.999% 可用 | 读侧近乎零开销 |
+| 语言运行时 | JVM `juc` / .NET `Concurrent` / GC | 借鉴 hazard pointer / RCU 管并发回收 | 跨语言标准原语 | GC safepoint / 屏障同源 |
+
+> **表注（㉒.2）**：上表把「hazard pointer / RCU」拉成「无锁回收的两条主干」。RCU 解决「读极多写极少」全局结构（内核路由表、NFV 转发面、MVCC 旧版本），靠宽限期保证读者安全；hazard pointer 解决「无锁结构里单个节点回收」（folly 队列、JVM / .NET 运行时），靠读者登记再回收。注意 urcu 一行：把内核 RCU 搬进用户态后，连 Chromium / MySQL / QEMU 都用它——说明这套思想跨内核 / 用户态 / 语言运行时通吃。
+
+**一条判读**：选回收策略的判据是「读多写少还是节点级回收」。全局读多写少结构（路由表、MVCC、转发面） → RCU（宽限期不回收，读者零开销）；无锁结构里要安全回收单个被并发读节点（队列 / 哈希） → hazard pointer（读者先登记 hazard 再回收）。规则：两者都解决「无锁下安全回收」，RCU 管全局、hazard pointer 管节点；别用裸 delete 回收被并发读的节点（悬空读 = UB）。
 
 ### ㉒.3 生产踩坑：hazard pointer / RCU 的常见误用
 
