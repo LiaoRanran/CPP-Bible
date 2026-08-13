@@ -1606,12 +1606,20 @@ int main() {
 
 ### ㉒.2 真实工程坐标：智能指针活在哪些项目里
 
-- **几乎一切现代 C++ 项目**：Chromium 的 `base::WrapUnique`/`scoped_refptr`、LLVM 的 `llvm::IntrusiveRefCntPtr`、Abseil 的 `absl::WrapUnique` 都以 `std::unique_ptr`/`shared_ptr` 为基类；大型代码库里裸 `new` 几乎被禁用，靠智能指针统一生命周期。
-- **LLVM / Clang**：核心 IR 对象用侵入式引用计数（`IntrusiveRefCntPtr`）而非 `shared_ptr`，因为 AST 节点数量以千万计，`shared_ptr` 控制块的额外分配不可接受——这正是第 ⑨ 节「`make_shared` 一次分配优势」的反面教材（某些场景连一次分配都要省）。
-- **游戏引擎（Unreal）**：用 `TSharedPtr`/`TWeakObjectPtr` 等自研 UObject 引用系统（配合垃圾回收），而非标准 `shared_ptr`，因为要跟编辑器/反射/序列化深度集成——标准智能指针无法承载这些。
-- **数据库/网络服务**：RocksDB、Envoy 等大量用 `unique_ptr` 管理连接、缓冲区、任务对象，用 `shared_ptr` 在多线程间共享配置与连接池，`weak_ptr` 做缓存项的「可失效句柄」。
-- **自动驾驶开源栈（Apollo / Autoware）**：Apollo 等 L4 自动驾驶栈大量用 `std::unique_ptr` 管理感知/规划/控制模块的算法对象生命周期，跨进程用共享内存（非 `shared_ptr`）传递传感数据——智能指针在自动驾驶里的主干用法。
-- **WebAssembly / Emscripten JS↔C++ 绑定**：Emscripten 的 `emscripten::val` 与 embind 绑定层用 `std::shared_ptr`/`unique_ptr` 管理桥接对象的生命周期，保证 JS 侧持有的 C++ 对象不被提前回收。
+下表揭示「智能指针不是只有两种」：通用层用 `unique_ptr`/`shared_ptr`，但规模或生态耦合会逼出侵入式 / 自研方案。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 现代 C++ 项目（通用） | Chromium（`WrapUnique`/`scoped_refptr`）、LLVM（`IntrusiveRefCntPtr`）、Abseil（`WrapUnique`） | 以 `unique_ptr`/`shared_ptr` 为基类统一生命周期 | 大型代码库裸 `new` 近乎禁用 | 智能指针是生命周期默认设施 |
+| 编译器 | LLVM / Clang（`IntrusiveRefCntPtr`） | AST 节点用侵入式引用计数而非 `shared_ptr` | 节点以千万计 | 第 ⑨ 节 `make_shared` 优势的反面：连一次分配都要省 |
+| 游戏引擎 | Unreal（`TSharedPtr`/`TWeakObjectPtr` + GC） | 自研 UObject 引用系统替代 `shared_ptr` | 与编辑器 / 反射 / 序列化深度集成 | 标准智能指针无法承载 |
+| 数据库 / 网络 | RocksDB / Envoy | `unique_ptr` 管连接 / 缓冲 / 任务；`shared_ptr` 跨线程共享配置 / 池；`weak_ptr` 做可失效缓存句柄 | 高并发服务主干 | 三类指针各司其职 |
+| 自动驾驶 | Apollo / Autoware（L4 栈） | `unique_ptr` 管感知 / 规划 / 控制模块对象；跨进程共享内存传传感数据 | 实时算法对象生命期 | 跨进程不用 `shared_ptr`（走共享内存） |
+| WebAssembly | Emscripten（`emscripten::val` / embind） | `shared_ptr`/`unique_ptr` 管 JS↔C++ 桥接对象生命周期 | JS 侧持有 C++ 不被提前回收 | 绑定层生命周期桥梁 |
+
+> **表注（㉒.2）**：上表揭示「智能指针不是只有两种」。通用层用 `unique_ptr`/`shared_ptr`；但当规模到千万节点（LLVM）时连控制块分配都嫌贵 → 侵入式计数；当要跟 GC / 反射 / 序列化深度集成（Unreal）时 → 自研引用系统；当跨进程传数据时 → 共享内存而非 `shared_ptr`。注意第 ⑨ 节的「`make_shared` 一次分配优势」在 LLVM 这里成了反例：场景极端到连那一次分配都要省。
+
+**一条判读**：选哪种「指针」看三件事——是否独占（`unique_ptr`）、是否跨线程共享（`shared_ptr`）、是否要可被失效观测（`weak_ptr`）。但规模（LLVM 千万节点）或生态耦合（Unreal GC / 反射）会逼出侵入式 / 自研方案，这时标准智能指针反而「太重」。普通业务项目无脑 `unique_ptr` 优先、必要时 `shared_ptr`、缓存场景 `weak_ptr`，即可覆盖 90% 需求。
 
 ### ㉒.3 生产踩坑：智能指针的常见误用
 

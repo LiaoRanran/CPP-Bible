@@ -1870,12 +1870,20 @@ int main() {
 
 ### ㉒.2 真实工程坐标：`new`/`delete` 活在哪些项目里
 
-- **标准库与容器**：`std::vector`/`std::string` 扩容、`std::shared_ptr` 控制块（ch41）、`std::pmr`（ch38）最终都调到 `::operator new`；libstdc++/libc++/MS STL 各自实现了「new 默认落到 `malloc`」（第 ④ 节）的具体桥接。
-- **Chromium / Blink**：拥有自研的 **PartitionAlloc**，通过替换全局 `operator new`（特定构建）为不同安全域隔离内存，是浏览器对抗 UAF/堆喷射的核心手段之一。
-- **游戏引擎（Unreal/Unity）**：在生产构建里普遍替换 `operator new` 为引擎内存池（见 ch44），以便做追踪、内存统计与确定性的帧回收——因为默认 `new` 在每秒数万次分配下太慢、太不可控。
-- **嵌入式/HFT**：关闭异常 + 替换 `operator new` 为静态池或返回 `nullptr` 的 `nothrow` 后端，换取确定性延迟（第 ⑦ 节 `std::nothrow` 在此处是刚需而非风格偏好）。
-- **游戏主机平台（PlayStation / Xbox 主机 OS）**：主机平台的 `operator new` 常被替换为带类别的分配器（如 PS4 的 `sys::memory` 把内存分到不同带宽池），因为统一堆无法满足不同内存区域（CPU/音频/显存）的带宽差异——`operator new` 可替换性在主机的刚需体现。
-- **数据库（PostgreSQL `MemoryContext`）**：PostgreSQL 自研 `palloc`/`MemoryContext` 绕开默认 `operator new`，所有后端内存走上下文，事务/语句结束整块释放，避免长连接内存泄漏累积——这是大型服务里「默认 new 被系统性绕开」的工业案例。
+下表揭示一个反直觉事实：越是大型、长生命周期、对延迟或安全敏感的系统，越倾向于「绕开或替换」默认 `operator new`，而非直接用它。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库 / 容器 | `std::vector`·`string` 扩容、`shared_ptr` 控制块（ch41）、`std::pmr`（ch38） | 最终都调到 `::operator new` | 一切 C++ 程序地基 | libstdc++ / libc++ / MS STL 各实现「new → malloc」桥（第 ④ 节） |
+| 浏览器 | Chromium / Blink（PartitionAlloc） | 特定构建替换全局 `operator new` 做安全域隔离 | UAF / 堆喷射防御核心 | 可替换性是浏览器对抗内存破坏的武器 |
+| 游戏引擎 | Unreal / Unity | 生产构建替换 `operator new` 为引擎内存池（ch44） | 追踪 / 统计 / 确定性帧回收 | 默认 `new` 在万次/秒下太慢太不可控 |
+| 嵌入式 / HFT | 关闭异常 + 静态池 / `nothrow` 后端 | 替换 `operator new` 换取确定性延迟 | 微秒级尾延迟刚需 | 第 ⑦ 节 `std::nothrow` 在此时是刚需非风格 |
+| 游戏主机 | PlayStation / Xbox（`sys::memory` 分带宽池） | `operator new` 替换为带类别分配器 | 满足 CPU / 音频 / 显存带宽差 | 可替换性在主机的刚需体现 |
+| 数据库 | PostgreSQL（`palloc` / `MemoryContext`） | 绕开默认 `operator new`，后端内存走上下文 | 事务 / 语句末整块释放 | 大型服务「默认 `new` 被系统性绕开」的实证 |
+
+> **表注（㉒.2）**：上表把 `operator new` 的工业使用分三层——容器层（第 ④ 节的「new → malloc」桥）是默认实现；浏览器 / 主机 / 引擎层是全局替换；PostgreSQL 层是连桥都绕开。这不是「`new` 不好」，而是「默认策略的代价在规模化后被显式接管」。注意 Chromium 与 PostgreSQL 都用替换/绕开来服务不同目标（安全域隔离 vs 长连接泄漏防控）。
+
+**一条判读**：`operator new` 的可替换性（replaceable）不是语言彩蛋，而是工业界接管内存来源的主阀门。判断一个系统要不要接管它，只看两点：延迟是否必须可预测（嵌入式 / HFT / 主机），以及安全域是否必须隔离（浏览器）。其余 90% 的普通程序老老实实用默认 `new` 即可——不要为了「看起来高级」而自研分配器。
 
 ### ㉒.3 生产踩坑：`new`/`delete` 的常见误用
 

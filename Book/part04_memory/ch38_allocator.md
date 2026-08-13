@@ -1595,12 +1595,20 @@ int main() {
 
 ### ㉒.2 真实工程坐标：分配器活在哪些项目里
 
-- **LLVM / Clang**：大量使用 **BumpPtrAllocator（即 monotonic allocator，第 ⑩ 节）** 在编译期按阶段批量分配 AST / IR 节点，阶段结束一次性释放，避免海量小对象拖垮堆——这是 `monotonic_buffer_resource` 的真实原型。
-- **游戏与引擎**：Unreal 的 `FMemStack`、Unity 的帧分配器都是栈式/单调分配器的产品化；EASTL（EA 的 STL 替换）提供 `allocator` 与固定池，用于主机游戏确定性内存。
-- **高频交易与数据库**：自研 thread-local 池（第 ⑨ 节 `unsynchronized_pool_resource` 的思想）把每笔订单的临时对象限制在本地核，规避跨核锁；RocksDB 用自定义 arena 控制 SSTable 写入的内存来源。
-- **Web 与基础设施**：Chromium 的 PartitionAlloc、Facebook/Folly 的 `SysArena`、jemalloc 的 `tcache` 都是「分级空闲列表 / 线程本地缓存」思想（第 ⑪ 节）的大规模工业实现。
-- **影视渲染（Pixar RenderMan / OSL）**：离线渲染器用分帧/分 tile 的 arena allocator 管理巨量微多边形与着色上下文，单帧末整块回收——monotonic allocator 在影视离线渲染的标杆应用。
-- **网络代理 / 边车（Envoy / HAProxy）**：Envoy 用 `Buffer::BufferFragment` 与自建缓冲区管理做零拷贝转发；HAProxy 自研内存池（per-connection pools）管理连接对象，避免每连接 `new`/`delete` 的缓存抖动。
+下表把「分配器」从容器模板参数拉到「按对象生命周期形态选分配策略」的工业全景。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 编译器 | LLVM / Clang（`BumpPtrAllocator`） | 按编译阶段批分配 AST / IR 节点，阶段末整块释放 | 编译期性能关键 | `monotonic_buffer_resource` 的真实原型（第 ⑩ 节） |
+| 游戏 / 引擎 | Unreal（`FMemStack`）、Unity 帧分配器、EASTL | 栈式 / 单调分配器产品化；固定池做主机确定性内存 | 帧 / 主机确定性 | EASTL 提供 `allocator` 与固定池 |
+| HFT / 数据库 | 自研 thread-local 池、RocksDB（自定义 arena） | 临时对象限本地核避跨核锁；控制 SSTable 写入内存来源 | 微秒级 / IO 确定性 | 第 ⑨ 节 `unsynchronized_pool_resource`、第 ⑪ 节思想落地 |
+| Web / 基础设施 | Chromium（PartitionAlloc）、folly（`SysArena`）、jemalloc（`tcache`） | 分级空闲列表 / 线程本地缓存 | 大规模服务端 | 第 ⑪ 节「线程本地缓存」思想工业实现 |
+| 影视渲染 | Pixar RenderMan / OSL | 分帧 / 分 tile 的 arena 管理巨量微多边形与着色上下文 | 离线渲染标杆 | 单帧末整块回收，monotonic 的影视实证 |
+| 网络代理 / 边车 | Envoy（`BufferFragment`）、HAProxy（per-connection pool） | 零拷贝转发缓冲；连接对象池 | 高并发代理 | 避免每连接 `new`/`delete` 缓存抖动 |
+
+> **表注（㉒.2）**：上表把「分配器」拉到「按对象生命周期形态选分配策略」的工业全景。关键区分是生命周期形态：编译期 / 帧 / 渲染 tile 是「可预测批量、阶段末整块释放」（monotonic）；服务端是「高并发、线程本地缓存」（pool）；代理是「连接级复用」。注意第 ⑨ / ⑩ / ⑪ 节三个标准分配器思想分别在 HFT、LLVM、基础设施里找到了真实原型。
+
+**一条判读**：选分配器先看「对象活多久、在哪释放」，而不是「它快不快」。生命周期与某阶段强绑定（编译期 AST、每帧、每 tile）→ 单调分配器；生命周期与线程强绑定（服务端请求）→ 线程本地池；生命周期与连接 / 会话强绑定（代理）→ 连接池。把「全局通用堆」换成「匹配生命周期形态的分配器」，往往比换更快的堆收益更大。
 
 ### ㉒.3 生产踩坑：分配器的常见误用
 

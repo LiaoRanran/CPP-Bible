@@ -1658,13 +1658,22 @@ int main() {
 [史] 「cache」一词由 **Maurice Wilkes** 在 1940 年代设计 EDSAC 二代存储时提出（他称其为 "slave memory"，用于隐藏磁鼓延迟）；**IBM System/360 Model 85（1970）** 是第一台商用化引入 CPU 缓存的主机。多级缓存（L1/L2）随 **Intel Pentium Pro（1993）** 进入 x86 主流；**L3** 在 Pentium 4 / 多核时代成为片内共享层。[史] 「false sharing（伪共享）」这一术语随 SMP 多处理器扩展被提出——多核争用同一缓存行里的不同变量，使缓存一致性流量爆炸，是 2000 年代后大规模并行服务的头号性能杀手。[轶] 早期手册把 cache 当成「透明加速」，直到 multi-core + NUMA 时代工程师才被迫理解缓存行边界，否则「改一个计数器让程序慢 10 倍」成为经典面试题。[评] 缓存不是「更快的内存」，而是一套**空间/时间局部性的博弈系统**；C++ 程序员必须主动布局数据，而非依赖硬件。
 
 ### ㉒.2 真实工程坐标：缓存局部性活在哪些产品里
-- **高频交易（HFT）/ 低延迟系统**：把热路径数据 pin 在 L1/L2、用 `alignas(64)` 隔离每线程状态、避免跨核缓存行迁移，是纳秒级延迟的生命线。
-- **游戏引擎（Unreal / Unity）**：ECS 的 SoA 布局、按缓存行对齐组件池，直接决定每帧能遍历多少实体；Unity DOTS 把缓存友好当核心卖点。
-- **数据库/存储（LevelDB / RocksDB / PostgreSQL）**：block / buffer pool 的预取与顺序读、MemTable 跳表布局，全部围绕减少 cache miss 设计。
-- **数值/HPC（Eigen / BLAS）**：矩阵分块（blocking/tiling）让内层循环吃满 L1/L2，是「同样算法快 5–10×」的根因；`std::transform` + SIMD 配套缓存对齐。
-- **Linux 内核**：`perf stat` 的 `cache-misses`/`cache-references`、`perf c2c` 专查伪共享、`numactl` 做 NUMA first-touch 亲和。
-- **机器学习推理（TensorFlow / ONNX Runtime / TVM）**：推理引擎对 tensor 布局（NHWC vs NCHW）与权重打包做 cache 对齐优化，TVM/XLA 的 layout 变换直接决定推理延迟；`std::hardware_constructive_interference_size` 的「真共享」思想正用于把协同访问的张量放同一缓存行。
-- **大规模检索（Google 索引 / 列存引擎）**：Google 的基础设施靠 cache-friendly 的 protocol buffer 布局与列存结构支撑海量检索；ClickHouse 的列式存储与 `mark` 索引同样是围绕减少 cache miss 设计的工业实证。
+
+下表把「缓存局部性」从教材概念铺成七行业的性能主轴，共同规律是「把一起访问的数据放一起、把互斥访问的数据隔开」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| HFT / 低延迟 | 订单撮合热路径 | pin L1/L2、`alignas(64)` 隔离每线程状态 | 纳秒级延迟生命线 | 避跨核 cache line 迁移 |
+| 游戏引擎 | Unreal / Unity（ECS SoA） | 缓存行对齐组件池 | 决定每帧遍历实体数 | Unity DOTS 以缓存友好为核心卖点 |
+| 数据库 / 存储 | LevelDB / RocksDB / PostgreSQL | block / buffer pool 预取与顺序读；MemTable 跳表布局 | 减 cache miss | 全部围绕减少 miss 设计 |
+| 数值 / HPC | Eigen / BLAS | 矩阵分块（blocking / tiling）吃满 L1/L2 | 同算法快 5–10× 的根因 | `std::transform` + SIMD 配缓存对齐 |
+| 操作系统 | Linux（`perf stat`/`c2c`、`numactl`） | `cache-misses` 观测、`c2c` 查伪共享、NUMA first-touch | 诊断与亲和工具链 | 把缓存行为变成可测量项 |
+| 机器学习推理 | TensorFlow / ONNX Runtime / TVM | tensor 布局（NHWC / NCHW）与权重打包做 cache 对齐 | 直接决定推理延迟 | `hardware_constructive_interference_size` 真共享思想落地 |
+| 大规模检索 | Google 索引 / ClickHouse（列存 + `mark` 索引） | cache-friendly protobuf / 列存结构 | 海量检索底层 | 减少 cache miss 的工业实证 |
+
+> **表注（㉒.2）**：上表把「缓存局部性」从教材概念铺成七行业的性能主轴。共同规律是「把一起访问的数据放一起、把互斥访问的数据隔开」：HFT 用 `alignas(64)` 隔开线程状态，引擎用 SoA 聚合同类组件，数据库用顺序读喂 buffer pool，Eigen 用分块吃满 L1/L2，TVM 用 layout 变换对齐 tensor。Linux 一行是工具侧——把缓存行为变成可观测、可亲和的工程量。
+
+**一条判读**：缓存局部性的工程判据是「数据的物理摆放匹配访问模式」。访问顺序连续 → SoA / 分块 / 顺序读；访问互斥 → cache line 隔离避伪共享；跨 NUMA → first-touch 亲和。它不靠新算法，而靠「让热数据待在最近的那级缓存里」。凡是「同样算法换个布局就快几倍」的案子，根因几乎都是缓存命中率，而非指令数。
 
 ### ㉒.3 生产踩坑：缓存局部性的常见误用
 - **伪共享（false sharing）**：多核各写一个 `struct` 里相邻的 `counter`，变量落在同一 64B 缓存行，核间反复 invalidate——用 `alignas(std::hardware_destructive_interference_size)`（C++17）或显式 padding 隔离；`perf c2c` 可定位。

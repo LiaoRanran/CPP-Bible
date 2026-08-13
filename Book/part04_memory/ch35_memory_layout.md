@@ -1347,12 +1347,20 @@ int main() {
 
 ### ㉒.2 真实工程坐标：内存布局活在哪些产品/项目里
 
-- **操作系统内核**：Linux 内核的 `struct page`、VMA（vm_area_struct）布局、以及用户态 `mmap`/`brk` 边界管理，本质上是本章 「虚拟地址 + 分页 + 段权限」 的活体教科书；Windows 内核的 `MEMORY_BASIC_INFORMATION`、堆段（heap segment）同样是同一套概念。
-- **游戏引擎**：Unreal Engine 与 Unity 的底层大量手工控制对象在内存中的排列（结构体字段重排以减少 padding、cache line 对齐避免 false sharing、SOA 布局替代 AOS），直接决定帧预算能否守住；这些优化全部建立在「你知道字段偏移与对齐」之上（见第 ⑮–⑱ 节）。
-- **数据库与存储引擎**：LevelDB / RocksDB 的 SSTable block、ClickHouse 的列式存储，刻意按 cache line 与 SIMD 宽度对齐数据，连对齐都来自 `alignas` 与内存映射布局的协同。
-- **HFT / 低延迟系统**：高频交易订单匹配引擎用 `mlock` 锁页 + 大页（huge page）规避 TLB miss 与缺页中断（第 ⑪/⑬ 节），并把关键结构体对齐到独立 cache line 以隔离生产者/消费者线程，这正是 `hardware_destructive_interference_size` 的用武之地。
-- **汽车电子（AUTOSAR / 车载 ECU）**：AUTOSAR 规范的 Memory Mapping 机制（`MEMORY_*` 链接器段 + MPU/内存保护分区）强制把代码、数据、栈、堆分别映射到不同存储区与保护域，整个车载控制器的内存布局由链接脚本与内存映射规范决定——这是「地址空间布局是功能安全合规要求（ISO 26262）」而非仅性能优化的真实案例。
-- **多媒体 / 视频编解码（FFmpeg / x264）**：FFmpeg 的 `av_malloc` 按 32/64 字节对齐分配音视频帧缓冲（配合 SIMD 读写），且 `AVFrame` 的 plane 排列与 `linesize` stride 对齐直接决定能否零拷贝送给 GPU（VAAPI/VDPAU）——「字段偏移与对齐」在编解码流水线里是硬约束。
+下表把六个行业里「内存布局」从教科书概念变成产品硬约束的坐标，列成一屏可扫描的对照。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 操作系统内核 | Linux（`struct page` / VMA / `mmap` / `brk`）、Windows（`MEMORY_BASIC_INFORMATION` / 堆段） | 虚拟地址 + 分页 + 段权限的活体教科书 | 一切进程的地址空间地基 | 概念直接对应本章第 ⑮–⑱ 节 |
+| 游戏引擎 | Unreal Engine / Unity | 手工字段重排减 padding、cache line 对齐避 false sharing、SOA 替代 AOS | 帧预算能否守住的决定因素 | 优化建立在「知字段偏移与对齐」之上 |
+| 数据库 / 存储引擎 | LevelDB / RocksDB（SSTable block）、ClickHouse（列式） | 按 cache line 与 SIMD 宽度对齐数据 | 海量压缩 / 检索的底层 | 对齐来自 `alignas` 与内存映射布局协同 |
+| HFT / 低延迟 | 高频订单匹配引擎 | `mlock` 锁页 + 大页避 TLB miss / 缺页；关键结构对齐独立 cache line 隔离生产者 / 消费者 | 纳秒级延迟刚需 | `hardware_destructive_interference_size` 的用武之地（第 ⑪ / ⑬ 节） |
+| 汽车电子 | AUTOSAR（`MEMORY_*` 链接段 + MPU / 内存保护分区） | 代码 / 数据 / 栈 / 堆分别映射不同存储区与保护域 | 功能安全合规（ISO 26262）要求 | 布局由链接脚本 + 内存映射规范决定，非仅性能 |
+| 多媒体 / 编解码 | FFmpeg（`av_malloc` 32/64B 对齐）/ x264 | 音视频帧缓冲按 SIMD 宽对齐；`AVFrame` plane / `linesize` stride 对齐 | 决定能否零拷贝送 GPU（VAAPI / VDPAU） | 字段偏移与对齐是编解码流水线硬约束 |
+
+> **表注（㉒.2）**：上表把六个行业里「内存布局从教科书概念变成产品硬约束」的坐标列成可扫描的一屏。注意 AUTOSAR 与 FFmpeg 两行：前者让「地址空间布局」成为 ISO 26262 功能安全合规项而非性能优化项，后者让「字段偏移与对齐」成为能否零拷贝喂 GPU 的硬约束——这两类是把本章概念推到「产品能不能交付」层面的真实证据，其余各行则是在性能维度复用同一套概念。
+
+**一条判读**：内存布局不是「底层细节」，而是跨行业的「接口契约」——内核用它界定进程边界，引擎用它守住帧预算，存储引擎用它喂 SIMD，车载用它过功能安全认证，编解码用它做零拷贝。凡是「布局错了就出 bug / 出事故 / 掉帧」的地方，都说明 `alignas`、padding、段权限不是玄学，而是产品正确性的组成部分。
 
 ### ㉒.3 生产踩坑：内存布局与地址空间的常见误用
 

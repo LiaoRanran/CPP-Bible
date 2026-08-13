@@ -1761,12 +1761,20 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 ### ㉒.2 真实工程坐标：RAII 活在哪里
 
-- **标准库几乎所有资源管理类型**：`std::lock_guard`/`std::unique_lock`（第 ⑬ 节）、`std::fstream`、`std::unique_ptr`/`shared_ptr`、`std::vector`（析构释放缓冲区）都是 RAII——可以说标准库本身就是 RAII 的最大用户。
-- **Chromium / Blink**：大量 `base::ScopedFD`/`base::ScopedTempDir`/`base::AutoLock` 等 scoped 类型，确保句柄、锁、临时文件在任意返回路径（含早退与异常）下都被清理；`base::scope_exit`（第 ⑭ 节 ScopeGuard 思想）广泛用于资源回滚。
-- **游戏引擎**：Unreal 的 `TUniquePtr`/`FScopeLock`、Unity 的 `AutoPPtr` 等，把 RAII 用于 GPU 资源、渲染状态与锁，避免帧中途异常导致设备上下文泄漏。
-- **金融/数据库系统**：交易事务的「提交或回滚」惯用法（第 ⑭ 节 `std::uncaught_exceptions`，ch40）普遍用 RAII 守卫实现，确保异常路径下事务一致回滚而非悬挂锁。
-- **机器人中间件（ROS 2 / `rclcpp`）**：ROS 2 的 C++ 客户端库用 RAII 管理 DDS 订阅/发布者/节点的生命周期，节点退出或异常时自动回收底层 DDS 资源；实时（RT）节点则倾向显式生命周期以免析构抖动。
-- **医学影像 / DICOM（ITK 等影像处理）**：医学影像处理（如 ITK）用 RAII 管理 DICOM 文件流、GPU 纹理与大规模体数据缓冲，异常路径下确保患者数据句柄与设备上下文不泄漏——医疗软件的 RAII 实证。
+下表把 RAII 从「语法 idiom」拉到「资源生命周期的跨行业兜底机制」。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库 | `std::lock_guard`·`unique_lock`（第 ⑬ 节）、`fstream`、`unique_ptr`·`shared_ptr`、`vector` | 析构释放锁 / 句柄 / 缓冲区 | RAII 的最大用户 | 标准库自身即 RAII 范本 |
+| 浏览器 | Chromium（`base::ScopedFD`·`ScopedTempDir`·`AutoLock`·`scope_exit`） | 任意返回路径（含早退 / 异常）清理资源 | 句柄 / 锁 / 临时文件零泄漏 | 第 ⑭ 节 ScopeGuard 思想的产品化 |
+| 游戏引擎 | Unreal（`TUniquePtr`·`FScopeLock`）、Unity（`AutoPPtr`） | RAII 管 GPU 资源 / 渲染状态 / 锁 | 防帧中途异常致设备泄漏 | 实时环境靠 RAII 兜底 |
+| 金融 / 数据库 | 事务「提交或回滚」惯用法 | RAII 守卫实现，异常路径自动回滚 | 事务一致性标配 | 第 ⑭ 节 `uncaught_exceptions` + ch40 |
+| 机器人中间件 | ROS 2 / `rclcpp` | RAII 管 DDS 订阅 / 发布 / 节点生命周期 | 节点退出 / 异常自动回收 DDS | RT 节点倾向显式生命周期避析构抖动 |
+| 医学影像 | ITK（医学影像 / DICOM） | RAII 管 DICOM 流 / GPU 纹理 / 体数据缓冲 | 患者数据句柄零泄漏 | 医疗软件 RAII 实证 |
+
+> **表注（㉒.2）**：上表把 RAII 从「语法 idiom」拉到「资源生命周期的跨行业兜底机制」。共同点是：凡是有「必须在任意退出路径（正常 / 早退 / 异常）释放」的资源——锁、句柄、GPU 上下文、事务、DDS 连接——RAII 都是首选。注意 ROS 2 与 ITK 两行点出边界：硬实时节点怕析构抖动而倾向显式生命周期，说明 RAII 不是无代价（析构有运行时成本），在硬实时下要权衡。
+
+**一条判读**：RAII 的适用判据是「资源释放路径必须覆盖所有退出分支」。锁、文件、GPU、事务、订阅者都符合，所以标准库 / 浏览器 / 引擎 / 金融 / 医疗全用它。但当析构的运行时抖动不可接受（硬实时 ROS 节点）时，要改用显式生命周期管理——RAII 是默认首选，不是唯一答案，其代价（确定性析构）在软实时以下才可忽略。
 
 ### ㉒.3 生产踩坑：RAII 与三五法则的误用
 
