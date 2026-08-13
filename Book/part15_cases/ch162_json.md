@@ -808,13 +808,21 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 f
 [史] JSON 由 **Douglas Crockford** 在 2001 年规范化，最初在 RFC 4627（2006）成文，最终定稿为 **RFC 8259（2017，ECMA-404 同源）**——它是 IETF/ ECMA 标准，而非 C++ 标准。[史] C++ 侧，**RapidJSON（腾讯，约 2011）** 以"零拷贝、SAX/DOM、极致性能"出圈；**nlohmann/json（2013 起）** 则以"直觉的 STL 式 API（`operator[]`、自动类型）"成为最流行的头文件库。两者代表了"性能优先"与"易用优先"两条路线（见 ⑨⑩）。[评] JSON 在 C++ 里没有标准库实现，生态由社区库填补——这与标准库"不绑定具体数据交换格式"的取向一致。
 
 ### ㉒.2 真实工程坐标：JSON 活在哪些产品里
-- **nlohmann/json**：Web 后端、配置文件、工具链里几乎无处不在，因单头易集成、API 友好。
-- **RapidJSON**：MySQL、腾讯系服务、游戏服务器等高吞吐场景，SAX 流式解析省内存。
-- **游戏 / 引擎**：资源描述、关卡配置大量用 JSON（或类 JSON 的自定义格式）。
-- **云原生 / DevOps**：K8s、CI 配置、可观测数据普遍 JSON 序列化。
 
-- **JSON 库坐标**：[nlohmann/json](https://github.com/nlohmann/json)（最流行、头-only、`operator[]` 友好但拷贝偏多）、[RapidJSON](https://github.com/Tencent/rapidjson)（腾讯，零拷贝 SAX/DOM、极致性能）、[simdjson](https://github.com/simdjson/simdjson)（SIMD 解析、GB/s 级）、[Boost.JSON](https://github.com/boostorg/json)。
-- **生态**：游戏配置、微服务通信、CI 产物、IDE 插件配置几乎都用 JSON；protobuf/flatbuffers 在对性能/体积敏感处替代。
+JSON 是「配置与数据交换的通用语」。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 通用 / 配置 | nlohmann/json（单头、API 友好） | Web 后端/配置文件/工具链 | 几乎无处不在 | `operator[]` 友好但拷贝偏多 |
+| 高吞吐 | RapidJSON（腾讯，SAX 流式） | MySQL/游戏服务器省内存 | 高吞吐场景 | 零拷贝 SAX/DOM |
+| 游戏 / 引擎 | 资源描述/关卡配置大量 JSON | 关卡与资源描述 | 游戏事实格式 | 或类 JSON 自定义 |
+| 云原生 / DevOps | K8s/CI/可观测数据 JSON | 序列化与配置 | 云原生事实标准 | 配置与产物通用 |
+| JSON 库坐标 | nlohmann/json / RapidJSON / simdjson / Boost.JSON | SIMD/SAX/头-only 各取所需 | 库事实集合 | simdjson GB/s 级 SIMD 解析 |
+| 生态替代 | protobuf / flatbuffers | 性能/体积敏感处替代 JSON | 二进制序列化 | 与 JSON 互补 |
+
+> **表注（㉒.2）**：上表前 4 行是「JSON 在哪些领域吃重」，后 2 行是「库坐标与二进制替代」；nlohmann/json 易用但值语义拷贝偏多，RapidJSON 用 SAX/零拷贝换极致性能，simdjson 再上 SIMD——选型是「易用 vs 吞吐」的权衡，不是越新越好。
+
+**一条判读**：JSON 适合「人写/调试友好、量不大」的配置与交换；高吞吐服务内部（微服务间、游戏协议）应换 protobuf/flatbuffers 省 CPU 与体积，但对外/配置文件仍保留 JSON 的可读性——按边界取舍，而非全栈统一。
 
 ### ㉒.3 生产踩坑：JSON 解析的误用
 - **不安全解析导致的 DoS**：畸形/超深嵌套输入若递归下降无深度上限，可栈溢出；工业库提供 `max_depth`/SAX 流式来防御（见 ⑰）。

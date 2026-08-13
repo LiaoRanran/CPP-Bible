@@ -892,13 +892,21 @@ std::cout << f.get() << '\n';            // 441，worker 在后台执行
 [史] "线程池"是操作系统级的经典并发模式（1960 年代批处理即有用线程复用的思想），但 C++ 直到 **C++11** 才在标准中给出 `std::thread` / `std::async` / `std::future`，让线程管理脱离 pthread/Win32 平台 API。[史] **C++20** 的 `std::jthread`（由 P0660 引入）补上"带 `stop_token`、析构自动 join"的 RAII 线程，消除了"忘 join 导致 `std::terminate`"这一高频坑（见 ⑧⑨）。[评] 标准线程设施演进的主线，正是把"易错的人工纪律"变成"编译期/析构期强制正确"。
 
 ### ㉒.2 真实工程坐标：线程池活在哪些项目里
-- **Intel oneTBB（原 Threading Building Blocks）**：工业级并行任务调度，被 HPC/图像/数值库广泛依赖。
-- **Boost.Asio / 自研 io_context**：以"一个线程跑事件循环 + 任务队列"支撑网络服务（见第163章）。
-- **游戏引擎 / 渲染**：用线程池跑骨骼动画、资源加载、物理；常配合任务依赖图。
-- **Nginx / libuv**：虽非传统"线程池"，但用 worker 进程/线程 + 事件循环达成高并发，是同一问题的另一种解。
 
-- **线程池坐标**：Intel TBB 的 `task_arena`/`parallel_for`、folly::ThreadPoolExecutor（Meta）、`std::async`（C++11 起，但池策略由实现定义）、Boost.Asio 的 `io_context` 隐式线程池、libuv 的事件循环线程；nginx worker、游戏引擎任务系统均自研。
-- **无锁任务队列**：moodycamel::ConcurrentQueue 是跨项目高频采用的生产者-消费者无锁队列。
+线程池把「任务」与「线程」解耦，是压榨多核的标配。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 工业并行调度 | Intel oneTBB（原 TBB） | 工业级并行任务调度 | HPC/图像/数值库广泛依赖 | `task_arena`/`parallel_for` |
+| 网络服务 | Boost.Asio / 自研 `io_context` | 一线程事件循环 + 任务队列 | 网络服务底座 | 见第163章 |
+| 游戏 / 渲染 | 线程池跑骨骼动画 / 资源加载 / 物理 | 配合任务依赖图 | 实时帧预算 | 任务依赖图编排 |
+| 高并发另解 | Nginx / libuv（worker 进程/线程 + 事件循环） | 同一问题的事件循环解 | Web 高并发事实底座 | 非传统池但是同类问题 |
+| 线程池坐标 | TBB / folly::ThreadPoolExecutor / `std::async` / Asio `io_context` / libuv | 各厂线程池实现 | 工业级事实集合 | [STANDARD] `std::async`（C++11）池策略由实现定义 |
+| 无锁任务队列 | moodycamel::ConcurrentQueue | 生产者-消费者无锁队列 | 跨项目高频采用 | 无锁降争用 |
+
+> **表注（㉒.2）**：上表前 4 行是「各领域怎么用线程池/等价机制」，后 2 行是「线程池实现坐标与无锁队列」；事件循环（Nginx/libuv）与线程池是同一「并发」问题的两种解法——前者少上下文切换、后者好利用多核，选型看负载形状。
+
+**一条判读**：线程池适合「任务多、单任务短、需控并发度」的场景；任务依赖复杂时还要配依赖图（游戏/渲染常见），否则易死锁或空转；`std::async` 的池行为是实现定义的，生产项目通常直接用 TBB/Asio 而不是赌标准库的默认策略。
 
 ### ㉒.3 生产踩坑：线程池的误用
 - **线程数过多（oversubscription）**：池大小远超 `hardware_concurrency()`，上下文切换压垮吞吐；CPU 密集应≈核数，IO 密集可更多（见 ⑩）。

@@ -930,13 +930,21 @@ struct Endpoint {
 [史] 网络编程的基石是 **BSD socket（4.2BSD，1983）**，TCP 本身由 **RFC 793（1981）** 定义；POSIX 把它标准化，Windows 则提供 **Winsock**（见 ③）。[史] Linux 在 2.5.44（2002）引入 **epoll**，把"每连接一线程"的阻塞模型升级为"单线程多路复用"，是高并发服务的分水岭（见 ⑦⑧）。现代 C++ 侧，**Boost.Asio / Asio（Christopher Kohlhoff，约 2005）** 把异步 IO 抽象成 `io_context` + 回调/协程，并成为 **C++ 网络 TS（Networking Technical Specification）** 的基础提案——但该 TS 尚未并入 ISO C++（见 ⑱）。[评] 网络是"C++ 标准长期缺席、靠 POSIX/平台 API 与第三方库补位"的典型领域。
 
 ### ㉒.2 真实工程坐标：网络活在哪些产品里
-- **Nginx / Redis / libuv**：以事件循环 + epoll/kqueue 支撑百万级并发，是 Web/缓存的事实底座。
-- **Boost.Asio / Asio**：被无数 C++ 服务/客户端采用，抽象跨平台异步 IO（见 ⑯）。
-- **游戏服务器 / 数据库**：自研基于 epoll + 线程池（见 ⑨）的协议栈，追求低延迟。
-- **gRPC / RPC 框架**：在 TCP/TLS 之上建强类型传输，底层仍是这套 socket 模型。
 
-- **网络库坐标**：[Boost.Asio](https://github.com/boostorg/asio)（Proactor 模型、跨平台、C++20 协程友好）、[libevent](https://github.com/libevent/libevent)/[libuv](https://github.com/libuv/libuv)（Reactor/事件循环）、muduo（Linux 多线程 Reactor）、Seastar（高吞吐、futures）；Redis/Memcached 用自研事件循环。
-- **协议栈**：gRPC（HTTP/2 + Protobuf）、零拷贝 `io_uring`（Linux 5.x+）正在重塑高并发网络 I/O。
+网络栈是「进程间如何对话」的底层。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| Web / 缓存底座 | Nginx / Redis / libuv（事件循环 + epoll/kqueue） | 支撑百万级并发 | Web/缓存事实底座 | Reactor 事件循环 |
+| 跨平台异步 IO | Boost.Asio / Asio | 抽象跨平台异步 IO | 无数服务/客户端 | 见⑯；C++20 协程友好 |
+| 游戏 / 数据库 | 自研 epoll + 线程池协议栈 | 追求低延迟 | 低延迟服务 | 见⑨ |
+| RPC 框架 | gRPC / RPC（TCP/TLS 上强类型传输） | 底层仍是 socket 模型 | 强类型传输 | HTTP/2 + Protobuf |
+| 网络库坐标 | Boost.Asio（Proactor）/ libevent/libuv（Reactor）/ muduo / Seastar | 各模型实现 | 工业级事实集合 | Redis/Memcached 自研循环 |
+| 协议栈演进 | gRPC（HTTP/2 + Protobuf）/ 零拷贝 `io_uring`（Linux 5.x+） | 重塑高并发 I/O | 新兴事实 | io_uring 零拷贝系统调用 |
+
+> **表注（㉒.2）**：上表前 4 行是「谁在用哪套网络模型」，后 2 行是「库坐标与协议栈演进」；Reactor（事件循环）与 Proactor（完成端口/Asio）是两大异步模型，[STANDARD] 层面 C++ 不规定网络 API，全靠库（Asio/libuv）与 OS 原语（epoll/io_uring）支撑。
+
+**一条判读**：网络选型看「并发模型 + 平台」——Linux 高并发首选 epoll/io_uring + 事件循环，跨平台服务用 Asio 抽象掉差异，强类型内部通信用 gRPC；不要为了「现代」硬上 io_uring（需 Linux 5.x+）而忽略团队对该原语的熟悉度。
 
 ### ㉒.3 生产踩坑：网络编程的误用
 - **阻塞 IO 不缩放**：每连接一线程，连接数上千就线程爆炸；应改非阻塞 + IO 多路复用（见 ⑥⑦）。

@@ -987,13 +987,21 @@ int main() {
 [史] 通用 `malloc`/`free` 为"任意大小、任意时机"设计，存在锁竞争与碎片代价；**jemalloc**（Jason Evans，2005，源于 FreeBSD）与 **tcmalloc（Google，约 2008）** 用"线程本地缓存 + size class"把多核分配做到近无锁，成为服务端标配。[史] 标准层面，C++ 一直有 `std::allocator`；**C++17** 引入 **`std::pmr`（Polymorphic Memory Resources）**，让"分配器作为运行时可替换策略"成为标准能力，内存池可无缝接入容器（见 ⑧）。[评] 内存池的本质是"用领域知识（固定大小/生命周期）换通用分配器的开销"。
 
 ### ㉒.2 真实工程坐标：内存池活在哪些产品里
-- **Firefox**：默认用 **jemalloc**，在多 tab/多线程下控制碎片与延迟。
-- **Chrome**：自研 **PartitionAlloc**，按"分区"隔离不同类型分配，兼顾安全（隔离）与性能。
-- **Redis / 游戏服务器**：为热对象建固定大小池，避免频繁向系统要内存造成的尾延迟。
-- **数据库 / 消息中间件**：用内存池托住高频小对象，吞吐与 p99 显著改善。
 
-- **分配器坐标**：[tcmalloc](https://github.com/google/tcmalloc)/[jemalloc](https://github.com/jemalloc/jemalloc)/[mimalloc](https://github.com/microsoft/mimalloc) 用 per-thread/size-class 缓存把 malloc 锁争用降到极低；UE4 的 `FMallocBinned2`、游戏/嵌入式自研 slab/池是“确定延迟”刚需。
-- **标准对接**：`std::pmr::memory_resource`/`std::pmr::polymorphic_allocator`（C++17，[P0220](https://wg21.link/P0220)）把“自定义池”提升为一等公民，标准库容器可换池而不改接口。
+内存池把「分配」从全局 malloc 收拢到可控的池，换取确定延迟。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 浏览器 | Firefox（jemalloc） | 多 tab/多线程下控碎片与延迟 | 工业级浏览器 | jemalloc 控碎片 |
+| 浏览器 | Chrome（PartitionAlloc） | 按分区隔离不同类型分配 | 工业级浏览器 | 兼顾安全隔离与性能 |
+| 游戏 / 缓存 | Redis / 游戏服务器（固定大小池） | 热对象避免频繁向系统要内存 | 低延迟服务 | 避免尾延迟 |
+| 数据库 / 中间件 | 内存池托高频小对象 | 吞吐与 p99 显著改善 | 存储 / 消息 | 高频小对象友好 |
+| 分配器坐标 | tcmalloc / jemalloc / mimalloc / UE4 `FMallocBinned2` / 自研 slab | per-thread/size-class 缓存降锁争用 | 工业级分配器 | 确定延迟刚需 |
+| 标准对接 | `std::pmr::memory_resource`/`polymorphic_allocator`（C++17 [P0220]） | 把自定义池提升为一等公民 | 标准设施 | [STANDARD] C++17 [P0220]；容器换池不改接口 |
+
+> **表注（㉒.2）**：上表前 4 行是「谁在用内存池、为什么」，后 2 行是「分配器实现坐标与标准对接」；PartitionAlloc 的分区隔离同时服务「安全」（类型间越界难扩散）与「性能」（同区同 size-class），是浏览器级工程的两全设计。
+
+**一条判读**：内存池的回报在「确定延迟 + 降碎片」，代价是失去全局 malloc 的通用性；高频小对象/实时系统是刚需，普通业务用 mimalloc/jemalloc 替换全局分配器往往比自研池更划算，不必为「池」而池。
 
 ### ㉒.3 生产踩坑：内存池的误用
 - **替换全局 `new`/`delete` 的风险**：全局重载影响整个进程的分配语义，与第三方库/STL 内部假设冲突可能崩溃；优先用 `std::pmr` 或显式传递分配器，而非全局替换（见 ⑨）。

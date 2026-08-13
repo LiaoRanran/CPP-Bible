@@ -1478,13 +1478,21 @@ int main() {
 [史] C/C++ 日志长期靠 `printf`/`fprintf` + 自写宏；现代 C++ 日志库的转折点是 **{fmt}（Victor Zverovich，2012 起）** 提出的"类型安全、快、可扩展"格式化，以及 **spdlog（Gabriel Mocanu，2014）** 把它做成高性能异步日志库。[史] {fmt} 直接成为 **C++20 `std::format`** 的基础（P0645），日志从此有了标准格式化底座（见 ④⑤）。[评] 日志库的演进主线是"格式安全 + 零开销关闭 + 异步不阻塞"三件套。
 
 ### ㉒.2 真实工程坐标：日志活在哪些产品里
-- **spdlog**：被无数 C++ 服务/库采用，异步模式 + 多 sink（终端/文件/网络）开箱即用（见 ⑥⑬）。
-- **{fmt} → std::format**：{fmt} 被吸进标准库，C++20 起格式化不再依赖第三方。
-- **Google glog**：老牌工业日志（INFO/WARNING/ERROR/FATAL + 符号化栈），在大量后端服务中。
-- **结构化日志（JSON）**：云原生场景用 JSON 日志对接 ELK/Loki（见 ⑮）。
 
-- **日志库坐标**：[spdlog](https://github.com/gabime/spdlog)（header-only、fmt 后端、异步模式）、[glog](https://github.com/google/glog)（Google，带栈追踪/严重级别）、Boost.Log、[fmt](https://github.com/fmtlib/fmt)（格式化后端，C++20 `std::format` 的蓝本）。
-- **嵌入式/内核**：资源受限处用环形缓冲 + 关中断写、或 RTT/Segger SystemView 流式追迹，避免动态分配与阻塞。
+日志是「系统说了什么」的可观测基线。下面按领域展开：
+
+| 领域 / 类别 | 代表系统 · 生态 | 它承担的角色 | 规模 · 行业地位 | 备注 / 标准互动 |
+|---|---|---|---|---|
+| 通用服务 / 库 | spdlog（异步 + 多 sink） | 终端/文件/网络开箱即用 | 无数 C++ 服务采用 | 见⑥⑬；header-only |
+| 格式化 | {fmt} → `std::format`（C++20） | 格式化不再依赖第三方 | 标准设施 | [STANDARD] C++20 吸收 {fmt} |
+| 工业日志 | Google glog（INFO/WARNING/ERROR/FATAL + 符号化栈） | 分级 + 栈追踪 | 大量后端服务 | 老牌工业日志 |
+| 云原生 | 结构化 JSON 日志（ELK/Loki） | 机器可检索的日志流 | 云原生事实标准 | 见⑮ |
+| 日志库坐标 | spdlog / glog / Boost.Log / fmt | 各自覆盖异步/栈/级别/格式化 | 框架事实集合 | fmt 是 `std::format` 蓝本 |
+| 嵌入式 / 内核 | 环形缓冲 + 关中断写 / RTT·Segger SystemView | 避免动态分配与阻塞 | 资源受限刚需 | 流式追迹 |
+
+> **表注（㉒.2）**：上表前 4 行是「各领域的主流日志实践」，后 2 行是「日志库坐标与嵌入式约束」；C++20 把 {fmt} 吸收为 `std::format` 后，格式化后端不再是第三方刚需，但 spdlog/glog 的异步、分级、栈追踪仍是标准库未覆盖的事实能力。
+
+**一条判读**：日志选型看「体量 + 环境」——服务用 spdlog 异步+多 sink 最省心，云原生要 JSON 对接检索栈，嵌入式则必须零动态分配（环形缓冲/RTT）；关键是别在热路径同步刷盘，否则日志本身成了性能杀手。
 
 ### ㉒.3 生产踩坑：日志的误用
 - **热路径同步阻塞写盘**：每条 `LOG_INFO` 都同步 `fwrite`，IO 拖垮吞吐；应用异步队列 + 后台线程（见 ⑥）。
