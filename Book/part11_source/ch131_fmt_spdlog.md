@@ -615,6 +615,21 @@ class SPDLOG_API registry {
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `{fmt}` 的编译期格式串检查抓类型错配。** 你写错格式符立即编译报错。请说明标准对应。
+   - [标准] C++20 `std::format` 同样要求格式串与参数类型匹配（由库检查）；{fmt} 是其前身。
+   - [引用] ISO/IEC 14882:2023 §[format]（std::format 语义）/ fmt 文档；cppreference "std::format" 词条。
+
+2. **真实场景：`fmt::format` 比 `printf` 类型安全（无 `%` 解析 UB 风险）。** 你曾因格式符错配得到垃圾。请说明根因。
+   - [标准] `printf` 家族的格式符与实参不匹配通常为未定义行为；`format` 在类型层面保证匹配。
+   - [引用] ISO/IEC 14882:2023 §[cstdio]（printf 族风险）/ [format]（类型安全格式化）/ fmt 文档；cppreference "std::format" 词条。
+
+3. **真实场景：spdlog 以 `fmt` 为后端，支持异步多 sink 日志。** 你设计高性能日志。请说明（属库设计）。
+   - [标准] 无直接标准对应；异步/多 sink 是库设计，可结合线程与无锁队列（[atomics]/[thread]）。
+   - [引用] ISO/IEC 14882:2023 §[thread]/[atomics]（底层并发原语）/ fmt + spdlog 文档；cppreference。
+
+
 ```cpp
 // ⑳ fmt 常用格式说明符速查
 //   {}            默认格式

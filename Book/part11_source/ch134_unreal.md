@@ -637,6 +637,21 @@ void InspectGC(const TArray<void*>& reachables) { (void)reachables; }
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：UObject 反射/GC 由 UHT 生成代码（`UPROPERTY`/`UFUNCTION` 宏）。** 你以为这些是语言特性。请说明。
+   - [标准] 宏与代码生成（UHT）是构建期工具，非 C++ 语言设施；反射是引擎机制。
+   - [引用] ISO/IEC 14882:2023 §[cpp]（宏/预处理）/ Unreal UHT 文档；cppreference "Replacing text macros" 词条。
+
+2. **真实场景：`UPROPERTY` 指针被 GC 追踪（避免悬垂）。** 你对比标准智能指针。请说明机制差异。
+   - [标准] 追踪式 GC 是引擎机制；C++ 标准提供 `std::shared_ptr`/`weak_ptr` 引用计数（[util.smartptr]）。
+   - [引用] ISO/IEC 14882:2023 §[util.smartptr.shared] / [weak]（智能指针）/ Unreal GC 文档；cppreference "std::shared_ptr" 词条。
+
+3. **真实场景：值类型 `FVector` 可拷贝，UObject 不可拷贝。** 你设计游戏对象。请说明拷贝语义。
+   - [标准] 拷贝语义由用户定义；值类型默认可拷贝，身份型对象（UObject）应禁用拷贝。
+   - [引用] ISO/IEC 14882:2023 §[class.copy]（拷贝语义与三五法则）/ Unreal 文档；cppreference "Rule of three/five" 词条。
+
+
 | 概念 | UE 写法 | 标准 C++ 等价 | 说明 |
 |---|---|---|---|
 | 基类 | `UObject` | 自写基类 + 元数据 | 反射/GC 来源 |

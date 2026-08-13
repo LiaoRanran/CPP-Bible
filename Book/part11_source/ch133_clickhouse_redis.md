@@ -915,6 +915,21 @@ bool should_vectorize(size_t n, bool branchy) {
 
 ## ⑳ 速查表
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：ClickHouse 列存 + 向量化执行 vs 行存。** 你设计分析型查询。请说明（属系统架构，无标准对应）。
+   - [标准] 无 C++ 标准对应；列存利用连续内存批处理，语言层只保证数组连续（[dcl.array]）。
+   - [引用] ISO/IEC 14882:2023 §[dcl.array]（连续存储）/ ClickHouse 文档；cppreference "Array" 词条。
+
+2. **真实场景：Redis 单线程事件循环避免锁竞争。** 你对比 C++ 多线程并发。请说明。
+   - [标准] 单线程模型天然无数据竞争；C++ 多线程需显式同步（[intro.races]）。
+   - [引用] ISO/IEC 14882:2023 §[intro.races]（数据竞争）/ Redis 文档（event loop）；cppreference "Memory model" 词条。
+
+3. **真实场景：用 RESP 协议与 C++ 客户端通信。** 你序列化命令。请说明（属协议设计）。
+   - [标准] 网络序列化格式无标准规定；由协议文档定义，C++ 侧用缓冲/视图处理。
+   - [引用] Redis RESP 协议文档 / ISO/IEC 14882:2023 §[string.view]（零拷贝处理字节）；cppreference。
+
+
 ```cpp
 // ⑳ ClickHouse 向量化速查
 //   - 数据按列连续存放（ColumnVector<T>），不用 struct-of-row

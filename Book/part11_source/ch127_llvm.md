@@ -563,6 +563,21 @@ template <typename T> inline T add_generic(T a, T b) { return a + b; }
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：LLVM 的 libc++/compiler-rt 与 Clang 协同优化。** 你理解编译器与标准库实现分工。请说明标准边界。
+   - [标准] 标准只规定可观察行为与库接口；具体优化与实现由工具链自由决定。
+   - [引用] ISO/IEC 14882:2023 §[intro]（实现自由）/ LLVM 文档；cppreference 通用。
+
+2. **真实场景：用 `clang -stdlib=libc++` 切换标准库实现。** 你链接不同 STL。请说明可行性。
+   - [标准] 标准库实现是可替换的（只要符合标准接口）；跨实现传递标准库类型须一致。
+   - [引用] ISO/IEC 14882:2023 §[strings]（实现可替换）/ Clang 文档；cppreference。
+
+3. **真实场景：用 UBSan/ASan/TSan 抓未定义行为与数据竞争。** 你运行时校验 UB。请说明工具与标准的关系。
+   - [标准] 标准定义未定义行为（UB）与数据竞争；UBSan/TSan 正是检测这些标准违规的工具。
+   - [引用] ISO/IEC 14882:2023 §[intro.abstract]（UB）/ [intro.races]（数据竞争）/ Clang "UndefinedBehaviorSanitizer" 文档；cppreference "UB" 词条。
+
+
 | 主题 | 命令 / 概念 | 说明 |
 |---|---|---|
 | 源码→IR | `clang -emit-llvm -S -O2 x.cpp` | 生成人类可读 `.ll`（典型输出） |

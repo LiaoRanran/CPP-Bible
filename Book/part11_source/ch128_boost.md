@@ -745,6 +745,21 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 
 ## ⑳ 速查表
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 Boost.TypeTraits 做编译期判断（C++11 前）。** 你迁移到标准 `<type_traits>`。请说明对应。
+   - [标准] C++11 起标准提供 `<type_traits>` 全套编译期特性，与 Boost.TypeTraits 概念对应。
+   - [引用] ISO/IEC 14882:2023 §[meta]（标准类型特性）/ Boost.TypeTraits 文档；cppreference "Type traits" 词条。
+
+2. **真实场景：用 Boost.MP11 做类型列表元编程。** 你写编译期类型算法。请说明语言支撑。
+   - [标准] 模板与特化（[temp]）是编译期类型计算的语言基础；MP11 建立在此之上。
+   - [引用] ISO/IEC 14882:2023 §[temp]（模板元编程）/ Boost.MP11 文档；cppreference "Template metaprogramming" 词条。
+
+3. **真实场景：Boost 版本与 C++ 标准版本要求耦合。** 你升级 Boost 后需更高标准。请说明判定。
+   - [标准] 以特性测试宏与实现支持矩阵判定，而非假设版本。
+   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏）/ Boost 文档；cppreference "Feature test macros" 词条。
+
+
 ```text
 ┌──────────────────────────────────────────────────────────────┐
 │ Boost 速查表（核心库 → 标准映射 / 构建要点）                  │

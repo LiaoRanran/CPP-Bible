@@ -914,6 +914,21 @@ db->GetProperty("rocksdb.cfstats", &h);     // 每列族详细统计
 
 ## ⑳ 速查表 [经验]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：LevelDB 用 LSM-tree + MemTable + SSTable 组织数据。** 你理解写路径。请说明（属存储引擎设计，无标准对应）。
+   - [标准] 无直接 C++ 标准对应；这是存储引擎的架构选择，语言层只提供内存与类型原语。
+   - [引用] LevelDB / RocksDB 设计文档（LSM-tree, MemTable, SSTable）；cppreference 通用。
+
+2. **真实场景：compaction 带来写放大/读放大权衡。** 你调优 RocksDB。请说明（属工程权衡）。
+   - [标准] 无标准对应；属性能与持久化的工程权衡，由具体实现决定。
+   - [引用] RocksDB 文档 "Tuning Guide"（write/read/space amplification）；cppreference 通用。
+
+3. **真实场景：用 `Slice` 零拷贝引用底层字节（类似 `string_view`）。** 你避免拷贝大 value。请说明与标准的对应。
+   - [标准] 与 C++17 `std::string_view` 一样是非拥有视图语义，但 Slice 是库类型。
+   - [引用] ISO/IEC 14882:2023 §[string.view]（视图语义）/ LevelDB `Slice` 文档；cppreference "std::string_view" 词条。
+
+
 ```cpp
 #include <vector>
 #include <string>

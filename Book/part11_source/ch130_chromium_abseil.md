@@ -711,6 +711,21 @@ std::span<const int> t = s;      // 布局一致，可互转
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `absl::flat_hash_map` 替代 `std::unordered_map`（开放寻址更快）。** 你关心缓存友好。请说明标准对应。
+   - [标准] 标准无序容器要求 [unord.req]（Hash + KeyEqual）；abseil 是独立实现，不强制同接口。
+   - [引用] ISO/IEC 14882:2023 §[unord.req]（无序容器要求）/ Abseil 文档 "flat_hash_map"；cppreference "std::unordered_map" 词条。
+
+2. **真实场景：用 `absl::string_view` 做零拷贝只读视图（C++17 前）。** 你迁移到标准 `std::string_view`。请说明语义。
+   - [标准] C++17 起标准提供 `std::string_view`：连续字符序列的非拥有视图。
+   - [引用] ISO/IEC 14882:2023 §[string.view]（std::string_view）/ Abseil 文档；cppreference "std::string_view" 词条。
+
+3. **真实场景：`absl::Span` 对应 C++20 `std::span`。** 你统一用视图替代指针+长度。请说明。
+   - [标准] C++20 起标准提供 `std::span`：连续序列的非拥有视图。
+   - [引用] ISO/IEC 14882:2023 §[views.span]（std::span）/ Abseil 文档；cppreference "std::span" 词条。
+
+
 ```
 ┌──────────────────────────┬────────────────────────────┬──────────────────────┐
 │ 任务                      │ Abseil / Chromium API       │ 标准等价 / 备注       │

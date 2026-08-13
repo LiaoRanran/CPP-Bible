@@ -556,6 +556,21 @@ g++ -std=c++23 -E Examples/_ch124_vector.cpp -o repro.ii
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：libstdc++ 的 `std::string` 在 C++11 后从 COW 改为 SSO，且 `_GLIBCXX_USE_CXX11_ABI` 控制布局。** 你跨 ABI 传 string 崩溃。请说明标准契约。
+   - [标准] C++11 起 `basic_string` 必须连续且可独立修改，禁止写时复制；其具体内存布局是实现细节。
+   - [引用] ISO/IEC 14882:2023 §[strings]（basic_string 去 COW）/ GCC libstdc++ 手册 "Dual ABI"；cppreference "std::string" 词条。
+
+2. **真实场景：把旧 ABI 的 `__cxx11::string` 与新 ABI 混链导致 ODR/布局冲突。** 请说明责任归属。
+   - [标准] 标准库的内部表示（如 string 缓冲布局）不在标准保证内；跨 ABI 边界必须两边一致。
+   - [引用] ISO/IEC 14882:2023 §[strings]（实现细节）/ GCC 文档 "Dual ABI"；cppreference "std::string" 词条。
+
+3. **真实场景：依赖 libstdc++ 具体的 `allocator` 实现（如池细节）。** 你写的代码换编译器就坏。请说明边界。
+   - [标准] 标准只规定 `allocator` 接口与语义（[allocator.requirements]）；具体分配策略由实现自由决定。
+   - [引用] ISO/IEC 14882:2023 §[allocator.requirements]（分配器接口）/ GCC libstdc++ 手册；cppreference "std::allocator" 词条。
+
+
 ```text
 ┌───────────────────┬───────────────────────────────────────────┐
 │ 想做的事          │ 入口文件 / 真实行号                         │

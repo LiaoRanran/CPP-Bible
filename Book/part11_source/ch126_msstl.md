@@ -555,6 +555,21 @@ int read_entry() {
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：用 `/std:c++latest` 开启 MSVC STL 的新特性。** 你知道某特性未默认可用。请说明判定方式。
+   - [标准] 实现按特性测试宏逐步支持新特性；以 `__cpp_lib_*` 判定而非假设版本。
+   - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏）/ MSVC STL 博客；cppreference "Feature test macros" 词条。
+
+2. **真实场景：`/permissive-` 让模板两阶段名查找更严格。** 你旧代码在严格模式下报依赖名未 typename。请说明规则。
+   - [标准] 模板的两阶段名查找要求依赖名显式 `typename`/`template`；非依赖名在定义期即查。
+   - [引用] ISO/IEC 14882:2023 §[temp.res]（两阶段查找与依赖名）/ MSVC 文档；cppreference "Dependent names" 词条。
+
+3. **真实场景：MSVC STL 的 `std::format` 与 libstdc++ 有细微行为差。** 你做跨平台日志格式化。请说明契约。
+   - [标准] `std::format` 的格式化语义由标准规定；实现质量差异属实现层。
+   - [引用] ISO/IEC 14882:2023 §[format]（格式化库语义）/ MSVC STL 博客；cppreference "std::format" 词条。
+
+
 ```text
 ┌─────────────────────────┬──────────────────────────────────────────────┐
 │ 主题                    │ 入口 / 证据                                   │

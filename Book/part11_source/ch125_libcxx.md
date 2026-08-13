@@ -713,6 +713,21 @@ int probe() { return (int)sizeof(std::string); }  // 24(libc++) / 32(libstdc++)
 
 ## ⑳ 速查表 [标准]
 
+**练习题**（已升级为「真实场景 + 引用参考」框架：保留原考察技能，场景改写为工程应用）
+
+1. **真实场景：libc++ 的 `std::string` 用“容量-1 位”编码长度（与 libstdc++ 布局不同）。** 你跨标准库实现传 string 出问题。请说明。
+   - [标准] 标准不规定 `basic_string` 的内部表示；各实现布局可不同，跨实现传递须一致配置。
+   - [引用] ISO/IEC 14882:2023 §[strings]（实现自由的内部表示）/ libc++ 文档；cppreference "std::string" 词条。
+
+2. **真实场景：libc++ 在模块化（`import std`）上进度领先。** 你想用模块又不想绑死实现。请说明标准依据。
+   - [标准] C++20 引入模块，提供编译期接口单元；具体实现由编译器/标准库决定。
+   - [引用] ISO/IEC 14882:2023 §[module]（模块）/ libc++ release notes；cppreference "Modules" 词条。
+
+3. **真实场景：libc++ 与 libstdc++ 的 `std::regex` 性能差异显著。** 你做基准时惊讶。请说明谁负责什么。
+   - [标准] 正则表达式的匹配语义由标准规定，但性能与实现质量相关，不在标准保证内。
+   - [引用] ISO/IEC 14882:2023 §[re]（regular expressions 语义）/ libc++ 文档；cppreference "std::regex" 词条。
+
+
 | 主题 | libc++ 要点 | 对应节 |
 |---|---|---|
 | 身份宏 | `_LIBCPP_VERSION`，inline ns `std::__1` | ⑤ |
