@@ -628,12 +628,20 @@ int main() {
 [评] traits 是「编译期反射」的雏形，让泛型代码能「询问类型」而不必等到运行期；但它依赖大量模板特化与冗长的 `typename` 写法，concepts（ch67）正是为把这层「绕路自省」换成直白约束语法而生——萃取没有消失，只是被概念收编为一等公民。
 
 ### ㉒.2 真实工程坐标：type traits 活在哪些产品/项目里
-- 标准库与几乎每个泛型库都依赖它：`std::vector` 的 `std::is_nothrow_move_constructible` 分支、`std::shared_ptr` 的 `std::is_array` 特化路由、`std::optional` 的平凡析构优化，全靠 traits 在编译期选路。
-- 序列化/反射框架（Cereal、Magic Enum、Boost.Serialization）用 traits 探测类型是否可序列化、是否枚举、是否有特定成员，避免运行期 `typeid` 分支。
-- 游戏引擎与 ECS 用 `std::is_trivially_copyable` 等决定是否走 `memcpy` 快路径，大幅提升组件批量拷贝吞吐。
-- **密码学（Botan）**：用 `std::is_integral`/`std::is_trivially_copyable` 等 traits 在编译期为不同字宽与可平凡拷贝的缓冲区选择加解密实现路径，避免运行期 typeid 分支。
-- **定量金融（QuantLib）**：用 traits 区分 `Real`/`Complex` 与自定义数值类型，在编译期为定价引擎选解析或数值路径，是金融机构 C++ 代码库的常驻手法。
 
+下表把「type traits」拉成「在编译期探测类型属性并据此选路」的机制。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库与泛型库 | `std::vector`/`shared_ptr`/`optional` | `is_nothrow_move_constructible`/`is_array`/`is_trivially_destructible` 编译期选路 | 一切 C++ 程序地基 | traits 是编译期路由底座 [STANDARD] |
+| 序列化/反射 | Cereal、Magic Enum、Boost.Serialization | traits 探测可序列化/是否枚举/有无特定成员，避免 `typeid` 分支 | 数据基础设施 | 编译期能力探测 |
+| 游戏引擎/ECS | 组件批量拷贝 | `is_trivially_copyable` 决定是否走 `memcpy` 快路径 | 实时系统 | 组件拷贝吞吐优化 |
+| 密码学 | Botan | `is_integral`/`is_trivially_copyable` 按字宽与可平凡拷贝选加解密路径 | 安全基础设施 | 编译期选型免 typeid |
+| 定量金融 | QuantLib | traits 区分 `Real`/`Complex`/自定义数值，选解析或数值路径 | 金融 C++ 领域 | 定价引擎编译期路由 |
+
+> **表注（㉒.2）**：上表把「type traits」拉成「在编译期探测类型属性并据此选路」的机制。标准库用 `is_nothrow_move_constructible`/`is_array`/`is_trivially_destructible` 做分支与优化，序列化框架用 traits 探测可序列化性与成员，ECS 用 `is_trivially_copyable` 决定是否走 memcpy 快路径。注意 Botan 与 QuantLib 两行：前者用 traits 为不同字宽/可平凡拷贝缓冲区选加解密实现，后者用 traits 区分 `Real`/`Complex` 为定价引擎选解析或数值路径——traits 把「类型有什么能力」变成编译期可查询的常量，彻底替代运行期 typeid 分支。
+
+**一条判读**：用 type traits 的判据是「要根据类型的属性（平凡性/可移动/可序列化/数值类别）在编译期选不同实现」。容器优化（nothrow 移动、memcpy 快路径）、序列化路由、加解密/定价路径选择 → traits + `if constexpr`；避免运行期 `typeid`/`dynamic_cast` 分支。规则：能编译期查的属性绝不运行期查；自定义类型用 `type_traits` 变量模板或 `concept` 暴露属性，让泛型代码按属性分派而非按具体类型特化。
 ### ㉒.3 生产踩坑：type traits 的常见误用与陷阱
 - **`std::remove_reference` 不「去括号」变量**：它只作用于类型别名，写 `std::remove_reference<T>::type` 时漏掉 `typename` 或忘了 `::type` 是高频错误；C++14 起应改用 `_t` 别名（`std::remove_reference_t<T>`）。
 - **`std::enable_if` 必须出现在可SFINAE的语境**：把它放在函数体里不会触发替换失败，只能放在返回类型、默认模板实参或尾随返回位置，否则「约束」形同虚设。

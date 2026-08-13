@@ -517,12 +517,20 @@ static_assert(std::is_integral_v<int>);   // true，编译期已知
 [轶] 这条「把编译器的容错机制逆向工程成编程范式」的奇事，是 C++ 社区「在约束匮乏时代自己造工具」的典型缩影，也成就了无数老标准库与老框架的编译期分发逻辑。
 
 ### ㉒.2 真实工程坐标：SFINAE 活在哪些产品/项目里
-- Boost 全家桶：`Boost.EnableIf`、`Boost.TypeTraits`、`Boost.Serialization` 大量用 SFINAE 做「按类型能力选重载」，是这套技法的工业发源地。
-- 标准库自身：`std::enable_if` 驱动的 `std::vector` 的 `is_same` 特化路由、`std::shared_ptr` 的数组特化、`std::iterator_traits` 对指针的偏特化分支，底层都是 SFINAE。
-- 序列化/反射库（Cereal、Magic Enum）用 `void_t` 检测 idiom 判断「类型 T 是否有 serialize 方法」，编译期分流。
-- **Web/后端（nlohmann/json）**：用 `void_t`/SFINAE 探测用户是否提供了 ADL 可见的 `to_json`/`from_json`，编译期把自定义类型无缝接入 JSON 序列化，是序列化框架的经典探测 idiom。
-- **科学可视化（VTK，Kitware）**：用 SFINAE 为不同数据类型（`vtkDataArray` 子类）挑选 reader/writer 与处理管线，避免运行期大规模 `dynamic_cast`。
 
+下表把「SFINAE」拉成「按类型能力在编译期选重载」的探测技法。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| Boost 全家桶 | `Boost.EnableIf`/`TypeTraits`/`Serialization` | SFINAE 做「按类型能力选重载」 | 泛型库工业发源地 | SFINAE 技法诞生地 |
+| 标准库 | `std::enable_if`、`vector`/`shared_ptr`/`iterator_traits` | `enable_if` 驱动数组特化、指针偏特化分支 | 一切 C++ 程序地基 | SFINAE 是标准库分派底层 [STANDARD] |
+| 序列化/反射 | Cereal、Magic Enum | `void_t` 检测 idiom 判断「T 是否有 serialize 方法」 | 数据基础设施 | 编译期能力探测 |
+| Web/后端 | `nlohmann/json` | `void_t`/SFINAE 探测 ADL 可见 `to_json`/`from_json`，无缝接入 | 服务端序列化 | 经典探测 idiom |
+| 科学可视化 | VTK（Kitware） | SFINAE 为 `vtkDataArray` 子类挑 reader/writer 与管线 | 可视化基础设施 | 免运行期 dynamic_cast |
+
+> **表注（㉒.2）**：上表把「SFINAE」拉成「按类型能力在编译期选重载」的探测技法。Boost 是这套技法的工业发源地（`Boost.EnableIf`），标准库用 `enable_if` 驱动数组特化与指针偏特化，Cereal/Magic Enum 用 `void_t` 检测「是否有 serialize 方法」，nlohmann/json 用同一 idiom 把自定义类型无缝接入序列化。注意 VTK 一行：它用 SFINAE 为 `vtkDataArray` 各子类挑 reader/writer——把「类型能力探测」用到科学可视化的管线选择上，避免运行期大规模 `dynamic_cast`。
+
+**一条判读**：用 SFINAE 的判据是「要在替换失败时静默剔除重载（而非报错），按类型能力选实现」。`enable_if`/`void_t` 探测成员/操作、数组特化路由、自定义类型接入序列化 → SFINAE 主场。但要清醒：SFINAE 报错冗长、可读性差，C++20 起优先用 `requires`/`concept` 表达同一约束（报错收敛到调用点）。规则：新代码用 concepts 替代 SFINAE 迷宫；维护老库（Boost/标准库内部）时才碰 SFINAE；`void_t` 探测 idiom 仍是最通用的「有没有某成员」手法。
 ### ㉒.3 生产踩坑：SFINAE 的常见误用与陷阱
 - **报错信息天书**：一旦 SFINAE 没按预期筛掉重载，最终错误往往是一长串「无匹配重载」，根因（哪个替换失败）藏在几百行实例化回溯深处，极难定位。
 - **`enable_if` 摆错位置**：把它放在函数体内不会触发替换失败，只能放在返回类型、默认模板实参或尾随返回位置，否则约束失效。

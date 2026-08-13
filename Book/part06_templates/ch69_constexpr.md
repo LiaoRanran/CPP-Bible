@@ -567,12 +567,20 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 f
 [评] 它是零开销抽象的延伸——同样的代码，编译期能算就绝不拖到运行期，但「放宽史」本身也折射出委员会在「能力 vs 复杂度」之间的反复权衡。
 
 ### ㉒.2 真实工程坐标：`constexpr` 活在哪些产品/项目里
-- 标准库：`std::array`、`std::integer_sequence` 的构造、`std::char_traits` 的编译期比较、`std::is_constant_evaluated()`（C++20）让一份代码两用。C++23 把 `std::optional`、`std::variant`、部分 `<algorithm>` 标成 `constexpr`。
-- 游戏/图形引擎：用 `constexpr` 在编译期预计算查找表、多项式系数、颜色空间转换矩阵，省掉运行期初始化成本。
-- 嵌入式固件：编译期 CRC 表、编译期状态机转移表，把 RAM 占用压到最低（`constinit` 保证静态初始化期落地，避免静态初始化顺序灾难）。
-- **嵌入式安全（BearSSL）**：在极小 RAM 的 MCU 上用 `constexpr` 在编译期生成密码学 S-box 与查表，运行期零初始化成本，是 IoT/TLS 固件的真实手法。
-- **航天飞控（JPL/NASA）**：飞行软件编码标准鼓励 `constexpr` 表达物理常量与单位换算，在编译期捕获单位/量级错误，避免把这类 bug 带进发射前的验证（JPL 的 C++ 编码规范公开列为推荐实践）。
 
+下表把「`constexpr`」拉成「把运行期计算与初始化前移到编译期」的零成本设施。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库 | `std::array`/`integer_sequence`/`char_traits`、`is_constant_evaluated` | 编译期构造/比较；`is_constant_evaluated` 一份代码两用 | 一切 C++ 程序地基 | constexpr 进标准库 [STANDARD] |
+| 游戏/图形引擎 | 查找表/多项式系数/颜色矩阵 | `constexpr` 预计算，省运行期初始化成本 | 实时系统 | 编译期预计算 |
+| 嵌入式固件 | CRC 表、状态机转移表 | `constexpr` + `constinit` 压 RAM，避 SIOF | 资源受限设备 | 运行期零初始化成本 |
+| 嵌入式安全 | BearSSL（IoT/TLS MCU） | `constexpr` 编译期生成 S-box 与查表 | 极小 RAM 固件 | 运行期零初始化 |
+| 航天飞控 | JPL/NASA 编码规范 | `constexpr` 表达物理常量/单位换算，编译期捕获量级错误 | 飞行器控制软件 | 单位错误发射前拦截 [史] |
+
+> **表注（㉒.2）**：上表把「`constexpr`」拉成「把运行期计算与初始化前移到编译期」的零成本设施。标准库用它构造 `array`/`integer_sequence` 并靠 `is_constant_evaluated` 让一份代码两用，游戏/图形引擎预计算查找表与颜色矩阵，嵌入式用 `constexpr`+`constinit` 把 CRC 表与状态机压进 ROM、避 SIOF。注意 BearSSL 与 JPL/NASA 两行：前者在极小 RAM 的 MCU 上用 `constexpr` 生成密码学 S-box（运行期零初始化），后者鼓励用 `constexpr` 表达物理常量以在编译期捕获单位/量级错误——`constexpr` 在 IoT 固件与航天飞控里是「省内存」与「防单位 bug」的双重刚需。
+
+**一条判读**：用 constexpr 的判据是「计算/查表/常量可在编译期确定，且想省运行期成本或提前暴露错误」。编译期构造（array/integer_sequence）、预计算表（游戏/CRC/S-box）、物理常量/单位（航天）→ constexpr；配合 `constinit` 防 SIOF、配合 `if consteval` 区分编译/运行期两用（C++23）。规则：编译期已知的值与表优先 constexpr，但 `constexpr` 函数会增加编译时间且非所有 API 都 constexpr（C++23 才扩到 optional/variant/部分 algorithm）；运行期才知的值不能用。
 ### ㉒.3 生产踩坑：`constexpr` 的常见误用与陷阱
 - **隐式非常量求值陷阱**：`constexpr` 函数「能」在编译期求值不代表「一定」在编译期求值；只有当它出现在常量表达式语境（如 `static_assert`、模板实参、数组大小）时才真正编译期计算，否则照常运行期执行。
 - **`consteval` vs `constexpr` 混淆**：需要「必须编译期」语义时误用了 `constexpr`，导致本应失败的非常量调用被放行；应改用 `consteval`（C++20，提案 P1073）。

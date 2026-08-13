@@ -568,12 +568,20 @@ flowchart TD
 [评] 它彻底改变了模板风格——从 SFINAE（ch66）的「试探式」转向 `requires` 的「声明式」，报错从天书变人话，但长达二十年的拉锯也说明「通用性 vs 可读性」的张力有多难调和。
 
 ### ㉒.2 真实工程坐标：concepts 活在哪些产品/项目里
-- 标准库 `std::ranges`（C++20）是 concepts 的最大工业落地：`std::sort`、`std::find` 等算法改用 `std::random_access_iterator` 等概念约束，报错直接在调用点点名「你的类型缺了哪个操作」。
-- Abseil、Ranges-v3、Eigen 等库用 concepts 重写接口约束，取代旧的 `enable_if` 迷宫，编译错误大幅收敛。
-- 大型服务代码（如金融、游戏引擎）用自定义 concept（`Writable`、`Lockable`、`Allocator`）把「模板参数必须满足的契约」从文档约定升级为机器可检查。
-- **跨平台 GUI（Qt 6）**：开始用 concepts 约束信号/槽与容器 API 的模板参数，把「文档约定的契约」升级为机器可检查的约束，编译错误从几百行实例化回溯收敛到调用点。
-- **自动驾驶（Autoware/Apollo）**：用自定义 concept 描述传感器消息、点云与路径点的接口契约，让感知/规划模块间的模板接口在编译期即被校验，减少运行期类型错配。
 
+下表把「concepts」拉成「把模板参数的契约从文档升级为机器可检查」的 C++20 设施。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库 | `std::ranges`（`std::sort`/`find`） | 用 `random_access_iterator` 等 concept 约束算法，报错点名缺的操作 | 一切 C++20+ 程序地基 | concepts 最大工业落地 [STANDARD] |
+| 知名库 | Abseil、Ranges-v3、Eigen | concepts 重写接口约束，取代 `enable_if` 迷宫 | 工业级基础设施 | 编译错误大幅收敛 |
+| 大型服务代码 | 金融/游戏引擎（`Writable`/`Lockable`/`Allocator`） | 自定义 concept 把「参数契约」从文档升级为机器可检查 | 服务端/实时系统 | 契约机器化 |
+| 跨平台 GUI | Qt 6 | concepts 约束信号/槽与容器 API 模板参数 | 桌面/嵌入式 UI | 错误收敛到调用点 |
+| 自动驾驶 | Autoware / Apollo | 自定义 concept 描述传感器消息/点云/路径点契约 | 感知/规划模块 | 编译期校验接口，减运行期错配 |
+
+> **表注（㉒.2）**：上表把「concepts」拉成「把模板参数的契约从文档升级为机器可检查」的 C++20 设施。标准库 `std::ranges` 是最大工业落地（`std::sort` 用 `random_access_iterator` 约束、报错直接点名缺的操作），Abseil/Ranges-v3/Eigen 用它取代 `enable_if` 迷宫，Qt 6 把信号/槽契约机器化。注意 Autoware/Apollo 一行：自动驾驶用自定义 concept 描述传感器消息/点云/路径点的接口契约，让感知与规划模块间的模板接口在编译期就被校验——concepts 在这里把「运行期类型错配」提前成「编译期拒绝」，对安全关键系统价值极高。
+
+**一条判读**：用 concepts 的判据是「模板参数有一组必须满足的语义/语法契约，且要让违反时报错收敛到调用点」。算法约束（ranges）、库的接口契约、安全关键系统的模块接口 → concepts（C++20）；它直接取代 SFINAE/`enable_if` 迷宫，报错从几百行实例化回溯收敛到一行。规则：新泛型代码默认用 concept 表达约束；复合约束用 `requires` 子句；库的公共模板接口优先 concepts 而非 SFINAE，既收敛报错又当文档。
 ### ㉒.3 生产踩坑：concepts 的常见误用与陷阱
 - **约束不够强导致仍选错重载**：写得过于宽松的 concept 会让多个重载同时满足，最终回到「偏序/约束排序」的微妙判定，踩与 SFINAE 时代相同的坑。
 - **`requires` 表达式里的硬错误**：`requires` 内若写了「对某些类型必然失败的代码」（而非单纯约束不满足），会直接硬错误而非约束不满足，需改用 `requires requires` 或谨慎写法。

@@ -588,12 +588,20 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 f
 [评] TMP 极致的零运行期开销，是以「编译期极慢、报错极狠、可读性极差」为代价的，被戏称「图灵焦油坑」。它逼出了 `constexpr` 与 concepts，等于用自身之痛推动了语言进化。
 
 ### ㉒.2 真实工程坐标：TMP 活在哪些产品/项目里
-- 标准库深处：`std::tuple`、`std::integer_sequence`、`std::ratio`、`std::integral_constant` 全是 TMP 产物；`std::chrono::duration` 的编译期单位换算也靠它。
-- Boost.MPL / Boost.Hana：前者用 `mpl::vector`、`mpl::transform` 把元编程第一次做成「库」，后者用 `constexpr` + 异构容器统一编译期与运行期（`transform`/`filter` 两用），代表 TMP 向 constexpr 融合的转向。
-- 数值与 DSP 库（如 Blitz++、Eigen 的部分编译期维度推导）用 TMP 做编译期维度检查与循环展开。
-- **生物信息（SeqAn，FU Berlin）**：用密集 TMP 元函数表示 DNA/蛋白质字母表与序列类型，在编译期做类型级的状态机与维度检查，支撑基因组比对工具。
-- **计算几何（CGAL）**：用 TMP 在编译期区分几何核（精确 vs 近似）、维度标签与拓扑，把大量几何不变量检查前移到编译期。
 
+下表把「TMP（模板元编程）」拉成「在编译期用类型做计算」的隐藏引擎。
+
+| 领域/类别 | 代表系统·生态 | 它承担的角色 | 规模·行业地位 | 备注 / 标准互动 |
+| --- | --- | --- | --- | --- |
+| 标准库深处 | `std::tuple`/`integer_sequence`/`ratio`/`integral_constant`、`chrono::duration` | TMP 产物；编译期单位换算 | 一切 C++ 程序地基 | TMP 是标准库隐藏引擎 [STANDARD] |
+| Boost 元编程库 | Boost.MPL / Boost.Hana | MPL 把元编程做成库；Hana 用 `constexpr`+异构容器统一编译期/运行期 | 元编程基础设施 | TMP → constexpr 融合转向 |
+| 数值/DSP 库 | Blitz++、Eigen（维度推导） | TMP 做编译期维度检查与循环展开 | 数值计算 | 维度编译期验证 |
+| 生物信息 | SeqAn（FU Berlin） | 密集 TMP 元函数表示字母表/序列，类型级状态机与维度检查 | 基因组比对基石 | 运行期分支前移编译期 |
+| 计算几何 | CGAL | TMP 区分几何核/维度标签/拓扑，不变量检查前移编译期 | CAD/CAM/机器人/GIS | 几何不变量编译期化 |
+
+> **表注（㉒.2）**：上表把「TMP（模板元编程）」拉成「在编译期用类型做计算」的隐藏引擎。标准库的 `tuple`/`ratio`/`integral_constant` 与 `chrono::duration` 单位换算是 TMP 产物，Boost.MPL 第一次把元编程做成库、Boost.Hana 用 `constexpr` 把它与运行期融合，SeqAn/CGAL 把密集 TMP 用到生物字母表与几何不变量检查。注意 Hana 一行：它用 `constexpr` + 异构容器让 `transform`/`filter` 在编译期/运行期两用——这是 TMP 从「纯类型计算」向「constexpr 融合」的范式转向，也是现代 C++ 元编程的演进方向。
+
+**一条判读**：用 TMP 的判据是「要在编译期做类型级计算/不变量检查/维度推导，且结果影响生成的代码」。单位换算（duration）、类型级状态机、维度检查、编译期查表 → TMP；但 TMP 编译慢、报错晦涩、调试难。规则：能写 `constexpr` 函数（C++14+）就别写纯类型递归元函数——`constexpr` 更易读且可调试；只有「类型本身携带信息」（如 chrono 单位、Eigen 维度）才需真 TMP。现代趋势：TMP 与 constexpr 融合（Hana 路线）。
 ### ㉒.3 生产踩坑：TMP 的常见误用与陷阱
 - **编译时间爆炸**：深层递归实例化 + 大量元函数调用让编译时间线性甚至超线性增长，大项目里 TMP 头文件常成为编译瓶颈。
 - **报错不可读**：一个类型不符会沿实例化链展开成千上万行模板回溯，根因极难肉眼定位。
