@@ -33,6 +33,10 @@ Options:
   --json PATH    write full failure report (default tools/compile_report.json)
   --parallel     compile parts concurrently (one process per part)
   --workers N    max concurrent part-workers (default: part count, capped cpu)
+  --only PATH [PATH...]  only compile the listed chapter file(s) (scoped run)
+  --changed      only compile Book/*.md changed vs git base (incremental;
+                 auto-falls back to full when nothing changed)
+  --base REF     git base ref for --changed (default: origin/master, else HEAD~1)
 """
 
 import os, re, sys, subprocess, tempfile, shutil, json
@@ -71,6 +75,21 @@ if '--workers' in sys.argv:
 OUT_JSON = 'tools/compile_report.json'
 if '--json' in sys.argv:
     OUT_JSON = sys.argv[sys.argv.index('--json') + 1]
+
+# --- incremental / scoped selection (T2) ---------------------------------
+CHANGED = '--changed' in sys.argv
+BASE = None
+if '--base' in sys.argv:
+    try:
+        BASE = sys.argv[sys.argv.index('--base') + 1]
+    except Exception:
+        BASE = None
+ONLY = []
+if '--only' in sys.argv:
+    i = sys.argv.index('--only') + 1
+    while i < len(sys.argv) and not sys.argv[i].startswith('--'):
+        ONLY.append(sys.argv[i])
+        i += 1
 
 
 def extract_blocks(text, max_blocks=None):
@@ -197,6 +216,48 @@ def collect_chapters(book_root):
     return paths
 
 
+def _resolve_base():
+    """Pick a sensible git base ref for --changed: prefer origin/master/main,
+    fall back to HEAD~1. Returns a rev-parse-able ref string."""
+    for ref in ("origin/master", "origin/main", "HEAD~1"):
+        try:
+            subprocess.check_output(["git", "rev-parse", "--verify", ref],
+                                    stderr=subprocess.DEVNULL)
+            return ref
+        except Exception:
+            continue
+    return "HEAD~1"
+
+
+def collect_changed(book_root, base=None):
+    """Return set of changed Book/*.md paths (forward-slashed) for incremental
+    compile. Union of:
+      * committed changes since <base> (CI push / PR),
+      * unstaged worktree edits (local pre-commit check),
+      * staged (--cached) edits.
+    Only Book/**/*.md is retained. Returns empty set if git is unavailable or
+    nothing relevant changed (caller falls back to a full run)."""
+    base = base or _resolve_base()
+    results = set()
+    # committed changes since base
+    try:
+        out = subprocess.check_output(
+            ["git", "diff", "--name-only", f"{base}..HEAD"],
+            text=True, stderr=subprocess.DEVNULL)
+        results |= {l.strip() for l in out.splitlines() if l.strip()}
+    except Exception:
+        pass
+    # unstaged + staged worktree edits
+    for extra in (["git", "diff", "--name-only"],
+                  ["git", "diff", "--cached", "--name-only"]):
+        try:
+            out = subprocess.check_output(extra, text=True, stderr=subprocess.DEVNULL)
+            results |= {l.strip() for l in out.splitlines() if l.strip()}
+        except Exception:
+            pass
+    return {p for p in results if p.startswith("Book/") and p.endswith(".md")}
+
+
 def dump_report(total_chapters, passed_chapters, failed_chapters,
                 total_blocks, failed_blocks, all_failures,
                 processed_paths=None, partial=True):
@@ -250,7 +311,26 @@ def _merge_chapter_results(chap_results):
 def main():
     RESUME = '--resume' in sys.argv
     book = 'Book/'
-    paths = collect_chapters(book)
+    all_paths = collect_chapters(book)
+
+    # --- incremental / scoped selection (T2) ---------------------------
+    if ONLY:
+        targets = [p for p in ONLY if os.path.exists(p)]
+        partial_run = True
+    elif CHANGED:
+        changed = {c.replace('\\', '/') for c in collect_changed(book, BASE)}
+        targets = [p for p in all_paths if p.replace('\\', '/') in changed]
+        if not targets:
+            print("[*] --changed: 无章节变更，回退全量编译。")
+            targets = all_paths
+            partial_run = False
+        else:
+            print(f"[*] --changed: 仅编译 {len(targets)} 个变更章节 (partial)。")
+            partial_run = True
+    else:
+        targets = all_paths
+        partial_run = False
+    paths = targets
 
     if PARALLEL:
         # --- parallel-by-part branch (no resume; always fresh) -----------
@@ -269,7 +349,7 @@ def main():
             _merge_chapter_results(chap_results)
         dump_report(total_chapters, passed_chapters, failed_chapters,
                     total_blocks, failed_blocks, all_failures,
-                    processed_paths=processed, partial=False)
+                    processed_paths=processed, partial=partial_run)
     else:
         # --- sequential branch (preserves --resume checkpoint) -----------
         total_chapters = passed_chapters = failed_chapters = 0
@@ -277,7 +357,7 @@ def main():
         all_failures = []
         done_paths = set()
 
-        if RESUME and os.path.exists(OUT_JSON):
+        if (not partial_run) and RESUME and os.path.exists(OUT_JSON):
             try:
                 prev = json.load(open(OUT_JSON, encoding='utf-8'))
                 total_chapters = prev.get('total_chapters', 0)
@@ -328,7 +408,7 @@ def main():
             'gcc': GCC,
             'flags': FLAGS,
             'main_only': MAIN_ONLY,
-            'partial': False,
+            'partial': partial_run,
             'total_chapters': total_chapters,
             'passed_chapters': passed_chapters,
             'failed_chapters': failed_chapters,

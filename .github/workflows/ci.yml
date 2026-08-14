@@ -256,13 +256,16 @@ jobs:
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 100
         g++ --version | head -1
 
-    - name: Compile Audit (全量隔离块语法检查)
+    - name: Compile Audit (隔离块语法检查 · T2 增量优先)
       # --main-only 仅验证含 int main 的完整程序；设计性豁免（多文件工程/
       # 模块/MSVC/POSIX 专属/外部库/故意错误·UB/跨块增量）由 compile_gate
       # 依据 tools/compile_exempt.json 放行，避免误伤。
       # Clang 矩阵以 g++ 别名调用 clang++-19，C++23 支持完备但诊断风格
       # 与 GCC 有差异，初期 continue-on-error 观察基线。
-      run: python3 tools/compile_all.py --main-only
+      # T2 增量门禁：默认只编译 git 变更的 Book/*.md（秒级），无变更自动回退全量；
+      # `||` 兜底：若增量路径因异常（如 git 不可达）未能产出可用报告，则全量重跑，
+      # 保证编译防回归门禁永不直接跳过。
+      run: python3 tools/cppbible.py compile --changed --parallel || python3 tools/cppbible.py compile --full --parallel
       continue-on-error: ${{ matrix.compiler == 'clang' }}
 
     - name: Compile Gate (防回归门禁)

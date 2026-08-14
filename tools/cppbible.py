@@ -329,6 +329,43 @@ def cmd_report(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _compile_extra_args(args: argparse.Namespace, *, changed: bool) -> list:
+    """Build compile_all.py args for the chosen scope."""
+    extra = ["--main-only"]
+    if changed:
+        extra.append("--changed")
+        base = getattr(args, "base", None)
+        if base:
+            extra += ["--base", base]
+    if getattr(args, "parallel", False):
+        extra.append("--parallel")
+    return extra
+
+
+def cmd_compile(args: argparse.Namespace) -> int:
+    """Incremental/full compile of chapters (produces compile_report.json).
+
+    Default is incremental (--changed): only Book/*.md changed vs git base are
+    compiled; if nothing changed it auto-falls back to a full run.  The actual
+    regression gate (compile_gate.py) is a separate step/command so CI keeps an
+    explicit hard-fail gate; locally follow up with `cppbible check --stage compile`.
+    """
+    changed = not getattr(args, "full", False)  # 默认增量
+    scope = "changed (incremental)" if changed else "full"
+    print(f"\n[cppbible] compile --{scope}\n")
+    run([PYTHON_EXE, "tools/compile_all.py", *_compile_extra_args(args, changed=changed)],
+        check=True)
+    print("\n[cppbible] compile done -> tools/compile_report.json")
+    print("          下一步: cppbible check --stage compile  (含编译门禁)")
+    return 0
+
+
+def cmd_compile_changed(args: argparse.Namespace) -> int:
+    """Alias for `compile --changed`."""
+    args.full = False
+    return cmd_compile(args)
+
+
 # ---------------------------------------------------------------------------
 # CLI 入口
 # ---------------------------------------------------------------------------
@@ -353,6 +390,21 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("preflight", help="pre-push local checks")
     sub.add_parser("report", help="summarize build reports")
 
+    compile_cmd = sub.add_parser("compile", help="compile chapters (incremental/full)")
+    compile_cmd.add_argument("--changed", action="store_true",
+                             help="only changed chapters (default)")
+    compile_cmd.add_argument("--full", dest="full", action="store_true",
+                             help="all 151 chapters")
+    compile_cmd.add_argument("--base", default=None,
+                             help="git base ref for --changed")
+    compile_cmd.add_argument("--parallel", action="store_true",
+                             help="parallel by part")
+
+    compile_changed = sub.add_parser("compile-changed",
+                                     help="alias: compile --changed")
+    compile_changed.add_argument("--base", default=None)
+    compile_changed.add_argument("--parallel", action="store_true")
+
     return parser
 
 
@@ -374,6 +426,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         return cmd_preflight(args)
     if args.command == "report":
         return cmd_report(args)
+    if args.command == "compile":
+        return cmd_compile(args)
+    if args.command == "compile-changed":
+        return cmd_compile_changed(args)
 
     parser.print_help()
     return 0

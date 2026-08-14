@@ -91,12 +91,21 @@ def main() -> int:
                 regressions.append((f, blk, err))
 
     actual_keys = {(f, b) for f, b, _ in actual}
-    stale = [e for e in exempt_list if (e["file"], e["block"]) not in actual_keys]
+    # STALE 仅在「本报告实际编译过的章节」范围内计算，避免增量 (partial) 编译时
+    # 把未重编章节的豁免条目误报为 STALE（T2 增量门禁）。
+    processed = report.get("processed_paths") or []
+    processed_files = {os.path.basename(p) for p in processed}
+    if not processed_files:  # 兜底：无 processed_paths 时按全量处理
+        processed_files = {e["file"] for e in exempt_list}
+    stale = [e for e in exempt_list
+             if e["file"] in processed_files
+             and (e["file"], e["block"]) not in actual_keys]
 
     print("=" * 68)
     print(f"编译门禁  gcc={report.get('gcc')}  main_only={report.get('main_only')}  "
           f"partial={report.get('partial')}")
     print(f"  报告失败块 : {len(actual)}")
+    print(f"  处理章节   : {len(processed_files)}  (partial={report.get('partial')})")
     print(f"  已知豁免   : {len(exempt_hit)}  "
           f"(显式 {sum(1 for *_, k in exempt_hit if k == 'explicit')} / "
           f"模式 {sum(1 for *_, k in exempt_hit if k == 'auto')})")
