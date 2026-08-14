@@ -41,6 +41,7 @@ C++ 的版本演进本身，就是一份"学习路线困惑史"。1998 年 C++98
 
 > 史料来源：github.com/isocpp/CppCoreGuidelines、isocpp.org（C++ 标准与学习资源）
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：史料补遗与持续编年]
 ```cpp
 // 验证本章示例的编译器（本机已取证）
 // C:/Qt/Tools/mingw1310_64/bin/g++.exe  版本 13.1.0
@@ -52,6 +53,7 @@ C++ 的版本演进本身，就是一份"学习路线困惑史"。1998 年 C++98
 
 [经验] 大二只会应试语法 ≠ 能写工程代码。招聘看**项目 + 底层理解**，不是卷面分。两个月的核心 KPI：
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：为什么需要路线图]
 ```cpp
 // KPI 量化：暑假结束你应当能交出
 enum SummerKPI { ThreadPool=1, MemPool=2, Logger=4, JsonParser=8, NetServer=16 };
@@ -61,6 +63,7 @@ enum SummerKPI { ThreadPool=1, MemPool=2, Logger=4, JsonParser=8, NetServer=16 }
 - 路线错误示范：从第 1 页《C++ Primer》逐行读到第 800 页 → 两周后放弃。
 - 正确姿势：能编译的小项目驱动，遇到不会的语法再回查。
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：概述：为什么需要路线图]
 ```cpp
 // 每天最小产出：1 个能跑的 .cpp
 int main() { /* 今天写了什么，能编译运行吗？ */ return 0; }
@@ -70,6 +73,7 @@ int main() { /* 今天写了什么，能编译运行吗？ */ return 0; }
 
 [标准] 不必追新特性全貌，按"够用 + 面试常考"取舍。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：++ 版本演进（一句话每版必学点）]
 ```cpp
 #include <memory>
 #include <thread>
@@ -81,11 +85,13 @@ std::shared_ptr<int> p = std::make_shared<int>(1); // 智能指针
 std::thread t([]{ /*...*/ }); t.join();            // 线程
 ```
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：++ 版本演进（一句话每版必学点）]
 ```cpp
 // C++14：泛型 lambda / 返回值推导（几乎白送）
 auto f = [](auto a, auto b) { return a + b; };
 ```
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：++ 版本演进（一句话每版必学点）]
 ```cpp
 #include <string>
 #include <string_view>
@@ -96,6 +102,7 @@ for (auto& [k,v] : m) { (void)k; (void)v; }
 std::string_view sv = "no copy"; (void)sv;
 ```
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：++ 版本演进（一句话每版必学点）]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -111,6 +118,7 @@ std::ranges::sort(d);
 
 [实现] 把能力拆成四块，缺哪块补哪块：
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：核心能力地图（四格）]
 ```
 ┌─────────────┬─────────────┐
 │ 语言(Lang)   │ 标准库(STL)  │
@@ -125,6 +133,7 @@ std::ranges::sort(d);
 └─────────────┴─────────────┘
 ```
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：核心能力地图（四格）]
 ```cpp
 #include <vector>
 // 自测：下面每样能否 5 分钟内手写？不能就进对应章节
@@ -141,6 +150,7 @@ void self_test() {
 
 [实现] 每天 2–3h，第 1–2 周目标：能写 RAII、能熟练用 STL。
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：初级→中级路径]
 ```cpp
 // 练习1：指针与函数指针（文件 Examples/_ch165_pointer.cpp）
 int (*fp)(int,int) = &add;        // 函数指针
@@ -148,6 +158,7 @@ const int* cp = &x;               // 指向 const
 int* const pc = &x;               // const 指针
 ```
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：初级→中级路径]
 ```cpp
 #include <utility>
 #include <vector>
@@ -156,6 +167,7 @@ void inc(int& r) { r++; }
 std::vector<int> w = std::move(v); // 移动而非拷贝
 ```
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：初级→中级路径]
 ```cpp
 #include <string>
 #include <map>
@@ -166,6 +178,7 @@ std::count_if(v.begin(), v.end(), [](int x){ return x>3; });
 std::map<std::string,int> m; m["k"]=1;
 ```
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：初级→中级路径]
 ```cpp
 #include <iostream>
 // 练习4：类与构造/析构顺序
@@ -180,6 +193,7 @@ struct B { A a; B(){std::cout<<"B";} ~B(){std::cout<<"~B";} };
 
 [实现] 第 3–5 周目标：能写模板、能写线程安全代码、看得懂 STL 源码片段。
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：中级→高级路径]
 ```cpp
 #include <iostream>
 // 练习5：模板与特化（文件 Examples/_ch165_template.cpp）
@@ -188,11 +202,13 @@ template<> struct Box<bool> { bool v; void flip(){v=!v;} };
 template<typename... Ts> void print(Ts... xs){ ((std::cout<<xs<<" "),...); }
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：中级→高级路径]
 ```cpp
 // 练习6：concepts 约束（文件 Examples/_ch165_concept.cpp）
 template<std::integral T> T square(T x){ return x*x; }
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：中级→高级路径]
 ```cpp
 #include <mutex>
 // 练习7：并发与原子（文件 Examples/_ch165_concurrency.cpp）
@@ -200,6 +216,7 @@ std::mutex mtx; std::lock_guard<std::mutex> lk(mtx); ++counter;
 std::atomic<int> ac{0}; ++ac;     // 无锁计数
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：中级→高级路径]
 ```cpp
 // 练习8：内存对齐与 placement new（文件 Examples/_ch165_memory.cpp）
 struct Align16 { alignas(16) int x; };
@@ -212,6 +229,7 @@ int* p = new (buf) int(99);       // 在指定缓冲区构造
 
 [平台] 后端路线核心。先吃透三个系统调用层概念：文件描述符、进程/线程、I/O 多路复用。
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：系统编程方向]
 ```cpp
 #include <cstdint>
 #include <cstddef>
@@ -222,6 +240,7 @@ void encode(std::vector<uint8_t>& out, const std::string& payload);
 bool decode(const std::vector<uint8_t>& buf, size_t& pos, std::string& out);
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：系统编程方向]
 ```cpp
 // 项目名：单线程 Reactor 回声服务器（epoll / IOCP）
 // 关键文件落点：见第163章 网络（事件循环 + 非阻塞 socket）
@@ -234,6 +253,7 @@ class Reactor { /* add_event / del_event / loop */ };
 
 [平台] 嵌入式不追 C++ 高级特性，重"确定性与内存可控"。用 STM32CubeMX 生成工程后，用 C++ 写驱动类。
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：嵌入式方向]
 ```cpp
 #include <cstdint>
 // 嵌入式片段：用类封装 LED（无堆分配、无异常、无 RTTI）
@@ -246,6 +266,7 @@ public:
 };
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：嵌入式方向]
 ```cpp
 // FreeRTOS 练手：创建两个任务交替翻转
 // xTaskCreate(led_task, "led", 128, nullptr, 1, nullptr);
@@ -258,6 +279,7 @@ public:
 
 [实现] 性能路线的关键不是"多开线程"，而是**数据局部性（DOD）**。
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：高性能 / 游戏方向]
 ```cpp
 #include <vector>
 // 错误示范：面向对象，缓存不友好
@@ -271,6 +293,7 @@ struct Entities {
 };
 ```
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：高性能 / 游戏方向]
 ```cpp
 // ECS 最小骨架（见第142章 ECS）
 struct Position { float x, y; };
@@ -284,6 +307,7 @@ struct Velocity { float dx, dy; };
 
 [标准] 想进基础架构岗，必须会读标准库与编译器源码。路线：先 STL 实现，再 LLVM/模板元编程。
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：编译器 / 库开发方向（读源码路径）]
 ```cpp
 #include <cstddef>
 #include <vector>
@@ -298,6 +322,7 @@ struct Velocity { float dx, dy; };
 //   }
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：编译器 / 库开发方向（读源码路径）]
 ```cpp
 #include <cstddef>
 // 读源码练习：自己实现简化 vector（文件见第159章 练习载体）
@@ -318,6 +343,7 @@ public:
 
 [经验] 按"先肌肉记忆、后原理"顺序，不要从厚到薄死读。
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：必读书单（务实 4 本，含先读哪章）]
 ```cpp
 // 阅读顺序（暑假可执行版）
 const char* order[] = {
@@ -333,6 +359,7 @@ const char* order[] = {
 - 《STL 源码剖析》（侯捷）：配合第 159 章手写 vector/红黑树食用。
 - 《深度探索 C++ 对象模型》（Inside the C++ Object Model）：虚函数、多重继承布局必读。
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：必读书单（务实 4 本，含先读哪章）]
 ```cpp
 // 读书产出检验：能否默写对象内存布局？
 struct Base { virtual void f(); int a; };
@@ -344,30 +371,35 @@ struct Der : Base { int b; };
 
 [实现] 这是简历核心。每个项目给出工时与落点章。
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：必做项目]
 ```cpp
 // 项目1：线程池（见第159章 线程池，文件 Examples/_ch165_threadpool.cpp）
 // 工时：3 天。落点：mutex + condition_variable + 任务队列
 ThreadPool pool(4); pool.submit([]{ /* job */ });
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：必做项目]
 ```cpp
 // 项目2：内存池（见第160章 内存池，文件 Examples/_ch165_mempool.cpp）
 // 工时：2 天。落点：定长块 freelist，减少 new/delete 碎片
 FixedPool pool(sizeof(int)); void* p = pool.alloc(); pool.free(p);
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：必做项目]
 ```cpp
 // 项目3：日志库（见第161章 日志，文件 Examples/_ch165_log.cpp）
 // 工时：2 天。落点：级别 + 时间搓 + 线程安全 + 文件滚动
 Logger log("app.log"); log.info("server start");
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：必做项目]
 ```cpp
 // 项目4：JSON 解析器（见第162章 JSON，文件 Examples/_ch165_json.cpp）
 // 工时：4 天。落点：递归下降 + variant 值模型
 // 练习实现 parse_value / parse_object / parse_array
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：必做项目]
 ```cpp
 // 项目5：网络框架（见第163章 网络，文件 Examples/_ch165_network.cpp）
 // 工时：1 周。落点：Reactor + 长度前缀帧 + 连接管理
@@ -400,6 +432,7 @@ perf record ./main
 perf report                 # 看哪行最耗时 / cache-miss
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：工具链精通]
 ```cpp
 // sanitizer 实战：这段会被 AddressSanitizer 抓到堆溢出
 int* a = new int[4];
@@ -411,6 +444,7 @@ delete[] a;
 
 [标准] 不必逐条读提案，但要知道"去哪看"。
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：标准跟进]
 ```cpp
 // 关注方式（务实）
 // 1) WG21 提案站: 搜 "PxxxxRy <特性名>" 看动机与示例
@@ -418,6 +452,7 @@ delete[] a;
 // 3) 订阅: /r/cpp、ISO C++ 官网 "News"
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：标准跟进]
 ```cpp
 #include <expected>
 // 看提案学会的最小能力：读懂特性示例
@@ -432,6 +467,7 @@ delete[] a;
 
 [经验] 直接读大厂代码比看教程快。按关键词搜：
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：社区与开源]
 ```cpp
 // GitHub 搜索语法（直接可用）
 //   language:C++ stars:>5000 topic:networking
@@ -441,6 +477,7 @@ delete[] a;
 //   chenshuo/muduo, entropia/tinyhttpd
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：社区与开源]
 ```cpp
 // 贡献路径：先 fork → 修一个文档 typo → 再修 good-first-issue
 // 哪怕只合进一个 typo PR，简历也能写"参与开源"
@@ -452,12 +489,14 @@ delete[] a;
 
 [经验] 校招 C++ 后端高频题，按出现频率排序。配 cpp 自测能否手写。
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：面试考点地图（基础弱→重点补）]
 ```cpp
 // 高频1：指针与引用区别
 // 指针可空可重指有独立地址；引用必绑对象、无独立对象语义
 int a=1; int& r=a; int* p=&a; (void)r; (void)p;
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：面试考点地图（基础弱→重点补）]
 ```cpp
 // 高频2：虚函数与多态（对象模型第10节）
 struct B { virtual void f() {} virtual ~B(){} };
@@ -466,11 +505,13 @@ B* b = new D(); b->f();   // 动态绑定，走 vtable
 delete b;
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：面试考点地图（基础弱→重点补）]
 ```cpp
 // 高频3：STL 底层（vector 扩容 / map 红黑树 / unordered_map 哈希）
 // 见第159章：手写 vector 与红黑树即为此题答案
 ```
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：面试考点地图（基础弱→重点补）]
 ```cpp
 #include <memory>
 // 高频4：智能指针区别
@@ -480,6 +521,7 @@ auto s = std::make_shared<int>(2);
 std::weak_ptr<int> w = s;   // 不增计数
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：面试考点地图（基础弱→重点补）]
 ```cpp
 // 高频5：并发（互斥/死锁/原子内存序）
 // 死锁根因：两锁获取顺序不一致 → 统一加锁顺序或用 std::lock
@@ -492,12 +534,14 @@ std::lock(m1, m2);          // 同时锁，避免死锁
 
 [经验] 考研与就业不冲突，C++ 主要用在**数据结构与算法（408 之一）**和**机试**。
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：考研方向]
 ```cpp
 // 408 四门优先级（对 C++ 就业者）
 // 数据结构(最相关,用C++写算法题) > 计算机组成(理解底层) >
 // 操作系统(进程/内存/并发,与第163章互补) > 计算机网络(与网络项目互补)
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：考研方向]
 ```cpp
 #include <vector>
 // 机试练手：用 C++ STL 刷基础题（不碰高级特性，求稳）
@@ -517,12 +561,14 @@ void qsort(std::vector<int>& a, int l, int r) {
 
 [经验] 你最可能在这些坑里浪费时间：
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：常见误区（应试 vs 工程，3 条）]
 ```cpp
 // 误区1：刷题多 = 能写项目
 // 现实：刷 300 道 LeetCode 仍写不出线程池。项目与算法是两套能力。
 bool can_write_project = (leetcode_count > 300) && (projects == 0); // 仍 false
 ```
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：常见误区（应试 vs 工程，3 条）]
 ```cpp
 #include <memory>
 // 误区2：把 C++ 当 C 用，全程裸指针 + malloc
@@ -531,6 +577,7 @@ void bad() { int* p = (int*)malloc(sizeof(int)); /* 易忘 free */ }
 void good(){ auto p = std::make_unique<int>(1); } // 离开作用域自动释放
 ```
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：常见误区（应试 vs 工程，3 条）]
 ```cpp
 // 误区3：追最新标准特性，忽略基础
 // 现实：面试考虚表布局/内存对齐，不考 std::print
@@ -541,6 +588,7 @@ void good(){ auto p = std::make_unique<int>(1); } // 离开作用域自动释放
 
 [经验] 两个月 ≈ 60 天，每天 2–3h。下表按周排，具体到动作。
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：天计划（暑假紧凑表）]
 ```
 ┌──────┬──────────────────────────────┬──────────┐
 │ 周次 │ 动作                         │ 交付物   │
@@ -555,6 +603,7 @@ void good(){ auto p = std::make_unique<int>(1); } // 离开作用域自动释放
 └──────┴──────────────────────────────┴──────────┘
 ```
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：天计划（暑假紧凑表）]
 ```cpp
 // 每天固定节奏（2-3h）
 // 1h 读书/看源码 → 1h 写当天 cpp → 0.5h 跑 sanitizer+单测 → 0.5h 记笔记
@@ -567,6 +616,7 @@ struct Day { bool read, code, test, note; };
 
 [经验] 以下名字直接搜即得，无空泛推荐。
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：资源索引（全部具体可搜）]
 ```cpp
 // B站 UP 主（搜名字）
 //   侯捷：C++ 面向对象/STL/内存模型系列（配第10节读书）
@@ -575,12 +625,14 @@ struct Day { bool read, code, test, note; };
 //   极客时间《C++ 实战训练营》(付费,按需)
 ```
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：资源索引（全部具体可搜）]
 ```cpp
 // 书籍（见第⑩节顺序）
 //   C++ Primer / Effective C++ / STL源码剖析 / 深度探索C++对象模型
 // 在线：en.cppreference.com（语法权威查）、zh.cppreference.com（中文）
 ```
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：资源索引（全部具体可搜）]
 ```cpp
 // 练手项目名（直接搜）
 //   muduo（网络）、tinyhttpd（HTTP）、redis（数据结构/网络）
@@ -588,6 +640,7 @@ struct Day { bool read, code, test, note; };
 //   本机示例集：Examples/_ch165_*.cpp（14 个已验证可编译）
 ```
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：资源索引（全部具体可搜）]
 ```cpp
 // 求职/刷题
 //   LeetCode（算法）、牛客网（C++ 面经）、GitHub trending(C++)
@@ -653,6 +706,7 @@ C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概�
 ## 附录 A：进阶阅读路线 [B: Principle / F: Industry / J: Learning]
 
 ### 等级 1：语言掌握（1-3 个月）
+> **示例 54** [难度 ★☆☆☆☆] [主题：等级 1：语言掌握（1-3 个月）]
 ```
 必须读完:
 - Effective Modern C++ (Scott Meyers, 2014) — 42个条款, 每个10页
@@ -665,6 +719,7 @@ C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概�
 ```
 
 ### 等级 2：专家级（3-12 个月）
+> **示例 55** [难度 ★☆☆☆☆] [主题：等级 2：专家级（3-12 个月）]
 ```
 阅读顺序:
 1. C++ Concurrency in Action (Anthony Williams, 2nd ed)
@@ -684,6 +739,7 @@ C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概�
 ```
 
 ### 等级 3：工业贡献（12+ 个月）
+> **示例 56** [难度 ★☆☆☆☆] [主题：等级 3：工业贡献（12+ 个月）]
 ```
 - 贡献开源: LLVM (添加clang-tidy check), Chromium (fix bug), ClickHouse (add aggregate function)
 - 内部库开发: 类似 folly, Abseil 的基础设施组件
@@ -691,6 +747,7 @@ C++98 标准化催生第一波系统教材与路线；C++11 让"现代 C++"概�
 - 标准参与: 跟踪 WG21 邮件列表, 参加 SG1/SG14 会议
 ```
 
+> **示例 57** [难度 ★☆☆☆☆] [主题：等级 3：工业贡献（12+ 个月）]
 ```cpp
 #include <iostream>
 int main() {
@@ -710,6 +767,7 @@ int main() {
 | 后端开发 | ch93-94 线程/取消, ch107-112 原子/无锁, ch163 网络编程 | Linux System Programming, Google SRE book | 高性能Web服务器, 消息队列, RPC框架 |
 | 考研408 | ch01 C历史, ch04/ch06/ch07 版本演进, ch95-101 算法, ch35-47 内存+OOP | 王道考研408系列, 数据结构(严蔚敏) | 408真题 (C++实现版) |
 
+> **示例 58** [难度 ★☆☆☆☆] [主题：附录 B：嵌入式/后端/考研 三条路]
 ```cpp
 #include <iostream>
 int main() {
@@ -731,6 +789,7 @@ int main() {
 
 本书覆盖不全的领域（需要外部补充）：
 
+> **示例 59** [难度 ★☆☆☆☆] [主题：附录 C：你还需要读什么 [J: L]
 ```
 1. 编译原理 (本书: ch11编译器, ch127 LLVM)
    → 补充: Engineering a Compiler (Keith Cooper, 3rd ed)
@@ -753,6 +812,7 @@ int main() {
    → 实践: 实现简单的Raft共识算法
 ```
 
+> **示例 60** [难度 ★☆☆☆☆] [主题：附录 C：你还需要读什么 [J: L]
 ```cpp
 #include <iostream>
 int main() {
@@ -842,6 +902,7 @@ jl  .older
 
 使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
 
+> **示例 61** [难度 ★☆☆☆☆] [主题：重构建议（学习路径迭代）]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -859,6 +920,7 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 工具链里的 AddressSanitizer 能在越界/泄漏发生的瞬间抓出来。请写一个 `SafeArray`，
 用 `operator[]` 做边界检查并在越界时抛异常，演示“早失败、定位准”比“裸数组悄悄越界”安全。
 
+> **示例 62** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -900,6 +962,7 @@ int main() {
 调试时最怕“只看到一句 log，不知来自哪个文件哪一行”。C++20 的 `std::source_location`
 让日志自动携带调用点位置，是现代化诊断的基础。
 
+> **示例 63** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <source_location>
@@ -925,6 +988,7 @@ int main() {
 回归出现后，手工逐个 commit 试太低效。`git bisect` 本质是“在有序的‘通过→失败’序列上二分”。
 请用 `std::lower_bound` 找到“第一个失败提交”的索引。
 
+> **示例 64** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -953,6 +1017,7 @@ int main() {
 **选型**：把阶段目标映射为“从零实现”项目（第 159–164 章），每完成一个就补一块能力拼图。
 **落地**：
 
+> **示例 65** [难度 ★☆☆☆☆] [主题：演绎 1：把“90 天计划”落到具体]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -983,6 +1048,7 @@ int main() {
 **选型**：按提案编号区间判断主题（语言特性 / 库 / 演化），先读“已合并进某版 C++”的，再读“活跃草案”。
 **落地**：
 
+> **示例 66** [难度 ★☆☆☆☆] [主题：演绎 2：如何读 WG21 提案——]
 ```cpp
 #include <iostream>
 #include <string>

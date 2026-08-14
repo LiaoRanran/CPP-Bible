@@ -47,6 +47,7 @@
 
 > `[立场]` 本节是导学，立场标签仅用于标注后续每个论断的来源层级。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标 [标准]]
 ```cpp
 // C1 编译期求和：constexpr 让求和发生在翻译期，static_assert 在编译期验证
 #include <iostream>
@@ -73,6 +74,7 @@ int main() {
 - **constexpr 家族（ch21/ch69）**：`constexpr`/`consteval`/`constinit`（ch21）把函数值计算搬进翻译期。
 - **移动语义（ch115）/完美转发（ch116）**：编译期生成的代码仍需与运行期对象模型配合。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：前置知识 [标准]]
 ```cpp
 // C2 前置示例：一个简单的函数模板——模板是 CTP 的最小单元
 #include <iostream>
@@ -103,6 +105,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII）[经验]
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）[经验]]
 ```
                          ┌─────────────────────────────────────────────┐
                          │          编译期编程 演化主线                    │
@@ -178,6 +181,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：编译期值 vs 运行期值 [实现]
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：内存图：编译期值 vs 运行期值 []
 ```
 运行期求值（翻译后留在 .text，运行时算）：
 ┌────────── stack ──────────┐
@@ -192,6 +196,7 @@ classDiagram
       对象不存在于内存，值被烧进指令流
 ```
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：内存图：编译期值 vs 运行期值 []
 ```cpp
 // C3 编译期值不占内存：数组大小用 constexpr 计算（需要翻译期常量）
 #include <iostream>
@@ -206,6 +211,7 @@ int main() {
 
 ## ⑧ 生命周期图：模板实例化与 constexpr 求值 [实现]
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：生命周期图：模板实例化与 const]
 ```
 翻译期（编译）                         运行期（执行）
 ─────────────────                     ─────────────────
@@ -220,6 +226,7 @@ consteval 函数 ──► 必须常量语境 ────┘         （若传�
 
 ## ⑨ 调用栈/时序图：编译期 vs 运行期分派 [经验]
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：调用栈/时序图：编译期 vs 运行期]
 ```
 编译期分派（constexpr + if constexpr / consteval）：
   main ──(翻译期已折叠)──► 直接得到结果，无函数调用入栈
@@ -233,6 +240,7 @@ consteval 函数 ──► 必须常量语境 ────┘         （若传�
 
 ## ⑩ 汇编分析：consteval 折叠为立即数（-O2）[实现·GCC15.3.0] [VERIFIED]
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：汇编分析：consteval 折叠为]
 ```cpp
 // C4 consteval 强制编译期：factorial(5) 在 -O2 下成为立即数 120
 #include <iostream>
@@ -263,6 +271,7 @@ _Z4fact 不存在（consteval 立即函数不发射任何符号）；main 中只
 
 `type_traits` 是 CTP 的"标准库"。下面演示其最常用的一组。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：联系：type traits 的工业]
 ```cpp
 // C5 谓词：is_integral / is_same / is_pointer
 #include <iostream>
@@ -278,6 +287,7 @@ int main() {
 }
 ```
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：联系：type traits 的工业]
 ```cpp
 // C6 类型变换：remove_reference / add_pointer / remove_cv
 #include <iostream>
@@ -292,6 +302,7 @@ int main() {
 }
 ```
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：联系：type traits 的工业]
 ```cpp
 // C7 条件选择：conditional / enable_if 在类型层面的分支
 #include <iostream>
@@ -308,6 +319,7 @@ int main() {
 }
 ```
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：联系：type traits 的工业]
 ```cpp
 // C8 逻辑组合：conjunction / disjunction / negation（短路求值）
 #include <iostream>
@@ -329,6 +341,7 @@ int main() {
 
 **方案**：用 `consteval` 在编译期对字面量做 FNV-1a 哈希，得到编译期 `unsigned long long` 常量；运行期用 `switch(hash(method))` 分派——编译期字符串被折叠成整数比较，零扫描、可被编译器做 jump table。
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：工业案例：编译期字符串哈希驱动协议分]
 ```cpp
 // C9 编译期 FNV-1a 哈希（consteval）：字符串→整数，运行期零扫描
 #include <iostream>
@@ -365,6 +378,7 @@ int main() {
 }
 ```
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：工业案例：编译期字符串哈希驱动协议分]
 ```cpp
 // C10 编译期整数字面量解析：把 "1024" 这类配置常量在翻译期转成 int
 #include <iostream>
@@ -387,6 +401,7 @@ int main() {
 }
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：工业案例：编译期字符串哈希驱动协议分]
 ```cpp
 // C11 标签分发：编译期按"是否有序列化能力"选不同后端
 #include <iostream>
@@ -419,6 +434,7 @@ int main() {
 }
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：工业案例：编译期字符串哈希驱动协议分]
 ```cpp
 // C12 if constexpr 分派：编译期选 JSON 或二进制序列化，零运行期分支
 #include <iostream>
@@ -442,6 +458,7 @@ int main() {
 }
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：工业案例：编译期字符串哈希驱动协议分]
 ```cpp
 // C13 SFINAE 重载集：探测类型是否拥有 .size() 成员
 #include <iostream>
@@ -467,6 +484,7 @@ int main() {
 
 下列 `文件：` + `行号：` 取自 GCC 15.3.0 真实 `type_traits` 与 `concepts`（行号随 libstdc++ 版本更新）。
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：源码分析：libstdc++ 的 t]
 ```
 文件：type_traits                          行号：93
     template<typename _Tp, _Tp __v>
@@ -485,6 +503,7 @@ int main() {
 - `integral_constant`（93）是**所有布尔型 traits 的基类**：把值 `value` 作为编译期常量，并支持隐式转 `bool`（用于 `if (trait::value)`）。
 - `true_type`/`false_type`（117/120）只是它的两个特化别名。
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：源码分析：libstdc++ 的 t]
 ```
 文件：type_traits                          行号：134 / 139 / 2838
     template<bool _Cond, typename _Tp = void> struct enable_if { };
@@ -495,6 +514,7 @@ int main() {
 
 - `enable_if`（134）是 SFINAE 的"开关"：当 `_Cond` 为真才定义 `::type`，否则**整个模板被静默移出重载集**。`enable_if_t`（2838）是便利别名。
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：源码分析：libstdc++ 的 t]
 ```
 文件：type_traits                          行号：467
     template<typename _Tp> struct is_integral : public false_type { };
@@ -509,6 +529,7 @@ int main() {
 - `is_integral`（467）是"主模板=假，对各整型偏特化=真"的经典 TMP 分支模式。
 - `conditional`（2461）把"三元运算符"搬进类型系统：编译期按 `_Cond` 选 `type`。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：源码分析：libstdc++ 的 t]
 ```
 文件：concepts                             行号：109
     template<typename _Tp>
@@ -520,6 +541,7 @@ int main() {
 
 > `[实现·GCC15.3.0]` Concepts 在 libstdc++ 中**建立在 type traits 之上**：`concept integral`（concepts:109）直接复用了 `is_integral_v`。这说明"Concepts 不是另起炉灶，而是给 traits 加了语法糖 + 约束语义"。
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：源码分析：libstdc++ 的 t]
 ```cpp
 // C14 用 traits 机制自己造一个 enable_if 风格的"编译期开关"
 #include <iostream>
@@ -551,6 +573,7 @@ int main() {
 
 > `[标准]` 静态反射（P2996）是 CTP 的"下一站"：今天我们用 `consteval` + 字符串哈希只能处理**字面量字符串**；P2996 之后，编译器可在编译期暴露"某 struct 有哪些成员、各自什么类型"，从而自动生成 `operator==`、`to_json`、`visit` 等样板，彻底消灭手写反射。
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：提案：CTP 的演进方向 [标准]]
 ```cpp
 // C15 P2996 方向的"玩具反射"：现在用 traits 手动枚举成员（未来由编译器生成）
 #include <iostream>
@@ -578,6 +601,7 @@ int main() {
 2. 为什么 `constexpr` 函数还能在运行期调用，而 `consteval` 不行？
 3. SFINAE 是什么？为什么 C++20 推荐用 Concepts 取代它？
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：面试题 [经验]]
 ```cpp
 // C16 面试题第一题的"可运行演示"：三者能力边界
 #include <iostream>
@@ -594,6 +618,7 @@ int main() {
 }
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：面试题 [经验]]
 ```cpp
 // C17 面试题第三题：同一约束，SFINAE vs Concepts 两种写法
 #include <iostream>
@@ -616,6 +641,7 @@ int main() {
 
 ## ⑯ 易错点 [经验]
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：易错点 [经验]]
 ```cpp
 // C18 易错点1：consteval 只能吃编译期常量——下面这行若取消注释会编译失败
 #include <iostream>
@@ -629,6 +655,7 @@ int main() {
 }
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：易错点 [经验]]
 ```cpp
 // C19 易错点2：if constexpr 的"两个分支都必须能实例化"
 #include <iostream>
@@ -652,6 +679,7 @@ int main() {
 }
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：易错点 [经验]]
 ```cpp
 // C20 易错点3：constexpr 函数里调用了非 constexpr 的东西 → 无法编译期求值
 #include <iostream>
@@ -676,6 +704,7 @@ int main() {
 - **Q：编译期计算会让二进制变大吗？** 会，如果同一 constexpr 函数被不同常量实参实例化多次（生成多份代码）。但单常量实参通常被折叠为立即数，几乎不增代码。
 - **Q：TMP 现在还要学吗？** 要。纯类型计算（typelist、类型映射）仍靠 TMP；但值计算应优先 constexpr。
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：[经验]]
 ```cpp
 // C21 FAQ 演示：同一 constexpr 函数既编译期也运行期
 #include <iostream>
@@ -695,6 +724,7 @@ int main() {
 3. **`if constexpr` 替代运行时 `if` + traits 分支**，让编译器把死分支整个删掉。
 4. **编译期字符串用 `std::string_view` 作 `consteval` 实参**（C++20 起允许），避免 `char...` 包展开样板。
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // C22 最佳实践2：用 concept 约束，错误可读
 #include <iostream>
@@ -708,6 +738,7 @@ int main() {
 }
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // C23 最佳实践3：if constexpr 消除运行期死分支
 #include <iostream>
@@ -734,6 +765,7 @@ int main() {
 - 同一 constexpr 被 N 个不同常量实参调用，可能生成 N 份代码（代码膨胀）。
 - 重度 TMP（如 Boost.MPL 风格）曾让单 TU 编译耗时数分钟。
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：性能分析：编译期快，但翻译期慢 [经]
 ```
 编译时间成本示意（实测量级，示意）：
   普通函数                     ~0 额外翻译成本
@@ -742,6 +774,7 @@ int main() {
   大型表达式模板(数百 T)        可能 +秒级，需 Modules/LTO 缓解
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：性能分析：编译期快，但翻译期慢 [经]
 ```cpp
 // C24 性能对照：编译期斐波那契被折叠，运行期版本需要算
 #include <iostream>
@@ -782,6 +815,7 @@ int main() {
 | 反射 | 无内建（P2996 方向） | 派生宏 / 部分内置 trait | 完全编译期自省（强） |
 | 错误可读性 | Concepts 后较好；旧 SFINAE 糟糕 | 编译器错误清晰 | 极佳（comptime 栈可见） |
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：跨语言对比：Rust const g]
 ```cpp
 // C25 用 C++ 模板"模拟" Rust 的 const generic：数组大小作编译期参数
 #include <iostream>
@@ -797,6 +831,7 @@ int main() {
 }
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：跨语言对比：Rust const g]
 ```cpp
 // C26 编译期字符串作非类型模板参数（C++20 允许 string_view 字面量）
 #include <iostream>
@@ -814,6 +849,7 @@ int main() {
 }
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：跨语言对比：Rust const g]
 ```cpp
 #include <iostream>
 // C24: consteval 编译期素数表——验证编译器完全展开循环
@@ -837,6 +873,7 @@ int main() {
 }
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：跨语言对比：Rust const g]
 ```cpp
 // C25: if constexpr 编译期路由——替代 SFINAE 的清晰写法
 #include <iostream>
@@ -857,6 +894,7 @@ int main() {
 }
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：跨语言对比：Rust const g]
 ```cpp
 // C26: 编译期字符串哈希（FNV-1a constexpr）——用于 switch 分派字符串
 #include <iostream>
@@ -875,6 +913,7 @@ int main() {
 }
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：跨语言对比：Rust const g]
 ```cpp
 // C27: std::integral_constant + tag dispatch——编译期选择实现
 #include <iostream>
@@ -963,12 +1002,14 @@ int main() {
 
 ## 附录: 编译期编程深度
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：附录: 编译期编程深度]
 ```cpp
 #include <iostream>
 template<int N>struct Fib{static constexpr int v=Fib<N-1>::v+Fib<N-2>::v;};template<>struct Fib<0>{static constexpr int v=0;};template<>struct Fib<1>{static constexpr int v=1;};
 int main(){std::cout<<Fib<10>::v<<std::endl;return 0;}
 ```
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：附录: 编译期编程深度]
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -976,6 +1017,7 @@ template<typename T>constexpr bool is_ptr_v=std::is_pointer_v<T>;
 int main(){std::cout<<is_ptr_v<int*><<" "<<is_ptr_v<int><<std::endl;return 0;}
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：附录: 编译期编程深度]
 ```cpp
 #include <iostream>
 #include <array>
@@ -983,12 +1025,14 @@ constexpr auto make_squares(){std::array<int,10> a{};for(int i=0;i<10;++i)a[i]=i
 int main(){constexpr auto sq=make_squares();std::cout<<sq[5]<<std::endl;return 0;}
 ```
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：附录: 编译期编程深度]
 ```cpp
 #include <iostream>
 template<typename...Ts>constexpr int count=sizeof...(Ts);
 int main(){std::cout<<count<int,double,char><<std::endl;return 0;}
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：附录: 编译期编程深度]
 ```cpp
 #include <iostream>
 consteval int compile_only(int x){return x*x;}
@@ -1061,6 +1105,7 @@ int main(){std::cout<<compile_only(7)<<std::endl;return 0;}
 
 <details><summary>答案与解析</summary>
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 constexpr unsigned blocks_for(unsigned n, unsigned block) {
@@ -1084,6 +1129,7 @@ int main() { std::cout << blocks_for(1000, 256) << '\n'; }
 
 用 `void_t` + SFINAE 探测 `value_type` / `begin()` / `end()` 是否存在：
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <type_traits>
 #include <vector>
@@ -1112,6 +1158,7 @@ int main() {
 
 类型列表用递归特化累加长度，`type_list_size<Ts...>` 在编译期产出整数常量：
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <cstddef>
 template <typename... Ts> struct type_list { };
@@ -1256,6 +1303,7 @@ C++14 起 `integral_constant` 又被赋予了 `constexpr operator()`（代码中
 
 ### 可编译实证
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：可编译实证]
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -1311,6 +1359,7 @@ int main()
 
 ### D5.3 可复现演示
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 

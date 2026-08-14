@@ -67,6 +67,7 @@ libstdc++ 实现采用**开链法（separate chaining）**：一个桶数组（`
 
 ## ④ 知识图谱（ASCII）
 
+> **示例 1** [难度 ★★★☆☆] [主题：知识图谱（ASCII）]
 ```
                      ┌──────────────────────────────┐
                      │  Unordered Associative        │
@@ -147,6 +148,7 @@ classDiagram
 
 开链法下，每个元素是一个 `_Hash_node`，含：`_M_next`（下一节点指针）、`_M_hash_code`（缓存的哈希码）、值。
 
+> **示例 2** [难度 ★★★☆☆] [主题：内存图 / 对象布局]
 ```
 x86-64（指针 8B，哈希码 size_t 8B）：
   _Hash_node<int>:  [ _M_next 8B | _M_hash_code 8B | int value 4B | pad 4B ] = 24B
@@ -172,6 +174,7 @@ x86-64（指针 8B，哈希码 size_t 8B）：
 
 ## ⑧ 生命周期图
 
+> **示例 3** [难度 ★★★☆☆] [主题：生命周期图]
 ```
 构造 -> 仅建 _M_before_begin 哨兵, _M_bucket_count=1 (单桶)
   │
@@ -190,6 +193,7 @@ erase(k): 从桶链表摘除节点, delete, element_count-- (不触发 rehash)
 
 ## ⑨ 调用栈 / 时序图（一次 `unordered_set::find`）
 
+> **示例 4** [难度 ★★★☆☆] [主题：调用栈 / 时序图]
 ```
 调用方
   │ unordered_set::find(k)                 // unordered_set.h: 见 ⑬
@@ -240,6 +244,7 @@ _Hashtable::_M_find_node(bkt, key, code)  // hashtable.h:812
 
 场景：网关维护在线会话表，键为 `session_id`（字符串），值为会话上下文指针/状态。需要极高并发的查找/插入/过期删除；"`unordered_map`"是天然选型。
 
+> **示例 5** [难度 ★★★☆☆] [主题：工业案例：分布式会话缓存]
 ```cpp
 // 工业案例 C1：会话表（unordered_map<string, SessionState>）
 #include <unordered_map>
@@ -294,6 +299,7 @@ int main() {
 
 `unordered_set` 薄封装 `_Hashtable`（`bits/unordered_set.h:102` `class unordered_set`，组合成员 `_Hashtable _M_h`）：
 
+> **示例 6** [难度 ★★★☆☆] [主题：源码分析（libstdc++ 逐行）]
 ```cpp
 #include <cstddef>
 // 文件：bits/unordered_set.h   行号：102, 133, 490, 504, 601, 690, 731, 782, 829, 854, 865
@@ -365,6 +371,7 @@ int main() {
 
 ## ⑯ 易错点
 
+> **示例 7** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // ❌ 错误1：自定义类型未特化 hash -> 编译失败
 #include <unordered_set>
@@ -387,6 +394,7 @@ int main() {
 }
 ```
 
+> **示例 8** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // ❌ 错误2：扩容导致迭代器失效（rehash 后旧迭代器不可用）
 #include <unordered_set>
@@ -402,6 +410,7 @@ int main() {
 }
 ```
 
+> **示例 9** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // ❌ 错误3：糟糕哈希导致严重碰撞（所有键同桶 -> O(n) 查找）
 #include <unordered_set>
@@ -415,6 +424,7 @@ int main() {
 }
 ```
 
+> **示例 10** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // ❌ 错误4：忘记 reserve，运行期反复 rehash 造成延迟毛刺
 #include <unordered_map>
@@ -451,6 +461,7 @@ int main() {
 6. 并发：`unordered_map` 本身非线程安全；读多写少用 `shared_mutex` 或分段锁；或选用 `tbb::concurrent_hash_map`/`absl` 并发容器。
 7. 若需要"有序遍历 + 缓存友好"，改用排序 `vector` 或 `flat_map`（GCC13 未实现，用 `vector<pair>`+`sort`）。
 
+> **示例 11** [难度 ★★★☆☆] [主题：最佳实践]
 ```cpp
 // 最佳实践 B1：自定义键的高质量哈希 + 透明等值（C++20 异构查找）
 #include <unordered_set>
@@ -493,6 +504,7 @@ int main() {
 - `[实现·GCC15]`：默认 `max_load_factor = 1.0`；当 `size / bucket_count > 1.0` 触发 rehash，桶数按 `_M_rehash_policy` 增长（`hashtable.h:2159` `_M_need_rehash`）。`reserve(n)` 直接把桶数提到能容纳 n 而不超载荷。
 - `[经验]`：碰撞攻击面——libstdc++ 默认字符串哈希是 **FNV-1a**（`hash_bytes.h:54`），**非抗碰撞**。对外网输入做键时，应使用带密钥哈希（如 SipHash，自行实现或第三方库）或限制键空间。
 
+> **示例 12** [难度 ★★★☆☆] [主题：性能分析]
 ```cpp
 // 性能 P1：reserve 前后 rehash 次数对比（用 bucket_count 变化观测）
 #include <unordered_set>
@@ -509,6 +521,7 @@ int main() {
 }
 ```
 
+> **示例 13** [难度 ★★★☆☆] [主题：性能分析]
 ```cpp
 // 性能 P2：microbenchmark 量级（示意）。unordered vs ordered 查找循环
 #include <unordered_set>
@@ -611,6 +624,7 @@ int main() {
 
 以下为第85章完整可编译示例集（每块独立、自带 `#include` 与 `int main`，经 `g++ -std=c++23 -O2 -Wall -Wextra` 校验）。
 
+> **示例 14** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U1 基础：unordered_set 创建与查找（无序）
 #include <unordered_set>
@@ -623,6 +637,7 @@ int main() {
 }
 ```
 
+> **示例 15** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U2 基础：unordered_map 插入与访问
 #include <unordered_map>
@@ -639,6 +654,7 @@ int main() {
 }
 ```
 
+> **示例 16** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U3 operator[] vs at vs find（at 越界抛异常）
 #include <unordered_map>
@@ -654,6 +670,7 @@ int main() {
 }
 ```
 
+> **示例 17** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U4 insert 返回 pair<iterator,bool>
 #include <unordered_set>
@@ -668,6 +685,7 @@ int main() {
 }
 ```
 
+> **示例 18** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U5 自定义键类型：Point + 高质量哈希 + 等值
 #include <unordered_set>
@@ -692,6 +710,7 @@ int main() {
 }
 ```
 
+> **示例 19** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U6 load_factor / max_load_factor 观测
 #include <unordered_set>
@@ -706,6 +725,7 @@ int main() {
 }
 ```
 
+> **示例 20** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U7 rehash 显式扩容，观察 bucket_count 跳变
 #include <unordered_set>
@@ -719,6 +739,7 @@ int main() {
 }
 ```
 
+> **示例 21** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U8 reserve 预留容量（避免反复 rehash）
 #include <unordered_map>
@@ -734,6 +755,7 @@ int main() {
 }
 ```
 
+> **示例 22** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U9 bucket 接口：定位键所在桶与桶长度
 #include <unordered_set>
@@ -748,6 +770,7 @@ int main() {
 }
 ```
 
+> **示例 23** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U10 局部迭代器：遍历单个桶（begin(n)/end(n)）
 #include <unordered_set>
@@ -763,6 +786,7 @@ int main() {
 }
 ```
 
+> **示例 24** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U11 透明哈希（C++20）：find 用 string_view，免临时 string
 #include <unordered_set>
@@ -789,6 +813,7 @@ int main() {
 }
 ```
 
+> **示例 25** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U12 extract 节点句柄 + 跨表迁移（零拷贝）
 #include <unordered_set>
@@ -803,6 +828,7 @@ int main() {
 }
 ```
 
+> **示例 26** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U13 merge 合并（C++17）
 #include <unordered_set>
@@ -816,6 +842,7 @@ int main() {
 }
 ```
 
+> **示例 27** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U14 equal_range（unordered_multiset 取某键全部）
 #include <unordered_set>   // std::unordered_multiset 定义于此，无独立 <unordered_multiset> 头
@@ -829,6 +856,7 @@ int main() {
 }
 ```
 
+> **示例 28** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U15 工业：词频统计（Counter）
 #include <unordered_map>
@@ -846,6 +874,7 @@ int main() {
 }
 ```
 
+> **示例 29** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U16 工业：倒排索引（token -> doc ids），unordered_map<string, unordered_set>
 #include <unordered_map>
@@ -862,6 +891,7 @@ int main() {
 }
 ```
 
+> **示例 30** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U17 工业：URL 短链/缓存命中率统计（计数 + 命中判定）
 #include <unordered_map>
@@ -882,6 +912,7 @@ int main() {
 }
 ```
 
+> **示例 31** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U18 删除：按迭代器与按键，观察失效规则
 #include <unordered_set>
@@ -895,6 +926,7 @@ int main() {
 }
 ```
 
+> **示例 32** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U19 桶长度诊断（碰撞健康检查）
 #include <unordered_set>
@@ -912,6 +944,7 @@ int main() {
 }
 ```
 
+> **示例 33** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U20 糟糕哈希导致全碰撞（验证最坏情况）
 #include <unordered_set>
@@ -926,6 +959,7 @@ int main() {
 }
 ```
 
+> **示例 34** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U21 node_type 提取后引用仍有效（节点未移动）
 #include <unordered_set>
@@ -939,6 +973,7 @@ int main() {
 }
 ```
 
+> **示例 35** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U22 版本宏：C++20 透明哈希可用性探测
 #include <unordered_set>
@@ -954,6 +989,7 @@ int main() {
 }
 ```
 
+> **示例 36** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U23 折叠表达式批量插入 unordered_set
 #include <unordered_set>
@@ -970,6 +1006,7 @@ int main() {
 }
 ```
 
+> **示例 37** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U24 用用户定义字面量计时（UDL 带空格写法）观察 reserve 收益
 #include <unordered_map>
@@ -990,6 +1027,7 @@ int main() {
 }
 ```
 
+> **示例 38** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U25 unordered_multimap：一键多值
 #include <unordered_map>
@@ -1004,6 +1042,7 @@ int main() {
 }
 ```
 
+> **示例 39** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U26 try_emplace（C++17）：仅在缺失时构造 value，避免覆盖
 #include <unordered_map>
@@ -1019,6 +1058,7 @@ int main() {
 }
 ```
 
+> **示例 40** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U27 insert_or_assign：存在则赋值，缺失则插入
 #include <unordered_map>
@@ -1032,6 +1072,7 @@ int main() {
 }
 ```
 
+> **示例 41** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U28 交换 O(1)：swap 只交换内部指针
 #include <unordered_set>
@@ -1044,6 +1085,7 @@ int main() {
 }
 ```
 
+> **示例 42** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U29 迭代顺序不稳定：两次遍历顺序可能不同（尤其 rehash 后）
 #include <unordered_set>
@@ -1058,6 +1100,7 @@ int main() {
 }
 ```
 
+> **示例 43** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U30 并发读安全（const 读可多线程；写需锁，演示锁）
 #include <unordered_map>
@@ -1079,6 +1122,7 @@ int main() {
 }
 ```
 
+> **示例 44** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U31 与 map 对比：unordered_map 平均更快点查（量级示意）
 #include <unordered_map>
@@ -1092,6 +1136,7 @@ int main() {
 }
 ```
 
+> **示例 45** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U32 自定义哈希的混合函数单元测试桩（验证 h(a)==h(a)）
 #include <functional>
@@ -1110,6 +1155,7 @@ int main() {
 }
 ```
 
+> **示例 46** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U33 工业：用排序 vector 模拟 flat_map（GCC13 无 <flat_map>），对比缓存/有序
 #include <vector>
@@ -1128,6 +1174,7 @@ int main() {
 }
 ```
 
+> **示例 47** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U34 absl::flat_hash_map 思想对比（描述为开放寻址探测，非编译）
 #include <iostream>
@@ -1141,6 +1188,7 @@ int main() {
 }
 ```
 
+> **示例 48** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // U35 完整综合：会话表（复用 C1 思路，自包含可编译）
 #include <unordered_map>
@@ -1184,6 +1232,7 @@ int main() {
 ### 练习 1（难度 ★★）
 **真实场景：会话 ID 去重集合——为自定义 key 提供哈希。** 用自定义哈希的 `unordered_set<SessionId>` 做连接去重；字符串等标准类型可复用 `std::hash`/`std::equal_to`。
 
+> **示例 49** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <unordered_set>
@@ -1206,6 +1255,7 @@ int main() {
 ### 练习 2（难度 ★★★）
 **真实场景：高频查找避免临时 string 构造。** 热点路径用 `string_view` 直接 `contains`，不经 `std::string` 分配（异构查找 `is_transparent`）。
 
+> **示例 50** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <unordered_set>
@@ -1234,6 +1284,7 @@ int main() {
 ### 练习 3（难度 ★★★★）
 **真实场景：预分配桶避免 rehash 抖动。** 已知规模先 `reserve` 防 rehash 使迭代器失效；`load_factor = size/bucket_count`，超过 `max_load_factor`（默认 1.0）即触发扩容。
 
+> **示例 51** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <unordered_set>
@@ -1255,6 +1306,7 @@ int main() {
 ### 演绎 1：用 unordered_map + list 实现 O(1) 查找的 LRU 骨架
 map 存 key→list 迭代器做 O(1) 命中查找，list 维护使用顺序。
 
+> **示例 52** [难度 ★★★☆☆] [主题：演绎 1：用 unorderedma]
 ```cpp
 #include <iostream>
 #include <unordered_map>
@@ -1275,6 +1327,7 @@ int main() {
 ### 演绎 2：为 pair 提供组合哈希，避免退化到单字段哈希
 用移位+加法组合两个字段的哈希，降低碰撞概率（对抗哈希 DoS 需随机化种子，此处仅示组合法）。
 
+> **示例 53** [难度 ★★★☆☆] [主题：演绎 2：为 pair 提供组合哈希]
 ```cpp
 #include <iostream>
 #include <unordered_set>
@@ -1401,6 +1454,7 @@ bucket_chain:
 
 可复现基准（自包含、可编译）：
 
+> **示例 54** [难度 ★★★☆☆] [主题：真实性能基准：哈希容器 vs 红黑树]
 ```cpp
 // g++ -std=c++23 -O2 ch85_bench.cpp
 #include <unordered_map>
@@ -1498,6 +1552,7 @@ _M_rehash(size_type __bkt_count, true_type /* __uks */)
 
 ### 4. 第一方可编译验证（观察桶数 2 的幂扩张）
 
+> **示例 55** [难度 ★★★☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <unordered_map>
 #include <iostream>
@@ -1622,6 +1677,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 56** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <unordered_map>

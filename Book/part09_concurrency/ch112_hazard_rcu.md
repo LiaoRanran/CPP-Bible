@@ -39,6 +39,7 @@
 
 无锁数据结构（无锁栈/队列/哈希表）的核心矛盾是：**读者正拿着一个节点的指针，写者想把它 `delete`**——没有互斥锁保护"谁还在用"，直接 `delete` 会造成悬垂指针（use-after-free），另一个线程随后解引用即未定义行为。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：并发内存回收的难题 [标准]]
 ```cpp
 // ① 经典困境：pop 取出节点后能否立即 delete？
 struct Node { int val; Node* next; };
@@ -58,6 +59,7 @@ Node* pop() {
 
 `delete` 不是原子操作：它先调用析构函数，再归还内存给分配器；而读者只做了一次原子 `load`。二者之间没有任何 happens-before 关系。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：为什么 delete 在并发下危险 ]
 ```cpp
 // ② 读者线程（无锁）
 Node* p = head.load(std::memory_order_relaxed);
@@ -68,6 +70,7 @@ Node* old = head.exchange(next);
 delete old;                // ② 与上面 p->val 并发 -> data race
 ```
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：为什么 delete 在并发下危险 ]
 ```cpp
 // ② 用 ThreadSanitizer 能抓到的典型 race（伪代码模型）
 // READ of size 4 at 0x... by thread T1 (p->val)
@@ -82,12 +85,14 @@ delete old;                // ② 与上面 p->val 并发 -> data race
 
 Hazard Pointer（HP，Maged Michael, 2004；C++26 已采纳为 `std::hazard_pointer`，见 §⑲）的核心是：**每个读者在解引用共享指针前，先把自己的意图写进一张全局"声明表"**，声明"我正在用这个地址，谁都别动它"。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：原理（读者登记正在用的指针） [实现]
 ```cpp
 // ③ 直觉：读者先登记，再解引用
 // 全局声明表：每个线程一个槽，存"我当前保护的对象地址"
 std::atomic<void*> g_hp[N];   // ③ slot i 由线程 i 独占写入
 ```
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：原理（读者登记正在用的指针） [实现]
 ```cpp
 // ③ 读者协议（伪代码）
 void* protect(atomic<void*>* src, int slot) {
@@ -109,6 +114,7 @@ void* protect(atomic<void*>* src, int slot) {
 
 一个工业级 HP 框架三件套：**HP 数组（读者登记）**、**retired 列表（待回收对象）**、**scan 例程（决定哪些能删）**。
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：实现：全局 HP 数组 + 回收列表]
 ```cpp
 // ④ 头文件骨架（单文件可编译，见 Examples/_ch112_hp.cpp）
 #include <atomic>
@@ -123,6 +129,7 @@ struct Retired { void* ptr; Retired* next; };  // ④ 待回收链表节点
 std::atomic<Retired*> g_retired{nullptr};
 ```
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：实现：全局 HP 数组 + 回收列表]
 ```cpp
 // ④ 读者：登记 + 解除登记
 extern "C" void* hp_protect(std::atomic<void*>* src, int slot) {
@@ -138,6 +145,7 @@ extern "C" void hp_clear(int slot) {
 }
 ```
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：实现：全局 HP 数组 + 回收列表]
 ```cpp
 // ④ 写者：把要删的对象挂入 retired（不直接 delete）
 void retire(void* p) {
@@ -153,6 +161,7 @@ void retire(void* p) {
 
 回收的关键不变量：**若某个 HP 槽里存着 `ptr`，则 `ptr` 此刻正被某读者使用，绝不能删**。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：回收流程（扫描 HP 表） [实现·]
 ```cpp
 // ⑤ 回收者：取出 retired 链表，逐个对照所有 HP 槽
 extern "C" void hp_scan_and_reclaim() {
@@ -199,6 +208,7 @@ extern "C" void hp_scan_and_reclaim() {
 
 HP 的代价是**每个读者每次访问多一次原子写（登记）+ 一次原子写（清除）+ 回收者 O(retired × HP槽) 的扫描**。
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：性能特征与开销 [经验]]
 ```cpp
 // ⑥ 开销模型：登记/解除各一次原子操作
 // protect: 1× atomic load + 1× atomic seq_cst store (+ 可能的重试)
@@ -206,6 +216,7 @@ HP 的代价是**每个读者每次访问多一次原子写（登记）+ 一次�
 // scan   : retired数 × MAX_HP 次 atomic acquire load
 ```
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：性能特征与开销 [经验]]
 ```cpp
 // ⑥ false sharing 缓解：错位到独立缓存行
 alignas(64) std::atomic<void*> g_hp[MAX_HP];  // ⑥ 每槽占满 64B 缓存行
@@ -219,6 +230,7 @@ alignas(64) std::atomic<void*> g_hp[MAX_HP];  // ⑥ 每槽占满 64B 缓存行
 
 RCU（Read-Copy-Update，McKenney）走另一条路：**读者完全免锁，只做一次原子指针读；写者不原地改，而是复制一份新对象、改完、再用一次原子写替换指针**。旧对象等"所有正在读的读者都退出了"之后才回收。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：原理：读侧免锁、写侧复制替换 [标准]
 ```cpp
 // ⑦ 写者：复制-修改-替换（不碰旧对象）
 struct Config { int timeout; int workers; };
@@ -232,6 +244,7 @@ void rcu_update(int t, int w) {
 }
 ```
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：原理：读侧免锁、写侧复制替换 [标准]
 ```cpp
 // ⑦ 读者：免锁，仅一次原子 load，绝不阻塞
 Config* rcu_read() {
@@ -246,12 +259,14 @@ Config* rcu_read() {
 
 RCU 的灵魂是**宽限期（grace period）**：从"写者替换指针"那一刻起，到"所有在替换前开始的读者都已退出"为止的这段时间。宽限期结束后，旧对象**绝对**无人引用，方可安全 `delete`。
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：宽限期(grace period)与]
 ```cpp
 // ⑧ quiescent state（静止态）：读者暂时不再持有任何 RCU -protected 指针
 // 典型静止态：线程发生上下文切换 / 进入内核 / 显式调用 rcu_quiesce()
 // 宽限期 = 所有 CPU/线程都至少经过一次静止态
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：宽限期(grace period)与]
 ```cpp
 // ⑧ 用户态简化版宽限期等待（轮询所有读者线程已退出临界区）
 // 真实 urcu 用每线程计数器（见 §⑩）；此处仅示意"等所有人退出"
@@ -269,6 +284,7 @@ void synchronize_rcu(std::atomic<int>* readers, int n) {
 
 Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系统 inode、防火墙规则等都用 RCU 让**海量读者零开销并发读，写者偶尔更新**。
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：在 Linux 内核的应用 [平台·]
 ```cpp
 // ⑨ Linux 内核 RCU API 示意（kernel 风格，非本机可编译，仅展示模型）
 // rcu_read_lock();        // ⑨ 进入读者临界区（几乎零开销，仅禁止抢占）
@@ -277,6 +293,7 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 // kfree_rcu(old, rcu);    // ⑨ 在宽限期后自动 kfree
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：在 Linux 内核的应用 [平台·]
 ```cpp
 // ⑨ 经典用法：路由查找（读者路径热，写者路径冷）
 // 读者：rcu_read_lock(); route = rcu_dereference(routing_table); ...; rcu_read_unlock();
@@ -291,6 +308,7 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 
 用户态没有调度器帮忙，urcu（Userspace RCU 库）用**每线程静态计数器**实现静止态检测：读者进入临界区时本线程计数 +1，离开时 -1；`synchronize_rcu()` 等待每个线程计数归零。
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：用户态 RCU(urcu) 简介 []
 ```cpp
 // ⑩ urcu 读者/写者骨架（语义示意，基于 liburcu API）
 // #include <urcu.h>
@@ -306,6 +324,7 @@ Linux 内核是 RCU 的最大规模应用：路由表、进程调度、文件系
 // free(old);                       // ⑩ 安全回收
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：用户态 RCU(urcu) 简介 []
 ```cpp
 // ⑩ 手动复刻的"每线程计数"版宽限期（单文件可编译模型）
 #include <atomic>
@@ -403,6 +422,7 @@ rcu_update:
 | 适用读者数 | 中（受 HP 槽数限制） | 极大（无上限） |
 | 内存 Peak | 较低（立即回收） | 较高（宽限期内双份共存） |
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：对比 [标准]]
 ```cpp
 // ⑫ 一句话选型（详见 §⑱）：读者海量、写者稀疏 -> RCU；对象需即时回收 -> HP
 ```
@@ -414,6 +434,7 @@ rcu_update:
 
 quiescent state（静止态）是"本线程此刻不持有任何被保护指针"的声明。检测机制决定 RCU 实现形态。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：检测 [实现·GCC15]]
 ```cpp
 // ⑬ QSBR（Quiescent State Based Reclamation）风格：显式声明静止态
 std::atomic<int> qs_counter[N];     // ⑬ 每线程静止态计数
@@ -426,6 +447,7 @@ void my_synchronize_rcu_qsbr() {
 }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：检测 [实现·GCC15]]
 ```cpp
 // ⑬ 对比：urcu-mb（内存屏障 flavor）用显式 barrier 代替计数
 // rcu_quiescent_state() == 一次轻量内存屏障 + 计数 +1
@@ -438,6 +460,7 @@ void my_synchronize_rcu_qsbr() {
 
 ch111 讨论的 **ABA 问题**——无锁 CAS 因指针"被换走又换回同一地址"而误判成功——与本章是同一硬币的两面：**HP 和 RCU 都能根治 ABA**。
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：与 ch111 衔接]
 ```cpp
 // ⑭ ch111 的 ABA 场景（回顾）
 std::atomic<Node*> top;
@@ -448,6 +471,7 @@ std::atomic<Node*> top;
 // ⑭ 用 RCU 根治：写者复制新节点而非复用旧节点，旧 A 在宽限期后才回收
 ```
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：与 ch111 衔接]
 ```cpp
 // ⑭ HP 防 ABA 的关键：被保护的节点不进入 retired/复用池
 void* top = hp_protect(&stack_top, slot);  // ⑭ 声明保护 A
@@ -459,6 +483,7 @@ void* top = hp_protect(&stack_top, slot);  // ⑭ 声明保护 A
 
 ## ⑮ 误用案例 [经验]
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：误用案例 [经验]]
 ```cpp
 // ⑮ 误用1：登记后忘记 clear -> 该 HP 槽永远"保护"某地址 -> 内存永漏
 void* p = hp_protect(&head, slot);
@@ -466,12 +491,14 @@ use(p);
 // ❌ 漏写 hp_clear(slot);  -> 此后 p 永不回收
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：误用案例 [经验]]
 ```cpp
 // ⑮ 误用2：用普通指针而非原子 load 读共享槽 -> 数据竞争
 // ❌ void* p = src->load(); 写成非原子读（这里其实是原子，但有人误用裸指针拷贝）
 Node* raw = reinterpret_cast<Node*>(const_cast<void*>(g_hp[slot].load()));  // ❌ 漏 memory_order
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：误用案例 [经验]]
 ```cpp
 // ⑮ 误用3：RCU 写者在宽限期前就 delete 旧对象 -> 读者 UAF
 Config* old = g_config.load(acquire);
@@ -479,6 +506,7 @@ g_config.store(new Config{...}, release);
 delete old;          // ❌ 应 synchronize_rcu() 之后才 delete
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：误用案例 [经验]]
 ```cpp
 // ⑮ 误用4：HP 槽数小于并发读者数 -> 多读者共用一槽 -> 互相覆盖保护
 constexpr int MAX_HP = 8;   // ❌ 若并发读者达 16，槽不够 -> 误回收
@@ -490,6 +518,7 @@ constexpr int MAX_HP = 8;   // ❌ 若并发读者达 16，槽不够 -> 误回�
 
 HP/RCU 无法消除数据竞争检测，**错误实现照样会被 TSan 抓到**；正确实现则 TSan 应静默。
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：调试]
 ```cpp
 // ⑯ 编译并运行 TSan（取证命令示范）
 // g++ -std=c++23 -O1 -g -fsanitize=thread Examples/_ch112_hp.cpp -o _ch112_hp_tsan
@@ -500,6 +529,7 @@ HP/RCU 无法消除数据竞争检测，**错误实现照样会被 TSan 抓到**
 //     Previous write of size 8 at 0x... by thread T2 (delete old)
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：调试]
 ```cpp
 // ⑯ 用 RAII 让 HP 的 protect/clear 不可能漏（推荐写法）
 struct HazardGuard {
@@ -523,6 +553,7 @@ struct HazardGuard {
 
 以下为**量级示意**（真实数字依赖硬件/负载，本机 GCC 15.3.0 + x86-64 取证的是指令成本，非吞吐）[UNVERIFIED]。
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：性能基准 [经验]]
 ```cpp
 // ⑰ 读者路径单跳指令成本（来自 §⑪ 真实 asm）
 // HP  读者：lea + mov + xchg(lock) + mov + cmp + ret  ≈ 6 条，含 1 次锁操作
@@ -530,6 +561,7 @@ struct HazardGuard {
 // 互斥锁读者：lock cmpxchg + 可能的 syscall/上下文切换 ≈ 数十~数千 cycles
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：性能基准 [经验]]
 ```cpp
 // ⑰ 写者路径（宽限期是 RCU 的瓶颈）
 // HP  写者：retire 入链表 O(1)；回收 scan O(retired×MAX_HP)
@@ -544,6 +576,7 @@ struct HazardGuard {
 ⟶ Book/part09_concurrency/ch110_lockfree.md（无锁编程）—— 先确认是否真需无锁再选回收机制
 ⟶ Book/part09_concurrency/ch111_aba.md（ABA 问题与解决）—— 选型须评估 ABA 风险等级
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：选型指南 [经验]]
 ```cpp
 // ⑱ 决策树（伪代码）
 // if (读者海量 && 写者稀疏 && 可接受宽限期延迟)  -> RCU（urcu / QSBR）
@@ -552,6 +585,7 @@ struct HazardGuard {
 // else                                            -> 先别无锁，锁够用
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：选型指南 [经验]]
 ```cpp
 // ⑱ 典型映射
 // 路由/防火墙规则表：RCU（读极多写极少）
@@ -567,6 +601,7 @@ struct HazardGuard {
 
 C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实现。C++26 已采纳 Hazard Pointer 进入标准库。
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) [标准]]
 ```cpp
 // ⑲ C++26 标准 HP 用法（提案 P1122R6，GCC 尚未默认提供，此处展示目标形态）
 // std::hazard_pointer<std::atomic<Node*>> hp;
@@ -575,11 +610,13 @@ C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实�
 // // 析构时自动 clear，无需手动 slot
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) [标准]]
 ```cpp
 // ⑲ RCU 至今未进标准库：因其依赖"宽限期/静止态"这一 OS/运行时概念，
 // ⑲ 标准难以跨平台定义 quiescent state，故由库（urcu）或手写承担
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：++ 标准方向(无内建) [标准]]
 ```cpp
 // ⑲ 过渡期建议：C++23 工程的稳妥写法
 // - 优先第三方成熟库（liburcu / folio::hazard_pointer）
@@ -619,6 +656,7 @@ C++11~C++23 **没有**内建 HP 或 RCU；它们靠 `<atomic>` 原语自行实�
 | 调试 | TSan 抓错误实现 | `-fsanitize=thread` |
 | 标准方向 | HP 进 C++26，RCU 仍靠库 | `std::hazard_pointer` |
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ 最小正确 HP 使用范式（RAII，杜绝误用）
 #include <atomic>
@@ -692,6 +730,7 @@ struct Guard { int slot; void* p;
 
 ## 附录 A：工业 RCU/Hazard Pointer [F: Industry / D: stdlib]
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：附录 A：工业 RCU/Hazard]
 ```
 Linux kernel: RCU 的诞生地 (2002, Paul McKenney)。在 Linux 中:
   → rcu_read_lock() / rcu_read_unlock() — zero overhead on reader path
@@ -713,6 +752,7 @@ C++ proposal P0566R3 (2020): hazard pointers 进入 C++26 方向
 
 > 本附录为**附属/检索层**，仅作自测与检索，不承载核心标准/算法结论（见 CONVENTIONS.md §12）。
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：附录 B：面试与设计 [J: Lea]
 ```
 面试高频:
 Q: Hazard Pointer 和 RCU 的根本区别？
@@ -812,6 +852,7 @@ A: (1) tagged pointer (ABA 防护 + 无 HP); (2) hazard pointers (C++26 方向);
 
 HP 的核心约定：**读者先登记、再解引用**；**回收者先扫描 HP 表，被任一 HP 引用的节点推迟删除**。这样保证「正在被读的节点」永不被 free，从根上消除 use-after-free 与 ABA。
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -850,6 +891,7 @@ int main() {
 
 RCU 读侧几乎零开销（仅标记进入/退出临界区）；写侧「复制-修改-替换」后必须等待**宽限期**（当前所有读者都已离开旧版本临界区）才能安全 free 旧版本。
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <atomic>
 #include <memory>
@@ -887,6 +929,7 @@ int main() {
 
 工业 HP 的回收是**批量**的：retire 列表累积到阈值时，把所有活跃 HP 槽收集成集合，逐个 retired 节点判断是否命中，未命中者删除、命中者保留。
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <atomic>
 #include <vector>
@@ -943,6 +986,7 @@ int main() {
 
 **常见错误**：读多写少却选 HP，让每次读都付出 HP 登记的原子写开销。
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：演绎 1：HP 还是 RCU？读写比]
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -971,6 +1015,7 @@ int main() {
 
 **常见错误**：不等宽限期，读者仍持旧指针时就释放。
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：演绎 2：RCU 写侧忘记等宽限期就]
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1287,6 +1332,7 @@ flowchart TD
 
 ### D4.6 第一方可编译验证（安全回收 + 等待池）
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1337,6 +1383,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <cassert>
 #include <iostream>

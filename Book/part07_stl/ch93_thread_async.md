@@ -44,6 +44,7 @@
 
 学完应能在**不写裸 `pthread`、不直接 `new` 线程、不手动管理 join** 的前提下，用标准库搭出健壮的并发代码，并理解它与 ⟶ Book/part09_concurrency/ch107_atomic.md（并发内存模型）、⟶ Book/part09_concurrency/ch107_atomic.md（原子）、⟶ Book/part09_concurrency/ch108_memory_order.md（内存序）的边界关系。
 
+> **示例 1** [难度 ★★★★☆] [主题：学习目标 [标准]]
 ```cpp
 // ① 动机：单线程累加 vs 多线程累加（完整可编译）
 #include <iostream>
@@ -95,6 +96,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII） [标准]
 
+> **示例 2** [难度 ★★★★☆] [主题：知识图谱（ASCII） [标准]]
 ```
                          ┌─────────────────────────────┐
                          │    std::thread (C++11)       │
@@ -193,6 +195,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：thread 对象与底层 OS 线程 [实现·GCC15]
 
+> **示例 3** [难度 ★★★★☆] [主题：内存图：thread 对象与底层 O]
 ```
 栈上的 std::thread 对象 (sizeof ≈ 两个指针)
 ┌──────────────────────────────────────┐
@@ -217,6 +220,7 @@ classDiagram
 
 ## ⑧ 生命周期图：future 与共享状态 [标准]
 
+> **示例 4** [难度 ★★★★☆] [主题：生命周期图：future 与共享状态]
 ```
  producer 线程                共享状态                  consumer 线程
  ────────────               ───────────              ────────────
@@ -237,6 +241,7 @@ classDiagram
 
 ## ⑨ 调用栈/时序图：std::async(launch::async) 的一次往返 [标准]
 
+> **示例 5** [难度 ★★★★☆] [主题：调用栈/时序图：std::async]
 ```
 main 线程          runtime 线程池/新线程          共享状态
     │                    │                            │
@@ -251,6 +256,7 @@ main 线程          runtime 线程池/新线程          共享状态
     │                    │  在 future 析构时等待        │
 ```
 
+> **示例 6** [难度 ★★★★☆] [主题：调用栈/时序图：std::async]
 ```cpp
 // ⑨ async(launch::async) 立即起线程，get() 等待结果（完整可编译）
 #include <iostream>
@@ -302,6 +308,7 @@ _Z16launch_and_countv:
 - 常与 `std::ranges` / `std::transform` 配合做"fan-out/fan-in"并行 map（见 ⑫ 工业案例）。
 - `std::future` 的阻塞语义与 `std::condition_variable` 的等待（⟶ Book/part07_stl/ch93_thread_async.md）实现原理同源：`future` 的共享状态用 `call_once` + 条件变量实现"就绪通知"。
 
+> **示例 7** [难度 ★★★★☆] [主题：联系：future 在容器/算法/范]
 ```cpp
 // ⑪ 把一组 future 收集进 vector 并 wait（完整可编译）
 #include <iostream>
@@ -324,6 +331,7 @@ int main() {
 
 真实服务器常需把一次外部请求拆成 N 个子任务并发执行（如并行查缓存、DB、远程服务），再合并结果。下面是基于 `std::async` + `std::future` 的**结构骨架**（非 Hello World，可运行、可扩展为真实 handler）。
 
+> **示例 8** [难度 ★★★★☆] [主题：工业案例：高并发 Web 服务器的"]
 ```cpp
 // ⑫ 工业：一次请求并发调用三个下游服务并归并（完整可编译骨架）
 #include <iostream>
@@ -431,6 +439,7 @@ class _State_baseV2 {
 7. **`launch::deferred` 何时执行？** → 在 `get()`/`wait()` 处、在**调用 `get()` 的线程**上同步执行。
 8. **`packaged_task` 与 `async` 区别？** → 前者是"可手动调用的任务对象"（可延迟、可放进队列），后者是"立即/惰性启动的工厂"。
 
+> **示例 9** [难度 ★★★★☆] [主题：面试题 [标准]]
 ```cpp
 // ⑮ 面试题佐证：future 第二次 get() 抛 no_state（完整可编译）
 #include <iostream>
@@ -458,6 +467,7 @@ int main() {
 - **`future` 跨 `get()` 持有共享状态引用却提前析构** → 若仍有线程在写，状态生命周期依赖 `shared_ptr`，一般安全；但 `async` 的 future 析构会阻塞，小心 RAII 作用域。
 - **移动-only 类型（如 `std::unique_ptr`）直接传 thread** → 必须 `std::move`，否则拷贝失败。
 
+> **示例 10** [难度 ★★★★☆] [主题：易错点 [经验]]
 ```cpp
 // ⑯ 易错：deferred 在调用线程同步执行（完整可编译，注意计数线程id）
 #include <iostream>
@@ -489,6 +499,7 @@ int main() {
 
 **Q：为什么 `future` 不能拷贝？** A：共享状态只有一份结果，"单一消费者"语义保证 `get()` 的一次性；多消费者请用 `shared_future`。
 
+> **示例 11** [难度 ★★★★☆] [主题：[标准]]
 ```cpp
 // ⑰ FAQ 佐证：packaged_task 通过 get_future 取结果（完整可编译）
 #include <iostream>
@@ -513,6 +524,7 @@ int main() {
 5. 异常必须经由 `set_exception` 传播，不要在线程函数里吞异常（那会导致 `future.get()` 永远阻塞）。
 6. 真实高并发请用线程池 + 任务队列，而非每任务 `async`。
 
+> **示例 12** [难度 ★★★★☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱ 最佳实践：移动-only 结果经 promise 跨线程传递（完整可编译）
 #include <iostream>
@@ -547,6 +559,7 @@ int main() {
 | `future::get()` 命中已就绪 | ~数十 ns | 仅读 `shared_ptr` + 状态标志 |
 | `future::get()` 阻塞等待 | 取决于子线程 | 条件变量等待（µs 级上下文切换） |
 
+> **示例 13** [难度 ★★★★☆] [主题：性能分析]
 ```cpp
 // ⑲ microbenchmark：线程创建 vs 任务本身（量级示意，完整可编译）
 #include <iostream>
@@ -642,6 +655,7 @@ int main() {
 
 下面 E1–E26 每个都是**完整可编译程序**（自带 `#include` 与 `int main`），覆盖本章所有原语，且每个 thread 都已 `join`/`detach` 以确保正常退出。
 
+> **示例 14** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E1 std::thread 基本构造与 join
 #include <iostream>
@@ -654,6 +668,7 @@ int main() {
 }
 ```
 
+> **示例 15** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E2 多个线程 join 的惯用法（vector<thread>）
 #include <iostream>
@@ -668,6 +683,7 @@ int main() {
 }
 ```
 
+> **示例 16** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E3 detach 后台线程（必须确保被引用对象活得够久）
 #include <iostream>
@@ -682,6 +698,7 @@ int main() {
 }
 ```
 
+> **示例 17** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E4 按值传参（参数被 decay 拷贝进线程）
 #include <iostream>
@@ -696,6 +713,7 @@ int main() {
 }
 ```
 
+> **示例 18** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E5 按引用传参必须用 std::ref
 #include <iostream>
@@ -711,6 +729,7 @@ int main() {
 }
 ```
 
+> **示例 19** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E6 移动-only 对象经 std::move 传入线程
 #include <iostream>
@@ -726,6 +745,7 @@ int main() {
 }
 ```
 
+> **示例 20** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E7 成员函数作为线程入口（this 被拷贝/引用传入）
 #include <iostream>
@@ -741,6 +761,7 @@ int main() {
 }
 ```
 
+> **示例 21** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E8 thread::id 与 hardware_concurrency（不依赖结果，仅演示 API）
 #include <iostream>
@@ -754,6 +775,7 @@ int main() {
 }
 ```
 
+> **示例 22** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E9 简单 RAII 包装：作用域结束自动 join（thread 自身不可拷贝，用移动）
 #include <iostream>
@@ -773,6 +795,7 @@ int main() {
 }
 ```
 
+> **示例 23** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E10 promise 设置值，future 在另一线程读取
 #include <iostream>
@@ -789,6 +812,7 @@ int main() {
 }
 ```
 
+> **示例 24** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E11 promise 传播异常，future.get() 在消费线程重抛
 #include <iostream>
@@ -810,6 +834,7 @@ int main() {
 }
 ```
 
+> **示例 25** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E12 packaged_task：把可调用体封装为"可设置结果的任务"
 #include <iostream>
@@ -827,6 +852,7 @@ int main() {
 }
 ```
 
+> **示例 26** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E13 async(launch::async)：立即并行
 #include <iostream>
@@ -838,6 +864,7 @@ int main() {
 }
 ```
 
+> **示例 27** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E14 async(launch::deferred)：惰性，在 get() 处同步执行
 #include <iostream>
@@ -850,6 +877,7 @@ int main() {
 }
 ```
 
+> **示例 28** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E15 默认 async（async|deferred，由实现选择）
 #include <iostream>
@@ -861,6 +889,7 @@ int main() {
 }
 ```
 
+> **示例 29** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E16 async 组合 policy 的陷阱演示：可能退化成 deferred（严格按标准）
 #include <iostream>
@@ -876,6 +905,7 @@ int main() {
 }
 ```
 
+> **示例 30** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E17 shared_future：结果可被多个消费者读取
 #include <iostream>
@@ -894,6 +924,7 @@ int main() {
 }
 ```
 
+> **示例 31** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E18 future 的 wait / wait_for 超时控制
 #include <iostream>
@@ -912,6 +943,7 @@ int main() {
 }
 ```
 
+> **示例 32** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E19 call_once：只执行一次（多线程竞态安全）
 #include <iostream>
@@ -928,6 +960,7 @@ int main() {
 }
 ```
 
+> **示例 33** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E20 并行 for（fan-out）：用 async 并行处理区间
 #include <iostream>
@@ -957,6 +990,7 @@ int main() {
 }
 ```
 
+> **示例 34** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E21 async 返回移动-only 结果
 #include <iostream>
@@ -971,6 +1005,7 @@ int main() {
 }
 ```
 
+> **示例 35** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E22 promise 设置异常后再 get 重抛（含 error_code 风格）
 #include <iostream>
@@ -986,6 +1021,7 @@ int main() {
 }
 ```
 
+> **示例 36** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E23 packaged_task 的可调用体抛出异常也经 future 传播
 #include <iostream>
@@ -1002,6 +1038,7 @@ int main() {
 }
 ```
 
+> **示例 37** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E24 shared_future 的副本语义（拷贝后才共享同一状态）
 #include <iostream>
@@ -1016,6 +1053,7 @@ int main() {
 }
 ```
 
+> **示例 38** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E25 嵌套 async：任务内再发起子任务（完整可编译）
 #include <iostream>
@@ -1030,6 +1068,7 @@ int main() {
 }
 ```
 
+> **示例 39** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // E26 future::valid() 检查后再 get（避免 no_state）
 #include <iostream>
@@ -1107,6 +1146,7 @@ mfence                  ; 全内存屏障，约 10–20 ns
 
 ### 测试源码
 
+> **示例 40** [难度 ★★★★☆] [主题：测试源码]
 ```cpp
 #include <thread>; std::mutex mtx; std::atomic<int> cnt{0}; thread_local int tl=0;
 
@@ -1201,6 +1241,7 @@ Win64 上 `__tls_get_addr` 属 `KERNEL32.dll`——动态查找当前线程的 T
 
 <details><summary>答案与解析</summary>
 
+> **示例 41** [难度 ★★★★☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <thread>
 #include <vector>
@@ -1228,6 +1269,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
+> **示例 42** [难度 ★★★★☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 void fire_and_forget(){
     std::async(std::launch::async, [](){ heavy_work(); }); // future 是临时对象
@@ -1249,6 +1291,7 @@ void fire_and_forget(){
 
 <details><summary>答案与解析</summary>
 
+> **示例 43** [难度 ★★★★☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <atomic>
 std::atomic<int> counter{0};                 // 原子 RMW, 无竞争
@@ -1271,6 +1314,7 @@ void worker(){ for(int i=0;i<100000;++i) ++counter; } // 正确累加到 200000
 
 **步骤 1：朴素共享计数器（数据竞争 → 错误结果）**
 
+> **示例 44** [难度 ★★★★☆] [主题：附录：用法演绎 — 并行求和的数据竞]
 ```cpp
 long counter = 0;
 auto worker = [&](){ for(int i=0;i<50000;++i) ++counter; }; // 读-改-写非原子
@@ -1283,6 +1327,7 @@ t1.join(); t2.join(); t3.join(); t4.join();
 
 **步骤 2：加 `std::mutex`（正确但较重）**
 
+> **示例 45** [难度 ★★★★☆] [主题：附录：用法演绎 — 并行求和的数据竞]
 ```cpp
 long counter = 0; std::mutex m;
 auto worker = [&](){ for(int i=0;i<50000;++i){ std::lock_guard<std::mutex> lk(m); ++counter; } };
@@ -1291,6 +1336,7 @@ auto worker = [&](){ for(int i=0;i<50000;++i){ std::lock_guard<std::mutex> lk(m)
 
 **步骤 3：改 `std::atomic<int>`（无锁、正确）**
 
+> **示例 46** [难度 ★★★★☆] [主题：附录：用法演绎 — 并行求和的数据竞]
 ```cpp
 std::atomic<long> counter{0};
 auto worker = [&](){ for(int i=0;i<50000;++i) ++counter; }; // lock xadd 单指令 RMW
@@ -1299,6 +1345,7 @@ auto worker = [&](){ for(int i=0;i<50000;++i) ++counter; }; // lock xadd 单指�
 
 **步骤 4：更好——每个线程私有计数，最后合并（无共享 → 无竞争）**
 
+> **示例 47** [难度 ★★★★☆] [主题：附录：用法演绎 — 并行求和的数据竞]
 ```cpp
 std::vector<long> local(4, 0);
 std::vector<std::thread> ts;
@@ -1619,6 +1666,7 @@ future/promise/async 的核心是引用计数的共享状态。`_State_baseV2` �
 
 ### D4.9 编译验证
 
+> **示例 48** [难度 ★★★★☆] [主题：编译验证]
 ```cpp
 #include <chrono>
 #include <future>
@@ -1774,6 +1822,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 49** [难度 ★★★★☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <thread>

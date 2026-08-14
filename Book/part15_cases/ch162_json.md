@@ -63,6 +63,7 @@ JSON（JavaScript Object Notation，RFC 8259）是一种与语言无关的轻量
           └──────────────────────────────────────────
 ```
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：JSON 与 C++ 映射 []
 ```cpp
 // ① JSON 类型到 C++ 类型的标准映射（参考 RFC 8259 §1）
 // null    -> std::nullptr_t
@@ -81,6 +82,7 @@ const char* json_type_name(int idx) {
 
 JSON 值只有 6 种类型，且只有两种**复合类型**（array、object）可以嵌套。这一限制让"递归下降"成为天然合适的解析策略——复合类型在语法上就是自相似的。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：类型]
 ```cpp
 // ② 用枚举表达 6 种类型标签（与 std::variant 的 index() 一一对应）
 enum class JsonType : int {
@@ -111,6 +113,7 @@ struct JsonValue {
 
 `std::variant` 是 C++17 引入的"类型安全联合"，比裸 `union` 强在：① 自动析构活跃成员；② 编译期杜绝访问错误活跃类型；③ 自带 `index()` 与 `std::get`/`std::holds_alternative`。
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：值表示（std::variant）]
 ```cpp
 // ③ 完整的 Value 定义（自包含可编译，Examples/_ch162_variant.cpp 头段）
 // 文件：Examples/_ch162_variant.cpp
@@ -152,6 +155,7 @@ struct JsonValue {
    parse_pair  parse_elems
 ```
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：解析器]
 ```cpp
 // ④ 解析器骨架（自包含可编译，Examples/_ch162_json.cpp 的 Parser 类）
 // 文件：Examples/_ch162_json.cpp
@@ -179,6 +183,7 @@ private:
 
 严格 JSON 解析可以"无 tokenizer"：递归下降直接在字符流上工作（本章主库即如此）。但把"字符流 → token 流"这步显式拆出来，好处是可单独测试、可支持 SAX 模式（⑩）、可在 tokenizer 层做 UTF-8 预校验（⑫）。
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：词法分析（tokenizer）]
 ```cpp
 // ⑤ 一个最小 tokenizer（自包含可编译，Examples/_ch162_tokenizer.cpp）
 // 文件：Examples/_ch162_tokenizer.cpp
@@ -227,6 +232,7 @@ token 数: 9
 
 语法分析消费（字符或 token）流，按文法构建出 `Value` 树。核心难点在两个复合类型：数组与对象。下面给出数组/对象解析的真实可编译实现（节选自主库）。
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：语法分析（parser）]
 ```cpp
 // ⑥ 数组与对象解析（自包含可编译，Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -276,6 +282,7 @@ Value parse_object() {
 
 JSON 字符串里 `"` 和 `\` 必须转义，控制字符必须写成 `\n`/`\t`/... 或 `\uXXXX`。`\uXXXX` 还可能是 UTF-16 代理对（surrogate pair），需要合并成码点再编码成 UTF-8。下面给出转义/反转义的真实实现。
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：字符串转义处理]
 ```cpp
 // ⑦ 转义与反转义（自包含可编译，Examples/_ch162_escape.cpp）
 // 文件：Examples/_ch162_escape.cpp
@@ -313,6 +320,7 @@ std::string escape(const std::string& in) {
 
 主库对 `\uXXXX` 的处理（节选，含代理对合并）：
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：字符串转义处理]
 ```cpp
 // ⑦（续）\uXXXX → UTF-8（含高/低代理合并，Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -337,6 +345,7 @@ return codepoint_to_utf8(cp);                  // 1/2/3/4 字节 UTF-8 编码
 
 序列化是解析的逆过程：把内存 `Value` 树写回文本。两种输出风格——**紧凑**（无空白，省流量）与**美化**（带缩进，便于人读）。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：序列化（writer）]
 ```cpp
 // ⑧ 序列化（自包含可编译，Examples/_ch162_writer.cpp）
 // 文件：Examples/_ch162_writer.cpp
@@ -377,6 +386,7 @@ std::string write(const Value& v) {
 
 `nlohmann/json` 是最流行的单头文件 C++ JSON 库（上游：`https://github.com/nlohmann/json`，MIT）。它的 API 极度"点赞"（ergonomic）：
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：与 nlohmann/json 对比]
 ```cpp
 // ⑨ 上游参考：nlohmann/json 的惯用法（第三方库 API，本章不编译它）
 // 注意：下面代码依赖第三方库，仅作对比展示，非本章自制实现
@@ -412,6 +422,7 @@ auto obj = j.get<MyStruct>();                 // 自动反序列化到 struct（
    随机访问 ✅   内存 O(n)          流式 ✅      内存 O(1)
 ```
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // ⑩ SAX 风格的流式回调骨架（真实可编译片段，仅演示结构）
 #include <string>
@@ -435,6 +446,7 @@ struct Handler {
 
 性能必须**实测**。下面基准用 `std::chrono::high_resolution_clock` 对一个含嵌套对象/数组/字符串/数字/布尔的文档连续解析 N=200000 次，排除 I/O 只测纯 CPU 解析。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：性能]
 ```cpp
 // ⑪ 基准（自包含可编译，Examples/_ch162_benchmark.cpp）
 // 文件：Examples/_ch162_benchmark.cpp
@@ -466,6 +478,7 @@ double ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
 
 JSON 文本本身是 UTF-8（RFC 8259 强制，虽允许只传 ASCII）。两件事：① 解析 `\uXXXX` 时把码点编码成 UTF-8（见 ⑦）；② 解析前应校验输入字节序列是合法 UTF-8，否则后续 `std::string` 里可能混入非法序列，导致输出损坏或安全问题。
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：处理]
 ```cpp
 // ⑫ UTF-8 合法性校验（自包含可编译，Examples/_ch162_utf8.cpp）
 // 文件：Examples/_ch162_utf8.cpp
@@ -500,6 +513,7 @@ bool is_valid_utf8(std::string_view s) {
 
 这是全章核心：一个**单文件、零依赖、可直接 `g++` 编译运行**的 mini JSON 库。下面给出最关键的三个片段（完整文件见 `Examples/_ch162_json.cpp`，已在本机验证通过 `-Wall -Wextra` 无警告）。
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：真实完整实现]
 ```cpp
 // ⑬-A 值表示（完整文件头段，Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -524,6 +538,7 @@ struct Value {
 };
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：真实完整实现]
 ```cpp
 // ⑬-B 数字解析（严格，拒绝 1.2.3 / 1e 等非法形式，Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -545,6 +560,7 @@ double parse_number() {
 }
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：真实完整实现]
 ```cpp
 // ⑬-C 序列化入口（Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -583,6 +599,7 @@ unicode= 中文
 
 好的解析器失败时要告诉用户"**在哪**、**为什么**"。本章用异常携带偏移位置 `pos_`：
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：错误报告（位置/消息）]
 ```cpp
 // ⑭ 错误类型（自包含可编译，Examples/_ch162_json.cpp）
 // 文件：Examples/_ch162_json.cpp
@@ -610,6 +627,7 @@ struct ParseError : std::runtime_error {
 
 C++20 `<format>` 能安全拼字符串，但**不会替你转义 JSON 特殊字符**——把用户输入直接 `format` 进 JSON 等于开放注入漏洞（见 ⑰）。正确做法是：用 `format` 搭骨架，字符串值仍走 `escape_string`。
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：与 std::format 衔接]
 ```cpp
 // ⑮ std::format 拼 JSON 骨架（自包含可编译，Examples/_ch162_format.cpp）
 // 文件：Examples/_ch162_format.cpp
@@ -632,6 +650,7 @@ std::string build(int age, double score, const std::string& name) {
 
 解析出 `Object` 后，工程里常想直接拿强类型 `struct`。手写映射直观但重复；可用模板 + 字段描述简化（本章给出手写版，上游库用 `get<T>`）。
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：反序列化到 struct]
 ```cpp
 // ⑯ 反序列化到 struct（自包含可编译，Examples/_ch162_deserialize.cpp）
 // 文件：Examples/_ch162_deserialize.cpp
@@ -657,6 +676,7 @@ id=1 name=alice score=9.81
 
 ## ⑰ 反模式（不安全解析）
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：反模式（不安全解析）]
 ```cpp
 // ⑰ ❌ 反模式：盲目下标访问，越界即未定义行为（Examples/_ch162_antipattern.cpp）
 // 文件：Examples/_ch162_antipattern.cpp
@@ -673,6 +693,7 @@ std::vector<int> unsafe_split(const std::string& s) {
 }
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：反模式（不安全解析）]
 ```cpp
 // ⑰ ✅ 正确做法：边界检查 + 用本章 Parser 的 fail() 抛精确错误
 Value parse(const std::string_view s) {
@@ -696,6 +717,7 @@ Value parse(const std::string_view s) {
 - **字节序无关**：JSON 文本是字节流（UTF-8），本身不依赖 CPU 字节序，跨平台安全。
 - **`char` 符号性**：`char` 是否有符号由实现定义；处理字节时一律转 `unsigned char` 再比较（本章 `parse_number` 等处已用 `static_cast<unsigned char>`），否则在 `signed char` 平台遇到高位字节会出错。
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：平台差异 [平台·x86-64]]
 ```cpp
 // ⑱ 跨平台读文件建议（二进制读入，避免文本模式改写换行）
 #include <fstream>
@@ -711,6 +733,7 @@ std::string read_binary(const char* path) {
 
 下面是一份**服务器配置文件**解析（贴近工程，非 Hello World）。完整文件 `Examples/_ch162_case.cpp`，本机 `g++ -O2` 真实编译运行：
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：真实案例]
 ```cpp
 // ⑲ 解析服务器配置（自包含可编译，Examples/_ch162_case.cpp）
 // 文件：Examples/_ch162_case.cpp
@@ -779,21 +802,25 @@ _Z6any_wsSt17basic_string_viewIcSt11char_traitsIcEE:
 
 ## 补充分编可编译示例
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch162_json."<<std::endl;return 0;}
 ```
+> **示例 25** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch162_json."<<std::endl;return 0;}
 ```
+> **示例 26** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch162_json."<<std::endl;return 0;}
 ```
+> **示例 27** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -853,6 +880,7 @@ ISO C++ 至今无 `<json>`；JSON 解析器普遍用 **`std::variant`**（C++17�
 | Boost.JSON | ~400MB/s | Boost 生态, C++11 | Boost 用户 |
 | yyjson | ~1GB/s | C 库, 极简 API, C89 | 嵌入式, C 项目 |
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：附录 A：工业 JSON 库对比与标]
 ```cpp
 #include <iostream>
 int main() {
@@ -867,6 +895,7 @@ int main() {
 
 ## 附录 B：底层实现与面试 [E: Low-level / J: Learning / I: Practice]
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：附录 B：底层实现与面试 [E: L]
 ```
 JSON Parser 实现的关键决策:
 
@@ -907,6 +936,7 @@ A: 状态机: NORMAL → ESCAPE → UNICODE_4_HEX → 转换码点为 UTF-8 字�
 | 错误处理 | ch88(expected), ch146(error_handling) | parser error = expected<Json,Error> | C++23的expected是最佳错误类型 |
 | 性能优化 | ch151(benchmark), simdjson(ch155 SIMD) | JSON parse = 200MB/s vs 2.5GB/s(SIMD) | 了解simdjson的设计思想 |
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：项目学习地图：JSON库 → 全书知]
 ```cpp
 #include <iostream>
 int main() {
@@ -963,6 +993,7 @@ int main() {
 
 `std::variant` 在编译期枚举可能的备选项、运行时记录当前活跃类型，访问前可 `std::holds_alternative` 检查，避免 `void*` 的裸转型与类型错配 UB。
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <variant>
 #include <string>
@@ -1000,6 +1031,7 @@ int main() {
 
 JSON 字符串的 `\uXXXX` 是 UTF-16 码元；BMP 直接映射，代理对需合成码点再转 UTF-8。UTF-8 按码点长度用 1–4 字节编码，不能把 UTF-16 的 2 字节当 UTF-8 用。
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <string>
 #include <iostream>
@@ -1025,6 +1057,7 @@ int main() { std::string s; append_utf8(s, 0x4e2d); std::cout << s << '\n'; }  /
 
 DOM 易用但占内存、需先全量建树；SAX 边解析边回调，内存恒定、可早期剪枝，适合大文件与只取部分字段。下面用 `string_view` 把键名当只读视图传给回调，避免拷贝。
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <string_view>
 #include <iostream>
@@ -1171,6 +1204,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 #include <cstring>

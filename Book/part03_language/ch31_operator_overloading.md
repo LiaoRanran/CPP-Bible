@@ -38,6 +38,7 @@
 
 ## ② 加法运算符重载 [标准]
 
+> **示例 1** [难度 ★★★☆☆] [主题：加法运算符重载 [标准]]
 ```cpp
 #include <iostream>
 struct Vec2{int x,y;Vec2 operator+(const Vec2& o)const{return{x+o.x,y+o.y};}};
@@ -46,6 +47,7 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 
 ## ③ 比较运算符 [标准]
 
+> **示例 2** [难度 ★★★☆☆] [主题：比较运算符 [标准]]
 ```cpp
 #include <iostream>
 #include <compare>
@@ -55,6 +57,7 @@ int main(){Point a{1,2},b{1,3};std::cout<<(a<b)<<std::endl;return 0;}
 
 ## ④ 前置/后置自增 [标准]
 
+> **示例 3** [难度 ★★★☆☆] [主题：前置/后置自增 [标准]]
 ```cpp
 #include <iostream>
 struct Counter{int v;Counter&operator++(){++v;return*this;}Counter operator++(int){Counter t=*this;++v;return t;}};
@@ -63,6 +66,7 @@ int main(){Counter c{0};std::cout<<(++c).v<<" "<<(c++).v<<" "<<c.v<<std::endl;re
 
 ## ⑤ operator<< 输出 [标准]
 
+> **示例 4** [难度 ★★★☆☆] [主题：<< 输出 [标准]]
 ```cpp
 #include <iostream>
 struct Vec{int x,y;friend std::ostream&operator<<(std::ostream&os,const Vec&v){return os<<v.x<<","<<v.y;}};
@@ -71,6 +75,7 @@ int main(){Vec v{10,20};std::cout<<v<<std::endl;return 0;}
 
 ## ⑥ 赋值运算符（拷贝/移动）[标准]
 
+> **示例 5** [难度 ★★★☆☆] [主题：赋值运算符（拷贝/移动）[标准]]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -81,6 +86,7 @@ int main(){Buffer a(10),b(5);b=std::move(a);std::cout<<b.n<<std::endl;return 0;}
 
 ## ⑦ 类型转换运算符 [标准]
 
+> **示例 6** [难度 ★★★☆☆] [主题：类型转换运算符 [标准]]
 ```cpp
 #include <iostream>
 struct Rational{int n,d;explicit operator double()const{return(double)n/d;}};
@@ -89,6 +95,7 @@ int main(){Rational r{3,4};std::cout<<(double)r<<std::endl;return 0;}
 
 ## ⑧ 下标运算符 [标准]
 
+> **示例 7** [难度 ★★★☆☆] [主题：下标运算符 [标准]]
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -98,6 +105,7 @@ int main(){Array a{1,2,3,4,5};std::cout<<a[2]<<std::endl;return 0;}
 
 ## ⑨ 函数调用运算符 [标准]
 
+> **示例 8** [难度 ★★★☆☆] [主题：函数调用运算符 [标准]]
 ```cpp
 #include <iostream>
 struct Adder{int base;int operator()(int x)const{return base+x;}};
@@ -106,6 +114,7 @@ int main(){Adder add5{5};std::cout<<add5(10)<<std::endl;return 0;}
 
 ## ⑩ 不可重载的运算符 [标准]
 
+> **示例 9** [难度 ★★★☆☆] [主题：不可重载的运算符 [标准]]
 ```cpp
 #include <iostream>
 #include <typeinfo>
@@ -114,12 +123,14 @@ int main(){std::cout<<"Cannot overload: . .* :: ?: sizeof typeid const_cast stat
 
 ## 补充完整可编译示例
 
+> **示例 10** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct CVec{double x,y;};CVec operator*(const CVec&a,double s){return{a.x*s,a.y*s};}
 int main(){CVec c{1,2};auto d=c*2;std::cout<<d.x<<","<<d.y<<std::endl;return 0;}
 ```
 
+> **示例 11** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <cstring>
@@ -127,35 +138,41 @@ struct String{char*b;String(const char*s):b(strdup(s)){}~String(){free(b);}Strin
 int main(){String s("hello");String t=s;std::cout<<t.b<<std::endl;return 0;}
 ```
 
+> **示例 12** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"operator overloading: member vs free function. Free prefer non-member for symmetry.\n";return 0;}
 ```
 
+> **示例 13** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct Space{int m;bool operator!()const{return m==0;}};
 int main(){Space s{0};std::cout<<!s<<std::endl;return 0;}
 ```
 
+> **示例 14** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct Vec3{int x,y,z;bool operator==(const Vec3&o)const=default;};
 int main(){Vec3 a{1,2,3},b{1,2,3};std::cout<<(a==b)<<std::endl;return 0;}
 ```
 
+> **示例 15** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct Logger{Logger&operator<<(const char*s){std::cout<<s;return*this;}};
 int main(){Logger log;log<<"hello "<<"world\n";return 0;}
 ```
 
+> **示例 16** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct Matrix{int m[2][2];int&operator()(int i,int j){return m[i][j];}};
 int main(){Matrix mat{{{1,2},{3,4}}};std::cout<<mat(0,1)<<std::endl;return 0;}
 ```
 
+> **示例 17** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -163,18 +180,21 @@ struct Ptr{std::unique_ptr<int> p;int&operator*(){return*p;}int*operator->(){ret
 int main(){Ptr ptr{std::make_unique<int>(42)};std::cout<<*ptr<<std::endl;return 0;}
 ```
 
+> **示例 18** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct Bool{bool v;operator bool()const{return v;}};
 int main(){Bool b{true};if(b)std::cout<<"true\n";return 0;}
 ```
 
+> **示例 19** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"operator总结: 保留语义(+==>+), 避免歧义, 成员vs自由选择, <=>统一比较。"<<std::endl;return 0;}
 ```
 
 ## ⑪ STL 联系 [标准]
+> **示例 20** [难度 ★★★☆☆] [主题：联系 [标准]]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -183,48 +203,56 @@ int main(){S arr[]{{3},{1},{2}};std::sort(std::begin(arr),std::end(arr));std::co
 ```
 
 ## ⑫ 工业案例 [经验]
+> **示例 21** [难度 ★★★☆☆] [主题：工业案例 [经验]]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Eigen: operator+ returns expression template. fmt: operator<<_format for custom types.\n";return 0;}
 ```
 
 ## ⑬ 源码分析 [实现·GCC15.3.0]
+> **示例 22** [难度 ★★★☆☆] [主题：源码分析 [实现·GCC15.3.0]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GCC resolving operator@: lookup + overload resolution, error messages in cp/call.cc.\n";return 0;}
 ```
 
 ## ⑭ WG21 提案 [标准]
+> **示例 23** [难度 ★★★☆☆] [主题：提案 [标准]]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"P0515: three-way comparison <=>. P1185: defaulted <=> = default.\n";return 0;}
 ```
 
 ## ⑮ 面试题 [经验]
+> **示例 24** [难度 ★★★☆☆] [主题：面试题 [经验]]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Q: prefix vs postfix ++? A: prefix returns ref, postfix returns copy. Use prefix for perf.\n";return 0;}
 ```
 
 ## ⑯ 易错点 [经验]
+> **示例 25** [难度 ★★★☆☆] [主题：易错点 [经验]]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Pitfall: operator, overload loses short-circuit; operator&&/|| overload loses short-circuit.\n";return 0;}
 ```
 
 ## ⑰ FAQ [经验]
+> **示例 26** [难度 ★★★☆☆] [主题：[经验]]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Q: Why can't operator<< be a member? A: left operand is std::ostream, not your class.\n";return 0;}
 ```
 
 ## ⑱ 最佳实践 [经验]
+> **示例 27** [难度 ★★★☆☆] [主题：最佳实践 [经验]]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Best: use <=> for comparison; non-member for symmetric ops; friend for stream I/O.\n";return 0;}
 ```
 
 ## ⑲ 性能分析 [平台·x86-64]
+> **示例 28** [难度 ★★★☆☆] [主题：性能分析 [平台·x86-64]]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"operator+ temporaries can be avoided with expression templates (Eigen, range-v3).\n";return 0;}
@@ -246,11 +274,13 @@ int main(){std::cout<<"operator+ temporaries can be avoided with expression temp
    - [标准] 字面量运算符以 `_` 前缀命名，使 `1.0_km` 形式可读且可参与编译期计算。
    - [引用] ISO/IEC 14882:2023 §[over.literal]（字面量运算符）；cppreference "User-defined_literals" 词条。
 
+> **示例 29** [难度 ★★★☆☆] [主题：跨语言对比 [经验]]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++ operator overloading vs Rust std::ops traits vs Python __add__/dunder methods.\n";return 0;}
 ```
 
+> **示例 30** [难度 ★★★☆☆] [主题：跨语言对比 [经验]]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"operator重载总结: 保留原始语义, 避免歧义, <=>优先defaulted, 自由函数优于成员。"<<std::endl;return 0;}
@@ -310,6 +340,7 @@ C++ 早期 `operator+`/`[]`/`()` 等成形并约定"成员 vs 非成员"规则�
 | -> * (解引用) | 成员函数 | 模拟指针行为 |
 | && \|\| , (逻辑/逗号) | 不推荐重载 | 丢失短路求值语义 |
 
+> **示例 31** [难度 ★★★☆☆] [主题：附录 A: 运算符重载速查表]
 ```cpp
 #include <iostream>
 struct Complex{double r,i;Complex operator+(double s)const{return{r+s,i};}friend Complex operator+(double s,const Complex&c){return{c.r+s,c.i};}};
@@ -318,6 +349,7 @@ int main(){Complex c{1,2};auto d=c+3.0;auto e=3.0+c;std::cout<<d.r<<","<<e.r<<st
 
 ## 附录 B: <=> 三路比较深度
 
+> **示例 32** [难度 ★★★☆☆] [主题：附录 B: <=> 三路比较深度]
 ```cpp
 #include <iostream>
 #include <compare>
@@ -325,6 +357,7 @@ struct Date{int y,m,d;auto operator<=>(const Date&)const=default;};
 int main(){Date d1{2024,1,1},d2{2025,6,15};auto cmp=d1<=>d2;if(cmp<0)std::cout<<"before\n";return 0;}
 ```
 
+> **示例 33** [难度 ★★★☆☆] [主题：附录 B: <=> 三路比较深度]
 ```cpp
 #include <iostream>
 #include <compare>
@@ -334,6 +367,7 @@ int main(){Ord a{10},b{20};std::cout<<(a<b)<<" "<<(a>b)<<std::endl;return 0;}
 
 ## 附录 C: 表达式模板与延迟求值
 
+> **示例 34** [难度 ★★★☆☆] [主题：附录 C: 表达式模板与延迟求值]
 ```cpp
 #include <iostream>
 template<typename L,typename R>struct AddExpr{L l;R r;auto eval()const{return l.eval()+r.eval();}};
@@ -344,6 +378,7 @@ int main(){Vec a{10},b{20};std::cout<<(a+b).eval()<<std::endl;return 0;}
 
 ## 附录 D: 常见错误与修复
 
+> **示例 35** [难度 ★★★☆☆] [主题：附录 D: 常见错误与修复]
 ```cpp
 #include <iostream>
 int main(){
@@ -355,6 +390,7 @@ int main(){
 }
 ```
 
+> **示例 36** [难度 ★★★☆☆] [主题：附录 D: 常见错误与修复]
 ```cpp
 #include <iostream>
 struct SafeAssign{int*v;SafeAssign(int x):v(new int(x)){}~SafeAssign(){delete v;}SafeAssign&operator=(const SafeAssign&o){if(this==&o)return*this;int*t=new int(*o.v);delete v;v=t;return*this;}int get()const{return*v;}};
@@ -363,12 +399,14 @@ int main(){SafeAssign a(10),b(20);a=b;std::cout<<a.get()<<std::endl;return 0;}
 
 ## 附录 E: 自定义迭代器与智能指针
 
+> **示例 37** [难度 ★★★☆☆] [主题：附录 E: 自定义迭代器与智能指针]
 ```cpp
 #include <iostream>
 struct Range{int lo,hi;struct It{int v;int operator*()const{return v;}It&operator++(){++v;return*this;}bool operator!=(const It&o)const{return v!=o.v;}};It begin()const{return{lo};}It end()const{return{hi};}};
 int main(){Range r{1,5};int s=0;for(int x:r)s+=x;std::cout<<s<<std::endl;return 0;}
 ```
 
+> **示例 38** [难度 ★★★☆☆] [主题：附录 E: 自定义迭代器与智能指针]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -377,12 +415,14 @@ struct Ptr{std::unique_ptr<Res> p;Res&operator*(){return*p;}Res*operator->(){ret
 int main(){Ptr p(99);std::cout<<p->get()<<std::endl;return 0;}
 ```
 
+> **示例 39** [难度 ★★★☆☆] [主题：附录 E: 自定义迭代器与智能指针]
 ```cpp
 #include <iostream>
 struct Mat{int d[2][2];int*operator[](int i){return d[i];}};
 int main(){Mat m{{{1,2},{3,4}}};std::cout<<m[0][1]<<std::endl;return 0;}
 ```
 
+> **示例 40** [难度 ★★★☆☆] [主题：附录 E: 自定义迭代器与智能指针]
 ```cpp
 #include <iostream>
 #include <string>
@@ -392,6 +432,7 @@ int main(){Json j{42,"hello"};std::cout<<(int)j<<" "<<(std::string)j<<std::endl;
 
 ## 附录 A：标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 
+> **示例 41** [难度 ★★★☆☆] [主题：附录 A：标准库与底层 [D: st]
 ```
 标准库中的运算符重载:
 - std::complex<T>: operator+,-,*,/ → libstdc++内联展开为2条addps(SIMD)
@@ -429,6 +470,7 @@ WG21从未单独标准化运算符重载——它是C++78(C with Classes)的原�
 ; 结论: operator+=零开销抽象, 编译器内联后与手写相同
 ```
 
+> **示例 42** [难度 ★★★☆☆] [主题：汇编验证]
 ```cpp
 #include <iostream>
 struct Vec2{float x,y;Vec2 operator+(const Vec2&o)const{return{x+o.x,y+o.y};}};
@@ -452,6 +494,7 @@ Q: 为什么不要重载operator&&和operator||? A: 它们会失去短路求值(
 
 ## 附录 H：运算符重载面试
 
+> **示例 43** [难度 ★★★☆☆] [主题：附录 H：运算符重载面试]
 ```cpp
 #include <iostream>
 struct Vec2{float x,y;Vec2 operator+(const Vec2&o)const{return{x+o.x,y+o.y};}};
@@ -479,6 +522,7 @@ operator+的name mangling: GCC: _ZplRK4Vec2S1_ (operator+ for Vec2)
 ; 结论: operator+=零开销抽象, 编译器内联后与手写相同汇编
 ```
 
+> **示例 44** [难度 ★★★☆☆] [主题：附录 I：运算符ABI]
 ```cpp
 #include <iostream>
 struct Vec2{float x,y;Vec2 operator+(const Vec2&o)const{return{x+o.x,y+o.y};}};
@@ -526,6 +570,7 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 
 <details><summary>答案与解析</summary>
 
+> **示例 45** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 struct Vec2 {
@@ -556,6 +601,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
+> **示例 46** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <compare>
 struct Point {
@@ -586,6 +632,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
+> **示例 47** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <utility>
 #include <cstddef>
@@ -623,6 +670,7 @@ struct Matrix {                 // rule of 5
 
 **步骤 1：朴素裸指针（漏析构 → 泄漏）**
 
+> **示例 48** [难度 ★★★☆☆] [主题：附录：用法演绎 — 从 rule o]
 ```cpp
 struct MyString {
     char* data; size_t len;
@@ -635,6 +683,7 @@ struct MyString {
 
 **步骤 2：rule of 3（深拷贝补全）**
 
+> **示例 49** [难度 ★★★☆☆] [主题：附录：用法演绎 — 从 rule o]
 ```cpp
 struct MyString {                       // rule of 3: 管理资源的类必须给出三者
     char* data; std::size_t len;
@@ -652,6 +701,7 @@ struct MyString {                       // rule of 3: 管理资源的类必须�
 
 **步骤 3：vector 扩容的性能坑（移动未 noexcept → 退化拷贝）**
 
+> **示例 50** [难度 ★★★☆☆] [主题：附录：用法演绎 — 从 rule o]
 ```cpp
 #include <vector>
 #include <cstring>
@@ -672,6 +722,7 @@ int main(){
 
 **步骤 4：rule of 5（加 noexcept 移动）**
 
+> **示例 51** [难度 ★★★☆☆] [主题：附录：用法演绎 — 从 rule o]
 ```cpp
 #include <vector>
 #include <cstring>
@@ -955,6 +1006,7 @@ void operator delete[](void*) _GLIBCXX_TXN_SAFE _GLIBCXX_USE_NOEXCEPT
 
 ### 可编译实证
 
+> **示例 52** [难度 ★★★☆☆] [主题：可编译实证]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1004,6 +1056,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
+> **示例 53** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 

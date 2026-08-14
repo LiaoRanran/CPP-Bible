@@ -41,6 +41,7 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 
 调试不是"找 bug"的代名词，而是**把程序的可观察行为对齐到设计意图**的闭环。C++ 的典型故障分层：
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：调试的目标与分层 [标准]]
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  层级            典型故障              首选工具                │
@@ -54,6 +55,7 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 └─────────────────────────────────────────────────────────────┘
 ```
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：调试的目标与分层 [标准]]
 ```cpp
 // ① 同一段代码，无插桩时静默出错，加诊断后暴露问题
 #include <cstddef>
@@ -79,6 +81,7 @@ int main() {
 
 GDB 是 GNU 调试器，三大基石命令：`break`（断点）、`watch`（观察点）、`backtrace`（调用栈）。
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：基础]
 ```cpp
 // ② 供 GDB 练习的示例：求数组和，但有 off-by-one 隐患
 #include <cstddef>
@@ -118,6 +121,7 @@ gdb ./a.out
 
 无条件断点在大循环里会频繁命中；`condition` 让断点只在表达式为真时停下。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：条件断点与表达式]
 ```cpp
 // ③ 100 万次循环，只在 i==999999 时关心状态
 #include <cstddef>
@@ -150,6 +154,7 @@ int main() {
 
 LLDB 是 LLVM 调试器，命令语义与 GDB 高度对应，但在 macOS/Clang 生态是默认。
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：对比 [平台·Linux]]
 ```cpp
 // ④ 与 ② 同构，但用更现代的 range-for 风格
 #include <cstddef>
@@ -184,6 +189,7 @@ int main() {
 
 当进程收到 `SIGSEGV` 等致命信号，内核可写入 **core 文件**（进程内存镜像），事后用 GDB 离线分析。
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：核心转储 core dump 分析]
 ```cpp
 // ⑤ 故意空指针解引用，触发 SIGSEGV 生成 core dump
 #include <cstddef>
@@ -219,6 +225,7 @@ gdb ./a.out core
 
 AddressSanitizer（ASan）在编译期插桩，运行时检测堆/栈/全局变量的越界、UAF、double free。
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：地址消毒]
 ```cpp
 // 文件：Examples/_ch14_heap_overflow.cpp
 // 行号：6
@@ -251,6 +258,7 @@ $ echo $?
 
 UndefinedBehaviorSanitizer（UBSan）捕获有符号溢出、空指针解引用、对齐错误、移位越界等。
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：未定义行为检测]
 ```cpp
 // 文件：Examples/_ch14_ubsan.cpp
 // 行号：6
@@ -286,6 +294,7 @@ _ch14_warn.cpp:3:9: note: 'x' was declared here
 
 ThreadSanitizer（TSan）检测多线程对同地址的无同步并发访问（data race）。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：数据竞争检测]
 ```cpp
 // ⑧ 数据竞争：两线程无锁并发写同一变量（需 libtsan，Linux/Clang 可用）
 #include <cstddef>
@@ -312,6 +321,7 @@ int main() {
 
 Valgrind `memcheck` 是二进制插桩的内存错误检测器，无需重新编译（但会显著减速）。
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // ⑨ 内存泄漏示例：分配后不释放
 #include <cstddef>
@@ -342,6 +352,7 @@ int main() {
 
 C++ 的**RAII**让资源在析构时自动释放，从语言层面消灭大多数泄漏。
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：内存泄漏检测（自动 vs 手动）]
 ```cpp
 // ⑩ RAII：用 std::vector / 智能指针替代裸 new，析构自动释放
 #include <cstddef>
@@ -360,6 +371,7 @@ int main() { leak_free(); return 0; }
 
 手动泄漏检测思路（调试宏）：
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：内存泄漏检测（自动 vs 手动）]
 ```cpp
 // ⑩ 轻量泄漏钩子：重载 operator new/delete 记录未释放计数
 #include <cstddef>
@@ -413,6 +425,7 @@ collect2.exe: error: ld returned 1 exit status
 
 `-g` 在目标文件/可执行中嵌入 DWARF 调试信息（变量名、行号、类型），让 GDB 能把机器码映射回源码。
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：调试符号与 -g / strip []
 ```cpp
 // 文件：Examples/_ch14_asm.cpp
 // 行号：4
@@ -473,6 +486,7 @@ strip后:    13824 字节
 
 目标机（嵌入式/容器/无头服务器）跑 `gdbserver`，开发机 GDB 通过网络连接。
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：远程/嵌入式调试]
 ```cpp
 // ⑬ 目标板程序：裸机/嵌入式里一个会被断点暂停的循环
 #include <cstddef>
@@ -504,6 +518,7 @@ gdb ./firmware
 
 `assert` 在 `NDEBUG` 未定义时校验条件，失败则 `abort` 并打调用栈。
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：断言 assert 与调试宏]
 ```cpp
 // ⑭ 用断言固化前置条件；发布构建定义 NDEBUG 自动移除
 #include <cassert>
@@ -523,6 +538,7 @@ int main() {
 
 自定义调试宏：
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：断言 assert 与调试宏]
 ```cpp
 // ⑭ 带等级与行号的轻量日志宏（无开销发布版）
 #include <cstdio>
@@ -547,6 +563,7 @@ int main() {
 
 结构化策略胜过"逐行 println"。通用下钻法：
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：[经验]调试策略]
 ```cpp
 // ⑮ 二分定位：用一个可控的 flag 快速缩小问题区间
 #include <cstddef>
@@ -564,6 +581,7 @@ int main() {
 }
 ```
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：[经验]调试策略]
 ```cpp
 // ⑮ 最小复现：把 bug 从大系统抽离成 20 行可编译样本
 #include <cstddef>
@@ -583,6 +601,7 @@ int main() {
 
 ## ⑯ 常见崩溃（SEGV / double free / ABBA 死锁）
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：常见崩溃]
 ```cpp
 // ⑯ SEGV：空/野指针解引用
 #include <cstddef>
@@ -596,6 +615,7 @@ int segv() {
 int main() { std::printf("%d\n", segv()); return 0; }
 ```
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：常见崩溃]
 ```cpp
 // ⑯ double free：同一指针释放两次
 #include <cstddef>
@@ -608,6 +628,7 @@ int main() {
 }
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：常见崩溃]
 ```cpp
 // ⑯ ABBA 死锁：两线程以相反顺序取锁
 #include <cstddef>
@@ -640,6 +661,7 @@ int main() {
 
 现代 IDE（VS Code、CLion、Qt Creator、Visual Studio）内嵌 GDB/LLDB，提供图形断点、变量视图、调用栈。
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：与 IDE 集成]
 ```cpp
 // ⑰ IDE 调试的典型目标：一个带状态的对象
 #include <cstddef>
@@ -679,6 +701,7 @@ int main() {
 
 先确认瓶颈在**哪一层**，再用工具采样（perf / sampling profiler），而不是猜。
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：性能陷阱定位]
 ```cpp
 // 文件：Examples/_ch14_opt.cpp
 // 行号：2
@@ -717,6 +740,7 @@ _Z6sum_toi:
 
 把"防 bug"前置到编码习惯，比事后调试更省成本：
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑲ 用 std::lock 一次性锁多把锁，消除 ABBA（对应 ⑯ 死锁修复）
 #include <cstddef>
@@ -739,6 +763,7 @@ int main() {
 }
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑲ 用 span 把"裸指针+长度"变成带边界检查的接口
 #include <cstddef>
@@ -775,6 +800,7 @@ int main() {
    - [标准] 两个线程无同步地访问同一内存位置、且至少一个是写，即为数据竞争，属于未定义行为。
    - [引用] ISO/IEC 14882:2023 §[intro.races]（数据竞争）；cppreference "Memory model" 词条。
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：速查表]
 ```cpp
 // ⑳ 一页可粘贴的"调试开关"清单（C++23）
 // 编译期：g++ -std=c++23 -Wall -Wextra -Wshadow -g -O0
@@ -802,6 +828,7 @@ int main() { return 0; }
 
 ## 补充完整可编译示例（debugging）
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G1 观察点目标：被多处修改的变量
 #include <cstddef>
@@ -809,6 +836,7 @@ int g_flag = 0;
 int main() { g_flag = 1; g_flag = 2; return g_flag; }
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G2 调用栈追踪：深层递归
 #include <cstddef>
@@ -817,6 +845,7 @@ int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
 int main() { std::printf("%d\n", fact(5)); return 0; }
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G3 GDB 表达式求值：在断点处调用函数
 #include <cstddef>
@@ -825,6 +854,7 @@ int sq(int x) { return x * x; }
 int main() { std::printf("%d\n", sq(4)); return 0; }
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G4 LLDB 等价：打印对象布局
 #include <cstddef>
@@ -833,6 +863,7 @@ struct Pt { int x, y; };
 int main() { Pt p{1, 2}; std::printf("%d,%d\n", p.x, p.y); return 0; }
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G5 core dump 寄存器观测：除零
 #include <cstddef>
@@ -840,12 +871,14 @@ int main() { Pt p{1, 2}; std::printf("%d,%d\n", p.x, p.y); return 0; }
 int main() { int z = 0; std::printf("%d\n", 1 / z); return 0; }
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G6 ASan 栈溢出（需 libasan）：超大栈数组越界
 #include <cstddef>
 int main() { int a[4]; a[4] = 1; return 0; }
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G7 UBSan 空指针：需 libubsan
 #include <cstddef>
@@ -853,6 +886,7 @@ int main() { int a[4]; a[4] = 1; return 0; }
 int main() { int* p = nullptr; *p = 5; std::printf("%d\n", *p); return 0; }
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G8 TSan 竞争（需 libtsan，Linux/Clang）
 #include <cstddef>
@@ -865,6 +899,7 @@ int main() {
 }
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G9 Valgrind 未初始化读：读未赋值内存
 #include <cstddef>
@@ -872,6 +907,7 @@ int main() {
 int main() { int x; std::printf("%d\n", x); return 0; }
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G10 泄漏防护：unique_ptr 自动释放
 #include <cstddef>
@@ -879,6 +915,7 @@ int main() { int x; std::printf("%d\n", x); return 0; }
 int main() { auto p = std::make_unique<int>(9); return *p; }
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G11 自定义断言宏
 #include <cstddef>
@@ -887,6 +924,7 @@ int main() { auto p = std::make_unique<int>(9); return *p; }
 int main() { CHECK(1 + 1 == 2); return 0; }
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G12 NDEBUG 下断言消失验证
 #include <cassert>
@@ -898,6 +936,7 @@ int main() {
 }
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G13 远程调试桩：可被 gdbserver 附加的循环
 #include <cstddef>
@@ -905,6 +944,7 @@ volatile int tick = 0;
 int main() { while (true) { ++tick; for (volatile int i = 0; i < 500; ++i); } }
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G14 调试宏成本对比：DBG 在 NDEBUG 下零开销
 #include <cstddef>
@@ -917,6 +957,7 @@ int main() { while (true) { ++tick; for (volatile int i = 0; i < 500; ++i); } }
 int main() { TRACE(); return 0; }
 ```
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G15 最小复现模板：抽离到 20 行以内
 #include <cstddef>
@@ -930,6 +971,7 @@ int main() {
 }
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // G16 速查：perror 打印系统错误
 #include <cstddef>
@@ -982,6 +1024,7 @@ int main() { errno = 0; std::perror("debug point"); return 0; }
 
 ## 附录 A：工业调试与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：附录 A：工业调试与标准库 [B: ]
 ```
 C++调试工具工业对比:
 GDB: GNU调试器, Linux标配, 支持C++表达式(pType, p vector.size())
@@ -1030,6 +1073,7 @@ Sanitizer与标准库:
 | UBSan | signed overflow, null deref | 1.5x | 1.2x | 部分(轻量检查) |
 | MSan | uninitialized read | 3x | 2x | 否(仅Clang) |
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：性能对比]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GDB: int3(0xCC) breakpoint. ASan: shadow memory. TSan: lock+atomic interception."<<std::endl;return 0;}
@@ -1047,6 +1091,7 @@ GDB reverse debugging: target record-full → reverse-continue/reverse-step
 Core dump分析: gdb ./a.out core → bt(backtrace) → frame N → print var
 Watchpoint: watch x → x值改变时断(~1000x slower, uses hardware watchpoints)
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：附录 F：GDB高级调试技术]
 ```cpp
 #include <iostream>
 int main(){int x=0;x=42;std::cout<<"GDB: b main, r, p x, watch x, c"<<std::endl;return 0;}
@@ -1064,6 +1109,7 @@ int main(){int x=0;x=42;std::cout<<"GDB: b main, r, p x, watch x, c"<<std::endl;
 
 ## 附录 H：Valgrind vs Sanitizer
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：附录 H：Valgrind vs S]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Valgrind=no recompile, 20x slow; ASan=recompile, 2x slow, more precise"<<std::endl;return 0;}
@@ -1091,6 +1137,7 @@ int main(){std::cout<<"Valgrind=no recompile, 20x slow; ASan=recompile, 2x slow,
 | frame N | 切换栈帧 | frame 2 |
 | watch | 监视变量 | watch x |
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：附录 I：GDB核心命令速查]
 ```cpp
 #include <iostream>
 int main(){int x=0;x=42;std::cout<<"GDB:b main,r,p x,bt,frame 2,watch x"<<std::endl;return 0;}
@@ -1102,6 +1149,7 @@ TSan检测data race: 两个线程访问同一变量, 至少一个写, 无同步�
 编译: g++ -fsanitize=thread -g -O1
 运行: ./a.out → TSan报告race的调用栈(两个线程的调用栈)
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：附录 J：TSan使用指南]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1204,6 +1252,7 @@ mov byte [rax+0x0000], 0xcc   ; 写入软件断点
 
 **真实场景：偶发的堆破坏。** 程序偶尔输出乱码、重现不了，怀疑某处越界写坏了别的对象的元数据。请用 AddressSanitizer 在运行时抓堆越界：写一段含堆缓冲溢出的程序（编译期合法），并说明加上 `-fsanitize=address -g` 后运行会报什么。
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1224,6 +1273,7 @@ int main() {
 
 **真实场景：发布档里的整数溢出。** 一段计数逻辑在 Debug 下正常、`-O2` 下结果诡异，怀疑有符号溢出被优化消除。请用 UndefinedBehaviorSanitizer 抓这类 UB：写程序展示有符号溢出，并说明为什么"普通 `-O2` 构建"可能让这种 bug 更难发现。
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 
@@ -1243,6 +1293,7 @@ int main() {
 
 **真实场景：线上 core dump 分析。** 一台服务器崩了只留下 core 文件，你需要从中还原崩溃位置。请用 `-g` 把源码行映射到机器指令、用 `strip` 演示移除前后差异：写程序说明同样一个崩溃，带 `-g` 与不带 `-g` 在调试器里能看到的差异（用断言验证不变量作示范）。
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <cassert>
@@ -1274,6 +1325,7 @@ g++ -std=c++23 -fsanitize=address -g bug.cpp -o bug
 ./bug        # 越界那一行立即报 SUMMARY: AddressSanitizer: heap-buffer-overflow
 ```
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：演绎 1：用 ASan 定位“偶发”]
 ```cpp
 #include <iostream>
 #include <vector>

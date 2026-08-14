@@ -134,6 +134,7 @@ C++ 没有垃圾回收。裸 `new`/`delete`（见 ch37）把"分配"与"释放"�
 
 [实现·GCC15] libstdc++ 把 `unique_ptr` 的状态放在一个 `tuple<pointer, _Dp>` 里：
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：uniqueptr 总览与零开销本质]
 ```cpp
 #include <utility>
 // <bits/unique_ptr.h> 行 147-233（libstdc++ 13.1.0，真实摘录）
@@ -158,6 +159,7 @@ template <typename _Tp, typename _Dp>
 
 ### 示例 01：`unique_ptr` 基本用法与自动释放
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：示例 01：uniqueptr 基本]
 ```cpp
 #include <iostream>
 #include <memory>   // std::unique_ptr / std::make_unique 都在 <memory>
@@ -183,6 +185,7 @@ int main() {
 
 ### 示例 02：`unique_ptr` 不可拷贝、只可移动  `[核心知识点03]`
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：示例 02：uniqueptr 不可]
 ```cpp
 #include <memory>
 #include <utility>
@@ -206,6 +209,7 @@ int main() {
 
 ### 示例 03：默认 `default_delete`  `[核心知识点04]`
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：示例 03：默认 defaultde]
 ```cpp
 #include <memory>
 int main() {
@@ -216,6 +220,7 @@ int main() {
 
 ### 示例 04：自定义删除器——函数指针  `[核心知识点05]`
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：示例 04：自定义删除器——函数指针]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -234,6 +239,7 @@ int main() {
 
 ### 示例 05：自定义删除器——lambda  `[核心知识点05]`
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：示例 05：自定义删除器——lamb]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -250,6 +256,7 @@ int main() {
 
 ### 示例 06：自定义删除器——可调用对象作为**类型参数**  `[核心知识点05]`
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：示例 06：自定义删除器——可调用对]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -270,6 +277,7 @@ int main() {
 
 ### 示例 07：自定义删除器——**构造参数**传入（无状态更灵活）  `[核心知识点05]`
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：示例 07：自定义删除器——构造参数]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -300,6 +308,7 @@ int main() {
 
 ### 示例 08：`unique_ptr<T[]>` 数组特化  `[核心知识点06]`
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：示例 08：uniqueptr<T[]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -316,6 +325,7 @@ int main() {
 
 [实现·GCC15] libstdc++ `<bits/unique_ptr.h>` 行 535 起有 `class unique_ptr<_Tp[], _Dp>` 特化；其析构走 `_Sp_array_delete`（对 `is_array<_Tp>` 选择 `delete[]`）：
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：示例 08：uniqueptr<T[]
 ```cpp
 // <bits/unique_ptr.h> 行 132-141（default_delete<T[]> 对数组）
 template<typename _Up>
@@ -339,6 +349,7 @@ template<typename _Up>
 
 [实现·GCC15] 这些直接转发到 `__uniq_ptr_impl`（`<bits/unique_ptr.h>` 行 196-220）：
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：uniqueptr 成员：relea]
 ```cpp
 // <bits/unique_ptr.h> 行 214-220
 pointer release() noexcept {
@@ -357,6 +368,7 @@ void reset(pointer __p) noexcept {
 
 ### 示例 09：release / get / reset / swap  `[核心知识点07]`
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：示例 09：release / ge]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -393,6 +405,7 @@ int main() {
 
 ### 示例 10：EBO 验证——`sizeof` 对比  `[核心知识点02]`
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：示例 10：EBO 验证——size]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -431,6 +444,7 @@ int main() {
 
 ### 示例 11：Pimpl 惯用法（编译防火墙）  `[核心知识点08]`
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：示例 11：Pimpl 惯用法]
 ```cpp
 // widget.h
 #include <memory>
@@ -459,6 +473,7 @@ void Widget::draw() const { p_->draw(); }
 
 ### 示例 12：工厂函数返回 `unique_ptr`  `[核心知识点08]`
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：示例 12：工厂函数返回 uniqu]
 ```cpp
 #include <memory>
 struct Shape { virtual ~Shape() = default; virtual double area() const = 0; };
@@ -471,6 +486,7 @@ std::unique_ptr<Shape> make_circle(double r) {
 
 ### 示例 13：`unique_ptr` 存入容器  `[核心知识点08]`
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：示例 13：uniqueptr 存入]
 ```cpp
 #include <memory>
 #include <vector>
@@ -509,6 +525,7 @@ int main() {
 
 [实现·GCC15] libstdc++ 控制块基类 `_Sp_counted_base`（`<bits/shared_ptr_base.h>` 行 124-239）直接给出了两个计数与构造初值：
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：sharedptr 总览与控制块结构]
 ```cpp
 // <bits/shared_ptr_base.h> 行 124-239（真实摘录，截断无关方法）
 template<_Lock_policy _Lp = __default_lock_policy>
@@ -528,6 +545,7 @@ template<_Lock_policy _Lp = __default_lock_policy>
 
 `__shared_ptr` 自身只持有 `_M_ptr`（被指对象指针）和 `_M_refcount`（一个 `__shared_count`，内部就是那个控制块指针 `_M_pi`）：
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：sharedptr 总览与控制块结构]
 ```cpp
 // <bits/shared_ptr_base.h> 行 1422 起，__shared_ptr 关键成员
 // （数据成员在类尾，真实为）
@@ -537,6 +555,7 @@ template<_Lock_policy _Lp = __default_lock_policy>
 
 ### 示例 14：`shared_ptr` 基本与引用计数  `[核心知识点09]`
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：示例 14：sharedptr 基本]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -557,6 +576,7 @@ int main() {
 
 ### 示例 15：`shared_ptr` 自定义删除器控制释放方式  `[核心知识点22]`（先预览，详[元素17]）
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：示例 15：sharedptr 自定]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -579,6 +599,7 @@ int main() {
 
 [实现·GCC15] libstdc++ 的 `make_shared`（`shared_ptr.h` 行 1003-1011）只构造一个 `_Sp_alloc_shared_tag` 转发给 `shared_ptr` 构造，再进 `__shared_count` 的 `_Sp_alloc_shared_tag` 分支（`shared_ptr_base.h` 行 963-976）：
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：makeshared 一次分配与缺陷]
 ```cpp
 #include <utility>
 // <bits/shared_ptr.h> 行 1003-1011
@@ -610,6 +631,7 @@ template<typename _Tp, typename _Alloc, typename... _Args>
 
 一次分配的本质是 `_Sp_counted_ptr_inplace`（`<bits/shared_ptr_base.h>` 行 580-653），它用 `__gnu_cxx::__aligned_buffer<_Tp> _M_storage;` 把对象**内联**进控制块：
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：makeshared 一次分配与缺陷]
 ```cpp
 // <bits/shared_ptr_base.h> 行 580-653（截断）
 template<typename _Tp, typename _Alloc, _Lock_policy _Lp>
@@ -631,6 +653,7 @@ template<typename _Tp, typename _Alloc, _Lock_policy _Lp>
 
 ### 示例 16：`make_shared` vs `new + shared_ptr` 两次分配  `[核心知识点11][12]`
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：示例 16：makeshared v]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -660,6 +683,7 @@ int main() {
 
 [实现·GCC15] 走 `__shared_count(_Ptr __p)`（`shared_ptr_base.h` 行 911-924）：
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：new + sharedptr 两次]
 ```cpp
 // <bits/shared_ptr_base.h> 行 911-924
 template<typename _Ptr>
@@ -675,6 +699,7 @@ template<typename _Ptr>
 
 而 `_Sp_counted_ptr`（`shared_ptr_base.h` 行 419-443）只持有 `_M_ptr`，删除器固定 `delete _M_ptr`：
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：new + sharedptr 两次]
 ```cpp
 // <bits/shared_ptr_base.h> 行 426-428
 virtual void _M_dispose() noexcept { delete _M_ptr; }   // 对象与控制块分离
@@ -682,6 +707,7 @@ virtual void _M_dispose() noexcept { delete _M_ptr; }   // 对象与控制块分
 
 ### 示例 17：自定义删除器计数验证"两次分配"路径  `[核心知识点12]`
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：示例 17：自定义删除器计数验证"两]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -707,6 +733,7 @@ int main() {
 
 [实现·GCC15] `_Sp_counted_base<_S_atomic>::_M_release()`（`<bits/shared_ptr_base.h>` 行 315-363）：
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：引用计数原子操作与 memoryor]
 ```cpp
 // <bits/shared_ptr_base.h> 行 315-363（_S_atomic 策略，真实摘录）
 template<>
@@ -742,6 +769,7 @@ template<>
 
 当计数归零时调用 `_M_release_last_use()`（`shared_ptr_base.h` 行 172-193）：先 `_M_dispose()`（释放对象），再原子减弱计数，弱计数也归零才 `_M_destroy()`（释放控制块）：
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：引用计数原子操作与 memoryor]
 ```cpp
 // <bits/shared_ptr_base.h> 行 172-193
 void _M_release_last_use() noexcept
@@ -766,6 +794,7 @@ void _M_release_last_use() noexcept
 
 ### 示例 18：引用计数原子性——多线程拷贝  `[核心知识点13][15]`
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：示例 18：引用计数原子性——多线程]
 ```cpp
 #include <memory>
 #include <thread>
@@ -789,6 +818,7 @@ int main() {
 
 ### 示例 19：所指对象访问非线程安全（需要互斥）  `[核心知识点15]`
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：示例 19：所指对象访问非线程安全]
 ```cpp
 #include <memory>
 #include <thread>
@@ -818,6 +848,7 @@ int main() {
 
 [实现·GCC15] libstdc++ 的 C++11 自由函数（`<bits/shared_ptr_atomic.h>` 行 127-133）用 `_Sp_locker` 对指针加自旋锁：
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：std::atomic<shared]
 ```cpp
 // <bits/shared_ptr_atomic.h> 行 127-133
 template<typename _Tp>
@@ -835,6 +866,7 @@ template<typename _Tp>
 
 ### 示例 20：`std::atomic<shared_ptr>` C++20 多线程  `[核心知识点14]`
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：示例 20：std::atomic<]
 ```cpp
 #include <memory>
 #include <atomic>
@@ -872,6 +904,7 @@ int main() {
 
 ### 示例 21：循环引用泄漏（自定义删除器计数未释放）  `[核心知识点16]`
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：示例 21：循环引用泄漏]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -898,6 +931,7 @@ int main() {
 
 ### 示例 22：`weak_ptr` 打破循环  `[核心知识点16][17]`
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：示例 22：weakptr 打破循环]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -931,6 +965,7 @@ int main() {
 
 [实现·GCC15] `weak_ptr::lock()`（`shared_ptr_base.h` 行 2066-2068）直接委托给带 `nothrow` 的 `shared_ptr` 构造，该构造内部调用 `_M_refcount(__r._M_refcount, nothrow)`——若强计数已 0 则 `_M_ptr` 置空：
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：weakptr：lock / exp]
 ```cpp
 // <bits/shared_ptr_base.h> 行 2066-2076
 __shared_ptr<_Tp, _Lp>
@@ -945,6 +980,7 @@ bool expired() const noexcept
 
 ### 示例 23：`weak_ptr::lock()` / `expired()` 用法  `[核心知识点17]`
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：示例 23：weakptr::loc]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -979,6 +1015,7 @@ int main() {
 
 [实现·GCC15] `enable_shared_from_this`（`shared_ptr.h` 行 919-972）与基类 `__enable_shared_from_this`（`shared_ptr_base.h` 行 2171-2219）：
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：enablesharedfromth]
 ```cpp
 // <bits/shared_ptr.h> 行 919-939（真实摘录）
 class enable_shared_from_this
@@ -1002,6 +1039,7 @@ class __enable_shared_from_this
 
 ### 示例 24：`enable_shared_from_this` 正确用法  `[核心知识点18]`
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：示例 24：enableshared]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -1023,6 +1061,7 @@ int main() {
 
 ### 示例 25：`enable_shared_from_this` 错误——构造期调用 UB  `[核心知识点18]`
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：示例 25：enableshared]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -1052,6 +1091,7 @@ int main() {
 
 [实现·GCC15] `__shared_ptr` 别名构造（`shared_ptr_base.h` 行 1505-1520）：
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：别名构造 sharedptr<T>]
 ```cpp
 // <bits/shared_ptr_base.h> 行 1505-1510（左值引用版别名构造）
 template<typename _Yp>
@@ -1064,6 +1104,7 @@ template<typename _Yp>
 
 ### 示例 26：别名构造——返回成员并延长整体生命周期  `[核心知识点19]`
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：示例 26：别名构造——返回成员并延]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -1098,6 +1139,7 @@ int main() {
 
 ### 示例 27：别名构造 + `enable_shared_from_this` 组合
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：示例 27：别名构造 + enabl]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -1131,6 +1173,7 @@ int main() {
 
 ### 示例 28：`shared_ptr` 自定义删除器管理 `FILE*`  `[核心知识点22]`
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：示例 28：sharedptr 自定]
 ```cpp
 #include <memory>
 #include <cstdio>
@@ -1149,6 +1192,7 @@ int main() {
 
 ### 示例 29：`shared_ptr<T[]>`(C++17) 数组  `[核心知识点21]`
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：示例 29：sharedptr<T[]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -1173,6 +1217,7 @@ int main() {
 
 [实现·GCC15] `owner_less`（`shared_ptr_base.h` 行 2148-2168）转发到 `owner_before`，后者比较控制块指针 `_M_less`：
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：ownerless 与原子智能指针对]
 ```cpp
 // <bits/shared_ptr_base.h> 行 2160-2168
 template<typename _Tp, _Lock_policy _Lp>
@@ -1184,6 +1229,7 @@ template<typename _Tp, _Lock_policy _Lp>
 
 ### 示例 30：`owner_less` 用于 `std::map` 键  `[核心知识点20]`
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：示例 30：ownerless 用于]
 ```cpp
 #include <memory>
 #include <map>
@@ -1220,6 +1266,7 @@ int main() {
 
 ### 示例 31：microbenchmark——unique vs shared vs raw 创建/销毁  `[核心知识点01]`
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：示例 31：microbenchma]
 ```cpp
 #include <memory>
 #include <chrono>
@@ -1264,6 +1311,7 @@ int main() {
 
 ### 示例 32：microbenchmark——make_shared vs new 的拷贝原子成本  `[核心知识点11][12]`
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：示例 32：microbenchma]
 ```cpp
 #include <memory>
 #include <chrono>
@@ -1287,6 +1335,7 @@ int main() {
 
 ### 示例 33：microbenchmark——`weak_ptr::lock()` 成本  `[核心知识点17]`
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：示例 33：microbenchma]
 ```cpp
 #include <memory>
 #include <chrono>
@@ -1312,6 +1361,7 @@ int main() {
 
 ### 示例 34：make_shared 缺陷实证——weak_ptr 期间对象内存不回收  `[核心知识点23]`
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：示例 34：makeshared 缺]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -1337,6 +1387,7 @@ int main() {
 
 ### 示例 35：`shared_ptr` 自定义分配器  `[核心知识点22]`
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：示例 35：sharedptr 自定]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -1452,6 +1503,7 @@ int main() {
 
 1. **`release()` 后忘记 `delete`**：拿到裸指针必须有人释放，否则泄漏（元素 05）。
 2. **`shared_ptr` 从同一裸指针构造两次**：会产生**两个独立控制块**，析构时双重释放（double free）。必须用 `shared_ptr` 拷贝或 `enable_shared_from_this`。
+> **示例 52** [难度 ★☆☆☆☆] [主题：常见陷阱清单  [核心知识点07][]
    ```cpp
 #include <memory>
    int* raw = new int(1);
@@ -1466,6 +1518,7 @@ int main() {
 
 ### 示例 36：删除器作为类型参数 vs 构造参数（EBO 对照复测）  `[核心知识点02][05]`
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：示例 36：删除器作为类型参数 vs]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -1492,6 +1545,7 @@ int main() {
 
 ### 示例 37：`make_shared_for_overwrite`(C++20) 与未初始化对象  `[核心知识点11]`
 
+> **示例 54** [难度 ★☆☆☆☆] [主题：示例 37：makesharedfo]
 ```cpp
 #include <memory>
 #include <cstring>
@@ -1514,6 +1568,7 @@ int main() {
 
 ### 示例 38：有状态删除器 + 容器（资源标签）  `[核心知识点05][08]`
 
+> **示例 55** [难度 ★☆☆☆☆] [主题：示例 38：有状态删除器 + 容器]
 ```cpp
 #include <memory>
 #include <vector>
@@ -1542,6 +1597,7 @@ int main() {
 
 ### 示例 39：用 `weak_ptr` 实现对象缓存（自动失效）  `[核心知识点17]`
 
+> **示例 56** [难度 ★☆☆☆☆] [主题：示例 39：用 weakptr 实现]
 ```cpp
 #include <memory>
 #include <unordered_map>
@@ -1715,6 +1771,7 @@ folly::rc_shared_ptr<Widget> s = folly::to_shared_ptr(raw);
 
 下面把「计数内嵌于对象、一次分配」落成**本机可编译**的最小范式，对比 `std::shared_ptr` 少一次控制块堆分配。
 
+> **示例 57** [难度 ★☆☆☆☆] [主题：自包含可编译：最小侵入式引用计数]
 ```cpp
 #include <cstddef>
 #include <atomic>
@@ -1756,6 +1813,7 @@ int main() {
 
 ## 附录 B：面试与性能 [J: Learning / G: Performance]
 
+> **示例 58** [难度 ★☆☆☆☆] [主题：附录 B：面试与性能 [J: Lea]
 ```
 面试高频:
 Q: unique_ptr 和 shared_ptr 的选择？
@@ -1828,6 +1886,7 @@ call    _Znwy                   ; operator new(24): 单次分配
 
 > 编译器: GCC 15.3.0 (mingw64) | 选项: `-std=c++17 -O2 -fno-exceptions` | 结论: `unique_ptr` 在析构/返回全路径零额外指令开销。
 
+> **示例 59** [难度 ★☆☆☆☆] [主题：附录 C：编译实证——uniquep]
 ```cpp
 #include <memory>
 
@@ -1933,6 +1992,7 @@ unique_ptr_factory(int,int,int):
 
 ### 测试源码（节选）
 
+> **示例 60** [难度 ★☆☆☆☆] [主题：测试源码（节选）]
 ```cpp
 struct S { int x; };
 // 返回 p 触发 shared_ptr 拷贝构造 → 引用计数原子递增
@@ -1987,6 +2047,7 @@ clone(std::shared_ptr<S> const&):
 `unique_ptr` 独占所有权（不可拷贝、可移动，零控制块开销）；`shared_ptr` 共享所有权（引用计数，控制块分配）。
 工厂返回 `unique_ptr`，调用方用 `std::move` 接收转移；若想共享则 `std::shared_ptr<std::unique_ptr 不可>`——直接返回 `shared_ptr` 或用 `std::move` 构造 `shared_ptr`。
 
+> **示例 61** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <memory>
 struct Node { int v; };
@@ -2011,6 +2072,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 62** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 struct A; struct B;
 struct A { std::shared_ptr<B> b; ~A(){/*不会跑*/} };
@@ -2041,6 +2103,7 @@ pa->b = pb; pb->a = pa;            // 互相 +1 -> 双方引用计数停在有�
 `make_shared` 把"控制块 + 对象"**一次性分配**（一次堆分配、更好缓存局部性），且不会因
 `f(shared_ptr<T>(new T), g())` 的参数求值顺序导致泄漏；后者是两次分配。
 
+> **示例 63** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <memory>
 #include <cstdio>
@@ -2063,6 +2126,7 @@ auto file = std::shared_ptr<FILE>(std::fopen("log.txt","w"),
 
 **步骤 1：原始代码（双重释放雷区）**
 
+> **示例 64** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 从裸指针迁移到 ]
 ```cpp
 Buffer* create_buffer(size_t n) { return new Buffer(n); }
 // 调用方:
@@ -2073,6 +2137,7 @@ delete b;                 // 若 use() 内部也 delete -> 双重释放; 若抛�
 
 **步骤 2：用 `unique_ptr` + 自定义 deleter 包装**
 
+> **示例 65** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 从裸指针迁移到 ]
 ```cpp
 auto create_buffer(size_t n) {
     return std::unique_ptr<Buffer>(new Buffer(n));   // 或 make_unique
@@ -2083,6 +2148,7 @@ use(b.get());                   // .get() 仅借出裸指针, 不转移所有权
 
 **步骤 3：工厂模式转移所有权**
 
+> **示例 66** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 从裸指针迁移到 ]
 ```cpp
 std::unique_ptr<Buffer> b = create_buffer(1024);  // 拥有
 std::unique_ptr<Buffer> b2 = std::move(b);        // 显式转移; b 变空
@@ -2091,6 +2157,7 @@ std::unique_ptr<Buffer> b2 = std::move(b);        // 显式转移; b 变空
 
 **步骤 4：管理非内存资源（FILE*）**
 
+> **示例 67** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 从裸指针迁移到 ]
 ```cpp
 auto f = std::unique_ptr<FILE, decltype(&fclose)>(fopen("x","r"), fclose);
 // 文件句柄随 f 析构自动 fclose, 异常安全
@@ -2186,6 +2253,7 @@ _Sp_counted_base<_S_atomic>::_M_release() noexcept
 
 ### 6. 第一方可编译验证（观察共享所有权与 weak 失效）
 
+> **示例 68** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -2301,6 +2369,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 69** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <memory>

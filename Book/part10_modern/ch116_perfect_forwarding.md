@@ -71,6 +71,7 @@
 
 ## ④ 知识图谱（ASCII）
 
+> **示例 1** [难度 ★★★☆☆] [主题：知识图谱（ASCII）]
 ```
                         实参
                           │
@@ -94,6 +95,7 @@
      拷贝 (左值)     移动 (右值)    原位构造 (emplace)
 ```
 
+> **示例 2** [难度 ★★★☆☆] [主题：知识图谱（ASCII）]
 ```cpp
 // ④-a 万能引用 vs 右值引用：推导结果一目了然
 #include <type_traits>
@@ -160,6 +162,7 @@ classDiagram
 
 考虑 `template<class T> void f(T&& x)`，调用 `int a = 1; f(a);` 与 `f(1);`：
 
+> **示例 3** [难度 ★★★☆☆] [主题：内存图：引用折叠如何"编码"值类别]
 ```
 调用 f(a) —— a 是左值
   T 被推导为 int&  （注意是左值引用！）
@@ -184,6 +187,7 @@ classDiagram
 
 > `[平台·x86-64 Itanium ABI]`：无论 `int&` 还是 `int&&`，在 Itanium C++ ABI 下**传参都走同一个寄存器/栈槽**（引用在位级就是指针）。引用折叠在**编译期**完成，不产生运行期差异。
 
+> **示例 4** [难度 ★★★☆☆] [主题：内存图：引用折叠如何"编码"值类别]
 ```cpp
 // ⑦-a 引用折叠四条规则：编译期 static_assert 验证
 // 关键：源码中不能直接写 `int& &&`（引用的引用），编译器会报
@@ -205,6 +209,7 @@ int main() {
 
 ## ⑧ 生命周期图：std::move 不延长生命周期
 
+> **示例 5** [难度 ★★★☆☆] [主题：生命周期图：std::move 不延]
 ```
 t1: Widget w;
 t2: auto&& r = std::move(w);   // r 仍是 w 的别名，w 仍存活
@@ -214,6 +219,7 @@ t4: } // w 析构。r 在 w 之后失效——move 没做任何"接管所有权"
 
 > `[标准]`：`std::move` 只是 `static_cast`，**不转移所有权、不调用析构、不延长生命周期**（见 ch115）。把"移动"误以为 move 做的，是最大误区。`⟶ ch115_move.md`。
 
+> **示例 6** [难度 ★★★☆☆] [主题：生命周期图：std::move 不延]
 ```cpp
 // ⑧-a auto&& 万能引用：range-for 的完美捕获
 #include <utility>
@@ -237,6 +243,7 @@ int main() {
 
 以 `std::vector<Widget>::emplace_back(args...)` 为例：
 
+> **示例 7** [难度 ★★★☆☆] [主题：调用栈 / 时序图：emplace ]
 ```
 调用方                 vector              allocator   construct       Widget
   │                      │                    │           │              │
@@ -249,6 +256,7 @@ int main() {
 
 > `[实现·GCC15]`：`vector.tcc` 中 `emplace_back` 通过 `_Alloc_traits::construct(__p, std::forward<_Args>(__args)...)` 把参数**逐字转发**给 `Widget` 的构造函数，全程不出现 `Widget` 的临时对象。
 
+> **示例 8** [难度 ★★★☆☆] [主题：调用栈 / 时序图：emplace ]
 ```cpp
 // ⑨-a emplace 转发：用构造计数器证明无临时对象
 #include <utility>
@@ -276,6 +284,7 @@ int main() {
 
 下例在 **GCC 15.3.0** `-std=c++23 -O2 -S -masm=intel` 下真实编译（objdump 反汇编；算子标 `[[gnu::noinline]]` 以保留三个独立符号）：
 
+> **示例 9** [难度 ★★★☆☆] [主题：汇编分析：forward 与 move 都"消失"]
 ```cpp
 // ⑩-a move/forward 的汇编本质（GCC 15.3.0 -O2 -masm=intel）
 #include <utility>
@@ -322,6 +331,7 @@ int main() {
 
 > `[标准]`：上述均依赖 `std::forward`，见 `[utility.forward]`、`[memory]`、`[tuple.cnstr]`。
 
+> **示例 10** [难度 ★★★☆☆] [主题：联系：谁在靠完美转发]
 ```cpp
 // ⑪-a make_unique / make_shared 的转发本质（手写迷你版）
 #include <utility>
@@ -344,6 +354,7 @@ int main() {
 
 **场景**（非 Hello World）：一个网络服务把从 socket 读到的原始字节，连同调用上下文 `Context`、超时、追踪 ID，转发构造出一个 `Request` 对象交给业务 handler。若用拷贝/移动，会多出一次 `Request` 构造成本；用完美转发可在已分配的内存上**原位构造**。
 
+> **示例 11** [难度 ★★★☆☆] [主题：工业案例：RPC 请求体的零拷贝构造]
 ```cpp
 // ⑫-a RPC 请求构造器：把任意实参完美转发给 Request 构造函数
 #include <utility>
@@ -374,6 +385,7 @@ int main() {
 }
 ```
 
+> **示例 12** [难度 ★★★☆☆] [主题：工业案例：RPC 请求体的零拷贝构造]
 ```cpp
 // ⑫-b 线程任务封装：把 callable 与其参数整体转发进 worker
 #include <utility>
@@ -391,6 +403,7 @@ int main() {
 }
 ```
 
+> **示例 13** [难度 ★★★☆☆] [主题：工业案例：RPC 请求体的零拷贝构造]
 ```cpp
 // ⑫-c 工业：序列化器把字段集合完美转发给内部缓冲区构造
 #include <utility>
@@ -417,6 +430,7 @@ int main() {
 
 `[实现·GCC15]` 真实源码来自 `bits/move.h`（GCC 13.1.0）：
 
+> **示例 14** [难度 ★★★☆☆] [主题：源码分析：libstdc++ 的 s]
 ```cpp
 文件：bits/move.h
 行号：74-78
@@ -426,6 +440,7 @@ int main() {
     { return static_cast<_Tp&&>(__t); }
 ```
 
+> **示例 15** [难度 ★★★☆☆] [主题：源码分析：libstdc++ 的 s]
 ```cpp
 文件：bits/move.h
 行号：86-94
@@ -439,6 +454,7 @@ int main() {
     }
 ```
 
+> **示例 16** [难度 ★★★☆☆] [主题：源码分析：libstdc++ 的 s]
 ```cpp
 文件：bits/move.h
 行号：101-105
@@ -454,6 +470,7 @@ int main() {
 - `static_assert(!is_lvalue_reference<_Tp>)` 防止 `forward<X&>(rvalue)`——即禁止把右值当成左值转发（这会静默产生悬垂引用）。
 - `move` 直接 `static_cast` 到 `remove_reference<_Tp>::type&&`，**永远产生右值引用**，无 `static_assert`。
 
+> **示例 17** [难度 ★★★☆☆] [主题：源码分析：libstdc++ 的 s]
 ```cpp
 // ⑬-a 复刻 libstdc++ 的 forward/move（对照 bits/move.h:74-105）
 #include <type_traits>
@@ -508,6 +525,7 @@ int main() {
 4. **为什么 forward 要两重载？** 因为 `__t` 的形参类型由 `remove_reference<_Tp>::type&` 或 `&&` 决定，靠重载区分调用时 `__t` 本身的值类别，从而安全地还原。
 5. **`forward` 和 `move` 汇编一样吗？** 一样，都是编译期 cast，`-O2` 下零指令（见⑩）。
 
+> **示例 18** [难度 ★★★☆☆] [主题：面试题]
 ```cpp
 // ⑮-a 面试题 1 现场验证：T 的推导结果
 #include <type_traits>
@@ -540,6 +558,7 @@ void wrap(T&& f, Args&&... a) { f(std::forward<Args>(a)...); }
 wrap([](std::vector<int> v){ (void)v; }, {1,2,3});   // 编译失败
 ```
 
+> **示例 19** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // ✅ 修正 A：先命名或显式标注类型
 #include <utility>
@@ -557,6 +576,7 @@ int main() {
 
 **失败场景 B：`0` / `NULL` 转发后变成 `int`**
 
+> **示例 20** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // ⑯-b 0/NULL 转发退化成 int（此例可编译，演示语义"失败"）
 #include <utility>
@@ -573,6 +593,7 @@ int main() {
 }
 ```
 
+> **示例 21** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // ✅ 修正 B：用 nullptr_t 字面量
 #include <utility>
@@ -594,6 +615,7 @@ void g(int) {} void g(double) {}
 fwd(g);   // 编译失败：重载集不能推导
 ```
 
+> **示例 22** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // ✅ 修正 C：用函数指针 / lambda 包裹，类型明确
 #include <utility>
@@ -619,6 +641,7 @@ int main() {
 
 **Q：forward 与 decay 冲突吗？** `std::thread`/`std::bind` 会先把实参 `decay` 再存储，转发的是 **decay 后的值**，不再保留原始引用类别——所以线程里转发的是副本，不是原对象的引用。`[标准] [thread.thread.constr]`
 
+> **示例 23** [难度 ★★★☆☆] [主题：未分类]
 ```cpp
 // ⑰-a FAQ：forward 与 decay（线程内是副本，不是引用）
 #include <utility>
@@ -643,6 +666,7 @@ int main() {
 4. **emplace 优先于 push_back**：`v.emplace_back(a, b)` 比 `v.push_back(Widget(a, b))` 少一次移动。`⟶ ch117_copy_elision.md`
 5. **转发接受 `const` 成员时用 C++23 `std::forward_like`**（见⑲）；GCC 13.1 需自备实现。
 
+> **示例 24** [难度 ★★★☆☆] [主题：最佳实践]
 ```cpp
 // ⑱-a 最佳实践：可变参数转发 + 折叠丢弃
 #include <utility>
@@ -654,6 +678,7 @@ void log_and_forward(Args&&... args) {
 int main() { log_and_forward(1, 2, 3); return 0; }
 ```
 
+> **示例 25** [难度 ★★★☆☆] [主题：最佳实践]
 ```cpp
 // ⑱-b 最佳实践：多实参转发到成员初始化
 #include <utility>
@@ -678,6 +703,7 @@ int main() {
 - **ABI 稳定性**：`std::forward<T>` 的签名自 C++11 未变，`[abi:itanium]` 下 mangled name 稳定，跨 GCC/Clang/MSVC 二进制兼容。
 - **microbenchmark（示意量级，GCC13.1 -O2）**：
 
+> **示例 26** [难度 ★★★☆☆] [主题：性能分析]
 ```cpp
 // ⑲-a emplace 转发 vs push_back 移动：构造次数对比（计数示意）
 #include <utility>
@@ -699,6 +725,7 @@ int main() {
 }
 ```
 
+> **示例 27** [难度 ★★★☆☆] [主题：性能分析]
 ```cpp
 // ⑲-b 版本宏守卫：仅在 C++20+ 使用 concept 增强转发（GCC13 支持）
 #include <utility>
@@ -720,6 +747,7 @@ int main() { int a = 1; checked_forward(a); checked_forward(2); return 0; }
 
 `[实现·GCC15]`：**`std::forward_like` 在 GCC 13.1 的 libstdc++ 中尚不存在**（它随 GCC 14 进入）。下面给出等价手写实现，用于在"通过对象 `obj` 访问其成员 `m` 并把 `m` 转发"时，让 `m` 的值类别跟随 `obj` 的值类别：
 
+> **示例 28** [难度 ★★★☆☆] [主题：++23 std::forwardl]
 ```cpp
 // ⑲-c 手写 forward_like（语义等价于 C++23 std::forward_like，P2445）
 #include <utility>
@@ -786,6 +814,7 @@ int main() {
 > `[标准]`：C++ 的完美转发是**唯一**在"零开销"前提下同时保留"移动 vs 拷贝"决策的工业语言机制。Rust 用所有权系统从根本消除了"是否移动"的歧义，但代价是借用检查器；Go/Java 用 GC 与统一引用语义绕过了该问题，却失去了细粒度的值类别控制。
 > `[经验]`：从 Rust 转 C++ 的工程师最容易误解 `std::move`——在 Rust 里 `move` 是所有权转移（运行时可能真的搬数据），而 C++ 的 `std::move` 只是编译期 cast（`⟶ ch115_move.md`）。
 
+> **示例 29** [难度 ★★★☆☆] [主题：跨语言对比]
 ```cpp
 // ⑳-a 跨语言对照的 C++ 端：UDL 与转发组合（operator"" _x 带空格写法）
 #include <utility>
@@ -805,6 +834,7 @@ int main() {
 }
 ```
 
+> **示例 30** [难度 ★★★☆☆] [主题：跨语言对比]
 ```cpp
 // ⑳-b 引用折叠规则验证
 #include <iostream>
@@ -820,6 +850,7 @@ int main() {
 }
 ```
 
+> **示例 31** [难度 ★★★☆☆] [主题：跨语言对比]
 ```cpp
 // ⑳-c 变参完美转发 + emplace 等价体
 #include <iostream>
@@ -839,6 +870,7 @@ int main() {
 }
 ```
 
+> **示例 32** [难度 ★★★☆☆] [主题：跨语言对比]
 ```cpp
 // ⑳-d 完美转发失败：花括号初始化列表无法推导 T
 #include <iostream>
@@ -851,6 +883,7 @@ int main() {
 }
 ```
 
+> **示例 33** [难度 ★★★☆☆] [主题：跨语言对比]
 ```cpp
 // ⑳-e 转发 Lambda 捕获：init-capture + std::forward
 #include <iostream>
@@ -865,6 +898,7 @@ int add(int a, int b) { return a + b; }
 int main() { auto c = wrap_call(add, 3, 4); std::cout << c() << "\n"; return 0; }
 ```
 
+> **示例 34** [难度 ★★★☆☆] [主题：跨语言对比]
 ```cpp
 // ⑳-f 手写 std::forward 等价体（单重载，仅 static_cast）
 #include <iostream>
@@ -878,6 +912,7 @@ template <typename T> void wrap(T&& x) { sink(my_forward<T>(x)); }
 int main() { int n=0; wrap(n); wrap(42); return 0; }
 ```
 
+> **示例 35** [难度 ★★★☆☆] [主题：跨语言对比]
 ```cpp
 // ⑳-g std::forward_like 等价体（C++23 风格，GCC13 手写）
 #include <iostream>
@@ -899,6 +934,7 @@ int main() {
 }
 ```
 
+> **示例 36** [难度 ★★★☆☆] [主题：跨语言对比]
 ```cpp
 // ⑳-h 完美转发 + noexcept 传播：保留移动构造的异常规格
 #include <iostream>
@@ -915,6 +951,7 @@ int main() {
 }
 ```
 
+> **示例 37** [难度 ★★★☆☆] [主题：跨语言对比]
 ```cpp
 // ⑳-i emplace_back 转发链：从 push_back 到 placement new 的值类别保留
 #include <iostream>
@@ -993,6 +1030,7 @@ int main() {
 
 ## 附录: 完美转发深度
 
+> **示例 38** [难度 ★★★☆☆] [主题：附录: 完美转发深度]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1000,6 +1038,7 @@ template<typename T>void wrapper(T&&arg){std::cout<<std::forward<T>(arg)<<std::e
 int main(){int x=42;wrapper(x);wrapper(99);return 0;}
 ```
 
+> **示例 39** [难度 ★★★☆☆] [主题：附录: 完美转发深度]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1009,6 +1048,7 @@ struct S{int a,b;S(int x,int y):a(x),b(y){}};
 int main(){auto p=make<S>(10,20);std::cout<<p->a<<","<<p->b<<std::endl;return 0;}
 ```
 
+> **示例 40** [难度 ★★★☆☆] [主题：附录: 完美转发深度]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1017,12 +1057,14 @@ template<typename T>void push(std::vector<T>&v,T&&val){v.push_back(std::forward<
 int main(){std::vector<int> v;int x=5;push(v,std::move(x));push(v,10);std::cout<<v[0]<<" "<<v[1]<<std::endl;return 0;}
 ```
 
+> **示例 41** [难度 ★★★☆☆] [主题：附录: 完美转发深度]
 ```cpp
 #include <iostream>
 #include <utility>
 int main(){std::cout<<"std::forward: conditionally casts to rvalue. Preserves value category of the original argument."<<std::endl;return 0;}
 ```
 
+> **示例 42** [难度 ★★★☆☆] [主题：附录: 完美转发深度]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1085,6 +1127,7 @@ int main(){int a=1;g(a);g(2);return 0;}
 
 ### 测试源码（核心）
 
+> **示例 43** [难度 ★★★☆☆] [主题：测试源码（核心）]
 ```cpp
 int g_l = 0, g_r = 0;
 [[gnu::noinline]] void sink_l(S&)  { g_l = 1; }   // 左值接收端
@@ -1146,6 +1189,7 @@ template void fwd_tmpl<S>(S&&);   // 右值实例化
 
 `Args&&...` 万能引用 + `std::forward` 把每个实参按原值类别（左值拷贝、右值移动）转交给 `Request` 构造函数：
 
+> **示例 44** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <utility>
 #include <string>
@@ -1179,6 +1223,7 @@ int main() {
 
 把 `F&&` 与 `Args&&...` 都用 `std::forward` 还原后交给 `std::async`：
 
+> **示例 45** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <utility>
 #include <future>
@@ -1204,6 +1249,7 @@ int main() { auto f = post_task(add, 3, 4); (void)f.get(); }
 
 `int x; probe(x);` 推导 `T = int&`，折叠为 `int&`（左值）；`probe(42);` 推导 `T = int`，为 `int&&`（右值）：
 
+> **示例 46** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <type_traits>
 #include <iostream>
@@ -1367,6 +1413,7 @@ flowchart TD
 
 ### D4.4 第一方可编译验证（值类别还原）
 
+> **示例 47** [难度 ★★★☆☆] [主题：第一方可编译验证（值类别还原）]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1423,6 +1470,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
+> **示例 48** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <vector>

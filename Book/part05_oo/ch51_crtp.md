@@ -60,6 +60,7 @@ CRTP 是「静态多态」的代言人：对比虚函数（ch47）的运行期�
 
 ## ④ 知识图谱（ASCII）
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）]
 ```
   动态多态（虚函数）              静态多态（CRTP）
   Base* p ──► vtable              Base<Derived> b
@@ -94,6 +95,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图 / 对象布局
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：内存图 / 对象布局]
 ```
 CRTP 基类无虚函数 → 无 vptr：
   struct CrtpBase<Vec3> { /* 无数据成员时 sizeof=1(空类占位) */ };
@@ -106,6 +108,7 @@ CRTP 基类无虚函数 → 无 vptr：
 
 ## ⑧ 生命周期图
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：生命周期图]
 ```
 CRTP 对象是普通派生类对象，无 vtable 注册；构造/析构与普通类一致。
 static_cast<Derived*>(this) 是编译期类型转换（零指令），不触及运行期类型信息。
@@ -113,6 +116,7 @@ static_cast<Derived*>(this) 是编译期类型转换（零指令），不触及�
 
 ## ⑨ 调用栈 / 时序图
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：调用栈 / 时序图]
 ```
 b.interface()（b: CrtpBase<Vec3>&）
 ─────────────────────────────────────
@@ -125,6 +129,7 @@ b.interface()（b: CrtpBase<Vec3>&）
 
 【测试源 `Examples/_asm_crtp.cpp`】
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：汇编分析]
 ```cpp
 template <class Derived>
 struct CrtpBase {
@@ -183,6 +188,7 @@ _Z11use_virtualR5VBase:
 
 【案例 A：enable_shared_from_this 原理】
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 template<class T>
 class enable_shared_from_this {
@@ -199,6 +205,7 @@ struct Widget : std::enable_shared_from_this<Widget> {   // CRTP：以 Widget �
 
 【案例 B：用 CRTP 自动生成运算符（boost::operators 思路）】
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 template<class Derived>
 struct additive {
@@ -216,6 +223,7 @@ struct Vec2 : additive<Vec2> {
 
 【案例 C：Eigen 表达式模板（CRTP 消除临时对象）】
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 template<class Derived>
 class MatrixBase {
@@ -230,12 +238,14 @@ class Matrix : public MatrixBase<Matrix<R,C>> { /* ... */ };
 
 【增补可编译示例（真实，印证 CRTP 各点）】
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例1：最小 CRTP —— 静态多态
 template<class D> struct Base { void call(){ static_cast<D*>(this)->impl(); } };
 struct Der : Base<Der> { void impl(){} };
 ```
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例2：CRTP 用 const 接口
 template<class D> struct Base {
@@ -244,6 +254,7 @@ template<class D> struct Base {
 struct Der : Base<Der> { int value() const { return 42; } };
 ```
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例3：CRTP 返回派生类引用（fluent API）
 template<class D> struct Chain {
@@ -253,6 +264,7 @@ template<class D> struct Chain {
 struct C : Chain<C> {};
 ```
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例4：CRTP + 运算符自动生成（加法）
 template<class D> struct Addable {
@@ -261,6 +273,7 @@ template<class D> struct Addable {
 struct V : Addable<V> { int x; V& operator+=(const V& o){ x+=o.x; return *this; } };
 ```
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例5：enable_shared_from_this 用法
 #include <memory>
@@ -270,6 +283,7 @@ struct W : std::enable_shared_from_this<W> {
 auto p = std::make_shared<W>(); auto q = p->keep();   // 引用计数共享
 ```
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例6：CRTP 注入比较运算符（< 生成其余）
 template<class D> struct Comparable {
@@ -279,18 +293,21 @@ template<class D> struct Comparable {
 struct Pt : Comparable<Pt> { int x; bool operator<(const Pt& o) const { return x < o.x; } };
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例7：CRTP 性能——无 vtable 的接口
 struct Shape : CrtpBase<Shape> { int impl(){ return 7; } };
 static_assert(sizeof(Shape) == 1);   // 空基类占位，无 vptr
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例8：CRTP 基类带状态
 template<class D> struct Counter { int n=0; void tick(){ ++n; } };
 struct C : Counter<C> {};   // Counter<C> 占 4 字节（有数据成员）
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例9：多级 CRTP
 template<class D> struct L1 { void f1(){ static_cast<D*>(this)->leaf(); } };
@@ -298,12 +315,14 @@ template<class D> struct L2 : L1<D> { void f2(){ static_cast<D*>(this)->leaf(); 
 struct Leaf : L2<Leaf> { void leaf(){} };
 ```
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例10：CRTP + Concepts 约束（ch67）
 template<class D> requires requires(D d){ d.impl(); }
 struct Based { void go(){ static_cast<D*>(this)->impl(); } };
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例11：deducing this 替代 CRTP（C++23）
 struct Widget {
@@ -312,16 +331,19 @@ struct Widget {
 };
 ```
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例12：CRTP 双分派雏形
 template<class D> struct Visitable { template<class V> void accept(V& v){ v.visit(*static_cast<D*>(this)); } };
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例13：CRTP 混入 logging
 template<class D> struct Logged { void op(){ log_start(); static_cast<D*>(this)->do_op(); log_end(); } };
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例14：CRTP 避免虚函数但需运行时选择 → 仍要虚函数
 struct Base { virtual void f() = 0; };
@@ -330,6 +352,7 @@ struct B : Base { void f() override {} };
 Base* p = (cond)? static_cast<Base*>(new A) : static_cast<Base*>(new B);  // 需基类指针
 ```
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 #include <memory>
 // 例15：CRTP 实现 Cloneable
@@ -338,17 +361,20 @@ template<class D> struct Cloneable { std::unique_ptr<D> clone() const {
 struct Node : Cloneable<Node> { int v; };
 ```
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例16：CRTP 与模板实参推导
 template<class D> struct Wrapper { D& get(){ return static_cast<D&>(*this); } };
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例17：CRTP 错误——派生未实现 impl
 template<class D> struct B { void run(){ static_cast<D*>(this)->impl(); } };
 // struct Bad : B<Bad> {};   // 若 Bad 无 impl()，run() 实例化失败
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例18：CRTP 基类在类外定义需 D 完整
 template<class D> struct B { void f(); };
@@ -356,6 +382,7 @@ struct D : B<D> { int x; };
 template<class D> void B<D>::f() { static_cast<D*>(this)->x = 1; }  // D 已完整
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例19：CRTP 多混入
 template<class D> struct M1 { void m1(){ static_cast<D*>(this)->x++; } };
@@ -363,11 +390,13 @@ template<class D> struct M2 { void m2(){ static_cast<D*>(this)->x--; } };
 struct Obj : M1<Obj>, M2<Obj> { int x=0; };
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例20：extern template 控制实例化体积
 template class CrtpBase<Vec3>;   // 强制仅在一处实例化
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例21：CRTP + constexpr（ch69）
 template<class D> struct ConstBase { constexpr int r() const { return static_cast<const D*>(this)->v(); } };
@@ -375,6 +404,7 @@ struct C : ConstBase<C> { constexpr int v() const { return 5; } };
 static_assert(C{}.r() == 5);
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例22：CRTP 迭代器式访问
 template<class D> struct Iterable { auto begin(){ return static_cast<D*>(this)->data.begin(); } };
@@ -384,6 +414,7 @@ template<class D> struct Iterable { auto begin(){ return static_cast<D*>(this)->
 
 【libstdc++ `enable_shared_from_this.h` 关键行（真实节选）】
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：源码分析]
 ```cpp
 template<typename _Tp>
 class enable_shared_from_this {
@@ -424,6 +455,7 @@ public:
 
 【反例 1：派生类没实现基类期望的接口】
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 template<class D>
 struct Base { int run(){ return static_cast<D*>(this)->step(); } };
@@ -433,12 +465,14 @@ struct Bad : Base<Bad> {};          // ❌ 未实现 step()
 
 【正解】派生类必须提供 `step()`：
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 struct Good : Base<Good> { int step(){ return 1; } };
 ```
 
 【反例 2：CRTP 基类访问派生成员顺序错误】
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 template<class D>
 struct Base {
@@ -452,6 +486,7 @@ struct D : Base<D> { int x; };                   // x 声明在 Base 之后
 
 【反例 3：误以为 CRTP 能 heterogeneous】
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 vector<Base<???>> v;   // ❌ Base<Vec3> 与 Base<Mat3> 是不同类型，无法同容器
 ```
@@ -487,6 +522,7 @@ vector<Base<???>> v;   // ❌ Base<Vec3> 与 Base<Mat3> 是不同类型，无法
 - **分派成本**：CRTP 调用在 -O2 全内联（0 间接跳转）；虚函数至少 2 次内存取指 + 间接跳转（~1ns，且破坏分支预测）。
 - **代码膨胀**：每个 `Base<Derived>` 独立实例化。以下 microbenchmark 思路可量化：
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：性能分析]
 ```cpp
 #include <benchmark/benchmark.h>
 struct Vec3 : CrtpBase<Vec3> { int v=0; int impl(){return v*3;} };
@@ -647,12 +683,14 @@ BENCHMARK(BM_crtp); BENCHMARK(BM_virtual);
 
 ## 附录: CRTP 深度
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：附录: CRTP 深度]
 ```cpp
 #include <iostream>
 template<typename D>struct Base{void interface(){static_cast<D*>(this)->impl();}};struct Der:Base<Der>{void impl(){std::cout<<"Der"<<std::endl;}};
 int main(){Der d;d.interface();return 0;}
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：附录: CRTP 深度]
 ```cpp
 #include <iostream>
 template<typename T>struct Comparable{bool operator!=(const T&o)const{return!(*static_cast<const T*>(this)==o);}};
@@ -661,6 +699,7 @@ struct P:Comparable<P>{int x;bool operator==(const P&o)const{return x==o.x;}};
 int main(){P a{{},1},b{{},2};std::cout<<(a!=b)<<std::endl;return 0;}
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：附录: CRTP 深度]
 ```cpp
 #include <iostream>
 template<typename D>struct Counter{static int count;Counter(){++count;}~Counter(){--count;}};template<typename D>int Counter<D>::count=0;
@@ -668,11 +707,13 @@ struct MyClass:Counter<MyClass>{};
 int main(){MyClass a,b;std::cout<<Counter<MyClass>::count<<std::endl;return 0;}
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：附录: CRTP 深度]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"CRTP: compile-time polymorphism without virtual overhead. Used in Eigen, ATL, WTL."<<std::endl;return 0;}
 ```
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：附录: CRTP 深度]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -732,6 +773,7 @@ int main(){Widget w(7);auto c=w.clone();std::cout<<c->v<<std::endl;return 0;}
 
 ### 测试源码
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：测试源码]
 ```cpp
 template <typename D> struct AnimalCRTP { void speak() { static_cast<D*>(this)->speak_impl(); } };
 struct DogCRTP : AnimalCRTP<DogCRTP> { int age; void speak_impl() { age += 1; } };
@@ -797,6 +839,7 @@ void final_call(DogFinal* d) { d->speak(); }        // ③ final 类去虚拟化
 
 <details><summary>答案与解析</summary>
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 template <class D>
@@ -825,6 +868,7 @@ int main(){ Point p; p.print(); }   // 调用链在编译期确定, 无 vtable
 
 <details><summary>答案与解析</summary>
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 template <class D>
 struct LessThan {
@@ -855,6 +899,7 @@ Barton–Nackman 把"运算符"放在基类、把"核心比较"留给派生类�
 
 <details><summary>答案与解析</summary>
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 // CRTP: 编译期内联, 但 vector<Square> 不能混存其它算子
 template <class D> struct OpCrtp { double eval(double x) const { return static_cast<const D*>(this)->f(x); } };
@@ -882,6 +927,7 @@ CRTP 把虚调用变成静态 `static_cast` + 内联，循环中无 `call [vtabl
 
 **步骤 1：虚函数版本（vtable 间接，无法跨边界内联）**
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 把虚函数调用优化]
 ```cpp
 struct Op { virtual double eval(double) const = 0; virtual ~Op()=default; };
 struct Square : Op { double eval(double x) const override { return x*x; } };
@@ -898,6 +944,7 @@ int main(){
 
 **步骤 2：CRTP 版本（编译期内联，零间接）**
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 把虚函数调用优化]
 ```cpp
 template <class D> struct OpCrtp { double eval(double x) const { return static_cast<const D*>(this)->f(x); } };
 struct Square : OpCrtp<Square> { double f(double x) const { return x*x; } };
@@ -914,6 +961,7 @@ int main(){
 
 **步骤 3：代价——失去运行时异构**
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 把虚函数调用优化]
 ```cpp
 struct Op { virtual double eval(double) const = 0; virtual ~Op()=default; };
 template <class D> struct OpCrtp { double eval(double x) const { return static_cast<const D*>(this)->f(x); } };
@@ -938,6 +986,7 @@ Boost.Operators 用 CRTP 自动生成 `==`/`<` 全套。它们选 CRTP 就是为
 
 下面一段完整程序直接验证「CRTP 在编译期决议、无 vtable 间接」：
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：补例：自包含可编译验证]
 ```cpp
 #include <iostream>
 
@@ -1179,6 +1228,7 @@ CRTP 的本质是让基类在编译期就“知道”派生类的真实类型：
 
 ### 可编译实证
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：可编译实证]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -1220,6 +1270,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <cassert>

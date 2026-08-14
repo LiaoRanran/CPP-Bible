@@ -39,6 +39,7 @@
 
 C++ 是「抽象零开销」语言，但裸写的源码离机器码中间隔着一整套**中间表示（IR）优化流水线**。优化开关 `-O0..-Ofast` 决定这条流水线开多少遍、开哪些 pass；`-flto` 把流水线延伸到链接期；`-fprofile-*` 用运行期数据反哺决策。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：编译器优化层级 [标准]]
 ```cpp
 // ① 同一段语义，不同 -O 等级生成天差地别的代码
 int sq(int x) { return x * x; }
@@ -48,6 +49,7 @@ int f(int a) { return sq(a) + sq(a + 1); }   // O0: 两次 call sq；O2/LTO: 内
 - `[标准]`：优化等级是「实现质量」范畴，标准只规定「`as-if` 规则」——只要可观察行为一致，编译器可任意改写（[intro.abstract]）。
 - `[经验]`：永远不要假设「源码逐行对应汇编」；优化器按值流而非按语句工作。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：编译器优化层级 [标准]]
 ```cpp
 // ① 优化器的三块主战场
 //   (a) 局部：常量折叠、代数化简、死代码消除
@@ -57,11 +59,13 @@ constexpr int k = 1 << 10;            // (a) 编译期折叠为 1024
 int g(int x) { return x + 0; }        // (a) 化简为 return x;
 ```
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：概述：编译器优化层级 [标准]]
 ```cpp
 // ① 看待优化的正确心智模型：源码→Frontend→GIMPLE/SSA IR→优化 pass→RTL→汇编
 // 所有 -O* / -flto / -fprofile-* 只是「选择哪些 pass、跑几遍、用什么数据」
 ```
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：概述：编译器优化层级 [标准]]
 ```cpp
 // ① 一个被优化「抹平」的例子：函数可能被彻底消除
 int unused_helper(int x) { return x * 2; }   // 若无调用，O2 直接丢弃（不进目标文件）
@@ -72,17 +76,20 @@ int only_user() { return unused_helper(3); } // 内联后 helper 消失，只剩
 
 四个等级是优化**强度与耗时**的单调递增档位，GCC 用 `-O2` 作为「发布默认甜点」。
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：差异 [标准]]
 ```cpp
 // ② -O0：几乎不做优化，逐语句翻译，便于逐行调试
 //   特点：每个变量落栈、每个函数真实 call、无内联
 int o0_demo(int a, int b) { return a * b + a; }  // O0 下：imul; add; 三次内存往返
 ```
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：差异 [标准]]
 ```cpp
 // ② -O1：基础优化（常量折叠、简单内联、跳转线程），编译快、调试尚可
 //   仍保守，不开循环变换
 ```
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：差异 [标准]]
 ```cpp
 // ② -O2：发布默认。开启绝大多数「安全且通常盈利」的优化，含函数内联、
 //   循环不变外提、公共子表达式消除、尾调用、部分向量化准备
@@ -93,6 +100,7 @@ int o2_sum(const int* p, int n) {
 }
 ```
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：差异 [标准]]
 ```cpp
 // ② -O3：在 -O2 之上加更激进的 loop 变换——多层展开、向量化、循环分布/ interchange
 //   收益：计算密集内核更快；风险：代码膨胀、指令缓存压力、个别场景反而变慢
@@ -103,6 +111,7 @@ double o3_dot(const double* a, const double* b, int n) {
 }
 ```
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：差异 [标准]]
 ```cpp
 // ② 等级对照（GCC 13 实情，量级示意）
 //   -O0  调试友好，体积/速度最差
@@ -111,12 +120,14 @@ double o3_dot(const double* a, const double* b, int n) {
 //   -O3  计算内核更快，通用代码不一定
 ```
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：差异 [标准]]
 ```cpp
 // ② 实测内联门槛随等级变化：小函数 -O2 即内联，-O3 内联半径更大
 inline int add1(int x) { return x + 1; }   // inline 只是建议；-O0 仍可能生成独立符号
 int pipe(int x) { return add1(add1(add1(x))); }  // O2/O3 折叠为常数偏移 +3
 ```
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：差异 [标准]]
 ```cpp
 // ② -O0 与 -O2 对同一函数体生成的指令数差异（示意）
 int diff(int a) {
@@ -129,6 +140,7 @@ int diff(int a) {
 
 `-Ofast = -O3 -ffast-math -fallow-store-data-races`。核心是 **`-ffast-math`**：它让编译器假定浮点运算满足「实数代数律」——可重结合、可忽略 NaN/Inf、可忽略舍入误差、可假设无零除。这与 IEEE-754 严格语义冲突。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：与不严谨（放松 IEEE） [实现·]
 ```cpp
 // ③ -ffast-math 允许把 s = a*b + a*b 重结合为 (a+a)*b（改变舍入结果）
 double reassoc(double a, double b) {
@@ -138,6 +150,7 @@ double reassoc(double a, double b) {
 }
 ```
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：与不严谨（放松 IEEE） [实现·]
 ```cpp
 // ③ 实编译取证：dot 乘积在 -O2 vs -Ofast 下是否向量化（见 ⑨ 汇编）。
 //   -O2 默认不重结合 FP，标量累加；-Ofast 用 mulpd/addpd 打包（128/256-bit）。
@@ -148,6 +161,7 @@ double dot(const double* a, const double* b, int n) {
 }
 ```
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：与不严谨（放松 IEEE） [实现·]
 ```cpp
 // ③ -ffast-math 还可能「删除」你以为存在的 NaN 守卫
 //   严格模式：若 x 是 NaN，x==x 为 false，走错误处理
@@ -165,6 +179,7 @@ int guard(double x) {
 
 `-Os` 在 -O2 基础上**禁用会显著增大代码的优化**（如激进展开、部分向量化），目标最小代码尺寸；`-Oz`（Clang 专有，GCC 无此档）更极端的尺寸优先。
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：体积优化 [实现·GCC15]]
 ```cpp
 // ④ -Os：循环不展开、函数更倾向不内联，节 .text 体积
 int os_sum(const int* p, int n) {
@@ -174,11 +189,13 @@ int os_sum(const int* p, int n) {
 }
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：体积优化 [实现·GCC15]]
 ```cpp
 // ④ 体积敏感场景：嵌入式 / 启动加载器 / 代码缓存受限
 //   代价：同算法 -Os 常比 -O2 慢 5%–20%（不展开、少向量化）
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：体积优化 [实现·GCC15]]
 ```cpp
 // ④ GCC 没有 -Oz；等价做法是用 -Os 配合 -finline-limit= 与属性控制
 //   Clang 可用 -Oz 进一步压缩（甚至牺牲更多性能换尺寸）
@@ -191,6 +208,7 @@ int os_sum(const int* p, int n) {
 
 **LTO（Link-Time Optimization）** 把「整个程序」作为单一优化单元：编译期各 TU 只emit 带 IR 的目标文件（`.o` 内含 GIMPLE），链接期再跑一遍优化，于是**跨翻译单元的内联、去虚化、常量传播**成为可能——单个 TU 的 `-O2` 做不到，因为它看不到别的 `.cpp`。
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // ⑤ Examples/_ch156_lib.cpp：被调用方（独立翻译单元）
 // 文件：Examples/_ch156_lib.cpp
@@ -198,6 +216,7 @@ int os_sum(const int* p, int n) {
 int compute(int x) { return x * x + 1; }
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // ⑤ Examples/_ch156_main.cpp：调用方（另一个翻译单元）
 // 文件：Examples/_ch156_main.cpp
@@ -214,6 +233,7 @@ g++ -std=c++23 -O2 -flto   Examples/_ch156_lib.o Examples/_ch156_main.o -o Examp
 # 无 LTO 对比：去掉 -flto，compute 在链接期仍是外部符号，只能 call
 ```
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // ⑤ LTO 还能跨 TU 做常量传播与死代码消除
 //   lib.cpp: int config() { return 8; }
@@ -227,6 +247,7 @@ g++ -std=c++23 -O2 -flto   Examples/_ch156_lib.o Examples/_ch156_main.o -o Examp
 
 下面是 `Examples/_ch156_main.cpp` + `Examples/_ch156_lib.cpp` 在 **GCC 13.1.0** 下两种构建的真实反汇编（节选）。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实汇编：LTO]
 ```cpp
 // 文件：Examples/_ch156_main.cpp
 // 行号：2
@@ -275,6 +296,7 @@ int main(int argc, char**) { return compute(argc); }
 
 **PGO** 分两阶段：先用**插桩版（instrumented）**跑真实负载，收集「每条分支走哪边、每个函数被调多少次、循环跑几趟」的直方图；再用这份 **profile** 重编译，让优化器按**真实热路径**决策：分支布局、块分区（hot/cold）、内联谁、展开多少。
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：原理 [实现·GCC15]]
 ```cpp
 // ⑦ PGO 的本质：把「运行时频率」变成编译期可用的常量信息
 //   普通编译：编译器对分支频率只能瞎猜（默认 50/50）
@@ -285,6 +307,7 @@ int classify(int x) {
 }
 ```
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：原理 [实现·GCC15]]
 ```cpp
 // ⑦ 哪些决策被 profile 反转？
 //   - 分支预测提示 / 基本块布局（热块紧邻、冷块跳走）
@@ -300,6 +323,7 @@ int classify(int x) {
 
 三步闭环，关键是「训练负载必须贴近真实流量」，否则 profile 误导优化器。
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：流程：-fprofile-gener]
 ```cpp
 // ⑧ Examples/_ch156_pgo.cpp：含明显热/冷路径，训练数据偏斜
 // 文件：Examples/_ch156_pgo.cpp
@@ -332,6 +356,7 @@ g++ -std=c++23 -O2 -fprofile-generate    Examples/_ch156_pgo.o     -o Examples/_
 g++ -std=c++23 -O2 -fprofile-use -c Examples/_ch156_pgo.cpp -o Examples/_ch156_pgo.o
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：流程：-fprofile-gener]
 ```cpp
 // ⑧ 训练负载决定一切：若训练全是负值，编译器会把 cold 当热路径——适得其反
 //   工程上用「生产流量采样回放」做训练集，而非随机合成数据
@@ -344,6 +369,7 @@ g++ -std=c++23 -O2 -fprofile-use -c Examples/_ch156_pgo.cpp -o Examples/_ch156_p
 
 `Examples/_ch156_pgo.cpp` 在 **GCC 13.1.0** 下，普通 `-O2` 与 `-fprofile-use` 的段布局差异（节选）。
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实汇编：PGO]
 ```cpp
 // 文件：Examples/_ch156_pgo.cpp
 // 行号：2
@@ -391,12 +417,14 @@ g++ -std=c++23 -O3 -fopt-info-vec Examples/_ch156_fast.cpp -c -o /dev/null
 g++ -std=c++23 -O3 -fopt-info-vec=vec.log Examples/_ch156_fast.cpp -c -o /dev/null
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：优化报告 -fopt-info / ]
 ```cpp
 // ⑩ -fopt-info-vec 的典型输出（示意）
 //   Examples/_ch156_fast.cpp:3:21: note: 循环向量化，vector_size 16，步长 1
 //   examples.cpp:42:9: missed: 因可能存在别名，循环未向量化
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：优化报告 -fopt-info / ]
 ```cpp
 // ⑩ 配合 -fopt-info-inline 看内联决策
 //   note: 将 foo 内联进 bar（热度/尺寸预算允许）
@@ -410,6 +438,7 @@ g++ -std=c++23 -O3 -fopt-info-vec=vec.log Examples/_ch156_fast.cpp -c -o /dev/nu
 
 向量化（第155章）高度依赖优化等级：`-O2` **默认不开**自动向量化，`-O3`/`-Ofast` 才开；且 `-ffast-math` 决定 FP 归约能否重结合。
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：与 ch155 衔接]
 ```cpp
 // ⑪ 同一循环，不同等级命运不同
 //   -O2  ：标量累加（除非手写 pragma/#pragma GCC ivdep 提示）
@@ -420,12 +449,14 @@ void scale(double* a, double k, int n) {
 }
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：与 ch155 衔接]
 ```cpp
 // ⑪ 想强制 -O2 也向量化，可显式开启对应 pass（等价 -O3 的子集）
 //   #pragma GCC optimize("tree-vectorize")
 //   void hot_kernel(float* p, int n) { for (int i=0;i<n;++i) p[i]+=1.0f; }
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：与 ch155 衔接]
 ```cpp
 // ⑪ 与 ch155 的关系：向量化是「优化 pass 的一种」，O 级是它的总开关之一；
 //   LTO/PGO 也能改变向量化可行性（跨 TU 看到数组不别名、热循环被选中）
@@ -441,12 +472,14 @@ void scale(double* a, double k, int n) {
 
 内联是大多数优化（常量传播、死代码消除）的入口。`inline` 仅是**建议**；`__attribute__((always_inline))` 强迫内联（仍受 `noinline`/宏/取地址等约束）。
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：内联启发式与 attribute()]
 ```cpp
 // ⑫ 普通 inline：编译器按成本模型自行决定是否内联
 inline int cheap(int x) { return x + 1; }
 int use_cheap(int x) { return cheap(x) * 2; }   // -O2 大概率内联
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：内联启发式与 attribute()]
 ```cpp
 // ⑫ 强制内联：热路径小函数用 always_inline 锁死
 __attribute__((always_inline))
@@ -454,12 +487,14 @@ inline int hot_add(int a, int b) { return a + b; }
 int chain(int x) { return hot_add(hot_add(x, 1), 2); }  // 必定展开，无 call
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：内联启发式与 attribute()]
 ```cpp
 // ⑫ 反例：noinline 阻止内联（调试或规避代码膨胀时）
 __attribute__((noinline))
 int debug_only(int x) { return x * x; }   // 即便 -O3 也保留独立调用
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：内联启发式与 attribute()]
 ```cpp
 // ⑫ 取函数地址会阻止内联（必须存在独立符号）
 int (*fp)(int) = &cheap;   // 此时 cheap 必须可被链接器引用 → 不能纯内联
@@ -472,6 +507,7 @@ int (*fp)(int) = &cheap;   // 此时 cheap 必须可被链接器引用 → 不�
 
 UB 让编译器**合法地**假设它永不发生后，整条路径可被消去或重写——这是「优化很猛但结果诡异」的头号根源。
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：未定义行为(U.B.)如何让优化"爆]
 ```cpp
 // ⑬ 有符号溢出是 UB：编译器可假设它不发生，从而把循环当成死循环优化掉
 int wrap(int n) {
@@ -484,6 +520,7 @@ int wrap(int n) {
 }
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：未定义行为(U.B.)如何让优化"爆]
 ```cpp
 // ⑬ 空指针解引用是 UB：下列判断在 -O2 下可能被直接删成 if(true)
 int* p = nullptr;
@@ -492,6 +529,7 @@ if (p) {                       // 编译器知道 p==nullptr，整个 if 块被�
 }
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：未定义行为(U.B.)如何让优化"爆]
 ```cpp
 // ⑬ 严格别名违规：通过错误类型读写同一内存是 UB，优化器会缓存到寄存器造成「神秘」结果
 int alias_bad() {
@@ -501,6 +539,7 @@ int alias_bad() {
 }
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：未定义行为(U.B.)如何让优化"爆]
 ```cpp
 // ⑬ 正确做法：用 std::bit_cast / memcpy 做类型双关，避免 UB
 #include <bit>
@@ -517,16 +556,19 @@ float to_float(uint32_t u) { return std::bit_cast<float>(u); }  // C++20 安全�
 
 优化不是免费的：`-O3`、LTO、PGO（两遍编译）都显著拉长构建时间，需与 CI 预算权衡。
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：编译时间代价 [实现·GCC15]]
 ```cpp
 // ⑭ LTO 的编译时间主要来自链接期重放优化，且内存占用陡增
 //   大工程 -flto 链接可能吃掉数 GB RAM；用 -flto=N 并行分区缓解
 ```
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：编译时间代价 [实现·GCC15]]
 ```cpp
 // ⑭ PGO 是「编译两遍 + 跑训练」：时间 ≈ 1.5~2× 普通 -O2 构建 + 训练运行开销
 //   适合「每晚一次」的发布构建，而非开发者本地每次增量编译
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：编译时间代价 [实现·GCC15]]
 ```cpp
 // ⑭ 开发期用 -O0/-Og 保编译快、调试准；仅发布流水线用 -O2 -flto -fprofile-use
 //   -Og：专为调试优化的等级，保留变量与行号，同时做少量无害优化
@@ -540,6 +582,7 @@ int dev_build(int x) { return x * x + x; }   // -Og 下仍可在调试器看 x �
 
 `-Ofast` 的 `-ffast-math` 会改变浮点**结果**，在数值敏感领域是正确性 bug，不是性能优化。
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：误用：过度 -Ofast 导致数值错]
 ```cpp
 // ⑮ 错误：对金融/科学计算无脑 -Ofast → 结果偏离 IEEE 语义
 //   重结合后 s 的舍入顺序改变，与「严格累加」的参考实现不一致
@@ -550,6 +593,7 @@ double bad_accumulate(const double* a, int n) {
 }
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：误用：过度 -Ofast 导致数值错]
 ```cpp
 // ⑮ 更隐蔽：NaN/Inf 守卫被删，错误处理路径失效
 bool is_finite_ok(double x) {
@@ -557,6 +601,7 @@ bool is_finite_ok(double x) {
 }
 ```
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：误用：过度 -Ofast 导致数值错]
 ```cpp
 // ⑮ 正确：需要确定性/可复现数值时绝不用 -ffast-math
 //   若只求「快且可接受微小误差」，把 -ffast-math 限定到具体函数：
@@ -575,6 +620,7 @@ double fast_kernel(double* a, double* b, int n) {
 
 基准必须带误差条与硬件信息；下面为**量级示意**，本机实测请用 Google Benchmark + 多次取中位数。
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：性能基准]
 ```cpp
 // ⑯ 基准框架骨架（示意，非本机实测数字）
 #include <benchmark/benchmark.h>
@@ -588,6 +634,7 @@ static void BM_dot(benchmark::State& s) {
 BENCHMARK(BM_dot);
 ```
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：性能基准]
 ```cpp
 // ⑯ 相对收益（服务器计算内核，量级示意，非承诺）
 //   -O2        : 基线 1.00×
@@ -597,6 +644,7 @@ BENCHMARK(BM_dot);
 //   注意：-O3 在分支密集、i-cache 受限代码上可能持平甚至回退
 ```
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：性能基准]
 ```cpp
 // ⑯ 反模式：微基准被优化器「看穿」而整体消失
 int micro_bad(int x) { return x * 2 + 1; }
@@ -617,12 +665,14 @@ g++ -std=c++23 -O2 -S -masm=intel Examples/_ch156_fast.cpp -o Examples/_ch156_fa
 objdump -d -M intel Examples/_ch156_app_lto.exe > Examples/_ch156_main_lto.asm
 ```
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：调试：看编译器到底做了什么]
 ```cpp
 // ⑰ 想确认某函数有没有被内联：搜符号 + 看调用点
 //   有 call _Z3foo / jmp _Z3foo  → 没内联
 //   汇编里直接出现 foo 的指令体   → 已内联
 ```
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：调试：看编译器到底做了什么]
 ```cpp
 // ⑰ Compiler Explorer (godbolt.org) 实践：并排 -O2 / -O3 / -Ofast
 //   一眼看出向量化有没有发生（有没有 xmm/ymm 打包指令）
@@ -648,11 +698,13 @@ g++ -std=c++23 -O2 -flto -fprofile-generate   obj/*.o -o app_gen
 g++ -std=c++23 -O2 -flto -fprofile-use       obj/*.o -o app_pgo
 ```
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：最佳实践：发布用 -O2 -flto]
 ```cpp
 // ⑱ 不要全局 -Ofast：严格数值用 -O2；仅对可接受误差的内核局部放宽
 //   （见 ⑮ 的 __attribute__((optimize("fast-math"))) 局部做法）
 ```
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：最佳实践：发布用 -O2 -flto]
 ```cpp
 // ⑱ 调试符号与优化可共存：-O2 -g 仍出可用回溯（变量可能被优化掉，属正常）
 //   发布产物用 -O2 -flto -DNDEBUG 去掉断言与调试开销
@@ -667,6 +719,7 @@ g++ -std=c++23 -O2 -flto -fprofile-use       obj/*.o -o app_pgo
 
 三家的等价开关语义接近但细节与实现质量不同；`as-if` 保证行为一致，性能形态可能不同。
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：跨编译器]
 ```cpp
 // ⑲ 等价档位对照（语义层面）
 //   GCC/Clang : -O0 -O1 -O2 -O3 -Os  ;-Ofast(GCC) ≈ -O3 -ffast-math(Clang)
@@ -684,6 +737,7 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
 #   cl /O2 /fprofile-use          → PGO 使用
 ```
 
+> **示例 54** [难度 ★☆☆☆☆] [主题：跨编译器]
 ```cpp
 // ⑲ ThinLTO（Clang）比全量 LTO 更省内存、增量友好；GCC 也可用 -flto=thin（较新版本）
 //   跨编译器不共享 LTO/IR 缓存：GCC 的 .o(IR) 不能喂给 Clang 链接
@@ -708,6 +762,7 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
    - [标准] `volatile` 仅约束对抽象机的可观测访问顺序，不保证跨线程可见性或原子性；同步须用原子/互斥。
    - [引用] ISO/IEC 14882:2023 §[intro.races]（数据竞争）/ [atomics]（真正同步）/ [dcl.type.cv]（volatile 语义）；cppreference "volatile" 词条。
 
+> **示例 55** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
 ```
 ┌──────────────────┬───────────────────────────────────────────────┬─────────────────┐
 │ 开关              │ 含义 / 启用的主要优化                          │ 何时用          │
@@ -726,6 +781,7 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
 └──────────────────┴───────────────────────────────────────────────┴─────────────────┘
 ```
 
+> **示例 56** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ 一行决策树（伪代码）
 //   if (开发)        flags = "-Og -g";
@@ -735,6 +791,7 @@ clang++ -O2 -fprofile-use -c src.cpp            # PGO 使用
 //   if (需严格数值)  assert 不含 -ffast-math / -Ofast;
 ```
 
+> **示例 57** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ 最小可验证清单：改 flags 后必做
 //   1) 用 -fopt-info-vec 确认热循环向量化；
@@ -798,6 +855,7 @@ ISO C++ 用"未定义行为（UB）"换取优化空间——标准不定义的�
 
 ## 附录 F：编译器优化
 
+> **示例 58** [难度 ★☆☆☆☆] [主题：附录 F：编译器优化]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"-O2=标准;-O3=激进(循环展开+向量化);-Os=最小;-Ofast=-O3+不严格浮点(10-20%faster)"<<std::endl;std::cout<<"LTO=跨TU内联; PGO=profile训练数据→10-20% speedup"<<std::endl;return 0;}
@@ -870,6 +928,7 @@ Q: 本章核心? A: 见附录A-F中的深度分析(工业原理/性能/汇编/�
 
 `-O3` 提高内联阈值并开启更多向量化/展开，热点常受益；但展开会让函数体变大，若超出指令缓存友好范围，取指/解码反而成为瓶颈。应以基准（ch151）量化，而非盲目升档。
 
+> **示例 59** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 struct Point { int x, y;
@@ -896,6 +955,7 @@ int main() {
 
 普通编译每个 TU 独立优化，跨 TU 的调用点看不到被调函数体，无法内联/去虚化。LTO 把整个程序的中间表示在链接期统一优化，才能跨边界 inline、把 `final`/单实现的虚调用静态化。
 
+> **示例 60** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 // 头文件中定义（被多个 .cpp 包含）
 template <typename T>
@@ -919,6 +979,7 @@ int main() { std::cout << square(3.0) << '\n'; }
 
 PGO 先以代表性输入跑一遍采集分支/调用热点，再据此布局代码（热块相邻、冷块分离）、定向内联。静态 `-O3` 没有分布信息，只能做保守假设。
 
+> **示例 61** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 int main() {
@@ -1070,6 +1131,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 62** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 // D5.3 可复现 demo — ch156 编译器优化
 // 演示：[[likely]] 与 __builtin_expect 只影响代码生成，不改变可观察结果。

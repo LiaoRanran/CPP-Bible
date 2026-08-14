@@ -36,6 +36,7 @@ COW 与否是 `string` 史上最激烈的内部争论：COW 能让拷贝近乎�
 
 `std::string` 是 `std::basic_string<char>` 的特化，承载"值语义优先、零开销抽象、与 C 互操作"三原则。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：std::string 的设计]
 ```cpp
 // ① 最简形态：值语义，拷贝即独立副本
 #include <string>
@@ -68,6 +69,7 @@ flowchart TD
 2. **SSO（Small String Optimization，短字符串优化）**：GCC 5.1 起默认，已被所有主流实现采用。
 3. **总是堆指针（无优化）**：少数嵌入式实现。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：三种存储策略的历史演进 [标准]]
 ```cpp
 #include <string>
 // ② COW 已被标准禁止：C++11 起要求 string 满足"可装入容器 + 独立拷贝"
@@ -83,6 +85,7 @@ std::string y = x;          // C++11 起：必定深拷贝（独立堆块）
 
 libstdc++ 的 `std::string` 在 **SSO 模式**下是一个"联合体 + 长度 + 容量"结构。核心类型 `std::__cxx11::basic_string`（新 ABI）：
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：对象内存布局：std::string]
 ```cpp
 // ③ libstdc++ 概念布局（来自 bits/basic_string.h）
 // struct basic_string {
@@ -105,6 +108,7 @@ libstdc++ 的 `std::string` 在 **SSO 模式**下是一个"联合体 + 长度 + 
 
 SSO 的核心是常数容量内联缓冲，避免短串的堆分配。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：短字符串优化：阈值与内联缓冲 [实现]
 ```cpp
 // ④ SSO 容量：libstdc++ 固定 15 字节（char）
 #include <string>
@@ -124,6 +128,7 @@ int main() {
 
 ## ⑤ 构造 / 赋值 / 析构的生命周期 [标准]
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：构造 / 赋值 / 析构的生命周期 ]
 ```cpp
 #include <utility>
 #include <string>
@@ -143,6 +148,7 @@ void f() {
 
 SSO 模式的切换靠长度与阈值的比较。
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：小字符串判定：Mstringleng]
 ```cpp
 // ⑥ 判定逻辑（libstdc++ 概念）
 // bool is_local() const {
@@ -156,6 +162,7 @@ SSO 模式的切换靠长度与阈值的比较。
 
 ## ⑦ 拷贝 / 移动语义与 COW 陷阱 [标准]
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：拷贝 / 移动语义与 COW 陷阱 ]
 ```cpp
 // ⑦ 拷贝深、移动浅（窃取）
 #include <string>
@@ -173,6 +180,7 @@ void g() {
 
 ## ⑧ 扩容策略与迭代器失效 [标准]
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：扩容策略与迭代器失效 [标准]]
 ```cpp
 // ⑧ push_back/append 触发扩容，容量按几何增长（通常 ×2）
 #include <string>
@@ -196,6 +204,7 @@ int main() {
 
 ## ⑨ data() / c_str() 与 null 终止 [标准]
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：str() 与 null 终止 [标]
 ```cpp
 // ⑨ c_str() 与 data() 在 C++11 后都返回以 '\0' 结尾的连续缓冲
 #include <string>
@@ -213,6 +222,7 @@ int main() {
 
 ## ⑩ 拼接与性能：operator+ vs += vs append [标准]
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：拼接与性能：operator+ vs]
 ```cpp
 // ⑩ 链式 operator+ 产生多次临时；+=/append 就地复用
 #include <string>
@@ -232,6 +242,7 @@ std::string fast(const std::string& a, const std::string& b, const std::string& 
 
 ## ⑪ 与 char* 互操作及生命周期陷阱 [标准]
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：与 char 互操作及生命周期陷阱 ]
 ```cpp
 // ⑪ 常见悬空陷阱
 #include <string>
@@ -249,6 +260,7 @@ const char* good() {
 
 ## ⑫ std::string_view：零拷贝视图（C++17） [标准]
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：view：零拷贝视图（C++17） ]
 ```cpp
 // ⑫ string_view 不拥有存储，仅指向现有缓冲区
 #include <string_view>
@@ -270,6 +282,7 @@ int main() {
 
 ## ⑬ 编码与 Unicode 注意事项 [经验]
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：编码与 Unicode 注意事项 []
 ```cpp
 // ⑬ std::string 不感知编码，只存字节序列
 #include <string>
@@ -283,6 +296,7 @@ std::string utf8 = "中文";          // 存 UTF-8 字节（6 字节），size()
 
 libstdc++ 存在新旧两套 `std::string` ABI：
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：的 ABI 稳定性]
 ```cpp
 #include <string>
 // ⑭ 旧 ABI（pre-GCC5）：COW，符号在 std:: 命名空间
@@ -295,6 +309,7 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 
 ## ⑮ 真实 libstdc++ 源码逐行：`basic_string.h` 的 SSO 缓冲 [实现]
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码逐行：]
 ```cpp
 // 文件：bits/basic_string.h （GCC 13.1.0, libstdc++）
 // 行号：213
@@ -311,6 +326,7 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 
 ## ⑯ 真实源码：堆分配路径 `_M_create` / `_M_destroy` [实现]
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：真实源码：堆分配路径 Mcreate]
 ```cpp
 // 文件：bits/basic_string.h （GCC 13.1.0, libstdc++）
 // 行号：355
@@ -325,6 +341,7 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 
 ## ⑰ 真实源码：COW 的废弃（libstdc++ 5.1） [实现]
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：真实源码：COW 的废弃]
 ```cpp
 #include <string>
 // 文件：bits/basic_string.h （GCC 13.1.0, libstdc++）
@@ -348,6 +365,7 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 
 ## ⑲ microbenchmark：SSO 命中 vs 堆分配 [经验]
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：命中 vs 堆分配 [经验]]
 ```cpp
 // ⑲ 实测：短串（SSO）构造远快于长串（堆分配）
 #include <string>
@@ -374,6 +392,7 @@ int main() {
 
 ## 补充完整可编译示例（string）
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S1 多种构造
 #include <string>
@@ -383,6 +402,7 @@ std::string s3(5, 'x');           // "xxxxx"
 std::string s4 = std::string("hi") + "!";  // "hi!"
 ```
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S2 substr / find
 #include <string>
@@ -396,6 +416,7 @@ int f() {
 }
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S3 replace / erase / insert
 #include <string>
@@ -408,6 +429,7 @@ int g() {
 }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S4 compare / operator< 等
 #include <string>
@@ -417,6 +439,7 @@ bool cmp() {
 }
 ```
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S5 resize / shrink_to_fit
 #include <string>
@@ -428,6 +451,7 @@ void h() {
 }
 ```
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S6 front / back / 遍历
 #include <string>
@@ -438,6 +462,7 @@ int sum_ascii(const std::string& s) {
 }
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S7 数字 <-> 字符串
 #include <string>
@@ -450,6 +475,7 @@ int conv() {
 }
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S8 反向遍历
 #include <string>
@@ -458,6 +484,7 @@ void rev(const std::string& s) {
 }
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S9 拼接不同来源并 reserve
 #include <string>
@@ -469,6 +496,7 @@ std::string build() {
 }
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S10 清空与 empty
 #include <string>
@@ -479,6 +507,7 @@ bool t() {
 }
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S11 子串查找全部出现
 #include <string>
@@ -492,6 +521,7 @@ std::vector<size_t> all_pos(const std::string& s, const std::string& pat) {
 }
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（string）]
 ```cpp
 // S12 string 与 string_view 互转（零拷贝切片）
 #include <string>
@@ -570,6 +600,7 @@ int use_sv() {
 
 ## 附录 A: SSO 深度剖析
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：附录 A: SSO 深度剖析]
 ```cpp
 // SSO-A 验证短字符串在栈上（sizeof(string)内），无堆分配
 #include <iostream>
@@ -577,6 +608,7 @@ int use_sv() {
 int main(){std::string s="hi";std::cout<<"sizeof(string)="<<sizeof(s)<<" s.data() off stack? "<<( (char*)&s==s.data()?"yes(stack)":"no(heap)" )<<std::endl;return 0;}
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：附录 A: SSO 深度剖析]
 ```cpp
 // SSO-B GCC libstdc++ SSO 阈值 ~15 字节（含 '\0'）
 #include <iostream>
@@ -589,12 +621,14 @@ bool sso(const std::string& s){
 int main(){std::string s1(15,'a');std::string s2(16,'a');std::cout<<"15 chars: stack="<<sso(s1)<<" 16 chars: stack="<<sso(s2)<<std::endl;return 0;}
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：附录 A: SSO 深度剖析]
 ```cpp
 // SSO-C 字段布局模拟: union{char local[16];char* heap;} + size + capacity
 #include <iostream>
 int main(){std::cout<<"libstdc++ SSO: 16B local buffer, 8B size, 8B capacity = 32B total\n";return 0;}
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：附录 A: SSO 深度剖析]
 ```cpp
 // SSO-D 移动语义：短串移动后源仍有效（SSO拷贝），长串移动后源空（指针转移）
 #include <iostream>
@@ -605,6 +639,7 @@ int main(){std::string a(20,'x'),b=std::move(a);std::cout<<"b.size="<<b.size()<<
 
 ## 附录 B: 编码与标准库互操作
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：附录 B: 编码与标准库互操作]
 ```cpp
 // ENC-A string_view 零拷贝切片
 #include <iostream>
@@ -613,6 +648,7 @@ int main(){std::string a(20,'x'),b=std::move(a);std::cout<<"b.size="<<b.size()<<
 int main(){std::string s="hello world";std::string_view sv(s.data()+6,5);std::cout<<sv<<std::endl;return 0;}
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：附录 B: 编码与标准库互操作]
 ```cpp
 // ENC-B c_str() 返回的 C 字符串在 s 修改后失效
 #include <iostream>
@@ -620,6 +656,7 @@ int main(){std::string s="hello world";std::string_view sv(s.data()+6,5);std::co
 int main(){std::string s="hello";const char* p=s.c_str();s+=" world";std::cout<<p<<" (warn: dangling after modification)\n";return 0;}
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：附录 B: 编码与标准库互操作]
 ```cpp
 // ENC-C data() 在 C++17 起返回可写 char*
 #include <iostream>
@@ -627,6 +664,7 @@ int main(){std::string s="hello";const char* p=s.c_str();s+=" world";std::cout<<
 int main(){std::string s="abc";s.data()[0]='A';std::cout<<s<<std::endl;return 0;}
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：附录 B: 编码与标准库互操作]
 ```cpp
 // ENC-D 从 string_view 构造 string（显式）
 #include <iostream>
@@ -637,18 +675,21 @@ int main(){std::string_view sv="hello";std::string s(sv);std::cout<<s<<std::endl
 
 ## 附录 C: 性能比较
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：附录 C: 性能比较]
 ```cpp
 // PERF-A string vs string_view 传递开销
 #include <iostream>
 int main(){std::cout<<"Pass-by-value string: O(n) copy. Pass string_view: O(1). Use const& or string_view for read-only.\n";return 0;}
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：附录 C: 性能比较]
 ```cpp
 // PERF-B sso vs heap 分配速度（示意）
 #include <iostream>
 int main(){std::cout<<"SSO (<16 chars): ~2ns construct. Heap (>16): ~50-100ns malloc. Use short strings for perf.\n";return 0;}
 ```
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：附录 C: 性能比较]
 ```cpp
 // PERF-C += vs append 性能（append 可配 reserve）
 #include <iostream>
@@ -658,6 +699,7 @@ int main(){std::string s;s.reserve(100);s.append(50,'x');std::cout<<s.size()<<st
 
 ## 附录 E：std::string底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：附录 E：std::string底层]
 ```
 SSO (Short String Optimization) 底层:
 
@@ -672,6 +714,7 @@ MS STL: SSO阈值=15字节 → sizeof=32字节(同libstdc++布局)
 - protobuf: std::string用于protoString字段 → 启用SSO减少序列化开销
 ```
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：附录 E：std::string底层]
 ```cpp
 #include <iostream>
 #include <string>
@@ -726,6 +769,7 @@ int main() {
 | 如何检测SSO? | s.data()在&s和&s+1之间→SSO起作用 |
 | SSO什么情况不触发? | COW模式(GCC5.1前), 或显式禁用 |
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：面试]
 ```cpp
 #include <iostream>
 #include <string>
@@ -749,6 +793,7 @@ int main() {
 | COW历史? | GCC5.1前COW→ABI break→SSO(现在) |
 | string on stack? | ≤SSO阈值时纯栈分配(零堆) |
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：附录 G：string面试高频]
 ```cpp
 #include <iostream>
 #include <string>
@@ -787,6 +832,7 @@ int main(){std::string s="hello";std::cout<<s<<" ("<<s.capacity()<<" capacity, "
 
 ### 测试源码（核心）
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：测试源码（核心）]
 ```cpp
 volatile int g_obs = 0;
 [[gnu::noinline]] void make_short() {                 // 短串 -> SSO
@@ -829,6 +875,7 @@ volatile int g_obs = 0;
 ### 练习 1（难度 ★★）
 **真实场景：HTTP 请求行解析——零拷贝切出 method/path。** 解析 `"GET /index HTTP/1.1"` 时 `string_view::substr` 不分配，避免每请求堆分配（对比 `std::string::substr` 必分配新缓冲）。
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <string_view>
@@ -846,6 +893,7 @@ int main() {
 ### 练习 2（难度 ★★★）
 **真实场景：CSV 流式解析——按逗号切字段不拷贝。** 大文件逐行解析时全程 `string_view` 避免 N 次堆分配；字段视图生命周期必须短于拥有数据的 `std::string`。
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <string_view>
@@ -881,6 +929,7 @@ std::string_view dangling() {
 ```
 
 正确写法：
+> **示例 49** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -901,6 +950,7 @@ int main() {
 ### 演绎 1：日志接口统一用 string_view 避免临时 string 分配
 函数参数用 `string_view` 可同时接受字面量、`std::string`、C 字符串，且不发生拷贝。
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：演绎 1：日志接口统一用 strin]
 ```cpp
 #include <iostream>
 #include <string>
@@ -916,6 +966,7 @@ int main() {
 ### 演绎 2：string 累积拼接 vs 只读解析的取舍
 需要修改/拥有结果时用 `std::string` 累积；仅需查看时用 `string_view`，二者按所有权边界划分。
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：演绎 2：string 累积拼接 v]
 ```cpp
 #include <iostream>
 #include <string>
@@ -1023,6 +1074,7 @@ pointer _M_local_data()
 
 ### 4. 第一方可编译验证（观察 SSO 阈值 15）
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <string>
 #include <iostream>
@@ -1157,6 +1209,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <string>
 #include <vector>

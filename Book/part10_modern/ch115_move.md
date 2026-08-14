@@ -49,6 +49,7 @@ C++98 是严格的"值语义"：函数按值返回大对象、把临时对象赋
 - **Rule of Three/Five/Zero** ⟶ `Book/part04_memory/ch39_raii_rule.md`：移动语义使 Rule of Three 升级为 Rule of Five。
 - **vector 扩容、失效、allocator** ⟶ `Book/part07_stl/ch77_vector.md`：vector 扩容时如何"搬元素"直接取决于元素移动构造是否 `noexcept`（§⑫）。
 
+> **示例 1** [难度 ★★★★☆] [主题：前置知识]
 ```cpp
 // ②-1 前置：右值引用绑定到临时（独立可编译）
 #include <iostream>
@@ -64,6 +65,7 @@ int main() {
 }
 ```
 
+> **示例 2** [难度 ★★★★☆] [主题：前置知识]
 ```cpp
 // ②-2 前置：移动构造让"返回值"免拷贝（独立可编译，演示思想）
 #include <iostream>
@@ -86,6 +88,7 @@ int main() {
 
 ---
 
+> **示例 3** [难度 ★★★★☆] [主题：前置知识]
 ```cpp
 // ②-3 值类别可用类型特性在编译期识别（独立可编译）
 #include <type_traits>
@@ -115,6 +118,7 @@ int main() {
 - **RVO / NRVO 与拷贝消除** ⟶ `Book/part10_modern/ch117_copy_elision.md`：理解为什么"不要 `return std::move(local)`"——拷贝消除优先于移动（§⑯）。
 - **cast** ⟶ `Book/part03_language/ch27_cast.md`：`std::move` 的本质是 `static_cast<T&&>`，属于 `static_cast` 的合法用法。
 
+> **示例 4** [难度 ★★★★☆] [主题：后续依赖]
 ```cpp
 // ③-1 后续：移动 + 完美转发组合（独立可编译，演示）
 #include <iostream>
@@ -135,6 +139,7 @@ int main() {
 }
 ```
 
+> **示例 5** [难度 ★★★★☆] [主题：后续依赖]
 ```cpp
 // ③-2 后续：拷贝消除与移动的关系（独立可编译，return 局部触发 NRVO/移动）
 #include <iostream>
@@ -160,6 +165,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII）
 
+> **示例 6** [难度 ★★★★☆] [主题：知识图谱（ASCII）]
 ```
                  ┌─────────────────────────────────────────┐
                  │   表达式的值类别（C++17）                 │
@@ -221,6 +227,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：移动 = 指针转移，而非字节拷贝
 
+> **示例 7** [难度 ★★★★☆] [主题：内存图：移动 = 指针转移，而非字节]
 ```
 移动前：
   Source:  [_data] ──────► [堆: 100万个 int]
@@ -237,6 +244,7 @@ classDiagram
 - `[标准]`：移动语义的核心是**资源所有权的转移**，而非值的复制；移动构造/赋值把源的资源指针"偷"过来并把源置空，使源的析构不会释放已被转移的资源（避免双释放）。
 - `[经验]`：移动的成本是**常数级**（几次指针赋值），与对象大小无关；拷贝的成本是 `O(大小)`（逐字节/逐元素）。对持有堆资源的对象，差距可达数量级。
 
+> **示例 8** [难度 ★★★★☆] [主题：内存图：移动 = 指针转移，而非字节]
 ```cpp
 // ⑦-1 移动窃取指针，拷贝逐元素（独立可编译，演示思想）
 #include <iostream>
@@ -266,6 +274,7 @@ int main() {
 
 移动后，源对象仍然存在（直到其作用域结束），但处于**"有效但未指定（valid but unspecified）"**状态——可以安全析构或赋值，但不可假设其内容。
 
+> **示例 9** [难度 ★★★★☆] [主题：生命周期图：移动后源对象的状态]
 ```
 时间轴 ──────────────────────────────────────────────►
 
@@ -284,6 +293,7 @@ int main() {
 - `[标准]`：`[lib.types.movedfrom]` 规定被移动后的标准库类型仍可析构、可被赋值、可比较（比较结果未指定）；用户类型应遵守同一约定。
 - `[经验]`：实用准则——移动后把源对象当"空壳"，要么重新赋值再使用，要么不再使用直到析构。
 
+> **示例 10** [难度 ★★★★☆] [主题：生命周期图：移动后源对象的状态]
 ```cpp
 // ⑧-1 移动后源对象可重新赋值、可安全析构（独立可编译）
 #include <iostream>
@@ -300,6 +310,7 @@ int main() {
 }
 ```
 
+> **示例 11** [难度 ★★★★☆] [主题：生命周期图：移动后源对象的状态]
 ```cpp
 // ⑧-2 移动后源的"内容未指定"（独立可编译，仅展示可析构）
 #include <iostream>
@@ -322,6 +333,7 @@ int main() {
 
 最常见的误解：`std::move(x)` 会"移动 x"。**真相**：它只是把 `x` 强制转换成右值引用类型（`static_cast<T&&>`），真正的移动发生在随后调用的移动构造/赋值里。
 
+> **示例 12** [难度 ★★★★☆] [主题：调用栈 / 时序图：std::mov]
 ```
 调用方                       std::move                目标对象
   │                             │                         │
@@ -339,6 +351,7 @@ int main() {
 - `[标准]`：`std::move` 的语义就是 `static_cast<remove_reference_t<T>&&>(t)`（见 §⑬），它**不生成任何运行期代码**（在 `-O2` 下完全消失）。
 - `[经验]`：记住口头禅——"move 不移动，它只是允许移动"。
 
+> **示例 13** [难度 ★★★★☆] [主题：调用栈 / 时序图：std::mov]
 ```cpp
 // ⑨-1 演示：std::move 本身不触达任何成员（独立可编译）
 #include <iostream>
@@ -358,6 +371,7 @@ int main() {
 }
 ```
 
+> **示例 14** [难度 ★★★★☆] [主题：调用栈 / 时序图：std::mov]
 ```cpp
 // ⑨-2 对比：不 move 则拷贝（独立可编译）
 #include <iostream>
@@ -406,6 +420,7 @@ int main() {
 - `[实现·GCC15.3.0]` [VERIFIED]：汇编证实移动赋值的代价是 **`delete[]` 旧资源 + 两条 `mov` 窃取指针 + 源置空**（常数级），拷贝赋值则额外含 `call _Znay`（堆分配）+ 元素循环 `O(n)`。对大缓冲区，差距即"分配+复制" vs "两次指针赋值"。
 - `[标准]`：这正是移动语义把"深拷贝"降级为"指针转移"的性能收益来源。
 
+> **示例 15** [难度 ★★★★☆] [主题：汇编分析：移动 vs 拷贝]
 ```cpp
 // ⑩-1 被测代码（与上方 asm 对应）：Buf 的移动/拷贝赋值（独立可编译）
 #include <utility>
@@ -446,6 +461,7 @@ int main() {
 - `[标准]`：C++11 起，所有标准库容器/智能指针/字符串都提供了 `noexcept` 移动构造与移动赋值，使它们在容器中存储、作为返回值、跨线程传递时零拷贝。
 - `[经验]`：自己写的资源管理类（RAII）必须提供 `noexcept` 移动，才能享受与标准库同等的性能（见 §⑫）。
 
+> **示例 16** [难度 ★★★★☆] [主题：联系：移动语义贯穿整个标准库]
 ```cpp
 // ⑪-1 unique_ptr 只可移动不可拷贝（独立可编译）
 #include <memory>
@@ -460,6 +476,7 @@ int main() {
 }
 ```
 
+> **示例 17** [难度 ★★★★☆] [主题：联系：移动语义贯穿整个标准库]
 ```cpp
 // ⑪-2 string 移动窃取缓冲区（独立可编译）
 #include <string>
@@ -480,6 +497,7 @@ int main() {
 
 `std::vector` 扩容（reallocation）需要把旧元素搬到新内存。它**优先用移动构造**，但前提是移动构造**不抛异常（`noexcept`）**——因为一旦在搬移中途抛异常，vector 无法回滚到旧状态（旧元素已被搬走）。
 
+> **示例 18** [难度 ★★★★☆] [主题：移动决定 vector 扩容走"移动]
 ```cpp
 // ⑫-1 noexcept 移动：vector 扩容用移动，O(N) 仅指针搬运（独立可编译）
 #include <vector>
@@ -502,6 +520,7 @@ int main() {
 }
 ```
 
+> **示例 19** [难度 ★★★★☆] [主题：移动决定 vector 扩容走"移动]
 ```cpp
 // ⑫-2 非 noexcept 移动：vector 退回拷贝（更安全但更慢，独立可编译）
 #include <vector>
@@ -534,6 +553,7 @@ int main() {
 
 ### 13.1 std::move 的本质
 
+> **示例 20** [难度 ★★★★☆] [主题：的本质]
 ```cpp
 #include <utility>
 // ⑬-1a libstdc++ 源码摘录（文件：bits/move.h，行号：104）
@@ -548,6 +568,7 @@ int main() { return 0; }
 
 ### 13.2 move_if_noexcept（vector 扩容决策）
 
+> **示例 21** [难度 ★★★★☆] [主题：ifnoexcept]
 ```cpp
 #include <utility>
 // ⑬-2a libstdc++ 源码摘录（文件：bits/move.h，行号：125）
@@ -562,6 +583,7 @@ int main() { return 0; }
 
 ### 13.3 vector 的移动构造/赋值
 
+> **示例 22** [难度 ★★★★☆] [主题：的移动构造/赋值]
 ```cpp
 // ⑬-3a libstdc++ 源码摘录（文件：bits/stl_vector.h，行号：615 / 761）
 // 以下为 GCC 13.1.0 真实源码片段，以注释保存，便于审阅且不参与编译：
@@ -587,6 +609,7 @@ int main() { return 0; }
 - `[标准]`：移动语义自 C++11 成为核心；C++23 仅做边角完善（如更一致的 `noexcept` 推导）。
 - `[经验]`：现代 C++ 的 RAII + 移动语义组合（见 `Book/part04_memory/ch39_raii_rule.md`）是"零泄漏 + 零拷贝"的工程基石。
 
+> **示例 23** [难度 ★★★★☆] [主题：提案背景]
 ```cpp
 // ⑭-1 工业：工厂函数返回大对象，靠移动/拷贝消除免拷贝（独立可编译）
 #include <iostream>
@@ -639,6 +662,7 @@ int main() {
 7. **`std::unique_ptr` 为什么不能拷贝只能移动？**
    → `[标准]` 独占所有权语义：拷贝会导致双释放，故删除拷贝、仅留移动（§⑪）。
 
+> **示例 24** [难度 ★★★★☆] [主题：面试题]
 ```cpp
 // ⑮-1 面试题实战：vector 扩容的移动/拷贝路径（独立可编译）
 #include <vector>
@@ -666,6 +690,7 @@ int main() {
 ## ⑯ 易错点
 
 1. **`std::move` 具名右值引用却被当右值用**
+> **示例 25** [难度 ★★★★☆] [主题：易错点]
    ```cpp
    // ❌ 逻辑错误（编译通过，实际拷贝而非移动）
    #include <iostream>
@@ -681,6 +706,7 @@ int main() {
    ✅ 正确：`T x = std::move(r);`（再 move 一次）。
 
 2. **对 `const` 对象 move 退化为拷贝**
+> **示例 26** [难度 ★★★★☆] [主题：易错点]
    ```cpp
    // ⑯-1 const 对象被 move 实际拷贝（独立可编译，演示）
    #include <iostream>
@@ -694,6 +720,7 @@ int main() {
 ```
 
 3. **`return std::move(local);` 阻碍 RVO**
+> **示例 27** [难度 ★★★★☆] [主题：易错点]
    ```cpp
    // ⑯-2 错误写法：显式 move 阻止 NRVO（独立可编译，对比）
    #include <iostream>
@@ -705,6 +732,7 @@ int main() {
 ```
 
 4. **移动后继续读源对象**
+> **示例 28** [难度 ★★★★☆] [主题：易错点]
    ```cpp
    // ⑯-3 错误：移动后使用源对象内容（独立可编译，安全写法对照）
    #include <iostream>
@@ -722,6 +750,7 @@ int main() {
 5. **移动构造未标 `noexcept` 拖慢 vector**
    → 见 §⑫：非 noexcept 移动使 vector 扩容退回拷贝。务必 `= default` 或显式 `noexcept`。
 
+> **示例 29** [难度 ★★★★☆] [主题：易错点]
 ```cpp
 // ⑯-4 正确：移动构造/赋值都 noexcept（独立可编译，推荐写法）
 #include <iostream>
@@ -754,6 +783,7 @@ int main() { Holder a; Holder b = std::move(a); std::cout << "ok\n"; return 0; }
 6. **`std::unique_ptr` / `std::thread` 等只移动类型，用 `std::move` 转移所有权**，不要尝试拷贝 `[标准]`。
 7. **容器存大对象时，确保元素可 `noexcept` 移动**，扩容才走移动而非拷贝 `[经验]`。
 
+> **示例 30** [难度 ★★★★☆] [主题：最佳实践]
 ```cpp
 // ⑰-1 最佳实践：Rule of Five 显式声明（独立可编译）
 #include <iostream>
@@ -774,6 +804,7 @@ public:
 int main() { Buffer a(1), b; b = std::move(a); std::cout << "ok\n"; return 0; }
 ```
 
+> **示例 31** [难度 ★★★★☆] [主题：最佳实践]
 ```cpp
 // ⑰-2 最佳实践：返回局部对象、放入容器都靠移动（独立可编译）
 #include <vector>
@@ -806,6 +837,7 @@ int main() {
 
 ### 18.2 microbenchmark 量级
 
+> **示例 32** [难度 ★★★★☆] [主题：量级]
 ```cpp
 // ⑱-1 量级对照：拷贝 vs 移动一个大对象（独立可编译，计时骨架）
 #include <vector>
@@ -855,6 +887,7 @@ int main() {
 
 请求处理对象（持有连接、缓冲区）在 IO 线程解析后，整体 `std::move` 交给工作线程，避免跨线程拷贝大缓冲。
 
+> **示例 33** [难度 ★★★★☆] [主题：工业案例：所有权转移与容器化大对象]
 ```cpp
 // ⑲-1 unique_ptr 跨线程/跨作用域转移所有权（独立可编译，模拟逻辑）
 #include <memory>
@@ -882,6 +915,7 @@ int main() {
 
 写缓冲（WAL 段）作为大对象在"生产者"与"刷盘器"之间用移动传递，避免每批数据深拷贝。
 
+> **示例 34** [难度 ★★★★☆] [主题：工业案例：所有权转移与容器化大对象]
 ```cpp
 // ⑲-2 大对象容器：vector 存可移动 Buffer（独立可编译，模拟逻辑）
 #include <vector>
@@ -910,6 +944,7 @@ int main() {
 
 编译器可在返回处直接构造（NRVO）或隐式移动，使"返回大对象"与"返回 int"成本相当（见 §⑭、§⑯）。
 
+> **示例 35** [难度 ★★★★☆] [主题：工业案例：所有权转移与容器化大对象]
 ```cpp
 // ⑲-3 工厂返回大对象（独立可编译）
 #include <string>
@@ -960,6 +995,7 @@ int main() { Doc d = load(); std::cout << d.title << "\n"; return 0; }
   3. **规则**：C++ 因历史兼容需保留拷贝语义，`std::move` 是"请求"而非"强制"——源对象仍可访问（虽状态未指定）。
 - `[经验]`：从 Rust 转来的工程师会觉得 C++ 移动"不够安全但有更多控制"；从 Java/C# 转来的会觉得"C++ 终于能避免深拷贝了"。无论背景，都应把"移动后源对象当空壳"刻进肌肉记忆。
 
+> **示例 36** [难度 ★★★★☆] [主题：跨语言对比：移动语义]
 ```cpp
 // ⑳-1 跨语言映射：Rust 的 let y = x;（移动）在 C++ 用 std::move 表达（独立可编译）
 #include <iostream>
@@ -974,6 +1010,7 @@ int main() {
 }
 ```
 
+> **示例 37** [难度 ★★★★☆] [主题：跨语言对比：移动语义]
 ```cpp
 // ⑳-2 跨语言映射：C++ 的"移动后有效但未指定" vs Rust 的编译期禁止 use-after-move
 // （C++ 无法在编译期阻止，需纪律；独立可编译的"安全用法"示范）
@@ -1033,6 +1070,7 @@ C++ 没有走 Rust 那条"移动后旧绑定编译期不可用"的路，而是�
 
 1. 实现一个 `String` 类（动态 `char*` 缓冲），给出完整 Rule of Five（析构、拷贝构造、拷贝赋值、移动构造、移动赋值），全部 `noexcept` 适配移动，并写测试验证移动后源为空。
 
+> **示例 38** [难度 ★★★★☆] [主题：练习题]
 ```cpp
 // 练习①参考实现：Rule of Five String 类，noexcept 移动
 #include <iostream>
@@ -1092,6 +1130,7 @@ int main() {
 
 ## 附录: Move 语义深度
 
+> **示例 39** [难度 ★★★★☆] [主题：附录: Move 语义深度]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1101,6 +1140,7 @@ struct Buffer{int*d;size_t n;explicit Buffer(size_t s):d(new int[s]),n(s){}~Buff
 int main(){Buffer a(10);Buffer b=std::move(a);std::cout<<b.n<<std::endl;return 0;}
 ```
 
+> **示例 40** [难度 ★★★★☆] [主题：附录: Move 语义深度]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1108,6 +1148,7 @@ int main(){Buffer a(10);Buffer b=std::move(a);std::cout<<b.n<<std::endl;return 0
 int main(){std::vector<int> a{1,2,3};auto b=std::move(a);std::cout<<b.size()<<" "<<a.size()<<std::endl;return 0;}
 ```
 
+> **示例 41** [难度 ★★★★☆] [主题：附录: Move 语义深度]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1115,6 +1156,7 @@ int main(){std::vector<int> a{1,2,3};auto b=std::move(a);std::cout<<b.size()<<" 
 int main(){auto p1=std::make_unique<int>(42);auto p2=std::move(p1);std::cout<<*p2<<std::endl;return 0;}
 ```
 
+> **示例 42** [难度 ★★★★☆] [主题：附录: Move 语义深度]
 ```cpp
 #include <iostream>
 #include <string>
@@ -1122,6 +1164,7 @@ int main(){auto p1=std::make_unique<int>(42);auto p2=std::move(p1);std::cout<<*p
 int main(){std::string s1="hello";std::string s2=std::move(s1);std::cout<<s2<<std::endl;return 0;}
 ```
 
+> **示例 43** [难度 ★★★★☆] [主题：附录: Move 语义深度]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1155,6 +1198,7 @@ int main(){std::cout<<"std::move is a cast to rvalue reference. It does NOT move
 
 ### 测试源码
 
+> **示例 44** [难度 ★★★★☆] [主题：测试源码]
 ```cpp
 struct Big { char* data; size_t sz;
     Big(size_t n): data(new char[n]), sz(n) { memset(data, 0, n); }
@@ -1260,6 +1304,7 @@ RVO 不产生函数调用在调用方生成对象。编译器在函数签名层�
 
 `std::unique_ptr` 只能移动、不能拷贝（Rule of Five 中拷贝构造/赋值被 `=delete`）。用 `std::move` 把所有权从解析线程移交到任务队列，零拷贝：
 
+> **示例 45** [难度 ★★★★☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <memory>
 #include <vector>
@@ -1287,6 +1332,7 @@ int main() {
 
 `std::vector` 扩容前用 `std::move_if_noexcept` 决策：移动构造 `noexcept` 才移动，否则为强异常安全退回拷贝：
 
+> **示例 46** [难度 ★★★★☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <vector>
 #include <utility>
@@ -1318,6 +1364,7 @@ int main() {
 
 直接返回局部对象名字（或 prvalue），让 NRVO/强制消除生效；绝不对局部对象 `std::move`：
 
+> **示例 47** [难度 ★★★★☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <string>
 #include <utility>
@@ -1444,6 +1491,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 48** [难度 ★★★★☆] [主题：可复现 demo]
 ```cpp
 #include <vector>
 #include <string>

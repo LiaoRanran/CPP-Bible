@@ -56,6 +56,7 @@ WG21 = ISO/IEC JTC1/SC22/WG21, 即国际标准化组织/国际电工委员会 �
 
 ## ③ 从提案到标准：6阶段流程
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：从提案到标准：6阶段流程]
 ```
 PxxxxR0 提交 → Study Group 初审(6-12月)
 → EWG/LEWG 审设计(12-24月)
@@ -106,6 +107,7 @@ PxxxxR0 提交 → Study Group 初审(6-12月)
 | P2900R7 | contracts | C++26 | 标准化契约编程 |
 | P2996R5 | reflection | C++26 | ~500页, 最大单个提案 |
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：关键提案与影响]
 ```cpp
 #include <iostream>
 int main() {
@@ -192,6 +194,7 @@ GCC实现: 首个完整C++98(GCC 2.95,1999), 首个完整C++11(GCC 4.8,2013)
 Clang实现: 基于LLVM, 更好的错误信息, GCC ABI兼容
 MSVC实现: VS2022社区版免费, 完整C++23支持(17.8+)
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：编译器实现：GCC/Clang/MS]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GCC=GPLv3, Linux default; Clang=Apache2, LLVM native; MSVC=Windows default"<<std::endl;return 0;}
@@ -224,6 +227,7 @@ LTS: C++17(GCC8/Clang6/MSVC2019)
 嵌入式: C++14(arm-none-eabi-gcc 9+)
 安全关键: C++14(DO-178C certified)
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：版本选择决策树]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++17=minimum for new projects. C++20=recommended if compiler>=GCC10/Clang10/MSVC2019.16.10"<<std::endl;return 0;}
@@ -235,6 +239,7 @@ Google: 内部C++代码库20亿+行, 每次标准升级需5年规划。C++14→C
 LLVM: 作为C++编译器项目自身, 它最先采用新标准(C++17 in 2019, C++20 in 2023)
 Chromium: 6500万行C++, 版本迁移需1年+数千bot验证
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：++标准的工业影响]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Google=2B+ lines C++, 5yr per standard upgrade. LLVM=first adopter. Chromium=65M lines."<<std::endl;return 0;}
@@ -268,6 +273,7 @@ P1103R3(modules): Gabriel Dos Reis, 2018.08→C++20(2019). 4年(从2003初始算
 
 C++保护全球万亿行代码的投资。即使auto_ptr有严重缺陷,也保留了3个版本才移除(C++11废弃, C++17移除)。vector<bool>的特化从C++98存在至今(破坏兼容性的成本远超修复收益)
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：向后兼容]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++ philosophy: zero-overhead, backward compatible, trust the programmer"<<std::endl;return 0;}
@@ -285,6 +291,7 @@ int main(){std::cout<<"C++ philosophy: zero-overhead, backward compatible, trust
 | 最快? | string_view(~18月) |
 | 谁决定方向? | Direction Group(Bjarne)设长期愿景 |
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：附录 J：C++标准化面试高频]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"WG21=ISO C++ committee, 3 meetings/year, train model every 3 years"<<std::endl;return 0;}
@@ -308,6 +315,7 @@ int main(){std::cout<<"WG21=ISO C++ committee, 3 meetings/year, train model ever
 | Reflection | P2996R5 | ~500页, 编译期类型自省 |
 | std::execution | P2300R7 | 统一异步模型(sender/receiver) |
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：附录 L：C++26展望与面试]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++26=Contracts(P2900)+Reflection(P2996)+std::execution(P2300)"<<std::endl;return 0;}
@@ -340,6 +348,7 @@ WG21下设多个Study Group(SG), 每个聚焦特定领域:
 | SG21 | Contracts | 契约编程 | P2900(contracts) |
 | SG23 | Safety | 安全 | P3081(safety profiles) |
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：附录 M：WG21 Study Gr]
 ```cpp
 #include <iostream>
 int main() {
@@ -375,6 +384,7 @@ WG21提案有严格的格式要求:
 | 加拿大 | SCC | 中(Bloomberg Toronto) |
 | 瑞士 | SNV | 低(EDG总部) |
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：附录 O：国家代表与投票权]
 ```cpp
 #include <iostream>
 int main() {
@@ -487,6 +497,7 @@ int main(){std::cout<<"C++ standardization: ISO/WG21, 3-year cadence, 400+ membe
 
 ## 附录 R：C++标准化代码示例
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：附录 R：C++标准化代码示例]
 ```cpp
 #include <iostream>
 int main() {
@@ -500,6 +511,7 @@ int main() {
 
 ISO/IEC 14882约2200页。stable name: [alg.sort]/1=第25章第7.1节第1段。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：附录 R：ISO标准文档阅读]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"ISO 14882: ~2200 pages. Stable names for cross-ref."<<std::endl;return 0;}
@@ -519,6 +531,7 @@ int main(){std::cout<<"ISO 14882: ~2200 pages. Stable names for cross-ref."<<std
 WG21=ISO/IEC JTC1/SC22/WG21 | 3会/年 | 3年/版 | ~5年提案到标准
 ISO ballot=任何国家一票否决 | train model=2012年起每3年一版
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：附录 S：C++标准速查卡]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++=ISO14882, WG21, 3yr cadence, 400+ members"<<std::endl;return 0;}
@@ -533,6 +546,7 @@ int main(){std::cout<<"C++=ISO14882, WG21, 3yr cadence, 400+ members"<<std::endl
 
 Eric Niebler(range-v3)是独立贡献者成功案例。C++20 ranges的每页spec都有他的贡献。
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：附录 T：WG21参与指南]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/SG15 most open."<<std::endl;return 0;}
@@ -595,6 +609,7 @@ int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/S
 
 核心是用特性测试宏 `__cpp_lib_expected` 探测本编译器的标准库是否提供了 `<expected>`，而不是用 `__cplusplus` 粗粒度判断——同一份 C++23 代码在没实现该特性的早期编译器上仍能回退。`<version>` 头集中提供所有 `__cpp_*` 宏。
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -652,6 +667,7 @@ int main() {
 
 判断"现在能不能用"不能看提案号，要看编译器是否已用特性测试宏暴露该特性。下面以 P2996 反射为例——它仍在 C++26 train 中、尚未成为 IS，因此绝大多数 C++23 编译器没有对应宏：
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <version>
@@ -687,6 +703,7 @@ C++ 不是由某家厂商说了算，而是 ISO 框架下的公开委员会治�
 
 下面用枚举与简单结构把这三层与提案流向建模出来：
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <string_view>

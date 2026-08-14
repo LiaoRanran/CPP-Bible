@@ -44,6 +44,7 @@ C++17 的最大取舍在"可选值"上：`std::optional` 入标准前，社区�
 ⟶ Book/part01_history/ch05_cpp14.md
 ⟶ Book/part01_history/ch07_cpp20.md
 
+> **示例 1** [难度 ★★★☆☆] [主题：学习目标]
 ```cpp
 // [merged] ## ① 学习目标
 #include <iostream>
@@ -56,6 +57,7 @@ int main() {}
 
 ## ② 前置知识
 
+> **示例 2** [难度 ★★★☆☆] [主题：前置知识]
 ```cpp
 // [merged] ## ② 前置知识
 #include <iostream>
@@ -71,6 +73,7 @@ int main() {
 
 ## ③ 后续依赖
 
+> **示例 3** [难度 ★★★☆☆] [主题：后续依赖]
 ```cpp
 // [merged] ## ③ 后续依赖
 #include <iostream>
@@ -83,6 +86,7 @@ int main() {}
 
 ## ④ 知识图谱
 
+> **示例 4** [难度 ★★★☆☆] [主题：知识图谱]
 ```cpp
 // [merged] ## ④ 知识图谱
 #include <iostream>
@@ -93,6 +97,7 @@ int main() {
 }
 ```
 
+> **示例 5** [难度 ★★★☆☆] [主题：知识图谱]
 ```
 C++17 生产力
 ├─ 结构化绑定: auto [a,b] = pair/struct/tuple
@@ -111,6 +116,7 @@ C++17 生产力
 
 ## ⑤ Mermaid（结构化绑定解构）
 
+> **示例 6** [难度 ★★★☆☆] [主题：未分类]
 ```cpp
 // [merged] ## ⑤ Mermaid（结构化绑定解构）
 #include <iostream>
@@ -123,6 +129,7 @@ int main() {
 
 ## ⑥ UML / 结构图（特性关系）[标准]
 
+> **示例 7** [难度 ★★★☆☆] [主题：结构图（特性关系）[标准]]
 ```cpp
 // [merged] ## ⑥ UML / 结构图（特性关系）[标准]
 #include <iostream>
@@ -152,6 +159,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ## ⑦ ASCII 内存图（string_view 不拥有数据）
 
+> **示例 8** [难度 ★★★☆☆] [主题：内存图]
 ```cpp
 // [merged] ## ⑦ ASCII 内存图（string_view 不拥有数据）
 #include <iostream>
@@ -163,6 +171,7 @@ int main() {
 
 ## ⑧ 生命周期（新增库类型的所有权语义）
 
+> **示例 9** [难度 ★★★☆☆] [主题：生命周期（新增库类型的所有权语义）]
 ```cpp
 // [merged] ## ⑧ 生命周期（新增库类型的所有权语义）
 #include <iostream>
@@ -178,9 +187,11 @@ int main() {
 `string_view` 不拥有数据（悬垂风险，ch36）；`optional`/`variant`/`any` 在对象内管理所含值的生命周期（ch25）；CTAD 推导的临时对象生命周期遵循常规规则。
 ## ⑨ 调用栈（编译期分支与折叠）
 
+> **示例 10** [难度 ★★★☆☆] [主题：调用栈（编译期分支与折叠）]
 ```cpp
 auto t=std::make_tuple(1,2); void use_apply(){ std::apply([](auto...x){ ((void)x, ...); }, t); }
 ```
+> **示例 11** [难度 ★★★☆☆] [主题：调用栈（编译期分支与折叠）]
 ```cpp
 // 并行算法（执行策略）
 #include <algorithm>
@@ -190,6 +201,7 @@ void s(){ std::vector<int> v(4); std::sort(std::execution::par, v.begin(), v.end
 ```
 
 `if constexpr` 在编译期裁剪分支，不产生运行时调用；折叠表达式展开为顺序求值，调用栈与普通循环一致（ch26）。
+> **示例 12** [难度 ★★★☆☆] [主题：调用栈（编译期分支与折叠）]
 ```
 string_view sv:
 ┌──────────┬──────────┐
@@ -201,6 +213,7 @@ string_view sv:
 
 ## ⑩ 汇编（折叠表达式展开）
 
+> **示例 13** [难度 ★★★☆☆] [主题：汇编（折叠表达式展开）]
 ```cpp
 // [merged] ## ⑩ 汇编（折叠表达式展开）
 #include <iostream>
@@ -216,6 +229,7 @@ int main() {
 
 ## ⑪ STL 联系
 
+> **示例 14** [难度 ★★★☆☆] [主题：联系]
 ```cpp
 // [merged] ## ⑪ STL 联系
 #include <iostream>
@@ -232,6 +246,7 @@ int main() {}
 
 ## ⑫ 工业案例
 
+> **示例 15** [难度 ★★★☆☆] [主题：工业案例]
 ```cpp
 // [merged] ## ⑫ 工业案例
 #include <iostream>
@@ -246,6 +261,7 @@ int main() {}
 
 ## ⑬ 源码分析
 
+> **示例 16** [难度 ★★★☆☆] [主题：源码分析]
 ```cpp
 // [merged] ## ⑬ 源码分析
 #include <iostream>
@@ -259,6 +275,7 @@ int main() {}
 
 ## ⑭ WG21 提案
 
+> **示例 17** [难度 ★★★☆☆] [主题：提案]
 ```cpp
 // [merged] ## ⑭ WG21 提案
 #include <iostream>
@@ -281,6 +298,7 @@ int main() {}
 
 ## ⑮ 面试题
 
+> **示例 18** [难度 ★★★☆☆] [主题：面试题]
 ```cpp
 // [merged] ## ⑮ 面试题
 #include <iostream>
@@ -298,6 +316,7 @@ int main() {
 
 ## ⑯ 易错点
 
+> **示例 19** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // [merged] ## ⑯ 易错点
 #include <iostream>
@@ -316,6 +335,7 @@ int main() {
 
 ## ⑰ FAQ
 
+> **示例 20** [难度 ★★★☆☆] [主题：未分类]
 ```cpp
 // 嵌套命名空间别名
 namespace a::b::c { int v=0; }
@@ -326,6 +346,7 @@ namespace a::b::c { int v=0; }
 
 ## ⑱ 最佳实践
 
+> **示例 21** [难度 ★★★☆☆] [主题：最佳实践]
 ```cpp
 #include <array>
 std::array<int,2> arr{1,2}; void use_arr(){ auto [x,y]=arr; (void)x;(void)y; }
@@ -336,6 +357,7 @@ std::array<int,2> arr{1,2}; void use_arr(){ auto [x,y]=arr; (void)x;(void)y; }
 
 ## ⑲ 性能分析
 
+> **示例 22** [难度 ★★★☆☆] [主题：性能分析]
 ```cpp
 // [[maybe_unused]] 参数
 void log([[maybe_unused]] int verbose){}
@@ -359,6 +381,7 @@ void log([[maybe_unused]] int verbose){}
    - [标准] C++17 引入 inline 变量，使其可在多个翻译单元拥有同一定义而合法（解决多 TU 单定义）。
    - [引用] ISO/IEC 14882:2023 §[dcl.inline]（inline 变量）；cppreference "inline" 词条。
 
+> **示例 23** [难度 ★★★☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
 ```cpp
 // C++17 小结：结构化绑定/optional/string_view/折叠/if constexpr
 ```
@@ -410,6 +433,7 @@ C++17 是今天工业界的事实默认基线。下面按领域展开：
 
 ## 附录: C++17 五大特性速查
 
+> **示例 24** [难度 ★★★☆☆] [主题：附录: C++17 五大特性速查]
 ```cpp
 #include <iostream>
 #include <optional>
@@ -418,6 +442,7 @@ std::optional<int>safe_div(int a,int b){if(b==0)return{};return a/b;}
 int main(){if(auto r=safe_div(10,2))std::cout<<*r<<std::endl;return 0;}
 ```
 
+> **示例 25** [难度 ★★★☆☆] [主题：附录: C++17 五大特性速查]
 ```cpp
 #include <iostream>
 #include <variant>
@@ -425,12 +450,14 @@ int main(){if(auto r=safe_div(10,2))std::cout<<*r<<std::endl;return 0;}
 int main(){std::variant<int,std::string>v="hello";std::cout<<std::get<std::string>(v)<<std::endl;return 0;}
 ```
 
+> **示例 26** [难度 ★★★☆☆] [主题：附录: C++17 五大特性速查]
 ```cpp
 #include <iostream>
 #include <map>
 int main(){std::map<int,int>m{{1,10},{2,20}};for(auto[k,v]:m)std::cout<<k<<":"<<v<<" ";std::cout<<std::endl;return 0;}
 ```
 
+> **示例 27** [难度 ★★★☆☆] [主题：附录: C++17 五大特性速查]
 ```cpp
 #include <iostream>
 template<typename T>auto print(T t){if constexpr(std::is_integral_v<T>)std::cout<<"int:"<<t;else std::cout<<"other:"<<t;std::cout<<std::endl;}
@@ -441,6 +468,7 @@ int main(){print(42);print("str");return 0;}
 
 ## 附录 B: C++17 更多特性实例
 
+> **示例 28** [难度 ★★★☆☆] [主题：附录 B: C++17 更多特性实例]
 ```cpp
 #include <iostream>
 #include <filesystem>
@@ -448,6 +476,7 @@ namespace fs=std::filesystem;
 int main(){auto p=fs::current_path();std::cout<<p.string()<<std::endl;return 0;}
 ```
 
+> **示例 29** [难度 ★★★☆☆] [主题：附录 B: C++17 更多特性实例]
 ```cpp
 #include <iostream>
 #include <any>
@@ -455,6 +484,7 @@ int main(){auto p=fs::current_path();std::cout<<p.string()<<std::endl;return 0;}
 int main(){std::any a=42;a=std::string("hello");std::cout<<std::any_cast<std::string>(a)<<std::endl;return 0;}
 ```
 
+> **示例 30** [难度 ★★★☆☆] [主题：附录 B: C++17 更多特性实例]
 ```cpp
 #include <iostream>
 #include <string_view>
@@ -463,6 +493,7 @@ void print(std::string_view sv){std::cout<<sv<<std::endl;}
 int main(){print("hello");std::string s="world";print(s);return 0;}
 ```
 
+> **示例 31** [难度 ★★★☆☆] [主题：附录 B: C++17 更多特性实例]
 ```cpp
 #include <iostream>
 template<typename...Ts> auto sum(Ts...ts){return (ts+...);}
@@ -470,6 +501,7 @@ int main(){std::cout<<sum(1,2,3,4,5)<<std::endl;return 0;}
 ```
 ## 附录 C：C++17底层与工业采纳 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
+> **示例 32** [难度 ★★★☆☆] [主题：附录 C：C++17底层与工业采纳 ]
 ```
 C++17关键特性底层分析:
 
@@ -482,6 +514,7 @@ string_view: 零拷贝(指针+长度), ~5× faster than const string&
 filesystem: 跨平台统一, 替代boost::filesystem
 ```
 
+> **示例 33** [难度 ★★★☆☆] [主题：附录 C：C++17底层与工业采纳 ]
 ```cpp
 #include <iostream>
 #include <optional>
@@ -540,6 +573,7 @@ if constexpr(P0292R2): 死分支不编译→编译快2-5x, 二进制减10-30%
 ; string_view:   lea rdi,[str]; mov esi,len; call process (~0ns overhead)
 ```
 
+> **示例 34** [难度 ★★★☆☆] [主题：汇编验证]
 ```cpp
 #include <iostream>
 #include <string_view>
@@ -555,6 +589,7 @@ Q: if constexpr vs SFINAE? A: 简单分支→if constexpr; 多重重载→concep
 
 ## 附录 E：C++17面试速查
 
+> **示例 35** [难度 ★★★☆☆] [主题：附录 E：C++17面试速查]
 ```cpp
 #include <iostream>
 #include <optional>
@@ -613,6 +648,7 @@ int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<",
 
 **真实场景：解析配置/HTTP 头键值对。** 你处理一个 `std::map` 里的配置项（超时、重试次数），`it->first`/`it->second` 写法又长又易错。请用 C++17 结构化绑定遍历并解构 `[key, value]`，说明它如何提升可读性并减少 `it->` 噪音。
 
+> **示例 36** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <map>
@@ -639,6 +675,7 @@ int main() {
 
 **真实场景：缓存/配置查表可能缺失。** 你写一个 `lookup(key)`：查缓存命中返回结果，未命中不应返回 `-1` 之类魔法值（调用方容易忘判）。请用 `std::optional<T>` 实现一个可能失败的查表，并演示 `value_or` 与 `has_value` 如何强制处理缺失分支。
 
+> **示例 37** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <optional>
@@ -668,6 +705,7 @@ int main() {
 
 **真实场景：类型安全的序列化/JSON 编码。** 你写一个把异构值转成字符串的小编码器，`stringify` 要按类型分支、`sum` 要把任意个指标聚合成总和。请用 `if constexpr` + 折叠表达式实现，并说明二者都在编译期完成、零运行期开销。
 
+> **示例 38** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -707,6 +745,7 @@ SFINAE/标签分派样板；折叠表达式把变参递归展开压成一行，�
 **选型**：`std::variant` 替代 `union`+tag，`std::visit` 强制穷尽所有可能类型。
 **落地**：
 
+> **示例 39** [难度 ★★★☆☆] [主题：演绎 1：std::variant ]
 ```cpp
 #include <iostream>
 #include <variant>
@@ -737,6 +776,7 @@ int main() {
 **错误**：让 `string_view` 指向临时 `std::string`，临时销毁后视图悬垂。
 **落地**：
 
+> **示例 40** [难度 ★★★☆☆] [主题：演绎 2：stringview 零拷]
 ```cpp
 #include <iostream>
 #include <string_view>

@@ -46,6 +46,7 @@ CRTP 对虚函数之争是"C++ 零开销抽象"的教科书案例：虚函数为
 
 **CRTP（Curiously Recurring Template Pattern，奇异递归模板模式）** 指一个类 `Base` 以「派生类自身」作为模板参数来继承自己：
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：CRTP 是什么]
 ```cpp
 // 最小 CRTP 骨架
 template <typename Derived>
@@ -62,6 +63,7 @@ struct Derived : Base<Derived> {               // 派生类把“自己”喂回
 
 `[经验]` 记忆法：把「`Derived : Base<Derived>`」读作「基类模板拿着派生类的名片」——它在**编译期**就已知 `Derived` 的完整类型，因此无需虚表即可调用派生类实现。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：CRTP 是什么]
 ```cpp
 // 一句话直觉：CRTP = “用模板参数把派生类类型钉死在基类的类型系统里”
 template <typename T>
@@ -79,6 +81,7 @@ CRTP 不是「设计模式教科书」里凭空发明的，而是 C++ 模板系�
 
 **静态多态（static polymorphism）** 与 **动态多态（虚函数）** 的目标相同——「写一份操作接口的代码，让不同派生类型各自实现」。区别在于分发发生的时机：
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：静态多态原理]
 ```cpp
 // 动态多态：分发在运行时，经虚表
 struct Animal { virtual void speak() const = 0; };
@@ -96,12 +99,14 @@ struct Dog2 : Animal2<Dog2> {
 
 `[实现]` 关键差异：虚函数把「哪个 `speak`」的决定推迟到运行时的 `vptr→vtable→函数` 双重间接寻址；CRTP 在实例化 `Animal2<Dog2>` 时就把 `speak_impl` 这个名字**直接绑定**到 `Dog2::speak_impl`，后续可被内联。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：静态多态原理]
 ```cpp
 // 一次调用在两种范式下的语义对照
 void use_dynamic(const Animal& a) { a.speak(); }   // 运行时查表
 void use_static (const Animal2<Dog2>& a) { a.speak(); } // 编译期已定型
 ```
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：静态多态原理]
 ```
 ┌─────────────── 静态多态（CRTP）───────────────┐
 │  Base<Derived>  ──实例化──▶  直接绑定 Derived  │
@@ -122,6 +127,7 @@ void use_static (const Animal2<Dog2>& a) { a.speak(); } // 编译期已定型
 
 CRTP 的灵魂是 `static_cast<Derived*>(this)`：基类在**不知道 `Derived` 布局**的情况下，安全地把 `this` 下转成派生类指针。
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：基类调用派生类方法（静态向下转换）]
 ```cpp
 // Examples/_ch139_static_downcast.cpp（已编译通过）
 #include <iostream>
@@ -149,6 +155,7 @@ int main() {
 
 `[实现]` `static_cast` 在此是**编译期**转换（零运行时指令），编译器在实例化 `Base<DerivedA>` 时已确认 `DerivedA` 是 `Base<DerivedA>` 的派生类，转换必定合法。
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：基类调用派生类方法（静态向下转换）]
 ```cpp
 // 变体：const 正确版本（常被初学者写错）
 template <typename Derived>
@@ -170,6 +177,7 @@ struct ConstBase {
 
 源码（节选，完整可编译）：
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：编译期多态 vs 虚函数：开销对比]
 ```cpp
 struct ShapeV { virtual double area() const = 0; virtual ~ShapeV() = default; };
 struct CircleV : ShapeV {
@@ -247,6 +255,7 @@ _Z9process_vRK6ShapeV:
 
 CRTP 的接口契约可在**编译期**强制，比「运行时才崩」友好得多。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：编译期接口检查]
 ```cpp
 // Examples/_ch139_interface_check.cpp（已编译通过）
 #include <iostream>
@@ -270,10 +279,12 @@ int main() { Circle{}.draw(); }
 
 `[标准]` `static_assert` + `requires` 表达式（C++20 概念）让「漏写 `render()`」从运行期错误前移为编译期硬错误。取消注释下面这行会立即编译失败：
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：编译期接口检查]
 ```cpp
 // struct Bad : Drawable<Bad> {};  // 缺 render() -> static_assert 触发
 ```
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：编译期接口检查]
 ```cpp
 // 另一种写法：用 concept 约束模板形参本身
 template <typename D>
@@ -292,6 +303,7 @@ struct Drawable2 { void draw() const { static_cast<const D*>(this)->render(); } 
 
 **Barton-Nackman 技巧**：把友元比较运算符定义在基类模板内，自动获得对称、`hidden friend` 式的 `operator==`/`operator<`。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：实现 operator< 等]
 ```cpp
 // Examples/_ch139_barton_nackman.cpp（已编译通过）
 #include <iostream>
@@ -315,6 +327,7 @@ int main() {
 }
 ```
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：实现 operator< 等]
 ```cpp
 // 推广：一次性生成 <, <=, >, >=（关系运算符全家桶）
 template <typename T>
@@ -341,6 +354,7 @@ struct Version : Relational<Version> {
 
 CRTP 让「每个派生类拥有独立计数器」变得一行样板都不用多写：
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：计数]
 ```cpp
 // Examples/_ch139_counter.cpp（已编译通过）
 #include <iostream>
@@ -367,6 +381,7 @@ int main() {
 
 真实运行输出：`Widget live=2 Gadget live=1`。`[实现]` 关键点：`Counter<Widget>` 与 `Counter<Gadget>` 是**两个不同的类型**，因此各自持有独立的 `count`，这是 CRTP 而非普通基类才能做到的「按派生类参数化静态状态」。
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：计数]
 ```cpp
 // 进阶：计数 + 自增 id（CRTP 让 id 分配器也按类型隔离）
 template <typename T>
@@ -396,6 +411,7 @@ struct Edge : IdGen<Edge> {};
 
 下面是一段「Eigen 风格」的最小自实现，便于体会其结构（非 Eigen 源码，仅为教学复刻，可独立编译）：
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：与 Eigen/Boost 示例]
 ```cpp
 // 教学复刻：Eigen 风格 DenseBase<Derived> 的 CRTP 切片
 template <typename Derived>
@@ -420,6 +436,7 @@ struct MyVec : DenseBase<MyVec> {
 int main() { std::cout << MyVec{}.sum() << "\n"; }  // 输出 6
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：与 Eigen/Boost 示例]
 ```cpp
 // Boost.Operators 风格：只写 < 即得全套关系运算符
 #include <boost/operators.hpp>
@@ -435,6 +452,7 @@ struct Ver : boost::less_than_comparable<Ver> {
 
 CRTP 把「单例样板」收敛到基类，派生类只需声明自身：
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：单例]
 ```cpp
 // Examples/_ch139_singleton.cpp（已编译通过）
 #include <iostream>
@@ -467,6 +485,7 @@ int main() {
 
 `[经验]` 相比把 `instance()` 写在每个单例里，CRTP 版本让「禁止拷贝 + 全局访问点」逻辑只出现一次；`friend` 仅放开构造函数，派生类仍无法被外部 new。
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：单例]
 ```cpp
 #include <utility>
 // 带显式初始化的变体
@@ -486,6 +505,7 @@ struct SingletonInit {
 
 把多个 CRTP 能力类通过**多重继承**叠加，得到「可组合」的类型，且全程零虚函数：
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：与 mixin（多重继承叠加能力）]
 ```cpp
 // Examples/_ch139_mixin.cpp（已编译通过）
 #include <iostream>
@@ -516,6 +536,7 @@ int main() {
 
 `[实现]` `Printable<Entity>` 与 `Serializable<Entity>` 各自独立实例化，方法经 `static_cast` 调回 `Entity::type_name`；多重继承只是把两套基类子对象拼到 `Entity` 里。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：与 mixin（多重继承叠加能力）]
 ```cpp
 // 叠加第三个能力：Comparable
 template <typename Derived>
@@ -543,6 +564,7 @@ CRTP 的「卖点」之一是**彻底消灭 vptr/vtable**，从而：
 
 源码剖析（本机真实文件，未改写）：
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：避免虚函数虚表]
 ```cpp
 // ===== 源码剖析：libstdc++ enable_shared_from_this（真实 CRTP）=====
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/shared_ptr.h
@@ -565,6 +587,7 @@ template<typename _Tp>
 
 `[实现·libstdc++]` 注意第 919 行的 `template<typename _Tp> class enable_shared_from_this`——`_Tp` 就是「将要派生它的类」，`shared_from_this()` 通过 `_M_weak_this` 拿到自身的 `shared_ptr`，整个过程没有虚表参与。这正是 §③ 提到的「标准库真实 CRTP」。
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：避免虚函数虚表]
 ```cpp
 #include <utility>
 #include <functional>
@@ -587,6 +610,7 @@ struct Add : Callable<Add> {
 
 CRTP 基类通常是**空类**（只有方法、无数据）。借助 **EBO（Empty Base Optimization，空基类优化）**，派生类 `sizeof` 不膨胀。
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：与 EBO]
 ```cpp
 // Examples/_ch139_ebo.cpp（已编译通过）
 #include <iostream>
@@ -615,6 +639,7 @@ int main() {
 
 `[平台·x86-64]` 取证解读（x86-64，LP64）：`NoEBO` 中 `EmptyPolicy` 作成员占 1 字节、为满足 `int` 的对齐补 3 字节，加 `int` 4 字节 = 8；`WithEBO` 把空 `MyPolicy` 当基类，EBO 把它压成 0 字节，只剩 `int` 4 字节 = 4。CRTP 的「基类 + 方法」结构天然契合 EBO，比「成员 + 组合」更省内存。
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：与 EBO]
 ```cpp
 // EBO 在策略类叠叠乐中的实际价值：N 个空策略只增 0 字节
 template <typename P1, typename P2>
@@ -629,6 +654,7 @@ static_assert(sizeof(Composite<Pa, Pb>) == sizeof(int));   // 4 == 4
 
 CRTP 的硬伤：**分派在编译期锁定**，无法在运行时按数据选择实现。
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：限制（不能动态多态/运行时选择）]
 ```cpp
 // 想“运行时从配置选形状”？CRTP 做不到——类型必须在编译期确定
 template <typename D> struct Shape { double area() const { return static_cast<const D*>(this)->area_impl(); } };
@@ -641,6 +667,7 @@ struct Sq   : Shape<Sq>   { double s; double area_impl() const { return s*s; } }
 
 `[标准]` 修复手段是「类型擦除（type erasure）」：用一层 `std::unique_ptr<ShapeBase>` + 虚函数，或在 CRTP 之外包一层 `std::function`/自定义擦除器，把「静态多态内部实现」与「动态多态对外接口」分层。
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：限制（不能动态多态/运行时选择）]
 ```cpp
 #include <memory>
 #include <vector>
@@ -677,12 +704,14 @@ CRTP 的两类典型调试痛点：
 
 **(b) 错误信息离谱地长**——把 `Derived` 写错（如递归 `struct X : Base<Y>` 而 `Y` 又依赖 `X`）会触发「模板实例化深度超限」或一长串嵌套报错。
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：调试难点]
 ```cpp
 // 反例：把 Derived 写成另一个不相关的类型，报错会在基类内部深处爆发
 // template <typename D> struct B { void f(){ static_cast<D*>(this)->g(); } };
 // struct X : B<Y> {};   // Y 没有 g() -> 错误定位在 B<D>::f 而非 X 处
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：调试难点]
 ```cpp
 // 缓解：在基类入口处用 static_assert 提前、清晰报错（呼应 §⑤）
 template <typename D>
@@ -700,6 +729,7 @@ struct B {
 
 CRTP 链（基类调用派生、派生持有 `constexpr` 数据）可在**编译期**完整求值：
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：与 constexpr]
 ```cpp
 // Examples/_ch139_constexpr.cpp（已编译通过，含 static_assert 验证）
 #include <iostream>
@@ -731,6 +761,7 @@ int main() {
 
 `[标准]` `static_assert(a.dot(b) == 32)` 在编译期通过——说明 `dot` 的内联 + 循环在常量语境下被完整折叠。`[经验]` 这常用于「编译期数学/维度检查」（如 `Vec<N>` 的维度在类型里、错误维度直接编译失败）。
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：与 constexpr]
 ```cpp
 // constexpr + CRTP：编译期单位/维度校验
 template <int Dim>
@@ -748,6 +779,7 @@ static_assert(std::is_same_v<Tensor<3>, Tensor<3>>);  // 维度即类型的一�
 取证文件：`Examples/_ch139_bench.cpp`，编译运行：
 `g++ -std=c++23 -O2 -o _run/_ch139_bench.exe Examples/_ch139_bench.cpp && _run/_ch139_bench.exe`
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：性能基准]
 ```cpp
 #include <iostream>
 // 微基准核心（完整版见 Examples/_ch139_bench.cpp）
@@ -771,6 +803,7 @@ crtp     : 510822200 ns
 
 `[平台·x86-64]` 取证解读：当 `cv`/`cc` 是**函数内可见的具体对象**时，g++ `-O2` 对虚调用也做了投机内联，所以两者差距不大（约 5%）。**真正的差距出现在「动态类型对编译器不可见」时**（跨编译单元、经容器取出、或 `-fno-devirtualize`），此时虚版本退化为 `call [vtable]`，而 CRTP 始终零间接调用。基准结论：**CRTP 的性能优势是「上限优势」——在最坏情况下它稳赢，最好情况下它与去虚拟化后的虚调用持平。**
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：性能基准]
 ```cpp
 // 让差距放大的写法（隐藏动态类型，迫使虚调用无法被去虚拟化）
 double blackbox(const ShapeV& s) { return s.area(); }   // 跨 TU / 不透明
@@ -790,6 +823,7 @@ double blackbox(const ShapeV& s) { return s.area(); }   // 跨 TU / 不透明
 
 `[经验]` 共性结论：**越是「每字节/每纳秒都计较」的基础设施库，越倾向于把虚函数换成 CRTP/概念/标签分发**。你写的业务代码若处于热路径，也应如此权衡。
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：在现代库（fmt/Abseil）中的]
 ```cpp
 // 仿 fmt 的“编译期已知格式化器”思路（最小示意，非 fmt 源码）
 template <typename T>
@@ -803,6 +837,7 @@ struct Formatter { static void write(const T& v); };   // 编译期按 T 选择�
 
 CRTP 会触发更多模板实例化，直觉上「编译变慢」。用 `time g++ -std=c++23 -O2 -c -o /dev/null file.cpp` 实测：
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：编译时间成本（g++ 计时取证）]
 ```cpp
 // Examples/_ch139_compile_cost.cpp：构造深度 N 的 CRTP 递归链
 template <typename Derived>
@@ -831,6 +866,7 @@ g++ ... -c -o /dev/null depth_3000.cpp            ->  real 0m0.439s
 1. **深度不是主要矛盾**——3000 层递归链（0.44s）只比 120 层（0.20s）慢约 1.7 倍，因为 g++ 对等价模板实例做了**记忆化（memoization）**，线性 CRTP 链不会指数爆炸。
 2. **头文件才是大头**——含 `<iostream>` 的极小文件要 0.69s，远超 120 层递归。真实项目的 CRTP 编译成本，主要来自它依赖的沉重头文件，**而非模板递归深度本身（在合理深度内）**。
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：编译时间成本（g++ 计时取证）]
 ```cpp
 // 控制编译成本的实务：把 CRTP 基类放进独立头，前置声明隔离
 // crtp_base.h（只含模板定义，不拉 <iostream>）
@@ -843,6 +879,7 @@ g++ ... -c -o /dev/null depth_3000.cpp            ->  real 0m0.439s
 
 **反模式 1：在 CRTP 基类里加虚函数**——既失去零开销，又制造混乱。
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：反模式]
 ```cpp
 // 错误：CRTP 本为去虚表，却混进虚函数
 template <typename D>
@@ -854,6 +891,7 @@ struct BadBase {
 
 **反模式 2：把 `Derived` 写错成别的类型**——引发实例化深度错误或 ODR 隐患。
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：反模式]
 ```cpp
 // 错误：X 声称继承 Base<Y>，但 Y 与 X 无关系
 // struct X : Base<Y> { void impl(){} };  // 若 Y 未定义 -> 深层报错
@@ -863,6 +901,7 @@ struct X : Base<X> { void impl(){} };   // 唯一正确写法
 
 **反模式 3：用 CRTP 对抗「需要运行时多态」的需求**——强行 CRTP 会导致无法放入异构容器（见 §⑬）。
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：反模式]
 ```cpp
 // 错误：想放进 vector 却用 CRTP，结果没有公共基类
 // std::vector<Base<???>> v;  // 编译失败
@@ -871,6 +910,7 @@ struct X : Base<X> { void impl(){} };   // 唯一正确写法
 
 **反模式 4：在 CRTP 基类里存状态却不谈 EBO**——若把策略当成员而非基类，会白白增大对象（见 §⑫）。
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：反模式]
 ```cpp
 // 错误：策略作成员，对象膨胀
 struct S { SomePolicy p; int x; };     // sizeof 受 p 的对齐拖累
@@ -955,6 +995,7 @@ CRTP（奇异递归模板模式）用「基类以派生类为模板参数」在�
 
 ## 附录 A：CRTP 工业应用 [F: Industry / B: Principle]
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：附录 A：CRTP 工业应用 [F:]
 ```
 CRTP 在工业C++中的关键应用:
 
@@ -976,6 +1017,7 @@ Boost.Operators → CRTP 自动生成运算符
 
 ## 附录 B：面试 [J: Learning / I: Practice]
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：附录 B：面试 [J: Learni]
 ```
 面试高频:
 Q: CRTP 和虚函数的本质区别？
@@ -1057,6 +1099,7 @@ CRTP 不是被"设计"出来的，而是被"发现"的——它是模板机制�
 
 <details><summary>答案与解析</summary>
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 template <typename D>
@@ -1084,6 +1127,7 @@ int main() { Vec2 a, b; std::cout << (a < b) << '\n'; }
 
 <details><summary>答案与解析</summary>
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -1108,6 +1152,7 @@ int main() { Fire f; f.update(); std::cout << "ok\n"; }
 
 <details><summary>答案与解析</summary>
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 template <typename D>
@@ -1261,6 +1306,7 @@ CRTP 适用于策略类、混入（mixin）、表达式模板。virtual 适用�
 
 ### D5.3 可复现 demo
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 

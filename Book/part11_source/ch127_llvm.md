@@ -43,6 +43,7 @@ LLVM 对 GCC 的核心之争是"模块化/库化 vs 单体"。LLVM 以 MIT 类�
 
 LLVM 是一套**模块化、可重用**的编译器后端基础设施；Clang 是构建在 LLVM 之上的 C/C++/Obj-C 前端。二者分离：Clang 把源码翻译成中立的 **LLVM IR**，LLVM 后端把 IR 优化并生成目标机器码。这种「前端/IR/后端」解耦让 Rust、Swift、Julia 等都能复用同一套优化器与代码生成器。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：LLVM 项目与 Clang ]
 ```cpp
 // ① 典型的 Clang 调用：源码 -> IR -> 汇编（命令见 ⑩）
 // clang++ -std=c++20 -O2 -emit-llvm -S main.cpp -o main.ll
@@ -71,6 +72,7 @@ int main() { return 42; }
                                    └──────────────┘
 ```
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：架构：前端 / 优化器 / 后端 /]
 ```cpp
 // ② 三组件各自独立演进：换前端不影响后端
 // Clang(前端) 1.0 ─┐
@@ -86,6 +88,7 @@ struct CompileUnit { const char* frontend; const char* target; };
 
 LLVM IR 是**强类型、SSA 形式、低级但机器无关**的中间表示。函数、基本块、指令三层结构；每个值（除 PHI 外）只被赋值一次。
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：表示 [标准]]
 ```cpp
 // ③ 与 C++ 对应的 IR 直觉（典型输出，clang 未本机安装）
 // 源码: int add(int a, int b){ return a+b; }
@@ -97,6 +100,7 @@ LLVM IR 是**强类型、SSA 形式、低级但机器无关**的中间表示。�
 int add(int a, int b) { return a + b; }
 ```
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：表示 [标准]]
 ```cpp
 // ③ IR 中类型是一等公民：i1/i8/i32/i64/ptr/<数组>/<结构体>
 // 这与 C++ 的强类型在 CodeGen 阶段被忠实地映射
@@ -110,6 +114,7 @@ extern "C" int g(int* p, long n) { return (int)(p[0] + n); }
 
 早期 LLVM 用 `FunctionPassManager`/`ModulePassManager` 顺序跑 Pass；现代 LLVM（≥14）转向 **Analysis/Transform 分离的新 PassManager**，由 `PassBuilder` 按优化等级组装管道。
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：框架与优化管道 [实现·LLVM]]
 ```cpp
 // ④ 现代 PassManager 的 C++ 入口（上游典型结构，非可独立编译）
 // 文件：llvm/lib/Passes/PassBuilder.cpp（上游参考）
@@ -119,6 +124,7 @@ extern "C" int g(int* p, long n) { return (int)(p[0] + n); }
 //   MPM.run(M, MAM);   // M = Module&, MAM = ModuleAnalysisManager&
 ```
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：框架与优化管道 [实现·LLVM]]
 ```cpp
 // ④ 一个最小「自定义 Pass」骨架（适配新 PassManager）
 // 文件：llvm/include/llvm/IR/PassManager.h（上游参考）
@@ -135,6 +141,7 @@ extern "C" int g(int* p, long n) { return (int)(p[0] + n); }
 
 Clang 把 AST 翻译成 IR 的核心在 `clang/lib/CodeGen/`。`CodeGenFunction` 是「单函数发射器」，每个 AST 语句节点由 `Emit*Stmt` 处理；表达式由 `CodeGenFunction::EmitExpr` 分派到 `Scalar/Complex/Agg 表达式 emitter`。
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：[实现·LLVM] 源码剖析：Cla]
 ```cpp
 // ⑤ 源码剖析（上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/clang/lib/CodeGen/CodeGenFunction.h
@@ -147,6 +154,7 @@ Clang 把 AST 翻译成 IR 的核心在 `clang/lib/CodeGen/`。`CodeGenFunction`
 //   };
 ```
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：[实现·LLVM] 源码剖析：Cla]
 ```cpp
 // ⑤ 源码剖析（上游参考）：循环发射
 // 文件：https://github.com/llvm/llvm-project/blob/main/clang/lib/CodeGen/CGStmt.cpp
@@ -167,6 +175,7 @@ Clang 把 AST 翻译成 IR 的核心在 `clang/lib/CodeGen/`。`CodeGenFunction`
 
 Clang 前端管线：`Lexer`(分词) → `Parser`(语法 → AST) → `Sema`(语义检查/类型推导) → `CodeGen`(AST → IR)。AST 是带完整类型信息的树。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：前端与 AST [实现·LLVM]]
 ```cpp
 // ⑥ AST 节点层级（上游典型，非独立编译）
 // 文件：https://github.com/llvm/llvm-project/blob/main/clang/include/clang/AST/Expr.h
@@ -178,6 +187,7 @@ int binary_example(int a, int b) { return a * b + 1; } // AST: (BinaryOperator '
                                                       //        (BinaryOperator '*' a b) 1)
 ```
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：前端与 AST [实现·LLVM]]
 ```cpp
 // ⑥ Sema 在 CodeGen 之前就完成了重载解析与类型检查
 // → CodeGen 阶段拿到的 AST 已是「良类型」的，无需再查重载
@@ -192,6 +202,7 @@ int use_poly() { return poly(2, 3) + poly(1.5, 2.5); }
 
 Clang 以「诊断友好」著称：模板错误用 `note:` 串联实例化栈；`-Werror`、`-Weverything`、`-fsanitize=...` 都是 Clang 的特色。标准遵循度由 `clang/test/CXX/...` 下的 conformance 测试守护。
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：与 C++ 标准：诊断 / 实现 []
 ```cpp
 // ⑦ 标准违反的清晰诊断（典型输出，Clang 未本机安装）
 //   template<class T> requires T::value struct X {};
@@ -201,6 +212,7 @@ template <typename T> struct needs { static constexpr bool value = T::flag; };
 template <typename T> requires (needs<T>::value) int f(T) { return 0; }
 ```
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：与 C++ 标准：诊断 / 实现 []
 ```cpp
 // ⑦ 实现定义行为：Clang 用 __builtin / 属性暴露底层控制
 // -fsanitize=undefined 在 IR 中插入运行时检查（由 UBSan Pass 完成）
@@ -219,6 +231,7 @@ int ub_example(int* p) {
 - **GVN（全局值编号）**：同一表达式只算一次，重复出现复用其结果。
 - **循环优化**：LoopRotate / LICM / LoopUnroll 把循环变成更易优化的形态。
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：优化管道：SCCP / GVN / ]
 ```cpp
 // ⑧ SCCP 示例：caller() 传入常量 7，compute 全程被折叠
 // 见 ⑨ 真实汇编：O2 下 caller() 直接 mov eax, 92
@@ -231,6 +244,7 @@ int compute(int x) {
 int caller() { return compute(7); }  // SCCP: 全部代入 -> 常量
 ```
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：优化管道：SCCP / GVN / ]
 ```cpp
 // ⑧ GVN 去重：两个 x*2 在 IR 中合并为单个 mul
 // 文件：https://github.com/llvm/llvm-project/blob/main/llvm/lib/Transforms/Scalar/GVN.cpp
@@ -239,6 +253,7 @@ int caller() { return compute(7); }  // SCCP: 全部代入 -> 常量
 //       replaceAllUsesWith(Existing);
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：优化管道：SCCP / GVN / ]
 ```cpp
 // ⑧ 循环优化：LICM 把不变计算移出循环体
 // 文件：https://github.com/llvm/llvm-project/blob/main/llvm/lib/Transforms/Scalar/LICM.cpp
@@ -257,6 +272,7 @@ int dot(const int* a, const int* b, int n, int k) {
 
 我们用 GCC 13.1.0 真实编译 `Examples/_ch127_inline.cpp`，对比 `-O0` 与 `-O2` 的汇编。**这是真实取证，非示意**。
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：[实现·LLVM] 真实：用 g++]
 ```cpp
 // 文件：Examples/_ch127_inline.cpp，行号：9（use_inlined）/ 14（use_noinline）/ 5（add_inline）
 // 编译命令（真实）：
@@ -303,6 +319,7 @@ _Z6callerv:
 	ret
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：[实现·LLVM] 真实：用 g++]
 ```cpp
 // ⑨ 对照：同一份源码在 -O0 下不做常量传播（compute 仍是真实 mul/add）
 // 文件：Examples/_ch127_gvn.cpp，行号：3（compute）
@@ -327,6 +344,7 @@ llc -O2 -march=x86-64 -o main.s main.opt.ll
 llc -O2 -march=x86-64 -filetype=obj -o main.o main.opt.ll
 ```
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：工具链：opt / llc / cl]
 ```cpp
 // ⑩ clang -emit-llvm 的 IR 典型输出（代表性质，非本机产生）
 // 对应源码: int caller(){ return compute(7); }  其中 compute 见 ⑧
@@ -344,6 +362,7 @@ int caller_typical() { return 92; }  // 语义等价于优化后的 caller()
 
 LLVM 优化是**编译时间 ↔ 运行时间**的权衡。`-O0` 几乎不优化（快编译、慢运行），`-O2/-O3` 投入更多 Pass，`-Os` 偏向尺寸，LTO/PGO 跨 TU 进一步优化。
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：性能 [经验]]
 ```cpp
 // ⑪ 微基准直觉：优化把「运行期计算」搬到「编译期」
 // 未优化：每次调用都做 4 次加法 + 循环判停
@@ -356,6 +375,7 @@ int bench_inline() {
 }
 ```
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：性能 [经验]]
 ```cpp
 // ⑪ LTO：跨翻译单元的内联（典型输出，需 clang/llvm 工具链）
 //   clang++ -O2 -flto -c a.cpp -o a.o
@@ -371,6 +391,7 @@ int bench_inline() {
 
 同一份 LLVM IR 经不同 `Target` 后端生成不同 ISA。后端含指令选择（DAG/SelectionDAG 或 GlobalISel）、寄存器分配、指令调度、代码布局。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：跨平台后端：x86 / ARM / ]
 ```cpp
 // ⑫ 一份源码，多后端目标（典型输出，需 llc）
 //   llc -march=x86-64  -> add eax, edx        (CISC, 少指令)
@@ -380,6 +401,7 @@ int bench_inline() {
 int neutral_add(int a, int b) { return a + b; }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：跨平台后端：x86 / ARM / ]
 ```cpp
 // ⑫ 后端特定的内建：用 attribute 选择调用约定 / 指令集
 // Clang: __attribute__((target("avx2"))) 让函数体用 AVX2 指令（上游 CodeGen 会选 VEX 编码）
@@ -393,12 +415,14 @@ __attribute__((target("avx2"))) int vec_sum(const int* p, int n) {
 
 ## ⑬ 常见陷阱 [经验]
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬ 陷阱1：依赖未定义行为，优化后结果「诡异」
 // 有符号溢出是 UB；-O2 下编译器可能直接假定「不会溢出」并删掉判停条件
 int trap_ub(int x) { while (x + 1 > x) ++x; return x; } // 可能死循环或被删
 ```
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬ 陷阱2：volatile 不是同步原语，也不是优化开关
 // 想跨线程可见/原子，用 <atomic>；volatile 只保证「不省略对内存的访问」
@@ -406,6 +430,7 @@ volatile int flag = 0;
 int spin() { while (!flag) {} return flag; } // 不是正确的线程同步
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬ 陷阱3：把 IR 当「稳定 ABI」
 // LLVM IR 没有稳定二进制/文本 ABI；跨版本 .ll 可能无法重放
@@ -420,6 +445,7 @@ double trap_fma(double a, double b, double c) { return a * b + c; }
 
 Clang/LLVM 与 GCC 是两套独立实现：Clang 用 LLVM 的机器无关 IR + 每架构 Target 库；GCC 用 GIMPLE（高层 IR）+ RTL（低层 IR）+ 每架构后端（machine description `.md`）。
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：与 GCC 对比：CGEN vs G]
 ```cpp
 // ⑭ 同一优化意图，两边都能做，机制不同：
 //   GCC:  GIMPLE 上做 IPA/内联 -> RTL 上指令选择（.md 描述）
@@ -428,6 +454,7 @@ Clang/LLVM 与 GCC 是两套独立实现：Clang 用 LLVM 的机器无关 IR + �
 int both_inline(int a, int b) { return (a + b) * (a + b); }
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：与 GCC 对比：CGEN vs G]
 ```cpp
 // ⑭ 诊断差异（典型输出）
 //   Clang: 颜色化、模板实例化栈 note、--fixit 建议
@@ -443,6 +470,7 @@ void unused_warn(int x) { int y = x; (void)y; } // -Wunused 两边都会报
 
 Clang 通常**最快**跟进新标准特性（因 AST/Sema 模块化好）；GCC 随后追赶。C++20 的 modules/concepts/ranges、C++23 的 `std::expected`/deducing-this 均已在 Clang 主线可用。
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：演进：C++ 标准支持 [标准]]
 ```cpp
 // ⑮ C++20 concepts：Clang 的 Sema 在实例化前即检查约束（见 ⑥/⑦）
 template <typename T>
@@ -451,6 +479,7 @@ T square(T x) { return x * x; }
 static_assert(std::is_same_v<decltype(square(3)), int>);
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：演进：C++ 标准支持 [标准]]
 ```cpp
 // ⑮ C++20 模块（Clang 用 -fmodules，GCC 用 -fmodules-ts，参见 ch118）
 // export module math;  export int sq(int x){ return x*x; }
@@ -464,12 +493,14 @@ export int sq(int x) { return x * x; }
 
 ## ⑯ 最佳实践 [经验]
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑯ 实践1：用 -O2 起步，profiling 驱动优化（不要盲上 -O3）
 // 编译期：g++ -std=c++20 -O2 -g -flto  (GCC 13 本机可用)
 int hot(int* p, int n) { int s=0; for(int i=0;i<n;++i) s+=p[i]; return s; }
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑯ 实践2：用 [[likely]]/[[unlikely]] 给分支预测提示（C++20，IR 会带 !prof 元数据）
 int classify(int x) {
@@ -478,6 +509,7 @@ int classify(int x) {
 }
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑯ 实践3：把「编译期可定」的计算标 constexpr，给优化器最大空间
 constexpr int lookup_size(int n) { return n * n + 1; }
@@ -502,6 +534,7 @@ static_assert(lookup_size(7) == 50);
 # ninja -C build check-clang  # 跑 Clang 回归测试
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：贡献 [经验]]
 ```cpp
 // ⑰ 贡献最小示例：加一个 Clang 警告选项骨架（上游典型位置）
 // 文件：https://github.com/llvm/llvm-project/blob/main/clang/include/clang/Basic/DiagnosticGroups.td
@@ -517,6 +550,7 @@ static_assert(lookup_size(7) == 50);
 
 LLVM 是「语言无关后端」的典范。Rust 的 `rustc` 把 MIR  lowering 到 LLVM IR；Swift 用 Swift Intermediate Language 再降到 LLVM IR；二者都复用同一套优化器与 Target。
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：跨语言：Rust / Swift 用]
 ```cpp
 // ⑱ 概念映射（不是 Rust/Swift 源码，是「等价 C++ 语义」示意）
 // Rust:  fn add(a:i32,b:i32)->i32 { a+b }   -> LLVM IR 与下方 C++ 同构
@@ -524,6 +558,7 @@ LLVM 是「语言无关后端」的典范。Rust 的 `rustc` 把 MIR  lowering �
 int add_cross_lang(int a, int b) { return a + b; }  // 三语言最终都落到同一 IR
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：跨语言：Rust / Swift 用]
 ```cpp
 // ⑱ 共享优化器意味着「跨语言优化知识可迁移」：
 // Rust 的 #[inline] / Swift 的 @inlinable 与 C++ 的 inline 在 LLVM 层
@@ -538,6 +573,7 @@ template <typename T> inline T add_generic(T a, T b) { return a + b; }
 
 阅读 LLVM/Clang 源码的入口：先 `clang -emit-llvm -O0 -S` 看 IR，再对照 `clang/lib/CodeGen` 中对应 `Emit*` 函数；用 `opt -print-after-all` 观察每个 Pass 后的 IR 变化。
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读 [实现·LLVM]
 ```cpp
 // ⑲ 源码阅读锚点（上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/llvm/lib/IR/IRBuilder.cpp
@@ -549,6 +585,7 @@ template <typename T> inline T add_generic(T a, T b) { return a + b; }
 // 结论：C++ 里任何整数 '+' 最终都经 CreateAdd -> BinaryOperator::CreateAdd
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读 [实现·LLVM]
 ```cpp
 // ⑲ 源码阅读锚点（上游参考）：诊断发出
 // 文件：https://github.com/llvm/llvm-project/blob/main/clang/lib/Sema/Sema.cpp
@@ -589,6 +626,7 @@ template <typename T> inline T add_generic(T a, T b) { return a + b; }
 | 源码入口 | `clang/lib/CodeGen/` | AST→IR 发射（见 ⑤） |
 | 诊断入口 | `clang/lib/Sema/Sema.cpp::Diag` | 所有报错统一出口（见 ⑲） |
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ 一页纸心智模型：C++ 源码经过「Clang 前端 → LLVM IR → Pass 管道 → 后端」
 // 优化发生在 IR 与后端两层；前端只负责「忠实地翻译」（见 ②/⑤/⑧）
@@ -598,6 +636,7 @@ int model(int a, int b) {
 }
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ 与上章（ch118 Modules）的承接：模块只改「编译组织」，不改「优化机制」
 // 无论 #include 还是 import，落到 IR/Pass 后完全等价——Modules 省的是
@@ -625,6 +664,7 @@ export int bridge(int a, int b) { return (a + b) * (a + b); }
 
 LLVM 的核心模式之一，是用**标签联合（tagged union）+ 访问者**来遍历 AST/IR 节点。下面用纯标准库复刻这一模式（这正是 LLVM `Value`/`InstVisitor` 的简化本质）：
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：㉑.2 标准 C++ 等价实现：用 ]
 ```cpp
 // ㉑.2 用标准库 std::variant + visitor 复刻 LLVM「标签联合遍历 IR」的模式（本块可独立编译，GCC 15.3.0 验证）
 #include <variant>
@@ -661,6 +701,7 @@ int main() {
 
 下面才是你在 LLVM 工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头）。
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：㉑.3 真实 LLVM API 长什]
 ```cpp
 // ㉑.3 真实 LLVM 用法（仅注释演示，门禁按空块编译通过）：
 //   #include <llvm/IR/LLVMContext.h>
@@ -767,6 +808,7 @@ Clang 对 C++ 标准的遵循度由 `clang/test/CXX/...` 下的 conformance 测�
 
 ## 附录 F：LLVM架构
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：附录 F：LLVM架构]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"LLVM=Frontend(Clang→AST→IR)→Optimizer(Passes)→Backend(MC→binary)"<<std::endl;return 0;}
@@ -832,6 +874,7 @@ LLVM 用 `0x0040`（64 字节）对齐的 `SmallVector` 内联缓冲减少堆分
 
 用递归偏特化 + `std::bool_constant`/`std::is_same_v` 在编译期判定类型成员关系：
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <type_traits>
 template <class T, class... Ts>
@@ -858,6 +901,7 @@ int main() { return 0; }
 
 C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <concepts>
 template <std::integral T>
@@ -879,6 +923,7 @@ int main() { return total_steps(3, 4) == 7 ? 0 : 1; }
 
 `constexpr` 递归字符串比较可在常量表达式上下文求值；下列断言在编译期直接完成，等价于 `StringSwitch` 的编译期分发思想：
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <cstddef>
 constexpr bool ceq(const char* a, const char* b) {

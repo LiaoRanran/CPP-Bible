@@ -42,6 +42,7 @@
 
 **交叉编译（cross compilation）** = 在**宿主机（host，如 x86-64 Windows）**上编译出运行在**目标机（target，如 ARM Cortex-M）**上的可执行代码。与之相对的是**原生编译（native compilation）**：host == target。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：什么是交叉编译 [标准]]
 ```cpp
 // ① 一个完全可移植的“Hello 资源占用”目标程序——它不关心谁编译它
 // 文件：Examples/_ch17_hello.cpp（正文示意，不强制运行）
@@ -57,6 +58,7 @@ int add(int a, int b) { return a + b; }   // 同一份源码，x86 或 ARM 都�
 
 **目标三元组（target triple）**形如 `arch-vendor-os-abi`，是工具链定位“为谁生成代码”的字符串。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：目标三元组]
 ```cpp
 // ② 三元组拆解（注释示意，非运行代码）
 // arm      - none   - eabi        : GNU Arm Embedded，裸机嵌入式
@@ -66,6 +68,7 @@ int add(int a, int b) { return a + b; }   // 同一份源码，x86 或 ARM 都�
 // riscv32 - unknown - elf        : RISC-V 32 位裸机 ELF
 ```
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：目标三元组]
 ```cpp
 // ② 用宏确认“编译目标是谁”——同一份源码，不同三元组得到不同 __SIZEOF/宏
 #include <cstdio>
@@ -87,6 +90,7 @@ int main() {
 
 **sysroot** 是交叉工具链的“目标系统根目录”，内含目标专用的头文件与库（如 `sysroot/usr/include`、`sysroot/lib`）。编译器用 `--sysroot=<dir>` 把它当作逻辑 `/`。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：与库 [标准]]
 ```cpp
 // ③ 交叉编译时，#include <cstdio> 解析到“目标 sysroot 里的 libc++/libstdc++ 头”
 // 而非宿主机 /usr/include。这正是交叉与原生的根本差异之一。
@@ -94,6 +98,7 @@ int main() {
 int main() { std::printf("built for target\n"); return 0; }
 ```
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：与库 [标准]]
 ```cpp
 // ③ 指定 sysroot 的编译调用（arm-none-eabi-gcc 本机未装，仅示意）
 // arm-none-eabi-g++ --sysroot=/opt/arm/sysroot -std=c++23 main.cpp -o main.elf
@@ -107,6 +112,7 @@ int main() { std::printf("built for target\n"); return 0; }
 
 两类目标差异巨大：`bare-metal`（无 OS，自己写启动/向量表）与 `Linux`（有内核、libc、动态链接器）。
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：裸机 vs Linux 目标 [平台]
 ```cpp
 // ④ 裸机程序：必须自己定义入口，不能有 main 依赖 libc 的初始化
 extern "C" void _start() {              // 复位向量跳到这里
@@ -115,6 +121,7 @@ extern "C" void _start() {              // 复位向量跳到这里
 // 链接：arm-none-eabi-ld -T script.ld -o fw.elf start.o
 ```
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：裸机 vs Linux 目标 [平台]
 ```cpp
 // ④ Linux 目标：可以正常用 main + libc + 系统调用
 #include <cstdlib>
@@ -130,6 +137,7 @@ int main(int argc, char** argv) {
 
 本机是 x86-64 MinGW-W64，采用 **Microsoft x64 调用约定**（非 System V）：前 4 个整数参数依次进 `RCX, RDX, R8, R9`，第 5、6 个压栈；调用方还需预留 **32 字节 shadow space（影子空间）**。
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实：用本机 g]
 ```cpp
 // 文件：Examples/_ch17_callconv.cpp，行号：8（sum6 定义）
 // 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch17_callconv.cpp -o Examples/_ch17_callconv.asm
@@ -159,6 +167,7 @@ _Z4sum6llllll:
 
 **GNU Arm Embedded（arm-none-eabi-gcc）**是 Cortex-M/R 裸机的事实标准工具链。它用 **AAPCS（ARM Architecture Procedure Call Standard）**：前 4 个整数参数进 `R0–R3`，第 5 个起压栈；返回 32 位值走 `R0`，64 位走 `R0:R1`。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：嵌入式工具链]
 ```cpp
 // ⑥ 同一 sum6 在 ARM 上的源码——本体与 x86 完全一致（C++ 可移植）
 struct Point { long x, y; };
@@ -198,6 +207,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 ```
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：交叉编译工具链文件 [标准]]
 ```cpp
 // ⑦ 业务代码完全不感知交叉：CMakeLists 里照常 add_executable
 // CMakeLists.txt 片段（示意）：
@@ -214,6 +224,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 裸机没有 glibc（它依赖 Linux 系统调用），于是用 **newlib**（经典）或 **picolibc**（更轻、面向嵌入式）作为 C/C++ 运行时。它们把 `read/write/_sbrk` 等留给用户实现的 **syscall 桩（syscall stubs）**。
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：对比 [平台]]
 ```cpp
 // ⑧ newlib 需要一个 _sbrk 桩来支撑 malloc/自由存储（否则 new 也会失败）
 extern "C" {
@@ -227,6 +238,7 @@ extern "C" {
 }
 ```
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：对比 [平台]]
 ```cpp
 // ⑧ picolibc 更小：可裁剪 printf 浮点支持，适合 32KB RAM 的 MCU
 // 链接时选 picolibc 而非 newlib：-specs=picolibc.specs
@@ -241,6 +253,7 @@ int diag() { return std::snprintf(nullptr, 0, "%d", 42); }  // 尺寸敏感
 
 **QEMU** 能无需真实硬件就跑目标二进制：`qemu-arm` 做用户态模拟（系统调用转译到宿主），`qemu-system-arm` 模拟整块板子。
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：用户态模拟运行 [平台]]
 ```cpp
 // ⑨ 一个普通的 Linux 目标程序，既能真机跑，也能 qemu 跑
 #include <cstdio>
@@ -263,6 +276,7 @@ int main() {
 
 裸机最终产物是 **ELF**（含调试信息）与烧录用的 **bin/hex（纯机器码 + 加载地址）**。工具链用 `objcopy` 抽取，用链接脚本定地址。
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：固件/镜像生成 [平台]]
 ```cpp
 // ⑩ 复位向量表：第一项 SP 初值，第二项 Reset_Handler 入口
 // 文件：Examples/_ch17_baremetal.cpp，行号：16（_start）
@@ -286,6 +300,7 @@ extern "C" void _start() {
 
 取第⑤节的 `manhattan(Point)` 与 `make_point`，对比两套 ABI 对同一语义的不同寄存器分配：
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：[实现·GCC15]对比：x86 与]
 ```cpp
 // 文件：Examples/_ch17_callconv.cpp，行号：13（manhattan）/ 16（make_point）
 struct Point { long x, y; };
@@ -320,6 +335,7 @@ _Z9manhattan5Point:
 
 **端序（endianness）**决定多字节数在内存的字节序；**对齐（alignment）**决定对象允许的内存地址模数。二者都会让“同样代码、不同目标”产生不同行为或性能。
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：大小端/对齐差异 [标准]]
 ```cpp
 // ⑫ 端序探测：小端机 0x01020304 在内存为 04 03 02 01
 #include <cstdint>
@@ -329,6 +345,7 @@ bool is_little_endian() {
 }
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：大小端/对齐差异 [标准]]
 ```cpp
 // ⑫ 对齐：alignas 提升对齐以满足 SIMD 加载要求（如 AVX 需 32 字节）
 #include <cstddef>
@@ -351,6 +368,7 @@ alignas(32) static char dma_buf[128];     // 该数组地址必须是 32 的倍�
 
 嵌入式调试三件套：**调试器硬件（J-Link/ST-Link/OpenOCD 支持的目标）** + **OpenOCD（守护，桥接 USB↔GDB）** + **GDB（含交叉 gdb，如 arm-none-eabi-gdb）**。
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：调试]
 ```cpp
 // ⑬ 调试版应保留符号与帧指针，关闭过度优化
 // arm-none-eabi-g++ -std=c++23 -g3 -Og -mcpu=cortex-m4 main.cpp -o fw.elf
@@ -376,6 +394,7 @@ void toggle() { g_dbg ^= 1; }    // 在 GDB 里设断点、watch g_dbg
 
 嵌入式 FLASH 宝贵。核心手段：`-Os`（为尺寸优化）、`-ffunction-sections -fdata-sections`（每函数/变量独立段）、`--gc-sections`（链接期丢弃未引用段）。
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：体积优化]
 ```cpp
 // 文件：Examples/_ch17_sizeopt.cpp，行号：7（active，被引用）/ 11（dead，未引用）
 #include <cstdint>
@@ -408,6 +427,7 @@ int unused_var = 99;     // 未引用 -> 期望被 GC
 
 资源受限目标常禁用**异常、RTTI、部分 STL**，改用 `-fno-exceptions -fno-rtti -fno-use-cxa-atexit`，并以静态/池化分配替代自由存储。
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：嵌入式 C++ 子集]
 ```cpp
 // ⑮ 禁用异常后，不能依赖栈展开；用 std::optional / 错误码替代 throw
 #include <cstdint>
@@ -419,6 +439,7 @@ int unused_var = 99;     // 未引用 -> 期望被 GC
 }
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：嵌入式 C++ 子集]
 ```cpp
 // ⑮ 禁用 RTTI 后 dynamic_cast/typeid 不可用；用 variant / 显式 tag 分发
 #include <cstdint>
@@ -431,6 +452,7 @@ uint32_t dispatch(const Msg& m) {          // 用 tag 而非 dynamic_cast
 }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：嵌入式 C++ 子集]
 ```cpp
 // ⑮ 用静态缓冲区替代动态 new（避免堆碎片与不可预测延迟）
 #include <cstddef>
@@ -446,17 +468,20 @@ void* operator new(std::size_t n) {        // 极简静态分配器示意
 
 ## ⑯ 常见坑 [经验]
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：常见坑 [经验]]
 ```cpp
 // ⑯ 坑1：FPU 选项与固件不一致 -> 一进浮点就 HardFault
 // 编译用 -mfloat-abi=hard，但启动代码未初始化 FPU（或未设 CP10/CP11）：必崩
 float scale(float x) { return x * 3.14f; }   // 需 FPU 已使能
 ```
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：常见坑 [经验]]
 ```cpp
 // ⑯ 坑2：链接脚本的 _ebss/_estack 与启动代码符号名对不上 -> 堆栈/堆错位
 extern char _ebss;    // 启动文件里若叫 __bss_end__，这里就链接失败或堆错位
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：常见坑 [经验]]
 ```cpp
 // ⑯ 坑3：int 宽度假设。x86/ARM 桌面与 Cortex-M 的 int 都是 32 位，
 // 但指针在 Cortex-M 是 32 位、在 AArch64 是 64 位——把指针存进 int 会截断！
@@ -472,6 +497,7 @@ void good(uintptr_t p) { intptr_t safe = (intptr_t)p; }  // ✅ 用 intptr_t
 
 交叉构建常需要**主机工具（host tool）**：在宿主机运行、但产出目标数据的程序（如资源编译器、代码生成器、协议打包器）。它们必须用**宿主编译器**编，不能进交叉链路。
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：与主机工具协作（host tool）]
 ```cpp
 // ⑰ 主机工具：把字体/图片编译成 C 数组（在 x86 上跑，产出 .cpp 给目标用）
 // 用宿主 g++ 编译：g++ -std=c++23 gen_font.cpp -o gen_font
@@ -494,6 +520,7 @@ int main() {
 
 ## ⑱ 最佳实践 [经验]
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱ 实践1：平台相关代码集中到 arch_xxx 命名空间 + 编译期分发，避免散落 ifdef
 namespace arch {
@@ -509,6 +536,7 @@ namespace arch {
 }
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱ 实践2：对所有外设寄存器用 volatile 且显式宽度，杜绝“优化掉 MMIO”
 #include <cstdint>
@@ -516,6 +544,7 @@ volatile uint32_t& GPIOA_ODR = *reinterpret_cast<uint32_t*>(0x40020014u);
 void set_led(bool on) { if (on) GPIOA_ODR |= (1u<<5); else GPIOA_ODR &= ~(1u<<5); }
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱ 实践3：用 static_assert 固化跨平台假设，趁早 fail
 static_assert(sizeof(void*) == 4 || sizeof(void*) == 8, "指针宽度假设失效");
@@ -536,6 +565,7 @@ static_assert(alignof(double) <= 8, "double 对齐超预期");
 | ARM64 Linux | `aarch64-linux-gnu` | libstdc++/glibc | `-O2` | ❌ 未装 |
 | RISC-V 32 裸机 | `riscv32-unknown-elf` | newlib | `-Os -gc-sections` | ❌ 未装 |
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：跨平台构建矩阵 [平台]]
 ```cpp
 // ⑲ 矩阵里每个目标共享同一份业务逻辑，仅编译标志/标准库不同
 struct Firmware {
@@ -568,6 +598,7 @@ constexpr Firmware kMatrix[] = {
    - [标准] 可用 `alignof` 查询类型对齐、`alignas` 增强声明对齐；实际分配须由支持该对齐的分配器提供。
    - [引用] ISO/IEC 14882:2023 §[basic.align] / [dcl.align]（对齐与 alignas）；cppreference "alignof / alignas" 词条。
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ 三元组 → 工具链前缀 速查（编译时 -target / 工具链文件里设置）
 // x86_64-w64-mingw32     -> x86_64-w64-mingw32-g++   （本机即用）
@@ -648,27 +679,32 @@ constexpr Firmware kMatrix[] = {
 
 ## 附录: 交叉编译实战
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：附录: 交叉编译实战]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Cross-compile: gcc-arm-none-eabi for Cortex-M. aarch64-linux-gnu-gcc for ARM64 Linux."<<std::endl;return 0;}
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：附录: 交叉编译实战]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"CMake toolchain: set(CMAKE_SYSTEM_NAME Generic); set(CMAKE_C_COMPILER arm-none-eabi-gcc)."<<std::endl;return 0;}
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：附录: 交叉编译实战]
 ```cpp
 #include <iostream>
 #include <cstdint>
 int main(){uint32_t x=0x12345678;std::cout<<"Endian check: "<<(*(uint8_t*)&x==0x78?"little":"big")<<" endian"<<std::endl;return 0;}
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：附录: 交叉编译实战]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"QEMU: qemu-arm -L /usr/arm-linux-gnueabi ./app. Docker: FROM arm64v8/ubuntu."<<std::endl;return 0;}
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：附录: 交叉编译实战]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -677,6 +713,7 @@ int main(){std::vector<int> v(3,7);std::cout<<v.size()<<std::endl;return 0;}
 
 ## 附录 A：工业交叉编译 [B: Principle / F: Industry / H: Design / I: Practice / J: Learning]
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：附录 A：工业交叉编译 [B: Pr]
 ```
 交叉编译工业场景:
 - 嵌入式: arm-none-eabi-gcc (Cortex-M), aarch64-linux-gnu-gcc (ARM64 Linux)
@@ -721,6 +758,7 @@ aarch64-linux-gnu-gcc -std=c++20 --sysroot=/path/to/rpi-rootfs -O2 main.cpp -o a
 
 Android NDK: `clang++ --target=aarch64-linux-android21` → arm64-v8a .so
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：附录 F：交叉编译工具链细节]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"STM32=arm-none-eabi, RPi=aarch64-linux-gnu, Android=NDK clang"<<std::endl;return 0;}
@@ -742,6 +780,7 @@ set(CMAKE_C_COMPILER arm-none-eabi-gcc)
 set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：附录 H：CMake交叉编译配置]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"CMake cross: CMAKE_SYSTEM_NAME+compiler+sysroot=3 key settings"<<std::endl;return 0;}
@@ -759,6 +798,7 @@ int main(){std::cout<<"CMake cross: CMAKE_SYSTEM_NAME+compiler+sysroot=3 key set
 嵌入式通常禁用: 异常(-fno-exceptions), RTTI(-fno-rtti), 动态内存(无malloc/new)
 可用的: constexpr, template, static_assert, enum class, [[nodiscard]]
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：附录 I：嵌入式C++特性限制]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Embedded: -fno-exceptions -fno-rtti -fno-rtti. Use constexpr+template+static_assert instead."<<std::endl;return 0;}
@@ -777,6 +817,7 @@ int main(){std::cout<<"Embedded: -fno-exceptions -fno-rtti -fno-rtti. Use conste
 常量放到Flash: const/constexpr变量自动放入.rodata段(Flash)
 避免动态内存: pool allocator替代malloc, stack allocation替代heap
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：附录 J：嵌入式C++性能优化]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. pool>heap."<<std::endl;return 0;}
@@ -820,6 +861,7 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 
 **真实场景：CI 矩阵里的目标鉴别。** 你在 CI 里同时给 x86-64 和 ARM64 构建，需要代码能自报架构以选择正确的内联汇编 / intrinsics。请用预定义宏探测本机架构，并说明交叉编译目标三元组 `arch-vendor-os-abi` 各部分对应什么。
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 
@@ -843,6 +885,7 @@ int main() {
 
 **真实场景：固件里的紧凑报文布局。** 你要把一个状态结构体通过 SPI/网络发出去，两端必须用完全一致的字节布局，否则解释错位。请写程序对比默认对齐与 `#pragma pack` 后的大小，说明网络/Flash 二进制布局为何要显式控制对齐。
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -874,6 +917,7 @@ set(CMAKE_C_COMPILER   arm-linux-gnueabihf-gcc)
 set(CMAKE_CXX_COMPILER arm-linux-gnueabihf-g++)
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 
@@ -904,6 +948,7 @@ arm-linux-gnueabihf-g++ app.cpp -o app_arm
 qemu-arm -L /usr/arm-linux-gnueabihf ./app_arm   # 在 x86 宿主机跑 ARM 二进制
 ```
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：演绎 1：用 QEMU 用户态在 x]
 ```cpp
 #include <iostream>
 int main() { std::cout << "QEMU 用户态冒烟测试通过\n"; }
@@ -922,6 +967,7 @@ int main() { std::cout << "QEMU 用户态冒烟测试通过\n"; }
 set(CMAKE_SYSROOT /opt/arm-sysroot)   # 只搜目标的 include/lib
 ```
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：演绎 2：sysroot 隔离目标系]
 ```cpp
 #include <iostream>
 int main() { std::cout << "sysroot 锁定目标头与库，避免宿主污染\n"; }

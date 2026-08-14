@@ -45,6 +45,7 @@
 
 **[实现·GCC15]** `libstdc++` 的 `std::allocator` 直接转发到 `__new_allocator::allocate`，最终调用 `_GLIBCXX_OPERATOR_NEW`（即 `::operator new` 或 `__builtin_operator_new`）：
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：为何需要内存池（动机全景）]
 ```cpp
 // C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/new_allocator.h:121-148
 _GLIBCXX_NODISCARD _Tp*
@@ -94,12 +95,14 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 
 **[实现·GCC15]** GCC 扩展提供了一个真实的 free-list 池分配器 `std::pool_allocator`（在 `ext` 命名空间）。完整源码位于：
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码：gn]
 ```
 C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/pool_allocator.h
 ```
 
 核心设计（pool_allocator.h:77-118）：
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码：gn]
 ```cpp
 #include <cstddef>
 // ext/pool_allocator.h:77-118  (__gnu_cxx::__pool_alloc_base)
@@ -136,6 +139,7 @@ protected:
 
 分配路径（pool_allocator.h:214-266 节选）：
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码：gn]
 ```cpp
 #include <cstddef>
 // ext/pool_allocator.h:246-263
@@ -159,6 +163,7 @@ else
 
 释放路径（pool_allocator.h:268-295 节选）：
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码：gn]
 ```cpp
 // ext/pool_allocator.h:285-293
 _Obj* volatile* __free_list = _M_get_free_list(__bytes);
@@ -180,6 +185,7 @@ __q->_M_free_list_link = *__free_list;                  // O(1) 头插
 
 **[经验]** "侵入式"指：当一块**空闲**时，我们借用它**自己的内存**存放 `next` 指针；当它**被分配**后，这块内存完全交给用户，不再需要独立的"块头（block header）"记录大小/下一个。对比"外部元数据"方案：
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：侵入式（Intrusive）为何省去]
 ```
 外部元数据（每块多 16 字节头）：
 [ header | user data ][ header | user data ]...
@@ -194,6 +200,7 @@ __q->_M_free_list_link = *__free_list;                  // O(1) 头插
 
 ### 44.4.2 完整可编译实现（程序 1/≥30）
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：完整可编译实现（程序 1/≥30）]
 ```cpp
 // program_01_fixed_block_pool.cpp  —— 侵入式固定块池（完整可编译）
 // 编译: g++ -std=c++17 -O2 program_01_fixed_block_pool.cpp -o p01
@@ -266,6 +273,7 @@ int main() {
 
 ### 44.4.3 带构造/析构的强类型封装（程序 2/≥30）
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：带构造/析构的强类型封装]
 ```cpp
 // program_02_fixed_pool_typed.cpp —— 在池上做 placement new + 析构
 // 编译: g++ -std=c++17 -O2 program_02_fixed_pool_typed.cpp -o p02
@@ -323,6 +331,7 @@ int main() {
 
 **[标准]** `<memory>` 提供 `void* std::align(std::size_t alignment, std::size_t size, void*& ptr, std::size_t& space)`，在 `[ptr, ptr+space)` 区间内找到满足对齐的地址并前移 `ptr`、缩减 `space`。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：std::align 标准对齐工具]
 ```cpp
 // program_03_std_align.cpp —— 用 std::align 在缓冲内对齐
 // 编译: g++ -std=c++17 -O2 program_03_std_align.cpp -o p03
@@ -345,6 +354,7 @@ int main() {
 
 **[标准]** 手动向上对齐：`(addr + (a-1)) & ~(a-1)`，依赖 `a` 为 2 的幂。
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：手动指针算术对齐（程序 4/≥30）]
 ```cpp
 // program_04_manual_align.cpp —— reinterpret_cast + 指针算术手动对齐
 // 编译: g++ -std=c++17 -O2 program_04_manual_align.cpp -o p04
@@ -379,6 +389,7 @@ int main() {
 
 ### 44.6.1 完整可编译实现（程序 5/≥30）
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：完整可编译实现（程序 5/≥30）]
 ```cpp
 // program_05_bitmap_pool.cpp —— 1 bit/对象 的位图池
 // 编译: g++ -std=c++17 -O2 program_05_bitmap_pool.cpp -o p05
@@ -447,6 +458,7 @@ int main() {
 
 ### 44.7.1 完整可编译实现（程序 6/≥30）
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：完整可编译实现（程序 6/≥30）]
 ```cpp
 // program_06_monotonic.cpp —— bump pointer 单调分配器
 // 编译: g++ -std=c++17 -O2 program_06_monotonic.cpp -o p06
@@ -501,6 +513,7 @@ int main() {
 
 ### 44.8.1 完整可编译实现（程序 7/≥30）
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：完整可编译实现（程序 7/≥30）]
 ```cpp
 // program_07_segregated.cpp —— 分级空闲列表分配器
 // 编译: g++ -std=c++17 -O2 program_07_segregated.cpp -o p07
@@ -591,6 +604,7 @@ int main() {
 
 ### 44.9.1 完整可编译实现（程序 8/≥30）
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：完整可编译实现（程序 8/≥30）]
 ```cpp
 // program_08_thread_local.cpp —— thread_local free list + 全局批量取还
 // 编译: g++ -std=c++17 -O2 -pthread program_08_thread_local.cpp -o p08
@@ -677,6 +691,7 @@ int main() {
 
 ### 44.10.1 完整可编译实现（程序 9/≥30）
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：完整可编译实现（程序 9/≥30）]
 ```cpp
 // program_09_object_pool.cpp —— 预构造 N 个对象复用（无运行时构造）
 // 编译: g++ -std=c++17 -O2 program_09_object_pool.cpp -o p09
@@ -727,6 +742,7 @@ int main() {
 
 ### 44.11.1 完整可编译实现（程序 10/≥30）
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：完整可编译实现（程序 10/≥30）]
 ```cpp
 // program_10_embedded_static.cpp —— 编译期固定池，运行期无 new
 // 编译: g++ -std=c++17 -O2 program_10_embedded_static.cpp -o p10
@@ -772,6 +788,7 @@ int main() {
 
 ### 44.12.1 统一对齐固定块池 + 强类型包装（程序 11/≥30）
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：统一对齐固定块池 + 强类型包装]
 ```cpp
 // program_11_combo_fixed.cpp
 // 编译: g++ -std=c++17 -O2 -pthread program_11_combo_fixed.cpp -o p11
@@ -837,6 +854,7 @@ int main() {
 
 ### 44.12.2 分级池 + STL 容器对接（程序 12/≥30）
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：分级池 + STL 容器对接]
 ```cpp
 // program_12_combo_seg_stl.cpp —— 分级池作为 std::list 的分配器
 // 编译: g++ -std=c++17 -O2 program_12_combo_seg_stl.cpp -o p12
@@ -894,6 +912,7 @@ int main() {
 
 ### 44.12.3 线程局部池 + 确定性批量取还（程序 13/≥30）
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：线程局部池 + 确定性批量取还]
 ```cpp
 // program_13_combo_tls.cpp —— 线程局部池（复用 44.9 思路，独立可编译）
 // 编译: g++ -std=c++17 -O2 -pthread program_13_combo_tls.cpp -o p13
@@ -959,6 +978,7 @@ int main() {
 
 ### 44.13.1 把固定块池包成 memory_resource（程序 14/≥30）
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：把固定块池包成 memoryreso]
 ```cpp
 // program_14_pmr_adapter.cpp —— 自定义池接入 PMR
 // 编译: g++ -std=c++17 -O2 program_14_pmr_adapter.cpp -o p14
@@ -1020,6 +1040,7 @@ int main() {
 
 ### 44.14.1 GCC/Clang 对齐假设（程序 15/≥30）
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：对齐假设（程序 15/≥30）]
 ```cpp
 // program_15_assume_aligned.cpp
 // 编译: g++ -std=c++17 -O2 -fstrict-aliasing program_15_assume_aligned.cpp -o p15
@@ -1043,6 +1064,7 @@ int main() {
 
 ### 44.14.2 MSVC `_aligned_malloc`（程序 16/≥30）
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：alignedmalloc]
 ```cpp
 // program_16_aligned_malloc.cpp  —— [平台·Windows] MSVC / Windows
 // 编译(MSVC): cl /EHsc /O2 program_16_aligned_malloc.cpp
@@ -1080,6 +1102,7 @@ int main() {
 
 ### 44.15.1 基准程序（程序 17/≥30）
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：基准程序（程序 17/≥30）]
 ```cpp
 // program_17_bench_fixed_vs_new.cpp
 // 编译: g++ -std=c++17 -O2 program_17_bench_fixed_vs_new.cpp -o p17
@@ -1121,6 +1144,7 @@ int main() {
 
 ### 44.16.1 基准程序（程序 18/≥30）
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：基准程序（程序 18/≥30）]
 ```cpp
 // program_18_bench_seg_vs_malloc.cpp
 // 编译: g++ -std=c++17 -O2 program_18_bench_seg_vs_malloc.cpp -o p18
@@ -1158,6 +1182,7 @@ int main() {
 
 ### 44.17.1 扩展性测试（程序 19/≥30）
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：扩展性测试（程序 19/≥30）]
 ```cpp
 // program_19_bench_tls_scaling.cpp
 // 编译: g++ -std=c++17 -O2 -pthread program_19_bench_tls_scaling.cpp -o p19
@@ -1199,6 +1224,7 @@ int main() {
 
 ### 44.18.1 RTOS 风格静态对象池（程序 20/≥30）
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：风格静态对象池（程序 20/≥30）]
 ```cpp
 // program_20_rtos_static.cpp —— ISR 安全：运行期零分配
 // 编译: g++ -std=c++17 -O2 program_20_rtos_static.cpp -o p20
@@ -1257,6 +1283,7 @@ int main() {
 
 ### 44.19.1 `uses_allocator` 探测演示（程序 21/≥30）
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：usesallocator 探测演示]
 ```cpp
 // program_21_uses_allocator.cpp
 // 编译: g++ -std=c++17 -O2 program_21_uses_allocator.cpp -o p21
@@ -1406,6 +1433,7 @@ class Program {
 
 ### 44.21.1 栈式 LIFO 池（程序 26/≥30）
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：栈式 LIFO 池]
 ```cpp
 // program_26_lifo_stack_pool.cpp
 // 编译: g++ -std=c++17 -O2 program_26_lifo_stack_pool.cpp -o p26
@@ -1446,6 +1474,7 @@ int main() {
 
 ### 44.21.2 Arena 区域池（程序 27/≥30）
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：区域池（程序 27/≥30）]
 ```cpp
 // program_27_arena.cpp —— Arena：分配只增，析构整体释放（连接 ch39 RAII）
 // 编译: g++ -std=c++17 -O2 program_27_arena.cpp -o p27
@@ -1494,6 +1523,7 @@ int main() {
 
 ### 44.22.1 伪共享规避（程序 28/≥30）
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：伪共享规避（程序 28/≥30）]
 ```cpp
 // program_28_cache_friendly.cpp —— 每线程池块独立缓存行，避免 false sharing
 // 编译: g++ -std=c++17 -O2 -pthread program_28_cache_friendly.cpp -o p28
@@ -1528,6 +1558,7 @@ int main() {
 
 ### 44.23.1 碎片对比（程序 29/≥30）
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：碎片对比（程序 29/≥30）]
 ```cpp
 // program_29_fragmentation.cpp
 // 编译: g++ -std=c++17 -O2 program_29_fragmentation.cpp -o p29
@@ -1557,6 +1588,7 @@ int main() {
 
 ### 44.24.1 综合基准（程序 30/≥30）
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：综合基准（程序 30/≥30）]
 ```cpp
 // program_30_final_bench.cpp —— 三池统一并发基准
 // 编译: g++ -std=c++17 -O2 -pthread program_30_final_bench.cpp -o p30
@@ -1654,6 +1686,7 @@ int main(){
 
 ### 44.25.1 对齐尺寸 > 指针尺寸的固定块池（程序 31/≥30）
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：对齐尺寸 > 指针尺寸的固定块池]
 ```cpp
 // program_31_overaligned.cpp —— 块尺寸必须容纳 next 且对齐 over-aligned 类型
 // 编译: g++ -std=c++17 -O2 program_31_overaligned.cpp -o p31
@@ -1672,6 +1705,7 @@ int main() {
 
 ### 44.25.2 用 `std::pmr::synchronized_pool_resource`（程序 32/≥30）
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：用 std::pmr::synchr]
 ```cpp
 // program_32_pmr_synchronized.cpp —— 标准库线程安全池（连接 ch38）
 // 编译: g++ -std=c++17 -O2 program_32_pmr_synchronized.cpp -o p32
@@ -1690,6 +1724,7 @@ int main() {
 
 ### 44.25.3 对象池 + 构造复用（程序 33/≥30）
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：对象池 + 构造复用]
 ```cpp
 // program_33_object_pool_reuse.cpp
 // 编译: g++ -std=c++17 -O2 program_33_object_pool_reuse.cpp -o p33
@@ -1709,6 +1744,7 @@ int main() {
 
 ### 44.25.4 单调池 + 类型化 placement new 区域（程序 34/≥30）
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：单调池 + 类型化 placemen]
 ```cpp
 // program_34_monotonic_typed.cpp
 // 编译: g++ -std=c++17 -O2 program_34_monotonic_typed.cpp -o p34
@@ -1738,6 +1774,7 @@ int main(){
 
 ### 44.25.5 分级池 size class 对照 tcmalloc（程序 35/≥30）
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：分级池 size class 对照 ]
 ```cpp
 // program_35_sizeclass.cpp —— 展示 size class 几何分级（对照 tcmalloc SizeMap）
 // 编译: g++ -std=c++17 -O2 program_35_sizeclass.cpp -o p35
@@ -1759,6 +1796,7 @@ int main(){
 
 ### 44.25.6 线程局部池无锁路径断言（程序 36/≥30）
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：线程局部池无锁路径断言]
 ```cpp
 // program_36_tls_lockfree.cpp —— 演示线程热路径无 mutex（仅批量才锁）
 // 编译: g++ -std=c++17 -O2 -pthread program_36_tls_lockfree.cpp -o p36
@@ -1786,6 +1824,7 @@ int main(){
 
 ### 44.25.7 池容量回退到 ::operator new（程序 37/≥30）
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：池容量回退到 ::operator ]
 ```cpp
 // program_37_fallback.cpp —— 池满时回退系统分配（对照 pool_allocator.h 大块直走 new）
 // 编译: g++ -std=c++17 -O2 program_37_fallback.cpp -o p37
@@ -1808,6 +1847,7 @@ int main(){ SafePool p(sizeof(long),4); void* a=p.alloc(); void* b=p.alloc();
 
 ### 44.25.8 RAII 池资源守卫（程序 38/≥30，连接 ch39）
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：池资源守卫]
 ```cpp
 // program_38_raii_guard.cpp —— 池对象 RAII 守卫，离开作用域自动归还
 // 编译: g++ -std=c++17 -O2 program_38_raii_guard.cpp -o p38
@@ -1835,6 +1875,7 @@ int main(){
 
 ### 44.25.9 位图池批量分配（程序 39/≥30）
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：位图池批量分配（程序 39/≥30）]
 ```cpp
 // program_39_bitmap_batch.cpp
 // 编译: g++ -std=c++17 -O2 program_39_bitmap_batch.cpp -o p39
@@ -1868,6 +1909,7 @@ int main(){ BitmapBatch b(sizeof(int),256);
 
 ### 44.25.10 完整 PMR 单调池 + 容器（程序 40/≥30）
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：完整 PMR 单调池 + 容器]
 ```cpp
 // program_40_pmr_monotonic.cpp —— monotonic_buffer_resource 实测（连接 ch38/44.7）
 // 编译: g++ -std=c++17 -O2 program_40_pmr_monotonic.cpp -o p40
@@ -1968,6 +2010,7 @@ int main(){
 
 ## 附录 F：内存池面试
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：附录 F：内存池面试]
 ```cpp
 #include <iostream>
 int main(){
@@ -2054,6 +2097,7 @@ _ZL12probe_mallocy:
         jne     .L28
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：附录 G：内存池汇编（真实产物）]
 ```cpp
 #include <iostream>
 int main(){
@@ -2102,6 +2146,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <cstddef>
 template <class Block, std::size_t N>
@@ -2131,6 +2176,7 @@ struct FixedPool {
 
 <details><summary>答案与解析</summary>
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <memory_resource>
 #include <vector>
@@ -2163,6 +2209,7 @@ std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
 
 <details><summary>答案与解析</summary>
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 // 通用分配器: 任意大小混合分配/释放 -> 空闲块被切碎 -> 外部碎片
 // 长期运行后: 总空闲内存足够, 但无单块够大 -> 分配失败 (嵌入式致命)
@@ -2185,6 +2232,7 @@ std::pmr::vector<int> v{&pool};   // vector 的内存全部来自 pool
 
 **步骤 1：裸 new（不确定性延迟 + 碎片）**
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 实时系统里把 n]
 ```cpp
 struct Packet { int seq; };
 void use(Packet*);                   // -c 仅编译不链接, 声明即可
@@ -2200,6 +2248,7 @@ void control_loop(){
 
 **步骤 2：固定块池（O(1) 分配 + 零碎片，但有内碎片）**
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 实时系统里把 n]
 ```cpp
 struct Packet { int seq; };
 template <class T, std::size_t N> struct FixedPool {
@@ -2221,6 +2270,7 @@ void control_loop(){
 
 **步骤 3：接入 STL（pmr）**
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 实时系统里把 n]
 ```cpp
 struct Packet { int seq; };
 struct PoolResource : std::pmr::memory_resource {
@@ -2535,6 +2585,7 @@ libstdc++ 提供了一款**生产级**的池分配器 `__gnu_cxx::__pool_alloc`�
 
 ### 可编译实证
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：可编译实证]
 ```cpp
 #include <ext/pool_allocator.h>
 #include <vector>
@@ -2575,6 +2626,7 @@ int main()
 
 ### D5.3 可复现 demo
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <cassert>

@@ -36,6 +36,7 @@ Ranges 入标后，演进是"补适配器"与"打通协程/并行"两路并进�
 
 传统 STL 算法（`std::sort(v.begin(), v.end())`）要求显式迭代器对、难以组合。Ranges 把"范围"作为一等公民，支持**管道组合**（`|`）与**惰性求值**。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：Ranges 解决了什么 [标]
 ```cpp
 // ① 旧式 vs 新式
 #include <vector>
@@ -53,6 +54,7 @@ auto even = v | std::views::filter([](int i){ return i % 2 == 0; });
 
 ## ② View 概念：轻量、非拥有、可组合 [标准]
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：概念：轻量、非拥有、可组合 [标准]]
 ```cpp
 // ② view 是 O(1) 可拷贝的"适配器"，不持有元素
 #include <ranges>
@@ -67,6 +69,7 @@ auto f = v | std::views::reverse;     // f 是 view，O(1) 构造，不复制 v
 
 ## ③ 管道运算符 `|` 的本质 [标准]
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：管道运算符 | 的本质 [标准]]
 ```cpp
 // ③ v | adaptor 等价于 adaptor(v)
 #include <ranges>
@@ -81,6 +84,7 @@ auto r2 = v | std::views::filter([](int i){ return i > 1; }); // 管道写法
 
 ## ④ 惰性求值：不立即计算 [标准]
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：惰性求值：不立即计算 [标准]]
 ```cpp
 // ④ view 不存储结果，遍历时才计算
 #include <ranges>
@@ -97,6 +101,7 @@ for (int x : r) std::cout << x << " ";   // 遍历时才对每个元素 *10
 
 ## ⑤ 真实汇编：filter+transform 融合为单遍 [实现]
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：真实汇编：filter+transf]
 ```cpp
 // 文件：Examples/_asm_ranges.cpp，行号：8（_Z10use_rangesv）/ 39（test cl,1 过滤）/ 47（imul 平方）
 // 编译：g++ 15.3.0 -std=c++23 -O2 -S -masm=intel _asm_ranges.cpp -o _asm_ranges.asm
@@ -147,6 +152,7 @@ _Z10use_rangesv:
 
 ## ⑥ 常用 view 适配器 [标准]
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：常用 view 适配器 [标准]]
 ```cpp
 // ⑥ 常见 views
 #include <ranges>
@@ -166,6 +172,7 @@ auto g = std::views::iota(1, 10);                          // 无限/有限整�
 
 ## ⑦ 范围算法（ranges 算法） [标准]
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：范围算法（ranges 算法） [标]
 ```cpp
 // ⑦ 范围版算法接受范围而非迭代器对
 #include <ranges>
@@ -182,6 +189,7 @@ bool has = std::ranges::any_of(v, [](int i){ return i > 2; });
 
 ## ⑧ 投影（projection） [标准]
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：投影（projection） [标准]
 ```cpp
 // ⑧ 算法支持投影：对元素成员操作
 #include <ranges>
@@ -199,6 +207,7 @@ auto p = std::ranges::max(people, {}, &Person::age);  // 年龄最大者
 
 ## ⑨ 自定义 range 与 view [标准]
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：自定义 range 与 view []
 ```cpp
 // ⑨ 实现简单 input range（满足 begin/end + iterator_traits）
 #include <ranges>
@@ -230,6 +239,7 @@ static_assert(std::ranges::range<Count>);   // Count 满足 range 概念
 
 ## ⑩ view 的 dangling 风险 [标准]
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：的 dangling 风险 [标准]]
 ```cpp
 // ⑩ 返回 view 引用了临时范围 -> 悬空
 #include <ranges>
@@ -251,6 +261,7 @@ std::vector<int> good() {
 
 ## ⑪ 惰性 vs 急切：何时 materialize [经验]
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：惰性 vs 急切：何时 materi]
 ```cpp
 // ⑪ 链式多次遍历应物化，避免重复计算
 #include <ranges>
@@ -267,6 +278,7 @@ use(cached); use(cached);
 
 ## ⑫ 真实源码：view 的存储结构 [实现]
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：真实源码：view 的存储结构 [实]
 ```cpp
 // 文件：bits/ranges_base.h / bits/ranges_util.h （GCC 15.3.0, libstdc++），行号：filter_view 存 _M_base/_M_pred（概念，参见 ⑬）
 // 概念：filter_view 持有 _M_base（底层范围引用）+ _M_pred（谓词）
@@ -282,6 +294,7 @@ use(cached); use(cached);
 
 ## ⑬ 真实源码：管道运算符 `|` 的实现 [实现]
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：真实源码：管道运算符 | 的实现 []
 ```cpp
 #include <utility>
 // 文件：bits/ranges_util.h （GCC 15.3.0, libstdc++），行号：_RangeAdaptorClosure 重载 operator|（range|adaptor == adaptor(range)）
@@ -308,6 +321,7 @@ use(cached); use(cached);
 
 ## ⑮ microbenchmark：惰性 vs 手写循环 [经验]
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：惰性 vs 手写循环 [经验]]
 ```cpp
 // ⑮ 量级：ranges 链 ≈ 手写单循环（惰性融合后无中间容器）
 #include <ranges>
@@ -333,6 +347,7 @@ int hand_way(std::vector<int>& v) {
 
 ## ⑯ Ranges 与并行/执行策略 [标准]
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：与并行/执行策略 [标准]]
 ```cpp
 // ⑯ ranges 算法可配执行策略（C++20 起部分支持）
 #include <ranges>
@@ -348,6 +363,7 @@ std::ranges::sort(std::execution::par, v);   // 并行排序（注意迭代器�
 
 ## ⑰ Ranges 与协程/生成器 [标准]
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：与协程/生成器 [标准]]
 ```cpp
 // ⑰ 协程生成器可与 ranges 组合（C++20/23）
 #include <ranges>
@@ -360,6 +376,7 @@ std::ranges::sort(std::execution::par, v);   // 并行排序（注意迭代器�
 
 ## ⑱ Ranges 常见陷阱 [经验]
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑱ 陷阱1：filter 后不是随机访问 -> 不能 O(1) 下标
 auto r = v | std::views::filter([](int i){return i>0;});
@@ -374,6 +391,7 @@ auto bad = v | std::views::transform([](int i){ return std::to_string(i); });
 
 ## ⑲ Ranges 工程应用模式 [经验]
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：工程应用模式 [经验]]
 ```cpp
 // ⑲ 管道式数据清洗（工业常见）
 #include <ranges>
@@ -392,6 +410,7 @@ std::vector<std::string> clean(const std::vector<std::string>& in) {
 
 ## 补充完整可编译示例（ranges）
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R1 filter
 #include <ranges>
@@ -402,6 +421,7 @@ std::vector<int> evens(const std::vector<int>& v) {
 }
 ```
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R2 transform
 #include <ranges>
@@ -412,6 +432,7 @@ std::vector<int> squared(const std::vector<int>& v) {
 }
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R3 take / drop
 #include <ranges>
@@ -423,6 +444,7 @@ int head3(const std::vector<int>& v) {
 }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R4 reverse
 #include <ranges>
@@ -433,6 +455,7 @@ std::vector<int> reversed(std::vector<int> v) {
 }
 ```
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R5 iota 有限序列
 #include <ranges>
@@ -443,6 +466,7 @@ std::vector<int> ten() {
 }
 ```
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R6 slice
 #include <ranges>
@@ -454,6 +478,7 @@ int slice_sum(const std::vector<int>& v) {
 }
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R7 ranges 算法 sort
 #include <ranges>
@@ -462,6 +487,7 @@ int slice_sum(const std::vector<int>& v) {
 void sort_it(std::vector<int>& v) { std::ranges::sort(v); }
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R8 ranges max/min
 #include <ranges>
@@ -470,6 +496,7 @@ void sort_it(std::vector<int>& v) { std::ranges::sort(v); }
 int biggest(const std::vector<int>& v) { return *std::ranges::max_element(v); }
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R9 投影排序
 #include <ranges>
@@ -480,6 +507,7 @@ struct P { std::string name; int age; };
 void by_age(std::vector<P>& v) { std::ranges::sort(v, {}, &P::age); }
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R10 自定义 range
 #include <ranges>
@@ -492,6 +520,7 @@ struct Count {
 int count_sum(int n) { int s=0; for (int x : Count{n}) s+=x; return s; }
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R11 惰性物化
 #include <ranges>
@@ -502,6 +531,7 @@ std::vector<int> materialize(const std::vector<int>& v) {
 }
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（ranges）]
 ```cpp
 // R12 filter 后遍历（前向迭代器，无下标）
 #include <ranges>
@@ -591,12 +621,14 @@ Ranges 的价值是「视图零拷贝 + 惰性求值」——把多步变换写�
 
 ## 附录: Ranges 深度
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：附录: Ranges 深度]
 ```cpp
 #include <iostream>
 #include <ranges>
 int main(){auto v=std::views::iota(1,10)|std::views::filter([](int x){return x%2==0;})|std::views::transform([](int x){return x*x;});for(int x:v)std::cout<<x<<" ";std::cout<<std::endl;return 0;}
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：附录: Ranges 深度]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -604,12 +636,14 @@ int main(){auto v=std::views::iota(1,10)|std::views::filter([](int x){return x%2
 int main(){std::vector<int> v{5,3,1,4,2};auto r=v|std::views::take(3)|std::views::transform([](int x){return x*10;});for(int x:r)std::cout<<x<<" ";std::cout<<std::endl;return 0;}
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：附录: Ranges 深度]
 ```cpp
 #include <iostream>
 #include <ranges>
 int main(){for(int x:std::views::iota(1)|std::views::take(5))std::cout<<x<<" ";std::cout<<std::endl;return 0;}
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：附录: Ranges 深度]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -618,6 +652,7 @@ int main(){for(int x:std::views::iota(1)|std::views::take(5))std::cout<<x<<" ";s
 int main(){std::vector<int> v{1,2,3,4,5};auto even=[](int x){return x%2==0;};if(std::ranges::all_of(v,even))std::cout<<"all even";else std::cout<<"not all even";std::cout<<std::endl;return 0;}
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：附录: Ranges 深度]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -636,6 +671,7 @@ Ranges 从 Boost.Range (2003) 到 C++20 (2020) 走过了 17 年。三个关键�
 
 ## 附录 B：性能与面试 [E/G/J]
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：附录 B：性能与面试 [E/G/J]]
 ```cpp
 #include <iostream>
 int main() {
@@ -676,6 +712,7 @@ int main() {
 | ranges和C++23迭代器? | contiguous_iterator, sentinel概念 |
 | 何时不用ranges? | 单操作, 多分支代码, 预C++20 |
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：面试]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -685,6 +722,7 @@ int main(){for(int x: std::views::iota(1,6)|std::views::transform([](int a){retu
 ## ⑫ ranges::to 与 C++23 增强
 
 C++23 ranges::to<T>将view转换为容器:
+> **示例 38** [难度 ★☆☆☆☆] [主题：与 C++23 增强]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -718,6 +756,7 @@ C++23新增views:
 ## ⑬ ranges的sentinel优势
 
 sentinel不与end迭代器类型绑定→简化迭代器设计。例如null-terminated string的end就是sentinel(不是char*):
+> **示例 39** [难度 ★☆☆☆☆] [主题：的sentinel优势]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -822,6 +861,7 @@ sentinel使range不必提供同类型的end迭代器——这对复杂数据结�
 
 <details><summary>答案与解析</summary>
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -837,6 +877,7 @@ int main() {
 
 `filter`/`transform`/`take` 都是 **view（非拥有、惰性）**：它们只持有"对原 `v` 的引用 + 适配逻辑"，不拷贝元素。遍历 `r` 时，迭代器每次推进都在原 `v` 上"跳过不满足 filter 的元素 → 套用 transform → 数到 3 个即停"，**一遍扫描、零中间容器**。等价手写循环：
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <vector>
 #include <iostream>
@@ -865,6 +906,7 @@ int main() {
 
 projection 让算法"在比较前先抽取键"，免去手写 lambda 比较器与拷贝：
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -897,6 +939,7 @@ int main() {
 
 **错误（编译通过，运行期 UB）**：view 只持有对 `v` 的引用，`v` 在 `make_view()` 返回时已析构，外部拿到的 view 指向死对象：
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -911,6 +954,7 @@ auto dangling() {                       // 返回类型推导为 view, 引用已
 
 **安全做法 1（具名生命周期）**：让 view 与底层容器活在同一作用域，不要跨函数返回 view：
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -924,6 +968,7 @@ void ok_local() {
 
 **安全做法 2（物化到容器）**：需要把结果传出去时，用容器接收，`ranges::to` 或区间构造把它变成拥有式数据：
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -950,6 +995,7 @@ std::vector<int> safe() {
 
 **修复（落地）。** 谓词无捕获/按引用，管道单遍零中间容器：
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：演绎 1：手写循环 vs Range]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -974,6 +1020,7 @@ int main() {
 
 **修复（落地）。** 需要传递/存储就**物化**成拥有式容器；只在同作用域即时消费才保留 view：
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：演绎 2：管道结果要存/要传 → 物]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -1429,6 +1476,7 @@ flowchart TD
 
 ### D4.7 第一方可编译验证（Ranges 深入）
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -1476,6 +1524,7 @@ int main() {
 
 ### D5.3 可复现演示
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 #include <vector>

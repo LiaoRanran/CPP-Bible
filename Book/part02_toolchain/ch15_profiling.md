@@ -43,6 +43,7 @@
 
 没有测量就没有优化。经验直觉常错：你觉得慢的那行，火焰图里可能只占 0.3%；真正的热点藏在缓存未命中与分支预测失败里。性能分析（Profiling）把"感觉慢"变成"数字在哪慢"。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：为什么性能分析]
 ```
         ┌─────────────────────────────────────┐
         │  直觉(猜)        vs        测量(证)   │
@@ -54,6 +55,7 @@
 - `[标准]`：C++ 不规定 profiler；性能是可观测属性，依赖实现与硬件。
 - `[经验]`：先有可复现的基准，再谈优化；否则你在优化噪声。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：为什么性能分析]
 ```cpp
 // ① 一个"看起来无辜、实则热点"的函数：累加 5000 万元素
 #include <vector>
@@ -87,6 +89,7 @@ perf report
 - `[平台·Linux]`：`perf` 是 **Linux 专有**（依赖 `perf_event_open`  syscall）。Windows/MinGW 下不存在；对应能力由 ETW / Visual Studio Profiler 提供（见 ⑰）。
 - `[经验]`：采样频率 `-F 9999` ≈ 每秒 1 万次；太高会扰动程序，太低丢细节，9999 是常用甜点。
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：基础]
 ```cpp
 // ② 一个适合被 perf 采样的程序骨架
 #include <vector>
@@ -122,6 +125,7 @@ perf stat -e instructions,cycles ./app
 - `[实现·GCC15]`：计数器由硬件提供；`perf` 只是读取接口。不同微架构事件名可能不同（Intel `/sys/bus/event_source/devices/cpu/events/`）。
 - `[经验]`：**先算 IPC**。IPC≈3–4 说明算得快、等内存；IPC<1 说明指令供给或串行依赖是瓶颈。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：硬件计数器]
 ```cpp
 // ③ 缓存不友好：随机跳跃访问 -> 高 cache-miss
 #include <vector>
@@ -154,6 +158,7 @@ perf script | ./stackcollapse-perf.pl > out.folded
 ./flamegraph.pl out.folded > flame.svg
 ```
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：火焰图生成]
 ```cpp
 // ④ 一个能产生"深调用栈"的工作负载，便于火焰图展示
 #include <vector>
@@ -176,6 +181,7 @@ int main() {
 
 **实测**。程序 `Examples/_ch15_vector_reserve.cpp` 用 `std::chrono` 测量 N=20,000,000 次 `push_back`，对比"不 reserve"与"先 reserve(N)"：
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：[实现·GCC15] 真实微基准：v]
 ```cpp
 // 文件：Examples/_ch15_vector_reserve.cpp
 // 行号：11（no_reserve 段）/ 21（with_reserve 段）
@@ -221,6 +227,7 @@ with_reserve :    32.90 ms   size=20000000
 
 Intel VTune Profiler 是图形化、微架构级分析器（Windows/Linux 均可用），比 `perf` 更"会说话"：它直接告诉你 "Memory Bound"、"Front-End Bound"、"Bad Speculation" 占比。
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：简介]
 ```cpp
 // ⑥ 一个 VTune "Memory Bound" 视角会标红的工作负载
 #include <vector>
@@ -245,6 +252,7 @@ int main() {
 
 [Godbolt](https://godbolt.org) 是浏览器内编译器，输入 C++ 即时看汇编。用途：**确认你的优化有没有真的落到汇编**（比如 `-O2` 是否向量化了）。
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：用法]
 ```cpp
 // ⑦ 把这段代码贴进 Godbolt，选 x86-64 gcc 13.1 -O2，看 sum() 是否被 vectorize
 long sum(const long* a, long n) {
@@ -261,6 +269,7 @@ long sum(const long* a, long n) {
 
 手写 `chrono` 微基准容易踩坑（见 ⑯）。Google Benchmark 提供：多次迭代取中位数、自动剔除首尾、统计方差。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：基准框架 Google Benchm]
 ```cpp
 // ⑧a 用 Google Benchmark 重写 reserve 对比（需链接 benchmark 库）
 #include <benchmark/benchmark.h>
@@ -304,6 +313,7 @@ g++ -std=c++23 -O2 bench.cpp -lbenchmark -lpthread -o bench
 2. **采样**：`perf record -g` + 火焰图，找最宽塔。
 3. **下钻**：对热点函数取 `-S` 汇编，确认是否向量化 / 有无冗余。
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：热点识别方法]
 ```cpp
 #include <vector>
 // ⑨ 把"疑似热点"用 __attribute__((noinline)) 隔离，便于单独剖析
@@ -326,6 +336,7 @@ int main() {
 
 现代 CPU 是流水线。瓶颈分四类：
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：微架构瓶颈]
 ```
 ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌────────┐
 │ 前端 Front│→ │ 后端 Back │→ │ 执行单元  │→ │ 退役    │
@@ -342,6 +353,7 @@ int main() {
   - **Back-End / Memory Bound**：等数据（cache-miss、DRAM 延迟）→ 优化数据局部性。
   - **Bad Speculation**：分支预测失败 → 减少不可预测分支。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：微架构瓶颈]
 ```cpp
 // ⑩ 内存 bound 典型：顺序流访问，受带宽限制（非计算受限）
 #include <vector>
@@ -357,6 +369,7 @@ double stream_add(const std::vector<double>& a, const std::vector<double>& b) {
 
 **实测**。程序 `Examples/_ch15_scalar_vs_accum.cpp` 对比两个求和算法，并取真实 `-O2` 汇编。
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：[实现·GCC15] 真实：-O2 ]
 ```cpp
 // 文件：Examples/_ch15_scalar_vs_accum.cpp
 // 行号：14（scalar_sum）/ 21（four_acc_sum）
@@ -436,6 +449,7 @@ _Z12four_acc_sumPKll:
 
 缓存层级：L1（~1ns）→ L2（~4ns）→ L3（~10ns）→ DRAM（~100ns）。**缓存友好 = 顺序、局部、紧凑**。
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：缓存命中分析]
 ```cpp
 #include <cstddef>
 #include <vector>
@@ -447,6 +461,7 @@ void row_major(const std::vector<std::vector<double>>& m, double& s) {
 }
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：缓存命中分析]
 ```cpp
 #include <cstddef>
 #include <vector>
@@ -469,6 +484,7 @@ void col_major(const std::vector<std::vector<double>>& m, double& s) {
 | 采样 (Sampling) | 周期性中断取栈 | 开销低、可上生产 | 短函数可能漏采 |
 | 插桩 (Instrument) | 编译期注入计数器 | 精确、全覆盖 | 显著慢、改二进制 |
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：采样 vs 插桩]
 ```cpp
 // ⑬ 插桩视角：手动计数器（简化版"插桩"）
 #include <unordered_map>
@@ -486,6 +502,7 @@ void api_b() { COUNT(); api_a(); }
 
 把性能守卫写进 CI：跑基准，对比基线，超阈值就红。
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：与 CI 集成]
 ```cpp
 // ⑭a 用 Google Benchmark 的阈值断言（回归捕获）
 #include <benchmark/benchmark.h>
@@ -510,6 +527,7 @@ python3 compare.py bench_baseline.json bench_new.json --threshold 5%
 
 可复用的七步法：
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：[经验] 分析流程]
 ```
   ① 定目标(延迟?吞吐?) → ② 建可复现基准
         → ③ perf stat 看 IPC/缓存 → ④ 火焰图定位最宽塔
@@ -517,6 +535,7 @@ python3 compare.py bench_baseline.json bench_new.json --threshold 5%
         → ⑦ 重测，确认提升且无误回归
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：[经验] 分析流程]
 ```cpp
 #include <vector>
 // ⑮ 把"优化前后"做成同一基准的两种实现，便于对比
@@ -532,6 +551,7 @@ struct Algo {
 
 ## ⑯ 常见误区（微基准陷阱 / 温度计效应）
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：常见误区]
 ```cpp
 // ⑯a 陷阱1：死代码被优化掉——基准测了个寂寞
 #include <vector>
@@ -548,6 +568,7 @@ int main() {
 }
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：常见误区]
 ```cpp
 // ⑯b 陷阱2：false sharing（伪共享）——两线程各写自己的计数器，却在同一缓存行
 #include <thread>
@@ -568,6 +589,7 @@ void thread_b() { for (int i=0;i<100'000'000;++i) c.b++; }
 - **ETW**（Event Tracing for Windows）+ `xperf` / `WPR`：内核级采样。
 - **Visual Studio Profiler**：CPU Usage / Instrumentation，GUI 火焰图。
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：跨平台工具]
 ```cpp
 // ⑰ 同一段热点代码，跨平台都成立；只是"怎么测"不同
 #include <vector>
@@ -601,6 +623,7 @@ wpr -stop out.etl                # 停止并写出 ETL
 2. **时间线/轨迹**（timeline）：多线程、锁等待、I/O 阻塞。
 3. **Diff 火焰图**：优化前后减法，直接看"哪块塔矮了"。
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：可视化]
 ```cpp
 // ⑱ 多线程时间线视角：各线程忙等 vs 真正计算
 #include <thread>
@@ -619,6 +642,7 @@ void worker(long n, long& out) {
 
 ## ⑲ 最佳实践
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：最佳实践]
 ```cpp
 // ⑲ 把热点数据做成"对 cache 友好 + 对编译器友好"的形态
 #include <vector>
@@ -656,6 +680,7 @@ long fast_sum(const long* data, long n) {
    - [标准] `inline` 只是给实现的内联建议（同时放宽 ODR），并不强制内联；跨翻译单元无 LTO 时通常无法内联。
    - [引用] ISO/IEC 14882:2023 §[dcl.fct.spec]（inline 说明符）；cppreference "inline" 词条。
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：速查表]
 ```cpp
 // ⑳ 一键自查：你的微基准是否"诚实"？
 // 1) 结果是否被使用/打印？ 2) 是否多次取中位数？
@@ -686,6 +711,7 @@ bool honest_benchmark(long result_used, int iterations, bool checked_asm) {
 
 ## 补充完整可编译示例（profiling）
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P1 手动计时模板（避免重复 boilerplate）
 #include <chrono>
@@ -698,6 +724,7 @@ double time_ms(F f) {
 }
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P2 锚定结果，防 -O2 删循环（用 volatile 输出）
 #include <vector>
@@ -711,6 +738,7 @@ int main() {
 }
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P3 扁平矩阵（连续内存，利于缓存与向量化）
 #include <vector>
@@ -723,6 +751,7 @@ struct Mat {
 };
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P4 false sharing 修复：缓存行隔离
 #include <cstddef>
@@ -732,6 +761,7 @@ struct Aligned {
 };
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P5 用 std::accumulate 的"看起来不同、其实一样"的写法
 #include <vector>
@@ -741,6 +771,7 @@ long acc_sum(const std::vector<long>& v) {
 }
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P6 测"分配器压力"：频繁小对象 new/delete
 #include <vector>
@@ -754,6 +785,7 @@ long alloc_pressure(long n) {
 }
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P7 分支预测友好的查表替代（去分支）
 #include <array>
@@ -762,6 +794,7 @@ long lut_pick(const std::array<long,4>& t, int k) {
 }
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P8 多线程热点（tbb 风格思路，纯 std 实现）
 #include <thread>
@@ -774,6 +807,7 @@ void parallel_sum(const std::vector<long>& v, long& out, size_t lo, size_t hi) {
 }
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P9 让函数不被内联，便于 perf 单独采样
 __attribute__((noinline)) long isolated(long n) {
@@ -781,6 +815,7 @@ __attribute__((noinline)) long isolated(long n) {
 }
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P10 取汇编的极简驱动（配合 g++ -S）
 long add_all(const long* a, long n) {
@@ -790,6 +825,7 @@ long add_all(const long* a, long n) {
 }
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P11 cache line 大小感知的字段排布（热字段聚拢）
 struct Hot {
@@ -800,6 +836,7 @@ struct Hot {
 };
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P12 基准前"热身"：把数据拉进缓存，避免冷启动噪声
 #include <vector>
@@ -810,6 +847,7 @@ void warmup(std::vector<long>& v) {
 }
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // P13 端到端：构建可复现基准的最小骨架
 #include <vector>
@@ -871,6 +909,7 @@ int main() {
 
 ## 附录 A：工业性能分析与WG21背景
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：附录 A：工业性能分析与WG21背景]
 ```
 perf (Linux, 2009): perf record -g → perf report → 火焰图(Brendan Gregg,2013)
   → 采样 <5% overhead, Google 强制要求每个perf bug附perf报告
@@ -880,6 +919,7 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 
 ## 附录 B：性能分析黄金法则与面试
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：附录 B：性能分析黄金法则与面试]
 ```
 黄金法则:
 1. 先测量后优化 (never guess bottleneck)
@@ -936,6 +976,7 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 
 **真实场景：海量日志写入的扩容抖动。** 你往 `vector` 里逐条 push 百万条日志，发布前想确认扩容开销。请用微基准对比"预 reserve"与"不 reserve"的耗时差异，写程序体现 `std::vector::push_back` 在容量不足时重新分配并拷贝的代价。
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -961,6 +1002,7 @@ int main() {
 
 **真实场景：数值热点的向量化。** 一段求和热循环在采样里占比很高，你想确认编译器是否把它向量化、以及多累加器能否提 IPC。请写程序用"单累加器"和"四路累加器"两种写法，说明多累加器如何缓解流水线依赖、提升 IPC（可用 Compiler Explorer 比对 `-O2` 汇编码）。
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -983,6 +1025,7 @@ int main() {
 
 **真实场景：图像处理内核的缓存友好性。** 你对一个大矩阵（图像/张量）做逐元素运算，希望避免跨行大 stride 访问拖慢热点。请写程序对比"行优先（cache 友好）"与"列优先（跨行跳跃）"遍历，说明 stride 过大为何触发更多 cache miss。
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1017,6 +1060,7 @@ perf record -g ./app          # 采样带调用栈
 perf report                   # 按自身+子函数耗时排序，锁定热点函数
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：演绎 1：用 perf 定位热点再针]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1032,6 +1076,7 @@ int main() { std::vector<int> v(1'000'000, 1); long long s = 0; for (int x : v) 
 **错误**：靠读 C++ 猜编译器行为，容易高估或低估优化。
 **修复**：把函数贴进 Godbolt，选 GCC/Clang + `-O2`，直接看是否出现 `ymm`/`zmm` 向量指令；
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：演绎 2：用 Compiler Ex]
 ```cpp
 #include <iostream>
 int main() { long long s = 0; for (int i = 0; i < 1000; ++i) s += i; std::cout << s << "\n"; }

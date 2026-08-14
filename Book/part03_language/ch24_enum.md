@@ -84,6 +84,7 @@ C 的 `enum` 来自 1970 年代，本意是用具名常量替代魔法数字，�
 
 ## ③ 思维导图（文本版）
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：思维导图（文本版）]
 ```
 枚举 enum
 ├─ 无作用域枚举 (unscoped)        [标准/历史]
@@ -142,6 +143,7 @@ C 的 `enum` 来自 1970 年代，本意是用具名常量替代魔法数字，�
 
 **[标准]** 无作用域枚举把枚举符（enumerator）的名字注入**最近的外层作用域**，并且每个枚举符都可隐式转换为其底层整数类型（进而转为 `int`）。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：无作用域枚举]
 ```cpp
 // 示例 1：基本无作用域枚举
 enum Color { Red, Green, Blue };   // Red/Green/Blue 注入外层作用域
@@ -156,6 +158,7 @@ int main() {
 
 **[实现/历史]** 枚举符的值默认从 0 起递增；可显式赋值，后续未赋值者在前一个基础上 +1。
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：无作用域枚举]
 ```cpp
 // 示例 2：显式赋值与递增
 enum Permission {
@@ -170,6 +173,7 @@ static_assert(Read == 1 && Write == 2 && Execute == 4);
 
 **[经验]** unscoped 枚举最大的问题是**名字污染**：两个枚举定义了同名枚举符会冲突。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：无作用域枚举]
 ```cpp
 // 示例 3：作用域污染导致的冲突（编译错误演示）
 enum Color   { Red, Green, Blue };
@@ -186,6 +190,7 @@ enum Color   { Red, Green, Blue };
 1. **scoped（作用域）**：枚举符只在枚举类型体内可见，访问须写 `E::name`。
 2. **strongly-typed（强类型）**：枚举值**不再隐式转换**为整数；与整数的比较、赋值都需要显式 `static_cast`。
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：有作用域枚举：enum class]
 ```cpp
 // 示例 4：基本 enum class
 enum class Color { Red, Green, Blue };
@@ -209,6 +214,7 @@ int main() {
 
 **(b) strongly-typed：消灭魔法数** [K04]
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：设计动机深度剖析：为什么需要 enu]
 ```cpp
 // 示例 5：enum class 杜绝魔法数（这是它最重要的价值）
 enum class State { Idle, Running, Stopped };
@@ -225,6 +231,7 @@ void handle(State s) {
 
 强类型不是免费的——当你确实需要整数值（序列化、位掩码、数组下标）时，必须写 `static_cast`。这不是运行时开销，而是**书写成本**。
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：设计动机深度剖析：为什么需要 enu]
 ```cpp
 // 示例 6：static_cast 的“必要性”与“零运行时代价”
 #include <cstdio>
@@ -250,6 +257,7 @@ int main() {
 - **固定底层类型枚举（fixed underlying type）**：声明时写了 `: Type`，如 `enum E : std::uint8_t {...}`。底层类型固定为 `Type`。
 - **不固定底层类型枚举（unfixed）**：没写 `: Type`。底层类型由实现选择，但要能表示所有枚举符的值；若所有枚举符非负，实现可能选无符号类型。
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：枚举底层类型与 ABI [K06][]
 ```cpp
 // 示例 7：指定底层类型 : uint8_t 省内存
 #include <cstdint>
@@ -269,6 +277,7 @@ static_assert(sizeof(Normal) == 4);
 
 **[经验]** 指定 `: std::int8_t` / `: std::uint8_t` 表面省内存，但有两处经典坑：
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：对齐与符号扩展坑 [K09]]
 ```cpp
 // 示例 8：符号扩展坑（int8_t 负值）
 #include <cstdint>
@@ -283,6 +292,7 @@ int main() {
 }
 ```
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：对齐与符号扩展坑 [K09]]
 ```cpp
 // 示例 9：对齐/打包坑——小数组枚举并不“自动”压缩结构体
 #include <cstdint>
@@ -322,6 +332,7 @@ int main() {
 2. **scoped 枚举**：**不**存在到任何整数类型的隐式转换。`if(e == 1)` 非法。
 3. 反向（整数→枚举）**任何枚举都不隐式**；必须用 `static_cast`。`static_cast<Color>(2)` 合法，即使 2 不是某枚举符的值（结果**未指明行为**但合法）。
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：转换规则（C++11 起）[K11]]
 ```cpp
 // 示例 10：C++11 隐式转换规则演示
 #include <cstdio>
@@ -346,6 +357,7 @@ int main() {
 
 **[标准]** `static_cast` 在枚举与整数之间执行底层值拷贝。对于 scoped 枚举这是唯一通往整数的门。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：显式转换 staticcast [K]
 ```cpp
 // 示例 11：static_cast 双向
 #include <cstdint>
@@ -365,6 +377,7 @@ int main() {
 
 ### 经典重载模板 [K13]
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：经典重载模板 [K13]]
 ```cpp
 // 示例 12：位掩码枚举 operator| & ^ ~ 惯用法
 #include <cstdint>
@@ -402,6 +415,7 @@ int main() {
 
 **[标准/C++17]** `[[nodiscard]]` 应标在**纯函数式运算符**（`| & ^ ~`）上，防止 `a | b;` 这类“忘了接收结果”的误用（位运算不修改操作数）。复合赋值 `|=` 等返回引用、有副作用，一般不标。
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：[[nodiscard]] 的位置 ]
 ```cpp
 // 示例 13：[[nodiscard]] 防止误用
 // (a | b);   // 若 operator| 标了 [[nodiscard]]，此行产生警告：结果被丢弃
@@ -409,6 +423,7 @@ int main() {
 
 ### 与 `std::formatter` 特化（C++20）[经验]
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：与 std::formatter 特]
 ```cpp
 // 示例 14：为位掩码枚举特化 std::formatter（C++20）
 #include <format>
@@ -448,6 +463,7 @@ int main() {
 
 **[标准]** C++11 起枚举可以前向声明，但**只有当枚举有固定底层类型时**才允许。原因：不固定底层类型时，编译器在见到枚举定义前不知道其大小，无法为指针/引用之外的使用分配空间。
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：枚举前向声明（C++11）[K15]]
 ```cpp
 // 示例 15：合法的前向声明（指定底层类型）
 enum class ForwardDecl : int;          // OK：指定了底层类型
@@ -455,6 +471,7 @@ void consume(ForwardDecl);             // 可声明函数
 enum class ForwardDecl : int { A, B }; // 定义须与声明底层类型一致
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：枚举前向声明（C++11）[K15]]
 ```cpp
 // 示例 16：非法前向声明（不指定底层类型）
 // enum ForwardDecl;      // 错误：不固定底层类型不能前向声明
@@ -471,6 +488,7 @@ enum class ForwardDecl : int { A, B }; // 定义须与声明底层类型一致
 
 **[标准]** `enum { N = 5 };` 没有类型名，其枚举符直接注入外层作用域，常用于定义编译期整型常量。
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：匿名枚举作常量 [K16]]
 ```cpp
 // 示例 17：匿名枚举作编译期常量
 enum { BufferSize = 1024, MaxRetry = 3 };
@@ -482,6 +500,7 @@ static_assert(MaxRetry == 3);
 
 **[标准/C++11 起]** 匿名枚举常量是 C++11 前替代 `constexpr` 的惯用法。现代 C++ 更倾向：
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：与 constexpr / inli]
 ```cpp
 // 示例 18：三种“编译期常量”写法对比
 enum { Legacy = 100 };              // (a) 匿名枚举（C++98 风格，最老）
@@ -511,6 +530,7 @@ int main() {
 
 **文件**：`x86_64-w64-mingw32/bits/error_constants.h`，第 42 行起。
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：std::errc（枚举错误码）[K]
 ```cpp
 // x86_64-w64-mingw32/bits/error_constants.h:42  (libstdc++ 15.3.0, 本机实测)
   enum class errc
@@ -546,6 +566,7 @@ int main() {
 
 **文件**：`bits/ios_base.h`，第 59–117 行（含 `operator|` 等重载）。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：std::iosbase::fmtf]
 ```cpp
 // bits/ios_base.h:59  (libstdc++ 15.3.0, 本机实测)
   enum _Ios_Fmtflags
@@ -595,6 +616,7 @@ int main() {
 
 **文件**：`bits/ios_base.h`，第 236 行。
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：std::ioerrc [K18]]
 ```cpp
 // bits/ios_base.h:236  (libstdc++ 15.3.0, 本机实测)
 #if __cplusplus >= 201103L
@@ -611,6 +633,7 @@ int main() {
 
 **文件**：`charconv`，第 625–655 行。
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：std::charsformat]
 ```cpp
 // charconv:625  (libstdc++ 15.3.0, 本机实测)
   enum class chars_format
@@ -650,6 +673,7 @@ int main() {
 
 **文件**：`type_traits`，第 3929–3959 行。
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：std::isscopedenum]
 ```cpp
 // type_traits:3929  (libstdc++ 15.3.0, 本机实测)
 #define __cpp_lib_is_scoped_enum 202011L
@@ -717,6 +741,7 @@ int main() {
 
 ### 基准 1：`enum class` vs `int` 分支（零开销）
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：基准 1：enum class vs]
 ```cpp
 // 示例 19：enum class 与 int 分支开销对比（可编译运行）
 #include <benchmark.hpp>   // 用法示意，可替换为 Google Benchmark
@@ -750,6 +775,7 @@ int eval_int(int op, int a, int b) {
 
 ### 基准 2：`static_cast` 的开销（编译期）
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：基准 2：staticcast 的开]
 ```cpp
 // 示例 20：static_cast 是 no-op（编译期）
 #include <cstdint>
@@ -762,6 +788,7 @@ E from_int(std::uint8_t v) { return static_cast<E>(v); }
 
 ### 基准 3：指定 `: uint8_t` 的内存/缓存收益
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：基准 3：指定 : uint8t 的]
 ```cpp
 // 示例 21：大数组下底层类型影响内存占用（可运行计时）
 #include <cstdint>
@@ -798,6 +825,7 @@ int main() {
 
 可复现基准（自包含、可编译）：
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：实测：枚举派发 vs 虚调用]
 ```cpp
 // g++ -std=c++23 -O2 ch24_bench.cpp
 #include <chrono>
@@ -831,6 +859,7 @@ int main(){
 
 **[标准/预览]** P2996（静态反射）引入编译期元数据。`std::meta::enumerators_of<E>()` 返回一个枚举符的编译期序列，每个元素可取到名字（`@name`/`.name()`）与值。
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：++26 静态反射预览 std::m]
 ```cpp
 // 示例 22：C++26 静态反射（预览语法，编译器支持前无法编译）
 // #include <meta>  // C++26
@@ -856,6 +885,7 @@ int main(){
 
 **核心思路**：利用“枚举符连续且从 0 起”的约定 + 结构化绑定/模板特化，在编译期生成 `[名字, 值]` 数组。其骨架：
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：当前方案：magicenum 的实现]
 ```cpp
 // 示例 23：magic_enum 思路的最小实现（连续枚举，0 起）
 #include <string_view>
@@ -964,6 +994,7 @@ int main() {
 ## ⑲ 常见陷阱与最佳实践 [K09][K14][经验]
 
 1. **陷阱：未初始化枚举变量**
+> **示例 31** [难度 ★☆☆☆☆] [主题：常见陷阱与最佳实践 [K09][K1]
    ```cpp
    // 示例 28：枚举变量默认未初始化（与 int 一样）
    enum class E { A, B };
@@ -972,6 +1003,7 @@ int main() {
    **实践**：始终初始化；或优先用 `constexpr E x = E::A;`。
 
 2. **陷阱：负数枚举符与无符号底层类型**
+> **示例 32** [难度 ★☆☆☆☆] [主题：常见陷阱与最佳实践 [K09][K1]
    ```cpp
 #include <cstdint>
    // 示例 29：无符号底层类型装不下负枚举符 → 编译错误
@@ -980,6 +1012,7 @@ int main() {
    **实践**：有负值就用有符号底层类型（`int`/`int8_t`）。
 
 3. **陷阱：哈希/比较跨枚举类型**
+> **示例 33** [难度 ★☆☆☆☆] [主题：常见陷阱与最佳实践 [K09][K1]
    ```cpp
    // 示例 30：不同枚举类型即使底层值相同也不可比较
    enum class A { X = 1 };
@@ -991,6 +1024,7 @@ int main() {
 4. **最佳实践：`[[nodiscard]]` 标在纯位运算符上**（见 ⑨）。
 
 5. **最佳实践：序列化枚举时固定底层类型**
+> **示例 34** [难度 ★☆☆☆☆] [主题：常见陷阱与最佳实践 [K09][K1]
    ```cpp
 #include <cstdint>
    // 示例 31：网络/文件序列化必须固定底层类型，避免实现相关大小
@@ -1021,6 +1055,7 @@ int main() {
 
 ### A. 嵌入式寄存器位域
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：嵌入式寄存器位域]
 ```cpp
 // 示例 32：嵌入式寄存器——unscoped 位掩码（贴近硬件，直接 | 可用）
 #include <cstdint>
@@ -1036,6 +1071,7 @@ void enable() { *CTRL |= ENABLE | INT_EN; }
 bool ready()   { return (*CTRL & RDY) != 0; }
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：嵌入式寄存器位域]
 ```cpp
 // 示例 33：嵌入式寄存器——enum class 版（强类型，需运算符）
 #include <cstdint>
@@ -1053,6 +1089,7 @@ bool ready() { return (static_cast<Reg>(*CTRL) & Reg::Rdy) != Reg::Rdy; } // 注
 
 ### B. 状态机
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：状态机]
 ```cpp
 // 示例 34：enum class 驱动的有限状态机
 #include <cstdio>
@@ -1073,6 +1110,7 @@ int main() {
 }
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：状态机]
 ```cpp
 // 示例 35：状态机 + 非法状态用枚举值表示（强类型优于 int）
 enum class Conn { Closed, Connecting, Established, Closing };
@@ -1081,6 +1119,7 @@ bool is_active(Conn c) { return c == Conn::Connecting || c == Conn::Established;
 
 ### C. 协议标志位
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：协议标志位]
 ```cpp
 // 示例 36：网络协议标志（位掩码 + enum class）
 #include <cstdint>
@@ -1097,6 +1136,7 @@ struct Packet { PktFlag flags; /* ... */ };
 bool is_syn_ack(Packet p){ return (p.flags & (PktFlag::SYN|PktFlag::ACK)) == (PktFlag::SYN|PktFlag::ACK); }
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：协议标志位]
 ```cpp
 #include <cstdint>
 // 示例 37：协议版本枚举 + 前向声明（跨模块）
@@ -1107,6 +1147,7 @@ enum class ProtoVer : std::uint8_t;        // 前向声明（固定底层类型�
 
 ### D. 错误码场景（关联第 14 章）
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：错误码场景（关联第 14 章）]
 ```cpp
 // 示例 38：std::errc 构造 error_code（需 <system_error>）
 #include <system_error>
@@ -1118,6 +1159,7 @@ int main() {
 }
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：错误码场景（关联第 14 章）]
 ```cpp
 // 示例 39：自定义错误码枚举（is_error_code_enum 特化）
 // 注意：make_error_code 必须定义在枚举所在命名空间（供 ADL 找到）；
@@ -1137,6 +1179,7 @@ int main() {
 }
 ```
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：错误码场景（关联第 14 章）]
 ```cpp
 // 示例 40：io_errc 与 iostream 错误（libstdc++ ios_base.h:204）
 #include <system_error>
@@ -1149,6 +1192,7 @@ int main() {
 
 ### 附加：枚举 trait（关联第 60 章）
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：附加：枚举 trait]
 ```cpp
 // 示例 41：std::underlying_type / is_enum / is_scoped_enum 萃取
 // 注意：std::is_scoped_enum / is_scoped_enum_v 是 C++23；用 -std=c++23 编译。
@@ -1165,6 +1209,7 @@ static_assert(std::is_scoped_enum_v<E2>);    // C++23
 static_assert(std::is_same_v<std::underlying_type_t<E2>, std::uint8_t>);
 ```
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：附加：枚举 trait]
 ```cpp
 // 示例 42：枚举作模板非类型参数（C++11 起允许）
 #include <cstdint>
@@ -1173,6 +1218,7 @@ template<Color C> void paint() {}
 int main() { paint<Color::Red>(); }
 ```
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：附加：枚举 trait]
 ```cpp
 // 示例 43：枚举与 auto / 范围 for（连续枚举迭代）
 #include <cstdint>
@@ -1191,6 +1237,7 @@ int main() {
 
 **[标准/关联]** 枚举常量（枚举符）是**常量表达式**，可出现在静态/线程存储期对象的初始化器中（见第 19 章）。
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：枚举与第 19 章存储期关联]
 ```cpp
 // 示例 44：枚举用于静态存储期对象的初始化
 #include <cstdint>
@@ -1199,6 +1246,7 @@ LogLevel const g_min_level = LogLevel::Info;   // 静态存储期，常量初始
 int main() { (void)g_min_level; }
 ```
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：枚举与第 19 章存储期关联]
 ```cpp
 // 示例 45：匿名枚举常量在头文件多 TU 中的内部链接
 // header.h:
@@ -1360,6 +1408,7 @@ C 的 `enum` 来自 1970 年代，本意是用具名常量替代魔法数字，�
 | enum class性能? | 与int完全相同(汇编为mov指令), 零额外开销 |
 | using enum(C++20)? | 将enum class值引入当前作用域(不再写::), 同时保留类型安全 |
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：面试巩固]
 ```cpp
 #include <iostream>
 #include <cstdint>
@@ -1375,6 +1424,7 @@ int main() {
 
 ## 附录 F：enum面试
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：附录 F：enum面试]
 ```cpp
 #include <iostream>
 #include <cstdint>
@@ -1428,6 +1478,7 @@ int main(){Color c=Color::Red;std::cout<<static_cast<int>(c)<<","<<sizeof(c)<<st
 
 `enum class` 不提供到整数的隐式转换，读取底层值需 `static_cast`：
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -1462,6 +1513,7 @@ int main() {
 
 返回类型必须写回枚举本身，运算用 `std::underlying_type_t` 在整数域做位操作：
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -1497,12 +1549,14 @@ int main() {
 
 `status.fwd.hpp`：
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 enum class Status : int;   // 前向声明：仅占位，不定义枚举值
 ```
 
 `status.def.cpp`：
 
+> **示例 54** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <cstdint>
 enum class Status : int { Ok = 0, Pending = 1, Error = 2 };
@@ -1510,6 +1564,7 @@ enum class Status : int { Ok = 0, Pending = 1, Error = 2 };
 
 `use.cpp`：
 
+> **示例 55** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 enum class Status : int;          // 前向声明：底层类型已知，类型已完整
@@ -1534,6 +1589,7 @@ int main() {
 
 **常见错误**：沿用 C 风格 `unscoped enum`，隐式转 `int` 导致 switch 漏 `default` 也不报错、不同枚举值可被相加：
 
+> **示例 56** [难度 ★☆☆☆☆] [主题：演绎 1：何时选 enum clas]
 ```cpp
 #include <iostream>
 enum Color { Red, Green, Blue };
@@ -1548,6 +1604,7 @@ int main() {
 
 **修复**：一律改用 `enum class`，强制 `static_cast` 才能取整数值，比较只能同类型：
 
+> **示例 57** [难度 ★☆☆☆☆] [主题：演绎 1：何时选 enum clas]
 ```cpp
 #include <iostream>
 enum class Color : unsigned char { Red, Green, Blue };
@@ -1568,6 +1625,7 @@ int main() {
 
 **常见错误**：运算符返回 `int`，组合后表达式失去枚举类型，再次赋值或比较时类型退化、易与别的 `int` 混用：
 
+> **示例 58** [难度 ★☆☆☆☆] [主题：演绎 2：位掩码枚举的零开销与惯用法]
 ```cpp
 #include <iostream>
 enum class Perm : unsigned { R = 1, W = 2 };
@@ -1581,6 +1639,7 @@ int main() {
 
 **修复**：运算符返回原 `enum class` 类型，位运算在 `underlying_type` 整数域进行，再 `static_cast` 回枚举：
 
+> **示例 59** [难度 ★☆☆☆☆] [主题：演绎 2：位掩码枚举的零开销与惯用法]
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -1753,6 +1812,7 @@ enum class 提供作用域隔离和类型安全，零运行期代价。当需要
 
 ### D5.3 可复现 demo
 
+> **示例 60** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 

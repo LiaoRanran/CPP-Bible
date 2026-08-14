@@ -42,6 +42,7 @@ C++20 引入的**协作取消（cooperative cancellation）**三件套：
 
 学完应理解：**为什么 C++ 坚决不给"强制杀线程"**；如何用 `stop_requested()` 轮询、`stop_callback` 做中断唤醒；以及它与 ⟶ Book/part07_stl/ch93_thread_async.md（可中断等待）、⟶ Book/part09_concurrency/ch107_atomic.md（内部原子位）的关系。
 
+> **示例 1** [难度 ★★★★☆] [主题：学习目标 [标准]]
 ```cpp
 // ① 动机：jthread 在退出作用域时自动请求停止并 join（完整可编译）
 #include <iostream>
@@ -85,6 +86,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII） [标准]
 
+> **示例 2** [难度 ★★★★☆] [主题：知识图谱（ASCII） [标准]]
 ```
                 stop_source ──拥有──► _Stop_state (原子位 + 回调链表)
                      │  request_stop()                │
@@ -167,6 +169,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：_Stop_state 与回调链表 [实现·GCC15]
 
+> **示例 3** [难度 ★★★★☆] [主题：内存图：Stopstate 与回调链]
 ```
 主线程 / jthread                 _Stop_state (堆)
 ┌─────────────────┐            ┌──────────────────────────────────────┐
@@ -189,6 +192,7 @@ request_stop(): 置 bit1 (release)，然后遍历链表同步调用各 _M_callba
 
 ## ⑧ 生命周期图：request_stop 与回调执行 [标准]
 
+> **示例 4** [难度 ★★★★☆] [主题：生命周期图：requeststop ]
 ```
  t0: jthread 构造 → 建 stop_source, 注入 stop_token, 工作线程启动
  t1: 工作线程循环检查 stop_requested()（acquire 读原子位）
@@ -207,6 +211,7 @@ request_stop(): 置 bit1 (release)，然后遍历链表同步调用各 _M_callba
 
 ## ⑨ 时序图：stop_callback 在 request_stop 时触发 [标准]
 
+> **示例 5** [难度 ★★★★☆] [主题：时序图：stopcallback 在]
 ```
 主线程              _Stop_state           工作线程           stop_callback
   │                    │                     │                    │
@@ -223,6 +228,7 @@ request_stop(): 置 bit1 (release)，然后遍历链表同步调用各 _M_callba
   │◄──────────────────┼─────────────────────│ join 返回          │
 ```
 
+> **示例 6** [难度 ★★★★☆] [主题：时序图：stopcallback 在]
 ```cpp
 // ⑨ stop_callback 在 request_stop 时被同步调用（完整可编译）
 #include <iostream>
@@ -273,6 +279,7 @@ _Z15poll_until_stopRKSt10stop_tokenRSt6atomicIiE:
 
 C++20 给 `std::condition_variable_any` 增加了 `wait(stop_token, Pred)` 重载：当 `stop_token` 被请求时，等待会被唤醒并抛出 `std::stop_error`（若谓词仍不满足）。这让"等待 + 取消"合二为一。
 
+> **示例 7** [难度 ★★★★☆] [主题：联系：与 conditionvari]
 ```cpp
 // ⑪ 可中断等待：stop_token 触发时 wait 提前返回（完整可编译）
 #include <iostream>
@@ -308,6 +315,7 @@ int main() {
 
 真实服务必须能在收到 SIGINT/SIGTERM 时**停止接受新连接、完成在途请求、释放资源**。下面是基于 `jthread` + `stop_token` 的**骨架**（可运行、可扩展）。
 
+> **示例 8** [难度 ★★★★☆] [主题：工业案例：服务器优雅关闭]
 ```cpp
 // ⑫ 工业：用 stop_token 实现可取消的后台任务 + 优雅停止（完整可编译骨架）
 #include <iostream>
@@ -425,6 +433,7 @@ bool _M_request_stop() noexcept {
 6. **`request_stop()` 返回 false 意味着？** → 停止请求之前已发出过（或 source 不可取消），本次无效。
 7. **`stop_callback` 的析构是否从链表移除？** → 是（行号：`610` `_M_remove_callback`），且会等待正在执行的回调完成。
 
+> **示例 9** [难度 ★★★★☆] [主题：面试题 [标准]]
 ```cpp
 // ⑮ 面试题佐证：request_stop 只生效一次（完整可编译）
 #include <iostream>
@@ -448,6 +457,7 @@ int main() {
 - **`stop_callback` 析构与 `request_stop` 并发** → 标准保证析构会等正在执行的回调完成（行号：`263` 同步），但回调本身不应长时间持有锁。
 - **拷贝 `stop_source` 还是 `stop_token`？** → 通常持有 `stop_source`（能发令）并分发 `stop_token`（听令）；`stop_source` 也可拷贝（共享同一 state）。
 
+> **示例 10** [难度 ★★★★☆] [主题：易错点 [经验]]
 ```cpp
 // ⑯ 易错：线程从不检查 stop_requested -> join 永远阻塞（仅示意，请勿这样写）
 #include <iostream>
@@ -480,6 +490,7 @@ int main() {
 
 **Q：与 `std::condition_variable_any` 配合的 `stop_error`？** A：可中断等待在停止被请求且谓词不满足时抛 `std::stop_error`；可捕获后清理。
 
+> **示例 11** [难度 ★★★★☆] [主题：[标准]]
 ```cpp
 // ⑰ FAQ 佐证：stop_token 可拷贝共享同一 state（完整可编译）
 #include <iostream>
@@ -505,6 +516,7 @@ int main() {
 4. 拆分"发令"与"听令"：`stop_source` 留在控制方，`stop_token` 传给工作方；必要时把 `get_stop_token()` 继续下传。
 5. `stop_callback` 的回调要**快进快出**——它在 `request_stop` 调用栈里同步执行，别在回调里做重活或二次加锁。
 
+> **示例 12** [难度 ★★★★☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱ 最佳实践：stop_callback + condition_variable_any 实现可中断等待（完整可编译）
 #include <iostream>
@@ -541,6 +553,7 @@ int main() {
 | `stop_callback` 注册/注销 | 加锁链表操作（ns~µs） | 频繁注册需谨慎 |
 | `jthread` 析构 | 等同 `request_stop` + `join` | 比 `thread` 多一次原子置位 |
 
+> **示例 13** [难度 ★★★★☆] [主题：性能分析]
 ```cpp
 // ⑲ microbenchmark：stop_requested 的轮询开销（量级示意，完整可编译）
 #include <iostream>
@@ -633,6 +646,7 @@ int main() {
 
 下面 J1–J26 每个都是**完整可编译程序**（自带 `#include` 与 `int main`）；`jthread` 由析构自动收尾，普通 `thread` 均已 `join`。
 
+> **示例 14** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J1 最基础的 jthread：注入 stop_token，循环检查
 #include <iostream>
@@ -651,6 +665,7 @@ int main() {
 }
 ```
 
+> **示例 15** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J2 jthread 由函数对象接收 stop_token（结构体 operator()）
 #include <iostream>
@@ -671,6 +686,7 @@ int main() {
 }
 ```
 
+> **示例 16** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J3 用外部 stop_source 主动发停止（控制方/工作方分离）
 #include <iostream>
@@ -691,6 +707,7 @@ int main() {
 }
 ```
 
+> **示例 17** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J4 stop_callback：停止时执行清理动作
 #include <iostream>
@@ -709,6 +726,7 @@ int main() {
 }
 ```
 
+> **示例 18** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J5 注册多个 stop_callback，按序同步执行
 #include <iostream>
@@ -727,6 +745,7 @@ int main() {
 }
 ```
 
+> **示例 19** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J6 已停止后再注册 stop_callback -> 立即同步执行
 #include <iostream>
@@ -742,6 +761,7 @@ int main() {
 }
 ```
 
+> **示例 20** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J7 stop_token 可拷贝，多个听令者共享 state
 #include <iostream>
@@ -764,6 +784,7 @@ int main() {
 }
 ```
 
+> **示例 21** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J8 对比：plain thread + atomic<bool> 自管取消（旧写法）vs jthread
 #include <iostream>
@@ -785,6 +806,7 @@ int main() {
 }
 ```
 
+> **示例 22** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J9 stop_source 本身也可拷贝（共享同一 state）
 #include <iostream>
@@ -799,6 +821,7 @@ int main() {
 }
 ```
 
+> **示例 23** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J10 request_stop 返回值语义（true=首次成功，false=已请求过/不可取消）
 #include <iostream>
@@ -811,6 +834,7 @@ int main() {
 }
 ```
 
+> **示例 24** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J11 stop_token 在无 state 时 stop_possible()==false（默认构造的 token）
 #include <iostream>
@@ -823,6 +847,7 @@ int main() {
 }
 ```
 
+> **示例 25** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J12 jthread 也可接收普通参数（stop_token 注入在首参，其余照常）
 #include <iostream>
@@ -840,6 +865,7 @@ int main() {
 }
 ```
 
+> **示例 26** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J13 jthread 传移动-only 参数 + stop_token
 #include <iostream>
@@ -860,6 +886,7 @@ int main() {
 }
 ```
 
+> **示例 27** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J14 在阻塞任务中用 stop_callback 唤醒（配合 condition_variable_any）
 #include <iostream>
@@ -883,6 +910,7 @@ int main() {
 }
 ```
 
+> **示例 28** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J15 生产者-消费者：用 stop_token 通知消费者退出
 #include <iostream>
@@ -904,6 +932,7 @@ int main() {
 }
 ```
 
+> **示例 29** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J16 嵌套任务：外层 jthread 把 stop_token 下传给内层逻辑
 #include <iostream>
@@ -920,6 +949,7 @@ int main() {
 }
 ```
 
+> **示例 30** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J17 计算型循环：定期在检查点响应停止（避免忙等但及时退出）
 #include <iostream>
@@ -940,6 +970,7 @@ int main() {
 }
 ```
 
+> **示例 31** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J18 显式 get_stop_token / request_stop 接口演练
 #include <iostream>
@@ -956,6 +987,7 @@ int main() {
 }
 ```
 
+> **示例 32** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J19 stop_callback 在类成员里做资源释放（RAII 风格）
 #include <iostream>
@@ -978,6 +1010,7 @@ int main() {
 }
 ```
 
+> **示例 33** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J20 计时任务：到时自动停止（定时器式）
 #include <iostream>
@@ -998,6 +1031,7 @@ int main() {
 }
 ```
 
+> **示例 34** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J21 用 stop_source::get_token 在多线程间广播停止（扇出-取消）
 #include <iostream>
@@ -1021,6 +1055,7 @@ int main() {
 }
 ```
 
+> **示例 35** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J22 stop_callback 回调里再次注册？（演示允许的同步行为）
 #include <iostream>
@@ -1035,6 +1070,7 @@ int main() {
 }
 ```
 
+> **示例 36** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J23 与 future 协作：可取消的异步计算（jthread + promise）
 #include <iostream>
@@ -1063,6 +1099,7 @@ int main() {
 }
 ```
 
+> **示例 37** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J24 stop_token 与 stop_source 的生命周期：token 比 source 活得久也安全
 #include <iostream>
@@ -1080,6 +1117,7 @@ int main() {
 }
 ```
 
+> **示例 38** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J25 用 stop_callback 实现"停止时唤醒条件变量"（典型服务端 accept 中断）
 #include <iostream>
@@ -1103,6 +1141,7 @@ int main() {
 }
 ```
 
+> **示例 39** [难度 ★★★★☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // J26 综合：可取消的"后台定时刷新"服务（工业骨架）
 #include <iostream>
@@ -1160,6 +1199,7 @@ int main() {
 
 ## 附录 F：stop_token工业与面试
 
+> **示例 40** [难度 ★★★★☆] [主题：附录 F：stoptoken工业与面]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1217,6 +1257,7 @@ int main(){std::jthread t([](std::stop_token st){while(!st.stop_requested()){std
 
 <details><summary>答案与解析</summary>
 
+> **示例 41** [难度 ★★★★☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1241,6 +1282,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 42** [难度 ★★★★☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1266,6 +1308,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 43** [难度 ★★★★☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1654,6 +1697,7 @@ int main() {
 
 ### D4.9 编译验证
 
+> **示例 44** [难度 ★★★★☆] [主题：编译验证]
 ```cpp
 #include <chrono>
 #include <iostream>
@@ -1804,6 +1848,7 @@ flowchart TD
 
 ### D5.3 可复现演示
 
+> **示例 45** [难度 ★★★★☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 #include <thread>

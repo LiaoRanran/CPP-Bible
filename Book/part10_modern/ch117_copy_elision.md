@@ -37,6 +37,7 @@
 
 **定义**：拷贝消除是编译器在语义允许时，省去「把对象从一个存储位置复制到另一个存储位置」这一步的优化——两个名字（源与目标）实际上指向**同一块内存**，根本不发生复制构造或移动构造。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：拷贝消除是什么]
 ```cpp
 // ① 最朴素的直觉：下面这段"应该"发生一次拷贝，实则被彻底消掉
 #include <cstdio>
@@ -52,6 +53,7 @@ int main() { S x = make(); (void)x; }
 
 **RVO（Return Value Optimization）**：当函数返回一个**无名临时对象（prvalue）** 或单个局部对象时，编译器直接在调用者的「返回槽（return slot）」上构造该对象，跳过返回时的复制。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // ② 经典 RVO：返回 prvalue
 #include <cstdio>
@@ -60,6 +62,7 @@ Big factory() { return Big{}; }   // prvalue -> RVO
 int main(){ Big x = factory(); (void)x; }
 ```
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // ② 单局部对象同样适用 RVO
 Big make_one() {
@@ -76,6 +79,7 @@ Big make_one() {
 
 **NRVO（Named Return Value Optimization）**：返回的局部对象**有名字**（具名），编译器仍尝试把它直接构造在返回槽，从而省去返回时的复制。NRVO 是「允许」而非「强制」。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // ③ 具名对象 result 被 NRVO 折叠进调用者栈槽
 #include <cstdio>
@@ -95,6 +99,7 @@ int main(){ Big x = build(7); (void)x; }
 
 **核心变革**：C++17 重新定义了 **prvalue**——prvalue 不再「是一个将要被构造的值」，而是「一个**初始化动作的描述**」。当你写 `T obj = f();` 且 `f()` 返回 prvalue 时，该 prvalue 直接在 `obj` 的存储上「具现（materialize）」，中间对象与 `obj` 是**同一个实体**。
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：++17 guaranteed co]
 ```cpp
 // ④ C++17 之前：return T{} 先在返回槽构造临时，再拷到 x（可被省略）
 // ④ C++17 起：T{} 这个 prvalue 直接在 x 的存储上具现，零拷贝、零移动，且不可观察
@@ -114,6 +119,7 @@ int main(){ NonCopyable x = make(); (void)x; }  // 删了拷贝/移动也能编�
 
 源码与行号（供对照）：
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：真实汇编：RVO 下函数无拷贝调用 ]
 ```cpp
 // 文件：Examples/_ch117_rvo.cpp
 // 行号：10
@@ -145,6 +151,7 @@ int main() {
 
 当返回值**无法**与调用者存储合并（例如源对象来自函数形参，或需要显式制造第二个对象），拷贝/移动构造会**真实发出**。
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：对比无 RVO 时的拷贝构造函数调用]
 ```cpp
 // ⑥ 强制走拷贝：源不是本函数局部对象，无法省略
 #include <cstdio>
@@ -178,6 +185,7 @@ int main(){ Big x = make_forced(Big{}); (void)x; }
 
 对**局部返回值**写 `return std::move(b);` 是反模式：它把 `b` 变成右值，反而**禁止了 NRVO**，编译器只能改调用移动构造函数。
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：强制移动 std::move 与副作]
 ```cpp
 // ⑦ std::move 抑制 NRVO：多一次移动构造（还有其副作用）
 #include <cstdio>
@@ -195,6 +203,7 @@ int main(){ Big x=bad(); Big y=good(); (void)x;(void)y; }
 
 当不同返回路径返回**不同的具名对象**（或路径含条件），编译器无法把它们合并到同一返回槽，**NRVO 失败**，会插入拷贝/移动。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：为何不能总是省略]
 ```cpp
 // ⑧ 两个可能的返回值 a、b 各占独立栈槽，无法统一折叠 -> NRVO 失败
 #include <cstdio>
@@ -207,6 +216,7 @@ Big pick(bool c) {
 int main(){ Big x = pick(true); (void)x; }
 ```
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：为何不能总是省略]
 ```cpp
 // ⑧ 例外：所有路径返回同一具名对象 -> 仍可 NRVO
 Big pick_same(bool c) {
@@ -223,6 +233,7 @@ Big pick_same(bool c) {
 
 拷贝消除与移动语义是**正交但互补**的两条「免复制」通道：
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：与移动语义的关系]
 ```cpp
 // ⑨ 三条通道对比
 #include <utility>
@@ -245,6 +256,7 @@ Big by_value(Big b) { return b; }          // 通道C：取决于调用方实参
 
 返回值优化改变了实参的**值类别（value category）**：被 guaranteed elision 的返回值是 prvalue，它直接「具现」为函数形参，从而影响 `(const T&)` 与 `(T&&)` 重载的匹配。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：重载决议受影响]
 ```cpp
 // ⑩ prvalue 实参直接具现为形参：选中 (T&&) 重载（零拷贝）
 #include <cstdio>
@@ -255,6 +267,7 @@ Wrapper make_w() { return Wrapper(5); }   // prvalue -> guaranteed elision
 int main(){ f(make_w()); Wrapper w(6); f(w); }
 ```
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：重载决议受影响]
 ```cpp
 // ⑩ 陷阱：对同类型同时重载 (const T&) 与 (T) 会因 prvalue 实参产生歧义（编译失败）
 // void g(const Wrapper&) {}
@@ -268,6 +281,7 @@ int main(){ f(make_w()); Wrapper w(6); f(w); }
 
 源码与行号：
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：真实汇编：-O2 下 NRVO 折叠]
 ```cpp
 // 文件：Examples/_ch117_nrvo.cpp
 // 行号：11
@@ -296,6 +310,7 @@ Big compute(int sel) {           // 行号：11
 
 不仅返回能省略，**把临时对象传给按值形参**时，临时对象也会直接构造进形参的存储，省去构造+移动。
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：参数传递优化（入参构造省略）]
 ```cpp
 // ⑫ 临时 Big{} 直接构造进形参 b，无拷贝、无移动
 #include <cstdio>
@@ -304,6 +319,7 @@ void sink(Big b) { (void)b; }
 int main(){ sink(Big{}); return 0; }   // prvalue 实参 -> 直接具现进 b
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：参数传递优化（入参构造省略）]
 ```cpp
 // ⑫ 对照：传左值仍会发生拷贝（无可省略）
 Big w;
@@ -317,6 +333,7 @@ sink(w);          // 左值 -> 必须拷贝构造形参 b
 
 在常量求值（`constexpr`）中，拷贝消除不仅适用，而且因为**不产生运行期对象**，连「被删除的拷贝/移动」都不再成为障碍。
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：上下文中的拷贝消除]
 ```cpp
 // ⑬ constexpr 求值内，prvalue 直接具现，运行期零拷贝
 #include <cstdio>
@@ -326,6 +343,7 @@ constexpr int probe() { Lit x = make_lit(); return x.v; }
 int main(){ static_assert(probe()==99); std::printf("v=%d\n", probe()); }
 ```
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：上下文中的拷贝消除]
 ```cpp
 // ⑬ 即便拷贝构造 delete，prvalue 返回仍可编译（guaranteed elision）
 struct Immovable { Immovable()=default; Immovable(const Immovable&)=delete; Immovable(Immovable&&)=delete; };
@@ -339,6 +357,7 @@ constexpr Immovable mk() { return Immovable{}; }
 
 C++23 工作草案（N4950）相关条文要点：
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：标准条款]
 ```cpp
 // ⑭ 条文精要（非可编译条文，仅作条款索引，链接见 ISO/ 目录亦可）
 // [class.copy.elision]/1：在 return 语句中，若操作数是与函数返回类型同类型的
@@ -354,6 +373,7 @@ C++23 工作草案（N4950）相关条文要点：
 
 最隐蔽的 bug：**在拷贝/移动构造或析构里写了有副作用的逻辑，却假设它一定会执行**。代码在某处被省略、在另一处被执行，行为随优化级别或与编译器漂移。
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：误用：依赖被消除的析构/拷贝副作用]
 ```cpp
 // ⑮ 危险：把"计数/日志/资源登记"放进拷贝构造并依赖其执行
 #include <cstdio>
@@ -378,6 +398,7 @@ int main(){
 
 下面基准在「百万次构造大对象」循环中对比**有 NRVO**（无拷贝）与**强制拷贝**（模拟 NRVO 失败的最坏情况）的耗时差异。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：性能基准（消除前后耗时对比）]
 ```cpp
 // ⑯ 基准：无拷贝路径（NRVO 命中）
 #include <cstdio>
@@ -395,12 +416,14 @@ int main(){
 }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：性能基准（消除前后耗时对比）]
 ```cpp
 // ⑯ 对照：强制拷贝路径（模拟 NRVO 失败，每次循环多一次 2KB 复制）
 Vec make_copy(const Vec& src){ Vec v=src; return v; }  // v 必须从 src 拷贝
 // 调用处：for(...) { Vec v=make_copy(Vec{}); acc+=sum(v); }
 ```
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：性能基准（消除前后耗时对比）]
 ```cpp
 // ⑯ 实测示意（量级，非本机承诺值）：每对象 256*8=2KB
 //   NRVO 命中：  ~120 ms / 1e6 次（仅构造，无复制）
@@ -415,6 +438,7 @@ Vec make_copy(const Vec& src){ Vec v=src; return v; }  // v 必须从 src 拷贝
 
 移动语义（ch115）是拷贝消除**失效时的退路**，二者构成「免复制双保险」：
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：与 ch115 移动语义衔接 [标准]
 ```cpp
 // ⑰ 省略优先，移动兜底：同一返回语句的两种命运
 #include <utility>
@@ -434,6 +458,7 @@ Buff make() {
 
 用带静态计数器的 **Tracer** 类，可以直观看到「哪条路径触发了拷贝/移动」——这是定位 NRVO 是否命中的第一手段。
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：调试：观察拷贝次数（计数器类）]
 ```cpp
 // ⑱ 计数器类：静态统计 copies / moves
 #include <cstdio>
@@ -452,6 +477,7 @@ int main(){
 }
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：调试：观察拷贝次数（计数器类）]
 ```cpp
 // ⑱ 用 Tracer 验证 std::move 陷阱：bad() 会打印 move#1，good() 静默
 #include <utility>
@@ -463,12 +489,14 @@ Tracer good() { Tracer b; return b; }              // NRVO：静默
 
 ## ⑲ 最佳实践
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践]
 ```cpp
 // ⑲ 1) 直接返回局部对象，不要用 std::move
 auto f1() { Widget w; /* ... */ return w; }        // ✅ NRVO
 auto f2() { Widget w; return std::move(w); }        // ❌ 抑制 NRVO
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：最佳实践]
 ```cpp
 // ⑲ 2) 所有返回路径尽量返回同一具名对象
 Result compute(bool ok) {
@@ -478,11 +506,13 @@ Result compute(bool ok) {
 }
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：最佳实践]
 ```cpp
 // ⑲ 3) 返回不可移动类型时，用 prvalue（C++17 guaranteed elision）
 Handle open() { return Handle{}; }                  // ✅ 即使 Handle 不可拷贝/移动也能编译
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：最佳实践]
 ```cpp
 // ⑲ 4) 移动构造标记 noexcept，保障省略失败也不退化成拷贝
 struct Buff { Buff(Buff&&) noexcept; };              // ✅ 省略失败时仍走移动
@@ -507,6 +537,7 @@ struct Buff { Buff(Buff&&) noexcept; };              // ✅ 省略失败时仍�
    - [标准] 消除时源与目标直接合一，不产生临时对象，区别于“移动构造接管资源”。
    - [引用] ISO/IEC 14882:2023 §[class.copy.elision]（消除语义）；cppreference "Copy elision" 词条。
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：速查表]
 ```cpp
 #include <utility>
 // ⑳ 速查：四种返回写法的命运汇总（✅=无拷贝/移动, ⚠=可能复制）
@@ -561,6 +592,7 @@ struct Buff { Buff(Buff&&) noexcept; };              // ✅ 省略失败时仍�
 
 ## 附录：完整可编译示例（ch117）
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A1 RVO：prvalue 与单局部对象
 #include <cstdio>
@@ -569,18 +601,21 @@ Big make(){ Big b; b.a[0]=1; return b; }
 int main(){ Big x=make(); return (int)x.a[0]; }
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A2 NRVO：具名对象折叠
 struct N { int v; N(){v=0;} N(const N& o){v=o.v;} };
 N compute(int s){ N r; r.v=s; return r; }
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A3 guaranteed copy elision：不可移动类型也能返回
 struct Imm { Imm()=default; Imm(const Imm&)=delete; Imm(Imm&&)=delete; };
 Imm factory(){ return Imm{}; }
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A4 std::move 陷阱对照
 #include <cstdio>
@@ -590,12 +625,14 @@ M bad(){ M b; return std::move(b); }
 M good(){ M b; return b; }
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A5 多分支返回不同对象 -> NRVO 失败
 struct P { int v; P(){} P(const P& o){v=o.v;} };
 P pick(bool c){ P a,b; if(c) return a; else return b; }
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A6 参数传递省略：prvalue 实参直接具现进形参
 struct Q { int v; Q(){} Q(const Q& o){v=o.v;} };
@@ -603,12 +640,14 @@ void sink(Q b){ (void)b; }
 int use(){ sink(Q{}); return 0; }
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A7 constexpr 内拷贝消除
 constexpr int lit_val(){ struct L{int v; constexpr L(int x):v(x){} constexpr L(const L&o):v(o.v){}}; L a(7); return a.v; }
 static_assert(lit_val()==7);
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A8 重载决议：(const T&) vs (T&&)
 struct W { int v; W(int x):v(x){} };
@@ -618,23 +657,27 @@ W mw(){ return W(5); }
 void call(){ f(mw()); W w(6); f(w); }
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A9 Tracer 计数器（调试用）
 struct Tr { static int c,m; int id; Tr(int i=0):id(i){} Tr(const Tr&o):id(o.id){++c;} Tr(Tr&&o):id(o.id){++m;} };
 int Tr::c=0,Tr::m=0;
 ```
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A10 移动构造 noexcept 保障省略失败不退化
 struct Buf { double d[256]; Buf(){} Buf(const Buf& o){for(int i=0;i<256;++i)d[i]=o.d[i];} Buf(Buf&&) noexcept {} };
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A11 返回值即 prvalue 的工厂链
 struct Node { int v; Node(int x):v(x){} };
 Node chain(){ return Node{ Node{ Node{1}.v }.v }; }
 ```
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A12 错误示范：依赖拷贝构造副作用计数
 #include <cstdio>
@@ -643,6 +686,7 @@ int Cnt::n=0;
 Cnt mk(){ Cnt c; return c; }   // NRVO 时 n 不变 -> 脆弱
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 #include <cstdio>
 // A13 正确示范：副作用放到显式接口，而非构造
@@ -650,6 +694,7 @@ struct Log { int v; Log(int x):v(x){} void commit(){ std::printf("commit %d\n", 
 Log build_log(){ Log l(9); l.commit(); return l; }   // 副作用显式、可控
 ```
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A14 基准循环（无拷贝路径）
 #include <chrono>
@@ -658,30 +703,35 @@ V mv(){ V v; return v; }
 double use_mv(){ double s=0; for(int i=0;i<1000;++i){ V v=mv(); for(int j=0;j<256;++j) s+=v.d[j]; } return s; }
 ```
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A15 与 ch115 衔接：省略失败走移动
 struct Res { Res(){} Res(const Res&){} Res(Res&&) noexcept {} };
 Res combine(bool ok){ Res r; if(ok) return Res{}; return r; }
 ```
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A16 返回引用 vs 返回值：引用不触发消除，但无对象复制
 struct R { int v; };
 const R& ref_of(const R& r){ return r; }   // 返回已有的引用，无构造
 ```
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A17 在异常路径下 NRVO 的不确定性
 struct E { int v; E(){} E(const E& o){v=o.v;} };
 E maybe_throw(bool t){ E a,b; if(t) return a; if(!t) return b; return a; }
 ```
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A18 模板函数中的 RVO 同样适用
 template<typename T> T gen(){ T x{}; return x; }
 int g(){ return gen<int>(); }
 ```
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A19 结构化绑定与返回：绑定到 prvalue 返回，整体仍无拷贝
 #include <tuple>
@@ -690,6 +740,7 @@ std::tuple<int,double> pair(){ return {1, 2.0}; }
 void bp(){ auto [i,d] = pair(); (void)i;(void)d; }
 ```
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：附录：完整可编译示例（ch117）]
 ```cpp
 // A20 最小可观察验证：拷贝计数应为 0（NRVO 命中场景）
 #include <cstdio>
@@ -703,6 +754,7 @@ int zmain(){ Z z=zmake(); std::printf("copies=%d\n", Z::k); return z.k; }
 
 拷贝消除是 C++ 标准化史上最激烈的争议之一——因为它**改变可观察行为**，打破了 C++"as-if"优化的基本契约。
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：附录 A：WG21 提案与标准演化 ]
 ```
 C++98:    允许 NRVO（Named Return Value Optimization），但非强制
 C++03:    无变化
@@ -719,6 +771,7 @@ C++26:    P2025 — guaranteed NRVO（方向，未正式进入）
 
 ## 附录 B：编译器实现对比 [C: Compiler / E: Low-level]
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：附录 B：编译器实现对比 [C: C]
 ```cpp
 // 编译器资源管理器对比：GCC vs Clang vs MSVC 的拷贝消除行为
 struct Noisy {
@@ -757,6 +810,7 @@ Noisy make_rvo() {
 // - 拷贝消除后：调用方直接在自己的栈帧中分配返回对象空间，传递地址给被调方
 ```
 
+> **示例 54** [难度 ★☆☆☆☆] [主题：附录 B：编译器实现对比 [C: C]
 ```cpp
 #include <iostream>
 // 验证：C++17 guaranteed copy elision 即使删除拷贝/移动构造也能编译
@@ -783,6 +837,7 @@ int main() {
 
 拷贝消除对标准库的影响体现在 **ABI 稳定性** 和 **异常安全** 两个维度：
 
+> **示例 55** [难度 ★☆☆☆☆] [主题：附录 C：标准库实现视角 [D: s]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -817,6 +872,7 @@ int main() {
 
 ## 附录 D：工业案例与真实模式 [F: Industry / I: Practice]
 
+> **示例 56** [难度 ★☆☆☆☆] [主题：附录 D：工业案例与真实模式 [F:]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -875,6 +931,7 @@ int main() {
 
 拷贝消除不是银弹。以下是 5 个反模式：
 
+> **示例 57** [难度 ★☆☆☆☆] [主题：附录 E：设计权衡与反模式 [H: ]
 ```
 反模式1: 在拷贝构造函数中放置关键业务逻辑（引用计数、锁、日志）
   → 拷贝消除让这些逻辑完全消失。用显式的 clone() 或工厂方法替代。
@@ -895,6 +952,7 @@ int main() {
   → 对超大对象（>1MB），考虑输出参数或 shared_ptr。
 ```
 
+> **示例 58** [难度 ★☆☆☆☆] [主题：附录 E：设计权衡与反模式 [H: ]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -913,6 +971,7 @@ int main() {
 
 ## 附录 F：面试与 FAQ [J: Learning]
 
+> **示例 59** [难度 ★☆☆☆☆] [主题：附录 F：面试与 FAQ [J: L]
 ```
 Q1: C++17 guaranteed copy elision 和 C++11 NRVO 有什么区别？
 A: NRVO 是"编译器允许省略"；guaranteed copy elision 是"编译器必须省略"。
@@ -983,6 +1042,7 @@ A: P2025 提议将 NRVO 也强制化（目前仅 RVO 强制）。通过后，所
 
 ### 测试源码（核心）
 
+> **示例 60** [难度 ★☆☆☆☆] [主题：测试源码（核心）]
 ```cpp
 struct Tracer {
     int v;
@@ -1041,6 +1101,7 @@ struct Tracer {
 
 C++17 guaranteed copy elision 让"返回不可移动类型的 prvalue"合法：直接在调用方存储构造，根本不调用任何构造器：
 
+> **示例 61** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <utility>
 struct ScopedFd {
@@ -1067,6 +1128,7 @@ int main() { ScopedFd f = open_file(); (void)f; }
 
 返回局部对象名字，让 NRVO 把它直接构造在调用方返回槽：
 
+> **示例 62** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <string>
 struct QueryBuilder {
@@ -1093,6 +1155,7 @@ int main() { QueryBuilder q; q.table_ = "users"; q.cols_ = "id"; (void)q.build()
 
 `std::move(local)` 把具名对象变成右值，使 `[class.copy.elision]` 的省略规则不再适用（省略只针对"返回局部对象 id 表达式"），编译器被迫调用移动构造：
 
+> **示例 63** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <utility>
 #include <iostream>
@@ -1117,6 +1180,7 @@ C++17 把返回 prvalue 的复制消除从"允许优化"升级为"语言强制"�
 
 ### 测试源码
 
+> **示例 64** [难度 ★☆☆☆☆] [主题：测试源码]
 ```cpp
 struct Tracer {
     int v;
@@ -1146,6 +1210,7 @@ Tracer make_nrvo()    { Tracer t(7); return t; } // ② NRVO
 
 ### 强制消除的杀手锏：move 被删也能编译
 
+> **示例 65** [难度 ★☆☆☆☆] [主题：强制消除的杀手锏：move 被删也能]
 ```cpp
 struct NoMove {
     NoMove() = default;
@@ -1289,6 +1354,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 66** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <utility>

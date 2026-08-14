@@ -86,6 +86,7 @@ C++ 在对象模型上做了两个反潮流的选择：其一是**值语义优�
 
 **[标准]**　`[class.access]` 规定 `public` / `private` / `protected` 三种访问控制。**关键事实**：访问控制是**编译期（compile-time）约束**。编译器在名字查找/访问检查阶段拒绝非法访问；一旦编译通过，运行期对象就是一段普通内存，没有任何「访问锁」。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：封装：访问控制的真实含义]
 ```cpp
 // [示例 1] 封装 = 编译期访问检查，不是运行期安全
 #include <cstdio>
@@ -127,6 +128,7 @@ int main() {
 - **构造/析构顺序**：基类先构造、派生后构造；析构顺序相反（预告，详 `ch46`）。
 - **名字隐藏（name hiding）**：派生类同名成员/函数会**遮蔽**基类同名项，需用 `using` 引入（预告，详 `ch46`）。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：继承概览：is-a 与三类继承语义]
 ```cpp
 // [示例 2] public 继承 = is-a（最常用）
 #include <cstdio>
@@ -141,6 +143,7 @@ int main() {
 }
 ```
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：继承概览：is-a 与三类继承语义]
 ```cpp
 // [示例 3] protected / private 继承：实现复用而非 is-a
 #include <cstdio>
@@ -168,6 +171,7 @@ int main() {
 
 下面三个示例把第 3 节预告的「切片、构造/析构顺序、名字隐藏」一次性跑通——完整语义见 `ch46`，此处只建立直觉。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：三大现象预告的完整演示]
 ```cpp
 // [示例 3b] 切片 slicing：派生对象赋给基类对象，派生部分被丢弃
 #include <cstdio>
@@ -184,6 +188,7 @@ int main() {
 }
 ```
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：三大现象预告的完整演示]
 ```cpp
 // [示例 3c] 构造/析构顺序：基类先构造、派生后构造；析构相反
 #include <cstdio>
@@ -201,6 +206,7 @@ int main() { Derive d; }
 // 输出顺序：Base 构造 → Derive 构造 → Derive 析构 → Base 析构
 ```
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：三大现象预告的完整演示]
 ```cpp
 // [示例 3d] 名字隐藏：派生类成员遮蔽基类同名（需 using 引入）
 #include <cstdio>
@@ -240,6 +246,7 @@ int main() {
 - **静态多态（编译期决议）**：函数重载、模板、CRTP（Curiously Recurring Template Pattern）。零运行时开销，全部在编译期展开。
 - **动态多态（运行期决议）**：虚函数（`virtual`）+ 继承。通过虚函数表（vtable）在运行期按对象真实类型派发（详 `ch47`）。
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：多态概览：静态多态 vs 动态多态]
 ```cpp
 // [示例 4] 静态多态：函数重载 + 模板（编译期决议，零开销）
 #include <cstdio>
@@ -256,6 +263,7 @@ int main() {
 }
 ```
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：多态概览：静态多态 vs 动态多态]
 ```cpp
 // [示例 5] 静态多态：CRTP（编译期多态，无虚函数开销） —— 详 ch50
 #include <cstdio>
@@ -280,6 +288,7 @@ int main() {
 }
 ```
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：多态概览：静态多态 vs 动态多态]
 ```cpp
 // [示例 6] 动态多态预告：虚函数（运行期派发） —— 详 ch47
 #include <cstdio>
@@ -313,6 +322,7 @@ int main() {
 - `sizeof(T)` **包含**所有 padding，并向上取整到「最严格对齐成员」的整数倍（`[expr.sizeof]`）。
 - 基类子对象（单继承）通常位于派生对象起始（见第 3 节）。
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：对象模型基础：内存布局精确规则]
 ```cpp
 // [示例 7] 非静态成员按声明顺序、受对齐影响，offsetof 实测
 #include <cstdio>
@@ -340,6 +350,7 @@ int main() {
 
 把大对齐成员放前面、小成员聚拢，可显著减少 padding：
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：优化：重排成员节省内存]
 ```cpp
 // [示例 8] 成员重排：同样的字段，不同 sizeof
 #include <cstdio>
@@ -362,6 +373,7 @@ int main() {
 
 **[标准]**　`[class.mem]` 对多重继承规定：多个基类子对象按**基类声明顺序**在派生对象内排列（每个基类子对象各自可能带 vptr）。这是「基类指针指向派生对象时仍能正确偏移」的根本（详 `ch46`/`ch49`）。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：多重继承布局预告：多个基类子对象按声]
 ```cpp
 // [示例 8b] 多重继承：两个基类子对象按声明顺序布局
 #include <cstdio>
@@ -381,6 +393,7 @@ int main() {
 
 多重继承内存布局 ASCII（本机 GCC x86-64，`[平台·x86-64]`）：
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：多重继承布局预告：多个基类子对象按声]
 ```
 D : B1, B2 { int z; }
 =========================
@@ -403,6 +416,7 @@ D : B1, B2 { int z; }
 
 **[标准]**　`[intro.object]` / `[class]`：完整对象的大小**至少为 1 字节**——即使类没有任何非静态成员，编译器也会插入一个「占位字节」，确保**不同对象有不同地址**（`&a != &b`）。
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：空类、EBO 与空基类优化]
 ```cpp
 // [示例 9] 空类 sizeof == 1，空类数组每个元素占 1 字节
 #include <cstdio>
@@ -420,6 +434,7 @@ int main() {
 
 **[标准]**　**空基类优化（EBO, Empty Base Optimization）**：`[class.derived]` / 传统实现允许——当基类为空且该基类不是最派生对象时，其大小可**折叠为 0**，不占派生对象空间。这是 `boost::empty_base_optimization`、标准库 `std::allocator` 作为空基类混入容器的根基（详 `ch50`）。
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：空类、EBO 与空基类优化]
 ```cpp
 // [示例 10] EBO：空基类不占派生对象空间
 #include <cstdio>
@@ -445,6 +460,7 @@ int main() {
 
 **[标准]**　`[class.this]`：非静态成员函数有一个隐式对象形参 `this`，其类型为 `T*`（非 const 成员函数）或 `T const*`（const 成员函数）。编译器把 `obj.foo(args)` 改写为 `T::foo(&obj, args)` 形式的**非成员函数调用**。
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：指针机制：成员函数 = 带 this]
 ```cpp
 // [示例 11] this 指针观察：成员函数第一个隐式参数就是对象地址
 #include <cstdio>
@@ -465,6 +481,7 @@ int main() {
 
 **[平台·Windows]**　在本机 MinGW GCC 15.3.0（Windows 目标）上，使用的是 **Microsoft x64 调用约定**——`this` 通过寄存器 **`rcx`** 传递（而非压栈）。`[实现-推断]` 在 Linux 的 GCC/Clang（System V AMD64 ABI）下 `this` 走 **`rdi`**；MSVC（x64）同样是 `rcx`（见 `ch36` 调用约定）。下面用本机生成的反汇编实证。
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：指针机制：成员函数 = 带 this]
 ```cpp
 // [示例 12] this 通过 rcx 寄存器传递（本机 MinGW Windows：MS x64 ABI）
 // 编译实证：g++ -O2 -S -masm=intel asm45.cpp 后查看 T::f 的 [rcx] 取成员
@@ -480,6 +497,7 @@ int main() {
 
 **[标准]**　你不能取**绑定到成员函数的**指针：`&obj.func` 非法（`func` 是非对象实体）；但可以取**指向成员的指针** `&Class::func`（见 `ch47`）。
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：指针机制：成员函数 = 带 this]
 ```cpp
 // [示例 13] &obj.memfunc 不可取；只能取「指向成员的指针」
 #include <cstdio>
@@ -493,6 +511,7 @@ int main() {
 }
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：指针机制：成员函数 = 带 this]
 ```cpp
 // [示例 14] const 成员函数的 this 是 T const*
 #include <type_traits>
@@ -533,6 +552,7 @@ _ZN1T1fEv:                    ;; T::f() 的符号修饰名
 
 **[标准]**　非虚成员函数的机器码位于**代码段（`.text`）**，由该类所有实例**共享**——因此**普通成员函数不占对象空间**。对象里只有**非静态数据成员 + 可能的 vptr**（虚函数存在时）。
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：成员函数 vs 虚函数的内存归属]
 ```cpp
 // [示例 15] 成员函数不占对象空间：sizeof 不含成员函数
 #include <cstdio>
@@ -553,6 +573,7 @@ int main() {
 
 **[经验]**　「为何普通成员函数不占对象空间」——因为函数代码是**类型级**的，与具体实例无关；实例只通过 `this` 区分。只有**虚函数**才会在对象里放一个 vptr（通常 8 字节，64 位），指向类的共享 vtable（详 `ch47`）。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：成员函数 vs 虚函数的内存归属]
 ```cpp
 // [示例 16] 有无虚函数的 sizeof 差异：虚函数引入 vptr
 #include <cstdio>
@@ -574,6 +595,7 @@ int main() {
 
 **[标准]**　`[class.static]`：静态数据成员是**类级**实体，存储在**数据段（`.data` 已初始化 / `.bss` 零初始化）**，**不属于任何对象**。因此 `sizeof(T)` **不含**静态成员。
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：静态成员：在 .data/.bss，]
 ```cpp
 // [示例 17] 静态成员不在对象内：sizeof 不含 static 成员
 #include <cstdio>
@@ -601,6 +623,7 @@ int main() {
 
 **[标准]**　`[class.bit]`：位域（`int x : n;`）允许把多个窄字段打包进一个字。但**位域的分配方向、跨字边界行为、填充**是**实现定义（implementation-defined）**的——不可跨平台假设。相邻位域常被打包进同一底层存储单元。
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：位域（bit-field）布局与实现]
 ```cpp
 // [示例 18] 位域：把 4 个标志打包进 1 字节（实现定义打包顺序）
 #include <cstdio>
@@ -635,6 +658,7 @@ int main() {
 - `friend` 关系**不可继承、不可传递**（A 的友元 B 不等于 B 的友元 C）；
 - 友元是「受控的破封装」——只在你**显式**声明时生效，最小化使用。
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：封装的真实边界：private 与友]
 ```cpp
 // [示例 19] 受控破封装：友元函数访问 private 成员
 #include <cstdio>
@@ -651,6 +675,7 @@ void peek(const Secret& s) {
 int main() { Secret s; peek(s); }   // 输出 42
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：封装的真实边界：private 与友]
 ```cpp
 // [示例 20] 友元类：整体获权（谨慎使用）
 #include <cstdio>
@@ -668,6 +693,7 @@ public:
 int main() { Door d; Guard::open(d); }
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：封装的真实边界：private 与友]
 ```cpp
 // [示例 21] friend 不可继承、不可传递
 #include <cstdio>
@@ -695,6 +721,7 @@ int main() { Base b; FriendOfBase::see(b); }   // 输出 1
 
 **[平台]**　运行期对象内存完全可读写——`memcpy` 可合法地「破坏」封装（同类型对象间），因为封装只存在于编译期：
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：封装的真实边界：private 与友]
 ```cpp
 // [示例 22] 运行期封装可被 memcpy 绕过（合法但危险，同类型间）
 #include <cstdio>
@@ -727,6 +754,7 @@ int main() {
 
 **[标准]**　`[dcl.init]` / `[class.copy]`：C++ 默认**拷贝即独立对象**。`T a = b;` 调用拷贝构造，产生与 `b` 互不影响的新对象。这与 Java/C# 的「引用赋值共享同一对象」截然相反。
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：值语义 vs 引用语义]
 ```cpp
 // [示例 23] 值语义：拷贝产生独立对象
 #include <cstdio>
@@ -741,6 +769,7 @@ int main() {
 }
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：值语义 vs 引用语义]
 ```cpp
 // [示例 24] 引用语义对比（伪 Java 风格，用指针模拟 Java/C# 行为）
 #include <cstdio>
@@ -758,6 +787,7 @@ int main() {
 
 **[标准]**　**RAII 依赖值语义**：栈对象离开作用域自动析构（`[class.dtor]`），这是 C++ 无 GC 也能异常安全的根基（见 `ch39`）。值语义 + 移动语义（`ch32` 预告）使「拥有资源的对象」可被高效传递。
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：值语义 vs 引用语义]
 ```cpp
 // [示例 25] std::reference_wrapper：在值语义容器里模拟「引用」
 #include <cstdio>
@@ -788,6 +818,7 @@ int main() {
 
 除此之外，二者**完全等价**（都能有成员函数、继承、模板、构造/析构、甚至虚函数）。
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：的唯一区别]
 ```cpp
 // [示例 26] 唯一区别：默认访问
 #include <cstdio>
@@ -802,6 +833,7 @@ int main() {
 }
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：的唯一区别]
 ```cpp
 // [示例 27] 唯一区别：默认继承方式
 #include <cstdio>
@@ -829,6 +861,7 @@ int main() {
 
 **[标准]**　`[support.types]`：`offsetof(T, member)` 展开为 `size_t`，给出成员相对对象起始地址的字节偏移。仅对**标准布局类型（standard-layout）**保证良好定义；用于非标准布局类型是** conditionally-supported**（实现可能拒绝）。
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：与成员偏移]
 ```cpp
 // [示例 28] offsetof 计算各成员偏移，验证布局
 #include <cstdio>
@@ -858,6 +891,7 @@ int main() {
 
 ### 15.1 is_class（L655–657）
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：class（L655–657）]
 ```cpp
 // 文件：type_traits  （GCC 15.3.0, libstdc++）
 // 行 590-594
@@ -874,6 +908,7 @@ int main() {
 
 ### 15.2 is_empty（L955–957）—— 与 EBO 直接相关
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：empty（L955–957）—— ]
 ```cpp
 // 文件：type_traits ，行号：955–957
   /// is_empty
@@ -889,6 +924,7 @@ int main() {
 
 ### 15.3 is_polymorphic（L961–963）
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：polymorphic]
 ```cpp
 // 文件：type_traits ，行号：961–963
   /// is_polymorphic
@@ -903,6 +939,7 @@ int main() {
 
 ### 15.4 is_abstract（L976–978）
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：abstract（L976–978）]
 ```cpp
 // 文件：type_traits ，行号：976–978
   /// is_abstract
@@ -915,6 +952,7 @@ int main() {
 - `__is_abstract(_Tp)`：类含**至少一个纯虚函数**（`= 0`）时为 `true`。抽象类不能实例化（`[class.abstract]`）。
 - 用途：`static_assert(!is_abstract_v<T>)` 防止用户误把抽象类当具体类型使用。
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：abstract（L976–978）]
 ```cpp
 // [示例 29] 用 libstdc++ 的 trait 验证对象模型性质
 #include <type_traits>
@@ -944,6 +982,7 @@ int main() {
 
 标准库在「已分配但未构造」的内存上构造对象，用的是 **placement new**——这正是 `ch37` 的原地构造机制。核心函数 `_Construct`（L123–137）与 `construct_at`（L96–122）：
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码逐行：]
 ```cpp
 #include <utility>
 // 文件：bits/stl_construct.h ，行号：96–122  (C++20 construct_at)
@@ -957,6 +996,7 @@ int main() {
 #endif
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码逐行：]
 ```cpp
 #include <utility>
 // 文件：bits/stl_construct.h ，行号：123–137  (_Construct，C++11+)
@@ -984,6 +1024,7 @@ int main() {
 - C++20 常量求值分支：`std::__is_constant_evaluated()` 在 `constexpr` 上下文里改用 `construct_at`，使构造可在编译期发生。
 - 这正是 `std::vector::emplace_back`、`std::allocator::construct`（`ch38`）的底层——**把内存分配与对象构造分离**，是 RAII/容器零泄漏设计的核心。
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码逐行：]
 ```cpp
 // [示例 30] 复刻 libstdc++ _Construct：用 placement new 在缓冲上构造
 #include <new>
@@ -1015,6 +1056,7 @@ int main() {
 
 `uses_allocator<T, Alloc>` 回答「类型 `T` 能否用分配器 `Alloc` 构造」——这是 `std::scoped_allocator_adaptor` / 容器构造的编译期探针。关键定义（L73–75 主模板，L133 `uses_allocator_v`，L176–200 构造分发）：
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码逐行：]
 ```cpp
 // 文件：bits/uses_allocator.h ，行号：73–75
   template<typename _Tp, typename _Alloc>
@@ -1023,6 +1065,7 @@ int main() {
     { };
 ```
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码逐行：]
 ```cpp
 #include <utility>
 // 文件：bits/uses_allocator.h ，行号：166–191  （构造探测分发）
@@ -1054,6 +1097,7 @@ int main() {
 - 三个 `__uses_allocator_construct_impl` 重载对应三种构造策略，**全部基于 placement new**（与第 16 节一致）。
 - 这正是 `std::vector`、`std::list` 等容器在「用分配器构造元素」时走的编译期分支——把「分配器感知构造」从运行时挪到了编译期（零运行时开销）。
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码逐行：]
 ```cpp
 // [示例 31] uses_allocator 探测：自定义类型是否「分配器感知」
 #include <memory>
@@ -1091,6 +1135,7 @@ int main() {
 | 虚继承 vptr 布局 | 见 `ch49` | 见 `ch49` | `/vd` 控制 vptr 位置（`/vd2` 默认，`/vd1` 可前移） |
 | `this` 寄存器传递 | `rcx`(Windows/MS x64) `[平台·Windows]`，`rdi`(Linux/System V) `[实现-推断]` | `rdi`(System V) | `rcx`(MS x64) |
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：三编译器对比：GCC / LLVM / MSVC]
 ```cpp
 // [示例 32] 空类 sizeof 三编译器一致 = 1（条件编译展示平台差异说明）
 #include <cstdio>
@@ -1119,6 +1164,7 @@ int main() {
 
 ### 19.1 padding 导致的内存浪费
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：导致的内存浪费]
 ```cpp
 // [示例 33] padding 内存开销基准：Bad vs Good（100 万个对象）
 #include <cstdio>
@@ -1139,6 +1185,7 @@ int main() {
 
 ### 19.2 值语义拷贝 vs 引用共享
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：值语义拷贝 vs 引用共享]
 ```cpp
 // [示例 34] 值语义拷贝（深） vs 引用共享（指针） 时间基准
 #include <cstdio>
@@ -1171,6 +1218,7 @@ int main() {
 > - **共享指针耗时 ≈ 404 µs**——仅复制 200'000 × 8 B = 1.6 MB 指针。
 > - 二者相差约 **42 倍**：深拷贝随对象大小**线性增长**，共享指针开销**近乎恒定**。
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：值语义拷贝 vs 引用共享]
 ```cpp
 // [示例 34b] 上述基准的本机实测输出（节选）
 // compiler=GCC  deep_copy_us=17090  shared_ptr_us=404  empty_arr_bytes=1000000
@@ -1182,6 +1230,7 @@ int main() {
 
 ### 19.3 空类数组占用
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：空类数组占用]
 ```cpp
 // [示例 35] 空类数组：1 字节/元素，1 百万占 1 MB
 #include <cstdio>
@@ -1282,6 +1331,7 @@ int main() {
 
 以下为单继承、含虚函数时的常见布局（本机 GCC x86-64，`[平台·x86-64]`；AS 表示对齐填充）：
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：典型对象内存布局 ASCII 图]
 ```
 派生对象 Derived : Base, 含 int a; 虚函数 f()
 =================================================
@@ -1422,6 +1472,7 @@ EBO 派生（核心知识点 #12）
 ;   仅当每次调用都需重取 vtable (异构对象分发) 时才付出 ~13.8ns。
 ```
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：附录 F：vtable面试]
 ```cpp
 #include <iostream>
 struct B{virtual void f(){std::cout<<"B"<<std::endl;}virtual~B(){}};
@@ -1478,6 +1529,7 @@ _ZL11probe_fnptri:
 ; struct D2:B{int y;virtual void g();}; // sizeof=16(同上, g在已有vtable)
 ```
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：附录 G：vtable继承布局]
 ```cpp
 #include <iostream>
 struct B{virtual void f(){}int x;};
@@ -1539,6 +1591,7 @@ int main(){std::cout<<sizeof(B)<<","<<sizeof(D)<<std::endl;return 0;}
 
 对象模型要求每个成员按其**对齐要求**放置；`int` 对齐到 4，编译器在 `a` 后插入 3 字节填充，使 `b` 落在偏移 4；`c` 落在偏移 8，结构尾再补 3 字节使整体对齐到 4，故 `sizeof==12`。
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -1564,6 +1617,7 @@ int main() {
 
 静态成员属于类而非某个对象，所有实例共享同一份存储，因此 `sizeof` 不含它。取址 `&obj.shared` 得到的是类级存储位置。
 
+> **示例 54** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 struct S {
@@ -1594,6 +1648,7 @@ int main() {
 
 空基类子对象在满足"不与第一个非静态数据成员同地址冲突"时，编译器可将其优化为零字节；空**成员**则不行——C++ 要求每个完整对象具有唯一地址，故空成员至少占 1 字节并触发填充。
 
+> **示例 55** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 struct Empty {};
@@ -1620,6 +1675,7 @@ int main() {
 
 **常见错误**：返回指向局部对象的引用，导致悬垂引用（未定义行为，但编译通过）。
 
+> **示例 56** [难度 ★☆☆☆☆] [主题：演绎 1：值语义返回 vs 引用语义]
 ```cpp
 #include <iostream>
 struct Big { int data[1024] = {}; };
@@ -1635,6 +1691,7 @@ int main() {
 
 **修复**：优先值语义返回。现代 C++ 编译器通过 NRVO / 移动语义消除拷贝，零开销且语义安全。
 
+> **示例 57** [难度 ★☆☆☆☆] [主题：演绎 1：值语义返回 vs 引用语义]
 ```cpp
 #include <iostream>
 struct Big { int data[1024] = {}; };
@@ -1657,6 +1714,7 @@ int main() {
 
 **常见错误**：以为 `char+int+char` 占 `1+4+1=6` 字节，直接按 6 做内存拷贝或偏移计算，踩对齐填充坑。
 
+> **示例 58** [难度 ★☆☆☆☆] [主题：演绎 2：误以为 sizeof 是成]
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -1668,6 +1726,7 @@ int main() {
 
 **修复**：用 `offsetof` 实证真实布局；需要紧凑布局时用 `alignas` 控制或编译器 `#pragma pack`（注意可能牺牲访问性能与可移植性）。
 
+> **示例 59** [难度 ★☆☆☆☆] [主题：演绎 2：误以为 sizeof 是成]
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -1781,6 +1840,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 60** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 

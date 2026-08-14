@@ -69,6 +69,7 @@ STL（Standard Template Library）由**六大组件**构成，迭代器是连接
 
 ## ④ 知识图谱（ASCII）
 
+> **示例 1** [难度 ★★★☆☆] [主题：知识图谱（ASCII）]
 ```
                    ┌──────────── 六大组件 ────────────┐
                    │ 容器 迭代器 算法 仿函数 适配器 分配器 │
@@ -126,6 +127,7 @@ classDiagram
 
 迭代器本质是"指向元素或处于元素间"的抽象。`vector<int>::iterator` 在 libstdc++ 中就是 `int*`（连续迭代器）：
 
+> **示例 2** [难度 ★★★☆☆] [主题：内存图 / 对象布局]
 ```
 vector<int> v = {10,20,30}
 内存（连续）:  [ 10 | 20 | 30 | ... ]
@@ -145,6 +147,7 @@ list<int> 迭代器是节点指针（非连续）：
 
 ## ⑧ 生命周期图
 
+> **示例 3** [难度 ★★★☆☆] [主题：生命周期图]
 ```
 迭代器对象创建（通常栈上，或从 begin() 返回）
    │
@@ -157,6 +160,7 @@ list<int> 迭代器是节点指针（非连续）：
 
 ## ⑨ 调用栈 / 时序图：`std::advance(it, n)` 的标签分发
 
+> **示例 4** [难度 ★★★☆☆] [主题：调用栈 / 时序图：std::adv]
 ```
 调用方
   │ std::advance(it, n)
@@ -197,6 +201,7 @@ range-based for 对 `vector` 展开后就是指针比较循环，GCC13 `-O2` 下
 
 场景：把来自不同来源的"事件 timestamp"聚合统计，来源可能是 `vector`（内存）、`deque`（双端）、甚至 `list`（频繁中间插入）。算法代码应**一套通吃**。
 
+> **示例 5** [难度 ★★★☆☆] [主题：工业案例：泛型日志聚合器]
 ```cpp
 // 工业案例 C1：跨容器泛型聚合（算法与容器解耦）
 #include <vector>
@@ -230,6 +235,7 @@ int main() {
 
 迭代器五类标签是空结构体，通过继承表达"层次"（`bits/stl_iterator_base_types.h`）：
 
+> **示例 6** [难度 ★★★☆☆] [主题：源码分析（libstdc++ 逐行）]
 ```cpp
 // 文件：bits/stl_iterator_base_types.h   行号：93, 96, 99, 103, 107, 111
 //   93:  struct input_iterator_tag { };
@@ -290,6 +296,7 @@ int main() {
 
 ## ⑯ 易错点
 
+> **示例 7** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // ❌ 错误1：用 input 迭代器做多遍遍历（istream_iterator 只读一遍）
 #include <iterator>
@@ -306,6 +313,7 @@ int main() {
 }
 ```
 
+> **示例 8** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // ❌ 错误2：把 vector 迭代器当 list 那样"安全"——扩容后全部失效
 #include <vector>
@@ -320,6 +328,7 @@ int main() {
 }
 ```
 
+> **示例 9** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // ✅ 正确：随机访问迭代器支持 it + n（O(1)），list 不支持
 #include <vector>
@@ -360,6 +369,7 @@ int main() {
 5. 不要假设迭代器在容器修改后仍然有效——查 ⑲ 失效表。
 6. 新代码用 C++20 概念（如 `std::forward_iterator`）替代 `enable_if`  SFINAE 约束。
 
+> **示例 10** [难度 ★★★☆☆] [主题：最佳实践]
 ```cpp
 // 最佳实践 B1：用 C++20 概念约束泛型算法（最弱够用）
 #include <vector>
@@ -490,6 +500,7 @@ int main() {
 
 以下为第76章完整可编译示例集（每块独立、自带 `#include` 与 `int main`，经 `g++ -std=c++23 -O2 -Wall -Wextra` 校验）。
 
+> **示例 11** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A1 range-based for 展开（等价于 begin/end + ++ + !=）
 #include <vector>
@@ -502,6 +513,7 @@ int main() {
 }
 ```
 
+> **示例 12** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A2 iterator_traits 萃取范畴并用 type_traits 判断
 #include <vector>
@@ -522,6 +534,7 @@ int main() {
 }
 ```
 
+> **示例 13** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A3 标签分发：手写 advance 选择（示意编译期多态）
 #include <iterator>
@@ -547,6 +560,7 @@ int main() {
 }
 ```
 
+> **示例 14** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A4 std::advance 在不同范畴下的行为（O(1) vs O(n)）
 #include <vector>
@@ -562,6 +576,7 @@ int main() {
 }
 ```
 
+> **示例 15** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A5 std::distance：vector O(1)，list O(n)
 #include <vector>
@@ -577,6 +592,7 @@ int main() {
 }
 ```
 
+> **示例 16** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A6 六组件组合：容器+算法+仿函数+适配器
 #include <vector>
@@ -593,6 +609,7 @@ int main() {
 }
 ```
 
+> **示例 17** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A7 back_inserter 适配器：赋值即 push_back
 #include <vector>
@@ -608,6 +625,7 @@ int main() {
 }
 ```
 
+> **示例 18** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A8 inserter 适配器：插入到指定位置前
 #include <vector>
@@ -625,6 +643,7 @@ int main() {
 }
 ```
 
+> **示例 19** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A9 reverse_iterator 适配器：反向遍历
 #include <vector>
@@ -637,6 +656,7 @@ int main() {
 }
 ```
 
+> **示例 20** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A10 move_iterator（C++11）：移动而非拷贝元素
 #include <vector>
@@ -653,6 +673,7 @@ int main() {
 }
 ```
 
+> **示例 21** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A11 哨兵 C++20：istream_iterator + default_sentinel（读到 EOF 停止）
 #include <iterator>
@@ -668,6 +689,7 @@ int main() {
 }
 ```
 
+> **示例 22** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A12 contiguous_iterator 概念检查（C++20）
 #include <vector>
@@ -683,6 +705,7 @@ int main() {
 }
 ```
 
+> **示例 23** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A13 裸指针即连续迭代器（演示范畴）
 #include <iostream>
@@ -698,6 +721,7 @@ int main() {
 }
 ```
 
+> **示例 24** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A14 仿函数（lambda）作为算法策略
 #include <vector>
@@ -711,6 +735,7 @@ int main() {
 }
 ```
 
+> **示例 25** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A15 transform 用仿函数生成新序列
 #include <vector>
@@ -727,6 +752,7 @@ int main() {
 }
 ```
 
+> **示例 26** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A16 适配器：front_inserter（list 头插，逆序）
 #include <list>
@@ -744,6 +770,7 @@ int main() {
 }
 ```
 
+> **示例 27** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A17 迭代器失效演示：list 插入不影响其它迭代器
 #include <list>
@@ -757,6 +784,7 @@ int main() {
 }
 ```
 
+> **示例 28** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A18 C++20 概念约束：要求 forward_iterator
 #include <vector>
@@ -773,6 +801,7 @@ int main() {
 }
 ```
 
+> **示例 29** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A19 版本宏探测：C++20 contiguous_iterator 可用性
 #include <iterator>
@@ -787,6 +816,7 @@ int main() {
 }
 ```
 
+> **示例 30** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A20 折叠 + 迭代器：求和（演示泛型）
 #include <vector>
@@ -804,6 +834,7 @@ int main() {
 }
 ```
 
+> **示例 31** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A21 自定义输出迭代器（写入 ostream）
 #include <iterator>
@@ -826,6 +857,7 @@ int main() {
 }
 ```
 
+> **示例 32** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A22 streambuf 迭代器：逐字符读取（input 范畴）
 #include <iostream>
@@ -842,6 +874,7 @@ int main() {
 }
 ```
 
+> **示例 33** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A23 用 sentinel 概念检查 istream_iterator 可比较 default_sentinel
 #include <iterator>
@@ -857,6 +890,7 @@ int main() {
 }
 ```
 
+> **示例 34** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A24 泛型 + 适配器统计大于阈值的元素并写入新容器
 #include <vector>
@@ -874,6 +908,7 @@ int main() {
 }
 ```
 
+> **示例 35** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A25 不同容器共用同一算法（解耦验证）
 #include <deque>
@@ -890,6 +925,7 @@ int main() {
 }
 ```
 
+> **示例 36** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A26 迭代器作为"泛型指针"：find 跨容器
 #include <vector>
@@ -905,6 +941,7 @@ int main() {
 }
 ```
 
+> **示例 37** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A27 用户定义字面量计时 + 范畴对比（UDL 带空格写法）
 #include <vector>
@@ -926,6 +963,7 @@ int main() {
 }
 ```
 
+> **示例 38** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A28 反向 + 正向迭代器同时遍历（回文判定）
 #include <vector>
@@ -941,6 +979,7 @@ int main() {
 }
 ```
 
+> **示例 39** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A29 ostream_iterator 写出分隔序列
 #include <vector>
@@ -956,6 +995,7 @@ int main() {
 }
 ```
 
+> **示例 40** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A30 概念约束错误演示（注释）：非迭代器类型不会被接受
 #include <concepts>
@@ -972,6 +1012,7 @@ int main() {
 }
 ```
 
+> **示例 41** [难度 ★★★☆☆] [主题：附录：练习题 / 思考题 / 源码阅]
 ```cpp
 // A31 工业：泛型日志聚合（复用 C1 思路，自包含）
 #include <vector>
@@ -1003,6 +1044,7 @@ int main() {
 
 ## 附录 F：STL架构工业
 
+> **示例 42** [难度 ★★★☆☆] [主题：附录 F：STL架构工业]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1024,6 +1066,7 @@ int main(){std::vector<int> v{5,3,1,4,2};std::sort(v.begin(),v.end());std::cout<
 
 ## 附录 H：STL容器决策树
 
+> **示例 43** [难度 ★★★☆☆] [主题：附录 H：STL容器决策树]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1086,6 +1129,7 @@ int main(){std::vector<int> v{1,2,3};std::map<int,int> m{{1,10}};std::cout<<v[0]
 
 自定义迭代器把范畴标为 `random_access_iterator_tag`（委托裸指针算术），`my_distance` 的公共壳据 `iterator_traits::iterator_category` 在编译期选 `random_access`（O(1) 相减）或 `input`（O(n) 计数）重载：
 
+> **示例 44** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <iterator>
@@ -1172,6 +1216,7 @@ int main() {
 
 哨兵类型 `NullSentinel` 只与迭代器做 `==` 比较（遇 `'\0'` 即结束），`my_find` 用 `std::sentinel_for` 约束"结束"，不要求 `end` 与 `first` 同类型——于是 `(It, NullSentinel)` 与 `(It, It)` 都能复用同一算法：
 
+> **示例 45** [难度 ★★★☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -1233,6 +1278,7 @@ int main() {
 
 用 `std::input_iterator`（只读来源）与 `std::output_iterator`（可写目标）约束，使算法对任意满足能力的迭代器都成立；再示范 `std::contiguous_iterator` 分支说明连续内存可批量/SIMD 优化（此处以 `if constexpr` 标注分支，运行时逻辑二者一致，证明概念可静态区分）：
 
+> **示例 46** [难度 ★★★☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1619,6 +1665,7 @@ flowchart TD
 
 ### D4.6 第一方可编译验证（traits 提取 + 标签分发）
 
+> **示例 47** [难度 ★★★☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <iostream>
 #include <iterator>
@@ -1707,6 +1754,7 @@ int main() {
 
 ### D5.3 可复现演示
 
+> **示例 48** [难度 ★★★☆☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 #include <vector>

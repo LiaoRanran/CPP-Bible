@@ -40,6 +40,7 @@
 
 CPU 每个时钟周期能执行数条指令、完成数十次整数运算，但一次主存（DRAM）访问要几百个周期。绝大多数 C++ 性能问题不是"算得慢"，而是"等内存"。优化数据布局、让访问集中在缓存里，往往比换算法带来的收益大一个数量级。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：为什么缓存决定性能，而非 CP]
 ```cpp
 // ① 同样的 O(n) 求和，内存友好与否决定的是"等内存"还是"算数据"
 #include <iostream>
@@ -71,6 +72,7 @@ int main() {
 | L3 | 8–64 MB | ~40 周期 | ~数十–百 GB/s | 多核共享 |
 | DRAM | GB 级 | 200+ 周期 | ~数十 GB/s | 全局 |
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：内存层级：L1/L2/L3/DDR ]
 ```cpp
 // ② 指针追逐（pointer chasing）演示"等内存"：随机跳，缓存几乎全失效
 #include <iostream>
@@ -108,6 +110,7 @@ int main() {
 
 缓存以 **cache line** 为最小搬运单位。x86-64 一行 64 字节；一次访存若落在某行，整行被搬入缓存。两块地址差 < 64 且同余 64 即"同一行"。
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：与地址对齐]
 ```cpp
 // ③ 判断两个地址是否落在同一 cache line（64B）
 #include <iostream>
@@ -137,6 +140,7 @@ int main() {
 - **时间局部性**：刚访问的数据很可能马上再访问 → 留在缓存里就快。
 - **空间局部性**：访问地址 A 后，邻接 A 的地址很可能被访问 → 一次搬一行（64B）正好覆盖。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：时间局部性与空间局部性 [标准]]
 ```cpp
 // ④ 空间局部性：顺序访问 vs 大步长访问（后者每行只用一个字，浪费 63 字节）
 #include <iostream>
@@ -164,6 +168,7 @@ int main() {
 
 缓存用 `(地址 >> 6) % 路数` 把主存行映射到少量缓存槽。若多个热点行映射同一槽且数量 > 关联度，会互相"颠簸"（conflict miss / thrashing）。
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：缓存映射：直接映射 / 组相联 / ]
 ```cpp
 // ⑤ 冲突未命中演示：下标间隔 = 关联度×行大小 时反复同槽
 #include <iostream>
@@ -191,6 +196,7 @@ int main() {
 
 硬件预取器会沿顺序访问自动把下一行搬进缓存；对**不规则但可预测**的访问，可用 `__builtin_prefetch(addr, rw, locality)` 手动提前取。
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：预取：硬件预取器与 builtinp]
 ```cpp
 // ⑥ 软件预取：提前 k 步搬数据， hide 延迟（rw=0 读，locality=3 尽量留多级缓存）
 #include <iostream>
@@ -223,6 +229,7 @@ int main() {
 - **写回（write-back）**：写先落缓存，仅当该行被驱逐才写回内存；搭配 **写分配（write-allocate）**：写未命中时先取整行进缓存。这保证"连续写"只在地首/末产生内存流量。
 - 实测：顺序写一行 64B 只要一次缓存写 + 一次最终回写，而非 64 次访存。
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：行填充与写策略]
 ```cpp
 // ⑦ 顺序写（write-allocate+write-back）：连续 64B 只触发极少内存事务
 #include <iostream>
@@ -248,6 +255,7 @@ int main() {
 
 两个**本不相关**的变量被不同核频繁写，却恰好落在**同一 cache line**。任一核写入都会让另一核的整行失效（MESI 协议在核间弹来弹去），性能骤降——叫"伪"共享，因为它们逻辑上无共享，却因布局共享了行。
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：伪共享（false sharing）]
 ```
 ⑧ 伪共享内存图（同一 64B 行被两核各写一个字段）
 ┌─────────────────── cache line (64B) ───────────────────┐
@@ -257,6 +265,7 @@ int main() {
    core1 写 b → 需先取回 → core0 副本 INVALID  → 来回弹
 ```
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：伪共享（false sharing）]
 ```cpp
 // ⑧ 伪共享结构体：a、b 紧挨着，落在同一 64B 行
 #include <iostream>
@@ -297,6 +306,7 @@ int main() {
 
 同一 benchmark，仅改布局：把 a、b 分到不同 cache line。下面数字为本书在 MinGW GCC 13.1 / -O2 下实测（机器相关，仅作量级参考）：
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：实测：伪共享前后耗时对比]
 ```
 FALSE_SHARING bad ≈ 2.9× 于 good（同核数、同迭代）
 即把两个原子计数塞在同一行，耗时约为各自独占一行的 2~4 倍（双核争用越狠越大）
@@ -309,6 +319,7 @@ FALSE_SHARING bad ≈ 2.9× 于 good（同核数、同迭代）
 
 两种可移植写法：手写 `alignas(64)`，或用标准常量 `alignas(std::hardware_destructive_interference_size)`（C++17，GCC 13.1 值为 64）。
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：消除伪共享：alignas(64) ]
 ```cpp
 // ⑩-A 手写 alignas(64)：每个计数器独占一行
 #include <iostream>
@@ -336,6 +347,7 @@ int main() {
 }
 ```
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：消除伪共享：alignas(64) ]
 ```cpp
 // ⑩-B 用标准常量（可移植，GCC13.1 实际就是 64）
 #include <iostream>
@@ -372,12 +384,14 @@ int main() {
 
 遍历只取 `x` 时，AoS 每读一个 x 还顺带载入 y、z（浪费 2/3 带宽）；SoA 的 x 连续，预取器一路顺风，且天然对齐向量化。
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：内存布局与向量化/缓存 [实现·GC]
 ```
 ⑪ 布局对比（每个元素 12B）
 AoS: [x y z][x y z][x y z]...   取 x 要跳过 y,z
 SoA: [x x x ...][y y y ...][z z z ...]   取 x 全连续
 ```
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：内存布局与向量化/缓存 [实现·GC]
 ```cpp
 // ⑪ AoS 定义与遍历
 #include <iostream>
@@ -394,6 +408,7 @@ int main() {
 }
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：内存布局与向量化/缓存 [实现·GC]
 ```cpp
 // ⑪ SoA 定义与遍历
 #include <iostream>
@@ -422,10 +437,12 @@ int main() {
 
 本书实测（MinGW GCC 13.1 / -O2，N=4'000'000 仅累加 x 字段）：
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：实测：AoS vs SoA 遍历耗时]
 ```
 AOS_SOA  aos ≈ 1.8× ~ 2.5× 于 soa（仅取单字段时；字段越多差距越大）
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：实测：AoS vs SoA 遍历耗时]
 ```cpp
 // ⑫ 同一份数据两种布局计时对比（自包含，可直接跑）
 #include <iostream>
@@ -460,6 +477,7 @@ int main() {
 
 C/C++ 多维数组按**行优先**（row-major）：`a[i][j]` 中 `j` 连续。嵌套循环若外层 `i`、内层 `j`，访问 `a[i][j]` 是连续的；若内外反转，则步长 = 行宽，每行只取一个字——缓存灾难。
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：遍历顺序：行优先 vs 列优先]
 ```cpp
 // ⑬ 用一维 vector 模拟二维，对比行优先 / 列优先求和
 #include <iostream>
@@ -493,10 +511,12 @@ int main() {
 
 本书实测（MinGW GCC 13.1 / -O2，M=4096 整数矩阵）：
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：实测：行优先 vs 列优先耗时对比 ]
 ```
 ROW_COL  col ≈ 10× ~ 30× 于 row（列优先几乎每访都 cache miss）
 ```
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：实测：行优先 vs 列优先耗时对比 ]
 ```cpp
 // ⑭ 反例：用 vector<vector<int>> 既破坏连续，又叠加列优先 → 双重惩罚
 #include <iostream>
@@ -524,6 +544,7 @@ int main() {
 
 编译器为对齐成员会插填充字节。`struct{char a; int b;}` 在 x64 占 8B（a 后填 3B）。重排"把大对齐/热字段放前、小字段聚堆"可①减体积省缓存；②把会被并发写的字段隔到不同行。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：结构体填充（padding）与字段重]
 ```cpp
 // ⑮ 字段顺序影响大小与填充
 #include <iostream>
@@ -539,6 +560,7 @@ int main() {
 }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：结构体填充（padding）与字段重]
 ```cpp
 // ⑮ 热/冷字段分离：只把热字段凑一起，冷字段后置，提升缓存命中
 #include <iostream>
@@ -566,6 +588,7 @@ int main() {
 
 **数据导向设计（Data-Oriented Design, DOD）**：先想"怎么遍历"，再定"怎么存"，常把对象拆成 SoA。游戏引擎的 ECS（Entity-Component-System）即典型：所有 Position 连续存，System 只扫自己需要的组件数组。
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：数据结构布局：热/冷分离与 ECS ]
 ```cpp
 // ⑯ ECS 风格：组件各自连续，System 只遍历需要的数组
 #include <iostream>
@@ -595,6 +618,7 @@ int main() {
 
 当问题规模超过缓存（如大矩阵乘），把它切成"能放进 L1/L2"的子块，让子块内反复复用、几乎不重复访存。这是把"算法复杂度"与"缓存容量"对齐的经典手法。
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：缓存友好算法：分块]
 ```cpp
 // ⑰ 分块矩阵乘：把 N×N 切成 B×B 块，块内三循环全在缓存里
 #include <iostream>
@@ -626,6 +650,7 @@ int main() {
 - `std::assume_aligned<N>(p)`（C++20，`<memory>`）：告诉编译器 `p` 至少 N 对齐，解锁更激进的向量化与去别名优化（不改变地址，只给承诺）。
 - non-temporal（`_mm_stream_*`）写：绕过缓存，用于"写一次不再读"的大块，避免污染缓存（需要 `<immintrin.h>`，不属 PRELUDE，故本块仅展示签名，不纳入编译）。
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：内存对齐 API：assumeali]
 ```cpp
 // ⑱ std::assume_aligned 让编译器放心向量化（GCC13 / -O3 有效）
 #include <iostream>
@@ -643,6 +668,7 @@ int main() {
 }
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：内存对齐 API：assumeali]
 ```cpp
 // ⑱ 用 alignof / alignas 自定义对齐的结构
 #include <iostream>
@@ -666,6 +692,7 @@ int main() {
 - `valgrind --tool=cachegrind ./a`：模拟各级缓存命中率。
 - `std::hardware_destructive_interference_size`：代码层面确认行大小。
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：工具：perf / cachegri]
 ```cpp
 // ⑲ 用标准常量做"缓存感知"分块大小推导
 #include <iostream>
@@ -711,6 +738,7 @@ int main() {
 
 以下为可直接 `g++ -std=c++23 -O2` 运行的完整程序，覆盖本章核心手法。
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
 ```cpp
 // 补-A 一维数组 cache 友好归约 + 朴素 vs 分块对比骨架
 #include <iostream>
@@ -730,6 +758,7 @@ int main() {
 }
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
 ```cpp
 // 补-B 检测两个对象是否同 cache line（可移植）
 #include <iostream>
@@ -749,6 +778,7 @@ int main() {
 }
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
 ```cpp
 // 补-C 用 span 表达连续切片，保持缓存友好（不拷贝）
 #include <iostream>
@@ -765,6 +795,7 @@ int main() {
 }
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
 ```cpp
 // 补-D 字段重排减 padding：对比两种顺序的体积
 #include <iostream>
@@ -779,6 +810,7 @@ int main() {
 }
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
 ```cpp
 // 补-E 顺序写大数组（write-allocate 友好），计时
 #include <iostream>
@@ -796,6 +828,7 @@ int main() {
 }
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
 ```cpp
 // 补-F 软件预取：`__builtin_prefetch` 对顺序访问的加速验证
 #include <iostream>
@@ -818,6 +851,7 @@ int main() {
 }
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
 ```cpp
 // 补-G 检测 struct 跨 cache line（std::hardware_constructive_interference_size 使用）
 #include <iostream>
@@ -835,6 +869,7 @@ int main() {
 }
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（缓存优化综合）]
 ```cpp
 // 补-H 矩阵行优先 vs 列优先：缓存局部性对性能的极端影响
 #include <iostream>
@@ -860,26 +895,31 @@ int main() {
 
 ## 补充分编可编译示例
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch154_cache_opt."<<std::endl;return 0;}
 ```
+> **示例 37** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch154_cache_opt."<<std::endl;return 0;}
 ```
+> **示例 38** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch154_cache_opt."<<std::endl;return 0;}
 ```
+> **示例 39** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch154_cache_opt."<<std::endl;return 0;}
 ```
+> **示例 40** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -940,6 +980,7 @@ C++11 的 `alignas` 让"按 cache line 对齐"合法化；C++17 的 `hardware_de
 Chromium: LinkedList->flat_map(连续内存); StringPiece(零拷贝减少Cache footprint)
 LLVM: SmallVector<T,N>(栈分配<=64B); DenseMap(开放地址+连续, 比链表哈希快3x)
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：附录 E：Cache优化工业]
 ```cpp
 #include <iostream>
 struct alignas(64) CacheFriendly { int data; char pad[60]; };
@@ -1027,6 +1068,7 @@ int main(){std::cout<<sizeof(CacheFriendly)<<" (prevents false sharing)"<<std::e
 
 两个计数器若同处一个缓存行，任一核写入都会让其他核该行失效（MESI 协议），引发缓存行在核间来回失效。用 `alignas` 到干扰尺寸让它们各占一行即可解耦。
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <atomic>
 #include <new>
@@ -1055,6 +1097,7 @@ int main() {
 
 AoS 遍历 `x` 时仍把 `y,z` 一起载入缓存行，浪费带宽；SoA 的 `x` 数组连续紧凑，一次缓存行装入更多有效 `x`。需要全字段时才各有利弊。
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <vector>
 #include <iostream>
@@ -1082,6 +1125,7 @@ int main() {
 
 直接遍历大矩阵时工作集远超缓存容量，反复驱逐；分块把计算限制在小块内，使块内数据反复命中后再换块，大幅降 miss。块大小 `B` 应使 `B²·sizeof(T)` 约等于目标缓存级容量。
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <vector>
 #include <iostream>
@@ -1112,6 +1156,7 @@ int main() {
 
 正文 ⑩ 提到该常量"定义于 `<new>`"，但没给真身。其 libstdc++ 15.3.0 定义位于 `bits/.../c++/15.3.0/new`：
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：一手源码：hardwareinter]
 ```cpp
 // <new> (libstdc++ 15.3.0, 行 248–251)
 #ifdef __cpp_lib_hardware_interference_size        // C++ >= 17 && 编译器给出目标行大小
@@ -1122,6 +1167,7 @@ int main() {
 
 - `__GCC_DESTRUCTIVE_SIZE` / `__GCC_CONSTRUCTIVE_SIZE` 是**编译器前端内建常量**（不是库里手写的 `64`），x86-64 上二者均为 `64`；ARM 等架构可能不同。因此"一行大小"的可移植性来自**标准库转发编译器内建**，而非硬编码。
 - 配套的库特性宏在 `x86_64-w64-mingw32/bits/c++config.h:1606`：
+> **示例 46** [难度 ★☆☆☆☆] [主题：一手源码：hardwareinter]
   ```cpp
   /* Define if global objects can be aligned to
      std::hardware_destructive_interference_size. */
@@ -1275,6 +1321,7 @@ flowchart TD
 
 场景 A 的最小可复现版（单线程，无需 `-pthread`，编译 `g++ -O2 -std=c++23`）。完整版（含伪共享场景 B）见库根 `_bench_d5_154_cache.cpp`。
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 // D5 demo: 顺序 vs 随机遍历的缓存局部性（GCC 15.3.0）
 #include <algorithm>

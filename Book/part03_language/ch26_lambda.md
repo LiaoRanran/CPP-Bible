@@ -55,6 +55,7 @@ lambda 本质仍是"语法糖 + 闭包类"，委员会坚持零开销：不捕�
 
 lambda 不是"语法糖"，而是一台**编译器在编译期为你合成匿名类（闭包类型）**的机器。把 lambda 当作"语法糖化的函数对象"，本章所有现象立刻自洽：
 
+> **示例 1** [难度 ★★★★☆] [主题：本章地图（先给结论，再击穿）]
 ```
 源码                         编译器真实生成
 ─────────────────────────    ──────────────────────────────────────
@@ -86,6 +87,7 @@ auto f = [x](int a){          struct __lambda_1 {        // 闭包类型（匿�
 
 下面用程序逐一坐实。
 
+> **示例 2** [难度 ★★★★☆] [主题：闭包类型本质：匿名、唯一、无默认构造]
 ```cpp
 // prog_01_closure_unique_type.cpp —— 两个 lambda 是不同类型
 #include <cstdio>
@@ -105,6 +107,7 @@ int main() {
 }
 ```
 
+> **示例 3** [难度 ★★★★☆] [主题：闭包类型本质：匿名、唯一、无默认构造]
 ```cpp
 // prog_02_closure_no_default_ctor.cpp —— 演示“无默认构造”（本例故意编译失败，看报错）
 #include <cstdio>
@@ -122,6 +125,7 @@ int main() {
 ```
 > **[标准]** 把 `decltype(f) g;` 这行打开会得到类似 `error: use of deleted function '::<lambda(int)>::<lambda>()'`，坐实"无默认构造"。
 
+> **示例 4** [难度 ★★★★☆] [主题：闭包类型本质：匿名、唯一、无默认构造]
 ```cpp
 // prog_03_closure_copyable.cpp —— 闭包可拷贝/移动（按捕获而定）
 #include <cstdio>
@@ -167,6 +171,7 @@ int main() {
 
 > **[标准] 关键细节**：`[=]` 与 `[&]` 的"默认捕获"只作用于**在 lambda 体内被 odr-use（取地址/被绑定）**的变量；未被使用的变量**不会被捕获**（因此空 lambda 即便写在 `[=]` 里也可能无状态，见 prog_10）。
 
+> **示例 5** [难度 ★★★★☆] [主题：捕获列表全解：从 [] 到 [=, ]
 ```cpp
 // prog_04_capture_empty.cpp —— [] 不捕获
 #include <cstdio>
@@ -180,6 +185,7 @@ int main() {
 }
 ```
 
+> **示例 6** [难度 ★★★★☆] [主题：捕获列表全解：从 [] 到 [=, ]
 ```cpp
 // prog_05_capture_byvalue.cpp —— [=] 按值（拷贝）
 #include <cstdio>
@@ -192,6 +198,7 @@ int main() {
 }
 ```
 
+> **示例 7** [难度 ★★★★☆] [主题：捕获列表全解：从 [] 到 [=, ]
 ```cpp
 // prog_06_capture_byref.cpp —— [&] 按引用
 #include <cstdio>
@@ -204,6 +211,7 @@ int main() {
 }
 ```
 
+> **示例 8** [难度 ★★★★☆] [主题：捕获列表全解：从 [] 到 [=, ]
 ```cpp
 // prog_07_capture_mixed.cpp —— 混合：x 按值、y 按引用
 #include <cstdio>
@@ -215,6 +223,7 @@ int main() {
 }
 ```
 
+> **示例 9** [难度 ★★★★☆] [主题：捕获列表全解：从 [] 到 [=, ]
 ```cpp
 // prog_08_capture_expr.cpp —— [x = expr] / [&x = expr]（其实是 init-capture，C++14）
 #include <cstdio>
@@ -231,6 +240,7 @@ int main() {
 ```
 > 上面 `[sq = ...]` 与 `[&ref = b]` 属于 **init-capture**（C++14，详见 ⑧）。`[x = expr]` 在 C++11 不存在。
 
+> **示例 10** [难度 ★★★★☆] [主题：捕获列表全解：从 [] 到 [=, ]
 ```cpp
 // prog_09_capture_this.cpp —— [this] 与 [*this]
 #include <cstdio>
@@ -247,6 +257,7 @@ struct Widget {
 int main() { Widget w; w.demo(); return 0; }
 ```
 
+> **示例 11** [难度 ★★★★☆] [主题：捕获列表全解：从 [] 到 [=, ]
 ```cpp
 // prog_10_capture_only_odr_used.cpp —— 未被 odr-use 的变量不被捕获
 #include <cstdio>
@@ -264,6 +275,7 @@ int main() {
 
 下面三个程序把"捕获"落到工业常见场景，证明 lambda 不是玩具，而是**策略即数据**的载体。
 
+> **示例 12** [难度 ★★★★☆] [主题：真实场景：捕获驱动的排序谓词 / 过]
 ```cpp
 // prog_44_sort_predicate.cpp —— 用捕获定义"可配置排序"（ch80 算法配合）
 #include <cstdio>
@@ -281,6 +293,7 @@ int main() {
 }
 ```
 
+> **示例 13** [难度 ★★★★☆] [主题：真实场景：捕获驱动的排序谓词 / 过]
 ```cpp
 // prog_45_filter_capture.cpp —— 捕获阈值做条件过滤
 #include <cstdio>
@@ -297,6 +310,7 @@ int main() {
 }
 ```
 
+> **示例 14** [难度 ★★★★☆] [主题：真实场景：捕获驱动的排序谓词 / 过]
 ```cpp
 // prog_46_event_handler.cpp —— 事件处理器：捕获状态 + 注册回调
 #include <cstdio>
@@ -334,6 +348,7 @@ int main() {
 
 **[标准]** `[expr.prim.lambda]/3`：若 lambda 不声明 `mutable`，其 `operator()` 是 `const` 成员函数，因此**按值捕获的副本不可修改**。加上 `mutable` 后 `operator()` 不再是 const，可按值捕获变量被修改（且每次调用共享同一份副本状态）。
 
+> **示例 15** [难度 ★★★★☆] [主题：解开 operator() 的 co]
 ```cpp
 // prog_11_mutable.cpp —— mutable 让按值捕获可改
 #include <cstdio>
@@ -346,6 +361,7 @@ int main() {
 }
 ```
 
+> **示例 16** [难度 ★★★★☆] [主题：解开 operator() 的 co]
 ```cpp
 // prog_12_no_mutable_error.cpp —— 无 mutable 改按值捕获 = 编译失败（演示）
 #include <cstdio>
@@ -369,6 +385,7 @@ int main() {
 - 多个 `return` 且类型不同且未显式声明时 **C++11 禁止**（C++14 起对同类型多 return 可推导）。
 - 用 `-> Type` 显式指定（尾置返回类型），此时不受限制。
 
+> **示例 17** [难度 ★★★★☆] [主题：返回类型推导]
 ```cpp
 // prog_13_return_deduced.cpp —— 单 return 自动推导
 #include <cstdio>
@@ -379,6 +396,7 @@ int main() {
 }
 ```
 
+> **示例 18** [难度 ★★★★☆] [主题：返回类型推导]
 ```cpp
 // prog_14_return_trailing.cpp —— 显式尾置返回类型
 #include <cstdio>
@@ -389,6 +407,7 @@ int main() {
 }
 ```
 
+> **示例 19** [难度 ★★★★☆] [主题：返回类型推导]
 ```cpp
 // prog_15_return_multi.cpp —— 多 return 必须一致或显式
 #include <cstdio>
@@ -410,6 +429,7 @@ int main() {
 
 **[标准]** `[expr.prim.lambda]/4` 与 `[temp]`：C++14 起 lambda 形参可用 `auto`（或带 `auto` 的声明）。这等价于**闭包类型的 `operator()` 是一个函数模板**，每个 `auto` 形参是一个模板类型形参。`[expr.prim.lambda.generic]` 规定泛型 lambda 的 `operator()` 模板形参与其 `auto` 形参一一对应。
 
+> **示例 20** [难度 ★★★★☆] [主题：泛型 lambda（C++14）：o]
 ```cpp
 // prog_16_generic_lambda.cpp —— auto 参数 = operator() 是模板
 #include <cstdio>
@@ -420,6 +440,7 @@ int main() {
 }
 ```
 
+> **示例 21** [难度 ★★★★☆] [主题：泛型 lambda（C++14）：o]
 ```cpp
 // prog_17_generic_decltype.cpp —— 用 decltype 感知泛型参数类型
 #include <cstdio>
@@ -445,6 +466,7 @@ int main() {
 
 **[标准]** `[expr.prim.lambda]`（C++20 P0712R1）：lambda 可带**显式模板形参列表** `template<...>`，允许：显式指定模板参数、对形参加 concept 约束、甚至**重载 / 偏特化**式地写多个模板 lambda。**约束 lambda**（`[](std::integral auto x)`）语法来自 C++20 abbreviated function template + concepts。
 
+> **示例 22** [难度 ★★★★☆] [主题：模板 lambda（C++20）+ ]
 ```cpp
 // prog_18_template_lambda.cpp —— C++20 显式 template<...>
 #include <cstdio>
@@ -462,6 +484,7 @@ int main() {
 }
 ```
 
+> **示例 23** [难度 ★★★★☆] [主题：模板 lambda（C++20）+ ]
 ```cpp
 // prog_19_concept_lambda.cpp —— concept 约束的泛型 lambda
 #include <cstdio>
@@ -474,6 +497,7 @@ int main() {
 }
 ```
 
+> **示例 24** [难度 ★★★★☆] [主题：模板 lambda（C++20）+ ]
 ```cpp
 // prog_20_template_lambda_overload.cpp —— 用模板 lambda做编译期分派
 #include <cstdio>
@@ -502,6 +526,7 @@ int main() {
 
 init-capture 的本质精辟概括：**"捕获即声明"**——你不是在列"哪些外部变量要拷进来"，而是在"声明闭包对象有哪些成员、如何初始化"。
 
+> **示例 25** [难度 ★★★★☆] [主题："捕获即声明"的本质]
 ```cpp
 // prog_21_init_move.cpp —— 移动捕获（C++14）
 #include <cstdio>
@@ -515,6 +540,7 @@ int main() {
 }
 ```
 
+> **示例 26** [难度 ★★★★☆] [主题："捕获即声明"的本质]
 ```cpp
 // prog_22_init_expr.cpp —— 捕获表达式结果
 #include <cstdio>
@@ -527,6 +553,7 @@ int main() {
 }
 ```
 
+> **示例 27** [难度 ★★★★☆] [主题："捕获即声明"的本质]
 ```cpp
 // prog_23_init_uniqueptr.cpp —— 移动捕获 unique_ptr（按值捕获做不到）
 #include <cstdio>
@@ -540,6 +567,7 @@ int main() {
 }
 ```
 
+> **示例 28** [难度 ★★★★☆] [主题："捕获即声明"的本质]
 ```cpp
 // prog_24_init_newvar.cpp —— 在捕获中声明新变量（计数器）
 #include <cstdio>
@@ -565,6 +593,7 @@ int main() {
 
 **[标准]** C++20 引入 **consteval lambda**（立即函数 lambda，`[] consteval {...}`），其 `operator()` 被隐式 `consteval`——**只能在编译期求值**，无法在运行期调用，常用于要求编译期可调用对象的场景（如 `std::sort` 的编译期比较器、元编程）。
 
+> **示例 29** [难度 ★★★★☆] [主题：与 consteval lambda]
 ```cpp
 // prog_25_constexpr_lambda.cpp —— C++17 constexpr lambda
 #include <cstdio>
@@ -576,6 +605,7 @@ int main() {
 }
 ```
 
+> **示例 30** [难度 ★★★★☆] [主题：与 consteval lambda]
 ```cpp
 // prog_26_consteval_lambda.cpp —— C++20 consteval lambda（仅编译期）
 #include <cstdio>
@@ -590,6 +620,7 @@ int main() {
 }
 ```
 
+> **示例 31** [难度 ★★★★☆] [主题：与 consteval lambda]
 ```cpp
 // prog_27_constexpr_capture.cpp —— 带捕获的 constexpr lambda
 #include <cstdio>
@@ -612,6 +643,7 @@ int main() {
 1. **局部 `constexpr` 变量 + 复杂初始化**（避免污染外层作用域，又能在初始化时写多语句）。
 2. **延迟/惰性构造**或"先配置后返回对象"。
 
+> **示例 32** [难度 ★★★★☆] [主题：立即调用 lambda 表达式]
 ```cpp
 // prog_28_iile_local_constexpr.cpp —— 用 IILE 做多步骤初始化再返回
 #include <cstdio>
@@ -628,6 +660,7 @@ int main() {
 }
 ```
 
+> **示例 33** [难度 ★★★★☆] [主题：立即调用 lambda 表达式]
 ```cpp
 // prog_29_iile_config.cpp —— IILE 返回配置好的对象
 #include <cstdio>
@@ -652,6 +685,7 @@ int main() {
 
 **[实现]** 来自真实 libstdc++ 源码（路径见 ⑳）：`std::function` 内部持有 `_Any_data _M_functor`（联合缓冲，SBO）、`_Manager_type _M_manager`（管理拷贝/销毁/取类型）、`_Invoker_type _M_invoker`（调用入口）。构造时若目标满足"位置不变 + 足够小"则存入本地缓冲（SBO，零堆分配），否则 `new` 到堆。
 
+> **示例 34** [难度 ★★★★☆] [主题：与 std::function：类型]
 ```cpp
 // prog_30_lambda_to_function.cpp —— lambda 存入 std::function
 #include <cstdio>
@@ -666,6 +700,7 @@ int main() {
 ```
 > 注意：两个 lambda 类型不同，但都能赋给同一个 `std::function<int(int)>` —— 这就是类型擦除：把"类型"信息抹平，只保留"签名匹配"的调用能力。
 
+> **示例 35** [难度 ★★★★☆] [主题：与 std::function：类型]
 ```cpp
 // prog_31_function_copies_unique.cpp —— std::function 要求目标可拷贝（演示失败）
 #include <cstdio>
@@ -681,6 +716,7 @@ int main() {
 ```
 > **[经验]** `std::function` 的构造函数有 `static_assert(is_copy_constructible<target>)`（见 ⑳ 源码第 441 行）。**不可拷贝的可调用对象（捕获 `unique_ptr`、含 `mutex` 等）不能用 `std::function` 装**，改用模板参数、`std::move_only_function`（C++23）或 `std::shared_ptr` 包装。
 
+> **示例 36** [难度 ★★★★☆] [主题：与 std::function：类型]
 ```cpp
 // prog_32_function_ref.cpp —— 用 reference_wrapper 避免拷贝（仍走 function 接口）
 #include <cstdio>
@@ -700,6 +736,7 @@ int main() {
 
 lambda 是并发任务的天然载体，但**捕获的生命周期**在异步场景下尤为致命（见 ⑱）。
 
+> **示例 37** [难度 ★★★★☆] [主题：实战：异步任务中的 lambda]
 ```cpp
 // prog_47_async_capture.cpp —— std::async 中用 lambda（按值捕获保证生命周期）
 #include <cstdio>
@@ -717,6 +754,7 @@ int main() {
 }
 ```
 
+> **示例 38** [难度 ★★★★☆] [主题：实战：异步任务中的 lambda]
 ```cpp
 // prog_48_thread_capture.cpp —— std::thread + lambda（按引用须保证 join 前存活）
 #include <cstdio>
@@ -739,6 +777,7 @@ int main() {
 
 **[标准]** 泛型 lambda 的 `auto` 形参（⑥）与 C++20 **abbreviated function template**（普通函数也能写 `auto` 形参）同源：都是"隐式模板形参"。当 lambda 作为**函数形参（按 `auto`/模板）**传入时，类型被保留，从而可被内联、单态化（monomorphized），开销为零；当作为 `std::function` 实参传入时被擦除，有开销。
 
+> **示例 39** [难度 ★★★★☆] [主题：与 auto 参数]
 ```cpp
 // prog_33_auto_param_pass.cpp —— 模板函数保留 lambda 类型（零擦除）
 #include <cstdio>
@@ -760,6 +799,7 @@ int main() {
 
 下面是我用 **GCC 15.3.0 (x86_64-w64-mingw32, C++17, -O2)** 实测的真实 `sizeof` 数据：
 
+> **示例 40** [难度 ★★★★☆] [主题：捕获的 ABI / 内存布局 / s]
 ```
 闭包对象                       sizeof（本机 x64）
 ─────────────────────────────  ──────
@@ -774,6 +814,7 @@ std::function<int(int)>          32   （_M_functor16 + _M_manager8 + _M_invoker
 
 > **[实现] 关键验证**：`[=]` 那个例子 `sizeof == 1`，因为 `x`/`y` 根本没在 lambda 体内被使用，编译器**不捕获**它们——闭包退化为空类。这直接证明"[=] 只捕获 odr-use 的变量"（**[KP05]**）不是口头规则，而是落在对象大小上的硬事实。
 
+> **示例 41** [难度 ★★★★☆] [主题：捕获的 ABI / 内存布局 / s]
 ```cpp
 // prog_34_layout.cpp —— 实测闭包大小（与上面表格一一对应，本机可复现）
 #include <cstdio>
@@ -803,6 +844,7 @@ int main() {
 
 下面是我用 **`g++ -std=c++17 -O0 -S`** 对以下代码生成的**真实汇编**（`_ZZ4mainENKUliE_clEi` 是闭包 `operator()`，`_ZZ4mainENUliE_4_FUNEi` 是转换出的函数指针 thunk）：
 
+> **示例 42** [难度 ★★★★☆] [主题：无捕获 lambda → 函数指针]
 ```cpp
 // (编译输入 lam_fp.cpp)
 int apply(int (*fp)(int), int v) { return fp(v); }
@@ -836,6 +878,7 @@ main:
 
 > **[平台]** 汇编证据说明两件事：(1) 无捕获闭包的"对象"不携带任何状态，因此转换时 `this` 直接传 `0`（null）；(2) 转换出的函数指针 `_4_FUNEi` 只是个**薄 thunk**，直接 `call` 真正的 `operator()`。开销为零（连调用都可被内联）。若换成**有捕获**的 lambda，则**没有**这个函数指针转换（标准禁止），必须用 `std::function` 或模板参数桥接到 C 回调（并自行保证捕获数据的生命周期）。
 
+> **示例 43** [难度 ★★★★☆] [主题：无捕获 lambda → 函数指针]
 ```cpp
 // prog_35_fnptr_callback.cpp —— 无捕获 lambda 适配 C 风格回调
 #include <cstdio>
@@ -884,6 +927,7 @@ lambda 没有名字，因而"在自身内调用自身"需要技巧。三种工�
 2. **显式把自身作为形参传入**（零开销，推荐）。
 3. **Y 组合子**（纯函数式不动点组合子，展示 lambda 表达能力，**实际工程中慎用**，可读性差）。
 
+> **示例 44** [难度 ★★★★☆] [主题：与递归]
 ```cpp
 // prog_36_recursive_function.cpp —— std::function 自引用（有类型擦除成本）
 #include <cstdio>
@@ -896,6 +940,7 @@ int main() {
 }
 ```
 
+> **示例 45** [难度 ★★★★☆] [主题：与递归]
 ```cpp
 // prog_37_recursive_self_param.cpp —— 把自身当参数（零开销，推荐）
 #include <cstdio>
@@ -908,6 +953,7 @@ int main() {
 }
 ```
 
+> **示例 46** [难度 ★★★★☆] [主题：与递归]
 ```cpp
 // prog_38_y_combinator.cpp —— Y 组合子实现递归（纯 lambda，展示用）
 #include <cstdio>
@@ -938,6 +984,7 @@ int main() {
 
 **[标准]** `[func.invoke]`：`std::invoke` 是统一的可调用对象调用原语，能调用函数指针、成员函数、成员数据指针、`std::reference_wrapper`，以及**任何可调用对象（含 lambda）**。它让"用统一接口调用一切可调用体"成为可能，是 `std::function`、线程、打包任务（`std::packaged_task`）、`std::apply` 的底层。
 
+> **示例 47** [难度 ★★★★☆] [主题：std::invoke 与 lamb]
 ```cpp
 // prog_39_invoke_lambda.cpp —— std::invoke 调用 lambda
 #include <cstdio>
@@ -950,6 +997,7 @@ int main() {
 }
 ```
 
+> **示例 48** [难度 ★★★★☆] [主题：std::invoke 与 lamb]
 ```cpp
 // prog_40_invoke_generic.cpp —— std::invoke + 泛型 lambda 传递
 #include <cstdio>
@@ -972,6 +1020,7 @@ int main() {
 
 lambda 是 STL 算法的"谓词/操作"首选。下面四个程序覆盖 `transform` / `accumulate` / `remove_if` + `erase` / `partition`。
 
+> **示例 49** [难度 ★★★★☆] [主题：实战：lambda 配合 STL 数]
 ```cpp
 // prog_49_transform.cpp —— transform 用 lambda 做映射
 #include <cstdio>
@@ -987,6 +1036,7 @@ int main() {
 }
 ```
 
+> **示例 50** [难度 ★★★★☆] [主题：实战：lambda 配合 STL 数]
 ```cpp
 // prog_50_accumulate.cpp —— accumulate 用 lambda 做自定义归约
 #include <cstdio>
@@ -1001,6 +1051,7 @@ int main() {
 }
 ```
 
+> **示例 51** [难度 ★★★★☆] [主题：实战：lambda 配合 STL 数]
 ```cpp
 // prog_51_remove_if_erase.cpp —— erase-remove 惯用法 + lambda 谓词
 #include <cstdio>
@@ -1019,6 +1070,7 @@ int main() {
 }
 ```
 
+> **示例 52** [难度 ★★★★☆] [主题：实战：lambda 配合 STL 数]
 ```cpp
 // prog_52_partition.cpp —— partition 用 lambda 划分
 #include <cstdio>
@@ -1043,6 +1095,7 @@ int main() {
 
 **[标准][经验]** `[=]` 或 `[this]` 捕获的是 `this` **指针的副本**。若 lambda 被**异步保存/延迟执行**（丢进线程、回调队列、定时器），而 `this` 指向的对象已析构，则调用即 UB（悬垂指针）。
 
+> **示例 53** [难度 ★★★★☆] [主题：坑一：悬垂 this 捕获]
 ```cpp
 // prog_41_dangling_this.cpp —— 悬垂 this（演示逻辑风险）
 #include <cstdio>
@@ -1072,6 +1125,7 @@ int main() {
 
 **[经验]** lambda 按值捕获 `shared_ptr` 会**延长其生命周期**；若 lambda 又被该 `shared_ptr` 管理的对象反过来持有（如对象成员存着 lambda），形成循环引用，引用计数永不为 0，内存泄漏。
 
+> **示例 54** [难度 ★★★★☆] [主题：坑二：sharedptr 循环引用]
 ```cpp
 // prog_42_shared_cycle.cpp —— shared_ptr 循环引用（演示泄漏风险）
 #include <cstdio>
@@ -1094,6 +1148,7 @@ int main() {
 }
 ```
 
+> **示例 55** [难度 ★★★★☆] [主题：坑二：sharedptr 循环引用]
 ```cpp
 // prog_43_shared_weak_fix.cpp —— 用 weak_ptr 打破循环
 #include <cstdio>
@@ -1200,6 +1255,7 @@ pub trait Fn<Args>: FnMut<Args> {        // 不可变借用（最常用）
 
 ### ⑳.1 `_Any_data` 与 `_Function_base`（std_function.h:75–256）
 
+> **示例 56** [难度 ★★★★☆] [主题：Anydata 与 Function]
 ```cpp
 // std_function.h:75-102  —— 联合缓冲 + 访问器
 union _Nocopy_types
@@ -1221,6 +1277,7 @@ union [[gnu::may_alias]] _Any_data
 };
 ```
 
+> **示例 57** [难度 ★★★★☆] [主题：Anydata 与 Function]
 ```cpp
 #include <cstddef>
 // std_function.h:113-119  —— SBO 阈值定义
@@ -1233,6 +1290,7 @@ public:
 
 ### ⑳.2 本地存储 vs 堆分配的分界（std_function.h:120–178，逐行）
 
+> **示例 58** [难度 ★★★★☆] [主题：本地存储 vs 堆分配的分界]
 ```cpp
 #include <utility>
 // std_function.h:126-130  —— 是否存本地（SBO 判定，四个条件全满足才本地）
@@ -1252,6 +1310,7 @@ template<typename _Fn> static void _M_create(_Any_data& __dest, _Fn&& __f, false
 
 ### ⑳.3 调用入口 `_M_invoker` 与构造时绑定（std_function.h:588–594, 433–456）
 
+> **示例 59** [难度 ★★★★☆] [主题：调用入口 Minvoker 与构造时]
 ```cpp
 #include <utility>
 #include <functional>
@@ -1358,6 +1417,7 @@ noexcept(_Handler<_Functor>::template _S_nothrow_init<_Functor>())
 
 ### ㉑.4 真实 microbenchmark 结论（见 ⑭，本机 GCC 15.3.0 -O2 x64）
 
+> **示例 60** [难度 ★★★★☆] [主题：㉑.4 真实 microbenchm]
 ```
 场景                         耗时（200×1,000,000 次）   相对
 ─────────────────────────   ──────────────────────   ────
@@ -1413,6 +1473,7 @@ N3649(C++14 generic lambda): auto参数→模板化的operator() → 单态lambd
 ; sizeof = 4 bytes (int x)
 ```
 
+> **示例 61** [难度 ★★★★☆] [主题：汇编验证]
 ```cpp
 #include <iostream>
 #include <functional>
@@ -1609,6 +1670,7 @@ call   sink(int)
 
 `[p = std::move(up)]` 在捕获点构造新变量 `p`，把 `up` 的所有权移入：
 
+> **示例 62** [难度 ★★★★☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1634,6 +1696,7 @@ int main() {
 
 模板 lambda 的显式模板参数写在参数列表前的尖括号里，约束写在参数上：
 
+> **示例 63** [难度 ★★★★☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -1661,6 +1724,7 @@ int main() {
 
 泛型参数保留原类型（内联、零分配）；`std::function` 擦除类型（可能堆分配、虚调用）：
 
+> **示例 64** [难度 ★★★★☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <functional>
@@ -1690,6 +1754,7 @@ int main() {
 
 **常见错误**：滥用 `std::function` 导致本可内联的回调被类型擦除、并可能因捕获过大触发堆分配：
 
+> **示例 65** [难度 ★★★★☆] [主题：演绎 1：std::function]
 ```cpp
 #include <iostream>
 #include <functional>
@@ -1703,6 +1768,7 @@ int main() {
 
 **修复**：编译期已知类型时用模板；确实需要擦除时才 `std::function`，并控制捕获体积在 SBO 内：
 
+> **示例 66** [难度 ★★★★☆] [主题：演绎 1：std::function]
 ```cpp
 #include <iostream>
 #include <functional>
@@ -1723,6 +1789,7 @@ int main() {
 
 **常见错误**：用 `[=]` 捕获 `this` 后，lambda 被异步保存/执行，而对象已析构，访问悬垂 `this`；或 lambda 以值捕获 `shared_ptr` 又互相持有，形成循环引用导致内存泄漏：
 
+> **示例 67** [难度 ★★★★☆] [主题：演绎 2：悬垂 this 与循环引用]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1744,6 +1811,7 @@ int main() {
 
 **修复**：异步场景用 `weak_ptr` 提升检查生命周期；避免双向 `shared_ptr` 强引用，改为单向或 `weak_ptr`：
 
+> **示例 68** [难度 ★★★★☆] [主题：演绎 2：悬垂 this 与循环引用]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1890,6 +1958,7 @@ int main() {
 
 ### D4.9 编译验证
 
+> **示例 69** [难度 ★★★★☆] [主题：编译验证]
 ```cpp
 #include <functional>
 #include <iostream>
@@ -2023,6 +2092,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 70** [难度 ★★★★☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <functional>

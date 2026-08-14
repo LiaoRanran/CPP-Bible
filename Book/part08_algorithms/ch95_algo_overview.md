@@ -43,6 +43,7 @@ STL 算法是一组**与容器解耦**的、以迭代器对 `[first, last)` 为�
 - **零开销抽象** `[标准]`：算法在 `-O2` 下被内联为与手写循环等价的机器码（见第⑤节真实汇编）。
 - **复杂度契约**：每个算法在标准中写明最坏/平均复杂度，使用者可据此推理。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：STL 算法设计哲学 [标准]]
 ```cpp
 // ① 算法与手写循环语义等价：写一个"把偶数翻倍"的需求
 #include <algorithm>
@@ -62,6 +63,7 @@ void double_evens_hand(std::vector<int>& v) {                 // 手写式
 
 STL 算法按"是否改动区间"与"用途"分为六大类。下列每个类别给一个最小可编译示例。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：算法分类]
 ```cpp
 // ②-A 非修改序列算法：std::find（只读，不改动元素）
 #include <algorithm>
@@ -74,6 +76,7 @@ std::optional<int> try_find(const std::vector<int>& v, int key) {
 }
 ```
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：算法分类]
 ```cpp
 // ②-B 修改序列算法：std::copy（写入输出迭代器）
 #include <algorithm>
@@ -86,6 +89,7 @@ std::vector<int> copy_to_vec(const std::vector<int>& src) {
 }
 ```
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：算法分类]
 ```cpp
 // ②-C 排序算法：std::sort（改动且重排）
 #include <algorithm>
@@ -93,6 +97,7 @@ std::vector<int> copy_to_vec(const std::vector<int>& src) {
 void sort_asc(std::vector<int>& v) { std::sort(v.begin(), v.end()); }
 ```
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：算法分类]
 ```cpp
 // ②-D 数值算法：std::accumulate（<numeric>）
 #include <numeric>
@@ -102,6 +107,7 @@ long sum(const std::vector<int>& v) {
 }
 ```
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：算法分类]
 ```cpp
 // ②-E 堆算法：std::make_heap / std::pop_heap
 #include <algorithm>
@@ -115,6 +121,7 @@ int pop_max(std::vector<int>& v) {
 }
 ```
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：算法分类]
 ```cpp
 // ②-F 集合算法：std::set_union（要求两区间已排序）
 #include <algorithm>
@@ -128,6 +135,7 @@ std::vector<int> union_sorted(const std::vector<int>& a,
 }
 ```
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：算法分类]
 ```
 ┌─────────────── 算法六大类（STL）───────────────┐
 │ 非修改   find/count/equal/for_each(read-only)  │
@@ -143,6 +151,7 @@ std::vector<int> union_sorted(const std::vector<int>& a,
 
 算法对迭代器有最低类别要求。迭代器分五档（C++20 起用 `std::contiguous_iterator` 等概念强化）：
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：迭代器类别与算法要求 [标准]]
 ```
 input ─→ forward ─→ bidirectional ─→ random_access ─→ contiguous
 （只读一次）  （可重复）   （可双向）       （可+/-n跳）     （连续内存）
@@ -151,6 +160,7 @@ input ─→ forward ─→ bidirectional ─→ random_access ─→ contiguous
 - `std::find` 只需 **input**；`std::reverse` 需 **bidirectional**；`std::sort` 需 **random_access**。
 - `[标准]`：给错类别在编译期（concept）或实例化期报错，而非运行期崩溃。
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：迭代器类别与算法要求 [标准]]
 ```cpp
 // ③-A 用 C++20 概念显式表达"排序要求随机访问迭代器"
 #include <vector>
@@ -169,6 +179,7 @@ void demo() {
 }
 ```
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：迭代器类别与算法要求 [标准]]
 ```cpp
 // ③-B 迭代器 category 标签（traits 历史写法，仍常见于老代码/库）
 #include <iterator>
@@ -185,6 +196,7 @@ static_assert(std::is_same_v<
 - **摊销（amortized）**：单次可能贵，但均摊到多次操作是常数。典型：`std::vector::push_back` 扩容时 `O(n)`，但均摊 `O(1)`。
 - `[标准]`：`std::sort` 最坏 `O(n log n)`（内省排序，见第⑤节）；`std::unordered_set::find` 平均 `O(1)`、最坏 `O(n)`（哈希退化）。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：复杂度记号与摊销 [标准]]
 ```cpp
 // ④ 用计数直观感受复杂度档次（非基准，仅说明"量级"）
 #include <vector>
@@ -204,6 +216,7 @@ int count_inversions_quadratic(const std::vector<int>& v) {  // O(n^2) 示例
 
 取证目标：证明 `std::for_each` + lambda 在 `-O2` 下被完全内联，不产生任何函数调用——零开销抽象不是口号。
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：[实现]真实：编译一个算法调用看内联]
 ```cpp
 #include <vector>
 #include <algorithm>
@@ -243,6 +256,7 @@ _Z14sum_of_squaresRKSt6vectorIiSaIiEE:
 - `[实现·GCC15.3.0]`：循环里只有 `imul`/`add`，**没有任何 `call`**——`std::for_each` 与 lambda 被彻底内联。与手写 `for (int x : v) s += (long)x*x;` 生成的汇编逐条对应。
 - `[标准]`：这正是"零开销抽象"的可验证含义：高层抽象在优化后不残留运行时痕迹。
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：[实现]真实：编译一个算法调用看内联]
 ```cpp
 #include <vector>
 #include <algorithm>
@@ -311,6 +325,7 @@ _Z14square_inplaceRSt6vectorIiSaIiEE:
 
 - `[标准]`：`std::stable_sort` 稳定；`std::sort` **不**保证稳定（实际多为内省排序，相等元素可能换位）。
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：稳定性 stable]
 ```cpp
 // ⑥ 稳定性差异：以"值"为键，相等者顺序是否被保留
 #include <algorithm>
@@ -329,6 +344,7 @@ void show_stable() {
 }
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：稳定性 stable]
 ```cpp
 // ⑥-B 非稳定的 std::sort 可能打乱相等元素的原始顺序（不要依赖它）
 #include <algorithm>
@@ -344,6 +360,7 @@ void unstable_demo(std::vector<int>& v) {
 - **比较器（Comparator）**：接受两元素返回 `bool` 的可调用对象，约定 `comp(a,b)==true` 表示"a 应排在 b 前"，且必须严格弱序（strict weak ordering）。
 - **谓词（Predicate）**：接受元素返回 `bool`，用于 `find_if`/`count_if`/`remove_if` 等。
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：比较器与谓词 [标准]]
 ```cpp
 // ⑦-A 自定义比较器：按绝对值排序（严格弱序：|a|<|b|）
 #include <algorithm>
@@ -356,6 +373,7 @@ void sort_by_abs(std::vector<int>& v) {
 // [标准]：比较器必须满足 非自反/非对称/传递/等价传递，否则 sort 行为未定义。
 ```
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：比较器与谓词 [标准]]
 ```cpp
 // ⑦-B 谓词：count_if 统计满足条件的元素
 #include <algorithm>
@@ -366,6 +384,7 @@ long count_div(const std::vector<int>& v, int d) {
 }
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：比较器与谓词 [标准]]
 ```cpp
 // ⑦-C 函数对象 vs lambda：std::greater<> 是标准提供的比较器
 #include <algorithm>
@@ -380,6 +399,7 @@ void sort_desc_std(std::vector<int>& v) {
 
 C++11 引入 **move iterator**：解引用返回右值引用，使算法"搬移"而非"拷贝"元素。适用于元素移动成本低、且源不再使用的场景（如 `vector` → `vector` 重排）。
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：左值/右值迭代器与移动 [标准]]
 ```cpp
 // ⑧-A make_move_iterator：把元素移动进目标，而非拷贝
 #include <algorithm>
@@ -396,6 +416,7 @@ std::vector<std::string> move_all(std::vector<std::string>& src) {
 // [标准]：std::move 是"把迭代器包成 move iterator"，算法内部 *it 得到右值。
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：左值/右值迭代器与移动 [标准]]
 ```cpp
 // ⑧-B 用 make_move_iterator 显式驱动算法移动语义
 #include <algorithm>
@@ -415,6 +436,7 @@ void relocate(std::vector<std::string>& from, std::vector<std::string>& to) {
 
 C++17 引入执行策略：`seq`/`par`/`par_unseq`/`unseq`。把 `std::execution::par` 作为首参传给算法，请求并行执行。
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：并行执行策略 execution::]
 ```cpp
 // ⑨-A 并行 for_each（需标准库 PSTL 后端支持）
 #include <algorithm>
@@ -465,6 +487,7 @@ _Z12par_for_eachRSt6vectorIdSaIdEE:
 | `list`/`forward_list` 排序 | `std::list::sort` ✅（成员，不搬移节点） | 不要用 `std::sort`（需随机访问） |
 | 关联/无序容器查找 | `std::find` ❌（线性 O(n)） | `c.find()` ✅（O(log n)/O(1)） |
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：算法与容器成员函数取舍 [标准]]
 ```cpp
 // ⑩-A 优先用成员 sort（list 节点不搬移，O(n log n) 且保结构）
 #include <list>
@@ -474,6 +497,7 @@ void list_way(std::list<int>& l) { l.sort(); }          // ✅ 成员
 // void list_wrong(std::list<int>& l){ std::sort(l.begin(), l.end()); } // ❌ 需随机访问
 ```
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：算法与容器成员函数取舍 [标准]]
 ```cpp
 // ⑩-B 关联容器用成员 find，复杂度 O(log n) 而非 O(n)
 #include <set>
@@ -490,6 +514,7 @@ bool slow_lookup(const std::set<int>& s, int k) {
 
 算法操作会使指向容器的迭代器/引用/指针**失效**，规则由容器决定，不在算法本身。忘记这点是最常见的 UB 来源。
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：失效迭代器规则 [标准]]
 ```
 ┌──── 典型失效规则（算法改写区间时）────┐
 │ vector：插入可能整体失效（扩容）      │
@@ -499,6 +524,7 @@ bool slow_lookup(const std::set<int>& s, int k) {
 └──────────────────────────────────────┘
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：失效迭代器规则 [标准]]
 ```cpp
 // ⑪-A 危险：在 vector 上边遍历边用算法插入（可能失效）
 #include <vector>
@@ -510,6 +536,7 @@ void danger(std::vector<int>& v) {
 }
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：失效迭代器规则 [标准]]
 ```cpp
 // ⑪-B 正确：erase-remove 惯用法，先用算法分区再用成员 erase
 #include <vector>
@@ -520,6 +547,7 @@ void erase_zero(std::vector<int>& v) {
 }
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：失效迭代器规则 [标准]]
 ```cpp
 // ⑪-C list 删除安全：erase 只失效被删迭代器
 #include <list>
@@ -533,6 +561,7 @@ void safe_list_erase(std::list<int>& l) {
 
 算法不关心容器，只关心迭代器接口。标准提供多种**迭代器适配器**，把"写入目标/输入源"伪装成迭代器：
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：自定义迭代器适配 [标准]]
 ```cpp
 // ⑫-A back_inserter：算法写入时自动 push_back
 #include <algorithm>
@@ -547,6 +576,7 @@ std::vector<int> times_two(const std::vector<int>& v) {
 }
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：自定义迭代器适配 [标准]]
 ```cpp
 // ⑫-B ostream_iterator：把算法输出直接流向 cout
 #include <algorithm>
@@ -559,6 +589,7 @@ void print_all(const std::vector<int>& v) {
 }
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：自定义迭代器适配 [标准]]
 ```cpp
 // ⑫-C 自定义输入迭代器：从生成函数产生序列（简化 legacy-input-iterator）
 #include <iterator>
@@ -584,12 +615,14 @@ struct IntGen {
 
 最隐蔽的性能 Bug 来自"算法复杂度误判"。下面三个真实陷阱：
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：复杂度陷阱]
 ```cpp
 // ⑬-A 陷阱：对 std::list 调用 std::sort —— 编译失败（需随机访问）
 // 正确做法见 ⑩-A。若强行"先拷到 vector 排序再拷回"，则是 2*O(n)+O(n log n)，
 // 而 list::sort 是 O(n log n) 且零拷贝，反而更优。
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：复杂度陷阱]
 ```cpp
 // ⑬-B 陷阱：在 vector 上反复 erase 单个元素 → 每次 O(n)，共 O(n^2)
 #include <vector>
@@ -603,6 +636,7 @@ void slow_erase_evens(std::vector<int>& v) {
 }
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：复杂度陷阱]
 ```cpp
 // ⑬-C 陷阱：用线性查找代替有序查找
 #include <vector>
@@ -618,6 +652,7 @@ bool in_sorted(const std::vector<int>& v, int k) {
 
 选算法的优先级：**先利用容器/区间的有序性或哈希性，再考虑通用算法**。
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：[经验]选型：按数据结构与前提选算法]
 ```cpp
 // ⑭-A 已排序区间：用二分系列（O(log n) / O(log n)+线性）
 #include <algorithm>
@@ -630,6 +665,7 @@ std::vector<int>::const_iterator lower(const std::vector<int>& v, int k) {
 }
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：[经验]选型：按数据结构与前提选算法]
 ```cpp
 // ⑭-B 无序但需去重：先 sort 再 unique（O(n log n)），而非嵌套 find（O(n^2)）
 #include <algorithm>
@@ -641,6 +677,7 @@ void dedupe(std::vector<int>& v) {
 }
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：[经验]选型：按数据结构与前提选算法]
 ```cpp
 // ⑭-C 海量数据取 Top-K：partial_sort / nth_element 比全排序省
 #include <algorithm>
@@ -657,6 +694,7 @@ void top_k(std::vector<int>& v, std::size_t k) {
 
 C++20 `std::ranges` 让算法直接吃容器（免写 `begin()/end()`），并支持**惰性视图管道**。`|` 管道是算法组合的现代写法。
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：与 ranges 衔接（C++20）]
 ```cpp
 // ⑮-A ranges 版：直接传容器，不必 begin/end
 #include <algorithm>
@@ -668,6 +706,7 @@ void r_sort(std::vector<int>& v) {
 }
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：与 ranges 衔接（C++20）]
 ```cpp
 // ⑮-B 视图管道：过滤+变换是惰性的，只遍历一次
 #include <vector>
@@ -681,6 +720,7 @@ void pipe_demo(const std::vector<int>& v) {
 // [标准]：ranges 算法与经典算法语义一致，但接口更安全（禁止迭代器来自不同区间）。
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：与 ranges 衔接（C++20）]
 ```cpp
 // ⑮-C ranges 版去重惯用法：ranges::unique 返回 [新逻辑尾, 尾)，再配成员 erase
 #include <vector>
@@ -695,11 +735,13 @@ void unique_in_place(std::vector<int>& v) {
 
 ## ⑯ 常见误用 [经验]
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：常见误用 [经验]]
 ```cpp
 // ⑯-A ❌ 对 list 用 std::sort（需随机访问，编译期即失败）
 // 正确见 ⑩-A：l.sort();
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：常见误用 [经验]]
 ```cpp
 // ⑯-B ❌ erase 后继续使用失效迭代器
 #include <vector>
@@ -712,6 +754,7 @@ void use_after_erase(std::vector<int>& v) {
 }
 ```
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：常见误用 [经验]]
 ```cpp
 // ⑯-C ✅ remove_if 的正确配套写法（erase-remove 惯用法）
 #include <vector>
@@ -723,6 +766,7 @@ void keep_positive(std::vector<int>& v) {
 }
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：常见误用 [经验]]
 ```cpp
 // ⑯-D ❌ 比较器不满足严格弱序（返回 a<=b 而非 a<b）→ sort 未定义行为
 #include <vector>
@@ -743,6 +787,7 @@ void bad_comparator(std::vector<int>& v) {
 | libc++（Clang） | 类似 | 同理 | 符号名不同但算法一致 |
 | MS STL（MSVC） | 类似 | 同理 | `/std:c++20` 起 |
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：跨 STL 实现差异 [平台]]
 ```cpp
 // ⑰-A 跨实现一致：无论哪套标准库，下列调用语义与复杂度契约相同
 #include <algorithm>
@@ -754,6 +799,7 @@ int median_of_three(std::vector<int>& v) {
 // [平台]：差异仅在"跑多快/占多少临时内存"，不在"对不对"。
 ```
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：跨 STL 实现差异 [平台]]
 ```cpp
 // ⑰-B 调试模式差异：libstdc++ 的 _GLIBCXX_DEBUG 会额外检查迭代器失效
 //   编译加 -D_GLIBCXX_DEBUG 可在运行期捕获 ⑪ 节的失效 UB；libc++ 用 _LIBCPP_HARDENING_MODE。
@@ -762,6 +808,7 @@ int median_of_three(std::vector<int>& v) {
 
 ## ⑱ 最佳实践 [经验]
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱-A 优先算法而非手写循环：可读性 + 易优化 + 易并行（加 execution::par）
 #include <algorithm>
@@ -774,6 +821,7 @@ long sum_par(const std::vector<int>& v) {
 }
 ```
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱-B 优先成员函数：关联容器用 find，list 用 sort（见 ⑩）
 #include <unordered_set>
@@ -783,6 +831,7 @@ bool set_member(const std::unordered_set<int>& s, int k) {
 }
 ```
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱-C 用算法返回值驱动后续操作，避免重复遍历
 #include <algorithm>
@@ -797,6 +846,7 @@ std::vector<int> keep_matches(const std::vector<int>& v, int mod) {
 
 ## ⑲ 调试手段 [经验]
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：调试手段 [经验]]
 ```cpp
 // ⑲-A 用"带追踪的谓词"在 debug 构建打印算法内部行为（仅调试，不参与复杂度）
 #include <algorithm>
@@ -815,12 +865,14 @@ void debug_count_if(const std::vector<int>& v, int d) {
 }
 ```
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：调试手段 [经验]]
 ```cpp
 // ⑲-B 用 _GLIBCXX_DEBUG（GCC）在运行期捕获迭代器失效/越界（发布构建移除以保性能）
 //   编译：g++ -D_GLIBCXX_DEBUG -std=c++23 _dbg.cpp -o _dbg
 //   一旦算法操作了失效迭代器，会立即 abort 并给出精确位置——比"偶发崩溃"好定位。
 ```
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：调试手段 [经验]]
 ```cpp
 // ⑲-C 用 Compiler Explorer 风格 -S 比对：怀疑某算法没内联时，看汇编有无 call
 //   g++ -std=c++23 -O2 -S -masm=intel x.cpp -o x.asm
@@ -843,6 +895,7 @@ void debug_count_if(const std::vector<int>& v, int d) {
    - [标准] 标准规定每算法复杂度上界，是实现与调用方都遵守的契约。
    - [引用] ISO/IEC 14882:2023 §[algorithms]（算法复杂度要求）；cppreference "Algorithm complexity" 词条。
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：速查表]
 ```
 ┌── STL 算法速查（复杂度均为最坏，n=|区间|）──────────────┐
 │ find/find_if          O(n)      非修改，线性扫描          │
@@ -866,6 +919,7 @@ void debug_count_if(const std::vector<int>& v, int d) {
 └────────────────────────────────────────────────────────┘
 ```
 
+> **示例 54** [难度 ★☆☆☆☆] [主题：速查表]
 ```cpp
 // ⑳-A 一页纸自检：把本章要点串成可编译片段
 #include <algorithm>
@@ -952,6 +1006,7 @@ int quickcheck() {
 
 STL 算法在不同标准库实现中的差异：
 
+> **示例 55** [难度 ★☆☆☆☆] [主题：附录 A：工业实现对比 [F: In]
 ```
                     libstdc++ (GCC)       libc++ (Clang)         MS STL
 ─────────────────────────────────────────────────────────────────
@@ -963,6 +1018,7 @@ std::for_each       循环展开 (O2自动)     循环展开 (O3)          自�
 并行算法            Intel TBB 后端        未完全支持             完全支持(C++17)
 ```
 
+> **示例 56** [难度 ★☆☆☆☆] [主题：附录 A：工业实现对比 [F: In]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -978,6 +1034,7 @@ int main() {
 
 ## 附录 B：算法选择决策树 [H: Design]
 
+> **示例 57** [难度 ★☆☆☆☆] [主题：附录 B：算法选择决策树 [H: D]
 ```
 选择算法的系统决策流程:
 
@@ -1007,6 +1064,7 @@ int main() {
 
 ## 附录 C：并行算法的真实性能 [G: Performance / B: Principle]
 
+> **示例 58** [难度 ★☆☆☆☆] [主题：附录 C：并行算法的真实性能 [G:]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1028,6 +1086,7 @@ int main() {
 
 ## 附录 D：常见错误与面试 [I: Practice / J: Learning]
 
+> **示例 59** [难度 ★☆☆☆☆] [主题：附录 D：常见错误与面试 [I: P]
 ```
 算法使用中的5大错误:
 1. 忘记 include <algorithm> — 编译通过但行为未定义 (ADL 可能拉入错误版本)
@@ -1086,6 +1145,7 @@ A: std::sort 需要随机访问迭代器。list::sort 利用链表特性做归�
 
 <details><summary>答案与解析</summary>
 
+> **示例 60** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1112,6 +1172,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 61** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1140,6 +1201,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 62** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1171,6 +1233,7 @@ int main() {
 
 **常见错误（text）**：
 
+> **示例 63** [难度 ★☆☆☆☆] [主题：演绎 1：已排序区间的查找——二分 ]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1187,6 +1250,7 @@ int main() {
 
 **修复（cpp）**：区间已排序，改用 `std::lower_bound` 二分（O(log n)）。
 
+> **示例 64** [难度 ★☆☆☆☆] [主题：演绎 1：已排序区间的查找——二分 ]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1209,6 +1273,7 @@ int main() {
 
 **常见错误（text）**：
 
+> **示例 65** [难度 ★☆☆☆☆] [主题：演绎 2：并行算法中的数据竞争]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1226,6 +1291,7 @@ int main() {
 
 **修复（cpp）**：用 `std::reduce` 做线程安全分区规约。
 
+> **示例 66** [难度 ★☆☆☆☆] [主题：演绎 2：并行算法中的数据竞争]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1267,6 +1333,7 @@ graph LR
 
 `std::sort` 的真实引擎是 **introsort（内省排序）**：
 
+> **示例 67** [难度 ★☆☆☆☆] [主题：一句话结论]
 ```
 quicksort 主体  +  median-of-three 选轴  +  小数组插入排序  +  递归深度上限 → 退化时转 heap sort
 ```
@@ -1277,6 +1344,7 @@ quicksort 主体  +  median-of-three 选轴  +  小数组插入排序  +  递归
 
 #### J.2.1 入口 `__sort`（stl_algo.h:1899）
 
+> **示例 68** [难度 ★☆☆☆☆] [主题：逐段真实源码]
 ```cpp
 // bits/stl_algo.h:1899  (GCC 15.3.0, 逐字)
 template<typename _RandomAccessIterator, typename _Compare>
@@ -1300,6 +1368,7 @@ template<typename _RandomAccessIterator, typename _Compare>
 
 #### J.2.2 深度上限 `__lg`（stl_algobase.h:1552）
 
+> **示例 69** [难度 ★☆☆☆☆] [主题：逐段真实源码]
 ```cpp
 // bits/stl_algobase.h:1552  (逐字)
 template<typename _Tp>
@@ -1317,6 +1386,7 @@ template<typename _Tp>
 
 #### J.2.3 小数组阈值（stl_algo.h:1806, 1812）
 
+> **示例 70** [难度 ★☆☆☆☆] [主题：逐段真实源码]
 ```cpp
 // bits/stl_algo.h:1806  (逐字)
 enum { _S_threshold = 16 };
@@ -1340,6 +1410,7 @@ __final_insertion_sort(_RandomAccessIterator __first,
 
 #### J.2.4 主循环 `__introsort_loop`（stl_algo.h:1876）—— 核心
 
+> **示例 71** [难度 ★☆☆☆☆] [主题：逐段真实源码]
 ```cpp
 // bits/stl_algo.h:1876  (逐字)
 template<typename _RandomAccessIterator, typename _Size, typename _Compare>
@@ -1371,6 +1442,7 @@ template<typename _RandomAccessIterator, typename _Size, typename _Compare>
 
 #### J.2.5 median-of-three 的落地（stl_algo.h:88, 1851）
 
+> **示例 72** [难度 ★☆☆☆☆] [主题：逐段真实源码]
 ```cpp
 // bits/stl_algo.h:88  __move_median_to_first (逐字)
 void
@@ -1733,6 +1805,7 @@ flowchart TD
 
 ### D4.4 第一方可编译验证（copy 快路径 + 双版本 sort）
 
+> **示例 73** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1833,6 +1906,7 @@ int main() {
 
 ### D5.3 可复现演示
 
+> **示例 74** [难度 ★☆☆☆☆] [主题：可复现演示]
 ```cpp
 // D5 演示：STL 算法选择的功能验证（不断言时间，仅验证语义正确性）
 #include <iostream>

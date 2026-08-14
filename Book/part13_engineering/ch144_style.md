@@ -46,6 +46,7 @@
 
 `[经验]` 一条被反复验证的共识：**风格本身没有绝对对错，但"不一致"几乎总是错**。Google、Microsoft、LLVM 风格彼此冲突，但各自内部高度一致——这正是它们能规模化的根本原因。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：为什么代码风格重要 [经验]]
 ```cpp
 // ❌ 反例：同一文件里三种命名 + 两种缩进，可读性灾难
 int   userCount;          // 小驼峰
@@ -53,6 +54,7 @@ void Process_Data();      // 大驼峰 + 下划线混杂
 class tcp_server {int Port;};  // 缩进全无
 ```
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：为什么代码风格重要 [经验]]
 ```cpp
 // ✅ 正例：统一 snake_case 函数/变量、PascalCase 类型、2 空格缩进
 int user_count = 0;
@@ -69,6 +71,7 @@ class TcpServer { int port_ = 0; };
 - **K&R（1TBS）**：左括号紧接语句行尾，省垂直空间，Linux 内核、Go 默认。
 - **Allman**：左括号独占一行，括号成对对齐，块边界一眼可见，Microsoft/LLVM 常用。
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：缩进与括号风格]
 ```cpp
 // K&R / 1TBS：左花括号同行
 void kr_style(int n) {
@@ -80,6 +83,7 @@ void kr_style(int n) {
 }
 ```
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：缩进与括号风格]
 ```cpp
 // Allman：左花括号独占一行，块边界对齐清晰
 void allman_style(int n)
@@ -95,6 +99,7 @@ void allman_style(int n)
 }
 ```
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：缩进与括号风格]
 ```cpp
 // ❌ 反例：同文件混用两种风格，且缩进层级错乱
 void messy(int n){
@@ -119,6 +124,7 @@ void messy(int n){
 | 私有成员变量 | `trailing_underscore_` | `m_port`/`_port` |
 | 命名空间 | 全小写短名 | `MyNamespace` |
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：命名一致性（关联 ch145）]
 ```cpp
 // ✅ 一致的命名：类型 PascalCase，变量/函数 snake_case，常量 k 前缀
 class ConnectionPool {
@@ -130,6 +136,7 @@ private:
 };
 ```
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：命名一致性（关联 ch145）]
 ```cpp
 // ❌ 反例：同语义的变量用了三种风格
 int UserCount;        // 大驼峰
@@ -137,6 +144,7 @@ int maxConnect;       // 小驼峰
 int DEFAULT_PORT = 80;// 全小写常量
 ```
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：命名一致性（关联 ch145）]
 ```cpp
 // 命名空间小写短名，避免与类型撞脸
 namespace telemetry {
@@ -150,6 +158,7 @@ namespace telemetry {
 
 头文件必须防止被重复包含，否则会出现重定义错误。两种机制：
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：头文件与 include 守卫]
 ```cpp
 // 机制 A：传统 ifndef 守卫（可移植、标准 C++）
 #ifndef EXAMPLE_WIDGET_H
@@ -158,6 +167,7 @@ struct Widget { int id; int value; };
 #endif // EXAMPLE_WIDGET_H
 ```
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：头文件与 include 守卫]
 ```cpp
 // 机制 B：#pragma once（非标准但被所有主流编译器支持，写法更短）
 #pragma once
@@ -173,6 +183,7 @@ g++ -std=c++23 -E Examples/_ch144_guard_main.cpp -o Examples/_ch144_guard.i
 
 展开产物 `Examples/_ch144_guard.i` 中，`Widget` 的定义仅出现一次（`#ifndef _CH144_GUARD_WIDGET_H` 在第二次包含时挡掉了整个结构体）。这证明：守卫的语义是"翻译单元内只展开一次"，而非"整个程序只定义一次"——跨翻译单元的重定义要靠 ODR（单一定义规则）约束，与守卫无关。
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：头文件与 include 守卫]
 ```cpp
 // _ch144_guard_main.cpp 的要点：两次包含同一头文件仍能编译
 #include "_ch144_guard.h"
@@ -189,6 +200,7 @@ int main() { Widget w{42, 7}; return w.id + w.value; }
 
 命名空间用于避免全局名字冲突，但滥用同样制造问题。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：命名空间使用（匿名/内联）]
 ```cpp
 // 具名命名空间：隔离模块符号
 namespace net {
@@ -196,6 +208,7 @@ namespace net {
 }
 ```
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：命名空间使用（匿名/内联）]
 ```cpp
 // 匿名命名空间：翻译单元内部的"内部链接"，替代 static
 namespace {
@@ -204,6 +217,7 @@ namespace {
 }
 ```
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：命名空间使用（匿名/内联）]
 ```cpp
 // 内联命名空间：让内层符号对外层"透明"，常用于 ABI 版本切换
 inline namespace v2 {
@@ -219,6 +233,7 @@ namespace v1 {
 - 不要用 `using namespace` 于头文件作用域；
 - `using namespace foo;` 在 `.cpp` 文件顶部尚可接受，函数内部局部使用更稳妥。
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：命名空间使用（匿名/内联）]
 ```cpp
 // ❌ 反例：头文件顶层 using namespace，污染所有包含方
 // my_header.h
@@ -231,6 +246,7 @@ using namespace std;   // ❌ 禁止
 
 const 正确性是 C++ 类型系统的核心护栏。`[标准]` const 成员函数保证不修改对象逻辑状态（[class.const]），从而可被 const 对象调用。
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：正确性]
 ```cpp
 class Account {
     long balance_ = 0;
@@ -244,6 +260,7 @@ public:
 
 `constexpr` 把求值推进到编译期，`[实现·GCC15]` 看汇编证明它真的被折叠：
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：正确性]
 ```cpp
 constexpr int factorial(int n) { return n <= 1 ? 1 : n * factorial(n - 1); }
 static_assert(factorial(5) == 120);
@@ -260,6 +277,7 @@ _Z13use_factorialv:
 
 `mutable` 用于"逻辑 const、物理可变"的字段（如缓存、互斥量）：
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：正确性]
 ```cpp
 #include <mutex>
 class Cache {
@@ -274,6 +292,7 @@ public:
 };
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：正确性]
 ```cpp
 // ❌ 反例：能用 const/constexpr 却不用，丧失接口保证与优化机会
 int square(int x) { return x * x; }   // 应 constexpr
@@ -283,6 +302,7 @@ int square(int x) { return x * x; }   // 应 constexpr
 
 `auto` 不是"懒得写类型"，而是**消除冗余**、避免截断（如 `size()` 返回 `size_t` 赋给 `int` 的警告）。`[实现·GCC15]` 关键结论：**auto 在编译期完成类型推断，零运行时开销**，与手写类型生成相同机器码。
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：使用规范]
 ```cpp
 #include <vector>
 long explicit_sum(const std::vector<long>& v) {
@@ -313,6 +333,7 @@ long auto_sum(const std::vector<long>& v) {
 - **不要用 `auto` 做接口返回类型的唯一声明**而失去可读性（除非显然是 `auto` 推导更佳，如 lambda）；
 - 需要值拷贝时用 `auto`，需要引用时用 `auto&`/`const auto&`。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：使用规范]
 ```cpp
 #include <string>
 #include <map>
@@ -321,6 +342,7 @@ std::map<std::string, int> m;
 for (const auto& [key, val] : m) { /* ... */ }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：使用规范]
 ```cpp
 // ❌ 反例：用 auto 触发意外拷贝（应为 const auto&）
 for (auto x : huge_vector) { sum += x; }   // 每个元素都被拷贝
@@ -330,6 +352,7 @@ for (auto x : huge_vector) { sum += x; }   // 每个元素都被拷贝
 
 范围 for（`for (auto& x : container)`）比手写下标/迭代器更安全、更短，且 `[实现·GCC15]` 证实它编译为**与下标、迭代器循环完全相同的机器码**。
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：范围 for 优先]
 ```cpp
 #include <vector>
 #include <cstddef>
@@ -354,6 +377,7 @@ void by_range(const std::vector<int>& v, long& acc) {
         jne     .L12
 ```
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：范围 for 优先]
 ```cpp
 // ✅ 优先范围 for；需要下标时才回退索引
 for (auto& item : items) process(item);
@@ -367,6 +391,7 @@ for (auto it = v.begin(); it != v.end();) { /* 漏写 ++it → 死循环 */ }
 
 裸 `new`/`delete` 在现代 C++ 中应被智能指针取代。`[标准]` `std::unique_ptr` 表达独占所有权（不可拷贝、可移动），`std::shared_ptr` 表达共享所有权（引用计数）。
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：智能指针规范]
 ```cpp
 #include <memory>
 #include <utility>
@@ -381,6 +406,7 @@ void transfer() {
 }
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：智能指针规范]
 ```cpp
 // shared_ptr：多所有者共享，注意避免循环引用
 #include <memory>
@@ -392,6 +418,7 @@ struct Node {
 
 `Examples/_ch144_smartptr_O2.asm` 证实 `std::move(a)` 仅是一次指针赋值（O(1)），析构在作用域末尾自动释放。
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：智能指针规范]
 ```cpp
 // ❌ 反例：裸 new 却可能漏 delete（异常路径尤甚）
 Connection* c = new Connection(3);
@@ -407,6 +434,7 @@ delete c;
 
 `[标准]` `std::vector` 在重分配（reallocation）时，只有元素类型的移动构造为 `noexcept` 才会用移动搬迁元素，否则退回拷贝——这是为了保证强异常安全。
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：异常规范（noexcept）]
 ```cpp
 #include <vector>
 struct CopyOnly {            // 移动构造非 noexcept → 重分配时拷贝
@@ -425,6 +453,7 @@ struct NoexceptMove {        // 移动构造 noexcept → 重分配时移动
 
 `[实现·libstdc++]` 真实源码印证了这一决策（`_GLIBCXX_MAKE_MOVE_IF_NOEXCEPT_ITERATOR` 正是"若移动不抛则移动，否则拷贝"的迭代器包装）：
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：异常规范（noexcept）]
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/vector.tcc
 // 行号：75-91
@@ -439,6 +468,7 @@ struct NoexceptMove {        // 移动构造 noexcept → 重分配时移动
 
 `[实现·GCC15]` `Examples/_ch144_noexcept_O2.asm` 中 `fill_copy` 与 `fill_move` 对**平凡类型 `int`** 生成了几乎一致的代码——这恰好说明：对于 trivially-copyable 类型，移动与拷贝在机器层面无差别；`noexcept` 的收益在**非平凡类型（如 `std::string`）**上才体现为"指针交换而非深拷贝"。结论真实、可复现。
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：异常规范（noexcept）]
 ```cpp
 #include <vector>
 // ✅ 不抛异常的移动/析构/交换，应一律标 noexcept
@@ -451,6 +481,7 @@ public:
 };
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：异常规范（noexcept）]
 ```cpp
 // ❌ 反例：移动构造未标 noexcept，vector 重分配将退化成拷贝，拖累性能
 struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实际 noexcept，
@@ -465,6 +496,7 @@ struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实际 noex
 
 移动语义让"资源转让"代替"深拷贝"。`[标准]` 右值引用（`T&&`）绑定临时对象，配合 `std::move` 触发移动而非拷贝。
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：移动语义规范]
 ```cpp
 #include <vector>
 std::vector<int> make_buffer() {
@@ -480,6 +512,7 @@ std::vector<int> consume() {
 
 `Examples/_ch144_move_O2.asm` 显示：`make_buffer` 到 `consume` 中局部变量 `v` 的传递被**保证复制消除**（`consume` 直接复用返回对象的存储，无 memcpy）；只有 `push_back` 触发容量增长时的重分配才会 `call memcpy` 搬迁既有元素——这正说明：**移动针对的是"容器对象本身"，元素级重分配仍可能拷贝，故应善用 `reserve` 预分配**。
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：移动语义规范]
 ```cpp
 // ❌ 反例：对左值误用 std::move，导致后续误用已移走的对象
 std::string s = "hello";
@@ -487,6 +520,7 @@ std::string t = std::move(s);
 std::cout << s;        // ❌ s 处于有效但未指定状态，读取危险
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：移动语义规范]
 ```cpp
 #include <utility>
 #include <vector>
@@ -499,6 +533,7 @@ sink(std::move(local_vec));    // ✅ 明确转让
 
 模板强大但易写出"天书"。`[标准]` C++20 概念（concepts）应优先于 SFINAE 表达约束。
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：模板与 SFINAE 可读性]
 ```cpp
 // ❌ 反例：旧式 SFINAE，可读性差
 template <typename T, typename = std::void_t<>>
@@ -507,6 +542,7 @@ template <typename T>
 struct has_size<T, std::void_t<decltype(std::declval<T>().size())>> : std::true_type {};
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：模板与 SFINAE 可读性]
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -518,12 +554,14 @@ template <HasSize T>
 void report_size(const T& c) { std::cout << c.size(); }
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：模板与 SFINAE 可读性]
 ```cpp
 // 变参模板：用折叠表达式（C++17）替代递归，更简洁
 template <typename... Ts>
 auto sum_all(Ts... xs) { return (xs + ... + 0); }
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：模板与 SFINAE 可读性]
 ```cpp
 // ❌ 反例：模板实参列表与实现纠缠，无文档化注释
 template<template<class,class>class C, class T, class A>
@@ -536,11 +574,13 @@ void f(C<T,A>&){}
 
 注释回答"为什么"，而非复述"做什么"。`[经验]` 好注释解释动机、不变量、陷阱；坏注释只是把代码翻译回中文。
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：注释规范（Doxygen）]
 ```cpp
 // ❌ 反例：复述代码的废话注释
 i = i + 1;   // 把 i 加 1
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：注释规范（Doxygen）]
 ```cpp
 // ✅ 正例：解释为什么（重要不变量 / 陷阱）
 // 注意：此处必须先加锁再读 hits_，否则与 lookup() 的 const 路径竞争。
@@ -550,6 +590,7 @@ hits_++;
 
 Doxygen 风格注释便于自动生成文档：
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：注释规范（Doxygen）]
 ```cpp
 /**
  * @brief 从连接池获取一个空闲连接
@@ -560,6 +601,7 @@ Doxygen 风格注释便于自动生成文档：
 Connection* acquire(int timeout_ms);
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：注释规范（Doxygen）]
 ```cpp
 // TODO/FIXME 标记 actionable 项，便于 grep 追踪
 // FIXME: 高并发下 acquire() 可能自旋过久，需引入条件变量（见 ch145）。
@@ -571,6 +613,7 @@ Connection* acquire(int timeout_ms);
 
 C++ 工程普遍遵循"声明在 `.h`、实现在 `.cpp`"的分离，带来编译防火墙与更短依赖链。
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：文件组织（声明/实现分离）]
 ```cpp
 // connection.h —— 仅声明，可被多方包含
 #pragma once
@@ -586,6 +629,7 @@ private:
 };
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：文件组织（声明/实现分离）]
 ```cpp
 // connection.cpp —— 实现，翻译单元隔离
 #include "connection.h"
@@ -597,6 +641,7 @@ void Connection::send(const char* buf, int len) { ::send(impl_->fd, buf, len, 0)
 Connection::~Connection() = default;
 ```
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：文件组织（声明/实现分离）]
 ```cpp
 // ❌ 反例：模板以外的函数体塞进头文件，导致所有包含方重复编译、耦合膨胀
 // utils.h
@@ -614,16 +659,19 @@ inline void log_time() { /* 大段实现 */ }   // 非模板也应放 .cpp
 
 不同标准引入的特性，取舍依据是"团队工具链版本"与"收益/复杂度比"。`[标准]` 以 C++23 为基线，但应考虑部署目标。
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
 ```cpp
 // C++11：智能指针、范围 for、auto、lambda 已是必用项
 auto f = [](int x) { return x * 2; };
 ```
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
 ```cpp
 // C++14：泛型 lambda、返回值推导
 auto g = [](auto x) { return x + x; };
 ```
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
 ```cpp
 #include <string>
 #include <string_view>
@@ -634,17 +682,20 @@ if (auto [it, ok] = m.try_emplace("k", 1); ok) { /* ... */ }
 std::string_view sv = "zero-copy view";   // ✅ 避免临时 string
 ```
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
 ```cpp
 // C++20：concept、range、三路比较 <=>、modules（渐进引入）
 auto positive = [](std::integral auto x) { return x > 0; };
 ```
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
 ```cpp
 #include <expected>
 // C++23：deducing this、std::expected、flat_map 等
 // auto operator()(this auto& self) { ... }  // 统一值/引用重载
 ```
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
 ```cpp
 // ❌ 反例：为炫技堆叠高级特性，可读性塌方
 auto r = v | std::views::filter([](auto x){return x>0;})
@@ -657,6 +708,7 @@ auto r = v | std::views::filter([](auto x){return x>0;})
 
 跨平台代码必须把 OS/ABI 差异收敛到少量文件，避免 `#ifdef` 在业务逻辑里四处蔓延。`[平台·x86-64/Windows+POSIX]`
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：平台相关代码隔离 [平台·Windo]
 ```cpp
 // 所有平台差异收敛到一个编译单元，业务代码不感知
 #if defined(_PLATFORM_WIN)
@@ -674,6 +726,7 @@ int platform_tag() { return static_cast<int>(family()[0]); }
 
 `[实现·GCC15]` 该文件在 Windows 与 POSIX 两种宏定义下均通过 `-Wall -Wextra` 洁净编译（`Examples/_ch144_platform*.o`）；**不定义任何平台宏时 `#error` 直接失败**，证明守卫有效、不会静默编译出错误目标。
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：平台相关代码隔离 [平台·Windo]
 ```cpp
 #include <memory>
 // 更好的隔离：抽象接口 + 每平台一个 .cpp 实现（编译防火墙）
@@ -738,6 +791,7 @@ PointerAlignment: Left
 
 典型输出（示意）：运行前缩进混乱、括号风格混杂；运行后统一为配置风格。例如：
 
+> **示例 54** [难度 ★☆☆☆☆] [主题：格式化工具]
 ```cpp
 // 格式化前（混乱）
 int   x=0;
@@ -768,6 +822,7 @@ void f() {
 | 最大行宽 | 80 | 100+ | 80 |
 | 特性取舍 | 较保守（禁 RTTI/异常） | 较宽松 | 较宽松，重 clang 工具链 |
 
+> **示例 55** [难度 ★☆☆☆☆] [主题：风格文档]
 ```cpp
 // Google 风格示例
 class UrlTable {
@@ -778,6 +833,7 @@ private:
 };
 ```
 
+> **示例 56** [难度 ★☆☆☆☆] [主题：风格文档]
 ```cpp
 // LLVM 风格示例（与 Google 的主要差异在命名大小写）
 class UrlTable {
@@ -811,6 +867,7 @@ private:
 
 代码风格的本质是**一致性工程**。本章取证结论汇总：
 
+> **示例 57** [难度 ★☆☆☆☆] [主题：小结]
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ 风格门禁清单（落地即强制执行）                                │
@@ -872,6 +929,7 @@ ISO C++ 标准本身不规定代码风格，但 **C++ Core Guidelines**（由 Bj
 
 ## 附录 A：工业代码规范对比 [F: Industry / B: Principle]
 
+> **示例 58** [难度 ★☆☆☆☆] [主题：附录 A：工业代码规范对比 [F: ]
 ```
 C++ 代码风格——四大工业规范对比:
 
@@ -896,6 +954,7 @@ Qt Coding Style:
 
 ## 附录 B：面试 [J: Learning / H: Design]
 
+> **示例 59** [难度 ★☆☆☆☆] [主题：附录 B：面试 [J: Learni]
 ```
 Q: clang-format 团队采纳的最佳实践？
 A: .clang-format 文件入 Git; CI pre-commit hook 自动检查; PR 不接受未格式化代码
@@ -962,6 +1021,7 @@ A: 无性能差异。C++ 标准库用 snake_case; Qt/Unreal 用 CamelCase → �
 
 <details><summary>答案与解析</summary>
 
+> **示例 60** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 // .clang-format （示意，纯配置非 C++）
 // BasedOnStyle: Google
@@ -983,6 +1043,7 @@ int main() { std::cout << "formatted\n"; }
 
 <details><summary>答案与解析</summary>
 
+> **示例 61** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #pragma once
 #include <iostream>
@@ -1002,6 +1063,7 @@ int main() { std::cout << Config{}.v << '\n'; }
 
 <details><summary>答案与解析</summary>
 
+> **示例 62** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1152,6 +1214,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 63** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 #include <vector>

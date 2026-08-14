@@ -36,6 +36,7 @@
 
 ## ② 不必要的堆分配 [经验]
 
+> **示例 1** [难度 ★★★★☆] [主题：不必要的堆分配 [经验]]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -50,6 +51,7 @@ int main() {
 
 ## ③ 隐式拷贝与临时对象 [经验]
 
+> **示例 2** [难度 ★★★★☆] [主题：隐式拷贝与临时对象 [经验]]
 ```cpp
 #include <iostream>
 #include <string>
@@ -60,6 +62,7 @@ int main(){ std::string x="hello";sink_ref(x);std::cout<<x<<std::endl;return 0; 
 
 ## ④ std::endl vs `'\n'` [经验]
 
+> **示例 3** [难度 ★★★★☆] [主题：'\n' [经验]]
 ```cpp
 #include <iostream>
 int main(){
@@ -71,6 +74,7 @@ int main(){
 
 ## ⑤ 虚函数间接调用 [经验]
 
+> **示例 4** [难度 ★★★★☆] [主题：虚函数间接调用 [经验]]
 ```cpp
 #include <iostream>
 struct Hot{ int f(int x){return x*2;} }; // ✅ 非虚，直接调用
@@ -106,6 +110,7 @@ _Z12compute_areaRK5Shape:
 
 ## ⑥ 异常在热路径 [经验]
 
+> **示例 5** [难度 ★★★★☆] [主题：异常在热路径 [经验]]
 ```cpp
 #include <iostream>
 int div_nothrow(int a,int b){ return b!=0?a/b:0; } // ✅ 不抛异常
@@ -114,6 +119,7 @@ int main(){ std::cout<<div_nothrow(10,2)<<std::endl;return 0; }
 
 ## ⑦ false sharing [经验]
 
+> **示例 6** [难度 ★★★★☆] [主题：[经验]]
 ```cpp
 #include <iostream>
 #include <new>
@@ -123,6 +129,7 @@ int main(){ Slot s{}; s.v=42;std::cout<<s.v<<std::endl;return 0; }
 
 ## ⑧ 缓存不友好遍历 [经验]
 
+> **示例 7** [难度 ★★★★☆] [主题：缓存不友好遍历 [经验]]
 ```cpp
 #include <iostream>
 int main(){
@@ -134,6 +141,7 @@ int main(){
 
 ## ⑨ std::regex 构造开销 [经验]
 
+> **示例 8** [难度 ★★★★☆] [主题：构造开销 [经验]]
 ```cpp
 #include <iostream>
 #include <regex>
@@ -146,6 +154,7 @@ int main(){
 
 ## ⑩ std::function 类型擦除 [经验]
 
+> **示例 9** [难度 ★★★★☆] [主题：类型擦除 [经验]]
 ```cpp
 #include <iostream>
 #include <functional>
@@ -155,6 +164,7 @@ int main(){call([]{std::cout<<"zero-erase\n";});return 0;}
 
 ## ⑪ reserve 缺失 [经验]
 
+> **示例 10** [难度 ★★★★☆] [主题：缺失 [经验]]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -168,6 +178,7 @@ int main(){
 
 ## ⑫ 移动语义未触发 [经验]
 
+> **示例 11** [难度 ★★★★☆] [主题：移动语义未触发 [经验]]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -184,6 +195,7 @@ int main(){
 
 ## ⑬ 过度模板实例化 [经验]
 
+> **示例 12** [难度 ★★★★☆] [主题：过度模板实例化 [经验]]
 ```cpp
 #include <iostream>
 template<int N> struct Fact{static constexpr int v=N*Fact<N-1>::v;};
@@ -193,6 +205,7 @@ int main(){ std::cout<<Fact<5>::v<<std::endl;return 0; }
 
 ## ⑭ 分支预测失败 [经验]
 
+> **示例 13** [难度 ★★★★☆] [主题：分支预测失败 [经验]]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -209,6 +222,7 @@ int main(){std::vector<int>v(10000);for(int i=0;i<10000;++i)v[i]=i%2;std::sort(v
 | Go | defer 热路径、interface{} boxing、GC pressure |
 | Java | auto-boxing、String concatenation、unnecessary synchronization |
 
+> **示例 14** [难度 ★★★★☆] [主题：跨语言对比 [经验]]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Cross-language: all languages have unique perf pitfalls.\n";return 0;}
@@ -216,6 +230,7 @@ int main(){std::cout<<"Cross-language: all languages have unique perf pitfalls.\
 
 ## ⑯ WG21 与标准演进 [标准]
 
+> **示例 15** [难度 ★★★★☆] [主题：与标准演进 [标准]]
 ```cpp
 // ⑯ 标准中消除性能反模式的关键提案
 #include <iostream>
@@ -234,6 +249,7 @@ int main() {
 
 ## ⑰ FAQ：性能诊断实战 [经验]
 
+> **示例 16** [难度 ★★★★☆] [主题：性能诊断实战 [经验]]
 ```cpp
 // ⑰ 性能反模式的诊断与修复问答
 #include <iostream>
@@ -255,6 +271,7 @@ int main() {
 
 ## ⑱ 最佳实践总结 [经验]
 
+> **示例 17** [难度 ★★★★☆] [主题：最佳实践总结 [经验]]
 ```cpp
 // ⑱ 性能优化的 6 条铁律
 #include <iostream>
@@ -296,6 +313,7 @@ int main() {
 
 ## ⑲ 性能数据参考：反模式代价量化 [经验]
 
+> **示例 18** [难度 ★★★★☆] [主题：性能数据参考：反模式代价量化 [经验]
 ```cpp
 // ⑲ 常见反模式的量化性能数据
 #include <iostream>
@@ -338,6 +356,7 @@ int main() {
    - [标准] 动态分配（`new`/`delete`）由实现提供，频繁调用有成本；可用定制分配器或 arena 降低。
    - [引用] ISO/IEC 14882:2023 §[basic.stc.dynamic] / [new.delete]（动态存储）/ [allocator.requirements]（定制分配器）；cppreference。
 
+> **示例 19** [难度 ★★★★☆] [主题：源码阅读路线 [经验]]
 ```cpp
 // ⑳ 学习性能优化的开源项目阅读路线
 #include <iostream>
@@ -363,46 +382,54 @@ int main() {
 
 ## 补充完整可编译示例
 
+> **示例 20** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <array>
 int main(){ std::array<int,10> a{}; a[0]=1;std::cout<<a[0]<<std::endl;return 0; }
 ```
 
+> **示例 21** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <cstring>
 int main(){ char buf[128]; std::strcpy(buf,"stack");std::cout<<buf<<std::endl;return 0; }
 ```
 
+> **示例 22** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){ for(int i=0;i<1000;++i); std::cout<<"no std::endl flush\n";return 0; }
 ```
 
+> **示例 23** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct Direct{ int val()const{return 42;} };
 int main(){Direct d;std::cout<<d.val()<<std::endl;return 0;}
 ```
 
+> **示例 24** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int safe_div(int a,int b){if(b==0)return 0;return a/b;}
 int main(){std::cout<<safe_div(10,2)<<std::endl;return 0;}
 ```
 
+> **示例 25** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <new>
 int main(){std::cout<<"constexpr size="<<std::hardware_destructive_interference_size<<std::endl;return 0;}
 ```
 
+> **示例 26** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){int a[4][4];for(int i=0;i<4;++i)for(int j=0;j<4;++j)a[i][j]=i+j;std::cout<<a[0][0]<<std::endl;return 0;}
 ```
 
+> **示例 27** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <string>
@@ -410,18 +437,21 @@ int simple_match(const std::string& s,const std::string& pat){return s.find(pat)
 int main(){std::cout<<simple_match("hello","ell")<<std::endl;return 0;}
 ```
 
+> **示例 28** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 void call_lambda(void(*f)()){f();}
 int main(){call_lambda([]{std::cout<<"fnptr\n";});return 0;}
 ```
 
+> **示例 29** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v;v.reserve(50);for(int i=0;i<50;++i)v.push_back(i);std::cout<<v.size()<<std::endl;return 0;}
 ```
 
+> **示例 30** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -430,6 +460,7 @@ struct Movable{int* p=nullptr;Movable(int x):p(new int(x)){}~Movable(){delete p;
 int main(){std::vector<Movable> v;v.push_back(Movable{42});std::cout<<v[0].get()<<std::endl;return 0;}
 ```
 
+> **示例 31** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 template<int N>constexpr int fib(){return fib<N-1>()+fib<N-2>();}
@@ -438,16 +469,19 @@ template<> constexpr int fib<1>(){return 1;}
 int main(){std::cout<<fib<10>()<<std::endl;return 0;}
 ```
 
+> **示例 32** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){int x;std::cin>>x;std::cout<<x*2<<std::endl;return 0;}
 ```
 
+> **示例 33** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"branch prediction: [[likely]]/[[unlikely]] hints\n";return 0;}
 ```
 
+> **示例 34** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -455,12 +489,14 @@ int sum(const std::vector<int>& v){int s=0;for(int x:v)s+=x;return s;}
 int main(){std::vector<int> v{1,2,3,4,5};std::cout<<sum(v)<<std::endl;return 0;}
 ```
 
+> **示例 35** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int abs_branchless(int x){int m=x>>31;return(x^m)-m;}
 int main(){std::cout<<abs_branchless(-99)<<std::endl;return 0;}
 ```
 
+> **示例 36** [难度 ★★★★☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){int v=42;int&r=v;r=100;std::cout<<v<<std::endl;return 0;}
@@ -526,11 +562,13 @@ C++11 起的标准持续提供反模式的"正解"：`std::move`（避免拷贝�
 | regex重复编译 | ~1us/次 | static const |
 | std::function hot | 32B erase | template param |
 
+> **示例 37** [难度 ★★★★☆] [主题：附录: 反模式代价速查与修复]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Profile first, fix only hot path. 80% of antipatterns are harmless outside critical path.\n";return 0;}
 ```
 
+> **示例 38** [难度 ★★★★☆] [主题：附录: 反模式代价速查与修复]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -587,6 +625,7 @@ int main(){std::vector<int> v;v.reserve(1000);for(int i=0;i<1000;++i)v.push_back
 
 `" " + to_string(i)` 每次都构造临时 `std::string` 并分配；反复拼接触发多次重分配与拷贝。预先 `reserve` 并直接 `+=` 可复用同一缓冲区，避免冗余分配。
 
+> **示例 39** [难度 ★★★★☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <string>
 #include <iostream>
@@ -613,6 +652,7 @@ int main() {
 
 `std::vector` 元素连续，预取器与缓存行高效；`std::list` 节点各自 `new`，遍历是随机访存，几乎每次都 miss。这就是"盲目用链表"反模式。
 
+> **示例 40** [难度 ★★★★☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <list>
 #include <vector>
@@ -640,6 +680,7 @@ int main() {
 
 单实现的虚函数几乎必然是去虚化（devirtualize）的好候选：标 `final` 或改用模板/CRTP 让编译器静态决议，消除 `vcall`，从而允许内联与后续常量传播。
 
+> **示例 41** [难度 ★★★★☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 struct Base { virtual ~Base() = default; virtual int f(int x) const { return x * 2; } };
@@ -814,6 +855,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 42** [难度 ★★★★☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <vector>

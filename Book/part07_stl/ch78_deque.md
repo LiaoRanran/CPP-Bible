@@ -42,6 +42,7 @@ deque 是"两全其美"的尝试，也暴露了"没有免费午餐"：它换来�
 - 知道为何 `std::stack` / `std::queue` 的**默认底层容器是 deque**。
 - 用 microbenchmark 量化"首尾插入"与 `vector` 的差异，并理解其**缓存局部性的两面性**（段内连续、段间跳跃）。
 
+> **示例 1** [难度 ★★★☆☆] [主题：学习目标 [标准]]
 ```cpp
 // ① 动机：双端队列首尾都能 O(1) 推入（完整可编译）
 #include <iostream>
@@ -82,6 +83,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII） [标准]
 
+> **示例 2** [难度 ★★★☆☆] [主题：知识图谱（ASCII） [标准]]
 ```
                   std::deque<T>
         ┌────────────┬────────────┬────────────┐
@@ -155,6 +157,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图：分段连续与四指针 [实现·GCC15]
 
+> **示例 3** [难度 ★★★☆☆] [主题：内存图：分段连续与四指针 [实现·G]
 ```
 deque 对象（栈/堆）
 ┌──────────────────────────────────────────────┐
@@ -183,6 +186,7 @@ deque 对象（栈/堆）
 
 ## ⑧ 生命周期图：中控扩容不搬运元素 [标准]
 
+> **示例 4** [难度 ★★★☆☆] [主题：生命周期图：中控扩容不搬运元素 [标]
 ```
  初始:  map 容量 8, 仅用中间若干槽
  push_front/push_back 反复增长...
@@ -201,6 +205,7 @@ deque 对象（栈/堆）
 
 ## ⑨ 调用栈/时序图：operator[] 的跨段定位 [实现·GCC15]
 
+> **示例 5** [难度 ★★★☆☆] [主题：调用栈/时序图：operator[]]
 ```
   访问 d[k]
     │
@@ -220,6 +225,7 @@ deque 对象（栈/堆）
   返回 *_M_cur
 ```
 
+> **示例 6** [难度 ★★★☆☆] [主题：调用栈/时序图：operator[]]
 ```cpp
 // ⑨ 随机访问跨段：operator[] 直接下标（完整可编译）
 #include <iostream>
@@ -263,6 +269,7 @@ int main() {
 - `std::stack<T>` 与 `std::queue<T>` 的**默认底层容器就是 `deque<T>`**（⟶ Book/part07_stl/ch86_adapters.md），因为 deque 首尾 O(1) 完美契合栈/队列语义。
 - `std::deque` 满足 *Erasable*/*DefaultInsertable* 等容器要求，可用于大多数接受序列容器的泛型算法。
 
+> **示例 7** [难度 ★★★☆☆] [主题：联系：deque 与算法/适配器 []
 ```cpp
 // ⑪ deque 可直接用 std::sort（随机访问迭代器，完整可编译）
 #include <iostream>
@@ -283,6 +290,7 @@ int main() {
 
 交易/网络引擎常用 deque 做"工作窃取"或"双端缓冲"：新任务从一端压入，worker 从另一端取；偶发的"插队优先级任务"从同端头插。下面是可运行骨架（真实场景配锁/无锁，见 ⟶ Book/part07_stl/ch93_thread_async.md）。
 
+> **示例 8** [难度 ★★★☆☆] [主题：工业案例：高吞吐任务队列]
 ```cpp
 // ⑫ 工业：双端任务缓冲（完整可编译骨架）
 #include <iostream>
@@ -380,6 +388,7 @@ _Map_pointer _M_node;    // 在 map 中指向"当前 buffer 的指针"
 6. **deque 的 buffer 大小怎么定？** → 每个 buffer 至少 512 字节（libstdc++），T 小则多装，T 大则每 buffer 一个。
 7. **deque 有 `data()` 返回连续数组吗？** → 没有（不像 vector/array），因为它不是整体连续。
 
+> **示例 9** [难度 ★★★☆☆] [主题：面试题 [标准]]
 ```cpp
 // ⑮ 面试题佐证：erase 使迭代器失效但元素引用不失效（结构演示，完整可编译）
 #include <iostream>
@@ -403,6 +412,7 @@ int main() {
 - **把 deque 当"线程安全队列"** → 不是；需 `mutex`（⟶ Book/part07_stl/ch93_thread_async.md）。
 - **频繁跨段随机访问热点** → 若访问模式高度随机且跨段多，`vector` 的单一连续访问可能更稳更快。
 
+> **示例 10** [难度 ★★★☆☆] [主题：易错点 [经验]]
 ```cpp
 // ⑯ 易错：erase 后旧迭代器失效（用返回值才正确，完整可编译）
 #include <iostream>
@@ -428,6 +438,7 @@ int main() {
 
 **Q：deque 能用于 `std::vector`-style 的 `data()` 接口吗？** A：不能；它不是连续单块。需要连续内存请用 `vector`/`array`/`span`（⟶ Book/part07_stl/ch80_array.md、⟶ Book/part07_stl/ch82_span.md）。
 
+> **示例 11** [难度 ★★★☆☆] [主题：[标准]]
 ```cpp
 // ⑰ FAQ 佐证：deque 无 data()，但可正常遍历（完整可编译）
 #include <iostream>
@@ -450,6 +461,7 @@ int main() {
 4. 迭代器失效后务必用 `erase`/`insert` 的返回值刷新；不要缓存迭代器跨修改使用。
 5. 高频随机访问且不需双端插入 → 仍用 `vector`（更连续、更快、更省内存）。
 
+> **示例 12** [难度 ★★★☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱ 最佳实践：deque 作 FIFO 队列（完整可编译）
 #include <iostream>
@@ -479,6 +491,7 @@ int main() {
 | 中控扩容 | 拷贝 map 指针 O(map) | 整体搬迁 O(n) | 无 |
 | 缓存局部性 | 段内好、段间跳 | 整体好 | 差（节点散列） |
 
+> **示例 13** [难度 ★★★☆☆] [主题：性能分析]
 ```cpp
 // ⑲ microbenchmark：push_front 的 deque vs vector（量级示意，完整可编译）
 #include <iostream>
@@ -621,6 +634,7 @@ graph TD
 
 下面 D1–D34 每个都是**完整可编译程序**（自带 `#include` 与 `int main`）。
 
+> **示例 14** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D1 基本构造 + 首尾推入 + 遍历
 #include <iostream>
@@ -634,6 +648,7 @@ int main() {
 }
 ```
 
+> **示例 15** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D2 随机访问 operator[] 与 at()
 #include <iostream>
@@ -647,6 +662,7 @@ int main() {
 }
 ```
 
+> **示例 16** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D3 头插大量元素（deque 的强项）
 #include <iostream>
@@ -660,6 +676,7 @@ int main() {
 }
 ```
 
+> **示例 17** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D4 中间插入 insert
 #include <iostream>
@@ -674,6 +691,7 @@ int main() {
 }
 ```
 
+> **示例 18** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D5 删除 erase（用返回值刷新迭代器）
 #include <iostream>
@@ -691,6 +709,7 @@ int main() {
 }
 ```
 
+> **示例 19** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D6 就地构造 emplace_front / emplace_back
 #include <iostream>
@@ -706,6 +725,7 @@ int main() {
 }
 ```
 
+> **示例 20** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D7 弹出 pop_front / pop_back
 #include <iostream>
@@ -719,6 +739,7 @@ int main() {
 }
 ```
 
+> **示例 21** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D8 访问 front / back / at / 下标
 #include <iostream>
@@ -731,6 +752,7 @@ int main() {
 }
 ```
 
+> **示例 22** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D9 resize（扩大填默认值，缩小丢弃）
 #include <iostream>
@@ -745,6 +767,7 @@ int main() {
 }
 ```
 
+> **示例 23** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D10 clear / empty / size
 #include <iostream>
@@ -758,6 +781,7 @@ int main() {
 }
 ```
 
+> **示例 24** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D11 assign（覆盖赋值）
 #include <iostream>
@@ -771,6 +795,7 @@ int main() {
 }
 ```
 
+> **示例 25** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D12 swap 两个 deque
 #include <iostream>
@@ -785,6 +810,7 @@ int main() {
 }
 ```
 
+> **示例 26** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D13 deque 作栈（尾插尾出）
 #include <iostream>
@@ -798,6 +824,7 @@ int main() {
 }
 ```
 
+> **示例 27** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D14 deque 是 std::stack / std::queue 的默认底层（完整可编译）
 #include <iostream>
@@ -813,6 +840,7 @@ int main() {
 }
 ```
 
+> **示例 28** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D15 迭代器失效：erase 后旧迭代器失效（接收返回值）
 #include <iostream>
@@ -826,6 +854,7 @@ int main() {
 }
 ```
 
+> **示例 29** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D16 与 vector 对比：遍历打印
 #include <iostream>
@@ -842,6 +871,7 @@ int main() {
 }
 ```
 
+> **示例 30** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D17 拷贝构造与赋值
 #include <iostream>
@@ -855,6 +885,7 @@ int main() {
 }
 ```
 
+> **示例 31** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D18 范围构造（迭代器区间）
 #include <iostream>
@@ -869,6 +900,7 @@ int main() {
 }
 ```
 
+> **示例 32** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D19 deque 存自定义类型
 #include <iostream>
@@ -884,6 +916,7 @@ int main() {
 }
 ```
 
+> **示例 33** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D20 反向迭代（rbegin/rend）
 #include <iostream>
@@ -896,6 +929,7 @@ int main() {
 }
 ```
 
+> **示例 34** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D21 索引遍历 + size / max_size
 #include <iostream>
@@ -909,6 +943,7 @@ int main() {
 }
 ```
 
+> **示例 35** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D22 push_front 跨多 buffer 仍正常（验证分段）
 #include <iostream>
@@ -922,6 +957,7 @@ int main() {
 }
 ```
 
+> **示例 36** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D23 二维 deque（matrix 风格，段内连续）
 #include <iostream>
@@ -934,6 +970,7 @@ int main() {
 }
 ```
 
+> **示例 37** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D24 用 std::find 查找元素
 #include <iostream>
@@ -947,6 +984,7 @@ int main() {
 }
 ```
 
+> **示例 38** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D25 用 std::sort 排序（deque 支持随机访问）
 #include <iostream>
@@ -962,6 +1000,7 @@ int main() {
 }
 ```
 
+> **示例 39** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D26 反向 + 旋转等算法
 #include <iostream>
@@ -976,6 +1015,7 @@ int main() {
 }
 ```
 
+> **示例 40** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D27 比较 deque（== / <）
 #include <iostream>
@@ -988,6 +1028,7 @@ int main() {
 }
 ```
 
+> **示例 41** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D28 shrink_to_fit 提示（非绑定）
 #include <iostream>
@@ -1001,6 +1042,7 @@ int main() {
 }
 ```
 
+> **示例 42** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D29 用 deque 实现滑动窗口最大值骨架
 #include <iostream>
@@ -1022,6 +1064,7 @@ int main() {
 }
 ```
 
+> **示例 43** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D30 与 list 对比：deque 可随机访问，list 不能
 #include <iostream>
@@ -1037,6 +1080,7 @@ int main() {
 }
 ```
 
+> **示例 44** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D31 元素引用在 map 扩容后不失效（结构演示）
 #include <iostream>
@@ -1051,6 +1095,7 @@ int main() {
 }
 ```
 
+> **示例 45** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D32 用 std::accumulate 求和
 #include <iostream>
@@ -1063,6 +1108,7 @@ int main() {
 }
 ```
 
+> **示例 46** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D33 首尾交替操作（双端特性综合）
 #include <iostream>
@@ -1079,6 +1125,7 @@ int main() {
 }
 ```
 
+> **示例 47** [难度 ★★★☆☆] [主题：附录A：30+ 完整可编译示例]
 ```cpp
 // D34 容量相关：deque 没有 capacity/reserve（完整可编译验证）
 #include <iostream>
@@ -1173,6 +1220,7 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 `vector::insert(begin())` 要把全部元素后移 → **O(n)**；`deque::push_front` 只填当前头块、
 必要时分配新块 → **摊还 O(1)**。`deque` 天然适合双端队列。
 
+> **示例 48** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <deque>
 std::deque<int> q;
@@ -1195,6 +1243,7 @@ int head = q.front(); q.pop_front(); // 出队头 O(1)
 `deque` 用"指针数组(map) + 定长块(512B)"两层结构。`operator[]` 先算块号 `i / 512`（`sar rdx, 0x7` 即 ÷128 元素的移位，取决于元素大小）去 map 查块指针，再算块内偏移 `i % 512`：
 两次内存访问 vs `vector` 一次。故仍是 O(1)，但常数更大、缓存局部性弱于 `vector`。
 
+> **示例 49** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
 ```
 block = map[ i >> 7 ];        // 第一跳: 取块基址
 elem  = block[ i & 0x7f ];    // 第二跳: 块内索引
@@ -1212,6 +1261,7 @@ elem  = block[ i & 0x7f ];    // 第二跳: 块内索引
 
 <details><summary>答案与解析</summary>
 
+> **示例 50** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 // 维护双端队列存"候选最大值下标", 队首为当前窗口最大
 std::deque<int> dq;
@@ -1238,6 +1288,7 @@ for (int i = 0; i < n; ++i) {
 
 **步骤 1：若误用 `vector`（头部删除 O(n)）**
 
+> **示例 51** [难度 ★★★☆☆] [主题：附录：用法演绎 — 生产者-消费者双]
 ```cpp
 std::vector<Task> q;
 q.push_back(t);          // 尾插 O(1)
@@ -1248,6 +1299,7 @@ q.erase(q.begin());      // 头删 O(n): 后续所有元素前移
 
 **步骤 2：改用 `deque`（头尾均摊 O(1)）**
 
+> **示例 52** [难度 ★★★☆☆] [主题：附录：用法演绎 — 生产者-消费者双]
 ```cpp
 std::deque<Task> q;
 q.push_back(t);          // 尾 O(1)
@@ -1258,6 +1310,7 @@ deque 的块结构让头删只动"头块"，其余块原地不动——无全局
 
 **步骤 3：何时 deque 反而**不如** vector？**
 
+> **示例 53** [难度 ★★★☆☆] [主题：附录：用法演绎 — 生产者-消费者双]
 ```cpp
 // 随机访问密集 + 缓存敏感的数值计算:
 for (size_t i=0;i<n;++i) sum += q[i];   // deque 每次访问 2 次间接(map查块+块内)
@@ -1343,6 +1396,7 @@ deque 通过一个指针数组（map）管理多个固定大小的 chunk（缓�
 
 ### D4.6 编译验证
 
+> **示例 54** [难度 ★★★☆☆] [主题：编译验证]
 ```cpp
 #include <deque>
 #include <iostream>
@@ -1472,6 +1526,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 55** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <deque>
 #include <vector>

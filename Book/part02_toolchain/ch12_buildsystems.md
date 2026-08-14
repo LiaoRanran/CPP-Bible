@@ -46,6 +46,7 @@ C++ 是**翻译单元（translation unit，TU）**模型：每个 `.cpp` 独立�
 2. **调度执行**——按依赖图顺序调用编译器，并尽可能并行。
 3. **产物管理**——输出可执行文件、静态库（`.a`/`.lib`）、动态库（`.so`/`.dll`）。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：构建系统解决什么 [标准]]
 ```cpp
 // ① 一个最小的、被构建系统反复编译的翻译单元
 // 文件：Examples/_ch12_hello.cpp（仅示意，非取证源）
@@ -59,6 +60,7 @@ int main() {
 - `[标准]`：C++ 标准只规定"一个程序由若干翻译单元链接而成"（[lex.phases]、[basic.link]），**不规定如何驱动编译**——构建系统是工程层。
 - `[经验]`：项目从 1 个文件增长到 1000 个文件时，手工敲 `g++ *.cpp` 会崩溃（重复全量编译、无法增量）；构建系统把"哪些要重编"变成图上问题。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：构建系统解决什么 [标准]]
 ```
 ┌──────────────── 构建流水线（单 TU）────────────────┐
 │  foo.cpp ──▶ [预处理] ──▶ [编译] ──▶ foo.o ──┐      │
@@ -73,6 +75,7 @@ int main() {
 
 Make 是最古老、最通用的构建工具：用户写 `Makefile`，声明**目标（target）: 依赖（prerequisites）** 与生成命令（recipe）。
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：基础（规则/目标/变量/自动变量） ]
 ```cpp
 // ② Make 构建的 C++ 源：foo.cpp
 // 文件：Examples/_ch12_foo.cpp（示意）
@@ -100,6 +103,7 @@ foo.o: foo.cpp        # 头改动时此规则触发重编
 
 模式规则（pattern rule）用 `%` 通配，避免为每个 `.cpp` 写一条规则；Make 内置函数（`wildcard`/`patsubst`/`addprefix`）做批量推导。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：模式规则与函数 [标准]]
 ```cpp
 // ③ 多个同构源：calc.cpp / emit.cpp 各自可被同一模式规则处理
 // 文件：Examples/_ch12_calc.cpp（示意）
@@ -124,6 +128,7 @@ app: $(OBJ)
 
 Ninja 设计哲学与 Make 相反：**Ninja 几乎不做决策**，它只执行一个扁平的依赖图；"哪些要重编"由生成器（CMake、Meson）算好写进 `build.ninja`。
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：快在哪（无递归、图依赖、紧凑语法） ]
 ```
 ┌──────── Make vs Ninja 决策位置 ─────────┐
 │ Make：读 Makefile → 边解析边决策 → 慢   │
@@ -132,6 +137,7 @@ Ninja 设计哲学与 Make 相反：**Ninja 几乎不做决策**，它只执行�
 └────────────────────────────────────────┘
 ```
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：快在哪（无递归、图依赖、紧凑语法） ]
 ```cpp
 // ④ Ninja 构建的源（与 Make 同一份 C++，构建器不同）
 // 文件：Examples/_ch12_ninja_main.cpp（示意）
@@ -157,6 +163,7 @@ build app: link ninja_main.o
 
 CMake 不是直接构建器，而是**构建系统生成器**：写一次 `CMakeLists.txt`，可生成 Makefile / Ninja / VS / Xcode 工程。其核心是 **target-based（目标导向）**——一切围绕"目标"（可执行/库）组织，属性挂在目标上而非全局变量。
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：概览]
 ```cpp
 // ⑤ CMake 管理的库源：lib.cpp
 // 文件：Examples/_ch12_lib.cpp（示意）
@@ -179,6 +186,7 @@ target_link_libraries(app PRIVATE mylib)   # 依赖关系即依赖图
 
 CMake 有两类"变量"：**普通变量**（函数/目录作用域）与 **缓存变量（cache entry）**（`set(... CACHE ...)`，跨配置持久、可被 `-D` 覆盖）。`option()` 是布尔缓存变量的语法糖。
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：变量/缓存/option [标准]]
 ```cpp
 // ⑥ 受 CMake option 控制的源：USE_SSE 决定走哪条路径
 // 文件：Examples/_ch12_feature.cpp（示意）
@@ -210,6 +218,7 @@ target_compile_definitions(mylib PRIVATE USE_SSE=$<IF:$<BOOL:${USE_SSE}>,1,0>)
 
 **生成器表达式（generator expression）** `$<...>` 在"生成期"才求值，用来表达"按配置/按语言/按条件"的差异。它和 `target_link_libraries` 配合，是 modern CMake 的精华。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：生成器表达式与 targetlink]
 ```cpp
 // ⑦ 消费者：链接 mylib 后使用其接口
 // 文件：Examples/_ch12_consumer.cpp（示意）
@@ -238,6 +247,7 @@ target_link_libraries(app PRIVATE
 
 `install()` 把产物与头拷到前缀目录；`install(EXPORT)` 生成 **目标导出集（`.cmake`）**，让别的工程能 `find_package` 找到你（闭环到 ⑯）。
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：安装/导出/包配置 [标准]]
 ```cpp
 // ⑧ 要被导出的库接口（头与 inline 必须随包分发）
 // 文件：Examples/_ch12_exportif.h（示意）
@@ -266,6 +276,7 @@ install(FILES engine.h DESTINATION include)
 
 `-MMD` 让编译器在编译同时**输出一个 `.d` 依赖文件**，列出本 TU 依赖的所有头。构建系统据它重建依赖图。下面全部为本机 GCC 13.1.0 真实运行结果。
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实：用 g++]
 ```cpp
 // 文件：Examples/_ch12_dep.cpp
 // 行号：1
@@ -297,6 +308,7 @@ _ch12_dep.o: _ch12_dep.cpp _ch12_dep.h
 
 Bazel（Google）走得更远：**声明式 BUILD 文件 + 内容寻址缓存 + 密封构建（hermetic build）**。每个 `cc_library`/`cc_binary` 是一个 **action**，依赖构成 action 图，输出按内容哈希缓存，可跨机器共享。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：简介（BUILD/action 图）]
 ```cpp
 // ⑩ Bazel cc_library 的源：server.cc
 // 文件：Examples/_ch12_server.cc（示意）
@@ -326,6 +338,7 @@ cc_binary(
 
 增量构建的正确性 = "**依赖闭包任何一处变化，相关 TU 必须重编**"。头被多个 TU 包含，于是头变了要重编所有包含它的 TU——这正是 `-MMD` 输出 `.d` 的根本动机。
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：头文件依赖与增量构建原理 [标准]]
 ```cpp
 // ⑪ 头依赖示意：config.h 被 a.cpp / b.cpp 同时包含
 // 文件：Examples/_ch12_config.h（示意）
@@ -333,6 +346,7 @@ cc_binary(
 constexpr int kBatch = 64;          // 改这里 → a.o、b.o 都要重编
 ```
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：头文件依赖与增量构建原理 [标准]]
 ```
 ┌──────── 头依赖传播（增量边界）─────────┐
 │  config.h ──┬──▶ a.cpp ──▶ a.o       │
@@ -350,6 +364,7 @@ constexpr int kBatch = 64;          // 改这里 → a.o、b.o 都要重编
 
 **预编译头（Precompiled Header, PCH）** 把"庞大且稳定"的头（如 `<vector>`、Qt、Boost）先编译成二进制缓存，后续 TU 直接复用，省去重复解析。
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：预编译头 PCH [标准]]
 ```cpp
 // ⑫ PCH 的"稳定大头"：pch.h（内容很少变动）
 // 文件：Examples/_ch12_pch.h（示意）
@@ -360,6 +375,7 @@ constexpr int kBatch = 64;          // 改这里 → a.o、b.o 都要重编
 #include <memory>
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：预编译头 PCH [标准]]
 ```cpp
 // ⑫ 业务 TU：首行强制包含 PCH（GCC/Clang 用 -include pch.h）
 // 文件：Examples/_ch12_biz.cpp（示意）
@@ -382,6 +398,7 @@ g++ -std=c++23 -include _ch12_pch.h _ch12_biz.cpp -o biz
 
 **Unity build（联合编译/单翻译单元构建）**：把 N 个 `.cpp` 用 `#include` 拼成一个大 TU 编译一次。收益来自**头只解析一遍**（尤其 PCH/大模板头），代价是失去 TU 隔离（见 ⑱ 全局命名冲突）。
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：联合编译]
 ```cpp
 // 文件：Examples/_ch12_part1.cpp
 // 行号：1
@@ -389,6 +406,7 @@ g++ -std=c++23 -include _ch12_pch.h _ch12_biz.cpp -o biz
 namespace ch12 { int compute_a(int x) { return x + 1; } }
 ```
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：联合编译]
 ```cpp
 // 文件：Examples/_ch12_part2.cpp
 // 行号：1
@@ -396,6 +414,7 @@ namespace ch12 { int compute_a(int x) { return x + 1; } }
 namespace ch12 { int compute_b(int x) { return x * 2; } }
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：联合编译]
 ```cpp
 // 文件：Examples/_ch12_unity.cpp
 // 行号：1
@@ -419,6 +438,7 @@ Unity：1 个合并 TU 编译       =>  合计  0.54 s
 
 **交叉编译（cross-compile）**：在 x86-64 主机上生成 ARM/嵌入式目标代码。CMake 用**工具链文件（toolchain file）** 指定 `CMAKE_CXX_COMPILER`、目标 sysroot、目标 triple。
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：交叉编译工具链文件 [标准]]
 ```cpp
 // ⑭ 交叉编译的目标程序：跑在 ARM 板上的控制循环
 // 文件：Examples/_ch12_arm_main.cpp（示意）
@@ -445,6 +465,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 **静态库（`.a`/`.lib`）** = 多个 `.o` 的归档，链接时把用到的目标代码拷进可执行文件；**动态库（`.so`/`.dll`）** = 独立文件，运行时加载、多进程共享。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：静态/动态库链接]
 ```cpp
 // 文件：Examples/_ch12_mylib.h
 // 行号：1
@@ -452,6 +473,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 namespace ch12 { int square(int x); int cube(int x); }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：静态/动态库链接]
 ```cpp
 // 文件：Examples/_ch12_mylib.cpp
 // 行号：1
@@ -459,6 +481,7 @@ namespace ch12 { int square(int x); int cube(int x); }
 namespace ch12 { int square(int x){return x*x;} int cube(int x){return x*x*x;} }
 ```
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：静态/动态库链接]
 ```cpp
 // 文件：Examples/_ch12_use_lib.cpp
 // 行号：1
@@ -490,6 +513,7 @@ g++ -std=c++23 _ch12_use_lib.cpp -L. -lch12 -o _ch12_use_lib_shared.exe
 
 `find_package(Foo)` 让 CMake 定位已安装的第三方库，并导入其**导入目标（imported target）** 如 `Foo::Foo`，从而复用对方的 include/编译选项，无需手写 `-I`/`-L`。
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：package 与包查找 [标准]]
 ```cpp
 // ⑯ 使用被 find_package 导入的目标提供的接口
 // 文件：Examples/_ch12_use_fmt.cpp（示意，以 {fmt} 为例）
@@ -511,6 +535,7 @@ target_link_libraries(app PRIVATE fmt::fmt)   # 自动带 include/选项
 
 同一份 C++，**不同优化级别**生成的汇编天差地别——这正是"构建配置（Debug/Release）"影响运行效率的根本。下面为 `_ch12_sum.cpp` 在 GCC 13.1.0 的真实 `-S` 输出。
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实：编译同一程]
 ```cpp
 // 文件：Examples/_ch12_sum.cpp
 // 行号：1
@@ -608,6 +633,7 @@ _Z6sum_toi:
 
 **陷阱 1：全局 include / 全局变量污染。** 老式 `include_directories(.)` 把当前目录塞进**每个** TU 的搜索路径，任何同名头都可能被误包含；全局 `int g_config;` 在多个 TU 定义触发 ODR 冲突。
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：常见陷阱]
 ```cpp
 // ⑱ ❌ 陷阱：在头里定义非 inline 全局变量 → 多 TU 包含 => 多重定义
 // 文件：Examples/_ch12_bad.h（示意，错误示范）
@@ -615,6 +641,7 @@ _Z6sum_toi:
 int g_counter = 0;                 // ❌ 每个包含此头的 TU 都有一份定义 → link error
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：常见陷阱]
 ```cpp
 // ⑱ ✅ 正确：用 inline（C++17）或 extern 声明 + 单点定义
 // 文件：Examples/_ch12_good.h（示意，正确示范）
@@ -625,6 +652,7 @@ inline int g_counter = 0;          // ✅ inline 变量：ODR 允许多 TU 同�
 
 **陷阱 2：目录式 include 与模糊匹配。** `include_directories(third_party)` 后 `#include "json.h"` 可能抓到错误的 `json.h`。
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：常见陷阱]
 ```cpp
 // ⑱ ❌ 陷阱：依赖目录式 include 的歧义
 // #include "json.h"   // ❌ 到底是哪个 json.h？项目内还是 third_party 的？
@@ -647,6 +675,7 @@ inline int g_counter = 0;          // ✅ inline 变量：ODR 允许多 TU 同�
 | 嵌入式 / 交叉编译 | CMake + 工具链文件 | `CMAKE_FIND_ROOT_PATH` 控依赖 |
 | Windows 原生重度 IDE | MSBuild / VS 工程 | 与 Visual Studio 集成最深 |
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：[经验]选型建议]
 ```cpp
 // ⑲ 选型落地的最小可演进骨架（CMake 起手）
 // 文件：Examples/_ch12_skeleton.cpp（示意）
@@ -673,6 +702,7 @@ int main() { std::printf("chosen build system\n"); return 0; }
    - [标准] 头依赖在语言层由 `#include` 与（C++20）模块导入表达；构建系统只负责把正确的包含路径与链接传给使用者。
    - [引用] ISO/IEC 14882:2023 §[cpp.include]（源文件包含）；cppreference "Replacing text macros / #include" 词条。
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：速查表]
 ```
 ┌────────────── 构建系统速查 ──────────────┐
 │ g++ 选项：                                 │
@@ -712,12 +742,14 @@ int main() { std::printf("chosen build system\n"); return 0; }
 
 ## 补充完整可编译示例（build systems）
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B1 最朴素的单 TU 程序（手工 g++ 即可构建）
 #include <cstdio>
 int main() { std::printf("plain\n"); return 0; }
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B2 多 TU：声明放头，定义放 .cpp（构建系统负责链接）
 // 文件：Examples/_ch12_math.h（示意）
@@ -725,6 +757,7 @@ int main() { std::printf("plain\n"); return 0; }
 namespace ch12 { int mul(int, int); }
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B3 与 B2 配对的定义 TU
 // 文件：Examples/_ch12_math.cpp（示意）
@@ -732,6 +765,7 @@ namespace ch12 { int mul(int, int); }
 namespace ch12 { int mul(int a, int b) { return a * b; } }
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B4 inline 变量：头里安全定义全局状态（ODR 友好）
 // 文件：Examples/_ch12_ivar.h（示意）
@@ -739,6 +773,7 @@ namespace ch12 { int mul(int a, int b) { return a * b; } }
 inline int ch12_registry_version = 2;
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B5 PCH 候选的大头集合（稳定、少变）
 // 文件：Examples/_ch12_stable.h（示意）
@@ -749,6 +784,7 @@ inline int ch12_registry_version = 2;
 #include <functional>
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B6 Unity 守卫：合并编译时跳过匿名命名空间冲突
 // 文件：Examples/_ch12_guarded.cpp（示意）
@@ -758,6 +794,7 @@ namespace { int local_only = 1; }
 int guarded_fn(int x) { return x + 1; }
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B7 共享库可见性：用默认隐藏 + 显式导出（避免 DLL Hell）
 // 文件：Examples/_ch12_visibility.cpp（示意，GCC/Clang）
@@ -769,6 +806,7 @@ int guarded_fn(int x) { return x + 1; }
 extern "C" API int public_entry(int x) { return x * x; }
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B8 交叉编译目标：避免假设字节序/对齐
 // 文件：Examples/_ch12_portable.cpp（示意）
@@ -778,6 +816,7 @@ uint32_t pack_u16(uint16_t hi, uint16_t lo) {
 }
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B9 配置期宏：由 CMake -DUSE_AVX=1 决定开启
 // 文件：Examples/_ch12_cfg.cpp（示意）
@@ -791,6 +830,7 @@ int transform(int x) {
 }
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B10 find_package 消费方：仅依赖导入目标
 // 文件：Examples/_ch12_use_zlib.cpp（示意）
@@ -799,6 +839,7 @@ int transform(int x) {
 int zlen(const char* s) { std::printf("%s\n", s); return 0; }
 ```
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B11 生成器表达式运行期镜像：Debug 多打日志
 // 文件：Examples/_ch12_dbg.cpp（示意）
@@ -813,6 +854,7 @@ int run(int x) {
 }
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B12 完整可链的最小库 + 主程序（验证 ⑮ 的 .a/.so 理论）
 // 文件：Examples/_ch12_lib_oop.h（示意）
@@ -820,6 +862,7 @@ int run(int x) {
 namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 ```
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // B13 与 B12 配对实现（定义集中，声明在头）
 // 文件：Examples/_ch12_lib_oop.cpp（示意）
@@ -871,6 +914,7 @@ namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 
 ## 附录 A：工业构建系统与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：附录 A：工业构建系统与标准库 [B]
 ```
 C++构建系统工业对比:
 CMake: 事实标准(90%+项目), 跨平台, 但语法丑陋
@@ -922,6 +966,7 @@ Google/LLVM CMake规范:
 - target_*命令只影响指定target(不使用全局add_compile_options)
 - PUBLIC/PRIVATE/INTERFACE严格区分
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：附录 H：CMake最佳实践]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Modern CMake=target_* commands, explicit deps, no GLOB"<<std::endl;return 0;}
@@ -935,6 +980,7 @@ int main(){std::cout<<"Modern CMake=target_* commands, explicit deps, no GLOB"<<
 
 ## 附录 I：CMake面试
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：附录 I：CMake面试]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"CMake=PUBLIC(传递)/PRIVATE(不传递)/INTERFACE(仅依赖方)"<<std::endl;return 0;}
@@ -1012,6 +1058,7 @@ project(demo)
 add_executable(app main.cpp)      # target 'app' 聚合源/包含/链接
 ```
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 int main() { std::cout << "minimal cmake target\n"; }
@@ -1026,6 +1073,7 @@ int main() { std::cout << "minimal cmake target\n"; }
 
 **真实场景：CI 里的增量构建。** 大型仓库每次提交都要重建，太慢。增量构建依赖"头文件依赖图"：只重编受改动头影响的目标文件。请写程序说明 `g++ -MMD -c` 生成的 `.d` 文件作用，并指出它如何让 `make`/`ninja` 在头文件改动时只重编受影响的源。
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1046,6 +1094,7 @@ int main() {
 
 **真实场景：发布形态选型。** 你要把一个 `square` 工具函数交付出去：做成静态库 `.a` 让调用方程序自包含，或做成动态库 `.so` 便于单独升级。请在单个自包含程序里体现"库函数"的调用形态，并写出分离成静态库的真实命令。
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 int square(int x) { return x * x; }   // 实际项目中会放进 libmath.a
@@ -1095,6 +1144,7 @@ g++ -std=c++23 -x c++-header stdpch.h -o stdpch.h.gch   # 预编译头
 g++ -std=c++23 -include stdpch.h main.cpp -o main        # 复用 gch
 ```
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：演绎 2：用 PCH 给巨量 Uni]
 ```cpp
 #include <iostream>
 #include <vector>

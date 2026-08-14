@@ -79,6 +79,7 @@ C 中 `auto` 是存储类；复活它引发"破坏旧代码"的担忧，但委�
 
 ## ④ 知识图谱
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：知识图谱]
 ```
                           ┌─ auto 变量 (C++11)
                           ├─ auto& / const auto& / auto&& (引用/转发)
@@ -124,6 +125,7 @@ flowchart TD
 
 ## ⑥ 内存图
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：内存图]
 ```
 栈帧 f():
 +-------------------+        +----------------------+
@@ -156,6 +158,7 @@ flowchart TD
 
 ## ⑧ 调用栈
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：调用栈]
 ```
 main()
  └─ make()                 // C++14 auto 返回工厂
@@ -218,6 +221,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ### 12.1 `std::declval`（文件 `type_traits`，行 1004-1015）
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：std::declval]
 ```cpp
 // type_traits:1004
   /// @cond undocumented
@@ -241,6 +245,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ### 12.2 `std::invoke_result`（文件 `type_traits`，行 3283-3297）
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：std::invokeresult]
 ```cpp
 // type_traits:3283
   /// std::invoke_result                    // 3283
@@ -268,6 +273,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ### 12.3 `std::invoke`（文件 `functional`，行 117-124）
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：std::invoke]
 ```cpp
 #include <utility>
 // functional:117
@@ -288,6 +294,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ### 12.4 内部 `__invoke` / `__invoke_impl`（文件 `bits/invoke.h`，行 60-101）
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：内部 invoke / invoke]
 ```cpp
 #include <utility>
 // bits/invoke.h:60
@@ -398,6 +405,7 @@ mov     QWORD PTR [rsp-16], rax    ; 仅保存指针/迭代器状态
 
 ### 18.1 `auto` 变量 vs 显式类型（证明零开销）
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：auto 变量 vs 显式类型]
 ```cpp
 // bm_auto_zero_overhead.cpp  (Google Benchmark)
 #include <benchmark/benchmark.h>
@@ -426,6 +434,7 @@ BENCHMARK(BM_ExplicitVar);
 
 ### 18.2 `decltype(auto)` 转发函数开销
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：decltype(auto) 转发函]
 ```cpp
 // bm_decltype_auto_forward.cpp
 #include <benchmark/benchmark.h>
@@ -559,18 +568,21 @@ BENCHMARK(BM_DecltypeAutoForward);
 - **工程应用**：`auto sz = v.size();`、`for (auto it = m.begin(); ...)`。
 - **真实源码**：`auto` 为语言特性，标准库无对应源码；编译器前端实现（见阅读路线）。
 - **错误示例**：
+> **示例 10** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
   ```cpp
   int a[10]; auto p = a;   // p 是 int*（退化），不是 int(&)[10]
   void f();   auto q = f;   // q 是 void(*)(void)，不是函数类型
   const int c = 1; auto x = c; // x 是 int（顶层 const 丢失）
 ```
 - **正确示例**：
+> **示例 11** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
   ```cpp
   int a[10]; auto p = a;          // int*，符合退化预期
   const int c = 1; const auto x = c; // 显式保留 const
 ```
 - **≥10 个例子**：ex01, ex02, ex39, ex26, ex34, ex35, ex36, ex27, ex06, ex37, ex40。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
 ```cpp
 // ex01_auto_basic.cpp —— auto 基本推导
 #include <type_traits>
@@ -586,6 +598,7 @@ int main() {
 }
 ```
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
 ```cpp
 // ex02_auto_reference_loss.cpp —— auto 丢失引用（陷阱演示）
 #include <type_traits>
@@ -601,6 +614,7 @@ int main() {
 }
 ```
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
 ```cpp
 // ex39_cv_preservation.cpp —— 顶层 cv 丢失 vs 显式保留
 #include <type_traits>
@@ -613,6 +627,7 @@ int main() {
 }
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
 ```cpp
 // ex26_factory_unique_ptr.cpp —— 工厂返回 auto 接收（工业）
 #include <memory>
@@ -624,6 +639,7 @@ int main() {
 }
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
 ```cpp
 // ex34_type_traits_declval.cpp —— declval 在 traits 中的工业用法
 #include <type_traits>
@@ -642,6 +658,7 @@ static_assert(!has_size<int>::value);
 int main() {}
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
 ```cpp
 // ex35_invoke_result_usage.cpp —— 用 invoke_result_t 提取返回类型
 #include <type_traits>
@@ -653,6 +670,7 @@ int main() {
 }
 ```
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
 ```cpp
 // ex36_invoke_example.cpp —— std::invoke（真实源码 functional:117）
 #include <functional>
@@ -667,6 +685,7 @@ int main() {
 }
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
 ```cpp
 // ex27_structured_bindings_auto.cpp —— C++17 结构化绑定 + auto
 #include <map>
@@ -678,6 +697,7 @@ int main() {
 }
 ```
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
 ```cpp
 // ex06_template_brace_fail.cpp —— 模板 T+{} 不推导 initializer_list（对比 auto）
 #include <initializer_list>
@@ -690,6 +710,7 @@ int main() {
 }
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
 ```cpp
 // ex37_perfect_forward_factory.cpp —— 转发工厂（综合）
 #include <memory>
@@ -701,6 +722,7 @@ auto make_resource(Args&&... a) {        // C++14 auto 返回
 int main() { auto p = make_resource<int>(5); (void)p; }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：auto 非引用推导规则]
 ```cpp
 // ex40_common_type_like.cpp —— auto 在泛型算法中的类型推导
 #include <type_traits>
@@ -741,16 +763,19 @@ int main() {
 - **工程应用**：`for (const auto& x : bigVec)` 避免拷贝大对象。
 - **真实源码**：语言特性；无 STL 源码。
 - **错误示例**：
+> **示例 23** [难度 ★☆☆☆☆] [主题：auto& / const auto]
   ```cpp
   int f(); auto& r = f();   // 错误：不能把非 const 左值引用绑到右值
 ```
 - **正确示例**：
+> **示例 24** [难度 ★☆☆☆☆] [主题：auto& / const auto]
   ```cpp
   int f(); const auto& r = f();  // OK，延长临时生命期
   auto&& u = f();                 // OK，u 为 int&&
 ```
 - **≥10 个例子**：ex03, ex04, ex21, ex22, ex24, ex38, ex28, ex29, ex30, ex18。
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：auto& / const auto]
 ```cpp
 // ex03_const_auto_ref.cpp —— const auto& 避免大对象拷贝
 #include <string>
@@ -764,6 +789,7 @@ int main() {
 }
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：auto& / const auto]
 ```cpp
 // ex04_auto_forwarding_ref.cpp —— auto&& 转发引用
 #include <type_traits>
@@ -776,6 +802,7 @@ void sink(T&& x) {                  // 转发引用
 int main() { int i=0; sink(i); sink(0); }
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：auto& / const auto]
 ```cpp
 // ex21_range_for_auto.cpp —— auto 范围 for（值拷贝）
 #include <vector>
@@ -787,6 +814,7 @@ int main() {
 }
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：auto& / const auto]
 ```cpp
 // ex22_range_for_auto_ref.cpp —— auto& 范围 for（原地修改）
 #include <vector>
@@ -798,6 +826,7 @@ int main() {
 }
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：auto& / const auto]
 ```cpp
 // ex24_vector_bool_autoref_fail.cpp —— vector<bool> proxy 不能绑 auto&
 #include <vector>
@@ -809,6 +838,7 @@ int main() {
 }
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：auto& / const auto]
 ```cpp
 // ex38_auto_ref_proxy_range.cpp —— auto&& 遍历 proxy 容器（推荐）
 #include <vector>
@@ -820,6 +850,7 @@ int main() {
 }
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：auto& / const auto]
 ```cpp
 // ex28_generic_lambda_auto.cpp —— C++14 generic lambda（auto 参数）
 #include <iostream>
@@ -829,6 +860,7 @@ int main() {
 }
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：auto& / const auto]
 ```cpp
 // ex29_auto_param_new.cpp —— C++20 普通函数 auto 参数（缩写模板）
 #include <iostream>
@@ -837,6 +869,7 @@ auto twice(auto x) { return x + x; }  // 等价于 template<class T> auto twice(
 int main() { std::cout << twice(3) << twice(std::string{"ab"}); }
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：auto& / const auto]
 ```cpp
 // ex30_auto_concept_requires.cpp —— C++20 concepts + auto 参数
 #include <concepts>
@@ -845,6 +878,7 @@ void print(std::integral auto x) { std::cout << x; } // 受约束缩写模板
 int main() { print(42); /* print(3.0); 错误：非 integral */ }
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：auto& / const auto]
 ```cpp
 // ex18_abbreviated_concept.cpp —— 缩写函数模板 + 多 auto 参数
 #include <concepts>
@@ -880,11 +914,13 @@ int main() { std::cout << add(2, 3); }
 - **工程应用**：`auto il = {1,2,3};` 极少直接写；陷阱多（见最佳实践 5）。
 - **真实源码**：`<initializer_list>`（libstdc++）定义 `std::initializer_list`（**真实存在**，行略；本书未贴全行，仅说明语义）。
 - **错误示例**：
+> **示例 35** [难度 ★☆☆☆☆] [主题：auto + { } → std::]
   ```cpp
   auto x{1,2};   // 错误（C++17 起, direct-init 多元素）
   auto y = {1, 2.0}; // 错误：元素类型不一致
 ```
 - **正确示例**：
+> **示例 36** [难度 ★☆☆☆☆] [主题：auto + { } → std::]
   ```cpp
 #include <initializer_list>
 #include <vector>
@@ -893,6 +929,7 @@ int main() { std::cout << add(2, 3); }
 ```
 - **≥10 个例子**：ex05, ex06, ex23(rest), 及下方 ex05。
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：auto + { } → std::]
 ```cpp
 // ex05_auto_brace_initializer_list.cpp —— auto + {} 特例
 #include <initializer_list>
@@ -936,17 +973,20 @@ int main() {
 - **工程应用**：推导返回类型、写 traits、完美转发返回。
 - **真实源码**：`type_traits:1015` `decltype(__declval<_Tp>(0))`；`type_traits:3286` 继承 `__invoke_result`（均为真实行号）。
 - **错误示例**：
+> **示例 38** [难度 ★☆☆☆☆] [主题：decltype 两条规则]
   ```cpp
   int x; decltype(x) y;   // int（实体规则）
   decltype((x)) z = x;    // int&（值类别规则，见 KP5）
 ```
 - **正确示例**：
+> **示例 39** [难度 ★☆☆☆☆] [主题：decltype 两条规则]
   ```cpp
   int x; decltype(x) a = 0;        // int
   int* p; decltype(*p) b = *p;     // int&（*p 是 lvalue）
 ```
 - **≥10 个例子**：ex07, ex08, ex10, ex09(rest), ex34, ex35, ex11, ex12, ex25, ex13.
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：decltype 两条规则]
 ```cpp
 // ex07_decltype_id_expression.cpp —— 规则1：未加括号 id-expression
 #include <type_traits>
@@ -958,6 +998,7 @@ int main() {
 }
 ```
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：decltype 两条规则]
 ```cpp
 // ex08_decltype_lvalue.cpp —— 规则2：左值表达式 -> T&
 #include <type_traits>
@@ -969,6 +1010,7 @@ int main() {
 }
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：decltype 两条规则]
 ```cpp
 // ex10_decltype_prvalue_xvalue.cpp —— 规则2：prvalue -> T, xvalue -> T&&
 #include <type_traits>
@@ -980,6 +1022,7 @@ int main() {
 }
 ```
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：decltype 两条规则]
 ```cpp
 // ex13_trailing_return.cpp —— decltype 用于尾置返回类型（依赖参数）
 #include <type_traits>
@@ -990,6 +1033,7 @@ int main() {
 }
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：decltype 两条规则]
 ```cpp
 // ex25_forwarding_wrapper_decltype_auto.cpp —— decltype(auto) 转发（见 KP6）
 #include <utility>
@@ -1020,17 +1064,20 @@ int main() { auto l = [](int& x) -> int& { return x; }; int v=1; int& r = call(l
 - **工程应用**：「`decltype((x))` 是引用」是 `decltype(auto)` 返回 `(x)` 产生悬垂引用的根因（见 KP6）。
 - **真实源码**：语言特性；标准库用例见 `type_traits:1015`（`decltype(__declval<_Tp>(0))` 中 `0` 是 prvalue → `T` 而非 `T&`）。
 - **错误示例**：
+> **示例 45** [难度 ★☆☆☆☆] [主题：decltype((x)) 为何是引]
   ```cpp
   int x = 0;
   decltype((x)) r = x;   // int&，若误以为 int 会出错
 ```
 - **正确示例**：
+> **示例 46** [难度 ★☆☆☆☆] [主题：decltype((x)) 为何是引]
   ```cpp
   int x = 0;
   static_assert(std::is_same_v<decltype((x)), int&>); // 明确认知
 ```
 - **≥10 个例子**：ex09, ex08, ex10, ex25, ex11, ex12, ex13, 面试 Q2/Q4.
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：decltype((x)) 为何是引]
 ```cpp
 // ex09_decltype_paren_reference.cpp —— 经典面试题：decltype((x)) 是 int&
 #include <type_traits>
@@ -1066,16 +1113,19 @@ int main() {
 - **工程应用**：完美转发包装器（见 ex25）、`operator->*` 等代理。
 - **真实源码**：STL 对应机制为 `invoke_result_t`（functional:109，真实行号）。
 - **错误示例**（悬垂引用）：
+> **示例 48** [难度 ★☆☆☆☆] [主题：decltype]
   ```cpp
   decltype(auto) bad() { int x = 0; return (x); } // 返回 int& 绑到局部 -> 悬垂!
 ```
 - **正确示例**：
+> **示例 49** [难度 ★☆☆☆☆] [主题：decltype]
   ```cpp
   int g = 0;
   decltype(auto) good() { return (g); }   // 返回 int&，合法（g 是静态生命期）
 ```
 - **≥10 个例子**：ex11, ex12, ex25, ex31, 18.2 bench, ex37.
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：decltype]
 ```cpp
 // ex11_decltype_auto_forward_return.cpp —— 完美转发返回类型
 #include <type_traits>
@@ -1089,6 +1139,7 @@ int main() {
 }
 ```
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：decltype]
 ```cpp
 // ex12_decltype_auto_dangling.cpp —— 经典坑：decltype(auto) 绑临时悬垂
 #include <iostream>
@@ -1122,17 +1173,20 @@ int main() {
 - **工程应用**：C++11 泛型函数返回依赖类型（见 ex13）。
 - **真实源码**：`std::invoke` 用 `invoke_result_t<...>` 作返回类型（functional:109）。
 - **错误示例**：
+> **示例 52** [难度 ★☆☆☆☆] [主题：未分类]
   ```cpp
   template<class A,class B>
   decltype(a+b) add(A a,B b); // 错误：a,b 在返回类型处不可见
 ```
 - **正确示例**：
+> **示例 53** [难度 ★☆☆☆☆] [主题：未分类]
   ```cpp
   template<class A,class B>
   auto add(A a,B b) -> decltype(a+b) { return a+b; } // OK
 ```
 - **≥10 个例子**：ex13, ex37, ex40, ex31.
 
+> **示例 54** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // ex13 见 KP4（尾置返回依赖参数类型）。再给一例：
 // ex31_abi_mangling_auto_return.cpp —— ABI：auto 返回 mangling 与手写一致
@@ -1159,16 +1213,19 @@ int main() { static_assert(std::is_same_v<decltype(square(2)), int>); }
 - **工程应用**：工厂、泛型算法（ex37）。
 - **真实源码**：`std::invoke` 返回 `invoke_result_t`（functional:109）即等价机制。
 - **错误示例**（多 return 不一致）：
+> **示例 55** [难度 ★☆☆☆☆] [主题：++14 普通函数 auto 返回]
   ```cpp
   auto bad() { if (true) return 1; else return 2.0; } // 错误：int vs double
 ```
 - **正确示例**：
+> **示例 56** [难度 ★☆☆☆☆] [主题：++14 普通函数 auto 返回]
   ```cpp
   auto ok() { return 1; }              // int
   auto ok2() { if (true) return 1; else return 2; } // 一致 int
 ```
 - **≥10 个例子**：ex14, ex15, ex16, ex37, ex31, ex11, ex12.
 
+> **示例 57** [难度 ★☆☆☆☆] [主题：++14 普通函数 auto 返回]
 ```cpp
 // ex14_auto_return_multi.cpp —— 多 return 必须一致
 #include <type_traits>
@@ -1176,6 +1233,7 @@ auto f(bool b) { if (b) return 1; else return 2; } // 都是 int
 int main() { static_assert(std::is_same_v<decltype(f(true)), int>); }
 ```
 
+> **示例 58** [难度 ★☆☆☆☆] [主题：++14 普通函数 auto 返回]
 ```cpp
 // ex15_auto_return_recursion.cpp —— 递归需先有确定返回类型的 return
 #include <type_traits>
@@ -1187,6 +1245,7 @@ auto fact(int n) -> int { return n <= 1 ? 1 : n * fact(n - 1); }
 int main() { static_assert(std::is_same_v<decltype(fact(5)), int>); }
 ```
 
+> **示例 59** [难度 ★☆☆☆☆] [主题：++14 普通函数 auto 返回]
 ```cpp
 // ex16_auto_return_constexpr.cpp —— auto 返回 + constexpr
 #include <type_traits>
@@ -1215,16 +1274,19 @@ int main() {
 - **工程应用**：短助手（ex18/ex29/ex30）。
 - **真实源码**：标准库 `<algorithm>` 中大量 `auto` 参数（**[实现-推断]**，未贴具体行）。
 - **错误示例**：
+> **示例 60** [难度 ★☆☆☆☆] [主题：++20 缩写函数模板]
   ```cpp
   // 缩写函数模板不能和同名非模板共存产生歧义（按重载规则）
   void f(int); auto f(auto) { } // 可能重载决议冲突，需谨慎
 ```
 - **正确示例**：
+> **示例 61** [难度 ★☆☆☆☆] [主题：++20 缩写函数模板]
   ```cpp
   auto id(auto x) { return x; }  // template<class T> T id(T)
 ```
 - **≥10 个例子**：ex18, ex29, ex30, ex17.
 
+> **示例 62** [难度 ★☆☆☆☆] [主题：++20 缩写函数模板]
 ```cpp
 // ex17_abbreviated_function_template.cpp —— 缩写函数模板（C++20）
 #include <concepts>
@@ -1255,18 +1317,21 @@ int main() { std::cout << max(3, 7) << max(1.0, 2.0); }
 - **工程应用**：编译期配置、类型分发（ex19/ex20）。
 - **真实源码**：标准库 NTTP 用例见 `<utility>` 的 `integer_sequence`（**[实现-推断]**，未贴行）。
 - **错误示例**：
+> **示例 63** [难度 ★☆☆☆☆] [主题：++17 auto 非类型模板参数]
   ```cpp
   template<auto V> struct C {};
   C<5> a; C<'x'> b;  // V 类型不同 -> 两个不同实例化
   // C<5>; C<5.0>;   // int vs double -> 不同实例化（非错误）
 ```
 - **正确示例**：
+> **示例 64** [难度 ★☆☆☆☆] [主题：++17 auto 非类型模板参数]
   ```cpp
   template<auto V> struct wrap { static constexpr auto value = V; };
   static_assert(wrap<42>::value == 42);
 ```
 - **≥10 个例子**：ex19, ex20.
 
+> **示例 65** [难度 ★☆☆☆☆] [主题：++17 auto 非类型模板参数]
 ```cpp
 // ex19_auto_nttp.cpp —— C++17 auto 非类型模板参数
 #include <type_traits>
@@ -1279,6 +1344,7 @@ int main() {
 }
 ```
 
+> **示例 66** [难度 ★☆☆☆☆] [主题：++17 auto 非类型模板参数]
 ```cpp
 // ex20_auto_nttp_different_types.cpp —— 不同类型产生不同实例化
 #include <type_traits>
@@ -1314,6 +1380,7 @@ int main() {
 - **工程应用**：不要以 `auto&` 遍历；算法需特化或避免 proxy。
 - **真实源码**：`<bits/stl_bvector.h>` `vector<bool>::reference`（真实文件，行略）。
 - **错误示例**：
+> **示例 67** [难度 ★☆☆☆☆] [主题：auto 与 proxy 对象]
   ```cpp
 #include <vector>
   std::vector<bool> bv(1);
@@ -1321,6 +1388,7 @@ int main() {
   auto x = bv[0]; x = true; // 改的是 proxy 副本，bv[0] 不变！
 ```
 - **正确示例**：
+> **示例 68** [难度 ★☆☆☆☆] [主题：auto 与 proxy 对象]
   ```cpp
   auto x = bv[0];        // proxy 值，可读
   // 或用 auto&& 遍历（ex38）
@@ -1328,6 +1396,7 @@ int main() {
 ```
 - **≥10 个例子**：ex23, ex24, ex38, ex21, 面试 Q6, 最佳实践 6.
 
+> **示例 69** [难度 ★☆☆☆☆] [主题：auto 与 proxy 对象]
 ```cpp
 // ex23_vector_bool_proxy_trap.cpp —— proxy 陷阱：auto 值修改不回写
 #include <vector>
@@ -1355,6 +1424,7 @@ int main() {
 **与 ch116（完美转发）交叉**：`auto&&` + `std::forward` = 转发引用惯用法。
 **与 ch26（lambda auto 参数）交叉**：generic lambda 的 `auto` 参数本质是缩写模板（KP9）。
 
+> **示例 70** [难度 ★☆☆☆☆] [主题：模板参数推导与 auto 的交互]
 ```cpp
 // ex32_auto_vs_template_equivalence.cpp —— 证明 auto 与模板同规则
 #include <type_traits>
@@ -1461,6 +1531,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 71** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1485,6 +1556,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 72** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 int g = 42;
@@ -1510,6 +1582,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 73** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1541,6 +1614,7 @@ std::vector<int> get_data();   // 把实现类型钉死, 将来想换成 span �
 ```
 
 **修复**：
+> **示例 74** [难度 ★☆☆☆☆] [主题：演绎 1：API 返回类型不确定时—]
 ```cpp
 #include <vector>
 auto get_data() {                 // C++14 起函数可返回 auto, 类型由 return 推导
@@ -1562,6 +1636,7 @@ template <class T> auto get(T& o) { return o.m; }   // 若 o.m 是 int& 也会�
 ```
 
 **修复**：
+> **示例 75** [难度 ★☆☆☆☆] [主题：演绎 2：转发函数的返回类型——de]
 ```cpp
 #include <iostream>
 struct S { int m = 5; };
@@ -1684,6 +1759,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 76** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 

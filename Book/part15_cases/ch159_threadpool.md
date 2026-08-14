@@ -55,6 +55,7 @@
 
 下面这段代码演示**反模式**：为每个任务都新建一个线程。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：线程池解决什么]
 ```cpp
 // 朴素做法：每个任务 new 一个 std::thread（开销巨大）
 #include <thread>
@@ -70,6 +71,7 @@ void naive_per_task(int n) {
 
 我们实测了 `n = 2000` 的同类负载：
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：概述：线程池解决什么]
 ```cpp
 // Examples/_ch159_naive.cpp（本机实测）
 // 2000 个任务，每个线程只做 50000 次累加
@@ -78,6 +80,7 @@ void naive_per_task(int n) {
 
 线程池的核心思想：**预先建好一组常驻 worker 线程，任务只被「投递」到共享队列，worker 循环取任务执行**。线程的创建/销毁成本被摊薄到整个程序生命周期，于是任务调度从「O(建线程)」降到「O(入队+唤醒)」。
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：概述：线程池解决什么]
 ```cpp
 // 一个最小心智模型：线程池 = 预建线程 + 任务队列
 //   submit(task)  ->  push 到队列
@@ -93,12 +96,14 @@ void naive_per_task(int n) {
 
 一个工业级线程池要回答四个问题，我们用接口草图锁定目标：
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：设计目标]
 ```cpp
 // 设计目标 1：可提交任意可调用对象，并取回结果
 template <class F, class... Args>
 auto submit(F&& f, Args&&... args) -> std::future<result_of_t<F,Args...>>;
 ```
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：设计目标]
 ```cpp
 // 设计目标 2：停止时安全退出，绝不悬挂 worker
 class ThreadPool {
@@ -108,6 +113,7 @@ class ThreadPool {
 
 设计清单（作为编译期配置常量示例）：
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：设计目标]
 ```cpp
 #include <cstddef>
 // 设计目标量化：用常量表达非功能需求
@@ -152,6 +158,7 @@ constexpr std::size_t kMaxQueue        = 4096;   // 背压上限（可选）
 
 骨架类定义（仅声明，实现见后续小节与 ⑰）：
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：基础架构]
 ```cpp
 #include <mutex>
 #include <thread>
@@ -177,6 +184,7 @@ class Worker {                                       // ③ worker
 
 `std::thread` 是 C++11 引入的「裸线程句柄」。它**不**自动 join，销毁时若仍 `joinable()` 会 `std::terminate`。
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：与 std::jthread]
 ```cpp
 // C++11：必须手动管理 join，否则析构即 terminate
 #include <thread>
@@ -187,6 +195,7 @@ int main() {
 }
 ```
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：与 std::jthread]
 ```cpp
 #include <thread>
 // 危险：detach 后线程可能与 main 同归于尽（访问已销毁对象）
@@ -196,6 +205,7 @@ t.detach();   // 极易悬垂，工业代码应尽量避免
 
 C++20 的 `std::jthread`（joining thread）在析构时**自动**调用 `request_stop()` 并 `join()`，并原生支持协作式取消：
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：与 std::jthread]
 ```cpp
 // C++20：jthread 析构自动 join，无需手动管理
 #include <thread>
@@ -213,6 +223,7 @@ int main() {
 
 队列是线程池的「交通咽喉」。经典实现用 `std::queue` + `std::mutex` + `std::condition_variable`。
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：任务队列]
 ```cpp
 // 线程安全队列（核心片段）
 #include <queue>
@@ -232,6 +243,7 @@ public:
     }
 ```
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：任务队列]
 ```cpp
 #include <utility>
 #include <mutex>
@@ -257,6 +269,7 @@ public:
 
 `submit` 通过模板接受任意可调用对象，用 `std::bind` 把参数固化，再用 `std::packaged_task` 包裹以取回 `future`。
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：提交任务]
 ```cpp
 #include <utility>
 #include <memory>
@@ -275,6 +288,7 @@ auto submit(F&& f, Args&&... args)
 
 为何用 `std::shared_ptr<std::packaged_task>` 而非裸 `packaged_task`？因为 `std::function` 要求目标**可拷贝**，而 `packaged_task` 不可拷贝、只可移动。用 `shared_ptr` 桥接移动语义与可拷贝擦除。
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：提交任务]
 ```cpp
 #include <iostream>
 // 调用方用法：Lambda、函数指针、成员函数皆可
@@ -290,6 +304,7 @@ std::cout << f1.get() << f2.get() << '\n';         // 阻塞取结果
 
 三者关系：`packaged_task` 把「可调用对象」和「与之绑定的 future」打包；`async` 是「帮你起线程并自动建 packaged_task」的便捷封装；`future` 是取结果的句柄。
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：task / std::async]
 ```cpp
 // std::async：fire-and-forget 由运行时选线程
 #include <future>
@@ -297,6 +312,7 @@ auto fa = std::async(std::launch::async, compute, 7);  // 真起线程
 auto fd = std::async(std::launch::deferred, compute, 7);// 惰性，get 时才执行
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：task / std::async]
 ```cpp
 #include <iostream>
 // std::packaged_task：把任务与 future 显式绑定（线程池内部就用它）
@@ -306,6 +322,7 @@ pt(9);                          // 手动执行（线程池里由 worker 执行�
 std::cout << f.get() << '\n';   // -> 81
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：task / std::async]
 ```cpp
 // shared_future：多消费者共享同一结果
 auto sf = std::async(compute, 7).share();
@@ -320,6 +337,7 @@ auto sf = std::async(compute, 7).share();
 
 线程池的析构必须保证：所有 worker 线程退出后，对象才可销毁。`std::atomic<bool> stop_` + `cv_.notify_all()` + 循环 `join()` 是标准组合。
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：停止与析构（RAII join）]
 ```cpp
 // RAII 析构：原子置位 -> 唤醒全部 -> 逐个 join
 ~ThreadPool() {
@@ -332,6 +350,7 @@ auto sf = std::async(compute, 7).share();
 
 worker 退出条件必须同时检查 `stop_` 与「队列空」，否则会漏掉 `stop` 前已入队但未执行的任务：
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：停止与析构（RAII join）]
 ```cpp
 #include <utility>
 // 正确的 worker 退出判定
@@ -348,6 +367,7 @@ task = std::move(tasks_.front()); tasks_.pop();
 
 C++20 提供更优雅的协作式取消：`std::stop_token` + `std::stop_callback`，无需手写 `atomic<bool>`。
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：的 stoptoken（C++20）]
 ```cpp
 // C++20：把 stop_token 作为 worker 首参，循环检查 stop_requested()
 #include <stop_token>
@@ -360,6 +380,7 @@ void worker(std::stop_token st, int id) {
 std::jthread t(worker, 1);   // jthread 自动把 stop_token 注入首参
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：的 stoptoken（C++20）]
 ```cpp
 // 用 stop_callback 在取消时做清理（如flush日志）
 std::jthread t([](std::stop_token st) {
@@ -368,6 +389,7 @@ std::jthread t([](std::stop_token st) {
 });
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：的 stoptoken（C++20）]
 ```cpp
 // 完整可跑示例（Examples/_ch159_jthread.cpp 节选）
 std::jthread a([](std::stop_token st) { worker(st, 1); });
@@ -384,6 +406,7 @@ std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 `std::thread::hardware_concurrency()` 返回**逻辑**处理器数（本机 = 32，即 16 物理核 × 超线程）。
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：线程数选择]
 ```cpp
 #include <thread>
 // 自动取核数，失败兜底为 1
@@ -394,6 +417,7 @@ ThreadPool pool(n);
 
 CPU 密集型与 IO/等待密集型策略不同：
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：线程数选择]
 ```cpp
 #include <thread>
 // CPU 密集：N ≈ 逻辑核数
@@ -410,6 +434,7 @@ unsigned io_bound    = std::thread::hardware_concurrency() * 4;
 
 固定 N 个 worker + 单一共享队列是最简单且通常足够好的均衡：任务随机到达，长任务与短任务在队列里天然交错。
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：负载均衡]
 ```cpp
 #include <cstddef>
 #include <thread>
@@ -428,6 +453,7 @@ void parallel_for(std::size_t n, std::size_t workers, auto&& fn) {
 
 更进阶的是 **work-stealing**（如 Intel TBB、Go runtime）：每个 worker 有自己双端队列，空闲时从别处「偷」队尾任务，减少中心队列争用。
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：负载均衡]
 ```cpp
 // work-stealing 概念骨架（不阻塞中心队列）
 struct Worker {
@@ -443,6 +469,7 @@ struct Worker {
 
 关键事实：**`std::packaged_task` 在调用 operator() 时，会把任务内抛出的异常捕获并存入关联的 `future`**。于是 worker 执行 `(*pt)()` 即使抛异常，也只会「结束这个任务」而不会 `terminate` 整个进程。
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：异常传播]
 ```cpp
 // 任务内抛异常
 int risky(bool fail) {
@@ -458,11 +485,13 @@ catch (const std::exception& e) { /* 拿到 "boom from task" */ }
 
 worker 端**不要**吞掉异常，也不要让异常逃出 `std::thread` 的栈（那会 `terminate`）：
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：异常传播]
 ```cpp
 // 正确：异常由 packaged_task 内部吸收并转发给 future
 task();   // task = [pt]{ (*pt)(); }，异常不会逃出线程
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：异常传播]
 ```cpp
 #include <functional>
 // 若直接用裸 function（无 packaged_task）则需显式 try/catch 避免 terminate
@@ -480,6 +509,7 @@ void safe_run(std::function<void()> f) {
 
 医疗/交易/UI 等场景里，某些任务必须「插队」。把 `std::queue` 换成 `std::priority_queue`，按 `level` 排序。
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：优先级队列]
 ```cpp
 #include <functional>
 // 优先级任务：level 越小越优先
@@ -491,6 +521,7 @@ struct Task {
 std::priority_queue<Task> pq;
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：优先级队列]
 ```cpp
 #include <vector>
 // 自定义比较器（也可用于 function 包装不同任务类型）
@@ -506,6 +537,7 @@ std::priority_queue<Task, std::vector<Task>, decltype(cmp)> pq(cmp);
 
 「无锁」指**系统整体**前进不依赖单个线程（只要有一条线程在前进，系统就不停滞）。经典有界 MPMC 无锁环形队列（Vyukov 算法）用每槽 `seq` 序号 + CAS 实现。
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：无锁队列]
 ```cpp
 #include <cstddef>
 // 入队核心（Vyukov 有界环形，非阻塞）
@@ -525,6 +557,7 @@ bool enqueue(const T& v) {
 }
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：无锁队列]
 ```cpp
 #include <cstddef>
 // 出队核心
@@ -556,6 +589,7 @@ bool dequeue(T& v) {
 ```
 
 > [实现·libstdc++] 源码剖析（路径无空格，本机可达）：
+> **示例 34** [难度 ★☆☆☆☆] [主题：无锁队列]
 ```cpp
 // 文件：Examples/_ch159_threadpool.cpp
 // 行号：1
@@ -569,6 +603,7 @@ bool dequeue(T& v) {
 
 基准必须**防 DCE（Dead Code Elimination）**：编译器若发现结果未使用，会整段删掉。用 `volatile` 全局 sink 强制保留副作用。
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：性能测量]
 ```cpp
 // 防 DCE：结果必须产生可观测副作用
 static volatile long g_sink = 0;
@@ -582,6 +617,7 @@ long work(long n) {
 
 测量用 `std::chrono::steady_clock`（单调时钟，不受系统时间调整影响）：
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：性能测量]
 ```cpp
 auto t0 = std::chrono::steady_clock::now();
 /* 跑负载 */
@@ -611,6 +647,7 @@ naive per-task-thread (2000 线程): 266.726 ms   <- 比串行还慢！
 
 `std::thread` 是**标准抽象层**，底层映射因平台而异：
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：平台差异]
 ```cpp
 #include <thread>
 // 跨平台容错：不同 OS 的默认栈/调度提示不同，用条件编译表达差异
@@ -623,6 +660,7 @@ naive per-task-thread (2000 线程): 266.726 ms   <- 比串行还慢！
 #endif
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：平台差异]
 ```cpp
 // 原生 pthread 等价写法（仅 Linux/macOS，展示底层映射）
 #ifdef __linux__
@@ -643,6 +681,7 @@ void spawn_pthread() {
 
 下面是**完整、经本机 g++ 13.1.0 `-std=c++23 -O2` 编译并运行通过**的线程池。复制保存为 `Examples/_ch159_threadpool.cpp` 即可直接编译运行（即本章 ⑮ 基准的来源）。
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：真实完整实现]
 ```cpp
 // ===== 头/类定义部分 =====
 #include <atomic>
@@ -717,6 +756,7 @@ public:
 };
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：真实完整实现]
 ```cpp
 #include <cstdio>
 #include <cstddef>
@@ -775,6 +815,7 @@ Examples/_ch159_threadpool.exe
 
 `std::async` 是「一次性任务」便利封装，线程池是「持续复用线程」的基础设施。二者适用不同粒度。
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：与 std::async 对比]
 ```cpp
 // std::async：适合少量、一次性、分散触发的任务
 auto a = std::async(std::launch::async, heavy, x);
@@ -782,6 +823,7 @@ auto b = std::async(std::launch::async, heavy, y);
 // 但：成百上千次 async 会反复建/销线程，重蹈 ⑮ 朴素反模式
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：与 std::async 对比]
 ```cpp
 // 线程池：适合大量、短平快、成批的任务
 for (int i = 0; i < 100000; ++i) pool.submit(short_task, i);
@@ -806,6 +848,7 @@ for (int i = 0; i < 100000; ++i) pool.submit(short_task, i);
 
 **反模式 A：线程数远超核数且任务 CPU 密集** —— 上下文切换开销吞噬并行收益。
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：反模式（过多线程/死锁）]
 ```cpp
 #include <thread>
 #include <vector>
@@ -819,6 +862,7 @@ void bad() {
 
 **反模式 B：在持有 mutex 时调用可能阻塞的代码，造成死锁/吞吐塌陷**。
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：反模式（过多线程/死锁）]
 ```cpp
 #include <mutex>
 // 反模式：持锁做重活，worker 彼此饿死
@@ -830,6 +874,7 @@ void bad_worker() {
 }
 ```
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：反模式（过多线程/死锁）]
 ```cpp
 #include <mutex>
 // 正确：临界区只做最小必要操作（取/放任务），重活在锁外
@@ -840,6 +885,7 @@ void good_worker() {
 }
 ```
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：反模式（过多线程/死锁）]
 ```cpp
 // 反模式 C：析构前未 notify_all，worker 永久阻塞在 cv_.wait -> 程序挂死
 ~ThreadPool_bad() {
@@ -875,6 +921,7 @@ void good_worker() {
 - 进阶方向：work-stealing、`moodycamel` 无锁队列、优先级调度、动态扩缩容。
 - 全章示例代码均位于 `Examples/_ch159_*.cpp`，已通过 GCC 13.1.0 `-std=c++23 -O2` 真实编译运行，数字与汇编均来自本机采集。
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：小结]
 ```cpp
 #include <iostream>
 // 一句话最小可用（基于 ⑰ 完整实现）
@@ -939,6 +986,7 @@ C++11 的 `std::async` 提供"异步任务 + future 取结果"的最小池；C++
 | Seastar (ScyllaDB) | reactor per core | 共享无架构 (shared-nothing) | 每核一个线程，绑定 CPU 亲和性 |
 | ClickHouse | GlobalThreadPool | 固定大小线程池 | std::priority_queue (按优先级) |
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：附录 A：工业线程池对比 [F: I]
 ```cpp
 #include <iostream>
 int main() {
@@ -953,6 +1001,7 @@ int main() {
 
 ## 附录 B：线程池的性能陷阱 [E: Low-level / G: Performance]
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：附录 B：线程池的性能陷阱 [E: ]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -974,6 +1023,7 @@ int main() {
 
 ## 附录 C：设计权衡与面试 [H: Design / J: Learning]
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：附录 C：设计权衡与面试 [H: D]
 ```
 面试高频:
 Q: 线程池 vs std::async 的区别？
@@ -998,6 +1048,7 @@ A: 全局队列 = 单点竞争；工作窃取 = 每个 worker 有本地队列，
 - 任务优先级：Priority queue → O(log n) push；FIFO → O(1) push
 ```
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：附录 C：设计权衡与面试 [H: D]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1041,6 +1092,7 @@ int main() {
 | 性能优化 | ch154(cache_opt), ch152(perf_model) | false sharing, 工作窃取 | 每个worker用alignas(64)的独立队列 |
 | 内存管理 | ch160(mempool), ch41(unique_ptr) | 任务对象的生命周期 | 用unique_ptr<task>避免内存泄漏 |
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：项目学习地图：线程池 → 全书知识映]
 ```cpp
 #include <iostream>
 int main() {
@@ -1124,6 +1176,7 @@ int main() {
 
 worker 循环从队列取任务执行；`submit` 把 `packaged_task` 的 `future` 返回给调用方，任务在 worker 里跑完后结果/异常经 `future` 传递。
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1168,6 +1221,7 @@ int main() {
 
 `std::jthread` 自带 `stop_token`；worker 在等待条件时把 `stop_token` 传给 `wait`，或循环里查 `stop_requested()`，请求停止即干净退出——把"停止语义"从手写标志升级为语言级协作取消。
 
+> **示例 54** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1199,6 +1253,7 @@ int main() {
 
 全局锁在高争用下串行化；无锁队列用 CAS 让生产者并发入队，work-stealing 进一步把热点分散到每线程本地队列。下面用原子计数器示意"无锁计数入队"的并发安全累加。
 
+> **示例 55** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <atomic>
 #include <iostream>
@@ -1342,6 +1397,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 56** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 // D5.3 可复现 demo — ch159 线程池
 // 演示：用 std::async 把求和并发化，结果必须与串行闭式解一致（正确性验证）。

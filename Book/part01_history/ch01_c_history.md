@@ -55,11 +55,13 @@
 
 ⟶ Book/part01_history/ch02_standardization.md
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标]
 ```cpp
 // C 语言谱系：最早的 "C with Classes" 风格（早期用 C 的 printf）
 #include <cstdio>
 void c_lineage(){ std::printf("hello from c-lineage\n"); }
 ```
+> **示例 2** [难度 ★☆☆☆☆] [主题：学习目标]
 ```cpp
 // struct 聚合数据（C/早期 C++ 共有）
 struct Point { int x; int y; };
@@ -73,10 +75,12 @@ int area(Point p) { return p.x * p.y; }
 
 ## ② 前置知识
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：前置知识]
 ```cpp
 // 指针基础
 int v = 42; int* p = &v; // *p == 42
 ```
+> **示例 4** [难度 ★☆☆☆☆] [主题：前置知识]
 ```cpp
 // 函数前置声明
 int add(int, int); int add(int a, int b){ return a+b; }
@@ -86,10 +90,12 @@ int add(int, int); int add(int a, int b){ return a+b; }
 
 ## ③ 后续依赖
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：后续依赖]
 ```cpp
 // 枚举
 typedef enum { RED, GREEN, BLUE } Color; Color c = GREEN;
 ```
+> **示例 6** [难度 ★☆☆☆☆] [主题：后续依赖]
 ```cpp
 union U { int i; float f; }; U u{7};
 ```
@@ -101,15 +107,18 @@ union U { int i; float f; }; U u{7};
 
 ## ④ 知识图谱（ASCII）
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）]
 ```cpp
 // typedef 别名
 typedef unsigned long ulong; ulong n = 1000;
 ```
+> **示例 8** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）]
 ```cpp
 // 宏（文本替换，非类型安全）
 #define MAX(a,b) ((a)>(b)?(a):(b))
 ```
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）]
 ```
 [C 语言 1972]
    ├─ 类型系统(int/char/指针/数组/struct)
@@ -132,9 +141,11 @@ typedef unsigned long ulong; ulong n = 1000;
 
 ## ⑤ Mermaid 时间线
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：时间线]
 ```cpp
 int a[4]={1,2,3,4}; int s = a[0]+a[1]+a[2]+a[3];
 ```
+> **示例 11** [难度 ★☆☆☆☆] [主题：时间线]
 ```cpp
 // C 风格字符串
 const char* name = "cpp"; // strlen(name)==3
@@ -157,11 +168,13 @@ timeline
 
 ## ⑥ UML 类图（C with Classes 早期对象模型）
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：类图]
 ```cpp
 // 文件读写（早期 <stdio.h>）
 #include <stdio.h>
 void w(){ FILE* f=fopen("t.txt","w"); if(f){ fputs("x",f); fclose(f);} }
 ```
+> **示例 13** [难度 ★☆☆☆☆] [主题：类图]
 ```cpp
 void demo_malloc(){ int* p=(int*)std::malloc(sizeof(int)); std::free(p); }
 ```
@@ -202,16 +215,19 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ## ⑦ ASCII 内存图（C 的 struct vs C++ 的 class 对象布局）
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：内存图]
 ```cpp
 // 位运算
 unsigned m = 1<<3; // m == 8
 ```
+> **示例 15** [难度 ★☆☆☆☆] [主题：内存图]
 ```cpp
 // 早期 class（构造函数雏形）
 class A { public: int x; A(){ x=0; } };
 ```
 
 C 的 struct（POD，无虚函数）：
+> **示例 16** [难度 ★☆☆☆☆] [主题：内存图]
 ```
 对象 obj @ 0x1000:
 ┌──────────────┬─────────┬──────────┐
@@ -220,6 +236,7 @@ C 的 struct（POD，无虚函数）：
 0x1000         0x1004     0x1008
 ```
 C with Classes 加入虚函数后（Itanium 风格，标注 `[平台·Linux]`）：
+> **示例 17** [难度 ★☆☆☆☆] [主题：内存图]
 ```
 对象 circle @ 0x2000:
 ┌──────────────┬────────────┬─────────┐
@@ -236,10 +253,12 @@ C with Classes 加入虚函数后（Itanium 风格，标注 `[平台·Linux]`）
 
 ## ⑧ 生命周期图（C 变量 vs C++ 对象）
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：生命周期图]
 ```cpp
 // 成员函数
 class B { int x; public: void set(int v){ x=v; } int get(){ return x; } };
 ```
+> **示例 19** [难度 ★☆☆☆☆] [主题：生命周期图]
 ```cpp
 // 访问控制 public/private
 class C { int secret; public: int open; };
@@ -250,15 +269,18 @@ class C { int secret; public: int open; };
 
 ## ⑨ 调用栈（CFront 编译模型）
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：调用栈（CFront 编译模型）]
 ```cpp
 // 构造函数重载
 class D { public: D(){} D(int){} };
 ```
+> **示例 21** [难度 ★☆☆☆☆] [主题：调用栈（CFront 编译模型）]
 ```cpp
 // 继承（base/derived）
 class Base { public: int a; }; class Der : public Base { public: int b; };
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：调用栈（CFront 编译模型）]
 ```
 [源码 .c/.cpp] → CFront 翻译为 C → C 编译器 → 目标文件 → 链接器 → 可执行
 ```
@@ -266,10 +288,12 @@ class Base { public: int a; }; class Der : public Base { public: int b; };
 
 ## ⑩ 汇编分析（C 与 C++ 同构示例）
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：汇编分析（C 与 C++ 同构示例）]
 ```cpp
 // 虚函数（运行时多态）
 class Animal { public: virtual void speak(){} }; class Dog:public Animal{ public: void speak(){} };
 ```
+> **示例 24** [难度 ★☆☆☆☆] [主题：汇编分析（C 与 C++ 同构示例）]
 ```cpp
 // 纯虚函数 -> 抽象类
 class Shape { public: virtual double area()=0; };
@@ -285,9 +309,11 @@ add:
 
 ## ⑪ STL 联系
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：联系]
 ```cpp
 void demo_new(){ int* q=new int(5); delete q; }
 ```
+> **示例 26** [难度 ★☆☆☆☆] [主题：联系]
 ```cpp
 // iostream 初现
 #include <iostream>
@@ -301,10 +327,12 @@ void hi(){ std::cout << "hi\n"; }
 
 ⟶ Book/part11_source/ch134_unreal.md
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 名字空间（后期加入）
 namespace lib { int f(){ return 1; } }
 ```
+> **示例 28** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 函数模板雏形
 template<class T> T max(T a,T b){ return a>b?a:b; }
@@ -318,10 +346,12 @@ template<class T> T max(T a,T b){ return a>b?a:b; }
 
 ⟶ Book/part11_source/ch124_libstdcxx.md
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：源码分析]
 ```cpp
 // const 限定
 const int N = 10; // N 不可改
 ```
+> **示例 30** [难度 ★☆☆☆☆] [主题：源码分析]
 ```cpp
 // 引用形参
 void inc(int& r){ ++r; }
@@ -335,10 +365,12 @@ void inc(int& r){ ++r; }
 ⟶ Book/part01_history/ch03_cpp98_03.md
 ⟶ Book/part01_history/ch04_cpp11.md
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：提案 / 标准背景]
 ```cpp
 // 默认实参
 int f(int a, int b=10){ return a+b; }
 ```
+> **示例 32** [难度 ★☆☆☆☆] [主题：提案 / 标准背景]
 ```cpp
 // 静态成员
 class S { public: static int cnt; }; int S::cnt=0;
@@ -349,10 +381,12 @@ class S { public: static int cnt; }; int S::cnt=0;
 
 ## ⑮ 面试题
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：面试题]
 ```cpp
 // 友元
 class X { int k=1; friend void peek(X&); }; void peek(X& o){ (void)o.k; }
 ```
+> **示例 34** [难度 ★☆☆☆☆] [主题：面试题]
 ```cpp
 // inline 建议内联
 inline int sq(int x){ return x*x; }
@@ -364,9 +398,11 @@ inline int sq(int x){ return x*x; }
 
 ## ⑯ 易错点
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 void demo_try(){ try { throw 1; } catch(int){} }
 ```
+> **示例 36** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 // 多重继承
 class P{}; class Q{}; class R:public P,public Q{};
@@ -377,6 +413,7 @@ class P{}; class Q{}; class R:public P,public Q{};
 
 ## ⑰ FAQ
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // this 指针
 class T { int v=0; public: T& self(){ return *this; } };
@@ -388,6 +425,7 @@ class T { int v=0; public: T& self(){ return *this; } };
 
 ## ⑱ 最佳实践（历史经验映射到现代）
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：最佳实践（历史经验映射到现代）]
 ```cpp
 // 简易容器类
 class Vec { int d[3]={0,0,0}; public: int& at(int i){ return d[i]; } };
@@ -400,6 +438,7 @@ class Vec { int d[3]={0,0,0}; public: int& at(int i){ return d[i]; } };
 
 ⟶ Book/part14_perf/ch153_cpu_micro.md
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：性能分析]
 ```cpp
 // 全局对象构造顺序（历史坑）
 int g1=1; int g2=g1+1; // g2 依赖 g1 初始化序
@@ -423,6 +462,7 @@ int g1=1; int g2=g1+1; // g2 依赖 g1 初始化序
    - [标准] C++ 中 `void*` 不能隐式转换为对象指针，必须显式 `static_cast`（与 C 不同）。
    - [引用] ISO/IEC 14882:2023 §[conv.ptr]（空指针/void 转换，无隐式 void*→T*）；cppreference "Implicit conversions" 词条。
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
 ```cpp
 // 兼容 C 的 extern "C"
 extern "C" int cfunc(int);
@@ -478,6 +518,7 @@ C 与 C++ 的起点不是教科书，而是今天你调用的每一层基础设�
 
 ## 附录: C with Classes → C++ 代码演化
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：附录: C with Classes]
 ```cpp
 // 附录-A: C 风格 struct + 函数指针 vs C++ class + 成员函数
 // C style (1979)
@@ -495,6 +536,7 @@ int main() {
 }
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：附录: C with Classes]
 ```cpp
 #include <cstdio>
 // 附录-B: C 宏 vs C++ constexpr (30年演化)
@@ -503,6 +545,7 @@ constexpr double PI_CPP = 3.141592653589793;
 int main() { printf("C macro: %f  C++ constexpr: %f\n", PI_C, PI_CPP); return 0; }
 ```
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：附录: C with Classes]
 ```cpp
 #include <cstdio>
 // 附录-C: void* 通用指针 vs template 类型安全
@@ -511,6 +554,7 @@ template<typename T> T max_t(T a, T b) { return a > b ? a : b; } // C++ template
 int main() { printf("C++ template: %d\n", max_t(10, 20)); return 0; }
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：附录: C with Classes]
 ```cpp
 #include <cstdio>
 // 附录-D: C 错误码 vs C++ 异常
@@ -518,6 +562,7 @@ int div_c(int a, int b, int* out) { if (b==0) return -1; *out = a/b; return 0; }
 int main() { int r; if (div_c(10, 2, &r) == 0) printf("C: %d\n", r); return 0; }
 ```
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：附录: C with Classes]
 ```cpp
 // 附录-E: malloc/free vs new/delete vs RAII
 #include <memory>
@@ -529,6 +574,7 @@ int main() { c_style(); cpp_style(); printf("RAII: no manual free needed.\n"); r
 
 ## 附录 D：C遗产底层与工业影响 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：附录 D：C遗产底层与工业影响 [E]
 ```
 C语言如何影响C++底层:
 
@@ -549,6 +595,7 @@ extern "C": 不name-mangling, 不异常处理, 不重载
 | 类型安全 | 弱(void*,隐式转换) | 强(static_cast, explicit, template) |
 | 抽象能力 | 函数+结构体 | 函数+类+模板+lambda+concepts |
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：附录 D：C遗产底层与工业影响 [E]
 ```cpp
 #include <iostream>
 #include <cstring>
@@ -574,6 +621,7 @@ int main() {
 
 ## 附录 E：C遗产的现代C++替代 [D: Stdlib / E: Lowlevel / H: Design]
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：附录 E：C遗产的现代C++替代 []
 ```
 C → C++ 替代对照:
 
@@ -589,6 +637,7 @@ C → C++ 替代对照:
 | qsort + cmp | std::sort + lambda | 内联, 无函数指针调用 |
 ```
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：附录 E：C遗产的现代C++替代 []
 ```cpp
 #include <iostream>
 #include <array>
@@ -614,6 +663,7 @@ int main() {
 | 字符串 | char[]+strlen | std::string(SSO) | C方案零开销, C++方案安全 |
 | 内存 | malloc+free | new/RAII | C方案手动但可预测, C++自动 |
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：附录 G：C vs C++设计取舍 ]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C=simplicity+predictable; C++=abstraction+safety. Choose per context."<<std::endl;return 0;}
@@ -629,6 +679,7 @@ int main(){std::cout<<"C=simplicity+predictable; C++=abstraction+safety. Choose 
 | 模块化 | 头文件+extern | namespace+modules(C++20) | 隔离性更好 |
 | 错误处理 | errno+返回码 | 异常+expected<T> | 显式+不可跳过 |
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：附录 H：C与C++的设计层面对比]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C=simplicity, C++=abstraction. Use C for kernel, C++ for apps."<<std::endl;return 0;}
@@ -647,6 +698,7 @@ GCC name mangling: void f(int)→_Z1fi; MSVC: ?f@@YAXH@Z
 extern "C"绕过mangling: void f(int)→f (纯C名字)
 extern "C"也禁用异常和函数重载(两者依赖mangling)
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：附录 I：C ABI兼容性深度]
 ```cpp
 #include <iostream>
 extern "C" { void c_func(int x) { std::cout << x << std::endl; } }
@@ -668,6 +720,7 @@ C qsort: 函数指针间接调用, 比较无法内联, 实测 N=1M 约 171 ms (G
 C++ std::sort: lambda 比较器内联, 实测约 87.6 ms, 约 1.95× 加速 (详见 汇编证明节)
 （绝对毫秒数随 CPU/编译器浮动; 比值 1.5–2× 量级稳定）
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：附录 J：C vs C++性能与面试]
 ```cpp
 #include <iostream>
 #include <cstdlib>
@@ -722,6 +775,7 @@ int main(){int arr[5]={5,3,1,4,2};qsort(arr,5,4,cmp);std::cout<<arr[0]<<std::end
 
 C++ 是 C 的**超集但有数十处例外**（本文件第⑯节）。下面用一段可编译的 C++23 代码演示三处典型不兼容点，并在注释里标出 C 的写法：
 
+> **示例 54** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <cstddef>
 #include <cstdio>
@@ -764,6 +818,7 @@ int main() {
 
 C with Classes（1980）的核心目标：把「类/构造函数」翻译成**等价的 C 代码**，再交给 C 编译器生成原生机器码。下面这段 C++ 经 CFront 转译后，其 `run_demo` 会带 C ABI 符号，可被任意 C 链接器直接消费，运行期没有任何 VM 解释开销：
 
+> **示例 55** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <cstdio>
 
@@ -806,6 +861,7 @@ int main() {
 
 「在 C 上加特性」能通过 CFront 把新语法机械翻译回 C 来实现，从而**零成本复用 C 编译器、链接器、调试器**。下面演示 CFront 的核心手法——把 C++ class 展开为「C 的 struct + 全局 init 函数」，这正是 1980 年 C with Classes 落地的真实方式：
 
+> **示例 56** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <cstdio>
 

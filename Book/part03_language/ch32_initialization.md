@@ -38,6 +38,7 @@ C 的初始化靠 `=`、`()`（构造）、aggregate 大括号 `{ }`，各自规
 
 ## ② 六种初始化语法 [标准]
 
+> **示例 1** [难度 ★★★☆☆] [主题：六种初始化语法 [标准]]
 ```cpp
 #include <iostream>
 struct S{int x;};
@@ -46,6 +47,7 @@ int main(){S a{1};S b={2};S c=S{3};auto d=S{4};S e(5);S f;std::cout<<a.x<<b.x<<c
 
 ## ③ 列表初始化与窄化 [标准]
 
+> **示例 2** [难度 ★★★☆☆] [主题：列表初始化与窄化 [标准]]
 ```cpp
 #include <iostream>
 int main(){int x{42};double d=3.14;int y{static_cast<int>(d)};std::cout<<x<<" "<<y<<std::endl;return 0;}
@@ -53,6 +55,7 @@ int main(){int x{42};double d=3.14;int y{static_cast<int>(d)};std::cout<<x<<" "<
 
 ## ④ std::initializer_list [标准]
 
+> **示例 3** [难度 ★★★☆☆] [主题：list [标准]]
 ```cpp
 #include <iostream>
 #include <initializer_list>
@@ -61,6 +64,7 @@ int main(){std::initializer_list<int> il={1,2,3,4,5};int s=0;for(int x:il)s+=x;s
 
 ## ⑤ 默认/值/零初始化 [标准]
 
+> **示例 4** [难度 ★★★☆☆] [主题：默认/值/零初始化 [标准]]
 ```cpp
 #include <iostream>
 struct A{int x;};A a;A b{};
@@ -69,6 +73,7 @@ int main(){std::cout<<a.x<<" "<<b.x<<std::endl;return 0;}
 
 ## ⑥ 聚合初始化 [标准]
 
+> **示例 5** [难度 ★★★☆☆] [主题：聚合初始化 [标准]]
 ```cpp
 #include <iostream>
 typedef struct { int x,y; } Point2D;
@@ -77,6 +82,7 @@ int main(){Point2D p2{3,4};std::cout<<p2.x<<","<<p2.y<<std::endl;return 0;}
 
 ## ⑦ 构造函数 vs initializer_list 优先级 [标准]
 
+> **示例 6** [难度 ★★★☆☆] [主题：构造函数 vs initialize]
 ```cpp
 #include <iostream>
 #include <initializer_list>
@@ -86,6 +92,7 @@ int main(){V v1(1,2);std::cout<<"ctor chosen when () used\n";return 0;}
 
 ## ⑧ 静态初始化与动态初始化 [标准]
 
+> **示例 7** [难度 ★★★☆☆] [主题：静态初始化与动态初始化 [标准]]
 ```cpp
 #include <iostream>
 static int x=42;
@@ -94,6 +101,7 @@ int main(){std::cout<<x<<std::endl;return 0;}
 
 ## ⑨ 跨语言对比：初始化语法 [经验]
 
+> **示例 8** [难度 ★★★☆☆] [主题：跨语言对比：初始化语法 [经验]]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++ brace init vs Rust let x:Type=... vs Go x:=... vs Java Type x=new Type()\n";return 0;}
@@ -101,6 +109,7 @@ int main(){std::cout<<"C++ brace init vs Rust let x:Type=... vs Go x:=... vs Jav
 
 ## ⑩ 初始化与移动语义 [标准]
 
+> **示例 9** [难度 ★★★☆☆] [主题：初始化与移动语义 [标准]]
 ```cpp
 #include <iostream>
 #include <string>
@@ -110,6 +119,7 @@ int main(){std::string a="hello";std::string b=std::move(a);std::cout<<b<<std::e
 
 ## ⑪ STL 联系：容器初始化全景 [标准]
 
+> **示例 10** [难度 ★★★☆☆] [主题：联系：容器初始化全景 [标准]]
 ```cpp
 // ⑪ 六种 STL 容器初始化方式对比
 #include <iostream>
@@ -146,6 +156,7 @@ int main() {
 
 ## ⑫ 工业案例：JSON 配置解析器初始化 [经验]
 
+> **示例 11** [难度 ★★★☆☆] [主题：工业案例：JSON 配置解析器初始化]
 ```cpp
 // ⑫ 使用 initializer_list 实现声明式配置
 #include <iostream>
@@ -179,6 +190,7 @@ int main() {
 
 ## ⑬ 源码分析：GCC 中 initializer_list 的实现 [实现·GCC15.3.0]
 
+> **示例 12** [难度 ★★★☆☆] [主题：源码分析：GCC 中 initial]
 ```cpp
 // ⑬ libstdc++ 中 std::initializer_list 的核心实现
 #include <iostream>
@@ -199,6 +211,7 @@ int main() {
 
 ## ⑭ WG21 关键提案：初始化演进史 [标准]
 
+> **示例 13** [难度 ★★★☆☆] [主题：关键提案：初始化演进史 [标准]]
 ```cpp
 // ⑭ 从 C++11 到 C++26 的初始化提案全景
 #include <iostream>
@@ -220,6 +233,7 @@ int main() {
 
 ## ⑮ 面试题精选：初始化 5 问 [经验]
 
+> **示例 14** [难度 ★★★☆☆] [主题：面试题精选：初始化 5 问 [经验]]
 ```cpp
 // ⑮ 初始化相关的 5 道高频面试题
 #include <iostream>
@@ -242,6 +256,7 @@ int main() {
 
 ## ⑯ 易错点与陷阱 [经验]
 
+> **示例 15** [难度 ★★★☆☆] [主题：易错点与陷阱 [经验]]
 ```cpp
 // ⑯ 初始化的 5 大陷阱
 #include <iostream>
@@ -279,6 +294,7 @@ int main() {
 
 ## ⑰ FAQ：初始化实战问题 [经验]
 
+> **示例 16** [难度 ★★★☆☆] [主题：初始化实战问题 [经验]]
 ```cpp
 // ⑰ 实际开发中的初始化高频问答
 #include <iostream>
@@ -308,6 +324,7 @@ int main() {
 
 ## ⑱ 最佳实践总结 [经验]
 
+> **示例 17** [难度 ★★★☆☆] [主题：最佳实践总结 [经验]]
 ```cpp
 // ⑱ 初始化的 6 条黄金法则
 #include <iostream>
@@ -344,6 +361,7 @@ int main() {
 
 ## ⑲ 性能分析：初始化的运行时开销 [平台·x86-64]
 
+> **示例 18** [难度 ★★★☆☆] [主题：性能分析：初始化的运行时开销 [平台]
 ```cpp
 // ⑲ 不同初始化方式的汇编对比
 #include <iostream>
@@ -389,6 +407,7 @@ int main() {
    - [标准] 常量初始化（constant-initialization）属于静态初始化子阶段，先于动态初始化，避免 SIOF。
    - [引用] ISO/IEC 14882:2023 §[basic.start.static]；cppreference "Initialization#Non-local_variables" 词条。
 
+> **示例 19** [难度 ★★★☆☆] [主题：跨语言对比：初始化语法全景 [经验]]
 ```cpp
 // ⑳ 各语言初始化语义对比
 #include <iostream>
@@ -418,29 +437,34 @@ int main() {
 
 ## 补充完整可编译示例
 
+> **示例 20** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2,3,4,5};std::cout<<v.size()<<std::endl;return 0;}
 ```
 
+> **示例 21** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct C{int a;double b;};C c{42,3.14};
 int main(){std::cout<<c.a<<" "<<c.b<<std::endl;return 0;}
 ```
 
+> **示例 22** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){int arr[]{1,2,3,4,5};std::cout<<arr[0]<<std::endl;return 0;}
 ```
 
+> **示例 23** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <string>
 int main(){std::string s="hello";std::cout<<s<<std::endl;return 0;}
 ```
 
+> **示例 24** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <initializer_list>
@@ -448,91 +472,107 @@ struct D{D(int){}D(std::initializer_list<int>){}};
 int main(){D d(42);std::cout<<"ctor\n";return 0;}
 ```
 
+> **示例 25** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 static int counter=0;struct T{T(){++counter;}};T t1,t2;
 int main(){std::cout<<counter<<std::endl;return 0;}
 ```
 
+> **示例 26** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 constexpr int sq(int x){return x*x;}
 int main(){constexpr int v=sq(10);std::cout<<v<<std::endl;return 0;}
 ```
 
+> **示例 27** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct P{int x,y;};int main(){P p{.x=1,.y=2};std::cout<<p.x<<","<<p.y<<std::endl;return 0;}
 ```
 
+> **示例 28** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <utility>
 int main(){auto [a,b]=std::pair{10,20};std::cout<<a<<" "<<b<<std::endl;return 0;}
 ```
 
+> **示例 29** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct Null{int* p=nullptr;};Null n;
 int main(){std::cout<<(n.p==nullptr)<<std::endl;return 0;}
 ```
 
+> **示例 30** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){int* p=new int{42};std::cout<<*p<<std::endl;delete p;return 0;}
 ```
 
+> **示例 31** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct M{int a;double b;};M m{.a=10,.b=3.14};
 int main(){std::cout<<m.a<<","<<m.b<<std::endl;return 0;}
 ```
 
+> **示例 32** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){auto v=std::vector{1,2,3};std::cout<<v.size()<<std::endl;return 0;}
 ```
 
+> **示例 33** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct F{int val;F():val(42){}F(int v):val(v){}};F f1,f2(99);
 int main(){std::cout<<f1.val<<" "<<f2.val<<std::endl;return 0;}
 ```
 
+> **示例 34** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){auto x={1,2,3,4,5};std::cout<<*x.begin()<<std::endl;return 0;}
 ```
 
+> **示例 35** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct G{int x=5;};
 int main(){G g;std::cout<<g.x<<std::endl;return 0;}
 ```
 
+> **示例 36** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 constexpr int compile_time=42;int runtime=42;
 int main(){std::cout<<compile_time<<" "<<runtime<<std::endl;return 0;}
 ```
 
+> **示例 37** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){int arr[3]={};for(int i=0;i<3;++i)std::cout<<arr[i]<<" ";std::cout<<std::endl;return 0;}
 ```
 
+> **示例 38** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){int x{};std::cout<<x<<std::endl;return 0;}
 ```
 
+> **示例 39** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct Copyable{Copyable()=default;Copyable(const Copyable&)=default;Copyable&operator=(const Copyable&)=default;};
 int main(){Copyable a,b=a;std::cout<<"copy init\n";return 0;}
 ```
 
+> **示例 40** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"初始化总结: 优先{}列表初始化(防窄化);区分零/值/默认;aggregate用designated initializer"<<std::endl;return 0;}
@@ -588,6 +628,7 @@ C++98 传统初始化语法林立；C++11 统一初始化（`{}`）与 `std::ini
 | `T x{}` | 值初始化 | — | 零初始化内置类型 |
 | `auto x = T{val}` | auto + 列表 | ✅ | C++11+ 惯用法 |
 
+> **示例 41** [难度 ★★★☆☆] [主题：附录 A: 初始化语法速查表]
 ```cpp
 #include <iostream>
 struct Demo{int a;double b;};
@@ -596,6 +637,7 @@ int main(){Demo d{42,3.14};Demo e{};std::cout<<d.a<<" "<<e.a<<std::endl;return 0
 
 ## 附录 B: Most Vexing Parse 陷阱
 
+> **示例 42** [难度 ★★★☆☆] [主题：附录 B: Most Vexing ]
 ```cpp
 #include <iostream>
 struct Foo{};
@@ -609,6 +651,7 @@ int main(){
 
 ## 附录 C: 聚合初始化进化
 
+> **示例 43** [难度 ★★★☆☆] [主题：附录 C: 聚合初始化进化]
 ```cpp
 #include <iostream>
 struct P{int x,y;}; // C++11 aggregate
@@ -623,6 +666,7 @@ int main(){P p1{1,2};P p2{.x=10,.y=20};std::cout<<p1.x<<" "<<p2.y<<std::endl;ret
 | T x{1,2,3} | 禁止窄化 | 中(initializer_list陷阱) | 聚合初始化 |
 | T x(42) | 普通 | 简洁 | 单参数构造 |
 
+> **示例 44** [难度 ★★★☆☆] [主题：附录 G：初始化设计权衡 [H: D]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Use T x{} as default: value-init, zero-cost, impossible to forget."<<std::endl;return 0;}
@@ -636,6 +680,7 @@ Fix: X x{}; (C++11) 或 X x; (C++98)
 initializer_list vs constructor: vector<int> v{1,2} = initializer_list(2元素)
 vector<int> v(2) = size_t(2个默认初始化的元素)
 
+> **示例 45** [难度 ★★★☆☆] [主题：附录 H：初始化面试陷阱]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -654,6 +699,7 @@ int main(){std::vector<int> a{1,2},b(2);std::cout<<a.size()<<","<<b.size()<<std:
 ; initializer_list: {begin_ptr, size} = 16 bytes on stack then vector copy
 ```
 
+> **示例 46** [难度 ★★★☆☆] [主题：附录 I：初始化汇编]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -710,6 +756,7 @@ int main(){int x{};std::vector<int> v{1,2,3};std::cout<<x<<","<<v[0]<<std::endl;
 
 圆括号走"计数/值"构造，花括号优先匹配 `initializer_list` 构造：
 
+> **示例 47** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -738,6 +785,7 @@ int main() {
 
 聚合体（无用户声明构造、无私有非静态成员等）可用 `{ .成员 = 值 }` 指定初始化：
 
+> **示例 48** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 struct Point { int x; int y; int z; };    // 聚合体
@@ -763,6 +811,7 @@ int main() {
 
 `std::array` 是聚合、定长、无堆分配，`{}` 直接聚合初始化其底层数组：
 
+> **示例 49** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <array>
@@ -790,6 +839,7 @@ int main() {
 
 **常见错误**：想构造 10 个默认元素却写了 `vector<int> v{10}`，结果得到"含单个元素 10"的向量——花括号优先匹配 `initializer_list` 构造：
 
+> **示例 50** [难度 ★★★☆☆] [主题：演绎 1：initializerli]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -801,6 +851,7 @@ int main() {
 
 **修复**：明确意图——"n 个元素"用圆括号，"列表内容"用花括号：
 
+> **示例 51** [难度 ★★★☆☆] [主题：演绎 1：initializerli]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -819,6 +870,7 @@ int main() {
 
 **常见错误**：给聚合体加了用户声明构造函数或 `private` 成员，破坏了聚合性，导致 `{}` 聚合初始化与指定初始化器全部编译失败：
 
+> **示例 52** [难度 ★★★☆☆] [主题：演绎 2：聚合初始化与指定初始化器的]
 ```cpp
 #include <iostream>
 struct Config { int port; bool tls;
@@ -833,6 +885,7 @@ int main() {
 
 **修复**：保持聚合（移除用户构造、成员公开），使用 C++20 指定初始化器按需赋值，未指定成员自动零值：
 
+> **示例 53** [难度 ★★★☆☆] [主题：演绎 2：聚合初始化与指定初始化器的]
 ```cpp
 #include <iostream>
 struct Config { int port; bool tls; char host[8]; };   // 仍是聚合
@@ -875,6 +928,7 @@ ret
 
 `initializer_list` 不拥有数据，它指向一个**临时数组**。一旦该数组失效，il 即悬垂：
 
+> **示例 54** [难度 ★★★☆☆] [主题：附录：std::initialize]
 ```cpp
 std::initializer_list<int> dangling_il() {
     return {1, 2, 3};   // 底层数组为临时，; 处销毁 → 悬垂
@@ -883,6 +937,7 @@ std::initializer_list<int> dangling_il() {
 
 GCC 直接告警：
 
+> **示例 55** [难度 ★★★☆☆] [主题：附录：std::initialize]
 ```
 warning: returning temporary 'initializer_list' does not extend the lifetime of the underlying array [-Winit-list-lifetime]
 ```
@@ -1003,6 +1058,7 @@ graph TD
 
 **libstdc++（GCC）—— `bits/move.h`**
 
+> **示例 56** [难度 ★★★☆☆] [主题：维度四 · 源码解析：三标准库的同一]
 ```cpp
 // std::move_if_noexcept 的真实定义（节选）
 template<typename _Tp>
@@ -1234,6 +1290,7 @@ flowchart TD
 
 ### 可编译实证
 
+> **示例 57** [难度 ★★★☆☆] [主题：可编译实证]
 ```cpp
 #include <iostream>
 #include <initializer_list>
@@ -1282,6 +1339,7 @@ N_S1S2=2'000'000，N_S3=1'000'000，N_S4=2'000'000（50 轮重复）。所有场
 
 ### D5.3 可复现演示
 
+> **示例 58** [难度 ★★★☆☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 #include <vector>

@@ -61,6 +61,7 @@ Ranges 最核心的立场是**"算法应操作区间而非迭代器对"**，并�
 
 ## ④ 知识图谱（ASCII）[标准]
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）[标准]]
 ```
                          ┌────────────────────────────┐
                          │  range = 能 begin()/end()   │  (concept, ranges_base.h:501)
@@ -132,6 +133,7 @@ classDiagram
 
 `std::views::filter(v, pred)` 返回的 `filter_view` **不拷贝 `v` 的任何元素**，只保存「对 `v` 的引用（或 `ref_view`）+ 谓词对象」：
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：内存图：view 不持有元素 [实现]
 ```
 std::vector<int> v = {1,2,3,4,5};          // 元素在堆上(25B)
 auto fv = v | views::filter(even);         // filter_view 仅:
@@ -187,6 +189,7 @@ sequenceDiagram
 
 **示例：view 管道 vs 手写循环**——在 `-O2` 下，简单 `transform`/`take` 管道常被完全优化成与手写循环相同的汇编。
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：汇编分析（-O2，Intel 语法）]
 ```cpp
 // 文件：Examples/_ch90_view_asm.cpp
 // 编译：g++ -std=c++23 -O2 -S -masm=intel _ch90_view_asm.cpp -o _ch90_view_asm.asm
@@ -257,6 +260,7 @@ _Z8sum_evenRKSt6vectorIiSaIiEE:
 
 **案例 1（日志管道）**：从一批日志行中筛选 ERROR 级别、提取时间戳、仅取前 100 条，全程惰性、无中间容器。
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：工业案例：日志过滤 + 词频统计 E]
 ```cpp
 // 案例1：惰性日志处理管道
 #include <vector>
@@ -282,6 +286,7 @@ int main() {
 
 **案例 2（词频 ETL）**：分词 → 过滤短词 → 计数（投影 + group），展示投影 `proj` 的威力。
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：工业案例：日志过滤 + 词频统计 E]
 ```cpp
 // 案例2：ranges 投影（proj）按字段排序/筛选
 #include <vector>
@@ -304,6 +309,7 @@ int main() {
 
 **A. `range` 概念（文件：`bits/ranges_base.h`，行号：`501`）**
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）[实现]
 ```
 文件：bits/ranges_base.h
 行号：501   concept range = requires(_Tp& __t) {
@@ -316,6 +322,7 @@ int main() {
 
 **B. `view` 概念（文件：`bits/ranges_base.h`，行号：`578`）**
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）[实现]
 ```
 文件：bits/ranges_base.h
 行号：578   concept view = range<_Tp> && movable<_Tp> && enable_view<_Tp>;
@@ -325,6 +332,7 @@ int main() {
 
 **C. `subrange`（`ref_view` 的近亲，文件：`bits/ranges_util.h`，行号：`256`）**
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）[实现]
 ```
 文件：bits/ranges_util.h
 行号：256   class subrange : public view_interface<subrange<_It,_Sent,_Kind>> { ... };
@@ -334,6 +342,7 @@ int main() {
 
 **D. 各 view 类定义（文件：`ranges`，行号见下）**
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）[实现]
 ```
 文件：ranges
 行号：358    class iota_view   : public view_interface<iota_view<W,B>>    // 数值序列(可无限)
@@ -401,6 +410,7 @@ A：可用，本章所有 C++23 view 示例均通过 `-std=c++23 -O2` 编译（G
 
 1. **优先管道组合**而非嵌套 `std::copy_if` + 临时 `vector`：
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ✅ 惰性管道，零中间容器
 #include <vector>
@@ -417,6 +427,7 @@ int main() {
 
 2. **需要传统 `begin()/end()` 同类型（如传旧 API）时用 `views::common`**：
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ✅ 把 view 变成 common_range（begin/end 同类型）
 #include <vector>
@@ -445,6 +456,7 @@ int main() {
 
 **惰性 vs 急切（副作用计数）**：
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：性能分析 [经验]]
 ```cpp
 // 演示惰性：transform 的副作用仅在迭代时发生，且仅对「被拉取」的元素
 #include <vector>
@@ -466,6 +478,7 @@ int main() {
 
 ## ⑲b 补充完整可编译示例（ch90_ex01 – ch90_ex30，每块独立可编译）[标准]
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex01：基础 ranges for_each（惰性遍历）
 #include <vector>
@@ -479,6 +492,7 @@ int main() {
 }
 ```
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex02：views::filter
 #include <vector>
@@ -493,6 +507,7 @@ int main() {
 }
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex03：views::transform
 #include <vector>
@@ -507,6 +522,7 @@ int main() {
 }
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex04：filter | transform | take 组合管道
 #include <vector>
@@ -524,6 +540,7 @@ int main() {
 }
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex05：views::take（惰性截断）
 #include <vector>
@@ -537,6 +554,7 @@ int main() {
 }
 ```
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex06：views::drop
 #include <vector>
@@ -550,6 +568,7 @@ int main() {
 }
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex07：views::reverse（需双向迭代器）
 #include <vector>
@@ -563,6 +582,7 @@ int main() {
 }
 ```
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex08：views::iota 无限序列 + take（惰性）
 #include <vector>
@@ -576,6 +596,7 @@ int main() {
 }
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex09：views::iota 有界区间
 #include <ranges>
@@ -587,6 +608,7 @@ int main() {
 }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex10：views::common 转为传统同类型迭代器对
 #include <vector>
@@ -601,6 +623,7 @@ int main() {
 }
 ```
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex11：views::enumerate（索引 + 值，C++23）
 #include <vector>
@@ -616,6 +639,7 @@ int main() {
 }
 ```
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex12：views::zip 多 range 并行（C++23）
 #include <vector>
@@ -630,6 +654,7 @@ int main() {
 }
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex13：views::chunk 分块（C++23）
 #include <vector>
@@ -644,6 +669,7 @@ int main() {
 }
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex14：views::slide 滑动窗口（C++23）
 #include <vector>
@@ -660,6 +686,7 @@ int main() {
 }
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex15：views::pairwise / adjacent（C++23）
 #include <vector>
@@ -674,6 +701,7 @@ int main() {
 }
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex16：views::stride 步进取样（C++23）
 #include <vector>
@@ -687,6 +715,7 @@ int main() {
 }
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex17：views::cartesian_product 笛卡尔积（C++23）
 #include <vector>
@@ -701,6 +730,7 @@ int main() {
 }
 ```
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex18：views::split + join（惰性分词与扁平化）
 #include <string>
@@ -718,6 +748,7 @@ int main() {
 }
 ```
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex19：views::split + join_with 拼接（C++23）
 #include <vector>
@@ -733,6 +764,7 @@ int main() {
 }
 ```
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex20：views::join 扁平化嵌套 range
 #include <vector>
@@ -746,6 +778,7 @@ int main() {
 }
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex21：views::keys / values（map 投影）
 #include <map>
@@ -762,6 +795,7 @@ int main() {
 }
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex22：views::elements（元组序列投影）
 #include <vector>
@@ -777,6 +811,7 @@ int main() {
 }
 ```
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex23：投影 proj 用于 ranges::sort
 #include <vector>
@@ -794,6 +829,7 @@ int main() {
 }
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex24：ranges::count / ranges::find 直接作用于 view
 #include <vector>
@@ -808,6 +844,7 @@ int main() {
 }
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex25：const 元素 + 结构化绑定遍历
 #include <vector>
@@ -824,6 +861,7 @@ int main() {
 }
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex26：views::repeat + take（C++23）
 #include <ranges>
@@ -836,6 +874,7 @@ int main() {
 }
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex27：ref_view 显式引用（不拥有底层 range）
 #include <vector>
@@ -853,6 +892,7 @@ int main() {
 }
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex28：subrange 返回区间（不拷贝）
 #include <vector>
@@ -871,6 +911,7 @@ int main() {
 }
 ```
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex29：lazy 验证（transform 副作用仅在迭代时发生）
 #include <vector>
@@ -888,6 +929,7 @@ int main() {
 }
 ```
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch90_ex30：ranges 与传统算法的桥接（管道 + 旧 API）
 #include <vector>
@@ -1002,6 +1044,7 @@ int main() {
 range-v3(2014-2019): C++20 ranges前身; LLVM 17+:内部用ranges::sort; ClickHouse:lazy列转换
 views=惰性+管道+零开销(编译器融合为单循环)
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：附录 E：Ranges工业]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -1044,6 +1087,7 @@ int main(){auto v=std::views::iota(1,6)|std::views::transform([](int x){return x
 - **策略 B · 手写融合循环**：单 `for` 循环内联 filter+square+累加，作为零抽象上界。
 - **策略 C · 贪婪物化**：先 `push_back` 过滤结果到 `vector`，再 `push_back` 变换结果到 `vector`，最后累加——三遍 + 两次堆分配。
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：基准设计（三策略）]
 ```cpp
 // _bench_ranges.cpp（库根，不进 Book/ 编译门禁；g++ -std=c++20 -O2 -pthread）
 unsigned long long bench_lazy(const vector<int>& v) {
@@ -1132,6 +1176,7 @@ flowchart TD
 
 <details><summary>答案与解析</summary>
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -1157,6 +1202,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -1180,6 +1226,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -1279,6 +1326,7 @@ Ranges 视图的核心工程价值是「零拷贝 + 惰性求值」：视图对�
 
 ### D4.4 可编译验证
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：可编译验证]
 ```cpp
 #include <ranges>
 #include <vector>
@@ -1424,6 +1472,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <array>

@@ -61,6 +61,7 @@ Simula 67 只给单继承，但现实里「一个窗口同时是图形节点、�
 
 ## ④ 知识图谱（ASCII）
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）]
 ```
         [单继承]                      [多重继承]
    Base    Derived              B1      B2
@@ -94,6 +95,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图 / 对象布局
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：内存图 / 对象布局]
 ```
 x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
@@ -114,6 +116,7 @@ x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
 ## ⑧ 生命周期图
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：生命周期图]
 ```
 构造顺序：先 B1 子对象（vptr→B1子表），再 B2 子对象（vptr→B2子表），最后 Derived 自身成员。
 析构顺序：逆序。每个基类的虚析构在各自子表的 dtor 槽，B2 侧同样是 thunk（this-=8）。
@@ -121,6 +124,7 @@ x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
 ## ⑨ 调用栈 / 时序图
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：调用栈 / 时序图]
 ```
 调用 p->g()（p: B2*, 指向 Derived+8）
 ─────────────────────────────────────────────
@@ -135,6 +139,7 @@ x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
 【测试源 `Examples/_asm_mi.cpp`】
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：汇编分析]
 ```cpp
 struct B1 { virtual void f(); virtual ~B1(); };
 struct B2 { virtual void g(); virtual ~B2(); };
@@ -224,6 +229,7 @@ _ZThn8_N1D1gEv:                ; thunk（rcx = B2 子对象 = D+8）
 
 【案例 A：日志后端多接口混入】
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 struct IStartable { virtual void start() = 0; };
 struct IStoppable { virtual void stop() = 0; };
@@ -237,6 +243,7 @@ void halt(IStoppable& s){ s.stop(); }            // 传 Service&，this 指向 I
 
 【案例 B：误用导致 this 错位的崩溃】
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 struct A { virtual void fa(); };
 struct B { virtual void fb(); };
@@ -251,6 +258,7 @@ A* pa = &c;                 // pa 指向 C+0（A 子对象）
 
 【增补可编译示例（真实，印证上文各点）】
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例1：三基类布局，第三个基类 vptr 接着排
 struct A { virtual void a(); };
@@ -260,11 +268,13 @@ struct D : A, B, C { void a() override {} void b() override {} void c() override
 // A.vptr@0, B.vptr@8, C.vptr@16（每个含虚函数的基类各一具 vptr）
 ```
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例2：static_cast 跨基类自动插入 this 调整
 D d; B* pb = &d; D* pd = static_cast<D*>(pb);   // 编译器插入 pd = (char*)pb - 8
 ```
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例3：dynamic_cast 跨不相关基类返回 nullptr
 struct X { virtual ~X() = default; };
@@ -273,12 +283,14 @@ struct Z : X, Y {};
 Z z; Y* py = &z; X* px = dynamic_cast<X*>(py);   // 成功（Z 含两者）
 ```
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例4：dynamic_cast 到无继承关系的类 → nullptr
 struct W { virtual ~W() = default; };
 W* pw = dynamic_cast<W*>(py);                     // nullptr（Y 与 W 无关）
 ```
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例5：菱形非虚继承 —— 两份爷爷基类子对象
 struct G { int g; virtual ~G() = default; };
@@ -288,6 +300,7 @@ struct Bottom : L, R {};   // 两个 G 子对象：L::G 与 R::G
 Bottom b; b.L::g = 1; b.R::g = 2;   // 两份独立，需消歧
 ```
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例6：mixin 接口同时混入两个能力
 struct ILoggable { virtual void log() = 0; };
@@ -298,6 +311,7 @@ struct Entity : ILoggable, ISerializable {
 };
 ```
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例7：含虚函数的多基类 + char 成员的对齐
 struct A { virtual void a(); };
@@ -305,6 +319,7 @@ struct B { virtual void b(); };
 struct D : A, B { char c; };   // sizeof=24: A.vptr@0 B.vptr@8 c@16 +7填充
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例8：offsetof 断言第二基类偏移
 #include <cstddef>
@@ -314,6 +329,7 @@ struct D : B1, B2 { int x; };
 static_assert(offsetof(D, x) == 16);   // 两 vptr(16) + x@16
 ```
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例9：虚析构链在多重继承下按逆序调用
 struct A { virtual ~A() { /*A*/ } };
@@ -321,6 +337,7 @@ struct B { virtual ~B() { /*B*/ } };
 struct D : A, B { ~D() override { /*D*/ } };  // 析构顺序 D→B→A
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例10：名字歧义用 using 提升并消歧
 struct A { void f(int){} };
@@ -328,6 +345,7 @@ struct B { void f(double){} };
 struct D : A, B { using A::f; using B::f; };   // 两 f 都可见，调用按重载决议
 ```
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例11：模板基类多重继承
 template<class T> struct TBase1 { virtual void f1() = 0; };
@@ -337,12 +355,14 @@ struct Impl : TBase1<int>, TBase2<int> {
 };
 ```
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例12：CRTP 基类混入多重继承（ch51）
 template<class D> struct CtrpBase { void run(){ static_cast<D*>(this)->step(); } };
 struct Mix : CtrpBase<Mix>, B1 { void step(){} void f() override {} };
 ```
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例13：final 阻止进一步重写
 struct A { virtual void f(); };
@@ -350,6 +370,7 @@ struct B : A { void f() final override; };
 // struct C : B { void f() override; };  // ❌ f 已 final
 ```
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例14：override 关键字静态检查
 struct A { virtual void f(int); };
@@ -357,6 +378,7 @@ struct B : A { void f(int) override {} };   // 签名一致才允许 override
 // void f(double) override {};            // ❌ 无匹配虚函数，编译失败
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例15：protected 基类成员跨继承可见性
 struct A { protected: int a; };
@@ -364,6 +386,7 @@ struct B { protected: int b; };
 struct D : A, B { int sum() { return a + b; } };   // a、b 均可访问
 ```
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例16：虚函数 + 非虚函数共存于多基类
 struct A { virtual void v(); void nv(){} };
@@ -371,11 +394,13 @@ struct B { virtual void w(); };
 struct D : A, B { void v() override {} void w() override {} };
 ```
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例17：首基类切片（值语义丢失第二基类）
 D d; A a = d;   // 仅拷贝 A 子对象（B 部分丢失）；故基类析构应 virtual
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例18：placement new 构造多重继承对象
 #include <new>
@@ -383,6 +408,7 @@ alignas(D) char buf[sizeof(D)];
 D* pd = new (buf) D();   // 两 vptr 在构造时分别初始化
 ```
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例19：noexcept 析构与多重继承
 struct A { virtual ~A() noexcept = default; };
@@ -390,6 +416,7 @@ struct B { virtual ~B() noexcept = default; };
 struct D : A, B { ~D() noexcept override = default; };
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例20：const 成员函数跨多基类
 struct A { virtual int get() const = 0; };
@@ -397,6 +424,7 @@ struct B { virtual int val() const = 0; };
 struct D : A, B { int g=0,v=0; int get() const override { return g; } int val() const override { return v; } };
 ```
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例21：多重继承 + 抽象基类纯虚析构需定义
 struct Iface { virtual ~Iface() = 0; };
@@ -404,6 +432,7 @@ Iface::~Iface() = default;   // 纯虚析构仍需函数体，否则链接失败
 struct C : Iface, B1 { ~C() override {} };
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 例22：运行时通过两接口分发
 ILoggable* pl = new Entity(); ISerializable* ps = new Entity();
@@ -440,6 +469,7 @@ Itanium ABI 规定，一个类的 vtable 对象由「主虚拟表（primary vtbl
 
 【反例 1：把基类指针当派生类裸转】
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 C c; B* pb = &c;
 C* pc = (C*)(void*)pb;          // ❌ this 没调回 C 头，pc 实际指向 C+8
@@ -448,6 +478,7 @@ pc->fa();                        // ❌ 写到错误偏移，UB
 
 【正解】用 `static_cast<C*>(pb)` 或 `dynamic_cast`：
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 C* pc = static_cast<C*>(pb);    // ✅ 编译器插入 this+=8 调整
 pc->fa();                        // ✅ 正确
@@ -455,6 +486,7 @@ pc->fa();                        // ✅ 正确
 
 【反例 2：多重继承 + 重载歧义】
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 struct A { void f(int); };
 struct B { void f(double); };
@@ -464,6 +496,7 @@ D d; d.f(1);                     // ❌ 两个 f 都可见，调用歧义（编�
 
 【正解】显式消歧：
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 d.A::f(1);                       // ✅ 指定 A::f
 d.B::f(1.0);                     // ✅ 指定 B::f
@@ -471,6 +504,7 @@ d.B::f(1.0);                     // ✅ 指定 B::f
 
 【反例 3：误以为 sizeof 是基类之和】
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 struct E : B1, B2 { char c; };
 // sizeof(E) 不是 8+8+1=17，而是 24（两个 vptr@8 + char@16 + 7 填充对齐到 8）
@@ -505,6 +539,7 @@ struct E : B1, B2 { char c; };
 - **时间**：跨第二基类虚调用 = 取 vptr + 取槽 + thunk 调整 + 真身，比单继承多一次 this 调整（通常折进偏移，开销趋近于 0，但间接跳转影响分支预测）。
 - **microbenchmark 思路**：
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：性能分析]
 ```cpp
 #include <benchmark/benchmark.h>
 struct B1 { virtual int f() = 0; };
@@ -619,29 +654,34 @@ BENCHMARK(BM_SecondBaseVCall);
 
 ## 附录: 多重继承深度
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：附录: 多重继承深度]
 ```cpp
 #include <iostream>
 struct A{int a=10;};struct B{int b=20;};struct C:A,B{};
 int main(){C c;std::cout<<c.a<<","<<c.b<<std::endl;return 0;}
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：附录: 多重继承深度]
 ```cpp
 #include <iostream>
 struct Printable{virtual void print()=0;};struct Serializable{virtual void save()=0;};struct Doc:Printable,Serializable{void print()override{std::cout<<"doc"<<std::endl;}void save()override{}};
 int main(){Doc d;d.print();return 0;}
 ```
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：附录: 多重继承深度]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"MI: each base has its own subobject. this pointer adjusts for each base."<<std::endl;return 0;}
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：附录: 多重继承深度]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<std::endl;return 0;}
 ```
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：附录: 多重继承深度]
 ```cpp
 #include <iostream>
 struct X{void f(){std::cout<<"X";}};struct Y{void f(){std::cout<<"Y";}};struct Z:X,Y{};
@@ -704,6 +744,7 @@ int main(){Z z;z.X::f();z.Y::f();std::cout<<std::endl;return 0;}
 
 ## 附录 F：多重继承工业与面试
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：附录 F：多重继承工业与面试]
 ```cpp
 #include <iostream>
 struct A{int a=10; void f(){std::cout<<"A"<<std::endl;}};
@@ -724,6 +765,7 @@ int main(){C c;c.call();std::cout<<c.a<<","<<c.b<<std::endl;return 0;}
 
 ## 附录 H：MI设计选择
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：附录 H：MI设计选择]
 ```cpp
 #include <iostream>
 #include <string>
@@ -822,6 +864,7 @@ thunk 是一小段 `sub` + `jmp`，成本约 0.3 ns（一次 ALU + 一次跳转�
 
 <details><summary>答案与解析</summary>
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 struct A { int a; };
 struct B : A {};
@@ -851,6 +894,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 struct A { int a; };
 struct B : A {};
@@ -879,6 +923,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 struct A { int a; };
 struct B : virtual A {};
@@ -977,6 +1022,7 @@ ret
 
 **步骤 1：非虚 MI 菱形 → 二义性 + 两份基类**
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 菱形继承：要不要]
 ```cpp
 struct Object { int id; };
 struct Drawable   : Object {};
@@ -993,6 +1039,7 @@ int main(){
 
 **步骤 2：显式消歧 → 数据重复（治标不治本）**
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 菱形继承：要不要]
 ```cpp
 struct Object { int id; };
 struct Drawable : Object {};
@@ -1008,6 +1055,7 @@ int main(){
 
 **步骤 3：virtual 继承 → 单一基类，但指针调整开销**
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 菱形继承：要不要]
 ```cpp
 struct Object { int id; };
 struct Drawable  : virtual Object {};
@@ -1037,6 +1085,7 @@ int main(){
 
 下例验证「virtual 继承让共享基类唯一」：
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：补例：自包含可编译验证]
 ```cpp
 #include <iostream>
 
@@ -1264,6 +1313,7 @@ pr->g();           // 经 R* 调 g：thunk 先把 this 调回 &m，再进 M::g
 
 ### D4.4 可编译 demo：双基类指针值证明 this 调整 + tuple<EBO> sizeof
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：可编译 demo：双基类指针值证明 ]
 ```cpp
 #include <iostream>
 #include <tuple>
@@ -1343,6 +1393,7 @@ int main() {
 
 ### D5.3 可复现演示
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 #include <cassert>

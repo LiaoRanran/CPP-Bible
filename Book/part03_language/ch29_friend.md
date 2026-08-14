@@ -37,6 +37,7 @@ C++ 的 `private` / `public` 访问控制继承自 Simula 67 的"数据隐藏"�
 
 ## ② 友元函数 [标准]
 
+> **示例 1** [难度 ★★☆☆☆] [主题：友元函数 [标准]]
 ```cpp
 #include <iostream>
 class Point { int x_, y_; public: Point(int x,int y):x_(x),y_(y){} friend std::ostream& operator<<(std::ostream&,const Point&); };
@@ -46,6 +47,7 @@ int main(){Point p(3,4);std::cout<<p<<std::endl;return 0;}
 
 ## ③ 友元类 [标准]
 
+> **示例 2** [难度 ★★☆☆☆] [主题：友元类 [标准]]
 ```cpp
 #include <iostream>
 class Engine { int rpm=0; friend class Mechanic; };
@@ -55,6 +57,7 @@ int main(){Engine e;Mechanic m;m.tune(e);return 0;}
 
 ## ④ 友元成员函数 [标准]
 
+> **示例 3** [难度 ★★☆☆☆] [主题：友元成员函数 [标准]]
 ```cpp
 #include <iostream>
 class Safe; class Key{public:void unlock(Safe&);};
@@ -65,6 +68,7 @@ int main(){Safe s;Key k;k.unlock(s);return 0;}
 
 ## ⑤ 友元不可传递 [标准]
 
+> **示例 4** [难度 ★★☆☆☆] [主题：友元不可传递 [标准]]
 ```cpp
 #include <iostream>
 class A{int a=1;friend class B;};
@@ -75,6 +79,7 @@ int main(){A a;B b;std::cout<<"friend not transitive\n";return 0;}
 
 ## ⑥ 友元不可继承 [标准]
 
+> **示例 5** [难度 ★★☆☆☆] [主题：友元不可继承 [标准]]
 ```cpp
 #include <iostream>
 class Base{int x=10;friend class Viewer;};
@@ -85,6 +90,7 @@ int main(){Base b;Derived d;Viewer v;v.show(b);return 0;}
 
 ## ⑦ 模板友元 [标准]
 
+> **示例 6** [难度 ★★☆☆☆] [主题：模板友元 [标准]]
 ```cpp
 #include <iostream>
 template<typename T> class Box{T val; public:Box(T v):val(v){} template<typename U> friend void peek(const Box<U>&);};
@@ -94,6 +100,7 @@ int main(){Box<int> b(42);peek(b);return 0;}
 
 ## ⑧ friend 与 operator<< 惯用法 [经验]
 
+> **示例 7** [难度 ★★☆☆☆] [主题：与 operator<< 惯用法 []
 ```cpp
 #include <iostream>
 class Vec3{double x,y,z;public:Vec3(double a,double b,double c):x(a),y(b),z(c){}friend std::ostream& operator<<(std::ostream&,const Vec3&);};
@@ -103,6 +110,7 @@ int main(){Vec3 v(1,2,3);std::cout<<v<<std::endl;return 0;}
 
 ## ⑨ friend 的替代方案 [经验]
 
+> **示例 8** [难度 ★★☆☆☆] [主题：的替代方案 [经验]]
 ```cpp
 #include <iostream>
 class Widget{int val=99;public:int get()const{return val;} void set(int v){val=v;} };
@@ -111,6 +119,7 @@ int main(){Widget w;w.set(42);std::cout<<w.get()<<std::endl;return 0;}
 
 ## ⑩ friend 与单元测试 [经验]
 
+> **示例 9** [难度 ★★☆☆☆] [主题：与单元测试 [经验]]
 ```cpp
 #include <iostream>
 class PrivateClass{int secret=99;friend struct TestAccessor;};struct TestAccessor{static int peek(const PrivateClass& p){return p.secret;}};
@@ -119,6 +128,7 @@ int main(){PrivateClass p;std::cout<<TestAccessor::peek(p)<<std::endl;return 0;}
 
 ## ⑪ STL 联系：operator<< 必须 friend [标准]
 
+> **示例 10** [难度 ★★☆☆☆] [主题：联系：operator<< 必须 f]
 ```cpp
 // ⑪ std::ostream::operator<< 只能通过 friend 访问私有成员
 #include <iostream>
@@ -144,6 +154,7 @@ int main() {
 
 ## ⑫ 工业案例：工厂模式 + 友元控制构造 [经验]
 
+> **示例 11** [难度 ★★☆☆☆] [主题：工业案例：工厂模式 + 友元控制构造]
 ```cpp
 // ⑫ friend 工厂：构造函数私有，仅工厂类可创建
 #include <iostream>
@@ -184,6 +195,7 @@ int main() {
 
 ## ⑬ 源码分析：GCC friend 处理流程 [实现·GCC15.3.0]
 
+> **示例 12** [难度 ★★☆☆☆] [主题：源码分析：GCC friend 处理]
 ```cpp
 // ⑬ GCC 编译器内部的 friend 处理路径（伪代码注释）
 #include <iostream>
@@ -203,6 +215,7 @@ int main() {
 
 ## ⑭ WG21 关键提案 [标准]
 
+> **示例 13** [难度 ★★☆☆☆] [主题：关键提案 [标准]]
 ```cpp
 // ⑭ friend 相关的标准演化与提案
 #include <iostream>
@@ -224,6 +237,7 @@ int main() {
 
 ## ⑮ 面试题精选 [经验]
 
+> **示例 14** [难度 ★★☆☆☆] [主题：面试题精选 [经验]]
 ```cpp
 // ⑮ 高频面试问题与标准答案
 #include <iostream>
@@ -246,6 +260,7 @@ int main() {
 
 ## ⑯ 易错点与陷阱 [经验]
 
+> **示例 15** [难度 ★★☆☆☆] [主题：易错点与陷阱 [经验]]
 ```cpp
 // ⑯ 5 个最常见的 friend 使用错误
 #include <iostream>
@@ -271,6 +286,7 @@ int main() {
 
 ## ⑰ FAQ：工程实战常见问题 [经验]
 
+> **示例 16** [难度 ★★☆☆☆] [主题：工程实战常见问题 [经验]]
 ```cpp
 // ⑰ 来自实际项目的 friend 使用问答
 #include <iostream>
@@ -306,6 +322,7 @@ int main() {
 
 ## ⑱ 最佳实践总结 [经验]
 
+> **示例 17** [难度 ★★☆☆☆] [主题：最佳实践总结 [经验]]
 ```cpp
 // ⑱ friend 使用的 6 条黄金法则
 #include <iostream>
@@ -333,6 +350,7 @@ int main() {
 
 ## ⑲ 性能分析：friend 的零运行时成本 [平台·x86-64]
 
+> **示例 18** [难度 ★★☆☆☆] [主题：性能分析：friend 的零运行时成]
 ```cpp
 // ⑲ friend 是编译期概念 —— 生成代码与非 friend 完全一致
 // 验证方法：Compiler Explorer 对比两种访问方式
@@ -373,6 +391,7 @@ int main() {
    - [标准] 友元关系不可传递、不可继承，需显式声明每一授予。
    - [引用] ISO/IEC 14882:2023 §[class.friend]；cppreference "friend#Inheritance" 词条。
 
+> **示例 19** [难度 ★★☆☆☆] [主题：跨语言对比：访问控制机制 [经验]]
 ```cpp
 // ⑳ C++ friend vs 其他语言的访问控制旁路机制
 #include <iostream>
@@ -394,6 +413,7 @@ int main() {
 
 ## 补充完整可编译示例
 
+> **示例 20** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class Lock{bool locked=true;friend class MasterKey; public:bool isLocked()const{return locked;} };
@@ -401,24 +421,28 @@ class MasterKey{public:void unlock(Lock&l){l.locked=false;std::cout<<"unlocked\n
 int main(){Lock l;MasterKey m;m.unlock(l);std::cout<<l.isLocked()<<std::endl;return 0;}
 ```
 
+> **示例 21** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 template<typename T>class Outer{template<typename U>class Inner{friend class Outer;};};
 int main(){std::cout<<"nested friend template OK\n";return 0;}
 ```
 
+> **示例 22** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class A{int a=1;friend void show(A&);}; void show(A& a){std::cout<<a.a<<std::endl;}
 int main(){A a;show(a);return 0;}
 ```
 
+> **示例 23** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct X{int x;friend void f(X&);}; struct Y{int y;friend void f(X&);};
 int main(){std::cout<<"multiple friend declarations OK\n";return 0;}
 ```
 
+> **示例 24** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class Secret{int code=1234;friend class Auditor;};
@@ -426,6 +450,7 @@ class Auditor{public:int audit(const Secret& s){return s.code;}};
 int main(){Secret s;Auditor a;std::cout<<a.audit(s)<<std::endl;return 0;}
 ```
 
+> **示例 25** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class C{static int count;friend class Counter;};int C::count=0;
@@ -433,6 +458,7 @@ class Counter{public:void inc(){++C::count;} int get(){return C::count;}};
 int main(){Counter c;c.inc();c.inc();std::cout<<c.get()<<std::endl;return 0;}
 ```
 
+> **示例 26** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class Matrix{int d[4];public:Matrix(int a,int b,int c,int e){d[0]=a;d[1]=b;d[2]=c;d[3]=e;}friend Matrix operator+(const Matrix&,const Matrix&);};
@@ -440,6 +466,7 @@ Matrix operator+(const Matrix& a,const Matrix& b){return Matrix(a.d[0]+b.d[0],a.
 int main(){Matrix m(1,2,3,4);std::cout<<"matrix op+\n";return 0;}
 ```
 
+> **示例 27** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class Node{int data;Node*next;friend class List;public:Node(int d):data(d),next(nullptr){}};
@@ -447,72 +474,84 @@ class List{Node*head=nullptr;public:void push(int d){auto*n=new Node(d);n->next=
 int main(){List l;l.push(10);l.push(20);std::cout<<l.top()<<std::endl;return 0;}
 ```
 
+> **示例 28** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class H{int v;friend void set(H&,int);friend int get(const H&);};void set(H&h,int x){h.v=x;}int get(const H&h){return h.v;}
 int main(){H h;set(h,7);std::cout<<get(h)<<std::endl;return 0;}
 ```
 
+> **示例 29** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class Limited{int limit=100;friend bool check(const Limited&,int);};bool check(const Limited& l,int v){return v<l.limit;}
 int main(){Limited l;std::cout<<check(l,50)<<std::endl;return 0;}
 ```
 
+> **示例 30** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class Pair{int a,b;friend void swap(Pair&);public:Pair(int x,int y):a(x),b(y){}void show(){std::cout<<a<<","<<b<<std::endl;}};void swap(Pair& p){int t=p.a;p.a=p.b;p.b=t;}
 int main(){Pair p(1,2);swap(p);p.show();return 0;}
 ```
 
+> **示例 31** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct Data{protected:int val=0;friend class Proxy;};struct Proxy{void set(Data& d,int v){d.val=v;}int get(Data& d){return d.val;}};
 int main(){Data d;Proxy p;p.set(d,99);std::cout<<p.get(d)<<std::endl;return 0;}
 ```
 
+> **示例 32** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 template<int N>struct Fib{static constexpr int v=Fib<N-1>::v+Fib<N-2>::v;};template<>struct Fib<0>{static constexpr int v=0;};template<>struct Fib<1>{static constexpr int v=1;};
 int main(){std::cout<<Fib<10>::v<<std::endl;return 0;}
 ```
 
+> **示例 33** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class Logger{friend void log(const Logger&,const char*); int id; public:Logger(int i):id(i){}};void log(const Logger& l,const char* msg){std::cout<<"["<<l.id<<"] "<<msg<<std::endl;}
 int main(){Logger l(1);log(l,"started");return 0;}
 ```
 
+> **示例 34** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class Vault{int code;public:Vault(int c):code(c){}friend int crack(const Vault&);};int crack(const Vault& v){return v.code;}
 int main(){Vault v(1234);std::cout<<crack(v)<<std::endl;return 0;}
 ```
 
+> **示例 35** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class A2{int a=10;friend class B2;};class B2{public:void show(A2& a){std::cout<<a.a<<std::endl;}};
 int main(){A2 a;B2 b;b.show(a);return 0;}
 ```
 
+> **示例 36** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct Vec{int x,y;friend Vec add(const Vec&,const Vec&);};Vec add(const Vec& a,const Vec& b){return{a.x+b.x,a.y+b.y};}
 int main(){Vec v=add({1,2},{3,4});std::cout<<v.x<<","<<v.y<<std::endl;return 0;}
 ```
 
+> **示例 37** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 class Counter{int n=0;friend void reset(Counter&);friend int read(const Counter&);};void reset(Counter& c){c.n=0;}int read(const Counter& c){return c.n;}
 int main(){Counter c;std::cout<<read(c)<<std::endl;return 0;}
 ```
 
+> **示例 38** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 struct Window{int w,h;friend int area(const Window&);Window(int a,int b):w(a),h(b){}};int area(const Window& win){return win.w*win.h;}
 int main(){Window w(800,600);std::cout<<area(w)<<std::endl;return 0;}
 ```
 
+> **示例 39** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"friend总结: 单向/不传递/不继承。用于operator<<、工厂、测试、内部类访问。"<<std::endl;return 0;}
@@ -568,6 +607,7 @@ C++ 的 `private`/`public` 访问控制继承自 Simula 67 的"数据隐藏"思�
 | 内部迭代器 | 嵌套迭代器类 | `friend class iterator` |
 | CRTP 基类访问 | 基类模板 | `friend class Base<Derived>` |
 
+> **示例 40** [难度 ★★☆☆☆] [主题：附录 A: friend 模式速查]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -578,6 +618,7 @@ int main(){auto r=makeResource(99);std::cout<<r->get()<<std::endl;return 0;}
 
 ## 附录 B: friend 与封装边界设计
 
+> **示例 41** [难度 ★★☆☆☆] [主题：附录 B: friend 与封装边界]
 ```cpp
 #include <iostream>
 int main(){
@@ -591,6 +632,7 @@ int main(){
 
 ## 附录 C: 模板 friend 模式
 
+> **示例 42** [难度 ★★☆☆☆] [主题：附录 C: 模板 friend 模式]
 ```cpp
 #include <iostream>
 template<typename T>class Box{T val;public:Box(T v):val(v){}template<typename U>friend class Inspector;};
@@ -604,6 +646,7 @@ CRTP中使用friend: 基类方法访问派生类(private)
 流输出: operator<<(ostream&,const MyClass&) 通常是friend
 测试: 测试框架访问被测类的private成员
 
+> **示例 43** [难度 ★★☆☆☆] [主题：附录 F：friend的工业应用]
 ```cpp
 #include <iostream>
 class X{int v=42;friend std::ostream&operator<<(std::ostream&o,const X&x){return o<<x.v;}};
@@ -618,6 +661,7 @@ int main(){X x;std::cout<<x<<std::endl;return 0;}
 friend不影响ABI: 不改变sizeof, 不改变vtable, 不改变name mangling
 friend是纯编译期特性: 只在访问检查时起作用, 编译后无痕迹
 
+> **示例 44** [难度 ★★☆☆☆] [主题：附录 G：friend的ABI影响]
 ```cpp
 #include <iostream>
 class X{int v=42;friend class Test;};
@@ -692,6 +736,7 @@ call private_impl
 
 `operator<<` 必须是（或调用）`friend` 才能访问右操作数的私有成员：
 
+> **示例 45** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -722,6 +767,7 @@ int main() {
 
 在类模板内用当前模板参数声明友元，约束为同 `T`：
 
+> **示例 46** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 template <typename T>
@@ -737,6 +783,7 @@ int main() { Box<int> a(1); Box<double> b(2.0); std::cout << "ok\n"; }
 
 更严格的"仅同 `T` 友元"写法（每个实例只与自身类型友元）：
 
+> **示例 47** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 template <typename T>
@@ -763,6 +810,7 @@ int main() { Box<int> a(1); std::cout << "ok\n"; }
 
 构造私有 + 友元工厂，外部无法直接构造：
 
+> **示例 48** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -801,6 +849,7 @@ int main() {
 
 **常见错误**：为打印/测试便利，把所有成员改成 `public`，导致任何调用方都能破坏对象不变式：
 
+> **示例 49** [难度 ★★☆☆☆] [主题：演绎 1：何时用 friend 而非]
 ```cpp
 #include <iostream>
 struct Account {
@@ -815,6 +864,7 @@ int main() {
 
 **修复**：成员保持 `private`，仅对必要函数授予 `friend`：
 
+> **示例 50** [难度 ★★☆☆☆] [主题：演绎 1：何时用 friend 而非]
 ```cpp
 #include <iostream>
 struct Account {
@@ -839,6 +889,7 @@ int main() {
 
 **常见错误**：为测试方便把私有成员改为 `public`，污染公共接口并误导使用者：
 
+> **示例 51** [难度 ★★☆☆☆] [主题：演绎 2：friend 与单元测试]
 ```cpp
 #include <iostream>
 class Engine {
@@ -851,6 +902,7 @@ int main() { Engine e; e.rpm = 9999; }   // 生产代码也能乱改
 
 **修复**：仅对测试夹具类授予 `friend`，内部状态保持 `private`：
 
+> **示例 52** [难度 ★★☆☆☆] [主题：演绎 2：friend 与单元测试]
 ```cpp
 #include <iostream>
 class TestEngine;             // 前置声明
@@ -891,6 +943,7 @@ int main() {
 
 可验证示例（自包含、可编译；两函数产物指令一致）：
 
+> **示例 53** [难度 ★★☆☆☆] [主题：性能视角：friend 的零运行期开]
 ```cpp
 // g++ -std=c++23 -O2 ch29_costmodel.cpp
 #include <cstdio>
@@ -1025,6 +1078,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
+> **示例 54** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 

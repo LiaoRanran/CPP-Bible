@@ -45,6 +45,7 @@
 - **二分查找**：`lower_bound` / `upper_bound` / `equal_range` / `binary_search`，**要求区间已按比较器升序**，复杂度 O(log N)。
 - **哈希查找**：`std::unordered_*` 的 `find` / `count`，平均 O(1)，但不保序、需可哈希。
 
+> **示例 1** [难度 ★☆☆☆☆] [主题：概述：查找算法的分类与定位 [标准]]
 ```cpp
 // ① 三族查找的"门面"对比
 #include <algorithm>
@@ -67,6 +68,7 @@ int demo() {
 
 `std::find(first, last, value)` 从头到尾逐个比较 `==`，返回首个相等元素的迭代器，找不到返回 `last`。
 
+> **示例 2** [难度 ★☆☆☆☆] [主题：线性查找 std::find [标准]
 ```cpp
 // ② 基本用法：返回首个等于 value 的迭代器
 #include <algorithm>
@@ -79,6 +81,7 @@ int find_basic() {
 }
 ```
 
+> **示例 3** [难度 ★☆☆☆☆] [主题：线性查找 std::find [标准]
 ```cpp
 // ② 找不到时返回 last（必须判等，绝不可解引用）
 #include <algorithm>
@@ -90,6 +93,7 @@ bool find_missing() {
 }
 ```
 
+> **示例 4** [难度 ★☆☆☆☆] [主题：线性查找 std::find [标准]
 ```cpp
 // ② find_first_of：在 [first,last) 中找"任一"目标集合元素
 #include <algorithm>
@@ -114,6 +118,7 @@ int find_first_of_demo() {
 - `upper_bound`：首个 **comp(value, elem)**（即 `> value`）的位置。
 - `equal_range`：等价于 `{lower_bound, upper_bound}`，返回 `[first_eq, last_eq)` 半开区间。
 
+> **示例 5** [难度 ★☆☆☆☆] [主题：二分查找 lowerbound / ]
 ```cpp
 // ③ lower_bound：第一个 >= 5 的位置
 #include <algorithm>
@@ -125,6 +130,7 @@ int lower_demo() {
 }
 ```
 
+> **示例 6** [难度 ★☆☆☆☆] [主题：二分查找 lowerbound / ]
 ```cpp
 // ③ upper_bound：第一个 > 5 的位置
 #include <algorithm>
@@ -136,6 +142,7 @@ int upper_demo() {
 }
 ```
 
+> **示例 7** [难度 ★☆☆☆☆] [主题：二分查找 lowerbound / ]
 ```cpp
 // ③ equal_range：返回等于 5 的半开区间 [2, 4)
 #include <algorithm>
@@ -148,6 +155,7 @@ int eqrange_demo() {
 }
 ```
 
+> **示例 8** [难度 ★☆☆☆☆] [主题：二分查找 lowerbound / ]
 ```cpp
 // ③ 三者的恒等式：lower 与 upper 的差 = 等于 value 的元素个数
 #include <algorithm>
@@ -167,6 +175,7 @@ int count_via_bounds() {
 
 `std::binary_search` 是 `lower_bound` 的薄封装：找到 `lower_bound`，再判断该位置是否等于 value。复杂度 O(log N)，但**只返回 bool**。
 
+> **示例 9** [难度 ★☆☆☆☆] [主题：search [标准]]
 ```cpp
 // ④ binary_search：仅回答"在不在"
 #include <algorithm>
@@ -177,6 +186,7 @@ bool contains_demo() {
 }
 ```
 
+> **示例 10** [难度 ★☆☆☆☆] [主题：search [标准]]
 ```cpp
 // ④ 等价展开：binary_search 约等于 lower_bound 后比较
 #include <algorithm>
@@ -194,6 +204,7 @@ bool binary_equiv(const std::vector<int>& v, int x) {
 
 下面是用 GCC 15.3.0 `-O2 -masm=intel` 对 `lower_bound_idx` 生成的**真实汇编**（已截去文件头）。注意它**没有被完全展开成常数表**，而是生成了标准的 `mid = n/2` 二分循环——因为区间长度 `n` 是运行时值。
 
+> **示例 11** [难度 ★☆☆☆☆] [主题：真实汇编：lowerbound 在 ]
 ```cpp
 // 文件：Examples/_ch97_lower_bound.cpp
 // 行号：10
@@ -238,6 +249,7 @@ _Z15lower_bound_idxPKiii:
 
 `<algorithm>` 提供一组**要求两区间都已排序**的集合算法，输出到 `result`，复杂度 O(N+M)。
 
+> **示例 12** [难度 ★☆☆☆☆] [主题：有序区间算法：集合操作 [标准]]
 ```cpp
 // ⑥ set_union：并集（已排序两区间 -> 合并）
 #include <algorithm>
@@ -252,6 +264,7 @@ std::vector<int> union_demo() {
 }
 ```
 
+> **示例 13** [难度 ★☆☆☆☆] [主题：有序区间算法：集合操作 [标准]]
 ```cpp
 // ⑥ set_intersection：交集
 #include <algorithm>
@@ -266,6 +279,7 @@ std::vector<int> inter_demo() {
 }
 ```
 
+> **示例 14** [难度 ★☆☆☆☆] [主题：有序区间算法：集合操作 [标准]]
 ```cpp
 // ⑥ includes：a 是否包含 b 的全部元素（返回 bool）
 #include <algorithm>
@@ -276,6 +290,7 @@ bool includes_demo() {
 }
 ```
 
+> **示例 15** [难度 ★☆☆☆☆] [主题：有序区间算法：集合操作 [标准]]
 ```cpp
 // ⑥ merge：稳定归并两个有序区间（std::sort 的归并步）
 #include <algorithm>
@@ -297,6 +312,7 @@ std::vector<int> merge_demo() {
 
 `search` 在母序列中找**首个**等于子序列的偏移；`find_end` 找**最后**一个；`search_n` 找连续 `count` 个相等元素。都是线性、单趟。
 
+> **示例 16** [难度 ★☆☆☆☆] [主题：搜索子序列 search / fin]
 ```cpp
 // ⑦ search：找子序列首次出现
 #include <algorithm>
@@ -310,6 +326,7 @@ int search_demo() {
 }
 ```
 
+> **示例 17** [难度 ★☆☆☆☆] [主题：搜索子序列 search / fin]
 ```cpp
 // ⑦ find_end：找子序列最后一次出现
 #include <algorithm>
@@ -323,6 +340,7 @@ int find_end_demo() {
 }
 ```
 
+> **示例 18** [难度 ★☆☆☆☆] [主题：搜索子序列 search / fin]
 ```cpp
 // ⑦ search_n：找连续 count 个等于 value 的段
 #include <algorithm>
@@ -341,6 +359,7 @@ int search_n_demo() {
 
 `adjacent_find` 找**第一对相邻且相等（或满足二元谓词）**的元素，返回指向这对中**前者**的迭代器；找不到返回 `last`。
 
+> **示例 19** [难度 ★☆☆☆☆] [主题：相邻查找 adjacentfind ]
 ```cpp
 // ⑧ 默认：找第一对相邻相等的元素
 #include <algorithm>
@@ -352,6 +371,7 @@ int adj_demo() {
 }
 ```
 
+> **示例 20** [难度 ★☆☆☆☆] [主题：相邻查找 adjacentfind ]
 ```cpp
 // ⑧ 自定义谓词：找第一对"相邻且差 < 2"的元素
 #include <algorithm>
@@ -372,6 +392,7 @@ int adj_pred_demo() {
 
 `find_if(first, last, pred)` 返回首个使 `pred(*it)` 为真的迭代器。`find_if_not` 是其反义（C++11）。
 
+> **示例 21** [难度 ★☆☆☆☆] [主题：谓词查找 findif / find]
 ```cpp
 // ⑨ find_if：找首个偶数
 #include <algorithm>
@@ -384,6 +405,7 @@ int find_if_demo() {
 }
 ```
 
+> **示例 22** [难度 ★☆☆☆☆] [主题：谓词查找 findif / find]
 ```cpp
 // ⑨ find_if_not：找首个"不满足"谓词者
 #include <algorithm>
@@ -404,6 +426,7 @@ int find_if_not_demo() {
 
 下面是用 GCC 15.3.0 `-O2` 在本机运行的 **`std::chrono` 实测**（非示意）。对 1,048,576 个升序 `int` 做 200 次随机命中查找：
 
+> **示例 23** [难度 ★☆☆☆☆] [主题：真实性能：二分 vs 线性]
 ```cpp
 // 文件：Examples/_ch97_bench.cpp
 // 行号：24
@@ -461,6 +484,7 @@ sink=77443
 
 `std::unordered_set/map` 提供 `find` / `count` / `contains`（C++20），基于哈希，平均 O(1)、最坏 O(N)；与二分查找互补：**要序用二分，要速用哈希**。
 
+> **示例 24** [难度 ★☆☆☆☆] [主题：哈希查找衔接：与 unordered]
 ```cpp
 // ⑪ unordered_set::find：平均 O(1)
 #include <unordered_set>
@@ -471,6 +495,7 @@ int hash_find_demo() {
 }
 ```
 
+> **示例 25** [难度 ★☆☆☆☆] [主题：哈希查找衔接：与 unordered]
 ```cpp
 // ⑪ contains（C++20）：比 find 后判 end 更直白地回答"在不在"
 #include <unordered_set>
@@ -487,6 +512,7 @@ bool hash_contains_demo() {
 
 二分算法依赖**严格弱序**（strict weak ordering）：`comp(a,b)` 必须满足非自反、非对称、传递，且等价（equivalence）`!comp(a,b) && !comp(b,a)` 是等价关系。默认 `comp = std::less`（即 `<`）。
 
+> **示例 26** [难度 ★☆☆☆☆] [主题：比较器与等价关系 [标准]]
 ```cpp
 // ⑫ 降序区间必须用同一比较器，否则二分 UB
 #include <algorithm>
@@ -498,6 +524,7 @@ int desc_lower_bound() {
 }
 ```
 
+> **示例 27** [难度 ★☆☆☆☆] [主题：比较器与等价关系 [标准]]
 ```cpp
 // ⑫ 等价关系：用 < 定义"相等"——两者都不小于对方即等价
 #include <algorithm>
@@ -516,6 +543,7 @@ bool approx_equiv(double a, double b, double eps) {
 
 当查找条件不是"相等"而是"满足某属性"，用谓词；当比较的是对象的某成员，用投影或自定义比较器，避免手写 lambda 包一层。
 
+> **示例 28** [难度 ★☆☆☆☆] [主题：自定义查找（谓词 / 投影） [标准]
 ```cpp
 // ⑬ 用 find_if + lambda 按成员查找
 #include <algorithm>
@@ -529,6 +557,7 @@ int find_by_age(const std::vector<Person>& v, int a) {
 }
 ```
 
+> **示例 29** [难度 ★☆☆☆☆] [主题：自定义查找（谓词 / 投影） [标准]
 ```cpp
 // ⑬ 自定义二分：在按 .age 排序的区间里定位
 #include <algorithm>
@@ -559,6 +588,7 @@ int lower_by_age(const std::vector<Person>& v, int a) {
 | `set_union` 等 | O(N+M) | O(N+M) | 两区间已排序 |
 | `unordered::find` | 平均 O(1) / 最坏 O(N) | O(N) | 可哈希 |
 
+> **示例 30** [难度 ★☆☆☆☆] [主题：复杂度汇总 [标准]]
 ```cpp
 // ⑭ 复杂度直觉：线性查找的"比较次数"随 N 线性增长
 #include <algorithm>
@@ -575,6 +605,7 @@ int linear_cost(const std::vector<int>& v, int x) {
 
 ## ⑮ 选型经验：何时用哪种查找 [经验]
 
+> **示例 31** [难度 ★☆☆☆☆] [主题：选型经验：何时用哪种查找 [经验]]
 ```cpp
 // ⑮ 决策骨架：依据"有序? 多次? 要序?"
 #include <algorithm>
@@ -593,6 +624,7 @@ How choose(int n, bool sorted, int queries) {
 
 ## ⑯ 常见坑：对未排序区间用二分 = UB [经验]
 
+> **示例 32** [难度 ★☆☆☆☆] [主题：常见坑：对未排序区间用二分 = UB]
 ```cpp
 // ⑯ ❌ 错误：区间未排序却调 lower_bound —— 结果错误且行为未定义
 #include <algorithm>
@@ -604,6 +636,7 @@ int wrong_binary() {
 }
 ```
 
+> **示例 33** [难度 ★☆☆☆☆] [主题：常见坑：对未排序区间用二分 = UB]
 ```cpp
 // ⑯ ✅ 正确：先排序，再二分
 #include <algorithm>
@@ -616,6 +649,7 @@ int right_binary() {
 }
 ```
 
+> **示例 34** [难度 ★☆☆☆☆] [主题：常见坑：对未排序区间用二分 = UB]
 ```cpp
 // ⑯ ❌ 错误：降序区间配默认 < 比较器 —— 等价关系被打破
 #include <algorithm>
@@ -635,6 +669,7 @@ int wrong_desc() {
 
 `std::ranges::` 版查找支持**投影**（projection）、返回 `borrowed_iterator`、可直接吃容器，不必写 `begin()/end()`。
 
+> **示例 35** [难度 ★☆☆☆☆] [主题：与 C++20 Ranges [标准]
 ```cpp
 // ⑰ ranges::find：直接传容器，按成员投影
 #include <algorithm>
@@ -649,6 +684,7 @@ int ranges_find_demo() {
 }
 ```
 
+> **示例 36** [难度 ★☆☆☆☆] [主题：与 C++20 Ranges [标准]
 ```cpp
 // ⑰ ranges::lower_bound：同样支持投影
 #include <algorithm>
@@ -663,6 +699,7 @@ int ranges_lower_demo() {
 }
 ```
 
+> **示例 37** [难度 ★☆☆☆☆] [主题：与 C++20 Ranges [标准]
 ```cpp
 // ⑰ ranges::binary_search：投影版存在性判断
 #include <algorithm>
@@ -680,6 +717,7 @@ bool ranges_bs_demo() {
 
 ## ⑱ 最佳实践 [经验]
 
+> **示例 38** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱ 优先 lower_bound 而非 binary_search：一次定位即得位置，避免二次二分
 #include <algorithm>
@@ -690,6 +728,7 @@ bool exists_via_lower(const std::vector<int>& v, int x) {
 }
 ```
 
+> **示例 39** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱ 用 equal_range 做"计数 + 遍历等价段"，不要手动 while
 #include <algorithm>
@@ -709,6 +748,7 @@ int count_and_sum(const std::vector<int>& v, int x) {
 
 三套标准库对二分算法的**语义完全一致**（同 ISO 条款），差异在内部实现细节与调试体验：
 
+> **示例 40** [难度 ★☆☆☆☆] [主题：跨库差异：libstdc++ / l]
 ```cpp
 // ⑲ 语义一致的最小验证：同样输入三库结果相同
 #include <algorithm>
@@ -756,6 +796,7 @@ int cross_lib() {
 | 有序集合并/交/差 | `set_union` 等 | O(N+M) | 两区间已排序 |
 | 已哈希单点查询 | `unordered_*` | 平均 O(1) | 可哈希 |
 
+> **示例 41** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ 速查示例：一行选对 API
 #include <algorithm>
@@ -775,6 +816,7 @@ int cheat() {
 
 ## 补充完整可编译示例（search）
 
+> **示例 42** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（search）]
 ```cpp
 // S1 lower_bound 在 vector<double> 上定位插入点
 #include <algorithm>
@@ -786,6 +828,7 @@ int s1() {
 }
 ```
 
+> **示例 43** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（search）]
 ```cpp
 // S2 upper_bound 用于删除所有等于 x 的元素
 #include <algorithm>
@@ -799,6 +842,7 @@ int s2() {
 }
 ```
 
+> **示例 44** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（search）]
 ```cpp
 // S3 用 find 在字符串中找字符
 #include <algorithm>
@@ -810,6 +854,7 @@ int s3() {
 }
 ```
 
+> **示例 45** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（search）]
 ```cpp
 // S4 find_if 找首个负数
 #include <algorithm>
@@ -822,6 +867,7 @@ int s4() {
 }
 ```
 
+> **示例 46** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（search）]
 ```cpp
 // S5 is_sorted 断言：二分前的保险
 #include <algorithm>
@@ -835,6 +881,7 @@ int s5() {
 }
 ```
 
+> **示例 47** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（search）]
 ```cpp
 // S6 自定义类型 + 全局比较器二分
 #include <algorithm>
@@ -849,6 +896,7 @@ int s6() {
 }
 ```
 
+> **示例 48** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（search）]
 ```cpp
 // S7 ranges::find_end 在容器上找末次子序列
 #include <algorithm>
@@ -862,6 +910,7 @@ int s7() {
 }
 ```
 
+> **示例 49** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（search）]
 ```cpp
 // S8 用 unordered_map::find 取值（哈希，O(1)）
 #include <unordered_map>
@@ -921,6 +970,7 @@ int s8() {
 
 ## 附录 A：工业查找算法 [F: Industry / B: Principle / G: Performance]
 
+> **示例 50** [难度 ★☆☆☆☆] [主题：附录 A：工业查找算法 [F: In]
 ```
 工业查找策略对比:
 Redis: 哈希表 (dict) + 跳表 (skiplist, 有序查找)
@@ -935,6 +985,7 @@ LLVM: DenseMap (开放地址哈希) + StringMap (字符串哈希特化)
 
 ## 附录 B：面试 [J: Learning]
 
+> **示例 51** [难度 ★☆☆☆☆] [主题：附录 B：面试 [J: Learni]
 ```
 面试高频:
 Q: std::find vs std::binary_search 选择?
@@ -1039,6 +1090,7 @@ A: 多个哈希函数→位数组; 假阳性(说不存在=true; 说存在=maybe)
 
 <details><summary>答案与解析</summary>
 
+> **示例 52** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1065,6 +1117,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 53** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1089,6 +1142,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
+> **示例 54** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1118,6 +1172,7 @@ int main() {
 
 **常见错误（text）**：
 
+> **示例 55** [难度 ★☆☆☆☆] [主题：演绎 1：仅判存在性——binary]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1133,6 +1188,7 @@ int main() {
 
 **修复（cpp）**：用 `std::binary_search` 直接返回 `bool`（O(log n)）。
 
+> **示例 56** [难度 ★☆☆☆☆] [主题：演绎 1：仅判存在性——binary]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1154,6 +1210,7 @@ int main() {
 
 **常见错误（text）**：
 
+> **示例 57** [难度 ★☆☆☆☆] [主题：演绎 2：二分的前提是「已排序」]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1168,6 +1225,7 @@ int main() {
 
 **修复（cpp）**：二分前先 `std::sort`（生产代码可加 `assert(std::is_sorted(...))`）。
 
+> **示例 58** [难度 ★☆☆☆☆] [主题：演绎 2：二分的前提是「已排序」]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1422,6 +1480,7 @@ flowchart TD
 
 ### D4.6 第一方可编译验证（二分查找族）
 
+> **示例 59** [难度 ★☆☆☆☆] [主题：第一方可编译验证（二分查找族）]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1476,6 +1535,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
+> **示例 60** [难度 ★☆☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <vector>
