@@ -1451,7 +1451,7 @@ _Z9g_nofencev:
         ret
 
 # g_fence() —— asm 屏障强制累加器每轮存活，100 次迭代真实执行
-_Z8g_fencev:
+_Z7g_fencev:
         xor     edx, edx
         xor     eax, eax
 .L2:
