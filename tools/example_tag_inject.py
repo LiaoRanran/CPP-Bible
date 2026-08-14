@@ -46,7 +46,8 @@ def clean_theme(h: str) -> str:
     h = re.sub(r'（[^（）]*）', '', h)     # 移除全角括号组
     h = re.sub(r'\([^()]*\)', '', h)      # 移除半角括号组
     h = re.sub(r'^[①-⑳0-9a-zA-Z\s/、，。：:.（）()\-]+', '', h)  # 去前导序号/标点
-    h = re.sub(r'[`*_#]', '', h)
+    h = re.sub(r'[`*_#\\]', '', h)   # 去 Markdown 标记 **同时删除裸露反斜杠**（防 PDF xelatex Undefined control sequence）
+    h = h.replace("'", "").replace('"', '')  # 去残留引号（标题如 '\n' 会残留 '）
     h = h.strip(' ：:')
     h = re.sub(r'[（(]\s*$', '', h).strip()  # 兜底去除行尾孤立开括号
     if not h:

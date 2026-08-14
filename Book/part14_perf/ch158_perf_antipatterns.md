@@ -62,7 +62,7 @@ int main(){ std::string x="hello";sink_ref(x);std::cout<<x<<std::endl;return 0; 
 
 ## ④ std::endl vs `'\n'` [经验]
 
-> **示例 3** [难度 ★★★★☆] [主题：'\n' [经验]]
+> **示例 3** [难度 ★★★★☆] [主题：std::endl 与换行刷新 [经验]]
 ```cpp
 #include <iostream>
 int main(){

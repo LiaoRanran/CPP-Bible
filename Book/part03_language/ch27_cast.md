@@ -280,7 +280,7 @@ int main() {
 
 ### 4.2 数值转换、enum↔整数、void\*↔T\*
 
-> **示例 9** [难度 ★★★★★] [主题：数值转换、enum↔整数、void\]
+> **示例 9** [难度 ★★★★★] [主题：数值转换、enum↔整数、void*]
 ```cpp
 // prog_07_static_numeric_enum_void.cpp —— 数值/枚举/void* 转换
 // 编译: g++ -std=c++20 -Wall prog_07_static_numeric_enum_void.cpp -o prog_07
