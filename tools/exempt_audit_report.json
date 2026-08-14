@@ -3,10 +3,10 @@
   "gcc_version": "15.3.0",
   "platform": "windows",
   "flags": "-std=c++23 -O0 -fsyntax-only",
-  "baseline": "_audit_gcc15.json (full main-only, gcc-15.3.0)",
-  "total": 65,
+  "baseline": "_audit_gcc15.json (full main-only, gcc-15.3.0) + T1-1 ch126 link-fail (blocks 21/39 std::print) + T1-1 ch27/ch45 runtime UB + chapter-context 假阳性; ch45#6 log()命名冲突已修复(log_val)，豁免移出",
+  "total": 63,
   "by_status": {
-    "OK": 65
+    "OK": 63
   },
   "results": [
     {
@@ -401,32 +401,12 @@
     },
     {
       "file": "ch126_msstl.md",
-      "block": 22,
-      "reason": "MSVC",
-      "note": "",
-      "status": "OK",
-      "passed": false,
-      "error": "invalid type argument of unary '*' (have 'int')",
-      "has_main": true
-    },
-    {
-      "file": "ch126_msstl.md",
       "block": 32,
       "reason": "MSVC",
       "note": "",
       "status": "OK",
       "passed": false,
       "error": "'_MSC_VER' was not declared in this scope",
-      "has_main": true
-    },
-    {
-      "file": "ch126_msstl.md",
-      "block": 40,
-      "reason": "MSVC",
-      "note": "",
-      "status": "OK",
-      "passed": false,
-      "error": "request for member 'value_or' in 'e.std::expected<int, int>::error()', which is of non-class type 'int'",
       "has_main": true
     },
     {
@@ -650,14 +630,14 @@
       "has_main": true
     },
     {
-      "file": "ch161_logger.md",
-      "block": 36,
-      "reason": "CROSS_BLOCK",
-      "note": "符号在前序块定义",
+      "file": "ch118_modules.md",
+      "block": 42,
+      "reason": "MODULE",
+      "note": "",
       "status": "OK",
       "passed": false,
-      "error": "'now' was not declared in this scope",
-      "has_main": true
+      "error": "'module' does not name a type",
+      "has_main": false
     }
   ]
 }
