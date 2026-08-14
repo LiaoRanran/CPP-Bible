@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cpp-bible-toolchain"
+version = "1.0.0"
+description = "《现代 C++ 终极圣经》生产级工具链：门禁、构建、发布、本地开发一体化 CLI"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "阿信", email = "liaoranran@example.com"}
+]
+keywords = ["cpp", "documentation", "toolchain", "ci", "mkdocs", "pandoc"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+dependencies = [
+    # 核心仅依赖标准库；以下为建设站点/发布所需
+    "mkdocs-material>=9.5.0",
+    "mkdocs-mermaid2-plugin>=1.1.0",
+]
+
+[project.optional-dependencies]
+# PDF/EPUB 发布（CI 与本地 WSL）
+pdf = [
+    "pypandoc>=1.13.0",
+]
+# 本地开发与 lint
+dev = [
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+]
+# CI 额外（PageFind 通过 pip 安装二进制扩展）
+ci = [
+    "pagefind[extended]>=1.1.0",
+]
+# 一键全装
+all = [
+    "cpp-bible-toolchain[pdf,dev,ci]",
+]
+
+[project.scripts]
+cppbible = "tools.cppbible:main"
+
+[project.urls]
+Homepage = "https://liaoranran.github.io/CPP-Bible"
+Repository = "https://github.com/LiaoRanran/CPP-Bible"
+
+[tool.setuptools]
+# 不打包 Book/ 等大量文件，仅暴露 CLI
+py-modules = ["tools.cppbible"]
+
+[tool.cppbible]
+# 工具链配置：可被 tools/cppbible.py 读取
+# Windows 默认使用本机已验证的 MinGW GCC 15.3.0
+python = "C:/Users/ASUS/.workbuddy/binaries/python/versions/3.13.12/python.exe"
+gcc = "C:/Qt/Tools/mingw1530_64/bin/g++.exe"
+clang = "clang++"
+parallel_workers = 8
+compile_std = "c++23"
+# 核心门禁清单（按执行顺序）
+quality_gates = [
+    "tools/preflight_check.py",
+    "tools/consistency_check.py",
+    "tools/crossref_audit.py",
+    "tools/xref_check.py",
+    "tools/gen_indexes.py --check",
+    "tools/density_audit.py --check 20",
+    "tools/d5_appendix_audit.py",
+    "tools/d5_source_integrity.py --check",
+    "tools/terminology_normalize.py --check",
+    "tools/exercise_dup_guard.py",
+    "tools/verify_asm_evidence.py --root Book --examples Examples",
+    "tools/book_asm_freshness.py",
+    "tools/structure_audit.py --check",
+    "tools/sweep_fences.py --check",
+    "tools/whitespace_fix.py --check",
+    "tools/s10_verify_mark.py --check",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true

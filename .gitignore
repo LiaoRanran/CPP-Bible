@@ -40,6 +40,11 @@ __pycache__/
 *.pyc
 .venv/
 _book_asm_freshness.json
+*.egg-info/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # 编辑器 / 系统
 .DS_Store
