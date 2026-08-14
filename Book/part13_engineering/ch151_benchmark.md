@@ -1390,6 +1390,79 @@ C++11 引入 `<chrono>` 与 `std::chrono::steady_clock`，给基准提供"不受
 - **跨模块延伸（part02 工具链）**：⟶ Book/part02_toolchain/ch15_profiling.md（第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++））—— 基准测试需配合 perf/VTune 定位瓶颈
 - **跨模块延伸（part07 STL）**：⟶ Book/part07_stl/ch92_chrono.md（第92章 时间库 chrono）—— chrono 为基准提供稳定时基
 
+## D5 性能附录：基准测试的两大陷阱（GCC 15.3.0, -O2）
+
+### D5.1 基准结果
+
+> 【性能】本机实测（GCC 15.3.0，`g++ -O2 -std=c++23`），`[实验·本机实测]`；绝对数值随机器而变。
+| 指标 | 本机值 | 含义 |
+|---|---|---|
+| `steady_clock` 分辨率 | ≈100 ns | 相邻两次 `now()` 最小可分辨间隔（本机 QPC 基） |
+| 单步采样（100-iter 求和）min | 0 ns | 命中分辨率下限，完全不可信 |
+| 单步采样 max | 200 ns | 与 min 同量级跨度 |
+| 单步采样 mean / stddev | 75 ns / 43 ns | 标准差≈均值的 58% |
+
+- **时钟有分辨率下限（≈100 ns）**：任何短于分辨率的工期在单次采样里被压成 0 或 1 个 tick，测不到真实值。
+- **单次采样方差巨大（0–200 ns，stddev≈均值 58%）**：单次计时完全不可信，必须重复采样取中位数/最优。
+
+### D5.2 非显然结论
+
+1. **分辨率是硬下限，不是误差**：`steady_clock` 不会给你优于 ~100 ns 的精度；想测纳秒级工期必须放大工作量或聚合多次。
+2. **单次采样方差来自 OS 调度/缓存/噪声**：stddev 达到均值的 58%，说明单次读数可能是真值的若干倍——这是基准测试第一大坑。
+3. **必须重复 + 聚合**：取中位数或“最优（最快）”轮，而不是均值；5–10 轮取最快是常见做法。
+4. **死代码消除（DCE）是第二大坑**：轻量循环会被编译器闭式化（见 D5.5），使耗时≈0；必须用 `volatile`/`asm volatile` 屏障保活累加器。
+
+### D5.3 可复现 demo
+
+最小可复现版（演示 DCE 防护），编译 `g++ -O2 -std=c++23`。完整版（分辨率+方差统计）见库根 `_bench_d5_151_timing.cpp`。
+
+> **示例** [主题：用 asm 屏障阻止 DCE]
+```cpp
+#include <chrono>
+#include <iostream>
+
+int main(){
+    const int N = 100;
+    auto t0 = std::chrono::steady_clock::now();
+    long long s = 0;
+    for (int i=0;i<N;++i){ s += i;
+        asm volatile("" : "+r"(s) :: "memory"); }   // 没有这行，循环会被闭式化为 mov eax,4950
+    auto t1 = std::chrono::steady_clock::now();
+    std::cout << "sum=" << s << "  took=" << (t1-t0).count() << " ns" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- **基准源码见库根 `_bench_d5_151_timing.cpp`**：分辨率探测 + 3000 次重复采样的 min/mean/stddev，编译 `g++ -O2 -std=c++23`。demo 仅抽取 DCE 防护核心。
+- **防 DCE**：`asm volatile("" : "+r"(s) :: "memory")` 强制 `s` 每轮存活（见 D5.5 的汇编对比）。
+- **聚合**：报告中位数/最优而非均值；本机单次采样 stddev≈均值 58%，必须用分布而非单点。
+- **一致性门禁**：本附录 demo 块经 `chapter_compile_check.py`（GCC 15.3.0）编译通过。
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 同一个常数界循环，**没有屏障被闭式化、有屏障保留真实循环**——这就是微基准必须防 DCE 的硬件证据。完整反汇编见 `Examples/_ch151_timing.asm`。
+
+```asm
+# g_nofence() —— 编译器把 sum(0..99) 闭式化为常量 4950，循环消失
+_Z9g_nofencev:
+        mov     eax, 4950
+        ret
+
+# g_fence() —— asm 屏障强制累加器每轮存活，100 次迭代真实执行
+_Z8g_fencev:
+        xor     edx, edx
+        xor     eax, eax
+.L2:
+        add     rax, rdx
+        add     rdx, 1
+        cmp     rdx, 100
+        jne     .L2
+        ret
+```
+
+
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
 ### 工业案例（真实可查证）

@@ -907,6 +907,72 @@ int main() {
 - https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html ：Intel VTune 页，证明厂商级调优器坐标。
 - https://sourceware.org/binutils/docs/gprof/ ：gprof 文档，证明 1982 BSD 插桩剖析起源。
 
+## D5 性能附录：测量本身的成本（GCC 15.3.0, -O2）
+
+### D5.1 基准结果
+
+> 【性能】本机实测（GCC 15.3.0，`g++ -O2 -std=c++23`，N=5e7），`[实验·本机实测]`；绝对毫秒随机器而变，只看加速比。
+| 场景 | 本机耗时(5轮最快) | 相对 | 折算单次 `now()` |
+|---|---|---|---|
+| 基线（循环内不取时） | 21.94 ms | 1.00× | — |
+| 循环内每次取 `now()` | 2487.31 ms | ≈113× | ≈49 ns |
+
+- **每次 `steady_clock::now()` 约 49 ns**：2487.31 − 21.94 = 2465.37 ms 摊到 5e7 次调用。
+- **把时间戳打在热循环内部，测量开销会淹没被测工作**：当循环体快于 ~50 ns 时，你测到的主要是 `now()` 本身。
+
+### D5.2 非显然结论
+
+1. **`now()` 是真实函数调用，不是免费操作**：见 D5.5，它编译成一条 `call` 到 `steady_clock::now` 的实现（本机走 QPC）。
+2. **测“环绕”而非“测内”**：对快于分辨率/调用开销的操作，应在循环**外**取起止时刻，循环**内**只做被测工作；循环内打点会把测量噪声变成主信号。
+3. **分辨率与调用开销是两件事**：分辨率（≈100 ns）决定“能看到多细”，调用开销（≈49 ns）决定“测一次要花多少”——前者是读数下限，后者是写入成本。
+4. **[PLATFORM] 依赖**：Windows 上 `steady_clock` 通常映射 `QueryPerformanceCounter`，Linux 映射 `clock_gettime(CLOCK_MONOTONIC)`；两者的分辨率与调用开销不同，跨平台基准必须各自复测。
+
+### D5.3 可复现 demo
+
+最小可复现版（基线 vs 循环内取时），编译 `g++ -O2 -std=c++23`。完整版见库根 `_bench_d5_15_profiling.cpp`。
+
+> **示例** [主题：now() 调用开销]
+```cpp
+#include <chrono>
+#include <iostream>
+
+static long long sink = 0;
+
+int main(){
+    const int N = 50'000'000;
+    using namespace std::chrono;
+    auto t0 = steady_clock::now();
+    long long s = 0;
+    for (int i=0;i<N;++i){ s += i;
+        asm volatile("" : "+r"(s) :: "memory"); }   // 阻止 DCE，保证循环真实执行
+    auto t1 = steady_clock::now();
+    sink += s;
+    std::cout << "baseline (no clock): " << (t1-t0).count()/1e6 << " ms" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- **基准源码见库根 `_bench_d5_15_profiling.cpp`**：基线 + 循环内取时两路径同文件，编译 `g++ -O2 -std=c++23`。demo 仅抽取基线路径核心（取时路径同理，只是循环内多一次 `now()`）。
+- **防 DCE**：`asm volatile("" : "+r"(s) :: "memory")` 保活累加器，否则基线循环被闭式化、对比失效。
+- **计时**：`steady_clock` 5 轮取最快；绝对毫秒随机器/负载而变；**单次 `now()`≈49 ns** 才是应记住的结论。
+- **一致性门禁**：本附录 demo 块经 `chapter_compile_check.py`（GCC 15.3.0）编译通过。
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> `steady_clock::now()` 编译为一条真实 `call` 指令——这正解释了 D5.1 里每次 ≈49 ns 的来源。完整反汇编见 `Examples/_ch15_profiling.asm`。
+
+```asm
+# f() —— 一次 steady_clock::now() 就是一次 call
+_Z1fv:
+        sub     rsp, 40
+        call    _ZNSt6chrono3_V212steady_clock3nowEv   # 真实函数调用，非内联免费
+        add     rsp, 40
+        ret
+```
+
+
 ## 附录 A：工业性能分析与WG21背景
 
 > **示例 39** [难度 ★☆☆☆☆] [主题：附录 A：工业性能分析与WG21背景]

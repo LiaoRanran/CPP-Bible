@@ -841,6 +841,98 @@ while (auto x = pop()) consume(*x);   // 自然终止，无异常
 - [WG21 P0709R4（Zero-overhead Deterministic Exceptions）](https://wg21.link/P0709) — 异常零开销/确定性方向的委员会争论
 - [isocpp 异常与错误处理 FAQ](https://isocpp.org/wiki/faq/exceptions) — 异常使用的事实标准问答
 
+## D5 性能附录：错误处理的真实代价（GCC 15.3.0, -O2）
+
+### D5.1 基准结果
+
+> 【性能】本机实测（GCC 15.3.0，`g++ -O2 -std=c++23`），`[实验·本机实测]`；绝对毫秒随机器而变，只看加速比。
+| 路径 | 操作 (N=1e7) | 本机耗时(5轮最快) | 相对 |
+|---|---|---|---|
+| error-code 成功 | 永不触错 | 4.27 ms | 1.00× |
+| exception 成功 | 永不触错 | 4.25 ms | 1.00× |
+| error-code 失败 | 每次返回 -1 | 4.27 ms | 1.00× |
+| exception 失败 | 每次抛异常 | 59064.8 ms | **≈1.38×10⁴×** |
+
+- **非抛出路径：异常 ≈ 错误码（1.00×）**——happy path 上异常机制零开销，异常表被编译器塞进 `.cold`/unlikely 段，热路径是直线代码（见 D5.5）。
+- **抛出路径：异常 ≈ 错误码的 1.4×10⁴ 倍（≈14000×）**——每次 `throw` 触发 `__cxa_allocate_exception` + `__cxa_throw` + 栈展开，代价是微秒级而非纳秒级。
+
+### D5.2 非显然结论
+
+1. **“零开销异常”只承诺非抛出路径**：标准允许实现在未抛异常时不付运行时成本，但**抛出路径的代价没有上限保证**——本机单次 `throw`≈5.9 µs，比等效错误码返回慢四个数量级。
+2. **错误码返回在任何路径上都恒定便宜**：成功/失败都只是一次比较+分支（≈4.27 ms 几乎不变），成本**可预测、有上限**；异常成本**双峰**（快乐路径免费，错误路径爆炸）。
+3. **选型依据是错误发生的频率，不是“异常慢/快”**：若错误是热路径常态（如解析器每 token 可能失败），异常让整体慢上万倍；若错误罕见（真正“异常”语义），异常几乎免费且代码更清晰。
+4. **[ABI] 维度**：MinGW 用 SEH（`.seh_*` + `.xdata`/`.pdata`），Itanium ABI 用 `.gcc_except_table`；两者都满足“非抛出零开销”，但跨模块（DLL）边界的展开行为不同。
+
+### D5.3 可复现 demo
+
+最小可复现版（仅 error-code 成功路径对比，编译 `g++ -O2 -std=c++23`）。完整四路径版见库根 `_bench_d5_146_error.cpp`。
+
+> **示例** [主题：error-code 成功路径计时]
+```cpp
+#include <chrono>
+#include <iostream>
+#include <stdexcept>
+
+static long long sink = 0;
+int compute_ec(int x, int& out){ if(x==0) return -1; out=x*2; return 0; }
+int compute_ex(int x){ if(x==0) throw std::runtime_error("zero"); return x*2; }
+
+int main(){
+    const int N = 10'000'000;
+    auto t0 = std::chrono::steady_clock::now();
+    long long s = 0;
+    for (int i=0;i<N;++i){ int o; if(compute_ec(i+1,o)==0) s+=o;
+        asm volatile("" : "+r"(s) :: "memory"); }   // 阻止编译器把等差数列求和闭式化(DCE)
+    auto t1 = std::chrono::steady_clock::now();
+    sink += s;
+    std::cout << "error-code success: " << (t1-t0).count()/1e6 << " ms" << std::endl;
+    return 0;
+}
+```
+
+### D5.4 方法学注
+
+- **基准源码见库根 `_bench_d5_146_error.cpp`**：四路径（error-code / exception × 成功 / 失败）同文件，编译 `g++ -O2 -std=c++23`。demo 仅抽取 error-code 成功路径核心。
+- **防 DCE**：循环内 `asm volatile("" : "+r"(s) :: "memory")` 强制累加器每轮存活，否则编译器闭式化求和，测得 ≈0（同一手法见 ch151 的 D5.5）。
+- **计时**：`steady_clock` 5 轮取最快；绝对毫秒随机器/负载而变；一切结论以**加速比**表达，本机 ≈1.00× / ≈1.4×10⁴× 仅供量级参考。
+- **一致性门禁**：本附录 demo 块经 `chapter_compile_check.py`（GCC 15.3.0）编译通过。
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 非抛出路径上 `compute_ex` 与 `compute_ec` 都是直线代码，异常表被编译器塞进 `.cold`/unlikely 段，**不进热路径**——这是“零开销异常”的硬件真相。完整反汇编见 `Examples/_ch146_error.asm`。
+
+```asm
+# compute_ec(int, int&) —— 错误码：直线，无异常机械
+_Z10compute_eciRi:
+        test    ecx, ecx
+        je      .L3
+        add     ecx, ecx
+        xor     eax, eax
+        mov     DWORD PTR [rdx], ecx
+        ret
+.L3:
+        mov     eax, -1
+        ret
+
+# compute_ex(int) —— 成功路径同样是直线（无 EH 机械）
+_Z10compute_exi:
+        test    ecx, ecx
+        je      .L7
+        lea     eax, [rcx+rcx]
+        ret
+# 抛出路径在独立 .cold 段，仅 je 命中时才进入：
+_Z10compute_exi.cold:
+.L7:
+        mov     ecx, 4
+        call    __cxa_allocate_exception     # 真正的运行时代价在这里
+        mov     rdx, QWORD PTR .refptr._ZTIi[rip]
+        xor     r8d, r8d
+        mov     DWORD PTR [rax], 1
+        mov     rcx, rax
+        call    __cxa_throw
+```
+
+
 ## 附录 A：工业错误处理范式对比 [F: Industry]
 
 四个世界级 C++ 项目的错误处理策略：
