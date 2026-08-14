@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
 import subprocess
@@ -315,17 +316,42 @@ def cmd_preflight(_args: argparse.Namespace) -> int:
 
 
 def cmd_report(_args: argparse.Namespace) -> int:
-    """汇总 build/reports/ 下各门禁报告（占位，后续 T4 完善）。"""
-    reports_dir = ROOT / "build"
-    print("\n[cppbible] report summary\n")
-    files = sorted(reports_dir.glob("*_report.json")) + sorted(reports_dir.glob("*_audit.json"))
-    if not files:
-        print("  No reports found in build/")
-        return 0
-    for f in files[:20]:
-        print(f"  - {f.name}")
-    if len(files) > 20:
-        print(f"  ... and {len(files)-20} more")
+    """汇总并归集各门禁报告到 build/reports/（T4 归集器 + M1 版式守门员）。
+
+    非阻塞：仅产出可见性报告，不 fail CI。源报告 writer 不动，避免回归。
+    """
+    print("\n[cppbible] report (collect + style audit)\n")
+
+    # 1) M1 版式守门员：生成 build/markdown_style_report.json（仅报告）
+    style_report = ROOT / "build" / "markdown_style_report.json"
+    try:
+        run([PYTHON_EXE, "tools/markdown_style_guard.py", "--root", "Book",
+             "--json", str(style_report)], check=True)
+        print("  ✅ markdown_style_guard 完成（非阻塞，详见报告）")
+    except subprocess.CalledProcessError as e:
+        print(f"  ⚠️  markdown_style_guard 异常（不阻断）: {e}")
+
+    # 2) T4 归集：散落报告 -> build/reports/ + INDEX.json
+    reports_out = ROOT / "build" / "reports"
+    try:
+        run([PYTHON_EXE, "tools/collect_reports.py", "--root", str(ROOT),
+             "--out", str(reports_out)], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"  ⚠️  collect_reports 异常（不阻断）: {e}")
+
+    # 3) 摘要
+    if reports_out.exists():
+        idx = reports_out / "INDEX.json"
+        n = 0
+        if idx.exists():
+            data = json.loads(idx.read_text(encoding="utf-8"))
+            n = len(data.get("reports", {}))
+        files = sorted(reports_out.glob("*.json"))
+        print(f"\n  build/reports/ 共 {n} 个报告条目（物理文件 {len(files)}）:")
+        for f in files[:25]:
+            print(f"    - {f.name}")
+        if len(files) > 25:
+            print(f"    ... and {len(files)-25} more")
     return 0
 
 
