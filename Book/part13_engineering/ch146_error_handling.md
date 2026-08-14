@@ -932,7 +932,6 @@ _Z10compute_exi.cold:
         call    __cxa_throw
 ```
 
-
 ## 附录 A：工业错误处理范式对比 [F: Industry]
 
 四个世界级 C++ 项目的错误处理策略：
