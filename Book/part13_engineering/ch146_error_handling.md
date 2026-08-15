@@ -856,6 +856,43 @@ while (auto x = pop()) consume(*x);   // 自然终止，无异常
 - **非抛出路径：异常 ≈ 错误码（1.00×）**——happy path 上异常机制零开销，异常表被编译器塞进 `.cold`/unlikely 段，热路径是直线代码（见 D5.5）。
 - **抛出路径：异常 ≈ 错误码的 1.4×10⁴ 倍（≈14000×）**——每次 `throw` 触发 `__cxa_allocate_exception` + `__cxa_throw` + 栈展开，代价是微秒级而非纳秒级。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 332" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="错误处理四路径耗时对数轴柱状图">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：错误处理四路径耗时（对数轴, GCC -O2, N=1e7）</text>
+  <line x1="70" y1="290" x2="620" y2="290" stroke="#333" stroke-width="1"/>
+  <line x1="70" y1="290" x2="70" y2="45" stroke="#333" stroke-width="1"/>
+  <line x1="70" y1="241" x2="620" y2="241" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="192" x2="620" y2="192" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="143" x2="620" y2="143" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="94" x2="620" y2="94" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="45" x2="620" y2="45" stroke="#ececf0" stroke-width="1"/>
+  <text x="64" y="294" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <text x="64" y="245" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="64" y="196" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10²</text>
+  <text x="64" y="147" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10³</text>
+  <text x="64" y="98" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10⁴</text>
+  <text x="64" y="49" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10⁵</text>
+  <text x="18" y="167" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 18 167)">耗时 (ms, 对数)</text>
+  <line x1="70" y1="94" x2="620" y2="94" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="616" y="90" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1×10⁴× 抛出代价量级</text>
+  <rect x="110" y="259.1" width="80" height="30.9" fill="#4C72B0"/>
+  <rect x="220" y="259.2" width="80" height="30.8" fill="#4C72B0"/>
+  <rect x="425" y="259.1" width="80" height="30.9" fill="#4C72B0"/>
+  <rect x="535" y="56.2" width="80" height="233.8" fill="#DD8452"/>
+  <text x="150" y="251" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">4.27</text>
+  <text x="260" y="251" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">4.25</text>
+  <text x="465" y="251" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">4.27</text>
+  <text x="575" y="48" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">59064.8</text>
+  <text x="575" y="38" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">(≈1.4×10⁴×)</text>
+  <text x="150" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">EC 成功</text>
+  <text x="260" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">EX 成功</text>
+  <text x="465" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">EC 失败</text>
+  <text x="575" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">EX 失败</text>
+</svg>
+
+> 图注：非抛出路径上异常与错误码同价（均 ≈1.00×，happy path 零开销）；一旦进入抛出路径，单次 `throw` 触发异常分配 + 栈展开，代价从纳秒级跃迁到微秒级，比等效错误码返回慢约 **1.4×10⁴×**（四个数量级）。对数轴才能在同一图内容纳 4.27ms 与 59064.8ms 的跨度；绝对毫秒随机器/负载而变，**数量级结论为可移植信号**。数据见上方 D5.1 表。
+
 ### D5.2 非显然结论
 
 1. **“零开销异常”只承诺非抛出路径**：标准允许实现在未抛异常时不付运行时成本，但**抛出路径的代价没有上限保证**——本机单次 `throw`≈5.9 µs，比等效错误码返回慢四个数量级。

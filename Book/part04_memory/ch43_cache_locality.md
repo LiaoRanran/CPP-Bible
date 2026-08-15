@@ -2059,6 +2059,35 @@ flowchart TD
 | row_major（行主序，连续访问） | 3.9631 | 基准 1.00× |
 | col_major（列主序，stride=16KB） | 40.4009 | **10.2×** |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 332" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="行优先与列优先遍历 4096 平方 int 矩阵耗时对比柱状图">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：行优先 vs 列优先遍历 4096² int 矩阵耗时（GCC -O2, 64MB 超 L3）</text>
+  <line x1="70" y1="290" x2="620" y2="290" stroke="#333" stroke-width="1"/>
+  <line x1="70" y1="290" x2="70" y2="45" stroke="#333" stroke-width="1"/>
+  <line x1="70" y1="234" x2="620" y2="234" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="179" x2="620" y2="179" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="123" x2="620" y2="123" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="67" x2="620" y2="67" stroke="#ececf0" stroke-width="1"/>
+  <text x="64" y="294" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <text x="64" y="238" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="64" y="183" text-anchor="end" font-size="10.5" font-family="Georgia, serif">20</text>
+  <text x="64" y="127" text-anchor="end" font-size="10.5" font-family="Georgia, serif">30</text>
+  <text x="64" y="71" text-anchor="end" font-size="10.5" font-family="Georgia, serif">40</text>
+  <text x="20" y="167" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 167)">耗时 (ms)</text>
+  <line x1="70" y1="267.9" x2="620" y2="267.9" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="616" y="263" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基准</text>
+  <rect x="180" y="267.9" width="100" height="22.1" fill="#4C72B0"/>
+  <rect x="400" y="65" width="100" height="225" fill="#DD8452"/>
+  <text x="230" y="259" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">3.96 ms</text>
+  <text x="450" y="57" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">40.40 ms</text>
+  <text x="450" y="46" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">(10.2×)</text>
+  <text x="230" y="309" text-anchor="middle" font-size="12" font-family="Georgia, serif">row_major</text>
+  <text x="450" y="309" text-anchor="middle" font-size="12" font-family="Georgia, serif">col_major</text>
+</svg>
+
+> 图注：列主序因 16KB 步长跨行跳跃、缓存行中 15/16 个 `int` 被浪费、预取器无法预测，比行主序慢 **10.2×**；二者访问的 `int` 总数完全相同，瓶颈在访问顺序而非元素个数。绝对毫秒随机器/缓存层级而变，**10.2× 是可移植信号**。数据见上方 D5.1 表。
+
 ### D5.2 非显然结论
 
 1. **列主序慢 10.2×，尽管二者都访问完全相同数量的 `int`。** 根因不在元素个数，而在访问顺序：行主序按内存连续前进，每个 64B 缓存行摊到 16 个 `int`，且硬件预取器能全速顺流式预取下一行；列主序每次只取 1 个 `int` 就跳到下一行（步长 16KB），缓存行中另 15 个 `int` 被浪费，预取器无法预测这种跨行跳跃。

@@ -1349,6 +1349,45 @@ int main()
 | S5 编译期查找表 LUT（10M） | 61.496 ms | 1.00× |
 | S5 运行期 isqrt 计算（10M） | 113.093 ms | 1.84× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="编译期计算相对于运行期计算的加速比柱状图">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：编译期 vs 运行期计算加速比（越高越快, GCC -O2）</text>
+  <line x1="70" y1="290" x2="620" y2="290" stroke="#333" stroke-width="1"/>
+  <line x1="70" y1="290" x2="70" y2="45" stroke="#333" stroke-width="1"/>
+  <line x1="70" y1="250" x2="620" y2="250" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="211" x2="620" y2="211" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="171" x2="620" y2="171" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="132" x2="620" y2="132" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="92" x2="620" y2="92" stroke="#ececf0" stroke-width="1"/>
+  <line x1="70" y1="53" x2="620" y2="53" stroke="#ececf0" stroke-width="1"/>
+  <text x="64" y="294" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <text x="64" y="254" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="64" y="215" text-anchor="end" font-size="10.5" font-family="Georgia, serif">20</text>
+  <text x="64" y="175" text-anchor="end" font-size="10.5" font-family="Georgia, serif">30</text>
+  <text x="64" y="136" text-anchor="end" font-size="10.5" font-family="Georgia, serif">40</text>
+  <text x="64" y="96" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <text x="64" y="57" text-anchor="end" font-size="10.5" font-family="Georgia, serif">60</text>
+  <text x="18" y="167" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 18 167)">加速比 (×)</text>
+  <rect x="82" y="266.1" width="70" height="23.9" fill="#4C72B0"/>
+  <rect x="192" y="56.7" width="70" height="233.3" fill="#DD8452"/>
+  <rect x="302" y="286.0" width="70" height="4.0" fill="#55A868"/>
+  <rect x="412" y="286.0" width="70" height="4.0" fill="#55A868"/>
+  <rect x="522" y="282.7" width="70" height="7.3" fill="#4C72B0"/>
+  <text x="117" y="258" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">6.05×</text>
+  <text x="227" y="48" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">59.04×</text>
+  <text x="337" y="278" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#55A868">≈1×</text>
+  <text x="447" y="278" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#55A868">≈1×</text>
+  <text x="557" y="274" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.84×</text>
+  <text x="117" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S1 常量读取</text>
+  <text x="227" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S2 排序数组</text>
+  <text x="337" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S3 consteval/TMP</text>
+  <text x="447" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S4 constexpr</text>
+  <text x="557" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S5 LUT</text>
+</svg>
+
+> 图注：加速比衡量"编译期计算相对运行期计算的快多少倍"。高频读取场景收益巨大——编译期排序数组比运行期 `sort` 快 **59.04×**、编译期常量读取比运行期 `factorial` 快 **6.05×**；低频/简单场景收益小——LUT 仅 **1.84×**，而 `consteval`/`constexpr`/`TMP` 三种机制读常量性能相同（≈1×，差别只在编译时间与二进制体积）。编译期计算把成本从运行期移到编译期，**非免费午餐**。加速比随机器而变。数据见上方 D5.1 表。
+
 ### D5.2 非显然结论
 
 1. **读取编译期常量比运行期计算快 6×**——`constexpr` 值在编译期已固化进二进制（`.rodata`），运行期只是读一个立即数；运行期 factorial 要循环 5M 次。
