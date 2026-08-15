@@ -1310,59 +1310,75 @@ int main() {
 
 > 本章 0.3 的立场是"没有可复现数字的优化只是猜测"，而 0.4 进一步点破：**一个数字不可信，一串可对比的数字才可信**。下面把章末『取证产物清单』里四个最反直觉的对比画成图——重点不是绝对毫秒（随机器而变），而是**加速比**与**分派开销的结构**。
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
-  <rect x="0" y="0" width="680" height="320" fill="#fbfbfd"/>
-  <text x="340" y="26" text-anchor="middle" font-size="15" font-weight="bold" fill="#222">图 1　四类基准的加速比（×，越大越快）</text>
-  <line x1="125" y1="48" x2="125" y2="292" stroke="#888" stroke-width="1"/>
-  <line x1="125" y1="292" x2="648" y2="292" stroke="#888" stroke-width="1"/>
-  <line x1="243" y1="48" x2="243" y2="292" stroke="#e3e3e8" stroke-width="1"/>
-  <line x1="362" y1="48" x2="362" y2="292" stroke="#e3e3e8" stroke-width="1"/>
-  <line x1="480" y1="48" x2="480" y2="292" stroke="#e3e3e8" stroke-width="1"/>
-  <line x1="598" y1="48" x2="598" y2="292" stroke="#e3e3e8" stroke-width="1"/>
-  <text x="125" y="306" text-anchor="middle" fill="#666" font-size="11">0</text>
-  <text x="243" y="306" text-anchor="middle" fill="#666" font-size="11">7×</text>
-  <text x="362" y="306" text-anchor="middle" fill="#666" font-size="11">14×</text>
-  <text x="480" y="306" text-anchor="middle" fill="#666" font-size="11">21×</text>
-  <text x="598" y="306" text-anchor="middle" fill="#666" font-size="11">28×</text>
-  <text x="118" y="83" text-anchor="end" fill="#333">行优先→列优先</text>
-  <rect x="125" y="62" width="94" height="30" fill="#4C72B0"/>
-  <text x="227" y="83" fill="#222" font-weight="bold">5.1×</text>
-  <text x="118" y="145" text-anchor="end" fill="#333">vector→list</text>
-  <rect x="125" y="124" width="464" height="30" fill="#4C72B0"/>
-  <text x="597" y="145" fill="#222" font-weight="bold">25.1×</text>
-  <text x="118" y="207" text-anchor="end" fill="#333">scalar→reduce(SIMD)</text>
-  <rect x="125" y="186" width="270" height="30" fill="#4C72B0"/>
-  <text x="403" y="207" fill="#222" font-weight="bold">14.6×</text>
-  <text x="118" y="269" text-anchor="end" fill="#333">-O2→-O3native</text>
-  <rect x="125" y="248" width="20" height="30" fill="#DD8452"/>
-  <text x="151" y="269" fill="#222" font-weight="bold">1.08×</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 332" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="0" y="0" width="680" height="332" fill="#ffffff"/>
+  <text x="340" y="24" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1a1a1a">图 1　四类基准的加速比（×，越大越快）</text>
+  <line x1="110" y1="52" x2="110" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="110" y1="300" x2="648" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="244.5" y1="52" x2="244.5" y2="300" stroke="#ececf0" stroke-width="1"/>
+  <line x1="379.0" y1="52" x2="379.0" y2="300" stroke="#ececf0" stroke-width="1"/>
+  <line x1="513.5" y1="52" x2="513.5" y2="300" stroke="#ececf0" stroke-width="1"/>
+  <line x1="648.0" y1="52" x2="648.0" y2="300" stroke="#ececf0" stroke-width="1"/>
+  <line x1="129.2" y1="52" x2="129.2" y2="300" stroke="#c0504d" stroke-width="0.8" stroke-dasharray="3 3"/>
+  <text x="129.2" y="48" text-anchor="middle" fill="#c0504d" font-size="9.5">1×</text>
+  <line x1="110" y1="300" x2="110" y2="305" stroke="#555" stroke-width="1"/>
+  <line x1="244.5" y1="300" x2="244.5" y2="305" stroke="#555" stroke-width="1"/>
+  <line x1="379.0" y1="300" x2="379.0" y2="305" stroke="#555" stroke-width="1"/>
+  <line x1="513.5" y1="300" x2="513.5" y2="305" stroke="#555" stroke-width="1"/>
+  <line x1="648.0" y1="300" x2="648.0" y2="305" stroke="#555" stroke-width="1"/>
+  <text x="110" y="318" text-anchor="middle" fill="#555" font-size="10.5">0</text>
+  <text x="244.5" y="318" text-anchor="middle" fill="#555" font-size="10.5">7×</text>
+  <text x="379.0" y="318" text-anchor="middle" fill="#555" font-size="10.5">14×</text>
+  <text x="513.5" y="318" text-anchor="middle" fill="#555" font-size="10.5">21×</text>
+  <text x="648.0" y="318" text-anchor="middle" fill="#555" font-size="10.5">28×</text>
+  <text x="379" y="330" text-anchor="middle" fill="#777" font-size="11">加速比（慢 ÷ 快，×）</text>
+  <text x="104" y="87" text-anchor="end" fill="#333" font-size="12">行优先→列优先</text>
+  <rect x="110" y="71" width="98.0" height="24" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="215" y="87" fill="#1a1a1a" font-weight="bold" font-size="12">5.1×</text>
+  <text x="104" y="145" text-anchor="end" fill="#333" font-size="12">vector→list</text>
+  <rect x="110" y="129" width="482.3" height="24" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="599" y="145" fill="#1a1a1a" font-weight="bold" font-size="12">25.1×</text>
+  <text x="104" y="203" text-anchor="end" fill="#333" font-size="12">scalar→reduce(SIMD)</text>
+  <rect x="110" y="187" width="280.5" height="24" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="397" y="203" fill="#1a1a1a" font-weight="bold" font-size="12">14.6×</text>
+  <text x="104" y="261" text-anchor="end" fill="#333" font-size="12">-O2→-O3native</text>
+  <rect x="110" y="245" width="20.8" height="24" fill="#DD8452" stroke="#b5651d" stroke-width="0.75"/>
+  <text x="138" y="261" fill="#1a1a1a" font-weight="bold" font-size="12">1.08×</text>
 </svg>
 
 > **图注 1**：加速比 = 慢方案耗时 ÷ 快方案耗时（数据取自章末『取证产物清单』，本机 GCC 实测，绝对毫秒随机器而变）。三件事值得记住：**①** vector 遍历比 list 快约 25×，根因是 list 节点散落导致缓存 miss 爆炸，而非"vector 更快"这种空话；**②** 标量求和被 `std::reduce` 的 SIMD 并行砍到约 1/14.6，印证第⑫节向量化；**③** 把 `-O3 -march=native` 当"必定更快"是误区——本机仅快 1.08×，且 AVX-512 还会触发降频。只有行优先/列优先（5.1×）与缓存局部性直接相关。颜色仅作区分，数值标签已写明。
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 340" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
-  <rect x="0" y="0" width="680" height="340" fill="#fbfbfd"/>
-  <text x="340" y="24" text-anchor="middle" font-size="15" font-weight="bold" fill="#222">图 2　虚函数分派开销拆解（ms，越低越好）</text>
-  <line x1="60" y1="280" x2="620" y2="280" stroke="#888" stroke-width="1"/>
-  <line x1="60" y1="280" x2="60" y2="36" stroke="#888" stroke-width="1"/>
-  <line x1="60" y1="184" x2="620" y2="184" stroke="#e3e3e8" stroke-width="1"/>
-  <line x1="60" y1="88" x2="620" y2="88" stroke="#e3e3e8" stroke-width="1"/>
-  <text x="54" y="284" text-anchor="end" fill="#666" font-size="11">0</text>
-  <text x="54" y="188" text-anchor="end" fill="#666" font-size="11">80</text>
-  <text x="54" y="92" text-anchor="end" fill="#666" font-size="11">160</text>
-  <text x="54" y="46" text-anchor="end" fill="#666" font-size="11">240</text>
-  <rect x="95" y="222.9" width="80" height="57.1" fill="#4C72B0"/>
-  <text x="135" y="216" text-anchor="middle" fill="#222" font-weight="bold">57.1</text>
-  <text x="135" y="298" text-anchor="middle" fill="#333">inline</text>
-  <rect x="225" y="191.2" width="80" height="88.8" fill="#4C72B0"/>
-  <text x="265" y="184" text-anchor="middle" fill="#222" font-weight="bold">88.8</text>
-  <text x="265" y="298" text-anchor="middle" fill="#333">branch</text>
-  <rect x="355" y="232.0" width="80" height="48.0" fill="#4C72B0"/>
-  <text x="395" y="225" text-anchor="middle" fill="#222" font-weight="bold">48.0</text>
-  <text x="395" y="298" text-anchor="middle" fill="#333">virtual(devirt)</text>
-  <rect x="485" y="51.2" width="80" height="228.8" fill="#DD8452"/>
-  <text x="525" y="44" text-anchor="middle" fill="#222" font-weight="bold">228.8</text>
-  <text x="525" y="298" text-anchor="middle" fill="#333">virtual(real)</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 348" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="0" y="0" width="680" height="348" fill="#ffffff"/>
+  <text x="340" y="24" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1a1a1a">图 2　虚函数分派开销拆解（ms，越低越好）</text>
+  <line x1="72" y1="48" x2="72" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="300" x2="620" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="216.7" x2="620" y2="216.7" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="133.3" x2="620" y2="133.3" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="50.0" x2="620" y2="50.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="232.7" x2="620" y2="232.7" stroke="#c0504d" stroke-width="0.8" stroke-dasharray="4 3"/>
+  <text x="616" y="229" text-anchor="end" fill="#c0504d" font-size="9.5">其余均值 ≈64.6 ms</text>
+  <line x1="72" y1="300" x2="67" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="216.7" x2="67" y2="216.7" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="133.3" x2="67" y2="133.3" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="50.0" x2="67" y2="50.0" stroke="#555" stroke-width="1"/>
+  <text x="67" y="303.5" text-anchor="end" fill="#555" font-size="10.5">0</text>
+  <text x="67" y="220.2" text-anchor="end" fill="#555" font-size="10.5">80</text>
+  <text x="67" y="136.8" text-anchor="end" fill="#555" font-size="10.5">160</text>
+  <text x="67" y="53.5" text-anchor="end" fill="#555" font-size="10.5">240</text>
+  <text x="34" y="174" text-anchor="middle" transform="rotate(-90 34 174)" fill="#777" font-size="11">耗时（ms）</text>
+  <rect x="112" y="240.5" width="76" height="59.5" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="150" y="233.5" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">57.1</text>
+  <text x="150" y="320" text-anchor="middle" fill="#333" font-size="11.5">inline</text>
+  <rect x="232" y="207.5" width="76" height="92.5" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="270" y="200.5" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">88.8</text>
+  <text x="270" y="320" text-anchor="middle" fill="#333" font-size="11.5">branch</text>
+  <rect x="352" y="250.0" width="76" height="50.0" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="390" y="243.0" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">48.0</text>
+  <text x="390" y="320" text-anchor="middle" fill="#333" font-size="11.5">virtual(devirt)</text>
+  <rect x="472" y="61.7" width="76" height="238.3" fill="#DD8452" stroke="#b5651d" stroke-width="0.75"/>
+  <text x="510" y="54.7" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">228.8</text>
+  <text x="510" y="320" text-anchor="middle" fill="#333" font-size="11.5">virtual(real)</text>
 </svg>
 
 > **图注 2**：同一份"可见动态类型"代码，因编译器能否在编译期确定目标，分派代价天差地别：`virtual(devirt)`（去虚化后，约 48ms）与 `inline`/`branch` 同量级，而 `virtual(real)`（类型不可见、保留 `call [vtable]`，约 229ms）是其 **4–5×**。"虚函数一定慢"只在"类型对编译器不可见"时成立——用 `-fno-devirtualize` 反汇编才能确认你的虚调用是否真留下了。
