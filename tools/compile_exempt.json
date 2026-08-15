@@ -301,9 +301,9 @@
     },
     {
       "file": "ch146_error_handling.md",
-      "block": 57,
+      "block": 58,
       "reason": "CROSS_BLOCK",
-      "note": "符号在前序块定义"
+      "note": "符号在前序块定义(divide_error_code 在 #blk57 定义, 本块调用)"
     },
     {
       "file": "ch150_testing.md",
