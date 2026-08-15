@@ -1330,6 +1330,43 @@ N_S1S2=2'000'000，N_S3=1'000'000，N_S4=2'000'000（50 轮重复）。所有场
 
 > S4 数组零初始化 vs 默认初始化 **44.849×**；字面量初始化全部被编译期折叠为 0.000 ms。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：初始化形式相对耗时倍数（基线=聚合 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：初始化形式相对耗时倍数（基线=聚合 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (聚合)</text>
+  <rect x="98.7" y="300.0" width="56.0" height="0.0" fill="#9A9A9A"/>
+  <text x="126.7" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="126.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">聚合</text>
+  <rect x="192.0" y="292.1" width="56.0" height="7.9" fill="#DD8452"/>
+  <text x="220.0" y="286.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.157×</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">构造函数</text>
+  <rect x="285.3" y="254.4" width="56.0" height="45.6" fill="#55A868"/>
+  <text x="313.3" y="248.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">2.331×</text>
+  <text x="313.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">位置初始化</text>
+  <rect x="378.7" y="257.1" width="56.0" height="42.9" fill="#8172B3"/>
+  <text x="406.7" y="251.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">2.218×</text>
+  <text x="406.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">指定成员</text>
+  <rect x="472.0" y="74.1" width="56.0" height="225.9" fill="#C44E52"/>
+  <text x="500.0" y="68.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">66.320×</text>
+  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">数组零初始化</text>
+  <rect x="565.3" y="278.9" width="56.0" height="21.1" fill="#64B5CD"/>
+  <text x="593.3" y="272.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">1.479×</text>
+  <text x="593.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">数组默认初始化</text>
+</svg>
+
+> 图注：`T arr[N]{}` 值初始化（清零）比聚合初始化慢 **66.32×**（额外 100.8ms 的 memset）；带括号位置初始化比聚合慢 2.33×（多一次临时构造）。初始化形式直接影响热路径成本。
+
 ### D5.2 非显然结论
 
 1. **聚合初始化与构造函数初始化在 `-O2` 下编译成完全相同的机器码**（delta=-0.239 ms，落在测量噪声内）。选哪种纯粹是可读性问题，性能零差异——不要为了"性能"而偏好某一种。

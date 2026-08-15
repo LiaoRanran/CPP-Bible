@@ -1217,6 +1217,35 @@ flowchart TD
 | 条件累加 — 无分支写法 | 50.305 | 1.30× 快（仅标量 cmov，未向量化） |
 
 > 【性能】以下 ms 为本机 GCC 15.3.0 实测量级（非通用结论），标 `[实验·本机实测][UNVERIFIED]`；毫秒随机器而变，只看纵向加速比，勿横向跨表比毫秒。
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：向量化相对标量实现的加速比">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：向量化相对标量实现的加速比</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">加速比 (×, 标量=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="118.0" y="83.0" width="64.0" height="217.0" fill="#C44E52"/>
+  <text x="150.0" y="77.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">7.5×</text>
+  <text x="150.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">求和 自动</text>
+  <rect x="258.0" y="83.0" width="64.0" height="217.0" fill="#C44E52"/>
+  <text x="290.0" y="77.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">7.5×</text>
+  <text x="290.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">求和 AVX2</text>
+  <rect x="398.0" y="98.4" width="64.0" height="201.6" fill="#55A868"/>
+  <text x="430.0" y="92.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">6.5×</text>
+  <text x="430.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">条件累加 自动</text>
+  <rect x="538.0" y="289.7" width="64.0" height="10.3" fill="#8172B3"/>
+  <text x="570.0" y="283.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.10×</text>
+  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">saxpy AVX2</text>
+</svg>
+
+> 图注：求和循环自动向量化后快 **7.5×**（32 字节向量一次吃 8 个 `float`），无分支条件累加快 6.5×；但 `saxpy` 受内存带宽墙限制，AVX2 仅快 1.10×——向量化收益取决于「计算密度 vs 搬运」。
+
 ### D5.2 非显然结论
 
 1. **"GCC `-O2` 不向量化"的正文口径（基于 GCC 13）在 GCC 15 上需要修正为："`-O2` 已默认打开自动向量化，但用 very-cheap 代价模型，只接受不需要循环版本化/剥离的循环。"** 证据链（`-fopt-info-vec`）：裸 `-O2` 下本文件三个热循环全部落选（saxpy 报 "couldn't vectorize loop"——指针可能别名，需要版本化，very-cheap 不允许）；加 `-fvect-cost-model=cheap` 或换 `-O3` 后同样的 SSE2 目标全部向量化成功；而 ch82 基准中迭代次数编译期已知的定长 16 循环在裸 `-O2` 下就报 "loop vectorized using 16 byte vectors"。结论：GCC 15 的 `-O2` 向量化器是"开着的但很挑剔"，不是"关着的"。

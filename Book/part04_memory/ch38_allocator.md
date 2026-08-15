@@ -2214,6 +2214,40 @@ flowchart TD
 
 > 上表为本次本机复测的中位耗时；绝对毫秒随机器负载而变，加速比（3.51×、10.16×、6.90× 等）才是可移植信号。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：std::pmr 相对默认分配器加速比">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：std::pmr 相对默认分配器加速比</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">加速比 (×, 默认=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="104.0" y="232.4" width="64.0" height="67.6" fill="#4C72B0"/>
+  <text x="136.0" y="226.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">3.51×</text>
+  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">vector pmr</text>
+  <rect x="216.0" y="175.1" width="64.0" height="124.9" fill="#C44E52"/>
+  <text x="248.0" y="169.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">10.16×</text>
+  <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">list pmr</text>
+  <rect x="328.0" y="260.6" width="64.0" height="39.4" fill="#55A868"/>
+  <text x="360.0" y="254.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">2.08×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">list pool</text>
+  <rect x="440.0" y="268.9" width="64.0" height="31.1" fill="#8172B3"/>
+  <text x="472.0" y="262.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.78×</text>
+  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">1M小对象 pool</text>
+  <rect x="552.0" y="196.0" width="64.0" height="104.0" fill="#937860"/>
+  <text x="584.0" y="190.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">6.90×</text>
+  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">1M小对象 mono</text>
+</svg>
+
+> 图注：`std::pmr` + `monotonic_buffer_resource` 让 `list` 插入从 304.7ms 降到 29.98ms（**快 10.16×**）；100 万小对象用 `monotonic_buffer_resource` 比裸 `new`/`delete` 快 6.90×。一次性/单线程分配场景是 PMR 的主场。
+
 ### D5.2 非显然结论
 
 1. **节点容器才是 PMR 的甜点区：`list` 提速 10.16×，而 `vector` 只有 3.51×。** 根因不在容器本身，而在**分配频率**。`vector` 靠几何扩容，20 万个元素只触发 O(log n) 次分配，单次分配的固定成本被上万个元素摊薄；`list` 每 `push_back` 一个节点就要一次分配，是 O(n) 次。PMR 削掉的正是"每次分配的固定成本"，所以分配越频繁收益越大。D5.3 的 demo 把这一点量化到了分配次数层面：1000 节点的 `pmr::list` 直挂上游资源时被请求 **1000** 次，套一层 `unsynchronized_pool_resource` 后只剩 **7** 次。

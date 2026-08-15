@@ -1310,6 +1310,37 @@ flowchart TD
 - **A 顺序/随机 ≈ 27×（多次运行 24–28×）**：128 MB 工作集 > 64 MB L3，随机跳访几乎每次都未命中缓存，硬件预取器对随机模式完全失效；顺序访问则被预取器提前搬入缓存行。
 - **B 伪共享/对齐 ≈ 4.4×（多次运行 4.4–4.6×）**：两个 `atomic<long>` 落在同一缓存行时，两核为独占该缓存行来回失效（MESI 弹动），即使 `relaxed` 无内存屏障也贵；`alignas(64)` 把它们拆到不同缓存行后该成本消失。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：缓存/伪共享相对顺序遍历的倍数">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：缓存/伪共享相对顺序遍历的倍数</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 顺序=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (顺序)</text>
+  <rect x="118.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="150.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="150.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">顺序遍历</text>
+  <rect x="258.0" y="120.7" width="64.0" height="179.3" fill="#C44E52"/>
+  <text x="290.0" y="114.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">27.9×</text>
+  <text x="290.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">随机遍历</text>
+  <rect x="398.0" y="217.8" width="64.0" height="82.2" fill="#55A868"/>
+  <text x="430.0" y="211.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">4.6×</text>
+  <text x="430.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">伪共享</text>
+  <rect x="538.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="570.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="570.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">无伪共享</text>
+</svg>
+
+> 图注：随机访问让 128MB 数组遍历从 4.4ms 涨到 122ms（**慢 27.9×**）——缓存行完全失效；双线程 `atomic` 伪共享（同缓存行）2706ms vs 分缓存行 588ms（**4.6×**）。数据布局与 false sharing 是隐藏的性能杀手。
+
 ### D5.2 非显然结论
 
 1. **缓存局部性是「等内存」还是「算数据」的分水岭**：同一 O(n) 求和，顺序 vs 随机差近 30×——这比绝大多数「换个更好算法」带来的收益大一个数量级。优化数据布局常是性价比最高的手段。

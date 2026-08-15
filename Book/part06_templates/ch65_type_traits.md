@@ -1195,6 +1195,38 @@ N=1'000'000（拷贝元素），VN=200'000（vector push_back）。`sizeof Trivi
 | S5b 手写 memcpy | 3.559 ms | 0.93× |
 | S5c trait 链（conjunction）拷贝 | 3.785 ms | 0.99× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：类型萃取/分支策略相对开销（基线=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：类型萃取/分支策略相对开销（基线=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="141.3" y="213.2" width="64.0" height="86.8" fill="#4C72B0"/>
+  <text x="173.3" y="207.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.75×</text>
+  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">不可预测分支</text>
+  <rect x="328.0" y="150.2" width="64.0" height="149.8" fill="#C44E52"/>
+  <text x="360.0" y="144.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">3.02×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">64B padded 拷贝</text>
+  <rect x="514.7" y="196.8" width="64.0" height="103.2" fill="#55A868"/>
+  <text x="546.7" y="190.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">2.08×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">ThrowingMove</text>
+</svg>
+
+> 图注：分支不可预测时 runtime-if 比 `if constexpr` 编译期选路慢 **1.75×**（流水线冲刷）；`conditional_t` 拷贝 64B padded 比 8B compact 慢 3.02×；`ThrowingMove` 的 `vector` 扩容慢 2.08×（必须回退拷贝）。类型萃取的价值在「消除运行期分支与冗余存储」。
+
 ### D5.2 非显然结论
 
 1. **`is_trivially_copyable` 分派是零成本的**：trait 路径（4.244）与手写 memcpy（4.106）几乎相同（0.97×）；non-trivial 走逐元素循环（5.049）慢 1.19×。根因是 trivial 类型下 trait 路径在**编译期**就选了 memcpy，运行期无任何分支——类型萃取把决策前移到编译期。

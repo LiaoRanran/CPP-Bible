@@ -1288,6 +1288,41 @@ flowchart TD
 | 40 万次 advance — `list` 迭代器走标签分发（input 路径逐步 `++`） | 13.215 | 1.10×（噪声级） |
 | 40 万次 advance — `list` 迭代器手写 `++` 循环 | 11.977 | **1.00×** |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：advance 分发方式相对耗时（基线=if constexpr 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：advance 分发方式相对耗时（基线=if constexpr 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="118.0" y="159.9" width="64.0" height="140.1" fill="#4C72B0"/>
+  <text x="150.0" y="153.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.13×</text>
+  <text x="150.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">标签分发</text>
+  <rect x="258.0" y="176.0" width="64.0" height="124.0" fill="#9A9A9A"/>
+  <text x="290.0" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">if constexpr</text>
+  <rect x="398.0" y="171.0" width="64.0" height="129.0" fill="#55A868"/>
+  <text x="430.0" y="165.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">1.04×</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">runtime-if</text>
+  <rect x="538.0" y="80.5" width="64.0" height="219.5" fill="#C44E52"/>
+  <text x="570.0" y="74.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1.77×</text>
+  <text x="570.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">函数指针表</text>
+</svg>
+
+> 图注：函数指针表分发（每次查表间接调用）比 `if constexpr` 编译期选路慢 **1.77×**；标签分发与可预测 runtime-if 都在噪声内（≈1.0×）。零开销抽象的敌人是「间接调用 + 去虚拟化失败」。
+
 ### D5.2 非显然结论
 
 1. **标签分发与 `if constexpr` 生成等价代码，首轮 13% 的差距是测量噪声。** 首轮实测 63.47 vs 56.27ms，但同一可执行文件复跑一轮变为 68.51 vs 69.02ms——两者互有胜负、差异完全落入轮间波动。根因：标签实参（如 `random_access_iterator_tag{}`）是空类，重载决议在编译期完成后，-O2 直接把选中的实现内联，空标签对象连一个字节都不会传递。ch69 说两者"殊途同归"，这里给出实测背书。

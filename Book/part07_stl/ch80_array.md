@@ -1405,6 +1405,38 @@ flowchart TD
 | 200 万次 新建+用完即弃 — 栈上 `std::array<uint32_t,64>` | 91.469 | **1.00×** |
 | 200 万次 新建+用完即弃 — 堆上 `std::vector<uint32_t>(64)` | 319.604 | 3.49× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：std::array vs vector 相对耗时（基线=vector 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：std::array vs vector 相对耗时（基线=vector 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (vector)</text>
+  <rect x="104.0" y="286.8" width="64.0" height="13.2" fill="#4C72B0"/>
+  <text x="136.0" y="280.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.13×</text>
+  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">seq sum array</text>
+  <rect x="216.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="248.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="248.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">vector</text>
+  <rect x="328.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="360.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">array .at</text>
+  <rect x="440.0" y="275.1" width="64.0" height="24.9" fill="#8172B3"/>
+  <text x="472.0" y="269.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.26×</text>
+  <text x="472.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">按值传 64B</text>
+  <rect x="552.0" y="165.4" width="64.0" height="134.6" fill="#C44E52"/>
+  <text x="584.0" y="159.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">3.49×</text>
+  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">堆 vector 即用即弃</text>
+</svg>
+
+> 图注：200 万次「新建即用即弃」，`std::vector<uint32_t>(64)` 堆分配比栈上 `std::array<uint32_t,64>` 慢 **3.49×**；按值传 64B `array` 比 `const&` 慢 1.26×（拷贝成本）。固定大小优先栈上 `array`。
+
 ### D5.2 非显然结论
 
 1. **C 数组、`std::array`、`std::vector` 顺序求和同速（17.89 / 20.11 / 17.79ms）。** `std::array` 一轮 13% 的偏差来自轮间波动（其 5 轮最快为 17.81ms，与另两者最快值重合）。根因：三者的热循环在 -O2 下编译成相同的向量化求和——`std::array` 的 `operator[]` 内联后就是 C 数组下标，`vector` 遍历时数据同样连续。零开销抽象在**访问已存在的数据**这一维度上三者无差别；差别在下一条和第 4 条。

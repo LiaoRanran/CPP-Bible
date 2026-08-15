@@ -1326,6 +1326,44 @@ int main() {
 | S3/S4 T16 LockFree / Mutex | 376.072 / 76.187 ms | 0.203× |
 | S5 Weak CAS / Strong CAS | 78.605 / 79.628 ms | 0.987× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：Lock-Free vs Mutex 相对耗时（基线=Mutex 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：Lock-Free vs Mutex 相对耗时（基线=Mutex 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (Mutex)</text>
+  <rect x="104.0" y="164.5" width="64.0" height="135.5" fill="#4C72B0"/>
+  <text x="136.0" y="158.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.093×</text>
+  <text x="136.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">T1</text>
+  <rect x="216.0" y="276.2" width="64.0" height="23.8" fill="#DD8452"/>
+  <text x="248.0" y="270.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.192×</text>
+  <text x="248.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">T2</text>
+  <rect x="328.0" y="265.2" width="64.0" height="34.8" fill="#55A868"/>
+  <text x="360.0" y="259.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.281×</text>
+  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">T4</text>
+  <rect x="440.0" y="271.5" width="64.0" height="28.5" fill="#8172B3"/>
+  <text x="472.0" y="265.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">0.230×</text>
+  <text x="472.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">T8</text>
+  <rect x="552.0" y="274.8" width="64.0" height="25.2" fill="#C44E52"/>
+  <text x="584.0" y="268.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.203×</text>
+  <text x="584.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">T16</text>
+</svg>
+
+> 图注：低争用（T1）时 Lock-Free 比 Mutex 慢 1.09×（原子操作更重）；但随线程数上升，Mutex 串行化急剧恶化，T16 时 Lock-Free 仅 0.203×（**快约 5×**）。并发原语选型必须结合实际争用度。
+
 ### D5.2 非显然结论
 
 1. **单线程下 Tagged64 与裸 CAS 性能几乎相同（1.032×）**——tag 只是把指针与计数打包进同一 64 位字，一次 `cmpxchg` 完成，无额外开销。Tagged128 单线程反而更快（0.667×）但**非 lock-free**（见下）。

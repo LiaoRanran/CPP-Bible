@@ -2446,6 +2446,34 @@ flowchart TD
 
 > 上表为本次本机复测的中位耗时；绝对毫秒随机器负载而变，加速比（20.86×、1.34× 等）才是可移植信号。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：减少堆分配次数相对逐对象 new 的加速比">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：减少堆分配次数相对逐对象 new 的加速比</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">加速比 (×, 逐对象=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="141.3" y="136.4" width="64.0" height="163.6" fill="#4C72B0"/>
+  <text x="173.3" y="130.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">20.86×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">批量 new[]</text>
+  <rect x="328.0" y="122.6" width="64.0" height="177.4" fill="#C44E52"/>
+  <text x="360.0" y="116.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">26.98×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">placement new</text>
+  <rect x="514.7" y="120.6" width="64.0" height="179.4" fill="#C44E52"/>
+  <text x="546.7" y="114.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">27.99×</text>
+  <text x="546.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">栈对象</text>
+</svg>
+
+> 图注：减少分配次数是王道：批量 `new[]`（3.1万次分配）比逐对象 `new`（200万次）快 **20.86×**，placement new 复用缓冲快 26.98×，纯栈对象快 27.99×。堆分配的固定成本远高于单次搬运。
+
 ### D5.2 非显然结论
 
 1. **批量 `new[]` 比逐对象 `new` 快 20.86×，而构造的对象数完全相同。** 根因：差距全部来自分配器簿记，而非对象构造。每次 `operator new` 都要走一遍分箱查找 / 空闲链摘取，并在返回块前写入尺寸头；`new Node[64]` 把 2,000,000 次这样的簿记压缩成 31,250 次，单次簿记成本被 64 个对象摊薄。这给正文"`new[]` 是一次分配 + N 次构造"提供了数字：分配那一次才是大头。

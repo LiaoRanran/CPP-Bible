@@ -1839,6 +1839,33 @@ flowchart TD
 | s5 共享 stop_token（8 线程） | 3.3572 ms | 0.962×（≈私有 atomic） |
 | s5 每线程私有 atomic（8 线程） | 3.4898 ms | 1.00× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：request_stop 相对单次 atomic store 开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：request_stop 相对单次 atomic store 开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, store=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (atomic store)</text>
+  <rect x="188.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="220.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">atomic store ×100k</text>
+  <rect x="468.0" y="129.4" width="64.0" height="170.6" fill="#C44E52"/>
+  <text x="500.0" y="123.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">115.69×</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">request_stop ×100k</text>
+</svg>
+
+> 图注：`request_stop` ×100k 耗时 9.78ms，而单次 `atomic` store ×100k 仅 0.0845ms（**重 115.69×**）——取消是「广播 + 同步」操作，不是免费标志；`jthread` 协作取消比裸 `thread`+原子标志还快 12%（封装零开销）。
+
 ### D5.2 非显然结论
 
 1. **`jthread` 的协作取消比"裸 `thread` + atomic 标志"略快（0.893×）**——`jthread` 通过引用把 `stop_token` 传入，取消检查是单次 atomic load；裸方案额外有 `join` 等待 + 手动 flag 轮询，反而略慢。协程化取消既安全又高效。

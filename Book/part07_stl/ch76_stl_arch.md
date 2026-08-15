@@ -1740,6 +1740,45 @@ int main() {
 >
 > 排序对照（N=500K）：`std::sort(vector)` 中位 51.5019 ms，`list::sort` 中位 274.519 ms——同为 O(N log N) 但 list::sort 慢 5.33×。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：容器遍历 2M 元素耗时相对倍数（内存布局连续性决定）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：容器遍历 2M 元素耗时相对倍数（内存布局连续性决定）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (vector)</text>
+  <rect x="98.7" y="300.0" width="56.0" height="0.0" fill="#9A9A9A"/>
+  <text x="126.7" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="126.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">vector</text>
+  <rect x="192.0" y="277.5" width="56.0" height="22.5" fill="#DD8452"/>
+  <text x="220.0" y="271.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.87×</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">deque</text>
+  <rect x="285.3" y="199.3" width="56.0" height="100.7" fill="#55A868"/>
+  <text x="313.3" y="193.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">16.54×</text>
+  <text x="313.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">list</text>
+  <rect x="378.7" y="194.0" width="56.0" height="106.0" fill="#8172B3"/>
+  <text x="406.7" y="188.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">19.15×</text>
+  <text x="406.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 406.7 314.0)">fwd_list</text>
+  <rect x="472.0" y="135.3" width="56.0" height="164.7" fill="#937860"/>
+  <text x="500.0" y="129.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">98.37×</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">unordered_set</text>
+  <rect x="565.3" y="104.5" width="56.0" height="195.5" fill="#C44E52"/>
+  <text x="593.3" y="98.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">231.81×</text>
+  <text x="593.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">set</text>
+</svg>
+
+> 图注：容器遍历耗时随「内存布局连续性」断崖式上升：连续 `vector` 最快，分段 `deque` 慢 1.87×，链式 `list`/`forward_list` 慢 16–19×，哈希桶 `unordered_set` 慢 98×，**红黑树 `set` 慢 231.81×**——迭代器推进每次都是一次间接跳转 + 缓存未命中。绝对毫秒随机器而变，倍数才是可移植信号。数据见上方 D5.1 表。
+
 ### D5.2 非显然结论
 
 1. **vector 遍历比 list 快 16.54×，尽管算法复杂度同为 O(n)。** 根因：差距完全来自缓存局部性。vector 的连续内存让 CPU 预取器在检测到顺序访问模式后提前将后续缓存行载入 L1；list 的每个节点由 `operator new` 独立分配，节点间地址不连续，每次 `++it` 都是一次指针解引用，命中 L1 的概率极低，沦为 L2/L3 甚至主存延迟。这给正文"连续迭代器利于缓存"提供了毫秒级数字依据。

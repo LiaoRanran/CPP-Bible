@@ -1882,6 +1882,38 @@ int main() {
 | `std::copy` | 4.55 | 1.06× |
 | `memcpy` | 4.31 | 1.00×（基准） |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：部分排序算法相对 sort 加速比">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：部分排序算法相对 sort 加速比</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">加速比 (×, sort=1.0)</text>
+  <line x1="80" y1="297.5" x2="640" y2="297.5" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="293.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.0× 基准 (sort)</text>
+  <rect x="141.3" y="256.5" width="64.0" height="43.5" fill="#4C72B0"/>
+  <text x="173.3" y="250.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">17.54×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">nth_element</text>
+  <rect x="328.0" y="153.9" width="64.0" height="146.1" fill="#C44E52"/>
+  <text x="360.0" y="147.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">58.91×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">partial_sort</text>
+  <rect x="514.7" y="297.5" width="64.0" height="2.5" fill="#9A9A9A"/>
+  <text x="546.7" y="291.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.0×</text>
+  <text x="546.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">sort</text>
+</svg>
+
+> 图注：不必全排序时，`nth_element`（O(n) 取第 k 小）比 `sort` 快 **17.54×**，`partial_sort`（取前 k）快 **58.91×**；排序是「做过头」的典型。
+
 ### D5.2 非显然结论
 
 **结论 1：`partial_sort`（O(n log k)）在小 K 时反超 `nth_element`（O(n)）——渐进复杂度更低者未必更快。**

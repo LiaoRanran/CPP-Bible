@@ -1163,6 +1163,38 @@ flowchart TD
 | `switch` 分发 | 编译为跳转表 | 391.11 | 1.00× (基线) |
 | `template` 策略 | 编译期单态化 | 0.00 | ~0× (消除) |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：策略分发方式相对开销（基线=switch 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：策略分发方式相对开销（基线=switch 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (switch)</text>
+  <rect x="141.3" y="250.4" width="64.0" height="49.6" fill="#9A9A9A"/>
+  <text x="173.3" y="244.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">switch</text>
+  <rect x="328.0" y="299.5" width="64.0" height="0.5" fill="#DD8452"/>
+  <text x="360.0" y="293.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">~0× 消除</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">template</text>
+  <rect x="514.7" y="161.1" width="64.0" height="138.9" fill="#C44E52"/>
+  <text x="546.7" y="155.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">2.8×</text>
+  <text x="546.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">virtual</text>
+</svg>
+
+> 图注：策略分发用 `switch` 跳转表最快（1.00×），`template` 编译期单态化把开销降到 0；而 `virtual` 虚调用慢 **2.8×**。运行期多态的代价在间接调用。
+
 ### D5.2 非显然结论
 
 **virtual 策略比 switch 分发慢 2.8 倍——间接调用破坏流水线**

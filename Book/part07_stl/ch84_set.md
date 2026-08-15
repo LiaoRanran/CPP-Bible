@@ -1554,6 +1554,47 @@ flowchart TD
 
 > 上表为本次本机复测的中位耗时；绝对毫秒随机器负载而变，加速比（15.6×、5.84×、327× 等）才是可移植信号。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：1M 元素插入/查询耗时（关联容器 vs vector 路线）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：1M 元素插入/查询耗时（关联容器 vs vector 路线）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">500</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1500</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="100.6" x2="640" y2="100.6" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="96.6" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (multiset 插入)</text>
+  <rect x="98.7" y="100.6" width="56.0" height="199.4" fill="#9A9A9A"/>
+  <text x="126.7" y="94.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1608</text>
+  <text x="126.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 126.7 314.0)">multiset 插入</text>
+  <rect x="192.0" y="104.6" width="56.0" height="195.4" fill="#DD8452"/>
+  <text x="220.0" y="98.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1576</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">set 插入</text>
+  <rect x="285.3" y="287.2" width="56.0" height="12.8" fill="#C44E52"/>
+  <text x="313.3" y="281.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">103 (0.064×)</text>
+  <text x="313.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 313.3 314.0)">vector 推+排序+去重</text>
+  <rect x="378.7" y="280.9" width="56.0" height="19.1" fill="#8172B3"/>
+  <text x="406.7" y="274.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">154 (0.096×)</text>
+  <text x="406.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 406.7 314.0)">set 已排序构造</text>
+  <rect x="472.0" y="200.7" width="56.0" height="99.3" fill="#937860"/>
+  <text x="500.0" y="194.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">801</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">multiset 查询</text>
+  <rect x="565.3" y="283.3" width="56.0" height="16.7" fill="#64B5CD"/>
+  <text x="593.3" y="277.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">135 (0.169×)</text>
+  <text x="593.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 593.3 314.0)">vector lower_bound</text>
+</svg>
+
+> 图注：对 1M 元素，`set`/`multiset` 逐个插入要 1.5–1.6s，而「`vector` 推入 + `sort` + `unique`」只需 103ms（**快 15.6×**），「从已排序区间构造 `set`」154ms（**快 10.4×**）；查询同理，`vector` 的 `lower_bound` 比 `set::find` 快 5.93×。关联容器的节点分配与树平衡是主要开销。
+
 ### D5.2 非显然结论
 
 1. **vector 二分查询（lower_bound 121 ms / binary_search 130 ms）快约 6× 于 set::find（759 ms）——差距来自缓存，不是算法复杂度。** 两者都是 O(log n)，100 万元素时树高约 20 层，比较次数几乎相同。但 set 每步比较要解引用一个散布在堆上的节点指针，每跳一次都可能 L3 cache miss（50-100 cycle 惩罚）。vector 二分在连续内存上操作，硬件预取器在消费第一个 cache line 时就把后续行拉进 L1，20 步比较几乎全在 L1 命中。这是 ch154 缓存优化的活数字：同阶复杂度下，缓存友好性决定真实速度。

@@ -1379,6 +1379,38 @@ int main() {
 
 **对象体积观测**（仅记录，不作断言）：单继承 16 B，多重继承 32 B，非虚继承链 16 B，虚继承菱形 32 B。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：多重继承跨基类虚调用相对耗时（基线=单继承 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：多重继承跨基类虚调用相对耗时（基线=单继承 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (单继承)</text>
+  <rect x="141.3" y="176.0" width="64.0" height="124.0" fill="#9A9A9A"/>
+  <text x="173.3" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">单继承</text>
+  <rect x="328.0" y="168.6" width="64.0" height="131.4" fill="#DD8452"/>
+  <text x="360.0" y="162.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.06×</text>
+  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">第一基类</text>
+  <rect x="514.7" y="162.4" width="64.0" height="137.6" fill="#C44E52"/>
+  <text x="546.7" y="156.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1.11×</text>
+  <text x="546.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">第二基类</text>
+</svg>
+
+> 图注：多重继承经**第二基类**虚调用需 thunk 调整 `this` 指针，比单继承慢 **1.11×**（第一基类无需调整，仅 1.06×）。MI 的代价是「每次跨基类虚调用可能多一次指针修正」。
+
 ### D5.2 非显然结论
 
 1. **thunk 的 `this` 调整在实测中量不出来——而这本身就是结论。** 第二基类路径 990.005 ms 对第一基类路径 945.804 ms，比值 1.05×，即"经过 thunk 的那条反而略快"。重复整轮运行时该比值在 **0.97× ~ 1.05×** 之间来回翻号（本机 3 次独立运行：1.047×、0.974×、1.052×），说明它完全落在噪声内。**正确的读法不是"第二基类更快"，而是"差异不可测"。** 根因：thunk 在跳转前只多一条 `sub` 形式的常量减法，在乱序核上与间接跳转的 BTB 预测、vtable 载入完全重叠，占不到额外的执行周期。正文里"第二基类指针需要调整"是布局事实，但把它当成运行期性能顾虑是错的。
