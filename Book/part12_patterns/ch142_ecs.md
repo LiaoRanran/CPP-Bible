@@ -19,9 +19,14 @@
 ECS（Entity-Component-System）成形于 1990 年代末的游戏引擎。常被引用的早期实践包括 Looking Glass 的 *Thief*（1998）与 Gas Powered Games 的 *Dungeon Siege*——后者由 Scott Bilas 在 2002 年的 GDC 演讲中首次系统公开"用组件代替继承树"的架构 [史]。痛点极其现实：传统 `GameObject : public Renderable, public Physical` 的继承层级，让上百万对象各自散布在内存里，CPU 缓存命中率惨淡、虚函数满天飞。
 
 ### 0.2 关键转折（编年）
-- 2002：Dungeon Siege 的 GDC 演讲让 ECS 思想出圈 [史]。
-- 2010s：Unity 的 **DOTS**、Unreal 的 **MassEntity**、轻量库 **EnTT**（Michele Caini）把它推向工业化 [史]。
-- 现代：ECS 成为"数据导向"游戏/仿真架构的代名词 [评]。
+
+| 时间 | 事件 | 意义 |
+|---|---|---|
+| 2002 | Dungeon Siege 的 GDC 演讲（Scott Bilas） | ECS 思想出圈 [史] |
+| 2010s | Unity **DOTS**、Unreal **MassEntity**、轻量库 **EnTT**（Michele Caini） | 推向工业化 [史] |
+| 现代 | ECS 成为"数据导向"游戏/仿真架构的代名词 | 与 DOD（⑱）同源 [评] |
+
+> 表注：ECS 从"游戏引擎的内部技巧"演变为"数据导向架构的代名词"，关键跃迁是 2010 年后引擎级落地。
 
 ### 0.3 设计哲学之争
 ECS 对经典 OOP 游戏对象模型之争，本质是"数据布局 vs 对象语义"：OOP 把"是什么"（含行为）绑在一个对象上，ECS 把"纯数据（Component）"与"批量算法（System）"分离，让 System 能连续遍历同类组件、吃满缓存带宽 [评]。代价是心智模型反转——你不再"让对象做某事"，而是"让系统筛选一批数据做某类变换"。
@@ -672,16 +677,31 @@ void monster_system(std::vector<MonsterData>& m) {
 }
 ```
 
-- `[经验]`：反模式清单——① 组件有虚函数/资源所有权；② 用继承表达"实体种类"；③ 主存储用 `unordered_map`；④ 系统读写未声明的共享状态；⑤ 每实体一次堆分配（应批量 arena/块分配）；⑥ 系统间用全局单例隐式耦合。
+- `[经验]`：反模式对照表如下（正反对照见示例 42/43）：
+
+| # | 反模式 | 危害 |
+|---|---|---|
+| ① | 组件有虚函数/资源所有权 | 破坏"纯数据"，引入虚表与生命周期 UB |
+| ② | 用继承表达"实体种类" | 百万虚调用 + 散乱堆，缓存灾难 |
+| ③ | 主存储用 `unordered_map` | 节点散列，缓存不友好（见 ⑪） |
+| ④ | 系统读写未声明的共享状态 | 破坏可并行性，数据竞争 |
+| ⑤ | 每实体一次堆分配 | 碎片 + 停顿，应批量 arena/块分配 |
+| ⑥ | 系统间用全局单例隐式耦合 | 显式依赖被藏，难测 |
+
+> 表注：把 ECS 写成"换皮 OOP"是最常见的失败；正解见示例 43（数据归组件、逻辑归系统、存储连续）。
 - `[标准]`：组件若含非平凡成员（如 `std::string`），其存储需遵守对象的**生命周期规则**（`[class.dtor]`），否则批量 `memcpy`/重排会触发 UB——这也是"组件要平凡可拷贝"被反复强调的原因。
 
 ## ⑰ ECS 真实库（EnTT 上游参考） [实现·GCC15]
 
 工业级 ECS 不必自造，主流开源实现已高度优化：
 
-- **EnTT**（上游仓库 `skypjack/entt`，MIT，单头倾向）：核心是 **sparse set（稀疏集）**——每个组件类型一个 sparse-set，entity 映射到密集数组下标，组件与 entity 列表**双双连续**，迭代快、增删 O(1) 摊还。
-- **Unity DOTS / Entities**：Archetype + Chunk（见 ⑭ ⑩），面向大规模仿真。
-- **flecs / Bevy**：Archetype + 查询语言，强调关系（relationship）与系统编排。
+| 库 | 核心存储结构 | 特点 | 适用 |
+|---|---|---|---|
+| **EnTT**（`skypjack/entt`，MIT，单头倾向） | sparse set（稀疏集） | entity→密集数组下标，组件与 entity 列表**双双连续**，迭代快、增删 O(1) 摊还 | 要稳定 API 的项目 |
+| **Unity DOTS / Entities** | Archetype + Chunk（见 ⑭ ⑩） | 面向大规模仿真，Burst 编译为 SIMD | 已绑定 Unity 的团队 |
+| **flecs / Bevy** | Archetype + 查询语言 | 强调关系（relationship）与系统编排 | 需查询语言/编译期并行（Bevy） |
+
+> 表注：选型权衡——自研迷你 ECS（⑲）适学习/嵌入式；EnTT 适稳定 API；Unity DOTS/Bevy 适对应引擎（见 [经验]）。
 
 > **示例 44** [难度 ★☆☆☆☆] [主题：真实库（EnTT 上游参考） [实现]
 ```cpp
@@ -868,9 +888,13 @@ a alive after destroy? no
 
 ### ㉒.1 历史纵深：从「对象树」到「数据表」
 
-- `[史]` 传统游戏用「深继承的对象树」（GameObject → Enemy → Boss），但层级膨胀、复用困难、缓存不友好。**ECS（Entity-Component-System）** 把世界拆成三者：Entity（仅一个 id）、Component（纯数据）、System（纯逻辑），最早在《Thief》（1998，Looking Glass）等项目中实践。
-- `[史]` 2000 年代后 Unity、的 DOTS（Data-Oriented Tech Stack）、以及 Bevy（Rust）等把 ECS 推向主流；它本质是对「OOP 继承 + 虚调用 + 缓存失效」的反叛，与 Data-Oriented Design（见第143章）同源。
-- `[轶]` ECS 的流行也来自一个反直觉发现：游戏里「按系统批量处理同类数据」远比「逐个对象调方法」快——因为内存连续、缓存命中高。
+| 视角 | 内容 | 类型 |
+|---|---|---|
+| 起源 | 传统游戏用深继承对象树（GameObject→Enemy→Boss），层级膨胀/复用难/缓存不友好；ECS 把世界拆为 Entity/Component/System，最早见于《Thief》(1998, Looking Glass) | [史] |
+| 主流化 | 2000 年代后 Unity DOTS、Bevy(Rust) 等把 ECS 推向主流，本质是对「OOP 继承+虚调用+缓存失效」的反叛，与 DOD（第143章）同源 | [史] |
+| 流行根因 | ECS 的流行来自反直觉发现：按系统批量处理同类数据远比逐个对象调方法快——内存连续、缓存命中高 | [轶] |
+
+> 表注：从「对象树」到「数据表」的范式转移，核心是缓存局部性（见 ⑥⑬ 取证）。
 
 ### ㉒.2 真实产业坐标：被巨头项目验证
 
@@ -890,11 +914,15 @@ ECS（Entity-Component-System）用「数据表 + 系统遍历」取代深层对
 
 ### ㉒.3 生产踩坑：系统顺序与缓存
 
-- **系统执行顺序依赖**：System 之间有隐式先后（先用输入、再算物理、再渲染），顺序错就出诡异 bug；需要显式声明 system 依赖/阶段。
-- **组件未打包导致缓存失效**：若 Component 仍按「对象」散落存储，ECS 的缓存优势尽失——必须 SoA/分块连续存储。
-- **实体销毁失效**：删除实体后，引用它的 System/句柄需失效处理，否则访问悬空组件。
-- **过度 ECS**：小项目/小实体数硬上 ECS，反而增加复杂度；ECS 收益在「实体多 + 同构批处理」时才显著。
-- **archetype vs sparse-set 取舍**：不同存储策略对「增删组件」与「遍历」各有取舍，选错会两头不讨好。
+| 踩坑 | 表现 | 缓解 |
+|---|---|---|
+| 系统执行顺序依赖 | System 隐式先后（输入→物理→渲染），顺序错出诡异 bug | 显式声明 system 依赖/阶段（⑨） |
+| 组件未打包致缓存失效 | Component 按「对象」散落存储，缓存优势尽失 | SoA/分块连续存储（⑤⑩） |
+| 实体销毁失效 | 删实体后引用它的 System/句柄仍访问悬空组件 | 句柄 version 失效 + 命令缓冲延迟重排（⑧⑭） |
+| 过度 ECS | 小项目/小实体数硬上 ECS，反增复杂度 | 仅在「实体多 + 同构批处理」时采用 |
+| archetype vs sparse-set 取舍 | 不同存储策略对增删/遍历各有取舍，选错两头不讨好 | 按访问共现性选型（⑰） |
+
+> 表注：踩坑多源于"把 ECS 当银弹"——ECS 收益在「实体多 + 同构批处理」时才显著（见 ⑳ 小结）。
 
 ### ㉒.4 与 C++ 标准的互动
 
@@ -926,26 +954,30 @@ ECS（Entity-Component-System）用「数据表 + 系统遍历」取代深层对
 
 > 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
 
-- **Google** — FlatBuffers 用于 ECS 序列化（game Google 生态）
-- **LLVM** — 自研脚本语言常用 LLVM 作为 ECS 后端
-- **Chromium** — V8 作为 ECS 脚本运行时嵌入游戏
-- **Boost** — Boost.Signals2 驱动 ECS 事件总线
-- **Qt ** — Qt3D 提供 ECS 风格实体组件
-- **Eigen** — ECS 变换矩阵以 Eigen 为数学底座
-- **folly** — ECS 网络层用 folly 协程
-- **Redis** — ECS 世界状态可用 Redis 持久化
-- **ClickHouse** — ECS 遥测以 ClickHouse 列式存储
-- **RocksDB** — ECS 存档以 RocksDB 落地
-- **V8** — ECS 行为脚本常跑在 V8 上
-- **DPDK** — ECS 网络同步用 DPDK 低延迟收发
-- **gRPC** — ECS 多节点同步用 gRPC 通信
-- **spdlog** — ECS 运行日志接入 spdlog
-- **fmt** — ECS 调试输出用 fmt 格式化
-- **Unreal** — Unreal Engine 的 Mass Entity 是 ECS 范式
-- **WebKit** — WebGL ECS 演示基于 WebKit
-- **Mozilla** — SpiderMonkey 作为 ECS 脚本引擎
-- **Abseil** — ECS 工具链复用 Abseil 容器
-- **Blink** — Blink 用 ECS 思路管理合成节点
+| 项目/库 | 与 ECS 的关联 | 备注 |
+|---|---|---|
+| **Google** | FlatBuffers 用于 ECS 序列化 | game Google 生态 |
+| **LLVM** | 自研脚本语言常用 LLVM 作为 ECS 后端 | — |
+| **Chromium** | V8 作为 ECS 脚本运行时嵌入游戏 | — |
+| **Boost** | Boost.Signals2 驱动 ECS 事件总线 | — |
+| **Qt** | Qt3D 提供 ECS 风格实体组件 | — |
+| **Eigen** | ECS 变换矩阵以 Eigen 为数学底座 | — |
+| **folly** | ECS 网络层用 folly 协程 | — |
+| **Redis** | ECS 世界状态可用 Redis 持久化 | — |
+| **ClickHouse** | ECS 遥测以 ClickHouse 列式存储 | — |
+| **RocksDB** | ECS 存档以 RocksDB 落地 | — |
+| **V8** | ECS 行为脚本常跑在 V8 上 | — |
+| **DPDK** | ECS 网络同步用 DPDK 低延迟收发 | — |
+| **gRPC** | ECS 多节点同步用 gRPC 通信 | — |
+| **spdlog** | ECS 运行日志接入 spdlog | — |
+| **fmt** | ECS 调试输出用 fmt 格式化 | — |
+| **Unreal** | Unreal Engine 的 Mass Entity 是 ECS 范式 | 见 ㉒.1/附录 M |
+| **WebKit** | WebGL ECS 演示基于 WebKit | — |
+| **Mozilla** | SpiderMonkey 作为 ECS 脚本引擎 | — |
+| **Abseil** | ECS 工具链复用 Abseil 容器 | — |
+| **Blink** | Blink 用 ECS 思路管理合成节点 | — |
+
+> 表注（附录 H）：上表为「项目/库与 ECS 的生态关联」，多数为间接复用（序列化/日志/通信后端），并非该项目的官方 ECS 用途；其中部分关联属二手记载，标注 [UNVERIFIED]。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

@@ -32,9 +32,14 @@
 Policy-Based Design 由 Andrei Alexandrescu 在 2001 年的《Modern C++ Design》中系统提出，并配套 **Loki** 库落地 [史]。痛点直指传统继承的死穴：想让一个 Widget 在"内存管理、线程安全、同步策略"等多个维度各自可变，用继承会得到指数级爆炸的子类（MemorySafeThreadSafeWidget…）。Policy-Based Design 把每个维度做成独立的小模板参数（Policy），在编译期像搭积木一样组装。
 
 ### 0.2 关键转折（编年）
-- 2001：Alexandrescu《Modern C++ Design》与 Loki 库，把 Policy-Based Design、编译期多态、Typelist 等推上台面 [史]。
-- 此后：其思想深刻影响了 C++11 —— type traits、tuple、可变参数模板都能看到"编译期组合"的影子 [史]。
-- 现代：`std::unique_ptr` 的默认删除器、分配器（Allocator）概念都可视为 Policy 思想的直系后裔 [评]。
+
+| 时间 | 事件 | 立场 | 意义 |
+|---|---|---|---|
+| 2001 | Alexandrescu《Modern C++ Design》与 Loki 库，把 Policy-Based Design、编译期多态、Typelist 推上台面 | [史] | Policy-Based Design 正式命名并工程化 |
+| 此后 | 思想深刻影响 C++11：type traits、tuple、可变参数模板皆见「编译期组合」影子 | [史] | 泛型组合思想沉淀进标准库 |
+| 现代 | `std::unique_ptr` 默认删除器、Allocator 概念可视为 Policy 直系后裔 | [评] | 标准库本身就是 Policy 的最大生产部署（见 §⑬） |
+
+> 表注（0.2）：Policy-Based Design 走「提出（2001）→ 影响标准（C++11）→ 沉淀进标准库」路径，与 CRTP 的演化（ch139 §0.2）同源。
 
 ### 0.3 设计哲学之争
 Policy-Based Design 对"继承层级"之争是"组合优于继承"的极致化：不是 A 继承 B，而是 `Host<A,B,C>` 把 A、B、C 三个策略在编译期拼成新类型 [评]。它与 CRTP 常被混用——基类用 CRTP 反向调用派生，派生用 Policy 决定行为。代价是模板错误极长、编译变慢，且对初学者门槛高 [评]。
@@ -89,11 +94,16 @@ static_assert(!std::is_same_v<A, B>);  // 编译期即知二者不同
 
 ## ② 政策类基本形态
 
-一个 policy 类通常具备以下一种或多种形态：
-1. **静态成员函数 policy**：无状态，宿主直接 `Policy::f(...)` 调用。
-2. **嵌套类型/别名 policy**：提供 `using value_type = ...;`、`using impl = ...;`。
-3. **带状态的成员 policy**：policy 自身有数据，宿主以成员方式组合它（"member policy"）。
-4. **模板 policy（policy 模板）**：policy 本身接收宿主类型参数，实现双向依赖。
+一个 policy 类通常具备以下一种或多种形态（对应 §② 示例 3–6）：
+
+| 形态 | 特征 | 调用 / 组合方式 | 典型示例 |
+|---|---|---|---|
+| 静态成员函数 policy | 无状态 | 宿主直接 `Policy::f(...)` 调用 | `LoggingOff` / `LoggingOn`（示例 3） |
+| 嵌套类型 / 别名 policy | 提供类型别名 | `using value_type = ...; using impl = ...;` | `UseVector` / `UseDeque`（示例 4） |
+| 带状态的成员 policy | policy 自身有数据 | 宿主以成员方式组合（"member policy"） | `WithRefCount`（示例 5） |
+| 模板 policy（policy 模板） | 接收宿主类型参数 | 实现双向依赖（policy 知宿主、宿主知 policy） | `Mutator<Host>`（示例 6） |
+
+> 表注（②）：四种形态可按「有无状态 / 是否双向依赖」正交组合；libstdc++ 的 `_Vector_base<_Tp,_Alloc>` 即模板 policy + 成员组合的工业范例（见 §② 末）。
 
 > **示例 3** [难度 ★☆☆☆☆] [主题：政策类基本形态]
 ```cpp
@@ -991,12 +1001,15 @@ Policy（策略）把「可替换的行为维度」做成模板/运行时参数�
 
 ### ㉒.4 与 C++ 标准的互动
 
-- `[评]` C++20 Concepts 让 policy 从「隐性鸭子类型」变成「可约束契约」：`template<Policy P> class Host` 直接声明所需接口，错误提前到约束失败。
-- `if constexpr` 可在 policy 基础上做「编译期分支分发」，替代部分运行期策略选择；现代小场景甚至不必上完整 policy 机制。
-- `[评]` 标准演进把 policy 的「灵活」与「可读/可错」通过 concepts 拉回平衡——这是泛型库设计的分水岭。
+| 维度 | 内容 | 立场 | 标准 / 提案坐标 |
+|---|---|---|---|
+| 接口契约化 | C++20 Concepts 让 policy 从「隐性鸭子类型」变「可约束契约」：`template<Policy P> class Host` 直接声明接口，错误前移到约束失败 | [评] | C++20 `[concept]` |
+| 编译期分支分发 | `if constexpr` 可在 policy 基础上做编译期分支，替代部分运行期策略选择 | — | C++17 `if constexpr`（见 §⑤） |
+| 可读/可错平衡 | 标准演进把 policy 的「灵活」与「可读/可错」经 concepts 拉回平衡 | [评] | 泛型库设计分水岭 |
+| 约束语法化 | P0734R0 把对 policy 接口的要求从 SFINAE 黑魔法改为一行 `requires`；`std::invocable`/`std::predicate` 成标准契约 | [评] | WG21 **P0734R0**（C++20，<https://wg21.link/P0734>） |
+| 概念形式化 | 在 `[temp.concept]` 把概念定义为「布尔 constexpr 变量模板」，使隐式契约变显式、可诊断 | [评] | ISO/IEC 14882:2020 |
 
-- `[评]` 除 concepts 外，WG21 **P0734R0**（Wording for concepts，<https://wg21.link/P0734>，C++20）把「对 policy 所需接口的要求」从 SFINAE 黑魔法改为一行 `requires`；`std::invocable`/`std::predicate` 等概念直接成为 policy 参数的标准契约。
-- `[评]` ISO/IEC 14882:2020 在 `[temp.concept]` 把概念定义为「布尔类型的 constexpr 变量模板」；委员会理由：让 policy 的「隐式契约」变成「编译期可诊断、可文档化」的显式约束，降低泛型库误用成本。
+> 表注（㉒.4）：policy 与标准的互动主线是「隐性鸭子类型 → 被 Concepts 显式约束」；P0734R0 是这道分水岭的提案坐标，与 CRTP 的 P0847R7（ch139 §㉒.4）并列。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 
@@ -1392,9 +1405,13 @@ Policy-Based Design 这一术语与范式由 Andrei Alexandrescu 在《Modern C+
 
 Boost 多个库把 policy 用到生产级：
 
-- **Boost.SmartPtr**：`boost::shared_ptr` 的删除器（deleter）即一种「释放 policy」——`shared_ptr<T, D>` 把「如何释放」作为类型参数传入，构造时携带 deleter，析构时调用；这与 Loki 的 `ReleasePolicy` 一脉相承。
-- **Boost.Parameter**：用「命名参数」+ 模板化的 policy 槽，让用户以 `boost::python::class_<X, bases<Y>, Z>()` 这类近乎自然语言的顺序组合 policy，缓解「policy 顺序敏感」（M.5）问题。
-- **Boost.Math / Boost.Serialization**：各自用 policy 模板参数选择「精度」「后端」「归档格式」等正交维度。
+| 库 | policy 用法 | 解决的设计问题 |
+|---|---|---|
+| Boost.SmartPtr | `shared_ptr<T, D>` 把「如何释放」作为类型参数（deleter policy），析构时调用 | 与 Loki `ReleasePolicy` 一脉相承，零开销可替换释放语义 |
+| Boost.Parameter | 命名参数 + 模板化 policy 槽，近似自然语言顺序组合 policy | 缓解「policy 顺序敏感」问题（见 M.5） |
+| Boost.Math / Boost.Serialization | policy 模板参数选择「精度 / 后端 / 归档格式」等正交维度 | 同一数学/序列化逻辑适配多种规则 |
+
+> 表注（M.3）：三库分别展示了 policy 在「释放语义 / 组合顺序 / 正交维度」三类生产场景的落地；与标准库 `std::unique_ptr` 删除器（§⑬）同源。
 
 ### M.4 真实落地：Loki 之外的现代继承者
 

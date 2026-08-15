@@ -1239,11 +1239,15 @@ DOD（面向数据设计）以「内存布局服务缓存与 SIMD」榨干吞吐
 
 ### ㉒.3 生产踩坑：先量再改，别玄学优化
 
-- **过早 DOD**：没 profile 就盲目把 AoS 改 SoA，可能反而更难维护、收益为零——DOD 强调「测量驱动（measure-first）」。
-- **缓存行伪共享（false sharing）**：两个线程各写一个「逻辑独立但同缓存行」的字段，会互相 invalidate，性能暴跌；需用缓存行对齐隔离（如 `std::hardware_destructive_interference_size`）。
-- **SoA 让单对象访问变丑**：取「第 i 个对象的多个字段」要分散到多个数组，单实体逻辑变繁琐——DOD 适合批处理，不适合频繁单点访问。
-- **对齐/填充错误**：结构体字段顺序导致空洞（padding）或对齐不符 SIMD 要求，需 `alignas` 与重排字段。
-- **封装退化的代价**：DOD 常把数据摊平，面向对象那套「私有状态 + 方法」被削弱，需靠纪律补偿可维护性。
+| 坑 | 机理 | 对策 |
+|---|---|---|
+| 过早 DOD | 没 profile 就盲目把 AoS 改 SoA，可能反而更难维护、收益为零 | 坚持「测量驱动（measure-first）」：先 `perf` 确认 cache miss 是瓶颈再动布局 |
+| 缓存行伪共享（false sharing） | 两个线程各写一个「逻辑独立但同缓存行」的字段，互相 invalidate，性能暴跌 | 缓存行对齐隔离，如 `std::hardware_destructive_interference_size` |
+| SoA 让单对象访问变丑 | 取「第 i 个对象的多个字段」要分散到多个数组，单实体逻辑变繁琐 | 认清 DOD 适合批处理、不适合频繁单点访问，单点场景退回 AoS |
+| 对齐/填充错误 | 结构体字段顺序导致空洞（padding）或对齐不符 SIMD 要求 | 用 `alignas` 与重排字段消除空洞、满足 SIMD 对齐 |
+| 封装退化的代价 | DOD 常把数据摊平，面向对象那套「私有状态 + 方法」被削弱 | 靠工程纪律补偿可维护性，业务层保留 OOP 抽象 |
+
+> 表注（㉒.3）：五条均源自正文已论证的 DOD 反模式（⑬ false sharing、⑯ 指针追踪/链表、④ SoA vs AoS）；核心判读是「先量后改」——盲目 SoA 化与忽视伪共享是 production 里最高频的两类性能回归。
 
 ### ㉒.4 与 C++ 标准的互动
 
@@ -1264,26 +1268,30 @@ DOD（面向数据设计）以「内存布局服务缓存与 SIMD」榨干吞吐
 
 > 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
 
-- **Google** — Protobuf 的 SoA 编码体现 DoD 思想
-- **LLVM** — 后端寄存器分配用 SoA 数组
-- **Chromium** — Blink 布局用 SoA 存储样式
-- **Boost** — Boost.Container 提供小缓冲 SoA 容器
-- **Qt ** — Qt 绘图用 SoA 顶点缓冲
-- **Eigen** — SoA 数学是 Eigen 性能关键
-- **folly** — folly 用 SoA 优化批量处理
-- **Redis** — 分析管线用 SoA 列式处理
-- **ClickHouse** — 列式存储本身就是 DoD 的极致
-- **RocksDB** — block 缓存用 SoA 组织元数据
-- **V8** — 对象属性用 SoA 字典存储
-- **DPDK** — 报文字段以 SoA 批处理提升吞吐
-- **gRPC** — 批量 RPC 用 SoA 序列化
-- **spdlog** — 日志批量写用 SoA 缓冲
-- **fmt** — 格式化批量用 SoA 字符缓冲
-- **Unreal** — TArray 支持 SoA 布局选项
-- **WebKit** — WTF 用 SoA 存储 GC 元数据
-- **Mozilla** — SpiderMonkey 用 SoA 存储对象形状
-- **Abseil** — Abseil 用 SoA 优化 `absl::InlinedVector`
-- **Blink** — Blink 用 SoA 提升缓存命中
+| 项目 | DOD/SoA 工业落地 |
+|---|---|
+| Google | Protobuf 的 SoA 编码体现 DoD 思想 |
+| LLVM | 后端寄存器分配用 SoA 数组 |
+| Chromium | Blink 布局用 SoA 存储样式 |
+| Boost | Boost.Container 提供小缓冲 SoA 容器 |
+| Qt | Qt 绘图用 SoA 顶点缓冲 |
+| Eigen | SoA 数学是 Eigen 性能关键 |
+| folly | folly 用 SoA 优化批量处理 |
+| Redis | 分析管线用 SoA 列式处理 |
+| ClickHouse | 列式存储本身就是 DoD 的极致 |
+| RocksDB | block 缓存用 SoA 组织元数据 |
+| V8 | 对象属性用 SoA 字典存储 |
+| DPDK | 报文字段以 SoA 批处理提升吞吐 |
+| gRPC | 批量 RPC 用 SoA 序列化 |
+| spdlog | 日志批量写用 SoA 缓冲 |
+| fmt | 格式化批量用 SoA 字符缓冲 |
+| Unreal | TArray 支持 SoA 布局选项 |
+| WebKit | WTF 用 SoA 存储 GC 元数据 |
+| Mozilla | SpiderMonkey 用 SoA 存储对象形状 |
+| Abseil | Abseil 用 SoA 优化 `absl::InlinedVector` |
+| Blink | Blink 用 SoA 提升缓存命中 |
+
+> 表注（附录 G）：20 个工业项目覆盖编译器 / 浏览器 / 数据库 / 网络 / 序列化 / 游戏引擎，共性是用「连续同类型数组（SoA）」替代「对象散列」来喂饱缓存与 SIMD；Blink 与 Chromium 的 Blink 实为同一引擎子系统，分列以示其在布局与命中两处各自的 DOD 用法。
 
 ## 附录 H：设计起源与演化 [B: 原理/设计目标]
 
@@ -1779,9 +1787,13 @@ DOD 并非「反 STL」，恰恰相反——**`std::vector` 的连续存储是 D
 
 第 143 章已列出的反模式（⑯ 指针追踪/链表、⑬ false sharing）之外，三个「认知级」坑：
 
-1. **为「建模自然」牺牲「访问高效」**：OOP 倾向「一个 Player 类把所有字段塞一起」，但游戏循环每帧只碰 `position`/`velocity`，`name`/`inventory`/`questLog` 等冷字段白白占据缓存行（第 143 章 ⑤ 量化：AoS 在 partial update 下慢 10.3×，根因就是「只动 1/8 字段却拉整行」）。DOD 要求「先画访问模式图，再定布局」。
-2. **False Sharing 的隐蔽性**：多线程各写自己元素时，若两元素落在同一 64B 缓存行，CPU 核心间会反复 invalidate 对方缓存行，性能从「线性加速」跌到「比单线程还慢」。必须用 `alignas(64)` 让每线程热数据独占缓存行，或用「每线程本地副本 + 帧末归并」消除跨核写竞争（第 143 章 ⑬/⑮）。
-3. **SoA 不是银弹**：当访问模式「总是整对象读写」（如序列化、拷贝），AoS 的「对象局部性」反而更好（第 143 章 ⑤ 结论 4 已点明：full update 下 SoA 仅快 3.61×，低于 partial 的 10.3×）。布局对错由**访问模式**决定，而非数组形态本身——这是 DOD 最常被教条化误用的地方。
+| 认知级坑 | 机理 | 对策 |
+|---|---|---|
+| 为「建模自然」牺牲「访问高效」 | OOP 倾向把 Player 类所有字段塞一起，但游戏循环每帧只碰 `position`/`velocity`，`name`/`inventory`/`questLog` 等冷字段白白占缓存行（⑤ 量化：AoS partial update 慢 10.3×，根因「只动 1/8 字段却拉整行」） | DOD 要求「先画访问模式图，再定布局」 |
+| False Sharing 的隐蔽性 | 多线程各写自己元素时，若两元素落同一 64B 缓存行，核心间反复 invalidate 对方缓存行，性能从「线性加速」跌到「比单线程还慢」 | 用 `alignas(64)` 让每线程热数据独占缓存行，或「每线程本地副本 + 帧末归并」消除跨核写竞争（⑬/⑮） |
+| SoA 不是银弹 | 访问模式「总是整对象读写」（序列化、拷贝）时，AoS 的「对象局部性」反而更好（⑤ 结论 4：full update 下 SoA 仅快 3.61×，低于 partial 的 10.3×） | 布局对错由**访问模式**决定，而非数组形态本身——勿教条化 SoA |
+
+> 表注（M.7）：三条为「认知级」坑，区别于 ⑯/⑬ 的语法级反模式；共同指向「DOD 是纪律而非银弹」，决策权在 profiler 与访问模式，不在数组名字。
 
 ### M.8 权威出处汇总
 
