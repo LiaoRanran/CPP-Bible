@@ -885,3 +885,42 @@ int main() {
 | --- | --- | --- |
 | ch154 缓存优化 | Book/part14_perf/ch154_cache_opt.md | 同一现象的「正面优化」写法 |
 | ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |
+
+## 基准数字可视化速读（本机 GCC 实测）
+
+> 『反模式』不是修辞，而是 10.84× 的真实代价。下面把 D5.1 的基准画成图——证明 **算法复杂度相同 ≠ 运行期相同**。
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 348" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="0" y="0" width="680" height="348" fill="#ffffff"/>
+  <text x="340" y="24" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1a1a1a">图 1　行优先 vs 列优先遍历（ms，越低越好）</text>
+  <line x1="72" y1="48" x2="72" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="300" x2="620" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="216.0" x2="620" y2="216.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="132.0" x2="620" y2="132.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="48.0" x2="620" y2="48.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="300.0" x2="67" y2="300.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="303.5" text-anchor="end" fill="#555" font-size="10.5">0</text>
+  <line x1="72" y1="216.0" x2="67" y2="216.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="219.5" text-anchor="end" fill="#555" font-size="10.5">20</text>
+  <line x1="72" y1="132.0" x2="67" y2="132.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="135.5" text-anchor="end" fill="#555" font-size="10.5">40</text>
+  <line x1="72" y1="48.0" x2="67" y2="48.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="51.5" text-anchor="end" fill="#555" font-size="10.5">60</text>
+  <text x="34" y="174" text-anchor="middle" transform="rotate(-90 34 174)" fill="#777" font-size="11">耗时（ms）</text>
+  <rect x="210.0" y="284.1" width="76" height="15.9" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="248.0" y="278.1" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">3.79ms</text>
+  <text x="248.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">行优先</text>
+  <rect x="406.0" y="127.2" width="76" height="172.8" fill="#DD8452" stroke="#b5651d" stroke-width="0.75"/>
+  <text x="444.0" y="121.2" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">41.15ms</text>
+  <text x="444.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">列优先</text>
+  <text x="346" y="338" text-anchor="middle" fill="#777" font-size="11">同一份 64MB 数据，仅交换循环嵌套顺序</text>
+</svg>
+
+> **图注**：列优先慢 **10.84×** 的根因：`int` 每行 4096×4 = 16 KB，远大于 64 B 缓存行；列优先每读一个元素就跳 16 KB 到下一行同列，几乎每次访存未命中 L1/L2，退化为内存带宽受限（本机 L3 仅 16 MB，64 MB 工作集早已溢出）。**『反模式』的定量定义就是 cache miss rate**——同一数据、同一套指令，仅交换循环嵌套顺序就差一个数量级。修复极廉价：写对 `for i for j`（行优先）即可，无需改数据结构。颜色仅作区分，数值标签已写明。
+
+| 遍历顺序 | 耗时 (ms) | 相对 |
+|----------|-----------|------|
+| 行优先（顺序访问，缓存友好） | 3.795 | 1.00× (基线) |
+| 列优先（跨步访问，缓存失效反模式） | 41.152 | 10.84× 更慢 |
+
+> 表注：以上数字取自本章 D5.1 基准（本机 GCC 实测，绝对毫秒随机器/编译选项而变），**相对值/加速比才是可移植信号**。三模式渲染下若矢量图不显示，本表即兜底数据来源。

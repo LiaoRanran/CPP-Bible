@@ -1299,3 +1299,42 @@ int main() {
 ```
 
 > 对照：`run_template<Lambda>`（模板回调路径）在 `-O2` 下整体内联进调用者，反汇编中**无独立符号**——它「消失」了，因为它不需要任何运行期实体（无 vtable、无函数指针、无类型擦除对象）。这是 7.8× 差距的本质：模板用「不灵活性」（编译期绑定类型）换来了零间接开销。
+
+## 基准数字可视化速读（本机 GCC 实测）
+
+> 本章 D5 的立场是『编译期已知类型，就别付运行期间接代价』。下面把 D5.1 的基准画成图——重点不是绝对毫秒（随机器而变），而是 **std::function 慢多少×** 与 **慢在哪一层**。
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 348" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="0" y="0" width="680" height="348" fill="#ffffff"/>
+  <text x="340" y="24" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1a1a1a">图 1　模板回调 vs std::function 分派开销（ms，越低越好）</text>
+  <line x1="72" y1="48" x2="72" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="300" x2="620" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="216.0" x2="620" y2="216.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="132.0" x2="620" y2="132.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="48.0" x2="620" y2="48.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="300.0" x2="67" y2="300.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="303.5" text-anchor="end" fill="#555" font-size="10.5">0</text>
+  <line x1="72" y1="216.0" x2="67" y2="216.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="219.5" text-anchor="end" fill="#555" font-size="10.5">20</text>
+  <line x1="72" y1="132.0" x2="67" y2="132.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="135.5" text-anchor="end" fill="#555" font-size="10.5">40</text>
+  <line x1="72" y1="48.0" x2="67" y2="48.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="51.5" text-anchor="end" fill="#555" font-size="10.5">60</text>
+  <text x="34" y="174" text-anchor="middle" transform="rotate(-90 34 174)" fill="#777" font-size="11">耗时（ms）</text>
+  <rect x="210.0" y="275.7" width="76" height="24.3" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="248.0" y="269.7" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">5.79ms</text>
+  <text x="248.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">模板回调</text>
+  <rect x="406.0" y="110.0" width="76" height="190.0" fill="#DD8452" stroke="#b5651d" stroke-width="0.75"/>
+  <text x="444.0" y="104.0" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">45.24ms</text>
+  <text x="444.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">std::function</text>
+  <text x="346" y="338" text-anchor="middle" fill="#777" font-size="11">编译期单态化 vs 运行期类型擦除</text>
+</svg>
+
+> **图注**：std::function 慢 ~7.8× 的代价来自**三重间接**：类型擦除封装、SBO 判定、函数指针间接调用；模板回调 `run_template<F>` 的 `F` 在编译期确定，`operator()` 被 `-O2` 完全内联，整个循环退化成 `add + lea`，零间接跳转。代价是**每种 `F` 实例化一份代码**（code bloat）——热路径排序比较器、数值积分核等编译期已知回调类型处，模板参数化可换 ~7.8× 加速；需运行期存储/替换异质回调（事件系统、回调队列）才用 std::function。颜色仅作区分，数值标签已写明。
+
+| 策略 | 分派方式 | 耗时 (ms) | 相对 |
+|------|----------|-----------|------|
+| 模板 `run_template<F>` | 单态化 + 内联 | 5.79 | 1.00x (基线) |
+| `std::function<int(int)>` | 类型擦除 + 间接调用 | 45.24 | ~7.8x 慢 |
+
+> 表注：以上数字取自本章 D5.1 基准（本机 GCC 实测，绝对毫秒随机器/编译选项而变），**相对值/加速比才是可移植信号**。三模式渲染下若矢量图不显示，本表即兜底数据来源。

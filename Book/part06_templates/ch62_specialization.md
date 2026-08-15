@@ -1447,3 +1447,42 @@ int main() {
 ```
 
 > 对照：`run_constexpr_route<OP_ADD>/<OP_MUL>`（if constexpr 路径）零分支、单态化、内联进 `main`，无独立符号。分支预测惩罚（~10.4×）>> 间接调用惩罚（ch61 ~4.3×），故工程上消除不可预测分支的收益通常大于消除间接调用（见 D5.2.2）。若运行期 tag 不可预测但操作集合封闭，jump table（函数指针表）比 if/else 链更优。
+
+## 基准数字可视化速读（本机 GCC 实测）
+
+> ch61 量化了『间接调用 ~4.3×』，本章进一步量化『分支预测失败 ~10.4×』——两类运行期开销量级不同。下面把 D5.1 的基准画成图。
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 348" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="0" y="0" width="680" height="348" fill="#ffffff"/>
+  <text x="340" y="24" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1a1a1a">图 1　编译期路由 vs 运行期 if/else 链（ms，越低越好）</text>
+  <line x1="72" y1="48" x2="72" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="300" x2="620" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="216.0" x2="620" y2="216.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="132.0" x2="620" y2="132.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="48.0" x2="620" y2="48.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="300.0" x2="67" y2="300.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="303.5" text-anchor="end" fill="#555" font-size="10.5">0</text>
+  <line x1="72" y1="216.0" x2="67" y2="216.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="219.5" text-anchor="end" fill="#555" font-size="10.5">50</text>
+  <line x1="72" y1="132.0" x2="67" y2="132.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="135.5" text-anchor="end" fill="#555" font-size="10.5">100</text>
+  <line x1="72" y1="48.0" x2="67" y2="48.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="51.5" text-anchor="end" fill="#555" font-size="10.5">150</text>
+  <text x="34" y="174" text-anchor="middle" transform="rotate(-90 34 174)" fill="#777" font-size="11">耗时（ms）</text>
+  <rect x="210.0" y="276.2" width="76" height="23.8" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="248.0" y="270.2" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">14.19ms</text>
+  <text x="248.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">if constexpr</text>
+  <rect x="406.0" y="51.7" width="76" height="248.3" fill="#DD8452" stroke="#b5651d" stroke-width="0.75"/>
+  <text x="444.0" y="45.7" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">147.79ms</text>
+  <text x="444.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">if/else 链</text>
+  <text x="346" y="338" text-anchor="middle" fill="#777" font-size="11">随机洗排 tag → 分支预测器无法学习</text>
+</svg>
+
+> **图注**：if/else 链慢 ~10.4× 的最大单项是**分支预测失败（misprediction），不是间接调用**：随机洗排的 3 路 tag 令预测命中率约 33%，每次 misprediction 触发流水线冲刷（~15-20 周期）。`if constexpr` 在编译期消除所有分支，每个 batch 是单态化直线代码，零条件跳转。`10.4× > ch61 的 4.3×` 量化了『分支预测惩罚 >> 间接调用惩罚』——工程上消除不可预测分支的收益通常大于消除间接调用。tag 编译期已知用 if constexpr/特化；不可预测但操作集合封闭用 jump table（间接调用 4.3× 远好于分支失败 10.4×）。颜色仅作区分，数值标签已写明。
+
+| 策略 | 分派方式 | 耗时 (ms) | 相对 |
+|------|----------|-----------|------|
+| `if constexpr` 编译期路由 | 单态化 + 无分支 | 14.19 | 1.00x (基线) |
+| 运行期 if/else 链 | 随机 tag → 高 misprediction | 147.79 | ~10.4x 慢 |
+
+> 表注：以上数字取自本章 D5.1 基准（本机 GCC 实测，绝对毫秒随机器/编译选项而变），**相对值/加速比才是可移植信号**。三模式渲染下若矢量图不显示，本表即兜底数据来源。

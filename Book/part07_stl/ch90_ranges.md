@@ -1510,3 +1510,46 @@ int main() {
 - `volatile` sink 防 DCE；关键是用**随机数据**填充输入，避免优化器把可闭式求值（常数传播）直接消除，从而暴露管道的真实常数开销（见 D5.2 结论 2）。
 - 加速比（如 5.38×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++17`。demo 仅断言功能正确性（两种写法结果相等），未对时间或倍数做任何断言。
+
+## 基准数字可视化速读（本机 GCC 实测）
+
+> ranges 是『真零开销抽象』还是『免费午餐』？答案分两层。下面把 D5.1 的基准画成图——单算法逐 ns 等价，多阶段管道才暴露常数开销。
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 348" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="0" y="0" width="680" height="348" fill="#ffffff"/>
+  <text x="340" y="24" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1a1a1a">图 1　手写循环 vs ranges 管道（ms，越低越好）</text>
+  <line x1="72" y1="48" x2="72" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="300" x2="620" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="216.0" x2="620" y2="216.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="132.0" x2="620" y2="132.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="48.0" x2="620" y2="48.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="300.0" x2="67" y2="300.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="303.5" text-anchor="end" fill="#555" font-size="10.5">0</text>
+  <line x1="72" y1="216.0" x2="67" y2="216.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="219.5" text-anchor="end" fill="#555" font-size="10.5">10</text>
+  <line x1="72" y1="132.0" x2="67" y2="132.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="135.5" text-anchor="end" fill="#555" font-size="10.5">20</text>
+  <line x1="72" y1="48.0" x2="67" y2="48.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="51.5" text-anchor="end" fill="#555" font-size="10.5">30</text>
+  <text x="34" y="174" text-anchor="middle" transform="rotate(-90 34 174)" fill="#777" font-size="11">耗时（ms）</text>
+  <rect x="112.0" y="258.2" width="76" height="41.8" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="150.0" y="252.2" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">4.98ms</text>
+  <text x="150.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">手写 for</text>
+  <rect x="308.0" y="258.4" width="76" height="41.6" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="346.0" y="252.4" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">4.95ms</text>
+  <text x="346.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">ranges for_each</text>
+  <rect x="504.0" y="75.0" width="76" height="225.0" fill="#DD8452" stroke="#b5651d" stroke-width="0.75"/>
+  <text x="542.0" y="69.0" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">26.79ms</text>
+  <text x="542.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">ranges 管道</text>
+  <text x="346" y="338" text-anchor="middle" fill="#777" font-size="11">单算法/单视图 vs 多阶段 | 适配</text>
+</svg>
+
+> **图注**：`ranges::for_each` 与手写循环**逐 ns 等价**（4.95 vs 4.98 ms ≈ 1.00×）：views 与算法 lazy、零开销，迭代器调用被同构内联进主循环，是『真零开销抽象』实测铁证。但 `filter | transform` 多阶段管道慢 **5.38×**：(1) 每层 view iterator 适配链解包；(2) `filter` 不可预测跳过致分支失败 + cache miss；(3) 早期『0.87× 更快』假象来自优化器闭式求值消除，改随机数据后暴露真实常数开销。**ranges 非免费午餐**——单算法/单视图几乎零成本，每多叠一层 `|` 适配就多一层迭代器链解包；热点循环里手写或合并单 pass 更划算。颜色仅作区分，数值标签已写明。
+
+| 场景 | 耗时 ms | 相对 |
+|---|---|---|
+| 手写 for 循环遍历 + 变换（基线） | 4.98 | 基准 1.00× |
+| ranges `for_each` 单算法 | 4.95 | 1.00×（几乎无差） |
+| ranges `filter \| transform` 管道 | 26.79 | **5.38×**（慢） |
+
+> 表注：以上数字取自本章 D5.1 基准（本机 GCC 实测，绝对毫秒随机器/编译选项而变），**相对值/加速比才是可移植信号**。三模式渲染下若矢量图不显示，本表即兜底数据来源。

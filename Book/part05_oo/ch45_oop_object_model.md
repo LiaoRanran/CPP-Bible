@@ -1903,3 +1903,42 @@ int main() {
 ```
 
 > 间接调用的代价不止 `call` 本身，还包括流水线停顿与无法跨调用边界内联。本基准用 `[[gnu::noinline]]` 工厂阻止编译器去虚化，使 `run_virtual` 保留真实 vtable 间接；生产代码中可去虚化的场景（对象类型在调用点可见）虚函数几乎免费，这正是实测方差大的根源（见 D5.2.2）。
+
+## 基准数字可视化速读（本机 GCC 实测）
+
+> 『虚函数一定慢』只在『类型对编译器不可见』时成立。下面把 D5.1 的基准画成图——CRTP 快 ~8.9× 的根源是消除两次间接。
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 348" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="0" y="0" width="680" height="348" fill="#ffffff"/>
+  <text x="340" y="24" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1a1a1a">图 1　虚函数 vs CRTP 分派开销（ms，越低越好）</text>
+  <line x1="72" y1="48" x2="72" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="300" x2="620" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="216.0" x2="620" y2="216.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="132.0" x2="620" y2="132.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="48.0" x2="620" y2="48.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="300.0" x2="67" y2="300.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="303.5" text-anchor="end" fill="#555" font-size="10.5">0</text>
+  <line x1="72" y1="216.0" x2="67" y2="216.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="219.5" text-anchor="end" fill="#555" font-size="10.5">20</text>
+  <line x1="72" y1="132.0" x2="67" y2="132.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="135.5" text-anchor="end" fill="#555" font-size="10.5">40</text>
+  <line x1="72" y1="48.0" x2="67" y2="48.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="51.5" text-anchor="end" fill="#555" font-size="10.5">60</text>
+  <text x="34" y="174" text-anchor="middle" transform="rotate(-90 34 174)" fill="#777" font-size="11">耗时（ms）</text>
+  <rect x="210.0" y="115.7" width="76" height="184.3" fill="#DD8452" stroke="#b5651d" stroke-width="0.75"/>
+  <text x="248.0" y="109.7" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">43.88ms</text>
+  <text x="248.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">virtual</text>
+  <rect x="406.0" y="279.3" width="76" height="20.7" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="444.0" y="273.3" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">4.94ms</text>
+  <text x="444.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">CRTP</text>
+  <text x="346" y="338" text-anchor="middle" fill="#777" font-size="11">运行期多态基线 vs 编译期单态化（noinline 工厂阻止去虚化）</text>
+</svg>
+
+> **图注**：CRTP 快 ~8.9× 的根源是消除**两次间接**：vtable 取指（`mov rax,[rdi]`）+ 函数指针间接跳转（`call [rax+offset]`）；`static_cast<Derived const*>(this)->work_impl(x)` 在编译期单态化，`work_impl` 被 `-O2` 完全内联，零间接跳转。编译器**去虚化**会使差距缩小（本基准用 `[[gnu::noinline]]` 工厂隐藏动态类型，强制保留真正 vtable 间接）——这解释了生产代码虚函数实测开销方差大。**代价**是编译期耦合与晦涩模板报错；`final` 能在不牺牲可读性下帮助去虚化，是中间方案。颜色仅作区分，数值标签已写明。
+
+| 策略 | 分派方式 | 耗时 (ms) | 相对 |
+|------|----------|-----------|------|
+| `virtual work()` | vtable 间接调用 | 43.88 | 1.00x (基线) |
+| CRTP `work_impl` | 编译期内联单态化 | 4.94 | ~8.9x 快 |
+
+> 表注：以上数字取自本章 D5.1 基准（本机 GCC 实测，绝对毫秒随机器/编译选项而变），**相对值/加速比才是可移植信号**。三模式渲染下若矢量图不显示，本表即兜底数据来源。

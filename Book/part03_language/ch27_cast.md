@@ -2250,3 +2250,42 @@ int main() {
 ```
 
 > 注意：`static_cast` 的「零开销」以「程序员保证类型安全」为前提——`run_static` 不做任何运行期检查，若实际类型不是 `D4` 即 UB。这与 D5.2.3 一致：`dynamic_cast` 的代价是「每次调用都付」，应移出热路径或用 `std::variant` + `std::visit` 替代。
+
+## 基准数字可视化速读（本机 GCC 实测）
+
+> dynamic_cast 的 ~10× 开销全部来自 RTTI 验证，不是虚调用本身。下面把 D5.1 的基准画成图——精确隔离出『运行期类型判别』的代价。
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 348" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="0" y="0" width="680" height="348" fill="#ffffff"/>
+  <text x="340" y="24" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1a1a1a">图 1　static_cast vs dynamic_cast 下转开销（ms，越低越好）</text>
+  <line x1="72" y1="48" x2="72" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="300" x2="620" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="216.0" x2="620" y2="216.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="132.0" x2="620" y2="132.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="48.0" x2="620" y2="48.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="300.0" x2="67" y2="300.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="303.5" text-anchor="end" fill="#555" font-size="10.5">0</text>
+  <line x1="72" y1="216.0" x2="67" y2="216.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="219.5" text-anchor="end" fill="#555" font-size="10.5">50</text>
+  <line x1="72" y1="132.0" x2="67" y2="132.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="135.5" text-anchor="end" fill="#555" font-size="10.5">100</text>
+  <line x1="72" y1="48.0" x2="67" y2="48.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="51.5" text-anchor="end" fill="#555" font-size="10.5">150</text>
+  <text x="34" y="174" text-anchor="middle" transform="rotate(-90 34 174)" fill="#777" font-size="11">耗时（ms）</text>
+  <rect x="210.0" y="281.5" width="76" height="18.5" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="248.0" y="275.5" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">11.02ms</text>
+  <text x="248.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">static_cast</text>
+  <rect x="406.0" y="108.8" width="76" height="191.2" fill="#DD8452" stroke="#b5651d" stroke-width="0.75"/>
+  <text x="444.0" y="102.8" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">113.81ms</text>
+  <text x="444.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">dynamic_cast</text>
+  <text x="346" y="338" text-anchor="middle" fill="#777" font-size="11">单继承链下转（工厂隐藏动态类型，阻止去虚化）</text>
+</svg>
+
+> **图注**：两条路径执行相同的虚调用 `d->id()`，唯一差异是 `static_cast<D4*>`（编译期指针偏移，单继承链零偏移、零运行期指令）vs `dynamic_cast<D4*>`（运行期遍历 type_info 继承链比对）。**10.3× 的差距精确隔离了 RTTI 验证开销**——且 dynamic_cast 每次调用都付，随继承深度增长。选型：编译期已知下转用 static_cast（零开销，但以放弃安全检查换）；运行期才知下转首选 `std::variant`+`std::visit`，次选 dynamic_cast（移出热路径，一次性验证后缓存）。颜色仅作区分，数值标签已写明。
+
+| 策略 | 分派方式 | 耗时 (ms) | 相对 |
+|------|----------|-----------|------|
+| `static_cast<D4*>` | 编译期指针偏移 | 11.02 | 1.00x (基线) |
+| `dynamic_cast<D4*>` | RTTI type_info 验证 | 113.81 | ~10.3x 慢 |
+
+> 表注：以上数字取自本章 D5.1 基准（本机 GCC 实测，绝对毫秒随机器/编译选项而变），**相对值/加速比才是可移植信号**。三模式渲染下若矢量图不显示，本表即兜底数据来源。

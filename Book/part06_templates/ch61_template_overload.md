@@ -1257,3 +1257,42 @@ int main() {
 ```
 
 > 对照：`run_constexpr<0>/<1>`（if constexpr 路径）各自单态化为一份不含分支的代码并内联进 `main`，无独立符号。目标地址集合小且固定，BTB 能缓存，故其惩罚（4.3×）小于 ch62 的分支预测失败（10.4×）——前者是「间接调用 + 无内联」，后者叠加「分支预测失败惩罚」。
+
+## 基准数字可视化速读（本机 GCC 实测）
+
+> 函数指针表比 if/else 链温和（4.3× vs 10.4×），因为目标地址固定紧凑、BTB 能缓存。下面把 D5.1 的基准画成图。
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 348" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="0" y="0" width="680" height="348" fill="#ffffff"/>
+  <text x="340" y="24" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1a1a1a">图 1　编译期分派 vs 函数指针表（ms，越低越好）</text>
+  <line x1="72" y1="48" x2="72" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="300" x2="620" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="216.0" x2="620" y2="216.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="132.0" x2="620" y2="132.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="48.0" x2="620" y2="48.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="300.0" x2="67" y2="300.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="303.5" text-anchor="end" fill="#555" font-size="10.5">0</text>
+  <line x1="72" y1="216.0" x2="67" y2="216.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="219.5" text-anchor="end" fill="#555" font-size="10.5">20</text>
+  <line x1="72" y1="132.0" x2="67" y2="132.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="135.5" text-anchor="end" fill="#555" font-size="10.5">40</text>
+  <line x1="72" y1="48.0" x2="67" y2="48.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="51.5" text-anchor="end" fill="#555" font-size="10.5">60</text>
+  <text x="34" y="174" text-anchor="middle" transform="rotate(-90 34 174)" fill="#777" font-size="11">耗时（ms）</text>
+  <rect x="210.0" y="241.2" width="76" height="58.8" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="248.0" y="235.2" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">13.99ms</text>
+  <text x="248.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">if constexpr</text>
+  <rect x="406.0" y="49.4" width="76" height="250.6" fill="#DD8452" stroke="#b5651d" stroke-width="0.75"/>
+  <text x="444.0" y="43.4" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">59.66ms</text>
+  <text x="444.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">函数指针表</text>
+  <text x="346" y="338" text-anchor="middle" fill="#777" font-size="11">随机 tag → BTB 可缓存固定目标地址</text>
+</svg>
+
+> **图注**：函数指针表慢 ~4.3× 的根源是**间接调用阻止内联 + 分支预测惩罚**：`table[tags[i]](v[i])` 每次迭代取索引、取地址、间接 `call`，阻止 `op_*` 内联，且随机 tag 令 BTB 难稳。但因三个目标地址固定且紧凑，`4.3× < ch62 的 10.4×`——前者是『间接调用 + 无内联』，后者叠加『分支预测失败』。**代价**是每种 Tag 实例化一份代码（mangled 名参与，独立实例化）。选型：操作集合编译期已知且封闭用 if constexpr/重载；运行期动态决定（插件、命令分派）才用函数指针表。颜色仅作区分，数值标签已写明。
+
+| 策略 | 分派方式 | 耗时 (ms) | 相对 |
+|------|----------|-----------|------|
+| `if constexpr` 编译期分派 | 单态化 + 内联 | 13.99 | 1.00x (基线) |
+| 函数指针表 `table[tag](x)` | 运行期间接调用 | 59.66 | ~4.3x 慢 |
+
+> 表注：以上数字取自本章 D5.1 基准（本机 GCC 实测，绝对毫秒随机器/编译选项而变），**相对值/加速比才是可移植信号**。三模式渲染下若矢量图不显示，本表即兜底数据来源。

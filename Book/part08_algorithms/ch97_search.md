@@ -1584,3 +1584,48 @@ int main() {
 - 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
 - 加速比（4.03× / 4.17× / 16.8×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_97_search.cpp`。
+
+## 基准数字可视化速读（本机 GCC 实测）
+
+> 同为『找一个键』，三种容器的差距却是一个数量级。下面把 D5.1 的基准画成图——重点看 **离散节点查找的瓶颈在缓存，而非算法阶数**。
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 348" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="0" y="0" width="680" height="348" fill="#ffffff"/>
+  <text x="340" y="24" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1a1a1a">图 1　查找容器：sorted vector / set / unordered_set（ms，越低越好）</text>
+  <line x1="72" y1="48" x2="72" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="300" x2="620" y2="300" stroke="#555" stroke-width="1"/>
+  <line x1="72" y1="216.0" x2="620" y2="216.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="132.0" x2="620" y2="132.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="48.0" x2="620" y2="48.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="72" y1="287.0" x2="620" y2="287.0" stroke="#c0504d" stroke-width="0.8" stroke-dasharray="4 3"/>
+  <text x="620" y="283.0" text-anchor="end" fill="#c0504d" font-size="9.5">最快 154 ms</text>
+  <line x1="72" y1="300.0" x2="67" y2="300.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="303.5" text-anchor="end" fill="#555" font-size="10.5">0</text>
+  <line x1="72" y1="216.0" x2="67" y2="216.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="219.5" text-anchor="end" fill="#555" font-size="10.5">1000</text>
+  <line x1="72" y1="132.0" x2="67" y2="132.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="135.5" text-anchor="end" fill="#555" font-size="10.5">2000</text>
+  <line x1="72" y1="48.0" x2="67" y2="48.0" stroke="#555" stroke-width="1"/>
+  <text x="63" y="51.5" text-anchor="end" fill="#555" font-size="10.5">3000</text>
+  <text x="34" y="174" text-anchor="middle" transform="rotate(-90 34 174)" fill="#777" font-size="11">耗时（ms）</text>
+  <rect x="112.0" y="245.9" width="76" height="54.1" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="150.0" y="239.9" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">643.5ms</text>
+  <text x="150.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">sorted vector</text>
+  <rect x="308.0" y="82.1" width="76" height="217.9" fill="#DD8452" stroke="#b5651d" stroke-width="0.75"/>
+  <text x="346.0" y="76.1" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">2593.9ms</text>
+  <text x="346.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">set</text>
+  <rect x="504.0" y="287.0" width="76" height="13.0" fill="#4C72B0" stroke="#2f4b73" stroke-width="0.75"/>
+  <text x="542.0" y="281.0" text-anchor="middle" fill="#1a1a1a" font-weight="bold" font-size="12">154.4ms</text>
+  <text x="542.0" y="320" text-anchor="middle" fill="#333" font-size="11.5">unordered_set</text>
+  <text x="346" y="338" text-anchor="middle" fill="#777" font-size="11">400 万键 / 200 万次查询全命中（mt19937 随机键）</text>
+</svg>
+
+> **图注**：同为 O(log N) 二分，`set` 比 `sorted vector` 慢 **4.03×**：红黑树每步是随机指针追逐（400 万节点 × 40+ 字节控制块，缓存命中率极低）；`sorted vector` 数据连续、末几步同 cache line，预取器能掩盖延迟。`unordered_set` 快在 **O(1) 桶直达**（约 77ns/查询，被内存延迟而非哈希主导）。工程决策：只查不改/批量建 → sorted vector；需有序遍历+频繁增删 → set；纯点查 → unordered_set。与 ch83「map vs unordered_map 22.5×」互证——离散节点查找瓶颈在缓存。颜色仅作区分，数值标签已写明。
+
+| 场景 | 耗时 ms | 加速比 |
+|---|---|---|
+| sorted vector + `lower_bound` | 643.5 | 1.00×（基准） |
+| `set::find` | 2593.9 | 0.25×（比 lower_bound 慢 4.03×） |
+| `unordered_set::find` | 154.4 | 4.17×（比 lower_bound 快 4.17×，比 set 快 16.8×） |
+
+> 表注：以上数字取自本章 D5.1 基准（本机 GCC 实测，绝对毫秒随机器/编译选项而变），**相对值/加速比才是可移植信号**。三模式渲染下若矢量图不显示，本表即兜底数据来源。
