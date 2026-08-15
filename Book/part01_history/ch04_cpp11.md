@@ -358,16 +358,20 @@ int main() {
 // 输出：1
 ```
 
-- **N1968** Rvalue References → 移动语义。
-- **N2658** Move Special Members。
-- **N2672** Uniform Initialization / `initializer_list`。
-- **N2761** `auto` & `decltype`。
-- **N2927** `nullptr`。
-- **N2725** Lambda。
-- **N2242** `constexpr`（基础版）。
-- **N2249** `unique_ptr`/`shared_ptr`/`weak_ptr`。
-- **N2660** `std::thread` 等并发。
-- **N2429** 内存模型与 C++11 原子（定义 happens-before、data race free）。
+| 提案 | 贡献特性 | 一句话 | 标准条款 |
+|---|---|---|---|
+| N1968 | 右值引用 | 引入 `T&&`，为移动语义与完美转发奠基 | [dcl.ref] |
+| N2658 | 移动特殊成员 | 规定移动构造/移动赋值的生成与抑制规则 | [class.copy.ctor] |
+| N2672 | 统一初始化 / `initializer_list` | `{}` 收敛各类初始化语法，构造可接收初始化列表 | [dcl.init.list] |
+| N2761 | `auto` & `decltype` | 类型推导，削减迭代器/模板冗长类型名 | [dcl.spec.auto] |
+| N2927 | `nullptr` | 类型安全的空指针常量，消除 `0`/`NULL` 重载陷阱 | [lex.nullptr] |
+| N2725 | Lambda | 就地可调用对象，让 STL 算法真正好用 | [expr.prim.lambda] |
+| N2242 | `constexpr`（基础版） | 把计算移入编译期 | [dcl.constexpr] |
+| N2249 | `unique_ptr`/`shared_ptr`/`weak_ptr` | RAII 智能指针接管所有权，替代 `auto_ptr` | [util.smartptr] |
+| N2660 | `std::thread` 等并发 | 跨平台多线程标准库 | [thread] |
+| N2429 | 内存模型与原子 | 定义 happens-before、data race free，支撑无锁 | [intro.multithread] / [atomics.order] |
+
+> 表注（⑭）：十份关键提案共同把 C++11 从「语言修订」变成「现代 C++ 基座」；右值引用（N1968）与并发内存模型（N2429）是最底层的两根支柱，其余特性均建立其上。
 
 ## ⑮ 面试题
 
@@ -524,9 +528,13 @@ C++11 是现代 C++ 的拐点。下面按领域展开：
 
 ### ㉒.3 生产踩坑：C++11 常见误用
 
-- **移动后对象处于"有效但未指定状态"**：对同一对象重复 `std::move` 后再使用，或对 `const` 对象误用 move（退化成拷贝），是高频 bug；标准只保证 moved-from 对象可析构/赋值。
-- **`std::thread` 析构若仍 joinable 直接 `std::terminate`**：必须显式 `join()` 或 `detach()`（C++20 的 `jthread` 才自动 join），否则程序崩溃。
-- **lambda 默认按值/引用捕获的生命周期**：返回引用捕获的局部变量的 lambda，悬挂引用是经典 UB；应优先值捕获或 `std::shared_ptr` 延长生命周期。
+| 误用 | 后果 | 对策 |
+|---|---|---|
+| 移动后对象处于"有效但未指定状态" | 对同一对象重复 `std::move` 后再使用、或对 `const` 对象误用 move（退化成拷贝），是高频 bug | 标准只保证 moved-from 对象可析构/赋值；move 后仅做赋值/析构 |
+| `std::thread` 析构若仍 joinable 直接 `std::terminate` | 未显式 `join()`/`detach()` 即析构，程序崩溃 | 显式 `join()`/`detach()`；C++20 用 `jthread` 自动 join |
+| lambda 默认按值/引用捕获的生命周期 | 返回引用捕获局部变量的 lambda，悬挂引用是经典 UB | 优先值捕获，或用 `std::shared_ptr` 延长生命周期 |
+
+> 表注（㉒.3）：三类误用都源于“把移动/线程/闭包当语法糖而非资源”——注意 moved-from 状态、thread 的 joinable 契约、lambda 捕获的生命周期，是 C++11 工程化的三条底线。
 
 ### ㉒.4 与标准的互动：从 N2118 到今天
 
@@ -797,26 +805,30 @@ _Z8null_ptrv:
 
 > 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
 
-- **Google** — Abseil 的 `absl::make_unique` 是 C++11 `std::make_unique` 的前身 polyfill
-- **LLVM** — libc++ 用 C++11 `std::forward` / `std::function` 实现标准库
-- **Chromium** — base::Callback 是 C++11 `std::function` 的前身，2014 年落地
-- **Boost** — Boost.Move 在 C++11 前用宏模拟右值引用 move 语义
-- **Qt ** — Qt5 用 `Q_DECL_OVERRIDE` = `override`，全面转向 C++11
-- **Eigen** — 用 C++11 `constexpr` 表达编译期矩阵维度
-- **folly** — folly::Future 构建于 C++11 `std::async` 之上
-- **Redis** — hiredispp 客户端自 2018 年起采用 C++11
-- **ClickHouse** — 起步于 C++11，现已要求 C++20 编译器
-- **RocksDB** — Facebook 用 C++11 `thread_local` 实现 PerfContext
-- **V8** — Torque 编译器大量使用 C++11 `constexpr`
-- **DPDK** — 示例程序用 C++11 封装轮询线程
-- **gRPC** — 全量使用 C++11 `std::shared_ptr` 管理生命周期
-- **spdlog** — C++11 线程安全 sink，跨线程无锁写入
-- **fmt** — 用 C++11 变量模板实现 `fmt::format`
-- **Unreal** — UE4.0 起采用 C++11，去除了旧有 TR1 依赖
-- **WebKit** — JavaScriptCore 用 C++11 lambda 重写回调
-- **Mozilla** — MFBT 用 C++11 MoveRef 替代退化的 auto_ptr
-- **Abseil** — Abseil 要求 C++14 编译器，但 move 语义源自 C++11
-- **Blink** — Blink 渲染引擎的事件分发基于 C++11 lambda
+| 项目 | 工业用法 | 关键 C++11 特性 |
+|---|---|---|
+| Google / Abseil | `absl::make_unique` 是 `std::make_unique` 的前身 polyfill | `make_unique` / 智能指针 |
+| LLVM | libc++ 用 `std::forward` / `std::function` 实现标准库 | 完美转发 / `std::function` |
+| Chromium | `base::Callback` 是 `std::function` 前身，2014 落地 | `std::function` |
+| Boost | `Boost.Move` 在 C++11 前用宏模拟 move 语义 | 移动语义（宏模拟） |
+| Qt | Qt5 用 `Q_DECL_OVERRIDE = override`，全面转向 C++11 | `override` |
+| Eigen | 用 `constexpr` 表达编译期矩阵维度 | `constexpr` |
+| folly | `folly::Future` 构建于 `std::async` 之上 | `std::async` |
+| Redis | hiredispp 客户端自 2018 起采用 C++11 | 通用现代写法 |
+| ClickHouse | 起步于 C++11，现已要求 C++20 编译器 | 移动语义（基座） |
+| RocksDB | 用 `thread_local` 实现 PerfContext | `thread_local` |
+| V8 | Torque 编译器大量使用 `constexpr` | `constexpr` |
+| DPDK | 示例程序用 C++11 封装轮询线程 | 线程 / 并发 |
+| gRPC | 全量使用 `std::shared_ptr` 管理生命周期 | `shared_ptr` |
+| spdlog | 线程安全 sink，跨线程无锁写入 | 并发 / 原子 |
+| fmt | 用变量模板实现 `fmt::format` | 变量模板 |
+| Unreal | UE4.0 起采用 C++11，去除旧 TR1 依赖 | 通用现代写法 |
+| WebKit | JavaScriptCore 用 lambda 重写回调 | lambda |
+| Mozilla | MFBT 用 `MoveRef` 替代退化 `auto_ptr` | 移动语义 |
+| Abseil | 要求 C++14 编译器，但 move 语义源自 C++11 | 移动语义 |
+| Blink | 渲染引擎事件分发基于 lambda | lambda |
+
+> 表注（附录 I）：20 个生产项目一致把 C++11 当作「最低现代基线」——移动语义、lambda、智能指针、`constexpr`、`thread_local` 是被复用的高频特性；多数项目随后以 C++14/17/20 为门槛继续上探。
 
 ## 叙事补遗 [J: Learning]
 

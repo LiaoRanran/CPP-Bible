@@ -330,12 +330,16 @@ CRTP vs 虚函数决策表：
 
 ## ⑨ 模式与 C++ 标准库的暗合（iterator/allocator） [标准]
 
-C++ 标准库本身就是模式的集大成者。理解这点，能让你"用标准库即是用模式"：
+C++ 标准库本身就是模式的集大成者。理解这点，能让你"用标准库即是用模式"（下表的「≈」表示"语言/库已内建该模式的等价物"，而非逐字照搬 GoF 写法）：
 
-- **Iterator** ≈ GoF Iterator 模式，且被语言级 `for(:)` 语法糖消纳。
-- **Allocator** ≈ 可替换的创建策略（Abstract Factory 的变体）。
-- **std::function** ≈ Command/Strategy 的通用容器。
-- **std::shared_ptr 的删除器** ≈ Strategy 注入。
+| 标准库设施 | 对应 GoF 模式 | 说明 |
+|---|---|---|
+| `Iterator` / 范围 `for` | Iterator | 语言级语法糖消纳迭代，几乎无需手写 |
+| 分配器 `Allocator` | Abstract Factory（变体） | 可替换的"对象如何被分配"创建策略 |
+| `std::function` | Command / Strategy | 类型擦除的通用函数对象容器 |
+| `std::shared_ptr` 的删除器 | Strategy（注入） | 析构行为作为可替换策略注入 |
+
+> 表注（⑨）：上表列举 4 个最常被"收编"进标准库的 GoF 模式；其余 STL 暗合见附录 E 与 L.2（如 Adapter=`std::stack`、Facade=`std::filesystem`）。结论：能用标准库设施表达的模式，就不必手写样板。
 
 > **示例 19** [难度 ★☆☆☆☆] [主题：模式与 C++ 标准库的暗合]
 ```cpp
@@ -393,13 +397,17 @@ void log_to_console() { std::printf("log\n"); }  // 一个函数足矣
 
 ## ⑪ 模式与 SOLID 原则 [标准]
 
-[标准] SOLID 五原则为模式提供"为什么好"的理论底座：
+[标准] SOLID 五原则为模式提供"为什么好"的理论底座（下表给出每条原则与相关模式的对应）：
 
-- **S**ingle Responsibility：Facade、Mediator 收敛变化面。
-- **O**pen/Closed：Strategy、Decorator、Template Method 让扩展不修改源码。
-- **L**iskov：任何用基类的地方可替换派生类（模式成立的前提）。
-- **I**nterface Segregation：细粒度接口（如仅 `Drawable` 而非 "大接口"）。
-- **D**ependency Inversion：依赖抽象（`Shape&`）而非具体（`Square`）。
+| 原则 | 字母 | 含义 | 在模式中的体现 |
+|---|---|---|---|
+| Single Responsibility | S | 一个类只承担一种变化来源 | Facade、Mediator 收敛变化面 |
+| Open/Closed | O | 对扩展开放、对修改封闭 | Strategy、Decorator、Template Method 让扩展不碰源码 |
+| Liskov Substitution | L | 基类可用的地方派生类皆可替换 | 多态模式成立的前提（如 `Shape&` 收一切图形） |
+| Interface Segregation | I | 接口应细粒度、按需拆分 | 仅暴露 `Drawable` 而非臃肿大接口 |
+| Dependency Inversion | D | 依赖抽象而非具体实现 | 依赖 `Shape&` 而非具体 `Square` |
+
+> 表注（⑪）：SOLID 是模式的"理论底座"——S/O 解释为何 Facade/Strategy 好用，L 是多态模式成立的硬前提，I/D 指导如何定义抽象边界；第⑭⑯节的编译期策略是把 D 推到极致（依赖模板参数而非基类）。
 
 用模板表达"依赖倒置"且零成本：
 
@@ -805,10 +813,14 @@ ch139  CRTP 与编译期多态深度专题
 
 ### ㉒.3 生产踩坑：模式不是目标，是解决手段
 
-- **为模式而模式（over-engineering）**：小项目硬套抽象工厂/访问者，反而增加理解成本与编译负担。
-- **单例滥用**：全局可变状态破坏测试性与并发安全，现代 C++ 更推荐「依赖注入 + 明确所有权」替代裸单例。
-- **忽视值语义**：C++ 有 RAII、值类型、`unique_ptr` 等更轻量的「非虚接口」替代方案，不必事事走接口 + 多态。
-- **虚调用成本被忽略**：模式常默认用虚函数，热路径上应评估模板/CRTP/`if constexpr` 的零开销替代。
+| 踩坑 | 表现 | 规避 / 对策 |
+|---|---|---|
+| 为模式而模式（over-engineering） | 小项目硬套抽象工厂/访问者，增加理解成本与编译负担 | 先用 `if/else` + 单一函数，真出现第 3 种需求再抽 |
+| 单例滥用 | 全局可变状态破坏测试性与并发安全 | 现代 C++ 用「依赖注入 + 明确所有权」替代裸单例（见 ch136 ⑭） |
+| 忽视值语义 | 事事走接口 + 多态，忽略更轻量的非虚替代 | 优先 RAII、值类型、`unique_ptr` 等非虚接口方案 |
+| 虚调用成本被忽略 | 模式默认用虚函数，热路径隐性变慢 | 评估模板/CRTP/`if constexpr` 的零开销替代（见 ⑮⑱） |
+
+> 表注（㉒.3）：四条坑的共同根因是把"模式"当目标而非手段；前两条（over-engineering、单例）在 ch136 ⑫⑭、L.3 有更细的工业复盘，后两条（值语义、虚调用）呼应 ④⑦⑮ 的零开销主线。
 
 ### ㉒.4 与 C++ 标准的互动
 
@@ -899,28 +911,32 @@ Q: 本章核心? A: 见附录A-F中的深度分析(工业原理/性能/汇编/�
 
 ## 附录 H（工业级设计模式实战）
 
-> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
+> 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。下表按"项目 → 所用模式 → 承担角色"整理，便于对照本章模式清单：
 
-- **Google** — Abseil 用 Singleton 模式管理全局状态
-- **LLVM** — LLVM 用 Visitor 模式遍历 IR
-- **Chromium** — base 用 Observer 模式通知生命周期
-- **Boost** — Boost.Signals2 实现观察者模式
-- **Qt ** — Qt 信号槽即观察者模式
-- **Eigen** — 策略模式选择矩阵后端
-- **folly** — folly 用 Future 实现命令模式
-- **Redis** — 事件驱动即 Reactor 模式
-- **ClickHouse** — Pipeline 即职责链模式
-- **RocksDB** — WriteBatch 即命令模式
-- **V8** — 解释器用 Visitor 模式
-- **DPDK** — 轮询即 Proactor/Reactor
-- **gRPC** — 拦截器即装饰器模式
-- **spdlog** — sink 即装饰器模式
-- **fmt** — 格式化器即策略模式
-- **Unreal** — UE 用组件模式组合行为
-- **WebKit** — WTF 用 RAII 管理资源
-- **Mozilla** — mfbt 用 RAII 封装句柄
-- **Abseil** — Abseil `absl::Cleanup` 实现作用域退出
-- **Blink** — Blink 用组合模式管理 DOM
+| 项目 / 库 | 使用的模式 | 承担角色（工业语境） |
+|---|---|---|
+| Google Abseil | Singleton | `absl::Singleton` 管理线程安全全局状态 |
+| LLVM | Visitor | `InstVisitor` / `RecursiveASTVisitor` 遍历 IR/AST |
+| Chromium（`base`） | Observer | `ObserverList` 通知生命周期/状态变化 |
+| Boost（Signals2） | Observer | 线程安全的信号槽实现 |
+| Qt | Observer | 信号槽（`QObject::connect`）是观察者工业范例 |
+| Eigen | Strategy | 策略选择矩阵后端 / 表达式模板 |
+| folly | Command | `Future`/`Promise` 封装异步命令 |
+| Redis | Reactor | 事件驱动循环即 Reactor 模式 |
+| ClickHouse | Chain of Responsibility | Pipeline 即职责链处理查询阶段 |
+| RocksDB | Command | `WriteBatch` 把多次写聚合成一条命令 |
+| V8 | Visitor | 解释器/编译器用 Visitor 遍历语法树 |
+| DPDK | Proactor/Reactor | 轮询（busy-poll）即 Proactor/Reactor |
+| gRPC | Decorator | 拦截器（interceptor）装饰 RPC 调用 |
+| spdlog | Decorator | `sink` 链装饰日志输出目标 |
+| fmt | Strategy | 格式化器作为可替换策略 |
+| Unreal Engine | Component / Composite | 组件模式组合 Actor 行为 |
+| WebKit（WTF） | RAII | 用 RAII 管理资源/句柄生命周期 |
+| Mozilla（mfbt） | RAII | 用 RAII 封装原生句柄 |
+| Abseil（`absl::Cleanup`） | Scope Guard | 作用域退出时自动执行清理 |
+| Blink | Composite | 用组合模式管理 DOM 树 |
+
+> 表注（附录 H）：上表 20 项均指向可公开核查的工业代码，覆盖 Observer/Visitor/Command/Decorator/RAII/Singleton 等高频模式；规律是"框架的隐形骨架几乎都是模式"——但落地形态已被 C++ 现代惯用法（信号槽、`std::function`、RAII）重新表达，而非 GoF 原始虚接口写法。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

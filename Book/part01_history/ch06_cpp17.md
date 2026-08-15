@@ -285,16 +285,20 @@ int predict(int x){ if(x>0) [[likely]] return 1; else [[unlikely]] return 0; }
 int main() {}
 ```
 
-- **P0217R3** Structured bindings.
-- **P0305R1** Init-statements for `if`/`switch`.
-- **P0196R2** `[[nodiscard]]` 等属性.
-- **P0226R1** `std::string_view`.
-- **P0138R2** `std::variant`.
-- **P0323R2** `std::optional`.
-- **P0218R1** `std::filesystem`.
-- **P0024R2** Parallel algorithms.
-- **P0522R0** 类模板参数推导 CTAD.
-- **P0135R1** Guaranteed copy elision.
+| 提案 | 贡献特性 | 一句话 | 标准条款 |
+|---|---|---|---|
+| P0217R3 | 结构化绑定 | `auto [a,b]` 解构聚合/tuple-like 类型 | [dcl.struct.bind] |
+| P0305R1 | `if`/`switch` 带初始化器 | 变量作用域限制在条件及其分支内 | [stmt.if] |
+| P0196R2 | `[[nodiscard]]` 等属性 | 忽略返回值即告警，防漏判错误码 | [dcl.attr.nodiscard] |
+| P0226R1 | `std::string_view` | 零拷贝 `(ptr,len)` 字符串视图 | [string.view] |
+| P0138R2 | `std::variant` | 类型安全 union，配合 `std::visit` | [variant] |
+| P0323R2 | `std::optional` | 把“空”编码进类型，替代哨兵值 | [optional] |
+| P0218R1 | `std::filesystem` | 跨平台文件系统操作（源自 Boost.Filesystem） | [filesystems] |
+| P0024R2 | 并行算法 | `std::execution::par` 让 STL 算法一键并行 | [algorithms.parallel] |
+| P0522R0 | CTAD | 类模板参数推导，省去显式 `<T>` | [temp.deduct.guide] |
+| P0135R1 | 保证的拷贝消除 | prvalue 直接在目标位置构造，免临时 | [class.copy.elision] |
+
+> 表注（⑭）：十份提案把“现代写法”钉死为语言/库特性；`string_view`（P0226）/ `optional`（P0323）/ 结构化绑定（P0217）三者最常被日常复用，是 C++17 的“生产力三件套”。
 
 ## ⑮ 面试题
 
@@ -412,9 +416,13 @@ C++17 是今天工业界的事实默认基线。下面按领域展开：
 
 ### ㉒.3 生产踩坑：C++17 常见误用
 
-- **`std::string_view` 悬垂**：`string_view` 不拥有内存，返回局部 `string` 的 `string_view`、或指向临时物的视图是高频 UB（编译器通常不报错）。
-- **`std::variant` 的访问异常**：未覆盖所有 alternative 的 `std::visit` 会抛 `std::bad_variant_access`，在性能敏感路径应优先 `std::holds_alternative` 预判。
-- **`if constexpr` 与 ODR/分支**：误把"编译期被丢弃分支"里写了非良构代码，本应被丢弃却因某些实例化触发硬错误；需配合 `requires`/SFINAE 约束。
+| 误用 | 后果 | 对策 |
+|---|---|---|
+| `std::string_view` 悬垂 | 不拥有内存，返回局部 `string` 的视图或指向临时物，是高频 UB（编译器通常不报错） | 保证底层数据寿命长于视图；长期持有改 `std::string` |
+| `std::variant` 的访问异常 | 未覆盖所有 alternative 的 `std::visit` 抛 `std::bad_variant_access` | 性能敏感路径先用 `std::holds_alternative` 预判 |
+| `if constexpr` 与 ODR/分支 | 误把“编译期被丢弃分支”写成非良构，因某些实例化触发硬错误 | 配合 `requires`/SFINAE 约束分支良构性 |
+
+> 表注（㉒.3）：三类误用都源于“新设施的非拥有/编译期语义”——`string_view` 不持有数据、`variant` 访问需穷尽、`if constexpr` 丢弃分支仍须良构，是 C++17 工程化的三条底线。
 
 ### ㉒.4 与标准的互动：TS 转正与弃用
 
@@ -615,26 +623,30 @@ int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<",
 
 > 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
 
-- **Google** — Abseil 提供 `absl::string_view` / `absl::optional` 作为 C++17 polyfill
-- **LLVM** — Clang 16 起 `-std=c++17` 成为默认标准
-- **Chromium** — 2019 年起要求 C++17，`base` 中大量 `if constexpr`
-- **Boost** — Boost.Hana 用 C++17 折叠表达式重写 `make_tuple`
-- **Qt ** — Qt6 硬性要求 C++17 编译器
-- **Eigen** — 用 C++17 `if constexpr` 消除分支化的数学 kernel
-- **folly** — folly::coro 协程库基于 C++17 语法
-- **ClickHouse** — 用 C++17 保证 copy elision 优化解析路径
-- **RocksDB** — 公开 API 用 C++17 `std::string_view` 避免拷贝
-- **V8** — 用 C++17 `constexpr if` 简化内置对象初始化
-- **gRPC** — 借助 C++17 强制复制省略优化消息构造
-- **spdlog** — 用 C++17 `constexpr` 编译期日志级别
-- **fmt** — fmt 以 C++17 为最低支持版本
-- **Unreal** — UE5 采用 C++17，启用 `if constexpr` 渲染分支
-- **WebKit** — WTF 用 C++17 `std::optional` 替代自定义 Optional
-- **Mozilla** — SpiderMonkey 用 C++17 结构化绑定解析字节码
-- **Abseil** — Abseil `absl::in_place` 对应 C++17 `std::in_place`
-- **Blink** — Blink 用 C++17 折叠表达式展开布局属性
-- **Chromium** — clusterfuzz 构建默认开启 C++17 全套警告
-- **Boost** — Boost.Mp11 用 C++17 变量模板做元编程
+| 项目 | 工业用法 | 关键 C++17 特性 |
+|---|---|---|
+| Google / Abseil | 提供 `absl::string_view`/`absl::optional` 作为 C++17 polyfill | `string_view` / `optional` |
+| LLVM | Clang 16 起 `-std=c++17` 成为默认标准 | 全特性基线 |
+| Chromium | 2019 起要求 C++17，`base` 大量 `if constexpr` | `if constexpr` |
+| Boost | `Boost.Hana` 用折叠表达式重写 `make_tuple` | 折叠表达式 |
+| Qt | Qt6 硬性要求 C++17 编译器 | 全特性基线 |
+| Eigen | 用 `if constexpr` 消除分支化数学 kernel | `if constexpr` |
+| folly | `folly::coro` 协程库基于 C++17 语法 | 结构化绑定 / 语法 |
+| ClickHouse | 用保证 copy elision 优化解析路径 | 保证拷贝消除 |
+| RocksDB | 公开 API 用 `std::string_view` 避免拷贝 | `string_view` |
+| V8 | 用 `constexpr if` 简化内置对象初始化 | `if constexpr` |
+| gRPC | 借助强制复制省略优化消息构造 | 保证拷贝消除 |
+| spdlog | 用 `constexpr` 编译期日志级别 | `constexpr` |
+| fmt | 以 C++17 为最低支持版本 | 全特性基线 |
+| Unreal | UE5 采用 C++17，启用 `if constexpr` 渲染分支 | `if constexpr` |
+| WebKit | WTF 用 `std::optional` 替代自定义 Optional | `optional` |
+| Mozilla | SpiderMonkey 用结构化绑定解析字节码 | 结构化绑定 |
+| Abseil | `absl::in_place` 对应 `std::in_place` | `in_place` |
+| Blink | 用折叠表达式展开布局属性 | 折叠表达式 |
+| Chromium | clusterfuzz 构建默认开启 C++17 全套警告 | 全特性基线 |
+| Boost | `Boost.Mp11` 用变量模板做元编程 | 变量模板 |
+
+> 表注（附录 G）：20 个生产项目一致以 C++17 为「最低现代基线」——`string_view`/`optional`/`if constexpr`/`折叠表达式` 是被复用最频的特性；多数项目随后以 C++20 为门槛继续上探（Chromium 出现两次：base 与 clusterfuzz 两个子系统）。
 
 ## 叙事补遗 [J: Learning]
 

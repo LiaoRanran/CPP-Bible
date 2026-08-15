@@ -46,10 +46,14 @@
 
 版本控制不是“存档工具”，而是**工程协作的事实真相源（single source of truth）**。对 C++ 这类编译型、强耦合、构建缓慢的工程，Git 的价值体现在四个维度：
 
-- **可追溯**：任意一行源码都能回答“谁、何时、为何改动”。
-- **可回退**：`reflog` 与对象不可变保证任何提交都不会真正丢失。
-- **可并行**：分支让多特性并发开发互不阻塞。
-- **可审计**：`bisect`、标签、`git describe` 让“哪个版本引入的 bug”可被机械定位。
+| 维度 | 含义 | 对应 Git 能力 |
+|---|---|---|
+| 可追溯 | 任意一行源码都能回答“谁、何时、为何改动” | `blame` / `log` / 对象元数据 |
+| 可回退 | `reflog` 与对象不可变保证任何提交都不会真正丢失 | `reflog` / `reset` / `gc` 宽限期 |
+| 可并行 | 分支让多特性并发开发互不阻塞 | 轻量分支 / 多工作树 |
+| 可审计 | `bisect`、标签、`git describe` 让“哪个版本引入 bug”可被机械定位 | `bisect` / `tag` / `describe` |
+
+> 表注（①）：四维度共同把“协作约定”沉淀为可机械验证的流程；可追溯/可审计是后续 bisect 与 CI 的前提。
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：概述：版本控制价值 [经验]]
 ```cpp
@@ -803,10 +807,15 @@ Git 工作流本质是「分支模型 + 评审合并约定」的组合，随项�
 **一条判读**：工作流没有银弹——小团队 GitHub Flow 足够，超大规模 monorepo 需要 trunk-based + 专有工具，强治理项目（内核/区块链）则用邮件列表+维护者树保住去中心化评审；关键是评审门禁与可追溯性，而非具体分支命名。
 
 ### ㉒.3 生产踩坑：Git 工作流的误用
-- **对共享分支 `git push --force`**：改写公共历史，导致协作者本地历史错位、互相覆盖；保护分支应禁 force，确需改写用 `--force-with-lease`。
-- **巨型 monorepo 不稀疏检出**：整仓 clone 拖垮 CI 与本地；应用 `sparse-checkout` / `partial-clone`（见 ⑬）。
-- **长期分支合并地狱**：特性分支存活数月，合并冲突爆炸；应小步合入、频繁 rebase/merge main。
-- **跨平台行尾（CRLF/LF）**：未配 `.gitattributes` 的 `* text=auto`，Windows 提交会把全文件转 CRLF，制造假 diff 并破坏需精确字节的构建产物。[评] 统一 LF + `.gitattributes` 是 C++ 跨平台项目的底线。
+
+| 误用 | 后果 | 对策 |
+|---|---|---|
+| 对共享分支 `git push --force` | 改写公共历史，协作者本地历史错位、互相覆盖 | 保护分支禁 force；确需改写用 `--force-with-lease` |
+| 巨型 monorepo 不稀疏检出 | 整仓 clone 拖垮 CI 与本地 | `sparse-checkout` / `partial-clone`（见 ⑬） |
+| 长期分支合并地狱 | 特性分支存活数月，合并冲突爆炸 | 小步合入、频繁 `rebase`/`merge main` |
+| 跨平台行尾（CRLF/LF） | 未配 `.gitattributes * text=auto`，Windows 提交把全文件转 CRLF，制造假 diff 并破坏需精确字节的构建产物 | 统一 LF + `.gitattributes`（C++ 跨平台项目底线） |
+
+> 表注（㉒.3）：四类误用都源于“把本地习惯直接推向共享仓库”——force 改写历史、整仓 clone 浪费带宽、长分支累积冲突、CRLF 制造假 diff；[评] 统一 LF + `.gitattributes` 是 C++ 跨平台项目的底线。
 
 ### ㉒.4 与标准的互动：版本与"标准"工程约定
 Git 本身不在 ISO C++ 标准里，但 C++ 生态的事实工程约定与之深度耦合：**语义化版本（SemVer 2.0.0）** 决定 ABI/API 兼容承诺（见第145章）；**Conventional Commits** 让提交信息可被工具解析、自动生成 changelog 与版本号；`git tag` 与发布分支管理直接对应库的 release 节奏。[评] 版本号不是装饰，而是"我保证不改 ABI"的契约。
@@ -984,12 +993,14 @@ A: cherry-pick=复制提交到当前分支; revert=创建反向提交(不改历�
 
 > 从工程视角补 git 内部机制的硬核细节（非虚构），用以解释 gitflow 工作流下分支/合并的成本。
 
-- **对象模型与 SHA-1 寻址**：git 中每个 blob/tree/commit 对象以其内容 SHA-1 摘要为唯一 ID，例如某 commit 对象的摘要为 `0x9b1c4f8a2e7d3b5c6a1f0e9d8c7b6a5f4e3d2c1b`（40 位十六进制）。内容寻址意味着相同内容只存一份，`git gc` 的 delta 压缩把相似对象存为 `base + 指令流`，对 10k 对象重建 pack 约耗时 `250ms`。pack 文件头魔数为 `0xPACK`（`0x5041434b`）。
-- **引用与分支的 O(1) 语义**：`git branch`/`git checkout` 仅写入一个 41 字节（40 十六进制 + `\n`）的 ref 文件，与仓库规模无关；而 `git merge` 三方合并时间取决于变更文件数，对 1k 文件做 `git diff` 约 `3ms`。
-- **打包与 zlib**：对象入库经 zlib `deflate`（level 6）压缩，典型文本压缩比 `3x`~`8x`；`core.compression` 可调，`-z0` 关闭压缩换取 `CPU` 时间。对象大小中位数约 `4KB`，pack 索引以 `4KB` 页对齐。
-- **CI 集成画像**：gitflow 的 `release`/`hotfix` 分支触发 CI 全量构建，单一 TU 编译在 `-O2` 下约 `300ms`（见 [ch156](Book/part14_perf/ch156_compiler_opt.md)）；`git clone --depth 1` 把传输从 `O(全历史)` 降到 `O(单提交)`，CI 拉取从 `120MB`/`12s` 降到 `1.5s`。
+| 主题 | 机制 | 量级 / 实测 |
+|---|---|---|
+| 对象模型与 SHA-1 寻址 | 每个 blob/tree/commit 对象以其内容 SHA-1 摘要为唯一 ID（40 位十六进制）；相同内容只存一份，`git gc` 的 delta 压缩存为 `base + 指令流` | 10k 对象重建 pack 约 `250ms`；pack 头魔数 `0xPACK`（`0x5041434b`） |
+| 引用与分支的 O(1) 语义 | `git branch`/`git checkout` 仅写入一个 41 字节（40 十六进制 + `\n`）的 ref 文件，与仓库规模无关 | `git merge` 三方合并取决于变更文件数；1k 文件 `git diff` 约 `3ms` |
+| 打包与 zlib | 对象入库经 zlib `deflate`（level 6）压缩，`core.compression` 可调，`-z0` 关闭压缩换 CPU | 典型文本压缩比 `3x`~`8x`；对象大小中位数约 `4KB`，pack 索引 `4KB` 页对齐 |
+| CI 集成画像 | gitflow 的 `release`/`hotfix` 分支触发 CI 全量构建；`git clone --depth 1` 把传输从 `O(全历史)` 降到 `O(单提交)` | 单 TU 在 `-O2` 下约 `300ms`（见 ch156）；CI 拉取从 `120MB`/`12s` 降到 `1.5s` |
 
-**最佳实践**：feature 分支长期不合并会累积冲突面；用 `git rebase` 保持线性历史可让 `git bisect` 的二分查找在 `log2(N)` 步内定位引入回归的提交（N 为提交数）。Chromium 与 LLVM 都用基于 git 的单仓（monorepo）而非 gitflow；Google 内部用 Piper（类 git 的集中式 VCS），Mesos/DPDK 则坚守 gitflow 变体。
+> 表注（DEP）：对象存储的「内容寻址 + delta + zlib」决定了分支/合并的成本下限；[最佳实践] feature 分支长期不合并会累积冲突面，用 `git rebase` 保持线性历史可让 `git bisect` 在 `log2(N)` 步内定位回归提交（N 为提交数）。Chromium/LLVM 用 monorepo 而非 gitflow；Google 内部用 Piper，Mesos/DPDK 坚守 gitflow 变体。
 
 > 交叉引用：CI/CD 见 [ch149](Book/part13_engineering/ch149_ci_cd.md)；代码评审见 [ch147](Book/part13_engineering/ch147_code_review.md)。
 
@@ -997,12 +1008,14 @@ A: cherry-pick=复制提交到当前分支; revert=创建反向提交(不改历�
 
 gitflow 的合并成本藏在对象存储与 CI 缓存里：
 
-- **packfile delta**：`.git/objects/pack/*.pack` 用 delta 压缩存 `base + 指令流`（复制/插入），`.idx` 索引存 4 字节偏移表（页对齐 `0x1000`）；`git gc` 对 10k 对象重建 pack 约 `250 ms`，冷克隆体积压到松散对象的 `30%`。
-- **CI 缓存键**：GitHub Actions `cache` 用 `hashFiles('**/CMakeLists.txt')` 算 SHA-256（64 位十六进制，形如 `0x9f2a4c...`）作键，命中省去 `vcpkg install` 约 `100 ms`；未命中全量构建 `3–8 min`。
-- **rebase 代价**：`git rebase main` 对 N 个提交逐个重放，每个重放触发一次 `git diff`（`1k` 文件约 `3 ms`）加一次 `g++ -c`（`~300 ms`/TU），N=200 时约 `60 s` 额外 CPU；长 feature 分支 rebase 前先 `git merge main` 减少冲突面。
-- **对象去重**：内容寻址让 40 位 SHA-1 作文件名，相同 blob 只存一份，monorepo（Chromium/LLVM）借此把百万对象压进少量 pack。
+| 主题 | 机制 | 量级 / 实测 |
+|---|---|---|
+| packfile delta | `.git/objects/pack/*.pack` 用 delta 压缩存 `base + 指令流`（复制/插入），`.idx` 索引存 4 字节偏移表（页对齐 `0x1000`） | `git gc` 对 10k 对象重建 pack 约 `250 ms`，冷克隆体积压到松散对象的 `30%` |
+| CI 缓存键 | GitHub Actions `cache` 用 `hashFiles('**/CMakeLists.txt')` 算 SHA-256（形如 `0x9f2a4c...`）作键 | 命中省去 `vcpkg install` 约 `100 ms`；未命中全量构建 `3–8 min` |
+| rebase 代价 | `git rebase main` 对 N 个提交逐个重放，每次触发 `git diff`（`1k` 文件约 `3 ms`）+ `g++ -c`（`~300 ms`/TU） | N=200 时约 `60 s` 额外 CPU；rebase 前先 `git merge main` 减少冲突面 |
+| 对象去重 | 内容寻址让 40 位 SHA-1 作文件名，相同 blob 只存一份 | monorepo（Chromium/LLVM）借此把百万对象压进少量 pack |
 
-最佳实践：用 `git rebase` 保持线性历史，`git bisect` 在 `log2(N)` 步内定位回归提交（N 为提交数）。
+> 表注（附录 F）：四项都指向同一根因——对象存储的「内容寻址 + delta」是 gitflow 合并/克隆成本可控的关键；[最佳实践] 用 `git rebase` 保持线性历史，`git bisect` 在 `log2(N)` 步内定位回归提交（N 为提交数）。
 
 ## 附录 G（packfile 与对象存储）
 

@@ -50,8 +50,10 @@ JSON（JavaScript Object Notation，RFC 8259）是一种与语言无关的轻量
 
 核心矛盾：JSON 是**动态类型**（一个值可以是任意 6 种类型之一），C++ 是**静态类型**（编译期定类型）。解决方案有两条路线：
 
-- **类型擦除（type-erased）**：用 `std::variant`/`std::any` 把 6 种类型装进一个"值"类型（本章路线）。
-- **代码生成（codegen）**：用 `std::format`/反射把 JSON 直接映射成你定义的 `struct`（见 ⑯）。
+| 路线 | 机制 | 取舍 |
+|---|---|---|
+| 类型擦除（type-erased） | 用 `std::variant`/`std::any` 把 6 种类型装进一个"值"类型（本章路线） | 灵活、运行时通用；引入类型擦除开销与内联限制 |
+| 代码生成（codegen） | 用 `std::format`/反射把 JSON 直接映射成你定义的 `struct`（见 ⑯） | 零反射、类型安全、快；需 schema 或宏/反射支撑 |
 
 ```text
        JSON 文本                     C++ 内存
@@ -410,8 +412,10 @@ auto obj = j.get<MyStruct>();                 // 自动反序列化到 struct（
 
 ## ⑩ DOM vs SAX
 
-- **DOM（Document Object Model）**：把整个 JSON 读进内存树（本章主库就是 DOM）。优点：可随机访问、可往返修改；缺点：内存峰值高（整树驻留）。
-- **SAX（Simple API for XML 风格）**：边读边回调 `on_object_start`/`on_number`/...，不建树。优点：内存 O(1)、可流式处理超大数据；缺点：不能回头访问、回调状态机复杂。
+| 模型 | 机制 | 优点 | 缺点 |
+|---|---|---|---|
+| DOM（Document Object Model） | 把整个 JSON 读进内存树（本章主库即 DOM） | 可随机访问、可往返修改 | 内存峰值高（整树驻留） |
+| SAX（Simple API for XML 风格） | 边读边回调 `on_object_start`/`on_number`/...，不建树 | 内存 O(1)、可流式处理超大数据 | 不能回头访问、回调状态机复杂 |
 
 ```text
    DOM 模式                         SAX 模式
@@ -852,10 +856,13 @@ JSON 是「配置与数据交换的通用语」。下面按领域展开：
 **一条判读**：JSON 适合「人写/调试友好、量不大」的配置与交换；高吞吐服务内部（微服务间、游戏协议）应换 protobuf/flatbuffers 省 CPU 与体积，但对外/配置文件仍保留 JSON 的可读性——按边界取舍，而非全栈统一。
 
 ### ㉒.3 生产踩坑：JSON 解析的误用
-- **不安全解析导致的 DoS**：畸形/超深嵌套输入若递归下降无深度上限，可栈溢出；工业库提供 `max_depth`/SAX 流式来防御（见 ⑰）。
-- **数字精度丢失**：JSON 数字按 IEEE double 解析，`int64` 大整数会被截断；需整数专用解析或字符串保真。
-- **UTF-8 错误处理不当**：非法序列未拒绝/未替换，产生乱码或注入；应校验 UTF-8（见 ⑫）。
-- **拷贝开销**：DOM 式 API 频繁 `operator[]` 返回临时 `Value`，热路径应用 `const` 引用/Sax 避免（见 ⑩⑯）。
+
+| 坑 | 机理 | 对策 |
+|---|---|---|
+| 不安全解析导致的 DoS | 畸形/超深嵌套输入若递归下降无深度上限，可栈溢出 | 工业库提供 `max_depth`/SAX 流式防御（见 ⑰） |
+| 数字精度丢失 | JSON 数字按 IEEE double 解析，`int64` 大整数会被截断 | 整数专用解析或字符串保真 |
+| UTF-8 错误处理不当 | 非法序列未拒绝/未替换，产生乱码或注入 | 校验 UTF-8（见 ⑫） |
+| 拷贝开销 | DOM 式 API 频繁 `operator[]` 返回临时 `Value` | 热路径用 `const` 引用/SAX 避免（见 ⑩⑯） |
 
 ### ㉒.4 与标准的互动：C++ 没有标准 JSON，但有标准积木
 ISO C++ 至今无 `<json>`；JSON 解析器普遍用 **`std::variant`**（C++17，值类型：null/bool/number/string/array/object，见 ③）、`std::string_view`、`std::optional` 等标准件搭建。C++20 `std::format` 也让"对象 → JSON 字符串"的序列化更易复用标准格式化。[评] 标准提供"词汇类型积木"，具体交换格式交给生态——这也是 C++ 标准"克制不膨胀"的一贯取舍。

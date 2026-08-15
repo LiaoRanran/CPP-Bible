@@ -1045,13 +1045,18 @@ int main() {
    - [引用] ISO/IEC 14882:2023 §[class.derived]（继承 vs 组合）/ [util.smartptr]（持有实现）；cppreference "Bridge pattern" 词条。
 
 **【七种模式一句话】**
-- **Adapter**：改接口，让不兼容的能协作（组合优于继承）。
-- **Bridge**：解耦「抽象/实现」两维，乘法变加法；能确定类型用编译期，否则运行期。
-- **Composite**：部分—整体统一接口，客户端不知树深。
-- **Decorator**：组合代替继承，运行期动态加职责；热路径改用 CRTP 消除虚调用。
-- **Facade**：给复杂子系统一个简单门面，降低耦合。
-- **Flyweight**：共享内在状态，省内存；前提是对象海量且可外提外在状态。
-- **Proxy**：替身控制访问；`unique_ptr`/`shared_ptr`/`scoped_lock` 都是代理。
+
+| 模式 | 一句话摘要 | 关键取舍 |
+|---|---|---|
+| Adapter | 改接口，让不兼容的能协作 | 组合优于继承 |
+| Bridge | 解耦「抽象/实现」两维，乘法变加法 | 能确定类型用编译期，否则运行期 |
+| Composite | 部分—整体统一接口，客户端不知树深 | 强制统一接口可能违反接口隔离 |
+| Decorator | 组合代替继承，运行期动态加职责 | 热路径改用 CRTP 消除虚调用 |
+| Facade | 给复杂子系统一个简单门面，降低耦合 | 门面本身勿膨胀成上帝类 |
+| Flyweight | 共享内在状态，省内存 | 前提是对象海量且可外提外在状态 |
+| Proxy | 替身控制访问 | `unique_ptr`/`shared_ptr`/`scoped_lock` 都是代理 |
+
+> 表注：上表为运行期结构型模式的「取舍速查」；其虚分发代价在 ⑰/⑱ 用真实汇编与微基准量化（每层约 2–3 ns、至少三次内存访问加一次间接分支）。
 
 **【权威衡】** 运行期结构型模式（Bridge/Decorator/Proxy 的虚分发）的代价在 ⑰/⑱ 已用真实汇编与微基准量化：每层约 2–3 ns、至少三次内存访问加一次间接分支。**【经验】** 性能敏感且组合固定的场景，用模板/CRTP 把间接「编译期化」，零运行时开销。
 
@@ -1100,10 +1105,14 @@ int main() {
 
 ### ㉒.3 生产踩坑：间接层是把双刃剑
 
-- **Bridge 的过度抽象**：把「可能永远不变的实现」也拆成两层，徒增间接与虚调用。
-- **Decorator 叠加后的类型/性能**：多层装饰引入多层虚调用与对象，热路径要警惕；C++ 可用 CRTP/模板在编译期叠加以避免运行时开销。
-- **Composite 违反接口隔离**：为统一处理而强迫叶子也实现容器接口，暴露不该有的 `add()`/`remove()`。
-- **Proxy 的生命周期**：代理对象必须比被代理对象活得久，否则悬空；资源型 Proxy（智能指针）需明确所有权语义。
+| 模式 | 踩坑 | 正解 |
+|---|---|---|
+| Bridge | 过度抽象：把「可能永远不变的实现」也拆成两层，徒增间接与虚调用 | 仅当确实有两个变化维度才上 Bridge；否则直接持有实现 |
+| Decorator | 叠加后的类型/性能：多层装饰引入多层虚调用与对象，热路径开销显著 | 热路径用 CRTP/模板在编译期叠加，消除运行时虚调用 |
+| Composite | 违反接口隔离：为统一处理强迫叶子也实现容器接口，暴露不该有的 `add()`/`remove()` | 用默认抛异常的 `add()`/`remove()`，或分离 `Leaf`/`Composite` 接口 |
+| Proxy | 生命周期：代理对象必须比被代理对象活得久，否则悬空 | 资源型 Proxy 用智能指针明确所有权语义 |
+
+> 表注（㉒.3）：间接层是把双刃剑——解耦的同时引入虚调用、对象膨胀与生命周期责任；性能敏感路径优先「编译期化」。
 
 ### ㉒.4 与 C++ 标准的互动
 
@@ -1531,21 +1540,29 @@ int main() {
 
 ### L.2 真实工程场景：每个结构型模式的工业锚点
 
-- **Adapter**：Boost.Iterator `iterator_adaptor`（CRTP 为底层迭代器加适配层，零运行时开销）；标准库 `std::back_inserter`/`std::front_inserter` 是输出迭代器适配器；LLVM `raw_ostream` 适配 `std::ostream` 与 fd；C 风格数组借 `begin()/end()` 适配器接入范围 `for`。
-- **Bridge**：Unreal `FGenericWindow`（抽象）↔ `FWindowsWindow`/`FMacWindow`（实现）正交解耦；`std::basic_string<CharT,Traits,Allocator>` 字符类型与分配器两维独立变化；`folly::small_vector` 组合栈缓冲 + 堆溢出（编译期策略切换）。
-- **Composite**：WebKit `RenderObject` 树（`RenderBlock`/`RenderInline`/`RenderText` 统一 `layout()`）；DOM 树；文件系统目录树（ch137 ⑥ 工业版）。
-- **Decorator**：Boost.Iostreams `filtering_stream`（`input → gzip_decompressor → file_source` 链式装饰）；标准库 `std::reverse_iterator`/`std::move_iterator`；`std::stack/queue/priority_queue` 是容器适配器（裁剪接口）。
-- **Facade**：`std::filesystem` 封装平台 `CreateFile`/`open`/`stat`；Qt `QFileDialog::getOpenFileName()` 三平台统一入口；`std::async` 封装 thread+promise+future。
-- **Flyweight**：LLVM `StringMap` 内部字符串驻留；`std::string_view` 共享字符存储而不拥有；字体/字形缓存（ch137 ⑪）。
-- **Proxy**：`std::shared_ptr`/`std::unique_ptr` 是所有权代理；`std::scoped_lock`/`std::lock_guard` 是锁代理；Chromium `base::WaitableEvent` 跨平台同步代理；`std::vector<bool>::reference` 是 bit 代理；`std::function` 是可调用对象代理。
+| 模式 | 工业锚点（真实项目 / 标准库） |
+|---|---|
+| Adapter | Boost.Iterator `iterator_adaptor`（CRTP 加适配层，零运行时开销）；`std::back_inserter`/`std::front_inserter` 输出迭代器适配器；LLVM `raw_ostream` 适配 `std::ostream` 与 fd；C 数组借 `begin()/end()` 接入范围 `for` |
+| Bridge | Unreal `FGenericWindow`↔`FWindowsWindow`/`FMacWindow` 正交解耦；`std::basic_string<CharT,Traits,Allocator>` 字符类型与分配器两维独立变化；`folly::small_vector` 栈缓冲+堆溢出（编译期策略切换） |
+| Composite | WebKit `RenderObject` 树（`RenderBlock`/`RenderInline`/`RenderText` 统一 `layout()`）；DOM 树；文件系统目录树 |
+| Decorator | Boost.Iostreams `filtering_stream`（`input → gzip_decompressor → file_source` 链式装饰）；`std::reverse_iterator`/`std::move_iterator`；`std::stack`/`queue`/`priority_queue` 容器适配器（裁剪接口） |
+| Facade | `std::filesystem` 封装平台 `CreateFile`/`open`/`stat`；Qt `QFileDialog::getOpenFileName()` 三平台统一入口；`std::async` 封装 thread+promise+future |
+| Flyweight | LLVM `StringMap` 内部字符串驻留；`std::string_view` 共享字符存储而不拥有；字体/字形缓存 |
+| Proxy | `std::shared_ptr`/`std::unique_ptr` 所有权代理；`std::scoped_lock`/`std::lock_guard` 锁代理；Chromium `base::WaitableEvent` 跨平台同步代理；`std::vector<bool>::reference` bit 代理；`std::function` 可调用代理 |
+
+> 表注（L.2）：结构型模式大多「已经在用」而不自知——智能指针即 Proxy、容器适配器即 Adapter；识别它们可在需解耦/增行为时直接复用标准库既有结构。
 
 ### L.3 生产踩坑实录
 
-1. **Adapter 对象切片**：按值持有 Adaptee 会切片且丢失动态类型（ch137 ② 错误示例）。正解：引用/指针/`unique_ptr` 持有，仅做转发。
-2. **装饰链过长的间接开销**：每层多一次虚调用 + 一次 `unique_ptr` 解引用，ch137 ⑱ 实测 5 层约 12.5 ns/调用；热路径改用 CRTP 装饰（ch137 ⑯）压到 0。
-3. **Bridge 双指针间接**：运行期桥接至少「控制块取指 + vtable 取指 + 虚调用」三次内存访问 + 一次间接分支（ch137 ⑰）。能确定类型用编译期桥接。
-4. **Flyweight 控制块反噬**：对象数量不大时，哈希表 + 控制块开销反而得不偿失；仅当对象海量且内在状态可外提才上 Flyweight（ch137 ⑪）。
-5. **YAGNI 提前套 Bridge/Decorator**：为「可能以后扩展」提前套结构型模式，等第二个变化维度真正出现再加——否则违反 ch137 ⑳ 反模式提醒。
+| 踩坑 | 现象 / 代价 | 正解 |
+|---|---|---|
+| Adapter 对象切片 | 按值持有 Adaptee 会切片且丢失动态类型（ch137 ② 错误示例） | 用引用/指针/`unique_ptr` 持有，仅做转发 |
+| 装饰链过长间接开销 | 每层多一次虚调用 + 一次 `unique_ptr` 解引用，ch137 ⑱ 实测 5 层约 12.5 ns/调用 | 热路径改用 CRTP 装饰（ch137 ⑯）压到 0 |
+| Bridge 双指针间接 | 运行期桥接至少「控制块取指 + vtable 取指 + 虚调用」三次内存访问 + 一次间接分支（ch137 ⑰） | 能确定类型用编译期桥接 |
+| Flyweight 控制块反噬 | 对象数量不大时，哈希表 + 控制块开销反而得不偿失 | 仅当对象海量且内在状态可外提才上 Flyweight（ch137 ⑪） |
+| YAGNI 提前套模式 | 为「可能以后扩展」提前套 Bridge/Decorator | 等第二个变化维度真正出现再加，否则违反 ch137 ⑳ 反模式提醒 |
+
+> 表注（L.3）：所有踩坑的共同根因是「把运行期间接层当作默认解」；先写最直接代码，让变化维度真实出现后再引入模式。
 
 ### L.4 与现代 C++ 的互动
 

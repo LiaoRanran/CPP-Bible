@@ -20,9 +20,14 @@
 CRTP（Curiously Recurring Template Pattern，奇异递归模板模式）这一命名源自 James Coplien，他在 1990 年代早期的 C++ 著作中记录并命名了这种"基类以派生类自身为模板参数"的写法 [史]。痛点清晰：虚函数带来 vtable 查表与无法内联的成本，而对"编译期已知类型"的场景，这笔开销纯属浪费。CRTP 用静态反向调用（`static_cast<Derived*>(this)`）把多态移到编译期，零开销、可内联。
 
 ### 0.2 关键转折（编年）
-- 1990s 初：Coplien 记录并命名 CRTP [史]。
-- 1998 起：Microsoft 的 **ATL**（Active Template Library）大量使用 CRTP 做编译期多态，让它走入工业视野 [史]。
-- 现代：Boost 的 `iterator_facade`、标准库的 `std::enable_shared_from_this` 都是 CRTP 的化身 [史]。
+
+| 时间 | 事件 | 史料标签 | 工业意义 |
+|---|---|---|---|
+| 1990s 初 | Coplien 记录并命名 CRTP | [史] | 确立「基类以派生类自身为模板参数」的写法 |
+| 1998 起 | Microsoft **ATL** 大量使用 CRTP 做编译期多态 | [史] | 让 CRTP 走入工业视野，脱离纯学术技巧 |
+| 现代 | Boost `iterator_facade`、标准库 `std::enable_shared_from_this` | [史] | CRTP 被吸收进标准库与工业库，成为基础设施 idiom |
+
+> 表注（0.2）：三个节点对应 CRTP 的「命名 → 工业落地 → 标准化沉淀」三阶段；其代价（代码膨胀、错误信息长）在 §0.3 / §㉒.3 展开。
 
 ### 0.3 设计哲学之争
 CRTP 对虚函数之争是"C++ 零开销抽象"的教科书案例：虚函数为"运行时未知类型"付费，CRTP 为"编译期已知类型"免费 [评]。但代价是代码膨胀（每实例化一种派生就生成一套基类代码）和错误信息地狱 [评]。它并非虚函数的替代品，而是"类型在编译期就确定"那一档的最优解。
@@ -980,12 +985,15 @@ CRTP（奇异递归模板模式）用「基类以派生类为模板参数」在�
 
 ### ㉒.4 与 C++ 标准的互动
 
-- `[评]` C++20 Concepts 让 CRTP 基类能「约束派生类接口」：`template<typename D> requires requires(D d){ d.foo(); } class Base`——既静态又安全。
-- 表达式模板（Eigen、Blaze）依赖 CRTP 把 `a + b + c` 在编译期拼成单一循环，是「零开销抽象」的旗舰案例。
-- `[评]` 标准演进把 CRTP 从「黑魔法」变成「可被 concept 约束的静态接口」，可读性大幅提升。
+| 维度 | 内容 | 立场 | 标准 / 提案坐标 |
+|---|---|---|---|
+| 接口约束 | C++20 Concepts 让 CRTP 基类能约束派生类接口：`template<typename D> requires requires(D d){ d.foo(); } class Base`——既静态又安全 | [评] | C++20 `[concept]` |
+| 零开销抽象 | 表达式模板（Eigen、Blaze）靠 CRTP 把 `a + b + c` 在编译期拼成单一循环，是旗舰案例 | — | 实现层面，非提案 |
+| 可读性演化 | 标准演进把 CRTP 从「黑魔法」变为「可被 concept 约束的静态接口」 | [评] | C++20 Concepts |
+| Deducing this | 显式对象参数 `void f(this auto&& self)` 让 CRTP 静态接口写法直观、无需基类 typedef | [评] | WG21 **P0847R7**（C++23，<https://wg21.link/P0847>） |
+| 显式对象参数语义 | 在 `[expr.call]`/`[dcl.fct]` 引入显式对象参数，支持按值类别/cv 重载，化简静态接口 | [评] | ISO/IEC 14882:2023 |
 
-- `[评]` WG21 **P0847R0→…→P0847R7**（Deducing this / 显式对象参数，<https://wg21.link/P0847>，C++23）：让成员函数能 `void f(this auto&& self)`，把 CRTP 的「静态接口」写法变得直观且无需奇怪的基类 typedef，是 CRTP 静态多态被语言正面拥抱的标志。
-- `[评]` ISO/IEC 14882:2023 在 `[expr.call]`/`[dcl.fct]` 引入显式对象参数；委员会理由：减少 CRTP 的样板与名字查找陷阱，同时支持「按值类别/cv 重载」，是静态接口设计的重大简化。
+> 表注（㉒.4）：CRTP 与标准的互动主线是「从隐式黑魔法 → 被 Concepts / Deducing this 正面拥抱」；Deducing this 是 CRTP 静态多态首次获语言层直接支持。
 
 ### ㉒.5 权威参考（建议延伸阅读）
 
@@ -1060,10 +1068,15 @@ A: 不能。CRTP是编译期绑定，variant/any需要运行时类型擦除 → 
 
 CRTP 不是被"设计"出来的，而是被"发现"的——它是模板机制的一个自然结果，先有用法、后有命名。理解这段历史背景有助于把握它的设计目标边界。
 
-- **Barton-Nackman trick（1994）**：John Barton 与 Lee Nackman 在《Scientific and Engineering C++》中用"基类模板以派生类为实参"的写法解决运算符注入问题，业界称 Barton-Nackman trick——这是 CRTP 的技术雏形，但当时无统一名称。
-- **命名（1995）**：James O. Coplien 于 1995-02 在《C++ Report》发表 "Curiously Recurring Template Patterns"，正式为 `class D : Base<D>` 这一"奇异递归"结构命名 CRTP。**设计目标**从此明确：在**不付出虚函数运行时代价**的前提下实现多态（即静态多态），把派生类型信息在编译期注入基类。
-- **演化**：C++11 的可变参数模板让 CRTP 与 mixin 结合，可"叠加"多个能力基类（本章 §⑩）；C++20 Concepts 在"接口约束"这一用途上部分替代 CRTP（用 `requires` 直接约束而非靠 CRTP 检查），但 CRTP 在**运算符批量生成**（Boost.Operators）、**空基类优化**（§⑫）、`std::enable_shared_from_this` 等场景仍不可替代——因为这些依赖"基类静态知道派生类型"，而非仅仅约束接口。
-- **一句话**：Concepts 回答"这个类型满足接口吗"，CRTP 回答"基类如何静态复用派生类的实现"——二者互补而非替代。
+| 节点 | 时间 | 事件 | 设计目标 / 意义 |
+|---|---|---|---|
+| Barton-Nackman trick | 1994 | Barton 与 Nackman 在《Scientific and Engineering C++》用「基类模板以派生类为实参」解决运算符注入 | CRTP 的技术雏形，当时尚无统一名称 |
+| 命名 | 1995-02 | Coplien 在《C++ Report》发表 "Curiously Recurring Template Patterns" | 正式命名 `class D : Base<D>`；明确「不付虚函数代价即获多态」的设计目标 |
+| 演化 | C++11 → C++20 | 可变参数模板让 CRTP+mixin 叠加（§⑩）；Concepts 在「接口约束」上部分替代 CRTP | 运算符批量生成（Boost.Operators）、EBO（§⑫）、`enable_shared_from_this` 仍不可替代 |
+
+> 表注（附录 C）：上表三节点是 CRTP「技术雏形 → 命名 → 演化」的编年；CRTP 依赖「基类静态知晓派生类型」，因此无法被 Concepts 完全替代。
+
+> **[评]** Concepts 回答「这个类型满足接口吗」，CRTP 回答「基类如何静态复用派生类的实现」——二者互补而非替代。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
@@ -1084,10 +1097,14 @@ CRTP 不是被"设计"出来的，而是被"发现"的——它是模板机制�
 
 ### 最佳实践（速记 · CRTP 静态多态）
 
-- **静态多态避免虚函数开销**：CRTP 在编译期绑定，无 vtable/间接调用；但基类方法体中出现 `Derived` 时它仍是不完整类型，不能按值持有派生类成员。
-- **fluent API 靠向下转型**：基类返回 `static_cast<Derived&>(*this)` 实现链式调用（如 `derived.foo().bar()`），这是 CRTP 的标志性用法。
-- **不能进运行时多态集合**：`std::vector<Base>` 不成立（Base 不完整且大小不定）；需运行时异构时用 `std::vector<std::unique_ptr<Interface>>`，但失去静态分发。
-- **与 EBO 配合**：CRTP 基类常为 empty class，继承后触发空基类优化不占空间；定义 mixin 时注意继承顺序与对齐。
+| 实践 | 要点 | 边界 / 陷阱 |
+|---|---|---|
+| 静态多态避免虚函数开销 | 编译期绑定，无 vtable / 间接调用 | 基类方法体中的 `Derived` 仍不完整，不能按值持有派生类成员 |
+| fluent API 靠向下转型 | 基类返回 `static_cast<Derived&>(*this)` 实现链式调用 `derived.foo().bar()` | 标志性用法，但须保证返回派生类型而非基类 |
+| 不能进运行时多态集合 | 需异构时用 `std::vector<std::unique_ptr<Interface>>` | `std::vector<Base>` 不成立（Base 不完整、大小不定），退回虚接口后失去静态分发 |
+| 与 EBO 配合 | CRTP 基类常为空类，继承触发空基类优化不占空间 | 定义 mixin 时注意继承顺序与对齐 |
+
+> 表注（附录 I·最佳实践）：四条速记对应「分发时机 / 链式调用 / 异构集合边界 / 内存布局」；完整反模式见 §⑲、调试要点见 §⑭。
 
 ## 自测练习（Exercises）
 

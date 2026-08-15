@@ -25,11 +25,15 @@
 
 ### 0.2 关键转折（编年）
 
-- **1995 前后**：pthreads 普及，多线程服务端成为可能，但也把"线程很贵"的痛点摆上台面。[史]
-- **2004**：Java 5 引入 `java.util.concurrent` 与 `Executor` 框架，把"线程池"从民间技巧变成了语言级一等公民，深刻影响了后来所有语言的服务端写法。[史]
-- **2006**：Intel Threading Building Blocks（TBB）发布，带来任务调度与工作窃取（work-stealing），比"中心队列 + 固定线程数"更适应不规则负载。[史]
-- **2011**：C++11 带来 `std::thread`、`std::async`、`std::future`，C++ 才第一次在标准层面有了可移植的线程原语；但"池"仍要自己搭。
-- **2010 年代至今**：C++ 标准化委员会提出 Executors 提案（P0443 系列），试图把线程池/调度器纳入标准——这条路至今仍在拉锯。[史]
+| 年份 | 里程碑 | 对线程池的意义 |
+|---|---|---|
+| 1995 前后 | POSIX pthreads 普及 | 多线程服务端成为可能，也把「线程很贵」的痛点摆上台面 [史] |
+| 2004 | Java 5 `java.util.concurrent` / `Executor` | 把「线程池」从民间技巧变成语言级一等公民，影响所有语言服务端写法 [史] |
+| 2006 | Intel TBB 发布 | 引入任务调度与工作窃取（work-stealing），比「中心队列 + 固定线程数」更适应不规则负载 [史] |
+| 2011 | C++11 `std::thread` / `std::async` / `std::future` | C++ 首次在标准层面有可移植线程原语；但「池」仍要自己搭 |
+| 2010 年代至今 | WG21 Executors 提案（P0443 系列） | 试图把线程池 / 调度器纳入标准，至今仍在拉锯 [史] |
+
+> 表注（0.2）：线程池并非 C++ 原生概念——它从 OS/pthreads 与 Java/.NET 生态借来，经 TBB 工作窃取进化，最终由 C++20 `jthread`/`stop_token`（见 ⑨）与仍在拉锯的 Executors 提案逐步标准化。
 
 ### 0.3 设计哲学之争
 
@@ -956,10 +960,15 @@ std::cout << f.get() << '\n';            // 441，worker 在后台执行
 **一条判读**：线程池适合「任务多、单任务短、需控并发度」的场景；任务依赖复杂时还要配依赖图（游戏/渲染常见），否则易死锁或空转；`std::async` 的池行为是实现定义的，生产项目通常直接用 TBB/Asio 而不是赌标准库的默认策略。
 
 ### ㉒.3 生产踩坑：线程池的误用
-- **线程数过多（oversubscription）**：池大小远超 `hardware_concurrency()`，上下文切换压垮吞吐；CPU 密集应≈核数，IO 密集可更多（见 ⑩）。
-- **任务里抛异常被吞**：`std::async` 的异常只在未来 `get()` 时抛出，忘了 `get()` 就静默丢失；好的池把异常转发回提交方（见 ⑫）。
-- **忘 join / detach 泄漏**：`std::thread` 析构若仍 joinable 直接 `terminate`；`jthread` 用 RAII 消除（见 ⑧）。
-- **任务队列上的 false sharing**：多 worker 抢同一 `std::queue` + `mutex`，队列头尾计数器同一 cache line，互相 invalidate（关联第143章/第154章 ⑩）。
+
+| 坑 | 机理 | 对策 |
+|---|---|---|
+| 线程数过多（oversubscription） | 池大小远超 `hardware_concurrency()`，上下文切换压垮吞吐 | CPU 密集≈核数、IO 密集可更多（见 ⑩） |
+| 任务里抛异常被吞 | `std::async` 异常只在 `get()` 时抛，忘了 `get()` 就静默丢失 | 好池用 `packaged_task` 把异常转发回提交方（见 ⑫） |
+| 忘 join / detach 泄漏 | `std::thread` 析构若仍 joinable 直接 `terminate` | 用 `jthread` 的 RAII 自动 join 消除（见 ⑧） |
+| 任务队列上的 false sharing | 多 worker 抢同一 `std::queue`+`mutex`，头尾计数器同 cache line 互相 invalidate | 每 worker 独立队列 / 对齐隔离（关联第143章/第154章 ⑩） |
+
+> 表注（㉒.3）：四类中「线程数过多」与「队列 false sharing」是高频性能回归，「异常被吞」与「忘 join」是正确性与泄漏雷区；前者靠 `hardware_concurrency()` 与 per-worker 队列，后者靠 `jthread`/`packaged_task` 的内建 RAII 与异常转发。
 
 ### ㉒.4 与标准的互动：从 std::async 到 jthread
 C++11 的 `std::async` 提供"异步任务 + future 取结果"的最小池；C++20 的 **P0660（std::jthread）** 把停止令牌与自动 join 纳入标准，使"可协作取消的线程"成为一等公民。`std::hardware_concurrency()`（C++11）则给池大小一个可移植的默认依据。[评] 标准逐步把线程池的"正确性与可取消性"内建化，自研池的重心转向调度策略而非线程生命周期。
@@ -1119,26 +1128,30 @@ int main() {
 
 > 下列项目均在生产代码中大规模使用该特性，源码可在其公开仓库核查。
 
-- **Google** — Abseil `absl::BlockingCounter` 协调线程池任务
-- **LLVM** — LLD 链接器用 ThreadPool 并行处理
-- **Chromium** — base::ThreadPool 默认起 48+ 线程
-- **Boost** — Boost.Asio io_context / Boost.Thread 提供池
-- **Qt ** — QThreadPool 与 QtConcurrent 封装任务
-- **Eigen** — 并行 Eigen 基于 OpenMP 线程池
-- **folly** — folly::CPUThreadPoolExecutor 为 Meta 标准
-- **Redis** — 主线程单线程，作线程池对照案例
-- **ClickHouse** — 每查询起独立线程池并行算子
-- **RocksDB** — compaction 用后台线程池
-- **V8** — 任务队列驱动 isolate 执行
-- **DPDK** — lcore 将线程钉核避免迁移
-- **gRPC** — 完成队列用线程池分发事件
-- **spdlog** — 异步 logger 用专用后台线程
-- **fmt** — 格式化可卸载到线程池
-- **Unreal** — TaskGraph 为 UE 任务并行框架
-- **WebKit** — WorkQueue 管理跨线程任务
-- **Mozilla** — TaskQueue 驱动 Gecko 并发
-- **Abseil** — Abseil `absl::ThreadPool` 官方实现
-- **Blink** — Blink 用线程池处理合成任务
+| 项目 | 线程池工业落地 |
+|---|---|
+| Google | Abseil `absl::BlockingCounter` 协调线程池任务 |
+| LLVM | LLD 链接器用 ThreadPool 并行处理 |
+| Chromium | base::ThreadPool 默认起 48+ 线程 |
+| Boost | Boost.Asio io_context / Boost.Thread 提供池 |
+| Qt | QThreadPool 与 QtConcurrent 封装任务 |
+| Eigen | 并行 Eigen 基于 OpenMP 线程池 |
+| folly | folly::CPUThreadPoolExecutor 为 Meta 标准 |
+| Redis | 主线程单线程，作线程池对照案例 |
+| ClickHouse | 每查询起独立线程池并行算子 |
+| RocksDB | compaction 用后台线程池 |
+| V8 | 任务队列驱动 isolate 执行 |
+| DPDK | lcore 将线程钉核避免迁移 |
+| gRPC | 完成队列用线程池分发事件 |
+| spdlog | 异步 logger 用专用后台线程 |
+| fmt | 格式化可卸载到线程池 |
+| Unreal | TaskGraph 为 UE 任务并行框架 |
+| WebKit | WorkQueue 管理跨线程任务 |
+| Mozilla | TaskQueue 驱动 Gecko 并发 |
+| Abseil | Abseil `absl::ThreadPool` 官方实现 |
+| Blink | Blink 用线程池处理合成任务 |
+
+> 表注（附录 G）：20 个项目覆盖编译器 / 浏览器 / 数据库 / 网络 / 序列化 / 游戏引擎；注意 Redis 是「单线程」对照案例，反衬线程池的价值；Abseil 与 Google 分列，因其 `BlockingCounter` 与 `ThreadPool` 为两套独立设施。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

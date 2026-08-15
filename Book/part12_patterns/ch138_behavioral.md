@@ -876,10 +876,14 @@ main:
 
 ### ㉒.3 生产踩坑：生命周期与双重分派
 
-- **Observer 悬挂**：观察者析构前没 `disconnect`，发布者回调悬空指针——现代做法用 `std::weak_ptr` 或 `signals2::connection` 自动断开。
-- **Visitor 脆弱**：新增被访问类要改所有 Visitor 接口（破坏开闭原则），是双重分派的固有痛点；可用 `std::variant` + `std::visit` 替代。
-- **Command 内存膨胀**：每个操作都建对象，长事务下内存压力大；可批处理/合并。
-- **Strategy 虚调用冗余**：当策略在编译期已知，用模板/`if constexpr` 比虚函数更优。
+| 痛点 | 现象 / 代价 | 正解 |
+|---|---|---|
+| Observer 悬挂 | 观察者析构前没 `disconnect`，发布者回调悬空指针 | 用 `std::weak_ptr` 或 `signals2::connection` 自动断开 |
+| Visitor 脆弱 | 新增被访问类要改所有 Visitor 接口（破坏开闭原则），是双重分派固有痛点 | 改用 `std::variant` + `std::visit` 做类型安全分派 |
+| Command 内存膨胀 | 每个操作都建对象，长事务下内存压力大 | 批处理/合并命令，或以 `std::function` 轻量封装 |
+| Strategy 虚调用冗余 | 当策略在编译期已知，虚函数调用属浪费 | 用模板 / `if constexpr` 在编译期选定策略 |
+
+> 表注（㉒.3）：生命周期与双重分派是行为型模式的两大雷区；能用编译期/`variant` 解决的，就别付运行期虚调用与悬挂的代价。
 
 ### ㉒.4 与 C++ 标准的互动
 
@@ -1015,11 +1019,15 @@ Template Method 把不变骨架放基类、可变步放虚函数，仍走 vtable
 
 ### 最佳实践（速记 · 行为型模式）
 
-- **按「谁变化」选型**：变化在算法→策略(Strategy)；变化在通知→观察者(Observer)；变化在请求封装→命令(Command)；变化在对象结构→访问者(Visitor)。先定位变化轴再套模式。
-- **避免 Visitor 滥用**：C++ 有 `std::variant` + `std::visit` 做编译期分发，比手写 Visitor 更轻、零运行时分支表；仅当需双分派且类型稳定时才用 Visitor。
-- **命令模式与 undo**：维护命令栈，命令对象以 RAII 持有资源，撤销即弹栈并 `undo()`；注意命令生命周期长于执行上下文时的悬挂引用。
-- **状态模式 vs 枚举+switch**：状态多且转移复杂→状态模式（多态，易扩展）；状态少且固定→直接用状态枚举 + `switch`，避免过度设计。
-- **模板方法**：父类扩展点虚函数命名加 `do_` 前缀（如 `do_execute`），明确这是子类可覆写的钩子，区分框架固定流程。
+| 实践 | 要点 | 取舍 |
+|---|---|---|
+| 按「谁变化」选型 | 算法→Strategy；通知→Observer；请求封装→Command；对象结构→Visitor | 先定位变化轴再套模式，勿反向套模式 |
+| 避免 Visitor 滥用 | `std::variant` + `std::visit` 做编译期分发，更轻、零运行时分支表 | 仅当需双分派且类型稳定时才用 Visitor |
+| 命令模式与 undo | 维护命令栈，命令以 RAII 持有资源，撤销即弹栈 `undo()` | 注意命令生命周期长于执行上下文时的悬挂引用 |
+| 状态模式 vs 枚举+switch | 状态多且迁移复杂→状态模式（多态易扩展） | 状态少且固定→枚举 + `switch`，避免过度设计 |
+| 模板方法 | 父类扩展点虚函数加 `do_` 前缀（如 `do_execute`） | 明确这是子类可覆写的钩子，区分框架固定流程 |
+
+> 表注：上表为行为型模式的「选型速记」；核心是「让变化轴决定模式，而非为模式制造变化」。
 
 ## 自测练习（Exercises）
 
@@ -1317,17 +1325,21 @@ int main(){
 
 ### L.2 真实工程场景：每个行为型模式的工业锚点
 
-- **Strategy**：`std::sort` 的比较器即策略；`std::regex` 的 `ECMAScript`/`POSIX` 后端策略；Eigen 矩阵后端策略；`std::unique_ptr<T,D>` 的删除器是编译期策略（ch135 ⑨）。
-- **Observer**：Qt `QObject::connect` 信号槽（Qt Creator 整个 UI 交互层是大型 Observer）；Boost.Signals2 线程安全信号；Chromium `base::ObserverList` 通知生命周期（标签页通信）。
-- **Command**：`std::function<void()>` 无状态命令；Chromium `base::OnceCallback`/`RepeatingCallback` 跨进程 IPC 命令序列化执行；Qt `QAction`；RocksDB `WriteBatch` 即命令批处理；folly `Future` 链。
-- **Iterator**：STL 迭代器 + 范围 `for`；C++20 `std::ranges` 惰性视图链（`filter`/`transform`）。
-- **Template Method**：框架钩子——Qt `QCoreApplication::notify`、MFC `OnInitDialog` 类固定骨架 + 虚钩子。
-- **Visitor**：Clang `clang::RecursiveASTVisitor` 遍历 AST；LLVM `InstVisitor` 遍历指令；`std::visit` + `overloaded` lambda 是编译期访客（ch138 ⑭）。
-- **State**：Qt `QStateMachine`（SCXML）；游戏 AI 的 idle/patrol/chase 迁移（ch138 ⑪ 表驱动）。
-- **Mediator**：Qt 事件循环 `QEventLoop`、Boost.Asio `io_context` 集中仲裁；聊天室/控件协调。
-- **Memento**：Boost.Serialization、Qt `QDataStream`（`<<`/`>>` 外部化状态）。
-- **Chain of Responsibility**：`spdlog` 的 sink 链与日志级别过滤；HTTP 中间件链；`boost::asio` 异步链。
-- **Interpreter**：Clang 的 C++ 表达式解析、SQL/正则引擎的 AST 求值（ch138 ⑰）。
+| 模式 | 工业锚点（真实项目 / 标准库） |
+|---|---|
+| Strategy | `std::sort` 的比较器；`std::regex` 的 `ECMAScript`/`POSIX` 后端；Eigen 矩阵后端；`std::unique_ptr<T,D>` 删除器是编译期策略 |
+| Observer | Qt `QObject::connect` 信号槽；Boost.Signals2 线程安全信号；Chromium `base::ObserverList` 通知生命周期（标签页通信） |
+| Command | `std::function<void()>` 无状态命令；Chromium `base::OnceCallback`/`RepeatingCallback` 跨进程 IPC；Qt `QAction`；RocksDB `WriteBatch`；folly `Future` 链 |
+| Iterator | STL 迭代器 + 范围 `for`；C++20 `std::ranges` 惰性视图链（`filter`/`transform`） |
+| Template Method | Qt `QCoreApplication::notify`、MFC `OnInitDialog`：固定骨架 + 虚钩子 |
+| Visitor | Clang `RecursiveASTVisitor` 遍历 AST；LLVM `InstVisitor` 遍历指令；`std::visit` + `overloaded` 是编译期访客 |
+| State | Qt `QStateMachine`（SCXML）；游戏 AI 的 idle/patrol/chase 迁移（表驱动） |
+| Mediator | Qt 事件循环 `QEventLoop`、Boost.Asio `io_context` 集中仲裁；聊天室/控件协调 |
+| Memento | Boost.Serialization、Qt `QDataStream`（`<<`/`>>` 外部化状态） |
+| Chain of Responsibility | `spdlog` 的 sink 链与日志级别过滤；HTTP 中间件链；`boost::asio` 异步链 |
+| Interpreter | Clang 的 C++ 表达式解析、SQL/正则引擎的 AST 求值 |
+
+> 表注（L.2）：行为型模式几乎覆盖了现代 C++ 生态的协作编排——从 GUI 信号槽到编译器 AST 遍历，再到日志/网络中间件链。
 
 ### L.3 生产踩坑实录
 
