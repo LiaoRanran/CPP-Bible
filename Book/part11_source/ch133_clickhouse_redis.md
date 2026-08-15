@@ -1028,10 +1028,16 @@ bool should_vectorize(size_t n, bool branchy) {
 
 ### ㉑.1 今天它活在哪里（真实坐标）
 
-- **Redis 是全球头号内存缓存/数据结构存储**：被几乎每家互联网公司用于缓存、会话、排行榜、消息队列 [史]。
-- **ClickHouse 是 OLAP 标杆**：被字节、Cloudflare、Uber 等用于实时分析、日志/指标平台 [史]。
-- **常组合使用**：Redis 扛在线热点、ClickHouse 扛离线/近线聚合，二者互补（见"联合使用场景"）[史]。
-- **开源生态繁荣**：`redis-plus-plus`/`hiredis`（C++ 客户端）、`clickhouse-cpp` 让 C++ 工程直接接入 [史]。
+下表按「系统 × 产业坐标 × 代表部署 × 角色备注」把 ClickHouse / Redis 的真实落点并列摆开；二者的最大公约数是「**都从单一场景跨进全行业基础设施**」。
+
+| 系统 | 产业坐标 · 角色 | 代表部署 / 生态 | 角色 · 备注 |
+|---|---|---|---|
+| Redis | 全球头号内存缓存 / 数据结构存储 | 几乎每家互联网公司；`redis-plus-plus` / `hiredis` | 缓存 / 会话 / 排行榜 / 消息队列 [史] |
+| ClickHouse | OLAP 标杆（列存 + 向量化） | 字节 · Cloudflare · Uber；`clickhouse-cpp` | 实时分析 / 日志 / 指标平台 [史] |
+| 组合使用 | Redis 扛在线热点 + ClickHouse 扛离线/近线聚合 | 二者互补分层 | 见"联合使用场景" [史] |
+| C++ 生态 | 标准 C++ 工程直接接入 | `redis-plus-plus` / `hiredis` / `clickhouse-cpp` | 让 C++ 工程落地两大系统 [史] |
+
+> 表注（㉑.1）：据各项目官方博客与公开案例整理，呈现「产业坐标」而非穷举；代表部署随业务变动，以各项目官方披露为准。二者均消费 C++17 `std::string_view`、C++20 `std::span` 这类零成本词汇类型，却都拒绝把核心数据结构交给 `std::vector` / `std::unordered_map`（详见 ㉒.5）。
 
 ### ㉑.2 标准 C++ 等价实现：先把"带过期的 KV"跑通（可编译）
 
@@ -1151,18 +1157,21 @@ int main() {
 
 ### ㉒.4 生产踩坑（真实坑，非教科书）
 
-**Redis：**
-- **内存成本**：一切在 RAM，1GB 数据集至少吃 1GB 内存，加上 jemalloc 碎片常再涨 20–40%。大 key（百万元素的 hash / list / zset）导致 `HGETALL` 卡顿、集群 `slot` 迁移超时。
-- **持久化取舍（RDB vs AOF）**：RDB 是时间点快照（fork + 写时复制，重启快但丢最后一次快照后的数据）；AOF 是追加日志（fsync 策略 `always` / `everysec` / `no`，默认 `everysec`、最多丢 1s）。**AOF rewrite 触发 `fork()`，大实例下内存翻倍（COW）风险真实存在**；生产多用 RDB + AOF 混合。
-- **集群槽（16384 slots）**：多键事务 / Lua 必须落在同一 slot（用 hash-tag `{}` 约束），跨 slot 的多键命令直接报错；resharding 需谨慎避免丢数据。
-- **单线程代价**：一个慢命令（`KEYS *`、重 Lua 循环、大 key 上的 `O(N)`）阻塞整个实例；热 key 被所有客户端同时轰击也无法并行（单线程无法并行单个 key）。
-- **fork 延迟**：大内存实例的 `bgsave` / AOF rewrite 的 `fork()` 因页表复制可造成 10–100ms 的 Stop-The-World 暂停。
+下表把 Redis / ClickHouse 各自的生产坑按「系统 × 坑 × 机理/影响 × 工程对策」并列；二者都印证同一句经验——**为性能做的架构选择，必然在另一维度付出代价**。
 
-**ClickHouse：**
-- **物化视图写放大**：`MATERIALIZED VIEW` 后每笔写入要同步更新多个聚合视图，高写入下 CPU / IO 放大数倍。工业上只对高频聚合建物化视图（见附录 I）。
-- **分区与 part 爆炸**：`PARTITION BY`（如 `toYYYYMM(ts)`）粒度错了 → 要么 part 过多（"Too many parts"、merge 跟不上、查询变慢），要么 part 过大。`MergeTree` 的后台 merge 是命脉，需控制小批量插入频率。
-- **JOIN 性能**：ClickHouse 的 JOIN 弱于点查 / 扫描；跨分片 JOIN 依赖 `Distributed` 引擎，开销大。工程上优先**反范式化、字典表（Dictionary）、或在分片键上做本地 JOIN**，而非照搬星型 schema。
-- **内存限制**：`max_memory_usage` / `max_memory_usage_for_user` 超限时查询被 SIGKILL；需加 `LIMIT` 与 `SETTINGS max_threads` 约束单查询，避免拖垮集群。
+| 系统 | 生产坑 | 机理 / 影响 | 工程对策 |
+|---|---|---|---|
+| Redis | 内存成本 | 一切在 RAM，1GB 数据至少吃 1GB；jemalloc 碎片常再涨 20–40%；大 key（百万元素 hash/list/zset）致 `HGETALL` 卡顿、集群 `slot` 迁移超时 | 控制大 key、拆分或换结构 |
+| Redis | 持久化取舍（RDB vs AOF） | RDB 时间点快照（重启快但丢最后一次后数据）；AOF 追加日志（`everysec` 默认、最多丢 1s）；**AOF rewrite 触发 `fork()`，大实例内存翻倍（COW）风险真实存在** | 生产多用 RDB + AOF 混合 |
+| Redis | 集群槽（16384 slots） | 多键事务 / Lua 须落同一 slot，跨 slot 命令直接报错；resharding 易丢数据 | 用 hash-tag `{}` 约束同 slot |
+| Redis | 单线程代价 | 一个慢命令（`KEYS *`、重 Lua、大 key `O(N)`）阻塞整个实例；热 key 无法并行 | 禁 `KEYS *`、重计算搬出 Redis、用 SCAN |
+| Redis | fork 延迟 | `bgsave` / AOF rewrite 的 `fork()` 因页表复制致 10–100ms STW 暂停 | 控实例内存、错峰备份 |
+| ClickHouse | 物化视图写放大 | `MATERIALIZED VIEW` 每笔写入同步更新多聚合视图，高写下 CPU/IO 放大数倍 | 只对高频聚合建物化视图（附录 I） |
+| ClickHouse | 分区与 part 爆炸 | `PARTITION BY` 粒度错 → part 过多（"Too many parts"）或过大；后台 merge 是命脉 | 控制小批量插入频率、调分区粒度 |
+| ClickHouse | JOIN 性能 | 弱于点查/扫描；跨分片 JOIN 依赖 `Distributed`，开销大 | 反范式化 / 字典表 / 分片键本地 JOIN |
+| ClickHouse | 内存限制 | `max_memory_usage` 超限查询被 SIGKILL，拖垮集群 | 加 `LIMIT` 与 `SETTINGS max_threads` 约束 |
+
+> 表注（㉒.4）：坑源均来自各项目官方文档与公开工程复盘（Cloudflare/字节等迁移博客、Redis `dict.c`/`t_zset.c`、ClickHouse `MergeTree` 文档），意在呈现「生产真实代价」而非穷举；具体阈值（如 16384 slots、20–40% 碎片）以各项目官方披露为准。
 
 ### ㉒.5 与现代 C++ 的互动
 

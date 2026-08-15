@@ -745,10 +745,16 @@ int Decide(bool isUObject) { return isUObject ? 0 : 1; }
 
 ### ㉑.1 今天 UE 活在哪里（真实坐标）
 
-- **游戏**：《堡垒之夜》（Epic 自研，数亿用户）、大量 3A 与独立游戏。
-- **汽车与交通**：车企用 UE 做座舱 HMI、仪表与驾驶模拟器（要实时、要好看、要好迭代）。
-- **影视虚拟制片**：《曼达洛人》的 LED 虚拟摄影棚 **StageCraft** 用 UE 实时渲染背景，演员对着真实光照演戏。
-- **建筑 / 训练 / 数字孪生**：BIM 可视化、飞行与工业训练模拟器、工厂数字孪生。
+下表按「领域 × 代表产品 × UE 承担角色 × 规模/地位 × 备注」把 UE 的真实落点并列摆开；它们的最大公约数是「**UE 早已是通用实时 3D 引擎，游戏只是最显眼的那块**」。
+
+| 领域 | 代表产品 · 案例 | UE 承担的角色 | 规模 · 地位 | 备注 |
+|---|---|---|---|---|
+| 游戏 | 《堡垒之夜》（Epic 自研，数亿用户）· 大量 3A 与独立游戏 | 3A 与独立游戏引擎 | 数亿用户反向哺育 UE5 | Epic 自研 |
+| 汽车与交通 | 车企座舱 HMI · 仪表 · 驾驶模拟器 | 实时渲染与交互原型 | 要实时 · 好看 · 好迭代 | — |
+| 影视虚拟制片 | 《曼达洛人》StageCraft（ILM） | LED 虚拟摄影棚实时背景 | 演员对真实光照演戏 | 同技术见于《The Batman》 |
+| 建筑 / 训练 / 数字孪生 | BIM 可视化 · 飞行与工业训练模拟器 · 工厂数字孪生 | 实时可视化与仿真 | — | — |
+
+> 表注（㉑.1）：据 Epic 官方客户案例与公开工程博客整理，呈现「产业坐标」而非穷举；代表部署随合作变动，以 Epic 官方披露为准。这些领域看似天差地别，却都卡在同一痛点：**要实时、要好看、要好迭代**——正是 UHT 反射 + 对象树 + 自造容器这套设计被真实产业反复验证的价值（详 ㉒.2）。
 
 ### ㉑.2 标准 C++ 等价实现：先把"反射属性表 + GC 托管"跑通（可编译）
 
@@ -858,11 +864,17 @@ int main() {
 
 ### ㉒.3 生产踩坑（真实坑，非教科书）
 
-- **反射属性访问开销**：附录 D5 的基准已量化——字符串键反射（`FName` 注册表 `find`）比虚 getter 慢约 4.3×、比直接字段慢几个数量级。结论：**反射 / 蓝图属性只用于编辑期与低频路径，运行时热路径必须用生成的强类型 getter**（UHT 生成的 `GetX()` 编译后等价于直接字段访问）。
-- **GC 停顿**：UE 是标记-清除增量 GC，UE5 每帧只扫一小部分对象避免长停顿；但大世界下 `FUObjectArray` 体量巨大，全量 GC 暂停可达约 22ms（附录 C）。需用 Unreal Insights（`-tracehost`）的 `stat unit` / `stat game` 与 LLM（Low Level Memory Tracker）定位对象膨胀。
-- **蓝图 / C++ 互操作**：`UFUNCTION(BlueprintCallable)` 走蓝图 VM 间接分派，热逻辑放蓝图会慢；最佳实践是把重逻辑推回 C++。UE5 已移除"蓝图 Nativization"（旧的性能 workaround），更强调 C++ 子系统（如 `GameplayAbilitySystem`）。
-- **编译时长**：UE 以编译慢著称。缓解靠 **Unity Build**（多 cpp 合并为单 TU）、**PCH**（预编译头）、确定性编译与 **Live Coding**（Hot Reload 后继）。UBT 统一管理模块依赖与宏展开。
-- **UHT 耦合与 CDO 膨胀**：头文件宏配对错会报 `Inappropriate #include`；每个 `UCLASS` 启动时构造一个常驻 **CDO（Class Default Object）**，含大 `TArray` 默认值的类会拖慢启动、吃常驻内存（附录 D）。裸 `UObject*` 跨 UObject 边界不标 `UPROPERTY` → GC 误回收悬垂（⑬ 节与练习 2 的根因）。
+下表把 UE 的生产坑按「坑 × 机理/影响 × 工程对策」并列；五个坑都指向同一句经验——**反射/GC/蓝图带来开发便利，代价必须在编译、内存与热路径上精确偿还**。
+
+| 坑 | 机理 / 影响 | 工程对策 |
+|---|---|---|
+| 反射属性访问开销 | 字符串键反射（`FName` 注册表 `find`）比虚 getter 慢约 4.3×、比直接字段慢几个数量级（附录 D5 基准）；`UPROPERTY` 未标 → GC 误回收悬垂 | 反射/蓝图属性只用于编辑期与低频路径；运行时热路径用 UHT 生成的强类型 `GetX()`（编译后等价直接字段访问） |
+| GC 停顿 | 标记-清除增量 GC，UE5 每帧只扫一小部分；但大世界下 `FUObjectArray` 体量巨大，全量暂停可达约 22ms（附录 C） | 用 Unreal Insights（`-tracehost`）的 `stat unit`/`stat game` 与 LLM 定位对象膨胀，控存活 UObject 总数 |
+| 蓝图 / C++ 互操作 | `UFUNCTION(BlueprintCallable)` 走蓝图 VM 间接分派，热逻辑放蓝图会慢；UE5 已移除"蓝图 Nativization" | 重逻辑推回 C++；优先 C++ 子系统（如 `GameplayAbilitySystem`） |
+| 编译时长 | UE 以编译慢著称，宏展开 + 模块依赖放大 | 靠 Unity Build（多 cpp 合并单 TU）、PCH、确定性编译与 Live Coding（Hot Reload 后继），由 UBT 统一管理 |
+| UHT 耦合与 CDO 膨胀 | 头文件宏配对错报 `Inappropriate #include`；每个 `UCLASS` 启动构造常驻 CDO，大 `TArray` 默认值拖慢启动、吃常驻内存 | 控 CDO 默认值体积；裸 `UObject*` 跨边界必标 `UPROPERTY`（⑬ 节与练习 2 根因） |
+
+> 表注（㉒.3）：坑源均来自 UE 官方文档、Unreal Insights 实践与公开工程复盘；基准数字（4.3×、22ms）见附录 C / 附录 D5，随机器与版本浮动，加速比方向稳定。裸 `UObject*` 不标 `UPROPERTY` 的悬垂是 UE 项目最高频崩溃源之一（附录 D）。
 
 ### ㉒.4 为何自造容器（TArray/TMap/FString）而非 STL：与 C++ 的互动
 

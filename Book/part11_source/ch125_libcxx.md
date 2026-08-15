@@ -806,10 +806,14 @@ int main() {
 
 ### ㉑.1 今天 libc++ 活在哪里（真实坐标）
 
-- **Apple 全平台默认**：macOS/iOS/watchOS/tvOS 的系统 Clang 默认 `-stdlib=libc++`。[史] 自 Xcode 5（2013）起 libc++ 成为默认 C++ 标准库。
-- **Clang 在 Linux/BSD 上**：装了 libc++ 包后，可用 `-stdlib=libc++` 显式切换。
-- **LLVM 生态工具**：Clang、lld、lldb 自身及大量基于 LLVM 的工具链默认用 libc++ 构建。
-- **对 C++20/23 跟进更快**：ranges、`std::format`、实验性 modules 等常由 libc++ 率先完整支持。
+| 部署场景 | 默认 / 切换方式 | 关键事实 / 证据 |
+|---|---|---|
+| Apple 全平台（macOS/iOS/watchOS/tvOS） | 系统 Clang 默认 `-stdlib=libc++` | [史] 自 Xcode 5（2013）起成为默认 C++ 标准库 |
+| Linux / BSD（装了 libc++ 包） | 显式 `-stdlib=libc++` 切换 | 与系统 libstdc++ 并存，需构建系统约定 |
+| LLVM 生态工具 | Clang/lld/lldb 等默认用 libc++ 构建 | 大量基于 LLVM 的工具链自举即用 libc++ |
+| 前沿标准跟进 | 纯实现速度（与部署无关） | ranges/`std::format`/实验性 modules 常由 libc++ 率先完整支持 |
+
+> 表注（㉑.1）：libc++ 的装机量由「Apple 平台唯一默认 + 现代跨平台工具链首选」共同撑起，与 ㉒.2 的产业坐标表互证。
 
 ### ㉑.2 标准 C++ 等价实现：用 constexpr STL 体验 libc++ 的"编译期求值"风格（可编译）
 

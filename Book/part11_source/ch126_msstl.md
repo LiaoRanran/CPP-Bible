@@ -825,10 +825,14 @@ int read_entry() { std::vector<std::string> v{"x"}; return (int)v.size(); }
 
 ### ㉑.1 今天 MS STL 活在哪里（真实坐标）
 
-- **所有 MSVC 编译的 Windows C++ 程序**：默认用 MS STL（Microsoft 的标准库实现）。[史] 它随 Visual Studio / Build Tools 一起发布。
-- **Windows 桌面与 UWP 应用**：Office、Visual Studio、大量桌面软件的标准库底座。
-- **游戏与引擎**：Unreal/Unity(C++) 在 Windows 上以 MSVC + MS STL 构建。
-- **企业/工业软件**：.NET 的 C++/CLI 互操作层、各类驱动与后台服务。
+| 部署场景 | 默认标准库身份 | 关键事实 / 证据 |
+|---|---|---|
+| 所有 MSVC 编译的 Windows C++ 程序 | MS STL | [史] 随 Visual Studio / Build Tools 一起发布，默认即它 |
+| Windows 桌面与 UWP 应用 | MS STL | Office、Visual Studio、大量桌面软件的标准库底座 |
+| 游戏与引擎 | MSVC + MS STL | Unreal / Unity(C++) 在 Windows 上以此构建 |
+| 企业 / 工业软件 | MS STL | .NET 的 C++/CLI 互操作层、各类驱动与后台服务 |
+
+> 表注（㉑.1）：MS STL 的覆盖由「Windows 生态」定义——凡用 MSVC 编译的本地 Windows 代码几乎都链它（`msvcp140.dll`/`vcruntime140.dll`），与 ㉒.2 的产业坐标表互证。
 
 ### ㉑.2 标准 C++ 等价实现：用"受检容器"体验 MS STL 调试期迭代器检查（可编译）
 

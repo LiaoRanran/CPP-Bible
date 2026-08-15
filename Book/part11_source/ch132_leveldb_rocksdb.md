@@ -27,10 +27,14 @@ LSM-Tree 对 B+Tree 的核心取舍是"写优化"：用顺序写 + 后台 Compac
 ### 0.4 史料补遗与持续编年
 继 2011/2012 年 LevelDB 与 RocksDB 先后开源，LSM 单机引擎从"参考实现"长成了云原生时代的存储基石。
 
-- [史] RocksDB 被工业界大规模采用：TiKV、CockroachDB、Kafka 的流式状态、MySQL 的 MyRocks 存储引擎、Flink 与各类缓存/消息中间件都以它为底座；LevelDB 则留在"轻量嵌入式 KV"的经典位置，被 Chrome 的 IndexedDB 等沿用。
-- [史] RocksDB 8.x（2023–2024）清理了长期废弃 API、把 C++ 基线抬到 C++17，并针对 NVMe SSD 与大内存机器优化 Compaction 与写放大；社区也出现了 Pebble（CockroachDB 的 Go 重写版）等"去 C++ 依赖"的变体。
-- [评] LSM 的"写优化换读/写放大"权衡至今无解——RocksDB 把所有旋钮（列族、前缀布隆、合并算子、分层压缩）交给用户，灵活但陡峭；这恰是它被云厂商偏爱、也让新手劝退的原因。
-- [轶] LevelDB 名字里的 'Level' 正来自它把数据分成多层（Level 0/1/2…）的压缩结构，命名一目了然。
+| 类型 | 内容 |
+|---|---|
+| `[史]` | RocksDB 被工业界大规模采用：TiKV、CockroachDB、Kafka 的流式状态、MySQL 的 MyRocks 存储引擎、Flink 与各类缓存/消息中间件都以它为底座；LevelDB 则留在"轻量嵌入式 KV"的经典位置，被 Chrome 的 IndexedDB 等沿用。 |
+| `[史]` | RocksDB 8.x（2023–2024）清理了长期废弃 API、把 C++ 基线抬到 C++17，并针对 NVMe SSD 与大内存机器优化 Compaction 与写放大；社区也出现了 Pebble（CockroachDB 的 Go 重写版）等"去 C++ 依赖"的变体。 |
+| `[评]` | LSM 的"写优化换读/写放大"权衡至今无解——RocksDB 把所有旋钮（列族、前缀布隆、合并算子、分层压缩）交给用户，灵活但陡峭；这恰是它被云厂商偏爱、也让新手劝退的原因。 |
+| `[轶]` | LevelDB 名字里的 'Level' 正来自它把数据分成多层（Level 0/1/2…）的压缩结构，命名一目了然。 |
+
+> 表注（0.4）：四条补遗按证据性质分列——`[史]` 可查证事实、`[评]` 工程权衡判断、`[轶]` 命名趣闻。
 
 > 史料来源：
 > - https://github.com/facebook/rocksdb
@@ -1077,10 +1081,14 @@ bool healthy = imm <= 2 && !pending_compaction && live_data_mb < capacity_mb * 0
 
 ### ㉑.1 今天它活在哪里（真实坐标）
 
-- **RocksDB 是工业 KV 引擎基石**：被 Kafka Streams、TiDB、CockroachDB、Cassandra、MySQL（MyRocks）用作存储/缓存引擎 [史]。
-- **LevelDB 是嵌入式 KV 范本**：被 Chrome（IndexedDB 底层）、无数移动/桌面应用用作本地持久 KV [史]。
-- **区块链与特征存储**：许多链上节点与推荐系统特征库以 RocksDB 存状态 [史]。
-- **与 Redis 组合**：热数据在 Redis、全量在 RocksDB 是常见分层架构 [史]。
+| 真实坐标 | 承担角色 | 与标准 / 生态互动 | 出处 |
+|---|---|---|---|
+| RocksDB | 工业 KV 引擎基石，被 Kafka Streams / TiDB / CockroachDB / Cassandra / MySQL（MyRocks）用作存储或缓存引擎 | LSM 写优化哲学的旗舰实现 | `[史]` |
+| LevelDB | 嵌入式 KV 范本，被 Chrome（IndexedDB 底层）与无数移动 / 桌面应用用作本地持久 KV | 轻量嵌入式 LSM 参考实现 | `[史]` |
+| 区块链 / 特征存储 | 链上节点与推荐系统特征库以 RocksDB 存状态 | 扩宽 LSM 的应用边界 | `[史]` |
+| 与 Redis 组合 | 热数据在 Redis、全量在 RocksDB 的分层架构 | 内存 + 持久 KV 经典搭配 | `[史]` |
+
+> 表注（㉑.1）：速览 LevelDB / RocksDB 的今日坐标；完整产业坐标见 ㉒.3。
 
 ### ㉑.2 标准 C++ 等价实现：先把"Put/Get/Delete"接口跑通（可编译）
 

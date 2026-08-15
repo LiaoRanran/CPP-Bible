@@ -854,10 +854,16 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 
 ### ㉑.1 今天 Boost 活在哪里（真实坐标）
 
-- **C++ 标准库的"试验田"**：大量标准设施源自 Boost。[史] `std::shared_ptr`←Boost、`std::optional`←Boost.Optional、`std::variant`←Boost.Variant、`std::filesystem`←Boost.Filesystem、`std::regex`←Boost.Regex、`std::format` 受 Boost.Format / {fmt} 影响。
-- **网络与异步**：`Boost.Asio` 是 C++ 标准网络 TS 的源头，广泛用于服务端与中间件。
-- **图与解析**：`Boost.Graph`、`Boost.Spirit` 在算法/DSL 领域仍是事实标准。
-- **你依赖的库背后**：许多开源库（含部分标准库实现与工具链）内部大量使用 Boost。
+下表把 Boost 的真实坐标按「领域 × 代表 / 能力 × 它扮演的角色 × 备注」并列摆开——与 ㉒.2 的「具体生产系统」视角互补，这里是「能力维度」视角。
+
+| 领域 | 代表 / 能力 | Boost 扮演的角色 | 备注 |
+|---|---|---|---|
+| 标准库的「试验田」 | `std::shared_ptr`←SmartPtr · `std::optional`←Optional · `std::variant`←Variant · `std::filesystem`←Filesystem · `std::regex`←Regex · `std::format` 受 Format/{fmt} 影响 | 接口/语义被标准收编，Boost 是先验验证方 | 见 ⑱ / ㉒.4 提案链路 [史] |
+| 网络与异步 | Boost.Asio | C++ 标准网络 TS 的源头，广泛用于服务端/中间件 | 标准网络库尚不成熟 |
+| 图与解析 | Boost.Graph · Boost.Spirit | 算法/DSL 领域事实标准 | 标准尚未覆盖 |
+| 下游库的内部依赖 | 大量开源库（含部分标准库实现与工具链） | 内部大量使用 Boost 组件 | 透明依赖，开发者常不自知 |
+
+> **表注（㉑.1）**：本表从「能力维度」呈现 Boost 的坐标，与 ㉒.2 的「具体生产系统」视角互为补充。Boost 最好的库往往活成标准，剩余库在 Asio/Beast/Geometry/Spirit/MPL 等标准尚未覆盖的高地仍是工业底座。
 
 ### ㉑.2 标准 C++ 等价实现：用 std::optional 复刻"被标准采纳的 Boost 思想"（可编译）
 

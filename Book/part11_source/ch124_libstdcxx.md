@@ -853,10 +853,14 @@ int main() {
 
 ### ㉑.1 今天 libstdc++ 活在哪里（真实坐标）
 
-- **每个 Linux 上的 C++ 程序**：默认链接 libstdc++（GCC 工具链自带）。[史] 即使你没写 `<bits/stdc++.h>`，`g++` 也会自动加 `-lstdc++`。
-- **Android NDK**：早期 NDK 的默认 STL 就是 libstdc++（NDK r16 起逐步转向 c++_shared/libc++）。[史]
-- **绝大多数 GCC 编译的发行版软件**：从核心工具到大型应用的 C++ 部分，容器/算法/IO 都来自它。
-- **服务器与嵌入式**：Debian/RHEL/Arch 等发行版的 C++ 运行时默认即 libstdc++。
+| 部署场景 | 默认标准库身份 | 关键事实 / 证据 |
+|---|---|---|
+| 每个 Linux 上的 C++ 程序 | libstdc++（GCC 工具链自带） | [史] 即使没写 `<bits/stdc++.h>`，`g++` 也自动加 `-lstdc++` |
+| Android NDK（历史） | libstdc++（早期默认 STL） | [史] NDK r16 起逐步转向 `c++_shared`/libc++ |
+| 绝大多数 GCC 编译的发行版软件 | libstdc++ | 从核心工具到大型应用的 C++ 部分，容器/算法/IO 均来自它 |
+| 服务器与嵌入式 | libstdc++ | Debian/RHEL/Arch 等发行版的 C++ 运行时默认即它 |
+
+> 表注（㉑.1）：libstdc++ 的「无处不在」源于它被 GCC 工具链默认链接——凡用 GCC 编译的用户态/超算/固件，最终都落到同一份 `libstdc++.so.6`；与 ㉒.2 的产业坐标表互证。
 
 ### ㉑.2 标准 C++ 等价实现：用 std::pmr 体验"容器可换内存来源"（可编译）
 

@@ -655,10 +655,16 @@ export int bridge(int a, int b) { return (a + b) * (a + b); }
 
 ### ㉑.1 今天 LLVM 活在哪里（真实坐标）
 
-- **Clang / Swift / Rust 后端**：三者都把 IR  lowering 到 LLVM，再由同一套后端生成机器码。[史] Rust 早期用过 LLVM 自研后端（rustc 的 LLVM 后端），Swift 直接基于 LLVM。
-- **无数语言**：Kotlin/Native、Julia、Zig、Ruby（Truffle/LLVM 变体）、CUDA（NVVM 基于 LLVM）等都建立在 LLVM 之上。
-- **系统工具链**：`clang-format`、`clang-tidy`、`clangd`（LSP）、`lld` 链接器皆 LLVM 项目。
-- **你手机与电脑里的二进制**：大量 App 的本地代码最终经 LLVM 后端产出。
+下表把 LLVM 的真实部署按「领域 × 代表系统 × 它承担的角色 × 备注」并列摆开；它们的最大公约数就是「大半现代编程语言的公共后端」——装机量以「设备数 × 语言数」计。
+
+| 领域 | 代表系统 | LLVM / Clang 承担的角色 | 备注 |
+|---|---|---|---|
+| C/C++/Obj-C 与 Swift/Rust 后端 | Clang · Swift · Rust（rustc） | 三者把各自 IR lowering 到 LLVM，再共用同一套后端生成机器码 | Rust 早期用自研 LLVM 后端；Swift 直接基于 LLVM [史] |
+| 其他语言后端 | Kotlin/Native · Julia · Zig · Ruby（Truffle LLVM 变体）· CUDA（NVVM 基于 LLVM） | 代码生成后端，统一落各种硬件 | 「写一种 IR，落所有硬件」 |
+| 系统工具链 | clang-format · clang-tidy · clangd（LSP）· lld 链接器 | 皆 LLVM 项目产出 | clangd 是 LSP 服务端 |
+| 终端用户二进制 | 手机与电脑里的本地代码（App、系统组件） | 大量本地代码最终经 LLVM 后端产出 | 与 ㉒.2 的详细产业表呼应 |
+
+> **表注（㉑.1）**：本表据 LLVM/Clang 官方文档与各语言事实整理，意在呈现 LLVM 的「产业坐标」而非穷举。代表系统随各语言/平台版本策略变动，以各项目官方披露为准。LLVM 实现 C++ 标准但不定义其内部结构——见 ㉒。
 
 ### ㉑.2 标准 C++ 等价实现：用 std::variant + visitor 复刻"AST/IR 遍历"（可编译）
 
