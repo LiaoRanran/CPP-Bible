@@ -112,7 +112,30 @@ Node* child = new Node(root);      // child 的 parent = root
 
 信号槽是 Qt 的发布/订阅：一个对象 `emit signal(args)`，所有 `connect` 到该信号的槽被依次调用。机制实现完全由 moc 生成代码 + `QMetaObject::activate` 完成。
 
-![图 ③-1：Qt 信号槽的发布/订阅模型（自绘示意图，非官方素材）](../assets/qt/signalslot_flow.svg)
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 220" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="0" y="0" width="640" height="220" fill="#ffffff"/>
+  <text x="320" y="22" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#1a1a1a">图 ③-1　Qt 信号槽发布/订阅模型</text>
+  <rect x="40" y="60" width="120" height="48" rx="6" fill="#4C72B0" stroke="#2f4b73" stroke-width="1"/>
+  <text x="100" y="89" text-anchor="middle" fill="#fff" font-weight="bold">Sender</text>
+  <rect x="250" y="60" width="150" height="48" rx="6" fill="#f0f3f8" stroke="#9aa0a6" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="325" y="80" text-anchor="middle" fill="#333">QMetaObject::activate</text>
+  <text x="325" y="98" text-anchor="middle" fill="#777" font-size="10.5">moc 编译期生成 · 连接表</text>
+  <rect x="470" y="60" width="120" height="48" rx="6" fill="#DD8452" stroke="#b5651d" stroke-width="1"/>
+  <text x="530" y="89" text-anchor="middle" fill="#fff" font-weight="bold">Slot</text>
+  <line x1="160" y1="84" x2="247" y2="84" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
+  <text x="200" y="76" text-anchor="middle" fill="#555" font-size="10.5">emit 信号</text>
+  <line x1="403" y1="84" x2="467" y2="84" stroke="#555" stroke-width="1.5" marker-end="url(#ar)"/>
+  <text x="435" y="76" text-anchor="middle" fill="#555" font-size="10.5">按索引调用</text>
+  <rect x="250" y="140" width="150" height="52" rx="6" fill="#fbf3ee" stroke="#DD8452" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="325" y="160" text-anchor="middle" fill="#333">QueuedConnection</text>
+  <text x="325" y="178" text-anchor="middle" fill="#777" font-size="10.5">跨线程：QMetaCallEvent</text>
+  <line x1="325" y1="108" x2="325" y2="138" stroke="#888" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#ar)"/>
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0 0 L9 4.5 L0 9 Z" fill="#555"/>
+    </marker>
+  </defs>
+</svg>
 > **图注（图 ③-1）**：`Sender` 通过 `emit` 触发 `QMetaObject::activate`，由 moc 生成的连接表（`connectionList`）按信号索引取出全部订阅者，逐一调用其槽函数；跨线程 `QueuedConnection` 时参数经 `QMetaCallEvent` 序列化入事件队列，由目标线程事件循环分发。虚线框表示 moc 在**编译期**生成的元数据，运行期不参与类型检查——新式 `connect` 已在编译期校验签名，旧式字符串连接才推迟到运行期。
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：信号槽机制]

@@ -38,8 +38,15 @@ C++26 的旗舰之争是"反射该有多强"。一派要完整编译期元对象
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
 
-![Bjarne Stroustrup，C++26 进行中（WG21 持续演进）](../assets/history/bjarne_stroustrup.jpg)
-> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 150" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="1" y="1" width="638" height="148" rx="6" fill="#fafbfc" stroke="#9aa0a6" stroke-width="1"/>
+  <rect x="16" y="30" width="88" height="92" rx="4" fill="#eef1f4" stroke="#c4cad1" stroke-width="1"/>
+  <circle cx="44" cy="58" r="8" fill="#aeb6bf"/>
+  <path d="M22 110 L48 78 L66 96 L82 80 L102 110 Z" fill="#c3cad2"/>
+  <text x="124" y="46" font-size="13" font-weight="bold" fill="#1a1a1a">Bjarne Stroustrup，C++26 进行中（</text>
+  <text x="124" y="70" font-size="13" font-weight="bold" fill="#1a1a1a">WG21 持续演进）</text>
+  <text x="124" y="134" font-size="10" fill="#888">图源：ICPCNews，许可 CC BY 2.0，来源 https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg</text>
+</svg>
 
 ## ① 学习目标
 

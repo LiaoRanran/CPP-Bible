@@ -37,8 +37,16 @@ C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派�
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
 
-![DEC PDP-11/40 小型机（1973）：C 与 Unix 的诞生平台，C++ 系统级血统的直接源头（语境影像）](../assets/history/dec_pdp11_1973.jpg)
-> 图源：Jeff Keyzer，许可 CC BY-SA 2.0，来源 <https://commons.wikimedia.org/wiki/File:DEC_PDP-11-40_Minicomputer,_1973,_Technisches_Museum_Wien_(edited,_white_background).jpg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 150" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="1" y="1" width="638" height="148" rx="6" fill="#fafbfc" stroke="#9aa0a6" stroke-width="1"/>
+  <rect x="16" y="30" width="88" height="92" rx="4" fill="#eef1f4" stroke="#c4cad1" stroke-width="1"/>
+  <circle cx="44" cy="58" r="8" fill="#aeb6bf"/>
+  <path d="M22 110 L48 78 L66 96 L82 80 L102 110 Z" fill="#c3cad2"/>
+  <text x="124" y="46" font-size="13" font-weight="bold" fill="#1a1a1a">DEC PDP-11/40 小型机（1973）：C 与 </text>
+  <text x="124" y="70" font-size="13" font-weight="bold" fill="#1a1a1a">Unix 的诞生平台，C++ 系统级血统的直接源头（语境</text>
+  <text x="124" y="94" font-size="13" font-weight="bold" fill="#1a1a1a">影像）</text>
+  <text x="124" y="134" font-size="10" fill="#888">图源：Jeff Keyzer，许可 CC BY-SA 2.0，来源 https://commons.wikimedia.org/wiki/File:DEC_PDP-11-40_Minicomputer,_1973,_Technisches_Museum_Wien_(edited,_white_background).jpg</text>
+</svg>
 
 ## ① 学习目标
 

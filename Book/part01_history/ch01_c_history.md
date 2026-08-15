@@ -39,17 +39,44 @@
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范；非公有领域者已按许可要求标注作者与许可。
 
-![贝尔实验室新泽西霍尔姆德尔园区，C 与 C++ 的诞生地](../assets/history/bell_labs_holmdel.jpg)
-> 图源：derivative work: MBisanz，许可 CC BY-SA 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bell_Labs_Holmdel.jpg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 150" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="1" y="1" width="638" height="148" rx="6" fill="#fafbfc" stroke="#9aa0a6" stroke-width="1"/>
+  <rect x="16" y="30" width="88" height="92" rx="4" fill="#eef1f4" stroke="#c4cad1" stroke-width="1"/>
+  <circle cx="44" cy="58" r="8" fill="#aeb6bf"/>
+  <path d="M22 110 L48 78 L66 96 L82 80 L102 110 Z" fill="#c3cad2"/>
+  <text x="124" y="46" font-size="13" font-weight="bold" fill="#1a1a1a">贝尔实验室新泽西霍尔姆德尔园区，C 与 C++ 的诞生地</text>
+  <text x="124" y="134" font-size="10" fill="#888">图源：derivative work: MBisanz，许可 CC BY-SA 2.0，来源 https://commons.wikimedia.org/wiki/File:Bell_Labs_Holmdel.jpg</text>
+</svg>
 
-![Ken Thompson，C 语言共同创造者（贝尔实验室）](../assets/history/ken_thompson.jpg)
-> 图源：Unknown author，许可 Public domain，来源 <https://commons.wikimedia.org/wiki/File:Ken_Thompson_02.jpg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 150" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="1" y="1" width="638" height="148" rx="6" fill="#fafbfc" stroke="#9aa0a6" stroke-width="1"/>
+  <rect x="16" y="30" width="88" height="92" rx="4" fill="#eef1f4" stroke="#c4cad1" stroke-width="1"/>
+  <circle cx="44" cy="58" r="8" fill="#aeb6bf"/>
+  <path d="M22 110 L48 78 L66 96 L82 80 L102 110 Z" fill="#c3cad2"/>
+  <text x="124" y="46" font-size="13" font-weight="bold" fill="#1a1a1a">Ken Thompson，C 语言共同创造者（贝尔实验室</text>
+  <text x="124" y="70" font-size="13" font-weight="bold" fill="#1a1a1a">）</text>
+  <text x="124" y="134" font-size="10" fill="#888">图源：Unknown author，许可 Public domain，来源 https://commons.wikimedia.org/wiki/File:Ken_Thompson_02.jpg</text>
+</svg>
 
-![Dennis Ritchie，C 语言创造者（贝尔实验室）](../assets/history/dennis_ritchie.jpg)
-> 图源：Denise Panyik-Dale，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Dennis_Ritchie_2011.jpg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 150" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="1" y="1" width="638" height="148" rx="6" fill="#fafbfc" stroke="#9aa0a6" stroke-width="1"/>
+  <rect x="16" y="30" width="88" height="92" rx="4" fill="#eef1f4" stroke="#c4cad1" stroke-width="1"/>
+  <circle cx="44" cy="58" r="8" fill="#aeb6bf"/>
+  <path d="M22 110 L48 78 L66 96 L82 80 L102 110 Z" fill="#c3cad2"/>
+  <text x="124" y="46" font-size="13" font-weight="bold" fill="#1a1a1a">Dennis Ritchie，C 语言创造者（贝尔实验室</text>
+  <text x="124" y="70" font-size="13" font-weight="bold" fill="#1a1a1a">）</text>
+  <text x="124" y="134" font-size="10" fill="#888">图源：Denise Panyik-Dale，许可 CC BY 2.0，来源 https://commons.wikimedia.org/wiki/File:Dennis_Ritchie_2011.jpg</text>
+</svg>
 
-![Bjarne Stroustrup，C++ 创造者，1979 年于贝尔实验室启动 C with Classes](../assets/history/bjarne_stroustrup.jpg)
-> 图源：ICPCNews，许可 CC BY 2.0，来源 <https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 150" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
+  <rect x="1" y="1" width="638" height="148" rx="6" fill="#fafbfc" stroke="#9aa0a6" stroke-width="1"/>
+  <rect x="16" y="30" width="88" height="92" rx="4" fill="#eef1f4" stroke="#c4cad1" stroke-width="1"/>
+  <circle cx="44" cy="58" r="8" fill="#aeb6bf"/>
+  <path d="M22 110 L48 78 L66 96 L82 80 L102 110 Z" fill="#c3cad2"/>
+  <text x="124" y="46" font-size="13" font-weight="bold" fill="#1a1a1a">Bjarne Stroustrup，C++ 创造者，19</text>
+  <text x="124" y="70" font-size="13" font-weight="bold" fill="#1a1a1a">79 年于贝尔实验室启动 C with Classes</text>
+  <text x="124" y="134" font-size="10" fill="#888">图源：ICPCNews，许可 CC BY 2.0，来源 https://commons.wikimedia.org/wiki/File:Bjarne_Stroustrup_(2013).jpg</text>
+</svg>
 
 ## ① 学习目标
 
