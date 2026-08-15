@@ -37,15 +37,8 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 150" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
-  <rect x="1" y="1" width="638" height="148" rx="6" fill="#fafbfc" stroke="#9aa0a6" stroke-width="1"/>
-  <rect x="16" y="30" width="88" height="92" rx="4" fill="#eef1f4" stroke="#c4cad1" stroke-width="1"/>
-  <circle cx="44" cy="58" r="8" fill="#aeb6bf"/>
-  <path d="M22 110 L48 78 L66 96 L82 80 L102 110 Z" fill="#c3cad2"/>
-  <text x="124" y="46" font-size="13" font-weight="bold" fill="#1a1a1a">Ken Thompson，Unix 与 C 共同创造者（</text>
-  <text x="124" y="70" font-size="13" font-weight="bold" fill="#1a1a1a">C++ 工程文化的重要源头）</text>
-  <text x="124" y="134" font-size="10" fill="#888">图源：Public domain，作者 Unknown，来源 https://commons.wikimedia.org/wiki/File:Ken_Thompson_02.jpg</text>
-</svg>
+![Ken Thompson，Unix 与 C 共同创造者（C++ 工程文化的重要源头）](../assets/history/ken_thompson.jpg)
+> 图源：Public domain，作者 Unknown，来源 <https://commons.wikimedia.org/wiki/File:Ken_Thompson_02.jpg>
 
 ## ① 学习目标
 

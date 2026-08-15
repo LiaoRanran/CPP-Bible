@@ -36,15 +36,8 @@ C++14 几乎没有什么"路线之争"，它验证的是另一条哲学：**标�
 
 > 本节图片均取自 Wikimedia Commons，引入前经 API 核验许可与作者，符合 §4.3 溯源规范。
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 150" font-family="'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif" font-size="13">
-  <rect x="1" y="1" width="638" height="148" rx="6" fill="#fafbfc" stroke="#9aa0a6" stroke-width="1"/>
-  <rect x="16" y="30" width="88" height="92" rx="4" fill="#eef1f4" stroke="#c4cad1" stroke-width="1"/>
-  <circle cx="44" cy="58" r="8" fill="#aeb6bf"/>
-  <path d="M22 110 L48 78 L66 96 L82 80 L102 110 Z" fill="#c3cad2"/>
-  <text x="124" y="46" font-size="13" font-weight="bold" fill="#1a1a1a">Cray-1 超级计算机：C++ 在高性能计算（HPC）</text>
-  <text x="124" y="70" font-size="13" font-weight="bold" fill="#1a1a1a">领域长期占据核心（语境影像）</text>
-  <text x="124" y="134" font-size="10" fill="#888">图源：Rama，许可 CC BY-SA 2.0 fr，来源 https://commons.wikimedia.org/wiki/File:Cray_1_IMG_9126.jpg</text>
-</svg>
+![Cray-1 超级计算机：C++ 在高性能计算（HPC）领域长期占据核心（语境影像）](../assets/history/cray1.jpg)
+> 图源：Rama，许可 CC BY-SA 2.0 fr，来源 <https://commons.wikimedia.org/wiki/File:Cray_1_IMG_9126.jpg>
 
 ## ① 学习目标
 
