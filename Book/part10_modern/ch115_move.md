@@ -1,4 +1,5 @@
 # 第115章　移动语义与右值引用
+> **[验证环境·实现]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。移动语义本身是 [标准] 定义的语言机制；但「移动后性能提升 X」「NRVO 是否触发」等**实测结论依赖具体编译器与优化级别**（GCC 15.3.0 / `-O2`），不可移植为通用性能定律。断言如「移动比拷贝快」仅在给定类型与编译器下成立，标 `[UNVERIFIED]` 处请以本机复测为准。
 
 > 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：95 分钟 / 前置：⟶ Book/part03_language/ch19_variables.md（变量与存储期）、⟶ Book/part03_language/ch20_reference_pointer.md（引用与指针）、⟶ Book/part04_memory/ch39_raii_rule.md（Rule of Three/Five/Zero）、⟶ Book/part07_stl/ch77_vector.md（vector 扩容）/ 后续：⟶ Book/part10_modern/ch116_perfect_forwarding.md（完美转发）、⟶ Book/part10_modern/ch117_copy_elision.md（RVO/NRVO）、⟶ Book/part03_language/ch27_cast.md（cast）/ 难度：★★★★☆
 

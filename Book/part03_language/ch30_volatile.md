@@ -1,4 +1,5 @@
 # 第30章 volatile / atomic 与硬件寄存器
+> **[验证环境·平台/ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。C++ 标准层（[标准]）：`volatile` 仅保证「对 volatile 对象的访问不被优化掉、不被与其他 volatile 访问重排」，**不提供**跨线程可见性、不保证原子性、不阻止编译器/CPU 重排；因此 `volatile` **不可用于线程同步**——历史上 MSVC 对其有额外放松（[实现·MSVC]），但 GCC/Clang 不保证，属平台差异（[ABI/平台]）。涉及内存映射 I/O（MMIO）的语义以具体编译器与目标平台为准，跨平台请用 `std::atomic` 或 OS 原语。
 
 ⟶ Book/part09_concurrency/ch107_atomic.md
 

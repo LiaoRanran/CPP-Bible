@@ -1,4 +1,5 @@
 # 第49章 虚继承与菱形继承：共享虚基类
+> **[验证环境·ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。虚继承的 **vbptr / vbtable / thunk 布局由 ABI 规定而非 C++ 标准**（[标准] 不规定具体布局）；GCC/Clang 遵循 **Itanium C++ ABI**（含虚基类偏移调整 thunk），MSVC 采用独立的 vfptr/vbptr 双指针布局。本章展示的虚继承布局与偏移均为 **GCC/Itanium ABI 实测**，跨编译器或平台可能存在差异，切勿视作标准保证。
 
 ⟶ Book/part05_oo/ch47_virtual_functions.md
 ⟶ Book/part05_oo/ch50_multiple_inheritance.md

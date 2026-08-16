@@ -1,4 +1,5 @@
 # 第09章　C++26：已确定特性与方向
+> **[验证环境·标准状态]** 本章描述 **C++26 尚未冻结**的特性（截至编写时）。示例与语法在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++26`** 下验证其**当前支持程度**；具体语义以最终 ISO C++26 标准与 GCC 后续版本为准。标 `[UNVERIFIED]` 处表示本机 GCC 15.3.0 尚未实现或行为待定，非通用结论。
 
 ⟶ Book/part10_modern/ch121_contracts.md
 ⟶ Book/part10_modern/ch123_ct_programming.md

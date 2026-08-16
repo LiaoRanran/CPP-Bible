@@ -1,4 +1,5 @@
 # 第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）
+> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
 ⟶ Book/part06_templates/ch64_fold.md
 ⟶ Book/part10_modern/ch116_perfect_forwarding.md

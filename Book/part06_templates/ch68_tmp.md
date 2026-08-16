@@ -1,4 +1,5 @@
 # 第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）
+> **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
 ⟶ Book/part06_templates/ch69_constexpr.md
 ⟶ Book/part06_templates/ch65_type_traits.md
