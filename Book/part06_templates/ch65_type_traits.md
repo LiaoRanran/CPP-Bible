@@ -1195,34 +1195,126 @@ N=1'000'000（拷贝元素），VN=200'000（vector push_back）。`sizeof Trivi
 | S5b 手写 memcpy | 3.559 ms | 0.93× |
 | S5c trait 链（conjunction）拷贝 | 3.785 ms | 0.99× |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：类型萃取/分支策略相对开销（基线=1.00×）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：类型萃取/分支策略相对开销（基线=1.00×）</text>
-  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+<svg viewBox="0 0 1040 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="520" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="1000" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
-  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
-  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
-  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
-  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
-  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
-  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
-  <rect x="141.3" y="213.2" width="64.0" height="86.8" fill="#4C72B0"/>
-  <text x="173.3" y="207.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.75×</text>
-  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">不可预测分支</text>
-  <rect x="328.0" y="150.2" width="64.0" height="149.8" fill="#C44E52"/>
-  <text x="360.0" y="144.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">3.02×</text>
-  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">64B padded 拷贝</text>
-  <rect x="514.7" y="196.8" width="64.0" height="103.2" fill="#55A868"/>
-  <text x="546.7" y="190.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">2.08×</text>
-  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">ThrowingMove</text>
+  <line x1="80" y1="300.0" x2="1000" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="1000" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="1000" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="222.2" x2="1000" y2="222.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="1000" y="218.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 4.24ms</text>
+  <rect x="92.3" y="222.2" width="36.8" height="77.8" fill="#9A9A9A"/>
+  <text x="110.7" y="216.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">4.24ms</text>
+  <text x="110.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 110.7 314.0)">S1a trait→memcpy（trivial POD）</text>
+  <rect x="153.6" y="212.8" width="36.8" height="87.2" fill="#DD8452"/>
+  <text x="172.0" y="206.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">5.05ms</text>
+  <text x="172.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 172.0 314.0)">S1b trait→element-loop（non-trivial）</text>
+  <rect x="214.9" y="223.9" width="36.8" height="76.1" fill="#55A868"/>
+  <text x="233.3" y="217.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">4.11ms</text>
+  <text x="233.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 233.3 314.0)">S1c 手写 memcpy（control）</text>
+  <rect x="276.3" y="224.3" width="36.8" height="75.7" fill="#8172B3"/>
+  <text x="294.7" y="218.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">4.08ms</text>
+  <text x="294.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 294.7 314.0)">S1d 原始 memcpy（同布局）</text>
+  <rect x="337.6" y="225.2" width="36.8" height="74.8" fill="#937860"/>
+  <text x="356.0" y="219.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">4.01ms</text>
+  <text x="356.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 356.0 314.0)">S2a if constexpr 分派</text>
+  <rect x="398.9" y="223.6" width="36.8" height="76.4" fill="#64B5CD"/>
+  <text x="417.3" y="217.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">4.13ms</text>
+  <text x="417.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 417.3 314.0)">S2b runtime-if（可预测）</text>
+  <rect x="460.3" y="195.2" width="36.8" height="104.8" fill="#CCB974"/>
+  <text x="478.7" y="189.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">7.00ms</text>
+  <text x="478.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 478.7 314.0)">S2c runtime-if（不可预测 50/50）</text>
+  <rect x="521.6" y="243.5" width="36.8" height="56.5" fill="#DA8BC3"/>
+  <text x="540.0" y="237.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">2.86ms</text>
+  <text x="540.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 540.0 314.0)">S3a copy compact（8B, conditional_t）</text>
+  <rect x="582.9" y="183.9" width="36.8" height="116.1" fill="#8C8C8C"/>
+  <text x="601.3" y="177.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">8.63ms</text>
+  <text x="601.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 601.3 314.0)">S3b copy padded（64B, conditional_t）</text>
+  <rect x="644.3" y="254.6" width="36.8" height="45.4" fill="#4C72B0"/>
+  <text x="662.7" y="248.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">2.32ms</text>
+  <text x="662.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 662.7 314.0)">S3c copy CompactPod 直接</text>
+  <rect x="705.6" y="141.3" width="36.8" height="158.7" fill="#DD8452"/>
+  <text x="724.0" y="135.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">19.04ms</text>
+  <text x="724.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 724.0 314.0)">S4a vector&lt;NoexceptMove&gt; push_back</text>
+  <rect x="766.9" y="101.9" width="36.8" height="198.1" fill="#C44E52"/>
+  <text x="785.3" y="95.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">39.56ms</text>
+  <text x="785.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 785.3 314.0)">S4b vector&lt;ThrowingMove&gt; push_back</text>
+  <rect x="828.3" y="227.5" width="36.8" height="72.5" fill="#8172B3"/>
+  <text x="846.7" y="221.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">3.84ms</text>
+  <text x="846.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 846.7 314.0)">S5a trait 分派拷贝</text>
+  <rect x="889.6" y="231.6" width="36.8" height="68.4" fill="#937860"/>
+  <text x="908.0" y="225.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">3.56ms</text>
+  <text x="908.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 908.0 314.0)">S5b 手写 memcpy</text>
+  <rect x="950.9" y="228.3" width="36.8" height="71.7" fill="#64B5CD"/>
+  <text x="969.3" y="222.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">3.79ms</text>
+  <text x="969.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 969.3 314.0)">S5c trait 链（conjunction）拷贝</text>
+</svg>
+
+<svg viewBox="0 0 1040 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="520" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="1000" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="1000" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <line x1="80" y1="176.0" x2="1000" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="52.0" x2="1000" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="176.0" x2="1000" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="1000" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="92.3" y="176.0" width="36.8" height="124.0" fill="#9A9A9A"/>
+  <text x="110.7" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="110.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 110.7 314.0)">S1a trait→memcpy（trivial POD）</text>
+  <rect x="153.6" y="166.6" width="36.8" height="133.4" fill="#DD8452"/>
+  <text x="172.0" y="160.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.19×</text>
+  <text x="172.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 172.0 314.0)">S1b trait→element-loop（non-trivial）</text>
+  <rect x="214.9" y="177.8" width="36.8" height="122.2" fill="#55A868"/>
+  <text x="233.3" y="171.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.97×</text>
+  <text x="233.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 233.3 314.0)">S1c 手写 memcpy（control）</text>
+  <rect x="276.3" y="178.1" width="36.8" height="121.9" fill="#8172B3"/>
+  <text x="294.7" y="172.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">0.96×</text>
+  <text x="294.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 294.7 314.0)">S1d 原始 memcpy（同布局）</text>
+  <rect x="337.6" y="179.0" width="36.8" height="121.0" fill="#937860"/>
+  <text x="356.0" y="173.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">0.95×</text>
+  <text x="356.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 356.0 314.0)">S2a if constexpr 分派</text>
+  <rect x="398.9" y="177.4" width="36.8" height="122.6" fill="#64B5CD"/>
+  <text x="417.3" y="171.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">0.97×</text>
+  <text x="417.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 417.3 314.0)">S2b runtime-if（可预测）</text>
+  <rect x="460.3" y="149.1" width="36.8" height="150.9" fill="#CCB974"/>
+  <text x="478.7" y="143.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">1.65×</text>
+  <text x="478.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 478.7 314.0)">S2c runtime-if（不可预测 50/50）</text>
+  <rect x="521.6" y="197.3" width="36.8" height="102.7" fill="#DA8BC3"/>
+  <text x="540.0" y="191.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">0.67×</text>
+  <text x="540.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 540.0 314.0)">S3a copy compact（8B, conditional_t）</text>
+  <rect x="582.9" y="137.8" width="36.8" height="162.2" fill="#8C8C8C"/>
+  <text x="601.3" y="131.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">2.03×</text>
+  <text x="601.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 601.3 314.0)">S3b copy padded（64B, conditional_t）</text>
+  <rect x="644.3" y="208.5" width="36.8" height="91.5" fill="#4C72B0"/>
+  <text x="662.7" y="202.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">0.55×</text>
+  <text x="662.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 662.7 314.0)">S3c copy CompactPod 直接</text>
+  <rect x="705.6" y="95.2" width="36.8" height="204.8" fill="#DD8452"/>
+  <text x="724.0" y="89.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">4.49×</text>
+  <text x="724.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 724.0 314.0)">S4a vector&lt;NoexceptMove&gt; push_back</text>
+  <rect x="766.9" y="55.8" width="36.8" height="244.2" fill="#C44E52"/>
+  <text x="785.3" y="49.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">9.32×</text>
+  <text x="785.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 785.3 314.0)">S4b vector&lt;ThrowingMove&gt; push_back</text>
+  <rect x="828.3" y="181.4" width="36.8" height="118.6" fill="#8172B3"/>
+  <text x="846.7" y="175.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">0.91×</text>
+  <text x="846.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 846.7 314.0)">S5a trait 分派拷贝</text>
+  <rect x="889.6" y="185.5" width="36.8" height="114.5" fill="#937860"/>
+  <text x="908.0" y="179.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">0.84×</text>
+  <text x="908.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 908.0 314.0)">S5b 手写 memcpy</text>
+  <rect x="950.9" y="182.2" width="36.8" height="117.8" fill="#64B5CD"/>
+  <text x="969.3" y="176.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">0.89×</text>
+  <text x="969.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 969.3 314.0)">S5c trait 链（conjunction）拷贝</text>
 </svg>
 
 > 图注：分支不可预测时 runtime-if 比 `if constexpr` 编译期选路慢 **1.75×**（流水线冲刷）；`conditional_t` 拷贝 64B padded 比 8B compact 慢 3.02×；`ThrowingMove` 的 `vector` 扩容慢 2.08×（必须回退拷贝）。类型萃取的价值在「消除运行期分支与冗余存储」。

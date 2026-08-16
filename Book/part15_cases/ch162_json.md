@@ -1199,10 +1199,10 @@ flowchart TD
 | SAX 流式扫描 | 仅扫结构不入栈 | 0.328 | ~0.21× (4.7× 快) |
 | token 扫描 | 仅数分隔符 | 0.334 | ~0.22× (4.6× 快) |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：JSON 解析方案耗时（基线=递归下降）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：JSON 解析方案耗时（基线=递归下降）</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -1215,18 +1215,46 @@ flowchart TD
   <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
   <line x1="80" y1="109.9" x2="640" y2="109.9" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="105.9" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (递归下降)</text>
+  <text x="640" y="105.9" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 1.53ms</text>
   <rect x="141.3" y="109.9" width="64.0" height="190.1" fill="#9A9A9A"/>
-  <text x="173.3" y="103.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.533 (1.00×)</text>
-  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">递归下降</text>
-  <rect x="328.0" y="259.3" width="64.0" height="40.7" fill="#C44E52"/>
-  <text x="360.0" y="253.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.328 (4.7× 快)</text>
-  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">SAX流式</text>
-  <rect x="514.7" y="258.6" width="64.0" height="41.4" fill="#55A868"/>
-  <text x="546.7" y="252.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.334 (4.6× 快)</text>
-  <text x="546.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">token扫描</text>
+  <text x="173.3" y="103.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.53ms</text>
+  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">递归下降解析</text>
+  <rect x="328.0" y="259.3" width="64.0" height="40.7" fill="#DD8452"/>
+  <text x="360.0" y="253.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.33ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">SAX 流式扫描</text>
+  <rect x="514.7" y="258.6" width="64.0" height="41.4" fill="#C44E52"/>
+  <text x="546.7" y="252.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.33ms</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">token 扫描</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="48.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="141.3" y="52.0" width="64.0" height="248.0" fill="#9A9A9A"/>
+  <text x="173.3" y="46.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">递归下降解析</text>
+  <rect x="328.0" y="246.9" width="64.0" height="53.1" fill="#DD8452"/>
+  <text x="360.0" y="240.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.21×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">SAX 流式扫描</text>
+  <rect x="514.7" y="246.0" width="64.0" height="54.0" fill="#C44E52"/>
+  <text x="546.7" y="240.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.22×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">token 扫描</text>
 </svg>
 
 > 图注：三种 JSON 解析方案中，`ostringstream` 递归下降最慢（1.533ms，1.00× 基线）；`SAX 流式`仅扫描结构不入栈（0.328ms，**4.7× 快**），`token 扫描`只数分隔符（0.334ms，**4.6× 快**）。避免完整构造 value 树是主要加速机制——省掉绝大部分对象分配与递归开销。数据见上方 D5.1 表。

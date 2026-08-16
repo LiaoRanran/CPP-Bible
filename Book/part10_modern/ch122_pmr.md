@@ -1814,34 +1814,82 @@ int main() {
 | vector<string> 50 万 5 字符小串（SSO 内、零堆分配）· std | 6.390 | 1.00× |
 | vector<string> 50 万 5 字符小串（SSO 内、零堆分配）· pmr | 7.978 | **慢 0.80×** |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：list 20 万节点构建+求和 — std::list 与 pmr 对比">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：list 20 万节点构建+求和 — std::list 与 pmr 对比</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
-  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
-  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
-  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">15</text>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">20</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
-  <line x1="80" y1="159.0" x2="640" y2="159.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="155.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (std::list)</text>
-  <rect x="141.3" y="159.0" width="64.0" height="141.0" fill="#9A9A9A"/>
-  <text x="173.3" y="153.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">11.371</text>
-  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">std::list</text>
-  <rect x="328.0" y="267.3" width="64.0" height="32.7" fill="#C44E52"/>
-  <text x="360.0" y="261.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">2.635 (4.32×)</text>
-  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">pmr+mono</text>
-  <rect x="514.7" y="240.1" width="64.0" height="59.9" fill="#55A868"/>
-  <text x="546.7" y="234.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">4.833 (2.35×)</text>
-  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">pmr+pool</text>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="212.7" x2="640" y2="212.7" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="208.7" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 11.37ms</text>
+  <rect x="96.0" y="212.7" width="48.0" height="87.3" fill="#9A9A9A"/>
+  <text x="120.0" y="206.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">11.37ms</text>
+  <text x="120.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 120.0 314.0)">list&lt;int&gt; 20 万节点 构建+求和 · std::list（全局 new）</text>
+  <rect x="176.0" y="265.2" width="48.0" height="34.8" fill="#DD8452"/>
+  <text x="200.0" y="259.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">2.63ms</text>
+  <text x="200.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 200.0 314.0)">list&lt;int&gt; 20 万节点 构建+求和 · pmr::list + monotonic_buffer_resource</text>
+  <rect x="256.0" y="243.4" width="48.0" height="56.6" fill="#55A868"/>
+  <text x="280.0" y="237.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">4.83ms</text>
+  <text x="280.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 280.0 314.0)">list&lt;int&gt; 20 万节点 构建+求和 · pmr::list + unsynchronized_pool_resource</text>
+  <rect x="336.0" y="123.5" width="48.0" height="176.5" fill="#C44E52"/>
+  <text x="360.0" y="117.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">137ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">200 轮重建（每轮 1 万节点）· std::list</text>
+  <rect x="416.0" y="199.8" width="48.0" height="100.2" fill="#937860"/>
+  <text x="440.0" y="193.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">16.31ms</text>
+  <text x="440.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 440.0 314.0)">200 轮重建（每轮 1 万节点）· pmr monotonic + 每轮 release() 复用</text>
+  <rect x="496.0" y="233.4" width="48.0" height="66.6" fill="#64B5CD"/>
+  <text x="520.0" y="227.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">6.39ms</text>
+  <text x="520.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 520.0 314.0)">vector&lt;string&gt; 50 万 5 字符小串（SSO 内、零堆分配）· std</text>
+  <rect x="576.0" y="225.4" width="48.0" height="74.6" fill="#CCB974"/>
+  <text x="600.0" y="219.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">7.98ms</text>
+  <text x="600.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 600.0 314.0)">vector&lt;string&gt; 50 万 5 字符小串（SSO 内、零堆分配）· pmr</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="213.3" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="96.0" y="217.3" width="48.0" height="82.7" fill="#9A9A9A"/>
+  <text x="120.0" y="211.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="120.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 120.0 314.0)">list&lt;int&gt; 20 万节点 构建+求和 · std::list（全局 new）</text>
+  <rect x="176.0" y="269.8" width="48.0" height="30.2" fill="#DD8452"/>
+  <text x="200.0" y="263.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.23×</text>
+  <text x="200.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 200.0 314.0)">list&lt;int&gt; 20 万节点 构建+求和 · pmr::list + monotonic_buffer_resource</text>
+  <rect x="256.0" y="248.1" width="48.0" height="51.9" fill="#55A868"/>
+  <text x="280.0" y="242.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.43×</text>
+  <text x="280.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 280.0 314.0)">list&lt;int&gt; 20 万节点 构建+求和 · pmr::list + unsynchronized_pool_resource</text>
+  <rect x="336.0" y="128.1" width="48.0" height="171.9" fill="#C44E52"/>
+  <text x="360.0" y="122.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">12.01×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">200 轮重建（每轮 1 万节点）· std::list</text>
+  <rect x="416.0" y="204.4" width="48.0" height="95.6" fill="#937860"/>
+  <text x="440.0" y="198.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">1.43×</text>
+  <text x="440.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 440.0 314.0)">200 轮重建（每轮 1 万节点）· pmr monotonic + 每轮 release() 复用</text>
+  <rect x="496.0" y="238.0" width="48.0" height="62.0" fill="#64B5CD"/>
+  <text x="520.0" y="232.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">0.56×</text>
+  <text x="520.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 520.0 314.0)">vector&lt;string&gt; 50 万 5 字符小串（SSO 内、零堆分配）· std</text>
+  <rect x="576.0" y="230.1" width="48.0" height="69.9" fill="#CCB974"/>
+  <text x="600.0" y="224.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">0.70×</text>
+  <text x="600.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 600.0 314.0)">vector&lt;string&gt; 50 万 5 字符小串（SSO 内、零堆分配）· pmr</text>
 </svg>
 
 > 图注：`list<int>` 20 万节点构建+求和：默认 `std::list` 每节点一次全局 `new`，11.371ms；`pmr::list` + `monotonic_buffer_resource` 2.635ms（**快 4.32×**），+ `unsynchronized_pool_resource` 4.833ms（**快 2.35×**）。节点密集分配下，PMR 复用单块缓冲省掉逐节点分配开销。200 轮重建（每轮 1 万节点）`pmr`+`release()` 复用更达 8.37×。

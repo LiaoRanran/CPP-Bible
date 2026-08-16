@@ -1665,10 +1665,40 @@ flowchart TD
 | umap_lookup（哈希查找） | 38.91 | 基准 |
 | map_lookup（红黑树查找 ~20 层） | 721.36 | 慢 **18.5×** |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：unordered_map reserve 与 map 插入相对开销">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：unordered_map reserve 与 map 插入相对开销</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="100.4" x2="640" y2="100.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="96.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 407.07ms</text>
+  <rect x="104.0" y="100.4" width="64.0" height="199.6" fill="#9A9A9A"/>
+  <text x="136.0" y="94.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">407ms</text>
+  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">umap_insert_noreserve（无 reserve，含 rehash）</text>
+  <rect x="216.0" y="116.0" width="64.0" height="184.0" fill="#DD8452"/>
+  <text x="248.0" y="110.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">305ms</text>
+  <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">umap_insert_reserve（reserve(N) 预分配）</text>
+  <rect x="328.0" y="61.6" width="64.0" height="238.4" fill="#C44E52"/>
+  <text x="360.0" y="55.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">837ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">map_insert（红黑树插入）</text>
+  <rect x="440.0" y="226.8" width="64.0" height="73.2" fill="#8172B3"/>
+  <text x="472.0" y="220.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">38.91ms</text>
+  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">umap_lookup（哈希查找）</text>
+  <rect x="552.0" y="69.6" width="64.0" height="230.4" fill="#937860"/>
+  <text x="584.0" y="63.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">721ms</text>
+  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">map_lookup（红黑树查找 ~20 层）</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -1681,18 +1711,24 @@ flowchart TD
   <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.875</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, umap无reserve插入=1.00)</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
   <line x1="80" y1="200.8" x2="640" y2="200.8" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="196.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (umap 无reserve)</text>
-  <rect x="141.3" y="200.8" width="64.0" height="99.2" fill="#9A9A9A"/>
-  <text x="173.3" y="194.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">umap 插入 无reserve</text>
-  <rect x="328.0" y="225.6" width="64.0" height="74.4" fill="#DD8452"/>
-  <text x="360.0" y="219.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.75×</text>
-  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">umap 插入 +reserve</text>
-  <rect x="514.7" y="91.7" width="64.0" height="208.3" fill="#C44E52"/>
-  <text x="546.7" y="85.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">2.1×</text>
-  <text x="546.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">map 插入</text>
+  <text x="640" y="196.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="104.0" y="200.8" width="64.0" height="99.2" fill="#9A9A9A"/>
+  <text x="136.0" y="194.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">umap_insert_noreserve（无 reserve，含 rehash）</text>
+  <rect x="216.0" y="225.8" width="64.0" height="74.2" fill="#DD8452"/>
+  <text x="248.0" y="219.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.75×</text>
+  <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">umap_insert_reserve（reserve(N) 预分配）</text>
+  <rect x="328.0" y="96.1" width="64.0" height="203.9" fill="#C44E52"/>
+  <text x="360.0" y="90.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">2.06×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">map_insert（红黑树插入）</text>
+  <rect x="440.0" y="290.5" width="64.0" height="9.5" fill="#8172B3"/>
+  <text x="472.0" y="284.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">0.10×</text>
+  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">umap_lookup（哈希查找）</text>
+  <rect x="552.0" y="124.2" width="64.0" height="175.8" fill="#937860"/>
+  <text x="584.0" y="118.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">1.77×</text>
+  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">map_lookup（红黑树查找 ~20 层）</text>
 </svg>
 
 > 图注：`unordered_map` 插入前 `reserve(N)` 避免 rehash，耗时从 407ms 降到 305ms（**-25%**）；红黑树 `map` 插入比无 reserve 的 `unordered_map` 慢 **2.1×**；而 `map` 查找比 `unordered_map` 查找慢达 18.5×——哈希容器胜在查找。

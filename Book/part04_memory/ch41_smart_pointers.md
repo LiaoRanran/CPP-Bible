@@ -2355,10 +2355,49 @@ flowchart TD
 | 传参 50M 次 — `const&` | 28.478 | 基准 1.00× |
 | `weak_ptr::lock()` 20M 次 | 287.824 | ≈14.4ns/次（内部 CAS 循环） |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：智能指针相对 raw new/delete 开销">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：智能指针相对 raw new/delete 开销</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="213.4" x2="640" y2="213.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="209.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 49.93ms</text>
+  <rect x="94.0" y="213.4" width="42.0" height="86.6" fill="#9A9A9A"/>
+  <text x="115.0" y="207.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">49.93ms</text>
+  <text x="115.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 115.0 314.0)">分配 + 释放 1M 次 — raw new/delete（指针逃逸到 volatile）</text>
+  <rect x="164.0" y="214.1" width="42.0" height="85.9" fill="#DD8452"/>
+  <text x="185.0" y="208.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">49.27ms</text>
+  <text x="185.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 185.0 314.0)">分配 + 释放 1M 次 — make_unique</text>
+  <rect x="234.0" y="175.2" width="42.0" height="124.8" fill="#55A868"/>
+  <text x="255.0" y="169.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">101ms</text>
+  <text x="255.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 255.0 314.0)">同循环 — shared_ptr(new)（无法消除）</text>
+  <rect x="304.0" y="212.0" width="42.0" height="88.0" fill="#8172B3"/>
+  <text x="325.0" y="206.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">51.22ms</text>
+  <text x="325.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 325.0 314.0)">同循环 — make_shared（无法消除）</text>
+  <rect x="374.0" y="175.2" width="42.0" height="124.8" fill="#937860"/>
+  <text x="395.0" y="169.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">101ms</text>
+  <text x="395.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 395.0 314.0)">shared_ptr(new T) vs make_shared（合并分配）</text>
+  <rect x="444.0" y="72.4" width="42.0" height="227.6" fill="#C44E52"/>
+  <text x="465.0" y="66.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">685ms</text>
+  <text x="465.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 465.0 314.0)">传参 50M 次 — 按值拷贝 shared_ptr</text>
+  <rect x="514.0" y="243.6" width="42.0" height="56.4" fill="#CCB974"/>
+  <text x="535.0" y="237.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">28.48ms</text>
+  <text x="535.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 535.0 314.0)">传参 50M 次 — const&amp;</text>
+  <rect x="584.0" y="119.1" width="42.0" height="180.9" fill="#DA8BC3"/>
+  <text x="605.0" y="113.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">288ms</text>
+  <text x="605.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 605.0 314.0)">weak_ptr::lock() 20M 次</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -2369,24 +2408,33 @@ flowchart TD
   <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, raw=1.00)</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
   <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="213.3" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (raw new/delete)</text>
-  <rect x="104.0" y="217.3" width="64.0" height="82.7" fill="#9A9A9A"/>
-  <text x="136.0" y="211.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">raw new/delete</text>
-  <rect x="216.0" y="217.3" width="64.0" height="82.7" fill="#DD8452"/>
-  <text x="248.0" y="211.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">~1.0×</text>
-  <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">make_unique</text>
-  <rect x="328.0" y="191.9" width="64.0" height="108.1" fill="#55A868"/>
-  <text x="360.0" y="185.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">2.03×</text>
-  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">shared_ptr(new)</text>
-  <rect x="440.0" y="103.2" width="64.0" height="196.8" fill="#C44E52"/>
-  <text x="472.0" y="97.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">24× vs const&amp;</text>
-  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">shared_ptr 按值传参</text>
-  <rect x="552.0" y="237.5" width="64.0" height="62.5" fill="#937860"/>
-  <text x="584.0" y="231.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">0.57×</text>
-  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">const&amp; 传参</text>
+  <text x="640" y="213.3" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="94.0" y="217.3" width="42.0" height="82.7" fill="#9A9A9A"/>
+  <text x="115.0" y="211.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="115.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 115.0 314.0)">分配 + 释放 1M 次 — raw new/delete（指针逃逸到 volatile）</text>
+  <rect x="164.0" y="217.8" width="42.0" height="82.2" fill="#DD8452"/>
+  <text x="185.0" y="211.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.99×</text>
+  <text x="185.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 185.0 314.0)">分配 + 释放 1M 次 — make_unique</text>
+  <rect x="234.0" y="191.9" width="42.0" height="108.1" fill="#55A868"/>
+  <text x="255.0" y="185.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">2.03×</text>
+  <text x="255.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 255.0 314.0)">同循环 — shared_ptr(new)（无法消除）</text>
+  <rect x="304.0" y="216.4" width="42.0" height="83.6" fill="#8172B3"/>
+  <text x="325.0" y="210.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.03×</text>
+  <text x="325.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 325.0 314.0)">同循环 — make_shared（无法消除）</text>
+  <rect x="374.0" y="191.9" width="42.0" height="108.1" fill="#937860"/>
+  <text x="395.0" y="185.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">2.03×</text>
+  <text x="395.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 395.0 314.0)">shared_ptr(new T) vs make_shared（合并分配）</text>
+  <rect x="444.0" y="123.3" width="42.0" height="176.7" fill="#C44E52"/>
+  <text x="465.0" y="117.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">13.72×</text>
+  <text x="465.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 465.0 314.0)">传参 50M 次 — 按值拷贝 shared_ptr</text>
+  <rect x="514.0" y="237.5" width="42.0" height="62.5" fill="#CCB974"/>
+  <text x="535.0" y="231.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">0.57×</text>
+  <text x="535.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 535.0 314.0)">传参 50M 次 — const&amp;</text>
+  <rect x="584.0" y="154.4" width="42.0" height="145.6" fill="#DA8BC3"/>
+  <text x="605.0" y="148.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">5.76×</text>
+  <text x="605.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 605.0 314.0)">weak_ptr::lock() 20M 次</text>
 </svg>
 
 > 图注：`make_unique` 与 raw `new` 同速（**零开销**）；但 `shared_ptr` 按值拷贝 50M 次比 `const&` 贵 **24×**（原子引用计数 RMW）；`shared_ptr(new T)` 比 `make_shared` 慢 1.98×（两次分配）。

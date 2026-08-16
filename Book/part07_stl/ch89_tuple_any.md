@@ -1644,34 +1644,82 @@ flowchart TD
 | 求和遍历 — `any_cast<int>` | 17.51 | 7.5× |
 | `any` 装 64 字符 `string`（100 万，超 SBO） | 140.1 | —（每元素两次堆分配） |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：构造 vector 耗时（类型擦除容器最慢）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：构造 vector 耗时（类型擦除容器最慢）</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
-  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">12.5</text>
-  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
-  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">37.5</text>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
-  <line x1="80" y1="264.7" x2="640" y2="264.7" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="260.7" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (int)</text>
-  <rect x="141.3" y="264.7" width="64.0" height="35.3" fill="#9A9A9A"/>
-  <text x="173.3" y="258.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">7.11ms (1.00×)</text>
-  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">int</text>
-  <rect x="328.0" y="138.5" width="64.0" height="161.5" fill="#DD8452"/>
-  <text x="360.0" y="132.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">32.56ms (4.6×)</text>
-  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">variant</text>
-  <rect x="514.7" y="100.7" width="64.0" height="199.3" fill="#C44E52"/>
-  <text x="546.7" y="94.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">40.18ms (5.7×)</text>
-  <text x="546.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">any</text>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="229.6" x2="640" y2="229.6" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="225.6" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 7.11ms</text>
+  <rect x="96.0" y="229.6" width="48.0" height="70.4" fill="#9A9A9A"/>
+  <text x="120.0" y="223.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">7.11ms</text>
+  <text x="120.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 120.0 314.0)">构造 vector — int</text>
+  <rect x="176.0" y="175.0" width="48.0" height="125.0" fill="#DD8452"/>
+  <text x="200.0" y="169.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">32.56ms</text>
+  <text x="200.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 200.0 314.0)">构造 vector — variant&lt;int,double&gt;</text>
+  <rect x="256.0" y="167.4" width="48.0" height="132.6" fill="#55A868"/>
+  <text x="280.0" y="161.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">40.18ms</text>
+  <text x="280.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 280.0 314.0)">构造 vector — any</text>
+  <rect x="336.0" y="269.6" width="48.0" height="30.4" fill="#8172B3"/>
+  <text x="360.0" y="263.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">2.33ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">求和遍历 — int</text>
+  <rect x="416.0" y="222.7" width="48.0" height="77.3" fill="#937860"/>
+  <text x="440.0" y="216.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">8.61ms</text>
+  <text x="440.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 440.0 314.0)">求和遍历 — variant get_if</text>
+  <rect x="496.0" y="197.2" width="48.0" height="102.8" fill="#64B5CD"/>
+  <text x="520.0" y="191.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">17.51ms</text>
+  <text x="520.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 520.0 314.0)">求和遍历 — any_cast&lt;int&gt;</text>
+  <rect x="576.0" y="122.6" width="48.0" height="177.4" fill="#C44E52"/>
+  <text x="600.0" y="116.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">140ms</text>
+  <text x="600.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 600.0 314.0)">any 装 64 字符 string（100 万，超 SBO）</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="213.3" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="96.0" y="217.3" width="48.0" height="82.7" fill="#9A9A9A"/>
+  <text x="120.0" y="211.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="120.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 120.0 314.0)">构造 vector — int</text>
+  <rect x="176.0" y="162.7" width="48.0" height="137.3" fill="#DD8452"/>
+  <text x="200.0" y="156.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">4.58×</text>
+  <text x="200.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 200.0 314.0)">构造 vector — variant&lt;int,double&gt;</text>
+  <rect x="256.0" y="155.2" width="48.0" height="144.8" fill="#55A868"/>
+  <text x="280.0" y="149.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">5.65×</text>
+  <text x="280.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 280.0 314.0)">构造 vector — any</text>
+  <rect x="336.0" y="257.4" width="48.0" height="42.6" fill="#8172B3"/>
+  <text x="360.0" y="251.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">0.33×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">求和遍历 — int</text>
+  <rect x="416.0" y="210.5" width="48.0" height="89.5" fill="#937860"/>
+  <text x="440.0" y="204.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">1.21×</text>
+  <text x="440.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 440.0 314.0)">求和遍历 — variant get_if</text>
+  <rect x="496.0" y="185.0" width="48.0" height="115.0" fill="#64B5CD"/>
+  <text x="520.0" y="179.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">2.46×</text>
+  <text x="520.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 520.0 314.0)">求和遍历 — any_cast&lt;int&gt;</text>
+  <rect x="576.0" y="110.3" width="48.0" height="189.7" fill="#C44E52"/>
+  <text x="600.0" y="104.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">19.70×</text>
+  <text x="600.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 600.0 314.0)">any 装 64 字符 string（100 万，超 SBO）</text>
 </svg>
 
 > 图注：构造 `vector` 时类型擦除容器最慢：`any` 40.18ms、**`variant<int,double>` 32.56ms**，均慢于裸 `int` 的 7.11ms（**5.7×/4.6×**）——内部堆/联合存储 + 构造开销；遍历读值时 `any_cast<int>`（17.51ms）比 `int` 求和（2.33ms）慢 7.5×，差距进一步拉大。

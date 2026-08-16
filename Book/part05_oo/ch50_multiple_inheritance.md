@@ -1379,10 +1379,44 @@ int main() {
 
 **对象体积观测**（仅记录，不作断言）：单继承 16 B，多重继承 32 B，非虚继承链 16 B，虚继承菱形 32 B。
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：多重继承跨基类虚调用相对耗时（基线=单继承 1.00×）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：多重继承跨基类虚调用相对耗时（基线=单继承 1.00×）</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">500</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1500</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="189.5" x2="640" y2="189.5" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="185.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 891.38ms</text>
+  <rect x="104.0" y="189.5" width="64.0" height="110.5" fill="#9A9A9A"/>
+  <text x="136.0" y="183.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">891ms</text>
+  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">单继承，经 Base* 虚调用</text>
+  <rect x="216.0" y="182.7" width="64.0" height="117.3" fill="#DD8452"/>
+  <text x="248.0" y="176.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">946ms</text>
+  <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">多重继承，经第一基类 L* 虚调用（无需调整 this）</text>
+  <rect x="328.0" y="177.2" width="64.0" height="122.8" fill="#55A868"/>
+  <text x="360.0" y="171.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">990ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">多重继承，经第二基类 R* 虚调用（需 thunk 调整 this）</text>
+  <rect x="440.0" y="189.6" width="64.0" height="110.4" fill="#8172B3"/>
+  <text x="472.0" y="183.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">890ms</text>
+  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">非虚继承链，访问基类成员 + 虚调用</text>
+  <rect x="552.0" y="173.2" width="64.0" height="126.8" fill="#C44E52"/>
+  <text x="584.0" y="167.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1023ms</text>
+  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">虚继承菱形，访问虚基类成员 + 虚调用</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -1395,18 +1429,24 @@ int main() {
   <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
   <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (单继承)</text>
-  <rect x="141.3" y="176.0" width="64.0" height="124.0" fill="#9A9A9A"/>
-  <text x="173.3" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">单继承</text>
-  <rect x="328.0" y="168.6" width="64.0" height="131.4" fill="#DD8452"/>
-  <text x="360.0" y="162.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.06×</text>
-  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">第一基类</text>
-  <rect x="514.7" y="162.4" width="64.0" height="137.6" fill="#C44E52"/>
-  <text x="546.7" y="156.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1.11×</text>
-  <text x="546.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">第二基类</text>
+  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="104.0" y="176.0" width="64.0" height="124.0" fill="#9A9A9A"/>
+  <text x="136.0" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">单继承，经 Base* 虚调用</text>
+  <rect x="216.0" y="168.4" width="64.0" height="131.6" fill="#DD8452"/>
+  <text x="248.0" y="162.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.06×</text>
+  <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">多重继承，经第一基类 L* 虚调用（无需调整 this）</text>
+  <rect x="328.0" y="162.3" width="64.0" height="137.7" fill="#55A868"/>
+  <text x="360.0" y="156.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">1.11×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">多重继承，经第二基类 R* 虚调用（需 thunk 调整 this）</text>
+  <rect x="440.0" y="176.1" width="64.0" height="123.9" fill="#8172B3"/>
+  <text x="472.0" y="170.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.00×</text>
+  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">非虚继承链，访问基类成员 + 虚调用</text>
+  <rect x="552.0" y="157.7" width="64.0" height="142.3" fill="#C44E52"/>
+  <text x="584.0" y="151.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1.15×</text>
+  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">虚继承菱形，访问虚基类成员 + 虚调用</text>
 </svg>
 
 > 图注：多重继承经**第二基类**虚调用需 thunk 调整 `this` 指针，比单继承慢 **1.11×**（第一基类无需调整，仅 1.06×）。MI 的代价是「每次跨基类虚调用可能多一次指针修正」。

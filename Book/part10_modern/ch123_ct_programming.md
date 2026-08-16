@@ -1349,41 +1349,104 @@ int main()
 | S5 编译期查找表 LUT（10M） | 61.496 ms | 1.00× |
 | S5 运行期 isqrt 计算（10M） | 113.093 ms | 1.84× |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="编译期计算相对于运行期计算的加速比柱状图">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：编译期 vs 运行期计算加速比（越高越快, GCC -O2）</text>
-  <line x1="70" y1="290" x2="620" y2="290" stroke="#333" stroke-width="1"/>
-  <line x1="70" y1="290" x2="70" y2="45" stroke="#333" stroke-width="1"/>
-  <line x1="70" y1="250" x2="620" y2="250" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="211" x2="620" y2="211" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="171" x2="620" y2="171" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="132" x2="620" y2="132" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="92" x2="620" y2="92" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="53" x2="620" y2="53" stroke="#ececf0" stroke-width="1"/>
-  <text x="64" y="294" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
-  <text x="64" y="254" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
-  <text x="64" y="215" text-anchor="end" font-size="10.5" font-family="Georgia, serif">20</text>
-  <text x="64" y="175" text-anchor="end" font-size="10.5" font-family="Georgia, serif">30</text>
-  <text x="64" y="136" text-anchor="end" font-size="10.5" font-family="Georgia, serif">40</text>
-  <text x="64" y="96" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
-  <text x="64" y="57" text-anchor="end" font-size="10.5" font-family="Georgia, serif">60</text>
-  <text x="18" y="167" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 18 167)">加速比 (×)</text>
-  <rect x="82" y="266.1" width="70" height="23.9" fill="#4C72B0"/>
-  <rect x="192" y="56.7" width="70" height="233.3" fill="#DD8452"/>
-  <rect x="302" y="286.0" width="70" height="4.0" fill="#55A868"/>
-  <rect x="412" y="286.0" width="70" height="4.0" fill="#55A868"/>
-  <rect x="522" y="282.7" width="70" height="7.3" fill="#4C72B0"/>
-  <text x="117" y="258" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">6.05×</text>
-  <text x="227" y="48" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">59.04×</text>
-  <text x="337" y="278" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#55A868">≈1×</text>
-  <text x="447" y="278" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#55A868">≈1×</text>
-  <text x="557" y="274" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.84×</text>
-  <text x="117" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S1 常量读取</text>
-  <text x="227" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S2 排序数组</text>
-  <text x="337" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S3 consteval/TMP</text>
-  <text x="447" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S4 constexpr</text>
-  <text x="557" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S5 LUT</text>
+<svg viewBox="0 0 808 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="404" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="768" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="768" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="217.3" x2="768" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="134.7" x2="768" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="768" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="274.5" x2="768" y2="274.5" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="768" y="270.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 2.03ms</text>
+  <rect x="92.5" y="188.1" width="37.5" height="111.9" fill="#4C72B0"/>
+  <text x="111.3" y="182.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">22.60ms</text>
+  <text x="111.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.3 314.0)">S1 读取 constexpr 常量（50M 次）</text>
+  <rect x="155.1" y="206.1" width="37.5" height="93.9" fill="#DD8452"/>
+  <text x="173.8" y="200.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">13.68ms</text>
+  <text x="173.8" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.8 314.0)">S1 运行期 factorial（5M 次）</text>
+  <rect x="217.6" y="274.5" width="37.5" height="25.5" fill="#9A9A9A"/>
+  <text x="236.4" y="268.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">2.03ms</text>
+  <text x="236.4" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 236.4 314.0)">S2 读取编译期排序数组（512×5000）</text>
+  <rect x="280.1" y="128.1" width="37.5" height="171.9" fill="#C44E52"/>
+  <text x="298.9" y="122.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">120ms</text>
+  <text x="298.9" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 298.9 314.0)">S2 运行期 fill+sort+read（512×5000）</text>
+  <rect x="342.7" y="187.2" width="37.5" height="112.8" fill="#937860"/>
+  <text x="361.5" y="181.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">23.17ms</text>
+  <text x="361.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 361.5 314.0)">S3 consteval 读取（50M）</text>
+  <rect x="405.2" y="185.3" width="37.5" height="114.7" fill="#64B5CD"/>
+  <text x="424.0" y="179.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">24.42ms</text>
+  <text x="424.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 424.0 314.0)">S3 constexpr 运行期调用（5M）</text>
+  <rect x="467.8" y="165.0" width="37.5" height="135.0" fill="#CCB974"/>
+  <text x="486.5" y="159.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">42.99ms</text>
+  <text x="486.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 486.5 314.0)">S3 constexpr 常量读取（50M）</text>
+  <rect x="530.3" y="190.1" width="37.5" height="109.9" fill="#DA8BC3"/>
+  <text x="549.1" y="184.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">21.37ms</text>
+  <text x="549.1" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 549.1 314.0)">S4 TMP 读取（50M）</text>
+  <rect x="592.9" y="179.0" width="37.5" height="121.0" fill="#8C8C8C"/>
+  <text x="611.6" y="173.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">29.10ms</text>
+  <text x="611.6" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 611.6 314.0)">S4 运行期迭代 fib（5M）</text>
+  <rect x="655.4" y="152.1" width="37.5" height="147.9" fill="#4C72B0"/>
+  <text x="674.2" y="146.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">61.50ms</text>
+  <text x="674.2" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 674.2 314.0)">S5 编译期查找表 LUT（10M）</text>
+  <rect x="718.0" y="130.2" width="37.5" height="169.8" fill="#DD8452"/>
+  <text x="736.7" y="124.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">113ms</text>
+  <text x="736.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 736.7 314.0)">S5 运行期 isqrt 计算（10M）</text>
+</svg>
+
+<svg viewBox="0 0 808 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="404" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="768" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="768" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="768" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="768" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="300.0" x2="768" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="768" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="92.5" y="170.3" width="37.5" height="129.7" fill="#4C72B0"/>
+  <text x="111.3" y="164.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">11.12×</text>
+  <text x="111.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.3 314.0)">S1 读取 constexpr 常量（50M 次）</text>
+  <rect x="155.1" y="197.3" width="37.5" height="102.7" fill="#DD8452"/>
+  <text x="173.8" y="191.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">6.73×</text>
+  <text x="173.8" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.8 314.0)">S1 运行期 factorial（5M 次）</text>
+  <rect x="217.6" y="300.0" width="37.5" height="0.0" fill="#9A9A9A"/>
+  <text x="236.4" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="236.4" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 236.4 314.0)">S2 读取编译期排序数组（512×5000）</text>
+  <rect x="280.1" y="80.4" width="37.5" height="219.6" fill="#C44E52"/>
+  <text x="298.9" y="74.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">59.04×</text>
+  <text x="298.9" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 298.9 314.0)">S2 运行期 fill+sort+read（512×5000）</text>
+  <rect x="342.7" y="169.0" width="37.5" height="131.0" fill="#937860"/>
+  <text x="361.5" y="163.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">11.40×</text>
+  <text x="361.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 361.5 314.0)">S3 consteval 读取（50M）</text>
+  <rect x="405.2" y="166.1" width="37.5" height="133.9" fill="#64B5CD"/>
+  <text x="424.0" y="160.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">12.01×</text>
+  <text x="424.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 424.0 314.0)">S3 constexpr 运行期调用（5M）</text>
+  <rect x="467.8" y="135.7" width="37.5" height="164.3" fill="#CCB974"/>
+  <text x="486.5" y="129.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">21.14×</text>
+  <text x="486.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 486.5 314.0)">S3 constexpr 常量读取（50M）</text>
+  <rect x="530.3" y="173.3" width="37.5" height="126.7" fill="#DA8BC3"/>
+  <text x="549.1" y="167.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">10.51×</text>
+  <text x="549.1" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 549.1 314.0)">S4 TMP 读取（50M）</text>
+  <rect x="592.9" y="156.7" width="37.5" height="143.3" fill="#8C8C8C"/>
+  <text x="611.6" y="150.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">14.32×</text>
+  <text x="611.6" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 611.6 314.0)">S4 运行期迭代 fib（5M）</text>
+  <rect x="655.4" y="116.4" width="37.5" height="183.6" fill="#4C72B0"/>
+  <text x="674.2" y="110.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">30.25×</text>
+  <text x="674.2" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 674.2 314.0)">S5 编译期查找表 LUT（10M）</text>
+  <rect x="718.0" y="83.6" width="37.5" height="216.4" fill="#DD8452"/>
+  <text x="736.7" y="77.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">55.63×</text>
+  <text x="736.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 736.7 314.0)">S5 运行期 isqrt 计算（10M）</text>
 </svg>
 
 > 图注：加速比衡量"编译期计算相对运行期计算的快多少倍"。高频读取场景收益巨大——编译期排序数组比运行期 `sort` 快 **59.04×**、编译期常量读取比运行期 `factorial` 快 **6.05×**；低频/简单场景收益小——LUT 仅 **1.84×**，而 `consteval`/`constexpr`/`TMP` 三种机制读常量性能相同（≈1×，差别只在编译时间与二进制体积）。编译期计算把成本从运行期移到编译期，**非免费午餐**。加速比随机器而变。数据见上方 D5.1 表。

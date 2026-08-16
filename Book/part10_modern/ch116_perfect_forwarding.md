@@ -1458,10 +1458,10 @@ int main() {
 
 单 `string` 三场景差异 < 8%（713.7 / 718.9 / 772.5 ms），全部被 64 字节堆分配（~140 ns/次）淹没；pair 场景中 `emplace_back` 反而慢 1.44×，且 3 次复测 919 / 1014 / 1070 ms 稳定复现同一方向。
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：pair 场景下 push_back 与 emplace_back 耗时">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：pair 场景下 push_back 与 emplace_back 耗时</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -1474,15 +1474,64 @@ int main() {
   <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1500</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2000</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
-  <line x1="80" y1="208.0" x2="640" y2="208.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="204.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (push_back pair)</text>
-  <rect x="188.0" y="208.0" width="64.0" height="92.0" fill="#9A9A9A"/>
-  <text x="220.0" y="202.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">742.0</text>
-  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">push_back</text>
-  <rect x="468.0" y="167.3" width="64.0" height="132.7" fill="#C44E52"/>
-  <text x="500.0" y="161.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1070.2 (1.44×)</text>
-  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">emplace_back</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="211.5" x2="640" y2="211.5" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="207.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 713.70ms</text>
+  <rect x="98.7" y="211.5" width="56.0" height="88.5" fill="#9A9A9A"/>
+  <text x="126.7" y="205.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">714ms</text>
+  <text x="126.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 126.7 314.0)">push_back(const char*)（隐式构造临时 + 移动）</text>
+  <rect x="192.0" y="210.9" width="56.0" height="89.1" fill="#DD8452"/>
+  <text x="220.0" y="204.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">719ms</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">emplace_back(const char*)（原位构造）</text>
+  <rect x="285.3" y="204.2" width="56.0" height="95.8" fill="#55A868"/>
+  <text x="313.3" y="198.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">772ms</text>
+  <text x="313.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 313.3 314.0)">push_back(左值 string)（深拷贝）</text>
+  <rect x="378.7" y="208.0" width="56.0" height="92.0" fill="#8172B3"/>
+  <text x="406.7" y="202.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">742ms</text>
+  <text x="406.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 406.7 314.0)">pair：push_back(make_pair(i, string(s64)))</text>
+  <rect x="472.0" y="167.3" width="56.0" height="132.7" fill="#C44E52"/>
+  <text x="500.0" y="161.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1070ms</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">pair：emplace_back(i, s64)</text>
+  <rect x="565.3" y="186.0" width="56.0" height="114.0" fill="#64B5CD"/>
+  <text x="593.3" y="180.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">919ms</text>
+  <text x="593.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 593.3 314.0)">pair：emplace_back 3 次复测区间</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="98.7" y="176.0" width="56.0" height="124.0" fill="#9A9A9A"/>
+  <text x="126.7" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="126.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 126.7 314.0)">push_back(const char*)（隐式构造临时 + 移动）</text>
+  <rect x="192.0" y="175.1" width="56.0" height="124.9" fill="#DD8452"/>
+  <text x="220.0" y="169.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.01×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">emplace_back(const char*)（原位构造）</text>
+  <rect x="285.3" y="165.8" width="56.0" height="134.2" fill="#55A868"/>
+  <text x="313.3" y="159.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">1.08×</text>
+  <text x="313.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 313.3 314.0)">push_back(左值 string)（深拷贝）</text>
+  <rect x="378.7" y="171.1" width="56.0" height="128.9" fill="#8172B3"/>
+  <text x="406.7" y="165.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.04×</text>
+  <text x="406.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 406.7 314.0)">pair：push_back(make_pair(i, string(s64)))</text>
+  <rect x="472.0" y="114.1" width="56.0" height="185.9" fill="#C44E52"/>
+  <text x="500.0" y="108.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1.50×</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">pair：emplace_back(i, s64)</text>
+  <rect x="565.3" y="140.3" width="56.0" height="159.7" fill="#64B5CD"/>
+  <text x="593.3" y="134.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">1.29×</text>
+  <text x="593.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 593.3 314.0)">pair：emplace_back 3 次复测区间</text>
 </svg>
 
 > 图注：多参数 pair 场景：`push_back(make_pair(i, string(s64)))` 742.0ms，`emplace_back(i, s64)` 1070.2ms，**慢 1.44×**。单元素场景（`emplace_back(const char*)` 718.9 vs `push_back` 713.7ms）在噪声内基本持平；本表只突出 pair 这一真正出现额外开销的情形——emplace 的原位构造优势被基准 `make_pair` 路径抵消。

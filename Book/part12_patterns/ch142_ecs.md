@@ -1219,53 +1219,104 @@ flowchart TD
 
 > 上表为本次本机复测的中位耗时；绝对毫秒随机器负载而变，加速比（5.80×、2.68× 等）才是可移植信号。
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ECS 五场景相对耗时倍数分组柱状图">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：ECS 五场景相对耗时倍数（基线 = 1.00×, GCC -O2, 500K 实体）</text>
-  <line x1="70" y1="290" x2="620" y2="290" stroke="#333" stroke-width="1"/>
-  <line x1="70" y1="290" x2="70" y2="45" stroke="#333" stroke-width="1"/>
-  <line x1="70" y1="249" x2="620" y2="249" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="208" x2="620" y2="208" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="167" x2="620" y2="167" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="127" x2="620" y2="127" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="86" x2="620" y2="86" stroke="#ececf0" stroke-width="1"/>
-  <text x="64" y="294" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
-  <text x="64" y="253" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
-  <text x="64" y="212" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
-  <text x="64" y="171" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3</text>
-  <text x="64" y="131" text-anchor="end" font-size="10.5" font-family="Georgia, serif">4</text>
-  <text x="64" y="90" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
-  <text x="18" y="167" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 18 167)">相对倍数 (×)</text>
-  <rect x="84" y="249.2" width="38" height="40.8" fill="#4C72B0"/>
-  <rect x="128" y="53.2" width="38" height="236.8" fill="#DD8452"/>
-  <rect x="194" y="249.2" width="38" height="40.8" fill="#4C72B0"/>
-  <rect x="238" y="180.6" width="38" height="109.4" fill="#DD8452"/>
-  <rect x="304" y="249.2" width="38" height="40.8" fill="#4C72B0"/>
-  <rect x="348" y="227.5" width="38" height="62.5" fill="#DD8452"/>
-  <rect x="414" y="249.2" width="38" height="40.8" fill="#4C72B0"/>
-  <rect x="458" y="267.1" width="38" height="22.9" fill="#DD8452"/>
-  <rect x="524" y="249.2" width="38" height="40.8" fill="#4C72B0"/>
-  <rect x="568" y="289.6" width="38" height="0.4" fill="#DD8452"/>
-  <text x="103" y="241" text-anchor="middle" font-size="9.5" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.00</text>
-  <text x="147" y="45" text-anchor="middle" font-size="9.5" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">5.80</text>
-  <text x="213" y="241" text-anchor="middle" font-size="9.5" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.00</text>
-  <text x="257" y="172" text-anchor="middle" font-size="9.5" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">2.68</text>
-  <text x="323" y="241" text-anchor="middle" font-size="9.5" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.00</text>
-  <text x="367" y="219" text-anchor="middle" font-size="9.5" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.53</text>
-  <text x="433" y="241" text-anchor="middle" font-size="9.5" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.00</text>
-  <text x="477" y="259" text-anchor="middle" font-size="9.5" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.56</text>
-  <text x="543" y="241" text-anchor="middle" font-size="9.5" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.00</text>
-  <text x="587" y="281" text-anchor="middle" font-size="9.5" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.01</text>
-  <text x="125" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S1</text>
-  <text x="235" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S2</text>
-  <text x="345" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S3</text>
-  <text x="455" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S4</text>
-  <text x="565" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">S5</text>
-  <rect x="430" y="58" width="12" height="12" fill="#4C72B0"/>
-  <text x="446" y="68" font-size="10.5" font-family="Georgia, serif">基线 1.00×</text>
-  <rect x="430" y="74" width="12" height="12" fill="#DD8452"/>
-  <text x="446" y="84" font-size="10.5" font-family="Georgia, serif">对照</text>
+<svg viewBox="0 0 750 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="375" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="710" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="710" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.001</text>
+  <line x1="80" y1="238.0" x2="710" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.01</text>
+  <line x1="80" y1="176.0" x2="710" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <line x1="80" y1="114.0" x2="710" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="52.0" x2="710" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="124.1" x2="710" y2="124.1" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="710" y="120.1" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 0.69ms</text>
+  <rect x="92.6" y="124.1" width="37.8" height="175.9" fill="#9A9A9A"/>
+  <text x="111.5" y="118.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">0.69ms</text>
+  <text x="111.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.5 314.0)">S1: Archetype (SoA) 遍历 Position+Velocity</text>
+  <rect x="155.6" y="76.8" width="37.8" height="223.2" fill="#C44E52"/>
+  <text x="174.5" y="70.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">3.99ms</text>
+  <text x="174.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 174.5 314.0)">S1: Naive AoS 堆对象遍历（每实体 40B 结构）</text>
+  <rect x="218.6" y="125.8" width="37.8" height="174.2" fill="#55A868"/>
+  <text x="237.5" y="119.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.65ms</text>
+  <text x="237.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 237.5 314.0)">S2: 稠密遍历（SoA 连续数组，500K Position）</text>
+  <rect x="281.6" y="99.2" width="37.8" height="200.8" fill="#8172B3"/>
+  <text x="300.5" y="93.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.73ms</text>
+  <text x="300.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 300.5 314.0)">S2: 稀疏遍历（AoS 指针追逐，500K 堆分配 Position*）</text>
+  <rect x="344.6" y="125.0" width="37.8" height="175.0" fill="#937860"/>
+  <text x="363.5" y="119.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">0.67ms</text>
+  <text x="363.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 363.5 314.0)">S3: 单组件查询（仅遍历 Position 列）</text>
+  <rect x="407.6" y="113.6" width="37.8" height="186.4" fill="#64B5CD"/>
+  <text x="426.5" y="107.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">1.02ms</text>
+  <text x="426.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 426.5 314.0)">S3: 全实体遍历（Position+Velocity+Health+Render 四列）</text>
+  <rect x="470.6" y="109.7" width="37.8" height="190.3" fill="#CCB974"/>
+  <text x="489.5" y="103.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">1.17ms</text>
+  <text x="489.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 489.5 314.0)">S4: ECS 间接查找（entity→row→component， shuffled 映射）</text>
+  <rect x="533.6" y="125.3" width="37.8" height="174.7" fill="#DA8BC3"/>
+  <text x="552.5" y="119.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">0.66ms</text>
+  <text x="552.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 552.5 314.0)">S4: 直接数组索引（顺序访问 Position 数组）</text>
+  <rect x="596.6" y="164.0" width="37.8" height="136.0" fill="#8C8C8C"/>
+  <text x="615.5" y="158.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">0.16ms</text>
+  <text x="615.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 615.5 314.0)">S5: Archetype 迁移 50K 实体（拷贝 Pos+Vel，追加 Health）</text>
+  <rect x="659.6" y="281.3" width="37.8" height="18.7" fill="#4C72B0"/>
+  <text x="678.5" y="275.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">0.00ms</text>
+  <text x="678.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 678.5 314.0)">S5: 原地标志切换 50K 实体（flags[i] ^= 1）</text>
+</svg>
+
+<svg viewBox="0 0 750 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="375" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="710" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="710" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="710" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="176.0" x2="710" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <line x1="80" y1="114.0" x2="710" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">7.5</text>
+  <line x1="80" y1="52.0" x2="710" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="275.2" x2="710" y2="275.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="710" y="271.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="92.6" y="275.2" width="37.8" height="24.8" fill="#9A9A9A"/>
+  <text x="111.5" y="269.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="111.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.5 314.0)">S1: Archetype (SoA) 遍历 Position+Velocity</text>
+  <rect x="155.6" y="156.1" width="37.8" height="143.9" fill="#C44E52"/>
+  <text x="174.5" y="150.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">5.80×</text>
+  <text x="174.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 174.5 314.0)">S1: Naive AoS 堆对象遍历（每实体 40B 结构）</text>
+  <rect x="218.6" y="276.7" width="37.8" height="23.3" fill="#55A868"/>
+  <text x="237.5" y="270.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.94×</text>
+  <text x="237.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 237.5 314.0)">S2: 稠密遍历（SoA 连续数组，500K Position）</text>
+  <rect x="281.6" y="237.4" width="37.8" height="62.6" fill="#8172B3"/>
+  <text x="300.5" y="231.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">2.52×</text>
+  <text x="300.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 300.5 314.0)">S2: 稀疏遍历（AoS 指针追逐，500K 堆分配 Position*）</text>
+  <rect x="344.6" y="276.0" width="37.8" height="24.0" fill="#937860"/>
+  <text x="363.5" y="270.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">0.97×</text>
+  <text x="363.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 363.5 314.0)">S3: 单组件查询（仅遍历 Position 列）</text>
+  <rect x="407.6" y="263.3" width="37.8" height="36.7" fill="#64B5CD"/>
+  <text x="426.5" y="257.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">1.48×</text>
+  <text x="426.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 426.5 314.0)">S3: 全实体遍历（Position+Velocity+Health+Render 四列）</text>
+  <rect x="470.6" y="257.7" width="37.8" height="42.3" fill="#CCB974"/>
+  <text x="489.5" y="251.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">1.70×</text>
+  <text x="489.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 489.5 314.0)">S4: ECS 间接查找（entity→row→component， shuffled 映射）</text>
+  <rect x="533.6" y="276.2" width="37.8" height="23.8" fill="#DA8BC3"/>
+  <text x="552.5" y="270.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">0.96×</text>
+  <text x="552.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 552.5 314.0)">S4: 直接数组索引（顺序访问 Position 数组）</text>
+  <rect x="596.6" y="294.4" width="37.8" height="5.6" fill="#8C8C8C"/>
+  <text x="615.5" y="288.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">0.23×</text>
+  <text x="615.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 615.5 314.0)">S5: Archetype 迁移 50K 实体（拷贝 Pos+Vel，追加 Health）</text>
+  <rect x="659.6" y="299.9" width="37.8" height="0.1" fill="#4C72B0"/>
+  <text x="678.5" y="293.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">0.00×</text>
+  <text x="678.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 678.5 314.0)">S5: 原地标志切换 50K 实体（flags[i] ^= 1）</text>
 </svg>
 
 > 图注：分组对比中蓝柱为基线（1.00×）、橙柱为对照方案。SoA/稠密/单组件显著快于 AoS/稀疏/全遍历（最高 **5.80×**，主因缓存行污染而非指针追逐）；S4 直接数组索引因消除间接查找随机性快 1.78×（0.56×）；S5 标志切换（连续可向量化）比 Archetype 迁移快 103.8×（0.01×）。注意 S5 对照倍数 < 1 表示"更快"。倍数随机器而变，**趋势为可移植信号**。数据见上方 D5.1 表。

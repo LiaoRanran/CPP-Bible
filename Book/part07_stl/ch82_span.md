@@ -1566,31 +1566,84 @@ flowchart TD
 
 另实测：`sizeof(std::span<const int>) == 16`，`sizeof(std::span<const int, 16>) == 8`（仅供参考，不作断言）。
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：span 静态 extent vs 动态 extent 相对开销">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：span 静态 extent vs 动态 extent 相对开销</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="130.0" x2="640" y2="130.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="126.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 113.78ms</text>
+  <rect x="96.0" y="128.2" width="48.0" height="171.8" fill="#4C72B0"/>
+  <text x="120.0" y="122.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">120ms</text>
+  <text x="120.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 120.0 314.0)">整块求和 — std::span&lt;const int&gt; 传参</text>
+  <rect x="176.0" y="127.9" width="48.0" height="172.1" fill="#C44E52"/>
+  <text x="200.0" y="121.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">121ms</text>
+  <text x="200.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 200.0 314.0)">整块求和 — const std::vector&lt;int&gt;&amp; 传参</text>
+  <rect x="256.0" y="130.0" width="48.0" height="170.0" fill="#9A9A9A"/>
+  <text x="280.0" y="124.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">114ms</text>
+  <text x="280.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 280.0 314.0)">整块求和 — 裸指针 + 长度传参</text>
+  <rect x="336.0" y="199.5" width="48.0" height="100.5" fill="#8172B3"/>
+  <text x="360.0" y="193.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">16.42ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">3 级 subspan 切片链（subspan→subspan→first）</text>
+  <rect x="416.0" y="197.2" width="48.0" height="102.8" fill="#937860"/>
+  <text x="440.0" y="191.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">17.50ms</text>
+  <text x="440.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 440.0 314.0)">手工指针偏移 p + w*64 + 16，长度 32</text>
+  <rect x="496.0" y="251.3" width="48.0" height="48.7" fill="#64B5CD"/>
+  <text x="520.0" y="245.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">3.88ms</text>
+  <text x="520.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 520.0 314.0)">16 元素块求和 — span&lt;const int, 16&gt;（静态 extent）</text>
+  <rect x="576.0" y="220.6" width="48.0" height="79.4" fill="#CCB974"/>
+  <text x="600.0" y="214.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">9.14ms</text>
+  <text x="600.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 600.0 314.0)">16 元素块求和 — span&lt;const int&gt;（动态 extent）</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
   <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.625</text>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
   <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
   <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.875</text>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 动态extent=1.00)</text>
-  <line x1="80" y1="200.8" x2="640" y2="200.8" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="196.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (动态 extent)</text>
-  <rect x="188.0" y="200.8" width="64.0" height="99.2" fill="#9A9A9A"/>
-  <text x="220.0" y="194.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">span 动态extent</text>
-  <rect x="468.0" y="65.9" width="64.0" height="234.1" fill="#C44E52"/>
-  <text x="500.0" y="59.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">2.36×</text>
-  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">span 静态extent</text>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="96.0" y="169.7" width="48.0" height="130.3" fill="#4C72B0"/>
+  <text x="120.0" y="163.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.05×</text>
+  <text x="120.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 120.0 314.0)">整块求和 — std::span&lt;const int&gt; 传参</text>
+  <rect x="176.0" y="168.2" width="48.0" height="131.8" fill="#C44E52"/>
+  <text x="200.0" y="162.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1.06×</text>
+  <text x="200.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 200.0 314.0)">整块求和 — const std::vector&lt;int&gt;&amp; 传参</text>
+  <rect x="256.0" y="176.0" width="48.0" height="124.0" fill="#9A9A9A"/>
+  <text x="280.0" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="280.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 280.0 314.0)">整块求和 — 裸指针 + 长度传参</text>
+  <rect x="336.0" y="282.1" width="48.0" height="17.9" fill="#8172B3"/>
+  <text x="360.0" y="276.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">0.14×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">3 级 subspan 切片链（subspan→subspan→first）</text>
+  <rect x="416.0" y="280.9" width="48.0" height="19.1" fill="#937860"/>
+  <text x="440.0" y="274.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">0.15×</text>
+  <text x="440.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 440.0 314.0)">手工指针偏移 p + w*64 + 16，长度 32</text>
+  <rect x="496.0" y="295.8" width="48.0" height="4.2" fill="#64B5CD"/>
+  <text x="520.0" y="289.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">0.03×</text>
+  <text x="520.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 520.0 314.0)">16 元素块求和 — span&lt;const int, 16&gt;（静态 extent）</text>
+  <rect x="576.0" y="290.0" width="48.0" height="10.0" fill="#CCB974"/>
+  <text x="600.0" y="284.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">0.08×</text>
+  <text x="600.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 600.0 314.0)">16 元素块求和 — span&lt;const int&gt;（动态 extent）</text>
 </svg>
 
 > 图注：`span<int,16>` 静态 extent 让编译器把边界已知的小块展开，比 `span<int>` 动态 extent 快 **2.36×**；整块求和各传参方式（span/vector&/指针）在噪声内同速——`span` 不是性能陷阱。

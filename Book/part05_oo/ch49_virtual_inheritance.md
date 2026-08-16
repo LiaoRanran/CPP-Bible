@@ -1461,43 +1461,62 @@ int main() {
 | 非虚 upcast 遍历（ND1*→NB*，编译期常量偏移） | 639.132 | 基准 1.00× |
 | exact type 直接访问（VM* 直接成员） | 1398.358 | ≈ 虚继承 |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：虚继承 vs 普通继承对象 sizeof">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：虚继承 vs 普通继承对象 sizeof</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
   <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">12.5</text>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">500</text>
   <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
   <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">37.5</text>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1500</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">对象大小 (B)</text>
-  <line x1="80" y1="220.6" x2="640" y2="220.6" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="216.6" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">16B 基线 (普通继承)</text>
-  <rect x="98.7" y="220.6" width="56.0" height="79.4" fill="#9A9A9A"/>
-  <text x="126.7" y="214.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">16B</text>
-  <text x="126.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">普通基类 NB</text>
-  <rect x="192.0" y="220.6" width="56.0" height="79.4" fill="#9A9A9A"/>
-  <text x="220.0" y="214.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">16B</text>
-  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">普通派生 ND1</text>
-  <rect x="285.3" y="181.0" width="56.0" height="119.0" fill="#55A868"/>
-  <text x="313.3" y="175.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">24B</text>
-  <text x="313.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 313.3 314.0)">普通多继承 NM</text>
-  <rect x="378.7" y="220.6" width="56.0" height="79.4" fill="#9A9A9A"/>
-  <text x="406.7" y="214.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">16B</text>
-  <text x="406.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">虚基类 VB</text>
-  <rect x="472.0" y="141.3" width="56.0" height="158.7" fill="#C44E52"/>
-  <text x="500.0" y="135.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">32B</text>
-  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">虚派生 VD1</text>
-  <rect x="565.3" y="61.9" width="56.0" height="238.1" fill="#C44E52"/>
-  <text x="593.3" y="55.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">48B</text>
-  <text x="593.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">多虚继承 VM</text>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="220.7" x2="640" y2="220.7" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="216.7" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 639.13ms</text>
+  <rect x="141.3" y="124.9" width="64.0" height="175.1" fill="#C44E52"/>
+  <text x="173.3" y="118.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1412ms</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">虚继承 upcast 遍历（VD1*→VB*，查 vtable 负偏移）</text>
+  <rect x="328.0" y="220.7" width="64.0" height="79.3" fill="#9A9A9A"/>
+  <text x="360.0" y="214.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">639ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">非虚 upcast 遍历（ND1*→NB*，编译期常量偏移）</text>
+  <rect x="514.7" y="126.6" width="64.0" height="173.4" fill="#55A868"/>
+  <text x="546.7" y="120.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">1398ms</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">exact type 直接访问（VM* 直接成员）</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.625</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.875</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="200.8" x2="640" y2="200.8" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="196.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="141.3" y="80.8" width="64.0" height="219.2" fill="#C44E52"/>
+  <text x="173.3" y="74.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">2.21×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">虚继承 upcast 遍历（VD1*→VB*，查 vtable 负偏移）</text>
+  <rect x="328.0" y="200.8" width="64.0" height="99.2" fill="#9A9A9A"/>
+  <text x="360.0" y="194.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">非虚 upcast 遍历（ND1*→NB*，编译期常量偏移）</text>
+  <rect x="514.7" y="83.0" width="64.0" height="217.0" fill="#55A868"/>
+  <text x="546.7" y="77.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">2.19×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">exact type 直接访问（VM* 直接成员）</text>
 </svg>
 
 > 图注：虚继承为存「虚基类偏移表」使对象膨胀：单虚派生 32B（vs 普通派生 16B），双虚继承链 48B；虚基类本身 16B 未膨胀（偏移表挂在派生侧）。sizeof 影响缓存密度与传值成本。

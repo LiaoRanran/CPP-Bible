@@ -1143,10 +1143,40 @@ flowchart TD
 | `std::variant` + `std::visit` | 运行时 | 351.87 | 1.38× |
 | virtual（vtable 间接） | 运行时 | 4544.37 | 17.8× |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：编译期分派 vs 虚调用相对开销">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：编译期分派 vs 虚调用相对开销</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="249.5" x2="640" y2="249.5" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="245.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 255.64ms</text>
+  <rect x="104.0" y="249.5" width="64.0" height="50.5" fill="#9A9A9A"/>
+  <text x="136.0" y="243.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">256ms</text>
+  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">if-constexpr（编译期定类型）</text>
+  <rect x="216.0" y="249.4" width="64.0" height="50.6" fill="#DD8452"/>
+  <text x="248.0" y="243.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">256ms</text>
+  <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">tag 分派（重载决议）</text>
+  <rect x="328.0" y="249.4" width="64.0" height="50.6" fill="#55A868"/>
+  <text x="360.0" y="243.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">256ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">SFINAE 重载集</text>
+  <rect x="440.0" y="232.2" width="64.0" height="67.8" fill="#8172B3"/>
+  <text x="472.0" y="226.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">352ms</text>
+  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">std::variant + std::visit</text>
+  <rect x="552.0" y="94.5" width="64.0" height="205.5" fill="#C44E52"/>
+  <text x="584.0" y="88.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">4544ms</text>
+  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">virtual（vtable 间接）</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -1155,24 +1185,24 @@ flowchart TD
   <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, if-constexpr=1.00)</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (编译期分派)</text>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
   <rect x="104.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
   <text x="136.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">if-constexpr</text>
-  <rect x="216.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
-  <text x="248.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="248.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">tag 分派</text>
-  <rect x="328.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
-  <text x="360.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">SFINAE</text>
-  <rect x="440.0" y="282.7" width="64.0" height="17.3" fill="#8172B3"/>
-  <text x="472.0" y="276.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.38×</text>
-  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">variant+visit</text>
-  <rect x="552.0" y="144.9" width="64.0" height="155.1" fill="#C44E52"/>
-  <text x="584.0" y="138.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">17.8×</text>
-  <text x="584.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">virtual</text>
+  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">if-constexpr（编译期定类型）</text>
+  <rect x="216.0" y="300.0" width="64.0" height="0.0" fill="#DD8452"/>
+  <text x="248.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.00×</text>
+  <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">tag 分派（重载决议）</text>
+  <rect x="328.0" y="300.0" width="64.0" height="0.0" fill="#55A868"/>
+  <text x="360.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">1.00×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">SFINAE 重载集</text>
+  <rect x="440.0" y="282.8" width="64.0" height="17.2" fill="#8172B3"/>
+  <text x="472.0" y="276.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.38×</text>
+  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">std::variant + std::visit</text>
+  <rect x="552.0" y="145.0" width="64.0" height="155.0" fill="#C44E52"/>
+  <text x="584.0" y="139.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">17.78×</text>
+  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">virtual（vtable 间接）</text>
 </svg>
 
 > 图注：三种编译期分派（if-constexpr/tag/SFINAE）同速（约 255ms）；`variant+visit` 运行期分派慢 1.38×；`virtual` vtable 间接慢 **17.8×**——类型已知时编译期分派碾压运行期间接。

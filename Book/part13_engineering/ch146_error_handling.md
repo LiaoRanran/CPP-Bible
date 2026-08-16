@@ -856,39 +856,74 @@ while (auto x = pop()) consume(*x);   // 自然终止，无异常
 - **非抛出路径：异常 ≈ 错误码（1.00×）**——happy path 上异常机制零开销，异常表被编译器塞进 `.cold`/unlikely 段，热路径是直线代码（见 D5.5）。
 - **抛出路径：异常 ≈ 错误码的 1.4×10⁴ 倍（≈14000×）**——每次 `throw` 触发 `__cxa_allocate_exception` + `__cxa_throw` + 栈展开，代价是微秒级而非纳秒级。
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 332" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="错误处理四路径耗时对数轴柱状图">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：错误处理四路径耗时（对数轴, GCC -O2, N=1e7）</text>
-  <line x1="70" y1="290" x2="620" y2="290" stroke="#333" stroke-width="1"/>
-  <line x1="70" y1="290" x2="70" y2="45" stroke="#333" stroke-width="1"/>
-  <line x1="70" y1="241" x2="620" y2="241" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="192" x2="620" y2="192" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="143" x2="620" y2="143" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="94" x2="620" y2="94" stroke="#ececf0" stroke-width="1"/>
-  <line x1="70" y1="45" x2="620" y2="45" stroke="#ececf0" stroke-width="1"/>
-  <text x="64" y="294" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
-  <text x="64" y="245" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
-  <text x="64" y="196" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10²</text>
-  <text x="64" y="147" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10³</text>
-  <text x="64" y="98" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10⁴</text>
-  <text x="64" y="49" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10⁵</text>
-  <text x="18" y="167" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 18 167)">耗时 (ms, 对数)</text>
-  <line x1="70" y1="94" x2="620" y2="94" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="616" y="90" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1×10⁴× 抛出代价量级</text>
-  <rect x="110" y="259.1" width="80" height="30.9" fill="#4C72B0"/>
-  <rect x="220" y="259.2" width="80" height="30.8" fill="#4C72B0"/>
-  <rect x="425" y="259.1" width="80" height="30.9" fill="#4C72B0"/>
-  <rect x="535" y="56.2" width="80" height="233.8" fill="#DD8452"/>
-  <text x="150" y="251" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">4.27</text>
-  <text x="260" y="251" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">4.25</text>
-  <text x="465" y="251" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">4.27</text>
-  <text x="575" y="48" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">59064.8</text>
-  <text x="575" y="38" text-anchor="middle" font-size="10.5" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">(≈1.4×10⁴×)</text>
-  <text x="150" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">EC 成功</text>
-  <text x="260" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">EX 成功</text>
-  <text x="465" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">EC 失败</text>
-  <text x="575" y="307" text-anchor="middle" font-size="11" font-family="Georgia, serif">EX 失败</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="253.9" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="200.8" x2="640" y2="200.8" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="204.3" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="151.2" x2="640" y2="151.2" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="154.7" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <line x1="80" y1="101.6" x2="640" y2="101.6" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="105.1" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10000</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="268.7" x2="640" y2="268.7" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="264.7" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 4.27ms</text>
+  <rect x="118.0" y="268.7" width="64.0" height="31.3" fill="#9A9A9A"/>
+  <text x="150.0" y="262.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">4.27ms</text>
+  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">error-code 成功</text>
+  <rect x="258.0" y="268.8" width="64.0" height="31.2" fill="#DD8452"/>
+  <text x="290.0" y="262.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">4.25ms</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">exception 成功</text>
+  <rect x="398.0" y="268.7" width="64.0" height="31.3" fill="#55A868"/>
+  <text x="430.0" y="262.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">4.27ms</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">error-code 失败</text>
+  <rect x="538.0" y="63.3" width="64.0" height="236.7" fill="#C44E52"/>
+  <text x="570.0" y="57.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">59065ms</text>
+  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">exception 失败</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <line x1="80" y1="258.7" x2="640" y2="258.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="262.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <line x1="80" y1="93.3" x2="640" y2="93.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="96.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10000</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="258.7" x2="640" y2="258.7" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="254.7" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="118.0" y="258.7" width="64.0" height="41.3" fill="#9A9A9A"/>
+  <text x="150.0" y="252.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">error-code 成功</text>
+  <rect x="258.0" y="258.8" width="64.0" height="41.2" fill="#DD8452"/>
+  <text x="290.0" y="252.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.00×</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">exception 成功</text>
+  <rect x="398.0" y="258.7" width="64.0" height="41.3" fill="#55A868"/>
+  <text x="430.0" y="252.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">1.00×</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">error-code 失败</text>
+  <rect x="538.0" y="87.5" width="64.0" height="212.5" fill="#C44E52"/>
+  <text x="570.0" y="81.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">13832.51×</text>
+  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">exception 失败</text>
 </svg>
 
 > 图注：非抛出路径上异常与错误码同价（均 ≈1.00×，happy path 零开销）；一旦进入抛出路径，单次 `throw` 触发异常分配 + 栈展开，代价从纳秒级跃迁到微秒级，比等效错误码返回慢约 **1.4×10⁴×**（四个数量级）。对数轴才能在同一图内容纳 4.27ms 与 59064.8ms 的跨度；绝对毫秒随机器/负载而变，**数量级结论为可移植信号**。数据见上方 D5.1 表。

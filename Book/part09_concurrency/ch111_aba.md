@@ -1326,40 +1326,104 @@ int main() {
 | S3/S4 T16 LockFree / Mutex | 376.072 / 76.187 ms | 0.203× |
 | S5 Weak CAS / Strong CAS | 78.605 / 79.628 ms | 0.987× |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：Lock-Free vs Mutex 相对耗时（基线=Mutex 1.00×）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：Lock-Free vs Mutex 相对耗时（基线=Mutex 1.00×）</text>
-  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+<svg viewBox="0 0 750 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="375" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="710" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
-  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="710" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <line x1="80" y1="238.0" x2="710" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="710" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="114.0" x2="710" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="710" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="102.1" x2="710" y2="102.1" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="710" y="98.1" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 155.61ms</text>
+  <rect x="92.6" y="102.1" width="37.8" height="197.9" fill="#9A9A9A"/>
+  <text x="111.5" y="96.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">156ms</text>
+  <text x="111.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.5 314.0)">S2 Plain unsafe CAS 栈</text>
+  <rect x="155.6" y="101.2" width="37.8" height="198.8" fill="#DD8452"/>
+  <text x="174.5" y="95.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">161ms</text>
+  <text x="174.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 174.5 314.0)">S2 Tagged64（标签指针）CAS 栈</text>
+  <rect x="218.6" y="113.0" width="37.8" height="187.0" fill="#55A868"/>
+  <text x="237.5" y="107.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">104ms</text>
+  <text x="237.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 237.5 314.0)">S2 Tagged128 CAS 栈（非 lock-free）</text>
+  <rect x="281.6" y="87.0" width="37.8" height="213.0" fill="#8172B3"/>
+  <text x="300.5" y="81.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">273ms</text>
+  <text x="300.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 300.5 314.0)">S2 Hazard pointer 栈</text>
+  <rect x="344.6" y="251.5" width="37.8" height="48.5" fill="#937860"/>
+  <text x="363.5" y="245.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">0.61ms</text>
+  <text x="363.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 363.5 314.0)">S3/S4 T1 LockFree / Mutex</text>
+  <rect x="407.6" y="160.2" width="37.8" height="139.8" fill="#64B5CD"/>
+  <text x="426.5" y="154.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">17.99ms</text>
+  <text x="426.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 426.5 314.0)">S3/S4 T2 LockFree / Mutex</text>
+  <rect x="470.6" y="136.3" width="37.8" height="163.7" fill="#CCB974"/>
+  <text x="489.5" y="130.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">43.65ms</text>
+  <text x="489.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 489.5 314.0)">S3/S4 T4 LockFree / Mutex</text>
+  <rect x="533.6" y="104.6" width="37.8" height="195.4" fill="#DA8BC3"/>
+  <text x="552.5" y="98.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">142ms</text>
+  <text x="552.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 552.5 314.0)">S3/S4 T8 LockFree / Mutex</text>
+  <rect x="596.6" y="78.3" width="37.8" height="221.7" fill="#C44E52"/>
+  <text x="615.5" y="72.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">376ms</text>
+  <text x="615.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 615.5 314.0)">S3/S4 T16 LockFree / Mutex</text>
+  <rect x="659.6" y="120.5" width="37.8" height="179.5" fill="#4C72B0"/>
+  <text x="678.5" y="114.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">78.61ms</text>
+  <text x="678.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 678.5 314.0)">S5 Weak CAS / Strong CAS</text>
+</svg>
+
+<svg viewBox="0 0 750 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="375" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="710" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="710" y2="300.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
-  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
-  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
-  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
-  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
-  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (Mutex)</text>
-  <rect x="104.0" y="164.5" width="64.0" height="135.5" fill="#4C72B0"/>
-  <text x="136.0" y="158.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.093×</text>
-  <text x="136.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">T1</text>
-  <rect x="216.0" y="276.2" width="64.0" height="23.8" fill="#DD8452"/>
-  <text x="248.0" y="270.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.192×</text>
-  <text x="248.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">T2</text>
-  <rect x="328.0" y="265.2" width="64.0" height="34.8" fill="#55A868"/>
-  <text x="360.0" y="259.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.281×</text>
-  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">T4</text>
-  <rect x="440.0" y="271.5" width="64.0" height="28.5" fill="#8172B3"/>
-  <text x="472.0" y="265.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">0.230×</text>
-  <text x="472.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">T8</text>
-  <rect x="552.0" y="274.8" width="64.0" height="25.2" fill="#C44E52"/>
-  <text x="584.0" y="268.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.203×</text>
-  <text x="584.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">T16</text>
+  <line x1="80" y1="238.0" x2="710" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.625</text>
+  <line x1="80" y1="176.0" x2="710" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="114.0" x2="710" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.875</text>
+  <line x1="80" y1="52.0" x2="710" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="200.8" x2="710" y2="200.8" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="710" y="196.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="92.6" y="200.8" width="37.8" height="99.2" fill="#9A9A9A"/>
+  <text x="111.5" y="194.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="111.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.5 314.0)">S2 Plain unsafe CAS 栈</text>
+  <rect x="155.6" y="197.6" width="37.8" height="102.4" fill="#DD8452"/>
+  <text x="174.5" y="191.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.03×</text>
+  <text x="174.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 174.5 314.0)">S2 Tagged64（标签指针）CAS 栈</text>
+  <rect x="218.6" y="233.9" width="37.8" height="66.1" fill="#55A868"/>
+  <text x="237.5" y="227.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.67×</text>
+  <text x="237.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 237.5 314.0)">S2 Tagged128 CAS 栈（非 lock-free）</text>
+  <rect x="281.6" y="126.1" width="37.8" height="173.9" fill="#8172B3"/>
+  <text x="300.5" y="120.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.75×</text>
+  <text x="300.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 300.5 314.0)">S2 Hazard pointer 栈</text>
+  <rect x="344.6" y="299.6" width="37.8" height="0.4" fill="#937860"/>
+  <text x="363.5" y="293.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">0.00×</text>
+  <text x="363.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 363.5 314.0)">S3/S4 T1 LockFree / Mutex</text>
+  <rect x="407.6" y="288.5" width="37.8" height="11.5" fill="#64B5CD"/>
+  <text x="426.5" y="282.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">0.12×</text>
+  <text x="426.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 426.5 314.0)">S3/S4 T2 LockFree / Mutex</text>
+  <rect x="470.6" y="272.2" width="37.8" height="27.8" fill="#CCB974"/>
+  <text x="489.5" y="266.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">0.28×</text>
+  <text x="489.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 489.5 314.0)">S3/S4 T4 LockFree / Mutex</text>
+  <rect x="533.6" y="209.8" width="37.8" height="90.2" fill="#DA8BC3"/>
+  <text x="552.5" y="203.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">0.91×</text>
+  <text x="552.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 552.5 314.0)">S3/S4 T8 LockFree / Mutex</text>
+  <rect x="596.6" y="60.3" width="37.8" height="239.7" fill="#C44E52"/>
+  <text x="615.5" y="54.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">2.42×</text>
+  <text x="615.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 615.5 314.0)">S3/S4 T16 LockFree / Mutex</text>
+  <rect x="659.6" y="249.9" width="37.8" height="50.1" fill="#4C72B0"/>
+  <text x="678.5" y="243.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">0.51×</text>
+  <text x="678.5" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 678.5 314.0)">S5 Weak CAS / Strong CAS</text>
 </svg>
 
 > 图注：低争用（T1）时 Lock-Free 比 Mutex 慢 1.09×（原子操作更重）；但随线程数上升，Mutex 串行化急剧恶化，T16 时 Lock-Free 仅 0.203×（**快约 5×**）。并发原语选型必须结合实际争用度。

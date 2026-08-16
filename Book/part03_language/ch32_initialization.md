@@ -1330,39 +1330,96 @@ N_S1S2=2'000'000，N_S3=1'000'000，N_S4=2'000'000（50 轮重复）。所有场
 
 > S4 数组零初始化 vs 默认初始化 **44.849×**；字面量初始化全部被编译期折叠为 0.000 ms。
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：初始化形式相对耗时倍数（基线=聚合 1.00×）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：初始化形式相对耗时倍数（基线=聚合 1.00×）</text>
-  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+<svg viewBox="0 0 692 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="346" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="652" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
-  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
-  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="652" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <line x1="80" y1="238.0" x2="652" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="652" y2="176.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
-  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="80" y1="114.0" x2="652" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="652" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="226.7" x2="652" y2="226.7" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="652" y="222.7" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 1.52ms</text>
+  <rect x="92.7" y="226.7" width="38.1" height="73.3" fill="#9A9A9A"/>
+  <text x="111.8" y="220.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.52ms</text>
+  <text x="111.8" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.8 314.0)">Aggregate 初始化（聚合）</text>
+  <rect x="156.3" y="222.8" width="38.1" height="77.2" fill="#DD8452"/>
+  <text x="175.3" y="216.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.76ms</text>
+  <text x="175.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 175.3 314.0)">Constructor 初始化（构造函数）</text>
+  <rect x="219.8" y="203.9" width="38.1" height="96.1" fill="#55A868"/>
+  <text x="238.9" y="197.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">3.54ms</text>
+  <text x="238.9" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 238.9 314.0)">Positional 初始化（带括号位置）</text>
+  <rect x="283.4" y="205.3" width="38.1" height="94.7" fill="#8172B3"/>
+  <text x="302.4" y="199.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">3.37ms</text>
+  <text x="302.4" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 302.4 314.0)">Designated 初始化（指定成员）</text>
+  <rect x="346.9" y="225.6" width="38.1" height="74.4" fill="#937860"/>
+  <text x="366.0" y="219.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">1.58ms</text>
+  <text x="366.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 366.0 314.0)">Init-list 运行期</text>
+  <rect x="410.5" y="231.9" width="38.1" height="68.1" fill="#64B5CD"/>
+  <text x="429.6" y="225.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">1.25ms</text>
+  <text x="429.6" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 429.6 314.0)">Pack 运行期</text>
+  <rect x="474.0" y="113.8" width="38.1" height="186.2" fill="#C44E52"/>
+  <text x="493.1" y="107.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">101ms</text>
+  <text x="493.1" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 493.1 314.0)">数组零初始化 T arr[N]{}</text>
+  <rect x="537.6" y="216.2" width="38.1" height="83.8" fill="#DA8BC3"/>
+  <text x="556.7" y="210.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">2.25ms</text>
+  <text x="556.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 556.7 314.0)">数组默认初始化 T arr[N]</text>
+  <rect x="601.2" y="277.8" width="38.1" height="22.2" fill="#8C8C8C"/>
+  <text x="620.2" y="271.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">0.23ms</text>
+  <text x="620.2" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 620.2 314.0)">结构体默认初始化 T t</text>
+</svg>
+
+<svg viewBox="0 0 692 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="346" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="652" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="652" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <line x1="80" y1="217.3" x2="652" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="134.7" x2="652" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="652" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
-  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (聚合)</text>
-  <rect x="98.7" y="300.0" width="56.0" height="0.0" fill="#9A9A9A"/>
-  <text x="126.7" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="126.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">聚合</text>
-  <rect x="192.0" y="292.1" width="56.0" height="7.9" fill="#DD8452"/>
-  <text x="220.0" y="286.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.157×</text>
-  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">构造函数</text>
-  <rect x="285.3" y="254.4" width="56.0" height="45.6" fill="#55A868"/>
-  <text x="313.3" y="248.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">2.331×</text>
-  <text x="313.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">位置初始化</text>
-  <rect x="378.7" y="257.1" width="56.0" height="42.9" fill="#8172B3"/>
-  <text x="406.7" y="251.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">2.218×</text>
-  <text x="406.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">指定成员</text>
-  <rect x="472.0" y="74.1" width="56.0" height="225.9" fill="#C44E52"/>
-  <text x="500.0" y="68.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">66.320×</text>
-  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">数组零初始化</text>
-  <rect x="565.3" y="278.9" width="56.0" height="21.1" fill="#64B5CD"/>
-  <text x="593.3" y="272.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">1.479×</text>
-  <text x="593.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">数组默认初始化</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="217.3" x2="652" y2="217.3" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="652" y="213.3" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="92.7" y="217.3" width="38.1" height="82.7" fill="#9A9A9A"/>
+  <text x="111.8" y="211.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="111.8" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.8 314.0)">Aggregate 初始化（聚合）</text>
+  <rect x="156.3" y="212.1" width="38.1" height="87.9" fill="#DD8452"/>
+  <text x="175.3" y="206.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.16×</text>
+  <text x="175.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 175.3 314.0)">Constructor 初始化（构造函数）</text>
+  <rect x="219.8" y="187.0" width="38.1" height="113.0" fill="#55A868"/>
+  <text x="238.9" y="181.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">2.33×</text>
+  <text x="238.9" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 238.9 314.0)">Positional 初始化（带括号位置）</text>
+  <rect x="283.4" y="188.7" width="38.1" height="111.3" fill="#8172B3"/>
+  <text x="302.4" y="182.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">2.22×</text>
+  <text x="302.4" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 302.4 314.0)">Designated 初始化（指定成员）</text>
+  <rect x="346.9" y="215.9" width="38.1" height="84.1" fill="#937860"/>
+  <text x="366.0" y="209.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">1.04×</text>
+  <text x="366.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 366.0 314.0)">Init-list 运行期</text>
+  <rect x="410.5" y="224.2" width="38.1" height="75.8" fill="#64B5CD"/>
+  <text x="429.6" y="218.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">0.83×</text>
+  <text x="429.6" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 429.6 314.0)">Pack 运行期</text>
+  <rect x="474.0" y="66.7" width="38.1" height="233.3" fill="#C44E52"/>
+  <text x="493.1" y="60.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">66.32×</text>
+  <text x="493.1" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 493.1 314.0)">数组零初始化 T arr[N]{}</text>
+  <rect x="537.6" y="203.3" width="38.1" height="96.7" fill="#DA8BC3"/>
+  <text x="556.7" y="197.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">1.48×</text>
+  <text x="556.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 556.7 314.0)">数组默认初始化 T arr[N]</text>
+  <rect x="601.2" y="285.5" width="38.1" height="14.5" fill="#8C8C8C"/>
+  <text x="620.2" y="279.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">0.15×</text>
+  <text x="620.2" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 620.2 314.0)">结构体默认初始化 T t</text>
 </svg>
 
 > 图注：`T arr[N]{}` 值初始化（清零）比聚合初始化慢 **66.32×**（额外 100.8ms 的 memset）；带括号位置初始化比聚合慢 2.33×（多一次临时构造）。初始化形式直接影响热路径成本。

@@ -1596,33 +1596,94 @@ flowchart TD
 | 有序遍历 1M — `map` 顺序扫 | 130.380 | **1.50×**（map 更快） |
 | 有序遍历 1M — `unordered_map` 拷出 + sort | 196.220 | 基准 1.00× |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：map vs unordered_map 查找/插入开销（基线=map 查找）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：map vs unordered_map 查找/插入开销（基线=map 查找）</text>
-  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+<svg viewBox="0 0 692 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="346" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="652" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
-  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="652" y2="300.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
-  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="80" y1="176.0" x2="652" y2="176.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
-  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="80" y1="52.0" x2="652" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
-  <line x1="80" y1="62.1" x2="640" y2="62.1" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="58.1" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">829ms 基线 (map 查找)</text>
-  <rect x="118.0" y="62.1" width="64.0" height="237.9" fill="#9A9A9A"/>
-  <text x="150.0" y="56.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">829ms</text>
-  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">map 查找 int</text>
-  <rect x="258.0" y="229.8" width="64.0" height="70.2" fill="#C44E52"/>
-  <text x="290.0" y="223.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">36.8ms (22.5×快)</text>
-  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">umap 查找 int</text>
-  <rect x="398.0" y="65.4" width="64.0" height="234.6" fill="#55A868"/>
-  <text x="430.0" y="59.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">780ms</text>
-  <text x="430.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">map 插入</text>
-  <rect x="538.0" y="130.0" width="64.0" height="170.0" fill="#8172B3"/>
-  <text x="570.0" y="124.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">235ms (3.32×快)</text>
-  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">umap+reserve 插入</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="65.4" x2="652" y2="65.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="652" y="61.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 780.27ms</text>
+  <rect x="92.7" y="65.4" width="38.1" height="234.6" fill="#9A9A9A"/>
+  <text x="111.8" y="59.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">780ms</text>
+  <text x="111.8" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.8 314.0)">插入 1M int 键 — map</text>
+  <rect x="156.3" y="119.1" width="38.1" height="180.9" fill="#DD8452"/>
+  <text x="175.3" y="113.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">288ms</text>
+  <text x="175.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 175.3 314.0)">插入 1M int 键 — unordered_map（含 rehash）</text>
+  <rect x="219.8" y="130.0" width="38.1" height="170.0" fill="#55A868"/>
+  <text x="238.9" y="124.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">235ms</text>
+  <text x="238.9" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 238.9 314.0)">插入 1M int 键 — unordered_map + reserve</text>
+  <rect x="283.4" y="62.1" width="38.1" height="237.9" fill="#C44E52"/>
+  <text x="302.4" y="56.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">829ms</text>
+  <text x="302.4" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 302.4 314.0)">命中查找 1M int 键（乱序探测）— map</text>
+  <rect x="346.9" y="229.8" width="38.1" height="70.2" fill="#937860"/>
+  <text x="366.0" y="223.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">36.83ms</text>
+  <text x="366.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 366.0 314.0)">命中查找 1M int 键（乱序探测）— unordered_map</text>
+  <rect x="410.5" y="136.4" width="38.1" height="163.6" fill="#64B5CD"/>
+  <text x="429.6" y="130.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">208ms</text>
+  <text x="429.6" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 429.6 314.0)">命中查找 200K 25字符 string 键 — map</text>
+  <rect x="474.0" y="206.2" width="38.1" height="93.8" fill="#CCB974"/>
+  <text x="493.1" y="200.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">57.09ms</text>
+  <text x="493.1" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 493.1 314.0)">命中查找 200K 25字符 string 键 — unordered_map</text>
+  <rect x="537.6" y="161.7" width="38.1" height="138.3" fill="#DA8BC3"/>
+  <text x="556.7" y="155.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">130ms</text>
+  <text x="556.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 556.7 314.0)">有序遍历 1M — map 顺序扫</text>
+  <rect x="601.2" y="139.7" width="38.1" height="160.3" fill="#8C8C8C"/>
+  <text x="620.2" y="133.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">196ms</text>
+  <text x="620.2" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 620.2 314.0)">有序遍历 1M — unordered_map 拷出 + sort</text>
+</svg>
+
+<svg viewBox="0 0 692 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="346" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="652" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="652" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="652" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="176.0" x2="652" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="114.0" x2="652" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
+  <line x1="80" y1="52.0" x2="652" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="176.0" x2="652" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="652" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="92.7" y="176.0" width="38.1" height="124.0" fill="#9A9A9A"/>
+  <text x="111.8" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="111.8" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.8 314.0)">插入 1M int 键 — map</text>
+  <rect x="156.3" y="254.3" width="38.1" height="45.7" fill="#DD8452"/>
+  <text x="175.3" y="248.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.37×</text>
+  <text x="175.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 175.3 314.0)">插入 1M int 键 — unordered_map（含 rehash）</text>
+  <rect x="219.8" y="262.6" width="38.1" height="37.4" fill="#55A868"/>
+  <text x="238.9" y="256.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.30×</text>
+  <text x="238.9" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 238.9 314.0)">插入 1M int 键 — unordered_map + reserve</text>
+  <rect x="283.4" y="168.2" width="38.1" height="131.8" fill="#C44E52"/>
+  <text x="302.4" y="162.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1.06×</text>
+  <text x="302.4" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 302.4 314.0)">命中查找 1M int 键（乱序探测）— map</text>
+  <rect x="346.9" y="294.1" width="38.1" height="5.9" fill="#937860"/>
+  <text x="366.0" y="288.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">0.05×</text>
+  <text x="366.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 366.0 314.0)">命中查找 1M int 键（乱序探测）— unordered_map</text>
+  <rect x="410.5" y="266.9" width="38.1" height="33.1" fill="#64B5CD"/>
+  <text x="429.6" y="260.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">0.27×</text>
+  <text x="429.6" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 429.6 314.0)">命中查找 200K 25字符 string 键 — map</text>
+  <rect x="474.0" y="290.9" width="38.1" height="9.1" fill="#CCB974"/>
+  <text x="493.1" y="284.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">0.07×</text>
+  <text x="493.1" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 493.1 314.0)">命中查找 200K 25字符 string 键 — unordered_map</text>
+  <rect x="537.6" y="279.3" width="38.1" height="20.7" fill="#DA8BC3"/>
+  <text x="556.7" y="273.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">0.17×</text>
+  <text x="556.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 556.7 314.0)">有序遍历 1M — map 顺序扫</text>
+  <rect x="601.2" y="268.8" width="38.1" height="31.2" fill="#8C8C8C"/>
+  <text x="620.2" y="262.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">0.25×</text>
+  <text x="620.2" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 620.2 314.0)">有序遍历 1M — unordered_map 拷出 + sort</text>
 </svg>
 
 > 图注：`unordered_map` 哈希查找比 `map` 红黑树查找快 **22.5×**（36.8ms vs 829ms）；插入（含 reserve）快 3.32×；但有序遍历 `map` 反而快 1.50×（`unordered_map` 需拷出再 sort）。选容器先定访问模式。

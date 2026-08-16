@@ -1405,34 +1405,90 @@ flowchart TD
 | 200 万次 新建+用完即弃 — 栈上 `std::array<uint32_t,64>` | 91.469 | **1.00×** |
 | 200 万次 新建+用完即弃 — 堆上 `std::vector<uint32_t>(64)` | 319.604 | 3.49× |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：std::array vs vector 相对耗时（基线=vector 1.00×）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：std::array vs vector 相对耗时（基线=vector 1.00×）</text>
-  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+<svg viewBox="0 0 692 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="346" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="652" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
-  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="652" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="176.0" x2="652" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="652" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="269.0" x2="652" y2="269.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="652" y="265.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 17.79ms</text>
+  <rect x="92.7" y="268.7" width="38.1" height="31.3" fill="#4C72B0"/>
+  <text x="111.8" y="262.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">17.89ms</text>
+  <text x="111.8" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.8 314.0)">400 万×25 顺序求和 — C 数组</text>
+  <rect x="156.3" y="262.4" width="38.1" height="37.6" fill="#DD8452"/>
+  <text x="175.3" y="256.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">20.11ms</text>
+  <text x="175.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 175.3 314.0)">400 万×25 顺序求和 — std::array</text>
+  <rect x="219.8" y="269.0" width="38.1" height="31.0" fill="#9A9A9A"/>
+  <text x="238.9" y="263.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">17.79ms</text>
+  <text x="238.9" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 238.9 314.0)">400 万×25 顺序求和 — std::vector</text>
+  <rect x="283.4" y="267.3" width="38.1" height="32.7" fill="#8172B3"/>
+  <text x="302.4" y="261.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">18.35ms</text>
+  <text x="302.4" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 302.4 314.0)">400 万×25 顺序求和 — std::array 用 operator[]</text>
+  <rect x="346.9" y="268.6" width="38.1" height="31.4" fill="#937860"/>
+  <text x="366.0" y="262.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">17.91ms</text>
+  <text x="366.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 366.0 314.0)">400 万×25 顺序求和 — std::array 用 .at()</text>
+  <rect x="410.5" y="105.6" width="38.1" height="194.4" fill="#C44E52"/>
+  <text x="429.6" y="99.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">370ms</text>
+  <text x="429.6" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 429.6 314.0)">2000 万次调用 — 64B array 按值传参（noinline）</text>
+  <rect x="474.0" y="118.0" width="38.1" height="182.0" fill="#CCB974"/>
+  <text x="493.1" y="112.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">294ms</text>
+  <text x="493.1" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 493.1 314.0)">2000 万次调用 — 同函数按 const&amp; 传参（noinline）</text>
+  <rect x="537.6" y="180.8" width="38.1" height="119.2" fill="#DA8BC3"/>
+  <text x="556.7" y="174.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">91.47ms</text>
+  <text x="556.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 556.7 314.0)">200 万次 新建+用完即弃 — 栈上 std::array&lt;uint32_t,64&gt;</text>
+  <rect x="601.2" y="113.4" width="38.1" height="186.6" fill="#8C8C8C"/>
+  <text x="620.2" y="107.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">320ms</text>
+  <text x="620.2" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 620.2 314.0)">200 万次 新建+用完即弃 — 堆上 std::vector&lt;uint32_t&gt;(64)</text>
+</svg>
+
+<svg viewBox="0 0 692 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="346" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="652" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="652" y2="300.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
-  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
-  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (vector)</text>
-  <rect x="104.0" y="286.8" width="64.0" height="13.2" fill="#4C72B0"/>
-  <text x="136.0" y="280.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.13×</text>
-  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">seq sum array</text>
-  <rect x="216.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
-  <text x="248.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="248.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">vector</text>
-  <rect x="328.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
-  <text x="360.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">array .at</text>
-  <rect x="440.0" y="275.1" width="64.0" height="24.9" fill="#8172B3"/>
-  <text x="472.0" y="269.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.26×</text>
-  <text x="472.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">按值传 64B</text>
-  <rect x="552.0" y="165.4" width="64.0" height="134.6" fill="#C44E52"/>
-  <text x="584.0" y="159.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">3.49×</text>
-  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">堆 vector 即用即弃</text>
+  <line x1="80" y1="176.0" x2="652" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="652" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="300.0" x2="652" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="652" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="92.7" y="299.7" width="38.1" height="0.3" fill="#4C72B0"/>
+  <text x="111.8" y="293.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.01×</text>
+  <text x="111.8" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 111.8 314.0)">400 万×25 顺序求和 — C 数组</text>
+  <rect x="156.3" y="293.4" width="38.1" height="6.6" fill="#DD8452"/>
+  <text x="175.3" y="287.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.13×</text>
+  <text x="175.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 175.3 314.0)">400 万×25 顺序求和 — std::array</text>
+  <rect x="219.8" y="300.0" width="38.1" height="0.0" fill="#9A9A9A"/>
+  <text x="238.9" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="238.9" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 238.9 314.0)">400 万×25 顺序求和 — std::vector</text>
+  <rect x="283.4" y="298.3" width="38.1" height="1.7" fill="#8172B3"/>
+  <text x="302.4" y="292.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.03×</text>
+  <text x="302.4" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 302.4 314.0)">400 万×25 顺序求和 — std::array 用 operator[]</text>
+  <rect x="346.9" y="299.6" width="38.1" height="0.4" fill="#937860"/>
+  <text x="366.0" y="293.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">1.01×</text>
+  <text x="366.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 366.0 314.0)">400 万×25 顺序求和 — std::array 用 .at()</text>
+  <rect x="410.5" y="136.6" width="38.1" height="163.4" fill="#C44E52"/>
+  <text x="429.6" y="130.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">20.78×</text>
+  <text x="429.6" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 429.6 314.0)">2000 万次调用 — 64B array 按值传参（noinline）</text>
+  <rect x="474.0" y="149.0" width="38.1" height="151.0" fill="#CCB974"/>
+  <text x="493.1" y="143.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">16.52×</text>
+  <text x="493.1" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 493.1 314.0)">2000 万次调用 — 同函数按 const&amp; 传参（noinline）</text>
+  <rect x="537.6" y="211.8" width="38.1" height="88.2" fill="#DA8BC3"/>
+  <text x="556.7" y="205.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">5.14×</text>
+  <text x="556.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 556.7 314.0)">200 万次 新建+用完即弃 — 栈上 std::array&lt;uint32_t,64&gt;</text>
+  <rect x="601.2" y="144.4" width="38.1" height="155.6" fill="#8C8C8C"/>
+  <text x="620.2" y="138.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8C8C8C">17.97×</text>
+  <text x="620.2" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 620.2 314.0)">200 万次 新建+用完即弃 — 堆上 std::vector&lt;uint32_t&gt;(64)</text>
 </svg>
 
 > 图注：200 万次「新建即用即弃」，`std::vector<uint32_t>(64)` 堆分配比栈上 `std::array<uint32_t,64>` 慢 **3.49×**；按值传 64B `array` 比 `const&` 慢 1.26×（拷贝成本）。固定大小优先栈上 `array`。
