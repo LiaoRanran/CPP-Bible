@@ -2506,7 +2506,7 @@ flowchart TD
   <text x="570.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">栈对象</text>
 </svg>
 
-> 图注：减少分配次数是王道：批量 new[](3.1万次分配)比逐对象 new(200万次)快 20.86×，placement new 复用缓冲快 26.98×，纯栈对象快 27.99×。堆分配的固定成本远高于单次搬运。
+> 图注：减少分配次数是王道：批量 new[]（3.1万次分配）比逐对象 new（200万次）快 20.86×，placement new 复用缓冲快 26.98×，纯栈对象快 27.99×。堆分配的固定成本远高于单次搬运。
 
 ### D5.2 非显然结论
 
