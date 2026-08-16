@@ -2214,6 +2214,37 @@ int main() {
 | errcode_thrown（错误码分支返回） | 12.3613 | 错误码风格 |
 | exception_thrown（真实 throw/catch） | 635.175 | 约 **51.4×** 于错误码路径 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：异常路径 vs happy path 相对开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：异常路径 vs happy path 相对开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 无异常基线=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="118.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="150.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">plain_loop</text>
+  <rect x="258.0" y="298.4" width="64.0" height="1.6" fill="#DD8452"/>
+  <text x="290.0" y="292.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">≈1.03×</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">try_nothrow</text>
+  <rect x="398.0" y="298.4" width="64.0" height="1.6" fill="#55A868"/>
+  <text x="430.0" y="292.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">≈1.03×</text>
+  <text x="430.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">errcode</text>
+  <rect x="538.0" y="87.8" width="64.0" height="212.2" fill="#C44E52"/>
+  <text x="570.0" y="81.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">51.4×</text>
+  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">exception_thrown</text>
+</svg>
+
+> 图注：happy path 上 `try/catch`（从不抛）与错误码分支都只比无异常基线慢 <3%，**零开销实证**；但真实 `throw/catch` 路径比错误码慢 **51.4×**——异常的成本全在抛出那一瞬（栈展开），不在常态路径。
+
 ### D5.2 非显然结论
 
 1. **存在 try 块的正常路径与裸循环逐 ms 等价（12.39 vs 12.05ms，差 < 3%）。** 根因：Itanium C++ ABI 采用 table-driven zero-cost EH —— 不抛异常时运行时完全不插桩，try 块不产生任何指令，仅因优化器在异常边界处略受抑制（如少做某些跨边界重排）而带来 < 3% 的微弱差异，这正是"零开销异常"的实测含义：你不为不发生的异常买单。

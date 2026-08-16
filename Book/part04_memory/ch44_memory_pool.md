@@ -2618,6 +2618,35 @@ int main()
 | 通用 `malloc`/`free` — 2M 次 32B 分配+释放（指针逃逸 volatile） | 193.84 | 基准 1.00× |
 | free-list 内存池 — 2M 次 32B 分配+释放（同样逃逸） | 64.30 | **3.01×** |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：free-list 内存池相对 malloc/free 开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：free-list 内存池相对 malloc/free 开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, malloc/free=1.00)</text>
+  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (malloc/free)</text>
+  <rect x="188.0" y="250.4" width="64.0" height="49.6" fill="#9A9A9A"/>
+  <text x="220.0" y="244.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">通用 malloc/free</text>
+  <rect x="468.0" y="150.7" width="64.0" height="149.3" fill="#C44E52"/>
+  <text x="500.0" y="144.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">3.01×</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">free-list 内存池</text>
+</svg>
+
+> 图注：固定大小 free-list 内存池把 2M 次 32B 分配+释放从 193.84ms 降到 64.30ms（**快 3.01×**）——免去通用分配器的锁竞争与空闲链表遍历。
+
 ### D5.2 非显然结论
 
 1. **free-list 池比通用 `malloc` 快 3.01×。** 根因：通用分配器要应对任意尺寸请求，内部做 size class 查找、bin 管理、线程安全锁或 tcache 取还，释放时还要做空闲块合并与元数据校验；free-list 池的 `alloc` 只是"弹出单链表头"、`dealloc` 只是"把节点压回链表头"，两三条指令即完成，且节点被反复复用带来天然的缓存热命中（分配出的地址很快又被访问）。

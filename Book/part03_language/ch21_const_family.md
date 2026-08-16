@@ -1243,6 +1243,35 @@ flowchart TD
 | `ct_sum(K)`（K 为 constexpr 常量） | 编译期已知 | 0.0001 | 整个计算被折叠为常数 |
 | `rt_sum(kv)`（kv 为 volatile 运行期值） | 运行期未知 | 152.94 | 每次调用重新计算 sum 0..63 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：编译期已知 vs 运行期未知求和耗时">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：编译期已知 vs 运行期未知求和耗时</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">150</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">200</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="110.4" x2="640" y2="110.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="106.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">运行期 152.94ms</text>
+  <rect x="188.0" y="110.4" width="64.0" height="189.6" fill="#9A9A9A"/>
+  <text x="220.0" y="104.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">152.94ms</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">rt_sum 运行期</text>
+  <rect x="468.0" y="300.0" width="64.0" height="0.0" fill="#C44E52"/>
+  <text x="500.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">≈0 折叠</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">ct_sum 编译期折叠</text>
+</svg>
+
+> 图注：`K` 为 constexpr 常量时，整个 `ct_sum` 被折叠为常数（运行期 ≈0）；`kv` 为 volatile 运行期值时每次调用重算 0..63 求和（152.94ms）。编译期计算把工作量提前到编译时。
+
 ### D5.2 非显然结论
 
 1. **编译期已知实参下 constexpr 是把「计算」彻底消除，而非「加速」**：`ct_sum(K)` 在编译期折叠为常量 2016，运行期只做 `s += 2016`，故耗时趋近于 0（本机 0.0001 ms）；这是「零成本抽象」的典范——成本在编译期支付，运行期账单为空。

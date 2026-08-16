@@ -1596,6 +1596,37 @@ flowchart TD
 | 有序遍历 1M — `map` 顺序扫 | 130.380 | **1.50×**（map 更快） |
 | 有序遍历 1M — `unordered_map` 拷出 + sort | 196.220 | 基准 1.00× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：map vs unordered_map 查找/插入开销（基线=map 查找）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：map vs unordered_map 查找/插入开销（基线=map 查找）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="62.1" x2="640" y2="62.1" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="58.1" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">829ms 基线 (map 查找)</text>
+  <rect x="118.0" y="62.1" width="64.0" height="237.9" fill="#9A9A9A"/>
+  <text x="150.0" y="56.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">829ms</text>
+  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">map 查找 int</text>
+  <rect x="258.0" y="229.8" width="64.0" height="70.2" fill="#C44E52"/>
+  <text x="290.0" y="223.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">36.8ms (22.5×快)</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">umap 查找 int</text>
+  <rect x="398.0" y="65.4" width="64.0" height="234.6" fill="#55A868"/>
+  <text x="430.0" y="59.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">780ms</text>
+  <text x="430.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">map 插入</text>
+  <rect x="538.0" y="130.0" width="64.0" height="170.0" fill="#8172B3"/>
+  <text x="570.0" y="124.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">235ms (3.32×快)</text>
+  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">umap+reserve 插入</text>
+</svg>
+
+> 图注：`unordered_map` 哈希查找比 `map` 红黑树查找快 **22.5×**（36.8ms vs 829ms）；插入（含 reserve）快 3.32×；但有序遍历 `map` 反而快 1.50×（`unordered_map` 需拷出再 sort）。选容器先定访问模式。
+
 ### D5.2 非显然结论
 
 1. **查找差距（22.5×）远大于插入差距（2.71×）。** 根因：查找是纯结构对比 —— `map` 查找走约 20 层红黑树指针追逐（log2(1M)≈20），每层都是一次潜在 cache miss；`unordered_map` 只需 1 次哈希 + ~1–2 次访存。插入时两者都要分配一个堆节点，分配器的固定成本稀释了结构本身的差距，所以倍率被拉平。

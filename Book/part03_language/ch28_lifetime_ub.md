@@ -1785,6 +1785,38 @@ flowchart TD
 | `unique_ptr` 堆 | RAII 管理堆分配+释放 | 27.14 | ~3.1× 慢 |
 | 裸 `new`/`delete` | 手动堆分配+释放 | 26.89 | ~3.0× 慢 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：栈对象 vs 堆对象构造/析构开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：栈对象 vs 堆对象构造/析构开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 栈 RAII=1.00)</text>
+  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (栈 RAII)</text>
+  <rect x="141.3" y="250.4" width="64.0" height="49.6" fill="#9A9A9A"/>
+  <text x="173.3" y="244.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">栈 RAII auto</text>
+  <rect x="328.0" y="146.2" width="64.0" height="153.8" fill="#DD8452"/>
+  <text x="360.0" y="140.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">3.10×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">unique_ptr 堆</text>
+  <rect x="514.7" y="151.2" width="64.0" height="148.8" fill="#55A868"/>
+  <text x="546.7" y="145.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">3.00×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">裸 new/delete</text>
+</svg>
+
+> 图注：堆分配（无论 `unique_ptr` 还是裸 `new`）比栈对象慢约 **3×**——差在分配/释放的固定成本，而非 RAII 本身（`unique_ptr` 零抽象开销）。
+
 ### D5.2 非显然结论
 
 **堆分配的代价是栈分配的 3 倍——不是 RAII 本身的开销，而是 malloc/free 的系统调用成本**

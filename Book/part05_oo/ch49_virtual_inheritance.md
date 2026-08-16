@@ -1461,6 +1461,47 @@ int main() {
 | 非虚 upcast 遍历（ND1*→NB*，编译期常量偏移） | 639.132 | 基准 1.00× |
 | exact type 直接访问（VM* 直接成员） | 1398.358 | ≈ 虚继承 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：虚继承 vs 普通继承对象 sizeof">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：虚继承 vs 普通继承对象 sizeof</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">12.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">37.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">对象大小 (B)</text>
+  <line x1="80" y1="220.6" x2="640" y2="220.6" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="216.6" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">16B 基线 (普通继承)</text>
+  <rect x="98.7" y="220.6" width="56.0" height="79.4" fill="#9A9A9A"/>
+  <text x="126.7" y="214.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">16B</text>
+  <text x="126.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">普通基类 NB</text>
+  <rect x="192.0" y="220.6" width="56.0" height="79.4" fill="#9A9A9A"/>
+  <text x="220.0" y="214.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">16B</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">普通派生 ND1</text>
+  <rect x="285.3" y="181.0" width="56.0" height="119.0" fill="#55A868"/>
+  <text x="313.3" y="175.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">24B</text>
+  <text x="313.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 313.3 314.0)">普通多继承 NM</text>
+  <rect x="378.7" y="220.6" width="56.0" height="79.4" fill="#9A9A9A"/>
+  <text x="406.7" y="214.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">16B</text>
+  <text x="406.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">虚基类 VB</text>
+  <rect x="472.0" y="141.3" width="56.0" height="158.7" fill="#C44E52"/>
+  <text x="500.0" y="135.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">32B</text>
+  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">虚派生 VD1</text>
+  <rect x="565.3" y="61.9" width="56.0" height="238.1" fill="#C44E52"/>
+  <text x="593.3" y="55.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">48B</text>
+  <text x="593.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">多虚继承 VM</text>
+</svg>
+
+> 图注：虚继承为存「虚基类偏移表」使对象膨胀：单虚派生 32B（vs 普通派生 16B），双虚继承链 48B；虚基类本身 16B 未膨胀（偏移表挂在派生侧）。sizeof 影响缓存密度与传值成本。
+
 ### D5.2 非显然结论
 
 1. **虚基类偏移不是编译期常量，须经 vptr 间接加载。** 根因：vbase offset 存于 vtable 负偏移区，每次 `VD1*→VB*` upcast 需先经 vptr 取虚基类偏移再算地址，比 `ND1*→NB*` 的编译期常量偏移多一次依赖加载；在指针追逐（cache miss 主导）场景下这条额外加载形成两级依赖链，把基准从 639ms 拉到 1412ms。

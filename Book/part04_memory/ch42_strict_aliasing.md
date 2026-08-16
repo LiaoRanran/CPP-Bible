@@ -1711,6 +1711,34 @@ flowchart TD
 | `add3` 无 `restrict` | 66.477 | |
 | `add3 __restrict` | 68.013 | 几乎无差 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：打破别名 vs 可别名指针相对开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：打破别名 vs 可别名指针相对开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 可别名=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (可别名指针)</text>
+  <rect x="141.3" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="173.3" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">++*counter 可别名</text>
+  <rect x="328.0" y="148.4" width="64.0" height="151.6" fill="#C44E52"/>
+  <text x="360.0" y="142.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">16.7×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">局部累加末尾写回</text>
+  <rect x="514.7" y="297.4" width="64.0" height="2.6" fill="#55A868"/>
+  <text x="546.7" y="291.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">1.05×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">__restrict</text>
+</svg>
+
+> 图注：把累加搬到局部变量、末尾一次写回，让编译器消除每次迭代的 load/store 别名检查，快 **16.7×**；`__restrict` 在此反而慢约 5%——别名提示不是银弹，取决于编译器能否证明无别名。
+
 ### D5.2 非显然结论
 
 1. **真正的性能来源是“消除每轮内存 store”（局部累加 52.872ms vs 可别名 884.813ms，16.7×），而非 `restrict` 关键字本身。** 根因：`++*counter` 每轮把计数器写回内存，形成 store→load 依赖链，且计数器 cache line 被频繁回写；局部累加仅在末尾一次 `store`，循环体无内存依赖，可被充分流水线化与向量化。

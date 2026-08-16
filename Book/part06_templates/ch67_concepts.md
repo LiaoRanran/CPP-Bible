@@ -1127,6 +1127,37 @@ flowchart TD
 | if-constexpr | 编译期 | 255.81 | 1.00× |
 | virtual（vtable 间接） | 运行时 | 4568.80 | 17.9× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：Concepts 约束分派 vs 虚调用相对开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：Concepts 约束分派 vs 虚调用相对开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, Concepts=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (编译期分派)</text>
+  <rect x="118.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="150.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">Concepts</text>
+  <rect x="258.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="290.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="290.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">SFINAE</text>
+  <rect x="398.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="430.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">if-constexpr</text>
+  <rect x="538.0" y="144.6" width="64.0" height="155.4" fill="#C44E52"/>
+  <text x="570.0" y="138.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">17.9×</text>
+  <text x="570.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">virtual</text>
+</svg>
+
+> 图注：`Concepts`/`SFINAE`/`if-constexpr` 三种编译期约束分派同速（约 256ms）；`virtual` 运行期派发慢 **17.9×**。约束语法的开销在编译期，不在运行期。
+
 ### D5.2 非显然结论
 
 1. **Concepts 在运行时是"隐形"的——它不发射任何指令**。concepts 只在重载决议阶段过滤候选，一旦选定具体函数，热点循环里只剩该函数的直接调用 / 内联体。本机 concepts / SFINAE / if-constexpr 三者中位 255.6–255.8 ms 完全不可分（比值 1.00×）。

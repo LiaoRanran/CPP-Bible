@@ -1186,6 +1186,34 @@ flowchart TD
 | call 自写 `csin` ×100M | 2040.683 | 慢于查表 |
 | max\|`CT_TABLE` − `std::sin`\| | 1.035e-11 | 最大绝对误差 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：编译期查表 vs 运行期 transcendental 调用">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：编译期查表 vs 运行期 transcendental 调用</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 查表=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (查表)</text>
+  <rect x="141.3" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="173.3" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">查表 CT_TABLE</text>
+  <rect x="328.0" y="150.7" width="64.0" height="149.3" fill="#DD8452"/>
+  <text x="360.0" y="144.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">16.0×</text>
+  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">自写 csin</text>
+  <rect x="514.7" y="85.6" width="64.0" height="214.4" fill="#C44E52"/>
+  <text x="546.7" y="79.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">53.6×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">std::sin</text>
+</svg>
+
+> 图注：编译期预计算的查表法（最大绝对误差 1e-11）比调用 `std::sin` 快 **53.6×**，比自写 `csin` 快 16×——用编译期常数表换运行期 transcendental 调用。
+
 ### D5.2 非显然结论
 
 1. **`CT_TABLE` 查表 ≈1.28ns/次，比 `std::sin` 快 53.6×。** 根因：`CT_TABLE` 是 `.rodata` 里的常量数组，运行时零初始化成本、查表即为一次 L1 命中的加载；而 `std::sin` 是 libm 调用，内部走参数规约 + 多项式逼近 + 精度分支，约 68ns/次——差距来自"内存读取"与"函数调用 + 数值计算"两个量级的本质区别。

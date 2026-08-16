@@ -1197,6 +1197,41 @@ flowchart TD
 | `-O3`（更激进矢量化/展开） | 34.968 | 16.38× 更快 |
 | `-O2 -flto`（单 TU 的 LTO） | 59.826 | 9.57× 更快 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：构建优化等级相对 -O0 加速比">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：构建优化等级相对 -O0 加速比</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">15</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">20</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">加速比 (×, -O0=1.00)</text>
+  <line x1="80" y1="287.6" x2="640" y2="287.6" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="283.6" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基准 (-O0)</text>
+  <rect x="118.0" y="287.6" width="64.0" height="12.4" fill="#9A9A9A"/>
+  <text x="150.0" y="281.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="150.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">-O0</text>
+  <rect x="258.0" y="93.3" width="64.0" height="206.7" fill="#C44E52"/>
+  <text x="290.0" y="87.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">16.67×</text>
+  <text x="290.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">-O2</text>
+  <rect x="398.0" y="96.9" width="64.0" height="203.1" fill="#C44E52"/>
+  <text x="430.0" y="90.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">16.38×</text>
+  <text x="430.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">-O3</text>
+  <rect x="538.0" y="181.3" width="64.0" height="118.7" fill="#8172B3"/>
+  <text x="570.0" y="175.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">9.57×</text>
+  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">-O2 -flto</text>
+</svg>
+
+> 图注：`-O2` 比 `-O0` 快 **16.67×**；`-O3` 与 `-O2` 几乎同速（16.38×，更激进矢量化未带来收益）；单 TU 的 `-flto` 反而因重新序列化慢于 `-O2`（LTO 收益在多 TU 跨模块内联才显）。
+
 ### D5.2 非显然结论
 
 1. **Debug 比 Release 慢约 16.7×**：`-O0` 保留每个函数调用、不做矢量化与展开，而 `-O2` 把循环内联、自动向量化为 `vsqrtpd` 等 SIMD 指令；这是「Debug 配置绝不应进生产」的最硬证据。

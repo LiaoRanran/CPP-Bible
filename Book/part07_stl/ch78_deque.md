@@ -1512,6 +1512,41 @@ flowchart TD
 | 随机下标访问 ×2M | 5.67 | 13.32 | deque 慢 2.35× |
 | 头插（`push_front` / `insert(begin)`）×100K | 540.5 | 0.366 | deque 快 1477× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：deque vs vector 相对开销（基线=vector 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：deque vs vector 相对开销（基线=vector 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (vector)</text>
+  <rect x="118.0" y="294.9" width="64.0" height="5.1" fill="#4C72B0"/>
+  <text x="150.0" y="288.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">deque慢1.21×</text>
+  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">push_back</text>
+  <rect x="258.0" y="277.9" width="64.0" height="22.1" fill="#DD8452"/>
+  <text x="290.0" y="271.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">deque慢2.27×</text>
+  <text x="290.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">顺序遍历</text>
+  <rect x="398.0" y="277.0" width="64.0" height="23.0" fill="#55A868"/>
+  <text x="430.0" y="271.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">deque慢2.35×</text>
+  <text x="430.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">随机下标</text>
+  <rect x="538.0" y="103.5" width="64.0" height="196.5" fill="#C44E52"/>
+  <text x="570.0" y="97.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">deque快1477×</text>
+  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">头插 push_front</text>
+</svg>
+
+> 图注：`deque` 的随机下标/遍历比 `vector` 慢 2.2–2.4×（分段连续 + 每次跨 chunk 边界判断）；但头插 `push_front` 比 `vector::insert(begin)` 快 **1477×**——`deque` 的代价在顺序访问，优势在两端 O(1)。
+
 ### D5.2 非显然结论
 
 1. **遍历慢 2.27×：二级间接 + 块边界分支。** 根因：libstdc++ 的 deque 块大小 = 512 字节 / 元素大小（`_GLIBCXX_DEQUE_BUF_SIZE=512`），`int` 每块 128 个。顺序遍历每跨一个块都要经中控 `map` 指针数组做二级间接寻址，并每次判断"是否到达块尾"的分支，cache 局部性远差于 vector 的单一连续数组。

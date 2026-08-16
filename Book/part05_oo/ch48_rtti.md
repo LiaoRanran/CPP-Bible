@@ -1655,6 +1655,38 @@ int main() {
 | `dynamic_cast` 向下转型 — 5M 次（命中则加、否则虚调用） | 89.11 | ≈1.20× |
 | `typeid` 精确比较 — 5M 次 `typeid(*p) == typeid(Derived)` | 22.29 | **≈0.30×**（最快） |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：RTTI 操作相对虚调用开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：RTTI 操作相对虚调用开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 虚派发=1.00)</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (虚派发)</text>
+  <rect x="141.3" y="176.0" width="64.0" height="124.0" fill="#9A9A9A"/>
+  <text x="173.3" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">虚函数派发</text>
+  <rect x="328.0" y="151.2" width="64.0" height="148.8" fill="#DD8452"/>
+  <text x="360.0" y="145.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.20×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">dynamic_cast</text>
+  <rect x="514.7" y="262.8" width="64.0" height="37.2" fill="#C44E52"/>
+  <text x="546.7" y="256.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.30×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">typeid 比较</text>
+</svg>
+
+> 图注：`typeid` 精确类型比较比虚调用快 **0.30×**（编译器常把 `typeid(*p)==typeid(D)` 折叠为常数比较）；`dynamic_cast` 向下转型慢 1.20×（需遍历基类链）；RTTI 不是均匀昂贵。
+
 ### D5.2 非显然结论
 
 1. **`dynamic_cast` 比虚调用贵约 20%（89.11 vs 74.14ms）。** 根因：虚调用是一次经 vptr 的间接跳转；`dynamic_cast<Derived*>` 要走运行库函数 `__dynamic_cast`（实现体在 GCC 源码树的 libsupc++，本附录不伪造其源码），运行时遍历 `type_info` 继承图来确认"是否可安全转成 `Derived`"。本例仅一层单继承就已多约 20%，继承更深、含虚继承/菱形继承时开销通常更高。

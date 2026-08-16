@@ -1597,6 +1597,35 @@ flowchart TD
 | `push_back` ×4M（预先 reserve） | 4.16 | **2.0×**（快） |
 | erase-remove 删除 4M 中一半（偶数值） | 22.16 | —（独立量级：O(n) 搬移） |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：push_back 预 reserve vs 不 reserve 开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：push_back 预 reserve vs 不 reserve 开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 无reserve=1.00)</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (无 reserve)</text>
+  <rect x="188.0" y="176.0" width="64.0" height="124.0" fill="#9A9A9A"/>
+  <text x="220.0" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">push_back 无reserve</text>
+  <rect x="468.0" y="52.0" width="64.0" height="248.0" fill="#C44E52"/>
+  <text x="500.0" y="46.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">2.0×</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">push_back 预reserve</text>
+</svg>
+
+> 图注：4M 次 `push_back` 不 `reserve` 会触发多次指数重分配 + 搬移，比预先 `reserve` 慢 **2.0×**；已知大小务必预分配。
+
 ### D5.2 非显然结论
 
 1. **预先 reserve 令 `push_back` 快 2.0×。** 根因：无 reserve 时 `vector` 按几何因子（GCC 默认 2×）指数扩容，触发约 `log2(N)` 次 `realloc`，每次都要把已有元素整体搬移到新缓冲区——均摊 O(1) 但常数不小，且大块连续搬移对缓存不友好。reserve(N) 一次性分配到位，后续 `push_back` 只做原位构造，零搬移。

@@ -1796,6 +1796,41 @@ flowchart TD
 | `raw int` switch | `switch(int)` | 46.72 | ~1.14× |
 | 函数指针表 | `table[op](i)` 间接调用 | 167.80 | ~4.1× 慢 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：枚举分发方式相对 switch 开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：枚举分发方式相对 switch 开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, C enum=1.00)</text>
+  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (C enum)</text>
+  <rect x="118.0" y="250.4" width="64.0" height="49.6" fill="#9A9A9A"/>
+  <text x="150.0" y="244.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">C enum switch</text>
+  <rect x="258.0" y="243.0" width="64.0" height="57.0" fill="#DD8452"/>
+  <text x="290.0" y="237.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.15×</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">enum class switch</text>
+  <rect x="398.0" y="243.5" width="64.0" height="56.5" fill="#55A868"/>
+  <text x="430.0" y="237.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">1.14×</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">raw int switch</text>
+  <rect x="538.0" y="96.6" width="64.0" height="203.4" fill="#C44E52"/>
+  <text x="570.0" y="90.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">4.10×</text>
+  <text x="570.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">函数指针表</text>
+</svg>
+
+> 图注：函数指针表间接调用分发比 `switch` 慢 **4.1×**（查表 + 间接跳转）；`enum class` 与裸 `int` 的 `switch` 几乎同速（强类型不引入运行时成本）。
+
 ### D5.2 非显然结论
 
 **enum class 与 C-style enum 的 switch 性能几乎相同——作用域安全不付运行期代价**

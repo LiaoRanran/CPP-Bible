@@ -1902,6 +1902,38 @@ flowchart TD
 | Good {double;int;char;char} | 16 | 36.962 | 1.00× |
 | Fat {Good + pad[48]} | 64 | 104.599 | 慢 2.83× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：结构体字段排布对遍历耗时的影响">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：结构体字段排布对遍历耗时的影响</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, Good=1.00)</text>
+  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (Good 排布)</text>
+  <rect x="141.3" y="250.4" width="64.0" height="49.6" fill="#9A9A9A"/>
+  <text x="173.3" y="244.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">Good{double;int;char;char}</text>
+  <rect x="328.0" y="240.0" width="64.0" height="60.0" fill="#DD8452"/>
+  <text x="360.0" y="234.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.21×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">Bad{char;double;char;int}</text>
+  <rect x="514.7" y="159.6" width="64.0" height="140.4" fill="#C44E52"/>
+  <text x="546.7" y="153.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">2.83×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">Fat{+pad[48]}</text>
+</svg>
+
+> 图注：字段重排消除 8B 填充（`Bad`24B→`Good`16B）遍历快 1.21×；为对齐塞入 48B 填充的 `Fat` 慢 **2.83×**——结构体布局直接影响缓存密度。
+
 ### D5.2 非显然结论
 
 1. **字段重排消除 padding 后，单位缓存行能装载更多对象。** 根因：64B 缓存行装 4 个 Good（16B）vs 2.67 个 Bad（24B）vs 仅 1 个 Fat（64B）。在带宽受限的遍历循环里，每缓存行可并行处理的有效对象数直接决定吞吐，因而 Good 比 Bad 快 1.21×。

@@ -1260,6 +1260,35 @@ int main() {
 | virtual_dispatch（vtable 间接派发） | 35.09 | 基准 1.00× |
 | crtp_static（CRTP 静态分发，可内联） | 2.60 | **13.5×** |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：CRTP 静态分发 vs 虚调用开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：CRTP 静态分发 vs 虚调用开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">15</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">20</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, virtual=1.00)</text>
+  <line x1="80" y1="287.6" x2="640" y2="287.6" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="283.6" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (virtual)</text>
+  <rect x="188.0" y="287.6" width="64.0" height="12.4" fill="#9A9A9A"/>
+  <text x="220.0" y="281.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">virtual_dispatch</text>
+  <rect x="468.0" y="132.6" width="64.0" height="167.4" fill="#C44E52"/>
+  <text x="500.0" y="126.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">13.5×</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">crtp_static</text>
+</svg>
+
+> 图注：CRTP 静态分发把虚调用编译期内联，比 vtable 间接派发快 **13.5×**——代价是失去运行期多态（类型必须在编译期固定）。
+
 ### D5.2 非显然结论
 
 1. **13.5× 的大头来自"内联解锁的二次优化"，而非省掉一次跳转。** 根因：虚调用是 vtable 间接跳转，编译器无法内联、对循环体内的 `compute` 语义不可知（不能假设无副作用/无别名），只能逐次经间接分支调用，整个归约循环无法被自动向量化，乘法与累加都被锁死在循环内。CRTP 的 `compute` 是模板非虚方法，被完全内联，`x*3+1` 暴露给 -O2，归约循环被自动向量化（SIMD）+ 强度折减等循环级优化——这才是加速的主因。

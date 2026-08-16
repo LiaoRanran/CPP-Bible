@@ -920,6 +920,33 @@ int main() {
 - **每次 `steady_clock::now()` 约 49 ns**：2487.31 − 21.94 = 2465.37 ms 摊到 5e7 次调用。
 - **把时间戳打在热循环内部，测量开销会淹没被测工作**：当循环体快于 ~50 ns 时，你测到的主要是 `now()` 本身。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：循环内逐次取时相对开销（基线=不取时）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：循环内逐次取时相对开销（基线=不取时）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 不取时=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (不取时)</text>
+  <rect x="188.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="220.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">基线 不取时</text>
+  <rect x="468.0" y="130.3" width="64.0" height="169.7" fill="#C44E52"/>
+  <text x="500.0" y="124.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">113×</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">循环内每次 now()</text>
+</svg>
+
+> 图注：循环内每次调用 `now()` 取时比不取时慢 **113×**（≈49ns/次系统调用）；高频计时务必「圈外取时」或降频采样，勿在热循环内逐次取时。
+
 ### D5.2 非显然结论
 
 1. **`now()` 是真实函数调用，不是免费操作**：见 D5.5，它编译成一条 `call` 到 `steady_clock::now` 的实现（本机走 QPC）。

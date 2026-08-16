@@ -1049,6 +1049,38 @@ flowchart TD
 | `constexpr` `fib_ce(30)` | 编译期（常量折叠） | 42.45 | 1.00× |
 | 运行时迭代 `fib_rt_iter(i%30)` | 运行时（每轮重算） | 393.92 | 9.28× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：编译期计算 vs 运行期迭代开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：编译期计算 vs 运行期迭代开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">7.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, TMP=1.00)</text>
+  <line x1="80" y1="275.2" x2="640" y2="275.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="271.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (TMP/constexpr)</text>
+  <rect x="141.3" y="275.2" width="64.0" height="24.8" fill="#9A9A9A"/>
+  <text x="173.3" y="269.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">TMP Fib&lt;30&gt;</text>
+  <rect x="328.0" y="275.2" width="64.0" height="24.8" fill="#9A9A9A"/>
+  <text x="360.0" y="269.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">constexpr fib_ce</text>
+  <rect x="514.7" y="69.9" width="64.0" height="230.1" fill="#C44E52"/>
+  <text x="546.7" y="63.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">9.28×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">runtime 迭代</text>
+</svg>
+
+> 图注：`Fib<30>` 模板元编程与 `constexpr` 都在编译期折成常量，运行期只取结果（约 42ms，含循环外壳）；运行时迭代每轮重算，慢 **9.28×**。编译期计算把工作量提前到编译时。
+
 ### D5.2 非显然结论
 
 1. **TMP 与 constexpr 在运行时产物完全相同（1.00×）**。`Fib<30>::value` 和 `constexpr fib_ce(30)` 都被编译器在编译期折成同一个整型常量 `832040`；热点循环里只是"加一个常量"，两者中位 42.44 / 42.45 ms 不可分。运行期行为上 TMP 不比 constexpr 快一丝一毫。

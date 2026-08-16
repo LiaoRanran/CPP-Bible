@@ -1625,6 +1625,35 @@ flowchart TD
 | `by_value(Big)` 按值（栈拷贝 64 B） | 调用点 memcpy 64 B + 求和 | 508.78 | 6.32× 更慢 |
 | `by_cref(const Big&)` const 引用（传指针） | 仅传 8 B 指针 + 求和 | 80.51 | 1.00× (基线) |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：大对象传参方式相对 const&amp; 开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：大对象传参方式相对 const&amp; 开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">7.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, const&amp;=1.00)</text>
+  <line x1="80" y1="275.2" x2="640" y2="275.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="271.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (const&amp;)</text>
+  <rect x="188.0" y="275.2" width="64.0" height="24.8" fill="#9A9A9A"/>
+  <text x="220.0" y="269.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">by_cref const&amp;</text>
+  <rect x="468.0" y="143.3" width="64.0" height="156.7" fill="#C44E52"/>
+  <text x="500.0" y="137.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">6.32×</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">by_value Big(64B)</text>
+</svg>
+
+> 图注：64B 大对象按值传参每次调用栈上 memcpy 512B，比 const 引用（仅传 8B 指针）慢 **6.32×**；大对象优先 const&/指针，避免无谓拷贝。
+
 ### D5.2 非显然结论
 
 1. **大对象按值传递慢约 6.3×**：64 字节结构体按值传递时，System V AMD64 ABI 要求调用点在栈上 memcpy 整个对象（本基准每轮修改 `b.a[0]` 使拷贝不可被提升到循环外），而 const 引用只压一个 8 字节指针；6.3× 正是「拷贝成本」被单独孤立出来的结果。

@@ -1212,6 +1212,38 @@ flowchart TD
 | 表达式模板（单循环融合） | 261.366 | 4.20× 加速 |
 | 手写融合循环 | 247.115 | ≈4.44× 加速（最快） |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：表达式模板 vs 朴素求值相对开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：表达式模板 vs 朴素求值相对开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, naive=1.00)</text>
+  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (naive)</text>
+  <rect x="141.3" y="250.4" width="64.0" height="49.6" fill="#9A9A9A"/>
+  <text x="173.3" y="244.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">naive 3临时3遍历</text>
+  <rect x="328.0" y="91.7" width="64.0" height="208.3" fill="#DD8452"/>
+  <text x="360.0" y="85.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">4.20×</text>
+  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">表达式模板</text>
+  <rect x="514.7" y="79.8" width="64.0" height="220.2" fill="#C44E52"/>
+  <text x="546.7" y="73.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">4.44×</text>
+  <text x="546.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">手写融合循环</text>
+</svg>
+
+> 图注：表达式模板把 `a+b+c` 融合成单循环（延迟求值），比朴素「每步产生临时 + 三遍遍历」快 **4.20×**，与手写融合循环（4.44×）几乎同速——零开销抽象的典型。
+
 ### D5.2 非显然结论
 
 1. **朴素 `a+b+c+d` 触发 3 次堆分配 + 3 趟完整内存读写（1097.868ms）。** 根因（数据结构 + 微架构层）：`NaiveVec::operator+` 按值返回全新 `Vec`，每次都走 `allocator` 分配一块连续内存并做一次"读源 + 写目标"的完整遍历；链式表达式把同一份数据在内存中搬移 3 次，既付出 3 次 `malloc/free` 的固定成本，又让 3× 内存带宽被浪费，并污染 L1/L2 缓存（新分配的向量挤占热点数据）。

@@ -1566,6 +1566,35 @@ flowchart TD
 
 另实测：`sizeof(std::span<const int>) == 16`，`sizeof(std::span<const int, 16>) == 8`（仅供参考，不作断言）。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：span 静态 extent vs 动态 extent 相对开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：span 静态 extent vs 动态 extent 相对开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.625</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.875</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 动态extent=1.00)</text>
+  <line x1="80" y1="200.8" x2="640" y2="200.8" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="196.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (动态 extent)</text>
+  <rect x="188.0" y="200.8" width="64.0" height="99.2" fill="#9A9A9A"/>
+  <text x="220.0" y="194.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">span 动态extent</text>
+  <rect x="468.0" y="65.9" width="64.0" height="234.1" fill="#C44E52"/>
+  <text x="500.0" y="59.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">2.36×</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">span 静态extent</text>
+</svg>
+
+> 图注：`span<int,16>` 静态 extent 让编译器把边界已知的小块展开，比 `span<int>` 动态 extent 快 **2.36×**；整块求和各传参方式（span/vector&/指针）在噪声内同速——`span` 不是性能陷阱。
+
 ### D5.2 非显然结论
 
 1. **span / `vector&` / 裸指针三方在调用边界上逐 ns 等价（119.6 / 120.9 / 113.8 ms，差异 <6%，且复跑一轮排序会翻转）。** 根因：`span<const int>` 就是 `{指针, 长度}` 二元组，Windows x64 调用约定下按引用传 16 字节结构，被调方取两个字段后循环体与裸指针版完全一致——正文 §⑩ 的汇编结论在 5 轮计时下成立。诚实标注：两次全程复跑中三者排序会互换（±10% 噪声），因此只能下"噪声内同速"结论，不能声称某一方更快。

@@ -1490,6 +1490,38 @@ flowchart TD
 | `count` ×10（计 true / 1） | 107.1 | 1137.2 | 270.8 | vector<bool> 慢 10.6×，vector<char> 慢 2.5× |
 | 一致性校验（置位总数） | 95166490 | 95166490 | 95166490 | 三者一致 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：bitset vs vector&lt;bool&gt;/vector&lt;char&gt; 计 true 个数开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：bitset vs vector&lt;bool&gt;/vector&lt;char&gt; 计 true 个数开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">15</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">20</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, bitset=1.00)</text>
+  <line x1="80" y1="287.6" x2="640" y2="287.6" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="283.6" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (bitset)</text>
+  <rect x="141.3" y="287.6" width="64.0" height="12.4" fill="#9A9A9A"/>
+  <text x="173.3" y="281.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">bitset count</text>
+  <rect x="328.0" y="269.0" width="64.0" height="31.0" fill="#DD8452"/>
+  <text x="360.0" y="263.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">2.5×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">vector&lt;char&gt; count</text>
+  <rect x="514.7" y="168.6" width="64.0" height="131.4" fill="#C44E52"/>
+  <text x="546.7" y="162.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">10.6×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">vector&lt;bool&gt; count</text>
+</svg>
+
+> 图注：计 true 个数时 `vector<bool>`（位压缩 + 逐位测试）比 `bitset` 慢 **10.6×**，比 `vector<char>` 慢 2.5×——`vector<bool>` 的空间节省以随机访问/聚合速度为代价；`bitset` 用字级 popcount 最快。
+
 ### D5.2 非显然结论
 
 1. **`count` 慢 10.6×：硬件 popcount vs 逐位提取。** 根因：`bitset::count` 走 `__builtin_popcountll`，每个 64 位字一条指令（Zen4 硬件 POPCNT）；而 `vector<bool>` 用 `std::count` 走通用迭代器，逐位做一次 mask + shift + 比较。libstdc++ 未对 `vector<bool>::iterator` 特化 `std::count`，抽象层锁死了本可"一次位并行 64 位"的能力，于是慢了整整一个数量级。

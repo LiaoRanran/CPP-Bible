@@ -1723,6 +1723,35 @@ int main() {
 | sizeof 证据：多态类 D1 = 8（含 vptr） | — | — |
 | sizeof 证据：CRTP 类 C1 = 1（无 vptr） | — | — |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：虚调用 vs 静态分发相对开销">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：虚调用 vs 静态分发相对开销</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 直接调用=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (直接调用/CRTP)</text>
+  <rect x="118.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="150.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="150.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">直接调用</text>
+  <rect x="258.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="290.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">CRTP 静态分发</text>
+  <rect x="398.0" y="229.2" width="64.0" height="70.8" fill="#55A868"/>
+  <text x="430.0" y="223.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">1.93×</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">虚调用·同型数组</text>
+  <rect x="538.0" y="88.3" width="64.0" height="211.7" fill="#C44E52"/>
+  <text x="570.0" y="82.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">7.14×</text>
+  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">虚调用·两型混排</text>
+</svg>
+
+> 图注：虚调用在「目标类型恒定」时仅慢 1.93×（间接跳转可预测、BTB 命中）；一旦类型随机混排、间接跳转不可预测，暴涨到 **7.14×**（vs CRTP 静态分发）；去虚拟化失败是主要代价。
+
 ### D5.2 非显然结论
 
 1. **CRTP = 直接调用（20.42 vs 20.42 ms）**：静态分发在编译期定型、全内联，零成本抽象实测成立。
