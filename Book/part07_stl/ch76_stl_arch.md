@@ -1740,10 +1740,10 @@ int main() {
 >
 > 排序对照（N=500K）：`std::sort(vector)` 中位 51.5019 ms，`list::sort` 中位 274.519 ms——同为 O(N log N) 但 list::sort 慢 5.33×。
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：容器遍历 2M 元素耗时相对倍数（内存布局连续性决定）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：容器遍历 2M 元素耗时相对倍数（内存布局连续性决定）</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -1754,30 +1754,65 @@ int main() {
   <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
-  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (vector)</text>
-  <rect x="98.7" y="300.0" width="56.0" height="0.0" fill="#9A9A9A"/>
-  <text x="126.7" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="126.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">vector</text>
-  <rect x="192.0" y="277.5" width="56.0" height="22.5" fill="#DD8452"/>
-  <text x="220.0" y="271.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.87×</text>
-  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">deque</text>
-  <rect x="285.3" y="199.3" width="56.0" height="100.7" fill="#55A868"/>
-  <text x="313.3" y="193.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">16.54×</text>
-  <text x="313.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">list</text>
-  <rect x="378.7" y="194.0" width="56.0" height="106.0" fill="#8172B3"/>
-  <text x="406.7" y="188.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">19.15×</text>
-  <text x="406.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 406.7 314.0)">fwd_list</text>
-  <rect x="472.0" y="135.3" width="56.0" height="164.7" fill="#937860"/>
-  <text x="500.0" y="129.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">98.37×</text>
-  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">unordered_set</text>
-  <rect x="565.3" y="104.5" width="56.0" height="195.5" fill="#C44E52"/>
-  <text x="593.3" y="98.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">231.81×</text>
-  <text x="593.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">set</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="281.2" x2="640" y2="281.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="277.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 1.69ms</text>
+  <rect x="98.7" y="281.2" width="56.0" height="18.8" fill="#9A9A9A"/>
+  <text x="126.7" y="275.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.69ms</text>
+  <text x="126.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 126.7 314.0)">vector 遍历</text>
+  <rect x="192.0" y="258.7" width="56.0" height="41.3" fill="#DD8452"/>
+  <text x="220.0" y="252.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">3.16ms</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">deque 遍历</text>
+  <rect x="285.3" y="180.4" width="56.0" height="119.6" fill="#55A868"/>
+  <text x="313.3" y="174.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">27.95ms</text>
+  <text x="313.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">list 遍历</text>
+  <rect x="378.7" y="175.2" width="56.0" height="124.8" fill="#8172B3"/>
+  <text x="406.7" y="169.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">32.36ms</text>
+  <text x="406.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 406.7 314.0)">forward_list 遍历</text>
+  <rect x="472.0" y="116.4" width="56.0" height="183.6" fill="#937860"/>
+  <text x="500.0" y="110.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">166ms</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">unordered_set 遍历</text>
+  <rect x="565.3" y="85.6" width="56.0" height="214.4" fill="#C44E52"/>
+  <text x="593.3" y="79.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">392ms</text>
+  <text x="593.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">set 遍历</text>
 </svg>
 
-> 图注：容器遍历耗时随「内存布局连续性」断崖式上升：连续 `vector` 最快，分段 `deque` 慢 1.87×，链式 `list`/`forward_list` 慢 16–19×，哈希桶 `unordered_set` 慢 98×，**红黑树 `set` 慢 231.81×**——迭代器推进每次都是一次间接跳转 + 缓存未命中。绝对毫秒随机器而变，倍数才是可移植信号。数据见上方 D5.1 表。
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="98.7" y="300.0" width="56.0" height="0.0" fill="#9A9A9A"/>
+  <text x="126.7" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="126.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 126.7 314.0)">vector 遍历</text>
+  <rect x="192.0" y="277.6" width="56.0" height="22.4" fill="#DD8452"/>
+  <text x="220.0" y="271.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.87×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">deque 遍历</text>
+  <rect x="285.3" y="199.3" width="56.0" height="100.7" fill="#55A868"/>
+  <text x="313.3" y="193.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">16.54×</text>
+  <text x="313.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">list 遍历</text>
+  <rect x="378.7" y="194.0" width="56.0" height="106.0" fill="#8172B3"/>
+  <text x="406.7" y="188.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">19.15×</text>
+  <text x="406.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 406.7 314.0)">forward_list 遍历</text>
+  <rect x="472.0" y="135.3" width="56.0" height="164.7" fill="#937860"/>
+  <text x="500.0" y="129.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">98.37×</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">unordered_set 遍历</text>
+  <rect x="565.3" y="104.5" width="56.0" height="195.5" fill="#C44E52"/>
+  <text x="593.3" y="98.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">231.81×</text>
+  <text x="593.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">set 遍历</text>
+</svg>
+
+> 图注：容器遍历耗时随内存布局连续性断崖上升：连续 vector 1.6901ms 最快，分段 deque 慢 1.87×，链式 list/forward_list 慢 16–19×，哈希桶 unordered_set 慢 98×，红黑树 set 慢 231.81×(391.778ms)——每次迭代器推进都是间接跳转 + 缓存未命中。
 
 ### D5.2 非显然结论
 

@@ -1313,10 +1313,38 @@ flowchart TD
 | std::unordered_map | 链地址 / 节点分配 | 0.817 | ~4.2× 慢 |
 | sorted vector + bsearch | 连续内存二分 | 0.825 | ~4.3× 慢 |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：flat_hash_map vs std 容器相对耗时（基线=flat 1.00×）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：flat_hash_map vs std 容器相对耗时（基线=flat 1.00×）</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="251.9" x2="640" y2="251.9" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="247.9" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 0.19ms</text>
+  <rect x="141.3" y="251.9" width="64.0" height="48.1" fill="#9A9A9A"/>
+  <text x="173.3" y="245.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">0.19ms</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">flat_hash_map</text>
+  <rect x="328.0" y="97.4" width="64.0" height="202.6" fill="#C44E52"/>
+  <text x="360.0" y="91.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.82ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">std::unordered_map</text>
+  <rect x="514.7" y="95.4" width="64.0" height="204.6" fill="#C44E52"/>
+  <text x="546.7" y="89.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.82ms</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">sorted vector+bsearch</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -1329,21 +1357,21 @@ flowchart TD
   <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
   <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (flat)</text>
+  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
   <rect x="141.3" y="250.4" width="64.0" height="49.6" fill="#9A9A9A"/>
   <text x="173.3" y="244.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
   <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">flat_hash_map</text>
-  <rect x="328.0" y="91.7" width="64.0" height="208.3" fill="#C44E52"/>
-  <text x="360.0" y="85.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">4.2×</text>
-  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">unordered_map</text>
-  <rect x="514.7" y="86.7" width="64.0" height="213.3" fill="#C44E52"/>
-  <text x="546.7" y="80.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">4.3×</text>
-  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">sorted vector</text>
+  <rect x="328.0" y="91.1" width="64.0" height="208.9" fill="#C44E52"/>
+  <text x="360.0" y="85.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">4.21×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">std::unordered_map</text>
+  <rect x="514.7" y="89.1" width="64.0" height="210.9" fill="#C44E52"/>
+  <text x="546.7" y="83.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">4.25×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">sorted vector+bsearch</text>
 </svg>
 
-> 图注：Abseil `flat_hash_map`（开放寻址 + 缓存友好）比 `std::unordered_map`（链地址 + 节点分配）快 **4.2×**，也比「排序 `vector` + 二分」快 4.3×。节点分配与指针 chasing 是标准容器的硬伤。
+> 图注：Abseil flat_hash_map(开放寻址/缓存友好) 0.194ms 最快；std::unordered_map(链地址/节点分配) 0.817ms(慢 ~4.2×)，sorted vector+二分 0.825ms(慢 ~4.3×)。节点分配与指针 chasing 是标准容器的硬伤。
 
 ### D5.2 非显然结论
 

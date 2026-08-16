@@ -1523,33 +1523,61 @@ int main() {
 | `set::find` | 2593.9 | 0.25×（比 lower_bound 慢 4.03×） |
 | `unordered_set::find` | 154.4 | 4.17×（比 lower_bound 快 4.17×，比 set 快 16.8×） |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：三类查找相对 sorted vector 加速比">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：三类查找相对 sorted vector 加速比</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
   <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">加速比 (×, lower_bound=1.00)</text>
-  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (lower_bound)</text>
-  <rect x="141.3" y="176.0" width="64.0" height="124.0" fill="#9A9A9A"/>
-  <text x="173.3" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">lower_bound</text>
-  <rect x="328.0" y="250.7" width="64.0" height="49.3" fill="#DD8452"/>
-  <text x="360.0" y="244.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.25× (慢4.03×)</text>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="199.7" x2="640" y2="199.7" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="195.7" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 643.50ms</text>
+  <rect x="141.3" y="199.7" width="64.0" height="100.3" fill="#9A9A9A"/>
+  <text x="173.3" y="193.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">644ms</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">sorted vector+lower_bound</text>
+  <rect x="328.0" y="124.7" width="64.0" height="175.3" fill="#DD8452"/>
+  <text x="360.0" y="118.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">2594ms</text>
   <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">set::find</text>
-  <rect x="514.7" y="99.1" width="64.0" height="200.9" fill="#C44E52"/>
-  <text x="546.7" y="93.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">4.17× (快)</text>
-  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">unordered_set</text>
+  <rect x="514.7" y="276.6" width="64.0" height="23.4" fill="#C44E52"/>
+  <text x="546.7" y="270.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">154ms</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">unordered_set::find</text>
 </svg>
 
-> 图注：以 sorted `vector` + `lower_bound` 为基线（1.00×，643.5 ms）：`unordered_set::find` 154.4 ms（**快 4.17×**），因开放寻址 + 连续桶、缓存友好；`set::find` 2593.9 ms（**慢 4.03×**，加速比 0.25×），因红黑树节点离散堆分配、每步随机指针追逐、缓存命中率极低。同为 O(log N) 二分，连续数组碾压链式树。
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="141.3" y="250.4" width="64.0" height="49.6" fill="#9A9A9A"/>
+  <text x="173.3" y="244.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">sorted vector+lower_bound</text>
+  <rect x="328.0" y="100.1" width="64.0" height="199.9" fill="#DD8452"/>
+  <text x="360.0" y="94.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">4.03×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">set::find</text>
+  <rect x="514.7" y="288.1" width="64.0" height="11.9" fill="#C44E52"/>
+  <text x="546.7" y="282.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.24×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">unordered_set::find</text>
+</svg>
+
+> 图注：查找容器选型：1M 元素 sorted vector+lower_bound 643.5ms 为基线；set::find 红黑树遍历 2593.9ms(慢 4.03×)；unordered_set::find 开放寻址 154.4ms(快 4.17× vs lower_bound，快 16.8× vs set)。关联/哈希容器的节点与缓存效应主导开销。
 
 ### D5.2 非显然结论
 

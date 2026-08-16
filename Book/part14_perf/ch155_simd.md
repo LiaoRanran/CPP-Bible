@@ -1217,34 +1217,65 @@ flowchart TD
 | 条件累加 — 无分支写法 | 50.305 | 1.30× 快（仅标量 cmov，未向量化） |
 
 > 【性能】以下 ms 为本机 GCC 15.3.0 实测量级（非通用结论），标 `[实验·本机实测][UNVERIFIED]`；毫秒随机器而变，只看纵向加速比，勿横向跨表比毫秒。
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：向量化相对标量实现的加速比">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：向量化相对标量实现的加速比</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">75</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">加速比 (×, 标量=1.00)</text>
-  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
-  <rect x="118.0" y="83.0" width="64.0" height="217.0" fill="#C44E52"/>
-  <text x="150.0" y="77.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">7.5×</text>
-  <text x="150.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">求和 自动</text>
-  <rect x="258.0" y="83.0" width="64.0" height="217.0" fill="#C44E52"/>
-  <text x="290.0" y="77.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">7.5×</text>
-  <text x="290.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">求和 AVX2</text>
-  <rect x="398.0" y="98.4" width="64.0" height="201.6" fill="#55A868"/>
-  <text x="430.0" y="92.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">6.5×</text>
-  <text x="430.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">条件累加 自动</text>
-  <rect x="538.0" y="289.7" width="64.0" height="10.3" fill="#8172B3"/>
-  <text x="570.0" y="283.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">1.10×</text>
-  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">saxpy AVX2</text>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="87.4" x2="640" y2="87.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="83.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 85.73ms</text>
+  <rect x="141.3" y="87.4" width="64.0" height="212.6" fill="#9A9A9A"/>
+  <text x="173.3" y="81.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">85.73ms</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">求和 标量严格FP</text>
+  <rect x="328.0" y="271.7" width="64.0" height="28.3" fill="#C44E52"/>
+  <text x="360.0" y="265.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">11.43ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">求和 自动向量化</text>
+  <rect x="514.7" y="271.5" width="64.0" height="28.5" fill="#55A868"/>
+  <text x="546.7" y="265.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">11.50ms</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">求和 AVX2 intrinsics</text>
 </svg>
 
-> 图注：求和循环自动向量化后快 **7.5×**（32 字节向量一次吃 8 个 `float`），无分支条件累加快 6.5×；但 `saxpy` 受内存带宽墙限制，AVX2 仅快 1.10×——向量化收益取决于「计算密度 vs 搬运」。
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="48.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="141.3" y="52.0" width="64.0" height="248.0" fill="#9A9A9A"/>
+  <text x="173.3" y="46.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">求和 标量严格FP</text>
+  <rect x="328.0" y="266.9" width="64.0" height="33.1" fill="#C44E52"/>
+  <text x="360.0" y="260.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.13×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">求和 自动向量化</text>
+  <rect x="514.7" y="266.7" width="64.0" height="33.3" fill="#55A868"/>
+  <text x="546.7" y="260.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.13×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">求和 AVX2 intrinsics</text>
+</svg>
+
+> 图注：求和循环自动向量化后从 85.729ms 降到 11.425ms(快 7.5×，32 字节向量一次吃 8 个 float)，AVX2 intrinsics 持平 11.499ms；但 saxpy 受内存带宽墙限制仅快 1.10×。向量化收益取决于计算密度 vs 搬运。
 
 ### D5.2 非显然结论
 

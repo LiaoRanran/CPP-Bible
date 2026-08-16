@@ -1200,10 +1200,10 @@ flowchart TD
 | 15 | 11.616 ms | 1.00× |
 | 64 | 10.148 ms | **0.87×** |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：不同串长构造/拷贝耗时（SSO 上限 = len15）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：不同串长构造/拷贝耗时（SSO 上限 = len15）</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -1216,24 +1216,55 @@ flowchart TD
   <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">150</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">200</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
   <line x1="80" y1="277.9" x2="640" y2="277.9" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="273.9" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基准 (len15)</text>
+  <text x="640" y="273.9" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 17.84ms</text>
   <rect x="118.0" y="270.5" width="64.0" height="29.5" fill="#4C72B0"/>
-  <text x="150.0" y="264.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">23.824</text>
-  <text x="150.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">len7</text>
+  <text x="150.0" y="264.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">23.82ms</text>
+  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">len7(SSO内)</text>
   <rect x="258.0" y="277.9" width="64.0" height="22.1" fill="#9A9A9A"/>
-  <text x="290.0" y="271.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">17.836</text>
-  <text x="290.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">len15</text>
+  <text x="290.0" y="271.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">17.84ms</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">len15(SSO上限)</text>
   <rect x="398.0" y="154.1" width="64.0" height="145.9" fill="#C44E52"/>
-  <text x="430.0" y="148.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">117.689 (6.60×)</text>
-  <text x="430.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">len16</text>
+  <text x="430.0" y="148.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">118ms</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">len16(首堆分配)</text>
   <rect x="538.0" y="158.1" width="64.0" height="141.9" fill="#8172B3"/>
-  <text x="570.0" y="152.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">114.438 (6.42×)</text>
+  <text x="570.0" y="152.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">114ms</text>
   <text x="570.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">len32</text>
 </svg>
 
-> 图注：字符串一旦越过 SSO 上限（len15→len16）落入堆分配，单次构造/拷贝耗时从 ~17.8ms 跳到 ~117ms，**陡增 6.60×**；之后长度增加不再显著变慢（已付过堆分配的固定成本）。短字符串优化是「小对象零分配」的典型杠杆。
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">7.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="275.2" x2="640" y2="275.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="271.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="118.0" y="266.9" width="64.0" height="33.1" fill="#4C72B0"/>
+  <text x="150.0" y="260.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">1.34×</text>
+  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">len7(SSO内)</text>
+  <rect x="258.0" y="275.2" width="64.0" height="24.8" fill="#9A9A9A"/>
+  <text x="290.0" y="269.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">len15(SSO上限)</text>
+  <rect x="398.0" y="136.4" width="64.0" height="163.6" fill="#C44E52"/>
+  <text x="430.0" y="130.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">6.60×</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">len16(首堆分配)</text>
+  <rect x="538.0" y="140.9" width="64.0" height="159.1" fill="#8172B3"/>
+  <text x="570.0" y="134.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">6.42×</text>
+  <text x="570.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">len32</text>
+</svg>
+
+> 图注：字符串越过 SSO 上限(len15→len16)落入堆分配，单次构造/拷贝从 17.836ms 跳到 117.689ms(陡增 6.60×)；之后长度增加不再显著变慢(已付过堆分配固定成本)。短字符串优化是小对象零分配的典型杠杆。
 
 ### D5.2 非显然结论
 

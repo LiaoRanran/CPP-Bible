@@ -1367,10 +1367,34 @@ flowchart TD
 | 双线程真争用 fetch_add 共 1 亿 — relaxed | 1213.792 | 比单线程慢 3.42× |
 | 双线程真争用 fetch_add 共 1 亿 — seq_cst | 1183.519 | 与 relaxed 0.98×（仍同价） |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：std::atomic 内存序开销（store 顺序一致性代价）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：std::atomic 内存序开销（store 顺序一致性代价）</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="221.2" x2="640" y2="221.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="217.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 43.23ms</text>
+  <rect x="141.3" y="221.2" width="64.0" height="78.8" fill="#9A9A9A"/>
+  <text x="173.3" y="215.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">43.23ms</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">relaxed store</text>
+  <rect x="328.0" y="146.6" width="64.0" height="153.4" fill="#DD8452"/>
+  <text x="360.0" y="140.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">173ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">release store</text>
+  <rect x="514.7" y="73.6" width="64.0" height="226.4" fill="#C44E52"/>
+  <text x="546.7" y="67.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">670ms</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">seq_cst store</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -1381,19 +1405,19 @@ flowchart TD
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
   <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">relaxed 1.00× (基线)</text>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
   <rect x="141.3" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
   <text x="173.3" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
-  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">relaxed</text>
-  <rect x="328.0" y="225.3" width="64.0" height="74.7" fill="#DD8452"/>
-  <text x="360.0" y="219.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">4.00×</text>
-  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">release</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">relaxed store</text>
+  <rect x="328.0" y="225.4" width="64.0" height="74.6" fill="#DD8452"/>
+  <text x="360.0" y="219.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">4.00×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">release store</text>
   <rect x="514.7" y="152.4" width="64.0" height="147.6" fill="#C44E52"/>
   <text x="546.7" y="146.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">15.49×</text>
-  <text x="546.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">seq_cst</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">seq_cst store</text>
 </svg>
 
-> 图注：低争用下 `memory_order_relaxed` 几乎零代价；`release`/`acquire` 引入约 4× 的栅栏开销；`seq_cst` 需维持全局总序（x86 上为 `lock` 前缀总线锁），开销达 15.49×。按实际同步需求选最弱内存序即可，越强的序只在确实需要全序时才付出代价。
+> 图注：内存序有真实成本：单线程 2 亿次 seq_cst store 669.714ms，比 relaxed store 43.226ms 慢 15.49×，release 172.753ms(慢 4.00×)；但 fetch_add 的 relaxed 与 seq_cst 几乎同价(1.01×)——seq_cst 的全局顺序保证才是代价，非原子操作本身。
 
 ### D5.2 反汇编铁证
 

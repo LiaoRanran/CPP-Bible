@@ -1447,43 +1447,65 @@ flowchart TD
 | S6 协程切换（1M resume） | 0.339 ms | 27.5×（vs 线程切换） |
 | S6 线程切换（1M ping-pong） | 9.332 ms | 1.00× |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：协程 vs 函数调用/线程/async 相对耗时倍数">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：协程 vs 函数调用/线程/async 相对耗时倍数</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
   <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
   <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
   <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10000</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
-  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
-  <rect x="104.0" y="231.5" width="64.0" height="68.5" fill="#4C72B0"/>
-  <text x="136.0" y="225.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">12.72×</text>
-  <text x="136.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">协程恢复</text>
-  <rect x="216.0" y="286.2" width="64.0" height="13.8" fill="#DD8452"/>
-  <text x="248.0" y="280.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.67×</text>
-  <text x="248.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">协程链</text>
-  <rect x="328.0" y="162.0" width="64.0" height="138.0" fill="#55A868"/>
-  <text x="360.0" y="156.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">≈168×</text>
-  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">协程 vs async</text>
-  <rect x="440.0" y="112.3" width="64.0" height="187.7" fill="#C44E52"/>
-  <text x="472.0" y="106.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1066×</text>
-  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">协程 vs 线程</text>
-  <rect x="552.0" y="246.5" width="64.0" height="53.5" fill="#937860"/>
-  <text x="584.0" y="240.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">7.29×</text>
-  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">generator</text>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="75.9" x2="640" y2="75.9" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="71.9" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 412.31ms</text>
+  <rect x="141.3" y="75.9" width="64.0" height="224.1" fill="#9A9A9A"/>
+  <text x="173.3" y="69.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">412ms</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">std::thread(5K)</text>
+  <rect x="328.0" y="263.6" width="64.0" height="36.4" fill="#C44E52"/>
+  <text x="360.0" y="257.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.39ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">协程(5K任务)</text>
+  <rect x="514.7" y="75.9" width="64.0" height="224.1" fill="#55A868"/>
+  <text x="546.7" y="69.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">411ms</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">std::async(5K)</text>
 </svg>
 
-> 图注：协程在「高并发轻量任务」场景碾压线程/async：`std::thread` 5K 任务耗时 412ms，等价协程仅 0.387ms（**快 1066×**）；即便对比 `std::async` 线程池也快 ~168×。代价是单点恢复比普通函数调用慢 12.72×——协程的价值在「量」，不在「单点」。
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="48.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="141.3" y="52.0" width="64.0" height="248.0" fill="#9A9A9A"/>
+  <text x="173.3" y="46.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">std::thread(5K)</text>
+  <rect x="328.0" y="299.8" width="64.0" height="0.2" fill="#C44E52"/>
+  <text x="360.0" y="293.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.00×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">协程(5K任务)</text>
+  <rect x="514.7" y="52.8" width="64.0" height="247.2" fill="#55A868"/>
+  <text x="546.7" y="46.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">1.00×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">std::async(5K)</text>
+</svg>
+
+> 图注：协程在高并发轻量任务场景碾压线程：std::thread 5K 任务 412.309ms，等价协程仅 0.387ms(快 1066×)；即便对比 std::async 线程池也快 ~168×。代价是单点恢复比普通函数调用慢 12.72×——协程的价值在量，不在单点。
 
 ### D5.2 非显然结论
 

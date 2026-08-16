@@ -1379,41 +1379,75 @@ N = 1000 万，取 top-100（K=100）。checksum 214746090999 四策略一致。
 | heapsort（make_heap + 逐个 pop_heap 全排序） | 3673.579 | 慢 3.34×（vs full sort） |
 | introsort（std::sort） | 1035.394 | — |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：取前 K 小元素各算法耗时（基线=full sort 1.00×）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：取前 K 小元素各算法耗时（基线=full sort 1.00×）</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
   <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
   <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
-  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (full sort)</text>
-  <rect x="104.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
-  <text x="136.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="131.2" x2="640" y2="131.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="127.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 1101.81ms</text>
+  <rect x="104.0" y="131.2" width="64.0" height="168.8" fill="#9A9A9A"/>
+  <text x="136.0" y="125.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1102ms</text>
   <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">full sort</text>
-  <rect x="216.0" y="209.3" width="64.0" height="90.7" fill="#DD8452"/>
-  <text x="248.0" y="203.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">12.5× 快</text>
+  <rect x="216.0" y="221.8" width="64.0" height="78.2" fill="#DD8452"/>
+  <text x="248.0" y="215.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">88.25ms</text>
   <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">nth+sort</text>
-  <rect x="328.0" y="142.4" width="64.0" height="157.6" fill="#55A868"/>
-  <text x="360.0" y="136.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">80.6× 快</text>
+  <rect x="328.0" y="288.8" width="64.0" height="11.2" fill="#55A868"/>
+  <text x="360.0" y="282.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">13.67ms</text>
   <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">partial_sort</text>
-  <rect x="440.0" y="132.3" width="64.0" height="167.7" fill="#C44E52"/>
-  <text x="472.0" y="126.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">106.8× 快</text>
+  <rect x="440.0" y="298.9" width="64.0" height="1.1" fill="#C44E52"/>
+  <text x="472.0" y="292.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">10.32ms</text>
   <text x="472.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">流式小顶堆</text>
-  <rect x="552.0" y="256.7" width="64.0" height="43.3" fill="#C44E52"/>
-  <text x="584.0" y="250.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">3.34× 慢</text>
+  <rect x="552.0" y="88.0" width="64.0" height="212.0" fill="#937860"/>
+  <text x="584.0" y="82.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">3674ms</text>
   <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">heapsort</text>
 </svg>
 
-> 图注：取前 K 小不必全排序：`nth_element`+sort 前 K 比 full sort 快 12.5×（88.245ms），`partial_sort` 快 80.6×（13.671ms），**流式 K-小顶堆（维护 100 元素）最快，快 106.8×**（10.319ms）——只维护 K 规模堆，常数最小。反例是 `heapsort` 全排序（3673.579ms，**慢 3.34×** vs full sort），证明其「全量堆操作」比 introsort 更重。
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="104.0" y="250.4" width="64.0" height="49.6" fill="#9A9A9A"/>
+  <text x="136.0" y="244.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">full sort</text>
+  <rect x="216.0" y="296.0" width="64.0" height="4.0" fill="#DD8452"/>
+  <text x="248.0" y="290.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.08×</text>
+  <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">nth+sort</text>
+  <rect x="328.0" y="299.4" width="64.0" height="0.6" fill="#55A868"/>
+  <text x="360.0" y="293.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.01×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">partial_sort</text>
+  <rect x="440.0" y="299.5" width="64.0" height="0.5" fill="#C44E52"/>
+  <text x="472.0" y="293.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.01×</text>
+  <text x="472.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">流式小顶堆</text>
+  <rect x="552.0" y="134.6" width="64.0" height="165.4" fill="#937860"/>
+  <text x="584.0" y="128.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">3.33×</text>
+  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">heapsort</text>
+</svg>
+
+> 图注：取前 K 小不必全排序：流式 K-小顶堆（10.319ms）比 full sort（1101.810ms）快 **106.8×**，partial_sort 快 80.6×，nth_element+sort 快 12.5×；反例 heapsort 全排序 3673.579ms（慢 3.34×）。(a) 绝对毫秒随机器而变，(b) 倍数才是可移植信号。
 
 ### D5.2 非显然结论
 

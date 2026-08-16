@@ -1551,10 +1551,38 @@ flowchart TD
 | Stroustrup 有序插入 20K（线性查找 + 同规则） | 55.524 ms | 829.095 ms | list 慢 **14.9×** |
 | 已知位置中部插入 10K 次（list 预持迭代器） | 81.699 ms | 0.744 ms | list 快 **109.8×** |
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：std::list vs std::vector 相对倍数（基线=vector 1.00×）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：std::list vs std::vector 相对倍数（基线=vector 1.00×）</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="277.2" x2="640" y2="277.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="273.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 0.23ms</text>
+  <rect x="141.3" y="277.2" width="64.0" height="22.8" fill="#9A9A9A"/>
+  <text x="173.3" y="271.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">0.23ms</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">vector 顺序遍历</text>
+  <rect x="328.0" y="173.4" width="64.0" height="126.6" fill="#DD8452"/>
+  <text x="360.0" y="167.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">11.02ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">list 顺序遍历</text>
+  <rect x="514.7" y="111.3" width="64.0" height="188.7" fill="#C44E52"/>
+  <text x="546.7" y="105.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">111ms</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">list 碎片化遍历</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -1565,24 +1593,21 @@ flowchart TD
   <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (vector)</text>
-  <rect x="118.0" y="161.5" width="64.0" height="138.5" fill="#4C72B0"/>
-  <text x="150.0" y="155.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">list 慢 47.4×</text>
-  <text x="150.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">顺序遍历</text>
-  <rect x="258.0" y="78.7" width="64.0" height="221.3" fill="#C44E52"/>
-  <text x="290.0" y="72.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">list 慢 475.8×</text>
-  <text x="290.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">碎片化遍历</text>
-  <rect x="398.0" y="203.0" width="64.0" height="97.0" fill="#55A868"/>
-  <text x="430.0" y="197.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">list 慢 14.9×</text>
-  <text x="430.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">有序插入</text>
-  <rect x="538.0" y="131.3" width="64.0" height="168.7" fill="#8172B3"/>
-  <text x="570.0" y="125.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">list 快 109.8×</text>
-  <text x="570.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">中部插入</text>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="141.3" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="173.3" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">vector 顺序遍历</text>
+  <rect x="328.0" y="161.5" width="64.0" height="138.5" fill="#DD8452"/>
+  <text x="360.0" y="155.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">47.30×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">list 顺序遍历</text>
+  <rect x="514.7" y="78.7" width="64.0" height="221.3" fill="#C44E52"/>
+  <text x="546.7" y="72.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">474.98×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">list 碎片化遍历</text>
 </svg>
 
-> 图注：`list` 的链式节点在顺序遍历时比 `vector` 慢 47.4×（碎片化内存下飙到 **475.8×**），有序插入也慢 14.9×；唯一反例是「已知位置中部插入」——`list` 持迭代器插入比 `vector` 整体搬移快 109.8×。缓存局部性压倒渐近优势。
+> 图注：缓存局部性压倒渐近优势：list 链式节点顺序遍历 1M int 比 vector 慢 47.4×(11.022ms vs 0.233ms)，堆序打乱碎片化内存下飙到 475.8×(110.670ms)。仅已知位置中部插入 list 持迭代器反超 vector。
 
 ### D5.2 非显然结论
 

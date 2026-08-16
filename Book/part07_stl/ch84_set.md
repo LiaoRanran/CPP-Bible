@@ -1554,46 +1554,67 @@ flowchart TD
 
 > 上表为本次本机复测的中位耗时；绝对毫秒随机器负载而变，加速比（15.6×、5.84×、327× 等）才是可移植信号。
 
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：1M 元素插入/查询耗时（关联容器 vs vector 路线）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：1M 元素插入/查询耗时（关联容器 vs vector 路线）</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
+  <line x1="80" y1="150.4" x2="640" y2="150.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="146.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 1608.00ms</text>
+  <rect x="118.0" y="150.4" width="64.0" height="149.6" fill="#9A9A9A"/>
+  <text x="150.0" y="144.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1608ms</text>
+  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">multiset 逐个插入1M</text>
+  <rect x="258.0" y="151.5" width="64.0" height="148.5" fill="#DD8452"/>
+  <text x="290.0" y="145.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1576ms</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">set 逐个插入1M</text>
+  <rect x="398.0" y="298.4" width="64.0" height="1.6" fill="#C44E52"/>
+  <text x="430.0" y="292.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">103ms</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">vector 推+排序+去重</text>
+  <rect x="538.0" y="276.7" width="64.0" height="23.3" fill="#8172B3"/>
+  <text x="570.0" y="270.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">154ms</text>
+  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">set 已排序构造</text>
+</svg>
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
   <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">500</text>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.25</text>
   <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
   <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1500</text>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.75</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
-  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2000</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
-  <line x1="80" y1="100.6" x2="640" y2="100.6" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="96.6" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (multiset 插入)</text>
-  <rect x="98.7" y="100.6" width="56.0" height="199.4" fill="#9A9A9A"/>
-  <text x="126.7" y="94.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1608</text>
-  <text x="126.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 126.7 314.0)">multiset 插入</text>
-  <rect x="192.0" y="104.6" width="56.0" height="195.4" fill="#DD8452"/>
-  <text x="220.0" y="98.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1576</text>
-  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">set 插入</text>
-  <rect x="285.3" y="287.2" width="56.0" height="12.8" fill="#C44E52"/>
-  <text x="313.3" y="281.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">103 (0.064×)</text>
-  <text x="313.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 313.3 314.0)">vector 推+排序+去重</text>
-  <rect x="378.7" y="280.9" width="56.0" height="19.1" fill="#8172B3"/>
-  <text x="406.7" y="274.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">154 (0.096×)</text>
-  <text x="406.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 406.7 314.0)">set 已排序构造</text>
-  <rect x="472.0" y="200.7" width="56.0" height="99.3" fill="#937860"/>
-  <text x="500.0" y="194.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">801</text>
-  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">multiset 查询</text>
-  <rect x="565.3" y="283.3" width="56.0" height="16.7" fill="#64B5CD"/>
-  <text x="593.3" y="277.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">135 (0.169×)</text>
-  <text x="593.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 593.3 314.0)">vector lower_bound</text>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="48.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="118.0" y="52.0" width="64.0" height="248.0" fill="#9A9A9A"/>
+  <text x="150.0" y="46.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="150.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 150.0 314.0)">multiset 逐个插入1M</text>
+  <rect x="258.0" y="56.9" width="64.0" height="243.1" fill="#DD8452"/>
+  <text x="290.0" y="50.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.98×</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">set 逐个插入1M</text>
+  <rect x="398.0" y="284.1" width="64.0" height="15.9" fill="#C44E52"/>
+  <text x="430.0" y="278.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.06×</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">vector 推+排序+去重</text>
+  <rect x="538.0" y="276.2" width="64.0" height="23.8" fill="#8172B3"/>
+  <text x="570.0" y="270.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">0.10×</text>
+  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">set 已排序构造</text>
 </svg>
 
-> 图注：对 1M 元素，`set`/`multiset` 逐个插入要 1.5–1.6s，而「`vector` 推入 + `sort` + `unique`」只需 103ms（**快 15.6×**），「从已排序区间构造 `set`」154ms（**快 10.4×**）；查询同理，`vector` 的 `lower_bound` 比 `set::find` 快 5.93×。关联容器的节点分配与树平衡是主要开销。
+> 图注：1M 元素 set/multiset 逐个插入要 1.6s，而 vector 推入+sort+unique 仅 103ms(快 15.6×)，从已排序区间构造 set 154ms(快 10.4×)。关联容器的节点分配与树平衡是主要开销。
 
 ### D5.2 非显然结论
 
