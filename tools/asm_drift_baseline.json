@@ -1,7 +1,7 @@
 {
   "description": "ASM 漂移基线：asm_prepush_guard.py 已知的 DRIFT 文件集（非回归）。新增漂移即判红；基线内的已知漂移仅 WARN。",
   "generated_at": "2026-08-09",
-  "updated_at": "2026-08-10",
+  "updated_at": "2026-08-16",
   "toolchain": "MinGW GCC 15.3.0 (C:/Qt/Tools/mingw1530_64/bin/g++.exe)",
   "note": "ch47_d4_vtable 原为 DRIFT（-O2 内联析构导致符号消失），已通过 flags_for 增加文件级 -O1 -fno-inline 覆盖修复（书 D4.3 显记），现判为 MATCH。ch99 AVX 指令调度漂移保留。另：_ch13_use / _ch143_novirtual 因源码演进 + 15.3.0 代码生成差异（pkg::println 在 -O2 被内联、虚拟 Circle::area 不再作为独立符号发出），其书稿内嵌示例依赖这些 13.1.0 符号，故保留为 13.1.0 证据并登记为已知漂移，不予强制升级（避免破坏教学示例）。",
   "known_drift": [
@@ -24,16 +24,7 @@
       "new_symbols": []
     }
   ],
-  "known_compile_fail": [
-    {
-      "file": "_mod_main.asm",
-      "reason": "C++20 模块接口 (`export module math;`)。单文件 `g++ -S -std=c++23` 无法独立产出可对照的 .asm：模块需两步 BMI 构建 (`g++ -fmodules -c _mod_main.cpp` 生成 math.gcm，再 `g++ -fmodules -fmodule-file=math.gcm -S _mod_use.cpp`)。单文件 spotcheck 不支持模块图，保留为已知 COMPILE_FAIL，不计入回归。"
-    },
-    {
-      "file": "_mod_use.asm",
-      "reason": "C++20 模块消费者 (`import math;`)，依赖 _mod_main 的 BMI。单文件编译报 `error: 'import' ...`（模块未构建），COMPILE_FAIL 为预期。与 _mod_main 共同构成模块示例，需两步构建才能复现。"
-    }
-  ],
+  "known_compile_fail": [],
   "known_no_source": [
     "_ch03_perf.asm",
     "_ch08_perf.asm",
@@ -46,5 +37,6 @@
     "_ch156_pgo_base.asm",
     "_ch156_pgo_use.asm"
   ],
-  "known_no_source_note": "这 10 个 .asm 故意不带 `.file` 指令：它们是手写的『多档对比 / 示意』汇编（如 ch156 的 -O2/-Ofast/LTO/PGO 多配置对照、ch83 的 map vs unordered_map 示意），本就不可能来自单一源文件编译。asm_repro_spotcheck 判定为 NO_SOURCE 并由门禁排除出失败集（策展噪声），属设计内行为，非破损。请勿为它们补伪 `.file`。"
+  "known_no_source_note": "这 10 个 .asm 故意不带 `.file` 指令：它们是手写的『多档对比 / 示意』汇编（如 ch156 的 -O2/-Ofast/LTO/PGO 多配置对照、ch83 的 map vs unordered_map 示意），本就不可能来自单一源文件编译。asm_repro_spotcheck 判定为 NO_SOURCE 并由门禁排除出失败集（策展噪声），属设计内行为，非破损。请勿为它们补伪 `.file`。",
+  "known_compile_fail_note": "2026-08-16 起 known_compile_fail 已清空：C++20 模块示例 (_mod_main/_mod_use) 现由 asm_repro_spotcheck 的模块感知逻辑真实复现（接口 -fmodules -c 填充 Examples/gcm.cache/math.gcm，消费者 -S -fmodules 经默认 mapper 找到 BMI）。见 tools/asm_repro_spotcheck.py 的 build_module_bmis / MODULE_IFACE_RE / MODULE_IMPORT_RE。"
 }

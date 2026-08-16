@@ -21,12 +21,44 @@ Examples/*.asm 复现性 spot-check（对抗式审计，非零确认）。
 用法:
   python tools/asm_repro_spotcheck.py --gpp <g++.exe> --examples Examples [--out report.json] [--only 15.3.0|13.1.0|unmarked|all] [--name-substr X]
 """
-import os, re, sys, subprocess, json, glob, difflib, argparse
+import os, re, sys, subprocess, json, glob, difflib, argparse, shutil
 from collections import Counter
 
 CALL_RE = (r'\b(call|callq|jmp|jmpq|je|jne|jg|jl|jge|jle|ja|jb|jae|jbe|'
            r'jz|jnz|jo|jno|js|jns|jc|jnc|jcxz|jecxz|jrcxz|loop|loope|loopne)\s+'
            r'[0-9a-fA-F]+\s+(<[^>]+>)')
+
+# 模块源识别（C++20 模块）：接口单元 `export module X;` / 消费者 `import X;`（命名模块，
+# 排除 `import <header>` / `import "header"` 头单元）。
+MODULE_IFACE_RE = re.compile(r'^\s*export\s+module\b', re.M)
+MODULE_IMPORT_RE = re.compile(r'^\s*import\s+(?![<"])', re.M)
+
+
+def build_module_bmis(GPP, EX, std="c++23", opt=None):
+    """预编译 Examples 内所有模块接口单元为 BMI (gcm.cache)，供消费者 -S 复现。
+
+    GCC 15.3.0 的 -fmodules 默认 module mapper 把 BMI 写到 cwd 下的 gcm.cache/，
+    以模块名为键（如 math.gcm）。接口单元必须先 -c 填充 gcm.cache，消费者才能
+    -S -fmodules 经默认 mapper 找到 BMI。单文件 spotcheck 此前缺此逻辑，导致
+    _mod_main/_mod_use 判 COMPILE_FAIL（红线③：证据必须真实可复现）。
+
+    返回 gcm.cache 路径供调用方清理；接口单元编译失败则静默跳过（不影响其它文件）。
+    """
+    if opt is None:
+        opt = ["-O2"]
+    for cpp in sorted(glob.glob(os.path.join(EX, "*.cpp"))):
+        try:
+            txt = open(cpp, encoding="utf-8", errors="replace").read()
+        except Exception:
+            continue
+        if not MODULE_IFACE_RE.search(txt):
+            continue
+        o = os.path.join(EX, "_bmi_" + os.path.splitext(os.path.basename(cpp))[0] + ".o")
+        subprocess.run([GPP, "-fmodules", "-std=" + std] + opt + ["-c", cpp, "-o", o],
+                       cwd=EX, capture_output=True, text=True)
+        if os.path.exists(o):
+            os.remove(o)
+    return os.path.join(EX, "gcm.cache")
 
 
 def flags_for(name):
@@ -115,7 +147,11 @@ def main():
                     help="15.3.0 | 13.1.0 | unmarked | all")
     ap.add_argument("--name-substr", default=None)
     a = ap.parse_args()
-    GPP, EX = a.gpp, a.examples
+    GPP, EX = a.gpp, os.path.abspath(a.examples)
+
+    # 预编译所有模块接口单元为 BMI（gcm.cache），使消费者可 -S 复现；
+    # 非模块仓库此步无副作用（无 export module 即跳过）。
+    build_module_bmis(GPP, EX)
 
     asm_files = sorted(glob.glob(os.path.join(EX, "*.asm")))
     results = []
@@ -143,9 +179,29 @@ def main():
                             "fmt": fmt})
             continue
         flags = flags_for(name)
+        try:
+            src_txt = open(src, encoding="utf-8", errors="replace").read()
+        except Exception:
+            src_txt = ""
+        is_iface = bool(MODULE_IFACE_RE.search(src_txt))
+        is_mod = is_iface or bool(MODULE_IMPORT_RE.search(src_txt))
         fs_ = os.path.join(EX, "_chk_" + name + ".s")
-        p = subprocess.run([GPP] + flags + ["-S", "-masm=intel", src, "-o", fs_],
-                           capture_output=True, text=True)
+        if is_mod:
+            # 模块感知：加 -fmodules；cwd=EX 使 BMI 落到 Examples/gcm.cache，
+            # 接口单元与消费者共享默认 mapper 找到同一份 math.gcm。
+            mod_flags = ["-fmodules"] + flags  # flags 已含 -std=c++23 -O2
+            if is_iface:
+                # 接口单元须先 -c 填充 gcm.cache，单文件 -S 无 BMI 会失败
+                o = os.path.join(EX, "_bmi_" + name + ".o")
+                subprocess.run([GPP] + mod_flags + ["-c", src, "-o", o],
+                               cwd=EX, capture_output=True, text=True)
+                if os.path.exists(o):
+                    os.remove(o)
+            p = subprocess.run([GPP] + mod_flags + ["-S", "-masm=intel", src, "-o", fs_],
+                               cwd=EX, capture_output=True, text=True)
+        else:
+            p = subprocess.run([GPP] + flags + ["-S", "-masm=intel", src, "-o", fs_],
+                               capture_output=True, text=True)
         rc, err = p.returncode, p.stderr
         if rc != 0:
             results.append({"name": name, "ver": ver, "status": "COMPILE_FAIL",
@@ -198,6 +254,16 @@ def main():
     json.dump({"summary": dict(cnt), "results": results},
               open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     print(f"-> {out}")
+
+    # 清理模块 BMI 缓存与残留临时 .o（红线⑦：不污染工作树、不误提交生成物）
+    for tmp in glob.glob(os.path.join(EX, "_bmi_*.o")):
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
+    gcache = os.path.join(EX, "gcm.cache")
+    if os.path.isdir(gcache):
+        shutil.rmtree(gcache, ignore_errors=True)
 
 
 if __name__ == "__main__":
