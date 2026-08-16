@@ -1197,10 +1197,10 @@ flowchart TD
 | compact-if sorted | 110.151 | **8.47× 于 unsorted** |
 
 > 【性能】以下 ms 为本机 GCC 15.3.0 实测量级（非通用结论），标 `[实验·本机实测][UNVERIFIED]`；毫秒随机器而变，只看纵向加速比，勿横向跨表比毫秒。
-#### 可视化速读（D5.1 数据图）
+#### 可视化速读（D5.1 数据图·双面板）
 
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：sum-if/compact-if 分支变体耗时（基线=sum-if unsorted）">
-  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：sum-if/compact-if 分支变体耗时（基线=sum-if unsorted）</text>
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(a) 绝对耗时（随机器而变，仅作量级参考）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(a) 绝对耗时（随机器而变，仅作量级参考）</text>
   <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
   <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
@@ -1209,27 +1209,59 @@ flowchart TD
   <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
   <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
   <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
-  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">绝对耗时 (ms)</text>
   <line x1="80" y1="272.7" x2="640" y2="272.7" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
-  <text x="640" y="268.7" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (sum-if 乱序)</text>
+  <text x="640" y="268.7" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">基线 16.60ms</text>
   <rect x="104.0" y="272.7" width="64.0" height="27.3" fill="#9A9A9A"/>
-  <text x="136.0" y="266.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">16.599 (1.00×)</text>
-  <text x="136.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">sum乱序</text>
+  <text x="136.0" y="266.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">16.60ms</text>
+  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">sum-if unsorted（基准）</text>
   <rect x="216.0" y="272.3" width="64.0" height="27.7" fill="#DD8452"/>
-  <text x="248.0" y="266.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">16.733 (≈)</text>
-  <text x="248.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">sum已排序</text>
+  <text x="248.0" y="266.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">16.73ms</text>
+  <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">sum-if sorted</text>
   <rect x="328.0" y="294.0" width="64.0" height="6.0" fill="#55A868"/>
-  <text x="360.0" y="288.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">11.172 (1.49× 快)</text>
-  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">无分支</text>
+  <text x="360.0" y="288.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">11.17ms</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">sum branchless（掩码）</text>
   <rect x="440.0" y="55.7" width="64.0" height="244.3" fill="#C44E52"/>
-  <text x="472.0" y="49.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">932.829 (56× 慢)</text>
-  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">compact乱序</text>
+  <text x="472.0" y="49.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">933ms</text>
+  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">compact-if unsorted</text>
   <rect x="552.0" y="170.8" width="64.0" height="129.2" fill="#937860"/>
-  <text x="584.0" y="164.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">110.151 (8.47× 慢)</text>
-  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">compact已排序</text>
+  <text x="584.0" y="164.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">110ms</text>
+  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">compact-if sorted</text>
 </svg>
 
-> 图注：经典「分支预测」实验中，`sum-if unsorted` 16.599ms（1.00× 基线）与 `sum-if sorted` 16.733ms 基本一致——经典结论在 `-O2` 下失效；分支消除的 `branchless` 11.172ms（1.49× 快）。但 `compact-if unsorted` 高达 932.829ms（**慢 56×**，headline）暴露真实分支预测惩罚，而 `compact-if sorted` 110.151ms（**慢 8.47×**）——数据局部性决定分支可预测性。数据见上方 D5.1 表。
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="(b) 相对倍数（可移植信号：基准=1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">(b) 相对倍数（可移植信号：基准=1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="213.3" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="104.0" y="217.3" width="64.0" height="82.7" fill="#9A9A9A"/>
+  <text x="136.0" y="211.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="136.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 136.0 314.0)">sum-if unsorted（基准）</text>
+  <rect x="216.0" y="217.0" width="64.0" height="83.0" fill="#DD8452"/>
+  <text x="248.0" y="211.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.01×</text>
+  <text x="248.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 248.0 314.0)">sum-if sorted</text>
+  <rect x="328.0" y="231.5" width="64.0" height="68.5" fill="#55A868"/>
+  <text x="360.0" y="225.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.67×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">sum branchless（掩码）</text>
+  <rect x="440.0" y="72.7" width="64.0" height="227.3" fill="#C44E52"/>
+  <text x="472.0" y="66.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">56.20×</text>
+  <text x="472.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 472.0 314.0)">compact-if unsorted</text>
+  <rect x="552.0" y="149.4" width="64.0" height="150.6" fill="#937860"/>
+  <text x="584.0" y="143.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">6.64×</text>
+  <text x="584.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 584.0 314.0)">compact-if sorted</text>
+</svg>
+
+> 图注：分支预测惩罚是主因：compact-if unsorted 932.829ms，约 **56.2×** 于基线 sum-if unsorted（16.599ms）；排序后分支可预测，compact-if sorted 降到 110.151ms（6.64×）；sum branchless 用算术掩码消除分支，反快 0.67×（11.172ms）。经典「排序使分支预测变快」实验在 -O2 下对 sum-if 失效（16.599≈16.733）。(a) 绝对毫秒随机器而变，(b) 倍数才是可移植信号。
 
 ### D5.2 非显然结论
 
