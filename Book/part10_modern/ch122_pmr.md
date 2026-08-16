@@ -215,25 +215,27 @@ classDiagram
 
 ---
 
-## ⑩ 汇编分析（Compiler Explorer 风格，标注 -O2）
+## ⑩ 汇编分析（GCC 15.3.0 -O2，Intel 语法）
 
 **对比点**：arena（monotonic）分配 vs 直接 `new[]`。下面是从真实 GCC 15.3.0 `-O2 -masm=intel` 提取的关键片段。
 
 `[实现·GCC15.3.0]` 直接 `new int[10]` 每次都落到 `operator new[]`（`_Znay`）：
 
 ```asm
-; 文件：use_new（源：new int[10]×2 + delete[]，GCC 15.3.0 -O2 -masm=intel）
+; 文件：use_new（源：new int[10]×2 + delete[]，GCC 15.3.0 -O2 -masm=intel，真实提取）
 _Z7use_newv:
         mov     ecx, 40
-        call    _Znay              ; operator new[](40) —— 系统分配！
+        call    _Znay              ; operator new[](40) —— g_a = new int[10]
         mov     ecx, 40
-        mov     rsi, rax
+        mov     rsi, rax           ; rsi 暂存 g_a 指针
         mov     QWORD PTR g_a[rip], rax
-        call    _Znay              ; 第二次系统分配
+        call    _Znay              ; g_b = new int[10]
+        mov     rcx, rsi           ; rcx ← g_a：首次 delete 的目标（关键中转，漏写会拿 40 当指针）
+        mov     rbx, rax           ; rbx 暂存 g_b 指针
         mov     QWORD PTR g_b[rip], rax
-        call    _ZdaPv            ; operator delete[]（g_a）
-        mov     rcx, rbx
-        jmp     _ZdaPv            ; operator delete[]（g_b）
+        call    _ZdaPv            ; operator delete[](g_a)
+        mov     rcx, rbx           ; rcx ← g_b
+        jmp     _ZdaPv            ; operator delete[](g_b）
 ```
 
 `[实现·GCC15.3.0]` `monotonic_buffer_resource` 的 `do_allocate` 被内联为"取默认资源 + 指针推进"：构造时调用一次 `get_default_resource`，之后分配是纯算术（无 `operator new`）：
