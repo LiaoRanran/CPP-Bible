@@ -1018,7 +1018,7 @@ int main() {
 
 [实现·GCC15] `enable_shared_from_this`（`shared_ptr.h` 行 919-972）与基类 `__enable_shared_from_this`（`shared_ptr_base.h` 行 2171-2219）：
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：enablesharedfromth]
+> **示例 37** [难度 ★☆☆☆☆] [主题：enable_shared_from_this]
 ```cpp
 // <bits/shared_ptr.h> 行 919-939（真实摘录）
 class enable_shared_from_this

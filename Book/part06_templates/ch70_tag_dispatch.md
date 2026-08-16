@@ -771,8 +771,8 @@ int main(){std::vector<int> v{1,2,3};auto it=v.begin();std::advance(it,2);std::c
 | 技术 | 版本 | 编译速度 | 错误信息 |
 |---|---|---|---|
 | Tag dispatch | C++98 | 极快 | 清晰 |
-| Concepts | C++20 | 快2-5x | 1行 | [UNVERIFIED]
-| SFINAE | C++11 | 慢 | 1000行 | [UNVERIFIED]
+| Concepts | C++20 | 快2-5x | 1行 [UNVERIFIED] |
+| SFINAE | C++11 | 慢 | 1000行 [UNVERIFIED] |
 | if constexpr | C++17 | 快 | 清晰 |
 
 面试: tag dispatch何时用? C++14兼容代码; concepts何时用? 新C++20项目

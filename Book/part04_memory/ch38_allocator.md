@@ -68,7 +68,7 @@ STL（Stepanov，1994 入标准）的设计原则之一：算法 / 容器与"内
 **[实现·GCC15]**　libstdc++ 里 `std::allocator<T>` 的基类是 `__new_allocator<T>`，见
 `x86_64-w64-mingw32/bits/c++allocator.h:47`：
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：设计动机：容器与内存解耦，但「默认无]
+> **示例 1** [难度 ★☆☆☆☆] [主题：设计动机：容器与内存解耦，但默认无]
 ```cpp
 // x86_64-w64-mingw32/bits/c++allocator.h:46-47
 template<typename _Tp>
@@ -77,7 +77,7 @@ template<typename _Tp>
 
 而 `__new_allocator::allocate`（`bits/new_allocator.h:121-148`）最终就是：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：设计动机：容器与内存解耦，但「默认无]
+> **示例 2** [难度 ★☆☆☆☆] [主题：设计动机：容器与内存解耦，但默认无]
 ```cpp
 // bits/new_allocator.h:143-147
 std::align_val_t __al = std::align_val_t(alignof(_Tp));
@@ -1169,7 +1169,7 @@ int main() {
 
 **真实源码定位（libstdc++ `scoped_allocator:177` 定义 `class scoped_allocator_adaptor`；`:372` `construct`；`:202-227` `_M_construct` 按 `uses_allocator` 协议分派）**：
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：scopedallocatorada]
+> **示例 47** [难度 ★☆☆☆☆] [主题：scoped_allocator_adaptor]
 ```cpp
 #include <utility>
 // scoped_allocator:372-377 —— 构造元素时把「内层分配器」自动下发
@@ -1186,7 +1186,7 @@ construct(_Tp* __p, _Args&&... __args)
 
 程序 27：经典 `scoped_allocator_adaptor` 让 `vector<string>` 的字符也走同一分配器：
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：scopedallocatorada]
+> **示例 48** [难度 ★☆☆☆☆] [主题：scoped_allocator_adaptor]
 ```cpp
 // 编译: g++ -std=c++17 ch38_p27.cpp -o ch38_p27
 #include <vector>
@@ -1211,7 +1211,7 @@ int main() {
 
 **[经验]**　PMR 的杀手级特性：`polymorphic_allocator<T>` 的拷贝构造函数会**复制 `memory_resource*`**（`bits/memory_resource.h:135-138`），因此 `pmr::vector<string>` 在构造内部 `pmr::string` 元素时，自动把同一个 `resource` 指针下传给元素的 `polymorphic_allocator<char>`。嵌套“免费”共享资源——这正是它比经典分配器（需 `scoped_allocator_adaptor` 手动传递）优雅的地方。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：scopedallocatorada]
+> **示例 49** [难度 ★☆☆☆☆] [主题：scoped_allocator_adaptor]
 ```cpp
 // 编译: g++ -std=c++17 ch38_p28.cpp -o ch38_p28
 #include <memory_resource>

@@ -412,7 +412,7 @@ int main(){
 
 **[标准]**　`<type_traits>` 的 `is_nothrow_move_constructible`、`is_nothrow_swappable`、`is_nothrow_default_constructible` 等是编译期布尔常量，是标准库做 noexcept 决策的同一组工具（第 7 节 `move_if_noexcept` 内部即用 `is_nothrow_move_constructible`）。用户代码可复用它们编写「若元素够强则优化、否则回退」的泛型逻辑。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：实战：用 isnothrow 编写「]
+> **示例 14** [难度 ★☆☆☆☆] [主题：实战：用 isnothrow 编写]
 ```cpp
 // [示例 41] 泛型容器包装：移动不抛才 relocate，否则拷贝（复刻标准库思路）
 #include <type_traits>

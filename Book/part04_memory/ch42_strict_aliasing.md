@@ -1103,7 +1103,7 @@ int main() {
 
 ### 22.5 `has_unique_object_representations` 探测
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：hasuniqueobjectrep]
+> **示例 38** [难度 ★☆☆☆☆] [主题：has_unique_object_representations]
 ```cpp
 // 【程序 31】探测对象表示唯一性（与别名/逐字节比较相关）
 #include <type_traits>
