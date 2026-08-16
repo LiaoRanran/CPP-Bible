@@ -380,7 +380,7 @@ user 42 logged in from 10.0.0.7
 
 **[标准]** `[format.syn]` 规定 `std::format` 在编译期校验格式串，类型错误直接编译失败，而非运行期 UB。需要 `-std=c++20`（本机 gcc 13.1.0 已支持）。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 11** [难度 ★★☆☆☆] [主题：从零实现日志库]
 ```cpp
 // ⑤ std::format：编译期格式串检查 + 类型安全
 #include <format>
@@ -411,7 +411,7 @@ std::string dyn_format(std::string_view fmt, int a, double b) {
 // dyn_format("x={} y={:.1f}", 7, 2.5) -> "x=7 y=2.5"
 
 // ⑤ 自定义 std::format formatter：为用户类型提供 {} 格式化（真实可编译，Examples/_ch161_fix4.cpp）
-> **示例 12** [难度 ★★★☆☆] [主题：未分类]
+> **示例 12** [难度 ★★★☆☆] [主题：从零实现日志库]
 ```cpp
 // 文件：Examples/_ch161_fix4.cpp
 #include <cstdio>

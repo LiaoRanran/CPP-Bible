@@ -480,7 +480,7 @@ int runtime_call = chooses(1);  // 走 x*2 分支 = 2，不是 1001
 - **Q：为什么 `-O0` 下 `constexpr` 函数也没有符号？** A：因调用点全是常量表达式，`constexpr` 函数在实例化时被常量折叠，不产生运行期 odr-use，故不生成实体（见 ⑩）。
 - **Q：`constinit` 和 `constexpr` 全局变量差在哪？** A：`constexpr` 全局变量同时是 `const`（只读）；`constinit` 只约束初始化必须编译期，变量可运行期写，适合需要静态初始化又需运行期修改的状态（如计数器、配置）。
 
-> **示例 28** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 28** [难度 ★★☆☆☆] [主题：FAQ 问答]
 ```cpp
 // FAQ 演示：constexpr 隐含 const，constinit 不隐含 const
 constexpr int k = 10;        // 编译期定值 + 只读

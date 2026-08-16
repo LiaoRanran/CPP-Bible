@@ -166,7 +166,7 @@ void gcc_pragma(float* a, float* b, float* c, int n) {
 
 C++ 标准曾以 **DAT（Data-Parallel Types）** 提案把 SIMD 纳入语言，`<experimental/simd>` 是其 TS 实现（GCC/libstdc++ 提供）。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 9** [难度 ★☆☆☆☆] [主题：SIMD / AVX 向量化]
 ```cpp
 // ⑥ 用 std::experimental::simd 表达"对 N 个 float 同时运算"
 #include <experimental/simd>
@@ -182,7 +182,7 @@ void simd_class(float* a, float* b, float* c, int n) {
 }
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 10** [难度 ★☆☆☆☆] [主题：SIMD / AVX 向量化]
 ```cpp
 // ⑥ 常见算法：可以一次做多条（本块自含 DAT 头与命名空间别名，可独立编译）
 #include <experimental/simd>

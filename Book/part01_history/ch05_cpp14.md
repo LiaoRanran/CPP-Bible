@@ -116,7 +116,7 @@ C++14 补全
 
 ## ⑤ Mermaid
 
-> **示例 6** [难度 ★★★☆☆] [主题：未分类]
+> **示例 6** [难度 ★★★☆☆] [主题：Mermaid 图解]
 ```cpp
 // [merged] ## ⑤ Mermaid
 #include <iostream>
@@ -313,7 +313,7 @@ void reg(void(*cb)(int)){ if(cb) cb(0); }
 
 ## ⑰ FAQ
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 19** [难度 ★☆☆☆☆] [主题：FAQ 问答]
 ```cpp
 // 泛型 lambda 比较
 auto cmp=[](auto a,auto b){ return a<b; }; bool t=cmp(1,2);

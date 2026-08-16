@@ -992,7 +992,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 22.1 common initial sequence（共同初始序列）
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 32** [难度 ★☆☆☆☆] [主题：严格别名规则（Strict Aliasing）与编译器优化]
 ```cpp
 // 【程序 25】共同初始序列判定（标准布局 + 前缀成员相同）
 #include <cstdio>

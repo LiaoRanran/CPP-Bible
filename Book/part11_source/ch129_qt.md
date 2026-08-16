@@ -323,7 +323,7 @@ class MyThread : public QThread {
 
 Qt 两套 UI 技术：**Widgets**（C++ 命令式，适合桌面工具/IDE）与 **QML**（声明式 JS 风格，适合触屏/动画/移动端）。两者都基于同一 QObject 元对象系统，可 `QQuickWidget` 嵌入混用。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 15** [难度 ★☆☆☆☆] [主题：Qt 对象模型与信号槽]
 ```cpp
 // ⑧ Widgets：C++ 命令式构建界面
 #include <QPushButton>
@@ -334,7 +334,7 @@ void build_ui(QWidget* w) {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 16** [难度 ★☆☆☆☆] [主题：Qt 对象模型与信号槽]
 ```cpp
 // ⑧ QML：声明式描述界面（.qml 由 qml 引擎解析，C++ 侧用 QQuickView 加载）
 // 文件：main.qml（非 cpp，此处列以对照）

@@ -296,7 +296,7 @@ namespace std { template<> struct is_error_code_enum<io_err> : std::true_type {}
 
 `[标准]` `std::expected<T, E>` 是一个"要么有值 `T`，要么有错误 `E`"的 discriminated union，是异常的**零开销替代**：失败不展开栈、不分配，且强制调用方处理。C++23 引入。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 20** [难度 ★☆☆☆☆] [主题：错误处理]
 ```cpp
 #include <expected>
 #include <string>
@@ -309,7 +309,7 @@ std::expected<int, std::string> to_int(std::string_view s) {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 21** [难度 ★☆☆☆☆] [主题：错误处理]
 ```cpp
 #include <iostream>
 #include <string>
@@ -327,7 +327,7 @@ auto safe    = to_int("x").or_else([](const std::string& e){
 
 `[标准]` 与 `std::optional` 的区别：`expected` 携带**错误原因**，`optional` 只表示"无值"。需要诊断信息时优先 `expected`。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 22** [难度 ★☆☆☆☆] [主题：错误处理]
 ```cpp
 #include <string>
 // 错误链：map 错误类型

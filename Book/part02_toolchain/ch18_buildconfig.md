@@ -76,7 +76,7 @@ int workload(int x) {
 
 Debug 与 Release 的本质区别只有两点被标准定义：**`NDEBUG` 宏**和**未指定行为的优化自由度**；其余（优化级别、符号）都是约定俗成。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 3** [难度 ★☆☆☆☆] [主题：构建配置：Debug / Release / LTO / PGO]
 ```cpp
 // ② <cassert> 的 assert 宏在 NDEBUG 定义后被整体替换为空
 // Debug（无 NDEBUG）：
@@ -87,7 +87,7 @@ int divide(int a, int b) {
 }
 ```
 
-> **示例 4** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 4** [难度 ★★☆☆☆] [主题：构建配置：Debug / Release / LTO / PGO]
 ```cpp
 #include <cassert>
 // ② Release：g++ -DNDEBUG 后，assert 展开为空语句
@@ -95,7 +95,7 @@ int divide(int a, int b) {
 // 此时上面的 assert(b != 0 ...) 完全消失，零开销，但越界错误不再被拦截
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 5** [难度 ★☆☆☆☆] [主题：构建配置：Debug / Release / LTO / PGO]
 ```cpp
 // ② 自己实现"永不被 NDEBUG 关闭"的检查（Release 也需要防御时）
 #include <cstdio>
@@ -475,7 +475,7 @@ nm libch18.a | grep engine
 
 加固三件套提升对抗内存破坏的能力：
 
-> **示例 21** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 21** [难度 ★★☆☆☆] [主题：构建配置：Debug / Release / LTO / PGO]
 ```
 ┌────────────────────┬─────────────────────────────┬──────────────────────┐
 │ 加固项             │ 作用                        │ GCC 标志              │
@@ -487,7 +487,7 @@ nm libch18.a | grep engine
 └────────────────────┴─────────────────────────────┴──────────────────────┘
 ```
 
-> **示例 22** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 22** [难度 ★★☆☆☆] [主题：构建配置：Debug / Release / LTO / PGO]
 ```cpp
 // ⑫ 触发栈保护：含被取地址/较大局部数组的函数会被 -fstack-protector-strong 保护
 #include <cstddef>

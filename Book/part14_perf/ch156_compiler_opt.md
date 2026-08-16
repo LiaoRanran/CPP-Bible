@@ -208,7 +208,7 @@ int os_sum(const int* p, int n) {
 
 **LTO（Link-Time Optimization）** 把「整个程序」作为单一优化单元：编译期各 TU 只emit 带 IR 的目标文件（`.o` 内含 GIMPLE），链接期再跑一遍优化，于是**跨翻译单元的内联、去虚化、常量传播**成为可能——单个 TU 的 `-O2` 做不到，因为它看不到别的 `.cpp`。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 18** [难度 ★☆☆☆☆] [主题：编译器优化：O2/O3/Ofast/LTO/PGO]
 ```cpp
 // ⑤ Examples/_ch156_lib.cpp：被调用方（独立翻译单元）
 // 文件：Examples/_ch156_lib.cpp
@@ -216,7 +216,7 @@ int os_sum(const int* p, int n) {
 int compute(int x) { return x * x + 1; }
 ```
 
-> **示例 19** [难度 ★★★☆☆] [主题：未分类]
+> **示例 19** [难度 ★★★☆☆] [主题：编译器优化：O2/O3/Ofast/LTO/PGO]
 ```cpp
 // ⑤ Examples/_ch156_main.cpp：调用方（另一个翻译单元）
 // 文件：Examples/_ch156_main.cpp
@@ -233,7 +233,7 @@ g++ -std=c++23 -O2 -flto   Examples/_ch156_lib.o Examples/_ch156_main.o -o Examp
 # 无 LTO 对比：去掉 -flto，compute 在链接期仍是外部符号，只能 call
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 20** [难度 ★☆☆☆☆] [主题：编译器优化：O2/O3/Ofast/LTO/PGO]
 ```cpp
 // ⑤ LTO 还能跨 TU 做常量传播与死代码消除
 //   lib.cpp: int config() { return 8; }

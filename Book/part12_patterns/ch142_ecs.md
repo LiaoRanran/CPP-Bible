@@ -81,7 +81,7 @@ void movement_system();                                 // 系统即逻辑（见
 
 Entity 在本质上只是一个**稳定、可复用的整型句柄**。它不指向任何对象，只是"在存储里的一把钥匙"。
 
-> **示例 3** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 3** [难度 ★★☆☆☆] [主题：实体组件系统 ECS]
 ```cpp
 // ② 最简实体：32 位整型即实体；0 约定为"空实体"
 #include <cstdint>
@@ -92,7 +92,7 @@ int main() { Entity e = 1; return (int)e; }
 
 真实编译产物（`Examples/_ch142_entity.asm`，GCC 13.1.0 `-O2`）：`main` 直接返回常量 `1`，实体没有任何运行时开销——它**就是**一个整数。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 4** [难度 ★☆☆☆☆] [主题：实体组件系统 ECS]
 ```cpp
 // ② 实体生成器：用一个空闲列表（free list）复用槽位，避免频繁分配
 #include <cstdint>
@@ -108,7 +108,7 @@ std::uint32_t create() {                 // 返回一个 index（version 见 ⑧
 - `[实现·GCC15]`：上述 `create()` 在 `-O2` 下被编译为几次 `mov`/`add`/`call operator new` 的薄封装；实体本身是**零抽象**的（见 ⑫ 的 constexpr 实体，连这层封装都能在编译期消去）。
 - `[经验]`：永远用 `NULL_ENTITY`（或 `entt::null`）表示"无"，不要用 `-1` 或随机魔法值；否则系统遍历时会因"到底有没有这个实体"而分支出 bug。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 5** [难度 ★☆☆☆☆] [主题：实体组件系统 ECS]
 ```cpp
 // ② 实体不应持有任何成员函数或虚表：下面这样写就违背了 ECS 信条
 // ❌ struct Entity { virtual ~Entity(); std::uint32_t id; };  // 虚表 + 行为，错！
@@ -118,7 +118,7 @@ std::uint32_t create() {                 // 返回一个 index（version 见 ⑧
 
 Component 是**无逻辑、最好平凡可拷贝**的数据包。它不继承、不虚函数、不持有资源（资源用句柄/ID 引用，而非组件本身持有）。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 6** [难度 ★☆☆☆☆] [主题：实体组件系统 ECS]
 ```cpp
 // ③ 纯数据组件：三个 float，trivially copyable，可 memcpy、可 vector 存储
 #include <cstdint>
@@ -127,7 +127,7 @@ struct Velocity { float vx, vy, vz; };
 struct Tag      { std::uint32_t id; };   // 标签组件：几乎零数据，仅用于"存在性"查询
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 7** [难度 ★☆☆☆☆] [主题：实体组件系统 ECS]
 ```cpp
 // ③ 组件必须"瘦"：把逻辑塞进组件是反模式（见 ⑯）
 // ❌ struct Bad { virtual void update(); int hp; };   // 有虚函数 = 非平凡 = 破坏布局
@@ -137,7 +137,7 @@ struct Tag      { std::uint32_t id; };   // 标签组件：几乎零数据，仅
 - `[标准]`：要让组件能被放进 `std::vector` 并以 `memcpy` 搬移，理想情况下它应是 **trivially copyable**（`[basic.types.general]/9`）。若组件含 `std::string` 等非平凡成员，则存储需用"放置 new + 显式析构"或外置资源（资源句柄化）。
 - `[经验]`：把**资源**（纹理、网格、音频）放进组件时，组件只存 `std::uint32_t asset_id`，真正的资源由外部资源管理器按 ID 取——这叫"组件瘦化"。
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 8** [难度 ★☆☆☆☆] [主题：实体组件系统 ECS]
 ```cpp
 // ③ 用 std::span 表达"一批同类组件的连续切片"，是系统输入的标准形态
 #include <span>
@@ -151,7 +151,7 @@ void render_system(std::span<const Position> pos, std::span<const Tag> visible) 
 
 System 是**纯算法**：它声明"我需要哪些组件"，引擎把满足条件的实体批次喂给它，它就地变换组件。System 之间不直接通信，只通过共享的组件存储间接耦合。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 9** [难度 ★☆☆☆☆] [主题：实体组件系统 ECS]
 ```cpp
 // ④ 移动系统：声明依赖 [Position, Velocity]，批量积分
 #include <vector>
@@ -168,7 +168,7 @@ void movement_system(std::vector<Position>& pos,
 }
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 10** [难度 ★☆☆☆☆] [主题：实体组件系统 ECS]
 ```cpp
 #include <vector>
 // ④ 系统应该是"无状态函数"：所有状态都在组件里，便于并行（见 ⑨ ⑮）
@@ -179,7 +179,7 @@ void movement_system(std::vector<Position>& pos,
 - `[实现·GCC15]`：`movement_system` 在 `-O2` 内循环被编译为简单的 `movss`/`mulss`/`addss` 标量序列（未向量化，因 `-O2` 默认不开 tree-vectorize；`-O3 -mavx2` 才会展开为 `vmulps`/`vaddps`，见 ⑬）。
 - `[经验]`：系统的顺序即"帧的逻辑顺序"（输入→物理→AI→动画→渲染）。把顺序做成**显式调度表**（见 ⑨），而非隐式依赖全局初始化顺序。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 11** [难度 ★★☆☆☆] [主题：实体组件系统 ECS]
 ```cpp
 // ④ 系统可以"查询"而非"持有"：用组件的有无组合出行为
 //   [Position, Velocity]        -> 移动

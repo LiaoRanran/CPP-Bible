@@ -915,7 +915,7 @@ int main(){ std::vector<int> v; writer(v); writer_throw(v); }
 
 **[标准]/[平台]**　GCC/Clang 的 `-fno-exceptions` 禁止异常机制：所有 `throw` 编译失败或 `std::terminate`，`try/catch` 无效，且库/生成代码更小更快（无展开表）。嵌入式、游戏、内核常开。代价：标准库容器等在无法分配时会 `std::abort` 而非抛 `bad_alloc`，且 `vector` 扩容的 strong 保证退化为「失败即终止」。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 33** [难度 ★☆☆☆☆] [主题：异常安全]
 ```cpp
 // [示例 21] -fno-exceptions 下需避免异常，改用错误码/必成功假设
 // 编译：g++ -fno-exceptions 时下面无法通过 throw 表达错误

@@ -146,7 +146,7 @@ int main() {
 
 CLion 用 **Clangd 衍生引擎**做索引，重构（重命名、提取函数、改变量）基于**语义**而非文本正则，跨文件安全。它对 CMake 项目开箱即用。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 5** [难度 ★☆☆☆☆] [主题：IDE 与编辑器：VSCode / CLion / QtCreator / VIM]
 ```cpp
 // ④ 在 CLion 中"提取函数"：选中循环体 → Refactor → Extract Function
 #include <string>
@@ -173,7 +173,7 @@ add_executable(demo main.cpp)
 
 QtCreator 是 Qt 官方 IDE，强项是 **UI 设计器（.ui）+ 信号槽（SIGNAL/SLOT 或 新语法 connect）**。信号槽是 Qt 的元对象系统（moc 预编译）特性。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 6** [难度 ★★☆☆☆] [主题：IDE 与编辑器：VSCode / CLion / QtCreator / VIM]
 ```cpp
 // ⑤ 新语法 connect：类型安全，编译期检查（推荐，[实现]真实可用需 Qt 头）
 #include <QPushButton>
@@ -184,7 +184,7 @@ void wire(QPushButton* btn) {
 }
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 7** [难度 ★☆☆☆☆] [主题：IDE 与编辑器：VSCode / CLion / QtCreator / VIM]
 ```cpp
 // ⑤ 旧语法 connect：运行时按字符串匹配，IDE 补全弱、易在运行期才炸
 // connect(btn, SIGNAL(clicked()), this, SLOT(onClicked()));  // 拼错 SLOT 名编译不报错

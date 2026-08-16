@@ -641,7 +641,7 @@ int main() {
 
 **Q：forward 与 decay 冲突吗？** `std::thread`/`std::bind` 会先把实参 `decay` 再存储，转发的是 **decay 后的值**，不再保留原始引用类别——所以线程里转发的是副本，不是原对象的引用。`[标准] [thread.thread.constr]`
 
-> **示例 23** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 23** [难度 ★★☆☆☆] [主题：FAQ 问答]
 ```cpp
 // ⑰-a FAQ：forward 与 decay（线程内是副本，不是引用）
 #include <utility>

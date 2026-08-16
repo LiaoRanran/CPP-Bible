@@ -53,7 +53,7 @@ int main() { S x = make(); (void)x; }
 
 **RVO（Return Value Optimization）**：当函数返回一个**无名临时对象（prvalue）** 或单个局部对象时，编译器直接在调用者的「返回槽（return slot）」上构造该对象，跳过返回时的复制。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 2** [难度 ★☆☆☆☆] [主题：RVO / NRVO 与拷贝消除]
 ```cpp
 // ② 经典 RVO：返回 prvalue
 #include <cstdio>
@@ -62,7 +62,7 @@ Big factory() { return Big{}; }   // prvalue -> RVO
 int main(){ Big x = factory(); (void)x; }
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 3** [难度 ★☆☆☆☆] [主题：RVO / NRVO 与拷贝消除]
 ```cpp
 // ② 单局部对象同样适用 RVO
 Big make_one() {
@@ -79,7 +79,7 @@ Big make_one() {
 
 **NRVO（Named Return Value Optimization）**：返回的局部对象**有名字**（具名），编译器仍尝试把它直接构造在返回槽，从而省去返回时的复制。NRVO 是「允许」而非「强制」。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 4** [难度 ★★☆☆☆] [主题：RVO / NRVO 与拷贝消除]
 ```cpp
 // ③ 具名对象 result 被 NRVO 折叠进调用者栈槽
 #include <cstdio>

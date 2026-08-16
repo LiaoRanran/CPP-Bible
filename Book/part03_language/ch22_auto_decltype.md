@@ -1173,20 +1173,20 @@ int main() {
 - **工程应用**：C++11 泛型函数返回依赖类型（见 ex13）。
 - **真实源码**：`std::invoke` 用 `invoke_result_t<...>` 作返回类型（functional:109）。
 - **错误示例**：
-> **示例 52** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 52** [难度 ★★☆☆☆] [主题：`auto` 类型推导、`decltype` 与返回类型推导]
   ```cpp
   template<class A,class B>
   decltype(a+b) add(A a,B b); // 错误：a,b 在返回类型处不可见
 ```
 - **正确示例**：
-> **示例 53** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 53** [难度 ★★☆☆☆] [主题：`auto` 类型推导、`decltype` 与返回类型推导]
   ```cpp
   template<class A,class B>
   auto add(A a,B b) -> decltype(a+b) { return a+b; } // OK
 ```
 - **≥10 个例子**：ex13, ex37, ex40, ex31.
 
-> **示例 54** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 54** [难度 ★★☆☆☆] [主题：`auto` 类型推导、`decltype` 与返回类型推导]
 ```cpp
 // ex13 见 KP4（尾置返回依赖参数类型）。再给一例：
 // ex31_abi_mangling_auto_return.cpp —— ABI：auto 返回 mangling 与手写一致

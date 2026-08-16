@@ -1559,7 +1559,7 @@ int main() {
 
 下面程序在三库下行为一致，但揭示"替换全局 new 即影响容器"这一事实：
 
-> **示例 51** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 51** [难度 ★★☆☆☆] [主题：动态内存分配原语：`operator new` / `operator delete`]
 ```cpp
 // 程序 34：替换全局 operator new 影响 std::vector（三 STL 通用）
 #include <new>

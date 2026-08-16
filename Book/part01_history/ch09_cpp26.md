@@ -115,7 +115,7 @@ C++26 (方向)
 
 ## ⑤ Mermaid（执行器 Sender 管线）
 
-> **示例 6** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 6** [难度 ★★☆☆☆] [主题：Mermaid 图解]
 ```cpp
 // [merged] ## ⑤ Mermaid（执行器 Sender 管线）
 #include <iostream>
@@ -302,7 +302,7 @@ int main() {}
 
 ## ⑰ FAQ
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 19** [难度 ★☆☆☆☆] [主题：FAQ 问答]
 ```cpp
 // [merged] ## ⑰ FAQ
 #include <iostream>

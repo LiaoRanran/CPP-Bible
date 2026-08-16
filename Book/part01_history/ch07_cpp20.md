@@ -123,7 +123,7 @@ C++20 四大支柱 + 配套
 
 ## ⑤ Mermaid（Ranges 管道）
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 7** [难度 ★☆☆☆☆] [主题：Mermaid 图解]
 ```cpp
 // [merged] ## ⑤ Mermaid（Ranges 管道）
 #include <iostream>
@@ -333,7 +333,7 @@ template<class T> requires std::default_initializable<T> T make(){ return T{}; }
 
 ## ⑰ FAQ
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 22** [难度 ★☆☆☆☆] [主题：FAQ 问答]
 ```cpp
 // 范围 for + 结构化绑定
 #include <map>

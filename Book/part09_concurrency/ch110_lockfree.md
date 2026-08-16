@@ -133,7 +133,7 @@ void contribute(unsigned long long x) {
 
 **wait-free** 比 lock-free 更强：每个线程都能在**有限步数内**完成自己的操作，步数上界与竞争者数量无关。它既保证系统前进，也保证**单个线程不被饿死**。
 
-> **示例 6** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 6** [难度 ★★☆☆☆] [主题：无锁编程：lock-free / wait-free]
 ```cpp
 // ④ wait-free 计数：单一 fetch_add，无循环、无重试
 #include <atomic>
@@ -144,7 +144,7 @@ void waitfree_count() {
 }
 ```
 
-> **示例 7** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 7** [难度 ★★☆☆☆] [主题：无锁编程：lock-free / wait-free]
 ```cpp
 // ④ 注意：并非所有算法都能 wait-free。下面"交换两个原子"在无额外机制时
 //        只能 lock-free（需要 CAS 循环），不是 wait-free
@@ -165,7 +165,7 @@ bool swap_pair(int na, int nb) {
 
 **obstruction-free** 是最弱的保证：在**假设没有其他线程并发运行**的"某一刻"之后，当前线程能在有限步内完成。一旦有竞争者持续访问同一位置，单线程可能永远推进不了——但它**不会死锁**。它是 lock-free 的弱化版。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 8** [难度 ★★☆☆☆] [主题：无锁编程：lock-free / wait-free]
 ```cpp
 // ⑤ obstruction-free：单写者视角下，若无人竞争即可一次成功
 #include <atomic>
@@ -179,7 +179,7 @@ bool try_claim() {
 }
 ```
 
-> **示例 9** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 9** [难度 ★★☆☆☆] [主题：无锁编程：lock-free / wait-free]
 ```cpp
 // ⑤ 退避后重试：obstruction-free 常见配套——短暂退避降低冲突概率
 #include <atomic>

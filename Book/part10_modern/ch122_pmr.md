@@ -534,7 +534,7 @@ int main() {
 - **Q：如何验证 `new_delete_resource()` 是单例？**
   A：见下例。
 
-> **示例 8** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 8** [难度 ★★☆☆☆] [主题：FAQ 问答]
 ```cpp
 // ⑰ 验证全局资源为单例
 #include <memory_resource>

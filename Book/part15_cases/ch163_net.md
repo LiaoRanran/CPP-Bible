@@ -84,7 +84,7 @@ struct WSAGuard {
 
 Berkeley Socket（BSD socket）是 1983 年 4.2BSD 引入的 API，如今已成为**事实标准**：Linux/macOS/BSD 的接口几乎一致。**[标准]** 一个 TCP 服务器的最小生命周期是 `socket → bind → listen → accept → recv/send → close`。
 
-> **示例 4** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 4** [难度 ★★☆☆☆] [主题：从零实现网络编程]
 ```cpp
 // ② Berkeley 风格的最小 TCP 服务器骨架（Linux/macOS 可直接编译）
 //   g++ -std=c++23 -O2 bsd_echo.cpp -o bsd_echo
@@ -108,7 +108,7 @@ int bsd_server() {
 }
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 5** [难度 ★☆☆☆☆] [主题：从零实现网络编程]
 ```cpp
 // ② SO_REUSEADDR：避免 TIME_WAIT 状态下 bind 失败（服务器重启必备）
 //   典型用法：bind 之前对监听套接字设置一次（Windows/Winsock 风格，
@@ -119,7 +119,7 @@ void set_reuseaddr(SOCKET fd) {
 }
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 6** [难度 ★☆☆☆☆] [主题：从零实现网络编程]
 ```cpp
 // ② 把 errno 转成可读信息（POSIX 侧，Berkeley 与 Linux 通用）
 #include <cerrno>
@@ -170,7 +170,7 @@ inet_pton(AF_INET, "127.0.0.1", &a.sin_addr);   // 返回 1 表示成功
 
 这是本章的"门面示例"：绑定 `127.0.0.1:54321`、accept 一个连接、逐行回显。**本机 g++ 已真实编译运行**，输出见本节末尾与 ⑲。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 10** [难度 ★★☆☆☆] [主题：从零实现网络编程]
 ```cpp
 // ④ 完整可编译 echo server（本机实测通过：g++ -std=c++23 -O2 -lws2_32）
 // 文件：Examples/_ch163_echo_server.cpp
@@ -236,7 +236,7 @@ int main() {
 
 客户端比服务器简单：无需 bind/listen，调用 `connect` 即可。**[实现·GCC15]** 注意 `connect` 在阻塞模式下会一直等到三次握手完成（或超时失败）。
 
-> **示例 11** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 11** [难度 ★★☆☆☆] [主题：从零实现网络编程]
 ```cpp
 // ⑤ 完整可编译 echo client（本机实测通过）
 // 文件：Examples/_ch163_echo_client.cpp
@@ -264,7 +264,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 12** [难度 ★☆☆☆☆] [主题：从零实现网络编程]
 ```cpp
 #include <string>
 // ⑤ recv 直到遇到换行（应用层"读一行"），演示 TCP 流式读取的边界处理

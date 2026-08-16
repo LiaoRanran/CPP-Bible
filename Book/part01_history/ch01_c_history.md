@@ -413,7 +413,7 @@ class P{}; class Q{}; class R:public P,public Q{};
 
 ## ⑰ FAQ
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 37** [难度 ★☆☆☆☆] [主题：FAQ 问答]
 ```cpp
 // this 指针
 class T { int v=0; public: T& self(){ return *this; } };

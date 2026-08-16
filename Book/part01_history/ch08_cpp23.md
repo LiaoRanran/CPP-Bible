@@ -118,7 +118,7 @@ C++23 库大修
 
 ## ⑤ Mermaid（expected 错误处理流）
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 6** [难度 ★☆☆☆☆] [主题：Mermaid 图解]
 ```cpp
 // [merged] ## ⑤ Mermaid（expected 错误处理流）
 #include <iostream>
@@ -334,7 +334,7 @@ void fmt(){ std::cout << "val=" << 100 << "\n"; }
 
 ## ⑰ FAQ
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 20** [难度 ★☆☆☆☆] [主题：FAQ 问答]
 ```cpp
 // 多维下标运算符重载
 struct Mat{ int d[4]; int operator[](int i){ return d[i]; } };

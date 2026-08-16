@@ -321,7 +321,7 @@ int main() {
 
 Valgrind `memcheck` 是二进制插桩的内存错误检测器，无需重新编译（但会显著减速）。
 
-> **示例 10** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 10** [难度 ★★☆☆☆] [主题：调试与诊断：GDB / LLDB / Sanitizer / Valgrind]
 ```cpp
 // ⑨ 内存泄漏示例：分配后不释放
 #include <cstddef>

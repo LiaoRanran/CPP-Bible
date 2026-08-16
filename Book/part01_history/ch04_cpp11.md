@@ -151,7 +151,7 @@ C++11 三大支柱
 
 ## ⑤ Mermaid（移动语义数据流向）
 
-> **示例 6** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 6** [难度 ★★☆☆☆] [主题：Mermaid 图解]
 ```cpp
 #include <iostream>
 int main() {
@@ -186,7 +186,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ## ⑥ UML（不适用）
 
-> **示例 7** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 7** [难度 ★★☆☆☆] [主题：UML 图解]
 ```cpp
 #include <iostream>
 constexpr int sq(int x) { return x*x; }
@@ -414,7 +414,7 @@ int main() {
 
 ## ⑰ FAQ
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 21** [难度 ★☆☆☆☆] [主题：FAQ 问答]
 ```cpp
 #include <iostream>
 #include <vector>
