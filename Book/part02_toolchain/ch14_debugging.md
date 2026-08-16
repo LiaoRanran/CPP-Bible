@@ -1222,7 +1222,7 @@ mov byte [rax+0x0000], 0xcc   ; 写入软件断点
 - `__cplusplus` = 202302L；`__builtin_debugtrap()` 插入陷阱
 - WG21 提案 P0784R7 扩展 constexpr 可调试性
 
-## 附录 I：工业实战复盘（I.实战）[I: Practice]
+## 附录 W：工业实战复盘（I.实战）[I: Practice]
 
 ### 工业案例（真实可查证）
 

@@ -2343,7 +2343,7 @@ flowchart TD
 | ch40 异常安全 | ch37 | new 抛异常时的回滚语义 |
 | ch44 内存池 | ch37 | 池分配构建于 operator new |
 
-## 附录 J：new/delete 与自定义分配 决策流（D3 维度）
+## 附录 L：new/delete 与自定义分配 决策流（D3 维度）
 
 ```mermaid
 flowchart TD
@@ -2376,7 +2376,7 @@ flowchart TD
 
 > 决策流说明：区分 new 表达式（带构造）与 ::operator new（仅字节）；数组必须 new[]/delete[] 配对，分配失败处理 bad_alloc；异常路径以智能指针兜底，形成无泄漏闭环。
 
-## 附录 K：new/delete 与自定义分配 知识图谱（D6 维度）
+## 附录 M：new/delete 与自定义分配 知识图谱（D6 维度）
 
 ```mermaid
 flowchart TD

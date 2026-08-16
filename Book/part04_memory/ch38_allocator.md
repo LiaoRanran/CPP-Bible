@@ -2112,7 +2112,7 @@ flowchart TD
 | ch41 智能指针 | ch38 | 智能指针与分配器协同管理资源 |
 | ch40 异常安全 | ch38 | 分配失败时的异常传播语义 |
 
-## 附录 J：分配器选择与 rebind 决策流（D3 维度）
+## 附录 L：分配器选择与 rebind 决策流（D3 维度）
 
 ```mermaid
 flowchart TD
@@ -2143,7 +2143,7 @@ flowchart TD
 
 > 决策流说明：标准容器默认 std::allocator；需共享资源走 pmr::polymorphic_allocator；为不同 T 分配需 rebind/allocator_traits；跨容器传递要定好相等语义，形成分配策略闭环。
 
-## 附录 K：分配器选择与 rebind 知识图谱（D6 维度）
+## 附录 M：分配器选择与 rebind 知识图谱（D6 维度）
 
 ```mermaid
 flowchart TD

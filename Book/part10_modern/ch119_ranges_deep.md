@@ -821,7 +821,7 @@ sentinel使range不必提供同类型的end迭代器——这对复杂数据结�
 
 > 交叉引用：ranges 入门见 [ch90](Book/part07_stl/ch90_ranges.md)；算法见 [ch95](Book/part08_algorithms/ch95_algo_overview.md)；惰性见 [ch120](Book/part10_modern/ch120_coroutine_app.md)。
 
-## 附录 A：工业实战复盘与设计取舍 [I: Practice / H: Design]
+## 附录 L：工业实战复盘与设计取舍 [I: Practice / H: Design]
 
 ### 工业案例（真实可查证）
 

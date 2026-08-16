@@ -732,7 +732,7 @@ int main(){int x{};std::vector<int> v{1,2,3};std::cout<<x<<","<<v[0]<<std::endl;
 
 > 交叉引用：变量见 [ch19](Book/part03_language/ch19_variables.md)；构造见 [ch37](Book/part04_memory/ch37_new_delete.md)。
 
-## 附录 G：工业初始化惯例与底层语义
+## 附录 L：工业初始化惯例与底层语义
 
 | 项目 | 初始化风格 | 动机 | 源码/来源 |
 |------|----------|------|----------|

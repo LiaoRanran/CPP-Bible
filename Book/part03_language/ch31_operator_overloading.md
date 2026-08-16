@@ -430,9 +430,9 @@ struct Json{int n;std::string s;operator int()const{return n;}operator std::stri
 int main(){Json j{42,"hello"};std::cout<<(int)j<<" "<<(std::string)j<<std::endl;return 0;}
 ```
 
-## 附录 A：标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
+## 附录 L：标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 
-> **示例 41** [难度 ★★★☆☆] [主题：附录 A：标准库与底层 [D: st]
+> **示例 41** [难度 ★★★☆☆] [主题：附录 L：标准库与底层 [D: st]
 ```
 标准库中的运算符重载:
 - std::complex<T>: operator+,-,*,/ → libstdc++内联展开为2条addps(SIMD)
@@ -824,7 +824,7 @@ flowchart TD
 | ch40 异常安全 | ch31 | 先算后提交实现强异常安全 |
 | ch61 模板与重载 | ch31 | 模板参数推导驱动运算符重载决议 |
 
-## 附录 J：运算符重载规则与陷阱 决策流（D3 维度）
+## 附录 M：运算符重载规则与陷阱 决策流（D3 维度）
 
 ```mermaid
 flowchart TD
@@ -856,7 +856,7 @@ flowchart TD
 
 > 决策流说明：先判断运算符是否可重载，对称双操作数优先非成员以保证左侧隐式转换；返回值类型需区分引用（链式）与值（防悬垂），并借「先算后提交」保证强异常安全，形成闭环。
 
-## 附录 K：运算符重载规则与陷阱 知识图谱（D6 维度）
+## 附录 N：运算符重载规则与陷阱 知识图谱（D6 维度）
 
 ```mermaid
 flowchart TD

@@ -1038,7 +1038,7 @@ A: P2025 提议将 NRVO 也强制化（目前仅 RVO 强制）。通过后，所
 
 ## 附录 H：GCC 15.3.0 真机汇编复核（ASM-117-nrvo） [C: Compiler / E: Low-level]
 
-> `[实测]` 编译：`g++ -std=c++26 -O2 -c ch117_nrvo_test.cpp` + `objdump -d -M intel -C`。拷贝/移动构造塞 `puts` 副作用，数汇编里的 `call` 即知是否真消除。产物 `_asm_demo/ch117_nrvo_test.{cpp,.s}`。本附录用 GCC 15.3.0 真实 `-M intel` 产物复核附录 E 的手写注释段，并补"NRVO 失效"对比。
+> `[实测]` 编译：`g++ -std=c++26 -O2 -c ch117_nrvo_test.cpp` + `objdump -d -M intel -C`。拷贝/移动构造塞 `puts` 副作用，数汇编里的 `call` 即知是否真消除。产物 `_asm_demo/ch117_nrvo_test.{cpp,.s}`。本附录用 GCC 15.3.0 真实 `-M intel` 产物复核附录 L 的手写注释段，并补"NRVO 失效"对比。
 
 ### 测试源码（核心）
 
@@ -1087,7 +1087,7 @@ struct Tracer {
 - **prvalue 强制消除 = 零调用**：`make_prvalue` 全程无 `call puts`，`Tracer(42)` 直接在调用方返回槽（`rcx`）里构造，不存在"临时→拷贝/移动"中间步。这是 C++17 语义规则，编译器无选择。
 - **NRVO 通常消除但非强制**：`make_nrvo` 在 `-O2` 下零 `call`，但标准只"允许"不"保证"。
 - **NRVO 失效的硬证据**：`make_nrvo_fail` 因不同返回路径返回不同具名对象，编译器无法把它们合并进同一返回槽，两分支各插入一次 `call Tracer(Tracer&&)`（move 发生）。这说明"依赖 NRVO 省掉移动构造"只在**单一返回路径返回同一具名对象**时可靠——跨路径/条件返回会退化成真实 move，开销立刻显现。因此**别删具名返回类型的移动构造器**。
-- 本附录与附录 E 互证：附录 E 直接给出 GCC 15.3.0 `-M intel` 下的 `mov rax,rcx`（intel 语法，旧 AT&T 记法为 `mov %rcx,%rax`），语义一致；本附录补了"失效路径"这一附录 E 缺失的对照。
+- 本附录与附录 L 互证：附录 L 直接给出 GCC 15.3.0 `-M intel` 下的 `mov rax,rcx`（intel 语法，旧 AT&T 记法为 `mov %rcx,%rax`），语义一致；本附录补了"失效路径"这一附录 L 缺失的对照。
 
 ## 自测练习（Exercises）
 
@@ -1172,7 +1172,7 @@ int main() { bad(); good(); }
 
 ---
 
-## 附录 E：编译实证——强制复制消除的"零调用"证据 [C: Compiler / E: Low-level]
+## 附录 L：编译实证——强制复制消除的"零调用"证据 [C: Compiler / E: Low-level]
 
 > `[实测]` 编译：`g++ -std=c++23 -O2 -c ch117_elision_test.cpp` + `objdump -dC`（GCC 15.3.0 / Win64 ABI）。产物 `_asm_demo/ch117_elision_test.cpp`。
 

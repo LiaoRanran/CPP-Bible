@@ -1970,7 +1970,7 @@ unique_ptr_factory(int,int,int):
 - `shared_ptr` 的控制块（引用计数 + 弱引用计数 + 删除器）有 2 个原子变量，跨线程 `shared_ptr` 拷贝是有开销的 —— 见 ch107 `std::atomic` 与 ch41 附录 B 的性能对比数据。
 
 
-## 附录 D：工业实战复盘（I.实战）[I: Practice]
+## 附录 I：工业实战复盘（I.实战）[I: Practice]
 
 ### 工业案例（真实可查证）
 

@@ -507,11 +507,11 @@ int main() {
 }
 ```
 
-## 附录 R：ISO标准文档阅读
+## 附录 W：ISO标准文档阅读
 
 ISO/IEC 14882约2200页。stable name: [alg.sort]/1=第25章第7.1节第1段。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：附录 R：ISO标准文档阅读]
+> **示例 12** [难度 ★☆☆☆☆] [主题：附录 W：ISO标准文档阅读]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"ISO 14882: ~2200 pages. Stable names for cross-ref."<<std::endl;return 0;}
@@ -569,7 +569,7 @@ int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/S
 - **版本特性**：⟶ Book/part01_history/ch10_version_matrix.md（第10章　版本特性全景对照表与迁移指南）—— 本章 §④ 仅概述各版本演进脉络，本章给出逐特性的横向对照、取舍与迁移指引，是版本历史的深化入口。
 - **编译器实现**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI）—— 延伸本章 附录⑩ 编译器对标准的支持差异，落到具体工具链实现。
 
-## 附录 I：工业实战复盘（I.实战）[I: Practice]
+## 附录 X：工业实战复盘（I.实战）[I: Practice]
 
 ### 工业案例（真实可查证）
 

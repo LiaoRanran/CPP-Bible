@@ -1348,9 +1348,9 @@ int main() {
 
 *本章交叉引用：ch14（性能 SIMD，向量化依赖别名信息）、ch19（存储期，对象生命周期与别名的关系）、ch27（`reinterpret_cast`，双关的非法手段）、ch28（`std::launder` 与 UB 专题）、ch35（对齐，`alignas` 与对象表示）、ch60（并发屏障，CPU 级内存屏障与 `atomic_thread_fence`）、ch80（算法与别名，`std::copy` 等如何依赖 `memcpy`/`char_traits` 字节访问）。*
 
-## 附录 A：工业严格别名规则 [F: Industry / B: Principle / H: Design]
+## 附录 L：工业严格别名规则 [F: Industry / B: Principle / H: Design]
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录 A：工业严格别名规则 [F: ]
+> **示例 43** [难度 ★☆☆☆☆] [主题：附录 L：工业严格别名规则 [F: ]
 ```
 为什么存在 strict aliasing? (WG21 + C99 共同决定):
   → 编译器优化: 两个不同类型指针不会指向同一内存 → 可重排读写 → SIMD + 向量化
@@ -1366,9 +1366,9 @@ int main() {
 关键规则: char*, unsigned char*, std::byte* 可以合法别名任何类型 (唯一例外)
 ```
 
-## 附录 B：面试与工程实践 [J: Learning / I: Practice]
+## 附录 M：面试与工程实践 [J: Learning / I: Practice]
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：附录 B：面试与工程实践 [J: L]
+> **示例 44** [难度 ★☆☆☆☆] [主题：附录 M：面试与工程实践 [J: L]
 ```
 常见问题与面试:
 Q: 什么是 strict aliasing rule?

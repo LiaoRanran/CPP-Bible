@@ -1273,7 +1273,7 @@ int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=c
 - **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch142_ecs.md（第142章 实体组件系统 ECS（C++））
 - **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch143_dod.md（第143章 面向数据设计 DOD（C++））
 
-## 附录 G：结构型模式工业实例
+## 附录 M：结构型模式工业实例
 
 | 模式 | 项目 | 实现 | 源码 |
 |------|------|------|------|

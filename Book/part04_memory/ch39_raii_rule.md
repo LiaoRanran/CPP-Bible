@@ -2271,7 +2271,7 @@ flowchart TD
 | ch40 异常安全 | ch39 | 栈展开释放是异常安全基础 |
 | ch42 strict aliasing | ch39 | 共享资源别名需与 RAII 协同 |
 
-## 附录 J：RAII 与手动管理 / 异常安全 决策流（D3 维度）
+## 附录 L：RAII 与手动管理 / 异常安全 决策流（D3 维度）
 
 ```mermaid
 flowchart TD
@@ -2299,7 +2299,7 @@ flowchart TD
 
 > 决策流说明：能确定作用域优先 RAII，跨作用域共享用 shared_ptr；获取可能失败时按需取强/基本异常安全保证，且析构应保持 noexcept 以避免栈展开双抛，形成资源管理闭环。
 
-## 附录 K：RAII 与手动管理 / 异常安全 知识图谱（D6 维度）
+## 附录 M：RAII 与手动管理 / 异常安全 知识图谱（D6 维度）
 
 ```mermaid
 flowchart TD
