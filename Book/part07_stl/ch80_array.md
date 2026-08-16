@@ -1555,3 +1555,46 @@ int main() {
 - 400 万元素的 C 数组与 `std::array` 放在静态存储区（避免爆栈），`vector` 数据在堆上——三者物理位置不同但均为连续内存，顺序访问模式下预取行为一致。
 - 诚实标注：①`.at()` 与 `[]` 同速的结论**仅**对"编译器可证明下标安全"的循环成立，不可推广到任意下标来源；②`std::array` 求和一轮 13% 的偏差为轮间波动（其最快轮 17.81ms 与 C 数组最快轮重合），不构成三者有差的证据；③创建组的 3.49× 测的是"新建+填充+求和+销毁"整个生命周期，其中填充与求和两边同担，纯分配/释放差价比 3.49× 更大；④按值传参组每次调用前改写 `small[0]`，防止编译器缓存上次求和结果。
 - 复现：`g++ -O2 -std=c++23 _bench_d5_ch80_array.cpp`。基准源码见库根 `_bench_d5_ch80_array.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch80_array.cpp` 真实生成（节选 `_Z10sum_by_ref` / `_Z12sum_by_value`）。两函数分别接收 `const std::array<uint32_t,16>&` 与按值 `std::array<uint32_t,16>`，在 -O2 下编译产物**等价**（仅 `cmp` 两操作数次序互换）——这正是 D5.2 结论#1「零开销抽象：访问已存在的数据三者无差别」的机器码证据。
+
+```asm
+; sum_by_ref：const std::array<uint32_t,16>& 形参（rcx = 指针）
+;   _Z10sum_by_refRKSt5arrayIjLy16EE  (节选)
+        pxor    xmm1, xmm1             ; 累加器清零
+        pxor    xmm2, xmm2
+        lea     rax, 64[rcx]           ; rax = 末端哨兵（16 元素 × 4B = 64B）
+.L:     movdqu  xmm0, XMMWORD PTR [rcx]; ← SIMD 一次加载 16 字节（4× uint32）
+        add     rcx, 16                ; 指针自增 16 字节
+        movdqa  xmm3, xmm0
+        punpckhdq xmm0, xmm2           ; 把两路 dword 拆开
+        punpckldq xmm3, xmm2
+        paddq   xmm0, xmm3             ; ← 四路求和（无下标检查、无函数调用）
+        paddq   xmm1, xmm0
+        cmp     rcx, rax
+        jne     .L                     ; 循环完 64 字节
+; sum_by_value：按值 std::array<uint32_t,16> 形参 —— 与上面编译产物等价
+;   _Z12sum_by_valueSt5arrayIjLy16EE  (节选)
+        pxor    xmm1, xmm1
+        pxor    xmm2, xmm2
+        lea     rax, 64[rcx]
+.L:     movdqu  xmm0, XMMWORD PTR [rcx]; 同样：SIMD 加载 + 指针自增，无边界检查
+        add     rcx, 16
+        movdqa  xmm3, xmm0
+        punpckhdq xmm0, xmm2
+        punpckldq xmm3, xmm2
+        paddq   xmm0, xmm3
+        paddq   xmm1, xmm0
+        cmp     rax, rcx
+        jne     .L
+        movdqa  xmm0, xmm1
+        psrldq  xmm0, 8
+        paddq   xmm1, xmm0
+        movq    rax, xmm1
+        ret
+```
+
+> 注意：`std::array` 的 `operator[]` 在 -O2 内联后就是一次 SIMD 加载 + 指针自增（与 C 数组下标、`vector` 连续遍历完全一致），没有任何边界检查或间接开销——证实 D5.2 结论#1「访问已存在的数据零开销」。按值版本 26% 的惩罚（结论#3）并不在这个函数体里（两者等价），而是发生在**调用点**：按值传参迫使调用方把 64 字节整块拷入实参槽（Windows x64 隐藏副本 ABI）2000 万次，而 `const&` 只传 8 字节指针。零开销抽象保证「访问」免费，但不消除「值语义拷贝」。绝对毫秒随机器而变，加速比才是可移植信号。

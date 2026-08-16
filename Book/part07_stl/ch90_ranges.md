@@ -1155,6 +1155,76 @@ flowchart TD
 
 > 交叉引用：迭代器见 [ch76](Book/part07_stl/ch76_stl_arch.md)；算法见 [ch95](Book/part08_algorithms/ch95_algo_overview.md)；惰性求值见 [ch120](Book/part10_modern/ch120_coroutine_app.md)。
 
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_90_ranges.cpp` 真实生成（节选 `manual` / `ranges_for_each` / `ranges_pipe` 三个热函数）。D5.2 结论 1「`ranges::for_each` 与手写循环逐 ns 等价」直接体现为 `manual` 与 `ranges_for_each` 机器码完全同构；结论 2「`filter|transform` 多阶段管道慢 5.38×」则体现为 `ranges_pipe` 多出近一倍的迭代器解包指令。
+
+```asm
+; manual：手写循环基线（16 条指令）
+;   _Z6manualRKSt6vectorIiSaIiEE  (节选)
+        xor     r8d, r8d
+        mov     rdx, QWORD PTR [rcx]    ; 取 vector 首元素指针
+        mov     r9, QWORD PTR 8[rcx]    ; 取 end 指针
+        cmp     r9, rdx
+        je      .L                     ; 空则跳过
+        mov     ecx, DWORD PTR [rdx]    ; 取 *x
+        lea     eax, [rcx+rcx*2]        ; x*3
+        cdqe
+        add     rax, r8
+        and     ecx, 1                 ; x%2==0 的判定（取最低位）
+        cmove   r8, rax                 ; 偶则累加 x*3
+        add     rdx, 4                 ; 推进到下一元素
+        cmp     r9, rdx
+        jne     .L                     ; 循环结尾
+        mov     rax, r8
+        ret
+
+; ranges_for_each：算法被同构内联，与 manual 逐条对应（16 条指令）
+;   _Z15ranges_for_eachRKSt6vectorIiSaIiEE  (节选)
+        xor     r8d, r8d
+        mov     r9, QWORD PTR 8[rcx]
+        mov     rdx, QWORD PTR [rcx]
+        cmp     r9, rdx
+        je      .L
+        mov     ecx, DWORD PTR [rdx]
+        lea     eax, [rcx+rcx*2]
+        cdqe
+        add     rax, r8
+        and     ecx, 1
+        cmove   r8, rax
+        add     rdx, 4
+        cmp     r9, rdx
+        jne     .L
+        mov     rax, r8
+        ret
+
+; ranges_pipe：filter|transform 多层 view 迭代器链，指令数近翻倍（节选）
+;   _Z11ranges_pipeRKSt6vectorIiSaIiEE  (节选)
+        mov     r8, QWORD PTR 8[rcx]
+        mov     rcx, QWORD PTR [rcx]
+        cmp     r8, rcx
+        jne     .L
+        jmp     .L
+        add     rcx, 4                 ; 推进 view 迭代器（每层各一套）
+        cmp     r8, rcx
+        je      .L
+        mov     edx, DWORD PTR [rcx]    ; operator* 取元素
+        test    dl, 1                  ; filter：逐位判偶
+        jne     .L                     ; ← 不可预测的跳过（分支预测失败）
+        xor     r9d, r9d
+        cmp     r8, rcx
+        je      .L
+        lea     eax, [rdx+rdx*2]        ; transform：x*3
+        cdqe
+        add     r9, rax
+        lea     rax, 4[rcx]
+        cmp     r8, rax
+        jne     .L                     ; 回到 filter 顶层（多层迭代器链解包）
+```
+
+> 注意：`ranges_for_each` 与 `manual` 的循环核（取数 → `and ecx,1` 判偶 → `cmove` 累加 `x*3` → `add rdx,4` 推进）逐条相同，故 D5.2 结论 1 成立（真·零开销抽象铁证）。`ranges_pipe` 每段 view 都多一层 `operator*`/`operator++` 解包（`add rcx,4` 推进 + 额外的 `.L` 分支跳转），`filter` 的不可预测跳过还带来分支预测失败与 cache miss——这就是 5.38× 常数开销的机器码来源。绝对毫秒随机器而变，加速比才是可移植信号。
+
 ## 相关章节（交叉引用）
 
 - **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— ranges 构建于该架构的迭代器概念之上

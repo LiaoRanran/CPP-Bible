@@ -1313,3 +1313,28 @@ int main() {
 | --- | --- | --- |
 | ch64 折叠表达式 | Book/part06_templates/ch64_fold.md | 折叠表达式是包展开的归约替代 |
 | ch116 完美转发 | Book/part10_modern/ch116_perfect_forwarding.md | 可变参数 + 万能引用实现 emplace 转发构造 |
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch63_tuple_struct.cpp` 真实生成（节选热函数 `sum_struct` / `sum_tuple`）。二者在 -O2 下都塌缩为 4 条标量 `addsd` 直加（偏移顺序不同，但都是编译期确定的直接偏移访问）：证明 `std::get<N>` 的"递归继承布局 + 编译期分派"已被完全内联，**运行期没有任何虚调用 / 查表 / 分支**；D5.2 那 9% 的差距只来自内存布局与寄存器分配，而非算法差异。
+
+```asm
+; sum_struct：等价 struct Rec{x,y,z,w} 直接偏移访问（4 次 addsd 全内联）
+;   _Z10sum_structRK3Rec  (节选)
+        movsd   xmm0, QWORD PTR [rcx]   ; r.x：从偏移 0 加载
+        addsd   xmm0, QWORD PTR 8[rcx]  ; + r.y（偏移 8）
+        addsd   xmm0, QWORD PTR 16[rcx] ; + r.z（偏移 16）
+        addsd   xmm0, QWORD PTR 24[rcx] ; + r.w（偏移 24）
+        ret
+
+; sum_tuple：std::get<0..3> 编译期分派到直接偏移访问（同样 4 次 addsd）
+;   _Z9sum_tupleRKSt5tupleIJddddEE  (节选)
+        movsd   xmm0, QWORD PTR 24[rcx] ; get<3>（偏移 24，从尾端起）
+        addsd   xmm0, QWORD PTR 16[rcx] ; get<2>（偏移 16）
+        addsd   xmm0, QWORD PTR 8[rcx]  ; get<1>（偏移 8）
+        addsd   xmm0, QWORD PTR [rcx]   ; get<0>（偏移 0）
+        ret
+```
+
+> 注意：两条路径都是直线型标量加法，指令数完全相同（5 条），差异仅在偏移加法的顺序——这正是 D5.2 第 2 点"开销来自布局而非运行期"的机器码证据。`std::get<N>` 的所有索引在编译期确定，运行期零分派开销；9% 差距是递归基类链布局 vs 扁平 struct 的寄存器分配代价，随编译器/微架构略有波动。绝对毫秒随机器而变，加速比（tuple/struct = 1.09×）才是可移植信号。

@@ -2401,3 +2401,25 @@ int main() {
 - C 组的 monotonic 版本刻意不做逐块 `deallocate`（那本来就是 no-op），由资源析构时统一归还，这正是它的正确用法；把它与 pool 的耗时并列比较时，请连同这条生命周期约束一起读。
 - 加速比（8.38×、3.50× 等）是可移植信号；绝对毫秒随 CPU、系统分配器实现与编译器版本而变，请勿跨机器直接比较毫秒。demo 断言的是分配**次数**与**相等语义**这类稳定事实，未对时间或倍数做任何断言。
 - 基准源码见库根 `_bench_d5_ch38_allocator.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch38_allocator.cpp` 真实生成（节选热函数 `std::__cxx11::List_base<int, pmr::polymorphic_allocator<int>>::_M_clear`，对应 bench B2/B3 的 `pmr::list`）。它证实 D5.2 第 5 条：PMR 的每次释放不是直接 `free`，而是经 `memory_resource` 虚表的一次**虚调用**——这正是「运行时多态」换来的成本，也是 `std::allocator` 编译期内联所没有的。
+
+```asm
+; ===== _ZNSt7__cxx1110_List_baseIiNSt3pmr21polymorphic_allocatorIiEEE8_M_clearEv()  —  GCC 15.3.0 -O2 -masm=intel (节选) =====
+        mov     rbx, QWORD PTR 8[rcx]   ; rcx=this；取首节点（_M_node）
+        ;   ... rsi=this；rdi=哨兵地址；判空 ...
+        mov     rcx, QWORD PTR [rsi]    ; 取出绑定的 memory_resource*（分配器的首个成员）
+        mov     rdx, rbx                ; 第 2 参数 void* p = 待释放节点
+        mov     rbx, QWORD PTR [rbx]    ; rbx = 下一节点，准备下一轮
+        mov     r9d, 8                  ; 第 4 参数 alignment = 8
+        mov     r8d, 24                 ; 第 3 参数 bytes = 24（节点大小）
+        mov     rax, QWORD PTR [rcx]    ; ← 取出 memory_resource 的虚表指针
+        call    [QWORD PTR 24[rax]]     ; ← 虚调用 do_deallocate：释放经 PMR 资源路由
+        cmp     rbx, rdi                ; 回到哨兵则结束
+        jne     .L
+```
+
+> 注意：默认 `std::allocator` 的释放会被内联成直通的 `free`/`delete`，没有这次虚调用；PMR 把「能否互相释放」推迟到运行期指针比较，代价就是每次分配/释放多一次 `call [vtable]`（D5.2 第 5 条）。但即便含这笔虚调用开销，节点容器仍比默认分配器快约 10×——因为削掉的是「每次 push_back 一次分配」的固定成本（D5.2 第 1 条）。绝对毫秒随机器而变，加速比才是可移植信号。

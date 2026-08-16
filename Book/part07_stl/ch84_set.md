@@ -1731,3 +1731,27 @@ int main() {
 - 加速比（15.6×、5.84×、327× 等）是可移植信号；绝对毫秒随 CPU、分配器实现与编译器版本而变，请勿跨机器直接比较毫秒。
 - demo 只断言功能等价性（元素数、遍历一致性、查询一致性、重复计数），未对时间、倍数或精确 `sizeof` 做任何断言。
 - 基准源码见库根 `_bench_d5_ch84_set_multiset.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch84_set_multiset.cpp` 真实生成（节选 `set<int>` 的 `_M_get_insert_unique_pos`，int 键）。D5.2 的 headline 结论 #1（vector `lower_bound`/`binary_search` 快约 6× 于 `set::find`，差距来自缓存而非算法复杂度）可由这段红黑树下降循环直接看出：`set` 与 vector 二分每步比较次数几乎相同（都是 O(log n)≈20 层），但 `set` 每步都要先解引用一个散布在堆上的节点指针、再沿 `_M_left`/`_M_right` 追逐到下一层——每次跳跃都是一次不可预测的堆地址跳转，极易 L3 cache miss（50–100 cycle 惩罚）；vector 二分的中点地址是 `base + mid*4` 的连续推算，硬件预取器在消费第一个 cache line 时就把后续行拉进 L1。int 键的比较本身只是一句 4 字节 `cmp`，便宜到可以忽略，于是真实瓶颈就是"指针追逐"这一项。
+
+```asm
+; set 键定位：红黑树逐层指针追逐（关键路径，int 键）
+;   _ZNSt8_Rb_treeIiiSt9_IdentityIiESt4lessIiESaIiEE24_M_get_insert_unique_posERKi.isra.0  (节选；find 与插入定位共用同一套下降逻辑)
+  mov     rcx, QWORD PTR 16[rdx]      ; rcx = 根节点 _M_root
+  test    rcx, rcx
+  je      .L
+.L:
+  mov     r9d, DWORD PTR 32[rcx]      ; 读节点值（int，offset 32）
+  mov     rax, QWORD PTR 24[rcx]      ; 读子节点指针（offset 24 = _M_right）
+  cmp     r8d, r9d                    ; ← 比较待查值 vs 节点值（单次 4 字节 cmp，极廉价）
+  cmovl   rax, QWORD PTR 16[rcx]      ; 小于 → 改走 _M_left（offset 16）
+  setl    r10b
+  test    rax, rax
+  jne     .L                          ; 子节点非空 → 下降一层（追逐堆上子节点指针）
+  ; …（下降前的栈/寄存器准备指令省略）
+```
+
+> 注意：`set::find` 走的就是这条完全相同的下降循环——每层一次 `cmp` + 一次 `_M_left`/`_M_right` 指针追逐，树高约 20 层即约 20 次潜在 cache miss。vector 的 `lower_bound` 每层也是一次 `cmp`，但"下一层中点"由 `base + mid*4` 算术连续得出，预取器可预测、几乎全在 L1 命中。这正是 D5.2 #1「同阶复杂度、缓存定胜负」的机器码注脚，也是 #4（有序遍历 vector 快 327×）与 #5（set 内存膨胀 10×）同一根因：节点散布堆上 → 缓存友好性崩塌。绝对毫秒随 CPU/编译器而变，加速比才是可移植信号。

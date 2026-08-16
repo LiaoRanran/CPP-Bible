@@ -1773,3 +1773,38 @@ int main() {
 - 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
 - 加速比（4.6× / 5.7× / 3.7× / 7.5×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_89_any.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_89_any.cpp` 真实生成（节选类型擦除管理器 `_Manager_internal<int>` 与 `_Manager_external<std::string>`）。`any` 每次访问都要先经「manager 跳转表」间接分发（函数指针 + `typeid` 校验），这正是 D5.2 结论 1「`int` 走 SBO 仍慢 5.7×」的来源；而 SBO 命中（`int`）与堆分配（`string`）在栈帧开销上一眼可分。
+
+```asm
+; _Manager_internal<int>：int 命中 16 字节 SBO，全程 in-situ，无堆操作（7 条）
+;   _ZNSt3any17_Manager_internalIiE9_S_manageENS_3_OpEPKS_PNS_4_ArgE  (节选)
+        cmp     ecx, 4                  ; 先按 Op 码做 manager 分发
+        ja      .L
+        lea     r9, .L[rip]             ; 取跳转表基址
+        mov     ecx, ecx
+        movsxd  rax, DWORD PTR [r9+rcx*4]
+        add     rax, r9
+        jmp     rax                     ; ← 跳到对应管理器分支（间接分发）
+
+; _Manager_external<std::string>：string 超 SBO，必走堆（13 条，多出栈帧与取堆指针）
+;   _ZNSt3any17_Manager_externalINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEE9_S_manageENS_3_OpEPKS_PNS_4_ArgE  (节选)
+        push    rsi                     ; ← 额外栈帧：要管理堆上的对象外壳
+        push    rbx
+        sub     rsp, 88
+        mov     r10, r8
+        mov     r9, rdx
+        mov     r8, QWORD PTR 8[rdx]    ; ← 取出指向「堆上 string 外壳」的指针
+        cmp     ecx, 4                  ; 同样先走 manager 跳转表分发
+        ja      .L
+        lea     rdx, .L[rip]
+        mov     ecx, ecx
+        movsxd  rax, DWORD PTR [rdx+rcx*4]
+        add     rax, rdx
+        jmp     rax
+```
+
+> 注意：两条路径都付出 manager 跳转表间接分发（D5.2 结论 1 的 5.7× 根因是每次访问的指针/类型校验，而非堆分配）；区别在 `_Manager_external` 多出 `push/sub rsp` 的栈帧与「堆上 string 外壳 + 其内 64 字节数据区」两级分配（D5.2 结论 4）。`int` 因满足可平凡移动而命中 SBO，故帧仅 7 条、无 `_ZdlPv`；绝对毫秒随机器而变，5.7× 才是可移植信号。

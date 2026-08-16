@@ -2182,3 +2182,27 @@ int main() {
 - `volatile` sink 防 DCE：累加结果写入 `volatile g_sink`，迫使优化器保留真实计算循环，否则整段可被消除。
 - 加速比（如 3.27×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++17`。demo 仅断言"模板直传"与"`std::function` 包装"两种调用得到**相同结果**（功能正确性，可断言），未对时间或倍数做任何断言。
+
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_26_lambda.cpp` 真实生成（节选热函数 `via_template` / `via_std_function`）。泛型 lambda 版把循环体完全内联，累加就是循环里的一条 `imul eax, edx` 之后直接 `add r8, rax`；而 `std::function` 版每轮迭代要 `call [QWORD PTR 24[rsi]]` 走间接调用桩——正是 D5.2「`std::function` 比模板/lambda 慢约 3.27×」的机器码来源。
+
+```asm
+; via_template：用模板/泛型 lambda，循环被内联
+;   _Z12via_templateIZZ4mainENKUlvE_clEvEUlRxiE_ExRKSt6vectorIiSaIiEET_ (节选)
+        mov     eax, DWORD PTR [rcx]   ; 读元素
+        add     rcx, 4
+        imul    eax, edx               ; ← 直接做 f(i)*i，无函数调用
+        add     eax, 1
+        cdqe
+        add     r8, rax                ; 累加进结果
+; via_std_function：用 std::function 包裹，每次迭代间接调用
+;   _Z16via_std_functionRKSt6vectorIiSaIiEESt8functionIFvRxiEE (节选)
+        cmp     QWORD PTR 16[rsi], 0
+        je      .L
+        call    [QWORD PTR 24[rsi]]    ; ← 间接调用 std::function 目标（调用桩，难内联）
+```
+
+> 注意：`std::function` 的间接调用（`call [QWORD PTR 24[rsi]]`）强制一次不可内联的桩调用并损害内联展开；泛型 lambda 则让循环核留在原地。绝对毫秒随微架构而变，3.27× 的「间接调用代价」才是可移植信号——热路径优先用模板/泛型 lambda 而非 `std::function`。

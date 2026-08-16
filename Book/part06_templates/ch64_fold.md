@@ -1333,3 +1333,38 @@ int main() {
 | ch63 可变参数模板 | Book/part06_templates/ch63_variadic.md | 包展开与递归变参的对比对象 |
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | 编译期折叠的更广义机制 |
 | ch65 type_traits | Book/part06_templates/ch65_type_traits.md | 编译期布尔与 `all_integral` 等 trait 配合 fold |
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch64_fold.cpp` 真实生成（节选热函数 `unrolled_sum` / `rec_sum` / `loop_sum`）。`unrolled_sum` 与 `rec_sum` 把 8 个编译期字面量直接折成常量（各 2 条指令）；`loop_sum` 却把 8 个操作数物化到栈再逐轮加载（19 条指令）。这正面印证 D5.2：折叠 / 递归 / 展开三者位级等价（均≈1.00×），而"手写循环更慢 2.9×"的根因是栈上数组物化，而非循环本身。
+
+```asm
+; unrolled_sum：立即数展开，8 个字面量被折成一个常量
+;   _Z12unrolled_sumv  (节选)
+        movsd   xmm0, QWORD PTR .LC[rip]  ; 1.1+2.2+...+8.8 已在编译期求和为常量
+        ret
+
+; rec_sum：递归变参，同样在编译期折成常量
+;   _Z7rec_sumv  (节选)
+        pxor    xmm0, xmm0                ; 0.0（编译期归约结果）
+        ret
+
+; loop_sum：遍历 const double a[8]，先把 8 个操作数物化到栈
+;   _Z8loop_sumv  (节选)
+        sub     rsp, 72                   ; 在栈上留 64B 给数组
+        movapd  xmm0, XMMWORD PTR .LC[rip]; 把字面量逐个搬到栈（前 2 次）
+        movaps  XMMWORD PTR [rsp], xmm0
+        ;   ... 余下 6 次 movapd/movaps 物化（省略）...
+        pxor    xmm0, xmm0                ; 累加器清零
+        addsd   xmm0, QWORD PTR [rax]     ; 运行时才从栈加载并累加
+        lea     rdx, 64[rsp]
+        add     rax, 16
+        addsd   xmm0, QWORD PTR -8[rax]   ; 下一元素
+        cmp     rdx, rax
+        jne     .L                        ; ← 真实循环回边：操作数已不在寄存器/立即数
+        add     rsp, 72
+        ret
+```
+
+> 注意：fold / 递归 / 展开三者产物相同（`movsd` 常量 + `ret`），故 D5.2 第 1 点"位级等价、1.00×"。`loop_sum` 多出的指令几乎都是"把编译期常量搬到栈再读回"——这是点 2 所谓"栈上数组 vs 立即数"的机器码证据；把 `const` 数组改为 `constexpr`/`std::array` 字面量即可让循环追平 fold。绝对毫秒随机器而变，fold≈rec≈unrolled 的比值（1.00×）才是可移植信号。

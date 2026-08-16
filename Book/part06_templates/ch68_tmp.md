@@ -1138,3 +1138,28 @@ int main() {
 | ch63 可变参数模板 | Book/part06_templates/ch63_variadic.md | 包展开常与 TMP 配合 |
 | ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 模板实例化机制前置 |
 | ch70 tag dispatch | Book/part06_templates/ch70_tag_dispatch.md | 编译期分派的另一种形态 |
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch68_tmp.cpp` 真实生成（节选热函数 `fib_rt_iter`，即运行期迭代版斐波那契）。它是一个带 `jne` 回边的真实循环（16 条指令），每轮重新计算——而 D5.2 第 1、3 点指出，TMP / constexpr 版 `Fib<30>` 在编译期就折成常量 `832040`，运行期只是"加一个常量"。此反差正是"把工作搬到编译期省约 9.3×"的机器码证据。
+
+```asm
+; fib_rt_iter：运行期迭代斐波那契，每轮都要真算
+;   _Z11fib_rt_iteri  (节选)
+        test    ecx, ecx
+        jle     .L                          ; n<=0 走冷路径返回
+        xor     edx, edx                    ; a = 0
+        mov     eax, 1                      ; b = 1
+        xor     r9d, r9d
+        mov     r8, rax
+        add     edx, 1                      ; 计数 +1
+        add     rax, r9                     ; b = b + a
+        mov     r9, r8
+        cmp     ecx, edx
+        jne     .L                          ; ← 真实循环回边：运行期反复迭代
+        mov     rax, r8
+        ret
+```
+
+> 注意：运行期版是 16 条指令的真实循环（含 `jne` 回边），每轮重新展开计算——这是 D5.2 第 3 点"运行时版每轮都要重新迭代"的机器码证据；而 TMP `Fib<30>::value` 与 `constexpr fib_ce(30)` 在 -O2 都折成同一常量 `832040`，热点循环里只是读取它（运行期零额外指令）。运行期→编译期的 9.3× 来自"常量 vs 迭代"，非 TMP 比 constexpr 快。绝对毫秒随机器而变，runtime/TMP≈9.3× 的比值才是可移植信号。

@@ -1762,3 +1762,49 @@ int main() {
 - `volatile` sink（`volatile int sink`）吸收计算结果，防止编译器以"结果未使用"为由将整段循环死代码消除（DCE）。
 - 加速比（如 22.5×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++17`。demo 已把规模缩到 50K 以在 CI 秒级跑完，仅作结构对照，不承诺与主控 1M 基准成线性比例。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_83_map.cpp` 真实生成（节选 `unordered_map` 的 `_M_find_before_node` 与 `map` 的 `_M_get_insert_unique_pos`，均为 string 键）。D5.2 的 headline 结论 #1（查找差距 22.5× ≫ 插入差距 2.71×）与 #2（string 键把差距稀释到 3.65×）根因都在"键操作的结构成本"：`map` 每次定位都要沿红黑树**逐层指针追逐**并对整条 25 字节键 `memcmp`；`unordered_map` 只需一次哈希定位桶、再沿桶链做"缓存 hash → 键长 → `memcmp`"的短链比对。树深约 log2(1M)≈20 层，每层一次潜在 cache miss，于是查找倍率被结构本身放大；而插入时两侧都要分配堆节点，分配器固定成本稀释了结构差距，倍率被拉平到 2.71×。
+
+```asm
+; unordered_map 查找：哈希表桶链遍历（关键路径，string 键）
+;   _ZNKSt10_Hashtable<...>19_M_find_before_nodeEyRS7_y.isra.0  (节选)
+  mov     r9,  QWORD PTR [rcx+r8*8]   ; 取桶 bucket[bucket_index]（哈希已由调用方算好）
+  test    r9,  r9
+  je      .L                          ; 空桶 → 未命中
+  mov     r10, QWORD PTR [r9]         ; r10 = 桶中首节点（链表头）
+  mov     rcx, QWORD PTR 48[r10]      ; 读节点内缓存的 hash
+  cmp     rbp, rcx                    ; 先比 hash，不等则跳过该节点
+  mov     r8,  QWORD PTR 8[rdi]       ; 读待查键长度
+  cmp     r8,  QWORD PTR 16[r10]      ; 再比节点键长度
+  mov     r11, QWORD PTR [r10]        ; 读 _M_next，沿桶链续找下一个节点
+  test    r11, r11
+  je      .L
+  ; …（桶链中间节点的 hash/键长/memcmp 比对同上，此处省略）
+  call    memcmp                      ; 长度一致才逐字节比对键内容（桶链通常仅 1–2 节点）
+
+; map 查找/插入定位：红黑树逐层指针追逐（关键路径，string 键）
+;   _ZNSt8_Rb_tree<...>24_M_get_insert_unique_posERS7_  (节选；find 共用同一套下降逻辑)
+  mov     r14, QWORD PTR 16[rdx]      ; r14 = 根节点 _M_root
+.L:
+  mov     rsi, QWORD PTR [r8]         ; 读待查键指针
+  mov     r13, QWORD PTR 8[r8]        ; 读待查键长度
+  mov     r15, QWORD PTR 32[r14]      ; 节点左子树指针（offset 32）
+  mov     rbx, QWORD PTR 40[r14]      ; 节点右子树指针（offset 40）
+  ; …（下降前的栈/寄存器准备指令省略）
+  call    memcmp                      ; ← 逐字节比较键（25 字节堆串，开销大）
+  test    eax, eax
+  je      .L                          ; 相等 → 命中
+  test    eax, eax
+  js      .L                          ; 小于 → 走左子树
+  mov     rax, QWORD PTR 24[r14]      ; 取子节点
+  test    rax, rax
+  je      .L
+  mov     r15, QWORD PTR 32[rax]      ; 下探子节点左子树
+  mov     rbx, QWORD PTR 40[rax]      ; 下探子节点右子树
+  mov     r14, rax                    ; r14 ← 子节点（下降一层，指针追逐）
+```
+
+> 注意：两侧都含 `call memcmp` 这一键比较大头，因此"键越贵，结构差距越被稀释"——这正是 #2（string 键 3.65× < int 键 22.5×）的机器码注脚。`map` 的下降循环深度约 log2(N)：1M 元素 ≈ 20 层，每层一次 cache-miss 倾向的指针追逐，结构上就注定查找远慢于"一次哈希 + 短桶链"的 `unordered_map`。绝对毫秒随 CPU/编译器而变，加速比才是可移植信号。

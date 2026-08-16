@@ -1833,3 +1833,35 @@ int main() {
 - 反直觉点已在 D5.2 第 2 条诚实标注：`list` 底层在队列语义下是灾难级反向优化。
 - 复现旗标：`g++ -O2 -std=c++23`。demo 仅断言 `priority_queue` 与 `multiset` 弹出的降序最大序列逐元素一致、以及 `stack<vector>` 与 `stack<deque>` 的 LIFO 一致，未断言运行时间或加速比。
 - 基准源码见库根 `_bench_d5_86_adapters.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_86_adapters.cpp` 真实生成（节选 `deque<int>` 的 `_M_initialize_map` 与 `_M_push_back_aux`）。D5.2 的 headline 结论 #1（`stack<vector>` 比 `stack<deque>` 快 1.40×，根因是 deque 的"一级间接寻址 + 块边界分支"）可由这两段直接看出：`deque` 不是一块连续内存，而是"中央映射数组 + 多块 512 字节定长块"的两层结构——初始化时先 `call _Znwy` 分配映射数组，再循环 `call _Znwy` 分配每个块并把块指针写回映射数组；尾端跨块时 `_M_push_back_aux` 还要再 `call _Znwy` 开新块。于是每次 `push_back` 都要先经映射数组取出块指针、再落到块内元素（两级寻址），还多了"当前块是否已满"的分支；`vector` 则是一次连续分配 + 容量内纯顺序写入（一条 `mov`），无映射数组、无逐块 `operator new`，自然更快。
+
+```asm
+; deque 构造：中央映射数组 + 多块定长块（两层结构，关键路径）
+;   _ZNSt11_Deque_baseIiSaIiEE17_M_initialize_mapEy  (节选)
+  lea     rcx, 0[0+rbx*8]             ; rcx = 映射数组字节数（块数 × 8 字节指针）
+  ; …（计算块数、对齐等准备指令省略）
+  call    _Znwy                        ; ← 分配中央映射数组（存各块指针）
+  ; …（循环初始化块指针区间等准备指令省略）
+  mov     ecx, 512                     ; 每块 512 字节（= 128 个 int）
+  call    _Znwy                        ; ← 逐个分配定长块（每次都是一次 operator new）
+  mov     QWORD PTR [rbx], rax         ; 把块指针写回中央映射数组
+  add     rbx, 8
+  cmp     rbx, rbp
+  jb      .L                           ; 循环：把所有块都挂到映射数组上
+
+; deque 尾插跨块：再开一块并接入映射数组
+;   _ZNSt5dequeIiSaIiEE16_M_push_back_auxIJRKiEEEvDpOT_  (节选)
+  mov     ecx, 512
+  add     rdi, 8
+  call    _Znwy                        ; ← 当前块满，分配新 512 字节块
+  mov     ecx, DWORD PTR [rsi]
+  mov     QWORD PTR [rdi], rax         ; 把新块指针写入映射数组（"映射"这一级间接寻址）
+  mov     DWORD PTR [rdx], ecx         ; 再写到块内元素
+  ; …（更新 deque 的 _M_last 等尾部迭代器状态指令省略）
+```
+
+> 注意：`deque` 的 1.40× 劣势不是来自算法，而来自内存布局——两层结构带来"映射数组取块指针 + 块内取元素"的二级寻址，以及逐块 `operator new`（ch37 已证单次 `_Znwy` ≈ 49.5 ns）。`vector` 把元素压进同一块连续内存，硬件预取器可整行预取，尾端 `push_back` 退化为一条 `mov`。这同时解释了 D5.2 #2（`queue<list>` 17.7× 灾难：`list` 比 `deque` 还糟，每节点独立 `malloc` + 2 指针元数据 + 纯指针追逐）与 #4（换 `list` 几乎永远是错）：适配器暴露底层容器选择权时，应看访问模式与内存布局，而非直觉。绝对毫秒随分配器/编译器而变，加速比才是可移植信号。

@@ -1576,3 +1576,24 @@ int main() {
 - 加速比 / 相对倍数是可移植信号；绝对毫秒随 CPU、ABI 与编译器版本而变，请勿跨机器直接比较毫秒。落在噪声内的比值（如本附录的 thunk 一项）不得当作结论使用。
 - demo 只断言子对象偏移非零、虚调用分派结果、虚基类共享性这类稳定语义，未对时间、倍数或精确 `sizeof` 做任何断言。
 - 基准源码见库根 `_bench_d5_ch50_multiple_inheritance.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch50_multiple_inheritance.cpp` 真实生成（节选多重继承 `M` 的两个 this 调整 thunk）。它们对应 D5.2 第 1/2 条所说的 thunk：「经第二基类 `R*` 的虚调用/析构，跳转前多一条 `sub rcx, 16` 的常量减法把 this 调回对象首地址」；而单继承（第一基类 `L*` 与派生类同首地址）根本不需要这层。
+
+```asm
+; 经第二基类 R* 触发的 this 调整 thunk（多重继承专属）
+;   _ZThn16_N9MDerivedAD0Ev  (节选, GCC 15.3.0 -O2)
+        mov     edx, 32                 ; 对象大小 32B（传给 operator delete）
+        sub     rcx, 16                 ; ← this 从 R 子对象（偏移 16）调回 M 首地址
+        jmp     _ZdlPvy                 ; 尾跳 operator delete
+; 虚继承菱形路径的 this 调整 thunk（偏移运行期从 vtable 读出）
+;   _ZTv0_n24_N9VDerivedAD0Ev  (节选)
+        mov     edx, 32                 ; 对象大小 32B
+        mov     rax, QWORD PTR [rcx]    ; 取对象头部 vptr
+        add     rcx, QWORD PTR -24[rax] ; ← 从 vtable 负偏移区读虚基类偏移（-24）加到 this
+        jmp     _ZdlPvy                 ; 尾跳 operator delete
+```
+
+> 注意：`sub rcx, 16` 就是 D5.2 第 1 条点名的「thunk 在跳转前多一条 `sub` 形式的常量减法」——它确实存在，但只是一次常量减法，在乱序核上与间接跳转的 BTB 预测、vtable 载入完全重叠，占不到额外周期，故实测落在噪声内（0.97×~1.05× 翻号）。真正的、方向从不翻转的开销是右侧虚继承那条 `add rcx, QWORD PTR -24[rax]`：每次访问虚基类成员都要先跑一次 vtable 依赖加载。thunk 的真实代价是抬高二进制体积与 i-cache 压力，而非单次调用周期。绝对毫秒随机器而变，加速比才是可移植信号。

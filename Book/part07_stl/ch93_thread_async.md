@@ -1911,3 +1911,63 @@ int main() {
 - `thread_reuse` 此处是 K=16 固定 worker 的近似线程池；生产线程池还需任务队列、工作窃取与亲和性调优，但"复用远优于每次新建"的定性结论不受影响。
 - `deferred` 虽快却不是并发：它把任务推迟到 `get()` 在本线程同步跑，只能省"线程创建"不能省"计算量"，切勿用它以图降延迟。
 - 复现旗标：`g++ -O2 -std=c++23 -pthread`。基准源码见库根 `_bench_d5_93_async.cpp`。demo 用副作用标志 `ran` 验证 `deferred` 直到 `get()` 才执行，并断言 `async` 返回值正确（均为功能正确性），未对时间、倍数或 `sizeof` 做任何断言。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -pthread -masm=intel _bench_d5_93_async.cpp` 真实生成（节选 `Async_state_impl::_M_run` 与 `Deferred_state::_M_complete_async`）。D5.2 结论 1「`async(launch::async)` 每次调用开销 ≈ 线程复用 595×」、结论 2「`deferred` 最快但是『假并发』」可由此对照：两条路径的**任务执行体**机器码逐条同构，说明 595× 差价不来自任务本身，而来自 `async` 每次必经的「线程创建 + 销毁（std::thread ctor → 内核对象分配 + 默认栈保留 + 调度注册）」，deferred 则完全跳过这一步、直接在本线程跑 `_M_complete_async`。
+
+```asm
+; Deferred_state::_M_complete_async：deferred 在本线程同步跑任务（无新线程）
+;   _ZNSt13__future_base15_Deferred_stateINSt6thread8_InvokerISt5tupleIJZZ4mainENKUlvE_clEvEUlvE_EEEExE17_M_complete_asyncEv  (节选)
+        push    rsi
+        push    rbx
+        sub     rsp, 72
+        mov     r8d, 1
+        movq    xmm0, QWORD PTR .LC[rip]
+        lea     rax, 48[rcx]
+        lea     rdx, 32[rsp]
+        mov     QWORD PTR 32[rsp], rax
+        lea     rax, 56[rcx]
+        mov     QWORD PTR 40[rsp], rax
+        lea     rax, _ZNSt17_Function_handlerIFSt10unique_ptrINSt13__future_base12_Result_baseENS2_8_DeleterEEvENS1_12_Task_setterIS0_INS1_7_ResultIxEES3_ENSt6thread8_InvokerISt5tupleIJZZ4mainENKUlvE_clEvEUlvE_EEEExEEE9_M_invokeERKSt9_Any_data[rip]
+        movq    xmm1, rax
+        punpcklqdq     xmm0, xmm1
+        movaps  XMMWORD PTR 48[rsp], xmm0
+        call    _ZNSt13__future_base13_State_baseV213_M_set_resultESt8functionIFSt10unique_ptrINS_12_Result_baseENS3_8_DeleterEEvEEb
+        mov     rax, QWORD PTR 48[rsp]
+        test    rax, rax
+        je      .L
+        mov     r8d, 3
+        lea     rdx, 32[rsp]
+        lea     rcx, 32[rsp]
+        call    rax                     ; ← 在本线程直接调用任务（无线程创建）
+
+; Async_state_impl::_M_run：async 在新建线程里跑同一个任务体
+;   _ZNSt13__future_base17_Async_state_implINSt6thread8_InvokerISt5tupleIJZZ4mainENKUlvE_clEvEUlvE_EEEExE6_M_runEv  (节选)
+        push    rsi
+        push    rbx
+        sub     rsp, 88
+        xor     r8d, r8d
+        movq    xmm0, QWORD PTR .LC[rip]
+        lea     rax, 64[rcx]
+        lea     rdx, 48[rsp]
+        mov     rbx, rcx
+        mov     QWORD PTR 48[rsp], rax
+        lea     rax, 72[rcx]
+        mov     QWORD PTR 56[rsp], rax
+        lea     rax, _ZNSt17_Function_handlerIFSt10unique_ptrINSt13__future_base12_Result_baseENS2_8_DeleterEEvENS1_12_Task_setterIS0_INS1_7_ResultIxEES3_ENSt6thread8_InvokerISt5tupleIJZZ4mainENKUlvE_clEvEUlvE_EEEExEEE9_M_invokeERKSt9_Any_data[rip]
+        movq    xmm1, rax
+        punpcklqdq     xmm0, xmm1
+        movaps  XMMWORD PTR 64[rsp], xmm0
+        call    _ZNSt13__future_base13_State_baseV213_M_set_resultESt8functionIFSt10unique_ptrINS_12_Result_baseENS3_8_DeleterEEvEEb
+        mov     rax, QWORD PTR 64[rsp]
+        test    rax, rax
+        je      .L
+        mov     r8d, 3
+        lea     rdx, 48[rsp]
+        lea     rcx, 48[rsp]
+        call    rax                     ; ← 同一任务体，但运行在 std::thread 新建的 OS 线程里
+```
+
+> 注意：两段机器码几乎同构——都构造 `Task_setter` 闭包（`punpcklqdq` 拼 16 字节 `Any_data`）并 `call _M_set_result` 跑任务。`async` 的 `_M_run` 之所以贵，不是这 29 条指令本身，而是它被 std::thread 在一个**新建 OS 线程**里启动（线程 ctor → 内核对象 + 默认栈保留 + 调度注册/注销），每次 `async` 调用都付一次；`deferred` 的 `_M_complete_async` 则在 `get()` 调用线程内同步执行，零线程开销（D5.2 结论 2 的「假并发」）。绝对毫秒随机器/标准库而变，595× 才是可移植信号（且 MinGW winpthreads 可能在原生线程 API 之上再叠一层）。

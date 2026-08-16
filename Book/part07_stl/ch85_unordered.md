@@ -1785,3 +1785,42 @@ int main() {
 - 加速比（18.5×、2.1×、25%）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_85_unordered.cpp`（库根目录）。
 - demo 断言 `reserve` 后 `bucket_count` 不减、插入后可查到键值等功能语义（稳定语义，可断言），未对时间或倍数做任何断言；并兑现正文 L1413 关于"rehash 只重挂指针不拷值"的前向引用。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_85_unordered.cpp` 真实生成（节选 `unordered_map<int,int>` 的 `_Map_base::ix` 与 `map<int,int>` 的 `_M_get_insert_unique_pos`，均为 int 键）。D5.2 的 headline 结论 #1（查找 18.5×：`unordered_map` 哈希 O(1) 一次桶定位 vs `map` 红黑树 ~20 层指针追逐）可从两段热循环直接看出：`unordered_map` 查找只做"一次取模定位桶 + `mov` 取桶首节点 + 短链比较键"，核心访存是 `mov r11, QWORD PTR [rax+rdx*8]` 那一次桶数组寻址；`map` 查找是逐层 `cmp` + 沿 `_M_left`/`_M_right` 追逐子节点指针的循环，树高约 log2(1M)≈20 层，每层一次不可预测的堆跳转、极易 cache miss。2 个容器每步比较都是一句 4 字节 `cmp`，所以 18.5× 几乎完全来自这约 20 次随机内存访问 vs 1 次桶定位的差异。
+
+```asm
+; unordered_map 查找/下标：哈希 O(1) 一次桶定位（关键路径，int 键）
+;   _ZNSt8__detail9_Map_base<...>ixERS2_  (节选；operator[]/find 共用此桶定位逻辑)
+  movsxd  rax, DWORD PTR [rdx]        ; 取键（int）
+  mov     r8,  QWORD PTR 8[rcx]       ; r8 = bucket_count（桶数组长度）
+  div     r8                          ; 键 % bucket_count → 桶索引（一次取模即哈希定位）
+  mov     rax, QWORD PTR [rcx]        ; 桶数组基址
+  mov     r11, QWORD PTR [rax+rdx*8]  ; r11 = bucket[bucket_index]（← 一次寻址到桶，O(1)）
+  test    r11, r11
+  je      .L                          ; 空桶 → 未命中
+  mov     r9,  QWORD PTR [r11]        ; 桶中首节点
+  mov     r10d, DWORD PTR 8[r9]       ; 读节点键
+  cmp     r13d, r10d                  ; ← 比较键（4 字节 int，廉价）
+  je      .L                          ; 命中
+  mov     rcx, QWORD PTR [r9]         ; 沿 _M_next 续链（桶链通常仅 1–2 节点）
+
+; map 查找：红黑树 ~20 层指针追逐（关键路径，int 键）
+;   _ZNSt8_Rb_treeIi...24_M_get_insert_unique_posERS1_.isra.0  (节选；find 共用同一套下降逻辑)
+  mov     rcx, QWORD PTR 16[rdx]      ; rcx = 根节点 _M_root
+  test    rcx, rcx
+  je      .L
+.L:
+  mov     r9d, DWORD PTR 32[rcx]      ; 读节点值（int）
+  mov     rax, QWORD PTR 24[rcx]      ; 读子节点（offset 24 = _M_right）
+  cmp     r8d, r9d                    ; ← 比较待查值 vs 节点值（单次 4 字节 cmp）
+  cmovl   rax, QWORD PTR 16[rcx]      ; 小于 → 走 _M_left（offset 16）
+  setl    r10b
+  test    rax, rax
+  jne     .L                          ; 子节点非空 → 下降一层（追逐堆上子节点指针）
+  ; …（下降前的栈/寄存器准备指令省略）
+```
+
+> 注意：`unordered_map` 的代价被浓缩进一条桶数组寻址（外加一次取模）；`map` 的代价被摊成约 20 次"解引用堆节点 + 取子指针"的串行走廊，每次都可能是 L3 cache miss（50–100 cycle）。int 键比较本身可忽略，故 18.5× 几乎全是内存访问模式的差距——这与 ch83 的 22.5×、ch84 的 6× 同源：节点散布堆上时"指针追逐"才是真瓶颈，`reserve` 只能压桶数组重排（见 D5.2 #2），救不了每元素仍逐个堆分配的本质。绝对毫秒随 CPU/编译器而变，加速比才是可移植信号。

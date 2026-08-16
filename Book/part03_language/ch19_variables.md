@@ -1896,3 +1896,31 @@ int main() {
 | --- | --- | --- |
 | ch43 缓存局部性 | Book/part04_memory/ch43_cache_locality.md | 存储布局与缓存行占用基线 |
 | ch32 初始化 | Book/part03_language/ch32_initialization.md | 存储期决定静态/线程初始化阶段 |
+
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch19_threadlocal.cpp` 真实生成（节选热函数 `bench_local` / `bench_global` / `bench_tls`）。三者热循环都在做「load 当前值 → 加 (i&1) → 写回」，差异只在**寻址模式**：栈局部走 `[rsp]`、全局 static 走 `[rip]`（GOT 重定位符号）、thread_local 在循环外 `call __emutls_get_address` 解析一次地址后走寄存器间接 `[rax]`——这正对应 D5.2 中 tls 反而比栈/全局略快（0.83×）的成因。
+
+```asm
+; bench_local：自动局部变量，热循环里是单条 RSP 相对访存（无符号、无 GOT）
+;   _Z11bench_localx (节选)
+        mov     r8, QWORD PTR 8[rsp]    ; 读栈帧局部变量 [rsp+8]（RSP 相对寻址）
+        add     rdx, r8
+        mov     QWORD PTR 8[rsp], rdx   ; 写回栈帧局部变量，单条内存操作、无符号无 GOT
+; bench_global：全局 static，每次迭代走 RIP 相对、经 GOT 重定位的符号
+;   _Z12bench_globalx (节选)
+        mov     r8, QWORD PTR _ZL9g_counter[rip]   ; 读全局 static，走 RIP 相对 + GOT 重定位符号
+        add     rdx, r8
+        mov     QWORD PTR _ZL9g_counter[rip], rdx   ; 写回同样经 [_ZL9g_counter[rip]]
+; bench_tls：thread_local，循环外解析一次地址，热循环走寄存器间接 [rax]
+;   _Z9bench_tlsx (节选)
+        lea     rcx, __emutls_v._ZL9t_counter[rip]
+        call    __emutls_get_address    ; ← 仅一次：解析 TLS 变量地址（MinGW 用模拟 TLS）
+        mov     rcx, QWORD PTR [rax]    ; 循环体经寄存器指针 [rax] 访问，无每轮 GOT 间接
+        add     rcx, r8
+        mov     QWORD PTR [rax], rcx    ; 写回同样是单条寄存器间接访存
+```
+
+> 注意：本机（MinGW GCC 15.3.0）的 `thread_local` 用模拟 TLS（`__emutls_get_address` 解析一次地址）而非原生 `%gs` 段相对指令；不同工具链/TLS 模型下指令组合会不同。因此「加速比（tls ≈ 0.83× local）」才是可移植信号，绝对毫秒与具体寻址指令随编译器与微架构而变，勿直接跨机比较。

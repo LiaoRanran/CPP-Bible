@@ -1719,3 +1719,33 @@ int main() {
 - `volatile` sink 防 DCE：累加结果写入 `volatile g_sink`，迫使优化器保留真实计算，否则整段可被消除。
 - 加速比（如 2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++17`。demo 用重载 `operator new` 统计分配次数，断言"reserve 路径分配次数少于无 reserve 路径"（稳定语义，可断言），未对时间或倍数做任何断言。
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_77_vector.cpp` 真实生成（节选 `bench_reserve` / `bench_no_reserve`）。两条路径循环体几乎相同，决定性差异在**初始容量边界 `rsi`**：reserve 一次性把 `rsi` 设为 16MB 末端，循环内 `cmp r15, rsi` 永远不越界；no_reserve 让 `rsi=0`，每个 `push_back` 立刻落入 `_Znwy`+`memcpy`+`_ZdlPvy` 重分配搬移块——这就是 2.0× 差距的机器码根因。
+
+```asm
+; bench_reserve：reserve(N) 预分配，循环内零搬移
+;   _Z13bench_reservev  (节选)
+        mov     ecx, 16000000           ; ← reserve：一次性申请 16M 字节（4M×int）
+        call    _Znwy                   ; operator new：单次分配到位
+        mov     r15, rax                ; r15 = 缓冲区基址
+        lea     rsi, 16000000[rax]      ; rsi = 容量末端哨兵（一整块）
+.L:     mov     DWORD PTR [r15], r14d   ; push_back：原位写入
+        add     r15, 4
+        cmp     r15, rsi                ; ← 容量检查：r15 永远追不上 rsi
+        jne     .L                      ;   未越界 → 直接下轮，无重分配
+; bench_no_reserve：无 reserve，rsi=0，每次越界触发重分配搬移
+;   _Z16bench_no_reservev  (节选)
+        xor     esi, esi                ; ← 无 reserve：容量边界 rsi = 0
+.L:     mov     DWORD PTR [r15], r14d   ; push_back：原位写入
+        add     r15, 4
+        cmp     r15, rsi                ; ← 容量检查：r15 立即 == rsi(0)
+        jne     .L                      ; 越过 → 进入下方重分配块
+        movabs  rcx, 2305843009213693951;   计算 2× 新容量
+        call    _Znwy                   ; ← operator new：分配新缓冲区
+        call    memcpy                  ; ← 把旧元素整体搬移到新缓冲区（全量搬移）
+        call    _ZdlPvy                 ; ← 释放旧缓冲区
+```
+
+> 注意：`bench_reserve` 的重分配块虽同样存在于代码里，但因 `rsi` 被一次性设为整块末端而**永不执行**；`bench_no_reserve` 的 `rsi=0` 使每条 `push_back` 都反复进入该块，累计约 2N 次元素搬移（D5.2 结论#3）。这与是否 reserve 无关、只关乎「是否预知大小」——已知大小务必 `reserve`。绝对毫秒随机器而变，加速比才是可移植信号。

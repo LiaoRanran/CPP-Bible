@@ -1306,3 +1306,46 @@ int main() {
 - `std::sort` 接受函数对象时若可内联（模板/lambda）则无间接开销；`std::function` 必有类型擦除成本。
 - 加速比（3.30×、14.08× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch71_policy.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch71_policy.cpp` 真实生成（节选策略模板 `V*::apply`/`transform` 与运行期分发 `transform_fptr`/`insertion_sort_func`）。策略模板（编译期多态）被完全内联为 1–2 条指令；函数指针与 `std::function` 则必须付出真实的间接 `call`——这正面印证 D5.2：策略模板全面优于 `std::function`（3.3×/14×）与函数指针（2.27×），"热路径上的间接调用是性能杀手"。
+
+```asm
+; VDouble::apply：策略模板，比较器被内联为一条 lea（x*2）
+;   _ZN7VDouble5applyEi  (节选)
+        lea     eax, [rdx+rdx]          ; 直接算 2*x，无调用、无状态
+        ret
+
+; VTransformOffset::transform：策略模板，内联为一条 lea（x+1）
+;   _ZN16VTransformOffset9transformEi  (节选)
+        lea     eax, 1[rdx]             ; 直接算 x+1
+        ret
+
+; transform_fptr：函数指针，必须真实 call（阻断内联）
+;   _Z14transform_fptrPiiPFiiE  (节选)
+        mov     rsi, r8                  ; 把函数指针装进寄存器
+        movsxd  rdx, edx
+        mov     rbx, rcx
+        lea     rdi, [rcx+rdx*4]
+        mov     ecx, DWORD PTR [rbx]
+        add     rbx, 4
+        call    rsi                      ; ← 间接调用：无法内联，开销 > 工作本身
+        mov     DWORD PTR -4[rbx], eax
+        cmp     rbx, rdi
+        jne     .L
+
+; insertion_sort_func：std::function 类型擦除，双重间接调用
+;   _Z19insertion_sort_funcPiiSt8functionIFbiiEE  (节选)
+        cmp     QWORD PTR 16[r15], 0     ; 空函数检查
+        je      .L
+        lea     r8, 60[rsp]
+        mov     rdx, rbp
+        mov     rcx, r15
+        call    [QWORD PTR 24[r15]]      ; ← 经 vtable 式间接调用（类型擦除）
+        test    al, al
+        je      .L
+```
+
+> 注意：三个策略类（`VDouble`/`VTransformOffset`/`VTransformIdentity`/`VPassThrough`）都被内联成 2 条指令的纯算术，运行期零分发成本；`transform_fptr` 因 `call rsi` 无法内联慢 2.27×，`insertion_sort_func` 经 `std::function` 类型擦除的 `call [24[r15]]` 双重间接最慢（S1 3.3×、S4 14×）。与 D5.2 一致：能用模板静态分发就不要函数指针 / `std::function` / 虚函数。绝对毫秒随机器而变，策略模板/运行期分发的比值才是可移植信号。

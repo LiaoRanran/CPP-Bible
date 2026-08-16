@@ -1848,3 +1848,27 @@ int main() {
 
 - Book/part03_language/ch19_variables.md — 变量声明与初始化
 - Book/part06_templates/ch65_type_traits.md — 类型萃取
+
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch22_auto_decltype.cpp` 真实生成（节选热函数 `bench_auto_val` / `bench_decltype_ref`）。两者热循环本体（`paddd` 向量求和）完全一致；唯一的实质差异是 `bench_auto_val`（推导为值 → 拷贝 128 个 int）在进入循环前多了一条 `rep movsq` 把整个 512 字节 `Big` 复制到栈帧，而 `bench_decltype_ref`（推导为引用）零拷贝直接在原地求和——这正是 D5.2「`auto` 默认拷贝比 `auto&` 慢 36%」的机器码来源。
+
+```asm
+; bench_auto_val：auto 推导为值类型，先把 128 int (512B) 拷到栈帧
+;   _Z14bench_auto_vali (节选)
+        lea     r9, 512[rsp]
+        mov     r8, r9
+        mov     rdi, r9
+        mov     ecx, 64                 ; 64 个 qword = 512 字节
+        mov     rsi, rsp
+        rep movsq                       ; ← 整块拷贝 Big（auto 的隐式值拷贝，128 int）
+        paddd   xmm0, XMMWORD PTR [rax] ; 之后循环核与引用版完全相同
+; bench_decltype_ref：decltype(auto) 推导为引用，原地访问，无拷贝
+;   _Z18bench_decltype_refi (节选)
+        sub     rsp, 520               ; 仅分配栈帧，没有 rep movsq
+        paddd   xmm0, XMMWORD PTR [rax] ; 同样的向量求和，前面无整块拷贝
+```
+
+> 注意：`rep movsq` 只在大对象（> 寄存器宽度）上才显现成本；对 ≤ 2 word 的小类型，`auto` 拷贝可忽略，此时 `auto` 与 `const auto&` 生成相同机器码。绝对毫秒随对象大小而变，36% 的拷贝差才是可移植信号。

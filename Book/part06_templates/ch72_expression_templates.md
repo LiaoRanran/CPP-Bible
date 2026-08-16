@@ -1339,3 +1339,37 @@ int main() {
 - 反直觉点已在 D5.2 第 3 条诚实标注：看似"重"的模板抽象实测近乎零开销。
 - 复现旗标：`g++ -O2 -std=c++23`。demo 仅断言朴素与 ET 结果一致，未断言运行时间、加速比或精确 `sizeof`。
 - 基准源码见库根 `_bench_d5_72_exprtmpl.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_72_exprtmpl.cpp` 真实生成（节选热函数 `NaiveVec::operator+`）。它先 `call _Znwy` 分配新向量内存，再 `call memset` 清零，最后跑一个逐元素 `addsd` 循环——每个 `+` 都产生一次真实堆分配与一趟完整内存读写。这正面印证 D5.2 第 1 点：朴素 `a+b+c+d` 触发 3 次堆分配 + 3 趟内存搬运（1097ms）；表达式模板把物化推迟到 `operator=`、合并成单循环（261ms，≈手写融合循环）。
+
+```asm
+; operator+：朴素实现——每次 + 都分配新向量并逐元素相加
+;   _ZplRK8NaiveVecS1_  (节选)
+        sub     rsp, 48
+        mov     rdx, QWORD PTR 8[rdx]    ; 取 lhs 长度
+        mov     rdi, r8
+        mov     rbx, rcx
+        sub     rdx, QWORD PTR [rsi]     ; 长度校验
+        mov     r8, rdx
+        sar     r8, 3
+        je      .L
+        call    _Znwy                    ; ← operator new：真实堆分配
+        ...                              ; 设置 _M_start/_M_finish
+        cmp     QWORD PTR 40[rsp], 1
+        je      .L
+        call    memset                   ; ← 清零新分配的内存
+        mov     rcx, QWORD PTR [rsi]
+        mov     rdx, QWORD PTR 8[rsi]
+        sub     rdx, rcx
+        movsd   xmm0, QWORD PTR [rcx+rax*8]  ; 读 lhs[i]（逐元素循环起点）
+        addsd   xmm0, QWORD PTR [r8+rax*8]   ; + rhs[i]
+        movsd   QWORD PTR [r9+rax*8], xmm0   ; 写目标[i]
+        add     rax, 1
+        cmp     rax, rdx
+        jb      .L                       ; ← 真实逐元素循环：一趟完整内存读写
+```
+
+> 注意：朴素 `operator+` 的关键指令里，`call _Znwy`（分配）与 `call memset`（清零）是固定的堆开销，逐元素 `addsd` 循环则是每趟完整内存读写的来源——这正是 D5.2 第 1 点"3 次分配 + 3 趟内存搬运"的机器码证据。表达式模板用惰性 `AddExpr` 把物化推迟到赋值、合并成单循环（1 读 1 写），且与手写融合循环仅差 ~6%（第 2、3 点）。绝对毫秒随机器而变，ET/朴素 ≈ 4.2× 的比值才是可移植信号。

@@ -1607,3 +1607,70 @@ int main() {
 - 计时取多轮稳定值，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
 - 加速比（1.21× / 2.27× / 2.35× / 1477×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_78_deque.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_78_deque.cpp` 真实生成（节选热函数 `_M_initialize_map` / `_M_reallocate_map`，二者都在 deque 构造与 `push_back` 的计时路径内）。D5.2 把遍历/随机访问 2.2–2.4× 的劣势归因为「二级间接 + 块边界分支」，把 `push_back` 仅 1.21× 归因为「切新块而不搬旧元素」。下面两段正是这两条结论的机器码根源：deque 的存储不是一块连续数组，而是一张「中央 map 指针数组 + 若干 512B 离散块」。
+
+```asm
+; _M_initialize_map：deque 构造时搭建「二级间接」存储骨架
+;   _ZNSt11_Deque_baseIiSaIiEE17_M_initialize_mapEy  (节选)
+        mov     eax, 8
+        mov     rbx, rdx
+        mov     rsi, rcx
+        mov     rdi, rdx
+        shr     rbx, 7              ; 元素总数 >> 7 (=/128)：每块 128 个 int（512B/4B），算出需要的 chunk 数
+        lea     rbp, 1[rbx]
+        add     rbx, 3
+        cmp     rbx, rax
+        cmovb   rbx, rax
+        mov     QWORD PTR 8[rcx], rbx
+        lea     rcx, 0[0+rbx*8]     ; map 指针数组字节数 = chunk数 * 8（每个指针 8 字节）
+        sub     rbx, rbp
+        shr     rbx
+        call    _Znwy              ; ← 分配「中央 map」指针数组（二级间接的【第一级】）
+        lea     r12, [rax+rbx*8]
+        mov     QWORD PTR [rsi], rax
+        lea     rbp, [r12+rbp*8]
+        cmp     r12, rbp
+        jnb     .L
+        mov     rbx, r12
+        mov     ecx, 512
+        call    _Znwy              ; ← 循环内逐块分配 512 字节缓冲（【第二级】实体数据）
+        mov     QWORD PTR [rbx], rax  ; 把新 chunk 指针写回中央 map
+        add     rbx, 8
+        cmp     rbx, rbp
+        jb      .L                 ; 循环直到 map 填满
+; _M_reallocate_map：deque 增长时只扩「指针数组」，绝不搬元素
+;   _ZNSt5dequeIiSaIiEE17_M_reallocate_mapEyb  (节选)
+        lea     rcx, 0[0+r12*8]
+        call    _Znwy              ; ← 分配更大的中央 map 数组（仍然只是指针数组）
+        mov     r9, QWORD PTR 32[rsp]
+        mov     rdx, QWORD PTR 40[rsp]
+        mov     r13, rax
+        mov     rax, r12
+        sub     rax, QWORD PTR 48[rsp]
+        shr     rax
+        sal     rax, 3
+        cmp     BYTE PTR 60[rsp], 0
+        lea     rcx, [rax+rsi*8]
+        cmovne  rax, rcx
+        sub     r8, rdx
+        lea     rsi, 0[r13+rax]
+        cmp     r8, 8
+        jle     .L
+        mov     rcx, rsi
+        call    memmove            ; ← 仅把旧 map 里的「chunk 指针」搬进新 map；已有元素数据【不搬移】
+        mov     rcx, QWORD PTR [rbx]
+        lea     rdx, 0[0+rdi*8]
+        call    _ZdlPvy            ; ← 释放旧 map 数组（注意：释放的是指针数组，不是元素块）
+        mov     QWORD PTR [rbx], r13  ; 更新 _M_map（指向新 map）
+        mov     QWORD PTR 8[rbx], r12 ; 更新 _M_map_size
+        mov     rax, QWORD PTR [rsi]
+        mov     QWORD PTR 24[rbx], rax
+        add     rax, 512
+        mov     QWORD PTR 40[rbx], rsi  ; 重设首/尾块指针
+```
+
+> 注意：这两段 asm 证明 D5.2 的根因——deque 每次访问都要先凭「中央 map 指针」找到对应 512B 块再取元素（二级间接），且顺序遍历每跨一个块就有一次块边界判断（`jb .L`），cache 局部性远差于 vector 的单一连续数组，这正是 2.27×/2.35× 的机器码来历；而 `_M_reallocate_map` 全程只 `memmove` 指针、`_ZdlPvy` 旧 map，元素缓冲始终原地不动，解释了为何 `push_back` 仅比 vector 慢 1.21×（`vector` 容量耗尽要分配更大缓冲并搬移全部旧元素）。绝对毫秒随机器而变，加速比才是可移植信号。

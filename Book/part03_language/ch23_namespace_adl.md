@@ -1584,3 +1584,26 @@ int main() {
 
 - Book/part03_language/ch29_friend.md — 友元与访问控制
 - Book/part06_templates/ch66_sfinae.md — SFINAE 与替换失败
+
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch23_namespace_adl.cpp` 真实生成（节选热函数 `bench_qualified` / `bench_adl`）。两条对比路径都只构造三个 `Item` 实参后 `call` 同一个 mangled 函数 `_ZN3foo7computeERKNS_4ItemES2_S2_`——ADL 版与显式限定版生成**逐字节相同**的调用序列，即 ADL 在机器码层面零开销，正是 D5.2「ADL 不影响性能」的证据。
+
+```asm
+; bench_qualified：显式限定 foo::compute，热路径直接 call 目标
+;   _Z15bench_qualifiedi (节选)
+        lea     rdx, 48[rsp]            ; 第 3 个实参（Item&）
+        lea     rcx, 32[rsp]            ; 第 1 个实参
+        lea     r8, 64[rsp]             ; 第 2 个实参
+        call    _ZN3foo7computeERKNS_4ItemES2_S2_   ; ← 直接调用 foo::compute
+; bench_adl：依赖实参依赖查找（ADL），生成的调用序列完全相同
+;   _Z9bench_adli (节选)
+        lea     rdx, 48[rsp]            ; 同上构造三个实参
+        lea     rcx, 32[rsp]
+        lea     r8, 64[rsp]
+        call    _ZN3foo7computeERKNS_4ItemES2_S2_   ; ← 同一 mangled 名，零额外开销
+```
+
+> 注意：两条路径的差异仅限于源码里的名字查找规则，落到 `-O2` 机器码后都是同一个 `call`，没有任何重定向、虚表或间接跳转。因此「ADL 慢」是误区——可移植信号是「调用指令一致」，绝对毫秒随微架构而变。

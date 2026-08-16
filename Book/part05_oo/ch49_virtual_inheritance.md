@@ -1569,3 +1569,24 @@ int main() {
 - 指针追逐场景用堆上构造 + `std::shuffle` 指针数组强制乱序访存，避免硬件预取掩盖 vtable 间接加载代价。
 - 加速比（如 2.21×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_49_vinherit.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_49_vinherit.cpp` 真实生成（节选虚继承菱形 `VM` 的两个 this 指针调整 thunk）。两者都是「经中间基类析构/虚调用前修正 `this`」的桩，却揭示了一个根本差异：**普通偏移是编译期常量（`sub rcx,16`），而虚基类偏移是运行期从 vtable 读出（`add rcx, QWORD PTR -24[rax]`）**——这正是 D5.2 第 1 条「虚基类偏移不是编译期常量，须经 vptr 间接加载」的机器码证据。
+
+```asm
+; 非虚继承路径的 this 调整：偏移是编译期常量
+;   _ZThn16_N2VMD0Ev  (节选, GCC 15.3.0 -O2)
+        mov     edx, 48                 ; 对象大小 48B（传给 operator delete）
+        sub     rcx, 16                 ; this 从 VB 子对象调回 VM 首地址（-16，常量）
+        jmp     _ZdlPvy                 ; 尾跳 operator delete
+; 虚继承路径的 this 调整：偏移运行期从 vtable 读出
+;   _ZTv0_n24_N2VMD0Ev  (节选)
+        mov     edx, 48                 ; 对象大小 48B
+        mov     rax, QWORD PTR [rcx]    ; 取对象头部 vptr
+        add     rcx, QWORD PTR -24[rax] ; ← 从 vtable 负偏移区读虚基类偏移（-24）加到 this
+        jmp     _ZdlPvy                 ; 尾跳 operator delete
+```
+
+> 注意：普通基类子对象的偏移（如 16B）在编译期已知，只是 `sub rcx,16` 一条常量减法；**虚基类因为「谁是最派生类」运行期才定，其偏移必须存进 vtable、每次访问临时加载**——`add rcx, QWORD PTR -24[rax]` 就多了一条依赖访存，与虚调用本身的 vtable 载入串在同一条依赖链上，乱序引擎藏不掉，这正是 upcast 实测慢 2.21× 的核心贡献。普通（非虚）继承不产生这类 thunk。绝对毫秒随机器而变，加速比才是可移植信号。

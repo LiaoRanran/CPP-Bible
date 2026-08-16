@@ -1723,3 +1723,47 @@ int main() {
 - 静态 extent 2.36× 的机制证据来自 `-fopt-info-vec-optimized`：定长循环在裸 `-O2` 下报告 "loop vectorized using 16 byte vectors"，动态版无此报告。
 - 加速比是可移植信号，绝对毫秒请勿跨机器比较。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_ch82_span.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch82_span.cpp` 真实生成（节选 `sum_fixed16` / `sum_dyn16`，两者都求 16 个 int）。静态 extent `span<const int,16>` 让 GCC 15 在**裸 -O2** 下就把定长循环 SSE2 向量化；动态 extent 因长度运行期未知只能标量累加——这正是 D5.2 结论#3「静态 extent 快 2.36×」的机器码根因。
+
+```asm
+; sum_fixed16：span<const int,16>（静态 extent，长度编进类型）
+;   _Z11sum_fixed16St4spanIKiLy16EE  (节选)
+        pxor    xmm1, xmm1             ; 累加器清零
+        pxor    xmm2, xmm2
+        lea     rax, 64[rcx]           ; 末端哨兵 = ptr + 64B（16×int）
+.L:     movdqu  xmm0, XMMWORD PTR [rcx]; ← SIMD 一次加载 16 字节（4× int）
+        add     rcx, 16
+        movdqa  xmm3, xmm0
+        punpckhdq xmm0, xmm2
+        punpckldq xmm3, xmm2
+        paddq   xmm0, xmm3             ; ← 四路并行求和（无尾循环）
+        paddq   xmm1, xmm0
+        cmp     rax, rcx
+        jne     .L
+        movdqa  xmm0, xmm1             ; 跨 lane 收尾
+        psrldq  xmm0, 8
+        paddq   xmm1, xmm0
+        movq    rax, xmm1
+        ret
+; sum_dyn16：span<const int>（动态 extent，长度运行期未知）
+;   _Z9sum_dyn16St4spanIKiLy18446744073709551615EE  (节选)
+        mov     rdx, QWORD PTR 8[rcx]  ; rdx = 长度（span 的 {ptr,len} 第二字段）
+        mov     rax, QWORD PTR [rcx]   ; rax = 数据指针
+        lea     r8, [rax+rdx*4]        ; r8 = 末端 = ptr + len*4
+        xor     edx, edx
+        cmp     rax, r8
+        je      .L
+.L:     mov     ecx, DWORD PTR [rax]  ; ← 逐元素标量加载（1× int）
+        add     rax, 4
+        add     rdx, rcx               ; ← 标量累加，无 SIMD
+        cmp     r8, rax
+        jne     .L
+        mov     rax, rdx
+        ret
+```
+
+> 注意：两条路径元素数都是 16，但静态 extent 把长度编进类型，GCC 在 -O2 默认 very-cheap 向量化代价模型下即可展开为 SSE2（`movdqu` + `paddq`，4 路并行、无尾循环）；动态 extent 因长度只在运行期存在于 span 的第二个字段（`QWORD PTR 8[rcx]`），编译器拒绝向量化，退回逐元素标量 `add`。这正是 D5.2 结论#3「静态 extent 稳定快 2.36×」的代价根因——把 extent 编进类型，从理论优势变成实测 2.4×。绝对毫秒随机器而变，加速比才是可移植信号。

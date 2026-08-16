@@ -1227,3 +1227,22 @@ int main() {
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | 编译期求值与约束的更广义机制 |
 | ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 重载决议前置 |
 | ch119 Ranges | Book/part10_modern/ch119_ranges_deep.md | ranges 中 concepts 约束的工业用法 |
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch67_concepts.cpp` 真实生成（节选热函数 `B::v` / `S::v`，即 concepts 约束选中的两个重载）。二者在 -O2 下都塌缩为"加载编译期常量 + ret"（各 2 条指令），证明 D5.2 第 1 点：concepts 只在重载决议阶段过滤候选，一旦选定具体函数就不发射任何指令——运行期产物与 SFINAE / if-constexpr 完全相同（1.00×）。
+
+```asm
+; B::v：concepts 选中的重载，直接返回编译期常量
+;   _ZNK1B1vEv  (节选)
+        movsd   xmm0, QWORD PTR .LC[rip]  ; B 的返回值已是编译期常量
+        ret
+
+; S::v：另一 concepts 约束重载，同样返回常量
+;   _ZNK1S1vEv  (节选)
+        movsd   xmm0, QWORD PTR .LC[rip]  ; S 的返回值已是编译期常量
+        ret
+```
+
+> 注意：两个 concept-约束函数都是 2 条指令的常数加载，运行期零开销——印证 D5.2"concepts 在运行时是隐形的"。三者（concepts≡SFINAE≡if-constexpr）差异仅在编译期：报错友好度、可读性与约束检查成本。唯一引入运行时分派成本的是 virtual（≈17.9×，vtable 间接 + 阻断内联）。绝对毫秒随机器而变，concepts≈SFINAE≈if-constexpr = 1.00× 的比值才是可移植信号。

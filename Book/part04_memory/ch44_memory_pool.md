@@ -2737,3 +2737,26 @@ int main() {
 - 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
 - 加速比（3.01×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_44_mempool.cpp`（位于库根）。demo 仅断言功能正确性（空闲链表清空、内容写回、地址复用），未对时间、倍数或精确 `sizeof` 做任何断言。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_44_mempool.cpp` 真实生成（节选热函数 `_ZN4PoolD1Ev`，即 `Pool` 析构函数）。它证实 D5.2 第 2 条的「代价」面：free-list 池**直到析构才把内存归还 OS**——析构时逐块 `call free`，并 `jmp operator delete` 释放内部 `blocks` 向量。与之相对，`pool.alloc()` 只是「弹出单链表头」（2~3 条指令，已内联进 `main`），这才是 3.01× 的来源。
+
+```asm
+; ===== _ZN4PoolD1Ev()  —  GCC 15.3.0 -O2 -masm=intel (节选) =====
+        mov     rbx, QWORD PTR 8[rcx]   ; blocks._M_start（批量 malloc 的指针数组）
+        mov     rsi, QWORD PTR 16[rcx]  ; blocks._M_finish
+        cmp     rsi, rbx
+        je      .L
+        mov     rcx, QWORD PTR [rbx]    ; 取第 i 个块指针
+        add     rbx, 8                  ; 推进到下一槽
+        call    free                    ; ← 逐个把块还给 OS（整轮唯一的系统调用点）
+        cmp     rbx, rsi
+        jne     .L
+        mov     rbx, QWORD PTR 8[rdi]   ; 收尾：取 free_list 头
+        ;   ... 计算大小 ...
+        jmp     _ZdlPvy                 ; ← operator delete[]：释放 blocks 向量自身
+```
+
+> 注意：`pool.alloc()` 的「弹出空闲链表头」是 O(1) 纯指针运算，被内联进 `main`、不出现在本函数里；本析构函数展示的是它的对称面——**延迟归还**：所有块都积累到析构才批量 `free`。这正解释了 D5.2 第 2 条「直到池析构才把内存归还 OS」的语义代价，也说明该池只适合「大量同尺寸、短生命周期」场景。绝对毫秒随机器而变，加速比才是可移植信号。

@@ -1939,3 +1939,39 @@ int main() {
 - 加速比（16.54×、231.81×、5.33×、61.85× 等）是可移植信号；绝对毫秒随 CPU、分配器实现与编译器版本而变，请勿跨机器直接比较毫秒。
 - demo 只断言迭代器**语义正确性**（类别标签、advance/distance 结果、累加和、缓存行大小），未对时间、倍数或精确 `sizeof` 做任何断言。
 - 基准源码见库根 `_bench_d5_ch76_stl_iterators.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch76_stl_iterators.cpp` 真实生成（节选 `bench_vector_traverse` / `bench_list_traverse` 遍历闭包的热循环）。两条路径算法复杂度同为 O(n)，但 vector 仅是单指针自增的连续读取，list 每步须解引用节点指针两次（取 value + 取 next），缓存未命中正是 16.54× 差距的机器码根因。
+
+```asm
+; bench_vector_traverse：连续内存，仅指针自增 + 线性读取
+;   _ZNSt17_Function_handlerIFdvEZL21bench_vector_traverseiRVxEUlvE_E9_M_invokeERKSt9_Any_data  (节选)
+        mov     r9, QWORD PTR 8[rdx]    ; r9 = end() 哨兵指针
+        mov     rax, QWORD PTR [rdx]    ; rax = begin() 指针
+        cmp     r9, rax
+        je      .L                     ; 空则跳过
+        mov     r8, QWORD PTR 40[rsp]   ; r8 = 累加器 s
+.L:     movsxd  rdx, DWORD PTR [rax]    ; ← 线性读取 value（地址连续，预取器提前载入 L1）
+        add     rax, 4                  ; ← 指针自增 4 字节（random_access：O(1) 前进，无跳转）
+        add     rdx, r8                 ; s += *it
+        mov     QWORD PTR 40[rsp], rdx
+        cmp     rax, r9
+        jne     .L
+; bench_list_traverse：链式节点，每步指针追逐
+;   _ZNSt17_Function_handlerIFdvEZL19bench_list_traverseiRVxEUlvE_E9_M_invokeERKSt9_Any_data  (节选)
+        mov     r9, QWORD PTR [rbx]     ; r9 = 头节点指针（遍历基准）
+        mov     rax, QWORD PTR [r9]     ; rax = 头节点->_M_next（首次解引用）
+        cmp     r9, rax
+        je      .L                     ; 空则跳过
+        mov     r8, QWORD PTR 40[rsp]   ; r8 = 累加器 s
+.L:     movsxd  rdx, DWORD PTR 16[rax]  ; ← 从节点偏移 16 取 value（解引用 #2）
+        mov     rax, QWORD PTR [rax]    ; ← 取 _M_next（指针追逐：依赖上一条加载，缓存未命中高发）
+        add     rdx, r8                 ; s += *it
+        mov     QWORD PTR 40[rsp], rdx
+        cmp     r9, rax
+        jne     .L
+```
+
+> 注意：vector 遍历核只有一次内存读取（`[rax]`）+ 一次 `add rax, 4`，CPU 顺序预取器能稳定命中 L1；list 遍历核每元素需两次地址互不连续的解引用（`16[rax]` 取 value + `[rax]` 取 next），几乎每步都触发缓存缺失——这正是 D5.2 结论 #1「同复杂度 O(n) 却慢 16.54×」的机器码根因。绝对毫秒随机器而变，加速比才是可移植信号。

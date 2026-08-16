@@ -1933,3 +1933,26 @@ int main() {
 - 计时取 5 轮中位数；`volatile int* g_escape` 逃逸迫使堆分配保留，避免被 -O2 消除而测得假象 0.000ms。务必注意：栈变量测得 0.000ms 是“被折叠”，不是“零成本”。
 - 相对加速比（1.26×、1.37×）是可移植信号；绝对毫秒随 CPU/内存/编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_36_stackheap.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_36_stackheap.cpp` 真实生成（节选热函数 `_ZZ4mainENKUlvE2_clEv.isra.0`，对应 bench「stack: int[1024]+write」）。它证实 D5.2 第 1、2 条的核心：栈路径**没有任何 `operator new`/`malloc` 调用**，分配只是一次栈帧调整；而对照的堆路径每次迭代都要内联 `operator new`（位于 `main`，提取器按设计不展开）。
+
+```asm
+; ===== _ZZ4mainENKUlvE2_clEv.isra.0()  —  GCC 15.3.0 -O2 -masm=intel (节选) =====
+        call    ___chkstk_ms            ; 栈帧探测：仅调整 RSP，不向堆申请内存
+        sub     rsp, rax                ; 一次性分配 4104B 栈帧（容纳 1024-int 数组）
+        ;   ... 中间省略 SIMD 初始化（约 14 条：填装向量、设步长）...
+        lea     r9, 4096[rsp]           ; 4096 = 1024×4B，即整个栈数组的字节跨度
+        movaps  XMMWORD PTR -16[rax], xmm1   ; 向量化写回 16B（4 个 int）到栈数组
+        ;   ... 循环体：paddd 自增 + 每轮一条 movaps 写栈 ...
+        cmp     r9, rax                 ; ← 循环边界：200K 轮全部在栈上完成，无堆分配
+        jne     .L
+        mov     QWORD PTR g_escape[rip], r8  ; 逃逸，防止整段被 DCE 消除
+        mov     QWORD PTR g_sink[rip], rcx
+        add     rsp, 4104
+        ret
+```
+
+> 注意：栈路径的「分配」只有 `___chkstk_ms` + `sub rsp`（栈帧探测，几乎零内存写），写回还是向量化的；对照的堆路径（`new int` / `new int[1024]`）在 `main` 中每次迭代内联 `operator new`/`delete`，要走分配器慢路径（D5.2 第 2、4 条）。绝对毫秒随机器而变，**「栈路径零堆调用」才是可移植、可机校的事实**，加速比只是它的吞吐投影。

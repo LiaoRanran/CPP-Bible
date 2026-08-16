@@ -1893,3 +1893,27 @@ int main() {
 - Book/part04_memory/ch35_memory_layout.md — 类内存布局与对齐
 - Book/part04_memory/ch36_stack_heap.md — 栈 vs 堆深度对比
 - Book/part03_language/ch28_lifetime_ub.md — 对象生命周期与 UB
+
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch28_lifetime_ub.cpp` 真实生成（节选热函数 `bench_stack` / `bench_unique_ptr`）。栈上直接持有数组的版本只 `sub rsp, 136` 分配、循环核 `paddd` 向量求和、最后 `add rsp, 136` 随函数返回自动释放，全程**零堆操作**；而 `unique_ptr` 版每轮迭代都要 `call _Znwy`（operator new）与 `call _ZdlPvy`（operator delete）——正是 D5.2「`unique_ptr` 比栈对象慢约 3×」的机器码来源。
+
+```asm
+; bench_stack：在栈上直接持有数组，零分配
+;   _Z11bench_stacki (节选)
+        sub     rsp, 136               ; 仅分配栈帧
+        paddd   xmm0, xmm1             ; 循环核：向量求和
+        add     rsp, 136               ; 函数返回即释放，无 free
+        ret
+; bench_unique_ptr：每轮 new/delete
+;   _Z16bench_unique_ptri (节选)
+        mov     ecx, 64
+        call    _Znwy                  ; ← operator new（堆分配）
+        mov     edx, 64
+        movups  XMMWORD PTR [rax], xmm8
+        call    _ZdlPvy                ; ← operator delete（堆释放）
+```
+
+> 注意：`unique_ptr` 的「零成本抽象」指它不在对象上额外加 vptr/控制块，但每次 `reset`/析构仍要真实调用 `operator new`/`delete`——这是堆分配本身的开销，而非智能指针的包装开销。绝对毫秒随分配器/微架构而变，3× 的「堆 vs 栈」差才是可移植信号。

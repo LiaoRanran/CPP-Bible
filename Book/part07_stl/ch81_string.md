@@ -1360,3 +1360,24 @@ int main() {
 - 求和/规模等结果经 `volatile` sink 累加，防止编译器把无副作用循环整段死代码消除（DCE）。
 - 报告一律给「相对倍数 ×」而非绝对毫秒作为可移植信号；绝对毫秒随机器、编译器版本、频率伸缩而变，不可横向比较。
 - SSO 容量因实现而异（libstdc++ 15 / MSVC 15 / libc++ 22），demo 用运行期 `std::string().capacity()` 打印探测，不 `assert` 固定值，保证跨平台可编译。复现旗标：`g++ -O2 -std=c++17`，规模已缩小 10×，CI 可在秒级跑完。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_81_sso.cpp` 真实生成（节选 `std::string::_M_dispose`）。这正是短字符串优化（SSO, libstdc++ 内部容量 15）的机器码判据：解构时先判定 data 指针是否落在对象自身的本地缓冲里——`je .L` 跳过释放即 SSO 串「零释放」，否则落入 `operator delete` 释放堆内存。这条分支就是 D5.2 结论#1「越过 SSO 上限 = malloc + free + 一次间接寻址」的 6.60× 断崖之源。
+
+```asm
+; std::string::_M_dispose：解构时按 is_local 决定要不要释放堆
+;   _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE10_M_disposeEv  (节选)
+        mov     rax, QWORD PTR [rcx]    ; rax = _M_dataplus._M_p（字符数据指针）
+        lea     rdx, 16[rcx]            ; rdx = 对象内 SSO 本地缓冲首址（偏移 16）
+        cmp     rax, rdx
+        je      .L                      ; ← is_local 判定：data 指向自身缓冲 → SSO 串，跳过释放
+        mov     rdx, QWORD PTR 16[rcx]  ; 否则取 capacity 字段（堆串时此处为 _M_allocated_capacity）
+        mov     rcx, rax                ; rcx = data 指针（operator delete 的待释放区）
+        add     rdx, 1                  ; 还原 capacity（libstdc++ 以最高位标记 is_local，此处 +1 还原）
+        jmp     _ZdlPvy                 ; ← 堆串：调用 operator delete 释放堆内存
+.L:     ret                             ; SSO 串：直接返回，零释放、零间接寻址
+```
+
+> 注意：`_M_dispose` 的 `cmp rax, rdx; je .L` 是字符串「是否为 SSO」的唯一判据，同样的 is_local 分支在构造、拷贝、赋值时都存在。对 len≤15 的 SSO 串它永远走 `ret`（无 malloc / 无 free / 数据就在栈上对象内）；对 len≥16 的堆串它每轮都真实进入 `operator delete`（构造时则对应 `operator new`）。正因如此，D5.1 中 len16 与 len32 几乎同价（6.60 vs 6.42×）——贵的是「分配这件事本身」而非字节数。绝对毫秒随机器而变，加速比才是可移植信号。

@@ -1650,3 +1650,46 @@ int main() {
 | --- | --- | --- |
 | ch158 性能反模式 | Book/part14_perf/ch158_perf_antipatterns.md | 抽象/分配开销的系统性讨论 |
 | ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch91_filesystem.cpp` 真实生成（节选 `manual_split` 与 `std::string::resize`）。D5.2 结论 1「`path` 词法分解比手写慢 8.9×」的根因是：每次 `parent_path()`/`filename()`/`extension()` 都物化一个**新分配的** `std::string`，而手写版全程用 `string_view` 零拷贝切分、只对 dir/name/ext 三个结果各物化一次。
+
+```asm
+; manual_split：用 string_view 定位切分点，零拷贝，仅对超 SBO 的结果才分配
+;   _Z12manual_splitRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERS4_S7_S7_  (节选)
+        mov     r10, QWORD PTR [rcx]    ; 原串首地址（string_view 起点，未拷贝整串）
+        mov     rdi, r9
+        mov     r9, QWORD PTR 8[rcx]    ; 原串长度
+        mov     r14, rdx
+        mov     rbp, r8
+        test    r9, r9
+        je      .L
+        mov     rdx, r9
+        sub     rdx, 1
+        cmp     BYTE PTR [r10+rdx], 47  ; find_last_of('/')：按 [ptr+len] 扫描，零分配
+        je      .L
+        test    rdx, rdx
+        jne     .L
+
+; std::string::resize：只要物化一个 std::string 子结果就走堆分配（节选）
+;   _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE6resizeEyc  (节选)
+        cmp     rdx, r9
+        jb      .L
+        add     rax, rax
+        mov     r14, rax
+        cmp     r9, rax
+        jnb     .L
+        lea     rcx, 1[rax]
+        cmp     rdx, rax
+        jnb     .L
+        movabs  rcx, 9223372036854775807
+        mov     QWORD PTR 104[rsp], r9
+        mov     QWORD PTR 96[rsp], r10
+        mov     QWORD PTR 40[rsp], r8
+        mov     QWORD PTR 32[rsp], r11
+        call    _Znwy                  ; ← operator new：堆分配新缓冲
+```
+
+> 注意：`manual_split` 用「指针 + 长度」（`[r10+rdx]` 直接扫描原串）定位分隔符，中间切分零拷贝，仅对 dir/name/ext 三个结果各物化一次（`string_view` 子串）；而 `path` 的每个 `parent_path()`/`filename()`/`extension()` 都返回一个**值语义** `std::string`，必经 `resize` 的 `call _Znwy`（堆分配），销毁时再走 `_M_dispose` 的 `_ZdlPvy`（堆释放）——每个子操作一次「分配 + 释放」的堆抖动，正是 8.9× 的机器码来源。绝对毫秒随路径长度而变，加速比（手写较 `path` 快 8.91×）才是可移植信号。

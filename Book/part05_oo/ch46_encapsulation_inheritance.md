@@ -2078,3 +2078,26 @@ int main() {
 - 虚调用基准把 3 种派生类随机 `shuffle` 后经 `unique_ptr<Base>` 数组访问，专门破坏去虚化与间接分支预测；非虚对照组走同一数组，保证内存访问模式一致。
 - 诚实标注：①第 2 组的 3.11× 含指针追逐背景成本，纯"虚机制税"在缓存友好场景下会明显更小；②第 3 组 10% 的差异接近本机 5 轮的轮间波动（对照组自身波动约 ±8%），只能得出"深继承链无显著额外成本"而非"扁平一定更快"；③虚版本 getter 各返回 `v+1/v+2/v+3`（防止三个覆盖体被合并），额外一次加法对结论无影响。
 - 复现：`g++ -O2 -std=c++23 _bench_d5_ch46_encapsulation.cpp`。基准源码见库根 `_bench_d5_ch46_encapsulation.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch46_encapsulation.cpp` 真实生成（节选热函数 `Circle::get` / `Square::get` / `Triangle::get`）。三者是被打乱的多态数组上「虚 getter」基准真正执行的派生函数体；它们都只有 3 条指令，说明 D5.2 的 **3.11× 差距几乎全在调用点的 vtable 间接跳转，而不在函数体本身**——这也同时印证了结论 1：内联 getter 与 `public` 直接访问逐指令等价，封装是编译期契约。
+
+```asm
+; 虚 getter：三种派生类的覆盖体彼此只差一个常量，且本体极简
+;   _ZNK6Circle3getEv  (节选, GCC 15.3.0 -O2)
+        mov     eax, DWORD PTR 8[rcx]   ; rcx=this；前 8B 是 vptr，成员 v 在偏移 8
+        add     eax, 1                  ; 返回 v + 1（Circle 特有常量）
+        ret
+;   _ZNK6Square3getEv  (节选)
+        mov     eax, DWORD PTR 8[rcx]   ; 同样的取成员
+        add     eax, 2                  ; 返回 v + 2
+        ret
+;   _ZNK8Triangle3getEv  (节选)
+        mov     eax, DWORD PTR 8[rcx]   ; 同样的取成员
+        add     eax, 3                  ; 返回 v + 3
+        ret
+```
+
+> 注意：三个函数本体都只是 `mov`+`add`+`ret`，与「`private` 成员 + 内联 getter 直接读」生成的机器码逐条一致（结论 1 的零成本铁证）。3.11× 的来源不在这些行里，而在调用方 `shapes[i]->get()` 处：先读对象头部的 vptr、再查 vtable 槽、再 `call [rax]` 间接跳——两次额外内存访问 + 不可预测的间接分支。若数组不打乱（同类型连续），GCC 去虚化会把这层开销大幅削掉。绝对毫秒随机器而变，加速比才是可移植信号。

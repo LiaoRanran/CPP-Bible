@@ -2389,3 +2389,30 @@ int main() {
 | --- | --- | --- |
 | ch88 optional/variant | Book/part07_stl/ch88_optional_variant.md | 同主题扩展：std::optional 与 std::variant 取舍 |
 | ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |
+
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch25_union_variant.cpp` 真实生成（节选热函数 `visit_tagged` / `visit_var`）。手写「带 tag 的 union」经整型 `kind` 分发（`mov edx, DWORD PTR [rcx]`），`std::variant` 经内部单字节 `index` 分发（`movzx eax, BYTE PTR 8[rcx]`）——但两条路径的核心计算都是同一组 `neg` / `cmovs` / `add` 取绝对值，生成的机器码强度一致，即 D5.2「`std::variant` 与手写 tagged union 零成本」的证据。
+
+```asm
+; visit_tagged：手写的「带 tag 的 union」，经整型 kind 分发
+;   _Z12visit_taggedRK6Tagged (节选)
+        mov     edx, DWORD PTR [rcx]   ; 读 tag（kind）
+        cmp     edx, 1
+        je      .L
+        neg     eax                    ; 核心：取绝对值
+        cmovs   eax, edx
+        add     eax, 1
+; visit_var：std::variant，经内部 index（单字节）分发
+;   _Z9visit_varRKSt7variantIJidxEE (节选)
+        movzx   eax, BYTE PTR 8[rcx]   ; 读 variant 的 index（1 字节）
+        cmp     al, 1
+        je      .L
+        neg     rax                    ; 核心：完全一致的取绝对值
+        cmovs   rax, rdx
+        add     rax, 1
+```
+
+> 注意：`std::variant` 的「类型安全」只体现在源码层与编译期检查；`-O2` 下它退化为与手写 tagged union 相同的整数分发 + 同一计算核，没有任何 RTTI 或虚调用开销。绝对毫秒随微架构而变，二者「零成本差」才是可移植信号。

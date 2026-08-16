@@ -1362,3 +1362,22 @@ int main() {
 - 加速比（13.5×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_51_crtp.cpp`（库根目录）。
 - demo 用功能断言验证 CRTP 与虚函数对同一输入给出一致结果（稳定语义，可断言），未对时间或倍数做任何断言。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_51_crtp.cpp` 真实生成（节选热函数 `VDerived::compute` / `VOther::compute`）。它们是基准里「vtable 间接派发」路径实际执行的虚函数体，各自被折叠成**单条 `lea`**；而「CRTP 静态分发」对应的 `CDerived::compute` 根本**没有独立符号**——它被编译器整个内联进热循环并触发向量化。这直接解释了 D5.2 的 **13.5×：大头来自内联解锁的二次优化（向量化/强度折减），而非省掉一次跳转**。
+
+```asm
+; 虚 compute：本体极简，调用却必须走 vtable 间接跳转、不可内联
+;   _ZNK8VDerived7computeEi  (节选, GCC 15.3.0 -O2)
+        lea     eax, 1[rdx+rdx*2]       ; x*3+1 折叠为单条 lea（VDerived::compute 本体）
+        ret
+;   _ZNK6VOther7computeEi  (节选)
+        lea     eax, [rdx+rdx]          ; x*2 折叠为单条 lea（VOther::compute 本体）
+        ret
+; CRTP 对照：CDerived::compute 不在符号表中
+;   （被 -O2 完全内联进主循环，无 _ZN... 符号可列）
+```
+
+> 注意：两个虚 `compute` 明明都只是单条 `lea`，却必须保留独立符号、每次调用经 `vptr → vtable 槽 → call [rax]` 间接跳转，优化器对循环体内语义不可知，归约循环无法被自动向量化——这是 35.09ms（基准）的主因。CRTP 的 `compute` 因模板静态定型被内联，连符号都不生成，`x*3+1` 直接暴露给 -O2，循环被 SIMD + 强度折减，得到 2.60ms（13.5×）。与 ch47 机制同源，倍数随循环体是否可向量化而浮动。绝对毫秒随机器而变，加速比才是可移植信号。

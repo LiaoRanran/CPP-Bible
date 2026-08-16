@@ -1441,3 +1441,39 @@ int main() {
 - 运行期 `if` 组用 `volatile bool` 标志阻止编译器把分支常量化，但标志方向不变、分支完美可预测——这是刻意设计：度量的是"保留分支但预测全中"的下界成本；若方向随机，该组会显著变慢。
 - 诚实标注：①D5.1 表中第 1、2 行的 13% 差距在第二轮完整复跑中消失（68.51 vs 69.02ms），故结论 1 以"两者等价"为准，表格保留首轮原始数字以示真实；②函数指针表组的 1.7× 在两轮中均稳定复现，是本附录最可信的相对差；③"运行期 if"组无法真正按运行期信息切换迭代器类别（类型是编译期属性），它度量的是分支保留成本，不是功能等价方案。
 - 复现：`g++ -O2 -std=c++23 _bench_d5_ch70_tag_dispatch.cpp`。基准源码见库根 `_bench_d5_ch70_tag_dispatch.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch70_tag_dispatch.cpp` 真实生成（节选 `Ops::jump`，即标签分发按迭代器类别选中的"随机访问"与"输入"实现）。`random_access` 版是一条 `sal`+`add` 的指针算术（3 条指令，O(1)）；`input`(list) 版是 18 条指令的逐节点指针追逐（O(n)）。这印证 D5.2 第 4 点：标签分发不改变算法成本，它自动为每种迭代器选中"能负担的最优算法"，调用方写同一行代码。
+
+```asm
+; Ops::jump —— random_access 迭代器（vector）：O(1) 指针算术，空标签连一字节都不传
+;   _ZN3OpsIN9__gnu_cxx17__normal_iteratorIPiSt6vectorIiSaIiEEEEE4jumpERS6_x  (节选)
+        sal     rdx, 2                  ; n *= sizeof(int)=4（编译期已知的移位）
+        add     QWORD PTR [rcx], rdx    ; it += n 直接改指针，无循环
+        ret
+
+; Ops::jump —— input 迭代器（list）：O(n) 逐节点指针追逐
+;   _ZN3OpsISt14_List_iteratorIiEE4jumpERS1_x  (节选)
+        mov     r8, rdx
+        test    rdx, rdx
+        jle     .L
+        mov     rax, QWORD PTR [rcx]    ; 取当前节点指针
+        lea     rdx, -1[rdx]
+        test    r8b, 1
+        je      .L
+        mov     rax, QWORD PTR [rax]    ; 沿 _M_next 跳转
+        lea     rdx, -2[r8]
+        cmp     r8, 1
+        je      .L
+        mov     rax, QWORD PTR [rax]
+        sub     rdx, 2
+        mov     rax, QWORD PTR [rax]
+        cmp     rdx, -1
+        jne     .L
+        mov     QWORD PTR [rcx], rax
+        ret
+```
+
+> 注意：`random_access` 版只有 3 条指令（纯整型移位 + 指针加），`input` 版要 18 条走链表——差距完全来自"底层数据结构"，与 D5.2 第 4 点一致；标签分发只是把这两份实现在编译期按 `iterator_tag` 选中并内联，空标签对象零传递（第 1 点）。函数指针版因无法内联而稳定慢约 1.7×（第 3 点，本块未列）。绝对毫秒随机器而变，list/vector 的差距才是可移植信号。

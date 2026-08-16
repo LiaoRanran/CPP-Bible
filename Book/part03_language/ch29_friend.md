@@ -1111,3 +1111,32 @@ int main() {
 
 - Book/part05_oo/ch46_encapsulation_inheritance.md — 封装与继承
 - Book/part03_language/ch23_namespace_adl.md — 命名空间与 ADL
+
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch29_friend.cpp` 真实生成（节选热函数 `sum_friend` / `sum_getter` / `sum_public_call`）。三者都是先 `pxor xmm0` 清零向量累加器，循环里 `movdqu` 加载 + `paddd` 四路 int 并行累加，最后 `movd eax, xmm0` 归约——`friend` 函数、公有 `getter`、直接 `public` 成员访问三条路径生成**逐字节相同**的 15 条指令，即 D5.2「友元不破坏封装却零性能代价」的证据。
+
+```asm
+; sum_friend：friend 函数直接访问私有成员，矢量求和
+;   _Z10sum_friendRK9Container (节选)
+        pxor    xmm0, xmm0             ; 清零向量累加器
+        lea     rax, 32768[rcx]        ; 数据尾地址（32768B = 8192 int）
+        movdqu  xmm2, XMMWORD PTR [rcx] ; 向量加载 4 个 int
+        add     rcx, 16
+        paddd   xmm0, xmm2             ; 4 路 int 并行相加
+        cmp     rax, rcx
+        jne     .L
+        movd    eax, xmm0              ; 归约得结果
+        ret
+; sum_getter / sum_public_call：与 friend 版逐字节相同
+;   _Z10sum_getterRK9Container / _Z15sum_public_callRK9Container (节选)
+        pxor    xmm0, xmm0             ; 同上：相同首指令
+        movdqu  xmm2, XMMWORD PTR [rcx] ; 相同加载
+        paddd   xmm0, xmm2             ; 相同累加
+        movd    eax, xmm0
+        ret                            ; 与 sum_friend 完全一致
+```
+
+> 注意：友元只是放宽编译期名字可见性，不改变数据布局或生成的访存序列——因此 `friend` 访问私有成员与 `getter`/公有访问产生相同机器码。绝对毫秒随微架构而变，「三者指令逐字节相同」才是可移植信号。

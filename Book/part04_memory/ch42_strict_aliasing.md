@@ -1835,3 +1835,35 @@ int main() {
 - 计时取 5 轮中位数；`volatile` sink 防 DCE；所有被测函数 `__attribute__((noinline))`，避免内联掩盖 aliasing 假设差异。
 - 相对加速比（16.7×）是可移植信号；反直觉点（restrict 版反而更慢、add3 几乎无差）已如实标注，根因在于编译器是否真正消费该承诺。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_42_aliasing.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_42_aliasing.cpp` 真实生成（节选 `count_via_local` 与 `count_via_ptr`/`count_via_restrict`）。它直证 D5.2 第 1 条：性能差异的真正来源是**「消除每轮内存 store」**——`count_via_local` 把计数在 XMM 寄存器里累加、整轮只写回一次；可别名版每轮都把 `counter` 写回内存，形成 store→load 依赖链。
+
+```asm
+; count_via_ptr / count_via_restrict（节选，各 10 条指令，可别名路径）
+        test    rdx, rdx
+        je      .L
+        add     rdx, rcx
+        cmp     BYTE PTR [rcx], 0
+        je      .L
+        add     QWORD PTR [r8], 1        ; ← 每轮一次内存自增（store→load 依赖链）
+        add     rcx, 1
+        cmp     rcx, rdx
+        jne     .L
+        ret
+
+; count_via_local（节选，97 条指令，局部累加路径）
+        movdqu  xmm0, XMMWORD PTR [rax]  ; 一次取 16 字节
+        pcmpeqb xmm0, xmm5               ; 逐字节比较 == 0
+        ;   ... 中间省略约 60 条 SIMD 拆包（byte→word→dword 掩码展开）...
+        paddq   xmm1, xmm6               ; ← 命中计数在 XMM 寄存器累加（无内存写）
+        ;   ... psubq 合并各通道 ...
+        cmp     rax, r10
+        jne     .L                       ; 循环回边：全程不碰内存计数器
+        ;   ... 收尾：把 XMM 累加和化约到 rax ...
+        add     QWORD PTR [r8], rax      ; ← 整轮仅此一次内存写回
+```
+
+> 注意：本例中 `__restrict` 版（10 条）与可别名版逐指令相同——GCC 并未用 `restrict` 把计数器提升寄存器，故 D5.2 第 2、3 条「restrict 反直觉地没加速」在此 bench 成立；但 `count_via_local` 因**作用域局部性**让编译器得以消除每轮 store，才拿到 16.7×。教训同 D5.2 第 4 条：**测量而非信仰关键字**。绝对毫秒随机器而变，加速比才是可移植信号。

@@ -2501,3 +2501,23 @@ int main() {
 - `volatile` sink 防 DCE；**ch41 特别提示**：本附录还依赖"指针逃逸"来区分真实开销与被消除的假象 —— 只有逃逸到 `volatile` 的指针才会迫使优化器保留分配，从而测出 `unique_ptr` 与裸 `new` 的等价真值。
 - 加速比（如 1.98×、24×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++17`。demo 用重载 `operator new` 统计分配次数，断言 `make_shared` 分配次数少于 `shared_ptr(new)`（这是稳定语义，可断言），未对时间或倍数做任何断言。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_41_sptr.cpp` 真实生成（节选热函数 `_ZNSt16_Sp_counted_baseIL...E10_M_releaseEv`，即 `shared_ptr` 引用计数的释放路径）。它直证 D5.2 第 4 条：`shared_ptr` 按值传参/拷贝时，每次都要对引用计数做一次 **`lock` 前缀原子读-改-写**——这是它比裸指针/`unique_ptr` 贵约 24× 的机器级根因。
+
+```asm
+; ===== _ZNSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE10_M_releaseEv()  —  GCC 15.3.0 -O2 -masm=intel (节选) =====
+        movabs  rdx, 4294967297         ; 比较常量：use_count==1 且 weak_count==1 时进入析构
+        mov     r8, QWORD PTR 8[rcx]    ; 载入 use_count（rcx=this，+8 即 _M_use_count）
+        lea     rax, 8[rcx]             ; rax = &use_count
+        cmp     r8, rdx
+        je      .L                      ; 仅当计数走到 1 才走稀有析构路径
+        lock sub DWORD PTR [rax], 1     ; ← 关键：原子递减引用计数（lock 前缀=总线锁/缓存行独占）
+        je      .L
+        add     rsp, 56
+        ret                             ; 常见路径：一次原子自减即返回
+```
+
+> 注意：`shared_ptr` 的「一次拷贝」= 此处原子 `sub`（减旧计数）+ 拷贝构造里对应的原子 `inc`（加新计数），共两条 `lock` 前缀指令，外加引用计数 cache line 的写争用——这条正是 D5.2 第 4 条「按值传参贵 24×」的硬件成因。对照 `unique_ptr`/`make_unique` 在 `main` 中不触碰任何原子、析构序列与手写 `delete` 逐指令等价（D5.2 第 1 条）。绝对毫秒随机器而变，加速比才是可移植信号。

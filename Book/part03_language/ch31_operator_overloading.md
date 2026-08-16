@@ -1082,3 +1082,36 @@ int main() {
 | --- | --- | --- |
 | ch158 性能反模式 | Book/part14_perf/ch158_perf_antipatterns.md | 临时对象/隐式拷贝反模式对照 |
 | ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |
+
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch31_operator.cpp` 真实生成（节选热函数 `operator+` / `operator+=`）。二元 `+`（`_ZpLR3VecRKS_`）与就地 `+=`（`_ZplRK3VecS1_`）都先 `movupd` 加载两个向量、再 `addpd` 四路 double 相加、最后 `addsd` 处理第 3 个 double——两条路径都是 9 条指令、结构完全对称，没有任何虚调用或运行时分发，即 D5.2「运算符重载是零成本抽象（二者差约 1%）」的证据。
+
+```asm
+; operator+：返回新对象（二元 +）
+;   _ZpLR3VecRKS_ (节选)
+        movupd  xmm1, XMMWORD PTR [rdx]
+        movupd  xmm0, XMMWORD PTR [rcx]
+        addpd   xmm0, xmm1             ; 4 路 double 并行加
+        mov     rax, rcx
+        movups  XMMWORD PTR [rcx], xmm0
+        movsd   xmm0, QWORD PTR 16[rcx]
+        addsd   xmm0, QWORD PTR 16[rdx] ; 第 3 个 double 加
+        movsd   QWORD PTR 16[rcx], xmm0
+        ret
+; operator+=：就地累加（一元 +=）
+;   _ZplRK3VecS1_ (节选)
+        movupd  xmm0, XMMWORD PTR [rdx]
+        movupd  xmm1, XMMWORD PTR [r8]
+        addpd   xmm0, xmm1             ; 4 路 double 并行加（结构同上）
+        mov     rax, rcx
+        movups  XMMWORD PTR [rcx], xmm0
+        movsd   xmm0, QWORD PTR 16[rdx]
+        addsd   xmm0, QWORD PTR 16[r8] ; 第 3 个 double 加（同上）
+        movsd   QWORD PTR 16[rcx], xmm0
+        ret
+```
+
+> 注意：运算符重载在 `-O2` 下被内联为普通算术指令（`addpd`/`addsd`），与手写成员函数无差别；`+` 与 `+=` 的微小差异仅来自返回值语义（多一次写回），故二者性能几乎相同（约 1%）。绝对毫秒随微架构而变，「零额外分发开销」才是可移植信号。

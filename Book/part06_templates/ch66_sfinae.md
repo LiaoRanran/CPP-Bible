@@ -1247,3 +1247,22 @@ int main() {
 | ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 重载决议与 SFINAE 前置 |
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | if-constexpr 的编译期求值机制 |
 | ch89 variant/any | Book/part07_stl/ch89_tuple_any.md | `std::variant` 存储布局与 SBO |
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch66_sfinae.cpp` 真实生成（节选热函数 `handle_tag<Cat>` / `handle_tag<Dog>`）。标签分发选中的两个重载在 -O2 下都塌缩为"加载常量 + ret"（各 2 条指令），热点循环里没有任何分派 / 查表 / 间接调用——这正面印证 D5.2 第 1 点：if-constexpr / tag / SFINAE 三种静态分派在运行期零差异（≈1.00×），分派在编译期实例化阶段就已定死。
+
+```asm
+; handle_tag<AnimalCat>：标签选中的具体重载，直接返回编译期常量
+;   _Z10handle_tag9AnimalCat3tagIS_E  (节选)
+        movsd   xmm0, QWORD PTR .LC[rip]  ; Cat 的 sound 值（1.0）已是常量
+        ret
+
+; handle_tag<AnimalDog>：另一标签重载，同样直接返回常量
+;   _Z10handle_tag9AnimalDog3tagIS_E  (节选)
+        movsd   xmm0, QWORD PTR .LC[rip]  ; Dog 的 sound 值（2.0）已是常量
+        ret
+```
+
+> 注意：两个 `handle_tag` 重载都是 2 条指令的"常数加载"，运行期不产生任何 dispatch 成本——与 D5.2 第 1 点一致。代价只在编译期（实例化两份重载）；运行期三者（if-constexpr/tag/SFINAE）不可分，选型应看报错友好度与可读性。真正贵的是把类型延迟到运行时的 virtual（≈17.8×，vtable 间接 + 阻断内联）与 variant visit（≈1.38×）。绝对毫秒随机器而变，静态三机制≈1.00× 的比值才是可移植信号。
