@@ -326,6 +326,8 @@ int main() {
 }
 ```
 
+> **[警告·并发安全]** 上方 `pop()`（示例 17/18）**仅在单线程下正确**。一旦多个线程并发 `pop`、或与 `push` 交错，`delete old`（L308）后另一线程可能经已被推进的 `head` 再次读到 `old->next` 指向的**已释放内存**——这是经典 **ABA 问题 / use-after-free**。本节标注的「已用 GCC 15.3.0 -O2 验证通过」只证明**单线程逻辑与内存序标注正确**，**不代表该结构可安全用于并发**；真正多线程 `pop` 的安全回收须配 tagged pointer（见 [ch111](Book/part09_concurrency/ch111_aba.md)）或 Hazard Pointer / RCU（见 [ch112](Book/part09_concurrency/ch112_hazard_rcu.md)）。生产环境优先复用 `std::stack`+mutex 或 `boost::lockfree::stack`。
+
 - `[实现·GCC15]`：CAS 在 x86 上编译为 `lock cmpxchg`；acquire/release 的“屏障”在 TSO 下是免费的普通 `mov`。
 - `[经验]`：无锁结构难度极高，生产环境优先复用 `std::stack`+mutex，或 `boost::lockfree::stack`；手写仅用于学习底层机制。
 

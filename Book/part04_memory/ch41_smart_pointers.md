@@ -1011,7 +1011,10 @@ int main() {
 
 [标准] 若类 `T` 继承 `std::enable_shared_from_this<T>`，则该对象已被某个 `shared_ptr` 管理时，可调用 `shared_from_this()` 获得一个**共享所有权**的 `shared_ptr<T>`（指向自身）。实现上基类持有一个 `weak_ptr<T>` 成员 `_M_weak_this`，由第一个接管它的 `shared_ptr` 在构造时填充。
 
-**[核心知识点18] 构造期调用 UB**：对象的生命周期尚未被 `shared_ptr` 接管，`_M_weak_this` 为空，此时调 `shared_from_this()` 是**未定义行为**（通常抛 `bad_weak_ptr`）——必须在已被 `shared_ptr` 管理之后才能用。
+**[核心知识点18] 构造期调用（版本相关）**：对象的生命周期尚未被 `shared_ptr` 接管时，`_M_weak_this` 为空（内部 `weak_ptr` 处于「已过期」状态）。此时调 `shared_from_this()` 的后果**按标准版本分两种**：
+- **C++14 及更早**：**未定义行为**（实现通常直接崩溃，少数实现抛异常）。
+- **C++17 起（含本书标称的 C++23 / GCC 15.3.0）**：**良定义地抛出 `std::bad_weak_ptr`**——因为从已过期的 `weak_ptr` 构造 `shared_ptr` 本身就会抛异常，这是标准保证的行为，而非 UB。
+因此无论哪个版本，**都必须在对象已被 `shared_ptr`（或 `make_shared`）接管之后**才能调用 `shared_from_this()`。
 
 [实现·GCC15] `enable_shared_from_this`（`shared_ptr.h` 行 919-972）与基类 `__enable_shared_from_this`（`shared_ptr_base.h` 行 2171-2219）：
 
@@ -1059,7 +1062,7 @@ int main() {
 }
 ```
 
-### 示例 25：`enable_shared_from_this` 错误——构造期调用 UB  `[核心知识点18]`
+### 示例 25：`enable_shared_from_this` 陷阱——构造期禁止调用  `[核心知识点18]`
 
 > **示例 39** [难度 ★☆☆☆☆] [主题：示例 25：enableshared]
 ```cpp
@@ -1069,7 +1072,7 @@ int main() {
 struct Bad : std::enable_shared_from_this<Bad> {
     Bad() {
         // 错误：此刻尚未被 shared_ptr 接管，_M_weak_this 为空
-        // auto self = shared_from_this();  // UB：通常抛 std::bad_weak_ptr
+        // auto self = shared_from_this();  // 错误：C++14及更早为UB；C++17起抛 std::bad_weak_ptr
     }
     void ok() { auto self = shared_from_this(); (void)self; }
 };
@@ -1510,7 +1513,7 @@ int main() {
    std::shared_ptr<int> a(raw);
    std::shared_ptr<int> b(raw);   // 错误！两个控制块 -> double free
 ```
-3. **构造期调用 `shared_from_this()`**：UB（元素 15 示例 25）。
+3. **构造期调用 `shared_from_this()`**：C++14 及更早为 UB；C++17 起良定义抛 `std::bad_weak_ptr`（元素 15 示例 25）。
 4. **循环引用不打破**：泄漏（元素 13）。
 5. **`get()` 返回后 `reset()` 使悬空**：`int* p = sp.get(); sp.reset(); *p; // 悬空`。
 6. **`unique_ptr` 当函数参数却按值拷贝**：编译失败；应 `std::move` 传入或传引用。
@@ -1635,7 +1638,7 @@ int main() {
 
 - **AddressSanitizer / LeakSanitizer**：`-fsanitize=address` 可检测循环引用泄漏（对象未被释放会在退出时报告）。本机 MinGW GCC 13.1.0 支持 ASan。
 - **`use_count()` 仅诊断**：线上不要用它做逻辑判断（值非原子快照，且别名构造会令人困惑）。
-- **`std::enable_shared_from_this` 误用**：构造期调用会抛 `std::bad_weak_ptr`（libstdc++ 行 158-159 `_M_add_ref_lock` 抛异常路径），是快速定位 UB 的信号。
+- **`std::enable_shared_from_this` 误用**：构造期调用会抛 `std::bad_weak_ptr`（libstdc++ 行 158-159 `_M_add_ref_lock` 抛异常路径）。注意这是 **C++17 起的良定义行为**，并非未定义行为；若标称标准退回 C++14 及更早，则属 UB。
 - **控制块地址**：`printf("%p\n", (void*)sp.get());` 无法直接取控制块；可通过 `owner_less`/`owner_before` 间接判断两 `shared_ptr` 是否同属一个控制块（元素 18）。
 
 ---
@@ -1646,7 +1649,7 @@ int main() {
 2. **共享才用 `shared_ptr`**：强/弱计数 + 控制块，拷贝/析构带原子成本（KP09、KP10、KP13）。
 3. **`make_shared` 优先**：一次分配、缓存友好、异常安全；代价是 weak 滞留时对象内存不回收（KP11、KP23）。
 4. **循环用 `weak_ptr` 打破**：父持 `shared_ptr`，子持 `weak_ptr`（KP16、KP17）。
-5. **`enable_shared_from_this` 必须在被 `shared_ptr` 管理后调用**，否则 UB（KP18）。
+5. **`enable_shared_from_this` 必须在被 `shared_ptr` 管理后调用**，否则在 C++14 及更早为 UB、C++17 起抛 `std::bad_weak_ptr`（KP18）。
 6. **别名构造**共享控制块、指向别的对象，经典用于"返回内部指针延长整体生命周期"（KP19）。
 7. **线程安全分层**：计数原子安全，所指对象访问与同一变量并发写非安全，需 `atomic<shared_ptr>` 或锁（KP15、KP14）。
 8. **`owner_less`** 按所有权（控制块）比较，不按指针值（KP20）。
@@ -1680,7 +1683,7 @@ int main() {
 ### ㉒.3 生产踩坑：智能指针的常见误用
 
 - **循环引用导致内存泄漏**：第 ⑬/⑭ 节经典案例，两个对象互相 `shared_ptr` 持有，引用计数永不为 0；必须用 `weak_ptr` 打破环，否则内存只涨不跌。
-- **`enable_shared_from_this` 误用**：第 ⑮ 节指出，必须在对象已存在 `shared_ptr` 拥有时才调用 `shared_from_this()`；在栈对象或构造期（尚无 `shared_ptr` 接管）调用会抛 `bad_weak_ptr` 或 UB。
+- **`enable_shared_from_this` 误用**：第 ⑮ 节指出，必须在对象已存在 `shared_ptr` 拥有时才调用 `shared_from_this()`；在栈对象或构造期（尚无 `shared_ptr` 接管）调用会抛 `std::bad_weak_ptr`（**C++17 起良定义**；C++14 及更早才是未定义行为）。
 - **`new + shared_ptr` 两次分配**：第 ⑩ 节强调 `std::shared_ptr<T>(new T)` 会分别分配对象与控制块，而 `make_shared` 一次分配更省更快且异常安全；遗留代码常见这个低效写法。
 - **多线程下误以为 `shared_ptr` 自身完全线程安全**：第 ⑪ 节澄清，引用计数原子（线程安全析构）≠ 所指对象线程安全；多个线程各自持有 `shared_ptr` 拷贝去改同一对象，仍需额外同步，否则数据竞争。
 - **`unique_ptr` 用 `release()` 后又忘删**：第 ⑤ 节，`.release()` 主动放弃所有权返回裸指针，若收指针的一方忘了释放即泄漏——`release()` 应只在「转移所有权给别的 RAII 类型」时用。
@@ -2093,7 +2096,7 @@ pa->b = pb; pb->a = pa;            // 互相 +1 -> 双方引用计数停在有�
 
 ### 练习 3（难度 ★★★★）
 
-**真实场景：网络连接的句柄生命周期。** 服务器中每个连接对应一个对象，底层 `FILE*` / socket 句柄必须在引用归零时关闭；同时该对象在异步回调里常需 `shared_from_this()` 延长自身生命，直到回调跑完。若对象尚未被 `shared_ptr` 拥有就调用 `shared_from_this()`，会得到 `bad_weak_ptr` 或 UB。
+**真实场景：网络连接的句柄生命周期。** 服务器中每个连接对应一个对象，底层 `FILE*` / socket 句柄必须在引用归零时关闭；同时该对象在异步回调里常需 `shared_from_this()` 延长自身生命，直到回调跑完。若对象尚未被 `shared_ptr` 拥有就调用 `shared_from_this()`，会得到 `std::bad_weak_ptr`（**C++17 起良定义**；C++14 及更早为未定义行为）。
 
 `std::make_shared<T>` 相比 `std::shared_ptr<T>(new T)` 为何更快且更安全？
 再写一个用**自定义 deleter** 管理 `std::FILE*` 的例子，并指出 `enable_shared_from_this` 的生命周期陷阱。
@@ -2113,7 +2116,7 @@ auto file = std::shared_ptr<FILE>(std::fopen("log.txt","w"),
 ```
 
 陷阱：`enable_shared_from_this::shared_from_this()` 要求对象**已**被 `shared_ptr` 拥有；
-在构造函数内或栈上对象调用会得到 `bad_weak_ptr` 或 UB。
+在构造函数内或栈上对象调用会得到 `std::bad_weak_ptr`（**C++17 起良定义**；C++14 及更早为未定义行为）。
 
 [标准] `make_shared`(C++11) 单分配; `shared_ptr` deleter 保存在控制块中。
 [引用] ISO/IEC 14882:2023 §[smartptr.shared]、§[util.smartptr.shared.const]（自定义 deleter 存于控制块）；cppreference "std::enable_shared_from_this" 明确：必须在对象已被 `shared_ptr` 拥有后调用 `shared_from_this()`。
