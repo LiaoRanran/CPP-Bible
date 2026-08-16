@@ -186,7 +186,7 @@ target_link_libraries(app PRIVATE mylib)   # 依赖关系即依赖图
 
 CMake 有两类"变量"：**普通变量**（函数/目录作用域）与 **缓存变量（cache entry）**（`set(... CACHE ...)`，跨配置持久、可被 `-D` 覆盖）。`option()` 是布尔缓存变量的语法糖。
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：变量/缓存/option [标准]]
+> **示例 8** [难度 ★★☆☆☆] [主题：变量/缓存/option [标准]]
 ```cpp
 // ⑥ 受 CMake option 控制的源：USE_SSE 决定走哪条路径
 // 文件：Examples/_ch12_feature.cpp（示意）
@@ -218,7 +218,7 @@ target_compile_definitions(mylib PRIVATE USE_SSE=$<IF:$<BOOL:${USE_SSE}>,1,0>)
 
 **生成器表达式（generator expression）** `$<...>` 在"生成期"才求值，用来表达"按配置/按语言/按条件"的差异。它和 `target_link_libraries` 配合，是 modern CMake 的精华。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：生成器表达式与 targetlink]
+> **示例 9** [难度 ★★☆☆☆] [主题：生成器表达式与 targetlink]
 ```cpp
 // ⑦ 消费者：链接 mylib 后使用其接口
 // 文件：Examples/_ch12_consumer.cpp（示意）
@@ -247,7 +247,7 @@ target_link_libraries(app PRIVATE
 
 `install()` 把产物与头拷到前缀目录；`install(EXPORT)` 生成 **目标导出集（`.cmake`）**，让别的工程能 `find_package` 找到你（闭环到 ⑯）。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：安装/导出/包配置 [标准]]
+> **示例 10** [难度 ★★☆☆☆] [主题：安装/导出/包配置 [标准]]
 ```cpp
 // ⑧ 要被导出的库接口（头与 inline 必须随包分发）
 // 文件：Examples/_ch12_exportif.h（示意）
@@ -338,7 +338,7 @@ cc_binary(
 
 增量构建的正确性 = "**依赖闭包任何一处变化，相关 TU 必须重编**"。头被多个 TU 包含，于是头变了要重编所有包含它的 TU——这正是 `-MMD` 输出 `.d` 的根本动机。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：头文件依赖与增量构建原理 [标准]]
+> **示例 13** [难度 ★★☆☆☆] [主题：头文件依赖与增量构建原理 [标准]]
 ```cpp
 // ⑪ 头依赖示意：config.h 被 a.cpp / b.cpp 同时包含
 // 文件：Examples/_ch12_config.h（示意）
@@ -481,7 +481,7 @@ namespace ch12 { int square(int x); int cube(int x); }
 namespace ch12 { int square(int x){return x*x;} int cube(int x){return x*x*x;} }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：静态/动态库链接]
+> **示例 23** [难度 ★★☆☆☆] [主题：静态/动态库链接]
 ```cpp
 // 文件：Examples/_ch12_use_lib.cpp
 // 行号：1
@@ -535,7 +535,7 @@ target_link_libraries(app PRIVATE fmt::fmt)   # 自动带 include/选项
 
 同一份 C++，**不同优化级别**生成的汇编天差地别——这正是"构建配置（Debug/Release）"影响运行效率的根本。下面为 `_ch12_sum.cpp` 在 GCC 13.1.0 的真实 `-S` 输出。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实：编译同一程]
+> **示例 25** [难度 ★★★☆☆] [主题：[实现·GCC15]真实：编译同一程]
 ```cpp
 // 文件：Examples/_ch12_sum.cpp
 // 行号：1
@@ -633,7 +633,7 @@ _Z6sum_toi:
 
 **陷阱 1：全局 include / 全局变量污染。** 老式 `include_directories(.)` 把当前目录塞进**每个** TU 的搜索路径，任何同名头都可能被误包含；全局 `int g_config;` 在多个 TU 定义触发 ODR 冲突。
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：常见陷阱]
+> **示例 26** [难度 ★★☆☆☆] [主题：常见陷阱]
 ```cpp
 // ⑱ ❌ 陷阱：在头里定义非 inline 全局变量 → 多 TU 包含 => 多重定义
 // 文件：Examples/_ch12_bad.h（示意，错误示范）
@@ -652,7 +652,7 @@ inline int g_counter = 0;          // ✅ inline 变量：ODR 允许多 TU 同�
 
 **陷阱 2：目录式 include 与模糊匹配。** `include_directories(third_party)` 后 `#include "json.h"` 可能抓到错误的 `json.h`。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：常见陷阱]
+> **示例 28** [难度 ★★☆☆☆] [主题：常见陷阱]
 ```cpp
 // ⑱ ❌ 陷阱：依赖目录式 include 的歧义
 // #include "json.h"   // ❌ 到底是哪个 json.h？项目内还是 third_party 的？
@@ -702,7 +702,7 @@ int main() { std::printf("chosen build system\n"); return 0; }
    - [标准] 头依赖在语言层由 `#include` 与（C++20）模块导入表达；构建系统只负责把正确的包含路径与链接传给使用者。
    - [引用] ISO/IEC 14882:2023 §[cpp.include]（源文件包含）；cppreference "Replacing text macros / #include" 词条。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：速查表]
+> **示例 30** [难度 ★★★☆☆] [主题：速查表]
 ```
 ┌────────────── 构建系统速查 ──────────────┐
 │ g++ 选项：                                 │
@@ -914,7 +914,7 @@ namespace ch12 { struct Counter { int v = 0; int inc() { return ++v; } }; }
 
 ## 附录 A：工业构建系统与标准库 [B: Principle / D: stdlib / H: Design / I: Practice / J: Learning]
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：附录 A：工业构建系统与标准库 [B]
+> **示例 44** [难度 ★★☆☆☆] [主题：附录 A：工业构建系统与标准库 [B]
 ```
 C++构建系统工业对比:
 CMake: 事实标准(90%+项目), 跨平台, 但语法丑陋
@@ -1094,7 +1094,7 @@ int main() {
 
 **真实场景：发布形态选型。** 你要把一个 `square` 工具函数交付出去：做成静态库 `.a` 让调用方程序自包含，或做成动态库 `.so` 便于单独升级。请在单个自包含程序里体现"库函数"的调用形态，并写出分离成静态库的真实命令。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 49** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 int square(int x) { return x * x; }   // 实际项目中会放进 libmath.a
@@ -1144,7 +1144,7 @@ g++ -std=c++23 -x c++-header stdpch.h -o stdpch.h.gch   # 预编译头
 g++ -std=c++23 -include stdpch.h main.cpp -o main        # 复用 gch
 ```
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：演绎 2：用 PCH 给巨量 Uni]
+> **示例 50** [难度 ★★☆☆☆] [主题：演绎 2：用 PCH 给巨量 Uni]
 ```cpp
 #include <iostream>
 #include <vector>

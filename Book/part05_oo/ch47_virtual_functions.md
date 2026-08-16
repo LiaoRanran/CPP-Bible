@@ -53,7 +53,7 @@ Simula、Smalltalk 默认「一切方法皆虚」，调用必走查表；C++ 反
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 1** [难度 ★★★★★] [主题：知识图谱（ASCII）]
 ```
                     ┌───────────── C++ 多态 ─────────────┐
                     │                                      │
@@ -104,7 +104,7 @@ classDiagram
 
 单继承对象布局（x86-64，Itanium ABI，假设无数据成员仅 vptr）：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：内存图 / 对象布局]
+> **示例 2** [难度 ★★★★☆] [主题：内存图 / 对象布局]
 ```
         Derived 对象（地址 base）
         ┌─────────────────────────┐  <- base (offset 0)
@@ -123,7 +123,7 @@ classDiagram
 
 ## ⑧ 生命周期图
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：生命周期图]
+> **示例 3** [难度 ★★★☆☆] [主题：生命周期图]
 ```
 构造 Derived d:
   Base 构造体 ──设置 vptr──▶ 指向 Base vtable
@@ -139,7 +139,7 @@ classDiagram
 
 ## ⑨ 调用栈 / 时序图
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：调用栈 / 时序图]
+> **示例 4** [难度 ★★★★★] [主题：调用栈 / 时序图]
 ```
 调用点                 vtable               目标函数
   │                      │                     │
@@ -219,7 +219,7 @@ g++ -std=c++23 -O2 -S -masm=intel _asm_ctor_vptr.cpp -o _asm_ctor_vptr.asm
 > 构建：`g++ -std=c++23 -O2 -Wall case47_plugin.cpp -o case47_plugin`
 > 文件：`Examples/case47_plugin.cpp`
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：工业案例 47-A：插件式渲染后端]
+> **示例 5** [难度 ★★★★☆] [主题：工业案例 47-A：插件式渲染后端]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -261,7 +261,7 @@ int main() {
 
 ### 工业案例 47-B：错误示范——基类非虚析构导致泄漏/UB
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：工业案例 47-B：错误示范——基类]
+> **示例 6** [难度 ★★★☆☆] [主题：工业案例 47-B：错误示范——基类]
 ```cpp
 // ❌ 基类析构非虚：delete 基类指针只调 Base 析构，派生部分不释放
 struct BadBase { ~BadBase() {} };                 // 非虚
@@ -282,7 +282,7 @@ struct GoodDerived : GoodBase { int* buf = new int[1024]; ~GoodDerived() overrid
 
 ### 工业案例 47-C：同类型对象共享同一份 vtable（vptr 相同）
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：工业案例 47-C：同类型对象共享同]
+> **示例 8** [难度 ★★★☆☆] [主题：工业案例 47-C：同类型对象共享同]
 ```cpp
 #include <cstdio>
 struct Base { virtual ~Base() = default; virtual int f() const { return 1; } };
@@ -333,7 +333,7 @@ struct Der : Base { Der* clone() const override { return new Der(*this); } };  /
 
 ### 工业案例 47-H：多重继承 thunk（第二基类调用前 this 调整）
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：工业案例 47-H：多重继承 thu]
+> **示例 13** [难度 ★★★☆☆] [主题：工业案例 47-H：多重继承 thu]
 ```cpp
 struct L { virtual int lf() const { return 1; } };
 struct R { virtual int rf() const { return 2; } };
@@ -380,7 +380,7 @@ struct Der : Base { void cleanup() const override {} };  // 基类析构时调 B
 
 ### 工业案例 47-M：模板成员不可为虚函数
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：工业案例 47-M：模板成员不可为虚]
+> **示例 18** [难度 ★★☆☆☆] [主题：工业案例 47-M：模板成员不可为虚]
 ```cpp
 struct Base { virtual ~Base() = default; };
 // template<class T> virtual void f(T);  // ❌ 编译错误：模板成员不可为 virtual
@@ -421,7 +421,7 @@ struct IShape {
 
 ### 工业案例 47-Q：CRTP 静态替代（对比 ⑲ benchmark）
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：工业案例 47-Q：CRTP 静态替]
+> **示例 22** [难度 ★★★☆☆] [主题：工业案例 47-Q：CRTP 静态替]
 ```cpp
 template<class D>
 struct CrtpBase { int f() const { return static_cast<const D*>(this)->f_impl(); } };
@@ -450,7 +450,7 @@ void demo_r() { B* b = new D; delete b; }  // 正确：先 ~D 再 ~B
 
 [标准·Itanium C++ ABI] vtable 结构（单继承，简化）：
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：源码剖析 1：虚析构与 vtable]
+> **示例 24** [难度 ★★★☆☆] [主题：源码剖析 1：虚析构与 vtable]
 ```
 vtable for C:
   [0]  offset-to-top
@@ -550,7 +550,7 @@ extern "C" void __cxa_pure_virtual() { std::terminate(); }
 
 【microbenchmark 设计（Google Benchmark，可复现）】
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：性能分析]
+> **示例 26** [难度 ★★★☆☆] [主题：性能分析]
 ```cpp
 #include <benchmark/benchmark.h>
 struct Base { virtual ~Base()=default; virtual int f() const { return 1; } };
@@ -663,7 +663,7 @@ struct Big { virtual void f1(); /*...*/ virtual void f200(); };
 ```
 
 【正确示例】
-> **示例 28** [难度 ★☆☆☆☆] [主题：知识点 B1：vtable 布局与覆]
+> **示例 28** [难度 ★★★☆☆] [主题：知识点 B1：vtable 布局与覆]
 ```cpp
 // ✅ 覆盖同名同签名虚函数，编译器自动替换 vtable 同槽
 struct Base { virtual int f() { return 1; } };
@@ -795,7 +795,7 @@ Der d; d.init();  // 显式调用，打印 "der"
 【真实源码】libstdc++ `<exception>` 的 `std::exception::~exception()` 为 virtual。
 
 【错误示例】
-> **示例 31** [难度 ★☆☆☆☆] [主题：知识点 B3：虚析构必须 virtu]
+> **示例 31** [难度 ★★★☆☆] [主题：知识点 B3：虚析构必须 virtu]
 ```cpp
 // ❌ 非虚析构基类 + 多态 delete
 struct Shape { ~Shape(){} };                 // 非虚
@@ -804,7 +804,7 @@ Shape* s=new Circle; delete s;               // UB：pts 泄漏
 ```
 
 【正确示例】
-> **示例 32** [难度 ★☆☆☆☆] [主题：知识点 B3：虚析构必须 virtu]
+> **示例 32** [难度 ★★☆☆☆] [主题：知识点 B3：虚析构必须 virtu]
 ```cpp
 // ✅ 虚析构
 struct Shape { virtual ~Shape()=default; };
@@ -1149,7 +1149,7 @@ call rax                ; 间接跳转，目标运行期才定
 
 > 编译器: GCC 15.3.0 (mingw64) | 选项: `-std=c++17 -O2 -fno-rtti -fno-exceptions`
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录 E：编译实证——虚调用的真实汇]
+> **示例 42** [难度 ★★★★★] [主题：附录 E：编译实证——虚调用的真实汇]
 ```cpp
 struct Base {
     virtual int value() const { return 1; }
@@ -1246,7 +1246,7 @@ call_virtual(int):
 
 ### 测试源码（节选）
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：测试源码（节选）]
+> **示例 43** [难度 ★★★★☆] [主题：测试源码（节选）]
 ```cpp
 struct ShapeV { int k; virtual int area() const = 0; virtual ~ShapeV()=default; };
 struct CircV : ShapeV { int r; int area() const override { return r*r; } };
@@ -1346,7 +1346,7 @@ long c_loop<RectC>(RectC const*, int):
 
 <details><summary>答案与解析</summary>
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 44** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1400,7 +1400,7 @@ int main(){ Der d; }   // 输出 "Base::f", 不是 "Der::f"
 
 <details><summary>答案与解析</summary>
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 46** [难度 ★★★★☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 // 动态多态: 运行时异构, 有 vtable + 间接调用开销
 struct Addable { virtual int add(int)=0; };
@@ -1444,7 +1444,7 @@ struct Grayscale : Filter {
 
 **步骤 3：工厂注册 + 运行时按名创建（多态分发）**
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 设计一个可扩展的]
+> **示例 49** [难度 ★★★☆☆] [主题：附录：用法演绎 — 设计一个可扩展的]
 ```cpp
 std::map<std::string, std::function<std::unique_ptr<Filter>()>> registry;
 registry["grayscale"] = [] { return std::make_unique<Grayscale>(); };
@@ -1455,7 +1455,7 @@ Image out = f->apply(src);              // 经 vtable 分发到正确实现
 
 **步骤 4：对比 CRTP 静态策略（性能优先时）**
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 设计一个可扩展的]
+> **示例 50** [难度 ★★★★★] [主题：附录：用法演绎 — 设计一个可扩展的]
 ```cpp
 template <class Impl> struct FilterCrtp {
     Image apply(const Image& i) const { return static_cast<const Impl*>(this)->impl(i); }
@@ -1684,7 +1684,7 @@ OFFSET           TYPE                      VALUE
 
 ### D4.5 第一方可编译验证（type_info 三能力）
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
+> **示例 51** [难度 ★★★★☆] [主题：第一方可编译验证]
 ```cpp
 #include <iostream>
 #include <typeinfo>
@@ -1800,7 +1800,7 @@ int main() {
 基准源码见库根 `_bench_d5_47_virt.cpp`。
 ### 下一节 可复现 demo
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：下一节 可复现 demo]
+> **示例 52** [难度 ★★★☆☆] [主题：下一节 可复现 demo]
 ```cpp
 #include <iostream>
 #include <vector>

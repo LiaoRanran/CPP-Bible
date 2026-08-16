@@ -60,7 +60,7 @@ DI 在 Java 世界靠"运行时反射 + 注解容器"实现，而 C++ 没有原�
 
 下面是最简示例：把 `Logger` 注入 `Service`，而非 `Service` 内部 `new Logger`。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：DI 是什么]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：DI 是什么]
 ```cpp
 // Examples/_ch141_overview.cpp
 // 依赖注入最小示例：将 Logger 注入 Service，而非在 Service 内部 new Logger。
@@ -86,7 +86,7 @@ int main() {
 
 依赖关系用 ASCII 框线图表示（高层不依赖低层的具体类，只依赖“被注入的端口”）：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：DI 是什么]
+> **示例 2** [难度 ★★☆☆☆] [主题：概述：DI 是什么]
 ```
 ┌────────────┐       注入        ┌────────────┐
 │  Service   │ ───────────────▶ │  Logger    │
@@ -107,7 +107,7 @@ int main() {
 
 【定义】构造注入（Constructor Injection）：依赖在对象构造期一次性绑定，构造后不可变（常声明为 `const`）。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：构造函数注入]
+> **示例 3** [难度 ★★☆☆☆] [主题：构造函数注入]
 ```cpp
 // Examples/_ch141_ctor_inject.cpp
 // 构造函数注入（Constructor Injection）：依赖在构造期一次性绑定，对象不可变（const 成员）。
@@ -134,7 +134,7 @@ int main() {
 
 [标准] `explicit` 单参数构造函数防止隐式转换（[class.ctor]），是工业代码对“注入构造”的推荐写法。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：构造函数注入]
+> **示例 4** [难度 ★★☆☆☆] [主题：构造函数注入]
 ```cpp
 // 反例：依赖在对象构造后处于“半初始化”状态
 // ❌ 未注入 cfg 时 start() 解引用空引用 → 未定义行为
@@ -148,7 +148,7 @@ int main() {
 
 【定义】setter 注入（Setter Injection）：对象先以默认/空状态构造，随后通过 setter 在运行时替换依赖。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：注入]
+> **示例 5** [难度 ★★☆☆☆] [主题：注入]
 ```cpp
 // Examples/_ch141_setter_inject.cpp
 // setter 注入（Setter Injection）：依赖可在对象构造后替换，适合可选/可热插拔依赖。
@@ -193,7 +193,7 @@ int main() {
 
 【定义】模板参数注入：把“依赖类型”作为**模板参数**传入，绑定在编译期完成，零运行时开销。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：模板参数注入（编译期绑定）]
+> **示例 7** [难度 ★★★☆☆] [主题：模板参数注入（编译期绑定）]
 ```cpp
 // Examples/_ch141_template_inject.cpp
 // 模板参数注入（编译期绑定）：依赖类型作为模板参数，零运行时开销，可被内联/去虚化。
@@ -233,7 +233,7 @@ struct AnotherClock { int now() const { return 7; } };  // 没继承任何基类
 
 【定义】DI 容器（Container）：一个**组装根**的集中实现——按类型登记“工厂”，在 `resolve()` 时自动创建并装配整张依赖图。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：容器（手写简易）]
+> **示例 9** [难度 ★★☆☆☆] [主题：容器（手写简易）]
 ```cpp
 // Examples/_ch141_container.cpp
 // 手写简易 DI 容器：按类型登记工厂，按需解析（resolve）并自动注入依赖图。
@@ -288,7 +288,7 @@ int main() {
 
 【定义】接口注入：高层依赖**抽象基类（接口）**而非具体类，运行时通过多态解耦。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：与接口（抽象基类）]
+> **示例 11** [难度 ★★☆☆☆] [主题：与接口（抽象基类）]
 ```cpp
 // Examples/_ch141_interface.cpp
 // DI 与接口（抽象基类）：面向接口编程，运行时多态解耦高层与低层。
@@ -338,7 +338,7 @@ struct BadIface { /* 无 virtual ~BadIface() */ virtual void f() = 0; };
 
 【定义】用 `std::unique_ptr` 表达“**依赖所有权随注入转移**”的语义：容器/工厂拥有依赖，注入后独占，无共享、无拷贝。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：与 std::uniqueptr 所]
+> **示例 13** [难度 ★★☆☆☆] [主题：与 std::uniqueptr 所]
 ```cpp
 // Examples/_ch141_unique_ptr.cpp
 // DI 与 std::unique_ptr 所有权：容器拥有依赖生命周期，注入后所有权转移，无共享、无拷贝。
@@ -373,7 +373,7 @@ int main() {
 
 【源码剖析】libstdc++ 的 `std::unique_ptr::reset` 是“所有权转移”的核心，注入后容器通过 `reset` 把指针交给 `unique_ptr`：
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：与 std::uniqueptr 所]
+> **示例 14** [难度 ★★☆☆☆] [主题：与 std::uniqueptr 所]
 ```cpp
 #include <utility>
 // 文件：bits/unique_ptr.h（libstdc++ 13.1.0）
@@ -396,7 +396,7 @@ int main() {
 
 【定义】测试用 DI：把真实依赖（DB/网络/时钟）替换成**测试替身（test double / fake / mock）**，使单测无外部副作用、可断言。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：与测试（mock 注入）]
+> **示例 15** [难度 ★★☆☆☆] [主题：与测试（mock 注入）]
 ```cpp
 // Examples/_ch141_mock.cpp
 // DI 与测试：通过注入“假实现”（mock/fake）隔离被测对象，无需真实数据库/网络。
@@ -447,7 +447,7 @@ int main() {
 
 【上游参考】Boost.DI（`boost::di`）是工业级 C++14 DI 框架，核心 API：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：框架对比]
+> **示例 17** [难度 ★★★☆☆] [主题：框架对比]
 ```cpp
 // 上游参考（Boost.DI，需 boost 1.80+，本书环境未装 boost，故不在此编译）。
 // 其“自动装配”风格：
@@ -507,7 +507,7 @@ int main() {
 
 【定义】编译期 DI：用 `if constexpr`（C++17）在编译期根据策略常量选择实现分支，杜绝虚调用与运行时分支。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：编译期 DI]
+> **示例 19** [难度 ★★★☆☆] [主题：编译期 DI]
 ```cpp
 // Examples/_ch141_compiletime_select.cpp
 // 编译期 DI：用 if constexpr 在编译期选择实现，避免虚调用与分支开销。
@@ -532,7 +532,7 @@ int main() {
 
 【编译器行为】`Production` 是编译期常量，`if constexpr` 的未选中分支根本不参与实例化，生成代码里只有被选中的后端。真实 `-O2` 汇编（`_ch141_compiletime_select.asm`）中 `dev` 分支直接加载字符串 `"dev"`、`prod` 分支加载 `"prod"`，无任何分支跳转。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：编译期 DI]
+> **示例 20** [难度 ★★☆☆☆] [主题：编译期 DI]
 ```cpp
 // 进一步：把开关交给编译宏，做到“同份代码、零成本切换实现”
 // template <int Env = BUILD_ENV> struct Backend { ... };
@@ -546,7 +546,7 @@ int main() {
 
 【定义】单例（Singleton）与 DI 常被混淆。单例把“**如何获取依赖**”和“**全局可见性**”硬编码进依赖自身；DI 把依赖当普通参数传入，单例只在**最外层**持有一份。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：与单例（替代，关联 ch136）]
+> **示例 21** [难度 ★★☆☆☆] [主题：与单例（替代，关联 ch136）]
 ```cpp
 // Examples/_ch141_singleton.cpp
 // DI 替代单例：单例把“如何获取”和“全局可见性”硬编码；DI 把依赖当作普通参数传入。
@@ -583,7 +583,7 @@ int main() {
 
 【定义】DI 的生命周期由**所有权语义 + RAII** 保障：依赖资源在拥有者析构时自动释放，无需手动 `dispose()`。
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：生命周期管理（RAII）]
+> **示例 23** [难度 ★★☆☆☆] [主题：生命周期管理（RAII）]
 ```cpp
 // Examples/_ch141_raii.cpp
 // DI 生命周期管理（RAII）：依赖资源由拥有者（容器/unique_ptr）在析构时自动释放。
@@ -608,7 +608,7 @@ int main() {
 
 【生命周期图】：
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：生命周期管理（RAII）]
+> **示例 24** [难度 ★★☆☆☆] [主题：生命周期管理（RAII）]
 ```
 main ──new Connection──▶ unique_ptr<Connection>
                               │
@@ -630,7 +630,7 @@ main ──new Connection──▶ unique_ptr<Connection>
 
 【定义】DI 与并发的交点在于：**注入的依赖在多线程下的线程安全边界**必须明确。
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：与多线程]
+> **示例 26** [难度 ★★☆☆☆] [主题：与多线程]
 ```cpp
 // Examples/_ch141_mt.cpp
 // DI 与多线程：注入的依赖需明确线程安全边界。不可变（const）依赖可安全共享。
@@ -661,7 +661,7 @@ int main() {
 
 【线程安全】注入**无状态、只读**的依赖（如 `Square`）并以 `shared_ptr` 共享，多个工作线程并发调用是安全的（[thread.req.lockable] 层面无数据竞争）。反之，若依赖含可变状态，需在其内部加锁或用无锁结构。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：与多线程]
+> **示例 27** [难度 ★★☆☆☆] [主题：与多线程]
 ```cpp
 // 若依赖自身有状态，注入的是“每线程实例”而非共享实例：
 // thread_local Worker tl_worker(make_stateful());
@@ -677,7 +677,7 @@ int main() {
 - **接口注入**（虚函数）：有 vtable、有间接调用。
 - **模板注入**（静态多态，非虚）：无 vtable、可内联。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：性能]
+> **示例 28** [难度 ★★★★☆] [主题：性能]
 ```cpp
 // Examples/_ch141_perf.cpp
 // DI 性能取证：接口注入（虚 / 运行时多态） vs 模板注入（静态多态，无虚调用）。
@@ -752,7 +752,7 @@ _Z11via_virtualRK8IStorage:
 
 【定义】列清常见 DI 反模式，避免“看起来像 DI 实则更糟”。
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：反模式]
+> **示例 29** [难度 ★★☆☆☆] [主题：反模式]
 ```cpp
 // Examples/_ch141_antipattern.cpp
 // DI 反模式：在构造函数里 new 具体依赖、或让依赖自己 new 依赖（service locator 伪装成 DI）。
@@ -810,7 +810,7 @@ int main() {
 
 【定义】DI 与 `constexpr` 结合：编译期策略对象作为常量表达式注入，可进入常量折叠 / 放入 ROM。
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：与 constexpr]
+> **示例 31** [难度 ★★★☆☆] [主题：与 constexpr]
 ```cpp
 // Examples/_ch141_constexpr.cpp
 // DI 与 constexpr：编译期策略对象可作为常量表达式注入，进入 ROM / 常量折叠。
@@ -831,7 +831,7 @@ int main() {
 
 【标准】模板参数 `P` 的 `factor()` 是 `constexpr` 函数，因此 `compute` 能在编译期求值（[expr.const]），`r1`/`r2` 均为编译期常量，不产生运行时计算。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：与 constexpr]
+> **示例 32** [难度 ★★★★☆] [主题：与 constexpr]
 ```cpp
 // constexpr 注入也可用于“编译期配置表”：
 // template <auto Config> struct Engine { static constexpr int max = Config.max_threads; };
@@ -845,7 +845,7 @@ int main() {
 
 【定义】ECS（Entity-Component-System）是 DI 思想在游戏/仿真领域的延伸：**系统（System）依赖组件存储（World）注入**，而非全局单例。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：与 ECS 衔接（预告 ch142）]
+> **示例 33** [难度 ★★☆☆☆] [主题：与 ECS 衔接（预告 ch142）]
 ```cpp
 // Examples/_ch141_ecs.cpp
 // DI 与 ECS 衔接：系统（System）通过“组件存储（World）”依赖注入，而非全局单例（预告 ch142）。
@@ -875,7 +875,7 @@ int main() {
 
 【为什么设计】传统 OOP 让 `GameObject` 自带行为（继承树爆炸）；ECS 把“数据（Component）”与“行为（System）”分离，System 通过注入的 `World` 读写组件，天然契合 DI 的“依赖外置”。
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：与 ECS 衔接（预告 ch142）]
+> **示例 34** [难度 ★★☆☆☆] [主题：与 ECS 衔接（预告 ch142）]
 ```cpp
 // ECS 中 System 常以模板/接口注入多种 Component 视图（只读/可写），与 ④ 模板注入同构
 // class RenderSystem { template<class View> void run(View v); };
@@ -889,7 +889,7 @@ int main() {
 
 【定义】工业级案例：交易网关（TradingGateway）注入**行情源**与**风控**，生产用真实实现、单测用 fake，体现 DI 的全部价值。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 35** [难度 ★★☆☆☆] [主题：真实案例]
 ```cpp
 // Examples/_ch141_realcase.cpp
 // 真实案例：交易网关（TradingGateway）注入行情源与风控，单测可换 fake，生产可换真实实现。
@@ -942,7 +942,7 @@ int main() {
 
 【定义】把 DI 落到测试工程：采用**端口/适配器（六边形）架构**，外部端口（事件总线、DB、时钟）皆为接口，测试中换内存适配器。
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：测试策略]
+> **示例 37** [难度 ★★☆☆☆] [主题：测试策略]
 ```cpp
 // Examples/_ch141_test_strategy.cpp
 // 测试策略：用依赖注入实现“端口/适配器（六边形）”架构，测试中用内存适配器替换外部端口。
@@ -1031,7 +1031,7 @@ int main() {
 
 【选型速查】
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：小结]
+> **示例 39** [难度 ★★☆☆☆] [主题：小结]
 ```
 依赖可热插拔？ ──是──▶ setter 注入（③）
       │否
@@ -1160,7 +1160,7 @@ DI 常被误当成"一个 C++ 技巧"，实则是一条源自 1980 年代的软�
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 41** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1187,7 +1187,7 @@ int main() { Handler h(std::make_unique<MemStorage>()); h.run(); }
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 42** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <cassert>
 #include <string>
@@ -1219,7 +1219,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 43** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 struct SysClock { double now() const { return 0.0; } };
@@ -1254,7 +1254,7 @@ int main() { MovementSystem<SysClock, Rng> sys; sys.tick(); }
 
 可复现基准（自包含、可编译）：
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：真实性能基准：三种依赖注入方式的调用]
+> **示例 44** [难度 ★★★★☆] [主题：真实性能基准：三种依赖注入方式的调用]
 ```cpp
 // g++ -std=c++23 -O2 ch141_bench.cpp
 #include <chrono>
@@ -1413,7 +1413,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 45** [难度 ★★★★☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 

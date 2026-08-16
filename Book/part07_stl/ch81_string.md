@@ -36,7 +36,7 @@ COW 与否是 `string` 史上最激烈的内部争论：COW 能让拷贝近乎�
 
 `std::string` 是 `std::basic_string<char>` 的特化，承载"值语义优先、零开销抽象、与 C 互操作"三原则。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：std::string 的设计]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：std::string 的设计]
 ```cpp
 // ① 最简形态：值语义，拷贝即独立副本
 #include <string>
@@ -69,7 +69,7 @@ flowchart TD
 2. **SSO（Small String Optimization，短字符串优化）**：GCC 5.1 起默认，已被所有主流实现采用。
 3. **总是堆指针（无优化）**：少数嵌入式实现。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：三种存储策略的历史演进 [标准]]
+> **示例 2** [难度 ★★☆☆☆] [主题：三种存储策略的历史演进 [标准]]
 ```cpp
 #include <string>
 // ② COW 已被标准禁止：C++11 起要求 string 满足"可装入容器 + 独立拷贝"
@@ -85,7 +85,7 @@ std::string y = x;          // C++11 起：必定深拷贝（独立堆块）
 
 libstdc++ 的 `std::string` 在 **SSO 模式**下是一个"联合体 + 长度 + 容量"结构。核心类型 `std::__cxx11::basic_string`（新 ABI）：
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：对象内存布局：std::string]
+> **示例 3** [难度 ★★☆☆☆] [主题：对象内存布局：std::string]
 ```cpp
 // ③ libstdc++ 概念布局（来自 bits/basic_string.h）
 // struct basic_string {
@@ -108,7 +108,7 @@ libstdc++ 的 `std::string` 在 **SSO 模式**下是一个"联合体 + 长度 + 
 
 SSO 的核心是常数容量内联缓冲，避免短串的堆分配。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：短字符串优化：阈值与内联缓冲 [实现]
+> **示例 4** [难度 ★★☆☆☆] [主题：短字符串优化：阈值与内联缓冲 [实现]
 ```cpp
 // ④ SSO 容量：libstdc++ 固定 15 字节（char）
 #include <string>
@@ -128,7 +128,7 @@ int main() {
 
 ## ⑤ 构造 / 赋值 / 析构的生命周期 [标准]
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：构造 / 赋值 / 析构的生命周期 ]
+> **示例 5** [难度 ★★☆☆☆] [主题：构造 / 赋值 / 析构的生命周期 ]
 ```cpp
 #include <utility>
 #include <string>
@@ -162,7 +162,7 @@ SSO 模式的切换靠长度与阈值的比较。
 
 ## ⑦ 拷贝 / 移动语义与 COW 陷阱 [标准]
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：拷贝 / 移动语义与 COW 陷阱 ]
+> **示例 7** [难度 ★★☆☆☆] [主题：拷贝 / 移动语义与 COW 陷阱 ]
 ```cpp
 // ⑦ 拷贝深、移动浅（窃取）
 #include <string>
@@ -242,7 +242,7 @@ std::string fast(const std::string& a, const std::string& b, const std::string& 
 
 ## ⑪ 与 char* 互操作及生命周期陷阱 [标准]
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：与 char 互操作及生命周期陷阱 ]
+> **示例 11** [难度 ★★☆☆☆] [主题：与 char 互操作及生命周期陷阱 ]
 ```cpp
 // ⑪ 常见悬空陷阱
 #include <string>
@@ -365,7 +365,7 @@ libstdc++ 存在新旧两套 `std::string` ABI：
 
 ## ⑲ microbenchmark：SSO 命中 vs 堆分配 [经验]
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：命中 vs 堆分配 [经验]]
+> **示例 18** [难度 ★★☆☆☆] [主题：命中 vs 堆分配 [经验]]
 ```cpp
 // ⑲ 实测：短串（SSO）构造远快于长串（堆分配）
 #include <string>
@@ -600,7 +600,7 @@ int use_sv() {
 
 ## 附录 A: SSO 深度剖析
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：附录 A: SSO 深度剖析]
+> **示例 31** [难度 ★★☆☆☆] [主题：附录 A: SSO 深度剖析]
 ```cpp
 // SSO-A 验证短字符串在栈上（sizeof(string)内），无堆分配
 #include <iostream>
@@ -608,7 +608,7 @@ int use_sv() {
 int main(){std::string s="hi";std::cout<<"sizeof(string)="<<sizeof(s)<<" s.data() off stack? "<<( (char*)&s==s.data()?"yes(stack)":"no(heap)" )<<std::endl;return 0;}
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：附录 A: SSO 深度剖析]
+> **示例 32** [难度 ★★☆☆☆] [主题：附录 A: SSO 深度剖析]
 ```cpp
 // SSO-B GCC libstdc++ SSO 阈值 ~15 字节（含 '\0'）
 #include <iostream>
@@ -699,7 +699,7 @@ int main(){std::string s;s.reserve(100);s.append(50,'x');std::cout<<s.size()<<st
 
 ## 附录 E：std::string底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录 E：std::string底层]
+> **示例 42** [难度 ★★☆☆☆] [主题：附录 E：std::string底层]
 ```
 SSO (Short String Optimization) 底层:
 
@@ -714,7 +714,7 @@ MS STL: SSO阈值=15字节 → sizeof=32字节(同libstdc++布局)
 - protobuf: std::string用于protoString字段 → 启用SSO减少序列化开销
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录 E：std::string底层]
+> **示例 43** [难度 ★★★☆☆] [主题：附录 E：std::string底层]
 ```cpp
 #include <iostream>
 #include <string>
@@ -832,7 +832,7 @@ int main(){std::string s="hello";std::cout<<s<<" ("<<s.capacity()<<" capacity, "
 
 ### 测试源码（核心）
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：测试源码（核心）]
+> **示例 46** [难度 ★★★☆☆] [主题：测试源码（核心）]
 ```cpp
 volatile int g_obs = 0;
 [[gnu::noinline]] void make_short() {                 // 短串 -> SSO
@@ -893,7 +893,7 @@ int main() {
 ### 练习 2（难度 ★★★）
 **真实场景：CSV 流式解析——按逗号切字段不拷贝。** 大文件逐行解析时全程 `string_view` 避免 N 次堆分配；字段视图生命周期必须短于拥有数据的 `std::string`。
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 48** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <string_view>
@@ -966,7 +966,7 @@ int main() {
 ### 演绎 2：string 累积拼接 vs 只读解析的取舍
 需要修改/拥有结果时用 `std::string` 累积；仅需查看时用 `string_view`，二者按所有权边界划分。
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：演绎 2：string 累积拼接 v]
+> **示例 51** [难度 ★★★☆☆] [主题：演绎 2：string 累积拼接 v]
 ```cpp
 #include <iostream>
 #include <string>
@@ -1074,7 +1074,7 @@ pointer _M_local_data()
 
 ### 4. 第一方可编译验证（观察 SSO 阈值 15）
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
+> **示例 52** [难度 ★★☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <string>
 #include <iostream>
@@ -1275,7 +1275,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 53** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <string>
 #include <vector>

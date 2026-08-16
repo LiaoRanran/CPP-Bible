@@ -111,7 +111,7 @@ Packet read_packet(int fd);   // 失败时抛 std::system_error
 
 `[标准]` 异常由 `throw` 触发、`try` 捕获、`catch` 处理。`catch` 按**最派生类型优先**匹配，捕获顺序决定行为；`catch(...)` 捕获一切但拿不到对象。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：异常机制]
+> **示例 7** [难度 ★★☆☆☆] [主题：异常机制]
 ```cpp
 #include <stdexcept>
 #include <string>
@@ -276,7 +276,7 @@ int main() {
 
 自定义类别只需覆写 `name()`、`message()`，即可把任意枚举接入 `std::error_code` 体系（完整可编译示例见 `Examples/_ch146_errorcode.cpp`，本机运行输出 `db:1 connection timeout`）。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：code / std::errorc]
+> **示例 19** [难度 ★★☆☆☆] [主题：code / std::errorc]
 ```cpp
 #include <string>
 enum class io_err { ok = 0, eof = 1, broken = 2 };
@@ -418,7 +418,7 @@ public:
 };
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：错误处理与 noexcept]
+> **示例 30** [难度 ★★☆☆☆] [主题：错误处理与 noexcept]
 ```cpp
 #include <utility>
 // 条件 noexcept：仅当成员移动不抛时才 noexcept
@@ -432,7 +432,7 @@ public:
 
 `[经验]` 规则：**任何可能从异常路径被调用的清理函数都标 `noexcept`**；反之，会重新分配/可能抛的函数（如 `vector::push_back`）不要标 noexcept。
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：错误处理与 noexcept]
+> **示例 31** [难度 ★★★☆☆] [主题：错误处理与 noexcept]
 ```cpp
 // ❌ 反例：析构抛异常 => 栈展开中再抛 => terminate
 ~Widget() { if (flush() == false) throw std::runtime_error("flush failed"); }
@@ -473,7 +473,7 @@ int add_throw(int a, int b) { if (b == 0) throw 0; return a / b; }  // -> 冷拆
 
 `[标准]` C++98 的**动态异常规范** `throw(T1, T2)` 在运行期检查、且必须被携带到类型系统，开销大、收益小；C++11 起弃用，C++17 移除（仅保留 `noexcept` 与 `noexcept(...)`）。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：异常规范演化]
+> **示例 33** [难度 ★★☆☆☆] [主题：异常规范演化]
 ```cpp
 // C++98/03 风格（已弃用/移除）
 void old() throw(std::runtime_error);    // 动态规范：只许抛 runtime_error，否则 unexpected
@@ -494,7 +494,7 @@ void f() noexcept(false);
 
 `[经验]` 现代代码：**不要用 `throw()` 动态规范**，统一用 `noexcept`。`noexcept` 让优化器移除展开信息，并让标准库在重分配时选择移动语义。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：异常规范演化]
+> **示例 35** [难度 ★★☆☆☆] [主题：异常规范演化]
 ```cpp
 // ❌ 反例：动态异常规范（C++17 起非法）
 void legacy() throw(std::exception);
@@ -554,7 +554,7 @@ void process() {
 }
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：资源清理与 finally]
+> **示例 40** [难度 ★★☆☆☆] [主题：资源清理与 finally]
 ```cpp
 #include <functional>
 // 手写 RAII 等价 finally（兼容 C++11）
@@ -621,7 +621,7 @@ void outer() {
 
 `[平台·Windows]` 异常是**实现细节耦合**的：Itanium ABI 与 MSVC 的异常处理模型不同，不同编译器/不同异常模型（SJLJ vs SEH vs DWARF）混链会 `terminate`。因此**跨 ABI / 跨语言 / 插件边界严禁抛异常穿越**。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：跨 ABI 错误处理 [平台·Win]
+> **示例 45** [难度 ★★☆☆☆] [主题：跨 ABI 错误处理 [平台·Win]
 ```cpp
 // ❌ 危险：异常从 DLL(MSVC) 抛到 EXE(MinGW) 边界 => 未定义行为
 extern "C" void plugin_entry();   // 插件绝不能让 C++ 异常逃逸
@@ -673,7 +673,7 @@ void emit(const ErrRecord& r);   // 由日志层统一落盘/上报
 
 `[实现]` 下面用本机 `g++ -std=c++23 -O2 -Wall -Wextra` 编译并运行 `Examples/_ch146_errorcode.cpp`（自定义 `std::error_code` 类别），验证：① `error_code` 可隐式由枚举构造；② `category().name()`/`message()` 来自自定义虚函数；③ `if (ec)` 判定错误态。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 49** [难度 ★★★☆☆] [主题：真实案例]
 ```cpp
 #include <string>
 // Examples/_ch146_errorcode.cpp（节选，完整见文件）
@@ -1041,7 +1041,7 @@ int main() {
 
 ## 附录 B：异常 vs 错误码 —— 汇编层面的真实代价 [E: Low-level / G: Performance]
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：附录 B：异常 vs 错误码 —— ]
+> **示例 56** [难度 ★★☆☆☆] [主题：附录 B：异常 vs 错误码 —— ]
 ```cpp
 // 异常 vs 错误码的汇编对比（GCC -O2 x86-64）
 int divide_error_code(int a, int b, int* out) {
@@ -1060,7 +1060,7 @@ int divide_exception(int a, int b) {
 // 失败路径: ~100ns (unwind table lookup + RTTI + destructor chain)
 ```
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：附录 B：异常 vs 错误码 —— ]
+> **示例 57** [难度 ★★☆☆☆] [主题：附录 B：异常 vs 错误码 —— ]
 ```cpp
 #include <iostream>
 #include <chrono>
@@ -1092,7 +1092,7 @@ int main() {
 
 ## 附录 C：WG21 为什么拒绝 Checked Exceptions [B: Principle]
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：附录 C：WG21 为什么拒绝 Ch]
+> **示例 58** [难度 ★★★☆☆] [主题：附录 C：WG21 为什么拒绝 Ch]
 ```
 Java 的 checked exceptions 强制调用方处理或声明异常。C++ 委员会在多个提案中拒绝了类似机制:
 
@@ -1113,7 +1113,7 @@ C++ 错误处理的未来方向:
 
 ## 附录 D：面试与设计权衡 [H: Design / J: Learning]
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：附录 D：面试与设计权衡 [H: D]
+> **示例 59** [难度 ★★☆☆☆] [主题：附录 D：面试与设计权衡 [H: D]
 ```
 错误处理策略选择矩阵:
 
@@ -1128,7 +1128,7 @@ C API 包装                error_code → 异常转换       C 调用方不理�
 异步回调                  std::promise::set_exception 唯一传递异常的方式
 ```
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：附录 D：面试与设计权衡 [H: D]
+> **示例 60** [难度 ★★☆☆☆] [主题：附录 D：面试与设计权衡 [H: D]
 ```cpp
 #include <iostream>
 #include <expected>
@@ -1288,7 +1288,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 63** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 63** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <memory>
 #include <mutex>

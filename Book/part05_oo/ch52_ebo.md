@@ -58,7 +58,7 @@ EBO 体现 C++ 对「大小即性能」的执念：在密集容器、嵌入式�
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 1** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
 ```
   空类作成员                      空类作基类（EBO）
   struct AsMember {               struct Derived : Empty {
@@ -96,7 +96,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图 / 对象布局
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：内存图 / 对象布局]
+> **示例 2** [难度 ★★★★☆] [主题：内存图 / 对象布局]
 ```
 x64 / GCC 15.3.0：
   struct Empty {};                    // 空类
@@ -132,7 +132,7 @@ x64 / GCC 15.3.0：
 
 ## ⑨ 调用栈 / 时序图
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：调用栈 / 时序图]
+> **示例 4** [难度 ★★☆☆☆] [主题：调用栈 / 时序图]
 ```
 读取 Derived::x：
   mov eax, [rcx]      ; rcx=Derived*，x 就在偏移 0
@@ -145,7 +145,7 @@ x64 / GCC 15.3.0：
 
 【测试源 `Examples/_asm_ebo.cpp`】
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：汇编分析]
+> **示例 5** [难度 ★★★☆☆] [主题：汇编分析]
 ```cpp
 #include <cstddef>
 struct Empty {};
@@ -187,7 +187,7 @@ _Z11read_memberP8AsMember:
 
 【案例 A：压缩策略对象（Policy-Based Design 雏形）】
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 6** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 struct NoLog  { void log() const {} };        // 空策略
 struct Timer  { int ticks = 0; void tick(){ ++ticks; } };  // 有状态策略
@@ -200,7 +200,7 @@ struct Engine : LogP, TimeP {                  // 两个策略作空基类
 
 【案例 B：std::vector 的 allocator 零开销（原理示意）】
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 7** [难度 ★★★☆☆] [主题：工业案例]
 ```cpp
 #include <cstddef>
 #include <vector>
@@ -283,7 +283,7 @@ struct Noop { void operator()(int*) const {} };
 static_assert(sizeof(std::unique_ptr<int, Noop>) == sizeof(int*));   // 无额外字节
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 17** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 // 例9：策略混入（Policy-Based 雏形）
 struct NoLog { void log() const {} };
@@ -310,7 +310,7 @@ D d; void* pb = static_cast<Empty*>(&d); void* pd = &d;   // 可能相等
 Derived arr[100];   // 占 400B；AsMember arr2[100] 占 800B
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 21** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 // 例13：boost::compressed_pair 思路
 template<class T1, class T2> struct CPair : T1, T2 { /* 空成员也压 */ };
@@ -330,14 +330,14 @@ struct InputTag {};
 struct Iter : InputTag { int* p; };   // InputTag 占 0
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 24** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 // 例16：std::chrono::duration 的 Period 空基类
 #include <chrono>
 using S = std::chrono::seconds;   // Period 是编译期空类型，作为空基类
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 25** [难度 ★★★☆☆] [主题：工业案例]
 ```cpp
 // 例17：EBO 与虚继承（ch49）
 struct G {};
@@ -351,7 +351,7 @@ struct E1 {}; struct E2 {};
 struct D2 : E1, E2 {};   // 部分 MSVC 旧版：sizeof(D2)==2（各占1）
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 27** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 // 例19：用 std::is_empty 检测空类
 #include <type_traits>
@@ -474,7 +474,7 @@ void* pd = &d;
 - **缓存密度**：EBO 让更多对象装入缓存行（64B 行装 16 个 `Derived` vs 8 个 `AsMember`），减少 cache miss（ch44）。
 - **microbenchmark（GCC 15.3.0 实测，自包含、可编译）**：
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：性能分析]
+> **示例 35** [难度 ★★☆☆☆] [主题：性能分析]
 ```cpp
 // g++ -std=c++23 -O2 ch52_bench.cpp
 #include <chrono>
@@ -651,7 +651,7 @@ struct Empty{};struct NonEmpty:Empty{int x;};
 int main(){std::cout<<sizeof(Empty)<<" "<<sizeof(NonEmpty)<<std::endl;return 0;}
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录: EBO 深度]
+> **示例 37** [难度 ★★☆☆☆] [主题：附录: EBO 深度]
 ```cpp
 #include <iostream>
 #include <functional>
@@ -660,7 +660,7 @@ struct Delete{void operator()(int*p){delete p;}};
 int main(){std::unique_ptr<int,Delete> p(new int(42));std::cout<<*p<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录: EBO 深度]
+> **示例 38** [难度 ★★☆☆☆] [主题：附录: EBO 深度]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -700,7 +700,7 @@ EBO=空基类不占空间。C++20 [[no_unique_address]]扩展到空成员变量�
 
 ### 工业案例: unique_ptr的EBO
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：工业案例: uniqueptr的EB]
+> **示例 41** [难度 ★★☆☆☆] [主题：工业案例: uniqueptr的EB]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -818,7 +818,7 @@ int main() {
 
 策略类无数据成员时作空基类混入，宿主类自身零状态开销（基类被 EBO）。这正是 `std::vector` 分配器、`std::map` 比较器的实现思路。
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 44** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 template <class AllocPolicy>
@@ -848,7 +848,7 @@ int main() {
 
 **常见错误**：把策略类作为**成员**字段，即使策略无状态也至少占 1 字节并产生填充，容器尺寸膨胀。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：演绎 1：空策略类当成员导致尺寸膨胀]
+> **示例 45** [难度 ★★☆☆☆] [主题：演绎 1：空策略类当成员导致尺寸膨胀]
 ```cpp
 #include <iostream>
 template <class P> struct W { P policy; int x; };
@@ -861,7 +861,7 @@ int main() {
 
 **修复**：私有继承策略类（空基类混入），触发 EBO，宿主零状态开销。
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：演绎 1：空策略类当成员导致尺寸膨胀]
+> **示例 46** [难度 ★★☆☆☆] [主题：演绎 1：空策略类当成员导致尺寸膨胀]
 ```cpp
 #include <iostream>
 template <class P> struct W : private P { int x; };
@@ -910,7 +910,7 @@ int main() { std::cout << sizeof(Good) << '\n'; }
 
 ### 测试源码
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：测试源码]
+> **示例 49** [难度 ★★★☆☆] [主题：测试源码]
 ```cpp
 struct Empty {};                        // sizeof == 1（独立时，空类至少 1 字节且本例无子对象，恰为 1）
 struct WithEBO : Empty { int x; };      // 继承空基类 —— EBO 通常使 sizeof == 4（实现许可，非强制）
@@ -968,7 +968,7 @@ C++ 要求**同类型的两个不同对象有不同地址**。若 `NoEBO::e` 占
 
 下例用 `static_assert` 把正文结论变成编译期可验证事实：
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：补例：自包含可编译验证]
+> **示例 50** [难度 ★★★☆☆] [主题：补例：自包含可编译验证]
 ```cpp
 #include <cstddef>
 #include <iostream>
@@ -1248,7 +1248,7 @@ EBO 生效三条件：**(1) 类型是空类（无非静态数据成员、无虚�
 
 ### D4.6 第一方可编译验证（tuple vs pair 空成员布局 + 自定义 EBO holder）
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
+> **示例 51** [难度 ★★★☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <iostream>
 #include <tuple>
@@ -1383,7 +1383,7 @@ int main() {
 
 ### D5.3 验证 demo
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：验证 demo]
+> **示例 52** [难度 ★★☆☆☆] [主题：验证 demo]
 ```cpp
 #include <iostream>
 #include <memory>

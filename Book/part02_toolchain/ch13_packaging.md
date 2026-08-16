@@ -42,7 +42,7 @@ C++ 包管理的根本难点是**二进制兼容性**：同一份源码在不同
 
 C++ 长期缺乏官方一级包管理器。传统做法（手动下载 zip、把 `.h`/`.lib` 拖进工程、`-I`/`-L` 手工配路径）在依赖一多即崩溃：版本错配、ABI 不一致、Debug/Release 混链、传递依赖爆炸。包管理器的价值是**把"找库、下库、配路径、解依赖、保证可重现"自动化**。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：为什么需要包管理 [标准]]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：为什么需要包管理 [标准]]
 ```cpp
 // ① 没有包管理时的"祖传"写法：路径硬编码、易碎
 // g++ main.cpp -I/opt/fmt-9.1.0/include -L/opt/fmt-9.1.0/lib -lfmt
@@ -86,7 +86,7 @@ vcpkg（Microsoft 维护）核心三概念：**端口(port)**=单个库的安装
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：模型：端口 / 三元组 / mani]
+> **示例 4** [难度 ★★☆☆☆] [主题：模型：端口 / 三元组 / mani]
 ```cpp
 // ② 三元组决定产物形态：静态 vs 动态、CRT 归属
 // 常用 triplet（只列名，不写进 C++）：
@@ -103,7 +103,7 @@ vcpkg（Microsoft 维护）核心三概念：**端口(port)**=单个库的安装
 
 vcpkg 通过 **toolchain 文件** 把 `CMAKE_TOOLCHAIN_FILE` 指向 `vcpkg.cmake`，后者改写 `find_package`/`find_library` 的搜索路径，使其命中 `installed/<triplet>`。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：集成 CMake：findpacka]
+> **示例 5** [难度 ★★★☆☆] [主题：集成 CMake：findpacka]
 ```cpp
 // ③ CMake 侧：用法与"普通系统安装"的库毫无区别
 // 文件：Examples/_ch13_CMakeLists.txt，行号：1
@@ -123,7 +123,7 @@ target_link_libraries(app PRIVATE fmt::fmt)
 # -- Configuring done
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：集成 CMake：findpacka]
+> **示例 6** [难度 ★★☆☆☆] [主题：集成 CMake：findpacka]
 ```cpp
 // ③ find_package 成功后，目标名由包作者定义；用 target 形式链接最稳
 target_link_libraries(app PRIVATE fmt::fmt);   // 含 include + lib + 宏定义
@@ -149,7 +149,7 @@ class MyApp(ConanFile):
         self.folders.build = "build"
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：模型：recipe / 二进制缓存 ]
+> **示例 7** [难度 ★★☆☆☆] [主题：模型：recipe / 二进制缓存 ]
 ```cpp
 // ④ settings 决定 package_id：任意一项变了 = 不同二进制
 //   os: Windows / Linux / Macos
@@ -213,7 +213,7 @@ class MyApp(ConanFile):
 
 Conan 不替代构建系统，而是**生成集成文件**交给 CMake/MSBuild。与 vcpkg 的"全局工具链注入"不同，Conan 走 **presets + toolchain** 的双文件模式。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：集成 CMake / MSBuild]
+> **示例 9** [难度 ★★☆☆☆] [主题：集成 CMake / MSBuild]
 ```cpp
 // ⑥ CMakePresets 里指向 Conan 工具链（现代做法）
 // {
@@ -249,7 +249,7 @@ Conan 不替代构建系统，而是**生成集成文件**交给 CMake/MSBuild�
 
 包两种形态：**源码分发**（只发 `.h`/`.cpp`/构建脚本，消费端现编）与**二进制分发**（发 `.lib/.a/.dll/.so` + 头）。C++ 因 ABI 脆弱，**二进制分发必须保证编译器/标准库/flags 全一致**。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：源码分发 vs 二进制分发 [标准]]
+> **示例 11** [难度 ★★☆☆☆] [主题：源码分发 vs 二进制分发 [标准]]
 ```cpp
 // ⑦ 头-only 库 = 源码分发的最简形式：无 .lib，编译期实例化
 // 例：自写 span_view（见 ⑨ 的 _ch13_packlib.hpp）
@@ -305,7 +305,7 @@ template <class T> class span_view { /* 全在头里 */ };
 
 下面是被包管理器"拉取"后的**真实形态**：一个头-only 包 `_ch13_packlib.hpp`（gsl 风格 `span_view` + fmt 风格 `println`），由一个使用程序 `_ch13_use.cpp` 消费。**本机 vcpkg/Conan 未装**，故直接用 g++ 编译该头库，作为"被包管理的库"的真实 C++ 证据（不编造任何汇编）。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实示例：用 g]
+> **示例 17** [难度 ★★★☆☆] [主题：[实现·GCC15]真实示例：用 g]
 ```cpp
 // ⑨ 被包管理的头-only 库（供应方视角）
 // 文件：Examples/_ch13_packlib.hpp，行号：1
@@ -328,7 +328,7 @@ inline void println(std::format_string<A...> fmt, A&&... a) {   // fmt 风格
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实示例：用 g]
+> **示例 18** [难度 ★★★★☆] [主题：[实现·GCC15]真实示例：用 g]
 ```cpp
 // ⑨ 消费方：仅 #include 即用——这正是包管理想给你的体验
 // 文件：Examples/_ch13_use.cpp，行号：1
@@ -393,7 +393,7 @@ main:
 //   多版本并存需 brew 的版本化前缀或自己管理
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：系统包管理器 apt/brew/vc]
+> **示例 21** [难度 ★★☆☆☆] [主题：系统包管理器 apt/brew/vc]
 ```cpp
 // ⑩ vcpkg/Conan 的优势：按 triplet/settings 同机多份并存、版本自由、可重现
 //   同一机器可同时有 fmt/9-static、fmt/10-dynamic、fmt/10-Release/Debug
@@ -463,7 +463,7 @@ main:
 // }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：私有仓库 / 制品库 [经验]]
+> **示例 25** [难度 ★★☆☆☆] [主题：私有仓库 / 制品库 [经验]]
 ```cpp
 // ⑫ 私有包与公开包在 recipe/manifest 里写法一致，仅来源不同
 // requires = "mycorp-private-lib/2.3.0"   // Conan 先查私有 remote
@@ -490,7 +490,7 @@ main:
 // 后续 conan install --lockfile=conan.lock  -> 版本不再漂移
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：可重现构建：锁文件 [标准]]
+> **示例 26** [难度 ★★☆☆☆] [主题：可重现构建：锁文件 [标准]]
 ```cpp
 // ⑬ 没有锁文件的后果
 // 今天 fmt 是 10.1.1，明天上游发 10.1.2 修了某 bug 也改了行为
@@ -545,7 +545,7 @@ main:
 //   只是本地试库、CI 简单        -> apt/brew 也行，但牺牲可重现
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：[经验]选型建议]
+> **示例 31** [难度 ★★☆☆☆] [主题：[经验]选型建议]
 ```cpp
 // ⑮ 团队已重度 CMake + 多 triplet -> 两者都 OK，看是否要二进制复用
 //   要"编译一次全队复用" -> Conan（binary cache 强）
@@ -561,7 +561,7 @@ main:
 
 这是 C++ 包管理最高频的"能编过但运行崩"的来源。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
+> **示例 32** [难度 ★★☆☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
 ```cpp
 #include <string>
 // ⑯ 陷阱1：ABI 不匹配
@@ -570,7 +570,7 @@ main:
 //   现象常是"偶发崩溃""未处理异常""堆损坏"
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
+> **示例 33** [难度 ★★☆☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
 ```cpp
 // ⑯ 陷阱2：Debug/Release 混链
 //   MSVC: /MDd (Debug DLL CRT) vs /MD (Release DLL CRT)
@@ -578,14 +578,14 @@ main:
 //   表现：free/delete 时 abort，或 Debug 跑得好好的 Release 崩
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
+> **示例 34** [难度 ★★★☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
 ```cpp
 // ⑯ 陷阱3：静态/动态不一致
 //   fmt 以 static 编进 A，又以 shared 编进 B，符号两份 -> ODR 违例风险
 //   统一：要么全 static，要么全 shared，由 triplet/settings 决定
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
+> **示例 35** [难度 ★★☆☆☆] [主题：常见陷阱：ABI 不匹配、Debug]
 ```cpp
 // ⑯ 陷阱4：忘记导出符号（Windows DLL）
 //   __declspec(dllexport) 漏写 -> 链接方找不到符号
@@ -601,7 +601,7 @@ main:
 
 包管理器不替代 CMake/Ninja/MSBuild，而是**喂给**它们正确的 include/lib/宏。理解这条边界能少踩 80% 的坑。
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：与构建系统协作 [经验]]
+> **示例 36** [难度 ★★☆☆☆] [主题：与构建系统协作 [经验]]
 ```cpp
 // ⑰ vcpkg 模式：CMake 启动时读 vcpkg.cmake 工具链
 //   - CMAKE_TOOLCHAIN_FILE 指向 vcpkg.cmake
@@ -631,7 +631,7 @@ main:
 
 同一份 manifest/recipe 要在 Windows/Linux/macOS 上各自产出正确依赖，差异集中在 **triplet/settings + 编译器 + CRT**。
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：跨平台 [平台·Windows]]
+> **示例 39** [难度 ★★☆☆☆] [主题：跨平台 [平台·Windows]]
 ```cpp
 // ⑱ 跨平台 manifest 写法一致，差异由工具按宿主推断
 // vcpkg: 在 Linux 自动 x64-linux，Windows 自动 x64-windows
@@ -663,7 +663,7 @@ main:
 
 把上面散点收敛成可执行的清单。
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 42** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑲ 1) 用 manifest 模式（vcpkg.json / conanfile.py），并入库
 // ⑲ 2) 锁文件 + baseline/profile 进版本控制
@@ -702,7 +702,7 @@ main:
 
 把全章浓缩成一张可贴墙的表。
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：速查表]
+> **示例 44** [难度 ★★★☆☆] [主题：速查表]
 ```cpp
 // ⑳ vcpkg 速查
 //   声明依赖      : vcpkg.json { "dependencies": ["fmt"] }
@@ -712,7 +712,7 @@ main:
 //   模式          : manifest 模式（推荐）> 古典全局 install
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：速查表]
+> **示例 45** [难度 ★★☆☆☆] [主题：速查表]
 ```cpp
 // ⑳ Conan 速查
 //   声明依赖      : conanfile.py requires = "fmt/10.1.1"
@@ -722,7 +722,7 @@ main:
 //   生成器        : CMakeDeps + CMakeToolchain
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：速查表]
+> **示例 46** [难度 ★★★☆☆] [主题：速查表]
 ```cpp
 // ⑳ 通用速查
 //   链接姿势      : target_link_libraries(x PRIVATE pkg::pkg)   // 永远用 imported target
@@ -878,7 +878,7 @@ target_link_libraries(my_app PRIVATE fmt::fmt spdlog::spdlog)
 
 vcpkg triplet: x64-windows/x64-linux/arm64-android等20+平台
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：附录 H：vcpkg manifes]
+> **示例 50** [难度 ★★☆☆☆] [主题：附录 H：vcpkg manifes]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"vcpkg=manifest(vcpkg.json)+CMake+triplet=cross-platform C++ package mgr"<<std::endl;return 0;}
@@ -1017,7 +1017,7 @@ int main() {
 
 **真实场景：依赖地狱中的版本统一。** 你的项目里库 A 要 `fmt/9`、库 B 要 `fmt/10`，包管理器必须算出唯一可用版本。请写程序模拟"依赖图解析器"在冲突时如何按"取满足所有约束的最小上界"策略统一版本。
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 52** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -1079,7 +1079,7 @@ conan install . --output-folder=build --build=missing
 # 已缓存的三元组( gcc 13, Release, x86_64 )直接命中二进制，跳过编译
 ```
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：演绎 2：Conan 二进制缓存避免]
+> **示例 53** [难度 ★★★☆☆] [主题：演绎 2：Conan 二进制缓存避免]
 ```cpp
 #include <iostream>
 int main() { std::cout << "命中二进制缓存，省去源码编译。\n"; }

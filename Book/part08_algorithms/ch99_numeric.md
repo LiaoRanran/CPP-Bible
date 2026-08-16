@@ -62,7 +62,7 @@ int main() {
 
 `std::accumulate` 自 C++98 起存在，严格顺序；`std::reduce` 自 C++17 起，允许任意结合顺序，因而可并行。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：[实现]真实：reduce 内联/向]
+> **示例 2** [难度 ★★★☆☆] [主题：[实现]真实：reduce 内联/向]
 ```cpp
 // 文件：Examples/_ch99_accumulate.cpp
 // 行号：10 (reduce_int) / 13 (accum_int) / 18 (reduce_dbl) / 21 (accum_dbl)
@@ -189,7 +189,7 @@ int demo_diff() {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：[实现]真实：reduce 内联/向]
+> **示例 4** [难度 ★★☆☆☆] [主题：[实现]真实：reduce 内联/向]
 ```cpp
 // ② 初值类型陷阱：用 0（int）会先把元素截断成 int 再累加 -> 溢出/截断
 #include <numeric>
@@ -210,7 +210,7 @@ void init_type_trap() {
 
 `std::inner_product` 是 "点积 + 广义加权累加"：先把两序列对应元素经二元变换相乘，再经另一二元运算累加。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：product]
+> **示例 5** [难度 ★★☆☆☆] [主题：product]
 ```cpp
 // 文件：Examples/_ch99_inner_product.cpp
 // 行号：9 (dot) / 14 (axpy_reduce)
@@ -265,7 +265,7 @@ double dot_via_tr(const std::vector<double>& a, const std::vector<double>& b) {
 
 "扫描"把**前缀状态**逐位置写出。`partial_sum` 是经典就地流式接口；C++17 起 `inclusive_scan`（含当前）/ `exclusive_scan`（不含当前）/ `transform_exclusive_scan` 提供更规范、可并行的版本。
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：sum / inclusivesca]
+> **示例 8** [难度 ★★☆☆☆] [主题：sum / inclusivesca]
 ```cpp
 // 文件：Examples/_ch99_scan.cpp
 // 行号：9 (demo_partial) / 15 (demo_scan) / 21 (demo_exclusive)
@@ -321,7 +321,7 @@ void prefix_min_exclusive() {
 - `[标准]`：`inclusive_scan` 每个输出含当前元素；`exclusive_scan` 每个输出**不含**当前元素（即严格前缀）。二者在并行下要求二元运算可结合。
 - `[经验]`：做"前缀和/前缀最值/前缀积"时优先 `inclusive_scan`/`exclusive_scan`（可喂 `execution::par`），`partial_sum` 仅当需流式、单线程、且与旧代码兼容时使用。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：sum / inclusivesca]
+> **示例 10** [难度 ★★☆☆☆] [主题：sum / inclusivesca]
 ```
 ┌──────────────── 扫描数据流（inclusive）────────────────┐
 │ in :  1   2   3   4   5                                  │
@@ -388,7 +388,7 @@ double l2_norm(const std::vector<double>& a) {
 
 用与第②节相同的真实工具链编译 `transform_reduce`，看它到底有没有被向量化。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：[实现]真实：transformre]
+> **示例 14** [难度 ★★★☆☆] [主题：[实现]真实：transformre]
 ```cpp
 // 文件：Examples/_ch99_transform_reduce.cpp
 // 行号：10 (tr_square) / 17 (tr_mul) / 25 (tr_int)
@@ -550,7 +550,7 @@ _Z9tr_squarePKdy:
 
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：[实现]真实：transformre]
+> **示例 15** [难度 ★★☆☆☆] [主题：[实现]真实：transformre]
 ```cpp
 // ⑥ 把上面两个编译结果落到"可读结论"：想要 SIMD，需要 -O3 + 合适 ISA + FP 重排许可
 // 本例 tr_square 在 -O2 不向量化，-O3 -mavx2 -ffast-math 才出 vmulpd/vaddpd（见第⑬节）
@@ -565,7 +565,7 @@ inline bool vectorized_only_at_o3() { return true; }   // 占位：结论见汇�
 
 C++17 引入 `std::execution`：`seq`/`par`/`par_unseq`/`unseq`。归约类算法（reduce/transform_reduce/scan 家族）接受策略参数即可并行化**计算**，但前提是**归约运算可结合+可交换**且**没有数据竞争**。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：并行执行策略与数据竞争 [经验]]
+> **示例 16** [难度 ★★☆☆☆] [主题：并行执行策略与数据竞争 [经验]]
 ```cpp
 // ⑦ 正确并行：归约内部无共享写，天然无数据竞争
 #include <numeric>
@@ -576,7 +576,7 @@ double par_sum(const std::vector<double>& a) {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：并行执行策略与数据竞争 [经验]]
+> **示例 17** [难度 ★★★★☆] [主题：并行执行策略与数据竞争 [经验]]
 ```cpp
 // ⑦ 危险并行：在 op 里写共享状态 -> 数据竞争（UB）
 #include <numeric>
@@ -604,7 +604,7 @@ double par_safe(const std::vector<double>& a, double& n_written) {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：并行执行策略与数据竞争 [经验]]
+> **示例 19** [难度 ★★☆☆☆] [主题：并行执行策略与数据竞争 [经验]]
 ```
 ┌──────────── 并行归约的线程划分（概念）────────────┐
 │ 输入 [0..N) 被切成块，各线程独立归约出局部和：     │
@@ -621,7 +621,7 @@ double par_safe(const std::vector<double>& a, double& n_written) {
 
 归约的数值质量取决于**求和顺序**与**量级差异**。`1e15 + 1.0 - 1e15` 在浮点下可能直接得 `0` 而非 `1.0`（大数"吞掉"小数）。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：数值稳定性]
+> **示例 20** [难度 ★★☆☆☆] [主题：数值稳定性]
 ```cpp
 // 文件：Examples/_ch99_stability.cpp
 // 行号：11 (cond_number) / 21 (compensated_pairwise)
@@ -691,7 +691,7 @@ void naive_vs_stable() {
 
 用 `std::chrono` 在本机实测 `execution::seq` 与 `execution::par` 的耗时差。**结论：本 MinGW 无 TBB，`par` 串行回退，ratio≈1。**
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：并行加速实测]
+> **示例 23** [难度 ★★☆☆☆] [主题：并行加速实测]
 ```cpp
 // 文件：Examples/_ch99_par_bench.cpp
 // 行号：见 main：hardware_concurrency=32；seq/par 计时与 ratio 见下方真实输出
@@ -805,7 +805,7 @@ void lcm_zero() {
 
 `std::iota` 用**连续自增**填充区间，名字源自 APL 的 ⍳。适合快速生成 0..N、步进序列、索引数组。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 27** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // 文件：Examples/_ch99_iota.cpp
 // 行号：8 (fill_seq) / 14 (fill_steps)
@@ -919,7 +919,7 @@ void lerp_edges() {
 
 `<numeric>` 算法本身不"产生" SIMD，但**规整的归约循环 + 合适编译选项**可被自动向量化（第②/⑥节已实证）。衔接要点：循环体无数据依赖、步长固定、运算可重排。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：与 SIMD 衔接]
+> **示例 33** [难度 ★★★☆☆] [主题：与 SIMD 衔接]
 ```cpp
 // 文件：Examples/_ch99_simd.cpp
 // 行号：11 (manual_simd_friendly) / 19 (compare_tr)
@@ -980,7 +980,7 @@ void simd_hint() {
 
 `reduce` 的并行/分块把加法**重新结合**，而 IEEE-754 浮点加法不结合，于是结果随策略/线程数/输入顺序**改变**（甚至同机器两次跑都不同）。
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：常见坑]
+> **示例 36** [难度 ★★☆☆☆] [主题：常见坑]
 ```cpp
 // 文件：Examples/_ch99_pitfall.cpp
 // 行号：10 (nonassoc) / 18 (fixed_associative)
@@ -1039,7 +1039,7 @@ double deterministic_fp(const std::vector<double>& v) {
 
 C++20 ranges 把管道（`|`）与算法结合；C++23 更引入 `ranges::fold_left` 等作为 `accumulate` 的现代化替代，并能与 `<numeric>` 的 `reduce` 混用。
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：与 ranges]
+> **示例 39** [难度 ★★☆☆☆] [主题：与 ranges]
 ```cpp
 // 文件：Examples/_ch99_ranges.cpp
 // 行号：9 (rng_sum) / 15 (rng_fold)
@@ -1098,7 +1098,7 @@ std::vector<int> first_n(int n) {
 
 ## ⑯ 最佳实践
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 42** [难度 ★★☆☆☆] [主题：最佳实践]
 ```cpp
 // 文件：Examples/_ch99_best_practice.cpp
 // 行号：11 (safe_mean) / 19 (kahan)
@@ -1146,7 +1146,7 @@ double product_of(const std::vector<double>& v) {
 }
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 44** [难度 ★★☆☆☆] [主题：最佳实践]
 ```cpp
 // ⑯ 实践4：单线程小数据用 accumulate/reduce(seq)，少一层策略开销
 #include <numeric>
@@ -1162,7 +1162,7 @@ double small_sum(const std::vector<double>& v) {
 
 不同标准库/PSTL 后端对"并行算法"的实现差异很大，这是工业代码移植时最易踩的坑。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：跨库差异]
+> **示例 45** [难度 ★★☆☆☆] [主题：跨库差异]
 ```cpp
 // ⑰ 同一份并行代码，三套标准库行为可能不同（伪代码对比，非可编译单文件）
 // libstdc++ (GCC)    : par 需要 TBB 才多线程；否则串行回退（本章已实测）
@@ -1178,7 +1178,7 @@ double cross_lib(const std::vector<double>& a) {
 }
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：跨库差异]
+> **示例 46** [难度 ★★☆☆☆] [主题：跨库差异]
 ```cpp
 // ⑰ 用宏隔离不同后端的并行开关（工程常见手法）
 #include <numeric>
@@ -1238,7 +1238,7 @@ void stable_interp() {
 
 数值算法难调试，因为"结果只差几个 ULP"看不出。策略：先固定顺序（seq）验证正确性，再比较并行结果是否**近似**一致。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：调试]
+> **示例 49** [难度 ★★☆☆☆] [主题：调试]
 ```cpp
 // 文件：Examples/_ch99_debug.cpp
 // 行号：9 (dump_reduce) / 16 (assert_det)
@@ -1271,7 +1271,7 @@ int main() {
 }
 ```
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：调试]
+> **示例 50** [难度 ★★★★☆] [主题：调试]
 ```cpp
 // ⑲ 用 sanitizer 抓数据竞争：编译加 -fsanitize=thread 跑并行版
 //   g++ -std=c++23 -O1 -fsanitize=thread _ch99_debug.cpp -o dbg && ./dbg
@@ -1284,7 +1284,7 @@ double tsan_target(const std::vector<double>& a) {
 }
 ```
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：调试]
+> **示例 51** [难度 ★★☆☆☆] [主题：调试]
 ```cpp
 // ⑲ 打印归约中间块和，定位"哪一段"贡献异常（调试大数组）
 #include <numeric>
@@ -1385,7 +1385,7 @@ void demo_c7() {
 }
 ```
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 59** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
 ```cpp
 // C8 par_unseq 显式 SIMD+并行意图
 #include <numeric>
@@ -1502,7 +1502,7 @@ void demo_c10(const std::vector<long long>& v) {
 
 ## 附录 E：数值算法底层与工业 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 62** [难度 ★☆☆☆☆] [主题：附录 E：数值算法底层与工业 [E:]
+> **示例 62** [难度 ★★☆☆☆] [主题：附录 E：数值算法底层与工业 [E:]
 ```
 数值算法工业应用:
 
@@ -1723,7 +1723,7 @@ int main() {
 
 **修复（cpp）**：用 `0.0` 作初值，结果类型即 `double`。
 
-> **示例 70** [难度 ★☆☆☆☆] [主题：演绎 2：初值类型决定结果类型]
+> **示例 70** [难度 ★★☆☆☆] [主题：演绎 2：初值类型决定结果类型]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1980,7 +1980,7 @@ flowchart TD
 
 ### D4.5 第一方可编译验证（accumulate / reduce / partial_sum）
 
-> **示例 71** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
+> **示例 71** [难度 ★★☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <iostream>
 #include <numeric>
@@ -2107,7 +2107,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 72** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 72** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <numeric>

@@ -81,7 +81,7 @@ void movement_system();                                 // 系统即逻辑（见
 
 Entity 在本质上只是一个**稳定、可复用的整型句柄**。它不指向任何对象，只是"在存储里的一把钥匙"。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 3** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // ② 最简实体：32 位整型即实体；0 约定为"空实体"
 #include <cstdint>
@@ -179,7 +179,7 @@ void movement_system(std::vector<Position>& pos,
 - `[实现·GCC15]`：`movement_system` 在 `-O2` 内循环被编译为简单的 `movss`/`mulss`/`addss` 标量序列（未向量化，因 `-O2` 默认不开 tree-vectorize；`-O3 -mavx2` 才会展开为 `vmulps`/`vaddps`，见 ⑬）。
 - `[经验]`：系统的顺序即"帧的逻辑顺序"（输入→物理→AI→动画→渲染）。把顺序做成**显式调度表**（见 ⑨），而非隐式依赖全局初始化顺序。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 11** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // ④ 系统可以"查询"而非"持有"：用组件的有无组合出行为
 //   [Position, Velocity]        -> 移动
@@ -192,7 +192,7 @@ void movement_system(std::vector<Position>& pos,
 
 这是 ECS 性能讨论的**核心分叉**。两种把 N 个实体存进内存的方式：
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：数据布局：AoS vs SoA [实]
+> **示例 12** [难度 ★★☆☆☆] [主题：数据布局：AoS vs SoA [实]
 ```
 ┌───────────────────────── AoS (Array of Structures) ─────────────────────────┐
 │ 实体0: [Pos | Vel | Hp | ...]  实体1: [Pos | Vel | Hp | ...]  实体2: [...]   │
@@ -242,7 +242,7 @@ void integrate_soa(ParticlesSoA& ps, float dt) {
   (sink 校验，防止 DCE: 204472320)
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：缓存友好真实基准]
+> **示例 16** [难度 ★★☆☆☆] [主题：缓存友好真实基准]
 ```cpp
 #include <cstddef>
 // ⑥ 基准核心：用 volatile 累加防止编译器把"无用循环"优化成 0ms 假象
@@ -272,7 +272,7 @@ double bench_soa_partial(std::size_t n, std::size_t iters) {
 
 **原型（Archetype / 归档）** 的思路：把所有"拥有完全相同组件集合"的实体放进**同一块连续内存**，每个实体占一行（行主序）。这样"查询某组件组合"变成"找到对应原型块"，遍历时组件完全连续。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：原型/归档式存储]
+> **示例 17** [难度 ★★☆☆☆] [主题：原型/归档式存储]
 ```
 ┌─────────── Archetype[Position,Velocity] ───────────┐
 │ 行0: P0 │ V0    行1: P1 │ V1    行2: P2 │ V2  ...   │
@@ -281,7 +281,7 @@ double bench_soa_partial(std::size_t n, std::size_t iters) {
    查询"有 Position 且有 Velocity" => 直接锁这块，无需逐实体判断
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：原型/归档式存储]
+> **示例 18** [难度 ★★☆☆☆] [主题：原型/归档式存储]
 ```cpp
 // ⑦ 极简原型存储：一块 buffer 行主序存放"组件集"，alive 位标记删除
 #include <cstddef>
@@ -319,7 +319,7 @@ float* component_at(Archetype& a, std::size_t i, std::size_t off) {
   旧句柄 version=3, 槽已复用 version=4 => 校验失败
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：实体管理与句柄（handle） [实]
+> **示例 21** [难度 ★★☆☆☆] [主题：实体管理与句柄（handle） [实]
 ```cpp
 // ⑧ 打包句柄：高 12 位版本 + 低 20 位索引（也可拆成两个字段，见 mini ECS ⑲）
 #include <cstdint>
@@ -359,7 +359,7 @@ bool resolve(const std::vector<std::uint32_t>& versions, std::uint32_t h) {
 └──────────────────────────────────────────────────────────┘
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：系统调度（并行） [实现·GCC15]
+> **示例 24** [难度 ★★☆☆☆] [主题：系统调度（并行） [实现·GCC15]
 ```cpp
 // ⑨ 用 std::jthread 并行跑"无写冲突"的系统组（C++20，见 part09 并发章）
 #include <thread>
@@ -394,7 +394,7 @@ struct SystemInfo { const char* name; bool reads_pos; bool writes_pos; };
 └──────────────────────────────────────────────────────┘
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：与多叉/分块（chunk） [平台·]
+> **示例 27** [难度 ★★☆☆☆] [主题：与多叉/分块（chunk） [平台·]
 ```cpp
 // ⑩ 固定容量分块：偏移 = i * 每块字节，连续、可预测、缓存友好
 #include <cstddef>
@@ -407,7 +407,7 @@ struct Chunk {
 constexpr std::size_t offset_of(std::size_t i) { return i * CHUNK_COMPONENT_BYTES; }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：与多叉/分块（chunk） [平台·]
+> **示例 28** [难度 ★★☆☆☆] [主题：与多叉/分块（chunk） [平台·]
 ```cpp
 #include <cstddef>
 #include <span>
@@ -466,7 +466,7 @@ void sys(std::span<float> x, std::span<float> vx, float dt) {
 
 把实体的 `index/version` 打包做成 `constexpr`，可在编译期完成实体定义并参与 `static_assert` 静态检查——适用于"场景里固定存在的少数关键实体"（玩家、摄像机、灯光）。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：与 constexpr 编译期实体 ]
+> **示例 32** [难度 ★★☆☆☆] [主题：与 constexpr 编译期实体 ]
 ```cpp
 // ⑫ 编译期实体：打包/解包全是 constexpr，可在编译期求值
 #include <cstdint>
@@ -478,7 +478,7 @@ constexpr std::uint32_t CAMERA = make_entity(8u, 1u);
 static_assert(PLAYER != CAMERA);
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：与 constexpr 编译期实体 ]
+> **示例 33** [难度 ★★☆☆☆] [主题：与 constexpr 编译期实体 ]
 ```cpp
 #include <cstdint>
 // ⑫ 编译期实体可进模板/数组维度，甚至做编译期存在性校验
@@ -501,7 +501,7 @@ std::uint32_t runtime_player = create();   // 运行期分配 index
 
 下面用**真实汇编**证明 AoS 与 SoA 的访存模式差异。两者皆 GCC 13.1.0 `-O2 -masm=intel`。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：性能剖析]
+> **示例 35** [难度 ★★★☆☆] [主题：性能剖析]
 ```cpp
 // 文件：Examples/_ch142_aos.cpp
 // 行号：5
@@ -530,7 +530,7 @@ _Z13integrate_aosP8Particleif:
     jne     .L3
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：性能剖析]
+> **示例 36** [难度 ★★★☆☆] [主题：性能剖析]
 ```cpp
 // 文件：Examples/_ch142_soa.cpp
 // 行号：5
@@ -564,7 +564,7 @@ void integrate_soa(float* x, const float* vx, int n, float dt) {
 
 Archetype 是 Unity DOTS / flecs / Bevy 的主流布局：**相同组件组合的实体共享一块连续内存**。好处是"查询即定位块"，遍历零判断；代价是"加/删组件要迁移实体"。
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：内存布局 Archetype]
+> **示例 37** [难度 ★★☆☆☆] [主题：内存布局 Archetype]
 ```
 ┌── Archetype A [Position, Velocity] ──┐  ┌── Archetype B [Position, Render] ──┐
 │ e0:P|V  e1:P|V  e2:P|V ... (连续)    │  │ e7:P|R  e8:P|R ... (连续)           │
@@ -606,7 +606,7 @@ void migrate(std::uint32_t entity, ArchKey from, ArchKey to) {
 
 ECS 的天然并行点：**只读共享组件的系统**可以无锁并发读。只要没有写者在同一帧改同一组件，读者之间就完全无竞争。写者则常用 `std::atomic` 做"版本戳"式无锁发布。
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：与多线程（无锁读） [平台·x86-]
+> **示例 40** [难度 ★★☆☆☆] [主题：与多线程（无锁读） [平台·x86-]
 ```cpp
 // ⑮ 无锁读：读线程只 load 一个 atomic，无需加锁
 #include <atomic>
@@ -620,7 +620,7 @@ bool is_alive(const EntityRecord& r) {
 }
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：与多线程（无锁读） [平台·x86-]
+> **示例 41** [难度 ★★★☆☆] [主题：与多线程（无锁读） [平台·x86-]
 ```cpp
 // ⑮ 写：先释放式置否，再 relaxed 递增版本（发布-订阅式）
 void kill(EntityRecord& r) {
@@ -651,7 +651,7 @@ _Z4killR12EntityRecord:
 
 把 ECS 写成"换皮 OOP"是最常见的失败。下面逐一对照。
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：反模式 [经验]]
+> **示例 42** [难度 ★★★☆☆] [主题：反模式 [经验]]
 ```cpp
 // ⑯ ❌ 反模式1：组件里塞逻辑/虚函数（破坏"纯数据"）
 struct BadComponent { virtual void update(); int hp; };  // 非平凡、带虚表
@@ -703,7 +703,7 @@ void monster_system(std::vector<MonsterData>& m) {
 
 > 表注：选型权衡——自研迷你 ECS（⑲）适学习/嵌入式；EnTT 适稳定 API；Unity DOTS/Bevy 适对应引擎（见 [经验]）。
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：真实库（EnTT 上游参考） [实现]
+> **示例 44** [难度 ★★☆☆☆] [主题：真实库（EnTT 上游参考） [实现]
 ```cpp
 // ⑰ EnTT sparse set 的极简还原（示意其"双数组"思想，可编译）
 #include <cstdint>
@@ -744,7 +744,7 @@ ECS 是 **Data-Oriented Design（面向数据设计，DOD）** 在"实体-组件
 
 下面是一份**自包含、可编译、可运行**的迷你 ECS（`Examples/_ch142_mini_ecs.cpp`），含 entity（句柄）/ component（纯数据）/ system（逻辑）三件套，约 120 行，已用 GCC 13.1.0 验证。
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：实现迷你 ECS]
+> **示例 46** [难度 ★★★☆☆] [主题：实现迷你 ECS]
 ```cpp
 // 文件：Examples/_ch142_mini_ecs.cpp
 // 行号：9
@@ -773,7 +773,7 @@ void destroy_entity(Entity e) {
 }
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：实现迷你 ECS]
+> **示例 47** [难度 ★★☆☆☆] [主题：实现迷你 ECS]
 ```cpp
 #include <cstdint>
 #include <vector>
@@ -796,7 +796,7 @@ void add_velocity(World& w, Entity e, Velocity v) {
 }
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：实现迷你 ECS]
+> **示例 48** [难度 ★★☆☆☆] [主题：实现迷你 ECS]
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -1077,7 +1077,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 52** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1335,7 +1335,7 @@ flowchart TD
 
 ### D5.3 可复现演示
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：可复现演示]
+> **示例 53** [难度 ★★★☆☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 #include <cstdint>

@@ -41,7 +41,7 @@ C++ 标准刻意不规定段布局（那是 OS / ABI 的事），只谈"对象�
 
 `[标准]` C++ 标准本身不规定「虚拟地址空间」——那是操作系统/实现的概念。但标准中的**存储期（storage duration）**、**对象生存期**、**指针**、**对齐**全部建立在一个前提上：**每个进程拥有独立、连续的虚拟地址空间，由操作系统通过 MMU（内存管理单元）映射到物理页框**。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概览：进程虚拟地址空间]
+> **示例 1** [难度 ★★☆☆☆] [主题：概览：进程虚拟地址空间]
 ```
         高地址 0xFFFF'FFFF'FFFF'FFFF
         ┌───────────────────────────┐
@@ -96,7 +96,7 @@ flowchart TD
 
 `[实现·GCC15]` 是否启用 5 级页表（57 位 LA57）由内核引导参数决定；用户态程序无需关心——`uintptr_t` 在 x86-64 上恒为 64 位，`sizeof(void*)==8`。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：的 48 位虚拟地址与用户/内核划分]
+> **示例 2** [难度 ★★☆☆☆] [主题：的 48 位虚拟地址与用户/内核划分]
 ```cpp
 // P1: 验证指针宽度为 64 位，并观察地址落在用户空间低半区
 #include <cstdint>
@@ -130,7 +130,7 @@ int main() {
 
 `[平台·x86-64]` 观察 ASLR：连续运行两次，栈/堆地址会改变。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：地址空间布局随机化]
+> **示例 3** [难度 ★★☆☆☆] [主题：地址空间布局随机化]
 ```cpp
 // P2: 观察 ASLR —— 同一程序两次运行的栈/堆地址不同
 #include <cstdio>
@@ -264,7 +264,7 @@ Idx Name          Size      VMA               LMA               File off  Algn
 - `.data` / `.bss` → `RW-`（可读写、不可执行）。
 - 栈/堆默认 `RW-`；现代系统默认**栈不可执行（NX bit）**，杜绝 shellcode 注入。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：段权限 R/W/X 与 MMU]
+> **示例 5** [难度 ★★☆☆☆] [主题：段权限 R/W/X 与 MMU]
 ```cpp
 // P4: 试图修改 .rodata 中的 const 全局 → 未定义行为，运行时通常 SIGSEGV
 #include <iostream>
@@ -288,7 +288,7 @@ int main() {
 
 `[实现·GCC15]` 下面这个程序包含每种存储类别的实体，编译后用 `objdump -h` / `readelf`（ELF）确认落点。本机 MinGW 产物为 PE，故用 `objdump -h`（见元素 6 输出）。Linux 下用 `readelf -S` 会得到 `.text/.data/.bss/.rodata/.tdata/.tbss`。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：真实实验：C++ 实体 → 段的映射]
+> **示例 6** [难度 ★★☆☆☆] [主题：真实实验：C++ 实体 → 段的映射]
 ```cpp
 // P5 (seg_demo.cpp): 各类存储期实体的段落位示例
 #include <thread>
@@ -334,7 +334,7 @@ int main() {
 2. **文件映射** —— 把文件映射到地址空间，省去 `read` 拷贝。
 3. **共享库加载** —— 动态链接器 `mmap` `.so`/`.dll` 的代码节（R-X）与数据节（RW），多进程共享同一份代码物理页。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：内存映射、共享库、文件映射]
+> **示例 7** [难度 ★★☆☆☆] [主题：内存映射、共享库、文件映射]
 ```cpp
 // P6: POSIX 文件映射（Linux/macOS）[平台-推断: 本机 MinGW 无 mmap，见下方 Windows 等价]
 #include <fcntl.h>
@@ -355,7 +355,7 @@ int main() {
 // 编译(Linux): g++ -std=c++17 p6.cpp -o p6
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：内存映射、共享库、文件映射]
+> **示例 8** [难度 ★★☆☆☆] [主题：内存映射、共享库、文件映射]
 ```cpp
 // P7: Windows 等价 —— CreateFileMapping / MapViewOfFile [平台-推断]
 #include <windows.h>
@@ -434,7 +434,7 @@ int main() {
 
 `[平台·x86-64]` **x86-64 4 级页表**：CR3 → PML4 → PDPT → PD → PT，每级 9 位索引、末级 12 位页内偏移，共 9+9+9+9+12 = 48 位。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：分页与页表：虚拟 → 物理]
+> **示例 11** [难度 ★★☆☆☆] [主题：分页与页表：虚拟 → 物理]
 ```cpp
 // P9: 演示 4 级页表索引划分 (9/9/9/9/12)
 #include <cstdint>
@@ -469,7 +469,7 @@ int main() {
   3. 若是第一访问匿名/`MAP_PRIVATE` 页 → demand paging 分配零页（minor fault，见元素 15）。
   4. 若是 COW 写保护页 → 复制一份解除保护（见元素 16）。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：与缺页中断]
+> **示例 12** [难度 ★★☆☆☆] [主题：与缺页中断]
 ```cpp
 // P10: microbenchmark —— 顺序访问(良好 TLB/预取) vs 跨大步访问(频繁 TLB miss)
 #include <chrono>
@@ -500,7 +500,7 @@ int main() {
 
 `[实现·GCC15]` 上面的手搓计时只是直觉验证。生产级 microbenchmark 应使用 Google Benchmark（需 `-lbenchmark -lpthread`）：
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：用 Google Benchmark]
+> **示例 13** [难度 ★★☆☆☆] [主题：用 Google Benchmark]
 ```cpp
 // P36: Google Benchmark 版 TLB/cache 步长扫描（需 Google Benchmark 库）
 #include <benchmark/benchmark.h>
@@ -534,7 +534,7 @@ BENCHMARK_MAIN();
 
 `[标准][平台·x86-64]` 进程启动时，操作系统**不会**真的把 `.bss`、堆、`mmap` 区域一次性全填好物理页。只有当代码/数据**第一次访问**某页时才分配物理页（清零或换入）。这叫 demand paging。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 14** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // P11: demand paging 直觉 —— 分配 1 GiB 但不访问，RSS 不会真占 1 GiB [平台-推断: Linux]
 #include <cstdio>
@@ -594,7 +594,7 @@ int main() {
 
 `[平台·Linux]` 经典 x86-64 Linux 进程布局（从高到低）：
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：经典地址空间布局]
+> **示例 16** [难度 ★★☆☆☆] [主题：经典地址空间布局]
 ```
 0xFFFF...  内核
           ┌─────────┐
@@ -610,7 +610,7 @@ int main() {
 0x0000...
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：经典地址空间布局]
+> **示例 17** [难度 ★★☆☆☆] [主题：经典地址空间布局]
 ```cpp
 // P13: 打印各区域地址，直观感受「栈高、堆中、代码低、全局低」
 #include <cstdio>
@@ -642,7 +642,7 @@ int main() {
 - `alignas(N)` / `alignas(T)` —— 指定变量/类型的对齐（N 必须是合法对齐且 ≥ 其固有对齐）。
 - `std::alignment_of<T>` —— 等同 `integral_constant<size_t, alignof(T)>`（见元素 18 真实源码）。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：对齐基础：alignof / ali]
+> **示例 18** [难度 ★★☆☆☆] [主题：对齐基础：alignof / ali]
 ```cpp
 // P14: alignof 各基础类型的对齐（x86-64 System V ABI）
 #include <cstdio>
@@ -683,7 +683,7 @@ int main() {
 
 `[平台·x86-64]` x86-64 对**自然对齐**的标量访问是原子的（硬件容忍未对齐访问但有性能代价）；某些架构（ARM 部分、旧 RISC）对未对齐访问直接抛出总线错误。更关键的是 **cache line**：x86-64 典型 **64 字节**缓存行。两个独立变量若落在同一 cache line，多核并发修改会引发 **false sharing（伪共享）**——虽无逻辑竞争，却因缓存一致性协议（MESI）反复使对方行失效而严重降速。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：硬件对齐要求与 cache line]
+> **示例 20** [难度 ★★☆☆☆] [主题：硬件对齐要求与 cache line]
 ```cpp
 // P16: 观测 cache line 大小（x86-64 通常 64）
 #include <cstdio>
@@ -712,7 +712,7 @@ int main() { std::printf("assumed cache line = %d bytes\n", CACHE_LINE); return 
 
 `[实现·GCC15]` 源文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new`，**行号：210–214**：
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码]
+> **示例 21** [难度 ★★☆☆☆] [主题：真实 libstdc++ 源码]
 ```cpp
 #include <cstddef>
 210  #ifdef __GCC_DESTRUCTIVE_SIZE
@@ -755,7 +755,7 @@ int main(){
 // 编译: g++ -std=c++17 t.cpp -o t && ./t   →  64
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码]
+> **示例 24** [难度 ★★☆☆☆] [主题：真实 libstdc++ 源码]
 ```cpp
 // P17: 用 destructive size 隔离两个线程的热变量，避免 false sharing
 #include <new>
@@ -782,7 +782,7 @@ int main() {
 
 `[实现·GCC15]` 下面用单头文件风格（Google Benchmark 风格主循环）对比「同行（伪共享）」与「不同行（对齐隔离）」两种布局：
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：的真实量级]
+> **示例 25** [难度 ★★★☆☆] [主题：的真实量级]
 ```cpp
 // P18: false sharing microbenchmark（对比 同行 vs 不同行）
 #include <new>
@@ -833,7 +833,7 @@ int main() {
 
 `[实现·GCC15]` 用 Google Benchmark 同时测两种布局，输出更可信：
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：版 false-sharing 对比]
+> **示例 26** [难度 ★★★☆☆] [主题：版 false-sharing 对比]
 ```cpp
 // P37: Google Benchmark 对比 伪共享 vs 隔离（需 -lbenchmark -lpthread）
 #include <benchmark/benchmark.h>
@@ -886,7 +886,7 @@ int main() {
 
 `[实现·GCC15]` 文件 `.../include/c++/new`，**行号：148–171**（由 `#if __cpp_aligned_new` 守护）：
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：真实 libstdc++ <new>]
+> **示例 28** [难度 ★★☆☆☆] [主题：真实 libstdc++ <new>]
 ```cpp
 #include <cstddef>
 148  #if __cpp_aligned_new
@@ -937,7 +937,7 @@ int main() {
 
 即 `align_val_t` 是 `size_t` 底层的**强类型枚举**，用于在对齐分配函数的重载集合中区分「对齐 new」与普通 new，避免与普通 `(size_t)` new 歧义。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：真实 libstdc++ <new>]
+> **示例 30** [难度 ★★☆☆☆] [主题：真实 libstdc++ <new>]
 ```cpp
 // P20: 用对齐 new 分配 64 字节对齐对象（C++17）
 #include <new>
@@ -956,7 +956,7 @@ int main() {
 
 `[标准]` C 层用 `std::aligned_alloc(alignment, size)`（C11，声明于 `<cstdlib>`）或 POSIX `posix_memalign`。注意 `aligned_alloc` 要求 **size 是对齐的整数倍**（C11 约束）。
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：真实 libstdc++ <new>]
+> **示例 31** [难度 ★★☆☆☆] [主题：真实 libstdc++ <new>]
 ```cpp
 // P21: C11 aligned_alloc（size 须为 alignment 的整数倍）
 #include <cstdlib>
@@ -1001,7 +1001,7 @@ int main() {
 
 `[实现-推断]` GCC 与 Clang（均用 LLVM 后端时）在 Linux 上段语义一致；MSVC 因 PE-COFF 与 Windows ABI 差异，使用 `.rdata` 而非 `.rodata`，并提供独有的 `/Zp`（默认 ` /Zp8`，即默认 8 字节打包）与 `/align`（节对齐）。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：三编译器对比：GCC / Clang]
+> **示例 32** [难度 ★★☆☆☆] [主题：三编译器对比：GCC / Clang]
 ```cpp
 // P22: #pragma pack 对结构体布局的影响（MSVC/GCC/Clang 通用语）
 #include <cstdio>
@@ -1050,7 +1050,7 @@ int main() {
 
 `[实现-推断]` 三家的**值都是 64**（x86-64 主流 cache line），但**旧版本根本不声明这两个常量**——这是工程陷阱：用 `#ifdef __cpp_lib_hardware_interference_size` 守护，缺失时回退到硬编码 64（或平台探测）。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：三 STL 对比：libstdc++]
+> **示例 33** [难度 ★★★☆☆] [主题：三 STL 对比：libstdc++]
 ```cpp
 // P23: 可移植地取 interference size（缺失时回退 64）
 #include <cstddef>
@@ -1084,7 +1084,7 @@ int main() {
 - 成员按声明顺序，遇对齐不足则插入 **padding（填充）**。
 - `sizeof(struct)` 是其对齐的整数倍。
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：与结构体 padding]
+> **示例 34** [难度 ★★☆☆☆] [主题：与结构体 padding]
 ```cpp
 // P24: 排列不同 → sizeof 不同（padding 实战）
 #include <cstdio>
@@ -1103,7 +1103,7 @@ int main() {
 
 `[经验]` 把大对齐/大尺寸成员放前、小成员聚尾，可减 padding；但胜于一切的是**把跨缓存行/跨页的字段按访问频率分组**（热/冷分离），见 ch44 内存池。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：与结构体 padding]
+> **示例 35** [难度 ★★★☆☆] [主题：与结构体 padding]
 ```cpp
 // P25: __attribute__((packed)) 消除填充（GCC/Clang；MSVC 用 #pragma pack）
 #include <cstdio>
@@ -1148,7 +1148,7 @@ _Z7set_tagP6Packetc:
 
 `[实现·GCC15]` 文件：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/type_traits`，**行号：1345–1352**：
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：of（<typetraits>）真实]
+> **示例 36** [难度 ★★☆☆☆] [主题：of（<typetraits>）真实]
 ```cpp
 #include <cstddef>
 1345  /// alignment_of
@@ -1170,7 +1170,7 @@ _Z7set_tagP6Packetc:
 
 `[标准]` 变量模板 `alignment_of_v<T>`（同文件第 3331 行 `inline constexpr size_t alignment_of_v = alignment_of<_Tp>::value;`）是便捷形式。
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：of（<typetraits>）真实]
+> **示例 37** [难度 ★★★☆☆] [主题：of（<typetraits>）真实]
 ```cpp
 // P26: 使用 std::alignment_of / alignment_of_v
 #include <type_traits>
@@ -1292,7 +1292,7 @@ public class P29 {
 | 内存池对齐 | ch44 | 池用 `alignas(hardware_destructive_interference_size)` 隔离热变量 |
 | 模板对齐 trait | ch60 | 复用 `alignment_of`/对齐元函数做编译期布局计算 |
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：本章与全书的交叉引用]
+> **示例 38** [难度 ★★☆☆☆] [主题：本章与全书的交叉引用]
 ```cpp
 // P30: 交叉引用演示 —— ch19 存储期 + ch21 const 协同决定段落位
 #include <cstdio>
@@ -1307,7 +1307,7 @@ int main() {
 // 编译: g++ -std=c++17 p30.cpp -o p30 && ./p30
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：本章与全书的交叉引用]
+> **示例 39** [难度 ★★☆☆☆] [主题：本章与全书的交叉引用]
 ```cpp
 // P31: 交叉引用演示 —— ch36 栈堆 + ch37 对齐 new
 #include <new>
@@ -1327,7 +1327,7 @@ int main() {
 // 编译: g++ -std=c++17 p31.cpp -o p31 && ./p31
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：本章与全书的交叉引用]
+> **示例 40** [难度 ★★☆☆☆] [主题：本章与全书的交叉引用]
 ```cpp
 // P32: 交叉引用演示 —— ch38 allocator 的对齐（std::allocator 保证自然对齐）
 #include <memory>
@@ -1361,7 +1361,7 @@ int main() {
 // 编译: g++ -std=c++17 p33.cpp -o p33 && ./p33
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：本章与全书的交叉引用]
+> **示例 42** [难度 ★★★☆☆] [主题：本章与全书的交叉引用]
 ```cpp
 // P34: 交叉引用演示 —— ch60 模板对齐 trait（复用 alignment_of）
 #include <type_traits>
@@ -1533,7 +1533,7 @@ Linux进程内存布局 (64位):
            OOM Killer → Linux在内存耗尽时杀进程, 无C++异常
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：附录 E：内存布局面试与工业 [B:]
+> **示例 44** [难度 ★★☆☆☆] [主题：附录 E：内存布局面试与工业 [B:]
 ```cpp
 #include <iostream>
 #include <cstdlib>
@@ -1601,7 +1601,7 @@ int main() {
 
 地址数值受 ASLR 随机化影响，但各存储期的相对区间稳定：代码与只读常量在最底；已初始化全局/静态在 .data、零初始化在 .bss；堆从低向高增长；栈从高向低增长，因此栈地址通常高于堆。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 45** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 int g = 1;          // .data
@@ -1660,7 +1660,7 @@ int main() {
 
 局部变量 `b` 的地址通常低于 `a`（栈向下增长）；`new` 得到的 `p2` 通常高于 `p1`（堆向上增长）。
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 47** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 int main() {
@@ -1695,7 +1695,7 @@ void rx_task() {
 
 **修复**：把大缓冲提升为全局或静态，使其进入 .bss（启动即分配、不占栈）；或放进链接脚本指定的特定 RAM 区。
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：演绎 1：嵌入式固件如何规划 RAM]
+> **示例 48** [难度 ★★☆☆☆] [主题：演绎 1：嵌入式固件如何规划 RAM]
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -1722,7 +1722,7 @@ void deep(int n){ deep(n+1); }  // 无终止递归, 必然溢出
 
 **修复**：大对象改放堆（`std::vector`/智能指针，堆上只存 24B 句柄）；递归确保有终止条件；开 `-fstack-protector-strong` 让栈金丝雀在返回前检测破坏。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：演绎 2：栈溢出的检测与规避]
+> **示例 49** [难度 ★★★☆☆] [主题：演绎 2：栈溢出的检测与规避]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1972,7 +1972,7 @@ flowchart TD
 
 ### D5.3 验证 demo
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：验证 demo]
+> **示例 50** [难度 ★★☆☆☆] [主题：验证 demo]
 ```cpp
 #include <iostream>
 #include <cstddef>

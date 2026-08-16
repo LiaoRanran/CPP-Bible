@@ -98,7 +98,7 @@ for (int x : r) std::cout << x << ' ';   // 6 5 4 3 2 1（底层变了，view �
 
 旧算法（`std::sort`、`std::find`）需要显式传迭代器对；range 算法（`std::ranges::sort`、`std::ranges::find`）吃整个 range，并**返回 `borrowed_iterator`**——对临时 range 也安全。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：算法 vs 旧算法 [标准]]
+> **示例 5** [难度 ★★☆☆☆] [主题：算法 vs 旧算法 [标准]]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -187,7 +187,7 @@ auto it = std::ranges::find(people, 'B', &Person::name); // 投影取 name[0] �
 
 用 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch100_sort.cpp`。`ranges::sort(v, less{}, proj)` 底层仍是 libstdc++ 的 **introsort（`__introsort_loop`）**，但多了一个投影闭包。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：[实现]真实：ranges::sor]
+> **示例 11** [难度 ★★★☆☆] [主题：[实现]真实：ranges::sor]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -254,7 +254,7 @@ for (auto s : names | std::views::transform([](const std::string& n) { return n.
 
 同样用真实编译与 chrono 实测。先给源码，再给真实汇编，最后给实测数据。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：[实现]真实：惰性管道 vs 及早旧]
+> **示例 14** [难度 ★★★☆☆] [主题：[实现]真实：惰性管道 vs 及早旧]
 ```cpp
 // 文件：Examples/_ch100_bench.cpp
 // 行号：20（eager 临时容器 pos）/ 37（lazy 块：v | filter | transform 累加）
@@ -360,7 +360,7 @@ for (int x : data | std::views::filter([](int n) { return n > 3; })
 
 不一定非要手写整套 `view_interface`——用标准 adaptor 包装业务逻辑，是最常用、可编译、零依赖的"自定义 view"。下面这段代码在 GCC 15.3.0 下 `-std=c++23 -O2` 真实编译通过。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：自定义 view]
+> **示例 17** [难度 ★★★☆☆] [主题：自定义 view]
 ```cpp
 // 文件：Examples/_ch100_custom_view.cpp
 // 行号：9（scale 定义）/ 16（main：v | scale(10)）
@@ -442,7 +442,7 @@ for (int x : v | std::views::filter(pred1)
 
 view **不拥有底层数据**。指向局部/临时容器的 view 是悬垂（dangling），访问即 UB。C++20 对此有**编译期防护**。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：常见坑：悬垂 view / dang]
+> **示例 22** [难度 ★★☆☆☆] [主题：常见坑：悬垂 view / dang]
 ```cpp
 // ⑬ ❌ 悬垂：返回引用局部容器的 view
 auto dangling_demo() {
@@ -451,7 +451,7 @@ auto dangling_demo() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：常见坑：悬垂 view / dang]
+> **示例 23** [难度 ★★☆☆☆] [主题：常见坑：悬垂 view / dang]
 ```cpp
 // ⑬ ranges 对"临时 range 上调算法"返回 std::ranges::dangling 作编译期护栏
 auto it = std::ranges::find(std::vector<int>{1, 2, 3}, 2);
@@ -492,7 +492,7 @@ for (auto blk : v | std::views::chunk(100)) {            // 10 个大小为 100 
 
 ## ⑮ 最佳实践 [经验]
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 26** [难度 ★★★☆☆] [主题：最佳实践 [经验]]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -840,7 +840,7 @@ Ranges 算法是 C++20 对 STL 算法库最重大的升级：
 | 并行策略 | `std::execution::par` | 同传统 (仍使用 execution policies) |
 | 返回值 | 通常是输出迭代器 | 返回 borrowed_iterator_t (含范围信息) |
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：附录 A：Ranges 算法 vs ]
+> **示例 46** [难度 ★★☆☆☆] [主题：附录 A：Ranges 算法 vs ]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -861,7 +861,7 @@ int main() {
 
 ## 附录 B：工业案例 —— range-v3 与标准 ranges [F: Industry]
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：附录 B：工业案例 —— range]
+> **示例 47** [难度 ★★★☆☆] [主题：附录 B：工业案例 —— range]
 ```
 range-v3 (Eric Niebler, 2014-2019) 是 C++20 ranges 的原型库:
 
@@ -879,7 +879,7 @@ range-v3 提供但标准尚未包含的:
 
 ## 附录 C：性能分析 —— Ranges vs 手写循环 [E: Low-level / G: Performance]
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：附录 C：性能分析 —— Range]
+> **示例 48** [难度 ★★☆☆☆] [主题：附录 C：性能分析 —— Range]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -899,7 +899,7 @@ int main() {
 
 ## 附录 D：面试 [J: Learning]
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：附录 D：面试 [J: Learni]
+> **示例 49** [难度 ★★☆☆☆] [主题：附录 D：面试 [J: Learni]
 ```
 面试高频:
 Q: ranges::sort vs std::sort 的区别？
@@ -1077,7 +1077,7 @@ int main() {
 
 **常见错误（text）**：
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：演绎 2：视图不拥有数据——悬垂视图]
+> **示例 55** [难度 ★★☆☆☆] [主题：演绎 2：视图不拥有数据——悬垂视图]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1091,7 +1091,7 @@ int main() { (void)make_view(); }
 
 **修复（cpp）**：视图绑定到生命周期更长的底层范围；在同一作用域内使用，且底层容器变化对视图可见。
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：演绎 2：视图不拥有数据——悬垂视图]
+> **示例 56** [难度 ★★★☆☆] [主题：演绎 2：视图不拥有数据——悬垂视图]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1249,7 +1249,7 @@ flowchart TD
 
 ### D4.4 第一方可编译验证（ranges::sort 带投影）
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
+> **示例 57** [难度 ★★☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <algorithm>
 #include <iostream>
@@ -1386,7 +1386,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 58** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <algorithm>
 #include <cassert>

@@ -85,7 +85,7 @@ C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期）�
 
 ### 3.1 三个正交维度
 
-> **示例 1** [难度 ★★★★★] [主题：三个正交维度]
+> **示例 1** [难度 ★★☆☆☆] [主题：三个正交维度]
 ```
                             ┌──────── 变量三大正交属性 ────────┐
                             │                                  │
@@ -103,7 +103,7 @@ C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期）�
 
 ### 3.2 关键组合速查
 
-> **示例 2** [难度 ★★★★★] [主题：关键组合速查]
+> **示例 2** [难度 ★★☆☆☆] [主题：关键组合速查]
 ```
 ├─ 命名空间 static int x;       → static 存储期 + internal 链接
 ├─ int g; (命名空间)            → static 存储期 + external 链接
@@ -155,7 +155,7 @@ flowchart TD
 
 **程序 1：请求处理栈缓冲（服务器场景，离开即回收）**
 
-> **示例 3** [难度 ★★★★★] [主题：——真实栈帧布局图]
+> **示例 3** [难度 ★★☆☆☆] [主题：——真实栈帧布局图]
 ```cpp
 // server_handle.cpp
 #include <cstddef>
@@ -176,7 +176,7 @@ void handle(unsigned long long req_id) {
 
 栈帧布局（`-O0` 下，`rbp` 为帧基址）：
 
-> **示例 4** [难度 ★★★★★] [主题：——真实栈帧布局图]
+> **示例 4** [难度 ★★☆☆☆] [主题：——真实栈帧布局图]
 ```
 调用前:
         ... 调用者栈帧 ...
@@ -194,7 +194,7 @@ foo 栈帧 (rbp 指向旧 rbp 保存处):
 
 **程序 2：automatic 在递归中的栈帧隔离**
 
-> **示例 5** [难度 ★★★★★] [主题：——真实栈帧布局图]
+> **示例 5** [难度 ★★★☆☆] [主题：——真实栈帧布局图]
 ```cpp
 // recurse_stack.cpp
 #include <cstdio>
@@ -240,7 +240,7 @@ foo(int):
 
 **程序 3：四大段落位对照（可直接 `objdump -t` 验证）**
 
-> **示例 6** [难度 ★★★★★] [主题：——真实 ELF 段图]
+> **示例 6** [难度 ★★☆☆☆] [主题：——真实 ELF 段图]
 ```cpp
 // segments.cpp
 int   g_init   = 42;          // .data    (非零初值, external 链接)
@@ -254,7 +254,7 @@ int main() { return g_init + g_zero + s_file + C + t; }
 
 ELF 段落位图（x86-64，低→高地址）：
 
-> **示例 7** [难度 ★★★★★] [主题：——真实 ELF 段图]
+> **示例 7** [难度 ★★☆☆☆] [主题：——真实 ELF 段图]
 ```
 高地址 0x7fff...
 ┌─────────────────────────────┐
@@ -282,7 +282,7 @@ ELF 段落位图（x86-64，低→高地址）：
 
 **程序 4：验证 .bss 不占文件空间**
 
-> **示例 8** [难度 ★★★★★] [主题：——真实 ELF 段图]
+> **示例 8** [难度 ★☆☆☆☆] [主题：——真实 ELF 段图]
 ```cpp
 // bss_size.cpp
 #include <cstdio>
@@ -305,7 +305,7 @@ size bss_size      # .bss 列巨大，但文件 size 远小于 4MiB
 
 **程序 5：thread_local 每线程请求 ID（高并发服务器）**
 
-> **示例 9** [难度 ★★★★★] [主题：——每线程一块]
+> **示例 9** [难度 ★★★☆☆] [主题：——每线程一块]
 ```cpp
 // tls_request.cpp
 #include <thread>
@@ -351,7 +351,7 @@ inc():
 
 **程序 6：堆分配由 `new` 转发到 `malloc` 内部**
 
-> **示例 10** [难度 ★★★★★] [主题：——malloc 内部如何落位]
+> **示例 10** [难度 ★★☆☆☆] [主题：——malloc 内部如何落位]
 ```cpp
 // heap_alloc.cpp
 #include <memory>
@@ -385,7 +385,7 @@ void serve() {
 
 **程序 7：三阶段初始化可观察验证**
 
-> **示例 11** [难度 ★★★★★] [主题：生命周期图（三阶段静态初始化）]
+> **示例 11** [难度 ★★☆☆☆] [主题：生命周期图（三阶段静态初始化）]
 ```cpp
 // static_phases.cpp
 #include <cstdio>
@@ -420,7 +420,7 @@ int main() {
 
 **程序 8：链接三态对照**
 
-> **示例 12** [难度 ★★★★★] [主题：链接三态精确语义]
+> **示例 12** [难度 ★☆☆☆☆] [主题：链接三态精确语义]
 ```cpp
 // linkage.cpp
 int g_ext = 1;                 // external：可被其他 TU 引用
@@ -444,7 +444,7 @@ void f() {
 
 **程序 9：匿名命名空间包裹私有类型（static 无法做到）**
 
-> **示例 13** [难度 ★★★★★] [主题：匿名命名空间演进史]
+> **示例 13** [难度 ★☆☆☆☆] [主题：匿名命名空间演进史]
 ```cpp
 // anon_ns.cpp
 namespace {
@@ -463,7 +463,7 @@ int use() {
 
 **程序 10：C 风格 static 与匿名命名空间等价对照（变量层面）**
 
-> **示例 14** [难度 ★★★★★] [主题：匿名命名空间演进史]
+> **示例 14** [难度 ★☆☆☆☆] [主题：匿名命名空间演进史]
 ```cpp
 // static_vs_anon.cpp
 static int legacy_counter = 0;     // C 风格 internal 链接
@@ -478,7 +478,7 @@ int bump() { return ++legacy_counter + ++modern_counter; }
 
 **程序 11：inline 变量头文件共享配置（库设计）**
 
-> **示例 15** [难度 ★★★★★] [主题：头文件 inline 变量——根治 ODR 多定义]
+> **示例 15** [难度 ★☆☆☆☆] [主题：头文件 inline 变量——根治 ODR 多定义]
 ```cpp
 // config.hpp  —— 可安全被多个 .cpp #include
 #pragma once
@@ -495,7 +495,7 @@ inline Config g_config;            // C++17 inline：多 TU 定义合并为一�
 
 **程序 12：inline constexpr 头文件常量（对标 `<numbers>`，见 ⑬-C）**
 
-> **示例 16** [难度 ★★★★★] [主题：头文件 inline 变量——根治 ODR 多定义]
+> **示例 16** [难度 ★★☆☆☆] [主题：头文件 inline 变量——根治 ODR 多定义]
 ```cpp
 // math_const.hpp
 #pragma once
@@ -508,7 +508,7 @@ inline constexpr int    kMax  = 1024;
 
 **程序 13：extern 声明 + 单 TU 定义（C++17 前的旧式替代）**
 
-> **示例 17** [难度 ★★★★★] [主题：头文件 inline 变量——根治 ODR 多定义]
+> **示例 17** [难度 ★★☆☆☆] [主题：头文件 inline 变量——根治 ODR 多定义]
 ```cpp
 // config.hpp
 extern Config g_config;            // 声明，不定义
@@ -525,7 +525,7 @@ Config g_config{ .http_port = 8080 }; // 唯一定义
 
 **程序 14：extern 跨 TU 共享计数器**
 
-> **示例 18** [难度 ★★★★★] [主题：跨 TU 引用 extern 真实示]
+> **示例 18** [难度 ★☆☆☆☆] [主题：跨 TU 引用 extern 真实示]
 ```cpp
 // counter.hpp
 #pragma once
@@ -564,7 +564,7 @@ int main() {
 
 **程序 15：inline 变量多定义合法**
 
-> **示例 19** [难度 ★★★★★] [主题：哪些多重定义合法]
+> **示例 19** [难度 ★☆☆☆☆] [主题：哪些多重定义合法]
 ```cpp
 // shared.hpp
 #pragma once
@@ -575,7 +575,7 @@ inline int g_shared = 42;          // 多 TU 合法
 
 **程序 16：模板静态成员多定义合法（ch60 联动）**
 
-> **示例 20** [难度 ★★★★★] [主题：哪些多重定义合法]
+> **示例 20** [难度 ★★☆☆☆] [主题：哪些多重定义合法]
 ```cpp
 // tpl_static.cpp
 #include <cstdio>
@@ -606,7 +606,7 @@ int main() {
 
 **程序 17：ODR-use 触发 vs 不触发**
 
-> **示例 21** [难度 ★★★★★] [主题：的精确定义]
+> **示例 21** [难度 ★★☆☆☆] [主题：的精确定义]
 ```cpp
 // odr_use.cpp
 #include <cstdio>
@@ -631,7 +631,7 @@ int main() {
 
 **程序 18：绑定引用迫使 ODR-use**
 
-> **示例 22** [难度 ★★★★★] [主题：的精确定义]
+> **示例 22** [难度 ★☆☆☆☆] [主题：的精确定义]
 ```cpp
 // odr_ref.cpp
 #include <cstdio>
@@ -648,7 +648,7 @@ int main() { observe(); }
 
 **程序 19：类内隐式 inline 成员函数多 TU 安全**
 
-> **示例 23** [难度 ★★★★★] [主题：类内定义 / static 成员 /]
+> **示例 23** [难度 ★☆☆☆☆] [主题：类内定义 / static 成员 /]
 ```cpp
 // widget.hpp
 #pragma once
@@ -663,7 +663,7 @@ inline int make_id() { return 7; } // 显式 inline 函数
 
 **程序 20：C++17 inline static 成员类内直接定义**
 
-> **示例 24** [难度 ★★★★★] [主题：类内定义 / static 成员 /]
+> **示例 24** [难度 ★☆☆☆☆] [主题：类内定义 / static 成员 /]
 ```cpp
 // pool.hpp
 #pragma once
@@ -683,7 +683,7 @@ struct Pool {
 
 **程序 21：SOIF 灾难（依赖跨 TU 全局）**
 
-> **示例 25** [难度 ★★★★★] [主题：灾难复现]
+> **示例 25** [难度 ★☆☆☆☆] [主题：灾难复现]
 ```cpp
 // file_a.cpp
 #include <cstdio>
@@ -710,7 +710,7 @@ int main() {
 
 **程序 22：Meyers 单例（函数内 static，线程安全）**
 
-> **示例 26** [难度 ★★★★★] [主题：修复 1：Meyers 单例]
+> **示例 26** [难度 ★★☆☆☆] [主题：修复 1：Meyers 单例]
 ```cpp
 // logger.hpp
 #pragma once
@@ -736,7 +736,7 @@ inline Logger& getLogger() {       // inline 允许头文件定义
 
 **程序 23：constinit 根治安标（ch21 联动）**
 
-> **示例 27** [难度 ★★★★★] [主题：修复 2：constinit 强制常]
+> **示例 27** [难度 ★☆☆☆☆] [主题：修复 2：constinit 强制常]
 ```cpp
 // constinit_fix.cpp
 constinit int g_threshold = 100;   // 强制 constant-init 阶段完成，早于所有 dynamic-init
@@ -750,7 +750,7 @@ int& threshold() { return g_threshold; } // 任何 TU 任何时刻读取都安�
 
 **程序 24：construct-on-first-use（返回裸指针/引用，适合需显式销毁序的场景）**
 
-> **示例 28** [难度 ★★★★★] [主题：修复 3：construct-on-]
+> **示例 28** [难度 ★★☆☆☆] [主题：修复 3：construct-on-]
 ```cpp
 // cofu.cpp
 #include <memory>
@@ -821,7 +821,7 @@ getLogger():
 
 **文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/cxxabi.h`（__cxa_guard_acquire 声明），行号：120**
 
-> **示例 29** [难度 ★★★★★] [主题：真实 libstdc++ / lib]
+> **示例 29** [难度 ★★☆☆☆] [主题：真实 libstdc++ / lib]
 ```cpp
 // libstdc++-v3/libsupc++/guard.h （真实声明）
 namespace __cxxabiv1 {
@@ -834,7 +834,7 @@ namespace __cxxabiv1 {
 
 **文件：`libstdc++-v3/libsupc++/guard.cc`（GCC 15.3.0 源码树，Linux futex 快速路径），行号：~110（__cxa_guard_acquire 实现）**
 
-> **示例 30** [难度 ★★★★★] [主题：真实 libstdc++ / lib]
+> **示例 30** [难度 ★★☆☆☆] [主题：真实 libstdc++ / lib]
 ```cpp
 // libstdc++-v3/libsupc++/guard.cc （Linux/GLIBC 路径，保留真实结构）
 #include <bits/c++config.h>
@@ -917,7 +917,7 @@ __cxa_guard_abort(__guard* g)
 
 **程序 25：构造抛异常后 guard 允许重试**
 
-> **示例 31** [难度 ★★★★★] [主题：验证 guard 行为（异常路径）]
+> **示例 31** [难度 ★★☆☆☆] [主题：验证 guard 行为（异常路径）]
 ```cpp
 // guard_abort.cpp
 #include <cstdio>
@@ -995,7 +995,7 @@ inc PROC
 
 **文件：`libgcc/emutls.c`（GCC 15.3.0 源码树，TLS 仿真），行号：~110（__emutls_get_address）**
 
-> **示例 32** [难度 ★★★★★] [主题：真实 libgcc emutls.c]
+> **示例 32** [难度 ★★☆☆☆] [主题：真实 libgcc emutls.c]
 ```cpp
 #include <cstdint>
 // libgcc/emutls.c （保留真实结构）
@@ -1059,7 +1059,7 @@ __emutls_get_address(emutls_control *obj)
 
 **程序 26：thread_local 非平凡类型每线程析构**
 
-> **示例 33** [难度 ★★★★★] [主题：local 完整可编译示例]
+> **示例 33** [难度 ★★☆☆☆] [主题：local 完整可编译示例]
 ```cpp
 // tls_tracer.cpp
 #include <cstdio>
@@ -1086,7 +1086,7 @@ int main() {
 
 **程序 27：thread_local 类静态成员（每线程每类一份）**
 
-> **示例 34** [难度 ★★★★★] [主题：local 完整可编译示例]
+> **示例 34** [难度 ★★☆☆☆] [主题：local 完整可编译示例]
 ```cpp
 // tls_member.cpp
 #include <cstdio>
@@ -1104,7 +1104,7 @@ int main() {
 
 **程序 28：线程池场景 TLS 重置（避免复用线程残留）**
 
-> **示例 35** [难度 ★★★★★] [主题：local 完整可编译示例]
+> **示例 35** [难度 ★★☆☆☆] [主题：local 完整可编译示例]
 ```cpp
 // tls_reset.cpp
 #include <thread>
@@ -1142,7 +1142,7 @@ int main() {
 
 **程序 29：全局 vs 函数内 static vs thread_local 访问延迟**
 
-> **示例 36** [难度 ★★★★★] [主题：完整程序]
+> **示例 36** [难度 ★★☆☆☆] [主题：完整程序]
 ```cpp
 // bench_storage.cpp
 // 编译: g++ -O2 -std=c++17 bench_storage.cpp -lbenchmark -lpthread -o bench_storage
@@ -1305,7 +1305,7 @@ static/全局数据常驻 `.data`，多对象共享只读页；dynamic 堆对象
 
 **文件：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/numbers`（真实结构），行号：132（pi）/ 129（e）**
 
-> **示例 37** [难度 ★★★★★] [主题：标准库中的 inline 变量]
+> **示例 37** [难度 ★★★☆☆] [主题：标准库中的 inline 变量]
 ```cpp
 // libstdc++-v3/include/std/numbers
 namespace std {
@@ -1323,7 +1323,7 @@ namespace std {
 
 **程序 30：模拟 `std::cout` 的 static 保证（库设计）**
 
-> **示例 38** [难度 ★★★★★] [主题：std::iosbase::Init]
+> **示例 38** [难度 ★★☆☆☆] [主题：std::iosbase::Init]
 ```cpp
 // init_guard.cpp
 #include <cstdio>
@@ -1389,7 +1389,7 @@ int main() {
 
 **程序 31：嵌入式 static 配置进 `.data`，启动即用（无堆）**
 
-> **示例 39** [难度 ★★★★★] [主题：嵌入式场景真实示例]
+> **示例 39** [难度 ★★☆☆☆] [主题：嵌入式场景真实示例]
 ```cpp
 // embedded_config.cpp  (bare-metal / RTOS)
 #include <cstdint>
@@ -1406,7 +1406,7 @@ uint32_t get_tick() { return g_tick_count; }
 
 **程序 32：volatile + static 映射硬件寄存器（ISR 可见）**
 
-> **示例 40** [难度 ★★★★★] [主题：嵌入式场景真实示例]
+> **示例 40** [难度 ★★☆☆☆] [主题：嵌入式场景真实示例]
 ```cpp
 // embedded_reg.cpp
 #include <cstdint>
@@ -1632,7 +1632,7 @@ void clear_status() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★★★★★] [主题：练习 1（难度 ★★）]
+> **示例 41** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <cstdint>
@@ -1660,7 +1660,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★★★★★] [主题：练习 2（难度 ★★★）]
+> **示例 42** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 // cfg.h  (被多个 .cpp 包含)
 inline int g_timeout_ms = 3000;          // C++17: inline 变量, 多 TU 合并为一份
@@ -1682,7 +1682,7 @@ namespace {
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★★★★★] [主题：练习 3（难度 ★★★★）]
+> **示例 43** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 struct Database { int open() const { return 1; } };
@@ -1712,7 +1712,7 @@ int g_timeout_ms = 3000;   // 被 6 个 .cpp 包含 -> 6 份定义 -> 链接报 
 ```
 
 **修复**：
-> **示例 44** [难度 ★★★★★] [主题：演绎 1：跨翻译单元共享配置——选 ]
+> **示例 44** [难度 ★☆☆☆☆] [主题：演绎 1：跨翻译单元共享配置——选 ]
 ```cpp
 // cfg.h
 inline int g_timeout_ms = 3000;   // C++17: 多 TU 合并为一份, 链接零错误
@@ -1734,7 +1734,7 @@ Logger g_logger(g_config);  // 若 g_config 尚未初始化 -> 读到垃圾
 ```
 
 **修复**：
-> **示例 45** [难度 ★★★★★] [主题：演绎 2：全局服务的初始化顺序——用]
+> **示例 45** [难度 ★★☆☆☆] [主题：演绎 2：全局服务的初始化顺序——用]
 ```cpp
 #include <iostream>
 struct Config { int timeout() const { return 3000; } };
@@ -1867,7 +1867,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 46** [难度 ★★★★★] [主题：可复现 demo]
+> **示例 46** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 

@@ -45,7 +45,7 @@ C++11 的核心争论是"自动推导 vs 显式声明"。`auto` 一度被老派�
 ⟶ Book/part01_history/ch03_cpp98_03.md
 ⟶ Book/part01_history/ch05_cpp14.md
 
-> **示例 1** [难度 ★★★☆☆] [主题：学习目标]
+> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标]
 ```cpp
 #include <iostream>
 #include <string>
@@ -67,7 +67,7 @@ int main() {
 
 ## ② 前置知识
 
-> **示例 2** [难度 ★★★☆☆] [主题：前置知识]
+> **示例 2** [难度 ★☆☆☆☆] [主题：前置知识]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -84,7 +84,7 @@ int main() {
 
 ## ③ 后续依赖
 
-> **示例 3** [难度 ★★★☆☆] [主题：后续依赖]
+> **示例 3** [难度 ★☆☆☆☆] [主题：后续依赖]
 ```cpp
 #include <iostream>
 #include <string>
@@ -105,7 +105,7 @@ int main() {
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 4** [难度 ★★★☆☆] [主题：知识图谱（ASCII）]
+> **示例 4** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -117,7 +117,7 @@ int main() {
 // 输出：5 5
 ```
 
-> **示例 5** [难度 ★★★☆☆] [主题：知识图谱（ASCII）]
+> **示例 5** [难度 ★★★★☆] [主题：知识图谱（ASCII）]
 ```
 C++11 三大支柱
 ├─ 资源管理革命
@@ -151,7 +151,7 @@ C++11 三大支柱
 
 ## ⑤ Mermaid（移动语义数据流向）
 
-> **示例 6** [难度 ★★★☆☆] [主题：未分类]
+> **示例 6** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 #include <iostream>
 int main() {
@@ -186,7 +186,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ## ⑥ UML（不适用）
 
-> **示例 7** [难度 ★★★☆☆] [主题：未分类]
+> **示例 7** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 #include <iostream>
 constexpr int sq(int x) { return x*x; }
@@ -202,7 +202,7 @@ int main() {
 
 ## ⑦ ASCII 内存图（移动 vs 拷贝）
 
-> **示例 8** [难度 ★★★☆☆] [主题：内存图（移动 vs 拷贝）]
+> **示例 8** [难度 ★★☆☆☆] [主题：内存图（移动 vs 拷贝）]
 ```cpp
 #include <iostream>
 constexpr int fact(int n) { return n<=1?1:n*fact(n-1); }
@@ -216,13 +216,13 @@ int main() {
 ```
 
 拷贝（深拷贝，开销大）：
-> **示例 9** [难度 ★★★☆☆] [主题：内存图（移动 vs 拷贝）]
+> **示例 9** [难度 ★☆☆☆☆] [主题：内存图（移动 vs 拷贝）]
 ```
 src: [ptr→0x5000 数据]
 dst: [ptr→0x6000 数据副本]   // 新分配+逐字节拷贝
 ```
 移动（窃取指针，O(1)）：
-> **示例 10** [难度 ★★★☆☆] [主题：内存图（移动 vs 拷贝）]
+> **示例 10** [难度 ★☆☆☆☆] [主题：内存图（移动 vs 拷贝）]
 ```
 src: [ptr→ (置空/null)]
 dst: [ptr→0x5000 数据]       // 直接接管
@@ -230,7 +230,7 @@ dst: [ptr→0x5000 数据]       // 直接接管
 
 ## ⑧ 生命周期
 
-> **示例 11** [难度 ★★★☆☆] [主题：生命周期]
+> **示例 11** [难度 ★☆☆☆☆] [主题：生命周期]
 ```cpp
 #include <iostream>
 class A { int x; public: A():A(0){} A(int v):x(v){} int get() const { return x; } };
@@ -248,7 +248,7 @@ int main() {
 
 ## ⑨ 调用栈（lambda 闭包）
 
-> **示例 12** [难度 ★★★☆☆] [主题：调用栈（lambda 闭包）]
+> **示例 12** [难度 ★☆☆☆☆] [主题：调用栈（lambda 闭包）]
 ```cpp
 #include <iostream>
 class Base { public: virtual void f(){} };
@@ -264,7 +264,7 @@ int main() {
 // 输出：ok
 ```
 
-> **示例 13** [难度 ★★★☆☆] [主题：调用栈（lambda 闭包）]
+> **示例 13** [难度 ★☆☆☆☆] [主题：调用栈（lambda 闭包）]
 ```
 调用方 → lambda 闭包对象(含捕获成员) → 调用 operator()
 ```
@@ -272,7 +272,7 @@ int main() {
 
 ## ⑩ 汇编（移动构造省去分配）
 
-> **示例 14** [难度 ★★★☆☆] [主题：汇编（移动构造省去分配）]
+> **示例 14** [难度 ★★☆☆☆] [主题：汇编（移动构造省去分配）]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -289,7 +289,7 @@ int main() {
 
 ## ⑪ STL 联系
 
-> **示例 15** [难度 ★★★☆☆] [主题：联系]
+> **示例 15** [难度 ★☆☆☆☆] [主题：联系]
 ```cpp
 #include <iostream>
 auto add(int x, int y) -> int { return x+y; }
@@ -307,7 +307,7 @@ int main() {
 
 ## ⑫ 工业案例
 
-> **示例 16** [难度 ★★★☆☆] [主题：工业案例]
+> **示例 16** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -344,7 +344,7 @@ int main() {
 
 ## ⑭ WG21 提案（关键）[标准]
 
-> **示例 18** [难度 ★★★☆☆] [主题：提案（关键）[标准]]
+> **示例 18** [难度 ★☆☆☆☆] [主题：提案（关键）[标准]]
 ```cpp
 #include <iostream>
 #include <tuple>
@@ -375,7 +375,7 @@ int main() {
 
 ## ⑮ 面试题
 
-> **示例 19** [难度 ★★★☆☆] [主题：面试题]
+> **示例 19** [难度 ★☆☆☆☆] [主题：面试题]
 ```cpp
 #include <iostream>
 enum class E : unsigned char { A, B };
@@ -395,7 +395,7 @@ int main() {
 
 ## ⑯ 易错点
 
-> **示例 20** [难度 ★★★☆☆] [主题：易错点]
+> **示例 20** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 #include <iostream>
 #include <array>
@@ -414,7 +414,7 @@ int main() {
 
 ## ⑰ FAQ
 
-> **示例 21** [难度 ★★★☆☆] [主题：未分类]
+> **示例 21** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -434,7 +434,7 @@ int main() {
 
 ## ⑱ 最佳实践
 
-> **示例 22** [难度 ★★★☆☆] [主题：最佳实践]
+> **示例 22** [难度 ★★☆☆☆] [主题：最佳实践]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -456,7 +456,7 @@ int main() {
 
 ## ⑲ 性能分析
 
-> **示例 23** [难度 ★★★☆☆] [主题：性能分析]
+> **示例 23** [难度 ★★☆☆☆] [主题：性能分析]
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -491,7 +491,7 @@ int main() {
    - [标准] `std::unique_ptr` 在类型中编码独占所有权，不可拷贝、只能移动（转让）；析构时自动释放。
    - [引用] ISO/IEC 14882:2023 §[util.smartptr.unique]（unique_ptr 所有权与不可拷贝）；cppreference "std::unique_ptr" 词条。
 
-> **示例 24** [难度 ★★★☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 24** [难度 ★☆☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
 ```cpp
 // 智能指针数组
 #include <memory>
@@ -552,7 +552,7 @@ C++11 是现代 C++ 的拐点。下面按领域展开：
 
 ## 附录: C++11 核心特性速查
 
-> **示例 25** [难度 ★★★☆☆] [主题：附录: C++11 核心特性速查]
+> **示例 25** [难度 ★☆☆☆☆] [主题：附录: C++11 核心特性速查]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -561,7 +561,7 @@ C++11 是现代 C++ 的拐点。下面按领域展开：
 int main(){std::vector<int>v{1,2,3,4,5};int s=0;for(auto x:v)s+=x;std::cout<<"sum:"<<s<<std::endl;return 0;}
 ```
 
-> **示例 26** [难度 ★★★☆☆] [主题：附录: C++11 核心特性速查]
+> **示例 26** [难度 ★☆☆☆☆] [主题：附录: C++11 核心特性速查]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -569,7 +569,7 @@ int main(){std::vector<int>v{1,2,3,4,5};int s=0;for(auto x:v)s+=x;std::cout<<"su
 int main(){auto p=std::make_unique<int>(42);std::cout<<*p<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★★★☆☆] [主题：附录: C++11 核心特性速查]
+> **示例 27** [难度 ★★☆☆☆] [主题：附录: C++11 核心特性速查]
 ```cpp
 #include <iostream>
 // constexpr 编译期斐波那契
@@ -577,7 +577,7 @@ constexpr int fib(int n){return n<=1?n:fib(n-1)+fib(n-2);}
 int main(){constexpr int f=fib(20);std::cout<<f<<std::endl;return 0;}
 ```
 
-> **示例 28** [难度 ★★★☆☆] [主题：附录: C++11 核心特性速查]
+> **示例 28** [难度 ★☆☆☆☆] [主题：附录: C++11 核心特性速查]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -613,7 +613,7 @@ C++11引入的底层变化:
 
 ## 附录追加：工业底层与面试
 
-> **示例 30** [难度 ★★★☆☆] [主题：附录追加：工业底层与面试]
+> **示例 30** [难度 ★★☆☆☆] [主题：附录追加：工业底层与面试]
 ```cpp
 // noexcept move 让 vector realloc 时"移动"而非"拷贝"元素(强异常安全)
 #include <iostream>
@@ -656,7 +656,7 @@ noexcept move 为什么重要（机制修正）: vector 扩容/realloc 时——
 unique_ptr: sizeof=8(EBO), dereference=mov 同裸指针, 零开销（见 ch115）。
 
 真实可运行基准（输出实测值，非估算；完整源与汇编见 Examples/_ch04_move_perf.{cpp,asm}）:
-> **示例 31** [难度 ★★★☆☆] [主题：附录 F：move底层与工业]
+> **示例 31** [难度 ★★☆☆☆] [主题：附录 F：move底层与工业]
 ```cpp
 // 编译运行: g++ -O2 -std=c++17 _ch04_move_perf.cpp -o _ch04_move_perf && ./_ch04_move_perf
 #include <iostream>
@@ -693,7 +693,7 @@ noexcept move 为何重要? vector realloc 时允许浅移动而非深拷贝(强
 
 ## 附录 G：C++11面试速查
 
-> **示例 32** [难度 ★★★☆☆] [主题：附录 G：C++11面试速查]
+> **示例 32** [难度 ★☆☆☆☆] [主题：附录 G：C++11面试速查]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -843,7 +843,7 @@ _Z8null_ptrv:
 
 **真实场景：老代码现代化。** 你把一个 C++98 的 `std::vector` 统计循环（手写迭代器 + `NULL` 哨兵）升级到 C++11。请用 `auto`、范围 for、`nullptr` 重写"遍历容器并统计"的逻辑，并说明 `nullptr` 相比 `NULL`/`0` 的类型安全优势（避免重载决议把 `0` 当成 `int`）。
 
-> **示例 34** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
+> **示例 34** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -871,7 +871,7 @@ int main() {
 
 **真实场景：工厂返回独占资源。** 你写一个 `open_connection()` 工厂，返回一条连接/文件句柄；调用方拿到后独占使用、用完即释放，绝不能有两个持有者。请用 `std::unique_ptr` 演示所有权从工厂转移到调用方，并解释为何它能安全替代大多数裸 `new`/`delete`（离开作用域自动释放，无泄漏）。
 
-> **示例 35** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 35** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -903,7 +903,7 @@ int main() {
 
 **真实场景：图像/缓冲解码返回大对象。** 你的解码函数产出一个持有大堆缓冲的 `Buffer`，若按值返回走深拷贝会极慢；应让返回"偷走"内部指针。请为 `Buffer` 实现移动构造/移动赋值，用计数证明移动"偷取指针"而非深拷贝，并说明 `noexcept` 对 `std::vector` 扩容时选择移动还是拷贝的影响。
 
-> **示例 36** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 36** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <cstring>
@@ -949,7 +949,7 @@ int main() {
 **选型**：lambda 就地写行为，`std::function` 做类型擦除的统一存储容器。
 **落地**：
 
-> **示例 37** [难度 ★★★☆☆] [主题：演绎 1：lambda + std:]
+> **示例 37** [难度 ★★☆☆☆] [主题：演绎 1：lambda + std:]
 ```cpp
 #include <iostream>
 #include <functional>
@@ -978,7 +978,7 @@ int main() {
 **选型**：`shared_ptr` 引用计数共享；但双向引用会形成计数环导致泄漏，用 `weak_ptr` 打破。
 **落地**：
 
-> **示例 38** [难度 ★★★☆☆] [主题：演绎 2：sharedptr 共享所]
+> **示例 38** [难度 ★★☆☆☆] [主题：演绎 2：sharedptr 共享所]
 ```cpp
 #include <iostream>
 #include <memory>

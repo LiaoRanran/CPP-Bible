@@ -204,7 +204,7 @@ bool binary_equiv(const std::vector<int>& v, int x) {
 
 下面是用 GCC 15.3.0 `-O2 -masm=intel` 对 `lower_bound_idx` 生成的**真实汇编**（已截去文件头）。注意它**没有被完全展开成常数表**，而是生成了标准的 `mid = n/2` 二分循环——因为区间长度 `n` 是运行时值。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：真实汇编：lowerbound 在 ]
+> **示例 11** [难度 ★★★☆☆] [主题：真实汇编：lowerbound 在 ]
 ```cpp
 // 文件：Examples/_ch97_lower_bound.cpp
 // 行号：10
@@ -428,7 +428,7 @@ int find_if_not_demo() {
 
 下面是用 GCC 15.3.0 `-O2` 在本机运行的 **`std::chrono` 实测**（非示意）。对 1,048,576 个升序 `int` 做 200 次随机命中查找：
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：真实性能：二分 vs 线性]
+> **示例 23** [难度 ★★☆☆☆] [主题：真实性能：二分 vs 线性]
 ```cpp
 // 文件：Examples/_ch97_bench.cpp
 // 行号：24
@@ -514,7 +514,7 @@ bool hash_contains_demo() {
 
 二分算法依赖**严格弱序**（strict weak ordering）：`comp(a,b)` 必须满足非自反、非对称、传递，且等价（equivalence）`!comp(a,b) && !comp(b,a)` 是等价关系。默认 `comp = std::less`（即 `<`）。
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：比较器与等价关系 [标准]]
+> **示例 26** [难度 ★★☆☆☆] [主题：比较器与等价关系 [标准]]
 ```cpp
 // ⑫ 降序区间必须用同一比较器，否则二分 UB
 #include <algorithm>
@@ -651,7 +651,7 @@ int right_binary() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：常见坑：对未排序区间用二分 = UB]
+> **示例 34** [难度 ★★☆☆☆] [主题：常见坑：对未排序区间用二分 = UB]
 ```cpp
 // ⑯ ❌ 错误：降序区间配默认 < 比较器 —— 等价关系被打破
 #include <algorithm>
@@ -972,7 +972,7 @@ int s8() {
 
 ## 附录 A：工业查找算法 [F: Industry / B: Principle / G: Performance]
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：附录 A：工业查找算法 [F: In]
+> **示例 50** [难度 ★★☆☆☆] [主题：附录 A：工业查找算法 [F: In]
 ```
 工业查找策略对比:
 Redis: 哈希表 (dict) + 跳表 (skiplist, 有序查找)
@@ -987,7 +987,7 @@ LLVM: DenseMap (开放地址哈希) + StringMap (字符串哈希特化)
 
 ## 附录 B：面试 [J: Learning]
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：附录 B：面试 [J: Learni]
+> **示例 51** [难度 ★★☆☆☆] [主题：附录 B：面试 [J: Learni]
 ```
 面试高频:
 Q: std::find vs std::binary_search 选择?
@@ -1227,7 +1227,7 @@ int main() {
 
 **修复（cpp）**：二分前先 `std::sort`（生产代码可加 `assert(std::is_sorted(...))`）。
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：演绎 2：二分的前提是「已排序」]
+> **示例 58** [难度 ★★☆☆☆] [主题：演绎 2：二分的前提是「已排序」]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1482,7 +1482,7 @@ flowchart TD
 
 ### D4.6 第一方可编译验证（二分查找族）
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：第一方可编译验证（二分查找族）]
+> **示例 59** [难度 ★★☆☆☆] [主题：第一方可编译验证（二分查找族）]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1593,7 +1593,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 60** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <vector>

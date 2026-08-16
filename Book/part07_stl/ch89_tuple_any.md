@@ -64,7 +64,7 @@ C/C++ 函数历来只能"返回一个值"，要回多个就得靠输出参数或
 
 ## ④ 知识图谱（ASCII）[标准]
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）[标准]]
+> **示例 1** [难度 ★★★☆☆] [主题：知识图谱（ASCII）[标准]]
 ```
                          ┌─────────────────────────────────────────────┐
                          │            值语义异构容器家族                │
@@ -150,7 +150,7 @@ classDiagram
 
 **tuple 的递归继承布局**（libstdc++：`tuple<int,double,std::string>` 实际是 `_Tuple_impl<0,int,_Tuple_impl<1,double,_Tuple_impl<2,std::string>>>`）：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：内存图 / 对象布局 [实现]]
+> **示例 2** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 [实现]]
 ```
 内存（x86-64, 对齐8）:
 std::tuple<int, double, std::string>  (sizeof = 8+8+32 = 48, string 内部含指针+size+容量=24~32)
@@ -171,7 +171,7 @@ std::tuple<int, double, std::string>  (sizeof = 8+8+32 = 48, string 内部含指
 
 **any 的 16 字节布局**（文件：`any`，行号：`83-92`、`360-361`）：
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：内存图 / 对象布局 [实现]]
+> **示例 3** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 [实现]]
 ```
 std::any  (sizeof = 16 在 x86-64)
 ┌─────────────────────────────────────────┐
@@ -185,7 +185,7 @@ SBO 阈值: sizeof(Tp) <= sizeof(_Storage)=8 且 alignof(Tp) <= 8  (行号:96)
 
 **function 的内部**（文件：`bits/std_function.h`，行号：`252-253`、`668`）：
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：内存图 / 对象布局 [实现]]
+> **示例 4** [难度 ★★☆☆☆] [主题：内存图 / 对象布局 [实现]]
 ```
 std::function<R(Args)>  (sizeof = 32 在 x86-64: 16B _Any_data + 8B manager + 8B invoker 指针)
 ┌──────────────────────────────────────────────────────────┐
@@ -235,7 +235,7 @@ sequenceDiagram
 
 **示例 A：`std::make_from_tuple` 在 `-O2` 下被完全内联**（无运行期「逐元素拷贝」）：
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：汇编分析（-O2，Intel 语法）]
+> **示例 5** [难度 ★★★★☆] [主题：汇编分析（-O2，Intel 语法）]
 ```cpp
 // 文件：Examples/ch89_make_from_tuple_asm.cpp
 // 编译：g++ -std=c++23 -O2 -S -masm=intel ch89_make_from_tuple_asm.cpp -o ch89_make_from_tuple_asm.asm
@@ -258,7 +258,7 @@ _Z6buildv:
 
 **示例 B：`std::function` 的一次调用是一次函数指针间接跳转**（无法内联跨边界）：
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：汇编分析（-O2，Intel 语法）]
+> **示例 6** [难度 ★★★☆☆] [主题：汇编分析（-O2，Intel 语法）]
 ```cpp
 // 文件：Examples/ch89_function_asm.cpp
 #include <functional>
@@ -288,7 +288,7 @@ int main() { std::function<int(int)> f = [](int a){ return a*2; }; return use(f,
 
 **案例 1（配置解析）**：一个服务器从配置文件解析出若干可选/必填字段，用 `tuple` 一次性返回多种类型，用 `optional` 表达可选，用 `any` 承载插件自定义字段。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：工业案例：配置解析 + RPC 请求]
+> **示例 7** [难度 ★★☆☆☆] [主题：工业案例：配置解析 + RPC 请求]
 ```cpp
 // 案例1：解析连接配置，返回 (host, port, optional<tls>, any 扩展字段)
 #include <tuple>
@@ -329,7 +329,7 @@ int main() {
 
 **案例 2（RPC 请求派发）**：用 `std::function` 维护「方法名 → 处理器」表，实现轻量分发器；用 `reference_wrapper` 让处理器持有共享会话状态而不拷贝。
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：工业案例：配置解析 + RPC 请求]
+> **示例 8** [难度 ★★☆☆☆] [主题：工业案例：配置解析 + RPC 请求]
 ```cpp
 // 案例2：RPC 方法派发表
 #include <functional>
@@ -370,7 +370,7 @@ int main() {
 
 libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）[实现]
+> **示例 9** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）[实现]
 ```
 文件：tuple
 行号：259   struct _Tuple_impl<size_t _Idx, typename _Head, typename... _Tail>
@@ -385,7 +385,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 **B. any 的类型擦除（文件：`any`，行号：`80`/`96`/`360-361`/`370`/`574`/`402`/`608`）**
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）[实现]
+> **示例 10** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）[实现]
 ```
 文件：any
 行号：80    class any { ... void(*_M_manager)(_Op,const any*,_Arg*); _Storage _M_storage; };
@@ -401,7 +401,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 **C. function 的 SBO + 擦除（文件：`bits/std_function.h`，行号：`117`/`124`/`334`/`591`）**
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）[实现]
+> **示例 11** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）[实现]
 ```cpp
 文件：bits/std_function.h
 行号：117   static const size_t _M_max_size  = sizeof(_Nocopy_types);   // x86-64 = 16
@@ -417,7 +417,7 @@ libstdc++ 把 `tuple<T0,T1,...,Tn>` 实现为递归继承链：
 
 **D. bind 与占位符（文件：`functional`，行号：`87`/`266`/`294-311`/`881`）**
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）[实现]
+> **示例 12** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）[实现]
 ```
 文件：functional
 行号：87    template<int _Num> struct _Placeholder { };
@@ -559,7 +559,7 @@ int main() { return b_style() + l_style(); }
 
 **B. `any` 的 SBO 零分配验证**：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：性能分析 [经验]]
+> **示例 17** [难度 ★★☆☆☆] [主题：性能分析 [经验]]
 ```cpp
 // any 小对象(≤8B) 全息：无堆分配；大对象走堆
 #include <any>
@@ -579,7 +579,7 @@ int main() {
 
 **C. `function` 间接调用开销量级**（示意，x86-64）：
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：性能分析 [经验]]
+> **示例 18** [难度 ★★☆☆☆] [主题：性能分析 [经验]]
 ```cpp
 // 调用开销示意：function 比直接 lambda 多一次间接跳转 + 可能的分配
 #include <functional>
@@ -611,7 +611,7 @@ int main() { return bench() > 0 ? 0 : 1; }
 
 **D. `apply`/`make_from_tuple` 编译期展开零开销**：
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：性能分析 [经验]]
+> **示例 19** [难度 ★★☆☆☆] [主题：性能分析 [经验]]
 ```cpp
 // apply 在 -O2 下完全内联（见 ⑩ 示例 A 的汇编）
 #include <tuple>
@@ -669,7 +669,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 23** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch89_ex04：tuple_size / tuple_element 编译期查询
 #include <tuple>
@@ -730,7 +730,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 27** [难度 ★★★☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch89_ex08：index_sequence + 折叠 ((void)x,...) 遍历 tuple
 #include <tuple>
@@ -752,7 +752,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 28** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch89_ex09：pair piecewise_construct 原地构造（避免临时对象）
 #include <utility>
@@ -784,7 +784,7 @@ int main() {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 30** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch89_ex11：get<T>（类型唯一）按类型取元素
 #include <tuple>
@@ -884,7 +884,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 36** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch89_ex17：any 作异构容器（vector<any>）
 #include <any>
@@ -1082,7 +1082,7 @@ int main() {
 }
 ```
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 49** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // ch89_ex30：constexpr 上下文中的 tuple
 #include <tuple>
@@ -1302,7 +1302,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 52** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <any>
@@ -1496,7 +1496,7 @@ use_agg(P const&):                 ; struct P{int a; double b; char c;}
 
 ### D4.7 编译验证
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：编译验证]
+> **示例 53** [难度 ★★★☆☆] [主题：编译验证]
 ```cpp
 #include <tuple>
 #include <iostream>
@@ -1736,7 +1736,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 54** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <any>
 #include <variant>

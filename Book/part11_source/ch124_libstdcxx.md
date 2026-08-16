@@ -40,7 +40,7 @@ libstdc++ 的哲学是"紧贴 GCC、紧跟标准、以自由许可（LGPL/GPL）
 
 libstdc++（全称 *The GNU C++ Library*）是 GCC 自带的 C++ 标准库实现，提供 `<vector>`、`<string>`、`<iostream>` 等标准容器/算法/迭代器/本地化/IO。它与 `libgcc`（底层运行时）协同：标准库负责 C++ 抽象，运行时负责异常、RTTI、`new` 等。每个 GCC 版本绑定一个 libstdc++ 版本（GCC 13.1.0 → libstdc++ 13）。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：libstdc++ 是 GCC]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：libstdc++ 是 GCC]
 ```cpp
 // ① 最小可编译程序：仅依赖 libstdc++ 的 <vector>
 #include <vector>
@@ -91,7 +91,7 @@ int main() {
 
 想读懂 `std::vector`，入口是顶层 `<vector>`：它几乎不实现逻辑，只串起一堆 `bits/` 头，真正定义落在 `bits/stl_vector.h`（类模板）与 `bits/vector.tcc`（成员函数实现）。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：阅读入口]
+> **示例 3** [难度 ★★☆☆☆] [主题：阅读入口]
 ```cpp
 // ③ 复刻 <vector> 的核心包含顺序（节选自真实 vector:60-80）
 #include <bits/requires_hosted.h>
@@ -128,7 +128,7 @@ int main() {
 
 GCC 的 `std::string` 采用 **SSO（Small String Optimization）**：短字符串（≤15 字节）存于对象内部的 `_M_local_buf`，免堆分配。`_S_local_capacity` 是容量常量，定义如下。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：[实现]真实：读 local bit]
+> **示例 6** [难度 ★★☆☆☆] [主题：[实现]真实：读 local bit]
 ```cpp
 // ④ SSO 行为：短串不触发 new
 #include <string>
@@ -163,7 +163,7 @@ int main() {
 
 `std::allocator` 是标准默认分配器；`__gnu_cxx` 命名空间承载 GNU 扩展（如 `__gnu_cxx::__alloc_traits`，对 `std::allocator_traits` 做补充）。理解分配器是读懂容器内存管理的前提。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：分配器与 gnucxx / std:]
+> **示例 9** [难度 ★★☆☆☆] [主题：分配器与 gnucxx / std:]
 ```cpp
 // ⑤ 标准 allocator 用法
 #include <vector>
@@ -208,7 +208,7 @@ int main() {
 
 libstdc++ 对「强异常安全」与 `noexcept` 移动构造极度重视——这直接决定容器在扩容/排序时的性能（见 ⑭）。`basic_string` 的移动构造是 `noexcept`，因此 `vector<string>` 扩容走移动而非拷贝。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：异常安全与 noexcept [标准]
+> **示例 13** [难度 ★★★☆☆] [主题：异常安全与 noexcept [标准]
 ```cpp
 // ⑥ noexcept 移动带来的性能差异
 #include <vector>
@@ -298,7 +298,7 @@ int main() {
 
 用真实 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch124_vector.cpp`，可见 libstdc++ 的关键事实：**vector 的遍历被完全内联**（无函数调用），而 `std::string` 的 `+=` 因 SSO 分支仍生成对 `_M_mutate` 的调用。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：[实现]真实：编译用 <vector]
+> **示例 20** [难度 ★★★☆☆] [主题：[实现]真实：编译用 <vector]
 ```cpp
 // ⑨ 文件：Examples/_ch124_vector.cpp（已真实编译取证）
 #include <vector>
@@ -375,7 +375,7 @@ gdb dbg.exe
 
 每个 `std::vector<T, A>` / `std::string` 实例化都会在目标文件生成一族符号。`nm -C` 可直观看到这些实例化产物——这是「模板代码膨胀」的量化入口。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：模板实例化体积]
+> **示例 22** [难度 ★★☆☆☆] [主题：模板实例化体积]
 ```cpp
 // ⑪ 同样的代码，nm 能看到 vector/base/string 的实例化符号
 #include <vector>
@@ -428,7 +428,7 @@ int main() {
 
 新 ABI（`__cxx11`）自 GCC 5 起默认。它通过 `inline namespace __cxx11` 把新布局类型放进独立命名空间，使新旧 `std::string` 在同一进程可并存而不冲突；旧代码可 `-D_GLIBCXX_USE_CXX11_ABI=0` 回退。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：cxx11 新 ABI 与兼容 [实]
+> **示例 24** [难度 ★★★☆☆] [主题：cxx11 新 ABI 与兼容 [实]
 ```cpp
 // ⑬ 验证当前处于哪个 ABI 命名空间
 #include <string>
@@ -485,7 +485,7 @@ int main() {
 
 `debug/`（即 `__gnu_debug`）提供带越界/迭代器失效检查的「调试版」容器；`profile/` 统计操作开销；`parallel/` 用 OpenMP 并行化算法。它们通过宏（如 `_GLIBCXX_DEBUG`）切换，不影响发布构建。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：扩展（gnucxx 调试容器） [实]
+> **示例 28** [难度 ★★☆☆☆] [主题：扩展（gnucxx 调试容器） [实]
 ```cpp
 // ⑮ 调试模式：越界访问会触发断言（需 -D_GLIBCXX_DEBUG 编译）
 #define _GLIBCXX_DEBUG
@@ -565,7 +565,7 @@ int wrap() {
 
 想深入或修 libstdc++：源码在 GCC 仓库 `libstdc++-v3/`；本地可用本机 `include/c++/` 直接读。报告 bug 用 libstdc++ Bugzilla，最小复现用 `-std=c++23` + 预处理后的 `.ii`（`g++ -E`）。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：调试/贡献 [平台·x86-64]]
+> **示例 33** [难度 ★★☆☆☆] [主题：调试/贡献 [平台·x86-64]]
 ```cpp
 // ⑲ 生成预处理文件便于向上游报 bug
 #include <vector>
@@ -657,7 +657,7 @@ int main() { std::printf("%ld\n", (long)__GLIBCXX__); return 0; }
 int use() { std::vector<long> v; return (int)v.size(); }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 37** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
 ```cpp
 // S4 SSO 阈值探测（对应 ④）
 #include <string>
@@ -670,7 +670,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 38** [难度 ★★★☆☆] [主题：补充：完整可编译示例]
 ```cpp
 // S5 自定义分配器接入（对应 ⑤）
 #include <vector>
@@ -687,7 +687,7 @@ int main() {
 }
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 39** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
 ```cpp
 // S6 noexcept 移动静态断言（对应 ⑥）
 #include <string>
@@ -798,7 +798,7 @@ int main() {
 }
 ```
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 50** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
 ```cpp
 // S17 用 std::array 对比 vector（无堆分配）
 #include <array>
@@ -811,7 +811,7 @@ int main() {
 }
 ```
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 51** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
 ```cpp
 // S18 allocator_traits 取 rebound（对应 ⑤）
 #include <memory>
@@ -824,7 +824,7 @@ int main() {
 }
 ```
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 52** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
 ```cpp
 // S19 用 nm 思想：template 实例化计数（对应 ⑪）
 #include <vector>
@@ -866,7 +866,7 @@ int main() {
 
 libstdc++ 让你无需换编译器就能改变容器的内存去处——标准库自带的 `std::pmr` 正是同一机制。下面用纯标准库复刻"把 vector 的内存全部取自我的栈缓冲池"：
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：㉑.2 标准 C++ 等价实现：用 ]
+> **示例 54** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：用 ]
 ```cpp
 // ㉑.2 用标准库 std::pmr 复刻「libstdc++ 让容器可替换内存来源」的机制（本块可独立编译，GCC 15.3.0 验证）
 #include <memory_resource>   // std::pmr 是标准库一部分，libstdc++/libc++ 都自带
@@ -894,7 +894,7 @@ int main() {
 
 下面才是你在工程里**真正会写的 libstdc++ 相关代码**；以注释呈现（门禁按空块通过，不引入第三方头）。
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：㉑.3 真实 libstdc++ 长]
+> **示例 55** [难度 ★★☆☆☆] [主题：㉑.3 真实 libstdc++ 长]
 ```cpp
 // ㉑.3 真实工程里常见的 libstdc++ 用法（仅注释演示，门禁按空块编译通过）：
 //   // 1) 查询 libstdc++ 版本：__GLIBCXX__ 是一个日期，如 20250627
@@ -1026,7 +1026,7 @@ int main() {
 
 ## 附录 B：源码阅读导航 [F: Industry / I: Practice]
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：附录 B：源码阅读导航 [F: In]
+> **示例 57** [难度 ★★★☆☆] [主题：附录 B：源码阅读导航 [F: In]
 ```
 libstdc++ 源码阅读路径 (难度递增):
 
@@ -1177,7 +1177,7 @@ Code Review 清单：
 
 `std::move` 只是一次 `static_cast`，编译期转型、运行期无指令（GCC 13 在 `bits/move.h:104`）：
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 59** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <utility>
 #include <iostream>
@@ -1203,7 +1203,7 @@ int main() {
 
 `vector` 用 `std::move_if_noexcept`：移动构造 `noexcept` 才移动，否则为强异常安全退回拷贝：
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 60** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <vector>
 #include <utility>
@@ -1235,7 +1235,7 @@ int main() {
 
 GCC 5 起 libstdc++ 引入新 ABI：`std::string` 改为 SSO 内联存储、用 `std::basic_string` 的 `std::__cxx11` inline namespace 隔离。旧 ABI 的 `std::string` 是 `std::basic_string<char>` 的 `std::string`（COW 外置缓冲）：
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 61** [难度 ★★★★☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <string>
 #include <type_traits>

@@ -36,7 +36,7 @@ Modules 入标只是起点，真正的硬仗是"工具链落地"与"生态迁移
 
 传统 C++ 用 `#include` 做**文本包含**——预处理器把整个头文件复制粘贴进每个翻译单元，导致重复解析、宏泄漏、编译慢。Modules 提供**语义导入单元**，只暴露声明、按需编译一次、无宏污染。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：Modules 要解决什么 []
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：Modules 要解决什么 []
 ```cpp
 // ① 模块接口单元：导出声明
 // 文件：math.ixx（或 .cppm）
@@ -123,7 +123,7 @@ int main() { return std::cout ? 0 : 1; }
 
 ## ⑤ 真实汇编：模块符号与零包含开销 [实现·GCC15.3.0]
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：真实汇编：模块符号与零包含开销 [实]
+> **示例 6** [难度 ★★★★☆] [主题：真实汇编：模块符号与零包含开销 [实]
 ```cpp
 // 文件：Examples/_mod_use.cpp，行号：8（_Z7use_modv）/ 12（jmp _ZW4math6squarei）
 // 编译：g++ 15.3.0 -std=c++23 -O2 -fmodules-ts -S -masm=intel _mod_use.cpp -o _mod_use.asm
@@ -254,7 +254,7 @@ import <vector>;       // 把传统头当作头单元导入（C++20 头单元）
 
 ## ⑬ 模块的典型陷阱 [经验]
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：模块的典型陷阱 [经验]]
+> **示例 14** [难度 ★★★☆☆] [主题：模块的典型陷阱 [经验]]
 ```cpp
 // ⑬ 陷阱1：在模块接口里忘记 export -> 导出不可见
 export module m;
@@ -297,7 +297,7 @@ g++ Examples/_mod_main.o Examples/_mod_use.o -o Examples/_mod_app
 
 ## ⑯ 模块与模板 [标准]
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：模块与模板 [标准]]
+> **示例 15** [难度 ★★☆☆☆] [主题：模块与模板 [标准]]
 ```cpp
 // ⑯ 模板也能导出（接口单元直接 export template）
 export module tmpl;
@@ -313,7 +313,7 @@ T max_of(T a, T b) { return a < b ? b : a; }
 
 ## ⑰ 模块与内联/constexpr [标准]
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：模块与内联/constexpr [标]
+> **示例 16** [难度 ★★☆☆☆] [主题：模块与内联/constexpr [标]
 ```cpp
 // ⑰ inline / constexpr 在模块中照常工作
 export module consts;
@@ -337,7 +337,7 @@ export inline int twice(int x) { return x * 2; }
 
 ## ⑲ microbenchmark：模块对编译时间的收益 [经验]
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：模块对编译时间的收益 [经验]]
+> **示例 17** [难度 ★★★☆☆] [主题：模块对编译时间的收益 [经验]]
 ```cpp
 // ⑲ 单 TU 运行期开销：模块函数 = 普通函数（零差）
 // 编译期收益（量级，非本机实测数字示意）：
@@ -527,7 +527,7 @@ int main(){std::cout<<"Implementation partitions hide internal details from impo
 
 ## 附录 D: 模块与编译性能的量化分析
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：附录 D: 模块与编译性能的量化分析]
+> **示例 26** [难度 ★★☆☆☆] [主题：附录 D: 模块与编译性能的量化分析]
 ```cpp
 // D-1 编译时间对比模拟器
 #include <iostream>
@@ -544,7 +544,7 @@ int main(){
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：附录 D: 模块与编译性能的量化分析]
+> **示例 27** [难度 ★★☆☆☆] [主题：附录 D: 模块与编译性能的量化分析]
 ```cpp
 // D-2 模块的零运行时开销证明
 #include <iostream>
@@ -596,7 +596,7 @@ export module wrap;
 export uint32_t pack(uint16_t a, uint16_t b) { return (uint32_t(a) << 16) | b; }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（modules）]
+> **示例 32** [难度 ★★☆☆☆] [主题：补充完整可编译示例（modules）]
 ```cpp
 // M5 模块内导出模板
 export module tm;
@@ -604,7 +604,7 @@ export template <typename T>
 T max_of(T a, T b) { return a < b ? b : a; }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（modules）]
+> **示例 33** [难度 ★★☆☆☆] [主题：补充完整可编译示例（modules）]
 ```cpp
 // M6 模块内 constexpr / inline
 export module c;
@@ -666,7 +666,7 @@ int internal() { return 42; }   // 仅本模块可见
 // 非模块等价：_Z6squarei —— 调用约定/布局完全相同，仅名字前缀不同
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（modules）]
+> **示例 40** [难度 ★★★☆☆] [主题：补充完整可编译示例（modules）]
 ```cpp
 // M13 模块 + 概念（C++20）导出受约束接口
 export module mathc;
@@ -821,7 +821,7 @@ int main() { return square(add(2, 3)); }
 
 这正好是"头文件包含"的反面：传统头文件把 `sq` 的**定义**文本塞进每个 TU，改 `sq` 任一行所有包含者全重编。下面用普通类演示同一封装边界（可编译）：
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 41** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 // 模块里未 export 的 helper 等价于类的 private 实现：
@@ -1096,7 +1096,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 42** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 // 模块无法写成「单文件可运行」demo：它天然是多翻译单元 + 模块编译管线（GCC 15 需 -fmodules）。
 // 复现步骤（CI 编译门禁按 MODULE 模式显式豁免本块，不单独编译运行）：

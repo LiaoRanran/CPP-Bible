@@ -101,7 +101,7 @@ for (int x : r) std::cout << x << " ";   // 遍历时才对每个元素 *10
 
 ## ⑤ 真实汇编：filter+transform 融合为单遍 [实现]
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：真实汇编：filter+transf]
+> **示例 5** [难度 ★★★☆☆] [主题：真实汇编：filter+transf]
 ```cpp
 // 文件：Examples/_asm_ranges.cpp，行号：8（_Z10use_rangesv）/ 39（test cl,1 过滤）/ 47（imul 平方）
 // 编译：g++ 15.3.0 -std=c++23 -O2 -S -masm=intel _asm_ranges.cpp -o _asm_ranges.asm
@@ -152,7 +152,7 @@ _Z10use_rangesv:
 
 ## ⑥ 常用 view 适配器 [标准]
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：常用 view 适配器 [标准]]
+> **示例 6** [难度 ★★☆☆☆] [主题：常用 view 适配器 [标准]]
 ```cpp
 // ⑥ 常见 views
 #include <ranges>
@@ -207,7 +207,7 @@ auto p = std::ranges::max(people, {}, &Person::age);  // 年龄最大者
 
 ## ⑨ 自定义 range 与 view [标准]
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：自定义 range 与 view []
+> **示例 9** [难度 ★★☆☆☆] [主题：自定义 range 与 view []
 ```cpp
 // ⑨ 实现简单 input range（满足 begin/end + iterator_traits）
 #include <ranges>
@@ -261,7 +261,7 @@ std::vector<int> good() {
 
 ## ⑪ 惰性 vs 急切：何时 materialize [经验]
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：惰性 vs 急切：何时 materi]
+> **示例 11** [难度 ★★☆☆☆] [主题：惰性 vs 急切：何时 materi]
 ```cpp
 // ⑪ 链式多次遍历应物化，避免重复计算
 #include <ranges>
@@ -294,7 +294,7 @@ use(cached); use(cached);
 
 ## ⑬ 真实源码：管道运算符 `|` 的实现 [实现]
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：真实源码：管道运算符 | 的实现 []
+> **示例 13** [难度 ★★☆☆☆] [主题：真实源码：管道运算符 | 的实现 []
 ```cpp
 #include <utility>
 // 文件：bits/ranges_util.h （GCC 15.3.0, libstdc++），行号：_RangeAdaptorClosure 重载 operator|（range|adaptor == adaptor(range)）
@@ -321,7 +321,7 @@ use(cached); use(cached);
 
 ## ⑮ microbenchmark：惰性 vs 手写循环 [经验]
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：惰性 vs 手写循环 [经验]]
+> **示例 14** [难度 ★★☆☆☆] [主题：惰性 vs 手写循环 [经验]]
 ```cpp
 // ⑮ 量级：ranges 链 ≈ 手写单循环（惰性融合后无中间容器）
 #include <ranges>
@@ -376,7 +376,7 @@ std::ranges::sort(std::execution::par, v);   // 并行排序（注意迭代器�
 
 ## ⑱ Ranges 常见陷阱 [经验]
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 17** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑱ 陷阱1：filter 后不是随机访问 -> 不能 O(1) 下标
 auto r = v | std::views::filter([](int i){return i>0;});
@@ -671,7 +671,7 @@ Ranges 从 Boost.Range (2003) 到 C++20 (2020) 走过了 17 年。三个关键�
 
 ## 附录 B：性能与面试 [E/G/J]
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：附录 B：性能与面试 [E/G/J]]
+> **示例 36** [难度 ★★☆☆☆] [主题：附录 B：性能与面试 [E/G/J]]
 ```cpp
 #include <iostream>
 int main() {
@@ -722,7 +722,7 @@ int main(){for(int x: std::views::iota(1,6)|std::views::transform([](int a){retu
 ## ⑫ ranges::to 与 C++23 增强
 
 C++23 ranges::to<T>将view转换为容器:
-> **示例 38** [难度 ★☆☆☆☆] [主题：与 C++23 增强]
+> **示例 38** [难度 ★★☆☆☆] [主题：与 C++23 增强]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -756,7 +756,7 @@ C++23新增views:
 ## ⑬ ranges的sentinel优势
 
 sentinel不与end迭代器类型绑定→简化迭代器设计。例如null-terminated string的end就是sentinel(不是char*):
-> **示例 39** [难度 ★☆☆☆☆] [主题：的sentinel优势]
+> **示例 39** [难度 ★★★☆☆] [主题：的sentinel优势]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -939,7 +939,7 @@ int main() {
 
 **错误（编译通过，运行期 UB）**：view 只持有对 `v` 的引用，`v` 在 `make_view()` 返回时已析构，外部拿到的 view 指向死对象：
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 43** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -1020,7 +1020,7 @@ int main() {
 
 **修复（落地）。** 需要传递/存储就**物化**成拥有式容器；只在同作用域即时消费才保留 view：
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：演绎 2：管道结果要存/要传 → 物]
+> **示例 47** [难度 ★★☆☆☆] [主题：演绎 2：管道结果要存/要传 → 物]
 ```cpp
 #include <vector>
 #include <ranges>
@@ -1524,7 +1524,7 @@ int main() {
 
 ### D5.3 可复现演示
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：可复现演示]
+> **示例 49** [难度 ★★☆☆☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 #include <vector>

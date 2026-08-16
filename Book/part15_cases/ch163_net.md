@@ -84,7 +84,7 @@ struct WSAGuard {
 
 Berkeley Socket（BSD socket）是 1983 年 4.2BSD 引入的 API，如今已成为**事实标准**：Linux/macOS/BSD 的接口几乎一致。**[标准]** 一个 TCP 服务器的最小生命周期是 `socket → bind → listen → accept → recv/send → close`。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 4** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // ② Berkeley 风格的最小 TCP 服务器骨架（Linux/macOS 可直接编译）
 //   g++ -std=c++23 -O2 bsd_echo.cpp -o bsd_echo
@@ -170,7 +170,7 @@ inet_pton(AF_INET, "127.0.0.1", &a.sin_addr);   // 返回 1 表示成功
 
 这是本章的"门面示例"：绑定 `127.0.0.1:54321`、accept 一个连接、逐行回显。**本机 g++ 已真实编译运行**，输出见本节末尾与 ⑲。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 10** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // ④ 完整可编译 echo server（本机实测通过：g++ -std=c++23 -O2 -lws2_32）
 // 文件：Examples/_ch163_echo_server.cpp
@@ -236,7 +236,7 @@ int main() {
 
 客户端比服务器简单：无需 bind/listen，调用 `connect` 即可。**[实现·GCC15]** 注意 `connect` 在阻塞模式下会一直等到三次握手完成（或超时失败）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 11** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // ⑤ 完整可编译 echo client（本机实测通过）
 // 文件：Examples/_ch163_echo_client.cpp
@@ -289,7 +289,7 @@ std::string recv_line(SOCKET fd) {
 
 默认 socket 是**阻塞**的：`recv` 没有数据就睡眠，直到有数据或连接关闭才返回。**[经验]** 阻塞模型写起来直观，但一个线程只能服务一个连接，高并发必须靠"线程/进程 × N"。**非阻塞**模式（`ioctlsocket(fd, FIONBIO, &mode)`）下 `recv`/`connect` 立刻返回，配合 `select`/`poll`/`epoll` 才能单线程扛万级连接。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：阻塞 vs 非阻塞]
+> **示例 13** [难度 ★★☆☆☆] [主题：阻塞 vs 非阻塞]
 ```cpp
 #include <thread>
 // ⑥ 阻塞：最简单的"一连接一线程"accept 循环（教学清晰，但扩展性差）
@@ -349,7 +349,7 @@ void select_loop(SOCKET lfd) {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：多路复用]
+> **示例 16** [难度 ★★☆☆☆] [主题：多路复用]
 ```cpp
 // ⑦ poll 骨架（POSIX；Windows 没有原生 poll，用 WSAPoll 近似）
 #include <poll.h>
@@ -421,7 +421,7 @@ int main() {
 
 **[实现·GCC15]** 阻塞模型下，把"每连接一线程"升级为**线程池**即可复用线程、避免频繁创建开销。这里的思想与 第159章（线程池与并发）完全一致——任务队列 + 固定 worker。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：多线程/线程池服务]
+> **示例 17** [难度 ★★☆☆☆] [主题：多线程/线程池服务]
 ```cpp
 // ⑨ 内联最小线程池 + 把"一个连接"封装成任务提交（关联 第159章 任务抽象）
 //   已编译通过 _ch163_threadpool.cpp（含 -pthread -lws2_32）
@@ -473,7 +473,7 @@ void handle_connection(ThreadPool& pool, SOCKET conn) {
 
 **[经验]** 网络代码最大的性能陷阱是"每次 recv 都 new/拷贝"。工业做法是**应用层环形缓冲（RingBuffer）**：读写指针循环复用同一块内存，避免频繁分配。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：缓冲区管理]
+> **示例 18** [难度 ★★☆☆☆] [主题：缓冲区管理]
 ```cpp
 // ⑩ 单生产者/单消费者环形缓冲（跨平台纯 C++23，已编译通过 _ch163_buffer.cpp）
 #include <cstddef>
@@ -516,7 +516,7 @@ TCP 是字节流，**你必须自己切"消息"**。两种主流 framing：
 1. **长度前缀**：`[uint32 大端长度][payload]`——可精确切包，二进制安全。
 2. **分隔符**：用 `\n` 或 `\r\n` 当消息边界——人类可读，但 payload 不能含分隔符。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：协议设计（长度前缀/分隔符）]
+> **示例 20** [难度 ★★☆☆☆] [主题：协议设计（长度前缀/分隔符）]
 ```cpp
 // ⑪ 长度前缀编解码（已编译通过 _ch163_lenprefix.cpp）
 #include <vector>
@@ -559,7 +559,7 @@ bool try_extract(std::string& buf, std::string& msg) {
 
 消息切包后，payload 内部的"结构化数据"需要序列化。**[实现·GCC15]** 这里复用 第162章（JSON 库）的思想：把对象序列成 JSON 字符串，再用 ⑪ 的长度前缀包一层，得到"自描述且二进制安全"的线路格式。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：序列化（关联 第162章 JSON）]
+> **示例 22** [难度 ★★☆☆☆] [主题：序列化（关联 第162章 JSON）]
 ```cpp
 #include <cstdint>
 #include <vector>
@@ -599,7 +599,7 @@ int parse_seq(const std::string& json) {
 
 **[平台·Linux]** 跨平台网络程序的入口是 `getaddrinfo`：它同时支持 IPv4/IPv6，且 Windows/Linux 接口一致。本节两个示例本机均 `g++` 跑通。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：真实跨平台实现]
+> **示例 24** [难度 ★★☆☆☆] [主题：真实跨平台实现]
 ```cpp
 // ⑬ 用 getaddrinfo 解析 "localhost"（已编译通过 _ch163_getaddrinfo.cpp）
 #include <winsock2.h>
@@ -637,7 +637,7 @@ void print_version() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：真实跨平台实现]
+> **示例 26** [难度 ★★☆☆☆] [主题：真实跨平台实现]
 ```cpp
 // ⑬ Winsock 错误码 -> 可读字符串（跨平台时换成 strerror）
 #include <winsock2.h>
@@ -664,7 +664,7 @@ _getaddrinfo.exe:
 
 **[经验]** 网络服务的两个核心指标：**并发连接数**与**单连接吞吐**。本机（Windows 笔记本 + MinGW）受限于单核调度与杀毒软件对 .exe 的首跑扫描，仅适合做"正确性证据"与小规模基准，不适合作为权威性能数字。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：性能（连接数/吞吐，说明本机限制）]
+> **示例 27** [难度 ★★☆☆☆] [主题：性能（连接数/吞吐，说明本机限制）]
 ```cpp
 // ⑭ 高精度计时器（C++11 steady_clock），用于本地微基准
 #include <chrono>
@@ -678,7 +678,7 @@ struct Timer {
 };
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：性能（连接数/吞吐，说明本机限制）]
+> **示例 28** [难度 ★★☆☆☆] [主题：性能（连接数/吞吐，说明本机限制）]
 ```cpp
 #include <cstdint>
 // ⑭ 连接计数器：记录 accept 总数与回显字节数（真实服务应加原子保护）
@@ -754,7 +754,7 @@ void asio_echo() {
 #endif
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：与 ASIO/boost::asio]
+> **示例 32** [难度 ★★☆☆☆] [主题：与 ASIO/boost::asio]
 ```cpp
 #include <cstddef>
 #include <memory>
@@ -811,7 +811,7 @@ void bad_leak(SOCKET lfd) {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：反模式（忙等/连接泄漏）]
+> **示例 35** [难度 ★★☆☆☆] [主题：反模式（忙等/连接泄漏）]
 ```cpp
 // ⑰ 正确做法：RAII 包装 socket，构造即持有、析构即关闭，杜绝泄漏
 struct Socket {
@@ -845,7 +845,7 @@ void proposed() {
 #endif
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：++26 网络 TS 前瞻 [标准]]
+> **示例 37** [难度 ★★☆☆☆] [主题：++26 网络 TS 前瞻 [标准]]
 ```cpp
 // ⑱ 与之配套的执行器（executor）概念——把"在哪里跑回调"显式化
 //   示意：strand 保证同一连接的回调不并发，等价于 ⑨ 线程池的互斥效果。
@@ -859,7 +859,7 @@ net::co_spawn(s, echo_coro(sock), net::detached);
 
 本节的每段输出都来自本机 `g++ 13.1.0 -std=c++23 -O2 -lws2_32` 的真实运行，绝不编造。先给出**单进程确定性回显**源码，再给出**双进程（后台 server + 前台 client）**的真实交互。
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 38** [难度 ★★☆☆☆] [主题：真实案例]
 ```cpp
 // ⑲ 单进程回显证据（已编译通过 _ch163_echo_inproc.cpp）
 // 文件：Examples/_ch163_echo_inproc.cpp
@@ -940,7 +940,7 @@ int main() {
 
 从 `socket()` 到 `epoll`，从字节流到"消息"，从阻塞到线程池——本章把 C++ 网络编程的骨架从零搭了一遍，并用本机 Winsock2 的真实编译运行做了端到端取证。核心结论：**[经验]** 手写 socket 的价值不在"重复造轮子"，而在让你理解 Asio / 第159章线程池 / 第162章序列化 这些上层抽象到底在替你屏蔽什么。**[标准]** 记住 C++ 标准至今没有网络 API，选 Winsock 还是 Berkeley、选 select 还是 epoll，都是工程权衡而非语言规定。
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：小结]
+> **示例 39** [难度 ★★☆☆☆] [主题：小结]
 ```cpp
 #include <cstdint>
 #include <string>
@@ -1043,7 +1043,7 @@ int main() {
 
 ## 附录 B：性能模型 —— epoll vs io_uring [E: Low-level / G: Performance]
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 B：性能模型 —— epoll]
+> **示例 41** [难度 ★★☆☆☆] [主题：附录 B：性能模型 —— epoll]
 ```cpp
 #include <iostream>
 // 注：以下为 Linux epoll/io_uring 参考量级（Jens Axboe / lwn.net 基准），
@@ -1068,7 +1068,7 @@ int main() {
 
 ## 附录 C：面试 [J: Learning]
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录 C：面试 [J: Learni]
+> **示例 42** [难度 ★★☆☆☆] [主题：附录 C：面试 [J: Learni]
 ```
 面试高频:
 Q: epoll 的水平触发 (LT) 和边缘触发 (ET) 的区别？
@@ -1083,7 +1083,7 @@ A: TIME_WAIT = 2MSL 等待 (防止残留报文干扰); SO_REUSEADDR = 允许绑�
 
 ## 附录 D：编译器与底层网络性能 [C: Compiler / E: Low-level / I: Practice]
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录 D：编译器与底层网络性能 [C]
+> **示例 43** [难度 ★★★☆☆] [主题：附录 D：编译器与底层网络性能 [C]
 ```
 网络编程的底层性能边界（量级参考，区分平台）：
 
@@ -1131,7 +1131,7 @@ Q: SO_REUSEPORT? A: 多socket绑定同端口,内核自动负载均衡(Linux 3.9+
 
 ## 附录 F：编译器与底层网络性能 [C: Compiler / E: Lowlevel / I: Practice]
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：附录 F：编译器与底层网络性能 [C]
+> **示例 45** [难度 ★★★☆☆] [主题：附录 F：编译器与底层网络性能 [C]
 ```
 GCC编译选项对网络代码的影响:
 -D_GNU_SOURCE → 启用epoll_create1, accept4, recvmmsg等Linux特有API
@@ -1218,7 +1218,7 @@ int main(){std::cout<<"Network=ch163+ch93+ch81+ch77+ch159"<<std::endl;return 0;}
 
 使用 `std::common_comparison_category` 或 `std::cmp_less` 避免符号陷阱：
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：重构建议]
+> **示例 47** [难度 ★★☆☆☆] [主题：重构建议]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1248,7 +1248,7 @@ int main() { std::cout << max_safe(3, 7) << '\n'; }
 网络读写常遇到“一次 recv 只到半包”，需要把零散字节攒进应用层缓冲。
 请实现一个定长环形缓冲区 `RingBuffer`：`push` 写入、`pop` 取出，跨读写指针不越界。
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 48** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1290,7 +1290,7 @@ int main() {
 TCP 是字节流，应用层必须自己定界。长度前缀（先发 4 字节大端长度，再发载荷）是最常用的定界法。
 请实现 `encode`/`decode`：把一条消息序列化为 `[uint32 len][payload]`，再解析回来。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 49** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -1329,7 +1329,7 @@ int main() {
 非阻塞服务里，一个连接可能要跨多次 epoll 事件才能收齐一条消息。请用状态机表达
 “读头部 → 读载荷 → 处理”，并用分块输入的字节流驱动它，模拟非阻塞累积。
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 50** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -1382,7 +1382,7 @@ int main() {
 **错误**：以为“多线程 + epoll”能无限扩展——上下文切换与拷贝开销先到顶（关联 附录 B 性能模型）。
 **落地**：
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：演绎 1：epoll vs iour]
+> **示例 51** [难度 ★★☆☆☆] [主题：演绎 1：epoll vs iour]
 ```cpp
 #include <iostream>
 
@@ -1408,7 +1408,7 @@ int main() {
 **选型**：Reactor（单/少数线程 + I/O 多路复用）用一个线程监管上万连接，连接元数据用哈希表索引。
 **落地**：
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：演绎 2：C10K 到 C100K—]
+> **示例 52** [难度 ★★☆☆☆] [主题：演绎 2：C10K 到 C100K—]
 ```cpp
 #include <iostream>
 #include <unordered_map>
@@ -1615,7 +1615,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 53** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 #include <cstring>

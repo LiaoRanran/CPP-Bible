@@ -52,7 +52,7 @@
 - **核心结构**：`template <parameter-list> decl`
 - **一句话定义**：模板是一段「带未定参数的代码蓝图」，编译器在实例化点把它落地为具体实体 [标准]
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：本模板模式速查]
+> **示例 1** [难度 ★★☆☆☆] [主题：本模板模式速查]
 ```cpp
 template <typename T>          // 模板参数列表：T 是类型参数
 T max_val(T a, T b) {          // 函数模板
@@ -64,7 +64,7 @@ T max_val(T a, T b) {          // 函数模板
 
 模板参数有三类：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 2** [难度 ★★★☆☆] [主题：核心结构与完整代码实现]
 ```cpp
 // 1) 类型参数
 template <typename T> struct Box { T v; };
@@ -79,7 +79,7 @@ struct Holder { Container<T> c; };
 
 非类型参数的合法类型 [标准]：
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 3** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
 ```cpp
 #include <cstddef>
 template <int I>            struct A {};   // 整数
@@ -93,7 +93,7 @@ template <const char* S>    struct G {};   // 字符串字面量地址可作 NTT
 
 ## ④ 实例化机制（实例化点 / 两阶段查找）
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：实例化机制]
+> **示例 4** [难度 ★★☆☆☆] [主题：实例化机制]
 ```cpp
 template <typename T>
 void f(T x) {
@@ -107,7 +107,7 @@ void f(T x) {
 
 实例化点（POI）规则 [标准]：
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：实例化机制]
+> **示例 5** [难度 ★★☆☆☆] [主题：实例化机制]
 ```cpp
 template <typename T> void g(T);
 void h() {
@@ -127,7 +127,7 @@ void h() {
 
 ## ⑥ 完整可运行示例（最小）
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 6** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
 ```cpp
 #include <iostream>
 template <typename T>
@@ -140,7 +140,7 @@ int main() {
 }
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 7** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
 ```cpp
 // 类模板最小示例
 #include <iostream>
@@ -152,7 +152,7 @@ struct Pair {
 int main() { Pair<int> p{1, 2}; std::cout << p.bigger() << '\n'; }
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 8** [难度 ★★★☆☆] [主题：完整可运行示例（最小）]
 ```cpp
 #include <cstddef>
 // NTTP 最小示例：编译期定长数组
@@ -172,7 +172,7 @@ int main() { Fixed<int, 4> f; static_assert(f.size() == 4); }
 
 ## ⑧ GCC / Clang / MSVC 行为差异 [实现][平台]
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：行为差异 [实现][平台]]
+> **示例 9** [难度 ★★★☆☆] [主题：行为差异 [实现][平台]]
 ```cpp
 // MSVC 老前端（<=19.1x）对两阶段查找不严：dependent name 在定义点即查
 // GCC/Clang 严格：以下在 MSVC 可能误编过，GCC/Clang 必报错
@@ -180,7 +180,7 @@ template <typename T>
 void buggy(T x) { undefined_helper(x); }   // GCC/Clang：dependent，实例化才报；MSVC 可能定义点就报
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：行为差异 [实现][平台]]
+> **示例 10** [难度 ★★★★☆] [主题：行为差异 [实现][平台]]
 ```cpp
 // Mangling 差异：GCC/Clang 用 Itanium ABI；MSVC 用自己的一套（?max_val@@...）
 // 跨编译器 ABI 不兼容，模板实参不能跨 DLL 边界导出（见 ch47 ABI 节，占位：part05）
@@ -191,7 +191,7 @@ template <typename T> void cross_dll(T);   // 导出模板函数跨 MSVC DLL 易
 
 模板本身**不占运行时内存**。实例化出的每个具体函数/类是独立实体，各自有代码段与（按需）数据段。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：内存 / 对象模型]
+> **示例 11** [难度 ★★★★☆] [主题：内存 / 对象模型]
 ```cpp
 template <typename T> struct S { T x; };
 static_assert(sizeof(S<int>) == sizeof(int));        // 通常 4
@@ -227,7 +227,7 @@ _Z7max_valIdET_S0_S0_:
 
 **B1 实例化类型：隐式 vs 显式 vs 特化 [标准]**（各带可编译示例）
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 12** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> void f(T) {}        // 主模板
 // 隐式实例化：调用处触发
@@ -238,7 +238,7 @@ template void f<double>(double);           // 发射 f<double>
 extern template void f<char>(char);        // 不生成，期望别处提供
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 13** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 显式特化：为特定实参提供完全不同实现
 template <> void f<const char*>(const char* s) { /* 字符串专用 */ }
@@ -253,7 +253,7 @@ template class std::vector<int>;           // 强制实例化整个 vector<int>
 
 **B2 两阶段查找实战 [实现]**（≥10 例）
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 15** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 int g(int);                       // 非依赖
 template <typename T>
@@ -265,60 +265,60 @@ namespace N { struct X {}; void g(N::X); }
 void test() { use(N::X{}); }      // 实例化点 ADL 找到 N::g
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 16** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> void h(T x) { T::static_method(); }  // 依赖，Phase2
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 17** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> auto k(T x) -> decltype(x.foo()) { return x.foo(); } // 依赖，SFINAE 友好
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 18** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> void m() { T::value; }   // 非类型值依赖，Phase2
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 19** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> void n(T x) { ::g(x); }   // 限定名 :: 不 ADL，Phase1 绑定 ::g
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 20** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> void p(T x) { g(x); }     // 非限定，ADL 在 Phase2
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 21** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 struct B { void f() {} };
 template <typename T> void q(T x) { x.f(); }    // 成员调用依赖，Phase2
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 22** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> T r(T a, T b) { return a + b; }  // operator+ 依赖 T，Phase2
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 23** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> void s(T x) { using U = typename T::type; } // typename 必需：依赖类型
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 24** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> void t(T x) { T::template rebind<int>::other y; } // template 必需：依赖模板
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 25** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> auto u(T x) -> std::enable_if_t<sizeof(T) == 4> { } // 依赖 SFINAE
 ```
 
 **B3 非类型模板参数 NTTP 边界 [标准]**
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 26** [难度 ★★★☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <int N> struct Ctx { static constexpr int n = N; };
 Ctx<3> c;                                   // OK：字面量
@@ -328,7 +328,7 @@ int x = 6;
 // Ctx<x> e;                                // 错误：x 非编译期常量
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 27** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // C++20 字符串字面量作 NTTP（需 static 存储期）
 template <const char* S> struct Lit {};
@@ -336,19 +336,19 @@ extern const char hello[] = "hi";          // 具链接期地址
 Lit<hello> l;                              // OK（C++20 放宽）
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 28** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // auto NTTP（C++17）
 template <auto V> struct Val { static constexpr auto value = V; };
 Val<42> a; Val<'x'> b; Val<3.14> c;        // 整数/字符/浮点均可（浮点 NTTP C++20）
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 29** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <std::nullptr_t P> struct Null {};  // nullptr_t 可作 NTTP
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 30** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <int(*F)(int)> struct FnPtr { static int call(int x){ return F(x); } };
 int inc(int x){ return x+1; }
@@ -357,7 +357,7 @@ FnPtr<inc> fp;                              // 函数指针作 NTTP
 
 **B4 模板模板参数 TTP [标准]**
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 31** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 #include <vector>
 template <typename T, template <typename> class C>
@@ -365,34 +365,34 @@ struct Wrap { C<T> v; };
 Wrap<int, std::vector> w;                   // OK（C++17 起不必写 <typename>）
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 32** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 带默认参数的 TTP
 template <typename T, template <typename, typename = std::allocator<T>> class C>
 struct Wrap2 { C<T> v; };
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 33** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // TTP 匹配时参数列表要兼容
 template <typename T, template <typename U, typename A> class C>
 struct Wrap3 { C<T, std::allocator<T>> v; };
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 34** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 变量模板（C++14）
 template <typename T> constexpr T pi = T(3.1415926535897932385L);
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 35** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> constexpr bool is_small = sizeof(T) <= 4;
 ```
 
 **B5 错误与正确对照 [经验]**
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 36** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 错误：依赖类型名漏 typename
 template <typename T> void bad(T x) { T::iterator i; }   // 报错：依赖名前需 typename
@@ -400,14 +400,14 @@ template <typename T> void bad(T x) { T::iterator i; }   // 报错：依赖名�
 template <typename T> void good(typename T::iterator i) { }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 37** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 错误：依赖模板名漏 template
 template <typename T> void bad2(T x) { typename T::template rebind<int>::other y; }
 // 实际缺 template 关键字会报
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 38** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 正确：auto 返回类型推导
 template <typename T, typename U> auto add(T a, U b) { return a + b; }
@@ -425,7 +425,7 @@ template void f<int>(double);              // 错误：实参类型不匹配
 ⟶ Book/part07_stl/ch76_stl_arch.md（STL 架构与迭代器概念）—— STL 容器/算法全是模板
 ⟶ Book/part07_stl/ch77_vector.md（vector 扩容/失效/allocator）—— vector 即类模板典型实例化
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：中的该模式]
+> **示例 40** [难度 ★★★☆☆] [主题：中的该模式]
 ```cpp
 // 本节覆盖：① vector 类模板独立实例化 ② std::max 函数模板推导
 //           ③ std::integral_constant 类模板+NTTP ④ std::pair 类模板
@@ -460,7 +460,7 @@ int main() {
 
 ## ⑫ 变体（variant patterns）
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：变体]
+> **示例 41** [难度 ★★★★☆] [主题：变体]
 ```cpp
 // 本节覆盖：① 变量模板 ② 别名模板 ③ 默认模板参数
 //           ④ 模板参数包 ⑤ 概念约束（C++20）
@@ -499,7 +499,7 @@ int main() {
 
 ## ⑬ 反模式（anti-patterns）
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 42** [难度 ★★★☆☆] [主题：反模式（anti-patterns）]
 ```cpp
 // 反模式合集（保留原 5 条要点，并给出可编译实证）
 //  AP1: 为省类型滥用宏——丢类型安全、参数求值两次
@@ -533,7 +533,7 @@ int main() {
 ⟶ Book/part11_source/ch128_boost.md（Boost 库生态）—— Boost 是工业模板库的最大实践场
 ⟶ Book/part12_patterns/ch140_policy_pattern.md（Policy-Based Design）—— 模板+policy 组合定制组件
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 43** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 // 案例：跨 TU 显式实例化，避免头文件模板在每个 .cpp 重复实例化、缩短编译时间
 // math.h
@@ -545,7 +545,7 @@ template float  dot<float>(const float*, const float*, int);
 template double dot<double>(const double*, const double*, int);
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 44** [难度 ★★★★☆] [主题：工业案例]
 ```cpp
 // 工业案例（NTTP 定维 + std::array 定长）
 #include <iostream>
@@ -572,7 +572,7 @@ int main() {
 
 ⟶ Book/part11_source/ch124_libstdcxx.md（libstdc++ 实现剖析）—— 标准库模板的统一实现底座
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 45** [难度 ★★★☆☆] [主题：源码剖析（libstdc++ 相关）]
 ```cpp
 // libstdc++ 的 std::integral_constant 本质（简化）
 template <typename _Tp, _Tp __v>
@@ -596,7 +596,7 @@ struct integral_constant {
 
 ## ⑯ 易错点
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 48** [难度 ★★★☆☆] [主题：易错点]
 ```cpp
 // 易错点合集（保留原 6 条，并给出可编译实证）
 //  1) 模板定义必须对所有实例化可见（通常放头文件）
@@ -623,7 +623,7 @@ int main() {
 
 ## ⑰ FAQ
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 49** [难度 ★★★☆☆] [主题：未分类]
 ```cpp
 // FAQ 合集（保留原 5 条问答，并给出"宏 vs 模板"可编译实证）
 //  Q：模板和宏有什么区别？
@@ -652,7 +652,7 @@ int main() {
 
 ## ⑱ 最佳实践
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 50** [难度 ★★★☆☆] [主题：最佳实践]
 ```cpp
 // 最佳实践合集（保留原 5 条，并给出可编译实证）
 //  1) 模板声明与定义同放头文件（或 .ipp 包含）
@@ -687,7 +687,7 @@ int main() {
 ⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— 实例化成本取决于前端预算
 ⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 运行期开销须微基准实测
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：性能（编译期 / 运行期）]
+> **示例 51** [难度 ★★★★☆] [主题：性能（编译期 / 运行期）]
 ```cpp
 // 性能要点（保留原 3 条）：实例化零运行期开销 / Code bloat / NTTP 编译期求值
 #include <iostream>
@@ -856,7 +856,7 @@ Google规范: 避免>3层模板继承, 用concepts替代SFINAE(C++20)
 LLVM: llvm::cast<T>/ArrayRef<T>模板, ~30%代码是模板
 Eigen: Matrix<Scalar,Rows,Cols,Options,MaxRows,MaxCols> 6模板参数
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：附录 E：模板工业]
+> **示例 52** [难度 ★★☆☆☆] [主题：附录 E：模板工业]
 ```cpp
 #include <iostream>
 template<typename T> T max(T a,T b){return a>b?a:b;}
@@ -873,7 +873,7 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 
 ## 附录 F：模板面试
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：附录 F：模板面试]
+> **示例 53** [难度 ★★☆☆☆] [主题：附录 F：模板面试]
 ```cpp
 #include <iostream>
 template<typename T> T max(T a,T b){return a>b?a:b;}
@@ -920,7 +920,7 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 
 <details><summary>答案与解析</summary>
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 54** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 
@@ -954,7 +954,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 55** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 
@@ -986,7 +986,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 56** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -1024,7 +1024,7 @@ T clamp_bad(T v, T lo, T hi, Cmp cmp);
 
 **修复**：默认参数必须整体落在参数列表末尾：
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：演绎 1：默认模板参数的位置约束]
+> **示例 57** [难度 ★★★☆☆] [主题：演绎 1：默认模板参数的位置约束]
 ```cpp
 #include <iostream>
 
@@ -1055,7 +1055,7 @@ Matrix<double, r, c> m;   // 错误：r/c 不是编译期常量
 
 **修复**：用 `constexpr`/字面量：
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：演绎 2：非类型参数必须是编译期常量]
+> **示例 58** [难度 ★★★☆☆] [主题：演绎 2：非类型参数必须是编译期常量]
 ```cpp
 #include <iostream>
 
@@ -1131,7 +1131,7 @@ template<typename _Tp>
 
 ### D4.4 可编译验证
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：可编译验证]
+> **示例 59** [难度 ★★★☆☆] [主题：可编译验证]
 ```cpp
 #include <utility>
 #include <type_traits>
@@ -1292,7 +1292,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 60** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <functional>

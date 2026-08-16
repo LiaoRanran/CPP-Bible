@@ -41,7 +41,7 @@ Boost 的取舍是"宽松许可（Boost Software License）、模板驱动、头
 
 Boost 是一组经过同行评审、可移植、开源的 C++ 库集合，被称为 C++ 的"事实标准库"。它长期充当**标准库的试验田**：大量组件经提炼后进入 ISO C++ 标准。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：Boost 库集合]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：Boost 库集合]
 ```cpp
 // ① 最小可感：用 Boost 的 shared_ptr（需先安装 Boost）
 // 编译：g++ -std=c++17 -I C:/boost/include ch128_min.cpp -o min.exe
@@ -57,7 +57,7 @@ int main() {
 - `[标准]`：Boost 不是标准，是**社区事实标准**；进入标准的只剩"标准里的副本"，Boost 版本通常迭代更快。
 - `[经验]`：新项目优先用 `std::` 等价物（shared_ptr/filesystem/optional…），仅当标准缺失或 Boost 有显著增强时才引入 Boost。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：Boost 库集合]
+> **示例 2** [难度 ★★☆☆☆] [主题：概述：Boost 库集合]
 ```cpp
 #include <memory>
 #include <optional>
@@ -85,7 +85,7 @@ std::vector<std::string> split_demo(const std::string& s) {
 
 Boost 体量庞大，但工业界最常落地的是五个核心库。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：核心库]
+> **示例 4** [难度 ★★☆☆☆] [主题：核心库]
 ```cpp
 // ② SmartPtr：多种智能指针（scoped/intrusive/weak/shared）
 #include <boost/scoped_ptr.hpp>
@@ -146,7 +146,7 @@ double dist_demo() {
 
 Boost 与标准库是**共生**关系：Boost 先验证，标准后收编。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：与标准库关系]
+> **示例 9** [难度 ★★☆☆☆] [主题：与标准库关系]
 ```cpp
 // ③ 同一意图的两种写法：Boost 版 vs 标准版
 #include <boost/shared_ptr.hpp>   // 旧代码
@@ -175,7 +175,7 @@ std::uintmax_t size_of(const std::string& p){ return fs::file_size(p); }
 
 Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg 仓库）。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：源码剖析]
+> **示例 12** [难度 ★★★☆☆] [主题：源码剖析]
 ```cpp
 // 文件：https://github.com/boostorg/smart_ptr/blob/develop/include/boost/smart_ptr/shared_ptr.hpp
 // 行号：412
@@ -193,7 +193,7 @@ Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg �
 // };
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：源码剖析]
+> **示例 13** [难度 ★★☆☆☆] [主题：源码剖析]
 ```cpp
 // 文件：https://github.com/boostorg/smart_ptr/blob/develop/include/boost/smart_ptr/detail/shared_count.hpp
 // 行号：168
@@ -226,7 +226,7 @@ Boost 源码以"上游参考"方式引用（本机未装，URL 取自 boostorg �
 // }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：源码剖析]
+> **示例 15** [难度 ★★★☆☆] [主题：源码剖析]
 ```cpp
 // ④ 文件：https://github.com/boostorg/asio/blob/develop/include/boost/asio/basic_socket.hpp
 // 行号：256
@@ -286,7 +286,7 @@ int to_int(const std::string& s) {
 }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：头-only vs 需编译]
+> **示例 18** [难度 ★★☆☆☆] [主题：头-only vs 需编译]
 ```cpp
 // ⑥ 需编译库示例：Boost.Filesystem / Boost.System / Boost.Asio
 // 这些库含独立 .cpp，必须链接对应二进制，否则报 undefined reference
@@ -311,7 +311,7 @@ int need_link() {
 
 Boost 普遍提供**强/基本异常保证**；理解它才能在异常路径下不泄漏资源。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：异常安全]
+> **示例 20** [难度 ★★☆☆☆] [主题：异常安全]
 ```cpp
 // ⑦ shared_ptr 构造的异常安全：若第二个 new 抛异常，已分配的会被释放
 #include <boost/shared_ptr.hpp>
@@ -352,7 +352,7 @@ void nothrow_demo() {
 
 Boost 是模板元编程（TMP）的巅峰。以 **CRTP** 为例——编译期多态，零虚函数开销，正是 `Boost.Operators`、`Boost.Iterator` 的基石。
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：[实现·Boost] 模板元编程大量]
+> **示例 23** [难度 ★★★★★] [主题：[实现·Boost] 模板元编程大量]
 ```cpp
 // ⑧ 文件：Examples/_ch128_crtp.cpp（已用本机 g++ 13.1.0 真实编译取汇编）
 // 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch128_crtp.cpp -o Examples/_ch128_crtp.asm
@@ -401,7 +401,7 @@ struct Point : boost::addable<Point> {
 
 为取证 Boost 解决的机制，下面用**纯标准库**复刻其核心行为，并取真实汇编（不依赖 Boost）。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：[实现·Boost] 真实：编译对应]
+> **示例 25** [难度 ★★★★☆] [主题：[实现·Boost] 真实：编译对应]
 ```cpp
 // ⑨ 文件：Examples/_ch128_shared_ptr.cpp（自包含引用计数指针，已真实编译）
 // 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch128_shared_ptr.cpp -o Examples/_ch128_shared_ptr.asm
@@ -522,7 +522,7 @@ std::string name_of(const std::type_info& ti){
 
 Boost 的设计哲学是**零成本抽象**，但部分组件有可测量的开销。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：性能]
+> **示例 30** [难度 ★★☆☆☆] [主题：性能]
 ```cpp
 // ⑪ shared_ptr 的原子计数在多线程下是真实成本（每次拷贝/析构 lock 前缀）
 // 单线程热路径可用 boost::intrusive_ptr 或 unique_ptr 规避原子开销
@@ -530,7 +530,7 @@ Boost 的设计哲学是**零成本抽象**，但部分组件有可测量的开�
 // intrusive_ptr 的计数存于对象自身，且可关闭原子（单线程安全模式）
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：性能]
+> **示例 31** [难度 ★★☆☆☆] [主题：性能]
 ```cpp
 // ⑪ Asio 的 proactor 模型：每连接开销低，epoll/iocp 驱动，吞吐量高
 // 性能示意（量级，非本机实测）：单线程 io_context 可驱动 10w+ 并发连接
@@ -540,7 +540,7 @@ Boost 的设计哲学是**零成本抽象**，但部分组件有可测量的开�
 - `[经验]`：优先 `unique_ptr`（零原子）；必须共享时才 `shared_ptr`；热路径避免频繁拷贝 `shared_ptr`。
 - `[平台·x86-64]`：x86-64 上 `lock` 前缀原子在争用高时显著拖慢；NUMA 下控制块跨节点更痛。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：性能]
+> **示例 32** [难度 ★★☆☆☆] [主题：性能]
 ```cpp
 // ⑪ 用 boost::container::small_vector 减少堆分配（小数据栈上内联）
 #include <boost/container/small_vector.hpp>
@@ -563,7 +563,7 @@ namespace fs = boost::filesystem;
 fs::path p = fs::path("a") / "b" / "c";  // 跨平台均正确
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：跨平台]
+> **示例 34** [难度 ★★☆☆☆] [主题：跨平台]
 ```cpp
 // ⑫ 线程/同步：Boost.Thread 在 C++11 前提供可移植线程
 #include <boost/thread.hpp>
@@ -589,7 +589,7 @@ boost::endian::big_int32_t net_value = 0x01020304;  // 大端存储，跨机一�
 //    -> 运行期崩溃 / 静默数据错乱
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：常见陷阱（版本 / ABI）]
+> **示例 37** [难度 ★★☆☆☆] [主题：常见陷阱（版本 / ABI）]
 ```cpp
 // ⑬ ✅ 正确：头版本与链接库版本严格一致；用 find_package 锁定
 // CMake: find_package(Boost 1.83 EXACT REQUIRED COMPONENTS filesystem)
@@ -644,7 +644,7 @@ Boost 正从"单一巨库"走向**模块化**：自 Boost 1.73 起采用模块�
 //              Boost.Geometry、Boost.Spirit（解析器 DSL）、Boost.MPL/Fusion
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 43** [难度 ★★★☆☆] [主题：最佳实践]
 ```cpp
 // ⑮ 头-only 优先：减少部署与 ABI 风险
 //   可用 header-only 的部分：algorithm / lexical_cast / numeric / type_traits
@@ -761,7 +761,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 
 深入源码是掌握 Boost 的根本。以下为**上游参考**式阅读入口（本机未装，引用 URL + 行号）。
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读]
+> **示例 51** [难度 ★★★☆☆] [主题：调试 / 源码阅读]
 ```cpp
 // 文件：https://github.com/boostorg/smart_ptr/blob/develop/include/boost/smart_ptr/shared_ptr.hpp
 // 行号：412
@@ -785,7 +785,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 // }
 ```
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读]
+> **示例 53** [难度 ★★☆☆☆] [主题：调试 / 源码阅读]
 ```cpp
 // ⑲ 本机可做的源码阅读：用上面真实编译的 _ch128_shared_ptr 对照
 //    在 GDB 下单步，观察 control block 的 strong 计数变化，
@@ -869,7 +869,7 @@ Boost 以**同行评审**著称；贡献需走正式流程。
 
 最能体现 Boost→标准 传承的，是 **Boost.Optional 进化为 `std::optional`**。下面用纯标准库复刻它的核心：用"可能有值"的类型替代裸指针哨兵：
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：㉑.2 标准 C++ 等价实现：用 ]
+> **示例 55** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：用 ]
 ```cpp
 // ㉑.2 用标准库 std::optional 复刻 Boost.Optional 的核心思想（本块可独立编译，GCC 15.3.0 验证）
 #include <optional>
@@ -1063,7 +1063,7 @@ int main(){std::cout<<"Boost=167库, ~80%进入C++标准. shared_ptr→C++11, op
 
 函数模板按实参推导返回类型；`std::optional` 以强类型表达"可能缺失"，替代易错的哨兵值：
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 58** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <optional>
 #include <string_view>
@@ -1092,7 +1092,7 @@ int main() {
 
 C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 59** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <concepts>
 template <std::integral T>
@@ -1114,7 +1114,7 @@ int main() { return sample_count(10) == 10 ? 0 : 1; }
 
 `constexpr` 递归函数在常量表达式上下文（如 `static_assert` 实参）中于编译期求值：
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 60** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 constexpr int fact(int n) { return n <= 1 ? 1 : n * fact(n - 1); }
 static_assert(fact(5) == 120);
@@ -1144,7 +1144,7 @@ int main() { return fact(5); }
 
 可复现基准（自包含、可编译）：
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：真实性能基准：Boost 惯用抽象的]
+> **示例 61** [难度 ★★☆☆☆] [主题：真实性能基准：Boost 惯用抽象的]
 ```cpp
 // g++ -std=c++23 -O2 ch128_bench.cpp
 #include <chrono>

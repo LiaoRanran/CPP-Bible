@@ -52,7 +52,7 @@
 
 cv 限定符可以叠加、可以出现在类型的不同位置，组合规则如下：
 
-> **示例 1** [难度 ★★★★★] [主题：在类型系统里的位置]
+> **示例 1** [难度 ★★☆☆☆] [主题：在类型系统里的位置]
 ```
 T                      // 无 cv
 const T                // 顶层 const：T 本身不可改（对对象类型）
@@ -79,7 +79,7 @@ const T* const* const* // 任意叠加，从右向左读
 
 `const` 在推导中**停留在被推导类型的引用/指针所指层**，不自动传到外层：
 
-> **示例 2** [难度 ★★★★★] [主题：与模板实参推导]
+> **示例 2** [难度 ★★☆☆☆] [主题：与模板实参推导]
 ```cpp
 template<typename T>
 void f(T x);          // T 推导时不带顶层 const
@@ -106,7 +106,7 @@ h(cp);                // T = const int（底层 const 进入 T，因为指针所
 
 `const` 成员函数与非 const 成员函数构成**合法重载**，决议依据调用对象的 cv：
 
-> **示例 3** [难度 ★★★★★] [主题：与重载决议]
+> **示例 3** [难度 ★☆☆☆☆] [主题：与重载决议]
 ```cpp
 struct Blob {
     int&       get()       { return x_; }  // #1
@@ -129,7 +129,7 @@ const Blob cb; cb.get();   // 调用 #2（cb 是 const 对象，只能调用 con
 - **物理 const（bitwise const）**：对象每个字节都不变。编译器能检查的只是这个。
 - **逻辑 const（logical const）**：对象的可观察行为不变，但内部缓存、互斥锁、引用计数等"逻辑上不算状态"的成员可以变 → 用 `mutable`。
 
-> **示例 4** [难度 ★★★★★] [主题：成员函数、逻辑 const 与 mu]
+> **示例 4** [难度 ★★☆☆☆] [主题：成员函数、逻辑 const 与 mu]
 ```cpp
 #include <mutex>
 #include <optional>
@@ -150,14 +150,14 @@ public:
 
 ### 1.5 const 与对象模型 / .rodata / const_cast 去 const 的硬件后果
 
-> **示例 5** [难度 ★★★★★] [主题：与对象模型 / .rodata / ]
+> **示例 5** [难度 ★☆☆☆☆] [主题：与对象模型 / .rodata / ]
 ```cpp
 const int G = 100;          // 通常落 .rodata（只读段，页属性 R）
 int        H = 200;          // 落 .data（RW）
 ```
 
 内存布局（x86-64 ELF）：
-> **示例 6** [难度 ★★★★★] [主题：与对象模型 / .rodata / ]
+> **示例 6** [难度 ★☆☆☆☆] [主题：与对象模型 / .rodata / ]
 ```
 0x400000 .text    (R-X)  代码
 0x400500 .rodata  (R--)  G=100  ← 写保护页
@@ -166,7 +166,7 @@ int        H = 200;          // 落 .data（RW）
 ```
 
 `const_cast` 去掉 const 后写**真正的 const 对象**的后果：
-> **示例 7** [难度 ★★★★★] [主题：与对象模型 / .rodata / ]
+> **示例 7** [难度 ★★☆☆☆] [主题：与对象模型 / .rodata / ]
 ```cpp
 const int G = 100;
 int* p = const_cast<int*>(&G);
@@ -183,7 +183,7 @@ int* p = const_cast<int*>(&G);
 - 两个线程同时调 const 成员、都触发缓存计算写 `val_`，竞争。
 - `std::atomic` 成员即使是 const 对象也能原子修改（atomic 操作是 const 成员）。
 
-> **示例 8** [难度 ★★★★★] [主题：与并发]
+> **示例 8** [难度 ★★☆☆☆] [主题：与并发]
 ```cpp
 class Counter {
     mutable std::atomic<int> c_{0};
@@ -200,7 +200,7 @@ public:
 - **底层 const 影响 mangling**：`void f(int*)` 与 `void f(const int*)` 是不同函数（类型不同）。
 - **const 成员函数影响 mangling**：`void A::g()` 与 `void A::g() const` 修饰不同（const 版本带 `K` 后缀，Itanium ABI）。
 
-> **示例 9** [难度 ★★★★★] [主题：与 ABI / Name Mangl]
+> **示例 9** [难度 ★☆☆☆☆] [主题：与 ABI / Name Mangl]
 ```
 _Z1fPi     void f(int*)
 _Z1fPKi    void f(const int*)     // P Ki = pointer to const int
@@ -219,7 +219,7 @@ _ZNK1A1gEv A::g() const           // K = const member function
 - **核心常量表达式（core constant expression）**：满足 [expr.const] 一长串限制的表达式（不能含未初始化变量、不能 UB、不能调用非 constexpr 函数等）。
 - **potential constant expression**：在合适上下文能成为常量表达式的表达式（如 constexpr 函数调用，取决于实参）。
 
-> **示例 10** [难度 ★★★★★] [主题：三个核心概念]
+> **示例 10** [难度 ★★☆☆☆] [主题：三个核心概念]
 ```cpp
 constexpr int sq(int n) { return n*n; }
 constexpr int a = sq(5);     // sq(5) 是常量表达式 → a 是编译期常量
@@ -253,7 +253,7 @@ int b = sq(r);               // sq(r) 不是常量表达式，但 sq 声明为 c
 
 ### 2.4 constexpr 构造函数与析构
 
-> **示例 11** [难度 ★★★★★] [主题：构造函数与析构]
+> **示例 11** [难度 ★★☆☆☆] [主题：构造函数与析构]
 ```cpp
 struct Point {
     int x, y;
@@ -273,7 +273,7 @@ C++20 起，含非平凡析构的类型也能 constexpr（只要析构在编译�
 - 工具：`std::min/max/swap`、`std::bit`、`std::hash`
 - 数值：`std::complex` 部分、`<numbers>` 常量
 
-> **示例 12** [难度 ★★★★★] [主题：与标准库全景（C++23）]
+> **示例 12** [难度 ★★☆☆☆] [主题：与标准库全景（C++23）]
 ```cpp
 #include <vector>
 constexpr std::vector<int> make() {
@@ -298,7 +298,7 @@ static_assert(make().size() == 5);
 
 `consteval` 函数（immediate function）**每次调用都必须在编译期求值**，不存在运行期实体。与 constexpr 的"可"相对，consteval 是"必须"。
 
-> **示例 13** [难度 ★★★★★] [主题：定义]
+> **示例 13** [难度 ★★☆☆☆] [主题：定义]
 ```cpp
 consteval int sq(int n) { return n*n; }
 constexpr int a = sq(5);   // OK：编译期
@@ -316,7 +316,7 @@ constexpr int a = sq(5);   // OK：编译期
 
 这是 consteval 最经典的工业应用——在编译期校验字符串字面量的格式/长度/字符集：
 
-> **示例 14** [难度 ★★★★★] [主题：编译期字符串类型安全（完整实现）]
+> **示例 14** [难度 ★★★☆☆] [主题：编译期字符串类型安全（完整实现）]
 ```cpp
 // 编译期字符串字面量类型（存指针+大小，size 是模板非类型参数 → 编译期已知）
 template<size_t N>
@@ -348,7 +348,7 @@ consteval fixed_string<strlen_lit("")> check_ident(const char* s) {
 
 ### 3.4 consteval 与 Concepts 配合
 
-> **示例 15** [难度 ★★★★★] [主题：与 Concepts 配合]
+> **示例 15** [难度 ★★★☆☆] [主题：与 Concepts 配合]
 ```cpp
 #include <iostream>
 template<typename T>
@@ -366,7 +366,7 @@ consteval auto validate(std::format_string<Args...> fmt) { return fmt; }
 
 C++ 中跨**翻译单元（TU）**的**动态初始化（dynamic initialization）**顺序**未指定**。若 TU A 的全局对象构造依赖 TU B 的全局对象，而 A 先构造，则读到未初始化值：
 
-> **示例 16** [难度 ★★★★★] [主题：机制]
+> **示例 16** [难度 ★☆☆☆☆] [主题：机制]
 ```cpp
 // log.cpp
 Logger& get_logger() { static Logger L; return L; }   // Meyers 单例，首次调用构造
@@ -379,7 +379,7 @@ static Logger& g_log = get_logger();   // 依赖 get_logger，但构造顺序不
 
 `constinit` 要求变量在**常量初始化阶段（constant initialization）**完成——早于所有 dynamic init，顺序无关。它不要求初值是编译期常量（区别于 constexpr），只要求初始化在常量期发生：
 
-> **示例 17** [难度 ★★★★★] [主题：的精确定义]
+> **示例 17** [难度 ★★☆☆☆] [主题：的精确定义]
 ```cpp
 constexpr int f();
 constinit int a = f();        // OK：f() 在常量期求值
@@ -404,7 +404,7 @@ constinit 变量在常量期初始化，main 之前完成，**无并发问题**�
 ## ⑤ 真实 libstdc++ 源码逐行
 
 ### 5.1 `<type_traits>` is_const（偏特化经典）
-> **示例 18** [难度 ★★★★★] [主题：<typetraits> iscon]
+> **示例 18** [难度 ★★☆☆☆] [主题：<typetraits> iscon]
 ```cpp
 template<typename> struct is_const : false_type {};        // 主模板：非 const
 template<typename _Tp> struct is_const<_Tp const> : true_type {};  // const 特化
@@ -412,7 +412,7 @@ template<typename _Tp> struct is_const<_Tp const> : true_type {};  // const 特�
 推导：`is_const<int>` → 主模板 → false；`is_const<const int>` → 匹配 `_Tp const` 特化（`_Tp=int`）→ true。
 
 ### 5.2 `<vector>` constexpr size()（C++20）
-> **示例 19** [难度 ★★★★★] [主题：<vector> constexpr]
+> **示例 19** [难度 ★★☆☆☆] [主题：<vector> constexpr]
 ```cpp
 constexpr size_type size() const noexcept {
     return _M_impl._M_finish - _M_impl._M_start;   // 指针相减，编译期可算
@@ -423,7 +423,7 @@ constexpr size_type size() const noexcept {
 libstdc++ `<format>` 通过 `basic_format_string` 的 consteval 构造遍历格式串，用 `std::__format::__parse` 在编译期校验占位符与参数包类型，不匹配则 `static_assert` 失败。这是 C++20 `<format>` 类型安全的根基。
 
 ### 5.4 `<numbers>`（C++20，constexpr 数学常量）
-> **示例 20** [难度 ★★★★★] [主题：<numbers>]
+> **示例 20** [难度 ★★☆☆☆] [主题：<numbers>]
 ```cpp
 template<typename _Tp> inline constexpr _Tp pi_v = _Tp(3.1415926535897932384626433832795029L);
 ```
@@ -433,7 +433,7 @@ template<typename _Tp> inline constexpr _Tp pi_v = _Tp(3.14159265358979323846264
 
 ## ⑥ 真实可编译完整程序集（32 个）
 
-> **示例 21** [难度 ★★★★★] [主题：真实可编译完整程序集（32 个）]
+> **示例 21** [难度 ★★★☆☆] [主题：真实可编译完整程序集（32 个）]
 ```cpp
 #include <cstdint>
 #include <cstddef>
@@ -531,7 +531,7 @@ void log(std::format_string<int,double> fmt, int a, double b){ std::print(fmt, a
 ## ⑦ 真实 benchmark（可复现 microbenchmark）
 
 ### 7.1 constexpr 预计算 vs 运行期初始化
-> **示例 22** [难度 ★★★★★] [主题：预计算 vs 运行期初始化]
+> **示例 22** [难度 ★★★☆☆] [主题：预计算 vs 运行期初始化]
 ```cpp
 #include <benchmark/benchmark.h>
 #include <cstdint>
@@ -548,7 +548,7 @@ BENCHMARK(BM_ConstexprTable); BENCHMARK(BM_RuntimeTable);
 - 收益倍数：构建开销约 **∞ 倍消除**（运行期从 0 开始，编译期已就绪）；数据进 .rodata 还省私有 RSS（多进程共享只读页）。
 
 ### 7.2 const 提示的循环优化
-> **示例 23** [难度 ★★★★★] [主题：提示的循环优化]
+> **示例 23** [难度 ★☆☆☆☆] [主题：提示的循环优化]
 ```cpp
 int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*a[i]; return s; }
 ```
@@ -669,7 +669,7 @@ int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*
 4. **`[expr.consteval]`（consteval 立即函数）**：`consteval` 函数**只能**在编译期调用，其结果必须是常量表达式；任何运行期实参都是硬错误（与 `constexpr` 的"可退化"形成对比）。
 5. **`[basic.start.static]` / `[basic.start.dynamic]`（constinit）**：`constinit` 要求变量拥有**静态初始化**（常量初始化或零初始化），杜绝"静态初始化顺序失败（SOIF）"。它不要求值本身是常量表达式，只要求初始化发生在静态期。
 
-> **示例 24** [难度 ★★★★★] [主题：标准条款逐条]
+> **示例 24** [难度 ★★☆☆☆] [主题：标准条款逐条]
 ```cpp
 // [dcl.constexpr] 退化示例：constexpr 函数可在运行期调用
 constexpr int f(int x) { return x + 1; }   // x 非常量表达式也可编译
@@ -682,7 +682,7 @@ int b = a + 1;          // 可能 SOIF：a 与 b 谁先初始化未知
 constinit int c = 42;   // 静态初始化，绝无 SOIF
 ```
 
-> **示例 25** [难度 ★★★★★] [主题：标准条款逐条]
+> **示例 25** [难度 ★★★☆☆] [主题：标准条款逐条]
 ```cpp
 // [expr.const] 边界：constexpr 函数体内不能含未定义行为，且结果须可求值
 constexpr int div(int x, int y) { return x / y; }   // 函数本身合法
@@ -700,7 +700,7 @@ static_assert(div(10, 2) == 5);                     // 合法：编译期可求�
 2. **`constexpr` → 可能零存储**：纯编译期常量若未被 ODR 使用，编译器完全可以不为它分配任何内存（直接内联进立即数）；只有取地址/绑定到引用时才"物化"为对象（见 ch27 §①.2）。
 3. **`mutable` 突破 const 成员**：`mutable` 成员即使对象被 `const` 限定也可修改，且**不**进入 `.rodata` 共享——常用于缓存/锁字段（见 §⑫ 最佳实践第 8 条）。
 
-> **示例 26** [难度 ★★★★★] [主题：内存与对象生命周期视角]
+> **示例 26** [难度 ★★★★☆] [主题：内存与对象生命周期视角]
 ```cpp
 // 顶层 const 全局 → .rodata（只读页）
 const int kGlobal = 100;          // 链接后位于 .rodata
@@ -715,7 +715,7 @@ struct Counter { int n = 0; mutable int cache = -1; };
 const Counter c;                   // c 在 .rodata，但 cache 字段单独可写（布局上与 n 相邻，整体仍 .rodata 则需谨慎）
 ```
 
-> **示例 27** [难度 ★★★★★] [主题：内存与对象生命周期视角]
+> **示例 27** [难度 ★★☆☆☆] [主题：内存与对象生命周期视角]
 ```cpp
 // constexpr 变量未被 ODR 使用时零存储
 constexpr int table_size = 256;          // 可能仅在编译期存在
@@ -735,7 +735,7 @@ static_assert(used == 255);
 3. **非类型模板参数（NTTP）与 cv**：C++20 允许 `template<auto V>` 把 const 值类型作为 NTTP；`template<const int* P>` 要求实参是指向 const 的指针。
 4. **const 成员函数与重载**：`struct S { void f(); void f() const; };` 按对象 cv 限定选择，是"const 正确接口"的核心（见 ch20 §⑪.2）。
 
-> **示例 28** [难度 ★★★★★] [主题：模板与 const]
+> **示例 28** [难度 ★★☆☆☆] [主题：模板与 const]
 ```cpp
 template<class T> void g(T x) { static_assert(std::is_same_v<T, int>); }  // 顶层 const 被忽略
 g(42);
@@ -752,7 +752,7 @@ s.f();    // 选非 const 重载
 cs.f();   // 选 const 重载
 ```
 
-> **示例 29** [难度 ★★★★★] [主题：模板与 const]
+> **示例 29** [难度 ★★★★☆] [主题：模板与 const]
 ```cpp
 // NTTP 与 cv：C++20 允许 const 值类型作为非类型模板参数
 template<const int* P> struct Tag { static constexpr const int* ptr = P; };
@@ -799,7 +799,7 @@ mov  DWORD PTR [rbp-4], 3   ; y 有真实存储
 2. **const 引用延长减少拷贝**：`for (const auto& x : c)` 避免每个元素的拷贝构造，对大对象/非平凡类型显著省时（ch20 §⑩、ch25 §）。
 3. **const 帮助别名分析**：给优化器更多"该内存不会被别名修改"的信息，便于循环不变外提、向量化（ch43 §）。但**过度 const 局部变量无收益**——只在接口边界和真不可变数据使用（§⑫ 第 10 条）。
 
-> **示例 30** [难度 ★★★★★] [主题：性能]
+> **示例 30** [难度 ★★☆☆☆] [主题：性能]
 ```cpp
 #include <vector>
 // constexpr 编译期折叠：运行期零成本
@@ -834,7 +834,7 @@ for (const auto& b : bigs) use(b);         // 无拷贝，O(1) 引用遍历
 **反模式 E：用 const_cast 去 const 改对象**
 去 const 后写"真正声明为 const 的对象"是 UB（§⑮.1、ch27 §①.2）——只在与第三方非 const 正确接口互操作时、且确认底层对象本就可写时才用。
 
-> **示例 31** [难度 ★★★★★] [主题：工业案例]
+> **示例 31** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 #include <string>
 // 案例 A：const 正确的库接口
@@ -850,7 +850,7 @@ private:
 constinit Registry& g_reg = get_registry();   // 静态初始化，无 SOIF
 ```
 
-> **示例 32** [难度 ★★★★★] [主题：工业案例]
+> **示例 32** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // 反模式 E 的修正：第三方接口非 const 正确，用 const_cast 仅当底层可写
 struct Legacy { int value; };          // 未标 const，但文档承诺"不修改"
@@ -861,7 +861,7 @@ void observe(const Legacy& l) {
 }
 ```
 
-> **示例 33** [难度 ★★★★★] [主题：工业案例]
+> **示例 33** [难度 ★★★☆☆] [主题：工业案例]
 ```cpp
 #include <string_view>
 // 编译期格式校验（consteval 示范，ch65 §⑪ 进阶）
@@ -905,31 +905,31 @@ struct Formatted { static constexpr int len = N; };
 
 ## 补充分编可编译示例
 
-> **示例 34** [难度 ★★★★★] [主题：补充分编可编译示例]
+> **示例 34** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 1 for ch21_const_family."<<std::endl;return 0;}
 ```
-> **示例 35** [难度 ★★★★★] [主题：补充分编可编译示例]
+> **示例 35** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 2 for ch21_const_family."<<std::endl;return 0;}
 ```
-> **示例 36** [难度 ★★★★★] [主题：补充分编可编译示例]
+> **示例 36** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 3 for ch21_const_family."<<std::endl;return 0;}
 ```
-> **示例 37** [难度 ★★★★★] [主题：补充分编可编译示例]
+> **示例 37** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
 int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 4 for ch21_const_family."<<std::endl;return 0;}
 ```
-> **示例 38** [难度 ★★★★★] [主题：补充分编可编译示例]
+> **示例 38** [难度 ★☆☆☆☆] [主题：补充分编可编译示例]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1005,7 +1005,7 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 <details><summary>答案与解析</summary>
 
-> **示例 39** [难度 ★★★★★] [主题：练习 1（难度 ★★）]
+> **示例 39** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <vector>
 struct Buffer {
@@ -1037,7 +1037,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 40** [难度 ★★★★★] [主题：练习 2（难度 ★★★）]
+> **示例 40** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <cstdlib>
 constexpr int sq(int x){ return x*x; }
@@ -1064,7 +1064,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★★★★★] [主题：练习 3（难度 ★★★★）]
+> **示例 41** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <cstdlib>
 constinit static int g = 42;          // 编译期完成初始化, 零运行时开销, 无 SIOF
@@ -1092,7 +1092,7 @@ int main(){
 
 **步骤 1：顶层 const 与底层 const（指针的两种 const）**
 
-> **示例 42** [难度 ★★★★★] [主题：附录：用法演绎 — const 的层]
+> **示例 42** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — const 的层]
 ```cpp
 int v = 1;
 const int* p = &v;     // 底层 const: 不能经 p 改 *p, 但 p 可指向别处
@@ -1105,7 +1105,7 @@ const int* const r = &v; // 既不能改指向也不能改所指
 
 **步骤 2：const 成员函数与逻辑 const（mutable）**
 
-> **示例 43** [难度 ★★★★★] [主题：附录：用法演绎 — const 的层]
+> **示例 43** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — const 的层]
 ```cpp
 struct Cache {
     mutable std::size_t hits = 0;   // 逻辑 const 豁免: 不影响对外状态
@@ -1118,7 +1118,7 @@ struct Cache {
 
 **步骤 3：constexpr 两用（编译期 + 运行期）**
 
-> **示例 44** [难度 ★★★★★] [主题：附录：用法演绎 — const 的层]
+> **示例 44** [难度 ★★☆☆☆] [主题：附录：用法演绎 — const 的层]
 ```cpp
 constexpr int sq(int x){ return x*x; }
 static_assert(sq(5) == 25);          // 编译期: 不生成任何运行时指令
@@ -1128,7 +1128,7 @@ int y = sq(get_runtime());           // 运行期: 退化为普通调用
 
 **步骤 4：constinit / consteval 消除静态初始化灾难**
 
-> **示例 45** [难度 ★★★★★] [主题：附录：用法演绎 — const 的层]
+> **示例 45** [难度 ★★★☆☆] [主题：附录：用法演绎 — const 的层]
 ```cpp
 constexpr int compute(){ return 42; }       // 编译期可求值的初始化器
 constinit static int G = compute();  // 强制编译期初始化 -> 无 SIOF, 零运行时开销
@@ -1280,7 +1280,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 46** [难度 ★★★★★] [主题：可复现 demo]
+> **示例 46** [难度 ★★★★☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 

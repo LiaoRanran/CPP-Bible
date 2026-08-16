@@ -65,7 +65,7 @@ x86 向量指令集按寄存器宽度代际演进，宽度翻倍 = 同一条指�
 | AVX2 | 2013 | ymm0–15 | 256 | 8（整数也向量化） |
 | AVX-512 | 2017 | zmm0–31 | 512 | 16 |
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：演进与寄存器宽度 [标准]]
+> **示例 2** [难度 ★★★☆☆] [主题：演进与寄存器宽度 [标准]]
 ```cpp
 // ② 寄存器宽度决定每轮处理的元素数（float，4 字节）
 //   SSE  xmm: 16B / 4B = 4 个 float
@@ -83,7 +83,7 @@ constexpr int floats_per_avx512= 64 / 4;  // 16
 
 编译器能在满足约束时，把普通标量循环**自动改写**为向量指令，无需手写 intrinsics。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：编译器自动向量化]
+> **示例 3** [难度 ★★☆☆☆] [主题：编译器自动向量化]
 ```cpp
 // ③ 这段代码在 -O3 -mavx2 下会被 GCC 自动向量化为 vaddps ymm（见 ⑧ 真实汇编）
 void saxpy(float* __restrict y, const float* __restrict x,
@@ -257,7 +257,7 @@ void fma_demo(const float* a, const float* b, const float* c, float* d) {
 
 先给出自动向量化的**真实汇编**（GCC 13.1.0，`-O3 -mavx2`）。源码剖析：
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：[实现·GCC15] 真实汇编：标量]
+> **示例 15** [难度 ★★★☆☆] [主题：[实现·GCC15] 真实汇编：标量]
 ```cpp
 // 文件：Examples/_ch155_simd.cpp
 // 行号：4
@@ -315,7 +315,7 @@ __m128 vb = _mm_loadu_ps(&buf[3]);  // 任意地址 OK
 
 源码剖析（真实 intrinsics 汇编，区分对齐/未对齐）：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：内存对齐与 mmloadu]
+> **示例 17** [难度 ★★★☆☆] [主题：内存对齐与 mmloadu]
 ```cpp
 // 文件：Examples/_ch155_align.cpp
 // 行号：5
@@ -367,7 +367,7 @@ void clamp_low(const float* in, float* out, int n, float lo) {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：与比较指令 [实现·GCC15]]
+> **示例 19** [难度 ★★☆☆☆] [主题：与比较指令 [实现·GCC15]]
 ```cpp
 // ⑩ AVX-512 用真正的 16 位/32 位 k-mask 寄存器（k1..k7），语义更清晰
 #include <immintrin.h>
@@ -404,7 +404,7 @@ void transform(float* a, float* b, int n) {
 - **AoS**（Array of Structs）：结构体数组，同类字段分散。
 - **SoA**（Struct of Arrays）：字段各自成数组，同类数据连续。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：数据布局：AoS vs SoA 对向]
+> **示例 21** [难度 ★★★☆☆] [主题：数据布局：AoS vs SoA 对向]
 ```cpp
 // ⑫ AoS：x/y/z 交错，向量化需跨步/广播，浪费 lane
 struct Vec3 { float x, y, z; };
@@ -459,7 +459,7 @@ _Z9aos_scaleP4Vec3if:
 
 AVX-512 寄存器宽、FMA 密，功耗与发热陡增，很多 CPU 在执行 512 位指令时会**降频（throttling）**，单核频率回落。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：与降频（throttling）代价 ]
+> **示例 22** [难度 ★★★☆☆] [主题：与降频（throttling）代价 ]
 ```cpp
 // ⑬ 运行时检测 AVX-512 是否可用（避免在不支持机器上 SIGILL）
 #include <immintrin.h>
@@ -507,7 +507,7 @@ void dep(float* a, int n) {
 
 源码剖析（真实汇编，仍是标量 `vaddss`）：
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：误用：非连续 / 带分支的循环无法向]
+> **示例 24** [难度 ★★☆☆☆] [主题：误用：非连续 / 带分支的循环无法向]
 ```cpp
 // 文件：Examples/_ch155_dep.cpp
 // 行号：4
@@ -537,7 +537,7 @@ _Z13add_dependentPfi:
 
 ## ⑮ 性能基准（标量 vs 向量） [经验]
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：性能基准（标量 vs 向量） [经验]
+> **示例 25** [难度 ★★☆☆☆] [主题：性能基准（标量 vs 向量） [经验]
 ```cpp
 // ⑮ 朴素基准框架（计时用 std::chrono），对比标量 / AVX2
 #include <chrono>
@@ -553,7 +553,7 @@ static double bench(void(*f)(float*,float*,float*,int),
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：性能基准（标量 vs 向量） [经验]
+> **示例 26** [难度 ★★☆☆☆] [主题：性能基准（标量 vs 向量） [经验]
 ```cpp
 // ⑮ 标量版
 void scalar(float* a, float* b, float* c, int n) {
@@ -584,7 +584,7 @@ g++ -std=c++23 -O3 -mavx2 -fopt-info-vec -fopt-info-vec-missed \
 #   <source>:X: note: not vectorized: control flow in loop (✘ 有分支)
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：调试：查看 asm 是否真的向量化 ]
+> **示例 27** [难度 ★★☆☆☆] [主题：调试：查看 asm 是否真的向量化 ]
 ```cpp
 // ⑯ 也可在代码里用 builtin 辅助诊断（编译期确认宽度）
 #include <immintrin.h>
@@ -599,7 +599,7 @@ static_assert(lanes_avx2 == 8, "AVX2 width");
 
 x86 用 SSE/AVX，ARM 用 **NEON**（高级 SIMD，ARM64 默认 128 位 `float32x4_t`）。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：跨平台]
+> **示例 28** [难度 ★★☆☆☆] [主题：跨平台]
 ```cpp
 // ⑰ x86 AVX2 已在 ⑦/⑳ 的 v_avx2 中实现，下面给出 ARM 等价
 // ⑰ ARM NEON 等价（ARM64，GCC/Clang 均支持）
@@ -623,7 +623,7 @@ void neon_add(const float* a, const float* b, float* c) {
 
 ## ⑱ 最佳实践 [经验]
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 29** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱ 1) 先保证连续、无别名、无依赖，让 -O3 自动向量化
 void best(float* __restrict a, float* __restrict b,
@@ -825,7 +825,7 @@ void portable(float* __restrict a, float* __restrict b,
 }
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（simd）]
+> **示例 44** [难度 ★★☆☆☆] [主题：补充完整可编译示例（simd）]
 ```cpp
 // S14 尾部收尾：向量主循环 + 标量补齐余数（避免越界）
 void with_tail(const float* a, const float* b, float* c, int n) {
@@ -908,7 +908,7 @@ WG21 **P0214** 是标准 SIMD 类型的主线提案，配合编译器 `-O2/-O3` 
 
 ## 附录 E：SIMD设计权衡与实战 [H: Design / I: Practice / J: Learning]
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：附录 E：SIMD设计权衡与实战 []
+> **示例 47** [难度 ★★★☆☆] [主题：附录 E：SIMD设计权衡与实战 []
 ```
 SIMD设计决策树:
 1. 数据连续？ → 否: 重排数据或用SoA布局; 是: 继续
@@ -1045,7 +1045,7 @@ int main() {
 
 纯标准 C++ 只能写出"对编译器友好、等待其自动向量化"的代码（如练习 1 的连续循环）；要精确控制 AVX/AVX-512 指令必须 `#include <immintrin.h>`，这属于实现特定头，会破坏"仅 std::"的 CI 门禁，因此本手册练习不纳入。
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 50** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <vector>
 #include <iostream>
@@ -1291,7 +1291,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 51** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 // 本 demo 只需 g++ -O2 -std=c++23，不需要 -mavx2，可移植
 #include <cassert>

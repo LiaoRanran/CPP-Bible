@@ -44,7 +44,7 @@ C++14 几乎没有什么"路线之争"，它验证的是另一条哲学：**标�
 ⟶ Book/part01_history/ch04_cpp11.md
 ⟶ Book/part01_history/ch06_cpp17.md
 
-> **示例 1** [难度 ★★☆☆☆] [主题：学习目标]
+> **示例 1** [难度 ★☆☆☆☆] [主题：学习目标]
 ```cpp
 // [merged] ## ① 学习目标
 #include <iostream>
@@ -59,7 +59,7 @@ int main() {
 
 ## ② 前置知识
 
-> **示例 2** [难度 ★★☆☆☆] [主题：前置知识]
+> **示例 2** [难度 ★★★☆☆] [主题：前置知识]
 ```cpp
 // [merged] ## ② 前置知识
 #include <iostream>
@@ -74,7 +74,7 @@ int main() {
 
 ## ③ 后续依赖
 
-> **示例 3** [难度 ★★☆☆☆] [主题：后续依赖]
+> **示例 3** [难度 ★☆☆☆☆] [主题：后续依赖]
 ```cpp
 // [merged] ## ③ 后续依赖
 #include <iostream>
@@ -101,7 +101,7 @@ int main() {
 }
 ```
 
-> **示例 5** [难度 ★★☆☆☆] [主题：知识图谱]
+> **示例 5** [难度 ★★★☆☆] [主题：知识图谱]
 ```
 C++14 补全
 ├─ 泛型 lambda: [](auto x){...}
@@ -116,7 +116,7 @@ C++14 补全
 
 ## ⑤ Mermaid
 
-> **示例 6** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 6** [难度 ★★★☆☆] [主题：未分类]
 ```cpp
 // [merged] ## ⑤ Mermaid
 #include <iostream>
@@ -176,7 +176,7 @@ C++14 未改变对象内存布局；放宽 constexpr 使更多计算在编译期
 
 ## ⑧ 生命周期（沿用 C++11 RAII / 移动语义）
 
-> **示例 9** [难度 ★★☆☆☆] [主题：生命周期]
+> **示例 9** [难度 ★☆☆☆☆] [主题：生命周期]
 ```cpp
 // [merged] ## ⑧ 生命周期（沿用 C++11 RAII / 移动语义）
 #include <iostream>
@@ -189,7 +189,7 @@ C++14 无新生命周期语义；generic lambda 的闭包对象生命周期与�
 
 ## ⑨ 调用栈（C++14 特性均编译期，无新运行时调用模型）
 
-> **示例 10** [难度 ★★☆☆☆] [主题：调用栈]
+> **示例 10** [难度 ★★★☆☆] [主题：调用栈]
 ```cpp
 // [merged] ## ⑨ 调用栈（C++14 特性均编译期，无新运行时调用模型）
 #include <iostream>
@@ -234,7 +234,7 @@ int main() {
 
 ## ⑫ 工业案例
 
-> **示例 13** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 13** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // [merged] ## ⑫ 工业案例
 #include <iostream>
@@ -250,7 +250,7 @@ int main() {
 
 ## ⑬ 源码分析
 
-> **示例 14** [难度 ★★☆☆☆] [主题：源码分析]
+> **示例 14** [难度 ★☆☆☆☆] [主题：源码分析]
 ```cpp
 // 初始化捕获移动语义
 #include <memory>
@@ -269,7 +269,7 @@ template<class T> constexpr bool is_int_v = std::is_same_v<T,int>; static_assert
 
 ## ⑭ WG21 提案
 
-> **示例 16** [难度 ★★☆☆☆] [主题：提案]
+> **示例 16** [难度 ★☆☆☆☆] [主题：提案]
 ```cpp
 // [merged] ## ⑭ WG21 提案
 #include <iostream>
@@ -303,7 +303,7 @@ int main() {
 
 ## ⑯ 易错点
 
-> **示例 18** [难度 ★★☆☆☆] [主题：易错点]
+> **示例 18** [难度 ★☆☆☆☆] [主题：易错点]
 ```cpp
 // lambda 作为回调类型
 void reg(void(*cb)(int)){ if(cb) cb(0); }
@@ -313,7 +313,7 @@ void reg(void(*cb)(int)){ if(cb) cb(0); }
 
 ## ⑰ FAQ
 
-> **示例 19** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 19** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // 泛型 lambda 比较
 auto cmp=[](auto a,auto b){ return a<b; }; bool t=cmp(1,2);
@@ -323,7 +323,7 @@ auto cmp=[](auto a,auto b){ return a<b; }; bool t=cmp(1,2);
 
 ## ⑱ 最佳实践
 
-> **示例 20** [难度 ★★☆☆☆] [主题：最佳实践]
+> **示例 20** [难度 ★☆☆☆☆] [主题：最佳实践]
 ```cpp
 // 初始化捕获 + 引用
 #include <vector>
@@ -357,7 +357,7 @@ template<class T> constexpr bool is_ptr_v = std::is_pointer_v<T>;
    - [标准] C++14 放松 constexpr 函数体限制，允许声明、循环等，但仍必须能在常量表达式语境求值。
    - [引用] ISO/IEC 14882:2023 §[dcl.constexpr]（constexpr 函数体要求，C++14 起放松）；cppreference "constexpr" 词条。
 
-> **示例 22** [难度 ★★☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 22** [难度 ★☆☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
 ```cpp
 // C++14 小结：泛型 lambda + 变量模板 + make_unique 三件套
 ```
@@ -407,14 +407,14 @@ C++14 是「现代语法 + 老旧 CI 也能编」的甜点基线。下面按领�
 
 ## 附录: C++14 四大改进代码
 
-> **示例 23** [难度 ★★☆☆☆] [主题：附录: C++14 四大改进代码]
+> **示例 23** [难度 ★☆☆☆☆] [主题：附录: C++14 四大改进代码]
 ```cpp
 #include <iostream>
 #include <memory>
 int main(){auto p=std::make_unique<int>(100);std::cout<<*p<<std::endl;return 0;}
 ```
 
-> **示例 24** [难度 ★★☆☆☆] [主题：附录: C++14 四大改进代码]
+> **示例 24** [难度 ★☆☆☆☆] [主题：附录: C++14 四大改进代码]
 ```cpp
 #include <iostream>
 int main(){auto twice=[](auto x){return x+x;};std::cout<<twice(21)<<std::endl;return 0;}
@@ -427,7 +427,7 @@ template<typename T>constexpr T pi=T(3.14159);
 int main(){std::cout<<pi<double><<std::endl;return 0;}
 ```
 
-> **示例 26** [难度 ★★☆☆☆] [主题：附录: C++14 四大改进代码]
+> **示例 26** [难度 ★☆☆☆☆] [主题：附录: C++14 四大改进代码]
 ```cpp
 #include <iostream>
 int main(){int mask=0b1010'1111;std::cout<<std::hex<<mask<<std::endl;return 0;}
@@ -443,7 +443,7 @@ constexpr int factorial(int n){int r=1;for(int i=2;i<=n;++i)r*=i;return r;}
 int main(){constexpr int f=factorial(5);std::cout<<f<<std::endl;return 0;}
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：附录: C++14 深度特性]
+> **示例 28** [难度 ★☆☆☆☆] [主题：附录: C++14 深度特性]
 ```cpp
 // deprecated 属性
 #include <iostream>
@@ -451,7 +451,7 @@ int main(){constexpr int f=factorial(5);std::cout<<f<<std::endl;return 0;}
 int main(){std::cout<<"[[deprecated]] warns at compile time\n";return 0;}
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：附录: C++14 深度特性]
+> **示例 29** [难度 ★☆☆☆☆] [主题：附录: C++14 深度特性]
 ```cpp
 // return type deduction for all lambdas
 #include <iostream>
@@ -493,7 +493,7 @@ N3649: 泛型 lambda → C++14
 2020: C++17 成为新的"默认"标准，C++14 作为 LTS (长期支持) 基线
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：附录 B：C++14 工业采纳与标准]
+> **示例 32** [难度 ★★★☆☆] [主题：附录 B：C++14 工业采纳与标准]
 ```cpp
 #include <iostream>
 int main() {
@@ -507,7 +507,7 @@ int main() {
 
 ## 附录 B-1：工业案例 —— 谁还在用 C++14 作为基线 [F: Industry]
 
-> **示例 33** [难度 ★★☆☆☆] [主题：附录 B-1：工业案例 —— 谁还在]
+> **示例 33** [难度 ★☆☆☆☆] [主题：附录 B-1：工业案例 —— 谁还在]
 ```
 仍然使用 C++14 作为最低编译器要求的项目:
 - Abseil (Google): LTS release 系列用 C++14 保证最大兼容性
@@ -524,7 +524,7 @@ int main() {
 
 ## 附录 D：面试 [J: Learning]
 
-> **示例 34** [难度 ★★☆☆☆] [主题：附录 D：面试 [J: Learni]
+> **示例 34** [难度 ★★★☆☆] [主题：附录 D：面试 [J: Learni]
 ```
 面试高频:
 Q: C++14 最大的三个新特性？
@@ -539,7 +539,7 @@ A: 不能用于虚函数, 不能用于递归函数 (除非有明确的返回语�
 
 ## 附录 L：C++14标准库与底层 [D: stdlib / E: Lowlevel / H: Design]
 
-> **示例 35** [难度 ★★☆☆☆] [主题：附录 L：C++14标准库与底层 []
+> **示例 35** [难度 ★★★★☆] [主题：附录 L：C++14标准库与底层 []
 ```
 C++14标准库变化:
 - std::make_unique: 补齐C++11遗漏, 消除最后一个裸new的理由
@@ -568,7 +568,7 @@ C++14标准库变化:
 
 ## 附录 E：C++14面试
 
-> **示例 36** [难度 ★★☆☆☆] [主题：附录 E：C++14面试]
+> **示例 36** [难度 ★☆☆☆☆] [主题：附录 E：C++14面试]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -624,7 +624,7 @@ int main() {
 
 **真实场景：数值库的多精度 π 常量。** 你写一个几何/物理数值库，坐标计算既可能用 `float` 也可能用 `double`，硬编码 `double` 字面量会丢精度或浪费。请用 C++14 放宽返回类型推导（普通函数可写 `auto` 返回）+ 变量模板，实现一个类型无关的"取中值"和一个编译期常量 `pi<T>`。
 
-> **示例 38** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 38** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 
@@ -649,7 +649,7 @@ int main() {
 
 **真实场景：OS/文件权限位掩码。** 你在写一个系统工具，用位掩码表达"读/写/执行"权限（类比 Linux `chmod` 的 `rwx`）。请用 C++14 的 `std::make_unique`、二进制字面量、数字分隔符，写一个位掩码权限系统，并解释这三项特性各自消除了什么样的样板与易错点。
 
-> **示例 39** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 39** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -682,7 +682,7 @@ int main() {
 **选型**：C++14 泛型 lambda 就地写比较，免去为每种类型写 functor。
 **落地**：
 
-> **示例 40** [难度 ★★☆☆☆] [主题：演绎 1：泛型 lambda 做一次]
+> **示例 40** [难度 ★☆☆☆☆] [主题：演绎 1：泛型 lambda 做一次]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -709,7 +709,7 @@ int main() {
 **选型**：变量模板 `template<class T> constexpr T e = ...;` 按需实例化。
 **落地**：
 
-> **示例 41** [难度 ★★☆☆☆] [主题：演绎 2：变量模板集中管理编译期物理]
+> **示例 41** [难度 ★★★☆☆] [主题：演绎 2：变量模板集中管理编译期物理]
 ```cpp
 #include <iostream>
 #include <iomanip>

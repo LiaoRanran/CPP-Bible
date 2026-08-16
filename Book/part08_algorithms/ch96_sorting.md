@@ -51,7 +51,7 @@ int main() {
 }
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：排序在 <algorithm>]
+> **示例 2** [难度 ★★☆☆☆] [主题：概述：排序在 <algorithm>]
 ```cpp
 // ① 降序：用 std::greater（需 <functional>）
 #include <algorithm>
@@ -81,7 +81,7 @@ introsort(arr, depth_limit = 2·⌊log2 N⌋):
         introsort(right, depth_limit-1)
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：的实现：introsort]
+> **示例 3** [难度 ★★★☆☆] [主题：的实现：introsort]
 ```cpp
 // ② 一个可编译的 introsort-lite，演示三阶段组合（仅示意，非标准库实现）
 #include <algorithm>
@@ -106,7 +106,7 @@ void introsort(It first, It last, int depth, Cmp cmp) {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：的实现：introsort]
+> **示例 4** [难度 ★★★☆☆] [主题：的实现：introsort]
 ```cpp
 // ② 使用上面的 introsort-lite（与 std::sort 语义一致：不稳定）
 #include <vector>
@@ -163,7 +163,7 @@ __introsort_loop(_RandomAccessIterator __first,
 
 下面把 libstdc++ 的「三点取中 + 无守卫分区」落成**本机可编译**的最小范式，返回枢轴最终位置（与 ② 的 introsort-lite 可拼成完整排序）。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：自包含可编译：median-of-t]
+> **示例 5** [难度 ★★★☆☆] [主题：自包含可编译：median-of-t]
 ```cpp
 #include <algorithm>
 #include <iterator>
@@ -196,7 +196,7 @@ int main() {
 
 `std::sort` 要求 **O(N·log N)** 平均与最坏。枢纽选择决定快排段质量，libstdc++ 用 **三点取中（median-of-three）** 降低坏分区概率：
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：复杂度与枢纽（pivot）选择 [标]
+> **示例 6** [难度 ★★☆☆☆] [主题：复杂度与枢纽（pivot）选择 [标]
 ```cpp
 // ③ 三点取中：取首、中、尾的中位数作为枢纽（libstdc++ 思路的简化版）
 #include <algorithm>
@@ -253,7 +253,7 @@ int main() {
 }
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：sort：归并排序（稳定） [标准]]
+> **示例 9** [难度 ★★★☆☆] [主题：sort：归并排序（稳定） [标准]]
 ```cpp
 // ④ 一个可编译的归并排序（演示 stable 的本质：合并时左段优先）
 #include <algorithm>
@@ -311,7 +311,7 @@ int main() {
 
 用 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch96_sort_asm.cpp`，在产物中能直接看到 libstdc++ 的 `std::__introsort_loop` 实例化符号——这是对"② introsort"的**真实取证**。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：[实现] 真实：sort 调用的汇编]
+> **示例 12** [难度 ★★★☆☆] [主题：[实现] 真实：sort 调用的汇编]
 ```cpp
 #include <algorithm>
 // 文件：Examples/_ch96_sort_asm.cpp
@@ -371,7 +371,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：比较器正确性：严格弱序]
+> **示例 14** [难度 ★★☆☆☆] [主题：比较器正确性：严格弱序]
 ```cpp
 // ⑦ 致命错误：用 <= 作为比较器违反了"非自反"与"非对称" → 未定义行为
 // ⚠ 此代码语义非法（UB），仅用于对照，切勿使用
@@ -441,7 +441,7 @@ int main() {
 
 `std::sort` 本身**单线程串行**。C++17 起可用**执行策略**让 `std::sort(std::execution::par, ...)` 并行，但 `std::execution::par` 在 libstdc++ 需要 TBB 后端，且并行排序**不保证稳定**。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：排序与并行：标准 std::sort]
+> **示例 18** [难度 ★★☆☆☆] [主题：排序与并行：标准 std::sort]
 ```cpp
 // ⑨ 串行排序（基准，单线程）
 #include <algorithm>
@@ -474,7 +474,7 @@ int main() {
 
 不稳定排序会打乱相等元素原序。当"先按主键排、再按主键的次序展示"时，不稳定会破坏预期。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：稳定性陷阱：何时"不稳定"会咬你 []
+> **示例 20** [难度 ★★☆☆☆] [主题：稳定性陷阱：何时"不稳定"会咬你 []
 ```cpp
 // ⑩ 陷阱演示：unstable sort 后，相等 key 的插入次序被打乱
 #include <algorithm>
@@ -512,7 +512,7 @@ int main() {
 
 仍以 `g++ -std=c++23 -O2 -S -masm=intel` 编译 `Examples/_ch96_lambda_inline.cpp`（用无状态 lambda）。产物中比较器**没有独立函数调用**，而是直接内联成 `cmp DWORD PTR 8[rax], ecx`——证明 lambda 比较器被展开进 `__introsort_loop`。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：[实现] 真实：自定义比较器被内联进]
+> **示例 22** [难度 ★★★☆☆] [主题：[实现] 真实：自定义比较器被内联进]
 ```cpp
 #include <algorithm>
 // 文件：Examples/_ch96_lambda_inline.cpp
@@ -666,7 +666,7 @@ int main() {
 
 用 `std::chrono` 实测 `std::sort` 在不同规模下的耗时（MinGW GCC 15.3.0，`-O2`，本机实测，非编造）：
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：[经验] 性能实测：chrono 取]
+> **示例 29** [难度 ★★☆☆☆] [主题：[经验] 性能实测：chrono 取]
 ```cpp
 // ⑮ 性能取证代码（见 Examples/_ch96_bench.cpp）
 #include <algorithm>
@@ -704,7 +704,7 @@ N=1000000 sort耗时=87.2073 ms 已序校验=1
 
 最经典的排序 bug：比较器写成 `>=`、`<=`、或"相等时也返回 true"，直接触发**未定义行为**——`std::sort` 可能死循环或崩溃。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：常见 bug：比较器不满足严格弱序 ]
+> **示例 30** [难度 ★★☆☆☆] [主题：常见 bug：比较器不满足严格弱序 ]
 ```cpp
 // ⑯ bug：用 <= 作比较器 → 违反非自反/非对称 → UB（切勿使用）
 #include <algorithm>
@@ -717,7 +717,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：常见 bug：比较器不满足严格弱序 ]
+> **示例 31** [难度 ★★☆☆☆] [主题：常见 bug：比较器不满足严格弱序 ]
 ```cpp
 // ⑯ bug：浮点 NaN 比较 a<b 与 b<a 都为 false → 等价类断裂 → UB 风险
 #include <algorithm>
@@ -803,7 +803,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：最佳实践清单 [经验]]
+> **示例 36** [难度 ★★☆☆☆] [主题：最佳实践清单 [经验]]
 ```cpp
 // ⑱ 排序后去重：必须先用 sort 让相等元素相邻，再 unique
 #include <algorithm>
@@ -839,7 +839,7 @@ int main() {
 └─────────────┴──────────────┴───────────────────────────────┴──────────────┘
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：跨库差异：libstdc++ / l]
+> **示例 37** [难度 ★★☆☆☆] [主题：跨库差异：libstdc++ / l]
 ```cpp
 // ⑲ 行为一致性的可移植写法：只依赖标准契约，不依赖实现细节
 #include <algorithm>
@@ -947,7 +947,7 @@ int main() {
 
 ## 附录 A：工业排序实现与标准提案 [F: Industry / B: Principle]
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录 A：工业排序实现与标准提案 []
+> **示例 39** [难度 ★★☆☆☆] [主题：附录 A：工业排序实现与标准提案 []
 ```
 introsort (C++ std::sort): 快速排序 + 堆排序回退 (O(N log N) 保证)
 pdqsort (Rust, 2016): Pattern-Defeating Quicksort → 检测已排序/反向, 比 introsort 快 ~2×
@@ -958,7 +958,7 @@ C++ proposal P1273R0: 提议加入 pdqsort, 未通过 (委员会认为 introsort
 
 ## 附录 B：性能与面试 [G/J]
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录 B：性能与面试 [G/J]]
+> **示例 40** [难度 ★★★☆☆] [主题：附录 B：性能与面试 [G/J]]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1135,7 +1135,7 @@ std::partial_sort(a.begin(), a.begin()+100, a.end()); // 前 100 就位且有序
 
 **步骤 3：`std::nth_element`（只分区，O(n) — top-k 与中位数的最优解）**
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — top-k 与中]
+> **示例 46** [难度 ★★☆☆☆] [主题：附录：用法演绎 — top-k 与中]
 ```cpp
 // 找中位数: 只保证第 n/2 个就位, 左边都 <= 它, 右边都 >= 它
 std::nth_element(a.begin(), a.begin()+a.size()/2, a.end());
@@ -1423,7 +1423,7 @@ introsort 对大区间用快排递归，但当子区间长度降到 `_S_threshol
 
 ### D4.7 第一方可编译验证（introsort + 堆排兜底）
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
+> **示例 47** [难度 ★★☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <iostream>
 #include <algorithm>
@@ -1546,7 +1546,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 48** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <algorithm>

@@ -41,7 +41,7 @@
 
 C++20 引入**无栈协程（stackless coroutine）**：一种能在 `co_await`/`co_yield` 处**挂起（suspend）**并把控制流交还调用者、之后又能**恢复（resume）**继续执行的普通函数。它**不是线程**，没有独立调用栈——挂起时只把局部状态保存到堆上的**协程帧（coroutine frame）**，恢复时从帧里取回状态。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：C++20 coroutine]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：C++20 coroutine]
 ```cpp
 // ① 最小可编译协程：一个立即返回的 task
 #include <coroutine>
@@ -83,7 +83,7 @@ stateDiagram-v2
 
 三者解决同一问题：**异步/可暂停的控制流**，但代价与写法天差地别。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：协程 vs 线程 vs 回调 [标准]
+> **示例 2** [难度 ★★☆☆☆] [主题：协程 vs 线程 vs 回调 [标准]
 ```cpp
 // ②A 线程：抢占式、有独立栈、由 OS 调度
 #include <thread>
@@ -103,7 +103,7 @@ void with_callback(auto on_done) {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：协程 vs 线程 vs 回调 [标准]
+> **示例 4** [难度 ★★☆☆☆] [主题：协程 vs 线程 vs 回调 [标准]
 ```cpp
 // ②C 协程：写法像同步、无独立栈、由 await 点主动让出
 mini_task with_coroutine() {
@@ -143,7 +143,7 @@ struct my_coro {
 
 协程帧（GCC `-O2` 实测 `range(int)` 帧 56 字节）布局：
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：type 与协程帧布局 [标准]]
+> **示例 6** [难度 ★★☆☆☆] [主题：type 与协程帧布局 [标准]]
 ```
 ┌──────────────────────────── 协程帧 (heap) ────────────────────────────┐
 │ [0]  resume/destroy 指针 (actor/destroy 入口，GCC 放帧首)             │
@@ -232,7 +232,7 @@ mini_task use_awaiter() {
 
 `generator` 是"惰性序列"：每次 `next()` 恢复协程跑到下一个 `co_yield`，产出值后再次挂起。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：手写 generator]
+> **示例 12** [难度 ★★☆☆☆] [主题：手写 generator]
 ```cpp
 // ⑥ generator：promise 保存当前产出值，yield_value 把它写入帧
 #include <coroutine>
@@ -285,7 +285,7 @@ int sum_range(int n) {
 
 `task` 表示"将来完成的无值计算"，可组合（`co_await` 一个 task 会等到它完成）。与 generator 不同，task 通常 `final_suspend` 挂起以便手动 `destroy`。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：未来式（future-like） []
+> **示例 14** [难度 ★★☆☆☆] [主题：未来式（future-like） []
 ```cpp
 // ⑦ task：可 await 的完成信号（future-like，无返回值版本）
 struct task {
@@ -326,13 +326,13 @@ task step2() { co_await step1(); co_await std::suspend_always{}; } // 顺序组�
 
 协程帧默认在**堆上**分配，走 `operator new`。可以**在 `promise_type` 内重载 `operator new`** 来自定义分配（如帧池、栈上分配）。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：协程帧内存分配]
+> **示例 16** [难度 ★★☆☆☆] [主题：协程帧内存分配]
 ```cpp
 // ⑧A 默认分配：编译器插入 operator new(size) 调用（见 ⑨ 汇编）
 generator default_alloc() { co_yield 0; }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：协程帧内存分配]
+> **示例 17** [难度 ★★☆☆☆] [主题：协程帧内存分配]
 ```cpp
 #include <cstddef>
 // ⑧B 自定义分配器：在 promise_type 内提供 static operator new/new[]
@@ -360,7 +360,7 @@ struct pooled_task {
 
 下面是 `Examples/_ch113_co.cpp` 经 GCC 15.3.0 真实编译（`-std=c++23 -O2 -S -masm=intel`）的取证，逐行对照，非编造。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实汇编：协程帧]
+> **示例 18** [难度 ★★★★☆] [主题：[实现·GCC15]真实汇编：协程帧]
 ```cpp
 // 文件：Examples/_ch113_co.cpp
 // 行号：59
@@ -460,7 +460,7 @@ _Z8count_upv:
 
 无栈协程没有独立栈，挂起时只是"把当前执行点（恢复索引）写进帧、返回调用者"；恢复时从帧读回恢复索引，跳到对应代码位置继续。`std::coroutine_handle::resume()` 即调用 `<func>.Frame.actor`。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：无栈协程的挂起/恢复原理 [标准]]
+> **示例 19** [难度 ★★☆☆☆] [主题：无栈协程的挂起/恢复原理 [标准]]
 ```
 ┌─ 调用者 next() ──────────┐        ┌─ 协程帧 (heap) ──────────────┐
 │ g.next()                 │        │ resume 索引 = 2               │
@@ -490,7 +490,7 @@ g.next();  // value()==1
 
 协程体内抛出的异常**不会直接冒泡到调用者**，而被协程变换捕获，转交 `promise.unhandled_exception()`。你必须在此决定如何处理（重抛给 await 方 / 终止 / 记录）。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：异常处理与 unhandledexc]
+> **示例 21** [难度 ★★☆☆☆] [主题：异常处理与 unhandledexc]
 ```cpp
 // ⑪A 捕获并转交：把异常存进 promise，恢复后由 await_resume 重抛
 #include <exception>
@@ -522,7 +522,7 @@ void unhandled_exception() { std::terminate(); }   // 见 ①/⑥/⑦ 的 promis
 
 `co_return` 触发 `return_void()`（无值）或 `return_value(v)`（有值）；协程体结束后到达 `final_suspend` 决定**是否挂起**以待外部 `destroy()`。
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：void / returnvalue]
+> **示例 23** [难度 ★★☆☆☆] [主题：void / returnvalue]
 ```cpp
 // ⑫A return_value：带返回值的 task<T>
 struct value_task {
@@ -553,7 +553,7 @@ std::suspend_always final_suspend() noexcept { return {}; }
 
 协程的价值在**应用模式**层爆发：用 `task<T>` + IO 多路复用可写出"看起来同步、实际非阻塞"的网络/文件服务器，这正是第 120 章（异步 IO 与完成模型）的核心衔接点。下面给出一个**不依赖任何外部库**的驱动骨架。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：与 ch120 应用模式衔接 [经验]
+> **示例 25** [难度 ★★★☆☆] [主题：与 ch120 应用模式衔接 [经验]
 ```cpp
 // ⑬ sync_wait：在调用线程上驱动一棵协程树直到完成（顶层入口）
 template <typename T>
@@ -564,7 +564,7 @@ T sync_wait(task<T> t) {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：与 ch120 应用模式衔接 [经验]
+> **示例 26** [难度 ★★☆☆☆] [主题：与 ch120 应用模式衔接 [经验]
 ```cpp
 // ⑬B 衔接形态：async_read/async_write 作为 awaiter，协程内线性编排
 task<int> handle_connection() {
@@ -588,7 +588,7 @@ task<int> handle_connection() {
 | 回调 | 函数调用级 | KB 级闭包 | 函数调用级 | 碎片、难维护 |
 | 协程 | ~几次内存访问 + 分支 | 帧 48–数百 B | 函数调用级（见 ⑨ `call _Znwy` + actor） | 顺序线性 |
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：性能对比]
+> **示例 27** [难度 ★★☆☆☆] [主题：性能对比]
 ```cpp
 // ⑭ 百万次 resume 微基准（示意结构；真实测量请用 std::chrono 多次取中位数）
 #include <chrono>
@@ -606,7 +606,7 @@ auto dt = std::chrono::steady_clock::now() - t0;
 
 **坑 1**：返回**指向局部变量/参数的引用**的协程——参数在帧里，但若函数形参是引用且指向调用者栈，则恢复时调用者栈可能已消亡。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：常见坑：悬垂引用与协程帧生命周期 []
+> **示例 28** [难度 ★★☆☆☆] [主题：常见坑：悬垂引用与协程帧生命周期 []
 ```cpp
 // ⑮A ❌ 悬垂：co_yield 返回对形参引用的视图，调用者栈帧已不在
 generator bad_view(const std::string& s) {
@@ -639,7 +639,7 @@ void leak() { auto g = range(10); /* 未 next 也未显式 destroy 路径 */ }
 
 协程调试难点在于"控制流被切成状态机"。实用手段：
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：调试手段 [经验]]
+> **示例 31** [难度 ★★☆☆☆] [主题：调试手段 [经验]]
 ```cpp
 // ⑯A 在 promise 内插桩：每次挂起/恢复打印（生产可换成 trace 点）
 struct traced_task {
@@ -656,7 +656,7 @@ struct traced_task {
 };
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：调试手段 [经验]]
+> **示例 32** [难度 ★★☆☆☆] [主题：调试手段 [经验]]
 ```cpp
 #include <cstdio>
 // ⑯B 自建 awaiter 包裹：统一记录 co_await 进入/离开
@@ -830,7 +830,7 @@ Task hello(){std::cout<<"Hello from coroutine"<<std::endl;co_return;}
 int main(){hello();return 0;}
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录: Coroutine 原语深度]
+> **示例 38** [难度 ★★☆☆☆] [主题：附录: Coroutine 原语深度]
 ```cpp
 #include <iostream>
 #include <coroutine>
@@ -968,7 +968,7 @@ int main(){hello();return 0;}
 
 `promise_type` 是协程的「控制中枢」：`get_return_object`（造返回对象）、`initial_suspend`（起始是否挂起，生成器用 `suspend_always` 实现惰性）、`final_suspend`（结束是否挂起，须 `noexcept`）、`yield_value`（接管 `co_yield`）、`return_void` + `unhandled_exception`。
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 43** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <coroutine>
 #include <iostream>
@@ -1012,7 +1012,7 @@ int main() {
 
 `await_ready` 返回 `true` 表示无需挂起（快路径）；否则调 `await_suspend`（决定挂起后行为，可返回 `void`/`bool`/句柄）；恢复后调 `await_resume` 产出 `co_await` 表达式的值。
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 44** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <coroutine>
 #include <iostream>
@@ -1052,7 +1052,7 @@ int main() { demo(); return 0; }
 
 协程帧在首次挂起时把「跨挂起点使用的局部」存入堆上的协程帧；但**函数参数若是引用/指针**，指向的对象在调用者作用域结束后即失效，恢复时解引用即悬垂。规则：需要跨挂起点存活的数据，协程应**按值接收并持有**。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 45** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <coroutine>
 #include <string>
@@ -1106,7 +1106,7 @@ int main() {
 
 **常见错误**：把 generator 当容器，遍历完再遍历第二遍。
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：演绎 1：生成海量序列——协程、回调]
+> **示例 46** [难度 ★★★☆☆] [主题：演绎 1：生成海量序列——协程、回调]
 ```cpp
 #include <coroutine>
 #include <iostream>
@@ -1147,7 +1147,7 @@ int main() {
 
 **常见错误**：返回对象不管理句柄生命周期，或多个包装共享同一句柄导致重复 destroy。
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：演绎 2：协程句柄泄漏与悬垂——谁负]
+> **示例 47** [难度 ★★☆☆☆] [主题：演绎 2：协程句柄泄漏与悬垂——谁负]
 ```cpp
 #include <coroutine>
 #include <iostream>
@@ -1468,7 +1468,7 @@ flowchart TD
 
 ### D4.5 第一方可编译验证（coroutine_handle 行为）
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
+> **示例 48** [难度 ★★☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <coroutine>
 #include <iostream>
@@ -1592,7 +1592,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 49** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <coroutine>
 #include <cassert>

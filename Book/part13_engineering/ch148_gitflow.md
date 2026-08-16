@@ -77,7 +77,7 @@ int main() {
 
 Git 是**内容寻址文件系统**：每个对象由内容做 SHA-1 得到 40 位哈希，哈希即地址。四类对象：`blob`（文件内容）、`tree`（目录）、`commit`、`tag`。工作流围绕“三区”展开：**工作区 → 暂存区（index）→ 版本库（object store）**。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：基础模型]
+> **示例 2** [难度 ★★☆☆☆] [主题：基础模型]
 ```cpp
 // ② Git blob 头的二进制布局（源头自 Git 源码 object.c 的对象写入逻辑）
 // 格式固定为： "<type> <size>\0<content>"
@@ -101,7 +101,7 @@ $ printf 'blob 5\0hello' | sha1sum
 b6fc4c620b67d95f953a5c1c1230aaab5db5a1b0
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：基础模型]
+> **示例 3** [难度 ★★☆☆☆] [主题：基础模型]
 ```cpp
 // ②' 用自包含 SHA-1 复现上述哈希（不依赖 OpenSSL），编译运行输出见下方
 // 见 Examples/_ch148_git_object.cpp：sha1("blob 5\0hello")
@@ -192,7 +192,7 @@ bool is_valid_feature_branch(const std::string& name) {
 
 **[经验]** 一个提交应当是一个**逻辑上不可分割的变更单元**：自包含、可独立编译、可独立回退。把“重构 + 新功能 + 格式化”塞进一个提交，会让 `bisect`、`revert`、`code review` 全部失效。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：提交原子性]
+> **示例 7** [难度 ★★☆☆☆] [主题：提交原子性]
 ```cpp
 #include <cstddef>
 #include <vector>
@@ -223,7 +223,7 @@ void fill(Buffer& b, int value, size_t count) {    // 提交 B：只改实现
 
 `Conventional Commits`（`[标准]` 参照 conventionalcommits.org）统一格式：`<type>(<scope>): <subject>`，可选 `!` 表示破坏性变更。它让 `git log`、自动生成 CHANGELOG、`semver` 升级都变得可机械处理。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：提交信息规范]
+> **示例 9** [难度 ★★☆☆☆] [主题：提交信息规范]
 ```cpp
 // ⑤ 解析 Conventional Commits 的提交信息（完整见 Examples/_ch148_conventional_commit.cpp）
 #include <regex>
@@ -291,7 +291,7 @@ const char* integration_policy(bool pull_rebase) {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：用 git log --graph ]
+> **示例 11** [难度 ★★☆☆☆] [主题：用 git log --graph ]
 ```cpp
 // ⑥' 三路合并的“基准/两边”概念映射到 C++ 差分工具参数
 struct MergeSides { const char* base; const char* ours; const char* theirs; };
@@ -359,7 +359,7 @@ $ ./_ch148_version_macro
 version=v2.4.1 commit=na
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：与版本号（语义化版本）]
+> **示例 14** [难度 ★★☆☆☆] [主题：与版本号（语义化版本）]
 ```cpp
 // ⑧' 在代码里比较 semver（供工具链判断升级兼容性）
 #include <tuple>
@@ -412,7 +412,7 @@ bool submodule_in_sync(std::string_view status_line) {
 
 钩子是放在 `.git/hooks/` 下的可执行脚本，在特定 Git 动作前后触发。C++ 工程最常用 `pre-commit`（拦住坏提交）与 `commit-msg`（校验提交规范）。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：钩子]
+> **示例 17** [难度 ★★☆☆☆] [主题：钩子]
 ```cpp
 // ⑩ pre-commit 调用的 C++ 检查器核心（完整见 Examples/_ch148_precommit_lint.cpp）
 // 拒绝：制表符、行尾空白、CRLF。非零退出即阻止提交。
@@ -613,7 +613,7 @@ struct Version { int major, minor, patch, distance; char commit[41]; };
 // "v2.4.1-12-gabcdef0" -> major=2 minor=4 patch=1 distance=12 commit=abcdef0
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：发布分支管理]
+> **示例 30** [难度 ★★☆☆☆] [主题：发布分支管理]
 ```cpp
 // ⑯' 标签校验：发布前确认 HEAD 恰好打在某个附注标签上
 #include <cstdlib>
@@ -683,7 +683,7 @@ void process(/* 旧签名 */) { /* 旧实现 */ }
 
 **反模式二：强行推送**——`git push --force` 改写已共享历史，会撕裂协作者本地仓库。
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：反模式（大提交/-force）]
+> **示例 34** [难度 ★★☆☆☆] [主题：反模式（大提交/-force）]
 ```cpp
 // ⑱' 安全替代：--force-with-lease 仅在远端未领先于本地预期时才推送
 //   git push --force-with-lease
@@ -874,7 +874,7 @@ int main() {
   → 解决方案: Git Flow 模型，release 分支仅从 develop 分出，仅修 bug
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录 B：C++ 项目 Git 反模]
+> **示例 39** [难度 ★★☆☆☆] [主题：附录 B：C++ 项目 Git 反模]
 ```cpp
 #include <iostream>
 // C++ 特有的 git 问题：头文件依赖导致冲突放大
@@ -891,7 +891,7 @@ int main() {
 
 ## 附录 C：CMake + Git 集成模式 [F: Industry]
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录 C：CMake + Git 集]
+> **示例 40** [难度 ★★☆☆☆] [主题：附录 C：CMake + Git 集]
 ```cpp
 #include <iostream>
 int main() {
@@ -911,7 +911,7 @@ int main() {
 
 ## 附录 D：Git 与 C++ CI/CD 管道 [B: Principle / H: Design]
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 D：Git 与 C++ CI/]
+> **示例 41** [难度 ★★☆☆☆] [主题：附录 D：Git 与 C++ CI/]
 ```
 标准 C++ 项目的 Git + CI 管道（以 LLVM 为参考）:
 
@@ -932,7 +932,7 @@ post-merge (CI post-submit):
   package + deploy → CPack / Conan upload
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录 D：Git 与 C++ CI/]
+> **示例 42** [难度 ★★☆☆☆] [主题：附录 D：Git 与 C++ CI/]
 ```cpp
 #include <iostream>
 int main() {
@@ -949,7 +949,7 @@ int main() {
 
 ## 附录 E：Git与C++标准库/构建系统的集成 [D: stdlib / B: Principle / J: Learning]
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录 E：Git与C++标准库/构建]
+> **示例 43** [难度 ★★☆☆☆] [主题：附录 E：Git与C++标准库/构建]
 ```
 WG21与Git的关系: 无直接关系, 但C++标准库的发布周期与Git工作流强相关
 - libstdc++: GCC仓库子目录, 跟随GCC发布 (git clone gcc.gnu.org/git/gcc.git)

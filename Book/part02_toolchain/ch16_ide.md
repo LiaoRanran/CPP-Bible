@@ -68,7 +68,7 @@ int sum_of(const std::vector<int>& v) {
 
 VSCode 本身只是壳，**C/C++ 扩展（ms-vscode.cpptools）** 提供 IntelliSense（基于 EDG 的语义引擎）与调试适配。装好后关键配置在 `.vscode/c_cpp_properties.json`。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：+ C++ 扩展]
+> **示例 3** [难度 ★★☆☆☆] [主题：+ C++ 扩展]
 ```cpp
 // ② IntelliSense 能否补全，取决于它能否看到正确的 include 路径与 -std
 #include <ranges>
@@ -173,7 +173,7 @@ add_executable(demo main.cpp)
 
 QtCreator 是 Qt 官方 IDE，强项是 **UI 设计器（.ui）+ 信号槽（SIGNAL/SLOT 或 新语法 connect）**。信号槽是 Qt 的元对象系统（moc 预编译）特性。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 6** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // ⑤ 新语法 connect：类型安全，编译期检查（推荐，[实现]真实可用需 Qt 头）
 #include <QPushButton>
@@ -205,7 +205,7 @@ require('lspconfig').clangd.setup{
 }
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：[实现·Clang19]]
+> **示例 8** [难度 ★★★☆☆] [主题：[实现·Clang19]]
 ```cpp
 // ⑥ clangd 读懂编译命令后，才能对模板/Concept 做精确补全
 template <std::integral T>
@@ -231,7 +231,7 @@ T gcd(T a, T b) { while (b) { T t = a % b; a = b; b = t; } return a; }
 ]
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：与 compilecommands.]
+> **示例 9** [难度 ★★☆☆☆] [主题：与 compilecommands.]
 ```cpp
 // ⑦ clangd 用上面的 command 解析 app.cpp：include 路径与 -std 完全一致
 #include "mylib/widget.h"      // clangd 知道 -I../include，才找得到
@@ -377,7 +377,7 @@ std::string before(const std::vector<int>& xs) {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：[实现·Clang19]真实：一个函]
+> **示例 17** [难度 ★★★☆☆] [主题：[实现·Clang19]真实：一个函]
 ```cpp
 // 文件：Examples/_ch16_refactor_after.cpp
 // 行号：9
@@ -447,7 +447,7 @@ int obscure(int a, int b) {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：远程开发]
+> **示例 20** [难度 ★★☆☆☆] [主题：远程开发]
 ```cpp
 // ⑬ 远端编译的程序与本地无异，只是 g++ 跑在容器里
 #include <version>
@@ -480,7 +480,7 @@ TEST(Math, AddPositive) {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：单元测试集成 [标准]]
+> **示例 22** [难度 ★★★☆☆] [主题：单元测试集成 [标准]]
 ```cpp
 // ⑭ doctest 极简风格：单头文件，IDE 配一个 main 即可
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
@@ -657,7 +657,7 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
    - [标准] 宏是纯文本替换，其参数在替换列表中被逐字展开（含 `#`/`##` 运算符），不参与语言级作用域重命名。
    - [引用] ISO/IEC 14882:2023 §[cpp.replace]（宏替换与 #、## 运算符）；cppreference "Replacing text macros" 词条。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
+> **示例 33** [难度 ★★☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ 一行速记：各工具的核心命令（复制即用）
 // 生成编译数据库: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
@@ -765,7 +765,7 @@ int main(){std::cout<<"Profiling: VS Diagnostic Tools, PerfView (Windows), Instr
 
 ## 附录 A：工业IDE选择与WG21背景 [B: Principle / F: Industry]
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录 A：工业IDE选择与WG21背]
+> **示例 40** [难度 ★★☆☆☆] [主题：附录 A：工业IDE选择与WG21背]
 ```
 C++ IDE 生态的工业现实:
 
@@ -787,7 +787,7 @@ Meson: 默认生成 compile_commands.json
 
 ## 附录 B：面试与权衡 [J: Learning / H: Design]
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 B：面试与权衡 [J: Lea]
+> **示例 41** [难度 ★★☆☆☆] [主题：附录 B：面试与权衡 [J: Lea]
 ```
 IDE 选型决策:
 - 新手: VS 2022 Community (Windows) / CLion (跨平台, 开箱即用)
@@ -895,7 +895,7 @@ int main(){std::cout<<"clangd=LSP with Clang AST, ~100MB for LLVM index, ~30s co
 
 ## 附录 H：IDE面试
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：附录 H：IDE面试]
+> **示例 46** [难度 ★★☆☆☆] [主题：附录 H：IDE面试]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"compile_commands.json=bridge build->IDE(LSP clangd reads it)"<<std::endl;return 0;}
@@ -1039,7 +1039,7 @@ int main() { std::cout << "格式化后 diff 只剩真正逻辑改动\n"; }
 **错误**：只在 `.vimrc` 里手写 `set path+=...`，条件宏/三方头解析错乱。
 **修复**：`cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON` 生成数据库，Neovim 的 lspconfig 指向 clangd；
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：演绎 2：用 compilecomm]
+> **示例 51** [难度 ★★☆☆☆] [主题：演绎 2：用 compilecomm]
 ```cpp
 #include <iostream>
 int main() { std::cout << "clangd 用真实编译命令提供补全/诊断/跳转\n"; }

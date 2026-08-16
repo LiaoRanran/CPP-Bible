@@ -65,7 +65,7 @@ void show(const Format& f, int v) { f.render(v); } // 通过基类接口调用
 
 与之等价、但零运行时开销的**静态策略**（见第⑭节）写法：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：什么是设计模式 [标准]]
+> **示例 2** [难度 ★★☆☆☆] [主题：概述：什么是设计模式 [标准]]
 ```cpp
 #include <cstdio>
 
@@ -147,7 +147,7 @@ GoF 把 23 个模式按**目的**分为三类。下面的 ASCII 框线图给出�
 
 创建型最简示例——工厂方法：
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：模式分类：创建/结构/行为三大类 []
+> **示例 6** [难度 ★★☆☆☆] [主题：模式分类：创建/结构/行为三大类 []
 ```cpp
 #include <memory>
 struct Widget { virtual ~Widget()=default; virtual const char* kind() const=0; };
@@ -157,7 +157,7 @@ std::unique_ptr<Widget> make_button() { return std::make_unique<Button>(); }
 
 结构型最简示例——组合（Composite）：
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：模式分类：创建/结构/行为三大类 []
+> **示例 7** [难度 ★★☆☆☆] [主题：模式分类：创建/结构/行为三大类 []
 ```cpp
 #include <vector>
 #include <memory>
@@ -189,7 +189,7 @@ C++ 适合模式的三个硬理由：
 
 零开销证据——一个模板策略在 `-O2` 下完全消失：
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：为什么 C++ 特别适合模式]
+> **示例 9** [难度 ★★☆☆☆] [主题：为什么 C++ 特别适合模式]
 ```cpp
 template <typename T> T add(T a, T b) { return a + b; }   // 无虚表、无间接
 int f() { return add(1, 2); }                            // 直接内联为常量
@@ -197,7 +197,7 @@ int f() { return add(1, 2); }                            // 直接内联为常�
 
 对比带虚函数的等价物（有运行时成本）：
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：为什么 C++ 特别适合模式]
+> **示例 10** [难度 ★★★☆☆] [主题：为什么 C++ 特别适合模式]
 ```cpp
 struct Op { virtual int do_(int,int) const=0; };
 struct Add : Op { int do_(int a,int b) const override { return a+b; } };
@@ -213,7 +213,7 @@ int f(const Op& o){ return o.do_(1,2); }   // 必须经 vtable（见第⑮节实
 - **运行时多态**（虚函数）：行为在运行期确定，对象可跨 API 边界、可序列化、可被插件 DLL 提供。
 - **编译期多态**（模板/CRTP）：行为在编译期确定，零间接、可被内联与常量折叠，但类型必须在编译期可知。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：模板元编程 vs 运行时多态 [标准]
+> **示例 11** [难度 ★★☆☆☆] [主题：模板元编程 vs 运行时多态 [标准]
 ```cpp
 // 运行时多态：接口在 .h 暴露，实现可在另一 TU（甚至另一 DLL）
 struct Shape { virtual double area() const = 0; };
@@ -224,7 +224,7 @@ template <typename S> double area_of(const S& s) { return s.area(); }
 
 当行为集合**封闭**且**编译期可知**时，优先模板；当行为需**插件式扩展**或跨 ABI 时，才用虚函数。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：模板元编程 vs 运行时多态 [标准]
+> **示例 12** [难度 ★★☆☆☆] [主题：模板元编程 vs 运行时多态 [标准]
 ```cpp
 #include <cstdio>
 struct Circle { double r; double area() const { return 3.14159*r*r; } };
@@ -237,7 +237,7 @@ int main(){ Circle c{2}; std::printf("%f\n", area_of(c)); } // 编译期解析
 
 [实现] RAII（Resource Acquisition Is Initialization）是 C++ 模式体系的地基：**资源生命周期 = 对象生命周期**。任何需要在"构造获得、析构释放"之间保持不变量安全的模式（Lock、SmartPtr、ScopeGuard、Factory 返回的句柄），都应通过 RAII 表达。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：对象生命周期与模式]
+> **示例 13** [难度 ★★☆☆☆] [主题：对象生命周期与模式]
 ```cpp
 #include <cstdio>
 struct LockGuard {
@@ -271,7 +271,7 @@ std::unique_ptr<int> make_buf() { return std::make_unique<int>(42); }
 
 以「Flyweight（享元）」为例——共享部分用引用语义，外在状态用值语义：
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：值语义 vs 引用语义在模式中的选择]
+> **示例 15** [难度 ★★☆☆☆] [主题：值语义 vs 引用语义在模式中的选择]
 ```cpp
 #include <string>
 #include <unordered_map>
@@ -297,7 +297,7 @@ Point clone_by_value(const Point& p) { return p; }  // 值拷贝=天然原型
 
 [标准] CRTP（Curiously Recurring Template Pattern）让基类「反向」知道自己派生类的类型，从而在编译期完成虚函数要做的事，**无需 vtable**：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：静态多态（CRTP）与动态多态权衡 ]
+> **示例 17** [难度 ★★☆☆☆] [主题：静态多态（CRTP）与动态多态权衡 ]
 ```cpp
 #include <cstdio>
 template <typename Derived>
@@ -313,7 +313,7 @@ int main(){ Square s; s.side=7; volatile int a=s.area(); (void)a; }
 
 CRTP vs 虚函数决策表：
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：静态多态（CRTP）与动态多态权衡 ]
+> **示例 18** [难度 ★★★☆☆] [主题：静态多态（CRTP）与动态多态权衡 ]
 ```
 ┌─────────────────┬──────────────┬────────────────────┐
 │ 维度            │ CRTP(静态)   │ 虚函数(动态)       │
@@ -341,7 +341,7 @@ C++ 标准库本身就是模式的集大成者。理解这点，能让你"用标
 
 > 表注（⑨）：上表列举 4 个最常被"收编"进标准库的 GoF 模式；其余 STL 暗合见附录 E 与 L.2（如 Adapter=`std::stack`、Facade=`std::filesystem`）。结论：能用标准库设施表达的模式，就不必手写样板。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：模式与 C++ 标准库的暗合]
+> **示例 19** [难度 ★★☆☆☆] [主题：模式与 C++ 标准库的暗合]
 ```cpp
 #include <vector>
 #include <memory>
@@ -411,7 +411,7 @@ void log_to_console() { std::printf("log\n"); }  // 一个函数足矣
 
 用模板表达"依赖倒置"且零成本：
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：模式与 SOLID 原则 [标准]]
+> **示例 23** [难度 ★★☆☆☆] [主题：模式与 SOLID 原则 [标准]]
 ```cpp
 template <typename Storage>
 struct Repository {
@@ -441,7 +441,7 @@ struct Penguin : Bird { void fly() override { /* 抛异常：违反 LSP */ } };
 
 被滥用的反面教材（**不要这样写**）：
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：模式的反模式]
+> **示例 25** [难度 ★★☆☆☆] [主题：模式的反模式]
 ```cpp
 // 反模式：裸指针 + 非线程安全的懒构造
 class BadCfg { static BadCfg* p; public: static BadCfg* get(){ if(!p) p=new BadCfg; return p; } };
@@ -449,7 +449,7 @@ class BadCfg { static BadCfg* p; public: static BadCfg* get(){ if(!p) p=new BadC
 
 现代正确做法——Meyers Singleton（C++11 起静态局部变量初始化线程安全，且无需裸 `new`）：
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：模式的反模式]
+> **示例 26** [难度 ★★☆☆☆] [主题：模式的反模式]
 ```cpp
 #include <cstdio>
 struct Config {
@@ -475,7 +475,7 @@ int main(){ std::printf("%d\n", Config::instance().value); }
 
 以 Factory 为例的改写：
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：现代 C++ 对经典模式的改写]
+> **示例 27** [难度 ★★☆☆☆] [主题：现代 C++ 对经典模式的改写]
 ```cpp
 #include <memory>
 #include <cstdio>
@@ -490,7 +490,7 @@ std::unique_ptr<Product> make(char k){
 
 为佐证 `std::unique_ptr` 的"默认构造即空、零开销"语义，直接追溯本机 libstdc++ 源码。其默认构造函数定义为 `constexpr` 且 `noexcept`，持有空 deleter 与空指针：
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：现代 C++ 对经典模式的改写]
+> **示例 28** [难度 ★★☆☆☆] [主题：现代 C++ 对经典模式的改写]
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h
 // 行号：304
@@ -510,7 +510,7 @@ std::unique_ptr<Product> make(char k){
 
 Policy 模式（编译期选择行为）：
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：编译期模式]
+> **示例 29** [难度 ★★☆☆☆] [主题：编译期模式]
 ```cpp
 #include <cstdio>
 struct LogNothing { static void log(int){} };
@@ -522,7 +522,7 @@ int main(){ Counter<LogPrint> c; c.inc(); }
 
 `type_traits` 做编译期分支与约束：
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：编译期模式]
+> **示例 30** [难度 ★★☆☆☆] [主题：编译期模式]
 ```cpp
 #include <type_traits>
 template <typename T>
@@ -533,7 +533,7 @@ static_assert(std::is_same_v<std::remove_reference_t<int&>, int>);
 
 编译期策略选择（SFINAE / `if constexpr` 雏形）：
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：编译期模式]
+> **示例 31** [难度 ★★★★★] [主题：编译期模式]
 ```cpp
 #include <type_traits>
 template <typename T>
@@ -604,7 +604,7 @@ _Z11via_virtualRK6Animal:
 
 可复现基准（自包含、可编译）：
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：实测：策略分发的运行期开销]
+> **示例 32** [难度 ★★☆☆☆] [主题：实测：策略分发的运行期开销]
 ```cpp
 // g++ -std=c++23 -O2 ch135_bench.cpp
 #include <functional>
@@ -629,7 +629,7 @@ int main(){
 
 `constexpr` 工厂（编译期决定类型与值）：
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：模式与 constexpr/if c]
+> **示例 33** [难度 ★★☆☆☆] [主题：模式与 constexpr/if c]
 ```cpp
 constexpr int pick(bool b) { return b ? 10 : 20; }
 static_assert(pick(true) == 10);   // 编译期求值
@@ -637,7 +637,7 @@ static_assert(pick(true) == 10);   // 编译期求值
 
 `if constexpr` 按类型在编译期选分支（替代运行时 type-switch）：
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：模式与 constexpr/if c]
+> **示例 34** [难度 ★★★☆☆] [主题：模式与 constexpr/if c]
 ```cpp
 #include <cstdio>
 template <typename T>
@@ -681,7 +681,7 @@ int main(){
 
 重构路径（从坏到好）：
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：模式组合与重构 [经验]]
+> **示例 36** [难度 ★★☆☆☆] [主题：模式组合与重构 [经验]]
 ```
 裸指针 + 手动 delete  →  unique_ptr 返回所有权   →  进一步用值语义/optional
 虚函数热点循环        →  加 final / 改 CRTP        →  编译期策略
@@ -712,7 +712,7 @@ void test(){
 
 编译期策略的测试同样简单，且零运行时：
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：测试模式代码 [平台·x86-64]]
+> **示例 38** [难度 ★★★★☆] [主题：测试模式代码 [平台·x86-64]]
 ```cpp
 #include <cstdio>
 struct LogPrint { static void log(int v){ std::printf("%d\n", v); } };
@@ -732,7 +732,7 @@ int main(){ Counter<LogPrint> c; c.inc(); }  // 行为在编译期锁定，测�
 
 跨 ABI 的安全边界封装（C 接口 + 内部 C++ 模式）：
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：跨平台模式注意事项 [平台·x86-]
+> **示例 39** [难度 ★★★☆☆] [主题：跨平台模式注意事项 [平台·x86-]
 ```cpp
 // 对外暴露 C 链接的稳定句柄，规避 vtable/STL ABI 差异
 extern "C" {
@@ -774,7 +774,7 @@ extern "C" {
 
 后续章节索引（仅章号与主题，不含跨章链接）：
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：本章小结与索引 [标准]]
+> **示例 40** [难度 ★★☆☆☆] [主题：本章小结与索引 [标准]]
 ```
 ch136  创建型模式（Factory/Builder/Prototype/Singleton 现代写法）
 ch137  结构型模式（Adapter/Bridge/Composite/Decorator/Proxy）
@@ -847,7 +847,7 @@ int main(){std::cout<<"ch135_patterns_intro.md enhanced"<<"\n";return 0;}
 
 ## 附录 E：STL中的设计模式
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录 E：STL中的设计模式]
+> **示例 42** [难度 ★★☆☆☆] [主题：附录 E：STL中的设计模式]
 ```
 Adapter: std::stack/queue → 适配deque接口
 Decorator: reverse_iterator/move_iterator → 装饰迭代器
@@ -855,7 +855,7 @@ Strategy: unique_ptr<T,Deleter> → 编译期策略
 Singleton: std::cout (Meyers Singleton)
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录 E：STL中的设计模式]
+> **示例 43** [难度 ★★☆☆☆] [主题：附录 E：STL中的设计模式]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -965,7 +965,7 @@ Q: 本章核心? A: 见附录A-F中的深度分析(工业原理/性能/汇编/�
 
 <details><summary>答案与解析</summary>
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 44** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -993,7 +993,7 @@ int main() { auto r = make_renderer("vulkan"); if (r) r->draw(); }
 
 <details><summary>答案与解析</summary>
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 45** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1023,7 +1023,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 46** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1233,7 +1233,7 @@ template 策略在 N=500M 下测量为 0.00 ms，因为编译器在 `-O2` 下将
 
 ### D5.3 可复现 demo
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 47** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 #include <functional>

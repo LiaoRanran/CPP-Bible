@@ -79,7 +79,7 @@ fmt 的核心不在「运行期拼字符串」，而在**编译期**对格式串
 2. 其 `FMT_CONSTEVAL` 构造函数在**编译期**遍历格式串，用 `format_string_checker` 核对每个 `{}` 占位符的类型/数量与 `Args...` 一致；不匹配直接编译失败。
 3. 运行期按预解析结果把参数经 `formatter<T>` 特化写入输出缓冲，避免重复扫描格式串。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：格式化原理（编译期格式串解析） [实]
+> **示例 4** [难度 ★★★☆☆] [主题：格式化原理（编译期格式串解析） [实]
 ```cpp
 // ② 等价思路：编译期统计占位符数（fmt 在编译期做更强的事——类型检查）
 constexpr int count_braces(const char* s, int i = 0, int n = 0) {
@@ -90,7 +90,7 @@ constexpr int count_braces(const char* s, int i = 0, int n = 0) {
 static_assert(count_braces("a={} b={}") == 2);  // 编译期常量
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：格式化原理（编译期格式串解析） [实]
+> **示例 5** [难度 ★★☆☆☆] [主题：格式化原理（编译期格式串解析） [实]
 ```cpp
 // ② fmt 把「字面量」升级为「类型安全的格式描述」
 //    fmt::format("{}", x) 中 "{}" 的类型是 format_string<T>，
@@ -103,7 +103,7 @@ static_assert(count_braces("a={} b={}") == 2);  // 编译期常量
 
 > 本机未装 fmt，以下引用上游固定 tag 源码做剖析，标注「上游参考」。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：[实现·fmt] 源码剖析：upst]
+> **示例 6** [难度 ★★★☆☆] [主题：[实现·fmt] 源码剖析：upst]
 ```cpp
 // 文件：https://github.com/fmtlib/fmt/blob/10.2.1/include/fmt/format.h
 // 行号：4050
@@ -119,7 +119,7 @@ class basic_format_string {
 };
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：[实现·fmt] 源码剖析：upst]
+> **示例 7** [难度 ★★★☆☆] [主题：[实现·fmt] 源码剖析：upst]
 ```cpp
 // 文件：https://github.com/fmtlib/fmt/blob/10.2.1/include/fmt/core.h
 // 行号：748
@@ -140,7 +140,7 @@ using is_compile_string = std::is_base_of<compile_string, S>;
 
 spdlog 由三层组成，关注点分离清晰：
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：架构]
+> **示例 8** [难度 ★★☆☆☆] [主题：架构]
 ```
 ┌─────────────┐   log()    ┌──────────────┐  sink_it_  ┌──────────────┐
 │   logger    │ ─────────▶ │   registry   │ ─────────▶ │    sink      │
@@ -182,7 +182,7 @@ spdlog::set_default_logger(existing);     // 设为默认
 
 fmt 快在三点：
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：性能：比 iostream / pr]
+> **示例 11** [难度 ★★☆☆☆] [主题：性能：比 iostream / pr]
 ```cpp
 // ⑤ 对比：iostream 的 operator<< 链式调用 + 锁 + 临时对象开销大
 #include <iostream>
@@ -191,7 +191,7 @@ void io_way()  { std::cout << "x=" << 3.14 << " y=" << 42 << "\n"; }
 void fmt_way() { fmt::print("x={} y={}\n", 3.14, 42); }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：性能：比 iostream / pr]
+> **示例 12** [难度 ★★★☆☆] [主题：性能：比 iostream / pr]
 ```cpp
 // ⑤ fmt 用连续内存缓冲 + 整数/浮点专用快速路径，避免 locale 反复查询
 //    并可在编译期决定格式布局，运行期直接写缓冲（见第 ⑦ 节汇编证据）
@@ -204,7 +204,7 @@ fmt::format_to(std::back_inserter(buf), "{}", 123456789);  // 整数快速路径
 
 ## ⑥ 类型安全：编译期检查格式串 [标准]
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：类型安全：编译期检查格式串 [标准]]
+> **示例 13** [难度 ★★☆☆☆] [主题：类型安全：编译期检查格式串 [标准]]
 ```cpp
 // ⑥ 类型安全：占位符与参数类型在编译期核对
 fmt::format("{} {}", 1, "s");     // OK：int + const char*
@@ -212,7 +212,7 @@ fmt::format("{} {}", 1, "s");     // OK：int + const char*
 // fmt::format("{:d}", "s");      // 编译失败：字符串不能用 :d 整数格式
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：类型安全：编译期检查格式串 [标准]]
+> **示例 14** [难度 ★★☆☆☆] [主题：类型安全：编译期检查格式串 [标准]]
 ```cpp
 // ⑥ 运行期格式串（用户输入）必须显式声明，关闭编译期检查
 #include <fmt/format.h>
@@ -228,7 +228,7 @@ std::string dyn = fmt::format(fmt::runtime(user_pattern), arg);
 
 fmt 未安装，下面用 **GCC 15.3.0 真实编译**一个**自包含**示例，等价复现 fmt 的两大机制（编译期格式串解析 + 类型安全分派），并取真实汇编。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：[实现·fmt] 真实：编译自包含格]
+> **示例 15** [难度 ★★★★☆] [主题：[实现·fmt] 真实：编译自包含格]
 ```cpp
 // 文件：Examples/_ch131_format_check.cpp（自包含，无需 fmt）
 // 真实编译命令（MinGW GCC 15.3.0）：
@@ -347,7 +347,7 @@ try {
 
 为用户类型提供 `fmt::formatter<T>` 特化，即可被 `{}` 直接格式化——这是 fmt 可扩展性的核心。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：自定义格式化]
+> **示例 19** [难度 ★★★☆☆] [主题：自定义格式化]
 ```cpp
 // ⑨ 为 Point 提供 formatter 特化（fmt 10 写法）
 #include <fmt/format.h>
@@ -362,7 +362,7 @@ struct fmt::formatter<Point> {
 // 使用：fmt::format("{}", Point{1,2}) -> "(1, 2)"
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：自定义格式化]
+> **示例 20** [难度 ★★★☆☆] [主题：自定义格式化]
 ```cpp
 // ⑨ 带格式选项：支持 {:?} 之类自定义说明符
 template <>
@@ -386,7 +386,7 @@ struct fmt::formatter<Point> {
 
 ## ⑩ 调试 [经验]
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：调试 [经验]]
+> **示例 21** [难度 ★★☆☆☆] [主题：调试 [经验]]
 ```cpp
 // ⑩ 动态调整级别，快速定位问题
 #include <spdlog/spdlog.h>
@@ -437,14 +437,14 @@ auto s = std::make_shared<spdlog::sinks::basic_file_sink_mt>(f);
 
 ## ⑫ 常见陷阱：格式化用户类型需特化 [经验]
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：常见陷阱：格式化用户类型需特化 [经]
+> **示例 25** [难度 ★★☆☆☆] [主题：常见陷阱：格式化用户类型需特化 [经]
 ```cpp
 // ⑫ 陷阱1：未特化 formatter 的用户类型无法用 {} 格式化（编译失败）
 struct Widget { int id; };
 // fmt::format("{}", Widget{1});   // 错误：no matching formatter
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：常见陷阱：格式化用户类型需特化 [经]
+> **示例 26** [难度 ★★☆☆☆] [主题：常见陷阱：格式化用户类型需特化 [经]
 ```cpp
 #include <string>
 // ⑫ 陷阱2：悬空引用——format 的参数若绑定临时对象要注意生命周期
@@ -453,7 +453,7 @@ fmt::format("hi {}", name);          // OK：值/引用都安全（fmt 拷贝必
 // fmt::format("{}", std::string("tmp").c_str()); // 危险：c_str 悬空
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：常见陷阱：格式化用户类型需特化 [经]
+> **示例 27** [难度 ★★☆☆☆] [主题：常见陷阱：格式化用户类型需特化 [经]
 ```cpp
 // ⑫ 陷阱3：spdlog 默认按引用捕获参数？不会——它立即格式化，无悬空风险
 spdlog::info("v={}", compute());     // 立即求值并格式化，安全
@@ -464,7 +464,7 @@ spdlog::info("v={}", compute());     // 立即求值并格式化，安全
 
 ## ⑬ 演进 [标准]
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：演进 [标准]]
+> **示例 28** [难度 ★★★☆☆] [主题：演进 [标准]]
 ```cpp
 #include <string_view>
 // ⑬ fmt 5：引入 FMT_STRING 宏做编译期检查（C++11 兼容）
@@ -503,7 +503,7 @@ for (int i = 0; i < N; ++i) {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑭ 异步日志：spdlog 异步 sink 解耦 I/O 与业务线程
 #include <spdlog/async.h>
@@ -528,7 +528,7 @@ std::string s = std::format("{} + {} = {}", 2, 2, 4);   // "2 + 2 = 4"
 std::string u = std::format("{:_>}8", 42);              // 对齐/填充语法一致
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：与 std::format 对应]
+> **示例 34** [难度 ★★★☆☆] [主题：与 std::format 对应]
 ```cpp
 // ⑮ 自定义类型：std::formatter<T> 特化语法与 fmt 一致
 #include <format>
@@ -574,7 +574,7 @@ spdlog::info("point={}", Point{3, 4});     // 走同一 formatter 特化
 //   ctest --test-dir build        # 跑回归测试后再提 PR
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：贡献 [经验]]
+> **示例 38** [难度 ★★★☆☆] [主题：贡献 [经验]]
 ```cpp
 // ⑰ 贡献一个自定义 sink（spdlog）的骨架：继承 base_sink
 #include <spdlog/sinks/base_sink.h>
@@ -595,7 +595,7 @@ class my_sink : public spdlog::sinks::base_sink<Mutex> {
 
 ## ⑱ 性能对比（bench 思路 / 数字量级） [经验]
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：性能对比]
+> **示例 39** [难度 ★★☆☆☆] [主题：性能对比]
 ```cpp
 // ⑱ 微基准思路：固定消息模板，循环 1e6 次，测吞吐（条/秒）
 #include <fmt/core.h>
@@ -634,7 +634,7 @@ void logger::log_(const source_loc& loc, level::level_enum lvl,
                   const string_view_t& msg);  // 内部做 formatter 调用 + 遍历 sinks
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读 [实现·fmt]]
+> **示例 42** [难度 ★★☆☆☆] [主题：调试 / 源码阅读 [实现·fmt]]
 ```cpp
 #include <memory>
 #include <string>
@@ -647,7 +647,7 @@ class SPDLOG_API registry {
 };
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读 [实现·fmt]]
+> **示例 43** [难度 ★★☆☆☆] [主题：调试 / 源码阅读 [实现·fmt]]
 ```cpp
 // ⑲ 阅读顺序建议（硬核路线）
 //   1) fmt/core.h：compile_string / format_string_checker（编译期检查）
@@ -688,7 +688,7 @@ class SPDLOG_API registry {
 //   {:>8.2f}      宽8右对齐+2位小数
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
+> **示例 45** [难度 ★★☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ spdlog 级别速查（低->高）
 //   trace < debug < info < warn < error < critical < off
@@ -740,7 +740,7 @@ class SPDLOG_API registry {
 
 fmt 最值得学的机制——**类型安全 + 编译期格式串检查**——已经被 C++20 直接吸收为 `std::format`。下面用纯标准库复刻一节开头那个例子：
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：㉑.2 标准 C++ 等价实现：用 ]
+> **示例 47** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：用 ]
 ```cpp
 // ㉑.2 用标准 C++20 std::format 复刻 fmt 的核心（本块可独立编译，GCC 15.3.0 验证）
 #include <format>
@@ -765,7 +765,7 @@ int main() {
 
 下面才是你在工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：㉑.3 真实 API 长什么样]
+> **示例 48** [难度 ★★☆☆☆] [主题：㉑.3 真实 API 长什么样]
 ```cpp
 // ㉑.3 真实 fmt / spdlog 写法（仅注释演示，需链接 fmt / spdlog；本门禁按空块编译通过）：
 //   #include <fmt/core.h>
@@ -942,7 +942,7 @@ spdlog 异步 logger 用有界 MPSC 队列。队列满时的 **设计权衡** �
 
 函数模板按实参推导类型；`std::format` 在编译期校验格式串、类型安全，避免 `printf` 的实参与格式符不匹配：
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 50** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <format>
 #include <string>
@@ -965,7 +965,7 @@ int main() { return show(42) == "value=42" ? 0 : 1; }
 
 C++20 概念取代 SFINAE 做编译期约束，违反约束为硬错误、诊断更可读：
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 51** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <concepts>
 template <std::integral T>
@@ -987,7 +987,7 @@ int main() { return set_level(2) == 2 ? 0 : 1; }
 
 `constexpr` 函数在常量表达式上下文（如 `static_assert` 实参）中于编译期求值；格式宽度预计算可避免运行期分支：
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 52** [难度 ★★★☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 constexpr int field_width(int n) { return n < 0 ? -n : n; }  // 示意：计算整数字段宽度
 static_assert(field_width(120) == 120);
@@ -1169,7 +1169,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 53** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <format>

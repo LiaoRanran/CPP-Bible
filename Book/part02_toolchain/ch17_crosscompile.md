@@ -112,7 +112,7 @@ int main() { std::printf("built for target\n"); return 0; }
 
 两类目标差异巨大：`bare-metal`（无 OS，自己写启动/向量表）与 `Linux`（有内核、libc、动态链接器）。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：裸机 vs Linux 目标 [平台]
+> **示例 6** [难度 ★★☆☆☆] [主题：裸机 vs Linux 目标 [平台]
 ```cpp
 // ④ 裸机程序：必须自己定义入口，不能有 main 依赖 libc 的初始化
 extern "C" void _start() {              // 复位向量跳到这里
@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
 
 本机是 x86-64 MinGW-W64，采用 **Microsoft x64 调用约定**（非 System V）：前 4 个整数参数依次进 `RCX, RDX, R8, R9`，第 5、6 个压栈；调用方还需预留 **32 字节 shadow space（影子空间）**。
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实：用本机 g]
+> **示例 8** [难度 ★★★☆☆] [主题：[实现·GCC15]真实：用本机 g]
 ```cpp
 // 文件：Examples/_ch17_callconv.cpp，行号：8（sum6 定义）
 // 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch17_callconv.cpp -o Examples/_ch17_callconv.asm
@@ -167,7 +167,7 @@ _Z4sum6llllll:
 
 **GNU Arm Embedded（arm-none-eabi-gcc）**是 Cortex-M/R 裸机的事实标准工具链。它用 **AAPCS（ARM Architecture Procedure Call Standard）**：前 4 个整数参数进 `R0–R3`，第 5 个起压栈；返回 32 位值走 `R0`，64 位走 `R0:R1`。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：嵌入式工具链]
+> **示例 9** [难度 ★★★☆☆] [主题：嵌入式工具链]
 ```cpp
 // ⑥ 同一 sum6 在 ARM 上的源码——本体与 x86 完全一致（C++ 可移植）
 struct Point { long x, y; };
@@ -224,7 +224,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 裸机没有 glibc（它依赖 Linux 系统调用），于是用 **newlib**（经典）或 **picolibc**（更轻、面向嵌入式）作为 C/C++ 运行时。它们把 `read/write/_sbrk` 等留给用户实现的 **syscall 桩（syscall stubs）**。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：对比 [平台]]
+> **示例 11** [难度 ★★☆☆☆] [主题：对比 [平台]]
 ```cpp
 // ⑧ newlib 需要一个 _sbrk 桩来支撑 malloc/自由存储（否则 new 也会失败）
 extern "C" {
@@ -276,7 +276,7 @@ int main() {
 
 裸机最终产物是 **ELF**（含调试信息）与烧录用的 **bin/hex（纯机器码 + 加载地址）**。工具链用 `objcopy` 抽取，用链接脚本定地址。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：固件/镜像生成 [平台]]
+> **示例 14** [难度 ★★☆☆☆] [主题：固件/镜像生成 [平台]]
 ```cpp
 // ⑩ 复位向量表：第一项 SP 初值，第二项 Reset_Handler 入口
 // 文件：Examples/_ch17_baremetal.cpp，行号：16（_start）
@@ -300,7 +300,7 @@ extern "C" void _start() {
 
 取第⑤节的 `manhattan(Point)` 与 `make_point`，对比两套 ABI 对同一语义的不同寄存器分配：
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：[实现·GCC15]对比：x86 与]
+> **示例 15** [难度 ★★★☆☆] [主题：[实现·GCC15]对比：x86 与]
 ```cpp
 // 文件：Examples/_ch17_callconv.cpp，行号：13（manhattan）/ 16（make_point）
 struct Point { long x, y; };
@@ -345,7 +345,7 @@ bool is_little_endian() {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：大小端/对齐差异 [标准]]
+> **示例 17** [难度 ★★☆☆☆] [主题：大小端/对齐差异 [标准]]
 ```cpp
 // ⑫ 对齐：alignas 提升对齐以满足 SIMD 加载要求（如 AVX 需 32 字节）
 #include <cstddef>
@@ -394,7 +394,7 @@ void toggle() { g_dbg ^= 1; }    // 在 GDB 里设断点、watch g_dbg
 
 嵌入式 FLASH 宝贵。核心手段：`-Os`（为尺寸优化）、`-ffunction-sections -fdata-sections`（每函数/变量独立段）、`--gc-sections`（链接期丢弃未引用段）。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：体积优化]
+> **示例 19** [难度 ★★☆☆☆] [主题：体积优化]
 ```cpp
 // 文件：Examples/_ch17_sizeopt.cpp，行号：7（active，被引用）/ 11（dead，未引用）
 #include <cstdint>
@@ -427,7 +427,7 @@ int unused_var = 99;     // 未引用 -> 期望被 GC
 
 资源受限目标常禁用**异常、RTTI、部分 STL**，改用 `-fno-exceptions -fno-rtti -fno-use-cxa-atexit`，并以静态/池化分配替代自由存储。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：嵌入式 C++ 子集]
+> **示例 20** [难度 ★★☆☆☆] [主题：嵌入式 C++ 子集]
 ```cpp
 // ⑮ 禁用异常后，不能依赖栈展开；用 std::optional / 错误码替代 throw
 #include <cstdint>
@@ -452,7 +452,7 @@ uint32_t dispatch(const Msg& m) {          // 用 tag 而非 dynamic_cast
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：嵌入式 C++ 子集]
+> **示例 22** [难度 ★★☆☆☆] [主题：嵌入式 C++ 子集]
 ```cpp
 // ⑮ 用静态缓冲区替代动态 new（避免堆碎片与不可预测延迟）
 #include <cstddef>
@@ -520,7 +520,7 @@ int main() {
 
 ## ⑱ 最佳实践 [经验]
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 27** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱ 实践1：平台相关代码集中到 arch_xxx 命名空间 + 编译期分发，避免散落 ifdef
 namespace arch {
@@ -536,7 +536,7 @@ namespace arch {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 28** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑱ 实践2：对所有外设寄存器用 volatile 且显式宽度，杜绝“优化掉 MMIO”
 #include <cstdint>
@@ -565,7 +565,7 @@ static_assert(alignof(double) <= 8, "double 对齐超预期");
 | ARM64 Linux | `aarch64-linux-gnu` | libstdc++/glibc | `-O2` | ❌ 未装 |
 | RISC-V 32 裸机 | `riscv32-unknown-elf` | newlib | `-Os -gc-sections` | ❌ 未装 |
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：跨平台构建矩阵 [平台]]
+> **示例 30** [难度 ★★☆☆☆] [主题：跨平台构建矩阵 [平台]]
 ```cpp
 // ⑲ 矩阵里每个目标共享同一份业务逻辑，仅编译标志/标准库不同
 struct Firmware {
@@ -598,7 +598,7 @@ constexpr Firmware kMatrix[] = {
    - [标准] 可用 `alignof` 查询类型对齐、`alignas` 增强声明对齐；实际分配须由支持该对齐的分配器提供。
    - [引用] ISO/IEC 14882:2023 §[basic.align] / [dcl.align]（对齐与 alignas）；cppreference "alignof / alignas" 词条。
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
+> **示例 31** [难度 ★★☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ 三元组 → 工具链前缀 速查（编译时 -target / 工具链文件里设置）
 // x86_64-w64-mingw32     -> x86_64-w64-mingw32-g++   （本机即用）
@@ -713,7 +713,7 @@ int main(){std::vector<int> v(3,7);std::cout<<v.size()<<std::endl;return 0;}
 
 ## 附录 A：工业交叉编译 [B: Principle / F: Industry / H: Design / I: Practice / J: Learning]
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录 A：工业交叉编译 [B: Pr]
+> **示例 37** [难度 ★★★☆☆] [主题：附录 A：工业交叉编译 [B: Pr]
 ```
 交叉编译工业场景:
 - 嵌入式: arm-none-eabi-gcc (Cortex-M), aarch64-linux-gnu-gcc (ARM64 Linux)
@@ -798,7 +798,7 @@ int main(){std::cout<<"CMake cross: CMAKE_SYSTEM_NAME+compiler+sysroot=3 key set
 嵌入式通常禁用: 异常(-fno-exceptions), RTTI(-fno-rtti), 动态内存(无malloc/new)
 可用的: constexpr, template, static_assert, enum class, [[nodiscard]]
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录 I：嵌入式C++特性限制]
+> **示例 40** [难度 ★★☆☆☆] [主题：附录 I：嵌入式C++特性限制]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Embedded: -fno-exceptions -fno-rtti -fno-rtti. Use constexpr+template+static_assert instead."<<std::endl;return 0;}
@@ -885,7 +885,7 @@ int main() {
 
 **真实场景：固件里的紧凑报文布局。** 你要把一个状态结构体通过 SPI/网络发出去，两端必须用完全一致的字节布局，否则解释错位。请写程序对比默认对齐与 `#pragma pack` 后的大小，说明网络/Flash 二进制布局为何要显式控制对齐。
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 43** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -967,7 +967,7 @@ int main() { std::cout << "QEMU 用户态冒烟测试通过\n"; }
 set(CMAKE_SYSROOT /opt/arm-sysroot)   # 只搜目标的 include/lib
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：演绎 2：sysroot 隔离目标系]
+> **示例 46** [难度 ★★★☆☆] [主题：演绎 2：sysroot 隔离目标系]
 ```cpp
 #include <iostream>
 int main() { std::cout << "sysroot 锁定目标头与库，避免宿主污染\n"; }

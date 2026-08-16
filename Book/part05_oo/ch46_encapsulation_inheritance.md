@@ -92,7 +92,7 @@ C++ 没把继承当成唯一复用手段：它一边给继承，一边强调**�
 
 **[标准]**　关键契约：**不变量只能由类的成员函数（及其友元）维护**。类的责任是：对外暴露的每一个 public 接口，调用前/返回后都不变量必须成立；private 成员是实现细节，可自由重构。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：封装本质：接口与实现分离、不变量责任]
+> **示例 1** [难度 ★★☆☆☆] [主题：封装本质：接口与实现分离、不变量责任]
 ```cpp
 // [示例 1] 不变量：balance_ 永不为负，由成员函数维护
 #include <cstdio>
@@ -137,7 +137,7 @@ int main() {
 
 **[经验]**　「封装是编译期契约而非运行时保险箱」。下面三个例子证明 `private` 在运行期形同虚设。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：封装边界真相：private 仅是编]
+> **示例 2** [难度 ★★★☆☆] [主题：封装边界真相：private 仅是编]
 ```cpp
 // [示例 2] 封装边界真相 ①：offsetof + 指针算术可越过 private
 #include <cstdio>
@@ -182,7 +182,7 @@ int main() {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：封装边界真相：private 仅是编]
+> **示例 4** [难度 ★★☆☆☆] [主题：封装边界真相：private 仅是编]
 ```cpp
 // [示例 4] 封装边界真相 ③：同布局 struct 强行 reinterpret 读写
 #include <cstdio>
@@ -308,7 +308,7 @@ int main() { Car c; c.rev(); printf("%d\n", c.rpm()); }
 
 **[标准]**　`protected` 的**脆弱基类问题（fragile base class）**：派生类依赖基类的 `protected` 名字与布局。一旦基类作者修改 `protected` 成员（改名、改类型、改访问），**所有派生类静默编译失败或行为改变**——因为派生类代码直接吃进了基类的私有实现细节。这与「封装应隐藏实现」自相矛盾，是 `protected` 最大的隐患。
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：真实语义]
+> **示例 8** [难度 ★★★☆☆] [主题：真实语义]
 ```cpp
 // [示例 8] public/private/protected 编译期语义
 #include <cstdio>
@@ -336,7 +336,7 @@ int main() {
 }
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：真实语义]
+> **示例 9** [难度 ★★☆☆☆] [主题：真实语义]
 ```cpp
 // [示例 9] 脆弱基类：基类改 protected 布局，派生类静默崩
 #include <cstdio>
@@ -488,7 +488,7 @@ int main() {
 
 **[标准-经验]**　**Liskov 替换原则（LSP）**：若 `D` 是 `B` 的（public）派生类，则任何用到 `B` 的程序，在把 `B` 替换为 `D` 后，其行为契约（前置条件不强化、后置条件不弱化、不变量保持）必须依然成立。违反 LSP 的 `public` 继承是「语法合法、语义毒药」。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：继承与 Liskov 替换原则]
+> **示例 15** [难度 ★★☆☆☆] [主题：继承与 Liskov 替换原则]
 ```cpp
 // [示例 15] 满足 LSP 的 public 继承：栈是一种列表（仅收窄，不破坏契约）
 #include <cstdio>
@@ -513,7 +513,7 @@ int main() {
 
 **[标准-经验]**　经典反例：把 `Square` 声明为 `Rectangle` 的 `public` 派生类，看似「正方形是矩形」，实则违反 LSP。`Rectangle` 的契约允许「独立设置宽和高」；`Square` 若遵守该契约就必须允许宽高不等，但正方形不变量要求宽高相等——两者冲突。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：经典 LSP 反例与正确做法]
+> **示例 16** [难度 ★★☆☆☆] [主题：经典 LSP 反例与正确做法]
 ```cpp
 // [示例 16] 违反 LSP：Square : Rectangle（错误示范）
 #include <cstdio>
@@ -548,7 +548,7 @@ int main() {
 
 **正确做法三选一**：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：经典 LSP 反例与正确做法]
+> **示例 17** [难度 ★★☆☆☆] [主题：经典 LSP 反例与正确做法]
 ```cpp
 // [示例 17] 修复 ①：共同抽象基类（都继承 Geometry），而非 Square 继承 Rectangle
 #include <cstdio>
@@ -708,7 +708,7 @@ void describe(const Base& b) { printf("%s\n", b.who()); }   // 引用：不切�
 int main() { Derived d; describe(d); }                       // Derived
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：切片修复：引用 / 指针 / uni]
+> **示例 25** [难度 ★★☆☆☆] [主题：切片修复：引用 / 指针 / uni]
 ```cpp
 // [示例 24] 修复 ②：vector<unique_ptr<Base>>，多态容器不切片
 #include <cstdio>
@@ -727,7 +727,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：切片修复：引用 / 指针 / uni]
+> **示例 26** [难度 ★★☆☆☆] [主题：切片修复：引用 / 指针 / uni]
 ```cpp
 // [示例 25] 修复 ③：基类指针 + 显式 new/delete（现代写法优先 unique_ptr）
 #include <cstdio>
@@ -752,7 +752,7 @@ int main() {
 
 **[标准]**　`[class.base.init]` / `[class.dtor]`：构造顺序——（1）虚基类子对象（最左最深优先，见第 13 节）；（2）**按声明顺序**的直接基类子对象；（3）**按声明顺序**的非静态数据成员；（4）构造函数体。析构顺序**严格相反**。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：构造 / 析构顺序实证]
+> **示例 27** [难度 ★★☆☆☆] [主题：构造 / 析构顺序实证]
 ```cpp
 // [示例 26] 单继承构造/析构顺序：基类 → 成员 → 派生；析构反序
 #include <cstdio>
@@ -836,7 +836,7 @@ int main() try {
 
 **[标准]**　`[class.base.init]`：在存在**虚基类（virtual base，见 `ch49`）**时，无论继承路径如何，**虚基类子对象由最派生类（most derived class）直接初始化一次**，且它先于所有非虚基类构造。`[实现-推断]`　Itanium C++ ABI（GCC/Clang 遵循）把虚基类布局放在对象尾部（或独立于主基类链），通过构造期间的「虚基类表（VTT）/构造虚表（ctor vtable）」在中间基类构造函数里把虚基类指针重定向到最派生类提供的实例——这正是为什么中间基类构造时虚基类已存在，但只有最派生类真正「拥有」它。
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：多继承与虚基类构造顺序]
+> **示例 31** [难度 ★★★☆☆] [主题：多继承与虚基类构造顺序]
 ```cpp
 // [示例 30] 虚基类由最派生类构造一次（详细见 ch49）
 #include <cstdio>
@@ -860,7 +860,7 @@ int main() { D d; }
 
 **[标准]**　`[class.member.lookup]`：派生类作用域中的名字会**遮蔽（hide）**基类作用域中**所有同名**名字——注意是「同名即隐藏全部重载」，**不是**重载解析。因此即使参数类型不同，基类同名函数也不可见。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：名字隐藏（name hiding）与]
+> **示例 32** [难度 ★★☆☆☆] [主题：名字隐藏（name hiding）与]
 ```cpp
 // [示例 31] 名字隐藏陷阱：基类 f(double) 被派生 f(int) 隐藏
 #include <cstdio>
@@ -881,7 +881,7 @@ int main() {
 
 **[经验]**　示例 31 是静默 bug：`d.f(1.0)` 本意可能是 `Base::f(double)`，但因为 `Derived::f(int)` 把名字 `f` 整个隐藏，编译器只看到 `Derived::f(int)`，于是 `1.0` 被**截断为 `int 1`** 调用。这是数据精度丢失/语义错误的温床。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：名字隐藏（name hiding）与]
+> **示例 33** [难度 ★★☆☆☆] [主题：名字隐藏（name hiding）与]
 ```cpp
 // [示例 32] 用 using Base::f; 恢复基类重载集
 #include <cstdio>
@@ -959,7 +959,7 @@ struct Bad : Base {
 int main() { Good g; const Base& b = g; b.draw(0); }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 36** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // [示例 35] final：阻止进一步覆盖 + 助编译器去虚化
 #include <cstdio>
@@ -1005,7 +1005,7 @@ int main() { B b; printf("%d\n", call(b)); }
 
 **[标准-经验]**　NVI（非虚接口，又称「模板方法模式」的 C++ 实现）：基类暴露一个 **public 非虚** 函数，它在内部做「前置检查 / 锁定 / 度量 / 日志」等公共骨架，再调用一个 **protected 或 private 虚** 函数让派生类定制核心逻辑。这样公共不变式永远被统一执行，派生类无法绕过前置/后置。
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：惯用法]
+> **示例 38** [难度 ★★☆☆☆] [主题：惯用法]
 ```cpp
 // [示例 37] NVI：公有非虚封装 protected 虚，统一前置/后置
 #include <cstdio>
@@ -1123,7 +1123,7 @@ int main() { Car c; c.drive(); }
 
 文件 `type_traits:1551-1553`（本机路径 `C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/type_traits`）：
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：isbaseof —— 派生到基关系]
+> **示例 42** [难度 ★★☆☆☆] [主题：isbaseof —— 派生到基关系]
 ```cpp
   /// is_base_of
   template<typename _Base, typename _Derived>
@@ -1134,7 +1134,7 @@ int main() { Car c; c.drive(); }
 
 **[实现·libstdc++]**　libstdc++（GCC 15.3.0）直接委托给**编译器内建 `__is_base_of`**（由 GCC 前端在 `[class.derived]` 语义上实现）。`__is_base_of(B, D)` 在 `B` 是 `D` 的基类（含自身、含多继承、含虚基类）时为真。标准变量模板在 `type_traits:3695`：
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：isbaseof —— 派生到基关系]
+> **示例 43** [难度 ★★☆☆☆] [主题：isbaseof —— 派生到基关系]
 ```cpp
   template<typename _Base, typename _Derived>
     inline constexpr bool is_base_of_v = __is_base_of(_Base, _Derived);
@@ -1146,7 +1146,7 @@ int main() { Car c; c.drive(); }
 
 `[实现-推断]`　理解 `__is_base_of` 的机制，可看经典 SFINAE 实现（仅当 `D*` 能 `static_cast` 到 `B*` 时 `test<D>(...)` 才返回 `true_type`）：
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：手搓版 isbaseof：用 sta]
+> **示例 44** [难度 ★★★☆☆] [主题：手搓版 isbaseof：用 sta]
 ```cpp
 // [示例 41] 手搓 is_base_of：派生指针可 static_cast 到基类指针 → 是基类
 #include <type_traits>
@@ -1180,7 +1180,7 @@ int main() {
 
 文件 `type_traits:1564-1602`（GCC 15.3.0 优先用内建）：
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：isconvertible —— 隐]
+> **示例 45** [难度 ★★★☆☆] [主题：isconvertible —— 隐]
 ```cpp
 #if __has_builtin(__is_convertible)
   template<typename _From, typename _To>
@@ -1221,7 +1221,7 @@ int main() {
 
 **[实现·libstdc++]**　解读：当编译器**没有** `__is_convertible` 内建时，libstdc++ 用 SFINAE 试探「`declval<_From>()` 能否传给接收 `_To` 的 `__test_aux`」。`#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"` 很重要：若 `_From`/`_To` 的拷贝构造是 `private`，本应报警，但类型特性探测不该因访问检查失败而误报，故临时关闭该警告。`noexcept` 标记确保探测自身不影响 `is_nothrow_convertible` 推导。
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：isconvertible —— 隐]
+> **示例 46** [难度 ★★☆☆☆] [主题：isconvertible —— 隐]
 ```cpp
 // [示例 42] is_convertible：派生 → 基类可隐式转（is-a 的编译期证据）
 #include <type_traits>
@@ -1240,7 +1240,7 @@ int main() {
 
 文件 `bits/uses_allocator.h:56-70`（本机路径 `.../include/c++/bits/uses_allocator.h`）：
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：usesallocator.h ——]
+> **示例 47** [难度 ★★★☆☆] [主题：usesallocator.h ——]
 ```cpp
   template<typename _Tp, typename _Alloc, typename = __void_t<>>
     struct __uses_allocator_helper
@@ -1265,7 +1265,7 @@ int main() {
 
 文件 `bits/stl_construct.h:105-120`：
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：stlconstruct.h —— ]
+> **示例 48** [难度 ★★☆☆☆] [主题：stlconstruct.h —— ]
 ```cpp
 #include <utility>
 #if __cplusplus >= 201103L
@@ -1304,7 +1304,7 @@ int main() {
 
 **[平台]**　`-Wsuggest-override`（GCC/Clang）会在「覆盖虚函数却没写 `override`」时给出提示，把示例 34 的纪律变成编译器助攻。`/Woverloaded-virtual`（MSVC）与 `-Woverloaded-virtual`（GCC/Clang）会在「派生类同名函数隐藏了基类虚函数重载」时告警——直接针对第 14 节名字隐藏陷阱。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：三编译器对比：GCC / LLVM ]
+> **示例 49** [难度 ★★☆☆☆] [主题：三编译器对比：GCC / LLVM ]
 ```cpp
 // [示例 43] 触发 -Woverloaded-virtual 的名字隐藏（GCC/Clang 加 -Woverloaded-virtual）
 struct Base {
@@ -1364,7 +1364,7 @@ int main() {
 
 下面用可编译小程序实证四个工程关注点。为简洁，计时用 `std::chrono` 的粗粒度演示（生产基准见 Google Benchmark）。
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：切片、构造顺序、NVI、overri]
+> **示例 51** [难度 ★★☆☆☆] [主题：切片、构造顺序、NVI、overri]
 ```cpp
 // [示例 45] 微基准 ①：切片导致派生数据丢失（正确性，非性能）
 #include <cstdio>
@@ -1380,7 +1380,7 @@ int main() {
 }
 ```
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：切片、构造顺序、NVI、overri]
+> **示例 52** [难度 ★★☆☆☆] [主题：切片、构造顺序、NVI、overri]
 ```cpp
 // [示例 46] 微基准 ②：构造/析构顺序日志（运行时可观测）
 #include <cstdio>
@@ -1397,7 +1397,7 @@ struct Derived : Base, Mid { Tracer d{"Derived"}; };
 int main(){ Derived d; }   // +Base +Mid +Derived -Derived -Mid -Base
 ```
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：切片、构造顺序、NVI、overri]
+> **示例 53** [难度 ★★☆☆☆] [主题：切片、构造顺序、NVI、overri]
 ```cpp
 // [示例 47] 微基准 ③：NVI 前置检查收益（统一度量，派生无法绕过）
 #include <cstdio>
@@ -1421,7 +1421,7 @@ int main(){
 }
 ```
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：切片、构造顺序、NVI、overri]
+> **示例 54** [难度 ★★☆☆☆] [主题：切片、构造顺序、NVI、overri]
 ```cpp
 // [示例 48] 微基准 ④：漏写 override → 静默错误（基准对照“有 override”）
 #include <cstdio>
@@ -1579,7 +1579,7 @@ int main(){
 
 ## 附录 F：封装继承工业与面试
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：附录 F：封装继承工业与面试]
+> **示例 55** [难度 ★★☆☆☆] [主题：附录 F：封装继承工业与面试]
 ```cpp
 #include <iostream>
 struct Base{virtual void f(){std::cout<<"Base"<<std::endl;}};
@@ -1762,7 +1762,7 @@ int main() {
 
 NVI 把契约（前置条件、后置条件、不变式、日志）收敛在非虚公共接口，用户无法绕过；派生类仅覆写虚步骤，降低误用面。
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 60** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <cassert>
@@ -1814,7 +1814,7 @@ int main() {
 
 **修复**：返回基指针 / `unique_ptr<Base>` / `Base&`，让多态经引用或指针传递。
 
-> **示例 62** [难度 ★☆☆☆☆] [主题：演绎 1：切片 bug——函数返回基]
+> **示例 62** [难度 ★★☆☆☆] [主题：演绎 1：切片 bug——函数返回基]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1837,7 +1837,7 @@ int main() {
 
 **常见错误**：派生类函数签名写错（如参数类型不符），未用 `override`；编译器将其视为**新函数**而非覆写，调用仍走基类版本——编译通过但行为错误。
 
-> **示例 63** [难度 ★☆☆☆☆] [主题：演绎 2：忘记 override 导]
+> **示例 63** [难度 ★★☆☆☆] [主题：演绎 2：忘记 override 导]
 ```cpp
 #include <iostream>
 struct Shape { virtual void draw() { std::cout << "Shape\n"; } };
@@ -1852,7 +1852,7 @@ int main() {
 
 **修复**：基类虚函数保持 `virtual`，派生加 `override`（签名不符立即编译错误）；用 `final` 锁死不再被进一步覆盖。
 
-> **示例 64** [难度 ★☆☆☆☆] [主题：演绎 2：忘记 override 导]
+> **示例 64** [难度 ★★★★☆] [主题：演绎 2：忘记 override 导]
 ```cpp
 #include <iostream>
 struct Shape { virtual void draw() = 0; };
@@ -2032,7 +2032,7 @@ flowchart TD
 
 下面的独立程序不测时间，验证的是本章可移植的稳定语义：非虚函数按**静态类型**在编译期绑定，虚函数按**动态类型**在运行期绑定——这正是 3.11× 开销差的语义来源。
 
-> **示例 65** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 65** [难度 ★★★★★] [主题：可复现 demo]
 ```cpp
 // demo_d5_ch46.cpp
 // g++ -O2 -std=c++23 demo_d5_ch46.cpp && ./a.out

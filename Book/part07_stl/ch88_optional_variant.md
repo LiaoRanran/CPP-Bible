@@ -115,7 +115,7 @@ int use2(std::optional<int> o) {
 
 ## ⑤ 真实汇编：optional 零堆分配、可全折叠 [实现]
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：真实汇编：optional 零堆分配]
+> **示例 5** [难度 ★★★☆☆] [主题：真实汇编：optional 零堆分配]
 ```cpp
 // 文件：Examples/_asm_optional.cpp
 // 编译：g++ -std=c++23 -O2 -S -masm=intel _asm_optional.cpp -o _asm_optional.asm
@@ -364,7 +364,7 @@ std::expected<int,std::string> with_exp(int a, int b);    // expected（显式�
 
 ## ⑲ microbenchmark：optional 的零开销验证 [经验]
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：的零开销验证 [经验]]
+> **示例 18** [难度 ★★☆☆☆] [主题：的零开销验证 [经验]]
 ```cpp
 // ⑲ optional 设值 vs 裸 int：性能几乎无差
 #include <optional>
@@ -437,7 +437,7 @@ std::optional<int> to_opt(const std::expected<int,std::string>& e) {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 24** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // O6 variant visit 多类型（修改）
 #include <variant>
@@ -503,7 +503,7 @@ int total(const std::vector<std::variant<int,double>>& vs) {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：补充完整可编译示例]
+> **示例 30** [难度 ★★☆☆☆] [主题：补充完整可编译示例]
 ```cpp
 // O12 optional 作结构体成员（延迟初始化）
 #include <optional>
@@ -629,7 +629,7 @@ std::expected (P0323R12, 2022, Vicente Botet):
   → 设计目标: 替代异常 (成功返值, 失败返错误), 零开销成功路径
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：附录 A：WG21 —— optio]
+> **示例 37** [难度 ★★☆☆☆] [主题：附录 A：WG21 —— optio]
 ```cpp
 #include <iostream>
 #include <optional>
@@ -646,7 +646,7 @@ int main() {
 
 ## 附录 B：工业案例 [F: Industry / H: Design]
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录 B：工业案例 [F: Indu]
+> **示例 38** [难度 ★★☆☆☆] [主题：附录 B：工业案例 [F: Indu]
 ```cpp
 #include <iostream>
 #include <optional>
@@ -665,7 +665,7 @@ int main() {
 
 ## 附录 C：性能与内存布局 [E: Low-level / G: Performance]
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录 C：性能与内存布局 [E: L]
+> **示例 39** [难度 ★★★★☆] [主题：附录 C：性能与内存布局 [E: L]
 ```cpp
 #include <iostream>
 #include <optional>
@@ -684,7 +684,7 @@ int main() {
 
 ## 附录 D：面试 [J: Learning]
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：附录 D：面试 [J: Learni]
+> **示例 40** [难度 ★★★★☆] [主题：附录 D：面试 [J: Learni]
 ```
 面试高频:
 Q: optional vs unique_ptr 的选择？
@@ -781,7 +781,7 @@ movsd xmm0, [rdi+0x0008]  ; 取 double 成员（偏移 0x0008）
 
 ### 测试源码
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：测试源码]
+> **示例 41** [难度 ★★★☆☆] [主题：测试源码]
 ```cpp
 struct A { int x; int compute() const { return x; } };
 struct B { int x; int compute() const { return x*2; } };
@@ -919,7 +919,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 44** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <optional>
@@ -1045,7 +1045,7 @@ struct _Variant_storage<false, _Types...>
 > 该路径依赖异常传播，在 MinGW/SEH 下不会回绕到用户 `catch`，故此处只演示常态 API；
 > 抛异常导致 valueless 的机制已由源码摘录覆盖。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
+> **示例 45** [难度 ★★☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <variant>
 #include <optional>
@@ -1264,7 +1264,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 46** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <variant>

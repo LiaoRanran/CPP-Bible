@@ -50,7 +50,7 @@ C 风格的可变参数是类型安全的黑洞：`printf` 全靠格式串和约
 - **核心结构**：`template <typename... Ts> void f(Ts...);`
 - **一句话定义**：用省略号 `...` 声明「类型 + 值」参数包，在展开位点把包逐元素展开 [标准]
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：本模板模式速查]
+> **示例 1** [难度 ★★☆☆☆] [主题：本模板模式速查]
 ```cpp
 template <typename... Ts>
 void print_all(Ts... args) {
@@ -62,7 +62,7 @@ void print_all(Ts... args) {
 
 参数包声明与展开：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 2** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
 ```cpp
 template <typename... Ts>        // Ts：类型包
 struct Tuple { };
@@ -73,7 +73,7 @@ void f(Ts... args) {             // args：函数参数包
 }
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 3** [难度 ★★☆☆☆] [主题：核心结构与完整代码实现]
 ```cpp
 #include <cstddef>
 // sizeof... 取包大小（编译期）
@@ -88,7 +88,7 @@ static_assert(count() == 0);
 ⟶ Book/part06_templates/ch64_fold.md（折叠表达式：C++17 归约替代递归，更优）
 ⟶ Book/part06_templates/ch62_specialization.md（偏特化常做递归终止 base case）
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：递归展开（C++11 经典写法）]
+> **示例 4** [难度 ★★☆☆☆] [主题：递归展开（C++11 经典写法）]
 ```cpp
 #include <iostream>
 // 基线（0 参数）
@@ -102,7 +102,7 @@ void print(T first, Rest... rest) {
 }
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：递归展开（C++11 经典写法）]
+> **示例 5** [难度 ★★★☆☆] [主题：递归展开（C++11 经典写法）]
 ```cpp
 // 编译期求和（递归 + 累加）
 template <typename T>
@@ -125,7 +125,7 @@ static_assert(sum(1, 2, 3, 4) == 10);
 
 ## ⑥ 完整可运行示例（最小）
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 6** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
 ```cpp
 #include <iostream>
 void print() {}
@@ -137,7 +137,7 @@ void print(T first, Rest... rest) {
 int main() { print(1, 2.5, 'x', "hi"); }
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 7** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
 ```cpp
 // 完美转发构造（emplace 基础）
 struct Widget {
@@ -146,7 +146,7 @@ struct Widget {
 };
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 8** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
 ```cpp
 #include <array>
 // 包展开进初始化列表
@@ -156,7 +156,7 @@ auto make_array(Ts... ts) {
 }
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 9** [难度 ★★☆☆☆] [主题：完整可运行示例（最小）]
 ```cpp
 // sizeof... 编译期
 template <typename... Ts> constexpr auto nargs(Ts...) { return sizeof...(Ts); }
@@ -170,7 +170,7 @@ template <typename... Ts> constexpr auto nargs(Ts...) { return sizeof...(Ts); }
 
 ## ⑧ GCC / Clang / MSVC 行为差异 [实现][平台]
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：行为差异 [实现][平台]]
+> **示例 10** [难度 ★★☆☆☆] [主题：行为差异 [实现][平台]]
 ```cpp
 // 三者均支持可变参数模板（C++11 起）
 // MSVC 旧版（<=19.1x）对「包展开进 lambda 捕获」支持较晚
@@ -190,7 +190,7 @@ template <typename... Ts> auto f(Ts... ts) {
 
 每个展开的实例化是独立函数/类型。递归展开 = 实例化链（见 ⑩）。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：内存 / 对象模型]
+> **示例 12** [难度 ★★★★☆] [主题：内存 / 对象模型]
 ```cpp
 #include <cstddef>
 // make_index_sequence 偏特化 + 包展开生成编译期整数序列
@@ -228,69 +228,69 @@ _Z9print_allIcJEEvT_DpT0_
 
 **B1 包展开位点（≥10 处） [标准]**
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 13** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 1) 函数调用参数
 template <typename... Ts> void a(Ts... ts) { g(ts...); }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 14** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 #include <vector>
 // 2) 初始化列表
 template <typename... Ts> auto b(Ts... ts) { return std::vector<int>{ static_cast<int>(ts)... }; }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 15** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 3) 基类列表
 template <typename... Bases> struct D : Bases... { };
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 16** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 4) using 声明
 template <typename... Ts> struct E : Ts... { using Ts::foo...; };
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 17** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 #include <array>
 // 5) 花括号初始化（聚合）
 template <typename... Ts> auto c(Ts... ts) { return std::array<int, sizeof...(ts)>{ ts... }; }
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 18** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 6) 返回语句
 template <typename... Ts> auto d(Ts... ts) { return std::make_tuple(ts...); }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 19** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 7) 下标/运算符（配合折叠）
 template <typename... Ts> auto e(Ts... ts) { return (ts + ...); }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 20** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 8) 模板参数
 template <typename... Ts> struct F { template <Ts... vals> struct Ctx {}; };
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 21** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 9) sizeof... 
 template <typename... Ts> constexpr auto n(Ts...) { return sizeof...(Ts); }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 22** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 10) lambda 捕获（C++20 广义捕获展开）
 template <typename... Ts> auto f(Ts... ts) { auto l = [ts...] { return (0 + ... + ts); }; return l(); }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 23** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 11) new 初始化列表
 template <typename... Ts> auto g(Ts... ts) { auto p = new int[sizeof...(ts)]{ ts... }; return p; }
@@ -298,7 +298,7 @@ template <typename... Ts> auto g(Ts... ts) { auto p = new int[sizeof...(ts)]{ ts
 
 **B2 双层包（内层包） [标准]**
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 24** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts>
 void outer(Ts... ts) {
@@ -306,7 +306,7 @@ void outer(Ts... ts) {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 25** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 #include <iostream>
 template <typename... Ts>
@@ -315,13 +315,13 @@ void each(Ts... ts) {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 26** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename T> void h(T);
 template <typename... Ts> void call_all(Ts... ts) { (h(ts), ...); }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 27** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 #include <iostream>
 // 双层：每个元素再展开其成员
@@ -333,14 +333,14 @@ void pairs(Ts... ts) {
 
 **B3 递归基线设计 [标准]**
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 28** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 基线优先匹配 0 参数
 void rec() {}
 template <typename T, typename... R> void rec(T f, R... r) { rec(r...); }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 29** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 用 if constexpr 替代基线（C++17）
 template <typename T, typename... R>
@@ -350,7 +350,7 @@ void rec2(T f, R... r) {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 30** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 计数基线
 constexpr int cnt() { return 0; }
@@ -359,23 +359,23 @@ template <typename T, typename... R> constexpr int cnt(T, R... r) { return 1 + c
 
 **B4 sizeof... 与编译期 [标准]**
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 31** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> constexpr bool all_int = (std::is_same_v<Ts, int> && ...);
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 32** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> constexpr bool none_empty = (!std::is_empty_v<Ts> && ...);
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 33** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 #include <cstddef>
 template <typename... Ts> struct Count { static constexpr std::size_t value = sizeof...(Ts); };
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 34** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 包中第一个类型
 template <typename First, typename... Rest> struct Front { using type = First; };
@@ -383,7 +383,7 @@ template <typename First, typename... Rest> struct Front { using type = First; }
 
 **B5 错误与正确对照 [经验]**
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 35** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 错误：包无展开位点
 template <typename... Ts> void bad(Ts... ts) { g(ts); }   // 缺 ... 展开
@@ -391,19 +391,19 @@ template <typename... Ts> void bad(Ts... ts) { g(ts); }   // 缺 ... 展开
 template <typename... Ts> void good(Ts... ts) { g(ts...); }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 36** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 错误：递归无基线 → 无限实例化 / 失败
 // template <typename T, typename... R> void r(T, R... r) { r(r...); }  // 无 0 参基线
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 37** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 错误：双层包展开缺括号
 // (f(ts)... ...)   非法；应 (f(ts) , ...)
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 38** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 正确：折叠表达式（C++17）替代递归最简洁
 template <typename... Ts> auto add(Ts... ts) { return (0 + ... + ts); }
@@ -414,7 +414,7 @@ template <typename... Ts> auto add(Ts... ts) { return (0 + ... + ts); }
 ⟶ Book/part10_modern/ch116_perfect_forwarding.md（emplace 的可变参数完美转发实现）
 ⟶ Book/part06_templates/ch65_type_traits.md（对参数包做类型萃取）
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：中的该模式]
+> **示例 39** [难度 ★★★☆☆] [主题：中的该模式]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -440,7 +440,7 @@ int main() {
 
 ## ⑫ 变体（variant patterns）
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：变体]
+> **示例 40** [难度 ★★★☆☆] [主题：变体]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -475,19 +475,19 @@ int main() {
 
 ## ⑬ 反模式（anti-patterns）
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 41** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
 ```cpp
 #include <cstdio>
 // 反模式1：用 C 风格 va_list 而非可变参数模板——丢类型安全、需格式串
 // printf("%d", x); 不如 print(x, y, z)
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 42** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
 ```cpp
 // 反模式2：递归无基线导致编译失败或爆栈（编译期无限实例化）
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 43** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
 ```cpp
 // 反模式3：能用折叠表达式（ch64）却用递归，代码长、实例化多
 template <typename... Ts> auto s(Ts... ts) { return (ts + ...); }   // 优于递归
@@ -498,7 +498,7 @@ template <typename... Ts> auto s(Ts... ts) { return (ts + ...); }   // 优于递
 // 反模式4：包展开进宏，可读性灾难
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 45** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
 ```cpp
 // 反模式5：可变参数 + 虚函数（模板不能虚），需类型擦除替代
 ```
@@ -507,7 +507,7 @@ template <typename... Ts> auto s(Ts... ts) { return (ts + ...); }   // 优于递
 
 ⟶ Book/part10_modern/ch116_perfect_forwarding.md（日志/格式化库的可变参数转发底座）
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 46** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 #include <utility>
 #include <string>
@@ -517,7 +517,7 @@ template <typename... Ts> std::string format_str(const char* fmt, Ts&&... ts) {
 }
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 47** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 #include <utility>
 // 案例：日志库
@@ -526,7 +526,7 @@ template <typename... Ts> void log(Level lvl, Ts&&... ts) {
 }
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 48** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 #include <utility>
 #include <memory>
@@ -536,7 +536,7 @@ template <typename T, typename... Ts> std::unique_ptr<T> make(Ts&&... ts) {
 }
 ```
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 49** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 // 案例：测试框架 ASSERT 多参数
 template <typename... Ts> void expect_all(bool cond, Ts...);
@@ -544,7 +544,7 @@ template <typename... Ts> void expect_all(bool cond, Ts...);
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 50** [难度 ★★☆☆☆] [主题：源码剖析（libstdc++ 相关）]
 ```cpp
 #include <utility>
 // libstdc++ std::tuple 用递归继承 + 包展开
@@ -554,7 +554,7 @@ template <typename _Tp, typename... _Rest> class tuple<_Tp, _Rest...> : public t
 };
 ```
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 51** [难度 ★★☆☆☆] [主题：源码剖析（libstdc++ 相关）]
 ```cpp
 #include <utility>
 #include <cstddef>
@@ -598,14 +598,14 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 // 5) 双层包展开需用括号分组 pattern
 ```
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 58** [难度 ★★☆☆☆] [主题：易错点]
 ```cpp
 // 6) 可变参数不能用于虚函数 / 异常规格
 ```
 
 ## ⑰ FAQ
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 59** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 #include <initializer_list>
 // Q：可变参数模板和 std::initializer_list 区别？
@@ -624,13 +624,13 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 // A：纯归约（求和/与或）可以且更优（见 ch64）。
 ```
 
-> **示例 62** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 62** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // Q：为什么 emplace 用可变参数？
 // A：把构造实参完美转发给成员 in-place 构造，避免临时对象。
 ```
 
-> **示例 63** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 63** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // Q：sizeof... 是运算符吗？
 // A：是，返回包的「元素个数」（编译期常量）。
@@ -649,7 +649,7 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 // 2) 转发用 Ts&&... + std::forward<Ts>(ts)...
 ```
 
-> **示例 66** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 66** [难度 ★★☆☆☆] [主题：最佳实践]
 ```cpp
 // 3) 递归展开务必写 0 参数基线或用 if constexpr 兜底
 ```
@@ -660,21 +660,21 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 // 4) 优先 std::tuple / std::apply 复用标准实现
 ```
 
-> **示例 68** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 68** [难度 ★★☆☆☆] [主题：最佳实践]
 ```cpp
 // 5) 异构参数优先可变参数模板而非 any/void*（保类型安全）
 ```
 
 ## ⑲ 性能（编译期 / 运行期）
 
-> **示例 69** [难度 ★☆☆☆☆] [主题：性能（编译期 / 运行期）]
+> **示例 69** [难度 ★★☆☆☆] [主题：性能（编译期 / 运行期）]
 ```cpp
 // 展开纯编译期；选中实现内联后无函数调用（见⑩ 4 次内联自增）
 // 递归展开实例化链 = 包大小+1 份函数；折叠表达式通常单函数 + 展开为加法链
 // fold_sum(1,2,3,4) 在 -O2 直接是常量 10，零运行期计算
 ```
 
-> **示例 70** [难度 ★☆☆☆☆] [主题：性能（编译期 / 运行期）]
+> **示例 70** [难度 ★★☆☆☆] [主题：性能（编译期 / 运行期）]
 ```cpp
 // 代价：包越大编译期实例化越多（→ 编译时间）
 ```
@@ -757,7 +757,7 @@ decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>) {
 
 ## 附录 A：底层与原理 [B: Principle / E: Lowlevel]
 
-> **示例 71** [难度 ★☆☆☆☆] [主题：附录 A：底层与原理 [B: Pri]
+> **示例 71** [难度 ★★★☆☆] [主题：附录 A：底层与原理 [B: Pri]
 ```
 WG21可变参数模板提案:
 N2242 (C++11): Variadic templates (Douglas Gregor, 2007)
@@ -791,7 +791,7 @@ N2242 (C++11): Variadic templates (Douglas Gregor, 2007)
 
 ## 附录 F：可变参数工业
 
-> **示例 72** [难度 ★☆☆☆☆] [主题：附录 F：可变参数工业]
+> **示例 72** [难度 ★★☆☆☆] [主题：附录 F：可变参数工业]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -854,7 +854,7 @@ int main(){auto p=std::make_shared<S>(10,20);std::cout<<p->a<<","<<p->b<<std::en
 | 递归vs折叠? | 折叠编译时间不随N增长; GCC15.3实测 N=100→1.1×, N=1000→95× [UNVERIFIED] |
 | make_shared参数? | 可变参数+完美转发→构造函数 |
 
-> **示例 74** [难度 ★☆☆☆☆] [主题：附录 H：可变参数面试]
+> **示例 74** [难度 ★★★☆☆] [主题：附录 H：可变参数面试]
 ```cpp
 #include <iostream>
 template<typename...Ts> auto sum(Ts...ts){return (ts+...);}
@@ -873,7 +873,7 @@ int main(){std::cout<<sum(1,2,3,4,5)<<std::endl;return 0;}
 ; 结论: 递归实例化链随 N 线性变长, 折叠编译时间基本恒定
 ```
 
-> **示例 75** [难度 ★☆☆☆☆] [主题：附录 I：可变参数性能与汇编]
+> **示例 75** [难度 ★★☆☆☆] [主题：附录 I：可变参数性能与汇编]
 ```cpp
 #include <iostream>
 template<typename...Ts> auto sum(Ts...ts){return (ts+...);}  // fold(C++17)
@@ -907,7 +907,7 @@ int main(){std::cout<<sum(1,2,3,4,5,6,7,8,9,10)<<std::endl;return 0;}
 
 <details><summary>答案与解析</summary>
 
-> **示例 76** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 76** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 
@@ -933,7 +933,7 @@ int main() { print_all(1, "two", 3.0, 'x'); std::cout << '\n'; }
 
 <details><summary>答案与解析</summary>
 
-> **示例 77** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 77** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <iostream>
 
@@ -958,7 +958,7 @@ int main() { print_all(1, 2, 3); std::cout << sum(1, 2, 3, 4) << '\n'; }
 
 <details><summary>答案与解析</summary>
 
-> **示例 78** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 78** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <array>
@@ -1000,7 +1000,7 @@ void print_all(const T& f, const Ts&... r) { std::cout << f; print_all(r...); }
 
 **修复**：补一个无参 base case 收尾：
 
-> **示例 79** [难度 ★☆☆☆☆] [主题：演绎 1：递归展开必须有 base ]
+> **示例 79** [难度 ★★☆☆☆] [主题：演绎 1：递归展开必须有 base ]
 ```cpp
 #include <iostream>
 
@@ -1028,7 +1028,7 @@ template <typename F, typename... Ts> void for_each(F f, Ts... xs) { f(xs)...; }
 
 **修复**：用逗号折叠 `(f(xs), ...)`：
 
-> **示例 80** [难度 ★☆☆☆☆] [主题：演绎 2：包展开的运算符不能省略]
+> **示例 80** [难度 ★★☆☆☆] [主题：演绎 2：包展开的运算符不能省略]
 ```cpp
 #include <iostream>
 
@@ -1059,7 +1059,7 @@ graph LR
 ### D4.1 libstdc++ 真实源码摘录
 
 // 摘自 libstdc++ 15.3.0：tuple:280（_Tuple_impl 递归继承展开参数包）
-> **示例 81** [难度 ★☆☆☆☆] [主题：++ 真实源码摘录]
+> **示例 81** [难度 ★★☆☆☆] [主题：++ 真实源码摘录]
 ```
   template<size_t _Idx, typename _Head, typename... _Tail>
     struct _Tuple_impl<_Idx, _Head, _Tail...>
@@ -1072,7 +1072,7 @@ graph LR
 ```
 
 // 摘自 libstdc++ 15.3.0：tuple:546（递归基：单元素终止特化）
-> **示例 82** [难度 ★☆☆☆☆] [主题：++ 真实源码摘录]
+> **示例 82** [难度 ★★☆☆☆] [主题：++ 真实源码摘录]
 ```
   template<size_t _Idx, typename _Head>
     struct _Tuple_impl<_Idx, _Head>
@@ -1121,7 +1121,7 @@ int main() {
 ```
 
 预期输出：
-> **示例 84** [难度 ★☆☆☆☆] [主题：可编译验证]
+> **示例 84** [难度 ★★★★☆] [主题：可编译验证]
 ```
 42
 3.14
@@ -1289,7 +1289,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 85** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 85** [难度 ★★★★☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <tuple>

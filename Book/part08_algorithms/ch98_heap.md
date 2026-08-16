@@ -40,7 +40,7 @@
 
 堆（heap）是二叉**最大/最小堆**的数组实现——逻辑上是一棵完全二叉树，物理上是一段连续数组。C++ 标准库把"堆"建模成一段 `[first, last)` 区间上满足**堆性质**（heap property）的序列，并通过 `std::make_heap / push_heap / pop_heap / sort_heap` 四种算法维护它；`std::priority_queue` 则是建立在 `std::vector` 之上的容器适配器（container adapter），把堆封装成"只暴露队首"的优先队列。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：堆（优先队列）[标准]]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：堆（优先队列）[标准]]
 ```cpp
 // ① 裸算法版：用 vector 当堆存储
 #include <vector>
@@ -89,7 +89,7 @@ b.push_back(8);
 std::push_heap(b.begin(), b.end());   // 8 上浮 -> a[0] 仍为 10
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：heap / pushheap / ]
+> **示例 5** [难度 ★★☆☆☆] [主题：heap / pushheap / ]
 ```cpp
 #include <vector>
 // ② pop_heap：极值被移到末尾，需手动 pop_back 才是"弹出"
@@ -99,7 +99,7 @@ int top = c.back();                    // top == 10
 c.pop_back();                          // 真正删除
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：heap / pushheap / ]
+> **示例 6** [难度 ★★☆☆☆] [主题：heap / pushheap / ]
 ```cpp
 #include <vector>
 // ② 完整优先队列循环：make -> 反复 push/pop
@@ -131,7 +131,7 @@ while (!q.empty()) {
 
 这意味着堆不需要任何指针/next 字段——索引即"指针"，空间开销为 0（仅元素本身），且对缓存极度友好（顺序访问）。
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：堆性质与数组布局 [实现]]
+> **示例 8** [难度 ★★☆☆☆] [主题：堆性质与数组布局 [实现]]
 ```cpp
 // ③ 数组布局：完全二叉树的下标亲子公式（无指针、连续内存）
 #include <cstddef>
@@ -141,7 +141,7 @@ constexpr std::size_t right (std::size_t i) { return 2 * i + 2; }
 static_assert(parent(3) == 1 && left(1) == 3 && right(1) == 4);
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：堆性质与数组布局 [实现]]
+> **示例 9** [难度 ★★☆☆☆] [主题：堆性质与数组布局 [实现]]
 ```
           大顶堆（数组下标视图，逻辑完全二叉树）
           ┌──────────────────────────────────────────────┐
@@ -163,7 +163,7 @@ static_assert(parent(3) == 1 && left(1) == 3 && right(1) == 4);
 
 下面汇编来自真实编译（`g++ -std=c++23 -O2 -S -masm=intel`，见 `Examples/_ch98_heap.asm`）。源码中 `std::push_heap` 被内联进 `do_push`，编译器生成的就是经典的 sift-up 循环。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：真实汇编：pushheap 的 si]
+> **示例 10** [难度 ★★★☆☆] [主题：真实汇编：pushheap 的 si]
 ```cpp
 #include <vector>
 // 文件：Examples/_ch98_heap.cpp
@@ -215,7 +215,7 @@ void do_push(std::vector<int>& v, int x) {
 
 `sort_heap(first, last)` 重复 `pop_heap`：`[first,last)` 已是堆时，每次把当前极值换到末尾、区间缩一，循环 `n-1` 次后得到升序序列。总复杂度 O(n log n)。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：heap：把堆变成有序序列 [标准]]
+> **示例 11** [难度 ★★☆☆☆] [主题：heap：把堆变成有序序列 [标准]]
 ```cpp
 // ⑤ sort_heap：堆 -> 完全有序（升序，因大顶堆每次把最大沉到尾）
 #include <vector>
@@ -243,7 +243,7 @@ for (auto it = b.end(); it != b.begin(); --it) {
 
 `std::priority_queue<T, Container=vector<T>, Compare=less<T>>` 把堆算法封装成只暴露队首的适配器：`push` = `c.push_back` + `push_heap(c)`，`pop` = `pop_heap(c)` + `c.pop_back()`，`top` = `c.front()`。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：queue 容器适配器]
+> **示例 13** [难度 ★★★☆☆] [主题：queue 容器适配器]
 ```cpp
 // 文件：Examples/_ch98_pq.cpp
 // 行号：5
@@ -307,7 +307,7 @@ _ZNSt14priority_queueIiSt6vectorIiSaIiEESt4lessIiEE4pushERKi:
 
 `pop_heap` 把 `*(first)` 换到末尾，并对 `[first, last-1)` 做 sift-down（自顶向下找更大子节点并下沉）。下面汇编来自 `do_pop`（`Examples/_ch98_heap.asm`）。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：真实汇编：popheap 的 sif]
+> **示例 14** [难度 ★★★☆☆] [主题：真实汇编：popheap 的 sif]
 ```cpp
 #include <vector>
 // 文件：Examples/_ch98_heap.cpp
@@ -361,7 +361,7 @@ std::vector<int> a{5, 3, 8, 1, 9};
 std::make_heap(a.begin(), a.end(), std::greater<int>());  // a[0]==1（最小）
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：自定义比较器（大顶 / 小顶）[标准]
+> **示例 16** [难度 ★★☆☆☆] [主题：自定义比较器（大顶 / 小顶）[标准]
 ```cpp
 // ⑧ priority_queue 小顶堆
 #include <queue>
@@ -372,7 +372,7 @@ minpq.push(5); minpq.push(1); minpq.push(3);
 int t = minpq.top();                    // t == 1
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：自定义比较器（大顶 / 小顶）[标准]
+> **示例 17** [难度 ★★☆☆☆] [主题：自定义比较器（大顶 / 小顶）[标准]
 ```cpp
 // ⑧ 自定义类型 + 自定义比较器（按得分降序的玩家堆）
 #include <string>
@@ -396,7 +396,7 @@ std::make_heap(v.begin(), v.end(), ByScore{});
 
 堆的两大经典用途：**动态取极值**（Dijkstra 取最近未访问节点）与 **Top-K / 流式中位数**（维护大小为 K 的堆）。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：堆在算法中]
+> **示例 18** [难度 ★★☆☆☆] [主题：堆在算法中]
 ```cpp
 // ⑨ Dijkstra 的最短边提取：用 priority_queue 反复取最小距离节点
 #include <queue>
@@ -425,7 +425,7 @@ int dijkstra(const std::vector<std::vector<Edge>>& g, int src) {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：堆在算法中]
+> **示例 19** [难度 ★★☆☆☆] [主题：堆在算法中]
 ```cpp
 // ⑨ Top-K：维护大小为 K 的小顶堆，遍历后堆中即最大的 K 个
 #include <queue>
@@ -443,7 +443,7 @@ std::vector<int> top_k(const std::vector<int>& a, int k) {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：堆在算法中]
+> **示例 20** [难度 ★★☆☆☆] [主题：堆在算法中]
 ```cpp
 // ⑨ 流式中位数：大顶堆存较小半 + 小顶堆存较大半
 #include <queue>
@@ -468,7 +468,7 @@ double median_stream(const std::vector<int>& s) {
 
 堆算法**不稳定**：`push_heap/pop_heap` 只依据比较器决定位置，相等元素（比较器返回 `false` 双方）的相对顺序不保证保留；且 sift 过程中相等元素可能被交换。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：稳定性与堆 [标准]]
+> **示例 21** [难度 ★★☆☆☆] [主题：稳定性与堆 [标准]]
 ```cpp
 // ⑩ 不稳定演示：相等优先级的任务，出堆顺序不保证原入堆顺序
 #include <queue>
@@ -519,7 +519,7 @@ double sift_height(std::size_t n) { return std::floor(std::log2((double)n)); }
 | 增量插入 | O(log n) 直接 push | 需重排，O(n log n) |
 | 完全有序 | sort_heap 额外 O(n log n) | 已有序 |
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：与 sort 取舍 [标准]]
+> **示例 23** [难度 ★★☆☆☆] [主题：与 sort 取舍 [标准]]
 ```cpp
 // ⑫ 选择依据：只取少量极值 -> 堆；要全序或频繁查询 -> sort
 #include <vector>
@@ -542,7 +542,7 @@ void choose(std::vector<int>& v, bool only_top_k, int k) {
 
 ## ⑬ 场景：何时用堆 [经验]
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：场景：何时用堆 [经验]]
+> **示例 24** [难度 ★★☆☆☆] [主题：场景：何时用堆 [经验]]
 ```cpp
 // ⑬ 场景A：合并 K 个有序链表（LeetCode 23）——小顶堆按节点值取最小
 #include <queue>
@@ -569,7 +569,7 @@ ListNode* merge_k(std::vector<ListNode*>& lists) {
 
 最大的坑是**违反前置条件**。`push_heap/pop_heap/sort_heap` 都要求区间已满足堆性质；任何在未维持堆性质的容器上调用它们都是未定义行为。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：常见坑：在已修改的容器上重复 mak]
+> **示例 25** [难度 ★★★☆☆] [主题：常见坑：在已修改的容器上重复 mak]
 ```cpp
 // ⑭ ❌ 坑1：重复 make_heap + 之后又 push_heap 但忘了维护堆性质
 #include <vector>
@@ -580,7 +580,7 @@ v.push_back(99);                        // 直接尾插但没 push_heap -> v 不
 std::push_heap(v.begin(), v.end());     // ❌ UB：push_heap 要求 [first,last-1) 已是堆
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：常见坑：在已修改的容器上重复 mak]
+> **示例 26** [难度 ★★★☆☆] [主题：常见坑：在已修改的容器上重复 mak]
 ```cpp
 // ⑭ ❌ 坑2：pop_heap 后没 pop_back，又直接改了尾部元素
 std::vector<int> w{10, 5, 3};
@@ -589,7 +589,7 @@ w.back() = 7;                           // ❌ 破坏了 [first,last-1) 的堆�
 std::pop_heap(w.begin(), w.end());      // ❌ UB：区间已不是合法堆
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：常见坑：在已修改的容器上重复 mak]
+> **示例 27** [难度 ★★☆☆☆] [主题：常见坑：在已修改的容器上重复 mak]
 ```cpp
 // ⑭ ❌ 坑3：比较器不一致 —— make_heap 用 less，push_heap 用 greater
 std::vector<int> u{5, 2, 8};
@@ -616,7 +616,7 @@ ok.pop_back();                                   // ✅ 真正删除极值
 
 C++20 起 `<algorithm>` 提供 ranges 版堆算法：`std::ranges::make_heap / push_heap / pop_heap / sort_heap / is_heap / is_heap_until`，返回 `borrowed_iterator`（便于在 `|` 管道中衔接），并支持**投影（projection）**。
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：与 ranges（C++20）[标准]
+> **示例 29** [难度 ★★☆☆☆] [主题：与 ranges（C++20）[标准]
 ```cpp
 // ⑮ ranges::make_heap + 投影：直接按成员排序，不必写比较器
 #include <vector>
@@ -637,7 +637,7 @@ std::ranges::pop_heap(jobs, {}, &Job::prio);
 jobs.pop_back();
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：与 ranges（C++20）[标准]
+> **示例 31** [难度 ★★☆☆☆] [主题：与 ranges（C++20）[标准]
 ```cpp
 // ⑮ ranges::is_heap / is_heap_until：调试与校验堆性质（见 §⑲）
 #include <vector>
@@ -653,7 +653,7 @@ auto bad = std::ranges::is_heap_until(h);        // 指向第一个破坏性质�
 
 ## ⑯ 最佳实践 [经验]
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑯ 实践1：优先用 priority_queue 而非裸算法，除非需要中断式遍历
 #include <queue>
@@ -661,7 +661,7 @@ auto bad = std::ranges::is_heap_until(h);        // 指向第一个破坏性质�
 std::priority_queue<int> pq;          // 不变量由适配器托管，最不容易踩 §⑭ 的 UB
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 33** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑯ 实践2：需要随机访问堆中间（如"减小 key"）时，用裸 vector + 下标管理
 #include <vector>
@@ -674,7 +674,7 @@ void decrease_key(std::vector<int>& h, std::size_t i, int newval) {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 34** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 #include <vector>
 // ⑯ 实践3：比较器全程一致；把堆封装进类，杜绝裸调用前置条件错误
@@ -715,7 +715,7 @@ std::make_heap(cross.begin(), cross.end(), std::greater<int>());   // 小顶 -> 
 
 堆的存储就是底层容器的连续缓冲，无额外节点结构。以 `priority_queue<int>`（默认 `vector<int>`）为例，其内存与 `vector` 完全相同：
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：内存布局 [实现]]
+> **示例 36** [难度 ★★☆☆☆] [主题：内存布局 [实现]]
 ```
    priority_queue<int> pq;  push(9) push(7) push(8) 后（大顶堆）
    ┌────────── vector 底层缓冲（连续、可增长）──────────┐
@@ -725,7 +725,7 @@ std::make_heap(cross.begin(), cross.end(), std::greater<int>());   // 小顶 -> 
    容量增长时整体 realloc（倍增策略），所以 push 均摊 O(1)
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：内存布局 [实现]]
+> **示例 37** [难度 ★★☆☆☆] [主题：内存布局 [实现]]
 ```cpp
 // ⑱ 内存连续性验证：底层 vector 的 data() 即堆的连续存储
 #include <queue>
@@ -748,7 +748,7 @@ assert(h.size() == 3);
 
 验证"区间是否仍是合法堆"是排查堆 UB 的第一手段；C++ 提供 `std::is_heap` / `std::is_heap_until`，前者返回布尔，后者返回第一个破坏堆性质的迭代器。
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：调试 [经验]]
+> **示例 38** [难度 ★★☆☆☆] [主题：调试 [经验]]
 ```cpp
 // ⑲ 调试1：用 is_heap 校验不变量（定位 §⑭ 的 UB 现场）
 #include <vector>
@@ -763,7 +763,7 @@ auto it = std::is_heap_until(h.begin(), h.end());
 std::cout << "first broken at index " << (it - h.begin()) << "\n";
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：调试 [经验]]
+> **示例 39** [难度 ★★★☆☆] [主题：调试 [经验]]
 ```cpp
 // ⑲ 调试2：封装一个带断言的 safe_pop，开发期捕获 UB
 #include <vector>
@@ -776,7 +776,7 @@ void safe_pop(std::vector<int>& h) {
 }
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：调试 [经验]]
+> **示例 40** [难度 ★★☆☆☆] [主题：调试 [经验]]
 ```cpp
 // ⑲ 调试3：dump 堆为层序，肉眼核对父子关系
 #include <vector>
@@ -885,7 +885,7 @@ sorted-bsearch M=20000 : 3143.4 us (hits=20000)
 
 ## 附录 A：工业堆应用 [F: Industry / B: Principle]
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 A：工业堆应用 [F: Ind]
+> **示例 41** [难度 ★★☆☆☆] [主题：附录 A：工业堆应用 [F: Ind]
 ```
 堆在工业项目中的关键应用:
 
@@ -902,7 +902,7 @@ Linux kernel: timer wheel (多级时间轮) → 优于堆的 O(1) 插入, 用于
 
 ## 附录 B：性能与面试 [G: Performance / J: Learning]
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录 B：性能与面试 [G: Per]
+> **示例 42** [难度 ★★☆☆☆] [主题：附录 B：性能与面试 [G: Per]
 ```cpp
 #include <iostream>
 #include <queue>
@@ -960,7 +960,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 43** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1013,7 +1013,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 45** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1065,7 +1065,7 @@ int main() {
 
 **修复（cpp）**：用 `std::priority_queue`（堆），插入/取最大均 O(log n)。
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：演绎 1：动态极值——priorit]
+> **示例 47** [难度 ★★☆☆☆] [主题：演绎 1：动态极值——priorit]
 ```cpp
 #include <iostream>
 #include <queue>
@@ -1086,7 +1086,7 @@ int main() {
 
 **常见错误（text）**：
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：演绎 2：堆不变量——裸 pushb]
+> **示例 48** [难度 ★★☆☆☆] [主题：演绎 2：堆不变量——裸 pushb]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1101,7 +1101,7 @@ int main() {
 
 **修复（cpp）**：插入后必须 `push_heap` 维护不变量。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：演绎 2：堆不变量——裸 pushb]
+> **示例 49** [难度 ★★☆☆☆] [主题：演绎 2：堆不变量——裸 pushb]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1342,7 +1342,7 @@ flowchart TD
 
 ### D4.5 第一方可编译验证（堆四件套）
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：第一方可编译验证（堆四件套）]
+> **示例 50** [难度 ★★☆☆☆] [主题：第一方可编译验证（堆四件套）]
 ```cpp
 #include <algorithm>
 #include <iostream>
@@ -1475,7 +1475,7 @@ N = 1000 万，取 top-100（K=100）。checksum 214746090999 四策略一致。
 
 ### D5.3 验证 demo
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：验证 demo]
+> **示例 51** [难度 ★★☆☆☆] [主题：验证 demo]
 ```cpp
 #include <iostream>
 #include <vector>

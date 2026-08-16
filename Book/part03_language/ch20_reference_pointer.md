@@ -60,7 +60,7 @@ Stroustrup 在 1980 年代早期设计 C with Classes 时遇到硬需求：要�
 
 由此引出一组 cascade 的后果，本章逐一"击穿"：
 
-> **示例 1** [难度 ★★★☆☆] [主题：本章地图（先给结论，再击穿）]
+> **示例 1** [难度 ★★☆☆☆] [主题：本章地图（先给结论，再击穿）]
 ```
 引用 T&                                       指针 T*
 ─────────────────────────                     ─────────────────────────
@@ -90,7 +90,7 @@ sizeof(T&) == sizeof(T)                          sizeof(T*) == 8(64位)
 
 **[标准]** 引用一旦绑定即定型，`r = y;` 是"把 y 的值赋给 r 所指对象"，而非让 r 改指 y。
 
-> **示例 2** [难度 ★★★☆☆] [主题：证明①：引用无身份、不可重绑定]
+> **示例 2** [难度 ★★☆☆☆] [主题：证明①：引用无身份、不可重绑定]
 ```cpp
 // prog_01_ref_no_identity.cpp  —— 嵌入式场景：配置寄存器别名
 #include <cstdio>
@@ -107,7 +107,7 @@ int main() {
 }
 ```
 
-> **示例 3** [难度 ★★★☆☆] [主题：证明①：引用无身份、不可重绑定]
+> **示例 3** [难度 ★★☆☆☆] [主题：证明①：引用无身份、不可重绑定]
 ```cpp
 // prog_02_rebind_needs_pointer.cpp  —— 服务器场景：热切换后端节点
 #include <cstdio>
@@ -133,7 +133,7 @@ int main() {
 
 **[标准]** `[expr.sizeof]/2`：对引用应用 `sizeof` 时，结果是被引用类型的大小——因为"引用不是对象，没有自己的大小可量"。
 
-> **示例 4** [难度 ★★★☆☆] [主题：证明②：sizeof(T&) 取的是]
+> **示例 4** [难度 ★☆☆☆☆] [主题：证明②：sizeof(T&) 取的是]
 ```cpp
 // prog_03_sizeof_reference.cpp  —— 库场景：序列化缓冲区元数据
 #include <cstdio>
@@ -209,7 +209,7 @@ int main() {
 
 **[标准]** 语言层没有"空引用"类型；`int& r = *static_cast<int*>(nullptr);` **语法合法、编译通过**，但解引用空指针是 **[标准] 未定义行为（UB）**。标准对"引用非空"的保证是**契约而非运行时检查**。
 
-> **示例 7** [难度 ★★★☆☆] [主题：证明⑤：不存在"空引用"——但可伪造]
+> **示例 7** [难度 ★★☆☆☆] [主题：证明⑤：不存在"空引用"——但可伪造]
 ```cpp
 // prog_06_null_reference_ub.cpp  —— 演示"非空引用"只是契约
 #include <cstdio>
@@ -304,7 +304,7 @@ by_ref(int&):
 
 ### 3.3 返回引用同样返回地址（RAX）
 
-> **示例 9** [难度 ★★★☆☆] [主题：返回引用同样返回地址（RAX）]
+> **示例 9** [难度 ★★☆☆☆] [主题：返回引用同样返回地址（RAX）]
 ```cpp
 // prog_08_return_ref_asm.cpp
 int& first(int& a, int& b) { return a; }   // 返回 a 的地址
@@ -321,7 +321,7 @@ first(int&, int&):
 
 **[实现][平台·Windows]** 当引用作为**类成员**，或处于**虚继承**需要 this 指针调整时，编译器可能为引用分配一个指针大小的存储（否则无法在运行期完成绑定/偏移计算）。这是"引用非对象"规则的现实例外。
 
-> **示例 10** [难度 ★★★☆☆] [主题：例外：成员引用 / 虚继承下引用可能]
+> **示例 10** [难度 ★★☆☆☆] [主题：例外：成员引用 / 虚继承下引用可能]
 ```cpp
 // prog_09_member_ref_occupies_storage.cpp
 #include <cstdio>
@@ -346,7 +346,7 @@ int main() {
 }
 ```
 
-> **示例 11** [难度 ★★★☆☆] [主题：例外：成员引用 / 虚继承下引用可能]
+> **示例 11** [难度 ★☆☆☆☆] [主题：例外：成员引用 / 虚继承下引用可能]
 ```cpp
 // prog_10_virtual_inheritance_ref_storage.cpp  —— 虚继承导致 this 调整
 #include <cstdio>
@@ -375,7 +375,7 @@ int main() {
 
 ### 4.1 规则全景（直接绑定 vs 间接绑定）
 
-> **示例 12** [难度 ★★★☆☆] [主题：规则全景（直接绑定 vs 间接绑定）]
+> **示例 12** [难度 ★★☆☆☆] [主题：规则全景（直接绑定 vs 间接绑定）]
 ```
 延长成立：  const T& r = prvalue/临时;          // 直接绑定 → 延长
 延长成立：  T&&    r = prvalue/临时;          // 右值引用直接绑定 → 延长 (ch115)
@@ -387,7 +387,7 @@ int main() {
 
 ### 4.2 直接绑定延长（成立）
 
-> **示例 13** [难度 ★★★☆☆] [主题：直接绑定延长（成立）]
+> **示例 13** [难度 ★★☆☆☆] [主题：直接绑定延长（成立）]
 ```cpp
 // prog_11_const_ref_extends_prvalue.cpp  —— 库场景：构造临时配置直接读
 #include <string>
@@ -409,7 +409,7 @@ int main() {
 
 ### 4.3 例外②：成员引用不延长
 
-> **示例 14** [难度 ★★★☆☆] [主题：例外②：成员引用不延长]
+> **示例 14** [难度 ★★☆☆☆] [主题：例外②：成员引用不延长]
 ```cpp
 // prog_12_member_ref_no_extend.cpp  —— 经典悬垂陷阱
 #include <string>
@@ -429,7 +429,7 @@ Holder make() {
 
 ### 4.4 例外③：绑定到数组元素不延长
 
-> **示例 15** [难度 ★★★☆☆] [主题：例外③：绑定到数组元素不延长]
+> **示例 15** [难度 ★★☆☆☆] [主题：例外③：绑定到数组元素不延长]
 ```cpp
 // prog_13_array_element_ref_no_extend.cpp
 #include <cstdio>
@@ -445,7 +445,7 @@ int main() {
 
 ### 4.5 例外①：返回 const T& 指向局部临时 = 悬垂
 
-> **示例 16** [难度 ★★★☆☆] [主题：例外①：返回 const T& 指向]
+> **示例 16** [难度 ★★☆☆☆] [主题：例外①：返回 const T& 指向]
 ```cpp
 // prog_14_return_const_ref_dangles.cpp
 #include <string>
@@ -465,7 +465,7 @@ const std::string& bad() {
 
 ### 5.1 场景 A：返回局部变量引用
 
-> **示例 17** [难度 ★★★☆☆] [主题：场景 A：返回局部变量引用]
+> **示例 17** [难度 ★☆☆☆☆] [主题：场景 A：返回局部变量引用]
 ```cpp
 // prog_15_return_local_ref.cpp  —— 服务器场景: 拼装响应头
 #include <string>
@@ -482,7 +482,7 @@ std::string& build_ok(std::string& out) {
 
 ### 5.2 场景 B：range-for 遍历临时（临时在循环前析构）
 
-> **示例 18** [难度 ★★★☆☆] [主题：场景 B：range-for 遍历临]
+> **示例 18** [难度 ★★☆☆☆] [主题：场景 B：range-for 遍历临]
 ```cpp
 // prog_16_range_for_over_temp.cpp  —— 嵌入式场景: 遍历传感器快照
 #include <vector>
@@ -506,7 +506,7 @@ void ok() {
 
 ### 5.3 场景 C：三元运算符两边类型不同产生临时
 
-> **示例 19** [难度 ★★★☆☆] [主题：场景 C：三元运算符两边类型不同产生]
+> **示例 19** [难度 ★☆☆☆☆] [主题：场景 C：三元运算符两边类型不同产生]
 ```cpp
 // prog_17_ternary_temp.cpp
 #include <cstdio>
@@ -525,7 +525,7 @@ int main() {
 
 ### 5.4 场景 D：`initializer_list` 引用元素生命周期坑
 
-> **示例 20** [难度 ★★★☆☆] [主题：场景 D：initializerli]
+> **示例 20** [难度 ★★☆☆☆] [主题：场景 D：initializerli]
 ```cpp
 // prog_18_init_list_dangle.cpp  —— 用 initializer_list 存"引用"? 危险
 #include <initializer_list>
@@ -545,7 +545,7 @@ void ok_pattern() {
 
 ### 5.5 场景 E：引用绑定到已被 `std::move` 的对象
 
-> **示例 21** [难度 ★★★☆☆] [主题：场景 E：引用绑定到已被 std::]
+> **示例 21** [难度 ★★☆☆☆] [主题：场景 E：引用绑定到已被 std::]
 ```cpp
 // prog_19_ref_to_moved.cpp  —— 库场景: 转移后原引用失效
 #include <string>
@@ -615,7 +615,7 @@ void bad() {
 
 ### 6.2 工厂 `ref()` / `cref()`
 
-> **示例 23** [难度 ★★★☆☆] [主题：工厂 ref() / cref()]
+> **示例 23** [难度 ★★☆☆☆] [主题：工厂 ref() / cref()]
 ```cpp
 // bits/refwrap.h (libstdc++ 13)
   template<typename _Tp>
@@ -634,7 +634,7 @@ void bad() {
 
 ### 6.4 程序：基础用法
 
-> **示例 24** [难度 ★★★☆☆] [主题：程序：基础用法]
+> **示例 24** [难度 ★★☆☆☆] [主题：程序：基础用法]
 ```cpp
 // prog_20_refwrap_basic.cpp
 #include <functional>
@@ -657,7 +657,7 @@ int main() {
 
 ### 6.5 程序：容器存"引用"
 
-> **示例 25** [难度 ★★★☆☆] [主题：程序：容器存"引用"]
+> **示例 25** [难度 ★★☆☆☆] [主题：程序：容器存"引用"]
 ```cpp
 // prog_21_refwrap_in_vector.cpp  —— 监控一组已存在 socket, 不拥有它们
 #include <vector>
@@ -684,7 +684,7 @@ int main() {
 
 ### 6.6 程序：与 std::bind 配合（按引用传参）
 
-> **示例 26** [难度 ★★★☆☆] [主题：程序：与 std::bind 配合]
+> **示例 26** [难度 ★★☆☆☆] [主题：程序：与 std::bind 配合]
 ```cpp
 // prog_22_refwrap_with_bind.cpp  —— 多线程场景: 子线程改主线程变量
 #include <functional>
@@ -705,7 +705,7 @@ int main() {
 
 ### 6.7 程序：reference_wrapper 可调用
 
-> **示例 27** [难度 ★★★☆☆] [主题：程序：referencewrappe]
+> **示例 27** [难度 ★☆☆☆☆] [主题：程序：referencewrappe]
 ```cpp
 // prog_23_refwrap_callable.cpp
 #include <functional>
@@ -727,7 +727,7 @@ int main() {
 
 ### 7.1 Google Benchmark 代码
 
-> **示例 28** [难度 ★★★☆☆] [主题：代码]
+> **示例 28** [难度 ★★☆☆☆] [主题：代码]
 ```cpp
 // prog_24_bench_pass.cpp  —— 编译: g++ -O2 -std=c++20 prog_24_bench_pass.cpp -lbenchmark -lpthread
 #include <benchmark/benchmark.h>
@@ -780,7 +780,7 @@ BENCHMARK(BM_ValueBig);   BENCHMARK(BM_RefBig);   BENCHMARK(BM_PtrBig);
 
 ### 7.3 别名分析与 `__restrict` 的影响
 
-> **示例 29** [难度 ★★★☆☆] [主题：别名分析与 restrict 的影响]
+> **示例 29** [难度 ★★☆☆☆] [主题：别名分析与 restrict 的影响]
 ```cpp
 // prog_25_alias_restrict.cpp  —— 演示引用别名限制优化
 #include <cstdio>
@@ -810,7 +810,7 @@ int main() {
 
 ### 8.1 指针算术 + 数组衰减
 
-> **示例 30** [难度 ★★★☆☆] [主题：指针算术 + 数组衰减]
+> **示例 30** [难度 ★☆☆☆☆] [主题：指针算术 + 数组衰减]
 ```cpp
 // prog_26_ptr_arith_decay.cpp  —— 服务器场景: 协议报文解析
 #include <cstdio>
@@ -834,7 +834,7 @@ int main() {
 
 **[标准]** `[expr.rel]/3`：比较两个**指向不同数组对象**的指针是**未指定（unspecified）**；但比较指向同一数组（或其一过去末尾一位 `past-the-end`）的指针是良定义的。**比较指向完全不同对象的指针（尤其是越过末尾多位）是 UB 的常见来源**。
 
-> **示例 31** [难度 ★★★☆☆] [主题：指针比较 UB 边界：超出数组末端的]
+> **示例 31** [难度 ★★☆☆☆] [主题：指针比较 UB 边界：超出数组末端的]
 ```cpp
 // prog_27_ptr_compare_ub.cpp
 #include <cstdio>
@@ -859,7 +859,7 @@ int main() {
 
 **[标准]** `void*` 是"无类型指针"，可存任意对象地址，但**不能解引用、不能做算术（无 `sizeof`）**，需先转回具体类型。
 
-> **示例 32** [难度 ★★★☆☆] [主题：void 的限制与转换]
+> **示例 32** [难度 ★☆☆☆☆] [主题：void 的限制与转换]
 ```cpp
 // prog_28_void_star.cpp  —— 嵌入式场景: 通用缓冲区句柄
 #include <cstdio>
@@ -878,7 +878,7 @@ int main() {
 
 ### 8.4 指针差 `ptrdiff_t`
 
-> **示例 33** [难度 ★★★☆☆] [主题：指针差 ptrdifft]
+> **示例 33** [难度 ★☆☆☆☆] [主题：指针差 ptrdifft]
 ```cpp
 // prog_29_ptrdiff.cpp
 #include <cstdio>
@@ -894,7 +894,7 @@ int main() {
 
 ### 8.5 引用无算术（对比演示）
 
-> **示例 34** [难度 ★★★☆☆] [主题：引用无算术（对比演示）]
+> **示例 34** [难度 ★☆☆☆☆] [主题：引用无算术（对比演示）]
 ```cpp
 // prog_30_ref_no_arith.cpp
 int main() {
@@ -1031,7 +1031,7 @@ public class Main {
 
 ### 案例 A：const T& 只读参数避免大对象拷贝
 
-> **示例 36** [难度 ★★★☆☆] [主题：案例 A：const T& 只读参数]
+> **示例 36** [难度 ★☆☆☆☆] [主题：案例 A：const T& 只读参数]
 ```cpp
 // prog_35_server_config_readonly.cpp
 #include <string>
@@ -1053,7 +1053,7 @@ bool is_allowed(const ServerConfig& cfg, const std::string& peer) {
 
 ### 案例 B：operator[] / front() 返回 T&（容器内元素别名）
 
-> **示例 37** [难度 ★★★☆☆] [主题：案例 B：operator[] / ]
+> **示例 37** [难度 ★☆☆☆☆] [主题：案例 B：operator[] / ]
 ```cpp
 // prog_36_container_returns_ref.cpp  —— ch77 预告
 #include <vector>
@@ -1070,7 +1070,7 @@ int main() {
 
 ### 案例 C：工厂返回引用必须指向长生命对象
 
-> **示例 38** [难度 ★★★☆☆] [主题：案例 C：工厂返回引用必须指向长生命]
+> **示例 38** [难度 ★★☆☆☆] [主题：案例 C：工厂返回引用必须指向长生命]
 ```cpp
 // prog_37_factory_safe_ref.cpp
 #include <string>
@@ -1085,7 +1085,7 @@ std::string& registry(const std::string& key) {
 
 ### 案例 D：范围 for 必须 `auto&` 才能就地修改
 
-> **示例 39** [难度 ★★★☆☆] [主题：案例 D：范围 for 必须 aut]
+> **示例 39** [难度 ★☆☆☆☆] [主题：案例 D：范围 for 必须 aut]
 ```cpp
 // prog_38_sensor_calibrate.cpp  —— 嵌入式: 就地校准传感器读数
 #include <array>
@@ -1106,7 +1106,7 @@ int main() {
 
 ### 案例 E：多线程按引用传参必须用 reference_wrapper
 
-> **示例 40** [难度 ★★★☆☆] [主题：案例 E：多线程按引用传参必须用 r]
+> **示例 40** [难度 ★★☆☆☆] [主题：案例 E：多线程按引用传参必须用 r]
 ```cpp
 // prog_39_thread_by_ref.cpp  —— 对应 §⑥ prog_22 扩展
 #include <thread>
@@ -1127,7 +1127,7 @@ int main() {
 
 ### 案例 F：成员引用导致类不可赋值（Rule of Five 破坏）
 
-> **示例 41** [难度 ★★★☆☆] [主题：案例 F：成员引用导致类不可赋值]
+> **示例 41** [难度 ★★☆☆☆] [主题：案例 F：成员引用导致类不可赋值]
 ```cpp
 // prog_40_member_ref_rule_of_five.cpp  —— ch48 预告
 #include <cstdio>
@@ -1269,7 +1269,7 @@ int main() {
 4. 跨 DLL/so 边界的 `T&`/`T*` 是否保证同编译器同 STL 版本（§⑰ 第 9 条）？
 
 **重构范式：观察者指针 → 智能指针**
-> **示例 42** [难度 ★★★☆☆] [主题：综合实战：引用与指针在工业代码中的审]
+> **示例 42** [难度 ★★☆☆☆] [主题：综合实战：引用与指针在工业代码中的审]
 ```cpp
 #include <memory>
 // 反模式：裸指针持有所有权，易漏释放/重复释放
@@ -1282,7 +1282,7 @@ Widget2 w2; int* obs = w2.buf.get();   // obs 明确是观察者，不负责释�
 ```
 
 **重构范式：多返回用结构化绑定（引用实现）**
-> **示例 43** [难度 ★★★☆☆] [主题：综合实战：引用与指针在工业代码中的审]
+> **示例 43** [难度 ★☆☆☆☆] [主题：综合实战：引用与指针在工业代码中的审]
 ```cpp
 #include <string>
 #include <map>
@@ -1411,7 +1411,7 @@ GCC实现处理编译Clang实现处理编译MSVC实现处理编译ABI NameMangli
 若用指针：`void scale(std::vector<int>* v, int f)` 内部写 `(*v)[i] *= f`，调用处 `scale(&v, 2)`。
 指针表达"可空"，引用表达"必非空"——按语义选：此函数不应接受空对象，故引用更贴切。
 
-> **示例 44** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
+> **示例 44** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <vector>
 #include <iostream>
@@ -1438,7 +1438,7 @@ int main() {
 `x == 20`。`r` 和 `*p` 都直接寻址 `x` 的内存，没有任何"引用对象"被创建。
 GCC 15.3.0 下 `r = 10` 编译为 `mov DWORD PTR [rbp-4], 10`，与直接写 `x` 的指令完全相同——引用在优化后**不占存储、无间接层**。
 
-> **示例 45** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 45** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 int x = 5; int& r = x; int* p = &x;
 r = 10;      // mov DWORD PTR [rbp-4], 10
@@ -1490,7 +1490,7 @@ int main() {
 
 **步骤 1：朴素值返回（错误起点）**
 
-> **示例 47** [难度 ★★★☆☆] [主题：附录：用法演绎 — 返回引用还是指针]
+> **示例 47** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 返回引用还是指针]
 ```cpp
 Config load_config();              // 返回副本: 大对象拷贝 + 可能异常
 Config c = load_config();          // 一次完整拷贝
@@ -1500,7 +1500,7 @@ Config c = load_config();          // 一次完整拷贝
 
 **步骤 2：返回 `const` 引用（悬垂风险）**
 
-> **示例 48** [难度 ★★★☆☆] [主题：附录：用法演绎 — 返回引用还是指针]
+> **示例 48** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 返回引用还是指针]
 ```cpp
 const Config& load_config();       // 若内部返回局部变量的引用 -> 悬垂!
 const Config& c = load_config();   // c 指向已销毁对象 -> UB
@@ -1510,7 +1510,7 @@ const Config& c = load_config();   // c 指向已销毁对象 -> UB
 
 **步骤 3：返回指针表达"可空"**
 
-> **示例 49** [难度 ★★★☆☆] [主题：附录：用法演绎 — 返回引用还是指针]
+> **示例 49** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 返回引用还是指针]
 ```cpp
 Config* load_config();             // nullptr 表示"未找到/失败"
 Config* c = load_config();

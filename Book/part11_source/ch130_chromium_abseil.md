@@ -7,7 +7,7 @@
 > 本机未安装 Abseil / Chromium 源码树，源码剖析统一引用上游仓库 URL（见各 `// 文件：`/`// 行号：` 标注，注明「上游参考」），不保证行号与 HEAD 完全一致。
 > 真实取证：第⑥、⑨ 节的 C++ 示例为【自包含】等价实现，已在本机 g++ 13.1.0 真实编译并抓取真实汇编（见「典型输出」）。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 1** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // ① 本章两条主线对应的"最小可用心智模型"
 // Abseil  = Google 开源的 C++ 基础库（容器/字符串/时间/同步），标准库的"预演场"
@@ -57,7 +57,7 @@ Abseil 与标准库的边界之争最有趣：它不试图替代标准库，而�
 - **Abseil**：2019 年 Google 开源，把内部 `strings`/`container`/`time`/`synchronization` 等沉淀标准化，许多特性后来进入 C++17/20/23（见第⑱节）。
 - **Chromium `base`**：Chromium 项目的地基，提供 `TaskRunner`/`MessageLoop`/`PartitionAlloc`/`StringPiece` 等，支撑每秒数十亿次回调与多进程沙箱。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：Chromium / Abse]
+> **示例 2** [难度 ★★☆☆☆] [主题：概述：Chromium / Abse]
 ```cpp
 // ① 一个"同时用到两者"的典型工程入口草图（合法 C++，需链接对应库）
 #include "absl/container/flat_hash_map.h"
@@ -123,7 +123,7 @@ consume(arr);   // 零拷贝视图
 
 `absl::flat_hash_map` 自身只是薄封装，真正逻辑在 `internal/raw_hash_map.h`。下面逐行对照上游源码（本机未装，引用上游）。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：[实现·Abseil]源码剖析：上游]
+> **示例 7** [难度 ★★★☆☆] [主题：[实现·Abseil]源码剖析：上游]
 ```cpp
 #include <utility>
 // 文件：https://github.com/abseil/abseil-cpp/blob/master/absl/container/flat_hash_map.h
@@ -142,7 +142,7 @@ consume(arr);   // 零拷贝视图
 //   };
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：[实现·Abseil]源码剖析：上游]
+> **示例 8** [难度 ★★☆☆☆] [主题：[实现·Abseil]源码剖析：上游]
 ```cpp
 // ③ 下游真正干活的是 raw_hash_map（Swiss Table / 开放寻址 + 元数据字节）
 // 文件：https://github.com/abseil/abseil-cpp/blob/master/absl/container/internal/raw_hash_map.h
@@ -175,7 +175,7 @@ base::StringPiece p("https://example.com");
 log_url(p);
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：库]
+> **示例 10** [难度 ★★☆☆☆] [主题：库]
 ```cpp
 // ④-b base::Thread：封装一条 OS 线程 + 自带 TaskRunner
 #include "base/threading/thread.h"
@@ -185,7 +185,7 @@ worker.task_runner()->PostTask(        // 往该线程投递任务
     FROM_HERE, base::BindOnce([] { /* 在 io_thread 上执行 */ }));
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：库]
+> **示例 11** [难度 ★★☆☆☆] [主题：库]
 ```cpp
 // ④-c base::PlatformThread::CurrentId()：拿本线程 ID（跨平台）
 #include "base/threading/platform_thread.h"
@@ -200,7 +200,7 @@ base::PlatformThreadId id = base::PlatformThread::CurrentId();
 
 Chromium 的任务系统的三大件：`TaskRunner`（投递入口）、`MessageLoop`（执行循环）、`PostTask`（投递动作）。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：任务系统]
+> **示例 12** [难度 ★★☆☆☆] [主题：任务系统]
 ```cpp
 // ⑤-a 最简：线程池投递一个一次性任务
 #include "base/task/thread_pool/thread_pool.h"
@@ -247,7 +247,7 @@ std::move(cb).Run();
 
 Chromium 默认分配器 `PartitionAlloc` 的核心思想：**按大小分桶(bucket)，每个分区独立、bump-pointer 快速分配、附带防越界隔离**。下面用【自包含】等价实现在本机编译取证。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：内存：PartitionAlloc]
+> **示例 16** [难度 ★★★★☆] [主题：内存：PartitionAlloc]
 ```cpp
 // ⑥ 自包含分区式分配器等价：bump-pointer arena（PartitionAlloc 单分区的 O(1) 路径）
 // 文件：Examples/_ch130_allocator.cpp，行号：见下方真实编译
@@ -321,7 +321,7 @@ int v = absl::any_cast<int>(box);
 (void)v;
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：与标准关系：Abseil 先于标准的]
+> **示例 19** [难度 ★★☆☆☆] [主题：与标准关系：Abseil 先于标准的]
 ```cpp
 // ⑦-c optional / variant / string_view 三者都先出现在 absl，后进入标准
 #include "absl/types/optional.h"
@@ -369,7 +369,7 @@ ninja -C out/Default base
 
 下面用【自包含】开放寻址哈希表等价 `flat_hash_map`，在本机 g++ 13.1.0 真实编译，抓取 `find` 的热探测循环汇编。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：[实现·Abseil]真实：编译自包]
+> **示例 20** [难度 ★★★☆☆] [主题：[实现·Abseil]真实：编译自包]
 ```cpp
 // ⑨ 自包含开放寻址哈希表（flat_hash_map 的等价机制：连续数组 + 线性探测）
 // 文件：Examples/_ch130_flat_hash_map.cpp，行号：见下方真实编译
@@ -478,7 +478,7 @@ std::string dbg = absl::StrCat("id=", 7, " state=", "run");
 
 ## ⑪ 性能：flat_hash_map vs std::unordered_map [标准]
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：性能：flathashmap vs ]
+> **示例 24** [难度 ★★☆☆☆] [主题：性能：flathashmap vs ]
 ```cpp
 // ⑪-a 基准思路：same workload，换容器，比 ns/op
 #include <unordered_map>
@@ -497,7 +497,7 @@ m.reserve(1 << 20);                 // 一次性定容，省掉多次 rehash
 for (int i = 0; i < (1 << 20); ++i) m[i] = i;
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：性能：flathashmap vs ]
+> **示例 26** [难度 ★★☆☆☆] [主题：性能：flathashmap vs ]
 ```cpp
 // ⑪-c 测量缓存行为（perf 思路，非本机运行）
 //   perf stat -e cache-misses,instructions ./bench_flat
@@ -521,7 +521,7 @@ const char* kSep = "/";
 #endif
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：跨平台：宏、线程、文件 [平台]]
+> **示例 28** [难度 ★★☆☆☆] [主题：跨平台：宏、线程、文件 [平台]]
 ```cpp
 // ⑫-b 跨平台睡眠/线程
 #include "base/threading/platform_thread.h"
@@ -540,7 +540,7 @@ absl::Duration elapsed = absl::Now() - start;     // 同一接口，不同 OS �
 
 ## ⑬ 常见陷阱 [经验]
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 30** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬-a 陷阱1：flat_hash_map 的引用/迭代器在 insert 时可能整体失效
 absl::flat_hash_map<int, int> m;
@@ -549,7 +549,7 @@ m.reserve(1000000);        // 触发重哈希 -> 底层数组搬迁
 ref = 5;                   // ⚠ 悬垂引用！未定义行为
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 31** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬-b 陷阱2：遍历时 erase 要用返回的新迭代器（两容器规则类似）
 for (auto it = m.begin(); it != m.end(); ) {
@@ -558,7 +558,7 @@ for (auto it = m.begin(); it != m.end(); ) {
 }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 32** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬-c 陷阱3：key 类型必须稳定 hash/eq；用 mutable 字段做 key 会破坏查找
 struct BadKey { int id; mutable int cached; };  // ⚠ cached 参与比较会出 bug
@@ -667,7 +667,7 @@ widgets.emplace(1, std::make_unique<Widget>());
 
 ## ⑰ 贡献：如何向上游提补丁 [经验]
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：贡献：如何向上游提补丁 [经验]]
+> **示例 43** [难度 ★★☆☆☆] [主题：贡献：如何向上游提补丁 [经验]]
 ```cpp
 // ⑰-a Abseil 补丁示例：给 flat_hash_map 加一个 helper（伪代码草图）
 //   提交前必须过测试 + clang-format + 通过 CI
@@ -744,7 +744,7 @@ std::span<const int> t = s;      // 布局一致，可互转
 //   3) absl/container/internal/raw_hash_set.h  —— 底层容器
 ```
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读：怎么读这两套库 ]
+> **示例 49** [难度 ★★☆☆☆] [主题：调试 / 源码阅读：怎么读这两套库 ]
 ```cpp
 // ⑲-b 读 Chromium 任务系统：从 PostTask 顺藤摸瓜
 //   base/task/thread_pool/thread_pool.h        —— PostTask 入口
@@ -752,7 +752,7 @@ std::span<const int> t = s;      // 布局一致，可互转
 //   base/message_loop/message_loop.cc          —— Run 循环
 ```
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读：怎么读这两套库 ]
+> **示例 50** [难度 ★★☆☆☆] [主题：调试 / 源码阅读：怎么读这两套库 ]
 ```cpp
 // ⑲-c 用本机等价实现辅助理解（见第⑥/⑨节，自包含、可单步调试）
 //   把上游复杂的 SIMD/锁逻辑替换成最小可运行版本，先懂机制再读优化
@@ -778,7 +778,7 @@ std::span<const int> t = s;      // 布局一致，可互转
    - [标准] C++20 起标准提供 `std::span`：连续序列的非拥有视图。
    - [引用] ISO/IEC 14882:2023 §[views.span]（std::span）/ Abseil 文档；cppreference "std::span" 词条。
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
+> **示例 51** [难度 ★★☆☆☆] [主题：速查表 [标准]]
 ```
 ┌──────────────────────────┬────────────────────────────┬──────────────────────┐
 │ 任务                      │ Abseil / Chromium API       │ 标准等价 / 备注       │
@@ -799,7 +799,7 @@ std::span<const int> t = s;      // 布局一致，可互转
 └──────────────────────────┴────────────────────────────┴──────────────────────┘
 ```
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
+> **示例 52** [难度 ★★☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ 30 秒上手指纹：最小可用代码片段（合法 C++，需对应头文件/链接）
 #include "absl/container/flat_hash_map.h"
@@ -845,7 +845,7 @@ int quickstart() {
 
 不装 Abseil / Chromium 也能理解 `base::RepeatingCallback` 的运行模型——下面用标准库复刻其核心：**一个可多次调用的类型擦除回调**。这正是 `base::RepeatingCallback` 干的事（早期 Chromium 用 `base::Callback`，现已统一为 `RepeatingCallback`/`OnceCallback`）。
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
+> **示例 53** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
 ```cpp
 // ㉑.2 用标准 C++ 复刻 Abseil/Chromium「可重复回调」的本质（本块可独立编译，GCC 15.3.0 验证）
 #include <functional>
@@ -876,7 +876,7 @@ int main() {
 
 下面才是你在工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：㉑.3 真实 API 长什么样]
+> **示例 54** [难度 ★★☆☆☆] [主题：㉑.3 真实 API 长什么样]
 ```cpp
 // ㉑.3 真实 Abseil/Chromium 写法（仅注释演示，需链接 absl / Chromium base；本门禁按空块编译通过）：
 //   #include "absl/container/flat_hash_map.h"
@@ -1055,7 +1055,7 @@ int main(){std::cout<<"Chromium=no exceptions+RTTI; Abseil=SwissTable+StatusOr"<
 
 计数放在对象自身（侵入式），指针只负责增减，不持有计数：
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 56** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <cassert>
 #include <utility>
@@ -1109,7 +1109,7 @@ int main() {
 
 桶数组连续、探测解决冲突、负载因子触发翻倍 rehash：
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 57** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <cstddef>
 #include <string_view>
@@ -1173,7 +1173,7 @@ int main() {
 
 值/错二选一并显式检查，避免"忽略错误码"这一最大来源：
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 58** [难度 ★★★☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <string>
 #include <utility>
@@ -1385,7 +1385,7 @@ vector+二分只在「写极少读极多且已排序」时划算；通用高频�
 
 ### D5.3 可复现 demo
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 59** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 #include <vector>

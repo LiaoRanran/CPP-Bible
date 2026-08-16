@@ -174,7 +174,7 @@ timeline
 #include <stdio.h>
 void w(){ FILE* f=fopen("t.txt","w"); if(f){ fputs("x",f); fclose(f);} }
 ```
-> **示例 13** [难度 ★☆☆☆☆] [主题：类图]
+> **示例 13** [难度 ★★★★☆] [主题：类图]
 ```cpp
 void demo_malloc(){ int* p=(int*)std::malloc(sizeof(int)); std::free(p); }
 ```
@@ -236,7 +236,7 @@ C 的 struct（POD，无虚函数）：
 0x1000         0x1004     0x1008
 ```
 C with Classes 加入虚函数后（Itanium 风格，标注 `[平台·Linux]`）：
-> **示例 17** [难度 ★☆☆☆☆] [主题：内存图]
+> **示例 17** [难度 ★★★☆☆] [主题：内存图]
 ```
 对象 circle @ 0x2000:
 ┌──────────────┬────────────┬─────────┐
@@ -293,7 +293,7 @@ class Base { public: int a; }; class Der : public Base { public: int b; };
 // 虚函数（运行时多态）
 class Animal { public: virtual void speak(){} }; class Dog:public Animal{ public: void speak(){} };
 ```
-> **示例 24** [难度 ★☆☆☆☆] [主题：汇编分析（C 与 C++ 同构示例）]
+> **示例 24** [难度 ★★☆☆☆] [主题：汇编分析（C 与 C++ 同构示例）]
 ```cpp
 // 纯虚函数 -> 抽象类
 class Shape { public: virtual double area()=0; };
@@ -332,7 +332,7 @@ void hi(){ std::cout << "hi\n"; }
 // 名字空间（后期加入）
 namespace lib { int f(){ return 1; } }
 ```
-> **示例 28** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 28** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 // 函数模板雏形
 template<class T> T max(T a,T b){ return a>b?a:b; }
@@ -536,7 +536,7 @@ int main() {
 }
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录: C with Classes]
+> **示例 42** [难度 ★★☆☆☆] [主题：附录: C with Classes]
 ```cpp
 #include <cstdio>
 // 附录-B: C 宏 vs C++ constexpr (30年演化)
@@ -545,7 +545,7 @@ constexpr double PI_CPP = 3.141592653589793;
 int main() { printf("C macro: %f  C++ constexpr: %f\n", PI_C, PI_CPP); return 0; }
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录: C with Classes]
+> **示例 43** [难度 ★★☆☆☆] [主题：附录: C with Classes]
 ```cpp
 #include <cstdio>
 // 附录-C: void* 通用指针 vs template 类型安全
@@ -562,7 +562,7 @@ int div_c(int a, int b, int* out) { if (b==0) return -1; *out = a/b; return 0; }
 int main() { int r; if (div_c(10, 2, &r) == 0) printf("C: %d\n", r); return 0; }
 ```
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：附录: C with Classes]
+> **示例 45** [难度 ★★☆☆☆] [主题：附录: C with Classes]
 ```cpp
 // 附录-E: malloc/free vs new/delete vs RAII
 #include <memory>
@@ -574,7 +574,7 @@ int main() { c_style(); cpp_style(); printf("RAII: no manual free needed.\n"); r
 
 ## 附录 D：C遗产底层与工业影响 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：附录 D：C遗产底层与工业影响 [E]
+> **示例 46** [难度 ★★★★☆] [主题：附录 D：C遗产底层与工业影响 [E]
 ```
 C语言如何影响C++底层:
 
@@ -621,7 +621,7 @@ int main() {
 
 ## 附录 E：C遗产的现代C++替代 [D: Stdlib / E: Lowlevel / H: Design]
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：附录 E：C遗产的现代C++替代 []
+> **示例 48** [难度 ★★★★☆] [主题：附录 E：C遗产的现代C++替代 []
 ```
 C → C++ 替代对照:
 
@@ -775,7 +775,7 @@ int main(){int arr[5]={5,3,1,4,2};qsort(arr,5,4,cmp);std::cout<<arr[0]<<std::end
 
 C++ 是 C 的**超集但有数十处例外**（本文件第⑯节）。下面用一段可编译的 C++23 代码演示三处典型不兼容点，并在注释里标出 C 的写法：
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 54** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <cstddef>
 #include <cstdio>
@@ -818,7 +818,7 @@ int main() {
 
 C with Classes（1980）的核心目标：把「类/构造函数」翻译成**等价的 C 代码**，再交给 C 编译器生成原生机器码。下面这段 C++ 经 CFront 转译后，其 `run_demo` 会带 C ABI 符号，可被任意 C 链接器直接消费，运行期没有任何 VM 解释开销：
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 55** [难度 ★★★☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <cstdio>
 
@@ -861,7 +861,7 @@ int main() {
 
 「在 C 上加特性」能通过 CFront 把新语法机械翻译回 C 来实现，从而**零成本复用 C 编译器、链接器、调试器**。下面演示 CFront 的核心手法——把 C++ class 展开为「C 的 struct + 全局 init 函数」，这正是 1980 年 C with Classes 落地的真实方式：
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 56** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <cstdio>
 

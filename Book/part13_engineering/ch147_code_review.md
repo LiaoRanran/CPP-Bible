@@ -73,7 +73,7 @@ public:
 
 `[经验]` 一份可复用的审查清单（checklist）是团队规模化的前提。把"每次都要想"的共性项固化成清单，reviewer 的注意力才能留给真正需要判断力的部分。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：审查清单]
+> **示例 4** [难度 ★★☆☆☆] [主题：审查清单]
 ```cpp
 // 正确性自查清单（伪代码，落到 PR 模板里）
 //   [ ] 所有分支都有返回值（非空路径）？
@@ -173,7 +173,7 @@ int main(){ important(); std::printf("ignored\n"); }
 // declared with attribute 'nodiscard' [-Wunused-result]
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：编译器警告]
+> **示例 12** [难度 ★★☆☆☆] [主题：编译器警告]
 ```cpp
 // _ch147_overflow.cpp —— 常量整数溢出（UB）
 #include <cstdio>
@@ -248,7 +248,7 @@ int report_gap(const std::vector<int>& a, const std::vector<int>& b) {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：重构与坏味道（code smell）]
+> **示例 19** [难度 ★★☆☆☆] [主题：重构与坏味道（code smell）]
 ```cpp
 // 神秘数字 -> 命名常量
 constexpr int kMaxRetries = 3;        // 而非裸写 3
@@ -259,7 +259,7 @@ for (int i = 0; i < kMaxRetries; ++i) try_once();
 
 `[实现]` C++ 的内存模型下，未同步的共享写是数据竞争（data race），属于未定义行为——UB 不会在编译期报错，却会在特定调度下产生"偶发错误"。reviewer 必须盯紧：共享状态是否 `std::mutex`/`std::atomic` 保护，锁的粒度与顺序，以及 `std::shared_ptr` 的引用计数虽原子但**指向的对象**仍需额外同步。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：并发缺陷审查]
+> **示例 20** [难度 ★★★★☆] [主题：并发缺陷审查]
 ```cpp
 // 坏味道：数据竞争（_ch147_race.cpp 节选）
 #include <thread>
@@ -268,7 +268,7 @@ void inc(){ for(int i=0;i<100000;++i) ++g; }   // 非原子、非加锁
 // g++ -Wall -Wextra 不报，但运行时结果不确定
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：并发缺陷审查]
+> **示例 21** [难度 ★★☆☆☆] [主题：并发缺陷审查]
 ```cpp
 // 修复：原子变量保护共享计数
 #include <atomic>
@@ -277,7 +277,7 @@ std::atomic<int> g{0};
 void inc(){ for(int i=0;i<100000;++i) ++g; }    // 原子递增，无竞争
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：并发缺陷审查]
+> **示例 22** [难度 ★★☆☆☆] [主题：并发缺陷审查]
 ```cpp
 // 修复（临界区较长时）：互斥锁
 #include <mutex>
@@ -304,7 +304,7 @@ int main(){ int* p = make(); (void)*p; /* 漏 delete -> 泄漏 */ }
 std::unique_ptr<int> make() { return std::make_unique<int>(1); }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：内存安全审查（泄漏/UB）]
+> **示例 25** [难度 ★★★☆☆] [主题：内存安全审查（泄漏/UB）]
 ```cpp
 // 释放后使用（UAF，UB）：_ch147_uaf.cpp 节选
 int* leak_dangling() {
@@ -315,7 +315,7 @@ int* leak_dangling() {
 // returned [-Wreturn-local-addr]
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：内存安全审查（泄漏/UB）]
+> **示例 26** [难度 ★★☆☆☆] [主题：内存安全审查（泄漏/UB）]
 ```cpp
 // 越界读取（UB）：_ch147_oob.cpp 节选
 int main(){ int a[3] = {1,2,3}; return a[5]; }  // 越界，运行时未定义
@@ -346,7 +346,7 @@ int main(){ int a[3] = {1,2,3}; return a[5]; }  // 越界，运行时未定义
 
 `[经验]` review 不只看"代码对不对"，还要看"有没有证据证明它对"。每个公共函数应至少覆盖：一条正向用例 + 一条边界用例（空输入、最大值、错误码）。测试覆盖的度量与门槛见第150章。
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：测试覆盖审查（关联第150章）]
+> **示例 29** [难度 ★★☆☆☆] [主题：测试覆盖审查（关联第150章）]
 ```cpp
 // _ch147_test.cpp 节选（GoogleTest 风格伪代码）
 // 审查时核对是否覆盖：空栈 pop、单元素、连续 pop 至空
@@ -354,7 +354,7 @@ struct Stack { int pop(); bool empty() const; };
 // 期望用例：EXPECT_THROW(s.pop(), underflow) 当 empty()；EXPECT_EQ(s.pop(), v)
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：测试覆盖审查（关联第150章）]
+> **示例 30** [难度 ★★★☆☆] [主题：测试覆盖审查（关联第150章）]
 ```cpp
 // 审查清单：新增逻辑是否带测试？分支是否都有断言覆盖？
 //   if (x < 0) return error;   // 必须有 x<0 的测试用例
@@ -394,7 +394,7 @@ struct Stack { int pop(); bool empty() const; };
 
 `[实现]` 把审查中能机械判断的项交给 CI，让人聚焦判断力。CI 门禁至少包含：编译（`-Wall -Wextra -Werror`）、静态分析、单元测试、覆盖率门槛。门禁配置与流水线见第149章。
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：自动化门禁]
+> **示例 31** [难度 ★★★☆☆] [主题：自动化门禁]
 ```cpp
 // 用编译期断言固化"不可违反"的接口不变量，让门禁替你审查
 template <typename T>
@@ -459,7 +459,7 @@ void log_user(const std::string& name) {
 // 修复：用iostream/字符串拼接，避免格式串解释；对 name 做长度与字符白名单
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：安全审查（CVE/OWASP）]
+> **示例 36** [难度 ★★☆☆☆] [主题：安全审查（CVE/OWASP）]
 ```cpp
 #include <span>
 #include <algorithm>
@@ -560,7 +560,7 @@ int main(){ important(); std::printf("ignored\n"); }
 ```
 
 真实 g++ 警告（节选）：
-> **示例 44** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 44** [难度 ★★★☆☆] [主题：真实案例]
 ```
 _ch147_nodiscard.cpp:3:22: warning: ignoring return value of 'int important()',
 declared with attribute 'nodiscard' [-Wunused-result]
@@ -591,7 +591,7 @@ declared with attribute 'nodiscard' [-Wunused-result]
 
 **源码剖析（libstdc++ 真实路径 + 行号）**
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 45** [难度 ★★☆☆☆] [主题：真实案例]
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/move.h
 // 行号：104
@@ -827,7 +827,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 52** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <mutex>
 #include <thread>
@@ -849,7 +849,7 @@ int main() { Counter x; std::thread t1([&]{ for(int i=0;i<1000;++i) x.inc(); });
 
 <details><summary>答案与解析</summary>
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 53** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <cstdio>
 #include <string>

@@ -69,7 +69,7 @@ C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造
 
 下面这个程序印证了"表达式"与"函数"的分离：
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：一个反直觉的分离：new 表达式 ≠]
+> **示例 1** [难度 ★★☆☆☆] [主题：一个反直觉的分离：new 表达式 ≠]
 ```cpp
 // 程序 1：分离演示 —— 全局 operator new 只负责拿内存
 #include <new>
@@ -152,7 +152,7 @@ int main() {
 
 ### 37.2.4 placement 版本（**不可替换**）
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：版本（不可替换）]
+> **示例 3** [难度 ★★☆☆☆] [主题：版本（不可替换）]
 ```cpp
 #include <cstddef>
 void* operator new(std::size_t, void* p) noexcept { return p; }
@@ -167,7 +167,7 @@ void operator delete[](void*, void*) noexcept { }
 
 下面直接来自本机文件（已 Read 探测），路径 `C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/new:126-181`：
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：真实源码：libstdc++ <ne]
+> **示例 4** [难度 ★★☆☆☆] [主题：真实源码：libstdc++ <ne]
 ```cpp
 #include <cstddef>
 // new:126-129 —— 单对象与数组，普通（抛异常）版本
@@ -255,7 +255,7 @@ inline void operator delete[](void*, void*) _GLIBCXX_USE_NOEXCEPT { }
 
 `[实现-推断] libstdc++ src/libstdc++-v3/libsupc++/new_op.cc`（节选，已与本地 `<new>` 声明一致核对）：
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：默认实现：最终落到 malloc /]
+> **示例 5** [难度 ★★☆☆☆] [主题：默认实现：最终落到 malloc /]
 ```cpp
 #include <cstddef>
 // [实现-推断] new_op.cc（GCC libstdc++ canonical，对应 <new>:126 声明）
@@ -294,7 +294,7 @@ void operator delete(void* ptr) noexcept {
 
 下面这个程序证明 `new` 得到的指针确实来自 `malloc`（地址空间连续、且可被 `free` 释放）：
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：默认实现：最终落到 malloc /]
+> **示例 7** [难度 ★★☆☆☆] [主题：默认实现：最终落到 malloc /]
 ```cpp
 // 程序 2：new 与 malloc 同源验证
 #include <new>
@@ -319,7 +319,7 @@ int main() {
 
 `C:/.../include/c++/new:55-86` 真实定义：
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：std::badalloc 与 st]
+> **示例 8** [难度 ★★☆☆☆] [主题：std::badalloc 与 st]
 ```cpp
 // new:55-71 —— bad_alloc
 class bad_alloc : public exception {
@@ -348,7 +348,7 @@ public:
 
 程序验证：
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：std::badalloc 与 st]
+> **示例 9** [难度 ★★★☆☆] [主题：std::badalloc 与 st]
 ```cpp
 // 程序 3：捕获 bad_alloc
 #include <new>
@@ -374,7 +374,7 @@ int main() {
 }
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：std::badalloc 与 st]
+> **示例 10** [难度 ★★☆☆☆] [主题：std::badalloc 与 st]
 ```cpp
 // 程序 4：bad_array_new_length（长度溢出）
 #include <new>
@@ -442,7 +442,7 @@ handler 是普通函数，它有**三种合法结局**，正好对应三种恢�
 
 程序 5-7 分别演示三种策略：
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：循环重试模型]
+> **示例 13** [难度 ★★☆☆☆] [主题：循环重试模型]
 ```cpp
 // 程序 5：new_handler 释放缓存后重试（推荐模式）
 #include <new>
@@ -486,7 +486,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：循环重试模型]
+> **示例 14** [难度 ★★★☆☆] [主题：循环重试模型]
 ```cpp
 // 程序 6：new_handler 直接抛出异常
 #include <new>
@@ -512,7 +512,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：循环重试模型]
+> **示例 15** [难度 ★★★☆☆] [主题：循环重试模型]
 ```cpp
 // 程序 7：new_handler 终止程序（嵌入式/致命策略）
 #include <new>
@@ -535,7 +535,7 @@ int main() {
 }
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：循环重试模型]
+> **示例 16** [难度 ★★☆☆☆] [主题：循环重试模型]
 ```cpp
 // 程序 8：get_new_handler 与 set_new_handler 配合（保存/恢复）
 #include <new>
@@ -595,7 +595,7 @@ void* operator new(std::size_t sz, const std::nothrow_t&) noexcept {
 
 > **[标准]** `nothrow` **只影响分配这一步**。对象构造仍可能抛异常——`new(std::nothrow) T(args)` 若构造函数抛异常，内存会被释放，然后异常照常传播。所以 `nothrow` 防护的是"拿不到内存"，不是"构造失败"。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：std::nothrow 版本：失败]
+> **示例 19** [难度 ★★☆☆☆] [主题：std::nothrow 版本：失败]
 ```cpp
 // 程序 9：nothrow 防御性分配（常用于不能抛异常的底层/驱动代码）
 #include <new>
@@ -623,7 +623,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：std::nothrow 版本：失败]
+> **示例 20** [难度 ★★☆☆☆] [主题：std::nothrow 版本：失败]
 ```cpp
 // 程序 10：nothrow 数组版本（new[]）
 #include <new>
@@ -664,7 +664,7 @@ void* operator new(std::size_t, void* p) noexcept { return p; }
 
 ### 37.7.2 基础与数组 placement
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：基础与数组 placement]
+> **示例 22** [难度 ★★☆☆☆] [主题：基础与数组 placement]
 ```cpp
 // 程序 11：基础 placement new（用户缓冲 + 手动析构）
 #include <new>
@@ -686,7 +686,7 @@ int main() {
 }
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：基础与数组 placement]
+> **示例 23** [难度 ★★★☆☆] [主题：基础与数组 placement]
 ```cpp
 // 程序 12：数组 placement new
 #include <new>
@@ -710,7 +710,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：基础与数组 placement]
+> **示例 24** [难度 ★★☆☆☆] [主题：基础与数组 placement]
 ```cpp
 // 程序 13：显式析构 + 不能 delete 的警告演示
 #include <new>
@@ -731,7 +731,7 @@ int main() {
 
 placement new 是**自定义内存管理的基础**：你用任意后端（内存池、ring buffer、共享内存、GPU 显存）准备一块存储，再用 placement new 在其上"种"对象。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：与内存池 / ring buffer]
+> **示例 25** [难度 ★★☆☆☆] [主题：与内存池 / ring buffer]
 ```cpp
 // 程序 14：内存池 + placement new（高性能固定大小分配器）
 #include <new>
@@ -799,7 +799,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：与内存池 / ring buffer]
+> **示例 26** [难度 ★★★☆☆] [主题：与内存池 / ring buffer]
 ```cpp
 // 程序 15：ring buffer + placement new（固定容量对象循环复用）
 #include <new>
@@ -825,7 +825,7 @@ int main() {
 }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：与内存池 / ring buffer]
+> **示例 27** [难度 ★★☆☆☆] [主题：与内存池 / ring buffer]
 ```cpp
 // 程序 16：共享内存中的 placement new [平台-推断：POSIX shm]
 // 注意：跨进程共享对象需要类型布局稳定 + 自定义 operator new 转发到 shm。
@@ -861,7 +861,7 @@ int main() {
 
 > **[平台·x86-64]** Itanium C++ ABI（GCC/Clang 默认）下，`new T[n]` 在返回指针前 8 字节存元素个数（对 `sizeof(size_t)==8` 的平台）；MSVC 类似但偏移/编码略不同。下面用探测代码演示（依赖实现布局，仅供理解，标注 `[平台-推断]`）。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：的存在性]
+> **示例 28** [难度 ★★★★★] [主题：的存在性]
 ```cpp
 // 程序 17：观察数组 cookie（读取返回指针前的若干字节）[平台-推断]
 #include <new>
@@ -894,7 +894,7 @@ int main() {
 
 [实现·GCC15] 下面用真实汇编展示 `delete[]` 如何读取 cookie 决定析构次数（`[平台-推断]`：Itanium ABI）。考虑：
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：汇编层面看 cookie 读取]
+> **示例 29** [难度 ★★★★☆] [主题：汇编层面看 cookie 读取]
 ```cpp
 // 程序 18（源）：编译器为 delete[] 生成的"读 cookie → 循环析构"逻辑示意
 #include <cstddef>
@@ -924,7 +924,7 @@ call   operator delete(void*, size_t)
 
 ### 37.8.3 混用的灾难性后果
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：混用的灾难性后果]
+> **示例 30** [难度 ★★★☆☆] [主题：混用的灾难性后果]
 ```cpp
 // 程序 19：错误示范——混用 delete 与 delete[]（严禁！此处仅说明原理）
 #include <cstdio>
@@ -958,7 +958,7 @@ int main() {
 
 `C:/.../include/c++/bits/new_allocator.h:139-146` 展示了 allocator 如何选择：
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：过对齐类型自动触发]
+> **示例 31** [难度 ★★☆☆☆] [主题：过对齐类型自动触发]
 ```cpp
 // new_allocator.h:139-146
 #if __cpp_aligned_new
@@ -972,7 +972,7 @@ int main() {
 
 即：allocator 一旦发现 `alignof(T) > 16`，就转发到对齐版 `operator new`。`new` 表达式对过对齐类型同理。
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：过对齐类型自动触发]
+> **示例 32** [难度 ★★☆☆☆] [主题：过对齐类型自动触发]
 ```cpp
 // 程序 20：过对齐类型自动触发对齐 new
 #include <new>
@@ -991,7 +991,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：过对齐类型自动触发]
+> **示例 33** [难度 ★★☆☆☆] [主题：过对齐类型自动触发]
 ```cpp
 // 程序 21：显式对齐 new（手动指定对齐值）
 #include <new>
@@ -1007,7 +1007,7 @@ int main() {
 }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：过对齐类型自动触发]
+> **示例 34** [难度 ★★☆☆☆] [主题：过对齐类型自动触发]
 ```cpp
 // 程序 22：缓存行隔离，避免 false sharing [经验]
 #include <new>
@@ -1037,7 +1037,7 @@ int main() {
 
 ### 37.10.1 基础：统计分配次数
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：基础：统计分配次数]
+> **示例 35** [难度 ★★☆☆☆] [主题：基础：统计分配次数]
 ```cpp
 // 程序 23：类专属 operator new/delete 统计
 #include <new>
@@ -1078,7 +1078,7 @@ int main() {
 
 ### 37.10.2 防堆分配（private/delete）
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：防堆分配]
+> **示例 36** [难度 ★★★☆☆] [主题：防堆分配]
 ```cpp
 // 程序 24：private operator new 禁止堆分配
 #include <cstdio>
@@ -1102,7 +1102,7 @@ int main() {
 
 ### 37.10.3 调试填充：检测缓冲区溢出
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：调试填充：检测缓冲区溢出]
+> **示例 37** [难度 ★★★☆☆] [主题：调试填充：检测缓冲区溢出]
 ```cpp
 // 程序 25：调试填充 + 哨兵检测溢出 [经验]
 #include <new>
@@ -1146,7 +1146,7 @@ int main() {
 
 ### 37.10.4 类专属内存池
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：类专属内存池]
+> **示例 38** [难度 ★★★☆☆] [主题：类专属内存池]
 ```cpp
 // 程序 26：类专属池（高频小对象，零锁/低碎片）[经验]
 #include <new>
@@ -1201,7 +1201,7 @@ int main() {
 
 ### 37.10.5 工厂模式：私有构造 + 静态工厂
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：工厂模式：私有构造 + 静态工厂]
+> **示例 39** [难度 ★★☆☆☆] [主题：工厂模式：私有构造 + 静态工厂]
 ```cpp
 // 程序 27：工厂模式控制对象创建路径
 #include <new>
@@ -1243,7 +1243,7 @@ int main() {
 
 `C:/.../include/c++/bits/new_allocator.h:121-148` 真实实现（逐行）：
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：operator new 与 std]
+> **示例 40** [难度 ★★☆☆☆] [主题：operator new 与 std]
 ```cpp
 #include <cstddef>
 // new_allocator.h:121-148
@@ -1277,7 +1277,7 @@ allocate(size_type __n, const void* = static_cast<const void*>(0))
 - **`:140-145` 对齐分支**：过对齐类型走对齐 new（呼应 37.9）。
 - **`:147` 普通分支**：`_GLIBCXX_OPERATOR_NEW` 在支持 `__builtin_operator_new` 时展开为内建（让编译器知道这是分配函数，可优化），否则为 `::operator new`（`new_allocator.h:111-117`）。
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：operator new 与 std]
+> **示例 41** [难度 ★★☆☆☆] [主题：operator new 与 std]
 ```cpp
 // 程序 28：std::allocator::allocate 底层即 operator new
 #include <memory>
@@ -1305,7 +1305,7 @@ int main() {
 
 `C:/.../include/c++/new:185-208` 真实定义：
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：std::launder：构造后取指]
+> **示例 42** [难度 ★★★☆☆] [主题：std::launder：构造后取指]
 ```cpp
 // new:188-194
 #ifdef _GLIBCXX_HAVE_BUILTIN_LAUNDER
@@ -1319,7 +1319,7 @@ int main() {
 
 本机 `c++config.h:852` 定义 `_GLIBCXX_HAVE_BUILTIN_LAUNDER 1`，故 `launder` 走 `__builtin_launder`。
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：std::launder：构造后取指]
+> **示例 43** [难度 ★★☆☆☆] [主题：std::launder：构造后取指]
 ```cpp
 // 程序 29：std::launder 在 placement new 覆盖 const 对象时的必要用法
 #include <new>
@@ -1356,7 +1356,7 @@ int main() {
 
 `C:/.../include/c++/new:218-233` 真实定义：
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：std::destroyingdel]
+> **示例 44** [难度 ★★★☆☆] [主题：std::destroyingdel]
 ```cpp
 // new:218-233（C++20）
 #if __cplusplus > 201703L
@@ -1374,7 +1374,7 @@ namespace std {
 
 典型用途：**侵入式数据结构**，对象知道自己属于哪个池/分配器，删除时（析构前）可从链表摘除自己，再归还内存给正确的池。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：std::destroyingdel]
+> **示例 45** [难度 ★★☆☆☆] [主题：std::destroyingdel]
 ```cpp
 // 程序 30：destroying_delete_t 让 operator delete 先析构再释放
 #include <new>
@@ -1412,7 +1412,7 @@ int main() {
 
 libstdc++ 优先用 `A::rebind::other`（C++17 前），否则 `allocator_traits` 合成（C++17 起要求 `rebind_alloc` 存在，`new_allocator.h:75-78` 提供了旧式 `rebind`）：
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：std::allocatortrai]
+> **示例 46** [难度 ★★☆☆☆] [主题：std::allocatortrai]
 ```cpp
 // new_allocator.h:75-78（C++17 前版本提供 rebind 嵌套结构）
 template<typename _Tp1>
@@ -1420,7 +1420,7 @@ template<typename _Tp1>
     { typedef __new_allocator<_Tp1> other; };
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：std::allocatortrai]
+> **示例 47** [难度 ★★☆☆☆] [主题：std::allocatortrai]
 ```cpp
 // 程序 31：allocator_traits::rebind 演示
 #include <memory>
@@ -1467,7 +1467,7 @@ int main() {
 
 [标准] C++14 允许 `operator delete(void* p, std::size_t sz)`，释放时直接拿到原始大小，**不必**再向分配器查询块大小（glibc 的 `free` 本就要查块头，但 sized 版本可让自定义分配器跳过这步，或用于调试校验）。
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：-fsized-deallocati]
+> **示例 48** [难度 ★★☆☆☆] [主题：-fsized-deallocati]
 ```cpp
 // 程序 32：观察 sized delete（编译需开启 sized deallocation，GCC 默认开）
 #include <new>
@@ -1497,7 +1497,7 @@ int main() {
 - `/Zc:throwingNew`（默认）：假设 `new` 抛异常 → 在 `new` 后不必插入"检查空指针"的代码（因为失败会走异常，不会返回空）。
 - 反之若关闭，编译器会在每次 `new` 后插入 null 检查，可能破坏"new 返回非空"假设的优化。
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：/Zc:throwingNew与 -fassume-thro]
+> **示例 49** [难度 ★★☆☆☆] [主题：/Zc:throwingNew与 -fassume-thro]
 ```cpp
 // 程序 33：throwingNew 影响的代码模式（示意，行为依赖编译器开关）
 #include <new>
@@ -1559,7 +1559,7 @@ int main() {
 
 下面程序在三库下行为一致，但揭示"替换全局 new 即影响容器"这一事实：
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 51** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // 程序 34：替换全局 operator new 影响 std::vector（三 STL 通用）
 #include <new>
@@ -1589,7 +1589,7 @@ int main() {
 
 [标准/经验] 以下基准用 `std::chrono` 高频循环测量相对开销（本机 MinGW GCC 13.1.0，`-O2`）。绝对数字随硬件/负载波动，关注**相对量级**（程序 35，chrono 粗粒度）。程序 36 用 RDTSC 直接测每轮分配的 CPU 周期→纳秒（本机 TSC 2.395 GHz 已校准），给出**绝对开销（实测）**。
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：真实 microbenchmark]
+> **示例 52** [难度 ★★☆☆☆] [主题：真实 microbenchmark]
 ```cpp
 // 程序 35：microbenchmark —— new vs malloc / placement vs new / 池 vs 全局
 #include <new>
@@ -1766,7 +1766,7 @@ public class Main {
 
 下面这个程序综合展示：类专属统计 new + 内存池 + 对齐 + nothrow 防御 + placement + `launder`，作为本章的"收口"。
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：综合示例：把本章所有机制串起来]
+> **示例 53** [难度 ★★☆☆☆] [主题：综合示例：把本章所有机制串起来]
 ```cpp
 // 程序 36：综合示例（统计 + 池 + 对齐 + nothrow + placement + launder）
 #include <new>
@@ -1868,7 +1868,7 @@ int main() {
 
 ## 附录 E：operator new/delete 工业 [B: Principle / H: Design / I: Practice / J: Learning]
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：附录 E：operator new/]
+> **示例 54** [难度 ★★☆☆☆] [主题：附录 E：operator new/]
 ```cpp
 operator new 的内部实现:
 
@@ -1889,7 +1889,7 @@ GCC (libstdc++):
   替换方式: LD_PRELOAD=/path/to/allocator.so ./app
 ```
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：附录 E：operator new/]
+> **示例 55** [难度 ★★☆☆☆] [主题：附录 E：operator new/]
 ```cpp
 #include <iostream>
 #include <new>
@@ -2010,7 +2010,7 @@ int main() {
 
 类域 `operator new` 优先于全局版本；在其中调用 `std::malloc` 并累计计数，即可观测该类全部分配。
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 56** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <cstdlib>
@@ -2047,7 +2047,7 @@ int main() {
 
 placement new 的 `new(p) T(args)` 形式在已存在的内存 `p` 上构造对象，不分配；因此必须手动调用析构函数，且缓冲区需满足对齐与大小。
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 57** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <new>
@@ -2075,7 +2075,7 @@ int main() {
 
 在类域 `operator new` 中优先从空闲链表取块，不足才 `malloc`；`operator delete` 把块挂回空闲链表。这样高频 new/delete 仅在首次触及系统分配器。
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 58** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <cstdlib>
@@ -2123,7 +2123,7 @@ delete p;          // 错误: 应 delete[] p; 否则 UB(仅释放首元素或破
 
 **修复**：严格配对 `new`/`delete` 与 `new[]`/`delete[]`；更彻底的方案是根本不写裸 `new`，改用容器或智能指针。
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：演绎 1：new / delete ]
+> **示例 59** [难度 ★★☆☆☆] [主题：演绎 1：new / delete ]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -2153,7 +2153,7 @@ void on_packet() {
 
 **修复**：用空闲链表对象池复用 Pkt 块，或 placement new 落预分配缓冲；分配次数从"每包一次"降到"池耗尽才一次"。
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：演绎 2：高频小对象 → 对象池 /]
+> **示例 60** [难度 ★★☆☆☆] [主题：演绎 2：高频小对象 → 对象池 /]
 ```cpp
 #include <iostream>
 #include <cstdlib>
@@ -2244,7 +2244,7 @@ inline void operator delete  (void*, void*)
 
 ### D4.4 可编译验证
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：可编译验证]
+> **示例 61** [难度 ★★☆☆☆] [主题：可编译验证]
 ```cpp
 #include <new>
 #include <cstddef>
@@ -2522,7 +2522,7 @@ flowchart TD
 
 ### D5.3 可复现演示
 
-> **示例 62** [难度 ★☆☆☆☆] [主题：可复现演示]
+> **示例 62** [难度 ★★☆☆☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 #include <new>

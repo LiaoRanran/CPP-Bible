@@ -61,7 +61,7 @@ Ranges 最核心的立场是**"算法应操作区间而非迭代器对"**，并�
 
 ## ④ 知识图谱（ASCII）[标准]
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）[标准]]
+> **示例 1** [难度 ★★★★☆] [主题：知识图谱（ASCII）[标准]]
 ```
                          ┌────────────────────────────┐
                          │  range = 能 begin()/end()   │  (concept, ranges_base.h:501)
@@ -133,7 +133,7 @@ classDiagram
 
 `std::views::filter(v, pred)` 返回的 `filter_view` **不拷贝 `v` 的任何元素**，只保存「对 `v` 的引用（或 `ref_view`）+ 谓词对象」：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：内存图：view 不持有元素 [实现]
+> **示例 2** [难度 ★★★☆☆] [主题：内存图：view 不持有元素 [实现]
 ```
 std::vector<int> v = {1,2,3,4,5};          // 元素在堆上(25B)
 auto fv = v | views::filter(even);         // filter_view 仅:
@@ -189,7 +189,7 @@ sequenceDiagram
 
 **示例：view 管道 vs 手写循环**——在 `-O2` 下，简单 `transform`/`take` 管道常被完全优化成与手写循环相同的汇编。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：汇编分析（-O2，Intel 语法）]
+> **示例 3** [难度 ★★★☆☆] [主题：汇编分析（-O2，Intel 语法）]
 ```cpp
 // 文件：Examples/_ch90_view_asm.cpp
 // 编译：g++ -std=c++23 -O2 -S -masm=intel _ch90_view_asm.cpp -o _ch90_view_asm.asm
@@ -260,7 +260,7 @@ _Z8sum_evenRKSt6vectorIiSaIiEE:
 
 **案例 1（日志管道）**：从一批日志行中筛选 ERROR 级别、提取时间戳、仅取前 100 条，全程惰性、无中间容器。
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：工业案例：日志过滤 + 词频统计 E]
+> **示例 4** [难度 ★★☆☆☆] [主题：工业案例：日志过滤 + 词频统计 E]
 ```cpp
 // 案例1：惰性日志处理管道
 #include <vector>
@@ -286,7 +286,7 @@ int main() {
 
 **案例 2（词频 ETL）**：分词 → 过滤短词 → 计数（投影 + group），展示投影 `proj` 的威力。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：工业案例：日志过滤 + 词频统计 E]
+> **示例 5** [难度 ★★☆☆☆] [主题：工业案例：日志过滤 + 词频统计 E]
 ```cpp
 // 案例2：ranges 投影（proj）按字段排序/筛选
 #include <vector>
@@ -309,7 +309,7 @@ int main() {
 
 **A. `range` 概念（文件：`bits/ranges_base.h`，行号：`501`）**
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）[实现]
+> **示例 6** [难度 ★★★☆☆] [主题：源码分析（libstdc++）[实现]
 ```
 文件：bits/ranges_base.h
 行号：501   concept range = requires(_Tp& __t) {
@@ -322,7 +322,7 @@ int main() {
 
 **B. `view` 概念（文件：`bits/ranges_base.h`，行号：`578`）**
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：源码分析（libstdc++）[实现]
+> **示例 7** [难度 ★★☆☆☆] [主题：源码分析（libstdc++）[实现]
 ```
 文件：bits/ranges_base.h
 行号：578   concept view = range<_Tp> && movable<_Tp> && enable_view<_Tp>;
@@ -456,7 +456,7 @@ int main() {
 
 **惰性 vs 急切（副作用计数）**：
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：性能分析 [经验]]
+> **示例 12** [难度 ★★☆☆☆] [主题：性能分析 [经验]]
 ```cpp
 // 演示惰性：transform 的副作用仅在迭代时发生，且仅对「被拉取」的元素
 #include <vector>
@@ -1087,7 +1087,7 @@ int main(){auto v=std::views::iota(1,6)|std::views::transform([](int x){return x
 - **策略 B · 手写融合循环**：单 `for` 循环内联 filter+square+累加，作为零抽象上界。
 - **策略 C · 贪婪物化**：先 `push_back` 过滤结果到 `vector`，再 `push_back` 变换结果到 `vector`，最后累加——三遍 + 两次堆分配。
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：基准设计（三策略）]
+> **示例 44** [难度 ★★☆☆☆] [主题：基准设计（三策略）]
 ```cpp
 // _bench_ranges.cpp（库根，不进 Book/ 编译门禁；g++ -std=c++20 -O2 -pthread）
 unsigned long long bench_lazy(const vector<int>& v) {
@@ -1295,7 +1295,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 47** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -1395,7 +1395,7 @@ Ranges 视图的核心工程价值是「零拷贝 + 惰性求值」：视图对�
 
 ### D4.4 可编译验证
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：可编译验证]
+> **示例 48** [难度 ★★★☆☆] [主题：可编译验证]
 ```cpp
 #include <ranges>
 #include <vector>
@@ -1595,7 +1595,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 49** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <array>

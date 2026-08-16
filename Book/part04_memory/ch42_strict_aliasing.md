@@ -134,7 +134,7 @@
 
 ### 3.1 通过 `int*` 读 `float` 对象 —— UB
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：通过 int 读 float 对象 ]
+> **示例 1** [难度 ★★☆☆☆] [主题：通过 int 读 float 对象 ]
 ```cpp
 // 【程序 1】UB：用 int 左值访问 float 对象（违反 [basic.lval]）
 #include <cstdio>
@@ -198,7 +198,7 @@ int main() {
 
 ## ⑤ 合法双关之一：`memcpy`
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：合法双关之一：memcpy]
+> **示例 3** [难度 ★★☆☆☆] [主题：合法双关之一：memcpy]
 ```cpp
 // 【程序 3】memcpy 双关：float <-> uint32_t 的位模式转换（完全合法）
 #include <cstdio>
@@ -232,7 +232,7 @@ int main() {
 
 ## ⑥ 合法双关之二：`std::bit_cast`（C++20）
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：合法双关之二：std::bitcas]
+> **示例 4** [难度 ★★☆☆☆] [主题：合法双关之二：std::bitcas]
 ```cpp
 // 【程序 4】std::bit_cast：编译期也可用的类型双关
 #include <bit>
@@ -284,7 +284,7 @@ int main() {
 }
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：合法双关之三：union 的 com]
+> **示例 6** [难度 ★★☆☆☆] [主题：合法双关之三：union 的 com]
 ```cpp
 // 【程序 6】非法：写入 a.x 后读 b.y（非共同初始序列，UB）
 #include <cstdio>
@@ -311,7 +311,7 @@ int main() {
 
 **[实现·GCC15]** `std::launder`（`[ptr.launder]`，C++17）是"指针洗涤器"：告诉编译器"这块内存里的对象表示可能已经改变，请重新推导其动态类型相关信息"。常见于 placement new 在同一地址构造新对象后（见 ch28 UB 专题）。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：合法双关之四：std::launde]
+> **示例 7** [难度 ★★☆☆☆] [主题：合法双关之四：std::launde]
 ```cpp
 // 【程序 7】std::launder：placement new 后获取正确指针
 #include <new>
@@ -351,7 +351,7 @@ int main() {
 
 下面这个函数，编译器**假定 `p` 与 `q` 不 alias**，于是可以把 `*p`、`*q` 缓存在寄存器：
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：优化武器化实例：int p + fl]
+> **示例 8** [难度 ★★★☆☆] [主题：优化武器化实例：int p + fl]
 ```cpp
 // 【程序 8】优化武器化：int* 与 float* 被假定不 alias
 void f(int* p, float* q, int n) {
@@ -429,7 +429,7 @@ void scale(double* __restrict dest,
 }
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：restrict / restric]
+> **示例 10** [难度 ★★☆☆☆] [主题：restrict / restric]
 ```cpp
 // 【程序 10】违反 restrict 契约 = UB（不要这样做）
 void bad(double* __restrict p, int n) {
@@ -444,7 +444,7 @@ void bad(double* __restrict p, int n) {
 
 **[实现·GCC15]** 自动向量化（`-O3`）需要证明指针不重叠。`__restrict` 提供了这个证明。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：restrict 解锁向量化：真实汇]
+> **示例 11** [难度 ★★★☆☆] [主题：restrict 解锁向量化：真实汇]
 ```cpp
 // 【程序 11】数组求和：无 restrict
 void sum_norestrict(double* dest, const double* src, int n) {
@@ -547,7 +547,7 @@ float g(float* q, int_alias* p, int n) {
 > - `<bits/std_function.h>:83`：`union [[gnu::may_alias]] _Any_data`——`std::function` 的内部存储联合，需要确保通过不同成员访问时不触发别名 UB（见第 21 节）。
 > - `<experimental/bits/simd.h>:807-814`：定义 `template<typename _Tp> using __may_alias [[__gnu__::__may_alias__]] = _Tp;`，并在 `:1653` 用 `reinterpret_cast<const __may_alias<_To>&>(__v)` 做类型双关（SIMD 内部需要按字节视角访问）。
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：attribute()：在类型级关闭别名假设]
+> **示例 14** [难度 ★★★☆☆] [主题：attribute()：在类型级关闭别名假设]
 ```cpp
 // 【程序 15】memcpy 风格的双关辅助（libstdc++ simd 思路简化版）
 #include <cstring>
@@ -584,7 +584,7 @@ int main() {
 
 ### 15.1 `asm volatile("" ::: "memory")`——编译器屏障
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：asm volatile——编译器屏障]
+> **示例 15** [难度 ★★☆☆☆] [主题：asm volatile——编译器屏障]
 ```cpp
 // 【程序 16】asm volatile 编译器屏障（GCC/Clang）
 #include <cstdio>
@@ -614,7 +614,7 @@ int main() {
 
 ### 15.2 `std::atomic_signal_fence(seq_cst)`——标准可移植屏障
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：std::atomicsignalf]
+> **示例 16** [难度 ★★☆☆☆] [主题：std::atomicsignalf]
 ```cpp
 // 【程序 17】std::atomic_signal_fence：同线程/信号处理器的编译器屏障
 #include <atomic>
@@ -668,7 +668,7 @@ int main() {
 
 ### 15.4 内存映射 IO 与信号处理实战
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：内存映射 IO 与信号处理实战]
+> **示例 18** [难度 ★★☆☆☆] [主题：内存映射 IO 与信号处理实战]
 ```cpp
 // 【程序 19】内存映射 IO：写寄存器必须不被优化/重排
 #include <cstdint>
@@ -684,7 +684,7 @@ void wait_ready() {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：内存映射 IO 与信号处理实战]
+> **示例 19** [难度 ★★☆☆☆] [主题：内存映射 IO 与信号处理实战]
 ```cpp
 // 【程序 20】信号处理：用 signal_fence 保证顺序（简化示意）
 #include <atomic>
@@ -731,7 +731,7 @@ int main() {
 - 值无法安全缓存在寄存器；
 - 冗余加载/存储增加。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：-fno-strict-aliasi]
+> **示例 20** [难度 ★★☆☆☆] [主题：-fno-strict-aliasi]
 ```cpp
 // 【程序 21】诊断：用 -Wstrict-aliasing 捕获可疑双关
 // 编译：g++ -O2 -Wstrict-aliasing=2 -c this.cpp
@@ -765,7 +765,7 @@ int main() { std::printf("x\n"); return 0; }
 
 ### 18.1 三编译器开关实验
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：三编译器开关实验]
+> **示例 21** [难度 ★★☆☆☆] [主题：三编译器开关实验]
 ```cpp
 // 【程序 22】三编译器编译/诊断开关速查（注释即命令，非单文件编译）
 // GCC  :
@@ -798,7 +798,7 @@ restrict   : 702.5 ms  (speedup = 1.03x)
 >
 > 这正是教学要点：**restrict 的价值用汇编看最清楚，用计时看要选对循环类型**。在自己的热点循环上用 `-O3 -S` 检查是否生成 `addpd`/`mulps` 等打包指令，比单纯计时更可靠。
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：真实 microbenchmark：]
+> **示例 23** [难度 ★★☆☆☆] [主题：真实 microbenchmark：]
 ```cpp
 // 【程序 23】compute-bound 友好基准骨架（自行调 N 与迭代次数观察 restrict 红利）
 #include <chrono>
@@ -881,7 +881,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 21.1 `<bit>` 的 `bit_cast`（`<bit>:78-88`）
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：<bit> 的 bitcast]
+> **示例 25** [难度 ★★★☆☆] [主题：<bit> 的 bitcast]
 ```cpp
 // 路径: .../include/c++/bit
 // 78  template<typename _To, typename _From>
@@ -939,7 +939,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 21.5 `<experimental/bits/simd.h>` 的 `__may_alias` 辅助（`:807-814` 与 `:1653`）
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：<experimental/bits]
+> **示例 29** [难度 ★★☆☆☆] [主题：<experimental/bits]
 ```cpp
 // 路径: .../include/c++/experimental/bits/simd.h
 // 807  // __may_alias{{{
@@ -953,7 +953,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 21.6 `<type_traits>` 的 `has_unique_object_representations`（`<type_traits>:3377-3395`）
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：<typetraits> 的 has]
+> **示例 30** [难度 ★★★☆☆] [主题：<typetraits> 的 has]
 ```cpp
 // 路径: .../include/c++/type_traits
 // 3377  #ifdef _GLIBCXX_HAVE_BUILTIN_HAS_UNIQ_OBJ_REP
@@ -975,7 +975,7 @@ void scale(double* restrict dest, const double* restrict src, int n) {
 
 ### 21.7 `<new>` 的 `std::launder`（`<new>:189-194`）
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：<new> 的 std::laund]
+> **示例 31** [难度 ★★☆☆☆] [主题：<new> 的 std::laund]
 ```cpp
 // 路径: .../include/c++/new
 // 189  #define __cpp_lib_launder 201606L
@@ -1083,7 +1083,7 @@ int main() {
 
 ### 22.4 `constexpr` 编译期 bit_cast
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：constexpr 编译期 bitc]
+> **示例 37** [难度 ★★☆☆☆] [主题：constexpr 编译期 bitc]
 ```cpp
 // 【程序 30】编译期类型双关（bit_cast 可在常量表达式中使用）
 #include <bit>
@@ -1103,7 +1103,7 @@ int main() {
 
 ### 22.5 `has_unique_object_representations` 探测
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：has_unique_object_representations]
+> **示例 38** [难度 ★★☆☆☆] [主题：has_unique_object_representations]
 ```cpp
 // 【程序 31】探测对象表示唯一性（与别名/逐字节比较相关）
 #include <type_traits>
@@ -1148,7 +1148,7 @@ int main() {
 
 ### 24.2 程序 32：`char_traits` 风格字节拷贝（库内部字节访问）
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：程序 32：chartraits 风]
+> **示例 39** [难度 ★★★☆☆] [主题：程序 32：chartraits 风]
 ```cpp
 // 【程序 32】模拟 std::char_traits::copy：用 __builtin_memcpy 做字节级拷贝
 #include <cstring>
@@ -1198,7 +1198,7 @@ int main() {
 
 ### 24.4 程序 34：严格别名假设自检（诊断小程序）
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：程序 34：严格别名假设自检]
+> **示例 41** [难度 ★★★☆☆] [主题：程序 34：严格别名假设自检]
 ```cpp
 // 【程序 34】编译两次对照：g++ -O2 -fstrict-aliasing  vs  -fno-strict-aliasing
 // 该函数假设 p、q 不 alias；若调用方让它们重叠，严格别名下结果未定义
@@ -1350,7 +1350,7 @@ int main() {
 
 ## 附录 L：工业严格别名规则 [F: Industry / B: Principle / H: Design]
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录 L：工业严格别名规则 [F: ]
+> **示例 43** [难度 ★★★★☆] [主题：附录 L：工业严格别名规则 [F: ]
 ```
 为什么存在 strict aliasing? (WG21 + C99 共同决定):
   → 编译器优化: 两个不同类型指针不会指向同一内存 → 可重排读写 → SIMD + 向量化
@@ -1368,7 +1368,7 @@ int main() {
 
 ## 附录 M：面试与工程实践 [J: Learning / I: Practice]
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：附录 M：面试与工程实践 [J: L]
+> **示例 44** [难度 ★★★☆☆] [主题：附录 M：面试与工程实践 [J: L]
 ```
 常见问题与面试:
 Q: 什么是 strict aliasing rule?
@@ -1428,7 +1428,7 @@ A: 几乎从不。唯一安全: 从指向标准布局类型第一个成员的指
 
 <details><summary>答案与解析</summary>
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 45** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <cstring>
 #include <bit>
@@ -1459,7 +1459,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 46** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <cstddef>
 #include <iostream>
@@ -1515,7 +1515,7 @@ void axpy(int n, double* __restrict y,
 
 ### 测试源码
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：测试源码]
+> **示例 48** [难度 ★★★☆☆] [主题：测试源码]
 ```cpp
 int no_alias(int* pi, float* pf) {
     *pi = 1;          // 写 int
@@ -1582,7 +1582,7 @@ int same_type(int* pi, int* pj) {  // 同类型: 必然可能重叠
 
 **步骤 1：错误——`reinterpret_cast` 跨类型读写（UB）**
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 严格别名如何悄悄]
+> **示例 49** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 严格别名如何悄悄]
 ```cpp
 float f = 1.0f;
 int bits = *reinterpret_cast<int*>(&f);   // 违反严格别名 -> UB
@@ -1607,7 +1607,7 @@ int main(){
 
 **步骤 3：优雅——`std::bit_cast`（C++20）**
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 严格别名如何悄悄]
+> **示例 51** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 严格别名如何悄悄]
 ```cpp
 int bits = std::bit_cast<int>(1.0f);   // 编译期可求值, 类型安全, 零开销
 ```
@@ -1616,7 +1616,7 @@ int bits = std::bit_cast<int>(1.0f);   // 编译期可求值, 类型安全, 零�
 
 **步骤 4：高级——`__restrict` 解锁向量化（性能反向利用别名假设）**
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 严格别名如何悄悄]
+> **示例 52** [难度 ★★★☆☆] [主题：附录：用法演绎 — 严格别名如何悄悄]
 ```cpp
 void axpy(int n, double* __restrict y, const double* __restrict a,
           const double* __restrict x, double c){
@@ -1791,7 +1791,7 @@ flowchart TD
 
 ### D5.3 验证 demo
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：验证 demo]
+> **示例 53** [难度 ★★☆☆☆] [主题：验证 demo]
 ```cpp
 #include <iostream>
 #include <cassert>

@@ -74,7 +74,7 @@ public:
 };
 ```
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：Unreal Engine C]
+> **示例 2** [难度 ★★☆☆☆] [主题：概述：Unreal Engine C]
 ```cpp
 // ① 标准 C++ 与 UE 的分层对照（概念图，ASCII 框线）
 // ┌─────────────────────────────────────────────┐
@@ -175,7 +175,7 @@ class UWeapon : public UActorStub {
 };
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：垃圾回收]
+> **示例 8** [难度 ★★☆☆☆] [主题：垃圾回收]
 ```cpp
 // ④ 非 UPROPERTY 裸指针：GC 看不见 -> 悬空风险（见第⑬节陷阱）
 class UBroken : public UActorStub {
@@ -190,7 +190,7 @@ class UBroken : public UActorStub {
 
 UE 提供三件套，**不依赖 `std::`**，且能与 UObject GC 共存：
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：智能指针]
+> **示例 9** [难度 ★★★☆☆] [主题：智能指针]
 ```cpp
 // ⑤ TSharedPtr：引用计数（非 GC），用于非 UObject 的资源/工具对象
 #include <memory>
@@ -211,7 +211,7 @@ void UseCache() {
 }
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：智能指针]
+> **示例 11** [难度 ★★☆☆☆] [主题：智能指针]
 ```cpp
 #include <memory>
 // ⑤ TUniquePtr：独占所有权，禁止拷贝，等价 std::unique_ptr
@@ -269,7 +269,7 @@ struct PlayerMeta {
 
 UE 自研容器替代 STL，强调**内存可控、序列化友好、调试可视化**：
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：容器]
+> **示例 14** [难度 ★★★☆☆] [主题：容器]
 ```cpp
 // ⑦ TArray：连续存储，接口近似 std::vector，但默认不抛异常、内存策略可调
 #include <vector>
@@ -295,7 +295,7 @@ struct FString {
 FString Name(u"Hero");
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：容器]
+> **示例 16** [难度 ★★☆☆☆] [主题：容器]
 ```cpp
 // ⑦ TMap：哈希表，Key 需有 GetTypeHash；等价 std::unordered_map
 #include <unordered_map>
@@ -359,7 +359,7 @@ struct UThing { UPROPERTY() std::string Tag; };  // 仅当类是 UObject 时 Tag
 
 下面用 **GCC 13.1.0** 真实编译 `Examples/_ch134_objsys.cpp`（自包含对象系统 / RTTI 等价），证明 UObject 式反射骨架在标准 C++ 下可编译、并观察其汇编。UE 专属命令 `UHT` 未安装，故取真实汇编为证，标注「典型输出」。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：真实取证：编译自包含对象系统取汇编 ]
+> **示例 20** [难度 ★★★☆☆] [主题：真实取证：编译自包含对象系统取汇编 ]
 ```cpp
 // 文件：Examples/_ch134_objsys.cpp，行号：46（GetClass）/ 52（NewObject）
 // 编译：C:/Qt/Tools/mingw1310_64/bin/g++.exe -std=c++17 -O2 -S -masm=intel
@@ -417,7 +417,7 @@ _Z9NewObjectPK6FClass:
 
 ## ⑩ 调试 [经验]
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：调试 [经验]]
+> **示例 21** [难度 ★★☆☆☆] [主题：调试 [经验]]
 ```cpp
 // ⑩ 用 ensure/check 宏替代裸 assert，能触发编辑器断点与调用栈
 #define check(cond) do { if(!(cond)) __builtin_trap(); } while(0)
@@ -444,7 +444,7 @@ void Dump(const DbgObj& o) {
 
 ## ⑪ 性能 [经验]
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：性能 [经验]]
+> **示例 23** [难度 ★★☆☆☆] [主题：性能 [经验]]
 ```cpp
 // ⑪ TArray 预分配：避免多次 realloc（与 std::vector::reserve 同义）
 #include <vector>
@@ -454,7 +454,7 @@ Positions.reserve(1024);     // 一次性预留，热路径零分配
 for (int i=0;i<1024;++i) Positions.push_back((float)i);
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：性能 [经验]]
+> **示例 24** [难度 ★★☆☆☆] [主题：性能 [经验]]
 ```cpp
 // ⑪ 避免在热循环里创建 FString：用栈缓冲 / 数值直传
 #include <string>
@@ -497,7 +497,7 @@ uint32 HostToNetwork(uint32 v) {
 
 ## ⑬ 常见陷阱（裸指针跨 UObject 边界） [经验]
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：常见陷阱]
+> **示例 27** [难度 ★★☆☆☆] [主题：常见陷阱]
 ```cpp
 // ⑬ 陷阱1：裸 UObject* 不标 UPROPERTY -> GC 看不见 -> 悬空
 #define UPROPERTY(...)
@@ -507,7 +507,7 @@ class UGameMgr {
 };
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：常见陷阱]
+> **示例 28** [难度 ★★☆☆☆] [主题：常见陷阱]
 ```cpp
 // ⑬ 陷阱2：TSharedPtr 持有 UObject -> 与 GC 双重生命周期冲突
 #include <memory>
@@ -516,7 +516,7 @@ class UBad {
 };
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：常见陷阱]
+> **示例 29** [难度 ★★☆☆☆] [主题：常见陷阱]
 ```cpp
 // ⑬ 陷阱3：在构造函数里访问未初始化的 UPROPERTY（UHT 顺序问题）
 class USafe {
@@ -569,7 +569,7 @@ class USettings {
 };
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 34** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑮ 用 const 引用传大对象，避免 UObject 上的不必要拷贝
 #include <vector>
@@ -665,7 +665,7 @@ EngineDiff Diffs[4] = {
 int ReadEntry() { return 1; }   // 占位：提示读者去上游该位置阅读
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：调试/源码阅读 [经验]]
+> **示例 41** [难度 ★★☆☆☆] [主题：调试/源码阅读 [经验]]
 ```cpp
 // ⑲ 用条件断点观察 GC：在 MarkReachable 等价函数上断住，查看可达集合增长
 #include <vector>
@@ -725,7 +725,7 @@ public:
 };
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：速查表 [标准]]
+> **示例 43** [难度 ★★☆☆☆] [主题：速查表 [标准]]
 ```cpp
 // ⑳ 选择指南（编译期决策树，ASCII 框线）
 // ┌─ 是否 UObject 派生？ ─┐
@@ -760,7 +760,7 @@ int Decide(bool isUObject) { return isUObject ? 0 : 1; }
 
 不装 UE 也能理解 `UPROPERTY` 与 `UClass` 的运行模型——下面用标准库复刻核心：**每个类有一张属性元数据表，每个对象注册进全局存活表（GC 根集）**。这正是 UE 让编辑器/序列化/网络复制"看见"字段的机制。
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
+> **示例 44** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
 ```cpp
 // ㉑.2 用标准 C++ 复刻 UE「反射属性表 + GC 托管」的最小模型（本块可独立编译，GCC 13.1.0 验证）
 #include <string>
@@ -802,7 +802,7 @@ int main() {
 
 下面才是你在 UE 编辑器里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入引擎头依赖）。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：㉑.3 真实 UE C++ 长什么样]
+> **示例 45** [难度 ★★☆☆☆] [主题：㉑.3 真实 UE C++ 长什么样]
 ```cpp
 // ㉑.3 真实 UE C++ 写法（仅注释演示，需 UE + UHT；本门禁按空块编译通过）：
 //   #include "HealthPickup.h"
@@ -906,7 +906,7 @@ int main() {
 - [Epic 开发者门户](https://dev.epicgames.com/)：SDK、源码与社区资源。
 ## 附录 A：Unreal Engine C++ 工业实践 [F: Industry / B: Principle]
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：附录 A：Unreal Engine]
+> **示例 46** [难度 ★★★☆☆] [主题：附录 A：Unreal Engine]
 ```
 Unreal Engine C++ 的设计哲学与标准 C++ 的差异:
 
@@ -928,7 +928,7 @@ Unreal Engine C++ 的设计哲学与标准 C++ 的差异:
 
 ## 附录 B：面试 [J: Learning / H: Design]
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：附录 B：面试 [J: Learni]
+> **示例 47** [难度 ★★☆☆☆] [主题：附录 B：面试 [J: Learni]
 ```
 Unreal C++ 面试高频:
 Q: UObject 为什么需要 BeginPlay/Tick/EndPlay？
@@ -1033,7 +1033,7 @@ call [rcx+0x0018]         ; 反射访问属性
 
 宏在静态初始化期把"类名→工厂"登记进全局表，实现运行期按名构造：
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 48** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <map>
 #include <string>
@@ -1081,7 +1081,7 @@ int main() {
 
 只有被"强引用列表"登记的对象参与可达性；未登记的裸指针目标不可达、被回收：
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 49** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <vector>
 
@@ -1127,7 +1127,7 @@ int main() {
 
 Actor 拥有组件生命周期；Tick 向下传播，对应 UE 的组件驱动模型：
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 50** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <vector>
 
@@ -1320,7 +1320,7 @@ UObject 反射看着「灵活」，但字符串键属性访问的代价是哈希
 
 ### D5.3 可复现 demo
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 51** [难度 ★★★★☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 #include <unordered_map>

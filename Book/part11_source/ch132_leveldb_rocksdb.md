@@ -79,7 +79,7 @@ enum class Amplification { Read, Write, Space };
 
 LevelDB 的单库由下列部件组成，全部是 C++ 类，体现 RAII 与明确所有权：
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：架构]
+> **示例 4** [难度 ★★☆☆☆] [主题：架构]
 ```cpp
 // ② 核心类（上游参考，类名与 leveldb 1.23 一致）
 //   DBImpl        : 引擎门面，持有 MemTable / 版本集 / 后台线程
@@ -113,7 +113,7 @@ struct SkipNode {
 
 - `[实现·纯C++]`：下面跳表为**可独立编译运行**的纯 C++ 示意，对应 LevelDB `MemTable` 的跳表结构；不依赖 LevelDB，仅演示 O(log n) 查找 / 插入的核心机制（上游 `leveldb::SkipList` 用柔性数组 + `AtomicPointer` 保证无锁并发读，此处用 `std::vector` 简化）。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：架构]
+> **示例 7** [难度 ★★☆☆☆] [主题：架构]
 ```cpp
 // 纯 C++ 跳表示意（可编译运行，对应 LevelDB MemTable；不依赖 LevelDB）
 #include <iostream>
@@ -187,7 +187,7 @@ int main() {
 
 以下剖析 LevelDB 的写入口，引用上游源码 URL + 行号（上游参考，非本机文件）。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：[实现·LevelDB]源码剖析：D]
+> **示例 9** [难度 ★★☆☆☆] [主题：[实现·LevelDB]源码剖析：D]
 ```cpp
 // 文件：https://github.com/google/leveldb/blob/main/db/db_impl.cc
 // 行号：1017  （Status DBImpl::Write(const WriteOptions&, WriteBatch*) 定义处，leveldb 1.23）
@@ -221,7 +221,7 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* my_batch) {
 - `[实现·LevelDB]`：写合并（group commit）由 `writers_` 队列 + condition variable 实现——队首 writer 代表整批落盘，其余等待，极大提升并发吞吐。
 - `[实现·LevelDB]`：行号 `1017` 为 leveldb 1.23 发布标签近似位置，阅读请以你 checkout 的实际行号为准（上游参考）。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：[实现·LevelDB]源码剖析：D]
+> **示例 11** [难度 ★★☆☆☆] [主题：[实现·LevelDB]源码剖析：D]
 ```cpp
 // ③ MaybeScheduleCompaction 触发后台线程（后台 Compaction 总览）
 // 上游参考：https://github.com/google/leveldb/blob/main/db/db_impl.cc
@@ -234,7 +234,7 @@ Status DBImpl::Write(const WriteOptions& options, WriteBatch* my_batch) {
 
 RocksDB 是 Facebook 对 LevelDB 的工业级分支，增加**列族（Column Family）**、**Merge 算子**、**通用压缩（Universal/_FIFO）**、**事务**、**前缀布隆**等。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：扩展（列族/合并/压缩） [实现·R]
+> **示例 12** [难度 ★★★☆☆] [主题：扩展（列族/合并/压缩） [实现·R]
 ```cpp
 // ④ 列族：一个 DB 内含多个独立有序空间，共享 WAL/Manifest 但独立 Compaction
 #include <rocksdb/db.h>
@@ -292,7 +292,7 @@ prefix_opt.table_factory.reset(rocksdb::NewBlockBasedTableFactory(bto));
 leveldb::Status s = db->Put(leveldb::WriteOptions(), "k1", "v1");
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：写路径（WAL+MemTable） ]
+> **示例 17** [难度 ★★☆☆☆] [主题：写路径（WAL+MemTable） ]
 ```cpp
 // ⑤ 原子批量写：一批要么全见、要么全不见（WAL 单条 record）
 leveldb::WriteBatch batch;
@@ -302,7 +302,7 @@ batch.Delete("c");
 leveldb::Status s = db->Write(leveldb::WriteOptions(), &batch);
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：写路径（WAL+MemTable） ]
+> **示例 18** [难度 ★★☆☆☆] [主题：写路径（WAL+MemTable） ]
 ```cpp
 // ⑤ 同步写：options.sync=true 落盘 fsync（强持久，吞吐更低）
 leveldb::WriteOptions sync_opt;
@@ -349,7 +349,7 @@ ro.snapshot = db->GetSnapshot();           // 固定一致视图
 db->ReleaseSnapshot(ro.snapshot);          // 用完释放
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：读路径与缓存 [实现·LevelDB]
+> **示例 21** [难度 ★★☆☆☆] [主题：读路径与缓存 [实现·LevelDB]
 ```cpp
 // ⑥ 迭代器：范围扫描（LevelDB 合并各层形成有序视图）
 leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
@@ -362,7 +362,7 @@ delete it;   // 迭代器需手动释放（见 ⑧ RAII 封装）
 - `[实现·LevelDB]`：布隆过滤器在 `Table::Get` 前先判「文件必有？」，消除大量无谓 IO。
 - `[经验]`：默认 BlockCache 为 8MB LRU；热数据集调大 `options.block_cache` 显著降读放大。
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：读路径与缓存 [实现·LevelDB]
+> **示例 22** [难度 ★★☆☆☆] [主题：读路径与缓存 [实现·LevelDB]
 ```cpp
 // ⑥ 显式 BlockCache 尺寸（RocksDB 写法，LevelDB 用 options.block_cache）
 // 上游参考：https://github.com/facebook/rocksdb/blob/main/include/rocksdb/options.h
@@ -382,7 +382,7 @@ leveldb::Slice begin("a"), end("z");
 db->CompactRange(&begin, &end);   // 合并 [a,z) 覆盖的所有层
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：策略 [实现·LevelDB]]
+> **示例 24** [难度 ★★☆☆☆] [主题：策略 [实现·LevelDB]]
 ```cpp
 #include <string>
 // ⑦ Compaction 过滤器：合并时改写/丢弃值（如 TTL 过期）
@@ -399,7 +399,7 @@ public:
 };
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：策略 [实现·LevelDB]]
+> **示例 25** [难度 ★★☆☆☆] [主题：策略 [实现·LevelDB]]
 ```cpp
 // ⑦ 本仓库自包含等价：多路归并（真实汇编见 ⑨）
 // 见 Examples/_ch132_lsm_toy.cpp 的 merge_runs()：
@@ -422,7 +422,7 @@ u.size_ratio = 10;   // 相邻文件大小比超过即合并
 
 LevelDB 大量使用 RAII 与裸指针所有权约定；RocksDB 更进一步用 `std::unique_ptr` 与可插拔分配器（Arena）。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：与 C++ 特性]
+> **示例 27** [难度 ★★★☆☆] [主题：与 C++ 特性]
 ```cpp
 // ⑧ RAII 封装 leveldb::DB：离开作用域自动 Close（避免漏 Close 陷阱，见 ⑬）
 #include <memory>
@@ -438,7 +438,7 @@ DBPtr open_db(const std::string& path) {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：与 C++ 特性]
+> **示例 28** [难度 ★★☆☆☆] [主题：与 C++ 特性]
 ```cpp
 #include <memory>
 // ⑧ RAII 封装迭代器：delete it 易漏，用 unique_ptr 定制删除器
@@ -449,7 +449,7 @@ IterPtr scan(leveldb::DB* db) {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：与 C++ 特性]
+> **示例 29** [难度 ★★☆☆☆] [主题：与 C++ 特性]
 ```cpp
 #include <cstddef>
 // ⑧ Arena 分配器：MemTable 内对象从同一块连续内存分配，析构一次释放全部
@@ -474,7 +474,7 @@ co.memtable_prefix_bloom_size_ratio = 0.1;   // 前缀布隆占 MemTable 比例
 
 本仓库 `Examples/_ch132_lsm_toy.cpp` 用纯标准库实现跳表（MemTable 等价）+ 有序段（SSTable 等价）+ 多路归并（Compaction 等价）。以下是 **GCC 13.1.0 真实 `-O2 -masm=intel` 汇编**（非示意）。
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：[实现·纯C++]真实：编译自包含跳]
+> **示例 31** [难度 ★★★☆☆] [主题：[实现·纯C++]真实：编译自包含跳]
 ```cpp
 // 文件：Examples/_ch132_lsm_toy.cpp
 // 行号：26  （int skiplist_contains(const Node*, int, int) 定义）
@@ -526,7 +526,7 @@ _Z17skiplist_containsPK4Nodeii:
 	.seh_endproc
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：[实现·纯C++]真实：编译自包含跳]
+> **示例 32** [难度 ★★★☆☆] [主题：[实现·纯C++]真实：编译自包含跳]
 ```cpp
 #include <vector>
 // 文件：Examples/_ch132_lsm_toy.cpp
@@ -577,7 +577,7 @@ _Z10merge_runsRKSt6vectorI3RunSaIS0_EERS_IiSaIiEES7_:
 - `[实现·GCC15]`：`merge_runs` 用魔法乘法 `-6148914691236517205` 做 `ptrdiff/8`；`jl .L68` 实现「取最小 key」的归并选择——这正是 Compaction 多路归并的核心分支。
 - `[平台·Windows]`：上述符号名 `_Z17skiplist_containsPK4Nodeii` 为 Itanium C++ ABI 名字改编（leveldb 的 `SkipList::FindGreaterOrEqual` 在目标文件中呈类似改编名）。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：[实现·纯C++]真实：编译自包含跳]
+> **示例 33** [难度 ★★☆☆☆] [主题：[实现·纯C++]真实：编译自包含跳]
 ```cpp
 // ⑨ 速取汇编的命令（可重跑验证）
 //   g++ -std=c++23 -O2 -S -masm=intel Examples/_ch132_lsm_toy.cpp -o Examples/_ch132_lsm_toy.asm
@@ -690,7 +690,7 @@ leveldb::DB::Open(opt, "/tmp/testdb", &db);
 #endif
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：跨平台 [平台·Windows]]
+> **示例 44** [难度 ★★☆☆☆] [主题：跨平台 [平台·Windows]]
 ```cpp
 // ⑫ 文件锁在跨平台下行为差异：LevelDB 用 flock(Linux)/LockFileEx(Win)
 //   网络盘(NFS/SMB)上锁可能不可靠 -> 不要把 DB 放在网络文件系统
@@ -709,28 +709,28 @@ o.use_direct_io_for_flush_and_compaction = true;
 
 ## ⑬ 常见陷阱 [经验]
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 46** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬ 陷阱1：忘记 delete iterator -> 内存泄漏
 leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
 // ... 使用后必须有 delete it;   => 用 ⑧ 的 IterPtr 封装避免
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 47** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬ 陷阱2：迭代器/快照长期持有 -> MemTable 无法释放，空间爆
 //   ❌ 持有快照数小时，期间所有旧版本都不能被 Compaction 回收
 //   ✅ 用完立即 ReleaseSnapshot
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 48** [难度 ★★★★☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬ 陷阱3：把 LevelDB 当关系库做事务跨键更新
 //   ❌ 期望两个 Put 原子（LevelDB 单键原子，无跨键事务）
 //   ✅ 用 WriteBatch 单批，或上 RocksDB TransactionDB
 ```
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 49** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬ 陷阱4：options.block_cache 多 ColumnFamily 共享同一 cache 实例
 //   ❌ 每个 CF new 一个 cache -> 内存翻倍且无全局 LRU 效益
@@ -740,7 +740,7 @@ leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
 - `[经验]`：最致命的是「长期快照 + 高写入」导致空间放大失控；监控 `rocksdb.estimate-live-data-size` 与 `rocksdb.compaction-pending`。
 - `[经验]`：LevelDB 默认 `create_if_missing=false` 时要先确认目录存在，否则 `Open` 返回 `NotFound`。
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 50** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 #include <string>
 // ⑬ 陷阱5：value 返回引用悬空（LevelDB 的 Slice 指向内部缓冲）
@@ -812,7 +812,7 @@ o.block_cache = leveldb::NewLRUCache(128 << 20);        // 128MB
 rocksdb::Options o = rocksdb::Options::OptimizeForPointLookup(128 /*MB cache*/);
 ```
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 58** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑮ 控制写放大：限制后台线程，避免 Compaction 抢前台 IO
 rocksdb::Options o;
@@ -843,7 +843,7 @@ co.min_blob_size = 1024;     // 大于 1KB 的 value 进 blob 文件
 //   主要差异：RocksDB 多 ColumnFamilyHandle 参数，几乎所有方法多一个 handle
 ```
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：跨库 [经验]]
+> **示例 61** [难度 ★★☆☆☆] [主题：跨库 [经验]]
 ```cpp
 // ⑯ 与 LMDB（B+Tree，mmap）对比：LMDB 读无拷贝、事务强，但写单线程
 //   LevelDB/RocksDB：写并发高、Compaction 自管；LMDB：读极致、写受锁
@@ -899,7 +899,7 @@ const char* pick(bool need_sql, bool need_high_write) {
 - `[经验]`：改核心路径（Compaction / MemTable）务必补 `db_test` 与 `compaction_test`，并跑 `make check`。
 - `[平台·Windows]`：Windows 用 Visual Studio 的 CMake 预设；Linux/macOS 用 Ninja 更快。
 
-> **示例 67** [难度 ★☆☆☆☆] [主题：贡献 [经验]]
+> **示例 67** [难度 ★★☆☆☆] [主题：贡献 [经验]]
 ```cpp
 // ⑰ 用 sanitizer 编译定位内存问题（开发期）
 //   cmake -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined" ..
@@ -909,7 +909,7 @@ const char* pick(bool need_sql, bool need_high_write) {
 
 `std::map`（红黑树）与 LevelDB（LSM）都提供有序 KV，但**持久化、并发、规模**维度天差地别。
 
-> **示例 68** [难度 ★☆☆☆☆] [主题：与 STL 容器对比]
+> **示例 68** [难度 ★★☆☆☆] [主题：与 STL 容器对比]
 ```cpp
 // ⑱ std::map：内存、单线程友好、O(log n) 但受限于 RAM
 #include <map>
@@ -1006,7 +1006,7 @@ db->GetProperty("rocksdb.cfstats", &h);     // 每列族详细统计
    - [标准] 与 C++17 `std::string_view` 一样是非拥有视图语义，但 Slice 是库类型。
    - [引用] ISO/IEC 14882:2023 §[string.view]（视图语义）/ LevelDB `Slice` 文档；cppreference "std::string_view" 词条。
 
-> **示例 76** [难度 ★☆☆☆☆] [主题：速查表 [经验]]
+> **示例 76** [难度 ★★★☆☆] [主题：速查表 [经验]]
 ```cpp
 #include <vector>
 #include <string>
@@ -1094,7 +1094,7 @@ bool healthy = imm <= 2 && !pending_compaction && live_data_mb < capacity_mb * 0
 
 不装 LevelDB / RocksDB 也能理解 KV 引擎的接口契约——下面用标准库复刻其核心：**`std::map` 提供与 `leveldb::DB::Put/Get/Delete` 同名同义的接口**。真实引擎把数据拆成"内存 MemTable + 多层磁盘 SSTable"（LSM 树），用顺序写换写性能，但对外接口还是这三件事。
 
-> **示例 79** [难度 ★☆☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
+> **示例 79** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
 ```cpp
 // ㉑.2 用标准库 std::map 复刻 KV 引擎的「Put/Get/Delete」接口（本块可独立编译，GCC 15.3.0 验证）
 #include <map>
@@ -1131,7 +1131,7 @@ int main() {
 
 下面才是你在工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
 
-> **示例 80** [难度 ★☆☆☆☆] [主题：㉑.3 真实 API 长什么样]
+> **示例 80** [难度 ★★★☆☆] [主题：㉑.3 真实 API 长什么样]
 ```cpp
 // ㉑.3 真实 LevelDB / RocksDB 写法（仅注释演示，需链接 leveldb / rocksdb；本门禁按空块编译通过）：
 //   #include <leveldb/db.h>
@@ -1241,7 +1241,7 @@ LevelDB 的设计哲学则直接继承自 **Chang、Dean、Ghemawat 等《Bigtab
 - [LSM-Tree（维基百科）](https://en.wikipedia.org/wiki/Log-structured_merge-tree)：LevelDB/RocksDB 的根基算法与读放大/写放大权衡。
 ## 附录 F：LevelDB/RocksDB 工业原理与面试 [B: Principle / D: Stdlib / H: Design / I: Practice / J: Learning]
 
-> **示例 81** [难度 ★☆☆☆☆] [主题：附录 F：LevelDB/Rocks]
+> **示例 81** [难度 ★★☆☆☆] [主题：附录 F：LevelDB/Rocks]
 ```
 LevelDB设计哲学 (Jeff Dean, Sanjay Ghemawat, 2011):
 - LSM Tree: 写优化 → 内存MemTable → 磁盘SST文件 → Compaction合并
@@ -1256,7 +1256,7 @@ RocksDB改进 (Facebook, 2013):
 C++实现: 整个项目~500K行C++, 使用std::atomic, std::thread, std::unique_ptr
 ```
 
-> **示例 82** [难度 ★☆☆☆☆] [主题：附录 F：LevelDB/Rocks]
+> **示例 82** [难度 ★★☆☆☆] [主题：附录 F：LevelDB/Rocks]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1349,7 +1349,7 @@ mov rax, [rdi+0x0010]     ; 下一级
 
 C++20 概念取代 SFINAE 做编译期约束：
 
-> **示例 83** [难度 ★☆☆☆☆] [主题：重构建议]
+> **示例 83** [难度 ★★☆☆☆] [主题：重构建议]
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -1367,7 +1367,7 @@ LevelDB 写路径第一步是把记录追加进 WAL（Write-Ahead Log），进�
 请用 RAII 封装一个 `WalWriter`：构造时以追加模式打开文件，提供 `Append(const std::string&)` 写入一条带长度前缀的记录，
 析构时保证 flush 并关闭文件——即便中途抛异常也不泄漏文件句柄。
 
-> **示例 84** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 84** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <cstdio>
 #include <cstdint>
@@ -1409,7 +1409,7 @@ MemTable 中的一条记录可能是 Put（带值）、Delete（墓碑）或 Mer
 请用 `std::variant` 把这三类操作建模为一个 `Op` 类型，并统计一批操作中各类型的占比——
 体会用代数数据类型（sum type）替代“基类+继承”如何消除虚调用与堆分配。
 
-> **示例 85** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 85** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <variant>
@@ -1448,7 +1448,7 @@ LevelDB 的 MemTable 底层是跳表（SkipList），读路径无锁、写路径
 请实现一个简化跳表：固定最大层数、`next` 指针用 `std::atomic` 标注内存序，
 插入时以 `memory_order_release` 发布、查找时以 `memory_order_acquire` 观察，保证发布-观察的 happens-before。
 
-> **示例 86** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 86** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <atomic>
@@ -1506,7 +1506,7 @@ int main() {
 **错误**：每条记录独立 `new/delete`，分配器成为瓶颈且碎片难回收。
 **落地**：
 
-> **示例 87** [难度 ★☆☆☆☆] [主题：演绎 1：Arena 分配器——把 ]
+> **示例 87** [难度 ★★★☆☆] [主题：演绎 1：Arena 分配器——把 ]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1555,7 +1555,7 @@ int main() {
 **错误**：不看后端压实进度，无脑全速写入，最终被反压拖垮（关联 附录 I 工业案例：Compaction 风暴）。
 **落地**：
 
-> **示例 88** [难度 ★☆☆☆☆] [主题：演绎 2：Compaction 风暴]
+> **示例 88** [难度 ★★☆☆☆] [主题：演绎 2：Compaction 风暴]
 ```cpp
 #include <iostream>
 
@@ -1705,7 +1705,7 @@ SSTable 归并（merge）是 compaction 的核心：给定两个已排序的 `st
 
 <details><summary>答案与解析</summary>
 
-> **示例 90** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 90** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <vector>

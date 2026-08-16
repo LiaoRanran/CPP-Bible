@@ -54,7 +54,7 @@ int main() {
 
 ## ② 前置知识
 
-> **示例 2** [难度 ★★☆☆☆] [主题：前置知识]
+> **示例 2** [难度 ★☆☆☆☆] [主题：前置知识]
 ```cpp
 // [merged] ## ② 前置知识
 #include <iostream>
@@ -70,7 +70,7 @@ int main() {
 
 ## ③ 后续依赖
 
-> **示例 3** [难度 ★★☆☆☆] [主题：后续依赖]
+> **示例 3** [难度 ★☆☆☆☆] [主题：后续依赖]
 ```cpp
 // [merged] ## ③ 后续依赖
 #include <iostream>
@@ -86,7 +86,7 @@ int main() {
 
 ## ④ 对照总表
 
-> **示例 4** [难度 ★★☆☆☆] [主题：对照总表]
+> **示例 4** [难度 ★☆☆☆☆] [主题：对照总表]
 ```cpp
 // [merged] ## ④ 对照总表
 #include <iostream>
@@ -152,7 +152,7 @@ int main() {
 
 ## ⑥ 编译器支持矩阵（要点，详见 ch11）
 
-> **示例 6** [难度 ★★☆☆☆] [主题：编译器支持矩阵]
+> **示例 6** [难度 ★☆☆☆☆] [主题：编译器支持矩阵]
 ```cpp
 // [merged] ## ⑥ 编译器支持矩阵（要点，详见 ch11）
 #include <iostream>
@@ -171,7 +171,7 @@ int main() {
 
 ## ⑦ 版本演进 Mermaid
 
-> **示例 7** [难度 ★★☆☆☆] [主题：版本演进 Mermaid]
+> **示例 7** [难度 ★☆☆☆☆] [主题：版本演进 Mermaid]
 ```cpp
 // [merged] ## ⑦ 版本演进 Mermaid
 #include <iostream>
@@ -185,7 +185,7 @@ int main() {
 
 ## ⑧ 生命周期（版本矩阵本身无生命周期语义）
 
-> **示例 8** [难度 ★★☆☆☆] [主题：生命周期]
+> **示例 8** [难度 ★☆☆☆☆] [主题：生命周期]
 ```cpp
 // [merged] ## ⑧ 生命周期（版本矩阵本身无生命周期语义）
 #include <iostream>
@@ -234,7 +234,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ## ⑩ 自检（每版一条）
 
-> **示例 10** [难度 ★★☆☆☆] [主题：自检（每版一条）]
+> **示例 10** [难度 ★☆☆☆☆] [主题：自检（每版一条）]
 ```cpp
 // 平台宏 _WIN32 / __linux__
 #ifdef _WIN32
@@ -242,7 +242,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 #ifdef __linux__
 #endif
 ```
-> **示例 11** [难度 ★★☆☆☆] [主题：自检（每版一条）]
+> **示例 11** [难度 ★☆☆☆☆] [主题：自检（每版一条）]
 ```cpp
 // 检测 64 位平台
 static_assert(sizeof(void*)==8, "64-bit");
@@ -263,7 +263,7 @@ int main() {
 C++11 起 STL 大幅扩展（智能指针、区间、并发）；C++17/20 加入 `string_view`/`<filesystem>`/Ranges；演进全貌见 ch76–ch110。
 ## ⑫ 工业案例（编译器/库对标准的跟进节奏）
 
-> **示例 13** [难度 ★★☆☆☆] [主题：工业案例]
+> **示例 13** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // [merged] ## ⑫ 工业案例（编译器/库对标准的跟进节奏）
 #include <iostream>
@@ -293,7 +293,7 @@ int main() {
 C++ 标准文本（ISO/IEC 14882）与 WG21 提案、编译器前端实现共同构成「规范级源码」；研读草案比二手博客更可靠。
 ## ⑭ WG21 提案背景 [标准]
 
-> **示例 15** [难度 ★★☆☆☆] [主题：提案背景 [标准]]
+> **示例 15** [难度 ★☆☆☆☆] [主题：提案背景 [标准]]
 ```cpp
 // [merged] ## ⑭ WG21 提案背景 [标准]
 #include <iostream>
@@ -316,7 +316,7 @@ int main() {
 
 ## ⑮ 面试题
 
-> **示例 16** [难度 ★★☆☆☆] [主题：面试题]
+> **示例 16** [难度 ★☆☆☆☆] [主题：面试题]
 ```cpp
 // [merged] ## ⑮ 面试题
 #include <iostream>
@@ -341,7 +341,7 @@ int main() {}
 混用不同 `-std=` 编译单元可能导致 ODR 违规与 ABI 不一致；NDK/MSVC 对新课标支持常滞后，切勿假设「写 C++20 就能编」。
 ## ⑰ FAQ（迁移必读）
 
-> **示例 18** [难度 ★★☆☆☆] [主题：未分类]
+> **示例 18** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // [merged] ## ⑰ FAQ（迁移必读）
 #include <iostream>
@@ -355,7 +355,7 @@ int main() {
 - **Q：如何写跨版本代码？** A：用特性测试宏 `__cpp_*` 做条件编译，而非硬编码版本号。
 ## ⑱ 最佳实践（版本治理）
 
-> **示例 19** [难度 ★★☆☆☆] [主题：最佳实践（版本治理）]
+> **示例 19** [难度 ★☆☆☆☆] [主题：最佳实践（版本治理）]
 ```cpp
 // 特性宏 __cpp_explicit_this_parameter（C++23 deducing this，GCC 15.3 实测 202110）
 // 注意：标准宏名是 __cpp_explicit_this_parameter，非直觉的 __cpp_deducing_this（后者不存在）
@@ -449,7 +449,7 @@ const char* plat="other";
 
 ## 附录: 版本特性速查
 
-> **示例 22** [难度 ★★☆☆☆] [主题：附录: 版本特性速查]
+> **示例 22** [难度 ★★★☆☆] [主题：附录: 版本特性速查]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++11: move,auto,lambda,smart_ptr,constexpr,noexcept,thread\n";return 0;}
@@ -467,7 +467,7 @@ int main(){std::cout<<"C++17: structured_binding,if_constexpr,optional,variant,s
 int main(){std::cout<<"C++20: concepts,coroutines,ranges,modules,span,<=>\n";return 0;}
 ```
 
-> **示例 25** [难度 ★★☆☆☆] [主题：附录: 版本特性速查]
+> **示例 25** [难度 ★☆☆☆☆] [主题：附录: 版本特性速查]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++23: expected,print,flat_map,views::zip,deducing_this\n";return 0;}
@@ -484,7 +484,7 @@ int main(){std::cout<<"C++23: expected,print,flat_map,views::zip,deducing_this\n
 int main(){std::cout<<"New project? Start C++17 minimum. Can target C++20? Use concepts/coroutines. Embedded? C++11+ with RTOS."<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★★☆☆☆] [主题：附录 B: 版本选择决策树]
+> **示例 27** [难度 ★☆☆☆☆] [主题：附录 B: 版本选择决策树]
 ```cpp
 #include <iostream>
 int main(){
@@ -496,13 +496,13 @@ int main(){
 }
 ```
 
-> **示例 28** [难度 ★★☆☆☆] [主题：附录 B: 版本选择决策树]
+> **示例 28** [难度 ★☆☆☆☆] [主题：附录 B: 版本选择决策树]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"Feature macro names: __cpp_lib_*, __cpp_*. Check with #if. Portable detection without version guessing."<<std::endl;return 0;}
 ```
 
-> **示例 29** [难度 ★★☆☆☆] [主题：附录 B: 版本选择决策树]
+> **示例 29** [难度 ★☆☆☆☆] [主题：附录 B: 版本选择决策树]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"GCC 13 C++23 support: ~90%. MSVC 17.8: ~95%. Clang 17: ~85%. Check cppreference for details."<<std::endl;return 0;}
@@ -524,7 +524,7 @@ LTS/企业: C++17 (GCC8/Clang6/MSVC2019, RHEL8)
 嵌入式: C++11/14 (arm-none-eabi-gcc 9+)
 安全关键: C++14 (DO-178C certified compilers)
 
-> **示例 30** [难度 ★★☆☆☆] [主题：附录 E：版本选择工业与面试]
+> **示例 30** [难度 ★☆☆☆☆] [主题：附录 E：版本选择工业与面试]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++11->14=minor, 14->17=productivity, 17->20=paradigm"<<std::endl;return 0;}
@@ -581,7 +581,7 @@ WG21 train model每3年1版:
 ; C++17: guaranteed elision=直接构造在返回地址 → cost ~0ns
 ```
 
-> **示例 32** [难度 ★★☆☆☆] [主题：汇编验证]
+> **示例 32** [难度 ★☆☆☆☆] [主题：汇编验证]
 ```cpp
 #include <iostream>
 #include <optional>

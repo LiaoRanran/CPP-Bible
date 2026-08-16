@@ -40,7 +40,7 @@ STL 收编的算法并非随意堆砌，而是围绕几条主线组织：**遍�
 
 算法 = 在有限步骤内把输入变为输出的确定过程。工业 C++ 工程中，绝大多数"业务逻辑瓶颈"可归结为六类经典思想：**哈希（O(1) 近似随机访问）、图（关系与遍历）、树（有序与平衡）、动态规划（重叠子问题）、贪心（局部最优）、分治/回溯（分解与枚举）**。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：算法思想总览 [标准]]
+> **示例 1** [难度 ★★☆☆☆] [主题：概述：算法思想总览 [标准]]
 ```cpp
 // ① 六类思想的"一句话 C++ 形态"
 #include <unordered_map>
@@ -81,7 +81,7 @@ std::function<int(int)> fib = [&](int n){ return n<2?n:fib(n-1)+fib(n-2); }; // 
 
 **链地址（separate chaining）**：每个桶挂一条链表。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：哈希表原理与冲突（链地址/开放寻址）]
+> **示例 2** [难度 ★★★☆☆] [主题：哈希表原理与冲突（链地址/开放寻址）]
 ```cpp
 // ② 链地址：桶数组 + 单向链表
 #include <list>
@@ -108,7 +108,7 @@ struct ChainingHash {
 
 **开放寻址（open addressing）**：所有元素存在桶数组内，冲突时按探测序列找下一个空槽。常见探测：线性 `h+i`、二次 `h+i²`、双重哈希 `h + i·h2(k)`。
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：哈希表原理与冲突（链地址/开放寻址）]
+> **示例 3** [难度 ★★☆☆☆] [主题：哈希表原理与冲突（链地址/开放寻址）]
 ```cpp
 // ② 开放寻址骨架（线性探测）：槽位内联，无链表节点
 #include <cstddef>
@@ -164,7 +164,7 @@ void dfs(int u, const std::vector<std::vector<int>>& adj,
 
 Dijkstra 在非负权图上求单源最短路，核心是"每次取出当前距离最小的未定节点并松弛邻居"。用 `std::priority_queue`（堆）实现为 O((V+E)logV)。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：最短路径 Dijkstra [标准]]
+> **示例 6** [难度 ★★☆☆☆] [主题：最短路径 Dijkstra [标准]]
 ```cpp
 // ④ Dijkstra：最小堆驱动，距离数组 + 松弛
 #include <queue>
@@ -199,7 +199,7 @@ std::vector<long long> dijkstra(int s,
 
 二叉搜索树（BST）中序有序，但退化为链时 O(n)。平衡树通过旋转维持高度 O(log n)：AVL（严格平衡，查找快、插入慢）、红黑树（近似平衡，插入删除更稳）。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：树（BST/平衡树 AVL/红黑） ]
+> **示例 7** [难度 ★★☆☆☆] [主题：树（BST/平衡树 AVL/红黑） ]
 ```cpp
 // ⑤ BST 插入（递归）：左小右大
 struct BST {
@@ -272,7 +272,7 @@ int lis(const std::vector<int>& a) {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：动态规划 DP [标准]]
+> **示例 12** [难度 ★★☆☆☆] [主题：动态规划 DP [标准]]
 ```cpp
 // ⑥ 状态压缩 DP：用整数位表示集合（旅行商 TSP 雏形）
 // dp[mask][u] = 已访问集合 mask、当前在 u 的最小代价
@@ -314,7 +314,7 @@ int max_intervals(std::vector<std::pair<int,int>> iv) {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：贪心 [标准]]
+> **示例 14** [难度 ★★☆☆☆] [主题：贪心 [标准]]
 ```cpp
 // ⑦ Kruskal 思路：边按权升序，并查集避免环
 #include <vector>
@@ -341,7 +341,7 @@ int kruskal(std::vector<std::tuple<int,int,int>> edges, int n) {
 
 下面是被真实编译的源（完整可编译见 `Examples/_ch101_open_addressing.cpp`）。`oah_find` 用线性探测：`for i in [0,cap): idx=(h+i)&(cap-1)`，遇空槽返回、遇同键返回。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：[实现]真实：手写开放寻址哈希表编译]
+> **示例 15** [难度 ★★★☆☆] [主题：[实现]真实：手写开放寻址哈希表编译]
 ```cpp
 #include <cstddef>
 // 文件：Examples/_ch101_open_addressing.cpp
@@ -388,7 +388,7 @@ static Entry* oah_find(OAHMap* m, int key) {
 
 真实基准（源 `Examples/_ch101_bench.cpp`，MinGW GCC 15.3.0，`-O2`，x86-64，N=300000 次插入+查找）：
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：[实现]真实：手写哈希表 vs st]
+> **示例 16** [难度 ★★☆☆☆] [主题：[实现]真实：手写哈希表 vs st]
 ```cpp
 #include <map>
 // 文件：Examples/_ch101_bench.cpp
@@ -421,7 +421,7 @@ speedup(hand/std)=3.01x
 
 分治 = 分解 → 解决子问题 → 合并。经典：归并排序、快速排序。C++ 的 `std::sort` 是 introsort（快排 + 堆排 + 插入排序混合）。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：分治（与 std::sort 衔接）]
+> **示例 17** [难度 ★★☆☆☆] [主题：分治（与 std::sort 衔接）]
 ```cpp
 // ⑩ 归并排序（分治 + 合并）：O(n log n)，稳定
 #include <vector>
@@ -456,7 +456,7 @@ std::sort(v.begin(), v.end(), std::greater<int>()); // 降序
 
 回溯 = 试探性搜索，走到死路就撤销（undo）并返回上一层。典型：N 皇后、全排列、数独。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：回溯 [标准]]
+> **示例 19** [难度 ★★☆☆☆] [主题：回溯 [标准]]
 ```cpp
 // ⑪ N 皇后：逐行放皇后，冲突则回溯
 #include <vector>
@@ -574,7 +574,7 @@ auto it = std::find(v.begin(), v.end(), 5);                 // 顺序 O(n)
 auto lb = std::lower_bound(v.begin(), v.end(), 5);          // 有序 O(log n)
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：与 STL 算法对应]
+> **示例 26** [难度 ★★☆☆☆] [主题：与 STL 算法对应]
 ```cpp
 // ⑮ 堆思想 -> std::priority_queue / std::make_heap（Dijkstra 用其取最小，见 ④）
 #include <queue>
@@ -607,7 +607,7 @@ if (m[1]) { }                 // ⑯ 坑：m[1] 不存在时插入默认 0，污
 if (m.find(1) != m.end()) { }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：常见坑 [经验]]
+> **示例 29** [难度 ★★☆☆☆] [主题：常见坑 [经验]]
 ```cpp
 // ⑯ 坑2：自定义 key 未特化 std::hash / 未定义 operator==
 #include <unordered_map>
@@ -625,7 +625,7 @@ std::unordered_map<Pt, int> pts;   // ⑯ 必须提供 hash + ==，否则编译/
 
 ## ⑰ 工程应用案例 [标准]
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：工程应用案例 [标准]]
+> **示例 30** [难度 ★★★☆☆] [主题：工程应用案例 [标准]]
 ```cpp
 // ⑰ 案例：LRU 缓存 = 哈希表(定位) + 双向链表(顺序)，O(1) get/put
 #include <unordered_map>
@@ -679,7 +679,7 @@ std::unordered_map<int,int> m;
 m.reserve(1 << 16);     // ⑲ 预分配，INSERT 阶段不扩容
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑲ 实践2：遍历图/树用迭代器或显式栈，避免深递归爆栈
 #include <vector>
@@ -700,7 +700,7 @@ void dfs_iter(int s, const std::vector<std::vector<int>>& adj) {
 
 ## 补充完整可编译示例（算法思想）
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 33** [难度 ★★★☆☆] [主题：补充完整可编译示例（算法思想）]
 ```cpp
 // E1 链地址哈希表完整版（可编译）
 #include <list>
@@ -725,7 +725,7 @@ struct ChainingHash {
 };
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 34** [难度 ★★☆☆☆] [主题：补充完整可编译示例（算法思想）]
 ```cpp
 // E2 开放寻址完整版（墓碑删除）
 #include <cstddef>
@@ -774,7 +774,7 @@ int components(const std::vector<std::vector<int>>& adj) {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 37** [难度 ★★☆☆☆] [主题：补充完整可编译示例（算法思想）]
 ```cpp
 // E5 Dijkstra 完整可编译
 #include <queue>
@@ -844,7 +844,7 @@ void msort(std::vector<int>& a, int l, int r,
 }
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 41** [难度 ★★☆☆☆] [主题：补充完整可编译示例（算法思想）]
 ```cpp
 // E9 N 皇后计数（位运算剪枝）
 #include <vector>
@@ -875,7 +875,7 @@ std::vector<long long> build_prefix(const std::vector<int>& a) {
 }
 ```
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：补充完整可编译示例（算法思想）]
+> **示例 43** [难度 ★★★☆☆] [主题：补充完整可编译示例（算法思想）]
 ```cpp
 // E11 LRU 缓存完整可编译（见 ⑰ 思想）
 #include <unordered_map>
@@ -995,7 +995,7 @@ int main() { return 0; }
 
 ## 附录 A：算法在工业中的应用 [F: Industry / B: Principle]
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：附录 A：算法在工业中的应用 [F:]
+> **示例 46** [难度 ★★★☆☆] [主题：附录 A：算法在工业中的应用 [F:]
 ```
 工业项目中的算法选择实例:
 
@@ -1014,7 +1014,7 @@ protobuf: varint 编码 = 7-bit 分组 + MSB 标志 (O(1) 编码, O(N) 传输, �
 
 ## 附录 B：面试高频 [J: Learning / I: Practice]
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：附录 B：面试高频 [J: Lear]
+> **示例 47** [难度 ★★★☆☆] [主题：附录 B：面试高频 [J: Lear]
 ```
 高频算法题 → C++实现:
 1. LRU Cache → std::list + std::unordered_map (O(1) get/put)
@@ -1124,7 +1124,7 @@ add rdi, 0x0008             ; 收缩左界
 
 开放寻址把所有元素内联在桶数组里，冲突时沿探测序列找下一个空槽；删除用墓碑而非清 `used`，避免切断链：
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：真实开源项目参考（可查证链接）]
+> **示例 48** [难度 ★★☆☆☆] [主题：真实开源项目参考（可查证链接）]
 ```cpp
 #include <cstddef>
 #include <cstdint>
@@ -1200,7 +1200,7 @@ int main() {
 
 Dijkstra 每次取出当前最近未定节点并松弛邻居；`priority_queue` 配 `greater<>` 当小顶堆：
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 49** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <queue>
@@ -1257,7 +1257,7 @@ int main() {
 
 状态 `dp[w]` = 容量 `w` 下的最大价值；逆序更新保证每件物品至多选一次：
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 50** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1499,7 +1499,7 @@ flowchart TD
 
 ### D4.5 第一方可编译验证（equal / lexicographical_compare）
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：第一方可编译验证]
+> **示例 51** [难度 ★★☆☆☆] [主题：第一方可编译验证]
 ```cpp
 #include <algorithm>
 #include <iostream>
@@ -1609,7 +1609,7 @@ int main() {
 
 ### D5.3 可复现演示
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：可复现演示]
+> **示例 52** [难度 ★★★☆☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 #include <vector>

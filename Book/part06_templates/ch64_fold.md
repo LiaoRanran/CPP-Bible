@@ -50,7 +50,7 @@ C++11 的可变参数模板虽然解决了「任意参数」，但要对参数�
 - **核心结构**：`(init op ... op pack)` 或 `(pack op ...)` 或 `(... op pack)` 等
 - **一句话定义**：把二元运算符「折叠」应用到整个参数包，编译期展开为单条表达式链 [标准]
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：本模板模式速查]
+> **示例 1** [难度 ★★☆☆☆] [主题：本模板模式速查]
 ```cpp
 template <typename... Ts>
 auto sum(Ts... ts) { return (0 + ... + ts); }   // 一元左折叠 + 初值 0
@@ -58,7 +58,7 @@ auto sum(Ts... ts) { return (0 + ... + ts); }   // 一元左折叠 + 初值 0
 
 ## ③ 核心结构与完整代码实现
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：核心结构与完整代码实现]
+> **示例 2** [难度 ★★★☆☆] [主题：核心结构与完整代码实现]
 ```cpp
 // 一元左折叠（无初值）：((a op b) op c) op d
 template <typename... Ts> auto left(Ts... ts) { return (... + ts); }
@@ -87,7 +87,7 @@ int main() {
 
 ## ④ 空包处理规则 [标准]
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：空包处理规则 [标准]]
+> **示例 3** [难度 ★★☆☆☆] [主题：空包处理规则 [标准]]
 ```cpp
 // 一元折叠空包：除 &&(true) / ||(false) / 逗号(void()) 外均为错误
 template <typename... Ts> auto and_all(Ts... ts) { return (... && ts); }  // 空包 => true
@@ -110,7 +110,7 @@ template <typename... Ts> auto sum0(Ts... ts) { return (0 + ... + ts); }  // 空
 
 ## ⑥ 完整可运行示例（最小）
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：完整可运行示例（最小）]
+> **示例 4** [难度 ★★★☆☆] [主题：完整可运行示例（最小）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -140,7 +140,7 @@ int main() {
 
 ## ⑧ GCC / Clang / MSVC 行为差异 [实现][平台]
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：行为差异 [实现][平台]]
+> **示例 5** [难度 ★★☆☆☆] [主题：行为差异 [实现][平台]]
 ```cpp
 #include <iostream>
 // C++17 起三者均支持折叠表达式
@@ -154,7 +154,7 @@ int main() { p(1, 2, 3); std::cout << "msvc-compatible comma fold ok\n"; }
 
 折叠不产生运行期数据结构，纯编译期展开为运算符链。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：内存 / 对象模型]
+> **示例 6** [难度 ★★★★☆] [主题：内存 / 对象模型]
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -187,113 +187,113 @@ _Z8use_foldv:
 
 **B1 四种折叠形态（≥10 例） [标准]**
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 7** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto a(Ts... ts) { return (... + ts); }      // 一元左
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 8** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto b(Ts... ts) { return (ts + ...); }      // 一元右
 ```
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 9** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto c(Ts... ts) { return (0 + ... + ts); }  // 二元左（初值0）
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 10** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto d(Ts... ts) { return (ts + ... + 0); }  // 二元右（初值0）
 ```
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 11** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto e(Ts... ts) { return (1 * ... * ts); }  // 一元左乘
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 12** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto f(Ts... ts) { return (ts * ... * 1); }  // 一元右乘
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 13** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto g(Ts... ts) { return (... && ts); }     // 一元左逻辑与
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 14** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto h(Ts... ts) { return (ts || ...); }     // 一元右逻辑或
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 15** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 #include <string>
 template <typename... Ts> auto i(Ts... ts) { return (std::string{} + ... + ts); } // 二元左串接
 ```
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 16** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 #include <iostream>
 template <typename... Ts> auto j(Ts... ts) { ( (std::cout << ts), ... ); } // 逗号折叠（序列）
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 17** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto k(Ts... ts) { return (std::max({ts...})); } // 折叠 + 初始化列表
 ```
 
 **B2 空包处理（≥10 例） [标准]**
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 18** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto t_and(Ts... ts) { return (... && ts); }  // 空=>true
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 19** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto t_or(Ts... ts)  { return (... || ts); }  // 空=>false
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 20** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto t_comma(Ts... ts){ (ts , ...); }        // 空=>void()
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 21** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto t_sum(Ts... ts) { return (0 + ... + ts); }  // 空=>0
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 22** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto t_mul(Ts... ts) { return (1 * ... * ts); }  // 空=>1
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 23** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 错误：一元 + 空包
 // template <typename... Ts> auto bad(Ts... ts) { return (... + ts); }  // 空包 ill-formed
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 24** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 用二元折叠避免空包错误
 template <typename... Ts> auto safe(Ts... ts) { return (0 + ... + ts); }  // 永不空错
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 25** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto safe_or(Ts... ts) { return (false || ... || ts); }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 26** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 template <typename... Ts> auto safe_and(Ts... ts){ return (true && ... && ts); }
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 27** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 空包对成员访问：用二元折叠兜底
 template <typename... Ts> auto first_nonzero(Ts... ts) { return (0 + ... + (ts ? ts : 0)); }
@@ -301,14 +301,14 @@ template <typename... Ts> auto first_nonzero(Ts... ts) { return (0 + ... + (ts ?
 
 **B3 短路语义（≥10 例） [标准]**
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 28** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 逻辑与一元左折叠：从左到右短路
 template <typename... Ts> bool all(Ts... ts) { return (... && ts); }
 // all(p1, p2, p3)：p1 假则后续不求值
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 29** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 逻辑或一元左折叠：首个真即停
 template <typename... Ts> bool any(Ts... ts) { return (... || ts); }
@@ -320,25 +320,25 @@ template <typename... Ts> bool any(Ts... ts) { return (... || ts); }
 int g();  bool b = (false && g());   // g() 不调用（短路）
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 31** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 二元折叠同样短路
 template <typename... Ts> bool all2(Ts... ts) { return (true && ... && ts); }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 32** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 逗号折叠不短路（顺序求值全部）
 template <typename... Ts> void seq(Ts... ts) { ( (ts), ... ); }  // 每个都求值
 ```
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 33** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 短路配合谓词
 template <typename... Ts> bool all_even(Ts... ts) { return (... && (ts % 2 == 0)); }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 34** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 短路避免越界
 template <typename... Ts> bool in_range(Ts... ts) { return (... && (ts < 100)); }
@@ -349,13 +349,13 @@ template <typename... Ts> bool in_range(Ts... ts) { return (... && (ts < 100)); 
 // 短路在 && 中：首 false 后续 fold 项不实例化求值（运行期）
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 36** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 注意：编译期常量折叠下短路被常量传播吃掉的等价结果
 static_assert((false && true) == false);  // 编译期即 false（短路：首 false 后续不求值）
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 37** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 折叠 + 短路做「全部满足」断言
 template <typename... Ts> constexpr bool all_ptr(Ts... ts) { return (... && std::is_pointer_v<Ts>); }
@@ -363,7 +363,7 @@ template <typename... Ts> constexpr bool all_ptr(Ts... ts) { return (... && std:
 
 **B4 与递归等价（≥10 例） [经验]**
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 38** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 递归求和（C++11）
 template <typename T> constexpr T rsum(T v){ return v; }
@@ -371,7 +371,7 @@ template <typename T, typename... R> constexpr T rsum(T f, R... r){ return f + r
 // 折叠等价：(0 + ... + ts)
 ```
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 39** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 递归与（C++11）
 template <typename T> constexpr bool rand(T v){ return v; }
@@ -379,7 +379,7 @@ template <typename T, typename... R> constexpr bool rand(T f, R... r){ return f 
 // 折叠等价：(... && ts)
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 40** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 递归乘积
 template <typename T> constexpr T rmul(T v){ return v; }
@@ -387,7 +387,7 @@ template <typename T, typename... R> constexpr T rmul(T f, R... r){ return f * r
 // 折叠：(1 * ... * ts)
 ```
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 41** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 #include <iostream>
 // 递归打印
@@ -415,7 +415,7 @@ template <typename T, typename... R> void rprint(T f, R... r){ std::cout<<f; rpr
 // 二义：二者不可混用同名的危险（决议选更匹配）
 ```
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 46** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 编译期：折叠与递归在 constexpr 下都折叠为常量
 ```
@@ -427,7 +427,7 @@ template <typename T, typename... R> void rprint(T f, R... r){ std::cout<<f; rpr
 
 **B5 错误与正确对照 [经验]**
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 48** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 错误：折叠空包无初值且运算符不可空
 template <typename... Ts> auto bad(Ts... ts) { return (... + ts); }  // 空包错
@@ -435,7 +435,7 @@ template <typename... Ts> auto bad(Ts... ts) { return (... + ts); }  // 空包�
 template <typename... Ts> auto ok(Ts... ts) { return (0 + ... + ts); }
 ```
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 49** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 错误：折叠非二元运算符
 // template <typename... Ts> auto bad(Ts... ts) { return (... = ts); }  // = 不可折叠（需二元左值）
@@ -446,7 +446,7 @@ template <typename... Ts> auto ok(Ts... ts) { return (0 + ... + ts); }
 // 错误：在 C++14 用折叠（需 C++17）
 ```
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：知识点深挖（模板B）]
+> **示例 51** [难度 ★★☆☆☆] [主题：知识点深挖（模板B）]
 ```cpp
 // 正确：逗号折叠包 void 转换保兼容
 template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ) ); }
@@ -462,7 +462,7 @@ template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ) ); }
 ⟶ Book/part06_templates/ch63_variadic.md（折叠是递归展开的归约替代）
 ⟶ Book/part10_modern/ch116_perfect_forwarding.md（完美转发 + 包展开协同）
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：中的该模式]
+> **示例 53** [难度 ★★★☆☆] [主题：中的该模式]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -486,7 +486,7 @@ int main() {
 
 ## ⑫ 变体（variant patterns）
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：变体]
+> **示例 54** [难度 ★★★☆☆] [主题：变体]
 ```cpp
 #include <iostream>
 #include <string>
@@ -542,7 +542,7 @@ int main() {
 // 反模式4：逗号折叠忘 (void) 转换，旧编译器告警
 ```
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：反模式（anti-patterns）]
+> **示例 59** [难度 ★★☆☆☆] [主题：反模式（anti-patterns）]
 ```cpp
 // 反模式5：用折叠替代需要「早退返回」的复杂逻辑——此时 if constexpr 更合适
 ```
@@ -552,7 +552,7 @@ int main() {
 ⟶ Book/part10_modern/ch116_perfect_forwarding.md（日志/格式化库以折叠做类型安全归约）
 ⟶ Book/part06_templates/ch72_expression_templates.md（表达式模板的编译期归约近亲）
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 60** [难度 ★★★☆☆] [主题：工业案例]
 ```cpp
 #include <iostream>
 #include <string>
@@ -584,7 +584,7 @@ int main() {
 ⟶ Book/part06_templates/ch65_type_traits.md（traits 组合常借助折叠）
 ⟶ Book/part06_templates/ch60_template_basics.md（实例化机制基础）
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：源码剖析（libstdc++ 相关）]
+> **示例 61** [难度 ★★★★☆] [主题：源码剖析（libstdc++ 相关）]
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -603,7 +603,7 @@ int main() {
 
 ## ⑯ 易错点
 
-> **示例 62** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 62** [难度 ★★☆☆☆] [主题：易错点]
 ```cpp
 // 1) 一元折叠空包除 &&/||/逗号 外非法 → 加初值
 ```
@@ -659,7 +659,7 @@ int main() {
 // A：纯归约可以；需要「携带状态/早退/复杂控制流」的递归仍需保留。
 ```
 
-> **示例 72** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 72** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // Q：折叠性能如何？
 // A：编译期展开，常折叠为常量或加法链，优于递归实例化。
@@ -697,7 +697,7 @@ int main() {
 ⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化与内联对归约的影响）
 ⟶ Book/part06_templates/ch63_variadic.md（与递归展开编译时间对比）
 
-> **示例 78** [难度 ★☆☆☆☆] [主题：性能（编译期 / 运行期）]
+> **示例 78** [难度 ★★★☆☆] [主题：性能（编译期 / 运行期）]
 ```cpp
 // 折叠完全编译期展开；(0+...+ts) 在 -O2 成单加法链或常量
 // use_fold 实测退化为 mov eax,39（见⑩），零运行期计算
@@ -787,7 +787,7 @@ int main() {
 
 ## 附录 A：WG21 提案 [B: Principle]
 
-> **示例 80** [难度 ★☆☆☆☆] [主题：附录 A：WG21 提案 [B: P]
+> **示例 80** [难度 ★★★☆☆] [主题：附录 A：WG21 提案 [B: P]
 ```
 折叠表达式 (Fold Expressions) 的标准化历程:
 
@@ -807,7 +807,7 @@ P0036R0 (2015): 进入 C++17 的最终提案
 
 ## 附录 B：工业案例 —— 标准库内部的折叠 [F: Industry / D: stdlib]
 
-> **示例 81** [难度 ★☆☆☆☆] [主题：附录 B：工业案例 —— 标准库内部]
+> **示例 81** [难度 ★★★☆☆] [主题：附录 B：工业案例 —— 标准库内部]
 ```cpp
 // libstdc++ <type_traits> 中使用折叠表达式实现 conjunction/disjunction
 // template<typename...> struct conjunction : true_type {};
@@ -831,7 +831,7 @@ int main() {
 
 ## 附录 C：折叠表达式的性能 [E: Low-level / G: Performance]
 
-> **示例 82** [难度 ★☆☆☆☆] [主题：附录 C：折叠表达式的性能 [E: ]
+> **示例 82** [难度 ★★★★☆] [主题：附录 C：折叠表达式的性能 [E: ]
 ```cpp
 // 折叠表达式 vs 递归模板 —— 编译期 vs 运行时对比
 // 编译性能:
@@ -924,7 +924,7 @@ A: && → true (逻辑与空集 = 真); || → false; , → void()
 
 <details><summary>答案与解析</summary>
 
-> **示例 84** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 84** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 
@@ -946,7 +946,7 @@ int main() { std::cout << sum(1, 2, 3, 4) << ' ' << product(1, 2, 3, 4) << '\n';
 
 <details><summary>答案与解析</summary>
 
-> **示例 85** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 85** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 
@@ -973,7 +973,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 86** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 86** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 
@@ -1003,7 +1003,7 @@ auto r = (xs - ...);   // 左折叠 ((1-2)-3) = -4，并非期望的 2
 
 **修复**：对 `+`/`*` 用任意方向都安全；对 `-`/`/` 明确方向或用归约算法：
 
-> **示例 87** [难度 ★☆☆☆☆] [主题：演绎 1：折叠方向对 - / / 敏]
+> **示例 87** [难度 ★★☆☆☆] [主题：演绎 1：折叠方向对 - / / 敏]
 ```cpp
 #include <iostream>
 
@@ -1024,7 +1024,7 @@ int main() {
 
 **修复**：`&&` 空包为 `true`、`||` 空包为 `false`，是标准定义值：
 
-> **示例 88** [难度 ★☆☆☆☆] [主题：演绎 2：空包的行为差异]
+> **示例 88** [难度 ★★★☆☆] [主题：演绎 2：空包的行为差异]
 ```cpp
 #include <iostream>
 
@@ -1116,7 +1116,7 @@ namespace __detail
 
 ### D4.4 可编译验证（用户侧折叠表达式 vs 标准 trait 等价性）
 
-> **示例 89** [难度 ★☆☆☆☆] [主题：可编译验证]
+> **示例 89** [难度 ★★★☆☆] [主题：可编译验证]
 ```cpp
 #include <type_traits>
 #include <iostream>
@@ -1308,7 +1308,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 90** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 90** [难度 ★★★★☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 

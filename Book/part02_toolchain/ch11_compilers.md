@@ -41,7 +41,7 @@ C/C++ 编译器天生要解决"把文本变成机器码"。GCC 由 Richard Stall
 
 C++ 源码不是机器能直接执行的——它需要被**翻译**为特定 ISA（x86-64 / ARM64 / RISC-V 等）的机器码。编译器承担三件事：① 把文本翻译为语义正确的指令；② 在翻译中做等价变换（优化）以提升速度/减小体积；③ 与操作系统/链接器/运行时协作，产出可加载的二进制。
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：概述：为什么需要编译器，三巨头格局]
+> **示例 1** [难度 ★★★☆☆] [主题：概述：为什么需要编译器，三巨头格局]
 ```cpp
 // ① 同一份 C++ 源码，三种主流编译器都能产出可执行文件
 //   GCC       : g++ main.cpp -o main
@@ -130,7 +130,7 @@ Clang/LLVM 的差异化优势：
 - **LLVM IR**：前后端解耦——同一份 IR 可被不同 `Target` 后端（`X86`、`AArch64`、`RISCV`）翻译，易于移植新架构。
 - **PassManager**：基于依赖图的按需调度，而非 GCC 的固定顺序。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：架构：模块化、libclang、LL]
+> **示例 5** [难度 ★★☆☆☆] [主题：架构：模块化、libclang、LL]
 ```cpp
 // ③ LLVM 多后端示意：同一 IR，不同 -mtriple 产出不同汇编
 //   clang++ -target x86_64-w64-windows-gnu -emit-llvm ...   -> X86
@@ -153,7 +153,7 @@ int add(int a, int b) { return a + b; }
 
 MSVC 是 Windows 原生工具链，组件与另两家命名完全不同。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：后端、MSBuild]
+> **示例 7** [难度 ★★☆☆☆] [主题：后端、MSBuild]
 ```cpp
 // ④ MSVC 编译命令（cl.exe 一站式完成 编译+汇编+链接）
 //   cl /std:c++20 /EHsc /O2 /Fe:app.exe main.cpp
@@ -192,7 +192,7 @@ void may_throw(bool b) { if (b) throw 1; }
 
 经典四阶段，GCC/Clang 用 `-E / -S / -c` 分阶段暴露。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：编译流程：预处理 → 编译 → 汇编]
+> **示例 10** [难度 ★★☆☆☆] [主题：编译流程：预处理 → 编译 → 汇编]
 ```cpp
 // ⑤ 一个最小 TU，用于演示四阶段
 // 文件：Examples/_ch11_f.cpp（第2行 int f(int)）
@@ -216,7 +216,7 @@ g++ main.o -o main            # 4) 链接：多 .o + 库 -> 可执行
 std::vector<int> make() { return {1, 2, 3}; }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：编译流程：预处理 → 编译 → 汇编]
+> **示例 12** [难度 ★★☆☆☆] [主题：编译流程：预处理 → 编译 → 汇编]
 ```cpp
 // ⑤ 链接期解析符号：未定义引用(ld: undefined reference) 即"声明有、定义无"
 // 典型：只在头里声明 void foo(); 但没在任何 TU 定义 -> 链接失败
@@ -280,7 +280,7 @@ _Z  <编码长度+名字>   <参数编码...>
      类型码：i=int, c=char, d=double, l=long, P=pointer, S_=short?, 等
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：++ ABI 与名字改编]
+> **示例 17** [难度 ★★★★☆] [主题：++ ABI 与名字改编]
 ```cpp
 // ⑦ 下列声明对应 Itanium mangling（真实符号取自 Examples/_ch11_mangle.cpp）
 int         g(int, double);          // -> _Z1gid
@@ -321,7 +321,7 @@ template<typename T> T id(T);        // -> _Z2idIiET_S0_ (id<int>)
 //   c++filt _ZN2ns1qEi ->  ns::q(int)
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：++ ABI 与名字改编]
+> **示例 20** [难度 ★★☆☆☆] [主题：++ ABI 与名字改编]
 ```cpp
 // ⑦ 模板实例化的 mangling 含实参：id<int> -> 在 _Z2id 后追加 <IiE>
 // 这就是为什么同一模板不同实参会得到不同符号、互不冲突
@@ -336,7 +336,7 @@ template int id<int>(int);     // 显式实例化 -> _Z2idIiET_S0_
 
 下面所有汇编均来自本机 **GCC 13.1.0** 真实编译，未做任何改写。
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：[实现·GCC15.3.0]真实汇编]
+> **示例 21** [难度 ★★★☆☆] [主题：[实现·GCC15.3.0]真实汇编]
 ```cpp
 // 文件：Examples/_ch11_f.cpp
 // 行号：2
@@ -392,7 +392,7 @@ extern "C" int f_c(int x) { return x + 1; }   // 符号即 "f_c"（无 _Z 前缀
 
 C++ 异常的实现依赖运行期机制，三大编译器分属两套模型。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：异常处理模型：Itanium zer]
+> **示例 24** [难度 ★★★☆☆] [主题：异常处理模型：Itanium zer]
 ```cpp
 // ⑨ Itanium 零成本模型（GCC/Clang 在 Linux/macOS 用）：
 //   无异常时不付任何运行时检查代价（"零成本"），异常抛出时才查表(.eh_frame)展开栈
@@ -414,7 +414,7 @@ int risky(bool b) {
 //   典型输出：/EHa 下 try { *(int*)0 = 0; } catch(...) {} 能吞掉访问违规(AV)
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：异常处理模型：Itanium zer]
+> **示例 26** [难度 ★★☆☆☆] [主题：异常处理模型：Itanium zer]
 ```cpp
 // ⑨ 跨模型陷阱：在 MinGW(GCC) 下 throw 与 Windows SEH 是两套体系，
 //   用 -fnon-call-exceptions 才能让某些 async 信号被 C++ 异常捕获
@@ -428,7 +428,7 @@ int risky(bool b) {
 
 vtable（虚函数表）与 RTTI（`typeid`/`dynamic_cast`）是同一套机制的表里两面，都挂在类对象头部的**虚表指针（vptr）** 上。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：与 vtable 布局：从真实汇编看]
+> **示例 27** [难度 ★★★★☆] [主题：与 vtable 布局：从真实汇编看]
 ```cpp
 // 文件：Examples/_ch11_vtable.cpp
 // 行号：2
@@ -461,7 +461,7 @@ _ZTV5Shape:
 
 源码剖析：`[实现·GCC15]` 真实 vtable 布局为 **[offset-to-top][typeinfo ptr][虚函数指针...]**。第 0 项 `offset-to-top` 用于多继承下把 `Derived*` 调整回 `Base*`；第 1 项指向 `_ZTI5Shape`（RTTI 实体），`typeid(obj)` 即经 vptr 取这一项。`_ZN5ShapeD1Ev` = `Shape::~Shape()` 的 complete destructor 变体。
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：与 vtable 布局：从真实汇编看]
+> **示例 28** [难度 ★★★☆☆] [主题：与 vtable 布局：从真实汇编看]
 ```cpp
 // ⑩ 对象内存布局：vptr 在最前（Itanium ABI 单继承）
 //   Shape 对象: [ vptr -> _ZTV5Shape ][ ...派生成员... ]
@@ -472,7 +472,7 @@ struct Circle : Shape {
 // Circle 的 vtable 第4项(_ZNK6Circle4areaEv)覆盖 Shape 的 area，动态分派即"经 vptr 取第4槽"
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：与 vtable 布局：从真实汇编看]
+> **示例 29** [难度 ★★★☆☆] [主题：与 vtable 布局：从真实汇编看]
 ```cpp
 // ⑩ RTTI 在运行期经 vtable 取 typeinfo
 #include <typeinfo>
@@ -482,7 +482,7 @@ void probe(const Shape& s) {
 }
 ```
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：与 vtable 布局：从真实汇编看]
+> **示例 30** [难度 ★★★☆☆] [主题：与 vtable 布局：从真实汇编看]
 ```cpp
 // ⑩ 多继承的 offset-to-top 非 0：下面 Derived 的第二基类 Base2 的 vtable 子表 offset-to-top = -8
 struct Base1 { virtual void a(); };
@@ -500,7 +500,7 @@ struct Derived : Base1, Base2 { void a() override; void b() override; };
 
 **调用约定（calling convention）** 规定：参数怎么传（寄存器/栈）、谁清理栈、返回值放哪。这纯属 `[平台·Windows]` 层约定。
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：调用约定：cdecl / stdca]
+> **示例 31** [难度 ★★☆☆☆] [主题：调用约定：cdecl / stdca]
 ```cpp
 // ⑪ 32 位 x86 常见调用约定（x86-64 下大多被统一，见下）
 //   cdecl   : 参数右→左压栈, 调用方清栈 (C 默认)
@@ -511,7 +511,7 @@ struct Derived : Base1, Base2 { void a() override; void b() override; };
 extern "C" int __attribute__((stdcall)) win_api(int, int);
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：调用约定：cdecl / stdca]
+> **示例 32** [难度 ★★★☆☆] [主题：调用约定：cdecl / stdca]
 ```cpp
 // 文件：Examples/_ch11_cconv.cpp
 // 行号：3
@@ -572,7 +572,7 @@ inline int square(int x) { return x * x; }
 int use1(int a) { return square(a) + 1; }   // 很可能被内联
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：内联与优化管道]
+> **示例 36** [难度 ★★☆☆☆] [主题：内联与优化管道]
 ```cpp
 // ⑫ __attribute__((always_inline)) / [[gnu::always_inline]] 强制内联（GCC/Clang）
 //   注意 MSVC 用 __forceinline
@@ -580,7 +580,7 @@ int use1(int a) { return square(a) + 1; }   // 很可能被内联
 int use2(int a) { return triple(a); }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：内联与优化管道]
+> **示例 37** [难度 ★★☆☆☆] [主题：内联与优化管道]
 ```cpp
 // ⑫ 优化级别对照： -O0 不内联、不优化；-O2 开全套；-O3 加向量化/循环展开
 //   g++ -O0 -S x.cpp   -> 直译式汇编，每个语句对应几条指令
@@ -629,7 +629,7 @@ std::expected<int, const char*> parse(const char* s) {
 - `[标准]` Clang libc++：https://libcxx.llvm.org/Status/Cxx23.html
 - `[标准]` MSVC STL：https://learn.microsoft.com/cpp/visual-cpp-language-conformance
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：标准符合度对比（C++23 支持度）]
+> **示例 41** [难度 ★★☆☆☆] [主题：标准符合度对比（C++23 支持度）]
 ```cpp
 // ⑬ C++23 的 if consteval（编译期分支，三家 C++23 模式均支持）
 consteval int compile_time(int x) { return x * 2; }
@@ -639,7 +639,7 @@ int f(int v) {
 }
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：标准符合度对比（C++23 支持度）]
+> **示例 42** [难度 ★★★☆☆] [主题：标准符合度对比（C++23 支持度）]
 ```cpp
 // ⑬ 三家对"实验性特性"的门控宏不同：
 //   GCC     : __cpp_modules / __cpp_concepts (特性测试宏，ISO 规定)
@@ -657,7 +657,7 @@ int f(int v) {
 
 编译器报错质量直接决定开发体验，这是 Clang 的传统强项。
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：诊断与报错质量对比]
+> **示例 43** [难度 ★★☆☆☆] [主题：诊断与报错质量对比]
 ```cpp
 // ⑭ 同一错误在三家中的表现差异（以下为"典型输出"示意，因本机仅装 GCC13）
 //   错误：漏写分号 / 模板实参推导失败 / 类型不匹配
@@ -720,7 +720,7 @@ export module math;
 export int square(int x) { return x * x; }
 ```
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：模块（Modules）支持现状]
+> **示例 50** [难度 ★★☆☆☆] [主题：模块（Modules）支持现状]
 ```cpp
 // ⑮ 三家的 BMI 格式互不相通！同一模块无法跨编译器复用 .gcm/.ifc
 //   所以团队必须锁定"单一编译器 + 固定版本"才能做模块迁移
@@ -745,7 +745,7 @@ int main() { return square(7); }
 int portable() { return sizeof(void*) == 8 ? 8 : 4; }   // 64位平台返回8
 ```
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：跨平台与三元组]
+> **示例 52** [难度 ★★☆☆☆] [主题：跨平台与三元组]
 ```cpp
 // ⑯ 三元组常经宏暴露给代码，用于条件编译
 //   __x86_64__ / __aarch64__ / __riscv  (GCC/Clang 内置宏)
@@ -772,7 +772,7 @@ int cross() { return 0; }
 
 调试器需要知道"机器码地址 ↔ 源码行 ↔ 变量名"的映射，这就是调试信息格式的差异点。
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：调试信息：DWARF vs PDB]
+> **示例 54** [难度 ★★☆☆☆] [主题：调试信息：DWARF vs PDB]
 ```cpp
 // ⑰ GCC/Clang 在 ELF/Mach-O 上产出 DWARF（嵌入 .debug_* 段或独立 .dwo）
 //   g++ -g -O2 main.cpp -o main     (-g 开启 DWARF)
@@ -780,7 +780,7 @@ int cross() { return 0; }
 int traced(int x) { return x * x; }   // 断点可停在源码行，变量可见
 ```
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：调试信息：DWARF vs PDB]
+> **示例 55** [难度 ★★☆☆☆] [主题：调试信息：DWARF vs PDB]
 ```cpp
 // ⑭/⑰ MSVC 产出 PDB（Program Database），由 link.exe /DEBUG 生成
 //   cl /Zi /EHsc main.cpp /link /DEBUG   -> main.exe + main.pdb
@@ -788,7 +788,7 @@ int traced(int x) { return x * x; }   // 断点可停在源码行，变量可见
 int traced2(int x) { return x + 1; }
 ```
 
-> **示例 56** [难度 ★☆☆☆☆] [主题：调试信息：DWARF vs PDB]
+> **示例 56** [难度 ★★☆☆☆] [主题：调试信息：DWARF vs PDB]
 ```cpp
 // ⑰ 拆分调试信息（发布时分离，减小二进制）：
 //   GCC : objcopy --only-keep-debug a.out a.debug ; strip a.out
@@ -860,7 +860,7 @@ export int answer() { return 42; }
 int choose() { return 0; }
 ```
 
-> **示例 62** [难度 ★☆☆☆☆] [主题：[经验]选型建议]
+> **示例 62** [难度 ★★☆☆☆] [主题：[经验]选型建议]
 ```cpp
 // ⑲ 团队工具链统一原则：锁版本！
 //   例：CMakePresets.json 固定 compiler + version，避免"我机器能编"问题
@@ -910,7 +910,7 @@ int main() { return 0; }
 | 内置宏(64) | `__x86_64__` | `__x86_64__` | `_M_X64` |
 | 强制内联 | `[[gnu::always_inline]]` | 同左 | `__forceinline` |
 
-> **示例 64** [难度 ★☆☆☆☆] [主题：速查表]
+> **示例 64** [难度 ★★☆☆☆] [主题：速查表]
 ```cpp
 // ⑳ 取证命令速查（本机 GCC13 + c++filt 已验证可用）
 //   g++ -std=c++23 -O2 -S -masm=intel x.cpp -o x.asm   // 取真实汇编
@@ -976,7 +976,7 @@ int trivia(int x) { return x; }
 
 ## 附录 E：编译器面试与设计 [B: Principle / H: Design / I: Practice / J: Learning]
 
-> **示例 65** [难度 ★☆☆☆☆] [主题：附录 E：编译器面试与设计 [B: ]
+> **示例 65** [难度 ★★☆☆☆] [主题：附录 E：编译器面试与设计 [B: ]
 ```
 C++编译器选择的工业现实:
 
@@ -1125,7 +1125,7 @@ int main() {
 
 **真实场景：调试宏展开 bug。** 你用 X-Macro / token paste 生成大量样板代码，结果某处展开不符合预期。请用 `#`/`##` 运算符直观展示"预处理阶段就把宏展开/token 拼接"这一事实，并说明后三个阶段（编译→汇编→链接）各自产出什么文件（`g++ -E`/`-S`/`-c`）。
 
-> **示例 69** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 69** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 
@@ -1211,7 +1211,7 @@ int main() {
 
 可复现基准（自包含、可编译）：
 
-> **示例 72** [难度 ★☆☆☆☆] [主题：真实性能基准：零成本异常与 RTTI]
+> **示例 72** [难度 ★★☆☆☆] [主题：真实性能基准：零成本异常与 RTTI]
 ```cpp
 // g++ -std=c++23 -O2 ch11_bench.cpp
 #include <chrono>

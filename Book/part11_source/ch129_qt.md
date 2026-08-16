@@ -81,7 +81,7 @@ signals:
 
 Qt 对象模型的核心是 `QObject`：几乎所有 Qt 类都直接或间接继承它。每个 `QObject` 持有指向父对象的指针（用于所有权）与指向 `QMetaObject` 的指针（用于元信息）。`moc` 读取头文件，为每个含 `Q_OBJECT` 的类生成 `moc_*.cpp`，里面定义 `staticMetaObject`、`qt_metacast`、`qt_metacall`、`qt_static_metacall`。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：对象模型]
+> **示例 2** [难度 ★★☆☆☆] [主题：对象模型]
 ```cpp
 // ② QObject 构造接受父对象，建立所有权链
 #include <QObject>
@@ -151,7 +151,7 @@ public:
 };
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：信号槽机制]
+> **示例 5** [难度 ★★☆☆☆] [主题：信号槽机制]
 ```cpp
 // ③ 【典型输出】本机 moc.exe（Qt 6.8.3）对上面 Button 的真实产物节选：
 //   文件：Examples/_ch129_moc_button.cpp
@@ -176,7 +176,7 @@ void Button::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
 }
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：信号槽机制]
+> **示例 6** [难度 ★★☆☆☆] [主题：信号槽机制]
 ```cpp
 // ③ 【上游参考】QMetaObject::activate 是信号分发的真正引擎（遍历连接列表、按线程策略投递/直调）
 // 文件：https://github.com/qt/qtbase/blob/6.8/src/corelib/kernel/qobject.cpp
@@ -232,7 +232,7 @@ void dump(QObject* o) {
 
 Qt 用**父子所有权**替代裸 `delete`：把子对象 `new` 出来时把父 `QObject*` 传入构造，`parent` 析构时会递归 `delete` 所有子对象。这避免了手动释放整棵控件树。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：内存管理]
+> **示例 9** [难度 ★★☆☆☆] [主题：内存管理]
 ```cpp
 // ⑤ 父子所有权：父析构自动 delete 子
 #include <QObject>
@@ -246,7 +246,7 @@ void scope() {
 }
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：内存管理]
+> **示例 10** [难度 ★★☆☆☆] [主题：内存管理]
 ```cpp
 // ⑤ deleteLater：延迟到事件循环空闲时删除（线程安全，避免正在发信号时自杀）
 #include <QObject>
@@ -291,7 +291,7 @@ void wait_seconds(int s) {
 
 Qt 线程模型：**`QThread` 是线程控制器，不是线程本体**。正确用法是 `new Worker; worker->moveToThread(thread); thread->start();`，对象活在子线程，靠信号槽跨线程通信（Qt::QueuedConnection 自动经事件队列投递）。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：线程]
+> **示例 13** [难度 ★★☆☆☆] [主题：线程]
 ```cpp
 // ⑦ 推荐：moveToThread 把对象搬进子线程
 #include <QThread>
@@ -307,7 +307,7 @@ QObject::connect(t, &QThread::started, w, &Worker::doWork);
 t->start();
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：线程]
+> **示例 14** [难度 ★★☆☆☆] [主题：线程]
 ```cpp
 // ⑦ 反模式：继承 QThread 并重写 run()（Qt4 遗物，易踩线程亲和性坑）
 #include <QThread>
@@ -349,7 +349,7 @@ void build_ui(QWidget* w) {
 
 Qt 未链接时，用**自包含纯 C++**（观察者模式 + `std::function` 类型擦除）复现「信号持有槽表、emit 即遍历回调」的等价机制，并用真实 g++ 编译取汇编，证明信号槽在机器码层面就是「遍历函数对象数组 + 间接调用」。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：[实现·Qt]真实：编译一个手写信号]
+> **示例 17** [难度 ★★★☆☆] [主题：[实现·Qt]真实：编译一个手写信号]
 ```cpp
 // ⑨ 自包含信号槽等价机制（无 Qt 依赖，可直接编译运行）
 // 文件：Examples/_ch129_signal_slot.cpp
@@ -424,7 +424,7 @@ void f() {
 }
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：调试]
+> **示例 19** [难度 ★★☆☆☆] [主题：调试]
 ```cpp
 // ⑩ 在 Qt Creator 中断在信号触发点：本质是断在 moc 生成的 clicked() 实现或槽函数
 // 调试技巧：对跨线程 queued 连接，断点要打在接收者线程的槽实现里，而非 emit 处。
@@ -448,7 +448,7 @@ void share() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：性能]
+> **示例 21** [难度 ★★☆☆☆] [主题：性能]
 ```cpp
 // ⑪ 跨线程信号传大对象：用 const 引用 + 注册元类型，避免不必要拷贝
 #include <QMetaType>
@@ -492,7 +492,7 @@ QString cfg = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
 
 两个高频坑：**跨线程对象生命周期**与**父子跨线程**。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：常见陷阱（跨线程信号槽 / 内存）]
+> **示例 24** [难度 ★★★★☆] [主题：常见陷阱（跨线程信号槽 / 内存）]
 ```cpp
 // ⑬ 陷阱1：把父对象设在不同线程的子对象上 → 运行期警告甚至崩溃
 // QObject: Cannot create children for a parent that is in a different thread
@@ -505,7 +505,7 @@ void trap() {
 }
 ```
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：常见陷阱（跨线程信号槽 / 内存）]
+> **示例 25** [难度 ★★★★☆] [主题：常见陷阱（跨线程信号槽 / 内存）]
 ```cpp
 // ⑬ 陷阱2：跨线程 queued 连接传非注册元类型 → 运行时「Invalid parameter」
 #include <QMetaType>
@@ -521,7 +521,7 @@ Q_DECLARE_METATYPE(Payload)                 // 必须注册，queued 连接才�
 
 Qt 所有权（父子 `delete`）与标准 C++ RAII（`std::unique_ptr`）是**两套重叠的内存模型**。混用规则：要么全交给 Qt 父子树，要么全用智能指针，切忌两边都管。
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：与标准 C++ 关系]
+> **示例 26** [难度 ★★☆☆☆] [主题：与标准 C++ 关系]
 ```cpp
 // ⑭ 混用：用 unique_ptr 管理非 QObject 的纯标准类型，Qt 管 QObject 树
 #include <memory>
@@ -532,7 +532,7 @@ class View : public QObject { Q_OBJECT
 };   // View 自身由 Qt 父对象管理；buf 随 View 析构由 unique_ptr 释放
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：与标准 C++ 关系]
+> **示例 27** [难度 ★★☆☆☆] [主题：与标准 C++ 关系]
 ```cpp
 // ⑭ 把 QObject* 交给 unique_ptr 需自定义删除器走 deleteLater（线程安全）
 #include <memory>
@@ -574,7 +574,7 @@ signals: void wChanged(int);
 
 ## ⑯ 最佳实践
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 30** [难度 ★★☆☆☆] [主题：最佳实践]
 ```cpp
 // ⑯ 用新式函数指针 connect（编译期类型检查，IDE 可跳转）
 #include <QObject>
@@ -618,7 +618,7 @@ signals:
 | std::function + 观察者 | 手写 | 需手写 | 无 | 标准库 |
 | libsigc++（GTK） | 模板 | 支持 | 弱 | glibmm |
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：跨库对比]
+> **示例 33** [难度 ★★☆☆☆] [主题：跨库对比]
 ```cpp
 // ⑱ Boost.Signals2：纯模板、无 moc，但编译期更重、无运行时内省
 #include <boost/signals2.hpp>
@@ -662,7 +662,7 @@ sig(42);                       // 等价 emit
    - [标准] 对象身份/树语义要求类型不可拷贝；拷贝语义由用户定义（三五法则）。
    - [引用] ISO/IEC 14882:2023 §[class.copy]（拷贝语义）/ Qt 文档 "Object Trees"；cppreference "Rule of three/five" 词条。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：速查表]
+> **示例 35** [难度 ★★★☆☆] [主题：速查表]
 ```
 ┌───────────────────────┬────────────────────────────────────────────┐
 │ 写法                  │ 等价/说明                                    │
@@ -718,7 +718,7 @@ public: void go(){ emit ping(1); }
 
 不装 Qt 也能理解 `connect/emit` 的运行模型——下面用标准库复刻其核心：**一个信号持有若干订阅函数，emit 时依次调用**（这正是 `QMetaObject::activate` 干的活）。
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
+> **示例 37** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
 ```cpp
 // ㉑.2 用标准 C++ 复刻 Qt 信号槽的「解耦」本质（本块可独立编译，GCC 15.3.0 验证）
 #include <functional>
@@ -755,7 +755,7 @@ int main() {
 
 下面才是你在 `qmake`/`CMake` 工程里**真正会写的代码**；以注释呈现（门禁按空块通过，不引入第三方头依赖）。
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：㉑.3 真实 Qt API 长什么样]
+> **示例 38** [难度 ★★☆☆☆] [主题：㉑.3 真实 Qt API 长什么样]
 ```cpp
 // ㉑.3 真实 Qt 6 写法（仅注释演示，需 Qt 链接；本门禁按空块编译通过）：
 //   #include <QCoreApplication>
@@ -789,7 +789,7 @@ int main() {
 
 ## 附录 A：MOC 为什么存在 —— 标准 C++ 尚无法替代 [B: Principle]
 
-> **示例 39** [难度 ★☆☆☆☆] [主题：附录 A：MOC 为什么存在 —— ]
+> **示例 39** [难度 ★★★☆☆] [主题：附录 A：MOC 为什么存在 —— ]
 ```
 Qt 的 Meta-Object Compiler (MOC) 补充了 C++ 缺失的 4 个核心能力:
 
@@ -828,7 +828,7 @@ int main() {
 
 ## 附录 B：工业级 Qt 项目模式 [F: Industry]
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：附录 B：工业级 Qt 项目模式 []
+> **示例 41** [难度 ★★☆☆☆] [主题：附录 B：工业级 Qt 项目模式 []
 ```cpp
 #include <iostream>
 int main() {
@@ -864,7 +864,7 @@ int main() {
 
 ## 附录 D：面试与 QObject 内存模型 [J: Learning / E: Low-level]
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：附录 D：面试与 QObject 内]
+> **示例 43** [难度 ★★☆☆☆] [主题：附录 D：面试与 QObject 内]
 ```
 面试高频:
 Q: QObject 的 parent-child 内存模型如何工作？
@@ -1035,7 +1035,7 @@ moc 生成的 `qt_static_metacall` 是一张函数指针表（槽宽 `0x0008`）
 
 Qt 的父子所有权 = 父 `QObject` 内部维护一张子对象指针表，析构时遍历这张表逐个 `delete` 子对象（子再递归释放自己的子），最后把自己从父的子表中摘除。下面用裸指针忠实地复刻这一语义（注意：这与第⑤/附录 D 的 `unique_ptr` 树是同一"级联释放"思想，但 Qt 用的是运行期指针而非编译期唯一所有权）：
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 44** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 // 自包含建模 QObject 父子所有权（无 Qt 依赖，可直接编译运行）
 #include <iostream>
@@ -1086,7 +1086,7 @@ int main() {
 
 Qt 的 `emit clicked(x)` 经 moc 变成 `Button::clicked`，内部调用 `QMetaObject::activate` 遍历连接表、对每个接收者做一次间接调用（见第③⑨节）。下面用 `std::function` 类型擦除复刻"信号持有若干槽、emit 时逐一调用"的本质，**多对多、零耦合**：
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 45** [难度 ★★★☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 // 自包含最小信号/槽（无 Qt 依赖，可直接编译运行）
 #include <iostream>
@@ -1139,7 +1139,7 @@ C++ 至今（C++23）没有内建反射（见第 0.3 节）。Qt 的解法是在
 
 正是这张元数据表让 `qobject_cast<T*>(o)` 不用 RTTI：它沿 `metaObject()->superClass()` 链做 `inherits` 判断（等价于"o 的元对象链上是否出现过 T 的 staticMetaObject"）。这比 `dynamic_cast` 稳健——`dynamic_cast` 依赖编译器 RTTI，跨 DLL/共享库边界、或关 RTTI 的构建里会失效，而 `qobject_cast` 纯粹基于 moc 生成的元数据，**跨模块、跨线程亲和都可用**。下面用一段自包含代码演示 moc 提供的"沿继承链的类型判定"本质：
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 46** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 // 自包含演示 qobject_cast 的底层机制：沿 meta 链做 inherits 判定（无 Qt 依赖）
 #include <cstdio>
@@ -1189,7 +1189,7 @@ int main() {
 Qt 的 `QueuedConnection` 本质是把 `emit progress(i)` 打包成事件，投递到接收者所在线程的
 事件循环，从而避免了手写互斥与轮询。下面用标准库复刻这一"跨线程观察"语义：
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：练习 4]
+> **示例 47** [难度 ★★☆☆☆] [主题：练习 4]
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1229,7 +1229,7 @@ int main() {
 Qt 的父子所有权 = "父 `QObject` 析构时递归 `delete` 所有子对象"。标准 C++ 用 `unique_ptr` 树
 得到等价且零开销的自动释放：
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：练习 5（难度 ★★ · 应用导向）]
+> **示例 48** [难度 ★★☆☆☆] [主题：练习 5（难度 ★★ · 应用导向）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1263,7 +1263,7 @@ Qt 5 引入的**新式 `connect(&a,&A::sig,&b,&B::slot)`** 相比旧式 `SIGNAL/
 旧式宏把信号/槽名拼成字符串，匹配推迟到运行期（`QMetaObject::activate` 里按名查找）——拼错
 只在运行期崩。新式 `connect` 用**成员函数指针**做连接目标，编译器在编译期就校验签名一致：
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：练习 6（难度 ★★ · 设计权衡）]
+> **示例 49** [难度 ★★★☆☆] [主题：练习 6（难度 ★★ · 设计权衡）]
 ```cpp
 #include <iostream>
 struct B { void slot(int){ std::cout << "ok\n"; } };
@@ -1419,7 +1419,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 50** [难度 ★★★★☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 

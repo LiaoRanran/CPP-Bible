@@ -53,7 +53,7 @@ int workload(int x) {
 
 构建配置的核心维度（每个维度都是一个旋钮）：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：概述：构建配置维度]
+> **示例 2** [难度 ★★★☆☆] [主题：概述：构建配置维度]
 ```
 ┌───────────────┬───────────────────────────┬──────────────────────────┐
 │ 维度          │ Debug 端                   │ Release 端               │
@@ -87,7 +87,7 @@ int divide(int a, int b) {
 }
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 4** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 #include <cassert>
 // ② Release：g++ -DNDEBUG 后，assert 展开为空语句
@@ -116,7 +116,7 @@ int divide_safe(int a, int b) {
 
 GCC 优化级别是递进的（每组开启上一级全部 + 新增 pass）：
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：优化级别 -O0/-O1/-O2/-]
+> **示例 6** [难度 ★★☆☆☆] [主题：优化级别 -O0/-O1/-O2/-]
 ```cpp
 // ③ 这些级别只改变"是否/如何变换"，不改变程序语义（只要无 UB）
 // -O0  逐语句翻译，便于单步调试（默认）
@@ -149,7 +149,7 @@ int twice(int x)    { return x + x; }      // -O2：lea eax,[rcx+rcx]
 
 取证源（本机真实编译，逐字反汇编）：
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实：-O0 v]
+> **示例 8** [难度 ★★★☆☆] [主题：[实现·GCC15]真实：-O0 v]
 ```cpp
 // 文件：Examples/_ch18_opt.cpp
 // 行号：4
@@ -269,7 +269,7 @@ g++ -O2 -flto main.o lib.o -o app        # 链接期才做全程序优化
 
 PGO（Profile-Guided Optimization）= 先插桩跑一遍**真实负载**收集热点，再据剖面二次编译。它让优化器知道"哪条分支热、哪段循环被反复执行"。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：流程]
+> **示例 12** [难度 ★★☆☆☆] [主题：流程]
 ```cpp
 #include <cstddef>
 // ⑦ 被剖面的函数：真实负载下 p[i] > 0 几乎总成立
@@ -309,7 +309,7 @@ int helper(int x) { return x * 2 + 1; }
 int compute(int a) { return helper(a) + helper(a); }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实：-flto]
+> **示例 14** [难度 ★★★☆☆] [主题：[实现·GCC15]真实：-flto]
 ```cpp
 // 文件：Examples/_ch18_main.cpp
 // 行号：4
@@ -369,7 +369,7 @@ _Z6driveri:
 
 `assert` 是 C 遗留的运行时检查；C++ 正走向**契约**（Contracts，C++20 被推迟，后续标准重启）。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：断言与契约]
+> **示例 15** [难度 ★★☆☆☆] [主题：断言与契约]
 ```cpp
 // ⑨ 经典 assert：前置条件（Debug 拦截非法调用）
 #include <cassert>
@@ -389,7 +389,7 @@ double sqrt_pos(double x) {
 // 当前 GCC13 需用 -fcontracts（实验分支）；生产仍用 assert / gsl::Expects。
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：断言与契约]
+> **示例 17** [难度 ★★☆☆☆] [主题：断言与契约]
 ```cpp
 #include <cassert>
 // ⑨ 用类型系统把"不可能越界"编码进契约（比运行时 assert 更强）
@@ -407,7 +407,7 @@ int use(NonNull n) { return *n.p; }   // 调用方无法传入 nullptr
 
 调试符号 `-g` 让文件巨大但可调试；发布用 `strip` 去除。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：符号与剥离]
+> **示例 18** [难度 ★★☆☆☆] [主题：符号与剥离]
 ```cpp
 // ⑩ 同一份代码，带符号与剥离后的体积差可达数倍到数十倍
 #include <vector>
@@ -441,7 +441,7 @@ __attribute__((visibility("hidden")))  int internal_impl(int x);
 
 同一实现可打包成静态库 `.a`（归档）或动态库（Linux `.so` / Windows `.dll`）。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：静态 / 动态链接取舍]
+> **示例 20** [难度 ★★☆☆☆] [主题：静态 / 动态链接取舍]
 ```cpp
 // 文件：Examples/_ch18_mylib.cpp
 // 行号：2
@@ -475,7 +475,7 @@ nm libch18.a | grep engine
 
 加固三件套提升对抗内存破坏的能力：
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 21** [难度 ★★☆☆☆] [主题：未分类]
 ```
 ┌────────────────────┬─────────────────────────────┬──────────────────────┐
 │ 加固项             │ 作用                        │ GCC 标志              │
@@ -487,7 +487,7 @@ nm libch18.a | grep engine
 └────────────────────┴─────────────────────────────┴──────────────────────┘
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：未分类]
+> **示例 22** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // ⑫ 触发栈保护：含被取地址/较大局部数组的函数会被 -fstack-protector-strong 保护
 #include <cstddef>
@@ -512,7 +512,7 @@ g++ -std=c++23 -O2 -fstack-protector-strong -fPIE -pie \
 
 取证源（本机真实编译，逐字反汇编）：
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：[实现·GCC15]真实：-fsta]
+> **示例 23** [难度 ★★★☆☆] [主题：[实现·GCC15]真实：-fsta]
 ```cpp
 #include <cstddef>
 // 文件：Examples/_ch18_stack.cpp
@@ -599,7 +599,7 @@ g++ -std=c++23 -Wall -Wextra -Wshadow -Wconversion -Werror -c app.cpp
 
 Sanitizer 在**测试期**插入运行时检测，抓 UBSan/ASan/TSan 类 bug，代价是大幅变慢与膨胀——只用于 Debug 测试，绝不进发布。
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：集成（-fsanitize）]
+> **示例 26** [难度 ★★★☆☆] [主题：集成（-fsanitize）]
 ```cpp
 // ⑮ 一个 ASan 能当场抓出的堆缓冲区溢出
 #include <cstddef>
@@ -619,7 +619,7 @@ g++ -std=c++23 -O1 -g -fsanitize=address -fno-omit-frame-pointer \
 ./app_asan          # 输出 ==15769==ERROR: AddressSanitizer: heap-buffer-overflow
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：集成（-fsanitize）]
+> **示例 27** [难度 ★★★☆☆] [主题：集成（-fsanitize）]
 ```cpp
 // ⑮ UBSan：抓整数溢出、空指针解引用、未对齐等未定义行为
 //   -fsanitize=undefined 编译后，下面的有符号溢出会被标记
@@ -686,7 +686,7 @@ assert(load_config() == 0);   // Release：load_config 根本不执行！
 int rc = load_config();  assert(rc == 0);
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：常见坑]
+> **示例 29** [难度 ★★☆☆☆] [主题：常见坑]
 ```cpp
 // ⑱ 坑2：开发期 -O0 隐藏 UB，发布 -O2 直接崩
 int* p = nullptr;
@@ -720,7 +720,7 @@ double inverse(double x){ return 1.0 / x; }   // -ffast-math 下 x=NaN 可能被
 
 ## ⑲ 最佳实践
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 33** [难度 ★★☆☆☆] [主题：最佳实践]
 ```cpp
 // ⑲ 实践1：用 static_assert 把不变式前移到编译期（零运行时成本）
 template <typename T>
@@ -736,7 +736,7 @@ T clamp(T v, T lo, T hi) {
 [[gnu::always_inline]] inline int hot_add(int a, int b) { return a + b; }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：最佳实践]
+> **示例 35** [难度 ★★☆☆☆] [主题：最佳实践]
 ```cpp
 // ⑲ 实践3：发布保留调试符号的独立副本，分发 strip 版
 //   objcopy --only-keep-debug app app.debug
@@ -772,7 +772,7 @@ ccache g++ -std=c++23 -O2 -flto -c app.cpp -o app.o
    - [标准] 宏是文本替换，参数在替换列表中按出现次数逐一展开，可能多次求值（含副作用）。
    - [引用] ISO/IEC 14882:2023 §[cpp.replace]（宏替换与参数求值）；cppreference "Replacing text macros" 词条。
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：速查表]
+> **示例 36** [难度 ★★★★☆] [主题：速查表]
 ```
 ┌──────────────────────────┬───────────────────────────────────────────────┐
 │ 目标                     │ 推荐标志（GCC 13 / C++23）                      │
@@ -857,7 +857,7 @@ ccache g++ -std=c++23 -O2 -flto -c app.cpp -o app.o
 int main(){std::cout<<"CMakeLists: cmake_minimum_required(VERSION 3.20); project(App LANGUAGES CXX); set(CMAKE_CXX_STANDARD 20)."<<std::endl;return 0;}
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：附录: CMake 构建配置实战]
+> **示例 38** [难度 ★★☆☆☆] [主题：附录: CMake 构建配置实战]
 ```cpp
 #include <iostream>
 #include <string>
@@ -893,7 +893,7 @@ int main(){std::cout<<"Ninja: faster than make. cmake -G Ninja -B build. CCache:
 
 ## 附录 E：构建配置工业 [D: Stdlib / F: Industry / H: Design / J: Learning]
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录 E：构建配置工业 [D: St]
+> **示例 42** [难度 ★★☆☆☆] [主题：附录 E：构建配置工业 [D: St]
 ```
 Debug vs Release 编译器差异:
 
@@ -977,7 +977,7 @@ int main() {
 
 **真实场景：跨文件的内联与去虚化。** 你的库把 `square()` 放在头、调用方在另一个 TU，想让发布构建跨文件内联掉这层调用。请用 `constexpr` 体现"编译期可知"的优化前提，并写出开启 LTO 的命令。
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 45** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 
@@ -1001,7 +1001,7 @@ g++ -std=c++23 -flto -O2 a.o b.o -o app
 
 **真实场景：用真实负载喂出最优布局。** 你的服务有典型的请求分布，想让发布二进制按真实热点重排代码。请用 PGO（剖面引导优化）先收集热点再重优化：写程序并用命令示意两阶段流程。
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 46** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1039,7 +1039,7 @@ g++ -std=c++23 -D_GGLIBCXX_ASSERTIONS -O2 app.cpp -o app
 # v[10] 访问 v(4) 时直接抛 std::out_of_range
 ```
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：演绎 1：Debug 用 GLIBC]
+> **示例 47** [难度 ★★☆☆☆] [主题：演绎 1：Debug 用 GLIBC]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1061,7 +1061,7 @@ g++ -std=c++23 -fprofile-use -O2 bench.cpp -o bench
 ./bench --benchmark_format=json | tee result.json   # 与基线 diff，超阈值则 CI 失败
 ```
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：演绎 2：把 PGO 接进 CI 做]
+> **示例 48** [难度 ★★☆☆☆] [主题：演绎 2：把 PGO 接进 CI 做]
 ```cpp
 #include <iostream>
 int main() { std::cout << "PGO + 基准门禁 = 性能回归早知道\n"; }
@@ -1269,7 +1269,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 49** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <vector>

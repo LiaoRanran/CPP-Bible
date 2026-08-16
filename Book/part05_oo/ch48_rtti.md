@@ -50,7 +50,7 @@ RTTI 的反对者理由很硬：它让二进制变大、让「不该知道类型
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 1** [难度 ★★★★★] [主题：知识图谱（ASCII）]
 ```
                        ┌──────── C++ 类型查询 ────────┐
                        │                               │
@@ -107,7 +107,7 @@ classDiagram
 
 单继承（x86-64，Itanium ABI，`Base`/`Der` 各含虚函数）：
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：内存图 / vtable 与 typ]
+> **示例 2** [难度 ★★★★☆] [主题：内存图 / vtable 与 typ]
 ```
         Der 对象（地址 base）
         ┌──────────────────────┐  <- base (offset 0)
@@ -134,7 +134,7 @@ classDiagram
 
 ## ⑧ 生命周期图
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：生命周期图]
+> **示例 3** [难度 ★★★★☆] [主题：生命周期图]
 ```
 编译期：type_info 对象生成于 .rdata，vtable 槽1 固定指向它
 构造对象 d：vptr 指向 Der vtable ⟶ 间接指向 typeinfo(Der)
@@ -146,7 +146,7 @@ classDiagram
 
 ## ⑨ 调用栈 / 时序图
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：调用栈 / 时序图]
+> **示例 4** [难度 ★★★★☆] [主题：调用栈 / 时序图]
 ```
 调用点                  vtable/type_info          运行时支持例程
   │                        │                          │
@@ -232,7 +232,7 @@ _Z13down_cast_refRK4Base:
 > 构建：`g++ -std=c++23 -O2 -Wall case48_dispatcher.cpp -o case48_dispatcher`
 > 文件：`Examples/case48_dispatcher.cpp`
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：工业案例 48-A：消息分发器]
+> **示例 5** [难度 ★★☆☆☆] [主题：工业案例 48-A：消息分发器]
 ```cpp
 #include <iostream>
 #include <unordered_map>
@@ -285,7 +285,7 @@ void good(A* p) { p->dispatch(); }   // 走虚表，无需 RTTI，体积更小
 
 ### 工业案例 48-C：typeid 静态 vs 动态（核心语义对照）
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：工业案例 48-C：typeid 静]
+> **示例 8** [难度 ★★☆☆☆] [主题：工业案例 48-C：typeid 静]
 ```cpp
 // typeid 对非多态取静态类型，对多态对象取动态类型
 #include <typeinfo>
@@ -316,7 +316,7 @@ void demo_d() {
 
 ### 工业案例 48-E：dynamic_cast 上行转换（编译期确定，零运行期成本）
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：工业案例 48-E：dynamicc]
+> **示例 10** [难度 ★★☆☆☆] [主题：工业案例 48-E：dynamicc]
 ```cpp
 struct Base { virtual ~Base() = default; };
 struct Der : Base {};
@@ -476,7 +476,7 @@ void demo_q() {
 
 ### 工业案例 48-R：模板 + type_traits 编译期替代 RTTI
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：工业案例 48-R：模板 + typ]
+> **示例 23** [难度 ★★☆☆☆] [主题：工业案例 48-R：模板 + typ]
 ```cpp
 #include <type_traits>
 template<class T>
@@ -600,7 +600,7 @@ extern "C" void* __dynamic_cast(const void* __src,
 
 【microbenchmark 设计（Google Benchmark，可复现）】
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：性能分析]
+> **示例 26** [难度 ★★★☆☆] [主题：性能分析]
 ```cpp
 #include <benchmark/benchmark.h>
 #include <typeinfo>
@@ -1096,7 +1096,7 @@ int main() {
 
 `typeid` 对多态左值/表达式返回动态类型信息（经 vtable 的 `type_info`）；对非多态类型退化为编译期静态类型，无法反映实际派生。
 
-> **示例 41** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 41** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <typeinfo>
@@ -1125,7 +1125,7 @@ int main() {
 
 `variant` 把"可能是哪几种类型"编码进类型系统；`visit` 在编译期对每种 alternative 生成分支，无 vtable 查询、无运行时类型检查，且漏处理一种类型会编译失败。
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 42** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <variant>
@@ -1201,7 +1201,7 @@ int main() {
 
 **修复**：`dynamic_cast` 要求源表达式为多态类型。若确实需要在已知层次内转换且自担保安全，用 `static_cast`（无运行时检查）；否则把基类改为多态（加虚析构）或重构为 `variant`/虚函数层次。
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：演绎 2：对无虚函数类误用 dyna]
+> **示例 46** [难度 ★★☆☆☆] [主题：演绎 2：对无虚函数类误用 dyna]
 ```cpp
 #include <iostream>
 struct A { virtual ~A() = default; };
@@ -1223,7 +1223,7 @@ RTTI 常被说成"黑盒"，但它的实现完全可在汇编里看清：多态 
 
 ### ① 多态 `typeid` —— 读 vtable[-1]
 
-> **示例 47** [难度 ★☆☆☆☆] [主题：多态 typeid —— 读 vta]
+> **示例 47** [难度 ★★★☆☆] [主题：多态 typeid —— 读 vta]
 ```cpp
 const std::type_info& who(Base& b) { return typeid(b); }
 ```
@@ -1239,7 +1239,7 @@ const std::type_info& who(Base& b) { return typeid(b); }
 
 ### ② `dynamic_cast` 下行 —— 尾调 `__dynamic_cast`
 
-> **示例 48** [难度 ★☆☆☆☆] [主题：dynamiccast 下行 —— ]
+> **示例 48** [难度 ★★☆☆☆] [主题：dynamiccast 下行 —— ]
 ```cpp
 Derived* down(Base* b) { return dynamic_cast<Derived*>(b); }
 ```
@@ -1260,7 +1260,7 @@ Derived* down(Base* b) { return dynamic_cast<Derived*>(b); }
 
 ### ③ 静态 `typeid` —— 编译期常量，零运行期开销
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：静态 typeid —— 编译期常量]
+> **示例 49** [难度 ★★★☆☆] [主题：静态 typeid —— 编译期常量]
 ```cpp
 const std::type_info& static_who() { return typeid(Derived); }  // 非多态表达式
 ```
@@ -1599,7 +1599,7 @@ flowchart TD
 | `dynamic_cast` 运行时 | `__dynamic_cast` + 三类节点 | 自有 vtable 描述结构 | 自有 RTTI 与 `vfcast`，含 vtordisp |
 | `src2dst` hint | 支持 `>-1/-1/-2/-3` | 不以此接口暴露 | 不以此接口暴露 |
 ### D4.4 可编译 demo：上下行 cast + typeid 比较 + hash_code
-> **示例 50** [难度 ★☆☆☆☆] [主题：可编译 demo：上下行 cast ]
+> **示例 50** [难度 ★★★★☆] [主题：可编译 demo：上下行 cast ]
 ```cpp
 #include <iostream>
 #include <typeinfo>
@@ -1726,7 +1726,7 @@ int main() {
 
 ### D5.3 可复现 demo
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 51** [难度 ★★☆☆☆] [主题：可复现 demo]
 ```cpp
 #include <iostream>
 #include <typeinfo>

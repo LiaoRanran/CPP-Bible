@@ -47,7 +47,7 @@ C++26 的旗舰之争是"反射该有多强"。一派要完整编译期元对象
 ⟶ Book/part01_history/ch08_cpp23.md
 ⟶ Book/part01_history/ch10_version_matrix.md
 
-> **示例 1** [难度 ★★★★☆] [主题：学习目标]
+> **示例 1** [难度 ★★☆☆☆] [主题：学习目标]
 ```cpp
 // [merged] ## ① 学习目标
 #include <iostream>
@@ -62,7 +62,7 @@ int main() {}
 
 ## ② 前置知识
 
-> **示例 2** [难度 ★★★★☆] [主题：前置知识]
+> **示例 2** [难度 ★☆☆☆☆] [主题：前置知识]
 ```cpp
 // [merged] ## ② 前置知识
 #include <iostream>
@@ -75,7 +75,7 @@ int main() {}
 
 ## ③ 后续依赖
 
-> **示例 3** [难度 ★★★★☆] [主题：后续依赖]
+> **示例 3** [难度 ★★★☆☆] [主题：后续依赖]
 ```cpp
 // [merged] ## ③ 后续依赖
 #include <iostream>
@@ -89,7 +89,7 @@ int main() {}
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 4** [难度 ★★★★☆] [主题：知识图谱（ASCII）]
+> **示例 4** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）]
 ```cpp
 // [merged] ## ④ 知识图谱（ASCII）
 #include <iostream>
@@ -100,7 +100,7 @@ void r9(){ std::vector<int> v{1,2,3}; auto x=v | std::views::take(2); for(int e:
 int main() {}
 ```
 
-> **示例 5** [难度 ★★★★☆] [主题：知识图谱（ASCII）]
+> **示例 5** [难度 ★★☆☆☆] [主题：知识图谱（ASCII）]
 ```
 C++26 (方向)
 ├─ 静态反射: std::meta / 反射运算符 (^^ / [: :] 提案)
@@ -115,7 +115,7 @@ C++26 (方向)
 
 ## ⑤ Mermaid（执行器 Sender 管线）
 
-> **示例 6** [难度 ★★★★☆] [主题：未分类]
+> **示例 6** [难度 ★★☆☆☆] [主题：未分类]
 ```cpp
 // [merged] ## ⑤ Mermaid（执行器 Sender 管线）
 #include <iostream>
@@ -127,7 +127,7 @@ int main() {
 
 ## ⑥ UML / 结构图（C++26 方向性特性）[标准]
 
-> **示例 7** [难度 ★★★★☆] [主题：结构图（C++26 方向性特性）[标]
+> **示例 7** [难度 ★☆☆☆☆] [主题：结构图（C++26 方向性特性）[标]
 ```cpp
 // [merged] ## ⑥ UML / 结构图（C++26 方向性特性）[标准]
 #include <iostream>
@@ -137,7 +137,7 @@ int main() {}
 C++26（草案）：静态反射、`std::execution` sender/receiver、契约 (contracts)、`std::simd`、扩展 `constexpr`、模式匹配（方向性，可能变动）。
 ## ⑦ ASCII 内存图（C++26 反射与值）
 
-> **示例 8** [难度 ★★★★☆] [主题：内存图（C++26 反射与值）]
+> **示例 8** [难度 ★☆☆☆☆] [主题：内存图（C++26 反射与值）]
 ```cpp
 // [merged] ## ⑦ ASCII 内存图（C++26 反射与值）
 #include <iostream>
@@ -148,7 +148,7 @@ int main() {}
 静态反射在编译期暴露类型元数据，不影响运行时对象布局；契约由编译器在前后置条件插入检查，无新内存模型（ch11）。
 ## ⑧ 生命周期（C++26 契约与 constexpr 扩展）
 
-> **示例 9** [难度 ★★★★☆] [主题：生命周期]
+> **示例 9** [难度 ★★☆☆☆] [主题：生命周期]
 ```cpp
 // [merged] ## ⑧ 生命周期（C++26 契约与 constexpr 扩展）
 #include <iostream>
@@ -159,7 +159,7 @@ int main() {}
 契约不改变对象生命周期；`constexpr` 扩展到更多库类型，更多计算移至编译期（ch22）。
 ## ⑨ 调用栈（C++26 sender/receiver 执行器）
 
-> **示例 10** [难度 ★★★★☆] [主题：调用栈]
+> **示例 10** [难度 ★☆☆☆☆] [主题：调用栈]
 ```cpp
 // std::execution 执行策略改进
 #include <execution>
@@ -167,7 +167,7 @@ int main() {}
 #include <vector>
 void ex9(){ std::vector<int> v(2); std::sort(std::execution::par, v.begin(), v.end()); }
 ```
-> **示例 11** [难度 ★★★★☆] [主题：调用栈]
+> **示例 11** [难度 ★★☆☆☆] [主题：调用栈]
 ```cpp
 // 协程推广示意
 // task<int> gen26(){ co_yield 1; co_return 2; }
@@ -195,7 +195,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ## ⑩ 汇编（反射编译期生成）
 
-> **示例 12** [难度 ★★★★☆] [主题：汇编（反射编译期生成）]
+> **示例 12** [难度 ★★★☆☆] [主题：汇编（反射编译期生成）]
 ```cpp
 // [merged] ## ⑩ 汇编（反射编译期生成）
 #include <iostream>
@@ -214,7 +214,7 @@ int main() {}
 
 ## ⑪ STL 联系
 
-> **示例 13** [难度 ★★★★☆] [主题：联系]
+> **示例 13** [难度 ★☆☆☆☆] [主题：联系]
 ```cpp
 // [merged] ## ⑪ STL 联系
 #include <iostream>
@@ -230,7 +230,7 @@ int main() {
 
 ## ⑫ 工业案例
 
-> **示例 14** [难度 ★★★★☆] [主题：工业案例]
+> **示例 14** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
 // [merged] ## ⑫ 工业案例
 #include <iostream>
@@ -243,7 +243,7 @@ int main() {}
 
 ## ⑬ 源码分析（方向）
 
-> **示例 15** [难度 ★★★★☆] [主题：源码分析（方向）]
+> **示例 15** [难度 ★☆☆☆☆] [主题：源码分析（方向）]
 ```cpp
 // [merged] ## ⑬ 源码分析（方向）
 #include <iostream>
@@ -255,7 +255,7 @@ int main() {}
 
 ## ⑭ WG21 提案（关键，可能变动）
 
-> **示例 16** [难度 ★★★★☆] [主题：提案（关键，可能变动）]
+> **示例 16** [难度 ★★☆☆☆] [主题：提案（关键，可能变动）]
 ```cpp
 // [merged] ## ⑭ WG21 提案（关键，可能变动）
 #include <iostream>
@@ -274,7 +274,7 @@ int main() {
 
 ## ⑮ 面试题
 
-> **示例 17** [难度 ★★★★☆] [主题：面试题]
+> **示例 17** [难度 ★☆☆☆☆] [主题：面试题]
 ```cpp
 // [merged] ## ⑮ 面试题
 #include <iostream>
@@ -289,7 +289,7 @@ int main() {}
 
 ## ⑯ 易错点
 
-> **示例 18** [难度 ★★★★☆] [主题：易错点]
+> **示例 18** [难度 ★★☆☆☆] [主题：易错点]
 ```cpp
 // [merged] ## ⑯ 易错点
 #include <iostream>
@@ -302,7 +302,7 @@ int main() {}
 
 ## ⑰ FAQ
 
-> **示例 19** [难度 ★★★★☆] [主题：未分类]
+> **示例 19** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // [merged] ## ⑰ FAQ
 #include <iostream>
@@ -319,7 +319,7 @@ int main() {
 
 ## ⑱ 最佳实践
 
-> **示例 20** [难度 ★★★★☆] [主题：最佳实践]
+> **示例 20** [难度 ★☆☆☆☆] [主题：最佳实践]
 ```cpp
 // [merged] ## ⑱ 最佳实践
 #include <iostream>
@@ -334,7 +334,7 @@ int main() {}
 
 ## ⑲ 性能（不适用，方向性）
 
-> **示例 21** [难度 ★★★★☆] [主题：性能（不适用，方向性）]
+> **示例 21** [难度 ★☆☆☆☆] [主题：性能（不适用，方向性）]
 ```cpp
 // C++26 小结：反射/契约/模块化/数据并行（多为提案阶段）
 ```
@@ -355,7 +355,7 @@ int main() {}
    - [标准] 采纳新特性应以特性测试宏与实现支持矩阵为准，而非主观假设“标准已出即全平台可用”。
    - [引用] ISO/IEC 14882:2023 §[cpp.predefined]（特性测试宏作为支持判定）；cppreference "Feature test macros" 词条。
 
-> **示例 22** [难度 ★★★★☆] [主题：练习题 + 思考题 + 源码阅读路线]
+> **示例 22** [难度 ★☆☆☆☆] [主题：练习题 + 思考题 + 源码阅读路线]
 ```cpp
 // 编译器版本探测
 #ifdef __GNUC__
@@ -411,7 +411,7 @@ C++26 的特性已在编译器实验分支提前「活」起来。下面按领�
 
 ## 附录: C++26 方向特性前瞻
 
-> **示例 23** [难度 ★★★★☆] [主题：附录: C++26 方向特性前瞻]
+> **示例 23** [难度 ★☆☆☆☆] [主题：附录: C++26 方向特性前瞻]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++26: Contracts(P2900), reflection(P2996), std::execution(P2300), std::simd.\n";return 0;}
@@ -422,7 +422,7 @@ int main(){std::cout<<"C++26: Contracts(P2900), reflection(P2996), std::executio
 
 ## 附录 B: C++26 方向深度代码
 
-> **示例 24** [难度 ★★★★☆] [主题：附录 B: C++26 方向深度代码]
+> **示例 24** [难度 ★☆☆☆☆] [主题：附录 B: C++26 方向深度代码]
 ```cpp
 #include <iostream>
 #include <cassert>
@@ -430,19 +430,19 @@ int bounded_sqrt(int x){assert(x>=0);int r=0;while(r*r<=x)++r;return r-1;}
 int main(){std::cout<<bounded_sqrt(50)<<std::endl;return 0;}
 ```
 
-> **示例 25** [难度 ★★★★☆] [主题：附录 B: C++26 方向深度代码]
+> **示例 25** [难度 ★☆☆☆☆] [主题：附录 B: C++26 方向深度代码]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"P2300 sender/receiver: composable async pipeline, replaces future/promise."<<std::endl;return 0;}
 ```
 
-> **示例 26** [难度 ★★★★☆] [主题：附录 B: C++26 方向深度代码]
+> **示例 26** [难度 ★☆☆☆☆] [主题：附录 B: C++26 方向深度代码]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"P2996 reflection: enumerate members at compile time, auto-generate JSON/serialization."<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★★★★☆] [主题：附录 B: C++26 方向深度代码]
+> **示例 27** [难度 ★☆☆☆☆] [主题：附录 B: C++26 方向深度代码]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"std::simd: explicit SIMD vectors without intrinsics, portable across architectures."<<std::endl;return 0;}
@@ -450,7 +450,7 @@ int main(){std::cout<<"std::simd: explicit SIMD vectors without intrinsics, port
 
 ## 附录 C：C++26底层影响与工业前瞻 [E: Lowlevel / F: Industry / H: Design / J: Learning]
 
-> **示例 28** [难度 ★★★★☆] [主题：附录 C：C++26底层影响与工业前]
+> **示例 28** [难度 ★★★☆☆] [主题：附录 C：C++26底层影响与工业前]
 ```
 C++26关键特性及其工程影响:
 
@@ -467,7 +467,7 @@ std::execution (P2300R7):
   LLVM/Chromium可能迁移到标准异步框架
 ```
 
-> **示例 29** [难度 ★★★★☆] [主题：附录 C：C++26底层影响与工业前]
+> **示例 29** [难度 ★☆☆☆☆] [主题：附录 C：C++26底层影响与工业前]
 ```cpp
 #include <iostream>
 int main() {
@@ -513,7 +513,7 @@ std::execution(P2300): 统一15年分散的异步模型(callback/future/coroutin
 | Reflection | Qt MOC/UE UHT | 编译期零运行时 | 消除预处理器 |
 | std::execution | asio/epoll | 编译期组合 | 统一异步 |
 
-> **示例 30** [难度 ★★★★☆] [主题：工业影响]
+> **示例 30** [难度 ★☆☆☆☆] [主题：工业影响]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"C++26=Contracts+Reflection+std::execution=proof-carrying+zero-preprocessor+unified-async"<<std::endl;return 0;}
@@ -532,7 +532,7 @@ P2300 sender/receiver模型统一了C++的异步编程:
 - receiver: 消费结果(如写回buffer)
 - 组合器: then/upon_error/retry/stop_when
 
-> **示例 31** [难度 ★★★★☆] [主题：附录 E：C++26 P2300 s]
+> **示例 31** [难度 ★☆☆☆☆] [主题：附录 E：C++26 P2300 s]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"P2300 sender/receiver=unified async model, zero-callback overhead"<<std::endl;std::cout<<"Replaces: Boost.Asio callbacks, std::future, coroutine manual scheduling"<<std::endl;return 0;}
@@ -556,7 +556,7 @@ P2300核心优势:
 
 C++20 P0542被拒(continuation过于复杂)。P2900简化: 只保留pre/post/assert + 三级检查(default/audit/axiom)。
 
-> **示例 32** [难度 ★★★★☆] [主题：附录 G：Contracts P29]
+> **示例 32** [难度 ★☆☆☆☆] [主题：附录 G：Contracts P29]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"P2900 contracts=pre/post/assert with default/audit/axiom levels"<<std::endl;return 0;}
@@ -572,7 +572,7 @@ int main(){std::cout<<"P2900 contracts=pre/post/assert with default/audit/axiom 
 
 ### G.1 真机汇编实证（GCC 15.3.0 `-fcontracts`）
 
-> **示例 33** [难度 ★★★★☆] [主题：真机汇编实证]
+> **示例 33** [难度 ★★★☆☆] [主题：真机汇编实证]
 ```cpp
 // _asm_demo/ch09_contracts_test.cpp （GCC 15.3.0 -std=c++26 -O2 -fcontracts，实测）
 [[nodiscard]] int clamp(int x, int lo, int hi)
@@ -621,7 +621,7 @@ jg     7b                    ; 失败→跳 0x7b 调用 handle_contract_violatio
 
 C++23 的痛点：每一步都要手动嵌套回调，错误与取消需自建通道，且 `std::future` 是"急切"启动、组合时被迫 `.get()` 串行等待。下面是一段可编译的回调拼接示例（`[实现·GCC15]`）：
 
-> **示例 34** [难度 ★★★★☆] [主题：练习 1（难度 ★★）]
+> **示例 34** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <functional>
@@ -649,7 +649,7 @@ int main() {
 
 C++26 的方向（P2300）用惰性 sender 把三步声明为一条可组合管线，**不会**像 `std::future` 那样急切执行，错误与停止令牌沿链自动传播（`[假设·C++26][UNVERIFIED]`，GCC15 未实现 `std::execution::just`/`then`）：
 
-> **示例 35** [难度 ★★★★☆] [主题：练习 1（难度 ★★）]
+> **示例 35** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 // [假设·C++26][UNVERIFIED] P2300 std::execution（示意，GCC15 不可编译）
 auto pipeline = std::execution::just(10)
@@ -673,7 +673,7 @@ std::execution::start_detached(pipeline);   // 惰性：仅在此处才真正调
 
 C++23 用手工 `if/throw` 模拟契约——能编译，但检查是"手写的、可遗漏的"（`[实现·GCC15]`）：
 
-> **示例 36** [难度 ★★★★☆] [主题：练习 2（难度 ★★）]
+> **示例 36** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <stdexcept>
@@ -694,7 +694,7 @@ int main() { std::cout << clamp_cpp23(5, 0, 10) << '\n'; }
 
 C++26 的 Contracts（P2900）把前置/后置写成属性，编译器可据级别插入检查或降级为 `assume`（`[假设·C++26][UNVERIFIED]`，GCC15 仅为实验性 `-fcontracts`）：
 
-> **示例 37** [难度 ★★★★☆] [主题：练习 2（难度 ★★）]
+> **示例 37** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 // [假设·C++26][UNVERIFIED] P2900 Contracts（示意，GCC15 实验性）
 int clamp(int x, int lo, int hi)
@@ -719,7 +719,7 @@ int clamp(int x, int lo, int hi)
 
 C++23 的样板：字段名与访问硬编码，新增成员必须同步修改序列化函数（`[实现·GCC15]`）：
 
-> **示例 38** [难度 ★★★★☆] [主题：练习 3（难度 ★★）]
+> **示例 38** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -739,7 +739,7 @@ int main() { Point p{3, 4}; std::cout << fields_cpp23(p) << '\n'; }
 
 C++26 的静态反射（P2996R5）在编译期暴露成员元数据，循环即可生成上述样板（`[假设·C++26][UNVERIFIED]`，`<meta>` 头在 GCC15 不存在）：
 
-> **示例 39** [难度 ★★★★☆] [主题：练习 3（难度 ★★）]
+> **示例 39** [难度 ★★★☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 // [假设·C++26][UNVERIFIED] P2996R5 静态反射（示意，GCC15 不可编译）
 #include <meta>                        // 尚不存在

@@ -93,7 +93,7 @@ std::string user_name;       // 意图：用户名，类型由 string 表达
 
 二级法则：**长度与可见范围成正比**——作用域越大、生命周期越长，名字应越长越具体；局部短变量可用单字母。
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：命名基本法则（意图揭示）]
+> **示例 6** [难度 ★★☆☆☆] [主题：命名基本法则（意图揭示）]
 ```cpp
 #include <cstddef>
 // 短作用域：单字母足够
@@ -131,7 +131,7 @@ enum class ColorSpace { Srgb, DisplayP3 };  // ✅ enum class 成员 PascalCase
 
 模板参数用描述性名字，避免单字母 `T`（除非极其通用）：
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：类型命名]
+> **示例 9** [难度 ★★☆☆☆] [主题：类型命名]
 ```cpp
 // ❌ 反例：单字母模板参数，约束意图不清
 template <typename T, typename U> class Pair { /* ... */ };
@@ -143,7 +143,7 @@ template <std::regular T> class RingBuffer { /* ... */ };
 
 概念（concept）命名用名词或形容词短语，常以 `able`/`ible` 结尾：
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：类型命名]
+> **示例 10** [难度 ★★☆☆☆] [主题：类型命名]
 ```cpp
 template <typename T>
 concept RandomAccess = requires(T t) { t[0]; t.size(); };   // ✅ 形容词性概念
@@ -151,7 +151,7 @@ concept RandomAccess = requires(T t) { t[0]; t.size(); };   // ✅ 形容词性�
 
 `[标准]` 类型别名用 `using`（而非 `typedef`）更易读，且支持模板别名：
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：类型命名]
+> **示例 11** [难度 ★★☆☆☆] [主题：类型命名]
 ```cpp
 #include <memory>
 #include <vector>
@@ -163,7 +163,7 @@ template <typename T> using Vec = std::vector<T>;
 
 `[经验]` 函数命名用**动词或动宾短语**，因为函数"做某事"。查询类（纯读）可用名词，命令类（有副作用）必须动词。
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：函数命名（动词/动宾）]
+> **示例 12** [难度 ★★☆☆☆] [主题：函数命名（动词/动宾）]
 ```cpp
 #include <cstddef>
 // ✅ 命令（有副作用）：动词开头
@@ -257,7 +257,7 @@ for (const auto& [key, value] : registry) { /* key/value 局部自明 */ }
 
 `[经验]` 编译期常量用 `kPascalCase`（Google 风）或 `k_snake_case`，贯穿 `constexpr`/`const` 静态成员/枚举值；宏用全大写 `UPPER_SNAKE_CASE`（必须与普通标识符视觉隔离，因宏无视作用域）。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：常量与宏命名]
+> **示例 20** [难度 ★★☆☆☆] [主题：常量与宏命名]
 ```cpp
 #include <cstddef>
 class Config {
@@ -280,14 +280,14 @@ inline constexpr double kPi = 3.141592653589793;
 
 枚举值命名与常量一致（C++11 起 `enum class` 作用域隔离，但仍推荐 `k` 前缀或全大写）：
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：常量与宏命名]
+> **示例 22** [难度 ★★☆☆☆] [主题：常量与宏命名]
 ```cpp
 enum class LogLevel { kTrace, kInfo, kWarn, kError };   // ✅ 作用域枚举 + k 前缀
 ```
 
 `[经验]` 能用 `constexpr`/`const`/`enum` 就绝不用 `#define`——宏无类型、无视命名空间、难调试：
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：常量与宏命名]
+> **示例 23** [难度 ★★☆☆☆] [主题：常量与宏命名]
 ```cpp
 // ❌ 反例
 #define MAX_SIZE 1024
@@ -324,7 +324,7 @@ namespace myproject {
 
 匿名命名空间（翻译单元内部链接）替代 `static`，隐藏 `.cpp` 内辅助符号：
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：命名空间命名]
+> **示例 26** [难度 ★★☆☆☆] [主题：命名空间命名]
 ```cpp
 namespace {
     int g_debug_counter = 0;                 // ✅ 仅本 .cpp 可见
@@ -380,7 +380,7 @@ sizeof(PimplWidget)=8        // 仅持有一个 unique_ptr（指针=8 字节）
 sizeof(FatWidget) =256       // 直接内联 64 个 long，随实现膨胀
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：稳定性（ABI/API 边界）[平台]
+> **示例 31** [难度 ★★☆☆☆] [主题：稳定性（ABI/API 边界）[平台]
 ```cpp
 #include <memory>
 // Pimpl：调用方看到的头文件大小恒为 8 字节，与 FatImpl 多胖无关
@@ -476,7 +476,7 @@ Pimpl（Pointer to Implementation）把数据成员与实现收进一个前向�
 
 `[实现·GCC15]` 关键成本模型：Pimpl 调用需经指针进入 impl，等价于一次**间接分支**。本机 g++ 取证（`Examples/_ch145_pimpl.asm`）对比"经函数指针的间接调用"与"直接调用"：
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：惯用法]
+> **示例 38** [难度 ★★★☆☆] [主题：惯用法]
 ```cpp
 // _ch145_pimpl.cpp 要点（自包含可编译）
 using draw_fn = void(*)(int);
@@ -674,7 +674,7 @@ struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实为 noex
 
 `[实现·GCC15]` 真实取证（`Examples/_ch145_return.asm`）对比三种返回：
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：返回值策略]
+> **示例 52** [难度 ★★★★☆] [主题：返回值策略]
 ```cpp
 #include <optional>
 struct Big { long a[8]; };
@@ -709,7 +709,7 @@ _Z7use_refRK3Big:
 
 结论真实可复现：**`by_ref` 仅把指针交还（O(1)），`by_value` 则需把对象写入调用方缓冲（与大小成正比，除非被优化掉）**。经验法则：
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：返回值策略]
+> **示例 53** [难度 ★★☆☆☆] [主题：返回值策略]
 ```cpp
 #include <cstdint>
 #include <memory>
@@ -725,7 +725,7 @@ std::unique_ptr<Connection> open(int fd) { return std::make_unique<Connection>(f
 std::optional<Record> find(std::uint64_t id) const;
 ```
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：返回值策略]
+> **示例 54** [难度 ★★☆☆☆] [主题：返回值策略]
 ```cpp
 // ❌ 反例：返回局部对象的引用（悬垂！）
 const std::string& bad() { std::string s = "x"; return s; }  // 返回后 s 已销毁
@@ -737,7 +737,7 @@ const std::string& bad() { std::string s = "x"; return s; }  // 返回后 s 已�
 
 本机编译取证（`Examples/_ch145_concepts.cpp`，`-Wall -Wextra` 零警告）：
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：概念约束]
+> **示例 55** [难度 ★★★☆☆] [主题：概念约束]
 ```cpp
 template <typename T>
 concept Arithmetic = std::integral<T> || std::floating_point<T>;
@@ -763,7 +763,7 @@ int main() {
 
 `[经验]` 把 concept 当作"命名化的接口契约"——`Arithmetic`、`Drawable`、`Readable` 比 `typename T` 表达力强百倍，且调用方违反时得到指向 concept 的清晰报错。
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：概念约束]
+> **示例 57** [难度 ★★☆☆☆] [主题：概念约束]
 ```cpp
 // ✅ 多约束组合，意图自解释
 template <typename T>
@@ -772,7 +772,7 @@ concept Serializable = std::semiregular<T> && requires(T t, std::ostream& os) {
 };
 ```
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：概念约束]
+> **示例 58** [难度 ★★☆☆☆] [主题：概念约束]
 ```cpp
 // ❌ 反例：无约束模板，误用时报错指向深层实现细节
 template <typename T>
@@ -785,7 +785,7 @@ auto area(const T& s) { return s.width * s.height; }   // T 没有 width 时报�
 
 本机编译取证（`Examples/_ch145_strong.cpp`，warnings clean）展示两者：
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：防误用设计]
+> **示例 59** [难度 ★★☆☆☆] [主题：防误用设计]
 ```cpp
 #include <cstdint>
 struct UserId { int64_t v; explicit UserId(int64_t x) : v(x) {} };
@@ -814,7 +814,7 @@ int main() {
 
 `[经验]` 用强类型把"单位/ID/标签"变成类型，让编译器替你挡住 `process(user_id, order_id)` 这类颠倒参数的 bug：
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：防误用设计]
+> **示例 61** [难度 ★★☆☆☆] [主题：防误用设计]
 ```cpp
 // ✅ 强类型让"参数顺序"由类型系统校验
 void transfer(UserId from, UserId to, Amount cents);
@@ -823,7 +823,7 @@ void transfer(UserId from, UserId to, Amount cents);
 
 `= delete` 还能删除危险隐式转换与拷贝：
 
-> **示例 62** [难度 ★☆☆☆☆] [主题：防误用设计]
+> **示例 62** [难度 ★★☆☆☆] [主题：防误用设计]
 ```cpp
 class NonCopyable {
 public:
@@ -893,7 +893,7 @@ void process(const int* data, std::size_t n);
 
 `[经验]` 文档是 API 契约的一部分。**公开接口的每个函数都应有 Doxygen 注释**：说明做什么、参数约束、返回值语义、异常/不变量、线程安全。
 
-> **示例 67** [难度 ★☆☆☆☆] [主题：文档（Doxygen）]
+> **示例 67** [难度 ★★☆☆☆] [主题：文档（Doxygen）]
 ```cpp
 /**
  * @brief 从连接池获取一个空闲连接
@@ -912,7 +912,7 @@ Connection* acquire(int timeout_ms);
 - 文档随签名改而改；过时文档比无文档更危险；
 - 内部 `detail::` 符号可不文档化，但公开符号必须。
 
-> **示例 68** [难度 ★☆☆☆☆] [主题：文档（Doxygen）]
+> **示例 68** [难度 ★★☆☆☆] [主题：文档（Doxygen）]
 ```cpp
 #include <string>
 /// @warning 返回的引用在对象析构后悬垂，调用方不得长期持有。
@@ -962,7 +962,7 @@ class ConnectionPool { /* ... */ };
 
 `optional<T>` 用类型本身表达"结果可能缺席"，比返回裸指针或哨兵自文档化得多；`nullopt` 这个单例名字清晰表达"空状态"。
 
-> **示例 72** [难度 ★☆☆☆☆] [主题：真实案例]
+> **示例 72** [难度 ★★☆☆☆] [主题：真实案例]
 ```cpp
 // 文件：C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/optional
 // 行号：705, 89
@@ -1011,7 +1011,7 @@ std::string s = std::move(other);   // move 仅转型，真正搬迁由 string �
 
 命名与 API 设计是**接口经济学**：名字是契约、是文档、是防误用的第一道闸门。本章取证结论汇总：
 
-> **示例 74** [难度 ★☆☆☆☆] [主题：小结]
+> **示例 74** [难度 ★★★★☆] [主题：小结]
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │ 命名与 API 设计门禁清单（落地即强制执行）                      │
@@ -1064,7 +1064,7 @@ v2(2018+): class Pass<IRUnitT,PreservedAnalysesT> → 返回丰富类型+模板�
 | PIMPL | 仅TU~10s | +2ns |
 | 虚接口 | 仅TU~10s | +5ns |
 
-> **示例 75** [难度 ★☆☆☆☆] [主题：性能]
+> **示例 75** [难度 ★★☆☆☆] [主题：性能]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1191,7 +1191,7 @@ int main() { FileCache c; c.Set("a","1"); assert(c.Has("a")); }
 
 <details><summary>答案与解析</summary>
 
-> **示例 77** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 77** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <memory>
 #include <string>
@@ -1236,7 +1236,7 @@ int main() { assign(UserId{1}, OrderId{2}); }      // 写反类型则编译失�
 
 下面一段自包含程序演示本章核心命名规则：布尔谓词用 `Is`/`Has` 前缀、获取器用 `GetX`、可失败调用用 `[[nodiscard]]`、修改器 `SetX` 标脏。用 `assert` 在运行期自检命名契约：
 
-> **示例 79** [难度 ★☆☆☆☆] [主题：补例：命名约定的自验证]
+> **示例 79** [难度 ★★☆☆☆] [主题：补例：命名约定的自验证]
 ```cpp
 #include <string>
 #include <cassert>

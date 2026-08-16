@@ -609,7 +609,7 @@ int main(){std::cout<<"Join WG21: ANSI/BSI membership or GitHub proposal. SG14/S
 
 核心是用特性测试宏 `__cpp_lib_expected` 探测本编译器的标准库是否提供了 `<expected>`，而不是用 `__cplusplus` 粗粒度判断——同一份 C++23 代码在没实现该特性的早期编译器上仍能回退。`<version>` 头集中提供所有 `__cpp_*` 宏。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 15** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <string>
@@ -703,7 +703,7 @@ C++ 不是由某家厂商说了算，而是 ISO 框架下的公开委员会治�
 
 下面用枚举与简单结构把这三层与提案流向建模出来：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 17** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <string_view>

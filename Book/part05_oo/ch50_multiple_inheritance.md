@@ -61,7 +61,7 @@ Simula 67 只给单继承，但现实里「一个窗口同时是图形节点、�
 
 ## ④ 知识图谱（ASCII）
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：知识图谱（ASCII）]
+> **示例 1** [难度 ★★★★☆] [主题：知识图谱（ASCII）]
 ```
         [单继承]                      [多重继承]
    Base    Derived              B1      B2
@@ -95,7 +95,7 @@ classDiagram
 
 ## ⑦ ASCII 内存图 / 对象布局
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：内存图 / 对象布局]
+> **示例 2** [难度 ★★★★☆] [主题：内存图 / 对象布局]
 ```
 x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
@@ -116,7 +116,7 @@ x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
 ## ⑧ 生命周期图
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：生命周期图]
+> **示例 3** [难度 ★★★☆☆] [主题：生命周期图]
 ```
 构造顺序：先 B1 子对象（vptr→B1子表），再 B2 子对象（vptr→B2子表），最后 Derived 自身成员。
 析构顺序：逆序。每个基类的虚析构在各自子表的 dtor 槽，B2 侧同样是 thunk（this-=8）。
@@ -124,7 +124,7 @@ x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
 ## ⑨ 调用栈 / 时序图
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：调用栈 / 时序图]
+> **示例 4** [难度 ★★★☆☆] [主题：调用栈 / 时序图]
 ```
 调用 p->g()（p: B2*, 指向 Derived+8）
 ─────────────────────────────────────────────
@@ -139,7 +139,7 @@ x64 / Itanium ABI / GCC 15.3.0，struct D : B1, B2 { int x=1; }
 
 【测试源 `Examples/_asm_mi.cpp`】
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：汇编分析]
+> **示例 5** [难度 ★★★★☆] [主题：汇编分析]
 ```cpp
 struct B1 { virtual void f(); virtual ~B1(); };
 struct B2 { virtual void g(); virtual ~B2(); };
@@ -345,7 +345,7 @@ struct B { void f(double){} };
 struct D : A, B { using A::f; using B::f; };   // 两 f 都可见，调用按重载决议
 ```
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 18** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 // 例11：模板基类多重继承
 template<class T> struct TBase1 { virtual void f1() = 0; };
@@ -355,7 +355,7 @@ struct Impl : TBase1<int>, TBase2<int> {
 };
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：工业案例]
+> **示例 19** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
 // 例12：CRTP 基类混入多重继承（ch51）
 template<class D> struct CtrpBase { void run(){ static_cast<D*>(this)->step(); } };
@@ -469,7 +469,7 @@ Itanium ABI 规定，一个类的 vtable 对象由「主虚拟表（primary vtbl
 
 【反例 1：把基类指针当派生类裸转】
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：易错点]
+> **示例 30** [难度 ★★☆☆☆] [主题：易错点]
 ```cpp
 C c; B* pb = &c;
 C* pc = (C*)(void*)pb;          // ❌ this 没调回 C 头，pc 实际指向 C+8
@@ -539,7 +539,7 @@ struct E : B1, B2 { char c; };
 - **时间**：跨第二基类虚调用 = 取 vptr + 取槽 + thunk 调整 + 真身，比单继承多一次 this 调整（通常折进偏移，开销趋近于 0，但间接跳转影响分支预测）。
 - **microbenchmark 思路**：
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：性能分析]
+> **示例 35** [难度 ★★★☆☆] [主题：性能分析]
 ```cpp
 #include <benchmark/benchmark.h>
 struct B1 { virtual int f() = 0; };
@@ -923,7 +923,7 @@ int main(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★★）]
+> **示例 45** [难度 ★★★★☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 struct A { int a; };
 struct B : virtual A {};
@@ -1085,7 +1085,7 @@ int main(){
 
 下例验证「virtual 继承让共享基类唯一」：
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：补例：自包含可编译验证]
+> **示例 49** [难度 ★★☆☆☆] [主题：补例：自包含可编译验证]
 ```cpp
 #include <iostream>
 
@@ -1313,7 +1313,7 @@ pr->g();           // 经 R* 调 g：thunk 先把 this 调回 &m，再进 M::g
 
 ### D4.4 可编译 demo：双基类指针值证明 this 调整 + tuple<EBO> sizeof
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：可编译 demo：双基类指针值证明 ]
+> **示例 50** [难度 ★★★★★] [主题：可编译 demo：双基类指针值证明 ]
 ```cpp
 #include <iostream>
 #include <tuple>
@@ -1465,7 +1465,7 @@ int main() {
 
 ### D5.3 可复现演示
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：可复现演示]
+> **示例 51** [难度 ★★☆☆☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 #include <cassert>

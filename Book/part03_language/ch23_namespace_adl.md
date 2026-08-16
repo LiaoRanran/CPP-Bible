@@ -49,7 +49,7 @@ ADL（参数依赖查找）是命名空间的"伴生怪物"：为了让 `operato
 
 本章回答四个互相缠绕的问题：**如何把名字分隔开（namespace）**、**如何让名字进入作用域（using）**、**为什么有些名字不需要 using 也能被找到（ADL）**、**如何用 namespace 管控 ABI（inline namespace）**。四者关系如下：
 
-> **示例 1** [难度 ★★★★☆] [主题：本章地图（先给结论，再击穿）]
+> **示例 1** [难度 ★☆☆☆☆] [主题：本章地图（先给结论，再击穿）]
 ```
 namespace ──隔离名字──▶ 避免全局污染 / ODR 冲突
    │
@@ -109,7 +109,7 @@ ADL (参数依赖查找) ──隐形查找──▶ 根据实参类型反查其
 
 **[标准]** 同一命名空间可在多个翻译单元（TU）中被"扩展"——所有同名命名空间的成员在链接时合并。这是 ODR（见 ch19）与命名空间的交汇点。
 
-> **示例 2** [难度 ★★★★☆] [主题：具名命名空间与扩展]
+> **示例 2** [难度 ★☆☆☆☆] [主题：具名命名空间与扩展]
 ```cpp
 // prog_01_named_ns_extension.cpp  —— 库场景：分文件扩展同一 namespace
 #include <cstdio>
@@ -129,7 +129,7 @@ int main() {
 
 ### 3.2 嵌套命名空间与 C++17 简写
 
-> **示例 3** [难度 ★★★★☆] [主题：嵌套命名空间与 C++17 简写]
+> **示例 3** [难度 ★☆☆☆☆] [主题：嵌套命名空间与 C++17 简写]
 ```cpp
 // prog_02_nested_ns.cpp  —— 引擎场景：分层 API
 #include <cstdio>
@@ -148,7 +148,7 @@ int main() {
 }
 ```
 
-> **示例 4** [难度 ★★★★☆] [主题：嵌套命名空间与 C++17 简写]
+> **示例 4** [难度 ★☆☆☆☆] [主题：嵌套命名空间与 C++17 简写]
 ```cpp
 // prog_03_nested_cpp17_shorthand.cpp  —— C++17 简写等价形式
 #include <cstdio>
@@ -166,7 +166,7 @@ int main() {
 
 **[经验]** 长命名空间（尤其嵌套深或带版本后缀）应用别名简化；但别名不改变链接名，仅是源码层便利。
 
-> **示例 5** [难度 ★★★★☆] [主题：命名空间别名（alias）]
+> **示例 5** [难度 ★☆☆☆☆] [主题：命名空间别名（alias）]
 ```cpp
 // prog_04_ns_alias.cpp  —— 跨平台场景：统一接口名
 #include <cstdio>
@@ -184,7 +184,7 @@ int main() {
 
 **[标准]** `[namespace.unnamed]/1`：匿名命名空间中的每个名字都隐含 `static` 语义，具有**内部链接**，只能在当前 TU 中可见，不会与其他 TU 的同名实体冲突（避免 ODR 违规）。
 
-> **示例 6** [难度 ★★★★☆] [主题：匿名（unnamed）命名空间]
+> **示例 6** [难度 ★☆☆☆☆] [主题：匿名（unnamed）命名空间]
 ```cpp
 // prog_05_anonymous_ns.cpp  —— 单 TU 私有实现
 #include <cstdio>
@@ -201,7 +201,7 @@ int main() {
 
 ### 3.5 内联（inline）命名空间——ABI 版本控制（详见 §⑨）
 
-> **示例 7** [难度 ★★★★☆] [主题：内联（inline）命名空间——AB]
+> **示例 7** [难度 ★☆☆☆☆] [主题：内联（inline）命名空间——AB]
 ```cpp
 // prog_06_inline_ns_intro.cpp  —— 库版本选择
 #include <cstdio>
@@ -238,7 +238,7 @@ int main() {
 
 ### 4.2 using 声明：精准引入
 
-> **示例 8** [难度 ★★★★☆] [主题：声明：精准引入]
+> **示例 8** [难度 ★☆☆☆☆] [主题：声明：精准引入]
 ```cpp
 // prog_07_using_decl.cpp  —— 工程场景：只引入需要的名字
 #include <cstdio>
@@ -258,7 +258,7 @@ int main() {
 
 **[标准]** using 指令引入的名字在遇到局部同名声明时，会被**局部声明隐藏（hide）**，但不会导致错误——这正是"静默污染"的来源。
 
-> **示例 9** [难度 ★★★★☆] [主题：指令的隐藏陷阱]
+> **示例 9** [难度 ★☆☆☆☆] [主题：指令的隐藏陷阱]
 ```cpp
 // prog_08_using_directive_hide.cpp  —— 危险演示：局部变量遮蔽
 #include <cstdio>
@@ -275,7 +275,7 @@ int main() {
 
 ### 4.4 名字冲突与二义性
 
-> **示例 10** [难度 ★★★★☆] [主题：名字冲突与二义性]
+> **示例 10** [难度 ★☆☆☆☆] [主题：名字冲突与二义性]
 ```cpp
 // prog_09_using_ambiguity.cpp  —— 两 namespace 同名 → 二义
 #include <cstdio>
@@ -307,7 +307,7 @@ int main() {
 
 ### 5.2 static 的局限
 
-> **示例 11** [难度 ★★★★☆] [主题：的局限]
+> **示例 11** [难度 ★★☆☆☆] [主题：的局限]
 ```cpp
 // prog_10_static_limits.cpp  —— static 不能用于模板类型参数包等
 #include <cstdio>
@@ -325,7 +325,7 @@ int main() {
 
 ### 5.3 等价的两种写法
 
-> **示例 12** [难度 ★★★★☆] [主题：等价的两种写法]
+> **示例 12** [难度 ★☆☆☆☆] [主题：等价的两种写法]
 ```cpp
 // prog_11_anon_vs_static.cpp  —— 等价对比
 #include <cstdio>
@@ -378,7 +378,7 @@ int main() {
 
 ### 6.3 算法伪代码（可读版）
 
-> **示例 13** [难度 ★★★★☆] [主题：算法伪代码（可读版）]
+> **示例 13** [难度 ★★☆☆☆] [主题：算法伪代码（可读版）]
 ```
 function associated_entities(T):
     result = {}
@@ -404,7 +404,7 @@ function associated_entities(T):
 
 ### 6.4 程序：直观感受 ADL
 
-> **示例 14** [难度 ★★★★☆] [主题：程序：直观感受 ADL]
+> **示例 14** [难度 ★☆☆☆☆] [主题：程序：直观感受 ADL]
 ```cpp
 // prog_12_adl_basic.cpp  —— ADL 找到用户命名空间的函数
 #include <cstdio>
@@ -420,7 +420,7 @@ int main() {
 }
 ```
 
-> **示例 15** [难度 ★★★★☆] [主题：程序：直观感受 ADL]
+> **示例 15** [难度 ★★☆☆☆] [主题：程序：直观感受 ADL]
 ```cpp
 // prog_13_adl_template_arg.cpp  —— 模板实参的命名空间也被纳入
 #include <cstdio>
@@ -445,7 +445,7 @@ int main() {
 
 下面用一个非平凡类型，逐条套用 §6.2 的算法，演示编译器在背后如何计算关联集合。
 
-> **示例 16** [难度 ★★★★☆] [主题：手算关联实体：完整走查]
+> **示例 16** [难度 ★★★☆☆] [主题：手算关联实体：完整走查]
 ```cpp
 // prog_13b_adl_walkthrough.cpp  —— 注释版：手算关联实体
 namespace lib {
@@ -478,7 +478,7 @@ namespace lib {
 
 **[标准]** 规则 B 明确：关联类含 `T` 的**所有基类**（含间接基类）。派生类实参会使基类所在命名空间的函数被找到。
 
-> **示例 17** [难度 ★★★★☆] [主题：程序：基类也进入关联类]
+> **示例 17** [难度 ★☆☆☆☆] [主题：程序：基类也进入关联类]
 ```cpp
 // prog_14b_adl_base_class.cpp  —— 基类命名空间被纳入关联集合
 #include <cstdio>
@@ -512,7 +512,7 @@ int main() {
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/bits/ostream.tcc`）
 > 第 309–311 行，`std` 命名空间内的自由函数模板 `operator<<`：
 
-> **示例 18** [难度 ★★★★☆] [主题：真实 libstdc++ 源码：<o]
+> **示例 18** [难度 ★★☆☆☆] [主题：真实 libstdc++ 源码：<o]
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, bits/ostream.tcc:309-311）=====
   template<typename _CharT, typename _Traits>
@@ -531,7 +531,7 @@ int main() {
 
 ### 7.3 完整可编译示例
 
-> **示例 19** [难度 ★★★★☆] [主题：完整可编译示例]
+> **示例 19** [难度 ★☆☆☆☆] [主题：完整可编译示例]
 ```cpp
 // prog_14_operator_stream_adl.cpp  —— 自定义类型流式输出
 #include <iostream>
@@ -561,7 +561,7 @@ int main() {
 
 **[标准]** 泛型代码（如 `std::vector`、`std::pair` 的 `swap` 成员）不应直接调用 `std::swap`，而应写：
 
-> **示例 20** [难度 ★★★★☆] [主题：惯用法与异常安全]
+> **示例 20** [难度 ★☆☆☆☆] [主题：惯用法与异常安全]
 ```cpp
 using std::swap;     // 把 std::swap 引入当前作用域
 swap(a, b);          // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则用它
@@ -574,7 +574,7 @@ swap(a, b);          // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则�
 > **[真实源码]** `std::swap` 主模板位于
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/bits/move.h`，第 225–238 行：
 
-> **示例 21** [难度 ★★★★☆] [主题：真实 libstdc++ 源码：st]
+> **示例 21** [难度 ★★★☆☆] [主题：真实 libstdc++ 源码：st]
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, bits/move.h:225-238）=====
   template<typename _Tp>
@@ -601,7 +601,7 @@ swap(a, b);          // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则�
 > **[真实源码]** 采用 `using std::swap;` 惯用法的库代码，例如
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/bits/stl_pair.h` 第 325–327 行：
 
-> **示例 22** [难度 ★★★★☆] [主题：真实 libstdc++ 源码：st]
+> **示例 22** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码：st]
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, bits/stl_pair.h:325-327）=====
       _GLIBCXX20_CONSTEXPR void
@@ -620,7 +620,7 @@ swap(a, b);          // 让 ADL 优先：若 a,b 类型在 N 中有 N::swap 则�
 
 ### 8.3 完整可编译示例：自定义高效 swap
 
-> **示例 23** [难度 ★★★★☆] [主题：完整可编译示例：自定义高效 swap]
+> **示例 23** [难度 ★★☆☆☆] [主题：完整可编译示例：自定义高效 swap]
 ```cpp
 // prog_15_swap_adl_idiom.cpp  —— 自定义 swap 被 ADL 优先选中
 #include <utility>
@@ -642,7 +642,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★★★★☆] [主题：完整可编译示例：自定义高效 swap]
+> **示例 24** [难度 ★☆☆☆☆] [主题：完整可编译示例：自定义高效 swap]
 ```cpp
 // prog_16_swap_fallback.cpp  —— 无可特化时回退 std::swap
 #include <utility>
@@ -671,7 +671,7 @@ int main() {
 > **[真实源码]** 本机探测
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/x86_64-w64-mingw32/bits/c++config.h`，第 371–375 行：
 
-> **示例 25** [难度 ★★★★☆] [主题：真实 libstdc++ 源码：cx]
+> **示例 25** [难度 ★★☆☆☆] [主题：真实 libstdc++ 源码：cx]
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, bits/c++config.h:371-375）=====
 #if _GLIBCXX_USE_CXX11_ABI
@@ -697,7 +697,7 @@ namespace __gnu_cxx
 
 ### 9.3 程序：直观看 inline namespace 默认可见
 
-> **示例 26** [难度 ★★★★☆] [主题：程序：直观看 inline name]
+> **示例 26** [难度 ★☆☆☆☆] [主题：程序：直观看 inline name]
 ```cpp
 // prog_17_inline_abi_demo.cpp  —— 自造双版本库
 #include <cstdio>
@@ -729,7 +729,7 @@ int main() {
 
 > **[实现-推断]** libc++ 与 MS STL 在本机未安装，无法 Read 真实头文件；上表基于公开实现知识。**严禁编造行号**——如需逐行引用，请在本机安装对应工具链后按 §⑱ 路线重新探测。
 
-> **示例 27** [难度 ★★★★☆] [主题：三套 STL 对比：inline n]
+> **示例 27** [难度 ★☆☆☆☆] [主题：三套 STL 对比：inline n]
 ```cpp
 // prog_18_three_stl_abi.cpp  —— 探测当前工具链的 inline 命名空间名（GCC）
 #include <string>
@@ -756,7 +756,7 @@ int main() {
 
 ### 11.2 名字冲突的经典坑
 
-> **示例 28** [难度 ★★★★☆] [主题：名字冲突的经典坑]
+> **示例 28** [难度 ★☆☆☆☆] [主题：名字冲突的经典坑]
 ```cpp
 // prog_19_adl_hide_by_name.cpp  —— 函数名冲突导致隐藏
 #include <cstdio>
@@ -780,7 +780,7 @@ int main() {
 
 **[标准]** ADL 可能把关联命名空间里"同名但语义不同"的函数拉入重载集，造成出乎意料的调用。
 
-> **示例 29** [难度 ★★★★☆] [主题：意外重载（ADL 拉入不想要的函数）]
+> **示例 29** [难度 ★★☆☆☆] [主题：意外重载（ADL 拉入不想要的函数）]
 ```cpp
 // prog_20_adl_surprise.cpp  —— ADL 拉入意外重载
 #include <cstdio>
@@ -807,7 +807,7 @@ int main() {
 
 **[实现]** GCC/Clang/MSVC 自 2019 起的版本均已实现 P0846。下面用等价的"构造临时对象调用成员函数模板"演示修复前后差异（编译期行为，附注释说明）：
 
-> **示例 30** [难度 ★★★★☆] [主题：显式调用语法修复 std::vect]
+> **示例 30** [难度 ★★☆☆☆] [主题：显式调用语法修复 std::vect]
 ```cpp
 // prog_21_p0846_member_template.cpp  —— 成员函数模板特化调用
 #include <cstdio>
@@ -842,7 +842,7 @@ int main() {
 > **[真实源码]** 本机探测
 > `/c/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/compare`，第 706–708 行（位于 `_Fp_fmt` 作用域内的 `consteval` 函数中，且用宏 `__cpp_using_enum` 守卫）：
 
-> **示例 31** [难度 ★★★★☆] [主题：真实 libstdc++ 源码：co]
+> **示例 31** [难度 ★☆☆☆☆] [主题：真实 libstdc++ 源码：co]
 ```cpp
 // ===== 真实源码摘录（libstdc++ GCC 15.3.0, compare:706-708）=====
 #ifdef __cpp_using_enum
@@ -855,7 +855,7 @@ int main() {
 
 ### 12.3 程序：using enum 简化
 
-> **示例 32** [难度 ★★★★☆] [主题：程序：using enum 简化]
+> **示例 32** [难度 ★☆☆☆☆] [主题：程序：using enum 简化]
 ```cpp
 // prog_22_using_enum.cpp  —— C++20 批量引入枚举值
 #include <cstdio>
@@ -878,7 +878,7 @@ int main() {
 }
 ```
 
-> **示例 33** [难度 ★★★★☆] [主题：程序：using enum 简化]
+> **示例 33** [难度 ★★☆☆☆] [主题：程序：using enum 简化]
 ```cpp
 // prog_23_using_enum_vs_old.cpp  —— C++17 等价写法（啰嗦）
 #include <cstdio>
@@ -913,7 +913,7 @@ int main() { std::printf("%s\n", old::n(old::A)); return 0; }
 
 ### 13.2 程序：模块替代头文件文本的命名空间隔离
 
-> **示例 34** [难度 ★★★★☆] [主题：程序：模块替代头文件文本的命名空间隔]
+> **示例 34** [难度 ★★☆☆☆] [主题：程序：模块替代头文件文本的命名空间隔]
 ```cpp
 // prog_24_module_demo.cpp  —— C++20 模块（需 -std=c++20 且编译器支持模块）
 // 真实模块需分文件编译（接口单元 math.cppm + 使用单元 main.cpp），结构示意：
@@ -943,7 +943,7 @@ int main() {
 
 ### 14.2 程序：违反 ODR 的命名空间陷阱
 
-> **示例 35** [难度 ★★★★☆] [主题：程序：违反 ODR 的命名空间陷阱]
+> **示例 35** [难度 ★☆☆☆☆] [主题：程序：违反 ODR 的命名空间陷阱]
 ```cpp
 // prog_25_odr_trap.cpp  —— 头文件中定义非 inline 函数于命名空间 → 多 TU 冲突
 // lib.h:
@@ -974,7 +974,7 @@ int main() { std::printf("%d\n", lib::f()); return 0; }
 
 **[经验]** 头文件里写 `using namespace std;` 会把 `std` 全部名字注入**每一个包含该头文件的 TU**，导致不可控的二义与隐藏。
 
-> **示例 36** [难度 ★★★★☆] [主题：using namespace 在头]
+> **示例 36** [难度 ★☆☆☆☆] [主题：using namespace 在头]
 ```cpp
 // prog_26_header_pollution_BAD.cpp  —— 反模式（错误示例）
 // ===== bad.h =====
@@ -1003,7 +1003,7 @@ int main() { std::printf("%d\n", safe::count()); return 0; }
 
 ### 15.3 程序：作用域受限的 using 指令（正确示例）
 
-> **示例 37** [难度 ★★★★☆] [主题：程序：作用域受限的 using 指令]
+> **示例 37** [难度 ★☆☆☆☆] [主题：程序：作用域受限的 using 指令]
 ```cpp
 // prog_27_scoped_using_OK.cpp  —— 正确：using 指令限制在函数内
 #include <cstdio>
@@ -1017,7 +1017,7 @@ int main() {
 }
 ```
 
-> **示例 38** [难度 ★★★★☆] [主题：程序：作用域受限的 using 指令]
+> **示例 38** [难度 ★☆☆☆☆] [主题：程序：作用域受限的 using 指令]
 ```cpp
 // prog_28_best_practice_adl.cpp  —— 正确：ADL 友好 + 精准 using
 #include <utility>
@@ -1060,7 +1060,7 @@ int main() {
 
 ### 17.2 基准程序（可量化对比）
 
-> **示例 39** [难度 ★★★★☆] [主题：基准程序（可量化对比）]
+> **示例 39** [难度 ★★☆☆☆] [主题：基准程序（可量化对比）]
 ```cpp
 // prog_29_bench_adl_swap.cpp  —— 计时对比（逻辑等价，证明零语义差异）
 #include <utility>
@@ -1087,7 +1087,7 @@ int main() {
 }
 ```
 
-> **示例 40** [难度 ★★★★☆] [主题：基准程序（可量化对比）]
+> **示例 40** [难度 ★★★☆☆] [主题：基准程序（可量化对比）]
 ```cpp
 // prog_30_bench_direct_swap.cpp  —— 直接调用（对比组，编译期等价）
 #include <cstdio>
@@ -1316,7 +1316,7 @@ C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀手工避免冲�
 
 <details><summary>答案与解析</summary>
 
-> **示例 41** [难度 ★★★★☆] [主题：练习 1（难度 ★★）]
+> **示例 41** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 namespace ns {
@@ -1341,7 +1341,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 42** [难度 ★★★★☆] [主题：练习 2（难度 ★★★）]
+> **示例 42** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1370,7 +1370,7 @@ int main() {
 
 <details><summary>答案与解析</summary>
 
-> **示例 43** [难度 ★★★★☆] [主题：练习 3（难度 ★★★★）]
+> **示例 43** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 namespace lib {
@@ -1406,7 +1406,7 @@ namespace geo { struct Point { int x, y; }; }
 ```
 
 **修复**：
-> **示例 44** [难度 ★★★★☆] [主题：演绎 1：自定义类型的流式输出——靠]
+> **示例 44** [难度 ★★☆☆☆] [主题：演绎 1：自定义类型的流式输出——靠]
 ```cpp
 #include <iostream>
 namespace geo {
@@ -1430,7 +1430,7 @@ Handle& operator=(Handle o) { delete p; p = o.p; o.p = nullptr; return *this; } 
 ```
 
 **修复**：
-> **示例 45** [难度 ★★★★☆] [主题：演绎 2：交换语义的异常安全——us]
+> **示例 45** [难度 ★★☆☆☆] [主题：演绎 2：交换语义的异常安全——us]
 ```cpp
 #include <iostream>
 #include <utility>
@@ -1557,7 +1557,7 @@ ADL 在编译期触发额外的候选集搜索（需检查所有实参的关联�
 
 ### D5.3 可复现 demo
 
-> **示例 46** [难度 ★★★★☆] [主题：可复现 demo]
+> **示例 46** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 

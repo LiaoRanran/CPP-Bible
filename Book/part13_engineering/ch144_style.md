@@ -133,7 +133,7 @@ void messy(int n){
 | 私有成员变量 | `trailing_underscore_` | `m_port`/`_port` |
 | 命名空间 | 全小写短名 | `MyNamespace` |
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：命名一致性（关联 ch145）]
+> **示例 6** [难度 ★★☆☆☆] [主题：命名一致性（关联 ch145）]
 ```cpp
 // ✅ 一致的命名：类型 PascalCase，变量/函数 snake_case，常量 k 前缀
 class ConnectionPool {
@@ -269,7 +269,7 @@ public:
 
 `constexpr` 把求值推进到编译期，`[实现·GCC15]` 看汇编证明它真的被折叠：
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：正确性]
+> **示例 17** [难度 ★★★☆☆] [主题：正确性]
 ```cpp
 constexpr int factorial(int n) { return n <= 1 ? 1 : n * factorial(n - 1); }
 static_assert(factorial(5) == 120);
@@ -286,7 +286,7 @@ _Z13use_factorialv:
 
 `mutable` 用于"逻辑 const、物理可变"的字段（如缓存、互斥量）：
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：正确性]
+> **示例 18** [难度 ★★☆☆☆] [主题：正确性]
 ```cpp
 #include <mutex>
 class Cache {
@@ -301,7 +301,7 @@ public:
 };
 ```
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：正确性]
+> **示例 19** [难度 ★★☆☆☆] [主题：正确性]
 ```cpp
 // ❌ 反例：能用 const/constexpr 却不用，丧失接口保证与优化机会
 int square(int x) { return x * x; }   // 应 constexpr
@@ -311,7 +311,7 @@ int square(int x) { return x * x; }   // 应 constexpr
 
 `auto` 不是"懒得写类型"，而是**消除冗余**、避免截断（如 `size()` 返回 `size_t` 赋给 `int` 的警告）。`[实现·GCC15]` 关键结论：**auto 在编译期完成类型推断，零运行时开销**，与手写类型生成相同机器码。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：使用规范]
+> **示例 20** [难度 ★★☆☆☆] [主题：使用规范]
 ```cpp
 #include <vector>
 long explicit_sum(const std::vector<long>& v) {
@@ -361,7 +361,7 @@ for (auto x : huge_vector) { sum += x; }   // 每个元素都被拷贝
 
 范围 for（`for (auto& x : container)`）比手写下标/迭代器更安全、更短，且 `[实现·GCC15]` 证实它编译为**与下标、迭代器循环完全相同的机器码**。
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：范围 for 优先]
+> **示例 23** [难度 ★★☆☆☆] [主题：范围 for 优先]
 ```cpp
 #include <vector>
 #include <cstddef>
@@ -386,7 +386,7 @@ void by_range(const std::vector<int>& v, long& acc) {
         jne     .L12
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：范围 for 优先]
+> **示例 24** [难度 ★★☆☆☆] [主题：范围 for 优先]
 ```cpp
 // ✅ 优先范围 for；需要下标时才回退索引
 for (auto& item : items) process(item);
@@ -400,7 +400,7 @@ for (auto it = v.begin(); it != v.end();) { /* 漏写 ++it → 死循环 */ }
 
 裸 `new`/`delete` 在现代 C++ 中应被智能指针取代。`[标准]` `std::unique_ptr` 表达独占所有权（不可拷贝、可移动），`std::shared_ptr` 表达共享所有权（引用计数）。
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：智能指针规范]
+> **示例 25** [难度 ★★☆☆☆] [主题：智能指针规范]
 ```cpp
 #include <memory>
 #include <utility>
@@ -490,7 +490,7 @@ public:
 };
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：异常规范（noexcept）]
+> **示例 31** [难度 ★★☆☆☆] [主题：异常规范（noexcept）]
 ```cpp
 // ❌ 反例：移动构造未标 noexcept，vector 重分配将退化成拷贝，拖累性能
 struct Bad { std::string s; Bad(Bad&&) = default; };  // 默认移动实际 noexcept，
@@ -542,7 +542,7 @@ sink(std::move(local_vec));    // ✅ 明确转让
 
 模板强大但易写出"天书"。`[标准]` C++20 概念（concepts）应优先于 SFINAE 表达约束。
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：模板与 SFINAE 可读性]
+> **示例 35** [难度 ★★☆☆☆] [主题：模板与 SFINAE 可读性]
 ```cpp
 // ❌ 反例：旧式 SFINAE，可读性差
 template <typename T, typename = std::void_t<>>
@@ -551,7 +551,7 @@ template <typename T>
 struct has_size<T, std::void_t<decltype(std::declval<T>().size())>> : std::true_type {};
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：模板与 SFINAE 可读性]
+> **示例 36** [难度 ★★★☆☆] [主题：模板与 SFINAE 可读性]
 ```cpp
 #include <iostream>
 #include <cstddef>
@@ -563,14 +563,14 @@ template <HasSize T>
 void report_size(const T& c) { std::cout << c.size(); }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：模板与 SFINAE 可读性]
+> **示例 37** [难度 ★★☆☆☆] [主题：模板与 SFINAE 可读性]
 ```cpp
 // 变参模板：用折叠表达式（C++17）替代递归，更简洁
 template <typename... Ts>
 auto sum_all(Ts... xs) { return (xs + ... + 0); }
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：模板与 SFINAE 可读性]
+> **示例 38** [难度 ★★☆☆☆] [主题：模板与 SFINAE 可读性]
 ```cpp
 // ❌ 反例：模板实参列表与实现纠缠，无文档化注释
 template<template<class,class>class C, class T, class A>
@@ -589,7 +589,7 @@ void f(C<T,A>&){}
 i = i + 1;   // 把 i 加 1
 ```
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：注释规范（Doxygen）]
+> **示例 40** [难度 ★★★★☆] [主题：注释规范（Doxygen）]
 ```cpp
 // ✅ 正例：解释为什么（重要不变量 / 陷阱）
 // 注意：此处必须先加锁再读 hits_，否则与 lookup() 的 const 路径竞争。
@@ -622,7 +622,7 @@ Connection* acquire(int timeout_ms);
 
 C++ 工程普遍遵循"声明在 `.h`、实现在 `.cpp`"的分离，带来编译防火墙与更短依赖链。
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：文件组织（声明/实现分离）]
+> **示例 43** [难度 ★★☆☆☆] [主题：文件组织（声明/实现分离）]
 ```cpp
 // connection.h —— 仅声明，可被多方包含
 #pragma once
@@ -691,7 +691,7 @@ if (auto [it, ok] = m.try_emplace("k", 1); ok) { /* ... */ }
 std::string_view sv = "zero-copy view";   // ✅ 避免临时 string
 ```
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：现代 C++ 特性取舍]
+> **示例 49** [难度 ★★☆☆☆] [主题：现代 C++ 特性取舍]
 ```cpp
 // C++20：concept、range、三路比较 <=>、modules（渐进引入）
 auto positive = [](std::integral auto x) { return x > 0; };
@@ -735,7 +735,7 @@ int platform_tag() { return static_cast<int>(family()[0]); }
 
 `[实现·GCC15]` 该文件在 Windows 与 POSIX 两种宏定义下均通过 `-Wall -Wextra` 洁净编译（`Examples/_ch144_platform*.o`）；**不定义任何平台宏时 `#error` 直接失败**，证明守卫有效、不会静默编译出错误目标。
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：平台相关代码隔离 [平台·Windo]
+> **示例 53** [难度 ★★☆☆☆] [主题：平台相关代码隔离 [平台·Windo]
 ```cpp
 #include <memory>
 // 更好的隔离：抽象接口 + 每平台一个 .cpp 实现（编译防火墙）
@@ -876,7 +876,7 @@ private:
 
 代码风格的本质是**一致性工程**。本章取证结论汇总：
 
-> **示例 57** [难度 ★☆☆☆☆] [主题：小结]
+> **示例 57** [难度 ★★★★☆] [主题：小结]
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ 风格门禁清单（落地即强制执行）                                │
@@ -943,7 +943,7 @@ ISO C++ 标准本身不规定代码风格，但 **C++ Core Guidelines**（由 Bj
 
 ## 附录 A：工业代码规范对比 [F: Industry / B: Principle]
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：附录 A：工业代码规范对比 [F: ]
+> **示例 58** [难度 ★★☆☆☆] [主题：附录 A：工业代码规范对比 [F: ]
 ```
 C++ 代码风格——四大工业规范对比:
 
@@ -1082,7 +1082,7 @@ int main() { std::cout << Config{}.v << '\n'; }
 
 <details><summary>答案与解析</summary>
 
-> **示例 62** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★★）]
+> **示例 62** [难度 ★★★☆☆] [主题：练习 3（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -1299,7 +1299,7 @@ flowchart TD
 
 ### D5.3 可复现 demo
 
-> **示例 63** [难度 ★☆☆☆☆] [主题：可复现 demo]
+> **示例 63** [难度 ★★★☆☆] [主题：可复现 demo]
 ```cpp
 #include <cstdio>
 #include <vector>

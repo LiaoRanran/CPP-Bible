@@ -92,7 +92,7 @@ libc++ 头文件按「公开头 + 内部细节」分层：`<string>`、`<vector>
 #include <__string>      // 实现头（双下划线）：不保证跨版本稳定
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：架构与模块化]
+> **示例 4** [难度 ★★☆☆☆] [主题：架构与模块化]
 ```cpp
 #include <vector>
 // ② 模块化：C++23 起用标准库模块替代海量 #include（Clang + libc++ 最成熟）
@@ -143,7 +143,7 @@ int main() {
 }
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：与 libc++abi 关系 [标准]
+> **示例 6** [难度 ★★☆☆☆] [主题：与 libc++abi 关系 [标准]
 ```cpp
 // ③ demangle 依赖 libc++abi 的 __cxa_demangle（上游参考）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxxabi/src/cxa_demangle.cpp
@@ -166,7 +166,7 @@ template <typename T> void show() {
 
 libc++ 的 `std::string` 用一个「标记联合（tagged union）」`__rep` 存放数据：短字符串走 `__short`（内联缓冲区 + 长度编码在高字节），长字符串走 `__long`（指针 + 大小 + 容量），还有一个 `__raw` 视图用于低层拷贝。判别靠一个标志位。**下面为上游源码定位（本机未装 libc++，标注上游参考）**。
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：[实现·libc++]源码剖析：ba]
+> **示例 7** [难度 ★★☆☆☆] [主题：[实现·libc++]源码剖析：ba]
 ```cpp
 #include <cstddef>
 // ④ 源码剖析（上游参考）：basic_string 的 repr 联合布局
@@ -205,7 +205,7 @@ int main() {
 
 最易踩坑的差异在**名字空间（inline namespace）** 与**特征值**。libstdc++ 新 ABI 把所有标准类型放进 `__cxx11` inline namespace，mangled 名形如 `_ZNSt7__cxx1112basic_string...`；libc++ 放进 `std::__1`（双下划线 + 数字 `1`）。二者符号不兼容，**混链会直接报未定义符号或 ODR 违规**。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：与 libstdc++ 差异 [标准]
+> **示例 9** [难度 ★★☆☆☆] [主题：与 libstdc++ 差异 [标准]
 ```cpp
 // ⑤ 同一个 std::string，在两个实现下 mangled 名不同（ABI 不兼容根因）
 // libstdc++ : _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE...  (__cxx11)
@@ -257,7 +257,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：异常 / RTTI [标准]]
+> **示例 12** [难度 ★★☆☆☆] [主题：异常 / RTTI [标准]]
 ```cpp
 // ⑥ RTTI：typeid / dynamic_cast 由 libc++abi 提供实现
 #include <typeinfo>
@@ -279,7 +279,7 @@ int main() {
 
 libc++ 完整实现 C++17 的 `<memory_resource>`：`std::pmr::memory_resource`、`std::pmr::polymorphic_allocator`、`std::pmr::monotonic_buffer_resource`、`std::pmr::unsynchronized_pool_resource` 等。容器可通过 `std::pmr::vector<T>`（别名模板）使用多态分配器，从而在「栈上缓冲区」零碎片分配，是 libc++ 性能优势的常见来源。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：内存资源 pmr [标准]]
+> **示例 13** [难度 ★★☆☆☆] [主题：内存资源 pmr [标准]]
 ```cpp
 // ⑦ monotonic_buffer_resource：在栈缓冲区上零系统调用分配
 #include <memory_resource>
@@ -295,7 +295,7 @@ int main() {
 }
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：内存资源 pmr [标准]]
+> **示例 14** [难度 ★★☆☆☆] [主题：内存资源 pmr [标准]]
 ```cpp
 // ⑦ 自定义 memory_resource（上游参考接口）
 // 文件：https://github.com/llvm/llvm-project/blob/main/libcxx/include/memory_resource
@@ -350,7 +350,7 @@ int main() {
 
 下面**本机真实编译 libstdc++ 示例**取证 SSO 容量，并对比 libc++ 的已知不同行为。取证命令与产物均来自 MinGW GCC 13.1.0。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：[实现·libc++]真实：本机 l]
+> **示例 17** [难度 ★★★★☆] [主题：[实现·libc++]真实：本机 l]
 ```cpp
 // ⑨ 真实示例（已落盘 Examples/_ch125_sso.cpp，本机 libstdc++ 编译运行）
 #include <string>
@@ -450,7 +450,7 @@ int sum(std::vector<int>& v) {
 }
 ```
 
-> **示例 22** [难度 ★☆☆☆☆] [主题：性能 [经验]]
+> **示例 22** [难度 ★★☆☆☆] [主题：性能 [经验]]
 ```cpp
 // ⑪ pmr 栈缓冲：热点内临时分配绕开 malloc 锁
 #include <memory_resource>
@@ -508,7 +508,7 @@ int main() {
 
 ## ⑬ 常见陷阱 [经验]
 
-> **示例 25** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 25** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬ 陷阱1：在 noexcept 函数里抛异常 -> 直接 std::terminate
 #include <stdexcept>
@@ -516,7 +516,7 @@ void bad() noexcept { throw std::runtime_error("x"); }  // 违例 -> terminate
 int main() { bad(); return 0; }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 26** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 #include <string>
 // ⑬ 陷阱2：混链 libc++ 与 libstdc++ -> 未定义符号 / ODR 违规
@@ -525,7 +525,7 @@ int main() { bad(); return 0; }
 // 正确：整个工程统一一种标准库
 ```
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：常见陷阱 [经验]]
+> **示例 27** [难度 ★★☆☆☆] [主题：常见陷阱 [经验]]
 ```cpp
 // ⑬ 陷阱3：调试模式只对开启的 TU 生效 -> 仅部分 TU 开 LIBCXX_DEBUG 会崩溃
 // 必须全工程一致开启/关闭（见 ⑩）
@@ -548,7 +548,7 @@ libc++ 与 Clang 是「原生搭档」：Clang 默认在 Apple/FreeBSD 上选 li
 #   g++ -std=c++23 -O2 app.cpp -o app_gcc && ./app_gcc
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：与 LLVM/Clang 集成 [平]
+> **示例 28** [难度 ★★☆☆☆] [主题：与 LLVM/Clang 集成 [平]
 ```cpp
 // ⑭ Clang + libc++ 启用 sanitizer 检查（典型输出）
 // 命令：clang++ -std=c++23 -stdlib=libc++ -fsanitize=address -g app.cpp -o app_asan
@@ -615,7 +615,7 @@ size_t count(char c, std::string_view sv) {
 int main() { return (int)count('a', std::string("banana")); }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 32** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑯ 用 pmr + 栈缓冲做函数内临时分配，减少碎片（libc++ 强项）
 #include <memory_resource>
@@ -661,7 +661,7 @@ int main() {
 }
 ```
 
-> **示例 35** [难度 ★☆☆☆☆] [主题：贡献 [经验]]
+> **示例 35** [难度 ★★☆☆☆] [主题：贡献 [经验]]
 ```cpp
 // ⑰ 修复补丁常见形态：改实现头 + 加测试（示意）
 // 修改 libcxx/include/__string 中某算法 -> 同步补 libcxx/test/... 回归用例
@@ -709,7 +709,7 @@ const char* which_stdlib() {
 int main() { std::printf("%s\n", which_stdlib()); return 0; }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：跨库对比（三套 STL） [标准]]
+> **示例 37** [难度 ★★☆☆☆] [主题：跨库对比（三套 STL） [标准]]
 ```cpp
 // ⑱ 三库都实现的 C++17 特性（语义一致，可安全跨库迁移）
 #include <optional>
@@ -737,7 +737,7 @@ int main() {
 #   grep -rn "basic_string" C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_string.h
 ```
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：调试 / 源码阅读 [经验]]
+> **示例 38** [难度 ★★☆☆☆] [主题：调试 / 源码阅读 [经验]]
 ```cpp
 // ⑲ 用 static_assert 验证实现行为（跨库可复现的小探针）
 #include <type_traits>
@@ -819,7 +819,7 @@ int main() {
 
 libc++ 长期以" aggressively constexpr 的 STL"著称——把更多算法/容器推进编译期。下面用纯标准库复刻这一思想：
 
-> **示例 40** [难度 ★☆☆☆☆] [主题：㉑.2 标准 C++ 等价实现：用 ]
+> **示例 40** [难度 ★★★☆☆] [主题：㉑.2 标准 C++ 等价实现：用 ]
 ```cpp
 // ㉑.2 用标准库复刻 libc++「编译期可求值的 STL」思想（本块可独立编译，GCC 15.3.0 验证）
 #include <vector>
@@ -943,7 +943,7 @@ libc++ 的长期标签是 **「最先完整实现新标准」**。它往往早�
 
 ## 附录 E：libc++工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：附录 E：libc++工业与底层 []
+> **示例 42** [难度 ★★☆☆☆] [主题：附录 E：libc++工业与底层 []
 ```
 libc++设计权衡:
 
@@ -1047,7 +1047,7 @@ int main() {
 
 利用 libc++ 的 `_LIBCPP_VERSION` 宏配合 `std::void_t` 做 SFINAE 探测；该宏在非 libc++ 环境下未定义，trait 自动退化为 `false_type`，代码在各标准库下都可编译：
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 44** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <type_traits>
 struct lib_identity {};
@@ -1076,7 +1076,7 @@ int main() { return 0; }
 
 libc++ 把实现放在 `inline namespace __1`（不同 ABI 代为 `__2` 等）中，`std::string` 的修饰名实际含 `__1::basic_string`，因此不同 ABI 版本的符号天然隔离、无法跨版本链接：
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 45** [难度 ★★☆☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <string>
 // libc++ 大致等价于：
@@ -1102,7 +1102,7 @@ int main() {
 
 C++20 起 `std::vector` 等容器已 constexpr 友好，可在常量表达式上下文构造并访问；若链接的 libc++ 过旧或编译选项未开启，下列 `static_assert` 会在编译期直接失败：
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 46** [难度 ★★★☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <vector>
 constexpr int make_constexpr_vector() {

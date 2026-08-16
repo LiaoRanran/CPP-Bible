@@ -91,7 +91,7 @@ flowchart TD
 
 **[实现]**　一个最小 RAII 包装器的骨架（下面所有示例的范式）：
 
-> **示例 1** [难度 ★☆☆☆☆] [主题：本质：资源获取即初始化，绑定对象生命]
+> **示例 1** [难度 ★★☆☆☆] [主题：本质：资源获取即初始化，绑定对象生命]
 ```cpp
 // [示例 1] 最小 RAII 包装器骨架：构造获取、析构释放
 #include <cstdio>
@@ -149,7 +149,7 @@ int main() {
 
 下面给出几类非内存资源的 RAII 封装示例（均可编译运行，仅做语义演示，平台相关调用以 MinGW/Win32 为准且标注 `[平台·x86-64]`）。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 2** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
 ```cpp
 // [示例 2] RAII 封装裸文件句柄 FILE*（与示例 1 等价，含写入）
 #include <cstdio>
@@ -180,7 +180,7 @@ int main() {
 }
 ```
 
-> **示例 3** [难度 ★☆☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 3** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
 ```cpp
 // [示例 3] RAII 封装互斥锁（Win32 CRITICAL_SECTION，[平台] MinGW/Win32）
 #include <windows.h>
@@ -215,7 +215,7 @@ int main() {
 }                          // 离开作用域自动解锁
 ```
 
-> **示例 4** [难度 ★☆☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 4** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
 ```cpp
 // [示例 4] RAII 封装 Win32 套接字（[平台] MinGW/Win32，需链接 -lws2_32）
 #include <winsock2.h>
@@ -245,7 +245,7 @@ public:
 };
 ```
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 5** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
 ```cpp
 // [示例 5] RAII 封装 GDI 位图句柄（[平台] Win32 GDI）
 #include <windows.h>
@@ -263,7 +263,7 @@ public:
 };
 ```
 
-> **示例 6** [难度 ★☆☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 6** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
 ```cpp
 // [示例 6] RAII 封装 SQLite 数据库连接（需链接 -lsqlite3，[平台] 可用）
 #include <sqlite3.h>
@@ -283,7 +283,7 @@ public:
 };
 ```
 
-> **示例 7** [难度 ★☆☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 7** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
 ```cpp
 // [示例 7] RAII 封装 POSIX 共享内存（[平台] POSIX，MinGW 下可改为 Win32）
 #include <sys/mman.h>
@@ -317,7 +317,7 @@ public:
 };
 ```
 
-> **示例 8** [难度 ★☆☆☆☆] [主题：资源类型全景：不只有内存]
+> **示例 8** [难度 ★★☆☆☆] [主题：资源类型全景：不只有内存]
 ```cpp
 // [示例 8] RAII 封装 Windows 内存映射文件 MMIO（[平台] Win32）
 #include <windows.h>
@@ -361,7 +361,7 @@ public:
 
 **[经验]**　关键认知：**RAII 保证的是「异常安全（exception safe）」，不是「不抛异常」。异常照样抛、照样传，但资源一定被清掉。** 对比非 RAII 的「手动释放 + goto cleanup」范式，一旦中间有异常（或提前 `return`），清理路径极易被跳过。
 
-> **示例 9** [难度 ★☆☆☆☆] [主题：与栈展开的耦合：异常安全的基石]
+> **示例 9** [难度 ★★☆☆☆] [主题：与栈展开的耦合：异常安全的基石]
 ```cpp
 // [示例 9] 非 RAII 的 C 风格 goto cleanup：易漏释放（异常时更糟）
 #include <cstdio>
@@ -381,7 +381,7 @@ int legacy_open_three_files() {
 // 问题：函数有多个出口，每个出口都要手写对应清理；若业务里抛异常，连 goto 都救不了。
 ```
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：与栈展开的耦合：异常安全的基石]
+> **示例 10** [难度 ★★☆☆☆] [主题：与栈展开的耦合：异常安全的基石]
 ```cpp
 // [示例 10] RAII 改写：无论正常返回还是异常，资源必释放
 #include <cstdio>
@@ -420,7 +420,7 @@ void raii_open_three_files() {
 
 **[经验]**　经典陷阱：**在构造函数体内用裸指针 `new` 后又 `new` 一次失败，第一次 `new` 的指针因尚未交给任何 RAII 成员而泄漏。** 解决之道是「成员即 RAII」：让每个资源从构造起就由一个 RAII 成员持有，而不是在 ctor 体内裸分配。
 
-> **示例 11** [难度 ★☆☆☆☆] [主题：构造函数失败的处理：已构子对象自动析]
+> **示例 11** [难度 ★★☆☆☆] [主题：构造函数失败的处理：已构子对象自动析]
 ```cpp
 // [示例 11] 构造失败：已构 RAII 子对象自动析构，无泄漏
 #include <cstdio>
@@ -453,7 +453,7 @@ int main() {
 }
 ```
 
-> **示例 12** [难度 ★☆☆☆☆] [主题：构造函数失败的处理：已构子对象自动析]
+> **示例 12** [难度 ★★☆☆☆] [主题：构造函数失败的处理：已构子对象自动析]
 ```cpp
 // [示例 12] 反例：ctor 体内裸 new 导致泄漏
 #include <cstdio>
@@ -471,7 +471,7 @@ struct Leaky {
 };
 ```
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：构造函数失败的处理：已构子对象自动析]
+> **示例 13** [难度 ★★☆☆☆] [主题：构造函数失败的处理：已构子对象自动析]
 ```cpp
 // [示例 13] 修复：用 unique_ptr 作为成员（见 ch41），ctor 失败也不泄漏
 #include <memory>
@@ -498,7 +498,7 @@ struct Safe {
 
 **[经验]**　这就是「双重异常（double exception）」死局：已有异常在飞，析构又抛异常，C++ 无法决定先处理哪个，只能 `terminate`。所以：**析构函数永远不能让异常逃出。**
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：析构函数必须 noexcept：双重]
+> **示例 14** [难度 ★★☆☆☆] [主题：析构函数必须 noexcept：双重]
 ```cpp
 // [示例 14] 析构 noexcept(false) + 栈展开中抛异常 → std::terminate（演示）
 #include <stdexcept>
@@ -527,7 +527,7 @@ int main() {
 // 运行结果：程序以 std::terminate 终止（ABRT），输出 reachable 不成立。
 ```
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：析构函数必须 noexcept：双重]
+> **示例 15** [难度 ★★☆☆☆] [主题：析构函数必须 noexcept：双重]
 ```cpp
 // [示例 15] 正确做法：析构吞掉内部异常（或 noexcept），绝不让异常逃出
 #include <stdexcept>
@@ -569,7 +569,7 @@ int main() {
 
 **[经验]**　最经典的 bug：`class String { char* data; ~String(){ delete[] data; } };` 没有自定义拷贝，于是 `String a = ...; String b = a;` 浅拷贝，`b.data == a.data`，离开作用域两个析构都 `delete[]` 同一指针 → double free → UB（通常崩溃）。
 
-> **示例 16** [难度 ★☆☆☆☆] [主题：浅拷贝灾难与 double free]
+> **示例 16** [难度 ★★☆☆☆] [主题：浅拷贝灾难与 double free]
 ```cpp
 // [示例 16] Rule of Three 缺失：double free 崩溃演示（不可取，仅演示灾难）
 #include <cstring>
@@ -602,7 +602,7 @@ int main() {
 
 **[标准]**　Rule of Three 修复：显式定义拷贝构造（深拷贝）+ 拷贝赋值（深拷贝 + 自赋值检查 + 释放旧资源）+ 析构。
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：浅拷贝灾难与 double free]
+> **示例 17** [难度 ★★☆☆☆] [主题：浅拷贝灾难与 double free]
 ```cpp
 // [示例 17] Rule of Three 完整修复：深拷贝
 #include <cstring>
@@ -659,7 +659,7 @@ int main() {
 
 **[经验]**　为何有了自定义析构/拷贝就必须考虑移动？因为**若你不定义移动构造/移动赋值，编译器不会生成它们**（当存在用户定义析构/拷贝/赋值中任一个时，移动操作被定义为 `delete`d），于是所有「移动语境」（如 `std::vector` 扩容、`return` 局部对象、`std::move`）**退化为拷贝**——对持有堆内存的类，这意味着昂贵的深拷贝，性能灾难。
 
-> **示例 18** [难度 ★☆☆☆☆] [主题：移动语义与性能]
+> **示例 18** [难度 ★★☆☆☆] [主题：移动语义与性能]
 ```cpp
 // [示例 18] Rule of Five 完整实现（移动窃取资源并置源为空）
 #include <cstring>
@@ -736,7 +736,7 @@ int main() {
 
 **[实现]**　这些「自带正确语义」的类型本身遵循 Rule of Five：`std::unique_ptr` 不可拷贝、可移动（见第 16 节源码）；`std::shared_ptr` 用引用计数自动管理；`std::vector`/`std::string` 自带深拷贝与移动。你的类只要成员是它们，就自动获得正确语义。
 
-> **示例 19** [难度 ★☆☆☆☆] [主题：现代 C++ 的首选]
+> **示例 19** [难度 ★★☆☆☆] [主题：现代 C++ 的首选]
 ```cpp
 // [示例 19] Rule of Zero：用 unique_ptr 管理资源，类不写任何五大函数
 #include <memory>
@@ -768,7 +768,7 @@ int main() {
 }
 ```
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：现代 C++ 的首选]
+> **示例 20** [难度 ★★☆☆☆] [主题：现代 C++ 的首选]
 ```cpp
 // [示例 20] Rule of Zero：用 shared_ptr 共享资源
 #include <memory>
@@ -785,7 +785,7 @@ int main() {
 }
 ```
 
-> **示例 21** [难度 ★☆☆☆☆] [主题：现代 C++ 的首选]
+> **示例 21** [难度 ★★☆☆☆] [主题：现代 C++ 的首选]
 ```cpp
 // [示例 21] Rule of Zero 改造：把示例 16 的 BadString 改成零规则
 #include <string>
@@ -830,7 +830,7 @@ unique_ptr(const unique_ptr&) = delete;
 unique_ptr& operator=(const unique_ptr&) = delete;
 ```
 
-> **示例 23** [难度 ★☆☆☆☆] [主题：= default 与 = dele]
+> **示例 23** [难度 ★★☆☆☆] [主题：= default 与 = dele]
 ```cpp
 // [示例 22] =default 让编译器生成正确的移动（当存在自定义析构时）
 #include <cstdio>
@@ -855,7 +855,7 @@ int main() {
 }
 ```
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：= default 与 = dele]
+> **示例 24** [难度 ★★☆☆☆] [主题：= default 与 = dele]
 ```cpp
 // [示例 23] =delete 禁止拷贝，实现独占语义
 #include <cstdio>
@@ -906,7 +906,7 @@ int main() {
 }
 ```
 
-> **示例 26** [难度 ★☆☆☆☆] [主题：移动后状态：valid but un]
+> **示例 26** [难度 ★★☆☆☆] [主题：移动后状态：valid but un]
 ```cpp
 // [示例 25] 误用移后对象：经典 bug
 #include <string>
@@ -940,7 +940,7 @@ int main() { buggy(); }
 
 这里仅做预告与自定义 deleter 演示，详细语义、原子性、控制块、别名构造留待 `ch41`。
 
-> **示例 27** [难度 ★☆☆☆☆] [主题：智能指针预告：uniqueptr /]
+> **示例 27** [难度 ★★☆☆☆] [主题：智能指针预告：uniqueptr /]
 ```cpp
 // [示例 26] 自定义 deleter（带状态的 deleter 对象）
 #include <memory>
@@ -961,7 +961,7 @@ int main() {
 }
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：智能指针预告：uniqueptr /]
+> **示例 28** [难度 ★★☆☆☆] [主题：智能指针预告：uniqueptr /]
 ```cpp
 // [示例 27] 自定义 deleter（lambda / 函数指针）
 #include <memory>
@@ -976,7 +976,7 @@ int main() {
 }
 ```
 
-> **示例 29** [难度 ★☆☆☆☆] [主题：智能指针预告：uniqueptr /]
+> **示例 29** [难度 ★★☆☆☆] [主题：智能指针预告：uniqueptr /]
 ```cpp
 // [示例 28] unique_ptr 管理 FILE*（预告，完整见 ch41）
 #include <memory>
@@ -1001,7 +1001,7 @@ int main() {
 - `std::scoped_lock<Mutexes...>`（C++17）：可同时锁多个互斥量并**避免死锁**（内部用 `std::lock` 算法）。
 - `std::unique_lock<Mutex>`：更灵活，可延迟加锁、手动 `lock()`/`unlock()`、可移动、可配合条件变量。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：锁：lockguard / scop]
+> **示例 30** [难度 ★★☆☆☆] [主题：锁：lockguard / scop]
 ```cpp
 // [示例 29] lock_guard 基本使用
 #include <mutex>
@@ -1022,7 +1022,7 @@ int main() {
 }
 ```
 
-> **示例 31** [难度 ★☆☆☆☆] [主题：锁：lockguard / scop]
+> **示例 31** [难度 ★★☆☆☆] [主题：锁：lockguard / scop]
 ```cpp
 // [示例 30] scoped_lock 双锁防死锁（C++17）
 #include <mutex>
@@ -1039,7 +1039,7 @@ void transfer() {
 int main() { transfer(); }
 ```
 
-> **示例 32** [难度 ★☆☆☆☆] [主题：锁：lockguard / scop]
+> **示例 32** [难度 ★★☆☆☆] [主题：锁：lockguard / scop]
 ```cpp
 // [示例 31] unique_lock 灵活锁 + 条件变量配合（演示延迟加锁）
 #include <mutex>
@@ -1070,7 +1070,7 @@ int main() {
 - **ScopeSuccess**：仅正常离开时执行。
 - **ScopeFail**：仅因异常离开时执行。
 
-> **示例 33** [难度 ★☆☆☆☆] [主题：惯用法]
+> **示例 33** [难度 ★★★★☆] [主题：惯用法]
 ```cpp
 // [示例 32] 自实现 ScopeExit（RAII + 可调用对象）
 #include <utility>
@@ -1187,7 +1187,7 @@ int main() {
 }
 ```
 
-> **示例 37** [难度 ★☆☆☆☆] [主题：标准库 RAII 类型一览]
+> **示例 37** [难度 ★★☆☆☆] [主题：标准库 RAII 类型一览]
 ```cpp
 // [示例 36] 多个标准 RAII 类型组合（vector + ofstream + lock_guard）
 #include <vector>
@@ -1220,7 +1220,7 @@ int main() {
 
 **析构函数**（`bits/unique_ptr.h:394-406`）：
 
-> **示例 38** [难度 ★☆☆☆☆] [主题：uniqueptr 析构与移动]
+> **示例 38** [难度 ★★★☆☆] [主题：uniqueptr 析构与移动]
 ```cpp
 #include <utility>
 // bits/unique_ptr.h:394-406
@@ -1254,7 +1254,7 @@ int main() {
       /// Move constructor.
       unique_ptr(unique_ptr&&) = default;
 ```
-> **示例 40** [难度 ★☆☆☆☆] [主题：uniqueptr 析构与移动]
+> **示例 40** [难度 ★★☆☆☆] [主题：uniqueptr 析构与移动]
 ```cpp
 #include <utility>
 // bits/unique_ptr.h:380-382  —— 转换移动构造（从不同 deleters 的 unique_ptr 移动）
@@ -1262,7 +1262,7 @@ int main() {
 	: _M_t(__u.release(), std::forward<_Ep>(__u.get_deleter()))
 	{ }
 ```
-> **示例 41** [难度 ★☆☆☆☆] [主题：uniqueptr 析构与移动]
+> **示例 41** [难度 ★★☆☆☆] [主题：uniqueptr 析构与移动]
 ```cpp
 #include <utility>
 // bits/unique_ptr.h:183-186  —— 内部 __uniq_ptr_impl 的移动构造（真正的"窃取"）
@@ -1291,7 +1291,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 **default_delete**（`bits/unique_ptr.h:74-101`）：
 
-> **示例 43** [难度 ★☆☆☆☆] [主题：uniqueptr 析构与移动]
+> **示例 43** [难度 ★★★★☆] [主题：uniqueptr 析构与移动]
 ```cpp
 // bits/unique_ptr.h:74-101
   template<typename _Tp>
@@ -1314,7 +1314,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 ### 16.2 `lock_guard` 构造/析构（bits/std_mutex.h）
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：lockguard 构造/析构]
+> **示例 44** [难度 ★★★☆☆] [主题：lockguard 构造/析构]
 ```cpp
 // bits/std_mutex.h:242-262
   template<typename _Mutex>
@@ -1352,7 +1352,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 控制块基类 `_Sp_counted_base`（引用计数核心，`bits/shared_ptr_base.h:125-238`）：
 
-> **示例 45** [难度 ★☆☆☆☆] [主题：sharedptr 引用计数管理]
+> **示例 45** [难度 ★★☆☆☆] [主题：sharedptr 引用计数管理]
 ```cpp
 // bits/shared_ptr_base.h:125-152（节选）
     class _Sp_counted_base
@@ -1379,7 +1379,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 **原子释放路径**（`bits/shared_ptr_base.h:315-344`，原子策略 `_S_atomic` 节选）：
 
-> **示例 46** [难度 ★☆☆☆☆] [主题：sharedptr 引用计数管理]
+> **示例 46** [难度 ★★★☆☆] [主题：sharedptr 引用计数管理]
 ```cpp
 // bits/shared_ptr_base.h:315-344（节选，省略双字优化分支）
   template<>
@@ -1470,7 +1470,7 @@ unique_ptr& operator=(const unique_ptr&) = delete;
 
 ### 18.1 RAII 锁 vs 手动 lock/unlock
 
-> **示例 49** [难度 ★☆☆☆☆] [主题：锁 vs 手动 lock/unloc]
+> **示例 49** [难度 ★★☆☆☆] [主题：锁 vs 手动 lock/unloc]
 ```cpp
 // [示例 37] microbenchmark：lock_guard vs 手动 unlock（计时对比）
 // 编译：g++ -O2 -std=c++17 bench_lock.cpp -o bench_lock -pthread
@@ -1512,7 +1512,7 @@ int main() {
 
 ### 18.2 unique_ptr vs 手动 new/delete
 
-> **示例 50** [难度 ★☆☆☆☆] [主题：ptr vs 手动 new/dele]
+> **示例 50** [难度 ★★☆☆☆] [主题：ptr vs 手动 new/dele]
 ```cpp
 // [示例 38] microbenchmark：unique_ptr 管理 vs 手动 new/delete
 // 编译：g++ -O2 -std=c++17 bench_ptr.cpp -o bench_ptr
@@ -1549,7 +1549,7 @@ int main() {
 
 ### 18.3 Rule of Zero 类 vs 手写五大
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：类 vs 手写五大]
+> **示例 51** [难度 ★★☆☆☆] [主题：类 vs 手写五大]
 ```cpp
 // [示例 39] microbenchmark：Rule of Zero（vector 成员） vs 手写五大（裸指针）
 // 编译：g++ -O2 -std=c++17 bench_zero.cpp -o bench_zero
@@ -1770,7 +1770,7 @@ with open("p.log", "w") as f:     # 块结束自动 f.__exit__ → close
 
 ## 附录 F：RAII工业与面试
 
-> **示例 52** [难度 ★☆☆☆☆] [主题：附录 F：RAII工业与面试]
+> **示例 52** [难度 ★★☆☆☆] [主题：附录 F：RAII工业与面试]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1793,7 +1793,7 @@ int main(){auto p=std::make_unique<int>(42);std::ifstream f("test.txt");std::cou
 
 通过stack unwind自动释放: unique_ptr, lock_guard, jthread, ifstream。
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：附录 H：RAII面试]
+> **示例 53** [难度 ★★☆☆☆] [主题：附录 H：RAII面试]
 ```cpp
 #include <iostream>
 #include <memory>
@@ -1908,7 +1908,7 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 <details><summary>答案与解析</summary>
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：练习 1（难度 ★★）]
+> **示例 54** [难度 ★★☆☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <cstdio>
 #include <stdexcept>
@@ -1938,7 +1938,7 @@ void use(){
 
 <details><summary>答案与解析</summary>
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
+> **示例 55** [难度 ★★★☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <utility>
 template <class F>
@@ -2032,7 +2032,7 @@ int main(){
 
 **步骤 3：ScopeGuard 处理非资源清理**
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 用 RAII 把]
+> **示例 59** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 用 RAII 把]
 ```cpp
 #include <mutex>
 std::mutex m;
@@ -2048,7 +2048,7 @@ int main(){
 
 **步骤 4：借 unique_ptr 自定义 deleter 复用标准设施**
 
-> **示例 60** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 用 RAII 把]
+> **示例 60** [难度 ★★★☆☆] [主题：附录：用法演绎 — 用 RAII 把]
 ```cpp
 #include <cstdio>
 #include <memory>
@@ -2165,7 +2165,7 @@ int main(){
 
 ### D4.8 编译验证
 
-> **示例 61** [难度 ★☆☆☆☆] [主题：编译验证]
+> **示例 61** [难度 ★★☆☆☆] [主题：编译验证]
 ```cpp
 #include <memory>
 #include <iostream>
@@ -2433,7 +2433,7 @@ BigData 为 1KB 缓冲（5 个 int 字段 + 1KB `std::vector<char>`），N=500'0
 
 ### D5.3 可复现演示
 
-> **示例 62** [难度 ★☆☆☆☆] [主题：可复现演示]
+> **示例 62** [难度 ★★☆☆☆] [主题：可复现演示]
 ```cpp
 #include <iostream>
 #include <vector>

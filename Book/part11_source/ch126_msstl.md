@@ -60,7 +60,7 @@ int main() {
 
 MSVC 编译管线分前端 `C1`（C++ 前端，产出 CIL）、后端 `C2`（代码生成，产出 OBJ），标准库在**前端之后的语义期**被包含解析——与 GCC 的 `cc1plus` / `cc1` 分工类似。MS STL 头经 `C1` 预处理+语义分析，模板实例化发生在 `C2` 之前的 IL 阶段。
 
-> **示例 2** [难度 ★☆☆☆☆] [主题：架构]
+> **示例 2** [难度 ★★☆☆☆] [主题：架构]
 ```cpp
 // ② 概念示意：编译器如何"看到"标准库（MSVC 管线）
 // C1 (前端) -> 解析 #include <vector> 的模板定义
@@ -114,7 +114,7 @@ int use_stl() {
 
 下面三处为**上游参考**——行号取自 `microsoft/STL` main 分支，随提交浮动，仅指示位置。
 
-> **示例 5** [难度 ★☆☆☆☆] [主题：源码剖析]
+> **示例 5** [难度 ★★★☆☆] [主题：源码剖析]
 ```cpp
 // ④ 文件：https://github.com/microsoft/STL/blob/main/stl/inc/vector
 // 行号：36
@@ -176,7 +176,7 @@ int m(int a, int b) { return std::max(a, b); }  // 用 std::max 而非宏
 
 MSVC 的 C++ 异常在 Windows 上由 **SEH（Structured Exception Handling）** 承载：栈展开经 `vcruntime` 的 `__CxxFrameHandler*`，由编译器为每个 `try` 生成 `FuncInfo` 描述。MinGW-w64（seh 变体）用同一套 Windows SEH 机制，故可在本机用 g++ 真实演示 C++ 异常→SEH 的映射。
 
-> **示例 10** [难度 ★☆☆☆☆] [主题：异常与 SEH [实现·MS STL]
+> **示例 10** [难度 ★★★★☆] [主题：异常与 SEH [实现·MS STL]
 ```cpp
 // ⑥ 用 C++ 异常演示 Windows SEH 机制（真实编译取证见下方汇编）
 #include <stdexcept>
@@ -240,7 +240,7 @@ int p() {
 
 MS STL 的 `std::string` 采用 **SSO（Small String Optimization）**：短串存对象内建缓冲，避免堆分配。`basic_string` 用 union `_Bx` 在「内置缓冲 `_Buf`」与「堆指针 `_Ptr`」间二选一（见 ④ `xstring:1860`）。本机用 g++ 编译 `std::string` 可演示同构的 SSO 阈值判定（`15`）。
 
-> **示例 13** [难度 ★☆☆☆☆] [主题：字符串实现策略 [实现·MS STL]
+> **示例 13** [难度 ★★★☆☆] [主题：字符串实现策略 [实现·MS STL]
 ```cpp
 // ⑧ SSO：短串不触发堆分配（本机 g++/libstdc++ 演示同一机制）
 #include <string>
@@ -261,7 +261,7 @@ int main() {
 ; MS STL 同样以 15 字节(x86-64, char) 为 SSO 阈值（见 ④ xstring union）
 ```
 
-> **示例 14** [难度 ★☆☆☆☆] [主题：字符串实现策略 [实现·MS STL]
+> **示例 14** [难度 ★★☆☆☆] [主题：字符串实现策略 [实现·MS STL]
 ```cpp
 // ⑧ SSO 容量探测（实现相关，演示短串存对象内）
 #include <string>
@@ -307,7 +307,7 @@ MSVC 默认开启 C++14 行为，需显式 `/std:c++20` 或 `/std:c++latest` 才
 
 Visual Studio 安装 "C++ 桌面" 工作负载时附带 MS STL 源码（`VC\Tools\MSVC\<ver>\crt\src` 与 include），可在异常/断点处单步进入 `vector`/`string` 模板实现。无需额外符号服务器即可看标准库内部。
 
-> **示例 15** [难度 ★☆☆☆☆] [主题：调试（Visual Studio） ]
+> **示例 15** [难度 ★★★☆☆] [主题：调试（Visual Studio） ]
 ```cpp
 // ⑩ 在 VS 中单步进入 vector::at 的越界检查
 #include <vector>
@@ -344,7 +344,7 @@ int main() {
 }
 ```
 
-> **示例 17** [难度 ★☆☆☆☆] [主题：性能 [经验]]
+> **示例 17** [难度 ★★☆☆☆] [主题：性能 [经验]]
 ```cpp
 // ⑪ noexcept 移动让扩容走移动而非拷贝（basic_string 移动 noexcept）
 #include <vector>
@@ -390,7 +390,7 @@ int main() {
 
 最致命陷阱：**跨越 DLL 边界传递 `std::string`/`std::vector` 等 STL 对象**，若两侧用不同 MS STL 版本/不同 `_MSC_VER`/不同 CRT（/MD 与 /MT 混用），会因「分配器不同」「内存布局不同」在释放侧崩溃（`_CrtIsValidHeapPointer` 失败）。
 
-> **示例 20** [难度 ★☆☆☆☆] [主题：常见陷阱]
+> **示例 20** [难度 ★★☆☆☆] [主题：常见陷阱]
 ```cpp
 // ⑬ 危险：DLL A 用 /MD，EXE 用 /MT（或反之），跨边界传 string
 // DLL:  __declspec(dllexport) std::string make(); // 在 DLL 堆分配
@@ -447,7 +447,7 @@ int main() {
 
 跨模块/跨库时，把标准库类型留在模块内部，边界用 C ABI（POD/句柄/字符串）。整工程统一 MSVC 版本、`/MD`、标准等级。第三方库用同工具链源码重编，避免二进制 STL 混链。
 
-> **示例 24** [难度 ★☆☆☆☆] [主题：最佳实践 [经验]]
+> **示例 24** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
 // ⑮ 边界用不透明句柄，MS STL 对象封装在 .cpp 内
 #include <vector>
@@ -515,7 +515,7 @@ int cross(const std::vector<int>& v) {
 #   [PASS] conformance.total
 ```
 
-> **示例 28** [难度 ★☆☆☆☆] [主题：贡献 [平台·Windows]]
+> **示例 28** [难度 ★★☆☆☆] [主题：贡献 [平台·Windows]]
 ```cpp
 // ⑰ 一个可提交的修复示例骨架（在 stl/inc/vector 增加注释/约束）
 #include <vector>
@@ -561,7 +561,7 @@ int demo() {
 
 在 Windows 上读 MS STL 源码最顺手：VS 安装时自带 `VC\Tools\MSVC\<ver>\include`，直接 `Ctrl+点击` 跳进 `vector`。也可在 GitHub 网页读 `microsoft/STL` 的 `stl/inc`。非 Windows 上可用 VS Code + 远程仓库只读浏览。
 
-> **示例 30** [难度 ★☆☆☆☆] [主题：调试/源码阅读 [平台·Window]
+> **示例 30** [难度 ★★☆☆☆] [主题：调试/源码阅读 [平台·Window]
 ```cpp
 // ⑲ 阅读入口：从顶层头追到实现（与 ③ 同思路）
 #include <vector>
@@ -657,7 +657,7 @@ std::wstring to_w(const std::string& s) {
 int main() { std::wstring w = to_w("hi"); return (int)w.size(); }
 ```
 
-> **示例 34** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 34** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
 ```cpp
 // S4 SSO 短串不分配（对应 ⑧）
 #include <string>
@@ -684,7 +684,7 @@ int main() {
 }
 ```
 
-> **示例 36** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 36** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
 ```cpp
 // S6 noexcept 移动静态断言（对应 ⑪）
 #include <string>
@@ -733,7 +733,7 @@ int cross(const std::vector<int>& v) {
 }
 ```
 
-> **示例 42** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 42** [难度 ★★★☆☆] [主题：补充：完整可编译示例]
 ```cpp
 // S12 自定义分配器接入（对应 ⑫，演示 allocator 可替换）
 #include <vector>
@@ -754,7 +754,7 @@ int main() { std::vector<int, my_alloc<int>> v{1,2,3}; return (int)v.size(); }
 int main() { try { throw std::runtime_error("x"); } catch (const std::exception& e) { std::printf("%s\n", e.what()); } return 0; }
 ```
 
-> **示例 44** [难度 ★☆☆☆☆] [主题：补充：完整可编译示例]
+> **示例 44** [难度 ★★☆☆☆] [主题：补充：完整可编译示例]
 ```cpp
 // S14 vector 遍历被内联（对应 ⑧，真实汇编见 Examples/_ch126_vector.asm）
 #include <vector>
@@ -838,7 +838,7 @@ int read_entry() { std::vector<std::string> v{"x"}; return (int)v.size(); }
 
 MS STL 的一大特色是 Debug 构建下默认开启**迭代器越界检查**（`_ITERATOR_DEBUG_LEVEL`），能抓出悬空/越界。下面用纯标准库复刻这种"访问前先校验"的精神：
 
-> **示例 51** [难度 ★☆☆☆☆] [主题：㉑.2 标准 C++ 等价实现：用"]
+> **示例 51** [难度 ★★★☆☆] [主题：㉑.2 标准 C++ 等价实现：用"]
 ```cpp
 // ㉑.2 用标准库复刻 MSSTL「调试期迭代器越界检查」的精神（本块可独立编译，GCC 15.3.0 验证）
 #include <vector>
@@ -968,7 +968,7 @@ MS STL 的覆盖由「Windows 生态」定义，凡用 MSVC 编译的本地代�
 
 ## 附录 A：MS STL 工业背景 [F: Industry / B: Principle]
 
-> **示例 53** [难度 ★☆☆☆☆] [主题：附录 A：MS STL 工业背景 []
+> **示例 53** [难度 ★★☆☆☆] [主题：附录 A：MS STL 工业背景 []
 ```
 Microsoft STL 的关键设计决策:
 
@@ -993,7 +993,7 @@ Microsoft STL 的关键设计决策:
 
 ## 附录 E：MS STL工业与底层 [F: Industry / E: Lowlevel / H: Design / J: Learning]
 
-> **示例 54** [难度 ★☆☆☆☆] [主题：附录 E：MS STL工业与底层 []
+> **示例 54** [难度 ★★☆☆☆] [主题：附录 E：MS STL工业与底层 []
 ```
 MS STL设计权衡:
 
@@ -1012,7 +1012,7 @@ MS STL设计权衡:
   parallel algorithms → Windows ThreadPool (无需TBB, 开箱即用)
 ```
 
-> **示例 55** [难度 ★☆☆☆☆] [主题：附录 E：MS STL工业与底层 []
+> **示例 55** [难度 ★★☆☆☆] [主题：附录 E：MS STL工业与底层 []
 ```cpp
 #include <iostream>
 #include <thread>
@@ -1162,7 +1162,7 @@ int main() { return 0; }
 
 MS STL 用 `_HAS_CXX20` 等宏门控标准特性；C++20 开启时用概念约束，关闭时退化为 `typename` 模板——注意退化后浮点不再被概念拦截，需额外 `static_assert`/`requires` 保语义：
 
-> **示例 58** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★）]
+> **示例 58** [难度 ★★★☆☆] [主题：练习 2（难度 ★★）]
 ```cpp
 #include <concepts>
 #if defined(_HAS_CXX20) && _HAS_CXX20
@@ -1188,7 +1188,7 @@ int main() { return add(2, 3) == 5 ? 0 : 1; }
 
 `std::array` 自 C++11 起即 constexpr 友好，可在常量表达式上下文构造并下标访问；下列 `static_assert` 在编译期直接求值：
 
-> **示例 59** [难度 ★☆☆☆☆] [主题：练习 3（难度 ★★）]
+> **示例 59** [难度 ★★★☆☆] [主题：练习 3（难度 ★★）]
 ```cpp
 #include <array>
 constexpr int lookup() {

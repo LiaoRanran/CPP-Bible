@@ -45,7 +45,7 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 ⟶ Book/part01_history/ch06_cpp17.md
 ⟶ Book/part01_history/ch08_cpp23.md
 
-> **示例 1** [难度 ★★★★☆] [主题：学习目标]
+> **示例 1** [难度 ★★☆☆☆] [主题：学习目标]
 ```cpp
 // 源码剖析：libstdc++ 中 C++20 概念（concepts）约束检查的展开
 // 文件：libstdc++/include/bits/ranges/base.h
@@ -54,7 +54,7 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 auto v = std::views::iota(1, 5);
 void use_view(){ for (int x : v) (void)x; }
 ```
-> **示例 2** [难度 ★★★★☆] [主题：学习目标]
+> **示例 2** [难度 ★★☆☆☆] [主题：学习目标]
 ```cpp
 // 简单概念
 template<class T> concept Addable = requires(T a,T b){ a+b; };
@@ -65,7 +65,7 @@ template<class T> concept Addable = requires(T a,T b){ a+b; };
 
 ## ② 前置知识
 
-> **示例 3** [难度 ★★★★☆] [主题：前置知识]
+> **示例 3** [难度 ★★★☆☆] [主题：前置知识]
 ```cpp
 // [merged] ## ② 前置知识
 #include <iostream>
@@ -79,7 +79,7 @@ int main() {}
 
 ## ③ 后续依赖
 
-> **示例 4** [难度 ★★★★☆] [主题：后续依赖]
+> **示例 4** [难度 ★★★☆☆] [主题：后续依赖]
 ```cpp
 // [merged] ## ③ 后续依赖
 #include <iostream>
@@ -94,7 +94,7 @@ int main() {}
 
 ## ④ 知识图谱
 
-> **示例 5** [难度 ★★★★☆] [主题：知识图谱]
+> **示例 5** [难度 ★☆☆☆☆] [主题：知识图谱]
 ```cpp
 // [merged] ## ④ 知识图谱
 #include <iostream>
@@ -123,7 +123,7 @@ C++20 四大支柱 + 配套
 
 ## ⑤ Mermaid（Ranges 管道）
 
-> **示例 7** [难度 ★★★★☆] [主题：未分类]
+> **示例 7** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // [merged] ## ⑤ Mermaid（Ranges 管道）
 #include <iostream>
@@ -137,7 +137,7 @@ int main() {
 
 ## ⑥ UML / 结构图（特性关系）[标准]
 
-> **示例 8** [难度 ★★★★☆] [主题：结构图（特性关系）[标准]]
+> **示例 8** [难度 ★★★☆☆] [主题：结构图（特性关系）[标准]]
 ```cpp
 // [merged] ## ⑥ UML / 结构图（特性关系）[标准]
 #include <iostream>
@@ -168,7 +168,7 @@ classDef xp    fill:#bcbd22,stroke:#767706,color:#fff
 
 ## ⑦ ASCII 内存图（Modules 编译模型）
 
-> **示例 9** [难度 ★★★★☆] [主题：内存图（Modules 编译模型）]
+> **示例 9** [难度 ★☆☆☆☆] [主题：内存图（Modules 编译模型）]
 ```cpp
 // [merged] ## ⑦ ASCII 内存图（Modules 编译模型）
 #include <iostream>
@@ -179,7 +179,7 @@ int main() {}
 
 ## ⑧ 生命周期（新增库类型的所有权语义）
 
-> **示例 10** [难度 ★★★★☆] [主题：生命周期（新增库类型的所有权语义）]
+> **示例 10** [难度 ★☆☆☆☆] [主题：生命周期（新增库类型的所有权语义）]
 ```cpp
 // [merged] ## ⑧ 生命周期（新增库类型的所有权语义）
 #include <iostream>
@@ -191,7 +191,7 @@ int main() {}
 `string_view` 不拥有数据（悬垂风险，ch36）；`optional`/`variant`/`any` 在对象内管理所含值的生命周期（ch25）；CTAD 推导的临时对象生命周期遵循常规规则。
 ## ⑨ 调用栈（编译期分支与折叠）
 
-> **示例 11** [难度 ★★★★☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 11** [难度 ★★☆☆☆] [主题：调用栈（编译期分支与折叠）]
 ```cpp
 // [merged] ## ⑨ 调用栈（编译期分支与折叠）
 #include <iostream>
@@ -203,14 +203,14 @@ int main() {
 
 `if constexpr` 在编译期裁剪分支，不产生运行时调用；折叠表达式展开为顺序求值，调用栈与普通循环一致（ch26）。
 传统头文件：每个 TU 重复解析 `include` 的文本。
-> **示例 12** [难度 ★★★★☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 12** [难度 ★☆☆☆☆] [主题：调用栈（编译期分支与折叠）]
 ```
 TU1.cpp ─┐
 TU2.cpp ─┼─> 全部文本拼入 → 解析(重复)
 TU3.cpp ─┘
 ```
 Modules：编译一次为二进制 BMI，复用：
-> **示例 13** [难度 ★★★★☆] [主题：调用栈（编译期分支与折叠）]
+> **示例 13** [难度 ★☆☆☆☆] [主题：调用栈（编译期分支与折叠）]
 ```
 module M; 编译 → M.pcm/BMI (一次) → 各 TU 直接加载
 ```
@@ -218,7 +218,7 @@ module M; 编译 → M.pcm/BMI (一次) → 各 TU 直接加载
 
 ## ⑩ 汇编（Concepts 不产生运行时开销）
 
-> **示例 14** [难度 ★★★★☆] [主题：汇编]
+> **示例 14** [难度 ★★☆☆☆] [主题：汇编]
 ```cpp
 // [merged] ## ⑩ 汇编（Concepts 不产生运行时开销）
 #include <iostream>
@@ -232,13 +232,13 @@ int main() {}
 
 ## ⑪ STL 联系
 
-> **示例 15** [难度 ★★★★☆] [主题：联系]
+> **示例 15** [难度 ★☆☆☆☆] [主题：联系]
 ```cpp
 // std::ssize 带符号大小
 #include <vector>
 void ss(){ std::vector<int> v{1,2}; auto n=std::ssize(v); (void)n; }
 ```
-> **示例 16** [难度 ★★★★☆] [主题：联系]
+> **示例 16** [难度 ★☆☆☆☆] [主题：联系]
 ```cpp
 // 范围算法 ranges::sort
 #include <ranges>
@@ -252,7 +252,7 @@ void rs(){ std::vector<int> v{3,1,2}; std::ranges::sort(v); }
 
 ## ⑫ 工业案例
 
-> **示例 17** [难度 ★★★★☆] [主题：工业案例]
+> **示例 17** [难度 ★★★☆☆] [主题：工业案例]
 ```cpp
 // [merged] ## ⑫ 工业案例
 #include <iostream>
@@ -269,7 +269,7 @@ int main() {
 
 ## ⑬ 源码分析
 
-> **示例 18** [难度 ★★★★☆] [主题：源码分析]
+> **示例 18** [难度 ★☆☆☆☆] [主题：源码分析]
 ```cpp
 // [merged] ## ⑬ 源码分析
 #include <iostream>
@@ -284,7 +284,7 @@ int main() {
 
 ## ⑭ WG21 提案
 
-> **示例 19** [难度 ★★★★☆] [主题：提案]
+> **示例 19** [难度 ★☆☆☆☆] [主题：提案]
 ```cpp
 // [merged] ## ⑭ WG21 提案
 #include <iostream>
@@ -303,7 +303,7 @@ int main() {}
 
 ## ⑮ 面试题
 
-> **示例 20** [难度 ★★★★☆] [主题：面试题]
+> **示例 20** [难度 ★☆☆☆☆] [主题：面试题]
 ```cpp
 // [merged] ## ⑮ 面试题
 #include <iostream>
@@ -321,7 +321,7 @@ int main() {}
 
 ## ⑯ 易错点
 
-> **示例 21** [难度 ★★★★☆] [主题：易错点]
+> **示例 21** [难度 ★★☆☆☆] [主题：易错点]
 ```cpp
 // 概念约束返回值
 template<class T> requires std::default_initializable<T> T make(){ return T{}; }
@@ -333,7 +333,7 @@ template<class T> requires std::default_initializable<T> T make(){ return T{}; }
 
 ## ⑰ FAQ
 
-> **示例 22** [难度 ★★★★☆] [主题：未分类]
+> **示例 22** [难度 ★☆☆☆☆] [主题：未分类]
 ```cpp
 // 范围 for + 结构化绑定
 #include <map>
@@ -346,7 +346,7 @@ void m(){ std::map<int,std::string> x{{1,"a"}}; for(auto& [k,v]:x){ (void)k;(voi
 
 ## ⑱ 最佳实践
 
-> **示例 23** [难度 ★★★★☆] [主题：最佳实践]
+> **示例 23** [难度 ★☆☆☆☆] [主题：最佳实践]
 ```cpp
 auto s2=std::format("{} {:.1f}", 1, 2.5); void use_fmt2(){ (void)s2; }
 ```
@@ -356,7 +356,7 @@ auto s2=std::format("{} {:.1f}", 1, 2.5); void use_fmt2(){ (void)s2; }
 
 ## ⑲ 性能分析
 
-> **示例 24** [难度 ★★★★☆] [主题：性能分析]
+> **示例 24** [难度 ★☆☆☆☆] [主题：性能分析]
 ```cpp
 // 移除 throw() 异常规范（C++20 弃用）
 void legacy() noexcept;
@@ -432,7 +432,7 @@ C++20 是「概念 / 范围 / 协程 / 模块」的代际跃迁。下面按领�
 
 ## 附录: C++20 四大特性速查
 
-> **示例 26** [难度 ★★★★☆] [主题：附录: C++20 四大特性速查]
+> **示例 26** [难度 ★★☆☆☆] [主题：附录: C++20 四大特性速查]
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -440,7 +440,7 @@ template<std::integral T>T safe_add(T a,T b){return a+b;}
 int main(){std::cout<<safe_add(10,20)<<std::endl;return 0;}
 ```
 
-> **示例 27** [难度 ★★★★☆] [主题：附录: C++20 四大特性速查]
+> **示例 27** [难度 ★☆☆☆☆] [主题：附录: C++20 四大特性速查]
 ```cpp
 #include <iostream>
 #include <span>
@@ -448,7 +448,7 @@ void print(std::span<int>s){for(int x:s)std::cout<<x<<" ";}
 int main(){int arr[]{1,2,3,4,5};print(arr);std::cout<<std::endl;return 0;}
 ```
 
-> **示例 28** [难度 ★★★★☆] [主题：附录: C++20 四大特性速查]
+> **示例 28** [难度 ★☆☆☆☆] [主题：附录: C++20 四大特性速查]
 ```cpp
 #include <iostream>
 #include <compare>
@@ -456,7 +456,7 @@ struct V{int x;auto operator<=>(const V&)const=default;};
 int main(){V a{1},b{2};std::cout<<(a<b)<<std::endl;return 0;}
 ```
 
-> **示例 29** [难度 ★★★★☆] [主题：附录: C++20 四大特性速查]
+> **示例 29** [难度 ★☆☆☆☆] [主题：附录: C++20 四大特性速查]
 ```cpp
 #include <iostream>
 #include <ranges>
@@ -467,21 +467,21 @@ int main(){auto v=std::views::iota(1,10)|std::views::filter([](int x){return x%2
 
 ## 附录 B: C++20 更多特性实例
 
-> **示例 30** [难度 ★★★★☆] [主题：附录 B: C++20 更多特性实例]
+> **示例 30** [难度 ★☆☆☆☆] [主题：附录 B: C++20 更多特性实例]
 ```cpp
 #include <iostream>
 #include <chrono>
 int main(){auto now=std::chrono::system_clock::now();auto t=std::chrono::system_clock::to_time_t(now);std::cout<<"epoch seconds: "<<t<<std::endl;return 0;}
 ```
 
-> **示例 31** [难度 ★★★★☆] [主题：附录 B: C++20 更多特性实例]
+> **示例 31** [难度 ★☆☆☆☆] [主题：附录 B: C++20 更多特性实例]
 ```cpp
 #include <iostream>
 #include <bit>
 int main(){unsigned x=42;std::cout<<"popcount:"<<std::popcount(x)<<" bit_width:"<<std::bit_width(x)<<std::endl;return 0;}
 ```
 
-> **示例 32** [难度 ★★★★☆] [主题：附录 B: C++20 更多特性实例]
+> **示例 32** [难度 ★☆☆☆☆] [主题：附录 B: C++20 更多特性实例]
 ```cpp
 #include <iostream>
 #include <source_location>
@@ -489,7 +489,7 @@ void log(std::source_location loc=std::source_location::current()){std::cout<<lo
 int main(){log();return 0;}
 ```
 
-> **示例 33** [难度 ★★★★☆] [主题：附录 B: C++20 更多特性实例]
+> **示例 33** [难度 ★★☆☆☆] [主题：附录 B: C++20 更多特性实例]
 ```cpp
 #include <iostream>
 #include <version>
@@ -503,7 +503,7 @@ int main(){
 
 ## 附录追加：工业底层与面试
 
-> **示例 34** [难度 ★★★★☆] [主题：附录追加：工业底层与面试]
+> **示例 34** [难度 ★☆☆☆☆] [主题：附录追加：工业底层与面试]
 ```cpp
 #include <iostream>
 int main(){std::cout<<"ch07_cpp20.md enhanced"<<"\n";return 0;}
@@ -511,7 +511,7 @@ int main(){std::cout<<"ch07_cpp20.md enhanced"<<"\n";return 0;}
 
 ## 附录 D：C++20 Concepts/Ranges底层
 
-> **示例 35** [难度 ★★★★☆] [主题：附录 D：C++20 Concept]
+> **示例 35** [难度 ★★★☆☆] [主题：附录 D：C++20 Concept]
 ```
 Concepts: 编译期boolean谓词, 汇编=SFINAE(完全相同mov/call)
 编译时间: 2-5x faster(early rejection); 错误: 500行→1行
@@ -563,7 +563,7 @@ int main(){std::cout<<add(10,20)<<std::endl;std::cout<<"concepts=zero runtime ov
 | 运行时代码 | call [rax] | call [rax] | 完全相同 |
 | 二进制大小 | 1x | 1x | 无差异 |
 
-> **示例 37** [难度 ★★★★☆] [主题：性能数据]
+> **示例 37** [难度 ★★☆☆☆] [主题：性能数据]
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -578,7 +578,7 @@ Q: concepts支持哪些约束? A: 类型属性(is_integral), 表达式有效性(
 
 ## 附录 E：C++20面试速查
 
-> **示例 38** [难度 ★★★★☆] [主题：附录 E：C++20面试速查]
+> **示例 38** [难度 ★★☆☆☆] [主题：附录 E：C++20面试速查]
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -631,7 +631,7 @@ C++20 的 concepts / ranges / coroutines / modules 在主流工具链与大型�
 
 **真实场景：数值聚合 API 的清晰报错。** 你写一个 `add` 聚合接口供全公司调用，传错类型时旧的 SFINAE 报错没人看得懂。请用 C++20 concepts 定义一个 `Number` 概念并约束 `add` 模板，展示非数值类型调用时被概念明确拒绝、错误信息直指"不满足 Number"。
 
-> **示例 39** [难度 ★★★★☆] [主题：练习 1（难度 ★★）]
+> **示例 39** [难度 ★★★☆☆] [主题：练习 1（难度 ★★）]
 ```cpp
 #include <iostream>
 #include <concepts>
@@ -659,7 +659,7 @@ int main() {
 
 **真实场景：事件流的惰性处理管道。** 你处理一条日志/指标流，要先"过滤出错误事件"再"转成错误码计数"，但不想为每步生成中间 `vector`。请用 C++20 Ranges 的 `views::filter` + `views::transform` 构建"取偶数再平方"的惰性管道，并说明惰性求值（不生成中间容器）的意义。
 
-> **示例 40** [难度 ★★★★☆] [主题：练习 2（难度 ★★★）]
+> **示例 40** [难度 ★☆☆☆☆] [主题：练习 2（难度 ★★★）]
 ```cpp
 #include <iostream>
 #include <vector>
@@ -686,7 +686,7 @@ int main() {
 
 **真实场景：依赖/库版本兼容性比较。** 你的包管理器或构建系统要判断"依赖 A 的版本 ≥ 要求的最低版本"，版本号是 `major.minor.patch` 三元组。请用 C++20 `<=>` 为 `Version` 实现三路比较与 `==`，并说明 `= default` 如何一次性自动派生 `< > <= >=`。
 
-> **示例 41** [难度 ★★★★☆] [主题：练习 3（难度 ★★★★）]
+> **示例 41** [难度 ★★☆☆☆] [主题：练习 3（难度 ★★★★）]
 ```cpp
 #include <iostream>
 #include <compare>
@@ -722,7 +722,7 @@ int main() {
 **选型**：`std::span<int>` 用“指针+长度”统一接口，零拷贝、不限容器来源。
 **落地**：
 
-> **示例 42** [难度 ★★★★☆] [主题：演绎 1：std::span —— ]
+> **示例 42** [难度 ★☆☆☆☆] [主题：演绎 1：std::span —— ]
 ```cpp
 #include <iostream>
 #include <span>
@@ -755,7 +755,7 @@ int main() {
 **选型**：C++20 指派初始化 `{.a=1, .d=1}`，按名初始化、未指派字段值初始化。
 **落地**：
 
-> **示例 43** [难度 ★★★★☆] [主题：演绎 2：designated in]
+> **示例 43** [难度 ★★☆☆☆] [主题：演绎 2：designated in]
 ```cpp
 #include <iostream>
 
