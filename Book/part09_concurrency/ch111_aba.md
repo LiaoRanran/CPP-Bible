@@ -1476,3 +1476,22 @@ int main() {
 - 计时取 5 轮中位数；`volatile` sink 防 DCE。多线程场景用 `std::thread` 施加争用。
 - 加速比（0.20×、1.75× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch111_aba.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch111_aba.cpp` 真实生成（节选所有无锁栈共享的节点分配器 `alloc_node`）。它只是一条「取下标→指针自增→返回池内地址」的纯算术，**没有任何 `lock`、没有任何原子、没有任何屏障**——这意味着 ch111 基准里 Plain / Tagged64 / Tagged128 / Hazard 各栈之间 1.03×～18.55× 的开销差异，全部来自 CAS / 危险指针发布等同步原语，而**绝不在节点分配本身**。
+
+```asm
+; alloc_node() —— 所有栈共用的节点分配器（节选）
+;   _Z10alloc_nodev (节选)
+        movsxd  rax, DWORD PTR _ZL10g_pool_idx[rip]  ; 读当前池下标 idx
+        lea     edx, 1[rax]                         ; idx + 1
+        sal     rax, 4                              ; idx * 16（Node 大小 16B）
+        mov     DWORD PTR _ZL10g_pool_idx[rip], edx  ; 写回 idx = idx + 1（普通 store，非原子）
+        lea     rdx, _ZL6g_pool[rip]                ; 池基址
+        add     rax, rdx                            ; 返回 &g_pool[idx]
+        ret                                          ; ← 全程无 lock / 无屏障
+```
+
+> 注意：`alloc_node` 是「预分配对象池」里的指针自增，是基准用来隔离「真实同步开销」的对照组——它证明各 ABA 防护方案的性能差距是**纯同步原语成本**（CAS 重试、hazard 槽的 `seq_cst` store、shared_ptr 的两条 `lock` 引用计数 RMW），而非分配器。这与 D5.2 各条「开销归因」自洽：**绝对毫秒随机器而变，加速比才是可移植信号**。

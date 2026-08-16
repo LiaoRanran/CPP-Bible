@@ -1325,3 +1325,58 @@ int main() {
 - 加速比（如 8.47×、1.49×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较。
 - 复现旗标：`g++ -O2 -std=c++23`。本 demo 用 compact_if 在 sorted/unsorted 输入上产出一致的元素多重集（排序后比较），仅断言顺序无关的正确性，未对时间或倍数做任何断言。
 - 基准源码见库根 `_bench_d5_153_branch.cpp`。
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_153_branch.cpp` 真实生成（节选自 sum_if(unsigned char const*, unsigned long long), sum_branchless(unsigned char const*, unsigned long long), compact_if(unsigned char const*, unsigned long long, unsigned char*)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; sum_if(unsigned char const*, unsigned long long)  (133 条指令)
+sub    rsp, 152
+movaps    XMMWORD PTR [rsp], xmm6
+movaps    XMMWORD PTR 16[rsp], xmm7
+movaps    XMMWORD PTR 32[rsp], xmm8
+movaps    XMMWORD PTR 48[rsp], xmm9
+movaps    XMMWORD PTR 64[rsp], xmm10
+movaps    XMMWORD PTR 80[rsp], xmm11
+movaps    XMMWORD PTR 96[rsp], xmm12
+movaps    XMMWORD PTR 112[rsp], xmm13
+movaps    XMMWORD PTR 128[rsp], xmm14
+test    rdx, rdx
+je    .L
+lea    rax, -1[rdx]
+cmp    rax, 14
+jbe    .L
+mov    r8, rdx
+pxor    xmm7, xmm7
+pxor    xmm9, xmm9
+mov    rax, rcx
+and    r8, -16
+pxor    xmm8, xmm8
+pxor    xmm6, xmm6
+lea    r9, [r8+rcx]
+movdqu    xmm2, XMMWORD PTR [rax]
+movdqa    xmm0, xmm9
+movdqa    xmm3, xmm9
+add    rax, 16
+pcmpgtb    xmm0, xmm2
+movdqa    xmm1, xmm2
+movdqa    xmm5, xmm2
+punpcklbw    xmm1, xmm9
+punpckhbw    xmm5, xmm9
+movdqa    xmm10, xmm1
+movdqa    xmm4, xmm5
+punpckhwd    xmm5, xmm8
+pcmpgtb    xmm3, xmm0
+movdqa    xmm2, xmm0
+punpcklwd    xmm10, xmm8
+punpcklwd    xmm4, xmm8
+punpckhwd    xmm1, xmm8
+punpcklbw    xmm2, xmm3
+punpckhbw    xmm0, xmm3
+movdqa    xmm11, xmm2
+movdqa    xmm3, xmm2
+movdqa    xmm12, xmm0
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

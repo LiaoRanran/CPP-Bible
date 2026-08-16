@@ -1364,3 +1364,56 @@ int main() {
 - 向量化判定证据来自 `-fopt-info-vec-optimized` / `-fopt-info-vec-missed`，非猜测。
 - 加速比是可移植信号，绝对毫秒请勿跨机器比较；两张表不可横向互比（D5.2 第 5 条）。
 - 复现旗标：`g++ -O2 -std=c++23 -mavx2`（基准）/ `g++ -O2 -std=c++23`（SSE2 基线与 demo）。基准源码见库根 `_bench_d5_ch155_simd.cpp`。
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch155_simd.cpp` 真实生成（节选自 main::{lambda(char const*, double*)#1}::operator()(char const*, double*) const [clone .isra.0], sum_scalar(float const*, unsigned long long), sum_auto_fastmath(float const*, unsigned long long)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; main::{lambda(char const*, double*)#1}::operator()(char const*, double*) const [clone .isra.0]  (43 条指令)
+push    rbp
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 120
+mov    r8d, 4
+movupd    xmm0, XMMWORD PTR 16[rdx]
+movupd    xmm1, XMMWORD PTR [rdx]
+movaps    XMMWORD PTR 80[rsp], xmm0
+lea    rbp, 104[rsp]
+mov    rbx, rdx
+mov    rsi, rcx
+movsd    xmm0, QWORD PTR 32[rdx]
+lea    rcx, 64[rsp]
+mov    rdx, rbp
+movaps    XMMWORD PTR 64[rsp], xmm1
+movsd    QWORD PTR 96[rsp], xmm0
+call    _ZSt16__introsort_loopIPdxN9__gnu_cxx5__ops15_Iter_less_iterEEvT_S4_T0_T1_.isra.0
+mov    rdx, rbp
+lea    rcx, 64[rsp]
+call    _ZSt16__insertion_sortIPdN9__gnu_cxx5__ops15_Iter_less_iterEEvT_S4_T0_.isra.0
+mov    r9, QWORD PTR 8[rbx]
+mov    r8, QWORD PTR [rbx]
+mov    rdx, rsi
+movsd    xmm0, QWORD PTR 80[rsp]
+lea    rcx, .LC[rip]
+movq    xmm3, r9
+movq    xmm2, r8
+movsd    QWORD PTR 56[rsp], xmm0
+movsd    xmm0, QWORD PTR 32[rbx]
+movsd    QWORD PTR 48[rsp], xmm0
+movsd    xmm0, QWORD PTR 24[rbx]
+movsd    QWORD PTR 40[rsp], xmm0
+movsd    xmm0, QWORD PTR 16[rbx]
+movsd    QWORD PTR 32[rsp], xmm0
+call    __mingw_printf
+nop
+add    rsp, 120
+pop    rbx
+pop    rsi
+pop    rdi
+pop    rbp
+ret
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

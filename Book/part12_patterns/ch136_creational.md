@@ -1493,6 +1493,62 @@ int main() {
 - Book/part12_patterns/ch135_patterns_intro.md — 设计模式总论
 - Book/part04_memory/ch38_allocator.md — 分配器与对象池
 
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch136_creational.cpp` 真实生成（节选自 bench_virtual_factory(int), get_factory(), FactoryA::create() const）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; bench_virtual_factory(int)  (56 条指令)
+push    r13
+push    r12
+push    rbp
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 120
+movaps    XMMWORD PTR 80[rsp], xmm6
+movaps    XMMWORD PTR 96[rsp], xmm7
+mov    edi, ecx
+call    _Z11get_factoryv
+mov    rbp, rax
+test    edi, edi
+jle    .L
+movdqa    xmm7, XMMWORD PTR .LC[rip]
+movdqa    xmm6, XMMWORD PTR .LC[rip]
+xor    ebx, ebx
+xor    esi, esi
+lea    r13, _ZNK8FactoryA6createEv[rip]
+jmp    .L
+movups    XMMWORD PTR 36[rsp], xmm7
+movups    XMMWORD PTR 52[rsp], xmm6
+movdqu    xmm0, XMMWORD PTR 36[rsp]
+movdqu    xmm2, XMMWORD PTR 52[rsp]
+add    ebx, 1
+paddd    xmm0, xmm2
+movdqa    xmm1, xmm0
+psrldq    xmm1, 8
+paddd    xmm0, xmm1
+movdqa    xmm1, xmm0
+psrldq    xmm1, 4
+paddd    xmm0, xmm1
+movd    eax, xmm0
+add    esi, eax
+cmp    edi, ebx
+je    .L
+mov    rax, QWORD PTR 0[rbp]
+mov    rax, QWORD PTR 16[rax]
+cmp    rax, r13
+je    .L
+mov    rdx, rbp
+lea    rcx, 32[rsp]
+call    rax
+jmp    .L
+xor    esi, esi
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。
+
 ## 附录 L：创建型模式工业深挖 — 历史、真实落地与生产戒律 [F: Industry / B: Principle]
 
 > 本节为 P0-11「应用/工程章」大波次扩写：在创建型层面补全 GoF 模式的历史演进、在知名 C++ 项目中的真实落地、生产踩坑、与现代 C++ 的互动、以及权威引用。所有论断均可查证，拒绝软文。

@@ -1503,3 +1503,29 @@ int main() {
 ### 最后 方法学注
 
 本附录的 store 数字来自单线程微基准，它把「优化器束手」这项本属于编译器许可差异的成本放大成了 4×——真实多生产者代码里 release store 往往接近免费。记住：**绝对毫秒随机器而变，只有比值才可移植**；不要在别的 CPU/编译器上照抄毫秒数，但「seq_cst store 最贵、load 各序同价、RMW 各序同码」这三条结构性结论在 x86-TSO 上稳定成立。 |
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_108_order.cpp` 真实生成（节选双线程争用 `fetch_add` 的工作线程，分别用于 relaxed 与 seq_cst）。两个变体**逐字节相同**——都编译成单条 `lock add`，这直接印证 D5.2 结论④「fetch_add 各序同码同价（1.01×）」：内存序的差异不体现在 RMW 指令上，而在编译器对周围访存的约束上。
+
+```asm
+; contend(relaxed) 工作线程（节选热循环）—— relaxed 的 fetch_add
+;   _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZZ4mainENKUlSt12memory_orderE_clES3_EUlvE_EEEEE6_M_runEv (节选)
+        mov     eax, 50000000
+        mov     rdx, QWORD PTR 16[rcx]
+        lock add        QWORD PTR [rdx], 1   ; ← relaxed 的 fetch_add：lock xadd
+        sub     rax, 1
+        jne     .L
+        ret
+; contend(seq_cst) 工作线程（节选热循环）—— seq_cst 的 fetch_add，代码与上面逐字节相同
+;   _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZZ4mainENKUlSt12memory_orderE_clES3_EUlvE0_EEEEE6_M_runEv (节选)
+        mov     eax, 50000000
+        mov     rdx, QWORD PTR 16[rcx]
+        lock add        QWORD PTR [rdx], 1   ; ← seq_cst 的 fetch_add：同样也是 lock xadd
+        sub     rax, 1
+        jne     .L
+        ret
+```
+
+> 注意：x86 的 `lock` 前缀本身就是全屏障（sequentially consistent），不存在「更弱」的 RMW 指令；想靠 `memory_order_relaxed` 给 `fetch_add` 在 x86 上提速是徒劳的——节省的只是 ARM 等弱内存架构上才有的语义差异。这与 D5.2 结论④一致：**绝对毫秒随机器而变，加速比（relaxed vs seq_cst ≈ 1.01×）才是可移植信号**。

@@ -1408,3 +1408,42 @@ int main(){
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 
 **交叉引用**：ch38（分配器与节点开销）/ ch83（关联容器 map）/ ch90（ranges 与算法）
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch130_chromium_abseil.cpp` 真实生成（节选热函数 `bench_sorted_vec` / `bench_unordered_map`）。`bench_sorted_vec` 走连续内存的二分查找（一条 `sar` + 步长 8 的 `cmp`），`bench_unordered_map` 走「哈希取模 `div` + 链表节点跳转」——后者每个命中都要追指针，缓存不命中正是 D5.2 中慢 4.2× 的根因。
+
+```asm
+; bench_sorted_vec：排序 vector + 二分，内存连续
+;   _Z16bench_sorted_vecRKSt6vectorIjSaIjEE  (节选，二分循环核)
+        mov     rax, rbx                ; 区间长度(字节)
+        sar     rax, 3                  ; 长度 / 8 = 元素个数
+        jmp     .L
+        sub     rax, rdx
+        lea     r8, 8[r8+rdx*8]
+        sub     rax, 1
+        test    rax, rax
+        jle     .L
+        mov     rdx, rax
+        sar     rdx                     ; mid = (lo+hi)/2
+        cmp     DWORD PTR [r8+rdx*8], r9d  ; 连续取 a[mid] 与 key 比较
+        jb      .L                      ; ← 仅一次内存访问、步长固定、缓存友好
+; bench_unordered_map：std::unordered_map，哈希 + 链表探probe
+;   _Z19bench_unordered_mapRKSt6vectorIjSaIjEE  (节选，查找循环核)
+        mov     eax, r8d
+        xor     edx, edx
+        div     r11                     ; ← 哈希取模(昂贵除法)，r11 = 桶数
+        mov     rax, rdi
+        lea     rcx, g_umap[rip+16]
+        jmp     .L
+        mov     rdx, QWORD PTR [rax]    ; 取桶首节点指针
+        mov     rcx, rax
+        test    rdx, rdx
+        je      .L
+        mov     rax, rdx
+        cmp     DWORD PTR 8[rax], r8d   ; 比较节点 key
+        jne     .L                      ; 未命中 → 继续追指针(缓存不命中)
+```
+
+> 注意：可移植信号是「unordered_map 用 `div` 算桶 + 逐节点 `QWORD PTR` 指针跳转（缓存不友好），sorted_vec 仅用 `sar` + 连续 `cmp`（缓存友好但 mid 计算有开销）」。这把 D5.2 的「胜负手是缓存而非算法」落到机器码：flat/vector 的连续存储让预取器有效工作，unordered_map 的散点节点让每跳都可能 miss；故 flat_hash_map 与 sorted_vec 同快，unordered_map 独慢。

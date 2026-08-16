@@ -1322,3 +1322,53 @@ int main(){
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 
 **交叉引用**：ch20（引用与指针）/ ch22（auto 推导）/ ch156（编译器优化与拷贝消除）
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch144_style.cpp` 真实生成（节选自 bench_index(std::vector<Heavy, std::allocator<Heavy> > const&), bench_copy(std::vector<Heavy, std::allocator<Heavy> > const&), bench_ref(std::vector<Heavy, std::allocator<Heavy> > const&)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; bench_index(std::vector<Heavy, std::allocator<Heavy> > const&)  (15 条指令)
+mov    r8, QWORD PTR [rcx]
+mov    rax, QWORD PTR 8[rcx]
+sub    rax, r8
+je    .L
+sar    rax, 6
+xor    edx, edx
+mov    r9, rax
+xor    eax, eax
+mov    rcx, rdx
+add    rdx, 1
+sal    rcx, 6
+add    rax, QWORD PTR [r8+rcx]
+cmp    rdx, r9
+jb    .L
+ret
+; bench_copy(std::vector<Heavy, std::allocator<Heavy> > const&)  (11 条指令)
+xor    edx, edx
+mov    rax, QWORD PTR [rcx]
+mov    rcx, QWORD PTR 8[rcx]
+cmp    rcx, rax
+je    .L
+add    rdx, QWORD PTR [rax]
+add    rax, 64
+cmp    rax, rcx
+jne    .L
+mov    rax, rdx
+ret
+; bench_ref(std::vector<Heavy, std::allocator<Heavy> > const&)  (11 条指令)
+xor    edx, edx
+mov    rax, QWORD PTR [rcx]
+mov    rcx, QWORD PTR 8[rcx]
+cmp    rcx, rax
+je    .L
+add    rdx, QWORD PTR [rax]
+add    rax, 64
+cmp    rax, rcx
+jne    .L
+mov    rax, rdx
+ret
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

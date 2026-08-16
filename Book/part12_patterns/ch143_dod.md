@@ -1701,6 +1701,62 @@ int main() {
 - 复现旗标：`g++ -O2 -std=c++23`。本 demo 用 AoS 与 SoA 各跑同一 partial update + reduce，仅断言两布局结果一致（浮点容差），未对时间或倍数、也未对 `sizeof` 做任何断言。
 - 基准源码见库根 `_bench_d5_143_dod.cpp`。
 
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_143_dod.cpp` 真实生成（节选自 ParticlesSoA::~ParticlesSoA()）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; ParticlesSoA::~ParticlesSoA()  (104 条指令)
+push    rbx
+sub    rsp, 32
+mov    rbx, rcx
+mov    rcx, QWORD PTR 360[rcx]
+test    rcx, rcx
+je    .L
+mov    rdx, QWORD PTR 376[rbx]
+sub    rdx, rcx
+call    _ZdlPvy
+mov    rcx, QWORD PTR 336[rbx]
+test    rcx, rcx
+je    .L
+mov    rdx, QWORD PTR 352[rbx]
+sub    rdx, rcx
+call    _ZdlPvy
+mov    rcx, QWORD PTR 312[rbx]
+test    rcx, rcx
+je    .L
+mov    rdx, QWORD PTR 328[rbx]
+sub    rdx, rcx
+call    _ZdlPvy
+mov    rcx, QWORD PTR 288[rbx]
+test    rcx, rcx
+je    .L
+mov    rdx, QWORD PTR 304[rbx]
+sub    rdx, rcx
+call    _ZdlPvy
+mov    rcx, QWORD PTR 264[rbx]
+test    rcx, rcx
+je    .L
+mov    rdx, QWORD PTR 280[rbx]
+sub    rdx, rcx
+call    _ZdlPvy
+mov    rcx, QWORD PTR 240[rbx]
+test    rcx, rcx
+je    .L
+mov    rdx, QWORD PTR 256[rbx]
+sub    rdx, rcx
+call    _ZdlPvy
+mov    rcx, QWORD PTR 216[rbx]
+test    rcx, rcx
+je    .L
+mov    rdx, QWORD PTR 232[rbx]
+sub    rdx, rcx
+call    _ZdlPvy
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

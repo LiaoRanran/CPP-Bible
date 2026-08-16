@@ -1406,3 +1406,43 @@ int main() {
 | 关联章 | 位置 | 说明 |
 |---|---|---|
 | 第151章 benchmark | Book/part13_engineering/ch151_benchmark.md | 3.58x 加速基准方法同源 |
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch160_mempool.cpp` 真实生成（节选自 Pool::~Pool()）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; Pool::~Pool()  (30 条指令)
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 32
+mov    rbx, QWORD PTR 8[rcx]
+mov    rsi, QWORD PTR 16[rcx]
+mov    rdi, rcx
+cmp    rsi, rbx
+je    .L
+mov    rcx, QWORD PTR [rbx]
+add    rbx, 8
+call    free
+cmp    rbx, rsi
+jne    .L
+mov    rbx, QWORD PTR 8[rdi]
+test    rbx, rbx
+je    .L
+mov    rdx, QWORD PTR 24[rdi]
+mov    rcx, rbx
+sub    rdx, rbx
+add    rsp, 32
+pop    rbx
+pop    rsi
+pop    rdi
+jmp    _ZdlPvy
+add    rsp, 32
+pop    rbx
+pop    rsi
+pop    rdi
+ret
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

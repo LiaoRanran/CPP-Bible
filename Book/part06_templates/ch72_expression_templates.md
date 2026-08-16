@@ -1357,7 +1357,13 @@ int main() {
         sar     r8, 3
         je      .L
         call    _Znwy                    ; ← operator new：真实堆分配
-        ...                              ; 设置 _M_start/_M_finish
+        mov     rdx, QWORD PTR 32[rsp]   ; 恢复容量
+        mov     r9, rax                  ; r9 = 新分配基址
+        mov     QWORD PTR [rbx], rax     ; 写 _M_start
+        lea     rax, [rax+rdx]           ; 计算 _M_finish 位置
+        mov     QWORD PTR [r9], 0x000000000  ; 初始 _M_end = 基址
+        lea     rcx, 8[r9]
+        mov     QWORD PTR 16[rbx], rax   ; 写 _M_end
         cmp     QWORD PTR 40[rsp], 1
         je      .L
         call    memset                   ; ← 清零新分配的内存

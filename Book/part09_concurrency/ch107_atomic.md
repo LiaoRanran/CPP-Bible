@@ -1312,6 +1312,45 @@ flowchart TD
 
 ---
 
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_107_atomic.cpp` 真实生成（节选 `bench_atomic_relaxed` / `bench_mutex` 的**工作线程**热循环）。原子路径是单条 `lock add`、互斥路径每次迭代要两次 `pthread_mutex_*` 系统调用再配一条普通 `add`——这正解释了 D5.2「mutex 慢在系统调用+阻塞、atomic 是纯 RMW」的非显然结论。
+
+```asm
+; bench_atomic_relaxed 工作线程（节选热循环）—— 单条 lock xadd，无系统调用、无阻塞
+;   _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ20bench_atomic_relaxediEUlvE_EEEEE6_M_runEv (节选)
+        mov     eax, 2000000
+        xor     edx, edx
+        idiv    DWORD PTR 16[rcx]      ; per = N / nthreads
+        test    eax, eax
+        jle     .L
+        cdqe
+        xor     edx, edx
+        mov     r8, QWORD PTR 8[rcx]
+        lock add        QWORD PTR [r8], 1   ; ← 原子 RMW：单条带 LOCK# 自增，纯用户态，无系统调用
+        add     rdx, 1
+        cmp     rax, rdx
+        jne     .L
+        ret
+; bench_mutex 工作线程（节选热循环）—— 每次迭代两次系统调用 + 一条普通自增
+;   _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ11bench_mutexiEUlvE_EEEEE6_M_runEv (节选)
+        mov     rbx, QWORD PTR 8[rcx]
+        mov     rcx, rsi
+        call    pthread_mutex_lock      ; ← 加锁：futex 系统调用 + 内存屏障
+        test    eax, eax
+        jne     .L
+        mov     rdx, QWORD PTR 24[rdi]
+        mov     rcx, rsi
+        add     rbx, 1
+        add     QWORD PTR [rdx], 1      ; 受互斥保护的普通自增（原子性来自锁，而非指令本身）
+        call    pthread_mutex_unlock    ; ← 解锁：第二次系统调用（可能陷入内核睡眠/唤醒）
+        cmp     rbp, rbx
+        jne     .L
+```
+
+> 注意：两条路径的「计数器自增」本身都是一次 `+1`，差异全在周围——`atomic` 用 CPU 的 `lock` 前缀把 RMW 变成不可分割的原子操作；`mutex` 则把临界区交给内核 futex 串行化，单次最慢、高争用下还坠入上下文切换。这与 D5.2 第①、②条一致：**绝对毫秒随机器而变，加速比（约 1.6–2.1×）才是可移植信号**。
+
 ## 附录 L：原子操作知识图谱（D6 知识连接） [J: Learning / H: Design / G: Performance]
 
 > 本附录把本章散落的「重排 / memory_order / RMW / 缓存 / 锁 / 无锁 / ABA」串成一张**概念依赖图**，回答三个 D6 问题：① 这些概念谁依赖谁？② 一条 `std::atomic` 写到底牵动哪些硬件/编译器机制？③ 与本书哪些章构成知识闭环？

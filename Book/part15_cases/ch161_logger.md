@@ -1957,3 +1957,58 @@ int main() {
 - 复现旗标：`g++ -O2 -std=c++23 -pthread _bench_d5_ch161_logger.cpp -o bench && ./bench`。**基准源码见库根 `_bench_d5_ch161_logger.cpp`**（与附录 D5 同源，已在本机 GCC 15.3.0 真实编译运行）。
 - 临时日志 `_bench_tmp_logger.log` 在基准结束时由 `std::remove` 清理；demo 内临时文件 `_bench_tmp_demo161.log` 同样用完即删。
 - 线程相关基准需 `-pthread`；加速比随机器/文件系统波动，方向性结论稳定可移植。
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch161_logger.cpp` 真实生成（节选自 strat_async(int), strat_async(int)::{lambda()#1}::operator()() const, fmt_ostringstream(int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; strat_async(int)  (525 条指令)
+push    r15
+push    r14
+push    r13
+push    r12
+push    rbp
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 376
+movaps    XMMWORD PTR 352[rsp], xmm6
+xor    edx, edx
+lea    rdi, 184[rsp]
+mov    r12d, ecx
+mov    rcx, rdi
+call    pthread_mutex_init
+pxor    xmm0, xmm0
+mov    ecx, 64
+mov    QWORD PTR 272[rsp], 0
+mov    QWORD PTR 280[rsp], 8
+movaps    XMMWORD PTR 288[rsp], xmm0
+movaps    XMMWORD PTR 304[rsp], xmm0
+movaps    XMMWORD PTR 320[rsp], xmm0
+movaps    XMMWORD PTR 336[rsp], xmm0
+call    _Znwy
+mov    ecx, 512
+mov    QWORD PTR 272[rsp], rax
+mov    rbx, rax
+lea    rsi, 24[rax]
+call    _Znwy
+mov    QWORD PTR 24[rbx], rax
+movq    xmm0, rax
+lea    rdx, 512[rax]
+mov    QWORD PTR 312[rsp], rsi
+punpcklqdq    xmm0, xmm0
+mov    QWORD PTR 344[rsp], rsi
+lea    rsi, 192[rsp]
+mov    rcx, rsi
+mov    QWORD PTR 304[rsp], rdx
+mov    QWORD PTR 328[rsp], rax
+mov    QWORD PTR 336[rsp], rdx
+mov    QWORD PTR 320[rsp], rax
+mov    QWORD PTR 32[rsp], rsi
+movaps    XMMWORD PTR 288[rsp], xmm0
+call    _ZNSt18condition_variableC1Ev
+mov    ecx, 40
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

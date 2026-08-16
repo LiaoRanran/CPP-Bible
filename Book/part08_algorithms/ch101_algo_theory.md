@@ -1642,3 +1642,70 @@ int main() {
 - 计时取 5 轮中位数；`volatile` sink 防 DCE。
 - 加速比（2.62×、4994× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch101_algo_theory.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch101_algo_theory.cpp` 真实生成（节选自热函数 `bench_greedy_vs_dp` 与 `bench_hash_vs_sorted`）。它们分别印证 D5.2 的两个非显然结论：贪心比 DP 快 4994× 是因为 DP 是 O(n·W) 嵌套循环、贪心只是一次线性扫描；`unordered_map` 比 sorted+二分快 2.62× 是因为哈希是 O(1) 单 `div`+短链、二分是 O(log N) 的 ~21 次随机访存。
+
+```asm
+; === bench_greedy_vs_dp：贪心主循环（已按价值密度排序，一遍线性扫描即结束）===
+;   _ZL18bench_greedy_vs_dpv() 节选
+  lea	rax, 8[r12]              ; r12 = 已排序的 (ratio,index) pair 数组
+  xor	r10d, r10d               ; r10 = 累计价值
+  lea	r11, 32008[r12]          ; 区间末尾（2000 个 pair）
+  mov	r9d, 100000              ; r9 = 剩余容量 W
+  movsxd	rdx, DWORD PTR [rax]     ; 取当前 pair 的 index
+  mov	ecx, DWORD PTR [rbx+rdx*4]   ; 取 wt[index]
+  cmp	ecx, r9d
+  jg	.L                        ; 装不下则跳过
+  movsxd	rdx, DWORD PTR [rsi+rdx*4]   ; 取 val[index]
+  sub	r9d, ecx                 ; 容量 -= wt
+  add	r10, rdx                 ; 价值 += val
+  add	rax, 16                  ; ← 步长 16 字节 = 1 个 pair<double,int>
+  cmp	r11, rax
+  jne	.L                       ; 线性扫描一遍即结束（O(n)）
+; === bench_greedy_vs_dp：0/1 背包 DP 内核（内层 w × 外层 i = O(n·W) ≈ 2×10⁸ 次）===
+;   _ZL18bench_greedy_vs_dpv() 节选
+  mov	eax, DWORD PTR [r8]      ; 取 wt[i]（r8=重量数组基址）
+  mov	edx, 100000              ; edx = w，从 W 向下递减
+  mov	ecx, edx
+  sub	ecx, eax                 ; ecx = w - wt[i]
+  mov	eax, DWORD PTR [r9]      ; 取 val[i]（r9=价值数组基址）
+  movsxd	rcx, ecx
+  add	eax, DWORD PTR [r12+rcx*4]   ; dp[w-wt[i]] + val[i]
+  mov	ecx, DWORD PTR [r12+rdx*4]   ; dp[w]
+  cmovl	eax, ecx                ; ← dp[w] = max(dp[w], dp[w-wt[i]]+val[i])
+  mov	DWORD PTR [r12+rdx*4], eax   ; 写回 dp[w]
+  mov	eax, DWORD PTR [r8]
+  sub	rdx, 1                   ; w--
+  cmp	eax, edx
+  jle	.L
+  add	r8, 4                    ; 外层 i++：重量指针 +4
+  add	r9, 4                    ; 外层 i++：价值指针 +4
+  cmp	rbp, r8
+  jne	.L                       ; 内层 w 循环 × 外层 i 循环 = O(n·W)
+; === bench_hash_vs_sorted：std::unordered_map 查找（链地址：取模 + 链表遍历）===
+;   _ZL20bench_hash_vs_sortedv() 节选
+  div	rdi                     ; ← key % bucket_count（取模定位桶，除法 ~20+ 周期）
+  mov	rcx, QWORD PTR [r9+rdx*8]   ; 取桶链表头
+  mov	rax, QWORD PTR [rcx]        ; 链表节点
+  mov	r12d, DWORD PTR 8[rax]      ; 节点内 key
+  cmp	r12d, r8d
+  je	.L                          ; 命中即返回
+  mov	r11, QWORD PTR [rax]        ; 下一节点（链地址指针跳转）
+  test	r11, r11
+  je	.L
+  mov	r12d, DWORD PTR 8[r11]
+  cmp	r12d, r8d
+  jne	.L                       ; 沿链比较，链长则退化为 O(n)
+; === bench_hash_vs_sorted：sorted + 二分查找（移位砍半，无除法）===
+;   _ZL20bench_hash_vs_sortedv() 节选
+  sar	rdx                       ; ← mid = (lo+hi)/2，二分砍半（移位，无除法）
+  cmp	r9d, DWORD PTR [r8+rdx*4]   ; 取 mid 元素与 key 比较
+  jg	.L
+  cmp	r9d, DWORD PTR [r8]    ; 命中判定
+  jne	.L
+```
+
+> 注意：贪心与 DP 的差距来自**循环嵌套层数**——DP 内层 `sub rdx,1`（w 递减）叠加外层 `add r8,4`/`add r9,4`（i 递增）形成 O(n·W) 的双层循环，而贪心只有 `add rax,16` 的单层线性扫描，故差千倍。哈希 vs 二分则相反：尽管哈希多了一次昂贵的 `div` 与指针跳转的链表遍历，但每查询只需 O(1) 几步；二分每次查询都要 `sar` 砍半并做 ~21 次随机访存（跨 8MB 数组，缓存未命中率高），在 Q≫N（5M 查询）时被放大。两例都印证 D5.2「选算法阶数比抠常数重要」与「绝对毫秒随机器而变，加速比才是可移植信号」。

@@ -1198,3 +1198,30 @@ int main() {
 | 关联章 | 路径 | 关系 |
 | --- | --- | --- |
 | ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch131_fmt_spdlog.cpp` 真实生成（节选 `std::__format::_Sink::_M_bump` / `_M_reserve`）。`_M_bump` 把一次写入推进游标压缩成 **2 条指令、零调用**；`_M_reserve` 的快速路径只做一次容量比较 `jnb`，仅当容量不足才 `call [ptr]` 走虚函数重分配。这把 D5.2「std::format 无 streambuf 动态分配与虚函数开销」落到机器码：热路径几乎免费。
+
+```asm
+; _M_bump：写入后推进游标（热路径，2 条指令）
+;   _ZNSt8__format5_SinkIcE7_M_bumpEy
+        add     QWORD PTR 24[rcx], rdx  ; end += n，仅移动写指针
+        ret                             ; ← 无 call、无分支
+; _M_reserve：预留容量，快速路径零分配
+;   _ZNSt8__format5_SinkIcE10_M_reserveEy  (节选)
+        sub     rcx, QWORD PTR 8[rax]   ; 计算当前已用字节
+        sub     r9, rcx
+        cmp     r9, rdx                 ; 剩余容量 >= 请求?
+        jnb     .L                      ; ← 够用则跳过，直接返回(无分配)
+        cmp     r8, rdx
+        jb      .L
+        mov     r8, QWORD PTR [rax]     ; 取重分配器 vptr
+        mov     rcx, rax
+        mov     QWORD PTR 48[rsp], rax
+        mov     QWORD PTR 56[rsp], rdx
+        call    [QWORD PTR [r8]]        ; 仅容量不足：虚函数重分配
+```
+
+> 注意：可移植信号是「format 的写路径 = 一次加法（_M_bump）+ 一次比较（_M_reserve 的 `jnb`）」，而 `ostringstream` 每次 `<<` 都要经 `streambuf` 虚函数与潜在堆分配。D5.2 的 1.42×/1.48× 加速比即源于此结构性差异，而非魔法；mingw 下 `snprintf` 反常识地慢属运行时实现特性，与这段 format 内部机制无关。

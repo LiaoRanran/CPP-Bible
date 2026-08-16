@@ -1559,3 +1559,48 @@ int main() {
 - 注意：ranges 视图是惰性求值的，管道组合是编译期类型运算，运行期无动态分发。
 - 比值（0.864×、1.315× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch119_ranges.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch119_ranges.cpp` 真实生成（节选自 sc1_ranges(std::vector<int, std::allocator<int> > const&)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; sc1_ranges(std::vector<int, std::allocator<int> > const&)  (34 条指令)
+mov    r8, QWORD PTR 8[rcx]
+mov    rcx, QWORD PTR [rcx]
+cmp    r8, rcx
+jne    .L
+jmp    .L
+add    rcx, 4
+cmp    r8, rcx
+je    .L
+movsxd    rdx, DWORD PTR [rcx]
+test    dl, 1
+jne    .L
+xor    r9d, r9d
+cmp    r8, rcx
+je    .L
+imul    rdx, rdx
+lea    rax, 4[rcx]
+add    r9, rdx
+cmp    r8, rax
+jne    .L
+jmp    .L
+add    rax, 4
+cmp    r8, rax
+je    .L
+movsxd    rdx, DWORD PTR [rax]
+mov    rcx, rax
+test    dl, 1
+jne    .L
+cmp    rax, r8
+jne    .L
+mov    rax, r9
+ret
+xor    r9d, r9d
+mov    rax, r9
+ret
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

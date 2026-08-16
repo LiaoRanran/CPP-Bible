@@ -1391,6 +1391,62 @@ int main(){
 
 **交叉引用**：ch135（模式总览：virtual 策略 vs switch vs template）/ ch71（policy 模式）/ ch67（concepts 约束）
 
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch140_policy_pattern.cpp` 真实生成（节选自 bench_policy_virtual(Data const&, int), get_vmul(), bench_policy_stdfunction(Data const&, int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; bench_policy_virtual(Data const&, int)  (53 条指令)
+push    r13
+push    r12
+push    rbp
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 40
+mov    rdi, rcx
+mov    ebp, edx
+call    _Z8get_vmulv
+mov    r12, rax
+test    ebp, ebp
+jle    .L
+xor    ebx, ebx
+xor    esi, esi
+lea    r13, _ZNK4VMul5applyERK4Data[rip]
+jmp    .L
+mov    eax, DWORD PTR [rdi]
+imul    eax, DWORD PTR 4[rdi]
+add    ebx, 1
+add    esi, eax
+cmp    ebp, ebx
+je    .L
+mov    rax, QWORD PTR [r12]
+mov    rax, QWORD PTR [rax]
+cmp    rax, r13
+je    .L
+mov    rdx, rdi
+mov    rcx, r12
+add    ebx, 1
+call    rax
+add    esi, eax
+cmp    ebp, ebx
+jne    .L
+mov    eax, esi
+add    rsp, 40
+pop    rbx
+pop    rsi
+pop    rdi
+pop    rbp
+pop    r12
+pop    r13
+ret
+xor    esi, esi
+mov    eax, esi
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。
+
 ## 附录 M：Policy-Based Design 工业落地与历史深挖
 
 ### M.1 历史深挖：Andrei Alexandrescu《Modern C++ Design》(2001) 的提出

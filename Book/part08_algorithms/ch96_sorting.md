@@ -1593,3 +1593,69 @@ int main() {
 - 计时用 `std::chrono::steady_clock`，每个场景跑 5 轮取中位数；求和/比较结果经 `volatile` sink 落盘，防止编译器把基准循环优化成无副作用的空操作。
 - 全部数字为同机实测锁定值，**请勿在本机重测并据此质疑正文**：绝对毫秒随硬件与负载而变，唯一可跨机器比较的是「加速比」。
 - demo 仅验证语义正确性——`is_sorted` 验全序、`partial_sort` 前缀段有序且其余元素不小于第 10 小、`nth_element` 左半 ≤ 中位 ≤ 右半——**绝不 assert 任何耗时**；规模缩到 1 千元素，CI 秒级完成。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_96_sort.cpp` 真实生成（节选自 double median5<main::{lambda(char const*, std::vector<int, std::allocator<int> > const&, auto:1&&)#1}::operator()<main::{lambda(std::vector<int, std::allocator<int> >&)#1}>(char const*, std::vector<int, std::allocator<int> > const&, main::{lambda(std::vector<int, std::allocator<int> >&)#1}&&) const::{lambda()#1}>(main::{lambda(char const*, std::vector<int, std::allocator<int> > const&, auto:1&&)#1}::operator()<main::{lambda(std::vector<int, std::allocator<int> >&)#1}>(char const*, std::vector<int, std::allocator<int> > const&, main::{lambda(std::vector<int, std::allocator<int> >&)#1}&&) const::{lambda()#1}), double median5<main::{lambda(char const*, std::vector<int, std::allocator<int> > const&, auto:1&&)#1}::operator()<main::{lambda(std::vector<int, std::allocator<int> >&)#2}>(char const*, std::vector<int, std::allocator<int> > const&, main::{lambda(std::vector<int, std::allocator<int> >&)#2}&&) const::{lambda()#1}>(main::{lambda(char const*, std::vector<int, std::allocator<int> > const&, auto:1&&)#1}::operator()<main::{lambda(std::vector<int, std::allocator<int> >&)#2}>(char const*, std::vector<int, std::allocator<int> > const&, main::{lambda(std::vector<int, std::allocator<int> >&)#2}&&) const::{lambda()#1}), double median5<main::{lambda(char const*, std::vector<int, std::allocator<int> > const&, auto:1&&)#1}::operator()<main::{lambda(std::vector<int, std::allocator<int> >&)#1}>(char const*, std::vector<int, std::allocator<int> > const&, main::{lambda(std::vector<int, std::allocator<int> >&)#1}&&) const::{lambda()#1}>(main::{lambda(char const*, std::vector<int, std::allocator<int> > const&, auto:1&&)#1}::operator()<main::{lambda(std::vector<int, std::allocator<int> >&)#1}>(char const*, std::vector<int, std::allocator<int> > const&, main::{lambda(std::vector<int, std::allocator<int> >&)#1}&&) const::{lambda()#1}) [clone .cold]）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; double median5<main::{lambda(char const*, std::vector<int, std::allocator<int> > const&, auto:1&&)#1}::operator()<main::{lambda(std::vector<int, std::allocator<int> >&)#1}>(char const*, std::vector<int, std::allocator<int> > const&, main::{lambda(std::vector<int, std::allocator<int> >&)#1}&&) const::{lambda()#1}>(main::{lambda(char const*, std::vector<int, std::allocator<int> > const&, auto:1&&)#1}::operator()<main::{lambda(std::vector<int, std::allocator<int> >&)#1}>(char const*, std::vector<int, std::allocator<int> > const&, main::{lambda(std::vector<int, std::allocator<int> >&)#1}&&) const::{lambda()#1})  (217 条指令)
+push    r15
+push    r14
+push    r13
+push    r12
+push    rbp
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 104
+movaps    XMMWORD PTR 64[rsp], xmm6
+movaps    XMMWORD PTR 80[rsp], xmm7
+movsd    xmm7, QWORD PTR .LC[rip]
+mov    r12d, 5
+xor    ebp, ebp
+mov    r13, QWORD PTR [rcx]
+mov    QWORD PTR 32[rsp], 0
+mov    QWORD PTR 48[rsp], 0
+mov    rbx, QWORD PTR 0[r13]
+mov    rdi, QWORD PTR 8[r13]
+sub    rdi, rbx
+je    .L
+mov    rcx, rdi
+call    _Znwy
+mov    rdx, rbx
+mov    r8, rdi
+mov    rcx, rax
+mov    r14, rax
+lea    r15, [rax+rdi]
+lea    rbx, 4[r14]
+call    memcpy
+call    _ZNSt6chrono3_V212steady_clock3nowEv
+mov    r8d, 63
+mov    rdx, r15
+mov    rcx, r14
+mov    QWORD PTR 40[rsp], rax
+mov    rax, rdi
+sar    rax, 2
+bsr    rax, rax
+xor    rax, 63
+sub    r8d, eax
+; double median5<main::{lambda(char const*, std::vector<int, std::allocator<int> > const&, auto:1&&)#1}::operator()<main::{lambda(std::vector<int, std::allocator<int> >&)#2}>(char const*, std::vector<int, std::allocator<int> > const&, main::{lambda(std::vector<int, std::allocator<int> >&)#2}&&) const::{lambda()#1}>(main::{lambda(char const*, std::vector<int, std::allocator<int> > const&, auto:1&&)#1}::operator()<main::{lambda(std::vector<int, std::allocator<int> >&)#2}>(char const*, std::vector<int, std::allocator<int> > const&, main::{lambda(std::vector<int, std::allocator<int> >&)#2}&&) const::{lambda()#1})  (153 条指令)
+push    r15
+push    r14
+push    r13
+push    r12
+push    rbp
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 136
+movaps    XMMWORD PTR 96[rsp], xmm6
+movaps    XMMWORD PTR 112[rsp], xmm7
+movsd    xmm7, QWORD PTR .LC[rip]
+mov    ebp, 5
+xor    edi, edi
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

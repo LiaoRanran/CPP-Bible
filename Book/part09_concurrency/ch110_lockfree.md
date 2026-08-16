@@ -1619,3 +1619,56 @@ int main() {
 - 编译与测量命令（基准与此 demo 同源）：`g++ -O2 -std=c++17`。
 - 本 demo 仅断言功能正确性（三条路径净额相等），不断言任何计时、加速比或 `sizeof` 数值。
 - 绝对毫秒取决于 CPU 频率 / 负载 / 温度计；跨机器只比较"相对倍数"才有意义。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_110_lockfree.cpp` 真实生成（节选三档累加的**工作线程**热循环）。per-thread 写私有槽是纯 `add`、atomic 是单条 `lock add`、mutex 是两次 `pthread_mutex_*` 系统调用加一条普通 `add`——这三行核心指令正好对应 D5.2「wait-free 零同步 / lock-free 受 MESI 拖累 / lock-based 最慢」的层级。
+
+```asm
+; bench_perthread 工作线程（节选）—— 写入本线程私有槽，零共享写、零同步指令
+;   _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ15bench_perthreadiEUlvE_EEEEE6_M_runEv (节选)
+        mov     eax, 2000000
+        xor     edx, edx
+        mov     r8, QWORD PTR 16[rcx]
+        idiv    DWORD PTR [r8]         ; per = N / nt
+        test    eax, eax
+        jle     .L
+        mov     rdx, QWORD PTR 24[rcx]
+        movsxd  rcx, DWORD PTR 8[rcx]
+        cdqe
+        mov     rdx, QWORD PTR [rdx]
+        add     QWORD PTR [rdx+rcx*8], rax  ; ← 写自己那一个槽：纯普通 add，无 lock、无原子
+        ret
+; bench_atomic 工作线程（节选）—— 共享原子计数器，单条 lock add
+;   _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12bench_atomiciEUlvE_EEEEE6_M_runEv (节选)
+        mov     eax, 2000000
+        xor     edx, edx
+        idiv    DWORD PTR 16[rcx]
+        test    eax, eax
+        jle     .L
+        cdqe
+        xor     edx, edx
+        mov     r8, QWORD PTR 8[rcx]
+        lock add        QWORD PTR [r8], 1   ; ← 单条 lock add：无锁 RMW，但抢同一 cache line
+        add     rdx, 1
+        cmp     rax, rdx
+        jne     .L
+        ret
+; bench_mutex 工作线程（节选）—— 每次迭代两次系统调用 + 普通 add
+;   _ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ11bench_mutexiEUlvE_EEEEE6_M_runEv (节选)
+        mov     rbx, QWORD PTR 8[rcx]
+        mov     rcx, rsi
+        call    pthread_mutex_lock      ; ← 加锁：futex 系统调用
+        test    eax, eax
+        jne     .L
+        mov     rdx, QWORD PTR 24[rdi]
+        mov     rcx, rsi
+        add     rbx, 1
+        add     QWORD PTR [rdx], 1      ; 受互斥保护的普通自增
+        call    pthread_mutex_unlock    ; ← 解锁：第二次系统调用
+        cmp     rbp, rbx
+        jne     .L
+```
+
+> 注意：三档「+1」本身都是一次加法，**性能差异全在同步原语**——per-thread 没有任何 `lock`/原子，故随核数近乎线性扩展（D5.2 第①条）；atomic 的 `lock add` 无锁却因 MESI 在核间反复弹跳同一 cache line 而负扩展（第②条）；mutex 更因 futex 睡眠/唤醒在高争用下最慢（第③条）。**绝对毫秒随机器而变，加速比才是可移植信号**。

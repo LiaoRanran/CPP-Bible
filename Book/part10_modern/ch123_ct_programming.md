@@ -1493,3 +1493,37 @@ int main() {
 - 编译期计算增加编译时间与二进制体积（`.rodata` 膨胀）；决策依据应是"查询频率 × 单次计算成本"。
 - 加速比（6.05×、59.04×、1.84× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch123_ct_programming.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch123_ct_programming.cpp` 真实生成（节选 `fact_rt` / `isqrt_pure` / `isqrt_ct`）。运行期计算（`fact_rt`/`isqrt_pure`）是真实循环（`imul` 逐次相乘 / 试乘）；而 `isqrt_ct` 在输入较大时直接查一张**编译期生成**的查找表 `kSqrtLUT`，核心只是一句 `movzx` 内存读——这正对应 D5.2 中"编译期 LUT 比运行期 isqrt 快 1.84×"与"运行期计算是 O(n) 实时工作"的机器码根因。
+
+```asm
+; fact_rt：运行期阶乘 —— 每次调用都真的用 imul 累乘
+;   _Z7fact_rti  (节选)
+        mov     edx, 1
+        cmp     ecx, 1
+        jle     .L
+        imul    rdx, rax                ; ← 运行期逐次相乘
+        imul    rdx, rcx
+        ; ...
+; isqrt_pure：运行期整数开方 —— 试乘循环
+;   _Z10isqrt_purei  (节选)
+        lea     r8d, [rdx+r9]
+        imul    r8d, eax                ; ← 运行期试乘
+        cmp     r8d, ecx
+        jg      .L
+        ; ...
+; isqrt_ct：编译期 LUT —— 大输入直接查表，无需计算
+;   _Z8isqrt_cti  (节选)
+        cmp     ecx, 255
+        jbe     .L                     ; 小输入走循环
+        movsxd  rcx, ecx
+        lea     rax, _ZL8kSqrtLUT[rip] ; ← 指向编译期生成的查找表 (.rodata)
+        movzx   edx, BYTE PTR [rax+rcx] ; ← 决定性指令：一次内存读即得结果
+        mov     eax, edx
+        ret
+```
+
+> 注意：`fact_rt`/`isqrt_pure` 的 `imul` 循环是 O(n) 运行期工作；`isqrt_ct` 的 LUT 路径把计算挪到编译期，运行期只剩一条 `movzx`（内存读），这正是 D5.2 第 4、5 点"编译期 LUT 快 1.84×"与"收益取决于查询频率"的硬件体现。绝对毫秒随机器而变；`movzx` 查表 vs `imul` 循环这一事实与编译器无关。

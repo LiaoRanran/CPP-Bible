@@ -1535,24 +1535,22 @@ int main(){
 
 ### D5.5 汇编实证 (GCC 15.3.0)
 
-> 同一个常数界循环，**没有屏障被闭式化、有屏障保留真实循环**——这就是微基准必须防 DCE 的硬件证据。完整反汇编见 `Examples/_ch151_timing.asm`。
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_151_timing.cpp` 真实生成（节选 `main` 计时循环）。注意循环体里**只有 `steady_clock::now()` 取时调用，没有任何被测计算**——因为累加结果未被使用，GCC -O2 把整个被测循环 DCE 消除了。这正印证 D5.2「微基准必须防编译器消除」：若不消费结果，你测到的只是取时开销，而非目标代码。
 
 ```asm
-# g_nofence() —— 编译器把 sum(0..99) 闭式化为常量 4950，循环消失
-_Z9g_nofencev:
-        mov     eax, 4950
-        ret
-
-# g_fence() —— asm 屏障强制累加器每轮存活，100 次迭代真实执行
-_Z7g_fencev:
-        xor     edx, edx
-        xor     eax, eax
-.L2:
-        add     rax, rdx
-        add     rdx, 1
-        cmp     rdx, 100
-        jne     .L2
-        ret
+; main：计时循环（节选）—— -O2 下被测计算被整个 DCE 消除
+;   main
+        call    __main
+        call    _ZNSt6chrono3_V212steady_clock3nowEv  ; t0 = steady_clock::now()
+        mov     rsi, rax
+        jmp     .L
+        cmp     ebx, 2000000                           ; 循环 2M 次
+        je      .L
+        call    _ZNSt6chrono3_V212steady_clock3nowEv  ; 反复取时(仅此而已)
+        add     ebx, 1
+        cmp     rsi, rax
+        je      .L
+        sub     rax, rsi                              ; dt = now - t0
 ```
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]

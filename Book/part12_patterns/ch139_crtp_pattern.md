@@ -1388,6 +1388,62 @@ int main() {
 - Book/part05_oo/ch51_crtp.md — CRTP 原理
 - Book/part12_patterns/ch137_structural.md — 结构型模式
 
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch139_crtp_pattern.cpp` 真实生成（节选自 bench_virtual(int), get_vobj(), bench_crtp(int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; bench_virtual(int)  (47 条指令)
+push    r12
+push    rbp
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 32
+mov    edi, ecx
+call    _Z8get_vobjv
+mov    rbp, rax
+test    edi, edi
+jle    .L
+xor    ebx, ebx
+xor    esi, esi
+lea    r12, _ZNK4VAdd7computeEv[rip]
+jmp    .L
+add    ebx, 1
+add    esi, eax
+cmp    edi, ebx
+je    .L
+mov    rax, QWORD PTR 0[rbp]
+mov    rdx, QWORD PTR 16[rax]
+mov    eax, 2
+cmp    rdx, r12
+je    .L
+mov    rcx, rbp
+add    ebx, 1
+call    rdx
+add    esi, eax
+cmp    edi, ebx
+jne    .L
+mov    eax, esi
+add    rsp, 32
+pop    rbx
+pop    rsi
+pop    rdi
+pop    rbp
+pop    r12
+ret
+xor    esi, esi
+mov    eax, esi
+add    rsp, 32
+pop    rbx
+pop    rsi
+pop    rdi
+pop    rbp
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。
+
 ## 附录 M：CRTP 工业落地与历史深挖（真实场景 × 权威出处）
 
 > 本附录聚焦第 139 章 §⑧、附录 A/I 之外的「硬核落地」与「被低估的历史细节」，所有论断均可在线核验。

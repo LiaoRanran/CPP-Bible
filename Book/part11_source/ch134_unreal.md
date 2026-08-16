@@ -1347,3 +1347,50 @@ int main(){
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 
 **交叉引用**：ch47（虚函数表与去虚化）/ ch41（智能指针与反射开销）/ ch25（variant 替代字符串分发）
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch134_unreal.cpp` 真实生成（节选 `bench_offset_access` / `bench_virtual` / `bench_string_lookup`）。`bench_offset_access`（成员指针）与直接字段**逐字相同**——成员指针在编译期化为固定偏移，循环中被消除、零调用；`bench_virtual`（强类型虚 getter）每属性一次虚表 `call rax`；`bench_string_lookup`（蓝图反射）每属性一次 `_ZSt11_Hash_bytes` 字符串哈希 + `div` 取桶 + `_M_find_before_node` 探probe。这把 D5.2 的「代价阶梯」从毫秒数变成机器码层级。
+
+```asm
+; bench_offset_access：成员指针 → 编译期偏移，等价于直接字段
+;   _Z19bench_offset_accessRK9Transformi  (节选)
+        test    edx, edx
+        jle     .L
+        cvttss2si      eax, DWORD PTR [rcx]  ; 取 Transform.x（固定偏移，无查找）
+        imul    eax, edx
+        ret                             ; ← 与 bench_direct 逐字相同、零调用
+; bench_virtual：强类型虚 getter → 每个属性一次虚调用
+;   _Z13bench_virtualRK9Transformi  (节选，循环核)
+        mov     rax, QWORD PTR [rdi]    ; 取对象虚表指针
+        mov     rax, QWORD PTR [rax]    ; 解引用虚表 → getter 地址
+        cmp     rax, r12
+        je      .L
+        mov     rcx, rdi
+        add     ebx, 1
+        call    rax                     ; ← 间接调用，不可内联
+; bench_string_lookup：蓝图反射 → 字符串键哈希 map 查找
+;   _Z19bench_string_lookupRK9Transformi  (节选，查找路径)
+        mov     r8d, 3339675911
+        mov     edx, 1
+        lea     rcx, .LC[rip]
+        call    _ZSt11_Hash_bytesPKvyy  ; ← 对字符串字面量 "x" 做哈希
+        xor     edx, edx                ; 32 位除法高位清零
+        mov     QWORD PTR 48[rsp], 1
+        mov     r9, rax                 ; r9 = 哈希值
+        lea     rax, _ZN17StringReflectable8prop_mapE[rip]
+        mov     r10, QWORD PTR 8[rax]   ; r10 = 桶数
+        mov     rcx, QWORD PTR [rax]
+        lea     rax, .LC[rip]
+        mov     QWORD PTR 32[rsp], r9
+        mov     QWORD PTR 56[rsp], rax
+        mov     rax, r9
+        mov     r9, rbp
+        div     r10                     ; 哈希取模得桶
+        mov     r8, rdx                 ; r8 = 桶下标(余数)
+        mov     rdx, r10
+        call    _ZNKSt10_HashtableISt17basic_string_viewIcSt11char_traitsIcEESt4pairIKS3_iESaIS6_ENSt8__detail10_Select1stESt8equal_toIS3_ESt4hashIS3_ENS8_18_Mod_range_hashingENS8_20_Default_ranged_hashENS8_20_Prime_rehash_policyENS8_17_Hashtable_traitsILb1ELb0ELb1EEEE19_M_find_before_nodeEyRS5_y.isra.0  ; 桶内探probe
+```
+
+> 注意：可移植信号是「直接/成员指针 = 0 次 call，虚 getter = 每属性 1 次 `call rax`，字符串反射 = 每属性 1 次 `Hash_bytes` + `div` + 桶探probe」的阶梯。D5.2「字符串键比 virtual 还慢 4.3×、比直接慢几个数量级」正是这条机器码阶梯的累加结果；引擎为热属性生成强类型 getter，编译后等价于 `bench_offset_access` 的零调用路径。

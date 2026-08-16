@@ -2024,3 +2024,41 @@ int main() {
 - 场景 3 使用随机数据排序后查询，避免编译器推导出确定性 pattern 而优化掉 `find`；200 次查询放大 O(n) 与 O(log n) 的差距至可测量范围。
 - 场景 5 预分配目标缓冲，仅测拷贝本身（排除 `vector` 构造开销）。
 - 绝对毫秒受 CPU 频率、缓存状态、后台负载影响，跨机器不可直接比较；**加速比**（同一机器同一轮的相对值）才是可移植信号。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch95_stl_algorithms.cpp` 真实生成（节选自热函数 `bench3_search`，对应 D5.1 场景 3 的 `find` vs `lower_bound` 计时段）。D5.2 结论 2 称 `lower_bound` 比 `find` 快约 9700×——根因就在下面两条路径：线性扫描每查询比较 ~N 次，二分每次只比较 ~log₂N 次；且二分用 `sar` 移位算 mid（无除法、纯索引寻址），而 `find` 是 `add rax,4` 的逐元素顺序比较。
+
+```asm
+; find（std::find 线性扫描）：每查询平均比较 ~N/2 个元素，最坏 2M 次
+;   _ZL13bench3_searchv() 节选
+  mov	ecx, DWORD PTR [r8]      ; ecx = 本次查询的 key（只取一次）
+  mov	rax, rbx                 ; rax = 已排序数组基址（扫描指针）
+  cmp	DWORD PTR [rbx], ecx     ; 比较第 1 个元素
+  je	.L
+  lea	rax, 4[rbx]              ; 指针 +4 字节（= 推进 1 个 int）
+  cmp	DWORD PTR [rax], ecx     ; 比较第 2 个元素，未命中继续
+  je	.L
+  add	rax, 4                   ; 继续线性推进
+  cmp	DWORD PTR [rax], ecx
+  je	.L
+  add	rax, 4
+  cmp	r12, rax                 ; r12 = 数组尾端
+  je	.L                       ; 扫到末尾仍未命中 → 最坏比较 2M 次
+; lower_bound（std::lower_bound 二分）：每次比较把区间对半砍
+;   _ZL13bench3_searchv() 节选
+  mov	r10d, DWORD PTR [rcx]    ; r10d = 本次查询的 key
+  mov	rax, r14                 ; r14 = 区间长度 N
+  mov	r9, rbx                  ; r9 = 数组基址
+  sar	rax, 2                   ; 长度 → 元素个数（/4）
+  mov	r8, rax
+  sar	r8                       ; ← 二分：mid = (lo+hi)/2，区间对半砍
+  cmp	DWORD PTR [r9+r8*4], r10d ; 取 base+mid*4 处元素与 key 比较
+  jl	.L                       ; 小于 key 则收窄右半（每次砍掉一半）
+  add	rcx, 4                   ; 下一查询 key
+  cmp	rcx, r13
+  jne	.L                       ; 200 次查询循环
+```
+
+> 注意：`find` 的核心 `add rax,4` + `cmp [rax],ecx` 是 O(N) 顺序比较（200 次查询共触碰 ~2 亿次比较），`lower_bound` 的 `sar r8` + `cmp [r9+r8*4],r10d` 是 O(log N)（200 次查询仅 ~4200 次比较）。比较次数差约 5 个数量级，正是 D5.2 结论 2「有序前提的价值被严重低估」的机器码证据。绝对毫秒随机器而变，加速比才是可移植信号。

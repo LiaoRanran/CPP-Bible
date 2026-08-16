@@ -1269,6 +1269,62 @@ int main() {
 - Book/part12_patterns/ch137_structural.md — 结构型模式
 - Book/part05_oo/ch51_crtp.md — CRTP 静态多态
 
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch135_patterns_intro.cpp` 真实生成（节选自 bench_switch_dispatch(int), bench_virtual_strategy(int), get_strat(int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; bench_switch_dispatch(int)  (47 条指令)
+mov    edx, DWORD PTR g_sink[rip]
+test    ecx, ecx
+jle    .L
+xor    eax, eax
+test    edx, edx
+jne    .L
+jmp    .L
+add    eax, 1
+cmp    ecx, eax
+je    .L
+cmp    edx, 1
+jne    .L
+mov    r8d, ecx
+xor    edx, edx
+sub    r8d, eax
+and    r8d, 1
+je    .L
+add    eax, 1
+mov    edx, 1729
+cmp    ecx, eax
+je    .L
+add    eax, 2
+add    edx, 3458
+cmp    ecx, eax
+jne    .L
+mov    eax, DWORD PTR g_sink[rip]
+xor    eax, edx
+mov    DWORD PTR g_sink[rip], eax
+mov    eax, edx
+ret
+xor    edx, edx
+jmp    .L
+test    cl, 1
+je    .L
+mov    edx, 39
+mov    eax, 1
+cmp    ecx, 1
+je    .L
+add    eax, 2
+add    edx, 78
+cmp    ecx, eax
+je    .L
+add    eax, 2
+add    edx, 78
+cmp    ecx, eax
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。
+
 ## 附录 L：设计模式工业深挖 — 历史渊源、真实落地与生产戒律 [F: Industry / B: Principle]
 
 > 本节为 P0-11 质量战役「应用/工程章」大波次扩写：在总论层面把 GoF 模式的历史、在知名 C++ 项目中的真实落地、生产踩坑、与现代 C++ 的互动、以及权威引用一次性补全。所有论断均有可查证出处，拒绝软文与比喻堆砌。

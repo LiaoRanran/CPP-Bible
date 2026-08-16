@@ -1479,3 +1479,35 @@ int main() {
 - 本附录亮点在**数字自洽**：`copy_return_copyonly` 实测值恰落在 `construct + pure_copy` 之和附近，构成可手算的闭合验证，独立于绝对毫秒。
 - 加速比（2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_117_rvo.cpp`。demo 区分了"纯 RVO（C++17 保证，可断言零拷贝）"与"NRVO（优化非保证，仅打印计数不 assert）"，并断言 `return std::move` 在 copy-only 类型上确实触发拷贝（功能语义），未对时间或精确 `sizeof` 做任何断言。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_117_rvo.cpp` 真实生成（节选热函数 `make_nrvo` / `make_move` 与 `make_move_copyonly`）。NRVO 与可移动类型的 `return std::move` 都把 vector 的指针/大小/容量三元组直接写入返回槽（O(1)）；而"只拷贝不可移动"的类型在 `return std::move` 时被重载决议静默落回 `const&` 拷贝，多出一个完整的 `memcpy`（O(n)）——这正是 D5.2 中 `copy_return_copyonly` 翻倍（2.0×）的机器码根因。
+
+```asm
+; make_nrvo：NRVO —— 局部对象直接在返回槽 [rbx] 构造，无拷贝
+;   _Z9make_nrvov  (节选)
+        mov     ecx, 4000000
+        call    _Znwy                   ; 分配 vector 堆缓冲
+        mov     QWORD PTR [rbx], rax    ; ← 把指针/大小/容量写入返回槽 (O(1))
+        mov     QWORD PTR 16[rbx], rdx
+        mov     QWORD PTR 8[rbx], rax
+; make_move：return std::move(b) 但类型可移动 —— 同样只交接指针三元组
+;   _Z9make_movev  (节选)
+        mov     ecx, 4000000
+        call    _Znwy
+        mov     QWORD PTR [rbx], rcx    ; ← O(1) 指针交接，无逐元素复制
+        mov     QWORD PTR 8[rbx], rdx
+        mov     QWORD PTR 16[rbx], rdx
+; make_move_copyonly：类型仅拷贝 —— std::move 退化成深拷贝
+;   _Z18make_move_copyonlyv  (节选)
+        mov     ecx, 4000000
+        call    _Znwy                   ; 分配临时源
+        mov     r8d, 4000000
+        call    memcpy                  ; ← 决定性指令：400 万元素的逐位深拷贝
+        mov     edx, 4000000
+        call    _ZdlPvy                 ; 释放临时源
+```
+
+> 注意：前两者循环体只有 3 条 `mov QWORD` 指针交接（O(1)），与 `construct_only` 几乎同成本；`make_move_copyonly` 多出 `call memcpy` + `call _ZdlPvy`，恰好等于一次额外深拷贝，使总耗时 ≈ 构造 + 纯拷贝（2.0×）。这印证了 D5.2 第 1、2、3 点：`return b;` 永远不劣于 `return std::move(b);`。加速比随机器而变。

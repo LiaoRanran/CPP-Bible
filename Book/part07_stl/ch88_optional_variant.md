@@ -1301,3 +1301,22 @@ int main() {
 - 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
 - 加速比（1.41×、~1.04×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_88_variant.cpp`。demo 仅断言 `visit` 分发结果与 `optional` 空/非空语义（功能正确性），未对时间、倍数或 `sizeof` 做任何断言。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_88_variant.cpp` 真实生成（节选自 VA::op(int) const, VB::op(int) const, VB::~VB()）。D5.2 比较 std::variant 访问与虚函数调用的开销。下方为 GCC 15.3.0 -O2 下两个访问函数的真实产物。
+
+```asm
+; VA::op(int) const  (2 条指令)
+lea    eax, 1[rdx]
+ret
+; VB::op(int) const  (2 条指令)
+lea    eax, [rdx+rdx]
+ret
+; VB::~VB()  (2 条指令)
+mov    edx, 8
+jmp    _ZdlPvy
+```
+
+> 注意：在 -O2 下 VA::op / VB::op 均被编译为 2 条指令的极简本体（lea;ret），析构走 jmp operator delete。这说明 D5.2 的 1.41× 差异并非来自计算本体，而是来自 std::visit 相比虚调用省去的堆分配（new/delete 往返）与一次间接 call 的开销。绝对毫秒随机器而变，加速比才是可移植信号。

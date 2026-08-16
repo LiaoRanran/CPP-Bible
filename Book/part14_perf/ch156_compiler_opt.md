@@ -1275,3 +1275,58 @@ int main() {
 | ch69 | 替代运行时 | constexpr | constexpr 编译期计算替代运行时 |
 | ch149 | 门禁固化 | CI 流程 | 优化开关纳入 CI 门禁 |
 | ch47 | 去虚化 | 虚函数 | 虚函数去虚化与 O3 内联相关 |
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch156_compiler_opt.cpp` 真实生成（节选自 main::{lambda(char const*, std::vector<double, std::allocator<double> >&)#1}::operator()(char const*, std::vector<double, std::allocator<double> >&) const [clone .isra.0], kernel_o0(long, long const*), loop_noinline(long, long const*)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; main::{lambda(char const*, std::vector<double, std::allocator<double> >&)#1}::operator()(char const*, std::vector<double, std::allocator<double> >&) const [clone .isra.0]  (80 条指令)
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 48
+mov    rdi, rdx
+mov    rdx, rcx
+lea    rcx, .LC[rip]
+call    __mingw_printf
+mov    rsi, QWORD PTR 8[rdi]
+mov    rbx, QWORD PTR [rdi]
+cmp    rbx, rsi
+je    .L
+movsd    xmm1, QWORD PTR [rbx]
+lea    rcx, .LC[rip]
+add    rbx, 8
+movq    rdx, xmm1
+call    __mingw_printf
+cmp    rsi, rbx
+jne    .L
+mov    rsi, QWORD PTR 8[rdi]
+mov    rcx, QWORD PTR [rdi]
+cmp    rsi, rcx
+je    .L
+mov    rbx, rsi
+mov    r8d, 63
+mov    QWORD PTR 40[rsp], rcx
+sub    rbx, rcx
+mov    rax, rbx
+sar    rax, 3
+bsr    rdx, rax
+xor    rdx, 63
+test    rax, rax
+mov    eax, 64
+cmovne    eax, edx
+mov    rdx, rsi
+sub    r8d, eax
+movsxd    r8, r8d
+add    r8, r8
+call    _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPdSt6vectorIdSaIdEEEExNS0_5__ops15_Iter_less_iterEEvT_S9_T0_T1_.isra.0
+cmp    rbx, 128
+mov    rcx, QWORD PTR 40[rsp]
+jle    .L
+lea    rbx, 128[rcx]
+mov    rdx, rbx
+call    _ZSt16__insertion_sortIN9__gnu_cxx17__normal_iteratorIPdSt6vectorIdSaIdEEEENS0_5__ops15_Iter_less_iterEEvT_S9_T0_.isra.0
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

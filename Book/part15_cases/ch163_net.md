@@ -1648,6 +1648,61 @@ int main(){
 
 **交叉引用**：ch91（filesystem 与 IO）/ ch156（编译器优化）/ ch160（内存池消除分配）
 
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch163_net.cpp` 真实生成（节选自 bench_field_copy(int), bench_length_prefix(int), bench_manual_pack(int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; bench_field_copy(int)  (108 条指令)
+sub    rsp, 104
+movaps    XMMWORD PTR [rsp], xmm6
+movaps    XMMWORD PTR 16[rsp], xmm7
+movaps    XMMWORD PTR 32[rsp], xmm8
+movaps    XMMWORD PTR 48[rsp], xmm9
+movaps    XMMWORD PTR 64[rsp], xmm10
+movaps    XMMWORD PTR 80[rsp], xmm11
+test    ecx, ecx
+jle    .L
+lea    eax, -1[rcx]
+cmp    eax, 14
+jbe    .L
+mov    r9d, 4
+mov    edx, ecx
+mov    r10d, 8
+xor    eax, eax
+movd    xmm7, r9d
+pcmpeqd    xmm3, xmm3
+mov    r11d, 12
+mov    r9d, 16
+movdqa    xmm2, XMMWORD PTR .LC[rip]
+movd    xmm6, r10d
+movd    xmm5, r11d
+shr    edx, 4
+movd    xmm4, r9d
+pxor    xmm9, xmm9
+pshufd    xmm7, xmm7, 0
+pshufd    xmm6, xmm6, 0
+psrlw    xmm3, 8
+pshufd    xmm5, xmm5, 0
+pshufd    xmm4, xmm4, 0
+movdqa    xmm10, xmm2
+movdqa    xmm0, xmm2
+movdqa    xmm1, xmm2
+add    eax, 1
+paddd    xmm10, xmm7
+movdqa    xmm11, xmm2
+punpcklwd    xmm0, xmm10
+punpckhwd    xmm1, xmm10
+paddd    xmm11, xmm5
+movdqa    xmm10, xmm0
+punpcklwd    xmm0, xmm1
+punpckhwd    xmm10, xmm1
+movdqa    xmm1, xmm2
+paddd    xmm2, xmm4
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。
+
 ## 自测练习（Exercises）
 
 > 以下题目用于自测掌握程度；答案折叠于每题下方，建议先独立作答。

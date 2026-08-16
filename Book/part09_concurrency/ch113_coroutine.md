@@ -1642,3 +1642,62 @@ int main() {
 - `volatile` sink 防 DCE；参数随循环变化，避免优化器把循环闭式求值为常量（早期 `111614×` 假象即源于此）。
 - 加速比（如 3.50×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 计时环境旗标：`g++ -O2 -std=c++17`；协程 demo 需 C++20+，用 `g++ -O2 -std=c++23` 编译（c++23 向后兼容 coroutines），仅断言功能正确性。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_113_coroutine.cpp` 真实生成（节选 `coro_sum` / `plain_sum`）。`plain_sum` 被编译成纯算术的闭式求值、零分配；`coro_sum` 每次调用都 `call _Znwy`（operator new）在堆上分配 48 字节协程帧——这正解释了 D5.2「协程慢 3.50×、约 55 ns/次调用」的根因：调用/恢复/销毁三阶段都涉及堆管理。
+
+```asm
+; coro_sum(int) —— 每次调用都在堆上分配协程帧（节选）
+;   _Z8coro_sumi (节选)
+        push    rbx
+        sub     rsp, 48
+        movaps  XMMWORD PTR 32[rsp], xmm6
+        mov     rbx, rcx
+        movd    xmm1, edx
+        mov     ecx, 48
+        pshufd  xmm6, xmm1, 0xe0
+        call    _Znwy                          ; ← operator new：堆分配 48 字节协程帧（每次调用一次）
+        lea     rdx, _Z8coro_sumP18_Z8coro_sumi.Frame.destroy[rip]
+        movq    xmm0, QWORD PTR .LC[rip]
+        movq    xmm2, rdx
+        lea     rdx, 16[rax]
+        mov     DWORD PTR 24[rax], 65538
+        mov     QWORD PTR [rbx], rdx
+        punpcklqdq     xmm0, xmm2
+        mov     edx, 1
+        mov     WORD PTR 28[rax], dx
+        movups  XMMWORD PTR [rax], xmm0
+        movq    QWORD PTR 16[rax], xmm6
+        movaps  xmm6, XMMWORD PTR 32[rsp]
+        mov     rax, rbx
+        add     rsp, 48
+        pop     rbx
+        ret
+; plain_sum(int) —— 闭式求和，零堆分配（节选）
+;   _Z9plain_sumi (节选)
+        mov     r8d, ecx
+        test    ecx, ecx
+        jle     .L
+        xor     edx, edx
+        and     r8d, 1
+        lea     ecx, 1[rcx]
+        mov     eax, 1
+        je      .L
+        mov     eax, 2
+        mov     edx, 1
+        cmp     eax, ecx
+        je      .L
+        lea     edx, 1[rdx+rax*2]             ; 循环展开求 1..n 之和（纯算术）
+        add     eax, 2
+        cmp     eax, ecx
+        jne     .L
+        mov     eax, edx                       ; ← 全程无 call _Znwy，零分配
+        ret
+        xor     edx, edx
+        mov     eax, edx
+        ret
+```
+
+> 注意：`coro_sum` 的代价不是「求和更慢」，而是**每次调用都要在堆上分配/销毁协程帧**（48 字节 promise + 局部变量 + 恢复上下文）；`plain_sum` 在 `-O2` 下被完全内联/闭式求值，连栈帧都没有。代价换来了可挂起/恢复的无栈并发表达力（D5.2 第②条）。**绝对毫秒随机器而变，加速比（约 3.50×）才是可移植信号**。

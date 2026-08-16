@@ -2280,7 +2280,10 @@ int main() {
         mov     rcx, rbp
         add     rbx, 1
         call    rdx                    ; ← 仅一次虚调用，无 RTTI 开销
-        ...
+        cdqe
+        add     rsi, rax
+        cmp     rdi, rbx
+        jne     .L
 ; run_dynamic：每次迭代先做 dynamic_cast 的 RTTI 验证
 ;   _Z11run_dynamicx  (节选)
         xor     r9d, r9d

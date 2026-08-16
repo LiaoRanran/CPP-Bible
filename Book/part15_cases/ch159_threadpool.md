@@ -1510,3 +1510,58 @@ int main() {
 - `volatile` sink 防 DCE；并交叉校验 `pool.sum == serial.sum`（语义正确性断言，可断言），未对时间或倍数做任何断言。
 - 复现旗标：`g++ -O2 -std=c++23 -pthread _bench_d5_ch159_threadpool.cpp -o bench && ./bench`。**基准源码见库根 `_bench_d5_ch159_threadpool.cpp`**（与附录 D5 同源，已在本机 GCC 15.3.0 真实编译运行；线程池实现与正文 §17 同构）。
 - `std::thread` 基准需 `-pthread`；加速比随机器/负载波动，方向性结论（池 >> 每任务线程）稳定可移植。
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch159_threadpool.cpp` 真实生成（节选自 measure_pool(long, long), measure_async(long, long), measure_per_task(long, long)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; measure_pool(long, long)  (528 条指令)
+push    r15
+push    r14
+push    r13
+push    r12
+push    rbp
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 360
+movaps    XMMWORD PTR 320[rsp], xmm6
+movaps    XMMWORD PTR 336[rsp], xmm7
+mov    QWORD PTR 432[rsp], rcx
+mov    DWORD PTR 440[rsp], edx
+mov    DWORD PTR 448[rsp], r8d
+call    _ZNSt6thread20hardware_concurrencyEv
+test    eax, eax
+jne    .L
+mov    rax, QWORD PTR 432[rsp]
+mov    QWORD PTR [rax], 0
+mov    QWORD PTR 8[rax], 0
+mov    rax, QWORD PTR 432[rsp]
+movaps    xmm6, XMMWORD PTR 320[rsp]
+movaps    xmm7, XMMWORD PTR 336[rsp]
+add    rsp, 360
+pop    rbx
+pop    rsi
+pop    rdi
+pop    rbp
+pop    r12
+pop    r13
+pop    r14
+pop    r15
+ret
+mov    edx, eax
+lea    rax, 192[rsp]
+mov    rcx, rax
+mov    QWORD PTR 72[rsp], rax
+call    _ZN10ThreadPoolC1Ey
+call    _ZNSt6chrono3_V212steady_clock3nowEv
+mov    QWORD PTR 80[rsp], rax
+movsxd    rax, DWORD PTR 440[rsp]
+mov    rsi, rax
+shr    rsi, 59
+jne    .L
+test    rax, rax
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

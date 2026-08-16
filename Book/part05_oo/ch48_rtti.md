@@ -1769,3 +1769,22 @@ int main() {
 - 计时取 5 轮中位数，规避调度抖动与冷热启动偏差；`volatile` sink 防 DCE。
 - 加速比（≈1.20×、≈0.30×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_48_rtti.cpp`（位于库根）。demo 仅断言功能正确性（`dynamic_cast` 成功/失败返回 `nullptr`、typeid 精确比较），未对时间、倍数或精确 `sizeof` 做任何断言；`__dynamic_cast` 实现细节仅做行为描述，未伪造源码摘录。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_48_rtti.cpp` 真实生成（节选自 Derived::op(int) const, Other::op(int) const, Other::~Other()）。D5.2 指出虚派发近乎免费、而 dynamic_cast/typeid 带运行期开销。下方为 GCC 15.3.0 -O2 下两个虚函数本体的真实产物。
+
+```asm
+; Derived::op(int) const  (2 条指令)
+lea    eax, 1[rdx]
+ret
+; Other::op(int) const  (2 条指令)
+lea    eax, [rdx+rdx]
+ret
+; Other::~Other()  (2 条指令)
+mov    edx, 8
+jmp    _ZdlPvy
+```
+
+> 注意：在 -O2 下，由于本基准中对象动态类型可知，GCC 对这些虚函数做了去虚拟化（devirtualize），将调用点直接编译为极简的 lea;ret（各 2 条指令），故此处只见到函数本体。D5.2 测得的虚派发/RTTI 开销来自类型无法静态确定的调用点——即经 vtable 的间接寻址（call [vptr+N]）与运行库 __dynamic_cast 沿 type_info 链的遍历，而非函数本体本身。绝对毫秒随机器而变，加速比才是可移植信号。

@@ -1303,3 +1303,58 @@ int main(){
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 
 **交叉引用**：ch25（variant 替代手搓联合）/ ch63（tuple 结构化值）/ ch119（ranges 解析）
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch162_json.cpp` 真实生成（节选自 Parser::parse_val(), bench_token_count(char const*, int), bench_sax(char const*, int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; Parser::parse_val()  (204 条指令)
+push    rsi
+push    rbx
+sub    rsp, 136
+mov    rax, QWORD PTR [rdx]
+mov    r9, QWORD PTR 8[rdx]
+mov    r10, rcx
+mov    r8, rdx
+mov    ecx, 8388627
+cmp    rax, r9
+jnb    .L
+movzx    edx, BYTE PTR [rax]
+sub    edx, 9
+cmp    dl, 23
+ja    .L
+bt    rcx, rdx
+jnc    .L
+add    rax, 1
+mov    QWORD PTR [r8], rax
+cmp    rax, r9
+jne    .L
+pxor    xmm0, xmm0
+movups    XMMWORD PTR [r10], xmm0
+movups    XMMWORD PTR 16[r10], xmm0
+movups    XMMWORD PTR 32[r10], xmm0
+movups    XMMWORD PTR 48[r10], xmm0
+movups    XMMWORD PTR 64[r10], xmm0
+mov    rax, r10
+add    rsp, 136
+pop    rbx
+pop    rsi
+ret
+pxor    xmm0, xmm0
+movups    XMMWORD PTR [r10], xmm0
+movups    XMMWORD PTR 16[r10], xmm0
+movups    XMMWORD PTR 32[r10], xmm0
+movups    XMMWORD PTR 48[r10], xmm0
+movups    XMMWORD PTR 64[r10], xmm0
+cmp    rax, r9
+jnb    .L
+movzx    edx, BYTE PTR [rax]
+cmp    dl, 45
+je    .L
+jg    .L
+cmp    dl, 34
+jne    .L
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

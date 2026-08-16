@@ -1476,3 +1476,58 @@ int main() {
 - 编译与测量命令（基准与此 demo 同源）：`g++ -O2 -std=c++17`。
 - 本 demo 仅断言功能正确性（解引用值相同、拷贝使 `use_count` +1），不断言任何计时、加速比或 `sizeof` 数值。
 - 绝对毫秒取决于硬件与负载；跨机器只比较"相对倍数"才有意义。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_112_hazard_rcu.cpp` 真实生成（节选 `bench_raw` / `bench_hazard` / `bench_shared_ptr` 的读取热循环）。三者的「解引用取数」都是同一条 `movsxd` 普通 load，差异全在**发布/回收安全读所付的同步代价**：raw 零开销、hazard 多一次 `xchg`（隐式 lock 全屏障）、shared_ptr 多两条 `lock` 引用计数 RMW——正对应 D5.2「hazard 慢 4.59×、shared_ptr 慢 18.55×」的归因。
+
+```asm
+; bench_raw 读取热循环（节选）—— 裸指针读：一次普通 load，零原子/零屏障
+;   _Z9bench_rawv (节选)
+        xor     eax, eax
+        xor     esi, esi
+        mov     edx, eax
+        add     eax, 1
+        mov     QWORD PTR g_esc[rip], rbx
+        and     edx, 63
+        movsxd  rdx, DWORD PTR [rbx+rdx*4]   ; ← 裸指针解引用：一次普通 load（基线 1.00×）
+        add     rsi, rdx
+        cmp     eax, 20000000
+        jne     .L
+; bench_hazard 读取热循环（节选）—— 每次多一次 xchg（隐式 lock 全屏障）发布危险指针
+;   _Z12bench_hazardv (节选)
+        mov     QWORD PTR 40[rsp], 0
+        xor     eax, eax
+        xor     ebx, ebx
+        mov     rdi, rsi
+        xchg    rdi, QWORD PTR 40[rsp]       ; ← 发布危险指针：xchg 隐式 lock = 全屏障（seq_cst store）
+        mov     ecx, eax
+        add     eax, 1
+        and     ecx, 63
+        mov     rdx, QWORD PTR 40[rsp]
+        movsxd  rcx, DWORD PTR [rdx+rcx*4]   ; 重读确认未被回收
+        mov     QWORD PTR g_esc[rip], rdx
+        add     rbx, rcx
+        cmp     eax, 20000000
+        jne     .L
+; bench_shared_ptr 读取热循环（节选）—— 每次拷贝两条 lock 引用计数 RMW
+;   _Z16bench_shared_ptrv (节选)
+        lock sub        DWORD PTR [rbx], 1    ; ← 旧副本析构：原子递减引用计数（第一条 lock）
+        je      .L
+        add     edi, 1
+        cmp     edi, 20000000
+        je      .L
+        lock add        DWORD PTR [rbx], 1    ; ← 拷贝：原子递增引用计数（第二条 lock）
+        mov     rax, QWORD PTR 16[rsi]
+        mov     edx, edi
+        and     edx, 63
+        movsxd  rax, DWORD PTR [rax+rdx*4]    ; 解引用取数（与 raw/hazard 同一条普通 load）
+        mov     QWORD PTR g_esc[rip], r12
+        add     rbp, rax
+        mov     rax, QWORD PTR [rbx]
+        cmp     rax, r13
+        jne     .L
+```
+
+> 注意：三种「安全读」的核心取数都是同一条 `movsxd` 普通 load；**慢的根因是发布/回收同步**：hazard 用一次 `xchg`（隐式 lock 全屏障）换无 GC 回收，shared_ptr 用两条 `lock` 原子 RMW 维护引用计数并承受控制块 cache-line 争用。这与 D5.2 第②、③条一致：**绝对毫秒随机器而变，加速比（4.59× / 18.55×）才是可移植信号**。

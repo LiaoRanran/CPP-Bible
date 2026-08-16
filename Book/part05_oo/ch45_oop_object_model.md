@@ -1940,7 +1940,14 @@ int main() {
         add     rdi, rax
         cmp     rbp, rbx
         jne     .L
-        ...
+        mov     rax, rdi
+        add     rsp, 32
+        pop     rbx
+        pop     rsi
+        pop     rdi
+        pop     rbp
+        pop     r12
+        ret
 ; run_crtp：work_impl 被内联，无 call
 ;   _Z8run_crtpRK11CRTPDerivedPKix  (节选)
         test    r8, r8

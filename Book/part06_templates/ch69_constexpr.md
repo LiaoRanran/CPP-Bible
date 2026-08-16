@@ -1280,3 +1280,54 @@ int main() {
 - 断言只验证编译期表特征与运行时精度（`static_assert` + `< 1e-9`），绝不断言时间、倍数或精确 `sizeof`。
 - 加速比（如 53.6×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_69_constexpr.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_69_constexpr.cpp` 真实生成（节选自 main::{lambda()#1}::operator()() const [clone .isra.0]）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; main::{lambda()#1}::operator()() const [clone .isra.0]  (58 条指令)
+push    r13
+mov    eax, 8312
+push    r12
+push    rbp
+push    rdi
+push    rsi
+push    rbx
+call    ___chkstk_ms
+sub    rsp, rax
+movaps    XMMWORD PTR 8224[rsp], xmm6
+movaps    XMMWORD PTR 8240[rsp], xmm7
+movaps    XMMWORD PTR 8256[rsp], xmm8
+movaps    XMMWORD PTR 8272[rsp], xmm9
+movaps    XMMWORD PTR 8288[rsp], xmm10
+movsd    xmm7, QWORD PTR .LC[rip]
+pxor    xmm9, xmm9
+xor    ebp, ebp
+movsd    xmm10, QWORD PTR .LC[rip]
+movsd    xmm6, QWORD PTR .LC[rip]
+movsd    xmm8, QWORD PTR .LC[rip]
+lea    r12, 8032[rsp]
+lea    rbx, 32[rsp]
+mov    ecx, 1024
+lea    rdi, 32[rsp]
+mov    rax, rbp
+rep stosq
+lea    r13, 40[rsp]
+movsd    QWORD PTR 32[rsp], xmm10
+mov    edi, 1
+pxor    xmm0, xmm0
+add    r13, 8
+cvtsi2sd    xmm0, rdi
+mulsd    xmm0, xmm8
+add    rdi, 1
+mulsd    xmm0, xmm7
+subsd    xmm0, xmm6
+call    sin
+movsd    QWORD PTR -8[r13], xmm0
+cmp    rdi, 1024
+jne    .L
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

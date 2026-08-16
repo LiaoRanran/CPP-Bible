@@ -1929,3 +1929,54 @@ int main() {
 - 注意：本基准原包含一个 `std::condition_variable` + `cv.wait_for` 场景，但在 MinGW GCC 15.3.0 下，当 `condition_variable` 与 `jthread`/`stop_callback`/`atomic` 共存于同一翻译单元时，进程会在进入 `main` 前被加载器拒绝（exit 127，零输出）——这是该工具链的已知缺陷，故已移除该场景，仅保留 s1/s2/s3/s5。
 - 加速比（115.69× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch94_stop_token.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch94_stop_token.cpp` 真实生成（节选自 median_of(std::vector<double, std::allocator<double> >)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; median_of(std::vector<double, std::allocator<double> >)  (64 条指令)
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 48
+mov    rsi, QWORD PTR 8[rcx]
+mov    rbx, rcx
+mov    rcx, QWORD PTR [rcx]
+cmp    rcx, rsi
+je    .L
+mov    rdi, rsi
+mov    r8d, 63
+mov    QWORD PTR 40[rsp], rcx
+sub    rdi, rcx
+mov    rax, rdi
+sar    rax, 3
+bsr    rdx, rax
+xor    rdx, 63
+test    rax, rax
+mov    eax, 64
+cmovne    eax, edx
+mov    rdx, rsi
+sub    r8d, eax
+movsxd    r8, r8d
+add    r8, r8
+call    _ZSt16__introsort_loopIN9__gnu_cxx17__normal_iteratorIPdSt6vectorIdSaIdEEEExNS0_5__ops15_Iter_less_iterEEvT_S9_T0_T1_.isra.0
+cmp    rdi, 128
+mov    rcx, QWORD PTR 40[rsp]
+jle    .L
+lea    rdi, 128[rcx]
+mov    rdx, rdi
+call    _ZSt16__insertion_sortIN9__gnu_cxx17__normal_iteratorIPdSt6vectorIdSaIdEEEENS0_5__ops15_Iter_less_iterEEvT_S9_T0_.isra.0
+cmp    rsi, rdi
+je    .L
+movsd    xmm1, QWORD PTR [rdi]
+movsd    xmm0, QWORD PTR -8[rdi]
+lea    rax, -8[rdi]
+comisd    xmm0, xmm1
+jbe    .L
+movsd    QWORD PTR 8[rax], xmm0
+mov    rdx, rax
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

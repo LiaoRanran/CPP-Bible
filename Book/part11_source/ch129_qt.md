@@ -1442,3 +1442,31 @@ int main(){
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 
 **交叉引用**：ch26（lambda 作槽）/ ch41（智能指针生命周期）/ ch93（线程与信号跨线程）
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch129_qt.cpp` 真实生成（节选热函数 `bench_direct` / `bench_virtual_slot`）。`bench_direct`（信号「直接发射」）被编译期内联为纯算术、零调用；`bench_virtual_slot`（虚槽）每次迭代都要经虚表解引用后 `call rax`。这把 D5.2 的「虚槽 = 间接调用」从秒表数字变成机器码事实，也解释了多槽为什么是「容器遍历 + 多级虚调用」的线性放大。
+
+```asm
+; bench_direct：信号直接发射 → 编译器内联成纯算术，全程无 call
+;   _Z12bench_directRK5Eventi  (节选)
+        test    edx, edx                ; n<=0 直接返回
+        jle     .L                      ; 跳过循环体
+        mov     eax, DWORD PTR 4[rcx]   ; 取 Event::y
+        add     eax, DWORD PTR [rcx]    ; + Event::x
+        imul    eax, edx                ; * n
+        ret                             ; ← 没有任何函数调用，零抽象开销
+; bench_virtual_slot：虚槽 → 每个接收者一次虚调用
+;   _Z18bench_virtual_slotRK5Eventi  (节选，含循环核)
+        mov     rax, QWORD PTR [r12]    ; 取对象首字段 = 虚表指针(__vptr)
+        mov     rax, QWORD PTR [rax]    ; 解引用虚表，取槽函数指针
+        cmp     rax, r13                ; 与期望槽地址比较(去虚化探测)
+        je      .L
+        mov     rdx, rdi
+        mov     rcx, r12
+        add     ebx, 1
+        call    rax                     ; ← 间接调用：无法内联、无法去虚化
+```
+
+> 注意：绝对毫秒随 CPU/编译器而变，可移植信号是「直接路径 0 次 call，虚路径每槽 1 次 `call rax`」这一结构性差异。它精确对应 D5.2：虚调用不可内联，多槽则把一次虚调用乘成 N 次容器遍历内的虚调用，故 4 接收者 ≈ 15× 单虚槽。

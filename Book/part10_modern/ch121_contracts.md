@@ -1334,3 +1334,38 @@ int main() {
 
 - Book/part10_modern/ch120_coroutine_app.md — 协程与契约
 - Book/part04_memory/ch40_exception_safety.md — 异常 vs 契约
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch121_contracts.cpp` 真实生成（节选 `bench_assert` / `bench_no_check` / `bench_manual_check`）。三者编译出的循环体**逐字节相同**：没有任何针对前置条件的 `test`/`cmp`+条件跳转——编译器证明循环传入的值恒为正、检查条件恒真，于是把 `assert` 与手写 `if` 一并消除。这正是 D5.2 中"assert 在 NDEBUG=off 模式下零运行期开销"的机器码证据。
+
+```asm
+; bench_no_check：无任何前置检查（基线）
+;   _Z14bench_no_checki  (节选)
+        test    ecx, ecx
+        jle     .L
+        xor     eax, eax
+        xor     edx, edx
+        test    cl, 1
+        je      .L
+        mov     eax, 1
+        ; ... 纯累加循环，无 precondition 分支
+; bench_assert：带 assert(x>0) 前置检查
+;   _Z12bench_asserti  (节选)
+        test    ecx, ecx
+        jle     .L
+        xor     eax, eax
+        xor     edx, edx
+        test    cl, 1
+        je      .L
+        mov     eax, 1
+        ; ... ← 与 no_check 完全相同：assert 已被消除
+; bench_manual_check：手写 if(x<0) 检查 —— 同样与上面逐字节一致
+;   _Z18bench_manual_checki  (节选)
+        test    ecx, ecx
+        jle     .L
+        ; ... 编译器证明条件恒真，检查被消除
+```
+
+> 注意：三份代码完全相同，说明在本基准的输入范围内 `assert` 与手写 `if` 都被证明"条件恒真"后消除，**零运行期开销**。代价/前提：这依赖编译器能静态证明条件恒真；若前置条件依赖运行期未知输入，assert 会保留为真实分支（Debug），而 Release（NDEBUG）下 assert 直接消失（同样零成本，但失去检查）。绝对毫秒随机器而变；"检查是否被消除"这一事实与编译器优化能力相关，与 D5.2 一致。

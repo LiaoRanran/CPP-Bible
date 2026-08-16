@@ -1493,7 +1493,11 @@ int main() {
         cmp     r8d, 1                       ; ← 条件分支 2
         je      .L
         xor     edx, 85
-        ...
+        add     rcx, 1
+        movsxd  rdx, edx
+        add     rax, rdx
+        cmp     rcx, r11
+        jb      .L
 ```
 
 > 对照：`run_constexpr_route<OP_ADD>/<OP_MUL>`（if constexpr 路径）零分支、单态化、内联进 `main`，无独立符号。分支预测惩罚（~10.4×）>> 间接调用惩罚（ch61 ~4.3×），故工程上消除不可预测分支的收益通常大于消除间接调用（见 D5.2.2）。若运行期 tag 不可预测但操作集合封闭，jump table（函数指针表）比 if/else 链更优。

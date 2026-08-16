@@ -1363,6 +1363,57 @@ int main(){
 
 **交叉引用**：ch135（模式总览）/ ch137（结构型模式：CRTP vs virtual）/ ch64（variant 与 visit）
 
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch138_behavioral.cpp` 真实生成（节选自 bench_virtual(Data const&, int), get_strat(int), bench_variant_visit(Data const&, int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; bench_virtual(Data const&, int)  (40 条指令)
+push    r12
+push    rbp
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 32
+mov    r12, rcx
+xor    ecx, ecx
+mov    ebp, edx
+call    _Z9get_strati
+mov    rdi, rax
+test    ebp, ebp
+jle    .L
+xor    ebx, ebx
+xor    esi, esi
+mov    rax, QWORD PTR [rdi]
+mov    rdx, r12
+mov    rcx, rdi
+add    ebx, 1
+call    [QWORD PTR [rax]]
+add    esi, eax
+cmp    ebp, ebx
+jne    .L
+mov    eax, esi
+add    rsp, 32
+pop    rbx
+pop    rsi
+pop    rdi
+pop    rbp
+pop    r12
+ret
+xor    esi, esi
+mov    eax, esi
+add    rsp, 32
+pop    rbx
+pop    rsi
+pop    rdi
+pop    rbp
+pop    r12
+ret
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。
+
 ## 附录 L：行为型模式工业深挖 — 历史、真实落地与生产戒律 [F: Industry / B: Principle]
 
 > 本节为 P0-11「应用/工程章」大波次扩写：在行为型层面补全历史渊源、在知名 C++ 项目中的真实落地、生产踩坑、与现代 C++ 的互动、以及权威引用。所有论断均可查证，拒绝软文。

@@ -1595,3 +1595,38 @@ int main() {
 - `volatile` sink + 逃逸防 DCE，逼出真实拷贝开销；否则小对象可能被整体消除。
 - 加速比（如 2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 计时环境旗标：`g++ -O2 -std=c++17`；demo 同旗标即可编译，仅断言功能正确性（绝不断言时间/倍数/精确 sizeof）。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_115_move.cpp` 真实生成（节选热函数 `bench_copy_str` / `bench_move_str` 与 `bench_copy_vec` / `bench_move_vec`）。深拷贝是 O(n) 的"堆分配 + 逐字节复制 + 释放源"，移动只是 O(1) 的"指针交接 + 置空源"，这正是 D5.2 中移动比深拷贝快约 2.0× 的机器码根因。
+
+```asm
+; bench_copy_str：深拷贝 —— 每次迭代都要再分配一块堆缓冲并逐字节复制
+;   _Z14bench_copy_strv  (节选循环体)
+        mov     ecx, 129
+        call    _Znwy                   ; ← 分配目标 string 的堆缓冲 (O(n) 分配)
+        mov     rcx, QWORD PTR 8[rbx]   ; 取源缓冲指针
+        mov     QWORD PTR [rax], rdx
+        movdqu  xmm0, XMMWORD PTR 16[rbx]  ; ← 逐 16 字节复制数据
+        movups  XMMWORD PTR 16[rax], xmm0
+        movdqu  xmm1, XMMWORD PTR 32[rbx]
+        movups  XMMWORD PTR 32[rax], xmm1
+        ; ... (共 8×16=128 字节的 movups/movdqu 复制块)
+        mov     BYTE PTR 128[rax], dl   ; 复制末字节
+        mov     edx, 129
+        call    _ZdlPvy                 ; 释放源 (深拷贝需保留源)
+; bench_move_str：移动 —— 同一循环体内没有二次分配、没有 memcpy 块
+;   _Z14bench_move_strv  (节选循环体)
+        call    _ZdlPvy                 ; 仅释放已"置空"的源对象自身
+        mov     rcx, QWORD PTR 48[rsp]
+        cmp     rcx, rbp
+        je      .L
+        add     rdi, rbx                ; 累加的是已被搬走的源首字节 (O(1))
+        sub     esi, 1
+        jne     .L
+; bench_copy_vec / bench_move_vec 同理：copy_vec 循环内含 `call _Znwy`(256)+movups
+;   复制块+`call _ZdlPvy`，而 move_vec 循环仅 `movsxd rax,[rcx]`(读 size)+`call _ZdlPvy`，无分配无复制。
+```
+
+> 注意：加速比（2.0×）是可移植信号；绝对毫秒随 CPU/内存而变。这里看到的 `call _Znwy`（分配）与整段 `movups`/`movdqu` 复制块，正是"O(n) 深拷贝"的硬件代价；移动把它压缩成一次 O(1) 的指针交接与一次近乎免费的析构（源已置空）。与 D5.2 第 1、2 点一致。

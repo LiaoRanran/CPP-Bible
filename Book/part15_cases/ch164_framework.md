@@ -1613,3 +1613,58 @@ int main(){
 **方法论**：volatile sink 防 DCE、`[[gnu::noinline]]` 防内联穿透、不透明工厂防去虚化；5 次运行取中位数，排除首访缓存冷启动。
 
 **交叉引用**：ch142（ECS 架构）/ ch135（模式总览）/ ch156（编译器优化与去虚化）
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch164_framework.cpp` 真实生成（节选自 bench_virtual_plugin(Ctx const&, int), get_plugin(), bench_stdfunction_callback(Ctx const&, int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; bench_virtual_plugin(Ctx const&, int)  (54 条指令)
+push    r13
+push    r12
+push    rbp
+push    rdi
+push    rsi
+push    rbx
+sub    rsp, 40
+mov    rsi, rcx
+mov    ebp, edx
+call    _Z10get_pluginv
+mov    r12, rax
+test    ebp, ebp
+jle    .L
+xor    ebx, ebx
+xor    edi, edi
+lea    r13, _ZN7PluginA6handleERK3Ctx[rip]
+jmp    .L
+mov    eax, DWORD PTR [rsi]
+add    ebx, 1
+imul    eax, DWORD PTR 4[rsi]
+add    eax, DWORD PTR 8[rsi]
+add    edi, eax
+cmp    ebp, ebx
+je    .L
+mov    rax, QWORD PTR [r12]
+mov    rax, QWORD PTR [rax]
+cmp    rax, r13
+je    .L
+mov    rdx, rsi
+mov    rcx, r12
+add    ebx, 1
+call    rax
+add    edi, eax
+cmp    ebp, ebx
+jne    .L
+mov    eax, edi
+add    rsp, 40
+pop    rbx
+pop    rsi
+pop    rdi
+pop    rbp
+pop    r12
+pop    r13
+ret
+xor    edi, edi
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。

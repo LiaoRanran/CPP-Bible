@@ -969,40 +969,52 @@ int main(){
 - **计时**：`steady_clock` 5 轮取最快；绝对毫秒随机器/负载而变；一切结论以**加速比**表达，本机 ≈1.00× / ≈1.4×10⁴× 仅供量级参考。
 - **一致性门禁**：本附录 demo 块经 `chapter_compile_check.py`（GCC 15.3.0）编译通过。
 
+
 ### D5.5 汇编实证 (GCC 15.3.0)
 
-> 非抛出路径上 `compute_ex` 与 `compute_ec` 都是直线代码，异常表被编译器塞进 `.cold`/unlikely 段，**不进热路径**——这是“零开销异常”的硬件真相。完整反汇编见 `Examples/_ch146_error.asm`。
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_146_error.cpp` 真实生成（节选自 compute_ex(int) [clone .cold], compute_ex(int), compute_ec(int, int&)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
 
 ```asm
-# compute_ec(int, int&) —— 错误码：直线，无异常机械
-_Z10compute_eciRi:
-        test    ecx, ecx
-        je      .L3
-        add     ecx, ecx
-        xor     eax, eax
-        mov     DWORD PTR [rdx], ecx
-        ret
-.L3:
-        mov     eax, -1
-        ret
-
-# compute_ex(int) —— 成功路径同样是直线（无 EH 机械）
-_Z10compute_exi:
-        test    ecx, ecx
-        je      .L7
-        lea     eax, [rcx+rcx]
-        ret
-# 抛出路径在独立 .cold 段，仅 je 命中时才进入：
-_Z10compute_exi.cold:
-.L7:
-        mov     ecx, 4
-        call    __cxa_allocate_exception     # 真正的运行时代价在这里
-        mov     rdx, QWORD PTR .refptr._ZTIi[rip]
-        xor     r8d, r8d
-        mov     DWORD PTR [rax], 1
-        mov     rcx, rax
-        call    __cxa_throw
+; compute_ex(int) [clone .cold]  (16 条指令)
+mov    ecx, 16
+call    __cxa_allocate_exception
+lea    rdx, .LC[rip]
+mov    rcx, rax
+mov    rbx, rax
+call    _ZNSt13runtime_errorC1EPKc
+lea    r8, _ZNSt13runtime_errorD1Ev[rip]
+lea    rdx, _ZTISt13runtime_error[rip]
+mov    rcx, rbx
+call    __cxa_throw
+mov    rsi, rax
+mov    rcx, rbx
+call    __cxa_free_exception
+mov    rcx, rsi
+call    _Unwind_Resume
+nop
+; compute_ex(int)  (10 条指令)
+push    rsi
+push    rbx
+sub    rsp, 40
+test    ecx, ecx
+je    .L
+lea    eax, [rcx+rcx]
+add    rsp, 40
+pop    rbx
+pop    rsi
+ret
+; compute_ec(int, int&)  (8 条指令)
+test    ecx, ecx
+je    .L
+add    ecx, ecx
+xor    eax, eax
+mov    DWORD PTR [rdx], ecx
+ret
+mov    eax, -1
+ret
 ```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。
 
 ## 附录 A：工业错误处理范式对比 [F: Industry]
 

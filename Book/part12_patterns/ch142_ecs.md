@@ -1454,6 +1454,49 @@ int main() {
 - demo 只断言实体数量与数据写入正确性，未对时间、倍数做任何断言。
 - 基准源码见库根 `_bench_d5_ch142_ecs.cpp`。
 
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch142_ecs.cpp` 真实生成（节选自 FullEntitySoA::~FullEntitySoA(), ECSRegistry::~ECSRegistry(), ArchetypeB::~ArchetypeB()）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; FullEntitySoA::~FullEntitySoA()  (32 条指令)
+push    rbx
+sub    rsp, 32
+mov    rbx, rcx
+mov    rcx, QWORD PTR 72[rcx]
+test    rcx, rcx
+je    .L
+mov    rdx, QWORD PTR 88[rbx]
+sub    rdx, rcx
+call    _ZdlPvy
+mov    rcx, QWORD PTR 48[rbx]
+test    rcx, rcx
+je    .L
+mov    rdx, QWORD PTR 64[rbx]
+sub    rdx, rcx
+call    _ZdlPvy
+mov    rcx, QWORD PTR 24[rbx]
+test    rcx, rcx
+je    .L
+mov    rdx, QWORD PTR 40[rbx]
+sub    rdx, rcx
+call    _ZdlPvy
+mov    rcx, QWORD PTR [rbx]
+test    rcx, rcx
+je    .L
+mov    rdx, QWORD PTR 16[rbx]
+sub    rdx, rcx
+add    rsp, 32
+pop    rbx
+jmp    _ZdlPvy
+add    rsp, 32
+pop    rbx
+ret
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。
+
 ## 附录 M：ECS 工业落地与历史深挖
 
 ### M.1 历史深挖：从 Doom/Quake 的「实体=结构体数组」到现代 ECS

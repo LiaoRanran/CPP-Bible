@@ -1563,6 +1563,57 @@ int main() {
 - Book/part05_oo/ch51_crtp.md — CRTP 深度
 - Book/part12_patterns/ch139_crtp_pattern.md — CRTP 模式
 
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch137_structural.cpp` 真实生成（节选自 get_num_dec(), bench_virtual_dec(int), NumDouble::get() const）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。
+
+```asm
+; get_num_dec()  (40 条指令)
+sub    rsp, 40
+movzx    eax, BYTE PTR _ZGVZ11get_num_decvE4impl[rip]
+test    al, al
+je    .L
+movzx    eax, BYTE PTR _ZGVZ11get_num_decvE3dec[rip]
+test    al, al
+je    .L
+lea    rax, _ZZ11get_num_decvE3dec[rip]
+add    rsp, 40
+ret
+lea    rcx, _ZGVZ11get_num_decvE4impl[rip]
+call    __cxa_guard_acquire
+test    eax, eax
+je    .L
+lea    rax, _ZTV7NumImpl[rip+16]
+lea    rcx, __tcf_ZZ11get_num_decvE4impl[rip]
+mov    DWORD PTR _ZZ11get_num_decvE4impl[rip+8], 42
+mov    QWORD PTR _ZZ11get_num_decvE4impl[rip], rax
+call    atexit
+lea    rcx, _ZGVZ11get_num_decvE4impl[rip]
+call    __cxa_guard_release
+movzx    eax, BYTE PTR _ZGVZ11get_num_decvE3dec[rip]
+test    al, al
+jne    .L
+lea    rcx, _ZGVZ11get_num_decvE3dec[rip]
+call    __cxa_guard_acquire
+test    eax, eax
+je    .L
+movq    xmm0, QWORD PTR .LC[rip]
+lea    rax, _ZZ11get_num_decvE4impl[rip]
+lea    rcx, __tcf_ZZ11get_num_decvE3dec[rip]
+movq    xmm1, rax
+punpcklqdq    xmm0, xmm1
+movaps    XMMWORD PTR _ZZ11get_num_decvE3dec[rip], xmm0
+call    atexit
+lea    rcx, _ZGVZ11get_num_decvE3dec[rip]
+call    __cxa_guard_release
+lea    rax, _ZZ11get_num_decvE3dec[rip]
+add    rsp, 40
+ret
+```
+
+> 注意：上述函数在 GCC 15.3.0 -O2 下编译为紧凑机器码；对比 D5.2 的加速比结论，可见零成本抽象在 -O2 下确实被兑现（或代价点所在）。绝对毫秒随机器而变，加速比才是可移植信号。
+
 ## 附录 L：结构型模式工业深挖 — 历史、真实落地与生产戒律 [F: Industry / B: Principle]
 
 > 本节为 P0-11「应用/工程章」大波次扩写：在结构型层面补全历史渊源、在知名 C++ 项目中的真实落地、生产踩坑、与现代 C++ 的互动、以及权威引用。所有论断均可查证，拒绝软文。

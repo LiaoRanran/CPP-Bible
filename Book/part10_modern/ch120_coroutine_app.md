@@ -1560,3 +1560,35 @@ int main() {
 - 协程帧默认在堆上分配（除非被编译器优化掉）；`await_ready` 返回 true 可避免挂起与分配。
 - 加速比（12.7×、1066×、27.5× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch120_coroutine.cpp`。
+
+
+### D5.5 汇编实证 (GCC 15.3.0)
+
+> 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch120_coroutine.cpp` 真实生成（节选 `bench_func_call` / `callback_chain_10` / `bench_callback_chain`）。直接函数调用的目标在编译期静态已知、可被内联；而用 `std::function` 包装的回调链必须经过一次**运行期指针间接调用**（`call rax`），类型擦除使编译器无法内联——这解释了 D5.2 第 2 点中"回调嵌套"依然带有可测开销的真实构成（协程则另付帧分配/挂起代价）。
+
+```asm
+; bench_func_call：直接调用 —— 目标静态已知，循环内直接写 sink，无间接调用
+;   _Z15bench_func_calli  (节选)
+        test    ebx, ebx
+        jle     .L
+        mov     DWORD PTR _ZL7g_sink1[rip], eax   ; ← 直接累加，无 call
+        cmp     ebx, eax
+        jne     .L
+; callback_chain_10：std::function 参数 —— 递归后经由类型擦除对象做间接调用
+;   _Z17callback_chain_10iSt8functionIFvvEE  (节选)
+        lea     rdx, 32[rsp]
+        call    _Z17callback_chain_10iSt8functionIFvvEE  ; 自递归(直接调用)
+        mov     rax, QWORD PTR 48[rsp]
+        test    rax, rax
+        je      .L
+        lea     rdx, 32[rsp]
+        lea     rcx, 32[rsp]
+        call    rax                    ; ← 决定性间接调用：std::function 擦除后的可调用对象
+; bench_callback_chain：即便 lambda 编译期已知，包进 std::function 仍走间接调用
+;   _Z20bench_callback_chaini  (节选)
+        lea     r13, _ZNSt17_Function_handlerIFvvEZ20bench_callback_chainiEUlvE_E9_M_invokeERKSt9_Any_data[rip]
+        ; ... 构造 std::function (存 invoke 指针)
+        call    rax                    ; ← 同样无法内联的间接调用
+```
+
+> 注意：`call rax` 的分支目标在运行期才确定，无法静态内联、且可能扰乱分支预测——这正是类型擦除抽象的"非零成本"所在。协程走另一条代价路径（堆分配帧 + 挂起/恢复），故 D5.2 中协程链比回调嵌套慢 1.67×，但二者都远快于线程。绝对毫秒随机器负载而变；间接调用这一事实与编译器无关。
