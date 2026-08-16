@@ -1598,6 +1598,35 @@ flowchart TD
 | 4 线程 — atomic relaxed / std::mutex | 22.39 / 34.83 | atomic **1.56×** 快 |
 | 8 线程 — atomic relaxed / std::mutex | 29.33 / 55.43 | atomic **1.89×** 快 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：8 线程 atomic relaxed vs std::mutex 累加耗时">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：8 线程 atomic relaxed vs std::mutex 累加耗时</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="162.5" x2="640" y2="162.5" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="158.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (std::mutex)</text>
+  <rect x="188.0" y="162.5" width="64.0" height="137.5" fill="#9A9A9A"/>
+  <text x="220.0" y="156.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">55.43ms (1.00×)</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">std::mutex</text>
+  <rect x="468.0" y="227.3" width="64.0" height="72.7" fill="#C44E52"/>
+  <text x="500.0" y="221.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">29.33ms (1.89×快)</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">atomic relaxed</text>
+</svg>
+
+> 图注：8 线程下 `atomic relaxed` 累加 29.33ms，比 `std::mutex` 55.43ms **快 1.89×**；1/4 线程结果同样利好原子（2.11× / 1.56×）。机制：lock-free 原子操作避开了 mutex 的系统调用与串行化等待。
+
 ### D5.2 非显然结论
 
 1. **`std::mutex` 慢的根因是系统调用 + 线程阻塞/唤醒 + 可能的上下文切换 + 临界区串行化。** 每次 `++c` 都要经过 `lock_guard` 的加锁/解锁，低争用时也至少是一次 futex 往返与内存屏障开销。

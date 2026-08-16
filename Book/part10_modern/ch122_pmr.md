@@ -1814,6 +1814,38 @@ int main() {
 | vector<string> 50 万 5 字符小串（SSO 内、零堆分配）· std | 6.390 | 1.00× |
 | vector<string> 50 万 5 字符小串（SSO 内、零堆分配）· pmr | 7.978 | **慢 0.80×** |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：list 20 万节点构建+求和 — std::list 与 pmr 对比">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：list 20 万节点构建+求和 — std::list 与 pmr 对比</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">15</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">20</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="159.0" x2="640" y2="159.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="155.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (std::list)</text>
+  <rect x="141.3" y="159.0" width="64.0" height="141.0" fill="#9A9A9A"/>
+  <text x="173.3" y="153.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">11.371</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">std::list</text>
+  <rect x="328.0" y="267.3" width="64.0" height="32.7" fill="#C44E52"/>
+  <text x="360.0" y="261.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">2.635 (4.32×)</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">pmr+mono</text>
+  <rect x="514.7" y="240.1" width="64.0" height="59.9" fill="#55A868"/>
+  <text x="546.7" y="234.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">4.833 (2.35×)</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">pmr+pool</text>
+</svg>
+
+> 图注：`list<int>` 20 万节点构建+求和：默认 `std::list` 每节点一次全局 `new`，11.371ms；`pmr::list` + `monotonic_buffer_resource` 2.635ms（**快 4.32×**），+ `unsynchronized_pool_resource` 4.833ms（**快 2.35×**）。节点密集分配下，PMR 复用单块缓冲省掉逐节点分配开销。200 轮重建（每轮 1 万节点）`pmr`+`release()` 复用更达 8.37×。
+
 ### D5.2 非显然结论
 
 1. **monotonic 快 4.3× 的根因是分配成本的数量级差异**：`monotonic_buffer_resource` 的分配就是「指针碰撞（bump）」——把游标加上请求大小即可返回，释放是真正的无操作（`do_deallocate` 为空）；而全局 `new`/malloc 每节点都要走桶查找、写块元数据、可能触发系统调用与锁竞争。节点越多，每元素的堆分配次数越高，差距越被放大。

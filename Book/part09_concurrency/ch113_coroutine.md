@@ -1528,6 +1528,35 @@ int main() {
 
 单次协程调用 ≈ 55 ns（11.06 ms / 200'000）。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：协程 Task vs 普通函数累加耗时">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：协程 Task vs 普通函数累加耗时</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">15</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">20</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="260.8" x2="640" y2="260.8" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="256.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (普通函数)</text>
+  <rect x="188.0" y="260.8" width="64.0" height="39.2" fill="#9A9A9A"/>
+  <text x="220.0" y="254.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">普通函数</text>
+  <rect x="468.0" y="162.9" width="64.0" height="137.1" fill="#C44E52"/>
+  <text x="500.0" y="156.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">3.50× 慢</text>
+  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">协程Task</text>
+</svg>
+
+> 图注：普通函数累加 3.16ms（基线 1.00×）；协程 `Task` 累加 11.06ms = **3.50× 慢**。代价来自每次挂起/恢复需分配并维护 coroutine frame（Promise + 状态机），单点调用开销明显大于裸函数调用。
+
 ### D5.2 非显然结论
 
 1. **协程慢 3.50×、约 55 ns/次调用。** 根因：每次 `co_return` 调用都要在堆上分配协程帧（promise + 局部变量 + 恢复上下文），调用 / 恢复 / 销毁三阶段都涉及堆管理；普通函数只压栈帧、且很可能被 `-O2` 完全内联，连栈帧都没有。

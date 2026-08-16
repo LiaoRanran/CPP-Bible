@@ -1944,6 +1944,35 @@ flowchart TD
 | 400 万×20 次 5 成员求和 — 5 层继承链（每层 1 个成员） | 58.257 | 1.10×（接近噪声） |
 | 400 万×20 次 5 成员求和 — 扁平结构体（5 成员平铺） | 53.027 | **1.00×** |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：多态指针数组 getter 调用耗时（基线=非虚 getter 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：多态指针数组 getter 调用耗时（基线=非虚 getter 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">3.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="250.4" x2="640" y2="250.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="246.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (非虚)</text>
+  <rect x="188.0" y="250.4" width="64.0" height="49.6" fill="#9A9A9A"/>
+  <text x="220.0" y="244.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">非虚getter</text>
+  <rect x="468.0" y="145.7" width="64.0" height="154.3" fill="#C44E52"/>
+  <text x="500.0" y="139.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">3.11× 慢</text>
+  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">虚getter</text>
+</svg>
+
+> 图注：对打乱的多态指针数组做 400 万×20 次成员读取：**非虚 getter** 781.313ms（基线 1.00×），**虚 getter** 2426.350ms（**慢 3.11×**）——每次调用多一次 vtable 间接跳转。对照组：5 层继承链 vs 扁平结构体的 5 成员求和仅 1.10×/1.00×（噪声级）；`public` 直接访问 vs `private`+内联 getter 几乎零成本（1.02×）。
+
 ### D5.2 非显然结论
 
 1. **getter/setter 与 `public` 直接访问逐毫秒等价（20.48 vs 20.17ms，差异 2% 在噪声内）。** 根因：内联 getter 在 -O2 下被完全展开，生成的机器码与直接读成员一条不差——`private` 只是编译期的访问检查，检查完就消失，不在运行期留下任何指令。这是本章"封装是编译期契约而非运行期保险箱"的实测铁证。

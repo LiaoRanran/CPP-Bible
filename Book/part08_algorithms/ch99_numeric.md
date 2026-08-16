@@ -2027,6 +2027,35 @@ int main() {
 | `accumulate` int ×5 | 42.47 | 基准 1.00× |
 | `reduce` int ×5 | 43.80 | 0.97×（同速，差异 3% 在噪声内） |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：float 累加 std::accumulate vs std::reduce 耗时（基线=accumulate 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：float 累加 std::accumulate vs std::reduce 耗时（基线=accumulate 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (accumulate)</text>
+  <rect x="188.0" y="176.0" width="64.0" height="124.0" fill="#9A9A9A"/>
+  <text x="220.0" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">accumulate</text>
+  <rect x="468.0" y="101.6" width="64.0" height="198.4" fill="#C44E52"/>
+  <text x="500.0" y="95.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1.60× 快</text>
+  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">reduce</text>
+</svg>
+
+> 图注：float ×5 累加：`std::accumulate` 89.21ms（基线 1.00×），`std::reduce` 55.65ms（**快 1.60×**）——`reduce` 允许并行/向量化重结合顺序。对照 int ×5 的 `reduce` 仅 0.97×（43.80 vs 42.47ms，差异在噪声内），收益主要来自 float 重排结合带来的向量化与 FMA 吞吐，而非整数。
+
 ### D5.2 非显然结论
 
 1. **accumulate 的 float 慢 1.60× 不在算法阶数，在求值顺序。** 根因：标准规定 `accumulate` 严格从左到右折叠；float 加法不可结合（`(a+b)+c ≠ a+(b+c)`），编译器被语义锁死不能向量化——每次加法依赖上一次结果，循环退化为一条串行依赖链，吞吐受限于 FP add 延迟而非吞吐。

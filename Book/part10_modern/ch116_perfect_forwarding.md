@@ -1458,6 +1458,35 @@ int main() {
 
 单 `string` 三场景差异 < 8%（713.7 / 718.9 / 772.5 ms），全部被 64 字节堆分配（~140 ns/次）淹没；pair 场景中 `emplace_back` 反而慢 1.44×，且 3 次复测 919 / 1014 / 1070 ms 稳定复现同一方向。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：pair 场景下 push_back 与 emplace_back 耗时">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：pair 场景下 push_back 与 emplace_back 耗时</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">500</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1500</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="208.0" x2="640" y2="208.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="204.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (push_back pair)</text>
+  <rect x="188.0" y="208.0" width="64.0" height="92.0" fill="#9A9A9A"/>
+  <text x="220.0" y="202.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">742.0</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">push_back</text>
+  <rect x="468.0" y="167.3" width="64.0" height="132.7" fill="#C44E52"/>
+  <text x="500.0" y="161.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1070.2 (1.44×)</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">emplace_back</text>
+</svg>
+
+> 图注：多参数 pair 场景：`push_back(make_pair(i, string(s64)))` 742.0ms，`emplace_back(i, s64)` 1070.2ms，**慢 1.44×**。单元素场景（`emplace_back(const char*)` 718.9 vs `push_back` 713.7ms）在噪声内基本持平；本表只突出 pair 这一真正出现额外开销的情形——emplace 的原位构造优势被基准 `make_pair` 路径抵消。
+
 ### D5.2 非显然结论
 
 1. **"emplace_back 更快"在可移动类型上基本不成立。** 根因：`push_back(临时)` = 构造临时 `string` + 一次 O(1) 移动；`string` 的移动仅是 3 个指针拷贝（~1 ns），而 64 字节堆分配约 ~140 ns。省下的"一次移动"与堆分配成本相差两个数量级，测不出来——713.7 vs 718.9 ms 的 5.2 ms 差异纯属噪声。

@@ -1605,6 +1605,31 @@ flowchart TD
 | reduce sum(x) | 243.623 | 102.418 | 2.38× |
 | full update（x,y,z += v*dt 六字段） | 594.549 | 164.631 | 3.61× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：partial update 场景 AoS vs SoA 耗时（基线=AoS 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：partial update 场景 AoS vs SoA 耗时（基线=AoS 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (AoS)</text>
+  <rect x="188.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="220.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">AoS</text>
+  <rect x="468.0" y="174.4" width="64.0" height="125.6" fill="#C44E52"/>
+  <text x="500.0" y="168.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">10.3× 快</text>
+  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">SoA</text>
+</svg>
+
+> 图注：只更新 `x`/`vx` 两字段的 **partial update** 场景，`SoA` 把连续访问的字段聚到一起，缓存命中率远高于 `AoS` 的 scattered 读取：`AoS` 611.612ms，`SoA` 59.282ms，**快 10.3×**。其余场景也偏向 `SoA`：full update 3.61×、reduce 2.38×——数据布局连续性的收益在部分更新时最夸张。
+
 ### D5.2 非显然结论
 
 1. **partial update 是 SoA 的杀手锏：10.3× 几乎精确对应 1/8 有效带宽比。** 根因：AoS 每碰 8B 有效数据就要拉整条 64B 缓存行（仅 1/8 有效带宽），而 SoA 的 `x[]`/`vx[]` 数组致密连续，一次缓存行装下 8 个有效元素，10.3× 是带宽比的实测镜像。

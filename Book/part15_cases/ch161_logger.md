@@ -1824,6 +1824,38 @@ N=200000 条消息。格式化维度各方式独立计时；落地维度以「�
 
 （正确性校验：异步落地后文件行数 = 200000，与同步/缓冲一致；三种落地「写什么」完全相同，仅「何时写」不同。）
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：日志格式化耗时（基线=ostringstream）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：日志格式化耗时（基线=ostringstream）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">62.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">125</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">187.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">250</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="73.0" x2="640" y2="73.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="69.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (ostringstream)</text>
+  <rect x="141.3" y="73.0" width="64.0" height="227.0" fill="#9A9A9A"/>
+  <text x="173.3" y="67.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">228.86 (1.00×)</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">ostringstream</text>
+  <rect x="328.0" y="79.2" width="64.0" height="220.8" fill="#DD8452"/>
+  <text x="360.0" y="73.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">222.61 (≈)</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">snprintf</text>
+  <rect x="514.7" y="234.5" width="64.0" height="65.5" fill="#C44E52"/>
+  <text x="546.7" y="228.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">65.98 (3.47× 快)</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">std::format</text>
+</svg>
+
+> 图注：在「格式化」场景，`ostringstream` 最慢（228.86ms，1.00× 基线），`snprintf` 基本持平（222.61ms，0.97×）；`std::format` 仅 65.98ms（**3.47× 快**）——`ostringstream` 的 `operator<<` 链与临时流对象是主因。注：在「落地」场景，异步后台线程生产者耗时 122.16ms，是同步逐条 flush（82.03ms）的约 1.49×（即 0.67× 速），异步并非免费。数据见上方 D5.1 表。
+
 ### D5.2 非显然结论
 
 1. **std::format 比 ostringstream 快 3.47×**（本机 GCC 15 libstdc++ 实测），且比传统 snprintf 也更快。根因：`ostringstream` 每次构造都付 locale/sentry 开销、产生多个临时对象；`std::format` 在 libstdc++ 中走更高效的格式化路径，避免这些开销。呼应正文 ④⑤「优先 std::format」。**诚实标注**：这 3.47× 是 GCC 15 的 libstdc++ 特例，其他标准库（如 MSVC STL、老版 libstdc++）具体倍数会变；方向（std::format ≥ snprintf > ostringstream 通常成立）稳定，绝对倍数不可移植。

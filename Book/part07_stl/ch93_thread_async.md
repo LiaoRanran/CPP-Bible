@@ -1812,6 +1812,36 @@ flowchart TD
 | 预建线程池（单 worker 复用，K=16） | 1.37 | **595×** |
 | `std::async(launch::deferred)` 惰性同步执行 | 4.50 | **181×** |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：异步任务调度耗时（K=16，log 跨度 595×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：异步任务调度耗时（K=16，log 跨度 595×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms, log)</text>
+  <line x1="80" y1="59.3" x2="640" y2="59.3" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="55.3" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (async)</text>
+  <rect x="141.3" y="59.3" width="64.0" height="240.7" fill="#9A9A9A"/>
+  <text x="173.3" y="53.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">814.93ms (1.00×)</text>
+  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">async</text>
+  <rect x="328.0" y="288.7" width="64.0" height="11.3" fill="#C44E52"/>
+  <text x="360.0" y="282.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1.37ms (595×)</text>
+  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">线程池</text>
+  <rect x="514.7" y="246.0" width="64.0" height="54.0" fill="#55A868"/>
+  <text x="546.7" y="240.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">4.50ms (181×)</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">deferred</text>
+</svg>
+
+> 图注：线程创建是最大开销：`std::async(launch::async)` 每次调用都新建线程，K=16 任务耗时 814.93ms；**预建线程池复用单 worker 仅 1.37ms，快 595×**；`launch::deferred` 惰性同步执行 4.50ms，快 181×。一次性任务的开销几乎全在「线程创建/销毁」，而非计算本身。
+
 ### D5.2 非显然结论
 
 1. **`std::async(launch::async)` 每次调用开销 ≈ 线程复用 595×。** 根因：每次调用都要创建 + 销毁一个 OS 线程——内核对象分配、默认栈保留（Windows 上常达 MB 级）、调度器注册/注销，单次在 Windows 上即达百微秒级；1 万次累加便是数百毫秒。而预建线程池只付一次建线程成本，任务通过队列复用同一组线程。

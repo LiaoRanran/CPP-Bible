@@ -1101,6 +1101,38 @@ flowchart TD
 
 （N = 2'000'000 次三段整数拼接；基准含 `volatile` sink 防死代码消除，结果取自本机 g++ 15.3.0 5 轮中位。）
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：三种格式化方式耗时（基线=std::format 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：三种格式化方式耗时（基线=std::format 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (format)</text>
+  <rect x="141.3" y="176.0" width="64.0" height="124.0" fill="#9A9A9A"/>
+  <text x="173.3" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">std::format</text>
+  <rect x="328.0" y="123.9" width="64.0" height="176.1" fill="#C44E52"/>
+  <text x="360.0" y="117.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1.42× 慢</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">ostringstream</text>
+  <rect x="514.7" y="116.5" width="64.0" height="183.5" fill="#C44E52"/>
+  <text x="546.7" y="110.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1.48× 慢</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">snprintf</text>
+</svg>
+
+> 图注：类型安全的 `std::format` 最快（307.130ms，基线 1.00×），`std::ostringstream` 流插入最慢（434.849ms，**慢 1.42×**），`std::snprintf` C 风格变参次之（455.717ms，**慢 1.48×**）。流式与 varargs 的临时对象/解析开销拖慢两者，现代 `format` 编译期格式串检查 + 整数快路径胜出。
+
 ### D5.2 非显然结论
 
 1. **`std::format` 比 `std::ostringstream` 快约 1.42×，比 `std::snprintf` 快约 1.48×**：`std::format` 在编译期解析格式串并直接生成特化代码，无 `ostringstream` 的 `streambuf` 动态分配与虚函数开销，也无 `snprintf` 运行期解析 varargs 格式串的代价。

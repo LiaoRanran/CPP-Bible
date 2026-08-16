@@ -1644,6 +1644,38 @@ flowchart TD
 | 求和遍历 — `any_cast<int>` | 17.51 | 7.5× |
 | `any` 装 64 字符 `string`（100 万，超 SBO） | 140.1 | —（每元素两次堆分配） |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：构造 vector 耗时（类型擦除容器最慢）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：构造 vector 耗时（类型擦除容器最慢）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">12.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">37.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="264.7" x2="640" y2="264.7" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="260.7" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (int)</text>
+  <rect x="141.3" y="264.7" width="64.0" height="35.3" fill="#9A9A9A"/>
+  <text x="173.3" y="258.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">7.11ms (1.00×)</text>
+  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">int</text>
+  <rect x="328.0" y="138.5" width="64.0" height="161.5" fill="#DD8452"/>
+  <text x="360.0" y="132.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">32.56ms (4.6×)</text>
+  <text x="360.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">variant</text>
+  <rect x="514.7" y="100.7" width="64.0" height="199.3" fill="#C44E52"/>
+  <text x="546.7" y="94.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">40.18ms (5.7×)</text>
+  <text x="546.7" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">any</text>
+</svg>
+
+> 图注：构造 `vector` 时类型擦除容器最慢：`any` 40.18ms、**`variant<int,double>` 32.56ms**，均慢于裸 `int` 的 7.11ms（**5.7×/4.6×**）——内部堆/联合存储 + 构造开销；遍历读值时 `any_cast<int>`（17.51ms）比 `int` 求和（2.33ms）慢 7.5×，差距进一步拉大。
+
 ### D5.2 非显然结论
 
 1. **`int` 走 any SBO 仍慢 5.7×。** 根因：libstdc++ `any` 内部小缓冲区 = `sizeof(void*)*2`（`_M_storage`，16 字节），且要求类型可平凡移动才启用 SBO——`int` 满足，故 SBO 命中、无堆分配；但每次访问仍付出 manager 函数指针间接调用 + `typeid` 比较，这才是 5.7× 的来源，而非堆分配。

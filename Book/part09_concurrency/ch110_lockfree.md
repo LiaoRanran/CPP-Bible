@@ -1499,6 +1499,38 @@ flowchart TD
 
 > 相对列以 mutex = 1.00× 为锚。派生倍数（供参考，非基准列）：per-thread 相对 atomic ≈ 19× (1T) / 35× (8T)；atomic 相对 mutex ≈ 2.2× (1T) / 2.0× (8T)。per-thread 为最快档，已加粗。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：8 线程并发累加相对 mutex 的耗时倍数（越低越好）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：8 线程并发累加相对 mutex 的耗时倍数（越低越好）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="48.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (mutex)</text>
+  <rect x="141.3" y="52.0" width="64.0" height="248.0" fill="#9A9A9A"/>
+  <text x="173.3" y="46.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">mutex</text>
+  <rect x="328.0" y="173.5" width="64.0" height="126.5" fill="#DD8452"/>
+  <text x="360.0" y="167.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.51×</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">atomic(fetch_add)</text>
+  <rect x="514.7" y="297.5" width="64.0" height="2.5" fill="#C44E52"/>
+  <text x="546.7" y="291.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">0.01×</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">per-thread(thread_local)</text>
+</svg>
+
+> 图注：8 线程下：`mutex` 53.27ms 为基线 1.00×；lock-free `atomic(fetch_add)` 27.19ms = **0.51×**（≈2× 更快），低争用时与 mutex 接近；wait-free `per-thread(thread_local)` 仅 0.78ms = **0.01×**——把累加拆到各线程本地，彻底消除跨线程争用。机制：锁/原子串行化 vs 线程本地累积。
+
 ### D5.2 非显然结论
 
 1. **per-thread（thread_local）几乎零成本且随线程数几乎不退化**：每个线程写入自己线程局部的累加器，不存在任何共享写、没有任何同步指令（`lock` 前缀 / 原子 RMW 都没有），因此 1 线程与 8 线程的耗时差仅来自线程启动本身（0.33 → 0.78 ms）。它是最强的 wait-free 形态，但要求"结果可延迟合并"的算法结构。

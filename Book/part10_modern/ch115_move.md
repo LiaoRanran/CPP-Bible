@@ -1481,6 +1481,35 @@ flowchart TD
 | `std::string` 深拷贝 | 199.29 | 基准 1.00× |
 | `std::string` 移动 | 99.70 | **2.0×** 快 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：vector&lt;int&gt; 深拷贝与移动耗时对比">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：vector&lt;int&gt; 深拷贝与移动耗时对比</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">62.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">125</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">187.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">250</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="98.2" x2="640" y2="98.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="94.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (深拷贝)</text>
+  <rect x="188.0" y="98.2" width="64.0" height="201.8" fill="#9A9A9A"/>
+  <text x="220.0" y="92.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">203.44</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">深拷贝</text>
+  <rect x="468.0" y="199.2" width="64.0" height="100.8" fill="#C44E52"/>
+  <text x="500.0" y="193.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">101.62 (2.0×)</text>
+  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">移动</text>
+</svg>
+
+> 图注：`std::vector<int>` 深拷贝 203.44ms，移动 101.62ms（**快 2.0×**）。移动只接管指针/大小/容量三元组（O(1)），免去 O(n) 元素逐位拷贝；凡持有资源的类型应使移动 `noexcept` 以解锁 `vector` 扩容时的移动而非拷贝。
+
 ### D5.2 非显然结论
 
 1. **移动比深拷贝快约 2.0×。** 根因：深拷贝是 O(n)——先分配整块堆内存，再逐字节复制；移动只是 O(1) 的"指针交接 + 置空源"：把内部缓冲指针从源搬走、源置为空。省掉的是整块堆内存的分配与逐字节复制，只剩源对象自身的小开销，而源被置空后析构几乎免费，因此接近减半（2.0×）。

@@ -999,6 +999,43 @@ flowchart TD
 | `seq_cst` store | 369.184 | ≈17.3× |
 | `release` store | 47.461 | ≈2.2× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：不同内存序栅栏/存储的相对耗时（基线=relaxed store 1.00×）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：不同内存序栅栏/存储的相对耗时（基线=relaxed store 1.00×）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×)</text>
+  <line x1="80" y1="259.1" x2="640" y2="259.1" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="255.1" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (relaxed store)</text>
+  <rect x="98.7" y="259.1" width="56.0" height="40.9" fill="#9A9A9A"/>
+  <text x="126.7" y="253.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="126.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 126.7 314.0)">relaxed store</text>
+  <rect x="192.0" y="221.9" width="56.0" height="78.1" fill="#DD8452"/>
+  <text x="220.0" y="215.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">≈2.0×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">relaxed+rel fence</text>
+  <rect x="285.3" y="221.9" width="56.0" height="78.1" fill="#55A868"/>
+  <text x="313.3" y="215.9" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">≈2.0×</text>
+  <text x="313.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 313.3 314.0)">relaxed+acq fence</text>
+  <rect x="378.7" y="108.5" width="56.0" height="191.5" fill="#C44E52"/>
+  <text x="406.7" y="102.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">8.2×</text>
+  <text x="406.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 406.7 314.0)">relaxed+sc fence</text>
+  <rect x="472.0" y="105.7" width="56.0" height="194.3" fill="#C44E52"/>
+  <text x="500.0" y="99.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">17.3×</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">seq_cst store</text>
+  <rect x="565.3" y="216.1" width="56.0" height="83.9" fill="#64B5CD"/>
+  <text x="593.3" y="210.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">≈2.2×</text>
+  <text x="593.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 593.3 314.0)">release store</text>
+</svg>
+
+> 图注：仅加 `release`/`acquire` 栅栏（42.6ms）相对 `relaxed` store（21.364ms）仅慢 **≈2.0×**；但 `seq_cst` 栅栏（350.074ms，**8.2×**）和 `seq_cst` store（369.184ms，**17.3×**）因强制全局顺序一致性而骤增约 16×。跨 21–369ms 的跨度用对数轴才看得清。
+
 ### D5.2 非显然结论
 
 1. **x86-TSO 下 release/acquire fence 不生成任何指令，却仍慢约 2× —— 零指令 ≠ 零成本。** 根因：`atomic_thread_fence` 在 x86 上仅作为编译器屏障（compiler barrier），不发射 `mfence`/`lock`；但它禁止编译器跨迭代做寄存器提升（register hoisting）与读写合并，于是 store 每一轮都真实落到内存而非被提升到循环外，开销来自被迫的每轮内存往返，是"屏障语义 ≠ 指令数"的活教材。
