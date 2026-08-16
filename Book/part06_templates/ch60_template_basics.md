@@ -1228,6 +1228,35 @@ flowchart TD
 | 模板 `run_template<F>` | 单态化 + 内联 | 5.79 | 1.00x (基线) |
 | `std::function<int(int)>` | 类型擦除 + 间接调用 | 45.24 | ~7.8x 慢 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：模板回调内联 vs std::function 类型擦除耗时">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：模板回调内联 vs std::function 类型擦除耗时</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">12.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">37.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="271.3" x2="640" y2="271.3" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="267.3" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (模板)</text>
+  <rect x="188.0" y="271.3" width="64.0" height="28.7" fill="#9A9A9A"/>
+  <text x="220.0" y="265.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">5.79 (1.00×)</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">模板</text>
+  <rect x="468.0" y="75.6" width="64.0" height="224.4" fill="#C44E52"/>
+  <text x="500.0" y="69.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">45.24 (7.8× 慢)</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">std::function</text>
+</svg>
+
+> 图注：模板回调 `run_template<F>` 的 `F` 在编译期确定、lambda `operator()` 被完全内联，耗时 5.79ms（1.00× 基线）；`std::function` 类型擦除需经 SBO 判定 + 函数指针间接调用，耗时 45.24ms，**慢 ~7.8×**。差距量化编译期已知类型直接内联 vs 运行期类型擦除间接调用的边界。
+
 ### D5.2 非显然结论
 
 1. **std::function 慢 ~7.8x 的代价来自三重间接：类型擦除封装、SBO 判定、函数指针间接调用**：模板回调 `run_template<F>(v, lambda)` 的 `F` 在编译期确定，lambda 的 `operator()` 被 `-O2` 完全内联——整个循环变成 `add + lea` 指令序列，零间接跳转。`std::function` 内部用类型擦除（vtable-like 结构）存储 callable，每次 `f(x)` 需要：(1) 检查 SBO（小缓冲优化）判定 callable 在栈上还是堆上；(2) 通过内部函数指针间接调用目标。7.8x 的差距量化了『编译期已知类型直接内联』vs『运行期类型擦除间接调用』的边界。

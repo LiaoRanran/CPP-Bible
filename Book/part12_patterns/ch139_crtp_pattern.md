@@ -1307,6 +1307,41 @@ flowchart TD
 | `virtual` | 虚函数间接调用 | 27.34 | ∞ (被消除 vs 27ms) |
 | `std::function` | 类型擦除+堆分配 | 0.00 | ~1.00× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：CRTP vs virtual vs std::function 调用开销相对倍数">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：CRTP vs virtual vs std::function 调用开销相对倍数</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">12.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">37.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="295.0" x2="640" y2="295.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="291.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (direct)</text>
+  <rect x="118.0" y="295.0" width="64.0" height="5.0" fill="#9A9A9A"/>
+  <text x="150.0" y="289.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="150.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">direct</text>
+  <rect x="258.0" y="295.0" width="64.0" height="5.0" fill="#DD8452"/>
+  <text x="290.0" y="289.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.00×</text>
+  <text x="290.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">CRTP</text>
+  <rect x="398.0" y="295.0" width="64.0" height="5.0" fill="#55A868"/>
+  <text x="430.0" y="289.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">1.00×</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">std::func</text>
+  <rect x="538.0" y="164.4" width="64.0" height="135.6" fill="#C44E52"/>
+  <text x="570.0" y="158.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">27.34×</text>
+  <text x="570.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">virtual</text>
+</svg>
+
+> 图注：CRTP 静态分发 + 内联、direct 常量计算、std::function（简单 lambda 被优化）均为 ~0 ms（相对 1.00×）；`virtual` 虚函数间接调用实测 27.34 ms，是静态方案的 **27.34×**。机制：virtual 的 `call [vtable+16]` 无法内联，而 CRTP 在编译期解析为直接调用。数据见上方 D5.1 表。
+
 ### D5.2 非显然结论
 
 **CRTP 完全消除虚调用开销——编译器生成等价于直接调用的代码**

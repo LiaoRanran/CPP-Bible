@@ -2178,6 +2178,31 @@ flowchart TD
 | `static_cast<D4*>` | 编译期指针偏移 | 11.02 | 1.00x (基线) |
 | `dynamic_cast<D4*>` | RTTI type_info 验证 | 113.81 | ~10.3x 慢 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：static_cast vs dynamic_cast 分派相对耗时倍数（RTTI 验证代价）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：static_cast vs dynamic_cast 分派相对耗时倍数（RTTI 验证代价）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, 基线=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (static_cast)</text>
+  <rect x="188.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="220.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">static_cast</text>
+  <rect x="468.0" y="174.3" width="64.0" height="125.7" fill="#C44E52"/>
+  <text x="500.0" y="168.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">10.33× 慢</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">dynamic_cast</text>
+</svg>
+
+> 图注：在隐藏动态类型（不透明工厂）的隔离基准下，`dynamic_cast<D4*>` 走 RTTI `type_info` 继承链验证，比编译期指针偏移的 `static_cast` 慢 **10.33×**（113.81 vs 11.02 ms）；开销 100% 来自运行期类型检查，与虚调用本身无关。
+
 ### D5.2 非显然结论
 
 1. **dynamic_cast 的 ~10x 开销全部来自 RTTI 验证，不是虚调用本身**：两条路径都执行相同的虚调用 `d->id()`（通过不透明工厂 `get_base()` 隐藏动态类型，编译器无法去虚化），唯一差异是 `static_cast<D4*>(p)`（编译期指针偏移，单继承链零偏移、机器码无额外指令）vs `dynamic_cast<D4*>(p)`（运行期遍历 type_info 继承链比对）。10.3x 的差距精确隔离了 RTTI 验证开销——这正是 ch27 cast 一节中『dynamic_cast 依赖 typeid 与 RTTI』在机器码层的量化体现。

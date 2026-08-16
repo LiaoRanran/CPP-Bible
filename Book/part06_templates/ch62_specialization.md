@@ -1353,6 +1353,31 @@ int main()
 | `if constexpr` 编译期路由 | 单态化 + 无分支 | 14.19 | 1.00x (基线) |
 | 运行期 if/else 链 | 随机 tag → 高 misprediction | 147.79 | ~10.4x 慢 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：if constexpr 编译期路由 vs 运行期 if/else 链耗时">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：if constexpr 编译期路由 vs 运行期 if/else 链耗时</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="281.2" x2="640" y2="281.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="277.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="188.0" y="281.2" width="64.0" height="18.8" fill="#9A9A9A"/>
+  <text x="220.0" y="275.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">14.19 (1.00×)</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">if constexpr</text>
+  <rect x="468.0" y="155.0" width="64.0" height="145.0" fill="#C44E52"/>
+  <text x="500.0" y="149.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">147.79 (10.4× 慢)</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">运行期if/else</text>
+</svg>
+
+> 图注：`if constexpr` 编译期路由无分支、单态化直线代码，耗时 14.19ms（1.00× 基线）；运行期 if/else 链面对随机洗排 tag（3 路均匀分布，misprediction 率约 67%），每次失败触发流水线冲刷，耗时 147.79ms，**慢 ~10.4×**。最大单项开销是分支预测失败，而非间接调用。
+
 ### D5.2 非显然结论
 
 1. **if/else 链慢 ~10.4x 的最大单项是分支预测失败（misprediction），不是间接调用**：ch62 的 if/else 链使用直接条件跳转（`cmp + je/jne`），不是间接调用——但随机洗排的 tag 令 CPU 分支预测器无法学习（均匀分布 3 路 → 预测命中率约 33%，misprediction 率约 67%）。每次 misprediction 触发流水线冲刷（~15-20 周期），在 2e7 次迭代中累计成巨大开销。`if constexpr` 在编译期消除所有分支——每个 batch 是单态化的直线代码，零条件跳转、零 misprediction。

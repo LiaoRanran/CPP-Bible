@@ -1380,6 +1380,33 @@ flowchart TD
 | 虚槽（单接收者） | 虚函数间接调用 | 85.02 | 间接调用开销 |
 | 多槽（4 接收者） | 容器遍历 + 4 虚调用 | 1273.22 | ~15× 慢（于单虚槽） |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：Qt 信号槽调用耗时（单虚槽 = 1.00× 基线）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：Qt 信号槽调用耗时（单虚槽 = 1.00× 基线）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="223.2" x2="640" y2="223.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="219.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (单虚槽)</text>
+  <rect x="188.0" y="223.2" width="64.0" height="76.8" fill="#9A9A9A"/>
+  <text x="220.0" y="217.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">85.02 (1.0×)</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">单虚槽</text>
+  <rect x="468.0" y="126.0" width="64.0" height="174.0" fill="#C44E52"/>
+  <text x="500.0" y="120.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">1273.22 (15.0×)</text>
+  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">多槽4接收</text>
+</svg>
+
+> 图注：Qt 信号槽「多槽（4 接收者）」因对每个接收者做一次虚调用并遍历接收者容器，耗时 1273.22 ms，比 `单虚槽`（85.02 ms）慢 **15.0×**；`直接调用`/`函数指针`/`std::function` 槽则被编译期内联消除（~0 ms）。解耦的代价是运行时容器遍历 + 间接调用，随接收者数目线性放大。数据见上方 D5.1 表。
+
 ### D5.2 非显然结论
 
 **Qt 信号槽的「解耦」代价是运行时容器遍历 + 虚调用——多槽比单虚槽慢 15×**

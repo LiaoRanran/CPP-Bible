@@ -1523,6 +1523,34 @@ int main() {
 | `set::find` | 2593.9 | 0.25×（比 lower_bound 慢 4.03×） |
 | `unordered_set::find` | 154.4 | 4.17×（比 lower_bound 快 4.17×，比 set 快 16.8×） |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：三类查找相对 sorted vector 加速比">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：三类查找相对 sorted vector 加速比</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0.1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">加速比 (×, lower_bound=1.00)</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="172.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (lower_bound)</text>
+  <rect x="141.3" y="176.0" width="64.0" height="124.0" fill="#9A9A9A"/>
+  <text x="173.3" y="170.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="173.3" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 173.3 314.0)">lower_bound</text>
+  <rect x="328.0" y="250.7" width="64.0" height="49.3" fill="#DD8452"/>
+  <text x="360.0" y="244.7" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.25× (慢4.03×)</text>
+  <text x="360.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 360.0 314.0)">set::find</text>
+  <rect x="514.7" y="99.1" width="64.0" height="200.9" fill="#C44E52"/>
+  <text x="546.7" y="93.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">4.17× (快)</text>
+  <text x="546.7" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 546.7 314.0)">unordered_set</text>
+</svg>
+
+> 图注：以 sorted `vector` + `lower_bound` 为基线（1.00×，643.5 ms）：`unordered_set::find` 154.4 ms（**快 4.17×**），因开放寻址 + 连续桶、缓存友好；`set::find` 2593.9 ms（**慢 4.03×**，加速比 0.25×），因红黑树节点离散堆分配、每步随机指针追逐、缓存命中率极低。同为 O(log N) 二分，连续数组碾压链式树。
+
 ### D5.2 非显然结论
 
 1. **同为 O(log N) 二分，set 比 sorted vector 慢 4.03×。** 根因是节点离散堆分配：红黑树每步跳转都是一次不可预取的随机指针追逐（400 万节点 × 每节点 40+ 字节控制块，缓存命中率极低）；sorted vector 二分虽也随机访问，但数据连续、最后几步落在同一 cache line，且无指针依赖链，预取器与硬件能部分掩盖延迟。

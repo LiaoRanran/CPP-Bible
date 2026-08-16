@@ -1226,6 +1226,35 @@ flowchart TD
 | `struct Rec { double x,y,z,w; }` | 直接偏移 `r.x` | 127.45 | 1.00× (基线) |
 | `std::tuple<double,double,double,double>` | `std::get<N>(t)` 编译期分派 | 138.30 | 1.09× 略慢 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：等价 struct 偏移访问 vs std::tuple 编译期分派耗时">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：等价 struct 偏移访问 vs std::tuple 编译期分派耗时</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">150</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">200</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="142.0" x2="640" y2="142.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="138.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (struct)</text>
+  <rect x="188.0" y="142.0" width="64.0" height="158.0" fill="#9A9A9A"/>
+  <text x="220.0" y="136.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">127.45 (1.00×)</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">struct</text>
+  <rect x="468.0" y="128.5" width="64.0" height="171.5" fill="#C44E52"/>
+  <text x="500.0" y="122.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">138.30 (1.09× 略慢)</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">std::tuple</text>
+</svg>
+
+> 图注：等价聚合 `struct Rec{ double x,y,z,w; }` 直接偏移访问耗时 127.45ms（1.00× 基线）；`std::tuple` 经递归继承布局 + 编译期 `std::get<N>` 分派，函数被内联但骨架无法完全消除，耗时 138.30ms，**仅慢 1.09×**（远小于『tuple 慢几十倍』的传言）。
+
 ### D5.2 非显然结论
 
 1. **std::tuple 并非零开销，但 -O2 下仅比等价 struct 慢约 9%**：`std::get<N>` 在编译期通过递归继承布局（`_Tuple_impl` 链）定位第 N 个基类子对象，该函数被内联，但「嵌套继承 + 编译期分派」的骨架无法被完全消除，残余约 9% 开销。这远小于「tuple 慢几十倍」的常见传言。

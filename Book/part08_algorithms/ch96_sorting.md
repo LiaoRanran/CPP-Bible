@@ -1467,6 +1467,51 @@ int main() {
 
 > 注：前 9 行为「随机 4M int」组，以该组 `sort`（383.317ms）为 1.00× 基准；最后 2 行为「64B 大元素 1M」组，以该组 `sort`（129.960ms）为 1.00× 基准。
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：随机 4M int 各排序策略相对 sort 倍数">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：随机 4M int 各排序策略相对 sort 倍数</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="217.3" x2="640" y2="217.3" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="220.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="134.7" x2="640" y2="134.7" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="138.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1000</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">相对倍数 (×, sort=1.00)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (sort)</text>
+  <rect x="94.0" y="300.0" width="42.0" height="0.0" fill="#9A9A9A"/>
+  <text x="115.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">1.00×</text>
+  <text x="115.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">sort</text>
+  <rect x="164.0" y="291.4" width="42.0" height="8.6" fill="#DD8452"/>
+  <text x="185.0" y="285.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">1.27×</text>
+  <text x="185.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 185.0 314.0)">stable_sort</text>
+  <rect x="234.0" y="133.6" width="42.0" height="166.4" fill="#C44E52"/>
+  <text x="255.0" y="127.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">103×</text>
+  <text x="255.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 255.0 314.0)">partial_sort</text>
+  <rect x="304.0" y="216.3" width="42.0" height="83.7" fill="#8172B3"/>
+  <text x="325.0" y="210.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">10.3×</text>
+  <text x="325.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 325.0 314.0)">nth_element</text>
+  <rect x="374.0" y="268.6" width="42.0" height="31.4" fill="#937860"/>
+  <text x="395.0" y="262.6" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#937860">2.40×</text>
+  <text x="395.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 395.0 314.0)">make_heap</text>
+  <rect x="444.0" y="237.0" width="42.0" height="63.0" fill="#64B5CD"/>
+  <text x="465.0" y="231.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#64B5CD">5.78×</text>
+  <text x="465.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">已升序</text>
+  <rect x="514.0" y="230.8" width="42.0" height="69.2" fill="#CCB974"/>
+  <text x="535.0" y="224.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#CCB974">6.88×</text>
+  <text x="535.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">已降序</text>
+  <rect x="584.0" y="245.4" width="42.0" height="54.6" fill="#DA8BC3"/>
+  <text x="605.0" y="239.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DA8BC3">4.58×</text>
+  <text x="605.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">近有序</text>
+</svg>
+
+> 图注：不必全排序时加速惊人：对随机 4M `int`，`partial_sort`（取 top1000）仅 3.717 ms（**比 `sort` 快 103×**），`nth_element`（取中位）37.274 ms（**快 10.3×**）；而 `stable_sort` 慢 1.27×、`make_heap`+`sort_heap` 慢 2.40×，已排序/近有序输入因 introsort 适应性分别快 5.78×/4.58×。`sort`（383.317 ms）为基线。本图仅取「随机 4M int」同组，避免与「64B 大元素 1M」组混基线。
+
 ### D5.2 非显然结论
 
 1. **最大的优化常是「承认你不需要全排」，而非换算法**：只要前 K 个用 `partial_sort` 快 103×（只建 K 大小的堆再选出，跳过其余 4M 的归并/划分），只要第 K 位或分位数用 `nth_element` 快 10×——它只做一趟划分把第 K 位归位，左右不排序。需求从「全序」降到「前缀序 / 第 K 位」时，算法复杂度的阶直接掉一档。

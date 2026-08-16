@@ -1171,6 +1171,35 @@ int main() {
 | `if constexpr` 编译期分派 | 单态化 + 内联 | 13.99 | 1.00x (基线) |
 | 函数指针表 `table[tag](x)` | 运行期间接调用 | 59.66 | ~4.3x 慢 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：if constexpr 编译期分派 vs 函数指针表耗时">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：if constexpr 编译期分派 vs 函数指针表耗时</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">75</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="265.3" x2="640" y2="265.3" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="261.3" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线</text>
+  <rect x="188.0" y="265.3" width="64.0" height="34.7" fill="#9A9A9A"/>
+  <text x="220.0" y="259.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">13.99 (1.00×)</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">if constexpr</text>
+  <rect x="468.0" y="152.0" width="64.0" height="148.0" fill="#C44E52"/>
+  <text x="500.0" y="146.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">59.66 (4.3× 慢)</text>
+  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">函数指针表</text>
+</svg>
+
+> 图注：`if constexpr` 在编译期消除分支、每 Tag 单态化内联，耗时 13.99ms（1.00× 基线）；函数指针表 `table[tag](x)` 每次迭代取索引→取地址→间接 `call`，阻止内联且令分支预测器无法稳定预测，耗时 59.66ms，**慢 ~4.3×**。
+
 ### D5.2 非显然结论
 
 1. **函数指针表慢 ~4.3x 的根源是间接调用阻止内联 + 分支预测惩罚**：`if constexpr` 在编译期消除了分支——`run_constexpr<0>` 只含 `op_add` 的内联体，`run_constexpr<1>` 只含 `op_mul`，每个 Tag 实例化一份单态化代码。函数指针表 `table[tags[i]](v[i])` 每次迭代：(1) 从 `tags[i]` 取索引；(2) 从 `table` 数组取函数地址；(3) 间接 `call` 该地址。间接调用阻止编译器内联 `op_add/op_mul/op_xor`，且随机 tag 令分支预测器无法稳定预测目标地址 → ~4.3x 代价。

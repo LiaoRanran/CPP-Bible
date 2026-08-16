@@ -1849,6 +1849,35 @@ flowchart TD
 | `vector<int>(1024)` 每轮新建 ×200K | 29.730 | |
 | `vector` 复用 clear+resize ×200K | 21.748 | 比新建快 1.37× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：栈 vs 堆 int[1024] 写入 ×200K 相对耗时">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：栈 vs 堆 int[1024] 写入 ×200K 相对耗时</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">12.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">37.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="173.1" x2="640" y2="173.1" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="169.1" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (栈)</text>
+  <rect x="188.0" y="173.1" width="64.0" height="126.9" fill="#9A9A9A"/>
+  <text x="220.0" y="167.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">25.576</text>
+  <text x="220.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 220.0 314.0)">栈 int[1024]</text>
+  <rect x="468.0" y="139.5" width="64.0" height="160.5" fill="#C44E52"/>
+  <text x="500.0" y="133.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">32.354 (1.26×)</text>
+  <text x="500.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 500.0 314.0)">堆 int[1024]</text>
+</svg>
+
+> 图注：在 200K 次 `int[1024]` 分配+写入基准中，堆 `new int[1024]` 比栈 `int[1024]` 慢 **1.26×**（32.354 vs 25.576 ms）；栈分配仅是栈指针自减、对象落在缓存热区，而堆分配需经分配器与系统调用冷路径。逐 `int` 的 `new`/`delete`（480ms）无对等栈基线（被 -O2 折叠为寄存器运算），不构成比较。
+
 ### D5.2 非显然结论
 
 1. **栈“分配”只是 `sub rsp`，甚至被折叠成寄存器。** `stack local int ×10M` 测得 0.000ms，但这是 -O2 把从未逃逸的栈变量提升为寄存器、整段消除的结果，**不是栈分配耗时为零的证据**。根因：`sub rsp` 本就只改 SP、无访存；变量不逃逸且结果不观测时，分配与读写被 DCE 与寄存器分配整体消去。

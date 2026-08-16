@@ -1831,6 +1831,35 @@ flowchart TD
 | `virtual work()` | vtable 间接调用 | 43.88 | 1.00x (基线) |
 | CRTP `work_impl` | 编译期内联单态化 | 4.94 | ~8.9x 快 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：虚调用 vs CRTP 编译期内联 单态化耗时">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：虚调用 vs CRTP 编译期内联 单态化耗时</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">12.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">37.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="82.4" x2="640" y2="82.4" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="78.4" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (virtual)</text>
+  <rect x="188.0" y="82.4" width="64.0" height="217.6" fill="#9A9A9A"/>
+  <text x="220.0" y="76.4" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">43.88 (1.00×)</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">virtual</text>
+  <rect x="468.0" y="275.5" width="64.0" height="24.5" fill="#C44E52"/>
+  <text x="500.0" y="269.5" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">4.94 (8.9× 快)</text>
+  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">CRTP</text>
+</svg>
+
+> 图注：`virtual work()` 经 vtable 两步间接（取 vtable 指针 + 函数指针间接跳转），耗时 43.88ms（1.00× 基线）；CRTP `work_impl` 在编译期单态化并被 `-O2` 完全内联，耗时 4.94ms，**快 ~8.9×**。差距精确量化了运行期多态间接性 vs 编译期多态直接性的代价边界。
+
 ### D5.2 非显然结论
 
 1. **CRTP 快 ~8.9x 的根源是消除了两次间接：vtable 取指 + 函数指针间接跳转**：虚函数调用经 `mov rax,[rdi]`（取 vtable 指针）→ `call [rax+offset]`（间接调用）两步；CRTP 的 `static_cast<Derived const*>(this)->work_impl(x)` 在编译期单态化，`work_impl` 被 `-O2` 完全内联进调用者——零间接跳转、零函数调用开销。8.9x 的差距精确量化了『运行期多态间接性』vs『编译期多态直接性』的代价边界。

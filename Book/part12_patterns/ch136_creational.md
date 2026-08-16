@@ -1413,6 +1413,41 @@ flowchart TD
 | `fn ptr` 工厂 | 函数指针间接调用 | 0.00 | ~1.00× |
 | `template` 工厂 | lambda 内联 | 0.00 | ~1.00× |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：对象创建方式耗时（direct 构造 = 1.00× 基线，ms）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：对象创建方式耗时（direct 构造 = 1.00× 基线，ms）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">2.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">5</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">7.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="296.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (direct)</text>
+  <rect x="118.0" y="300.0" width="64.0" height="0.0" fill="#9A9A9A"/>
+  <text x="150.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">0.00</text>
+  <text x="150.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">direct</text>
+  <rect x="258.0" y="134.1" width="64.0" height="165.9" fill="#C44E52"/>
+  <text x="290.0" y="128.1" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">6.69</text>
+  <text x="290.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 290.0 314.0)">virtual工厂</text>
+  <rect x="398.0" y="300.0" width="64.0" height="0.0" fill="#55A868"/>
+  <text x="430.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#55A868">0.00</text>
+  <text x="430.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">fnptr工厂</text>
+  <rect x="538.0" y="300.0" width="64.0" height="0.0" fill="#8172B3"/>
+  <text x="570.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#8172B3">0.00</text>
+  <text x="570.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 570.0 314.0)">template工厂</text>
+</svg>
+
+> 图注：创建型间接调用的代价是「间接调用 + 对象构造」双重开销：`virtual` 工厂每次迭代执行 vtable 查找 + 32B `Product` 栈构造，耗时 6.69 ms；而 `direct`/`fn ptr`/`template` 工厂在 -O2 下被内联消除至 ~0 ms。创建是否在热路径，决定工厂模式是否成为瓶颈。数据见上方 D5.1 表。
+
 ### D5.2 非显然结论
 
 **virtual 工厂比直接构造慢一个数量级——间接调用+对象构造双重开销**

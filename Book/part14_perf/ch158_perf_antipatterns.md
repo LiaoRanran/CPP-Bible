@@ -847,6 +847,31 @@ flowchart TD
 | 行优先（顺序访问，缓存友好） | 3.795 | 1.00× (基线) |
 | 列优先（跨步访问，缓存失效反模式） | 41.152 | 10.84× 更慢 |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：2D 矩阵遍历 行优先 vs 列优先（缓存友好 vs 反模式）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：2D 矩阵遍历 行优先 vs 列优先（缓存友好 vs 反模式）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">1</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">10</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">耗时 (ms)</text>
+  <line x1="80" y1="228.2" x2="640" y2="228.2" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="224.2" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">1.00× 基线 (行优先)</text>
+  <rect x="188.0" y="228.2" width="64.0" height="71.8" fill="#9A9A9A"/>
+  <text x="220.0" y="222.2" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">3.795</text>
+  <text x="220.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">行优先</text>
+  <rect x="468.0" y="99.8" width="64.0" height="200.2" fill="#C44E52"/>
+  <text x="500.0" y="93.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">41.152 (10.84×)</text>
+  <text x="500.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">列优先</text>
+</svg>
+
+> 图注：4096×4096 `int` 矩阵，行优先顺序访问 3.795 ms（1.00× 基线）；列优先跨步访问每读一元素跳 16 KB，几乎每次 cache miss，实测 41.152 ms，是行优先的 **10.84×**。『反模式』的定量定义就是 cache miss rate——同一数据、同一套指令仅交换循环嵌套顺序就差一个数量级。机制：缓存行 64 B ≪ 16 KB/行，退化为内存带宽受限。数据见上方 D5.1 表。
+
 ### D5.2 非显然结论
 
 1. **把「列优先」当反模式不是修辞，而是 10.84× 的真实代价**：`int` 每行 4096×4 = 16 KB，远大于 64 B 缓存行；列优先每读一个元素就要跳 16 KB 到下一行同列，几乎每次访存都未命中 L1/L2，退化为内存带宽受限——而本机 L3 仅 16 MB，64 MB 工作集早已溢出。
