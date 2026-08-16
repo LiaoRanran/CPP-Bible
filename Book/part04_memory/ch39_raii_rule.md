@@ -2469,7 +2469,6 @@ int main() {
 - 加速比（109×、18.5× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch39_raii_rule.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch39_raii_rule.cpp` 真实生成（节选自热函数 `bench_rule5_vs_rule0`，对比 R5 的 copy 路径与 move 路径在 `push_back` 循环体内**每个元素**的构造体）。D5.2 第 1 条断言"移动 1KB 对象比拷贝快 109×——移动只拷 3 个指针（浅拷贝）、拷贝要深拷贝 1KB 缓冲"。下面两段处在同一函数、同一循环骨架里，差异仅在元素构造：copy 路径对每个元素 `call operator new` + `call memcpy`（深拷贝 1KB），move 路径只是把 data_/size_ 两个字段搬过去并清空源，零分配、零字节搬运——这正是 109× 的根因。

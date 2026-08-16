@@ -1269,7 +1269,6 @@ int main() {
 - Book/part12_patterns/ch137_structural.md — 结构型模式
 - Book/part05_oo/ch51_crtp.md — CRTP 静态多态
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch135_patterns_intro.cpp` 真实生成（节选自 bench_switch_dispatch(int), bench_virtual_strategy(int), get_strat(int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。

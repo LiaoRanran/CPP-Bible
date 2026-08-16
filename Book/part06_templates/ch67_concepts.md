@@ -1228,7 +1228,6 @@ int main() {
 | ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 重载决议前置 |
 | ch119 Ranges | Book/part10_modern/ch119_ranges_deep.md | ranges 中 concepts 约束的工业用法 |
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch67_concepts.cpp` 真实生成（节选热函数 `B::v` / `S::v`，即 concepts 约束选中的两个重载）。二者在 -O2 下都塌缩为"加载编译期常量 + ret"（各 2 条指令），证明 D5.2 第 1 点：concepts 只在重载决议阶段过滤候选，一旦选定具体函数就不发射任何指令——运行期产物与 SFINAE / if-constexpr 完全相同（1.00×）。

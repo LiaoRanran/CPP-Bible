@@ -2183,8 +2183,6 @@ int main() {
 - 加速比（如 3.27×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++17`。demo 仅断言"模板直传"与"`std::function` 包装"两种调用得到**相同结果**（功能正确性，可断言），未对时间或倍数做任何断言。
 
-
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_26_lambda.cpp` 真实生成（节选热函数 `via_template` / `via_std_function`）。泛型 lambda 版把循环体完全内联，累加就是循环里的一条 `imul eax, edx` 之后直接 `add r8, rax`；而 `std::function` 版每轮迭代要 `call [QWORD PTR 24[rsi]]` 走间接调用桩——正是 D5.2「`std::function` 比模板/lambda 慢约 3.27×」的机器码来源。

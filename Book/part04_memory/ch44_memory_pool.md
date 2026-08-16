@@ -2738,7 +2738,6 @@ int main() {
 - 加速比（3.01×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_44_mempool.cpp`（位于库根）。demo 仅断言功能正确性（空闲链表清空、内容写回、地址复用），未对时间、倍数或精确 `sizeof` 做任何断言。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_44_mempool.cpp` 真实生成（节选热函数 `_ZN4PoolD1Ev`，即 `Pool` 析构函数）。它证实 D5.2 第 2 条的「代价」面：free-list 池**直到析构才把内存归还 OS**——析构时逐块 `call free`，并 `jmp operator delete` 释放内部 `blocks` 向量。与之相对，`pool.alloc()` 只是「弹出单链表头」（2~3 条指令，已内联进 `main`），这才是 3.01× 的来源。

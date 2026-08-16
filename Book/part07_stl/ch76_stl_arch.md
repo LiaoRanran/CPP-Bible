@@ -1940,7 +1940,6 @@ int main() {
 - demo 只断言迭代器**语义正确性**（类别标签、advance/distance 结果、累加和、缓存行大小），未对时间、倍数或精确 `sizeof` 做任何断言。
 - 基准源码见库根 `_bench_d5_ch76_stl_iterators.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch76_stl_iterators.cpp` 真实生成（节选 `bench_vector_traverse` / `bench_list_traverse` 遍历闭包的热循环）。两条路径算法复杂度同为 O(n)，但 vector 仅是单指针自增的连续读取，list 每步须解引用节点指针两次（取 value + 取 next），缓存未命中正是 16.54× 差距的机器码根因。

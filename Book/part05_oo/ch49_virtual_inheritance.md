@@ -1570,7 +1570,6 @@ int main() {
 - 加速比（如 2.21×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_49_vinherit.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_49_vinherit.cpp` 真实生成（节选虚继承菱形 `VM` 的两个 this 指针调整 thunk）。两者都是「经中间基类析构/虚调用前修正 `this`」的桩，却揭示了一个根本差异：**普通偏移是编译期常量（`sub rcx,16`），而虚基类偏移是运行期从 vtable 读出（`add rcx, QWORD PTR -24[rax]`）**——这正是 D5.2 第 1 条「虚基类偏移不是编译期常量，须经 vptr 间接加载」的机器码证据。

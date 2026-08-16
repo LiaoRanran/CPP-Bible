@@ -1443,7 +1443,6 @@ int main(){
 
 **交叉引用**：ch26（lambda 作槽）/ ch41（智能指针生命周期）/ ch93（线程与信号跨线程）
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch129_qt.cpp` 真实生成（节选热函数 `bench_direct` / `bench_virtual_slot`）。`bench_direct`（信号「直接发射」）被编译期内联为纯算术、零调用；`bench_virtual_slot`（虚槽）每次迭代都要经虚表解引用后 `call rax`。这把 D5.2 的「虚槽 = 间接调用」从秒表数字变成机器码事实，也解释了多槽为什么是「容器遍历 + 多级虚调用」的线性放大。

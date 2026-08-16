@@ -1439,7 +1439,6 @@ int main(){
 
 **交叉引用**：ch140（策略模式）/ ch41（unique_ptr 所有权）/ ch93（线程与依赖）
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch141_di.cpp` 真实生成（节选自 bench_di_virtual(Data const&, int), bench_di_unique_ptr(Data const&, int), get_service()）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。

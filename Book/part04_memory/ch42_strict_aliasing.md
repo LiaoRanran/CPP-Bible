@@ -1836,7 +1836,6 @@ int main() {
 - 相对加速比（16.7×）是可移植信号；反直觉点（restrict 版反而更慢、add3 几乎无差）已如实标注，根因在于编译器是否真正消费该承诺。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_42_aliasing.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_42_aliasing.cpp` 真实生成（节选 `count_via_local` 与 `count_via_ptr`/`count_via_restrict`）。它直证 D5.2 第 1 条：性能差异的真正来源是**「消除每轮内存 store」**——`count_via_local` 把计数在 XMM 寄存器里累加、整轮只写回一次；可别名版每轮都把 `counter` 写回内存，形成 store→load 依赖链。

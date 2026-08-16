@@ -1849,8 +1849,6 @@ int main() {
 - Book/part03_language/ch19_variables.md — 变量声明与初始化
 - Book/part06_templates/ch65_type_traits.md — 类型萃取
 
-
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch22_auto_decltype.cpp` 真实生成（节选热函数 `bench_auto_val` / `bench_decltype_ref`）。两者热循环本体（`paddd` 向量求和）完全一致；唯一的实质差异是 `bench_auto_val`（推导为值 → 拷贝 128 个 int）在进入循环前多了一条 `rep movsq` 把整个 512 字节 `Big` 复制到栈帧，而 `bench_decltype_ref`（推导为引用）零拷贝直接在原地求和——这正是 D5.2「`auto` 默认拷贝比 `auto&` 慢 36%」的机器码来源。

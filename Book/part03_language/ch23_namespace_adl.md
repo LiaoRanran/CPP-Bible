@@ -1585,8 +1585,6 @@ int main() {
 - Book/part03_language/ch29_friend.md — 友元与访问控制
 - Book/part06_templates/ch66_sfinae.md — SFINAE 与替换失败
 
-
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch23_namespace_adl.cpp` 真实生成（节选热函数 `bench_qualified` / `bench_adl`）。两条对比路径都只构造三个 `Item` 实参后 `call` 同一个 mangled 函数 `_ZN3foo7computeERKNS_4ItemES2_S2_`——ADL 版与显式限定版生成**逐字节相同**的调用序列，即 ADL 在机器码层面零开销，正是 D5.2「ADL 不影响性能」的证据。

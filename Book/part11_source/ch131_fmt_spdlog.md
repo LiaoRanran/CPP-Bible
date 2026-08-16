@@ -1199,7 +1199,6 @@ int main() {
 | --- | --- | --- |
 | ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch131_fmt_spdlog.cpp` 真实生成（节选 `std::__format::_Sink::_M_bump` / `_M_reserve`）。`_M_bump` 把一次写入推进游标压缩成 **2 条指令、零调用**；`_M_reserve` 的快速路径只做一次容量比较 `jnb`，仅当容量不足才 `call [ptr]` 走虚函数重分配。这把 D5.2「std::format 无 streambuf 动态分配与虚函数开销」落到机器码：热路径几乎免费。

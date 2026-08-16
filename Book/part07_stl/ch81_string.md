@@ -1361,7 +1361,6 @@ int main() {
 - 报告一律给「相对倍数 ×」而非绝对毫秒作为可移植信号；绝对毫秒随机器、编译器版本、频率伸缩而变，不可横向比较。
 - SSO 容量因实现而异（libstdc++ 15 / MSVC 15 / libc++ 22），demo 用运行期 `std::string().capacity()` 打印探测，不 `assert` 固定值，保证跨平台可编译。复现旗标：`g++ -O2 -std=c++17`，规模已缩小 10×，CI 可在秒级跑完。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_81_sso.cpp` 真实生成（节选 `std::string::_M_dispose`）。这正是短字符串优化（SSO, libstdc++ 内部容量 15）的机器码判据：解构时先判定 data 指针是否落在对象自身的本地缓冲里——`je .L` 跳过释放即 SSO 串「零释放」，否则落入 `operator delete` 释放堆内存。这条分支就是 D5.2 结论#1「越过 SSO 上限 = malloc + free + 一次间接寻址」的 6.60× 断崖之源。

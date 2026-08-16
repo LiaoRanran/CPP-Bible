@@ -1348,7 +1348,6 @@ int main(){
 
 **交叉引用**：ch47（虚函数表与去虚化）/ ch41（智能指针与反射开销）/ ch25（variant 替代字符串分发）
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch134_unreal.cpp` 真实生成（节选 `bench_offset_access` / `bench_virtual` / `bench_string_lookup`）。`bench_offset_access`（成员指针）与直接字段**逐字相同**——成员指针在编译期化为固定偏移，循环中被消除、零调用；`bench_virtual`（强类型虚 getter）每属性一次虚表 `call rax`；`bench_string_lookup`（蓝图反射）每属性一次 `_ZSt11_Hash_bytes` 字符串哈希 + `div` 取桶 + `_M_find_before_node` 探probe。这把 D5.2 的「代价阶梯」从毫秒数变成机器码层级。

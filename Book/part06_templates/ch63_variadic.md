@@ -1314,7 +1314,6 @@ int main() {
 | ch64 折叠表达式 | Book/part06_templates/ch64_fold.md | 折叠表达式是包展开的归约替代 |
 | ch116 完美转发 | Book/part10_modern/ch116_perfect_forwarding.md | 可变参数 + 万能引用实现 emplace 转发构造 |
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch63_tuple_struct.cpp` 真实生成（节选热函数 `sum_struct` / `sum_tuple`）。二者在 -O2 下都塌缩为 4 条标量 `addsd` 直加（偏移顺序不同，但都是编译期确定的直接偏移访问）：证明 `std::get<N>` 的"递归继承布局 + 编译期分派"已被完全内联，**运行期没有任何虚调用 / 查表 / 分支**；D5.2 那 9% 的差距只来自内存布局与寄存器分配，而非算法差异。

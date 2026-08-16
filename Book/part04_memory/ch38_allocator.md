@@ -2402,7 +2402,6 @@ int main() {
 - 加速比（8.38×、3.50× 等）是可移植信号；绝对毫秒随 CPU、系统分配器实现与编译器版本而变，请勿跨机器直接比较毫秒。demo 断言的是分配**次数**与**相等语义**这类稳定事实，未对时间或倍数做任何断言。
 - 基准源码见库根 `_bench_d5_ch38_allocator.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch38_allocator.cpp` 真实生成（节选热函数 `std::__cxx11::List_base<int, pmr::polymorphic_allocator<int>>::_M_clear`，对应 bench B2/B3 的 `pmr::list`）。它证实 D5.2 第 5 条：PMR 的每次释放不是直接 `free`，而是经 `memory_resource` 虚表的一次**虚调用**——这正是「运行时多态」换来的成本，也是 `std::allocator` 编译期内联所没有的。

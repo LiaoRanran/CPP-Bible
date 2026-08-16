@@ -1643,7 +1643,6 @@ int main() {
 - 加速比（2.62×、4994× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch101_algo_theory.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch101_algo_theory.cpp` 真实生成（节选自热函数 `bench_greedy_vs_dp` 与 `bench_hash_vs_sorted`）。它们分别印证 D5.2 的两个非显然结论：贪心比 DP 快 4994× 是因为 DP 是 O(n·W) 嵌套循环、贪心只是一次线性扫描；`unordered_map` 比 sorted+二分快 2.62× 是因为哈希是 O(1) 单 `div`+短链、二分是 O(log N) 的 ~21 次随机访存。

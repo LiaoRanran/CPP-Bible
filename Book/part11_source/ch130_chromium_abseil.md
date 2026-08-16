@@ -1409,7 +1409,6 @@ int main(){
 
 **交叉引用**：ch38（分配器与节点开销）/ ch83（关联容器 map）/ ch90（ranges 与算法）
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch130_chromium_abseil.cpp` 真实生成（节选热函数 `bench_sorted_vec` / `bench_unordered_map`）。`bench_sorted_vec` 走连续内存的二分查找（一条 `sar` + 步长 8 的 `cmp`），`bench_unordered_map` 走「哈希取模 `div` + 链表节点跳转」——后者每个命中都要追指针，缓存不命中正是 D5.2 中慢 4.2× 的根因。

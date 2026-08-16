@@ -1930,7 +1930,6 @@ int main() {
 - 加速比（115.69× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch94_stop_token.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch94_stop_token.cpp` 真实生成（节选自 median_of(std::vector<double, std::allocator<double> >)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。

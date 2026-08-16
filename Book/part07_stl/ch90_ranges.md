@@ -1155,7 +1155,6 @@ flowchart TD
 
 > 交叉引用：迭代器见 [ch76](Book/part07_stl/ch76_stl_arch.md)；算法见 [ch95](Book/part08_algorithms/ch95_algo_overview.md)；惰性求值见 [ch120](Book/part10_modern/ch120_coroutine_app.md)。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_90_ranges.cpp` 真实生成（节选 `manual` / `ranges_for_each` / `ranges_pipe` 三个热函数）。D5.2 结论 1「`ranges::for_each` 与手写循环逐 ns 等价」直接体现为 `manual` 与 `ranges_for_each` 机器码完全同构；结论 2「`filter|transform` 多阶段管道慢 5.38×」则体现为 `ranges_pipe` 多出近一倍的迭代器解包指令。

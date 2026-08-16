@@ -1786,7 +1786,6 @@ int main() {
 - 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_85_unordered.cpp`（库根目录）。
 - demo 断言 `reserve` 后 `bucket_count` 不减、插入后可查到键值等功能语义（稳定语义，可断言），未对时间或倍数做任何断言；并兑现正文 L1413 关于"rehash 只重挂指针不拷值"的前向引用。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_85_unordered.cpp` 真实生成（节选 `unordered_map<int,int>` 的 `_Map_base::ix` 与 `map<int,int>` 的 `_M_get_insert_unique_pos`，均为 int 键）。D5.2 的 headline 结论 #1（查找 18.5×：`unordered_map` 哈希 O(1) 一次桶定位 vs `map` 红黑树 ~20 层指针追逐）可从两段热循环直接看出：`unordered_map` 查找只做"一次取模定位桶 + `mov` 取桶首节点 + 短链比较键"，核心访存是 `mov r11, QWORD PTR [rax+rdx*8]` 那一次桶数组寻址；`map` 查找是逐层 `cmp` + 沿 `_M_left`/`_M_right` 追逐子节点指针的循环，树高约 log2(1M)≈20 层，每层一次不可预测的堆跳转、极易 cache miss。2 个容器每步比较都是一句 4 字节 `cmp`，所以 18.5× 几乎完全来自这约 20 次随机内存访问 vs 1 次桶定位的差异。

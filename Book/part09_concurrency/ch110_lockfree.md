@@ -1620,7 +1620,6 @@ int main() {
 - 本 demo 仅断言功能正确性（三条路径净额相等），不断言任何计时、加速比或 `sizeof` 数值。
 - 绝对毫秒取决于 CPU 频率 / 负载 / 温度计；跨机器只比较"相对倍数"才有意义。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_110_lockfree.cpp` 真实生成（节选三档累加的**工作线程**热循环）。per-thread 写私有槽是纯 `add`、atomic 是单条 `lock add`、mutex 是两次 `pthread_mutex_*` 系统调用加一条普通 `add`——这三行核心指令正好对应 D5.2「wait-free 零同步 / lock-free 受 MESI 拖累 / lock-based 最慢」的层级。

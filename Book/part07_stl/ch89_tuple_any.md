@@ -1774,7 +1774,6 @@ int main() {
 - 加速比（4.6× / 5.7× / 3.7× / 7.5×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_89_any.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_89_any.cpp` 真实生成（节选类型擦除管理器 `_Manager_internal<int>` 与 `_Manager_external<std::string>`）。`any` 每次访问都要先经「manager 跳转表」间接分发（函数指针 + `typeid` 校验），这正是 D5.2 结论 1「`int` 走 SBO 仍慢 5.7×」的来源；而 SBO 命中（`int`）与堆分配（`string`）在栈帧开销上一眼可分。

@@ -2079,7 +2079,6 @@ int main() {
 - 诚实标注：①第 2 组的 3.11× 含指针追逐背景成本，纯"虚机制税"在缓存友好场景下会明显更小；②第 3 组 10% 的差异接近本机 5 轮的轮间波动（对照组自身波动约 ±8%），只能得出"深继承链无显著额外成本"而非"扁平一定更快"；③虚版本 getter 各返回 `v+1/v+2/v+3`（防止三个覆盖体被合并），额外一次加法对结论无影响。
 - 复现：`g++ -O2 -std=c++23 _bench_d5_ch46_encapsulation.cpp`。基准源码见库根 `_bench_d5_ch46_encapsulation.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch46_encapsulation.cpp` 真实生成（节选热函数 `Circle::get` / `Square::get` / `Triangle::get`）。三者是被打乱的多态数组上「虚 getter」基准真正执行的派生函数体；它们都只有 3 条指令，说明 D5.2 的 **3.11× 差距几乎全在调用点的 vtable 间接跳转，而不在函数体本身**——这也同时印证了结论 1：内联 getter 与 `public` 直接访问逐指令等价，封装是编译期契约。

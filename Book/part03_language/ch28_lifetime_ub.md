@@ -1894,8 +1894,6 @@ int main() {
 - Book/part04_memory/ch36_stack_heap.md — 栈 vs 堆深度对比
 - Book/part03_language/ch28_lifetime_ub.md — 对象生命周期与 UB
 
-
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch28_lifetime_ub.cpp` 真实生成（节选热函数 `bench_stack` / `bench_unique_ptr`）。栈上直接持有数组的版本只 `sub rsp, 136` 分配、循环核 `paddd` 向量求和、最后 `add rsp, 136` 随函数返回自动释放，全程**零堆操作**；而 `unique_ptr` 版每轮迭代都要 `call _Znwy`（operator new）与 `call _ZdlPvy`（operator delete）——正是 D5.2「`unique_ptr` 比栈对象慢约 3×」的机器码来源。

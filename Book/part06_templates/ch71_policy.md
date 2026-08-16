@@ -1307,7 +1307,6 @@ int main() {
 - 加速比（3.30×、14.08× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch71_policy.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch71_policy.cpp` 真实生成（节选策略模板 `V*::apply`/`transform` 与运行期分发 `transform_fptr`/`insertion_sort_func`）。策略模板（编译期多态）被完全内联为 1–2 条指令；函数指针与 `std::function` 则必须付出真实的间接 `call`——这正面印证 D5.2：策略模板全面优于 `std::function`（3.3×/14×）与函数指针（2.27×），"热路径上的间接调用是性能杀手"。

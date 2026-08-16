@@ -969,7 +969,6 @@ int main(){
 - **计时**：`steady_clock` 5 轮取最快；绝对毫秒随机器/负载而变；一切结论以**加速比**表达，本机 ≈1.00× / ≈1.4×10⁴× 仅供量级参考。
 - **一致性门禁**：本附录 demo 块经 `chapter_compile_check.py`（GCC 15.3.0）编译通过。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_146_error.cpp` 真实生成（节选自 compute_ex(int) [clone .cold], compute_ex(int), compute_ec(int, int&)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。

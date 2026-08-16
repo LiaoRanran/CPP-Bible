@@ -1139,7 +1139,6 @@ int main() {
 | ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | 模板实例化机制前置 |
 | ch70 tag dispatch | Book/part06_templates/ch70_tag_dispatch.md | 编译期分派的另一种形态 |
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch68_tmp.cpp` 真实生成（节选热函数 `fib_rt_iter`，即运行期迭代版斐波那契）。它是一个带 `jne` 回边的真实循环（16 条指令），每轮重新计算——而 D5.2 第 1、3 点指出，TMP / constexpr 版 `Fib<30>` 在编译期就折成常量 `832040`，运行期只是"加一个常量"。此反差正是"把工作搬到编译期省约 9.3×"的机器码证据。

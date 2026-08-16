@@ -1480,7 +1480,6 @@ int main() {
 - 加速比（2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_117_rvo.cpp`。demo 区分了"纯 RVO（C++17 保证，可断言零拷贝）"与"NRVO（优化非保证，仅打印计数不 assert）"，并断言 `return std::move` 在 copy-only 类型上确实触发拷贝（功能语义），未对时间或精确 `sizeof` 做任何断言。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_117_rvo.cpp` 真实生成（节选热函数 `make_nrvo` / `make_move` 与 `make_move_copyonly`）。NRVO 与可移动类型的 `return std::move` 都把 vector 的指针/大小/容量三元组直接写入返回槽（O(1)）；而"只拷贝不可移动"的类型在 `return std::move` 时被重载决议静默落回 `const&` 拷贝，多出一个完整的 `memcpy`（O(n)）——这正是 D5.2 中 `copy_return_copyonly` 翻倍（2.0×）的机器码根因。

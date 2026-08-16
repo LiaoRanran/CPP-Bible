@@ -1388,7 +1388,6 @@ int main() {
 - Book/part05_oo/ch51_crtp.md — CRTP 原理
 - Book/part12_patterns/ch137_structural.md — 结构型模式
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch139_crtp_pattern.cpp` 真实生成（节选自 bench_virtual(int), get_vobj(), bench_crtp(int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。

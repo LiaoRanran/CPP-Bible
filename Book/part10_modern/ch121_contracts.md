@@ -1335,7 +1335,6 @@ int main() {
 - Book/part10_modern/ch120_coroutine_app.md — 协程与契约
 - Book/part04_memory/ch40_exception_safety.md — 异常 vs 契约
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch121_contracts.cpp` 真实生成（节选 `bench_assert` / `bench_no_check` / `bench_manual_check`）。三者编译出的循环体**逐字节相同**：没有任何针对前置条件的 `test`/`cmp`+条件跳转——编译器证明循环传入的值恒为正、检查条件恒真，于是把 `assert` 与手写 `if` 一并消除。这正是 D5.2 中"assert 在 NDEBUG=off 模式下零运行期开销"的机器码证据。

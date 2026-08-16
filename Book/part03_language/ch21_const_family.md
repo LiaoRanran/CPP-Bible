@@ -1309,8 +1309,6 @@ int main() {
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | 「constexpr 运行时不更快」同源印证 |
 | ch60 模板基础 | Book/part06_templates/ch60_template_basics.md | constexpr 与模板实参在编译期元编程耦合 |
 
-
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch21_constexpr.cpp` 真实生成（节选热函数 `rt_sum`）。`ct_sum(K)` 在编译期已知 `K` 时被整体折叠为常数，连函数符号都不会生成（本机 `--list` 仅见 `rt_sum`）；而运行期实参的 `rt_sum(kv)` 在 `-O2` 下是一段真实的循环累加到 `rax`/`rdx`，与等价普通函数没有区别——正是 D5.2「实参已知才免费，未知则等同普通函数」的机器码证据。

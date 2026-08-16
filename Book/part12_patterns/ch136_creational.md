@@ -1493,7 +1493,6 @@ int main() {
 - Book/part12_patterns/ch135_patterns_intro.md — 设计模式总论
 - Book/part04_memory/ch38_allocator.md — 分配器与对象池
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch136_creational.cpp` 真实生成（节选自 bench_virtual_factory(int), get_factory(), FactoryA::create() const）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。

@@ -1643,7 +1643,6 @@ int main() {
 - 加速比（如 3.50×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 计时环境旗标：`g++ -O2 -std=c++17`；协程 demo 需 C++20+，用 `g++ -O2 -std=c++23` 编译（c++23 向后兼容 coroutines），仅断言功能正确性。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_113_coroutine.cpp` 真实生成（节选 `coro_sum` / `plain_sum`）。`plain_sum` 被编译成纯算术的闭式求值、零分配；`coro_sum` 每次调用都 `call _Znwy`（operator new）在堆上分配 48 字节协程帧——这正解释了 D5.2「协程慢 3.50×、约 55 ns/次调用」的根因：调用/恢复/销毁三阶段都涉及堆管理。

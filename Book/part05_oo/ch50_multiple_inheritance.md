@@ -1577,7 +1577,6 @@ int main() {
 - demo 只断言子对象偏移非零、虚调用分派结果、虚基类共享性这类稳定语义，未对时间、倍数或精确 `sizeof` 做任何断言。
 - 基准源码见库根 `_bench_d5_ch50_multiple_inheritance.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch50_multiple_inheritance.cpp` 真实生成（节选多重继承 `M` 的两个 this 调整 thunk）。它们对应 D5.2 第 1/2 条所说的 thunk：「经第二基类 `R*` 的虚调用/析构，跳转前多一条 `sub rcx, 16` 的常量减法把 this 调回对象首地址」；而单继承（第一基类 `L*` 与派生类同首地址）根本不需要这层。

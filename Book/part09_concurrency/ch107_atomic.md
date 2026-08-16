@@ -1312,7 +1312,6 @@ flowchart TD
 
 ---
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_107_atomic.cpp` 真实生成（节选 `bench_atomic_relaxed` / `bench_mutex` 的**工作线程**热循环）。原子路径是单条 `lock add`、互斥路径每次迭代要两次 `pthread_mutex_*` 系统调用再配一条普通 `add`——这正解释了 D5.2「mutex 慢在系统调用+阻塞、atomic 是纯 RMW」的非显然结论。

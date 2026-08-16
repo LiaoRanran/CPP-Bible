@@ -1770,7 +1770,6 @@ int main() {
 - 加速比（≈1.20×、≈0.30×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`；基准源码：`_bench_d5_48_rtti.cpp`（位于库根）。demo 仅断言功能正确性（`dynamic_cast` 成功/失败返回 `nullptr`、typeid 精确比较），未对时间、倍数或精确 `sizeof` 做任何断言；`__dynamic_cast` 实现细节仅做行为描述，未伪造源码摘录。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_48_rtti.cpp` 真实生成（节选自 Derived::op(int) const, Other::op(int) const, Other::~Other()）。D5.2 指出虚派发近乎免费、而 dynamic_cast/typeid 带运行期开销。下方为 GCC 15.3.0 -O2 下两个虚函数本体的真实产物。

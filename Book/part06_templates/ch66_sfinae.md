@@ -1248,7 +1248,6 @@ int main() {
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | if-constexpr 的编译期求值机制 |
 | ch89 variant/any | Book/part07_stl/ch89_tuple_any.md | `std::variant` 存储布局与 SBO |
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch66_sfinae.cpp` 真实生成（节选热函数 `handle_tag<Cat>` / `handle_tag<Dog>`）。标签分发选中的两个重载在 -O2 下都塌缩为"加载常量 + ret"（各 2 条指令），热点循环里没有任何分派 / 查表 / 间接调用——这正面印证 D5.2 第 1 点：if-constexpr / tag / SFINAE 三种静态分派在运行期零差异（≈1.00×），分派在编译期实例化阶段就已定死。

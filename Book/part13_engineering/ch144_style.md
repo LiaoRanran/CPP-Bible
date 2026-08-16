@@ -1323,7 +1323,6 @@ int main(){
 
 **交叉引用**：ch20（引用与指针）/ ch22（auto 推导）/ ch156（编译器优化与拷贝消除）
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch144_style.cpp` 真实生成（节选自 bench_index(std::vector<Heavy, std::allocator<Heavy> > const&), bench_copy(std::vector<Heavy, std::allocator<Heavy> > const&), bench_ref(std::vector<Heavy, std::allocator<Heavy> > const&)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。

@@ -1363,7 +1363,6 @@ int main(){
 
 **交叉引用**：ch135（模式总览）/ ch137（结构型模式：CRTP vs virtual）/ ch64（variant 与 visit）
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch138_behavioral.cpp` 真实生成（节选自 bench_virtual(Data const&, int), get_strat(int), bench_variant_visit(Data const&, int)）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。

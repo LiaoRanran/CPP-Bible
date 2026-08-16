@@ -1912,7 +1912,6 @@ int main() {
 - `deferred` 虽快却不是并发：它把任务推迟到 `get()` 在本线程同步跑，只能省"线程创建"不能省"计算量"，切勿用它以图降延迟。
 - 复现旗标：`g++ -O2 -std=c++23 -pthread`。基准源码见库根 `_bench_d5_93_async.cpp`。demo 用副作用标志 `ran` 验证 `deferred` 直到 `get()` 才执行，并断言 `async` 返回值正确（均为功能正确性），未对时间、倍数或 `sizeof` 做任何断言。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -pthread -masm=intel _bench_d5_93_async.cpp` 真实生成（节选 `Async_state_impl::_M_run` 与 `Deferred_state::_M_complete_async`）。D5.2 结论 1「`async(launch::async)` 每次调用开销 ≈ 线程复用 595×」、结论 2「`deferred` 最快但是『假并发』」可由此对照：两条路径的**任务执行体**机器码逐条同构，说明 595× 差价不来自任务本身，而来自 `async` 每次必经的「线程创建 + 销毁（std::thread ctor → 内核对象分配 + 默认栈保留 + 调度注册）」，deferred 则完全跳过这一步、直接在本线程跑 `_M_complete_async`。

@@ -1651,7 +1651,6 @@ int main() {
 | ch158 性能反模式 | Book/part14_perf/ch158_perf_antipatterns.md | 抽象/分配开销的系统性讨论 |
 | ch151 基准方法 | Book/part13_engineering/ch151_benchmark.md | 加速基准方法同源 |
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch91_filesystem.cpp` 真实生成（节选 `manual_split` 与 `std::string::resize`）。D5.2 结论 1「`path` 词法分解比手写慢 8.9×」的根因是：每次 `parent_path()`/`filename()`/`extension()` 都物化一个**新分配的** `std::string`，而手写版全程用 `string_view` 零拷贝切分、只对 dir/name/ext 三个结果各物化一次。

@@ -1701,7 +1701,6 @@ int main() {
 - 复现旗标：`g++ -O2 -std=c++23`。本 demo 用 AoS 与 SoA 各跑同一 partial update + reduce，仅断言两布局结果一致（浮点容差），未对时间或倍数、也未对 `sizeof` 做任何断言。
 - 基准源码见库根 `_bench_d5_143_dod.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_143_dod.cpp` 真实生成（节选自 ParticlesSoA::~ParticlesSoA()）。。下方反汇编为 GCC 15.3.0 -O2 真实产物，印证该结论。

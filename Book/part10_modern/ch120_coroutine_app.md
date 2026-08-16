@@ -1561,7 +1561,6 @@ int main() {
 - 加速比（12.7×、1066×、27.5× 等）是可移植信号；绝对毫秒随机器负载而变。
 - 基准源码见库根 `_bench_d5_ch120_coroutine.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch120_coroutine.cpp` 真实生成（节选 `bench_func_call` / `callback_chain_10` / `bench_callback_chain`）。直接函数调用的目标在编译期静态已知、可被内联；而用 `std::function` 包装的回调链必须经过一次**运行期指针间接调用**（`call rax`），类型擦除使编译器无法内联——这解释了 D5.2 第 2 点中"回调嵌套"依然带有可测开销的真实构成（协程则另付帧分配/挂起代价）。

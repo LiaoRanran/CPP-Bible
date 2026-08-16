@@ -1897,8 +1897,6 @@ int main() {
 | ch43 缓存局部性 | Book/part04_memory/ch43_cache_locality.md | 存储布局与缓存行占用基线 |
 | ch32 初始化 | Book/part03_language/ch32_initialization.md | 存储期决定静态/线程初始化阶段 |
 
-
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch19_threadlocal.cpp` 真实生成（节选热函数 `bench_local` / `bench_global` / `bench_tls`）。三者热循环都在做「load 当前值 → 加 (i&1) → 写回」，差异只在**寻址模式**：栈局部走 `[rsp]`、全局 static 走 `[rip]`（GOT 重定位符号）、thread_local 在循环外 `call __emutls_get_address` 解析一次地址后走寄存器间接 `[rax]`——这正对应 D5.2 中 tls 反而比栈/全局略快（0.83×）的成因。

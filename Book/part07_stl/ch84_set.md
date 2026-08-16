@@ -1732,7 +1732,6 @@ int main() {
 - demo 只断言功能等价性（元素数、遍历一致性、查询一致性、重复计数），未对时间、倍数或精确 `sizeof` 做任何断言。
 - 基准源码见库根 `_bench_d5_ch84_set_multiset.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch84_set_multiset.cpp` 真实生成（节选 `set<int>` 的 `_M_get_insert_unique_pos`，int 键）。D5.2 的 headline 结论 #1（vector `lower_bound`/`binary_search` 快约 6× 于 `set::find`，差距来自缓存而非算法复杂度）可由这段红黑树下降循环直接看出：`set` 与 vector 二分每步比较次数几乎相同（都是 O(log n)≈20 层），但 `set` 每步都要先解引用一个散布在堆上的节点指针、再沿 `_M_left`/`_M_right` 追逐到下一层——每次跳跃都是一次不可预测的堆地址跳转，极易 L3 cache miss（50–100 cycle 惩罚）；vector 二分的中点地址是 `base + mid*4` 的连续推算，硬件预取器在消费第一个 cache line 时就把后续行拉进 L1。int 键的比较本身只是一句 4 字节 `cmp`，便宜到可以忽略，于是真实瓶颈就是"指针追逐"这一项。

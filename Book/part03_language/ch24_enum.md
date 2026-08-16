@@ -1910,8 +1910,6 @@ int main() {
 - Book/part03_language/ch25_union_variant.md — union 与 variant 安全对比
 - Book/part06_templates/ch65_type_traits.md — type_traits 反射
 
-
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch24_enum.cpp` 真实生成（节选热函数 `bench_fntable` / `bench_enum_class`）。函数指针表版每轮迭代要 `mov rax, QWORD PTR 0[rbp+rax*8]` 取指针再 `call rax`（间接调用，无法内联、分支预测困难）；而 `enum class` + 直接整数选择版用 `cmovne` 纯算术完成分发，**循环体内没有任何 `call`**——这正是 D5.2「函数表比 enum+switch 慢约 4.1×」的机器码来源。

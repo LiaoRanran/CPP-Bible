@@ -1112,8 +1112,6 @@ int main() {
 - Book/part05_oo/ch46_encapsulation_inheritance.md — 封装与继承
 - Book/part03_language/ch23_namespace_adl.md — 命名空间与 ADL
 
-
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch29_friend.cpp` 真实生成（节选热函数 `sum_friend` / `sum_getter` / `sum_public_call`）。三者都是先 `pxor xmm0` 清零向量累加器，循环里 `movdqu` 加载 + `paddd` 四路 int 并行累加，最后 `movd eax, xmm0` 归约——`friend` 函数、公有 `getter`、直接 `public` 成员访问三条路径生成**逐字节相同**的 15 条指令，即 D5.2「友元不破坏封装却零性能代价」的证据。

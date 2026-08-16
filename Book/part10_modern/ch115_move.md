@@ -1596,7 +1596,6 @@ int main() {
 - 加速比（如 2.0×）是可移植信号；绝对毫秒随 CPU、内存、编译器版本而变，请勿跨机器直接比较毫秒。
 - 计时环境旗标：`g++ -O2 -std=c++17`；demo 同旗标即可编译，仅断言功能正确性（绝不断言时间/倍数/精确 sizeof）。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_115_move.cpp` 真实生成（节选热函数 `bench_copy_str` / `bench_move_str` 与 `bench_copy_vec` / `bench_move_vec`）。深拷贝是 O(n) 的"堆分配 + 逐字节复制 + 释放源"，移动只是 O(1) 的"指针交接 + 置空源"，这正是 D5.2 中移动比深拷贝快约 2.0× 的机器码根因。

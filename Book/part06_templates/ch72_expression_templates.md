@@ -1340,7 +1340,6 @@ int main() {
 - 复现旗标：`g++ -O2 -std=c++23`。demo 仅断言朴素与 ET 结果一致，未断言运行时间、加速比或精确 `sizeof`。
 - 基准源码见库根 `_bench_d5_72_exprtmpl.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_72_exprtmpl.cpp` 真实生成（节选热函数 `NaiveVec::operator+`）。它先 `call _Znwy` 分配新向量内存，再 `call memset` 清零，最后跑一个逐元素 `addsd` 循环——每个 `+` 都产生一次真实堆分配与一趟完整内存读写。这正面印证 D5.2 第 1 点：朴素 `a+b+c+d` 触发 3 次堆分配 + 3 趟内存搬运（1097ms）；表达式模板把物化推迟到 `operator=`、合并成单循环（261ms，≈手写融合循环）。

@@ -1934,7 +1934,6 @@ int main() {
 - 相对加速比（1.26×、1.37×）是可移植信号；绝对毫秒随 CPU/内存/编译器版本而变，请勿跨机器直接比较毫秒。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_36_stackheap.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_36_stackheap.cpp` 真实生成（节选热函数 `_ZZ4mainENKUlvE2_clEv.isra.0`，对应 bench「stack: int[1024]+write」）。它证实 D5.2 第 1、2 条的核心：栈路径**没有任何 `operator new`/`malloc` 调用**，分配只是一次栈帧调整；而对照的堆路径每次迭代都要内联 `operator new`（位于 `main`，提取器按设计不展开）。

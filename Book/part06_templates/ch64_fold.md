@@ -1334,7 +1334,6 @@ int main() {
 | ch69 constexpr | Book/part06_templates/ch69_constexpr.md | 编译期折叠的更广义机制 |
 | ch65 type_traits | Book/part06_templates/ch65_type_traits.md | 编译期布尔与 `all_integral` 等 trait 配合 fold |
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch64_fold.cpp` 真实生成（节选热函数 `unrolled_sum` / `rec_sum` / `loop_sum`）。`unrolled_sum` 与 `rec_sum` 把 8 个编译期字面量直接折成常量（各 2 条指令）；`loop_sum` 却把 8 个操作数物化到栈再逐轮加载（19 条指令）。这正面印证 D5.2：折叠 / 递归 / 展开三者位级等价（均≈1.00×），而"手写循环更慢 2.9×"的根因是栈上数组物化，而非循环本身。

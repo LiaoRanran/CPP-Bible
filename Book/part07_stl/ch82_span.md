@@ -1724,7 +1724,6 @@ int main() {
 - 加速比是可移植信号，绝对毫秒请勿跨机器比较。
 - 复现旗标：`g++ -O2 -std=c++23`。基准源码见库根 `_bench_d5_ch82_span.cpp`。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_ch82_span.cpp` 真实生成（节选 `sum_fixed16` / `sum_dyn16`，两者都求 16 个 int）。静态 extent `span<const int,16>` 让 GCC 15 在**裸 -O2** 下就把定长循环 SSE2 向量化；动态 extent 因长度运行期未知只能标量累加——这正是 D5.2 结论#3「静态 extent 快 2.36×」的机器码根因。

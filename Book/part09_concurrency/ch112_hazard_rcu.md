@@ -1477,7 +1477,6 @@ int main() {
 - 本 demo 仅断言功能正确性（解引用值相同、拷贝使 `use_count` +1），不断言任何计时、加速比或 `sizeof` 数值。
 - 绝对毫秒取决于硬件与负载；跨机器只比较"相对倍数"才有意义。
 
-
 ### D5.5 汇编实证 (GCC 15.3.0)
 
 > 以下 disassembly 由 `g++ -O2 -std=c++23 -masm=intel _bench_d5_112_hazard_rcu.cpp` 真实生成（节选 `bench_raw` / `bench_hazard` / `bench_shared_ptr` 的读取热循环）。三者的「解引用取数」都是同一条 `movsxd` 普通 load，差异全在**发布/回收安全读所付的同步代价**：raw 零开销、hazard 多一次 `xchg`（隐式 lock 全屏障）、shared_ptr 多两条 `lock` 引用计数 RMW——正对应 D5.2「hazard 慢 4.59×、shared_ptr 慢 18.55×」的归因。
