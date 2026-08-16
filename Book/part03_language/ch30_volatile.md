@@ -391,22 +391,22 @@ int main() {
 }
 ```
 
-> **⑲·真实汇编证据**（GCC 15.3.0 -O2，`objdump -d -M intel -C`，节选自 `_asm_vol_probe.cpp` 的 `main`）：
+> **⑲·真实汇编证据**（GCC 15.3.0 -O2，`objdump -d -M intel -C`，代表程序：两个等价循环 `for(i=0;i<N;++i) g_vol=i` / `g_plain=i`，仅 `g_vol` 为 volatile）：
 
 ```asm
-; g_vol 是 volatile：循环未提升，每次迭代都生成真实 store
-mov DWORD PTR [rip+0x5daa], 0x0   # g_vol = 0   (iter 0)
-mov DWORD PTR [rip+0x5da0], 0x1   # g_vol = 1   (iter 1)
-mov DWORD PTR [rip+0x5d96], 0x2   # g_vol = 2   (iter 2)
-mov DWORD PTR [rip+0x5d8c], 0x3   # g_vol = 3   (iter 3)
-mov DWORD PTR [rip+0x5d82], 0x4   # g_vol = 4   (iter 4)
-mov edx, DWORD PTR [rip+0x5d7c]   # int x = g_vol  ← 强制重读内存
-
-; g_plain 非 volatile：循环被完全优化，仅单次最终 store
-mov DWORD PTR [rip+0x5d6e], 0x4   # g_plain = 4  (单次最终值)
+; g_vol 是 volatile：循环无法被提升/消除，每次迭代都生成真实 store（GCC 做了 2 倍展开）
+.Lvol_loop:
+	mov	DWORD PTR [rip+0x5d82], eax   ; g_vol = eax  ← 真实 store（不可省略/合并）
+	lea	edx, [rax+1]
+	add	eax, 2
+	mov	DWORD PTR [rip+0x5d76], edx   ; g_vol = edx  ← 仍是真实 store（同地址 0x140009088 <g_vol>）
+	cmp	eax, 0x989680                 ; 0x989680 = 10000000
+	jne	.Lvol_loop
+; g_plain 非 volatile：整个循环被折叠为单次最终 store
+	mov	DWORD PTR [rip+0x5d5c], 0x98967f   ; g_plain = 9999999（单次最终值）
 ```
 
-- **关键差异**：`volatile` 写入**不可被优化器省略或合并**（每轮真穿内存）；非 `volatile` 写入被**寄存器提升 + 循环消除**为单次最终 store；`int x = g_vol` 的读取强制重新加载，证明编译器未复用缓存值。这正是 ⑲ 计时差异的底层根源——而非「附带的 cycles 估算」。
+- **关键差异**：`volatile` 写入**不可被优化器省略或合并**（每轮真穿内存）；非 `volatile` 写入被**寄存器提升 + 循环消除**为单次最终 store。本例 `g_vol` 的值在循环后未被再次使用，故函数内不再出现重读；但凡后续再读取 `g_vol`，编译器都会强制重新加载内存而非复用寄存器——这正是 ⑲ 计时差异的底层根源，而非「附带的 cycles 估算」。
 
 - `[平台·x86-64]`：volatile 的单次访问成本与普通内存访问相同（～4 cycles L1, ～200 cycles DRAM，典型量级 [UNVERIFIED]）。代价不在单次访问，而在**禁止编译器进行循环优化、寄存器提升、公共子表达式消除**——这是真正的性能差距来源。
 

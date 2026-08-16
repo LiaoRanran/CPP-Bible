@@ -1156,18 +1156,19 @@ template void fwd_tmpl<S>(S&&);   // 右值实例化
 <void fwd_tmpl<S>(S&&)>: jmp   sink_r(S&&)       ; 右值实例化 —— 与 fwd_rvalue 逐字节相同
 
 <fwd_val(S)>:                                 ; 反例：按值传递
-    sub   rsp,0x38
-    movdqu xmm0, XMMWORD PTR [rcx]            ; 从传入位置取 S(12B→16B 对齐)
-    lea   rcx, [rsp+0x20]
-    movaps XMMWORD PTR [rsp+0x20], xmm0       ; 多一次 16 字节栈拷贝
+    sub   rsp, 0x28                           ; 分配 40 字节阴影空间（Windows x64 ABI）
+    mov   QWORD PTR 48[rsp], rcx              ; 按值传入的 S 先落到本地栈槽（Windows x64：前 4 参中按值结构体经 rcx 传入）
+    lea   rcx, 48[rsp]                        ; 取该栈槽地址作为 S&& 交给 sink_r
     call  sink_r(S&&)
+    add   rsp, 0x28
+    ret
 ```
 
 ### 关键发现
 
 - **`std::forward` 运行时零指令**：`fwd_tmpl<S&>` 与手写的 `fwd_lvalue` 都是 `jmp sink_l`，`fwd_tmpl<S>` 与 `fwd_rvalue` 都是 `jmp sink_r`，四者逐字节相同。`forward<T>(x)` 在汇编层面不产生任何 `mov`/构造，只是把 `x` 按原值类别（`S&` 或 `S&&`）交给被调函数。
 - **引用折叠保存值类别**：左值实例化走 `sink_l`（左值重载）、右值实例化走 `sink_r`（右值重载）。若改用 `const T&` 手写转发，只能落 `sink_l`，**丢失移动语义**——汇编上就是目标符号从 `sink_r` 变成 `sink_l`。这正是完美转发相对"const 引用转发"的不可替代之处。
-- **按值传递的隐藏代价**：`fwd_val(S)` 在调用方无法省略实参构造，进入函数后必须先 `movdqu`/`movaps` 把 S 拷到本地栈 `[rsp+0x20]`（一次 16 字节内存复制）再 `move` 给 `sink_r`；而完美转发（引用）直接 `jmp`，**完全避开这次拷贝**。对含非平凡成员的大对象，这一拷贝可能触发深层资源搬移，绝非免费。
+- **按值传递的隐藏代价**：`fwd_val(S)` 接收的是按值参数，无法像完美转发那样尾调用化（`jmp`）进 `sink_r`；本例中 `sink_r` 接收 `S&&`，编译器直接把本地 `s` 的地址交给它，并未发生 `movdqu`/`movaps` 内存拷贝——真正的额外代价是一次 `call`/返回与 40 字节阴影空间，而非内存复制。对含非平凡成员的大对象，按值参数在调用方仍需构造实参，同样绝非免费。
 
 ## 相关章节（交叉引用）
 

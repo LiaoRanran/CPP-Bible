@@ -254,39 +254,53 @@ void pq_push(std::priority_queue<int>& pq, int x) {
 ```
 
 ```asm
-; 取自 _Z7pq_pushRSt14priority_queue...  （_ch98_pq.asm 第 12–76 行）
-; do_push sift-up 核心（GCC 15.3.0 真机，_ch98_heap.asm）
-.L3:
+; GCC 15.3.0 -O2 -masm=intel（符号 _Z7pq_pushRSt14priority_queueIiSt6vectorIiSaIiEESt4lessIiEEi）
+; 事实：在 -O2 下 pq_push 并未把 push_heap 整体内联，而是生成一次 CALL；
+;       sift-up 循环被内联在 priority_queue::push（_ZNSt...4pushERKi）内部。
+_Z7pq_pushRSt14priority_queueIiSt6vectorIiSaIiEESt4lessIiEEi:
+	sub	rsp, 40
+	.seh_stackalloc	40
+	.seh_endprologue
+	mov	DWORD PTR 56[rsp], edx
+	lea	rdx, 56[rsp]
+	call	_ZNSt14priority_queueIiSt6vectorIiSaIiEESt4lessIiEE4pushERKi
+	nop
+	add	rsp, 40
+	ret
+
+; 被调用的 priority_queue::push 内部内联的 sift-up 核心（逻辑与 do_push 一致：
+; 比较仍是 cmp r10d, edx ; jg，仅标签号不同）
+_ZNSt14priority_queueIiSt6vectorIiSaIiEESt4lessIiEE4pushERKi:
+.L47:
 	sub	rax, r9
 	mov	rdx, rax
 	sar	rax, 2
 	lea	rcx, -1[rax]
 	test	rcx, rcx
-	jle	.L7
+	jle	.L51
 	sub	rax, 2
 	sar	rax
-	jmp	.L9
-.L20:
+	jmp	.L53
+.L62:
 	mov	DWORD PTR [rcx], edx
 	lea	rdx, -1[rax]
 	mov	rcx, rax
 	shr	rdx, 63
 	test	rax, rax
-	je	.L19
+	je	.L61
 	lea	rax, -1[rax+rdx]
 	sar	rax
-.L9:
+.L53:
 	lea	r8, [r9+rax*4]
 	lea	rcx, [r9+rcx*4]
 	mov	edx, DWORD PTR [r8]
 	cmp	r10d, edx
-	jg	.L20
-.L8:
+	jg	.L62
+.L52:
 	mov	DWORD PTR [rcx], r10d
-
 ```
 
-- `[实现·GCC15.3.0]`：比对 §④ 的 `_Z7do_push...` 汇编——`pq_push` 的 sift-up 核心（`.L3/.L9/.L20/.L8`、同样的 `cmp r10d, edx / jg .L20`）**逐字节一致**，且全程无 `call`，证明 `priority_queue::push` 把 `push_heap` 的 sift-up **整体内联**。因此适配器与裸算法在 `-O2` 下生成等价机器码，没有抽象惩罚。
+- `[实现·GCC15.3.0]`：与 §④ 比对会发现——**在 `-O2` 下 `pq_push` 并未把 `push_heap` 整体内联**：它只是 `call _ZNSt14priority_queue...4pushERKi`，真正的 sift-up 循环被内联在上述被调用的 `priority_queue::push` 内部（标签 `.L47/.L53/.L62/.L52`，比较仍为 `cmp r10d, edx ; jg .L62`，与 `do_push` 逻辑一致，仅标签号不同）。所以适配器与裸算法用的是**同一套 sift-up 指令**，区别只是 `-O2` 多了一层 `call`/`ret` 包装；若开启 `-O3`，GCC 才会把 `priority_queue::push` 也内联进 `pq_push`（此时循环比较方向会翻转为 `cmp edx, r10d ; jl`）。
 - `[标准]`：`[queue.priority]` 规定 `push` 等价于 `c.push_back(value); push_heap(c, comp)`。
 
 ## ⑦ 真实汇编：pop_heap 的 sift-down（比较+交换还原堆）[实现]
@@ -330,7 +344,7 @@ int do_pop(std::vector<int>& v) {
 
 ```
 
-- `[实现·GCC15.3.0]`：sift-down 的关键两步——`cmp r15d, r8d` 在左右子间选较大者（维持大顶堆性质），`mov DWORD PTR [rdx+rsi*4], r8d` 把较大子节点的值**下沉**到父位置（即与父交换）。循环直到到达叶子（`rax` 不小于末节点 `r12`）。这与 §④ 的 sift-up 方向相反但结构对称。
+- `[实现·GCC15.3.0]`：sift-down 的关键两步——`cmp r12d, r8d` 在左右子间选较大者（维持大顶堆性质），`mov DWORD PTR [rcx+rsi*4], r8d` 把较大子节点的值**下沉**到父位置（即与父交换）。循环直到到达叶子（`rax` 不小于末节点 `r12`）。这与 §④ 的 sift-up 方向相反但结构对称。
 - `[标准]`：`[alg.heap.operations]` 要求 `pop_heap` 后 `[first, last-1)` 仍满足堆性质、`*(last-1)` 为原队首——汇编中 `cmp r13, rax` 正是对"是否已越过末节点"的边界判断。
 
 ## ⑧ 自定义比较器（大顶 / 小顶）[标准]

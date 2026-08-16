@@ -294,9 +294,9 @@ int main() {
 ```
 
 ```asm
-; ⑧ 真实汇编（-O2 -masm=intel）：每个 fetch_add 编译为带 LOCK 的读-改-写
-;   lock xadd [rbx], rax    ; 原子加，且 xchg 隐含 LOCK，使该行在核间失效/重取
-; 两核对同一行的 lock xadd 互相等待 MESI 状态翻转 → 吞吐被锁死
+; ⑧ 真实汇编（-O2 -masm=intel）：fetch_add(1) 在返回值未使用时被优化为 lock add
+;   lock add QWORD PTR [rcx], 1   ; 原子加 1（返回被丢弃 → 用更省的 lock add，而非 lock xadd）
+; 两核对同一行的 lock 指令互相等待 MESI 状态翻转 → 吞吐被锁死
 ```
 
 - `[实现·GCC15]`：`std::atomic` 的 `fetch_add` 在 x86 编译为 `lock xadd`（或 `lock add`）；`lock` 前缀强制独占该行，是伪共享的"放大器"。
@@ -369,8 +369,8 @@ int main() {
 
 ```asm
 ; ⑩ 真实汇编（-O2）：alignas(64) 后 a、b 地址差 64（.bss 段按 64 对齐）
-;   t1: lock xadd [rax], rdx   ; rax 指向 a 的行
-;   t2: lock xadd [rbx], rdx   ; rbx 指向 b 的行（差 64，不同行）
+;   t1: lock add QWORD PTR [rax], 1   ; rax 指向 a 的行
+;   t2: lock add QWORD PTR [rbx], 1   ; rbx 指向 b 的行（差 64，不同行）
 ;   两核不再争同一行 → 无 MESI 来回弹 → 吞吐线性提升
 ```
 

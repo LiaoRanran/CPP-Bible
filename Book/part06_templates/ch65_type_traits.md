@@ -169,7 +169,7 @@ static_assert(std::is_pointer<int*>::value == true,  "编译期常量，无运�
 ; _Z10use_traitsv —— 全部 trait 运算在编译期折叠为常量 48
 _Z10use_traitsv:
     sub     rsp, 24
-    mov     DWORD PTR 12[rsp], 42      ; ValueV<42>::value 的编译期结果 = 42
+    mov     DWORD PTR 12[rsp], 42      ; MyIntegralConstant<int,42>::value（即 ic.value）的编译期结果 = 42
     mov     eax, DWORD PTR 12[rsp]
     add     eax, 6                     ; 42 + 6 = 48，完全常量折叠
     add     rsp, 24

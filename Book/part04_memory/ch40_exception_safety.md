@@ -1644,7 +1644,7 @@ int call_noexcept(int x, int y) { return noexcept_add(x, y); }
 .cold 段（抛异常路径）：
 ```asm
 <_Z14call_may_throwii.cold>:
-    call    <may_throw_div.part.0> ; 异常抛出函数
+    call    <_Z13may_throw_divii.part.0> ; 异常抛出函数
 ```
 
 **noexcept_add 本体 —— 1 指令**

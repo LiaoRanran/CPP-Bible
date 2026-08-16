@@ -333,30 +333,32 @@ g++ -O2 -flto main_lto.o lib_lto.o -o app_lto
 无 LTO：`driver` 内是**真实的跨 TU `call`**（链接期仍是两个独立函数）：
 
 ```asm
-; ⑧ 真实产物：app_nolto.exe 反汇编（objdump -d，节选）
+; ⑧ 真实产物：app_nolto.exe 反汇编（objdump -d -M intel，节选，GCC 15.3.0）
 _Z6driveri:
 	push	rsi
 	push	rbx
-	sub	$0x28,%rsp
-	mov	%ecx,%ebx
-	call	140001480 <_Z7computei>   ; ← 跨 TU 调用 compute
-	lea	0x1(%rbx),%ecx
-	mov	%eax,%esi
-	call	140001480 <_Z7computei>   ; ← 再次跨 TU 调用
-	add	%esi,%eax
-	add	$0x28,%rsp
-	pop	%rbx
+	sub	rsp, 40
+	mov	ebx, ecx
+	call	_Z7computei        ; ← 跨 TU 调用 compute
+	lea	ecx, [rbx+1]
+	mov	esi, eax
+	call	_Z7computei        ; ← 再次跨 TU 调用
+	add	eax, esi
+	add	rsp, 40
+	pop	rbx
+	pop	rsi
+	ret
 ```
 
 有 LTO：全程序内联 + 常量传播后，`main` 直接归约为 `mov eax,0x10`，且 `_Z7computei`/`_Z6helperi`/`_Z6driveri` **三个符号在产物中完全消失**（grep 计数为 0）：
 
 ```asm
-; ⑧ 真实产物：app_lto.exe 反汇编（objdump -d，节选）
+; ⑧ 真实产物：app_lto.exe 反汇编（objdump -d -M intel，节选，GCC 15.3.0）
 <main>:
-	sub	$0x28,%rsp
+	sub	rsp, 40
 	call	__main
-	mov	$0x10,%eax        ; ← driver(1)+driver(2) 全程折叠为 16，无 call
-	add	$0x28,%rsp
+	mov	eax, 16             ; ← driver(1) 全程折叠为 16，无 call
+	add	rsp, 40
 	ret
 ```
 
@@ -546,9 +548,9 @@ _Z5parsePKcy:
 
 ```asm
 ; ⑬ 真实产物 Examples/_ch18_stack.s（节选）
+	movsx	eax, BYTE PTR 32[rsp]   ; 先加载返回值 buf[0]
 	mov	rdx, QWORD PTR 104[rsp]   ; 读回栈上 canary
 	sub	rdx, QWORD PTR [r10]      ; 与原始 canary 比较
-	movsx	eax, BYTE PTR 32[rsp]
 	jne	.L14                      ; 被改过 → 栈溢出，跳转
 	add	rsp, 120
 	ret

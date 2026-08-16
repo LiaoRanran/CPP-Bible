@@ -77,15 +77,15 @@ C++ 不替你做数据布局优化，但给你"控制布局"的全部权力（�
 
 > 数值随 CPU 型号、频率、内存世代（DDR4/DDR5）浮动；上表为**可复现的实测值**，不是单一权威数字。本机 L3 实测 54 cyc 略高于"典型 30–50 cyc"上限，主因是本机 L3 容量/延迟代际差异；DRAM 实测 206 cyc 正好落在典型 200–400 cyc 区间。64 MB 工作集已超过 L3，且随机访问跨越上万虚拟页，实测值已含 TLB 未命中代价（见 ⑤）。
 
-指针追逐热路径（`[[gnu::noinline,gnu::noipa]] chase`，见 `Examples/_ch43_cache_perf.asm`）——关键在 `movq (%rax),%rax` 把"加载结果"直接喂给"下一次加载的地址"，形成**依赖链**，于是缓存未命中的延迟被压在关键路径上、无法被乱序执行隐藏：
+指针追逐热路径（`[[gnu::noinline,gnu::noipa]] chase`，见 `Examples/_ch43_cache_perf.asm`）——关键在 `mov (%rcx),%rcx` 把"加载结果"直接喂给"下一次加载的地址"，形成**依赖链**，于是缓存未命中的延迟被压在关键路径上、无法被乱序执行隐藏：
 
 ```asm
 _ZL5chasePyy:
 .L3:
-        movq    (%rax), %rax      ; p = *p  ← 这一次加载；若 S>本级缓存容量则缓存未命中
-        addq    $1, %rcx          ; 步数计数
-        addq    %rax, %r8         ; sum += p (防优化消除)
-        cmpq    %rcx, %rdx
+        mov     (%rcx), %rcx      ; p = *p  ← 这一次加载；若 S>本级缓存容量则缓存未命中
+        add     $1, %rax          ; 步数计数 i++
+        add     %rcx, %r8         ; sum += p (防优化消除)
+        cmp     %rax, %rdx        ; 比较 i(rax) 与 n(rdx)
         jne     .L3               ; 循环 N 步
 ```
 

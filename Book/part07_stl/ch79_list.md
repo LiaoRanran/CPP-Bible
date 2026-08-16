@@ -1300,7 +1300,7 @@ int main() {
 
 ```asm
 ; _M_create_node 分配节点（libstdc++ _List_node<int> 布局）
-; offset 0: prev ptr, offset 8: next ptr, offset 16: value
+; offset 0: next ptr, offset 8: prev ptr, offset 16: value
 ; total sizeof = 24 (=0x18) 对齐要求 8
 ; stack trace: main → push_back → _M_create_node → operator new(0x18)
 main+0x...:  call   operator new(unsigned long long)  ; ★ 每元素一次堆分配
@@ -1308,19 +1308,18 @@ main+0x...:  call   operator new(unsigned long long)  ; ★ 每元素一次堆�
 
 ⚠️ 100 个元素 = 100 次 `operator new`。与 vector 的 1 次 `realloc` 形成**数量级差异**。
 
-**2. 遍历 = 纯 `next` 指针追逐**（`mov rax,[rax+0x8]` 循环）：
+**2. 遍历 = 纯 `next` 指针追逐**（`mov rax,[rax]` 循环，next 在偏移 0）：
 
 ```asm
 ; for (auto it = l.begin(); it != l.end(); ++it) s += *it;
-; 核心遍历循环（链接 exe 中 `main` 循环段）：
-.L_loop:     mov    rax,QWORD PTR [rax+0x8]   ; ★ it = it->next (offset 8)
-             mov    eax,DWORD PTR [rax+0x10]  ; eax = it->value (offset 16)
-             add    edi,eax
-             cmp    rax,rbx                   ; it != end?
+; 核心遍历循环（GCC 15.3.0, -O2, -masm=intel 真实提取）
+.L_loop:     add    edx, DWORD PTR [rax+0x10]  ; ★ *it = it->value (offset 16)
+             mov    rax, QWORD PTR [rax]       ; ★ it = it->next (offset 0)
+             cmp    rax, rcx                   ; it != end?（rcx = list 哨兵/尾节点）
              jne    .L_loop
 ```
 
-⚠️ **无缓存预取**：每步 `[rax+0x8]` 加载的是上次才分配的上一个节点——`operator new` 返回的地址不连续，硬件预取器失效。5000 元素求和较 vector 约 **8-15× 慢**（L3 cache miss 主导）。
+⚠️ **无缓存预取**：每步 `[rax]`（offset 0 的 next 指针）加载的是上次才分配的上一个节点——`operator new` 返回的地址不连续，硬件预取器失效。5000 元素求和较 vector 约 **8-15× 慢**（L3 cache miss 主导）。
 
 **工程含义**：list 的插入/删除是 O(1) 指针改写（修改 `prev->next` 和 `next->prev`），但遍历因缓存缺失和指针间接引用代价高。**仅当插入/删除频率远超遍历时用 list**，否则 vector 的连续内存预取优势碾压。
 ## 附录：GCC 15.3.0 真机实证 — `std::forward_list` 单链哨兵与 insert_after 代价

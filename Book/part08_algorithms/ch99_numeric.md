@@ -510,8 +510,8 @@ _Z9tr_squarePKdy:
 .L6:
 	vmovupd	ymm0, YMMWORD PTR [rdx]
 	add	rdx, 32
-	vmulpd	xmm0, ymm0, ymm0
-	vaddpd	xmm1, xmm1, xmm0
+	vmulpd	ymm0, ymm0, ymm0
+	vaddpd	ymm1, ymm1, ymm0
 	cmp	rdx, r8
 	jne	.L6
 	vextractf128	xmm0, ymm1, 0x1
