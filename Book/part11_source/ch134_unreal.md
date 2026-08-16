@@ -1273,6 +1273,41 @@ flowchart TD
 | 虚 getter | 虚函数间接调用 | 8.50 | 间接调用开销 |
 | 字符串键查找 | FName 注册表 find | 36.84 | ~4.3× 慢（于 virtual） |
 
+#### 可视化速读（D5.1 数据图）
+
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="图：Unreal 属性访问方式开销对比（D5.1 数据）">
+  <text x="340" y="26" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Times New Roman', serif" font-weight="bold">图：Unreal 属性访问方式开销对比（D5.1 数据）</text>
+  <line x1="80" y1="300" x2="640" y2="300" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300" x2="80" y2="52" stroke="#333" stroke-width="1"/>
+  <line x1="80" y1="300.0" x2="640" y2="300.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="303.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">0</text>
+  <line x1="80" y1="238.0" x2="640" y2="238.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="241.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">12.5</text>
+  <line x1="80" y1="176.0" x2="640" y2="176.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="179.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">25</text>
+  <line x1="80" y1="114.0" x2="640" y2="114.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="117.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">37.5</text>
+  <line x1="80" y1="52.0" x2="640" y2="52.0" stroke="#ececf0" stroke-width="1"/>
+  <text x="74" y="55.5" text-anchor="end" font-size="10.5" font-family="Georgia, serif">50</text>
+  <text x="20" y="176" text-anchor="middle" font-size="12" font-family="Georgia, serif" transform="rotate(-90 20 176)">中位数耗时 (ms)</text>
+  <line x1="80" y1="257.8" x2="640" y2="257.8" stroke="#C44E52" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="640" y="253.8" text-anchor="end" font-size="10.5" font-family="Georgia, serif" fill="#C44E52">虚 getter 8.50ms (1.00×)</text>
+  <rect x="118.0" y="300.0" width="64.0" height="0.0" fill="#4C72B0"/>
+  <text x="150.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#4C72B0">0.00ms (消除)</text>
+  <text x="150.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">直接访问</text>
+  <rect x="258.0" y="300.0" width="64.0" height="0.0" fill="#DD8452"/>
+  <text x="290.0" y="294.0" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#DD8452">0.00ms (消除)</text>
+  <text x="290.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">成员指针</text>
+  <rect x="398.0" y="257.8" width="64.0" height="42.2" fill="#9A9A9A"/>
+  <text x="430.0" y="251.8" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#9A9A9A">8.50ms (1.00×)</text>
+  <text x="430.0" y="314.0" text-anchor="end" font-size="10.5" font-family="Georgia, serif" transform="rotate(-32 430.0 314.0)">虚 getter</text>
+  <rect x="538.0" y="117.3" width="64.0" height="182.7" fill="#C44E52"/>
+  <text x="570.0" y="111.3" text-anchor="middle" font-size="11" font-weight="bold" font-family="Georgia, serif" fill="#C44E52">36.84ms (4.33×慢)</text>
+  <text x="570.0" y="318.0" text-anchor="middle" font-size="11" font-family="Georgia, serif">FName查找</text>
+</svg>
+
+> 图注：在 `-O2` 下，直接字段访问与成员指针偏移被完全消除（0.00ms，编译期常量，无运行期开销）；虚 getter 因一次间接调用固定为 8.50ms；而 `FName` 字符串键注册表查找高达 36.84ms，相对虚访问慢 **4.33×**——热路径属性访问应优先静态偏移或虚函数，避免运行期字符串哈希查找。
+
 ### D5.2 非显然结论
 
 **字符串键反射比直接字段慢几个数量级——热路径必须用生成的强类型 getter**
