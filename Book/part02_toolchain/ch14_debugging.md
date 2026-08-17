@@ -114,6 +114,33 @@ gdb ./a.out
 (gdb) step / next              # 单步（进函数 / 过函数）
 ```
 
+**真实取证：本机 GDB 会话（MinGW GCC 15.3.0 `-O0 -g`，native `gdb.exe`）**：上面是"命令清单"，下面是**真实跑出来**的会话（源码即本节示例 3 / `Examples/_ch14_gdb_demo.cpp`）。注意 `hi=3` 越界读 `v[3]`，最终 `s` 被污染成 `6291116`（本应 `60`）——GDB 一上来就把 `lo/hi/a` 与循环变量 `i` 摊在眼前：
+
+```text
+# 环境：Windows / MinGW GCC 15.3.0 -O0 -g；命令：
+#   g++ -std=c++23 -O0 -g Examples/_ch14_gdb_demo.cpp -o _ch14_gdb_demo
+#   gdb -nx -batch -x cmds.txt --args _ch14_gdb_demo
+Breakpoint 1 at 0x...: file Examples/_ch14_gdb_demo.cpp, line 6.
+Thread 1 hit Breakpoint 1, sum_range (a=0x5ffe34, lo=0, hi=3) at Examples/_ch14_gdb_demo.cpp:6
+6           int s = 0;
+#0  sum_range (a=0x5ffe34, lo=0, hi=3) at Examples/_ch14_gdb_demo.cpp:6
+#1  0x... in caller () at Examples/_ch14_gdb_demo.cpp:13
+#2  0x... in main ()   at Examples/_ch14_gdb_demo.cpp:16
+$1 = 0            # lo
+$2 = 3            # hi
+$3 = (int *) 0x5ffe34   # a
+Breakpoint 2 at 0x...: file Examples/_ch14_gdb_demo.cpp, line 7.
+Thread 1 hit Breakpoint 2, sum_range (a=0x5ffe34, lo=0, hi=3) at Examples/_ch14_gdb_demo.cpp:7
+7           for (int i = lo; i <= hi; ++i) s += a[i];
+$4 = 0            # i（首轮）
+$5 = 0            # s（首轮）
+8           return s;
+$6 = 6291116      # s（循环结束后：10+20+30 + v[3] 越界脏值）
+6291116           # 程序最终打印：off-by-one 把栈上脏数据算进了和
+```
+
+> 注：已省略 GDB 的线程创建/退出等生命周期噪声行；地址哈希以 `0x...` 省略，命令、调用链与变量值均来自真实会话（详见附录 D 的 GDB 高级调试技术）。
+
 - `[标准]`：`backtrace`（简写 `bt`）展示从 `main` 到当前帧的完整调用链，是定位"谁调用了问题函数"的关键。
 - `[经验]`：发布构建（`-O2`）会内联/重排代码，断点可能"漂移"；调试请用 `-O0 -g`（见 ⑫）。
 
@@ -287,8 +314,19 @@ _ch14_warn.cpp:3:9: note: 'x' was declared here
       |         ^
 ```
 
-- `[标准]`：有符号整数溢出在 C++ 中是 UB（无补码回绕保证）；用 `-fsanitize=undefined`（需 `libubsan`）可在运行期精确报出行号。
-- `[经验]`：先开 `-Wall -Wextra -Wshadow` 把可静态判定的 UB 挡在编译期；运行期 UB 再用 UBSan 兜底。
+**真实取证 C'（Linux / WSL2 Ubuntu 24.04 + GCC 13.3.0，本书自跑）**：换到带 `libubsan` 的 Linux GCC，UBSan 在**运行期**精确捕获了示例 8 的有符号溢出——`runtime error` 精确到 `:6:7` 与具体运算：
+
+```text
+# 环境：Linux (WSL2 Ubuntu 24.04) GCC 13.3.0；命令：
+#   g++ -std=c++23 -fsanitize=undefined -g Examples/_ch14_ubsan.cpp -o _ch14_ubsan && ./_ch14_ubsan
+Examples/_ch14_ubsan.cpp:6:7: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'
+-2147483648
+```
+
+> 注：最后一行 `-2147483648` 是 `printf` 打印的**回绕结果**（恰好是补码下溢），但那是"未定义行为发生后的巧合值"——UBSan 在运算**当时**就报了错，比任何"猜回绕"都可靠。
+
+- `[标准]`：有符号整数溢出在 C++ 中是 UB（无补码回绕保证）。`-fsanitize=undefined` 在**实现/工具链**层面（需 `libubsan` 运行时）可在运行期精确报出行号；MinGW 本工具链不随附该库，故本节前面只能给编译期 `-Wall` 诊断。
+- `[经验]`：先开 `-Wall -Wextra -Wshadow` 把可静态判定的 UB 挡在编译期；运行期 UB 再用 UBSan 兜底——且优先在 Linux/Clang 工具链上跑（见 ⑪ 与 ⑰）。
 
 ## ⑧ TSan 数据竞争检测
 
@@ -404,22 +442,47 @@ int main() {
 理论上，以下命令应直接产出 ASan 的 `heap-buffer-overflow` 报告：
 
 ```bash
-# 理想命令（在带 libasan 的工具链上成立）
+# 在带 libasan 的工具链上成立（Linux / Clang）
 g++ -std=c++23 -fsanitize=address -g Examples/_ch14_heap_overflow.cpp -o _ch14_heap_overflow
 ./_ch14_heap_overflow
 ```
 
-**真实取证 B（本机实测）**：本机 MinGW GCC 13.1.0 **未随附 `libasan`**，链接阶段即失败，因此无法在本工具链上"跑出" ASan 报告——诚实记录，不编造：
+**真实取证 B（本机 MinGW 实测，诚实记录）**：本书实证默认工具链 **MinGW GCC 15.3.0（Brecht Sanders 构建）同样未随附 `libasan`**，链接阶段即失败——`[实现]` 层面确认，不编造：
 
 ```text
-# 文件：Examples/_ch14_heap_overflow.cpp
-# 命令：g++ -std=c++23 -fsanitize=address -g _ch14_heap_overflow.cpp -o _ch14_heap_overflow
-C:/Qt/Tools/mingw1310_64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -lasan: No such file or directory
+# 命令：g++ -std=c++23 -fsanitize=address -g Examples/_ch14_heap_overflow.cpp -o _ch14_heap_overflow
+C:/Qt/Tools/mingw1530_64/bin/../lib/gcc/x86_64-w64-mingw32/15.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: cannot find -lasan: No error
 collect2.exe: error: ld returned 1 exit status
 ```
 
-- `[实现]`：ASan 需要 `libasan`（运行时库 + 启动桩）。MinGW-w64 的"posix-seh"构建默认不打包 sanitizer 运行时；须换用 Clang/LLVM 或 Linux 上的 GCC 才能实际运行。
-- `[经验]`：在 CI 矩阵里固定一台 Linux + `g++ -fsanitize=address,undefined` 跑全套测试，是捕获内存/UB bug 的性价比最高的单点投入。
+**真实取证 B'（Linux / WSL2 Ubuntu 24.04 + GCC 13.3.0，本书自跑）**：换到带 `libasan` 的 Linux GCC，上文命令**确实跑出**教科书级报告——证明该命令本身正确，只差一个随附运行时的工具链：
+
+```text
+# 环境：Linux (WSL2 Ubuntu 24.04) GCC 13.3.0；命令：
+#   g++ -std=c++23 -fsanitize=address -g Examples/_ch14_heap_overflow.cpp -o _ch14_asan && ./_ch14_asan
+=================================================================
+==56==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x504000000038 at pc=0x... bp=0x... sp=0x...
+WRITE of size 4 at 0x504000000038 thread T0
+    #0 0x... in main Examples/_ch14_heap_overflow.cpp:6
+    #1 0x...  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8e9fd827...)
+    #2 0x... in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)
+    #3 0x... in _start (/tmp/_ch14_asan+0x1104)
+0x504000000038 is located 0 bytes after 40-byte region [0x504000000010,0x504000000038)
+allocated by thread T0 here:
+    #0 0x... in operator new[] ../../../../src/libsanitizer/asan/asan_new_delete.cpp:98
+    #1 0x... in main Examples/_ch14_heap_overflow.cpp:5
+    #2 0x...  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)
+    #3 0x... in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)
+    #4 0x... in _start (/tmp/_ch14_asan+0x1104)
+SUMMARY: AddressSanitizer: heap-buffer-overflow Examples/_ch14_heap_overflow.cpp:6 in main
+==56==ABORTING
+```
+
+> 注：为可读性，已把 WSL 挂载路径前缀（`/mnt/c/...`）归一为 `Examples/`，地址哈希以 `0x...` 省略；`WRITE of size 4`、`#0 ...:6`、`allocated by ...:5` 等核心字段均来自真实报告。
+
+- `[实现]`：ASan 需要 `libasan`（运行时库 + 启动桩）。MinGW-w64 的"posix-seh"构建默认不打包 sanitizer 运行时；而 Linux 发行版 GCC / Clang 自带。报告核心字段：`WRITE of size 4`（越界写 4 字节）、`#0 ... in main ...:6`（精确到行）、`allocated by ...:5`（`new int[10]` 在此分配）——把"谁越界、越界多少、内存谁分配的"一次说清。
+- `[标准]`：C++ 标准规定 `arr[10]` 对 `new int[10]` 是 UB；ASan 是**实现/工具链**层面的检测，不是标准保证。
+- `[经验]`：CI 矩阵固定一台 Linux + `g++ -fsanitize=address,undefined` 跑全套测试，是捕获内存/UB bug 性价比最高的单点投入（见 ⑰ 跨平台工具）。
 
 ## ⑫ 调试符号与 -g / strip [实现]
 

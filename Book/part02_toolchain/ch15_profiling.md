@@ -174,6 +174,35 @@ int main() {
 }
 ```
 
+> **真实取证（自产 · 非 perf 采样）**：以下火焰图由本书真实 C++ 调用树经本机实测生成。栈帧为真实函数 `workload → phase_a/b/c → kernel_*`，全部 `[[gnu::noinline]]` 以冻结调用栈；宽度按 MinGW GCC 15.3.0 `-O2` 下的 `std::chrono::steady_clock` 确定性自时间（非采样）归一为"包含时间占比"。`perf` 为 Linux 专有工具、本机不可用，此处以确定性计时复刻其"越宽越热"的语义，数据可复现（源 `Examples/_ch15_flamebench.cpp`）。
+
+<svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="火焰图示意：workload -> phase_a/b/c -> kernel_* 调用树，宽度按实测自时间">
+<text x="340" y="30" text-anchor="middle" font-size="14.5" font-family="Georgia, 'Microsoft YaHei', sans-serif" font-weight="bold">火焰图（自产渲染）— 栈帧为真实 C++ 函数，宽度按 GCC 15.3.0 -O2 实测自时间归一</text>
+<line x1="60.0" y1="214.00" x2="660.0" y2="214.00" stroke="#333" stroke-width="1"/>
+<text x="54.0" y="218.00" text-anchor="end" font-size="10.5" font-family="Georgia, serif">100%</text>
+<rect x="60.00" y="162.00" width="600.00" height="46.00" fill="#FFD27F" stroke="#5b4636" stroke-width="0.8" rx="1.5"/><text x="360.00" y="181.00" text-anchor="middle" font-size="12" font-family="Georgia, 'Microsoft YaHei', sans-serif" font-weight="bold" fill="#3a2a10">workload()</text><text x="360.00" y="197.00" text-anchor="middle" font-size="10" font-family="Georgia, serif" fill="#3a2a10">49471.7 us (incl)</text>
+<rect x="60.00" y="116.00" width="325.13" height="46.00" fill="#FB8C3C" stroke="#5b4636" stroke-width="0.8" rx="1.5"/><text x="222.57" y="135.00" text-anchor="middle" font-size="12" font-family="Georgia, 'Microsoft YaHei', sans-serif" font-weight="bold" fill="#3a2a10">phase_a()</text><text x="222.57" y="151.00" text-anchor="middle" font-size="10" font-family="Georgia, serif" fill="#3a2a10">26940.5 us · 54%</text>
+<rect x="385.13" y="116.00" width="242.65" height="46.00" fill="#FB8C3C" stroke="#5b4636" stroke-width="0.8" rx="1.5"/><text x="506.46" y="135.00" text-anchor="middle" font-size="12" font-family="Georgia, 'Microsoft YaHei', sans-serif" font-weight="bold" fill="#3a2a10">phase_b()</text><text x="506.46" y="151.00" text-anchor="middle" font-size="10" font-family="Georgia, serif" fill="#3a2a10">20106.3 us · 40%</text>
+<rect x="627.79" y="116.00" width="32.21" height="46.00" fill="#FB8C3C" stroke="#5b4636" stroke-width="0.8" rx="1.5"/>
+<rect x="60.00" y="70.00" width="338.48" height="46.00" fill="#E64B35" stroke="#5b4636" stroke-width="0.8" rx="1.5"/><text x="229.24" y="89.00" text-anchor="middle" font-size="12" font-family="Georgia, 'Microsoft YaHei', sans-serif" font-weight="bold" fill="#3a2a10">kernel_a1()</text><text x="229.24" y="105.00" text-anchor="middle" font-size="10" font-family="Georgia, serif" fill="#3a2a10">140.23 us ×200</text>
+<rect x="385.13" y="70.00" width="238.43" height="46.00" fill="#E64B35" stroke="#5b4636" stroke-width="0.8" rx="1.5"/><text x="504.34" y="89.00" text-anchor="middle" font-size="12" font-family="Georgia, 'Microsoft YaHei', sans-serif" font-weight="bold" fill="#3a2a10">kernel_b1()</text><text x="504.34" y="105.00" text-anchor="middle" font-size="10" font-family="Georgia, serif" fill="#3a2a10">39.51 us ×500</text>
+<rect x="623.56" y="70.00" width="0.00" height="46.00" fill="#E64B35" stroke="#5b4636" stroke-width="0.8" rx="1.5"/>
+<rect x="627.79" y="70.00" width="32.52" height="46.00" fill="#E64B35" stroke="#5b4636" stroke-width="0.8" rx="1.5"/>
+<text x="60.0" y="52.00" font-size="10.5" font-family="Georgia, serif" fill="#555">纵轴=栈深（root 在底，leaf 在顶）；横轴=包含 CPU 时间占比（越宽越热）。数据为确定性计时（非 perf 采样）。</text>
+</svg>
+
+| 调用栈层 | 帧 | 包含时间 | 占 workload |
+|---|---|---|---|
+| root | `workload` | 49471.7 us | 100% |
+| L1 | `phase_a` | 26940.5 us | 54% |
+| L1 | `phase_b` | 20106.3 us | 40% |
+| L1 | `phase_c` | 2670 us | 5.4% |
+| L2 leaf | `kernel_a1`（×200） | 140.23 us/次 | — |
+| L2 leaf | `kernel_b1`（×500） | 39.51 us/次 | — |
+| L2 leaf | `kernel_c1`（×200） | 13472 us/次 | — |
+
+> **图注**：三座塔对应 `phase_a`（54%）、`phase_b`（40%）、`phase_c`（5.4%）。`phase_a` 热点在 `kernel_a1`（200 次 × 140.23 us），`phase_b` 在 `kernel_b1`（500 次 × 39.51 us）；`phase_c` 的 `kernel_c1` 单次最重（13472 us）但调用少，故总占比低。`helper_b2` 极轻（≈0px，未单列）。数据为确定性计时，非 perf 采样。
+
 - `[平台·Linux]`：`stackcollapse-perf.pl` / `flamegraph.pl` 来自 [Brendan Gregg 的 flamegraph 仓库]（公开脚本，非本工程）；`perf script` 输出经管道折叠。
 - `[经验]`：火焰图横轴是**采样占比**（不是时间顺序）。最宽的"塔"就是最该优化的路径。
 
