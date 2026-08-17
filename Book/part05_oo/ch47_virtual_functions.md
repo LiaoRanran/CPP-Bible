@@ -181,7 +181,7 @@ _ZNK7Derived3fooEv:
 
 [实现·GCC15.3.0/MinGW x86-64] 关键事实：
 
-1. 虚调用由两条指令完成：`mov rax,[rcx]`（取 vptr）+ `jmp [16+rax]`（经 vtable 槽间接跳转）。`rcx` 是 x86-64 System V ABI 的第一个 this 指针寄存器（Windows x64 用 `rcx` 同样承载 this，但调用约定不同——见 ch36）。
+1. 虚调用由两条指令完成：`mov rax,[rcx]`（取 vptr）+ `jmp [16+rax]`（经 vtable 槽间接跳转）。`rcx` 是 **Windows x64 ABI**（本书 MinGW GCC 15.3.0 实证工具链）的第一个 this 指针寄存器；在 x86-64 **System V ABI**（Linux）中对应为 `rdi`（见 ch36）。
 2. vtable 对象布局：槽0 `offset-to-top`（8字节）、槽1 `typeinfo` 指针（8字节），真正的虚函数从槽2起，故 `foo` 在 vtable 字节偏移 16。但 **vptr 被初始化为 `_ZTV4Base+16`**（见下文构造期重写），直接指向首虚函数槽，因此分派指令 `jmp [rax]` 位移为 0 即命中 `foo`。汇编中的「16」属 vtable 对象内部偏移，已被 vptr 初始化跳过——二者不矛盾，且经真实汇编印证。
 3. 非虚调用 `bar` 被常量折叠为 `mov eax,2; ret`——因为 `bar` 非虚且返回常量，编译器在编译期求值，连函数调用都消除。
 4. 间接 `jmp`（非 `call`）是因为 `call_virtual` 本身是个薄包装，跳转即尾调用；真实多态调用场景多为 `call qword ptr [...]`，多一次返回栈协调，但取指/分派成本性质相同。

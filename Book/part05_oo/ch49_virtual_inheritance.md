@@ -1004,15 +1004,14 @@ mov    eax, DWORD PTR [rdi+0x8]    ; +8 跳过 B 的 vptr，取 int b
 
 ## 附录 G（vtable 底层与性能数据）
 
-下列为 x86-64 System V 下 GCC 13.2 `-O2` 生成的典型虚调用序列，用于说明运行时开销来源。
+下列为 **MinGW GCC 15.3.0 / Windows x64 ABI**（本书实证工具链，`this` 经 `rcx` 传入）真实提取的虚调用序列，与 ch45/ch47 的 ABI 约定一致；`vptr` 经 Itanium ABI 初始化已直接指向首虚函数槽，故间接跳转位移为 0。
 
-```text
-; 对象 obj 位于 rdi
-mov rax, [rdi+0x0000]     ; 取 vptr -> Derived vtable 基址
-mov rcx, [rax+0x0008]     ; 取 slot[1] = &Derived::foo
-call [rcx]                ; 间接虚调用
-mov rdx, [rax+0x0010]     ; 取 slot[2]
-add rdi, 0x0008           ; 多继承调整 this
+```asm
+// 复现源 Examples/_ch49_vcall.cpp；产物 Examples/_ch49_vcall.asm
+// （MinGW GCC 15.3.0 -O2 -masm=intel；Windows x64 ABI，this 经 rcx 传入）
+_Z8call_fooP4Base:
+    mov     rax, QWORD PTR [rcx]   ; 取 vptr（this 在 rcx）
+    rex.W jmp QWORD PTR [rax]      ; 经 vtable 首槽间接跳转（Itanium ABI：vptr 指向首虚函数槽，偏移 0 命中 foo）
 ```
 
 ### 内存布局（十六进制偏移）
@@ -1021,7 +1020,7 @@ add rdi, 0x0008           ; 多继承调整 this
 - 虚函数槽位按声明序：`0x0000` / `0x0008` / `0x0010` / `0x0018` / `0x0020`
 - 虚继承 vbptr 位于 `0x0008`，共享 vtable 顶端偏移 `0x0040`
 
-### 实测开销（Intel Skylake，3.2GHz）
+### 开销量级（微架构延迟参考，非本机实测；具体值随 CPU 型号、频率与分支预测器状态大幅波动）
 
 - 虚调用间接跳转 ≈ 3.2ns（BTB miss 时可达 18ns）
 - 非虚成员调用 ≈ 0.5ns；虚表取址 `mov rax,[rdi]` ≈ 1.0ns
@@ -1030,7 +1029,7 @@ add rdi, 0x0008           ; 多继承调整 this
 
 ### 编译器实现
 
-- GCC 13.2 / Clang 18 / MSVC 19.3 均生成 vtable
+- GCC / Clang / MSVC 均生成 vtable（跨编译器一致，与版本无关）
 - `__cplusplus` = 202302L（C++23）；`-fvtable-verify=std` 可插桩校验
 - `__attribute__((noinline))` 强制走虚分发；C++20 的 `-fwhole-program-vtables` 去虚化
 
