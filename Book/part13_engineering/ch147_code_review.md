@@ -784,7 +784,7 @@ call scan_node           ; 递归访问
 
 ### 工具链
 
-- GCC 13.2 / Clang 18 支持 `-fanalyzer`；`__cplusplus` = 202302L
+- GCC 15.3.0 / Clang 19 支持 `-fanalyzer`；`__cplusplus` = 202302L
 - `constexpr` 将检查前移到编译期（C++20 起 `std::is_constant_evaluated`）
 - WG21 提案 P0784R7 扩展 constexpr 容器支撑编译期校验
 

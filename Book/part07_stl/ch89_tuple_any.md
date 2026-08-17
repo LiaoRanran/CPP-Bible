@@ -1232,7 +1232,7 @@ jne .bad_any
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 / MSVC 19.3 均实现
+- GCC 15.3.0 / Clang 19 / MSVC 19.4x 均实现
 - `__cplusplus` = 202302L；`constexpr` tuple 自 C++20
 - WG21 提案 P0202R3 引入 `std::any`
 

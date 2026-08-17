@@ -1217,7 +1217,7 @@ call __cxa_throw          ; 触发展开
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 用 SJLJ / DWARF 展开
+- GCC 15.3.0 / Clang 19 用 SJLJ / DWARF 展开
 - `__cplusplus` = 202302L；`__attribute__((nothrow))` 等价 `noexcept`
 - WG21 提案 P0784R7 扩展 constexpr 错误处理
 

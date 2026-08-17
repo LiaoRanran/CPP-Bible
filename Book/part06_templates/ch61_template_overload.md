@@ -800,7 +800,7 @@ jbe .depth_error
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 对 `absl::Overload` 完全支持 [UNVERIFIED]
+- GCC 15.3.0 / Clang 19 对 `absl::Overload` 完全支持 [UNVERIFIED]
 - `__cplusplus` = 202302L；`_Pragma("once")` 加速头解析
 - WG21 提案 P0784R7 扩展 constexpr 模板能力
 

@@ -729,7 +729,7 @@ add rdi, 0x0008           ; 步进 int32
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 对 Eigen 表达式完全向量化
+- GCC 15.3.0 / Clang 19 对 Eigen 表达式完全向量化
 - `__cplusplus` = 202302L；`_Pragma("once")` 加速头解析
 - WG21 提案 P0784R7 扩展 constexpr 表达式
 

@@ -1013,7 +1013,7 @@ jge .ok
 
 - 比较器内联省 ≈ 3.2ns/调用；缓存行 `0x0040` 字节
 - L1 ≈ 1.0ns，L3 ≈ 12ns，主存 ≈ 100ns
-- GCC 13.2 / Clang 18 内联比较器；`__cplusplus` = 202302L
+- GCC 15.3.0 / Clang 19 内联比较器；`__cplusplus` = 202302L
 - WG21 提案 P0468R2 规范范围算法
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]

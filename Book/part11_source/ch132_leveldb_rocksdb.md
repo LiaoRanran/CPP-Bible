@@ -472,14 +472,14 @@ co.memtable_prefix_bloom_size_ratio = 0.1;   // 前缀布隆占 MemTable 比例
 
 ## ⑨ [实现·纯C++]真实：编译自包含跳表/SSTable 等价示例取汇编 [实现·纯C++]
 
-本仓库 `Examples/_ch132_lsm_toy.cpp` 用纯标准库实现跳表（MemTable 等价）+ 有序段（SSTable 等价）+ 多路归并（Compaction 等价）。以下是 **GCC 13.1.0 真实 `-O2 -masm=intel` 汇编**（非示意）。
+本仓库 `Examples/_ch132_lsm_toy.cpp` 用纯标准库实现跳表（MemTable 等价）+ 有序段（SSTable 等价）+ 多路归并（Compaction 等价）。以下是 **GCC 15.3.0 真实 `-O2 -masm=intel` 汇编**（非示意）。
 
 > **示例 31** [难度 ★★★☆☆] [主题：[实现·纯C++]真实：编译自包含跳]
 ```cpp
 // 文件：Examples/_ch132_lsm_toy.cpp
 // 行号：26  （int skiplist_contains(const Node*, int, int) 定义）
 // 编译：g++ -std=c++23 -O2 -S -masm=intel Examples/_ch132_lsm_toy.cpp -o Examples/_ch132_lsm_toy.asm
-// 真实汇编（节选，GCC 13.1.0，x86-64）：
+// 真实汇编（节选，GCC 15.3.0，x86-64）：
 ```
 
 ```x86asm
@@ -531,7 +531,7 @@ _Z17skiplist_containsPK4Nodeii:
 #include <vector>
 // 文件：Examples/_ch132_lsm_toy.cpp
 // 行号：64  （void merge_runs(const std::vector<Run>&, std::vector<int>&, std::vector<int>&) 定义）
-// 多路归并（Compaction 等价）真实汇编（节选，GCC 13.1.0）：
+// 多路归并（Compaction 等价）真实汇编（节选，GCC 15.3.0）：
 ```
 
 ```x86asm
@@ -1319,7 +1319,7 @@ mov rax, [rdi+0x0010]     ; 下一级
 ### 编译器与标准
 
 - 内部用 `std::atomic` 保护引用计数；`-O2` 生成上示代码
-- GCC 13.2 / Clang 18 编译；`__cplusplus` = 202302L
+- GCC 15.3.0 / Clang 19 编译；`__cplusplus` = 202302L
 - WG21 提案 P0784R7 扩展 constexpr 存储结构
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]

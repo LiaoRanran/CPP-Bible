@@ -1078,7 +1078,7 @@ jne .not_exist
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 / MSVC 19.3 均实现 `<filesystem>`
+- GCC 15.3.0 / Clang 19 / MSVC 19.4x 均实现 `<filesystem>`
 - `__cplusplus` = 202302L；C++17 引入该库
 - WG21 提案 P0202R3 规范 `std::filesystem`
 

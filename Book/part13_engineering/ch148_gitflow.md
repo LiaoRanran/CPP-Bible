@@ -1043,7 +1043,7 @@ mov rdx, [rcx]            ; 取对象头（类型+大小）
 
 ### 工具链
 
-- GCC 13.2 / Clang 18 编译 Git；`__cplusplus` = 202302L
+- GCC 15.3.0 / Clang 19 编译 Git；`__cplusplus` = 202302L
 - delta 链深度上限 `0x0100`；`__attribute__` 优化哈希
 - WG21 提案 P0784R7 类比内容寻址设计
 

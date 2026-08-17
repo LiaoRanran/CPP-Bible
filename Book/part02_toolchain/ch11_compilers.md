@@ -4,7 +4,7 @@
 [第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
 [第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
 
-> 真实取证工具链：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`，`-std=c++23 -O2 -S -masm=intel`）、`c++filt.exe`。
+> 真实取证工具链：MinGW GCC 15.3.0（`C:/Qt/Tools/mingw1530_64/bin/g++.exe`，`-std=c++23 -O2 -S -masm=intel`）、`c++filt.exe`。
 > 源码与汇编产物位于 `Examples/_ch11_*.cpp` / `Examples/_ch11_*.asm`。
 > 立场标签遵循 `CONVENTIONS.md §1`：`[标准]`=ISO、`[实现]`=编译器/库、`[平台·Windows]`=OS/ABI/硬件、`[经验]`=工程共识。
 
@@ -291,7 +291,7 @@ namespace ns { int q(int); }         // -> _ZN2ns1qEi
 template<typename T> T id(T);        // -> _Z2idIiET_S0_ (id<int>)
 ```
 
-真实符号对照（由 GCC 13.1.0 编译 `_ch11_mangle.cpp` 后从 `.asm` 提取，`c++filt` 还原）：
+真实符号对照（由 GCC 15.3.0 编译 `_ch11_mangle.cpp` 后从 `.asm` 提取，`c++filt` 还原）：
 
 | 源码签名 | 改编符号 | c++filt 还原 |
 |---|---|---|
@@ -334,7 +334,7 @@ template int id<int>(int);     // 显式实例化 -> _Z2idIiET_S0_
 
 ## ⑧ [实现·GCC15.3.0]真实汇编：编译 `int f(int)` 看 `_Z1fi` 并用 c++filt 还原
 
-下面所有汇编均来自本机 **GCC 13.1.0** 真实编译，未做任何改写。
+下面所有汇编均来自本机 **GCC 15.3.0** 真实编译，未做任何改写。
 
 > **示例 21** [难度 ★★★☆☆] [主题：[实现·GCC15.3.0]真实汇编]
 ```cpp
@@ -345,7 +345,7 @@ int f(int x) { return x + 1; }
 ```
 
 ```asm
-; 文件：Examples/_ch11_f.asm  (GCC 13.1.0, -O2 -masm=intel, 真实输出节选)
+; 文件：Examples/_ch11_f.asm  (GCC 15.3.0, -O2 -masm=intel, 真实输出节选)
 	.globl	_Z1fi
 	.def	_Z1fi;	.scl	2;	.type	32;	.endef
 	.seh_proc	_Z1fi
@@ -441,7 +441,7 @@ struct Shape {
 ```
 
 ```asm
-; 文件：Examples/_ch11_vtable.asm  (GCC 13.1.0, 真实输出节选)
+; 文件：Examples/_ch11_vtable.asm  (GCC 15.3.0, 真实输出节选)
 ; --- 类型字符串(typeinfo name) ---
 _ZTS5Shape:
 	.ascii "5Shape\0"
@@ -522,7 +522,7 @@ long compute(long a, long b, long c, long d, long e, long f) {
 ```
 
 ```asm
-; 文件：Examples/_ch11_cconv.asm  (GCC 13.1.0 x86-64, 真实输出节选)
+; 文件：Examples/_ch11_cconv.asm  (GCC 15.3.0 x86-64, 真实输出节选)
 ; Win64 调用约定：前 4 个整型参数依次 rcx, rdx, r8, r9；其余压栈
 _Z7computellllll:
 	.seh_endprologue

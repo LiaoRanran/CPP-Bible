@@ -872,7 +872,7 @@ jl  .older
 
 ### 编译器支持
 
-- GCC 13.2 / Clang 18 / MSVC 19.3 对 C++20 覆盖 > 0x0090%
+- GCC 15.3.0 / Clang 19 / MSVC 19.4x 对 C++20 覆盖 > 0x0090%
 - 静态反射提案 P0784R7 进入 C++26；`__attribute__` 兼容性持续维护
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]

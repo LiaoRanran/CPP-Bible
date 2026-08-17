@@ -1121,7 +1121,7 @@ call [rcx]
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 / MSVC 19.3 生成 vtable
+- GCC 15.3.0 / Clang 19 / MSVC 19.4x 生成 vtable
 - `__cplusplus` = 202302L；`__attribute__((noinline))` 强制虚分发
 - C++20 `-fvtable-verify=std` 插桩校验
 

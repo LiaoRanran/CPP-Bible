@@ -1342,7 +1342,7 @@ call [rdx]
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 / MSVC 19.3 生成 vtable
+- GCC 15.3.0 / Clang 19 / MSVC 19.4x 生成 vtable
 - `__cplusplus` = 202302L；`-fwhole-program-vtables` 去虚化框架调用
 - `constexpr` 将框架配置前移到编译期（C++20）
 

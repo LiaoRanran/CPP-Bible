@@ -833,7 +833,7 @@ call [rsi]
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 布局一致；MSVC 虚基类差异大
+- GCC 15.3.0 / Clang 19 布局一致；MSVC 虚基类差异大
 - `__cplusplus` = 202302L；`dynamic_cast` 跨继承查 RTTI ≈ 0.5us
 - WG21 提案 P0784R7 扩展 constexpr 多态
 

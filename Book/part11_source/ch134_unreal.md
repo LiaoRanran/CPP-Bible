@@ -3,7 +3,7 @@
 [第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
 [第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)
 
-> 真实编译器：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。
+> 真实编译器：MinGW GCC 15.3.0（`C:/Qt/Tools/mingw1530_64/bin/g++.exe`）。
 > Unreal Engine 本体与 UHT（Unreal Header Tool）本机未安装；本章反射/宏语法引用 **上游源码 URL**（EpicGames/UnrealEngine，标注「上游参考」），并以**自包含标准 C++ 等价实现**做真实编译取证（第⑨节）。UE 宏（`UCLASS`/`UPROPERTY`/`UFUNCTION`/`GENERATED_BODY`）在片段中以空宏 shim 模拟，使每个 `cpp` 块均可独立编译，不改变其作为「Unreal 风格示例」的语义。
 
 ## ⓪ 历史动机：Unreal Engine 的来龙去脉（为什么游戏引擎要自建一套 C++ 对象系统）
@@ -357,7 +357,7 @@ struct UThing { UPROPERTY() std::string Tag; };  // 仅当类是 UObject 时 Tag
 
 ## ⑨ 真实取证：编译自包含对象系统取汇编 [实现·Unreal]
 
-下面用 **GCC 13.1.0** 真实编译 `Examples/_ch134_objsys.cpp`（自包含对象系统 / RTTI 等价），证明 UObject 式反射骨架在标准 C++ 下可编译、并观察其汇编。UE 专属命令 `UHT` 未安装，故取真实汇编为证，标注「典型输出」。
+下面用 **GCC 15.3.0** 真实编译 `Examples/_ch134_objsys.cpp`（自包含对象系统 / RTTI 等价），证明 UObject 式反射骨架在标准 C++ 下可编译、并观察其汇编。UE 专属命令 `UHT` 未安装，故取真实汇编为证，标注「典型输出」。
 
 > **示例 20** [难度 ★★★☆☆] [主题：真实取证：编译自包含对象系统取汇编 ]
 ```cpp
@@ -369,7 +369,7 @@ const FClass* GetClass() const { return Class; }   // 返回 UClass 等价单例
 ```
 
 ```bash
-# 典型输出（本机 GCC 13.1.0 真实执行，命令如下）：
+# 典型输出（本机 GCC 15.3.0 真实执行，命令如下）：
 "/c/Qt/Tools/mingw1310_64/bin/g++.exe" -std=c++17 -O2 -S -masm=intel \
   Examples/_ch134_objsys.cpp -o Examples/_ch134_objsys.asm
 # 退出码 0；生成 _ch134_objsys.asm（约 1800 行）
@@ -762,7 +762,7 @@ int Decide(bool isUObject) { return isUObject ? 0 : 1; }
 
 > **示例 44** [难度 ★★☆☆☆] [主题：㉑.2 标准 C++ 等价实现：先把]
 ```cpp
-// ㉑.2 用标准 C++ 复刻 UE「反射属性表 + GC 托管」的最小模型（本块可独立编译，GCC 13.1.0 验证）
+// ㉑.2 用标准 C++ 复刻 UE「反射属性表 + GC 托管」的最小模型（本块可独立编译，GCC 15.3.0 验证）
 #include <string>
 #include <vector>
 #include <iostream>

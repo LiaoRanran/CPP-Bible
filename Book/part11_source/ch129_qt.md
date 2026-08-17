@@ -1011,7 +1011,7 @@ lea rdx, [rax+0x0020]     ; 参数数组基址
 
 ### 编译器与版本
 
-- GCC 13.2 / Clang 18 编译 Qt6；`__cplusplus` = 202302L
+- GCC 15.3.0 / Clang 19 编译 Qt6；`__cplusplus` = 202302L
 - Qt 要求 C++17（`QT_NO_KEYWORDS` 可禁用 `slots` 宏）
 - moc 由 `CMAKE_AUTOMOC` 在构建期生成 `.moc` 文件
 

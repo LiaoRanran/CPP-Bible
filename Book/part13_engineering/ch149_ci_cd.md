@@ -1183,7 +1183,7 @@ jne .hit                  ; 命中跳过编译
 
 ### 编译器版本与标准
 
-- GCC 13.2 / Clang 18 / MSVC 19.3 均受 CI 矩阵覆盖
+- GCC 15.3.0 / Clang 19 / MSVC 19.4x 均受 CI 矩阵覆盖
 - `__cplusplus` = 202302L；`__attribute__((visibility("hidden")))` 减小 SO 体积
 - C++20 模块 `import` 可将头开销从 0x0100KB 降到 0x0040KB
 

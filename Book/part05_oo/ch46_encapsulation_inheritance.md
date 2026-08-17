@@ -1672,7 +1672,7 @@ mov rdx, [rdi+0x0010]     ; 取 Derived 独有成员（偏移 0x0010）
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 / MSVC 19.3 布局一致（MSVC 有虚基类差异）
+- GCC 15.3.0 / Clang 19 / MSVC 19.4x 布局一致（MSVC 有虚基类差异）
 - `__cplusplus` = 202302L；`-fwhole-program-vtables` 去虚化
 - `constexpr` 构造省运行时初始化
 

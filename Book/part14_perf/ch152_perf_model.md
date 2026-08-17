@@ -985,7 +985,7 @@ add rdi, 0x0040              ; 步进一个缓存行
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 `-O3 -mavx2` 生成上示代码
+- GCC 15.3.0 / Clang 19 `-O3 -mavx2` 生成上示代码
 - `__cplusplus` = 202302L；`__builtin_expect` 指导分支预测
 - C++20 `<span>` 零拷贝视图降低带宽压力
 

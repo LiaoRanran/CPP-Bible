@@ -1069,7 +1069,7 @@ add rdi, 0x0008             ; 收缩左界
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 对 `std::sort` 内联比较器
+- GCC 15.3.0 / Clang 19 对 `std::sort` 内联比较器
 - `__cplusplus` = 202302L；`constexpr` 算法自 C++20 起可用
 - WG21 提案 P0468R2 规定范围算法接口
 

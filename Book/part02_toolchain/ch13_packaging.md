@@ -929,7 +929,7 @@ call [rcx]                ; 首次解析后填回 GOT
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 / MSVC 19.3 ABI 各异
+- GCC 15.3.0 / Clang 19 / MSVC 19.4x ABI 各异
 - `__cplusplus` = 202302L；`__attribute__((visibility("hidden")))` 减小 SO
 - C++20 模块 `import` 将头开销从 `0x0100` KB 降到 `0x0040` KB
 

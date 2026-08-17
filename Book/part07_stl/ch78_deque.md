@@ -1195,7 +1195,7 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 
 ### 编译器与标准
 
-- GCC 13.2 / Clang 18 实现一致
+- GCC 15.3.0 / Clang 19 实现一致
 - `__cplusplus` = 202302L；`constexpr` deque 自 C++20
 - WG21 提案 P0202R3 规范容器接口
 
