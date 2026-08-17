@@ -437,7 +437,7 @@ int main() {
 ```
 
 ```asm
-; ⑨ 真实汇编（节选自 Examples/_ch128_shared_ptr.asm，GCC13 -O2）
+; ⑨ 真实汇编（节选自 Examples/_ch128_shared_ptr.asm，GCC 15.3.0 -O2）
 ; 析构函数 _ZN13my_shared_ptrI6WidgetED1Ev 中的引用计数递减：
 _ZN13my_shared_ptrI6WidgetED1Ev:
 	push	rbx

@@ -720,7 +720,7 @@ call private_impl
 
 ### 编译器与标准
 
-- GCC 15.3 / Clang 18 / MSVC 19.3 语义一致
+- GCC 15.3.0 / Clang 19 / MSVC 19.4x 语义一致
 - `__cplusplus` = 202302L；`friend` 与 `constexpr` 可组合
 - WG21 提案 P0784R7 扩展 constexpr 友元
 

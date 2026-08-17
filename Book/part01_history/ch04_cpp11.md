@@ -724,7 +724,7 @@ int main(){auto p=std::make_unique<int>(42);auto f=[](int x){return x*2;};std::c
 ### H.2 真实汇编（节选自 `_ch04_move_perf.asm`）
 
 ```asm
-; Examples/_ch04_move_perf.asm  (MinGW GCC 13.1.0 -O2 -m64, 节选, 真实产物)
+; Examples/_ch04_move_perf.asm  (MinGW GCC 15.3.0 -O2 -m64, 节选, 真实产物)
 ; 书内 mangled 符号 ⊆ 该文件. 仅展示与底层断言相关的函数体.
 
 ; ---- mv_vec: std::vector<int> 的 move 构造 = 24 字节控制块移动(3 指针) ----

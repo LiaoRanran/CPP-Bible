@@ -848,7 +848,7 @@ int main() {
 
 **【定义】** 运行期桥接的代价来自**双指针间接**：`Shape` 持有一个 `shared_ptr<Renderer>`（指向控制块），控制块里的「被管理指针」再指向真实 `Renderer` 对象，对象再通过 vptr 找到虚函数。三层间接。
 
-**【取证·GCC13 x86-64】** 对 `Examples/_ch137_bridge_layout.cpp`（`Shape` 持 `shared_ptr<Renderer>`，`draw()` 调用 `r_->render()`）生成 `-O2 -S -masm=intel`。编译器把 `Shape::draw` **内联进 `main`**，关键取指与虚调用如下：
+**【取证·GCC 15.3.0 x86-64】** 对 `Examples/_ch137_bridge_layout.cpp`（`Shape` 持 `shared_ptr<Renderer>`，`draw()` 调用 `r_->render()`）生成 `-O2 -S -masm=intel`。编译器把 `Shape::draw` **内联进 `main`**，关键取指与虚调用如下：
 
 ```asm
 ; 取 shared_ptr 控制块的「被管理指针」（VectorRenderer 对象）
@@ -1258,7 +1258,7 @@ int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=c
 - **Folly `small_vector`（桥接 + 组合）**：`small_vector` 组合栈缓冲 + 堆溢出——桥接（编译期策略切换）与组合（内部存储分层）的双重示例。
   → <https://github.com/facebook/folly/blob/main/folly/small_vector.h>
 - **常见陷阱**：结构型模式在 C++ 中优先静态多态（CRTP/Policy/Tag）而非继承——GCC `-O2` 下 `iterator_adaptor` 的 `operator++` 展开后是零开销（inline + 编译期决议），等价的手写适配代码无性能差异。装饰器链嵌套超过 3 层时虚调用开销在 hot path 可达 ~6ns/层（ICache 未命中翻倍）。
-- **深度信号（DEP）**：结构型模式的零开销可用编译器证据量化——`iterator_adaptor` 的 `operator++` 在 GCC 13.2 `-O2` 下展开为纯寄存器递增 `add rdi, 0x8`；装饰器链第 N 层虚调用（Intel 语法，Skylake）为 `mov rax, QWORD PTR [rdi+0x18]`（取 vtable 指针）后 `call QWORD PTR [rax+0x20]`（调用第 5 个虚函数槽）。每层虚调用约 6ns（ICache 未命中 + 间接跳转），误分支预测代价约 15ns/次（14-16 cycles × ~1ns/周期）；装饰器嵌套超过 3 层时累计延迟在 1us 级热循环内可观测。`__builtin_expect`/C++20 `[[likely]]` 影响分支布局，`constexpr` 装饰器在编译期完成组合零运行时开销。SIMD（AVX2）版适配器把逐元素操作压成 256-bit 宽指令，vtable 槽按 0x1000 边界对齐避免跨页。
+- **深度信号（DEP）**：结构型模式的零开销可用编译器证据量化——`iterator_adaptor` 的 `operator++` 在 `-O2` 下展开为纯寄存器递增 `add rdi, 0x8`；装饰器链第 N 层虚调用（Intel 语法，Skylake）为 `mov rax, QWORD PTR [rdi+0x18]`（取 vtable 指针）后 `call QWORD PTR [rax+0x20]`（调用第 5 个虚函数槽）。每层虚调用约 6ns（ICache 未命中 + 间接跳转），误分支预测代价约 15ns/次（14-16 cycles × ~1ns/周期）；装饰器嵌套超过 3 层时累计延迟在 1us 级热循环内可观测。`__builtin_expect`/C++20 `[[likely]]` 影响分支布局，`constexpr` 装饰器在编译期完成组合零运行时开销。SIMD（AVX2）版适配器把逐元素操作压成 256-bit 宽指令，vtable 槽按 0x1000 边界对齐避免跨页。
 
 > 交叉引用：策略模式见 `Book/part12_patterns/ch140_policy_pattern.md`；接口设计见 `Book/part05_oo/ch45_oop_object_model.md`；CRTP 栈式多态见 `Book/part05_oo/ch51_crtp.md`——结构型模式在 C++ 中的最优实现往往退化为编译期组合。
 

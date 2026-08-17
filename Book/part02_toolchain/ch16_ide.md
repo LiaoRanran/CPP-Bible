@@ -937,7 +937,7 @@ call lookup_symbol       ; 递归查找定义
 ### 编译器与标准
 
 - Clang 18 提供 `libclang` / `clangd`；`__cplusplus` = 202302L
-- GCC 13.2 头可用 `-stdlib=libc++` 切换
+- Clang 可用 `-stdlib=libc++` 切换为 libc++ 标准库；GCC 默认使用 libstdc++（`-stdlib=libstdc++`），不提供 libc++ 支持
 - `constexpr` 将检查前移，减少 IDE 红色波浪
 
 ## 叙事补遗 [J: Learning]

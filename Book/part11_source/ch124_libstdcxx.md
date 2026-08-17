@@ -1122,7 +1122,7 @@ sub rdx, rax              ; capacity = end - start
 
 ### 编译器与 ABI
 
-- GCC 13.2 默认 `_GLIBCXX_USE_CXX11_ABI=1`
+- GCC 13.1.0 默认 `_GLIBCXX_USE_CXX11_ABI=1`
 - `__cplusplus` = 202302L；`__attribute__((always_inline))` 内联 `size()`
 - WG21 提案 P0202R3 引入 `std::string_view`
 

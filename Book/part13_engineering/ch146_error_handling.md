@@ -447,7 +447,7 @@ public:
 下面用本机 `g++ -std=c++23 -O2 -S -masm=intel` 对 `Examples/_ch146_perf.cpp` 取证。关键汇编（`_ch146_perf.asm`）：
 
 ```asm
-; 自 Examples/_ch146_perf.asm（GCC 13.1.0, -O2 -masm=intel）
+; 自 Examples/_ch146_perf.asm（GCC 15.3.0, -O2 -masm=intel）
 ; add_nonthrow：无异常路径 -> 单条 lea，无任何 EH 簿记
 _Z12add_nonthrowii:
         lea     eax, [rcx+rdx]      ; return a + b，纯算术

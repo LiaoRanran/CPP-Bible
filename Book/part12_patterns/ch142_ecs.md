@@ -90,7 +90,7 @@ constexpr Entity NULL_ENTITY = 0u;
 int main() { Entity e = 1; return (int)e; }
 ```
 
-真实编译产物（`Examples/_ch142_entity.asm`，GCC 13.1.0 `-O2`）：`main` 直接返回常量 `1`，实体没有任何运行时开销——它**就是**一个整数。
+真实编译产物（`Examples/_ch142_entity.asm`，GCC 15.3.0 `-O2`）：`main` 直接返回常量 `1`，实体没有任何运行时开销——它**就是**一个整数。
 
 > **示例 4** [难度 ★☆☆☆☆] [主题：实体组件系统 ECS]
 ```cpp
@@ -513,7 +513,7 @@ void integrate_aos(Particle* p, int n, float dt) {
 ```
 
 ```asm
-; 文件：Examples/_ch142_aos.asm  (GCC 13.1.0, -O2 -masm=intel, 真实输出节选)
+; 文件：Examples/_ch142_aos.asm  (GCC 15.3.0, -O2 -masm=intel, 真实输出节选)
 _Z13integrate_aosP8Particleif:
     test    edx, edx
     jle     .L1
@@ -541,7 +541,7 @@ void integrate_soa(float* x, const float* vx, int n, float dt) {
 ```
 
 ```asm
-; 文件：Examples/_ch142_soa.asm  (GCC 13.1.0, -O2 -masm=intel, 真实输出节选)
+; 文件：Examples/_ch142_soa.asm  (GCC 15.3.0, -O2 -masm=intel, 真实输出节选)
 ; (SoA 简化示意：integrate_soa(float* x, float* vx, int n) — 非 Examples/_ch142_soa.asm 结构体版产物)
     mov     rax, QWORD PTR 8[rcx]     ; vx 基址
     mov     rdx, QWORD PTR [rcx]      ; x  基址
@@ -629,10 +629,10 @@ void kill(EntityRecord& r) {
 }
 ```
 
-真实汇编（`Examples/_ch142_lockfree.asm`，GCC 13.1.0 `-O2`）：
+真实汇编（`Examples/_ch142_lockfree.asm`，GCC 15.3.0 `-O2`）：
 
 ```asm
-; 文件：Examples/_ch142_lockfree.asm  (GCC 13.1.0, -O2 -masm=intel, 真实输出节选)
+; 文件：Examples/_ch142_lockfree.asm  (GCC 15.3.0, -O2 -masm=intel, 真实输出节选)
 _Z8is_aliveRK12EntityRecord:
     movzx   eax, BYTE PTR 4[rcx]   ; ← 普通 load（acquire 在 x86 即普通 load）
     test    al, al

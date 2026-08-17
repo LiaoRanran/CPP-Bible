@@ -584,7 +584,7 @@ bool dequeue(T& v) {
 内存序的选择对应真实代价。我们实测 `fetch_add` 与 acquire `load` 的汇编：
 
 ```asm
-; 文件：Examples/_ch159_atomic.asm  (GCC 13.1.0, -O2 -masm=intel, 真实输出节选)
+; 文件：Examples/_ch159_atomic.asm  (GCC 15.3.0, -O2 -masm=intel, 真实输出节选)
 ; bump(): fetch_add(relaxed) 被编译为带 lock 前缀的原子读-改-写
         mov     r8d, 1
         lock xadd      DWORD PTR g[rip], r8d        ; 原子自增，全序

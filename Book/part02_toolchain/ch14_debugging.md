@@ -1280,8 +1280,8 @@ mov byte [rax+0x0000], 0xcc   ; 写入软件断点
 
 ### 工具链
 
-- GCC 13.2 `-g3` 含宏；`-O0` 栈帧便于观察（≈ 5.0ns/调用）
-- Clang 18 `-fsanitize=address` 与 GDB 协同
+- GCC 13.1.0 `-g3` 含宏；`-O0` 栈帧便于观察（≈ 5.0ns/调用）
+- Clang 17 `-fsanitize=address` 与 GDB 协同
 - `__cplusplus` = 202302L；`__builtin_debugtrap()` 插入陷阱
 - WG21 提案 P0784R7 扩展 constexpr 可调试性
 
