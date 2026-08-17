@@ -1,8 +1,8 @@
 # 第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-⟶ Book/part02_toolchain/ch11_compilers.md
-⟶ Book/part02_toolchain/ch14_debugging.md
+[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)
+[第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）](Book/part02_toolchain/ch14_debugging.md)
 
 > 真实编译器取证：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。
 > 示例源码根：`Examples/_ch16_*.cpp`；本章以真实 g++ 诊断与真实 `g++ -S` 汇编为证据（绝不编造）。
@@ -37,8 +37,8 @@ IDE 之争是"重集成 vs 轻可订"。重量级 IDE（CLion/VS）内建索引�
 
 ## ① 概述：IDE 在 C++ 工作流中的角色 [标准]
 
-⟶ Book/part02_toolchain/ch15_profiling.md
-⟶ Book/part02_toolchain/ch17_crosscompile.md
+[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)
+[第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)
 
 C++ 是**编译型 + 强类型 + 多翻译单元**语言，工作流天然比脚本语言重：编辑 → 索引/补全 → 静态检查 → 编译 → 调试 → 测试。IDE 的价值不是"写代码"，而是把这条链路的**反馈延迟压到最低**——把编译器的报错、clang-tidy 的异味、调试器的状态，直接叠在编辑器里。
 
@@ -249,8 +249,8 @@ g++ -std=c++23 -Iinclude -c src/app.cpp -o build/app.o
 
 ## ⑧ 代码格式化 clang-format [标准]
 
-⟶ Book/part13_engineering/ch144_style.md（代码风格）—— clang-format 是风格契约的工具化落地
-⟶ Book/part13_engineering/ch149_ci_cd.md（CI/CD 流水线）—— 格式化检查应作为 PR 门禁（--dry-run -Werror）
+[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)（代码风格）—— clang-format 是风格契约的工具化落地
+[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)（CI/CD 流水线）—— 格式化检查应作为 PR 门禁（--dry-run -Werror）
 
 `clang-format` 把**风格争议**变成可重入的机器规则。配置文件 `.clang-format` 基于 YAML，IDE 可绑定"保存时自动格式化"。
 
@@ -285,8 +285,8 @@ int foo(int x, int y) {
 
 ## ⑨ 静态检查 clang-tidy [实现·Clang19]
 
-⟶ Book/part13_engineering/ch144_style.md（代码风格）—— clang-tidy 覆盖风格工具管不到的语义约束
-⟶ Book/part13_engineering/ch147_code_review.md（代码审查）—— 静态分析前置到提交，review 聚焦设计
+[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)（代码风格）—— clang-tidy 覆盖风格工具管不到的语义约束
+[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)（代码审查）—— 静态分析前置到提交，review 聚焦设计
 
 `clang-tidy` 是基于 **Clang AST** 的 lint 工具，能抓到 g++ 不报的**语义异味**（悬空、窄化、冗余拷贝）。它同样读 `compile_commands.json`。
 
@@ -465,7 +465,7 @@ int main() { return has_print ? 0 : 1; }
 
 ## ⑭ 单元测试集成 [标准]
 
-⟶ Book/part13_engineering/ch150_testing.md（测试策略）—— 测试发现/单跑的底层是编译器把测试编成可执行文件
+[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)（测试策略）—— 测试发现/单跑的底层是编译器把测试编成可执行文件
 
 IDE 把测试框架（GoogleTest / Catch2 / doctest）的**发现与单跑**做成一键。底层仍是编译器把测试编成可执行文件再运行。
 
@@ -615,8 +615,8 @@ int hidden(int a) { int t = a * 2; return t + 1; }  // 调试期应 -O0 -g
 
 ## ⑲ 最佳实践 [标准]
 
-⟶ Book/part13_engineering/ch144_style.md（代码风格）—— 工具链把风格写进 CI 而非口头约定
-⟶ Book/part13_engineering/ch149_ci_cd.md（CI/CD 流水线）—— 一切检查（format/tidy/test）进 PR 门禁
+[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)（代码风格）—— 工具链把风格写进 CI 而非口头约定
+[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)（CI/CD 流水线）—— 一切检查（format/tidy/test）进 PR 门禁
 
 把上面零散建议收敛为可执行的清单：
 
@@ -906,8 +906,8 @@ int main(){std::cout<<"compile_commands.json=bridge build->IDE(LSP clangd reads 
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part02_toolchain/ch18_buildconfig.md（第18章　构建配置：Debug / Release / LTO / PGO（C++））—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part02_toolchain/ch12_buildsystems.md（第12章　构建系统：Make / Ninja / CMake（C++））—— 同模块下的其他主题。
+- **相邻主题**：[第18章　构建配置：Debug / Release / LTO / PGO（C++）](Book/part02_toolchain/ch18_buildconfig.md)）—— 编号相邻、主题接续。
+- **同模块**：[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)）—— 同模块下的其他主题。
 
 ## 附录 I（语言服务底层）
 

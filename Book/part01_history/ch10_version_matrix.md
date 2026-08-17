@@ -1,9 +1,9 @@
 # 第10章　版本特性全景对照表与迁移指南
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part01_history/ch04_cpp11.md
-⟶ Book/part01_history/ch07_cpp20.md
-⟶ Book/part16_reading/ch165_roadmap.md
+[第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)
+[第07章　C++20：量级升级](Book/part01_history/ch07_cpp20.md)
+[第165章 C++ 进阶路线图（C++）](Book/part16_reading/ch165_roadmap.md)
 
 > 标准基：C++98 → C++26｜预计阅读：20 min｜前置：ch03–ch09｜后续：全书｜难度：★★
 
@@ -35,7 +35,7 @@
 
 ## ① 学习目标
 
-⟶ Book/part01_history/ch09_cpp26.md
+[第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)
 
 > **示例 1** [难度 ★★☆☆☆] [主题：学习目标]
 ```cpp
@@ -597,10 +597,10 @@ Q: 版本迁移最大风险? A: ABI断裂(GCC5.1)和SFINAE→concepts重写
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part01_history/ch08_cpp23.md（第08章　C++23：标准库大修）—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part02_toolchain/ch12_buildsystems.md（第12章　构建系统：Make / Ninja / CMake（C++））—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
+- **相邻主题**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第08章　C++23：标准库大修](Book/part01_history/ch08_cpp23.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)）—— 编号相邻、主题接续。
+- **同模块**：[第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)—— 同模块下的其他主题。
 
 ## 附录 H：版本矩阵工业实践与源码对照
 

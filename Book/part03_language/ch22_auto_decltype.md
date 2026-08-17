@@ -1,8 +1,8 @@
 # 第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part03_language/ch19_variables.md
-⟶ Book/part06_templates/ch69_constexpr.md
+[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)
+[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
 
 > 工业级 C++ 圣经 · 第三部分「语言核心」· 目标读者：已掌握 ch19（变量）/ch20（引用）/ch21（const）的中高级工程师。
 >
@@ -42,8 +42,8 @@ C 中 `auto` 是存储类；复活它引发"破坏旧代码"的担忧，但委�
 
 ## ① 学习目标
 
-⟶ Book/part03_language/ch21_const_family.md
-⟶ Book/part03_language/ch23_namespace_adl.md
+[第21章　const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)
+[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](Book/part03_language/ch23_namespace_adl.md)
 
 学完本章你能：
 
@@ -1512,14 +1512,14 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part03_language/ch21_const_family.md（第21章　const / constexpr / consteval / constinit 深度详解）—— auto/decltype 与 const 的交互决定类型推导结果
-- **同模块接续**：⟶ Book/part03_language/ch24_enum.md（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— enum 的底层类型可由 auto 推导，decltype 可抽取枚举类型
-- **同模块接续**：⟶ Book/part03_language/ch26_lambda.md（第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除）—— lambda 返回类型常由 auto/decltype 推导，泛型 lambda 即模板
-- **同模块接续**：⟶ Book/part03_language/ch31_operator_overloading.md（第31章 运算符重载）—— 运算符重载的返回类型常借助 decltype(auto) 完美转发
-- **同模块接续**：⟶ Book/part03_language/ch32_initialization.md（第32章 初始化与列表初始化）—— 列表初始化 + auto 推导构成现代初始化习惯
-- **跨模块**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 大量以 decltype 抽取类型（invoke_result 等）
-- **跨模块**：⟶ Book/part06_templates/ch69_constexpr.md（第69章　编译期计算：constexpr / consteval / constinit）—— constexpr 函数返回类型常依赖 auto 推导
-- **跨模块**：⟶ Book/part10_modern/ch116_perfect_forwarding.md（第116章　完美转发与万能引用）—— 完美转发 std::forward 与 auto&& 协同，是转发的类型基础
+- **同模块接续**：[第21章　const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)—— auto/decltype 与 const 的交互决定类型推导结果
+- **同模块接续**：[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)）—— enum 的底层类型可由 auto 推导，decltype 可抽取枚举类型
+- **同模块接续**：[第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除](Book/part03_language/ch26_lambda.md)—— lambda 返回类型常由 auto/decltype 推导，泛型 lambda 即模板
+- **同模块接续**：[第31章 运算符重载](Book/part03_language/ch31_operator_overloading.md)—— 运算符重载的返回类型常借助 decltype(auto) 完美转发
+- **同模块接续**：[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)—— 列表初始化 + auto 推导构成现代初始化习惯
+- **跨模块**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— type_traits 大量以 decltype 抽取类型（invoke_result 等）
+- **跨模块**：[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)—— constexpr 函数返回类型常依赖 auto 推导
+- **跨模块**：[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)—— 完美转发 std::forward 与 auto&& 协同，是转发的类型基础
 
 ## 自测练习（Exercises）
 

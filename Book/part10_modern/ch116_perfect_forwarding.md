@@ -3,8 +3,8 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23)，引用条款以 N4950 为准
 > 预计阅读：约 75 分钟
-> 前置：⟶ Book/part10_modern/ch115_move.md（移动语义与右值引用）· ⟶ Book/part03_language/ch20_reference_pointer.md（引用本质）· ⟶ Book/part06_templates/ch63_variadic.md（可变参数模板）
-> 后续：⟶ Book/part10_modern/ch117_copy_elision.md（RVO/NRVO）· ⟶ Book/part10_modern/ch122_pmr.md（PMR 与多态分配器）· ⟶ Book/part09_concurrency/ch107_atomic.md（并发模型）
+> 前置：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)（移动语义与右值引用）· [第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)（引用本质）· [第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)（可变参数模板）
+> 后续：[第117章　RVO / NRVO 与拷贝消除（C++17）](Book/part10_modern/ch117_copy_elision.md)（RVO/NRVO）· [第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)（PMR 与多态分配器）· [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)（并发模型）
 > 难度：★★★☆☆（理解引用折叠是关键门槛）
 
 ---
@@ -54,7 +54,7 @@
 - **右值引用**（`ch115_move.md`）：`T&&` 绑定到右值；`std::move` 把左值"谎称"为右值以启用移动。`[标准]` `[dcl.ref]`。
 - **引用不是对象**：引用只是别名，无独立存储（除成员/基类可能占用指针大小的布局空间）。`⟶ ch20_reference_pointer.md`。
 - **模板实参推导**（`ch61_template_overload.md`、`ch63_variadic.md`）：函数模板 `template<class T> void f(T&&)` 对实参做两套推导——这是万能引用的根源。
-- **`std::remove_reference`**：`forward` 实现依赖它。类型萃取见 `⟶ Book/part06_templates/ch65_type_traits.md`。
+- **`std::remove_reference`**：`forward` 实现依赖它。类型萃取见 `[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)`。
 
 > `[经验]`：如果你还分不清 `T&&` 在"普通函数形参"与"模板形参"下的区别，先读 ch115，否则本章会反复困惑。
 
@@ -1172,11 +1172,11 @@ template void fwd_tmpl<S>(S&&);   // 右值实例化
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：⟶ Book/part06_templates/ch63_variadic.md（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part10_modern/ch117_copy_elision.md（第117章　RVO / NRVO 与拷贝消除（C++17））—— 同模块下的其他主题。
+- **后续依赖**：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 编号相邻、主题接续。
+- **同模块**：[第117章　RVO / NRVO 与拷贝消除（C++17）](Book/part10_modern/ch117_copy_elision.md)）—— 同模块下的其他主题。
 
 ## 自测练习（Exercises）
 

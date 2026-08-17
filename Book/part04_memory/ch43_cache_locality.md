@@ -1,8 +1,8 @@
 # 第 43 章　CPU 缓存体系与内存局部性
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-⟶ Book/part14_perf/ch154_cache_opt.md
-⟶ Book/part04_memory/ch36_stack_heap.md
+[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)
+[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)
 
 > 本章定位：性能优化的第一杠杆不是算法复杂度，而是**数据如何流动于存储层次之上**。本章以"缓存友好"为主线，串起存储层次、Cache Line、MESI、False Sharing、NUMA、TLB、Prefetch、数据结构布局与分支预测，并给出可编译的测量程序、三编译器实现差异与跨语言对照。
 >
@@ -48,8 +48,8 @@ C++ 不替你做数据布局优化，但给你"控制布局"的全部权力（�
 
 ## ① 存储层次与延迟量级（内存墙）
 
-⟶ Book/part04_memory/ch42_strict_aliasing.md
-⟶ Book/part04_memory/ch44_memory_pool.md
+[第 42 章 · 严格别名规则（Strict Aliasing）与编译器优化](Book/part04_memory/ch42_strict_aliasing.md)
+[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)
 
 **【标准】** 现代计算机的存储是一个金字塔：越靠近 CPU，容量越小、速度越快、单位成本越高。程序员能直接控制的"速度差"主要来自寄存器到主存这一段。
 
@@ -1743,12 +1743,12 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 控制块的缓存局部性决定解引用开销。
-- **同模块接续**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器与 PMR）—— pmr 池化减少碎片、改善空间局部性。
-- **同模块接续**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章　内存模型与 OS 视角）—— 段/页与 CPU 缓存层级的关系。
-- **同模块接续**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈与堆对比）—— 栈连续分配天然缓存友好。
-- **相邻主题**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　对象模型）—— 对象内存布局与访问局部性。
-- **前置基础**：⟶ Book/part10_modern/ch122_pmr.md（第 122 章　PMR 与多态分配器）—— 池化资源降延迟的底层机制。
+- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)—— 控制块的缓存局部性决定解引用开销。
+- **同模块接续**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)—— pmr 池化减少碎片、改善空间局部性。
+- **同模块接续**：[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)—— 段/页与 CPU 缓存层级的关系。
+- **同模块接续**：[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)—— 栈连续分配天然缓存友好。
+- **相邻主题**：[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)—— 对象内存布局与访问局部性。
+- **前置基础**：[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)—— 池化资源降延迟的底层机制。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

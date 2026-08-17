@@ -1,8 +1,8 @@
 # 第129章　Qt 对象模型与信号槽（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part05_oo/ch45_oop_object_model.md
-⟶ Book/part12_patterns/ch135_patterns_intro.md
+[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
+[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)
 
 > 真实取证工具链：MinGW GCC 15.3.0（`C:/Qt/Tools/mingw1530_64/bin/g++.exe`）+ Qt 6.8.3 本地 `moc.exe`（`C:/Qt/6.8.3/mingw_64/bin/moc.exe`）。
 > 本机已装 Qt（头文件 + moc），但**未安装 Qt 源码树**；故 Qt 本机源码剖析一律引用上游 GitHub URL + 行号并标注「上游参考」，本机可复现部分用真实 `moc` 产物与真实 g++ 汇编佐证的「典型输出」。
@@ -56,8 +56,8 @@
 
 ## ① 概述：Qt 框架（跨平台 C++ GUI/应用框架）
 
-⟶ Book/part11_source/ch128_boost.md
-⟶ Book/part11_source/ch130_chromium_abseil.md
+[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)
+[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)
 
 Qt 是 Trolltech（现 The Qt Company）推出的跨平台 C++ 应用框架，覆盖 GUI、网络、文件、并发、SQL、OpenGL 等。其最大特色是**在 ISO C++ 之上叠加一层由 moc（元对象编译器）生成的元对象系统**，从而支持信号槽、运行时类型 introspection、动态属性——这些是标准 C++ 没有的。
 
@@ -947,16 +947,16 @@ ISO C++ **至今（C++23）没有内建反射**。Qt 用独立的 **moc** 元对
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch124_libstdcxx.md（第124章　libstdc++ 架构与阅读入口（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch125_libcxx.md（第125章　libc++ 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch126_msstl.md（第126章　MS STL 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch127_llvm.md（第127章　LLVM / Clang 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch128_boost.md（第128章　Boost 核心库（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch130_chromium_abseil.md（第130章　Chromium / Abseil 基础设施（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch131_fmt_spdlog.md（第131章　fmt / spdlog 格式化与日志（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch132_leveldb_rocksdb.md（第132章　LevelDB / RocksDB 存储引擎（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch133_clickhouse_redis.md（第133章　ClickHouse / Redis 实现精读（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch134_unreal.md（第134章　Unreal Engine C++ 架构（C++））
+- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)）
+- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)）
+- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)）
+- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)）
+- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)）
+- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)）
+- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)）
+- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）
+- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）
+- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）
 
 ## 附录 E：Q_OBJECT 与 moc 的底层实现 [E: Low-level / B: Principle]
 

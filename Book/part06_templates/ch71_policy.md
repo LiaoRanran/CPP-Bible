@@ -1,8 +1,8 @@
 # 第71章　策略设计 Policy-Based Design
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-⟶ Book/part06_templates/ch65_type_traits.md
-⟶ Book/part12_patterns/ch140_policy_pattern.md
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
+[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)
 
 > 本章所有汇编证据由 **MinGW GCC 15.3.0**（`-std=c++23 -O2 -S -masm=intel`）真实提取，源码剖析行号取自该工具链安装的 libstdc++ 15.3.0 头文件。
 ## ⓪ 历史动机：策略类的来龙去脉
@@ -35,8 +35,8 @@
 
 ## ① 学习目标
 
-⟶ Book/part06_templates/ch70_tag_dispatch.md
-⟶ Book/part06_templates/ch72_expression_templates.md
+[第70章　std::integral_constant 与标签分发（Tag Dispatch）](Book/part06_templates/ch70_tag_dispatch.md)
+[第72章　表达式模板 Expression Templates](Book/part06_templates/ch72_expression_templates.md)
 
 - 掌握 **Policy-Based Design**：把"可变的算法/行为"抽象为**策略类（Policy）**，作为宿主模板的**模板参数**（普通类型参数或模板模板参数），在编译期组合出定制类型。
 - 理解**静态多态**与虚函数动态多态的本质区别：策略在编译期绑定、被完全内联，运行期**无 vtable 查表、无间接调用**（见 ⑩ 汇编证据）。
@@ -333,8 +333,8 @@ _Z11use_virtualR5VBase:
 
 ## ⑪ STL 中的该模式
 
-⟶ Book/part07_stl/ch76_stl_arch.md（STL 架构与迭代器概念）—— STL 以 policy 类定制分配器/比较器
-⟶ Book/part06_templates/ch65_type_traits.md（类型特征 Type Traits）—— 策略契约常用 traits 萃取特征
+[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)（STL 架构与迭代器概念）—— STL 以 policy 类定制分配器/比较器
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（类型特征 Type Traits）—— 策略契约常用 traits 萃取特征
 
 - **`std::vector<T,Allocator>`**：`Allocator` 是内存分配策略（默认 `std::allocator`），可替换为池分配器、栈分配器等（ch38）。
 - **`std::basic_string<C,Traits,Allocator>`**：`Traits`（字符特性策略：比较/长度/赋值）与 `Allocator`（内存策略）双策略组合（见 ⑮）。
@@ -422,8 +422,8 @@ struct BadState { static int counter; static void tick() { ++counter; } };  // �
 
 ## ⑭ 工业案例
 
-⟶ Book/part12_patterns/ch140_policy_pattern.md（Policy-Based Design 模式）—— 工业 policy 组合的惯用法与反模式
-⟶ Book/part11_source/ch128_boost.md（Boost 库生态）—— Boost 大量使用 policy 类定制组件行为
+[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)（Policy-Based Design 模式）—— 工业 policy 组合的惯用法与反模式
+[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)（Boost 库生态）—— Boost 大量使用 policy 类定制组件行为
 
 - **智能指针删除器**：`std::unique_ptr<FILE, fclose_deleter>` 用删除器策略管理非内存资源（文件、句柄、连接）。
 - **游戏引擎内存池**：对象分配器策略切换（堆/帧分配器/池），热路径用无锁策略，冷路径用通用策略（性能 ch19/43）。
@@ -464,7 +464,7 @@ using CM = Mat<float, 3, 3, 0x0>;   // 列主序策略
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-⟶ Book/part11_source/ch124_libstdcxx.md（libstdc++ 实现剖析）—— 标准库策略类的统一接口在此实现
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— 标准库策略类的统一接口在此实现
 
 **剖析 1：`std::basic_string` 的双策略参数（Traits + Allocator）**（`bits/basic_string.h`）
 
@@ -574,8 +574,8 @@ struct NoopPolicy { static void apply() {} };   // 零占用、可任意组合
 
 ## ⑲ 性能（编译期 / 运行期）
 
-⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— policy 内联由优化等级与成本预算决定
-⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 零开销须微基准实测验证
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— policy 内联由优化等级与成本预算决定
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 零开销须微基准实测验证
 
 - **运行期**：Policy-Based 在 `-O2` 下**完全内联、零 vtable 查表**（⑩），与手写专用代码性能等价；虚函数即便被 devirtualize 仍残留 vtable 取指结构。
 - **编译期**：策略组合在实例化时确定，零运行期路由计算。
@@ -693,14 +693,14 @@ policy-based design 自 2001 年起影响了整个 C++ 库生态（见 ch71 正�
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— Policy-Based Design 建立在模板组合之上
-- **同模块接续**：⟶ Book/part06_templates/ch69_constexpr.md（第69章　编译期计算：constexpr / consteval / constinit）—— policy 常为 constexpr 编译期策略
-- **同模块接续**：⟶ Book/part06_templates/ch68_tmp.md（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— policy 选择即 TMP 分支
-- **同模块接续**：⟶ Book/part06_templates/ch70_tag_dispatch.md（第70章　std::integral_constant 与标签分发（Tag Dispatch））—— 标签分发与 policy 互补选择实现
-- **同模块接续**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— concepts 可约束 policy 接口
-- **跨模块**：⟶ Book/part05_oo/ch51_crtp.md（第51章　CRTP 与静态多态（Curiously Recurring Template Pattern））—— CRTP 与 policy 组合实现静态接口叠加
-- **跨模块**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— STL 以 policy 类定制分配器/比较器
-- **跨模块**：⟶ Book/part12_patterns/ch140_policy_pattern.md（第140章 Policy-Based Design（C++））—— Policy-Based Design 设计模式详述其惯用法
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— Policy-Based Design 建立在模板组合之上
+- **同模块接续**：[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)—— policy 常为 constexpr 编译期策略
+- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)）—— policy 选择即 TMP 分支
+- **同模块接续**：[第70章　std::integral_constant 与标签分发（Tag Dispatch）](Book/part06_templates/ch70_tag_dispatch.md)）—— 标签分发与 policy 互补选择实现
+- **同模块接续**：[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)—— concepts 可约束 policy 接口
+- **跨模块**：[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)）—— CRTP 与 policy 组合实现静态接口叠加
+- **跨模块**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— STL 以 policy 类定制分配器/比较器
+- **跨模块**：[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)）—— Policy-Based Design 设计模式详述其惯用法
 
 ## 底层视角：策略模板参数与静态派发 [E: Low-level]
 

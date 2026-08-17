@@ -1,7 +1,7 @@
 # 第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part02_toolchain/ch15_profiling.md
+[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23`）。本章示例源码位于 `Examples/`，统一前缀 `_ch14_`。
 > 说明：本机 MinGW GCC 13.1.0（x86_64-posix-seh 构建）**未随附 `libasan`/`libubsan`/`libtsan` 运行时**，因此 ASan/UBSan/TSan 的 `-fsanitize=...` 链接会失败（已真实复现，见 ⑪）。本章对"真实取证"采用本工具链可执行的 `g++ -S -g`（调试符号与汇编）、`strip`、`-Wall -Wextra` 警告等真实产物，绝不编造 ASan 报告。
@@ -36,8 +36,8 @@ GDB/LLDB 是"事后查"，Sanitizer 是"事前埋点"——后者把检查编译
 
 ## ① 概述：调试的目标与分层 [标准]
 
-⟶ Book/part02_toolchain/ch13_packaging.md
-⟶ Book/part02_toolchain/ch15_profiling.md
+[第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)
+[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)
 
 调试不是"找 bug"的代名词，而是**把程序的可观察行为对齐到设计意图**的闭环。C++ 的典型故障分层：
 
@@ -1167,9 +1167,9 @@ int main(){std::thread t1([]{x=1;});std::thread t2([]{x=2;});t1.join();t2.join()
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：⟶ Book/part02_toolchain/ch16_ide.md（第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：⟶ Book/part02_toolchain/ch12_buildsystems.md（第12章　构建系统：Make / Ninja / CMake（C++））—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 同模块下的其他主题。
+- **后续依赖**：[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)）—— 编号相邻、主题接续。
+- **同模块**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)）—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

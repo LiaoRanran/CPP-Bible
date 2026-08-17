@@ -1,7 +1,7 @@
 # 第125章　libc++ 架构（C++）
 
-⟶ Book/part11_source/ch124_libstdcxx.md
-⟶ Book/part11_source/ch126_msstl.md
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
+[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)
 
 > 真实工具链：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 本机安装的是 **libstdc++**（GCC 13.1.0），**libc++ 未在本机安装**；因此凡涉及 libc++ 专有行为，均给出真实命令并明确标注「典型输出」，取证以本机 libstdc++ 真实汇编为准。
@@ -37,8 +37,8 @@ libc++ 的核心取舍是"现代化优先、许可友好、模块化"。它不�
 
 ## ① 概述：libc++ 是 LLVM 的 C++ 标准库 [标准]
 
-⟶ Book/part11_source/ch124_libstdcxx.md
-⟶ Book/part11_source/ch126_msstl.md
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
+[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)
 
 libc++ 是 LLVM 项目自带的 C++ 标准库实现（与 Clang 配套，但也能被 GCC 通过 `-stdlib=libc++` 使用）。它的设计目标是：高 C++11/14/17/20/23 符合度、模块化、与 LLVM/Clang 工具链深度协同、在 Apple 平台作为系统默认标准库。它与 libstdc++（GCC）、MSVC STL 并列为三大主流实现。
 
@@ -994,18 +994,18 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch124_libstdcxx.md（第124章　libstdc++ 架构与阅读入口（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch126_msstl.md（第126章　MS STL 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch127_llvm.md（第127章　LLVM / Clang 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch128_boost.md（第128章　Boost 核心库（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch129_qt.md（第129章　Qt 对象模型与信号槽（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch130_chromium_abseil.md（第130章　Chromium / Abseil 基础设施（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch131_fmt_spdlog.md（第131章　fmt / spdlog 格式化与日志（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch132_leveldb_rocksdb.md（第132章　LevelDB / RocksDB 存储引擎（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch133_clickhouse_redis.md（第133章　ClickHouse / Redis 实现精读（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch134_unreal.md（第134章　Unreal Engine C++ 架构（C++））
-- **跨模块延伸（part10 现代）**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— PMR 多态分配器是 libc++ 容器内存后端
-- **跨模块延伸（part10 现代）**：⟶ Book/part10_modern/ch123_ct_programming.md（第123章　Compile-Time 编程范式总览）—— 编译期编程范式是阅读 libc++ 源码的元编程底座
+- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)）
+- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)）
+- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)）
+- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)）
+- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）
+- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)）
+- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)）
+- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）
+- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）
+- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）
+- **跨模块延伸（part10 现代）**：[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)—— PMR 多态分配器是 libc++ 容器内存后端
+- **跨模块延伸（part10 现代）**：[第123章　Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)—— 编译期编程范式是阅读 libc++ 源码的元编程底座
 
 ## 附录 F：工业实战复盘与设计取舍 [I: Practice / H: Design]
 

@@ -1,8 +1,8 @@
 # 第 37 章 动态内存分配原语：`operator new` / `operator delete`
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-⟶ Book/part04_memory/ch39_raii_rule.md
-⟶ Book/part10_modern/ch115_move.md
+[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)
+[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)
 
 > 层级标记约定（全书统一）
 > - **[标准]** C++ 标准（ISO/IEC 14882）规定的行为，跨平台、跨编译器一致。
@@ -42,8 +42,8 @@ C 的 `malloc` 只给裸字节、不调构造；C++ 的对象需"分配 + 构造
 
 ## ① 本章在全书中的位置
 
-⟶ Book/part04_memory/ch36_stack_heap.md
-⟶ Book/part04_memory/ch38_allocator.md
+[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)
+[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)
 
 动态内存管理是 C++ 资源模型的核心支柱。本章聚焦**最底层原语**——`operator new` / `operator delete` 这一族可替换（replaceable）的全局函数，以及 `new` 表达式语法如何调用它们。它向上承接 ch19（存储期）、ch35（堆段布局）、ch36（`malloc`/`free` 后端）、ch38（`std::allocator` 与 `rebind`）、ch28（`launder` 与对象生命期）、ch33（`bad_alloc` 与异常）、ch44（内存池）、ch45（RAII 接管释放）。
 
@@ -1975,12 +1975,12 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章　内存模型与 OS 视角）—— 堆在进程地址空间中的落点。
-- **同模块接续**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈与堆对比）—— 何时该用 new 而非栈对象。
-- **同模块接续**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器与 PMR）—— allocator::allocate 与 operator new 的协作边界。
-- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 智能指针底层正是 new/delete + 控制块。
-- **同模块接续**：⟶ Book/part04_memory/ch44_memory_pool.md（第 44 章　内存池）—— placement new 是池化分配的核心原语。
-- **前置基础**：⟶ Book/part07_stl/ch77_vector.md（第 77 章　vector）—— vector 扩容经 allocator/new 在堆上成长。
+- **同模块接续**：[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)—— 堆在进程地址空间中的落点。
+- **同模块接续**：[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)—— 何时该用 new 而非栈对象。
+- **同模块接续**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)—— allocator::allocate 与 operator new 的协作边界。
+- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)—— 智能指针底层正是 new/delete + 控制块。
+- **同模块接续**：[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)—— placement new 是池化分配的核心原语。
+- **前置基础**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— vector 扩容经 allocator/new 在堆上成长。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

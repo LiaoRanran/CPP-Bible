@@ -1,8 +1,8 @@
 # 第162章 从零实现 JSON 库（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part07_stl/ch88_optional_variant.md
-⟶ Book/part06_templates/ch63_variadic.md
+[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
+[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)
 
 > 元数据：标准基 `C++20` / 预计阅读 45 分钟 / 前置 第?章（std::variant 与类型安全联合）、第?章（RAII 与异常）/ 后续 第?章（零开销抽象与内联）/ 难度 ★★★
 >
@@ -43,8 +43,8 @@ C++ 面对 JSON 有两道根本抉择。其一是**映射路线**：类型擦除
 
 ## ① 概述：JSON 与 C++ 映射 [标准]
 
-⟶ Book/part15_cases/ch161_logger.md
-⟶ Book/part15_cases/ch163_net.md
+[第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)
+[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)
 
 JSON（JavaScript Object Notation，RFC 8259）是一种与语言无关的轻量数据交换格式。**[标准]** 严格说 JSON 不是 C++ 标准的一部分——C++ 标准库（至 C++23）并未提供 `std::json`；它由 IETF RFC 8259 规定，各语言自行实现。把一个"文本协议"干净地映射进 C++ 的强类型世界，正是本章要解决的问题。
 
@@ -956,11 +956,11 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch160_mempool.md（第160章 从零实现内存池（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch161_logger.md（第161章 从零实现日志库（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch164_framework.md（第164章 从零实现迷你框架（C++））
+- **同模块兄弟（part15 实战案例）**：[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)）
+- **同模块兄弟（part15 实战案例）**：[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)）
+- **同模块兄弟（part15 实战案例）**：[第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)）
+- **同模块兄弟（part15 实战案例）**：[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)）
+- **同模块兄弟（part15 实战案例）**：[第164章 从零实现迷你框架（C++）](Book/part15_cases/ch164_framework.md)）
 
 ## 附录 G：工业 JSON 库生态
 

@@ -3,11 +3,11 @@
 
 > 真实编译器：MinGW GCC 15.3.0（x86-64；本章所有 GCC 汇编均以此真机 `-std=c++23 -O2 -S -masm=intel` 输出为准；`thread_local` 在本工具链默认走 emulated TLS）
 
-⟶ Book/part03_language/ch32_initialization.md
-⟶ Book/part03_language/ch21_const_family.md
+[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)
+[第21章　const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)
 
-⟶ Book/part04_memory/ch35_memory_layout.md
-⟶ Book/part04_memory/ch36_stack_heap.md
+[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)
+[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)
 
 > 标准基：ISO/IEC 14882:2023（C++23）为主，C++11 线程安全静态局部初始化 / C++17 inline 变量（P0607）/ C++20 constinit 强制常量初始化 / C++23 措辞清理｜预计阅读：6.0 h｜前置：ch01（C 遗产）、ch10（版本演进）、ch20（引用与指针）、ch31（const_cast）｜后续：ch21（const/constinit 关联本章）、ch32（初始化）、ch33（生命周期/悬垂）、ch35（目标文件段布局）、ch60（模板与 ODR）、ch102（并发与 static 初始化）｜难度：★★★★★
 
@@ -42,7 +42,7 @@ C 的 `static` 一词身兼数职（文件作用域隐藏 + 静态存储期）�
 
 ## ① 本章要击穿的十个问题
 
-⟶ Book/part03_language/ch20_reference_pointer.md
+[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)
 
 工业级 C++ 对"变量"的理解，绝不仅是"声明一个 `int`"。本章把下面十个问题逐一打到源码层：
 
@@ -1614,13 +1614,13 @@ void clear_status() {
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 引用/指针的取地址与绑引用直接构成 ODR-use，是本章存储期与 ODR 的落地场景
-- **同模块接续**：⟶ Book/part03_language/ch21_const_family.md（第21章　const / constexpr / consteval / constinit 深度详解）—— constinit 在 static 存储期上强制常量初始化阶段，是 SOIF 的根治手段
-- **同模块接续**：⟶ Book/part03_language/ch28_lifetime_ub.md（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— 对象生命周期结束即存储期结束，返回局部引用悬垂本质是 storage duration 越界
-- **同模块接续**：⟶ Book/part03_language/ch32_initialization.md（第32章 初始化与列表初始化）—— 列表初始化与 constant expression 约束 static/thread 初始化的时机
-- **同模块接续**：⟶ Book/part03_language/ch23_namespace_adl.md（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 匿名命名空间与 inline 变量重塑链接三态，是本章链接主题的直接延伸
-- **跨模块**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章  C++ 程序的内存模型与操作系统视角）—— 变量的物理落位（.data/.bss/.rodata/.tbss）由目标文件段布局决定
-- **跨模块**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈（stack）与堆（heap）的深度对比）—— 栈/堆的相向扩张直接承接 automatic/dynamic 存储期
+- **同模块接续**：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 引用/指针的取地址与绑引用直接构成 ODR-use，是本章存储期与 ODR 的落地场景
+- **同模块接续**：[第21章　const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)—— constinit 在 static 存储期上强制常量初始化阶段，是 SOIF 的根治手段
+- **同模块接续**：[第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化](Book/part03_language/ch28_lifetime_ub.md)：生存期、悬垂、UB 分类与编译器武器化）—— 对象生命周期结束即存储期结束，返回局部引用悬垂本质是 storage duration 越界
+- **同模块接续**：[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)—— 列表初始化与 constant expression 约束 static/thread 初始化的时机
+- **同模块接续**：[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](Book/part03_language/ch23_namespace_adl.md)、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 匿名命名空间与 inline 变量重塑链接三态，是本章链接主题的直接延伸
+- **跨模块**：[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)—— 变量的物理落位（.data/.bss/.rodata/.tbss）由目标文件段布局决定
+- **跨模块**：[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)与堆（heap）的深度对比）—— 栈/堆的相向扩张直接承接 automatic/dynamic 存储期
 
 ## 自测练习（Exercises）
 

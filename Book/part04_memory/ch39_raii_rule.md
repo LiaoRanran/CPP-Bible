@@ -1,7 +1,7 @@
 # 第 39 章　RAII 与 Rule of Zero/Three/Five
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-⟶ Book/part07_stl/ch77_vector.md
+[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
 
 > 老兵标准：**RAII 是 C++ 与异常安全之间唯一可信的契约。** 不会写 RAII，等于不会写现代 C++。
 > 本章遵循《现代 C++ 终极圣经》标准 v3：真实源码逐行 + GCC/LLVM/MSVC 三实现对照 + libstdc++/libc++/MS STL 三 STL 对照 + microbenchmark + 跨语言对比 + 推荐阅读已内化进正文。
@@ -46,8 +46,8 @@ RAII 是"确定性析构"对"垃圾回收"的回答：C++ 选了可预测、零�
 
 ## ① 概述：RAII 是什么，为何是 C++ 的脊梁
 
-⟶ Book/part04_memory/ch38_allocator.md
-⟶ Book/part04_memory/ch40_exception_safety.md
+[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)
+[第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)
 
 **[标准]**　RAII 是 **Resource Acquisition Is Initialization** 的缩写，意为「资源获取即初始化」。其核心约定（`[basic.raii]` 精神，源自 C++98 实践、C++11 起成为库设计基石）：**将资源的生命周期绑定到一个自动存储期（栈上）对象的生命周期——资源在构造函数中获取，在析构函数中释放。**
 
@@ -1864,11 +1864,11 @@ int main(){std::unique_ptr<int> p(new int(42));std::lock_guard<std::mutex> lk(m)
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章　内存模型与 OS 视角）—— 资源生命周期映射到栈/堆。
-- **同模块接续**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈与堆对比）—— 栈对象靠 RAII 自动析构，堆对象靠智能指针。
-- **同模块接续**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章　动态内存分配原语）—— RAII 把 new/delete 配对收敛为构造/析构。
-- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 智能指针是 RAII 最经典的实例化。
-- **相邻主题**：⟶ Book/part04_memory/ch42_strict_aliasing.md（第 42 章　严格别名）—— 底层类型双关优化与对象生命周期的交互。
+- **同模块接续**：[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)—— 资源生命周期映射到栈/堆。
+- **同模块接续**：[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)—— 栈对象靠 RAII 自动析构，堆对象靠智能指针。
+- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)—— RAII 把 new/delete 配对收敛为构造/析构。
+- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)—— 智能指针是 RAII 最经典的实例化。
+- **相邻主题**：[第 42 章 · 严格别名规则（Strict Aliasing）与编译器优化](Book/part04_memory/ch42_strict_aliasing.md)—— 底层类型双关优化与对象生命周期的交互。
 
 ## 底层视角：栈展开、析构代价与 noexcept [E: Low-level]
 

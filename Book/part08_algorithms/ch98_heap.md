@@ -1,7 +1,7 @@
 # 第98章　堆算法 heap（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part08_algorithms/ch96_sorting.md
+[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`。
@@ -12,7 +12,7 @@
 > 用一个普通数组，就能撑起"总能最快拿到最大值"的优先队列——隐式二叉堆是这门手艺的精髓。
 
 ### 0.1 起源（谁·何时·为何）
-优先队列（priority queue）要的是"插入 O(log n)、取最大 O(log n)、取最大 O(1)"，而**二叉堆（binary heap）** 用数组隐式表达完全二叉树，无需指针、缓存友好，是最经典的解决方案。[史] STL 把堆做成一组自由函数 `make_heap`/`push_heap`/`pop_heap`/`sort_heap`，并让 `priority_queue` 适配器（⟶ Book/part07_stl/ch86_adapters.md）以它为底层。这套算法思想可追溯到堆排序与 CLRS 的经典教材。
+优先队列（priority queue）要的是"插入 O(log n)、取最大 O(log n)、取最大 O(1)"，而**二叉堆（binary heap）** 用数组隐式表达完全二叉树，无需指针、缓存友好，是最经典的解决方案。[史] STL 把堆做成一组自由函数 `make_heap`/`push_heap`/`pop_heap`/`sort_heap`，并让 `priority_queue` 适配器（[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)）以它为底层。这套算法思想可追溯到堆排序与 CLRS 的经典教材。
 
 ### 0.2 关键转折（编年）
 - C++98：堆算法与 `priority_queue` 随 STL 入标，确立"数组即堆"的隐式表达。[史]
@@ -35,8 +35,8 @@
 
 ## ① 概述：堆（优先队列）[标准]
 
-⟶ Book/part08_algorithms/ch97_search.md
-⟶ Book/part08_algorithms/ch99_numeric.md
+[第97章　查找与二分（C++）](Book/part08_algorithms/ch97_search.md)
+[第99章　数值算法与并行执行策略（C++）](Book/part08_algorithms/ch99_numeric.md)
 
 堆（heap）是二叉**最大/最小堆**的数组实现——逻辑上是一棵完全二叉树，物理上是一段连续数组。C++ 标准库把"堆"建模成一段 `[first, last)` 区间上满足**堆性质**（heap property）的序列，并通过 `std::make_heap / push_heap / pop_heap / sort_heap` 四种算法维护它；`std::priority_queue` 则是建立在 `std::vector` 之上的容器适配器（container adapter），把堆封装成"只暴露队首"的优先队列。
 
@@ -933,9 +933,9 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：⟶ Book/part07_stl/ch86_adapters.md（第86章　容器适配器：stack / queue / priority_queue）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：⟶ Book/part08_algorithms/ch100_ranges_algo.md（第100章　Ranges 算法与投影（C++20））—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part08_algorithms/ch95_algo_overview.md（第95章　STL 算法分类与复杂度（C++））—— 同模块下的其他主题。
+- **后续依赖**：[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第100章　Ranges 算法与投影（C++20）](Book/part08_algorithms/ch100_ranges_algo.md)）—— 编号相邻、主题接续。
+- **同模块**：[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)）—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

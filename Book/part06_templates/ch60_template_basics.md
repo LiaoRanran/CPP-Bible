@@ -1,9 +1,9 @@
 # 第60章　模板基础与实例化（Template Basics & Instantiation）
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-⟶ Book/part06_templates/ch61_template_overload.md
-⟶ Book/part06_templates/ch69_constexpr.md
-⟶ Book/part07_stl/ch77_vector.md
+[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)
+[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
+[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
 
 ## ⓪ 历史动机：模板的来龙去脉
 
@@ -37,7 +37,7 @@
 
 ## ① 学习目标
 
-⟶ Book/part06_templates/ch61_template_overload.md
+[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)
 
 - 说清「模板」「模板参数」「模板实参」「实例化」四者关系 [标准]
 - 区分隐式实例化 / 显式实例化 / 显式特化 / 显式实例化定义 [标准]
@@ -422,8 +422,8 @@ template void f<int>(double);              // 错误：实参类型不匹配
 
 ## ⑪ STL 中的该模式
 
-⟶ Book/part07_stl/ch76_stl_arch.md（STL 架构与迭代器概念）—— STL 容器/算法全是模板
-⟶ Book/part07_stl/ch77_vector.md（vector 扩容/失效/allocator）—— vector 即类模板典型实例化
+[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)（STL 架构与迭代器概念）—— STL 容器/算法全是模板
+[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector 扩容/失效/allocator）—— vector 即类模板典型实例化
 
 > **示例 40** [难度 ★★★☆☆] [主题：中的该模式]
 ```cpp
@@ -530,8 +530,8 @@ int main() {
 
 ## ⑭ 工业案例
 
-⟶ Book/part11_source/ch128_boost.md（Boost 库生态）—— Boost 是工业模板库的最大实践场
-⟶ Book/part12_patterns/ch140_policy_pattern.md（Policy-Based Design）—— 模板+policy 组合定制组件
+[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)（Boost 库生态）—— Boost 是工业模板库的最大实践场
+[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— 模板+policy 组合定制组件
 
 > **示例 43** [难度 ★★☆☆☆] [主题：工业案例]
 ```cpp
@@ -570,7 +570,7 @@ int main() {
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-⟶ Book/part11_source/ch124_libstdcxx.md（libstdc++ 实现剖析）—— 标准库模板的统一实现底座
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— 标准库模板的统一实现底座
 
 > **示例 45** [难度 ★★★☆☆] [主题：源码剖析（libstdc++ 相关）]
 ```cpp
@@ -684,8 +684,8 @@ int main() {
 
 ## ⑲ 性能（编译期 / 运行期）
 
-⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— 实例化成本取决于前端预算
-⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 运行期开销须微基准实测
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— 实例化成本取决于前端预算
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 运行期开销须微基准实测
 
 > **示例 51** [难度 ★★★★☆] [主题：性能（编译期 / 运行期）]
 ```cpp
@@ -890,13 +890,13 @@ int main(){std::cout<<max(10,20)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— 重载决议决定哪个模板实例化，是实例化流程的入口
-- **同模块接续**：⟶ Book/part06_templates/ch62_specialization.md（第62章　类模板特化与偏特化（Class Template Specialization））—— 特化/偏特化是实例化的分支终点
-- **同模块接续**：⟶ Book/part06_templates/ch63_variadic.md（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 可变参数模板的包展开依赖实例化机制
-- **同模块接续**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 建立在模板基础之上做编译期萃取
-- **同模块接续**：⟶ Book/part06_templates/ch68_tmp.md（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— 模板元编程是模板基础的递归延伸
-- **跨模块**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— STL 容器/算法全是模板，架构建立在模板基础之上
-- **跨模块**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— vector 等容器即类模板的典型实例化
+- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)）—— 重载决议决定哪个模板实例化，是实例化流程的入口
+- **同模块接续**：[第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)）—— 特化/偏特化是实例化的分支终点
+- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)）—— 可变参数模板的包展开依赖实例化机制
+- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— type_traits 建立在模板基础之上做编译期萃取
+- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)）—— 模板元编程是模板基础的递归延伸
+- **跨模块**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— STL 容器/算法全是模板，架构建立在模板基础之上
+- **跨模块**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— vector 等容器即类模板的典型实例化
 
 ## 附录 G：工业 C++ 模板生态
 

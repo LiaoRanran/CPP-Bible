@@ -1,7 +1,7 @@
 # 第110章　无锁编程：lock-free / wait-free（C++11）
 
-⟶ Book/part09_concurrency/ch107_atomic.md
-⟶ Book/part09_concurrency/ch111_aba.md
+[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
+[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`，仓库权威工具链）；正文早期汇编插图示曾用 GCC 13.1.0 生成，已在本机 GCC 15.3.0 下复编确认指令一致（`fetch_add`→`lock add`/`lock xadd`、`CAS`→`lock cmpxchg`、128 位 CAS→`call __atomic_compare_exchange_16`），见下文 `[VERIFIED]` 标注。
 > 取证源码：`Examples/_ch110_cas.cpp` / `_ch110_counter.cpp` / `_ch110_dwcas.cpp`（均在本章 `Examples/` 下，真实编译取证，非编造）。
@@ -34,7 +34,7 @@
 
 ## ① 概述：无锁编程动机 [标准]
 
-⟶ Book/part09_concurrency/ch111_aba.md
+[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)
 
 多线程共享状态有两条路：**互斥**（mutex/锁）与**无锁**（lock-free，靠原子 RMW 指令而非互斥量推进）。锁的代价不只是临界区内的串行——它还带来**阻塞**（持锁线程被调度走/页错误/优先级反转时，所有等待线程全停）、**死锁**与**优先级反转**风险。
 
@@ -1025,14 +1025,14 @@ A: 互斥锁: 代码简单, 临界区长, 竞争不剧烈; 无锁: 需要低延�
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch108_memory_order.md（第108章　memory_order：六种内存序（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch109_fence.md（第109章 内存屏障与 fence）
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch111_aba.md（第111章　ABA 问题与解决（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch112_hazard_rcu.md（第112章　Hazard Pointer 与 RCU（C++11/实践））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch113_coroutine.md（第113章　协程 coroutine：promise / awaiter（C++20））
-- **硬件底座（part03）**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— 无锁结构的内存可见性本质是原子 + 内存序问题
-- **多线程落地（part07）**：⟶ Book/part07_stl/ch93_thread_async.md（第93章　线程与异步：thread / future / async）—— 无锁数据结构是线程/异步的高性能近亲
+- **同模块兄弟（part09 并发）**：[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)）
+- **同模块兄弟（part09 并发）**：[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)）
+- **同模块兄弟（part09 并发）**：[第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)
+- **同模块兄弟（part09 并发）**：[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)）
+- **同模块兄弟（part09 并发）**：[第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)）
+- **同模块兄弟（part09 并发）**：[第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)）
+- **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)—— 无锁结构的内存可见性本质是原子 + 内存序问题
+- **多线程落地（part07）**：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)—— 无锁数据结构是线程/异步的高性能近亲
 
 ## 附录 G（工业级无锁实战）
 

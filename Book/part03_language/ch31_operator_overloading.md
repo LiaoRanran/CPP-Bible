@@ -1,7 +1,7 @@
 # 第31章 运算符重载
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-> 标准基: C++23 / GCC 15.3 / 预计阅读: 50min / ⟶ Book/part03_language/ch27_cast.md / 难度: ★★★☆☆
+> 标准基: C++23 / GCC 15.3 / 预计阅读: 50min / [第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md) / 难度: ★★★☆☆
 
 ## ⓪ 历史动机：运算符重载的来龙去脉
 
@@ -533,13 +533,13 @@ int main(){Vec2 a{1,2},b{3,4},c=a+b;std::cout<<c.x<<","<<c.y<<std::endl;return 0
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 运算符与存储期/对象表示直接交互（如 operator new）
-- **同模块接续**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— operator-> 让智能指针/迭代器以指针语义访问
-- **同模块接续**：⟶ Book/part03_language/ch27_cast.md（第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解）—— 用户定义转换运算符经 cast 触发，与转型协同
-- **同模块接续**：⟶ Book/part03_language/ch29_friend.md（第29章 友元 friend 与访问控制）—— 运算符重载常声明为友元访问私有成员
-- **同模块接续**：⟶ Book/part03_language/ch32_initialization.md（第32章 初始化与列表初始化）—— 构造函数/赋值运算符是初始化章的核心语义
-- **跨模块**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— 模板运算符重载与 template_basics 联动
-- **跨模块**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— concepts 约束运算符重载的模板参数
+- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— 运算符与存储期/对象表示直接交互（如 operator new）
+- **同模块接续**：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— operator-> 让智能指针/迭代器以指针语义访问
+- **同模块接续**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)—— 用户定义转换运算符经 cast 触发，与转型协同
+- **同模块接续**：[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)—— 运算符重载常声明为友元访问私有成员
+- **同模块接续**：[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)—— 构造函数/赋值运算符是初始化章的核心语义
+- **跨模块**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— 模板运算符重载与 template_basics 联动
+- **跨模块**：[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)—— concepts 约束运算符重载的模板参数
 
 ## 真实开源项目参考（可查证链接）
 

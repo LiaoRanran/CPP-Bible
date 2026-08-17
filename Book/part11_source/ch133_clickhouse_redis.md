@@ -1,7 +1,7 @@
 # 第133章　ClickHouse / Redis 实现精读（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part07_stl/ch77_vector.md
+[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`g++ -std=c++20 -O3 -march=native -S -masm=intel`）。
 > 源码根：本机未安装 ClickHouse / Redis，本章源码剖析均引用**上游仓库**真实 URL + 行号，标注「上游参考」。
@@ -35,8 +35,8 @@
 
 ## ① 概述：ClickHouse（列存 OLAP）/Redis（内存 KV）
 
-⟶ Book/part11_source/ch132_leveldb_rocksdb.md
-⟶ Book/part11_source/ch134_unreal.md
+[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)
+[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)
 
 ClickHouse 是**列存 OLAP**数据库，核心卖点是「一整列数据连续存放 + 批量向量化执行」；Redis 是**单线程事件驱动**的内存 KV 存储，核心卖点是「单线程 Reactor 避免锁与竞争」。两者都用 C++ 写出极致性能，但走的是两条相反的路：
 
@@ -1234,17 +1234,17 @@ Q: LSM Tree vs B-tree? A: LSM=写快(顺序)+读慢(多层merge); B-tree=读写�
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch124_libstdcxx.md（第124章　libstdc++ 架构与阅读入口（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch125_libcxx.md（第125章　libc++ 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch126_msstl.md（第126章　MS STL 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch127_llvm.md（第127章　LLVM / Clang 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch128_boost.md（第128章　Boost 核心库（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch129_qt.md（第129章　Qt 对象模型与信号槽（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch130_chromium_abseil.md（第130章　Chromium / Abseil 基础设施（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch131_fmt_spdlog.md（第131章　fmt / spdlog 格式化与日志（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch132_leveldb_rocksdb.md（第132章　LevelDB / RocksDB 存储引擎（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch134_unreal.md（第134章　Unreal Engine C++ 架构（C++））
-- **跨模块延伸（part12 模式）**：⟶ Book/part12_patterns/ch135_patterns_intro.md（第135章 设计模式总论（C++））—— 设计模式总论是阅读 ClickHouse / Redis 架构的范式字典
+- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)）
+- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)）
+- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)）
+- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)）
+- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)）
+- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）
+- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)）
+- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)）
+- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）
+- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）
+- **跨模块延伸（part12 模式）**：[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)）—— 设计模式总论是阅读 ClickHouse / Redis 架构的范式字典
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

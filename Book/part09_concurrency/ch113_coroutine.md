@@ -1,10 +1,10 @@
 # 第113章　协程 coroutine：promise / awaiter（C++20）
 
-⟶ Book/part10_modern/ch120_coroutine_app.md
-⟶ Book/part09_concurrency/ch107_atomic.md
+[第120章 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)
+[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
 
-⟶ Book/part10_modern/ch120_coroutine_app.md
-⟶ Book/part09_concurrency/ch107_atomic.md
+[第120章 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)
+[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 取证源码：`Examples/_ch113_co.cpp`。协程是语言特性（`co_await`/`co_yield`/`co_return` + `promise_type`），**标准库未提供 `std::generator`/`std::task`**（C++23 仅 TS 级 `std::generator` 提案），本章手写实现并以真实汇编为证。
@@ -37,7 +37,7 @@
 
 ## ① 概述：C++20 coroutine 是什么（无栈协程） [标准]
 
-⟶ Book/part09_concurrency/ch112_hazard_rcu.md
+[第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)
 
 C++20 引入**无栈协程（stackless coroutine）**：一种能在 `co_await`/`co_yield` 处**挂起（suspend）**并把控制流交还调用者、之后又能**恢复（resume）**继续执行的普通函数。它**不是线程**，没有独立调用栈——挂起时只把局部状态保存到堆上的**协程帧（coroutine frame）**，恢复时从帧里取回状态。
 
@@ -909,16 +909,16 @@ int main(){hello();return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch108_memory_order.md（第108章　memory_order：六种内存序（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch109_fence.md（第109章 内存屏障与 fence）
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch111_aba.md（第111章　ABA 问题与解决（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch112_hazard_rcu.md（第112章　Hazard Pointer 与 RCU（C++11/实践））
-- **硬件底座（part03）**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— 协程帧的可见性与原子操作共享同一内存模型
-- **移动语义底座（part10）**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 协程帧与 await 结果的移动依赖移动语义
-- **协程模式深入（part10）**：⟶ Book/part10_modern/ch120_coroutine_app.md（第120章 Coroutine 应用模式）—— coroutine 应用模式（生成器/异步 IO）在 part10 展开
-- **异步 IO 落地（part15）**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））—— 网络编程大量使用协程实现异步
+- **同模块兄弟（part09 并发）**：[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)）
+- **同模块兄弟（part09 并发）**：[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)）
+- **同模块兄弟（part09 并发）**：[第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)
+- **同模块兄弟（part09 并发）**：[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)）
+- **同模块兄弟（part09 并发）**：[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)）
+- **同模块兄弟（part09 并发）**：[第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)）
+- **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)—— 协程帧的可见性与原子操作共享同一内存模型
+- **移动语义底座（part10）**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 协程帧与 await 结果的移动依赖移动语义
+- **协程模式深入（part10）**：[第120章 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)—— coroutine 应用模式（生成器/异步 IO）在 part10 展开
+- **异步 IO 落地（part15）**：[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)）—— 网络编程大量使用协程实现异步
 
 ## 附录 G：工业实战复盘与设计取舍 [I: Practice / H: Design]
 

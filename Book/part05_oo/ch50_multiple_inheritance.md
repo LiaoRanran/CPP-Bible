@@ -1,7 +1,7 @@
 # 第50章　多重继承与对象模型（Multiple Inheritance）
 
-⟶ Book/part05_oo/ch49_virtual_inheritance.md
-⟶ Book/part05_oo/ch45_oop_object_model.md
+[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)
+[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜立场分层：`[标准]` 语言规定 · `[实现]` 编译器/库实现 · `[平台·Windows]` ABI/OS · `[经验]` 工程共识
 > 汇编证据：MinGW GCC 15.3.0，`-std=c++23 -O2 -S -masm=intel` 真实输出（见 `Examples/_asm_mi.cpp` → `_asm_mi.asm`）
@@ -37,8 +37,8 @@ Simula 67 只给单继承，但现实里「一个窗口同时是图形节点、�
 
 ## ① 学习目标
 
-⟶ Book/part05_oo/ch49_virtual_inheritance.md
-⟶ Book/part05_oo/ch51_crtp.md
+[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)
+[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)
 
 - 说清单继承与**多重继承**在对象布局上的本质差异：每个非首基类各带一具独立 `vptr`。
 - 解释 **this 指针调整（this-adjustment thunk）** 的成因、汇编形态、以及对性能的影响。
@@ -785,12 +785,12 @@ int main(){Btn b;b.draw();return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　C++ 面向对象总览与对象模型基础）—— 多重继承对象含多个基类子对象，布局直观
-- **同模块接续**：⟶ Book/part05_oo/ch46_encapsulation_inheritance.md（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 多重继承是封装/继承的进阶形态
-- **同模块接续**：⟶ Book/part05_oo/ch47_virtual_functions.md（第47章 虚函数与虚表（vtable）：动态多态的发动机）—— 多重继承的虚函数调用可能二义，需显式限定
-- **同模块接续**：⟶ Book/part05_oo/ch48_rtti.md（第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询）—— 多重继承下 dynamic_cast 跨分支依赖虚基类
-- **同模块接续**：⟶ Book/part05_oo/ch49_virtual_inheritance.md（第49章 虚继承与菱形继承：共享虚基类）—— 菱形继承=虚继承+多重继承
-- **同模块接续**：⟶ Book/part05_oo/ch52_ebo.md（第52章　空基类优化 EBO（Empty Base Optimization））—— EBO 在多重继承基类中仍有布局收益
+- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)—— 多重继承对象含多个基类子对象，布局直观
+- **同模块接续**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)—— 多重继承是封装/继承的进阶形态
+- **同模块接续**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— 多重继承的虚函数调用可能二义，需显式限定
+- **同模块接续**：[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)—— 多重继承下 dynamic_cast 跨分支依赖虚基类
+- **同模块接续**：[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)—— 菱形继承=虚继承+多重继承
+- **同模块接续**：[第52章　空基类优化 EBO（Empty Base Optimization）](Book/part05_oo/ch52_ebo.md)）—— EBO 在多重继承基类中仍有布局收益
 
 ## 附录 G：MI（多继承）工业实践与 ABI 深度
 

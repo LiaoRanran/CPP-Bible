@@ -1,8 +1,8 @@
 # 第140章 Policy-Based Design（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part06_templates/ch71_policy.md
-⟶ Book/part12_patterns/ch135_patterns_intro.md
+[第71章　策略设计 Policy-Based Design](Book/part06_templates/ch71_policy.md)
+[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)
 
 > **取证说明（本章所有汇编均来自真实工具链，非编造）**
 > 编译器：`C:/Qt/Tools/mingw1310_64/bin/g++.exe`（GCC 13.1.0, MinGW-w64）。
@@ -58,8 +58,8 @@ Policy-Based Design 对"继承层级"之争是"组合优于继承"的极致化�
 
 ## ① 概述：Policy-Based Design 是什么
 
-⟶ Book/part12_patterns/ch139_crtp_pattern.md
-⟶ Book/part12_patterns/ch141_di.md
+[第139章 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)
+[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)
 
 Policy-Based Design（基于策略的设计，也称 policy-based class design）由 Andrei Alexandrescu 在《Modern C++ Design》(2001) 中系统提出。其核心思想是：**把类的行为拆解为一组正交的、可替换的、编译期绑定的"策略（policy）"，宿主类（host）通过模板参数把这些策略组合起来**。每个 policy 是一个只承载"某一维度行为"的迷你类，宿主类负责把各 policy 编排成完整类型。
 
@@ -634,7 +634,7 @@ int use_sfinae() {
 
 ## ⑬ 政策设计真实案例（Loki / Blaze 上游参考）
 
-⟶ Book/part11_source/ch128_boost.md
+[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)
 
 工业级 policy 设计并非纸上谈兵：
 - **Loki**（Alexandrescu 开源库）：`SmartPtr` 由 `OwnershipPolicy`、`ConversionPolicy`、`CheckingPolicy`、`StoragePolicy`、`DeleterPolicy` 等组合，并用 `Typelist` 生成线性/散乱继承层次。
@@ -715,7 +715,7 @@ constexpr int c14 = Algo<true>::step(5) + Algo<false>::step(5);  // 20 + 10
 
 ## ⑮ 政策与代码膨胀（模板实例化成本）
 
-⟶ Book/part06_templates/ch63_variadic.md
+[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)
 
 policy 的代价是**代码膨胀（code bloat）**：每套不同的 policy 组合都会独立实例化一份机器码。多 policy 正交组合时，组合数呈乘法增长。用 `nm` 可以直观看到每种组合生成的符号。
 
@@ -844,7 +844,7 @@ struct GoodPipeline {
 
 ## ⑱ 性能：零开销验证（对比手写虚函数版本）
 
-⟶ Book/part14_perf/ch153_cpu_micro.md
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)
 
 policy 设计的口号是"零开销抽象"，但必须用工具验证、不能空口断言。下面把 ⑩ 的结论量化：policy 版 `set` 在 `-O2` 下与"手写内联版本"生成的机器码**逐条相同**，而虚函数版多出 vtable 间接调用与对象布局（vptr）开销。
 
@@ -1111,15 +1111,15 @@ A: 零开销——删除器无 vtable，调用可内联。sizeof 与裸指针相
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch135_patterns_intro.md（第135章 设计模式总论（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch136_creational.md（第136章 创建型模式（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch137_structural.md（第137章 结构型模式（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch138_behavioral.md（第138章 行为型模式（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch139_crtp_pattern.md（第139章 CRTP 与静态多态（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch141_di.md（第141章 依赖注入（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch142_ecs.md（第142章 实体组件系统 ECS（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch143_dod.md（第143章 面向数据设计 DOD（C++））
-- **跨模块延伸（part06 模板）**：⟶ Book/part06_templates/ch71_policy.md（第71章　策略设计 Policy-Based Design）—— Policy-Based Design 的模板理论底座在 part06
+- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)）
+- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)）
+- **同模块兄弟（part12 模式）**：[第137章 结构型模式（C++）](Book/part12_patterns/ch137_structural.md)）
+- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](Book/part12_patterns/ch138_behavioral.md)）
+- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)）
+- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)）
+- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)）
+- **跨模块延伸（part06 模板）**：[第71章　策略设计 Policy-Based Design](Book/part06_templates/ch71_policy.md)—— Policy-Based Design 的模板理论底座在 part06
 
 ## 自测练习（Exercises）
 

@@ -1,8 +1,8 @@
 # 第146章 错误处理（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part07_stl/ch88_optional_variant.md
-⟶ Book/part10_modern/ch121_contracts.md
+[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
+[第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)
 
 > **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0 真实产物佐证；示例源码位于 `Examples/_ch146_*.cpp`，对应汇编/警告产物位于 `Examples/_ch146_*.asm` 与 `Examples/_ch146_*_warn.txt`。编译命令统一为 `g++ -std=c++23 -O2 -S -masm=intel <src> -o <dst>.asm`，全部示例均通过 `-Wall -Wextra` 警告零洁净（warnings clean）验证；关键机器码结论直接引用 g++ 生成的 Intel 语法汇编，绝不编造。运行时事实由本机真实编译执行得出。源码剖析（第⑥节）引用的 libstdc++ 路径为本机真实存在的 `.../include/c++/system_error`，行号取自实际文件（版本 GCC 13.1.0）。立场分层标签：`[标准]`=ISO C++，`[实现]`=编译器/标准库实现，`[平台·Windows]`=OS/ABI，`[经验]`=工程共识。
 
@@ -35,8 +35,8 @@ C 时代只有两种 primitive：返回码与全局 `errno`（1970s）。`[史]`
 
 ## ① 概述：错误处理策略 [经验]
 
-⟶ Book/part13_engineering/ch145_naming_api.md
-⟶ Book/part13_engineering/ch147_code_review.md
+[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)
+[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)
 
 错误处理不是"发生错误后怎么办"，而是**设计 API 契约时就必须决定的第一等公民**。一个函数一旦可能失败，调用方就必须有一个可预期、可组合、可推理的失败通道；错误通道设计得差，整个系统的可靠性会系统性塌方。
 
@@ -1154,14 +1154,14 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch147_code_review.md（第147章 代码审查（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch149_ci_cd.md（第149章 CI/CD 流水线（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch151_benchmark.md（第151章 基准测试与性能度量（C++））
-- **跨模块延伸（part07 STL）**：⟶ Book/part07_stl/ch91_filesystem.md（第91章 文件系统 filesystem）—— 文件系统操作大量使用异常语义
+- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）
+- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）
+- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)）
+- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）
+- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)）
+- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)）
+- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)）
+- **跨模块延伸（part07 STL）**：[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)—— 文件系统操作大量使用异常语义
 
 ## 附录 E（工业级错误处理实战）
 

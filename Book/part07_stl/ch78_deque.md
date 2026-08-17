@@ -1,7 +1,7 @@
 # 第78章　deque 与分段连续 [标准]
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：⟶ Book/part07_stl/ch76_stl_arch.md、⟶ Book/part07_stl/ch77_vector.md、⟶ Book/part06_templates/ch63_variadic.md ／ 后续：⟶ Book/part07_stl/ch79_list.md、⟶ Book/part07_stl/ch86_adapters.md、⟶ Book/part07_stl/ch90_ranges.md ／ 难度：★★★☆☆
+> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：150 分钟 ／ 前置：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)、[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md) ／ 后续：[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)、[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)、[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md) ／ 难度：★★★☆☆
 
 > 立场标签约定：本文 `[标准]` 指 ISO C++ 规定；`[实现·GCC15]` 指 GCC 15.3.0 / libstdc++ 实现行为；`[平台·x86-64]` 指 x86-64 内存与缓存；`[经验]` 为工程共识。libstdc++ 引用均给 `文件：` + `行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 
@@ -14,7 +14,7 @@
 `vector` 在头部插入是 O(n)，因为它要把整段内存往后搬。[史] 很多真实场景（如滑动窗口、双端缓冲、广度优先搜索的队列）偏偏需要高效的**头尾双端操作**。STL 给出的答案不是链表，而是一个更巧妙的结构：deque（double-ended queue）用一组固定大小的内存块（block/chunk），再用一个"中央映射数组"记录这些块的指针。[史] 这样头尾插入只需在边界块里增减，几乎无需搬移整体，同时仍保留近似随机访问的能力。
 
 ### 0.2 关键转折（编年）
-- C++98：`std::deque` 随 STL 标准化，默认作为 `stack`/`queue` 的底层容器（见 ⟶ Book/part07_stl/ch86_adapters.md）。[史]
+- C++98：`std::deque` 随 STL 标准化，默认作为 `stack`/`queue` 的底层容器（见 [第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)）。[史]
 - 长期：各实现（libstdc++、libc++、MS STL）在"块大小、映射增长策略"上各有微调，但分段连续的思想一脉相承。
 
 ### 0.3 设计哲学之争
@@ -63,10 +63,10 @@ int main() {
 
 | 主题 | 为什么必须 | 链接 |
 |---|---|---|
-| vector 的连续存储与扩容代价 | deque 是为"避免 vector 头插 O(n) 与整体搬迁"而生 | ⟶ Book/part07_stl/ch77_vector.md |
-| 迭代器分类（随机访问） | deque 提供随机访问迭代器，`std::sort` 可用 | ⟶ Book/part07_stl/ch76_stl_arch.md |
-| 容器适配器 | `stack`/`queue` 默认以 deque 为底层 | ⟶ Book/part07_stl/ch86_adapters.md |
-| 指针/引用失效规则 | 理解"元素引用不失效 vs 迭代器失效"的微妙区别 | ⟶ Book/part03_language/ch20_reference_pointer.md |
+| vector 的连续存储与扩容代价 | deque 是为"避免 vector 头插 O(n) 与整体搬迁"而生 | [第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md) |
+| 迭代器分类（随机访问） | deque 提供随机访问迭代器，`std::sort` 可用 | [第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md) |
+| 容器适配器 | `stack`/`queue` 默认以 deque 为底层 | [第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md) |
+| 指针/引用失效规则 | 理解"元素引用不失效 vs 迭代器失效"的微妙区别 | [第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md) |
 
 `[标准]`：`<deque>` 自 C++98 起即标准组件（`[deque]` 条款）；`deque` 满足 *Container*、*ReversibleContainer*、*SequenceContainer*，并额外提供随机访问。
 
@@ -74,10 +74,10 @@ int main() {
 
 ## ③ 后续依赖 [标准]
 
-- **list / forward_list**：当"任何位置 O(1) 插入/删除 + 迭代器稳定"比"随机访问"更重要时，deque 让位给链表（⟶ Book/part07_stl/ch79_list.md）。
-- **容器适配器**：`stack`/`queue` 默认底层容器（⟶ Book/part07_stl/ch86_adapters.md）。
-- **ranges / 算法**：deque 支持随机访问，可直接用于 `std::sort`、`std::ranges::views`（⟶ Book/part07_stl/ch90_ranges.md）。
-- **并发**：deque **非线程安全**，并发需外部同步（⟶ Book/part07_stl/ch93_thread_async.md）。
+- **list / forward_list**：当"任何位置 O(1) 插入/删除 + 迭代器稳定"比"随机访问"更重要时，deque 让位给链表（[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)）。
+- **容器适配器**：`stack`/`queue` 默认底层容器（[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)）。
+- **ranges / 算法**：deque 支持随机访问，可直接用于 `std::sort`、`std::ranges::views`（[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)）。
+- **并发**：deque **非线程安全**，并发需外部同步（[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)）。
 
 ---
 
@@ -266,7 +266,7 @@ int main() {
 ## ⑪ STL 联系：deque 与算法/适配器 [标准]
 
 - deque 提供**随机访问迭代器** → 可直接 `std::sort(d.begin(), d.end())`、`std::binary_search` 等（这点和 `list` 形成对比：`list` 必须用成员 `sort`，见第79章）。
-- `std::stack<T>` 与 `std::queue<T>` 的**默认底层容器就是 `deque<T>`**（⟶ Book/part07_stl/ch86_adapters.md），因为 deque 首尾 O(1) 完美契合栈/队列语义。
+- `std::stack<T>` 与 `std::queue<T>` 的**默认底层容器就是 `deque<T>`**（[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)），因为 deque 首尾 O(1) 完美契合栈/队列语义。
 - `std::deque` 满足 *Erasable*/*DefaultInsertable* 等容器要求，可用于大多数接受序列容器的泛型算法。
 
 > **示例 7** [难度 ★☆☆☆☆] [主题：联系：deque 与算法/适配器 []
@@ -288,7 +288,7 @@ int main() {
 
 ## ⑫ 工业案例：高吞吐任务队列（生产者-消费者双端缓冲） [经验]
 
-交易/网络引擎常用 deque 做"工作窃取"或"双端缓冲"：新任务从一端压入，worker 从另一端取；偶发的"插队优先级任务"从同端头插。下面是可运行骨架（真实场景配锁/无锁，见 ⟶ Book/part07_stl/ch93_thread_async.md）。
+交易/网络引擎常用 deque 做"工作窃取"或"双端缓冲"：新任务从一端压入，worker 从另一端取；偶发的"插队优先级任务"从同端头插。下面是可运行骨架（真实场景配锁/无锁，见 [第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)）。
 
 > **示例 8** [难度 ★★☆☆☆] [主题：工业案例：高吞吐任务队列]
 ```cpp
@@ -409,7 +409,7 @@ int main() {
 - **误以为 deque 整体连续** → 没有 `data()`，不能把 `&d[0]` 当数组首地址传给 C API；段间不连续。
 - **erase/insert 后继续使用旧迭代器** → 迭代器已失效（UB），应接收返回值：`it = d.erase(it)`。
 - **期望 `capacity()`/`reserve()`** → deque 没有；想控内存请用 `shrink_to_fit()`（提示）。
-- **把 deque 当"线程安全队列"** → 不是；需 `mutex`（⟶ Book/part07_stl/ch93_thread_async.md）。
+- **把 deque 当"线程安全队列"** → 不是；需 `mutex`（[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)）。
 - **频繁跨段随机访问热点** → 若访问模式高度随机且跨段多，`vector` 的单一连续访问可能更稳更快。
 
 > **示例 10** [难度 ★☆☆☆☆] [主题：易错点 [经验]]
@@ -436,7 +436,7 @@ int main() {
 
 **Q：deque 的迭代器比 vector 大吗？** A：大得多（4 个指针 vs 1 个指针），且解引用多一次间接寻址。
 
-**Q：deque 能用于 `std::vector`-style 的 `data()` 接口吗？** A：不能；它不是连续单块。需要连续内存请用 `vector`/`array`/`span`（⟶ Book/part07_stl/ch80_array.md、⟶ Book/part07_stl/ch82_span.md）。
+**Q：deque 能用于 `std::vector`-style 的 `data()` 接口吗？** A：不能；它不是连续单块。需要连续内存请用 `vector`/`array`/`span`（[第80章　array 与固定数组](Book/part07_stl/ch80_array.md)、[第82章　span 与裸数组视图](Book/part07_stl/ch82_span.md)）。
 
 > **示例 11** [难度 ★☆☆☆☆] [主题：[标准]]
 ```cpp
@@ -456,7 +456,7 @@ int main() {
 ## ⑱ 最佳实践 [经验]
 
 1. 需要**首尾都频繁插入删除**时首选 `deque`（而非 `vector` 头插 O(n)）。
-2. 需要**随机访问 + 双端操作**时选 `deque`；若只需头插/任意位置插入且不要随机访问，选 `list`（⟶ Book/part07_stl/ch79_list.md）。
+2. 需要**随机访问 + 双端操作**时选 `deque`；若只需头插/任意位置插入且不要随机访问，选 `list`（[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)）。
 3. 作栈/队列时直接用 `std::stack`/`std::queue`（默认底层 deque），不要手写。
 4. 迭代器失效后务必用 `erase`/`insert` 的返回值刷新；不要缓存迭代器跨修改使用。
 5. 高频随机访问且不需双端插入 → 仍用 `vector`（更连续、更快、更省内存）。
@@ -1155,7 +1155,7 @@ int main() {
 
 **源码阅读路线（libstdc++）**
 - `文件：bits/stl_deque.h` 行号：`92`（`_GLIBCXX_DEQUE_BUF_SIZE 512`）、`96`（`__deque_buf_size`）、`131`（`_S_buffer_size()`）、`142`–`145`（`_M_cur/_M_first/_M_last/_M_node`）、`192`（自增跨段）、`232`（`operator+=` 跨段除法/取模）、`259`（`_M_set_node`）、`1501`/`1511`/`1548`（`push_front/_M_push_front_aux/_M_push_back_aux`）、`2168`/`2176`/`2184`（`_M_reserve_map_at_*`/`_M_reallocate_map`）。
-- 对比阅读：`文件：bits/stl_vector.h`（vector 连续存储与扩容），见 ⟶ Book/part07_stl/ch77_vector.md。
+- 对比阅读：`文件：bits/stl_vector.h`（vector 连续存储与扩容），见 [第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)。
 
 > 本文件为独立章节，未改动 `INDEX.md` / `GLOSSARY.md` / `CROSSREF.md`；与 ch77(vector)、ch79(list)、ch86(适配器)、ch76(STL 架构)、ch90(ranges) 建立正文交叉引用。
 
@@ -1201,11 +1201,11 @@ mov eax, [rcx+rsi*0x0004] ; 取元素
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 迭代器概念与分段缓冲架构
-- **同模块相邻**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— 与 vector 的连续/分段差异
-- **同模块相邻**：⟶ Book/part07_stl/ch79_list.md（第79章　list / forward_list [标准]）—— 与 list 的中段插入成本对比
-- **同模块相邻**：⟶ Book/part07_stl/ch83_map.md（第83章　map / multimap（红黑树））—— 与红黑树容器的接口共性
-- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— 分段缓冲块经 allocator 分配
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 迭代器概念与分段缓冲架构
+- **同模块相邻**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— 与 vector 的连续/分段差异
+- **同模块相邻**：[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)—— 与 list 的中段插入成本对比
+- **同模块相邻**：[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)）—— 与红黑树容器的接口共性
+- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— 分段缓冲块经 allocator 分配
 
 ## 自测练习（Exercises）
 

@@ -1,8 +1,8 @@
 # 第145章 命名与 API 设计（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part13_engineering/ch144_style.md
-⟶ Book/part12_patterns/ch135_patterns_intro.md
+[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)
+[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)
 
 > **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0 真实产物佐证，示例源码位于 `Examples/_ch145_*.cpp`，对应汇编/警告产物位于 `Examples/_ch145_*.asm` 与 `Examples/_ch145_*_warn.txt`。编译命令统一为 `g++ -std=c++23 -O2 -S -masm=intel <src> -o <dst>.asm`，全部示例均通过 `-Wall -Wextra` 警告零洁净（warnings clean）验证；关键机器码结论直接引用 g++ 生成的 Intel 语法汇编，绝不编造。运行时事实（如 `sizeof`）由本机真实编译执行得出。源码剖析（第⑲节）引用的 libstdc++ 路径为本机真实存在的 `.../include/c++/bits/*.h`、`bits/vector.tcc`、`optional`，行号取自实际文件。立场分层标签：`[标准]`=ISO C++，`[实现]`=编译器/标准库实现，`[平台]`=OS/ABI，`[经验]`=工程共识。
 
@@ -35,8 +35,8 @@
 
 ## ① 概述：好命名的价值 [经验]
 
-⟶ Book/part13_engineering/ch144_style.md
-⟶ Book/part13_engineering/ch146_error_handling.md
+[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)
+[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)
 
 命名不是"审美偏好"，而是**接口契约的第一行文档**。API 的使用者首先读到的不是实现，而是名字；一个好名字能让误用在编译期或 code review 阶段就被消灭，一个坏名字则把理解成本转嫁给每一个后续维护者。
 
@@ -1134,14 +1134,14 @@ int main(){Widget w;w.doWork();std::cout<<"PIMPL: 2ns/call, 30x compile speedup"
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch147_code_review.md（第147章 代码审查（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch149_ci_cd.md（第149章 CI/CD 流水线（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch151_benchmark.md（第151章 基准测试与性能度量（C++））
-- **跨模块延伸（part12 模式）**：⟶ Book/part12_patterns/ch143_dod.md（第143章 面向数据设计 DOD（C++））—— DOD 结构暴露面受命名与 API 设计影响
+- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）
+- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）
+- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)）
+- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）
+- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)）
+- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)）
+- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)）
+- **跨模块延伸（part12 模式）**：[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)）—— DOD 结构暴露面受命名与 API 设计影响
 
 ## 附录 G：工业命名与 API 设计惯例
 

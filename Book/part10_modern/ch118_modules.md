@@ -31,8 +31,8 @@ Modules 入标只是起点，真正的硬仗是"工具链落地"与"生态迁移
 
 ## ① 概述：Modules 要解决什么 [标准]
 
-⟶ Book/part10_modern/ch117_copy_elision.md
-⟶ Book/part10_modern/ch119_ranges_deep.md
+[第117章　RVO / NRVO 与拷贝消除（C++17）](Book/part10_modern/ch117_copy_elision.md)
+[第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)
 
 传统 C++ 用 `#include` 做**文本包含**——预处理器把整个头文件复制粘贴进每个翻译单元，导致重复解析、宏泄漏、编译慢。Modules 提供**语义导入单元**，只暴露声明、按需编译一次、无宏污染。
 
@@ -709,11 +709,11 @@ T factorial(T n) { T r = 1; for (T i = 2; i <= n; ++i) r *= i; return r; }
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part10_modern/ch116_perfect_forwarding.md（第116章　完美转发与万能引用）—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part10_modern/ch120_coroutine_app.md（第120章 Coroutine 应用模式）—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 同模块下的其他主题。
+- **相邻主题**：[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第120章 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)—— 编号相邻、主题接续。
+- **同模块**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 同模块下的其他主题。
 
-- **同模块**：⟶ Book/part10_modern/ch121_contracts.md（第121章 Contracts 契约（方向，C++26））—— 同模块下的其他主题。
+- **同模块**：[第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)）—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

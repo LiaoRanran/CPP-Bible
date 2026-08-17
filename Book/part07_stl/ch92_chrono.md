@@ -3,8 +3,8 @@
 
 > 标准基：ISO/IEC 14882:2011（C++11）引入 `<chrono>`；C++17 增补 `floor/ceil/round`；C++20 大幅扩展日历（`year_month_day`）、时区（`time_zone`/`zoned_time`/`tzdb`）与格式化输出。本章以 C++23 / GCC 13.1.0（MinGW-w64）为验证基。
 > 预计阅读：约 90 分钟（深度版，含源码逐行与汇编）。
-> 前置：⟶ Book/part03_language/ch19_variables.md（对象生命周期与存储）· ⟶ Book/part05_oo/ch47_virtual_functions.md（clock 是空基类，理解 `is_clock` 概念）· ⟶ Book/part04_memory/ch39_raii_rule.md（RAII 计时器）。
-> 后续：⟶ Book/part07_stl/ch91_filesystem.md（`last_write_time` 返回的 `file_time_type` 即 `chrono::time_point`）· ⟶ Book/part14_perf/ch152_perf_model.md（基准测量的时间学基础）· ⟶ Book/part13_engineering/ch151_benchmark.md（基准方法论）。
+> 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（对象生命周期与存储）· [第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)（clock 是空基类，理解 `is_clock` 概念）· [第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)（RAII 计时器）。
+> 后续：[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)（`last_write_time` 返回的 `file_time_type` 即 `chrono::time_point`）· [第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)（基准测量的时间学基础）· [第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)（基准方法论）。
 > 难度：★★★☆☆（概念清晰，坑在 clock 选择、截断舍入与单位换算）。
 
 `<chrono>` 提供**编译期类型安全**的时间抽象：用 `duration`（时长）与 `time_point`（时刻）表达"多久"和"何时"，用 `clock`（时钟）提供"时刻的来源"。它彻底取代 `time_t`/`gettimeofday`/`clock()` 的裸整数用法，把"秒/毫秒/纳秒"编码进**类型**，杜绝单位混用的静默 bug。
@@ -46,28 +46,28 @@ chrono 的核心哲学是 **"用类型消灭单位错误"**：不再靠约定，
 - 正确使用字面量 `1s`/`100ms`（在函数内 `using namespace std::chrono_literals;`），避免裸整数秒；
 - 用 C++20 日历 `year_month_day` / `sys_days` 做日期运算，用时区 `zoned_time` 做本地时间转换（GCC13 实测 tzdb 可用）；
 - 掌握"作用域计时器"与"超时控制"两种工业惯用法（见第⑫节）；
-- 理解 `⟶ Book/part07_stl/ch91_filesystem.md` 中 `file_time_type` 与 `file_clock` 的关系；
+- 理解 `[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)` 中 `file_time_type` 与 `file_clock` 的关系；
 - 对比 `chrono` 与传统 `time_t`/`gettimeofday` 的优劣（见第⑳节）。
 
 ---
 
 ## ② 前置知识
 
-- **类型与模板参数**：`duration<Rep, Period>` 是两个模板参数；`ratio<Num,Den>` 是编译期有理数。见 `⟶ Book/part06_templates/ch60_template_basics.md`。
-- **`constexpr` 与编译期计算**：单位换算、日历字段在编译期完成。见 `⟶ Book/part06_templates/ch69_constexpr.md`。
-- **RAII**：计时器用构造/析构自动记录区间。见 `⟶ Book/part04_memory/ch39_raii_rule.md`。
-- **异常安全**：`system_clock::now()` 不抛；时区查找失败抛 `std::chrono::nonexistent_local_time` 等。见 `⟶ Book/part04_memory/ch40_exception_safety.md`。
-- **比值与整数溢出**：`Rep` 类型（如 `int64_t`）需足够宽，否则长时长溢出。见 `⟶ Book/part03_language/ch19_variables.md`。
+- **类型与模板参数**：`duration<Rep, Period>` 是两个模板参数；`ratio<Num,Den>` 是编译期有理数。见 `[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)`。
+- **`constexpr` 与编译期计算**：单位换算、日历字段在编译期完成。见 `[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)`。
+- **RAII**：计时器用构造/析构自动记录区间。见 `[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)`。
+- **异常安全**：`system_clock::now()` 不抛；时区查找失败抛 `std::chrono::nonexistent_local_time` 等。见 `[第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)`。
+- **比值与整数溢出**：`Rep` 类型（如 `int64_t`）需足够宽，否则长时长溢出。见 `[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)`。
 
 ---
 
 ## ③ 后续依赖
 
-- **filesystem（第91章）**：`last_write_time()` 返回 `file_time_type = time_point<file_clock, ...>`；比较文件新旧就是比较 `time_point`。`⟶ Book/part07_stl/ch91_filesystem.md`。
-- **性能测量（第152章）**：所有 benchmark 都建立在 `steady_clock` 上。见 `⟶ Book/part14_perf/ch152_perf_model.md`。
-- **基准方法论（第151章）**：反复测量、warm-up、统计分布。见 `⟶ Book/part13_engineering/ch151_benchmark.md`。
-- **并发超时（第103–105章）**：`try_lock_for(d)`、`wait_for(d)` 接收 `duration`。见 `⟶ Book/part07_stl/ch93_thread_async.md`。
-- **格式化（第131章 fmt/spdlog）**：时间戳格式化常借助 `std::format` 与 chrono 的 `operator<<`。见 `⟶ Book/part11_source/ch131_fmt_spdlog.md`。
+- **filesystem（第91章）**：`last_write_time()` 返回 `file_time_type = time_point<file_clock, ...>`；比较文件新旧就是比较 `time_point`。`[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)`。
+- **性能测量（第152章）**：所有 benchmark 都建立在 `steady_clock` 上。见 `[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)`。
+- **基准方法论（第151章）**：反复测量、warm-up、统计分布。见 `[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)`。
+- **并发超时（第103–105章）**：`try_lock_for(d)`、`wait_for(d)` 接收 `duration`。见 `[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)`。
+- **格式化（第131章 fmt/spdlog）**：时间戳格式化常借助 `std::format` 与 chrono 的 `operator<<`。见 `[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)`。
 
 ---
 
@@ -236,11 +236,11 @@ int main() {
 
 ## ⑪ STL 联系
 
-- **与 `ratio`（编译期有理数）**：`duration` 的 `Period` 就是 `ratio<Num,Den>`（如 `milli = ratio<1,1000>`，见 `文件：bits/chrono.h 行号：905`）。`⟶ Book/part06_templates/ch68_tmp.md`。
-- **与 filesystem（第91章）**：`file_time_type` 是 `time_point<file_clock, ...>`；`last_write_time` 的比较本质是 `time_point` 比较。`⟶ Book/part07_stl/ch91_filesystem.md`。
-- **与 `format`（第8章）**：C++20 起 `std::format("{:%Y-%m-%d}", sys_days{...})` 直接格式化日期。`⟶ Book/part01_history/ch08_cpp23.md`。
-- **与 ranges（第90章）**：`views::take` + `steady_clock` 可做定长时间窗口采样。`⟶ Book/part07_stl/ch90_ranges.md`。
-- **与 `optional`/`expected`（第88章）**：超时可表达为 `expected<Result, timeout_error>`。`⟶ Book/part07_stl/ch88_optional_variant.md`。
+- **与 `ratio`（编译期有理数）**：`duration` 的 `Period` 就是 `ratio<Num,Den>`（如 `milli = ratio<1,1000>`，见 `文件：bits/chrono.h 行号：905`）。`[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)`。
+- **与 filesystem（第91章）**：`file_time_type` 是 `time_point<file_clock, ...>`；`last_write_time` 的比较本质是 `time_point` 比较。`[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)`。
+- **与 `format`（第8章）**：C++20 起 `std::format("{:%Y-%m-%d}", sys_days{...})` 直接格式化日期。`[第08章　C++23：标准库大修](Book/part01_history/ch08_cpp23.md)`。
+- **与 ranges（第90章）**：`views::take` + `steady_clock` 可做定长时间窗口采样。`[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)`。
+- **与 `optional`/`expected`（第88章）**：超时可表达为 `expected<Result, timeout_error>`。`[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)`。
 - **与并发（第103–114章）**：`try_lock_for`/`wait_for`/`sleep_for` 全部接收 `duration`。
 
 ---
@@ -411,7 +411,7 @@ int main() {
 2. **测量函数耗时该用哪个 clock？** `steady_clock`（单调，不受系统时间调整影响）。`system_clock` 可能被 NTP 回拨导致负时长。
 3. **`high_resolution_clock` 一定单调吗？** 标准不保证；GCC/libstdc++ 上它是 `steady_clock` 别名，故单调；但可移植代码不要假设，需单调就用 `steady_clock`。
 4. **`time_point` 能脱离 `clock` 存在吗？** 不能——`time_point` 必须绑定一个 `clock`（模板参数），不同 clock 的 `time_point` 不可比较。
-5. **`system_clock::time_point` 与 `file_time_type` 能直接相减吗？** 不能——前者是 `system_clock`，后者是 `file_clock`，类型不同；需经纪元换算或都转 `file_time_type`。`⟶ Book/part07_stl/ch91_filesystem.md`。
+5. **`system_clock::time_point` 与 `file_time_type` 能直接相减吗？** 不能——前者是 `system_clock`，后者是 `file_clock`，类型不同；需经纪元换算或都转 `file_time_type`。`[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)`。
 6. **C++20 如何得到"今天"的 `year_month_day`？** `year_month_day(sys_days{system_clock::now()})`。
 7. **`duration<int, milli>` 加 `duration<int, micro>` 结果类型？** 取更细精度：`duration<int, micro>`（整数可能溢出，故常用 `int64_t`）。
 8. **时区"不存在的本地时间"（如夏令时跳变）转换会怎样？** 抛 `nonexistent_local_time` 或经 `local_info` 报告（C++20）。
@@ -515,13 +515,13 @@ int main() {
 
 **Q：GCC13 的时区数据从哪来？** A：MinGW 自带 `share/zoneinfo`（IANA tzdata）；`locate_zone("Asia/Shanghai")` 会读取它。若运行时缺失，可设 `TZDIR` 指向 zoneinfo 目录。实测本工具链可链接并使用。`[实现·GCC15]`
 
-**Q：`file_time_type` 与 `system_clock::time_point` 能互转吗？** A：C++20 提供 `clock_cast`（如 `std::chrono::clock_cast<system_clock>(file_time)`），因为 `file_clock` 与 `system_clock` 有固定的纪元偏移。见 `⟶ Book/part07_stl/ch91_filesystem.md`。`[标准]`
+**Q：`file_time_type` 与 `system_clock::time_point` 能互转吗？** A：C++20 提供 `clock_cast`（如 `std::chrono::clock_cast<system_clock>(file_time)`），因为 `file_clock` 与 `system_clock` 有固定的纪元偏移。见 `[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)`。`[标准]`
 
 **Q：为什么 `count()` 返回的是"tick"而非"秒"？** A：`duration` 的 `count()` 返回的是 `_r`（以 `Period` 为单位的刻度数）。要得到秒用 `duration_cast<seconds>(d).count()`。`[标准]`
 
 **Q：Windows 上 `steady_clock` 真的比 `system_clock` 准吗？** A：`steady_clock` 用 `QueryPerformanceCounter`（QPC，基于 TSC/HPET），单调且高精度；`system_clock` 基于系统挂钟，可被 NTP/用户改时间。因此"测时长"必须用 `steady_clock`，与平台无关。`[平台·Windows]`
 
-**Q：`clock_cast` 和 `duration_cast` 有何不同？** A：`duration_cast` 只换单位、不换纪元；`clock_cast` 在不同 `clock` 的 `time_point` 间转换（会按纪元偏移换算），如 `system_clock` ↔ `file_clock`。`file_clock` 的纪元与 `system_clock` 不同，故必须用 `clock_cast`（见 `⟶ Book/part07_stl/ch91_filesystem.md`）。`[标准]`
+**Q：`clock_cast` 和 `duration_cast` 有何不同？** A：`duration_cast` 只换单位、不换纪元；`clock_cast` 在不同 `clock` 的 `time_point` 间转换（会按纪元偏移换算），如 `system_clock` ↔ `file_clock`。`file_clock` 的纪元与 `system_clock` 不同，故必须用 `clock_cast`（见 `[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)`）。`[标准]`
 
 ---
 
@@ -685,7 +685,7 @@ int main() {
 }
 ```
 
-- `[经验·量级]`：`steady_clock::now()` 单次约 20–30 ns（vDSO/QPC，无需真正陷入内核）；`duration_cast` 在 `-O2` 下被常数折叠为一条 `imul`/`idiv`。因此"每次循环读一次时钟"在纳秒级工作的微基准里会**显著污染结果**——基准时应先测"空转 now()"的开销并扣除（见 `⟶ Book/part13_engineering/ch151_benchmark.md`）。
+- `[经验·量级]`：`steady_clock::now()` 单次约 20–30 ns（vDSO/QPC，无需真正陷入内核）；`duration_cast` 在 `-O2` 下被常数折叠为一条 `imul`/`idiv`。因此"每次循环读一次时钟"在纳秒级工作的微基准里会**显著污染结果**——基准时应先测"空转 now()"的开销并扣除（见 `[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)`）。
 - `[缓存友好性]`：`duration`/`time_point` 是 trivial 小对象（8 字节常见），可整体放入寄存器/缓存行，无指针间接，对缓存极友好。
 - `[汇编]`：`now()` 的关键路径在 libstdc++ 中只是调用 `__steady_clock_now` → `clock_gettime`/QPC；运算本身零开销（见第⑩节）。
 
@@ -944,7 +944,7 @@ int main() {
 ```
 
 - `[经验]`：聚合前先把每个样本转成 `duration<double>`（或 `duration<long long, nano>` 累加），**不要**先各自 `duration_cast<milliseconds>` 再平均——那样会把每样本的亚毫秒部分提前截断，均值系统性偏低。
-- `[经验]`：更稳健的统计用中位数或去极值均值（去掉最大/最小），因为最坏一次会被调度器拖累（见 `⟶ Book/part13_engineering/ch151_benchmark.md`）。
+- `[经验]`：更稳健的统计用中位数或去极值均值（去掉最大/最小），因为最坏一次会被调度器拖累（见 `[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)`）。
 
 ---
 
@@ -1062,10 +1062,10 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：⟶ Book/part07_stl/ch91_filesystem.md（第91章 文件系统 filesystem）—— filesystem 时间戳依赖 chrono
-- **同模块相邻**：⟶ Book/part07_stl/ch94_stop_token.md（第94章　stop_token 与协作取消 [标准]）—— stop_token 的超时基于 chrono 时长
-- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— chrono 是该架构外的标准库组件
-- **跨模块前置**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— PMR 可定制 chrono 的内存分配
+- **同模块相邻**：[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)—— filesystem 时间戳依赖 chrono
+- **同模块相邻**：[第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md)—— stop_token 的超时基于 chrono 时长
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— chrono 是该架构外的标准库组件
+- **跨模块前置**：[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)—— PMR 可定制 chrono 的内存分配
 
 ## 自测练习（Exercises）
 

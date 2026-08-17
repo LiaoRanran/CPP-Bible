@@ -1,8 +1,8 @@
 # 第149章 CI/CD 流水线（C++）
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-⟶ Book/part13_engineering/ch148_gitflow.md
-⟶ Book/part13_engineering/ch150_testing.md
+[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)
+[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)
 
 > **取证说明（真实运行，非编造）**
 > 本章所有 `g++` 输出均来自本机真实执行：`g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0`（路径 `C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。
@@ -41,8 +41,8 @@ CI 的核心理念是"让集成失败尽早、自动化、可重复"，反对"�
 
 ## ① 概述：CI/CD 是什么 [经验]
 
-⟶ Book/part13_engineering/ch148_gitflow.md
-⟶ Book/part13_engineering/ch150_testing.md
+[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)
+[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)
 
 CI（Continuous Integration，持续集成）指开发者频繁把代码合并进主干，并由自动化流水线在**每次推送**完成构建与测试；CD（Continuous Delivery/Deployment，持续交付/部署）在此基础上把通过门禁的产物自动发布到预发或生产。**CI 解决“合并地狱”，CD 解决“发布恐惧”**。
 
@@ -1138,14 +1138,14 @@ int main(){std::cout<<"LLVM:Buildbot+GH Actions(15min pre,2h full);Chromium:LUCI
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch147_code_review.md（第147章 代码审查（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch151_benchmark.md（第151章 基准测试与性能度量（C++））
-- **跨模块延伸（part02 工具链）**：⟶ Book/part02_toolchain/ch18_buildconfig.md（第18章　构建配置：Debug / Release / LTO / PGO（C++））—— CI/CD 构建配置依赖 Debug/Release/LTO/PGO 设定
+- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）
+- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）
+- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）
+- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)）
+- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）
+- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)）
+- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)）
+- **跨模块延伸（part02 工具链）**：[第18章　构建配置：Debug / Release / LTO / PGO（C++）](Book/part02_toolchain/ch18_buildconfig.md)）—— CI/CD 构建配置依赖 Debug/Release/LTO/PGO 设定
 
 ## 附录 B：编译缓存与分布式构建深度 [E: Low-level / B: Principle]
 

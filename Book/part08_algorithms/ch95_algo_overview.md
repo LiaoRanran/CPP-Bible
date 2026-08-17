@@ -1,9 +1,9 @@
 # 第95章　STL 算法分类与复杂度（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part07_stl/ch77_vector.md
-⟶ Book/part08_algorithms/ch96_sorting.md
-⟶ Book/part08_algorithms/ch97_search.md
+[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
+[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)
+[第97章　查找与二分（C++）](Book/part08_algorithms/ch97_search.md)
 
 > 真实编译器取证：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 示例源统一前缀 `Examples/_ch95_`，全部可编译；本章汇编与性能数据均由本机真实编译/运行取得，无编造。
@@ -17,7 +17,7 @@ Stepanov 对 STL 算法最核心的要求有两条：**泛型**（一个 `find` 
 
 ### 0.2 关键转折（编年）
 - 1994：STL 算法随标准库入标，奠定"区间 `[first,last)` + 迭代器范畴"的范式。[史]
-- 后续：C++11 引入 lambda 让谓词更顺手；C++17 加执行策略（`par`/`seq`）做并行；C++20 Ranges 重写成"吃区间"的版本（⟶ Book/part07_stl/ch90_ranges.md、Book/part08_algorithms/ch100_ranges_algo.md）。
+- 后续：C++11 引入 lambda 让谓词更顺手；C++17 加执行策略（`par`/`seq`）做并行；C++20 Ranges 重写成"吃区间"的版本（[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)、Book/part08_algorithms/ch100_ranges_algo.md）。
 
 ### 0.3 设计哲学之争
 STL 算法最大的反直觉之处，是**把算法放在容器之外、做自由函数**，而非容器成员。[评] 同期 OO 思路认为"排序就该是 `container.sort()`"，但 Stepanov 坚持：算法若依赖容器特化就会爆炸式重复，而迭代器解耦后，一套算法覆盖一切。代价是调用略啰嗦、报错晦涩，但换来了无可比拟的可组合性。[评]
@@ -35,7 +35,7 @@ STL 算法最大的反直觉之处，是**把算法放在容器之外、做自�
 
 ## ① 概述：STL 算法设计哲学 [标准]
 
-⟶ Book/part08_algorithms/ch96_sorting.md
+[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)
 
 STL 算法是一组**与容器解耦**的、以迭代器对 `[first, last)` 为参数的函数模板。它们只依赖迭代器暴露的接口，不关心元素存在 `vector`、`list` 还是裸数组——这就是"泛型"的本质。设计哲学三条：
 
@@ -1113,11 +1113,11 @@ A: std::sort 需要随机访问迭代器。list::sort 利用链表特性做归�
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：⟶ Book/part06_templates/ch70_tag_dispatch.md（第70章　std::integral_constant 与标签分发（Tag Dispatch））—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：⟶ Book/part07_stl/ch94_stop_token.md（第94章　stop_token 与协作取消 [标准]）—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part07_stl/ch93_thread_async.md（第93章　线程与异步：thread / future / async）—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part08_algorithms/ch98_heap.md（第98章　堆算法 heap（C++））—— 同模块下的其他主题。
+- **后续依赖**：[第70章　std::integral_constant 与标签分发（Tag Dispatch）](Book/part06_templates/ch70_tag_dispatch.md)）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)—— 编号相邻、主题接续。
+- **同模块**：[第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)）—— 同模块下的其他主题。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

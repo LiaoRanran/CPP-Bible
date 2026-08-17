@@ -1,7 +1,7 @@
 # 第111章　ABA 问题与解决（C++11）
 
-⟶ Book/part09_concurrency/ch110_lockfree.md
-⟶ Book/part09_concurrency/ch112_hazard_rcu.md
+[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)
+[第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`，双字 CAS 加 `-mcx16`，仓库权威工具链）；正文早期汇编插图示曾用 GCC 13.1.0 生成，已在本机 GCC 15.3.0 下复编确认指令一致（单字 CAS→`lock cmpxchg`、128 位 CAS→`call __atomic_compare_exchange_16`），见下文 `[VERIFIED]` 标注。
 > 源码根：`C:/Qt/Tools/mingw1530_64/lib/gcc/x86_64-w64-mingw32/15.3.0/include/c++/`；示例见 `Examples/_ch111_*.cpp`。
@@ -35,8 +35,8 @@ ABA 从"论文里的陷阱"走向"有官方回收解法"，靠的是 Hazard Poin
 
 ## ① 概述：什么是 ABA 问题 [标准]
 
-⟶ Book/part09_concurrency/ch110_lockfree.md
-⟶ Book/part09_concurrency/ch112_hazard_rcu.md
+[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)
+[第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)
 
 **ABA 问题**发生在基于**比较并交换（CAS）**的无锁（lock-free）算法中：一个共享变量的值从 `A` 变成 `B`，又变回 `A`，于是 CAS 看到“值还是 A”便误以为“什么都没发生”，从而**错误地成功**。但中间状态（`A→B→A`）往往伴随**被回收/被复用的内存**，导致逻辑被破坏。
 
@@ -426,8 +426,8 @@ constexpr bool dcas_lockfree = std::atomic<__int128>::is_always_lock_free;
 
 ## ⑬ 检测工具：ThreadSanitizer [实现·GCC15]
 
-⟶ Book/part09_concurrency/ch108_memory_order.md（memory_order 六种内存序）—— ABA 本质是内存序/可见性语义问题
-⟶ Book/part14_perf/ch152_perf_model.md（性能模型与测量方法论）—— 任何"X 比 Y 快"须注明负载与硬件
+[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)（memory_order 六种内存序）—— ABA 本质是内存序/可见性语义问题
+[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)（性能模型与测量方法论）—— 任何"X 比 Y 快"须注明负载与硬件
 
 **ThreadSanitizer（TSan）** 能发现数据竞争，但对"ABA 逻辑错误"本身**不能直接报"——它报的是并发访问冲突；ABA 常常表现为"无害的并发读"被 TSan 标记为 race，从而间接暴露隐患。
 
@@ -491,8 +491,8 @@ struct BadTagged { void* p; std::uint32_t tag; };   // ⑭ tag 太小，长时�
 
 ## ⑮ 性能代价对比 [实现·GCC15]
 
-⟶ Book/part14_perf/ch152_perf_model.md（性能模型与测量方法论）—— 延迟量级须对应具体硬件与竞争度
-⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— CAS 延迟受缓存/原子单元拓扑影响
+[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)（性能模型与测量方法论）—— 延迟量级须对应具体硬件与竞争度
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— CAS 延迟受缓存/原子单元拓扑影响
 
 无锁结构比加锁（`std::mutex`）快的前提是**低竞争**；高竞争下 CAS 自旋会空转。下面是定性对比（量级示意，非本机实测数字）：
 
@@ -565,8 +565,8 @@ bool need_aba_guard = uses_pointer_cas && reclaims_memory;
 
 ## ⑱ 基准对比 [实现·GCC15]
 
-⟶ Book/part13_engineering/ch151_benchmark.md（基准测试方法论）—— 微基准须可复现、标注软硬件
-⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 吞吐数字须结合微架构解读
+[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)（基准测试方法论）—— 微基准须可复现、标注软硬件
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 吞吐数字须结合微架构解读
 
 下面给出一个**可运行**的微基准骨架，用同一工作负载对比三种策略的相对吞吐（数字为示意，落地时请在本机用 `std::chrono` 实测并标注来源）。
 
@@ -606,8 +606,8 @@ double bench(F f, int threads, int iters) {
 
 ## ⑲ 最佳实践 [经验]
 
-⟶ Book/part09_concurrency/ch112_hazard_rcu.md（Hazard Pointer 与 RCU）—— 生产级回收用风险指针/RCU 而非裸 delete
-⟶ Book/part09_concurrency/ch110_lockfree.md（无锁编程 lock-free/wait-free）—— 先确认真有无锁收益再上
+[第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)（Hazard Pointer 与 RCU）—— 生产级回收用风险指针/RCU 而非裸 delete
+[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)（无锁编程 lock-free/wait-free）—— 先确认真有无锁收益再上
 
 > **示例 35** [难度 ★★☆☆☆] [主题：最佳实践 [经验]]
 ```cpp
@@ -796,13 +796,13 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch108_memory_order.md（第108章　memory_order：六种内存序（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch109_fence.md（第109章 内存屏障与 fence）
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch112_hazard_rcu.md（第112章　Hazard Pointer 与 RCU（C++11/实践））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch113_coroutine.md（第113章　协程 coroutine：promise / awaiter（C++20））
-- **硬件底座（part03）**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— ABA 的可见性本质是内存序问题，与架构强内存模型无关
+- **同模块兄弟（part09 并发）**：[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)）
+- **同模块兄弟（part09 并发）**：[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)）
+- **同模块兄弟（part09 并发）**：[第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)
+- **同模块兄弟（part09 并发）**：[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)）
+- **同模块兄弟（part09 并发）**：[第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)）
+- **同模块兄弟（part09 并发）**：[第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)）
+- **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)—— ABA 的可见性本质是内存序问题，与架构强内存模型无关
 
 ## 真实开源项目参考（可查证链接）
 

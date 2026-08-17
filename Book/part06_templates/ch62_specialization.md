@@ -1,8 +1,8 @@
 # 第62章　类模板特化与偏特化（Class Template Specialization）
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-⟶ Book/part06_templates/ch60_template_basics.md
-⟶ Book/part06_templates/ch68_tmp.md
+[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)
+[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
 
 ## ⓪ 历史动机：模板特化的来龙去脉
 
@@ -34,8 +34,8 @@
 
 ## ① 学习目标
 
-⟶ Book/part06_templates/ch61_template_overload.md
-⟶ Book/part06_templates/ch63_variadic.md
+[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)
+[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)
 
 - 区分主模板 / 全特化 / 偏特化 [标准]
 - 掌握偏序（哪份特化更特化）决定实例化选中谁 [标准]
@@ -485,7 +485,7 @@ template <> struct D<void> { };
 
 ## ⑪ STL 中的该模式
 
-⟶ Book/part06_templates/ch65_type_traits.md
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
 
 > **示例 45** [难度 ★★☆☆☆] [主题：中的该模式]
 ```cpp
@@ -567,7 +567,7 @@ template <typename T> struct B<T*> { };   // 若想只针对 int*，应写全特
 
 ## ⑭ 工业案例
 
-⟶ Book/part11_source/ch128_boost.md
+[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)
 
 > **示例 52** [难度 ★★★☆☆] [主题：工业案例]
 ```cpp
@@ -592,7 +592,7 @@ int main() {
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-⟶ Book/part11_source/ch124_libstdcxx.md
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
 
 > **示例 53** [难度 ★★★☆☆] [主题：源码剖析（libstdc++ 相关）]
 ```cpp
@@ -706,7 +706,7 @@ int main() {
 
 ## ⑲ 性能（编译期 / 运行期）
 
-⟶ Book/part14_perf/ch153_cpu_micro.md
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)
 
 > **示例 70** [难度 ★★☆☆☆] [主题：性能（编译期 / 运行期）]
 ```cpp
@@ -965,11 +965,11 @@ int main(){std::cout<<Traits<int>::name()<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— 特化是模板实例化的分支终点
-- **同模块接续**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— 重载决议在特化与基模板间选择
-- **同模块接续**：⟶ Book/part06_templates/ch63_variadic.md（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 可变参数模板常配合特化递归展开
-- **同模块接续**：⟶ Book/part06_templates/ch68_tmp.md（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— TMP 以特化实现编译期分支
-- **同模块接续**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 大量使用特化萃取类型
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— 特化是模板实例化的分支终点
+- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)）—— 重载决议在特化与基模板间选择
+- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)）—— 可变参数模板常配合特化递归展开
+- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)）—— TMP 以特化实现编译期分支
+- **同模块接续**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— type_traits 大量使用特化萃取类型
 
 ## 自测练习（Exercises）
 

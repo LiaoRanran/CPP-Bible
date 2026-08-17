@@ -1,8 +1,8 @@
 # 第13章　包管理：vcpkg / Conan（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part02_toolchain/ch12_buildsystems.md
-⟶ Book/part11_source/ch128_boost.md
+[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)
+[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)
 
 > 真实编译器取证：MinGW GCC 13.1.0（`-std=c++23 -O2 -S -I Examples`）。
 > 包管理器取证：本机未安装 vcpkg / Conan（实测 `where vcpkg`/`where conan` 均 `no vcpkg`/`no conan`），故给出**真实命令**并明确标注「典型输出」；真实 C++ 证据由 g++ 编译 `_ch13_packlib.hpp` + `_ch13_use.cpp` 取得（见 ⑨，绝不编造汇编）。
@@ -37,8 +37,8 @@ C++ 包管理的根本难点是**二进制兼容性**：同一份源码在不同
 
 ## ① 概述：为什么需要包管理 [标准]
 
-⟶ Book/part02_toolchain/ch12_buildsystems.md
-⟶ Book/part02_toolchain/ch14_debugging.md
+[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)
+[第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）](Book/part02_toolchain/ch14_debugging.md)
 
 C++ 长期缺乏官方一级包管理器。传统做法（手动下载 zip、把 `.h`/`.lib` 拖进工程、`-I`/`-L` 手工配路径）在依赖一多即崩溃：版本错配、ABI 不一致、Debug/Release 混链、传递依赖爆炸。包管理器的价值是**把"找库、下库、配路径、解依赖、保证可重现"自动化**。
 
@@ -244,8 +244,8 @@ Conan 不替代构建系统，而是**生成集成文件**交给 CMake/MSBuild�
 
 ## ⑦ 源码分发 vs 二进制分发 [标准]
 
-⟶ Book/part11_source/ch124_libstdcxx.md
-⟶ Book/part11_source/ch125_libcxx.md
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
+[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)
 
 包两种形态：**源码分发**（只发 `.h`/`.cpp`/构建脚本，消费端现编）与**二进制分发**（发 `.lib/.a/.dll/.so` + 头）。C++ 因 ABI 脆弱，**二进制分发必须保证编译器/标准库/flags 全一致**。
 
@@ -474,7 +474,7 @@ main:
 
 ## ⑬ 可重现构建：锁文件 [标准]
 
-⟶ Book/part13_engineering/ch149_ci_cd.md
+[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
 
 **可重现构建 (reproducible build)** = 同一份源码 + 同一份依赖声明，在任何机器、任何时间都产出**位级一致**（或语义一致）的产物。锁文件（lockfile）把"浮动版本"钉死。
 
@@ -502,8 +502,8 @@ main:
 
 ## ⑭ 许可证与 ABI 兼容 [平台·Windows]
 
-⟶ Book/part11_source/ch124_libstdcxx.md
-⟶ Book/part11_source/ch126_msstl.md
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
+[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)
 
 包管理不只是装库，还要管**许可证 (license)** 与 **ABI 边界**。静态链接 GPL 库可能传染你的分发义务；动态链接通常隔离得更干净（具体以律师意见为准，此处仅工程视角）。
 
@@ -557,7 +557,7 @@ main:
 
 ## ⑯ 常见陷阱：ABI 不匹配、Debug/Release 混链 [经验]
 
-⟶ Book/part11_source/ch124_libstdcxx.md
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
 
 这是 C++ 包管理最高频的"能编过但运行崩"的来源。
 
@@ -597,7 +597,7 @@ main:
 
 ## ⑰ 与构建系统协作 [经验]
 
-⟶ Book/part02_toolchain/ch12_buildsystems.md
+[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)
 
 包管理器不替代 CMake/Ninja/MSBuild，而是**喂给**它们正确的 include/lib/宏。理解这条边界能少踩 80% 的坑。
 
@@ -627,7 +627,7 @@ main:
 
 ## ⑱ 跨平台 [平台·Windows]
 
-⟶ Book/part02_toolchain/ch17_crosscompile.md
+[第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)
 
 同一份 manifest/recipe 要在 Windows/Linux/macOS 上各自产出正确依赖，差异集中在 **triplet/settings + 编译器 + CRT**。
 
@@ -658,8 +658,8 @@ main:
 
 ## ⑲ 最佳实践 [经验]
 
-⟶ Book/part13_engineering/ch149_ci_cd.md
-⟶ Book/part02_toolchain/ch12_buildsystems.md
+[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
+[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)
 
 把上面散点收敛成可执行的清单。
 
@@ -888,9 +888,9 @@ int main(){std::cout<<"vcpkg=manifest(vcpkg.json)+CMake+triplet=cross-platform C
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part02_toolchain/ch15_profiling.md（第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++））—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part02_toolchain/ch16_ide.md（第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++））—— 同模块下的其他主题。
+- **相邻主题**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)）—— 编号相邻、主题接续。
+- **同模块**：[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)）—— 同模块下的其他主题。
 
 ## 附录 I：包管理与 ABI 深度 [E: Low-level / B: Principle]
 

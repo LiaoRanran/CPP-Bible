@@ -1,7 +1,7 @@
 # 第121章 Contracts 契约（方向，C++26）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-> 标准基: P2900 / 编译器: GCC 13.1（未实现，用 assert/宏模拟）；**GCC 15.3.0 已原生支持 `-fcontracts`**（见 ⑩） / 预计阅读: 60min / 前置: ⟶ Book/part10_modern/ch120_coroutine_app.md / 后续: ⟶ Book/part10_modern/ch122_pmr.md / 难度: ★★★★☆
+> 标准基: P2900 / 编译器: GCC 13.1（未实现，用 assert/宏模拟）；**GCC 15.3.0 已原生支持 `-fcontracts`**（见 ⑩） / 预计阅读: 60min / 前置: [第120章 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md) / 后续: [第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md) / 难度: ★★★★☆
 
 ## ⓪ 历史动机：契约编程的来龙去脉
 > "这个参数不该是空"——每个程序员都写过无数遍 `assert`，却从没在语言层面被认真对待过。
@@ -959,11 +959,11 @@ int main(){std::cout<<"C++26 contracts(P2900): proof-carrying code for safety-cr
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：⟶ Book/part01_history/ch09_cpp26.md（第09章　C++26：已确定特性与方向）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：⟶ Book/part10_modern/ch119_ranges_deep.md（第119章　Ranges 深入（C++20））—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part10_modern/ch123_ct_programming.md（第123章　Compile-Time 编程范式总览）—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 同模块下的其他主题。
+- **后续依赖**：[第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第123章　Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)—— 编号相邻、主题接续。
+- **同模块**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

@@ -43,8 +43,8 @@
 
 ## ① 概述：异常安全是什么，四种保证一览
 
-⟶ Book/part04_memory/ch39_raii_rule.md
-⟶ Book/part04_memory/ch41_smart_pointers.md
+[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)
+[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)
 
 **[标准]**　异常安全（exception safety）描述：**当异常在程序执行中途抛出时，程序应满足的不变式（invariant）与资源保证。** 它没有独立的章节标题，而是散落在 `[res.on.exception.handling]`（标准库对异常的处理）、`[basic.ctor]`、`[class.dtor]`、`[except]` 各处。C++ 社区（Sutter、Stroustrup）把异常安全归纳为**四级保证（guarantee）**：
 
@@ -1594,12 +1594,12 @@ Google/LLVM禁止异常的深层原因: 异常会阻止noexcept优化链
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part04_memory/ch39_raii_rule.md（第 39 章　RAII 与 Rule of Zero/Three/Five）—— RAII 是强异常安全保证的基石。
-- **同模块接续**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章　动态内存分配原语）—— new 抛 bad_alloc 触发栈展开与回滚。
-- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 智能指针的 noexcept 移动避免二次异常。
-- **同模块接续**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器与 PMR）—— 分配器的异常保证影响容器操作安全性。
-- **前置基础**：⟶ Book/part07_stl/ch84_set.md（第 84 章　set/multiset）—— 有序容器的强异常保证。
-- **前置基础**：⟶ Book/part07_stl/ch91_filesystem.md（第 91 章　filesystem）—— 文件系统操作的异常语义。
+- **同模块接续**：[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)—— RAII 是强异常安全保证的基石。
+- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)—— new 抛 bad_alloc 触发栈展开与回滚。
+- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)—— 智能指针的 noexcept 移动避免二次异常。
+- **同模块接续**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)—— 分配器的异常保证影响容器操作安全性。
+- **前置基础**：[第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)—— 有序容器的强异常保证。
+- **前置基础**：[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)—— 文件系统操作的异常语义。
 
 ## 附录 C：编译实证——noexcept 零成本路径 vs 抛异常的汇编差异 [C: Compiler / E: Low-level]
 

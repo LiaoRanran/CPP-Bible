@@ -1,8 +1,8 @@
 # 第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询
 > **[验证环境·ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。RTTI（`dynamic_cast` / `typeid` / `std::type_info`）的**运行时布局由 ABI 规定而非 C++ 标准**（[标准] 不规定 vtable 中 RTTI 指针、type_info 对象的具体布局）；GCC/Clang 遵循 **Itanium C++ ABI**，MSVC 采用独立布局。本章展示的 `type_info` 结构与 `dynamic_cast` 查找路径均为 **GCC/Itanium ABI 实测**，跨编译器或平台可能存在差异，切勿视作标准保证。
 
-⟶ Book/part06_templates/ch65_type_traits.md
-⟶ Book/part05_oo/ch47_virtual_functions.md
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
 
 ## ⓪ 历史动机：RTTI 的来龙去脉
 
@@ -34,8 +34,8 @@ RTTI 的反对者理由很硬：它让二进制变大、让「不该知道类型
 
 ## ① 学习目标
 
-⟶ Book/part05_oo/ch47_virtual_functions.md
-⟶ Book/part05_oo/ch49_virtual_inheritance.md
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
+[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)
 
 - 说清 RTTI 由哪两个运算符提供、它们依赖 vtable 何处信息
 - 从真实 x86-64 汇编解释 `typeid(b).name()` 与 `dynamic_cast` 的全部指令与运行期成本
@@ -1038,12 +1038,12 @@ int main(){auto d=std::make_unique<Dog>();d->speak();return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　C++ 面向对象总览与对象模型基础）—— 对象模型中的 vtable 携带 RTTI 信息（type_info）
-- **同模块接续**：⟶ Book/part05_oo/ch46_encapsulation_inheritance.md（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 继承体系是 RTTI 查询的作用域
-- **同模块接续**：⟶ Book/part05_oo/ch47_virtual_functions.md（第47章 虚函数与虚表（vtable）：动态多态的发动机）—— dynamic_cast 对多态类型（含虚函数）才有效
-- **同模块接续**：⟶ Book/part05_oo/ch50_multiple_inheritance.md（第50章　多重继承与对象模型（Multiple Inheritance））—— 多重继承下 dynamic_cast 跨分支需虚基类
-- **跨模块**：⟶ Book/part03_language/ch27_cast.md（第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解）—— dynamic_cast 是转型四兄弟之一，依赖 RTTI
-- **跨模块**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 提供编译期类型查询，是 RTTI 的编译期对应物
+- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)—— 对象模型中的 vtable 携带 RTTI 信息（type_info）
+- **同模块接续**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)—— 继承体系是 RTTI 查询的作用域
+- **同模块接续**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— dynamic_cast 对多态类型（含虚函数）才有效
+- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)）—— 多重继承下 dynamic_cast 跨分支需虚基类
+- **跨模块**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)—— dynamic_cast 是转型四兄弟之一，依赖 RTTI
+- **跨模块**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— type_traits 提供编译期类型查询，是 RTTI 的编译期对应物
 
 ## 底层视角：RTTI 指针、typeinfo 与 dynamic_cast 的指针追逐 [E: Low-level]
 

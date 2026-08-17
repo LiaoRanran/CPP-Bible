@@ -1,8 +1,8 @@
 # 第 36 章　栈（stack）与堆（heap）的深度对比
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-⟶ Book/part04_memory/ch35_memory_layout.md
-⟶ Book/part04_memory/ch39_raii_rule.md
+[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)
+[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)
 
 > 本章定位：内存管理的"地基"章节。栈与堆是进程地址空间中两种根本不同的动态存储区域（与 ch35 地址空间布局、ch19 存储期紧密耦合）。理解二者的结构、分配语义、性能与生命周期差异，是掌握 `new`/`delete`（ch37）、分配器（ch38）、内存池（ch44）、并发与堆竞争（ch61）的前提。
 >
@@ -40,8 +40,8 @@
 
 ## ① 导言：两块内存，两种哲学
 
-⟶ Book/part04_memory/ch35_memory_layout.md
-⟶ Book/part04_memory/ch37_new_delete.md
+[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)
+[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)
 
 [标准] C++ 标准本身不规定"栈"或"堆"的实现细节——它只定义**存储期**（storage duration，见 ch19）：自动存储期（automatic）、动态存储期（dynamic）、静态存储期（static）、线程存储期（thread）。但在**所有真实实现**中，自动存储期对象几乎总是落在**栈**上，动态存储期对象几乎总是落在**堆**（自由存储区 free store，由 `malloc`/`operator new` 管理的堆）上。
 
@@ -1490,11 +1490,11 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章　内存模型与 OS 视角）—— 地址空间划分决定栈底与堆起点。
-- **同模块接续**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章　动态内存分配原语）—— new 从堆取内存，是栈溢出时的逃生通道。
-- **同模块接续**：⟶ Book/part04_memory/ch41_smart_pointers.md（第 41 章　智能指针全解）—— 智能指针默认堆分配，选栈还是堆的封装决策。
-- **同模块接续**：⟶ Book/part04_memory/ch44_memory_pool.md（第 44 章　内存池）—— 实时场景用池替代通用堆，规避碎片与不确定延迟。
-- **前置基础**：⟶ Book/part04_memory/ch43_cache_locality.md（第 43 章　缓存局部性）—— 堆对象访问模式决定缓存命中率。
+- **同模块接续**：[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)—— 地址空间划分决定栈底与堆起点。
+- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)—— new 从堆取内存，是栈溢出时的逃生通道。
+- **同模块接续**：[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)—— 智能指针默认堆分配，选栈还是堆的封装决策。
+- **同模块接续**：[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)—— 实时场景用池替代通用堆，规避碎片与不确定延迟。
+- **前置基础**：[第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)—— 堆对象访问模式决定缓存命中率。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

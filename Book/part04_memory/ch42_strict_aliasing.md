@@ -94,8 +94,8 @@
 
 ## ① 为什么需要严格别名规则
 
-⟶ Book/part04_memory/ch41_smart_pointers.md
-⟶ Book/part04_memory/ch43_cache_locality.md
+[第 41 章 智能指针全解（unique_ptr / shared_ptr / weak_ptr / enable_shared_from_this）](Book/part04_memory/ch41_smart_pointers.md)
+[第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)
 
 **[标准]** 严格别名规则回答一个根本问题：**当用某种类型的左值（glvalue）去读取一个对象时，这个左值的类型允许是什么？** 如果类型不匹配，标准规定这是**未定义行为（undefined behavior）**，而非"按位重新解释"。
 
@@ -1393,11 +1393,11 @@ A: 几乎从不。唯一安全: 从指向标准布局类型第一个成员的指
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part04_memory/ch37_new_delete.md（第 37 章　动态内存分配原语）—— 类型双关与 aliasing 规则约束内存重解释。
-- **同模块接续**：⟶ Book/part04_memory/ch40_exception_safety.md（第 40 章　异常安全）—— 激进优化影响异常处理元数据体积。
-- **同模块接续**：⟶ Book/part04_memory/ch44_memory_pool.md（第 44 章　内存池）—— 池内对象类型转换的 aliasing 边界。
-- **同模块接续**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章　内存模型与 OS 视角）—— 同一块内存的多种类型解释视图。
-- **同模块接续**：⟶ Book/part04_memory/ch36_stack_heap.md（第 36 章　栈与堆对比）—— 栈/堆内存的类型重解释一致性。
+- **同模块接续**：[第 37 章 动态内存分配原语：`operator new` / `operator delete`](Book/part04_memory/ch37_new_delete.md)—— 类型双关与 aliasing 规则约束内存重解释。
+- **同模块接续**：[第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)—— 激进优化影响异常处理元数据体积。
+- **同模块接续**：[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)—— 池内对象类型转换的 aliasing 边界。
+- **同模块接续**：[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)—— 同一块内存的多种类型解释视图。
+- **同模块接续**：[第 36 章　栈（stack）与堆（heap）的深度对比](Book/part04_memory/ch36_stack_heap.md)—— 栈/堆内存的类型重解释一致性。
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

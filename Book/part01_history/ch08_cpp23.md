@@ -1,8 +1,8 @@
 # 第08章　C++23：标准库大修
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part07_stl/ch88_optional_variant.md
-⟶ Book/part10_modern/ch120_coroutine_app.md
+[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
+[第120章 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)
 
 > 标准基：ISO/IEC 14882:2023（N4950）｜预计阅读：30 min｜前置：ch04–ch07｜后续：ch88 expected、ch82 span、ch131 format、ch90 ranges、ch34 UB｜难度：★★★
 
@@ -41,8 +41,8 @@ C++23 最值得玩味的是 `std::expected` 入标准——它直面"错误也�
 
 ## ① 学习目标
 
-⟶ Book/part01_history/ch07_cpp20.md
-⟶ Book/part01_history/ch09_cpp26.md
+[第07章　C++20：量级升级](Book/part01_history/ch07_cpp20.md)
+[第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：学习目标]
 ```cpp
@@ -872,12 +872,12 @@ count_even(const std::vector<int>&) @ -O2 (98 B):
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part01_history/ch07_cpp20.md（第07章　C++20：量级升级）—— 编号相邻、主题接续（C++20 → C++23 演进链）。
-- **相邻主题**：⟶ Book/part01_history/ch09_cpp26.md（第09章　C++26：已确定特性与方向）—— 编号相邻、主题接续（C++23 → C++26 方向）。
-- **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
-- **跨part主题**：⟶ Book/part07_stl/ch82_span.md（第82章　span 与裸数组视图）—— C++23 核心库特性 `std::span` 的演进源头，跨 part 延伸。
-- **跨part主题**：⟶ Book/part07_stl/ch88_optional_variant.md（第88章　optional / expected / variant：可空与可辨别联合）—— C++23 `std::optional`/`std::variant` 增强的对应章节，跨 part 延伸。
-- **跨part主题**：⟶ Book/part10_modern/ch120_coroutine_app.md（第120章 Coroutine 应用模式）—— C++23 协程应用的落地章节，跨 part 延伸。
+- **相邻主题**：[第07章　C++20：量级升级](Book/part01_history/ch07_cpp20.md)—— 编号相邻、主题接续（C++20 → C++23 演进链）。
+- **相邻主题**：[第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)—— 编号相邻、主题接续（C++23 → C++26 方向）。
+- **同模块**：[第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)—— 同模块下的其他主题。
+- **跨part主题**：[第82章　span 与裸数组视图](Book/part07_stl/ch82_span.md)—— C++23 核心库特性 `std::span` 的演进源头，跨 part 延伸。
+- **跨part主题**：[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)—— C++23 `std::optional`/`std::variant` 增强的对应章节，跨 part 延伸。
+- **跨part主题**：[第120章 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)—— C++23 协程应用的落地章节，跨 part 延伸。
 
 ## 叙事补遗 [J: Learning]
 

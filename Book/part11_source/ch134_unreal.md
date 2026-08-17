@@ -1,7 +1,7 @@
 # 第134章　Unreal Engine C++ 架构（C++）
 
-⟶ Book/part05_oo/ch45_oop_object_model.md
-⟶ Book/part12_patterns/ch142_ecs.md
+[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
+[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。
 > Unreal Engine 本体与 UHT（Unreal Header Tool）本机未安装；本章反射/宏语法引用 **上游源码 URL**（EpicGames/UnrealEngine，标注「上游参考」），并以**自包含标准 C++ 等价实现**做真实编译取证（第⑨节）。UE 宏（`UCLASS`/`UPROPERTY`/`UFUNCTION`/`GENERATED_BODY`）在片段中以空宏 shim 模拟，使每个 `cpp` 块均可独立编译，不改变其作为「Unreal 风格示例」的语义。
@@ -50,7 +50,7 @@ Epic 的取舍很清楚：**保留 C++ 的性能和零抽象控制力**（对比
 
 ## ① 概述：Unreal Engine C++ 架构 [标准]
 
-⟶ Book/part11_source/ch133_clickhouse_redis.md
+[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)
 
 Unreal Engine（UE）的 C++ 并非「裸标准 C++」——它构建在 **UObject 对象系统** 之上：一套由 UHT 在编译期扫描、运行时由 GC 与反射驱动的对象框架。标准 C++ 提供语言；UE 在其上叠加**元数据、垃圾回收、序列化、蓝图桥接**四大支柱。
 
@@ -951,18 +951,18 @@ A: 循环引用自动解决; 蓝图绑定(脚本语言无所有权概念); 编�
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch124_libstdcxx.md（第124章　libstdc++ 架构与阅读入口（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch125_libcxx.md（第125章　libc++ 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch126_msstl.md（第126章　MS STL 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch127_llvm.md（第127章　LLVM / Clang 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch128_boost.md（第128章　Boost 核心库（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch129_qt.md（第129章　Qt 对象模型与信号槽（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch130_chromium_abseil.md（第130章　Chromium / Abseil 基础设施（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch131_fmt_spdlog.md（第131章　fmt / spdlog 格式化与日志（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch132_leveldb_rocksdb.md（第132章　LevelDB / RocksDB 存储引擎（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch133_clickhouse_redis.md（第133章　ClickHouse / Redis 实现精读（C++））
-- **跨模块延伸（part12 模式）**：⟶ Book/part12_patterns/ch135_patterns_intro.md（第135章 设计模式总论（C++））—— 设计模式总论是阅读 Unreal 架构的范式字典
-- **跨模块延伸（part12 模式）**：⟶ Book/part12_patterns/ch136_creational.md（第136章 创建型模式（C++））—— 创建型模式在 Unreal 对象构造中大量使用
+- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)）
+- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)）
+- **同模块兄弟（part11 源码）**：[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)）
+- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)）
+- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)）
+- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）
+- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)）
+- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)）
+- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）
+- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）
+- **跨模块延伸（part12 模式）**：[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)）—— 设计模式总论是阅读 Unreal 架构的范式字典
+- **跨模块延伸（part12 模式）**：[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)）—— 创建型模式在 Unreal 对象构造中大量使用
 
 ## 附录 C（UE 反射与 GC 底层）
 

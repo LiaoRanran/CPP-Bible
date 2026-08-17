@@ -31,8 +31,8 @@ Ranges 入标后，演进是"补适配器"与"打通协程/并行"两路并进�
 
 ## ① 概述：Ranges 解决了什么 [标准]
 
-⟶ Book/part10_modern/ch118_modules.md
-⟶ Book/part10_modern/ch120_coroutine_app.md
+[第118章　Modules 模块（C++20）](Book/part10_modern/ch118_modules.md)
+[第120章 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)
 
 传统 STL 算法（`std::sort(v.begin(), v.end())`）要求显式迭代器对、难以组合。Ranges 把"范围"作为一等公民，支持**管道组合**（`|`）与**惰性求值**。
 
@@ -800,11 +800,11 @@ sentinel使range不必提供同类型的end迭代器——这对复杂数据结�
 - **`ranges::to` 物化时机**：只在确需容器/字符串时调用，过度 `to` 会抵消惰性收益。
 ## 相关章节（交叉引用）
 
-- **后续依赖**：⟶ Book/part01_history/ch07_cpp20.md（第07章　C++20：量级升级）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：⟶ Book/part10_modern/ch117_copy_elision.md（第117章　RVO / NRVO 与拷贝消除（C++17））—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part10_modern/ch121_contracts.md（第121章 Contracts 契约（方向，C++26））—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 同模块下的其他主题。
+- **后续依赖**：[第07章　C++20：量级升级](Book/part01_history/ch07_cpp20.md)—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第117章　RVO / NRVO 与拷贝消除（C++17）](Book/part10_modern/ch117_copy_elision.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)）—— 编号相邻、主题接续。
+- **同模块**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

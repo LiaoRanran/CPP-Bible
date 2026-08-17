@@ -1,7 +1,7 @@
 # 第120章 Coroutine 应用模式
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-> 标准基: C++20 / 编译器: GCC 15.3.0（汇编重生；延迟表保留 GCC 13.1 实测）/ 预计阅读: 75min / 前置: ⟶ Book/part09_concurrency/ch113_coroutine.md（协程基础）/ 后续: ⟶ Book/part10_modern/ch120_coroutine_app.md（纤程）/ 难度: ★★★★☆
+> 标准基: C++20 / 编译器: GCC 15.3.0（汇编重生；延迟表保留 GCC 13.1 实测）/ 预计阅读: 75min / 前置: [第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)（协程基础）/ 后续: [第120章 Coroutine 应用模式](Book/part10_modern/ch120_coroutine_app.md)（纤程）/ 难度: ★★★★☆
 
 ---
 
@@ -1051,12 +1051,12 @@ Q: 帧何时销毁? A: final_suspend后→operator delete
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：⟶ Book/part01_history/ch08_cpp23.md（第08章　C++23：标准库大修）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：⟶ Book/part10_modern/ch119_ranges_deep.md（第119章　Ranges 深入（C++20））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：⟶ Book/part10_modern/ch121_contracts.md（第121章 Contracts 契约（方向，C++26））—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part10_modern/ch118_modules.md（第118章　Modules 模块（C++20））—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 同模块下的其他主题。
+- **后续依赖**：[第08章　C++23：标准库大修](Book/part01_history/ch08_cpp23.md)—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第118章　Modules 模块（C++20）](Book/part10_modern/ch118_modules.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)—— 编号相邻、主题接续。
+- **同模块**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

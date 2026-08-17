@@ -1,8 +1,8 @@
 # 第148章 Git 工作流（C++）
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-⟶ Book/part13_engineering/ch149_ci_cd.md
-⟶ Book/part02_toolchain/ch18_buildconfig.md
+[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
+[第18章　构建配置：Debug / Release / LTO / PGO（C++）](Book/part02_toolchain/ch18_buildconfig.md)
 
 > **取证说明（真实运行，非编造）**
 > 本章所有 `git` 输出均来自本机真实执行：`git version 2.54.0.windows.1`、MinGW `g++.exe 13.1.0`。
@@ -41,8 +41,8 @@
 
 ## ① 概述：版本控制价值 [经验]
 
-⟶ Book/part13_engineering/ch147_code_review.md
-⟶ Book/part13_engineering/ch149_ci_cd.md
+[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)
+[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
 
 版本控制不是“存档工具”，而是**工程协作的事实真相源（single source of truth）**。对 C++ 这类编译型、强耦合、构建缓慢的工程，Git 的价值体现在四个维度：
 
@@ -981,13 +981,13 @@ A: cherry-pick=复制提交到当前分支; revert=创建反向提交(不改历�
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch147_code_review.md（第147章 代码审查（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch149_ci_cd.md（第149章 CI/CD 流水线（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch151_benchmark.md（第151章 基准测试与性能度量（C++））
+- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）
+- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）
+- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）
+- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)）
+- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)）
+- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)）
+- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)）
 
 ## 深度附录：Git 对象存储与性能画像（DEP）
 

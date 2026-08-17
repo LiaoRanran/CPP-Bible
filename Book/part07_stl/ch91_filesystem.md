@@ -3,8 +3,8 @@
 
 > 标准基：ISO/IEC 14882:2017（C++17）引入 `<filesystem>`，C++20 起纳入 `std::filesystem` 命名空间（此前为 `std::experimental::filesystem`）；本章以 C++23 / GCC 13.1.0（MinGW-w64）为验证基。
 > 预计阅读：约 95 分钟（深度版，含源码逐行与汇编）。
-> 前置：⟶ Book/part03_language/ch19_variables.md（对象生命周期）· ⟶ Book/part05_oo/ch47_virtual_functions.md（虚表与多态，理解 `directory_entry` 的薄封装）· ⟶ Book/part04_memory/ch39_raii_rule.md（RAII，理解迭代器/句柄的自动释放）。
-> 后续：⟶ Book/part07_stl/ch92_chrono.md（`file_time_type` 即 `chrono::time_point`，二者耦合）· ⟶ Book/part10_modern/ch122_pmr.md（用 `pmr::string` 作路径缓冲的可选优化）。
+> 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（对象生命周期）· [第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)（虚表与多态，理解 `directory_entry` 的薄封装）· [第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)（RAII，理解迭代器/句柄的自动释放）。
+> 后续：[第92章 时间库 chrono](Book/part07_stl/ch92_chrono.md)（`file_time_type` 即 `chrono::time_point`，二者耦合）· [第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)（用 `pmr::string` 作路径缓冲的可选优化）。
 > 难度：★★★☆☆（API 本身平缓，坑在平台差异、错误模型与并发安全）。
 
 `std::filesystem` 把"路径、目录遍历、文件状态、拷贝移动"等操作从平台相关的 POSIX `dirent`/`stat` 与 Windows `FindFirstFile`/`GetFileAttributes` 中抽象出来，提供一套值语义、异常/错误码双接口的跨平台文件系统库。它不替代文件内容 IO（`fstream`/`stdio`），而是操作"文件的元数据与目录结构"。
@@ -42,32 +42,32 @@
 
 - 区分 `std::filesystem::path` 的**词法（lexical）**与**语义（lexical-vs-physical）**操作，明白 `"/a/b/../c"` 在构造期不访问磁盘；
 - 解释 Windows 反斜杠 `\` 与 POSIX 正斜杠 `/` 在 `path` 内部统一为**可移植分隔符**的机制，以及 `generic_string()` 的作用；
-- 用 `directory_iterator` / `recursive_directory_iterator` 遍历目录（C++20 起它们是合法的 `range`，可配 `⟶ Book/part07_stl/ch90_ranges.md` 的算法）；
+- 用 `directory_iterator` / `recursive_directory_iterator` 遍历目录（C++20 起它们是合法的 `range`，可配 `[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)` 的算法）；
 - 用 `status` / `file_type` / `perms` 读取文件元数据，并理解 `symlink_status` 与 `status` 的差异；
 - 掌握 `copy` / `remove` / `rename` / `create_directory` 的语义与**原子性边界**；
-- 正确使用 `error_code` 双接口（抛异常 vs 无异常）做错误控制，关联到 `⟶ Book/part04_memory/ch40_exception_safety.md`；
-- 理解 `last_write_time` 返回的是 `std::chrono::file_time_type`（见 `⟶ Book/part07_stl/ch92_chrono.md`）；
+- 正确使用 `error_code` 双接口（抛异常 vs 无异常）做错误控制，关联到 `[第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)`；
+- 理解 `last_write_time` 返回的是 `std::chrono::file_time_type`（见 `[第92章 时间库 chrono](Book/part07_stl/ch92_chrono.md)`）；
 - 认识 Windows 宽字符路径与 UTF-8 编码的处理，以及 `std::filesystem` 与底层 POSIX / WinAPI 的映射关系。
 
 ---
 
 ## ② 前置知识
 
-- **RAII 与对象生命周期**：`path`、`directory_iterator`、`directory_entry` 都是值语义类型，析构时释放底层句柄（`directory_iterator` 析构会关闭 `DIR*`/`HANDLE`）。见 `⟶ Book/part04_memory/ch39_raii_rule.md`。
-- **异常安全等级**：文件系统函数提供 `noexcept` 的 `error_code&` 重载与抛异常的重载两套，理解"基本保证 / 强保证"见 `⟶ Book/part04_memory/ch40_exception_safety.md`。
-- **`std::string` 与 SSO**：`path` 内部通常持有 `string_type`（Windows 上为 `wstring` 转换而来）。SSO 短字符串优化见 `⟶ Book/part07_stl/ch81_string.md`。
-- **迭代器概念**：`directory_iterator` 是 `InputIterator`；C++20 起它也是 `std::ranges::input_range`，可与 `⟶ Book/part07_stl/ch90_ranges.md` 的 `views::filter` 组合。
-- **移动语义**：大路径、目录项在容器间传递应优先移动。见 `⟶ Book/part10_modern/ch115_move.md`。
+- **RAII 与对象生命周期**：`path`、`directory_iterator`、`directory_entry` 都是值语义类型，析构时释放底层句柄（`directory_iterator` 析构会关闭 `DIR*`/`HANDLE`）。见 `[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)`。
+- **异常安全等级**：文件系统函数提供 `noexcept` 的 `error_code&` 重载与抛异常的重载两套，理解"基本保证 / 强保证"见 `[第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)`。
+- **`std::string` 与 SSO**：`path` 内部通常持有 `string_type`（Windows 上为 `wstring` 转换而来）。SSO 短字符串优化见 `[第81章　std::string 与 SSO 短字符串优化](Book/part07_stl/ch81_string.md)`。
+- **迭代器概念**：`directory_iterator` 是 `InputIterator`；C++20 起它也是 `std::ranges::input_range`，可与 `[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)` 的 `views::filter` 组合。
+- **移动语义**：大路径、目录项在容器间传递应优先移动。见 `[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)`。
 
 ---
 
 ## ③ 后续依赖
 
-- **chrono（第92章）**：`last_write_time()`、`file_time_type`、`copy_file` 的时间戳比较全部依赖 `std::chrono`。`⟶ Book/part07_stl/ch92_chrono.md`。
-- **PMR 多态分配器**：把大量 `path` 放入 `std::pmr::vector<path>` 时，可用 `pmr::string` 作为 `path` 的字符缓冲减少分配。见 `⟶ Book/part10_modern/ch122_pmr.md`。
-- **ranges 算法**：目录遍历结果的惰性过滤/转换是 `views` 的典型用例。见 `⟶ Book/part07_stl/ch90_ranges.md`。
-- **错误处理哲学**：工程上如何统一文件系统错误与业务错误，见 `⟶ Book/part13_engineering/ch146_error_handling.md`。
-- **并发 IO**：多线程遍历不同子树时与 `⟶ Book/part09_concurrency/ch107_atomic.md` 的可见性约定相关。
+- **chrono（第92章）**：`last_write_time()`、`file_time_type`、`copy_file` 的时间戳比较全部依赖 `std::chrono`。`[第92章 时间库 chrono](Book/part07_stl/ch92_chrono.md)`。
+- **PMR 多态分配器**：把大量 `path` 放入 `std::pmr::vector<path>` 时，可用 `pmr::string` 作为 `path` 的字符缓冲减少分配。见 `[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)`。
+- **ranges 算法**：目录遍历结果的惰性过滤/转换是 `views` 的典型用例。见 `[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)`。
+- **错误处理哲学**：工程上如何统一文件系统错误与业务错误，见 `[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)`。
+- **并发 IO**：多线程遍历不同子树时与 `[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)` 的可见性约定相关。
 
 ---
 
@@ -263,9 +263,9 @@ libstdc++ 中 `operator/=` 调用 `_M_append`：
 
 ## ⑪ STL 联系
 
-- **与 `std::string`（第81章）**：`path` 可隐式/显式转 `string`（`string()`/`u8string()`/`generic_string()`）。`⟶ Book/part07_stl/ch81_string.md`。
-- **与 ranges（第90章）**：C++20 起 `directory_iterator` 满足 `std::ranges::input_range`，可直接 `for (auto& e : fs::recursive_directory_iterator(dir) | views::filter(...))`。`⟶ Book/part07_stl/ch90_ranges.md`。
-- **与 `optional`/`expected`（第88章）**：`copy_file` 的"成功/失败"可用 `error_code` 表达，也可用 `expected<void, error_code>` 包装（见第⑱节）。`⟶ Book/part07_stl/ch88_optional_variant.md`。
+- **与 `std::string`（第81章）**：`path` 可隐式/显式转 `string`（`string()`/`u8string()`/`generic_string()`）。`[第81章　std::string 与 SSO 短字符串优化](Book/part07_stl/ch81_string.md)`。
+- **与 ranges（第90章）**：C++20 起 `directory_iterator` 满足 `std::ranges::input_range`，可直接 `for (auto& e : fs::recursive_directory_iterator(dir) | views::filter(...))`。`[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)`。
+- **与 `optional`/`expected`（第88章）**：`copy_file` 的"成功/失败"可用 `error_code` 表达，也可用 `expected<void, error_code>` 包装（见第⑱节）。`[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)`。
 - **与容器（第77–87章）**：`std::vector<fs::path>` 可用于收集遍历结果；目录项不可随机访问迭代（input iterator），故 `vector` 是唯一可"再看一遍"的容器。
 - **与 chrono（第92章）**：`file_time_type` 就是 `chrono::time_point<file_clock, duration<...>>`。
 
@@ -713,7 +713,7 @@ int main() {
 ```
 
 - `[平台·Windows]`：Windows 下 `FindFirstFile`/`FindNextFile` 一次返回多项元数据（`size`、`attr`、`mtime`），天然"缓存"；POSIX 下 `readdir` 仅给名字，libstdc++ 额外 `stat` 才会拿到 `file_size`，故 `e.file_size()` 在 POSIX 可能再发一次 `stat`——这与平台实现细节相关。
-- `[缓存友好性]`：`path` 短路径走 SSO（见 `⟶ Book/part07_stl/ch81_string.md`），遍历海量文件时避免堆分配，对缓存与分配器压力友好。
+- `[缓存友好性]`：`path` 短路径走 SSO（见 `[第81章　std::string 与 SSO 短字符串优化](Book/part07_stl/ch81_string.md)`），遍历海量文件时避免堆分配，对缓存与分配器压力友好。
 
 ---
 
@@ -997,7 +997,7 @@ int main() {
 **练习题**
 1. 写一个函数 `std::vector<fs::path> find_by_ext(const fs::path& dir, std::string ext)`，递归找出某目录下所有指定扩展名的文件（`ext` 形如 `".cpp"`）。
 2. 实现 `bool same_file(const fs::path& a, const fs::path& b)`，用 `equivalent` 判断，并用 `error_code` 版避免异常。
-3. 用 `recursive_directory_iterator` + `views::filter`（见 `⟶ Book/part07_stl/ch90_ranges.md`）统计某目录下 `.log` 文件总大小。
+3. 用 `recursive_directory_iterator` + `views::filter`（见 `[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)`）统计某目录下 `.log` 文件总大小。
 
 **思考题**
 - `rename` 在 POSIX 同设备为何原子？内核如何保证"读者要么看旧名要么看新名，不会看到半截"？（提示：`rename` 只改目录项指针，不拷数据。）
@@ -1092,11 +1092,11 @@ jne .not_exist
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：⟶ Book/part07_stl/ch92_chrono.md（第92章 时间库 chrono）—— chrono 为 filesystem 操作提供时间戳
-- **同模块相邻**：⟶ Book/part07_stl/ch81_string.md（第81章　std::string 与 SSO 短字符串优化）—— 路径与文件名大量使用 string
-- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— filesystem 是该架构外的标准库组件
-- **跨模块前置**：⟶ Book/part04_memory/ch40_exception_safety.md（第 40 章　异常安全（Exception Safety））—— 文件系统操作大量使用异常语义
-- **跨模块前置**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— PMR 可定制 filesystem 的内存分配
+- **同模块相邻**：[第92章 时间库 chrono](Book/part07_stl/ch92_chrono.md)—— chrono 为 filesystem 操作提供时间戳
+- **同模块相邻**：[第81章　std::string 与 SSO 短字符串优化](Book/part07_stl/ch81_string.md)—— 路径与文件名大量使用 string
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— filesystem 是该架构外的标准库组件
+- **跨模块前置**：[第 40 章　异常安全（Exception Safety）](Book/part04_memory/ch40_exception_safety.md)）—— 文件系统操作大量使用异常语义
+- **跨模块前置**：[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)—— PMR 可定制 filesystem 的内存分配
 
 ## 自测练习（Exercises）
 

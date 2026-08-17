@@ -1,8 +1,8 @@
 # 第147章 代码审查（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part13_engineering/ch144_style.md
-⟶ Book/part13_engineering/ch150_testing.md
+[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)
+[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)
 
 > **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）真实产物佐证，示例源码位于 `Examples/_ch147_*.cpp`，对应警告产物位于 `Examples/_ch147_*_warn.txt`，对应汇编产物位于 `Examples/_ch147_*.asm`。编译与取证命令统一为：
 > - 警告取证：`g++ -std=c++23 -Wall -Wextra -c <src> -o <tmp>.o`（部分示例追加 `-O2` / `-Wconversion` / `-Wdangling-reference` 以触发特定警告）；
@@ -38,8 +38,8 @@
 
 ## ① 概述：Code Review 价值 [经验]
 
-⟶ Book/part13_engineering/ch146_error_handling.md
-⟶ Book/part13_engineering/ch148_gitflow.md
+[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)
+[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)
 
 代码审查（Code Review，CR）不是"找茬仪式"，而是**把缺陷消灭在合入之前的最后一道、也是最便宜的一道闸门**。大量工业数据（如 Google 工程实践、Microsoft 内部研究）表明：缺陷在需求/设计阶段被发现并修复的成本，远低于上线后由用户触发、再由 on-call 回溯修复的成本。C++ 尤其如此——它的未定义行为（UB）不会在编译期报错，却可能在 Release 构建里"安静地"生成错误结果。
 
@@ -734,13 +734,13 @@ int main(){std::cout<<"CR checklist: RAII/noexcept/const/override/explicit"<<std
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch149_ci_cd.md（第149章 CI/CD 流水线（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch151_benchmark.md（第151章 基准测试与性能度量（C++））
+- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）
+- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）
+- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）
+- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）
+- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)）
+- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)）
+- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)）
 
 ## 真实开源项目参考（可查证链接）
 

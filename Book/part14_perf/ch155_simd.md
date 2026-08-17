@@ -36,8 +36,8 @@ SIMD（单指令多数据）的动机来自"对一大堆数据做同一件事"�
 
 ## ① 概述：SIMD 是什么 [标准]
 
-⟶ Book/part14_perf/ch154_cache_opt.md
-⟶ Book/part14_perf/ch156_compiler_opt.md
+[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)
 
 **SIMD**（Single Instruction, Multiple Data，单指令多数据）指一条指令同时对一组（向量）数据做相同运算。对比 SISD（标量，一次一个数据），SIMD 用更少的指令完成批量同构计算，是多媒体、数值、AI 推理的核心加速手段。
 
@@ -942,14 +942,14 @@ SIMD设计决策树:
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch152_perf_model.md（第152章　性能模型与测量学）
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch153_cpu_micro.md（第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行）
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch154_cache_opt.md（第154章　缓存优化与数据局部性（C++/硬件））
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch156_compiler_opt.md（第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC））
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch157_compiler_explorer.md（第157章 Compiler Explorer 实战）
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch158_perf_antipatterns.md（第158章 性能反模式与陷阱）
-- **跨模块延伸**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）
-- **跨模块延伸**：⟶ Book/part07_stl/ch87_bitset.md（第87章　bitset：编译期定长位集）
+- **同模块兄弟（part14 性能工程）**：[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)
+- **同模块兄弟（part14 性能工程）**：[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)
+- **同模块兄弟（part14 性能工程）**：[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)）
+- **同模块兄弟（part14 性能工程）**：[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)）
+- **同模块兄弟（part14 性能工程）**：[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
+- **同模块兄弟（part14 性能工程）**：[第158章 性能反模式与陷阱](Book/part14_perf/ch158_perf_antipatterns.md)
+- **跨模块延伸**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)
+- **跨模块延伸**：[第87章　bitset：编译期定长位集](Book/part07_stl/ch87_bitset.md)
 
 ## 附录 F：SIMD 工业实践与深度 [F: Industry / E: Low-level / B: Principle]
 

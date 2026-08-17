@@ -1,9 +1,9 @@
 # 第108章　memory_order：六种内存序（C++11）
 
-⟶ Book/part09_concurrency/ch107_atomic.md
-⟶ Book/part09_concurrency/ch109_fence.md
+[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
+[第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)
 
-⟶ Book/part09_concurrency/ch110_lockfree.md
+[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`，仓库权威工具链）；正文早期汇编插图示曾用 GCC 13.1.0 生成，已在本机 GCC 15.3.0 下复编确认指令一致（`relaxed`/`release` store = `mov`、`seq_cst` store = `xchg`（隐式 `lock`）、RMW = `lock xadd`），见附录 J 与下文 `[VERIFIED]` 标注。
 > 本章所有汇编片段均为 x86-64（TSO）上的**真实产物**，源码位于 `Examples/_ch108_*.cpp`。
@@ -36,7 +36,7 @@
 
 ## ① 概述：内存序解决什么问题 [标准]
 
-⟶ Book/part09_concurrency/ch107_atomic.md
+[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)
 
 `std::atomic` 让单次读/写具备**原子性**（不会被观察到半写的值）。但多线程下还有第二个问题：**多个内存操作之间的可见顺序**。CPU 与编译器都会重排指令以提升性能，单线程语义不变，但跨线程观察时可能看到“乱序”的结果。
 
@@ -868,15 +868,15 @@ A: 大部分情况下相同 (x86 TSO 天然提供 acquire/release)。
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch109_fence.md（第109章 内存屏障与 fence）
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch111_aba.md（第111章　ABA 问题与解决（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch112_hazard_rcu.md（第112章　Hazard Pointer 与 RCU（C++11/实践））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch113_coroutine.md（第113章　协程 coroutine：promise / awaiter（C++20））
-- **硬件底座（part03）**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— 内存序的强弱最终映射到 x86 TSO / ARM 弱内存模型的真实屏障
-- **多线程落地（part07）**：⟶ Book/part07_stl/ch93_thread_async.md（第93章　线程与异步：thread / future / async）—— acquire/release 在线程/异步结果可见性中的用法
-- **协作取消衔接（part07）**：⟶ Book/part07_stl/ch94_stop_token.md（第94章　stop_token 与协作取消 [标准]）—— stop_token 的原子标志依赖内存序保证取消可见
+- **同模块兄弟（part09 并发）**：[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)）
+- **同模块兄弟（part09 并发）**：[第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)
+- **同模块兄弟（part09 并发）**：[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)）
+- **同模块兄弟（part09 并发）**：[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)）
+- **同模块兄弟（part09 并发）**：[第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)）
+- **同模块兄弟（part09 并发）**：[第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)）
+- **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)—— 内存序的强弱最终映射到 x86 TSO / ARM 弱内存模型的真实屏障
+- **多线程落地（part07）**：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)—— acquire/release 在线程/异步结果可见性中的用法
+- **协作取消衔接（part07）**：[第94章　stop_token 与协作取消 [标准]](Book/part07_stl/ch94_stop_token.md)—— stop_token 的原子标志依赖内存序保证取消可见
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

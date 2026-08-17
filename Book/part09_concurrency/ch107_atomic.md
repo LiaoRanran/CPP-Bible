@@ -1,13 +1,13 @@
 # 第107章　std::atomic 原子类型（C++11）
 
-⟶ Book/part09_concurrency/ch108_memory_order.md
-⟶ Book/part09_concurrency/ch109_fence.md
-⟶ Book/part03_language/ch30_volatile.md
+[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)
+[第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)
+[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)
 
-⟶ Book/part09_concurrency/ch108_memory_order.md
-⟶ Book/part09_concurrency/ch110_lockfree.md
+[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)
+[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)
 
-⟶ Book/part09_concurrency/ch111_aba.md
+[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`，仓库权威工具链）；正文早期汇编插图示曾用 GCC 13.1.0 生成，已在本机 GCC 15.3.0 下复编确认指令一致（`test_and_set`→`xchg`、`fetch_add`→`lock xadd`/`lock add`、`CAS`→`lock cmpxchg`、`load`→`mov`），见下文 `[VERIFIED]` 标注。
 > 约定参见 `CONVENTIONS.md`。本章所有汇编均为本机真实编译产物，未做任何人工改写；示例源码位于 `Examples/_ch107_*.cpp`。立场分层与验证标记（见 `CONVENTIONS.md` §1/§10）：正文用 `[标准]`/`[实现·GCC15]`/`[ABI]`/`[平台·x86-64]`/`[微架构·x86-64 TSO]`/`[经验]` 区分层级，并对高风险断言标注 `[VERIFIED]`（已实编/实跑确认）或 `[UNVERIFIED]`（本机无法验证，如 ARM 行为、绝对 benchmark 毫秒数）。
@@ -39,7 +39,7 @@ C++ 面临两条路：一是暴露编译器/硬件内建（如 GCC 的 `__atomic
 
 ## ① 概述：为什么需要原子操作与 data race [标准]
 
-⟶ Book/part09_concurrency/ch108_memory_order.md
+[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)
 
 多线程同时读写同一普通变量而缺乏同步，即构成**数据竞争（data race）**——这是 C++ 标准中未定义行为（UB），结果不可预测，且会被编译器优化彻底破坏。`std::atomic<T>` 提供**不可分割**的读写与读-改-写（RMW）操作，并附带**内存序（memory order）**约束，使并发访问既安全又可推理。
 
@@ -988,14 +988,14 @@ A: CAS 是用户态原子操作(~20ns)；mutex 涉及系统调用 + 上下文切
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch108_memory_order.md（第108章　memory_order：六种内存序（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch109_fence.md（第109章 内存屏障与 fence）
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch110_lockfree.md（第110章　无锁编程：lock-free / wait-free（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch111_aba.md（第111章　ABA 问题与解决（C++11））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch112_hazard_rcu.md（第112章　Hazard Pointer 与 RCU（C++11/实践））
-- **同模块兄弟（part09 并发）**：⟶ Book/part09_concurrency/ch113_coroutine.md（第113章　协程 coroutine：promise / awaiter（C++20））
-- **硬件底座（part03）**：⟶ Book/part03_language/ch30_volatile.md（第30章 volatile / atomic 与硬件寄存器）—— volatile/atomic 与硬件寄存器的内存可见性语义，是原子操作的语言层地基
-- **多线程落地（part07）**：⟶ Book/part07_stl/ch93_thread_async.md（第93章　线程与异步：thread / future / async）—— 原子操作在线程/异步同步中的典型用法
+- **同模块兄弟（part09 并发）**：[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md)）
+- **同模块兄弟（part09 并发）**：[第109章 内存屏障与 fence](Book/part09_concurrency/ch109_fence.md)
+- **同模块兄弟（part09 并发）**：[第110章　无锁编程：lock-free / wait-free（C++11）](Book/part09_concurrency/ch110_lockfree.md)）
+- **同模块兄弟（part09 并发）**：[第111章　ABA 问题与解决（C++11）](Book/part09_concurrency/ch111_aba.md)）
+- **同模块兄弟（part09 并发）**：[第112章　Hazard Pointer 与 RCU（C++11/实践）](Book/part09_concurrency/ch112_hazard_rcu.md)）
+- **同模块兄弟（part09 并发）**：[第113章　协程 coroutine：promise / awaiter（C++20）](Book/part09_concurrency/ch113_coroutine.md)）
+- **硬件底座（part03）**：[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)—— volatile/atomic 与硬件寄存器的内存可见性语义，是原子操作的语言层地基
+- **多线程落地（part07）**：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)—— 原子操作在线程/异步同步中的典型用法
 
 ## 附录 G：工业原子操作与 lock-free 数据结构
 

@@ -1,8 +1,8 @@
 # 第64章　折叠表达式 Fold Expression（C++17）
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-⟶ Book/part06_templates/ch63_variadic.md
-⟶ Book/part07_stl/ch77_vector.md
+[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)
+[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
 
 ## ⓪ 历史动机：折叠表达式的来龙去脉
 
@@ -34,8 +34,8 @@ C++11 的可变参数模板虽然解决了「任意参数」，但要对参数�
 
 ## ① 学习目标
 
-⟶ Book/part06_templates/ch63_variadic.md
-⟶ Book/part06_templates/ch65_type_traits.md
+[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
 
 - 区分四种折叠：一元左/右、二元左/右 [标准]
 - 说清空包（empty pack）的处理规则 [标准]
@@ -459,8 +459,8 @@ template <typename... Ts> void p(Ts... ts) { ( (void(ts), ... ) ); }
 
 ## ⑪ STL 中的该模式
 
-⟶ Book/part06_templates/ch63_variadic.md（折叠是递归展开的归约替代）
-⟶ Book/part10_modern/ch116_perfect_forwarding.md（完美转发 + 包展开协同）
+[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)（折叠是递归展开的归约替代）
+[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)（完美转发 + 包展开协同）
 
 > **示例 53** [难度 ★★★☆☆] [主题：中的该模式]
 ```cpp
@@ -549,8 +549,8 @@ int main() {
 
 ## ⑭ 工业案例
 
-⟶ Book/part10_modern/ch116_perfect_forwarding.md（日志/格式化库以折叠做类型安全归约）
-⟶ Book/part06_templates/ch72_expression_templates.md（表达式模板的编译期归约近亲）
+[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)（日志/格式化库以折叠做类型安全归约）
+[第72章　表达式模板 Expression Templates](Book/part06_templates/ch72_expression_templates.md)（表达式模板的编译期归约近亲）
 
 > **示例 60** [难度 ★★★☆☆] [主题：工业案例]
 ```cpp
@@ -581,8 +581,8 @@ int main() {
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-⟶ Book/part06_templates/ch65_type_traits.md（traits 组合常借助折叠）
-⟶ Book/part06_templates/ch60_template_basics.md（实例化机制基础）
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（traits 组合常借助折叠）
+[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)（实例化机制基础）
 
 > **示例 61** [难度 ★★★★☆] [主题：源码剖析（libstdc++ 相关）]
 ```cpp
@@ -694,8 +694,8 @@ int main() {
 
 ## ⑲ 性能（编译期 / 运行期）
 
-⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化与内联对归约的影响）
-⟶ Book/part06_templates/ch63_variadic.md（与递归展开编译时间对比）
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化与内联对归约的影响）
+[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)（与递归展开编译时间对比）
 
 > **示例 78** [难度 ★★★☆☆] [主题：性能（编译期 / 运行期）]
 ```cpp
@@ -744,7 +744,7 @@ int main() {
 - GCC `cp/semantics.c`：折叠表达式（finish_fold_expr）
 - libstdc++ `bits/utility.h`：integer_sequence + 折叠用法
 - libstdc++ `bits/conjunction.hpp`：conjunction 偏特化短路（语义等价于 && 折叠）
-- ⟶ Book/part06_templates/ch63_variadic.md（可变参数）　⟶ Book/part06_templates/ch65_type_traits.md（type traits）
+- [第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)（可变参数）　[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（type traits）
 
 ## ㉒ 历史纵深·真实产业坐标·生产踩坑·与标准的互动
 
@@ -895,13 +895,13 @@ A: && → true (逻辑与空集 = 真); || → false; , → void()
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part06_templates/ch63_variadic.md（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 折叠表达式是可变参数包展开的简化（C++17）
-- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— 折叠建立在模板基础之上
-- **同模块接续**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— 折叠参与包相关重载决议
-- **同模块接续**：⟶ Book/part06_templates/ch66_sfinae.md（第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发）—— SFINAE 可为折叠表达式加约束
-- **同模块接续**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— concepts 约束折叠中的包
-- **跨模块**：⟶ Book/part01_history/ch06_cpp17.md（第06章　C++17：生产力跃升）—— C++17 引入折叠表达式，是生产力跃升
-- **跨模块**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— vector 算法常用折叠表达归约
+- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)）—— 折叠表达式是可变参数包展开的简化（C++17）
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— 折叠建立在模板基础之上
+- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)）—— 折叠参与包相关重载决议
+- **同模块接续**：[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)—— SFINAE 可为折叠表达式加约束
+- **同模块接续**：[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)—— concepts 约束折叠中的包
+- **跨模块**：[第06章　C++17：生产力跃升](Book/part01_history/ch06_cpp17.md)—— C++17 引入折叠表达式，是生产力跃升
+- **跨模块**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— vector 算法常用折叠表达归约
 
 ## 附录 G：Fold Expression 工业应用与编译器优化
 

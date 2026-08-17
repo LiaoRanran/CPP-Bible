@@ -1,8 +1,8 @@
 # 第17章　交叉编译与嵌入式工具链（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part02_toolchain/ch11_compilers.md
-⟶ Book/part03_language/ch30_volatile.md
+[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)
+[第30章 volatile / atomic 与硬件寄存器](Book/part03_language/ch30_volatile.md)
 
 > 真实编译器取证：本机 MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`，`g++ --version` → `g++.exe ... 13.1.0`）。
 > 交叉工具链（arm-none-eabi-gcc 等）本机大概率未安装，故以**本机 g++ 编译同一程序**展示 x86-64 真实汇编作为硬证据，ARM 侧给出明确标注的「典型输出」（AAPCS，未在本机执行）。
@@ -37,8 +37,8 @@
 
 ## ① 概述：什么是交叉编译 [标准]
 
-⟶ Book/part02_toolchain/ch16_ide.md
-⟶ Book/part02_toolchain/ch18_buildconfig.md
+[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)
+[第18章　构建配置：Debug / Release / LTO / PGO（C++）](Book/part02_toolchain/ch18_buildconfig.md)
 
 **交叉编译（cross compilation）** = 在**宿主机（host，如 x86-64 Windows）**上编译出运行在**目标机（target，如 ARM Cortex-M）**上的可执行代码。与之相对的是**原生编译（native compilation）**：host == target。
 
@@ -834,9 +834,9 @@ int main(){std::cout<<"Embedded: -Os -flto -ffunction-sections. const=Flash. poo
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part02_toolchain/ch15_profiling.md（第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++））—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part02_toolchain/ch12_buildsystems.md（第12章　构建系统：Make / Ninja / CMake（C++））—— 同模块下的其他主题。
+- **相邻主题**：[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— 编号相邻、主题接续。
+- **同模块**：[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)）—— 同模块下的其他主题。
 
 ## 附录 G：工业交叉编译生态
 

@@ -1,8 +1,8 @@
 # 第12章　构建系统：Make / Ninja / CMake（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part02_toolchain/ch18_buildconfig.md
-⟶ Book/part02_toolchain/ch11_compilers.md
+[第18章　构建配置：Debug / Release / LTO / PGO（C++）](Book/part02_toolchain/ch18_buildconfig.md)
+[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)
 
 > 元数据：标准基 C++23 ／ 预计阅读 55 分钟 ／ 前置 第11章 编译器与工具链 ／ 后续 第13章 包管理 ／ 难度 ★★★☆☆
 > 真实工具链：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。本章所有 `-MMD` / `-S` / `.a` / `.dll` 证据均在本机 GCC 13.1.0 真实运行得到，绝不编造。
@@ -37,8 +37,8 @@ Make 直白却难跨平台、依赖 shell 与文件系统时间戳；CMake 选�
 
 ## ① 概述：构建系统解决什么 [标准]
 
-⟶ Book/part02_toolchain/ch11_compilers.md
-⟶ Book/part02_toolchain/ch13_packaging.md
+[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)
+[第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)
 
 C++ 是**翻译单元（translation unit，TU）**模型：每个 `.cpp` 独立经预处理→编译→汇编生成 `.o`，最后由链接器拼成可执行文件或库。**构建系统（build system）** 的核心职责只有三件：
 
@@ -1009,8 +1009,8 @@ int main(){std::cout<<"CMake=PUBLIC(传递)/PRIVATE(不传递)/INTERFACE(仅依�
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part01_history/ch10_version_matrix.md（第10章　版本特性全景对照表与迁移指南）—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part02_toolchain/ch15_profiling.md（第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++））—— 同模块下的其他主题。
+- **相邻主题**：[第10章　版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)—— 编号相邻、主题接续。
+- **同模块**：[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)）—— 同模块下的其他主题。
 
 ## 附录 J：工业实战复盘与设计取舍 [I: Practice / H: Design]
 

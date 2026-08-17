@@ -1,8 +1,8 @@
 # 第06章　C++17：生产力跃升
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part07_stl/ch88_optional_variant.md
-⟶ Book/part06_templates/ch64_fold.md
+[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
+[第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)
 
 > 标准基：ISO/IEC 14882:2017（N4659）｜预计阅读：35 min｜前置：ch04、ch05｜后续：ch81/82 string_view、ch26/88 variant/optional、ch91 filesystem、ch64 折叠、ch99 并行算法、ch32 初始化、ch33 生命周期｜难度：★★★
 
@@ -41,8 +41,8 @@ C++17 的最大取舍在"可选值"上：`std::optional` 入标准前，社区�
 
 ## ① 学习目标
 
-⟶ Book/part01_history/ch05_cpp14.md
-⟶ Book/part01_history/ch07_cpp20.md
+[第05章　C++14：小幅完善](Book/part01_history/ch05_cpp14.md)
+[第07章　C++20：量级升级](Book/part01_history/ch07_cpp20.md)
 
 > **示例 1** [难度 ★★★☆☆] [主题：学习目标]
 ```cpp
@@ -615,9 +615,9 @@ int main(){std::optional<int> o=42;std::string_view sv="hello";std::cout<<*o<<",
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part01_history/ch04_cpp11.md（第04章　C++11：现代 C++ 革命）—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part01_history/ch08_cpp23.md（第08章　C++23：标准库大修）—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
+- **相邻主题**：[第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第08章　C++23：标准库大修](Book/part01_history/ch08_cpp23.md)—— 编号相邻、主题接续。
+- **同模块**：[第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)—— 同模块下的其他主题。
 
 ## 附录 G（工业级 C++17 实战）
 

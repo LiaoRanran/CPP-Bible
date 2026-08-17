@@ -3,8 +3,8 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++20 透明哈希。
 > 预计阅读：约 100 分钟（深度版，含源码/汇编/基准）。
-> 前置：⟶ Book/part07_stl/ch84_set.md（有序集合，对比本章） · ⟶ Book/part03_language/ch19_variables.md（存储期） · ⟶ Book/part06_templates/ch65_type_traits.md（特化）。
-> 后续：⟶ Book/part14_perf/ch154_cache_opt.md（缓存与局部性） · ⟶ Book/part11_source/ch124_libstdcxx.md（libstdc++ 阅读入口）。
+> 前置：[第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)（有序集合，对比本章） · [第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（存储期） · [第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（特化）。
+> 后续：[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)（缓存与局部性） · [第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)（libstdc++ 阅读入口）。
 > 难度：★★★☆☆（理解开链哈希、负载因子与重哈希）。
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。本章 `[实现]` 级源码取自 `bits/hashtable.h`、`bits/unordered_set.h`、`bits/unordered_map.h`、`bits/functional_hash.h`、`bits/hash_bytes.h`，逐行标注文件与行号。
 
@@ -54,15 +54,15 @@ libstdc++ 实现采用**开链法（separate chaining）**：一个桶数组（`
 
 ## ② 前置知识
 
-- `set`/`multiset`：`unordered_*` 的有序对照，见 ⟶ Book/part07_stl/ch84_set.md。
-- `map`/`multimap`：`unordered_map` 的有序版，底层同为关联容器，见 ⟶ Book/part07_stl/ch83_map.md。
+- `set`/`multiset`：`unordered_*` 的有序对照，见 [第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)。
+- `map`/`multimap`：`unordered_map` 的有序版，底层同为关联容器，见 [第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)。
 - 哈希与取模：基本离散数学；碰撞处理见 ⑬、⑲。
-- 移动语义与节点句柄：`extract`/`merge`（C++17）同样适用于 `unordered_*`，见 ⟶ Book/part10_modern/ch115_move.md。
+- 移动语义与节点句柄：`extract`/`merge`（C++17）同样适用于 `unordered_*`，见 [第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)。
 
 ## ③ 后续依赖
 
-- 缓存与局部性：哈希桶随机散布，缓存命中率与 `map` 相当甚至更差，对比见 ⟶ Book/part14_perf/ch154_cache_opt.md。
-- libstdc++ 源码阅读：`_Hashtable` 是 STL 最复杂的类之一，见 ⟶ Book/part11_source/ch124_libstdcxx.md。
+- 缓存与局部性：哈希桶随机散布，缓存命中率与 `map` 相当甚至更差，对比见 [第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)。
+- libstdc++ 源码阅读：`_Hashtable` 是 STL 最复杂的类之一，见 [第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)。
 - `flat_map`/`flat_set`（C++23，GCC13 尚未实现）：排序 `vector` 的哈希/有序替代，本章用排序 `vector` 模拟对比。
 
 ## ④ 知识图谱（ASCII）
@@ -235,7 +235,7 @@ _Hashtable::_M_find_node(bkt, key, code)  // hashtable.h:812
 
 ## ⑪ STL 联系
 
-- 与 `set`/`map`：`unordered_*` 平均 O(1)、无序、缓存差、范围查询弱；`set`/`map` 有序、O(log n)、可范围遍历（⟶ Book/part07_stl/ch84_set.md、Book/part07_stl/ch83_map.md）。
+- 与 `set`/`map`：`unordered_*` 平均 O(1)、无序、缓存差、范围查询弱；`set`/`map` 有序、O(log n)、可范围遍历（[第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)、Book/part07_stl/ch83_map.md）。
 - 与 `unordered_multiset`/`unordered_multimap`：键可重复，`count` 可能 >1，`equal_range` 返回同桶连续段。
 - 与 `vector`+`hash`（自写开放寻址）：`absl::flat_hash_map` 用开放寻址 + 探测，缓存更友好、无链表指针开销，但 C++ 标准 `unordered_*` 用的是开链法。
 - 与算法：无"有序区间"假设，不能对 `unordered_*` 用 `std::set_union` 等（需先拷到有序容器）。
@@ -1219,11 +1219,11 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 无序关联容器满足前向迭代器
-- **同模块相邻**：⟶ Book/part07_stl/ch83_map.md（第83章　map / multimap（红黑树））—— map 是其有序红黑树版本
-- **同模块相邻**：⟶ Book/part07_stl/ch84_set.md（第84章　set / multiset：红黑树有序集合）—— set 是其同族有序版本
-- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— 桶与节点经 allocator 分配
-- **相邻主题**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 元素移动依赖移动语义
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 无序关联容器满足前向迭代器
+- **同模块相邻**：[第83章　map / multimap（红黑树）](Book/part07_stl/ch83_map.md)）—— map 是其有序红黑树版本
+- **同模块相邻**：[第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)—— set 是其同族有序版本
+- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— 桶与节点经 allocator 分配
+- **相邻主题**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 元素移动依赖移动语义
 
 ## 自测练习（Exercises）
 

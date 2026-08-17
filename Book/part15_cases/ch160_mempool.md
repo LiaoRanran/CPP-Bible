@@ -1,6 +1,6 @@
 # 第160章 从零实现内存池（C++）
 
-⟶ Book/part10_modern/ch122_pmr.md
+[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)
 
 > 元数据：标准基 `C++23` / 预计阅读 45 分钟 / 前置 第143章（缓存行对齐）、第?章（RAII 与异常安全）/ 后续 第?章（无锁数据结构）/ 难度 ★★★
 >
@@ -43,8 +43,8 @@ C++ 的分配器模型长期在"零开销但僵化"（C++98 要求分配器无�
 
 ## ① 概述：为什么需要内存池（malloc 开销/碎片）[经验]
 
-⟶ Book/part15_cases/ch159_threadpool.md
-⟶ Book/part15_cases/ch161_logger.md
+[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)
+[第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)
 
 通用分配器 `std::malloc`/`::operator new` 必须应对**任意大小、任意时序、任意线程**的请求，因此它内部要维护复杂的元数据（空闲链表、分箱、边界标记）、做加锁或原子操作，并承受**外部碎片**（大量小对象反复分配释放后，空闲内存被切成无法利用的小块）与**内部碎片**（为对齐与元数据而多占的空间）。
 
@@ -1092,12 +1092,12 @@ C++17 的 `std::pmr::memory_resource` / `std::pmr::polymorphic_allocator` 让"�
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch161_logger.md（第161章 从零实现日志库（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch162_json.md（第162章 从零实现 JSON 库（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch164_framework.md（第164章 从零实现迷你框架（C++））
-- **跨模块延伸**：⟶ Book/part14_perf/ch158_perf_antipatterns.md（第158章 性能反模式与陷阱）
+- **同模块兄弟（part15 实战案例）**：[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)）
+- **同模块兄弟（part15 实战案例）**：[第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)）
+- **同模块兄弟（part15 实战案例）**：[第162章 从零实现 JSON 库（C++）](Book/part15_cases/ch162_json.md)）
+- **同模块兄弟（part15 实战案例）**：[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)）
+- **同模块兄弟（part15 实战案例）**：[第164章 从零实现迷你框架（C++）](Book/part15_cases/ch164_framework.md)）
+- **跨模块延伸**：[第158章 性能反模式与陷阱](Book/part14_perf/ch158_perf_antipatterns.md)
 
 ### 面试要点（速记·内存池）
 

@@ -1,8 +1,8 @@
 # 第65章　类型特性 Type Traits —— 编译期类型自省与分发
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-⟶ Book/part06_templates/ch66_sfinae.md
-⟶ Book/part06_templates/ch68_tmp.md
+[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)
+[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)
 
 > 文件路径：`Book/part06_templates/ch65_type_traits.md`
 > 用途：以工业级深度讲解 C++ 类型特性（type traits）：手写实现、标准库 `type_traits`、SFINAE 分发、标签分发、编译期计算，并附 MinGW GCC 15.3.0 真实汇编证据。
@@ -39,8 +39,8 @@
 
 ## ① 本章要击穿的二十个问题 [标准]
 
-⟶ Book/part06_templates/ch64_fold.md
-⟶ Book/part06_templates/ch66_sfinae.md
+[第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)
+[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)
 
 1. `type_traits` 的底层机制是什么？为什么 `is_pointer<int*>::value` 能在编译期返回 `true`？
 2. 标准库的 `true_type` / `false_type` 到底是什么？为什么所有 trait 都从它们派生？
@@ -756,13 +756,13 @@ int main(){std::cout<<is_void<void><<" "<<is_void<int><<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— type_traits 建立在模板基础之上
-- **同模块接续**：⟶ Book/part06_templates/ch66_sfinae.md（第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发）—— SFINAE 常配合 traits 做条件分发
-- **同模块接续**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— concepts 是 traits 的类型安全替代
-- **同模块接续**：⟶ Book/part06_templates/ch63_variadic.md（第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion））—— 可变参数 traits（如 common_type）对包萃取
-- **同模块接续**：⟶ Book/part06_templates/ch69_constexpr.md（第69章　编译期计算：constexpr / consteval / constinit）—— constexpr traits 提供编译期值查询
-- **跨模块**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 引用/指针 traits（remove_reference 等）建立在引用语义上
-- **跨模块**：⟶ Book/part03_language/ch24_enum.md（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— underlying_type 萃取枚举底层类型
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— type_traits 建立在模板基础之上
+- **同模块接续**：[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)—— SFINAE 常配合 traits 做条件分发
+- **同模块接续**：[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)—— concepts 是 traits 的类型安全替代
+- **同模块接续**：[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)）—— 可变参数 traits（如 common_type）对包萃取
+- **同模块接续**：[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)—— constexpr traits 提供编译期值查询
+- **跨模块**：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 引用/指针 traits（remove_reference 等）建立在引用语义上
+- **跨模块**：[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)）—— underlying_type 萃取枚举底层类型
 
 ## 附录 G（工业级 type_traits 实战）
 

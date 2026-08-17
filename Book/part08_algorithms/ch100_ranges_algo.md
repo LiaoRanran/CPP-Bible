@@ -1,8 +1,8 @@
 # 第100章　Ranges 算法与投影（C++20）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part10_modern/ch119_ranges_deep.md
-⟶ Book/part08_algorithms/ch95_algo_overview.md
+[第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)
+[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；ranges 是标准库组件，证据取自 libstdc++ 在 `-O2` 下生成的真实汇编与 chrono 实测。
@@ -35,8 +35,8 @@ Ranges 算法相对传统的根本改动，是 **"范围优先 + 投影内置"**
 
 ## ① 概述：C++20 Ranges [标准]
 
-⟶ Book/part08_algorithms/ch101_algo_theory.md
-⟶ Book/part08_algorithms/ch99_numeric.md
+[第101章　哈希、图、树、DP、贪心（算法思想）](Book/part08_algorithms/ch101_algo_theory.md)
+[第99章　数值算法与并行执行策略（C++）](Book/part08_algorithms/ch99_numeric.md)
 
 **Ranges** 是一套以"范围（range）"为一等公民的标准库抽象：一个 range 由迭代器对（`begin`/`end`）定义，算法直接吃"整个容器/视图"而不是两个迭代器。`[标准]`：Ranges 由 P0896R4（C++20）引入，核心位于 `<ranges>`，复用 `<iterator>` 的 `std::input_iterator` 等概念。
 
@@ -925,8 +925,8 @@ A: operator| 重载。view1 | view2 → view2(view1) → 返回组合后的 view
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part08_algorithms/ch98_heap.md（第98章　堆算法 heap（C++））—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part08_algorithms/ch96_sorting.md（第96章　排序：sort / stable_sort / partial_sort（C++））—— 同模块下的其他主题。
+- **相邻主题**：[第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)）—— 编号相邻、主题接续。
+- **同模块**：[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)）—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

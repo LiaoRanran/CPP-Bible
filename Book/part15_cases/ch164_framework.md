@@ -1,8 +1,8 @@
 # 第164章 从零实现迷你框架（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part12_patterns/ch141_di.md
-⟶ Book/part15_cases/ch159_threadpool.md
+[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)
+[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)
 
 > 元数据：标准基 `C++23` / 预计阅读 50 分钟 / 前置 第141章（依赖注入）、第145章（文档与 API）、第148章（宏与代码生成/工具链）、第149章（发布与 CI）、第150章（测试）、第151章（性能）/ 后续 第?章（零开销抽象与内联）/ 难度 ★★★★
 >
@@ -45,7 +45,7 @@
 
 ## ① 概述：从零写框架的意义 [经验]
 
-⟶ Book/part15_cases/ch163_net.md
+[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)
 
 **框架（framework）**和**库（library）**的本质区别在控制权流向。库是你调用它；框架是它调用你——这就是著名的"好莱坞原则"（Don't call us, we'll call you）。**[经验]** 亲手写一个迷你框架，价值不在于"再造一个 Boost"，而在于看清 Asio / Qt / 第141章依赖注入容器 这些成熟抽象到底替你屏蔽了什么：对象生命周期、插件装载、事件调度、配置注入。
 
@@ -1292,12 +1292,12 @@ C++ Core Guidelines 的 **I（Interfaces）** 章节系统化了"窄而稳的接
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch160_mempool.md（第160章 从零实现内存池（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch161_logger.md（第161章 从零实现日志库（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch162_json.md（第162章 从零实现 JSON 库（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））
-- **跨模块延伸**：⟶ Book/part16_reading/ch165_roadmap.md（第165章 C++ 进阶路线图（C++））
+- **同模块兄弟（part15 实战案例）**：[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)）
+- **同模块兄弟（part15 实战案例）**：[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)）
+- **同模块兄弟（part15 实战案例）**：[第161章 从零实现日志库（C++）](Book/part15_cases/ch161_logger.md)）
+- **同模块兄弟（part15 实战案例）**：[第162章 从零实现 JSON 库（C++）](Book/part15_cases/ch162_json.md)）
+- **同模块兄弟（part15 实战案例）**：[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)）
+- **跨模块延伸**：[第165章 C++ 进阶路线图（C++）](Book/part16_reading/ch165_roadmap.md)）
 
 ## 真实开源项目参考（可查证链接）
 

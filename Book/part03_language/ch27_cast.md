@@ -1,10 +1,10 @@
 # 第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part03_language/ch31_operator_overloading.md
-⟶ Book/part05_oo/ch48_rtti.md
+[第31章 运算符重载](Book/part03_language/ch31_operator_overloading.md)
+[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)
 
-⟶ Book/part05_oo/ch48_rtti.md
+[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：6 h｜前置：ch19（存储期/链接/ODR）、ch20（引用与指针）、ch21（const/volatile）、ch60（模板与 traits）｜后续：ch31（异常与 bad_cast）、ch42（严格别名与优化）、ch65（OOP 与 RTTI）｜难度：★★★★★
 > 立场分层约定：`[标准]`＝ISO 条文语义；`[实现]`＝编译器/标准库源码行为；`[平台·x86-64]`＝OS/ABI/硬件（x86-64 / ARM / ELF / PE）；`[经验]`＝工程落地的铁律。四层不得混淆。
@@ -40,8 +40,8 @@ C 风格强转 `(T)expr` 在 1970 年代是"万能胶"：既能去 const、又�
 
 ## ① 本章地图（先给结论，再击穿）
 
-⟶ Book/part03_language/ch26_lambda.md
-⟶ Book/part03_language/ch28_lifetime_ub.md
+[第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除](Book/part03_language/ch26_lambda.md)
+[第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化](Book/part03_language/ch28_lifetime_ub.md)
 
 **知识图谱（前置→本章→后续）**：
 
@@ -1806,13 +1806,13 @@ C 风格强转 `(T)expr` 在 1970 年代是"万能胶"：能去 const、能做�
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— const_cast/reinterpret_cast 直接作用于指针与引用
-- **同模块接续**：⟶ Book/part03_language/ch21_const_family.md（第21章　const / constexpr / consteval / constinit 深度详解）—— const_cast 专门移除 const，是 const 章的对立面
-- **同模块接续**：⟶ Book/part03_language/ch28_lifetime_ub.md（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— 未定义转换（如 reinterpret_cast 乱转换）是 UB 的高发区
-- **同模块接续**：⟶ Book/part03_language/ch31_operator_overloading.md（第31章 运算符重载）—— 用户定义转换运算符经 cast 触发，与转型协同
-- **同模块接续**：⟶ Book/part03_language/ch29_friend.md（第29章 友元 friend 与访问控制）—— 友元与访问控制在转型可见性上交互
-- **跨模块**：⟶ Book/part05_oo/ch48_rtti.md（第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询）—— dynamic_cast 依赖 RTTI，是多态向下转型的唯一安全手段
-- **跨模块**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— std::move 即 static_cast 到右值引用，是移动语义的入口
+- **同模块接续**：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— const_cast/reinterpret_cast 直接作用于指针与引用
+- **同模块接续**：[第21章　const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)—— const_cast 专门移除 const，是 const 章的对立面
+- **同模块接续**：[第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化](Book/part03_language/ch28_lifetime_ub.md)：生存期、悬垂、UB 分类与编译器武器化）—— 未定义转换（如 reinterpret_cast 乱转换）是 UB 的高发区
+- **同模块接续**：[第31章 运算符重载](Book/part03_language/ch31_operator_overloading.md)—— 用户定义转换运算符经 cast 触发，与转型协同
+- **同模块接续**：[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)—— 友元与访问控制在转型可见性上交互
+- **跨模块**：[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)—— dynamic_cast 依赖 RTTI，是多态向下转型的唯一安全手段
+- **跨模块**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— std::move 即 static_cast 到右值引用，是移动语义的入口
 
 ## 附录 H：编译实证——四种 cast 的真实汇编代价分层 [C: Compiler / E: Low-level / G: Performance]
 

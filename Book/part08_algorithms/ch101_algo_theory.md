@@ -1,8 +1,8 @@
 # 第101章　哈希、图、树、DP、贪心（算法思想）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part08_algorithms/ch95_algo_overview.md
-⟶ Book/part08_algorithms/ch96_sorting.md
+[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)
+[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)
 
 > 真实编译器：MinGW GCC 15.3.0（`-std=c++23 -O2 -S -masm=intel`）。
 > 源码根：`C:/Qt/Tools/mingw1530_64/include/c++/15.3.0/`；本章以**真实编译产物**（手写开放寻址哈希表的线性探测汇编）与 **chrono 实测性能数字**为证据，绝不编造。
@@ -36,7 +36,7 @@ STL 收编的算法并非随意堆砌，而是围绕几条主线组织：**遍�
 
 ## ① 概述：算法思想总览 [标准]
 
-⟶ Book/part08_algorithms/ch100_ranges_algo.md
+[第100章　Ranges 算法与投影（C++20）](Book/part08_algorithms/ch100_ranges_algo.md)
 
 算法 = 在有限步骤内把输入变为输出的确定过程。工业 C++ 工程中，绝大多数"业务逻辑瓶颈"可归结为六类经典思想：**哈希（O(1) 近似随机访问）、图（关系与遍历）、树（有序与平衡）、动态规划（重叠子问题）、贪心（局部最优）、分治/回溯（分解与枚举）**。
 
@@ -1037,10 +1037,10 @@ C++ 特有: 优先使用 STL 容器而非裸数据结构。
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part08_algorithms/ch99_numeric.md（第99章　数值算法与并行执行策略（C++））—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part08_algorithms/ch97_search.md（第97章　查找与二分（C++））—— 同模块下的其他主题。
+- **相邻主题**：[第99章　数值算法与并行执行策略（C++）](Book/part08_algorithms/ch99_numeric.md)）—— 编号相邻、主题接续。
+- **同模块**：[第97章　查找与二分（C++）](Book/part08_algorithms/ch97_search.md)）—— 同模块下的其他主题。
 
-- **同模块**：⟶ Book/part08_algorithms/ch98_heap.md（第98章　堆算法 heap（C++））—— 同模块下的其他主题。
+- **同模块**：[第98章　堆算法 heap（C++）](Book/part08_algorithms/ch98_heap.md)）—— 同模块下的其他主题。
 
 ## 附录 G（算法复杂度的硬件落地）
 

@@ -1,8 +1,8 @@
 # 第01章　C 语言遗产与 C with Classes
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part03_language/ch19_variables.md
-⟶ Book/part03_language/ch32_initialization.md
+[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)
+[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)
 
 > 标准基：前标准（1972–1985）｜预计阅读：35 min｜前置：无｜后续：ch02 标准化、ch19 变量、ch50 封装｜难度：★
 
@@ -53,7 +53,7 @@
 
 ## ① 学习目标
 
-⟶ Book/part01_history/ch02_standardization.md
+[第02章　标准化组织、WG21 与提案流程](Book/part01_history/ch02_standardization.md)
 
 > **示例 1** [难度 ★☆☆☆☆] [主题：学习目标]
 ```cpp
@@ -325,7 +325,7 @@ void hi(){ std::cout << "hi\n"; }
 
 ## ⑫ 工业案例
 
-⟶ Book/part11_source/ch134_unreal.md
+[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)
 
 > **示例 27** [难度 ★☆☆☆☆] [主题：工业案例]
 ```cpp
@@ -344,7 +344,7 @@ template<class T> T max(T a,T b){ return a>b?a:b; }
 
 ## ⑬ 源码分析
 
-⟶ Book/part11_source/ch124_libstdcxx.md
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
 
 > **示例 29** [难度 ★☆☆☆☆] [主题：源码分析]
 ```cpp
@@ -362,8 +362,8 @@ void inc(int& r){ ++r; }
 
 ## ⑭ WG21 提案 / 标准背景
 
-⟶ Book/part01_history/ch03_cpp98_03.md
-⟶ Book/part01_history/ch04_cpp11.md
+[第03章　C++98 / C++03：奠基时代](Book/part01_history/ch03_cpp98_03.md)
+[第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)
 
 > **示例 31** [难度 ★☆☆☆☆] [主题：提案 / 标准背景]
 ```cpp
@@ -436,7 +436,7 @@ class Vec { int d[3]={0,0,0}; public: int& at(int i){ return d[i]; } };
 
 ## ⑲ 性能分析
 
-⟶ Book/part14_perf/ch153_cpu_micro.md
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)
 
 > **示例 39** [难度 ★☆☆☆☆] [主题：性能分析]
 ```cpp
@@ -689,8 +689,8 @@ int main(){std::cout<<"C=simplicity, C++=abstraction. Use C for kernel, C++ for 
 
 ## 附录 I：C ABI兼容性深度
 
-⟶ Book/part11_source/ch124_libstdcxx.md
-⟶ Book/part11_source/ch126_msstl.md
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
+[第126章　MS STL 架构（C++）](Book/part11_source/ch126_msstl.md)
 
 C ABI是操作系统最底层的接口约定。Linux kernel, Win32 API, POSIX全部使用C ABI。C++通过extern "C"与此交互。
 
@@ -740,9 +740,9 @@ int main(){int arr[5]={5,3,1,4,2};qsort(arr,5,4,cmp);std::cout<<arr[0]<<std::end
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：⟶ Book/part16_reading/ch165_roadmap.md（第165章 C++ 进阶路线图（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：⟶ Book/part01_history/ch03_cpp98_03.md（第03章　C++98 / C++03：奠基时代）—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part01_history/ch04_cpp11.md（第04章　C++11：现代 C++ 革命）—— 同模块下的其他主题。
+- **后续依赖**：[第165章 C++ 进阶路线图（C++）](Book/part16_reading/ch165_roadmap.md)）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第03章　C++98 / C++03：奠基时代](Book/part01_history/ch03_cpp98_03.md)—— 编号相邻、主题接续。
+- **同模块**：[第04章　C++11：现代 C++ 革命](Book/part01_history/ch04_cpp11.md)—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

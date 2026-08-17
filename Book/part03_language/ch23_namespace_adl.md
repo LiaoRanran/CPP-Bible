@@ -1,8 +1,8 @@
 # 第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁）。
 
-⟶ Book/part03_language/ch29_friend.md
-⟶ Book/part06_templates/ch61_template_overload.md
+[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)
+[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：210 min｜难度：★★★★
 > 前置：ch19（变量/对象/ODR/链接）｜后续：ch21（const 与命名空间作用域）、ch31（`const_cast` 与命名空间可见性）、ch60（模板·ADL 与友元）、ch62（模板元编程中的 ADL）、ch119（模块 Modules 深度版）
@@ -44,8 +44,8 @@ ADL（参数依赖查找）是命名空间的"伴生怪物"：为了让 `operato
 
 ## ① 本章地图（先给结论，再击穿）
 
-⟶ Book/part03_language/ch22_auto_decltype.md
-⟶ Book/part03_language/ch24_enum.md
+[第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导](Book/part03_language/ch22_auto_decltype.md)
+[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)
 
 本章回答四个互相缠绕的问题：**如何把名字分隔开（namespace）**、**如何让名字进入作用域（using）**、**为什么有些名字不需要 using 也能被找到（ADL）**、**如何用 namespace 管控 ABI（inline namespace）**。四者关系如下：
 
@@ -1273,12 +1273,12 @@ C++ 早期没有命名空间，大型项目靠 `prefix_` 前缀手工避免冲�
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 匿名命名空间与 inline 变量重塑链接三态，承接变量章链接主题
-- **同模块接续**：⟶ Book/part03_language/ch21_const_family.md（第21章　const / constexpr / consteval / constinit 深度详解）—— inline 变量/函数定义在命名空间作用域，是头文件共享状态的基础
-- **同模块接续**：⟶ Book/part03_language/ch24_enum.md（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— enum class 可置于命名空间内实现作用域隔离与版本化
-- **同模块接续**：⟶ Book/part03_language/ch25_union_variant.md（第25章　union 与 std::variant 深度详解）—— 匿名命名空间可包裹 union 等私有类型，避免跨 TU 冲突
-- **同模块接续**：⟶ Book/part03_language/ch29_friend.md（第29章 友元 friend 与访问控制）—— 友元函数经 ADL 被找到，是命名空间隐形查找的典范
-- **跨模块**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— ADL 在模板重载决议中决定候选函数集合，是泛型编程的隐形规则
+- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— 匿名命名空间与 inline 变量重塑链接三态，承接变量章链接主题
+- **同模块接续**：[第21章　const / constexpr / consteval / constinit 深度详解](Book/part03_language/ch21_const_family.md)—— inline 变量/函数定义在命名空间作用域，是头文件共享状态的基础
+- **同模块接续**：[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)）—— enum class 可置于命名空间内实现作用域隔离与版本化
+- **同模块接续**：[第25章　union 与 std::variant 深度详解](Book/part03_language/ch25_union_variant.md)—— 匿名命名空间可包裹 union 等私有类型，避免跨 TU 冲突
+- **同模块接续**：[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)—— 友元函数经 ADL 被找到，是命名空间隐形查找的典范
+- **跨模块**：[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)）—— ADL 在模板重载决议中决定候选函数集合，是泛型编程的隐形规则
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

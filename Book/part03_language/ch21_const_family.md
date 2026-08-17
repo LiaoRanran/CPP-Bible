@@ -3,10 +3,10 @@
 
 > 真实编译器：MinGW GCC 15.3.0（x86-64；本章 const 族汇编说明均以此真机 `-std=c++23 -O2` 语义为准；const 折叠为立即数是跨版本稳定的优化行为）
 
-⟶ Book/part03_language/ch19_variables.md
-⟶ Book/part03_language/ch31_operator_overloading.md
+[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)
+[第31章 运算符重载](Book/part03_language/ch31_operator_overloading.md)
 
-⟶ Book/part03_language/ch31_operator_overloading.md
+[第31章 运算符重载](Book/part03_language/ch31_operator_overloading.md)
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：5 h｜前置：ch19（存储期/链接/ODR）、ch20（引用与指针）｜难度：★★★★★
 
@@ -43,8 +43,8 @@
 
 ## ① const 的精确语义与 cv 限定符全规则
 
-⟶ Book/part03_language/ch20_reference_pointer.md
-⟶ Book/part03_language/ch22_auto_decltype.md
+[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)
+[第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导](Book/part03_language/ch22_auto_decltype.md)
 
 ### 1.1 const 在类型系统里的位置
 
@@ -634,8 +634,8 @@ int sum(const int* p, const int* a, int n){ int s=0; for(int i=0;i<n;++i) s+=*p*
 
 ## ⑫ 最佳实践（落地）
 
-⟶ Book/part13_engineering/ch144_style.md（代码风格）—— const 正确性是风格契约的核心护栏
-⟶ Book/part06_templates/ch69_constexpr.md（编译期计算 constexpr/consteval/constinit）—— 编译期计算的落地写法
+[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)（代码风格）—— const 正确性是风格契约的核心护栏
+[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)（编译期计算 constexpr/consteval/constinit）—— 编译期计算的落地写法
 
 1. 能 constexpr 的常量/小函数就 constexpr（零运行期 + 隐式 inline 防 ODR）。
 2. 接口只读参数用 `const T&`；只读成员标 const；返回内部引用用 `const T&`。
@@ -772,8 +772,8 @@ probe(vi);   // T = volatile int（volatile 不被忽略）
 
 ## ⑰ 汇编视角（const 族的机器层真相）[实现][平台·x86-64]
 
-⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— const 主要作为优化提示，现代优化器常自行推断
-⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 只读 .rodata 的缓存/共享特性
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— const 主要作为优化提示，现代优化器常自行推断
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 只读 .rodata 的缓存/共享特性
 
 `const`/`constexpr` 在 x86-64 上不是"指令"，而是"编译器优化决策 + 段属性"。
 
@@ -792,8 +792,8 @@ mov  DWORD PTR [rbp-4], 3   ; y 有真实存储
 
 ## ⑱ 性能（const 族对运行期成本的真实影响）[经验][实现]
 
-⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— const 的优化收益有限，主价值是契约
-⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 性能须微基准量化，勿凭印象
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— const 的优化收益有限，主价值是契约
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 性能须微基准量化，勿凭印象
 
 1. **`constexpr` 编译期折叠省运行期**：常量计算（如编译期斐波那契、查表生成）在翻译期完成，运行期只剩结果——零成本（见 ch60 §⑱、ch65 §⑱）。
 2. **const 引用延长减少拷贝**：`for (const auto& x : c)` 避免每个元素的拷贝构造，对大对象/非平凡类型显著省时（ch20 §⑩、ch25 §）。
@@ -816,8 +816,8 @@ for (const auto& b : bigs) use(b);         // 无拷贝，O(1) 引用遍历
 
 ## ⑲ 工业案例（const 族在真实项目中的用法与反模式）[经验]
 
-⟶ Book/part13_engineering/ch144_style.md（代码风格）—— 工业 const 规范是风格落地样本
-⟶ Book/part06_templates/ch69_constexpr.md（编译期计算）—— constinit 根治 static 初始化顺序灾难
+[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)（代码风格）—— 工业 const 规范是风格落地样本
+[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)（编译期计算）—— constinit 根治 static 初始化顺序灾难
 
 **案例 A：API 边界 const 正确（正确示范）**
 库接口对所有"只读输入"用 `const T&` / `const T*`，对"只读返回内部状态"用 `const T&`，明确所有权与可变性——这是大型 C++ 代码库（Chromium、LLVM）的硬性 Review 规则。
@@ -987,13 +987,13 @@ int main(){std::vector<int> v{1,2};std::cout<<v[0]<<" extended example block 5 f
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— constinit 把变量钉死在常量初始化阶段，根治 static 初始化顺序灾难
-- **同模块接续**：⟶ Book/part03_language/ch22_auto_decltype.md（第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导）—— const 与类型推导协同：auto 与 const 的交互决定推导结果
-- **同模块接续**：⟶ Book/part03_language/ch27_cast.md（第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解）—— const_cast 专门移除 const，是本章 const 正确性的对立面
-- **同模块接续**：⟶ Book/part03_language/ch32_initialization.md（第32章 初始化与列表初始化）—— 常量初始化（constant-initialization）是 static 初始化的最早子阶段
-- **同模块接续**：⟶ Book/part03_language/ch29_friend.md（第29章 友元 friend 与访问控制）—— constexpr 友元函数把编译期计算注入类接口
-- **跨模块**：⟶ Book/part06_templates/ch69_constexpr.md（第69章　编译期计算：constexpr / consteval / constinit）—— constexpr 与 consteval/constinit 共同构成编译期计算体系
-- **跨模块**：⟶ Book/part06_templates/ch65_type_traits.md（第65章　类型特性 Type Traits —— 编译期类型自省与分发）—— type_traits 普遍以 const/volatile 修饰做特征萃取（remove_const 等）
+- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— constinit 把变量钉死在常量初始化阶段，根治 static 初始化顺序灾难
+- **同模块接续**：[第 22 章 · `auto` 类型推导、`decltype` 与返回类型推导](Book/part03_language/ch22_auto_decltype.md)—— const 与类型推导协同：auto 与 const 的交互决定推导结果
+- **同模块接续**：[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)—— const_cast 专门移除 const，是本章 const 正确性的对立面
+- **同模块接续**：[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)—— 常量初始化（constant-initialization）是 static 初始化的最早子阶段
+- **同模块接续**：[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)—— constexpr 友元函数把编译期计算注入类接口
+- **跨模块**：[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)—— constexpr 与 consteval/constinit 共同构成编译期计算体系
+- **跨模块**：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)—— type_traits 普遍以 const/volatile 修饰做特征萃取（remove_const 等）
 
 ## 自测练习（Exercises）
 

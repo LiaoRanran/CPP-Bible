@@ -1,8 +1,8 @@
 # 第09章　C++26：已确定特性与方向
 > **[验证环境·标准状态]** 本章描述 **C++26 尚未冻结**的特性（截至编写时）。示例与语法在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++26`** 下验证其**当前支持程度**；具体语义以最终 ISO C++26 标准与 GCC 后续版本为准。标 `[UNVERIFIED]` 处表示本机 GCC 15.3.0 尚未实现或行为待定，非通用结论。
 
-⟶ Book/part10_modern/ch121_contracts.md
-⟶ Book/part10_modern/ch123_ct_programming.md
+[第121章 Contracts 契约（方向，C++26）](Book/part10_modern/ch121_contracts.md)
+[第123章　Compile-Time 编程范式总览](Book/part10_modern/ch123_ct_programming.md)
 
 > 标准基：ISO/IEC 14882:2026（草案，**特性可能变动**）｜预计阅读：25 min｜前置：ch07、ch67、ch113、ch114｜后续：ch74 反射、ch121 Contracts、ch114 Executor｜难度：★★★★
 
@@ -44,8 +44,8 @@ C++26 的旗舰之争是"反射该有多强"。一派要完整编译期元对象
 
 ## ① 学习目标
 
-⟶ Book/part01_history/ch08_cpp23.md
-⟶ Book/part01_history/ch10_version_matrix.md
+[第08章　C++23：标准库大修](Book/part01_history/ch08_cpp23.md)
+[第10章　版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)
 
 > **示例 1** [难度 ★★☆☆☆] [主题：学习目标]
 ```cpp
@@ -600,9 +600,9 @@ jg     7b                    ; 失败→跳 0x7b 调用 handle_contract_violatio
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part01_history/ch07_cpp20.md（第07章　C++20：量级升级）—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
+- **相邻主题**：[第07章　C++20：量级升级](Book/part01_history/ch07_cpp20.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)）—— 编号相邻、主题接续。
+- **同模块**：[第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)—— 同模块下的其他主题。
 
 ## 叙事补遗 [J: Learning]
 

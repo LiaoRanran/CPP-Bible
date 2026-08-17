@@ -1,8 +1,8 @@
 # 第70章　std::integral_constant 与标签分发（Tag Dispatch）
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-⟶ Book/part06_templates/ch65_type_traits.md
-⟶ Book/part08_algorithms/ch95_algo_overview.md
+[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)
+[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)
 
 > 本章所有汇编证据由 **MinGW GCC 15.3.0**（`-std=c++23 -O2 -S -masm=intel`）真实提取，源码剖析行号取自该工具链安装的 libstdc++ 15.3.0 头文件。
 ## ⓪ 历史动机：标签分发的来龙去脉
@@ -37,8 +37,8 @@ Stepanov 设计 STL（1994 年纳入标准）时面临一个难题：同一个�
 
 ## ① 学习目标
 
-⟶ Book/part06_templates/ch69_constexpr.md
-⟶ Book/part06_templates/ch71_policy.md
+[第69章　编译期计算：constexpr / consteval / constinit](Book/part06_templates/ch69_constexpr.md)
+[第71章　策略设计 Policy-Based Design](Book/part06_templates/ch71_policy.md)
 
 - 理解**标签分发（tag dispatch）**的本质：用一个**类型**（空 struct 或 `integral_constant<bool,B>::type`）作为"编译期路由键"，让重载决议在编译期选定实现分支。
 - 掌握 `std::true_type`/`std::false_type`（即 `integral_constant<bool,true/false>::type`）作为布尔标签的用法，以及 `std::is_integral<T>::type` 这类"类型性质 → 标签"的衔接。
@@ -792,13 +792,13 @@ int main(){std::vector<int> v{1,2,3};auto it=v.begin();std::advance(it,2);std::c
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— 标签分发建立在模板重载基础之上
-- **同模块接续**：⟶ Book/part06_templates/ch68_tmp.md（第68章　模板元编程 TMP 基础（递归 / 分支 / 循环））—— 标签分发是 TMP 的经典应用
-- **同模块接续**：⟶ Book/part06_templates/ch72_expression_templates.md（第72章　表达式模板 Expression Templates）—— 表达式模板用标签选择实现
-- **同模块接续**：⟶ Book/part06_templates/ch61_template_overload.md（第61章　函数模板重载决议（Function Template Overload Resolution））—— 标签即重载决议的空类型参数
-- **同模块接续**：⟶ Book/part06_templates/ch66_sfinae.md（第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发）—— SFINAE 可为标签分发加约束
-- **跨模块**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— STL 算法大量用标签分发选最优实现（如 iterator_category）
-- **跨模块**：⟶ Book/part08_algorithms/ch95_algo_overview.md（第95章　STL 算法分类与复杂度（C++））—— 算法总览中标签分发决定复杂度保证
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— 标签分发建立在模板重载基础之上
+- **同模块接续**：[第68章　模板元编程 TMP 基础（递归 / 分支 / 循环）](Book/part06_templates/ch68_tmp.md)）—— 标签分发是 TMP 的经典应用
+- **同模块接续**：[第72章　表达式模板 Expression Templates](Book/part06_templates/ch72_expression_templates.md)—— 表达式模板用标签选择实现
+- **同模块接续**：[第61章　函数模板重载决议（Function Template Overload Resolution）](Book/part06_templates/ch61_template_overload.md)）—— 标签即重载决议的空类型参数
+- **同模块接续**：[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)—— SFINAE 可为标签分发加约束
+- **跨模块**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— STL 算法大量用标签分发选最优实现（如 iterator_category）
+- **跨模块**：[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)）—— 算法总览中标签分发决定复杂度保证
 
 ## 附录 K（工业级标签分发实战）
 

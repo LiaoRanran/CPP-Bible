@@ -1,8 +1,8 @@
 # 第150章 测试策略（C++）
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-⟶ Book/part03_language/ch29_friend.md
-⟶ Book/part13_engineering/ch149_ci_cd.md
+[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)
+[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
 
 > **取证说明（真实运行，非编造）**
 > 本章所有 `g++` 输出均来自本机真实执行：`g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0`（路径 `C:/Qt/Tools/mingw1310_64/bin/g++.exe`）。
@@ -41,8 +41,8 @@ xUnit 的核心取舍是"隔离 + 断言 + 可重复"：每个测试独立、快
 
 ## ① 概述：测试金字塔 [经验]
 
-⟶ Book/part13_engineering/ch149_ci_cd.md
-⟶ Book/part13_engineering/ch151_benchmark.md
+[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
+[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)
 
 测试金字塔（Test Pyramid）是测试策略的全局权衡框架：底层是大量的**单元测试**（快、稳定、廉价），中层是较少的**集成测试**（验证模块协作），顶层是更少的**端到端测试**（慢、易碎、昂贵）。C++ 因编译/链接重、平台耦合强，更应避免把逻辑验证压在端到端层。
 
@@ -1195,14 +1195,14 @@ P2895R0 (std::testing): 标准化测试框架提案 (2024, 早期讨论)
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch147_code_review.md（第147章 代码审查（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch149_ci_cd.md（第149章 CI/CD 流水线（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch151_benchmark.md（第151章 基准测试与性能度量（C++））
-- **跨模块延伸（part14 性能）**：⟶ Book/part14_perf/ch152_perf_model.md（第152章　性能模型与测量学）—— 测试策略需结合性能模型判断基准有效性
+- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）
+- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）
+- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）
+- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)）
+- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）
+- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)）
+- **同模块兄弟（part13 工程）**：[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)）
+- **跨模块延伸（part14 性能）**：[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)—— 测试策略需结合性能模型判断基准有效性
 
 ## 底层视角：测试开销、并行争用与 SIMD 校验 [E: Low-level]
 

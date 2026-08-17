@@ -1,8 +1,8 @@
 # 第07章　C++20：量级升级
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part06_templates/ch67_concepts.md
-⟶ Book/part10_modern/ch119_ranges_deep.md
+[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)
+[第119章　Ranges 深入（C++20）](Book/part10_modern/ch119_ranges_deep.md)
 
 > 标准基：ISO/IEC 14882:2020（N4861）｜预计阅读：45 min｜前置：ch04–ch06、ch60 模板、ch63 变参｜后续：ch67 Concepts、ch90/119 Ranges、ch113/120 Coroutines、ch118 Modules、ch21 consteval、ch25 枚举(多种)、ch32 初始化(设计化)｜难度：★★★★
 
@@ -42,8 +42,8 @@ C++20 的旗舰之争是"概念该多强"。一派要完整类型级约束语言
 
 ## ① 学习目标
 
-⟶ Book/part01_history/ch06_cpp17.md
-⟶ Book/part01_history/ch08_cpp23.md
+[第06章　C++17：生产力跃升](Book/part01_history/ch06_cpp17.md)
+[第08章　C++23：标准库大修](Book/part01_history/ch08_cpp23.md)
 
 > **示例 1** [难度 ★★☆☆☆] [主题：学习目标]
 ```cpp
@@ -596,10 +596,10 @@ int main(){std::cout<<add(10,20)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：⟶ Book/part01_history/ch10_version_matrix.md（第10章　版本特性全景对照表与迁移指南）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：⟶ Book/part01_history/ch05_cpp14.md（第05章　C++14：小幅完善）—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part01_history/ch09_cpp26.md（第09章　C++26：已确定特性与方向）—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part01_history/ch01_c_history.md（第01章　C 语言遗产与 C with Classes）—— 同模块下的其他主题。
+- **后续依赖**：[第10章　版本特性全景对照表与迁移指南](Book/part01_history/ch10_version_matrix.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第05章　C++14：小幅完善](Book/part01_history/ch05_cpp14.md)—— 编号相邻、主题接续。
+- **相邻主题**：[第09章　C++26：已确定特性与方向](Book/part01_history/ch09_cpp26.md)—— 编号相邻、主题接续。
+- **同模块**：[第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)—— 同模块下的其他主题。
 
 ## 附录 G：C++20 工业实践与深度
 

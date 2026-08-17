@@ -31,8 +31,8 @@
 
 ## ① 概述：为什么需要可空与可辨别联合 [标准]
 
-⟶ Book/part07_stl/ch87_bitset.md
-⟶ Book/part07_stl/ch89_tuple_any.md
+[第87章　bitset：编译期定长位集](Book/part07_stl/ch87_bitset.md)
+[第89章　tuple / pair / any / function / bind](Book/part07_stl/ch89_tuple_any.md)
 
 `std::optional<T>`、`std::expected<T,E>`、`std::variant<...>` 三者都把"可能缺失 / 可能失败 / 多类型其一"编码进**值语义类型**，替代裸指针、`union`、异常或输出参数。
 
@@ -709,14 +709,14 @@ A: value() = wide contract (has_value 检查 → 抛异常); operator* = narrow 
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 可空/可辨别联合是该架构的值语义组件
-- **同模块相邻**：⟶ Book/part07_stl/ch89_tuple_any.md（第89章　tuple / pair / any / function / bind）—— tuple/pair/any 是其定长异构近亲
-- **同模块相邻**：⟶ Book/part07_stl/ch86_adapters.md（第86章　容器适配器：stack / queue / priority_queue）—— 适配器与这些组件常组合使用
-- **同模块相邻**：⟶ Book/part07_stl/ch90_ranges.md（第90章　ranges 与 views：惰性求值与管道组合）—— ranges 视图与这些类型配合表达惰性管道
-- **跨模块前置**：⟶ Book/part01_history/ch06_cpp17.md（第06章　C++17：生产力跃升）—— optional/variant 于 C++17 引入，本章为其前置
-- **跨模块前置**：⟶ Book/part01_history/ch08_cpp23.md（第08章　C++23：标准库大修）—— C++23 扩展与完善这些类型，本章为其前置
-- **相邻主题**：⟶ Book/part03_language/ch28_lifetime_ub.md（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— variant 的活性访问与对象生命周期/UB 紧密相关
-- **相邻主题**：⟶ Book/part04_memory/ch39_raii_rule.md（第 39 章　RAII 与 Rule of Zero/Three/Five）—— 这些类型以 RAII 管理内部资源
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 可空/可辨别联合是该架构的值语义组件
+- **同模块相邻**：[第89章　tuple / pair / any / function / bind](Book/part07_stl/ch89_tuple_any.md)—— tuple/pair/any 是其定长异构近亲
+- **同模块相邻**：[第86章　容器适配器：stack / queue / priority_queue](Book/part07_stl/ch86_adapters.md)—— 适配器与这些组件常组合使用
+- **同模块相邻**：[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)—— ranges 视图与这些类型配合表达惰性管道
+- **跨模块前置**：[第06章　C++17：生产力跃升](Book/part01_history/ch06_cpp17.md)—— optional/variant 于 C++17 引入，本章为其前置
+- **跨模块前置**：[第08章　C++23：标准库大修](Book/part01_history/ch08_cpp23.md)—— C++23 扩展与完善这些类型，本章为其前置
+- **相邻主题**：[第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化](Book/part03_language/ch28_lifetime_ub.md)：生存期、悬垂、UB 分类与编译器武器化）—— variant 的活性访问与对象生命周期/UB 紧密相关
+- **相邻主题**：[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)—— 这些类型以 RAII 管理内部资源
 
 ## 附录 E（工业级 optional / variant 实战）
 

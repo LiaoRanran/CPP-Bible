@@ -3,8 +3,8 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23) 为主；`<bit>` 整数位操作库见 §⑬。
 > 预计阅读：约 90 分钟（含源码精读与跨语言对比）。
-> 前置：⟶ Book/part07_stl/ch80_array.md（固定大小数组）、⟶ Book/part06_templates/ch65_type_traits.md（整型特性）、⟶ Book/part07_stl/ch77_vector.md（vector\<bool\> 特化对比）
-> 后续：⟶ Book/part07_stl/ch88_optional_variant.md（值语义包装）、⟶ Book/part14_perf/ch155_simd.md（位级并行）、⟶ Book/part11_source/ch124_libstdcxx.md（阅读入口）
+> 前置：[第80章　array 与固定数组](Book/part07_stl/ch80_array.md)（固定大小数组）、[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)（整型特性）、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector\<bool\> 特化对比）
+> 后续：[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)（值语义包装）、[第155章　SIMD / AVX 向量化（C++/硬件）](Book/part14_perf/ch155_simd.md)（位级并行）、[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)（阅读入口）
 > 难度：★★☆（API 简单，但"编译期定长"带来的约束与 `vector<bool>` 的取舍是面试高频点）
 
 ---
@@ -1110,10 +1110,10 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 定长位集是该架构的编译期定长组件
-- **同模块相邻**：⟶ Book/part07_stl/ch80_array.md（第80章　array 与固定数组）—— array 是定长值序列，bitset 是定长位序列
-- **同模块相邻**：⟶ Book/part07_stl/ch89_tuple_any.md（第89章　tuple / pair / any / function / bind）—— tuple 等定长异构组件类比
-- **对比展示**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— bitset 通常不使用 allocator（栈/静态存储），对比展示 STL 内存后端
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 定长位集是该架构的编译期定长组件
+- **同模块相邻**：[第80章　array 与固定数组](Book/part07_stl/ch80_array.md)—— array 是定长值序列，bitset 是定长位序列
+- **同模块相邻**：[第89章　tuple / pair / any / function / bind](Book/part07_stl/ch89_tuple_any.md)—— tuple 等定长异构组件类比
+- **对比展示**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— bitset 通常不使用 allocator（栈/静态存储），对比展示 STL 内存后端
 
 ## 自测练习（Exercises）
 

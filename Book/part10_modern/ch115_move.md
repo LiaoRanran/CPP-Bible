@@ -1,7 +1,7 @@
 # 第115章　移动语义与右值引用
 > **[验证环境·实现]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。移动语义本身是 [标准] 定义的语言机制；但「移动后性能提升 X」「NRVO 是否触发」等**实测结论依赖具体编译器与优化级别**（GCC 15.3.0 / `-O2`），不可移植为通用性能定律。断言如「移动比拷贝快」仅在给定类型与编译器下成立，标 `[UNVERIFIED]` 处请以本机复测为准。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：95 分钟 / 前置：⟶ Book/part03_language/ch19_variables.md（变量与存储期）、⟶ Book/part03_language/ch20_reference_pointer.md（引用与指针）、⟶ Book/part04_memory/ch39_raii_rule.md（Rule of Three/Five/Zero）、⟶ Book/part07_stl/ch77_vector.md（vector 扩容）/ 后续：⟶ Book/part10_modern/ch116_perfect_forwarding.md（完美转发）、⟶ Book/part10_modern/ch117_copy_elision.md（RVO/NRVO）、⟶ Book/part03_language/ch27_cast.md（cast）/ 难度：★★★★☆
+> 标准基：ISO/IEC 14882:2023 (C++23) / 预计阅读：95 分钟 / 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（变量与存储期）、[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)（引用与指针）、[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)（Rule of Three/Five/Zero）、[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector 扩容）/ 后续：[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)（完美转发）、[第117章　RVO / NRVO 与拷贝消除（C++17）](Book/part10_modern/ch117_copy_elision.md)（RVO/NRVO）、[第27章　显式转型四兄弟与隐式转换：const_cast / static_cast / dynamic_cast / reinterpret_cast 深度详解](Book/part03_language/ch27_cast.md)（cast）/ 难度：★★★★☆
 
 ## ⓪ 历史动机：移动语义的来龙去脉
 > 一个即将销毁的临时对象，凭什么还要被"拷贝"一遍？这曾是 C++ 最刺眼的浪费。
@@ -1287,11 +1287,11 @@ RVO 不产生函数调用在调用方生成对象。编译器在函数签名层�
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 本章为其前置，建议后续延伸阅读。
-- **后续依赖**：⟶ Book/part04_memory/ch39_raii_rule.md（第 39 章　RAII 与 Rule of Zero/Three/Five）—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：⟶ Book/part10_modern/ch116_perfect_forwarding.md（第116章　完美转发与万能引用）—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part10_modern/ch117_copy_elision.md（第117章　RVO / NRVO 与拷贝消除（C++17））—— 同模块下的其他主题。
+- **后续依赖**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 本章为其前置，建议后续延伸阅读。
+- **后续依赖**：[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第116章　完美转发与万能引用](Book/part10_modern/ch116_perfect_forwarding.md)—— 编号相邻、主题接续。
+- **同模块**：[第117章　RVO / NRVO 与拷贝消除（C++17）](Book/part10_modern/ch117_copy_elision.md)）—— 同模块下的其他主题。
 
 ## 自测练习（Exercises）
 

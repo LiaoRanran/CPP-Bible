@@ -3,8 +3,8 @@
 
 > 标准基：ISO/IEC 14882:2023 (C++23)，补充 C++20 迭代器概念与哨兵。
 > 预计阅读：约 90 分钟（深度版，含源码/汇编/概念映射）。
-> 前置：⟶ Book/part03_language/ch19_variables.md（存储期与对象） · ⟶ Book/part06_templates/ch60_template_basics.md（模板与实例化） · ⟶ Book/part06_templates/ch67_concepts.md（C++20 概念）。
-> 后续：⟶ Book/part07_stl/ch77_vector.md（vector 与三指针） · ⟶ Book/part07_stl/ch84_set.md（有序容器） · ⟶ Book/part07_stl/ch85_unordered.md（哈希容器）。
+> 前置：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)（存储期与对象） · [第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)（模板与实例化） · [第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)（C++20 概念）。
+> 后续：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)（vector 与三指针） · [第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)（有序容器） · [第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md)（哈希容器）。
 > 难度：★★★☆☆（理解泛型分层与"编译期多态"为何使 STL 既高效又可组合）。
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2 -Wall -Wextra`）。源码根：`C:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`。本章 `[实现]` 级源码取自 `bits/stl_iterator_base_types.h`、`bits/stl_iterator_base_funcs.h`、`bits/stl_iterator.h`，逐行标注文件与行号。
 
@@ -43,7 +43,7 @@ STL（Standard Template Library）由**六大组件**构成，迭代器是连接
 3. **算法（Algorithms）**：`sort`/`find`/`transform`/… 以迭代器区间 `[first,last)` 为参数。
 4. **仿函数 / 函数对象（Functors）**：`std::less`、lambda，作为算法策略。
 5. **适配器（Adapters）**：`stack`/`queue`、`back_inserter`、反向迭代器，改造接口。
-6. **分配器（Allocators）**：隔离内存申请/释放，见 ⟶ Book/part07_stl/ch77_vector.md。
+6. **分配器（Allocators）**：隔离内存申请/释放，见 [第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)。
 
 本章目标：
 
@@ -55,17 +55,17 @@ STL（Standard Template Library）由**六大组件**构成，迭代器是连接
 
 ## ② 前置知识
 
-- 模板基础与实例化：⟶ Book/part06_templates/ch60_template_basics.md。
-- 类型萃取 Type Traits：⟶ Book/part06_templates/ch65_type_traits.md。
-- C++20 Concepts：`std::forward_iterator` 等是概念，见 ⟶ Book/part06_templates/ch67_concepts.md。
-- 指针即随机访问/连续迭代器：⟶ Book/part03_language/ch20_reference_pointer.md。
+- 模板基础与实例化：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)。
+- 类型萃取 Type Traits：[第65章　类型特性 Type Traits —— 编译期类型自省与分发](Book/part06_templates/ch65_type_traits.md)。
+- C++20 Concepts：`std::forward_iterator` 等是概念，见 [第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)。
+- 指针即随机访问/连续迭代器：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)。
 
 ## ③ 后续依赖
 
-- `vector` 三指针与失效：⟶ Book/part07_stl/ch77_vector.md。
-- 有序/哈希容器迭代器失效差异：⟶ Book/part07_stl/ch84_set.md、Book/part07_stl/ch85_unordered.md。
-- 算法分类与复杂度：⟶ Book/part08_algorithms/ch95_algo_overview.md。
-- ranges 与投影：⟶ Book/part07_stl/ch90_ranges.md。
+- `vector` 三指针与失效：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)。
+- 有序/哈希容器迭代器失效差异：[第84章　set / multiset：红黑树有序集合](Book/part07_stl/ch84_set.md)、Book/part07_stl/ch85_unordered.md。
+- 算法分类与复杂度：[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)。
+- ranges 与投影：[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)。
 
 ## ④ 知识图谱（ASCII）
 
@@ -187,15 +187,15 @@ range-based for 对 `vector` 展开后就是指针比较循环，GCC13 `-O2` 下
 ; 注意：因 vector 迭代器是裸指针，循环被完全矢量化为 AVX 加载也很常见。
 ```
 
-- `[实现·GCC15]`：连续迭代器展开后等价于指针遍历，编译器可自动**向量化**（⟶ Book/part14_perf/ch155_simd.md）；而 `list` 迭代器因指针跳变无法向量化。
+- `[实现·GCC15]`：连续迭代器展开后等价于指针遍历，编译器可自动**向量化**（[第155章　SIMD / AVX 向量化（C++/硬件）](Book/part14_perf/ch155_simd.md)）；而 `list` 迭代器因指针跳变无法向量化。
 - `[经验]`：热路径遍历优先 `vector`/`array`（连续迭代器），这正是性能敏感代码的铁律。
 
 ## ⑪ STL 联系
 
-- 容器提供 `begin()/end()`，算法消费迭代器区间——二者通过迭代器解耦（⟶ Book/part07_stl/ch77_vector.md）。
-- 仿函数（lambda/`std::less`）作为算法第三参数，实现策略注入（⟶ Book/part06_templates/ch71_policy.md）。
-- 适配器：`back_inserter` 把"赋值"改成"push_back"；`reverse_iterator` 反转方向（⟶ Book/part07_stl/ch90_ranges.md）。
-- 分配器被容器在底层使用，普通算法不直接接触（⟶ Book/part04_memory/ch38_allocator.md）。
+- 容器提供 `begin()/end()`，算法消费迭代器区间——二者通过迭代器解耦（[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)）。
+- 仿函数（lambda/`std::less`）作为算法第三参数，实现策略注入（[第71章　策略设计 Policy-Based Design](Book/part06_templates/ch71_policy.md)）。
+- 适配器：`back_inserter` 把"赋值"改成"push_back"；`reverse_iterator` 反转方向（[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)）。
+- 分配器被容器在底层使用，普通算法不直接接触（[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)）。
 
 ## ⑫ 工业案例：泛型日志聚合器（跨容器复用算法，非 Hello World）
 
@@ -365,7 +365,7 @@ int main() {
 1. 泛型代码用**最弱够用的**迭代器概念做约束（如只读遍历用 `input_iterator` 而非 `random_access`），最大化复用。
 2. 热路径遍历优先连续迭代器（`vector`/`array`/`string`），利于向量化与缓存。
 3. 需要"写回容器"时用 `back_inserter`/`inserter`，避免手动维护索引。
-4. 区间算法优先 `std::ranges::xxx`（C++20），可读性更好（⟶ Book/part07_stl/ch90_ranges.md）。
+4. 区间算法优先 `std::ranges::xxx`（C++20），可读性更好（[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)）。
 5. 不要假设迭代器在容器修改后仍然有效——查 ⑲ 失效表。
 6. 新代码用 C++20 概念（如 `std::forward_iterator`）替代 `enable_if`  SFINAE 约束。
 
@@ -410,9 +410,9 @@ int main() {
 | `deque` | 头/尾插不失效；中间插全失效 | 头/尾删不失效；中间删全失效 | 分段连续 |
 | `list`/`forward_list` | 仅被插节点后插入点迭代器有效 | 仅被删迭代器失效 | 节点式，最稳 |
 | `map`/`set` | 不失效 | 仅被删迭代器失效 | 节点式 |
-| `unordered_*` | rehash 使所有失效；否则不失效 | 仅被删迭代器失效；引用仍有效 | 见 ⟶ Book/part07_stl/ch85_unordered.md |
+| `unordered_*` | rehash 使所有失效；否则不失效 | 仅被删迭代器失效；引用仍有效 | 见 [第85章　unordered_map / unordered_set：哈希开链集合](Book/part07_stl/ch85_unordered.md) |
 
-- `[平台·x86-64]`：连续迭代器遍历可被编译器向量化为 AVX 加载（⟶ Book/part14_perf/ch155_simd.md），单遍可快数倍；非连续迭代器每步一次缓存缺失。
+- `[平台·x86-64]`：连续迭代器遍历可被编译器向量化为 AVX 加载（[第155章　SIMD / AVX 向量化（C++/硬件）](Book/part14_perf/ch155_simd.md)），单遍可快数倍；非连续迭代器每步一次缓存缺失。
 - `[经验]`：性能敏感的批量处理尽量用 `vector` + 连续迭代器；`list` 仅在"频繁中间插入且持有迭代器"场景下占优。
 
 ## ⑳ 跨语言对比
@@ -1109,13 +1109,13 @@ int main(){std::vector<int> v{1,2,3};std::map<int,int> m{{1,10}};std::cout<<v[0]
 
 ## 相关章节（交叉引用）
 
-- **同模块核心**：⟶ Book/part07_stl/ch77_vector.md（第77章　vector：扩容、失效、allocator 协作）—— vector 是该架构下连续内存容器的典型实现，迭代器类别为随机访问
-- **同模块核心**：⟶ Book/part07_stl/ch78_deque.md（第78章　deque 与分段连续 [标准]）—— deque 的分段缓冲体现同一架构下的另一种迭代器模型
-- **同模块核心**：⟶ Book/part07_stl/ch79_list.md（第79章　list / forward_list [标准]）—— list/forward_list 的节点迭代器满足同一套迭代器概念
-- **同模块核心**：⟶ Book/part07_stl/ch90_ranges.md（第90章　ranges 与 views：惰性求值与管道组合）—— ranges 在该架构之上叠加惰性管道与视图
-- **跨模块前置**：⟶ Book/part04_memory/ch38_allocator.md（第 38 章　分配器（Allocator）模型与 PMR）—— allocator 是 STL 容器的可插拔内存后端，架构依赖它切分内存
-- **相邻主题**：⟶ Book/part10_modern/ch115_move.md（第115章　移动语义与右值引用）—— 移动语义是该架构值传递的零拷贝基石
-- **相邻主题**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— PMR 多态分配器是该架构的现代内存后端
+- **同模块核心**：[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)—— vector 是该架构下连续内存容器的典型实现，迭代器类别为随机访问
+- **同模块核心**：[第78章　deque 与分段连续 [标准]](Book/part07_stl/ch78_deque.md)—— deque 的分段缓冲体现同一架构下的另一种迭代器模型
+- **同模块核心**：[第79章　list / forward_list [标准]](Book/part07_stl/ch79_list.md)—— list/forward_list 的节点迭代器满足同一套迭代器概念
+- **同模块核心**：[第90章　ranges 与 views：惰性求值与管道组合](Book/part07_stl/ch90_ranges.md)—— ranges 在该架构之上叠加惰性管道与视图
+- **跨模块前置**：[第 38 章　分配器（Allocator）模型与 PMR](Book/part04_memory/ch38_allocator.md)模型与 PMR）—— allocator 是 STL 容器的可插拔内存后端，架构依赖它切分内存
+- **相邻主题**：[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)—— 移动语义是该架构值传递的零拷贝基石
+- **相邻主题**：[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)—— PMR 多态分配器是该架构的现代内存后端
 
 ## 自测练习（Exercises）
 

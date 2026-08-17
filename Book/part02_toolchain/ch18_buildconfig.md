@@ -1,8 +1,8 @@
 # 第18章　构建配置：Debug / Release / LTO / PGO（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part02_toolchain/ch12_buildsystems.md
-⟶ Book/part13_engineering/ch149_ci_cd.md
+[第12章　构建系统：Make / Ninja / CMake（C++）](Book/part02_toolchain/ch12_buildsystems.md)
+[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23`，x86-64，AT&T 汇编经 `objdump -d` 反汇编，Intel 关键字见 `-masm=intel`）。
 > 取证源：`Examples/_ch18_opt.cpp`、`Examples/_ch18_stack.cpp`、`Examples/_ch18_lib.cpp`、`Examples/_ch18_main.cpp`、`Examples/_ch18_pgo.cpp`、`Examples/_ch18_mylib.cpp`（均在本机真实编译、真实反汇编，汇编片段逐字取自产物，绝不编造）。
@@ -37,7 +37,7 @@
 
 ## ① 概述：构建配置维度
 
-⟶ Book/part02_toolchain/ch17_crosscompile.md
+[第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)
 
 构建配置决定**同一份源码**生成的可执行文件在体积、速度、可调试性、安全性上的差异。它不是语言特性，而是"编译器 + 链接器 + 库 + 标志"的组合。
 
@@ -933,11 +933,11 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **后续依赖**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））—— 本章为其前置，建议后续延伸阅读。
-- **相邻主题**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part02_toolchain/ch16_ide.md（第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++））—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part03_language/ch20_reference_pointer.md（第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 同模块下的其他主题。
+- **后续依赖**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）—— 本章为其前置，建议后续延伸阅读。
+- **相邻主题**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第20章　引用（reference）vs 指针（pointer）：语义本质、底层实现与生命周期战争](Book/part03_language/ch20_reference_pointer.md)vs 指针（pointer）：语义本质、底层实现与生命周期战争）—— 编号相邻、主题接续。
+- **同模块**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)）—— 同模块下的其他主题。
 
 ## 底层视角：编译旗标、SIMD 与二进制对齐 [E: Low-level]
 

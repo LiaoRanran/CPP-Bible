@@ -1,11 +1,11 @@
 # 第25章　union 与 std::variant 深度详解
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part07_stl/ch88_optional_variant.md
-⟶ Book/part03_language/ch32_initialization.md
+[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
+[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)
 
-⟶ Book/part07_stl/ch88_optional_variant.md
-⟶ Book/part03_language/ch32_initialization.md
+[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)
+[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)
 
 > 标准基：ISO/IEC 14882:2023（C++23）｜预计阅读：6 h｜前置：ch19（存储期/链接/ODR）、ch20（引用与指针）、ch21（const 家族）、ch34（异常安全与 valueless）、ch59（模板与 variant）、ch115（右值引用与 visit 完美转发）｜难度：★★★★★
 
@@ -45,8 +45,8 @@ union 用"内存复用"换安全；variant 用"一点控制块开销"换"永远�
 
 ## ① 概述：从 union 到 variant 的演进
 
-⟶ Book/part03_language/ch24_enum.md
-⟶ Book/part03_language/ch26_lambda.md
+[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)
+[第26章　lambda 表达式全解：闭包类型、捕获、泛型/模板 lambda、constexpr、ABI 与 std::function 类型擦除](Book/part03_language/ch26_lambda.md)
 
 `union` 是 C 语言遗留的"重叠存储"机制：所有成员共享同一块内存，同一时刻只有一个成员是"活跃的"（active）。它高效（零开销），但**完全不安全**——编译器不知道当前哪个成员有效，读错成员是未定义行为（UB）。
 
@@ -1986,14 +1986,14 @@ int main(){std::variant<int,double> v;std::cout<<sizeof(v)<<std::endl;v=3.14;std
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part03_language/ch19_variables.md（第19章　变量、存储期、链接与 ODR（工业级深度版））—— union/variant 的对象表示与存储期直接承接变量章
-- **同模块接续**：⟶ Book/part03_language/ch24_enum.md（第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射））—— 枚举标志位组合常与 union 共享内存表示
-- **同模块接续**：⟶ Book/part03_language/ch28_lifetime_ub.md（第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化）—— active 成员的构造/析构构成生命周期边界，误用即 UB
-- **同模块接续**：⟶ Book/part03_language/ch32_initialization.md（第32章 初始化与列表初始化）—— variant 的活跃成员初始化由初始化章的构造语义约束
-- **同模块接续**：⟶ Book/part03_language/ch23_namespace_adl.md（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 匿名命名空间可包裹私有 union 类型
-- **跨模块**：⟶ Book/part04_memory/ch35_memory_layout.md（第 35 章  C++ 程序的内存模型与操作系统视角）—— 联合的内存布局由目标文件段与对齐规则决定
-- **跨模块**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　C++ 面向对象总览与对象模型基础）—— 对象模型解释联合/变体在类中的内存表示
-- **跨模块**：⟶ Book/part07_stl/ch88_optional_variant.md（第88章　optional / expected / variant：可空与可辨别联合）—— std::variant 是 union 的类型安全现代化替代（STL 卷）
+- **同模块接续**：[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)）—— union/variant 的对象表示与存储期直接承接变量章
+- **同模块接续**：[第 24 章　枚举（枚举类型全解：unscoped / enum class / 位掩码 / ABI / 反射）](Book/part03_language/ch24_enum.md)）—— 枚举标志位组合常与 union 共享内存表示
+- **同模块接续**：[第28章　对象生命周期与未定义行为（UB）：生存期、悬垂、UB 分类与编译器武器化](Book/part03_language/ch28_lifetime_ub.md)：生存期、悬垂、UB 分类与编译器武器化）—— active 成员的构造/析构构成生命周期边界，误用即 UB
+- **同模块接续**：[第32章 初始化与列表初始化](Book/part03_language/ch32_initialization.md)—— variant 的活跃成员初始化由初始化章的构造语义约束
+- **同模块接续**：[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](Book/part03_language/ch23_namespace_adl.md)、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— 匿名命名空间可包裹私有 union 类型
+- **跨模块**：[第 35 章  C++ 程序的内存模型与操作系统视角](Book/part04_memory/ch35_memory_layout.md)—— 联合的内存布局由目标文件段与对齐规则决定
+- **跨模块**：[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)—— 对象模型解释联合/变体在类中的内存表示
+- **跨模块**：[第88章　optional / expected / variant：可空与可辨别联合](Book/part07_stl/ch88_optional_variant.md)—— std::variant 是 union 的类型安全现代化替代（STL 卷）
 
 ## 自测练习（Exercises）
 

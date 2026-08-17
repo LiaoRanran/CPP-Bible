@@ -1,8 +1,8 @@
 # 第137章 结构型模式（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part12_patterns/ch135_patterns_intro.md
-⟶ Book/part05_oo/ch45_oop_object_model.md
+[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)
+[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
 
 > 取证说明：本章所有可编译示例位于 `Examples/_ch137_*.cpp`，均通过 `g++ -std=c++23 -O2 -Wall -Wextra` 实测编译；汇编取证由 `g++ -std=c++23 -O2 -S -masm=intel` 对 `Examples/_ch137_bridge_layout.cpp` 生成（`Examples/_ch137_bridge_layout.asm` 与 `_O0.asm`）；性能数据由 `Examples/_ch137_decorator_bench.cpp` 在 mingw-w64 GCC 13.1.0 (x86-64, -O2) 上真实运行得到。未安装工具的环境请按「命令 + 典型输出」复现，绝不编造路径或指令。
 
@@ -34,8 +34,8 @@
 
 ## ① 概述：结构型模式解决什么
 
-⟶ Book/part12_patterns/ch136_creational.md
-⟶ Book/part12_patterns/ch138_behavioral.md
+[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)
+[第138章 行为型模式（C++）](Book/part12_patterns/ch138_behavioral.md)
 
 **【定义】** 结构型模式（Structural Patterns）关注「如何把类或对象组装成更大的结构」，在保持结构灵活、可复用的同时，处理接口不兼容、维度正交变化、对象组合关系三类问题。
 
@@ -1264,14 +1264,14 @@ int main(){std::cout<<"Adapter=change interface; Decorator=add behavior; Proxy=c
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch135_patterns_intro.md（第135章 设计模式总论（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch136_creational.md（第136章 创建型模式（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch138_behavioral.md（第138章 行为型模式（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch139_crtp_pattern.md（第139章 CRTP 与静态多态（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch140_policy_pattern.md（第140章 Policy-Based Design（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch141_di.md（第141章 依赖注入（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch142_ecs.md（第142章 实体组件系统 ECS（C++））
-- **同模块兄弟（part12 模式）**：⟶ Book/part12_patterns/ch143_dod.md（第143章 面向数据设计 DOD（C++））
+- **同模块兄弟（part12 模式）**：[第135章 设计模式总论（C++）](Book/part12_patterns/ch135_patterns_intro.md)）
+- **同模块兄弟（part12 模式）**：[第136章 创建型模式（C++）](Book/part12_patterns/ch136_creational.md)）
+- **同模块兄弟（part12 模式）**：[第138章 行为型模式（C++）](Book/part12_patterns/ch138_behavioral.md)）
+- **同模块兄弟（part12 模式）**：[第139章 CRTP 与静态多态（C++）](Book/part12_patterns/ch139_crtp_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)）
+- **同模块兄弟（part12 模式）**：[第141章 依赖注入（C++）](Book/part12_patterns/ch141_di.md)）
+- **同模块兄弟（part12 模式）**：[第142章 实体组件系统 ECS（C++）](Book/part12_patterns/ch142_ecs.md)）
+- **同模块兄弟（part12 模式）**：[第143章 面向数据设计 DOD（C++）](Book/part12_patterns/ch143_dod.md)）
 
 ## 附录 M：结构型模式工业实例
 

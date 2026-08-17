@@ -1,8 +1,8 @@
 # 第161章 从零实现日志库（C++）
 > 验证状态：[VERIFIED] — 复现链：D5 基准源码（经 E11 编译门禁） / 书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part11_source/ch131_fmt_spdlog.md
-⟶ Book/part13_engineering/ch144_style.md
+[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)
+[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)
 
 > 元数据：标准基 `C++20` / 预计阅读 40 分钟 / 前置 第146章（错误处理）、第143章（缓存行对齐）/ 后续 第?章（无锁数据结构）/ 难度 ★★★
 >
@@ -41,8 +41,8 @@
 
 ## ① 概述：日志的价值 [经验]
 
-⟶ Book/part15_cases/ch160_mempool.md
-⟶ Book/part15_cases/ch162_json.md
+[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)
+[第162章 从零实现 JSON 库（C++）](Book/part15_cases/ch162_json.md)
 
 日志是"程序运行时的黑匣子"。**[经验]** 在一个出过生产事故的人眼里，日志不是可选项，而是事故复盘的**唯一客观证据**——你无法用 gdb 去"回放"昨天凌晨三点的崩溃，但一条带时间戳和调用栈的 `error` 日志可以。
 
@@ -1600,11 +1600,11 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch159_threadpool.md（第159章 从零实现线程池（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch160_mempool.md（第160章 从零实现内存池（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch162_json.md（第162章 从零实现 JSON 库（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））
-- **同模块兄弟（part15 实战案例）**：⟶ Book/part15_cases/ch164_framework.md（第164章 从零实现迷你框架（C++））
+- **同模块兄弟（part15 实战案例）**：[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)）
+- **同模块兄弟（part15 实战案例）**：[第160章 从零实现内存池（C++）](Book/part15_cases/ch160_mempool.md)）
+- **同模块兄弟（part15 实战案例）**：[第162章 从零实现 JSON 库（C++）](Book/part15_cases/ch162_json.md)）
+- **同模块兄弟（part15 实战案例）**：[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)）
+- **同模块兄弟（part15 实战案例）**：[第164章 从零实现迷你框架（C++）](Book/part15_cases/ch164_framework.md)）
 
 ### 面试要点（速记·日志库）
 

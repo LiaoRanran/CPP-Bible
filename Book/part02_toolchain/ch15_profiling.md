@@ -1,8 +1,8 @@
 # 第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part13_engineering/ch151_benchmark.md
-⟶ Book/part14_perf/ch157_compiler_explorer.md
+[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)
+[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
 
 > 真实编译器：MinGW GCC 13.1.0（`-std=c++23 -O2`）。
 > 本章所有 `text` 数值均来自本机真实编译运行（`g++ -std=c++23 -O2`）；`asm` 来自 `g++ -std=c++23 -O2 -S -masm=intel` 的真实产物。
@@ -38,8 +38,8 @@
 
 ## ① 概述：为什么性能分析
 
-⟶ Book/part02_toolchain/ch14_debugging.md
-⟶ Book/part02_toolchain/ch16_ide.md
+[第14章　调试与诊断：GDB / LLDB / Sanitizer / Valgrind（C++）](Book/part02_toolchain/ch14_debugging.md)
+[第16章　IDE 与编辑器：VSCode / CLion / QtCreator / VIM（C++）](Book/part02_toolchain/ch16_ide.md)
 
 没有测量就没有优化。经验直觉常错：你觉得慢的那行，火焰图里可能只占 0.3%；真正的热点藏在缓存未命中与分支预测失败里。性能分析（Profiling）把"感觉慢"变成"数字在哪慢"。
 
@@ -1059,9 +1059,9 @@ tracy (2017): C++原生profiler, ~50ns/zone, Unity/Blizzard游戏公司使用
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part02_toolchain/ch13_packaging.md（第13章　包管理：vcpkg / Conan（C++））—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part02_toolchain/ch17_crosscompile.md（第17章　交叉编译与嵌入式工具链（C++））—— 编号相邻、主题接续。
-- **同模块**：⟶ Book/part02_toolchain/ch11_compilers.md（第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++））—— 同模块下的其他主题。
+- **相邻主题**：[第13章　包管理：vcpkg / Conan（C++）](Book/part02_toolchain/ch13_packaging.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第17章　交叉编译与嵌入式工具链（C++）](Book/part02_toolchain/ch17_crosscompile.md)）—— 编号相邻、主题接续。
+- **同模块**：[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)）—— 同模块下的其他主题。
 
 ## 真实开源项目参考（可查证链接）
 

@@ -34,8 +34,8 @@
 
 ## ① 概述：编译器优化层级 [标准]
 
-⟶ Book/part14_perf/ch155_simd.md
-⟶ Book/part14_perf/ch157_compiler_explorer.md
+[第155章　SIMD / AVX 向量化（C++/硬件）](Book/part14_perf/ch155_simd.md)
+[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
 
 C++ 是「抽象零开销」语言，但裸写的源码离机器码中间隔着一整套**中间表示（IR）优化流水线**。优化开关 `-O0..-Ofast` 决定这条流水线开多少遍、开哪些 pass；`-flto` 把流水线延伸到链接期；`-fprofile-*` 用运行期数据反哺决策。
 
@@ -467,8 +467,8 @@ void scale(double* a, double k, int n) {
 
 ## ⑫ 内联启发式与 __attribute__((always_inline)) [实现·GCC15]
 
-⟶ Book/part05_oo/ch51_crtp.md
-⟶ Book/part05_oo/ch47_virtual_functions.md
+[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
 
 内联是大多数优化（常量传播、死代码消除）的入口。`inline` 仅是**建议**；`__attribute__((always_inline))` 强迫内联（仍受 `noinline`/宏/取地址等约束）。
 
@@ -552,7 +552,7 @@ float to_float(uint32_t u) { return std::bit_cast<float>(u); }  // C++20 安全�
 
 ## ⑭ 编译时间代价 [实现·GCC15]
 
-⟶ Book/part06_templates/ch63_variadic.md
+[第63章　可变参数模板与包展开（Variadic Templates & Pack Expansion）](Book/part06_templates/ch63_variadic.md)
 
 优化不是免费的：`-O3`、LTO、PGO（两遍编译）都显著拉长构建时间，需与 CI 预算权衡。
 
@@ -715,7 +715,7 @@ g++ -std=c++23 -O2 -flto -fprofile-use       obj/*.o -o app_pgo
 
 ## ⑲ 跨编译器（clang/MSVC 等价） [平台·x86-64]
 
-⟶ Book/part02_toolchain/ch11_compilers.md
+[第11章　编译器全景：GCC / Clang / MSVC 架构与 ABI（C++）](Book/part02_toolchain/ch11_compilers.md)
 
 三家的等价开关语义接近但细节与实现质量不同；`as-if` 保证行为一致，性能形态可能不同。
 
@@ -868,12 +868,12 @@ Q: 本章核心? A: 见附录A-F中的深度分析(工业原理/性能/汇编/�
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch152_perf_model.md（第152章　性能模型与测量学）
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch153_cpu_micro.md（第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行）
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch154_cache_opt.md（第154章　缓存优化与数据局部性（C++/硬件））
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch155_simd.md（第155章　SIMD / AVX 向量化（C++/硬件））
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch157_compiler_explorer.md（第157章 Compiler Explorer 实战）
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch158_perf_antipatterns.md（第158章 性能反模式与陷阱）
+- **同模块兄弟（part14 性能工程）**：[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)
+- **同模块兄弟（part14 性能工程）**：[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)
+- **同模块兄弟（part14 性能工程）**：[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)）
+- **同模块兄弟（part14 性能工程）**：[第155章　SIMD / AVX 向量化（C++/硬件）](Book/part14_perf/ch155_simd.md)）
+- **同模块兄弟（part14 性能工程）**：[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
+- **同模块兄弟（part14 性能工程）**：[第158章 性能反模式与陷阱](Book/part14_perf/ch158_perf_antipatterns.md)
 
 ## 真实开源项目参考（可查证链接）
 

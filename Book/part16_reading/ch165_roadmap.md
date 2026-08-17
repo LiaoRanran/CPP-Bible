@@ -1,11 +1,11 @@
 # 第165章 C++ 进阶路线图（C++）
 > 验证状态：[UNVERIFIED] — 本章高风险断言尚未接入机器可验证复现链（无 D5 基准 / ASM 证据 / 已编译练习），待逐条核验。
 
-⟶ Book/part01_history/ch01_c_history.md
-⟶ Book/part03_language/ch19_variables.md
-⟶ Book/part04_memory/ch39_raii_rule.md
-⟶ Book/part07_stl/ch77_vector.md
-⟶ Book/part10_modern/ch115_move.md
+[第01章　C 语言遗产与 C with Classes](Book/part01_history/ch01_c_history.md)
+[第19章　变量、存储期、链接与 ODR（工业级深度版）](Book/part03_language/ch19_variables.md)
+[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)
+[第77章　vector：扩容、失效、allocator 协作](Book/part07_stl/ch77_vector.md)
+[第115章　移动语义与右值引用](Book/part10_modern/ch115_move.md)
 
 [经验] 你基础弱、只剩暑假两个月、目标嵌入式/C++后端/考研就业。结论先给：**别按教材顺序啃完，先堆出 4 个能写进简历的从零项目**，其余按需补。本章不灌鸡汤，只给可执行路径、命令、资源名。
 
@@ -842,8 +842,8 @@ int main() {
 
 ## 相关章节（交叉引用）
 
-- **相邻主题**：⟶ Book/part15_cases/ch164_framework.md（第164章 从零实现迷你框架（C++））—— 编号相邻、主题接续。
-- **相邻主题**：⟶ Book/part15_cases/ch163_net.md（第163章 从零实现网络编程（C++））—— 编号相邻、主题接续。
+- **相邻主题**：[第164章 从零实现迷你框架（C++）](Book/part15_cases/ch164_framework.md)）—— 编号相邻、主题接续。
+- **相邻主题**：[第163章 从零实现网络编程（C++）](Book/part15_cases/ch163_net.md)）—— 编号相邻、主题接续。
 
 ## 附录 G（标准演进与弃用时间线）
 

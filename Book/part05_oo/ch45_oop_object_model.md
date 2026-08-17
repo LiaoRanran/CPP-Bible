@@ -1,7 +1,7 @@
 # 第 45 章　C++ 面向对象总览与对象模型基础
 
-⟶ Book/part05_oo/ch47_virtual_functions.md
-⟶ Book/part05_oo/ch52_ebo.md
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
+[第52章　空基类优化 EBO（Empty Base Optimization）](Book/part05_oo/ch52_ebo.md)
 
 > 老兵标准：**不懂对象模型，就永远在用「猜」的方式写 C++。** 封装、继承、多态三大支柱背后，是一套关于「对象在内存里究竟长什么样」的精确规则。
 > 本章遵循《现代 C++ 终极圣经》标准 v3：真实源码逐行 + GCC/LLVM/MSVC 三实现对照 + libstdc++/libc++/MS STL 三 STL 对照 + microbenchmark + 跨语言对比 + 推荐阅读已内化进正文。
@@ -46,7 +46,7 @@ C++ 在对象模型上做了两个反潮流的选择：其一是**值语义优�
 
 ## ① 概述：C++ OOP 哲学——值语义优先、零开销、多范式
 
-⟶ Book/part05_oo/ch46_encapsulation_inheritance.md
+[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)
 
 **[标准]**　C++ 是一门**多范式（multi-paradigm）**语言：过程式、面向对象、泛型、函数式、元编程并存。它**不强制**你使用继承或运行时多态——这与 Java/C# 的「一切皆对象、一切皆引用」有本质区别。`[intro.object]` 把「对象」定义为「存储区域中能保存值的一段」，并不要求它属于某个类。
 
@@ -1554,14 +1554,14 @@ int main(){std::cout<<sizeof(B)<<","<<sizeof(D)<<std::endl;return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part05_oo/ch46_encapsulation_inheritance.md（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 封装/继承的对象内存布局是对象模型的直接体现，本章给出布局基线
-- **同模块接续**：⟶ Book/part05_oo/ch47_virtual_functions.md（第47章 虚函数与虚表（vtable）：动态多态的发动机）—— 虚函数表(vtable)指针是对象模型的核心成员，本章解释其偏移
-- **同模块接续**：⟶ Book/part05_oo/ch49_virtual_inheritance.md（第49章 虚继承与菱形继承：共享虚基类）—— 虚继承在对象模型中引入虚基类表指针(vbptr)，布局最复杂
-- **同模块接续**：⟶ Book/part05_oo/ch50_multiple_inheritance.md（第50章　多重继承与对象模型（Multiple Inheritance））—— 多重继承的对象模型含多个基类子对象与 this 调整
-- **同模块接续**：⟶ Book/part05_oo/ch52_ebo.md（第52章　空基类优化 EBO（Empty Base Optimization））—— EBO 是对象模型层面的布局优化，空基类不占空间
-- **跨模块**：⟶ Book/part04_memory/ch43_cache_locality.md（第 43 章　CPU 缓存体系与内存局部性）—— 缓存局部性受对象布局与访问模式影响
-- **跨模块**：⟶ Book/part04_memory/ch44_memory_pool.md（第 44 章 内存池（Memory Pool）从零实现）—— 内存池常按对象模型定制分配
-- **跨模块**：⟶ Book/part11_source/ch129_qt.md（第129章　Qt 对象模型与信号槽（C++））—— Qt 对象模型（元对象系统）建立在 C++ 对象模型之上
+- **同模块接续**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)—— 封装/继承的对象内存布局是对象模型的直接体现，本章给出布局基线
+- **同模块接续**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— 虚函数表(vtable)指针是对象模型的核心成员，本章解释其偏移
+- **同模块接续**：[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)—— 虚继承在对象模型中引入虚基类表指针(vbptr)，布局最复杂
+- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)）—— 多重继承的对象模型含多个基类子对象与 this 调整
+- **同模块接续**：[第52章　空基类优化 EBO（Empty Base Optimization）](Book/part05_oo/ch52_ebo.md)）—— EBO 是对象模型层面的布局优化，空基类不占空间
+- **跨模块**：[第 43 章　CPU 缓存体系与内存局部性](Book/part04_memory/ch43_cache_locality.md)—— 缓存局部性受对象布局与访问模式影响
+- **跨模块**：[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)从零实现）—— 内存池常按对象模型定制分配
+- **跨模块**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）—— Qt 对象模型（元对象系统）建立在 C++ 对象模型之上
 
 ## 附录 I：工业实战复盘（I.实战）[I: Practice]
 

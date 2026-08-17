@@ -1,8 +1,8 @@
 # 第126章　MS STL 架构（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part11_source/ch124_libstdcxx.md
-⟶ Book/part11_source/ch125_libcxx.md
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)
+[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)
 
 > 真实工具链：MinGW GCC 13.1.0（`C:/Qt/Tools/mingw1310_64/bin/g++.exe`，`-std=c++23 -O2 -S -masm=intel`）。
 > MS STL 本机未安装，故源码行号剖析一律引用上游 GitHub `microsoft/STL`（`https://github.com/microsoft/STL/...`）并标注「上游参考」——行号随提交浮动，以 main 分支为准。
@@ -36,8 +36,8 @@ MS STL 的取舍是"与 Windows 平台合一、以兼容与稳定为先"，例�
 
 ## ① 概述：MS STL 是 Microsoft 的 C++ 标准库 [标准]
 
-⟶ Book/part11_source/ch125_libcxx.md
-⟶ Book/part11_source/ch127_llvm.md
+[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)
+[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)
 
 MS STL（曾称 *Microsoft Visual C++ Standard Library*）是 MSVC 自带的 C++ 标准库实现，提供 `<vector>`、`<string>`、`<iostream>`、`<algorithm>` 等全部标准容器/算法/迭代器/本地化/IO/并行。它与 MSVC 工具链（编译器 `cl.exe`、运行时 `vcruntime`、CRT `ucrt`）深度耦合，是 Windows 平台 C++ 事实标准库。
 
@@ -1064,17 +1064,17 @@ int main(){std::cout<<"MS STL: 0=Release, 1=Debug, 2=Full. Parallel via Windows 
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch124_libstdcxx.md（第124章　libstdc++ 架构与阅读入口（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch125_libcxx.md（第125章　libc++ 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch127_llvm.md（第127章　LLVM / Clang 架构（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch128_boost.md（第128章　Boost 核心库（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch129_qt.md（第129章　Qt 对象模型与信号槽（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch130_chromium_abseil.md（第130章　Chromium / Abseil 基础设施（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch131_fmt_spdlog.md（第131章　fmt / spdlog 格式化与日志（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch132_leveldb_rocksdb.md（第132章　LevelDB / RocksDB 存储引擎（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch133_clickhouse_redis.md（第133章　ClickHouse / Redis 实现精读（C++））
-- **同模块兄弟（part11 源码）**：⟶ Book/part11_source/ch134_unreal.md（第134章　Unreal Engine C++ 架构（C++））
-- **跨模块延伸（part10 现代）**：⟶ Book/part10_modern/ch122_pmr.md（第122章　PMR 与多态分配器）—— PMR 多态分配器是 MS STL 容器内存后端
+- **同模块兄弟（part11 源码）**：[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)）
+- **同模块兄弟（part11 源码）**：[第125章　libc++ 架构（C++）](Book/part11_source/ch125_libcxx.md)）
+- **同模块兄弟（part11 源码）**：[第127章　LLVM / Clang 架构（C++）](Book/part11_source/ch127_llvm.md)）
+- **同模块兄弟（part11 源码）**：[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)）
+- **同模块兄弟（part11 源码）**：[第129章　Qt 对象模型与信号槽（C++）](Book/part11_source/ch129_qt.md)）
+- **同模块兄弟（part11 源码）**：[第130章　Chromium / Abseil 基础设施（C++）](Book/part11_source/ch130_chromium_abseil.md)）
+- **同模块兄弟（part11 源码）**：[第131章　fmt / spdlog 格式化与日志（C++）](Book/part11_source/ch131_fmt_spdlog.md)）
+- **同模块兄弟（part11 源码）**：[第132章　LevelDB / RocksDB 存储引擎（C++）](Book/part11_source/ch132_leveldb_rocksdb.md)）
+- **同模块兄弟（part11 源码）**：[第133章　ClickHouse / Redis 实现精读（C++）](Book/part11_source/ch133_clickhouse_redis.md)）
+- **同模块兄弟（part11 源码）**：[第134章　Unreal Engine C++ 架构（C++）](Book/part11_source/ch134_unreal.md)）
+- **跨模块延伸（part10 现代）**：[第122章　PMR 与多态分配器](Book/part10_modern/ch122_pmr.md)—— PMR 多态分配器是 MS STL 容器内存后端
 
 ## 真实开源项目参考（可查证链接）
 

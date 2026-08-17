@@ -1,7 +1,7 @@
 # 第94章　stop_token 与协作取消 [标准]
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
-> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：160 分钟 ／ 前置：⟶ Book/part07_stl/ch93_thread_async.md、⟶ Book/part09_concurrency/ch107_atomic.md、⟶ Book/part07_stl/ch93_thread_async.md ／ 后续：⟶ Book/part07_stl/ch93_thread_async.md、⟶ Book/part07_stl/ch93_thread_async.md ／ 难度：★★★★☆
+> 标准基：ISO/IEC 14882:2023 (C++23) · GCC 13.1.0 (MinGW, x86-64) ／ 预计阅读：160 分钟 ／ 前置：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md) ／ 后续：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md) ／ 难度：★★★★☆
 
 > 立场标签约定同第93章：`[标准]`/`[实现·GCC15]`/`[平台·x86-64]`/`[经验]`。libstdc++ 引用均给 `文件：`+`行号：`（相对 `lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/`）。
 
@@ -40,7 +40,7 @@ C++20 引入的**协作取消（cooperative cancellation）**三件套：
 - `std::stop_callback`：注册一个回调，在 `stop_source::request_stop()` 时被同步调用（用于释放资源、唤醒等待）。
 - `std::jthread`：C++20 新线程类型，在 `std::thread` 之上**自动持有 `stop_source`**，并把 `stop_token` 注入线程函数；析构时自动 `request_stop()` + `join()`。
 
-学完应理解：**为什么 C++ 坚决不给"强制杀线程"**；如何用 `stop_requested()` 轮询、`stop_callback` 做中断唤醒；以及它与 ⟶ Book/part07_stl/ch93_thread_async.md（可中断等待）、⟶ Book/part09_concurrency/ch107_atomic.md（内部原子位）的关系。
+学完应理解：**为什么 C++ 坚决不给"强制杀线程"**；如何用 `stop_requested()` 轮询、`stop_callback` 做中断唤醒；以及它与 [第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)（可中断等待）、[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)（内部原子位）的关系。
 
 > **示例 1** [难度 ★★☆☆☆] [主题：学习目标 [标准]]
 ```cpp
@@ -67,10 +67,10 @@ int main() {
 
 | 主题 | 为什么必须 | 链接 |
 |---|---|---|
-| `std::thread` 的 joinable/terminate 契约 | `jthread` 正是为消除"忘记 join 导致 terminate"而生 | ⟶ Book/part07_stl/ch93_thread_async.md |
-| 原子与内存序 | `stop_token` 内部用原子位测试 `stop_requested` | ⟶ Book/part09_concurrency/ch107_atomic.md、⟶ Book/part09_concurrency/ch108_memory_order.md |
-| RAII | `jthread`/`stop_callback` 的析构语义本质是 RAII | ⟶ Book/part04_memory/ch39_raii_rule.md |
-| 条件变量 | `stop_callback` 典型用途是唤醒 `condition_variable_any` 的等待 | ⟶ Book/part07_stl/ch93_thread_async.md |
+| `std::thread` 的 joinable/terminate 契约 | `jthread` 正是为消除"忘记 join 导致 terminate"而生 | [第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md) |
+| 原子与内存序 | `stop_token` 内部用原子位测试 `stop_requested` | [第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)、[第108章　memory_order：六种内存序（C++11）](Book/part09_concurrency/ch108_memory_order.md) |
+| RAII | `jthread`/`stop_callback` 的析构语义本质是 RAII | [第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md) |
+| 条件变量 | `stop_callback` 典型用途是唤醒 `condition_variable_any` 的等待 | [第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md) |
 
 `[标准]`：`<stop_token>` 自 C++20 起为标准组件（`[thread.stop_token]`、`[thread.jthread]` 条款）。
 
@@ -79,7 +79,7 @@ int main() {
 ## ③ 后续依赖 [标准]
 
 - **可中断等待**：`std::condition_variable_any::wait(stop_token, pred)` 在 `stop_token` 被请求时自动唤醒（见 ⑪）。
-- **执行器/线程池**：现代任务取消基于 `stop_token`（⟶ Book/part07_stl/ch93_thread_async.md、⟶ Book/part15_cases/ch159_threadpool.md）。
+- **执行器/线程池**：现代任务取消基于 `stop_token`（[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)、[第159章 从零实现线程池（C++）](Book/part15_cases/ch159_threadpool.md)）。
 - **内存模型**：`request_stop` 与 `stop_requested` 之间建立 happens-before（内部 release/acquire，见 ⑬）。
 
 ---
@@ -307,7 +307,7 @@ int main() {
 }
 ```
 
-`[标准]`：`condition_variable_any::wait(stop_token, pred)` 等价于"在 `pred()` 或 `stop_requested()` 时醒来"（⟶ Book/part07_stl/ch93_thread_async.md）。`[经验]`：用 `jthread` 的 `get_stop_token()` 作为该参数最自然。
+`[标准]`：`condition_variable_any::wait(stop_token, pred)` 等价于"在 `pred()` 或 `stop_requested()` 时醒来"（[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)）。`[经验]`：用 `jthread` 的 `get_stop_token()` 作为该参数最自然。
 
 ---
 
@@ -1232,12 +1232,12 @@ int main(){std::jthread t([](std::stop_token st){while(!st.stop_requested()){std
 
 ## 相关章节（交叉引用）
 
-- **同模块相邻**：⟶ Book/part07_stl/ch93_thread_async.md（第93章　线程与异步：thread / future / async）—— stop_token 为 thread/async 提供协作取消
-- **同模块相邻**：⟶ Book/part07_stl/ch92_chrono.md（第92章 时间库 chrono）—— 超时取消基于 chrono 时长
-- **同模块相邻**：⟶ Book/part07_stl/ch76_stl_arch.md（第76章　STL 架构与迭代器概念）—— 协作取消是该架构外的标准库设施
-- **跨模块前置**：⟶ Book/part08_algorithms/ch95_algo_overview.md（第95章　STL 算法分类与复杂度（C++））—— 取消常与算法循环配合
-- **跨模块前置**：⟶ Book/part08_algorithms/ch96_sorting.md（第96章　排序：sort / stable_sort / partial_sort（C++））—— 排序等算法可响应取消
-- **相邻主题**：⟶ Book/part09_concurrency/ch107_atomic.md（第107章　std::atomic 原子类型（C++11））—— 原子标志是 stop_token 的底层实现机制
+- **同模块相邻**：[第93章　线程与异步：thread / future / async](Book/part07_stl/ch93_thread_async.md)—— stop_token 为 thread/async 提供协作取消
+- **同模块相邻**：[第92章 时间库 chrono](Book/part07_stl/ch92_chrono.md)—— 超时取消基于 chrono 时长
+- **同模块相邻**：[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)—— 协作取消是该架构外的标准库设施
+- **跨模块前置**：[第95章　STL 算法分类与复杂度（C++）](Book/part08_algorithms/ch95_algo_overview.md)）—— 取消常与算法循环配合
+- **跨模块前置**：[第96章　排序：sort / stable_sort / partial_sort（C++）](Book/part08_algorithms/ch96_sorting.md)）—— 排序等算法可响应取消
+- **相邻主题**：[第107章　std::atomic 原子类型（C++11）](Book/part09_concurrency/ch107_atomic.md)）—— 原子标志是 stop_token 的底层实现机制
 
 ## 底层视角：stop 状态原子检查与回调链表 [E: Low-level]
 

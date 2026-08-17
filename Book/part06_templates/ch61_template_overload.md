@@ -1,8 +1,8 @@
 # 第61章　函数模板重载决议（Function Template Overload Resolution）
 > **[验证环境]** 本章示例均在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。模板与语言机制以 [标准]（ISO C++23）为权威；本章不含绝对性能或内存布局断言，跨编译器（Clang/MSVC）行为以各实现对标准的遵循度为准。
 
-⟶ Book/part06_templates/ch66_sfinae.md
-⟶ Book/part06_templates/ch67_concepts.md
+[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)
+[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)
 
 ## ⓪ 历史动机：模板重载与偏序的来龙去脉
 
@@ -34,8 +34,8 @@
 
 ## ① 学习目标
 
-⟶ Book/part06_templates/ch60_template_basics.md
-⟶ Book/part06_templates/ch62_specialization.md
+[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)
+[第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)
 
 - 复述重载决议的 3 阶段：候选集 → 可行集 → 最佳匹配 [标准]
 - 说清「非模板函数 > 更特化的模板 > 更泛化的模板」的优先权 [标准]
@@ -386,8 +386,8 @@ void bad(){ int x; k(x); }   // 注意：k(T) 对 int 完全匹配，k(const T&)
 
 ## ⑪ STL 中的该模式
 
-⟶ Book/part06_templates/ch66_sfinae.md（SFINAE 与 std::enable_if）—— STL 用 SFINAE 在重载集中剔除失败候选
-⟶ Book/part06_templates/ch67_concepts.md（Concepts 与 requires）—— C++20 起 STL 以 concepts 重写重载约束
+[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)（SFINAE 与 std::enable_if）—— STL 用 SFINAE 在重载集中剔除失败候选
+[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)（Concepts 与 requires）—— C++20 起 STL 以 concepts 重写重载约束
 
 > **示例 37** [难度 ★★☆☆☆] [主题：中的该模式]
 ```cpp
@@ -474,8 +474,8 @@ void f(int);  void f(double);  f(1.0f);  // float->int 与 float->double 谁优�
 
 ## ⑭ 工业案例
 
-⟶ Book/part11_source/ch128_boost.md（Boost 库生态）—— Boost 大量依赖模板重载做编译期分发
-⟶ Book/part12_patterns/ch140_policy_pattern.md（Policy-Based Design）—— policy 与重载协同定制行为
+[第128章　Boost 核心库（C++）](Book/part11_source/ch128_boost.md)（Boost 库生态）—— Boost 大量依赖模板重载做编译期分发
+[第140章 Policy-Based Design（C++）](Book/part12_patterns/ch140_policy_pattern.md)（Policy-Based Design）—— policy 与重载协同定制行为
 
 > **示例 44** [难度 ★★★☆☆] [主题：工业案例]
 ```cpp
@@ -502,7 +502,7 @@ int main() {
 
 ## ⑮ 源码剖析（libstdc++ 相关）
 
-⟶ Book/part11_source/ch124_libstdcxx.md（libstdc++ 实现剖析）—— STL 重载候选在此统一实现
+[第124章　libstdc++ 架构与阅读入口（C++）](Book/part11_source/ch124_libstdcxx.md)（libstdc++ 实现剖析）—— STL 重载候选在此统一实现
 
 > **示例 45** [难度 ★★★☆☆] [主题：源码剖析（libstdc++ 相关）]
 ```cpp
@@ -615,8 +615,8 @@ constexpr void swap(_Tp& __a, _Tp& __b) noexcept {
 
 ## ⑲ 性能（编译期 / 运行期）
 
-⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— 重载候选的实例化与偏序比较带来编译期成本
-⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 运行期开销需微基准实测
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— 重载候选的实例化与偏序比较带来编译期成本
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 运行期开销需微基准实测
 
 > **示例 63** [难度 ★★☆☆☆] [主题：性能（编译期 / 运行期）]
 ```cpp
@@ -741,12 +741,12 @@ P2593R0 (C++23): explicit object parameter (deducing this) → 简化CRTP重载
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part06_templates/ch60_template_basics.md（第60章　模板基础与实例化（Template Basics & Instantiation））—— 模板基础定义实例化，重载决议在其上选择候选
-- **同模块接续**：⟶ Book/part06_templates/ch62_specialization.md（第62章　类模板特化与偏特化（Class Template Specialization））—— 全特化/偏特化是重载决议的最终落点
-- **同模块接续**：⟶ Book/part06_templates/ch66_sfinae.md（第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发）—— SFINAE 是重载决议中剔除失败候选的核心机制
-- **同模块接续**：⟶ Book/part06_templates/ch67_concepts.md（第67章　Concepts 与 requires —— C++20 的编译期约束）—— concepts 以更清晰的约束重写重载决议
-- **同模块接续**：⟶ Book/part06_templates/ch64_fold.md（第64章　折叠表达式 Fold Expression（C++17））—— 折叠表达式参与包展开相关的重载
-- **跨模块**：⟶ Book/part03_language/ch23_namespace_adl.md（第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— ADL 在模板重载决议中决定候选函数集合
+- **同模块接续**：[第60章　模板基础与实例化（Template Basics & Instantiation）](Book/part06_templates/ch60_template_basics.md)）—— 模板基础定义实例化，重载决议在其上选择候选
+- **同模块接续**：[第62章　类模板特化与偏特化（Class Template Specialization）](Book/part06_templates/ch62_specialization.md)）—— 全特化/偏特化是重载决议的最终落点
+- **同模块接续**：[第66章　SFINAE 与 std::enable_if —— 替换失败非错误的编译期分发](Book/part06_templates/ch66_sfinae.md)—— SFINAE 是重载决议中剔除失败候选的核心机制
+- **同模块接续**：[第67章　Concepts 与 requires —— C++20 的编译期约束](Book/part06_templates/ch67_concepts.md)—— concepts 以更清晰的约束重写重载决议
+- **同模块接续**：[第64章　折叠表达式 Fold Expression（C++17）](Book/part06_templates/ch64_fold.md)）—— 折叠表达式参与包展开相关的重载
+- **跨模块**：[第23章　命名空间（namespace）、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找](Book/part03_language/ch23_namespace_adl.md)、using 与参数依赖查找（ADL）：隔离、版本化与隐形查找）—— ADL 在模板重载决议中决定候选函数集合
 
 ## 附录 G（工业级模板重载决议实战）
 

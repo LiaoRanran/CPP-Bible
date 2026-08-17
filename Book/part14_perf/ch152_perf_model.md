@@ -1,7 +1,7 @@
 # 第152章　性能模型与测量学
 
-⟶ Book/part13_engineering/ch151_benchmark.md
-⟶ Book/part14_perf/ch157_compiler_explorer.md
+[第151章 基准测试与性能度量（C++）](Book/part13_engineering/ch151_benchmark.md)
+[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
 
 > 元数据：标准基 C++23（GCC 13.1 / MinGW，`-std=c++23 -O2 -Wall -Wextra`）· 预计阅读 80 min · 前置 `ch151_benchmark` / `ch153_cpu_micro` / `ch154_cache_opt` / `ch155_simd` / `ch156_compiler_opt` · 后续 `ch157_ce` / `ch158_perf_antipattern` · 难度 ★★★★☆
 >
@@ -37,7 +37,7 @@
 
 ## ① 学习目标 [标准]
 
-⟶ Book/part14_perf/ch153_cpu_micro.md
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)
 
 性能工程的第一原则：**先建模，再测量，最后优化。** 本章目标是建立从"感觉快"到"证明快"的方法论闭环：
 
@@ -991,12 +991,12 @@ add rdi, 0x0040              ; 步进一个缓存行
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch153_cpu_micro.md（第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行）
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch154_cache_opt.md（第154章　缓存优化与数据局部性（C++/硬件））
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch155_simd.md（第155章　SIMD / AVX 向量化（C++/硬件））
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch156_compiler_opt.md（第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC））
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch157_compiler_explorer.md（第157章 Compiler Explorer 实战）
-- **同模块兄弟（part14 性能工程）**：⟶ Book/part14_perf/ch158_perf_antipatterns.md（第158章 性能反模式与陷阱）
+- **同模块兄弟（part14 性能工程）**：[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)
+- **同模块兄弟（part14 性能工程）**：[第154章　缓存优化与数据局部性（C++/硬件）](Book/part14_perf/ch154_cache_opt.md)）
+- **同模块兄弟（part14 性能工程）**：[第155章　SIMD / AVX 向量化（C++/硬件）](Book/part14_perf/ch155_simd.md)）
+- **同模块兄弟（part14 性能工程）**：[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)）
+- **同模块兄弟（part14 性能工程）**：[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
+- **同模块兄弟（part14 性能工程）**：[第158章 性能反模式与陷阱](Book/part14_perf/ch158_perf_antipatterns.md)
 
 ## 自测练习（Exercises）
 

@@ -1,11 +1,11 @@
 # 第47章 虚函数与虚表（vtable）：动态多态的发动机
 > **[验证环境·ABI]** 本章示例在 **Windows 11 · MinGW-w64 GCC 15.3.0 · `-std=c++23 -O2`** 下编译验证。虚函数表（vtable）的**内存布局由 ABI 规定而非 C++ 标准**（[标准] 不规定具体布局）；GCC/Clang 遵循 **Itanium C++ ABI**，MSVC 采用独立布局。本章展示的 vtable 布局与函数指针偏移均为 **GCC/Itanium ABI 实测**，跨编译器或平台（MSVC、不同 ABI）可能存在差异，切勿视作标准保证。
 
-⟶ Book/part05_oo/ch48_rtti.md
-⟶ Book/part05_oo/ch51_crtp.md
+[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)
+[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)
 
-⟶ Book/part05_oo/ch48_rtti.md
-⟶ Book/part05_oo/ch49_virtual_inheritance.md
+[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)
+[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)
 
 ## ⓪ 历史动机：虚函数的来龙去脉
 
@@ -37,8 +37,8 @@ Simula、Smalltalk 默认「一切方法皆虚」，调用必走查表；C++ 反
 
 ## ① 学习目标
 
-⟶ Book/part05_oo/ch46_encapsulation_inheritance.md
-⟶ Book/part05_oo/ch48_rtti.md
+[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)
+[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)
 
 - 说清 vptr/vtable 的物理布局与构造期重写机制
 - 能从 x86-64 汇编层面解释一次虚调用的全部指令与代价
@@ -200,8 +200,8 @@ g++ -std=c++23 -O2 -S -masm=intel _asm_ctor_vptr.cpp -o _asm_ctor_vptr.asm
 
 ## ⑪ STL 联系
 
-⟶ Book/part05_oo/ch45_oop_object_model.md（对象模型基础）—— vtable 指针即虚函数的对象模型落点
-⟶ Book/part07_stl/ch76_stl_arch.md（STL 架构与迭代器概念）—— STL 抽象基类大量用虚接口
+[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)（对象模型基础）—— vtable 指针即虚函数的对象模型落点
+[第76章　STL 架构与迭代器概念](Book/part07_stl/ch76_stl_arch.md)（STL 架构与迭代器概念）—— STL 抽象基类大量用虚接口
 
 - `std::function` 内部用虚表/类型擦除实现调用（`ch26`），与虚函数机制同源但运行时更重。
 - `std::shared_ptr` 控制块、`std::variant` 的 `visit` 分派（ch25）用函数指针表替代虚表，避免虚调用但仍是间接分派。
@@ -210,8 +210,8 @@ g++ -std=c++23 -O2 -S -masm=intel _asm_ctor_vptr.cpp -o _asm_ctor_vptr.asm
 
 ## ⑫ 工业案例
 
-⟶ Book/part05_oo/ch51_crtp.md（CRTP 与静态多态）—— 用静态多态替代虚接口规避虚调用开销
-⟶ Book/part05_oo/ch50_multiple_inheritance.md（多重继承与对象模型）—— 插件后端常用多重接口组合
+[第51章　CRTP 与静态多态（Curiously Recurring Template Pattern）](Book/part05_oo/ch51_crtp.md)（CRTP 与静态多态）—— 用静态多态替代虚接口规避虚调用开销
+[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)（多重继承与对象模型）—— 插件后端常用多重接口组合
 
 ### 工业案例 47-A：插件式渲染后端（虚接口 + RAII）
 
@@ -439,8 +439,8 @@ void demo_r() { B* b = new D; delete b; }  // 正确：先 ~D 再 ~B
 
 ## ⑬ 源码分析
 
-⟶ Book/part05_oo/ch48_rtti.md（RTTI 与 type_info）—— 虚表负偏移区存放 type_info 与 top_offset
-⟶ Book/part05_oo/ch45_oop_object_model.md（对象模型基础）—— vtable 在对象布局中的相对位置
+[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)（RTTI 与 type_info）—— 虚表负偏移区存放 type_info 与 top_offset
+[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)（对象模型基础）—— vtable 在对象布局中的相对位置
 
 ### 源码剖析 1：虚析构与 vtable 生成 @ Itanium C++ ABI（规范层）
 
@@ -545,8 +545,8 @@ extern "C" void __cxa_pure_virtual() { std::terminate(); }
 
 ## ⑲ 性能分析
 
-⟶ Book/part14_perf/ch156_compiler_opt.md（编译器优化）—— 去虚化(devirtualization)依赖别名分析与 PGO
-⟶ Book/part14_perf/ch153_cpu_micro.md（CPU 微架构与微基准）—— 间接跳转对分支预测/I-cache 的影响
+[第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md)（编译器优化）—— 去虚化(devirtualization)依赖别名分析与 PGO
+[第153章　CPU 微架构：流水线 / 分支预测 / 乱序执行](Book/part14_perf/ch153_cpu_micro.md)（CPU 微架构与微基准）—— 间接跳转对分支预测/I-cache 的影响
 
 【microbenchmark 设计（Google Benchmark，可复现）】
 
@@ -1088,13 +1088,13 @@ int main(){auto p=std::make_unique<Derived>(42);std::cout<<p->n<<std::endl;retur
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　C++ 面向对象总览与对象模型基础）—— 对象模型的 vtable 指针即虚函数的存储落点
-- **同模块接续**：⟶ Book/part05_oo/ch46_encapsulation_inheritance.md（第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI）—— 虚函数经继承体系重写，override/final 约束重写
-- **同模块接续**：⟶ Book/part05_oo/ch48_rtti.md（第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询）—— dynamic_cast/typeid 依赖虚函数表的存在
-- **同模块接续**：⟶ Book/part05_oo/ch49_virtual_inheritance.md（第49章 虚继承与菱形继承：共享虚基类）—— 虚继承下的虚函数调用涉及虚基类 this 调整
-- **同模块接续**：⟶ Book/part05_oo/ch50_multiple_inheritance.md（第50章　多重继承与对象模型（Multiple Inheritance））—— 多重继承的虚函数调用可能存在二义性，需显式消歧
-- **跨模块**：⟶ Book/part07_stl/ch91_filesystem.md（第91章 文件系统 filesystem）—— filesystem 大量使用虚接口抽象
-- **跨模块**：⟶ Book/part07_stl/ch92_chrono.md（第92章 时间库 chrono）—— chrono 的时钟/时区用虚接口多态
+- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)—— 对象模型的 vtable 指针即虚函数的存储落点
+- **同模块接续**：[第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI](Book/part05_oo/ch46_encapsulation_inheritance.md)—— 虚函数经继承体系重写，override/final 约束重写
+- **同模块接续**：[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)—— dynamic_cast/typeid 依赖虚函数表的存在
+- **同模块接续**：[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)—— 虚继承下的虚函数调用涉及虚基类 this 调整
+- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)）—— 多重继承的虚函数调用可能存在二义性，需显式消歧
+- **跨模块**：[第91章 文件系统 filesystem](Book/part07_stl/ch91_filesystem.md)—— filesystem 大量使用虚接口抽象
+- **跨模块**：[第92章 时间库 chrono](Book/part07_stl/ch92_chrono.md)—— chrono 的时钟/时区用虚接口多态
 
 ## 附录 G（虚函数与 thunk）
 

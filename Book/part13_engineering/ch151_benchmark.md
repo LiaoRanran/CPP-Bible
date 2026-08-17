@@ -1,8 +1,8 @@
 # 第151章 基准测试与性能度量（C++）
 > 验证状态：[VERIFIED] — 复现链：书内 `asm` 反汇编证据（book_asm_freshness 校验）。
 
-⟶ Book/part14_perf/ch157_compiler_explorer.md
-⟶ Book/part14_perf/ch152_perf_model.md
+[第157章 Compiler Explorer 实战](Book/part14_perf/ch157_compiler_explorer.md)
+[第152章　性能模型与测量学](Book/part14_perf/ch152_perf_model.md)
 
 > **取证说明（Forensic Note）**：本章所有可被机器验证的结论，均用本机 GCC 13.1.0 真实产物佐证。编译器：`g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0`，路径 `C:/Qt/Tools/mingw1310_64/bin/g++.exe`。示例源码位于 `Examples/_ch151_*.cpp`，对应汇编产物位于 `Examples/_ch151_*.asm`（命令统一为 `g++ -std=c++23 -O2 -S -masm=intel <src> -o <dst>.asm`）。全部示例以 `-std=c++23 -O2 -Wall -Wextra` 编译，**警告零洁净（warnings clean）** 且真实运行；正文中所有耗时数字（毫秒/纳秒）均逐字摘自本机运行输出，**绝不编造**。所有汇编片段（`.L4` 循环、`call [QWORD PTR 16[rax]]`、`mulpd`/`addpd`、`vmovupd zmm` 等）均逐字摘自真实生成的 `.asm` 文件。源码剖析（第④节）引用的 libstdc++ 路径为本机真实存在的 `.../include/c++/bits/chrono.h`，行号取自实际文件。立场分层标签：`[标准]`=ISO C++，`[实现·GCC15]`=编译器/标准库实现，`[平台·Linux]`=OS/ABI/CPU，`[经验]`=工程共识。外部框架（Google Benchmark / perf / valgrind cachegrind）本机未安装，一律按"上游参考 + 本机可复现等价示例"记录：等价示例经 `g++` 真实编译运行，框架语法以「典型输出」形式给出且明确标注为框架示意、非本机 `g++` 产物。
 
@@ -37,7 +37,7 @@
 
 ## ① 概述：基准测试陷阱 [经验]
 
-⟶ Book/part13_engineering/ch150_testing.md
+[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)
 
 基准测试（benchmarking）的目标是用可重复的数字回答"这段代码的真实开销是多少"。但 C++ 基准测试的陷阱远超直觉：**优化器会删除你以为在测的代码**、**时钟分辨率会给你 0**、**缓存预热会在首批样本里污染结果**、**平台/编译器差异会让数字完全不可比**。一条不可信的基准，比没有基准更危险——它会把错误的优化方向"焊死"进代码库。
 
@@ -1473,15 +1473,15 @@ C++11 引入 `<chrono>` 与 `std::chrono::steady_clock`，给基准提供"不受
 
 ## 相关章节（交叉引用）
 
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch144_style.md（第144章 代码风格与规范（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch145_naming_api.md（第145章 命名与 API 设计（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch146_error_handling.md（第146章 错误处理（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch147_code_review.md（第147章 代码审查（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch148_gitflow.md（第148章 Git 工作流（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch149_ci_cd.md（第149章 CI/CD 流水线（C++））
-- **同模块兄弟（part13 工程）**：⟶ Book/part13_engineering/ch150_testing.md（第150章 测试策略（C++））
-- **跨模块延伸（part02 工具链）**：⟶ Book/part02_toolchain/ch15_profiling.md（第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++））—— 基准测试需配合 perf/VTune 定位瓶颈
-- **跨模块延伸（part07 STL）**：⟶ Book/part07_stl/ch92_chrono.md（第92章 时间库 chrono）—— chrono 为基准提供稳定时基
+- **同模块兄弟（part13 工程）**：[第144章 代码风格与规范（C++）](Book/part13_engineering/ch144_style.md)）
+- **同模块兄弟（part13 工程）**：[第145章 命名与 API 设计（C++）](Book/part13_engineering/ch145_naming_api.md)）
+- **同模块兄弟（part13 工程）**：[第146章 错误处理（C++）](Book/part13_engineering/ch146_error_handling.md)）
+- **同模块兄弟（part13 工程）**：[第147章 代码审查（C++）](Book/part13_engineering/ch147_code_review.md)）
+- **同模块兄弟（part13 工程）**：[第148章 Git 工作流（C++）](Book/part13_engineering/ch148_gitflow.md)）
+- **同模块兄弟（part13 工程）**：[第149章 CI/CD 流水线（C++）](Book/part13_engineering/ch149_ci_cd.md)）
+- **同模块兄弟（part13 工程）**：[第150章 测试策略（C++）](Book/part13_engineering/ch150_testing.md)）
+- **跨模块延伸（part02 工具链）**：[第15章　性能分析：perf / VTune / 火焰图 / Compiler Explorer（C++）](Book/part02_toolchain/ch15_profiling.md)）—— 基准测试需配合 perf/VTune 定位瓶颈
+- **跨模块延伸（part07 STL）**：[第92章 时间库 chrono](Book/part07_stl/ch92_chrono.md)—— chrono 为基准提供稳定时基
 
 ## D5 性能附录：基准测试的两大陷阱（GCC 15.3.0, -O2）
 

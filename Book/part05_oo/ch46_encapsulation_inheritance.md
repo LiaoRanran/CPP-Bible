@@ -1,7 +1,7 @@
 # 第 46 章　封装与继承深度：访问控制、三种继承、切片、构造/析构、名字隐藏、override/final、NVI
 
-⟶ Book/part03_language/ch29_friend.md
-⟶ Book/part05_oo/ch45_oop_object_model.md
+[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)
+[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
 
 > 老兵标准：**继承是最被滥用的 C++ 特性，没有之一。** 真正的封装不是把成员写进 `private` 就万事大吉——它是一道**编译期契约**；真正的继承不只是「冒号加个 public」——它关乎 LSP、切片、构造顺序与名字隐藏。本章把这些都钉死。
 > 本章遵循《现代 C++ 终极圣经》标准 v3：真实源码逐行 + GCC/LLVM/MSVC 三实现对照 + libstdc++/libc++/MS STL 三 STL 对照 + microbenchmark + 跨语言对比 + 推荐阅读已内化进正文。
@@ -45,8 +45,8 @@ C++ 没把继承当成唯一复用手段：它一边给继承，一边强调**�
 
 ## ① 概述：封装与继承在 C++ 中的真实地位
 
-⟶ Book/part05_oo/ch45_oop_object_model.md
-⟶ Book/part05_oo/ch47_virtual_functions.md
+[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)
+[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)
 
 **[标准]**　`[class]` / `[class.access]` / `[class.derived]` 把封装与继承定义为「在编译期对名字访问与子类型关系施加约束」的机制。注意关键词是**编译期**——它们不产生任何运行期数据结构（不像虚函数会生成 vtable）。
 
@@ -1637,14 +1637,14 @@ int main(){D d;d.show();return 0;}
 
 ## 相关章节（交叉引用）
 
-- **同模块接续**：⟶ Book/part05_oo/ch45_oop_object_model.md（第 45 章　C++ 面向对象总览与对象模型基础）—— 对象模型解释继承后的子类内存布局
-- **同模块接续**：⟶ Book/part05_oo/ch47_virtual_functions.md（第47章 虚函数与虚表（vtable）：动态多态的发动机）—— 虚函数经继承体系重写，override/final 在此生效
-- **同模块接续**：⟶ Book/part05_oo/ch48_rtti.md（第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询）—— RTTI 在继承体系中查询动态类型
-- **同模块接续**：⟶ Book/part05_oo/ch49_virtual_inheritance.md（第49章 虚继承与菱形继承：共享虚基类）—— 虚继承解决菱形继承的重复基类子对象
-- **同模块接续**：⟶ Book/part05_oo/ch50_multiple_inheritance.md（第50章　多重继承与对象模型（Multiple Inheritance））—— 多重继承是封装/继承的进阶形态
-- **跨模块**：⟶ Book/part03_language/ch29_friend.md（第29章 友元 friend 与访问控制）—— 友元打破封装边界，与访问控制权衡
-- **跨模块**：⟶ Book/part04_memory/ch39_raii_rule.md（第 39 章　RAII 与 Rule of Zero/Three/Five）—— RAII 与构造/析构顺序直接承接继承体系
-- **跨模块**：⟶ Book/part04_memory/ch44_memory_pool.md（第 44 章 内存池（Memory Pool）从零实现）—— 内存池可封装为类内资源
+- **同模块接续**：[第 45 章　C++ 面向对象总览与对象模型基础](Book/part05_oo/ch45_oop_object_model.md)—— 对象模型解释继承后的子类内存布局
+- **同模块接续**：[第47章 虚函数与虚表（vtable）：动态多态的发动机](Book/part05_oo/ch47_virtual_functions.md)：动态多态的发动机）—— 虚函数经继承体系重写，override/final 在此生效
+- **同模块接续**：[第48章 RTTI 与 typeid/dynamic_cast：运行时类型查询](Book/part05_oo/ch48_rtti.md)—— RTTI 在继承体系中查询动态类型
+- **同模块接续**：[第49章 虚继承与菱形继承：共享虚基类](Book/part05_oo/ch49_virtual_inheritance.md)—— 虚继承解决菱形继承的重复基类子对象
+- **同模块接续**：[第50章　多重继承与对象模型（Multiple Inheritance）](Book/part05_oo/ch50_multiple_inheritance.md)）—— 多重继承是封装/继承的进阶形态
+- **跨模块**：[第29章 友元 friend 与访问控制](Book/part03_language/ch29_friend.md)—— 友元打破封装边界，与访问控制权衡
+- **跨模块**：[第 39 章　RAII 与 Rule of Zero/Three/Five](Book/part04_memory/ch39_raii_rule.md)—— RAII 与构造/析构顺序直接承接继承体系
+- **跨模块**：[第 44 章 内存池（Memory Pool）从零实现](Book/part04_memory/ch44_memory_pool.md)从零实现）—— 内存池可封装为类内资源
 
 ## 附录 G（对象布局与继承）
 
