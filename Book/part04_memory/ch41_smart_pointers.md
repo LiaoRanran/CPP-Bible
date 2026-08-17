@@ -2123,54 +2123,97 @@ auto file = std::shared_ptr<FILE>(std::fopen("log.txt","w"),
 
 </details>
 
-## 附录：用法演绎 — 从裸指针迁移到 `unique_ptr`
+## 附录：用法演绎 — 连接池资源类：从裸指针演进到 `enable_shared_from_this`
 
-> 场景：重构一段老代码，原接口返回裸 `T*`（调用方负责 `delete`），频繁出现泄漏与双重释放。
+> 场景：重构一个「数据库连接池」老代码，原接口返回裸 `Connection*`（调用方负责 `delete`），频繁出现泄漏与双重释放。下面让**同一个连接池资源类**随步骤推进而演化——先裸指针，再 `unique_ptr` 接管唯一所有权，再 `shared_ptr` 共享，再用 `weak_ptr` 打破循环，最后 `enable_shared_from_this` 从 `this` 安全取回 `shared_ptr`。每一步各解决一类所有权问题。
 
 **步骤 1：原始代码（双重释放雷区）**
 
-> **示例 64** [难度 ★☆☆☆☆] [主题：附录：用法演绎 — 从裸指针迁移到 ]
+> **示例 64** [难度 ★☆☆☆☆] [主题：用法演绎 — 连接池资源类演进]
 ```cpp
-Buffer* create_buffer(size_t n) { return new Buffer(n); }
+Connection* create_conn(int id) { return new Connection(id); }
 // 调用方:
-Buffer* b = create_buffer(1024);
-use(b);
-delete b;                 // 若 use() 内部也 delete -> 双重释放; 若抛异常 -> 泄漏
+Connection* c = create_conn(0);
+use(c);
+delete c;                 // 若 use() 内部也 delete -> 双重释放; 若抛异常 -> 泄漏
 ```
 
-**步骤 2：用 `unique_ptr` + 自定义 deleter 包装**
+**步骤 2：用 `unique_ptr` 接管唯一所有权**
 
-> **示例 65** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 从裸指针迁移到 ]
+> **示例 65** [难度 ★★☆☆☆] [主题：用法演绎 — 连接池资源类演进]
 ```cpp
-auto create_buffer(size_t n) {
-    return std::unique_ptr<Buffer>(new Buffer(n));   // 或 make_unique
+auto create_conn(int id) {
+    return std::unique_ptr<Connection>(new Connection(id));  // 或 make_unique
 }
-auto b = create_buffer(1024);   // 离开作用域自动释放, 异常安全
-use(b.get());                   // .get() 仅借出裸指针, 不转移所有权
+auto c = create_conn(0);   // 离开作用域自动释放, 异常安全
+use(c.get());              // .get() 仅借出裸指针, 不转移所有权
 ```
 
-**步骤 3：工厂模式转移所有权**
+**步骤 3：移动语义转移所有权**
 
-> **示例 66** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 从裸指针迁移到 ]
+> **示例 66** [难度 ★★☆☆☆] [主题：用法演绎 — 连接池资源类演进]
 ```cpp
-std::unique_ptr<Buffer> b = create_buffer(1024);  // 拥有
-std::unique_ptr<Buffer> b2 = std::move(b);        // 显式转移; b 变空
-// 不能 copy: auto b3 = b2; 编译失败 -> 编译期杜绝双重释放
+std::unique_ptr<Connection> c = create_conn(0);  // 拥有
+std::unique_ptr<Connection> c2 = std::move(c);   // 显式转移; c 变空
+// 不能 copy: auto c3 = c2; 编译失败 -> 编译期杜绝双重释放
 ```
 
 **步骤 4：管理非内存资源（FILE*）**
 
-> **示例 67** [难度 ★★☆☆☆] [主题：附录：用法演绎 — 从裸指针迁移到 ]
+> **示例 67** [难度 ★★☆☆☆] [主题：用法演绎 — 连接池资源类演进]
 ```cpp
 auto f = std::unique_ptr<FILE, decltype(&fclose)>(fopen("x","r"), fclose);
 // 文件句柄随 f 析构自动 fclose, 异常安全
 ```
 
-**结论**：`unique_ptr` 把"所有权"编码进类型系统——可移动不可拷贝，编译期阻止双重释放；
-`.get()` 仅用于需要裸指针的旧 API，绝不从中转交生命周期管理。
+**步骤 5：`shared_ptr` 共享所有权——一个连接同时被「池」与「借用者」持有**
 
-**工程含义**：裸 `new/delete` 在 modern C++ 中基本只应出现在 `make_unique/make_shared` 内部；
-所有权语义不清是 C++ 历史泄漏的头号来源。
+> **示例 70** [难度 ★★★☆☆] [主题：用法演绎 — 连接池资源类演进]
+```cpp
+class ConnectionPool {
+    std::vector<std::shared_ptr<Connection>> idle_;
+    int next_id_ = 0;
+public:
+    std::shared_ptr<Connection> acquire() {
+        if (idle_.empty()) return std::make_shared<Connection>(next_id_++);
+        auto c = std::move(idle_.back()); idle_.pop_back(); return c;
+    }
+    void release(std::shared_ptr<Connection> c) { idle_.push_back(std::move(c)); }
+};
+// 池与借用者各持一个 shared_ptr；最后一个持有者释放时才析构 Connection
+```
+
+**步骤 6：`weak_ptr` 打破循环——连接「回指」池用弱引用，不构成强环**
+
+> **示例 71** [难度 ★★★☆☆] [主题：用法演绎 — 连接池资源类演进]
+```cpp
+class Connection {
+    std::weak_ptr<ConnectionPool> pool_;   // 弱引用：不延长池的生命周期
+public:
+    void bind(std::shared_ptr<ConnectionPool> p) { pool_ = std::move(p); }
+    // 若这里改用 shared_ptr<ConnectionPool>，则 池(shared)→连接(shared)→池(shared) 成环 -> 泄漏
+};
+```
+
+**步骤 7：`enable_shared_from_this` 从 `this` 安全取回 `shared_ptr` 归还自己**
+
+> **示例 72** [难度 ★★★★☆] [主题：用法演绎 — 连接池资源类演进]
+```cpp
+class Connection : public std::enable_shared_from_this<Connection> {
+    std::weak_ptr<ConnectionPool> pool_;
+public:
+    void return_self() {
+        if (auto p = pool_.lock())            // weak_ptr::lock：池还活着才归还
+            p->release(shared_from_this());   // 从 this 安全取得 shared_ptr
+    }
+};
+// 关键：对象必须已由 shared_ptr 管理(如 make_shared)才能调 shared_from_this；
+//      构造期间 this 尚未交给 shared_ptr，调用会抛 std::bad_weak_ptr —— 见示例 25。
+```
+
+**结论（贯穿）**：这条演化链把「所有权」一步步写进类型系统——`unique_ptr` 用「不可拷贝」在编译期杜绝双重释放；`shared_ptr` 用引用计数支持多方共享；`weak_ptr` 用弱引用切断循环；`enable_shared_from_this` 让对象在需要时从 `this` 安全取回 `shared_ptr`。裸 `new/delete` 只应出现在 `make_unique/make_shared` 内部。
+
+**工程含义**：所有权语义不清是 C++ 历史泄漏的头号来源；选型口诀「唯一所有权用 `unique_ptr`，多方共享用 `shared_ptr`，观察不持有用 `weak_ptr`，从 `this` 取 `shared_ptr` 用 `enable_shared_from_this`」。
 
 ## 附录 D4：libstdc++ 15.3.0 源码解析 — `shared_ptr` 控制块（三标准库对比）[E: Low-level / H: Design]
 
