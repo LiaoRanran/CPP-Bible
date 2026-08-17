@@ -66,6 +66,7 @@ PANDOC_COMMON=(
   -V toccolor=black
   --toc --toc-depth=2 -N
   --highlight-style=tango
+  --lua-filter "$ROOT/tools/details.lua"
 )
 
 if [ "$BY_PART" = "--by-part" ]; then
