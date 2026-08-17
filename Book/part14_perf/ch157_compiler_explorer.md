@@ -1,6 +1,6 @@
 # 第157章 Compiler Explorer 实战
 
-> 标准基: godbolt.org / GCC 13.1 / 预计阅读: 60min / [第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md) / 难度: ★★★☆☆
+> 标准基: godbolt.org / GCC 15.3.0 / 预计阅读: 60min / [第156章　编译器优化：O2/O3/Ofast/LTO/PGO（GCC）](Book/part14_perf/ch156_compiler_opt.md) / 难度: ★★★☆☆
 > 【性能声明 · §10.3】本章所有绝对延迟/带宽数字（如 L1≈1ns、主存≈100ns、各基准 ms）均为 **x86-64 量级示意**，强依赖具体 CPU 型号/频率、编译器及版本、编译标志、OS、测试负载与样本量；非通用性能结论，绝对数字不可移植。微架构相关结论标 `[微架构·x86-64][UNVERIFIED]`；本机实测标 `[实验·本机实测][UNVERIFIED]`。断言形如「acquire 读比 relaxed 贵 X」仅在给定微架构下成立。
 
 ## ⓪ 历史动机：Compiler Explorer 的来龙去脉
@@ -280,7 +280,7 @@ int main() {
     std::cout << "   int test() { return 42*42; } → DCE 删除整个函数因为结果未使用\n";
     std::cout << "   修复: 用 volatile 或 benchmark::DoNotOptimize 或 printf\n\n";
     std::cout << "Trap 3: 不同编译器不同版本的 asm 差异\n";
-    std::cout << "   GCC 13 和 Clang 17 对同一代码的优化策略不同\n";
+    std::cout << "   GCC 15 和 Clang 17 对同一代码的优化策略不同\n";
     std::cout << "   修复: 同时检查 GCC/Clang/MSVC，选择最保守的写法\n\n";
     std::cout << "Trap 4: 混淆 AT&T 和 Intel 语法\n";
     std::cout << "   AT&T: movl %eax, %ebx (src, dst 相反)\n";
@@ -694,18 +694,53 @@ int main(){
 
 ## 附录 F（Compiler Explorer 汇编对照）
 
-Compiler Explorer 直接展示同一源码在不同编译器下的汇编，下列为对照要点。
+Compiler Explorer 直接展示同一源码在不同编译器下的汇编。下列对照**全部来自本机 MinGW GCC 15.3.0 真实提取**（`-S -masm=intel`），可复现源与产物见 `Examples/_ch157_square.cpp`、`Examples/_ch157_square_o0.asm`、`Examples/_ch157_square_o2.asm`——替换了原书编造的「GCC 13.2 / Clang 18」片段（后者不仅版本号错，且误用了 System V / Linux ABI 的 `edi` 寄存器；MinGW 走 Windows x64 ABI，首整型参数落在 `rcx`/`ecx`）。
 
-```text
-; int sq(int x){return x*x;}  GCC 13.2 -O2
-mov eax, edi
-imul eax, eax            ; 单条乘法
-ret
-; 对比 Clang 18 -O2
-mov eax, edi
-imul eax, eax
-ret
+**源码**（由 `main` 调用 `square(5)`）：
+
+```cpp
+// Examples/_ch157_square.cpp
+#include <cstdio>
+int square(int x) { return x * x; }
+int main() { int s = square(5); std::printf("%d\n", s); return 0; }
 ```
+
+**`-O0`（未优化 · 真实调用）**——`main` 先把 `5` 放入 `ecx` 再 `call _Z6squarei`；`square` 本体生成真实 `imul`，并保留完整栈帧：
+
+```asm
+; 节选自 Examples/_ch157_square_o0.asm  (MinGW GCC 15.3.0, -O0 -masm=intel)
+_Z6squarei:
+        push    rbp
+        mov     rbp, rsp
+        mov     DWORD PTR 16[rbp], ecx
+        mov     eax, DWORD PTR 16[rbp]
+        imul    eax, eax          ; 真实乘法：x*x
+        pop     rbp
+        ret
+main:
+        ...
+        mov     ecx, 5
+        call    _Z6squarei        ; -O0 不内联，真实函数调用
+        ...
+```
+
+**`-O2`（内联 + 常量折叠）**——独立的 `square` 符号仍为外部链接保留（`imul ecx, ecx`），但 `main` 中 `square(5)` 已被**内联并常量折叠为 `25`**，不再出现 `call` 或 `imul`：
+
+```asm
+; 节选自 Examples/_ch157_square_o2.asm  (MinGW GCC 15.3.0, -O2 -masm=intel)
+_Z6squarei:
+        imul    ecx, ecx          ; 外部链接保留的本体：x*x
+        mov     eax, ecx
+        ret
+main:
+        ...
+        mov     edx, 25           ; square(5) 折叠为常量 25，无 call / 无 imul
+        lea     rcx, .LC0[rip]
+        call    __mingw_printf
+        ...
+```
+
+> **判读（与练习 1 呼应）**：`-O0` 逐语句翻译，`main` 里能看到真实的 `call _Z6squarei` 与 `square` 本体的 `imul`；`-O2` 把 `square(5)` 视为编译期可求常量，`5*5` 折叠成 `25` 并内联展开，`main` 中只剩把 `25` 搬入 `edx` 的 `mov`（无 `imul`、无 `call`）。这正是练习 1 要求的「直接看编译器吐出的汇编」比跑基准数字更可靠的佐证——且它来自**真实编译器产物**，非手绘示意。
 
 ### 关键观察量级
 
@@ -715,7 +750,7 @@ ret
 
 ### 编译器标志与版本
 
-- GCC 13.2 / Clang 18 / MSVC 19.3 均可在 Explorer 选
+- 本书统一以 MinGW **GCC 15.3.0** 为实证工具链（见 D5.5 与 ASM 证据库）；Compiler Explorer 同时提供 GCC 13.x/14.x、Clang 17/18、MSVC 19.x 等多种版本供跨编译器对比，对比时务必锁定同一优化档位
 - `-march=native` 启用 AVX2/NEON；`0x0020` 字节向量寄存器
 - `__cplusplus` = 202302L；C++20 概念错误在 Clang 给出更短诊断
 - WG21 提案 P0468R2 规定范围算法，Explorer 可对比其生成代码
