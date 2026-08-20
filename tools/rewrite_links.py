@@ -412,6 +412,68 @@ def inject_chapter_anchor(content: str, slug: str) -> tuple[str, int]:
     return new, subs
 
 
+_ADMONITION_RE = re.compile(
+    r'^(\s*)(?:!!!|\?\?\?)\s+([A-Za-z0-9_-]+)(?:\s+"([^"]*)")?\s*$'
+)
+
+
+def _convert_admonitions(content: str) -> str:
+    """把 mkdocs-material 的 `!!!`/`???` admonition 转为 pandoc fenced div `:::`
+    （仅 pdf/epub 合并源调用；site 模式保留 `!!!` 由 mkdocs 原生渲染）。
+
+    mkdocs 语法（正文缩进 4 空格，块以缩进不足为界）:
+        !!! note "标题"
+            正文（缩进 4 空格）
+            继续正文
+    pandoc fenced div 语法（不缩进，`:::` 闭合）:
+        ::: {.note}
+        **标题**
+
+        正文
+        :::
+
+    幂等：只匹配行首（可带缩进）的 `!!!`/`???`，不碰已转换的 `:::`；
+    正文统一去 4 空格缩进；块内空行保留；块结束补 `:::`。
+    """
+    lines = content.split("\n")
+    out: list[str] = []
+    i = 0
+    n = len(lines)
+    while i < n:
+        m = _ADMONITION_RE.match(lines[i])
+        if not m:
+            out.append(lines[i])
+            i += 1
+            continue
+        indent = m.group(1)
+        kind = m.group(2)
+        title = m.group(3)
+        out.append(f"{indent}::: {{{kind}}}")
+        if title:
+            out.append(f"{indent}**{title}**")
+        j = i + 1
+        while j < n:
+            ln = lines[j]
+            if ln.startswith(indent + "    "):
+                out.append(ln[len(indent) + 4:])
+                j += 1
+            elif ln.strip() == "":
+                # 空行：若后续仍有缩进正文则保留该空行，否则视为块结束
+                k = j
+                while k < n and lines[k].strip() == "":
+                    k += 1
+                if k < n and lines[k].startswith(indent + "    "):
+                    out.append("")
+                    j = k
+                else:
+                    break
+            else:
+                break
+        out.append(f"{indent}:::")
+        i = j
+    return "\n".join(out)
+
+
 def run_pdf(index: dict) -> None:
     out_dir = ROOT / "build" / "pdf" / "combined_src"
     if out_dir.exists():
@@ -439,6 +501,8 @@ def run_pdf(index: dict) -> None:
         content = src.read_text(encoding="utf-8", errors="replace")
         new, n = rewrite_content(content, meta["path"], index, mode="pdf")
         total_rw += n
+        # mkdocs `!!!` admonition → pandoc `:::` fenced div（PDF/EPUB 不再字面渲染 `!!!`）
+        new = _convert_admonitions(new)
         # 给每章首个 H1 显式注入 pandoc id {#chNN}，使 #chNN 锚点可跳转。
         new, subs = inject_chapter_anchor(new, meta["slug"])
         anchored += subs

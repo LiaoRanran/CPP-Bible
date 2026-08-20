@@ -187,7 +187,69 @@ markdown_extensions:
 extra:
   generator: false
 
+extra_css:
+  - assets/extra.css
+
 {nav}
+"""
+
+
+EXTRA_CSS = """\
+/* CPP-Bible 层级徽章（[标准]/[实现]/[经验]/[ABI]/[平台]/[微架构]/[史]/[轶]/[评]）
+   在 site 渲染为彩色标签；PDF/EPUB 走 pandoc 时 span 降级为纯文本，不崩。 */
+.md-typeset .badge {
+  display: inline-block;
+  padding: 0.02em 0.55em;
+  border-radius: 0.35em;
+  font-size: 0.72em;
+  font-weight: 700;
+  line-height: 1.6;
+  vertical-align: 0.12em;
+  margin: 0 0.18em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.md-typeset .badge-std  { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+.md-typeset .badge-impl { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+.md-typeset .badge-exp  { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+.md-typeset .badge-abi  { background: #f3e5f5; color: #6a1b9a; border: 1px solid #ce93d8; }
+.md-typeset .badge-platform { background: #e0f7fa; color: #006064; border: 1px solid #80deea; }
+.md-typeset .badge-microarch { background: #ede7f6; color: #4527a0; border: 1px solid #b39ddb; }
+.md-typeset .badge-history { background: #fce4ec; color: #ad1457; border: 1px solid #f48fb1; }
+.md-typeset .badge-anecdote { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+.md-typeset .badge-comment { background: #eceff1; color: #455a64; border: 1px solid #b0bec5; }
+
+/* 中文高密度技术文档排版优化：缓解「拥挤感」 */
+.md-typeset {
+  line-height: 1.8;
+}
+.md-typeset p {
+  margin: 0.9em 0;
+}
+.md-typeset ul, .md-typeset ol {
+  margin: 0.7em 0;
+}
+.md-typeset li + li {
+  margin-top: 0.35em;
+}
+.md-typeset pre {
+  margin: 1.1em 0;
+  line-height: 1.55;
+}
+.md-typeset table:not([class]) {
+  margin: 1.1em 0;
+}
+.md-typeset h2, .md-typeset h3 {
+  margin-top: 1.7em;
+  margin-bottom: 0.6em;
+}
+.md-typeset blockquote {
+  margin: 1em 0;
+}
+.md-typeset img {
+  margin: 1em auto;
+  border-radius: 4px;
+}
 """
 
 
@@ -238,6 +300,8 @@ def main() -> int:
     nav = build_nav(index, part_titles)
     mkdocs_yml = MKDOCS_TEMPLATE.format(nav=nav)
     (SITE_DIR / "mkdocs.yml").write_text(mkdocs_yml, encoding="utf-8")
+    (DOCS_DIR / "assets").mkdir(parents=True, exist_ok=True)
+    (DOCS_DIR / "assets" / "extra.css").write_text(EXTRA_CSS, encoding="utf-8")
     welcome = WELCOME_TEMPLATE.format(part_table=build_part_table(index, part_titles))
     (DOCS_DIR / "index.md").write_text(welcome, encoding="utf-8")
     (DOCS_DIR / "search.md").write_text(SEARCH_PAGE, encoding="utf-8")
